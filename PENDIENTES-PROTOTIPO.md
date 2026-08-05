@@ -1,52 +1,97 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-07-31  
-**Estado vivo:** `C6_HUMAN_VISUAL_P0_PROVEN__DOMAIN_FINANCE_SHOPPER_PORTAL_FIX_PASS__LIVE_HR_AUDIT_PASS__PENDING_DEV_DEPLOY__NO_PRODUCTION`
+**Última actualización:** 2026-08-04  
+**Estado vivo:** `V7_2_RECEIVED_PREFLIGHT__FINAL_AUDIT_AND_DIRECT_APPLY_PENDING__NO_DEPLOY__NO_PRODUCTION`
 
-## 1. Protegido
-Corte3 FROZEN; R17N1,406/1,406; Corte5 14/616 PASS; Auth/claims/Rules PASS; HR live/auto-month PASS; perfil protegido120/329 PASS; finanzas/pagos canónicos preservados.
+## 1. Fuente de verdad
 
-## 2. P0 visible en Hosting actual
-- KPIs/fases contradictorios;
-- comparativo vacío;
-- refresh con salto;
-- shoppers210/219 e identidades divididas;
-- perfiles/certificación/histórico incompletos;
-- portal Activas1/Historial0/Beneficios vacío;
-- periodo financiero incoherente;
--33 submitidas omitidas de Liquidaciones.
+Mandan, en este orden:
 
-## 3. Root fix preparado, no desplegado
-Composer/semántica/watcher/bridge de dominio/read model financiero/portal Shopper canónicos y `index-backend-dev.html` conectados. `/app/modules/*` y `/app/core/*` intactos.
+1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
+2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
+3. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+4. manifiesto de composición canónica;
+5. PR #7 y HEAD vivo.
 
-## 4. Gates PASS
-- dominio canónico;
-- completitud de Finanzas/Liquidaciones;
-- contrato de portal Shopper;
-- HR viva row-level.
+Los estados C6 previos permanecen como historia protegida, pero no describen el bloqueo actual.
 
-HR:14 periodos/616 visitas/208 shoppers; JUL44 GT34/HN10; realizadas40; cuestionario38; submitidas33; fuera de rango accionable1; evidencia7; duplicados0.
+## 2. Protegido y no reabrir sin regresión reproducible
 
-## 5. Pendiente inmediato
-1. Autorización fresca para exactamente1 Hosting DEV existente.
-2. Remote smoke semántico integral.
-3. Tres ciclos refresh/focus sin movimiento.
-4. Admin: Dashboard, Visitas, Shoppers, certificación, histórico, Reportes, Reservas, Finanzas, Movimientos, Liquidaciones y Lotes.
-5. Shopper: Mi Perfil, Mis Visitas activas/históricas y Beneficios.
-6. Cambio MAY/JUN/JUL sin divergencia.
-7. Solo PASS completo congela Corte6.
+- Corte3 FROZEN.
+- R17N 1,406/1,406.
+- Corte5: 14 periodos y 616 visitas.
+- Auth/claims/Rules y continuidad de 91 identidades.
+- Login único DEV.
+- HR viva y cambio automático de periodo.
+- Dominio/semántica canónica.
+- Finanzas/Liquidaciones root fix.
+- Portal Shopper canónico.
+- Reservas fail-closed.
+- Composición source/static y contrato del Laboratorio PASS.
 
-## 6. Datos pendientes
-WhatsApp exige fuente real. Persistir/complementar shoppers, credenciales, certificación o Auth requiere inventario+write plan+dry-run+autorización específica; no se mezcla con Hosting.
+## 3. Bloqueo actual único
 
-## 7. Claude/prototipo
-Máquina única, identity review queue, completitud real, portal histórico completo, certificación visible, periodo único, liquidaciones por facetas y gate que compare todas las superficies.
+V7.1 no fue empalmada por P0 responsive reproducible y evidencia incompleta.
 
-## 8. P1/P2 preservados
-PDF/gráficas, Excel/formato, exportaciones y copy/readiness.
+V7.2 fue recibida y pasa preflight de paquete, pero todavía no tiene auditoría final ni carril file-aware listo para auditoría+aplicación atómica en la misma sesión.
 
-## 9. Agosto
-HOLD hasta FREEZE C6; luego solo delta plataforma-origin autorizado, sin repetir1,406.
+No existe todavía una candidata visible `ACTIVE_CANONICAL_BASELINE`.
+
+## 4. Pendientes inmediatos y orden obligatorio
+
+1. `EXECUTION_LANE_READY` con ZIP V7.2 extraído y checkout autenticado de `docs-tya-v6-v71-audit`.
+2. Auditoría final focalizada V7.2; no auditoría general.
+3. Generar evidencia real de cinco viewports y escenarios 1/2/8/12 países.
+4. Si GO sin P0, aplicar directamente solo el delta aprobado.
+5. Emitir manifest/build-lock/verificador del nuevo HEAD.
+6. Reejecutar source/static + gate del Laboratorio sobre el mismo HEAD.
+7. Un único Hosting DEV.
+8. Laboratorio real acumulativo Admin/Operaciones + Shopper, con `AUDIT-*`, snapshots, cleanup y evidencia.
+9. Validación humana de una sola URL/candidata.
+10. Freeze y cutover autorizado.
+
+## 5. V7.2 — recepción verificada
+
+- SHA-256 `d3b7551b3b0b30e1b071dfc74beb20009c9c523c2955cce760148da6b8727686`.
+- 23,243 bytes.
+- 4 entradas.
+- Delta declarado: `app/app.js` y `app/styles/layout.css`.
+- El correctivo CSS responsive solicitado está presente.
+- Capturas contractuales: ausentes; deben producirse durante auditoría.
+
+## 6. Mejor versión por módulo
+
+No se construirá manualmente por copia y pega. El manifiesto canónico ya fija autoridad por archivo y preserva las mejores versiones de Dashboard, Visitas, detalle, revisión, postulaciones, reservas, shoppers, Mis Visitas, certificación, cuestionario, beneficios, documentos, Finanzas, Liquidaciones, Cliente, ReportKit, Academia, Auth, HR y adapters.
+
+V7.2 solo puede modificar Login responsive. No puede reemplazar módulos aprobados ni crear una shell paralela.
+
+## 7. Pendientes que no bloquean el primer corte
+
+- PDF con gráficas incompletas en algunas rutas.
+- Excel con presentación básica.
+- ajuste del mapa esperado de cuatro rutas con nombres de archivo alternos.
+- Portal Cliente continúa en paralelo sobre la misma candidata.
+- WhatsApp requiere fuente real y autorización de integración.
+
+Se documentan como P1/P2 y no justifican nueva candidata, rama o deploy adicional.
+
+## 8. Datos actuales después del freeze visual
+
+- resolver solo deltas reales posteriores al histórico protegido;
+- conservar shoppers/certificaciones sin deduplicar por nombre;
+- mantener conflictos en review queue;
+- no repetir import histórico;
+- no inferir pagos, lotes o certificaciones;
+- agosto se procesa como delta autorizado, no como recarga total.
+
+## 9. Academia
+
+El freeze debe actualizar rutas por rol, manuales, cursos, checklists, glosario, errores frecuentes y notificaciones. Manual y Curso siguen siendo objetos distintos.
 
 ## 10. Estado seguro
-Hosting0; Cloud Run0; Firestore/Auth/Rules/Storage/HR/Make/Gemini/pagos0; merge=false; producción=false.
+
+- empalme V7.2: 0;
+- Hosting nuevo/redeploy: 0;
+- Firestore/Auth/Rules/Storage/HR writes: 0;
+- Make/Gemini/pagos: 0;
+- merge/producción: 0.
