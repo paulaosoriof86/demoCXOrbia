@@ -51,6 +51,18 @@
       "decision": "PRESERVE"
     },
     {
+      "path": "app/core/backend-browser-auth.js",
+      "gitBlob": "35c4fa2fab09fc4fd17a7547b721e4693f93f495",
+      "authority": "C6_LOGIN_SELECTOR_ROOT_FIX_AUTHORIZED_20260805",
+      "decision": "PRESERVE_ACCUMULATIVE_LG2_AND_LEGACY_LOGIN"
+    },
+    {
+      "path": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+      "gitBlob": "3acc508ac242407ea688b6a4ba964409af1125ba",
+      "authority": "C6_LOGIN_SELECTOR_ROOT_FIX_AUTHORIZED_20260805",
+      "decision": "PRESERVE_ACCUMULATIVE_LG2_AND_LEGACY_LOGIN"
+    },
+    {
       "path": "app/styles/layout.css",
       "gitBlob": "91b3d308e1a51be7a470f0f12b32382c1043058f",
       "authority": "V7_2_P0F1_AUDITED_GO_EMPALME_COMMIT_33D6F4F",
