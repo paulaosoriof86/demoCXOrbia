@@ -1,7 +1,7 @@
 # PHASE A — Tracker de avance por bloques TyA
 
 **Actualización:** 2026-08-05  
-**Estado:** `DEV_ROOT_REDIRECT_DEPLOYED__FUNCTIONAL_ROOT_GATES_PASS__QA_HYGIENE_HOLD__STOP_RETRY__HUMAN_VALIDATION_PENDING__NO_SECOND_DEPLOY`
+**Estado:** `HUMAN_LOGIN_SINGLE_FORM_SOURCE_FIX_PASS__SHOPPER_IDENTITY_AUDIT_PASS_WITH_FINDINGS__IDENTITY_REPAIR_REQUIRED__NO_DEPLOY`
 
 ## Microbloques de salida
 
@@ -10,74 +10,56 @@
 | 0 — Carril único | COMPLETADO | Rama viva y PR #7 preservados |
 | 1 — Auditoría focalizada V7.2 | COMPLETADO | P0 selector reproducible |
 | 2 — Empalme/composición acumulativa | COMPLETADO | V7.2-P0F1 empalmada |
-| 3 — Root fix selector Login | COMPLETADO | `.lg2-card, .login-card` en dos archivos exactos |
-| 4 — Reconciliación de pins Login | COMPLETADO | Dos pins actualizados |
-| 5 — Source/static posterior Login | PASS | Composición y Lab PASS |
-| 6 — Primer Hosting DEV | COMPLETADO HISTÓRICO | Descubrió P0 selector |
-| 7 — Segundo Hosting DEV correctivo | COMPLETADO | Login y gates remotos PASS |
-| 8A — Gates semánticos por entrypoint explícito | PASS | Staff, Shopper, Cliente, Finanzas y Reservas |
-| 8B — P0 entrypoint raíz DEV | DEMOSTRADO | `/` servía demo y los gates usaban entrada explícita |
-| 8C — Redirect raíz source-only | APLICADO | `/` → `/index-backend-dev.html`, HTTP 302 |
-| 8D — Gates permanentes de paridad | AGREGADOS | Source, remoto y runtime raíz |
-| 8E — Primer intento predeploy raíz | STOP_RETRY SIN DEPLOY | Heredoc indentado, Hosting `0` |
-| 8F — Correctivo heredoc-only | COMPLETADO | Dos terminadores; lógica y producto intactos |
-| 8G — Repin workflow-only | COMPLETADO | Blob `bd25e9a843496f6962e6e8cc1b987c82620e0a36` |
-| 8H — Source/static correctivo | PASS | Run `31037730522`, fallos efectivos `0` |
-| 8I — Único Hosting DEV raíz | COMPLETADO | Deploy publicado; total acumulado `3` |
-| 8J — Paridad remota desde `/` | PASS | Redirect 302 y cuerpo exacto de entrada canónica |
-| 8K — Staff desde `/` | PASS | Login, recargas y nueva pestaña |
-| 8L — Shopper desde `/` | PASS | Identidad, histórico, certificación, 3 recargas y nueva pestaña |
-| 8M — Cliente/Portal Cliente desde `/` | PASS | Autenticación, ruta y panorama |
-| 8N — Portal Shopper/Finanzas/Reservas | PASS | Contratos canónicos preservados |
-| 8O — Higiene final del harness | HOLD QA-ONLY | `gha-creds-*.json` efímero observado antes del cleanup |
-| 8P — STOP_RETRY postdeploy | APLICADO | Request consumido, cero reintento y cero segundo deploy |
-| 9 — Validación humana y freeze | LISTO / PENDIENTE HUMANO | Validar release DEV existente desde `/` |
-| 10 — Cutover/producción | PENDIENTE | Requiere validación humana, freeze y autorización expresa |
+| 3 — Root fix selector Login | COMPLETADO | `.lg2-card, .login-card` |
+| 4 — Reconciliación de pins | COMPLETADO | Manifest activo reconciliado |
+| 5 — Root DEV canónico | COMPLETADO | `/` redirige a `/index-backend-dev.html` |
+| 6 — Validación humana Login | FAIL P0 | Doble formulario y credencial incierta |
+| 7 — Bridge single-form source-only | APLICADO | Solo `#loginForm`, `#lgUser`, `#lgPass`, `#lgSubmit` |
+| 8 — Source/static posterior | PASS | Run `31041288528` |
+| 9 — Auditoría completa identidad Shopper | PASS CON HALLAZGOS | Run `31041406837` |
+| 10 — Contrato identidad Shopper | PENDIENTE | Membership vs claims+perfil no definido |
+| 11 — Reparación identidad Paula | PENDIENTE | Dos candidatas; ninguna full-ready |
+| 12 — Reparación poblacional idempotente | PENDIENTE | Requiere dry-run y autorización de writes |
+| 13 — Deploy del bridge single-form | NO AUTORIZADO | Cero deploy en este bloque |
+| 14 — Validación humana final y freeze | BLOQUEADO | Primero cerrar identidad y desplegar con gate autorizado |
+| 15 — Producción | PENDIENTE | Requiere freeze y autorización expresa |
 
-## Source/static del correctivo heredoc
+## Resultado de identidad
 
 ```text
-workflowRunId=31037730522
-workflowJobId=92414066321
-artifactId=8943265325
-artifactDigest=sha256:2b7a3619d45054ef0c296b396172df01001063d53f247852aef082373a313ff0
-PASS_READONLY_POST_GATES
-PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS
-PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
-PASS_C6_DEV_ROOT_ENTRYPOINT_SOURCE_PARITY
+firestoreProfiles=340
+credentialShopperRecords=109
+uniqueLogins=109
+authUsers=88
+claimsValid=88
+projectScopeValid=88
+profileMapped=88
+profilesWithoutCredentialMapping=252
+nameDotSurnamePattern=79
+nombre123PatternHash=81
+passwordSignInCompatible=85
+exactPasswordExceptions=4
+missingAuth=21
+shopperMemberships=0
 ```
 
-## Hosting y gates funcionales raíz
+## Paula
 
 ```text
-workflowRunId=31037828442
-workflowJobId=92414393948
-artifactId=8943383623
-artifactDigest=sha256:6c275fa95d9b729ffefa2e17c660b8a25c02df916a5c57740b538e902b00d3f5
-HOSTING_DEPLOY_SUCCEEDED=true
-PASS_C6_DEV_ROOT_ENTRYPOINT_REMOTE_PARITY
-PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_SHOPPER_RUNTIME_CLIENT_ROUTE_READY
-PASS_PHASE_A_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS_DYNAMIC
+staffCandidates=1
+shopperCandidates=1
+authUsers=1
+claimsValid=1
+membershipsValid=0
+passwordSignInCompatible=0
+fullReady=0
+ambiguous=true
 ```
-
-## HOLD final clasificado
-
-```text
-FAIL_C6_DEV_ROOT_RUNTIME_ACCUMULATIVE
-errorCode=REPOSITORY_CHANGED_BY_ROOT_RUNTIME_GATE
-observedUntracked=gha-creds-*.json
-trackedDelta=0
-classification=QA_WORKFLOW_HYGIENE_ONLY
-productRuntimeFailure=false
-secondDeploy=0
-```
-
-El archivo efímero fue generado por la acción de autenticación y eliminado en su cleanup posterior. El contrato fail-closed activó HOLD; por instrucción expresa se aplicó STOP_RETRY sin repetir gates ni desplegar otra vez.
 
 ## Siguiente bloque exacto
 
-`VALIDACIÓN HUMANA DE LA RELEASE DEV EXISTENTE DESDE / → DOCUMENTAR RESULTADO → FREEZE SI PASS → SIN REDEPLOY, MERGE O PRODUCCIÓN`.
+`DEFINIR CONTRATO CANÓNICO DE IDENTIDAD SHOPPER → AISLAR PAULA STAFF/SHOPPER → GENERAR PLAN DRY-RUN POR POBLACIÓN → CERO WRITE HASTA NUEVA AUTORIZACIÓN`.
 
 ## Estado seguro
 
-Hosting DEV acumulado `3`; Hosting DEV de este bloque `1`; deploy adicional autorizado `0`. Cloud Run, Firestore/Auth/Rules/Storage/HR writes, Make, Gemini, pagos, merge y producción: `0/false`.
+Hosting DEV del bloque `0`; Cloud Run `0`; Firestore/Auth/Rules/Storage/HR writes `0`; cambios/restablecimientos de contraseña `0`; Make/Gemini/pagos `0`; merge `false`; producción `false`.
