@@ -1,25 +1,21 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-04  
-**Estado:** `CODEX_EXECUTION_HANDOFF_READY__AWAITING_CODEX_WORKSPACE_WITH_V7_2__NO_AUDIT__NO_EMPALME__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `V7_2_P0_PROVEN__V7_2_P0F1_PREPARED__PENDING_FOCUSED_REAUDIT__NO_EMPALME__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Carril
 
 - repo `paulaosoriof86/demoCXOrbia`;
-- rama `docs-tya-v6-v71-audit`;
+- rama viva `docs-tya-v6-v71-audit`;
 - PR #7 draft/open/no merge;
 - producción intacta;
 - candidata canónica activa: no.
 
-## 2. Composición canónica source-only
+## 2. Composición canónica preservada
 
-Existe el manifiesto:
+Existe `CXORBIA-TYA-PHASE-A-COMPLETE-CANONICAL-COMPOSITION-20260804`, con una sola rama/candidata y autoridades por archivo/módulo. No es todavía `ACTIVE_CANONICAL_BASELINE`.
 
-`CXORBIA-TYA-PHASE-A-COMPLETE-CANONICAL-COMPOSITION-20260804`.
-
-Fija una sola rama/candidata y las mejores autoridades por archivo/módulo. No es todavía `ACTIVE_CANONICAL_BASELINE` porque falta empalme V7.2, visual, Laboratorio real, cleanup y aprobación humana.
-
-## 3. Laboratorio y gates ya PASS
+Gates históricos preservados:
 
 ```text
 PASS_READONLY_POST_GATES
@@ -27,128 +23,94 @@ PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS
 PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
 ```
 
-- run `30971991900`;
-- artifact `8916850770`;
-- digest `sha256:75953c600b68450a11cfac6667ac5b5cfa8eceea5c94a6a0856850a501e77dd8`;
-- composición: 53/53 base, 4/4 adicionales, 5/5 overrides, 0 faltantes, 0 duplicados, 0 secretos;
-- contrato: cinco perfiles, `AUDIT-*`, fingerprints, cleanup exacto y fail-closed.
+Run `30971991900`, artifact `8916850770`, digest `sha256:75953c600b68450a11cfac6667ac5b5cfa8eceea5c94a6a0856850a501e77dd8`.
 
-## 4. V7.1
+## 3. Auditoría focalizada V7.2
 
-`HOLD_NO_SEND_TO_EMPALME`.
-
-P0 reproducible: Login responsive recortado por flex/centrado/padding heredados. Evidencia visual incompleta. V7.1 aplicada: no.
-
-## 5. V7.2 recibida
-
-- paquete `Prototype development request V7.2.zip`;
-- SHA-256 `d3b7551b3b0b30e1b071dfc74beb20009c9c523c2955cce760148da6b8727686`;
-- 23,243 bytes;
-- 4 entradas;
-- delta declarado: `app/app.js` y `app/styles/layout.css`;
-- correctivo CSS responsive presente;
-- PNG contractuales: ausentes.
-
-Estado: preflight de recepción, no auditoría final y no GO.
-
-## 6. Intento de carril en la conversación actual
-
-Se intentó materializar el checkout file-aware en el runtime de esta conversación.
-
-Comprobado:
+Carril Codex:
 
 ```text
-CANDIDATE_BYTES_AVAILABLE=true
-CANDIDATE_EXTRACTABLE=true
-GIT_CLIENT_AVAILABLE=true
-REPO_AND_BRANCH_VERIFIED_THROUGH_CONNECTOR=true
-GITHUB_ADMIN_ACCESS=true
+EXECUTION_LANE_READY=true
+HEAD_BEFORE=da42e818c626e8bba56407869f5f3b32b61f49eb
+WORKTREE_CLEAN=true
 ```
 
-El acceso Git nativo falló por ausencia de red del runtime:
+Paquete auditado:
+
+- `Prototype development request V7.2.zip`;
+- SHA-256 `d3b7551b3b0b30e1b071dfc74beb20009c9c523c2955cce760148da6b8727686`.
+
+Decisión:
 
 ```text
-git ls-remote https://github.com/paulaosoriof86/demoCXOrbia.git
-→ fatal: Could not resolve host: github.com
+P0_PROVEN
 ```
 
-El artifact `8916850770` fue recuperado e inspeccionado. Confirma PASS y worktree limpio del run anterior, pero contiene reportes y no un checkout completo.
+Causa: `app/app.js` reintrodujo exposición visible de contraseñas en tres puntos:
+
+- `${CX.CREDS.passExample()}`;
+- `${CX.CREDS.pass(f,l)}`;
+- `${s.pass}`.
+
+El HEAD vivo ya protegía esos puntos mostrando solo usuario, mensaje de credencial inicial protegida y `Protegida`.
 
 Resultado:
 
-```text
-NATIVE_GITHUB_NETWORK_AVAILABLE=false
-REPO_CHECKOUT_COLOCATED_WITH_ZIP=false
-AUTHENTICATED_DIRECT_APPLY_FROM_CHECKOUT=false
-EXECUTION_LANE_READY=false
-```
+- V7.2 aplicada: no;
+- archivos modificados: 0;
+- commit/push: no;
+- worktree final: limpio;
+- deploy/producción: 0.
 
-Owner del bloqueo anterior: runtime de esta conversación.
+## 4. Correctivo focalizado V7.2-P0F1
 
-## 7. Carril Codex preparado
+Se preparó una revisión de la misma V7.2, no V7.3:
 
-Para evitar repetir el bloqueo y mantener auditoría+aplicación en la misma sesión:
+- archivo `Prototype development request V7.2-P0F1.zip`;
+- SHA-256 `09606d1cc133a1e1e138be76bd8c6aadeb1f70d7967d506aae3f81bf5e9c6fce`;
+- mantiene byte a byte el `layout.css` responsive de V7.2;
+- restaura en `app/app.js` los tres textos seguros del HEAD vivo;
+- `node --check`: PASS;
+- UTF-8 sin BOM: PASS;
+- patrones sensibles: ausentes.
 
-- `AGENTS.md` fue reconciliado con el lock prevalente;
-- se eliminó la autorización contradictoria de blobs/trees por conectores;
-- se creó `app/docs/CODEX-EXECUTION-TASK-V7-2-20260804.md`;
-- la tarea Codex exige checkout autenticado, ZIP V7.2 extraído, HEAD vivo, worktree limpio y capacidad de commit/push antes de auditar;
-- con GO sin P0 obliga a `APPLY_DELTA_DIRECTLY` en la misma tarea;
-- no permite rama, PR, workflow, PowerShell, deploy, writes, merge o producción.
+P0F1 aún no es GO y no está empalmada.
 
-Commits de preparación:
+## 5. Siguiente acción exacta
 
-- `7a9cfc9ef955c4866476de1f81f791648c245557` — `AGENTS.md`;
-- `0173773fb109123ec91be860337e3fc7f84fbaea` — tarea Codex;
-- `b82c127db7a8115950cb946be4ae61a03196fbf0` — addendum del carril Codex.
-
-La herramienta Codex no está expuesta como invocación dentro de esta conversación. La tarea ya quedó preparada en el repositorio para ejecutarse desde un workspace Codex conectado al mismo repo y rama.
-
-## 8. Siguiente acción exacta obligatoria
-
-En Codex, seleccionar el repositorio y rama existentes, adjuntar el mismo ZIP V7.2 y ejecutar:
+En el mismo workspace Codex existente:
 
 ```text
-Lee AGENTS.md y ejecuta íntegramente
-app/docs/CODEX-EXECUTION-TASK-V7-2-20260804.md.
-No crees rama ni PR. Detente antes de cualquier deploy.
-```
-
-Secuencia obligatoria:
-
-```text
-CODEX WORKSPACE + ZIP V7.2 + CHECKOUT AUTENTICADO
+ACTUALIZAR RAMA VIVA POR FAST-FORWARD
 → EXECUTION_LANE_READY
-→ AUDITORÍA FINAL FOCALIZADA V7.2
+→ AUDITORÍA FOCALIZADA V7.2-P0F1 SOLO app/app.js + app/styles/layout.css
+→ EVIDENCIA 5 VIEWPORTS + 1/2/8/12 PAÍSES
 → GO SIN P0
 → APPLY_DELTA_DIRECTLY
-→ MANIFEST / BUILD-LOCK / VERIFICADOR
-→ SOURCE/STATIC FINAL + GATE LAB
-→ TECHNICAL_PASS_PENDING_DEV_VISUAL
+→ UN COMMIT/PUSH ATÓMICO
+→ MANIFEST/BUILD-LOCK/VERIFICADOR
+→ SOURCE/STATIC + COMPOSICIÓN CANÓNICA + CONTRATO LAB
+→ DETENER ANTES DE DEPLOY
 ```
 
-No se abre auditoría general, nueva candidata, shell reducido ni composición paralela.
+No auditoría general, V7.3, nueva rama/PR, workflow transportador, PowerShell, Contents API para empalme ni reapertura de bloques protegidos.
 
-## 9. Pendientes Phase A reales
+## 6. Pendientes Phase A reales
 
-1. iniciar tarea Codex con el ZIP V7.2;
-2. audit/apply V7.2 en la misma tarea;
-3. único deploy DEV del mismo HEAD, en bloque posterior y con autorización;
+1. reauditoría focalizada P0F1;
+2. empalme y post-gates si GO;
+3. único Hosting DEV en bloque posterior y autorizado;
 4. Laboratorio real Admin/Operaciones + Shopper;
-5. evidencia sanitizada y cleanup con fingerprints iguales;
-6. validación humana de una única URL;
-7. freeze canónico;
-8. resolver solo deltas actuales de datos sin repetir histórico;
-9. producción con rollback y autorización expresa.
+5. cleanup y validación humana;
+6. freeze `ACTIVE_CANONICAL_BASELINE`;
+7. cutover/producción solo con autorización expresa.
 
-Portal Cliente continúa sobre la misma candidata en paralelo; no crea rama o build alterno.
+Portal Cliente continúa dentro de la misma composición y no crea candidata paralela.
 
-## 10. Estado seguro
+## 7. Estado seguro
 
-- tarea Codex iniciada: no;
-- auditoría final V7.2: no iniciada;
+- V7.2/P0F1 aplicada: no;
 - empalme: 0;
-- navegador/runtime funcional: 0;
 - Hosting/Cloud Run: 0;
 - Firestore/Auth/Storage/HR writes: 0;
 - Make/Gemini/pagos: 0;
