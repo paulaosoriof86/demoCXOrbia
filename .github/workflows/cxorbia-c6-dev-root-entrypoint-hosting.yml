@@ -172,7 +172,7 @@ jobs:
             node <<'NODE'
             const r=require('./'+process.env.OUT_DIR+'/root-entrypoint-source.json');
             if(r.decision!=='PASS_C6_DEV_ROOT_ENTRYPOINT_SOURCE_PARITY')throw new Error('root_source_gate_not_pass');
-            NODE
+          NODE
 
             npx firebase deploy \
               --config firebase.json \
@@ -197,7 +197,7 @@ jobs:
             if(r.client?.authenticated!==true||r.client?.integratedCredentialRoute!==true||r.client?.routeAccepted!==true||r.client?.viewExists!==true||r.client?.pageHeaderExists!==true||Number(r.client?.viewTextLength||0)<=0||r.client?.renderException!==null||r.client?.panoramaVisible!==true||r.client?.blocked!==false)throw new Error('root_client_not_pass');
             if(r.finance?.model!=='delegado'||Number(r.finance?.royaltyPct||0)!==0||r.finance?.valuesInvented!==false)throw new Error('root_finance_not_pass');
             if(r.reservations?.browserLocalStorageAsSource!==false||r.reservations?.mutationsEnabled!==false)throw new Error('root_reservations_not_pass');
-            NODE
+          NODE
 
             rm -rf .firebase
             rm -f firebase-debug.log
