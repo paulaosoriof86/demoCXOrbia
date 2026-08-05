@@ -27,6 +27,7 @@ Se verificó el ZIP V7.2 recibido:
 - cuatro entradas;
 - delta frontend declarado en `app/app.js` y `app/styles/layout.css`;
 - correctivo CSS responsive presente;
+- `app/app.js` pasa `node --check` en preflight;
 - capturas contractuales ausentes.
 
 ## 3. Trabajo recuperado de la conversación anterior
@@ -45,8 +46,12 @@ La conversación anterior sí dejó avances técnicos en repo aunque no cerró c
 
 - `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
 - `PENDIENTES-PROTOTIPO.md`;
+- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
+- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
+- `app/docs/RESUMEN-PARA-CLAUDE.md`;
+- `app/docs/ACADEMIA-IMPACTO-PLAN-CANONICO-V7-2-20260804.md`;
 - este addendum;
-- checkpoint e índice vigentes se actualizan en commits posteriores de este mismo bloque.
+- título y cuerpo del PR #7.
 
 ## 5. Causa del STOP actual
 
@@ -56,6 +61,8 @@ La conversación anterior sí dejó avances técnicos en repo aunque no cerró c
 - repo/rama/HEAD verificables: sí;
 - identidad GitHub con permiso admin: sí;
 - checkout Git autenticado co-localizado con el ZIP: no.
+
+Se intentó verificar acceso Git nativo desde el workspace y el entorno no puede resolver `github.com`; por tanto no existe un checkout operativo en esta sesión.
 
 No se sustituye por Contents API archivo por archivo, blobs/trees, PowerShell, workflow transportador, nueva rama/PR o tareas manuales de Paula.
 
@@ -75,11 +82,33 @@ La candidata canónica será el HEAD resultante de preservar el manifiesto acumu
 
 - **Reusable CXOrbia:** cadena única audit→apply→gate→visual→cleanup→freeze.
 - **Exclusivo TyA:** composición y perfiles del primer corte Admin/Operaciones + Shopper.
-- **Claude/prototipo:** V7.2 limitada al Login responsive.
-- **Academia:** deberá actualizarse al freeze con evidencia y rutas por rol.
+- **Claude/prototipo:** V7.2 limitada al Login responsive; no crear V7.3.
+- **Academia:** impacto documentado; contenido se actualiza solo al freeze.
 - **Sin impacto producción:** documentación y preflight únicamente.
 
-## 9. Estado seguro
+## 9. Commits del bloque documental
+
+- plan Phase A: `3843a0bc47dd45173b326caee5173ef0c8e238f7`;
+- pendientes: `66a1b16ace185a37c1793efbe300a7be593315bc`;
+- creación de este addendum: `3de13a9688516fee1743c6b1a16d4286ec678f50`;
+- checkpoint: `a8190e367e764fdf9b9491bf2e4ece382be89b1a`;
+- índice: `5590f66210018fd0c9384d4016a26b2aed9dfb8e`;
+- resumen Claude: `d21616ea869308175496b051e62192ac12d051e9`;
+- impacto Academia: `5c0e2315ea2b1785b509c57cd4666e473371dd19`.
+
+## 10. Siguiente acción exacta
+
+```text
+WORKSPACE FILE-AWARE CON CHECKOUT AUTENTICADO
+→ EXECUTION_LANE_READY
+→ AUDITORÍA FINAL FOCALIZADA V7.2
+→ GO SIN P0
+→ APPLY_DELTA_DIRECTLY
+```
+
+No se abrirá otro bloque metodológico antes de esta acción.
+
+## 11. Estado seguro
 
 - código frontend aplicado: 0;
 - empalme: 0;
