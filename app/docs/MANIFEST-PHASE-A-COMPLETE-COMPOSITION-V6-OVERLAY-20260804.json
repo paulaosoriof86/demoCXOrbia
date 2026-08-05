@@ -138,7 +138,7 @@
     },
     {
       "path": ".github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml",
-      "gitBlob": "a01f1f9be4891a9cc707707c58ce47abb706284b",
+      "gitBlob": "bd25e9a843496f6962e6e8cc1b987c82620e0a36",
       "authority": "C6_DEV_ROOT_ENTRYPOINT_P0_AUTHORIZED_20260805",
       "decision": "HOLD_PREDEPLOY_HEREDOC_INDENTATION_REQUIRES_NEW_AUTHORIZATION"
     }
