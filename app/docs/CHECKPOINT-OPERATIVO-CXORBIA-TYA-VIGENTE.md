@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-05  
-**Estado:** `HOSTING_DEV_DEPLOYED__REMOTE_PARITY_PASS__P0_LOGIN_CONTAINER_SELECTOR_MISMATCH__STOP_RETRY__NO_SECOND_DEPLOY__NO_PRODUCTION`
+**Estado:** `LOGIN_SELECTOR_SOURCE_FIX_APPLIED__LAB_CONTRACT_PASS__SOURCE_STATIC_HOLD_MANIFEST_BLOB_PINS_STALE__STOP_RETRY__NO_SECOND_DEPLOY__NO_PRODUCTION`
 
 ## 1. Rama y control
 
@@ -9,133 +9,99 @@
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
 - producción: intacta;
-- Codex: opcional, no dependencia operativa;
-- carril: ChatGPT + runners controlados de GitHub.
+- carril: ChatGPT + runners controlados de GitHub;
+- Hosting DEV acumulado antes de este bloque: `1`;
+- segundo Hosting DEV ejecutado en este bloque: `0`.
 
-## 2. Repair DEV de membresía Cliente
+## 2. Estado preservado antes del bloque
 
-Autorización ejecutada sobre:
+- membresía Cliente reparada con un único write y readback exacto;
+- Auth/claims/user/password writes: `0`;
+- Hosting DEV anterior: release completa;
+- paridad remota anterior y HR viva: PASS;
+- P0 comprobado: el Login V7.2 usa `.lg2-card`, mientras los bridges buscaban solo `.login-card`.
 
-`tenants/tya/users/cxorbia-c6-client-tya-cinepolis-v1`
+## 3. Root fix source-only aplicado
 
-Resultado comprobado:
-
-```text
-PASS_C6_CLIENT_ACCESS_TRANSACTION
-PASS_C6_CLIENT_AUTH_MEMBERSHIP_REPAIRED
-PASS_C6_CLIENT_AUTH_MEMBERSHIP_IDEMPOTENT_NOOP
-PASS_C6_CLIENT_AUTH_MEMBERSHIP_ROLLBACK_EXACT_DRY_RUN
-```
-
-Límites consumidos:
-
-```text
-membershipWrites=1
-authWrites=0
-claimsWrites=0
-userCreates=0
-passwordChanges=0
-passwordResets=0
-```
-
-La membresía quedó retenida porque el acceso pasó, el readback fue exacto y la autorización indicó continuar con Hosting DEV.
-
-## 3. Único Hosting DEV autorizado
-
-El único Hosting DEV autorizado fue ejecutado y consumido.
-
-```text
-deployAttempted=true
-deploySucceeded=true
-hostingDeploysThisRun=1
-hostingDeployAttempts=1
-automaticSecondDeploys=0
-```
-
-Firebase Hosting completó la release en:
-
-`https://cxorbia-backend-dev.web.app`
-
-La paridad remota posterior pasó:
-
-```text
-PASS_C6_HOSTING_DEV_REMOTE_PARITY_AND_LIVE_HR
-allCriticalAssetsMatch=true
-liveEndpoint.ok=true
-```
-
-## 4. P0 comprobado posterior al deploy
-
-El bloque remoto se detuvo en:
-
-```text
-failedStage=remote_staff_shopper
-decision=FAIL_C6_UNIFIED_HUMAN_AUTH_CREDENTIAL_STEP
-failedPrincipal=staff
-```
-
-La evidencia observable mostró:
-
-```text
-firebaseWrapper=true
-backendAuthPresent=true
-backendAuthReady=false
-earlyGuardInstalled=true
-earlyGuardIntercepts=0
-integratedStep=false
-integratedLogin=false
-appOn=false
-```
-
-### Causa raíz reproducible
-
-La candidata V7.2-P0F1 cambió el contenedor visible del login a:
-
-```html
-<form class="lg2-card" id="loginForm">
-```
-
-Sin embargo, los dos puntos que montan el formulario integrado de credenciales todavía buscan exclusivamente:
-
-```js
-loginRoot.querySelector('.login-card')
-```
-
-Archivos afectados:
-
-- `app/core/backend-browser-auth.js` → `showCredentialStep()`;
-- `app/adapters/tya-c6-unified-human-runtime-v1.js` → `clientCredentialStep()`.
-
-Como `.login-card` ya no existe en el login V7.2, ambos métodos retornan sin montar `#cxIntegratedAuthStep`. El wrapper oficial sí intercepta el rol Staff; el guard temprano no interviene porque detecta que el wrapper oficial está instalado. Por eso el botón responde sin abrir usuario/contraseña y el smoke cierra en `integratedStep=false`.
-
-Clasificación:
-
-```text
-P0_PROVEN=STAFF_LOGIN_CANNOT_START
-ROOT_CAUSE=LEGACY_LOGIN_CONTAINER_SELECTOR_AFTER_V7_2_MARKUP_CHANGE
-```
-
-No es un problema de credenciales, Firebase Auth, claims, membresía, HR, propagación de Hosting ni paridad de archivos.
-
-## 5. Correctivo source-only exacto
-
-En ambos archivos, sustituir el selector rígido por compatibilidad acumulativa:
+Se aplicó exactamente el selector acumulativo autorizado:
 
 ```js
 loginRoot.querySelector('.lg2-card, .login-card')
 ```
 
-Esto conserva compatibilidad con el login nuevo V7.2 y con cualquier shell histórico que aún use `.login-card`. No requiere rediseño, nueva candidata ni cambio de contratos backend.
+Archivos y commits:
 
-El correctivo todavía no se aplicó porque el gate exigió STOP_RETRY y el único deploy autorizado ya fue consumido.
+- `app/core/backend-browser-auth.js` — `d5cd7741dafd032138bd4f61d2f0500e9c68e64a`;
+- `app/adapters/tya-c6-unified-human-runtime-v1.js` — `9e59fcb81290c80e43233e5202356983a340bf4b`.
 
-## 6. Estado seguro
+No se modificaron `app/app.js`, CSS, credenciales, usuarios Auth, memberships, HR ni módulos de negocio.
+
+## 4. Gate source/static ejecutado
+
+Request:
 
 ```text
-HOSTING_DEPLOYS=1
-SECOND_DEPLOYS=0
+c6-login-container-selector-root-fix-source-static-20260805-01
+```
+
+Evidencia:
+
+```text
+workflowRunId=31023829902
+artifactId=8937732266
+artifactDigest=sha256:59442b8fa74ec77ab61c655a3380134ddbd91feec7c99c17bbe09128ef1df0f8
+repositoryUnchangedByGate=true
+```
+
+Resultados:
+
+```text
+PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
+HOLD_READONLY_POST_GATES
+FAIL_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE
+```
+
+## 5. Causa raíz del HOLD
+
+El código autorizado no presentó un fallo semántico adicional. El gate encontró exactamente dos diferencias de blob porque el manifiesto acumulativo aún fija las versiones anteriores de los dos archivos corregidos:
+
+```text
+app/core/backend-browser-auth.js
+manifest expected=d052a4b62e5320817d42055946e94de463914b24
+actual authorized=35c4fa2fab09fc4fd17a7547b721e4693f93f495
+
+app/adapters/tya-c6-unified-human-runtime-v1.js
+manifest expected=7c00752d9a34209366f3c328ea3e5f5fddb4e1db
+actual authorized=3acc508ac242407ea688b6a4ba964409af1125ba
+```
+
+Clasificación:
+
+```text
+ROOT_CAUSE=ACTIVE_COMPOSITION_MANIFEST_STILL_PINS_PRE_FIX_AUTH_BRIDGE_BLOBS
+SCOPE_OF_MISMATCH=EXACTLY_THE_TWO_AUTHORIZED_FILES
+```
+
+No se detectaron archivos faltantes, scripts duplicados, secretos, regresión de rutas ni fallo del contrato de Laboratorio.
+
+## 6. STOP_RETRY aplicado
+
+Como el source/static no obtuvo PASS:
+
+- no se intentó el segundo Hosting DEV;
+- no se ejecutaron gates remotos contra un build nuevo;
+- no hubo reintento automático;
+- el request quedó consumido y deshabilitado;
+- se registró evidencia en `app/docs/evidence/CORTE6-LOGIN-SELECTOR-SOURCE-STATIC-HOLD-LATEST.json`.
+
+## 7. Estado seguro
+
+```text
+HOSTING_DEPLOYS_TOTAL=1
+SECOND_HOSTING_DEPLOYS=0
 CLOUD_RUN_DEPLOYS=0
-FIRESTORE_MEMBERSHIP_WRITES=1
+FIRESTORE_MEMBERSHIP_WRITES_TOTAL=1
+FIRESTORE_WRITES_THIS_BLOCK=0
 AUTH_WRITES=0
 CLAIMS_WRITES=0
 USER_CREATES=0
@@ -150,14 +116,10 @@ MERGE=false
 PRODUCTION=false
 ```
 
-## 7. Phase A preservada
+## 8. Phase A preservada
 
-Se preservan V7.2-P0F1, composición acumulativa Phase A, HR e histórico, shoppers, postulaciones, certificaciones, liquidaciones/pagos, multi-tenant, multi-proyecto, Finanzas, Portal Cliente, Portal Shopper, Reservas, sincronización HR/plataforma y Academia.
+Se preservan V7.2-P0F1, la composición acumulativa Phase A, HR e histórico, shoppers, postulaciones, certificaciones, liquidaciones/pagos, multi-tenant, multi-proyecto, Finanzas, Portal Cliente, Portal Shopper, Reservas, sincronización HR/plataforma y Academia.
 
-## 8. Siguiente bloque exacto
+## 9. Siguiente acción exacta
 
-Requiere autorización expresa nueva:
-
-`APLICAR FIX SOURCE-ONLY P0 EN LOS DOS SELECTORES → GATES SOURCE/STATIC → SEGUNDO HOSTING DEV DE CORRECCIÓN → PARIDAD → STAFF → SHOPPER CON TRES RECARGAS Y NUEVA PESTAÑA → CLIENTE → DOMINIO/FINANZAS/PORTALES/RESERVAS → DETENERSE PARA VALIDACIÓN HUMANA`.
-
-Queda prohibido ejecutar el segundo Hosting DEV sin esa autorización.
+Reconciliar únicamente los dos blob pins autorizados en el manifiesto/build-lock activo, ejecutar un nuevo gate source/static y, solo con PASS, continuar con el segundo Hosting DEV correctivo y la cadena remota ya autorizada. No modificar nuevamente el Login ni abrir una auditoría general.
