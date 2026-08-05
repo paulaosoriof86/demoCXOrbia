@@ -1,77 +1,98 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-04  
-**Estado vivo:** `V6_EMPALMED__SOURCE_GATE_ROOT_FIX_MATERIALIZED__VISUAL_HOLD__CLOUD_V7_PENDING__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `V6_DERIVED_FILES_PROVISIONALLY_MATERIALIZED__EMPALME_NOT_COMPLETED__CLOUD_V7_HOLD__NO_DEPLOY__NO_PRODUCTION`
 
-## 1. Cloud V6 empalmada
+## 1. Corrección documental
 
-- commit funcional: `f961253f18c388ae04619bb5175269015c8349c3`;
-- SHA-256 candidata: `0a8c26e2b780a6feffeeb9d77d5efbcca94e79e2c3b17ee1a2c1446be5e1d407`;
-- una sola baseline acumulativa preservada;
-- deploy: 0.
+Pendiente cerrado mediante corrección:
 
-## 2. Bloqueante visual vigente
+- no volver a describir V6 como empalmada;
+- distinguir materialización provisional de empalme aprobado/completado.
 
-`HOLD_FRONTEND_VISUAL`.
+## 2. Cloud V7 — bloqueantes P0
 
-Problemas de la pantalla de escritorio:
+### P0-1 — paquete fuera de alcance
 
-- composición tipo demo en lugar de login corporativo;
-- jerarquía distinta de Emergent;
-- campos de acceso fuera de la primera composición;
-- accesos de validación y pie técnico visibles;
-- órbita pesada y rígida;
-- tarjetas sobredimensionadas;
-- evidencia insuficiente para declarar equivalencia visual.
+La entrega contiene 259 archivos y una aplicación completa. No puede enviarse a empalme.
 
-Pendiente Cloud V7, exclusivamente visual, principalmente sobre:
+Debe eliminarse todo salvo:
 
 - `app/app.js`;
-- `app/styles/layout.css`.
+- `app/styles/layout.css`;
+- manifest;
+- reporte;
+- capturas y comparación solicitadas.
 
-## 3. Source gate posterior al empalme
+### P0-2 — responsive del Login
 
-FAIL original:
+Corregir superposición del panel orbital y formulario en:
 
-- blobs históricos de cinco archivos modificados por V6;
-- `app/core/backend-dev-auth.local.js` ausente;
-- falso positivo de secreto sobre el código del scanner.
+- `768×1024`;
+- `412×915`;
+- `390×844`.
 
-Correctivos materializados:
+Criterios:
 
-- overlay V6 sobre manifest base;
-- placeholder Auth local fail-closed sin secretos;
-- scanner diferenciado para definiciones de patrones;
-- gate rebasado a manifest base + overlay.
+- formulario debajo del panel oscuro;
+- `INGRESO`, título, subtítulo, países y `PERFIL` visibles;
+- primera tarjeta completa;
+- órbita visible;
+- cero scroll horizontal general.
 
-Pendiente ejecutar y comprobar el gate actualizado. No se declara PASS todavía.
+## 3. Cloud V7 — P1
 
-## 4. Laboratorio DEV
+- crear `MANIFEST.json` con path, bytes y SHA-256;
+- entregar las cinco capturas requeridas;
+- entregar comparación V6/V7 en `1440×900`;
+- entregar evidencia de 1/2/8/12 países;
+- crear reporte V7 específico;
+- evitar corte del registro en `1440×900` con 12 países;
+- definir fallback seguro para banderas si falla `flagcdn.com`.
 
-El shell recibido marcaba escenarios y cleanup como ejecutados sin haber realizado operaciones reales.
+## 4. Cloud V7 — P2
 
-Corregido:
+- retirar documentación histórica del ZIP;
+- retirar manifests antiguos;
+- corregir mojibake en cualquier documento realmente incluido;
+- validar si el footer `v1.0 · 2026 · Powered by Gravicentra CX` pertenece al criterio de marca.
 
-- no inventa PASS;
-- estado `BLOCKED_AWAITING_CONTROLLED_RUNNER`;
-- contrato de evidencia por `CX.devScenarioLab.ingest(report)`;
-- fingerprints y cleanup obligatorios.
+## 5. Carril de empalme
 
-Pendiente bajo ChatGPT:
+```text
+EXECUTION_LANE_READY_FOR_APPLY = false
+V7_GO = false
+SEND_TO_EMPALME = false
+```
 
-- runner real por UI/contratos normales;
+Después de recibir la corrección:
+
+1. extraer ZIP;
+2. confirmar checkout autenticado y rama viva;
+3. comparar delta exacto;
+4. ejecutar auditoría semántica, sintáctica y visual;
+5. únicamente con GO y sin P0, aplicar delta directamente.
+
+## 6. Backend/laboratorio pendiente
+
+Sin cambio:
+
+- runner real por UI normal;
 - `CORE_OPERATIONS_ADMIN`;
 - `SHOPPER_FULL_CYCLE`;
-- `CROSS_MODULE_CONSISTENCY`;
+- consistencia cross-módulo;
 - tres recargas y nueva pestaña;
 - exportaciones/evidencia;
+- fingerprints;
 - cleanup exacto.
 
-## 5. Primer release slice
+No ejecutar antes del único deploy DEV de una candidata visual aprobada.
+
+## 7. Primer release slice
 
 `ADMIN/OPERACIONES + SHOPPER`.
 
-Validar:
+Validar después del deploy autorizado:
 
 - Hoja de Ruta e histórico;
 - Dashboard;
@@ -84,35 +105,35 @@ Validar:
 
 Portal Cliente continúa en carril paralelo.
 
-## 6. P1/P2 vivos
+## 8. Deuda viva no bloqueante por sí sola
 
-- overlay A+B superseded cargado;
+- overlay A+B superseded;
 - PDF puede omitir gráficas;
-- Excel básico;
-- responsive no crítico pendiente de visual V7.
+- Excel básico.
 
-No bloquean por sí solos el primer corte salvo que impidan un flujo esencial.
-
-## 7. Secuencia exacta
+## 9. Secuencia exacta
 
 ```text
-CLOUD V7
-→ AUDITORÍA VISUAL CHATGPT
-→ CODEX SOLO EMPALME
-→ ACTUALIZAR OVERLAY
-→ SOURCE/STATIC PASS
-→ ÚNICO HOSTING DEV
-→ LABORATORIO REAL ADMIN/OPERACIONES + SHOPPER
-→ CLEANUP EXACTO
-→ CHECKPOINT VISUAL HUMANO
+CORRECCIÓN CLOUD V7
+→ DELTA ESTRECHO + EVIDENCIAS
+→ EXECUTION_LANE_READY
+→ AUDITORÍA FINAL
+→ GO SIN P0
+→ APPLY_DELTA_DIRECTLY
+→ SOURCE/STATIC FINAL
+→ ÚNICO HOSTING DEV AUTORIZADO
+→ LABORATORIO REAL
+→ CLEANUP
+→ CHECKPOINT HUMANO
 → CUTOVER AUTORIZADO
 ```
 
-## 8. Estado seguro
+## 10. Estado seguro
 
+- empalme V6 aprobado/completado: no;
+- empalme V7: 0;
 - Hosting/Cloud Run: 0;
 - provider writes: 0;
 - Auth/Firestore/Storage/HR writes: 0;
 - Make/Gemini/pagos: 0;
-- merge/producción: 0;
-- producción intacta.
+- merge/producción: 0.
