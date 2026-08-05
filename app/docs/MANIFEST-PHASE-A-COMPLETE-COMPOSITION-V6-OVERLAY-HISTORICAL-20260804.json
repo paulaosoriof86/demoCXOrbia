@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.phase-a-complete-composition.v6-overlay.v1",
-  "candidateId": "CXORBIA-TYA-PHASE-A-COMPLETE-COMPOSITION-ACTIVE-OVERLAY-20260805",
+  "candidateId": "CXORBIA-TYA-PHASE-A-COMPLETE-COMPOSITION-CLOUD-V6-20260804",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -10,51 +10,25 @@
   "candidateAggregateSha256": "1f1af3a316c9dabf1df1ef5b07a7abd2fe62a8da09e704719912be7af328e825",
   "baseManifest": "app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json",
   "cloudManifest": "app/docs/MANIFEST-CLOUD-V6-CORE-OPS-SHOPPER-20260804.json",
-  "activeRevision": "V7_2_P0F1",
-  "legacyGateCompatibility": {
-    "stableAliasPath": "app/docs/MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-20260804.json",
-    "immutableV6Snapshot": "app/docs/MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-HISTORICAL-20260804.json",
-    "immutableV6SnapshotGitBlob": "94fbb474188d6907915df9226e01f0a86860518c",
-    "baseCandidateFieldsPreservedForGateV2Compatibility": true,
-    "currentAuthorityComesFrom": "latestAuditedDelta"
-  },
-  "latestAuditedDelta": {
-    "id": "V7_2_P0F1",
-    "decision": "AUDITED_GO_READY_DIRECT_APPLY",
-    "zipSha256": "09606d1cc133a1e1e138be76bd8c6aadeb1f70d7967d506aae3f81bf5e9c6fce",
-    "headBefore": "4b52a23b0d7eb7bbff679bd921b0af5dd9a30181",
-    "empalmeCommit": "33d6f4f14272f82dca9d9c7c0cc119a9f89619bd",
-    "aggregateSha256": "ecc725866acc3eb8aab292000be3ec31d1c46b5c14a53c8889fa7d6716a997e2",
-    "functionalFiles": [
-      "app/app.js",
-      "app/styles/layout.css"
-    ],
-    "sourceLockFile": "app/core/build-lock.js",
-    "credentialExposurePatternsAbsent": [
-      "CX.CREDS.passExample()",
-      "CX.CREDS.pass(f,l)",
-      "${s.pass}"
-    ]
-  },
-  "status": "V7_2_P0F1_EMPALMED__ACTIVE_COMPOSITION_AUTHORITY_RECONCILED__POST_GATES_PENDING__NO_DEPLOY",
+  "status": "V6_EMPALMED__VISUAL_HOLD__SOURCE_GATE_MARKER_FIX_MATERIALIZED_PENDING_RERUN__NO_DEPLOY",
   "criticalFileOverrides": [
     {
       "path": "app/app.js",
-      "gitBlob": "2043d33dee611adacebc947c8423ed1739c1a8da",
-      "authority": "V7_2_P0F1_AUDITED_GO_EMPALME_COMMIT_33D6F4F",
-      "decision": "PRESERVE_PENDING_DEV_VISUAL"
+      "gitBlob": "e345e1f81fc8064d16b80605611601cb5ce269cd",
+      "authority": "CLOUD_V6_EMPALME_COMMIT_F961253",
+      "decision": "PRESERVE_PENDING_VISUAL_CORRECTION_DELTA"
     },
     {
       "path": "app/core/build-lock.js",
-      "gitBlob": "068b28bce919c2a4f357eb4c21f85fede06a0c5d",
-      "authority": "V7_2_P0F1_RUNTIME_LOCK",
+      "gitBlob": "74bbc85d94b5b31c0be65c22ae9df8f9f2b78c87",
+      "authority": "CLOUD_V6_RUNTIME_LOCK",
       "decision": "PRESERVE"
     },
     {
       "path": "app/styles/layout.css",
-      "gitBlob": "91b3d308e1a51be7a470f0f12b32382c1043058f",
-      "authority": "V7_2_P0F1_AUDITED_GO_EMPALME_COMMIT_33D6F4F",
-      "decision": "PRESERVE_PENDING_DEV_VISUAL"
+      "gitBlob": "7fd40bd7edd6f8452654800d3afd3462c350484d",
+      "authority": "CLOUD_V6_EMPALME_COMMIT_F961253",
+      "decision": "PRESERVE_PENDING_VISUAL_CORRECTION_DELTA"
     },
     {
       "path": "app/modules/proyecto-wizard.js",
@@ -95,21 +69,12 @@
       "decision": "PRESERVE_NO_SECRETS"
     }
   ],
-  "preservation": {
-    "baseManifestRewritten": false,
-    "immutableV6SnapshotCreated": true,
-    "allOtherCriticalBlobsRemainExact": true,
-    "functionalDeltaAddedByThisReconciliation": false,
-    "gateRemainsFailClosed": true,
-    "singleCandidate": true,
-    "singleBranch": true
-  },
   "visualDecision": {
-    "status": "PENDING_SINGLE_HOSTING_DEV_AND_HUMAN_VISUAL",
-    "reason": "V7.2-P0F1 is source-audited and empalmed. Source/static composition and Lab gates must pass on the reconciled authority before the single DEV visual block."
+    "status": "HOLD_FRONTEND_VISUAL",
+    "reason": "The integrated login does not yet match the approved Emergent composition and must receive a cumulative Cloud correction delta before DEV visual approval."
   },
   "runtimeDecision": {
-    "scenarioLab": "SOURCE_CONTRACT_REVALIDATION_PENDING",
+    "scenarioLab": "VISIBLE_SHELL_READY__REAL_CONTROLLED_RUNNER_PENDING",
     "deployAllowedByThisManifest": false
   },
   "safety": {
