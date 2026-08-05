@@ -1,98 +1,92 @@
-# CXOrbia — ejecución obligatoria
+# CXOrbia TyA — instrucciones de ejecución vigentes
 
-Este archivo se lee antes de cualquier acción de Codex o agente en el repositorio.
+## Autoridad y continuidad
 
-## Fuentes prevalentes
+Antes de actuar, leer en este orden:
 
-Leer primero, en este orden:
+1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
+2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
+3. `app/docs/ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md`;
+4. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+5. fuentes activas declaradas por el índice;
+6. PR #7 y HEAD remoto de la rama viva.
 
-1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`
-2. `app/docs/ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md`
-3. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`
-4. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`
-5. `app/docs/CAMBIOS-BACKEND-ADDENDUM-RECUPERACION-PLAN-CANONICO-V7-2-20260804.md`
+Ante conflicto, prevalecen el índice vigente, el checkpoint vigente y el addendum de carril directo.
 
-Después leer el documento maestro de continuidad, addenda vigentes, manifiesto canónico, contratos, `CAMBIOS-BACKEND`, `RESUMEN-PARA-CLAUDE`, `PENDIENTES-PROTOTIPO`, source lock, tracker Phase A y PR #7.
+## Rama y PR únicos
 
-Ante cualquier conflicto documental, prevalecen el índice, el checkpoint y el lock de empalme directo vigente.
+- Repositorio: `paulaosoriof86/demoCXOrbia`.
+- Rama viva: `docs-tya-v6-v71-audit`.
+- PR existente: `#7`.
+- No crear rama, PR, candidata o metodología paralela.
+- No usar `main`, merge o producción sin autorización expresa.
 
-## Destino fijo
+## Carril directo obligatorio
 
-- Repo: `paulaosoriof86/demoCXOrbia`
-- Rama viva: `docs-tya-v6-v71-audit`
-- PR existente: `#7`
-- Prohibido `main`
-- No nueva rama
-- No nuevo PR
+CXOrbia no depende de Codex para escribir en GitHub.
 
-## Gate previo obligatorio
+`ATOMIC_DIRECT_APPLY_AVAILABLE` se satisface por cualquiera de estos carriles ya instalados:
 
-Antes de auditar o modificar, la misma tarea de Codex debe tener:
+1. checkout Git autenticado con commit/push directo; o
+2. `CXORBIA_ATOMIC_APPLY_RUNNER` mediante `.github/cxorbia-apply-requests/request.json`.
 
-1. ZIP de la candidata vigente extraído;
-2. checkout Git autenticado del repositorio;
-3. rama viva seleccionada;
-4. HEAD vivo verificado;
-5. worktree limpio;
-6. capacidad real de commit y push directo sobre la rama viva.
+Los gates post-aplicación se ejecutan mediante `CXORBIA_READONLY_POST_GATES_RUNNER` y `.github/cxorbia-gate-requests/request.json` cuando corresponda.
 
-Emitir `EXECUTION_LANE_READY` con evidencia. Si falta cualquiera, detenerse antes de auditar y registrar causa raíz, owner exacto y solución. No iniciar una auditoría que deba repetirse en otro entorno.
+Codex es opcional. Nunca debe convertirse en requisito, dependencia operativa ni acción manual de Paula cuando los runners controlados estén disponibles.
 
-## Método único vigente
+## Aplicación de deltas
 
-`EXECUTION_LANE_READY → AUDITORÍA FINAL FOCALIZADA → AUDITED_GO_READY_DIRECT_APPLY → APPLY_DELTA_DIRECTLY → EMPALMED_PENDING_POST_GATES`
+Para toda candidata auditada GO y sin P0 demostrado:
 
-Con GO y sin P0, aplicar inmediatamente el delta directamente sobre la rama viva, preservar backend/overlays/documentación, crear un único commit atómico verificable, hacer push y ejecutar gates después.
+- aplicar el delta directamente sobre la rama viva;
+- conservar backend, overlays, contratos, documentos y autoridades canónicas;
+- producir un solo commit funcional atómico;
+- verificar parent, hashes, allowlist, diff, push y HEAD remoto;
+- ejecutar los gates posteriores sobre el HEAD exacto;
+- detenerse antes de deploy salvo autorización expresa.
 
-## Prohibiciones prevalentes
+El runner atómico debe:
 
-- `incoming/`, plan JSON, `.cmd` o PowerShell para Paula;
-- Contents API archivo por archivo como transporte;
-- blobs, trees o commits Git construidos mediante conectores como sustituto del checkout;
-- workflows/Actions, Drive o Base64 como transportador;
-- rama o PR nuevos;
-- `main`;
-- force update;
-- copias manuales;
-- reauditoría general;
-- nueva candidata cuando la actual está GO;
-- afirmar éxito sin commit, diff, HEAD y gates verificables.
+- consumir una solicitud de una sola ejecución;
+- validar `expectedParentSha` y hashes actuales/destino;
+- limitarse a archivos allowlisted;
+- eliminar la solicitud en el commit funcional;
+- dejar worktree limpio;
+- publicar evidencia verificable.
 
-La operación permitida es `APPLY_DELTA_DIRECTLY` desde el checkout file-aware autenticado. Solo un `P0_PROVEN` reproducible y autorización expresa de Paula en la conversación vigente permiten detener o proponer un cambio de método.
+## Prohibiciones
 
-## Tarea vigente V7.2
+- Contents API secuencial para cambios funcionales;
+- mutaciones directas de árboles funcionales fuera del runner controlado;
+- workflows transportadores improvisados;
+- nuevas ramas o PR;
+- PowerShell, CMD o pasos manuales para Paula;
+- reconstrucciones de candidatas;
+- auditorías generales cuando existe un delta focalizado;
+- relajación de gates, wildcard o hardcode de PASS;
+- deploy, Firestore/Auth/Storage/HR writes, Make, Gemini, pagos, merge o producción sin autorización y gate correspondiente.
 
-Leer `app/docs/CODEX-EXECUTION-TASK-V7-2-20260804.md`.
+## Regla de oro del prototipo
 
-V7.2 solo puede aportar el correctivo responsive del Login. El alcance esperado, sujeto a comparación real, es:
+- No rediseñar ni reescribir `/app/modules` o `/app/core` desde backend.
+- No parchar UI desde backend salvo delta frontend auditado y autorizado.
+- Mantener la interfaz exacta de `CX.data`.
+- Mantener multi-tenant por `tenantId` y multi-proyecto por `projectId`.
+- Preservar HR, histórico, shoppers, postulaciones, certificaciones, liquidaciones/pagos y sincronización HR/plataforma.
+- No conectar ni copiar la base legacy.
 
-- `app/app.js`
-- `app/styles/layout.css`
+## Documentación y cierre
 
-Preservar íntegramente backend, contratos, adapters, tools, overlays TyA, `CX.data`, multi-tenant, multi-proyecto, HR, histórico, shoppers, postulaciones, certificaciones, liquidaciones/pagos, sincronización, Academia, manuales, rutas por rol, notificaciones, UTF-8 y ausencia de secretos.
+Registrar cada bloque en CAMBIOS, checkpoint, índice, resumen para Claude, pendientes e impacto Academia según aplique.
 
-Cinépolis es proyecto configurable, nunca default ni lógica global.
+No afirmar PASS, commit, push, deploy o producción sin evidencia reproducible.
 
-## Gates mínimos
+El cierre debe indicar:
 
-- hash, manifest y alcance;
-- comparación V7.2 vs V7.1 y vs HEAD vivo;
-- `node --check`;
-- UTF-8 sin BOM;
-- secretos/PII;
-- Login en 1920×1080, 1440×900, 768×1024, 412×915 y 390×844;
-- escenarios 1/2/8/12 países;
-- geometría y scroll contractuales;
-- source/static, composición canónica y contrato del Laboratorio después del empalme.
-
-La ausencia de capturas en el ZIP se resuelve generando evidencia durante la auditoría; no origina V7.3 por sí sola.
-
-## Estado seguro permanente
-
-Sin Hosting/Cloud Run, merge, producción, import real, Firestore/Auth/Storage/HR writes, Make/Gemini live ni pagos salvo gate y autorización expresa.
-
-## Cierre obligatorio
-
-Dejar el worktree limpio y documentar evidencia real en CAMBIOS, checkpoint, índice, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md` e impacto Academia. Nunca afirmar PASS, commit, push o ejecución sin evidencia reproducible.
-
-El estado específico de candidata, HEAD y siguiente bloque se toma únicamente del checkpoint vigente. No hardcodear versiones aquí.
+- qué se hizo;
+- HEAD anterior y nuevo;
+- archivos y gates;
+- qué se preservó;
+- impacto Phase A, Claude y Academia;
+- pendiente real y siguiente acción exacta;
+- estado seguro y bloqueo comprobado, si existe.
