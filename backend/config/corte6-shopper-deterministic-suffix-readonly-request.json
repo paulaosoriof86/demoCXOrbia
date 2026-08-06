@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.c6.shopper-deterministic-suffix-crosswalk-rootfix-source-only-request.v1",
   "requestId": "c6-shopper-deterministic-suffix-crosswalk-rootfix-source-only-known-lane-20260805-01",
-  "enabled": true,
-  "consumed": false,
-  "status": "authorized_execute_once",
+  "enabled": false,
+  "consumed": true,
+  "status": "consumed_source_static_pass_no_provider_read",
   "issuedAt": "2026-08-05T20:21:00-06:00",
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-05",
@@ -30,7 +30,11 @@
   "expectedStableCredentialsMapped": 101,
   "expectedStableCredentialsUnmapped": 8,
   "expectedPlanRows": 340,
-  "suffixLengths": [4, 6, 8],
+  "suffixLengths": [
+    4,
+    6,
+    8
+  ],
   "requiredChecks": [
     "linked_source_tech_keys_propagated",
     "linked_source_basis_preserved",
@@ -61,5 +65,12 @@
   "containsPii": false,
   "containsSecrets": false,
   "stopAfterSourceStatic": true,
-  "purpose": "Apply the source-only credential crosswalk root fix through the registered workflow lane, execute static gates, commit directly to the live branch and stop without any provider read or operational write."
+  "purpose": "Apply the source-only credential crosswalk root fix through the registered workflow lane, execute static gates, commit directly to the live branch and stop without any provider read or operational write.",
+  "consumedAt": "2026-08-06T02:34:47.327Z",
+  "result": {
+    "decision": "PASS_C6_DETERMINISTIC_SUFFIX_CROSSWALK_ROOTFIX_SOURCE_STATIC",
+    "providerReads": 0,
+    "providerWrites": 0,
+    "evidence": "app/docs/evidence/CORTE6-SHOPPER-DETERMINISTIC-SUFFIX-CROSSWALK-ROOTFIX-SOURCE-STATIC-PASS-LATEST.json"
+  }
 }

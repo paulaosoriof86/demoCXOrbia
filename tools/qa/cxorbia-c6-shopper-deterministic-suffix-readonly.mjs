@@ -27,6 +27,8 @@ const SURNAME_KEYS = ['lastName','apellido','apellidos','surname','familyName','
 const LOGIN_KEYS = ['username','userName','usuario','login','loginIdentifier','normalizedLogin'];
 const ACTIVE_STATUSES = new Set(['active','activo','enabled','habilitado','approved','aprobado','complete','completo','completed','verified','verificado','perfil_completo','vigente']);
 const INACTIVE_STATUSES = new Set(['inactive','inactivo','disabled','deshabilitado','deleted','eliminado','archived','archivado','rejected','rechazado','blocked','bloqueado','suspended','suspendido','cancelled','canceled','cancelado']);
+const STABLE_CREDENTIALS_MAPPED = 101;
+const STABLE_CREDENTIALS_UNMAPPED = 8;
 
 const root = process.cwd();
 const requestPath = process.argv[2] || 'backend/config/corte6-shopper-deterministic-suffix-readonly-request.json';
@@ -44,6 +46,21 @@ const add = (map, key, value) => {
   if (!map.has(k)) map.set(k, []);
   map.get(k).push(value);
 };
+function propagateLinkedSourceTechKeys(relationIndex, source, shopperId) {
+  const sourceValue = source?.value ?? source;
+  let propagated = 0;
+  for (const key of TECH_KEYS) {
+    const value = sourceValue?.[key];
+    for (const item of Array.isArray(value) ? value : [value]) {
+      const normalized = text(item);
+      if (!normalized) continue;
+      add(relationIndex, normalized, shopperId);
+      propagated++;
+    }
+  }
+  return propagated;
+}
+
 const pick = (obj, keys) => {
   for (const key of keys) {
     const value = text(obj?.[key]);
@@ -264,6 +281,7 @@ async function buildProviderPlan({ auth, db, bundle, webConfig, tenantId, projec
     if (!profiles.has(shopperId)) return;
     if (!linkedByProfile.has(shopperId)) linkedByProfile.set(shopperId, []);
     linkedByProfile.get(shopperId).push(source);
+    propagateLinkedSourceTechKeys(relationIndex, source, shopperId);
   };
   for (const [basis, snap] of [['hr', hrSnap], ['visit', visitSnap], ['certification', certSnap], ['liquidation', liqSnap]]) {
     for (const doc of snap.docs) {
@@ -311,6 +329,11 @@ async function buildProviderPlan({ auth, db, bundle, webConfig, tenantId, projec
       credentialsByProfile.get(exact[0]).push(record);
     }
   }
+
+  const credentialsUnmapped = credentialRecords.length - credentialsMapped;
+  const credentialCrosswalkParity =
+    credentialsMapped === STABLE_CREDENTIALS_MAPPED &&
+    credentialsUnmapped === STABLE_CREDENTIALS_UNMAPPED;
 
   const periods = visitSnap.docs.map(doc => periodKey(doc.data() || {}, doc.ref.path)).filter(Boolean).sort();
   const latestPeriod = periods.at(-1) || '';
@@ -502,7 +525,12 @@ async function buildProviderPlan({ auth, db, bundle, webConfig, tenantId, projec
   const unresolvedMultiAuth = rows.filter(row => row.holds.has('multi_auth_tie_residual')).length;
   const suffixAllocationHolds = rows.filter(row => row.holds.has('deterministic_suffix_collision_after_8')).length;
   const targetCollisionHolds = rows.filter(row => row.holds.has('target_login_not_unique')).length;
-  const ready = unresolvedActiveNames === 0 && unresolvedMultiAuth === 0 && suffixAllocationHolds === 0 && targetCollisionHolds === 0;
+  const ready =
+    credentialCrosswalkParity &&
+    unresolvedActiveNames === 0 &&
+    unresolvedMultiAuth === 0 &&
+    suffixAllocationHolds === 0 &&
+    targetCollisionHolds === 0;
 
   return {
     schemaVersion: 'cxorbia.c6.shopper-deterministic-suffix-readonly.result.v1',
@@ -514,7 +542,10 @@ async function buildProviderPlan({ auth, db, bundle, webConfig, tenantId, projec
       memberships: membershipSnap.docs.length,
       credentials: credentialRecords.length,
       credentialsMapped,
-      credentialsUnmapped: credentialRecords.length - credentialsMapped,
+      credentialsUnmapped,
+      credentialCrosswalkParity,
+      stableCredentialsMapped: STABLE_CREDENTIALS_MAPPED,
+      stableCredentialsUnmapped: STABLE_CREDENTIALS_UNMAPPED,
       hrImportDocs: hrSnap.docs.length,
       visits: visitSnap.docs.length,
       certifications: certSnap.docs.length,
@@ -596,6 +627,19 @@ function selfTest() {
     `ana.perez.${six}`
   ]));
   if (expandedEight.suffixLength !== 8) throw new Error('suffix_8_expansion_failed');
+  const relationFixture = new Map();
+  const propagated = propagateLinkedSourceTechKeys(
+    relationFixture,
+    { value: { legacyId: 'legacy-42', sourceKey: ['source-a', 'source-b'] }, basis: 'hr' },
+    'shopper-42'
+  );
+  if (
+    propagated !== 3 ||
+    relationFixture.get('legacy-42')?.[0] !== 'shopper-42' ||
+    relationFixture.get('source-a')?.[0] !== 'shopper-42' ||
+    relationFixture.get('source-b')?.[0] !== 'shopper-42'
+  ) throw new Error('credential_crosswalk_tech_key_propagation_failed');
+
   const sample = sourceSafeNames(
     { id: 'x', nombre: 'Ana Maria Perez Lopez' },
     [{ value: { shopperId: 'x', name: 'Ana Maria Perez Lopez' }, basis: 'hr' }],
@@ -611,7 +655,9 @@ function selfTest() {
       'PASS_SUFFIX_EXPANSION_6_8',
       'PASS_MULTI_SOURCE_SURNAME_CONSENSUS',
       'PASS_NO_PII_SUFFIX_CONTRACT',
-      'PASS_ONE_PRIMARY_OPERATION_SCHEMA'
+      'PASS_ONE_PRIMARY_OPERATION_SCHEMA',
+      'PASS_CREDENTIAL_CROSSWALK_TECH_KEY_PROPAGATION',
+      'PASS_CREDENTIAL_CROSSWALK_PARITY_HARD_STOP'
     ]
   };
 }
@@ -662,6 +708,9 @@ async function providerMain() {
       projectId: request.projectId
     });
     if (result.source.profiles !== Number(request.expectedProfiles || 340)) blockers.push(`profiles:${result.source.profiles}`);
+    if (result.source.credentialCrosswalkParity !== true) {
+      blockers.push(`credential_crosswalk_drift:${result.source.credentialsMapped}/${result.source.credentialsUnmapped}`);
+    }
     if (result.surnameCompletion.initialIncompleteActiveProfiles !== Number(request.expectedInitialIncompleteActiveProfiles || 83)) blockers.push(`initial_incomplete:${result.surnameCompletion.initialIncompleteActiveProfiles}`);
     if (result.disambiguation.collisionGroups !== Number(request.expectedDistinctActiveCollisionGroups || 64)) blockers.push(`collision_groups:${result.disambiguation.collisionGroups}`);
     if (result.plan.rows !== 340) blockers.push(`plan_rows:${result.plan.rows}`);
