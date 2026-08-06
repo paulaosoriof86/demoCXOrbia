@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.c6.skip13-auth-access-adjudication.request.v1",
-  "requestId": "c6-skip13-auth-access-adjudication-20260806-03",
+  "requestId": "c6-skip13-auth-access-adjudication-20260806-04",
   "enabled": true,
   "consumed": false,
   "status": "authorized_execute_once",
@@ -10,7 +10,7 @@
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "9136362468c6f3e92933686e1f320d671287c032",
+  "targetHeadSha": "3fb6d9fddeba1903cd845cd8c2bb44a6e1d23d5f",
   "requestCommitSha": null,
   "tenantId": "tya",
   "projectId": "cinepolis",
