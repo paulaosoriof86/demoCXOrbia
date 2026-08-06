@@ -1,79 +1,69 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-06  
-**Estado vivo:** `C6_LIVE_HR_V3_REQUEST_EMITTED__NO_CHECKPOINT_OBSERVED__STOP_RETRY__IDENTITY_HOLD_0__NO_PRODUCTION`
+**Estado vivo:** `C6_LIVE_HR_V3_CONTROL_PLANE_DIAGNOSIS_INCONCLUSIVE__PROVIDER_BOUNDARY_NOT_PROVEN__STOP_RETRY__IDENTITY_HOLD_0__NO_PRODUCTION`
 
 ## 1. Fuente de verdad
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-3. `app/docs/SOURCE-LOCK-C6-LIVE-HR-V3-REQUEST-NO-CHECKPOINT-20260806.md`;
+3. `app/docs/SOURCE-LOCK-C6-LIVE-HR-V3-CONTROL-PLANE-DIAGNOSIS-20260806.md`;
 4. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
 5. PR #7 y HEAD vivo.
 
 ## 2. Cerrado y protegido
 
-- Frontend acumulativo, composición canónica y módulos Phase A.
-- Universo Shopper equivalente 65/65.
-- 13 perfiles omitidos de Auth: `HOLD=0`, historia preservada.
-- Login único, contratos Auth/RBAC y plan Auth source-only.
-- Finanzas, Liquidaciones, Portales y Reservas.
-- Root fix HR viva source aplicado.
-- Root fix de observabilidad control-plane aplicado.
+- frontend acumulativo y módulos Phase A;
+- universo Shopper 65/65;
+- SKIP13: `HOLD=0`, historia preservada;
+- Login, Auth/RBAC source-only, Finanzas, Portales y Reservas;
+- root fixes de HR viva y observabilidad v3.
 
-## 3. Request v3 emitido
+## 3. Diagnóstico cerrado
 
 ```text
-sourceCommit=18ea2e6ab9b15480c851c7ba34cae8e8fbcae026
-requestCommit=d62dbae9b10b0650c2940f4b2bf7d456cb34fc83
-authorizationId=chat-20260806-live-hr-authority-current-period-v3-02
-```
-
-No se observó ningún checkpoint del journal:
-
-```text
-WORKFLOW_STARTED_PROVIDER_READS_0=NO
-PROVIDER_READ_BOUNDARY_ENTERED_MAX1=NO
-PROVIDER_READ_SEQUENCE_COMPLETED_LOGICAL_1=NO
-FINAL=NO
+request=d62dbae9b10b0650c2940f4b2bf7d456cb34fc83
+run/check suite/job localizado=false
+WORKFLOW_STARTED_PROVIDER_READS_0=NO OBSERVADO
+PROVIDER_READ_BOUNDARY_ENTERED_MAX1=NO OBSERVADO
+provider boundary probado=false
 providerReadConsumption=UNKNOWN_NO_CHECKPOINT_EVIDENCE
 STOP_RETRY=true
 ```
 
+No se puede afirmar que el run nunca existió porque la herramienta de runs disponible no enumera eventos `push`. No existe evidencia observable de frontera provider alcanzada.
+
 ## 4. P0 único actual
 
-Diagnosticar read-only por qué GitHub Actions no publicó siquiera el primer checkpoint del request v3.
+Comprobar source-only que GitHub Actions reconoce y mantiene habilitado el workflow. No tocar el request ni consultar HR.
 
 ## 5. Orden inmediato
 
-1. Localizar run/check suite del request exacto.
-2. Determinar si la ejecución quedó antes de provider boundary.
-3. No modificar el request.
-4. No consultar HR.
-5. No emitir segundo trigger.
-6. Solo con evidencia reproducible anterior a la frontera provider, solicitar autorización fresca.
-7. Después confirmar `2026-08`, tabs GT/HN, mutación histórica y `sourceRevision` transversal.
-8. Preparar repair Auth con SKIP13 y `HOLD=0`.
+1. Gate source-only de registro/habilitación del workflow.
+2. Identificar causa raíz reproducible sin trigger provider.
+3. Documentar y detenerse.
+4. Solo con autorización fresca separada, emitir un único intento read-only.
+5. Confirmar `2026-08`, GT/HN, mutación histórica y `sourceRevision` transversal.
+6. Preparar Auth SKIP13 con `HOLD=0`.
 
 ## 6. No hacer
 
-- No reinterpretar v2 o v3 como providerReads=0.
+- No reintentar el request v3.
+- No inferir `providerReads=0`.
 - No hardcodear periodos o conteos.
-- No tratar snapshots/Firestore como autoridad HR.
-- No repetir import histórico por conteo.
-- No reabrir los 13 perfiles.
+- No reabrir SKIP13 ni 65/65.
 - No ejecutar Auth, deploy, merge o producción sin gate separado.
 
 ## 7. P1/P2
 
-PDF con gráficas, presentación Excel y mejoras no bloqueantes continúan documentadas, pero no sustituyen el P0 de control-plane HR viva.
+PDF con gráficas, presentación Excel y mejoras no bloqueantes permanecen documentadas, pero no sustituyen el P0 del carril Actions/HR viva.
 
 ## 8. Seguridad
 
 ```text
-request v3 emitido=1
-segundo trigger=0
-provider writes=0
+request modificado=false
+nuevo trigger=0
+provider reads por diagnóstico=0
 HR/Firestore/Auth/Rules/Storage writes=0
 Hosting/Cloud Run deploys=0
 merge=false
