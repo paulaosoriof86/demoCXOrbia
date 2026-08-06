@@ -5,7 +5,7 @@ on:
     branches:
       - docs-tya-v6-v71-audit
     paths:
-      - backend/config/corte6-shopper-deterministic-suffix-readonly-request.json
+      - backend/config/corte6-shopper-deterministic-suffix-readonly-request-retired.json
 
 permissions:
   contents: read
