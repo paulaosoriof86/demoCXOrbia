@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "cxorbia.live-hr-v3-request-no-checkpoint.v1",
+  "generatedAt": "2026-08-06T11:34:00-06:00",
+  "decision": "STOP_RETRY_V3_REQUEST_NO_CONTROL_PLANE_CHECKPOINT_OBSERVED",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "sourceCommit": "18ea2e6ab9b15480c851c7ba34cae8e8fbcae026",
+  "requestCommit": "d62dbae9b10b0650c2940f4b2bf7d456cb34fc83",
+  "authorizationId": "chat-20260806-live-hr-authority-current-period-v3-02",
+  "previousV2RequestCommit": "4e404f2db48ff8b07430d7ac7505eff6c040458a",
+  "previousV2ProviderReadConsumption": "UNKNOWN_NO_EXECUTION_EVIDENCE",
+  "requestContract": {
+    "schemaVersion": "cxorbia.live-hr-current-reconcile.request.v3",
+    "controlPlaneContract": "cxorbia.live-hr-control-plane-journal.v1",
+    "providerReadsAuthorized": 1,
+    "providerWritesAuthorized": 0,
+    "hrWritesAuthorized": 0,
+    "firestoreWritesAuthorized": 0,
+    "authWritesAuthorized": 0,
+    "rulesWritesAuthorized": 0,
+    "storageWritesAuthorized": 0,
+    "hostingDeploysAuthorized": 0,
+    "cloudRunDeploysAuthorized": 0,
+    "production": false,
+    "merge": false
+  },
+  "observation": {
+    "requiredFirstCheckpoint": "WORKFLOW_STARTED_PROVIDER_READS_0",
+    "commitStatusesObserved": 0,
+    "firstCheckpointObserved": false,
+    "providerBoundaryCheckpointObserved": false,
+    "providerSequenceCheckpointObserved": false,
+    "finalCheckpointObserved": false,
+    "evidenceCommitObserved": false,
+    "branchAdvancedByWorkflow": false
+  },
+  "providerReadConsumption": "UNKNOWN_NO_CHECKPOINT_EVIDENCE",
+  "retryExecuted": false,
+  "prohibitedInference": [
+    "do_not_claim_provider_read_zero",
+    "do_not_claim_provider_read_consumed",
+    "do_not_claim_2026_08_pass_or_fail",
+    "do_not_emit_second_trigger_without_fresh_authorization"
+  ],
+  "safety": {
+    "newProviderRequestCommits": 1,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "make": 0,
+    "gemini": 0,
+    "payments": 0,
+    "merge": false,
+    "production": false
+  }
+}
