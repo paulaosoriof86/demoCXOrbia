@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-06  
-**Estado:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_GATE_HOLD__LIVE_HR_V4_UNRESOLVED__PROD_TARGET_UNMATERIALIZED__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_GATE_HOLD__LIVE_HR_V4_UNRESOLVED__PRODUCTION_STRATEGY_UNMATERIALIZED__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Rama y control
 
@@ -36,33 +36,34 @@ No se afirma ausencia del run, lectura cero ni lectura consumida.
 
 ## 3. Gate fast-track de producción
 
-Se agregó y ejecutó:
-
 ```text
-tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs
+tool=tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs
 node --check=PASS
 exitCode=2 esperado fail-closed
-decision=HOLD_PRODUCTION_TARGET_UNMATERIALIZED
-holdReason=PRODUCTION_CONFIGURATION_FILES_NOT_MATERIALIZED
+decision=HOLD_PRODUCTION_STRATEGY_UNMATERIALIZED
+holdReason=PRODUCTION_PROMOTION_STRATEGY_NOT_AUTHORIZED_OR_MATERIALIZED
 ```
 
-Configuración DEV observada:
+El proyecto limpio actualmente configurado es:
 
 ```text
 project=cxorbia-backend-dev
 hosting target=cxorbia-dev
 hosting site=cxorbia-backend-dev
 Cloud Run service=cxorbia-live-hr-dev
+region=us-central1
+public=app
+UTF-8=PASS
 ```
 
-Archivos PROD requeridos y ausentes:
+El gate permite dos rutas, pero no elige ninguna por inferencia:
 
 ```text
-.firebaserc.prod
-firebase.prod.json
+PROMOTE_EXISTING_CLEAN_PROJECT
+SEPARATE_CLEAN_PROD_PROJECT
 ```
 
-Conclusión: no existe todavía un carril de producción versionado y verificable. Un deploy desde la configuración actual no sería un cutover de producción válido.
+La primera conserva el proyecto limpio actual y exige aceptación expresa de sus identificadores/URL como producción. La segunda exige un proyecto limpio separado. En ambas se prohíbe reutilizar la base legacy como backend nuevo.
 
 ## 4. Identidades Shopper preservadas
 
@@ -85,10 +86,11 @@ SKIP13 e historia permanecen preservados. Auth no ha sido ejecutado.
 2. Confirmar `2026-08`, GT/HN, historia y `sourceRevision` transversal.
 3. Ejecutar Auth con gate separado.
 4. Ejecutar smoke acumulativo Admin/Operaciones, Shopper y Cliente.
-5. Materializar `.firebaserc.prod` y `firebase.prod.json` contra un proyecto nuevo y separado.
-6. Obtener PASS del gate de target PROD.
-7. Completar validación humana, rollback y autorización específica.
-8. Ejecutar un único cutover.
+5. Autorizar una estrategia de producción.
+6. Materializar el contrato y configuración correspondientes.
+7. Obtener PASS del gate de producción.
+8. Completar validación humana, rollback y autorización específica.
+9. Ejecutar un único cutover.
 
 ## 6. Phase A preservada
 
