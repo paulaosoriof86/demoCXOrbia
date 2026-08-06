@@ -1,84 +1,62 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-06  
-**Estado vivo:** `C6_LIVE_HR_V3_REQUEST_EMITTED__NO_CHECKPOINT_OBSERVED__STOP_RETRY__IDENTITY_HOLD_0__NO_PRODUCTION`
+**Estado vivo:** `C6_LIVE_HR_V3_CONTROL_PLANE_DIAGNOSIS_INCONCLUSIVE__PROVIDER_BOUNDARY_NOT_PROVEN__STOP_RETRY__IDENTITY_HOLD_0__NO_PRODUCTION`
 
 ## 1. Fuente vigente
 
-Leer primero:
-
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-3. `app/docs/SOURCE-LOCK-C6-LIVE-HR-V3-REQUEST-NO-CHECKPOINT-20260806.md`;
+3. `app/docs/SOURCE-LOCK-C6-LIVE-HR-V3-CONTROL-PLANE-DIAGNOSIS-20260806.md`;
 4. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
 5. PR #7 y HEAD vivo.
 
 ## 2. No reabrir
 
-- Frontend acumulativo y composición canónica.
-- Login único y contratos Auth/RBAC.
-- Universo Shopper 65/65.
-- Disposición de 13 perfiles: `HOLD=0`, fuera de repair Auth, historia preservada.
-- Finanzas, Liquidaciones, Portal Cliente, Portal Shopper y Reservas.
-- No crear nueva candidata, rama, PR o shell paralela.
+- frontend acumulativo y composición canónica;
+- Login y contratos Auth/RBAC;
+- universo Shopper 65/65;
+- SKIP13 con `HOLD=0` e historia preservada;
+- Finanzas, Liquidaciones, Portal Cliente, Portal Shopper y Reservas;
+- ninguna nueva candidata, rama, PR o shell paralela.
 
-## 3. Root fixes preservados
-
-- metadata provider para descubrir tabs y periodos;
-- periodo calendario dinámico;
-- registry como cache/last-known-good;
-- una sola revisión source-safe;
-- cambio histórico que debe alterar `sourceRevision`;
-- journal v3 con checkpoints previos a provider.
-
-## 4. Request v3 emitido
+## 3. Diagnóstico del request v3
 
 ```text
-sourceCommit=18ea2e6ab9b15480c851c7ba34cae8e8fbcae026
-requestCommit=d62dbae9b10b0650c2940f4b2bf7d456cb34fc83
-authorizationId=chat-20260806-live-hr-authority-current-period-v3-02
-controlPlaneContract=cxorbia.live-hr-control-plane-journal.v1
-```
-
-No se observó:
-
-```text
-WORKFLOW_STARTED_PROVIDER_READS_0
-PROVIDER_READ_BOUNDARY_ENTERED_MAX1
-PROVIDER_READ_SEQUENCE_COMPLETED_LOGICAL_1
-FINAL_<JOB_STATUS>_<CONSUMPTION>
-```
-
-Resultado:
-
-```text
+request=d62dbae9b10b0650c2940f4b2bf7d456cb34fc83
+run/check suite/job localizado=false
+commit statuses=0
+WORKFLOW_STARTED_PROVIDER_READS_0=NO OBSERVADO
+PROVIDER_READ_BOUNDARY_ENTERED_MAX1=NO OBSERVADO
+providerBoundaryProvenReached=false
 providerReadConsumption=UNKNOWN_NO_CHECKPOINT_EVIDENCE
-retryExecuted=false
 STOP_RETRY=true
 ```
 
-No declarar `2026-08`, GT/HN, mutación histórica ni paridad transversal como confirmados.
+El listado disponible de runs solo cubre `pull_request`, mientras este workflow usa `push`. Por ello no afirmar que el run nunca existió. Sí está probado que no existe evidencia observable de frontera provider alcanzada.
 
-## 5. Regla obligatoria para frontend
+## 4. Regla frontend
 
-Dashboard, Histórico, Visitas, Finanzas, Cliente y Shopper deben consumir la misma `sourceRevision`. No modificar `/app/modules/*` ni `/app/core/*` por este bloque. Los estados técnicos del journal no deben mostrarse al usuario final.
+No modificar `/app/modules/*` ni `/app/core/*`. Dashboard, Histórico, Visitas, Finanzas, Cliente y Shopper deben consumir una misma `sourceRevision` viva cuando exista evidencia. Los checkpoints técnicos no se muestran al usuario final.
 
-## 6. Siguiente bloque
+No declarar `2026-08`, GT/HN, mutación histórica o paridad transversal como confirmados.
+
+## 5. Siguiente bloque
 
 ```text
-CONTROL-PLANE/ACTIONS READ-ONLY DIAGNOSIS
-→ request d62dbae9
-→ localizar run/check suite o probar ausencia antes de provider boundary
-→ no tocar request ni HR
-→ STOP_RETRY sin segundo intento
+GATE SOURCE-ONLY DE RECONOCIMIENTO/HABILITACIÓN DE GITHUB ACTIONS
+→ no tocar request v3
+→ no consultar HR ni emitir trigger provider
+→ cerrar causa raíz del workflow no observable
+→ cualquier nueva lectura requiere autorización fresca separada
 ```
 
-## 7. Seguridad
+## 6. Seguridad
 
 ```text
-request v3 emitido=1
-segundo trigger=0
-provider writes=0
+request modificado=false
+nuevo trigger=0
+provider reads por diagnóstico=0
 HR/Firestore/Auth/Rules/Storage writes=0
 Hosting/Cloud Run deploys=0
 merge=false
