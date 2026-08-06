@@ -2,7 +2,7 @@
 
 **Fecha original:** 2026-07-04  
 **Actualización prevalente:** 2026-08-06  
-**Estado:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_GATE_HOLD__LIVE_HR_V4_UNRESOLVED__PROD_TARGET_UNMATERIALIZED__IDENTITY_HOLD_0__NO_PRODUCTION`
+**Estado:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_GATE_HOLD__LIVE_HR_V4_UNRESOLVED__PRODUCTION_STRATEGY_UNMATERIALIZED__IDENTITY_HOLD_0__NO_PRODUCTION`
 
 ## 1. Objetivo operativo
 
@@ -49,28 +49,34 @@ No se reabre sintaxis, registro, trigger, rama o path. Cualquier evidencia tard�
 
 ## 5. Gate fast-track de producción
 
-Se creó y ejecutó source-only:
-
 ```text
 tool=tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs
 node --check=PASS
 exitCode=2 esperado fail-closed
-decision=HOLD_PRODUCTION_TARGET_UNMATERIALIZED
-holdReason=PRODUCTION_CONFIGURATION_FILES_NOT_MATERIALIZED
+decision=HOLD_PRODUCTION_STRATEGY_UNMATERIALIZED
+holdReason=PRODUCTION_PROMOTION_STRATEGY_NOT_AUTHORIZED_OR_MATERIALIZED
 ```
 
-El gate confirmó:
+La configuración limpia vigente es:
 
 ```text
-DEV project=cxorbia-backend-dev
-DEV hosting target=cxorbia-dev
-DEV hosting site=cxorbia-backend-dev
-DEV Cloud Run service=cxorbia-live-hr-dev
-.firebaserc.prod existe=false
-firebase.prod.json existe=false
+project=cxorbia-backend-dev
+hosting target=cxorbia-dev
+hosting site=cxorbia-backend-dev
+Cloud Run service=cxorbia-live-hr-dev
+region=us-central1
+public=app
+UTF-8=PASS
 ```
 
-Un deploy desde el estado actual seguiría apuntando a DEV.
+El gate acepta dos estrategias y no impone ninguna:
+
+```text
+PROMOTE_EXISTING_CLEAN_PROJECT
+SEPARATE_CLEAN_PROD_PROJECT
+```
+
+En ninguna estrategia puede utilizarse la base legacy como backend nuevo.
 
 ## 6. Cadena única restante
 
@@ -87,13 +93,14 @@ Un deploy desde el estado actual seguiría apuntando a DEV.
 3. Smoke Admin/Operaciones, Shopper y Cliente.
 4. Tres recargas, nueva pestaña y estabilidad.
 
-### Bloque C — Materializar producción
+### Bloque C — Estrategia de producción
 
-1. Definir un proyecto de producción nuevo y separado del DEV vigente.
-2. Crear `.firebaserc.prod` y `firebase.prod.json` sin conectar la base legacy.
-3. Configurar alias, Hosting target, backend service, región, credenciales y rollback.
-4. Ejecutar el gate hasta `PASS_PRODUCTION_TARGET_SOURCE_ONLY_CONTRACT`.
-5. Mantener producción legacy intacta hasta autorización de cutover.
+1. Elegir expresamente entre promover el proyecto limpio existente o usar uno limpio separado.
+2. Materializar `backend/config/cxorbia-production-promotion-contract.json`.
+3. Para promoción del proyecto actual, aceptar expresamente sus identificadores/URL como producción.
+4. Para proyecto separado, materializar `.firebaserc.prod` y `firebase.prod.json`.
+5. Ejecutar el gate hasta PASS.
+6. Mantener producción legacy intacta hasta autorización de cutover.
 
 ### Bloque D — Cutover
 
@@ -102,7 +109,7 @@ Source lock final, validación humana, rollback probado, autorización específi
 ## 7. Circuit breakers
 
 - No emitir segundo request HR.
-- No desplegar DEV como si fuera PROD.
+- No desplegar un entorno como producción sin contrato de promoción.
 - No conectar ni copiar la base legacy.
 - No ejecutar Auth sin gate separado.
 - No reabrir SKIP13 o 65/65.
