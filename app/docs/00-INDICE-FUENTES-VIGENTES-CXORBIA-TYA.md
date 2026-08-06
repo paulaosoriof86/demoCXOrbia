@@ -2,19 +2,19 @@
 
 **Fecha:** 2026-08-06  
 **Estado:** ACTIVO Y RECONCILIADO  
-**Estado vivo:** `C6_SKIP13_ADJUDICATION_REQUEST_EMITTED__20M_NO_RUN_JOB_STATUS_EVIDENCE__CONSUMPTION_UNKNOWN__STOP_RETRY__AUTH_PLAN_FROZEN__PRODUCTION_PROMOTION_PASS__LIVE_HR_V4_UNRESOLVED__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_BASE_CONTROL_PLANE_NO_RUN__TEMP_FILES_REMOVED__CONSUMPTION_UNKNOWN__STOP_RETRY__AUTH_PLAN_FROZEN__PRODUCTION_PROMOTION_PASS__LIVE_HR_V4_UNRESOLVED__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Orden de prevalencia
 
 1. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `app/docs/SOURCE-LOCK-C6-SKIP13-AUTH-ACCESS-ADJUDICATION-20M-NO-RUN-EVIDENCE-20260806.md`;
-3. `app/docs/evidence/C6-SKIP13-AUTH-ACCESS-ADJUDICATION-20M-NO-RUN-EVIDENCE-LATEST.json`;
-4. `backend/config/c6-skip13-auth-access-adjudication-request.json`;
-5. `backend/contracts/c6-skip13-auth-access-adjudication-v1.json`;
-6. `tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly.mjs`;
-7. `.github/workflows/cxorbia-c6-skip13-auth-access-adjudication-readonly.yml`;
-8. `app/docs/SOURCE-LOCK-C6-AUTH-SMOKE-FINAL-PREPARATION-HOLD-20260806.md`;
-9. `app/docs/evidence/C6-AUTH-SMOKE-FINAL-PREPARATION-LATEST.json`;
+2. `app/docs/SOURCE-LOCK-C6-BASE-CONTROL-PLANE-NO-RUN-FAIL-CLOSED-20260806.md`;
+3. `app/docs/SOURCE-LOCK-C6-PR7-MERGEABILITY-PASS-SKIP13-CONTROL-PLANE-HOLD-20260806.md`;
+4. `app/docs/SOURCE-LOCK-C6-SKIP13-AUTH-ACCESS-ADJUDICATION-20M-NO-RUN-EVIDENCE-20260806.md`;
+5. `backend/config/c6-skip13-auth-access-adjudication-request.json` — deshabilitado en la rama viva;
+6. `backend/contracts/c6-skip13-auth-access-adjudication-v1.json`;
+7. `tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly.mjs`;
+8. `.github/workflows/cxorbia-c6-skip13-auth-access-adjudication-readonly.yml`;
+9. `app/docs/SOURCE-LOCK-C6-AUTH-SMOKE-FINAL-PREPARATION-HOLD-20260806.md`;
 10. `backend/config/c6-shopper-auth-final-freeze-v1.json`;
 11. `backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json`;
 12. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json`;
@@ -26,27 +26,31 @@
 18. addenda vigentes de CAMBIOS, Claude, Pendientes, Academia y tracker;
 19. `AGENTS.md`, PR #7 y HEAD vivo.
 
-## 2. Adjudicación SKIP13
+## 2. Último intento autorizado de adjudicación SKIP13
 
 ```text
-requestCommit=2eef8b70f2bd2d8570a7f3cc117e217851dd6964
-targetHead=9e7b53f8b468970d8ee174e114693074bfc7a67a
-skipProfiles=13
+controlPlaneBranch=release/cxorbia-tya-rc-20260630
+sourceLockHead=c694b75288873b1e3c1b0e70ed5bd86bc225d33e
+workflowInstallCommit=640125d08c76b9f333a02ae78ca538993f200e30
+requestId=c6-skip13-control-plane-20260806-01
+requestCommit=d0e5c5527d001587366097dbb7667fc242029e9d
+profiles=13
 blockingFingerprint=7cc28c78de9bfda01d14
-secondTrigger=0
 ```
 
-Tras 1,227 segundos no se recuperaron runId, jobId, steps, artifact ni status terminal.
+No se recuperaron runId, jobId, steps, artifact, claim status, overall status ni comentario terminal.
 
 ```text
-workflowRunExistence=UNKNOWN_AFTER_20M_OBSERVATION
-providerReadConsumption=UNKNOWN_NO_RUN_JOB_STATUS_OR_CHECKPOINT_EVIDENCE
+workflowRunExistence=NOT_OBSERVED
+providerBoundaryProvenReached=false
+providerReadConsumption=UNKNOWN_NO_RUN_JOB_STATUS_OR_ARTIFACT_EVIDENCE
 adjudicationCompleted=false
 unplannedEffectiveAccessDetermined=false
+secondAttempt=0
 STOP_RETRY=true
 ```
 
-No declarar provider reads cero o consumidos. Cualquier evidencia tardía debe reconciliarse únicamente contra el request commit exacto.
+El workflow y el request temporales fueron retirados en `baf7231b8df7b621c62c57ac1cd966b4a17763e6` y `4a85e7e4d0eb31691d7b77e3551ed7cafabb5984`. No queda request ejecutable en la rama base.
 
 ## 3. Plan Auth congelado
 
@@ -86,12 +90,13 @@ No están confirmados `2026-08`, GT/HN, mutación histórica ni `sourceRevision`
 
 ## 6. Pendiente real
 
-1. reconciliar evidencia tardía de la adjudicación SKIP13 exacta;
-2. cerrar acceso efectivo residual;
-3. reconciliar evidencia terminal HR v4 y confirmar HR viva;
-4. autorización separada para snapshot y repair Auth;
-5. readback, smoke acumulativo multirol, validación humana y rollback;
-6. autorización específica y único cutover.
+1. No reutilizar ninguno de los requests SKIP13 emitidos.
+2. Diagnosticar por un carril source-control read-only distinto por qué los commits del conector no materializan un run observable.
+3. Solo después, solicitar autorización separada para un mecanismo nuevo de adjudicación.
+4. Reconciliar HR v4 y confirmar HR viva.
+5. Autorizar por separado snapshot y repair Auth.
+6. Ejecutar readback, smoke acumulativo multirol, validación humana y rollback.
+7. Autorizar específicamente el único cutover.
 
 ## 7. Estado seguro
 
@@ -99,10 +104,12 @@ No están confirmados `2026-08`, GT/HN, mutación histórica ni `sourceRevision`
 provider read consumption SKIP13=UNKNOWN
 provider writes=0
 HR reads del bloque=0
-Auth/password/membership writes=0
+Auth/password/claims/membership writes=0
 Firestore/Rules/Storage/HR writes=0
 Hosting/Cloud Run deploys=0
 Make/Gemini/payments=0
 merge=false
 production=false
+baseTemporaryWorkflow=false
+baseTemporaryRequest=false
 ```
