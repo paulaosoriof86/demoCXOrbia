@@ -1,0 +1,375 @@
+name: CXOrbia C6 Direct Trusted Runner DEV Deploy Once V2
+
+on:
+  pull_request:
+    types: [synchronize]
+    paths:
+      - 'backend/config/c6-direct-trusted-runner-dev-deploy-request-v2.json'
+
+permissions:
+  contents: read
+  statuses: write
+  id-token: write
+
+concurrency:
+  group: cxorbia-c6-direct-trusted-runner-dev-deploy-once-v2
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  REQUEST_FILE: backend/config/c6-direct-trusted-runner-dev-deploy-request-v2.json
+  CONTRACT_FILE: backend/contracts/c6-direct-trusted-runner-dev-v2.json
+  OUT_DIR: .tmp/c6-direct-trusted-runner-dev-deploy-v2
+  GCP_PROJECT_ID: cxorbia-backend-dev
+  GCP_REGION: us-central1
+  CLOUD_RUN_SERVICE: cxorbia-c6-direct-runner-dev
+  RUNTIME_SA_NAME: cxorbia-c6-runner-dev
+
+jobs:
+  deploy:
+    name: Deploy corrected authenticated technical executor only to DEV
+    if: >-
+      github.event.pull_request.number == 7 &&
+      github.event.pull_request.head.ref == 'docs-tya-v6-v71-audit' &&
+      github.event.pull_request.base.ref == 'release/cxorbia-tya-rc-20260630'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
+    steps:
+      - name: Checkout exact PR head only
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Validate corrected one-shot request and source identity
+        id: request
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs');
+          const {execFileSync}=require('child_process');
+          const p=process.env.REQUEST_FILE;
+          const x=JSON.parse(fs.readFileSync(p,'utf8'));
+          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const falseKeys=['skip13Execution','authReads','authWrites','claimsReads','claimsWrites','membershipReads','membershipWrites','hrReads','hrWrites','firestoreReads','firestoreWrites','rulesWrites','storageReads','storageWrites','providerReads','providerWrites','hostingDeploy','merge','production','make','gemini','payments'];
+          const ok=
+            x.schemaVersion==='cxorbia.c6.direct-trusted-runner.deploy-request.v2' &&
+            x.requestId==='c6-direct-trusted-runner-dev-deploy-20260806-02' &&
+            x.enabled===true && x.consumed===false && x.status==='authorized_execute_once' &&
+            x.authorizedBy==='Paula' && Number(x.allowedDeploys)===1 &&
+            x.repository==='paulaosoriof86/demoCXOrbia' &&
+            x.branch==='docs-tya-v6-v71-audit' && Number(x.pullRequest)===7 &&
+            x.environment==='DEV' && x.providerProject==='cxorbia-backend-dev' &&
+            x.region==='us-central1' && x.service==='cxorbia-c6-direct-runner-dev' &&
+            x.sourceLockMode==='github.event.pull_request.head.sha' &&
+            x.expectedParentHeadSha===parent &&
+            head===process.env.PR_HEAD_SHA &&
+            changed.length===1 && changed[0]===p &&
+            x.scope?.technicalExecutorDeploy===true &&
+            x.scope?.authenticatedInvocation===true &&
+            x.scope?.idempotencyLeaseValidation===true &&
+            x.scope?.sourceLockValidation===true &&
+            x.scope?.rollbackValidation===true &&
+            falseKeys.every(k=>x.safeState?.[k]===false);
+          if(!ok)throw new Error('DIRECT_RUNNER_DEPLOY_REQUEST_V2_INVALID');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`request_id=${x.requestId}\nparent_head=${parent}\nsource_lock=${head}\n`);
+          fs.writeFileSync(process.env.OUT_DIR+'/request-source-safe.json',JSON.stringify({requestId:x.requestId,sourceLock:head,parent,changed,environment:x.environment,service:x.service,allowedDeploys:x.allowedDeploys,safeState:x.safeState},null,2)+'\n');
+          NODE
+
+      - name: Claim the single corrected technical deployment
+        id: claim
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          existing=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${PR_HEAD_SHA}/statuses" --paginate --jq '[.[] | select(.context=="cxorbia/c6-direct-runner-dev-deploy-v2/claim")] | length')
+          if [ "$existing" != '0' ]; then
+            echo 'claimed=false' >> "$GITHUB_OUTPUT"
+            echo 'duplicate=true' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          gh api --method POST \
+            -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${PR_HEAD_SHA}" \
+            -f state='pending' \
+            -f context='cxorbia/c6-direct-runner-dev-deploy-v2/claim' \
+            -f description='CLAIMED_SINGLE_CORRECTED_DEV_DEPLOY' \
+            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+          echo 'claimed=true' >> "$GITHUB_OUTPUT"
+          echo 'duplicate=false' >> "$GITHUB_OUTPUT"
+
+      - name: Stop duplicate before Google Cloud
+        if: steps.claim.outputs.claimed != 'true'
+        run: |
+          echo 'Duplicate corrected deployment prevented before Google Cloud.'
+          exit 2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Run corrected source and syntax gates
+        run: |
+          set -euo pipefail
+          node --check backend/runtime/c6-direct-trusted-runner/server.mjs
+          node --check tools/qa/cxorbia-c6-direct-runner-source-gate-v2.mjs
+          node tools/qa/cxorbia-c6-direct-runner-source-gate-v2.mjs | tee "$OUT_DIR/source-gate.json"
+          grep -q 'PASS_C6_DIRECT_RUNNER_SOURCE_GATE_V2' "$OUT_DIR/source-gate.json"
+          test "$(git rev-parse HEAD)" = "$PR_HEAD_SHA"
+          ! grep -q 'process.env.GITHUB_SHA' .github/workflows/cxorbia-c6-direct-trusted-runner-dev-deploy-once-v2.yml
+
+      - name: Authenticate to Google Cloud DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: cxorbia-backend-dev
+
+      - name: Resolve deployer and isolated runtime identity
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const x=JSON.parse(process.env.EXISTING_DEV_JSON||'{}');
+          if(x.project_id!=='cxorbia-backend-dev'||!x.client_email)throw new Error('DEPLOYER_CREDENTIAL_INVALID');
+          fs.appendFileSync(process.env.GITHUB_ENV,`DEPLOYER_SA_EMAIL=${x.client_email}\nRUNTIME_SA_EMAIL=${process.env.RUNTIME_SA_NAME}@${process.env.GCP_PROJECT_ID}.iam.gserviceaccount.com\n`);
+          NODE
+          if ! gcloud iam service-accounts describe "$RUNTIME_SA_NAME@$GCP_PROJECT_ID.iam.gserviceaccount.com" --project "$GCP_PROJECT_ID" >/dev/null 2>&1; then
+            gcloud iam service-accounts create "$RUNTIME_SA_NAME" \
+              --project "$GCP_PROJECT_ID" \
+              --display-name 'CXOrbia C6 Direct Runner DEV no-provider runtime'
+            echo 'runtimeServiceAccountCreated=true' > "$OUT_DIR/runtime-service-account-state.txt"
+          else
+            echo 'runtimeServiceAccountCreated=false' > "$OUT_DIR/runtime-service-account-state.txt"
+          fi
+          touch "$OUT_DIR/gcp-touched.marker"
+          gcloud iam service-accounts add-iam-policy-binding "$RUNTIME_SA_NAME@$GCP_PROJECT_ID.iam.gserviceaccount.com" \
+            --project "$GCP_PROJECT_ID" \
+            --member "serviceAccount:$DEPLOYER_SA_EMAIL" \
+            --role roles/iam.serviceAccountUser \
+            --quiet >/dev/null
+
+      - name: Capture predeploy state and rollback baseline
+        run: |
+          set -euo pipefail
+          if gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json > "$OUT_DIR/service-before.json" 2>/dev/null; then
+            echo 'serviceExistedBefore=true' > "$OUT_DIR/rollback-mode.txt"
+            gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format='value(status.latestReadyRevisionName)' > "$OUT_DIR/prior-revision.txt"
+            gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format='value(spec.template.spec.containers[0].image)' > "$OUT_DIR/prior-image.txt"
+          else
+            echo 'serviceExistedBefore=false' > "$OUT_DIR/rollback-mode.txt"
+            : > "$OUT_DIR/service-before.json"
+            : > "$OUT_DIR/prior-revision.txt"
+            : > "$OUT_DIR/prior-image.txt"
+          fi
+
+      - name: Build and push exact PR-head image
+        run: |
+          set -o pipefail
+          image_uri="gcr.io/$GCP_PROJECT_ID/$CLOUD_RUN_SERVICE:$PR_HEAD_SHA"
+          echo "IMAGE_URI=$image_uri" >> "$GITHUB_ENV"
+          set +e
+          gcloud builds submit . \
+            --project "$GCP_PROJECT_ID" \
+            --config backend/runtime/c6-direct-trusted-runner/cloudbuild.yaml \
+            --substitutions "_IMAGE=$image_uri" \
+            --quiet 2>&1 | tee "$OUT_DIR/cloud-build.log"
+          code=${PIPESTATUS[0]}
+          echo "$code" > "$OUT_DIR/cloud-build.exit"
+          exit "$code"
+
+      - name: Deploy one private Cloud Run DEV revision
+        run: |
+          set -o pipefail
+          set +e
+          gcloud run deploy "$CLOUD_RUN_SERVICE" \
+            --project "$GCP_PROJECT_ID" \
+            --region "$GCP_REGION" \
+            --image "$IMAGE_URI" \
+            --platform managed \
+            --service-account "$RUNTIME_SA_EMAIL" \
+            --no-allow-unauthenticated \
+            --ingress all \
+            --set-env-vars "CXORBIA_ENVIRONMENT=DEV,CXORBIA_SOURCE_LOCK=$PR_HEAD_SHA,CXORBIA_LEASE_TTL_MS=600000" \
+            --min-instances 0 \
+            --max-instances 1 \
+            --concurrency 1 \
+            --memory 256Mi \
+            --cpu 1 \
+            --timeout 30 \
+            --quiet 2>&1 | tee "$OUT_DIR/cloud-run-deploy.log"
+          code=${PIPESTATUS[0]}
+          echo "$code" > "$OUT_DIR/cloud-run-deploy.exit"
+          if [ "$code" -eq 0 ]; then touch "$OUT_DIR/cloud-run-deployed.marker"; fi
+          exit "$code"
+
+      - name: Grant only deployer authenticated invocation and verify private IAM
+        run: |
+          set -euo pipefail
+          gcloud run services add-iam-policy-binding "$CLOUD_RUN_SERVICE" \
+            --project "$GCP_PROJECT_ID" \
+            --region "$GCP_REGION" \
+            --member "serviceAccount:$DEPLOYER_SA_EMAIL" \
+            --role roles/run.invoker \
+            --quiet >/dev/null
+          gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format='value(status.url)' | tee "$OUT_DIR/service-url.txt"
+          gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json > "$OUT_DIR/service-after.json"
+          gcloud run services get-iam-policy "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json > "$OUT_DIR/service-iam-policy.json"
+          if grep -q 'allUsers\|allAuthenticatedUsers' "$OUT_DIR/service-iam-policy.json"; then
+            echo 'UNAUTHENTICATED_BINDING_DETECTED' >&2
+            exit 2
+          fi
+
+      - name: Validate authentication source lock lease and duplicate rejection
+        run: |
+          set -euo pipefail
+          service_url="$(cat "$OUT_DIR/service-url.txt")"
+          unauth_code=$(curl -sS -o "$OUT_DIR/unauthenticated-response.txt" -w '%{http_code}' "$service_url/health" || true)
+          echo "$unauth_code" > "$OUT_DIR/unauthenticated-status.txt"
+          case "$unauth_code" in 401|403) ;; *) echo "Expected 401/403, got $unauth_code" >&2; exit 2;; esac
+
+          identity_token=$(gcloud auth print-identity-token --audiences="$service_url")
+          curl -fsS -H "Authorization: Bearer $identity_token" "$service_url/health" > "$OUT_DIR/authenticated-health.json"
+          node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/authenticated-health.json','utf8'));if(x.ok!==true||x.environment!=='DEV'||x.sourceLock!==process.env.PR_HEAD_SHA||x.providerBoundaryEnabled!==false||x.providerReads!==0||x.providerWrites!==0)process.exit(2);"
+
+          request_id="c6-direct-technical-v2-${GITHUB_RUN_ID}"
+          cat > "$OUT_DIR/invocation.json" <<EOF
+          {"schemaVersion":"cxorbia.c6.direct-trusted-runner.invoke.v1","requestId":"$request_id","environment":"DEV","operation":"control_plane_self_test","sourceLock":"$PR_HEAD_SHA","dryRun":true,"providerBoundaryRequested":false,"providerReads":false,"providerWrites":false}
+          EOF
+
+          first_code=$(curl -sS -o "$OUT_DIR/first-invocation.json" -w '%{http_code}' \
+            -H "Authorization: Bearer $identity_token" -H 'Content-Type: application/json' \
+            --data-binary @"$OUT_DIR/invocation.json" "$service_url/v1/control-plane/execute")
+          test "$first_code" = '202'
+          node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/first-invocation.json','utf8'));if(x.decision!=='PASS_C6_DIRECT_TRUSTED_RUNNER_TECHNICAL_VALIDATION'||x.sourceLock!==process.env.PR_HEAD_SHA||x.providerBoundaryAllowed!==false||x.providerReads!==0||x.providerWrites!==0||!x.leaseId)process.exit(2);"
+
+          duplicate_code=$(curl -sS -o "$OUT_DIR/duplicate-invocation.json" -w '%{http_code}' \
+            -H "Authorization: Bearer $identity_token" -H 'Content-Type: application/json' \
+            --data-binary @"$OUT_DIR/invocation.json" "$service_url/v1/control-plane/execute")
+          test "$duplicate_code" = '409'
+          node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/duplicate-invocation.json','utf8'));if(x.decision!=='HOLD_C6_DIRECT_RUNNER_DUPLICATE_REJECTED'||x.providerBoundaryAllowed!==false||x.providerReads!==0||x.providerWrites!==0)process.exit(2);"
+
+          node - <<'NODE'
+          const fs=require('fs');
+          const x=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/invocation.json','utf8'));
+          x.requestId=`c6-direct-wrong-lock-v2-${process.env.GITHUB_RUN_ID}`;
+          x.sourceLock='0000000000000000000000000000000000000000';
+          fs.writeFileSync(process.env.OUT_DIR+'/wrong-source-lock-invocation.json',JSON.stringify(x)+'\n');
+          NODE
+          wrong_lock_code=$(curl -sS -o "$OUT_DIR/wrong-source-lock-response.json" -w '%{http_code}' \
+            -H "Authorization: Bearer $identity_token" -H 'Content-Type: application/json' \
+            --data-binary @"$OUT_DIR/wrong-source-lock-invocation.json" "$service_url/v1/control-plane/execute")
+          test "$wrong_lock_code" = '412'
+
+      - name: Verify isolated identity and validate rollback plan
+        run: |
+          set -euo pipefail
+          gcloud projects get-iam-policy "$GCP_PROJECT_ID" \
+            --flatten='bindings[].members' \
+            --filter="bindings.members:serviceAccount:$RUNTIME_SA_EMAIL" \
+            --format=json > "$OUT_DIR/runtime-project-role-bindings.json"
+          node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/runtime-project-role-bindings.json','utf8'));if(Array.isArray(x)&&x.length!==0)process.exit(2);"
+
+          latest_revision=$(gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format='value(status.latestReadyRevisionName)')
+          test -n "$latest_revision"
+          echo "$latest_revision" > "$OUT_DIR/latest-revision.txt"
+          if grep -q 'serviceExistedBefore=true' "$OUT_DIR/rollback-mode.txt"; then
+            prior_revision=$(cat "$OUT_DIR/prior-revision.txt")
+            test -n "$prior_revision"
+            printf '%s\n' \
+              "rollbackType=RESTORE_PRIOR_REVISION_TRAFFIC" \
+              "service=$CLOUD_RUN_SERVICE" \
+              "region=$GCP_REGION" \
+              "priorRevision=$prior_revision" \
+              "validatedCurrentRevision=$latest_revision" \
+              > "$OUT_DIR/rollback-plan.txt"
+          else
+            printf '%s\n' \
+              "rollbackType=DELETE_NEW_DEV_SERVICE_AND_RUNTIME_IDENTITY" \
+              "service=$CLOUD_RUN_SERVICE" \
+              "region=$GCP_REGION" \
+              "runtimeServiceAccount=$RUNTIME_SA_EMAIL" \
+              "validatedCurrentRevision=$latest_revision" \
+              > "$OUT_DIR/rollback-plan.txt"
+          fi
+          printf '%s\n' \
+            '{"decision":"PASS_C6_DIRECT_TRUSTED_RUNNER_DEV_TECHNICAL_DEPLOY_V2","environment":"DEV","authenticatedInvocation":true,"unauthenticatedDenied":true,"sourceLockMatch":true,"idempotencyLease":"acquired","duplicateRejected":true,"rollbackPlanValidated":true,"providerBoundaryAllowed":false,"providerReads":0,"providerWrites":0,"skip13Executed":false,"authReads":0,"hrReads":0,"firestoreReads":0,"hostingDeploy":0,"production":false}' \
+            > "$OUT_DIR/final-status.json"
+
+      - name: Roll back partial infrastructure on failure
+        if: failure() && steps.claim.outputs.claimed == 'true'
+        continue-on-error: true
+        run: |
+          set +e
+          mkdir -p "$OUT_DIR"
+          if [ -f "$OUT_DIR/gcp-touched.marker" ]; then
+            if [ -f "$OUT_DIR/cloud-run-deployed.marker" ]; then
+              if grep -q 'serviceExistedBefore=true' "$OUT_DIR/rollback-mode.txt" 2>/dev/null; then
+                prior_revision=$(cat "$OUT_DIR/prior-revision.txt" 2>/dev/null)
+                if [ -n "$prior_revision" ]; then
+                  gcloud run services update-traffic "$CLOUD_RUN_SERVICE" \
+                    --project "$GCP_PROJECT_ID" --region "$GCP_REGION" \
+                    --to-revisions "$prior_revision=100" --quiet
+                  echo 'rollbackExecuted=restore_prior_revision_traffic' > "$OUT_DIR/rollback-executed.txt"
+                fi
+              else
+                gcloud run services delete "$CLOUD_RUN_SERVICE" \
+                  --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --quiet
+                echo 'rollbackExecuted=delete_new_service' > "$OUT_DIR/rollback-executed.txt"
+              fi
+            fi
+            if grep -q 'runtimeServiceAccountCreated=true' "$OUT_DIR/runtime-service-account-state.txt" 2>/dev/null && ! grep -q 'serviceExistedBefore=true' "$OUT_DIR/rollback-mode.txt" 2>/dev/null; then
+              gcloud iam service-accounts delete "$RUNTIME_SA_NAME@$GCP_PROJECT_ID.iam.gserviceaccount.com" \
+                --project "$GCP_PROJECT_ID" --quiet
+              echo 'runtimeIdentityRollback=deleted' >> "$OUT_DIR/rollback-executed.txt"
+            fi
+          else
+            echo 'rollbackExecuted=not_required_pre_gcp_failure' > "$OUT_DIR/rollback-executed.txt"
+          fi
+          exit 0
+
+      - name: Upload source-safe terminal evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-c6-direct-trusted-runner-dev-v2-${{ github.run_id }}
+          path: ${{ env.OUT_DIR }}
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 14
+
+      - name: Publish terminal statuses
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB_STATE: ${{ job.status }}
+        run: |
+          set -euo pipefail
+          state=failure
+          desc='HOLD_C6_DIRECT_RUNNER_DEV_DEPLOY_V2'
+          if [ "$JOB_STATE" = 'success' ]; then
+            state=success
+            desc='PASS_C6_DIRECT_RUNNER_DEV_TECHNICAL_DEPLOY_V2'
+          fi
+          for context in cxorbia/c6-direct-runner-dev-deploy-v2/overall cxorbia/c6-direct-runner-dev-deploy-v2/claim; do
+            gh api --method POST \
+              -H 'Accept: application/vnd.github+json' \
+              "/repos/${GITHUB_REPOSITORY}/statuses/${PR_HEAD_SHA}" \
+              -f state="$state" -f context="$context" -f description="$desc" \
+              -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+          done
