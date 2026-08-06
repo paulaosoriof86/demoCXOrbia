@@ -1,0 +1,247 @@
+name: CXOrbia C6 SKIP13 Control Plane Once
+
+on:
+  push:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - backend/config/c6-skip13-control-plane-request.json
+
+permissions:
+  contents: write
+  issues: write
+  statuses: write
+
+concurrency:
+  group: cxorbia-c6-skip13-control-plane-once
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  REQUEST_FILE: backend/config/c6-skip13-control-plane-request.json
+  WORKFLOW_FILE: .github/workflows/cxorbia-c6-skip13-control-plane-once.yml
+  SOURCE_BRANCH: docs-tya-v6-v71-audit
+  SOURCE_TOOL: tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly.mjs
+  SOURCE_CONTRACT: backend/contracts/c6-skip13-auth-access-adjudication-v1.json
+  OUT_DIR: .tmp/c6-skip13-auth-access-adjudication
+  PRIVATE_DIR: .tmp/c6-skip13-control-plane-private
+
+jobs:
+  adjudicate-once:
+    name: Execute one source-locked SKIP13 adjudication
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout exact request commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: ${{ github.sha }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate request-only control-plane event
+        id: request
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const cp=require('child_process');
+          const p=process.env.REQUEST_FILE;
+          const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          const head=cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const parent=cp.execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=cp.execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const exactSet=[
+            'cc941934f90032aa48e8','9ed0cdabf3794b7ccf21','3451d618b5d6307b87da',
+            '80d716626b85e14778ea','8aea97650e97902f7616','32e2de62067ab6ecfb7b',
+            'b31bdc0c7514acbe25ba','4a59de15805804cbe398','cfbd0c519e59f40c6239',
+            '540c9e6b71440b393365','c01e0f344901f03e78d2','729eb0480d5ec2266a20',
+            '7cc28c78de9bfda01d14'
+          ].sort();
+          const actual=[...(r.profileFingerprints||[])].sort();
+          const falseKeys=['authWrites','passwordChanges','passwordResets','membershipWrites','firestoreWrites','rulesWrites','storageWrites','hrWrites','deploy','merge','production','make','gemini','payments'];
+          const ok=
+            r.schemaVersion==='cxorbia.c6.skip13-auth-access-adjudication.request.v1' &&
+            r.enabled===true && r.consumed===false && r.status==='authorized_execute_once' &&
+            r.authorizedBy==='Paula' && Number(r.allowedExecutions)===1 &&
+            r.repository==='paulaosoriof86/demoCXOrbia' &&
+            r.branch==='docs-tya-v6-v71-audit' &&
+            r.controlPlaneBranch==='release/cxorbia-tya-rc-20260630' &&
+            Number(r.pullRequest)===7 &&
+            r.controlPlaneTargetHeadSha===parent &&
+            r.targetHeadSha===r.sourceLockHead && /^[a-f0-9]{40}$/.test(r.sourceLockHead||'') &&
+            changed.length===1 && changed[0]===p &&
+            JSON.stringify(actual)===JSON.stringify(exactSet) &&
+            r.blockingProfileFingerprint==='7cc28c78de9bfda01d14' &&
+            JSON.stringify([...(r.blockingCandidateFingerprints||[])].sort())===JSON.stringify(['4e6d26551d11db444bd0','9b2b7ca1bd72c1301d29']) &&
+            r.scope?.auth===true && r.scope?.claims===true && r.scope?.memberships===true &&
+            r.scope?.profileIdIndex===true && r.scope?.hr===false && r.scope?.providerWrites===false &&
+            falseKeys.every(k=>r.safeState?.[k]===false);
+          if(!ok) throw new Error('CONTROL_PLANE_REQUEST_CONTRACT_INVALID');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`source_lock=${r.sourceLockHead}\nrequest_id=${r.requestId}\nhead=${head}\nparent=${parent}\n`);
+          NODE
+
+      - name: Fetch and verify exact audited source
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$SOURCE_BRANCH"
+          test "$(git rev-parse FETCH_HEAD)" = "${{ steps.request.outputs.source_lock }}"
+          test "$(git rev-parse FETCH_HEAD:$SOURCE_TOOL)" = "bed01216bf0a03ccbaaa0c04339c3a4e1e1affbe"
+          test "$(git rev-parse FETCH_HEAD:$SOURCE_CONTRACT)" = "dec851c8fc69753a5306bfe30c1ebb8dd8e945d2"
+          mkdir -p .tmp/c6-skip13-control-plane-source "$OUT_DIR" "$PRIVATE_DIR"
+          git show FETCH_HEAD:"$SOURCE_TOOL" > .tmp/c6-skip13-control-plane-source/adjudicator.mjs
+          git show FETCH_HEAD:"$SOURCE_CONTRACT" > .tmp/c6-skip13-control-plane-source/contract.json
+          node --check .tmp/c6-skip13-control-plane-source/adjudicator.mjs
+
+      - name: Claim the only provider execution
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          existing=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/statuses" --paginate --jq '[.[] | select(.context=="cxorbia/c6-skip13-control-plane/claim")] | length')
+          test "$existing" = '0'
+          gh api --method POST \
+            -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state='pending' \
+            -f context='cxorbia/c6-skip13-control-plane/claim' \
+            -f description='CLAIMED_ONE_LOGICAL_PROVIDER_READ' \
+            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+
+      - name: Install transient Firebase Admin dependency
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0
+
+      - name: Prepare existing clean project credential privately
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const raw=process.env.EXISTING_DEV_JSON||'';
+          let value=null;try{value=JSON.parse(raw);}catch{}
+          if(!(value&&value.type==='service_account'&&value.project_id==='cxorbia-backend-dev'&&value.client_email&&value.private_key))throw new Error('CREDENTIAL_INVALID');
+          fs.mkdirSync(process.env.PRIVATE_DIR,{recursive:true});
+          fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
+          NODE
+
+      - name: Execute exactly one SKIP13 provider read
+        id: execute
+        continue-on-error: true
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/c6-skip13-control-plane-private/credentials.json
+          CXORBIA_TARGET_HEAD: ${{ steps.request.outputs.source_lock }}
+        run: |
+          set +e
+          node .tmp/c6-skip13-control-plane-source/adjudicator.mjs "$REQUEST_FILE"
+          code=$?
+          decision=$(head -n 1 "$OUT_DIR/decision.txt" 2>/dev/null || echo HOLD_C6_SKIP13_ADJUDICATION_NO_DECISION)
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          echo "decision=$decision" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Materialize disabled request evidence
+        if: always()
+        run: |
+          mkdir -p "$OUT_DIR/control-plane"
+          node <<'NODE'
+          const fs=require('fs');
+          const p=process.env.REQUEST_FILE;
+          const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          r.enabled=false;
+          r.allowedExecutions=0;
+          r.status='consumed_or_fail_closed_after_single_run';
+          r.consumed=true;
+          r.disabledAt=new Date().toISOString();
+          r.runId=process.env.GITHUB_RUN_ID;
+          r.requestCommitSha=process.env.GITHUB_SHA;
+          fs.writeFileSync(process.env.OUT_DIR+'/control-plane/request-disabled-source-safe.json',JSON.stringify(r,null,2)+'\n');
+          NODE
+          printf '%s\n' \
+            "runId=${GITHUB_RUN_ID}" \
+            "requestCommit=${GITHUB_SHA}" \
+            "sourceLock=${{ steps.request.outputs.source_lock }}" \
+            "decision=${{ steps.execute.outputs.decision }}" \
+            "exitCode=${{ steps.execute.outputs.exit_code }}" \
+            > "$OUT_DIR/control-plane/execution-summary.txt"
+
+      - name: Capture repository delta evidence
+        if: always()
+        run: |
+          mkdir -p "$OUT_DIR/repository-status"
+          git status --porcelain=v1 > "$OUT_DIR/repository-status/status.txt"
+          git diff --name-status > "$OUT_DIR/repository-status/tracked.txt"
+          git ls-files --others --exclude-standard > "$OUT_DIR/repository-status/untracked.txt"
+
+      - name: Upload source-safe evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-c6-skip13-control-plane-${{ github.run_id }}
+          path: |
+            .tmp/c6-skip13-auth-access-adjudication
+            .tmp/cxorbia-readonly-post-gates-runner
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Publish terminal statuses and PR evidence
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DECISION: ${{ steps.execute.outputs.decision }}
+          EXIT_CODE: ${{ steps.execute.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          state=success
+          desc="${DECISION:-HOLD_C6_SKIP13_NO_DECISION}"
+          if [ "${EXIT_CODE:-999}" != '0' ]; then state=failure; desc='HOLD_C6_SKIP13_ADJUDICATION_TECHNICAL_ERROR'; fi
+          desc=$(printf '%s' "$desc" | cut -c1-140)
+          for context in cxorbia/c6-skip13-control-plane/overall cxorbia/c6-skip13-control-plane/claim; do
+            gh api --method POST \
+              -H 'Accept: application/vnd.github+json' \
+              "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+              -f state="$state" -f context="$context" -f description="$desc" \
+              -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+          done
+          body=$(cat <<EOF
+## C6 SKIP13 CONTROL PLANE — TERMINAL
+
+- Run: ${GITHUB_RUN_ID}
+- Request: ${{ steps.request.outputs.request_id }}
+- Request commit: ${GITHUB_SHA}
+- Source lock: ${{ steps.request.outputs.source_lock }}
+- Decision: ${DECISION:-HOLD_C6_SKIP13_NO_DECISION}
+- Exit code: ${EXIT_CODE:-999}
+- Artifact: cxorbia-c6-skip13-control-plane-${GITHUB_RUN_ID}
+- HR reads: 0
+- Provider writes: 0
+- Deploy/merge/production: 0
+EOF
+)
+          gh api --method POST \
+            -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/issues/7/comments" -f body="$body" >/dev/null
+
+      - name: Remove temporary control-plane files
+        if: always()
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          rm -rf "$PRIVATE_DIR" node_modules
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git rm -f "$REQUEST_FILE" "$WORKFLOW_FILE"
+          git commit -m "cleanup(c6): remove temporary SKIP13 control-plane lane [skip ci]"
+          git push origin HEAD:release/cxorbia-tya-rc-20260630
+
+      - name: Enforce technical result
+        if: always()
+        run: test "${{ steps.execute.outputs.exit_code }}" = "0"
