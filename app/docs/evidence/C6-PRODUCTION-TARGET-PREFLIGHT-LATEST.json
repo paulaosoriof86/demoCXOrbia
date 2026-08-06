@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "cxorbia.c6.production-target-preflight-source-only.v1",
+  "generatedAt": "2026-08-06T19:10:25.716Z",
+  "mode": "SOURCE_ONLY_NO_PROVIDER_NO_DEPLOY",
+  "tool": "tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs",
+  "toolBlobSha": "022fbdca748a4f7b35146a8b67a0d1fa9e3ff067",
+  "execution": {
+    "nodeCheck": "PASS",
+    "exitCode": 2,
+    "expectedFailClosedExit": true
+  },
+  "inputs": {
+    "devRcPath": ".firebaserc",
+    "devFirebasePath": "firebase.json",
+    "prodRcPath": ".firebaserc.prod",
+    "prodFirebasePath": "firebase.prod.json",
+    "devRcBlobSha": "35e381ceb8db2a6143623f42b92de649a10dda40",
+    "devFirebaseBlobSha": "3501332042fc3736d35f88e9ca5befee72589256"
+  },
+  "checks": {
+    "devProjectPresent": true,
+    "devHostingTargetPresent": true,
+    "devHostingSitePresent": true,
+    "devCloudRunServicePresent": true,
+    "devPublicDirectoryIsApp": true,
+    "productionRcPresent": false,
+    "productionFirebasePresent": false
+  },
+  "decision": "HOLD_PRODUCTION_TARGET_UNMATERIALIZED",
+  "dev": {
+    "projectId": "cxorbia-backend-dev",
+    "hostingTarget": "cxorbia-dev",
+    "hostingSite": "cxorbia-backend-dev",
+    "cloudRunService": "cxorbia-live-hr-dev"
+  },
+  "holdReason": "PRODUCTION_CONFIGURATION_FILES_NOT_MATERIALIZED",
+  "safeState": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "merge": false,
+    "production": false
+  }
+}
