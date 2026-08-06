@@ -2,7 +2,7 @@
 
 **Fecha original:** 2026-07-04  
 **Actualización prevalente:** 2026-08-06  
-**Estado:** `C6_AUTH_PLAN_340_FREEZE_PASS__IDEMPOTENCY_PASS__SMOKE_MATRIX_PREPARED__SKIPPED_ACCESS_RISK_HOLD__PRODUCTION_PROMOTION_PASS__LIVE_HR_V4_UNRESOLVED__NO_PRODUCTION`
+**Estado:** `C6_SKIP13_ADJUDICATION_REQUEST_EMITTED__20M_NO_TERMINAL_EVIDENCE__CONSUMPTION_UNKNOWN__STOP_RETRY__AUTH_PLAN_FROZEN__PRODUCTION_PROMOTION_PASS__LIVE_HR_V4_UNRESOLVED__NO_PRODUCTION`
 
 ## 1. Objetivo operativo
 
@@ -31,7 +31,6 @@ Los identificadores actuales se aceptan como producción futura. El contrato no 
 ## 4. Plan Auth congelado
 
 ```text
-sourceHead=df65bb45629588b7906b957551108a3a5c71b763
 rows=340
 uniqueRows=340
 CREATE_AUTH=81
@@ -46,20 +45,30 @@ idempotencyDecision=PASS_PREWRITE_IDEMPOTENCY_CONTRACT
 
 SKIP13 conserva historia, visitas, certificaciones y liquidaciones. No se copiaron filas crudas ni PII al repositorio.
 
-## 5. HOLD de acceso efectivo
+## 5. Adjudicación de acceso SKIP13
+
+Se preparó y emitió un único request read-only:
 
 ```text
-skippedProfiles=13
-multiAuthResidualProfiles=1
+requestCommit=2eef8b70f2bd2d8570a7f3cc117e217851dd6964
+targetHead=9e7b53f8b468970d8ee174e114693074bfc7a67a
+skipProfiles=13
 blockingFingerprint=7cc28c78de9bfda01d14
-providerCandidates=2
-enabledCandidates=2
-emailVerifiedCandidates=2
-unplannedEffectiveAccessProvenAbsent=false
-decision=HOLD_C6_AUTH_PREWRITE_SKIPPED_ACCESS_RISK_UNRESOLVED
+blockingCandidates=2
+secondTrigger=0
 ```
 
-`HOLD=0` en el plan no prueba ausencia de acceso efectivo. Antes de Auth se requiere una adjudicación read-only acotada a los 13 omitidos. No se permite ejecución parcial.
+Tras 1,227 segundos no se recuperaron runId, jobId, steps, artifact ni status terminal.
+
+```text
+workflowRunExistence=UNKNOWN_AFTER_20M_OBSERVATION
+providerReadConsumption=UNKNOWN_NO_RUN_JOB_STATUS_OR_CHECKPOINT_EVIDENCE
+adjudicationCompleted=false
+unplannedEffectiveAccessDetermined=false
+STOP_RETRY=true
+```
+
+`HOLD=0` en el plan no prueba ausencia de acceso efectivo. Auth continúa no ejecutable. No se permite segundo trigger ni ejecución parcial.
 
 ## 6. Snapshot, rollback y smoke
 
@@ -84,9 +93,9 @@ No están confirmados `2026-08`, GT/HN, mutación histórica ni `sourceRevision`
 
 ### Bloque A — Cerrar riesgo SKIP13
 
-1. Ejecutar una única adjudicación read-only de Auth/membership/claims limitada a los 13 fingerprints omitidos.
+1. Reconciliar únicamente evidencia tardía vinculada a `2eef8b70...`.
 2. Confirmar o bloquear acceso efectivo no previsto.
-3. No modificar cuentas ni memberships.
+3. No repetir la lectura ni modificar cuentas, claims o memberships.
 
 ### Bloque B — Cerrar HR v4
 
@@ -108,9 +117,10 @@ Validación humana, rollback final, autorización específica y único deploy/cu
 
 ## 9. Circuit breakers
 
-- No ejecutar Auth mientras el riesgo SKIP13 permanezca HOLD.
-- No emitir segundo request HR sin cierre terminal.
-- No desplegar por efecto del contrato source-only.
+- No ejecutar Auth mientras el acceso SKIP13 no esté determinado.
+- No emitir segundo trigger SKIP13 ni segundo request HR sin cierre terminal.
+- No declarar lectura cero o consumida sin run/job/steps.
+- No desplegar por efecto de contratos source-only.
 - No conectar ni copiar la base legacy.
 - No reabrir 65/65 ni regenerar el plan sin causa probada.
 - No pedir nueva candidata, rama o PR.
@@ -119,8 +129,9 @@ Validación humana, rollback final, autorización específica y único deploy/cu
 ## 10. Estado seguro
 
 ```text
-providerReads=0
+provider read consumption SKIP13=UNKNOWN
 provider writes=0
+HR reads del bloque=0
 Auth/data/HR writes=0
 Hosting/Cloud Run deploys=0
 merge=false
