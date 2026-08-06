@@ -1,55 +1,98 @@
 {
   "schemaVersion": "cxorbia.c6.human-login-shopper-identity-audit.v1",
   "requestId": "c6-shopper-login-collision-classification-review-20260805-01",
-  "enabled": true,
-  "consumed": false,
-  "status": "authorized_execute_once",
+  "enabled": false,
+  "consumed": true,
+  "status": "consumed_hold_stop_retry_after_collision_classification",
   "mode": "source_safe_collision_classification",
   "issuedAt": "2026-08-05T18:56:00-06:00",
+  "consumedAt": "2026-08-05T18:58:00-06:00",
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-05",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "targetHeadSha": "33e02ad1897577aba1570243316bb1659a8a7a64",
+  "requestCommitSha": "ca435f393dd8a2199b08155da8866150225b3019",
   "tenantId": "tya",
   "projectId": "cinepolis",
   "firebaseProjectId": "cxorbia-backend-dev",
   "canonicalIdentityContract": "backend/contracts/c6-shopper-identity-canonicalization-v1.json",
   "providerReads": true,
   "providerWrites": false,
-  "allowedExecutions": 1,
+  "allowedExecutions": 0,
   "sourceStaticDecision": "PASS_READONLY_POST_GATES",
   "sourceStaticRunId": 31061161498,
   "sourceStaticJobId": 92489240097,
   "sourceStaticArtifactId": 8952153534,
   "sourceStaticArtifactDigest": "sha256:ec793ef97bc8c4fd57df6e5b412aa108324dec65a1aa0af3f0622f78d9cf2a64",
+  "auditDecision": "HOLD_C6_SHOPPER_LOGIN_COLLISION_CLASSIFICATION",
+  "auditRunId": 31061262965,
+  "auditJobId": 92489532791,
+  "auditArtifactId": 8952193087,
+  "auditArtifactDigest": "sha256:4eaf9354e4ed15996237af74fcea05c5b99bc2ec97f1be063dc8d8e52f1dc95f",
   "expectedCandidateLoginGroups": 109,
   "expectedCandidateLoginProfiles": 238,
   "expectedMultipleAuthProfiles": 1,
   "expectedPriorIncompleteNames": 3,
   "surnameValidationPolicy": "explicit_or_technical_source_only_no_position_only",
-  "classificationPolicy": {
-    "groupCategories": [
-      "ACTIVE_CANONICAL_WITH_HISTORICAL_PRESERVED",
-      "HISTORICAL_ALIAS",
-      "HISTORICAL_DISTINCT",
-      "DISTINCT_ACTIVE_PEOPLE_SAME_VISIBLE_LOGIN"
-    ],
-    "technicalSources": [
-      "shopperId",
-      "legacy keys",
-      "HR",
-      "visits",
-      "certifications",
-      "liquidations",
-      "credential",
-      "Auth",
-      "claims"
-    ],
-    "dedupeByVisualName": false,
-    "applyDisambiguation": false,
-    "onePrimaryOperationPerProfile": true
+  "observedClassification": {
+    "profilesReviewed": 340,
+    "authUsersReviewed": 110,
+    "credentialRecordsReviewed": 109,
+    "credentialsMapped": 101,
+    "credentialsUnmapped": 8,
+    "hrImportDocsReviewed": 1,
+    "visitsReviewed": 616,
+    "certificationsReviewed": 77,
+    "liquidationsReviewed": 827,
+    "candidateLoginGroups": 109,
+    "candidateLoginProfiles": 238,
+    "groupSizeDistribution": {
+      "2": 94,
+      "3": 11,
+      "4": 3,
+      "5": 1
+    },
+    "resolvedSingleActiveGroups": 39,
+    "resolvedHistoricalOnlyGroups": 0,
+    "resolvedActiveDuplicateGroups": 0,
+    "distinctActiveCollisionGroups": 64,
+    "distinctActiveIdentities": 141,
+    "unresolvedSurnameGroups": 6,
+    "multipleAuthProfiles": 1,
+    "unresolvedMultipleAuthProfiles": 1,
+    "verifiedNameIncompleteActiveProfiles": 83,
+    "verifiedNameIncompleteHistoricalProfiles": 125,
+    "operationCounts": {
+      "CREATE_AUTH": 5,
+      "UPDATE_AUTH": 3,
+      "NO_OP": 45,
+      "HOLD": 162,
+      "PRESERVE_NO_AUTH": 125
+    },
+    "subchangeCounts": {
+      "email": 1,
+      "password": 3,
+      "claims": 1
+    },
+    "planRows": 340,
+    "planDigest": "bb82bbf6f7b2a1335668287dc631fa8de73ba39197f07f4e85e014ee9f41af57"
+  },
+  "disambiguation": {
+    "required": true,
+    "affectedGroups": 64,
+    "affectedActiveIdentities": 141,
+    "alternativesNotApplied": [
+      "VERIFIED_SECOND_SURNAME_SUFFIX",
+      "DETERMINISTIC_TECHNICAL_SUFFIX",
+      "TENANT_MANAGED_EXCEPTION_ALIAS"
+    ]
+  },
+  "diagnosis": {
+    "code": "DISTINCT_ACTIVE_SHOPPERS_SHARE_VISIBLE_NOMBRE_APELLIDO_AND_TECHNICAL_SURNAME_COVERAGE_IS_INCOMPLETE",
+    "detail": "The source-safe classifier resolved 39 groups as one active canonical profile with historical profiles preserved. It proved 64 groups contain multiple technically distinct active identities sharing the same visible nombre.apellido, affecting 141 active identities. Six candidate groups could not be verified under the explicit-or-technical surname rule, 83 active profiles lack a verified technical surname, and the one multiple-Auth profile remains tied on technical score. No disambiguation rule was applied.",
+    "stopReason": "VISIBLE_LOGIN_CLASSIFICATION_HOLDS:64/6/1/83"
   },
   "identityPolicy": {
     "username": "nombre.apellido",
@@ -77,5 +120,6 @@
   "containsPii": false,
   "containsSecrets": false,
   "stopRetryOnFailure": true,
-  "purpose": "Execute exactly one source-safe provider read-only classification of the 109 candidate nombre.apellido groups, one multiple-Auth profile and three prior incomplete names; report only aggregate counts, fingerprints and minimum disambiguation alternatives, and stop before every write or deploy."
+  "nextGate": "TENANT_DECISION_ON_MINIMUM_VISIBLE_LOGIN_DISAMBIGUATION_FOR_64_DISTINCT_ACTIVE_COLLISION_GROUPS_PLUS_TECHNICAL_SURNAME_COMPLETION_AND_MULTI_AUTH_RESOLUTION_BEFORE_ANY_WRITE",
+  "purpose": "Consumed after exactly one source-safe provider read-only collision classification. STOP_RETRY applied with zero Auth, password, membership, Firestore, Rules, Storage, HR, deploy, merge or production write."
 }
