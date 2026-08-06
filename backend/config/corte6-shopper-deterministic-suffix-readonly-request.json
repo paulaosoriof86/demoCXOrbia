@@ -3,7 +3,7 @@
   "requestId": "c6-shopper-deterministic-suffix-readonly-20260805-01",
   "enabled": false,
   "consumed": true,
-  "status": "consumed_hold_stop_retry_after_deterministic_suffix_readonly",
+  "status": "consumed_hold_stop_retry_credential_crosswalk_root_cause",
   "issuedAt": "2026-08-05T19:53:00-06:00",
   "consumedAt": "2026-08-05T20:02:52-06:00",
   "authorizedBy": "Paula",
@@ -25,23 +25,32 @@
   "providerWrites": false,
   "allowedExecutions": 0,
   "sourceStaticDecision": "PASS_C6_DETERMINISTIC_SUFFIX_SOURCE_STATIC",
-  "providerDecision": "HOLD_C6_DETERMINISTIC_SUFFIX_PLAN_STOP_RETRY",
+  "providerDecision": "HOLD_C6_DETERMINISTIC_SUFFIX_CREDENTIAL_CROSSWALK_STOP_RETRY",
   "workflowRunId": 31064458045,
   "workflowJobId": 92499147712,
   "artifactId": 8953330337,
   "artifactDigest": "sha256:dc98e359ec09ee04cf0b9ba49acb4062a789707fe4e34cfadbf977dce10e2c39",
-  "observed": {
+  "sourceRootCause": {
+    "proven": true,
+    "code": "LINKED_SOURCE_TECH_KEYS_NOT_PROPAGATED_TO_RELATION_INDEX",
+    "stableCredentialReference": {
+      "mapped": 101,
+      "unmapped": 8
+    },
+    "observedCredentialMapping": {
+      "mapped": 88,
+      "unmapped": 21
+    },
+    "mappingDrift": 13,
+    "effect": "surname, collision and multi-Auth results are provisional"
+  },
+  "providerObservedProvisional": {
     "profiles": 340,
     "authUsers": 110,
     "credentials": 109,
-    "credentialsMapped": 88,
-    "credentialsUnmapped": 21,
-    "visits": 616,
-    "certifications": 77,
-    "liquidations": 827,
     "sourceSafeSurnameConsensusCompleted": 71,
     "remainingIncompleteActiveSurnames": 12,
-    "collisionGroupsAfterCompletion": 65,
+    "collisionGroups": 65,
     "activeIdentitiesInCollisionGroups": 142,
     "groupsWithUniqueUnsuffixedKeeper": 52,
     "groupsAllSuffixed": 13,
@@ -61,18 +70,8 @@
       "NO_OP": 73,
       "HOLD": 13,
       "PRESERVE_NO_AUTH": 127
-    },
-    "subchangeCounts": {
-      "email": 39,
-      "password": 14,
-      "claims": 38
     }
   },
-  "blockers": [
-    "12 active profiles remain without a source-safe technical surname",
-    "1 multi-Auth profile remains tied after combined technical scoring",
-    "source-safe surname completion exposes 65 collision groups and 142 active identities instead of the prior 64/141 baseline"
-  ],
   "stopRetryApplied": true,
   "automaticRetry": false,
   "authRepairBlocked": true,
@@ -97,5 +96,5 @@
   },
   "containsPii": false,
   "containsSecrets": false,
-  "nextGate": "SOURCE_ONLY_ROOT_FIX_FOR_REMAINING_12_TECHNICAL_SURNAMES_AND_ONE_MULTI_AUTH_TIE_WITHOUT_PROVIDER_RETRY"
+  "nextGate": "SOURCE_ONLY_CREDENTIAL_CROSSWALK_ROOT_FIX_WITH_101_8_PARITY_AND_NO_PROVIDER_READS"
 }
