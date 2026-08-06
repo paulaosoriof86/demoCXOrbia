@@ -1,0 +1,53 @@
+name: Orbit 360 · Control-plane source-only macOS
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/orbit360-source-control-plane-macos-v20260806.yml
+
+permissions:
+  contents: read
+
+jobs:
+  orbit360-source-only:
+    runs-on: macos-14
+    timeout-minutes: 12
+    steps:
+      - name: Checkout Orbit 360 exact HEAD
+        uses: actions/checkout@v4
+        with:
+          repository: paulaosoriof86/orbit360-core
+          ref: addc1cc8b4cad311c5b24e9978c79b5008ab89fd
+          path: orbit360
+          persist-credentials: false
+
+      - name: Validate portable sourcefix
+        shell: bash
+        working-directory: orbit360
+        run: |
+          set -euo pipefail
+          node --check tools/orbit360-run-with-timeout-cross-platform-v20260806.mjs
+          node --check tools/orbit360-test-visual-matrix-cross-runner-source-v20260806.mjs
+          bash -n tools/orbit360-run-visual-matrix-corrected-post-auth-runtime-only-v3-cross-runner-v20260806.sh
+          node tools/orbit360-test-visual-matrix-cross-runner-source-v20260806.mjs
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const file = 'orbit360-platform/runtime-gate-crm-v20260716/visual-matrix-cross-runner-source-test-sanitized-v20260806.json';
+          const value = JSON.parse(fs.readFileSync(file, 'utf8'));
+          const ok = value.status === 'PASS_VISUAL_MATRIX_CROSS_RUNNER_SOURCE'
+            && value.total === 24
+            && value.passed === 24
+            && value.failed === 0
+            && value.priorSignalSafeChecks === 48
+            && value.priorSignalSafePassed === 48
+            && value.secretsRead === false
+            && value.firebaseAccess === false
+            && value.browserExecuted === false
+            && value.deployExecuted === false
+            && value.productionTouched === false
+            && value.ok === true;
+          if (!ok) process.exit(42);
+          console.log('PASS_ORBIT360_CONTROL_PLANE_SOURCE_ONLY_24_PLUS_48');
+          NODE
