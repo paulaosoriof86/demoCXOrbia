@@ -1,20 +1,22 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-06  
-**Estado vivo:** `C6_AUTH_PLAN_340_FREEZE_PASS__IDEMPOTENCY_PASS__SMOKE_MATRIX_PREPARED__SKIPPED_ACCESS_RISK_HOLD__PRODUCTION_PROMOTION_PASS__LIVE_HR_V4_UNRESOLVED__NO_PRODUCTION`
+**Estado vivo:** `C6_SKIP13_ADJUDICATION_REQUEST_EMITTED__20M_NO_TERMINAL_EVIDENCE__CONSUMPTION_UNKNOWN__STOP_RETRY__AUTH_PLAN_FROZEN__PRODUCTION_PROMOTION_PASS__LIVE_HR_V4_UNRESOLVED__NO_PRODUCTION`
 
 ## 1. Fuente de verdad
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-3. `app/docs/SOURCE-LOCK-C6-AUTH-SMOKE-FINAL-PREPARATION-HOLD-20260806.md`;
-4. `app/docs/evidence/C6-AUTH-SMOKE-FINAL-PREPARATION-LATEST.json`;
-5. `backend/config/c6-shopper-auth-final-freeze-v1.json`;
-6. `backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json`;
-7. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json`;
-8. `app/docs/SOURCE-LOCK-C6-PRODUCTION-PROMOTION-PASS-20260806.md`;
-9. `app/docs/SOURCE-LOCK-C6-LIVE-HR-V4-REQUEST-30M-NO-RUN-EVIDENCE-20260806.md`;
-10. PR #7 y HEAD vivo.
+3. `app/docs/SOURCE-LOCK-C6-SKIP13-AUTH-ACCESS-ADJUDICATION-20M-NO-RUN-EVIDENCE-20260806.md`;
+4. `app/docs/evidence/C6-SKIP13-AUTH-ACCESS-ADJUDICATION-20M-NO-RUN-EVIDENCE-LATEST.json`;
+5. `backend/config/c6-skip13-auth-access-adjudication-request.json`;
+6. `app/docs/SOURCE-LOCK-C6-AUTH-SMOKE-FINAL-PREPARATION-HOLD-20260806.md`;
+7. `backend/config/c6-shopper-auth-final-freeze-v1.json`;
+8. `backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json`;
+9. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json`;
+10. `app/docs/SOURCE-LOCK-C6-PRODUCTION-PROMOTION-PASS-20260806.md`;
+11. `app/docs/SOURCE-LOCK-C6-LIVE-HR-V4-REQUEST-30M-NO-RUN-EVIDENCE-20260806.md`;
+12. PR #7 y HEAD vivo.
 
 ## 2. Cerrado y protegido
 
@@ -29,18 +31,30 @@
 - estrategia PROD `PROMOTE_EXISTING_CLEAN_PROJECT` PASS;
 - request HR v4 sin segundo trigger.
 
-## 3. P0 Auth actual
+## 3. P0 SKIP13 actual
+
+La adjudicación read-only se preparó y solicitó una única vez:
 
 ```text
-decision=HOLD_C6_AUTH_PREWRITE_SKIPPED_ACCESS_RISK_UNRESOLVED
+requestCommit=2eef8b70f2bd2d8570a7f3cc117e217851dd6964
+targetHead=9e7b53f8b468970d8ee174e114693074bfc7a67a
+skipProfiles=13
 blockingFingerprint=7cc28c78de9bfda01d14
-providerCandidates=2
-enabledCandidates=2
-emailVerifiedCandidates=2
-unplannedEffectiveAccessProvenAbsent=false
+blockingCandidates=2
+secondTrigger=0
 ```
 
-Siguiente bloque exacto: una adjudicación completamente read-only de Auth, memberships y claims limitada a los 13 fingerprints SKIP13. No autoriza creación, actualización, eliminación, contraseña o membership writes.
+Después de 1,227 segundos:
+
+```text
+workflowRunExistence=UNKNOWN_AFTER_20M_OBSERVATION
+providerReadConsumption=UNKNOWN_NO_RUN_JOB_STATUS_OR_CHECKPOINT_EVIDENCE
+adjudicationCompleted=false
+unplannedEffectiveAccessDetermined=false
+STOP_RETRY=true
+```
+
+No se recuperaron runId, jobId, steps, artifact ni status terminal. No declarar lectura cero o consumida y no emitir otro trigger.
 
 ## 4. Plan Auth preservado
 
@@ -54,7 +68,7 @@ PRESERVE_NO_AUTH=140
 planDigest=6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b
 ```
 
-No ejecutar hasta cerrar el P0 de acceso omitido y obtener autorización separada para snapshot/writes.
+No ejecutar hasta determinar el acceso efectivo de SKIP13 y obtener autorización separada para snapshot/writes.
 
 ## 5. HR v4 separado
 
@@ -69,18 +83,19 @@ No están confirmados `2026-08`, GT/HN, historia ni `sourceRevision`.
 
 ## 6. Orden hacia producción
 
-1. adjudicar SKIP13 read-only;
-2. reconciliar HR v4 y confirmar HR viva;
-3. autorizar snapshot y repair Auth;
-4. ejecutar idempotencia, readback y rollback;
-5. ejecutar smoke acumulativo multirol;
-6. validación humana;
-7. autorización específica y único cutover.
+1. reconciliar exclusivamente evidencia tardía de `2eef8b70...`;
+2. determinar acceso efectivo residual SKIP13;
+3. reconciliar HR v4 y confirmar HR viva;
+4. autorizar snapshot y repair Auth;
+5. ejecutar idempotencia, readback y rollback;
+6. ejecutar smoke acumulativo multirol;
+7. validación humana;
+8. autorización específica y único cutover.
 
 ## 7. No hacer
 
-- no ejecutar Auth mientras SKIP13 permanezca HOLD;
-- no emitir segundo trigger HR sin cierre terminal;
+- no ejecutar Auth mientras SKIP13 siga sin determinación;
+- no emitir segundo trigger SKIP13 ni HR sin cierre terminal;
 - no crear otro proyecto PROD;
 - no conectar ni copiar la base legacy;
 - no reabrir 65/65 ni regenerar el plan sin causa probada;
@@ -94,7 +109,9 @@ PDF con gráficas, presentación Excel y mejoras no bloqueantes permanecen docum
 ## 9. Seguridad
 
 ```text
-providerReads=0
+provider read consumption SKIP13=UNKNOWN
+provider writes=0
+HR reads del bloque=0
 HR/Firestore/Auth/Rules/Storage writes=0
 Hosting/Cloud Run deploys=0
 merge=false
