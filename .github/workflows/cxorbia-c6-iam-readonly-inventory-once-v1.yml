@@ -1,0 +1,225 @@
+name: CXOrbia C6 IAM Readonly Inventory Once V1
+
+on:
+  pull_request:
+    types: [synchronize]
+    paths:
+      - 'backend/config/c6-iam-readonly-inventory-request-v1.json'
+
+permissions:
+  contents: read
+  statuses: write
+  id-token: write
+
+concurrency:
+  group: cxorbia-c6-iam-readonly-inventory-once-v1
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  REQUEST_FILE: backend/config/c6-iam-readonly-inventory-request-v1.json
+  OUT_DIR: .tmp/c6-iam-readonly-inventory-v1
+  GCP_PROJECT_ID: cxorbia-backend-dev
+  PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
+jobs:
+  inventory:
+    name: Inventory service accounts and project bindings read-only
+    if: >-
+      github.event.pull_request.number == 7 &&
+      github.event.pull_request.head.ref == 'docs-tya-v6-v71-audit' &&
+      github.event.pull_request.base.ref == 'release/cxorbia-tya-rc-20260630'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Validate one-shot IAM read-only request
+        id: request
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs');
+          const {execFileSync}=require('child_process');
+          const p=process.env.REQUEST_FILE;
+          const x=JSON.parse(fs.readFileSync(p,'utf8'));
+          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const ok=
+            x.schemaVersion==='cxorbia.c6.iam-readonly-inventory.request.v1' &&
+            x.requestId==='c6-iam-readonly-inventory-20260806-01' &&
+            x.enabled===true && x.consumed===false && x.status==='authorized_execute_once' &&
+            x.authorizedBy==='Paula' && Number(x.allowedExecutions)===1 &&
+            x.repository==='paulaosoriof86/demoCXOrbia' &&
+            x.branch==='docs-tya-v6-v71-audit' && Number(x.pullRequest)===7 &&
+            x.environment==='DEV' && x.providerProject==='cxorbia-backend-dev' &&
+            x.sourceLockMode==='github.event.pull_request.head.sha' &&
+            x.expectedParentHeadSha===parent && head===process.env.PR_HEAD_SHA &&
+            changed.length===1 && changed[0]===p &&
+            x.scope?.serviceAccountInventory===true &&
+            x.scope?.projectIamBindings===true &&
+            x.scope?.serviceAccountIamPolicies===true &&
+            x.scope?.classification===true &&
+            x.safeState?.iamWrites===false && x.safeState?.deploy===false &&
+            x.safeState?.providerReads===false && x.safeState?.providerWrites===false &&
+            x.safeState?.skip13Execution===false && x.safeState?.merge===false &&
+            x.safeState?.production===false;
+          if(!ok) throw new Error('IAM_READONLY_REQUEST_INVALID');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`request_id=${x.requestId}\nsource_lock=${head}\nparent_head=${parent}\n`);
+          fs.writeFileSync(process.env.OUT_DIR+'/request-source-safe.json',JSON.stringify({requestId:x.requestId,sourceLock:head,parent,changed,scope:x.scope,safeState:x.safeState},null,2)+'\n');
+          NODE
+
+      - name: Claim the single read-only inventory
+        id: claim
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          existing=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${PR_HEAD_SHA}/statuses" --paginate --jq '[.[] | select(.context=="cxorbia/c6-iam-readonly-inventory-v1/claim")] | length')
+          if [ "$existing" != '0' ]; then
+            echo 'claimed=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${PR_HEAD_SHA}" \
+            -f state='pending' \
+            -f context='cxorbia/c6-iam-readonly-inventory-v1/claim' \
+            -f description='CLAIMED_SINGLE_IAM_READONLY_INVENTORY' \
+            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+          echo 'claimed=true' >> "$GITHUB_OUTPUT"
+
+      - name: Stop duplicate before Google Cloud
+        if: steps.claim.outputs.claimed != 'true'
+        run: exit 2
+
+      - name: Authenticate to Google Cloud DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: cxorbia-backend-dev
+
+      - name: Read IAM inventory only
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT_DIR/service-account-policies"
+          gcloud iam service-accounts list \
+            --project "$GCP_PROJECT_ID" \
+            --format=json > "$OUT_DIR/service-accounts.json"
+          gcloud projects get-iam-policy "$GCP_PROJECT_ID" \
+            --format=json > "$OUT_DIR/project-iam-policy.json"
+          node <<'NODE'
+          const fs=require('fs');
+          const {execFileSync}=require('child_process');
+          const accounts=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/service-accounts.json','utf8'));
+          for (const account of accounts) {
+            const email=String(account.email||'');
+            if(!email) throw new Error('SERVICE_ACCOUNT_EMAIL_MISSING');
+            const safe=email.replace(/[^a-zA-Z0-9._-]+/g,'_');
+            const out=execFileSync('gcloud',['iam','service-accounts','get-iam-policy',email,'--project',process.env.GCP_PROJECT_ID,'--format=json'],{encoding:'utf8'});
+            fs.writeFileSync(process.env.OUT_DIR+'/service-account-policies/'+safe+'.json',out);
+          }
+          NODE
+
+      - name: Classify reusable identity candidates
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const crypto=require('crypto');
+          const out=process.env.OUT_DIR;
+          const accounts=JSON.parse(fs.readFileSync(out+'/service-accounts.json','utf8'));
+          const projectPolicy=JSON.parse(fs.readFileSync(out+'/project-iam-policy.json','utf8'));
+          const bindings=Array.isArray(projectPolicy.bindings)?projectPolicy.bindings:[];
+          const rolesByMember=new Map();
+          for(const binding of bindings){
+            for(const member of binding.members||[]){
+              if(!rolesByMember.has(member)) rolesByMember.set(member,[]);
+              rolesByMember.get(member).push(binding.role);
+            }
+          }
+          const systemPatterns=[/firebase-adminsdk/i,/@appspot\.gserviceaccount\.com$/i,/@developer\.gserviceaccount\.com$/i,/@cloudservices\.gserviceaccount\.com$/i,/^service-/i,/gcp-sa-/i];
+          const broadPrincipal=/^(allUsers|allAuthenticatedUsers)$/i;
+          const rows=[];
+          for(const account of accounts){
+            const email=String(account.email||'');
+            const member='serviceAccount:'+email;
+            const projectRoles=[...(rolesByMember.get(member)||[])].sort();
+            const safe=email.replace(/[^a-zA-Z0-9._-]+/g,'_');
+            const saPolicy=JSON.parse(fs.readFileSync(out+'/service-account-policies/'+safe+'.json','utf8'));
+            const saBindings=Array.isArray(saPolicy.bindings)?saPolicy.bindings:[];
+            const broadAccountPolicy=saBindings.some(b=>(b.members||[]).some(m=>broadPrincipal.test(m)));
+            const systemManaged=systemPatterns.some(r=>r.test(email));
+            const disabled=account.disabled===true;
+            const reusable=!disabled && !systemManaged && projectRoles.length===0 && !broadAccountPolicy;
+            const fingerprintInput={email,uniqueId:String(account.uniqueId||''),disabled,projectRoles,serviceAccountIamPolicy:saBindings};
+            const fingerprint=crypto.createHash('sha256').update(JSON.stringify(fingerprintInput)).digest('hex');
+            rows.push({email,displayName:account.displayName||'',uniqueId:String(account.uniqueId||''),disabled,systemManaged,projectRoles,serviceAccountIamPolicy:saBindings,broadAccountPolicy,reusable,fingerprint});
+          }
+          rows.sort((a,b)=>a.email.localeCompare(b.email));
+          const candidates=rows.filter(r=>r.reusable);
+          const decision=candidates.length?'PASS_REUSABLE_IDENTITY_CANDIDATE_FOUND':'ADMIN_IDENTITY_CREATION_REQUIRED';
+          const result={
+            schemaVersion:'cxorbia.c6.iam-readonly-inventory.result.v1',
+            project:process.env.GCP_PROJECT_ID,
+            sourceLock:process.env.PR_HEAD_SHA,
+            decision,
+            accountCount:rows.length,
+            candidateCount:candidates.length,
+            candidates:candidates.map(c=>({email:c.email,uniqueId:c.uniqueId,fingerprint:c.fingerprint,projectRoles:c.projectRoles,serviceAccountIamPolicy:c.serviceAccountIamPolicy})),
+            accounts:rows,
+            classificationContract:{
+              disabledMustBeFalse:true,
+              systemManagedExcluded:true,
+              directProjectRolesMustBeEmpty:true,
+              broadAccountPolicyForbidden:true,
+              inheritedOrgFolderBindingsAssessed:false,
+              providerDataReads:0,
+              iamWrites:0
+            },
+            safeState:{iamWrites:0,deploys:0,providerReads:0,providerWrites:0,skip13Executed:false,merge:false,production:false}
+          };
+          fs.writeFileSync(out+'/iam-inventory-classification.json',JSON.stringify(result,null,2)+'\n');
+          fs.writeFileSync(out+'/decision.txt',decision+'\n');
+          process.stdout.write(JSON.stringify({decision,accountCount:rows.length,candidateCount:candidates.length,safeState:result.safeState},null,2)+'\n');
+          NODE
+
+      - name: Upload terminal evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-c6-iam-readonly-inventory-v1-${{ github.run_id }}
+          path: ${{ env.OUT_DIR }}
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 14
+
+      - name: Publish terminal statuses
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB_STATE: ${{ job.status }}
+        run: |
+          set -euo pipefail
+          state=failure
+          desc='HOLD_C6_IAM_READONLY_INVENTORY_V1'
+          if [ "$JOB_STATE" = 'success' ]; then state=success; desc='PASS_C6_IAM_READONLY_INVENTORY_V1'; fi
+          for context in cxorbia/c6-iam-readonly-inventory-v1/overall cxorbia/c6-iam-readonly-inventory-v1/claim; do
+            gh api --method POST -H 'Accept: application/vnd.github+json' \
+              "/repos/${GITHUB_REPOSITORY}/statuses/${PR_HEAD_SHA}" \
+              -f state="$state" -f context="$context" -f description="$desc" \
+              -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+          done
