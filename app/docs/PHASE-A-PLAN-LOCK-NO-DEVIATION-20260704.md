@@ -2,11 +2,11 @@
 
 **Fecha original:** 2026-07-04  
 **Actualización prevalente:** 2026-08-06  
-**Estado:** `C6_LIVE_HR_V3_CONTROL_PLANE_DIAGNOSIS_INCONCLUSIVE__PROVIDER_BOUNDARY_NOT_PROVEN__STOP_RETRY__IDENTITY_HOLD_0__NO_PRODUCTION`
+**Estado:** `C6_LIVE_HR_RUN_REGISTRATION_PROVEN__V2_V3_CANCELLED_BEFORE_STEPS__PROVIDER_READS_0_PROVEN__DIAGNOSTIC_LOOP_CLOSED__IDENTITY_HOLD_0__NO_PRODUCTION`
 
 ## 1. Objetivo operativo
 
-Cerrar una única baseline acumulativa sobre `docs-tya-v6-v71-audit` y llevar Phase A a producción sin reabrir módulos preservados, sin candidata paralela y sin sustituir HR viva por snapshots o datos fijados.
+Cerrar una única baseline acumulativa sobre `docs-tya-v6-v71-audit` y llevar Phase A a producción sin reabrir módulos preservados, crear carriles paralelos ni sustituir HR viva por snapshots o datos fijados.
 
 ## 2. Preservado
 
@@ -33,69 +33,60 @@ PRESERVE_NO_AUTH=140
 
 SKIP13 permanece cerrado con historia preservada.
 
-## 4. Autoridad HR viva
+## 4. Causa raíz del control-plane HR
 
-Metadata provider, periodo calendario dinámico, registry last-known-good, revisión común, mutación histórica y planner sin conteos fijos permanecen como contrato vigente.
-
-## 5. Request v3 y diagnóstico
+Los requests v2 y v3 sí produjeron runs. Los dos jobs fueron cancelados antes de ejecutar cualquier step:
 
 ```text
-requestCommit=d62dbae9b10b0650c2940f4b2bf7d456cb34fc83
-WORKFLOW_STARTED_PROVIDER_READS_0=NO OBSERVADO
-PROVIDER_READ_BOUNDARY_ENTERED_MAX1=NO OBSERVADO
-run/check suite/job localizado=false
-providerBoundaryProvenReached=false
-providerReadConsumption=UNKNOWN_NO_CHECKPOINT_EVIDENCE
-STOP_RETRY=true
+v2 run=31117638647 job=92671263961 cancelled steps=0 providerReads=0 PROVEN
+v3 run=31123402722 job=92688738677 cancelled steps=0 providerReads=0 PROVEN
 ```
 
-La existencia del run sigue inconclusa porque el listado disponible no cubre eventos `push`. No existe evidencia observable de frontera provider alcanzada. No inferir `providerReads=0` ni lectura consumida.
+Por tanto quedan cerradas las dudas sobre registro del workflow, trigger `push`, rama y path. La ausencia del status inicial no significaba ausencia de run: ese status depende de un runner que nunca empezó a ejecutar steps.
 
-## 6. Cadena única restante
+Se agregó un clasificador determinístico de run/job/steps para impedir que esta falsa inferencia vuelva a generar rondas de autorización.
 
-### Bloque A — Gate source-only de Actions
+## 5. Cadena única restante
 
-1. Comprobar reconocimiento y habilitación del workflow.
-2. Verificar que GitHub acepta su definición y trigger sin tocar el request.
-3. Cero provider calls, HR o data writes.
-4. Documentar causa raíz reproducible.
+### Bloque A — Una lectura HR viva
 
-### Bloque B — Nueva lectura HR
+Con autorización fresca separada:
 
-Solo con causa raíz cerrada y autorización fresca separada:
+1. emitir un único request ligado al HEAD exacto;
+2. observar run, job, steps y journal;
+3. confirmar metadata/autodiscovery;
+4. confirmar `2026-08`, tabs GT/HN y conteos vivos;
+5. validar mutación histórica y `sourceRevision` transversal;
+6. cero writes, deploy, merge o producción.
 
-1. una única ejecución lógica read-only;
-2. checkpoints observables antes y después de provider;
-3. confirmar `2026-08`, GT/HN y conteos vivos;
-4. validar mutación histórica y `sourceRevision` transversal;
-5. reconciliar por `visitId/hrRowId`, no por recarga ciega.
+No se reabre el diagnóstico de reconocimiento de GitHub Actions. Si el job vuelve a cancelar con cero steps, se clasifica de inmediato y se detiene sin nuevas rondas metodológicas.
 
-### Bloque C — Auth y validación acumulativa
+### Bloque B — Auth y validación acumulativa
 
 1. Materializar plan Auth SKIP13 con `HOLD=0`.
 2. Ejecutar únicamente con autorización separada, snapshot, idempotencia, readback y rollback.
 3. Smoke Admin/Operaciones, Shopper y Cliente.
 4. Tres recargas, nueva pestaña y estabilidad.
 
-### Bloque D — Cutover
+### Bloque C — Cutover
 
 Source lock, rollback probado, smoke integral, autorización específica y único cutover.
 
-## 7. Circuit breakers
+## 6. Circuit breakers
 
-- No tocar ni reintentar el request v3.
-- No afirmar consumo cero.
 - No reabrir SKIP13 o 65/65.
+- No volver a interpretar ausencia de status como ausencia de run.
 - No pedir nueva candidata, rama o PR.
 - No ejecutar Auth sin gate separado.
 - No hardcodear periodos o conteos HR.
 - No repetir import histórico por conteo.
+- No convertir la anotación externa no recuperada en otra cadena de diagnóstico previa a la siguiente lectura.
 
-## 8. Estado seguro
+## 7. Estado seguro
 
 ```text
 nuevo trigger=0
-provider reads por diagnóstico=0
+provider reads del bloque=0
 provider writes=0
 Auth/data/HR writes=0
 Hosting/Cloud Run deploys=0
