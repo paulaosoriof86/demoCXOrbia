@@ -1,0 +1,68 @@
+name: CXOrbia C6 Equivalent Universe Tooling False Positive Fix
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - backend/config/corte6-equivalent-universe-tooling-fix-request.json
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 5
+          ref: docs-tya-v6-v71-audit
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate and apply tooling-only correction
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const {execFileSync}=require('child_process');
+          const requestPath='backend/config/corte6-equivalent-universe-tooling-fix-request.json';
+          const request=JSON.parse(fs.readFileSync(requestPath,'utf8'));
+          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          if(!(request.enabled===true&&request.consumed===false&&request.targetHeadSha===parent&&changed.length===1&&changed[0]===requestPath))throw new Error('tooling_fix_authorization_invalid');
+          const patcherPath='tools/qa/cxorbia-c6-shopper-equivalent-universe-integration-source-only.mjs';
+          let source=fs.readFileSync(patcherPath,'utf8');
+          const before="const forbidden = ['firebase-admin','GOOGLE_APPLICATION_CREDENTIALS','listAllUsers(','collectionGroup(','passwordSignInEmail('];";
+          const after="const forbidden = ['firebase' + '-admin','GOOGLE_' + 'APPLICATION_CREDENTIALS','listAll' + 'Users(','collection' + 'Group(','passwordSignIn' + 'Email('];";
+          if(source.split(before).length-1!==1)throw new Error('tooling_fix_target_not_unique');
+          source=source.replace(before,after);
+          fs.writeFileSync(patcherPath,source,'utf8');
+          request.enabled=false;
+          request.consumed=true;
+          request.status='consumed_tooling_false_positive_fixed';
+          request.consumedAt=new Date().toISOString();
+          request.result={providerReads:0,providerWrites:0,sourceApplied:false,correction:'split_forbidden_literals_in_patcher_self_check'};
+          fs.writeFileSync(requestPath,JSON.stringify(request,null,2)+'\n','utf8');
+          NODE
+          cat > .github/workflows/cxorbia-c6-equivalent-universe-tooling-fix.yml <<'YAML'
+          name: CXOrbia C6 Equivalent Universe Tooling Fix — Frozen
+          on:
+            push:
+              branches: [docs-tya-v6-v71-audit]
+              paths: [backend/config/corte6-equivalent-universe-tooling-fix-request-retired.json]
+          permissions:
+            contents: read
+          jobs:
+            frozen:
+              runs-on: ubuntu-24.04
+              steps:
+                - run: echo frozen
+          YAML
+          git config user.name 'cxorbia-source-only-bot'
+          git config user.email 'cxorbia-source-only-bot@users.noreply.github.com'
+          git add tools/qa/cxorbia-c6-shopper-equivalent-universe-integration-source-only.mjs backend/config/corte6-equivalent-universe-tooling-fix-request.json .github/workflows/cxorbia-c6-equivalent-universe-tooling-fix.yml
+          git commit -m 'fix(c6): correct source-only privacy gate false positive'
+          git push origin HEAD:docs-tya-v6-v71-audit
