@@ -144,13 +144,13 @@
     },
     {
       "path": "tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs",
-      "gitBlob": "fd4969858bbc6ade6bc69d0a6ee40dfca70488d3",
+      "gitBlob": "5cfbdcc5d3eea719eded3b31e06823a500c6109a",
       "authority": "C6_SHOPPER_IDENTITY_SOURCE_SAFE_RESOLUTION_AUTHORIZED_20260805",
       "decision": "GATE_CENSUS_AND_RESOLUTION_DISPATCH"
     },
     {
       "path": "tools/qa/cxorbia-c6-shopper-identity-resolution-review.mjs",
-      "gitBlob": "f4c1b0c778ba8395b7553100c4f08481cd3f57c1",
+      "gitBlob": "6ca283662a84bdf4b99eb19cfd8325d33a26dd7b",
       "authority": "C6_SHOPPER_IDENTITY_SOURCE_SAFE_RESOLUTION_AUTHORIZED_20260805",
       "decision": "HOLD_RESOLVER_CANONICAL_NAME_BASIS_TOO_RESTRICTIVE"
     },
