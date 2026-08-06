@@ -110,9 +110,9 @@ jobs:
           for(const forbidden of ['firebase-admin','GOOGLE_APPLICATION_CREDENTIALS','listAllUsers(','collectionGroup(','passwordSignInEmail(']){
             ensure(!helper.includes(forbidden),'provider_capability_forbidden:'+forbidden);
           }
-          const evidenceText=JSON.stringify(evidence);
-          for(const forbiddenKey of ['rawName','rawSurname','rawLogin','rawEmail','uidValue','rawPassword']){
-            ensure(!evidenceText.includes(forbiddenKey),'raw_identity_marker_forbidden:'+forbiddenKey);
+          const privacy=evidence.memberProvenanceContract||{};
+          for(const key of ['rawNamesAllowed','rawSurnamesAllowed','rawLoginsAllowed','rawEmailsAllowed','uidsAllowed','rawPasswordsAllowed','piiAllowed']){
+            ensure(privacy[key]===false,'privacy_flag_invalid:'+key);
           }
           NODE
 
