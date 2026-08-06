@@ -2,77 +2,98 @@
 
 **Fecha:** 2026-08-06  
 **Estado:** ACTIVO Y RECONCILIADO  
-**Estado vivo:** `C6_CONNECTOR_ACTIONS_NO_RUN_DIAGNOSTIC__ROOT_CAUSE_NOT_PROVEN__OBSERVABILITY_GAP_PROVEN__STOP_RETRY__AUTH_PLAN_FROZEN__NO_PROVIDER__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_GITHUB_ACTIONS_OUTAGE_ROOT_CAUSE_PROVEN__WEBHOOK_THROTTLING__CONTROL_PLANE_V2_PREPARED__REQUEST_DISABLED__AUTH_PLAN_FROZEN__NO_PROVIDER__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Orden de prevalencia
 
 1. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `app/docs/SOURCE-LOCK-C6-CONNECTOR-ACTIONS-NO-RUN-DIAGNOSTIC-STOP-RETRY-20260806.md`;
-3. `app/docs/SOURCE-LOCK-C6-BASE-CONTROL-PLANE-NO-RUN-FAIL-CLOSED-20260806.md`;
-4. `app/docs/SOURCE-LOCK-C6-PR7-MERGEABILITY-PASS-SKIP13-CONTROL-PLANE-HOLD-20260806.md`;
-5. `backend/config/c6-skip13-auth-access-adjudication-request.json` — deshabilitado en la rama viva;
-6. `backend/contracts/c6-skip13-auth-access-adjudication-v1.json`;
-7. `tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly.mjs`;
-8. `.github/workflows/cxorbia-c6-skip13-auth-access-adjudication-readonly.yml`;
-9. `app/docs/SOURCE-LOCK-C6-AUTH-SMOKE-FINAL-PREPARATION-HOLD-20260806.md`;
-10. `backend/config/c6-shopper-auth-final-freeze-v1.json`;
-11. `backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json`;
-12. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json`;
-13. `app/docs/SOURCE-LOCK-C6-PRODUCTION-PROMOTION-PASS-20260806.md`;
-14. `backend/config/cxorbia-production-promotion-contract.json`;
-15. `app/docs/SOURCE-LOCK-C6-LIVE-HR-V4-REQUEST-30M-NO-RUN-EVIDENCE-20260806.md`;
-16. `.github/cxorbia-firebase-requests/live-hr-current-reconcile.json`;
-17. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-18. addenda vigentes de CAMBIOS, Claude, Pendientes, Academia y tracker;
-19. `AGENTS.md`, PR #7 y HEAD vivo.
+2. `app/docs/SOURCE-LOCK-C6-GITHUB-ACTIONS-OUTAGE-ROOT-CAUSE-AND-FAILOVER-20260806.md`;
+3. `backend/contracts/c6-execution-control-plane-v2.json`;
+4. `tools/qa/cxorbia-c6-control-plane-preflight.mjs`;
+5. `app/docs/SOURCE-LOCK-C6-CONNECTOR-ACTIONS-NO-RUN-DIAGNOSTIC-STOP-RETRY-20260806.md`;
+6. `app/docs/SOURCE-LOCK-C6-BASE-CONTROL-PLANE-NO-RUN-FAIL-CLOSED-20260806.md`;
+7. `backend/config/c6-skip13-auth-access-adjudication-request.json` — deshabilitado;
+8. `backend/contracts/c6-skip13-auth-access-adjudication-v1.json`;
+9. `tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly.mjs`;
+10. `.github/workflows/cxorbia-c6-skip13-auth-access-adjudication-readonly.yml`;
+11. `app/docs/SOURCE-LOCK-C6-AUTH-SMOKE-FINAL-PREPARATION-HOLD-20260806.md`;
+12. `backend/config/c6-shopper-auth-final-freeze-v1.json`;
+13. `backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json`;
+14. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json`;
+15. `app/docs/SOURCE-LOCK-C6-PRODUCTION-PROMOTION-PASS-20260806.md`;
+16. `backend/config/cxorbia-production-promotion-contract.json`;
+17. `app/docs/SOURCE-LOCK-C6-LIVE-HR-V4-REQUEST-30M-NO-RUN-EVIDENCE-20260806.md`;
+18. `.github/cxorbia-firebase-requests/live-hr-current-reconcile.json`;
+19. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+20. addenda vigentes de CAMBIOS, Claude, Pendientes, Academia y tracker;
+21. `AGENTS.md`, PR #7 y HEAD vivo.
 
-## 2. Diagnóstico del control plane
+## 2. Causa raíz demostrada
 
-Se compararon:
+Incidente oficial:
 
 ```text
-noRunCommit=d0e5c5527d001587366097dbb7667fc242029e9d
-noRunWorkflowInstall=640125d08c76b9f333a02ae78ca538993f200e30
-historicalSuccessCommit=457c5810c88427ac775e54626c9936ab094047e2
-historicalRunId=29799752544
-historicalJobId=88798094500
+incidentId=qcvjkzcs7j74
+component=GitHub Actions
+status=investigating
+impact=critical
+componentStatus=major_outage
 ```
 
-Hallazgos:
+GitHub informó que los triggers webhook permanecían limitados y que muchos eventos `push` y `pull_request` no estaban creando runs. Una actualización anterior reportó procesamiento aproximado de 15% de los webhooks.
 
 ```text
+rootCause=EXTERNAL_GITHUB_ACTIONS_MAJOR_OUTAGE_AND_WEBHOOK_TRIGGER_THROTTLING
+repoWorkflowFaultProven=false
 branchPathOrderMismatch=false
 repositoryWritePermissionMissing=false
-historicalActionsRunExists=true
-visibleActorSame=true
-connectorReceivesPushEvents=false
-connectorReceivesWorkflowRunEvents=false
-exactWriteTokenTypeExposed=false
-currentActionsPolicyExposed=false
-workflowEnabledStateExposed=false
-auditLogExposed=false
+tokenSuppressionRequired=false
 ```
 
-Dictamen:
+## 3. Recuperación parcial observable
+
+El HEAD `2d4d760b492bd25d6c91b03151ff1be1cbe0d5dc` materializó posteriormente:
 
 ```text
-decision=STOP_RETRY_C6_CONNECTOR_ACTIONS_ROOT_CAUSE_NOT_PROVEN
-provenBlocker=CONTROL_PLANE_OBSERVABILITY_AND_CREDENTIAL_ATTRIBUTION_INSUFFICIENT
-newTrigger=0
-newSKIP13Request=0
-providerReadsThisBlock=0
+runId=31129990397
+jobId=92716480291
+workflow=CXOrbia C6 SKIP13 Auth Access Adjudication Readonly
+conclusion=success
+requestOnly=false
+executable=false
+status=SKIPPED_NON_REQUEST_EVENT
+providerReads=0
 ```
 
-No se declara supresión por token, workflow deshabilitado ni error del scheduler como causa raíz porque ninguna quedó demostrada.
+Esto valida el workflow y sus guards, pero no adjudica SKIP13.
 
-## 3. SKIP13 y Auth
+## 4. Solución de control plane preparada
+
+```text
+primaryLane=github_actions_explicit_dispatch
+primaryEvent=workflow_dispatch
+commitPushAsProviderSignal=false
+preflight=tools/qa/cxorbia-c6-control-plane-preflight.mjs
+```
+
+El preflight exige Actions operativo, incidente resuelto, throughput restaurado, `runId`, `jobId`, coincidencia de request/source lock y claim previo a provider.
+
+```text
+fallbackLane=direct_trusted_runner
+fallbackStatus=DESIGN_ONLY_NOT_DEPLOYED
+independentOfGitHubActions=true
+```
+
+El carril directo requiere autorización separada de despliegue.
+
+## 5. SKIP13 y Auth
 
 ```text
 SKIP13 profiles=13
 blockingFingerprint=7cc28c78de9bfda01d14
 adjudicationCompleted=false
-providerReadConsumptionPreviousRequests=UNKNOWN
 requestExecutable=false
+providerReadConsumptionPreviousRequests=UNKNOWN
 ```
 
 ```text
@@ -89,35 +110,25 @@ freezeDecision=PASS_AUTH_PLAN_340_CRYPTOGRAPHIC_FREEZE
 
 Auth no ha sido ejecutado.
 
-## 4. Estrategia de producción
-
-```text
-strategy=PROMOTE_EXISTING_CLEAN_PROJECT
-project=cxorbia-backend-dev
-promotionGate=PASS_PRODUCTION_PROMOTION_CONTRACT_EXISTING_CLEAN_PROJECT
-writes/deploy/merge/cutover autorizados=false
-```
-
-## 5. Request HR v4
+## 6. Request HR v4
 
 ```text
 requestCommit=ac2032ec224e6d56bf087788b949691b6690c437
 providerReadConsumption=UNKNOWN_NO_RUN_JOB_OR_CHECKPOINT_EVIDENCE
 STOP_RETRY=true
-segundo trigger=0
+segundoTrigger=0
 ```
 
-## 6. Pendiente real
+## 7. Pendiente real
 
-1. No reutilizar ni reemitir requests SKIP13.
-2. Obtener una superficie administrativa read-only que exponga Actions permissions, workflow state, audit log, identidad exacta del token o listado integral de runs.
-3. Solo con causa demostrada, definir un mecanismo nuevo y autorizar por separado la adjudicación.
-4. Reconciliar HR v4 y confirmar HR viva.
-5. Autorizar por separado snapshot y repair Auth.
-6. Ejecutar readback, smoke acumulativo multirol, validación humana y rollback.
-7. Autorizar específicamente el único cutover.
+1. No emitir requests por commit ni usar push como señal provider.
+2. Esperar incidente `qcvjkzcs7j74` resuelto y Actions operativo.
+3. Ejecutar el preflight del control plane v2.
+4. Autorizar una única adjudicación SKIP13 mediante dispatch explícito observable.
+5. Autorizar separadamente el carril directo autenticado independiente de Actions.
+6. Continuar snapshot, repair Auth, readback, smoke, validación humana y cutover mediante gates separados.
 
-## 7. Estado seguro
+## 8. Estado seguro
 
 ```text
 provider reads this block=0
