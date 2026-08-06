@@ -6,6 +6,7 @@
 ## Archivos creados
 
 - `tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs`;
+- `backend/config/cxorbia-production-promotion-contract.template.json`;
 - `app/docs/evidence/C6-PRODUCTION-FAST-TRACK-PREFLIGHT-LATEST.json`;
 - `app/docs/evidence/C6-PRODUCTION-TARGET-PREFLIGHT-LATEST.json`;
 - `app/docs/SOURCE-LOCK-C6-PRODUCTION-FAST-TRACK-PREFLIGHT-20260806.md`;
@@ -36,6 +37,10 @@ El gate acepta dos estrategias, sin imponer una:
 
 Ambas exigen autorización expresa y prohíben usar la base legacy como backend nuevo.
 
+## Plantilla preparada
+
+`backend/config/cxorbia-production-promotion-contract.template.json` quedó deshabilitada y sin estrategia. No autoriza writes, deploy, merge ni cutover; permite materializar rápidamente la opción elegida sin rediseñar el contrato.
+
 ## Hallazgo
 
 El repositorio materializa actualmente `cxorbia-backend-dev`, target `cxorbia-dev` y servicio `cxorbia-live-hr-dev`. Falta una decisión contractual de promoción; no se infiere que deba crearse otro proyecto ni que el DEV pueda promoverse sin autorización.
@@ -46,7 +51,7 @@ No se modificó frontend, `CX.data`, request HR, workflow, Firebase, Auth, Rules
 
 ## Clasificación
 
-- Reusable CXOrbia: gate de estrategia de producción autorizado.
+- Reusable CXOrbia: gate y plantilla de estrategia de producción autorizada.
 - Exclusivo TyA: preparación del cutover.
 - Claude/prototipo: sin cambios.
 - Academia: impacto documentado.
