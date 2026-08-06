@@ -115,3 +115,5 @@ NON-OPERATIONAL TENANT EVIDENCE/ADJUDICATION PREPARATION
 - inferir apellidos o seleccionar Auth automáticamente;
 - aplicar parcialmente el plan 340;
 - Auth/data/HR writes, deploy, Make, Gemini, pagos, merge o producción.
+
+**Último HEAD documental registrado antes del cierre del PR:** `0897758f1f664c9fe06f435c640169a799b07fb7`.
