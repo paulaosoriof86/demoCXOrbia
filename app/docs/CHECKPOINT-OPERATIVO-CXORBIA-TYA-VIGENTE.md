@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-05  
-**Estado:** `SHOPPER_FOCAL_RESOLVER_SOURCE_STATIC_PASS__READONLY_REVIEW_HOLD_109_VISIBLE_LOGIN_GROUPS__PAULA_RESOLVED__STOP_RETRY__NO_AUTH_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `SHOPPER_COLLISION_CLASSIFIER_SOURCE_STATIC_PASS__READONLY_HOLD_64_DISTINCT_ACTIVE_GROUPS__83_ACTIVE_SURNAMES_UNVERIFIED__1_MULTI_AUTH__STOP_RETRY__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Rama y control
 
@@ -12,7 +12,7 @@
 - Hosting DEV acumulado anterior: `3`;
 - Hosting DEV de este bloque: `0`.
 
-## 2. Contrato canónico vigente
+## 2. Contrato canónico preservado
 
 ```text
 Usuario Shopper TyA: nombre.apellido
@@ -22,44 +22,37 @@ Membership requerido: no
 Autoridad: Firebase Auth + claims exactos + shopperId canónico
 ```
 
-Paula Staff y Paula Shopper son principals técnicos distintos. No deduplicar por nombre visual.
+No se modificó el contrato ni se aplicó una regla de desambiguación.
 
-## 3. Corrección focal source-only
+## 3. Source preparado y pin exacto
 
-Se corrigieron:
+- clasificador: `tools/qa/cxorbia-c6-shopper-login-collision-classification.mjs`;
+- blob: `ef95c59442728be6a326b8240c3f74ae9a3551af`;
+- dispatcher: `tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs`;
+- blob: `9633a1db7fa071cf21350f27e7bb7d0cf00b1591`.
 
-- `tools/qa/cxorbia-c6-shopper-identity-resolution-review.mjs`;
-- `tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs`.
-
-El resolver ahora usa apellido explícito, login técnico o nombre completo solo después del enlace exacto por `shopperId` o claves técnicas. También genera comparación source-safe de Paula y reconcilia baselines por conjuntos de fingerprints.
-
-Pins vigentes:
-
-```text
-resolver=6ca283662a84bdf4b99eb19cfd8325d33a26dd7b
-dispatcher=5cfbdcc5d3eea719eded3b31e06823a500c6109a
-```
+No se tocaron módulos, diseño, Login, `CX.data` ni lógica de negocio.
 
 ## 4. Source/static — PASS
 
 ```text
-workflowRunId=31059576130
-workflowJobId=92484349960
-artifactId=8951552902
-artifactDigest=sha256:5ae40b1a338d9594ffc3368477673677f2462ddd14e0e2b2d313dbf0b6e5311a
+workflowRunId=31061161498
+workflowJobId=92489240097
+artifactId=8952153534
+artifactDigest=sha256:ec793ef97bc8c4fd57df6e5b412aa108324dec65a1aa0af3f0622f78d9cf2a64
 PASS_READONLY_POST_GATES
 PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS
 PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
 ```
 
-## 5. Única revisión focal read-only — HOLD
+## 5. Clasificación provider read-only — HOLD
 
 ```text
-workflowRunId=31059688423
-workflowJobId=92484697881
-artifactId=8951593943
-artifactDigest=sha256:fcaba14c38c2fcc1014563ac0edadc33bd40370511189dd01d511f5ff6176326
-HOLD_C6_SHOPPER_IDENTITY_RESOLUTION_REVIEW
+workflowRunId=31061262965
+workflowJobId=92489532791
+artifactId=8952193087
+artifactDigest=sha256:4eaf9354e4ed15996237af74fcea05c5b99bc2ec97f1be063dc8d8e52f1dc95f
+HOLD_C6_SHOPPER_LOGIN_COLLISION_CLASSIFICATION
 ```
 
 Cobertura:
@@ -68,66 +61,24 @@ Cobertura:
 profiles=340
 authUsers=110
 credentials=109
-visits=616
+credentialsMapped=101
+credentialsUnmapped=8
 hrImportDocs=1
+visits=616
+certifications=77
+liquidations=827
+latestPeriod=2026-07
 ```
 
-## 6. Baseline reconciliado por conjuntos
+## 6. Clasificación de los 109 grupos
 
 ```text
-Historical reference: missingAuth=21, loginExceptions=30, passwordExceptions=28
-Current: mapped=101, unmapped=8
-Current missingAuth=21
-Current loginExceptions=16
-Current passwordExceptions=18
-Credential partition complete=true
-Fingerprint sets complete=true
-```
-
-Los totales históricos se preservan como referencia. La lectura vigente se prueba mediante pertenencia de fingerprints, no mediante igualdad rígida con `30/28`.
-
-## 7. Paula Shopper — RESUELTA TÉCNICAMENTE
-
-```text
-staffCandidates=1
-shopperCandidates=2
-resolution=RESOLVED_ACTIVE_PROFILE_VS_HISTORICAL_BY_TECHNICAL_ACTIVITY
-```
-
-Candidata canónica:
-
-```text
-statusActive=true
-credentialCount=1
-authCount=0
-canonicalNameComplete=true
-score=220
-```
-
-Perfil preservado como histórico:
-
-```text
-statusActive=false
-historicalVisits=6
-credentialCount=0
-authCount=0
-canonicalNameComplete=true
-score=30
-```
-
-No se creó Auth Shopper ni se modificó Staff.
-
-## 8. HOLD real posterior a la corrección
-
-La corrección eliminó el falso bloqueo anterior de 109 nombres incompletos. Al derivar los logins de los perfiles exactos se reveló:
-
-```text
-CANONICAL_LOGIN_COLLISION_GROUPS=109
-PROFILES_IN_COLLISION_GROUPS=238
-MULTIPLE_AUTH_CANDIDATE_PROFILES=1
-CANONICAL_NAME_INCOMPLETE_PROFILES=3
-UNRESOLVED_PROFILES=241
-REMAINING_COLLISION_COUNT=110
+CANDIDATE_GROUPS=109
+CANDIDATE_PROFILES=238
+39 grupos = un activo canónico + históricos preservados
+64 grupos = identidades activas técnicamente distintas con el mismo nombre.apellido
+141 identidades activas afectadas
+6 grupos = apellido técnico no verificable o grupo candidato se divide
 ```
 
 Distribución:
@@ -139,24 +90,43 @@ Distribución:
 1 grupo de 5
 ```
 
-El resolver no encontró un ancla técnica compartida suficiente para fusionar automáticamente esos grupos. Deben clasificarse como alias históricos o personas activas distintas antes de cualquier Auth write.
+## 7. Apellidos y Auth pendientes
+
+```text
+ACTIVE_PROFILES_WITHOUT_VERIFIED_TECHNICAL_SURNAME=83
+HISTORICAL_PROFILES_WITHOUT_VERIFIED_TECHNICAL_SURNAME=125
+MULTIPLE_AUTH_PROFILES=1
+UNRESOLVED_MULTIPLE_AUTH_PROFILES=1
+```
+
+El perfil multi-Auth mantiene dos candidatos con igual puntuación técnica; no se eligió ninguno.
+
+## 8. Alternativas mínimas identificadas, no aplicadas
+
+Para los 64 grupos de personas activas distintas:
+
+1. segundo apellido verificado;
+2. sufijo técnico determinístico;
+3. alias excepcional administrado por el tenant.
+
+Cualquier opción requiere decisión expresa y una nueva validación. No cambia automáticamente el contrato vigente.
 
 ## 9. Plan no superpuesto, no ejecutable
 
 | Operación primaria | Total |
 |---|---:|
-| CREATE_AUTH | 6 |
-| UPDATE_AUTH | 2 |
-| NO_OP | 10 |
-| HOLD | 241 |
-| PRESERVE_NO_AUTH | 81 |
+| CREATE_AUTH | 5 |
+| UPDATE_AUTH | 3 |
+| NO_OP | 45 |
+| HOLD | 162 |
+| PRESERVE_NO_AUTH | 125 |
 | **Total** | **340** |
 
 ```text
-email subchanges=2
-password subchanges=1
+email subchanges=1
+password subchanges=3
 claims subchanges=1
-planDigest=ec16fb653bb8bf57a499b1ddc26ed8e64bd32ddb3d3debfac9eef6f2882efc40
+planDigest=bb82bbf6f7b2a1335668287dc631fa8de73ba39197f07f4e85e014ee9f41af57
 ```
 
 ## 10. STOP_RETRY y estado seguro
@@ -182,8 +152,6 @@ MERGE=false
 PRODUCTION=false
 ```
 
-No existe autorización residual para retry, repair o deploy.
-
 ## 11. Phase A preservada
 
 Se preservaron frontend canónico, `CX.data`, HR, histórico, shoppers, postulaciones, certificaciones, liquidaciones/pagos, multi-tenant, multi-proyecto, Finanzas, Portal Cliente, Portal Shopper, Reservas, sincronización HR/plataforma y Academia.
@@ -191,12 +159,12 @@ Se preservaron frontend canónico, `CX.data`, HR, histórico, shoppers, postulac
 ## 12. Siguiente bloque exacto
 
 ```text
-CLASIFICAR SOURCE-SAFE LOS 109 GRUPOS DE NOMBRE.APELLIDO
-+ RESOLVER 1 PERFIL CON DOS AUTH
-+ COMPLETAR 3 NOMBRES TÉCNICOS
-→ USAR SHOPPERID, LEGACY, HR, VISITAS, CREDENCIAL Y AUTH
-→ RESOLVER PRIMERO ACTIVO VS HISTÓRICO
-→ IDENTIFICAR PERSONAS ACTIVAS DISTINTAS QUE COMPARTEN LOGIN
-→ DETENERSE PARA LA REGLA MÍNIMA DE DESAMBIGUACIÓN SI EXISTEN
-→ CERO WRITE Y CERO DEPLOY
+DECISIÓN DEL TENANT SOBRE LA REGLA MÍNIMA DE DESAMBIGUACIÓN PARA 64 GRUPOS
++ COMPLETAR SOURCE-SAFE 83 APELLIDOS TÉCNICOS ACTIVOS
++ RESOLVER 1 PERFIL MULTI-AUTH
+→ REGENERAR PLAN DE 340 FILAS
+→ GATE SOURCE/STATIC Y READ-ONLY
+→ STOP ANTES DE AUTH/PASSWORD WRITE O DEPLOY
 ```
+
+No existe autorización residual para retry, repair, deploy, merge o producción.
