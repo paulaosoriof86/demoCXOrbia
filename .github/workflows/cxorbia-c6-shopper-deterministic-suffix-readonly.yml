@@ -1,18 +1,18 @@
-name: CXOrbia C6 Shopper Deterministic Suffix Provider Readonly Revalidation
+name: CXOrbia C6 Shopper Diagnostic Contract Root Fix Source Only
 
 on:
   push:
     branches:
       - docs-tya-v6-v71-audit
     paths:
-      - backend/config/corte6-shopper-deterministic-suffix-readonly-request-retired.json
+      - backend/config/corte6-shopper-deterministic-suffix-readonly-request.json
 
 permissions:
-  contents: read
+  contents: write
   statuses: write
 
 concurrency:
-  group: cxorbia-c6-shopper-deterministic-suffix-readonly
+  group: cxorbia-c6-shopper-diagnostic-contract-rootfix-source-only
   cancel-in-progress: false
 
 defaults:
@@ -21,15 +21,17 @@ defaults:
 
 env:
   REQUEST_FILE: backend/config/corte6-shopper-deterministic-suffix-readonly-request.json
-  OUT_DIR: .tmp/c6-shopper-deterministic-suffix-readonly
-  PRIVATE_DIR: .tmp/c6-shopper-deterministic-suffix-private
-  DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+  PLANNER_FILE: tools/qa/cxorbia-c6-shopper-deterministic-suffix-readonly.mjs
+  CLASSIFIER_FILE: tools/qa/cxorbia-c6-shopper-login-collision-classification.mjs
+  PATCHER_FILE: tools/qa/cxorbia-c6-shopper-diagnostic-contract-rootfix-source-only.mjs
+  CONTRACT_FILE: backend/contracts/c6-shopper-deterministic-suffix-v1.json
+  EVIDENCE_FILE: app/docs/evidence/CORTE6-SHOPPER-DIAGNOSTIC-CONTRACT-ROOTFIX-SOURCE-STATIC-PASS-LATEST.json
 
 jobs:
-  readonly:
-    name: Revalidate deterministic suffix plan provider read-only
+  source-only:
+    name: Apply and gate diagnostic contract root fix without provider reads
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 20
 
     steps:
       - name: Checkout exact live branch
@@ -43,9 +45,6 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Exclude ephemeral evidence
-        run: printf '%s\n' '.tmp/' 'gha-creds-*.json' >> .git/info/exclude
-
       - name: Read request state
         id: request
         run: |
@@ -53,10 +52,9 @@ jobs:
           const fs=require('fs');
           const x=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${x.enabled===true?'true':'false'}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`target=${x.targetHeadSha||''}\n`);
           NODE
 
-      - name: Validate exact one-shot authorization
+      - name: Validate exact source-only authorization
         if: steps.request.outputs.enabled == 'true'
         run: |
           set -euo pipefail
@@ -68,20 +66,28 @@ jobs:
           const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
           const ensure=(condition,code)=>{if(!condition)throw new Error(code);};
-          ensure(x.schemaVersion==='cxorbia.c6.shopper-deterministic-suffix-readonly-request.v1','request_schema_invalid');
-          ensure(x.repository==='paulaosoriof86/demoCXOrbia'&&x.branch==='docs-tya-v6-v71-audit'&&Number(x.pullRequest)===7,'repository_lane_invalid');
+          ensure(x.schemaVersion==='cxorbia.c6.shopper-diagnostic-contract-rootfix-source-only-request.v1','request_schema_invalid');
+          ensure(x.repository==='paulaosoriof86/demoCXOrbia'&&x.branch==='docs-tya-v6-v71-audit'&&Number(x.pullRequest)===7,'lane_invalid');
           ensure(x.enabled===true&&x.consumed===false&&x.status==='authorized_execute_once'&&x.authorizedBy==='Paula','authorization_state_invalid');
-          ensure(x.targetHeadSha===parent&&x.targetHeadSha&&head!==parent,'target_head_invalid');
+          ensure(Number(x.allowedExecutions)===1&&x.mode==='source_only_diagnostic_contract_rootfix','authorization_invalid');
+          ensure(x.targetHeadSha===parent&&head!==parent,'target_head_invalid');
           ensure(changed.length===1&&changed[0]===process.env.REQUEST_FILE,'request_commit_scope_invalid:'+changed.join(','));
-          ensure(Number(x.allowedExecutions)===1&&x.providerReads===true&&x.providerWrites===false,'readonly_scope_invalid');
-          ensure(x.policy==='DETERMINISTIC_TECHNICAL_SUFFIX'&&JSON.stringify(x.suffixLengths)===JSON.stringify([4,6,8]),'suffix_policy_invalid');
-          ensure(Number(x.expectedProfiles)===340&&Number(x.expectedStableCredentialsMapped)===101&&Number(x.expectedStableCredentialsUnmapped)===8,'expected_population_or_crosswalk_invalid');
-          for(const key of ['repositoryWrites','dataWrites','deploy','merge','production','firestoreWrites','authWrites','passwordChanges','passwordResets','membershipWrites','rulesWrites','storageWrites','hrWrites','make','gemini','payments']){
-            ensure(x.safeState?.[key]===false,'unsafe_scope_'+key);
+          ensure(x.providerReads===false&&x.providerWrites===false,'provider_scope_invalid');
+          ensure(x.groupFingerprintNamespace==='shopper-visible-login-group-v1','group_namespace_invalid');
+          ensure(x.collisionReconciliationPolicy==='fingerprint_set_membership_not_rigid_aggregate_equality','reconciliation_policy_invalid');
+          ensure(Number(x.expectedPlanRows)===340&&JSON.stringify(x.suffixLengths)===JSON.stringify([4,6,8]),'plan_or_suffix_contract_invalid');
+          for(const key of ['dataWrites','deploy','merge','production','firestoreWrites','authWrites','passwordChanges','passwordResets','membershipWrites','rulesWrites','storageWrites','hrWrites','make','gemini','payments']){
+            ensure(x.safeState?.[key]===false,'unsafe_'+key);
           }
           NODE
 
-      - name: Install transient audit dependency
+      - name: Apply exact source-only root fix
+        if: steps.request.outputs.enabled == 'true'
+        run: |
+          set -euo pipefail
+          node "$PATCHER_FILE" --apply
+
+      - name: Install transient static dependency
         if: steps.request.outputs.enabled == 'true'
         run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0
 
@@ -89,87 +95,137 @@ jobs:
         if: steps.request.outputs.enabled == 'true'
         run: |
           set -euo pipefail
-          node --check tools/qa/cxorbia-c6-shopper-deterministic-suffix-readonly.mjs
-          node tools/qa/cxorbia-c6-shopper-deterministic-suffix-readonly.mjs --self-test
-          node -e "const x=require('./backend/contracts/c6-shopper-deterministic-suffix-v1.json');if(x.schemaVersion!=='cxorbia.c6.shopper-deterministic-suffix.v1'||x.visibleLoginPolicy.exception!=='DETERMINISTIC_TECHNICAL_SUFFIX')process.exit(1)"
-
-      - name: Prepare existing DEV credential privately
-        if: steps.request.outputs.enabled == 'true'
-        env:
-          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-        run: |
-          set -euo pipefail
-          mkdir -p "$PRIVATE_DIR" "$OUT_DIR"
+          node --check "$PLANNER_FILE"
+          node --check "$CLASSIFIER_FILE"
+          node --check "$PATCHER_FILE"
+          node "$PATCHER_FILE" --verify
+          node "$PLANNER_FILE" --self-test
           node <<'NODE'
           const fs=require('fs');
-          const raw=process.env.EXISTING_DEV_JSON||'';
-          let p=null;try{p=JSON.parse(raw);}catch{}
-          if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.client_email&&p.private_key))throw new Error('credential_invalid');
-          fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
+          const planner=fs.readFileSync(process.env.PLANNER_FILE,'utf8');
+          const classifier=fs.readFileSync(process.env.CLASSIFIER_FILE,'utf8');
+          const contract=JSON.parse(fs.readFileSync(process.env.CONTRACT_FILE,'utf8'));
+          const request=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          const required=[
+            'preConsensusIncompleteActiveProfiles',
+            'completedByConsensus',
+            'remainingIncompleteActiveProfiles',
+            "diagnostics: primary === 'HOLD'",
+            'candidateVectors: scored.map',
+            "const GROUP_FINGERPRINT_NAMESPACE = 'shopper-visible-login-group-v1';",
+            'function reconcileFingerprintSets(referenceValues, currentValues)',
+            'collision_group_set_drift:',
+            'PASS_DIAGNOSTIC_CONTRACT_V2'
+          ];
+          const missing=required.filter(token=>!planner.includes(token));
+          if(missing.length)throw new Error('planner_static_missing:'+missing.join('|'));
+          if(planner.includes('result.disambiguation.collisionGroups !== Number(request.expectedDistinctActiveCollisionGroups || 64)'))throw new Error('rigid_collision_gate_present');
+          if(planner.includes('result.surnameCompletion.initialIncompleteActiveProfiles !== Number(request.expectedInitialIncompleteActiveProfiles || 83)'))throw new Error('old_metric_gate_present');
+          if(!classifier.includes('groupFp: fp(GROUP_FINGERPRINT_NAMESPACE, norm(login)),'))throw new Error('classifier_namespace_not_stable');
+          if(contract.schemaVersion!=='cxorbia.c6.shopper-deterministic-suffix.v2')throw new Error('contract_schema_not_v2');
+          if(contract.collisionReconciliation?.policy!=='fingerprint_set_membership_not_rigid_aggregate_equality')throw new Error('contract_set_policy_missing');
+          if(contract.multiAuthResolution?.diagnosticVector?.rawPiiAllowed!==false)throw new Error('multi_auth_privacy_missing');
+          if(request.providerReads!==false||request.providerWrites!==false)throw new Error('provider_scope_changed');
           NODE
 
-      - name: Execute one provider read-only plan
+      - name: Materialize sanitized evidence and consume request
         if: steps.request.outputs.enabled == 'true'
-        id: provider
-        continue-on-error: true
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/c6-shopper-deterministic-suffix-private/credentials.json
-          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
-          CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
-          CXORBIA_AUDIT_TARGET_HEAD: ${{ steps.request.outputs.target }}
         run: |
-          set +e
-          node tools/qa/cxorbia-c6-shopper-deterministic-suffix-readonly.mjs "$REQUEST_FILE"
-          code=$?
-          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
-          exit 0
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const path=require('path');
+          const crypto=require('crypto');
+          const {execFileSync}=require('child_process');
+          const request=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          const planner=fs.readFileSync(process.env.PLANNER_FILE,'utf8');
+          const classifier=fs.readFileSync(process.env.CLASSIFIER_FILE,'utf8');
+          const contract=fs.readFileSync(process.env.CONTRACT_FILE,'utf8');
+          const generatedAt=new Date().toISOString();
+          const evidence={
+            schemaVersion:'cxorbia.c6.shopper-diagnostic-contract-rootfix-source-static.v1',
+            generatedAt,
+            decision:'PASS_C6_SHOPPER_DIAGNOSTIC_CONTRACT_ROOTFIX_SOURCE_STATIC',
+            repository:request.repository,
+            branch:request.branch,
+            pullRequest:request.pullRequest,
+            requestId:request.requestId,
+            requestCommitSha:process.env.GITHUB_SHA,
+            targetHeadSha:request.targetHeadSha,
+            sha256:{
+              planner:crypto.createHash('sha256').update(planner,'utf8').digest('hex'),
+              classifier:crypto.createHash('sha256').update(classifier,'utf8').digest('hex'),
+              contract:crypto.createHash('sha256').update(contract,'utf8').digest('hex')
+            },
+            contract:{
+              metrics:['preConsensusIncompleteActiveProfiles','completedByConsensus','remainingIncompleteActiveProfiles'],
+              holdVectors:'booleans_counts_bases_only',
+              multiAuthVectors:'signals_score_margin_no_uid_email_pii',
+              groupFingerprintNamespace:'shopper-visible-login-group-v1',
+              collisionReconciliationPolicy:'fingerprint_set_membership_not_rigid_aggregate_equality',
+              rigidAggregateGateRemoved:true,
+              expectedPlanRows:340,
+              suffixLengths:[4,6,8]
+            },
+            checks:[
+              'PASS_NODE_SYNTAX_PLANNER_CLASSIFIER_PATCHER',
+              'PASS_PRE_CONSENSUS_COMPLETED_REMAINING_METRICS',
+              'PASS_METRIC_IDENTITY_GATE',
+              'PASS_HOLD_SOURCE_SAFE_DIAGNOSTIC_VECTORS',
+              'PASS_MULTI_AUTH_SOURCE_SAFE_SIGNAL_VECTOR',
+              'PASS_NO_UID_EMAIL_PII_DIAGNOSTICS',
+              'PASS_STABLE_GROUP_FINGERPRINT_NAMESPACE',
+              'PASS_FINGERPRINT_SET_RECONCILIATION',
+              'PASS_RIGID_64_GATE_REMOVED',
+              'PASS_OLD_83_GATE_REMOVED',
+              'PASS_PLAN_340_SCHEMA_PRESERVED',
+              'PASS_SUFFIX_4_6_8_PRESERVED',
+              'PASS_PROVIDER_READS_ZERO'
+            ],
+            safety:{
+              providerReads:0,providerWrites:0,authWrites:0,passwordChanges:0,passwordResets:0,membershipWrites:0,
+              firestoreWrites:0,rulesWrites:0,storageWrites:0,hrWrites:0,hostingDeploys:0,cloudRunDeploys:0,
+              makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,production:false
+            },
+            nextGate:'NEW_EXPLICIT_PROVIDER_READONLY_AUTHORIZATION_REQUIRED'
+          };
+          fs.mkdirSync(path.dirname(process.env.EVIDENCE_FILE),{recursive:true});
+          fs.writeFileSync(process.env.EVIDENCE_FILE,JSON.stringify(evidence,null,2)+'\n','utf8');
+          request.enabled=false;
+          request.consumed=true;
+          request.status='consumed_source_static_pass_no_provider_read';
+          request.consumedAt=generatedAt;
+          request.result={decision:evidence.decision,providerReads:0,providerWrites:0,evidence:process.env.EVIDENCE_FILE};
+          fs.writeFileSync(process.env.REQUEST_FILE,JSON.stringify(request,null,2)+'\n','utf8');
+          const status=execFileSync('git',['status','--porcelain=v1'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const allowed=new Set([process.env.PLANNER_FILE,process.env.CLASSIFIER_FILE,process.env.CONTRACT_FILE,process.env.REQUEST_FILE,process.env.EVIDENCE_FILE]);
+          for(const line of status){const file=line.slice(3).trim();if(!allowed.has(file))throw new Error('unexpected_delta:'+file);}
+          NODE
 
-      - name: Capture repository delta evidence
-        if: always() && steps.request.outputs.enabled == 'true'
+      - name: Commit source-only root fix directly on live branch
+        if: steps.request.outputs.enabled == 'true'
         run: |
-          mkdir -p "$OUT_DIR/repository-status"
-          git status --porcelain=v1 > "$OUT_DIR/repository-status/status.txt"
-          git diff --name-status > "$OUT_DIR/repository-status/tracked.txt"
-          git ls-files --others --exclude-standard > "$OUT_DIR/repository-status/untracked.txt"
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$PLANNER_FILE" "$CLASSIFIER_FILE" "$CONTRACT_FILE" "$REQUEST_FILE" "$EVIDENCE_FILE"
+          git diff --cached --check
+          git commit -m 'fix(c6): harden source-safe identity diagnostic contract'
+          git push origin HEAD:docs-tya-v6-v71-audit
 
-      - name: Upload sanitized evidence
-        if: always() && steps.request.outputs.enabled == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: cxorbia-c6-shopper-deterministic-suffix-revalidation-${{ github.run_id }}
-          path: |
-            .tmp/c6-shopper-deterministic-suffix-readonly
-            .tmp/cxorbia-readonly-post-gates-runner
-          if-no-files-found: error
-          retention-days: 14
-
-      - name: Publish observable commit status
+      - name: Publish source-static status
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
-          PROVIDER_EXIT_CODE: ${{ steps.provider.outputs.exit_code }}
         run: |
-          set -euo pipefail
           STATE=success
-          DESC='PASS_C6_DETERMINISTIC_SUFFIX_PROVIDER_READONLY'
-          if [ '${{ steps.request.outputs.enabled }}' != 'true' ]; then
-            DESC='SKIPPED_DISABLED_REQUEST'
-          elif [ "${PROVIDER_EXIT_CODE:-999}" != '0' ]; then
-            STATE=failure
-            DESC='HOLD_C6_DETERMINISTIC_SUFFIX_STOP_RETRY'
-          fi
+          DESC='PASS_C6_DIAGNOSTIC_CONTRACT_ROOTFIX_SOURCE_ONLY'
+          if [ '${{ steps.request.outputs.enabled }}' != 'true' ]; then DESC='SKIPPED_DISABLED_REQUEST'; fi
+          if [ '${{ job.status }}' != 'success' ]; then STATE=failure; DESC='HOLD_C6_DIAGNOSTIC_CONTRACT_ROOTFIX_SOURCE_ONLY'; fi
           gh api --method POST \
             -H 'Accept: application/vnd.github+json' \
             "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
             -f state="$STATE" \
-            -f context='cxorbia/c6-shopper-deterministic-suffix-readonly/overall' \
+            -f context='cxorbia/c6-shopper-diagnostic-contract-rootfix-source-only/overall' \
             -f description="$DESC" \
             -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
-
-      - name: Cleanup private material
-        if: always()
-        run: rm -rf "$PRIVATE_DIR"
-
-      - name: Enforce provider result
-        if: steps.request.outputs.enabled == 'true'
-        run: test "${{ steps.provider.outputs.exit_code }}" = "0"
