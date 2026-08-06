@@ -2,7 +2,7 @@
 
 **Fecha original:** 2026-07-04  
 **Actualización prevalente:** 2026-08-06  
-**Estado:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_SOURCE_ONLY_COMPLETE__LIVE_HR_V4_UNRESOLVED__DEV_ONLY_TARGET_CONFIRMED__IDENTITY_HOLD_0__NO_PRODUCTION`
+**Estado:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_GATE_HOLD__LIVE_HR_V4_UNRESOLVED__PROD_TARGET_UNMATERIALIZED__IDENTITY_HOLD_0__NO_PRODUCTION`
 
 ## 1. Objetivo operativo
 
@@ -47,21 +47,30 @@ segundo trigger=0
 
 No se reabre sintaxis, registro, trigger, rama o path. Cualquier evidencia tardía debe reconciliarse contra el request exacto.
 
-## 5. Fast-track paralelo ya ejecutado
+## 5. Gate fast-track de producción
 
-Para no esperar pasivamente se auditó la preparación de producción source-only.
+Se creó y ejecutó source-only:
 
 ```text
-default/dev project=cxorbia-backend-dev
-hosting target=cxorbia-dev
-hosting site=cxorbia-backend-dev
-Cloud Run service=cxorbia-live-hr-dev
-production alias=false
-production target=false
-production service=false
+tool=tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs
+node --check=PASS
+exitCode=2 esperado fail-closed
+decision=HOLD_PRODUCTION_TARGET_UNMATERIALIZED
+holdReason=PRODUCTION_CONFIGURATION_FILES_NOT_MATERIALIZED
 ```
 
-El repositorio todavía no materializa un carril PROD. Un deploy desde el estado actual seguiría apuntando a DEV.
+El gate confirmó:
+
+```text
+DEV project=cxorbia-backend-dev
+DEV hosting target=cxorbia-dev
+DEV hosting site=cxorbia-backend-dev
+DEV Cloud Run service=cxorbia-live-hr-dev
+.firebaserc.prod existe=false
+firebase.prod.json existe=false
+```
+
+Un deploy desde el estado actual seguiría apuntando a DEV.
 
 ## 6. Cadena única restante
 
@@ -80,10 +89,11 @@ El repositorio todavía no materializa un carril PROD. Un deploy desde el estado
 
 ### Bloque C — Materializar producción
 
-1. Definir un proyecto/target de producción nuevo y separado del DEV vigente.
-2. Configurar alias, Hosting target, backend service, credenciales y rollback sin conectar la base legacy.
-3. Ejecutar preflight contra el target exacto.
-4. Mantener producción legacy intacta hasta autorización de cutover.
+1. Definir un proyecto de producción nuevo y separado del DEV vigente.
+2. Crear `.firebaserc.prod` y `firebase.prod.json` sin conectar la base legacy.
+3. Configurar alias, Hosting target, backend service, región, credenciales y rollback.
+4. Ejecutar el gate hasta `PASS_PRODUCTION_TARGET_SOURCE_ONLY_CONTRACT`.
+5. Mantener producción legacy intacta hasta autorización de cutover.
 
 ### Bloque D — Cutover
 
