@@ -88,3 +88,5 @@ production=false
 ```
 
 La ejecución no autoriza repair Auth, aplicación parcial, deploy, merge ni producción. El siguiente bloque requiere autorización expresa y debe ser no operativo para preparar evidencia/adjudicación tenant de los 12 apellidos y el empate multi-Auth.
+
+**HEAD documental final antes de actualizar PR:** `9d908b74558bdb098b98d5b450b53cc629d153a0`.
