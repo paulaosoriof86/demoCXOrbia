@@ -1,0 +1,138 @@
+{
+  "schemaVersion": "cxorbia.c6.shopper-deterministic-suffix-provider-revalidation-hold.v1",
+  "generatedAt": "2026-08-06T02:43:47.663Z",
+  "decision": "HOLD_C6_DETERMINISTIC_SUFFIX_PLAN_STOP_RETRY",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "requestId": "c6-shopper-deterministic-suffix-provider-revalidation-20260805-01",
+  "requestCommitSha": "62cbe347000d102870e2e36bcf8b3638a1cc77ab",
+  "targetHeadSha": "4e62267d8072609edfee47331c4851eff4a88089",
+  "sourceRootFixCommitSha": "6160ef89b75bcdf9068c210810c528d3c6d13db1",
+  "execution": {
+    "workflowRunId": 31066410847,
+    "workflowJobId": 92504941089,
+    "artifactId": 8953983093,
+    "artifactDigest": "sha256:ba9a559832ee2d8003ae798ae8a40cbe7e6b7582587d32053c55f16af50b134a",
+    "providerExecutions": 1,
+    "providerSecondAttempt": 0,
+    "sourceStaticDecision": "PASS_C6_DETERMINISTIC_SUFFIX_SOURCE_STATIC",
+    "providerDecision": "HOLD_C6_DETERMINISTIC_SUFFIX_PLAN_STOP_RETRY"
+  },
+  "source": {
+    "profiles": 340,
+    "authUsers": 110,
+    "memberships": 1,
+    "credentials": 109,
+    "credentialsMapped": 101,
+    "credentialsUnmapped": 8,
+    "credentialCrosswalkParity": true,
+    "stableCredentialsMapped": 101,
+    "stableCredentialsUnmapped": 8,
+    "hrImportDocs": 1,
+    "visits": 616,
+    "certifications": 77,
+    "liquidations": 827,
+    "latestPeriod": "2026-07",
+    "recentFloor": "2026-05"
+  },
+  "surnameCompletion": {
+    "completedByMultiSourceConsensus": 71,
+    "remainingIncompleteActiveProfiles": 12,
+    "interpretation": "The corrected planner reports 12 source-safe unresolved active profiles. The earlier request expectation of 83 is superseded as an initial-incomplete metric; the same 12 profiles remain operational HOLD rows."
+  },
+  "disambiguation": {
+    "policy": "DETERMINISTIC_TECHNICAL_SUFFIX",
+    "collisionGroups": 65,
+    "activeIdentities": 142,
+    "groupSizeDistribution": {
+      "2": 56,
+      "3": 6,
+      "4": 3
+    },
+    "groupsWithUniqueUnsuffixedKeeper": 53,
+    "groupsAllSuffixed": 12,
+    "suffix4": 89,
+    "suffix6": 0,
+    "suffix8": 0,
+    "suffixAllocationHolds": 0,
+    "targetCollisionHolds": 0
+  },
+  "multiAuth": {
+    "profilesWithMultipleCandidates": 1,
+    "resolved": 0,
+    "unresolved": 1
+  },
+  "plan": {
+    "rows": 340,
+    "onePrimaryOperationPerProfile": true,
+    "operationCounts": {
+      "CREATE_AUTH": 81,
+      "UPDATE_AUTH": 47,
+      "NO_OP": 72,
+      "HOLD": 13,
+      "PRESERVE_NO_AUTH": 127
+    },
+    "subchangeCounts": {
+      "email": 39,
+      "password": 16,
+      "claims": 38
+    },
+    "digest": "a0fdc805de12f761feccd10b85d470be09156f4a5b6aff8fb0ca7f3ac4133bfb",
+    "executable": false,
+    "readyForAuthRepair": false,
+    "fullSourceSafePlanLocation": "workflow artifact 8953983093 / c6-shopper-deterministic-suffix-readonly/plan-340.json"
+  },
+  "holdRows": [
+    {"profileFp":"cc941934f90032aa48e8","reason":"technical_surname_unresolved"},
+    {"profileFp":"9ed0cdabf3794b7ccf21","reason":"technical_surname_unresolved"},
+    {"profileFp":"3451d618b5d6307b87da","reason":"technical_surname_unresolved"},
+    {"profileFp":"80d716626b85e14778ea","reason":"technical_surname_unresolved"},
+    {"profileFp":"8aea97650e97902f7616","reason":"technical_surname_unresolved"},
+    {"profileFp":"7cc28c78de9bfda01d14","reason":"multi_auth_tie_residual","baseLoginFp":"b33d2d62f63888674294","targetLoginFp":"c7c1f13857fe052101b2","surnameBasis":"multi_source_full_name_consensus"},
+    {"profileFp":"32e2de62067ab6ecfb7b","reason":"technical_surname_unresolved"},
+    {"profileFp":"b31bdc0c7514acbe25ba","reason":"technical_surname_unresolved"},
+    {"profileFp":"4a59de15805804cbe398","reason":"technical_surname_unresolved"},
+    {"profileFp":"cfbd0c519e59f40c6239","reason":"technical_surname_unresolved"},
+    {"profileFp":"540c9e6b71440b393365","reason":"technical_surname_unresolved"},
+    {"profileFp":"c01e0f344901f03e78d2","reason":"technical_surname_unresolved"},
+    {"profileFp":"729eb0480d5ec2266a20","reason":"technical_surname_unresolved"}
+  ],
+  "blockers": [
+    "12 active profiles lack sufficient source-safe technical surname evidence",
+    "1 multi-Auth profile remains tied after combined Auth, claims, credential, password compatibility and metadata scoring",
+    "collision population recalculated to 65 groups / 142 active identities and therefore does not match the former 64/141 reference"
+  ],
+  "safety": {
+    "providerReads": 1,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "membershipWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "rawNamesExported": false,
+    "rawLoginsExported": false,
+    "rawEmailsExported": false,
+    "rawPasswordsExported": false,
+    "uidsExported": false,
+    "merge": false,
+    "production": false
+  },
+  "stopRetry": {
+    "applied": true,
+    "automaticRetry": false,
+    "providerSecondAttempt": false,
+    "requestConsumed": true,
+    "workflowTriggerFrozen": true
+  },
+  "nextExactBlock": "SOURCE_ONLY residual identity root-cause classification for the 12 surname HOLD fingerprints, the 1 multi-Auth tie and the 65/142 versus 64/141 classification delta; zero provider reads and zero operational writes."
+}
