@@ -13,7 +13,7 @@ permissions:
 jobs:
   gate:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 0}
@@ -24,44 +24,46 @@ jobs:
         run: |
           node <<'NODE'
           const r=require('./.github/cxorbia-firebase-requests/live-hr-country-tab-consistency.json');
-          if(r.enabled!==true||r.mode!=='READ_ONLY_COUNTRY_TAB_CONSISTENCY'||r.providerWrites!==0||r.production!==false||r.merge!==false)process.exit(1);
+          if(r.enabled!==true||r.mode!=='READ_ONLY_COUNTRY_TAB_CONSISTENCY'||r.providerWrites!==0||r.production!==false||r.merge!==false)throw new Error('request_invalid');
           NODE
 
-      - name: Check provider tab existence before content
-        id: tabs
+      - name: Build one live provider revision and validate country/tab consistency
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+          CXORBIA_HR_SOURCE_SAFE_OUT: .tmp/hr-country/tya-hr-source-safe.js
+          CXORBIA_CURRENT_SOURCE_SAFE: .tmp/hr-country/tya-hr-source-safe.js
+          CXORBIA_GATE_OUT: .tmp/hr-country/gates
+          CXORBIA_HR_TAB_REGISTRY: backend/config/tya-live-hr-tab-registry.source-safe.json
+          CXORBIA_HR_TAB_REGISTRY_EVIDENCE: .tmp/hr-country/tab-registry-evidence.json
+          CXORBIA_COUNTRY_GATE_JSON: app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json
+          CXORBIA_COUNTRY_GATE_MD: app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.md
+          CXORBIA_HR_EARLIEST_PERIOD: '2025-06'
+          CXORBIA_HR_LIVE_MAX_ROW: '140'
+          CXORBIA_HR_LIVE_MAX_COL: 'AI'
         run: |
-          mkdir -p app/docs/evidence
-          node <<'NODE' >> "$GITHUB_OUTPUT"
-          const fs=require('fs');const r=require('./backend/config/tya-live-hr-tab-registry.source-safe.json');
-          const set=new Set(r.monthlyTabs||[]),gt=set.has('AGOSTO 26'),hn=set.has('AGOSTO 26 HN'),present=gt&&hn;
-          console.log(`august_present=${present?'true':'false'}`);
-          if(!present){
-            const e={schemaVersion:'tya.hr-country-tab-consistency.v2',generatedAt:new Date().toISOString(),sourceSafe:true,pii:false,providerWrites:0,providerTabRegistryObservedAt:r.observedAt,results:[{title:'AGOSTO 26',expectedCountry:'GT',tabExists:gt,visitRows:0,countryValidation:'NOT_APPLICABLE_TAB_MISSING'},{title:'AGOSTO 26 HN',expectedCountry:'HN',tabExists:hn,visitRows:0,countryValidation:'NOT_APPLICABLE_TAB_MISSING'}],decision:'HOLD_REQUIRED_AUGUST_PROVIDER_TABS_MISSING',safety:{hrWrites:0,firestoreWrites:0,authWrites:0,hostingDeploys:0,production:false,merge:false}};
-            fs.writeFileSync('app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json',JSON.stringify(e,null,2)+'\n');
-            fs.writeFileSync('app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.md','# TyA HR country/tab consistency\n\n- Decisión: HOLD_REQUIRED_AUGUST_PROVIDER_TABS_MISSING\n- AGOSTO 26 existe: '+gt+'\n- AGOSTO 26 HN existe: '+hn+'\n- No se consultó contenido GViz porque existencia de tab es gate previo.\n- Writes: 0.\n');
-          }
-          NODE
-
-      - name: Run source-safe country consistency gate
-        id: gate
-        if: steps.tabs.outputs.august_present == 'true'
-        continue-on-error: true
-        run: node tools/qa/tya-hr-country-tab-consistency-current.mjs
+          set -euo pipefail
+          mkdir -p .tmp/hr-country/gates app/docs/evidence
+          node tools/hr-source/tya-live-provider-registry-identity-dev.mjs
+          node tools/hr-source/tya-build-live-hr-source-safe-r20.mjs >/tmp/hr-country-build.json
+          node tools/hr-source/tya-enforce-live-tab-registry.mjs
+          node tools/qa/tya-hr-country-tab-consistency-current.mjs
 
       - name: Commit sanitized evidence on latest head
         run: |
           set -euo pipefail
           cp app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json /tmp/country.json
           cp app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.md /tmp/country.md
+          cp backend/config/tya-live-hr-tab-registry.source-safe.json /tmp/registry.json
           git fetch origin docs-tya-v6-v71-audit
           git reset --hard origin/docs-tya-v6-v71-audit
-          mkdir -p app/docs/evidence
+          mkdir -p app/docs/evidence backend/config
           cp /tmp/country.json app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json
           cp /tmp/country.md app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.md
+          cp /tmp/registry.json backend/config/tya-live-hr-tab-registry.source-safe.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.md
-          if ! git diff --cached --quiet;then git commit -m 'evidence: check live HR provider-tab and country consistency';git push origin HEAD:docs-tya-v6-v71-audit;fi
+          git add app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.md backend/config/tya-live-hr-tab-registry.source-safe.json
+          if ! git diff --cached --quiet;then git commit -m 'evidence: validate live HR current-period country consistency';git push origin HEAD:docs-tya-v6-v71-audit;fi
 
       - name: Publish status
         if: always()
@@ -70,7 +72,10 @@ jobs:
           STATE=error;DESC='HOLD_HR_COUNTRY_TAB_CONSISTENCY'
           if [ -f app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json ];then
             D=$(node -p "require('./app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json').decision")
-            if [ "$D" = 'PASS_COUNTRY_TAB_CONSISTENCY' ];then STATE=success;DESC='PASS_HR_COUNTRY_TAB_CONSISTENCY';
-            elif [ "$D" = 'HOLD_REQUIRED_AUGUST_PROVIDER_TABS_MISSING' ];then STATE=success;DESC='HOLD_AUGUST_PROVIDER_TABS_MISSING_READONLY_CONFIRMED';fi
+            if [ "$D" = 'PASS_COUNTRY_TAB_CONSISTENCY' ];then STATE=success;DESC='PASS_HR_CURRENT_PERIOD_COUNTRY_TAB_CONSISTENCY';fi
           fi
           gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/live-hr-country-tab-consistency' -f description="$DESC" >/dev/null
+
+      - name: Cleanup
+        if: always()
+        run: rm -rf .tmp/hr-country /tmp/hr-country-build.json
