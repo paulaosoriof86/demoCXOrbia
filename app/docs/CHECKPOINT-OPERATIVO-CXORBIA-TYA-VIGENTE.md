@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-05  
-**Estado:** `SHOPPER_IDENTITY_RESOLUTION_SOURCE_STATIC_PASS__READONLY_REVIEW_COMPLETE__RESOLVER_OVERHOLD_PROVEN__STOP_RETRY__NO_AUTH_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `SHOPPER_FOCAL_RESOLVER_SOURCE_STATIC_PASS__READONLY_REVIEW_HOLD_109_VISIBLE_LOGIN_GROUPS__PAULA_RESOLVED__STOP_RETRY__NO_AUTH_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Rama y control
 
@@ -22,139 +22,141 @@ Membership requerido: no
 Autoridad: Firebase Auth + claims exactos + shopperId canónico
 ```
 
-Paula Staff y Paula Shopper son principals técnicos distintos. No se permite deduplicar por nombre visual.
+Paula Staff y Paula Shopper son principals técnicos distintos. No deduplicar por nombre visual.
 
-## 3. Source preparado y gateado
+## 3. Corrección focal source-only
 
-Se agregaron:
+Se corrigieron:
 
 - `tools/qa/cxorbia-c6-shopper-identity-resolution-review.mjs`;
-- modo `source_safe_resolution_review` en `tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs`;
-- pins activos exactos en el manifiesto acumulativo.
+- `tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs`.
 
-Source/static:
+El resolver ahora usa apellido explícito, login técnico o nombre completo solo después del enlace exacto por `shopperId` o claves técnicas. También genera comparación source-safe de Paula y reconcilia baselines por conjuntos de fingerprints.
+
+Pins vigentes:
 
 ```text
-workflowRunId=31055889684
-workflowJobId=92473179280
-artifactId=8950210279
-artifactDigest=sha256:7d78d480b15b836ab98ded284a2bfca2b0ebe2517531c36825bc77159de915dd
+resolver=6ca283662a84bdf4b99eb19cfd8325d33a26dd7b
+dispatcher=5cfbdcc5d3eea719eded3b31e06823a500c6109a
+```
+
+## 4. Source/static — PASS
+
+```text
+workflowRunId=31059576130
+workflowJobId=92484349960
+artifactId=8951552902
+artifactDigest=sha256:5ae40b1a338d9594ffc3368477673677f2462ddd14e0e2b2d313dbf0b6e5311a
 PASS_READONLY_POST_GATES
 PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS
 PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
 ```
 
-## 4. Revisión source-safe ejecutada
+## 5. Única revisión focal read-only — HOLD
 
 ```text
-workflowRunId=31056005286
-workflowJobId=92473531087
-artifactId=8950260575
-artifactDigest=sha256:28bcefd758c53efa4357d0d4766488662c3b0701ce2ccfce551816c92d7edb88
+workflowRunId=31059688423
+workflowJobId=92484697881
+artifactId=8951593943
+artifactDigest=sha256:fcaba14c38c2fcc1014563ac0edadc33bd40370511189dd01d511f5ff6176326
 HOLD_C6_SHOPPER_IDENTITY_RESOLUTION_REVIEW
 ```
 
 Cobertura:
 
 ```text
-Perfiles=340
-Credenciales legacy=109
-Visitas=616
-HR imports=1
-Periodo más reciente=2026-07
+profiles=340
+authUsers=110
+credentials=109
+visits=616
+hrImportDocs=1
 ```
 
-## 5. Baseline reconciliado parcialmente
-
-La revisión confirmó:
+## 6. Baseline reconciliado por conjuntos
 
 ```text
-Credenciales mapeadas=101
-Credenciales sin mapear=8
-Missing Auth total=21
-  mapped missing Auth=13
-  unmapped credentials=8
+Historical reference: missingAuth=21, loginExceptions=30, passwordExceptions=28
+Current: mapped=101, unmapped=8
+Current missingAuth=21
+Current loginExceptions=16
+Current passwordExceptions=18
+Credential partition complete=true
+Fingerprint sets complete=true
 ```
 
-El `21` queda reconciliado exactamente como `13 + 8`.
+Los totales históricos se preservan como referencia. La lectura vigente se prueba mediante pertenencia de fingerprints, no mediante igualdad rígida con `30/28`.
 
-Los conteos de excepción vigentes fueron:
+## 7. Paula Shopper — RESUELTA TÉCNICAMENTE
 
 ```text
-Login exceptions=16
-  mapped mismatches=8
-  unmapped=8
-Password exceptions=18
-  mapped mismatches=10
-  unmapped=8
+staffCandidates=1
+shopperCandidates=2
+resolution=RESOLVED_ACTIVE_PROFILE_VS_HISTORICAL_BY_TECHNICAL_ACTIVITY
 ```
 
-Los conteos históricos `30/28` provenían de una población donde 21 credenciales todavía estaban sin mapear. Trece de ellas ahora quedaron enlazadas por claves técnicas; por eso `30/28` y `16/18` no deben forzarse como totales inmutables. La reconciliación correcta es por pertenencia de conjuntos, no por igualdad de agregados.
+Candidata canónica:
 
-## 6. Plan no superpuesto producido
+```text
+statusActive=true
+credentialCount=1
+authCount=0
+canonicalNameComplete=true
+score=220
+```
 
-Se generó una fila primaria por cada uno de los 340 perfiles:
+Perfil preservado como histórico:
+
+```text
+statusActive=false
+historicalVisits=6
+credentialCount=0
+authCount=0
+canonicalNameComplete=true
+score=30
+```
+
+No se creó Auth Shopper ni se modificó Staff.
+
+## 8. HOLD real posterior a la corrección
+
+La corrección eliminó el falso bloqueo anterior de 109 nombres incompletos. Al derivar los logins de los perfiles exactos se reveló:
+
+```text
+CANONICAL_LOGIN_COLLISION_GROUPS=109
+PROFILES_IN_COLLISION_GROUPS=238
+MULTIPLE_AUTH_CANDIDATE_PROFILES=1
+CANONICAL_NAME_INCOMPLETE_PROFILES=3
+UNRESOLVED_PROFILES=241
+REMAINING_COLLISION_COUNT=110
+```
+
+Distribución:
+
+```text
+94 grupos de 2
+11 grupos de 3
+3 grupos de 4
+1 grupo de 5
+```
+
+El resolver no encontró un ancla técnica compartida suficiente para fusionar automáticamente esos grupos. Deben clasificarse como alias históricos o personas activas distintas antes de cualquier Auth write.
+
+## 9. Plan no superpuesto, no ejecutable
 
 | Operación primaria | Total |
 |---|---:|
-| CREATE_AUTH | 22 |
-| UPDATE_AUTH | 8 |
-| NO_OP | 73 |
-| HOLD | 110 |
-| PRESERVE_NO_AUTH | 127 |
+| CREATE_AUTH | 6 |
+| UPDATE_AUTH | 2 |
+| NO_OP | 10 |
+| HOLD | 241 |
+| PRESERVE_NO_AUTH | 81 |
 | **Total** | **340** |
 
-Subcambios dentro de `UPDATE_AUTH`:
-
 ```text
-email=1
-password=8
-claims=1
-```
-
-Plan digest:
-
-```text
-901b43183721cb49218224d096b49612675d1c92f1bca9936da61c7eb09ac8c4
-```
-
-## 7. Causa raíz del HOLD actual
-
-```text
-CODE=RESOLVER_CANONICAL_NAME_BASIS_TOO_RESTRICTIVE
-```
-
-La identidad sí se enlazó mediante `shopperId`, legacy, HR y relaciones técnicas. Sin embargo, después del enlace, el resolver solo aceptó apellido explícito o apellido proveniente de una credencial ya enlazada. No utilizó los campos de nombre completo o login técnico del perfil exacto ya identificado.
-
-Consecuencia:
-
-```text
-FALSE_CANONICAL_NAME_INCOMPLETE_HOLDS=109
-UNRESOLVED_AUTH_COLLISION=1
-UNRESOLVED_PROFILES=110
-```
-
-Este es un defecto del harness de resolución, no prueba de que 109 Shoppers carezcan realmente de apellido.
-
-## 8. Paula
-
-La revisión volvió a encontrar:
-
-```text
-Staff candidates=1
-Shopper candidates=2
-Paula resolution=UNRESOLVED
-```
-
-El siguiente resolver debe emitir para ambas candidatas Shopper una matriz técnica source-safe con estado, actividad, visitas, HR links, credencial exacta y Auth, sin nombres ni PII. No se seleccionará por coincidencia visual.
-
-## 9. Rollback dry-run
-
-```text
-CREATE_AUTH: eliminar solo UID creado por el plan exacto y antes de writes dependientes.
-UPDATE_AUTH: restaurar email, disabled y claims desde snapshot previo.
-PASSWORD: la clave anterior no es recuperable; compensación = deshabilitar y reset controlado al contrato canónico.
-MEMBERSHIP: no aplica; writes=0.
+email subchanges=2
+password subchanges=1
+claims subchanges=1
+planDigest=ec16fb653bb8bf57a499b1ddc26ed8e64bd32ddb3d3debfac9eef6f2882efc40
 ```
 
 ## 10. STOP_RETRY y estado seguro
@@ -175,13 +177,12 @@ CLOUD_RUN_DEPLOYS=0
 MAKE_CALLS=0
 GEMINI_CALLS=0
 PAYMENT_WRITES=0
-RAW_NAMES_EXPORTED=false
-RAW_LOGINS_EXPORTED=false
-RAW_PASSWORDS_EXPORTED=false
-UIDS_EXPORTED=false
+RAW_NAMES/LOGINS/PASSWORDS/UIDS_EXPORTED=false
 MERGE=false
 PRODUCTION=false
 ```
+
+No existe autorización residual para retry, repair o deploy.
 
 ## 11. Phase A preservada
 
@@ -190,16 +191,12 @@ Se preservaron frontend canónico, `CX.data`, HR, histórico, shoppers, postulac
 ## 12. Siguiente bloque exacto
 
 ```text
-CORREGIR SOURCE-ONLY EL RESOLVER PARA:
-- usar nombre completo o login técnico del perfil exacto únicamente después de shopperId binding;
-- emitir resumen técnico source-safe de las 2 candidatas Shopper de Paula;
-- reconciliar baseline por conjuntos y no exigir 30/28 inmutables;
-- recalcular colisiones reales de nombre.apellido;
-- mantener una fila primaria por perfil;
-→ REPINAR RESOLVER Y DISPATCHER
-→ SOURCE/STATIC
-→ UNA NUEVA REVISIÓN READ-ONLY
-→ STOP ANTES DE AUTH/PASSWORD WRITE O DEPLOY
+CLASIFICAR SOURCE-SAFE LOS 109 GRUPOS DE NOMBRE.APELLIDO
++ RESOLVER 1 PERFIL CON DOS AUTH
++ COMPLETAR 3 NOMBRES TÉCNICOS
+→ USAR SHOPPERID, LEGACY, HR, VISITAS, CREDENCIAL Y AUTH
+→ RESOLVER PRIMERO ACTIVO VS HISTÓRICO
+→ IDENTIFICAR PERSONAS ACTIVAS DISTINTAS QUE COMPARTEN LOGIN
+→ DETENERSE PARA LA REGLA MÍNIMA DE DESAMBIGUACIÓN SI EXISTEN
+→ CERO WRITE Y CERO DEPLOY
 ```
-
-No existe autorización residual para retry, repair, deploy, merge o producción.
