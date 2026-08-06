@@ -4,38 +4,74 @@
 **Rama:** `docs-tya-v6-v71-audit`  
 **PR:** `#7` draft/open/no merge  
 **HEAD de entrada:** `3b8047358143adf2d03beb482fe3a68b7eed1e7b`  
-**Source contract commit:** `ceb5646400c61631eb2d8d469343360647c45f65`
+**Source contract commit:** `ceb5646400c61631eb2d8d469343360647c45f65`  
+**Request commit:** `206c26f777fadeec2c60cbf8d9c509998967f457`  
+**Workflow freeze commit:** `7ab085fdbc7c37c509d2191490257ca8bb950b5e`
 
-## Alcance autorizado
+## Ejecución única
 
-Una única ejecución provider read-only para:
+```text
+run=31069282511
+job=92513630516
+artifact=8955017770
+artifactDigest=sha256:ffdf8643726d4f8c0c63484790a3b71c2f0a8b4ac04be604e700b829304aff09
+providerDecision=HOLD_C6_DETERMINISTIC_SUFFIX_PLAN_STOP_RETRY
+validation=PASS_SOURCE_SAFE_OUTPUTS_AND_EXACT_PLAN_CARDINALITY
+secondAttempt=0
+```
 
-1. validar crosswalk `101 mapped / 8 unmapped`;
-2. calcular `preConsensusIncompleteActiveProfiles`, `completedByConsensus` y `remainingIncompleteActiveProfiles`;
-3. comprobar `pre = completed + remaining`;
-4. generar vectores source-safe por HOLD;
-5. generar vector y margen multi-Auth sin UID, correo ni PII;
-6. reconciliar los grupos mediante `shopper-visible-login-group-v1` y conjuntos de fingerprints;
-7. regenerar exactamente 340 filas no superpuestas.
+## Resultado
 
-## Reconciliación de conjuntos
+```text
+crosswalk=101/8 PASS
+preConsensus=83
+completedByConsensus=71
+remaining=12
+metricIdentityValid=true
+referenceGroups=64
+currentGroups=65
+setDelta=+1/-0
+multiAuth unresolved=1
+planRows=340 unique
+HOLD=13
+```
 
-En la misma ejecución se genera una referencia read-only con el clasificador estable vigente y el namespace compartido. La comparación usa únicamente fingerprints de grupos con `verifiedLoginAgreement=true` y `activeCount>1`. El planner recibe esa referencia de forma efímera; no se escribe identidad cruda al repo.
+### Los 12 residuales
 
-## STOP_RETRY
+Todos tienen primer nombre y semilla de contraseña completos. El apellido presenta:
 
-Cualquier HOLD, drift 101/8, identidad métrica inválida, diferencia de conjuntos, empate multi-Auth, colisión de sufijo o login objetivo produce `STOP_RETRY`. No se autoriza segundo intento.
+```text
+complete=false
+explicitCandidateCount=0
+technicalLoginCandidateCount=0
+consensusCandidateCount=0
+basisCount=0
+conflict=false
+```
+
+### Diferencia de grupos
+
+Se añadió únicamente `ebbcc231fcf415cbaf77`; no se eliminó ninguno. El grupo contiene dos identidades activas, un keeper y una identidad con sufijo de cuatro caracteres. El artifact no exporta la procedencia source-safe de sus miembros, por lo que el `+1/-0` queda sin explicación suficiente y bloquea.
+
+### Multi-Auth
+
+Dos candidatos obtuvieron `5016/5016`, margen `0` y vectores idénticos. Se mantiene `STOP_RETRY`.
+
+## Plan regenerado
+
+```text
+CREATE_AUTH=81
+UPDATE_AUTH=46
+NO_OP=73
+HOLD=13
+PRESERVE_NO_AUTH=127
+planDigest=74f34e3eb8d07df4d12e2f7ddb7514d3b152371fa901deefc2cd305686bde47f
+readyForAuthRepair=false
+partialExecutionAllowed=false
+```
 
 ## Seguridad
 
-```text
-providerWrites=0
-Auth/password/membership/Firestore/Rules/Storage/HR writes=0
-Hosting/Cloud Run deploys=0
-Make/Gemini/payments=0
-merge=false
-production=false
-raw names/logins/emails/passwords/uids exported=false
-```
+Una ejecución y cero segundo intento. Auth/password/membership/Firestore/Rules/Storage/HR writes, Hosting/Cloud Run, Make, Gemini, pagos, merge y producción: `0/false`. No se exportó identidad cruda.
 
-El bloque termina después de publicar artifacts source-safe, consumir el request, congelar el trigger y documentar el resultado. No autoriza repair ni aplicación parcial.
+El request quedó consumido y el trigger congelado. No existe autorización residual para provider read ni repair.
