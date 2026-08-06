@@ -1,13 +1,15 @@
 {
   "schemaVersion": "cxorbia.live-hr-current-reconcile.request.v3",
   "controlPlaneContract": "cxorbia.live-hr-control-plane-journal.v1",
-  "authorizationId": "chat-20260806-live-hr-authority-current-period-v3-02",
-  "authorizedAt": "2026-08-06T11:27:00-06:00",
+  "authorizationId": "chat-20260806-live-hr-authority-current-period-v4-03",
+  "authorizedAt": "2026-08-06T12:12:00-06:00",
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation",
-  "sourceCommit": "18ea2e6ab9b15480c851c7ba34cae8e8fbcae026",
+  "sourceCommit": "a1f11483153aa2576bb284b9b2f6ed178dbe528d",
   "previousV2RequestCommit": "4e404f2db48ff8b07430d7ac7505eff6c040458a",
-  "previousV2ProviderReadConsumption": "UNKNOWN_NO_EXECUTION_EVIDENCE",
+  "previousV2ProviderReadConsumption": "PROVEN_ZERO_BEFORE_RUNNER_STEPS",
+  "previousV3RequestCommit": "d62dbae9b10b0650c2940f4b2bf7d456cb34fc83",
+  "previousV3ProviderReadConsumption": "PROVEN_ZERO_BEFORE_RUNNER_STEPS",
   "additionalLogicalProviderExecutionAuthorized": 1,
   "enabled": true,
   "consumed": false,
@@ -35,5 +37,7 @@
     "PROVIDER_READ_SEQUENCE_COMPLETED_LOGICAL_1",
     "FINAL_<JOB_STATUS>_<CONSUMPTION>"
   ],
-  "triggerNonce": 10
+  "observationMode": "RUN_JOB_STEPS_JOURNAL_DIRECT",
+  "cancelBeforeStepsClassification": "PROVIDER_READS_0_STOP_NO_SECOND_TRIGGER",
+  "triggerNonce": 11
 }
