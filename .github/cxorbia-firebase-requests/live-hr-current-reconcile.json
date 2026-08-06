@@ -1,9 +1,14 @@
 {
-  "schemaVersion": "cxorbia.live-hr-current-reconcile.request.v2",
-  "authorizationId": "chat-20260806-live-hr-authority-current-period-01",
-  "authorizedAt": "2026-08-06T09:36:00-06:00",
+  "schemaVersion": "cxorbia.live-hr-current-reconcile.request.v3",
+  "controlPlaneContract": "cxorbia.live-hr-control-plane-journal.v1",
+  "authorizationId": "chat-20260806-live-hr-authority-current-period-v3-02",
+  "authorizedAt": "2026-08-06T11:27:00-06:00",
   "authorizedBy": "Paula",
-  "sourceCommit": "31f4af0f7501b23b4e72b1a5f8457669a5f91c77",
+  "authorizationSource": "current_conversation",
+  "sourceCommit": "18ea2e6ab9b15480c851c7ba34cae8e8fbcae026",
+  "previousV2RequestCommit": "4e404f2db48ff8b07430d7ac7505eff6c040458a",
+  "previousV2ProviderReadConsumption": "UNKNOWN_NO_EXECUTION_EVIDENCE",
+  "additionalLogicalProviderExecutionAuthorized": 1,
   "enabled": true,
   "consumed": false,
   "mode": "LIVE_HR_AUTHORITY_AND_CURRENT_PERIOD_READ_ONLY",
@@ -16,7 +21,19 @@
   "storageWrites": 0,
   "hostingDeploys": 0,
   "cloudRunDeploys": 0,
+  "make": 0,
+  "gemini": 0,
+  "payments": 0,
   "production": false,
   "merge": false,
-  "triggerNonce": 9
+  "stopRetryOnAnyFailureOrMissingCheckpoint": true,
+  "expectedCurrentPeriod": "2026-08",
+  "expectedCountries": ["GT", "HN"],
+  "requiredCheckpoints": [
+    "WORKFLOW_STARTED_PROVIDER_READS_0",
+    "PROVIDER_READ_BOUNDARY_ENTERED_MAX1",
+    "PROVIDER_READ_SEQUENCE_COMPLETED_LOGICAL_1",
+    "FINAL_<JOB_STATUS>_<CONSUMPTION>"
+  ],
+  "triggerNonce": 10
 }
