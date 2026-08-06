@@ -2,83 +2,66 @@
 
 **Fecha:** 2026-08-06  
 **Estado:** ACTIVO Y RECONCILIADO  
-**Estado vivo:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_GATE_HOLD__LIVE_HR_V4_UNRESOLVED__PRODUCTION_STRATEGY_UNMATERIALIZED__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_PRODUCTION_PROMOTION_CONTRACT_PASS__EXISTING_CLEAN_PROJECT_ACCEPTED__LIVE_HR_V4_UNRESOLVED__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Orden de prevalencia
 
 1. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `app/docs/SOURCE-LOCK-C6-PRODUCTION-FAST-TRACK-PREFLIGHT-20260806.md`;
+2. `app/docs/SOURCE-LOCK-C6-PRODUCTION-PROMOTION-PASS-20260806.md`;
 3. `app/docs/evidence/C6-PRODUCTION-TARGET-PREFLIGHT-LATEST.json`;
-4. `tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs`;
-5. `app/docs/evidence/C6-PRODUCTION-FAST-TRACK-PREFLIGHT-LATEST.json`;
+4. `backend/config/cxorbia-production-promotion-contract.json`;
+5. `tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs`;
 6. `app/docs/SOURCE-LOCK-C6-LIVE-HR-V4-REQUEST-30M-NO-RUN-EVIDENCE-20260806.md`;
 7. `app/docs/evidence/LIVE-HR-V4-REQUEST-30M-NO-RUN-EVIDENCE-LATEST.json`;
 8. `.github/cxorbia-firebase-requests/live-hr-current-reconcile.json`;
 9. `.github/workflows/cxorbia-live-hr-current-reconcile.yml`;
 10. `.firebaserc` y `firebase.json`;
-11. `tools/qa/cxorbia-live-hr-run-consumption-classifier.mjs`;
-12. `tools/qa/cxorbia-live-hr-control-plane-journal.mjs`;
-13. source lock y evidencia de cancelación v2/v3 como antecedentes cerrados;
-14. `app/docs/SOURCE-LOCK-C6-SKIP13-AUTH-DISPOSITION-20260806.md`;
-15. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-16. addenda vigentes de CAMBIOS, Claude, Pendientes, Academia y tracker;
-17. `AGENTS.md`, PR #7 y HEAD vivo.
+11. `app/docs/SOURCE-LOCK-C6-SKIP13-AUTH-DISPOSITION-20260806.md`;
+12. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+13. addenda vigentes de CAMBIOS, Claude, Pendientes, Academia y tracker;
+14. `AGENTS.md`, PR #7 y HEAD vivo.
 
-## 2. Request v4 vigente
+## 2. Estrategia de producción cerrada
 
 ```text
-sourceCommit=a1f11483153aa2576bb284b9b2f6ed178dbe528d
+strategy=PROMOTE_EXISTING_CLEAN_PROJECT
+project=cxorbia-backend-dev
+hostingTarget=cxorbia-dev
+hostingSite=cxorbia-backend-dev
+cloudRunService=cxorbia-live-hr-dev
+acceptCurrentIdentifiersAndUrlAsProduction=true
+```
+
+Contrato:
+
+```text
+commit=3197aa5056375ddcffd3a67836ba5cf55a91eede
+blob=972943da9698c07ff3af21eca8a4c539433d8d2d
+authorizationId=chat-20260806-promote-existing-clean-project-v1
+```
+
+## 3. Gate source-only
+
+```text
+node --check=PASS
+exitCode=0
+decision=PASS_PRODUCTION_PROMOTION_CONTRACT_EXISTING_CLEAN_PROJECT
+failedChecks=0
+holdReason=null
+```
+
+Este PASS autoriza la estrategia y topología futuras; no autoriza writes, deploy, merge ni cutover.
+
+## 4. Request HR v4
+
+```text
 requestCommit=ac2032ec224e6d56bf087788b949691b6690c437
-authorizationId=chat-20260806-live-hr-authority-current-period-v4-03
-providerReads autorizados=1
+providerReadConsumption=UNKNOWN_NO_RUN_JOB_OR_CHECKPOINT_EVIDENCE
+STOP_RETRY=true
 segundo trigger=0
 ```
 
-El request fue emitido una única vez y no fue modificado nuevamente.
-
-## 3. Resultado observable HR
-
-No se han recuperado runId, jobId, steps, journal, artifact o checkpoints. Los commit statuses del request continúan vacíos.
-
-```text
-workflowRunExistence=UNKNOWN_AFTER_30M_OBSERVATION
-providerBoundaryProvenReached=false
-providerReadConsumption=UNKNOWN_NO_RUN_JOB_OR_CHECKPOINT_EVIDENCE
-STOP_RETRY=true
-```
-
-No inferir que el run no existió, que `providerReads=0` o que la lectura fue consumida.
-
-## 4. Gate fast-track de producción
-
-```text
-tool=tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs
-node --check=PASS
-exitCode=2 esperado fail-closed
-decision=HOLD_PRODUCTION_STRATEGY_UNMATERIALIZED
-holdReason=PRODUCTION_PROMOTION_STRATEGY_NOT_AUTHORIZED_OR_MATERIALIZED
-```
-
-Configuración limpia observada:
-
-```text
-project=cxorbia-backend-dev
-hosting target=cxorbia-dev
-hosting site=cxorbia-backend-dev
-Cloud Run service=cxorbia-live-hr-dev
-region=us-central1
-public=app
-UTF-8=PASS
-```
-
-El gate no impone crear otro proyecto. Espera autorización de una estrategia:
-
-```text
-PROMOTE_EXISTING_CLEAN_PROJECT
-SEPARATE_CLEAN_PROD_PROJECT
-```
-
-Ninguna está autorizada o materializada todavía. La base legacy no puede usarse como backend nuevo.
+No se han confirmado `2026-08`, GT/HN, mutación histórica ni paridad transversal de `sourceRevision`.
 
 ## 5. Identidades Shopper
 
@@ -96,19 +79,17 @@ SKIP13 e historia permanecen preservados. Auth no ha sido ejecutado.
 ## 6. Pendiente real
 
 - evidencia terminal del request HR v4;
-- `2026-08`, tabs GT/HN, mutación histórica y `sourceRevision`;
+- PASS HR viva actual e histórica;
 - Auth con gate separado;
 - smoke acumulativo multirol;
-- estrategia de promoción autorizada y materializada;
-- PASS del gate de producción;
-- validación humana, rollback y autorización específica de cutover.
+- validación humana y rollback;
+- autorización específica de cutover;
+- único deploy/cutover.
 
 ## 7. Estado seguro
 
 ```text
-request modificado después de emisión=false
-segundo trigger=0
-provider reads ejecutados por preflight=0
+provider reads del bloque=0
 provider/HR/Firestore/Auth/Rules/Storage writes=0
 Hosting/Cloud Run deploys=0
 Make/Gemini/payments=0
