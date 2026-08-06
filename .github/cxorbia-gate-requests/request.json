@@ -1,26 +1,19 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "c6-shopper-identity-resolver-focal-source-static-20260805-02",
-  "enabled": false,
-  "issuedAt": "2026-08-05T18:18:00-06:00",
-  "consumedAt": "2026-08-05T18:24:00-06:00",
-  "consumed": true,
-  "status": "consumed_pass_focal_resolver_source_static",
-  "decision": "PASS_READONLY_POST_GATES",
-  "compositionDecision": "PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS",
-  "labDecision": "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT",
+  "requestId": "c6-shopper-login-collision-classification-source-static-20260805-01",
+  "enabled": true,
+  "issuedAt": "2026-08-05T18:43:00-06:00",
+  "consumed": false,
+  "status": "authorized_execute_once",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "f91acb97f913cd8a445f9e73407a594c284b4fff",
-  "requestCommitSha": "a0135ab4479e4faef38981d11eb4b448f1a31d08",
-  "workflowRunId": 31059576130,
-  "workflowJobId": 92484349960,
-  "artifactId": 8951552902,
-  "artifactDigest": "sha256:5ae40b1a338d9594ffc3368477673677f2462ddd14e0e2b2d313dbf0b6e5311a",
+  "targetHeadSha": "3f9f2b75633a1bcafe5e2b0922a084f2fd1d8d53",
   "profile": "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC",
-  "allowedProfiles": ["PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC"],
-  "allowedExecutions": 0,
+  "allowedProfiles": [
+    "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC"
+  ],
+  "allowedExecutions": 1,
   "repositoryWrites": false,
   "dataWrites": false,
   "providerReads": false,
@@ -34,8 +27,8 @@
   "activeOverlayManifest": "app/docs/MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-20260804.json",
   "canonicalIdentityContract": "backend/contracts/c6-shopper-identity-canonicalization-v1.json",
   "repinnedFiles": {
-    "tools/qa/cxorbia-c6-shopper-identity-resolution-review.mjs": "6ca283662a84bdf4b99eb19cfd8325d33a26dd7b",
-    "tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs": "5cfbdcc5d3eea719eded3b31e06823a500c6109a"
+    "tools/qa/cxorbia-c6-shopper-login-collision-classification.mjs": "ef95c59442728be6a326b8240c3f74ae9a3551af",
+    "tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs": "9633a1db7fa071cf21350f27e7bb7d0cf00b1591"
   },
   "requiredDecisions": [
     "PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS",
@@ -59,9 +52,9 @@
   "containsPii": false,
   "containsSecrets": false,
   "authorizedBy": "Paula",
-  "authorizationScope": "Validate source-only the focal Shopper identity resolver correction: exact technical binding before full-name or technical-login derivation, source-safe comparison of Paula's two Shopper candidates, fingerprint-set baseline reconciliation, real collision recalculation and exactly one primary plan row per 340 profiles. No provider reads in this gate and no provider write, deploy, merge or production.",
+  "authorizationScope": "Validate source-only the source-safe technical classifier for the 109 candidate nombre.apellido groups, one multiple-Auth profile and three prior incomplete names; preserve the visible contract, verify surnames only from explicit or technical sources, classify active versus historical and create one primary plan row for each of 340 profiles. No provider reads in this gate and no Auth/password/membership/Firestore/Rules/Storage/HR write, deploy, Cloud Run, Make, Gemini, payments, merge or production.",
   "repositoryUnchangedByGate": true,
   "stopRetryOnFailure": true,
-  "nextGate": "EXECUTE_ONE_SOURCE_SAFE_IDENTITY_RESOLUTION_REVIEW",
-  "purpose": "Consumed successful accumulated source/static gate before the single authorized read-only focal identity review."
+  "nextGate": "ON_PASS_EXECUTE_ONE_READONLY_SHOPPER_LOGIN_COLLISION_CLASSIFICATION",
+  "purpose": "One-shot accumulated source/static gate before the authorized provider read-only collision classification."
 }
