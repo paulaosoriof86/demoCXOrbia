@@ -3,7 +3,7 @@ name: Orbit 360 · Control-plane source-only macOS
 on:
   pull_request:
     branches:
-      - main
+      - orbit360-control-plane-base-20260806
     paths:
       - .github/workflows/orbit360-source-control-plane-macos-v20260806.yml
 
