@@ -1,9 +1,9 @@
 {
-  "schemaVersion": "cxorbia.c6.production-target-preflight-source-only.v1",
-  "generatedAt": "2026-08-06T19:10:25.716Z",
+  "schemaVersion": "cxorbia.c6.production-target-preflight-source-only.v2",
+  "generatedAt": "2026-08-06T19:15:51.532Z",
   "mode": "SOURCE_ONLY_NO_PROVIDER_NO_DEPLOY",
   "tool": "tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs",
-  "toolBlobSha": "022fbdca748a4f7b35146a8b67a0d1fa9e3ff067",
+  "toolBlobSha": "db42189a74e165c90c0dd13907c243702d9ba0b6",
   "execution": {
     "nodeCheck": "PASS",
     "exitCode": 2,
@@ -12,6 +12,7 @@
   "inputs": {
     "devRcPath": ".firebaserc",
     "devFirebasePath": "firebase.json",
+    "contractPath": "backend/config/cxorbia-production-promotion-contract.json",
     "prodRcPath": ".firebaserc.prod",
     "prodFirebasePath": "firebase.prod.json",
     "devRcBlobSha": "35e381ceb8db2a6143623f42b92de649a10dda40",
@@ -22,18 +23,26 @@
     "devHostingTargetPresent": true,
     "devHostingSitePresent": true,
     "devCloudRunServicePresent": true,
+    "devRegionIsUsCentral1": true,
     "devPublicDirectoryIsApp": true,
-    "productionRcPresent": false,
-    "productionFirebasePresent": false
+    "devUtf8HtmlHeaderPresent": true,
+    "productionPromotionContractPresent": false
   },
-  "decision": "HOLD_PRODUCTION_TARGET_UNMATERIALIZED",
+  "decision": "HOLD_PRODUCTION_STRATEGY_UNMATERIALIZED",
   "dev": {
     "projectId": "cxorbia-backend-dev",
     "hostingTarget": "cxorbia-dev",
     "hostingSite": "cxorbia-backend-dev",
-    "cloudRunService": "cxorbia-live-hr-dev"
+    "cloudRunService": "cxorbia-live-hr-dev",
+    "cloudRunRegion": "us-central1",
+    "publicDirectory": "app",
+    "utf8HtmlHeaderPresent": true
   },
-  "holdReason": "PRODUCTION_CONFIGURATION_FILES_NOT_MATERIALIZED",
+  "allowedStrategies": [
+    "PROMOTE_EXISTING_CLEAN_PROJECT",
+    "SEPARATE_CLEAN_PROD_PROJECT"
+  ],
+  "holdReason": "PRODUCTION_PROMOTION_STRATEGY_NOT_AUTHORIZED_OR_MATERIALIZED",
   "safeState": {
     "providerReads": 0,
     "providerWrites": 0,
