@@ -2,15 +2,13 @@
 
 **Fecha original:** 2026-07-04  
 **Actualización prevalente:** 2026-08-06  
-**Estado:** `C6_13_HOLD_DISPOSITION_AND_LIVE_HR_AUGUST_ROOT_FIX_PENDING__NO_PRODUCTION`
+**Estado:** `C6_SKIP13_AUTH_DISPOSITION_PASS__LIVE_HR_AUGUST_ROOT_FIX_PENDING__NO_PRODUCTION`
 
 ## 1. Objetivo operativo
 
-Cerrar una única baseline acumulativa sobre `docs-tya-v6-v71-audit` y llevar a producción Phase A sin reabrir módulos ya preservados, sin otra candidata paralela y sin sustituir la HR viva por snapshots o datos fijados.
+Cerrar una única baseline acumulativa sobre `docs-tya-v6-v71-audit` y llevar Phase A a producción sin reabrir módulos preservados, sin candidata paralela y sin sustituir la HR viva por snapshots o datos fijados.
 
-El estado V7.2 y cualquier carril anterior quedan como historia, no como estado vivo.
-
-## 2. Bloques preservados que no se reabren sin regresión reproducible
+## 2. Bloques preservados
 
 - frontend acumulativo y navegación multirol;
 - Dashboard, Histórico, Visitas, Postulaciones, Reservas y experiencia Shopper;
@@ -23,7 +21,7 @@ El estado V7.2 y cualquier carril anterior quedan como historia, no como estado 
 
 ## 3. Estado C6 de identidades
 
-La reconciliación estructural está cerrada:
+La conciliación estructural está cerrada:
 
 ```text
 profiles=340
@@ -34,25 +32,34 @@ suffix allocation holds=0
 target login collisions=0
 ```
 
-Quedan 13 decisiones humanas:
-
-- 12 perfiles sin apellido autoritativo;
-- 1 perfil con empate multi-Auth;
-- nombres aún pendientes de recuperación privada;
-- repair Auth no ejecutable mientras las filas permanezcan HOLD.
-
-## 4. Regla de disposición para perfiles antiguos
-
-Paula puede excluir un perfil antiguo del repair Auth sin borrar la persona ni su historia:
+Paula autorizó omitir del repair Auth los 13 perfiles residuales. La disposición source-only exacta produjo:
 
 ```text
-ARCHIVE_LEGACY_NO_AUTH
-EXCLUDE_FROM_AUTH_REPAIR
-PRESERVE_HISTORY=true
-LOGIN_ENABLED=false
+CREATE_AUTH=81
+UPDATE_AUTH=46
+NO_OP=73
+HOLD=0
+PRESERVE_NO_AUTH=140
+rows=340 unique
 ```
 
-La disposición debe conservar visitas, certificaciones, liquidaciones, comunicaciones y auditoría. No se permite hard delete ni fusión por nombre.
+Los 13 perfiles ya no bloquean el avance.
+
+## 4. Regla de disposición
+
+```text
+SKIP_AUTH_REPAIR_PRESERVE_HISTORY
+skipFromAuthRepair=true
+doNotCreateAuth=true
+doNotUpdateAuth=true
+preserveHistoricalProfile=true
+preserveVisits=true
+preserveCertifications=true
+preserveLiquidations=true
+futureManualReactivationAllowed=true
+```
+
+No se permite hard delete ni fusión por nombre. Las cuentas Auth preexistentes no se modificaron en este bloque; el pre-cutover debe verificar que las identidades omitidas no obtengan acceso efectivo.
 
 ## 5. Autoridad HR viva — regla prevalente
 
@@ -66,42 +73,37 @@ Toda información de HR, incluida la historia, debe provenir de una lectura viva
 
 ## 6. P0 agosto
 
-La evidencia previa prueba que el builder detectó 30 tabs, 15 periodos y 684 visitas, incluyendo `AGOSTO 26` y `AGOSTO 26 HN`; después, un registry desactualizado las rechazó y redujo la salida a 28 tabs, 14 periodos y 616 visitas.
+La evidencia prueba que el builder detectó 30 tabs, 15 periodos y 684 visitas, incluyendo `AGOSTO 26` y `AGOSTO 26 HN`; después, un registry desactualizado las rechazó y redujo la salida a 28 tabs, 14 periodos y 616 visitas.
 
 Producción no puede avanzar mientras:
 
 - metadata provider no responda;
 - `autoDiscovery` siga false;
-- agosto GT/HN no aparezca en la lectura viva;
-- la plataforma dependa de `latestPeriod=2026-07` proveniente de un snapshot materializado.
+- agosto GT/HN no aparezca en lectura viva;
+- la plataforma dependa de `latestPeriod=2026-07` materializado;
+- no exista una prueba de cambio histórico desde la HR viva.
 
 ## 7. Cadena única de salida
 
-### Bloque A — Identidades HOLD
-
-1. Recuperar nombres y actividad sin inferencia.
-2. Paula decide `KEEP_FOR_AUTH` o `ARCHIVE_LEGACY_NO_AUTH`.
-3. Regenerar plan de 340 filas.
-4. Exigir cero HOLD operativo, cero colisiones y plan no superpuesto.
-
-### Bloque B — HR viva agosto
+### Bloque A — HR viva agosto
 
 1. Corregir acceso a metadata provider/autodiscovery.
 2. Confirmar `AGOSTO 26` y `AGOSTO 26 HN`.
 3. Reconstruir todos los periodos desde HR viva.
 4. Confirmar `latestPeriodKey=2026-08`.
-5. Probar una modificación histórica controlada mediante revisión viva, sin snapshot fijo.
+5. Probar una modificación histórica controlada mediante revisión viva.
 6. Confirmar una sola `sourceRevision` en Dashboard, Histórico, Visitas, Finanzas, Cliente y Shopper.
 
-### Bloque C — Auth y validación acumulativa
+### Bloque B — Auth y validación acumulativa
 
-1. Ejecutar repair Auth solo con autorización expresa y plan final sin HOLD.
-2. Snapshot, idempotencia, readback y rollback.
-3. Smoke Admin/Operaciones, Shopper y Cliente.
-4. Tres recargas, nueva pestaña y estabilidad sin reload agresivo.
-5. Validación humana sobre una única URL/build.
+1. Materializar el plan de 340 filas con overlay SKIP13 y `HOLD=0`.
+2. Ejecutar repair Auth solo con autorización expresa, snapshot, idempotencia, readback y rollback.
+3. Verificar que los 13 perfiles omitidos no reciban acceso efectivo.
+4. Smoke Admin/Operaciones, Shopper y Cliente.
+5. Tres recargas, nueva pestaña y estabilidad sin reload agresivo.
+6. Validación humana sobre una única URL/build.
 
-### Bloque D — Cutover
+### Bloque C — Cutover
 
 1. Source lock final.
 2. Rollback probado.
@@ -111,10 +113,11 @@ Producción no puede avanzar mientras:
 
 ## 8. Circuit breakers
 
-- No segundo provider read del probe fallido sin autorización nueva.
+- No reabrir la conciliación de los 13 perfiles.
+- No segundo provider read del probe fallido.
 - No reauditar el universo 65/65.
 - No pedir otra candidata.
-- No aplicar parcialmente el plan Auth.
+- No ejecutar Auth sin autorización separada.
 - No hardcodear agosto ni añadirlo manualmente al registry como sustituto de metadata viva.
 - No tratar 616 visitas o 14 periodos como constantes.
 - No reabrir módulos protegidos salvo regresión reproducible.
@@ -122,7 +125,7 @@ Producción no puede avanzar mientras:
 ## 9. Estado seguro
 
 ```text
-Auth/data/HR writes=0
+provider/Auth/data/HR writes=0
 Hosting/Cloud Run deploys=0
 Make/Gemini/payments=0
 merge=false
