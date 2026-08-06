@@ -1,0 +1,144 @@
+{
+  "schemaVersion": "cxorbia.c6.shopper-deterministic-suffix-readonly-hold.v1",
+  "generatedAt": "2026-08-06T02:02:52.083Z",
+  "decision": "HOLD_C6_DETERMINISTIC_SUFFIX_PLAN_STOP_RETRY",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "request": {
+    "requestId": "c6-shopper-deterministic-suffix-readonly-20260805-01",
+    "requestCommitSha": "880546e4b80d7fe27eaefe5c01d4b2c16256080d",
+    "targetHeadSha": "7e22f2f20ac143419806d23569107bda259499ec",
+    "consumed": true,
+    "automaticRetry": false
+  },
+  "execution": {
+    "sourceStaticDecision": "PASS_C6_DETERMINISTIC_SUFFIX_SOURCE_STATIC",
+    "workflowRunId": 31064458045,
+    "workflowJobId": 92499147712,
+    "artifactId": 8953330337,
+    "artifactDigest": "sha256:dc98e359ec09ee04cf0b9ba49acb4062a789707fe4e34cfadbf977dce10e2c39",
+    "providerReads": true,
+    "providerWrites": false,
+    "executions": 1
+  },
+  "policy": {
+    "name": "DETERMINISTIC_TECHNICAL_SUFFIX",
+    "defaultVisibleLogin": "nombre.apellido",
+    "preserveUnsuffixedWhen": "one_unique_technical_holder_exists",
+    "suffixDerivation": "sha256(tenantId + NUL + shopperId)",
+    "suffixLengths": [4, 6, 8],
+    "suffixContainsPii": false
+  },
+  "source": {
+    "profiles": 340,
+    "authUsers": 110,
+    "memberships": 1,
+    "credentials": 109,
+    "credentialsMapped": 88,
+    "credentialsUnmapped": 21,
+    "hrImportDocs": 1,
+    "visits": 616,
+    "certifications": 77,
+    "liquidations": 827,
+    "latestPeriod": "2026-07",
+    "recentFloor": "2026-05"
+  },
+  "surnameCompletion": {
+    "priorActiveProfilesWithoutVerifiedTechnicalSurname": 83,
+    "completedByMultiSourceConsensus": 71,
+    "remainingIncompleteActiveProfiles": 12,
+    "completionCoverage": "71/83"
+  },
+  "disambiguation": {
+    "collisionGroups": 65,
+    "activeIdentities": 142,
+    "groupsWithUniqueUnsuffixedKeeper": 52,
+    "groupsAllSuffixed": 13,
+    "suffix4": 90,
+    "suffix6": 0,
+    "suffix8": 0,
+    "suffixAllocationHolds": 0,
+    "targetCollisionHolds": 0,
+    "diagnosticDeltaFromPriorBaseline": {
+      "collisionGroups": "+1",
+      "activeIdentities": "+1",
+      "explanation": "Source-safe surname completion exposed one additional real active collision group rather than creating a collision."
+    }
+  },
+  "multiAuth": {
+    "profilesWithMultipleCandidates": 1,
+    "resolved": 0,
+    "unresolved": 1,
+    "resolutionSignalsApplied": [
+      "exact claims",
+      "shopperId claim",
+      "target and base internal email",
+      "legacy credential email",
+      "password compatibility",
+      "enabled state",
+      "email verification",
+      "provider creation metadata"
+    ],
+    "result": "residual technical tie"
+  },
+  "plan": {
+    "rows": 340,
+    "CREATE_AUTH": 81,
+    "UPDATE_AUTH": 46,
+    "NO_OP": 73,
+    "HOLD": 13,
+    "PRESERVE_NO_AUTH": 127,
+    "subchangeEmail": 39,
+    "subchangePassword": 14,
+    "subchangeClaims": 38,
+    "planDigest": "831c9602aa5686aea22694970aa1beb9557f4bb7b966d4233e028e63fb456d01",
+    "onePrimaryOperationPerProfile": true,
+    "executable": false,
+    "readyForAuthRepair": false,
+    "holdComposition": {
+      "technicalSurnameUnresolved": 12,
+      "multiAuthTieResidual": 1
+    }
+  },
+  "blockers": [
+    "12 active profiles remain without a source-safe technical surname",
+    "1 multi-Auth profile remains tied after all authorized technical signals",
+    "the regenerated baseline is 65 collision groups and 142 active identities; the prior 64/141 count is superseded"
+  ],
+  "repositoryDeltaEvidence": {
+    "tracked": 0,
+    "untracked": 0,
+    "status": "clean"
+  },
+  "stopRetry": {
+    "applied": true,
+    "automaticRetry": false,
+    "providerSecondAttempt": false,
+    "authRepairBlocked": true,
+    "deployBlocked": true
+  },
+  "safety": {
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "membershipWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "rawNamesExported": false,
+    "rawLoginsExported": false,
+    "rawEmailsExported": false,
+    "rawPasswordsExported": false,
+    "uidsExported": false,
+    "merge": false,
+    "production": false
+  },
+  "nextExactBlock": "Source-only root fix and technical evidence design for 12 unresolved active surnames plus one residual multi-Auth tie, without provider retry, followed by a new explicitly authorized read-only gate only after source/static PASS."
+}
