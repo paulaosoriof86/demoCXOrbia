@@ -1,19 +1,28 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
   "requestId": "c6-shopper-login-collision-classification-source-static-20260805-01",
-  "enabled": true,
+  "enabled": false,
   "issuedAt": "2026-08-05T18:43:00-06:00",
-  "consumed": false,
-  "status": "authorized_execute_once",
+  "consumedAt": "2026-08-05T18:55:00-06:00",
+  "consumed": true,
+  "status": "consumed_pass_collision_classifier_source_static",
+  "decision": "PASS_READONLY_POST_GATES",
+  "compositionDecision": "PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS",
+  "labDecision": "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "targetHeadSha": "3f9f2b75633a1bcafe5e2b0922a084f2fd1d8d53",
+  "requestCommitSha": "98d2ccce5fd12a6b3f5f5b8a5264f4ab29e04062",
+  "workflowRunId": 31061161498,
+  "workflowJobId": 92489240097,
+  "artifactId": 8952153534,
+  "artifactDigest": "sha256:ec793ef97bc8c4fd57df6e5b412aa108324dec65a1aa0af3f0622f78d9cf2a64",
   "profile": "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC",
   "allowedProfiles": [
     "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC"
   ],
-  "allowedExecutions": 1,
+  "allowedExecutions": 0,
   "repositoryWrites": false,
   "dataWrites": false,
   "providerReads": false,
@@ -55,6 +64,6 @@
   "authorizationScope": "Validate source-only the source-safe technical classifier for the 109 candidate nombre.apellido groups, one multiple-Auth profile and three prior incomplete names; preserve the visible contract, verify surnames only from explicit or technical sources, classify active versus historical and create one primary plan row for each of 340 profiles. No provider reads in this gate and no Auth/password/membership/Firestore/Rules/Storage/HR write, deploy, Cloud Run, Make, Gemini, payments, merge or production.",
   "repositoryUnchangedByGate": true,
   "stopRetryOnFailure": true,
-  "nextGate": "ON_PASS_EXECUTE_ONE_READONLY_SHOPPER_LOGIN_COLLISION_CLASSIFICATION",
-  "purpose": "One-shot accumulated source/static gate before the authorized provider read-only collision classification."
+  "nextGate": "EXECUTE_ONE_READONLY_SHOPPER_LOGIN_COLLISION_CLASSIFICATION",
+  "purpose": "Consumed successful accumulated source/static gate before the authorized provider read-only collision classification."
 }
