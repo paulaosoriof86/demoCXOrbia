@@ -2,25 +2,27 @@
 
 **Fecha:** 2026-08-06  
 **Estado:** ACTIVO Y RECONCILIADO  
-**Estado vivo:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_SOURCE_ONLY_COMPLETE__LIVE_HR_V4_UNRESOLVED__DEV_ONLY_TARGET_CONFIRMED__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_GATE_HOLD__LIVE_HR_V4_UNRESOLVED__PROD_TARGET_UNMATERIALIZED__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Orden de prevalencia
 
 1. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 2. `app/docs/SOURCE-LOCK-C6-PRODUCTION-FAST-TRACK-PREFLIGHT-20260806.md`;
-3. `app/docs/evidence/C6-PRODUCTION-FAST-TRACK-PREFLIGHT-LATEST.json`;
-4. `app/docs/SOURCE-LOCK-C6-LIVE-HR-V4-REQUEST-30M-NO-RUN-EVIDENCE-20260806.md`;
-5. `app/docs/evidence/LIVE-HR-V4-REQUEST-30M-NO-RUN-EVIDENCE-LATEST.json`;
-6. `.github/cxorbia-firebase-requests/live-hr-current-reconcile.json`;
-7. `.github/workflows/cxorbia-live-hr-current-reconcile.yml`;
-8. `.firebaserc` y `firebase.json`;
-9. `tools/qa/cxorbia-live-hr-run-consumption-classifier.mjs`;
-10. `tools/qa/cxorbia-live-hr-control-plane-journal.mjs`;
-11. source lock y evidencia de cancelación v2/v3 como antecedentes cerrados;
-12. `app/docs/SOURCE-LOCK-C6-SKIP13-AUTH-DISPOSITION-20260806.md`;
-13. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-14. addenda vigentes de CAMBIOS, Claude, Pendientes, Academia y tracker;
-15. `AGENTS.md`, PR #7 y HEAD vivo.
+3. `app/docs/evidence/C6-PRODUCTION-TARGET-PREFLIGHT-LATEST.json`;
+4. `tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs`;
+5. `app/docs/evidence/C6-PRODUCTION-FAST-TRACK-PREFLIGHT-LATEST.json`;
+6. `app/docs/SOURCE-LOCK-C6-LIVE-HR-V4-REQUEST-30M-NO-RUN-EVIDENCE-20260806.md`;
+7. `app/docs/evidence/LIVE-HR-V4-REQUEST-30M-NO-RUN-EVIDENCE-LATEST.json`;
+8. `.github/cxorbia-firebase-requests/live-hr-current-reconcile.json`;
+9. `.github/workflows/cxorbia-live-hr-current-reconcile.yml`;
+10. `.firebaserc` y `firebase.json`;
+11. `tools/qa/cxorbia-live-hr-run-consumption-classifier.mjs`;
+12. `tools/qa/cxorbia-live-hr-control-plane-journal.mjs`;
+13. source lock y evidencia de cancelación v2/v3 como antecedentes cerrados;
+14. `app/docs/SOURCE-LOCK-C6-SKIP13-AUTH-DISPOSITION-20260806.md`;
+15. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+16. addenda vigentes de CAMBIOS, Claude, Pendientes, Academia y tracker;
+17. `AGENTS.md`, PR #7 y HEAD vivo.
 
 ## 2. Request v4 vigente
 
@@ -47,18 +49,27 @@ STOP_RETRY=true
 
 No inferir que el run no existió, que `providerReads=0` o que la lectura fue consumida.
 
-## 4. Fast-track de producción
+## 4. Gate fast-track de producción
 
-Se auditó la configuración versionada sin esperar pasivamente por HR:
+Se creó y ejecutó source-only:
+
+```text
+tool=tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs
+node --check=PASS
+exitCode=2 esperado fail-closed
+decision=HOLD_PRODUCTION_TARGET_UNMATERIALIZED
+holdReason=PRODUCTION_CONFIGURATION_FILES_NOT_MATERIALIZED
+```
+
+Configuración observada:
 
 ```text
 default/dev project=cxorbia-backend-dev
 hosting target=cxorbia-dev
 hosting site=cxorbia-backend-dev
 Cloud Run rewrite=cxorbia-live-hr-dev
-production alias=false
-production target=false
-production service=false
+.firebaserc.prod existe=false
+firebase.prod.json existe=false
 ```
 
 El repositorio todavía no materializa un carril de producción. Un deploy desde la configuración actual sería DEV, no producción.
@@ -82,7 +93,7 @@ SKIP13 e historia permanecen preservados. Auth no ha sido ejecutado.
 - `2026-08`, tabs GT/HN, mutación histórica y `sourceRevision`;
 - Auth con gate separado;
 - smoke acumulativo multirol;
-- target de producción nuevo, separado y verificado;
+- archivos y target de producción nuevos, separados y verificados;
 - validación humana, rollback y autorización específica de cutover.
 
 ## 7. Estado seguro
