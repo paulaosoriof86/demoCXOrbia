@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "cxorbia.c6.shopper-deterministic-suffix.v1",
+  "status": "tenant_authorized_readonly_planning_contract",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "firebaseProjectId": "cxorbia-backend-dev",
+  "visibleLoginPolicy": {
+    "default": "nombre.apellido",
+    "exception": "DETERMINISTIC_TECHNICAL_SUFFIX",
+    "scope": "distinct_active_people_sharing_same_visible_login_only",
+    "preserveUnsuffixedWhen": "one_unique_technical_holder_exists",
+    "suffixDerivation": "sha256(tenantId + NUL + shopperId)",
+    "suffixLengths": [4, 6, 8],
+    "suffixContainsPii": false,
+    "separator": "."
+  },
+  "technicalSurnameCompletion": {
+    "allowedSources": [
+      "explicit profile surname",
+      "explicit linked technical surname",
+      "exact legacy credential login",
+      "multi-source full-name consensus"
+    ],
+    "singlePositionOnlyInferenceAllowed": false,
+    "conflictPolicy": "HOLD"
+  },
+  "multiAuthResolution": {
+    "signals": [
+      "exact custom claims",
+      "shopperId claim",
+      "exact target email",
+      "exact credential email",
+      "password compatibility",
+      "enabled state",
+      "provider metadata"
+    ],
+    "tiePolicy": "STOP_RETRY"
+  },
+  "plan": {
+    "rows": 340,
+    "onePrimaryOperationPerProfile": true,
+    "operations": ["CREATE_AUTH", "UPDATE_AUTH", "NO_OP", "HOLD", "PRESERVE_NO_AUTH"],
+    "executable": false
+  },
+  "privacy": {
+    "rawNamesInRepositoryOrEvidence": false,
+    "rawVisibleLoginsInEvidence": false,
+    "rawEmailsInEvidence": false,
+    "rawPasswordsInEvidence": false,
+    "uidsInEvidence": false,
+    "suffixIsSourceSafe": true
+  },
+  "safeState": {
+    "providerReads": true,
+    "providerWrites": false,
+    "authWrites": false,
+    "passwordChanges": false,
+    "membershipWrites": false,
+    "firestoreWrites": false,
+    "rulesWrites": false,
+    "storageWrites": false,
+    "hrWrites": false,
+    "deploy": false,
+    "payments": false,
+    "merge": false,
+    "production": false
+  }
+}
