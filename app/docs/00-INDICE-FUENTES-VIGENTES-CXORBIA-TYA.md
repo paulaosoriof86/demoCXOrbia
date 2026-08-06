@@ -2,35 +2,34 @@
 
 **Fecha:** 2026-08-05  
 **Estado:** ACTIVO  
-**Estado vivo:** `SHOPPER_FOCAL_RESOLVER_SOURCE_STATIC_PASS__READONLY_REVIEW_HOLD_109_VISIBLE_LOGIN_GROUPS__PAULA_RESOLVED__STOP_RETRY__NO_AUTH_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `SHOPPER_COLLISION_CLASSIFIER_SOURCE_STATIC_PASS__READONLY_HOLD_64_DISTINCT_ACTIVE_GROUPS__83_ACTIVE_SURNAMES_UNVERIFIED__1_MULTI_AUTH__STOP_RETRY__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Fuentes activas y orden de prevalencia
 
 1. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `app/docs/evidence/CORTE6-SHOPPER-IDENTITY-FOCAL-RESOLUTION-HOLD-LATEST.json`;
+2. `app/docs/evidence/CORTE6-SHOPPER-LOGIN-COLLISION-CLASSIFICATION-HOLD-LATEST.json`;
 3. `backend/config/corte6-human-login-shopper-identity-audit.json`;
 4. `.github/cxorbia-gate-requests/request.json`;
 5. `backend/contracts/c6-shopper-identity-canonicalization-v1.json`;
-6. `tools/qa/cxorbia-c6-shopper-identity-resolution-review.mjs`;
+6. `tools/qa/cxorbia-c6-shopper-login-collision-classification.mjs`;
 7. `tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs`;
-8. `tools/qa/cxorbia-c6-shopper-identity-canonical-plan.mjs`;
-9. `app/docs/MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-20260804.json`;
-10. `CAMBIOS-BACKEND-ADDENDUM-C6-SHOPPER-FOCAL-RESOLUTION-HOLD-20260805.md`;
-11. `RESUMEN-PARA-CLAUDE-ADDENDUM-C6-SHOPPER-FOCAL-RESOLUTION-HOLD-20260805.md`;
-12. `PENDIENTES-PROTOTIPO-ADDENDUM-C6-SHOPPER-FOCAL-RESOLUTION-HOLD-20260805.md`;
-13. `ACADEMIA-IMPACTO-C6-SHOPPER-FOCAL-RESOLUTION-HOLD-20260805.md`;
-14. `PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-C6-SHOPPER-FOCAL-RESOLUTION-HOLD-20260805.md`;
-15. `PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md`;
-16. `app/docs/evidence/CORTE6-SHOPPER-IDENTITY-SOURCE-SAFE-RESOLUTION-HOLD-LATEST.json` — revisión anterior;
-17. `app/docs/evidence/CORTE6-SHOPPER-IDENTITY-CANONICAL-CENSUS-HOLD-LATEST.json` — censo anterior;
-18. `app/docs/evidence/CORTE6-HUMAN-LOGIN-SHOPPER-IDENTITY-AUDIT-LATEST.json` — baseline histórico;
-19. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-20. `ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md`;
-21. `DIRECT-GITHUB-RUNNER-INDEPENDENCE-20260805.md`;
-22. `AGENTS.md`;
-23. PR #7 y HEAD vivo.
+8. `tools/qa/cxorbia-c6-shopper-identity-resolution-review.mjs`;
+9. `tools/qa/cxorbia-c6-shopper-identity-canonical-plan.mjs`;
+10. `app/docs/MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-20260804.json`;
+11. `CAMBIOS-BACKEND-ADDENDUM-C6-SHOPPER-LOGIN-COLLISION-CLASSIFICATION-HOLD-20260805.md`;
+12. `RESUMEN-PARA-CLAUDE-ADDENDUM-C6-SHOPPER-LOGIN-COLLISION-CLASSIFICATION-HOLD-20260805.md`;
+13. `PENDIENTES-PROTOTIPO-ADDENDUM-C6-SHOPPER-LOGIN-COLLISION-CLASSIFICATION-HOLD-20260805.md`;
+14. `ACADEMIA-IMPACTO-C6-SHOPPER-LOGIN-COLLISION-CLASSIFICATION-HOLD-20260805.md`;
+15. `PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-C6-SHOPPER-LOGIN-COLLISION-CLASSIFICATION-HOLD-20260805.md`;
+16. `PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md`;
+17. `app/docs/evidence/CORTE6-SHOPPER-IDENTITY-FOCAL-RESOLUTION-HOLD-LATEST.json` — evidencia anterior;
+18. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+19. `ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md`;
+20. `DIRECT-GITHUB-RUNNER-INDEPENDENCE-20260805.md`;
+21. `AGENTS.md`;
+22. PR #7 y HEAD vivo.
 
-Ante conflicto, prevalecen este índice, el checkpoint vigente, la evidencia focal observable y el lock de ejecución directa.
+Ante conflicto, prevalecen este índice, el checkpoint vigente, la evidencia observable más reciente y el lock de ejecución directa.
 
 ## 2. Contrato vigente
 
@@ -41,71 +40,57 @@ Shopper password: Nombre123*
 Namespace: shopper
 Membership required: false
 Authority: Firebase Auth + exact claims + exact shopperId profile
-Paula Staff/Shopper: separate technical principals
 ```
 
-Las excepciones existentes son deuda de materialización, no formatos alternativos aceptados.
+No existe una regla de desambiguación aplicada. Las alternativas están documentadas, pero requieren decisión expresa del tenant.
 
 ## 3. Source/static vigente
 
 ```text
-run=31059576130
-job=92484349960
-artifact=8951552902
-digest=sha256:5ae40b1a338d9594ffc3368477673677f2462ddd14e0e2b2d313dbf0b6e5311a
+run=31061161498
+job=92489240097
+artifact=8952153534
+digest=sha256:ec793ef97bc8c4fd57df6e5b412aa108324dec65a1aa0af3f0622f78d9cf2a64
 PASS_READONLY_POST_GATES
 PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS
 PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
 ```
 
-## 4. Revisión focal vigente
+## 4. Clasificación vigente
 
 ```text
-run=31059688423
-job=92484697881
-artifact=8951593943
-digest=sha256:fcaba14c38c2fcc1014563ac0edadc33bd40370511189dd01d511f5ff6176326
-HOLD_C6_SHOPPER_IDENTITY_RESOLUTION_REVIEW
+run=31061262965
+job=92489532791
+artifact=8952193087
+digest=sha256:4eaf9354e4ed15996237af74fcea05c5b99bc2ec97f1be063dc8d8e52f1dc95f
+HOLD_C6_SHOPPER_LOGIN_COLLISION_CLASSIFICATION
 ```
 
 ```text
-PROFILES=340
-AUTH_USERS=110
-CREDENTIALS=109
-MAPPED=101
-UNMAPPED=8
-MISSING_AUTH=21
-LOGIN_EXCEPTIONS_CURRENT=16
-PASSWORD_EXCEPTIONS_CURRENT=18
-PAULA_SHOPPER=RESOLVED_ACTIVE_VS_HISTORICAL
-CANONICAL_LOGIN_GROUPS=109
+GROUPS=109
 PROFILES_IN_GROUPS=238
-MULTIPLE_AUTH_PROFILE=1
-INCOMPLETE_NAMES=3
-UNRESOLVED_PROFILES=241
+RESOLVED_SINGLE_ACTIVE_GROUPS=39
+DISTINCT_ACTIVE_COLLISION_GROUPS=64
+DISTINCT_ACTIVE_IDENTITIES=141
+UNRESOLVED_SURNAME_GROUPS=6
+ACTIVE_TECHNICAL_SURNAME_INCOMPLETE=83
+HISTORICAL_TECHNICAL_SURNAME_INCOMPLETE=125
+UNRESOLVED_MULTI_AUTH_PROFILES=1
 ```
 
-## 5. Diagnóstico vigente
+## 5. Plan vigente, no ejecutable
 
 ```text
-VISIBLE_LOGIN_CONTRACT_COLLISION_POPULATION_REQUIRES_TECHNICAL_GROUP_RESOLUTION
-```
-
-La corrección focal ya eliminó el falso hold de nombres incompletos. La derivación exacta reveló 109 grupos distintos con el mismo `nombre.apellido`. Ninguno presentó un ancla técnica compartida suficiente para fusión automática. Deben separarse alias históricos y personas activas distintas antes de cualquier write.
-
-## 6. Plan vigente, no ejecutable
-
-```text
-CREATE_AUTH=6
-UPDATE_AUTH=2
-NO_OP=10
-HOLD=241
-PRESERVE_NO_AUTH=81
+CREATE_AUTH=5
+UPDATE_AUTH=3
+NO_OP=45
+HOLD=162
+PRESERVE_NO_AUTH=125
 TOTAL=340
-planDigest=ec16fb653bb8bf57a499b1ddc26ed8e64bd32ddb3d3debfac9eef6f2882efc40
+planDigest=bb82bbf6f7b2a1335668287dc631fa8de73ba39197f07f4e85e014ee9f41af57
 ```
 
-## 7. Estado seguro
+## 6. Estado seguro
 
 ```text
 AUTH_WRITES=0
@@ -120,27 +105,25 @@ MERGE=false
 PRODUCTION=false
 ```
 
-## 8. Carril operativo vigente
+## 7. Carril operativo vigente
 
 ```text
-CLASIFICAR SOURCE-SAFE 109 GRUPOS NOMBRE.APELLIDO
-+ 1 PERFIL MULTI-AUTH
-+ 3 NOMBRES INCOMPLETOS
-→ usar shopperId, legacy, HR, visitas, credencial y Auth
-→ resolver activo vs histórico
-→ identificar personas activas distintas con el mismo login
-→ detenerse para regla mínima de desambiguación si existen
-→ cero write y cero deploy
+DECISIÓN DEL TENANT PARA 64 GRUPOS DE PERSONAS ACTIVAS DISTINTAS
+→ elegir entre segundo apellido verificado, sufijo técnico determinístico o alias excepcional administrado
+→ completar 83 apellidos técnicos activos
+→ resolver 1 perfil multi-Auth
+→ regenerar plan de 340 filas
+→ source/static + read-only
+→ STOP antes de writes o deploy
 ```
 
-## 9. Prohibiciones vigentes
+## 8. Prohibiciones vigentes
 
-- reintentar automáticamente el request consumido;
 - crear o modificar Auth;
 - cambiar o restablecer contraseñas;
 - escribir memberships;
 - fusionar por nombre visual;
-- inventar sufijos o cambiar el contrato visible sin decisión expresa;
+- aplicar sufijos o alias sin decisión expresa;
 - desplegar Hosting DEV;
 - crear nueva rama, PR o candidata;
 - Firestore/Rules/Storage/HR writes;
