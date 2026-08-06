@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-06  
-**Estado:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_SOURCE_ONLY_COMPLETE__LIVE_HR_V4_UNRESOLVED__DEV_ONLY_TARGET_CONFIRMED__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_GATE_HOLD__LIVE_HR_V4_UNRESOLVED__PROD_TARGET_UNMATERIALIZED__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Rama y control
 
@@ -34,22 +34,35 @@ STOP_RETRY=true
 
 No se afirma ausencia del run, lectura cero ni lectura consumida.
 
-## 3. Fast-track paralelo de producción
+## 3. Gate fast-track de producción
 
-Se auditó source-only la configuración de despliegue vigente:
+Se agregó y ejecutó:
 
 ```text
-.firebaserc default=cxorbia-backend-dev
-.firebaserc dev=cxorbia-backend-dev
-firebase hosting target=cxorbia-dev
-hosting site=cxorbia-backend-dev
-Cloud Run rewrite=cxorbia-live-hr-dev
-production alias configurado=false
-production target configurado=false
-production service configurado=false
+tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs
+node --check=PASS
+exitCode=2 esperado fail-closed
+decision=HOLD_PRODUCTION_TARGET_UNMATERIALIZED
+holdReason=PRODUCTION_CONFIGURATION_FILES_NOT_MATERIALIZED
 ```
 
-Conclusión: el repositorio solo materializa DEV. No existe todavía un carril de producción versionado y verificable. Un deploy desde esta configuración no sería un cutover de producción válido.
+Configuración DEV observada:
+
+```text
+project=cxorbia-backend-dev
+hosting target=cxorbia-dev
+hosting site=cxorbia-backend-dev
+Cloud Run service=cxorbia-live-hr-dev
+```
+
+Archivos PROD requeridos y ausentes:
+
+```text
+.firebaserc.prod
+firebase.prod.json
+```
+
+Conclusión: no existe todavía un carril de producción versionado y verificable. Un deploy desde la configuración actual no sería un cutover de producción válido.
 
 ## 4. Identidades Shopper preservadas
 
@@ -72,8 +85,10 @@ SKIP13 e historia permanecen preservados. Auth no ha sido ejecutado.
 2. Confirmar `2026-08`, GT/HN, historia y `sourceRevision` transversal.
 3. Ejecutar Auth con gate separado.
 4. Ejecutar smoke acumulativo Admin/Operaciones, Shopper y Cliente.
-5. Materializar y verificar un target de producción separado del DEV.
-6. Completar validación humana, rollback y autorización específica de cutover.
+5. Materializar `.firebaserc.prod` y `firebase.prod.json` contra un proyecto nuevo y separado.
+6. Obtener PASS del gate de target PROD.
+7. Completar validación humana, rollback y autorización específica.
+8. Ejecutar un único cutover.
 
 ## 6. Phase A preservada
 
