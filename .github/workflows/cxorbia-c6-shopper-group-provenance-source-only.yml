@@ -1,134 +1,18 @@
-name: CXOrbia C6 Shopper Group Provenance Residual Identity Source Only
+name: CXOrbia C6 Shopper Group Provenance Residual Identity Source Only — Frozen
 
 on:
   push:
     branches:
       - docs-tya-v6-v71-audit
     paths:
-      - backend/config/corte6-shopper-group-provenance-source-only-request.json
+      - backend/config/corte6-shopper-group-provenance-source-only-request-retired.json
 
 permissions:
   contents: read
   statuses: write
 
-concurrency:
-  group: cxorbia-c6-shopper-group-provenance-source-only
-  cancel-in-progress: false
-
-env:
-  REQUEST_FILE: backend/config/corte6-shopper-group-provenance-source-only-request.json
-  HELPER_FILE: tools/qa/cxorbia-c6-shopper-group-provenance-source-only.mjs
-  CONTRACT_FILE: backend/contracts/c6-shopper-deterministic-suffix-v1.json
-  EVIDENCE_FILE: app/docs/evidence/CORTE6-SHOPPER-GROUP-PROVENANCE-RESIDUAL-IDENTITY-SOURCE-ONLY-LATEST.json
-
 jobs:
-  source-static:
-    name: Validate group provenance and residual identity contract without provider reads
+  frozen:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
-
     steps:
-      - name: Checkout exact live branch
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-          ref: docs-tya-v6-v71-audit
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      - name: Read request
-        id: request
-        run: |
-          node <<'NODE'
-          const fs=require('fs');
-          const request=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${request.enabled===true?'true':'false'}\n`);
-          NODE
-
-      - name: Validate one-shot source-only authorization
-        if: steps.request.outputs.enabled == 'true'
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const fs=require('fs');
-          const {execFileSync}=require('child_process');
-          const request=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
-          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
-          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
-          const ensure=(condition,code)=>{if(!condition)throw new Error(code);};
-          ensure(request.schemaVersion==='cxorbia.c6.shopper-group-provenance-source-only-request.v1','request_schema_invalid');
-          ensure(request.repository==='paulaosoriof86/demoCXOrbia'&&request.branch==='docs-tya-v6-v71-audit'&&Number(request.pullRequest)===7,'lane_invalid');
-          ensure(request.enabled===true&&request.consumed===false&&request.status==='authorized_execute_once'&&request.authorizedBy==='Paula','authorization_invalid');
-          ensure(Number(request.allowedExecutions)===1&&request.automaticRetry===false,'one_shot_invalid');
-          ensure(request.targetHeadSha===parent&&head!==parent,'target_head_invalid');
-          ensure(changed.length===1&&changed[0]===process.env.REQUEST_FILE,'request_commit_scope_invalid:'+changed.join(','));
-          ensure(Number(request.sourceRun)===31069282511,'source_run_invalid');
-          ensure(request.addedGroupFingerprint==='ebbcc231fcf415cbaf77','added_group_invalid');
-          ensure(request.providerReads===false&&request.providerWrites===false,'provider_scope_invalid');
-          for(const key of ['dataWrites','deploy','merge','production','firestoreWrites','authWrites','passwordChanges','passwordResets','membershipWrites','rulesWrites','storageWrites','hrWrites','make','gemini','payments']){
-            ensure(request.safeState?.[key]===false,'unsafe_scope_'+key);
-          }
-          NODE
-
-      - name: Execute source and static gates
-        if: steps.request.outputs.enabled == 'true'
-        run: |
-          set -euo pipefail
-          node --check "$HELPER_FILE"
-          node "$HELPER_FILE" --self-test
-          node <<'NODE'
-          const fs=require('fs');
-          const contract=JSON.parse(fs.readFileSync(process.env.CONTRACT_FILE,'utf8'));
-          const evidence=JSON.parse(fs.readFileSync(process.env.EVIDENCE_FILE,'utf8'));
-          const helper=fs.readFileSync(process.env.HELPER_FILE,'utf8');
-          const ensure=(condition,code)=>{if(!condition)throw new Error(code);};
-          ensure(contract.schemaVersion==='cxorbia.c6.shopper-deterministic-suffix.v2.1','contract_schema_invalid');
-          ensure(contract.collisionReconciliation?.currentUniverseClassification==='REFERENCE_UNIVERSE_MISMATCH_PROVEN','universe_classification_missing');
-          ensure(contract.collisionReconciliation?.exactAddedGroupCause==='NOT_PROVEN_MEMBER_PROVENANCE_MISSING','observability_classification_missing');
-          ensure(contract.collisionReconciliation?.diagnosticComparatorDefect===true,'comparator_defect_missing');
-          ensure(contract.collisionReconciliation?.suffixAlgorithmDefectProven===false,'suffix_algorithm_false_required');
-          const fields=contract.collisionReconciliation?.memberProvenanceVector?.fields||[];
-          for(const field of ['memberFingerprint','active','preConsensusComplete','postConsensusComplete','completedByConsensus','sourceSafeSurnameBasis','surnameBasisCount','keeper','suffixApplied','suffixLength','inReferenceSet','inPlannerSet','referenceEligibility','plannerEligibility','linkedSourceResolutionMode']){
-            ensure(fields.includes(field),'member_vector_field_missing:'+field);
-          }
-          ensure(contract.collisionReconciliation?.memberProvenanceVector?.rawIdentityAllowed===false,'member_vector_privacy_missing');
-          ensure(contract.technicalSurnameCompletion?.diagnosticContract?.zeroEvidenceClassification==='AUTHORITATIVE_SURNAME_SOURCE_ENRICHMENT_REQUIRED','surname_mechanism_missing');
-          ensure(contract.multiAuthResolution?.exactTieClassification==='SOURCE_SAFE_ACCOUNT_ADJUDICATION_REQUIRED','multi_auth_mechanism_missing');
-          ensure(contract.multiAuthResolution?.automaticSelectionAllowed===false,'multi_auth_selection_must_be_false');
-          ensure(evidence.decision==='PASS_C6_GROUP_PROVENANCE_RESIDUAL_IDENTITY_SOURCE_ONLY_WITH_DIAGNOSTIC_HOLDS','evidence_decision_invalid');
-          ensure(evidence.addedGroup?.groupFingerprint==='ebbcc231fcf415cbaf77','evidence_group_invalid');
-          ensure(evidence.addedGroup?.primaryClassification==='REFERENCE_UNIVERSE_MISMATCH_PROVEN','evidence_universe_invalid');
-          ensure(evidence.addedGroup?.exactGroupCause==='NOT_PROVEN_MEMBER_PROVENANCE_MISSING','evidence_exact_cause_invalid');
-          ensure(evidence.addedGroup?.suffixAllocationAlgorithmDefect===false,'evidence_suffix_defect_invalid');
-          ensure(evidence.surnameResiduals?.count===12,'evidence_surname_count_invalid');
-          ensure(evidence.multiAuthResidual?.count===1&&evidence.multiAuthResidual?.scoreMargin===0,'evidence_multi_auth_invalid');
-          ensure(evidence.safety?.providerReads===0&&evidence.safety?.providerWrites===0,'evidence_provider_scope_invalid');
-          for(const forbidden of ['firebase-admin','GOOGLE_APPLICATION_CREDENTIALS','listAllUsers(','collectionGroup(','passwordSignInEmail(']){
-            ensure(!helper.includes(forbidden),'provider_capability_forbidden:'+forbidden);
-          }
-          const privacy=evidence.memberProvenanceContract||{};
-          for(const key of ['rawNamesAllowed','rawSurnamesAllowed','rawLoginsAllowed','rawEmailsAllowed','uidsAllowed','rawPasswordsAllowed','piiAllowed']){
-            ensure(privacy[key]===false,'privacy_flag_invalid:'+key);
-          }
-          NODE
-
-      - name: Publish source-static status
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          STATE=success
-          DESC='PASS_C6_GROUP_PROVENANCE_RESIDUAL_SOURCE_ONLY'
-          if [ '${{ steps.request.outputs.enabled }}' != 'true' ]; then DESC='SKIPPED_DISABLED_REQUEST'; fi
-          if [ '${{ job.status }}' != 'success' ]; then STATE=failure; DESC='HOLD_C6_GROUP_PROVENANCE_RESIDUAL_SOURCE_ONLY'; fi
-          gh api --method POST \
-            -H 'Accept: application/vnd.github+json' \
-            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
-            -f state="$STATE" \
-            -f context='cxorbia/c6-shopper-group-provenance-source-only/overall' \
-            -f description="$DESC" \
-            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+      - run: echo 'Source-only group provenance block completed; a new explicit authorization and workflow restoration are required.'
