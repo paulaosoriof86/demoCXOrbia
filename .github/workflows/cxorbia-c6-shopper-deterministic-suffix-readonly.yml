@@ -1,18 +1,343 @@
-name: CXOrbia C6 Shopper Diagnostic Contract Root Fix Source Only — Frozen
+name: CXOrbia C6 Shopper Diagnostic Contract V2 Provider Readonly Revalidation
 
 on:
   push:
     branches:
       - docs-tya-v6-v71-audit
     paths:
-      - backend/config/corte6-shopper-deterministic-suffix-readonly-request-retired.json
+      - backend/config/corte6-shopper-deterministic-suffix-readonly-request.json
 
 permissions:
   contents: read
   statuses: write
 
+concurrency:
+  group: cxorbia-c6-shopper-diagnostic-contract-v2-provider-readonly
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  REQUEST_FILE: backend/config/corte6-shopper-deterministic-suffix-readonly-request.json
+  PLANNER_FILE: tools/qa/cxorbia-c6-shopper-deterministic-suffix-readonly.mjs
+  CLASSIFIER_FILE: tools/qa/cxorbia-c6-shopper-login-collision-classification.mjs
+  CONTRACT_FILE: backend/contracts/c6-shopper-deterministic-suffix-v1.json
+  OUT_DIR: .tmp/c6-shopper-diagnostic-contract-v2-provider-readonly
+  PLANNER_OUT_DIR: .tmp/c6-shopper-deterministic-suffix-readonly
+  GENERIC_OUT_DIR: .tmp/cxorbia-readonly-post-gates-runner
+  PRIVATE_DIR: .tmp/c6-shopper-diagnostic-contract-v2-private
+  DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+
 jobs:
-  frozen:
+  readonly:
+    name: Revalidate diagnostic contract v2 and regenerate source-safe plan 340
     runs-on: ubuntu-24.04
+    timeout-minutes: 45
+
     steps:
-      - run: echo 'Consumed source-only trigger frozen; a new explicit authorization and workflow restoration are required.'
+      - name: Checkout exact live branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 20
+          ref: docs-tya-v6-v71-audit
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Exclude ephemeral material
+        run: printf '%s\n' '.tmp/' 'gha-creds-*.json' >> .git/info/exclude
+
+      - name: Read request state
+        id: request
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const x=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${x.enabled===true?'true':'false'}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`target=${x.targetHeadSha||''}\n`);
+          NODE
+
+      - name: Validate exact one-shot provider authorization
+        if: steps.request.outputs.enabled == 'true'
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const crypto=require('crypto');
+          const {execFileSync}=require('child_process');
+          const x=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const lastCommit=file=>execFileSync('git',['log','-1','--format=%H','--',file],{encoding:'utf8'}).trim();
+          const hash=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+          const ensure=(condition,code)=>{if(!condition)throw new Error(code);};
+          ensure(x.schemaVersion==='cxorbia.c6.shopper-deterministic-suffix-readonly-request.v1','request_schema_invalid');
+          ensure(x.diagnosticContractVersion==='v2','diagnostic_contract_version_invalid');
+          ensure(x.repository==='paulaosoriof86/demoCXOrbia'&&x.branch==='docs-tya-v6-v71-audit'&&Number(x.pullRequest)===7,'lane_invalid');
+          ensure(x.enabled===true&&x.consumed===false&&x.status==='authorized_execute_once'&&x.authorizedBy==='Paula','authorization_state_invalid');
+          ensure(Number(x.allowedExecutions)===1&&x.automaticRetry===false,'one_shot_invalid');
+          ensure(x.targetHeadSha===parent&&head!==parent,'target_head_invalid');
+          ensure(changed.length===1&&changed[0]===process.env.REQUEST_FILE,'request_commit_scope_invalid:'+changed.join(','));
+          ensure(x.sourceContractCommitSha==='ceb5646400c61631eb2d8d469343360647c45f65','source_contract_commit_invalid');
+          ensure(lastCommit(process.env.PLANNER_FILE)===x.sourceContractCommitSha,'planner_source_commit_drift');
+          ensure(lastCommit(process.env.CLASSIFIER_FILE)===x.sourceContractCommitSha,'classifier_source_commit_drift');
+          ensure(lastCommit(process.env.CONTRACT_FILE)===x.sourceContractCommitSha,'contract_source_commit_drift');
+          ensure(hash(process.env.PLANNER_FILE)===x.expectedSourceSha256.planner,'planner_hash_drift');
+          ensure(hash(process.env.CLASSIFIER_FILE)===x.expectedSourceSha256.classifier,'classifier_hash_drift');
+          ensure(hash(process.env.CONTRACT_FILE)===x.expectedSourceSha256.contract,'contract_hash_drift');
+          const contract=JSON.parse(fs.readFileSync(process.env.CONTRACT_FILE,'utf8'));
+          ensure(contract.schemaVersion==='cxorbia.c6.shopper-deterministic-suffix.v2','contract_schema_invalid');
+          ensure(x.providerReads===true&&x.providerWrites===false,'provider_scope_invalid');
+          ensure(x.policy==='DETERMINISTIC_TECHNICAL_SUFFIX'&&JSON.stringify(x.suffixLengths)===JSON.stringify([4,6,8]),'suffix_policy_invalid');
+          ensure(x.groupFingerprintNamespace==='shopper-visible-login-group-v1','group_namespace_invalid');
+          ensure(x.collisionReconciliationPolicy==='fingerprint_set_membership_not_rigid_aggregate_equality','reconciliation_policy_invalid');
+          ensure(Number(x.expectedProfiles)===340&&Number(x.expectedPlanRows)===340,'population_or_plan_invalid');
+          ensure(Number(x.expectedStableCredentialsMapped)===101&&Number(x.expectedStableCredentialsUnmapped)===8,'crosswalk_reference_invalid');
+          for(const key of ['repositoryWrites','dataWrites','deploy','merge','production','firestoreWrites','authWrites','passwordChanges','passwordResets','membershipWrites','rulesWrites','storageWrites','hrWrites','make','gemini','payments']){
+            ensure(x.safeState?.[key]===false,'unsafe_scope_'+key);
+          }
+          NODE
+
+      - name: Install transient audit dependency
+        if: steps.request.outputs.enabled == 'true'
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0
+
+      - name: Execute source and static preflight
+        if: steps.request.outputs.enabled == 'true'
+        run: |
+          set -euo pipefail
+          node --check "$PLANNER_FILE"
+          node --check "$CLASSIFIER_FILE"
+          node "$PLANNER_FILE" --self-test
+          node <<'NODE'
+          const fs=require('fs');
+          const planner=fs.readFileSync(process.env.PLANNER_FILE,'utf8');
+          const contract=JSON.parse(fs.readFileSync(process.env.CONTRACT_FILE,'utf8'));
+          for(const token of ['preConsensusIncompleteActiveProfiles','completedByConsensus','remainingIncompleteActiveProfiles','metricIdentityValid',"diagnostics: primary === 'HOLD'",'candidateVectors: scored.map','function reconcileFingerprintSets(referenceValues, currentValues)',"const GROUP_FINGERPRINT_NAMESPACE = 'shopper-visible-login-group-v1';"]){
+            if(!planner.includes(token))throw new Error('source_contract_missing:'+token);
+          }
+          if(contract.collisionReconciliation?.policy!=='fingerprint_set_membership_not_rigid_aggregate_equality')throw new Error('contract_reconciliation_missing');
+          if(contract.multiAuthResolution?.diagnosticVector?.rawPiiAllowed!==false)throw new Error('contract_privacy_missing');
+          NODE
+
+      - name: Prepare existing DEV credential privately
+        if: steps.request.outputs.enabled == 'true'
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$PRIVATE_DIR" "$OUT_DIR" "$PLANNER_OUT_DIR" "$GENERIC_OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs');
+          const raw=process.env.EXISTING_DEV_JSON||'';
+          let p=null;try{p=JSON.parse(raw);}catch{}
+          if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.client_email&&p.private_key))throw new Error('credential_invalid');
+          fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
+          NODE
+
+      - name: Build stable fingerprint reference read-only
+        if: steps.request.outputs.enabled == 'true'
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/c6-shopper-diagnostic-contract-v2-private/credentials.json
+          CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+        run: |
+          set -euo pipefail
+          cat > "$PRIVATE_DIR/classifier-runner.mjs" <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import admin from 'firebase-admin';
+          import { buildCollisionClassification } from '../../tools/qa/cxorbia-c6-shopper-login-collision-classification.mjs';
+          import { TENANT_ID, CANONICAL_PROJECT_ID, EXPECTED_FIREBASE_PROJECT, decryptCredentialBundle, fetchFirebaseWebConfig, sha256 } from '../../tools/qa/cxorbia-c6-shopper-identity-canonical-plan.mjs';
+          const credentialPath=process.env.GOOGLE_APPLICATION_CREDENTIALS;
+          const serviceAccount=JSON.parse(fs.readFileSync(credentialPath,'utf8'));
+          if(serviceAccount.project_id!==EXPECTED_FIREBASE_PROJECT)throw new Error('service_account_project_mismatch');
+          const bundle=decryptCredentialBundle({serviceAccount});
+          if(!admin.apps.length)admin.initializeApp({credential:admin.credential.cert(serviceAccount),projectId:EXPECTED_FIREBASE_PROJECT});
+          const webConfig=await fetchFirebaseWebConfig(process.env.CXORBIA_DEV_ROOT_URL,EXPECTED_FIREBASE_PROJECT);
+          const result=await buildCollisionClassification({auth:admin.auth(),db:admin.firestore(),bundle,webConfig,tenantId:TENANT_ID,projectId:CANONICAL_PROJECT_ID});
+          const referenceGroups=result.groupMatrix
+            .filter(group=>group.verifiedLoginAgreement===true&&Number(group.activeCount)>1)
+            .map(group=>group.groupFp)
+            .filter(Boolean)
+            .sort();
+          const unique=[...new Set(referenceGroups)];
+          const sourceSafe={
+            schemaVersion:'cxorbia.c6.shopper-collision-fingerprint-reference.v1',
+            generatedAt:new Date().toISOString(),
+            namespace:'shopper-visible-login-group-v1',
+            selection:'verifiedLoginAgreement=true AND activeCount>1',
+            source:result.source,
+            referenceGroupCount:unique.length,
+            referenceDigest:sha256(JSON.stringify(unique)),
+            referenceGroupFingerprints:unique,
+            rawNamesExported:false,
+            rawLoginsExported:false,
+            rawEmailsExported:false,
+            rawPasswordsExported:false,
+            uidsExported:false
+          };
+          fs.writeFileSync(path.join(process.env.OUT_DIR,'classifier-reference.json'),JSON.stringify(sourceSafe,null,2)+'\n','utf8');
+          NODE
+          node "$PRIVATE_DIR/classifier-runner.mjs"
+
+      - name: Materialize ephemeral planner request with set reference
+        if: steps.request.outputs.enabled == 'true'
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const request=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          const reference=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/classifier-reference.json','utf8'));
+          request.expectedCollisionGroupFingerprints=reference.referenceGroupFingerprints;
+          request.collisionReferenceDigest=reference.referenceDigest;
+          request.collisionReferenceSelection=reference.selection;
+          request.collisionReferenceGeneratedInSameRun=true;
+          fs.writeFileSync(process.env.OUT_DIR+'/provider-request.json',JSON.stringify(request,null,2)+'\n','utf8');
+          NODE
+
+      - name: Execute exactly one provider read-only planner
+        if: steps.request.outputs.enabled == 'true'
+        id: provider
+        continue-on-error: true
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/c6-shopper-diagnostic-contract-v2-private/credentials.json
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+          CXORBIA_AUDIT_TARGET_HEAD: ${{ steps.request.outputs.target }}
+        run: |
+          set +e
+          node "$PLANNER_FILE" "$OUT_DIR/provider-request.json"
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Validate source-safe outputs and exact plan cardinality
+        if: always() && steps.request.outputs.enabled == 'true'
+        id: validate
+        continue-on-error: true
+        run: |
+          set +e
+          node <<'NODE'
+          const fs=require('fs');
+          const fail=code=>{throw new Error(code);};
+          const reportPath=process.env.PLANNER_OUT_DIR+'/report.json';
+          const planPath=process.env.PLANNER_OUT_DIR+'/plan-340.json';
+          const matrixPath=process.env.PLANNER_OUT_DIR+'/group-matrix.json';
+          if(!fs.existsSync(reportPath)||!fs.existsSync(planPath)||!fs.existsSync(matrixPath))fail('provider_artifacts_missing');
+          const report=JSON.parse(fs.readFileSync(reportPath,'utf8'));
+          const plan=JSON.parse(fs.readFileSync(planPath,'utf8'));
+          const groups=JSON.parse(fs.readFileSync(matrixPath,'utf8'));
+          const reference=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/classifier-reference.json','utf8'));
+          if(report.source?.profiles!==340)fail('profiles_not_340');
+          if(report.source?.credentialsMapped!==101||report.source?.credentialsUnmapped!==8||report.source?.credentialCrosswalkParity!==true)fail('crosswalk_not_101_8');
+          if(report.surnameCompletion?.metricIdentityValid!==true)fail('metric_identity_invalid');
+          const s=report.surnameCompletion||{};
+          if(s.preConsensusIncompleteActiveProfiles!==s.completedByConsensus+s.remainingIncompleteActiveProfiles)fail('metric_arithmetic_invalid');
+          if(!Array.isArray(plan)||plan.length!==340||report.plan?.rows!==340)fail('plan_rows_not_340');
+          if(new Set(plan.map(row=>row.profileFp)).size!==340)fail('plan_profiles_not_unique');
+          if(report.disambiguation?.groupFingerprintNamespace!=='shopper-visible-login-group-v1')fail('group_namespace_invalid');
+          const reconciliation=report.disambiguation?.fingerprintReconciliation;
+          if(!reconciliation||reconciliation.referenceProvided!==true)fail('set_reference_not_applied');
+          if(reconciliation.referenceCount!==reference.referenceGroupCount)fail('reference_count_mismatch');
+          for(const row of plan.filter(row=>row.primary==='HOLD')){
+            const d=row.diagnostics;
+            if(!d||!d.name)fail('hold_diagnostics_missing');
+            const scalar=value=>value===null||['boolean','number'].includes(typeof value);
+            const inspect=value=>{
+              if(Array.isArray(value))return value.every(inspect);
+              if(value&&typeof value==='object')return Object.values(value).every(inspect);
+              return scalar(value);
+            };
+            if(!inspect(d))fail('hold_diagnostics_not_scalar_source_safe');
+          }
+          for(const vector of report.multiAuth?.vectors||[]){
+            if(typeof vector.profileFp!=='string'||!Array.isArray(vector.candidateVectors))fail('multi_auth_vector_invalid');
+            for(const candidate of vector.candidateVectors){
+              if(!Number.isInteger(candidate.candidateOrdinal)||typeof candidate.score!=='number')fail('multi_auth_candidate_invalid');
+              if(Object.values(candidate.signals||{}).some(value=>typeof value!=='boolean'))fail('multi_auth_signal_not_boolean');
+              for(const forbidden of ['uid','email','name','login','password'])if(Object.hasOwn(candidate,forbidden)||Object.hasOwn(candidate.signals||{},forbidden))fail('multi_auth_forbidden_'+forbidden);
+            }
+          }
+          if(report.safety?.providerWrites!==false||report.safety?.authWrites!==0||report.safety?.firestoreWrites!==0||report.safety?.merge!==false||report.safety?.production!==false)fail('unsafe_report_state');
+          if(report.safety?.rawNamesExported!==false||report.safety?.rawLoginsExported!==false||report.safety?.rawEmailsExported!==false||report.safety?.rawPasswordsExported!==false||report.safety?.uidsExported!==false)fail('raw_identity_export_flag');
+          const summary={
+            schemaVersion:'cxorbia.c6.shopper-diagnostic-contract-v2-provider-validation.v1',
+            generatedAt:new Date().toISOString(),
+            providerDecision:report.decision,
+            blockers:report.blockers||[],
+            source:report.source,
+            surnameCompletion:report.surnameCompletion,
+            disambiguation:report.disambiguation,
+            multiAuth:report.multiAuth,
+            plan:report.plan,
+            operationCounts:report.plan?.operationCounts,
+            holdRows:plan.filter(row=>row.primary==='HOLD').length,
+            groupRows:groups.length,
+            referenceGroupCount:reference.referenceGroupCount,
+            referenceDigest:reference.referenceDigest,
+            safety:report.safety
+          };
+          fs.writeFileSync(process.env.OUT_DIR+'/validation-summary.json',JSON.stringify(summary,null,2)+'\n','utf8');
+          NODE
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Capture repository delta evidence
+        if: always() && steps.request.outputs.enabled == 'true'
+        run: |
+          mkdir -p "$OUT_DIR/repository-status"
+          git status --porcelain=v1 > "$OUT_DIR/repository-status/status.txt"
+          git diff --name-status > "$OUT_DIR/repository-status/tracked.txt"
+          git ls-files --others --exclude-standard > "$OUT_DIR/repository-status/untracked.txt"
+
+      - name: Upload sanitized evidence
+        if: always() && steps.request.outputs.enabled == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-c6-shopper-diagnostic-contract-v2-provider-revalidation-${{ github.run_id }}
+          path: |
+            .tmp/c6-shopper-diagnostic-contract-v2-provider-readonly
+            .tmp/c6-shopper-deterministic-suffix-readonly
+            .tmp/cxorbia-readonly-post-gates-runner
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Publish observable commit status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PROVIDER_EXIT_CODE: ${{ steps.provider.outputs.exit_code }}
+          VALIDATION_EXIT_CODE: ${{ steps.validate.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          STATE=success
+          DESC='PASS_C6_DIAGNOSTIC_CONTRACT_V2_PROVIDER_READONLY'
+          if [ '${{ steps.request.outputs.enabled }}' != 'true' ]; then
+            DESC='SKIPPED_DISABLED_REQUEST'
+          elif [ "${PROVIDER_EXIT_CODE:-999}" != '0' ] || [ "${VALIDATION_EXIT_CODE:-999}" != '0' ]; then
+            STATE=failure
+            DESC='HOLD_C6_DIAGNOSTIC_CONTRACT_V2_STOP_RETRY'
+          fi
+          gh api --method POST \
+            -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="$STATE" \
+            -f context='cxorbia/c6-shopper-diagnostic-contract-v2-provider-readonly/overall' \
+            -f description="$DESC" \
+            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+
+      - name: Cleanup private material
+        if: always()
+        run: rm -rf "$PRIVATE_DIR"
+
+      - name: Enforce one-shot result without retry
+        if: steps.request.outputs.enabled == 'true'
+        run: |
+          test "${{ steps.provider.outputs.exit_code }}" = "0"
+          test "${{ steps.validate.outputs.exit_code }}" = "0"
