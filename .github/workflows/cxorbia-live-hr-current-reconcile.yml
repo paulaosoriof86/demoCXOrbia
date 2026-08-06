@@ -9,6 +9,7 @@ on:
 permissions:
   contents: write
   statuses: write
+  actions: read
 
 jobs:
   reconcile:
@@ -17,6 +18,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 0}
+
+      - name: Open control-plane journal before any provider access
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CXORBIA_CONTROL_PLANE_JOURNAL: .tmp/control-plane/journal.json
+        run: |
+          set -euo pipefail
+          node tools/qa/cxorbia-live-hr-control-plane-journal.mjs open
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state='pending' \
+            -f context='cxorbia/live-hr-control-plane' \
+            -f description='WORKFLOW_STARTED_PROVIDER_READS_0' >/dev/null
+
       - uses: actions/setup-node@v4
         with: {node-version: '24'}
 
@@ -26,7 +40,8 @@ jobs:
           node <<'NODE'
           const r=require('./.github/cxorbia-firebase-requests/live-hr-current-reconcile.json');
           const ok=
-            r.schemaVersion==='cxorbia.live-hr-current-reconcile.request.v2'&&
+            r.schemaVersion==='cxorbia.live-hr-current-reconcile.request.v3'&&
+            r.controlPlaneContract==='cxorbia.live-hr-control-plane-journal.v1'&&
             r.enabled===true&&r.consumed===false&&
             r.mode==='LIVE_HR_AUTHORITY_AND_CURRENT_PERIOD_READ_ONLY'&&
             typeof r.authorizationId==='string'&&r.authorizationId.length>10&&
@@ -41,6 +56,7 @@ jobs:
 
       - name: Source syntax and no-fixed-HR-data gate
         run: |
+          node --check tools/qa/cxorbia-live-hr-control-plane-journal.mjs
           node --check tools/hr-source/tya-live-provider-registry-identity-dev.mjs
           node --check tools/hr-source/tya-enforce-live-tab-registry.mjs
           node --check tools/qa/tya-live-hr-authority-contract.mjs
@@ -62,6 +78,18 @@ jobs:
       - name: Install transient read-only provider tooling
         run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
 
+      - name: Mark provider-read boundary before provider access
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CXORBIA_CONTROL_PLANE_JOURNAL: .tmp/control-plane/journal.json
+        run: |
+          set -euo pipefail
+          node tools/qa/cxorbia-live-hr-control-plane-journal.mjs enter-provider-boundary
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state='pending' \
+            -f context='cxorbia/live-hr-control-plane' \
+            -f description='PROVIDER_READ_BOUNDARY_ENTERED_MAX1' >/dev/null
+
       - name: Refresh provider metadata registry read-only
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
@@ -82,6 +110,18 @@ jobs:
           set -euo pipefail
           mkdir -p .tmp/hr-current/gates app/docs/evidence
           node tools/hr-source/tya-build-live-hr-source-safe-r20.mjs > .tmp/hr-current/build-output.json
+
+      - name: Mark provider-read sequence completed
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CXORBIA_CONTROL_PLANE_JOURNAL: .tmp/control-plane/journal.json
+        run: |
+          set -euo pipefail
+          node tools/qa/cxorbia-live-hr-control-plane-journal.mjs complete-provider-sequence
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state='pending' \
+            -f context='cxorbia/live-hr-control-plane' \
+            -f description='PROVIDER_READ_SEQUENCE_COMPLETED_LOGICAL_1' >/dev/null
 
       - name: Enforce fresh provider registry and canonicalize same revision
         env:
@@ -162,10 +202,24 @@ jobs:
           git add app/docs/evidence/LIVE-HR-AUTHORITY-CONTRACT-LATEST.json app/docs/evidence/LIVE-HR-AUTHORITY-CONTRACT-LATEST.md app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.md app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.md app/docs/evidence/AUGUST-DELTA-READONLY-PLAN-LATEST.json app/docs/evidence/LIVE-HR-TAB-REGISTRY-ENFORCEMENT-LATEST.json backend/config/tya-live-hr-tab-registry.source-safe.json
           if ! git diff --cached --quiet; then git commit -m 'evidence: pass live HR authority current period and history revision';git push origin HEAD:docs-tya-v6-v71-audit;fi
 
-      - name: Publish status
+      - name: Finalize control-plane journal and publish statuses
         if: always()
-        env: {GH_TOKEN: '${{ github.token }}'}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CXORBIA_CONTROL_PLANE_JOURNAL: .tmp/control-plane/journal.json
+          CXORBIA_JOB_STATUS: ${{ job.status }}
         run: |
+          set -euo pipefail
+          if [ -f "$CXORBIA_CONTROL_PLANE_JOURNAL" ]; then
+            node tools/qa/cxorbia-live-hr-control-plane-journal.mjs finalize
+            CONSUMPTION=$(node -p "require('./$CXORBIA_CONTROL_PLANE_JOURNAL').providerReadConsumption")
+            CP_STATE=error
+            if [ "$CXORBIA_JOB_STATUS" = 'success' ]; then CP_STATE=success; fi
+            gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+              -f state="$CP_STATE" \
+              -f context='cxorbia/live-hr-control-plane' \
+              -f description="FINAL_${CXORBIA_JOB_STATUS}_${CONSUMPTION}" >/dev/null
+          fi
           STATE=error;DESC='HOLD_LIVE_HR_AUTHORITY_CURRENT_PERIOD'
           if [ -f app/docs/evidence/LIVE-HR-AUTHORITY-CONTRACT-LATEST.json ];then
             A=$(node -p "require('./app/docs/evidence/LIVE-HR-AUTHORITY-CONTRACT-LATEST.json').decision")
@@ -175,8 +229,20 @@ jobs:
               if [ "$P" != 'PASS_CURRENT_PERIOD_LIVE_SOURCE_TECH_READY' ];then DESC='PASS_LIVE_HR_AUTHORITY__CURRENT_PERIOD_PLAN_HOLD';fi
             fi
           fi
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/live-hr-authority-current-period' -f description="$DESC" >/dev/null
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="$STATE" \
+            -f context='cxorbia/live-hr-authority-current-period' \
+            -f description="$DESC" >/dev/null
+
+      - name: Upload sanitized control-plane journal
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-live-hr-control-plane-${{ github.run_id }}
+          path: .tmp/control-plane/journal.json
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Cleanup
         if: always()
-        run: rm -rf .tmp/hr-current /tmp/cx-live-hr
+        run: rm -rf .tmp/hr-current .tmp/control-plane /tmp/cx-live-hr
