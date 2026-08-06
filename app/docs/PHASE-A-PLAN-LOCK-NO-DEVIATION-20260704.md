@@ -2,7 +2,7 @@
 
 **Fecha original:** 2026-07-04  
 **Actualización prevalente:** 2026-08-06  
-**Estado:** `C6_LIVE_HR_CONTROL_PLANE_OBSERVABILITY_PASS__PREVIOUS_V2_READ_UNKNOWN__NO_NEW_PROVIDER_READ__IDENTITY_HOLD_0__NO_PRODUCTION`
+**Estado:** `C6_LIVE_HR_V3_REQUEST_EMITTED__NO_CHECKPOINT_OBSERVED__STOP_RETRY__IDENTITY_HOLD_0__NO_PRODUCTION`
 
 ## 1. Objetivo operativo
 
@@ -32,82 +32,80 @@ HOLD=0
 PRESERVE_NO_AUTH=140
 ```
 
-Los 13 perfiles residuales permanecen omitidos del repair Auth, conservando historia. No bloquean y no se reabre su conciliación.
+Los 13 perfiles residuales permanecen omitidos del repair Auth, conservando historia.
 
 ## 4. Autoridad HR viva — contrato prevalente
 
 - Metadata provider descubre dinámicamente tabs y periodos.
-- El periodo operativo se deriva del calendario y de las pestañas vivas del país.
+- El periodo operativo se deriva del calendario y de pestañas vivas.
 - Firestore es materialización/índice; no autoridad HR.
 - Registry, snapshots y archivos estáticos son cache/last-known-good fail-closed.
 - Una modificación actual o histórica debe cambiar `sourceRevision` y propagarse transversalmente.
 - Cambios solo de timestamp no deben alterar la revisión.
 - No se permiten meses, conteos, estados o totales HR fijados en código.
 
-## 5. Root fix HR viva aplicado
+## 5. Root fixes aplicados
 
-Quedaron preparados los gates de metadata viva, periodo calendario, país/pestaña, mutación histórica, revisión estable y comparación provider/Firestore read-only. El carril activo ya no usa agosto, `34/10`, `616`, `684` o `1406` como constantes.
+- autoridad HR viva dinámica;
+- planner sin conteos fijos;
+- país/pestaña sobre una revisión;
+- journal v3 con checkpoints antes, durante y después de provider;
+- artifact y status sanitizados previstos.
 
-## 6. Antecedente provider v2 congelado
+## 6. Antecedente v2 congelado
 
 ```text
 requestCommit=4e404f2db48ff8b07430d7ac7505eff6c040458a
-sourceCommit=31f4af0f7501b23b4e72b1a5f8457669a5f91c77
 providerReadConsumption=UNKNOWN_NO_EXECUTION_EVIDENCE
-retryExecuted=false
 ```
 
-No se declara cero ni consumo confirmado.
-
-## 7. Root fix control-plane aplicado
-
-Commits:
+## 7. Request v3 ejecutado hasta emisión
 
 ```text
-dcbfe1ce4b5a98df9f2cc650dc344f983ed7118f
-c46e81bba4fd7424e6076e336bcaf86e82564c14
+sourceCommit=18ea2e6ab9b15480c851c7ba34cae8e8fbcae026
+requestCommit=d62dbae9b10b0650c2940f4b2bf7d456cb34fc83
+authorizationId=chat-20260806-live-hr-authority-current-period-v3-02
 ```
 
-El siguiente request debe ser v3 y producir:
+No apareció ningún checkpoint observable:
 
 ```text
-WORKFLOW_STARTED_PROVIDER_READS_0
-PROVIDER_READ_BOUNDARY_ENTERED_MAX1
-PROVIDER_READ_SEQUENCE_COMPLETED_LOGICAL_1
-FINAL_<JOB_STATUS>_<CONSUMPTION>
+WORKFLOW_STARTED_PROVIDER_READS_0=NO
+PROVIDER_READ_BOUNDARY_ENTERED_MAX1=NO
+PROVIDER_READ_SEQUENCE_COMPLETED_LOGICAL_1=NO
+FINAL=NO
+providerReadConsumption=UNKNOWN_NO_CHECKPOINT_EVIDENCE
+STOP_RETRY=true
 ```
-
-También debe generar journal y artifact sanitizados. El request v2 queda fail-closed bajo el workflow vigente.
 
 ## 8. Cadena única restante
 
-### Bloque A — Autorización y ejecución v3
+### Bloque A — Diagnóstico control-plane read-only
 
-1. Autorización fresca y explícita que reconozca el consumo v2 desconocido.
-2. Autorizar exactamente una ejecución lógica provider read-only adicional.
-3. Crear un único request v3 ligado al HEAD source exacto.
-4. Observar status/journal/artifact antes de interpretar consumo.
-5. Cero writes, deploy, merge o producción.
+1. Localizar run/check suite del request exacto.
+2. Determinar si la ejecución quedó antes de provider boundary.
+3. No tocar el request ni HR.
+4. No emitir segundo trigger.
+5. Documentar checkpoint reproducible.
 
 ### Bloque B — HR viva actual
 
-Únicamente dentro de la ejecución v3 autorizada:
+Solo con autorización fresca posterior y evidencia de que el intento previo no alcanzó provider boundary:
 
-1. confirmar metadata/autodiscovery provider;
-2. confirmar periodo calendario `2026-08` y tabs GT/HN;
-3. reconstruir todos los periodos desde HR viva;
+1. confirmar metadata/autodiscovery;
+2. confirmar `2026-08` y tabs GT/HN;
+3. reconstruir periodos desde HR viva;
 4. validar cambio histórico y `sourceRevision`;
-5. confirmar la misma revisión en Dashboard, Histórico, Visitas, Finanzas, Cliente y Shopper;
-6. reconciliar materialización por `visitId/hrRowId` y revisión, no por recarga ciega.
+5. confirmar revisión común en módulos;
+6. reconciliar materialización por `visitId/hrRowId`.
 
 ### Bloque C — Auth y validación acumulativa
 
 1. Materializar plan Auth con overlay SKIP13 y `HOLD=0`.
-2. Ejecutar solo con autorización expresa, snapshot, idempotencia, readback y rollback.
+2. Ejecutar solo con autorización separada, snapshot, idempotencia, readback y rollback.
 3. Verificar que los 13 omitidos no reciban acceso efectivo.
 4. Smoke Admin/Operaciones, Shopper y Cliente.
 5. Tres recargas, nueva pestaña y estabilidad.
-6. Validación humana sobre una sola URL/build.
 
 ### Bloque D — Cutover
 
@@ -120,20 +118,20 @@ También debe generar journal y artifact sanitizados. El request v2 queda fail-c
 ## 9. Circuit breakers
 
 - No reabrir los 13 perfiles.
-- No reinterpretar el request v2 como cero.
-- No tocar el request actual sin autorización fresca.
-- No ejecutar un request que no sea v3 con journal.
+- No reinterpretar v2 o v3 como providerReads=0.
+- No tocar el request actual.
+- No emitir segundo trigger.
 - No reauditar 65/65.
 - No pedir otra candidata.
 - No ejecutar Auth sin autorización separada.
 - No hardcodear periodos o conteos HR.
 - No repetir import histórico por conteo.
-- No reabrir módulos protegidos salvo regresión reproducible.
 
 ## 10. Estado seguro
 
 ```text
-nuevo provider read=0
+request v3 emitido=1
+segundo trigger=0
 provider writes=0
 Auth/data/HR writes=0
 Hosting/Cloud Run deploys=0
