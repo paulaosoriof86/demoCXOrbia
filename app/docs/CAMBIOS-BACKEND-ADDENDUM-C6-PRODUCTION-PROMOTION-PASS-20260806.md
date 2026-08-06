@@ -7,20 +7,36 @@
 
 - `backend/config/cxorbia-production-promotion-contract.json`;
 - `app/docs/SOURCE-LOCK-C6-PRODUCTION-PROMOTION-PASS-20260806.md`;
-- este addendum;
-- addenda de Claude, Pendientes, Academia y tracker.
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-PRODUCTION-PROMOTION-PASS-20260806.md`;
+- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-PRODUCTION-PROMOTION-PASS-20260806.md`;
+- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-PRODUCTION-PROMOTION-PASS-20260806.md`;
+- `app/docs/ACADEMIA-IMPACTO-C6-PRODUCTION-PROMOTION-PASS-20260806.md`;
+- `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-C6-PRODUCTION-PROMOTION-PASS-20260806.md`.
 
 ## Actualizado
 
 - `app/docs/evidence/C6-PRODUCTION-TARGET-PREFLIGHT-LATEST.json`;
-- índice, checkpoint, plan Phase A y documentos raíz;
+- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
+- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
+- `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+- `RESUMEN-PARA-CLAUDE.md`;
+- `PENDIENTES-PROTOTIPO.md`;
 - PR #7.
+
+## Auditado sin modificación funcional
+
+- `.firebaserc`;
+- `firebase.json`;
+- `tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs`;
+- request HR v4 y workflow asociado.
 
 ## Resultado
 
 ```text
 strategy=PROMOTE_EXISTING_CLEAN_PROJECT
+contractCommit=3197aa5056375ddcffd3a67836ba5cf55a91eede
 nodeCheck=PASS
+exitCode=0
 gateDecision=PASS_PRODUCTION_PROMOTION_CONTRACT_EXISTING_CLEAN_PROJECT
 failedChecks=0
 ```
