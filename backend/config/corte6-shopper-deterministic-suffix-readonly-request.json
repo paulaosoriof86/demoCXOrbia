@@ -10,7 +10,17 @@
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "c95f09364a9800d1f5fbf1c871a58f10316e3908",
+  "targetHeadSha": "15f8d3f0cd0aeb9468b3613634e494711cfa3f4b",
+  "sourceOnlyExecutionAttempt": 2,
+  "priorAttempt": {
+    "workflowRunId": 31065882519,
+    "workflowJobId": 92503388270,
+    "providerReads": 0,
+    "providerWrites": 0,
+    "sourceCommitCreated": false,
+    "failure": "TRANSIENT_STATIC_DEPENDENCY_FIREBASE_ADMIN_NOT_INSTALLED"
+  },
+  "retryBasis": "same unconsumed source-only block after correcting transient static dependency and truthful status publication; no provider execution occurred",
   "mode": "source_only_crosswalk_rootfix",
   "targetFile": "tools/qa/cxorbia-c6-shopper-deterministic-suffix-readonly.mjs",
   "sourceLock": "app/docs/SOURCE-LOCK-C6-DETERMINISTIC-SUFFIX-CROSSWALK-ROOTFIX-20260805.md",
@@ -51,5 +61,5 @@
   "containsPii": false,
   "containsSecrets": false,
   "stopAfterSourceStatic": true,
-  "purpose": "Apply the source-only credential crosswalk root fix through the already registered workflow lane, execute static gates, commit directly to the live branch and stop without any provider read or operational write."
+  "purpose": "Apply the source-only credential crosswalk root fix through the registered workflow lane, execute static gates, commit directly to the live branch and stop without any provider read or operational write."
 }
