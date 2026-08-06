@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-06  
-**Estado:** `C6_LIVE_HR_V4_REQUEST_EMITTED__30M_NO_RUN_JOB_CHECKPOINT_EVIDENCE__CONSUMPTION_UNKNOWN__STOP_RETRY__NO_SECOND_TRIGGER__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_SOURCE_ONLY_COMPLETE__LIVE_HR_V4_UNRESOLVED__DEV_ONLY_TARGET_CONFIRMED__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Rama y control
 
@@ -10,9 +10,9 @@
 - PR #7: draft/open/no merge;
 - producción: intacta;
 - request v4: `ac2032ec224e6d56bf087788b949691b6690c437`;
-- source exacto: `a1f11483153aa2576bb284b9b2f6ed178dbe528d`.
+- source exacto del request: `a1f11483153aa2576bb284b9b2f6ed178dbe528d`.
 
-## 2. Request único
+## 2. Request HR v4
 
 ```text
 authorizationId=chat-20260806-live-hr-authority-current-period-v4-03
@@ -22,27 +22,7 @@ request updates después de emisión=0
 segundo trigger=0
 ```
 
-## 3. Observación
-
-Ventana: `2026-08-06T18:13:33Z` a `2026-08-06T18:43:53Z`.
-
-```text
-runId recuperado=false
-jobId recuperado=false
-steps recuperados=false
-journal recuperado=false
-artifact recuperado=false
-commit statuses=0
-checkpoint inicial=NO OBSERVADO
-provider boundary=NO OBSERVADA
-secuencia provider=NO OBSERVADA
-final=NO OBSERVADO
-avance generado por workflow=NO OBSERVADO
-```
-
-## 4. Dictamen
-
-No se recuperó un job `cancelled` con `steps=0`; por eso no se puede aplicar la clasificación de consumo cero.
+No se recuperaron runId, jobId, steps, journal, artifact ni checkpoints. Los commit statuses continúan vacíos.
 
 ```text
 workflowRunExistence=UNKNOWN_AFTER_30M_OBSERVATION
@@ -54,7 +34,24 @@ STOP_RETRY=true
 
 No se afirma ausencia del run, lectura cero ni lectura consumida.
 
-## 5. Identidades Shopper preservadas
+## 3. Fast-track paralelo de producción
+
+Se auditó source-only la configuración de despliegue vigente:
+
+```text
+.firebaserc default=cxorbia-backend-dev
+.firebaserc dev=cxorbia-backend-dev
+firebase hosting target=cxorbia-dev
+hosting site=cxorbia-backend-dev
+Cloud Run rewrite=cxorbia-live-hr-dev
+production alias configurado=false
+production target configurado=false
+production service configurado=false
+```
+
+Conclusión: el repositorio solo materializa DEV. No existe todavía un carril de producción versionado y verificable. Un deploy desde esta configuración no sería un cutover de producción válido.
+
+## 4. Identidades Shopper preservadas
 
 ```text
 profiles=340
@@ -67,24 +64,27 @@ HOLD=0
 PRESERVE_NO_AUTH=140
 ```
 
-SKIP13 e historia permanecen preservados.
+SKIP13 e historia permanecen preservados. Auth no ha sido ejecutado.
 
-## 6. HR actual pendiente
+## 5. P0 restantes
 
-No existe evidencia viva nueva para confirmar `2026-08`, tabs GT/HN, conteos, mutación histórica o paridad transversal de `sourceRevision`.
+1. Reconciliar evidencia terminal del request v4.
+2. Confirmar `2026-08`, GT/HN, historia y `sourceRevision` transversal.
+3. Ejecutar Auth con gate separado.
+4. Ejecutar smoke acumulativo Admin/Operaciones, Shopper y Cliente.
+5. Materializar y verificar un target de producción separado del DEV.
+6. Completar validación humana, rollback y autorización específica de cutover.
 
-## 7. Regla antibucle
+## 6. Phase A preservada
 
-- no emitir otro request mientras el v4 no tenga evidencia terminal reconciliada;
-- no reabrir diagnóstico de sintaxis, registro, trigger, rama o path;
-- cualquier evidencia tardía debe ligarse al request exacto `ac2032ec...`;
-- no ejecutar Auth, deploy, merge o producción.
+Frontend acumulativo, Login, `CX.data`, shoppers, postulaciones, certificaciones, visitas, liquidaciones, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto y Academia permanecen preservados.
 
-## 8. Estado seguro
+## 7. Estado seguro
 
 ```text
+request modificado después de emisión=false
 segundo trigger=0
-provider reads ejecutados por observador=0
+provider reads ejecutados por preflight=0
 provider/HR/Firestore/Auth/Rules/Storage writes=0
 Hosting/Cloud Run deploys=0
 Make/Gemini/payments=0
