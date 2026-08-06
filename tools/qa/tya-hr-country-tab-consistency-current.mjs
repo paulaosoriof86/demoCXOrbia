@@ -1,20 +1,24 @@
 import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
 
-const SHEET_ID=process.env.CXORBIA_HR_LIVE_SHEET_ID||'1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4';
-const OUT_JSON=process.env.CXORBIA_COUNTRY_GATE_JSON||'app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json';
-const OUT_MD=process.env.CXORBIA_COUNTRY_GATE_MD||'app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.md';
-const tabs=[
-  {title:'JUNIO 26 HN',expected:'HN'},
-  {title:'JULIO 26 HN',expected:'HN'},
-  {title:'AGOSTO 26 HN',expected:'HN'},
-  {title:'AGOSTO 26',expected:'GT'},
-];
-function parseCsv(text){const rows=[];let row=[],field='',quoted=false;for(let i=0;i<text.length;i++){const c=text[i];if(quoted){if(c==='"'&&text[i+1]==='"'){field+='"';i++;}else if(c==='"')quoted=false;else field+=c;}else if(c==='"')quoted=true;else if(c===','){row.push(field);field='';}else if(c==='\n'){row.push(field.replace(/\r$/,''));rows.push(row);row=[];field='';}else field+=c;}if(field||row.length){row.push(field.replace(/\r$/,''));rows.push(row);}return rows;}
-function norm(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase().replace(/[^a-z0-9]+/g,' ');}
-function countryCode(v){const x=norm(v);if(x==='hn'||x.includes('honduras'))return'HN';if(x==='gt'||x.includes('guatemala'))return'GT';return x?`OTHER:${x.slice(0,30)}`:'EMPTY';}
-async function fetchTab(title){const params=new URLSearchParams({tqx:'out:csv',sheet:title,range:'A1:AI140',tq:'select *',_cxnonce:`${Date.now()}-${Math.random()}`});const r=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?${params}`,{headers:{'Cache-Control':'no-cache, no-store','Pragma':'no-cache'}});const text=await r.text();if(!r.ok||!/text\/csv/i.test(r.headers.get('content-type')||'')||/^<!doctype/i.test(text.trim()))throw new Error(`tab_fetch_failed:${title}:${r.status}`);return parseCsv(text);}
-const results=[];
-for(const t of tabs){const rows=await fetchTab(t.title);let headerIndex=-1,idxCountry=-1,idxShopping=-1,idxCity=-1;for(let i=0;i<Math.min(rows.length,14);i++){const cells=rows[i].map(norm);const c=cells.findIndex(x=>x==='pais'||x.startsWith('pais '));const s=cells.findIndex(x=>x==='shopping'||x.startsWith('shopping '));const city=cells.findIndex(x=>x==='ciudad'||x.startsWith('ciudad '));if(c>=0&&s>=0&&city>=0){headerIndex=i;idxCountry=c;idxShopping=s;idxCity=city;break;}}if(headerIndex<0)throw new Error(`header_not_found:${t.title}`);const counts={};const mismatchRows=[];let visitRows=0;for(let i=headerIndex+1;i<rows.length;i++){const row=rows[i]||[];if(!String(row[idxShopping]||'').trim()||!String(row[idxCity]||'').trim())continue;visitRows++;const code=countryCode(row[idxCountry]);counts[code]=(counts[code]||0)+1;if(code!==t.expected)mismatchRows.push(i+1);}results.push({title:t.title,expectedCountry:t.expected,headerRow:headerIndex+1,visitRows,countryCounts:counts,mismatchCount:mismatchRows.length,mismatchRows});}
-const decision=results.every(r=>r.mismatchCount===0)?'PASS_COUNTRY_TAB_CONSISTENCY':'HOLD_COUNTRY_TAB_MISMATCH';
-const report={schemaVersion:'tya.hr-country-tab-consistency.v1',generatedAt:new Date().toISOString(),sourceSafe:true,pii:false,providerWrites:0,results,decision,safety:{hrWrites:0,firestoreWrites:0,authWrites:0,hostingDeploys:0,production:false,merge:false}};
-fs.mkdirSync('app/docs/evidence',{recursive:true});fs.writeFileSync(OUT_JSON,JSON.stringify(report,null,2)+'\n');const md=['# TyA HR — consistencia país vs pestaña','',`- Fecha: ${report.generatedAt}`,`- Decisión: \`${decision}\``,'- Solo lectura; no PII; no provider writes.','',...results.flatMap(r=>[`## ${r.title}`,'',`- País esperado por pestaña: ${r.expectedCountry}.`,`- Filas visitables: ${r.visitRows}.`,`- Distribución de País en fuente: ${Object.entries(r.countryCounts).map(([k,v])=>`${k}=${v}`).join(', ')}.`,`- Filas con mismatch: ${r.mismatchCount}${r.mismatchRows.length?` (${r.mismatchRows.join(', ')})`:''}.`,'']),'## Seguridad','','No se exportan Shopping, ciudad, shopper, email, teléfono, observaciones ni ningún valor distinto de país y número de fila.',''];fs.writeFileSync(OUT_MD,md.join('\n'));console.log(JSON.stringify({decision,results}));if(decision!=='PASS_COUNTRY_TAB_CONSISTENCY')process.exitCode=2;
+const SOURCE=path.resolve(process.env.CXORBIA_CURRENT_SOURCE_SAFE||process.env.CXORBIA_HR_SOURCE_SAFE_OUT||'.tmp/hr-current/tya-hr-source-safe.js');
+const OUT_JSON=path.resolve(process.env.CXORBIA_COUNTRY_GATE_JSON||'app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json');
+const OUT_MD=path.resolve(process.env.CXORBIA_COUNTRY_GATE_MD||'app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.md');
+function currentPeriodKey(){const explicit=String(process.env.CXORBIA_EXPECTED_CURRENT_PERIOD||'').trim();if(/^20\d{2}-(0[1-9]|1[0-2])$/.test(explicit))return explicit;const now=new Date();return `${now.getUTCFullYear()}-${String(now.getUTCMonth()+1).padStart(2,'0')}`;}
+function load(){const code=fs.readFileSync(SOURCE,'utf8'),ctx={window:{}};vm.createContext(ctx);vm.runInContext(code,ctx);return JSON.parse(JSON.stringify(ctx.window.CX_TYA_HR_SOURCE_SAFE));}
+function expectedCountry(tab){return String(tab?.country||(/\sHN$/i.test(String(tab?.title||tab?.tabTitle||''))?'HN':'GT'));}
+function byCountry(rows){const out={};for(const row of rows){const c=String(row.country||row.pais||'EMPTY');out[c]=(out[c]||0)+1;}return out;}
+const source=load();
+if(!source||source.sourceSafe!==true)throw new Error('source_safe_snapshot_missing');
+const periodKey=currentPeriodKey();
+const tabs=(source.tabsRead||[]).filter(t=>String(t.periodKey||'')===periodKey);
+const visits=(source.visits||[]).filter(v=>String(v.periodKey||'')===periodKey);
+const results=tabs.map(tab=>{const title=String(tab.title||tab.tabTitle||''),expected=expectedCountry(tab),rows=visits.filter(v=>String(v.sourceTab||'')===title),mismatches=rows.filter(v=>String(v.country||v.pais||'')!==expected);return {title,periodKey,expectedCountry:expected,tabExists:true,visitRows:rows.length,countryCounts:byCountry(rows),mismatchCount:mismatches.length,mismatchRows:mismatches.map(v=>Number(v.sourceRow||0)).filter(Boolean).sort((a,b)=>a-b)};});
+const coverage=['GT','HN'].every(country=>results.some(r=>r.expectedCountry===country&&r.visitRows>0));
+const decision=tabs.length>=2&&coverage&&results.every(r=>r.mismatchCount===0)?'PASS_COUNTRY_TAB_CONSISTENCY':'HOLD_COUNTRY_TAB_CONSISTENCY';
+const report={schemaVersion:'tya.hr-country-tab-consistency.v3',generatedAt:new Date().toISOString(),sourceSafe:true,pii:false,providerWrites:0,periodKey,results,decision,safety:{hrWrites:0,firestoreWrites:0,authWrites:0,hostingDeploys:0,production:false,merge:false}};
+fs.mkdirSync(path.dirname(OUT_JSON),{recursive:true});fs.writeFileSync(OUT_JSON,JSON.stringify(report,null,2)+'\n','utf8');
+const md=['# TyA HR — consistencia país/pestaña desde la misma revisión viva','',`- Fecha: ${report.generatedAt}`,`- Periodo: ${periodKey}`,`- Decisión: \`${decision}\``,'- No se hace una segunda lectura GViz; se valida la misma revisión source-safe del provider.','',...results.flatMap(r=>[`## ${r.title}`,'',`- País esperado: ${r.expectedCountry}.`,`- Filas: ${r.visitRows}.`,`- Distribución: ${Object.entries(r.countryCounts).map(([k,v])=>`${k}=${v}`).join(', ')}.`,`- Mismatch: ${r.mismatchCount}.`,'']),'## Seguridad','','- Sin PII; provider/HR/Firestore/Auth/Hosting writes=0.',''];
+fs.writeFileSync(OUT_MD,md.join('\n'),'utf8');
+console.log(JSON.stringify({decision,periodKey,results}));if(decision!=='PASS_COUNTRY_TAB_CONSISTENCY')process.exitCode=2;
