@@ -2,7 +2,7 @@ name: CXOrbia C6 SKIP13 Auth Access Adjudication Readonly
 
 on:
   pull_request:
-    types: [synchronize]
+    types: [synchronize, ready_for_review]
 
 permissions:
   contents: read
