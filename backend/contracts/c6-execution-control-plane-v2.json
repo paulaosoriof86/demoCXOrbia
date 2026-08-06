@@ -4,7 +4,7 @@
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "providerProject": "cxorbia-backend-dev",
-  "status": "SOURCE_ONLY_PREPARED_NOT_EXECUTABLE",
+  "status": "SOURCE_READY_FALLBACK_DEPLOY_ATTEMPT_STOP_RETRY_NO_DEPLOY",
   "rootCause": {
     "incidentId": "qcvjkzcs7j74",
     "component": "GitHub Actions",
@@ -35,11 +35,19 @@
   },
   "fallbackLane": {
     "type": "direct_trusted_runner",
-    "status": "DESIGN_ONLY_NOT_DEPLOYED",
+    "status": "SOURCE_READY_DEPLOY_ATTEMPT_FAIL_CLOSED_NO_DEPLOY_STOP_RETRY",
     "requiresSeparateDeployAuthorization": true,
     "requiresAuthenticatedInvocation": true,
     "requiresIdempotencyLease": true,
-    "mustBeIndependentOfGitHubActions": true
+    "mustBeIndependentOfGitHubActions": true,
+    "sourceContract": "backend/contracts/c6-direct-trusted-runner-dev-v1.json",
+    "sourceRuntime": "backend/runtime/c6-direct-trusted-runner/server.mjs",
+    "lockedSourceHead": "4bc7c3529ccca34d87fc19747b7053831c577c47",
+    "attemptedRunId": "31131197140",
+    "attemptedJobId": "92720222820",
+    "deploysExecuted": 0,
+    "failureClassification": "TEST_HARNESS_PULL_REQUEST_SHA_CONTEXT_MISMATCH",
+    "stopRetry": true
   },
   "safety": {
     "providerWrites": false,
