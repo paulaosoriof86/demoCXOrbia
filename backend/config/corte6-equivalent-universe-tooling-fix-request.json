@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "cxorbia.c6.equivalent-universe-tooling-fix-request.v1",
+  "requestId": "c6-equivalent-universe-tooling-fix-20260805-01",
+  "enabled": true,
+  "consumed": false,
+  "status": "authorized_same_unconsumed_source_only_block_tooling_correction",
+  "authorizedBy": "Paula",
+  "authorizationSource": "same current source-only authorization; transient checker false positive only",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "targetHeadSha": "0e58c75020027bc33995ced74833d34c0b0122fd",
+  "priorWorkflowRunId": 31070904888,
+  "priorWorkflowJobId": 92518474585,
+  "priorResult": "shared fixture and integration patch PASS; textual gate matched forbidden literals inside its own checker",
+  "providerReads": 0,
+  "providerWrites": 0,
+  "sourceIntegrationCommitted": false,
+  "dataWrites": false,
+  "deploy": false,
+  "merge": false,
+  "production": false
+}
