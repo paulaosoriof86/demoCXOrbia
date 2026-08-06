@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "cxorbia.c6.direct-trusted-runner.dev.v1",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "environment": "DEV",
+  "providerProject": "cxorbia-backend-dev",
+  "region": "us-central1",
+  "service": "cxorbia-c6-direct-runner-dev",
+  "runtimeServiceAccount": "cxorbia-c6-runner-dev",
+  "status": "DEPLOY_AUTHORIZED_TECHNICAL_ONLY_PENDING_TERMINAL_EVIDENCE",
+  "invocation": {
+    "authentication": "cloud_run_iam_oidc",
+    "allowUnauthenticated": false,
+    "endpoint": "/v1/control-plane/execute",
+    "healthEndpoint": "/health",
+    "allowedOperation": "control_plane_self_test",
+    "providerBoundaryEnabled": false
+  },
+  "idempotency": {
+    "required": true,
+    "mode": "single_instance_memory_dev",
+    "ttlMs": 600000,
+    "maxInstances": 1,
+    "concurrency": 1,
+    "duplicateHttpStatus": 409,
+    "providerSafeDurability": false,
+    "scope": "technical_validation_only"
+  },
+  "sourceLock": {
+    "required": true,
+    "format": "sha40",
+    "requestCommitMustOnlyChangeDeployRequest": true,
+    "runtimeImageMustUseParentSourceHead": true
+  },
+  "deployment": {
+    "authorized": true,
+    "maximumDeploys": 1,
+    "hostingDeploy": false,
+    "production": false,
+    "rollbackRequired": true,
+    "rollbackModeWhenServiceIsNew": "delete_new_service_and_runtime_identity"
+  },
+  "safety": {
+    "skip13Execution": false,
+    "authReads": false,
+    "authWrites": false,
+    "claimsReads": false,
+    "claimsWrites": false,
+    "membershipReads": false,
+    "membershipWrites": false,
+    "hrReads": false,
+    "hrWrites": false,
+    "firestoreReads": false,
+    "firestoreWrites": false,
+    "rulesWrites": false,
+    "storageReads": false,
+    "storageWrites": false,
+    "providerReads": false,
+    "providerWrites": false,
+    "merge": false,
+    "production": false,
+    "make": false,
+    "gemini": false,
+    "payments": false
+  }
+}
