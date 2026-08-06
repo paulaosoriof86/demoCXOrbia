@@ -5,6 +5,7 @@ import vm from 'node:vm';
 const sourcePath=process.env.CXORBIA_HR_SOURCE_SAFE_OUT||'.tmp/hr-current/tya-hr-source-safe.js';
 const registryPath=process.env.CXORBIA_HR_TAB_REGISTRY||'backend/config/tya-live-hr-tab-registry.source-safe.json';
 const evidencePath=process.env.CXORBIA_HR_TAB_REGISTRY_EVIDENCE||'app/docs/evidence/LIVE-HR-TAB-REGISTRY-ENFORCEMENT-LATEST.json';
+const MONTH_NAMES=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
 function loadSource(){const code=fs.readFileSync(sourcePath,'utf8');const sandbox={window:{}};vm.createContext(sandbox);vm.runInContext(code,sandbox);return JSON.parse(JSON.stringify(sandbox.window.CX_TYA_HR_SOURCE_SAFE));}
 function uniq(values){return [...new Set(values.filter(Boolean))].sort();}
 function by(rows,fn){const out={};for(const row of rows){const k=String(fn(row)||'').trim()||'blank';out[k]=(out[k]||0)+1;}return out;}
@@ -14,6 +15,15 @@ function isRealized(v){return Boolean(v.realizada||v.completedDate)||v.canonical
 function hasQuestionnaire(v){return Boolean(v.cuestFecha||v.questionnaireDate)||v.canonicalFacets?.questionnaire===true;}
 function isSubmitted(v){return v.submit===true||v.submitted===true||Boolean(v.submittedAt)||v.canonicalFacets?.submitted===true;}
 function recalcCounts(source){const visits=source.visits||[],shoppers=source.shoppers||[];return {...(source.counts||{}),periods:(source.periods||[]).length,tabs:(source.tabsRead||[]).length,visits:visits.length,shoppers:shoppers.length,byStatus:by(visits,v=>v.estado||v.status),byCountry:by(visits,v=>v.country||v.pais),assigned:visits.filter(isAssigned).length,unassigned:visits.filter(v=>!isAssigned(v)).length,scheduled:visits.filter(isScheduled).length,realized:visits.filter(isRealized).length,questionnaireCompleted:visits.filter(hasQuestionnaire).length,submitted:visits.filter(isSubmitted).length,liquidationCandidatesPendingFinancialMatch:visits.filter(v=>v.liquidationState==='candidate_pending_financial_match').length,liquidationConfirmed:visits.filter(v=>v.liquidationState==='confirmed').length,paymentConfirmed:visits.filter(v=>v.paymentState==='confirmed').length,reviewRequired:visits.filter(v=>v.reviewRequired===true).length};}
+function currentPeriodDescriptor(){
+  const explicit=String(process.env.CXORBIA_EXPECTED_CURRENT_PERIOD||'').trim();
+  const match=explicit.match(/^(20\d{2})-(0[1-9]|1[0-2])$/);
+  const now=new Date();
+  const year=match?Number(match[1]):now.getUTCFullYear();
+  const month=match?Number(match[2]):now.getUTCMonth()+1;
+  const yy=String(year).slice(-2),name=MONTH_NAMES[month-1];
+  return {periodKey:`${year}-${String(month).padStart(2,'0')}`,tabs:[`${name} ${yy}`,`${name} ${yy} HN`]};
+}
 
 const source=loadSource();
 if(!source||source.sourceSafe!==true)throw new Error('source_safe_missing');
@@ -21,12 +31,8 @@ const accessMode=String(source.source?.accessMode||'');
 const sourceCarriesProviderMetadata=accessMode==='sheets_api_service_account';
 let registry=fs.existsSync(registryPath)?JSON.parse(fs.readFileSync(registryPath,'utf8')):null;
 if(registry&&(registry.schemaVersion!=='cxorbia.tya-live-hr-tab-registry.v1'||registry.sourceSafe!==true))throw new Error('tab_registry_invalid');
+const current=currentPeriodDescriptor();
 
-/* Auto-month provider metadata can arrive in either of two safe ways:
-   1) the source builder itself used Sheets API; or
-   2) the runtime refreshed the registry immediately beforehand through the
-      provider metadata probe using Cloud Run ADC. In both cases the registry
-      is provider-authoritative; GViz may still be used only for row values. */
 const externalProviderRegistry=Boolean(registry&&registry.autoDiscovery===true&&registry.providerMetadataReadOnly===true&&registry.registryMode==='live_provider_metadata_auto_refresh');
 let providerMetadataLive=sourceCarriesProviderMetadata||externalProviderRegistry;
 let registryMode=providerMetadataLive?'live_provider_metadata_auto_refresh':'last_provider_metadata_fail_closed';
@@ -44,9 +50,10 @@ if(sourceCarriesProviderMetadata){
     registryMode:'live_provider_metadata_auto_refresh',
     monthlyTabs,
     nonMonthlyTabs:[],
-    requiredAugustTabs:['AGOSTO 26','AGOSTO 26 HN'],
-    requiredAugustTabsPresent:monthlyTabs.includes('AGOSTO 26')&&monthlyTabs.includes('AGOSTO 26 HN'),
-    safety:{pii:false,hrWrites:0,firestoreWrites:0,production:false,merge:false}
+    currentCalendarPeriodKey:current.periodKey,
+    requiredCurrentPeriodTabs:current.tabs,
+    requiredCurrentPeriodTabsPresent:current.tabs.every(tab=>monthlyTabs.includes(tab)),
+    safety:{pii:false,hrWrites:0,firestoreWrites:0,authWrites:0,production:false,merge:false}
   };
   fs.mkdirSync(path.dirname(registryPath),{recursive:true});
   fs.writeFileSync(registryPath,JSON.stringify(registry,null,2)+'\n','utf8');
@@ -73,13 +80,13 @@ source.periods=[...periods.values()].sort((a,b)=>a.key.localeCompare(b.key)).map
 const refs=new Set(source.visits.map(v=>String(v.shopperId||'')).filter(Boolean));
 source.shoppers=(source.shoppers||[]).filter(s=>refs.has(String(s.id||s.shopperId||'')));
 source.counts=recalcCounts(source);
-source.source={...(source.source||{}),tabRegistryEnforced:true,tabRegistryMode:registryMode,tabRegistryAutoDiscovery:providerMetadataLive,tabRegistryObservedAt:registry.observedAt,tabRegistryProviderAuthority:providerMetadataLive?'google_sheets_metadata':'last_valid_provider_registry',phantomTabsRejected:uniq(removedTabs)};
+source.source={...(source.source||{}),tabRegistryEnforced:true,tabRegistryMode:registryMode,tabRegistryAutoDiscovery:providerMetadataLive,tabRegistryObservedAt:registry.observedAt,tabRegistryProviderAuthority:providerMetadataLive?'google_sheets_metadata':'last_valid_provider_registry',currentCalendarPeriodKey:registry.currentCalendarPeriodKey||current.periodKey,requiredCurrentPeriodTabs:registry.requiredCurrentPeriodTabs||current.tabs,requiredCurrentPeriodTabsPresent:registry.requiredCurrentPeriodTabsPresent===true,phantomTabsRejected:uniq(removedTabs)};
 source.safeState={...(source.safeState||{}),writes:false,tabRegistryEnforced:true};
 const after={tabs:source.tabsRead.length,periods:source.periods.length,visits:source.visits.length,shoppers:source.shoppers.length};
 const payload=`/* CXOrbia TyA live HR source-safe DEV payload. Provider tab registry enforced; no sensitive PII/raw workbook. */window.CX_TYA_HR_SOURCE_SAFE = ${JSON.stringify(source,null,2)};\nwindow.CX_TYA_HR_VIVA_SOURCE_SAFE = true;\n`;
 fs.writeFileSync(sourcePath,payload,'utf8');
 
-const evidence={schemaVersion:'cxorbia.tya-live-tab-registry-enforcement.v3',generatedAt:new Date().toISOString(),decision:'PASS_PROVIDER_TAB_REGISTRY_ENFORCED',accessMode,registryMode,autoDiscovery:providerMetadataLive,providerMetadataSource:sourceCarriesProviderMetadata?'source_builder_sheets_api':externalProviderRegistry?'adc_registry_probe':'last_valid_registry',providerMetadataFallbackReason:providerMetadataLive?null:(source.source?.fallbackReason||null),registryObservedAt:registry.observedAt,monthlyTabs:(registry.monthlyTabs||[]).length,requiredAugustTabsPresent:registry.requiredAugustTabsPresent===true,before,after,phantomTabsRejected:uniq(removedTabs),counts:source.counts,safety:{providerReads:true,hrWrites:0,firestoreWrites:0,authWrites:0,hostingDeploys:0,production:false,merge:false,pii:false,secrets:false}};
+const evidence={schemaVersion:'cxorbia.tya-live-tab-registry-enforcement.v4',generatedAt:new Date().toISOString(),decision:'PASS_PROVIDER_TAB_REGISTRY_ENFORCED',accessMode,registryMode,autoDiscovery:providerMetadataLive,providerMetadataSource:sourceCarriesProviderMetadata?'source_builder_sheets_api':externalProviderRegistry?'adc_registry_probe':'last_valid_registry',providerMetadataFallbackReason:providerMetadataLive?null:(source.source?.fallbackReason||null),registryObservedAt:registry.observedAt,monthlyTabs:(registry.monthlyTabs||[]).length,currentCalendarPeriodKey:registry.currentCalendarPeriodKey||current.periodKey,requiredCurrentPeriodTabs:registry.requiredCurrentPeriodTabs||current.tabs,requiredCurrentPeriodTabsPresent:registry.requiredCurrentPeriodTabsPresent===true,before,after,phantomTabsRejected:uniq(removedTabs),counts:source.counts,safety:{providerReads:true,hrWrites:0,firestoreWrites:0,authWrites:0,hostingDeploys:0,production:false,merge:false,pii:false,secrets:false}};
 fs.mkdirSync(path.dirname(evidencePath),{recursive:true});
 fs.writeFileSync(evidencePath,JSON.stringify(evidence,null,2)+'\n','utf8');
 console.log(JSON.stringify(evidence));
