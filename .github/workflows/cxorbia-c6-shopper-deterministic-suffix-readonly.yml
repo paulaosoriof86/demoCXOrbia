@@ -2,8 +2,7 @@ name: CXOrbia C6 Shopper Diagnostic Contract Root Fix Source Only
 
 on:
   push:
-    branches:
-      - docs-tya-v6-v71-audit
+    branches: [docs-tya-v6-v71-audit]
     paths:
       - backend/config/corte6-shopper-deterministic-suffix-readonly-request.json
 
@@ -32,7 +31,6 @@ jobs:
     name: Apply and gate diagnostic contract root fix without provider reads
     runs-on: ubuntu-24.04
     timeout-minutes: 20
-
     steps:
       - name: Checkout exact live branch
         uses: actions/checkout@v4
@@ -45,7 +43,7 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Read request state
+      - name: Read request
         id: request
         run: |
           node <<'NODE'
@@ -54,7 +52,7 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${x.enabled===true?'true':'false'}\n`);
           NODE
 
-      - name: Validate exact source-only authorization
+      - name: Validate source-only authorization
         if: steps.request.outputs.enabled == 'true'
         run: |
           set -euo pipefail
@@ -65,27 +63,23 @@ jobs:
           const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
           const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
-          const ensure=(condition,code)=>{if(!condition)throw new Error(code);};
-          ensure(x.schemaVersion==='cxorbia.c6.shopper-diagnostic-contract-rootfix-source-only-request.v1','request_schema_invalid');
-          ensure(x.repository==='paulaosoriof86/demoCXOrbia'&&x.branch==='docs-tya-v6-v71-audit'&&Number(x.pullRequest)===7,'lane_invalid');
-          ensure(x.enabled===true&&x.consumed===false&&x.status==='authorized_execute_once'&&x.authorizedBy==='Paula','authorization_state_invalid');
-          ensure(Number(x.allowedExecutions)===1&&x.mode==='source_only_diagnostic_contract_rootfix','authorization_invalid');
-          ensure(x.targetHeadSha===parent&&head!==parent,'target_head_invalid');
-          ensure(changed.length===1&&changed[0]===process.env.REQUEST_FILE,'request_commit_scope_invalid:'+changed.join(','));
-          ensure(x.providerReads===false&&x.providerWrites===false,'provider_scope_invalid');
-          ensure(x.groupFingerprintNamespace==='shopper-visible-login-group-v1','group_namespace_invalid');
-          ensure(x.collisionReconciliationPolicy==='fingerprint_set_membership_not_rigid_aggregate_equality','reconciliation_policy_invalid');
-          ensure(Number(x.expectedPlanRows)===340&&JSON.stringify(x.suffixLengths)===JSON.stringify([4,6,8]),'plan_or_suffix_contract_invalid');
-          for(const key of ['dataWrites','deploy','merge','production','firestoreWrites','authWrites','passwordChanges','passwordResets','membershipWrites','rulesWrites','storageWrites','hrWrites','make','gemini','payments']){
-            ensure(x.safeState?.[key]===false,'unsafe_'+key);
-          }
+          const ensure=(v,c)=>{if(!v)throw new Error(c);};
+          ensure(x.schemaVersion==='cxorbia.c6.shopper-diagnostic-contract-rootfix-source-only-request.v1','schema');
+          ensure(x.repository==='paulaosoriof86/demoCXOrbia'&&x.branch==='docs-tya-v6-v71-audit'&&Number(x.pullRequest)===7,'lane');
+          ensure(x.enabled===true&&x.consumed===false&&x.status==='authorized_execute_once'&&x.authorizedBy==='Paula','authorization');
+          ensure(Number(x.allowedExecutions)===1&&x.mode==='source_only_diagnostic_contract_rootfix','mode');
+          ensure(x.targetHeadSha===parent&&head!==parent,'target');
+          ensure(changed.length===1&&changed[0]===process.env.REQUEST_FILE,'scope:'+changed.join(','));
+          ensure(x.providerReads===false&&x.providerWrites===false,'provider');
+          ensure(x.groupFingerprintNamespace==='shopper-visible-login-group-v1','namespace');
+          ensure(x.collisionReconciliationPolicy==='fingerprint_set_membership_not_rigid_aggregate_equality','policy');
+          ensure(Number(x.expectedPlanRows)===340&&JSON.stringify(x.suffixLengths)===JSON.stringify([4,6,8]),'plan');
+          for(const key of ['dataWrites','deploy','merge','production','firestoreWrites','authWrites','passwordChanges','passwordResets','membershipWrites','rulesWrites','storageWrites','hrWrites','make','gemini','payments'])ensure(x.safeState?.[key]===false,'unsafe_'+key);
           NODE
 
-      - name: Apply exact source-only root fix
+      - name: Apply source-only root fix
         if: steps.request.outputs.enabled == 'true'
-        run: |
-          set -euo pipefail
-          node "$PATCHER_FILE" --apply
+        run: node "$PATCHER_FILE" --apply
 
       - name: Install transient static dependency
         if: steps.request.outputs.enabled == 'true'
@@ -102,107 +96,39 @@ jobs:
           node "$PLANNER_FILE" --self-test
           node <<'NODE'
           const fs=require('fs');
-          const planner=fs.readFileSync(process.env.PLANNER_FILE,'utf8');
-          const classifier=fs.readFileSync(process.env.CLASSIFIER_FILE,'utf8');
-          const contract=JSON.parse(fs.readFileSync(process.env.CONTRACT_FILE,'utf8'));
-          const request=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
-          const required=[
-            'preConsensusIncompleteActiveProfiles',
-            'completedByConsensus',
-            'remainingIncompleteActiveProfiles',
-            "diagnostics: primary === 'HOLD'",
-            'candidateVectors: scored.map',
-            "const GROUP_FINGERPRINT_NAMESPACE = 'shopper-visible-login-group-v1';",
-            'function reconcileFingerprintSets(referenceValues, currentValues)',
-            'collision_group_set_drift:',
-            'PASS_DIAGNOSTIC_CONTRACT_V2'
-          ];
-          const missing=required.filter(token=>!planner.includes(token));
-          if(missing.length)throw new Error('planner_static_missing:'+missing.join('|'));
-          if(planner.includes('result.disambiguation.collisionGroups !== Number(request.expectedDistinctActiveCollisionGroups || 64)'))throw new Error('rigid_collision_gate_present');
-          if(planner.includes('result.surnameCompletion.initialIncompleteActiveProfiles !== Number(request.expectedInitialIncompleteActiveProfiles || 83)'))throw new Error('old_metric_gate_present');
-          if(!classifier.includes('groupFp: fp(GROUP_FINGERPRINT_NAMESPACE, norm(login)),'))throw new Error('classifier_namespace_not_stable');
-          if(contract.schemaVersion!=='cxorbia.c6.shopper-deterministic-suffix.v2')throw new Error('contract_schema_not_v2');
-          if(contract.collisionReconciliation?.policy!=='fingerprint_set_membership_not_rigid_aggregate_equality')throw new Error('contract_set_policy_missing');
-          if(contract.multiAuthResolution?.diagnosticVector?.rawPiiAllowed!==false)throw new Error('multi_auth_privacy_missing');
-          if(request.providerReads!==false||request.providerWrites!==false)throw new Error('provider_scope_changed');
+          const p=fs.readFileSync(process.env.PLANNER_FILE,'utf8');
+          const c=fs.readFileSync(process.env.CLASSIFIER_FILE,'utf8');
+          const k=JSON.parse(fs.readFileSync(process.env.CONTRACT_FILE,'utf8'));
+          for(const token of ['preConsensusIncompleteActiveProfiles','completedByConsensus','remainingIncompleteActiveProfiles',"diagnostics: primary === 'HOLD'",'candidateVectors: scored.map',"const GROUP_FINGERPRINT_NAMESPACE = 'shopper-visible-login-group-v1';",'function reconcileFingerprintSets(referenceValues, currentValues)','collision_group_set_drift:','PASS_DIAGNOSTIC_CONTRACT_V2'])if(!p.includes(token))throw new Error('missing:'+token);
+          if(p.includes('result.disambiguation.collisionGroups !== Number(request.expectedDistinctActiveCollisionGroups || 64)'))throw new Error('rigid64');
+          if(p.includes('result.surnameCompletion.initialIncompleteActiveProfiles !== Number(request.expectedInitialIncompleteActiveProfiles || 83)'))throw new Error('old83');
+          if(!c.includes('groupFp: fp(GROUP_FINGERPRINT_NAMESPACE, norm(login)),'))throw new Error('classifier_namespace');
+          if(k.schemaVersion!=='cxorbia.c6.shopper-deterministic-suffix.v2'||k.collisionReconciliation?.policy!=='fingerprint_set_membership_not_rigid_aggregate_equality'||k.multiAuthResolution?.diagnosticVector?.rawPiiAllowed!==false)throw new Error('contract');
           NODE
 
-      - name: Materialize sanitized evidence and consume request
+      - name: Create evidence and consume request
         if: steps.request.outputs.enabled == 'true'
         run: |
           set -euo pipefail
           node <<'NODE'
-          const fs=require('fs');
-          const path=require('path');
-          const crypto=require('crypto');
+          const fs=require('fs'),path=require('path'),crypto=require('crypto');
           const {execFileSync}=require('child_process');
           const request=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
           const planner=fs.readFileSync(process.env.PLANNER_FILE,'utf8');
           const classifier=fs.readFileSync(process.env.CLASSIFIER_FILE,'utf8');
           const contract=fs.readFileSync(process.env.CONTRACT_FILE,'utf8');
           const generatedAt=new Date().toISOString();
-          const evidence={
-            schemaVersion:'cxorbia.c6.shopper-diagnostic-contract-rootfix-source-static.v1',
-            generatedAt,
-            decision:'PASS_C6_SHOPPER_DIAGNOSTIC_CONTRACT_ROOTFIX_SOURCE_STATIC',
-            repository:request.repository,
-            branch:request.branch,
-            pullRequest:request.pullRequest,
-            requestId:request.requestId,
-            requestCommitSha:process.env.GITHUB_SHA,
-            targetHeadSha:request.targetHeadSha,
-            sha256:{
-              planner:crypto.createHash('sha256').update(planner,'utf8').digest('hex'),
-              classifier:crypto.createHash('sha256').update(classifier,'utf8').digest('hex'),
-              contract:crypto.createHash('sha256').update(contract,'utf8').digest('hex')
-            },
-            contract:{
-              metrics:['preConsensusIncompleteActiveProfiles','completedByConsensus','remainingIncompleteActiveProfiles'],
-              holdVectors:'booleans_counts_bases_only',
-              multiAuthVectors:'signals_score_margin_no_uid_email_pii',
-              groupFingerprintNamespace:'shopper-visible-login-group-v1',
-              collisionReconciliationPolicy:'fingerprint_set_membership_not_rigid_aggregate_equality',
-              rigidAggregateGateRemoved:true,
-              expectedPlanRows:340,
-              suffixLengths:[4,6,8]
-            },
-            checks:[
-              'PASS_NODE_SYNTAX_PLANNER_CLASSIFIER_PATCHER',
-              'PASS_PRE_CONSENSUS_COMPLETED_REMAINING_METRICS',
-              'PASS_METRIC_IDENTITY_GATE',
-              'PASS_HOLD_SOURCE_SAFE_DIAGNOSTIC_VECTORS',
-              'PASS_MULTI_AUTH_SOURCE_SAFE_SIGNAL_VECTOR',
-              'PASS_NO_UID_EMAIL_PII_DIAGNOSTICS',
-              'PASS_STABLE_GROUP_FINGERPRINT_NAMESPACE',
-              'PASS_FINGERPRINT_SET_RECONCILIATION',
-              'PASS_RIGID_64_GATE_REMOVED',
-              'PASS_OLD_83_GATE_REMOVED',
-              'PASS_PLAN_340_SCHEMA_PRESERVED',
-              'PASS_SUFFIX_4_6_8_PRESERVED',
-              'PASS_PROVIDER_READS_ZERO'
-            ],
-            safety:{
-              providerReads:0,providerWrites:0,authWrites:0,passwordChanges:0,passwordResets:0,membershipWrites:0,
-              firestoreWrites:0,rulesWrites:0,storageWrites:0,hrWrites:0,hostingDeploys:0,cloudRunDeploys:0,
-              makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,production:false
-            },
-            nextGate:'NEW_EXPLICIT_PROVIDER_READONLY_AUTHORIZATION_REQUIRED'
-          };
+          const evidence={schemaVersion:'cxorbia.c6.shopper-diagnostic-contract-rootfix-source-static.v1',generatedAt,decision:'PASS_C6_SHOPPER_DIAGNOSTIC_CONTRACT_ROOTFIX_SOURCE_STATIC',repository:request.repository,branch:request.branch,pullRequest:request.pullRequest,requestId:request.requestId,requestCommitSha:process.env.GITHUB_SHA,targetHeadSha:request.targetHeadSha,sha256:{planner:crypto.createHash('sha256').update(planner).digest('hex'),classifier:crypto.createHash('sha256').update(classifier).digest('hex'),contract:crypto.createHash('sha256').update(contract).digest('hex')},contract:{metrics:['preConsensusIncompleteActiveProfiles','completedByConsensus','remainingIncompleteActiveProfiles'],holdVectors:'booleans_counts_bases_only',multiAuthVectors:'signals_score_margin_no_uid_email_pii',groupFingerprintNamespace:'shopper-visible-login-group-v1',collisionReconciliationPolicy:'fingerprint_set_membership_not_rigid_aggregate_equality',rigidAggregateGateRemoved:true,expectedPlanRows:340,suffixLengths:[4,6,8]},checks:['PASS_NODE_SYNTAX_PLANNER_CLASSIFIER_PATCHER','PASS_PRE_CONSENSUS_COMPLETED_REMAINING_METRICS','PASS_METRIC_IDENTITY_GATE','PASS_HOLD_SOURCE_SAFE_DIAGNOSTIC_VECTORS','PASS_MULTI_AUTH_SOURCE_SAFE_SIGNAL_VECTOR','PASS_NO_UID_EMAIL_PII_DIAGNOSTICS','PASS_STABLE_GROUP_FINGERPRINT_NAMESPACE','PASS_FINGERPRINT_SET_RECONCILIATION','PASS_RIGID_64_GATE_REMOVED','PASS_OLD_83_GATE_REMOVED','PASS_PLAN_340_SCHEMA_PRESERVED','PASS_SUFFIX_4_6_8_PRESERVED','PASS_PROVIDER_READS_ZERO'],safety:{providerReads:0,providerWrites:0,authWrites:0,passwordChanges:0,passwordResets:0,membershipWrites:0,firestoreWrites:0,rulesWrites:0,storageWrites:0,hrWrites:0,hostingDeploys:0,cloudRunDeploys:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,production:false},nextGate:'NEW_EXPLICIT_PROVIDER_READONLY_AUTHORIZATION_REQUIRED'};
           fs.mkdirSync(path.dirname(process.env.EVIDENCE_FILE),{recursive:true});
-          fs.writeFileSync(process.env.EVIDENCE_FILE,JSON.stringify(evidence,null,2)+'\n','utf8');
-          request.enabled=false;
-          request.consumed=true;
-          request.status='consumed_source_static_pass_no_provider_read';
-          request.consumedAt=generatedAt;
-          request.result={decision:evidence.decision,providerReads:0,providerWrites:0,evidence:process.env.EVIDENCE_FILE};
-          fs.writeFileSync(process.env.REQUEST_FILE,JSON.stringify(request,null,2)+'\n','utf8');
-          const status=execFileSync('git',['status','--porcelain=v1'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          fs.writeFileSync(process.env.EVIDENCE_FILE,JSON.stringify(evidence,null,2)+'\n');
+          request.enabled=false;request.consumed=true;request.status='consumed_source_static_pass_no_provider_read';request.consumedAt=generatedAt;request.result={decision:evidence.decision,providerReads:0,providerWrites:0,evidence:process.env.EVIDENCE_FILE};
+          fs.writeFileSync(process.env.REQUEST_FILE,JSON.stringify(request,null,2)+'\n');
+          const status=execFileSync('git',['status','--porcelain=v1'],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
           const allowed=new Set([process.env.PLANNER_FILE,process.env.CLASSIFIER_FILE,process.env.CONTRACT_FILE,process.env.REQUEST_FILE,process.env.EVIDENCE_FILE]);
           for(const line of status){const file=line.slice(3).trim();if(!allowed.has(file))throw new Error('unexpected_delta:'+file);}
           NODE
 
-      - name: Commit source-only root fix directly on live branch
+      - name: Commit source-only root fix
         if: steps.request.outputs.enabled == 'true'
         run: |
           set -euo pipefail
@@ -213,19 +139,12 @@ jobs:
           git commit -m 'fix(c6): harden source-safe identity diagnostic contract'
           git push origin HEAD:docs-tya-v6-v71-audit
 
-      - name: Publish source-static status
+      - name: Publish status
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          STATE=success
-          DESC='PASS_C6_DIAGNOSTIC_CONTRACT_ROOTFIX_SOURCE_ONLY'
+          STATE=success; DESC='PASS_C6_DIAGNOSTIC_CONTRACT_ROOTFIX_SOURCE_ONLY'
           if [ '${{ steps.request.outputs.enabled }}' != 'true' ]; then DESC='SKIPPED_DISABLED_REQUEST'; fi
           if [ '${{ job.status }}' != 'success' ]; then STATE=failure; DESC='HOLD_C6_DIAGNOSTIC_CONTRACT_ROOTFIX_SOURCE_ONLY'; fi
-          gh api --method POST \
-            -H 'Accept: application/vnd.github+json' \
-            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
-            -f state="$STATE" \
-            -f context='cxorbia/c6-shopper-diagnostic-contract-rootfix-source-only/overall' \
-            -f description="$DESC" \
-            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/c6-shopper-diagnostic-contract-rootfix-source-only/overall' -f description="$DESC" -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
