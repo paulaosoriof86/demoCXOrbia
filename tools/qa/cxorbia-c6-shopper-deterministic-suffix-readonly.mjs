@@ -29,6 +29,7 @@ const ACTIVE_STATUSES = new Set(['active','activo','enabled','habilitado','appro
 const INACTIVE_STATUSES = new Set(['inactive','inactivo','disabled','deshabilitado','deleted','eliminado','archived','archivado','rejected','rechazado','blocked','bloqueado','suspended','suspendido','cancelled','canceled','cancelado']);
 const STABLE_CREDENTIALS_MAPPED = 101;
 const STABLE_CREDENTIALS_UNMAPPED = 8;
+const GROUP_FINGERPRINT_NAMESPACE = 'shopper-visible-login-group-v1';
 
 const root = process.cwd();
 const requestPath = process.argv[2] || 'backend/config/corte6-shopper-deterministic-suffix-readonly-request.json';
@@ -40,6 +41,25 @@ const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
 const uniq = values => [...new Set(values.filter(Boolean))];
 const fp = (kind, value) => fingerprint(`${kind}\0${value}`);
+function stableGroupFingerprint(baseLogin) {
+  return fp(GROUP_FINGERPRINT_NAMESPACE, norm(baseLogin));
+}
+function reconcileFingerprintSets(referenceValues, currentValues) {
+  const reference = new Set((Array.isArray(referenceValues) ? referenceValues : []).filter(Boolean));
+  const current = new Set((Array.isArray(currentValues) ? currentValues : []).filter(Boolean));
+  const added = [...current].filter(value => !reference.has(value)).sort();
+  const removed = [...reference].filter(value => !current.has(value)).sort();
+  const unchanged = [...current].filter(value => reference.has(value)).sort();
+  return {
+    namespace: GROUP_FINGERPRINT_NAMESPACE,
+    referenceCount: reference.size,
+    currentCount: current.size,
+    added,
+    removed,
+    unchangedCount: unchanged.length,
+    exactMatch: added.length === 0 && removed.length === 0
+  };
+}
 const add = (map, key, value) => {
   const k = text(key);
   if (!k) return;
@@ -111,16 +131,22 @@ function sourceSafeNames(profile, linkedSources, credentials) {
     return '';
   })();
   const first = asciiToken(firstRaw);
+  const firstCandidateBases = uniq(sources.filter(item => {
+    const direct = pick(item.value, FIRST_KEYS);
+    const full = pick(item.value, NAME_KEYS);
+    const raw = direct ? direct.split(/\s+/)[0] : full ? full.split(/\s+/)[0] : '';
+    return first && asciiToken(raw) === first;
+  }).map(item => item.basis));
   const explicit = [];
   const logins = [];
 
   for (const item of sources) {
     const surname = pick(item.value, SURNAME_KEYS);
-    if (surname) explicit.push({ token: asciiToken(surname.split(/\s+/)[0]), basis: `${item.basis}:explicit` });
+    if (surname) explicit.push({ token: asciiToken(surname.split(/\s+/)[0]), basis: item.basis + ':explicit' });
     for (const key of LOGIN_KEYS) {
       const parts = norm(item.value?.[key]).split('.').filter(Boolean);
       if (parts.length >= 2 && asciiToken(parts[0]) === first) {
-        logins.push({ token: asciiToken(parts[1]), basis: `${item.basis}:technical_login` });
+        logins.push({ token: asciiToken(parts[1]), basis: item.basis + ':technical_login' });
       }
     }
   }
@@ -131,11 +157,16 @@ function sourceSafeNames(profile, linkedSources, credentials) {
     }
   }
 
-  const directTokens = uniq([...explicit, ...logins].map(item => item.token));
-  let surname = directTokens.length === 1 ? directTokens[0] : '';
+  const explicitTokens = uniq(explicit.map(item => item.token));
+  const technicalLoginTokens = uniq(logins.map(item => item.token));
+  const directTokens = uniq([...explicitTokens, ...technicalLoginTokens]);
+  const preConsensusSurname = directTokens.length === 1 ? directTokens[0] : '';
+  let surname = preConsensusSurname;
   let basis = surname ? 'explicit_or_technical' : '';
   let completedByConsensus = false;
   let conflict = directTokens.length > 1;
+  let consensusCandidateCount = 0;
+  let consensusBasisCount = 0;
 
   if (!surname && !conflict && first) {
     const candidates = new Map();
@@ -146,6 +177,8 @@ function sourceSafeNames(profile, linkedSources, credentials) {
       candidates.get(token).add(item.basis);
     }
     const corroborated = [...candidates.entries()].filter(([, bases]) => bases.size >= 2);
+    consensusCandidateCount = corroborated.length;
+    consensusBasisCount = corroborated.reduce((sum, [, bases]) => sum + bases.size, 0);
     if (corroborated.length === 1) {
       surname = corroborated[0][0];
       basis = 'multi_source_full_name_consensus';
@@ -155,20 +188,36 @@ function sourceSafeNames(profile, linkedSources, credentials) {
     }
   }
 
-  const baseLogin = first && surname ? `${first}.${surname}` : '';
+  const baseLogin = first && surname ? first + '.' + surname : '';
+  const preConsensusBaseLogin = first && preConsensusSurname ? first + '.' + preConsensusSurname : '';
   const passwordToken = text(firstRaw).normalize('NFC').replace(/[^\p{L}'’\-]/gu, '');
   const password = passwordToken
     ? passwordToken.charAt(0).toUpperCase() + passwordToken.slice(1).toLowerCase() + '123*'
     : '';
+  const passwordSeedComplete = Boolean(passwordToken);
   return {
     firstComplete: Boolean(first),
     surnameComplete: Boolean(surname),
+    passwordSeedComplete,
+    preConsensusComplete: Boolean(preConsensusBaseLogin && password),
     complete: Boolean(baseLogin && password),
     baseLogin,
     password,
     basis: basis || 'unresolved',
     completedByConsensus,
-    conflict
+    conflict,
+    diagnostics: {
+      first: { complete: Boolean(first), candidateCount: first ? 1 : 0, basisCount: firstCandidateBases.length },
+      surname: {
+        complete: Boolean(surname),
+        explicitCandidateCount: explicitTokens.length,
+        technicalLoginCandidateCount: technicalLoginTokens.length,
+        consensusCandidateCount,
+        basisCount: uniq([...explicit, ...logins].map(item => item.basis)).length + consensusBasisCount,
+        conflict
+      },
+      passwordSeed: { complete: passwordSeedComplete, candidateCount: passwordSeedComplete ? 1 : 0, basisCount: firstCandidateBases.length }
+    }
   };
 }
 
@@ -236,24 +285,39 @@ function continuityScore(row, baseEmail, tenantId, projectId) {
   return score;
 }
 
-async function authCandidateScore(user, row, tenantId, projectId, webConfig) {
+function buildAuthCandidateSignalVector(user, row, passwordCompatible, tenantId, projectId) {
   const claims = user.customClaims || {};
-  let score = 0;
-  if (exactClaims(claims, row.profile.id, tenantId, projectId)) score += 10000;
-  if (text(claims.shopperId) === row.profile.id) score += 5000;
-  if (norm(user.email) === norm(internalEmail(row.targetLogin, 'shopper', tenantId))) score += 1200;
-  if (norm(user.email) === norm(internalEmail(row.names.baseLogin, 'shopper', tenantId))) score += 800;
   const credentialEmails = row.credentials
     .map(record => norm(record.normalizedLogin || record.loginIdentifier))
     .filter(Boolean)
     .map(login => internalEmail(login, 'shopper', tenantId));
-  if (credentialEmails.some(email => norm(email) === norm(user.email))) score += 600;
+  const signals = {
+    exactClaims: exactClaims(claims, row.profile.id, tenantId, projectId),
+    shopperIdClaim: text(claims.shopperId) === row.profile.id,
+    targetEmailMatch: norm(user.email) === norm(internalEmail(row.targetLogin, 'shopper', tenantId)),
+    baseEmailMatch: norm(user.email) === norm(internalEmail(row.names.baseLogin, 'shopper', tenantId)),
+    credentialEmailMatch: credentialEmails.some(email => norm(email) === norm(user.email)),
+    passwordCompatible: Boolean(passwordCompatible),
+    enabled: !user.disabled,
+    emailVerified: Boolean(user.emailVerified),
+    providerCreationMetadataPresent: Boolean(user.metadata?.creationTime)
+  };
+  let score = 0;
+  if (signals.exactClaims) score += 10000;
+  if (signals.shopperIdClaim) score += 5000;
+  if (signals.targetEmailMatch) score += 1200;
+  if (signals.baseEmailMatch) score += 800;
+  if (signals.credentialEmailMatch) score += 600;
+  if (signals.passwordCompatible) score += 400;
+  if (signals.enabled) score += 10;
+  if (signals.emailVerified) score += 5;
+  if (signals.providerCreationMetadataPresent) score += 1;
+  return { score, passwordCompatible: Boolean(passwordCompatible), signals };
+}
+
+async function authCandidateScore(user, row, tenantId, projectId, webConfig) {
   const passwordCompatible = await passwordSignInEmail(webConfig.apiKey, user.email, row.names.password);
-  if (passwordCompatible) score += 400;
-  if (!user.disabled) score += 10;
-  if (user.emailVerified) score += 5;
-  if (user.metadata?.creationTime) score += 1;
-  return { user, score, passwordCompatible };
+  return { user, ...buildAuthCandidateSignalVector(user, row, passwordCompatible, tenantId, projectId) };
 }
 
 async function buildProviderPlan({ auth, db, bundle, webConfig, tenantId, projectId }) {
@@ -393,14 +457,20 @@ async function buildProviderPlan({ auth, db, bundle, webConfig, tenantId, projec
       resolutionBases: new Set(),
       holds: new Set(),
       selectedAuth: null,
-      selectedPasswordCompatible: false
+      selectedPasswordCompatible: false,
+      multiAuthDiagnostics: null
     });
   }
 
-  const initialIncompleteActiveProfiles = rows.filter(row => row.active && !row.names.complete).length;
+  const preConsensusIncompleteActiveProfiles = rows.filter(row => row.active && !row.names.preConsensusComplete).length;
   const completedByConsensus = rows.filter(row => row.active && row.names.completedByConsensus).length;
   for (const row of rows) {
-    if (row.active && !row.names.complete) row.holds.add(row.names.conflict ? 'technical_surname_conflict' : 'technical_surname_unresolved');
+    if (!row.active || row.names.complete) continue;
+    if (row.names.conflict) row.holds.add('technical_surname_conflict');
+    else if (!row.names.firstComplete) row.holds.add('technical_first_name_unresolved');
+    else if (!row.names.surnameComplete) row.holds.add('technical_surname_unresolved');
+    else if (!row.names.passwordSeedComplete) row.holds.add('technical_password_seed_unresolved');
+    else row.holds.add('technical_name_contract_unresolved');
   }
 
   const activeComplete = rows.filter(row => row.active && row.names.complete);
@@ -435,7 +505,7 @@ async function buildProviderPlan({ auth, db, bundle, webConfig, tenantId, projec
       row.resolutionBases.add('deterministic_technical_suffix');
     }
     groupMatrix.push({
-      groupFp: fp('deterministic-suffix-group', baseLogin),
+      groupFp: stableGroupFingerprint(baseLogin),
       activeCount: members.length,
       keeperSelected: Boolean(keeper),
       suffixedCount: members.length - (keeper ? 1 : 0),
@@ -463,6 +533,17 @@ async function buildProviderPlan({ auth, db, bundle, webConfig, tenantId, projec
       scored.sort((a, b) => b.score - a.score || text(a.user.metadata?.creationTime).localeCompare(text(b.user.metadata?.creationTime)));
       const top = scored[0];
       const second = scored[1];
+      row.multiAuthDiagnostics = {
+        candidateCount: scored.length,
+        topScore: top?.score || 0,
+        secondScore: second?.score || 0,
+        scoreMargin: top ? top.score - (second?.score || 0) : 0,
+        candidateVectors: scored.map((entry, index) => ({
+          candidateOrdinal: index + 1,
+          score: entry.score,
+          signals: entry.signals
+        }))
+      };
       if (top && top.score >= 400 && top.score > (second?.score || 0)) {
         row.selectedAuth = top.user;
         row.selectedPasswordCompatible = top.passwordCompatible;
@@ -512,6 +593,10 @@ async function buildProviderPlan({ auth, db, bundle, webConfig, tenantId, projec
       changes,
       sourceSafeSurnameBasis: row.names.basis,
       resolutionBases: [...row.resolutionBases].sort(),
+      diagnostics: primary === 'HOLD' ? {
+        name: row.names.diagnostics,
+        multiAuth: row.multiAuthDiagnostics
+      } : null,
       preconditions: row.holds.size ? [...row.holds].sort() : ['shopperId_exact','target_login_unique','provider_snapshot_required'],
       rollback: primary === 'CREATE_AUTH'
         ? 'delete_only_created_uid_if_no_downstream_write'
@@ -533,7 +618,7 @@ async function buildProviderPlan({ auth, db, bundle, webConfig, tenantId, projec
     targetCollisionHolds === 0;
 
   return {
-    schemaVersion: 'cxorbia.c6.shopper-deterministic-suffix-readonly.result.v1',
+    schemaVersion: 'cxorbia.c6.shopper-deterministic-suffix-readonly.result.v2',
     generatedAt: new Date().toISOString(),
     decision: ready ? 'PASS_C6_DETERMINISTIC_SUFFIX_PLAN_READY_READONLY' : 'HOLD_C6_DETERMINISTIC_SUFFIX_PLAN_STOP_RETRY',
     source: {
@@ -554,12 +639,15 @@ async function buildProviderPlan({ auth, db, bundle, webConfig, tenantId, projec
       recentFloor
     },
     surnameCompletion: {
-      initialIncompleteActiveProfiles,
+      preConsensusIncompleteActiveProfiles,
+      completedByConsensus,
       completedByMultiSourceConsensus: completedByConsensus,
-      remainingIncompleteActiveProfiles: unresolvedActiveNames
+      remainingIncompleteActiveProfiles: unresolvedActiveNames,
+      metricIdentityValid: preConsensusIncompleteActiveProfiles === completedByConsensus + unresolvedActiveNames
     },
     disambiguation: {
       policy: 'DETERMINISTIC_TECHNICAL_SUFFIX',
+      groupFingerprintNamespace: GROUP_FINGERPRINT_NAMESPACE,
       collisionGroups: collisionGroups.length,
       activeIdentities: collisionGroups.reduce((sum, [, members]) => sum + members.length, 0),
       groupsWithUniqueUnsuffixedKeeper: groupMatrix.filter(group => group.keeperSelected).length,
@@ -573,7 +661,11 @@ async function buildProviderPlan({ auth, db, bundle, webConfig, tenantId, projec
     multiAuth: {
       profilesWithMultipleCandidates: rows.filter(row => row.authUsers.length > 1).length,
       resolved: rows.filter(row => row.resolutionBases.has('multi_auth_resolved_by_combined_technical_signals')).length,
-      unresolved: unresolvedMultiAuth
+      unresolved: unresolvedMultiAuth,
+      vectors: rows.filter(row => row.multiAuthDiagnostics).map(row => ({
+        profileFp: fp('multi-auth-profile-v1', row.profile.id),
+        ...row.multiAuthDiagnostics
+      }))
     },
     groupMatrix,
     plan: {
@@ -645,7 +737,17 @@ function selfTest() {
     [{ value: { shopperId: 'x', name: 'Ana Maria Perez Lopez' }, basis: 'hr' }],
     []
   );
-  if (!sample.completedByConsensus || sample.baseLogin !== 'ana.perez') throw new Error('source_safe_consensus_failed');
+  if (!sample.completedByConsensus || sample.baseLogin !== 'ana.perez' || sample.preConsensusComplete !== false) throw new Error('source_safe_consensus_failed');
+  if (sample.diagnostics.first.complete !== true || sample.diagnostics.surname.consensusCandidateCount !== 1 || sample.diagnostics.passwordSeed.complete !== true) throw new Error('source_safe_diagnostic_vector_failed');
+  if (stableGroupFingerprint('Ana.Perez') !== stableGroupFingerprint('ana.perez')) throw new Error('stable_group_fingerprint_failed');
+  const setReview = reconcileFingerprintSets(['a','b'], ['b','c']);
+  if (setReview.added.join(',') !== 'c' || setReview.removed.join(',') !== 'a' || setReview.exactMatch) throw new Error('fingerprint_set_reconciliation_failed');
+  const authVector = buildAuthCandidateSignalVector(
+    { email: internalEmail('ana.perez', 'shopper', 'tya'), disabled: false, emailVerified: true, metadata: { creationTime: '2026-01-01T00:00:00Z' }, customClaims: { tenantId: 'tya', role: 'shopper', authNamespace: 'shopper', shopperId: 'x', projectIds: ['cinepolis'] } },
+    { profile: { id: 'x' }, targetLogin: 'ana.perez', names: { baseLogin: 'ana.perez' }, credentials: [] },
+    true, 'tya', 'cinepolis'
+  );
+  if (!authVector.signals.exactClaims || !authVector.signals.passwordCompatible || Object.hasOwn(authVector.signals, 'uid') || Object.hasOwn(authVector.signals, 'email')) throw new Error('multi_auth_source_safe_vector_failed');
   return {
     schemaVersion: 'cxorbia.c6.shopper-deterministic-suffix-source-static.v1',
     decision: 'PASS_C6_DETERMINISTIC_SUFFIX_SOURCE_STATIC',
@@ -657,7 +759,13 @@ function selfTest() {
       'PASS_NO_PII_SUFFIX_CONTRACT',
       'PASS_ONE_PRIMARY_OPERATION_SCHEMA',
       'PASS_CREDENTIAL_CROSSWALK_TECH_KEY_PROPAGATION',
-      'PASS_CREDENTIAL_CROSSWALK_PARITY_HARD_STOP'
+      'PASS_CREDENTIAL_CROSSWALK_PARITY_HARD_STOP',
+      'PASS_DIAGNOSTIC_CONTRACT_V2',
+      'PASS_PRE_CONSENSUS_COMPLETED_REMAINING_METRICS',
+      'PASS_HOLD_SOURCE_SAFE_DIAGNOSTIC_VECTORS',
+      'PASS_MULTI_AUTH_SOURCE_SAFE_SIGNAL_VECTOR',
+      'PASS_STABLE_GROUP_FINGERPRINT_NAMESPACE',
+      'PASS_FINGERPRINT_SET_RECONCILIATION_NO_RIGID_AGGREGATE'
     ]
   };
 }
@@ -674,6 +782,8 @@ function validateRequest(request) {
   ensure(request.providerReads === true && request.providerWrites === false, 'provider_scope_invalid');
   ensure(request.policy === 'DETERMINISTIC_TECHNICAL_SUFFIX', 'policy_invalid');
   ensure(JSON.stringify(request.suffixLengths) === JSON.stringify([4,6,8]), 'suffix_lengths_invalid');
+  ensure(request.groupFingerprintNamespace === GROUP_FINGERPRINT_NAMESPACE, 'group_fingerprint_namespace_invalid');
+  ensure(request.collisionReconciliationPolicy === 'fingerprint_set_membership_not_rigid_aggregate_equality', 'collision_reconciliation_policy_invalid');
   for (const key of ['repositoryWrites','dataWrites','deploy','merge','production','firestoreWrites','authWrites','passwordChanges','passwordResets','membershipWrites','rulesWrites','storageWrites','hrWrites','make','gemini','payments']) {
     ensure(request.safeState?.[key] === false, `unsafe_${key}`);
   }
@@ -711,8 +821,15 @@ async function providerMain() {
     if (result.source.credentialCrosswalkParity !== true) {
       blockers.push(`credential_crosswalk_drift:${result.source.credentialsMapped}/${result.source.credentialsUnmapped}`);
     }
-    if (result.surnameCompletion.initialIncompleteActiveProfiles !== Number(request.expectedInitialIncompleteActiveProfiles || 83)) blockers.push(`initial_incomplete:${result.surnameCompletion.initialIncompleteActiveProfiles}`);
-    if (result.disambiguation.collisionGroups !== Number(request.expectedDistinctActiveCollisionGroups || 64)) blockers.push(`collision_groups:${result.disambiguation.collisionGroups}`);
+    if (result.surnameCompletion.metricIdentityValid !== true) {
+      blockers.push(`surname_metric_identity:${result.surnameCompletion.preConsensusIncompleteActiveProfiles}/${result.surnameCompletion.completedByConsensus}/${result.surnameCompletion.remainingIncompleteActiveProfiles}`);
+    }
+    const collisionReference = Array.isArray(request.expectedCollisionGroupFingerprints) ? request.expectedCollisionGroupFingerprints : [];
+    const collisionReconciliation = reconcileFingerprintSets(collisionReference, result.groupMatrix.map(group => group.groupFp));
+    result.disambiguation.fingerprintReconciliation = { ...collisionReconciliation, referenceProvided: collisionReference.length > 0 };
+    if (collisionReference.length > 0 && !collisionReconciliation.exactMatch) {
+      blockers.push(`collision_group_set_drift:+${collisionReconciliation.added.length}/-${collisionReconciliation.removed.length}`);
+    }
     if (result.plan.rows !== 340) blockers.push(`plan_rows:${result.plan.rows}`);
     if (result.multiAuth.unresolved > 0) blockers.push(`multi_auth_tie:${result.multiAuth.unresolved}`);
     if (result.surnameCompletion.remainingIncompleteActiveProfiles > 0) blockers.push(`surname_remaining:${result.surnameCompletion.remainingIncompleteActiveProfiles}`);

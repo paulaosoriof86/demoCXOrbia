@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.c6.shopper-diagnostic-contract-rootfix-source-only-request.v1",
   "requestId": "c6-shopper-diagnostic-contract-rootfix-source-only-20260805-01",
-  "enabled": true,
-  "consumed": false,
-  "status": "authorized_execute_once",
+  "enabled": false,
+  "consumed": true,
+  "status": "consumed_source_static_pass_no_provider_read",
   "issuedAt": "2026-08-05T21:16:00-06:00",
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-05",
@@ -45,7 +45,11 @@
   "providerWrites": false,
   "allowedExecutions": 1,
   "expectedPlanRows": 340,
-  "suffixLengths": [4, 6, 8],
+  "suffixLengths": [
+    4,
+    6,
+    8
+  ],
   "metricContract": {
     "preConsensusIncompleteActiveProfiles": true,
     "completedByConsensus": true,
@@ -54,9 +58,24 @@
   },
   "holdDiagnosticContract": {
     "values": "booleans_counts_bases_only",
-    "first": ["complete", "candidateCount", "basisCount"],
-    "surname": ["complete", "explicitCandidateCount", "technicalLoginCandidateCount", "consensusCandidateCount", "basisCount", "conflict"],
-    "passwordSeed": ["complete", "candidateCount", "basisCount"],
+    "first": [
+      "complete",
+      "candidateCount",
+      "basisCount"
+    ],
+    "surname": [
+      "complete",
+      "explicitCandidateCount",
+      "technicalLoginCandidateCount",
+      "consensusCandidateCount",
+      "basisCount",
+      "conflict"
+    ],
+    "passwordSeed": [
+      "complete",
+      "candidateCount",
+      "basisCount"
+    ],
     "rawNames": false,
     "rawLogins": false,
     "rawEmails": false,
@@ -106,5 +125,12 @@
   "containsPii": false,
   "containsSecrets": false,
   "stopAfterSourceStatic": true,
-  "nextGate": "NEW_EXPLICIT_PROVIDER_READONLY_AUTHORIZATION_REQUIRED"
+  "nextGate": "NEW_EXPLICIT_PROVIDER_READONLY_AUTHORIZATION_REQUIRED",
+  "consumedAt": "2026-08-06T03:28:09.164Z",
+  "result": {
+    "decision": "PASS_C6_SHOPPER_DIAGNOSTIC_CONTRACT_ROOTFIX_SOURCE_STATIC",
+    "providerReads": 0,
+    "providerWrites": 0,
+    "evidence": "app/docs/evidence/CORTE6-SHOPPER-DIAGNOSTIC-CONTRACT-ROOTFIX-SOURCE-STATIC-PASS-LATEST.json"
+  }
 }

@@ -13,6 +13,7 @@ const SURNAME_KEYS = ['lastName','apellido','apellidos','surname','familyName','
 const LOGIN_KEYS = ['username','userName','usuario','login','loginIdentifier','normalizedLogin'];
 const ACTIVE_STATUSES = new Set(['active','activo','enabled','habilitado','approved','aprobado','complete','completo','completed','verified','verificado','perfil_completo','vigente']);
 const INACTIVE_STATUSES = new Set(['inactive','inactivo','disabled','deshabilitado','deleted','eliminado','archived','archivado','rejected','rechazado','blocked','bloqueado','suspended','suspendido','cancelled','canceled','cancelado']);
+const GROUP_FINGERPRINT_NAMESPACE = 'shopper-visible-login-group-v1';
 
 const uniq = values => [...new Set(values.filter(Boolean))];
 const add = (map, key, value) => {
@@ -276,7 +277,7 @@ function classifyGroup(login, members, tenantId, projectId) {
   const activeMembers = members.filter(member => member.active);
   const historicalMembers = members.filter(member => !member.active);
   const matrix = {
-    groupFp: fp('candidate-login-group', login),
+    groupFp: fp(GROUP_FINGERPRINT_NAMESPACE, norm(login)),
     memberCount: members.length,
     activeCount: activeMembers.length,
     historicalCount: historicalMembers.length,

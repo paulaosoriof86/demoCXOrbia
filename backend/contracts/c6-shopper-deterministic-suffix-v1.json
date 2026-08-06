@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "cxorbia.c6.shopper-deterministic-suffix.v1",
+  "schemaVersion": "cxorbia.c6.shopper-deterministic-suffix.v2",
   "status": "tenant_authorized_readonly_planning_contract",
   "tenantId": "tya",
   "projectId": "cinepolis",
@@ -10,7 +10,11 @@
     "scope": "distinct_active_people_sharing_same_visible_login_only",
     "preserveUnsuffixedWhen": "one_unique_technical_holder_exists",
     "suffixDerivation": "sha256(tenantId + NUL + shopperId)",
-    "suffixLengths": [4, 6, 8],
+    "suffixLengths": [
+      4,
+      6,
+      8
+    ],
     "suffixContainsPii": false,
     "separator": "."
   },
@@ -22,7 +26,34 @@
       "multi-source full-name consensus"
     ],
     "singlePositionOnlyInferenceAllowed": false,
-    "conflictPolicy": "HOLD"
+    "conflictPolicy": "HOLD",
+    "diagnosticContract": {
+      "preConsensusIncompleteActiveProfiles": "active incomplete before consensus",
+      "completedByConsensus": "completed only by multi-source consensus",
+      "remainingIncompleteActiveProfiles": "active incomplete after all allowed methods",
+      "metricIdentity": "preConsensusIncompleteActiveProfiles = completedByConsensus + remainingIncompleteActiveProfiles",
+      "holdVector": {
+        "first": [
+          "complete",
+          "candidateCount",
+          "basisCount"
+        ],
+        "surname": [
+          "complete",
+          "explicitCandidateCount",
+          "technicalLoginCandidateCount",
+          "consensusCandidateCount",
+          "basisCount",
+          "conflict"
+        ],
+        "passwordSeed": [
+          "complete",
+          "candidateCount",
+          "basisCount"
+        ]
+      },
+      "rawValuesAllowed": false
+    }
   },
   "multiAuthResolution": {
     "signals": [
@@ -34,13 +65,39 @@
       "enabled state",
       "provider metadata"
     ],
-    "tiePolicy": "STOP_RETRY"
+    "tiePolicy": "STOP_RETRY",
+    "diagnosticVector": {
+      "candidateOrdinalOnly": true,
+      "fields": [
+        "score",
+        "exactClaims",
+        "shopperIdClaim",
+        "targetEmailMatch",
+        "baseEmailMatch",
+        "credentialEmailMatch",
+        "passwordCompatible",
+        "enabled",
+        "emailVerified",
+        "providerCreationMetadataPresent"
+      ],
+      "scoreMarginRequired": true,
+      "uidAllowed": false,
+      "emailAllowed": false,
+      "rawPiiAllowed": false
+    }
   },
   "plan": {
     "rows": 340,
     "onePrimaryOperationPerProfile": true,
-    "operations": ["CREATE_AUTH", "UPDATE_AUTH", "NO_OP", "HOLD", "PRESERVE_NO_AUTH"],
-    "executable": false
+    "operations": [
+      "CREATE_AUTH",
+      "UPDATE_AUTH",
+      "NO_OP",
+      "HOLD",
+      "PRESERVE_NO_AUTH"
+    ],
+    "executable": false,
+    "diagnosticContractVersion": "v2"
   },
   "privacy": {
     "rawNamesInRepositoryOrEvidence": false,
@@ -64,5 +121,17 @@
     "payments": false,
     "merge": false,
     "production": false
+  },
+  "collisionReconciliation": {
+    "groupFingerprintNamespace": "shopper-visible-login-group-v1",
+    "basis": "normalized visible base login",
+    "policy": "fingerprint_set_membership_not_rigid_aggregate_equality",
+    "outputs": [
+      "added",
+      "removed",
+      "unchangedCount",
+      "exactMatch"
+    ],
+    "rigidExpectedGroupCountAllowed": false
   }
 }
