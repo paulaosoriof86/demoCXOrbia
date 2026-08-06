@@ -2,89 +2,88 @@
 
 **Fecha:** 2026-08-06  
 **Estado:** ACTIVO Y RECONCILIADO  
-**Estado vivo:** `C6_GITHUB_ACTIONS_OUTAGE_ROOT_CAUSE_PROVEN__WEBHOOK_THROTTLING__CONTROL_PLANE_V2_PREPARED__REQUEST_DISABLED__AUTH_PLAN_FROZEN__NO_PROVIDER__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_DIRECT_RUNNER_SOURCE_READY__DEPLOY_ATTEMPT_FAIL_CLOSED_PREPROVIDER_SHA_CONTEXT__ZERO_DEPLOY__STOP_RETRY__AUTH_PLAN_FROZEN__NO_PROVIDER__NO_WRITES__NO_PRODUCTION`
 
 ## 1. Orden de prevalencia
 
 1. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `app/docs/SOURCE-LOCK-C6-GITHUB-ACTIONS-OUTAGE-ROOT-CAUSE-AND-FAILOVER-20260806.md`;
-3. `backend/contracts/c6-execution-control-plane-v2.json`;
-4. `tools/qa/cxorbia-c6-control-plane-preflight.mjs`;
-5. `app/docs/SOURCE-LOCK-C6-CONNECTOR-ACTIONS-NO-RUN-DIAGNOSTIC-STOP-RETRY-20260806.md`;
-6. `app/docs/SOURCE-LOCK-C6-BASE-CONTROL-PLANE-NO-RUN-FAIL-CLOSED-20260806.md`;
-7. `backend/config/c6-skip13-auth-access-adjudication-request.json` — deshabilitado;
-8. `backend/contracts/c6-skip13-auth-access-adjudication-v1.json`;
-9. `tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly.mjs`;
-10. `.github/workflows/cxorbia-c6-skip13-auth-access-adjudication-readonly.yml`;
-11. `app/docs/SOURCE-LOCK-C6-AUTH-SMOKE-FINAL-PREPARATION-HOLD-20260806.md`;
-12. `backend/config/c6-shopper-auth-final-freeze-v1.json`;
-13. `backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json`;
-14. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json`;
-15. `app/docs/SOURCE-LOCK-C6-PRODUCTION-PROMOTION-PASS-20260806.md`;
-16. `backend/config/cxorbia-production-promotion-contract.json`;
-17. `app/docs/SOURCE-LOCK-C6-LIVE-HR-V4-REQUEST-30M-NO-RUN-EVIDENCE-20260806.md`;
-18. `.github/cxorbia-firebase-requests/live-hr-current-reconcile.json`;
-19. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-20. addenda vigentes de CAMBIOS, Claude, Pendientes, Academia y tracker;
-21. `AGENTS.md`, PR #7 y HEAD vivo.
+2. `app/docs/SOURCE-LOCK-C6-DIRECT-TRUSTED-RUNNER-DEV-DEPLOY-STOP-RETRY-20260806.md`;
+3. `backend/contracts/c6-direct-trusted-runner-dev-v1.json`;
+4. `backend/config/c6-direct-trusted-runner-dev-deploy-request.json` — deshabilitado y consumido;
+5. `backend/runtime/c6-direct-trusted-runner/server.mjs`;
+6. `tools/qa/cxorbia-c6-direct-runner-source-gate.mjs`;
+7. `backend/contracts/c6-execution-control-plane-v2.json`;
+8. `tools/qa/cxorbia-c6-control-plane-preflight.mjs`;
+9. `app/docs/SOURCE-LOCK-C6-GITHUB-ACTIONS-OUTAGE-ROOT-CAUSE-AND-FAILOVER-20260806.md`;
+10. `backend/config/c6-skip13-auth-access-adjudication-request.json` — deshabilitado;
+11. `backend/contracts/c6-skip13-auth-access-adjudication-v1.json`;
+12. `tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly.mjs`;
+13. `.github/workflows/cxorbia-c6-skip13-auth-access-adjudication-readonly.yml`;
+14. `app/docs/SOURCE-LOCK-C6-AUTH-SMOKE-FINAL-PREPARATION-HOLD-20260806.md`;
+15. `backend/config/c6-shopper-auth-final-freeze-v1.json`;
+16. `backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json`;
+17. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json`;
+18. `app/docs/SOURCE-LOCK-C6-PRODUCTION-PROMOTION-PASS-20260806.md`;
+19. `app/docs/SOURCE-LOCK-C6-LIVE-HR-V4-REQUEST-30M-NO-RUN-EVIDENCE-20260806.md`;
+20. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+21. addenda vigentes de CAMBIOS, Claude, Pendientes, Academia y tracker;
+22. `AGENTS.md`, PR #7 y HEAD vivo.
 
-## 2. Causa raíz demostrada
-
-Incidente oficial:
+## 2. Carril directo preparado
 
 ```text
-incidentId=qcvjkzcs7j74
-component=GitHub Actions
-status=investigating
-impact=critical
-componentStatus=major_outage
+lane=direct_trusted_runner
+sourceStatus=READY
+environment=DEV
+service=cxorbia-c6-direct-runner-dev
+authentication=Cloud Run IAM/OIDC
+operation=control_plane_self_test
+providerBoundaryEnabled=false
+leaseMode=single_instance_memory_dev
+providerSafeDurability=false
 ```
 
-GitHub informó que los triggers webhook permanecían limitados y que muchos eventos `push` y `pull_request` no estaban creando runs. Una actualización anterior reportó procesamiento aproximado de 15% de los webhooks.
+Fuente bloqueada:
 
 ```text
-rootCause=EXTERNAL_GITHUB_ACTIONS_MAJOR_OUTAGE_AND_WEBHOOK_TRIGGER_THROTTLING
-repoWorkflowFaultProven=false
-branchPathOrderMismatch=false
-repositoryWritePermissionMissing=false
-tokenSuppressionRequired=false
+lockedSourceHead=4bc7c3529ccca34d87fc19747b7053831c577c47
 ```
 
-## 3. Recuperación parcial observable
-
-El HEAD `2d4d760b492bd25d6c91b03151ff1be1cbe0d5dc` materializó posteriormente:
+## 3. Único intento de deploy
 
 ```text
-runId=31129990397
-jobId=92716480291
-workflow=CXOrbia C6 SKIP13 Auth Access Adjudication Readonly
-conclusion=success
-requestOnly=false
-executable=false
-status=SKIPPED_NON_REQUEST_EVENT
+requestId=c6-direct-trusted-runner-dev-deploy-20260806-01
+requestCommit=bebe0f207d62dd9d833cfeb0675f54705283cbc7
+runId=31131197140
+jobId=92720222820
+failureStep=Validate exact one-shot deployment request
+failureClassification=TEST_HARNESS_PULL_REQUEST_SHA_CONTEXT_MISMATCH
+```
+
+El checkout se fijó al head real del PR, pero el validador lo comparó contra `GITHUB_SHA`, que en el evento `pull_request` representa el merge commit sintético. El run se detuvo antes del claim y antes de Google Cloud.
+
+```text
+deploysExecuted=0
+CloudBuild=0
+CloudRunDeploy=0
+IAMWrites=0
 providerReads=0
+providerWrites=0
+secondAttempt=0
+STOP_RETRY=true
 ```
 
-Esto valida el workflow y sus guards, pero no adjudica SKIP13.
-
-## 4. Solución de control plane preparada
+## 4. Fail-close
 
 ```text
-primaryLane=github_actions_explicit_dispatch
-primaryEvent=workflow_dispatch
-commitPushAsProviderSignal=false
-preflight=tools/qa/cxorbia-c6-control-plane-preflight.mjs
+workflowRemovalCommit=810c707ddde1970e272d6b880f253cd172e7bb1d
+requestDisableCommit=2b607d9ad03cf14794d44f0eb49be285226a3cf8
+workflowPresent=false
+requestExecutable=false
+allowedDeploys=0
 ```
 
-El preflight exige Actions operativo, incidente resuelto, throughput restaurado, `runId`, `jobId`, coincidencia de request/source lock y claim previo a provider.
-
-```text
-fallbackLane=direct_trusted_runner
-fallbackStatus=DESIGN_ONLY_NOT_DEPLOYED
-independentOfGitHubActions=true
-```
-
-El carril directo requiere autorización separada de despliegue.
+No se reutilizan el request, workflow, run ni job anteriores.
 
 ## 5. SKIP13 y Auth
 
@@ -121,12 +120,10 @@ segundoTrigger=0
 
 ## 7. Pendiente real
 
-1. No emitir requests por commit ni usar push como señal provider.
-2. Esperar incidente `qcvjkzcs7j74` resuelto y Actions operativo.
-3. Ejecutar el preflight del control plane v2.
-4. Autorizar una única adjudicación SKIP13 mediante dispatch explícito observable.
-5. Autorizar separadamente el carril directo autenticado independiente de Actions.
-6. Continuar snapshot, repair Auth, readback, smoke, validación humana y cutover mediante gates separados.
+1. No reusar el request ni workflow del intento fallido.
+2. Solo con autorización nueva, crear un carril nuevo que use `github.event.pull_request.head.sha` como checkout y validación del head.
+3. Mantener la frontera provider deshabilitada hasta disponer de deploy DEV terminal PASS y lease durable apto para provider.
+4. Después, autorizar separadamente adjudicación SKIP13, snapshot/repair Auth, readback, smoke, validación humana y cutover.
 
 ## 8. Estado seguro
 
@@ -136,7 +133,10 @@ provider writes=0
 HR reads=0
 Auth/password/claims/membership writes=0
 Firestore/Rules/Storage/HR writes=0
-Hosting/Cloud Run deploys=0
+Cloud Build writes=0
+Cloud Run deploys=0
+IAM writes=0
+Hosting deploys=0
 Make/Gemini/payments=0
 merge=false
 production=false
