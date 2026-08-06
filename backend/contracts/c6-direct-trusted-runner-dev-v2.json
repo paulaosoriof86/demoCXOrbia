@@ -8,13 +8,14 @@
   "region": "us-central1",
   "service": "cxorbia-c6-direct-runner-dev",
   "runtimeServiceAccount": "cxorbia-c6-runner-dev",
-  "status": "AUTHORIZED_CORRECTED_DEPLOY_PENDING_TERMINAL_EVIDENCE",
+  "status": "SOURCE_GATE_PASS_DEPLOY_BLOCKED_IAM_SERVICE_ACCOUNT_CREATE_DENIED_STOP_RETRY",
   "sourceIdentity": {
     "mode": "github.event.pull_request.head.sha",
     "checkout": "PR_HEAD_SHA",
     "validation": "PR_HEAD_SHA",
     "imageTag": "PR_HEAD_SHA",
-    "forbiddenComparison": "GITHUB_SHA"
+    "forbiddenComparison": "GITHUB_SHA",
+    "validatedSourceLock": "5d95130a9813ed04461218fbc96c5b9c52c84b1f"
   },
   "invocation": {
     "authentication": "cloud_run_iam_oidc",
@@ -37,12 +38,23 @@
   "deployment": {
     "authorized": true,
     "maximumDeploys": 1,
+    "attemptedRuns": 1,
+    "deploysExecuted": 0,
     "hostingDeploy": false,
     "production": false,
     "rollbackRequired": true,
     "rollbackOnFailure": true,
-    "rollbackModeWhenServiceIsNew": "delete_new_service_and_runtime_identity",
-    "rollbackModeWhenServiceExists": "restore_prior_revision_traffic"
+    "rollbackResult": "not_required_pre_gcp_write_failure",
+    "workflowRunId": "31132278764",
+    "workflowJobId": "92723768448",
+    "artifactId": "8976504179",
+    "artifactDigest": "sha256:639b3aa8bd347bc3fd432fbe42552658977fbe88fd9eb14fa9f3dcb81e3b76f7",
+    "failureStep": "Resolve deployer and isolated runtime identity",
+    "failureClassification": "IAM_PERMISSION_DENIED_SERVICE_ACCOUNT_CREATE",
+    "failurePermission": "iam.serviceAccounts.create",
+    "failurePrincipal": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
+    "stopRetry": true,
+    "secondAttempt": false
   },
   "safety": {
     "skip13Execution": false,
@@ -61,6 +73,9 @@
     "storageWrites": false,
     "providerReads": false,
     "providerWrites": false,
+    "cloudBuildWrites": false,
+    "cloudRunDeploy": false,
+    "iamWrites": false,
     "hostingDeploy": false,
     "merge": false,
     "production": false,
