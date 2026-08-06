@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-08-06  
 **Estado:** ACTIVO Y RECONCILIADO  
-**Estado vivo:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_GATE_HOLD__LIVE_HR_V4_UNRESOLVED__PROD_TARGET_UNMATERIALIZED__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_GATE_HOLD__LIVE_HR_V4_UNRESOLVED__PRODUCTION_STRATEGY_UNMATERIALIZED__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Orden de prevalencia
 
@@ -51,28 +51,34 @@ No inferir que el run no existió, que `providerReads=0` o que la lectura fue co
 
 ## 4. Gate fast-track de producción
 
-Se creó y ejecutó source-only:
-
 ```text
 tool=tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs
 node --check=PASS
 exitCode=2 esperado fail-closed
-decision=HOLD_PRODUCTION_TARGET_UNMATERIALIZED
-holdReason=PRODUCTION_CONFIGURATION_FILES_NOT_MATERIALIZED
+decision=HOLD_PRODUCTION_STRATEGY_UNMATERIALIZED
+holdReason=PRODUCTION_PROMOTION_STRATEGY_NOT_AUTHORIZED_OR_MATERIALIZED
 ```
 
-Configuración observada:
+Configuración limpia observada:
 
 ```text
-default/dev project=cxorbia-backend-dev
+project=cxorbia-backend-dev
 hosting target=cxorbia-dev
 hosting site=cxorbia-backend-dev
-Cloud Run rewrite=cxorbia-live-hr-dev
-.firebaserc.prod existe=false
-firebase.prod.json existe=false
+Cloud Run service=cxorbia-live-hr-dev
+region=us-central1
+public=app
+UTF-8=PASS
 ```
 
-El repositorio todavía no materializa un carril de producción. Un deploy desde la configuración actual sería DEV, no producción.
+El gate no impone crear otro proyecto. Espera autorización de una estrategia:
+
+```text
+PROMOTE_EXISTING_CLEAN_PROJECT
+SEPARATE_CLEAN_PROD_PROJECT
+```
+
+Ninguna está autorizada o materializada todavía. La base legacy no puede usarse como backend nuevo.
 
 ## 5. Identidades Shopper
 
@@ -93,7 +99,8 @@ SKIP13 e historia permanecen preservados. Auth no ha sido ejecutado.
 - `2026-08`, tabs GT/HN, mutación histórica y `sourceRevision`;
 - Auth con gate separado;
 - smoke acumulativo multirol;
-- archivos y target de producción nuevos, separados y verificados;
+- estrategia de promoción autorizada y materializada;
+- PASS del gate de producción;
 - validación humana, rollback y autorización específica de cutover.
 
 ## 7. Estado seguro
