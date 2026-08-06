@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "cxorbia.c6.execution-control-plane.v2",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "providerProject": "cxorbia-backend-dev",
+  "status": "SOURCE_ONLY_PREPARED_NOT_EXECUTABLE",
+  "rootCause": {
+    "incidentId": "qcvjkzcs7j74",
+    "component": "GitHub Actions",
+    "classification": "EXTERNAL_PLATFORM_MAJOR_OUTAGE_AND_WEBHOOK_TRIGGER_THROTTLING",
+    "observedDate": "2026-08-06",
+    "repoConfigurationFaultProven": false
+  },
+  "primaryLane": {
+    "type": "github_actions_explicit_dispatch",
+    "event": "workflow_dispatch",
+    "requiresActionsOperational": true,
+    "requiresIncidentResolved": "qcvjkzcs7j74",
+    "requiresPushPullTriggersRestored": true,
+    "forbiddenExecutionSignals": [
+      "push",
+      "pull_request.synchronize",
+      "pull_request.ready_for_review",
+      "file_commit_as_trigger"
+    ],
+    "providerBoundaryGates": [
+      "runId",
+      "jobId",
+      "event=workflow_dispatch",
+      "requestIdMatch",
+      "sourceLockMatch",
+      "claimStatus=pending"
+    ]
+  },
+  "fallbackLane": {
+    "type": "direct_trusted_runner",
+    "status": "DESIGN_ONLY_NOT_DEPLOYED",
+    "requiresSeparateDeployAuthorization": true,
+    "requiresAuthenticatedInvocation": true,
+    "requiresIdempotencyLease": true,
+    "mustBeIndependentOfGitHubActions": true
+  },
+  "safety": {
+    "providerWrites": false,
+    "authWrites": false,
+    "passwordChanges": false,
+    "membershipWrites": false,
+    "firestoreWrites": false,
+    "rulesWrites": false,
+    "storageWrites": false,
+    "hrWrites": false,
+    "deploy": false,
+    "merge": false,
+    "production": false,
+    "make": false,
+    "gemini": false,
+    "payments": false
+  }
+}
