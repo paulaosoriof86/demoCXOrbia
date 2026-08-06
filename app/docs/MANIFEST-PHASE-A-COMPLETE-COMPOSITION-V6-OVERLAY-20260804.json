@@ -36,7 +36,7 @@
       "${s.pass}"
     ]
   },
-  "status": "C6_SHOPPER_COLLISION_CLASSIFIER_SOURCE_PREPARED__PENDING_SOURCE_STATIC__NO_PROVIDER_READS__NO_WRITES__NO_DEPLOY",
+  "status": "C6_SHOPPER_COLLISION_CLASSIFIER_SOURCE_STATIC_PASS__READONLY_CLASSIFICATION_HOLD_64_DISTINCT_ACTIVE_GROUPS__83_ACTIVE_NAMES_UNVERIFIED__1_MULTI_AUTH__STOP_RETRY__NO_WRITES__NO_DEPLOY",
   "criticalFileOverrides": [
     {
       "path": "app/app.js",
@@ -180,13 +180,22 @@
     "singleBranch": true
   },
   "visualDecision": {
-    "status": "NO_VISUAL_CHANGE_SOURCE_SAFE_IDENTITY_RESOLUTION_ONLY",
-    "reason": "The focal resolver correction and provider review changed no product or visual file."
+    "status": "NO_VISUAL_CHANGE_SOURCE_SAFE_COLLISION_CLASSIFICATION_ONLY",
+    "reason": "The classifier proved visible-login collisions and technical surname gaps without changing product, Login, modules or design."
   },
   "runtimeDecision": {
-    "sourceStaticPass": false,
+    "sourceStaticPass": true,
+    "sourceStaticRunId": 31061161498,
     "collisionClassifierPrepared": true,
-    "collisionClassificationExecuted": false,
+    "collisionClassificationExecuted": true,
+    "collisionClassificationDecision": "HOLD_C6_SHOPPER_LOGIN_COLLISION_CLASSIFICATION",
+    "collisionClassificationRunId": 31061262965,
+    "resolvedSingleActiveGroups": 39,
+    "distinctActiveCollisionGroups": 64,
+    "distinctActiveIdentities": 141,
+    "unresolvedSurnameGroups": 6,
+    "verifiedNameIncompleteActiveProfiles": 83,
+    "unresolvedMultipleAuthProfiles": 1,
     "identityWritesAuthorized": false,
     "deployAllowedByThisManifest": false,
     "newDeployAuthorized": false
