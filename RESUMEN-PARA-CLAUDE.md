@@ -1,7 +1,7 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-06  
-**Estado vivo:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_GATE_HOLD__LIVE_HR_V4_UNRESOLVED__PROD_TARGET_UNMATERIALIZED__IDENTITY_HOLD_0__NO_PRODUCTION`
+**Estado vivo:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_GATE_HOLD__LIVE_HR_V4_UNRESOLVED__PRODUCTION_STRATEGY_UNMATERIALIZED__IDENTITY_HOLD_0__NO_PRODUCTION`
 
 ## 1. Fuente vigente
 
@@ -36,26 +36,34 @@ segundo trigger=0
 
 No declarar run ausente, provider reads cero o lectura consumida.
 
-## 4. Gate de target PROD
+## 4. Gate de estrategia PROD
 
 ```text
 tool=tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs
 node --check=PASS
-decision=HOLD_PRODUCTION_TARGET_UNMATERIALIZED
-holdReason=PRODUCTION_CONFIGURATION_FILES_NOT_MATERIALIZED
+decision=HOLD_PRODUCTION_STRATEGY_UNMATERIALIZED
+holdReason=PRODUCTION_PROMOTION_STRATEGY_NOT_AUTHORIZED_OR_MATERIALIZED
 ```
 
-La configuración versionada sigue siendo exclusivamente DEV:
+El gate no exige obligatoriamente otro proyecto. Acepta:
+
+```text
+PROMOTE_EXISTING_CLEAN_PROJECT
+SEPARATE_CLEAN_PROD_PROJECT
+```
+
+Configuración actual:
 
 ```text
 project=cxorbia-backend-dev
 hosting target=cxorbia-dev
 Cloud Run service=cxorbia-live-hr-dev
-.firebaserc.prod=false
-firebase.prod.json=false
+region=us-central1
+public=app
+UTF-8=PASS
 ```
 
-No modificar `/app/modules/*`, `/app/core/*` ni `CX.data`. No parchar frontend para simular un entorno de producción.
+No modificar `/app/modules/*`, `/app/core/*` ni `CX.data`. No parchar frontend para simular producción. No usar la base legacy como backend nuevo.
 
 ## 5. Siguiente cadena real
 
@@ -64,7 +72,8 @@ RECONCILIAR EVIDENCIA V4
 → CONFIRMAR HR 2026-08 GT/HN + HISTORY + sourceRevision
 → AUTH CON GATE SEPARADO
 → SMOKE MULTIROL
-→ MATERIALIZAR .firebaserc.prod + firebase.prod.json EN PROYECTO NUEVO
+→ AUTORIZAR ESTRATEGIA DE PRODUCCIÓN
+→ MATERIALIZAR CONTRATO/CONFIGURACIÓN
 → PASS GATE PROD
 → VALIDACIÓN HUMANA + ROLLBACK
 → AUTORIZACIÓN ESPECÍFICA DE CUTOVER
