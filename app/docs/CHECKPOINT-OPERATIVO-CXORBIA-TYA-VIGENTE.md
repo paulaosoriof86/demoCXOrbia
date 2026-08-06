@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-06  
-**Estado:** `C6_LIVE_HR_AUTHORITY_SOURCE_ROOT_FIX_APPLIED__PROVIDER_TRIGGER_NOT_OBSERVED__STOP_RETRY__IDENTITY_HOLD_0__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `C6_LIVE_HR_CONTROL_PLANE_OBSERVABILITY_ROOT_FIX_PASS__PREVIOUS_V2_READ_UNKNOWN__NO_NEW_PROVIDER_READ__IDENTITY_HOLD_0__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Rama y control
 
@@ -9,8 +9,8 @@
 - rama: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
 - producción: intacta;
-- request HR viva: `4e404f2db48ff8b07430d7ac7505eff6c040458a`;
-- source commit exacto: `31f4af0f7501b23b4e72b1a5f8457669a5f91c77`.
+- request v2 antecedente: `4e404f2db48ff8b07430d7ac7505eff6c040458a`;
+- consumo v2: `UNKNOWN_NO_EXECUTION_EVIDENCE`.
 
 ## 2. Identidades Shopper cerradas
 
@@ -25,66 +25,96 @@ HOLD=0
 PRESERVE_NO_AUTH=140
 ```
 
-Los 13 perfiles residuales quedaron omitidos del repair Auth y preservados históricamente. No se reabre su conciliación.
+Los 13 perfiles residuales permanecen omitidos del repair Auth y preservados históricamente. No se reabre su conciliación.
 
 ## 3. Root fix HR viva materializado
 
-Se corrigió en source:
+Se mantiene corregido en source:
 
 1. metadata provider como autoridad de tabs;
 2. periodo calendario derivado dinámicamente;
 3. registry estático solo como last-known-good fail-closed;
 4. país/pestaña desde la misma revisión;
 5. `sourceRevision` estable sin timestamps volátiles;
-6. cambio histórico sintético debe modificar la revisión;
-7. planner del periodo actual sin conteos HR fijos;
-8. comparación read-only con materialización existente por identidad estable.
+6. cambio histórico real debe modificar la revisión;
+7. planner sin conteos HR fijos;
+8. reconciliación provider/Firestore por identidad estable y revisión.
 
-## 4. Ejecución provider no observada
+## 4. Diagnóstico control-plane anterior
 
-El request autorizó una lectura provider read-only y cero writes. Dentro del timeout de 20 minutos no apareció:
-
-- run/job/artifact recuperable;
-- status de commit publicado;
-- `LIVE-HR-AUTHORITY-CONTRACT-LATEST.json`;
-- evidence commit o avance de branch generado por el workflow.
-
-Resultado contractual:
+El conector disponible no permitió enumerar ejecuciones `push`; el request v2 no produjo evidencia recuperable en rama, status o artifact. Por tanto:
 
 ```text
-providerExecutionResult=UNAVAILABLE
 providerReadConsumption=UNKNOWN_NO_EXECUTION_EVIDENCE
-STOP_RETRY=true
+retryExecuted=false
 ```
 
-No se hará segundo trigger ni se afirmará que el read fue cero sin diagnóstico de control-plane.
+No se declara cero ni consumo confirmado.
 
-## 5. Agosto y autoridad histórica
+## 5. Root fix de observabilidad aplicado
 
-La evidencia anterior sigue demostrando únicamente que el builder alcanzó a ver `AGOSTO 26` y `AGOSTO 26 HN` antes de que el registry antiguo las rechazara. El root fix source está aplicado, pero todavía no existe evidencia viva nueva para confirmar:
+Commits:
+
+```text
+dcbfe1ce4b5a98df9f2cc650dc344f983ed7118f
+c46e81bba4fd7424e6076e336bcaf86e82564c14
+```
+
+El workflow corregido ahora registra:
+
+```text
+WORKFLOW_STARTED_PROVIDER_READS_0
+PROVIDER_READ_BOUNDARY_ENTERED_MAX1
+PROVIDER_READ_SEQUENCE_COMPLETED_LOGICAL_1
+FINAL_<JOB_STATUS>_<CONSUMPTION>
+```
+
+Además:
+
+- genera journal JSON sin PII;
+- publica status `cxorbia/live-hr-control-plane`;
+- sube artifact sanitizado por siete días;
+- exige request v3 y contrato de control-plane;
+- rechaza fail-closed el request v2 anterior.
+
+## 6. Validación source-only
+
+```text
+journal node --check=PASS
+journal transitions=PASS
+workflow generic YAML parse=PASS
+GitHub runtime execution=NO EJECUTADA
+```
+
+No se modificó el request y no se realizó nueva lectura HR.
+
+## 7. Agosto y autoridad histórica
+
+Sigue pendiente evidencia viva nueva para confirmar:
 
 - tabs actuales GT/HN;
-- total actual de periodos y visitas;
-- `2026-08` como periodo activo;
-- cambio histórico propagado;
-- paridad transversal de `sourceRevision`.
+- periodo calendario `2026-08`;
+- conteos vivos actuales;
+- mutación histórica propagada;
+- una sola `sourceRevision` transversal.
 
-No se permiten datos, meses ni conteos HR hardcodeados.
+No se permiten meses, datos o conteos HR hardcodeados.
 
-## 6. Phase A preservada
+## 8. Phase A preservada
 
-Frontend acumulativo, Login, `CX.data`, shoppers elegibles, postulaciones, certificaciones, visitas, liquidaciones, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto y Academia permanecen preservados.
+Frontend acumulativo, Login, `CX.data`, shoppers, postulaciones, certificaciones, visitas, liquidaciones, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto y Academia permanecen preservados.
 
-## 7. Documentación del bloque
+## 9. Documentación vigente
 
-- `app/docs/SOURCE-LOCK-C6-LIVE-HR-AUTHORITY-TRIGGER-NOT-OBSERVED-20260806.md`;
-- `app/docs/evidence/LIVE-HR-AUTHORITY-TRIGGER-NOT-OBSERVED-LATEST.json`;
+- `app/docs/SOURCE-LOCK-C6-LIVE-HR-CONTROL-PLANE-OBSERVABILITY-20260806.md`;
+- `app/docs/evidence/LIVE-HR-CONTROL-PLANE-OBSERVABILITY-ROOT-FIX-LATEST.json`;
 - addenda CAMBIOS, Claude, Pendientes, Academia y tracker;
 - índice, checkpoint, plan y PR #7 reconciliados.
 
-## 8. Estado seguro
+## 10. Estado seguro
 
 ```text
+nuevo provider read=0
 provider writes=0
 Auth/password/membership writes=0
 Firestore/Rules/Storage/HR writes=0
@@ -94,13 +124,13 @@ merge=false
 production=false
 ```
 
-## 9. Siguiente bloque exacto
+## 11. Siguiente bloque exacto
 
 ```text
-CONTROL-PLANE READ-ONLY DIAGNOSIS
-→ localizar run del request 4e404f2d o demostrar que no se creó
-→ si existe: recuperar job/log/artifact sin repetir provider read
-→ si no existe y providerReads=0: autorización fresca para un único trigger
+AUTORIZACIÓN FRESCA REQUEST V3
+→ reconocer consumo v2 desconocido
+→ autorizar una sola ejecución lógica provider read-only adicional
+→ observar journal/status/artifact
 → confirmar HR viva 2026-08 GT/HN + mutación histórica + sourceRevision
-→ continuar a Auth con HOLD=0
+→ continuar a precheck Auth con HOLD=0
 ```
