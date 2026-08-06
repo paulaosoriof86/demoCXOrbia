@@ -2,7 +2,7 @@
 
 **Fecha original:** 2026-07-04  
 **Actualización prevalente:** 2026-08-06  
-**Estado:** `C6_LIVE_HR_V4_REQUEST_EMITTED__30M_NO_RUN_JOB_CHECKPOINT_EVIDENCE__CONSUMPTION_UNKNOWN__STOP_RETRY__IDENTITY_HOLD_0__NO_PRODUCTION`
+**Estado:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_SOURCE_ONLY_COMPLETE__LIVE_HR_V4_UNRESOLVED__DEV_ONLY_TARGET_CONFIRMED__IDENTITY_HOLD_0__NO_PRODUCTION`
 
 ## 1. Objetivo operativo
 
@@ -31,58 +31,72 @@ HOLD=0
 PRESERVE_NO_AUTH=140
 ```
 
-SKIP13 permanece cerrado con historia preservada.
+SKIP13 permanece cerrado con historia preservada. Auth no ha sido ejecutado.
 
-## 4. Antecedente control-plane
-
-Los runs v2 y v3 fueron cancelados antes de cualquier step y consumieron cero lecturas provider. Ese diagnóstico permanece cerrado y no debe reabrirse.
-
-## 5. Request HR viva v4
+## 4. Request HR viva v4
 
 ```text
 sourceCommit=a1f11483153aa2576bb284b9b2f6ed178dbe528d
 requestCommit=ac2032ec224e6d56bf087788b949691b6690c437
-ventana observada=1820 segundos
 runId recuperado=false
 jobId recuperado=false
 providerReadConsumption=UNKNOWN_NO_RUN_JOB_OR_CHECKPOINT_EVIDENCE
 STOP_RETRY=true
+segundo trigger=0
 ```
 
-El request fue emitido una sola vez. No hubo segundo trigger ni modificación posterior del request.
+No se reabre sintaxis, registro, trigger, rama o path. Cualquier evidencia tardía debe reconciliarse contra el request exacto.
+
+## 5. Fast-track paralelo ya ejecutado
+
+Para no esperar pasivamente se auditó la preparación de producción source-only.
+
+```text
+default/dev project=cxorbia-backend-dev
+hosting target=cxorbia-dev
+hosting site=cxorbia-backend-dev
+Cloud Run service=cxorbia-live-hr-dev
+production alias=false
+production target=false
+production service=false
+```
+
+El repositorio todavía no materializa un carril PROD. Un deploy desde el estado actual seguiría apuntando a DEV.
 
 ## 6. Cadena única restante
 
-### Bloque A — Reconciliar el request v4
+### Bloque A — Cerrar HR v4
 
-1. Asociar cualquier evidencia tardía exclusivamente al request `ac2032ec...`.
-2. Si aparece job `cancelled` con `steps=0`, clasificar consumo cero y cerrar.
-3. Si aparece frontera provider, determinar consumo máximo uno mediante journal/steps.
-4. Si aparece evidencia completa, confirmar `2026-08`, GT/HN, mutación histórica y `sourceRevision`.
-5. Mientras no exista evidencia terminal, no emitir otro request.
+1. Reconciliar evidencia terminal del request `ac2032ec...`.
+2. Confirmar `2026-08`, tabs GT/HN, conteos vivos, mutación histórica y `sourceRevision` transversal.
+3. No emitir segundo trigger mientras el request no tenga evidencia terminal.
 
-Esto no reabre sintaxis, registro, trigger, rama o path del workflow.
+### Bloque B — Auth y smoke
 
-### Bloque B — Auth y validación acumulativa
+1. Ejecutar el plan Auth SKIP13 con `HOLD=0` únicamente mediante autorización separada.
+2. Snapshot, idempotencia, readback y rollback.
+3. Smoke Admin/Operaciones, Shopper y Cliente.
+4. Tres recargas, nueva pestaña y estabilidad.
 
-Solo después de HR viva resuelta:
+### Bloque C — Materializar producción
 
-1. materializar plan Auth SKIP13 con `HOLD=0`;
-2. ejecutar con autorización separada, snapshot, idempotencia, readback y rollback;
-3. smoke Admin/Operaciones, Shopper y Cliente;
-4. tres recargas, nueva pestaña y estabilidad.
+1. Definir un proyecto/target de producción nuevo y separado del DEV vigente.
+2. Configurar alias, Hosting target, backend service, credenciales y rollback sin conectar la base legacy.
+3. Ejecutar preflight contra el target exacto.
+4. Mantener producción legacy intacta hasta autorización de cutover.
 
-### Bloque C — Cutover
+### Bloque D — Cutover
 
-Source lock, rollback probado, smoke integral, autorización específica y único cutover.
+Source lock final, validación humana, rollback probado, autorización específica y único cutover.
 
 ## 7. Circuit breakers
 
-- No emitir segundo request mientras v4 permanezca sin evidencia terminal.
-- No volver a inferir ausencia de run desde ausencia de status.
+- No emitir segundo request HR.
+- No desplegar DEV como si fuera PROD.
+- No conectar ni copiar la base legacy.
+- No ejecutar Auth sin gate separado.
 - No reabrir SKIP13 o 65/65.
 - No pedir nueva candidata, rama o PR.
-- No ejecutar Auth sin gate separado.
 - No hardcodear periodos o conteos HR.
 - No repetir import histórico por conteo.
 
@@ -90,7 +104,7 @@ Source lock, rollback probado, smoke integral, autorización específica y únic
 
 ```text
 segundo trigger=0
-provider reads ejecutados por observador=0
+provider reads del preflight=0
 provider writes=0
 Auth/data/HR writes=0
 Hosting/Cloud Run deploys=0
