@@ -1,17 +1,18 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-06  
-**Estado vivo:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_SOURCE_ONLY_COMPLETE__LIVE_HR_V4_UNRESOLVED__DEV_ONLY_TARGET_CONFIRMED__IDENTITY_HOLD_0__NO_PRODUCTION`
+**Estado vivo:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_GATE_HOLD__LIVE_HR_V4_UNRESOLVED__PROD_TARGET_UNMATERIALIZED__IDENTITY_HOLD_0__NO_PRODUCTION`
 
 ## 1. Fuente vigente
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 3. `app/docs/SOURCE-LOCK-C6-PRODUCTION-FAST-TRACK-PREFLIGHT-20260806.md`;
-4. `app/docs/evidence/C6-PRODUCTION-FAST-TRACK-PREFLIGHT-LATEST.json`;
-5. `app/docs/SOURCE-LOCK-C6-LIVE-HR-V4-REQUEST-30M-NO-RUN-EVIDENCE-20260806.md`;
-6. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-7. PR #7 y HEAD vivo.
+4. `app/docs/evidence/C6-PRODUCTION-TARGET-PREFLIGHT-LATEST.json`;
+5. `app/docs/evidence/C6-PRODUCTION-FAST-TRACK-PREFLIGHT-LATEST.json`;
+6. `app/docs/SOURCE-LOCK-C6-LIVE-HR-V4-REQUEST-30M-NO-RUN-EVIDENCE-20260806.md`;
+7. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+8. PR #7 y HEAD vivo.
 
 ## 2. No reabrir
 
@@ -35,7 +36,14 @@ segundo trigger=0
 
 No declarar run ausente, provider reads cero o lectura consumida.
 
-## 4. Hallazgo fast-track de producción
+## 4. Gate de target PROD
+
+```text
+tool=tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs
+node --check=PASS
+decision=HOLD_PRODUCTION_TARGET_UNMATERIALIZED
+holdReason=PRODUCTION_CONFIGURATION_FILES_NOT_MATERIALIZED
+```
 
 La configuración versionada sigue siendo exclusivamente DEV:
 
@@ -43,7 +51,8 @@ La configuración versionada sigue siendo exclusivamente DEV:
 project=cxorbia-backend-dev
 hosting target=cxorbia-dev
 Cloud Run service=cxorbia-live-hr-dev
-production alias/target/service=false
+.firebaserc.prod=false
+firebase.prod.json=false
 ```
 
 No modificar `/app/modules/*`, `/app/core/*` ni `CX.data`. No parchar frontend para simular un entorno de producción.
@@ -55,7 +64,8 @@ RECONCILIAR EVIDENCIA V4
 → CONFIRMAR HR 2026-08 GT/HN + HISTORY + sourceRevision
 → AUTH CON GATE SEPARADO
 → SMOKE MULTIROL
-→ MATERIALIZAR TARGET PROD NUEVO Y SEPARADO
+→ MATERIALIZAR .firebaserc.prod + firebase.prod.json EN PROYECTO NUEVO
+→ PASS GATE PROD
 → VALIDACIÓN HUMANA + ROLLBACK
 → AUTORIZACIÓN ESPECÍFICA DE CUTOVER
 ```
