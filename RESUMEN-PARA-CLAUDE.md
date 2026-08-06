@@ -1,7 +1,7 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-06  
-**Estado vivo:** `C6_LIVE_HR_CONTROL_PLANE_OBSERVABILITY_ROOT_FIX_PASS__PREVIOUS_V2_READ_UNKNOWN__NO_NEW_PROVIDER_READ__IDENTITY_HOLD_0__NO_PRODUCTION`
+**Estado vivo:** `C6_LIVE_HR_V3_REQUEST_EMITTED__NO_CHECKPOINT_OBSERVED__STOP_RETRY__IDENTITY_HOLD_0__NO_PRODUCTION`
 
 ## 1. Fuente vigente
 
@@ -9,7 +9,7 @@ Leer primero:
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-3. `app/docs/SOURCE-LOCK-C6-LIVE-HR-CONTROL-PLANE-OBSERVABILITY-20260806.md`;
+3. `app/docs/SOURCE-LOCK-C6-LIVE-HR-V3-REQUEST-NO-CHECKPOINT-20260806.md`;
 4. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
 5. PR #7 y HEAD vivo.
 
@@ -22,21 +22,25 @@ Leer primero:
 - Finanzas, Liquidaciones, Portal Cliente, Portal Shopper y Reservas.
 - No crear nueva candidata, rama, PR o shell paralela.
 
-## 3. Root fix HR viva aplicado
-
-Backend exige:
+## 3. Root fixes preservados
 
 - metadata provider para descubrir tabs y periodos;
 - periodo calendario dinámico;
 - registry como cache/last-known-good;
-- una sola revisión source-safe para país/pestaña y módulos;
-- `sourceRevision` estable basada en contenido;
-- cambios históricos reflejados en nueva revisión;
-- cero meses o conteos fijados en código.
+- una sola revisión source-safe;
+- cambio histórico que debe alterar `sourceRevision`;
+- journal v3 con checkpoints previos a provider.
 
-## 4. Root fix de observabilidad
+## 4. Request v3 emitido
 
-El workflow vigente exige request v3 y registra:
+```text
+sourceCommit=18ea2e6ab9b15480c851c7ba34cae8e8fbcae026
+requestCommit=d62dbae9b10b0650c2940f4b2bf7d456cb34fc83
+authorizationId=chat-20260806-live-hr-authority-current-period-v3-02
+controlPlaneContract=cxorbia.live-hr-control-plane-journal.v1
+```
+
+No se observó:
 
 ```text
 WORKFLOW_STARTED_PROVIDER_READS_0
@@ -45,46 +49,35 @@ PROVIDER_READ_SEQUENCE_COMPLETED_LOGICAL_1
 FINAL_<JOB_STATUS>_<CONSUMPTION>
 ```
 
-También produce journal JSON y artifact sanitizado sin PII.
-
-Commits:
+Resultado:
 
 ```text
-dcbfe1ce4b5a98df9f2cc650dc344f983ed7118f
-c46e81bba4fd7424e6076e336bcaf86e82564c14
+providerReadConsumption=UNKNOWN_NO_CHECKPOINT_EVIDENCE
+retryExecuted=false
+STOP_RETRY=true
 ```
+
+No declarar `2026-08`, GT/HN, mutación histórica ni paridad transversal como confirmados.
 
 ## 5. Regla obligatoria para frontend
 
-Dashboard, Histórico, Visitas, Finanzas, Cliente y Shopper deben consumir la misma `sourceRevision`. Un refresh con la misma revisión no debe provocar reload agresivo; una revisión distinta debe invalidar proyecciones derivadas.
+Dashboard, Histórico, Visitas, Finanzas, Cliente y Shopper deben consumir la misma `sourceRevision`. No modificar `/app/modules/*` ni `/app/core/*` por este bloque. Los estados técnicos del journal no deben mostrarse al usuario final.
 
-No modificar `/app/modules/*` ni `/app/core/*` por este bloque. Los estados técnicos del journal no deben mostrarse al usuario final.
-
-## 6. Antecedente provider
+## 6. Siguiente bloque
 
 ```text
-request v2=4e404f2db48ff8b07430d7ac7505eff6c040458a
-providerReadConsumption=UNKNOWN_NO_EXECUTION_EVIDENCE
-retryExecuted=false
+CONTROL-PLANE/ACTIONS READ-ONLY DIAGNOSIS
+→ request d62dbae9
+→ localizar run/check suite o probar ausencia antes de provider boundary
+→ no tocar request ni HR
+→ STOP_RETRY sin segundo intento
 ```
 
-No declarar agosto PASS/FAIL y no reinterpretar el consumo como cero.
-
-## 7. Siguiente bloque
+## 7. Seguridad
 
 ```text
-AUTORIZACIÓN FRESCA REQUEST V3
-→ reconocer consumo v2 desconocido
-→ una ejecución lógica provider read-only adicional
-→ journal/status/artifact observables
-→ confirmar 2026-08 GT/HN, cambio histórico y sourceRevision transversal
-→ preparar Auth con HOLD=0
-```
-
-## 8. Seguridad
-
-```text
-nuevo provider read=0
+request v3 emitido=1
+segundo trigger=0
 provider writes=0
 HR/Firestore/Auth/Rules/Storage writes=0
 Hosting/Cloud Run deploys=0
