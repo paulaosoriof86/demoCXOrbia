@@ -1,13 +1,15 @@
 {
   "schemaVersion": "cxorbia.c6.production-target-preflight-source-only.v2",
-  "generatedAt": "2026-08-06T19:15:51.532Z",
+  "generatedAt": "2026-08-06T19:41:34.301Z",
   "mode": "SOURCE_ONLY_NO_PROVIDER_NO_DEPLOY",
   "tool": "tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs",
   "toolBlobSha": "db42189a74e165c90c0dd13907c243702d9ba0b6",
+  "contractCommit": "3197aa5056375ddcffd3a67836ba5cf55a91eede",
+  "contractBlobSha": "972943da9698c07ff3af21eca8a4c539433d8d2d",
   "execution": {
     "nodeCheck": "PASS",
-    "exitCode": 2,
-    "expectedFailClosedExit": true
+    "exitCode": 0,
+    "decision": "PASS_PRODUCTION_PROMOTION_CONTRACT_EXISTING_CLEAN_PROJECT"
   },
   "inputs": {
     "devRcPath": ".firebaserc",
@@ -26,9 +28,24 @@
     "devRegionIsUsCentral1": true,
     "devPublicDirectoryIsApp": true,
     "devUtf8HtmlHeaderPresent": true,
-    "productionPromotionContractPresent": false
+    "productionPromotionContractPresent": true,
+    "contractSchemaValid": true,
+    "contractAuthorized": true,
+    "authorizationIdPresent": true,
+    "strategyAllowed": true,
+    "legacyProjectNotReusedForBackend": true,
+    "productionProjectPresent": true,
+    "productionHostingTargetPresent": true,
+    "productionHostingSitePresent": true,
+    "productionCloudRunServicePresent": true,
+    "productionRegionIsUsCentral1": true,
+    "promotedProjectMatchesCurrentCleanProject": true,
+    "promotedHostingTargetMatchesCurrentTarget": true,
+    "promotedHostingSiteMatchesCurrentSite": true,
+    "promotedCloudRunServiceMatchesCurrentService": true,
+    "separateProdFilesRequired": false
   },
-  "decision": "HOLD_PRODUCTION_STRATEGY_UNMATERIALIZED",
+  "decision": "PASS_PRODUCTION_PROMOTION_CONTRACT_EXISTING_CLEAN_PROJECT",
   "dev": {
     "projectId": "cxorbia-backend-dev",
     "hostingTarget": "cxorbia-dev",
@@ -38,11 +55,49 @@
     "publicDirectory": "app",
     "utf8HtmlHeaderPresent": true
   },
-  "allowedStrategies": [
-    "PROMOTE_EXISTING_CLEAN_PROJECT",
-    "SEPARATE_CLEAN_PROD_PROJECT"
+  "contract": {
+    "schemaVersion": "cxorbia.production-promotion-contract.v1",
+    "authorizationId": "chat-20260806-promote-existing-clean-project-v1",
+    "authorizedAt": "2026-08-06T13:39:00-06:00",
+    "authorizedBy": "Paula",
+    "authorized": true,
+    "strategy": "PROMOTE_EXISTING_CLEAN_PROJECT",
+    "legacyProjectReuseForBackend": false,
+    "productionProjectId": "cxorbia-backend-dev",
+    "productionHostingTarget": "cxorbia-dev",
+    "productionHostingSite": "cxorbia-backend-dev",
+    "productionCloudRunService": "cxorbia-live-hr-dev",
+    "productionCloudRunRegion": "us-central1",
+    "acceptCurrentIdentifiersAndUrlAsProduction": true,
+    "requiresSeparateProdFiles": false,
+    "writesAuthorizedByThisContract": false,
+    "deployAuthorizedByThisContract": false,
+    "mergeAuthorizedByThisContract": false,
+    "productionCutoverAuthorizedByThisContract": false
+  },
+  "warnings": [
+    "PROMOTION_REUSES_CURRENT_DEV_NAMED_IDENTIFIERS",
+    "CUTOVER_REQUIRES_EXPLICIT_ACCEPTANCE_OF_CURRENT_PROJECT_AND_URL_AS_PRODUCTION"
   ],
-  "holdReason": "PRODUCTION_PROMOTION_STRATEGY_NOT_AUTHORIZED_OR_MATERIALIZED",
+  "productionDeployment": {
+    "projectId": "cxorbia-backend-dev",
+    "hostingTarget": "cxorbia-dev",
+    "hostingSite": "cxorbia-backend-dev",
+    "cloudRunService": "cxorbia-live-hr-dev",
+    "cloudRunRegion": "us-central1",
+    "publicDirectory": "app",
+    "utf8HtmlHeaderPresent": true
+  },
+  "failedChecks": [],
+  "holdReason": null,
+  "requiredPreCutoverGatesStillPending": [
+    "LIVE_HR_CURRENT_PERIOD_AND_HISTORY_REVISION_PASS",
+    "SHOPPER_AUTH_REPAIR_PASS",
+    "ACCUMULATIVE_MULTIROLE_SMOKE_PASS",
+    "HUMAN_VALIDATION_PASS",
+    "ROLLBACK_READY",
+    "EXPLICIT_CUTOVER_AUTHORIZATION"
+  ],
   "safeState": {
     "providerReads": 0,
     "providerWrites": 0,
