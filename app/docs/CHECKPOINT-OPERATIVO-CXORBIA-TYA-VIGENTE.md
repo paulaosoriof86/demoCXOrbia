@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-06  
-**Estado:** `C6_LIVE_HR_V3_CONTROL_PLANE_DIAGNOSIS_INCONCLUSIVE__PROVIDER_BOUNDARY_NOT_PROVEN__STOP_RETRY__IDENTITY_HOLD_0__NO_PROVIDER_READ_BY_DIAGNOSTIC__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `C6_LIVE_HR_RUN_REGISTRATION_PROVEN__V2_V3_CANCELLED_BEFORE_STEPS__PROVIDER_READS_0_PROVEN__DIAGNOSTIC_LOOP_CLOSED__NO_TRIGGER__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Rama y control
 
@@ -9,10 +9,41 @@
 - rama: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
 - producción: intacta;
-- request v3: `d62dbae9b10b0650c2940f4b2bf7d456cb34fc83`;
-- consumo v3: `UNKNOWN_NO_CHECKPOINT_EVIDENCE`.
+- request v2: `4e404f2db48ff8b07430d7ac7505eff6c040458a`;
+- request v3: `d62dbae9b10b0650c2940f4b2bf7d456cb34fc83`.
 
-## 2. Identidades Shopper cerradas
+## 2. Causa raíz Actions cerrada
+
+Se recuperaron los runs reales:
+
+```text
+v2 runId=31117638647 jobId=92671263961 status=completed conclusion=cancelled steps=0
+v3 runId=31123402722 jobId=92688738677 status=completed conclusion=cancelled steps=0
+```
+
+Esto prueba:
+
+```text
+workflow registrado=true
+trigger push reconocido=true
+rama reconocida=true
+path reconocido=true
+provider boundary alcanzada=false
+v2 provider reads=0
+v3 provider reads=0
+```
+
+El diagnóstico anterior de “run no localizado” queda corregido. El run existió; el job fue cancelado antes del runner y antes de cualquier step.
+
+## 3. Observabilidad y corrección
+
+El status `WORKFLOW_STARTED_PROVIDER_READS_0` estaba dentro de un step. Por tanto no podía publicarse cuando el job fue cancelado con `steps=0`.
+
+Se agregó `tools/qa/cxorbia-live-hr-run-consumption-classifier.mjs` para revisar run → job → steps antes de interpretar consumo provider. El bucle de autorizaciones por falsa ausencia de run queda cerrado.
+
+El texto exacto de la anotación de cancelación no estuvo disponible. No se inventa una causa externa específica.
+
+## 4. Identidades Shopper
 
 ```text
 profiles=340
@@ -27,72 +58,40 @@ PRESERVE_NO_AUTH=140
 
 SKIP13 e historia permanecen preservados.
 
-## 3. Root fixes preservados
+## 5. HR actual pendiente
 
-- metadata provider y periodo calendario dinámico;
-- registry como last-known-good;
-- país/pestaña desde una revisión;
-- `sourceRevision` estable y sensible a cambios históricos;
-- planner sin conteos fijos;
-- journal v3 antes de la frontera provider.
+No existe todavía una lectura viva válida para confirmar:
 
-## 4. Diagnóstico Actions/control-plane
+- tabs GT/HN;
+- periodo `2026-08`;
+- conteos vivos;
+- mutación histórica;
+- una `sourceRevision` transversal.
 
-Se verificó el commit exacto y el path observado por el workflow. La consulta de commit statuses devolvió cero estados. No se observó:
-
-```text
-WORKFLOW_STARTED_PROVIDER_READS_0
-PROVIDER_READ_BOUNDARY_ENTERED_MAX1
-PROVIDER_READ_SEQUENCE_COMPLETED_LOGICAL_1
-FINAL_<JOB_STATUS>_<CONSUMPTION>
-```
-
-Tampoco se recuperó runId, check suite, jobId, artifactId, evidence commit o avance generado por workflow.
-
-La lista disponible de runs por commit devolvió cero, pero solo cubre eventos `pull_request`; no es prueba de ausencia para este workflow `push`. Un control histórico recuperó correctamente un status existente, validando la lectura de commit statuses.
-
-## 5. Dictamen
-
-```text
-workflowRunLocated=false
-checkSuiteLocated=false
-jobLocated=false
-providerBoundaryProvenReached=false
-providerReadConsumption=UNKNOWN_NO_CHECKPOINT_EVIDENCE
-diagnosis=INCONCLUSIVE_RUN_EXISTENCE__REPRODUCIBLE_NO_PROVIDER_BOUNDARY_EVIDENCE
-retryExecuted=false
-STOP_RETRY=true
-```
-
-No se afirma `providerReads=0` ni lectura consumida.
-
-## 6. HR actual pendiente
-
-No existe evidencia viva nueva para confirmar `2026-08`, tabs GT/HN, conteos vivos, mutación histórica o paridad transversal de `sourceRevision`.
-
-## 7. Phase A preservada
+## 6. Phase A preservada
 
 Frontend acumulativo, Login, `CX.data`, shoppers, postulaciones, certificaciones, visitas, liquidaciones, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto y Academia permanecen preservados.
 
-## 8. Documentación vigente
+## 7. Siguiente bloque exacto
 
-- `app/docs/SOURCE-LOCK-C6-LIVE-HR-V3-CONTROL-PLANE-DIAGNOSIS-20260806.md`;
-- `app/docs/evidence/LIVE-HR-V3-CONTROL-PLANE-DIAGNOSIS-LATEST.json`;
-- addenda CAMBIOS, Claude, Pendientes, Academia y tracker;
-- índice, checkpoint, plan, documentos raíz y PR #7 reconciliados.
+```text
+AUTORIZACIÓN FRESCA DE UNA ÚNICA LECTURA HR VIVA
+→ no reabrir diagnóstico de registro/trigger
+→ observar run/job/steps y journal
+→ confirmar 2026-08, GT/HN, mutación histórica y sourceRevision
+→ cero writes, deploy, merge o producción
+```
 
-## 9. Estado seguro
+## 8. Estado seguro
 
 ```text
 request modificado=false
+workflow modificado=false
 nuevo trigger=0
-provider reads por diagnóstico=0
+provider reads del bloque=0
 provider/HR/Firestore/Auth/Rules/Storage writes=0
 Hosting/Cloud Run deploys=0
+Make/Gemini/payments=0
 merge=false
 production=false
 ```
-
-## 10. Siguiente bloque exacto
-
-Gate source-only de reconocimiento/habilitación de GitHub Actions. No tocar request ni HR. Un nuevo intento provider requiere autorización fresca separada.
