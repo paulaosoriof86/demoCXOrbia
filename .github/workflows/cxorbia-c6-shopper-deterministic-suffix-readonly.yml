@@ -84,6 +84,10 @@ jobs:
           set -euo pipefail
           node "$PATCHER_FILE" --apply
 
+      - name: Install transient static dependency
+        if: steps.request.outputs.enabled == 'true'
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0
+
       - name: Execute source and static gates
         if: steps.request.outputs.enabled == 'true'
         run: |
@@ -198,7 +202,12 @@ jobs:
           set -euo pipefail
           STATE=success
           DESC='PASS_C6_CROSSWALK_ROOTFIX_SOURCE_ONLY_NO_PROVIDER_READ'
-          if [ '${{ steps.request.outputs.enabled }}' != 'true' ]; then DESC='SKIPPED_DISABLED_SOURCE_ONLY_REQUEST'; fi
+          if [ '${{ job.status }}' = 'failure' ]; then
+            STATE=failure
+            DESC='HOLD_C6_CROSSWALK_ROOTFIX_SOURCE_STATIC'
+          elif [ '${{ steps.request.outputs.enabled }}' != 'true' ]; then
+            DESC='SKIPPED_DISABLED_SOURCE_ONLY_REQUEST'
+          fi
           gh api --method POST \
             -H 'Accept: application/vnd.github+json' \
             "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
