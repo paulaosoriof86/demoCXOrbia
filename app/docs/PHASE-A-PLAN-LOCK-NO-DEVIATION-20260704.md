@@ -2,7 +2,7 @@
 
 **Fecha original:** 2026-07-04  
 **Actualización prevalente:** 2026-08-06  
-**Estado:** `C6_LIVE_HR_RUN_REGISTRATION_PROVEN__V2_V3_CANCELLED_BEFORE_STEPS__PROVIDER_READS_0_PROVEN__DIAGNOSTIC_LOOP_CLOSED__IDENTITY_HOLD_0__NO_PRODUCTION`
+**Estado:** `C6_LIVE_HR_V4_REQUEST_EMITTED__30M_NO_RUN_JOB_CHECKPOINT_EVIDENCE__CONSUMPTION_UNKNOWN__STOP_RETRY__IDENTITY_HOLD_0__NO_PRODUCTION`
 
 ## 1. Objetivo operativo
 
@@ -33,60 +33,64 @@ PRESERVE_NO_AUTH=140
 
 SKIP13 permanece cerrado con historia preservada.
 
-## 4. Causa raíz del control-plane HR
+## 4. Antecedente control-plane
 
-Los requests v2 y v3 sí produjeron runs. Los dos jobs fueron cancelados antes de ejecutar cualquier step:
+Los runs v2 y v3 fueron cancelados antes de cualquier step y consumieron cero lecturas provider. Ese diagnóstico permanece cerrado y no debe reabrirse.
+
+## 5. Request HR viva v4
 
 ```text
-v2 run=31117638647 job=92671263961 cancelled steps=0 providerReads=0 PROVEN
-v3 run=31123402722 job=92688738677 cancelled steps=0 providerReads=0 PROVEN
+sourceCommit=a1f11483153aa2576bb284b9b2f6ed178dbe528d
+requestCommit=ac2032ec224e6d56bf087788b949691b6690c437
+ventana observada=1820 segundos
+runId recuperado=false
+jobId recuperado=false
+providerReadConsumption=UNKNOWN_NO_RUN_JOB_OR_CHECKPOINT_EVIDENCE
+STOP_RETRY=true
 ```
 
-Por tanto quedan cerradas las dudas sobre registro del workflow, trigger `push`, rama y path. La ausencia del status inicial no significaba ausencia de run: ese status depende de un runner que nunca empezó a ejecutar steps.
+El request fue emitido una sola vez. No hubo segundo trigger ni modificación posterior del request.
 
-Se agregó un clasificador determinístico de run/job/steps para impedir que esta falsa inferencia vuelva a generar rondas de autorización.
+## 6. Cadena única restante
 
-## 5. Cadena única restante
+### Bloque A — Reconciliar el request v4
 
-### Bloque A — Una lectura HR viva
+1. Asociar cualquier evidencia tardía exclusivamente al request `ac2032ec...`.
+2. Si aparece job `cancelled` con `steps=0`, clasificar consumo cero y cerrar.
+3. Si aparece frontera provider, determinar consumo máximo uno mediante journal/steps.
+4. Si aparece evidencia completa, confirmar `2026-08`, GT/HN, mutación histórica y `sourceRevision`.
+5. Mientras no exista evidencia terminal, no emitir otro request.
 
-Con autorización fresca separada:
-
-1. emitir un único request ligado al HEAD exacto;
-2. observar run, job, steps y journal;
-3. confirmar metadata/autodiscovery;
-4. confirmar `2026-08`, tabs GT/HN y conteos vivos;
-5. validar mutación histórica y `sourceRevision` transversal;
-6. cero writes, deploy, merge o producción.
-
-No se reabre el diagnóstico de reconocimiento de GitHub Actions. Si el job vuelve a cancelar con cero steps, se clasifica de inmediato y se detiene sin nuevas rondas metodológicas.
+Esto no reabre sintaxis, registro, trigger, rama o path del workflow.
 
 ### Bloque B — Auth y validación acumulativa
 
-1. Materializar plan Auth SKIP13 con `HOLD=0`.
-2. Ejecutar únicamente con autorización separada, snapshot, idempotencia, readback y rollback.
-3. Smoke Admin/Operaciones, Shopper y Cliente.
-4. Tres recargas, nueva pestaña y estabilidad.
+Solo después de HR viva resuelta:
+
+1. materializar plan Auth SKIP13 con `HOLD=0`;
+2. ejecutar con autorización separada, snapshot, idempotencia, readback y rollback;
+3. smoke Admin/Operaciones, Shopper y Cliente;
+4. tres recargas, nueva pestaña y estabilidad.
 
 ### Bloque C — Cutover
 
 Source lock, rollback probado, smoke integral, autorización específica y único cutover.
 
-## 6. Circuit breakers
+## 7. Circuit breakers
 
+- No emitir segundo request mientras v4 permanezca sin evidencia terminal.
+- No volver a inferir ausencia de run desde ausencia de status.
 - No reabrir SKIP13 o 65/65.
-- No volver a interpretar ausencia de status como ausencia de run.
 - No pedir nueva candidata, rama o PR.
 - No ejecutar Auth sin gate separado.
 - No hardcodear periodos o conteos HR.
 - No repetir import histórico por conteo.
-- No convertir la anotación externa no recuperada en otra cadena de diagnóstico previa a la siguiente lectura.
 
-## 7. Estado seguro
+## 8. Estado seguro
 
 ```text
-nuevo trigger=0
-provider reads del bloque=0
+segundo trigger=0
+provider reads ejecutados por observador=0
 provider writes=0
 Auth/data/HR writes=0
 Hosting/Cloud Run deploys=0
