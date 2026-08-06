@@ -2,16 +2,16 @@
 
 **Fecha original:** 2026-07-04  
 **Actualización prevalente:** 2026-08-06  
-**Estado:** `C6_SKIP13_AUTH_DISPOSITION_PASS__LIVE_HR_AUGUST_ROOT_FIX_PENDING__NO_PRODUCTION`
+**Estado:** `C6_LIVE_HR_AUTHORITY_SOURCE_FIX_APPLIED__PROVIDER_EXECUTION_UNRESOLVED__STOP_RETRY__IDENTITY_HOLD_0__NO_PRODUCTION`
 
 ## 1. Objetivo operativo
 
-Cerrar una única baseline acumulativa sobre `docs-tya-v6-v71-audit` y llevar Phase A a producción sin reabrir módulos preservados, sin candidata paralela y sin sustituir la HR viva por snapshots o datos fijados.
+Cerrar una única baseline acumulativa sobre `docs-tya-v6-v71-audit` y llevar Phase A a producción sin reabrir módulos preservados, sin candidata paralela y sin sustituir HR viva por snapshots, registries estáticos o datos fijados.
 
 ## 2. Bloques preservados
 
 - frontend acumulativo y navegación multirol;
-- Dashboard, Histórico, Visitas, Postulaciones, Reservas y experiencia Shopper;
+- Dashboard, Histórico, Visitas, Postulaciones y Reservas;
 - Finanzas, Liquidaciones, Beneficios y movimientos;
 - Portal Cliente, Portal Shopper y reportes;
 - `CX.data`, Firebase DEV, Auth/RBAC y contratos;
@@ -19,91 +19,92 @@ Cerrar una única baseline acumulativa sobre `docs-tya-v6-v71-audit` y llevar Ph
 - Academia, manuales y rutas por rol;
 - composición canónica única y PR #7.
 
-## 3. Estado C6 de identidades
-
-La conciliación estructural está cerrada:
+## 3. Identidades Shopper
 
 ```text
 profiles=340
 crosswalk=101/8 PASS
-metric=83=71+12 PASS
 reference/planner=65/65 exact match
-suffix allocation holds=0
-target login collisions=0
-```
-
-Paula autorizó omitir del repair Auth los 13 perfiles residuales. La disposición source-only exacta produjo:
-
-```text
 CREATE_AUTH=81
 UPDATE_AUTH=46
 NO_OP=73
 HOLD=0
 PRESERVE_NO_AUTH=140
-rows=340 unique
 ```
 
-Los 13 perfiles ya no bloquean el avance.
+Los 13 perfiles residuales fueron omitidos del repair Auth por decisión expresa de Paula, conservando historia. No bloquean producción y no se reabre su conciliación.
 
-## 4. Regla de disposición
+## 4. Autoridad HR viva — contrato prevalente
+
+- Metadata provider descubre dinámicamente tabs y periodos.
+- El periodo operativo se deriva del calendario y de la existencia viva de las pestañas del país.
+- Firestore es materialización/índice; no autoridad de HR.
+- Registry, snapshots y archivos estáticos son cache/last-known-good fail-closed.
+- Una modificación actual o histórica debe cambiar `sourceRevision` y reflejarse transversalmente.
+- Cambios solo de timestamp no deben cambiar la revisión.
+- No se permiten meses, conteos, estados o totales HR fijados en código.
+
+## 5. Root fix aplicado
+
+El bloque eliminó del carril activo:
+
+- agosto como mes contractual fijo;
+- `GT=34`, `HN=10`, `616`, `684` y `1406` como expectativas permanentes;
+- country gate con segunda lectura distinta;
+- registry estático como autoridad primaria;
+- delta histórico entendido únicamente como inserts nuevos.
+
+Quedaron preparados los gates de metadata viva, periodo calendario, país/pestaña, mutación histórica, revisión estable y comparación provider/Firestore read-only.
+
+## 6. HOLD actual: control-plane provider
+
+Request:
 
 ```text
-SKIP_AUTH_REPAIR_PRESERVE_HISTORY
-skipFromAuthRepair=true
-doNotCreateAuth=true
-doNotUpdateAuth=true
-preserveHistoricalProfile=true
-preserveVisits=true
-preserveCertifications=true
-preserveLiquidations=true
-futureManualReactivationAllowed=true
+authorizationId=chat-20260806-live-hr-authority-current-period-01
+sourceCommit=31f4af0f7501b23b4e72b1a5f8457669a5f91c77
+requestCommit=4e404f2db48ff8b07430d7ac7505eff6c040458a
 ```
 
-No se permite hard delete ni fusión por nombre. Las cuentas Auth preexistentes no se modificaron en este bloque; el pre-cutover debe verificar que las identidades omitidas no obtengan acceso efectivo.
+Al finalizar el timeout de 20 minutos no existía run/status/evidence observable. No puede determinarse si la lectura provider se consumió.
 
-## 5. Autoridad HR viva — regla prevalente
+```text
+STOP_RETRY=true
+providerReadConsumption=UNKNOWN_NO_EXECUTION_EVIDENCE
+```
 
-Toda información de HR, incluida la historia, debe provenir de una lectura viva y versionada del proveedor.
+No se dispara otra lectura por rutina.
 
-- No fijar periodos, conteos, estados o filas históricas como verdad en código.
-- Firestore es materialización/índice, no autoridad de HR.
-- Archivos estáticos son bootstrap o last-known-good, no fuente vigente.
-- Cada cambio en una fila actual o histórica debe producir nueva `sourceRevision` y reflejarse en todos los módulos.
-- El mes activo se descubre desde metadata provider y se elige por mes calendario disponible; nunca se hardcodea.
+## 7. Cadena única restante
 
-## 6. P0 agosto
+### Bloque A — Diagnóstico control-plane read-only
 
-La evidencia prueba que el builder detectó 30 tabs, 15 periodos y 684 visitas, incluyendo `AGOSTO 26` y `AGOSTO 26 HN`; después, un registry desactualizado las rechazó y redujo la salida a 28 tabs, 14 periodos y 616 visitas.
+1. Localizar el run del request exacto sin leer HR nuevamente.
+2. Si existe, recuperar run/job/log/artifact y su checkpoint.
+3. Si no existe, demostrar `providerReads=0`.
+4. No alterar fuente, datos, Auth, deploy o producción.
 
-Producción no puede avanzar mientras:
+### Bloque B — HR viva actual
 
-- metadata provider no responda;
-- `autoDiscovery` siga false;
-- agosto GT/HN no aparezca en lectura viva;
-- la plataforma dependa de `latestPeriod=2026-07` materializado;
-- no exista una prueba de cambio histórico desde la HR viva.
+Solo con autorización fresca y prueba de que no se consumió el read, o recuperando el run existente:
 
-## 7. Cadena única de salida
+1. confirmar metadata/autodiscovery provider;
+2. confirmar periodo calendario `2026-08` y tabs GT/HN;
+3. reconstruir todos los periodos desde HR viva;
+4. validar cambio histórico y `sourceRevision`;
+5. confirmar la misma revisión en Dashboard, Histórico, Visitas, Finanzas, Cliente y Shopper;
+6. reconciliar materialización por `visitId/hrRowId` y revisión, no por recarga ciega.
 
-### Bloque A — HR viva agosto
+### Bloque C — Auth y validación acumulativa
 
-1. Corregir acceso a metadata provider/autodiscovery.
-2. Confirmar `AGOSTO 26` y `AGOSTO 26 HN`.
-3. Reconstruir todos los periodos desde HR viva.
-4. Confirmar `latestPeriodKey=2026-08`.
-5. Probar una modificación histórica controlada mediante revisión viva.
-6. Confirmar una sola `sourceRevision` en Dashboard, Histórico, Visitas, Finanzas, Cliente y Shopper.
-
-### Bloque B — Auth y validación acumulativa
-
-1. Materializar el plan de 340 filas con overlay SKIP13 y `HOLD=0`.
-2. Ejecutar repair Auth solo con autorización expresa, snapshot, idempotencia, readback y rollback.
-3. Verificar que los 13 perfiles omitidos no reciban acceso efectivo.
+1. Materializar plan Auth con overlay SKIP13 y `HOLD=0`.
+2. Ejecutar solo con autorización expresa, snapshot, idempotencia, readback y rollback.
+3. Verificar que los 13 omitidos no reciban acceso efectivo.
 4. Smoke Admin/Operaciones, Shopper y Cliente.
-5. Tres recargas, nueva pestaña y estabilidad sin reload agresivo.
-6. Validación humana sobre una única URL/build.
+5. Tres recargas, nueva pestaña y estabilidad.
+6. Validación humana sobre una sola URL/build.
 
-### Bloque C — Cutover
+### Bloque D — Cutover
 
 1. Source lock final.
 2. Rollback probado.
@@ -113,19 +114,20 @@ Producción no puede avanzar mientras:
 
 ## 8. Circuit breakers
 
-- No reabrir la conciliación de los 13 perfiles.
-- No segundo provider read del probe fallido.
-- No reauditar el universo 65/65.
+- No reabrir los 13 perfiles.
+- No segundo provider read sin conocer consumo del primero.
+- No reauditar 65/65.
 - No pedir otra candidata.
 - No ejecutar Auth sin autorización separada.
-- No hardcodear agosto ni añadirlo manualmente al registry como sustituto de metadata viva.
-- No tratar 616 visitas o 14 periodos como constantes.
+- No hardcodear periodos o conteos HR.
+- No repetir import histórico por conteo.
 - No reabrir módulos protegidos salvo regresión reproducible.
 
 ## 9. Estado seguro
 
 ```text
-provider/Auth/data/HR writes=0
+provider writes=0
+Auth/data/HR writes=0
 Hosting/Cloud Run deploys=0
 Make/Gemini/payments=0
 merge=false
