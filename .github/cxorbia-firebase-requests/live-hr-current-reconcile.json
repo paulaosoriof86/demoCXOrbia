@@ -1,10 +1,22 @@
 {
-  "schemaVersion": "cxorbia.live-hr-current-reconcile.request.v1",
+  "schemaVersion": "cxorbia.live-hr-current-reconcile.request.v2",
+  "authorizationId": "chat-20260806-live-hr-authority-current-period-01",
+  "authorizedAt": "2026-08-06T09:36:00-06:00",
+  "authorizedBy": "Paula",
+  "sourceCommit": "31f4af0f7501b23b4e72b1a5f8457669a5f91c77",
   "enabled": true,
-  "mode": "LIVE_HR_READ_ONLY_RECONCILIATION",
+  "consumed": false,
+  "mode": "LIVE_HR_AUTHORITY_AND_CURRENT_PERIOD_READ_ONLY",
+  "providerReads": 1,
+  "providerWrites": 0,
   "hrWrites": 0,
   "firestoreWrites": 0,
+  "authWrites": 0,
+  "rulesWrites": 0,
+  "storageWrites": 0,
+  "hostingDeploys": 0,
+  "cloudRunDeploys": 0,
   "production": false,
   "merge": false,
-  "triggerNonce": 8
+  "triggerNonce": 9
 }
