@@ -1,17 +1,18 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-06  
-**Estado vivo:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_SOURCE_ONLY_COMPLETE__LIVE_HR_V4_UNRESOLVED__DEV_ONLY_TARGET_CONFIRMED__IDENTITY_HOLD_0__NO_PRODUCTION`
+**Estado vivo:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_GATE_HOLD__LIVE_HR_V4_UNRESOLVED__PROD_TARGET_UNMATERIALIZED__IDENTITY_HOLD_0__NO_PRODUCTION`
 
 ## 1. Fuente de verdad
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 3. `app/docs/SOURCE-LOCK-C6-PRODUCTION-FAST-TRACK-PREFLIGHT-20260806.md`;
-4. `app/docs/evidence/C6-PRODUCTION-FAST-TRACK-PREFLIGHT-LATEST.json`;
-5. `app/docs/SOURCE-LOCK-C6-LIVE-HR-V4-REQUEST-30M-NO-RUN-EVIDENCE-20260806.md`;
-6. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-7. PR #7 y HEAD vivo.
+4. `app/docs/evidence/C6-PRODUCTION-TARGET-PREFLIGHT-LATEST.json`;
+5. `app/docs/evidence/C6-PRODUCTION-FAST-TRACK-PREFLIGHT-LATEST.json`;
+6. `app/docs/SOURCE-LOCK-C6-LIVE-HR-V4-REQUEST-30M-NO-RUN-EVIDENCE-20260806.md`;
+7. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+8. PR #7 y HEAD vivo.
 
 ## 2. Cerrado y protegido
 
@@ -23,7 +24,8 @@
 - diagnóstico v2/v3 cancelado antes de steps;
 - request v4 emitido una sola vez;
 - segundo trigger prohibido y no ejecutado;
-- configuración DEV auditada.
+- configuración DEV auditada;
+- gate source-only de target PROD creado y `node --check` PASS.
 
 ## 3. Estado del request v4
 
@@ -39,19 +41,28 @@ STOP_RETRY=true
 
 No se recuperó evidencia terminal para clasificar lectura cero o consumida.
 
-## 4. Hallazgo fast-track de producción
+## 4. Gate de producción
+
+```text
+tool=tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs
+node --check=PASS
+execution exitCode=2 esperado fail-closed
+decision=HOLD_PRODUCTION_TARGET_UNMATERIALIZED
+holdReason=PRODUCTION_CONFIGURATION_FILES_NOT_MATERIALIZED
+```
+
+Configuración actual:
 
 ```text
 .firebaserc default/dev=cxorbia-backend-dev
 firebase hosting target=cxorbia-dev
 hosting site=cxorbia-backend-dev
 Cloud Run service=cxorbia-live-hr-dev
-production alias=false
-production target=false
-production service=false
+.firebaserc.prod=false
+firebase.prod.json=false
 ```
 
-El repositorio solo contiene DEV. No existe carril PROD versionado. Desplegar el estado actual no equivale a sacar la plataforma a producción.
+Desplegar el estado actual no equivale a sacar la plataforma a producción.
 
 ## 5. P0 actuales
 
@@ -59,9 +70,11 @@ El repositorio solo contiene DEV. No existe carril PROD versionado. Desplegar el
 2. Confirmar HR viva `2026-08`, GT/HN, mutación histórica y `sourceRevision`.
 3. Ejecutar Auth Shopper con gate separado.
 4. Ejecutar smoke acumulativo Admin/Operaciones, Shopper y Cliente.
-5. Materializar un target PROD nuevo, separado y verificable.
-6. Completar validación humana, rollback y autorización específica.
-7. Ejecutar un único cutover.
+5. Definir un proyecto PROD nuevo y separado.
+6. Materializar `.firebaserc.prod` y `firebase.prod.json`.
+7. Obtener `PASS_PRODUCTION_TARGET_SOURCE_ONLY_CONTRACT`.
+8. Completar validación humana, rollback y autorización específica.
+9. Ejecutar un único cutover.
 
 ## 6. No hacer
 
