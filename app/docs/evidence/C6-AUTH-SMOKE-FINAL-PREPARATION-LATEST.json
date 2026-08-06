@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "cxorbia.c6.auth-smoke-final-preparation-source-only.v1",
+  "generatedAt": "2026-08-06T19:57:20.189Z",
+  "mode": "SOURCE_ONLY_NO_PROVIDER_NO_WRITES_NO_DEPLOY",
+  "inputs": {
+    "contract": "backend/config/cxorbia-production-promotion-contract.json",
+    "freeze": "backend/config/c6-shopper-auth-final-freeze-v1.json",
+    "rollback": "backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json",
+    "smoke": "backend/config/c6-accumulative-multirole-smoke-matrix-v1.json",
+    "skipConfig": "backend/config/corte6-shopper-auth-skip13-disposition-v1.json",
+    "skipEvidence": "app/docs/evidence/CORTE6-SHOPPER-AUTH-SKIP13-SOURCE-ONLY-PASS-LATEST.json",
+    "residualEvidence": "app/docs/evidence/CORTE6-RESIDUAL-IDENTITY-ROOT-CAUSE-SOURCE-ONLY-LATEST.json",
+    "providerEvidence": "app/docs/evidence/CORTE6-SHOPPER-EQUIVALENT-UNIVERSE-PROVIDER-V22-HOLD-LATEST.json",
+    "out": "app/docs/evidence/C6-AUTH-SMOKE-FINAL-PREPARATION-LATEST.json"
+  },
+  "execution": {
+    "nodeCheck": "PASS",
+    "exitCode": 2,
+    "expectedFailClosedExit": true
+  },
+  "commits": {
+    "freeze": "844f8045d2166d963961a562beda14f814f0c863",
+    "rollback": "374c62636fa13f5cf23f9ac7d6a4cf4ce47f1587",
+    "smoke": "1d44bb9278599b8571ce92516824b5eab3fc5899",
+    "gate": "d04e2de8efaaabd4e0b945f4c0d9055086dea3e1"
+  },
+  "checks": {
+    "productionContractPass": true,
+    "freezeSchema": true,
+    "freezeRows340": true,
+    "freezeHold0": true,
+    "freezeDigestMatchesSkipConfig": true,
+    "freezeDigestMatchesSkipEvidence": true,
+    "sourceArtifactMatches": true,
+    "providerSourcePlanMatches": true,
+    "operationCountsMatch": true,
+    "skipCount13": true,
+    "rollbackBound": true,
+    "smokeBound": true,
+    "zeroWriteContracts": true,
+    "skipSetMatchesResidualLineage": true,
+    "idempotencyContractPass": true
+  },
+  "plan": {
+    "sourceHead": "df65bb45629588b7906b957551108a3a5c71b763",
+    "rows": 340,
+    "uniqueRows": 340,
+    "digest": "6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b",
+    "operationCounts": {
+      "CREATE_AUTH": 81,
+      "UPDATE_AUTH": 46,
+      "NO_OP": 73,
+      "HOLD": 0,
+      "PRESERVE_NO_AUTH": 140
+    },
+    "subchangeCounts": {
+      "email": 39,
+      "password": 14,
+      "claims": 38
+    },
+    "rawRowsCopiedToRepository": false,
+    "freezeDecision": "PASS_AUTH_PLAN_340_CRYPTOGRAPHIC_FREEZE"
+  },
+  "skippedAccess": {
+    "skippedProfiles": 13,
+    "surnameResidualProfiles": 12,
+    "multiAuthResidualProfiles": 1,
+    "blockingFingerprint": "7cc28c78de9bfda01d14",
+    "blockingFingerprintIsSkipped": true,
+    "providerCandidates": 2,
+    "enabledCandidates": 2,
+    "emailVerifiedCandidates": 2,
+    "unplannedEffectiveAccessProvenAbsent": false,
+    "classification": "SKIPPED_MULTI_AUTH_PROFILE_HAS_ENABLED_PROVIDER_CANDIDATES",
+    "requiredNextEvidence": "READ_ONLY_AUTH_MEMBERSHIP_AND_CLAIMS_ADJUDICATION_FOR_SKIPPED_SET_ONLY"
+  },
+  "idempotency": {
+    "expectedKey": "d3b2cbade967281a42b77fbdb2a6e87801e92c45223ef361003fafdf081148f6",
+    "declaredKey": "d3b2cbade967281a42b77fbdb2a6e87801e92c45223ef361003fafdf081148f6",
+    "keyMatches": true,
+    "duplicateExecutionForbidden": true,
+    "runMarkerRequired": true,
+    "decision": "PASS_PREWRITE_IDEMPOTENCY_CONTRACT"
+  },
+  "smoke": {
+    "personas": [
+      "ADMIN_OPERACIONES",
+      "SHOPPER",
+      "CLIENTE"
+    ],
+    "globalChecks": 9,
+    "executed": false,
+    "decision": "PREPARED_NOT_EXECUTED"
+  },
+  "decision": "HOLD_C6_AUTH_PREWRITE_SKIPPED_ACCESS_RISK_UNRESOLVED",
+  "safeState": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "merge": false,
+    "production": false
+  },
+  "failedChecks": []
+}
