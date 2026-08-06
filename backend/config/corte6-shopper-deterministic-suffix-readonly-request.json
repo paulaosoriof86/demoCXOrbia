@@ -1,111 +1,60 @@
 {
-  "schemaVersion": "cxorbia.c6.shopper-diagnostic-contract-rootfix-source-only-request.v1",
-  "requestId": "c6-shopper-diagnostic-contract-rootfix-source-only-20260805-01",
-  "enabled": false,
-  "consumed": true,
-  "status": "consumed_source_static_pass_no_provider_read",
-  "issuedAt": "2026-08-05T21:16:00-06:00",
+  "schemaVersion": "cxorbia.c6.shopper-deterministic-suffix-readonly-request.v1",
+  "diagnosticContractVersion": "v2",
+  "requestId": "c6-shopper-diagnostic-contract-v2-provider-revalidation-20260805-01",
+  "enabled": true,
+  "consumed": false,
+  "status": "authorized_execute_once",
+  "issuedAt": "2026-08-05T21:41:00-06:00",
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-05",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "3b4d83ce14f397c34bbb56ffa85de8f6e4069089",
-  "mode": "source_only_diagnostic_contract_rootfix",
-  "sourceOnlyExecutionAttempt": 3,
-  "priorAttempts": [
-    {
-      "workflowRunId": 31068251278,
-      "workflowJobId": 92510538630,
-      "providerReads": 0,
-      "providerWrites": 0,
-      "sourceCommitCreated": false,
-      "requestConsumed": false,
-      "failure": "TRANSIENT_PATCHER_SYNTAX_NESTED_TEMPLATE_LITERAL"
-    },
-    {
-      "workflowRunId": 31068415510,
-      "workflowJobId": 92511057053,
-      "providerReads": 0,
-      "providerWrites": 0,
-      "sourceCommitCreated": false,
-      "requestConsumed": false,
-      "sourceAndStaticGates": "PASS",
-      "failure": "TRANSIENT_PORCELAIN_STATUS_LEADING_WHITESPACE_TRIM"
-    }
-  ],
-  "retryBasis": "same unconsumed source-only authorization after correcting transient tooling only; source/static passed in attempt 2 and no provider read, source commit, request consumption or operational write occurred",
-  "sourceLock": "app/docs/SOURCE-LOCK-C6-DIAGNOSTIC-CONTRACT-ROOTFIX-SOURCE-ONLY-20260805.md",
-  "planner": "tools/qa/cxorbia-c6-shopper-deterministic-suffix-readonly.mjs",
-  "classifier": "tools/qa/cxorbia-c6-shopper-login-collision-classification.mjs",
-  "patcher": "tools/qa/cxorbia-c6-shopper-diagnostic-contract-rootfix-source-only.mjs",
-  "patcherImplementation": "tools/qa/cxorbia-c6-shopper-diagnostic-contract-rootfix-source-only-v2.mjs",
+  "targetHeadSha": "9784cdf16c09a549c255f9795aae5c9e6da412fb",
+  "sourceContractCommitSha": "ceb5646400c61631eb2d8d469343360647c45f65",
+  "sourceLock": "app/docs/SOURCE-LOCK-C6-DIAGNOSTIC-CONTRACT-V2-PROVIDER-REVALIDATION-20260805.md",
+  "expectedSourceSha256": {
+    "planner": "46bb0a58a936c9793dd9f405b08d6856ffa498432dc64f9c123e436159e387a6",
+    "classifier": "777b15405acdb526f00f7717cc1c756f0fe69146111be94123c1ec4afb5bd248",
+    "contract": "917b220a67c54740cf5ac1c0e3970561e72d6288f18b45d75e7c3cf45b7e803c"
+  },
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "firebaseProjectId": "cxorbia-backend-dev",
   "contract": "backend/contracts/c6-shopper-deterministic-suffix-v1.json",
-  "providerReads": false,
-  "providerWrites": false,
-  "allowedExecutions": 1,
-  "expectedPlanRows": 340,
-  "suffixLengths": [
-    4,
-    6,
-    8
-  ],
-  "metricContract": {
-    "preConsensusIncompleteActiveProfiles": true,
-    "completedByConsensus": true,
-    "remainingIncompleteActiveProfiles": true,
-    "identity": "preConsensusIncompleteActiveProfiles = completedByConsensus + remainingIncompleteActiveProfiles"
-  },
-  "holdDiagnosticContract": {
-    "values": "booleans_counts_bases_only",
-    "first": [
-      "complete",
-      "candidateCount",
-      "basisCount"
-    ],
-    "surname": [
-      "complete",
-      "explicitCandidateCount",
-      "technicalLoginCandidateCount",
-      "consensusCandidateCount",
-      "basisCount",
-      "conflict"
-    ],
-    "passwordSeed": [
-      "complete",
-      "candidateCount",
-      "basisCount"
-    ],
-    "rawNames": false,
-    "rawLogins": false,
-    "rawEmails": false,
-    "rawPasswords": false,
-    "uids": false
-  },
-  "multiAuthDiagnosticContract": {
-    "candidateOrdinalOnly": true,
-    "signalsAndScoreMargin": true,
-    "rawPii": false
-  },
+  "policy": "DETERMINISTIC_TECHNICAL_SUFFIX",
+  "preserveUnsuffixedWhen": "one_unique_technical_holder_exists",
+  "suffixDerivation": "sha256(tenantId + NUL + shopperId)",
+  "suffixLengths": [4, 6, 8],
   "groupFingerprintNamespace": "shopper-visible-login-group-v1",
   "collisionReconciliationPolicy": "fingerprint_set_membership_not_rigid_aggregate_equality",
-  "requiredChecks": [
-    "planner_classifier_patcher_node_syntax",
-    "source_static_self_test",
-    "pre_consensus_completed_remaining_metrics",
-    "metric_identity_gate",
-    "hold_source_safe_diagnostic_vectors",
-    "multi_auth_source_safe_signal_vector",
-    "stable_group_fingerprint_namespace",
-    "fingerprint_set_reconciliation",
-    "rigid_64_gate_removed",
-    "old_83_gate_removed",
-    "plan_340_schema_preserved",
-    "suffix_4_6_8_preserved",
-    "provider_reads_zero"
+  "collisionReferenceSelection": "same-run classifier groups with verifiedLoginAgreement=true and activeCount>1",
+  "expectedCollisionGroupFingerprints": [],
+  "expectedProfiles": 340,
+  "expectedPlanRows": 340,
+  "expectedStableCredentialsMapped": 101,
+  "expectedStableCredentialsUnmapped": 8,
+  "metricIdentity": "preConsensusIncompleteActiveProfiles = completedByConsensus + remainingIncompleteActiveProfiles",
+  "providerReads": true,
+  "providerWrites": false,
+  "allowedExecutions": 1,
+  "executions": 0,
+  "automaticRetry": false,
+  "stopRetryOn": [
+    "any_hold",
+    "credential_crosswalk_drift",
+    "metric_identity_invalid",
+    "collision_fingerprint_set_difference",
+    "multi_auth_tie",
+    "deterministic_suffix_collision",
+    "target_login_collision",
+    "plan_rows_not_340",
+    "duplicate_profile_row",
+    "raw_identity_export"
   ],
   "safeState": {
-    "repositoryWrites": true,
+    "repositoryWrites": false,
     "dataWrites": false,
     "deploy": false,
     "merge": false,
@@ -124,13 +73,10 @@
   },
   "containsPii": false,
   "containsSecrets": false,
-  "stopAfterSourceStatic": true,
-  "nextGate": "NEW_EXPLICIT_PROVIDER_READONLY_AUTHORIZATION_REQUIRED",
-  "consumedAt": "2026-08-06T03:28:09.164Z",
-  "result": {
-    "decision": "PASS_C6_SHOPPER_DIAGNOSTIC_CONTRACT_ROOTFIX_SOURCE_STATIC",
-    "providerReads": 0,
-    "providerWrites": 0,
-    "evidence": "app/docs/evidence/CORTE6-SHOPPER-DIAGNOSTIC-CONTRACT-ROOTFIX-SOURCE-STATIC-PASS-LATEST.json"
-  }
+  "rawNamesExported": false,
+  "rawLoginsExported": false,
+  "rawEmailsExported": false,
+  "rawPasswordsExported": false,
+  "uidsExported": false,
+  "nextGate": "STOP_AFTER_ONE_PROVIDER_READONLY_EXECUTION_AND_DOCUMENT_RESULT"
 }
