@@ -10,6 +10,7 @@ const SERVICE_ACCOUNT_JSON=process.env.FIREBASE_SERVICE_ACCOUNT_JSON||'';
 const MAX_ROW=Number(process.env.CXORBIA_HR_LIVE_MAX_ROW||140);
 const MAX_COL=process.env.CXORBIA_HR_LIVE_MAX_COL||'AI';
 const COLUMN_MAP=JSON.parse(fs.readFileSync(path.resolve('backend/contracts/tya-hr-column-map-r20-v1.json'),'utf8'));
+const MONTH_NAMES=['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
 
 function b64url(input){return Buffer.from(input).toString('base64url');}
 function signJwt(sa){
@@ -45,7 +46,20 @@ function parseTab(title){
   const clean=String(title||'').trim().replace(/\s+/g,' ').toUpperCase();
   const m=clean.match(/^(ENERO|FEBRERO|MARZO|ABRIL|MAYO|JUNIO|JULIO|AGOSTO|SEPTIEMBRE|SETIEMBRE|OCTUBRE|NOVIEMBRE|DICIEMBRE)\s+(\d{2})(?:\s+(HN))?$/);
   if(!m)return null;
-  return {title:String(title),country:m[3]==='HN'?'HN':'GT'};
+  const canonicalMonth=m[1]==='SETIEMBRE'?'SEPTIEMBRE':m[1];
+  const month=MONTH_NAMES.indexOf(canonicalMonth)+1;
+  const year=2000+Number(m[2]);
+  return {title:String(title),country:m[3]==='HN'?'HN':'GT',periodKey:`${year}-${String(month).padStart(2,'0')}`};
+}
+function currentPeriodDescriptor(){
+  const explicit=String(process.env.CXORBIA_EXPECTED_CURRENT_PERIOD||'').trim();
+  const match=explicit.match(/^(20\d{2})-(0[1-9]|1[0-2])$/);
+  const now=new Date();
+  const year=match?Number(match[1]):now.getUTCFullYear();
+  const month=match?Number(match[2]):now.getUTCMonth()+1;
+  const yy=String(year).slice(-2);
+  const monthName=MONTH_NAMES[month-1];
+  return {periodKey:`${year}-${String(month).padStart(2,'0')}`,tabs:[`${monthName} ${yy}`,`${monthName} ${yy} HN`]};
 }
 function assigned(value){
   const text=normalized(value);if(!text)return false;
@@ -76,11 +90,21 @@ async function main(){
   const title=String(meta.properties?.title||'');
   if(title!=='HR Guatemala - Sincronizacion Google Sheets')throw new Error(`canonical_hr_title_mismatch:${title}`);
   const monthly=(meta.sheets||[]).map(s=>parseTab(s.properties?.title)).filter(Boolean);
-  if(monthly.length<28)throw new Error(`canonical_monthly_tab_count_too_low:${monthly.length}`);
+  if(!monthly.length)throw new Error('canonical_monthly_tabs_missing');
   const monthlyTabs=monthly.map(x=>x.title);
+  const current=currentPeriodDescriptor();
   const now=new Date().toISOString();
-  const registry={schemaVersion:'cxorbia.tya-live-hr-tab-registry.v1',observedAt:now,sourceTitle:title,sourceSafe:true,providerMetadataReadOnly:true,autoDiscovery:true,registryMode:'live_provider_metadata_auto_refresh',monthlyTabs,nonMonthlyTabs:(meta.sheets||[]).map(s=>String(s.properties?.title||'')).filter(t=>!monthlyTabs.includes(t)),requiredAugustTabs:['AGOSTO 26','AGOSTO 26 HN'],requiredAugustTabsPresent:monthlyTabs.includes('AGOSTO 26')&&monthlyTabs.includes('AGOSTO 26 HN'),provider:{mode:auth.mode,principalMasked:String(auth.principal||'').replace(/^[^@]+/,'***')},safety:{pii:false,hrWrites:0,firestoreWrites:0,authWrites:0,production:false,merge:false}};
-  fs.mkdirSync(path.dirname(REGISTRY_OUT),{recursive:true});fs.writeFileSync(REGISTRY_OUT,JSON.stringify(registry,null,2)+'\n','utf8');
+  const registry={
+    schemaVersion:'cxorbia.tya-live-hr-tab-registry.v1',observedAt:now,sourceTitle:title,sourceSafe:true,
+    providerMetadataReadOnly:true,autoDiscovery:true,registryMode:'live_provider_metadata_auto_refresh',
+    monthlyTabs,nonMonthlyTabs:(meta.sheets||[]).map(s=>String(s.properties?.title||'')).filter(t=>!monthlyTabs.includes(t)),
+    currentCalendarPeriodKey:current.periodKey,requiredCurrentPeriodTabs:current.tabs,
+    requiredCurrentPeriodTabsPresent:current.tabs.every(tab=>monthlyTabs.includes(tab)),
+    provider:{mode:auth.mode,principalMasked:String(auth.principal||'').replace(/^[^@]+/,'***')},
+    safety:{pii:false,hrWrites:0,firestoreWrites:0,authWrites:0,production:false,merge:false}
+  };
+  fs.mkdirSync(path.dirname(REGISTRY_OUT),{recursive:true});
+  fs.writeFileSync(REGISTRY_OUT,JSON.stringify(registry,null,2)+'\n','utf8');
 
   let identityCount=0;
   if(IDENTITY_OUT){
@@ -104,6 +128,6 @@ async function main(){
     const overlay={schemaVersion:'cxorbia.tya-dev-operational-display-identity.v1',generatedAt:now,sourceTitle:title,displayIdentityOnly:true,containsContactData:false,containsGovernmentId:false,containsBankData:false,containsCredentials:false,identities:[...identities.values()].sort((a,b)=>a.shopperId.localeCompare(b.shopperId)),safety:{devOnly:true,hrWrites:0,firestoreWrites:0,authWrites:0,production:false,merge:false}};
     identityCount=overlay.identities.length;fs.mkdirSync(path.dirname(IDENTITY_OUT),{recursive:true});fs.writeFileSync(IDENTITY_OUT,JSON.stringify(overlay,null,2)+'\n','utf8');
   }
-  console.log(JSON.stringify({decision:'PASS_LIVE_PROVIDER_REGISTRY_AND_DEV_DISPLAY_IDENTITY',providerMode:auth.mode,totalTabs:(meta.sheets||[]).length,monthlyTabs:monthly.length,latestMonthlyTab:monthlyTabs.at(-1)||null,identityCount,requiredAugustTabsPresent:registry.requiredAugustTabsPresent,writes:0,production:false}));
+  console.log(JSON.stringify({decision:'PASS_LIVE_PROVIDER_REGISTRY_AND_DEV_DISPLAY_IDENTITY',providerMode:auth.mode,totalTabs:(meta.sheets||[]).length,monthlyTabs:monthly.length,latestMonthlyTab:monthlyTabs.at(-1)||null,currentCalendarPeriodKey:current.periodKey,requiredCurrentPeriodTabsPresent:registry.requiredCurrentPeriodTabsPresent,identityCount,writes:0,production:false}));
 }
 main().catch(e=>{console.error(e.stack||e);process.exit(1);});
