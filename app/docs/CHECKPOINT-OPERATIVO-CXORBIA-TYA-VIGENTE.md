@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-06  
-**Estado:** `C6_LIVE_HR_RUN_REGISTRATION_PROVEN__V2_V3_CANCELLED_BEFORE_STEPS__PROVIDER_READS_0_PROVEN__DIAGNOSTIC_LOOP_CLOSED__NO_TRIGGER__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `C6_LIVE_HR_V4_REQUEST_EMITTED__30M_NO_RUN_JOB_CHECKPOINT_EVIDENCE__CONSUMPTION_UNKNOWN__STOP_RETRY__NO_SECOND_TRIGGER__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Rama y control
 
@@ -9,41 +9,52 @@
 - rama: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
 - producción: intacta;
-- request v2: `4e404f2db48ff8b07430d7ac7505eff6c040458a`;
-- request v3: `d62dbae9b10b0650c2940f4b2bf7d456cb34fc83`.
+- request v4: `ac2032ec224e6d56bf087788b949691b6690c437`;
+- source exacto: `a1f11483153aa2576bb284b9b2f6ed178dbe528d`.
 
-## 2. Causa raíz Actions cerrada
-
-Se recuperaron los runs reales:
+## 2. Request único
 
 ```text
-v2 runId=31117638647 jobId=92671263961 status=completed conclusion=cancelled steps=0
-v3 runId=31123402722 jobId=92688738677 status=completed conclusion=cancelled steps=0
+authorizationId=chat-20260806-live-hr-authority-current-period-v4-03
+providerReads autorizados=1
+providerWrites=0
+request updates después de emisión=0
+segundo trigger=0
 ```
 
-Esto prueba:
+## 3. Observación
+
+Ventana: `2026-08-06T18:13:33Z` a `2026-08-06T18:43:53Z`.
 
 ```text
-workflow registrado=true
-trigger push reconocido=true
-rama reconocida=true
-path reconocido=true
-provider boundary alcanzada=false
-v2 provider reads=0
-v3 provider reads=0
+runId recuperado=false
+jobId recuperado=false
+steps recuperados=false
+journal recuperado=false
+artifact recuperado=false
+commit statuses=0
+checkpoint inicial=NO OBSERVADO
+provider boundary=NO OBSERVADA
+secuencia provider=NO OBSERVADA
+final=NO OBSERVADO
+avance generado por workflow=NO OBSERVADO
 ```
 
-El diagnóstico anterior de “run no localizado” queda corregido. El run existió; el job fue cancelado antes del runner y antes de cualquier step.
+## 4. Dictamen
 
-## 3. Observabilidad y corrección
+No se recuperó un job `cancelled` con `steps=0`; por eso no se puede aplicar la clasificación de consumo cero.
 
-El status `WORKFLOW_STARTED_PROVIDER_READS_0` estaba dentro de un step. Por tanto no podía publicarse cuando el job fue cancelado con `steps=0`.
+```text
+workflowRunExistence=UNKNOWN_AFTER_30M_OBSERVATION
+providerBoundaryProvenReached=false
+providerReadConsumption=UNKNOWN_NO_RUN_JOB_OR_CHECKPOINT_EVIDENCE
+retryExecuted=false
+STOP_RETRY=true
+```
 
-Se agregó `tools/qa/cxorbia-live-hr-run-consumption-classifier.mjs` para revisar run → job → steps antes de interpretar consumo provider. El bucle de autorizaciones por falsa ausencia de run queda cerrado.
+No se afirma ausencia del run, lectura cero ni lectura consumida.
 
-El texto exacto de la anotación de cancelación no estuvo disponible. No se inventa una causa externa específica.
-
-## 4. Identidades Shopper
+## 5. Identidades Shopper preservadas
 
 ```text
 profiles=340
@@ -58,37 +69,22 @@ PRESERVE_NO_AUTH=140
 
 SKIP13 e historia permanecen preservados.
 
-## 5. HR actual pendiente
+## 6. HR actual pendiente
 
-No existe todavía una lectura viva válida para confirmar:
+No existe evidencia viva nueva para confirmar `2026-08`, tabs GT/HN, conteos, mutación histórica o paridad transversal de `sourceRevision`.
 
-- tabs GT/HN;
-- periodo `2026-08`;
-- conteos vivos;
-- mutación histórica;
-- una `sourceRevision` transversal.
+## 7. Regla antibucle
 
-## 6. Phase A preservada
-
-Frontend acumulativo, Login, `CX.data`, shoppers, postulaciones, certificaciones, visitas, liquidaciones, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto y Academia permanecen preservados.
-
-## 7. Siguiente bloque exacto
-
-```text
-AUTORIZACIÓN FRESCA DE UNA ÚNICA LECTURA HR VIVA
-→ no reabrir diagnóstico de registro/trigger
-→ observar run/job/steps y journal
-→ confirmar 2026-08, GT/HN, mutación histórica y sourceRevision
-→ cero writes, deploy, merge o producción
-```
+- no emitir otro request mientras el v4 no tenga evidencia terminal reconciliada;
+- no reabrir diagnóstico de sintaxis, registro, trigger, rama o path;
+- cualquier evidencia tardía debe ligarse al request exacto `ac2032ec...`;
+- no ejecutar Auth, deploy, merge o producción.
 
 ## 8. Estado seguro
 
 ```text
-request modificado=false
-workflow modificado=false
-nuevo trigger=0
-provider reads del bloque=0
+segundo trigger=0
+provider reads ejecutados por observador=0
 provider/HR/Firestore/Auth/Rules/Storage writes=0
 Hosting/Cloud Run deploys=0
 Make/Gemini/payments=0
