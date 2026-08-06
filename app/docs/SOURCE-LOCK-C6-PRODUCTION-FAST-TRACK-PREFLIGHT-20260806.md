@@ -3,7 +3,7 @@
 **Fecha:** 2026-08-06  
 **Rama:** `docs-tya-v6-v71-audit`  
 **PR:** `#7` draft/open/no merge  
-**Estado:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_SOURCE_ONLY_COMPLETE__LIVE_HR_V4_UNRESOLVED__DEV_ONLY_TARGET_CONFIRMED__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_GATE_HOLD__LIVE_HR_V4_UNRESOLVED__PROD_TARGET_UNMATERIALIZED__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Objetivo
 
@@ -51,7 +51,34 @@ production Cloud Run service configurado=false
 
 Por tanto, el repositorio todavía no contiene un carril de producción materializado. Un deploy desde el estado actual apuntaría al entorno DEV y no constituye un cutover de producción válido.
 
-## 5. Identidades Shopper
+## 5. Gate source-only creado y ejecutado
+
+Se agregó:
+
+```text
+tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs
+```
+
+Evidencia:
+
+```text
+node --check=PASS
+execution exitCode=2 esperado fail-closed
+decision=HOLD_PRODUCTION_TARGET_UNMATERIALIZED
+holdReason=PRODUCTION_CONFIGURATION_FILES_NOT_MATERIALIZED
+productionRcPresent=false
+productionFirebasePresent=false
+provider/HR/Auth/Firestore/Rules/Storage writes=0
+deploys=0
+```
+
+El gate exige archivos separados `.firebaserc.prod` y `firebase.prod.json`, proyecto/target/site/servicio distintos de DEV, región `us-central1`, `public=app` y UTF-8. No crea infraestructura ni despliega.
+
+Evidencia canónica:
+
+- `app/docs/evidence/C6-PRODUCTION-TARGET-PREFLIGHT-LATEST.json`.
+
+## 6. Identidades Shopper
 
 ```text
 profiles=340
@@ -65,27 +92,29 @@ Auth writes ejecutados=false
 
 El plan está listo source-only, pero su ejecución continúa separada y requiere autorización de writes, snapshot, idempotencia, readback y rollback.
 
-## 6. Cadena mínima restante
+## 7. Cadena mínima restante
 
 1. Reconciliar evidencia terminal del request HR v4.
 2. Confirmar `2026-08`, GT/HN, mutación histórica y `sourceRevision` transversal.
 3. Ejecutar Auth con gate separado.
 4. Ejecutar smoke acumulativo Admin/Operaciones, Shopper y Cliente.
-5. Completar validación humana.
-6. Materializar y verificar un target de producción distinto del DEV vigente.
-7. Obtener autorización específica y ejecutar un único cutover con rollback.
+5. Materializar `.firebaserc.prod` y `firebase.prod.json` contra un proyecto nuevo y separado.
+6. Obtener PASS del gate de target PROD.
+7. Completar validación humana, rollback y autorización específica.
+8. Ejecutar un único cutover.
 
-## 7. Qué sí avanzó
+## 8. Qué sí avanzó
 
 - fuentes canónicas revalidadas;
 - request v4 confirmado sin modificación posterior;
-- ausencia actual de commit statuses registrada sin inferencias;
 - configuración Firebase auditada;
 - target DEV-only demostrado;
-- falta de target de producción convertida en bloqueo concreto y no en espera indefinida;
+- gate reutilizable DEV/PROD creado;
+- `node --check` PASS;
+- HOLD de producción reproducible y fail-closed;
 - no se emitió segundo trigger.
 
-## 8. Clasificación
+## 9. Clasificación
 
 - **Reusable CXOrbia:** separación verificable DEV/PROD y gate de target antes de deploy.
 - **Exclusivo TyA:** HR viva 2026-08 GT/HN y cutover operativo.
@@ -93,7 +122,7 @@ El plan está listo source-only, pero su ejecución continúa separada y requier
 - **Academia:** evidencia de por qué un deploy DEV no equivale a producción.
 - **Sin impacto Claude:** frontend, `CX.data`, Login, Finanzas, Portales, Reservas y SKIP13 preservados.
 
-## 9. Estado seguro
+## 10. Estado seguro
 
 ```text
 provider reads del preflight=0
