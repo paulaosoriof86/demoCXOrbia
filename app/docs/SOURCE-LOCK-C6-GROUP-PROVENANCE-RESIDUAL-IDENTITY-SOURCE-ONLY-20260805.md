@@ -7,17 +7,47 @@
 **Provider source run:** `31069282511`  
 **Artifact digest:** `sha256:ffdf8643726d4f8c0c63484790a3b71c2f0a8b4ac04be604e700b829304aff09`
 
-## Alcance autorizado
+## Ejecución source/static
 
-Usar únicamente el source vigente y los artifacts source-safe del run `31069282511` para:
+```text
+PASS run=31070193278
+PASS job=92516351034
+requestCommit=9f4a9840bc4aabe3e8a3e8fa04b02064ed22582f
+workflowFreezeCommit=e0844292783ef9e516e0028ef5f93fa8574309e9
+requestConsumedCommit=52412f5b71c7e504fd8352f19458ad1382edf8df
+providerReads=0
+```
 
-1. clasificar el delta `+1/-0` del grupo `ebbcc231fcf415cbaf77`;
-2. diseñar y aplicar al contrato diagnóstico un vector source-safe por miembro;
-3. clasificar el mecanismo mínimo no operativo para los 12 apellidos sin evidencia;
-4. clasificar el mecanismo mínimo no operativo para el empate multi-Auth;
-5. ejecutar únicamente gates source/static.
+Intento transitorio:
 
-## Vector mínimo por miembro
+```text
+run=31070119537
+job=92516119841
+helperSelfTest=PASS
+contractChecks=PASS
+failure=privacy checker matched safe field names ending in Allowed=false
+providerReads=0
+```
+
+## Clasificación final
+
+```text
+addedGroup=ebbcc231fcf415cbaf77
+primary=REFERENCE_UNIVERSE_MISMATCH_PROVEN
+exactGroupCause=NOT_PROVEN_MEMBER_PROVENANCE_MISSING
+legitimateConsensusChangeForExactGroup=POSSIBLE_NOT_PROVEN
+suffixAllocationAlgorithmDefect=false
+diagnosticComparatorDefect=true
+```
+
+La referencia y el planner no usan el mismo universo:
+
+- referencia: apellido explícito o login técnico verificado;
+- planner: completo post-consenso y linking adicional por anclas técnicas.
+
+Por ello, el `+1/-0` no prueba drift de datos ni defecto del algoritmo de sufijo. El grupo añadido es técnicamente asignable —keeper, un sufijo de cuatro caracteres, cero irresueltos—, pero no puede atribuirse exclusivamente al consenso porque los artifacts no exportan miembros.
+
+## Vector aplicado al contrato v2.1
 
 ```text
 memberFingerprint
@@ -39,9 +69,11 @@ linkedSourceResolutionMode
 
 No se permiten nombres, apellidos, logins, correos, UID, contraseñas ni PII.
 
-## Límites de clasificación
+## Identidades residuales
 
-Los artifacts actuales no incluyen miembros dentro de `groupMatrix`; por tanto, el bloque puede clasificar la causa contractual/comparativa y la observabilidad faltante, pero no atribuir el fingerprint añadido a personas específicas ni reconstruir identidad.
+- 12 apellidos: `AUTHORITATIVE_SURNAME_SOURCE_ENRICHMENT_REQUIRED`;
+- multi-Auth exacto: `SOURCE_SAFE_ACCOUNT_ADJUDICATION_REQUIRED`;
+- selección o inferencia automática: prohibida.
 
 ## Seguridad
 
@@ -55,4 +87,4 @@ merge=false
 production=false
 ```
 
-El bloque termina después de source/static. No autoriza una nueva lectura provider, repair ni aplicación parcial.
+El request quedó consumido y el trigger congelado. No existe autorización residual para provider read, repair ni aplicación parcial.
