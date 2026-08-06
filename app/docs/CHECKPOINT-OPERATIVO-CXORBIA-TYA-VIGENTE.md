@@ -1,18 +1,19 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-05  
-**Estado:** `C6_DETERMINISTIC_SUFFIX_CROSSWALK_ROOTFIX_SOURCE_STATIC_PASS__PROVIDER_REVALIDATION_NOT_AUTHORIZED__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `C6_CROSSWALK_PARITY_PASS__PROVIDER_REVALIDATION_HOLD_12_SURNAME_1_MULTI_AUTH_65_142__STOP_RETRY__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Rama y control
 
 - repo: `paulaosoriof86/demoCXOrbia`;
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
-- source commit del root fix: `6160ef89b75bcdf9068c210810c528d3c6d13db1`;
+- root fix source commit: `6160ef89b75bcdf9068c210810c528d3c6d13db1`;
+- provider request commit: `62cbe347000d102870e2e36bcf8b3638a1cc77ab`;
 - producción: intacta;
-- provider reads de este bloque: `0`;
-- provider writes: `0`;
-- Hosting/Cloud Run deploys: `0`.
+- provider executions de este bloque: `1`;
+- segundo intento: `0`;
+- writes/deploys: `0`.
 
 ## 2. Contrato Shopper preservado
 
@@ -26,96 +27,84 @@ Membership requerido: no
 Autoridad: Firebase Auth + claims exactos + shopperId canónico
 ```
 
-La política fue aprobada y permanece sin materializar.
+La política permanece sin materializar.
 
-## 3. Causa raíz corregida
-
-El planner determinístico perdía 13 anclajes porque `link()` guardaba las fuentes HR, visita, certificación o liquidación en `linkedByProfile`, pero no propagaba sus `TECH_KEYS` hacia `relationIndex`.
-
-El source vigente ahora:
-
-- preserva el objeto fuente y su `basis`;
-- ejecuta `propagateLinkedSourceTechKeys(relationIndex, source, shopperId)`;
-- indexa cada llave técnica no vacía de la fuente enlazada;
-- calcula `credentialsMapped`, `credentialsUnmapped` y `credentialCrosswalkParity`;
-- congela `101 mapped / 8 unmapped` como referencia esperada del próximo provider gate;
-- bloquea `readyForAuthRepair` si falta paridad;
-- genera `credential_crosswalk_drift:mapped/unmapped` ante cualquier diferencia.
-
-## 4. Source/static — PASS
+## 3. Ejecución provider read-only
 
 ```text
-workflowRunId=31066003792
-workflowJobId=92503740935
-requestCommit=8b1ee44906f6c46a751d97548cbc2542a3935ca2
-sourceCommit=6160ef89b75bcdf9068c210810c528d3c6d13db1
-sourceSha256=3200b8833b3af10a27e0493df992836f99d3e78668f2265269d2bd0c74640568
-PASS_C6_DETERMINISTIC_SUFFIX_CROSSWALK_ROOTFIX_SOURCE_STATIC
-PASS_C6_DETERMINISTIC_SUFFIX_SOURCE_STATIC
+workflowRunId=31066410847
+workflowJobId=92504941089
+artifactId=8953983093
+artifactDigest=sha256:ba9a559832ee2d8003ae798ae8a40cbe7e6b7582587d32053c55f16af50b134a
+sourceStatic=PASS_C6_DETERMINISTIC_SUFFIX_SOURCE_STATIC
+provider=HOLD_C6_DETERMINISTIC_SUFFIX_PLAN_STOP_RETRY
 ```
 
-Gates superados:
+Checkout, autorización, dependencia, gates, credencial DEV, lectura provider, artifact, status y limpieza completaron. El fallo final corresponde al enforcement contractual del HOLD.
+
+## 4. Crosswalk — PASS provider
 
 ```text
-PASS_NODE_SYNTAX
-PASS_LINKED_SOURCE_TECH_KEYS_PROPAGATED
-PASS_LINKED_SOURCE_BASIS_PRESERVED
-PASS_CREDENTIAL_CROSSWALK_FIXTURE
-PASS_STABLE_CREDENTIAL_REFERENCE_101_8
-PASS_CREDENTIAL_DRIFT_HARD_STOP
-PASS_READY_REQUIRES_CROSSWALK_PARITY
-PASS_PLAN_340_SCHEMA_PRESERVED
-PASS_SUFFIX_POLICY_4_6_8_PRESERVED
-PASS_PROVIDER_READS_ZERO
+profiles=340
+authUsers=110
+credentials=109
+credentialsMapped=101
+credentialsUnmapped=8
+credentialCrosswalkParity=true
 ```
 
-## 5. Incidencia transitoria cerrada
+El root fix quedó validado contra Firebase. La causa anterior de drift `88/21` está cerrada.
 
-El primer intento source-only `31065882519 / 92503388270` aplicó y verificó el patch en el runner, pero no pudo ejecutar el self-test del target porque faltaba la dependencia transitoria `firebase-admin`. No creó commit, no consumió el request y no realizó provider read.
-
-Se corrigió el workflow para instalar la dependencia y publicar el estado real. El segundo intento del mismo bloque terminó PASS y consumió el request.
-
-## 6. Estado del request
+## 5. Resultado residual
 
 ```text
-enabled=false
-consumed=true
-status=consumed_source_static_pass_no_provider_read
-providerReads=0
-providerWrites=0
-nextGate=NEW_EXPLICIT_PROVIDER_READONLY_AUTHORIZATION_REQUIRED
+multi-source surname completions=71
+remaining active source-safe surname holds=12
+collision groups=65
+active identities in collision groups=142
+groups with unique unsuffixed keeper=53
+groups all suffixed=12
+suffix4=89
+suffix6=0
+suffix8=0
+suffix allocation holds=0
+target login collisions=0
+multi-Auth unresolved=1
 ```
 
-## 7. Resultados provider aún provisionales
+El valor `83` usado como expectativa inicial correspondía a una métrica anterior y queda supersedido por el cálculo corregido de 12 incompletos. Los 12 continúan siendo bloqueadores reales.
 
-La ejecución provider anterior se hizo antes de este root fix y tuvo crosswalk incompleto. Por tanto continúan sin valor de baseline final:
+La diferencia `65/142` frente a `64/141` debe clasificarse source-only antes de congelar baseline.
+
+## 6. Plan no superpuesto
+
+| Operación | Filas |
+|---|---:|
+| CREATE_AUTH | 81 |
+| UPDATE_AUTH | 47 |
+| NO_OP | 72 |
+| HOLD | 13 |
+| PRESERVE_NO_AUTH | 127 |
+| **Total** | **340** |
 
 ```text
-65 collision groups observed
-142 active identities observed
-12 active surname holds observed
-1 multi-Auth tie observed
-340 diagnostic plan rows observed
+planDigest=a0fdc805de12f761feccd10b85d470be09156f4a5b6aff8fb0ca7f3ac4133bfb
+onePrimaryOperationPerProfile=true
+readyForAuthRepair=false
+executable=false
 ```
 
-La referencia 101/8 quedó protegida en source, pero no se afirma todavía que el provider corregido la alcance. Tampoco se afirma que 64/141 o 65/142 sean el resultado definitivo.
+Las 13 filas HOLD son 12 apellidos no resueltos y un empate multi-Auth. No se permite ejecución parcial.
 
-## 8. Phase A preservada
+## 7. STOP_RETRY
 
-Se preservaron:
+El request está consumido y deshabilitado. El trigger provider fue congelado después del run. No existe autorización residual ni segundo intento.
 
-- frontend canónico, módulos y `CX.data`;
-- HR e histórico completo;
-- shoppers, postulaciones y certificaciones;
-- visitas, liquidaciones y pagos;
-- multi-tenant y multi-proyecto;
-- sincronización HR/plataforma;
-- Finanzas, Portal Cliente, Portal Shopper y Reservas;
-- Academia y manuales sin cifras provisionales.
-
-## 9. Estado seguro
+## 8. Estado seguro
 
 ```text
+PROVIDER_READS=1
+PROVIDER_WRITES=0
 AUTH_WRITES=0
 PASSWORD_CHANGES=0
 PASSWORD_RESETS=0
@@ -129,33 +118,34 @@ CLOUD_RUN_DEPLOYS=0
 MAKE_CALLS=0
 GEMINI_CALLS=0
 PAYMENT_WRITES=0
+RAW_NAMES/LOGINS/EMAILS/PASSWORDS/UIDS_EXPORTED=false
 MERGE=false
 PRODUCTION=false
 ```
 
+## 9. Phase A preservada
+
+Frontend canónico, módulos, `CX.data`, HR, histórico, shoppers, postulaciones, certificaciones, visitas, liquidaciones/pagos, multi-tenant, multi-proyecto, sincronización HR/plataforma, Finanzas, Portal Cliente, Portal Shopper, Reservas y Academia permanecen intactos.
+
 ## 10. Documentación vigente
 
-- evidencia source/static PASS;
-- source lock del root fix;
-- cambios backend;
-- resumen para Claude;
-- pendientes del prototipo;
+- evidencia provider HOLD source-safe;
+- source lock de revalidación;
+- request consumido;
+- CAMBIOS-BACKEND;
+- RESUMEN-PARA-CLAUDE;
+- PENDIENTES-PROTOTIPO;
 - impacto Academia;
 - tracker Phase A;
-- índice vigente;
-- PR #7.
+- índice y PR #7.
 
 ## 11. Siguiente bloque exacto
 
 ```text
-NUEVA AUTORIZACIÓN PROVIDER READ-ONLY ONE-SHOT
-→ comprobar paridad real 101 mapped / 8 unmapped
-→ recalcular apellidos activos pendientes
-→ recalcular grupos de colisión e identidades activas
-→ resolver o mantener HOLD del perfil multi-Auth
-→ regenerar plan no superpuesto de 340 filas
-→ STOP_RETRY ante cualquier residual
-→ detenerse antes de Auth/password/membership/Firestore/Rules/Storage/HR write o deploy
+SOURCE-ONLY RESIDUAL IDENTITY ROOT-CAUSE CLASSIFICATION
+→ analizar los 12 fingerprints technical_surname_unresolved
+→ analizar el fingerprint multi_auth_tie_residual
+→ explicar 65/142 versus 64/141
+→ producir matriz de causas y propuesta no operativa
+→ STOP sin provider reads, writes, deploy, merge ni producción
 ```
-
-No existe autorización residual para provider read, Auth repair, deploy, merge o producción.
