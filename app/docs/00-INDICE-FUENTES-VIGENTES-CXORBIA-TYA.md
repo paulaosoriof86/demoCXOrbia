@@ -2,32 +2,30 @@
 
 **Fecha:** 2026-08-05  
 **Estado:** ACTIVO  
-**Estado vivo:** `C6_CROSSWALK_PARITY_PASS__PROVIDER_REVALIDATION_HOLD_12_SURNAME_1_MULTI_AUTH_65_142__STOP_RETRY__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_RESIDUAL_IDENTITY_ROOT_CAUSE_SOURCE_ONLY_PASS__12_INSUFFICIENT__1_MULTI_AUTH_CONFIRMED__METRIC_GATE_DEFECTS_IDENTIFIED__NO_PROVIDER_READS__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Fuentes activas y orden de prevalencia
 
 1. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `app/docs/evidence/CORTE6-SHOPPER-DETERMINISTIC-SUFFIX-PROVIDER-REVALIDATION-HOLD-LATEST.json`;
-3. `app/docs/SOURCE-LOCK-C6-DETERMINISTIC-SUFFIX-PROVIDER-REVALIDATION-HOLD-20260805.md`;
-4. `backend/config/corte6-shopper-deterministic-suffix-readonly-request.json`;
-5. `tools/qa/cxorbia-c6-shopper-deterministic-suffix-readonly.mjs`;
-6. `.github/workflows/cxorbia-c6-shopper-deterministic-suffix-readonly.yml` — trigger congelado después del one-shot;
-7. `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-PROVIDER-REVALIDATION-HOLD-20260805.md`;
-8. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-PROVIDER-REVALIDATION-HOLD-20260805.md`;
-9. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-PROVIDER-REVALIDATION-HOLD-20260805.md`;
-10. `app/docs/ACADEMIA-IMPACTO-C6-PROVIDER-REVALIDATION-HOLD-20260805.md`;
-11. `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-C6-PROVIDER-REVALIDATION-HOLD-20260805.md`;
-12. `app/docs/evidence/CORTE6-SHOPPER-DETERMINISTIC-SUFFIX-CROSSWALK-ROOTFIX-SOURCE-STATIC-PASS-LATEST.json` — root fix source/static;
-13. `app/docs/SOURCE-LOCK-C6-DETERMINISTIC-SUFFIX-CROSSWALK-ROOTFIX-20260805.md`;
+2. `app/docs/evidence/CORTE6-RESIDUAL-IDENTITY-ROOT-CAUSE-SOURCE-ONLY-LATEST.json`;
+3. `app/docs/DIAGNOSTICO-RAIZ-C6-RESIDUAL-IDENTITY-SOURCE-ONLY-20260805.md`;
+4. `app/docs/SOURCE-LOCK-C6-RESIDUAL-IDENTITY-ROOT-CAUSE-SOURCE-ONLY-20260805.md`;
+5. `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-RESIDUAL-IDENTITY-ROOT-CAUSE-SOURCE-ONLY-20260805.md`;
+6. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-RESIDUAL-IDENTITY-ROOT-CAUSE-SOURCE-ONLY-20260805.md`;
+7. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-RESIDUAL-IDENTITY-ROOT-CAUSE-SOURCE-ONLY-20260805.md`;
+8. `app/docs/ACADEMIA-IMPACTO-C6-RESIDUAL-IDENTITY-ROOT-CAUSE-SOURCE-ONLY-20260805.md`;
+9. `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-C6-RESIDUAL-IDENTITY-ROOT-CAUSE-SOURCE-ONLY-20260805.md`;
+10. `app/docs/evidence/CORTE6-SHOPPER-DETERMINISTIC-SUFFIX-PROVIDER-REVALIDATION-HOLD-LATEST.json` — provider anterior, fuente de los 13 HOLD;
+11. `app/docs/evidence/CORTE6-SHOPPER-LOGIN-COLLISION-CLASSIFICATION-HOLD-LATEST.json` — clasificador estable anterior;
+12. `tools/qa/cxorbia-c6-shopper-deterministic-suffix-readonly.mjs`;
+13. `tools/qa/cxorbia-c6-shopper-login-collision-classification.mjs`;
 14. `backend/contracts/c6-shopper-deterministic-suffix-v1.json`;
-15. `app/docs/evidence/CORTE6-SHOPPER-DETERMINISTIC-SUFFIX-READONLY-HOLD-LATEST.json` — provider pre-rootfix, histórico supersedido;
-16. `app/docs/evidence/CORTE6-SHOPPER-LOGIN-COLLISION-CLASSIFICATION-HOLD-LATEST.json` — referencia anterior 64/141;
-17. `backend/contracts/c6-shopper-identity-canonicalization-v1.json`;
-18. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-19. `app/docs/ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md`;
-20. `app/docs/DIRECT-GITHUB-RUNNER-INDEPENDENCE-20260805.md`;
-21. `AGENTS.md`;
-22. PR #7 y HEAD vivo.
+15. `backend/contracts/c6-shopper-identity-canonicalization-v1.json`;
+16. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+17. `app/docs/ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md`;
+18. `app/docs/DIRECT-GITHUB-RUNNER-INDEPENDENCE-20260805.md`;
+19. `AGENTS.md`;
+20. PR #7 y HEAD vivo.
 
 ## 2. Contrato vigente
 
@@ -43,39 +41,43 @@ Authority: Firebase Auth + exact claims + exact shopperId profile
 
 La política no fue materializada.
 
-## 3. Ejecución vigente
+## 3. Clasificación residual vigente
 
 ```text
-run=31066410847
-job=92504941089
-artifact=8953983093
-artifactDigest=sha256:ba9a559832ee2d8003ae798ae8a40cbe7e6b7582587d32053c55f16af50b134a
-sourceStatic=PASS_C6_DETERMINISTIC_SUFFIX_SOURCE_STATIC
-provider=HOLD_C6_DETERMINISTIC_SUFFIX_PLAN_STOP_RETRY
-```
-
-## 4. Resultado congelado
-
-```text
-crosswalk=101 mapped / 8 unmapped
-crosswalkParity=true
-remaining active source-safe surname holds=12
-collision groups=65
-active identities=142
-multi-Auth unresolved=1
-plan rows=340
-plan HOLD rows=13
+12 technical_surname_unresolved = NO_C6_OR_INSUFFICIENT_EVIDENCE
+1 multi_auth_tie_residual = C6_CONFIRMED
+83 = 71 completed by consensus + 12 remaining
+64/141 vs 65/142 = model change + rigid aggregate gate defect
 readyForAuthRepair=false
+partialExecutionAllowed=false
 ```
 
-El drift de crosswalk queda cerrado. El baseline de colisiones aún no queda congelado porque `65/142` difiere de `64/141` y requiere clasificación source-only.
+Los 12 fingerprints no prueban una colisión, alias ni múltiples identidades. El artifact tampoco permite afirmar que falte específicamente apellido, porque la etiqueta se deriva de `complete=false` sin exportar las dimensiones separadas.
+
+El multi-Auth conserva STOP_RETRY: no existe discriminador técnico único.
+
+## 4. Reconciliación agregada
+
+La población provider y el crosswalk son estables:
+
+```text
+profiles=340
+authUsers=110
+credentials=109
+mapped/unmapped=101/8
+visits=616
+certifications=77
+liquidations=827
+```
+
+El clasificador estable usó apellido explícito o login técnico. El planner nuevo añadió consenso entre múltiples fuentes para 71 perfiles. Por ello `64/141` y `65/142` no pueden compararse mediante una igualdad agregada rígida.
+
+Además, los fingerprints de grupo usan namespaces diferentes entre versiones; no existe un join source-safe para identificar el movimiento exacto entre los grupos de tamaño 5, 4 y 2.
 
 ## 5. Estado seguro
 
 ```text
-REQUEST_CONSUMED=true
-PROVIDER_EXECUTIONS=1
-PROVIDER_SECOND_ATTEMPT=0
+PROVIDER_READS_THIS_BLOCK=0
 PROVIDER_WRITES=0
 AUTH/PASSWORD/MEMBERSHIP/FIRESTORE/RULES/STORAGE/HR_WRITES=0
 HOSTING/CLOUD_RUN_DEPLOYS=0
@@ -87,20 +89,22 @@ PRODUCTION=false
 ## 6. Carril operativo vigente
 
 ```text
-SOURCE-ONLY RESIDUAL IDENTITY ROOT-CAUSE CLASSIFICATION
-→ 12 technical_surname_unresolved fingerprints
-→ 1 multi_auth_tie_residual fingerprint
-→ reconcile 65/142 versus 64/141
-→ no provider reads
-→ no writes or deploy
+SOURCE-ONLY DIAGNOSTIC-CONTRACT ROOT FIX
+→ split pre-consensus/completed/remaining metrics
+→ add source-safe diagnostic vectors per HOLD
+→ add source-safe multi-Auth signal vector
+→ replace rigid 64 gate with stable fingerprint-set reconciliation
+→ source/static only
+→ STOP before provider read
 ```
 
 ## 7. Prohibiciones vigentes
 
 - reejecutar el provider request consumido;
-- aplicar parcialmente las 327 filas sin HOLD;
-- tratar `65/142` o `64/141` como baseline final antes de reconciliar;
-- inferir apellido por posición visual única;
+- inferir apellidos para los 12 fingerprints;
+- seleccionar una cuenta multi-Auth por antigüedad u orden;
+- tratar `64/141` o `65/142` como baseline final;
+- aplicar parcialmente el plan 340;
 - crear o modificar Auth, claims, email o contraseña;
 - escribir memberships, Firestore, Rules, Storage o HR;
 - desplegar Hosting o Cloud Run;
