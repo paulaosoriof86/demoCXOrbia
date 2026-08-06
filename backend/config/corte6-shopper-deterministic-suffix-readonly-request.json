@@ -10,19 +10,31 @@
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "9868c9284af5b9f8c571f16f08e9d9b9c3ae9cc4",
+  "targetHeadSha": "3b4d83ce14f397c34bbb56ffa85de8f6e4069089",
   "mode": "source_only_diagnostic_contract_rootfix",
-  "sourceOnlyExecutionAttempt": 2,
-  "priorAttempt": {
-    "workflowRunId": 31068251278,
-    "workflowJobId": 92510538630,
-    "providerReads": 0,
-    "providerWrites": 0,
-    "sourceCommitCreated": false,
-    "requestConsumed": false,
-    "failure": "TRANSIENT_PATCHER_SYNTAX_NESTED_TEMPLATE_LITERAL"
-  },
-  "retryBasis": "same unconsumed source-only authorization after correcting the patcher syntax; no provider read, source application, request consumption or operational write occurred",
+  "sourceOnlyExecutionAttempt": 3,
+  "priorAttempts": [
+    {
+      "workflowRunId": 31068251278,
+      "workflowJobId": 92510538630,
+      "providerReads": 0,
+      "providerWrites": 0,
+      "sourceCommitCreated": false,
+      "requestConsumed": false,
+      "failure": "TRANSIENT_PATCHER_SYNTAX_NESTED_TEMPLATE_LITERAL"
+    },
+    {
+      "workflowRunId": 31068415510,
+      "workflowJobId": 92511057053,
+      "providerReads": 0,
+      "providerWrites": 0,
+      "sourceCommitCreated": false,
+      "requestConsumed": false,
+      "sourceAndStaticGates": "PASS",
+      "failure": "TRANSIENT_PORCELAIN_STATUS_LEADING_WHITESPACE_TRIM"
+    }
+  ],
+  "retryBasis": "same unconsumed source-only authorization after correcting transient tooling only; source/static passed in attempt 2 and no provider read, source commit, request consumption or operational write occurred",
   "sourceLock": "app/docs/SOURCE-LOCK-C6-DIAGNOSTIC-CONTRACT-ROOTFIX-SOURCE-ONLY-20260805.md",
   "planner": "tools/qa/cxorbia-c6-shopper-deterministic-suffix-readonly.mjs",
   "classifier": "tools/qa/cxorbia-c6-shopper-login-collision-classification.mjs",
