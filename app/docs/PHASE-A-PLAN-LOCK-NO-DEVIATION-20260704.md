@@ -2,22 +2,21 @@
 
 **Fecha original:** 2026-07-04  
 **Actualización prevalente:** 2026-08-06  
-**Estado:** `C6_LIVE_HR_V3_REQUEST_EMITTED__NO_CHECKPOINT_OBSERVED__STOP_RETRY__IDENTITY_HOLD_0__NO_PRODUCTION`
+**Estado:** `C6_LIVE_HR_V3_CONTROL_PLANE_DIAGNOSIS_INCONCLUSIVE__PROVIDER_BOUNDARY_NOT_PROVEN__STOP_RETRY__IDENTITY_HOLD_0__NO_PRODUCTION`
 
 ## 1. Objetivo operativo
 
-Cerrar una única baseline acumulativa sobre `docs-tya-v6-v71-audit` y llevar Phase A a producción sin reabrir módulos preservados, sin candidata paralela y sin sustituir HR viva por snapshots, registries estáticos o datos fijados.
+Cerrar una única baseline acumulativa sobre `docs-tya-v6-v71-audit` y llevar Phase A a producción sin reabrir módulos preservados, sin candidata paralela y sin sustituir HR viva por snapshots o datos fijados.
 
-## 2. Bloques preservados
+## 2. Preservado
 
 - frontend acumulativo y navegación multirol;
 - Dashboard, Histórico, Visitas, Postulaciones y Reservas;
-- Finanzas, Liquidaciones, Beneficios y movimientos;
-- Portal Cliente, Portal Shopper y reportes;
+- Finanzas, Liquidaciones, Portales y reportes;
 - `CX.data`, Firebase DEV, Auth/RBAC y contratos;
 - multi-tenant, multi-proyecto y Cinépolis configurable;
-- Academia, manuales y rutas por rol;
-- composición canónica única y PR #7.
+- Academia y composición canónica única;
+- PR #7 draft/open/no merge.
 
 ## 3. Identidades Shopper
 
@@ -32,110 +31,74 @@ HOLD=0
 PRESERVE_NO_AUTH=140
 ```
 
-Los 13 perfiles residuales permanecen omitidos del repair Auth, conservando historia.
+SKIP13 permanece cerrado con historia preservada.
 
-## 4. Autoridad HR viva — contrato prevalente
+## 4. Autoridad HR viva
 
-- Metadata provider descubre dinámicamente tabs y periodos.
-- El periodo operativo se deriva del calendario y de pestañas vivas.
-- Firestore es materialización/índice; no autoridad HR.
-- Registry, snapshots y archivos estáticos son cache/last-known-good fail-closed.
-- Una modificación actual o histórica debe cambiar `sourceRevision` y propagarse transversalmente.
-- Cambios solo de timestamp no deben alterar la revisión.
-- No se permiten meses, conteos, estados o totales HR fijados en código.
+Metadata provider, periodo calendario dinámico, registry last-known-good, revisión común, mutación histórica y planner sin conteos fijos permanecen como contrato vigente.
 
-## 5. Root fixes aplicados
-
-- autoridad HR viva dinámica;
-- planner sin conteos fijos;
-- país/pestaña sobre una revisión;
-- journal v3 con checkpoints antes, durante y después de provider;
-- artifact y status sanitizados previstos.
-
-## 6. Antecedente v2 congelado
+## 5. Request v3 y diagnóstico
 
 ```text
-requestCommit=4e404f2db48ff8b07430d7ac7505eff6c040458a
-providerReadConsumption=UNKNOWN_NO_EXECUTION_EVIDENCE
-```
-
-## 7. Request v3 ejecutado hasta emisión
-
-```text
-sourceCommit=18ea2e6ab9b15480c851c7ba34cae8e8fbcae026
 requestCommit=d62dbae9b10b0650c2940f4b2bf7d456cb34fc83
-authorizationId=chat-20260806-live-hr-authority-current-period-v3-02
-```
-
-No apareció ningún checkpoint observable:
-
-```text
-WORKFLOW_STARTED_PROVIDER_READS_0=NO
-PROVIDER_READ_BOUNDARY_ENTERED_MAX1=NO
-PROVIDER_READ_SEQUENCE_COMPLETED_LOGICAL_1=NO
-FINAL=NO
+WORKFLOW_STARTED_PROVIDER_READS_0=NO OBSERVADO
+PROVIDER_READ_BOUNDARY_ENTERED_MAX1=NO OBSERVADO
+run/check suite/job localizado=false
+providerBoundaryProvenReached=false
 providerReadConsumption=UNKNOWN_NO_CHECKPOINT_EVIDENCE
 STOP_RETRY=true
 ```
 
-## 8. Cadena única restante
+La existencia del run sigue inconclusa porque el listado disponible no cubre eventos `push`. No existe evidencia observable de frontera provider alcanzada. No inferir `providerReads=0` ni lectura consumida.
 
-### Bloque A — Diagnóstico control-plane read-only
+## 6. Cadena única restante
 
-1. Localizar run/check suite del request exacto.
-2. Determinar si la ejecución quedó antes de provider boundary.
-3. No tocar el request ni HR.
-4. No emitir segundo trigger.
-5. Documentar checkpoint reproducible.
+### Bloque A — Gate source-only de Actions
 
-### Bloque B — HR viva actual
+1. Comprobar reconocimiento y habilitación del workflow.
+2. Verificar que GitHub acepta su definición y trigger sin tocar el request.
+3. Cero provider calls, HR o data writes.
+4. Documentar causa raíz reproducible.
 
-Solo con autorización fresca posterior y evidencia de que el intento previo no alcanzó provider boundary:
+### Bloque B — Nueva lectura HR
 
-1. confirmar metadata/autodiscovery;
-2. confirmar `2026-08` y tabs GT/HN;
-3. reconstruir periodos desde HR viva;
-4. validar cambio histórico y `sourceRevision`;
-5. confirmar revisión común en módulos;
-6. reconciliar materialización por `visitId/hrRowId`.
+Solo con causa raíz cerrada y autorización fresca separada:
+
+1. una única ejecución lógica read-only;
+2. checkpoints observables antes y después de provider;
+3. confirmar `2026-08`, GT/HN y conteos vivos;
+4. validar mutación histórica y `sourceRevision` transversal;
+5. reconciliar por `visitId/hrRowId`, no por recarga ciega.
 
 ### Bloque C — Auth y validación acumulativa
 
-1. Materializar plan Auth con overlay SKIP13 y `HOLD=0`.
-2. Ejecutar solo con autorización separada, snapshot, idempotencia, readback y rollback.
-3. Verificar que los 13 omitidos no reciban acceso efectivo.
-4. Smoke Admin/Operaciones, Shopper y Cliente.
-5. Tres recargas, nueva pestaña y estabilidad.
+1. Materializar plan Auth SKIP13 con `HOLD=0`.
+2. Ejecutar únicamente con autorización separada, snapshot, idempotencia, readback y rollback.
+3. Smoke Admin/Operaciones, Shopper y Cliente.
+4. Tres recargas, nueva pestaña y estabilidad.
 
 ### Bloque D — Cutover
 
-1. Source lock final.
-2. Rollback probado.
-3. Smoke integral.
-4. Autorización específica de producción.
-5. Único cutover y verificación postproducción.
+Source lock, rollback probado, smoke integral, autorización específica y único cutover.
 
-## 9. Circuit breakers
+## 7. Circuit breakers
 
-- No reabrir los 13 perfiles.
-- No reinterpretar v2 o v3 como providerReads=0.
-- No tocar el request actual.
-- No emitir segundo trigger.
-- No reauditar 65/65.
-- No pedir otra candidata.
-- No ejecutar Auth sin autorización separada.
+- No tocar ni reintentar el request v3.
+- No afirmar consumo cero.
+- No reabrir SKIP13 o 65/65.
+- No pedir nueva candidata, rama o PR.
+- No ejecutar Auth sin gate separado.
 - No hardcodear periodos o conteos HR.
 - No repetir import histórico por conteo.
 
-## 10. Estado seguro
+## 8. Estado seguro
 
 ```text
-request v3 emitido=1
-segundo trigger=0
+nuevo trigger=0
+provider reads por diagnóstico=0
 provider writes=0
 Auth/data/HR writes=0
 Hosting/Cloud Run deploys=0
-Make/Gemini/payments=0
 merge=false
 production=false
 ```
