@@ -1,113 +1,92 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-06  
-**Estado:** `C6_SKIP13_AUTH_DISPOSITION_SOURCE_ONLY_PASS__IDENTITY_HOLD_0__LIVE_HR_AUGUST_P0_REMAINS__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `C6_LIVE_HR_AUTHORITY_SOURCE_ROOT_FIX_APPLIED__PROVIDER_TRIGGER_NOT_OBSERVED__STOP_RETRY__IDENTITY_HOLD_0__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Rama y control
 
 - repo: `paulaosoriof86/demoCXOrbia`;
 - rama: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
-- provider v2.2 run: `31104541809`;
-- artifact: `8968941587`;
-- provider v2.2 reads/writes: `1/0`;
-- segundo provider attempt: `0`;
-- producción: intacta.
+- producción: intacta;
+- request HR viva: `4e404f2db48ff8b07430d7ac7505eff6c040458a`;
+- source commit exacto: `31f4af0f7501b23b4e72b1a5f8457669a5f91c77`.
 
-## 2. Conciliación estructural cerrada
+## 2. Identidades Shopper cerradas
 
 ```text
 profiles=340
 crosswalk=101/8 parity=true
-metric=83=71+12 valid=true
-referenceGroups=65
-plannerGroups=65
-added=0
-removed=0
-exactMatch=true
-suffixAllocationHolds=0
-targetCollisionHolds=0
-```
-
-## 3. Decisión de Paula aplicada
-
-Paula autorizó omitir del repair Auth los 13 perfiles que permanecían HOLD y reincorporarlos manualmente en el futuro solo si resultan necesarios.
-
-Disposición:
-
-```text
-SKIP_AUTH_REPAIR_PRESERVE_HISTORY
-HOLD -> PRESERVE_NO_AUTH
-skipFromAuthRepair=true
-doNotCreateAuth=true
-doNotUpdateAuth=true
-futureManualReactivationAllowed=true
-```
-
-No se borró historia ni se ejecutaron cambios proveedor.
-
-## 4. Plan Auth después de disposición
-
-```text
+reference/planner=65/65 exact match
 CREATE_AUTH=81
 UPDATE_AUTH=46
 NO_OP=73
 HOLD=0
 PRESERVE_NO_AUTH=140
-rows=340 unique
-identityHoldsRemaining=0
-readyForAuthRepairByIdentity=true
-executable=false
-executionRequiresSeparateAuthorization=true
 ```
 
-Digests:
+Los 13 perfiles residuales quedaron omitidos del repair Auth y preservados históricamente. No se reabre su conciliación.
+
+## 3. Root fix HR viva materializado
+
+Se corrigió en source:
+
+1. metadata provider como autoridad de tabs;
+2. periodo calendario derivado dinámicamente;
+3. registry estático solo como last-known-good fail-closed;
+4. país/pestaña desde la misma revisión;
+5. `sourceRevision` estable sin timestamps volátiles;
+6. cambio histórico sintético debe modificar la revisión;
+7. planner del periodo actual sin conteos HR fijos;
+8. comparación read-only con materialización existente por identidad estable.
+
+## 4. Ejecución provider no observada
+
+El request autorizó una lectura provider read-only y cero writes. Dentro del timeout de 20 minutos no apareció:
+
+- run/job/artifact recuperable;
+- status de commit publicado;
+- `LIVE-HR-AUTHORITY-CONTRACT-LATEST.json`;
+- evidence commit o avance de branch generado por el workflow.
+
+Resultado contractual:
 
 ```text
-before=acc93da842d1a5d3244327680f88539f0651cb101bae09dd231fd8b5008bea92
-after=6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b
+providerExecutionResult=UNAVAILABLE
+providerReadConsumption=UNKNOWN_NO_EXECUTION_EVIDENCE
+STOP_RETRY=true
 ```
 
-## 5. Preservación y gate de seguridad
+No se hará segundo trigger ni se afirmará que el read fue cero sin diagnóstico de control-plane.
 
-Los 13 perfiles quedan fuera de creación o actualización Auth. Se preservan perfiles históricos, visitas, certificaciones y liquidaciones. Las cuentas Auth preexistentes no fueron modificadas en este bloque; antes del cutover se debe comprobar que ninguna identidad omitida reciba acceso efectivo.
+## 5. Agosto y autoridad histórica
 
-## 6. P0 vigente: autoridad HR viva y agosto
+La evidencia anterior sigue demostrando únicamente que el builder alcanzó a ver `AGOSTO 26` y `AGOSTO 26 HN` antes de que el registry antiguo las rechazara. El root fix source está aplicado, pero todavía no existe evidencia viva nueva para confirmar:
 
-La evidencia existente muestra:
+- tabs actuales GT/HN;
+- total actual de periodos y visitas;
+- `2026-08` como periodo activo;
+- cambio histórico propagado;
+- paridad transversal de `sourceRevision`.
 
-```text
-builder bruto=30 tabs / 15 periodos / 684 visitas
-registry aceptado=28 tabs / 14 periodos / 616 visitas
-rechazadas=AGOSTO 26, AGOSTO 26 HN
-provider metadata=403
-autoDiscovery=false
-```
+No se permiten datos, meses ni conteos HR hardcodeados.
 
-Agosto fue detectado por el builder y luego descartado por un registry desactualizado. Este es el bloqueo principal actual.
+## 6. Phase A preservada
 
-## 7. Regla operativa prevalente
+Frontend acumulativo, Login, `CX.data`, shoppers elegibles, postulaciones, certificaciones, visitas, liquidaciones, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto y Academia permanecen preservados.
 
-- HR viva es autoridad para periodo actual y todo el histórico.
-- Una corrección histórica debe producir nueva `sourceRevision` y reflejarse transversalmente.
-- Firestore, snapshots y archivos estáticos solo son materialización/cache/last-known-good.
-- No se permiten meses, conteos o estados HR hardcodeados.
+## 7. Documentación del bloque
 
-## 8. Phase A preservada
+- `app/docs/SOURCE-LOCK-C6-LIVE-HR-AUTHORITY-TRIGGER-NOT-OBSERVED-20260806.md`;
+- `app/docs/evidence/LIVE-HR-AUTHORITY-TRIGGER-NOT-OBSERVED-LATEST.json`;
+- addenda CAMBIOS, Claude, Pendientes, Academia y tracker;
+- índice, checkpoint, plan y PR #7 reconciliados.
 
-Frontend acumulativo, Login, `CX.data`, shoppers conciliados, postulaciones, certificaciones, visitas, liquidaciones, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto y Academia permanecen preservados.
-
-## 9. Archivos y evidencia del bloque
-
-- `backend/config/corte6-shopper-auth-skip13-disposition-v1.json`;
-- `tools/qa/cxorbia-c6-shopper-auth-skip-disposition-source-only.mjs`;
-- `app/docs/evidence/CORTE6-SHOPPER-AUTH-SKIP13-SOURCE-ONLY-PASS-LATEST.json`;
-- `app/docs/SOURCE-LOCK-C6-SKIP13-AUTH-DISPOSITION-20260806.md`.
-
-## 10. Estado seguro
+## 8. Estado seguro
 
 ```text
-provider/Auth/password/membership writes=0
+provider writes=0
+Auth/password/membership writes=0
 Firestore/Rules/Storage/HR writes=0
 Hosting/Cloud Run deploys=0
 Make/Gemini/payments=0
@@ -115,13 +94,13 @@ merge=false
 production=false
 ```
 
-## 11. Siguiente bloque exacto
+## 9. Siguiente bloque exacto
 
 ```text
-LIVE HR PROVIDER METADATA/AUTODISCOVERY ROOT FIX
-→ AUGUST GT/HN LIVE PASS
-→ HISTORICAL MUTATION PASS
-→ SOURCE REVISION PARITY
-→ AUTH EXECUTION PRECHECK WITH HOLD=0
-→ SEPARATE AUTHORIZATION FOR WRITES/DEPLOY/CUTOVER
+CONTROL-PLANE READ-ONLY DIAGNOSIS
+→ localizar run del request 4e404f2d o demostrar que no se creó
+→ si existe: recuperar job/log/artifact sin repetir provider read
+→ si no existe y providerReads=0: autorización fresca para un único trigger
+→ confirmar HR viva 2026-08 GT/HN + mutación histórica + sourceRevision
+→ continuar a Auth con HOLD=0
 ```
