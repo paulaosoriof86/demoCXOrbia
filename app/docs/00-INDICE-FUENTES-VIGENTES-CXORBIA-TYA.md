@@ -2,14 +2,14 @@
 
 **Fecha:** 2026-08-06  
 **Estado:** ACTIVO Y RECONCILIADO  
-**Estado vivo:** `C6_BASE_CONTROL_PLANE_NO_RUN__TEMP_FILES_REMOVED__CONSUMPTION_UNKNOWN__STOP_RETRY__AUTH_PLAN_FROZEN__PRODUCTION_PROMOTION_PASS__LIVE_HR_V4_UNRESOLVED__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_CONNECTOR_ACTIONS_NO_RUN_DIAGNOSTIC__ROOT_CAUSE_NOT_PROVEN__OBSERVABILITY_GAP_PROVEN__STOP_RETRY__AUTH_PLAN_FROZEN__NO_PROVIDER__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Orden de prevalencia
 
 1. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `app/docs/SOURCE-LOCK-C6-BASE-CONTROL-PLANE-NO-RUN-FAIL-CLOSED-20260806.md`;
-3. `app/docs/SOURCE-LOCK-C6-PR7-MERGEABILITY-PASS-SKIP13-CONTROL-PLANE-HOLD-20260806.md`;
-4. `app/docs/SOURCE-LOCK-C6-SKIP13-AUTH-ACCESS-ADJUDICATION-20M-NO-RUN-EVIDENCE-20260806.md`;
+2. `app/docs/SOURCE-LOCK-C6-CONNECTOR-ACTIONS-NO-RUN-DIAGNOSTIC-STOP-RETRY-20260806.md`;
+3. `app/docs/SOURCE-LOCK-C6-BASE-CONTROL-PLANE-NO-RUN-FAIL-CLOSED-20260806.md`;
+4. `app/docs/SOURCE-LOCK-C6-PR7-MERGEABILITY-PASS-SKIP13-CONTROL-PLANE-HOLD-20260806.md`;
 5. `backend/config/c6-skip13-auth-access-adjudication-request.json` — deshabilitado en la rama viva;
 6. `backend/contracts/c6-skip13-auth-access-adjudication-v1.json`;
 7. `tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly.mjs`;
@@ -26,33 +26,54 @@
 18. addenda vigentes de CAMBIOS, Claude, Pendientes, Academia y tracker;
 19. `AGENTS.md`, PR #7 y HEAD vivo.
 
-## 2. Último intento autorizado de adjudicación SKIP13
+## 2. Diagnóstico del control plane
+
+Se compararon:
 
 ```text
-controlPlaneBranch=release/cxorbia-tya-rc-20260630
-sourceLockHead=c694b75288873b1e3c1b0e70ed5bd86bc225d33e
-workflowInstallCommit=640125d08c76b9f333a02ae78ca538993f200e30
-requestId=c6-skip13-control-plane-20260806-01
-requestCommit=d0e5c5527d001587366097dbb7667fc242029e9d
-profiles=13
+noRunCommit=d0e5c5527d001587366097dbb7667fc242029e9d
+noRunWorkflowInstall=640125d08c76b9f333a02ae78ca538993f200e30
+historicalSuccessCommit=457c5810c88427ac775e54626c9936ab094047e2
+historicalRunId=29799752544
+historicalJobId=88798094500
+```
+
+Hallazgos:
+
+```text
+branchPathOrderMismatch=false
+repositoryWritePermissionMissing=false
+historicalActionsRunExists=true
+visibleActorSame=true
+connectorReceivesPushEvents=false
+connectorReceivesWorkflowRunEvents=false
+exactWriteTokenTypeExposed=false
+currentActionsPolicyExposed=false
+workflowEnabledStateExposed=false
+auditLogExposed=false
+```
+
+Dictamen:
+
+```text
+decision=STOP_RETRY_C6_CONNECTOR_ACTIONS_ROOT_CAUSE_NOT_PROVEN
+provenBlocker=CONTROL_PLANE_OBSERVABILITY_AND_CREDENTIAL_ATTRIBUTION_INSUFFICIENT
+newTrigger=0
+newSKIP13Request=0
+providerReadsThisBlock=0
+```
+
+No se declara supresión por token, workflow deshabilitado ni error del scheduler como causa raíz porque ninguna quedó demostrada.
+
+## 3. SKIP13 y Auth
+
+```text
+SKIP13 profiles=13
 blockingFingerprint=7cc28c78de9bfda01d14
-```
-
-No se recuperaron runId, jobId, steps, artifact, claim status, overall status ni comentario terminal.
-
-```text
-workflowRunExistence=NOT_OBSERVED
-providerBoundaryProvenReached=false
-providerReadConsumption=UNKNOWN_NO_RUN_JOB_STATUS_OR_ARTIFACT_EVIDENCE
 adjudicationCompleted=false
-unplannedEffectiveAccessDetermined=false
-secondAttempt=0
-STOP_RETRY=true
+providerReadConsumptionPreviousRequests=UNKNOWN
+requestExecutable=false
 ```
-
-El workflow y el request temporales fueron retirados en `baf7231b8df7b621c62c57ac1cd966b4a17763e6` y `4a85e7e4d0eb31691d7b77e3551ed7cafabb5984`. No queda request ejecutable en la rama base.
-
-## 3. Plan Auth congelado
 
 ```text
 rows=340
@@ -66,7 +87,7 @@ planDigest=6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b
 freezeDecision=PASS_AUTH_PLAN_340_CRYPTOGRAPHIC_FREEZE
 ```
 
-SKIP13 e historia permanecen preservados. Auth no ha sido ejecutado.
+Auth no ha sido ejecutado.
 
 ## 4. Estrategia de producción
 
@@ -86,13 +107,11 @@ STOP_RETRY=true
 segundo trigger=0
 ```
 
-No están confirmados `2026-08`, GT/HN, mutación histórica ni `sourceRevision` transversal.
-
 ## 6. Pendiente real
 
-1. No reutilizar ninguno de los requests SKIP13 emitidos.
-2. Diagnosticar por un carril source-control read-only distinto por qué los commits del conector no materializan un run observable.
-3. Solo después, solicitar autorización separada para un mecanismo nuevo de adjudicación.
+1. No reutilizar ni reemitir requests SKIP13.
+2. Obtener una superficie administrativa read-only que exponga Actions permissions, workflow state, audit log, identidad exacta del token o listado integral de runs.
+3. Solo con causa demostrada, definir un mecanismo nuevo y autorizar por separado la adjudicación.
 4. Reconciliar HR v4 y confirmar HR viva.
 5. Autorizar por separado snapshot y repair Auth.
 6. Ejecutar readback, smoke acumulativo multirol, validación humana y rollback.
@@ -101,15 +120,14 @@ No están confirmados `2026-08`, GT/HN, mutación histórica ni `sourceRevision`
 ## 7. Estado seguro
 
 ```text
-provider read consumption SKIP13=UNKNOWN
+provider reads this block=0
 provider writes=0
-HR reads del bloque=0
+HR reads=0
 Auth/password/claims/membership writes=0
 Firestore/Rules/Storage/HR writes=0
 Hosting/Cloud Run deploys=0
 Make/Gemini/payments=0
 merge=false
 production=false
-baseTemporaryWorkflow=false
-baseTemporaryRequest=false
+requestExecutable=false
 ```
