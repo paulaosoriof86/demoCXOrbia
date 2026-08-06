@@ -1,20 +1,22 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-06  
-**Estado vivo:** `C6_AUTH_PLAN_340_FREEZE_PASS__IDEMPOTENCY_PASS__SMOKE_MATRIX_PREPARED__SKIPPED_ACCESS_RISK_HOLD__PRODUCTION_PROMOTION_PASS__LIVE_HR_V4_UNRESOLVED__NO_PRODUCTION`
+**Estado vivo:** `C6_SKIP13_ADJUDICATION_REQUEST_EMITTED__20M_NO_TERMINAL_EVIDENCE__CONSUMPTION_UNKNOWN__STOP_RETRY__AUTH_PLAN_FROZEN__PRODUCTION_PROMOTION_PASS__LIVE_HR_V4_UNRESOLVED__NO_PRODUCTION`
 
 ## 1. Fuente vigente
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-3. `app/docs/SOURCE-LOCK-C6-AUTH-SMOKE-FINAL-PREPARATION-HOLD-20260806.md`;
-4. `app/docs/evidence/C6-AUTH-SMOKE-FINAL-PREPARATION-LATEST.json`;
-5. `backend/config/c6-shopper-auth-final-freeze-v1.json`;
-6. `backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json`;
-7. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json`;
-8. `app/docs/SOURCE-LOCK-C6-PRODUCTION-PROMOTION-PASS-20260806.md`;
-9. `app/docs/SOURCE-LOCK-C6-LIVE-HR-V4-REQUEST-30M-NO-RUN-EVIDENCE-20260806.md`;
-10. PR #7 y HEAD vivo.
+3. `app/docs/SOURCE-LOCK-C6-SKIP13-AUTH-ACCESS-ADJUDICATION-20M-NO-RUN-EVIDENCE-20260806.md`;
+4. `app/docs/evidence/C6-SKIP13-AUTH-ACCESS-ADJUDICATION-20M-NO-RUN-EVIDENCE-LATEST.json`;
+5. `backend/config/c6-skip13-auth-access-adjudication-request.json`;
+6. `app/docs/SOURCE-LOCK-C6-AUTH-SMOKE-FINAL-PREPARATION-HOLD-20260806.md`;
+7. `backend/config/c6-shopper-auth-final-freeze-v1.json`;
+8. `backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json`;
+9. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json`;
+10. `app/docs/SOURCE-LOCK-C6-PRODUCTION-PROMOTION-PASS-20260806.md`;
+11. `app/docs/SOURCE-LOCK-C6-LIVE-HR-V4-REQUEST-30M-NO-RUN-EVIDENCE-20260806.md`;
+12. PR #7 y HEAD vivo.
 
 ## 2. No reabrir
 
@@ -43,17 +45,27 @@ smoke=PREPARED_NOT_EXECUTED
 
 No modificar `/app/modules/*`, `/app/core/*` ni `CX.data`.
 
-## 4. HOLD SKIP13
+## 4. Adjudicación SKIP13
 
 ```text
+requestCommit=2eef8b70f2bd2d8570a7f3cc117e217851dd6964
+skipProfiles=13
 blockingFingerprint=7cc28c78de9bfda01d14
-providerCandidates=2
-enabled=2
-emailVerified=2
-unplannedEffectiveAccessProvenAbsent=false
+blockingCandidates=2
+secondTrigger=0
 ```
 
-No ocultar ni compensar este HOLD desde frontend. Auth no debe ejecutarse hasta una adjudicación read-only de memberships/claims acotada a SKIP13.
+Tras 1,227 segundos no se recuperaron runId, jobId, steps, artifact ni status terminal.
+
+```text
+workflowRunExistence=UNKNOWN_AFTER_20M_OBSERVATION
+providerReadConsumption=UNKNOWN_NO_RUN_JOB_STATUS_OR_CHECKPOINT_EVIDENCE
+adjudicationCompleted=false
+unplannedEffectiveAccessDetermined=false
+STOP_RETRY=true
+```
+
+No ocultar ni compensar este bloqueo desde frontend. Auth no debe ejecutarse y no debe emitirse otro trigger. Cualquier evidencia tardía se reconcilia exclusivamente contra el request exacto.
 
 ## 5. Smoke futuro
 
@@ -71,7 +83,8 @@ segundo trigger=0
 ## 7. Siguiente cadena real
 
 ```text
-ADJUDICACIÓN READ-ONLY SKIP13
+RECONCILIAR EVIDENCIA TARDÍA SKIP13 DEL REQUEST EXACTO
+→ DETERMINAR ACCESO EFECTIVO RESIDUAL
 → RECONCILIAR HR V4 Y CONFIRMAR HR VIVA
 → AUTORIZACIÓN SEPARADA SNAPSHOT + AUTH
 → READBACK + ROLLBACK
@@ -83,7 +96,9 @@ ADJUDICACIÓN READ-ONLY SKIP13
 ## 8. Seguridad
 
 ```text
-providerReads=0
+provider read consumption SKIP13=UNKNOWN
+provider writes=0
+HR reads del bloque=0
 HR/Firestore/Auth/Rules/Storage writes=0
 Hosting/Cloud Run deploys=0
 merge=false
