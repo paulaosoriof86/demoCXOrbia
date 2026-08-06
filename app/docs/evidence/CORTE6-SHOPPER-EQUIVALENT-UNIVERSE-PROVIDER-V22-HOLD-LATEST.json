@@ -1,0 +1,207 @@
+{
+  "schemaVersion": "cxorbia.c6.shopper-equivalent-universe-provider-v22-hold.v1",
+  "generatedAt": "2026-08-06T07:09:13-06:00",
+  "decision": "HOLD_C6_EQUIVALENT_UNIVERSE_PROVIDER_REVALIDATION_STOP_RETRY",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "sourceIntegrationCommitSha": "8fe5ad6dd185cce5ea3cdac06892f3144e8e5f0f",
+  "requestCommitSha": "9d26344f55809d95023a33aeb3111802adb15d26",
+  "workflowRunId": 31104541809,
+  "workflowJobId": 92626188022,
+  "artifactId": 8968941587,
+  "artifactDigest": "sha256:02e36c355b3f2d1c9d1e6f1be7fece93259251ddb0f981cdaac35f2262fcb264",
+  "diagnosticContractVersion": "v2.2",
+  "equivalentUniverseVersion": "shopper-equivalent-universe-v1",
+  "providerExecutionCount": 1,
+  "secondAttempt": 0,
+  "automaticRetry": false,
+  "canonicalBlockers": [
+    "plan_contains_hold:13",
+    "multi_auth_tie:1",
+    "surname_remaining:12"
+  ],
+  "validatorFalsePositive": {
+    "code": "hold_diagnostics_invalid",
+    "cause": "the validator rejected the contractual wrapper key diagnostics.name even though the nested payload contains only source-safe booleans, counts, fingerprints and nulls",
+    "affectsProviderResult": false,
+    "providerRerunRequired": false,
+    "providerRerunPerformed": false
+  },
+  "source": {
+    "profiles": 340,
+    "authUsers": 110,
+    "memberships": 1,
+    "credentials": 109,
+    "credentialsMapped": 101,
+    "credentialsUnmapped": 8,
+    "credentialCrosswalkParity": true,
+    "hrImportDocs": 1,
+    "visits": 616,
+    "certifications": 77,
+    "liquidations": 827,
+    "latestPeriod": "2026-07",
+    "recentFloor": "2026-05"
+  },
+  "surnameCompletion": {
+    "preConsensusIncompleteActiveProfiles": 83,
+    "completedByConsensus": 71,
+    "remainingIncompleteActiveProfiles": 12,
+    "metricIdentityValid": true,
+    "metricIdentity": "83 = 71 + 12"
+  },
+  "equivalentUniverse": {
+    "populationPredicate": "same_tenant_shopper_snapshot",
+    "activityPredicate": "equivalentActive_v1",
+    "linkingPredicate": "direct_shopper_id_or_exact_unique_technical_anchor",
+    "completenessPredicate": "post_consensus_active_complete",
+    "referenceGroups": 65,
+    "plannerGroups": 65,
+    "added": [],
+    "removed": [],
+    "unchangedCount": 65,
+    "exactMatch": true,
+    "deltaGroups": [],
+    "deltaMemberVectorsOnly": true,
+    "priorAddedGroup": {
+      "groupFingerprint": "ebbcc231fcf415cbaf77",
+      "classification": "UNCHANGED_EQUIVALENT_UNIVERSE_GROUP",
+      "activeCount": 2,
+      "keeperSelected": true,
+      "suffixedCount": 1,
+      "suffix4": 1,
+      "suffix6": 0,
+      "suffix8": 0,
+      "unresolvedCount": 0
+    }
+  },
+  "surnameResiduals": {
+    "count": 12,
+    "classification": "AUTHORITATIVE_SURNAME_SOURCE_ENRICHMENT_REQUIRED",
+    "automaticInferenceAllowed": false,
+    "profileFingerprints": [
+      "cc941934f90032aa48e8",
+      "9ed0cdabf3794b7ccf21",
+      "3451d618b5d6307b87da",
+      "80d716626b85e14778ea",
+      "8aea97650e97902f7616",
+      "32e2de62067ab6ecfb7b",
+      "b31bdc0c7514acbe25ba",
+      "4a59de15805804cbe398",
+      "cfbd0c519e59f40c6239",
+      "540c9e6b71440b393365",
+      "c01e0f344901f03e78d2",
+      "729eb0480d5ec2266a20"
+    ],
+    "commonVector": {
+      "firstComplete": true,
+      "firstCandidateCount": 1,
+      "firstBasisCount": 1,
+      "surnameComplete": false,
+      "explicitCandidateCount": 0,
+      "technicalLoginCandidateCount": 0,
+      "consensusCandidateCount": 0,
+      "surnameBasisCount": 0,
+      "surnameConflict": false,
+      "passwordSeedComplete": true,
+      "passwordSeedCandidateCount": 1,
+      "passwordSeedBasisCount": 1
+    }
+  },
+  "multiAuthResidual": {
+    "count": 1,
+    "classification": "SOURCE_SAFE_ACCOUNT_ADJUDICATION_REQUIRED",
+    "profileFingerprint": "d15356ed735e87a33e69",
+    "candidateCount": 2,
+    "topScore": 5016,
+    "secondScore": 5016,
+    "scoreMargin": 0,
+    "automaticSelectionAllowed": false,
+    "candidates": [
+      {
+        "candidateOrdinal": 1,
+        "candidateFingerprint": "9b2b7ca1bd72c1301d29",
+        "score": 5016,
+        "signals": {
+          "exactClaims": false,
+          "shopperIdClaim": true,
+          "targetEmailMatch": false,
+          "baseEmailMatch": false,
+          "credentialEmailMatch": false,
+          "passwordCompatible": false,
+          "enabled": true,
+          "emailVerified": true,
+          "providerCreationMetadataPresent": true
+        }
+      },
+      {
+        "candidateOrdinal": 2,
+        "candidateFingerprint": "4e6d26551d11db444bd0",
+        "score": 5016,
+        "signals": {
+          "exactClaims": false,
+          "shopperIdClaim": true,
+          "targetEmailMatch": false,
+          "baseEmailMatch": false,
+          "credentialEmailMatch": false,
+          "passwordCompatible": false,
+          "enabled": true,
+          "emailVerified": true,
+          "providerCreationMetadataPresent": true
+        }
+      }
+    ]
+  },
+  "disambiguation": {
+    "collisionGroups": 65,
+    "activeIdentities": 142,
+    "groupsWithUniqueUnsuffixedKeeper": 53,
+    "groupsAllSuffixed": 12,
+    "suffix4": 89,
+    "suffix6": 0,
+    "suffix8": 0,
+    "suffixAllocationHolds": 0,
+    "targetCollisionHolds": 0
+  },
+  "plan": {
+    "rows": 340,
+    "uniqueRows": 340,
+    "operationCounts": {
+      "CREATE_AUTH": 81,
+      "UPDATE_AUTH": 46,
+      "NO_OP": 73,
+      "HOLD": 13,
+      "PRESERVE_NO_AUTH": 127
+    },
+    "subchangeCounts": {
+      "email": 39,
+      "password": 14,
+      "claims": 38
+    },
+    "digest": "acc93da842d1a5d3244327680f88539f0651cb101bae09dd231fd8b5008bea92",
+    "readyForAuthRepair": false,
+    "executable": false,
+    "partialExecutionAllowed": false
+  },
+  "safety": {
+    "providerReads": 1,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "membershipWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "production": false,
+    "rawIdentityExported": false
+  },
+  "nextGate": "NON_OPERATIONAL_TENANT_EVIDENCE_AND_ADJUDICATION_PREPARATION_REQUIRED"
+}
