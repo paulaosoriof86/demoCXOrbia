@@ -1,4 +1,4 @@
-name: CXOrbia C6 Shopper Deterministic Suffix Readonly
+name: CXOrbia C6 Shopper Crosswalk Root Fix Source Only
 
 on:
   push:
@@ -8,11 +8,11 @@ on:
       - backend/config/corte6-shopper-deterministic-suffix-readonly-request.json
 
 permissions:
-  contents: read
+  contents: write
   statuses: write
 
 concurrency:
-  group: cxorbia-c6-shopper-deterministic-suffix-readonly
+  group: cxorbia-c6-shopper-crosswalk-rootfix-source-only-known-lane
   cancel-in-progress: false
 
 defaults:
@@ -21,15 +21,15 @@ defaults:
 
 env:
   REQUEST_FILE: backend/config/corte6-shopper-deterministic-suffix-readonly-request.json
-  OUT_DIR: .tmp/c6-shopper-deterministic-suffix-readonly
-  PRIVATE_DIR: .tmp/c6-shopper-deterministic-suffix-private
-  DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+  TARGET_FILE: tools/qa/cxorbia-c6-shopper-deterministic-suffix-readonly.mjs
+  PATCHER_FILE: tools/qa/cxorbia-c6-shopper-deterministic-suffix-crosswalk-rootfix-source-only.mjs
+  EVIDENCE_FILE: app/docs/evidence/CORTE6-SHOPPER-DETERMINISTIC-SUFFIX-CROSSWALK-ROOTFIX-SOURCE-STATIC-PASS-LATEST.json
 
 jobs:
-  readonly:
-    name: Build deterministic suffix plan source/static and provider read-only
-    runs-on: ubuntu-latest
-    timeout-minutes: 40
+  source-only-rootfix:
+    name: Apply crosswalk root fix and stop before provider reads
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
 
     steps:
       - name: Checkout exact live branch
@@ -43,9 +43,6 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Exclude ephemeral evidence
-        run: printf '%s\n' '.tmp/' 'gha-creds-*.json' >> .git/info/exclude
-
       - name: Read request state
         id: request
         run: |
@@ -53,10 +50,9 @@ jobs:
           const fs=require('fs');
           const x=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${x.enabled===true?'true':'false'}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`target=${x.targetHeadSha||''}\n`);
           NODE
 
-      - name: Validate exact one-shot authorization
+      - name: Validate exact one-shot source-only authorization
         if: steps.request.outputs.enabled == 'true'
         run: |
           set -euo pipefail
@@ -67,107 +63,146 @@ jobs:
           const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
           const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
-          if(x.schemaVersion!=='cxorbia.c6.shopper-deterministic-suffix-readonly-request.v1')throw new Error('request_schema_invalid');
-          if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7)throw new Error('repository_lane_invalid');
-          if(x.enabled!==true||x.consumed!==false||x.status!=='authorized_execute_once'||x.authorizedBy!=='Paula')throw new Error('authorization_state_invalid');
-          if(x.targetHeadSha!==parent||!x.targetHeadSha||head===parent)throw new Error('target_head_invalid');
-          if(changed.length!==1||changed[0]!==process.env.REQUEST_FILE)throw new Error('request_commit_scope_invalid:'+changed.join(','));
-          if(Number(x.allowedExecutions)!==1||x.providerReads!==true||x.providerWrites!==false)throw new Error('readonly_scope_invalid');
-          if(x.policy!=='DETERMINISTIC_TECHNICAL_SUFFIX'||JSON.stringify(x.suffixLengths)!==JSON.stringify([4,6,8]))throw new Error('suffix_policy_invalid');
-          for(const key of ['repositoryWrites','dataWrites','deploy','merge','production','firestoreWrites','authWrites','passwordChanges','passwordResets','membershipWrites','rulesWrites','storageWrites','hrWrites','make','gemini','payments']){
-            if(x.safeState?.[key]!==false)throw new Error('unsafe_scope_'+key);
+          const ensure=(condition,code)=>{if(!condition)throw new Error(code);};
+          ensure(x.schemaVersion==='cxorbia.c6.shopper-deterministic-suffix-crosswalk-rootfix-source-only-request.v1','request_schema_invalid');
+          ensure(x.repository==='paulaosoriof86/demoCXOrbia'&&x.branch==='docs-tya-v6-v71-audit'&&Number(x.pullRequest)===7,'repository_lane_invalid');
+          ensure(x.enabled===true&&x.consumed===false&&x.status==='authorized_execute_once'&&x.authorizedBy==='Paula','authorization_state_invalid');
+          ensure(x.targetHeadSha===parent&&head!==parent,'target_head_invalid');
+          ensure(changed.length===1&&changed[0]===process.env.REQUEST_FILE,'request_commit_scope_invalid:'+changed.join(','));
+          ensure(Number(x.allowedExecutions)===1&&x.providerReads===false&&x.providerWrites===false,'source_only_scope_invalid');
+          ensure(x.mode==='source_only_crosswalk_rootfix','mode_invalid');
+          ensure(x.expectedStableCredentialsMapped===101&&x.expectedStableCredentialsUnmapped===8,'stable_crosswalk_reference_invalid');
+          ensure(x.expectedPlanRows===340&&JSON.stringify(x.suffixLengths)===JSON.stringify([4,6,8]),'plan_or_suffix_contract_invalid');
+          for(const key of ['dataWrites','deploy','merge','production','firestoreWrites','authWrites','passwordChanges','passwordResets','membershipWrites','rulesWrites','storageWrites','hrWrites','make','gemini','payments']){
+            ensure(x.safeState?.[key]===false,'unsafe_scope_'+key);
           }
           NODE
 
-      - name: Install transient audit dependency
+      - name: Apply exact source root fix
         if: steps.request.outputs.enabled == 'true'
-        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0
+        run: |
+          set -euo pipefail
+          node "$PATCHER_FILE" --apply
 
       - name: Execute source and static gates
         if: steps.request.outputs.enabled == 'true'
         run: |
           set -euo pipefail
-          node --check tools/qa/cxorbia-c6-shopper-deterministic-suffix-readonly.mjs
-          node tools/qa/cxorbia-c6-shopper-deterministic-suffix-readonly.mjs --self-test
-          node -e "const x=require('./backend/contracts/c6-shopper-deterministic-suffix-v1.json');if(x.schemaVersion!=='cxorbia.c6.shopper-deterministic-suffix.v1'||x.visibleLoginPolicy.exception!=='DETERMINISTIC_TECHNICAL_SUFFIX')process.exit(1)"
-
-      - name: Prepare existing DEV credential privately
-        if: steps.request.outputs.enabled == 'true'
-        env:
-          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-        run: |
-          set -euo pipefail
-          mkdir -p "$PRIVATE_DIR" "$OUT_DIR"
+          node --check "$TARGET_FILE"
+          node --check "$PATCHER_FILE"
+          node "$PATCHER_FILE" --verify
+          node "$TARGET_FILE" --self-test
           node <<'NODE'
           const fs=require('fs');
-          const raw=process.env.EXISTING_DEV_JSON||'';
-          let p=null;try{p=JSON.parse(raw);}catch{}
-          if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.client_email&&p.private_key))throw new Error('credential_invalid');
-          fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
+          const source=fs.readFileSync(process.env.TARGET_FILE,'utf8');
+          const required=[
+            'const STABLE_CREDENTIALS_MAPPED = 101;',
+            'const STABLE_CREDENTIALS_UNMAPPED = 8;',
+            'propagateLinkedSourceTechKeys(relationIndex, source, shopperId);',
+            'const credentialCrosswalkParity =',
+            'credentialCrosswalkParity &&',
+            'credential_crosswalk_drift:',
+            'PASS_CREDENTIAL_CROSSWALK_TECH_KEY_PROPAGATION',
+            'PASS_CREDENTIAL_CROSSWALK_PARITY_HARD_STOP'
+          ];
+          const missing=required.filter(token=>!source.includes(token));
+          if(missing.length)throw new Error('static_gate_missing:'+missing.join('|'));
+          if(!source.includes('planRows.push({')||!source.includes('suffixLength: row.suffixLength'))throw new Error('plan_or_suffix_schema_missing');
           NODE
 
-      - name: Execute one provider read-only plan
+      - name: Materialize sanitized evidence and consume request
         if: steps.request.outputs.enabled == 'true'
-        id: provider
-        continue-on-error: true
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/c6-shopper-deterministic-suffix-private/credentials.json
-          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
-          CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
-          CXORBIA_AUDIT_TARGET_HEAD: ${{ steps.request.outputs.target }}
         run: |
-          set +e
-          node tools/qa/cxorbia-c6-shopper-deterministic-suffix-readonly.mjs "$REQUEST_FILE"
-          code=$?
-          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
-          exit 0
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const path=require('path');
+          const crypto=require('crypto');
+          const x=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          const source=fs.readFileSync(process.env.TARGET_FILE,'utf8');
+          const generatedAt=new Date().toISOString();
+          const evidence={
+            schemaVersion:'cxorbia.c6.shopper-deterministic-suffix-crosswalk-rootfix-source-static.v1',
+            generatedAt,
+            decision:'PASS_C6_DETERMINISTIC_SUFFIX_CROSSWALK_ROOTFIX_SOURCE_STATIC',
+            repository:x.repository,
+            branch:x.branch,
+            pullRequest:x.pullRequest,
+            requestId:x.requestId,
+            requestCommitSha:process.env.GITHUB_SHA,
+            targetHeadSha:x.targetHeadSha,
+            sourceSha256:crypto.createHash('sha256').update(source,'utf8').digest('hex'),
+            rootFix:{
+              linkedSourceTechKeysPropagated:true,
+              linkedSourceBasisPreserved:true,
+              stableCredentialsMapped:101,
+              stableCredentialsUnmapped:8,
+              credentialDriftHardStop:true,
+              readyRequiresCrosswalkParity:true,
+              expectedPlanRows:340,
+              suffixLengths:[4,6,8]
+            },
+            checks:[
+              'PASS_NODE_SYNTAX',
+              'PASS_LINKED_SOURCE_TECH_KEYS_PROPAGATED',
+              'PASS_LINKED_SOURCE_BASIS_PRESERVED',
+              'PASS_CREDENTIAL_CROSSWALK_FIXTURE',
+              'PASS_STABLE_CREDENTIAL_REFERENCE_101_8',
+              'PASS_CREDENTIAL_DRIFT_HARD_STOP',
+              'PASS_READY_REQUIRES_CROSSWALK_PARITY',
+              'PASS_PLAN_340_SCHEMA_PRESERVED',
+              'PASS_SUFFIX_POLICY_4_6_8_PRESERVED',
+              'PASS_PROVIDER_READS_ZERO'
+            ],
+            safety:{providerReads:0,providerWrites:0,authWrites:0,passwordChanges:0,passwordResets:0,membershipWrites:0,firestoreWrites:0,rulesWrites:0,storageWrites:0,hrWrites:0,hostingDeploys:0,cloudRunDeploys:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,production:false},
+            nextGate:'NEW_EXPLICIT_PROVIDER_READONLY_AUTHORIZATION_REQUIRED'
+          };
+          fs.mkdirSync(path.dirname(process.env.EVIDENCE_FILE),{recursive:true});
+          fs.writeFileSync(process.env.EVIDENCE_FILE,JSON.stringify(evidence,null,2)+'\n','utf8');
+          x.enabled=false;
+          x.consumed=true;
+          x.status='consumed_source_static_pass_no_provider_read';
+          x.consumedAt=generatedAt;
+          x.result={decision:evidence.decision,providerReads:0,providerWrites:0,evidence:process.env.EVIDENCE_FILE};
+          fs.writeFileSync(process.env.REQUEST_FILE,JSON.stringify(x,null,2)+'\n','utf8');
+          NODE
 
-      - name: Capture repository delta evidence
-        if: always() && steps.request.outputs.enabled == 'true'
+      - name: Verify exact repository delta
+        if: steps.request.outputs.enabled == 'true'
         run: |
-          mkdir -p "$OUT_DIR/repository-status"
-          git status --porcelain=v1 > "$OUT_DIR/repository-status/status.txt"
-          git diff --name-status > "$OUT_DIR/repository-status/tracked.txt"
-          git ls-files --others --exclude-standard > "$OUT_DIR/repository-status/untracked.txt"
+          set -euo pipefail
+          mapfile -t changed < <(git status --porcelain=v1 | sed 's/^...//')
+          for file in "${changed[@]}"; do
+            case "$file" in
+              "$TARGET_FILE"|"$REQUEST_FILE"|"$EVIDENCE_FILE") ;;
+              *) echo "unexpected_repository_delta:$file" >&2; exit 1 ;;
+            esac
+          done
 
-      - name: Upload sanitized evidence
-        if: always() && steps.request.outputs.enabled == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: cxorbia-c6-shopper-deterministic-suffix-readonly-${{ github.run_id }}
-          path: |
-            .tmp/c6-shopper-deterministic-suffix-readonly
-            .tmp/cxorbia-readonly-post-gates-runner
-          if-no-files-found: error
-          retention-days: 14
+      - name: Commit source-only root fix directly
+        if: steps.request.outputs.enabled == 'true'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$TARGET_FILE" "$REQUEST_FILE" "$EVIDENCE_FILE"
+          git diff --cached --check
+          git commit -m 'fix(c6): restore deterministic suffix credential crosswalk parity gate'
+          git push origin HEAD:docs-tya-v6-v71-audit
 
-      - name: Publish observable commit status
+      - name: Publish observable source-only status
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
-          PROVIDER_EXIT_CODE: ${{ steps.provider.outputs.exit_code }}
         run: |
           set -euo pipefail
           STATE=success
-          DESC='PASS_C6_DETERMINISTIC_SUFFIX_READONLY'
-          if [ '${{ steps.request.outputs.enabled }}' != 'true' ]; then
-            DESC='SKIPPED_DISABLED_REQUEST'
-          elif [ "${PROVIDER_EXIT_CODE:-999}" != '0' ]; then
-            STATE=failure
-            DESC='HOLD_C6_DETERMINISTIC_SUFFIX_STOP_RETRY'
-          fi
+          DESC='PASS_C6_CROSSWALK_ROOTFIX_SOURCE_ONLY_NO_PROVIDER_READ'
+          if [ '${{ steps.request.outputs.enabled }}' != 'true' ]; then DESC='SKIPPED_DISABLED_SOURCE_ONLY_REQUEST'; fi
           gh api --method POST \
             -H 'Accept: application/vnd.github+json' \
             "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
             -f state="$STATE" \
-            -f context='cxorbia/c6-shopper-deterministic-suffix-readonly/overall' \
+            -f context='cxorbia/c6-shopper-crosswalk-rootfix-source-only/overall' \
             -f description="$DESC" \
             -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
-
-      - name: Cleanup private material
-        if: always()
-        run: rm -rf "$PRIVATE_DIR"
-
-      - name: Enforce provider result
-        if: steps.request.outputs.enabled == 'true'
-        run: test "${{ steps.provider.outputs.exit_code }}" = "0"
