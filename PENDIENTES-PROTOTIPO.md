@@ -1,7 +1,7 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-06  
-**Estado vivo:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_GATE_HOLD__LIVE_HR_V4_UNRESOLVED__PROD_TARGET_UNMATERIALIZED__IDENTITY_HOLD_0__NO_PRODUCTION`
+**Estado vivo:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_GATE_HOLD__LIVE_HR_V4_UNRESOLVED__PRODUCTION_STRATEGY_UNMATERIALIZED__IDENTITY_HOLD_0__NO_PRODUCTION`
 
 ## 1. Fuente de verdad
 
@@ -24,8 +24,8 @@
 - diagnóstico v2/v3 cancelado antes de steps;
 - request v4 emitido una sola vez;
 - segundo trigger prohibido y no ejecutado;
-- configuración DEV auditada;
-- gate source-only de target PROD creado y `node --check` PASS.
+- configuración limpia vigente auditada;
+- gate source-only de estrategia PROD creado y `node --check` PASS.
 
 ## 3. Estado del request v4
 
@@ -47,22 +47,30 @@ No se recuperó evidencia terminal para clasificar lectura cero o consumida.
 tool=tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs
 node --check=PASS
 execution exitCode=2 esperado fail-closed
-decision=HOLD_PRODUCTION_TARGET_UNMATERIALIZED
-holdReason=PRODUCTION_CONFIGURATION_FILES_NOT_MATERIALIZED
+decision=HOLD_PRODUCTION_STRATEGY_UNMATERIALIZED
+holdReason=PRODUCTION_PROMOTION_STRATEGY_NOT_AUTHORIZED_OR_MATERIALIZED
 ```
 
-Configuración actual:
+Configuración limpia observada:
 
 ```text
-.firebaserc default/dev=cxorbia-backend-dev
-firebase hosting target=cxorbia-dev
+project=cxorbia-backend-dev
+hosting target=cxorbia-dev
 hosting site=cxorbia-backend-dev
 Cloud Run service=cxorbia-live-hr-dev
-.firebaserc.prod=false
-firebase.prod.json=false
+region=us-central1
+public=app
+UTF-8=PASS
 ```
 
-Desplegar el estado actual no equivale a sacar la plataforma a producción.
+El gate permite únicamente una estrategia expresamente autorizada:
+
+```text
+PROMOTE_EXISTING_CLEAN_PROJECT
+SEPARATE_CLEAN_PROD_PROJECT
+```
+
+La primera promueve el proyecto limpio existente y exige aceptar sus identificadores y URL actuales como producción. La segunda utiliza otro proyecto limpio y configuración separada. Ninguna permite reutilizar la base legacy como backend nuevo.
 
 ## 5. P0 actuales
 
@@ -70,9 +78,9 @@ Desplegar el estado actual no equivale a sacar la plataforma a producción.
 2. Confirmar HR viva `2026-08`, GT/HN, mutación histórica y `sourceRevision`.
 3. Ejecutar Auth Shopper con gate separado.
 4. Ejecutar smoke acumulativo Admin/Operaciones, Shopper y Cliente.
-5. Definir un proyecto PROD nuevo y separado.
-6. Materializar `.firebaserc.prod` y `firebase.prod.json`.
-7. Obtener `PASS_PRODUCTION_TARGET_SOURCE_ONLY_CONTRACT`.
+5. Autorizar una estrategia de producción.
+6. Materializar `backend/config/cxorbia-production-promotion-contract.json` y la configuración que corresponda.
+7. Obtener PASS del gate de producción.
 8. Completar validación humana, rollback y autorización específica.
 9. Ejecutar un único cutover.
 
@@ -80,7 +88,7 @@ Desplegar el estado actual no equivale a sacar la plataforma a producción.
 
 - no emitir segundo trigger HR;
 - no inferir ausencia de run desde ausencia de status;
-- no desplegar DEV como si fuera PROD;
+- no promocionar ni desplegar un entorno sin contrato de producción autorizado;
 - no conectar ni copiar la base legacy;
 - no reabrir SKIP13 ni 65/65;
 - no pedir nueva candidata, rama o PR;
@@ -88,7 +96,7 @@ Desplegar el estado actual no equivale a sacar la plataforma a producción.
 
 ## 7. P1/P2
 
-PDF con gráficas, presentación Excel y mejoras no bloqueantes permanecen documentadas, pero no sustituyen los P0 operativos de HR, Auth, smoke y target PROD.
+PDF con gráficas, presentación Excel y mejoras no bloqueantes permanecen documentadas, pero no sustituyen los P0 operativos de HR, Auth, smoke y estrategia de producción.
 
 ## 8. Seguridad
 
