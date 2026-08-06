@@ -1,23 +1,24 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-05  
-**Estado:** `DETERMINISTIC_SUFFIX_SOURCE_STATIC_PASS__PROVIDER_HOLD_CREDENTIAL_CROSSWALK_DRIFT_13__RESULTS_PROVISIONAL__STOP_RETRY__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `C6_DETERMINISTIC_SUFFIX_CROSSWALK_ROOTFIX_SOURCE_STATIC_PASS__PROVIDER_REVALIDATION_NOT_AUTHORIZED__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Rama y control
 
 - repo: `paulaosoriof86/demoCXOrbia`;
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
+- source commit del root fix: `6160ef89b75bcdf9068c210810c528d3c6d13db1`;
 - producción: intacta;
-- Hosting DEV de este bloque: `0`;
-- ejecuciones provider de este bloque: `1`;
-- segundo intento provider: `0`.
+- provider reads de este bloque: `0`;
+- provider writes: `0`;
+- Hosting/Cloud Run deploys: `0`.
 
-## 2. Contrato preservado
+## 2. Contrato Shopper preservado
 
 ```text
-Login normal Shopper: nombre.apellido
-Excepción autorizada: nombre.apellido.<sufijo técnico no PII>
+Login normal: nombre.apellido
+Excepción solo ante colisión activa: nombre.apellido.<sufijo técnico no PII>
 Sufijo: sha256(tenantId + NUL + shopperId), 4/6/8
 Contraseña: Nombre123*
 Namespace: shopper
@@ -25,87 +26,96 @@ Membership requerido: no
 Autoridad: Firebase Auth + claims exactos + shopperId canónico
 ```
 
-La política determinística pasó source/static. No fue materializada.
+La política fue aprobada y permanece sin materializar.
 
-## 3. Ejecución provider read-only
+## 3. Causa raíz corregida
+
+El planner determinístico perdía 13 anclajes porque `link()` guardaba las fuentes HR, visita, certificación o liquidación en `linkedByProfile`, pero no propagaba sus `TECH_KEYS` hacia `relationIndex`.
+
+El source vigente ahora:
+
+- preserva el objeto fuente y su `basis`;
+- ejecuta `propagateLinkedSourceTechKeys(relationIndex, source, shopperId)`;
+- indexa cada llave técnica no vacía de la fuente enlazada;
+- calcula `credentialsMapped`, `credentialsUnmapped` y `credentialCrosswalkParity`;
+- congela `101 mapped / 8 unmapped` como referencia esperada del próximo provider gate;
+- bloquea `readyForAuthRepair` si falta paridad;
+- genera `credential_crosswalk_drift:mapped/unmapped` ante cualquier diferencia.
+
+## 4. Source/static — PASS
 
 ```text
-workflowRunId=31064458045
-workflowJobId=92499147712
-artifactId=8953330337
-artifactDigest=sha256:dc98e359ec09ee04cf0b9ba49acb4062a789707fe4e34cfadbf977dce10e2c39
-sourceStatic=PASS_C6_DETERMINISTIC_SUFFIX_SOURCE_STATIC
-provider=HOLD_C6_DETERMINISTIC_SUFFIX_CREDENTIAL_CROSSWALK_STOP_RETRY
+workflowRunId=31066003792
+workflowJobId=92503740935
+requestCommit=8b1ee44906f6c46a751d97548cbc2542a3935ca2
+sourceCommit=6160ef89b75bcdf9068c210810c528d3c6d13db1
+sourceSha256=3200b8833b3af10a27e0493df992836f99d3e78668f2265269d2bd0c74640568
+PASS_C6_DETERMINISTIC_SUFFIX_CROSSWALK_ROOTFIX_SOURCE_STATIC
+PASS_C6_DETERMINISTIC_SUFFIX_SOURCE_STATIC
 ```
 
-Checkout, autorización, credencial DEV, source/static, lectura provider y carga del artifact completaron. El HOLD es contractual y metodológico, no de infraestructura.
-
-## 4. Causa raíz demostrada
-
-La ejecución leyó 109 credenciales, pero el crosswalk produjo:
+Gates superados:
 
 ```text
-referencia estable anterior=101 mapped / 8 unmapped
-planner determinístico=88 mapped / 21 unmapped
-drift=13
+PASS_NODE_SYNTAX
+PASS_LINKED_SOURCE_TECH_KEYS_PROPAGATED
+PASS_LINKED_SOURCE_BASIS_PRESERVED
+PASS_CREDENTIAL_CROSSWALK_FIXTURE
+PASS_STABLE_CREDENTIAL_REFERENCE_101_8
+PASS_CREDENTIAL_DRIFT_HARD_STOP
+PASS_READY_REQUIRES_CROSSWALK_PARITY
+PASS_PLAN_340_SCHEMA_PRESERVED
+PASS_SUFFIX_POLICY_4_6_8_PRESERVED
+PASS_PROVIDER_READS_ZERO
 ```
 
-Causa exacta:
+## 5. Incidencia transitoria cerrada
 
-- el clasificador estable incorpora a `relationIndex` cada `TECH_KEY` de las fuentes HR, visitas, certificaciones y liquidaciones enlazadas;
-- el planner determinístico solo guarda esas fuentes en `linkedByProfile`;
-- el mapeo de credenciales posterior consulta `relationIndex`;
-- 13 credenciales perdieron así su anclaje técnico antes de completar apellido y puntuar Auth.
+El primer intento source-only `31065882519 / 92503388270` aplicó y verificó el patch en el runner, pero no pudo ejecutar el self-test del target porque faltaba la dependencia transitoria `firebase-admin`. No creó commit, no consumió el request y no realizó provider read.
 
-La evidencia de source está registrada en `DIAGNOSTICO-RAIZ-C6-DETERMINISTIC-SUFFIX-CREDENTIAL-CROSSWALK-HOLD-20260805.md`.
+Se corrigió el workflow para instalar la dependencia y publicar el estado real. El segundo intento del mismo bloque terminó PASS y consumió el request.
 
-## 5. Resultados observados, provisionales
+## 6. Estado del request
 
 ```text
-profiles=340
-authUsers=110
-credentials=109
-surname consensus completions observed=71
-remaining active surnames observed=12
-collision groups observed=65
-active identities observed=142
-unique unsuffixed keeper groups observed=52
-all-suffixed groups observed=13
-suffix4 observed=90
-suffix6 observed=0
-suffix8 observed=0
-suffix collisions observed=0
-target login collisions observed=0
-multi-Auth unresolved observed=1
+enabled=false
+consumed=true
+status=consumed_source_static_pass_no_provider_read
+providerReads=0
+providerWrites=0
+nextGate=NEW_EXPLICIT_PROVIDER_READONLY_AUTHORIZATION_REQUIRED
 ```
 
-Estas cifras no sustituyen el baseline estable anterior porque fueron calculadas con 13 anclajes de credencial faltantes. En especial, 65/142 no queda congelado como baseline final.
+## 7. Resultados provider aún provisionales
 
-## 6. Plan observado, diagnóstico no ejecutable
-
-| Operación primaria observada | Total |
-|---|---:|
-| CREATE_AUTH | 81 |
-| UPDATE_AUTH | 46 |
-| NO_OP | 73 |
-| HOLD | 13 |
-| PRESERVE_NO_AUTH | 127 |
-| **Total** | **340** |
+La ejecución provider anterior se hizo antes de este root fix y tuvo crosswalk incompleto. Por tanto continúan sin valor de baseline final:
 
 ```text
-planDigestObserved=831c9602aa5686aea22694970aa1beb9557f4bb7b966d4233e028e63fb456d01
-credentialCrosswalkParity=false
-readyForAuthRepair=false
+65 collision groups observed
+142 active identities observed
+12 active surname holds observed
+1 multi-Auth tie observed
+340 diagnostic plan rows observed
 ```
 
-No se autoriza ejecutar las filas sin HOLD ni utilizar esta distribución como plan de repair.
+La referencia 101/8 quedó protegida en source, pero no se afirma todavía que el provider corregido la alcance. Tampoco se afirma que 64/141 o 65/142 sean el resultado definitivo.
 
-## 7. STOP_RETRY y estado seguro
+## 8. Phase A preservada
+
+Se preservaron:
+
+- frontend canónico, módulos y `CX.data`;
+- HR e histórico completo;
+- shoppers, postulaciones y certificaciones;
+- visitas, liquidaciones y pagos;
+- multi-tenant y multi-proyecto;
+- sincronización HR/plataforma;
+- Finanzas, Portal Cliente, Portal Shopper y Reservas;
+- Academia y manuales sin cifras provisionales.
+
+## 9. Estado seguro
 
 ```text
-REQUEST_CONSUMED=true
-AUTOMATIC_RETRY=false
-PROVIDER_SECOND_ATTEMPT=false
 AUTH_WRITES=0
 PASSWORD_CHANGES=0
 PASSWORD_RESETS=0
@@ -114,46 +124,38 @@ FIRESTORE_WRITES=0
 RULES_WRITES=0
 STORAGE_WRITES=0
 HR_WRITES=0
-HOSTING_DEPLOYS_THIS_BLOCK=0
+HOSTING_DEPLOYS=0
 CLOUD_RUN_DEPLOYS=0
 MAKE_CALLS=0
 GEMINI_CALLS=0
 PAYMENT_WRITES=0
-RAW_NAMES/LOGINS/EMAILS/PASSWORDS/UIDS_EXPORTED=false
 MERGE=false
 PRODUCTION=false
 ```
 
-El runner terminó con delta limpio: tracked `0`, untracked `0`.
+## 10. Documentación vigente
 
-## 8. Phase A preservada
-
-Se preservaron frontend canónico, `CX.data`, HR, histórico, shoppers, postulaciones, certificaciones, liquidaciones/pagos, multi-tenant, multi-proyecto, Finanzas, Portal Cliente, Portal Shopper, Reservas, sincronización HR/plataforma y Academia.
-
-## 9. Documentación prevalente
-
-- diagnóstico de causa raíz;
-- evidencia v2 del HOLD;
-- request consumido y deshabilitado;
-- cambios backend de corrección;
-- resumen Claude de corrección;
-- pendientes de corrección;
+- evidencia source/static PASS;
+- source lock del root fix;
+- cambios backend;
+- resumen para Claude;
+- pendientes del prototipo;
 - impacto Academia;
-- tracker de corrección;
-- índice activo y PR #7.
+- tracker Phase A;
+- índice vigente;
+- PR #7.
 
-Los documentos iniciales del bloque que presentaron 65/142 como baseline definitivo quedan supersedidos por este checkpoint.
-
-## 10. Siguiente bloque exacto
+## 11. Siguiente bloque exacto
 
 ```text
-SOURCE-ONLY CROSSWALK ROOT FIX
-→ propagar TECH_KEYS de fuentes enlazadas a relationIndex
-→ preservar basis de linaje
-→ fixture y gate 101 mapped / 8 unmapped
-→ hard stop ante credential drift
-→ validar política 4/6/8 y plan 340 estático
-→ STOP sin provider reads
+NUEVA AUTORIZACIÓN PROVIDER READ-ONLY ONE-SHOT
+→ comprobar paridad real 101 mapped / 8 unmapped
+→ recalcular apellidos activos pendientes
+→ recalcular grupos de colisión e identidades activas
+→ resolver o mantener HOLD del perfil multi-Auth
+→ regenerar plan no superpuesto de 340 filas
+→ STOP_RETRY ante cualquier residual
+→ detenerse antes de Auth/password/membership/Firestore/Rules/Storage/HR write o deploy
 ```
 
-Solo después de source/static PASS podrá solicitarse una nueva autorización provider read-only. No existe autorización residual para retry, Auth repair, contraseña, deploy, merge o producción.
+No existe autorización residual para provider read, Auth repair, deploy, merge o producción.
