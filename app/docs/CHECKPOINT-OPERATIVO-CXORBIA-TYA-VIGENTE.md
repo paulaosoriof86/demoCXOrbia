@@ -1,116 +1,103 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-05  
-**Estado:** `C6_EQUIVALENT_UNIVERSE_MEMBER_PROVENANCE_SOURCE_STATIC_PASS__CONTRACT_V2_2__PROVIDER_REVALIDATION_NOT_AUTHORIZED__12_SURNAME_AND_1_MULTI_AUTH_HOLDS_PRESERVED__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Fecha:** 2026-08-06  
+**Estado:** `C6_EQUIVALENT_UNIVERSE_PROVIDER_V22_HOLD__65_65_EXACT_MATCH__12_SURNAME__1_MULTI_AUTH_TIE__STOP_RETRY__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Rama y control
 
 - repo: `paulaosoriof86/demoCXOrbia`;
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
-- provider source run preservado: `31069282511`;
-- source/static PASS run: `31071318363`;
-- source/static PASS job: `92519679056`;
-- request trigger commit: `bccb986ad0408437bd5ca530bb496d5feef8b00e`;
 - source integration commit: `8fe5ad6dd185cce5ea3cdac06892f3144e8e5f0f`;
-- trigger freeze commit: `8db290c18d4f0e30a5a129beb82208abfbd9bc2e`;
-- tooling lane retirement commits: `80ad009baff0c73c9e06324dbdd24c3bbf75eb12` y `d79ceebfedd018d7ea05404b68f97cfcdbaaabe9`;
-- provider reads de este bloque: `0`;
+- provider request commit: `9d26344f55809d95023a33aeb3111802adb15d26`;
+- provider run: `31104541809`;
+- provider job: `92626188022`;
+- artifact: `8968941587`;
+- artifact digest: `sha256:02e36c355b3f2d1c9d1e6f1be7fece93259251ddb0f981cdaac35f2262fcb264`;
+- provider executions: `1`;
+- second attempt: `0`;
+- request: consumido;
+- trigger: congelado;
 - producción: intacta.
 
-## 2. Resultado source/static
+## 2. Resultado provider v2.2
 
 ```text
-decision=PASS_C6_EQUIVALENT_UNIVERSE_MEMBER_PROVENANCE_INTEGRATION_SOURCE_STATIC
-contractVersion=v2.2
-universeVersion=shopper-equivalent-universe-v1
-populationEquivalent=true
-activityEquivalent=true
-linkingEquivalent=true
-completenessEquivalent=true
-deltaOnlyMemberProvenance=true
-multiAuthCandidateFingerprints=true
+decision=HOLD_C6_EQUIVALENT_UNIVERSE_PROVIDER_REVALIDATION_STOP_RETRY
+profiles=340
+authUsers=110
+memberships=1
+credentials=109
+mapped/unmapped=101/8
+credentialCrosswalkParity=true
+hrImportDocs=1
+visits=616
+certifications=77
+liquidations=827
+latestPeriod=2026-07
+recentFloor=2026-05
 ```
 
-Todos los pasos del run `31071318363` terminaron PASS: autorización, aplicación del delta, sintaxis, fixtures, contrato, privacidad, delta exacto, consumo del request, commit y push.
-
-## 3. Universo equivalente integrado
-
-Planner y clasificador usan ahora los mismos predicados:
+## 3. Métricas de apellido
 
 ```text
+preConsensusIncompleteActiveProfiles=83
+completedByConsensus=71
+remainingIncompleteActiveProfiles=12
+metricIdentityValid=true
+83=71+12
+```
+
+Los 12 perfiles residuales tienen primer nombre y semilla de contraseña completos, pero cero candidato explícito, técnico o por consenso para apellido y `surnameBasisCount=0`. Permanecen `AUTHORITATIVE_SURNAME_SOURCE_ENRICHMENT_REQUIRED`.
+
+## 4. Universo equivalente confirmado
+
+```text
+universe=shopper-equivalent-universe-v1
 population=same_tenant_shopper_snapshot
 activity=equivalentActive_v1
 linking=direct_shopper_id_or_exact_unique_technical_anchor
 completeness=post_consensus_active_complete
-nameResolution=explicit_or_technical + multi_source_full_name_consensus
+referenceGroups=65
+plannerGroups=65
+added=0
+removed=0
+unchangedCount=65
+exactMatch=true
+deltaGroups=[]
 ```
 
-La referencia representa los grupos visibles antes de keeper/sufijo; el planner representa esos mismos grupos después de la asignación. El contrato prohíbe comparar universos distintos.
-
-## 4. Procedencia por miembro
-
-Para cualquier grupo añadido o eliminado, la salida source-safe queda limitada a:
+El fingerprint `ebbcc231fcf415cbaf77` aparece en referencia y planner. Su forma source-safe es:
 
 ```text
-memberFingerprint
-active
-preConsensusComplete
-postConsensusComplete
-completedByConsensus
-sourceSafeSurnameBasis
-surnameBasisCount
-keeper
-suffixApplied
-suffixLength
-inReferenceSet
-inPlannerSet
-referenceEligibility
-plannerEligibility
-linkedSourceResolutionMode
+activeCount=2
+keeperSelected=true
+suffixedCount=1
+suffix4=1
+suffix6=0
+suffix8=0
+unresolvedCount=0
+classification=UNCHANGED_EQUIVALENT_UNIVERSE_GROUP
 ```
 
-Namespace de miembros: `shopper-collision-member-v1`.
+El antiguo `+1/-0` queda cerrado como defecto previo del comparador por universos diferentes. No se demostró defecto del algoritmo de sufijos.
 
-Los candidatos multi-Auth incorporan `candidateFingerprint` bajo `shopper-auth-candidate-v1`, además de ordinal, score y señales booleanas. No se exportan UID, correos, nombres, logins o contraseñas.
-
-## 5. Estado del antiguo delta `+1/-0`
-
-La causa contractual demostrada previamente era la comparación entre universos distintos. Esa causa quedó corregida en source.
+## 5. Multi-Auth residual
 
 ```text
-prior=REFERENCE_UNIVERSE_MISMATCH_PROVEN
-currentSourceContract=EQUIVALENT_UNIVERSE_CONTRACT_INTEGRATED_SOURCE_ONLY
-exactAddedGroupCause=PENDING_EQUIVALENT_UNIVERSE_PROVIDER_REVALIDATION
-suffixAlgorithmDefectProven=false
-```
-
-Este bloque no realizó provider read, por lo que no afirma si el fingerprint `ebbcc231fcf415cbaf77` continuará, desaparecerá o quedará explicado por sus vectores de miembros.
-
-## 6. Residuales operativos preservados
-
-### Doce apellidos
-
-```text
-classification=AUTHORITATIVE_SURNAME_SOURCE_ENRICHMENT_REQUIRED
-automaticInferenceAllowed=false
-```
-
-### Multi-Auth
-
-```text
-classification=SOURCE_SAFE_ACCOUNT_ADJUDICATION_REQUIRED
+profileFingerprint=d15356ed735e87a33e69
 candidateCount=2
-historicalScore=5016/5016
-historicalMargin=0
+candidateFingerprints=9b2b7ca1bd72c1301d29 / 4e6d26551d11db444bd0
+score=5016/5016
+margin=0
+resolved=0
+unresolved=1
 automaticSelectionAllowed=false
 ```
 
-La integración añade observabilidad source-safe; no resuelve ni selecciona automáticamente estos casos.
+Las señales de ambos candidatos son idénticas: `shopperIdClaim=true`, enabled, verified y metadata presente; exact claims, target/base/credential email y password compatibility son `false`.
 
-## 7. Plan provider preservado
-
-El último plan provider continúa histórico, provisional y no ejecutable:
+## 6. Plan 340 vigente
 
 ```text
 CREATE_AUTH=81
@@ -118,32 +105,52 @@ UPDATE_AUTH=46
 NO_OP=73
 HOLD=13
 PRESERVE_NO_AUTH=127
+emailChanges=39
+passwordChanges=14
+claimsChanges=38
 rows=340 unique
+planDigest=acc93da842d1a5d3244327680f88539f0651cb101bae09dd231fd8b5008bea92
 readyForAuthRepair=false
 executable=false
 partialExecutionAllowed=false
 ```
 
-## 8. Incidencias transitorias
+Sufijos y target logins:
 
-1. Run `31070904888`: patch y fixture PASS en workspace; un checker textual coincidió con sus propios literales prohibidos. Sin commit, consumo ni provider read.
-2. Run `31071180319`: todos los gates y el delta exacto PASS; el push remoto fue rechazado exclusivamente porque intentaba modificar el workflow sin permiso `workflows`. El commit quedó solo local y no se consumió el request remoto.
-3. Run `31071318363`: transporte separado del workflow; PASS completo y commit remoto.
+```text
+collisionGroups=65
+activeIdentities=142
+keepers=53
+allSuffixedGroups=12
+suffix4=89
+suffix6=0
+suffix8=0
+suffixAllocationHolds=0
+targetCollisionHolds=0
+```
 
-No hubo reintento provider, lectura provider ni operación sobre datos.
+## 7. Falso positivo del validador
 
-## 9. Phase A preservada
+El resumen del artifact incluyó `hold_diagnostics_invalid` porque el validador trató la clave contractual `diagnostics.name` como identidad cruda. La estructura contiene solo booleanos, conteos, fingerprints y `null`; no contiene PII. El falso positivo no afecta el resultado provider ni exige un segundo read.
+
+Bloqueos canónicos reales:
+
+```text
+plan_contains_hold:13
+multi_auth_tie:1
+surname_remaining:12
+```
+
+## 8. Phase A preservada
 
 Frontend, módulos, Login, `CX.data`, HR, histórico, shoppers, postulaciones, certificaciones, visitas, liquidaciones/pagos, multi-tenant, multi-proyecto, sincronización HR/plataforma, Finanzas, Portal Cliente, Portal Shopper, Reservas y Academia permanecen intactos.
 
-## 10. Estado seguro
+## 9. Estado seguro
 
 ```text
 REQUEST_CONSUMED=true
-SOURCE_ONLY_TRIGGER_FROZEN=true
-UNUSED_TOOLING_REQUEST_RETIRED=true
-UNUSED_TOOLING_TRIGGER_FROZEN=true
-PROVIDER_READS=0
+PROVIDER_TRIGGER_FROZEN=true
+PROVIDER_READS=1
 PROVIDER_WRITES=0
 AUTH_WRITES=0
 PASSWORD_CHANGES/RESETS=0
@@ -156,28 +163,22 @@ MERGE=false
 PRODUCTION=false
 ```
 
-## 11. Clasificación de cierre
+## 10. Clasificación de cierre
 
-- **Reusable CXOrbia:** helper de universo equivalente, reconciliación delta-only y fingerprints de miembros/candidatos.
-- **Exclusivo TyA:** futura revalidación provider y resolución de 12 apellidos más el empate multi-Auth.
-- **Claude/prototipo:** sin cambios frontend ni ajustes visuales.
-- **Academia:** metodología de universos equivalentes y trazabilidad sin PII documentada.
-- **Sin impacto Claude:** Auth, datos, deploy y producción intactos.
+- **Reusable CXOrbia:** universo equivalente, reconciliación exacta, exportación delta-only y fingerprints de candidatos.
+- **Exclusivo TyA:** 12 apellidos y un empate multi-Auth.
+- **Claude/prototipo:** sin cambios frontend.
+- **Academia:** comparación de universos equivalentes y separación de falso positivo frente a HOLD real.
+- **Sin impacto Claude:** Auth, datos, deploy, merge y producción intactos.
 
-## 12. Siguiente bloque exacto
+## 11. Siguiente bloque exacto
 
-No existe autorización residual. El siguiente bloque debe autorizar expresamente una sola ruta:
+No existe autorización residual. El siguiente bloque debe ser exclusivamente no operativo:
 
 ```text
-A) ONE-SHOT PROVIDER READ-ONLY REVALIDATION AGAINST CONTRACT v2.2
-   → validar 101/8 y 340
-   → construir reference/planner en universo equivalente
-   → reconciliar sets y exportar member vectors solo para deltas
-   → regenerar candidate fingerprints multi-Auth
-   → STOP_RETRY ante cualquier HOLD o drift
-
-B) NON-OPERATIONAL TENANT EVIDENCE/ADJUDICATION PREPARATION
-   → 12 apellidos por profile fingerprints
-   → 2 candidatos multi-Auth por candidate fingerprints
-   → cero provider read y cero selección/aplicación
+NON-OPERATIONAL TENANT EVIDENCE/ADJUDICATION PREPARATION
+→ usar 12 profile fingerprints para preparar captura de evidencia autoritativa de apellido
+→ usar profile/candidate fingerprints para preparar adjudicación del empate multi-Auth
+→ corregir source-only el falso positivo del validador sin provider rerun
+→ cero provider read, selección, aplicación, Auth/data/HR writes, deploy, merge o producción
 ```
