@@ -1,4 +1,4 @@
-name: CXOrbia Live HR Current Reconcile
+name: CXOrbia Live HR Authority And Current Period Reconcile
 
 on:
   push:
@@ -13,24 +13,64 @@ permissions:
 jobs:
   reconcile:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with: {fetch-depth: 0}
       - uses: actions/setup-node@v4
         with: {node-version: '24'}
 
-      - name: Validate request
+      - name: Validate one-time read-only request and source commit
         run: |
+          export PARENT_SHA="$(git rev-parse HEAD^)"
           node <<'NODE'
           const r=require('./.github/cxorbia-firebase-requests/live-hr-current-reconcile.json');
-          if(r.enabled!==true||r.mode!=='LIVE_HR_READ_ONLY_RECONCILIATION'||r.hrWrites!==0||r.firestoreWrites!==0||r.production!==false||r.merge!==false)process.exit(1);
+          const ok=
+            r.schemaVersion==='cxorbia.live-hr-current-reconcile.request.v2'&&
+            r.enabled===true&&r.consumed===false&&
+            r.mode==='LIVE_HR_AUTHORITY_AND_CURRENT_PERIOD_READ_ONLY'&&
+            typeof r.authorizationId==='string'&&r.authorizationId.length>10&&
+            r.sourceCommit===process.env.PARENT_SHA&&
+            r.providerReads===1&&r.providerWrites===0&&
+            r.hrWrites===0&&r.firestoreWrites===0&&r.authWrites===0&&
+            r.rulesWrites===0&&r.storageWrites===0&&
+            r.hostingDeploys===0&&r.cloudRunDeploys===0&&
+            r.production===false&&r.merge===false;
+          if(!ok)throw new Error('live_hr_request_or_source_commit_invalid');
           NODE
 
-      - name: Install transient provider read tooling
+      - name: Source syntax and no-fixed-HR-data gate
+        run: |
+          node --check tools/hr-source/tya-live-provider-registry-identity-dev.mjs
+          node --check tools/hr-source/tya-enforce-live-tab-registry.mjs
+          node --check tools/qa/tya-live-hr-authority-contract.mjs
+          node --check tools/qa/tya-hr-country-tab-consistency-current.mjs
+          node --check tools/qa/cxorbia-august-delta-readonly-plan.mjs
+          node <<'NODE'
+          const fs=require('fs');
+          const files=[
+            'tools/hr-source/tya-live-provider-registry-identity-dev.mjs',
+            'tools/hr-source/tya-enforce-live-tab-registry.mjs',
+            'tools/qa/tya-live-hr-authority-contract.mjs',
+            'tools/qa/tya-hr-country-tab-consistency-current.mjs',
+            'tools/qa/cxorbia-august-delta-readonly-plan.mjs'
+          ];
+          const forbidden=['expectedByCountry={GT:34,HN:10}','doNotRepeatHistoricalWrites:1406'];
+          for(const file of files){const text=fs.readFileSync(file,'utf8');for(const token of forbidden)if(text.includes(token))throw new Error(`fixed_hr_data_forbidden:${file}:${token}`);}
+          NODE
+
+      - name: Install transient read-only provider tooling
         run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
 
-      - name: Build current HR source-safe snapshot read-only
+      - name: Refresh provider metadata registry read-only
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+          CXORBIA_HR_TAB_REGISTRY: backend/config/tya-live-hr-tab-registry.source-safe.json
+          CXORBIA_HR_LIVE_MAX_ROW: '140'
+          CXORBIA_HR_LIVE_MAX_COL: 'AI'
+        run: node tools/hr-source/tya-live-provider-registry-identity-dev.mjs
+
+      - name: Build full current HR source-safe snapshot from live provider
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
           CXORBIA_HR_SOURCE_SAFE_OUT: .tmp/hr-current/tya-hr-source-safe.js
@@ -43,71 +83,100 @@ jobs:
           mkdir -p .tmp/hr-current/gates app/docs/evidence
           node tools/hr-source/tya-build-live-hr-source-safe-r20.mjs > .tmp/hr-current/build-output.json
 
-      - name: Enforce or auto-refresh provider tab registry
+      - name: Enforce fresh provider registry and canonicalize same revision
         env:
           CXORBIA_HR_SOURCE_SAFE_OUT: .tmp/hr-current/tya-hr-source-safe.js
           CXORBIA_HR_TAB_REGISTRY: backend/config/tya-live-hr-tab-registry.source-safe.json
           CXORBIA_HR_TAB_REGISTRY_EVIDENCE: app/docs/evidence/LIVE-HR-TAB-REGISTRY-ENFORCEMENT-LATEST.json
-        run: node tools/hr-source/tya-enforce-live-tab-registry.mjs
+        run: |
+          node tools/hr-source/tya-enforce-live-tab-registry.mjs
+          node tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs --input .tmp/hr-current/tya-hr-source-safe.js --out .tmp/hr-current/tya-hr-source-safe.js --report-dir .tmp/hr-current/canonical
+          node tools/hr-source/tya-reapply-canonical-state-r20.mjs --input .tmp/hr-current/tya-hr-source-safe.js --out .tmp/hr-current/tya-hr-source-safe.js --report-dir .tmp/hr-current/state
+          node tools/qa/tya-live-hr-read-probe-gate.mjs --payload .tmp/hr-current/tya-hr-source-safe.js --out .tmp/hr-current/probe --max-age-seconds 600
 
-      - name: Persist sanitized live-HR reconciliation view
+      - name: Validate live authority, current calendar period, history revision and country parity
+        env:
+          CXORBIA_CURRENT_SOURCE_SAFE: .tmp/hr-current/tya-hr-source-safe.js
+          CXORBIA_HR_TAB_REGISTRY: backend/config/tya-live-hr-tab-registry.source-safe.json
+          CXORBIA_LIVE_HR_AUTHORITY_JSON: app/docs/evidence/LIVE-HR-AUTHORITY-CONTRACT-LATEST.json
+          CXORBIA_LIVE_HR_AUTHORITY_MD: app/docs/evidence/LIVE-HR-AUTHORITY-CONTRACT-LATEST.md
+          CXORBIA_COUNTRY_GATE_JSON: app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json
+          CXORBIA_COUNTRY_GATE_MD: app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.md
+        run: node tools/qa/tya-live-hr-authority-contract.mjs
+
+      - name: Persist sanitized same-revision live-HR reconciliation
         run: |
           node <<'NODE'
           const fs=require('fs'),vm=require('vm');
           const code=fs.readFileSync('.tmp/hr-current/tya-hr-source-safe.js','utf8'),ctx={window:{}};vm.createContext(ctx);vm.runInContext(code,ctx);const s=ctx.window.CX_TYA_HR_SOURCE_SAFE;
+          const authority=require('./app/docs/evidence/LIVE-HR-AUTHORITY-CONTRACT-LATEST.json');
           if(!s||s.sourceSafe!==true||s.safeState?.writes!==false||s.source?.tabRegistryEnforced!==true)throw new Error('registry_enforced_source_invalid');
+          if(authority.decision!=='PASS_LIVE_HR_AUTHORITY_CURRENT_PERIOD_AND_HISTORY_REVISION')throw new Error('live_hr_authority_not_pass');
           const periods=(s.periods||[]).map(p=>({key:p.key,visits:p.total??p.visits,byCountry:p.countries||p.byCountry}));
           const tabs=(s.tabsRead||[]).map(t=>({title:t.title,country:t.country,periodKey:t.periodKey,rows:t.rows,headerRow:t.headerRow,headerVariant:t.headerVariant}));
-          const report={schemaVersion:'cxorbia.live-hr-current-reconcile.v4',generatedAt:new Date().toISOString(),sourceGeneratedAt:s.generatedAt,accessMode:s.source?.accessMode||null,providerMetadataFallbackReason:s.source?.fallbackReason||null,cacheBustApplied:s.source?.cacheBustApplied===true,tabRegistryEnforced:true,tabRegistryMode:s.source?.tabRegistryMode||null,tabRegistryAutoDiscovery:s.source?.tabRegistryAutoDiscovery===true,tabRegistryObservedAt:s.source?.tabRegistryObservedAt||null,phantomTabsRejected:s.source?.phantomTabsRejected||[],counts:s.counts,periods,tabs,august:{GT:(s.visits||[]).filter(v=>v.periodKey==='2026-08'&&(v.country||v.pais)==='GT').length,HN:(s.visits||[]).filter(v=>v.periodKey==='2026-08'&&(v.country||v.pais)==='HN').length},safeState:{hrWrites:0,firestoreWrites:0,authWrites:0,hostingDeploys:0,production:false,merge:false,pii:false}};
+          const periodKey=authority.currentPeriod.periodKey;
+          const report={schemaVersion:'cxorbia.live-hr-current-reconcile.v5',generatedAt:new Date().toISOString(),sourceGeneratedAt:s.generatedAt,sourceRevision:authority.revision.sourceRevision,accessMode:s.source?.accessMode||null,cacheBustApplied:s.source?.cacheBustApplied===true,tabRegistryEnforced:true,tabRegistryMode:s.source?.tabRegistryMode||null,tabRegistryAutoDiscovery:s.source?.tabRegistryAutoDiscovery===true,tabRegistryObservedAt:s.source?.tabRegistryObservedAt||null,phantomTabsRejected:s.source?.phantomTabsRejected||[],activeCalendarPeriodKey:periodKey,latestObservedPeriodKey:authority.currentPeriod.latestObservedPeriodKey,counts:s.counts,periods,tabs,currentPeriod:{periodKey,byCountry:authority.currentPeriod.byCountry,totalVisits:authority.currentPeriod.totalVisits,tabs:authority.currentPeriod.tabs},historicalMutationChangesRevision:authority.revision.historicalMutationChangesRevision,volatileTimestampMutationPreservesRevision:authority.revision.volatileTimestampMutationPreservesRevision,sourceRevisionParity:authority.transversalParity,safeState:{providerReads:true,hrWrites:0,firestoreWrites:0,authWrites:0,hostingDeploys:0,cloudRunDeploys:0,production:false,merge:false,pii:false}};
           fs.writeFileSync('app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json',JSON.stringify(report,null,2)+'\n');
-          const md=['# CXOrbia — reconciliación HR viva actual','','- Fecha: '+report.generatedAt,'- Access mode: '+report.accessMode,`- Registry mode: ${report.tabRegistryMode||'n/a'}.`,`- Auto-discovery metadata provider: ${report.tabRegistryAutoDiscovery?'sí':'no; fail-closed con último registry provider'}.`,report.providerMetadataFallbackReason?`- Motivo fallback metadata: ${report.providerMetadataFallbackReason}`:'- Metadata provider directa disponible.','- Source-safe: sí; sin PII; writes=0.','',`- Periodos reales detectados: ${report.counts?.periods}`,`- Tabs mensuales reales procesados: ${report.counts?.tabs}`,`- Visitas: ${report.counts?.visits}`,`- Agosto real detectado: GT ${report.august.GT} / HN ${report.august.HN}`,`- Tabs fantasma rechazados: ${(report.phantomTabsRejected||[]).join(', ')||'ninguno'}`,'','## Periodos','',...periods.map(p=>`- ${p.key}: ${p.visits} (GT ${p.byCountry?.GT||0} / HN ${p.byCountry?.HN||0})`),'','## Seguridad','','- No se exporta PII ni workbook crudo.','- No HR/Firestore/Auth/Hosting writes; no producción/merge.',''];
+          const md=['# CXOrbia — reconciliación HR viva actual','',`- Fecha: ${report.generatedAt}.`,`- Source revision: \`${report.sourceRevision}\`.`,`- Access mode: ${report.accessMode}.`,`- Auto-discovery provider: ${report.tabRegistryAutoDiscovery?'PASS':'HOLD'}.`,`- Periodo calendario activo: ${periodKey}.`,`- Periodos vivos: ${report.counts?.periods}.`,`- Tabs mensuales vivas: ${report.counts?.tabs}.`,`- Visitas vivas: ${report.counts?.visits}.`,`- Periodo activo: GT ${report.currentPeriod.byCountry.GT} / HN ${report.currentPeriod.byCountry.HN}.`,`- Cambio histórico altera sourceRevision: ${report.historicalMutationChangesRevision?'PASS':'HOLD'}.`,`- Paridad transversal sourceRevision: ${report.sourceRevisionParity.allPass?'PASS':'HOLD'}.`,'','## Seguridad','','- Fuente viva y lectura provider read-only.','- Sin HR/Firestore/Auth/Hosting/Cloud Run writes o deploys.','- Sin producción ni merge.',''];
           fs.writeFileSync('app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.md',md.join('\n'));
           NODE
 
-      - name: Build August delta-only provider compare read-only
+      - name: Build current-period provider and Firestore compare read-only
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
           CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
           CXORBIA_CURRENT_SOURCE_SAFE: .tmp/hr-current/tya-hr-source-safe.js
           CXORBIA_COUNTRY_EVIDENCE: app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json
           CXORBIA_HR_TAB_REGISTRY: backend/config/tya-live-hr-tab-registry.source-safe.json
+          CXORBIA_LIVE_HR_AUTHORITY_JSON: app/docs/evidence/LIVE-HR-AUTHORITY-CONTRACT-LATEST.json
           CXORBIA_AUGUST_DELTA_PLAN: app/docs/evidence/AUGUST-DELTA-READONLY-PLAN-LATEST.json
         run: node tools/qa/cxorbia-august-delta-readonly-plan.mjs
 
-      - name: Commit sanitized evidence on latest branch head
+      - name: Commit sanitized evidence and fresh registry on latest branch head
         run: |
           set -euo pipefail
-          cp app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json /tmp/hr-current.json
-          cp app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.md /tmp/hr-current.md
-          cp app/docs/evidence/AUGUST-DELTA-READONLY-PLAN-LATEST.json /tmp/august-delta.json
-          cp app/docs/evidence/LIVE-HR-TAB-REGISTRY-ENFORCEMENT-LATEST.json /tmp/tab-registry-evidence.json
-          cp backend/config/tya-live-hr-tab-registry.source-safe.json /tmp/tab-registry.json
+          mkdir -p /tmp/cx-live-hr
+          cp app/docs/evidence/LIVE-HR-AUTHORITY-CONTRACT-LATEST.json /tmp/cx-live-hr/
+          cp app/docs/evidence/LIVE-HR-AUTHORITY-CONTRACT-LATEST.md /tmp/cx-live-hr/
+          cp app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json /tmp/cx-live-hr/
+          cp app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.md /tmp/cx-live-hr/
+          cp app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json /tmp/cx-live-hr/
+          cp app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.md /tmp/cx-live-hr/
+          cp app/docs/evidence/AUGUST-DELTA-READONLY-PLAN-LATEST.json /tmp/cx-live-hr/
+          cp app/docs/evidence/LIVE-HR-TAB-REGISTRY-ENFORCEMENT-LATEST.json /tmp/cx-live-hr/
+          cp backend/config/tya-live-hr-tab-registry.source-safe.json /tmp/cx-live-hr/registry.json
           git fetch origin docs-tya-v6-v71-audit
           git reset --hard origin/docs-tya-v6-v71-audit
           mkdir -p app/docs/evidence backend/config
-          cp /tmp/hr-current.json app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json
-          cp /tmp/hr-current.md app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.md
-          cp /tmp/august-delta.json app/docs/evidence/AUGUST-DELTA-READONLY-PLAN-LATEST.json
-          cp /tmp/tab-registry-evidence.json app/docs/evidence/LIVE-HR-TAB-REGISTRY-ENFORCEMENT-LATEST.json
-          cp /tmp/tab-registry.json backend/config/tya-live-hr-tab-registry.source-safe.json
+          cp /tmp/cx-live-hr/LIVE-HR-AUTHORITY-CONTRACT-LATEST.json app/docs/evidence/
+          cp /tmp/cx-live-hr/LIVE-HR-AUTHORITY-CONTRACT-LATEST.md app/docs/evidence/
+          cp /tmp/cx-live-hr/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json app/docs/evidence/
+          cp /tmp/cx-live-hr/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.md app/docs/evidence/
+          cp /tmp/cx-live-hr/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json app/docs/evidence/
+          cp /tmp/cx-live-hr/LIVE-HR-CURRENT-RECONCILIATION-LATEST.md app/docs/evidence/
+          cp /tmp/cx-live-hr/AUGUST-DELTA-READONLY-PLAN-LATEST.json app/docs/evidence/
+          cp /tmp/cx-live-hr/LIVE-HR-TAB-REGISTRY-ENFORCEMENT-LATEST.json app/docs/evidence/
+          cp /tmp/cx-live-hr/registry.json backend/config/tya-live-hr-tab-registry.source-safe.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.md app/docs/evidence/AUGUST-DELTA-READONLY-PLAN-LATEST.json app/docs/evidence/LIVE-HR-TAB-REGISTRY-ENFORCEMENT-LATEST.json backend/config/tya-live-hr-tab-registry.source-safe.json
-          if ! git diff --cached --quiet; then git commit -m 'evidence: reconcile live HR with auto-discovered provider tabs';git push origin HEAD:docs-tya-v6-v71-audit;fi
+          git add app/docs/evidence/LIVE-HR-AUTHORITY-CONTRACT-LATEST.json app/docs/evidence/LIVE-HR-AUTHORITY-CONTRACT-LATEST.md app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.md app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.md app/docs/evidence/AUGUST-DELTA-READONLY-PLAN-LATEST.json app/docs/evidence/LIVE-HR-TAB-REGISTRY-ENFORCEMENT-LATEST.json backend/config/tya-live-hr-tab-registry.source-safe.json
+          if ! git diff --cached --quiet; then git commit -m 'evidence: pass live HR authority current period and history revision';git push origin HEAD:docs-tya-v6-v71-audit;fi
 
       - name: Publish status
         if: always()
         env: {GH_TOKEN: '${{ github.token }}'}
         run: |
-          STATE=error;DESC='HOLD_LIVE_HR_CURRENT_RECONCILIATION'
-          if [ -f app/docs/evidence/AUGUST-DELTA-READONLY-PLAN-LATEST.json ];then
-            D=$(node -p "require('./app/docs/evidence/AUGUST-DELTA-READONLY-PLAN-LATEST.json').decision")
-            if [ "$D" = 'HOLD_AUGUST_REQUIRED_PROVIDER_TABS_MISSING' ];then STATE=success;DESC='HOLD_AUGUST_PROVIDER_TABS_MISSING_READONLY_CONFIRMED';
-            elif [ "$D" = 'PASS_AUGUST_FULL_DELTA_TECH_READY' ];then STATE=success;DESC='PASS_AUGUST_FULL_DELTA_TECH_READY';
-            else DESC='HOLD_HR_CURRENT__AUG_DELTA_PLAN';fi
+          STATE=error;DESC='HOLD_LIVE_HR_AUTHORITY_CURRENT_PERIOD'
+          if [ -f app/docs/evidence/LIVE-HR-AUTHORITY-CONTRACT-LATEST.json ];then
+            A=$(node -p "require('./app/docs/evidence/LIVE-HR-AUTHORITY-CONTRACT-LATEST.json').decision")
+            P=$(node -p "require('./app/docs/evidence/AUGUST-DELTA-READONLY-PLAN-LATEST.json').decision" 2>/dev/null || true)
+            if [ "$A" = 'PASS_LIVE_HR_AUTHORITY_CURRENT_PERIOD_AND_HISTORY_REVISION' ];then
+              STATE=success;DESC='PASS_LIVE_HR_AUTHORITY_CURRENT_PERIOD_HISTORY_REVISION'
+              if [ "$P" != 'PASS_CURRENT_PERIOD_LIVE_SOURCE_TECH_READY' ];then DESC='PASS_LIVE_HR_AUTHORITY__CURRENT_PERIOD_PLAN_HOLD';fi
+            fi
           fi
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/live-hr-current-reconcile' -f description="$DESC" >/dev/null
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/live-hr-authority-current-period' -f description="$DESC" >/dev/null
 
       - name: Cleanup
         if: always()
-        run: rm -rf .tmp/hr-current
+        run: rm -rf .tmp/hr-current /tmp/cx-live-hr
