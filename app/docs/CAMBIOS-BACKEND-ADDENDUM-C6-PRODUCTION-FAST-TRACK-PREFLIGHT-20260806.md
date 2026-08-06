@@ -1,7 +1,7 @@
 # CAMBIOS BACKEND — Addendum C6 fast-track de producción source-only
 
 **Fecha:** 2026-08-06  
-**Estado:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_GATE_HOLD__LIVE_HR_V4_UNRESOLVED__PROD_TARGET_UNMATERIALIZED__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `C6_PRODUCTION_FAST_TRACK_PREFLIGHT_GATE_HOLD__LIVE_HR_V4_UNRESOLVED__PRODUCTION_STRATEGY_UNMATERIALIZED__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## Archivos creados
 
@@ -25,15 +25,20 @@
 ```text
 node --check tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs = PASS
 execution exitCode=2 esperado fail-closed
-decision=HOLD_PRODUCTION_TARGET_UNMATERIALIZED
-holdReason=PRODUCTION_CONFIGURATION_FILES_NOT_MATERIALIZED
+decision=HOLD_PRODUCTION_STRATEGY_UNMATERIALIZED
+holdReason=PRODUCTION_PROMOTION_STRATEGY_NOT_AUTHORIZED_OR_MATERIALIZED
 ```
 
-El gate verifica que producción use archivos, proyecto, target, sitio y servicio separados de DEV. No crea infraestructura, no accede a provider y no despliega.
+El gate acepta dos estrategias, sin imponer una:
+
+- `PROMOTE_EXISTING_CLEAN_PROJECT`;
+- `SEPARATE_CLEAN_PROD_PROJECT`.
+
+Ambas exigen autorización expresa y prohíben usar la base legacy como backend nuevo.
 
 ## Hallazgo
 
-El repositorio solo materializa DEV: `cxorbia-backend-dev`, target `cxorbia-dev` y servicio `cxorbia-live-hr-dev`. No existen `.firebaserc.prod` ni `firebase.prod.json`.
+El repositorio materializa actualmente `cxorbia-backend-dev`, target `cxorbia-dev` y servicio `cxorbia-live-hr-dev`. Falta una decisión contractual de promoción; no se infiere que deba crearse otro proyecto ni que el DEV pueda promoverse sin autorización.
 
 ## Límites
 
@@ -41,7 +46,7 @@ No se modificó frontend, `CX.data`, request HR, workflow, Firebase, Auth, Rules
 
 ## Clasificación
 
-- Reusable CXOrbia: gate de separación DEV/PROD.
+- Reusable CXOrbia: gate de estrategia de producción autorizado.
 - Exclusivo TyA: preparación del cutover.
 - Claude/prototipo: sin cambios.
 - Academia: impacto documentado.
