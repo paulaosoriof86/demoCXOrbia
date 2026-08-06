@@ -1,4 +1,4 @@
-// SOURCE_ONLY_PENDING
+// SOURCE_ONLY_INTEGRATED
 import { text, norm, fingerprint, asciiToken } from './cxorbia-c6-shopper-identity-canonical-plan.mjs';
 
 export const EQUIVALENT_UNIVERSE_VERSION = 'shopper-equivalent-universe-v1';

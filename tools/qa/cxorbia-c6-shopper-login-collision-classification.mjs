@@ -2,6 +2,11 @@ import {
   TENANT_ID, CANONICAL_PROJECT_ID, text, norm, sha256, fingerprint, asciiToken,
   internalEmail, passwordSignInEmail
 } from './cxorbia-c6-shopper-identity-canonical-plan.mjs';
+import {
+  EQUIVALENT_UNIVERSE_VERSION,
+  resolveEquivalentNames, equivalentActive, resolveLinkedSourceMode,
+  buildReferenceMemberVector, stableAuthCandidateFingerprint
+} from './cxorbia-c6-shopper-equivalent-universe.mjs';
 
 const TECH_KEYS = [
   'shopperId','legacyShopperId','legacyId','externalShopperId','externalId',
@@ -378,10 +383,10 @@ export async function buildCollisionClassification({
 
   const relationIndex = new Map();
   const linkedByProfile = new Map();
-  const link = (shopperId, source, basis) => {
+  const link = (shopperId, source, basis, linkMode = 'direct_shopper_id') => {
     if (!profiles.has(shopperId)) return;
     if (!linkedByProfile.has(shopperId)) linkedByProfile.set(shopperId, []);
-    linkedByProfile.get(shopperId).push({ ...source, __basis: basis });
+    linkedByProfile.get(shopperId).push({ ...source, __basis: basis, __linkMode: linkMode });
     for (const key of TECH_KEYS) {
       const value = source?.[key];
       for (const item of Array.isArray(value) ? value : [value]) add(relationIndex, text(item), shopperId);
@@ -398,7 +403,14 @@ export async function buildCollisionClassification({
       const root = doc.data() || {};
       for (const source of [root, ...recursiveObjects(root)]) {
         const shopperId = text(source.shopperId || source.profileId || source.shopperDocId);
-        if (shopperId) link(shopperId, source, basis);
+        if (shopperId && profiles.has(shopperId)) {
+          link(shopperId, source, basis, 'direct_shopper_id');
+          continue;
+        }
+        const candidates = [];
+        for (const key of TECH_KEYS) candidates.push(...(relationIndex.get(text(source[key])) || []));
+        const exact = uniq(candidates);
+        if (exact.length === 1) link(exact[0], source, basis, 'exact_technical_anchor');
       }
     }
   }
@@ -466,7 +478,7 @@ export async function buildCollisionClassification({
   for (const profile of profiles.values()) {
     const linkedSources = linkedByProfile.get(profile.id) || [];
     const credentials = credentialsByProfile.get(profile.id) || [];
-    const names = canonicalNames(profile, linkedSources, credentials);
+    const names = resolveEquivalentNames(profile, linkedSources.map(source => ({ value: source, basis: source.__basis || 'linked', linkMode: source.__linkMode || 'direct_shopper_id' })), credentials);
     const status = statusInfo(profile);
     const profileActivity = activity.get(profile.id) || { visits: 0, recentVisits: 0, hrLinks: 0, certifications: 0, liquidations: 0 };
 
@@ -478,13 +490,13 @@ export async function buildCollisionClassification({
     const seen = new Set();
     const uniqueAuth = candidateAuth.filter(user => !seen.has(user.uid) && seen.add(user.uid));
 
-    const active = !status.inactive && (
-      status.active ||
-      uniqueAuth.length > 0 ||
-      credentials.length > 0 ||
-      profileActivity.hrLinks > 0 ||
-      profileActivity.recentVisits > 0
-    );
+    const active = equivalentActive({
+      status,
+      authCandidateCount: uniqueAuth.length,
+      credentialCount: credentials.length,
+      hrLinks: profileActivity.hrLinks,
+      recentVisits: profileActivity.recentVisits
+    });
     const historical = Boolean(
       profileActivity.visits ||
       profileActivity.certifications ||
@@ -517,13 +529,21 @@ export async function buildCollisionClassification({
   const groupMatrix = [];
   for (const [login, members] of candidateGroups) {
     if (members.length < 2) continue;
-    groupMatrix.push(classifyGroup(login, members, tenantId, projectId));
+    const classified = classifyGroup(login, members, tenantId, projectId);
+    classified.universeVersion = EQUIVALENT_UNIVERSE_VERSION;
+    classified.memberVectors = members.map(row => buildReferenceMemberVector({
+      profileId: row.profile.id,
+      active: row.active,
+      names: row.names,
+      linkedSourceResolutionMode: resolveLinkedSourceMode(row.linkedSources)
+    }));
+    groupMatrix.push(classified);
   }
 
   const authMatrix = [];
   for (const row of rows.filter(item => item.authUsers.length > 1)) {
     const scored = row.authUsers
-      .map(user => ({ user, score: authScore(user, row, tenantId, projectId) }))
+      .map(user => ({ user, candidateFingerprint: stableAuthCandidateFingerprint(user.uid), score: authScore(user, row, tenantId, projectId) }))
       .sort((a, b) => b.score - a.score);
     const top = scored[0];
     const second = scored[1];
@@ -539,6 +559,7 @@ export async function buildCollisionClassification({
       candidateCount: scored.length,
       topScore: top?.score || 0,
       scoreMargin: top && second ? top.score - second.score : top?.score || 0,
+      candidateVectors: scored.map((entry, index) => ({ candidateOrdinal: index + 1, candidateFingerprint: entry.candidateFingerprint, score: entry.score })),
       resolution: uniqueStrong ? 'RESOLVED_UNIQUE_TECHNICAL_AUTH_CANDIDATE' : 'HOLD_MULTIPLE_AUTH_CANDIDATES'
     });
   }
@@ -609,6 +630,7 @@ export async function buildCollisionClassification({
   };
 
   return {
+    schemaVersion: 'cxorbia.c6.shopper-login-collision-classification.result.v2.2',
     generatedAt: new Date().toISOString(),
     tenantId,
     projectId,
@@ -625,6 +647,15 @@ export async function buildCollisionClassification({
       visits: visitsSnap.docs.length,
       certifications: certSnap.docs.length,
       liquidations: liqSnap.docs.length
+    },
+    equivalentUniverse: {
+      version: EQUIVALENT_UNIVERSE_VERSION,
+      populationPredicate: 'same_tenant_shopper_snapshot',
+      activityPredicate: 'equivalentActive_v1',
+      linkingPredicate: 'direct_shopper_id_or_exact_unique_technical_anchor',
+      completenessPredicate: 'post_consensus_active_complete',
+      referenceGroupFingerprints: groupMatrix.map(group => group.groupFp).sort(),
+      memberProvenanceIntegrated: true
     },
     classification: matrix,
     groupSizeDistribution: groupMatrix.reduce((acc, group) => {

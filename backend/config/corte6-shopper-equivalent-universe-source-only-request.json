@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.c6.shopper-equivalent-universe-source-only-request.v1",
   "requestId": "c6-shopper-equivalent-universe-member-provenance-source-only-20260805-01",
-  "enabled": true,
-  "consumed": false,
-  "status": "authorized_execute_once",
+  "enabled": false,
+  "consumed": true,
+  "status": "consumed_source_static_pass",
   "issuedAt": "2026-08-05T22:12:00-06:00",
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-05",
@@ -50,7 +50,7 @@
   "contract": "backend/contracts/c6-shopper-deterministic-suffix-v1.json",
   "providerReads": false,
   "providerWrites": false,
-  "allowedExecutions": 1,
+  "allowedExecutions": 0,
   "automaticRetry": false,
   "requiredIntegration": {
     "equivalentPopulation": true,
@@ -82,5 +82,15 @@
   "containsPii": false,
   "containsSecrets": false,
   "stopAfterSourceStatic": true,
-  "nextGate": "NO_PROVIDER_READ_OR_REPAIR_AUTHORIZED"
+  "nextGate": "NEW_EXPLICIT_PROVIDER_READONLY_REVALIDATION_OR_TENANT_ADJUDICATION_PREPARATION_REQUIRED",
+  "consumedAt": "2026-08-06T04:28:00.055Z",
+  "executions": 1,
+  "workflowRunId": 31071318363,
+  "result": {
+    "decision": "PASS_C6_EQUIVALENT_UNIVERSE_MEMBER_PROVENANCE_INTEGRATION_SOURCE_STATIC",
+    "providerReads": 0,
+    "providerWrites": 0,
+    "contractVersion": "v2.2",
+    "evidence": "app/docs/evidence/CORTE6-SHOPPER-EQUIVALENT-UNIVERSE-MEMBER-PROVENANCE-SOURCE-STATIC-PASS-LATEST.json"
+  }
 }

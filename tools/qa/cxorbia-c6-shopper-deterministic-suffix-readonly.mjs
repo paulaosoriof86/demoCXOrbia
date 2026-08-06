@@ -16,6 +16,12 @@ import {
   decryptCredentialBundle,
   fetchFirebaseWebConfig
 } from './cxorbia-c6-shopper-identity-canonical-plan.mjs';
+import {
+  EQUIVALENT_UNIVERSE_VERSION,
+  resolveEquivalentNames, equivalentActive, resolveLinkedSourceMode,
+  buildReferenceMemberVector, buildPlannerMemberVector,
+  reconcileEquivalentGroupSets, stableAuthCandidateFingerprint
+} from './cxorbia-c6-shopper-equivalent-universe.mjs';
 
 const TECH_KEYS = [
   'shopperId','legacyShopperId','legacyId','externalShopperId','externalId',
@@ -341,10 +347,10 @@ async function buildProviderPlan({ auth, db, bundle, webConfig, tenantId, projec
   }
 
   const linkedByProfile = new Map();
-  const link = (shopperId, source) => {
+  const link = (shopperId, source, linkMode = 'direct_shopper_id') => {
     if (!profiles.has(shopperId)) return;
     if (!linkedByProfile.has(shopperId)) linkedByProfile.set(shopperId, []);
-    linkedByProfile.get(shopperId).push(source);
+    linkedByProfile.get(shopperId).push({ ...source, __linkMode: linkMode });
     propagateLinkedSourceTechKeys(relationIndex, source, shopperId);
   };
   for (const [basis, snap] of [['hr', hrSnap], ['visit', visitSnap], ['certification', certSnap], ['liquidation', liqSnap]]) {
@@ -353,13 +359,13 @@ async function buildProviderPlan({ auth, db, bundle, webConfig, tenantId, projec
       for (const source of [{ value: rootData, basis }, ...recursiveObjects(rootData, basis)]) {
         const direct = text(source.value.shopperId || source.value.profileId || source.value.shopperDocId);
         if (direct && profiles.has(direct)) {
-          link(direct, source);
+          link(direct, source, 'direct_shopper_id');
           continue;
         }
         const candidates = [];
         for (const key of TECH_KEYS) candidates.push(...(relationIndex.get(text(source.value[key])) || []));
         const exact = uniq(candidates);
-        if (exact.length === 1) link(exact[0], source);
+        if (exact.length === 1) link(exact[0], source, 'exact_technical_anchor');
       }
     }
   }
@@ -430,7 +436,7 @@ async function buildProviderPlan({ auth, db, bundle, webConfig, tenantId, projec
   for (const profile of profiles.values()) {
     const linkedSources = linkedByProfile.get(profile.id) || [];
     const credentials = credentialsByProfile.get(profile.id) || [];
-    const names = sourceSafeNames(profile, linkedSources, credentials);
+    const names = resolveEquivalentNames(profile, linkedSources, credentials);
     const status = statusInfo(profile);
     const rowActivity = activity.get(profile.id) || { visits: 0, recentVisits: 0, hrLinks: 0, certifications: 0, liquidations: 0 };
     const candidates = [...(authByShopperId.get(profile.id) || [])];
@@ -440,9 +446,13 @@ async function buildProviderPlan({ auth, db, bundle, webConfig, tenantId, projec
     }
     const seen = new Set();
     const authCandidates = candidates.filter(user => !seen.has(user.uid) && seen.add(user.uid));
-    const active = !status.inactive && (
-      status.active || authCandidates.length > 0 || credentials.length > 0 || rowActivity.hrLinks > 0 || rowActivity.recentVisits > 0
-    );
+    const active = equivalentActive({
+      status,
+      authCandidateCount: authCandidates.length,
+      credentialCount: credentials.length,
+      hrLinks: rowActivity.hrLinks,
+      recentVisits: rowActivity.recentVisits
+    });
     rows.push({
       profile,
       linkedSources,
@@ -506,13 +516,40 @@ async function buildProviderPlan({ auth, db, bundle, webConfig, tenantId, projec
     }
     groupMatrix.push({
       groupFp: stableGroupFingerprint(baseLogin),
+      universeVersion: EQUIVALENT_UNIVERSE_VERSION,
       activeCount: members.length,
       keeperSelected: Boolean(keeper),
       suffixedCount: members.length - (keeper ? 1 : 0),
       suffixLengths,
-      unresolvedCount: members.filter(row => !row.targetLogin).length
+      unresolvedCount: members.filter(row => !row.targetLogin).length,
+      memberVectors: members.map(row => buildPlannerMemberVector({
+        profileId: row.profile.id,
+        active: row.active,
+        names: row.names,
+        keeper: row === keeper,
+        suffixApplied: row.suffixLength > 0,
+        suffixLength: row.suffixLength,
+        linkedSourceResolutionMode: resolveLinkedSourceMode(row.linkedSources)
+      }))
     });
   }
+
+  const equivalentReferenceGroups = collisionGroups.map(([baseLogin, members]) => ({
+    groupFp: stableGroupFingerprint(baseLogin),
+    universeVersion: EQUIVALENT_UNIVERSE_VERSION,
+    memberVectors: members.map(row => buildReferenceMemberVector({
+      profileId: row.profile.id,
+      active: row.active,
+      names: row.names,
+      linkedSourceResolutionMode: resolveLinkedSourceMode(row.linkedSources)
+    }))
+  }));
+  const equivalentPlannerGroups = groupMatrix.map(group => ({
+    groupFp: group.groupFp,
+    universeVersion: EQUIVALENT_UNIVERSE_VERSION,
+    memberVectors: group.memberVectors
+  }));
+  const equivalentUniverseReconciliation = reconcileEquivalentGroupSets(equivalentReferenceGroups, equivalentPlannerGroups);
 
   for (const [, members] of baseGroups) {
     if (members.length === 1) {
@@ -540,6 +577,7 @@ async function buildProviderPlan({ auth, db, bundle, webConfig, tenantId, projec
         scoreMargin: top ? top.score - (second?.score || 0) : 0,
         candidateVectors: scored.map((entry, index) => ({
           candidateOrdinal: index + 1,
+          candidateFingerprint: stableAuthCandidateFingerprint(entry.user.uid),
           score: entry.score,
           signals: entry.signals
         }))
@@ -618,7 +656,7 @@ async function buildProviderPlan({ auth, db, bundle, webConfig, tenantId, projec
     targetCollisionHolds === 0;
 
   return {
-    schemaVersion: 'cxorbia.c6.shopper-deterministic-suffix-readonly.result.v2',
+    schemaVersion: 'cxorbia.c6.shopper-deterministic-suffix-readonly.result.v2.2',
     generatedAt: new Date().toISOString(),
     decision: ready ? 'PASS_C6_DETERMINISTIC_SUFFIX_PLAN_READY_READONLY' : 'HOLD_C6_DETERMINISTIC_SUFFIX_PLAN_STOP_RETRY',
     source: {
@@ -657,6 +695,17 @@ async function buildProviderPlan({ auth, db, bundle, webConfig, tenantId, projec
       suffix8: groupMatrix.reduce((sum, group) => sum + group.suffixLengths['8'], 0),
       suffixAllocationHolds,
       targetCollisionHolds
+    },
+    equivalentUniverse: {
+      version: EQUIVALENT_UNIVERSE_VERSION,
+      populationPredicate: 'same_tenant_shopper_snapshot',
+      activityPredicate: 'equivalentActive_v1',
+      linkingPredicate: 'direct_shopper_id_or_exact_unique_technical_anchor',
+      completenessPredicate: 'post_consensus_active_complete',
+      referenceGroups: equivalentReferenceGroups.length,
+      plannerGroups: equivalentPlannerGroups.length,
+      reconciliation: equivalentUniverseReconciliation,
+      deltaMemberVectorsOnly: true
     },
     multiAuth: {
       profilesWithMultipleCandidates: rows.filter(row => row.authUsers.length > 1).length,
