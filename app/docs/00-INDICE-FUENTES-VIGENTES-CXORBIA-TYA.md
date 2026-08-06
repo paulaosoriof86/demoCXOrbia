@@ -2,51 +2,63 @@
 
 **Fecha:** 2026-08-06  
 **Estado:** ACTIVO Y RECONCILIADO  
-**Estado vivo:** `C6_13_HOLD_PROFILES_FINGERPRINTED__NAMES_PENDING_PRIVATE_RECOVERY__LIVE_HR_AUGUST_AUTHORITY_P0__STOP_RETRY__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `C6_SKIP13_AUTH_DISPOSITION_SOURCE_ONLY_PASS__IDENTITY_HOLD_0__LIVE_HR_AUGUST_P0_REMAINS__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Orden de prevalencia
 
 1. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `app/docs/SOURCE-LOCK-C6-HOLD-PROFILES-LIVE-HR-AUGUST-20260806.md`;
-3. `app/docs/evidence/CORTE6-SHOPPER-EQUIVALENT-UNIVERSE-PROVIDER-V22-HOLD-LATEST.json`;
-4. `app/docs/SOURCE-LOCK-C6-EQUIVALENT-UNIVERSE-PROVIDER-READONLY-V22-20260806.md`;
-5. `app/docs/evidence/LIVE-HR-TAB-REGISTRY-ENFORCEMENT-LATEST.json`;
-6. `app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json`;
-7. `backend/runtime/hr-live-service/server.mjs`;
-8. `tools/hr-source/tya-build-live-hr-source-safe-r20.mjs`;
-9. `tools/hr-source/tya-enforce-live-tab-registry.mjs`;
-10. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-11. addenda vigentes de CAMBIOS, Claude, Pendientes, Academia y tracker de este bloque;
-12. `AGENTS.md`, PR #7 y HEAD vivo.
+2. `app/docs/SOURCE-LOCK-C6-SKIP13-AUTH-DISPOSITION-20260806.md`;
+3. `app/docs/evidence/CORTE6-SHOPPER-AUTH-SKIP13-SOURCE-ONLY-PASS-LATEST.json`;
+4. `backend/config/corte6-shopper-auth-skip13-disposition-v1.json`;
+5. `tools/qa/cxorbia-c6-shopper-auth-skip-disposition-source-only.mjs`;
+6. `app/docs/SOURCE-LOCK-C6-HOLD-PROFILES-LIVE-HR-AUGUST-20260806.md` — antecedente de los HOLD y P0 HR;
+7. `app/docs/evidence/CORTE6-SHOPPER-EQUIVALENT-UNIVERSE-PROVIDER-V22-HOLD-LATEST.json` — fuente del plan original;
+8. `app/docs/evidence/LIVE-HR-TAB-REGISTRY-ENFORCEMENT-LATEST.json`;
+9. `app/docs/evidence/LIVE-HR-CURRENT-RECONCILIATION-LATEST.json`;
+10. `backend/runtime/hr-live-service/server.mjs`;
+11. `tools/hr-source/tya-build-live-hr-source-safe-r20.mjs`;
+12. `tools/hr-source/tya-enforce-live-tab-registry.mjs`;
+13. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+14. addenda vigentes de CAMBIOS, Claude, Pendientes, Academia y tracker de este bloque;
+15. `AGENTS.md`, PR #7 y HEAD vivo.
 
-Los estados previos que describan V7.2 como pendiente principal, provider v2.2 como no ejecutado o agosto como inexistente quedan superados.
+Los estados previos que describan los 13 perfiles como decisión pendiente o bloqueo Auth quedan superados.
 
-## 2. Revalidación provider v2.2 cerrada
+## 2. Disposición de los 13 perfiles
+
+Paula autorizó omitir los 13 perfiles HOLD del repair Auth. La transformación source-only validó coincidencia exacta del conjunto y produjo:
 
 ```text
-run=31104541809
-job=92626188022
-artifact=8968941587
-profiles=340
-referenceGroups=65
-plannerGroups=65
-exactMatch=true
-HOLD=13
-providerReads=1
-providerWrites=0
-secondAttempt=0
+rows=340 unique
+CREATE_AUTH=81
+UPDATE_AUTH=46
+NO_OP=73
+HOLD=0
+PRESERVE_NO_AUTH=140
+identityHoldsRemaining=0
 ```
 
-El antiguo `+1/-0` quedó cerrado como comparación entre universos diferentes.
+Política:
 
-## 3. Perfiles HOLD
+```text
+SKIP_AUTH_REPAIR_PRESERVE_HISTORY
+doNotCreateAuth=true
+doNotUpdateAuth=true
+preserveHistory/visits/certifications/liquidations=true
+futureManualReactivationAllowed=true
+```
 
-- 12 perfiles: `AUTHORITATIVE_SURNAME_SOURCE_ENRICHMENT_REQUIRED`.
-- 1 perfil: `SOURCE_SAFE_ACCOUNT_ADJUDICATION_REQUIRED` por empate multi-Auth.
-- Los 13 fingerprints exactos están en el source lock vigente.
-- Los nombres todavía no están confirmados: el probe privado terminó `error` durante el empaquetado de salida y quedó congelado sin rerun.
+No hubo hard delete ni cambios proveedor.
 
-La disposición permitida por decisión de Paula es `ARCHIVE_LEGACY_NO_AUTH`, conservando historia, visitas, certificaciones y liquidaciones.
+## 3. Trazabilidad
+
+```text
+providerRun=31104541809
+artifact=8968941587
+planDigestBefore=acc93da842d1a5d3244327680f88539f0651cb101bae09dd231fd8b5008bea92
+planDigestAfter=6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b
+sourceOnlyDecision=PASS_C6_SKIP13_AUTH_DISPOSITION_SOURCE_ONLY
+```
 
 ## 4. Autoridad HR viva y agosto
 
@@ -60,16 +72,16 @@ provider metadata=403
 autoDiscovery=false
 ```
 
-Por tanto, julio no es una verdad vigente de HR; es el último registro aceptado por un registry desactualizado. Agosto ya existe según Paula y debe confirmarse directamente desde metadata/provider vivo.
+Agosto ya existe según Paula y fue detectado por el builder, pero un registry desactualizado lo rechazó. Este es el bloqueo principal vigente.
 
 ## 5. Regla de datos
 
-Toda operación e histórico debe derivarse de la HR viva y una `sourceRevision` común. Los snapshots, archivos estáticos y materializaciones Firestore son únicamente bootstrap, cache o last-known-good; nunca autoridad permanente. Una modificación histórica en HR debe reflejarse en la siguiente revisión viva.
+Toda operación e histórico debe derivarse de la HR viva y una `sourceRevision` común. Snapshots, archivos estáticos y materializaciones Firestore son únicamente bootstrap, cache o last-known-good; nunca autoridad permanente.
 
 ## 6. Estado seguro
 
 ```text
-Auth/password/membership writes=0
+provider/Auth/password/membership writes=0
 Firestore/Rules/Storage/HR writes=0
 Hosting/Cloud Run deploys=0
 Make/Gemini/payments=0
@@ -80,11 +92,10 @@ production=false
 ## 7. Siguiente bloque exacto
 
 ```text
-RECUPERAR NOMBRES DE LOS 13 HOLD SIN INFERENCIA
-→ DECISIÓN PAULA CONSERVAR O ARCHIVAR SIN AUTH
-→ CORREGIR METADATA PROVIDER/AUTODISCOVERY
-→ CONFIRMAR AGOSTO Y MUTACIÓN HISTÓRICA DESDE HR VIVA
-→ REGENERAR PLAN AUTH SIN HOLD OPERATIVO
-→ VALIDACIÓN ACUMULATIVA
-→ CUTOVER CON AUTORIZACIÓN EXPRESA
+LIVE HR PROVIDER METADATA/AUTODISCOVERY ROOT FIX
+→ confirmar AGOSTO 26 + AGOSTO 26 HN desde HR viva
+→ reconstruir todos los periodos e histórico
+→ validar cambio histórico y sourceRevision transversal
+→ preparar repair Auth con identity HOLD=0
+→ autorización separada para writes/deploy/cutover
 ```
