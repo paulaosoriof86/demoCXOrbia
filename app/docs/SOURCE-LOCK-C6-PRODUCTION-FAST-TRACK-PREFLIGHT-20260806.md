@@ -84,7 +84,22 @@ Evidencia canónica:
 
 - `app/docs/evidence/C6-PRODUCTION-TARGET-PREFLIGHT-LATEST.json`.
 
-## 6. Corrección antidesvío
+## 6. Contrato preparado sin autorización
+
+Se creó una plantilla deshabilitada:
+
+```text
+backend/config/cxorbia-production-promotion-contract.template.json
+authorized=false
+strategy=null
+writesAuthorizedByThisContract=false
+deployAuthorizedByThisContract=false
+productionCutoverAuthorizedByThisContract=false
+```
+
+La plantilla reduce el siguiente bloque a materializar únicamente la estrategia expresamente elegida. No modifica el entorno ni habilita writes o deploy.
+
+## 7. Corrección antidesvío
 
 No se asume que producción exige obligatoriamente un proyecto separado. La decisión debe ser expresa:
 
@@ -93,7 +108,7 @@ No se asume que producción exige obligatoriamente un proyecto separado. La deci
 
 Ninguna opción ha sido autorizada todavía. No se crea proyecto ni se cambia target por inferencia.
 
-## 7. Identidades Shopper
+## 8. Identidades Shopper
 
 ```text
 profiles=340
@@ -107,7 +122,7 @@ Auth writes ejecutados=false
 
 El plan está listo source-only, pero su ejecución continúa separada y requiere autorización de writes, snapshot, idempotencia, readback y rollback.
 
-## 8. Cadena mínima restante
+## 9. Cadena mínima restante
 
 1. Reconciliar evidencia terminal del request HR v4.
 2. Confirmar `2026-08`, GT/HN, mutación histórica y `sourceRevision` transversal.
@@ -119,7 +134,7 @@ El plan está listo source-only, pero su ejecución continúa separada y requier
 8. Completar validación humana, rollback y autorización específica.
 9. Ejecutar un único cutover.
 
-## 9. Clasificación
+## 10. Clasificación
 
 - **Reusable CXOrbia:** gate de promoción/target autorizado sin imponer topología.
 - **Exclusivo TyA:** HR viva 2026-08 GT/HN y cutover operativo.
@@ -127,7 +142,7 @@ El plan está listo source-only, pero su ejecución continúa separada y requier
 - **Academia:** diferencia entre entorno configurado y estrategia de promoción autorizada.
 - **Sin impacto Claude:** frontend, `CX.data`, Login, Finanzas, Portales, Reservas y SKIP13 preservados.
 
-## 10. Estado seguro
+## 11. Estado seguro
 
 ```text
 provider reads del preflight=0
