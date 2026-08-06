@@ -1,197 +1,130 @@
 # CXOrbia TyA — PLAN PHASE A SIN DESVIACIÓN
 
 **Fecha original:** 2026-07-04  
-**Actualización prevalente:** 2026-08-04  
-**Estado:** `V7_2_RECEIVED_PREFLIGHT__EXECUTION_LANE_NOT_READY_FOR_FINAL_AUDIT_APPLY__NO_EMPALME__NO_DEPLOY__NO_PRODUCTION`
+**Actualización prevalente:** 2026-08-06  
+**Estado:** `C6_13_HOLD_DISPOSITION_AND_LIVE_HR_AUGUST_ROOT_FIX_PENDING__NO_PRODUCTION`
 
 ## 1. Objetivo operativo
 
-Construir una sola candidata canónica acumulativa sobre `docs-tya-v6-v71-audit`, preservando las mejores autoridades ya aprobadas de cada módulo y aplicando únicamente deltas auditados. El primer corte operativo sigue siendo `ADMIN/OPERACIONES + SHOPPER`; Portal Cliente permanece incluido en la composición, pero su cierre funcional continúa en paralelo y no debe provocar una candidata separada.
+Cerrar una única baseline acumulativa sobre `docs-tya-v6-v71-audit` y llevar a producción Phase A sin reabrir módulos ya preservados, sin otra candidata paralela y sin sustituir la HR viva por snapshots o datos fijados.
 
-No se permite shell reducido, composición fragmentada por módulos, nueva rama, nuevo PR, nueva candidata por rutina ni reconstrucción desde cero.
+El estado V7.2 y cualquier carril anterior quedan como historia, no como estado vivo.
 
-## 2. Logros verificados que no se reabren
+## 2. Bloques preservados que no se reabren sin regresión reproducible
 
-- PR #7 draft/open/no merge.
-- HEAD vivo al cierre de recuperación: `35fcc44c89df33b374ce010d06c031320e28126a`.
-- Existe manifiesto único `CXORBIA-TYA-PHASE-A-COMPLETE-CANONICAL-COMPOSITION-20260804` con `singleCandidate=true`, `singleBranch=true` y autoridades explícitas por archivo/módulo.
-- Composición source/static: 53/53 blobs base, 4/4 adicionales, 5/5 overrides, 0 assets faltantes, 0 scripts duplicados y 0 secretos.
-- Laboratorio source-contract: cinco perfiles, política `AUDIT-*`, fingerprints, cleanup exacto y fail-closed validados.
-- Run `30971991900`, artifact `8916850770`, digest `sha256:75953c600b68450a11cfac6667ac5b5cfa8eceea5c94a6a0856850a501e77dd8`.
-- Decisiones: `PASS_READONLY_POST_GATES`, `PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS` y `PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT`.
-- V7.1 quedó correctamente bloqueada por P0 responsive reproducible y evidencia incompleta; no fue empalmada.
+- frontend acumulativo y navegación multirol;
+- Dashboard, Histórico, Visitas, Postulaciones, Reservas y experiencia Shopper;
+- Finanzas, Liquidaciones, Beneficios y movimientos;
+- Portal Cliente, Portal Shopper y reportes;
+- `CX.data`, Firebase DEV, Auth/RBAC y contratos;
+- multi-tenant, multi-proyecto y Cinépolis configurable;
+- Academia, manuales y rutas por rol;
+- composición canónica única y PR #7.
 
-## 3. Recepción V7.2 — preflight, no auditoría final
+## 3. Estado C6 de identidades
 
-Paquete recibido: `Prototype development request V7.2.zip`.
-
-- SHA-256: `d3b7551b3b0b30e1b071dfc74beb20009c9c523c2955cce760148da6b8727686`.
-- Tamaño: 23,243 bytes.
-- Entradas: 4.
-- Contiene: `MANIFEST.json`, reporte V7.2, `app/app.js` y `app/styles/layout.css`.
-- El CSS sí declara la anulación responsive solicitada para `#login` bajo 900 px.
-- El paquete no incluye las PNG contractuales de los cinco viewports ni los escenarios 1/2/8/12 países; el propio reporte declara esa ausencia.
-
-Esto es solo recepción/preflight. No constituye `GO`, no autoriza empalme y no reemplaza la auditoría final reproducible.
-
-## 4. Gate de carril
+La reconciliación estructural está cerrada:
 
 ```text
-CANDIDATE_BYTES_AVAILABLE=true
-CANDIDATE_EXTRACTABLE=true
-TARGET_REPOSITORY=paulaosoriof86/demoCXOrbia
-TARGET_BRANCH=docs-tya-v6-v71-audit
-HEAD_BEFORE=35fcc44c89df33b374ce010d06c031320e28126a
-GITHUB_IDENTITY=paulaosoriof86
-GITHUB_PERMISSION=admin
-REPO_CHECKOUT_COLOCATED_WITH_ZIP=false
-AUTHENTICATED_DIRECT_APPLY_FROM_CHECKOUT=false
-EXECUTION_LANE_READY=false
+profiles=340
+crosswalk=101/8 PASS
+metric=83=71+12 PASS
+reference/planner=65/65 exact match
+suffix allocation holds=0
+target login collisions=0
 ```
 
-Causa exacta: esta sesión tiene los bytes extraídos y acceso GitHub, pero no un checkout Git autenticado y co-localizado con el ZIP. Por el lock de empalme no se puede sustituir ese carril por Contents API archivo por archivo, blobs/trees, PowerShell, workflow transportador, nueva rama/PR o tareas manuales de Paula.
+Quedan 13 decisiones humanas:
 
-## 5. Diagnóstico de causas del bucle
+- 12 perfiles sin apellido autoritativo;
+- 1 perfil con empate multi-Auth;
+- nombres aún pendientes de recuperación privada;
+- repair Auth no ejecutable mientras las filas permanezcan HOLD.
 
-1. **Separación entre auditoría y ejecución:** se audita en un entorno y luego se intenta aplicar en otro, perdiendo atomicidad y obligando a repetir.
-2. **Confusión entre composición canónica source-only y candidata activa:** el manifiesto existe y preserva las mejores versiones, pero aún no hay un único HEAD empalmado, desplegado, validado y congelado.
-3. **Documentación dividida:** índice/checkpoint vigentes y archivos raíz antiguos expresan estados distintos; desde este corte manda el índice y checkpoint actualizados.
-4. **Evidencia visual incompleta:** se han aceptado entregas con afirmaciones responsive sin capturas o geometría reproducible, causando nuevos P0 al visualizar.
-5. **Reapertura de bloques protegidos:** Auth, histórico, finanzas, HR, shopper y módulos ya aprobados se han vuelto a revisar como si no existieran. Desde ahora se preservan por autoridad de archivo y solo se reabren con regresión reproducible.
-6. **Demasiadas transiciones intermedias:** requests, gates y deploys separados han creado estados parciales. La salida se reduce a una cadena única con un solo deploy DEV.
+## 4. Regla de disposición para perfiles antiguos
 
-## 6. Definición de candidata canónica única
+Paula puede excluir un perfil antiguo del repair Auth sin borrar la persona ni su historia:
 
-La candidata canónica no será el ZIP V7.2 ni una nueva composición paralela. Será el HEAD de `docs-tya-v6-v71-audit` que resulte de:
+```text
+ARCHIVE_LEGACY_NO_AUTH
+EXCLUDE_FROM_AUTH_REPAIR
+PRESERVE_HISTORY=true
+LOGIN_ENABLED=false
+```
 
-1. preservar íntegramente el manifiesto de composición final y sus autoridades por archivo;
-2. auditar V7.2 únicamente contra V7.1 y el HEAD vivo;
-3. aplicar solo el delta GO de `app/app.js` y `app/styles/layout.css`;
-4. emitir manifest/build-lock/verificador del nuevo HEAD;
-5. pasar source/static, Laboratorio, Hosting DEV, cleanup y validación humana;
-6. congelar ese mismo HEAD como `ACTIVE_CANONICAL_BASELINE`.
+La disposición debe conservar visitas, certificaciones, liquidaciones, comunicaciones y auditoría. No se permite hard delete ni fusión por nombre.
 
-Las mejores versiones ya fijadas incluyen, entre otras, Dashboard, Visitas, detalle, revisión, postulaciones, reservas, shoppers, Mis Visitas, certificación, cuestionario, beneficios, documentos, Finanzas, Liquidaciones, Cliente, ReportKit, Academia, Auth de login único, HR viva y adapters canónicos. V7.2 solo puede modificar el login responsive; no puede reemplazar esos módulos.
+## 5. Autoridad HR viva — regla prevalente
 
-## 7. Plan exacto de salida
+Toda información de HR, incluida la historia, debe provenir de una lectura viva y versionada del proveedor.
 
-### Microbloque 0 — Carril único
+- No fijar periodos, conteos, estados o filas históricas como verdad en código.
+- Firestore es materialización/índice, no autoridad de HR.
+- Archivos estáticos son bootstrap o last-known-good, no fuente vigente.
+- Cada cambio en una fila actual o histórica debe producir nueva `sourceRevision` y reflejarse en todos los módulos.
+- El mes activo se descubre desde metadata provider y se elige por mes calendario disponible; nunca se hardcodea.
 
-Abrir el workspace file-aware con el ZIP V7.2 extraído, checkout autenticado de la rama viva y HEAD `35fcc44...`. No crear otra rama/PR ni pedir otra candidata.
+## 6. P0 agosto
 
-**Salida:** `EXECUTION_LANE_READY`.
+La evidencia previa prueba que el builder detectó 30 tabs, 15 periodos y 684 visitas, incluyendo `AGOSTO 26` y `AGOSTO 26 HN`; después, un registry desactualizado las rechazó y redujo la salida a 28 tabs, 14 periodos y 616 visitas.
 
-### Microbloque 1 — Auditoría final focalizada V7.2
+Producción no puede avanzar mientras:
 
-Comparar exclusivamente:
+- metadata provider no responda;
+- `autoDiscovery` siga false;
+- agosto GT/HN no aparezca en la lectura viva;
+- la plataforma dependa de `latestPeriod=2026-07` proveniente de un snapshot materializado.
 
-- V7.2 vs V7.1;
-- V7.2 vs `app/app.js` y `app/styles/layout.css` del HEAD vivo;
-- preservación del manifiesto canónico y backend.
+## 7. Cadena única de salida
 
-Ejecutar:
+### Bloque A — Identidades HOLD
 
-- hash/manifest/alcance;
-- `node --check`;
-- UTF-8/BOM;
-- secrets/PII;
-- carga de Login;
-- geometría real 1920×1080, 1440×900, 768×1024, 412×915 y 390×844;
-- escenarios 1/2/8/12 países;
-- validaciones `strip.top`, `aside.left`, `main.left`, ancho, `scrollWidth` y `scrollHeight`.
+1. Recuperar nombres y actividad sin inferencia.
+2. Paula decide `KEEP_FOR_AUTH` o `ARCHIVE_LEGACY_NO_AUTH`.
+3. Regenerar plan de 340 filas.
+4. Exigir cero HOLD operativo, cero colisiones y plan no superpuesto.
 
-Las capturas faltantes del paquete deben generarse durante la auditoría; no se solicita otra candidata solo por esa ausencia.
+### Bloque B — HR viva agosto
 
-**Salida:** `P0_PROVEN` o `AUDITED_GO_READY_DIRECT_APPLY`.
+1. Corregir acceso a metadata provider/autodiscovery.
+2. Confirmar `AGOSTO 26` y `AGOSTO 26 HN`.
+3. Reconstruir todos los periodos desde HR viva.
+4. Confirmar `latestPeriodKey=2026-08`.
+5. Probar una modificación histórica controlada mediante revisión viva, sin snapshot fijo.
+6. Confirmar una sola `sourceRevision` en Dashboard, Histórico, Visitas, Finanzas, Cliente y Shopper.
 
-### Microbloque 2 — Empalme atómico
+### Bloque C — Auth y validación acumulativa
 
-Solo con GO sin P0:
+1. Ejecutar repair Auth solo con autorización expresa y plan final sin HOLD.
+2. Snapshot, idempotencia, readback y rollback.
+3. Smoke Admin/Operaciones, Shopper y Cliente.
+4. Tres recargas, nueva pestaña y estabilidad sin reload agresivo.
+5. Validación humana sobre una única URL/build.
 
-- `APPLY_DELTA_DIRECTLY` sobre la rama viva;
-- exactamente `app/app.js` y `app/styles/layout.css` si el delta final confirma ese alcance;
-- preservar backend, core, módulos, adapters, datos, contratos, tools y docs;
-- un commit/push atómico;
-- registrar `HEAD_AFTER`;
-- emitir manifest/build-lock/verificador.
+### Bloque D — Cutover
 
-**Salida:** `EMPALMED_PENDING_POST_GATES`.
+1. Source lock final.
+2. Rollback probado.
+3. Smoke integral.
+4. Autorización específica de producción.
+5. Único cutover y verificación postproducción.
 
-### Microbloque 3 — Gates finales sobre el mismo HEAD
+## 8. Circuit breakers
 
-- source/static completo;
-- gate de composición canónica;
-- gate de contrato del Laboratorio;
-- rutas por rol;
-- dependencias ReportKit;
-- ausencia de módulos/scripts faltantes o duplicados;
-- warnings P1/P2 documentados sin bloquear.
-
-**Salida:** `TECHNICAL_PASS_PENDING_DEV_VISUAL`.
-
-### Microbloque 4 — Único Hosting DEV
-
-Un solo deploy del mismo HEAD/build. No segundo deploy automático.
-
-**Salida:** URL/build exacto y smoke remoto técnico.
-
-### Microbloque 5 — Laboratorio real controlado
-
-En una sola sesión acumulativa:
-
-- Admin/Operaciones y Shopper;
-- cinco perfiles contractuales;
-- datos temporales exclusivamente `AUDIT-*`;
-- snapshot/fingerprint antes;
-- escenarios de navegación, estados, HR, visitas, postulaciones, reservas, certificación, cuestionario, histórico, finanzas, liquidaciones, beneficios y Academia;
-- refresh, focus y nueva pestaña;
-- captura de evidencia sanitizada;
-- cleanup por IDs del mismo run;
-- snapshot/fingerprint final idéntico.
-
-Fallo de cleanup es P0. No se declara PASS parcial.
-
-### Microbloque 6 — Validación humana y freeze
-
-Paula revisa una sola URL y una sola candidata acumulativa. Solo se corrigen diferencias reproducibles y focalizadas; no se abre otra auditoría general.
-
-Con `APROBADO`:
-
-- `ACTIVE_CANONICAL_BASELINE`;
-- freeze de Phase A visual-operativa;
-- actualización de checkpoint, índice, CAMBIOS, Claude, PENDIENTES, Academia, tracker y PR #7.
-
-### Microbloque 7 — Cierre Phase A y cutover
-
-Sin reabrir bloques protegidos:
-
-- confirmar HR e histórico canónico;
-- conservar shoppers y certificaciones existentes;
-- confirmar ciclo Shopper completo;
-- confirmar Finanzas/Liquidaciones/Pagos sin inferencias;
-- confirmar Auth/RBAC y login único;
-- confirmar multi-tenant/multi-proyecto y Cinépolis configurable;
-- confirmar Academia, manuales y rutas por rol;
-- resolver únicamente deltas reales pendientes de datos actuales;
-- preparar rollback y smoke integral;
-- ejecutar producción solo con autorización expresa.
-
-Portal Cliente continúa sobre la misma candidata y no origina una rama o shell paralelo.
-
-## 8. Circuit breakers antirretroceso
-
-- Misma familia de fallo repetida: `STOP_RETRY`; diagnosticar y corregir causa, no volver a correr el gate completo.
-- No más de una auditoría final para V7.2.
-- No nueva candidata si V7.2 queda GO.
-- No segundo deploy DEV.
-- No reabrir Auth, R17N, Corte3, Corte5, HR, finanzas o shopper sin regresión reproducible.
-- No declarar candidata canónica hasta completar empalme, gates, visual, cleanup y `APROBADO`.
+- No segundo provider read del probe fallido sin autorización nueva.
+- No reauditar el universo 65/65.
+- No pedir otra candidata.
+- No aplicar parcialmente el plan Auth.
+- No hardcodear agosto ni añadirlo manualmente al registry como sustituto de metadata viva.
+- No tratar 616 visitas o 14 periodos como constantes.
+- No reabrir módulos protegidos salvo regresión reproducible.
 
 ## 9. Estado seguro
 
-- V7.2 empalmada: no;
-- navegador/runtime: no ejecutado en esta recepción;
-- deploy DEV: 0;
-- Firestore/Auth/Storage/HR writes: 0;
-- Make/Gemini/pagos: 0;
-- merge/producción: 0.
+```text
+Auth/data/HR writes=0
+Hosting/Cloud Run deploys=0
+Make/Gemini/payments=0
+merge=false
+production=false
+```
