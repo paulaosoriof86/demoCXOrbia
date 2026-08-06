@@ -1,119 +1,111 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-05  
-**Estado:** `C6_RESIDUAL_IDENTITY_ROOT_CAUSE_SOURCE_ONLY_PASS__12_INSUFFICIENT__1_MULTI_AUTH_CONFIRMED__METRIC_GATE_DEFECTS_IDENTIFIED__NO_PROVIDER_READS__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `C6_DIAGNOSTIC_CONTRACT_ROOTFIX_SOURCE_STATIC_PASS__PROVIDER_REVALIDATION_NOT_AUTHORIZED__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Rama y control
 
 - repo: `paulaosoriof86/demoCXOrbia`;
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
-- HEAD de entrada del bloque: `018e35b56edaf205e46ca1e818634f78bb560528`;
-- provider reads de este bloque: `0`;
-- provider writes: `0`;
+- source commit: `ceb5646400c61631eb2d8d469343360647c45f65`;
+- workflow freeze commit: `6f34e8955dea6e51b3d9f3d12ebeda50e5bfb5d9`;
+- provider reads del bloque: `0`;
 - producción: intacta.
 
-## 2. Inputs source-safe
+## 2. Ejecución source/static
 
 ```text
-current artifact sha256=ba9a559832ee2d8003ae798ae8a40cbe7e6b7582587d32053c55f16af50b134a
-stable artifact sha256=4eaf9354e4ed15996237af74fcea05c5b99bc2ec97f1be063dc8d8e52f1dc95f
-current report sha256=2f05b73a71c0f348ff4cdbfb4bc7391fb89011468564d8cce12973cea255cf45
-current group matrix sha256=c39f53a1c40cb94d412e26c6e4933d171c488155613d2f9183e1d52445ff2f9f
-current plan 340 sha256=89bdbacdf2dabbf981b4835057f0a34f3451b5fb9bf57cd1e77bf8dc57bcb749
+run=31068501624
+job=92511329808
+requestCommit=1de9606ef6d78fec7802913c96ee50bb1deba441
+decision=PASS_C6_SHOPPER_DIAGNOSTIC_CONTRACT_ROOTFIX_SOURCE_STATIC
+plannerSha256=46bb0a58a936c9793dd9f405b08d6856ffa498432dc64f9c123e436159e387a6
+classifierSha256=777b15405acdb526f00f7717cc1c756f0fe69146111be94123c1ec4afb5bd248
+contractSha256=917b220a67c54740cf5ac1c0e3970561e72d6288f18b45d75e7c3cf45b7e803c
 ```
 
-## 3. Clasificación de los 12 HOLD
-
-Los 12 fingerprints `technical_surname_unresolved` comparten en el plan:
+## 3. Contrato diagnóstico v2
 
 ```text
-primary=HOLD
-baseLoginFp=null
-targetLoginFp=null
-sourceSafeSurnameBasis=unresolved
-resolutionBases=[]
+preConsensusIncompleteActiveProfiles
+completedByConsensus
+remainingIncompleteActiveProfiles
+metricIdentityValid: pre = completed + remaining
 ```
 
-Clasificación: `NO_C6_OR_INSUFFICIENT_EVIDENCE`.
+Los HOLD futuros exportarán únicamente:
 
-El artifact no permite demostrar que la dimensión ausente sea específicamente el apellido: no exporta por separado `firstComplete`, `surnameComplete`, `passwordSeedComplete`, cantidades de candidatos ni estado de conflicto. Tampoco demuestra homonimia, alias o personas activas distintas. Los 12 permanecen HOLD y no se infiere ningún apellido.
+- primer nombre: `complete`, `candidateCount`, `basisCount`;
+- apellido: `complete`, conteos explícitos/técnicos/consenso, `basisCount`, `conflict`;
+- semilla de contraseña: `complete`, `candidateCount`, `basisCount`.
 
-## 4. Multi-Auth
+No se exportan valores crudos.
 
-Fingerprint `7cc28c78de9bfda01d14`: `C6_CONFIRMED`.
+## 4. Multi-Auth source-safe
 
-Tiene nombre source-safe por consenso y login objetivo único, pero al menos dos Auth continúan empatados bajo los discriminadores autorizados. No existe base técnica para escoger uno por antigüedad, orden o conveniencia. Se conserva `STOP_RETRY`.
-
-## 5. Error de métrica 83/71/12
+Cada candidato podrá exponer únicamente:
 
 ```text
-stable incomplete active=83
-completed by multi-source consensus=71
-remaining incomplete active=12
-83 = 71 + 12
+candidateOrdinal
+score
+scoreMargin
+exactClaims
+shopperIdClaim
+targetEmailMatch
+baseEmailMatch
+credentialEmailMatch
+passwordCompatible
+enabled
+emailVerified
+providerCreationMetadataPresent
 ```
 
-No se perdieron perfiles. El planner calcula `initialIncompleteActiveProfiles` después de ejecutar el consenso, por lo que el nombre `initial` y el gate contra 83 son incorrectos.
+UID, correo, nombre, login, contraseña y PII quedan excluidos.
 
-Correctivo mínimo no aplicado:
-
-- `preConsensusIncompleteActiveProfiles=83`;
-- `completedByConsensus=71`;
-- `remainingIncompleteActiveProfiles=12`;
-- gate operativo únicamente sobre `remaining=0`.
-
-## 6. Reconciliación 64/141 vs 65/142
-
-La población provider es la misma y el crosswalk continúa `101/8`:
+## 5. Reconciliación de colisiones
 
 ```text
-profiles=340
-authUsers=110
-credentials=109
-visits=616
-certifications=77
-liquidations=827
+groupFingerprintNamespace=shopper-visible-login-group-v1
+policy=fingerprint_set_membership_not_rigid_aggregate_equality
+outputs=added/removed/unchangedCount/exactMatch
 ```
 
-Distribuciones:
+El gate rígido `collisionGroups === 64` fue eliminado. También se eliminó el gate antiguo que comparaba la métrica posterior al consenso contra `83`.
 
-```text
-stable 64/141: 55 grupos de 2, 6 de 3, 2 de 4, 1 de 5
-current 65/142: 56 grupos de 2, 6 de 3, 3 de 4
-```
+## 6. Gates PASS
 
-Diagnóstico:
+- sintaxis planner/clasificador/patcher;
+- self-test;
+- métricas separadas e identidad;
+- vectores HOLD y multi-Auth sin PII;
+- namespace estable y reconciliación por sets;
+- plan 340 preservado;
+- sufijo técnico 4/6/8 preservado;
+- provider reads `0`.
 
-1. cambio legítimo de modelo: el planner nuevo acepta consenso de nombre completo para 71 perfiles;
-2. defecto de gate: compara rígidamente `collisionGroups === 64` aunque cambió la regla;
-3. brecha de observabilidad: los fingerprints de grupo usan namespaces distintos y no permiten unir source-safe ambos resultados.
+## 7. Incidencias transitorias cerradas
 
-No se demuestra qué perfil o grupo migró entre las distribuciones, ni que exista data drift. No se congela 64/141 ni 65/142 como baseline final.
+- `31068251278`: patcher no parseó; no aplicó ni consumió;
+- `31068415510`: gates PASS, fallo del parser de delta; no commit ni consumo;
+- `31068501624`: PASS completo.
 
-## 7. Plan y bloqueo
+Ningún intento hizo provider read o write.
 
-El plan 340 anterior continúa:
+## 8. Estado operacional
 
-```text
-CREATE_AUTH=81
-UPDATE_AUTH=47
-NO_OP=72
-HOLD=13
-PRESERVE_NO_AUTH=127
-readyForAuthRepair=false
-executable=false
-partialExecutionAllowed=false
-```
+El último plan provider de 340 filas continúa histórico/provisional y no ejecutable. El root fix source/static no afirma todavía cuántos HOLD quedarán al recalcular el contrato v2.
 
-## 8. Phase A preservada
+No existe autorización para nueva lectura provider, Auth repair ni aplicación parcial.
+
+## 9. Phase A preservada
 
 Frontend canónico, módulos, `CX.data`, HR, histórico, shoppers, postulaciones, certificaciones, visitas, liquidaciones/pagos, multi-tenant, multi-proyecto, sincronización HR/plataforma, Finanzas, Portal Cliente, Portal Shopper, Reservas y Academia permanecen intactos.
 
-## 9. Estado seguro
+## 10. Estado seguro
 
 ```text
-PROVIDER_READS_THIS_BLOCK=0
+PROVIDER_READS=0
 PROVIDER_WRITES=0
 AUTH_WRITES=0
 PASSWORD_CHANGES/RESETS=0
@@ -125,26 +117,16 @@ MERGE=false
 PRODUCTION=false
 ```
 
-## 10. Documentación vigente
-
-- evidencia JSON de clasificación source-only;
-- diagnóstico y matriz de 12 fingerprints;
-- source lock;
-- CAMBIOS-BACKEND;
-- RESUMEN-PARA-CLAUDE;
-- PENDIENTES-PROTOTIPO;
-- impacto Academia;
-- tracker Phase A;
-- índice y PR #7.
-
 ## 11. Siguiente bloque exacto
 
 ```text
-SOURCE-ONLY DIAGNOSTIC-CONTRACT ROOT FIX
-→ separar métricas antes/después del consenso
-→ exportar booleanos y conteos source-safe por HOLD
-→ exportar vector source-safe y margen del multi-Auth
-→ sustituir gate rígido 64 por reconciliación de sets con fingerprint estable
-→ ejecutar source/static
-→ STOP antes de provider read, repair o deploy
+NUEVA AUTORIZACIÓN PROVIDER READ-ONLY ONE-SHOT
+→ validar crosswalk 101/8
+→ calcular preConsensus/completed/remaining
+→ generar vectores source-safe de HOLD
+→ generar vector y margen multi-Auth
+→ reconciliar grupos por fingerprints estables
+→ regenerar plan 340
+→ STOP_RETRY ante cualquier HOLD o drift
+→ cero writes/deploy
 ```
