@@ -2,7 +2,7 @@
 
 **Fecha original:** 2026-07-04  
 **Actualización prevalente:** 2026-08-06  
-**Estado:** `C6_LIVE_HR_AUTHORITY_SOURCE_FIX_APPLIED__PROVIDER_EXECUTION_UNRESOLVED__STOP_RETRY__IDENTITY_HOLD_0__NO_PRODUCTION`
+**Estado:** `C6_LIVE_HR_CONTROL_PLANE_OBSERVABILITY_PASS__PREVIOUS_V2_READ_UNKNOWN__NO_NEW_PROVIDER_READ__IDENTITY_HOLD_0__NO_PRODUCTION`
 
 ## 1. Objetivo operativo
 
@@ -32,61 +32,66 @@ HOLD=0
 PRESERVE_NO_AUTH=140
 ```
 
-Los 13 perfiles residuales fueron omitidos del repair Auth por decisión expresa de Paula, conservando historia. No bloquean producción y no se reabre su conciliación.
+Los 13 perfiles residuales permanecen omitidos del repair Auth, conservando historia. No bloquean y no se reabre su conciliación.
 
 ## 4. Autoridad HR viva — contrato prevalente
 
 - Metadata provider descubre dinámicamente tabs y periodos.
-- El periodo operativo se deriva del calendario y de la existencia viva de las pestañas del país.
-- Firestore es materialización/índice; no autoridad de HR.
+- El periodo operativo se deriva del calendario y de las pestañas vivas del país.
+- Firestore es materialización/índice; no autoridad HR.
 - Registry, snapshots y archivos estáticos son cache/last-known-good fail-closed.
-- Una modificación actual o histórica debe cambiar `sourceRevision` y reflejarse transversalmente.
-- Cambios solo de timestamp no deben cambiar la revisión.
+- Una modificación actual o histórica debe cambiar `sourceRevision` y propagarse transversalmente.
+- Cambios solo de timestamp no deben alterar la revisión.
 - No se permiten meses, conteos, estados o totales HR fijados en código.
 
-## 5. Root fix aplicado
+## 5. Root fix HR viva aplicado
 
-El bloque eliminó del carril activo:
+Quedaron preparados los gates de metadata viva, periodo calendario, país/pestaña, mutación histórica, revisión estable y comparación provider/Firestore read-only. El carril activo ya no usa agosto, `34/10`, `616`, `684` o `1406` como constantes.
 
-- agosto como mes contractual fijo;
-- `GT=34`, `HN=10`, `616`, `684` y `1406` como expectativas permanentes;
-- country gate con segunda lectura distinta;
-- registry estático como autoridad primaria;
-- delta histórico entendido únicamente como inserts nuevos.
-
-Quedaron preparados los gates de metadata viva, periodo calendario, país/pestaña, mutación histórica, revisión estable y comparación provider/Firestore read-only.
-
-## 6. HOLD actual: control-plane provider
-
-Request:
+## 6. Antecedente provider v2 congelado
 
 ```text
-authorizationId=chat-20260806-live-hr-authority-current-period-01
-sourceCommit=31f4af0f7501b23b4e72b1a5f8457669a5f91c77
 requestCommit=4e404f2db48ff8b07430d7ac7505eff6c040458a
+sourceCommit=31f4af0f7501b23b4e72b1a5f8457669a5f91c77
+providerReadConsumption=UNKNOWN_NO_EXECUTION_EVIDENCE
+retryExecuted=false
 ```
 
-Al finalizar el timeout de 20 minutos no existía run/status/evidence observable. No puede determinarse si la lectura provider se consumió.
+No se declara cero ni consumo confirmado.
+
+## 7. Root fix control-plane aplicado
+
+Commits:
 
 ```text
-STOP_RETRY=true
-providerReadConsumption=UNKNOWN_NO_EXECUTION_EVIDENCE
+dcbfe1ce4b5a98df9f2cc650dc344f983ed7118f
+c46e81bba4fd7424e6076e336bcaf86e82564c14
 ```
 
-No se dispara otra lectura por rutina.
+El siguiente request debe ser v3 y producir:
 
-## 7. Cadena única restante
+```text
+WORKFLOW_STARTED_PROVIDER_READS_0
+PROVIDER_READ_BOUNDARY_ENTERED_MAX1
+PROVIDER_READ_SEQUENCE_COMPLETED_LOGICAL_1
+FINAL_<JOB_STATUS>_<CONSUMPTION>
+```
 
-### Bloque A — Diagnóstico control-plane read-only
+También debe generar journal y artifact sanitizados. El request v2 queda fail-closed bajo el workflow vigente.
 
-1. Localizar el run del request exacto sin leer HR nuevamente.
-2. Si existe, recuperar run/job/log/artifact y su checkpoint.
-3. Si no existe, demostrar `providerReads=0`.
-4. No alterar fuente, datos, Auth, deploy o producción.
+## 8. Cadena única restante
+
+### Bloque A — Autorización y ejecución v3
+
+1. Autorización fresca y explícita que reconozca el consumo v2 desconocido.
+2. Autorizar exactamente una ejecución lógica provider read-only adicional.
+3. Crear un único request v3 ligado al HEAD source exacto.
+4. Observar status/journal/artifact antes de interpretar consumo.
+5. Cero writes, deploy, merge o producción.
 
 ### Bloque B — HR viva actual
 
-Solo con autorización fresca y prueba de que no se consumió el read, o recuperando el run existente:
+Únicamente dentro de la ejecución v3 autorizada:
 
 1. confirmar metadata/autodiscovery provider;
 2. confirmar periodo calendario `2026-08` y tabs GT/HN;
@@ -112,10 +117,12 @@ Solo con autorización fresca y prueba de que no se consumió el read, o recuper
 4. Autorización específica de producción.
 5. Único cutover y verificación postproducción.
 
-## 8. Circuit breakers
+## 9. Circuit breakers
 
 - No reabrir los 13 perfiles.
-- No segundo provider read sin conocer consumo del primero.
+- No reinterpretar el request v2 como cero.
+- No tocar el request actual sin autorización fresca.
+- No ejecutar un request que no sea v3 con journal.
 - No reauditar 65/65.
 - No pedir otra candidata.
 - No ejecutar Auth sin autorización separada.
@@ -123,9 +130,10 @@ Solo con autorización fresca y prueba de que no se consumió el read, o recuper
 - No repetir import histórico por conteo.
 - No reabrir módulos protegidos salvo regresión reproducible.
 
-## 9. Estado seguro
+## 10. Estado seguro
 
 ```text
+nuevo provider read=0
 provider writes=0
 Auth/data/HR writes=0
 Hosting/Cloud Run deploys=0
