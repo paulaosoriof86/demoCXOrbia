@@ -125,7 +125,17 @@ smoke=PREPARED_NOT_EXECUTED
 
 No se ejecutó reparación parcial ni modificación de cuentas.
 
-## 7. Clasificación documental
+## 7. Documentación asociada
+
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-BASE-CONTROL-PLANE-NO-RUN-20260806.md`;
+- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-BASE-CONTROL-PLANE-NO-RUN-20260806.md`;
+- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-BASE-CONTROL-PLANE-NO-RUN-20260806.md`;
+- `app/docs/ACADEMIA-ADDENDUM-C6-BASE-CONTROL-PLANE-NO-RUN-20260806.md`;
+- `app/docs/PHASE-A-TRACKER-ADDENDUM-C6-BASE-CONTROL-PLANE-NO-RUN-20260806.md`;
+- addenda equivalentes en la raíz;
+- índice y checkpoint vigentes actualizados.
+
+## 8. Clasificación documental
 
 - **Reusable CXOrbia:** carril temporal request-only, source lock por blob, claim previo a provider y limpieza fail-closed.
 - **Exclusivo TyA:** los 13 fingerprints y el bloqueante `7cc28c78de9bfda01d14`.
@@ -133,13 +143,13 @@ No se ejecutó reparación parcial ni modificación de cuentas.
 - **Academia:** separación verificable entre emisión de request, creación de run, cruce de frontera provider y evidencia terminal.
 - **Sin impacto Claude:** `/app`, módulos, core, adapters, Finanzas, Portales, Reservas, HR y UX preservados.
 
-## 8. Bloqueo comprobado
+## 9. Bloqueo comprobado
 
 El bloqueo restante continúa en la creación/observabilidad del run de GitHub Actions. El source-control temporal fue instalado y retirado correctamente, pero no existe evidencia de que el job haya comenzado.
 
 No se autoriza otro intento bajo este source lock sin una decisión separada sobre un mecanismo de ejecución distinto y observable.
 
-## 9. Estado seguro
+## 10. Estado seguro
 
 ```text
 newBranch=0
