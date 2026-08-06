@@ -1,0 +1,225 @@
+name: CXOrbia C6 Shopper Equivalent Universe Member Provenance Source Only
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - backend/config/corte6-shopper-equivalent-universe-source-only-request.json
+
+permissions:
+  contents: write
+  statuses: write
+
+concurrency:
+  group: cxorbia-c6-shopper-equivalent-universe-source-only
+  cancel-in-progress: false
+
+env:
+  REQUEST_FILE: backend/config/corte6-shopper-equivalent-universe-source-only-request.json
+  PATCHER_FILE: tools/qa/cxorbia-c6-shopper-equivalent-universe-integration-source-only.mjs
+  SHARED_FILE: tools/qa/cxorbia-c6-shopper-equivalent-universe.mjs
+  PLANNER_FILE: tools/qa/cxorbia-c6-shopper-deterministic-suffix-readonly.mjs
+  CLASSIFIER_FILE: tools/qa/cxorbia-c6-shopper-login-collision-classification.mjs
+  CONTRACT_FILE: backend/contracts/c6-shopper-deterministic-suffix-v1.json
+  EVIDENCE_FILE: app/docs/evidence/CORTE6-SHOPPER-EQUIVALENT-UNIVERSE-MEMBER-PROVENANCE-SOURCE-STATIC-PASS-LATEST.json
+
+jobs:
+  source-static:
+    name: Integrate equivalent universe and member provenance without provider reads
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+
+    steps:
+      - name: Checkout exact live branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 20
+          ref: docs-tya-v6-v71-audit
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Read request
+        id: request
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const request=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${request.enabled===true?'true':'false'}\n`);
+          NODE
+
+      - name: Validate exact one-shot source-only authorization
+        if: steps.request.outputs.enabled == 'true'
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const {execFileSync}=require('child_process');
+          const request=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const ensure=(condition,code)=>{if(!condition)throw new Error(code);};
+          ensure(request.schemaVersion==='cxorbia.c6.shopper-equivalent-universe-source-only-request.v1','request_schema_invalid');
+          ensure(request.repository==='paulaosoriof86/demoCXOrbia'&&request.branch==='docs-tya-v6-v71-audit'&&Number(request.pullRequest)===7,'lane_invalid');
+          ensure(request.enabled===true&&request.consumed===false&&request.status==='authorized_execute_once'&&request.authorizedBy==='Paula','authorization_invalid');
+          ensure(Number(request.allowedExecutions)===1&&request.automaticRetry===false,'one_shot_invalid');
+          ensure(request.targetHeadSha===parent&&head!==parent,'target_head_invalid');
+          ensure(changed.length===1&&changed[0]===process.env.REQUEST_FILE,'request_commit_scope_invalid:'+changed.join(','));
+          ensure(request.mode==='source_only_equivalent_universe_member_provenance_integration','mode_invalid');
+          ensure(request.sourceProviderRun===31069282511,'source_run_invalid');
+          ensure(request.providerReads===false&&request.providerWrites===false,'provider_scope_invalid');
+          for(const key of ['dataWrites','deploy','merge','production','firestoreWrites','authWrites','passwordChanges','passwordResets','membershipWrites','rulesWrites','storageWrites','hrWrites','make','gemini','payments']){
+            ensure(request.safeState?.[key]===false,'unsafe_scope_'+key);
+          }
+          NODE
+
+      - name: Apply integration directly on live branch workspace
+        if: steps.request.outputs.enabled == 'true'
+        run: |
+          set -euo pipefail
+          node --check "$PATCHER_FILE"
+          node "$PATCHER_FILE"
+
+      - name: Execute syntax fixtures and source-static gates
+        if: steps.request.outputs.enabled == 'true'
+        run: |
+          set -euo pipefail
+          node --check "$SHARED_FILE"
+          node --check "$PLANNER_FILE"
+          node --check "$CLASSIFIER_FILE"
+          node "$SHARED_FILE" --self-test
+          node <<'NODE'
+          const fs=require('fs');
+          const ensure=(condition,code)=>{if(!condition)throw new Error(code);};
+          const shared=fs.readFileSync(process.env.SHARED_FILE,'utf8');
+          const planner=fs.readFileSync(process.env.PLANNER_FILE,'utf8');
+          const classifier=fs.readFileSync(process.env.CLASSIFIER_FILE,'utf8');
+          const patcher=fs.readFileSync(process.env.PATCHER_FILE,'utf8');
+          const contract=JSON.parse(fs.readFileSync(process.env.CONTRACT_FILE,'utf8'));
+          const evidence=JSON.parse(fs.readFileSync(process.env.EVIDENCE_FILE,'utf8'));
+          ensure(contract.schemaVersion==='cxorbia.c6.shopper-deterministic-suffix.v2.2','contract_schema_invalid');
+          ensure(contract.collisionReconciliation?.referenceUniverse===contract.collisionReconciliation?.plannerUniverse,'universes_not_equivalent');
+          ensure(contract.collisionReconciliation?.diagnosticComparatorDefectFixedSourceOnly===true,'comparator_fix_missing');
+          ensure(contract.collisionReconciliation?.deltaOnlyMemberProvenanceExport===true,'delta_only_missing');
+          ensure(contract.multiAuthResolution?.diagnosticVector?.fields?.includes('candidateFingerprint'),'candidate_fingerprint_contract_missing');
+          ensure(planner.includes('reconcileEquivalentGroupSets')&&planner.includes('buildPlannerMemberVector'),'planner_integration_missing');
+          ensure(classifier.includes('resolveEquivalentNames')&&classifier.includes('buildReferenceMemberVector'),'classifier_integration_missing');
+          ensure(planner.includes("link(exact[0], source, 'exact_technical_anchor')"),'planner_anchor_link_missing');
+          ensure(classifier.includes("link(exact[0], source, basis, 'exact_technical_anchor')"),'classifier_anchor_link_missing');
+          ensure(evidence.decision==='PASS_C6_EQUIVALENT_UNIVERSE_MEMBER_PROVENANCE_INTEGRATION_SOURCE_STATIC','evidence_decision_invalid');
+          ensure(evidence.safety?.providerReads===0&&evidence.safety?.providerWrites===0,'provider_scope_invalid');
+          for(const source of [shared,patcher]){
+            for(const forbidden of ['firebase-admin','GOOGLE_APPLICATION_CREDENTIALS','listAllUsers(','collectionGroup(','passwordSignInEmail(']){
+              ensure(!source.includes(forbidden),'provider_capability_forbidden:'+forbidden);
+            }
+          }
+          const vectorFields=contract.collisionReconciliation.memberProvenanceVector.fields;
+          for(const field of ['memberFingerprint','active','preConsensusComplete','postConsensusComplete','completedByConsensus','sourceSafeSurnameBasis','surnameBasisCount','keeper','suffixApplied','suffixLength','inReferenceSet','inPlannerSet','referenceEligibility','plannerEligibility','linkedSourceResolutionMode']){
+            ensure(vectorFields.includes(field),'member_field_missing:'+field);
+          }
+          ensure(contract.collisionReconciliation.memberProvenanceVector.rawIdentityAllowed===false,'privacy_contract_invalid');
+          NODE
+
+      - name: Validate exact repository delta
+        if: steps.request.outputs.enabled == 'true'
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const {execFileSync}=require('child_process');
+          const actual=execFileSync('git',['status','--porcelain=v1'],{encoding:'utf8'})
+            .split(/\r?\n/).filter(Boolean).map(line=>line.slice(3)).sort();
+          const allowed=[
+            'app/docs/ACADEMIA-IMPACTO-C6-EQUIVALENT-UNIVERSE-MEMBER-PROVENANCE-SOURCE-STATIC-PASS-20260805.md',
+            'app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-EQUIVALENT-UNIVERSE-MEMBER-PROVENANCE-SOURCE-STATIC-PASS-20260805.md',
+            'app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-EQUIVALENT-UNIVERSE-MEMBER-PROVENANCE-SOURCE-STATIC-PASS-20260805.md',
+            'app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-C6-EQUIVALENT-UNIVERSE-MEMBER-PROVENANCE-SOURCE-STATIC-PASS-20260805.md',
+            'app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-EQUIVALENT-UNIVERSE-MEMBER-PROVENANCE-SOURCE-STATIC-PASS-20260805.md',
+            'app/docs/evidence/CORTE6-SHOPPER-EQUIVALENT-UNIVERSE-MEMBER-PROVENANCE-SOURCE-STATIC-PASS-LATEST.json',
+            'backend/contracts/c6-shopper-deterministic-suffix-v1.json',
+            'tools/qa/cxorbia-c6-shopper-deterministic-suffix-readonly.mjs',
+            'tools/qa/cxorbia-c6-shopper-equivalent-universe.mjs',
+            'tools/qa/cxorbia-c6-shopper-login-collision-classification.mjs'
+          ].sort();
+          if(JSON.stringify(actual)!==JSON.stringify(allowed))throw new Error('repository_delta_invalid:'+JSON.stringify(actual));
+          NODE
+
+      - name: Consume request freeze trigger and commit source-static PASS
+        if: steps.request.outputs.enabled == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const request=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          request.enabled=false;
+          request.consumed=true;
+          request.status='consumed_source_static_pass';
+          request.consumedAt=new Date().toISOString();
+          request.allowedExecutions=0;
+          request.executions=1;
+          request.workflowRunId=Number(process.env.GITHUB_RUN_ID);
+          request.result={
+            decision:'PASS_C6_EQUIVALENT_UNIVERSE_MEMBER_PROVENANCE_INTEGRATION_SOURCE_STATIC',
+            providerReads:0,
+            providerWrites:0,
+            contractVersion:'v2.2',
+            evidence:process.env.EVIDENCE_FILE
+          };
+          request.nextGate='NEW_EXPLICIT_PROVIDER_READONLY_REVALIDATION_OR_TENANT_ADJUDICATION_PREPARATION_REQUIRED';
+          fs.writeFileSync(process.env.REQUEST_FILE,JSON.stringify(request,null,2)+'\n','utf8');
+          NODE
+          cat > .github/workflows/cxorbia-c6-shopper-equivalent-universe-source-only.yml <<'YAML'
+          name: CXOrbia C6 Shopper Equivalent Universe Source Only — Frozen
+
+          on:
+            push:
+              branches:
+                - docs-tya-v6-v71-audit
+              paths:
+                - backend/config/corte6-shopper-equivalent-universe-source-only-request-retired.json
+
+          permissions:
+            contents: read
+            statuses: write
+
+          jobs:
+            frozen:
+              runs-on: ubuntu-24.04
+              steps:
+                - run: echo 'Consumed source-only integration trigger frozen; a new explicit authorization is required.'
+          YAML
+          git config user.name 'cxorbia-source-only-bot'
+          git config user.email 'cxorbia-source-only-bot@users.noreply.github.com'
+          git add \
+            "$REQUEST_FILE" \
+            .github/workflows/cxorbia-c6-shopper-equivalent-universe-source-only.yml \
+            "$SHARED_FILE" "$PLANNER_FILE" "$CLASSIFIER_FILE" "$CONTRACT_FILE" "$EVIDENCE_FILE" \
+            app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-EQUIVALENT-UNIVERSE-MEMBER-PROVENANCE-SOURCE-STATIC-PASS-20260805.md \
+            app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-EQUIVALENT-UNIVERSE-MEMBER-PROVENANCE-SOURCE-STATIC-PASS-20260805.md \
+            app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-EQUIVALENT-UNIVERSE-MEMBER-PROVENANCE-SOURCE-STATIC-PASS-20260805.md \
+            app/docs/ACADEMIA-IMPACTO-C6-EQUIVALENT-UNIVERSE-MEMBER-PROVENANCE-SOURCE-STATIC-PASS-20260805.md \
+            app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-C6-EQUIVALENT-UNIVERSE-MEMBER-PROVENANCE-SOURCE-STATIC-PASS-20260805.md
+          git commit -m 'feat(c6): integrate equivalent universe member provenance source-only'
+          git push origin HEAD:docs-tya-v6-v71-audit
+
+      - name: Publish observable source-static status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          STATE=success
+          DESC='PASS_C6_EQUIVALENT_UNIVERSE_SOURCE_STATIC'
+          if [ '${{ steps.request.outputs.enabled }}' != 'true' ]; then DESC='SKIPPED_DISABLED_REQUEST'; fi
+          if [ '${{ job.status }}' != 'success' ]; then STATE=failure; DESC='HOLD_C6_EQUIVALENT_UNIVERSE_SOURCE_STATIC'; fi
+          gh api --method POST \
+            -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="$STATE" \
+            -f context='cxorbia/c6-shopper-equivalent-universe-source-only/overall' \
+            -f description="$DESC" \
+            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
