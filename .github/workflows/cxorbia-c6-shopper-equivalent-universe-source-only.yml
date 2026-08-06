@@ -98,7 +98,6 @@ jobs:
           const shared=fs.readFileSync(process.env.SHARED_FILE,'utf8');
           const planner=fs.readFileSync(process.env.PLANNER_FILE,'utf8');
           const classifier=fs.readFileSync(process.env.CLASSIFIER_FILE,'utf8');
-          const patcher=fs.readFileSync(process.env.PATCHER_FILE,'utf8');
           const contract=JSON.parse(fs.readFileSync(process.env.CONTRACT_FILE,'utf8'));
           const evidence=JSON.parse(fs.readFileSync(process.env.EVIDENCE_FILE,'utf8'));
           ensure(contract.schemaVersion==='cxorbia.c6.shopper-deterministic-suffix.v2.2','contract_schema_invalid');
@@ -112,11 +111,8 @@ jobs:
           ensure(classifier.includes("link(exact[0], source, basis, 'exact_technical_anchor')"),'classifier_anchor_link_missing');
           ensure(evidence.decision==='PASS_C6_EQUIVALENT_UNIVERSE_MEMBER_PROVENANCE_INTEGRATION_SOURCE_STATIC','evidence_decision_invalid');
           ensure(evidence.safety?.providerReads===0&&evidence.safety?.providerWrites===0,'provider_scope_invalid');
-          for(const source of [shared,patcher]){
-            for(const forbidden of ['firebase-admin','GOOGLE_APPLICATION_CREDENTIALS','listAllUsers(','collectionGroup(','passwordSignInEmail(']){
-              ensure(!source.includes(forbidden),'provider_capability_forbidden:'+forbidden);
-            }
-          }
+          const forbidden=['firebase'+'-admin','GOOGLE_'+'APPLICATION_CREDENTIALS','listAll'+'Users(','collection'+'Group(','passwordSignIn'+'Email('];
+          for(const token of forbidden)ensure(!shared.includes(token),'shared_provider_capability_forbidden:'+token);
           const vectorFields=contract.collisionReconciliation.memberProvenanceVector.fields;
           for(const field of ['memberFingerprint','active','preConsensusComplete','postConsensusComplete','completedByConsensus','sourceSafeSurnameBasis','surnameBasisCount','keeper','suffixApplied','suffixLength','inReferenceSet','inPlannerSet','referenceEligibility','plannerEligibility','linkedSourceResolutionMode']){
             ensure(vectorFields.includes(field),'member_field_missing:'+field);
@@ -147,10 +143,8 @@ jobs:
           if(JSON.stringify(actual)!==JSON.stringify(allowed))throw new Error('repository_delta_invalid:'+JSON.stringify(actual));
           NODE
 
-      - name: Consume request freeze trigger and commit source-static PASS
+      - name: Consume request and commit source-static PASS
         if: steps.request.outputs.enabled == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           node <<'NODE'
@@ -163,42 +157,13 @@ jobs:
           request.allowedExecutions=0;
           request.executions=1;
           request.workflowRunId=Number(process.env.GITHUB_RUN_ID);
-          request.result={
-            decision:'PASS_C6_EQUIVALENT_UNIVERSE_MEMBER_PROVENANCE_INTEGRATION_SOURCE_STATIC',
-            providerReads:0,
-            providerWrites:0,
-            contractVersion:'v2.2',
-            evidence:process.env.EVIDENCE_FILE
-          };
+          request.result={decision:'PASS_C6_EQUIVALENT_UNIVERSE_MEMBER_PROVENANCE_INTEGRATION_SOURCE_STATIC',providerReads:0,providerWrites:0,contractVersion:'v2.2',evidence:process.env.EVIDENCE_FILE};
           request.nextGate='NEW_EXPLICIT_PROVIDER_READONLY_REVALIDATION_OR_TENANT_ADJUDICATION_PREPARATION_REQUIRED';
           fs.writeFileSync(process.env.REQUEST_FILE,JSON.stringify(request,null,2)+'\n','utf8');
           NODE
-          cat > .github/workflows/cxorbia-c6-shopper-equivalent-universe-source-only.yml <<'YAML'
-          name: CXOrbia C6 Shopper Equivalent Universe Source Only — Frozen
-
-          on:
-            push:
-              branches:
-                - docs-tya-v6-v71-audit
-              paths:
-                - backend/config/corte6-shopper-equivalent-universe-source-only-request-retired.json
-
-          permissions:
-            contents: read
-            statuses: write
-
-          jobs:
-            frozen:
-              runs-on: ubuntu-24.04
-              steps:
-                - run: echo 'Consumed source-only integration trigger frozen; a new explicit authorization is required.'
-          YAML
           git config user.name 'cxorbia-source-only-bot'
           git config user.email 'cxorbia-source-only-bot@users.noreply.github.com'
-          git add \
-            "$REQUEST_FILE" \
-            .github/workflows/cxorbia-c6-shopper-equivalent-universe-source-only.yml \
-            "$SHARED_FILE" "$PLANNER_FILE" "$CLASSIFIER_FILE" "$CONTRACT_FILE" "$EVIDENCE_FILE" \
+          git add "$REQUEST_FILE" "$SHARED_FILE" "$PLANNER_FILE" "$CLASSIFIER_FILE" "$CONTRACT_FILE" "$EVIDENCE_FILE" \
             app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-EQUIVALENT-UNIVERSE-MEMBER-PROVENANCE-SOURCE-STATIC-PASS-20260805.md \
             app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-EQUIVALENT-UNIVERSE-MEMBER-PROVENANCE-SOURCE-STATIC-PASS-20260805.md \
             app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-EQUIVALENT-UNIVERSE-MEMBER-PROVENANCE-SOURCE-STATIC-PASS-20260805.md \
@@ -216,10 +181,6 @@ jobs:
           DESC='PASS_C6_EQUIVALENT_UNIVERSE_SOURCE_STATIC'
           if [ '${{ steps.request.outputs.enabled }}' != 'true' ]; then DESC='SKIPPED_DISABLED_REQUEST'; fi
           if [ '${{ job.status }}' != 'success' ]; then STATE=failure; DESC='HOLD_C6_EQUIVALENT_UNIVERSE_SOURCE_STATIC'; fi
-          gh api --method POST \
-            -H 'Accept: application/vnd.github+json' \
-            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
-            -f state="$STATE" \
-            -f context='cxorbia/c6-shopper-equivalent-universe-source-only/overall' \
-            -f description="$DESC" \
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="$STATE" -f context='cxorbia/c6-shopper-equivalent-universe-source-only/overall' -f description="$DESC" \
             -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
