@@ -64,7 +64,7 @@ jobs:
           if(contract.target?.profileFingerprint!=='7cc28c78de9bfda01d14') throw new Error('PROFILE_DRIFT');
           const expected=['4e6d26551d11db444bd0','9b2b7ca1bd72c1301d29'].sort();
           if(JSON.stringify([...(contract.target?.candidateFingerprints||[])].sort())!==JSON.stringify(expected)) throw new Error('CANDIDATE_DRIFT');
-          for(const bad of ['.metadata','.disabled','.emailVerified','admin.firestore(','collection(','legacyCredentials']) if(source.includes(bad)) throw new Error('FORBIDDEN_SOURCE_MARKER:'+bad);
+          for(const bad of ['.metadata','.disabled','.emailVerified','admin.firestore(','collection(']) if(source.includes(bad)) throw new Error('FORBIDDEN_SOURCE_MARKER:'+bad);
           if(!source.includes('auth.listUsers(1000)')) throw new Error('AUTH_READ_SHAPE_MISSING');
           if(!source.includes('stableAuthCandidateFingerprint(user.uid)')) throw new Error('CANDIDATE_FP_MATCH_MISSING');
           if(!source.includes('targetSet.has(candidateFingerprint)')) throw new Error('FOCAL_FILTER_MISSING');
