@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "cxorbia.c6.skip13-selftest-harness-root-fix-source-only.evidence.v1",
+  "generatedAt": "2026-08-07T09:31:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "decision": "PASS_C6_SKIP13_SELFTEST_HARNESS_SOURCE_ONLY",
+  "rootFix": {
+    "file": "tools/qa/cxorbia-c6-shopper-equivalent-universe.mjs",
+    "commit": "02bbca9371c2736a7ed993be6361eb1b84bfd0bf",
+    "blobSha": "2055ed250c9fe1058759f582089fe112b84b9a06",
+    "change": "self-test CLI execution is guarded by direct-main-module identity; imported modules no longer react to a foreign --self-test argv"
+  },
+  "preservedSources": {
+    "adjudicator": {
+      "file": "tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly-v2.mjs",
+      "blobSha": "b93e01198200a1133dcaf78a9515be8556222392"
+    },
+    "contract": {
+      "file": "backend/contracts/c6-skip13-auth-access-adjudication-v2.json",
+      "blobSha": "3348cb1c694ca76d1fce7e3134013f6d0edc20fa"
+    }
+  },
+  "fingerprintContract": {
+    "profileFingerprintNamespace": "deterministic-suffix-plan-profile",
+    "authCandidateFingerprintNamespace": "shopper-auth-candidate-v1",
+    "memberProvenanceFingerprintNamespace": "shopper-collision-member-v1",
+    "multiAuthProfileFingerprintNamespace": "multi-auth-profile-v1",
+    "crossNamespaceEqualityAllowed": false,
+    "forbiddenProfileJoinNamespaces": [
+      "shopper-collision-member-v1",
+      "multi-auth-profile-v1"
+    ]
+  },
+  "executedChecks": {
+    "equivalentUniverseSyntax": "PASS",
+    "equivalentUniverseDirectSelfTest": "PASS_C6_EQUIVALENT_UNIVERSE_SOURCE_STATIC",
+    "foreignSelfTestArgvImportOutputBytes": 0,
+    "crossNamespaceSelfTest": "PASS_C6_SKIP13_FINGERPRINT_NAMESPACE_SELF_TEST",
+    "plannerAlgorithmExact": true,
+    "profileVsMemberSeparated": true,
+    "profileVsMultiAuthSeparated": true,
+    "memberVsMultiAuthSeparated": true,
+    "authCandidateNamespaceExact": true,
+    "allFingerprintsTwentyHex": true,
+    "adjudicatorSyntaxPriorGateStillApplicable": true,
+    "adjudicatorUnchangedSincePriorNodeCheckPass": true,
+    "adjudicatorProfileJoin": "stablePlanProfileFingerprint(doc.id)",
+    "memberProvenanceUsedAsProfileJoin": false
+  },
+  "executionMode": {
+    "type": "hermetic_source_only",
+    "networkAccess": false,
+    "providerCredentialUsed": false,
+    "providerAttempt": false,
+    "note": "The exact changed module was executed hermetically with the canonical fingerprint primitive replicated from the repository contract; the unchanged v2 adjudicator had already passed node --check in the immediately preceding source gate."
+  },
+  "temporaryWorkflow": {
+    "createdForSourceOnlyObservability": true,
+    "providerSecretsReferenced": false,
+    "providerCommandsPresent": false,
+    "removedCommit": "c465cab01292d599a03c038e8de5486aecaff943",
+    "presentAfterBlock": false,
+    "connectorCouldNotEnumeratePushTriggeredRun": true
+  },
+  "safety": {
+    "providerReads": 0,
+    "authReads": 0,
+    "claimsReads": 0,
+    "membershipReads": 0,
+    "hrReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "deploys": 0,
+    "cloudBuilds": 0,
+    "cloudRunDeploys": 0,
+    "hostingDeploys": 0,
+    "merge": false,
+    "production": false
+  },
+  "nextGate": "NEW_EXPLICIT_SKIP13_PROVIDER_READONLY_REVALIDATION_REQUIRED"
+}
