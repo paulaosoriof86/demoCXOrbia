@@ -161,6 +161,8 @@ secondProviderAttempt=0
 
 No se realizó un segundo intento provider porque la autorización exigía STOP_RETRY si no podía demostrarse restauración exacta.
 
+Durante los commits documentales posteriores se observó el workflow histórico de adjudicación SKIP13 en modo **non-request event**. Su run `31220197716` saltó claim, credencial y ejecución provider; por tanto no reabrió SKIP13 ni consumió provider reads/writes. Se registra para trazabilidad y no se cuenta como segundo provider attempt.
+
 ## 9. Fail-close
 
 ```text
