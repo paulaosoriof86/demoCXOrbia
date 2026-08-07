@@ -1,0 +1,106 @@
+name: CXOrbia C6 SKIP13 Access Reconciliation Source Only Once
+
+on:
+  pull_request:
+    types: [synchronize]
+
+permissions:
+  contents: read
+  statuses: write
+
+concurrency:
+  group: cxorbia-c6-skip13-access-reconciliation-source-only-once
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  REQUEST_FILE: backend/config/c6-skip13-access-reconciliation-source-only-request-v1.json
+  TOOL_FILE: tools/qa/cxorbia-c6-skip13-access-reconciliation-source-only.mjs
+  OUT_DIR: .tmp/c6-skip13-access-reconciliation-source-only
+  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
+jobs:
+  reconcile:
+    name: Reconcile SKIP13 effective access source-only
+    if: >-
+      github.event.pull_request.number == 7 &&
+      github.event.pull_request.head.ref == 'docs-tya-v6-v71-audit' &&
+      github.event.pull_request.base.ref == 'release/cxorbia-tya-rc-20260630'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Determine exact source-only request event
+        id: request
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const {execFileSync}=require('child_process');
+          let x={}; if(fs.existsSync(process.env.REQUEST_FILE)) x=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const requestOnly=changed.length===1&&changed[0]===process.env.REQUEST_FILE;
+          const executable=x.schemaVersion==='cxorbia.c6.skip13-access-reconciliation-source-only.request.v1'&&x.enabled===true&&x.consumed===false&&x.allowedExecutions===1&&x.targetHeadSha===parent&&requestOnly&&head===process.env.HEAD_SHA;
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`executable=${executable?'true':'false'}\n`);
+          console.log(JSON.stringify({head,parent,requestOnly,executable,changedCount:changed.length}));
+          NODE
+
+      - name: Record non-request event safely
+        if: steps.request.outputs.executable != 'true'
+        run: echo 'Not the exact source-only request commit; zero provider operations.'
+
+      - name: Validate request and execute source-only reconciliation
+        if: steps.request.outputs.executable == 'true'
+        id: run
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const x=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          if(x.authorizedBy!=='Paula'||x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7) throw new Error('REQUEST_LANE_INVALID');
+          for(const k of ['providerReads','authReads','claimsReads','membershipReads','hrReads','providerWrites','authWrites','firestoreWrites','rulesWrites','storageWrites','hrWrites','cloudBuilds','cloudRunDeploys','hostingDeploys']) if(x.safeState?.[k]!==0) throw new Error('REQUEST_UNSAFE_'+k);
+          if(x.safeState?.merge!==false||x.safeState?.production!==false) throw new Error('REQUEST_UNSAFE_RELEASE');
+          NODE
+          node --check "$TOOL_FILE"
+          decision="$(node "$TOOL_FILE")"
+          test "$decision" = 'STOP_RETRY_C6_SKIP13_ACCESS_RECONCILIATION_MULTI_AUTH_KEEPER_UNRESOLVED'
+          echo "decision=$decision" >> "$GITHUB_OUTPUT"
+
+      - name: Upload source-only evidence
+        if: steps.request.outputs.executable == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-c6-skip13-access-reconciliation-source-only-${{ github.run_id }}
+          path: ${{ env.OUT_DIR }}
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Publish observable status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DECISION: ${{ steps.run.outputs.decision }}
+        run: |
+          set -euo pipefail
+          desc='SKIPPED_NON_REQUEST_SOURCE_ONLY'
+          if [ '${{ steps.request.outputs.executable }}' = 'true' ]; then desc="${DECISION:-HOLD_C6_SKIP13_ACCESS_RECONCILIATION_NO_DECISION}"; fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" \
+            -f state='success' -f context='cxorbia/c6-skip13-access-reconciliation-source-only/overall' \
+            -f description="$(printf '%s' "$desc" | cut -c1-140)" \
+            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
