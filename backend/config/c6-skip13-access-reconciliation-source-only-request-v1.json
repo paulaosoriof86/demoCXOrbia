@@ -1,15 +1,23 @@
 {
   "schemaVersion": "cxorbia.c6.skip13-access-reconciliation-source-only.request.v1",
   "requestId": "c6-skip13-access-reconciliation-source-only-20260807-01",
-  "enabled": true,
-  "consumed": false,
-  "allowedExecutions": 1,
+  "enabled": false,
+  "consumed": true,
+  "allowedExecutions": 0,
+  "status": "consumed_stop_retry",
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_c6_skip13_access_reconciliation_source_only_2026-08-07",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "targetHeadSha": "dd3d41b4bbcc3f7973b728dc3e0c46cd5fc59c62",
+  "execution": {
+    "runId": 31197299766,
+    "jobId": 92928580367,
+    "artifactId": 9001336549,
+    "artifactDigest": "sha256:e3aa1169e33b97e34639542fd9a2ca6dfa6f8f72372479e24b784c1106b42480",
+    "decision": "STOP_RETRY_C6_SKIP13_ACCESS_RECONCILIATION_MULTI_AUTH_KEEPER_UNRESOLVED"
+  },
   "inputs": {
     "freeze": "backend/config/c6-shopper-auth-final-freeze-v1.json",
     "providerEvidence": "app/docs/evidence/C6-SKIP13-PROVIDER-READONLY-REVALIDATION-V2-HOLD-20260807.json",
