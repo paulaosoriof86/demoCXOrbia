@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.c6.auth-target-anchor-lineage-provider-minimum.v1",
-  "status": "source_only_contract_not_authorized_for_provider_execution",
+  "status": "provider_readonly_authorized_only_by_one_shot_request_current_conversation",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -16,22 +16,37 @@
     "targetLoginFingerprintNamespace": "target-login",
     "suffixApplied": true,
     "suffixLength": 4,
-    "sourceSafeSurnameBasis": "multi_source_full_name_consensus"
+    "sourceSafeSurnameBasis": "multi_source_full_name_consensus",
+    "planClass": "UPDATE_AUTH",
+    "changes": {"email": true, "password": true, "claims": true},
+    "collisionPeerProfileFingerprint": "a8dd7db89a02ff180674"
+  },
+  "rootCauseCircuitBreaker": {
+    "purpose": "prevent another narrowing-loop before provider execution",
+    "priorFailuresClassified": [
+      "claim-only resolver failed because current claims are themselves scheduled to change",
+      "profile/credential-only resolver failed because credential crosswalk depended on technical keys propagated from linked operational sources",
+      "source-safe lineage could not reconstruct exact corroborating bases because UPDATE_AUTH diagnostics were not persisted"
+    ],
+    "requiredCorrectionBeforeProvider": [
+      "reconstruct the original cross-source full-name lineage from target-linked sources",
+      "propagate target-linked technical keys before mapping encrypted credential records",
+      "resolve Auth with target-specific credential/claim/target-login anchors, never shared base-login alone",
+      "reject any candidate associated to the collision peer or another frozen plan row"
+    ],
+    "sharedBaseLoginForbiddenAsSoleTargetAnchor": true,
+    "credentialCrosswalkRequiredAfterLineage": true,
+    "currentClaimsForbiddenAsSoleTargetAnchor": true
   },
   "sourceOnlyFinding": {
     "baseLoginLineageStructurallyDemonstrated": true,
     "rawBaseLoginReconstructibleFromFingerprint": false,
     "exactConsensusBasisSetVersionedForTarget": false,
-    "reason": "The frozen UPDATE_AUTH plan row intentionally has diagnostics=null and the source-safe group export omits target memberVectors. The one-way fingerprints cannot recover the raw base login or the exact two-or-more corroborating source bases.",
+    "reason": "The frozen UPDATE_AUTH row intentionally has diagnostics=null and the source-safe group export omits target memberVectors. One-way fingerprints cannot recover the raw base login or exact corroborating bases.",
     "consensusRule": "Exactly one surname token must be corroborated by at least two distinct source bases before baseLogin is formed as first.surname.",
     "credentialLoginCanBeConsensusBasis": false,
-    "possibleFullNameConsensusBases": [
-      "profile",
-      "hr",
-      "visit",
-      "certification",
-      "liquidation"
-    ]
+    "credentialLoginCanBePostLineageAuthBindingAnchor": true,
+    "possibleFullNameConsensusBases": ["profile", "hr", "visit", "certification", "liquidation"]
   },
   "futureProviderMinimum": {
     "authorizationRequired": true,
@@ -40,37 +55,13 @@
       "authReads": 0,
       "hashConfigReads": 0,
       "reads": [
-        {
-          "source": "tenants/tya/shoppers",
-          "purpose": "resolve the target profile fingerprint to one technical shopper document and retain only the target in memory",
-          "exportRawValues": false
-        },
-        {
-          "source": "tenants/tya/projects/cinepolis/hrImports",
-          "purpose": "inspect only target-linked full-name/name technical objects using direct shopperId or exact unique technical anchors",
-          "adaptive": true,
-          "exportRawValues": false
-        },
-        {
-          "source": "tenants/tya/projects/cinepolis/visits",
-          "purpose": "inspect only target-linked full-name/name technical objects using direct shopperId or exact unique technical anchors",
-          "adaptive": true,
-          "exportRawValues": false
-        },
-        {
-          "source": "collectionGroup(certifications)",
-          "purpose": "inspect only target-linked full-name/name technical objects using direct shopperId or exact unique technical anchors",
-          "adaptive": true,
-          "exportRawValues": false
-        },
-        {
-          "source": "collectionGroup(liquidations)",
-          "purpose": "inspect only target-linked full-name/name technical objects using direct shopperId or exact unique technical anchors",
-          "adaptive": true,
-          "exportRawValues": false
-        }
+        {"source": "tenants/tya/shoppers", "purpose": "resolve the target profile fingerprint to one technical shopper document and retain only target technical/name fields in memory", "exportRawValues": false},
+        {"source": "tenants/tya/projects/cinepolis/hrImports", "purpose": "query only target-linked technical records and inspect linked full-name objects", "adaptive": true, "exportRawValues": false},
+        {"source": "tenants/tya/projects/cinepolis/visits", "purpose": "query only target-linked technical records and inspect linked full-name objects", "adaptive": true, "exportRawValues": false},
+        {"source": "collectionGroup(certifications)", "purpose": "query only target-linked technical records and inspect linked full-name objects", "adaptive": true, "exportRawValues": false},
+        {"source": "collectionGroup(liquidations)", "purpose": "query only target-linked technical records and inspect linked full-name objects", "adaptive": true, "exportRawValues": false}
       ],
-      "shortCircuit": "stop linked-source reads as soon as exactly one surname candidate is corroborated by at least two distinct bases and both frozen fingerprints match",
+      "shortCircuit": "stop linked-source reads as soon as exactly one surname candidate is corroborated by at least two distinct bases and both frozen login fingerprints match",
       "requiredChecks": [
         "resolvedProfileFingerprint == ac93d90d9e41512acdcd",
         "corroboratingBasisCount >= 2",
@@ -84,6 +75,11 @@
       "maximumAuthDirectoryPages": 1,
       "candidateCountRequired": 1,
       "otherPlanRowAssociationRequired": 0,
+      "sourceLocalEncryptedCredentialBundleAllowed": true,
+      "credentialMapping": "map credential legacy technical ids only after target-linked source technical keys have been propagated",
+      "targetSpecificAnchors": ["mapped credential derived internal email", "exact current shopperId claim if present", "reconstructed target-login internal email"],
+      "sharedBaseLoginEmailMayOnlyBeUsedAsOtherRowCollisionSignal": true,
+      "collisionPeerProfileFingerprint": "a8dd7db89a02ff180674",
       "transientDerivedInternalEmailAllowedInMemory": true,
       "rawEmailExported": false,
       "rawUidExported": false,
@@ -93,13 +89,21 @@
       "maximumHashConfigReads": 1,
       "passwordHashInspectionTargetCount": 1,
       "encryptedSnapshotRequired": true,
+      "legacySaltlessExactModeAllowedOnlyWhenCurrentHashEqualsExactlyOneTargetMappedLegacySHA256Hash": true,
+      "providerHashConfigExactModeRequiresNonEmptyCurrentSalt": true,
       "rawPasswordHashExported": false,
       "rawPasswordSaltExported": false
     }
   },
+  "activationFollowUpRootCause": {
+    "currentActivationPrewriteStillRequiresNonemptyHashAndSaltForAll14PasswordChanges": true,
+    "knownSourceFinding": "saltless SHA256/1 can be legitimate",
+    "rule": "If this block proves LEGACY_SHA256_ROUNDS1_SALTLESS_EXACT for the target, the next source-only activation root fix must replace the stale nonempty-salt hard stop before any Auth write. Do not rerun Auth Activation unchanged."
+  },
   "hardStops": [
-    "no source family broad scan beyond target-linked records after target technical id is resolved",
+    "no broad source family scan after target technical id is resolved; use target-linked equality queries only",
     "no Auth read before frozen baseLoginFp and targetLoginFp are reconstructed and matched",
+    "no shared base-login email as sole target candidate selector",
     "no password hash or salt inspection before candidateCount=1 and zero other-plan-row association",
     "no provider writes",
     "no Auth writes",
