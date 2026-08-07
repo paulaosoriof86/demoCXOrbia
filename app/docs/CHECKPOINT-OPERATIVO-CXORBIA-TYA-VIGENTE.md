@@ -26,6 +26,7 @@ revision=cxorbia-c6-direct-runner-dev-00001-2vz
 serviceUrl=https://cxorbia-c6-direct-runner-dev-mzgge2pnia-uc.a.run.app
 private=true
 providerBoundaryEnabled=false
+allowedOperations=control_plane_self_test
 ```
 
 ## 3. Ejecución terminal
@@ -96,8 +97,6 @@ rollbackPlan=PASS
 rollbackExecuted=false
 ```
 
-No fue necesario rollback porque todo el bloque terminó PASS.
-
 ## 7. SKIP13
 
 El workflow histórico SKIP13 se materializó como efecto del evento PR `edited`, pero reconoció que no era su request exacto y saltó la ejecución real:
@@ -111,7 +110,7 @@ providerReads=0
 providerWrites=0
 ```
 
-No debe confundirse el éxito técnico de ese workflow con una adjudicación SKIP13 realizada.
+El runner desplegado sigue deliberadamente sin provider boundary y su única operación actual es `control_plane_self_test`. La siguiente adjudicación SKIP13 debe ejecutarse, previa autorización nueva, mediante `backend/contracts/c6-skip13-auth-access-adjudication-v1.json` y `.github/workflows/cxorbia-c6-skip13-auth-access-adjudication-readonly.yml`. No requiere otro deploy del runner para ese read-only.
 
 ## 8. Auth congelado
 
@@ -146,7 +145,7 @@ Frontend acumulativo, Login, `CX.data`, HR, shoppers, postulaciones, certificaci
 
 ## 11. Siguiente cadena exacta
 
-1. Autorizar un único SKIP13 read-only explícito mediante el direct runner DEV ya desplegado.
+1. Autorizar una nueva adjudicación SKIP13 read-only explícita con el contrato/workflow source-safe existente.
 2. Con SKIP13 cerrado, ejecutar Auth sobre el plan congelado de 340 filas con snapshot/rollback.
 3. Smoke acumulativo Admin/Operaciones, Shopper y Cliente.
 4. Validación humana.
