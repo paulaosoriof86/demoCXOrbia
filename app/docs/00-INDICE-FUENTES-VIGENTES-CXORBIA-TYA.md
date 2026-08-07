@@ -81,6 +81,9 @@ secondProviderAttempt=false
 
 ```text
 requestDisableCommit=c6314294315757a971c2d31d31ac72f1dc3bcf13
+failCloseNonProviderRunId=31194826915
+failCloseNonProviderJobId=92920375094
+failCloseProviderStepsSkipped=true
 workflowRemovalCommit=a42008d5e0e9819dbdba7196071ca18a8c998d9c
 requestEnabled=false
 requestConsumed=true
@@ -101,7 +104,7 @@ planDigest=6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b
 AuthExecuted=false
 ```
 
-El plan continúa criptográficamente congelado, pero su ejecución queda bloqueada por el HOLD SKIP13: ocho perfiles que el flujo debía preservar requieren reconciliación de identidad antes de cualquier write.
+El plan continúa criptográficamente congelado, pero su ejecución queda bloqueada por el HOLD SKIP13: ocho perfiles requieren reconciliación de identidad antes de cualquier write.
 
 ## 6. Pendiente real
 
