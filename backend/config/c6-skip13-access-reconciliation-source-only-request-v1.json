@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "cxorbia.c6.skip13-access-reconciliation-source-only.request.v1",
+  "requestId": "c6-skip13-access-reconciliation-source-only-20260807-01",
+  "enabled": true,
+  "consumed": false,
+  "allowedExecutions": 1,
+  "authorizedBy": "Paula",
+  "authorizationSource": "current_conversation_c6_skip13_access_reconciliation_source_only_2026-08-07",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "targetHeadSha": "dd3d41b4bbcc3f7973b728dc3e0c46cd5fc59c62",
+  "inputs": {
+    "freeze": "backend/config/c6-shopper-auth-final-freeze-v1.json",
+    "providerEvidence": "app/docs/evidence/C6-SKIP13-PROVIDER-READONLY-REVALIDATION-V2-HOLD-20260807.json",
+    "overlay": "backend/config/c6-skip13-access-reconciliation-overlay-v1.json"
+  },
+  "safeState": {
+    "providerReads": 0,
+    "authReads": 0,
+    "claimsReads": 0,
+    "membershipReads": 0,
+    "hrReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "cloudBuilds": 0,
+    "cloudRunDeploys": 0,
+    "hostingDeploys": 0,
+    "merge": false,
+    "production": false
+  }
+}
