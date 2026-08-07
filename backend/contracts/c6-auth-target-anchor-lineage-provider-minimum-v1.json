@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.c6.auth-target-anchor-lineage-provider-minimum.v1",
-  "status": "provider_readonly_authorized_only_by_one_shot_request_current_conversation",
+  "status": "provider_readonly_consumed_terminal_root_cause_cross_row_principal_alias",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -17,94 +17,90 @@
     "suffixApplied": true,
     "suffixLength": 4,
     "sourceSafeSurnameBasis": "multi_source_full_name_consensus",
-    "planClass": "UPDATE_AUTH",
-    "changes": {"email": true, "password": true, "claims": true},
+    "frozenPlanClass": "UPDATE_AUTH",
+    "frozenChanges": {"email": true, "password": true, "claims": true},
     "collisionPeerProfileFingerprint": "a8dd7db89a02ff180674"
   },
   "rootCauseCircuitBreaker": {
-    "purpose": "prevent another narrowing-loop before provider execution",
     "priorFailuresClassified": [
       "claim-only resolver failed because current claims are themselves scheduled to change",
       "profile/credential-only resolver failed because credential crosswalk depended on technical keys propagated from linked operational sources",
       "source-safe lineage could not reconstruct exact corroborating bases because UPDATE_AUTH diagnostics were not persisted"
     ],
-    "requiredCorrectionBeforeProvider": [
-      "reconstruct the original cross-source full-name lineage from target-linked sources",
-      "propagate target-linked technical keys before mapping encrypted credential records",
-      "resolve Auth with target-specific credential/claim/target-login anchors, never shared base-login alone",
-      "reject any candidate associated to the collision peer or another frozen plan row"
-    ],
     "sharedBaseLoginForbiddenAsSoleTargetAnchor": true,
     "credentialCrosswalkRequiredAfterLineage": true,
-    "currentClaimsForbiddenAsSoleTargetAnchor": true
+    "currentClaimsForbiddenAsSoleTargetAnchor": true,
+    "crossRowExistingAuthPrincipalReuseForbidden": true
   },
-  "sourceOnlyFinding": {
-    "baseLoginLineageStructurallyDemonstrated": true,
-    "rawBaseLoginReconstructibleFromFingerprint": false,
-    "exactConsensusBasisSetVersionedForTarget": false,
-    "reason": "The frozen UPDATE_AUTH row intentionally has diagnostics=null and the source-safe group export omits target memberVectors. One-way fingerprints cannot recover the raw base login or exact corroborating bases.",
-    "consensusRule": "Exactly one surname token must be corroborated by at least two distinct source bases before baseLogin is formed as first.surname.",
-    "credentialLoginCanBeConsensusBasis": false,
-    "credentialLoginCanBePostLineageAuthBindingAnchor": true,
-    "possibleFullNameConsensusBases": ["profile", "hr", "visit", "certification", "liquidation"]
-  },
-  "futureProviderMinimum": {
-    "authorizationRequired": true,
-    "executableRequestPresent": false,
-    "stageAResolveConsensusLineage": {
-      "authReads": 0,
+  "terminalProviderFinding": {
+    "requestId": "c6-auth-target-adaptive-lineage-password-snapshot-readonly-20260807-02",
+    "runId": 31227139583,
+    "jobId": 93023626036,
+    "artifactId": 9012489547,
+    "artifactDigest": "sha256:82fc0f55becf62fbec5380652d5cd9f535d592da866fd921b51b0eeba9d32c05",
+    "workflowConclusion": "success",
+    "decision": "STOP_RETRY_C6_AUTH_TARGET_ADAPTIVE_LINEAGE_PASSWORD_SNAPSHOT_READONLY_TECHNICAL",
+    "lineage": {
+      "pass": true,
+      "corroboratingBases": ["profile", "visit"],
+      "corroboratingBasisCount": 2,
+      "baseLoginFingerprintMatch": true,
+      "targetLoginFingerprintMatch": true,
+      "suffixLength": 4,
+      "targetLoginUniqueInFrozenPlan": true
+    },
+    "authResolution": {
+      "targetSpecificCandidateCount": 0,
+      "credentialAnchorPresent": false,
       "hashConfigReads": 0,
-      "reads": [
-        {"source": "tenants/tya/shoppers", "purpose": "resolve the target profile fingerprint to one technical shopper document and retain only target technical/name fields in memory", "exportRawValues": false},
-        {"source": "tenants/tya/projects/cinepolis/hrImports", "purpose": "query only target-linked technical records and inspect linked full-name objects", "adaptive": true, "exportRawValues": false},
-        {"source": "tenants/tya/projects/cinepolis/visits", "purpose": "query only target-linked technical records and inspect linked full-name objects", "adaptive": true, "exportRawValues": false},
-        {"source": "collectionGroup(certifications)", "purpose": "query only target-linked technical records and inspect linked full-name objects", "adaptive": true, "exportRawValues": false},
-        {"source": "collectionGroup(liquidations)", "purpose": "query only target-linked technical records and inspect linked full-name objects", "adaptive": true, "exportRawValues": false}
-      ],
-      "shortCircuit": "stop linked-source reads as soon as exactly one surname candidate is corroborated by at least two distinct bases and both frozen login fingerprints match",
-      "requiredChecks": [
-        "resolvedProfileFingerprint == ac93d90d9e41512acdcd",
-        "corroboratingBasisCount >= 2",
-        "reconstructedBaseLoginFingerprint == 493f2b26360648693c37",
-        "deterministicSuffixLength == 4",
-        "reconstructedTargetLoginFingerprint == bd8d7019d612b4421366",
-        "targetLoginUniqueInFrozenPlan == true"
-      ]
+      "passwordInspected": false,
+      "snapshotCreated": false
     },
-    "stageBResolveAuthCandidateOnlyAfterStageAPass": {
-      "maximumAuthDirectoryPages": 1,
-      "candidateCountRequired": 1,
-      "otherPlanRowAssociationRequired": 0,
-      "sourceLocalEncryptedCredentialBundleAllowed": true,
-      "credentialMapping": "map credential legacy technical ids only after target-linked source technical keys have been propagated",
-      "targetSpecificAnchors": ["mapped credential derived internal email", "exact current shopperId claim if present", "reconstructed target-login internal email"],
-      "sharedBaseLoginEmailMayOnlyBeUsedAsOtherRowCollisionSignal": true,
-      "collisionPeerProfileFingerprint": "a8dd7db89a02ff180674",
-      "transientDerivedInternalEmailAllowedInMemory": true,
-      "rawEmailExported": false,
-      "rawUidExported": false,
-      "candidateFingerprintNamespace": "shopper-auth-candidate-v1"
+    "providerReads": {
+      "shopperIndexQueries": 1,
+      "shopperDocumentsRead": 340,
+      "targetLinkedQueries": 12,
+      "targetLinkedDocumentsRead": 5,
+      "authDirectoryPages": 1,
+      "hashConfigReads": 0
     },
-    "stageCPasswordSnapshotOnlyAfterStageBPass": {
-      "maximumHashConfigReads": 1,
-      "passwordHashInspectionTargetCount": 1,
-      "encryptedSnapshotRequired": true,
-      "legacySaltlessExactModeAllowedOnlyWhenCurrentHashEqualsExactlyOneTargetMappedLegacySHA256Hash": true,
-      "providerHashConfigExactModeRequiresNonEmptyCurrentSalt": true,
-      "rawPasswordHashExported": false,
-      "rawPasswordSaltExported": false
-    }
+    "writes": 0
+  },
+  "crossRowPrincipalAliasRootCause": {
+    "demonstrated": true,
+    "basis": [
+      "the frozen target and peer share the same baseLogin fingerprint",
+      "the peer preserves the unsuffixed base login",
+      "the old activation PREWRITE candidate gatherer included shared base-login Auth users for every row in that collision group",
+      "the old activation PREWRITE had no global uniqueness invariant preventing one existing Auth principal from being selected by multiple profile rows",
+      "the old PREWRITE advanced through candidate cardinality/change-flag validation to the password rollback phase",
+      "the corrected target-specific resolver reconstructs the exact target lineage but finds zero distinct eligible current Auth candidates when the shared base-login peer is excluded"
+    ],
+    "conclusion": "The old frozen UPDATE_AUTH classification for ac93d90d9e41512acdcd is not safe to execute. Its prior selected existing Auth principal can be explained by cross-row reuse of the collision peer through shared baseLogin.",
+    "doNotRepeatPasswordSnapshotUnderOldPlan": true,
+    "doNotRerunOldActivationPlan": true,
+    "sourcePlanRootFixRequired": true
+  },
+  "requiredNextSourceOnlyCorrection": {
+    "addGlobalExistingAuthPrincipalUniquenessInvariant": true,
+    "reclassifyTargetOnlyAfterSourceSafeSimulation": "CREATE_AUTH_IF_TARGET_SPECIFIC_CANDIDATE_COUNT_ZERO_AND_TARGET_LOGIN_UNIQUE",
+    "preserveCollisionPeerAsItsOwnExistingPrincipal": true,
+    "recalculatePlanCountsAndDigest": true,
+    "recalculateExpectedAuthPopulation": true,
+    "recalculatePasswordUpdateCount": true,
+    "fixSaltlessRollbackSemanticsWithoutRelaxingExactRollback": true,
+    "providerReadsAuthorized": false,
+    "writesAuthorized": false
   },
   "activationFollowUpRootCause": {
     "currentActivationPrewriteStillRequiresNonemptyHashAndSaltForAll14PasswordChanges": true,
     "knownSourceFinding": "saltless SHA256/1 can be legitimate",
-    "rule": "If this block proves LEGACY_SHA256_ROUNDS1_SALTLESS_EXACT for the target, the next source-only activation root fix must replace the stale nonempty-salt hard stop before any Auth write. Do not rerun Auth Activation unchanged."
+    "rule": "Do not rerun Auth Activation unchanged. The next source-only root fix must both prevent cross-row principal reuse and distinguish a proven legitimate empty salt from unavailable rollback material."
   },
   "hardStops": [
-    "no broad source family scan after target technical id is resolved; use target-linked equality queries only",
-    "no Auth read before frozen baseLoginFp and targetLoginFp are reconstructed and matched",
-    "no shared base-login email as sole target candidate selector",
-    "no password hash or salt inspection before candidateCount=1 and zero other-plan-row association",
+    "no second provider attempt for this consumed block",
+    "no password snapshot retry under the old UPDATE_AUTH classification",
+    "no old Auth Activation rerun",
     "no provider writes",
     "no Auth writes",
     "no Firestore writes",
