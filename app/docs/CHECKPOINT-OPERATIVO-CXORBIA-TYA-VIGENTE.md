@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-07  
-**Estado:** `C6_DIRECT_RUNNER_DEV_PASS__SKIP13_HOLD_FINGERPRINT_NAMESPACE_MISMATCH__ZERO_AUTH_MEMBERSHIP_READS__AUTH_PLAN_FROZEN__NO_PRODUCTION`
+**Estado:** `C6_DIRECT_RUNNER_DEV_PASS__SKIP13_ROOT_FIX_SOURCE_GATE_HOLD_SELFTEST_OUTPUT_CONTAMINATION__NO_PROVIDER_ATTEMPT__AUTH_PLAN_FROZEN__NO_PRODUCTION`
 
 ## 1. Rama y control
 
@@ -9,86 +9,84 @@
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
 - producción: intacta;
-- source lock vigente: `app/docs/SOURCE-LOCK-C6-SKIP13-FINGERPRINT-NAMESPACE-MISMATCH-STOP-RETRY-20260807.md`;
-- request direct runner ejecutable: ninguno;
-- request SKIP13 ejecutable: ninguno;
+- source lock vigente: `app/docs/SOURCE-LOCK-C6-SKIP13-ROOT-FIX-SOURCE-GATE-SELFTEST-HARNESS-HOLD-20260807.md`;
+- request SKIP13 v2 ejecutable: ninguno;
 - Auth ejecutado: no.
 
-## 2. Direct trusted runner DEV — PASS
+## 2. Direct trusted runner DEV — PASS preservado
 
 ```text
 service=cxorbia-c6-direct-runner-dev
-region=us-central1
-sourceLock=5c467be8d7359e66b6362a07dd3908ada3cf1c17
-deployDecision=PASS_C6_DIRECT_RUNNER_DEV_DEPLOY_V3
 revision=cxorbia-c6-direct-runner-dev-00001-2vz
-private=true
 runtime=cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com
 runtimeIsolation=PASS
+private=true
 providerBoundaryEnabled=false
 ```
 
-## 3. SKIP13 read-only — terminal HOLD
+## 3. Root-fix SKIP13 v2 materializado
 
 ```text
-requestId=c6-skip13-auth-access-adjudication-20260807-06
-requestCommit=313597f561315ff9f8c75c5a7be741a8cbac5d70
-runId=31188368926
-jobId=92898589212
-artifactId=8997714548
-artifactDigest=sha256:9dd0cee0aa205071fa82afb22f69d0cdf29b54d9d8d4b2f6462c58c22fd1e30d
-decision=HOLD_C6_SKIP13_ADJUDICATION_TECHNICAL_ERROR
-error=all_skip13_profile_ids_resolved:0
+contract=backend/contracts/c6-skip13-auth-access-adjudication-v2.json
+adjudicator=tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly-v2.mjs
+profileFingerprintNamespace=deterministic-suffix-plan-profile
+authCandidateFingerprintNamespace=shopper-auth-candidate-v1
+forbiddenProfileJoin=shopper-collision-member-v1,multi-auth-profile-v1
 ```
 
-El baseline leído fue exactamente 340 shopper document IDs, pero 0/13 fingerprints coincidieron.
+El adjudicador v2 resuelve shoppers con `stablePlanProfileFingerprint(doc.id)` y conserva salida source-safe.
 
-## 4. Lecturas consumidas
+## 4. Source gate — terminal HOLD
 
 ```text
-profileIdIndexQueries=1
-shopperIdIndexBaseline=340
-authListPages=0
-membershipPointReads=0
-membershipFieldQueries=0
-hrReads=0
+runId=31190357507
+jobId=92905316953
+head=1e693386d097c1fa90c61d0a013c06c3be941563
+```
+
+Pasaron:
+
+```text
+checkout exacto=PASS
+Node setup=PASS
+node --check adjudicator v2=PASS
+```
+
+Falló el self-test antes de cualquier provider read:
+
+```text
+failureClassification=SOURCE_GATE_SELFTEST_OUTPUT_CONTAMINATION_FROM_IMPORTED_MODULE_ARGV
+observedPrefix=PASS_C6_EQUIVALENT_UNIVERSE_SOURCE_STATIC
+failure=JSON.parse unexpected token P
+```
+
+Causa: el argumento global `--self-test` del adjudicador también activó el bloque self-test module-level del módulo importado `cxorbia-c6-shopper-equivalent-universe.mjs`, generando una línea adicional antes del JSON esperado.
+
+## 5. STOP_RETRY y fail-close
+
+```text
+v2RequestCreated=false
+providerCredentialPrepared=false
+providerAttempt=false
+shopperIdReads=0
+AuthReads=0
+claimsReads=0
+membershipReads=0
+HRReads=0
 providerWrites=0
-```
-
-No se alcanzaron Auth, claims ni memberships. No hubo writes.
-
-## 5. Causa raíz demostrada
-
-El plan determinístico produce:
-
-```text
-profileFp = fp('deterministic-suffix-plan-profile', profile.id)
-```
-
-El adjudicador intentó resolver los mismos fingerprints con:
-
-```text
-stableMemberFingerprint(profileId)
-namespace=shopper-collision-member-v1
-```
-
-La segunda función corresponde a member provenance de grupos del universo equivalente. Los namespaces son válidos individualmente pero no interoperables.
-
-Además el contrato SKIP13 no fija explícitamente `profileFingerprintNamespace`, permitiendo el error de integración.
-
-## 6. Fail-close
-
-```text
-failCloseCommit=3966dac8a42404f35245c474f975f696c9cb9f0e
-requestEnabled=false
-requestConsumed=true
-allowedExecutions=0
 secondProviderAttempt=false
 ```
 
-El workflow generado por el commit de fail-close (`runId=31188638266`) clasificó el evento como no ejecutable y saltó claim, credential preparation y adjudication.
+El workflow v2 fue retirado:
 
-## 7. Auth congelado
+```text
+workflowRemovalCommit=e269347c8305c6ff60ad182aa6190c9c94abfe62
+workflowPresent=false
+```
+
+No existe `backend/config/c6-skip13-auth-access-adjudication-request-v2.json`.
+
+## 6. Auth congelado
 
 ```text
 rows=340
@@ -103,39 +101,35 @@ freezeDecision=PASS_AUTH_PLAN_340_CRYPTOGRAPHIC_FREEZE
 AuthExecuted=false
 ```
 
-## 8. Phase A preservada
+## 7. Phase A preservada
 
 Frontend acumulativo, Login, `CX.data`, HR, shoppers, postulaciones, certificaciones, visitas, liquidaciones, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto y Academia permanecen preservados.
 
-## 9. Siguiente cadena exacta
+## 8. Siguiente cadena exacta
 
-1. Autorizar root-fix source-only del namespace SKIP13.
-2. Corregir el adjudicador para usar `deterministic-suffix-plan-profile` y declarar namespaces en contrato.
-3. Ejecutar self-test estático cross-namespace sin provider.
-4. Solo con PASS, autorizar una única nueva adjudicación SKIP13 read-only.
-5. Con SKIP13 cerrado, ejecutar Auth sobre el plan congelado de 340 filas con snapshot/rollback.
-6. Smoke acumulativo Admin/Operaciones, Shopper y Cliente.
-7. Validación humana.
-8. Cutover/promoción autorizada a producción.
+1. Nueva autorización source-only para corregir únicamente el harness de self-test, eliminando el side effect `process.argv` entre módulos.
+2. Ejecutar `node --check`, self-test cross-namespace y validación contractual v2 sin provider.
+3. Detenerse con PASS source-only.
+4. Solo con autorización posterior distinta, crear un request v2 no solapado y ejecutar una sola adjudicación SKIP13 read-only.
+5. Con SKIP13 cerrado, ejecutar Auth 340 con snapshot/rollback.
+6. Smoke multirrol, validación humana y cutover autorizado.
 
-## 10. Estado seguro
+## 9. Estado seguro
 
 ```text
 DirectRunnerDEV=PASS
-SKIP13 shopper-id index queries=1
-SKIP13 Auth reads=0
-SKIP13 claims reads=0
-SKIP13 membership reads=0
-HR reads=0
-provider writes=0
-Auth writes=0
-HR writes=0
-Firestore writes=0
-Rules writes=0
-Storage writes=0
-additional Cloud Builds=0
-additional Cloud Run deploys=0
-Hosting deploys=0
+SKIP13SourceGate=HOLD
+providerAttemptThisBlock=false
+providerReadsThisBlock=0
+providerWrites=0
+AuthWrites=0
+HRWrites=0
+FirestoreWrites=0
+RulesWrites=0
+StorageWrites=0
+additionalCloudBuilds=0
+additionalCloudRunDeploys=0
+HostingDeploys=0
 merge=false
 production=false
 providerBoundaryEnabled=false
