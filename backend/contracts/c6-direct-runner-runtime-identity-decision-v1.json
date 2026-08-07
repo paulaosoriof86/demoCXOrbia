@@ -5,84 +5,58 @@
   "pullRequest": 7,
   "project": "cxorbia-backend-dev",
   "environment": "DEV",
-  "sourceLock": "466d7baebefd5af97f0f0347110691fa1737fa6f",
-  "decision": "ADMIN_CREDENTIAL_CONFIGURATION_REQUIRED",
-  "inventory": {
-    "serviceAccountsListed": 2,
-    "projectIamPolicyRead": false,
-    "projectIamPolicyFailure": {
-      "classification": "IAM_PERMISSION_DENIED_PROJECT_GET_IAM_POLICY",
-      "permission": "resourcemanager.projects.getIamPolicy",
-      "principal": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com"
-    },
-    "serviceAccountIamPoliciesRead": false,
-    "candidateCount": 0
+  "decision": "RUNTIME_IDENTITY_EXISTS_READBACK_INCOMPLETE",
+  "runtimeIdentity": {
+    "email": "cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com",
+    "exists": true,
+    "enabled": true,
+    "uniqueId": "112507526829412676643",
+    "creationSource": "manual_google_cloud_console_by_paula",
+    "finalIsolationPass": false
   },
-  "accounts": [
+  "postCreationVerification": {
+    "contract": "backend/contracts/c6-runtime-identity-postcreate-verification-v1.json",
+    "decision": "STOP_RETRY_READBACK_INCOMPLETE",
+    "provisionalFingerprint": "ed8f84baa824b89305a8e6ab16af43c51ff555c72e3c940aeb0ef1339e5c2460",
+    "missingPermissions": [
+      "iam.serviceAccountKeys.list",
+      "iam.serviceAccounts.getIamPolicy",
+      "resourcemanager.projects.getIamPolicy"
+    ]
+  },
+  "excludedAccounts": [
     {
       "email": "87461567267-compute@developer.gserviceaccount.com",
-      "uniqueId": "111386648265978071009",
-      "displayName": "Default compute service account",
-      "disabled": false,
       "classification": "SYSTEM_DEFAULT_COMPUTE_IDENTITY_EXCLUDED",
-      "reusable": false,
       "fingerprint": "49e094a8f498fba2827c46785bc298557973959945434200c868b700afb3daf5"
     },
     {
       "email": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
-      "uniqueId": "115771268599010410289",
-      "displayName": "firebase-adminsdk",
-      "description": "Firebase Admin SDK Service Agent",
-      "disabled": false,
       "classification": "FIREBASE_ADMIN_SDK_IDENTITY_EXCLUDED",
-      "reusable": false,
       "fingerprint": "c9dd358bd886e96fb4b53f6edead9cc6a2c91d1c712ad70c21ebabcb55e58489"
     }
   ],
-  "administrativeCreationAttempt": {
-    "authorized": true,
-    "requestId": "c6-iam-admin-runtime-identity-create-20260806-01",
-    "requestCommit": "466d7baebefd5af97f0f0347110691fa1737fa6f",
-    "runId": "31133874657",
-    "jobId": "92728797539",
-    "failureStep": "Validate administrative credential envelope",
-    "failureClassification": "ADMIN_CREDENTIAL_NOT_AVAILABLE",
-    "gcpAuthenticationReached": false,
-    "serviceAccountCreated": false,
-    "rolesAssigned": false,
-    "keysCreated": false,
-    "rollback": "NOT_REQUIRED_NO_CREATION",
-    "secondAttempt": false,
-    "artifactId": "8977116099",
-    "artifactDigest": "sha256:19c3d8d343eba98ddd60f6af1eee0d9a6d48d936c972ee7f5063023040069136"
-  },
-  "reasoning": {
-    "defaultComputeExcludedRegardlessOfBindings": true,
-    "firebaseAdminSdkExcludedRegardlessOfBindings": true,
-    "cleanUserManagedIdentityFound": false,
-    "fullProjectBindingInventoryCompleted": false,
-    "conclusionStillDeterministic": true,
-    "conclusionBasis": "The only existing service accounts are categorically excluded, and the authorized administrative creation lane had no configured administrative credential available before Google Cloud authentication."
-  },
   "requiredNextState": {
-    "identityEmail": "cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com",
-    "mustBeUserManaged": true,
-    "mustHaveNoProjectRoles": true,
-    "mustHaveNoProviderRoles": true,
-    "mustHaveNoFirebaseAuthFirestoreStorageHrCloudBuildOrAdminRoles": true,
-    "mustNotReuseDefaultCompute": true,
-    "mustNotReuseFirebaseAdminSdk": true,
-    "administrativeCredentialMustBeConfiguredWithoutExposingSecret": true,
-    "creationRequiresSeparateFreshExecutionAuthorization": true
+    "doNotRecreateRuntimeIdentity": true,
+    "readOnlyVisibilityRequired": true,
+    "mustVerifyZeroUserManagedKeys": true,
+    "mustVerifyZeroDirectServiceAccountBindings": true,
+    "mustVerifyZeroDirectProjectRoles": true,
+    "deployAllowed": false
   },
   "safeState": {
-    "iamControlPlaneReads": 2,
     "providerDataReads": 0,
-    "iamWrites": 0,
-    "deploys": 0,
     "providerWrites": 0,
+    "iamWritesThisVerification": 0,
+    "deploys": 0,
     "skip13Executed": false,
     "merge": false,
     "production": false
+  },
+  "evidence": {
+    "runId": "31135508722",
+    "jobId": "92733827812",
+    "artifactId": "8977774322",
+    "artifactDigest": "sha256:c579dceb2d02df82dc5397ea2b0dcd1afbdc6cafcdd914f259ad33970e9d3ccb"
   }
 }
