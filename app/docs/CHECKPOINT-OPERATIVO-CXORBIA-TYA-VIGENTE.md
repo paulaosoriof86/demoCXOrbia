@@ -1,14 +1,14 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-07  
-**Estado:** `C6_DIRECT_RUNNER_DEV_PASS__SKIP13_7_UNIQUE_CANONICAL_AUTH__1_DUPLICATE_EFFECTIVE_PAIR_UNRESOLVED_KEEPER__STOP_RETRY__AUTH_FREEZE_UNMODIFIED__NO_WRITES__NO_PRODUCTION`
+**Estado:** `C6_MULTI_AUTH_FINAL_DISCRIMINATOR_NO_UNIQUE_TECHNICAL_ANCHOR__TENANT_ADJUDICATION_REQUIRED__STOP_RETRY__AUTH_FREEZE_UNMODIFIED__NO_WRITES__NO_PRODUCTION`
 
 ## 1. Control
 
 - repo: `paulaosoriof86/demoCXOrbia`;
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
-- source lock vigente: `app/docs/SOURCE-LOCK-C6-SKIP13-ACCESS-RECONCILIATION-SOURCE-ONLY-STOP-RETRY-20260807.md`;
+- source lock vigente: `app/docs/SOURCE-LOCK-C6-MULTI-AUTH-FINAL-DISCRIMINATOR-TENANT-ADJUDICATION-STOP-RETRY-20260807.md`;
 - producción: intacta;
 - request ejecutable: ninguno;
 - Auth ejecutado: no.
@@ -22,57 +22,102 @@ runtimeIsolation=PASS
 providerBoundaryEnabled=false
 ```
 
-## 3. SKIP13 provider V2 preservado
+## 3. Estado SKIP13 antes del bloque final
 
-La lectura provider previa quedó cerrada en 13/13 resueltos, 8 perfiles con 9 candidatos Auth efectivos y cero writes. No existe autorización provider residual ni segundo attempt.
-
-## 4. Reconciliación source-only ejecutada
+La cadena provider/source-only previa quedó en:
 
 ```text
-requestId=c6-skip13-access-reconciliation-source-only-20260807-01
-requestCommit=a73ad38d7007077837404b4e3a370828551effde
-runId=31197299766
-jobId=92928580367
-artifactId=9001336549
-artifactDigest=sha256:e3aa1169e33b97e34639542fd9a2ca6dfa6f8f72372479e24b784c1106b42480
-evidenceDigest=sha256:3c9babccf8f2dd736c6ba7efdcd21e67be42a8b6bbea98d1c2b76b2a7d2e2d03
-decision=STOP_RETRY_C6_SKIP13_ACCESS_RECONCILIATION_MULTI_AUTH_KEEPER_UNRESOLVED
+SKIP13 profiles resolved=13/13
+profiles with effective Auth=8
+effective Auth candidates=9
+profiles reconciled unique canonical=7
+remaining duplicate profile=1
+remaining duplicate candidates=2
 ```
 
-Todos los checks del validador source-only pasaron.
-
-## 5. Clasificación
-
-Siete perfiles efectivos tienen un único candidato Auth ligado por `shopperId` exacto y scope shopper `tya/cinepolis`; quedan reconciliados como identidad canónica vigente y preservación del Auth existente, sin repair:
-
-```text
-cc941934f90032aa48e8 -> fa84ea99678c2b2f5953
-9ed0cdabf3794b7ccf21 -> bc5b358c6883a46ef4e2
-80d716626b85e14778ea -> ff65430db1848288c596
-8aea97650e97902f7616 -> 8e80a0b286283139ff2e
-540c9e6b71440b393365 -> cc52fe65814c6b9ae201
-c01e0f344901f03e78d2 -> 63cb1df5e624217df319
-729eb0480d5ec2266a20 -> 26c355c7cabb98038038
-```
-
-No se demostró ningún alias histórico ni candidato concreto cuyo acceso deba retirarse entre esos siete.
-
-Perfil especial:
+Único perfil restante:
 
 ```text
 profileFingerprint=7cc28c78de9bfda01d14
 candidateA=4e6d26551d11db444bd0
 candidateB=9b2b7ca1bd72c1301d29
-classification=IDENTIDAD_DUPLICADA
-keeper=null
-accessToRetire=null
 ```
 
-Ambos candidatos son efectivos y las fuentes source-safe continúan empatadas. No es válido seleccionar por creationTime, ordinal, first-returned, enabled o emailVerified. Esto activa STOP_RETRY.
+## 4. Multi-Auth Final Discriminator read-only
 
-## 6. Freeze y overlay
+```text
+requestId=c6-multi-auth-final-discriminator-readonly-20260807-01
+sourceHead=f6c18173c028a3f04e08c16b027a211ce8cbc526
+requestCommit=1a2c2f95334ae1869d8ba8d7f665f31c080ad4e2
+runId=31199988897
+jobId=92937409808
+artifactId=9002409950
+artifactDigest=sha256:0387c7323cf16b50f8d0596fff7bb19bec4aba94e830b2d998761041f5d723e5
+decision=STOP_RETRY_C6_MULTI_AUTH_FINAL_DISCRIMINATOR_TENANT_ADJUDICATION_REQUIRED
+```
 
-Freeze original preservado e inmutable:
+El run terminó técnicamente en success. El STOP_RETRY es el resultado contractual de identidad.
+
+## 5. Resultado terminal
+
+Ambos candidatos continúan equivalentes bajo el scope expresamente autorizado:
+
+```text
+candidate 4e6d26551d11db444bd0:
+  tenantAllowed=true
+  projectAssigned=true
+  roleShopper=true
+  passwordProvider=true
+  shopperIdPresent=true
+  shopperIdFingerprint=37eddd3b0db728c2b0b565b3
+  allowlistedClaims=projectId,projectIds,role,shopperId,tenantId
+  source/batch/migration/import markers=0
+  decisiveMatches=0
+
+candidate 9b2b7ca1bd72c1301d29:
+  tenantAllowed=true
+  projectAssigned=true
+  roleShopper=true
+  passwordProvider=true
+  shopperIdPresent=true
+  shopperIdFingerprint=37eddd3b0db728c2b0b565b3
+  allowlistedClaims=projectId,projectIds,role,shopperId,tenantId
+  source/batch/migration/import markers=0
+  decisiveMatches=0
+```
+
+No existe ancla técnica única. Por tanto:
+
+```text
+keeper=null
+accessToRetire=null
+tenantAdjudicationRequired=true
+```
+
+No se usó creationTime, ordinal, first-returned, enabled/disabled ni emailVerified como selector.
+
+## 6. Lecturas consumidas
+
+```text
+AuthListPages=1
+AuthUsersScannedForFingerprintOnly=110
+targetCandidatesInspected=2
+nonTargetAttributesInspected=false
+FirestoreReads=0
+membershipReads=0
+HRReads=0
+visitsReads=0
+certificationsReads=0
+liquidationsReads=0
+StorageReads=0
+legacyCredentialReads=0
+```
+
+No se exportaron UID, nombre, correo, contraseña, shopperId crudo ni claims crudos.
+
+## 7. Freeze y overlay
+
+Freeze Auth original preservado e inmutable:
 
 ```text
 rows=340
@@ -86,7 +131,7 @@ planDigest=6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b
 AuthExecuted=false
 ```
 
-Overlay provisional no superpuesto:
+Overlay provisional sigue siendo la única reconciliación válida:
 
 ```text
 rows=340
@@ -101,44 +146,45 @@ targetHoldZeroSatisfied=false
 executable=false
 ```
 
-No se produjo un plan final HOLD=0 porque la identidad especial no es resoluble con las fuentes autorizadas.
+No se produjo plan final HOLD=0.
 
-## 7. Fail-close
+## 8. Fail-close
 
 ```text
-requestConsumeCommit=b56f372171d23fc7d06089d371ab4fa0b5dd90da
-workflowRemovalCommit=a4df8983ab8f07504c939ab34f7361a96a04d649
+requestConsumeCommit=f587489c0d025ab47085a1bc7074e7345d891f0b
+workflowRemovalCommit=55c9777698594815ef18bb380a0f0fad79f6f4b8
 requestEnabled=false
 requestConsumed=true
 allowedExecutions=0
 workflowPresent=false
+secondAttempt=0
 ```
 
-## 8. Phase A preservada
+Antes de crear el request se corrigió en `f6c18173c028a3f04e08c16b027a211ce8cbc526` un falso positivo del gate estático que confundía la comprobación `legacyCredentials=false` con una lectura legacy. No se consumió provider read antes de esa corrección.
+
+## 9. Phase A preservada
 
 Frontend acumulativo, Login, `CX.data`, HR, shoppers, postulaciones, certificaciones, visitas, liquidaciones, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto y Academia permanecen preservados.
 
-## 9. Siguiente cadena exacta
+## 10. Siguiente cadena exacta
 
-1. Resolver con una autorización distinta el discriminador keeper vs acceso a retirar para los candidatos `4e6d26551d11db444bd0` y `9b2b7ca1bd72c1301d29`.
-2. Regenerar/congelar plan Auth final 340/340 no superpuesto y HOLD=0.
-3. Autorizar Auth con snapshot/rollback.
+1. **Adjudicación explícita del tenant**, por candidate fingerprint únicamente, para indicar cuál de los dos candidatos es keeper.
+2. Materializar source-only un overlay final `340/340`, no superpuesto, `HOLD=0`; cero write.
+3. Con autorización separada: snapshot + retiro del acceso duplicado + ejecución Auth 340 + readback/rollback.
 4. Smoke acumulativo Admin/Operaciones, Shopper y Cliente.
 5. Validación humana.
 6. Cutover/promoción autorizada.
 
-## 10. Estado seguro
+No repetir el provider/Auth read de este discriminador.
+
+## 11. Estado seguro
 
 ```text
-providerReadsThisBlock=0
-AuthReads=0
-claimsReads=0
-membershipReads=0
-HRReads=0
 providerWrites=0
 AuthWrites=0
 passwordChanges=0
 passwordResets=0
+claimsWrites=0
 membershipWrites=0
 FirestoreWrites=0
 RulesWrites=0
