@@ -5,8 +5,8 @@
   "pullRequest": 7,
   "project": "cxorbia-backend-dev",
   "environment": "DEV",
-  "sourceLock": "754e7ee1e8b81d27ad7f90dd8c4f4c594c411c02",
-  "decision": "ADMIN_IDENTITY_CREATION_REQUIRED",
+  "sourceLock": "466d7baebefd5af97f0f0347110691fa1737fa6f",
+  "decision": "ADMIN_CREDENTIAL_CONFIGURATION_REQUIRED",
   "inventory": {
     "serviceAccountsListed": 2,
     "projectIamPolicyRead": false,
@@ -39,13 +39,30 @@
       "fingerprint": "c9dd358bd886e96fb4b53f6edead9cc6a2c91d1c712ad70c21ebabcb55e58489"
     }
   ],
+  "administrativeCreationAttempt": {
+    "authorized": true,
+    "requestId": "c6-iam-admin-runtime-identity-create-20260806-01",
+    "requestCommit": "466d7baebefd5af97f0f0347110691fa1737fa6f",
+    "runId": "31133874657",
+    "jobId": "92728797539",
+    "failureStep": "Validate administrative credential envelope",
+    "failureClassification": "ADMIN_CREDENTIAL_NOT_AVAILABLE",
+    "gcpAuthenticationReached": false,
+    "serviceAccountCreated": false,
+    "rolesAssigned": false,
+    "keysCreated": false,
+    "rollback": "NOT_REQUIRED_NO_CREATION",
+    "secondAttempt": false,
+    "artifactId": "8977116099",
+    "artifactDigest": "sha256:19c3d8d343eba98ddd60f6af1eee0d9a6d48d936c972ee7f5063023040069136"
+  },
   "reasoning": {
     "defaultComputeExcludedRegardlessOfBindings": true,
     "firebaseAdminSdkExcludedRegardlessOfBindings": true,
     "cleanUserManagedIdentityFound": false,
     "fullProjectBindingInventoryCompleted": false,
     "conclusionStillDeterministic": true,
-    "conclusionBasis": "The complete service-account list contains only a default compute identity and the Firebase Admin SDK identity. Both are categorically excluded by the isolation contract regardless of their undisclosed bindings."
+    "conclusionBasis": "The only existing service accounts are categorically excluded, and the authorized administrative creation lane had no configured administrative credential available before Google Cloud authentication."
   },
   "requiredNextState": {
     "identityEmail": "cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com",
@@ -55,7 +72,8 @@
     "mustHaveNoFirebaseAuthFirestoreStorageHrCloudBuildOrAdminRoles": true,
     "mustNotReuseDefaultCompute": true,
     "mustNotReuseFirebaseAdminSdk": true,
-    "creationRequiresSeparateAdministrativeAuthorization": true
+    "administrativeCredentialMustBeConfiguredWithoutExposingSecret": true,
+    "creationRequiresSeparateFreshExecutionAuthorization": true
   },
   "safeState": {
     "iamControlPlaneReads": 2,
@@ -66,11 +84,5 @@
     "skip13Executed": false,
     "merge": false,
     "production": false
-  },
-  "evidence": {
-    "runId": "31133025584",
-    "jobId": "92726136842",
-    "artifactId": "8976819925",
-    "artifactDigest": "sha256:f3e1330b6e5777317255389f1d5a330f94b85bf897093049ca22b06d01a5ea69"
   }
 }
