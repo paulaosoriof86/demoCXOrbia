@@ -2,118 +2,108 @@
 
 **Fecha:** 2026-08-07  
 **Estado:** ACTIVO Y RECONCILIADO  
-**Estado vivo:** `C6_DIRECT_RUNNER_DEV_PASS__SKIP13_HOLD_FINGERPRINT_NAMESPACE_MISMATCH__ZERO_AUTH_MEMBERSHIP_READS__AUTH_PLAN_FROZEN__NO_PRODUCTION`
+**Estado vivo:** `C6_DIRECT_RUNNER_DEV_PASS__SKIP13_ROOT_FIX_SOURCE_GATE_HOLD_SELFTEST_OUTPUT_CONTAMINATION__NO_PROVIDER_ATTEMPT__AUTH_PLAN_FROZEN__NO_PRODUCTION`
 
 ## 1. Orden de prevalencia
 
 1. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `app/docs/SOURCE-LOCK-C6-SKIP13-FINGERPRINT-NAMESPACE-MISMATCH-STOP-RETRY-20260807.md`;
-3. `app/docs/DIAGNOSTICO-CAUSA-RAIZ-C6-RUTA-PRODUCCION-20260807.md`;
-4. `backend/config/c6-skip13-auth-access-adjudication-request.json` — consumido/deshabilitado;
-5. `backend/contracts/c6-skip13-auth-access-adjudication-v1.json`;
-6. `tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly.mjs`;
-7. `.github/workflows/cxorbia-c6-skip13-auth-access-adjudication-readonly.yml`;
-8. `app/docs/SOURCE-LOCK-C6-DIRECT-RUNNER-DEV-DEPLOY-PASS-20260807.md`;
-9. `backend/contracts/c6-direct-trusted-runner-dev-v2.json`;
-10. `backend/contracts/c6-execution-control-plane-v2.json`;
-11. `backend/contracts/c6-runtime-identity-isolated-final-v2.json`;
-12. `backend/runtime/c6-direct-trusted-runner/server.mjs`;
-13. `tools/qa/cxorbia-c6-direct-runner-source-gate-v2.mjs`;
+2. `app/docs/SOURCE-LOCK-C6-SKIP13-ROOT-FIX-SOURCE-GATE-SELFTEST-HARNESS-HOLD-20260807.md`;
+3. `backend/contracts/c6-skip13-auth-access-adjudication-v2.json`;
+4. `tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly-v2.mjs`;
+5. `app/docs/SOURCE-LOCK-C6-SKIP13-FINGERPRINT-NAMESPACE-MISMATCH-STOP-RETRY-20260807.md`;
+6. `backend/config/c6-skip13-auth-access-adjudication-request.json` — consumido/deshabilitado;
+7. `backend/contracts/c6-skip13-auth-access-adjudication-v1.json`;
+8. `tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly.mjs`;
+9. `app/docs/SOURCE-LOCK-C6-DIRECT-RUNNER-DEV-DEPLOY-PASS-20260807.md`;
+10. `backend/contracts/c6-direct-trusted-runner-dev-v2.json`;
+11. `backend/contracts/c6-execution-control-plane-v2.json`;
+12. `backend/contracts/c6-runtime-identity-isolated-final-v2.json`;
+13. `backend/runtime/c6-direct-trusted-runner/server.mjs`;
 14. `backend/config/c6-shopper-auth-final-freeze-v1.json`;
 15. `backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json`;
 16. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json`;
 17. `tools/qa/cxorbia-c6-shopper-deterministic-suffix-readonly.mjs`;
 18. `tools/qa/cxorbia-c6-shopper-equivalent-universe.mjs`;
-19. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-20. addenda vigentes de CAMBIOS, Claude, Pendientes, Academia y tracker;
-21. `AGENTS.md`, PR #7 y HEAD vivo.
+19. `app/docs/DIAGNOSTICO-CAUSA-RAIZ-C6-RUTA-PRODUCCION-20260807.md`;
+20. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+21. addenda vigentes de CAMBIOS, Claude, Pendientes, Academia y tracker;
+22. `AGENTS.md`, PR #7 y HEAD vivo.
 
 ## 2. Direct trusted runner DEV — PASS preservado
 
 ```text
 service=cxorbia-c6-direct-runner-dev
-region=us-central1
-runtime=cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com
-runtimeUniqueId=112507526829412676643
-runtimeFingerprint=ed8f84baa824b89305a8e6ab16af43c51ff555c72e3c940aeb0ef1339e5c2460
-sourceLock=5c467be8d7359e66b6362a07dd3908ada3cf1c17
-decision=PASS_C6_DIRECT_RUNNER_DEV_DEPLOY_V3
 revision=cxorbia-c6-direct-runner-dev-00001-2vz
+runtime=cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com
+runtimeIsolation=PASS
 private=true
 providerBoundaryEnabled=false
 ```
 
-Evidencia terminal:
+No hubo redeploy ni cambios IAM en el bloque actual.
+
+## 3. SKIP13 root-fix v2 — materializado pero source gate HOLD
+
+Se crearon source-only:
 
 ```text
-runId=31186229092
-jobId=92891340577
-cloudBuildId=2ae79aa7-574b-483f-90c1-25e6ee3161b0
-artifactId=8996863935
-artifactDigest=sha256:d1c5b954bc69c2874aeb1e77136b53bf2b3d1699e1e1b03efddf198d8c0d8a0d
-cloudBuildsExecuted=1
-cloudRunDeploysExecuted=1
+backend/contracts/c6-skip13-auth-access-adjudication-v2.json
+tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly-v2.mjs
 ```
 
-## 3. SKIP13 — STOP_RETRY por namespace
+Namespaces explícitos:
 
 ```text
-requestId=c6-skip13-auth-access-adjudication-20260807-06
-requestCommit=313597f561315ff9f8c75c5a7be741a8cbac5d70
-runId=31188368926
-jobId=92898589212
-artifactId=8997714548
-artifactDigest=sha256:9dd0cee0aa205071fa82afb22f69d0cdf29b54d9d8d4b2f6462c58c22fd1e30d
-decision=HOLD_C6_SKIP13_ADJUDICATION_TECHNICAL_ERROR
-error=all_skip13_profile_ids_resolved:0
+profileFingerprintNamespace=deterministic-suffix-plan-profile
+authCandidateFingerprintNamespace=shopper-auth-candidate-v1
+memberProvenanceFingerprintNamespace=shopper-collision-member-v1
+multiAuthProfileFingerprintNamespace=multi-auth-profile-v1
+crossNamespaceEqualityAllowed=false
 ```
 
-Lecturas consumidas:
+El adjudicador v2 usa el algoritmo del planner para `stablePlanProfileFingerprint` y prohíbe usar member provenance como join key de perfiles.
+
+## 4. Source gate terminal
 
 ```text
-shopperIdIndexBaseline=340
-profileIdIndexQueries=1
-resolvedSkip13Profiles=0
-authListPages=0
-membershipPointReads=0
-membershipFieldQueries=0
-hrReads=0
+runId=31190357507
+jobId=92905316953
+head=1e693386d097c1fa90c61d0a013c06c3be941563
 ```
 
-No se alcanzaron Auth, claims ni memberships.
-
-## 4. Causa raíz SKIP13
-
-El plan Auth genera el `profileFp` mediante:
+Pasaron checkout exacto, Node y `node --check`. El self-test no llegó a validación contractual final porque la salida JSON quedó contaminada por un side effect del módulo importado `cxorbia-c6-shopper-equivalent-universe.mjs`, que también observó `--self-test` y emitió `PASS_C6_EQUIVALENT_UNIVERSE_SOURCE_STATIC` antes del JSON.
 
 ```text
-fp('deterministic-suffix-plan-profile', profile.id)
+failureClassification=SOURCE_GATE_SELFTEST_OUTPUT_CONTAMINATION_FROM_IMPORTED_MODULE_ARGV
+sourceGatePass=false
 ```
 
-El adjudicador intentó resolver ese set con:
+## 5. STOP_RETRY / fail-close
+
+Por la regla autorizada de STOP_RETRY ante fallo source:
 
 ```text
-stableMemberFingerprint(profileId)
-namespace=shopper-collision-member-v1
-```
-
-Son namespaces distintos. El namespace `shopper-collision-member-v1` corresponde a member provenance de grupos del universo equivalente, no al profile fingerprint del plan de Auth.
-
-El contrato de adjudicación tampoco declara explícitamente el namespace de `profileFingerprint`, lo que permitió el cruce semántico.
-
-## 5. Fail-close SKIP13
-
-```text
-failCloseCommit=3966dac8a42404f35245c474f975f696c9cb9f0e
-requestEnabled=false
-requestConsumed=true
-allowedExecutions=0
+v2RequestCreated=false
+providerAttempt=false
+providerReads=0
+providerWrites=0
 secondProviderAttempt=false
 ```
 
-El run posterior `31188638266`, provocado por el commit de fail-close, saltó claim, credential preparation y adjudication; no hubo segunda lectura provider.
+El workflow v2 fue retirado:
 
-## 6. Auth congelado
+```text
+workflowRemovalCommit=e269347c8305c6ff60ad182aa6190c9c94abfe62
+workflowPresent=false
+```
+
+No existe request v2 ejecutable.
+
+## 6. SKIP13 previo y Auth congelado
+
+El intento provider anterior permanece cerrado en el source lock previo y consumió únicamente un índice de 340 IDs shopper; no alcanzó Auth/claims/memberships.
+
+Plan Auth vigente:
 
 ```text
 rows=340
@@ -123,39 +113,35 @@ NO_OP=73
 HOLD=0
 PRESERVE_NO_AUTH=140
 planDigest=6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b
-freezeDecision=PASS_AUTH_PLAN_340_CRYPTOGRAPHIC_FREEZE
 AuthExecuted=false
 ```
 
 ## 7. Pendiente real
 
-1. Root-fix source-only del namespace SKIP13: `deterministic-suffix-plan-profile`.
-2. Declarar namespaces explícitos en el contrato y agregar self-test cross-namespace.
-3. Solo con source gate PASS y autorización nueva, una única adjudicación SKIP13 read-only corregida.
-4. Con SKIP13 cerrado, ejecutar Auth sobre las 340 filas con snapshot/rollback.
-5. Smoke acumulativo Admin/Operaciones, Shopper y Cliente.
+1. Nueva autorización source-only para corregir exclusivamente el harness de self-test y eliminar el side effect `process.argv` entre módulos.
+2. Ejecutar sintaxis + self-test cross-namespace + validación del contrato v2 sin provider.
+3. Solo con PASS source-only, nueva autorización distinta para una única adjudicación SKIP13 read-only.
+4. Con SKIP13 cerrado, Auth 340 con snapshot/rollback.
+5. Smoke multirrol.
 6. Validación humana.
-7. Cutover/promoción autorizada a producción.
+7. Cutover autorizado.
 
 ## 8. Estado seguro
 
 ```text
 DirectRunnerDEV=PASS
-SKIP13 shopper-id index queries=1
-SKIP13 Auth reads=0
-SKIP13 claims reads=0
-SKIP13 membership reads=0
-HR reads=0
-provider writes=0
-Auth writes=0
-Firestore writes=0
-Rules writes=0
-Storage writes=0
-HR writes=0
-Hosting deploys=0
-additional Cloud Builds=0
-additional Cloud Run deploys=0
+SKIP13SourceGate=HOLD
+providerAttemptThisBlock=false
+providerReadsThisBlock=0
+providerWrites=0
+AuthWrites=0
+FirestoreWrites=0
+RulesWrites=0
+StorageWrites=0
+HRWrites=0
+additionalCloudBuilds=0
+additionalCloudRunDeploys=0
+HostingDeploys=0
 merge=false
 production=false
-providerBoundaryEnabled=false
 ```
