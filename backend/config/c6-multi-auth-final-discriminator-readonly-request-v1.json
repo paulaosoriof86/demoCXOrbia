@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "cxorbia.c6.multi-auth-final-discriminator.request.v1",
+  "requestId": "c6-multi-auth-final-discriminator-readonly-20260807-01",
+  "enabled": true,
+  "consumed": false,
+  "status": "authorized_execute_once",
+  "allowedExecutions": 1,
+  "authorizedBy": "Paula",
+  "authorizationSource": "current_conversation_c6_multi_auth_final_discriminator_readonly_2026-08-07",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "firebaseProjectId": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "profileFingerprint": "7cc28c78de9bfda01d14",
+  "candidateFingerprints": [
+    "4e6d26551d11db444bd0",
+    "9b2b7ca1bd72c1301d29"
+  ],
+  "contract": "backend/contracts/c6-multi-auth-final-discriminator-readonly-v1.json",
+  "targetHeadSha": "f6c18173c028a3f04e08c16b027a211ce8cbc526",
+  "scope": {
+    "auth": true,
+    "customClaims": true,
+    "firestore": false,
+    "memberships": false,
+    "hr": false,
+    "visits": false,
+    "certifications": false,
+    "liquidations": false,
+    "storage": false,
+    "legacyCredentials": false
+  },
+  "safeState": {
+    "providerWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "claimsWrites": 0,
+    "membershipWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "cloudBuilds": 0,
+    "cloudRunDeploys": 0,
+    "hostingDeploys": 0,
+    "merge": false,
+    "production": false
+  }
+}
