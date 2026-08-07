@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "cxorbia.c6.shopper-auth-final-freeze.v2",
+  "generatedAt": "2026-08-07T13:23:00-06:00",
+  "authorizationSource": "current_conversation_c6_auth_activation_dev_2026-08-07",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "target": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "productionStrategy": "PROMOTE_EXISTING_CLEAN_PROJECT"
+  },
+  "sourceArtifact": {
+    "runId": 31104541809,
+    "artifactId": 8968941587,
+    "artifactName": "cxorbia-c6-equivalent-universe-provider-v22-31104541809",
+    "artifactDigest": "sha256:02e36c355b3f2d1c9d1e6f1be7fece93259251ddb0f981cdaac35f2262fcb264",
+    "sourcePlanFile": "plan-340-source-safe.json",
+    "sourcePlanRows": 340,
+    "sourcePlanDigest": "acc93da842d1a5d3244327680f88539f0651cb101bae09dd231fd8b5008bea92",
+    "sourceCounts": {
+      "CREATE_AUTH": 81,
+      "UPDATE_AUTH": 46,
+      "NO_OP": 73,
+      "HOLD": 13,
+      "PRESERVE_NO_AUTH": 127
+    }
+  },
+  "priorFreeze": {
+    "path": "backend/config/c6-shopper-auth-final-freeze-v1.json",
+    "digest": "6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b",
+    "skip13Count": 13
+  },
+  "transform": {
+    "uniqueEffectiveAuthToNoOp": {
+      "cc941934f90032aa48e8": "fa84ea99678c2b2f5953",
+      "9ed0cdabf3794b7ccf21": "bc5b358c6883a46ef4e2",
+      "80d716626b85e14778ea": "ff65430db1848288c596",
+      "8aea97650e97902f7616": "8e80a0b286283139ff2e",
+      "540c9e6b71440b393365": "cc52fe65814c6b9ae201",
+      "c01e0f344901f03e78d2": "63cb1df5e624217df319",
+      "729eb0480d5ec2266a20": "26c355c7cabb98038038"
+    },
+    "preserveNoAuth": [
+      "3451d618b5d6307b87da",
+      "32e2de62067ab6ecfb7b",
+      "b31bdc0c7514acbe25ba",
+      "4a59de15805804cbe398",
+      "cfbd0c519e59f40c6239"
+    ],
+    "tenantAdjudication": {
+      "profileFingerprint": "7cc28c78de9bfda01d14",
+      "from": "HOLD",
+      "to": "NO_OP",
+      "keeperCandidateFingerprint": "4e6d26551d11db444bd0",
+      "retireAccessCandidateFingerprint": "9b2b7ca1bd72c1301d29",
+      "retirementAction": "DISABLE_ONLY_NO_DELETE",
+      "basis": "EXPLICIT_TENANT_DELEGATION_WITH_DETERMINISTIC_TIEBREAK",
+      "technicalSuperiorityClaimed": false
+    }
+  },
+  "finalPlan": {
+    "rows": 340,
+    "uniqueRows": 340,
+    "operationCounts": {
+      "CREATE_AUTH": 81,
+      "UPDATE_AUTH": 46,
+      "NO_OP": 81,
+      "HOLD": 0,
+      "PRESERVE_NO_AUTH": 132
+    },
+    "subchangeCounts": {
+      "email": 39,
+      "password": 14,
+      "claims": 38
+    },
+    "compactRowsDigestSha256": "68e26a5217957333d256f2cb547faf3e1eef74e2c789bfd85454d42dfd472dc3",
+    "onePrimaryOperationPerProfile": true,
+    "executableAfterPrewritePass": true
+  },
+  "safety": {
+    "sourceOnlyMaterialization": true,
+    "containsPii": false,
+    "containsRawUid": false,
+    "containsRawEmail": false,
+    "containsRawPassword": false,
+    "repositorySafe": true
+  }
+}
