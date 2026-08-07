@@ -28,7 +28,12 @@
     "temporaryRolePresentDuringVerification": true,
     "temporaryRoleBindingCountDuringVerification": 1,
     "revokeRequiredBeforeNextProviderWrite": true,
-    "revocationVerified": false
+    "revocationVerified": true,
+    "revocationDecision": "PASS_TEMP_SECURITY_REVIEWER_EFFECTIVELY_REVOKED",
+    "revocationRunId": "31184231219",
+    "revocationJobId": "92884658675",
+    "revocationArtifactId": "8996049168",
+    "revocationArtifactDigest": "sha256:574dd060914cf69046d266f63a0eacb49f64919c9271898d9166eee3dc9b61bc"
   },
   "evidence": {
     "runId": "31180615131",
@@ -46,8 +51,7 @@
     "production": false
   },
   "nextGate": {
-    "required": "TEMPORARY_SECURITY_REVIEWER_REVOKE_AND_READBACK",
-    "then": "DIRECT_TRUSTED_RUNNER_DEV_DEPLOY_NEW_REQUEST",
-    "deployForbiddenUntilRevocationPass": true
+    "required": "DIRECT_TRUSTED_RUNNER_DEV_DEPLOY_NEW_REQUEST",
+    "deployForbiddenUntilRevocationPass": false
   }
 }
