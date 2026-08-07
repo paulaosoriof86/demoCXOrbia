@@ -159,7 +159,7 @@ secondDeploy=0
 
 ## 10. Siguiente bloque exacto
 
-El direct trusted runner DEV ya está desplegado y técnicamente validado. El siguiente bloque es la adjudicación SKIP13 read-only explícita mediante el runner desplegado, manteniendo provider writes en cero. Solo después procede Auth sobre el plan congelado de 340 filas, smoke multirrol, validación humana y cutover autorizado.
+El direct trusted runner DEV ya está desplegado y técnicamente validado, pero su provider boundary permanece deliberadamente apagado y su operación actual es únicamente `control_plane_self_test`. Por tanto, el siguiente bloque es una nueva adjudicación SKIP13 read-only explícita mediante el contrato y workflow source-safe ya existentes (`backend/contracts/c6-skip13-auth-access-adjudication-v1.json` y `.github/workflows/cxorbia-c6-skip13-auth-access-adjudication-readonly.yml`), no una ejecución provider a través del runner actual. Solo después procede Auth sobre el plan congelado de 340 filas, smoke multirrol, validación humana y cutover autorizado.
 
 ## 11. Clasificación
 
