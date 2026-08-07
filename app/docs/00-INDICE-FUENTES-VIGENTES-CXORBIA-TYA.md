@@ -12,18 +12,19 @@
 4. `backend/contracts/c6-execution-control-plane-v2.json`;
 5. `backend/contracts/c6-runtime-identity-isolated-final-v2.json`;
 6. `backend/config/c6-direct-trusted-runner-dev-deploy-request-v3.json` — consumido y deshabilitado;
-7. `app/docs/DIAGNOSTICO-CAUSA-RAIZ-C6-RUTA-PRODUCCION-20260807.md`;
-8. `app/docs/SOURCE-LOCK-C6-RUNTIME-IDENTITY-ISOLATED-REVIEWER-REVOKED-PASS-20260807.md`;
-9. `backend/runtime/c6-direct-trusted-runner/server.mjs`;
-10. `tools/qa/cxorbia-c6-direct-runner-source-gate-v2.mjs`;
-11. `backend/config/c6-shopper-auth-final-freeze-v1.json`;
-12. `backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json`;
-13. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json`;
-14. `backend/contracts/c6-skip13-auth-access-adjudication-v1.json`;
-15. `tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly.mjs`;
-16. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-17. addenda vigentes de CAMBIOS, Claude, Pendientes, Academia y tracker;
-18. `AGENTS.md`, PR #7 y HEAD vivo.
+7. `backend/contracts/c6-skip13-auth-access-adjudication-v1.json`;
+8. `tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly.mjs`;
+9. `.github/workflows/cxorbia-c6-skip13-auth-access-adjudication-readonly.yml`;
+10. `app/docs/DIAGNOSTICO-CAUSA-RAIZ-C6-RUTA-PRODUCCION-20260807.md`;
+11. `app/docs/SOURCE-LOCK-C6-RUNTIME-IDENTITY-ISOLATED-REVIEWER-REVOKED-PASS-20260807.md`;
+12. `backend/runtime/c6-direct-trusted-runner/server.mjs`;
+13. `tools/qa/cxorbia-c6-direct-runner-source-gate-v2.mjs`;
+14. `backend/config/c6-shopper-auth-final-freeze-v1.json`;
+15. `backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json`;
+16. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json`;
+17. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+18. addenda vigentes de CAMBIOS, Claude, Pendientes, Academia y tracker;
+19. `AGENTS.md`, PR #7 y HEAD vivo.
 
 ## 2. Direct trusted runner DEV — PASS
 
@@ -37,6 +38,7 @@ sourceLock=5c467be8d7359e66b6362a07dd3908ada3cf1c17
 decision=PASS_C6_DIRECT_RUNNER_DEV_DEPLOY_V3
 private=true
 providerBoundaryEnabled=false
+allowedOperations=control_plane_self_test
 ```
 
 Evidencia terminal:
@@ -72,8 +74,6 @@ rollbackPlan=PASS_DELETE_NEW_DEV_SERVICE_PRESERVE_RUNTIME_IDENTITY
 rollbackExecuted=false
 ```
 
-El servicio no existía antes del bloque. El rollback validado elimina únicamente el nuevo servicio DEV y preserva la identidad runtime.
-
 ## 4. Identidad runtime e IAM
 
 ```text
@@ -89,13 +89,15 @@ No se otorgaron roles provider/Firebase/Auth/Firestore/Storage/HR a la identidad
 
 ## 5. SKIP13 y Auth
 
-El evento del deploy materializó un workflow histórico de SKIP13, pero éste detectó que no era su request exacto y saltó claim, credencial y adjudicación. Por tanto:
+El evento del deploy materializó un workflow histórico de SKIP13, pero éste detectó que no era su request exacto y saltó claim, credencial y adjudicación:
 
 ```text
 SKIP13 logical execution=false
 SKIP13 provider reads=0
 SKIP13 provider writes=0
 ```
+
+El runner desplegado no tiene provider boundary habilitado y solo acepta `control_plane_self_test`; por ello no se usará su runtime actual para leer SKIP13. La adjudicación SKIP13 deberá usar el contrato/workflow read-only source-safe ya existentes con una nueva autorización one-shot.
 
 Plan Auth vigente:
 
@@ -124,13 +126,11 @@ secondDeploy=0
 
 ## 7. Pendiente real
 
-1. Autorizar y ejecutar un bloque SKIP13 read-only explícito mediante el direct runner DEV desplegado.
+1. Autorizar una nueva adjudicación SKIP13 read-only explícita mediante el contrato/workflow source-safe ya existentes, sin provider writes.
 2. Con SKIP13 cerrado, ejecutar Auth sobre el plan congelado de 340 filas con snapshot/rollback y gates.
 3. Smoke acumulativo Admin/Operaciones, Shopper y Cliente.
 4. Validación humana.
 5. Cutover/promoción autorizada a producción.
-
-Provider boundary permanece apagado hasta autorización explícita del bloque que corresponda.
 
 ## 8. Estado seguro
 
@@ -149,4 +149,5 @@ RulesWrites=0
 StorageWrites=0
 merge=false
 production=false
+providerBoundaryEnabled=false
 ```
