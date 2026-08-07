@@ -39,7 +39,7 @@ Cero provider/Auth/claims/membership/HR reads adicionales, cero writes y cero de
 
 ## Incidencias de herramienta
 
-Durante el cierre documental hubo dos intentos `update_file` que devolvieron `409` por SHA de contenido incorrecto: uno sobre el addendum de Claude y uno sobre este addendum. Ambos fueron no-op; no modificaron archivos, no tocaron provider y no alteraron el resultado del bloque. Este archivo fue vuelto a leer y actualizado con su blob SHA vigente.
+Durante el cierre documental hubo tres intentos `update_file` que devolvieron `409` por SHA de contenido incorrecto: dos sobre el addendum de Claude y uno sobre este addendum. Los tres fueron no-op; no modificaron archivos, no tocaron provider y no alteraron el resultado del bloque. Este archivo se volvió a leer y se actualizó usando el blob SHA vigente.
 
 ## Clasificación
 
