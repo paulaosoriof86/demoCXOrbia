@@ -83,8 +83,8 @@ ensure(!/passwordSalt\s*:/.test(importer),'IMPORTER_EXPECTED_SALTLESS_RECORDS');
 
 const profileExtraEnvelopePresent=fs.existsSync(profileExtraEnvelopePath);
 const sourceSafeTargetCredentialBindingProven=false;
-const currentProviderPasswordStateProven=false;
-const exactRollbackReconstructible=sourceSafeTargetCredentialBindingProven&&currentProviderPasswordStateProven;
+const currentPriorPasswordStateProven=false;
+const exactRollbackReconstructible=sourceSafeTargetCredentialBindingProven&&currentPriorPasswordStateProven;
 const contractMutationAllowed=exactRollbackReconstructible;
 const decision=exactRollbackReconstructible
   ? 'PASS_C6_AUTH_PASSWORD_ROLLBACK_ROOT_FIX_SOURCE_ONLY_EXACT_REVERSIBILITY_PROVEN'
