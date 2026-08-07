@@ -1,0 +1,239 @@
+name: CXOrbia C6 IAM Visibility Temporary Security Reviewer Once V1
+
+on:
+  pull_request:
+    types: [synchronize]
+    paths:
+      - 'backend/config/c6-iam-visibility-temporary-security-reviewer-request-v1.json'
+
+permissions:
+  contents: read
+  statuses: write
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  REQUEST_FILE: backend/config/c6-iam-visibility-temporary-security-reviewer-request-v1.json
+  OUT_DIR: .tmp/c6-iam-visibility-temporary-security-reviewer-v1
+  GCP_PROJECT_ID: cxorbia-backend-dev
+  TARGET_SA_EMAIL: cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com
+  REVIEWER_SA_EMAIL: firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com
+  TEMP_ROLE: roles/iam.securityReviewer
+  PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
+jobs:
+  visibility:
+    name: Temporary IAM visibility and isolated identity verification
+    if: >-
+      github.event.pull_request.number == 7 &&
+      github.event.pull_request.head.ref == 'docs-tya-v6-v71-audit' &&
+      github.event.pull_request.base.ref == 'release/cxorbia-tya-rc-20260630'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Validate exact visibility request
+        id: request
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs');
+          const {execFileSync}=require('child_process');
+          const p=process.env.REQUEST_FILE;
+          const x=JSON.parse(fs.readFileSync(p,'utf8'));
+          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const falseKeys=['deploy','providerReads','providerWrites','skip13Execution','authReads','authWrites','hrReads','hrWrites','firestoreReads','firestoreWrites','rulesWrites','storageReads','storageWrites','hostingDeploy','cloudRunDeploy','cloudBuildWrites','merge','production','make','gemini','payments'];
+          const ok=
+            x.schemaVersion==='cxorbia.c6.iam-visibility-temporary-security-reviewer.request.v1' &&
+            x.requestId==='c6-iam-visibility-temporary-security-reviewer-20260806-01' &&
+            x.enabled===true && x.consumed===false && x.status==='authorized_execute_once' &&
+            x.authorizedBy==='Paula' && Number(x.allowedIamWrites)===2 && Number(x.allowedExecutions)===1 &&
+            x.repository==='paulaosoriof86/demoCXOrbia' && x.branch==='docs-tya-v6-v71-audit' && Number(x.pullRequest)===7 &&
+            x.environment==='DEV' && x.providerProject==='cxorbia-backend-dev' &&
+            x.targetServiceAccount===process.env.TARGET_SA_EMAIL && x.reviewerServiceAccount===process.env.REVIEWER_SA_EMAIL && x.temporaryRole===process.env.TEMP_ROLE &&
+            x.sourceLockMode==='github.event.pull_request.head.sha' && x.expectedParentHeadSha===parent && head===process.env.PR_HEAD_SHA &&
+            changed.length===1 && changed[0]===p &&
+            x.scope?.grantTemporarySecurityReviewer===true && x.scope?.verifyRuntimeIdentity===true && x.scope?.revokeTemporarySecurityReviewer===true && x.scope?.verifyRevocation===true &&
+            falseKeys.every(k=>x.safeState?.[k]===false);
+          if(!ok) throw new Error('IAM_VISIBILITY_REQUEST_INVALID');
+          fs.writeFileSync(process.env.OUT_DIR+'/request-source-safe.json',JSON.stringify({requestId:x.requestId,sourceLock:head,parent,changed,target:x.targetServiceAccount,reviewer:x.reviewerServiceAccount,temporaryRole:x.temporaryRole,allowedIamWrites:x.allowedIamWrites,safeState:x.safeState},null,2)+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`request_id=${x.requestId}\nsource_lock=${head}\n`);
+          NODE
+
+      - name: Claim the single visibility execution
+        id: claim
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          existing=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${PR_HEAD_SHA}/statuses" --paginate --jq '[.[] | select(.context=="cxorbia/c6-iam-visibility-temp-reviewer-v1/claim")] | length')
+          if [ "$existing" != '0' ]; then echo 'claimed=false' >> "$GITHUB_OUTPUT"; exit 0; fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${PR_HEAD_SHA}" \
+            -f state='pending' -f context='cxorbia/c6-iam-visibility-temp-reviewer-v1/claim' \
+            -f description='CLAIMED_SINGLE_IAM_VISIBILITY_EXECUTION' \
+            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+          echo 'claimed=true' >> "$GITHUB_OUTPUT"
+
+      - name: Stop duplicate before Google Cloud
+        if: steps.claim.outputs.claimed != 'true'
+        run: exit 2
+
+      - name: Authenticate existing DEV control-plane identity
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: cxorbia-backend-dev
+
+      - name: Grant verify revoke and prove effective revocation
+        run: |
+          set +e
+          mkdir -p "$OUT_DIR"
+          member="serviceAccount:${REVIEWER_SA_EMAIL}"
+          grant_rc=0
+          revoke_rc=0
+          verify_rc=0
+          post_test_rc=0
+          grant_succeeded=false
+          revoke_attempted=false
+          revoke_succeeded=false
+
+          active=$(gcloud auth list --filter=status:ACTIVE --format='value(account)' 2>"$OUT_DIR/active-account-error.txt")
+          echo "$active" > "$OUT_DIR/active-account.txt"
+          if [ "$active" != "$REVIEWER_SA_EMAIL" ]; then
+            echo 'STOP_RETRY_UNEXPECTED_ACTIVE_PRINCIPAL' > "$OUT_DIR/decision.txt"
+            exit 23
+          fi
+
+          gcloud projects add-iam-policy-binding "$GCP_PROJECT_ID" \
+            --member="$member" --role="$TEMP_ROLE" --condition=None \
+            --format=json > "$OUT_DIR/grant-result.json" 2> "$OUT_DIR/grant-error.txt" || grant_rc=$?
+
+          if [ "$grant_rc" -ne 0 ]; then
+            cat > "$OUT_DIR/verification-result.json" <<JSON
+{"schemaVersion":"cxorbia.c6.iam-visibility-temporary-security-reviewer.result.v1","decision":"STOP_RETRY_TEMP_ROLE_GRANT_FAILED","project":"$GCP_PROJECT_ID","target":"$TARGET_SA_EMAIL","reviewer":"$REVIEWER_SA_EMAIL","temporaryRole":"$TEMP_ROLE","grantSucceeded":false,"grantReturnCode":$grant_rc,"iamWritesSucceeded":0,"revokeRequired":false,"safeState":{"deploys":0,"providerReads":0,"providerWrites":0,"skip13Executed":false,"merge":false,"production":false}}
+JSON
+            echo 'STOP_RETRY_TEMP_ROLE_GRANT_FAILED' > "$OUT_DIR/decision.txt"
+            exit 23
+          fi
+
+          grant_succeeded=true
+
+          gcloud iam service-accounts describe "$TARGET_SA_EMAIL" --project "$GCP_PROJECT_ID" --format=json > "$OUT_DIR/identity.json" 2> "$OUT_DIR/identity-error.txt" || verify_rc=31
+          gcloud iam service-accounts keys list --iam-account "$TARGET_SA_EMAIL" --project "$GCP_PROJECT_ID" --managed-by=user --format=json > "$OUT_DIR/user-managed-keys.json" 2> "$OUT_DIR/user-managed-keys-error.txt" || verify_rc=32
+          gcloud iam service-accounts get-iam-policy "$TARGET_SA_EMAIL" --project "$GCP_PROJECT_ID" --format=json > "$OUT_DIR/service-account-iam-policy.json" 2> "$OUT_DIR/service-account-iam-policy-error.txt" || verify_rc=33
+          gcloud projects get-iam-policy "$GCP_PROJECT_ID" --format=json > "$OUT_DIR/project-iam-policy-during-grant.json" 2> "$OUT_DIR/project-iam-policy-during-grant-error.txt" || verify_rc=34
+
+          node <<'NODE' || verify_rc=$?
+          const fs=require('fs');
+          const crypto=require('crypto');
+          const out=process.env.OUT_DIR;
+          const target=process.env.TARGET_SA_EMAIL;
+          const reviewer=process.env.REVIEWER_SA_EMAIL;
+          const role=process.env.TEMP_ROLE;
+          const read=n=>JSON.parse(fs.readFileSync(`${out}/${n}`,'utf8'));
+          const identity=read('identity.json');
+          const keys=read('user-managed-keys.json');
+          const saPolicy=read('service-account-iam-policy.json');
+          const projectPolicy=read('project-iam-policy-during-grant.json');
+          const saBindings=Array.isArray(saPolicy.bindings)?saPolicy.bindings:[];
+          const targetMember=`serviceAccount:${target}`;
+          const reviewerMember=`serviceAccount:${reviewer}`;
+          const targetRoles=(projectPolicy.bindings||[]).filter(b=>(b.members||[]).includes(targetMember)).map(b=>b.role).sort();
+          const reviewerTempBindings=(projectPolicy.bindings||[]).filter(b=>b.role===role && (b.members||[]).includes(reviewerMember));
+          const pass=identity.email===target && identity.disabled!==true && String(identity.uniqueId||'')!=='' && Array.isArray(keys) && keys.length===0 && saBindings.length===0 && targetRoles.length===0 && reviewerTempBindings.length===1;
+          const fingerprintInput={email:identity.email,uniqueId:String(identity.uniqueId||''),disabled:identity.disabled===true,userManagedKeys:keys,serviceAccountIamPolicy:saBindings,projectRoles:targetRoles};
+          const fingerprint=crypto.createHash('sha256').update(JSON.stringify(fingerprintInput)).digest('hex');
+          const result={schemaVersion:'cxorbia.c6.iam-visibility-temporary-security-reviewer.result.v1',decision:pass?'PASS_RUNTIME_IDENTITY_ISOLATED_BEFORE_REVOKE':'STOP_RETRY_RUNTIME_IDENTITY_NOT_ISOLATED',project:process.env.GCP_PROJECT_ID,target,reviewer,temporaryRole:role,identity:{exists:true,enabled:identity.disabled!==true,uniqueId:String(identity.uniqueId||'')},checks:{userManagedKeyCount:keys.length,directServiceAccountBindingCount:saBindings.length,projectRoleCount:targetRoles.length,temporaryReviewerBindingCount:reviewerTempBindings.length},targetProjectRoles:targetRoles,fingerprint,fingerprintFinal:pass,safeState:{deploys:0,providerReads:0,providerWrites:0,skip13Executed:false,merge:false,production:false}};
+          fs.writeFileSync(`${out}/verification-pre-revoke.json`,JSON.stringify(result,null,2)+'\n');
+          if(!pass) process.exit(41);
+          NODE
+
+          revoke_attempted=true
+          gcloud projects remove-iam-policy-binding "$GCP_PROJECT_ID" \
+            --member="$member" --role="$TEMP_ROLE" --condition=None \
+            --format=json > "$OUT_DIR/revoke-result.json" 2> "$OUT_DIR/revoke-error.txt" || revoke_rc=$?
+          if [ "$revoke_rc" -eq 0 ]; then revoke_succeeded=true; fi
+
+          # Post-revoke effective-permission readback. testIamPermissions is used because
+          # project getIamPolicy is intentionally expected to disappear with the temporary role.
+          token=$(gcloud auth print-access-token 2>"$OUT_DIR/token-error.txt")
+          if [ -n "$token" ]; then
+            curl -sS -X POST \
+              -H "Authorization: Bearer $token" \
+              -H 'Content-Type: application/json' \
+              "https://cloudresourcemanager.googleapis.com/v1/projects/${GCP_PROJECT_ID}:testIamPermissions" \
+              -d '{"permissions":["resourcemanager.projects.getIamPolicy","iam.serviceAccounts.getIamPolicy","iam.serviceAccountKeys.list"]}' \
+              > "$OUT_DIR/post-revoke-test-iam-permissions.json" 2> "$OUT_DIR/post-revoke-test-iam-permissions-error.txt" || post_test_rc=$?
+          else
+            post_test_rc=51
+          fi
+
+          export grant_rc revoke_rc verify_rc post_test_rc grant_succeeded revoke_attempted revoke_succeeded
+          node <<'NODE'
+          const fs=require('fs');
+          const out=process.env.OUT_DIR;
+          const readJson=(n,f)=>{try{return JSON.parse(fs.readFileSync(`${out}/${n}`,'utf8'))}catch{return f}};
+          const pre=readJson('verification-pre-revoke.json',null);
+          const test=readJson('post-revoke-test-iam-permissions.json',null);
+          const granted=String(process.env.grant_succeeded)==='true';
+          const revokeAttempted=String(process.env.revoke_attempted)==='true';
+          const revoked=String(process.env.revoke_succeeded)==='true';
+          const verifyRc=Number(process.env.verify_rc||0);
+          const revokeRc=Number(process.env.revoke_rc||0);
+          const postTestRc=Number(process.env.post_test_rc||0);
+          const remaining=new Set(Array.isArray(test?.permissions)?test.permissions:[]);
+          const tempPermissionsGone=postTestRc===0 && !remaining.has('resourcemanager.projects.getIamPolicy') && !remaining.has('iam.serviceAccounts.getIamPolicy') && !remaining.has('iam.serviceAccountKeys.list');
+          let decision='STOP_RETRY_UNKNOWN';
+          if(!granted) decision='STOP_RETRY_TEMP_ROLE_GRANT_FAILED';
+          else if(!revokeAttempted || !revoked || revokeRc!==0) decision='STOP_RETRY_TEMP_ROLE_REVOKE_FAILED';
+          else if(!tempPermissionsGone) decision='STOP_RETRY_TEMP_ROLE_REVOCATION_NOT_PROVEN';
+          else if(verifyRc!==0 || !pre || pre.decision!=='PASS_RUNTIME_IDENTITY_ISOLATED_BEFORE_REVOKE') decision='STOP_RETRY_RUNTIME_IDENTITY_NOT_ISOLATED';
+          else decision='PASS_ISOLATED_RUNTIME_IDENTITY_TEMP_ROLE_REVOKED';
+          const result={...(pre||{}),schemaVersion:'cxorbia.c6.iam-visibility-temporary-security-reviewer.terminal.v1',decision,grantSucceeded:granted,revokeAttempted,revokeSucceeded:revoked,verifyReturnCode:verifyRc,revokeReturnCode:revokeRc,postRevokeTestIamPermissionsReturnCode:postTestRc,postRevokeGrantedPermissions:[...remaining].sort(),temporaryPermissionsGone:tempPermissionsGone,iamWritesSucceeded:(granted?1:0)+(revoked?1:0),temporaryRolePresentAfterBlock:tempPermissionsGone?false:null,safeState:{iamWritesMaxAuthorized:2,deploys:0,providerReads:0,providerWrites:0,skip13Executed:false,merge:false,production:false}};
+          fs.writeFileSync(`${out}/verification-result.json`,JSON.stringify(result,null,2)+'\n');
+          fs.writeFileSync(`${out}/decision.txt`,decision+'\n');
+          console.log(JSON.stringify({decision,grantSucceeded:granted,revokeSucceeded:revoked,temporaryPermissionsGone:tempPermissionsGone,iamWritesSucceeded:result.iamWritesSucceeded,fingerprint:result.fingerprint||null},null,2));
+          if(decision!=='PASS_ISOLATED_RUNTIME_IDENTITY_TEMP_ROLE_REVOKED') process.exit(23);
+          NODE
+
+      - name: Upload terminal evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-c6-iam-visibility-temporary-security-reviewer-v1-${{ github.run_id }}
+          path: ${{ env.OUT_DIR }}
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 14
+
+      - name: Publish terminal statuses
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB_STATE: ${{ job.status }}
+        run: |
+          set -euo pipefail
+          state=failure; desc='STOP_RETRY_C6_IAM_VISIBILITY_TEMP_REVIEWER_V1'
+          if [ "$JOB_STATE" = 'success' ]; then state=success; desc='PASS_C6_IAM_VISIBILITY_TEMP_REVIEWER_V1'; fi
+          for context in cxorbia/c6-iam-visibility-temp-reviewer-v1/overall cxorbia/c6-iam-visibility-temp-reviewer-v1/claim; do
+            gh api --method POST -H 'Accept: application/vnd.github+json' \
+              "/repos/${GITHUB_REPOSITORY}/statuses/${PR_HEAD_SHA}" \
+              -f state="$state" -f context="$context" -f description="$desc" \
+              -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+          done
