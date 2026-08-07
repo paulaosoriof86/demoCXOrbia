@@ -1,10 +1,11 @@
 {
   "schemaVersion": "cxorbia.c6.iam-visibility-temporary-security-reviewer.request.v1",
   "requestId": "c6-iam-visibility-temporary-security-reviewer-20260806-01",
-  "enabled": true,
-  "consumed": false,
-  "status": "authorized_execute_once",
+  "enabled": false,
+  "consumed": true,
+  "status": "fail_closed_no_execution_lane_no_iam_write",
   "issuedAt": "2026-08-06T18:59:30-06:00",
+  "closedAt": "2026-08-06T19:03:00-06:00",
   "transportRearmedAt": "2026-08-06T19:00:30-06:00",
   "transportCorrection": "removed_large_pr_path_filter_before_any_provider_execution",
   "authorizedBy": "Paula",
@@ -19,15 +20,26 @@
   "temporaryRole": "roles/iam.securityReviewer",
   "sourceLockMode": "github.event.pull_request.head.sha",
   "expectedParentHeadSha": "338dd13d73920b372d005092afd2cce6375152d9",
-  "allowedExecutions": 1,
-  "allowedIamWrites": 2,
+  "requestCommitSha": "891a6acedcd620abbf70c4fc55d11b716c22d4dd",
+  "allowedExecutions": 0,
+  "allowedIamWrites": 0,
+  "executionsCompleted": 0,
+  "iamWritesSucceeded": 0,
   "scope": {
     "grantTemporarySecurityReviewer": true,
     "verifyRuntimeIdentity": true,
     "revokeTemporarySecurityReviewer": true,
     "verifyRevocation": true
   },
+  "terminal": {
+    "workflowRunMaterialized": false,
+    "iamGrantAttempted": false,
+    "iamRevokeAttempted": false,
+    "googleCloudAuthenticationReached": false,
+    "decision": "ADMINISTRATIVE_IAM_AUTHORITY_STILL_REQUIRED"
+  },
   "safeState": {
+    "iamWrites": false,
     "deploy": false,
     "providerReads": false,
     "providerWrites": false,
