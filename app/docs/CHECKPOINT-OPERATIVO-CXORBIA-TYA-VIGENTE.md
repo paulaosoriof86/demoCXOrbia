@@ -13,61 +13,36 @@
 - request SKIP13 v2 ejecutable: ninguno;
 - Auth ejecutado: no.
 
-## 2. Direct trusted runner DEV — PASS preservado
+## 2. Direct runner DEV
 
 ```text
-service=cxorbia-c6-direct-runner-dev
-revision=cxorbia-c6-direct-runner-dev-00001-2vz
-runtime=cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com
+PASS_C6_DIRECT_RUNNER_DEV_DEPLOY_V3
 runtimeIsolation=PASS
-private=true
 providerBoundaryEnabled=false
 ```
 
-## 3. Root-fix SKIP13 v2 materializado
+## 3. SKIP13 v2 source state
 
 ```text
-contract=backend/contracts/c6-skip13-auth-access-adjudication-v2.json
-adjudicator=tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly-v2.mjs
+contractV2=materialized
+adjudicatorV2=materialized
 profileFingerprintNamespace=deterministic-suffix-plan-profile
 authCandidateFingerprintNamespace=shopper-auth-candidate-v1
-forbiddenProfileJoin=shopper-collision-member-v1,multi-auth-profile-v1
 ```
 
-El adjudicador v2 resuelve shoppers con `stablePlanProfileFingerprint(doc.id)` y conserva salida source-safe.
-
-## 4. Source gate — terminal HOLD
+## 4. Source gate
 
 ```text
 runId=31190357507
 jobId=92905316953
-head=1e693386d097c1fa90c61d0a013c06c3be941563
-```
-
-Pasaron checkout exacto, Node y sintaxis. Falló el self-test antes de cualquier provider read por contaminación de salida causada por `--self-test` observado también por el módulo importado `cxorbia-c6-shopper-equivalent-universe.mjs`.
-
-```text
+nodeCheck=PASS
+sourceGate=HOLD
 failureClassification=SOURCE_GATE_SELFTEST_OUTPUT_CONTAMINATION_FROM_IMPORTED_MODULE_ARGV
 ```
 
-## 5. STOP_RETRY y fail-close
+No hubo provider attempt. El workflow v2 fue retirado y no existe request v2.
 
-```text
-v2RequestCreated=false
-providerCredentialPrepared=false
-providerAttempt=false
-shopperIdReads=0
-AuthReads=0
-claimsReads=0
-membershipReads=0
-HRReads=0
-providerWrites=0
-secondProviderAttempt=false
-workflowRemovalCommit=e269347c8305c6ff60ad182aa6190c9c94abfe62
-workflowPresent=false
-```
-
-## 6. Auth congelado
+## 5. Auth congelado
 
 ```text
 rows=340
@@ -80,29 +55,21 @@ planDigest=6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b
 AuthExecuted=false
 ```
 
-## 7. Siguiente cadena exacta
+## 6. Siguiente bloque
 
-1. Nueva autorización source-only para corregir únicamente el harness de self-test.
-2. PASS estático sin provider.
-3. Autorización posterior distinta para una única adjudicación SKIP13 read-only.
-4. Auth 340 con snapshot/rollback.
-5. Smoke multirrol, validación humana y cutover autorizado.
+Corrección source-only del harness `--self-test`, PASS estático y detención. La revalidación provider SKIP13 requerirá autorización posterior distinta.
 
-## 8. Estado seguro
+## 7. Estado seguro
 
 ```text
-DirectRunnerDEV=PASS
-SKIP13SourceGate=HOLD
 providerAttemptThisBlock=false
 providerReadsThisBlock=0
 providerWrites=0
 AuthWrites=0
 FirestoreWrites=0
-RulesWrites=0
-StorageWrites=0
 HRWrites=0
-additionalCloudBuilds=0
-additionalCloudRunDeploys=0
+CloudBuilds=0
+CloudRunDeploys=0
 HostingDeploys=0
 merge=false
 production=false
