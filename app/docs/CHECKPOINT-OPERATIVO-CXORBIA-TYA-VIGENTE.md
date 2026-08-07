@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-06  
-**Estado:** `C6_RUNTIME_IDENTITY_EXISTS_ENABLED__IAM_VISIBILITY_EXECUTION_LANE_NOT_MATERIALIZED__DIRECT_RUNNER_NOT_DEPLOYED__AUTH_PLAN_FROZEN__NO_PROVIDER__ZERO_IAM_WRITES__NO_PRODUCTION`
+**Fecha:** 2026-08-07  
+**Estado:** `C6_RUNTIME_IDENTITY_ISOLATED_PASS__TEMP_SECURITY_REVIEWER_REVOKE_PENDING__DIRECT_RUNNER_NOT_DEPLOYED__AUTH_PLAN_FROZEN__NO_PROVIDER__NO_PRODUCTION`
 
 ## 1. Rama y control
 
@@ -9,10 +9,8 @@
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
 - producción: intacta;
-- source lock vigente: `app/docs/SOURCE-LOCK-C6-IAM-VISIBILITY-NO-EXECUTION-LANE-STOP-RETRY-20260806.md`;
-- request IAM visibility ejecutable: ninguno;
-- request IAM post-create ejecutable: ninguno;
-- request IAM ADMIN ejecutable: ninguno;
+- source lock vigente: `app/docs/SOURCE-LOCK-C6-RUNTIME-IDENTITY-ISOLATED-PASS-PENDING-REVIEWER-REVOKE-20260807.md`;
+- request IAM final ejecutable: ninguno;
 - request direct runner ejecutable: ninguno;
 - requests SKIP13 ejecutables: ninguno.
 
@@ -26,123 +24,101 @@ deploy=NOT_EXECUTED
 providerBoundaryEnabled=false
 ```
 
-El source lock y el harness de `PR_HEAD_SHA` continúan corregidos. El ejecutor no está desplegado.
+El source y el harness de `PR_HEAD_SHA=github.event.pull_request.head.sha` están corregidos. El ejecutor todavía no está desplegado.
 
-## 3. Identidad runtime
+## 3. Identidad runtime — PASS
 
 ```text
 email=cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com
 exists=true
 enabled=true
-displayName=cxorbia-c6-runner-dev
-projectId=cxorbia-backend-dev
 uniqueId=112507526829412676643
 oauth2ClientId=112507526829412676643
+userManagedKeyCount=0
+directServiceAccountBindingCount=0
+projectRoleCount=0
 ```
 
-La identidad fue creada manualmente y confirmada terminalmente mediante `describe`.
-
-## 4. Readback IAM anterior
-
 ```text
-requestId=c6-iam-runtime-identity-postcreate-readonly-20260806-01
-runId=31135508722
-jobId=92733827812
-artifactId=8977774322
-artifactDigest=sha256:c579dceb2d02df82dc5397ea2b0dcd1afbdc6cafcdd914f259ad33970e9d3ccb
+decision=PASS_ISOLATED_RUNTIME_IDENTITY
+fingerprint=ed8f84baa824b89305a8e6ab16af43c51ff555c72e3c940aeb0ef1339e5c2460
+fingerprintStatus=FINAL_ISOLATED_IDENTITY
 ```
 
-Pasaron checkout exacto, request/source lock, claim único, Google Cloud authentication, gcloud setup e identity describe.
-
-El principal conectado careció de:
+## 4. Evidencia terminal
 
 ```text
-iam.serviceAccountKeys.list
-iam.serviceAccounts.getIamPolicy
-resourcemanager.projects.getIamPolicy
+requestId=c6-iam-runtime-isolation-readonly-final-20260807-01
+sourceLock=a7357d4b0a80b164560423a673a6430e5a16b2d7
+runId=31180615131
+jobId=92872746963
+artifactId=8994613975
+artifactDigest=sha256:b4ff0ffe54dca09f07264109eb327c71d84be6e4256b058a364cd494d6348e9c
 ```
 
-Siguen sin demostrarse terminalmente:
+Pasaron:
 
 ```text
-zeroUserManagedKeys
-zeroDirectServiceAccountBindings
-zeroProjectRoles
+checkout exacto=PASS
+request/source lock=PASS
+claim único=PASS
+Google Cloud authentication=PASS
+gcloud setup=PASS
+identity describe=PASS
+user-managed keys read=PASS
+service-account IAM policy read=PASS
+project IAM policy read=PASS
+runtime isolation classification=PASS
 ```
 
-Fingerprint provisional:
+## 5. Rol temporal de visibilidad
 
 ```text
-ed8f84baa824b89305a8e6ab16af43c51ff555c72e3c940aeb0ef1339e5c2460
-status=PROVISIONAL_INCOMPLETE_READBACK
-final=false
+principal=firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com
+role=roles/iam.securityReviewer
+temporaryReviewerBindingCount=1
 ```
 
-## 5. Bloque IAM VISIBILITY autorizado
+El rol fue agregado manualmente para completar los readbacks y continúa pendiente de retiro. No procede ningún provider write ni deploy hasta retirarlo y comprobar la revocación.
 
-Paula autorizó un único grant/revoke temporal de `roles/iam.securityReviewer` a:
+## 6. Root-fix del workflow one-shot
+
+El workflow IAM VISIBILITY anterior no materializó run usando `pull_request:synchronize`. El verificador final se instaló primero y se disparó después mediante `pull_request:edited`, manteniendo el source lock sobre `github.event.pull_request.head.sha`.
 
 ```text
-firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com
+runMaterialized=true
+runId=31180615131
+result=PASS
 ```
 
-con máximo dos IAM writes y obligación de revoke inmediato.
+Este patrón queda como root-fix para workflows C6 one-shot nuevos mientras PR #7 permanezca acumulativo.
 
-Carril source preparado:
-
-```text
-workflowCreateCommit=3a1bb800950e00ac5caa0482afa26d69429d7047
-requestCreateCommit=6d14c9b4458f4b7a37efa77542f101d617b745b4
-workflowTriggerCorrectionCommit=338dd13d73920b372d005092afd2cce6375152d9
-requestRearmCommit=891a6acedcd620abbf70c4fc55d11b716c22d4dd
-```
-
-## 6. Bloqueo terminal del bloque IAM VISIBILITY
-
-El workflow esperado no materializó un run observable. No se alcanzó Google Cloud ni se intentó el grant.
+## 7. Fail-close del verificador
 
 ```text
-workflowRunMaterialized=false
-claimMaterialized=false
-GoogleCloudAuthenticationReached=false
-iamGrantAttempted=false
-iamRevokeAttempted=false
-IAMWrites=0
-```
-
-Clasificación segura:
-
-```text
-GITHUB_ACTIONS_NEW_WORKFLOW_NOT_MATERIALIZED
-ADMINISTRATIVE_IAM_AUTHORITY_STILL_REQUIRED
-STOP_RETRY=true
-```
-
-No se declara causa raíz del no-materializado más allá de la evidencia observable.
-
-## 7. Fail-close IAM VISIBILITY
-
-```text
-workflowRemovalCommit=74ffa1c3049af2e79598b48ef6d3650c5bc6abb3
-requestDisableCommit=2a3a08acce1b8d4ea57bedca9a70692e24c95910
+workflowRemovalCommit=e76588a21bace175776c6878ce6b27301f6b7d70
+requestDisableCommit=ce05006345fa4f3af0dfafd566edd0516ab639ff
 workflowPresent=false
 requestEnabled=false
 requestConsumed=true
 allowedExecutions=0
-allowedIamWrites=0
-requestExecutable=false
 ```
 
-No se reutilizarán el workflow ni request cerrados.
+## 8. Diagnóstico de causa raíz acumulativo
 
-## 8. Contratos vigentes
+Documento vigente:
 
 ```text
-backend/contracts/c6-runtime-identity-postcreate-verification-v1.json
-backend/contracts/c6-direct-runner-runtime-identity-decision-v1.json
+app/docs/DIAGNOSTICO-CAUSA-RAIZ-C6-RUTA-PRODUCCION-20260807.md
 ```
 
-La decisión reconciliada continúa siendo que la identidad existe y está habilitada, pero su aislamiento final no está probado.
+Causas demostradas:
+
+1. **Geometría de permisos incorrecta del principal de control-plane:** capacidades amplias de Firebase/Cloud Run/Cloud Build, pero huecos en IAM create/read necesarios para C6.
+2. **Carril one-shot efímero:** un workflow nuevo no materializó con `synchronize`; el trigger `edited` posterior sí materializó y pasó.
+3. **SHA sintético del PR:** causa histórica ya corregida; no debe volver a usarse `GITHUB_SHA` para source lock C6.
+
+No hay evidencia de que estos bloqueos sean una regresión general del frontend o del plan de datos/Auth.
 
 ## 9. SKIP13 y Auth
 
@@ -172,19 +148,21 @@ Frontend acumulativo, Login, `CX.data`, shoppers, postulaciones, certificaciones
 
 ## 11. Siguiente cadena exacta
 
-1. Resolver una vía administrativa IAM observable; el principal GitHub actual no puede autoelevarse de forma segura y no hay identidad administrativa conectada demostrada.
-2. No recrear `cxorbia-c6-runner-dev`.
-3. Obtener evidencia terminal de cero llaves administradas por usuario, cero bindings directos y cero roles de proyecto.
-4. Generar fingerprint final y contrato PASS de identidad aislada.
-5. Solo con PASS autorizar un nuevo deploy DEV del direct runner.
-6. Mantener provider deshabilitado hasta terminal PASS.
+1. Retirar manualmente `roles/iam.securityReviewer` del principal Firebase Admin SDK.
+2. Ejecutar un readback read-only que demuestre `temporaryReviewerBindingCount=0`.
+3. Autorizar un nuevo deploy DEV único del direct trusted runner.
+4. Completar SKIP13 read-only.
+5. Ejecutar Auth sobre el plan congelado de 340 filas con snapshot/rollback.
+6. Ejecutar smoke acumulativo Admin/Operaciones, Shopper y Cliente.
+7. Validación humana.
+8. Cutover/promoción autorizada a producción.
 
 ## 12. Estado seguro
 
 ```text
 provider data reads=0
 provider writes=0
-IAM writes=0
+IAM writes by final verifier=0
 Cloud Build writes=0
 Cloud Run deploys=0
 Hosting deploys=0
