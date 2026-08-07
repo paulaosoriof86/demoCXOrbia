@@ -109,7 +109,16 @@ secondAttempt=0
 STOP_RETRY=true
 ```
 
-## 8. SKIP13 y Auth
+## 8. Contratos vigentes
+
+```text
+backend/contracts/c6-runtime-identity-postcreate-verification-v1.json
+backend/contracts/c6-direct-runner-runtime-identity-decision-v1.json
+```
+
+La decisión reconciliada es `RUNTIME_IDENTITY_EXISTS_READBACK_INCOMPLETE`.
+
+## 9. SKIP13 y Auth
 
 ```text
 profiles=13
@@ -131,11 +140,11 @@ freezeDecision=PASS_AUTH_PLAN_340_CRYPTOGRAPHIC_FREEZE
 
 Auth no ha sido ejecutado.
 
-## 9. Phase A preservada
+## 10. Phase A preservada
 
 Frontend acumulativo, Login, `CX.data`, shoppers, postulaciones, certificaciones, visitas, liquidaciones, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto y Academia permanecen preservados.
 
-## 10. Siguiente cadena exacta
+## 11. Siguiente cadena exacta
 
 1. Obtener una identidad o permiso temporal estrictamente read-only para leer llaves y políticas IAM.
 2. No recrear `cxorbia-c6-runner-dev`.
@@ -144,7 +153,7 @@ Frontend acumulativo, Login, `CX.data`, shoppers, postulaciones, certificaciones
 5. Solo con PASS autorizar un nuevo deploy DEV del ejecutor.
 6. Mantener provider deshabilitado hasta terminal PASS.
 
-## 11. Estado seguro
+## 12. Estado seguro
 
 ```text
 provider data reads=0
