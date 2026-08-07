@@ -22,17 +22,7 @@ artifactId=9000260368
 artifactDigest=sha256:05056323adb7a39df129fb3e7b498a331f0ef9ff9e8d9457614ac4294041d051
 ```
 
-Pasaron:
-
-```text
-checkout exacto=PASS
-namespace/harness root gate=PASS
-request-only source lock=PASS
-claim único=PASS
-request V2=PASS
-credential target=PASS
-resolvedProfiles=13/13
-```
+Pasaron checkout exacto, namespace/harness root gate, request-only source lock, claim único, request V2, credential target y resolución exacta `13/13`.
 
 ## 3. Decisión
 
@@ -45,7 +35,7 @@ effectiveProjectAccessCandidates=9
 effectiveOwnShopperAccessCandidates=9
 ```
 
-Los nueve candidatos efectivos observados cumplen, según el contrato de reglas evaluado:
+Los nueve candidatos efectivos observados cumplen:
 
 ```text
 enabled=true
@@ -62,8 +52,6 @@ Membership no es requisito para project read en el contrato vigente y los nueve 
 
 ## 4. Matriz source-safe
 
-Perfiles con acceso efectivo no previsto:
-
 ```text
 cc941934f90032aa48e8 -> fa84ea99678c2b2f5953
 9ed0cdabf3794b7ccf21 -> bc5b358c6883a46ef4e2
@@ -75,7 +63,7 @@ c01e0f344901f03e78d2 -> 63cb1df5e624217df319
 7cc28c78de9bfda01d14 -> 4e6d26551d11db444bd0, 9b2b7ca1bd72c1301d29
 ```
 
-Perfiles sin candidato Auth emparejado/effective access demostrado:
+Sin candidato Auth emparejado/effective access demostrado:
 
 ```text
 3451d618b5d6307b87da
@@ -85,16 +73,7 @@ b31bdc0c7514acbe25ba
 cfbd0c519e59f40c6239
 ```
 
-El perfil bloqueante `7cc28c78de9bfda01d14` resolvió exactamente los dos candidate fingerprints congelados:
-
-```text
-expected=2
-observed=2
-4e6d26551d11db444bd0=effective own shopper access
-9b2b7ca1bd72c1301d29=effective own shopper access
-```
-
-No hubo drift del set bloqueante; el HOLD se debe a acceso efectivo real no previsto.
+El perfil bloqueante resolvió exactamente `2/2` candidate fingerprints congelados y ambos tienen acceso efectivo own-shopper. No hubo drift del set bloqueante.
 
 ## 5. Lecturas consumidas
 
@@ -112,17 +91,20 @@ No se exportaron raw UIDs, shopper IDs, emails, claims ni PII.
 
 ## 6. STOP_RETRY / fail-close
 
-La autorización exigía detenerse ante acceso efectivo inesperado. Por tanto:
-
 ```text
 secondProviderAttempt=false
 requestDisableCommit=c6314294315757a971c2d31d31ac72f1dc3bcf13
+failCloseNonProviderRunId=31194826915
+failCloseNonProviderJobId=92920375094
+failCloseProviderStepsSkipped=true
 workflowRemovalCommit=a42008d5e0e9819dbdba7196071ca18a8c998d9c
 requestEnabled=false
 requestConsumed=true
 allowedExecutions=0
 workflowPresent=false
 ```
+
+El run disparado por el commit de fail-close ejecutó únicamente gates source-only; claim, credencial y adjudicación provider quedaron `skipped`.
 
 ## 7. Estado seguro
 
@@ -150,7 +132,7 @@ Direct runner DEV permanece PASS y sin cambios. El plan Auth de 340 filas perman
 
 No procede ejecutar Auth 340 mientras ocho perfiles SKIP13 conservan nueve candidatos con acceso efectivo TyA/Cinépolis, incluyendo dos candidatos efectivos para el fingerprint bloqueante.
 
-El siguiente bloque debe ser source-only, usando exclusivamente el freeze de 340 filas, matrices técnicas ya existentes y esta evidencia source-safe, para reconciliar cada uno de los ocho perfiles efectivos entre identidad canónica, alias histórico, identidad duplicada o acceso que debe retirarse. No requiere una nueva lectura provider para iniciar esa reconciliación.
+El siguiente bloque debe ser source-only, usando exclusivamente freeze, matrices técnicas ya existentes y esta evidencia, para reconciliar cada uno de los ocho perfiles entre identidad canónica vigente, alias histórico, identidad duplicada o acceso que debe retirarse. No requiere una nueva lectura provider para iniciar esa reconciliación.
 
 ## 9. Clasificación
 
