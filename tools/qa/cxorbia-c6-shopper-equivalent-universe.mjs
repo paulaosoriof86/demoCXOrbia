@@ -1,4 +1,6 @@
 // SOURCE_ONLY_INTEGRATED
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { text, norm, fingerprint, asciiToken } from './cxorbia-c6-shopper-identity-canonical-plan.mjs';
 
 export const EQUIVALENT_UNIVERSE_VERSION = 'shopper-equivalent-universe-v1';
@@ -183,4 +185,15 @@ export function selfTestEquivalentUniverse() {
   assert(!stableAuthCandidateFingerprint('internal-uid').includes('internal-uid'), 'candidate_fp_failed');
   return { decision: 'PASS_C6_EQUIVALENT_UNIVERSE_SOURCE_STATIC' };
 }
-if (process.argv.includes('--self-test')) console.log(selfTestEquivalentUniverse().decision);
+
+const isMainModule = (() => {
+  const entry = process.argv[1];
+  if (!entry) return false;
+  try {
+    return path.resolve(entry) === path.resolve(fileURLToPath(import.meta.url));
+  } catch {
+    return false;
+  }
+})();
+
+if (isMainModule && process.argv.includes('--self-test')) console.log(selfTestEquivalentUniverse().decision);
