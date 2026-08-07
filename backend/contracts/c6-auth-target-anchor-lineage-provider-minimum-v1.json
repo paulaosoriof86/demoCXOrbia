@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "cxorbia.c6.auth-target-anchor-lineage-provider-minimum.v1",
+  "status": "source_only_contract_not_authorized_for_provider_execution",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "firebaseProjectId": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "target": {
+    "profileFingerprint": "ac93d90d9e41512acdcd",
+    "profileFingerprintNamespace": "deterministic-suffix-plan-profile",
+    "baseLoginFingerprint": "493f2b26360648693c37",
+    "baseLoginFingerprintNamespace": "base-login",
+    "targetLoginFingerprint": "bd8d7019d612b4421366",
+    "targetLoginFingerprintNamespace": "target-login",
+    "suffixApplied": true,
+    "suffixLength": 4,
+    "sourceSafeSurnameBasis": "multi_source_full_name_consensus"
+  },
+  "sourceOnlyFinding": {
+    "baseLoginLineageStructurallyDemonstrated": true,
+    "rawBaseLoginReconstructibleFromFingerprint": false,
+    "exactConsensusBasisSetVersionedForTarget": false,
+    "reason": "The frozen UPDATE_AUTH plan row intentionally has diagnostics=null and the source-safe group export omits target memberVectors. The one-way fingerprints cannot recover the raw base login or the exact two-or-more corroborating source bases.",
+    "consensusRule": "Exactly one surname token must be corroborated by at least two distinct source bases before baseLogin is formed as first.surname.",
+    "credentialLoginCanBeConsensusBasis": false,
+    "possibleFullNameConsensusBases": [
+      "profile",
+      "hr",
+      "visit",
+      "certification",
+      "liquidation"
+    ]
+  },
+  "futureProviderMinimum": {
+    "authorizationRequired": true,
+    "executableRequestPresent": false,
+    "stageAResolveConsensusLineage": {
+      "authReads": 0,
+      "hashConfigReads": 0,
+      "reads": [
+        {
+          "source": "tenants/tya/shoppers",
+          "purpose": "resolve the target profile fingerprint to one technical shopper document and retain only the target in memory",
+          "exportRawValues": false
+        },
+        {
+          "source": "tenants/tya/projects/cinepolis/hrImports",
+          "purpose": "inspect only target-linked full-name/name technical objects using direct shopperId or exact unique technical anchors",
+          "adaptive": true,
+          "exportRawValues": false
+        },
+        {
+          "source": "tenants/tya/projects/cinepolis/visits",
+          "purpose": "inspect only target-linked full-name/name technical objects using direct shopperId or exact unique technical anchors",
+          "adaptive": true,
+          "exportRawValues": false
+        },
+        {
+          "source": "collectionGroup(certifications)",
+          "purpose": "inspect only target-linked full-name/name technical objects using direct shopperId or exact unique technical anchors",
+          "adaptive": true,
+          "exportRawValues": false
+        },
+        {
+          "source": "collectionGroup(liquidations)",
+          "purpose": "inspect only target-linked full-name/name technical objects using direct shopperId or exact unique technical anchors",
+          "adaptive": true,
+          "exportRawValues": false
+        }
+      ],
+      "shortCircuit": "stop linked-source reads as soon as exactly one surname candidate is corroborated by at least two distinct bases and both frozen fingerprints match",
+      "requiredChecks": [
+        "resolvedProfileFingerprint == ac93d90d9e41512acdcd",
+        "corroboratingBasisCount >= 2",
+        "reconstructedBaseLoginFingerprint == 493f2b26360648693c37",
+        "deterministicSuffixLength == 4",
+        "reconstructedTargetLoginFingerprint == bd8d7019d612b4421366",
+        "targetLoginUniqueInFrozenPlan == true"
+      ]
+    },
+    "stageBResolveAuthCandidateOnlyAfterStageAPass": {
+      "maximumAuthDirectoryPages": 1,
+      "candidateCountRequired": 1,
+      "otherPlanRowAssociationRequired": 0,
+      "transientDerivedInternalEmailAllowedInMemory": true,
+      "rawEmailExported": false,
+      "rawUidExported": false,
+      "candidateFingerprintNamespace": "shopper-auth-candidate-v1"
+    },
+    "stageCPasswordSnapshotOnlyAfterStageBPass": {
+      "maximumHashConfigReads": 1,
+      "passwordHashInspectionTargetCount": 1,
+      "encryptedSnapshotRequired": true,
+      "rawPasswordHashExported": false,
+      "rawPasswordSaltExported": false
+    }
+  },
+  "hardStops": [
+    "no source family broad scan beyond target-linked records after target technical id is resolved",
+    "no Auth read before frozen baseLoginFp and targetLoginFp are reconstructed and matched",
+    "no password hash or salt inspection before candidateCount=1 and zero other-plan-row association",
+    "no provider writes",
+    "no Auth writes",
+    "no Firestore writes",
+    "no HR writes",
+    "no deploy",
+    "no merge",
+    "no production"
+  ]
+}
