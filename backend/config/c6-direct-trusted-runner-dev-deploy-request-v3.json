@@ -17,7 +17,7 @@
   "runtimeServiceAccount": "cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com",
   "runtimeFingerprint": "ed8f84baa824b89305a8e6ab16af43c51ff555c72e3c940aeb0ef1339e5c2460",
   "sourceLockMode": "github.event.pull_request.head.sha",
-  "expectedParentHeadSha": "d2179d4336305b6656c0946ae398abf8f0aaccac",
+  "expectedParentHeadSha": "8bc30c9170f01dc7352774aa5905c349c306bda8",
   "allowedCloudBuilds": 1,
   "allowedDeploys": 1,
   "scope": {
