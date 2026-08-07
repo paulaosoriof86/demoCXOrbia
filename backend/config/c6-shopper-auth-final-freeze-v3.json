@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "cxorbia.c6.shopper-auth-final-freeze.v3",
+  "generatedAt": "2026-08-07T17:42:00-06:00",
+  "authorizationSource": "current_conversation_c6_auth_principal_uniqueness_rootfix_activation_dev_2026-08-07",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "target": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "productionStrategy": "PROMOTE_EXISTING_CLEAN_PROJECT"
+  },
+  "priorFinalPlan": {
+    "schemaVersion": "cxorbia.c6.shopper-auth-final-plan.v2",
+    "artifactRunId": 31213274602,
+    "artifactId": 9007517428,
+    "artifactName": "cxorbia-c6-auth-activation-dev-31213274602",
+    "rows": 340,
+    "digest": "68e26a5217957333d256f2cb547faf3e1eef74e2c789bfd85454d42dfd472dc3",
+    "executable": false,
+    "reason": "CROSS_ROW_EXISTING_AUTH_PRINCIPAL_ALIAS_IN_OLD_PREWRITE"
+  },
+  "rootCauseEvidence": {
+    "path": "app/docs/evidence/C6-AUTH-TARGET-ADAPTIVE-LINEAGE-ROOT-CAUSE-CROSS-ROW-PRINCIPAL-ALIAS-STOP-RETRY-20260807.json",
+    "classification": "CROSS_ROW_EXISTING_AUTH_PRINCIPAL_ALIAS_IN_OLD_PREWRITE",
+    "targetProfileFingerprint": "ac93d90d9e41512acdcd",
+    "collisionPeerProfileFingerprint": "a8dd7db89a02ff180674",
+    "targetSpecificExistingAuthCandidateCount": 0,
+    "targetLoginFingerprint": "bd8d7019d612b4421366",
+    "targetLoginUniqueInFrozenPlan": true,
+    "lineagePass": true,
+    "corroboratingBases": ["profile", "visit"]
+  },
+  "transform": {
+    "exactlyOnePrimaryRowMutation": true,
+    "profileFingerprint": "ac93d90d9e41512acdcd",
+    "from": "UPDATE_AUTH",
+    "to": "CREATE_AUTH",
+    "changesAfter": {"email": false, "password": false, "claims": false},
+    "basis": "TARGET_SPECIFIC_EXISTING_AUTH_CANDIDATE_COUNT_0_AFTER_EXACT_LINEAGE_PASS",
+    "peerMustRemainUnchanged": "a8dd7db89a02ff180674"
+  },
+  "finalPlan": {
+    "rows": 340,
+    "uniqueRows": 340,
+    "operationCounts": {
+      "CREATE_AUTH": 82,
+      "UPDATE_AUTH": 45,
+      "NO_OP": 81,
+      "HOLD": 0,
+      "PRESERVE_NO_AUTH": 132
+    },
+    "subchangeCounts": {
+      "email": 38,
+      "password": 13,
+      "claims": 37
+    },
+    "rowsDigestSha256": "7b92fa73946e74ec4058bcdcbcfca25fe90e0504db6b6b22e797fbad066bd749",
+    "expectedAuthUsersBefore": 110,
+    "expectedAuthUsersAfter": 192,
+    "onePrimaryOperationPerProfile": true,
+    "holdZero": true,
+    "globalExistingPrincipalUniquenessRequired": true
+  },
+  "rollbackSemantics": {
+    "exactRollbackRequired": true,
+    "passwordHashRequiredForExistingPasswordUpdates": true,
+    "nonEmptySaltRequiredUniversally": false,
+    "allowedModes": [
+      "PROVIDER_HASH_CONFIG_EXACT",
+      "LEGACY_SHA256_ROUNDS1_SALTLESS_EXACT"
+    ],
+    "saltlessModeRule": "Only if current passwordHash exactly equals one mapped legacy SHA256 hash for that same profile; empty/null salt then represents the proven SHA256/1 saltless import contract, not missing rollback material.",
+    "unavailableHashOrUnprovenSaltless": "STOP_RETRY_BEFORE_WRITE"
+  },
+  "tenantAdjudication": {
+    "profileFingerprint": "7cc28c78de9bfda01d14",
+    "keeperCandidateFingerprint": "4e6d26551d11db444bd0",
+    "retireAccessCandidateFingerprint": "9b2b7ca1bd72c1301d29",
+    "retirementAction": "DISABLE_ONLY_NO_DELETE"
+  },
+  "safety": {
+    "sourceOnlyMaterializationRequiredBeforeProvider": true,
+    "providerAttemptsMaximumAfterSourcePass": 1,
+    "secondProviderAttempt": false,
+    "repositorySafe": true,
+    "containsPii": false,
+    "containsRawUid": false,
+    "containsRawEmail": false,
+    "containsRawPassword": false
+  }
+}
