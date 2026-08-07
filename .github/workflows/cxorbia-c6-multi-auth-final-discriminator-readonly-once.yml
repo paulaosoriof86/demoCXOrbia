@@ -1,0 +1,243 @@
+name: CXOrbia C6 Multi-Auth Final Discriminator Readonly Once
+
+on:
+  pull_request:
+    types: [synchronize]
+
+permissions:
+  contents: read
+  statuses: write
+
+concurrency:
+  group: cxorbia-c6-multi-auth-final-discriminator-readonly-once
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  REQUEST_FILE: backend/config/c6-multi-auth-final-discriminator-readonly-request-v1.json
+  CONTRACT_FILE: backend/contracts/c6-multi-auth-final-discriminator-readonly-v1.json
+  TOOL_FILE: tools/qa/cxorbia-c6-multi-auth-final-discriminator-readonly-v1.mjs
+  EQUIV_FILE: tools/qa/cxorbia-c6-shopper-equivalent-universe.mjs
+  OUT_DIR: .tmp/c6-multi-auth-final-discriminator-readonly-v1
+  PRIVATE_DIR: .tmp/c6-multi-auth-final-discriminator-private-v1
+  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
+jobs:
+  discriminate:
+    name: Inspect exact multi-Auth pair read-only
+    if: >-
+      github.event.pull_request.number == 7 &&
+      github.event.pull_request.head.ref == 'docs-tya-v6-v71-audit' &&
+      github.event.pull_request.base.ref == 'release/cxorbia-tya-rc-20260630'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Exclude ephemeral evidence
+        run: printf '%s\n' '.tmp/' 'gha-creds-*.json' >> .git/info/exclude
+
+      - name: Static focal-scope gate
+        run: |
+          set -euo pipefail
+          node --check "$EQUIV_FILE"
+          node --check "$TOOL_FILE"
+          node <<'NODE'
+          const fs=require('fs');
+          const contract=JSON.parse(fs.readFileSync(process.env.CONTRACT_FILE,'utf8'));
+          const source=fs.readFileSync(process.env.TOOL_FILE,'utf8');
+          if(contract.schemaVersion!=='cxorbia.c6.multi-auth-final-discriminator.contract.v1') throw new Error('CONTRACT_SCHEMA_DRIFT');
+          if(contract.target?.firebaseProjectId!=='cxorbia-backend-dev') throw new Error('PROJECT_DRIFT');
+          if(contract.target?.profileFingerprint!=='7cc28c78de9bfda01d14') throw new Error('PROFILE_DRIFT');
+          const expected=['4e6d26551d11db444bd0','9b2b7ca1bd72c1301d29'].sort();
+          if(JSON.stringify([...(contract.target?.candidateFingerprints||[])].sort())!==JSON.stringify(expected)) throw new Error('CANDIDATE_DRIFT');
+          for(const bad of ['.metadata','.disabled','.emailVerified','admin.firestore(','collection(','legacyCredentials']) if(source.includes(bad)) throw new Error('FORBIDDEN_SOURCE_MARKER:'+bad);
+          if(!source.includes('auth.listUsers(1000)')) throw new Error('AUTH_READ_SHAPE_MISSING');
+          if(!source.includes('stableAuthCandidateFingerprint(user.uid)')) throw new Error('CANDIDATE_FP_MATCH_MISSING');
+          if(!source.includes('targetSet.has(candidateFingerprint)')) throw new Error('FOCAL_FILTER_MISSING');
+          if(!source.includes('nonTargetAttributesInspected: false')) throw new Error('NON_TARGET_POLICY_MISSING');
+          if(!source.includes('STOP_RETRY_C6_MULTI_AUTH_FINAL_DISCRIMINATOR_TENANT_ADJUDICATION_REQUIRED')) throw new Error('FAIL_CLOSE_MISSING');
+          if(!source.includes('PASS_C6_MULTI_AUTH_FINAL_DISCRIMINATOR_UNIQUE_KEEPER_PROVEN')) throw new Error('PASS_DECISION_MISSING');
+          console.log('PASS_C6_MULTI_AUTH_FINAL_DISCRIMINATOR_STATIC_FOCAL_GATE');
+          NODE
+
+      - name: Determine exact one-shot request event
+        id: request
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const {execFileSync}=require('child_process');
+          let x={};
+          if(fs.existsSync(process.env.REQUEST_FILE)) x=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const requestOnly=changed.length===1&&changed[0]===process.env.REQUEST_FILE;
+          const executable=x.schemaVersion==='cxorbia.c6.multi-auth-final-discriminator.request.v1'&&x.enabled===true&&x.consumed===false&&x.status==='authorized_execute_once'&&Number(x.allowedExecutions)===1&&x.targetHeadSha===parent&&head===process.env.HEAD_SHA&&requestOnly;
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`executable=${executable?'true':'false'}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`target=${x.targetHeadSha||''}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`request_id=${x.requestId||''}\n`);
+          console.log(JSON.stringify({head,parent,requestOnly,executable,changedCount:changed.length}));
+          NODE
+
+      - name: Record source-only non-request event
+        if: steps.request.outputs.executable != 'true'
+        run: echo 'Static focal gate PASS; not the exact authorized request-only commit; zero provider reads executed.'
+
+      - name: Claim one logical read-only execution
+        if: steps.request.outputs.executable == 'true'
+        id: claim
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          existing=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/statuses" --paginate --jq '[.[] | select(.context=="cxorbia/c6-multi-auth-final-discriminator/claim")] | length')
+          if [ "$existing" != '0' ]; then
+            echo 'claimed=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" \
+            -f state='pending' -f context='cxorbia/c6-multi-auth-final-discriminator/claim' \
+            -f description='CLAIMED_ONE_FOCAL_AUTH_READONLY_EXECUTION' \
+            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+          echo 'claimed=true' >> "$GITHUB_OUTPUT"
+
+      - name: Validate exact authorized request
+        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const {execFileSync}=require('child_process');
+          const x=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          if(x.schemaVersion!=='cxorbia.c6.multi-auth-final-discriminator.request.v1') throw new Error('REQUEST_SCHEMA_INVALID');
+          if(x.requestId!=='c6-multi-auth-final-discriminator-readonly-20260807-01') throw new Error('REQUEST_ID_INVALID');
+          if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7) throw new Error('LANE_INVALID');
+          if(x.enabled!==true||x.consumed!==false||x.status!=='authorized_execute_once'||x.authorizedBy!=='Paula'||Number(x.allowedExecutions)!==1) throw new Error('AUTHORIZATION_INVALID');
+          if(x.targetHeadSha!==parent||head!==process.env.HEAD_SHA||changed.length!==1||changed[0]!==process.env.REQUEST_FILE) throw new Error('REQUEST_ONLY_SOURCE_LOCK_INVALID');
+          if(x.firebaseProjectId!=='cxorbia-backend-dev'||x.profileFingerprint!=='7cc28c78de9bfda01d14') throw new Error('TARGET_INVALID');
+          const expected=['4e6d26551d11db444bd0','9b2b7ca1bd72c1301d29'].sort();
+          if(JSON.stringify([...(x.candidateFingerprints||[])].sort())!==JSON.stringify(expected)) throw new Error('CANDIDATE_SET_INVALID');
+          if(x.contract!==process.env.CONTRACT_FILE) throw new Error('CONTRACT_PATH_INVALID');
+          if(x.scope?.auth!==true||x.scope?.customClaims!==true) throw new Error('AUTH_SCOPE_INVALID');
+          for(const key of ['firestore','memberships','hr','visits','certifications','liquidations','storage','legacyCredentials']) if(x.scope?.[key]!==false) throw new Error('FORBIDDEN_READ_SCOPE:'+key);
+          for(const key of ['providerWrites','authWrites','passwordChanges','passwordResets','claimsWrites','membershipWrites','firestoreWrites','rulesWrites','storageWrites','hrWrites','cloudBuilds','cloudRunDeploys','hostingDeploys']) if(Number(x.safeState?.[key])!==0) throw new Error('UNSAFE_WRITE_SCOPE:'+key);
+          if(x.safeState?.merge!==false||x.safeState?.production!==false) throw new Error('UNSAFE_RELEASE_SCOPE');
+          NODE
+
+      - name: Install transient Firebase Admin dependency
+        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0
+
+      - name: Prepare clean-project credential privately
+        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$PRIVATE_DIR" "$OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs');
+          const raw=process.env.EXISTING_DEV_JSON||'';
+          let parsed=null; try{parsed=JSON.parse(raw);}catch{}
+          if(!(parsed&&parsed.type==='service_account'&&parsed.project_id==='cxorbia-backend-dev'&&parsed.client_email&&parsed.private_key)) throw new Error('CREDENTIAL_INVALID');
+          fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
+          NODE
+
+      - name: Execute one focal Auth/custom-claims read-only discriminator
+        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
+        id: discriminator
+        continue-on-error: true
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/c6-multi-auth-final-discriminator-private-v1/credentials.json
+          CXORBIA_TARGET_HEAD: ${{ steps.request.outputs.target }}
+          CXORBIA_MULTI_AUTH_OUT_DIR: ${{ github.workspace }}/.tmp/c6-multi-auth-final-discriminator-readonly-v1
+        run: |
+          set +e
+          node "$TOOL_FILE" "$REQUEST_FILE"
+          code=$?
+          decision=$(head -n 1 "$OUT_DIR/decision.txt" 2>/dev/null || echo HOLD_C6_MULTI_AUTH_FINAL_DISCRIMINATOR_NO_DECISION)
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          echo "decision=$decision" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Capture repository delta evidence
+        if: always() && steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
+        run: |
+          mkdir -p "$OUT_DIR/repository-status"
+          git status --porcelain=v1 > "$OUT_DIR/repository-status/status.txt"
+          git diff --name-status > "$OUT_DIR/repository-status/tracked.txt"
+          git ls-files --others --exclude-standard > "$OUT_DIR/repository-status/untracked.txt"
+
+      - name: Upload source-safe evidence
+        if: always() && steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-c6-multi-auth-final-discriminator-readonly-${{ github.run_id }}
+          path: |
+            .tmp/c6-multi-auth-final-discriminator-readonly-v1
+            .tmp/cxorbia-readonly-post-gates-runner
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Publish observable discriminator status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXIT_CODE: ${{ steps.discriminator.outputs.exit_code }}
+          DECISION: ${{ steps.discriminator.outputs.decision }}
+        run: |
+          set -euo pipefail
+          STATE=success
+          DESC='PASS_C6_MULTI_AUTH_FINAL_DISCRIMINATOR_STATIC_NON_REQUEST'
+          if [ '${{ steps.request.outputs.executable }}' = 'true' ] && [ '${{ steps.claim.outputs.claimed }}' != 'true' ]; then
+            DESC='SKIPPED_DUPLICATE_EXECUTION_PREVENTED'
+          elif [ '${{ steps.request.outputs.executable }}' = 'true' ]; then
+            if [ "${EXIT_CODE:-999}" = '0' ]; then DESC="${DECISION:-HOLD_C6_MULTI_AUTH_FINAL_DISCRIMINATOR_NO_DECISION}"; else STATE=failure; DESC='HOLD_C6_MULTI_AUTH_FINAL_DISCRIMINATOR_TECHNICAL_ERROR'; fi
+          fi
+          DESC=$(printf '%s' "$DESC" | cut -c1-140)
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" \
+            -f state="$STATE" -f context='cxorbia/c6-multi-auth-final-discriminator/overall' -f description="$DESC" \
+            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+
+      - name: Finalize claim status
+        if: always() && steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXIT_CODE: ${{ steps.discriminator.outputs.exit_code }}
+        run: |
+          state=success; desc='COMPLETED_ONE_FOCAL_AUTH_READONLY_EXECUTION'
+          if [ "${EXIT_CODE:-999}" != '0' ]; then state=failure; desc='COMPLETED_WITH_TECHNICAL_HOLD'; fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" \
+            -f state="$state" -f context='cxorbia/c6-multi-auth-final-discriminator/claim' -f description="$desc" \
+            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+
+      - name: Cleanup private material
+        if: always()
+        run: rm -rf "$PRIVATE_DIR"
+
+      - name: Enforce technical execution result
+        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
+        env:
+          EXIT_CODE: ${{ steps.discriminator.outputs.exit_code }}
+        run: test "${EXIT_CODE:-999}" = '0'
