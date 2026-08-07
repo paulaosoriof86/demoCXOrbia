@@ -64,8 +64,13 @@ function hashAlgorithmOf(cfg){return text(cfg?.hashAlgorithm||cfg?.algorithm||cf
 function providerConfigSufficient(cfg){
   const alg=hashAlgorithmOf(cfg);
   if(!alg||alg==='UNKNOWN')return false;
-  if(alg==='SCRYPT')return Boolean(cfg.signerKey||cfg.signer_key)&&Object.hasOwn(cfg,'rounds')&&Object.hasOwn(cfg,'memoryCost')||Object.hasOwn(cfg,'memory_cost');
-  return true;
+  if(alg==='SCRYPT'){
+    const signer=Boolean(cfg.signerKey||cfg.signer_key);
+    const rounds=Object.hasOwn(cfg,'rounds');
+    const memory=Object.hasOwn(cfg,'memoryCost')||Object.hasOwn(cfg,'memory_cost');
+    return signer&&rounds&&memory;
+  }
+  return Object.keys(cfg).length>0;
 }
 
 fs.mkdirSync(outDir,{recursive:true});
@@ -126,15 +131,19 @@ try{
   const page=await auth.listUsers(1000);evidence.providerRead.authDirectoryPages=1;
   ensure(!page.pageToken,'AUTH_DIRECTORY_EXCEEDS_ONE_PAGE_BUDGET');
   const candidates=page.users.filter(u=>emailAnchors.has(norm(u.email))||text(u.customClaims?.shopperId)===targetProfile.id);
-  const byUid=new Map(candidates.map(u=>[u.uid,u]));
-  const uniqueCandidates=[...byUid.values()];
+  const uniqueCandidates=[...new Map(candidates.map(u=>[u.uid,u])).values()];
   evidence.resolution.candidateCount=uniqueCandidates.length;
   ensure(uniqueCandidates.length===1,`TARGET_AUTH_CANDIDATE_COUNT_${uniqueCandidates.length}`);
   const user=uniqueCandidates[0];
   const cfp=candidateFp(user.uid);
 
   const credentialAssociations=[];
-  for(const r of shopperRecords){const login=norm(r.normalizedLogin||r.loginIdentifier);if(!login||norm(internalEmail(login))!==norm(user.email))continue;const legacy=text(r.legacyId||r.legacyShopperId||r.externalShopperId||r.externalId||r.sourceId||r.sourceKey);for(const pid of legacyIndex.get(legacy)||[])credentialAssociations.push(profileFp(pid));}
+  for(const r of shopperRecords){
+    const login=norm(r.normalizedLogin||r.loginIdentifier);
+    if(!login||norm(internalEmail(login))!==norm(user.email))continue;
+    const legacy=text(r.legacyId||r.legacyShopperId||r.externalShopperId||r.externalId||r.sourceId||r.sourceKey);
+    for(const pid of legacyIndex.get(legacy)||[])credentialAssociations.push(profileFp(pid));
+  }
   const finalLoginAssociation=exactTargetLogins.some(login=>norm(internalEmail(login))===norm(user.email))?[TARGET_PROFILE_FP]:[];
   const claimShopperId=text(user.customClaims?.shopperId);
   const claimKnownProfiles=claimShopperId&&docs.some(d=>d.id===claimShopperId)?[profileFp(claimShopperId)]:[];
@@ -143,16 +152,15 @@ try{
   ensure(associatedRows.includes(TARGET_PROFILE_FP),'TARGET_CANDIDATE_NOT_TECHNICALLY_BOUND');
   ensure(nonTargetAssociations.length===0,`TARGET_CANDIDATE_ASSOCIATED_TO_OTHER_ROWS_${nonTargetAssociations.length}`);
 
-  const targetMappedRecords=matchingRecords.filter(r=>norm(internalEmail(norm(r.normalizedLogin||r.loginIdentifier)))===norm(user.email));
-  const legacyHashes=uniq(targetMappedRecords.map(r=>String(r.passwordHashHex||'').toLowerCase()).filter(v=>/^[a-f0-9]{64}$/.test(v)&&r=>r));
+  const legacyHashes=uniq(matchingRecords.map(r=>String(r.passwordHashHex||'').toLowerCase()).filter(v=>/^[a-f0-9]{64}$/.test(v)));
   const currentHash=rawHashBytes(user.passwordHash);
   const passwordHashAvailable=currentHash.length>0;
   const rawSalt=user.passwordSalt;
   const saltBytes=rawSalt==null?Buffer.alloc(0):rawHashBytes(rawSalt);
+  const legacyHashMatches=passwordHashAvailable&&legacyHashes.length===1&&currentHash.equals(Buffer.from(legacyHashes[0],'hex'));
   let passwordSaltState='NOT_EXPOSED_OR_UNKNOWN';
   if(saltBytes.length>0)passwordSaltState='PRESENT_NONEMPTY';
-  else if(passwordHashAvailable&&legacyHashes.length===1&&currentHash.equals(Buffer.from(legacyHashes[0],'hex')))passwordSaltState='EMPTY_OR_NULL_LEGITIMATE_LEGACY_SHA256';
-  const legacyHashMatches=passwordHashAvailable&&legacyHashes.length===1&&currentHash.equals(Buffer.from(legacyHashes[0],'hex'));
+  else if(legacyHashMatches)passwordSaltState='EMPTY_OR_NULL_LEGITIMATE_LEGACY_SHA256';
 
   const hashConfig=await fetchHashConfig(credential);evidence.providerRead.hashConfigReads=1;
   const providerHashAlgorithm=hashAlgorithmOf(hashConfig);
@@ -160,8 +168,8 @@ try{
   const restoreMode=legacyHashMatches?'LEGACY_SHA256_ROUNDS1_SALTLESS_EXACT':(passwordHashAvailable&&passwordSaltState==='PRESENT_NONEMPTY'&&providerCfgSufficient?'PROVIDER_HASH_CONFIG_EXACT':'UNPROVEN');
   const exactRollbackReconstructible=passwordHashAvailable&&restoreMode!=='UNPROVEN';
 
-  evidence.resolution={candidateCount:1,candidateFingerprint:cfp,anchorTypes:uniq([emailAnchors.get(norm(user.email)),claimShopperId===targetProfile.id?'current_claim_exact':null].filter(Boolean)),credentialRecordMatches:matchingRecords.length,targetCredentialRecordMatches:targetMappedRecords.length,associatedPlanRowCount:associatedRows.length,nonTargetAssociationCount:0,uniquePlanAssociation:true};
-  evidence.passwordState={passwordHashAvailable,passwordHashByteLength:currentHash.length,passwordSaltState,passwordSaltByteLength:saltBytes.length,legacyHashMatches,providerHashConfigReadable:true,providerHashAlgorithmClass:providerHashAlgorithm,providerHashConfigSufficient:providerCfgSufficient};
+  evidence.resolution={candidateCount:1,candidateFingerprint:cfp,anchorTypes:uniq([emailAnchors.get(norm(user.email)),claimShopperId===targetProfile.id?'current_claim_exact':null].filter(Boolean)),credentialRecordMatches:matchingRecords.length,associatedPlanRowCount:associatedRows.length,nonTargetAssociationCount:0,uniquePlanAssociation:true};
+  evidence.passwordState={passwordHashAvailable,passwordHashByteLength:currentHash.length,passwordSaltState,passwordSaltByteLength:saltBytes.length,legacyHashMatches,legacyHashCandidateCount:legacyHashes.length,providerHashConfigReadable:true,providerHashAlgorithmClass:providerHashAlgorithm,providerHashConfigSufficient:providerCfgSufficient};
   evidence.restoration={restoreMode,exactRollbackReconstructible};
 
   if(exactRollbackReconstructible){
@@ -172,7 +180,7 @@ try{
     ensure(check.targetProfileFingerprint===TARGET_PROFILE_FP&&check.candidateFingerprint===cfp&&check.user.passwordHashBase64===currentHash.toString('base64'),'SNAPSHOT_ROUNDTRIP_FAILED');
     evidence.snapshot={created:true,encrypted:true,algorithm:'AES-256-GCM',roundtripVerified:true,digestSha256:sha(fs.readFileSync(snapshotPath)),repositoryForbidden:true};
     decision='PASS_C6_AUTH_ONE_TARGET_RESOLVER_PASSWORD_SNAPSHOT_READONLY_EXACT_ROLLBACK';
-  } else {
+  }else{
     decision='STOP_RETRY_C6_AUTH_ONE_TARGET_RESOLVER_PASSWORD_SNAPSHOT_READONLY_ROLLBACK_NOT_PROVEN';
   }
 }catch(error){evidence.error=safeCode(error);}
