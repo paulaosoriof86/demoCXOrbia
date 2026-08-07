@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "cxorbia.c6.runtime-identity-isolated-final.v2",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "project": "cxorbia-backend-dev",
+  "environment": "DEV",
+  "sourceLock": "a7357d4b0a80b164560423a673a6430e5a16b2d7",
+  "decision": "PASS_ISOLATED_RUNTIME_IDENTITY",
+  "targetServiceAccount": "cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com",
+  "identity": {
+    "exists": true,
+    "enabled": true,
+    "uniqueId": "112507526829412676643",
+    "oauth2ClientId": "112507526829412676643",
+    "userManagedKeyCount": 0,
+    "directServiceAccountBindingCount": 0,
+    "projectRoleCount": 0
+  },
+  "fingerprint": {
+    "value": "ed8f84baa824b89305a8e6ab16af43c51ff555c72e3c940aeb0ef1339e5c2460",
+    "status": "FINAL_ISOLATED_IDENTITY",
+    "final": true
+  },
+  "reviewer": {
+    "serviceAccount": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
+    "temporaryRole": "roles/iam.securityReviewer",
+    "temporaryRolePresentDuringVerification": true,
+    "temporaryRoleBindingCountDuringVerification": 1,
+    "revokeRequiredBeforeNextProviderWrite": true,
+    "revocationVerified": false
+  },
+  "evidence": {
+    "runId": "31180615131",
+    "jobId": "92872746963",
+    "artifactId": "8994613975",
+    "artifactDigest": "sha256:b4ff0ffe54dca09f07264109eb327c71d84be6e4256b058a364cd494d6348e9c"
+  },
+  "safeState": {
+    "iamWritesByVerifier": 0,
+    "deploys": 0,
+    "providerReads": 0,
+    "providerWrites": 0,
+    "skip13Executed": false,
+    "merge": false,
+    "production": false
+  },
+  "nextGate": {
+    "required": "TEMPORARY_SECURITY_REVIEWER_REVOKE_AND_READBACK",
+    "then": "DIRECT_TRUSTED_RUNNER_DEV_DEPLOY_NEW_REQUEST",
+    "deployForbiddenUntilRevocationPass": true
+  }
+}
