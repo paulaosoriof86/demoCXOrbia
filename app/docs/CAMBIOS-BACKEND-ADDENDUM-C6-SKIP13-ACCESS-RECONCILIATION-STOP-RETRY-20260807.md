@@ -37,6 +37,10 @@ decision=STOP_RETRY_C6_SKIP13_ACCESS_RECONCILIATION_MULTI_AUTH_KEEPER_UNRESOLVED
 
 Cero provider/Auth/claims/membership/HR reads adicionales, cero writes y cero deploy.
 
+## Incidencias de herramienta
+
+Durante el cierre documental hubo dos intentos `update_file` que devolvieron `409` por SHA de contenido incorrecto: uno sobre el addendum de Claude y uno sobre este addendum. Ambos fueron no-op; no modificaron archivos, no tocaron provider y no alteraron el resultado del bloque. Este archivo fue vuelto a leer y actualizado con su blob SHA vigente.
+
 ## Clasificación
 
 - Reusable CXOrbia: overlay no destructivo + gates de no superposición.
