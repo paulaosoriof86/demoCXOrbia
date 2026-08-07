@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-07  
-**Estado:** `C6_RUNTIME_IDENTITY_ISOLATED_PASS__TEMP_SECURITY_REVIEWER_REVOKED_PASS__DIRECT_RUNNER_NOT_DEPLOYED__AUTH_PLAN_FROZEN__NO_PROVIDER__NO_PRODUCTION`
+**Estado:** `C6_DIRECT_RUNNER_DEV_DEPLOY_PASS__PRIVATE_AUTHENTICATED__RUNTIME_ISOLATED__PROVIDER_BOUNDARY_OFF__AUTH_PLAN_FROZEN__NO_PRODUCTION`
 
 ## 1. Rama y control
 
@@ -9,98 +9,111 @@
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
 - producción: intacta;
-- source lock vigente: `app/docs/SOURCE-LOCK-C6-RUNTIME-IDENTITY-ISOLATED-REVIEWER-REVOKED-PASS-20260807.md`;
-- request IAM revoke readback ejecutable: ninguno;
+- source lock vigente: `app/docs/SOURCE-LOCK-C6-DIRECT-RUNNER-DEV-DEPLOY-PASS-20260807.md`;
 - request direct runner ejecutable: ninguno;
-- requests SKIP13 ejecutables: ninguno.
+- request SKIP13 ejecutable: ninguno;
+- Auth ejecutado: no.
 
-## 2. Direct trusted runner
+## 2. Direct trusted runner DEV — desplegado PASS
 
 ```text
 service=cxorbia-c6-direct-runner-dev
-source=READY
+region=us-central1
+sourceLock=5c467be8d7359e66b6362a07dd3908ada3cf1c17
 sourceGate=PASS_C6_DIRECT_RUNNER_SOURCE_GATE_V2
-deploy=NOT_EXECUTED
+deployDecision=PASS_C6_DIRECT_RUNNER_DEV_DEPLOY_V3
+revision=cxorbia-c6-direct-runner-dev-00001-2vz
+serviceUrl=https://cxorbia-c6-direct-runner-dev-mzgge2pnia-uc.a.run.app
+private=true
 providerBoundaryEnabled=false
 ```
 
-El source y el harness de `PR_HEAD_SHA=github.event.pull_request.head.sha` están corregidos. El ejecutor todavía no está desplegado.
+## 3. Ejecución terminal
 
-## 3. Identidad runtime — PASS final
+```text
+runId=31186229092
+jobId=92891340577
+cloudBuildId=2ae79aa7-574b-483f-90c1-25e6ee3161b0
+artifactId=8996863935
+artifactDigest=sha256:d1c5b954bc69c2874aeb1e77136b53bf2b3d1699e1e1b03efddf198d8c0d8a0d
+cloudBuildsExecuted=1
+cloudRunDeploysExecuted=1
+```
+
+Todas las etapas del run terminaron success. No hubo segundo deploy.
+
+## 4. Identidad runtime — preservada e aislada
 
 ```text
 email=cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com
-exists=true
-enabled=true
 uniqueId=112507526829412676643
-oauth2ClientId=112507526829412676643
+fingerprint=ed8f84baa824b89305a8e6ab16af43c51ff555c72e3c940aeb0ef1339e5c2460
 userManagedKeyCount=0
 directServiceAccountBindingCount=0
 projectRoleCount=0
-decision=PASS_ISOLATED_RUNTIME_IDENTITY
-fingerprint=ed8f84baa824b89305a8e6ab16af43c51ff555c72e3c940aeb0ef1339e5c2460
-fingerprintStatus=FINAL_ISOLATED_IDENTITY
+identityDecision=PASS_ISOLATED_RUNTIME_IDENTITY
+temporarySecurityReviewerRevoked=PASS
 ```
 
-## 4. Rol temporal de visibilidad — revocado PASS
+El deploy no creó bindings ni roles nuevos para la identidad runtime.
 
-El rol `roles/iam.securityReviewer` se añadió temporalmente a la identidad de control-plane `firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com` únicamente para completar los readbacks IAM. No pertenecía a `cxorbia-c6-runner-dev`.
-
-Paula lo retiró manualmente. El readback terminal confirmó:
+## 5. Endpoint, autenticación, lease e idempotencia
 
 ```text
-requestId=c6-iam-reviewer-revoke-readback-20260807-01
-sourceLock=7b57957a297beb0505337c007ee89e6a02fba057
-runId=31184231219
-jobId=92884658675
-artifactId=8996049168
-artifactDigest=sha256:574dd060914cf69046d266f63a0eacb49f64919c9271898d9166eee3dc9b61bc
-decision=PASS_TEMP_SECURITY_REVIEWER_EFFECTIVELY_REVOKED
-effectiveSensitiveIamPermissions=[]
-projectGetIamPolicyReturnCode=1
-serviceAccountGetIamPolicyReturnCode=1
-userManagedKeysListReturnCode=1
-temporaryReviewerEffective=false
+unauthenticated /health=HTTP 403
+authenticated /health=PASS
+environment=DEV
+runtimeSourceLock=5c467be8d7359e66b6362a07dd3908ada3cf1c17
+providerBoundaryEnabled=false
+providerReads=0
+providerWrites=0
 ```
 
-## 5. Root-fix del workflow one-shot
-
-El patrón vigente para C6 one-shot es instalar primero el workflow y dispararlo después con `pull_request:edited`. Este patrón materializó correctamente tanto la verificación final de aislamiento como la verificación de revocación, manteniendo siempre `PR_HEAD_SHA=github.event.pull_request.head.sha`.
-
-## 6. Fail-close
+Primera invocación técnica:
 
 ```text
-workflowRemovalCommit=9f75e76b3ac22165ab8503e0ab08d88c9f8945b7
-requestDisableCommit=1d6cb4bdc549e9d2a2b385a7602a408cd1ebdfe6
-workflowPresent=false
-requestEnabled=false
-requestConsumed=true
-allowedExecutions=0
+HTTP=202
+decision=PASS_C6_DIRECT_TRUSTED_RUNNER_TECHNICAL_VALIDATION
+leaseMode=single_instance_memory_dev
+leaseTtlMs=600000
 ```
 
-## 7. Diagnóstico de causa raíz acumulativo
-
-Documento vigente:
+Duplicado:
 
 ```text
-app/docs/DIAGNOSTICO-CAUSA-RAIZ-C6-RUTA-PRODUCCION-20260807.md
+HTTP=409
+decision=HOLD_C6_DIRECT_RUNNER_DUPLICATE_REJECTED
 ```
 
-Causas demostradas:
+## 6. Rollback
 
-1. geometría de permisos incorrecta del principal de control-plane;
-2. carril one-shot efímero con `synchronize`, corregido con instalación previa + `edited`;
-3. uso histórico de SHA sintético del PR, ya corregido con `pull_request.head.sha`.
-
-No hay evidencia de una regresión general del frontend ni del plan Auth.
-
-## 8. SKIP13 y Auth
+El servicio no existía antes del bloque.
 
 ```text
-profiles=13
-adjudicationCompleted=false
-providerReadConsumptionPreviousRequests=UNKNOWN
+rollbackType=DELETE_NEW_DEV_SERVICE
+runtimeIdentityPreserved=true
+rollbackPlan=PASS
+rollbackExecuted=false
 ```
+
+No fue necesario rollback porque todo el bloque terminó PASS.
+
+## 7. SKIP13
+
+El workflow histórico SKIP13 se materializó como efecto del evento PR `edited`, pero reconoció que no era su request exacto y saltó la ejecución real:
+
+```text
+claim=SKIPPED
+credentialPreparation=SKIPPED
+providerAdjudication=SKIPPED
+SKIP13Executed=false
+providerReads=0
+providerWrites=0
+```
+
+No debe confundirse el éxito técnico de ese workflow con una adjudicación SKIP13 realizada.
+
+## 8. Auth congelado
 
 ```text
 rows=340
@@ -112,36 +125,49 @@ HOLD=0
 PRESERVE_NO_AUTH=140
 planDigest=6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b
 freezeDecision=PASS_AUTH_PLAN_340_CRYPTOGRAPHIC_FREEZE
+AuthExecuted=false
 ```
 
-Auth no ha sido ejecutado.
-
-## 9. Phase A preservada
-
-Frontend acumulativo, Login, `CX.data`, shoppers, postulaciones, certificaciones, visitas, liquidaciones, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto y Academia permanecen preservados.
-
-## 10. Siguiente cadena exacta
-
-1. Autorizar un nuevo deploy DEV único del direct trusted runner.
-2. Completar SKIP13 read-only.
-3. Ejecutar Auth sobre el plan congelado de 340 filas con snapshot/rollback.
-4. Ejecutar smoke acumulativo Admin/Operaciones, Shopper y Cliente.
-5. Validación humana.
-6. Cutover/promoción autorizada a producción.
-
-## 11. Estado seguro
+## 9. Fail-close
 
 ```text
-provider data reads=0
-provider writes=0
-IAM writes by readback=0
-Cloud Build writes=0
-Cloud Run deploys=0
-Hosting deploys=0
-Auth/HR/Firestore/Storage reads=0
-Auth/HR/Firestore/Rules/Storage writes=0
-SKIP13 executed=false
+workflowRemovalCommit=76dbc80634805e7ca4e77e423b2a846221014150
+requestDisableCommit=f088078ef915eeb07e524faefb701dc258216593
+workflowPresent=false
+requestEnabled=false
+requestConsumed=true
+allowedCloudBuilds=0
+allowedDeploys=0
+```
+
+## 10. Phase A preservada
+
+Frontend acumulativo, Login, `CX.data`, HR, shoppers, postulaciones, certificaciones, visitas, liquidaciones, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto y Academia permanecen preservados.
+
+## 11. Siguiente cadena exacta
+
+1. Autorizar un único SKIP13 read-only explícito mediante el direct runner DEV ya desplegado.
+2. Con SKIP13 cerrado, ejecutar Auth sobre el plan congelado de 340 filas con snapshot/rollback.
+3. Smoke acumulativo Admin/Operaciones, Shopper y Cliente.
+4. Validación humana.
+5. Cutover/promoción autorizada a producción.
+
+## 12. Estado seguro
+
+```text
+CloudBuildsExecuted=1
+CloudRunDeploysExecuted=1
+HostingDeploys=0
+IAMWrites=0
+providerReads=0
+providerWrites=0
+SKIP13Executed=false
+AuthWrites=0
+HRWrites=0
+FirestoreWrites=0
+RulesWrites=0
+StorageWrites=0
 merge=false
 production=false
-requestExecutable=false
+providerBoundaryEnabled=false
 ```
