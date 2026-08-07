@@ -2,42 +2,59 @@
 
 **Fecha:** 2026-08-06  
 **Estado:** ACTIVO Y RECONCILIADO  
-**Estado vivo:** `C6_IAM_ADMIN_CREDENTIAL_NOT_AVAILABLE_PRE_GCP__RUNTIME_IDENTITY_NOT_CREATED__DIRECT_RUNNER_NOT_DEPLOYED__AUTH_PLAN_FROZEN__NO_PROVIDER__NO_WRITES__NO_PRODUCTION`
+**Estado vivo:** `C6_RUNTIME_IDENTITY_EXISTS_ENABLED__READBACK_INCOMPLETE__DIRECT_RUNNER_NOT_DEPLOYED__AUTH_PLAN_FROZEN__NO_PROVIDER__NO_WRITES__NO_PRODUCTION`
 
 ## 1. Orden de prevalencia
 
 1. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `app/docs/SOURCE-LOCK-C6-IAM-ADMIN-CREDENTIAL-NOT-AVAILABLE-STOP-RETRY-20260806.md`;
-3. `backend/contracts/c6-direct-runner-runtime-identity-decision-v1.json`;
-4. `backend/config/c6-iam-admin-runtime-identity-create-request-v1.json` — consumido y deshabilitado;
-5. `app/docs/SOURCE-LOCK-C6-IAM-READONLY-INVENTORY-ADMIN-IDENTITY-CREATION-REQUIRED-20260806.md`;
-6. `backend/config/c6-iam-readonly-inventory-request-v1.json` — consumido y deshabilitado;
-7. `app/docs/SOURCE-LOCK-C6-DIRECT-TRUSTED-RUNNER-DEV-IAM-CREATE-DENIED-STOP-RETRY-20260806.md`;
-8. `backend/contracts/c6-direct-trusted-runner-dev-v2.json`;
-9. `backend/config/c6-direct-trusted-runner-dev-deploy-request-v2.json` — consumido y deshabilitado;
-10. `backend/runtime/c6-direct-trusted-runner/server.mjs`;
-11. `tools/qa/cxorbia-c6-direct-runner-source-gate-v2.mjs`;
-12. `backend/contracts/c6-execution-control-plane-v2.json`;
-13. `backend/config/c6-skip13-auth-access-adjudication-request.json` — deshabilitado;
-14. `backend/contracts/c6-skip13-auth-access-adjudication-v1.json`;
-15. `tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly.mjs`;
-16. `.github/workflows/cxorbia-c6-skip13-auth-access-adjudication-readonly.yml`;
-17. `backend/config/c6-shopper-auth-final-freeze-v1.json`;
-18. `backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json`;
-19. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json`;
-20. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-21. addenda vigentes de CAMBIOS, Claude, Pendientes, Academia y tracker;
-22. `AGENTS.md`, PR #7 y HEAD vivo.
+2. `app/docs/SOURCE-LOCK-C6-IAM-POSTCREATE-READBACK-INCOMPLETE-STOP-RETRY-20260806.md`;
+3. `backend/contracts/c6-runtime-identity-postcreate-verification-v1.json`;
+4. `backend/config/c6-iam-runtime-identity-postcreate-readonly-request-v1.json` — consumido y deshabilitado;
+5. `app/docs/SOURCE-LOCK-C6-IAM-ADMIN-CREDENTIAL-NOT-AVAILABLE-STOP-RETRY-20260806.md`;
+6. `backend/contracts/c6-direct-runner-runtime-identity-decision-v1.json`;
+7. `backend/config/c6-iam-admin-runtime-identity-create-request-v1.json` — consumido y deshabilitado;
+8. `app/docs/SOURCE-LOCK-C6-IAM-READONLY-INVENTORY-ADMIN-IDENTITY-CREATION-REQUIRED-20260806.md`;
+9. `backend/config/c6-iam-readonly-inventory-request-v1.json` — consumido y deshabilitado;
+10. `app/docs/SOURCE-LOCK-C6-DIRECT-TRUSTED-RUNNER-DEV-IAM-CREATE-DENIED-STOP-RETRY-20260806.md`;
+11. `backend/contracts/c6-direct-trusted-runner-dev-v2.json`;
+12. `backend/config/c6-direct-trusted-runner-dev-deploy-request-v2.json` — consumido y deshabilitado;
+13. `backend/runtime/c6-direct-trusted-runner/server.mjs`;
+14. `tools/qa/cxorbia-c6-direct-runner-source-gate-v2.mjs`;
+15. `backend/contracts/c6-execution-control-plane-v2.json`;
+16. `backend/config/c6-skip13-auth-access-adjudication-request.json` — deshabilitado;
+17. `backend/contracts/c6-skip13-auth-access-adjudication-v1.json`;
+18. `tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly.mjs`;
+19. `.github/workflows/cxorbia-c6-skip13-auth-access-adjudication-readonly.yml`;
+20. `backend/config/c6-shopper-auth-final-freeze-v1.json`;
+21. `backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json`;
+22. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json`;
+23. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+24. addenda vigentes de CAMBIOS, Claude, Pendientes, Academia y tracker;
+25. `AGENTS.md`, PR #7 y HEAD vivo.
 
-## 2. Bloque IAM ADMIN autorizado
+## 2. Identidad runtime confirmada
 
 ```text
-requestId=c6-iam-admin-runtime-identity-create-20260806-01
-requestCommit=466d7baebefd5af97f0f0347110691fa1737fa6f
-runId=31133874657
-jobId=92728797539
-artifactId=8977116099
-artifactDigest=sha256:19c3d8d343eba98ddd60f6af1eee0d9a6d48d936c972ee7f5063023040069136
+email=cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com
+exists=true
+enabled=true
+displayName=cxorbia-c6-runner-dev
+projectId=cxorbia-backend-dev
+uniqueId=112507526829412676643
+oauth2ClientId=112507526829412676643
+```
+
+La creación manual quedó confirmada por `gcloud iam service-accounts describe`.
+
+## 3. Bloque post-creación read-only
+
+```text
+requestId=c6-iam-runtime-identity-postcreate-readonly-20260806-01
+requestCommit=e4a5538158980746f94f30ddea42dd1380f00caa
+runId=31135508722
+jobId=92733827812
+artifactId=8977774322
+artifactDigest=sha256:c579dceb2d02df82dc5397ea2b0dcd1afbdc6cafcdd914f259ad33970e9d3ccb
 ```
 
 Pasaron:
@@ -46,60 +63,57 @@ Pasaron:
 checkout exacto=PASS
 request/source lock=PASS
 claim único=PASS
+Google Cloud authentication=PASS
+gcloud setup=PASS
+identity describe=PASS
 ```
 
-## 3. Bloqueo terminal
+## 4. Readback incompleto
+
+El principal disponible no pudo leer:
 
 ```text
-failureClassification=ADMIN_CREDENTIAL_NOT_AVAILABLE
-failureStep=Validate administrative credential envelope
-adminCredentialsPresent=false
-GoogleCloudAuthentication=not_reached
+iam.serviceAccountKeys.list
+iam.serviceAccounts.getIamPolicy
+resourcemanager.projects.getIamPolicy
 ```
 
-El carril rechazaba expresamente Default Compute, Firebase Admin SDK y la identidad runtime objetivo. No se encontró ninguna credencial administrativa configurada bajo los nombres admitidos.
-
-## 4. Resultado real
+Por ello no quedaron demostradas terminalmente:
 
 ```text
-runtimeIdentityCreated=false
-serviceAccountCreates=0
-serviceAccountDeletes=0
-keysCreated=0
-rolesAssigned=0
-IAMWrites=0
-GCPAuthentication=0
-providerReads=0
-providerWrites=0
-deploys=0
-SKIP13Executed=false
-rollback=NOT_REQUIRED_NO_CREATION
+zeroUserManagedKeys
+zeroDirectServiceAccountBindings
+zeroProjectRoles
 ```
+
+```text
+decision=STOP_RETRY_READBACK_INCOMPLETE
+isolatedIdentityFinalPass=false
+```
+
+Fingerprint provisional:
+
+```text
+ed8f84baa824b89305a8e6ab16af43c51ff555c72e3c940aeb0ef1339e5c2460
+```
+
+No es final porque incorpora arrays vacíos de fuentes no legibles.
 
 ## 5. Fail-close
 
 ```text
-workflowRemovalCommit=a73fffb1fd758fc224482fb1774c1a4ff206286b
-requestDisableCommit=0ed31c4c184d9147758247541635f6fd828fee7e
+workflowRemovalCommit=795f2296a70b3f92169f409e7017b828fe0c486a
+requestDisableCommit=0e12b33172f8d9df423b87fc5037c53b602691fc
 workflowPresent=false
 requestExecutable=false
-allowedCreations=0
+allowedExecutions=0
 secondAttempt=0
 STOP_RETRY=true
 ```
 
-No se reutilizarán el request, workflow, run ni job consumidos.
+No se reutilizarán request, workflow, run ni job consumidos.
 
-## 6. Decisión vigente
-
-```text
-decision=ADMIN_CREDENTIAL_CONFIGURATION_REQUIRED
-requiredTarget=cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com
-```
-
-La fuente y el harness están listos. Falta configurar una identidad administrativa válida para `cxorbia-backend-dev` mediante un secreto seguro ya autorizado o un mecanismo OIDC administrativo. No se usarán Default Compute ni Firebase Admin SDK.
-
-## 7. Direct runner, SKIP13 y Auth
+## 6. Direct runner, SKIP13 y Auth
 
 ```text
 directRunnerSource=READY
@@ -124,16 +138,16 @@ planDigest=6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b
 freezeDecision=PASS_AUTH_PLAN_340_CRYPTOGRAPHIC_FREEZE
 ```
 
-## 8. Pendiente real
+## 7. Pendiente real
 
-1. Configurar una credencial administrativa o trust OIDC válida para `cxorbia-backend-dev`, sin exponer secretos.
-2. Validar únicamente la identidad administrativa y el permiso mínimo para crear la cuenta runtime.
-3. Con autorización nueva y no superpuesta, crear `cxorbia-c6-runner-dev` sin llaves ni roles.
-4. Ejecutar readback de estado, llaves y bindings directos.
-5. Solo después autorizar el deploy DEV del ejecutor.
-6. Mantener provider deshabilitado hasta terminal PASS.
+1. Obtener únicamente visibilidad IAM read-only suficiente para los tres readbacks pendientes.
+2. No recrear la identidad runtime.
+3. Con autorización nueva y no superpuesta, verificar cero llaves de usuario, cero bindings directos y cero roles de proyecto.
+4. Solo con PASS final autorizar un nuevo deploy DEV del ejecutor.
+5. Mantener provider deshabilitado hasta terminal PASS.
+6. Autorizar separadamente SKIP13, snapshot/repair Auth, smoke, validación humana y cutover.
 
-## 9. Estado seguro
+## 8. Estado seguro
 
 ```text
 provider data reads=0
