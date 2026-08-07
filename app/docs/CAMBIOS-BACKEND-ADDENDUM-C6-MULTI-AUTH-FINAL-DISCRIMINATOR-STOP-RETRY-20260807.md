@@ -50,6 +50,10 @@ workflowRemovalCommit=55c9777698594815ef18bb380a0f0fad79f6f4b8
 
 Antes de crear el request ejecutable se corrigió un falso positivo del gate estático: la herramienta incluía la palabra `legacyCredentials` únicamente para exigir `scope.legacyCredentials=false`, pero el gate la trataba como indicador de lectura. Se corrigió en `f6c18173c028a3f04e08c16b027a211ce8cbc526`. No hubo provider read previo ni segundo intento.
 
+## Incidencias de herramienta
+
+Durante el cierre documental se emitieron seis llamadas `update_file` con SHA placeholder incorrecto. GitHub respondió `409` en las seis; fueron operaciones no-op, no modificaron archivos, no movieron la rama y no tocaron GCP/Firebase. Después se retomó usando blobs válidos. Estas incidencias no afectan el run read-only ni su evidencia.
+
 ## Seguridad
 
 Cero Firestore/membership/HR/Storage/legacy reads; cero writes; cero deploy; cero merge; cero producción. La única lectura provider del bloque fue una página Auth, usando UID de los 110 usuarios únicamente para calcular candidate fingerprint y descartando atributos de no targets; se inspeccionaron atributos allowlisted solo de los dos targets.
