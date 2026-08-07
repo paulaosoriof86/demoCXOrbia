@@ -3,8 +3,6 @@ name: CXOrbia C6 IAM Visibility Temporary Security Reviewer Once V1
 on:
   pull_request:
     types: [synchronize]
-    paths:
-      - 'backend/config/c6-iam-visibility-temporary-security-reviewer-request-v1.json'
 
 permissions:
   contents: read
@@ -170,8 +168,6 @@ JSON
             --format=json > "$OUT_DIR/revoke-result.json" 2> "$OUT_DIR/revoke-error.txt" || revoke_rc=$?
           if [ "$revoke_rc" -eq 0 ]; then revoke_succeeded=true; fi
 
-          # Post-revoke effective-permission readback. testIamPermissions is used because
-          # project getIamPolicy is intentionally expected to disappear with the temporary role.
           token=$(gcloud auth print-access-token 2>"$OUT_DIR/token-error.txt")
           if [ -n "$token" ]; then
             curl -sS -X POST \
