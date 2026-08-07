@@ -34,17 +34,7 @@ artifactId=9000260368
 artifactDigest=sha256:05056323adb7a39df129fb3e7b498a331f0ef9ff9e8d9457614ac4294041d051
 ```
 
-Pasaron:
-
-```text
-namespace/harness static gate=PASS
-request-only source lock=PASS
-claim unique=PASS
-credential target=PASS
-shopper baseline=340
-profile resolution=13/13
-blocking candidate set=2/2
-```
+Pasaron namespace/harness static gate, request-only source lock, claim único, credential target, shopper baseline 340, resolución `13/13` y blocking candidate set `2/2`.
 
 ## 4. Resultado terminal
 
@@ -90,6 +80,9 @@ No se exportaron raw UIDs, shopper IDs, emails, claims ni PII.
 ```text
 secondProviderAttempt=false
 requestDisableCommit=c6314294315757a971c2d31d31ac72f1dc3bcf13
+failCloseNonProviderRunId=31194826915
+failCloseNonProviderJobId=92920375094
+failCloseProviderStepsSkipped=true
 workflowRemovalCommit=a42008d5e0e9819dbdba7196071ca18a8c998d9c
 requestEnabled=false
 requestConsumed=true
