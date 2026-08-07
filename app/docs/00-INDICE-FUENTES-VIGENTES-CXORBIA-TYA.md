@@ -34,53 +34,31 @@
 ```text
 service=cxorbia-c6-direct-runner-dev
 revision=cxorbia-c6-direct-runner-dev-00001-2vz
-runtime=cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com
 runtimeIsolation=PASS
-private=true
 providerBoundaryEnabled=false
 ```
 
-No hubo redeploy ni cambios IAM en el bloque actual.
-
-## 3. SKIP13 root-fix v2 — materializado pero source gate HOLD
-
-Se crearon source-only:
+## 3. SKIP13 root-fix v2
 
 ```text
-backend/contracts/c6-skip13-auth-access-adjudication-v2.json
-tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly-v2.mjs
-```
-
-Namespaces explícitos:
-
-```text
+contractV2=materialized
+adjudicatorV2=materialized
 profileFingerprintNamespace=deterministic-suffix-plan-profile
 authCandidateFingerprintNamespace=shopper-auth-candidate-v1
-memberProvenanceFingerprintNamespace=shopper-collision-member-v1
-multiAuthProfileFingerprintNamespace=multi-auth-profile-v1
-crossNamespaceEqualityAllowed=false
+forbiddenProfileJoin=shopper-collision-member-v1,multi-auth-profile-v1
 ```
 
-El adjudicador v2 usa el algoritmo del planner para `stablePlanProfileFingerprint` y prohíbe usar member provenance como join key de perfiles.
-
-## 4. Source gate terminal
+## 4. Source gate HOLD
 
 ```text
 runId=31190357507
 jobId=92905316953
-head=1e693386d097c1fa90c61d0a013c06c3be941563
-```
-
-Pasaron checkout exacto, Node y `node --check`. El self-test no llegó a validación contractual final porque la salida JSON quedó contaminada por un side effect del módulo importado `cxorbia-c6-shopper-equivalent-universe.mjs`, que también observó `--self-test` y emitió `PASS_C6_EQUIVALENT_UNIVERSE_SOURCE_STATIC` antes del JSON.
-
-```text
 failureClassification=SOURCE_GATE_SELFTEST_OUTPUT_CONTAMINATION_FROM_IMPORTED_MODULE_ARGV
-sourceGatePass=false
 ```
+
+Checkout, Node y sintaxis pasaron. El self-test falló antes de provider porque `--self-test` activó también el bloque module-level del módulo importado `cxorbia-c6-shopper-equivalent-universe.mjs`, contaminando la salida JSON.
 
 ## 5. STOP_RETRY / fail-close
-
-Por la regla autorizada de STOP_RETRY ante fallo source:
 
 ```text
 v2RequestCreated=false
@@ -88,22 +66,11 @@ providerAttempt=false
 providerReads=0
 providerWrites=0
 secondProviderAttempt=false
-```
-
-El workflow v2 fue retirado:
-
-```text
 workflowRemovalCommit=e269347c8305c6ff60ad182aa6190c9c94abfe62
 workflowPresent=false
 ```
 
-No existe request v2 ejecutable.
-
-## 6. SKIP13 previo y Auth congelado
-
-El intento provider anterior permanece cerrado en el source lock previo y consumió únicamente un índice de 340 IDs shopper; no alcanzó Auth/claims/memberships.
-
-Plan Auth vigente:
+## 6. Auth congelado
 
 ```text
 rows=340
@@ -118,13 +85,11 @@ AuthExecuted=false
 
 ## 7. Pendiente real
 
-1. Nueva autorización source-only para corregir exclusivamente el harness de self-test y eliminar el side effect `process.argv` entre módulos.
-2. Ejecutar sintaxis + self-test cross-namespace + validación del contrato v2 sin provider.
-3. Solo con PASS source-only, nueva autorización distinta para una única adjudicación SKIP13 read-only.
-4. Con SKIP13 cerrado, Auth 340 con snapshot/rollback.
-5. Smoke multirrol.
-6. Validación humana.
-7. Cutover autorizado.
+1. Nueva autorización source-only para corregir exclusivamente el harness de self-test.
+2. PASS estático cross-namespace sin provider.
+3. Nueva autorización distinta para una única adjudicación SKIP13 read-only.
+4. Auth 340 con snapshot/rollback.
+5. Smoke multirrol, validación humana y cutover autorizado.
 
 ## 8. Estado seguro
 
