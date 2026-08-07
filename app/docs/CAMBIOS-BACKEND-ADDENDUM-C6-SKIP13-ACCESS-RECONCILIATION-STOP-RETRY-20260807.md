@@ -39,7 +39,7 @@ Cero provider/Auth/claims/membership/HR reads adicionales, cero writes y cero de
 
 ## Incidencias de herramienta
 
-Durante el cierre documental hubo tres intentos `update_file` que devolvieron `409` por SHA de contenido incorrecto: dos sobre el addendum de Claude y uno sobre este addendum. Los tres fueron no-op; no modificaron archivos, no tocaron provider y no alteraron el resultado del bloque. Este archivo se volvió a leer y se actualizó usando el blob SHA vigente.
+Durante el cierre documental hubo cuatro intentos `update_file` que devolvieron `409` por SHA de contenido incorrecto: dos sobre el addendum de Claude, uno sobre este addendum y uno sobre el JSON de evidencia. Los cuatro fueron no-op: no modificaron archivos, no tocaron provider y no alteraron el resultado del bloque. También hubo un `422` al intentar actualizar PR #7 incluyendo `maintainer_can_modify` en un PR same-repo; fue no-op y se corrigió repitiendo exclusivamente la actualización de título/body/state sin ese campo. PR #7 quedó actualizado correctamente.
 
 ## Clasificación
 
