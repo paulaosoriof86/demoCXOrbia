@@ -31,19 +31,20 @@
   "artifactDigest": "sha256:d1c5b954bc69c2874aeb1e77136b53bf2b3d1699e1e1b03efddf198d8c0d8a0d",
   "image": "gcr.io/cxorbia-backend-dev/cxorbia-c6-direct-runner-dev:5c467be8d7359e66b6362a07dd3908ada3cf1c17",
   "revision": "cxorbia-c6-direct-runner-dev-00001-2vz",
-  "serviceUrl": "https://cxorbia-c6-direct-runner-dev-87461567267.us-central1.run.app",
+  "serviceUrl": "https://cxorbia-c6-direct-runner-dev-mzgge2pnia-uc.a.run.app",
+  "deployOutputUrl": "https://cxorbia-c6-direct-runner-dev-87461567267.us-central1.run.app",
   "decision": "PASS_C6_DIRECT_RUNNER_DEV_DEPLOY_V3",
   "validation": {
     "sourceGate": "PASS",
     "predeploy": "PASS",
     "privateService": "PASS",
     "runtimeIdentityAttached": "PASS",
-    "unauthenticatedDenied": "PASS",
+    "unauthenticatedDeniedHttpStatus": 403,
     "authenticatedHealth": "PASS",
     "sourceLock": "PASS",
     "lease": "PASS",
     "idempotencyDuplicate409": "PASS",
-    "rollbackPlan": "PASS",
+    "rollbackPlan": "PASS_DELETE_NEW_DEV_SERVICE_PRESERVE_RUNTIME_IDENTITY",
     "rollbackExecuted": false
   },
   "scope": {
