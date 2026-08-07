@@ -44,23 +44,11 @@ jobId=92905316953
 head=1e693386d097c1fa90c61d0a013c06c3be941563
 ```
 
-Pasaron:
-
-```text
-checkout exacto=PASS
-Node setup=PASS
-node --check adjudicator v2=PASS
-```
-
-Falló el self-test antes de cualquier provider read:
+Pasaron checkout exacto, Node y sintaxis. Falló el self-test antes de cualquier provider read por contaminación de salida causada por `--self-test` observado también por el módulo importado `cxorbia-c6-shopper-equivalent-universe.mjs`.
 
 ```text
 failureClassification=SOURCE_GATE_SELFTEST_OUTPUT_CONTAMINATION_FROM_IMPORTED_MODULE_ARGV
-observedPrefix=PASS_C6_EQUIVALENT_UNIVERSE_SOURCE_STATIC
-failure=JSON.parse unexpected token P
 ```
-
-Causa: el argumento global `--self-test` del adjudicador también activó el bloque self-test module-level del módulo importado `cxorbia-c6-shopper-equivalent-universe.mjs`, generando una línea adicional antes del JSON esperado.
 
 ## 5. STOP_RETRY y fail-close
 
@@ -75,46 +63,32 @@ membershipReads=0
 HRReads=0
 providerWrites=0
 secondProviderAttempt=false
-```
-
-El workflow v2 fue retirado:
-
-```text
 workflowRemovalCommit=e269347c8305c6ff60ad182aa6190c9c94abfe62
 workflowPresent=false
 ```
-
-No existe `backend/config/c6-skip13-auth-access-adjudication-request-v2.json`.
 
 ## 6. Auth congelado
 
 ```text
 rows=340
-uniqueRows=340
 CREATE_AUTH=81
 UPDATE_AUTH=46
 NO_OP=73
 HOLD=0
 PRESERVE_NO_AUTH=140
 planDigest=6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b
-freezeDecision=PASS_AUTH_PLAN_340_CRYPTOGRAPHIC_FREEZE
 AuthExecuted=false
 ```
 
-## 7. Phase A preservada
+## 7. Siguiente cadena exacta
 
-Frontend acumulativo, Login, `CX.data`, HR, shoppers, postulaciones, certificaciones, visitas, liquidaciones, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto y Academia permanecen preservados.
+1. Nueva autorización source-only para corregir únicamente el harness de self-test.
+2. PASS estático sin provider.
+3. Autorización posterior distinta para una única adjudicación SKIP13 read-only.
+4. Auth 340 con snapshot/rollback.
+5. Smoke multirrol, validación humana y cutover autorizado.
 
-## 8. Siguiente cadena exacta
-
-1. Nueva autorización source-only para corregir únicamente el harness de self-test, eliminando el side effect `process.argv` entre módulos.
-2. Ejecutar `node --check`, self-test cross-namespace y validación contractual v2 sin provider.
-3. Detenerse con PASS source-only.
-4. Solo con autorización posterior distinta, crear un request v2 no solapado y ejecutar una sola adjudicación SKIP13 read-only.
-5. Con SKIP13 cerrado, ejecutar Auth 340 con snapshot/rollback.
-6. Smoke multirrol, validación humana y cutover autorizado.
-
-## 9. Estado seguro
+## 8. Estado seguro
 
 ```text
 DirectRunnerDEV=PASS
@@ -123,14 +97,13 @@ providerAttemptThisBlock=false
 providerReadsThisBlock=0
 providerWrites=0
 AuthWrites=0
-HRWrites=0
 FirestoreWrites=0
 RulesWrites=0
 StorageWrites=0
+HRWrites=0
 additionalCloudBuilds=0
 additionalCloudRunDeploys=0
 HostingDeploys=0
 merge=false
 production=false
-providerBoundaryEnabled=false
 ```
