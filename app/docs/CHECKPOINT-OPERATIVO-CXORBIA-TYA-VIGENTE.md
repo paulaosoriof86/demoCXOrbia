@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-07  
-**Estado:** `C6_RUNTIME_IDENTITY_ISOLATED_PASS__TEMP_SECURITY_REVIEWER_REVOKE_PENDING__DIRECT_RUNNER_NOT_DEPLOYED__AUTH_PLAN_FROZEN__NO_PROVIDER__NO_PRODUCTION`
+**Estado:** `C6_RUNTIME_IDENTITY_ISOLATED_PASS__TEMP_SECURITY_REVIEWER_REVOKED_PASS__DIRECT_RUNNER_NOT_DEPLOYED__AUTH_PLAN_FROZEN__NO_PROVIDER__NO_PRODUCTION`
 
 ## 1. Rama y control
 
@@ -9,8 +9,8 @@
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
 - producción: intacta;
-- source lock vigente: `app/docs/SOURCE-LOCK-C6-RUNTIME-IDENTITY-ISOLATED-PASS-PENDING-REVIEWER-REVOKE-20260807.md`;
-- request IAM final ejecutable: ninguno;
+- source lock vigente: `app/docs/SOURCE-LOCK-C6-RUNTIME-IDENTITY-ISOLATED-REVIEWER-REVOKED-PASS-20260807.md`;
+- request IAM revoke readback ejecutable: ninguno;
 - request direct runner ejecutable: ninguno;
 - requests SKIP13 ejecutables: ninguno.
 
@@ -26,7 +26,7 @@ providerBoundaryEnabled=false
 
 El source y el harness de `PR_HEAD_SHA=github.event.pull_request.head.sha` están corregidos. El ejecutor todavía no está desplegado.
 
-## 3. Identidad runtime — PASS
+## 3. Identidad runtime — PASS final
 
 ```text
 email=cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com
@@ -37,74 +37,48 @@ oauth2ClientId=112507526829412676643
 userManagedKeyCount=0
 directServiceAccountBindingCount=0
 projectRoleCount=0
-```
-
-```text
 decision=PASS_ISOLATED_RUNTIME_IDENTITY
 fingerprint=ed8f84baa824b89305a8e6ab16af43c51ff555c72e3c940aeb0ef1339e5c2460
 fingerprintStatus=FINAL_ISOLATED_IDENTITY
 ```
 
-## 4. Evidencia terminal
+## 4. Rol temporal de visibilidad — revocado PASS
+
+El rol `roles/iam.securityReviewer` se añadió temporalmente a la identidad de control-plane `firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com` únicamente para completar los readbacks IAM. No pertenecía a `cxorbia-c6-runner-dev`.
+
+Paula lo retiró manualmente. El readback terminal confirmó:
 
 ```text
-requestId=c6-iam-runtime-isolation-readonly-final-20260807-01
-sourceLock=a7357d4b0a80b164560423a673a6430e5a16b2d7
-runId=31180615131
-jobId=92872746963
-artifactId=8994613975
-artifactDigest=sha256:b4ff0ffe54dca09f07264109eb327c71d84be6e4256b058a364cd494d6348e9c
+requestId=c6-iam-reviewer-revoke-readback-20260807-01
+sourceLock=7b57957a297beb0505337c007ee89e6a02fba057
+runId=31184231219
+jobId=92884658675
+artifactId=8996049168
+artifactDigest=sha256:574dd060914cf69046d266f63a0eacb49f64919c9271898d9166eee3dc9b61bc
+decision=PASS_TEMP_SECURITY_REVIEWER_EFFECTIVELY_REVOKED
+effectiveSensitiveIamPermissions=[]
+projectGetIamPolicyReturnCode=1
+serviceAccountGetIamPolicyReturnCode=1
+userManagedKeysListReturnCode=1
+temporaryReviewerEffective=false
 ```
 
-Pasaron:
+## 5. Root-fix del workflow one-shot
+
+El patrón vigente para C6 one-shot es instalar primero el workflow y dispararlo después con `pull_request:edited`. Este patrón materializó correctamente tanto la verificación final de aislamiento como la verificación de revocación, manteniendo siempre `PR_HEAD_SHA=github.event.pull_request.head.sha`.
+
+## 6. Fail-close
 
 ```text
-checkout exacto=PASS
-request/source lock=PASS
-claim único=PASS
-Google Cloud authentication=PASS
-gcloud setup=PASS
-identity describe=PASS
-user-managed keys read=PASS
-service-account IAM policy read=PASS
-project IAM policy read=PASS
-runtime isolation classification=PASS
-```
-
-## 5. Rol temporal de visibilidad
-
-```text
-principal=firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com
-role=roles/iam.securityReviewer
-temporaryReviewerBindingCount=1
-```
-
-El rol fue agregado manualmente para completar los readbacks y continúa pendiente de retiro. No procede ningún provider write ni deploy hasta retirarlo y comprobar la revocación.
-
-## 6. Root-fix del workflow one-shot
-
-El workflow IAM VISIBILITY anterior no materializó run usando `pull_request:synchronize`. El verificador final se instaló primero y se disparó después mediante `pull_request:edited`, manteniendo el source lock sobre `github.event.pull_request.head.sha`.
-
-```text
-runMaterialized=true
-runId=31180615131
-result=PASS
-```
-
-Este patrón queda como root-fix para workflows C6 one-shot nuevos mientras PR #7 permanezca acumulativo.
-
-## 7. Fail-close del verificador
-
-```text
-workflowRemovalCommit=e76588a21bace175776c6878ce6b27301f6b7d70
-requestDisableCommit=ce05006345fa4f3af0dfafd566edd0516ab639ff
+workflowRemovalCommit=9f75e76b3ac22165ab8503e0ab08d88c9f8945b7
+requestDisableCommit=1d6cb4bdc549e9d2a2b385a7602a408cd1ebdfe6
 workflowPresent=false
 requestEnabled=false
 requestConsumed=true
 allowedExecutions=0
 ```
 
-## 8. Diagnóstico de causa raíz acumulativo
+## 7. Diagnóstico de causa raíz acumulativo
 
 Documento vigente:
 
@@ -114,13 +88,13 @@ app/docs/DIAGNOSTICO-CAUSA-RAIZ-C6-RUTA-PRODUCCION-20260807.md
 
 Causas demostradas:
 
-1. **Geometría de permisos incorrecta del principal de control-plane:** capacidades amplias de Firebase/Cloud Run/Cloud Build, pero huecos en IAM create/read necesarios para C6.
-2. **Carril one-shot efímero:** un workflow nuevo no materializó con `synchronize`; el trigger `edited` posterior sí materializó y pasó.
-3. **SHA sintético del PR:** causa histórica ya corregida; no debe volver a usarse `GITHUB_SHA` para source lock C6.
+1. geometría de permisos incorrecta del principal de control-plane;
+2. carril one-shot efímero con `synchronize`, corregido con instalación previa + `edited`;
+3. uso histórico de SHA sintético del PR, ya corregido con `pull_request.head.sha`.
 
-No hay evidencia de que estos bloqueos sean una regresión general del frontend o del plan de datos/Auth.
+No hay evidencia de una regresión general del frontend ni del plan Auth.
 
-## 9. SKIP13 y Auth
+## 8. SKIP13 y Auth
 
 ```text
 profiles=13
@@ -142,27 +116,25 @@ freezeDecision=PASS_AUTH_PLAN_340_CRYPTOGRAPHIC_FREEZE
 
 Auth no ha sido ejecutado.
 
-## 10. Phase A preservada
+## 9. Phase A preservada
 
 Frontend acumulativo, Login, `CX.data`, shoppers, postulaciones, certificaciones, visitas, liquidaciones, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto y Academia permanecen preservados.
 
-## 11. Siguiente cadena exacta
+## 10. Siguiente cadena exacta
 
-1. Retirar manualmente `roles/iam.securityReviewer` del principal Firebase Admin SDK.
-2. Ejecutar un readback read-only que demuestre `temporaryReviewerBindingCount=0`.
-3. Autorizar un nuevo deploy DEV único del direct trusted runner.
-4. Completar SKIP13 read-only.
-5. Ejecutar Auth sobre el plan congelado de 340 filas con snapshot/rollback.
-6. Ejecutar smoke acumulativo Admin/Operaciones, Shopper y Cliente.
-7. Validación humana.
-8. Cutover/promoción autorizada a producción.
+1. Autorizar un nuevo deploy DEV único del direct trusted runner.
+2. Completar SKIP13 read-only.
+3. Ejecutar Auth sobre el plan congelado de 340 filas con snapshot/rollback.
+4. Ejecutar smoke acumulativo Admin/Operaciones, Shopper y Cliente.
+5. Validación humana.
+6. Cutover/promoción autorizada a producción.
 
-## 12. Estado seguro
+## 11. Estado seguro
 
 ```text
 provider data reads=0
 provider writes=0
-IAM writes by final verifier=0
+IAM writes by readback=0
 Cloud Build writes=0
 Cloud Run deploys=0
 Hosting deploys=0
