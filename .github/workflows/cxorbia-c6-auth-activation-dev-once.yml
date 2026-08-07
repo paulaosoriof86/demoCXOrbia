@@ -1,0 +1,275 @@
+name: CXOrbia C6 Auth Activation DEV Once
+
+on:
+  pull_request:
+    types: [synchronize]
+
+permissions:
+  contents: read
+  actions: read
+  statuses: write
+
+concurrency:
+  group: cxorbia-c6-auth-activation-dev-once
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  REQUEST_FILE: backend/config/c6-auth-activation-dev-request-v1.json
+  FREEZE_FILE: backend/config/c6-shopper-auth-final-freeze-v2.json
+  CONTRACT_FILE: backend/contracts/c6-auth-activation-dev-v1.json
+  TOOL_FILE: tools/qa/cxorbia-c6-auth-activation-dev.mjs
+  SOURCE_DIR: .tmp/c6-auth-activation-dev-source
+  FINAL_PLAN_FILE: .tmp/c6-auth-activation-dev-source/final-plan.json
+  EXPORT_DIR: .tmp/c6-auth-activation-dev-export
+  PRIVATE_DIR: .tmp/c6-auth-activation-dev-private
+  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
+jobs:
+  activate:
+    name: Execute one C6 Auth activation DEV with prewrite snapshot
+    if: >-
+      github.event.pull_request.number == 7 &&
+      github.event.pull_request.head.ref == 'docs-tya-v6-v71-audit' &&
+      github.event.pull_request.base.ref == 'release/cxorbia-tya-rc-20260630'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Exclude ephemeral sensitive material
+        run: printf '%s\n' '.tmp/' 'gha-creds-*.json' >> .git/info/exclude
+
+      - name: Static source contract gate
+        run: |
+          set -euo pipefail
+          node --check "$TOOL_FILE"
+          node <<'NODE'
+          const fs=require('fs');
+          const f=JSON.parse(fs.readFileSync(process.env.FREEZE_FILE,'utf8'));
+          const c=JSON.parse(fs.readFileSync(process.env.CONTRACT_FILE,'utf8'));
+          const src=fs.readFileSync(process.env.TOOL_FILE,'utf8');
+          const ensure=(v,code)=>{if(!v)throw new Error(code)};
+          ensure(f.schemaVersion==='cxorbia.c6.shopper-auth-final-freeze.v2','FREEZE_SCHEMA');
+          ensure(c.schemaVersion==='cxorbia.c6.auth-activation-dev.contract.v1','CONTRACT_SCHEMA');
+          ensure(f.repository==='paulaosoriof86/demoCXOrbia'&&f.branch==='docs-tya-v6-v71-audit'&&Number(f.pullRequest)===7,'FREEZE_LANE');
+          ensure(f.target?.firebaseProjectId==='cxorbia-backend-dev'&&f.target?.tenantId==='tya'&&f.target?.projectId==='cinepolis','FREEZE_TARGET');
+          ensure(f.sourceArtifact?.artifactId===8968941587&&f.sourceArtifact?.sourcePlanDigest==='acc93da842d1a5d3244327680f88539f0651cb101bae09dd231fd8b5008bea92','SOURCE_LINEAGE');
+          ensure(f.finalPlan?.compactRowsDigestSha256==='68e26a5217957333d256f2cb547faf3e1eef74e2c789bfd85454d42dfd472dc3','FINAL_DIGEST');
+          ensure(JSON.stringify(f.finalPlan?.operationCounts)===JSON.stringify({CREATE_AUTH:81,UPDATE_AUTH:46,NO_OP:81,HOLD:0,PRESERVE_NO_AUTH:132}),'FINAL_COUNTS');
+          ensure(c.finalPlan?.path===process.env.FINAL_PLAN_FILE&&c.freezeManifest===process.env.FREEZE_FILE,'PATH_CONTRACT');
+          ensure(c.tenantAdjudication?.keeperCandidateFingerprint==='4e6d26551d11db444bd0'&&c.tenantAdjudication?.retireAccessCandidateFingerprint==='9b2b7ca1bd72c1301d29','ADJUDICATION');
+          for(const token of ['PASSWORD_ROLLBACK_HASH_SALT_UNAVAILABLE','ENCRYPTED_ENVELOPE_DIGEST_MISMATCH','state.writeBoundaryEntered=true','disabled:true','PASS_C6_AUTH_ACTIVATION_DEV','STOP_RETRY_C6_AUTH_ACTIVATION_DEV_PREWRITE']) ensure(src.includes(token),'TOOL_GUARD_'+token);
+          for(const bad of ['deleteUser(','deleteUsers(','deploy']) ensure(!src.includes(bad),'FORBIDDEN_TOOL_'+bad);
+          console.log('PASS_C6_AUTH_ACTIVATION_DEV_STATIC_SOURCE_GATE');
+          NODE
+
+      - name: Determine exact one-shot request event
+        id: request
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs'); const {execFileSync}=require('child_process');
+          let x={}; if(fs.existsSync(process.env.REQUEST_FILE))x=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const executable=x.schemaVersion==='cxorbia.c6.auth-activation-dev.request.v1'&&x.enabled===true&&x.consumed===false&&x.status==='authorized_execute_once'&&Number(x.allowedExecutions)===1&&x.targetHeadSha===parent&&head===process.env.HEAD_SHA&&changed.length===1&&changed[0]===process.env.REQUEST_FILE;
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`executable=${executable?'true':'false'}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`target=${x.targetHeadSha||''}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`request_id=${x.requestId||''}\n`);
+          console.log(JSON.stringify({head,parent,changed,executable}));
+          NODE
+
+      - name: Record source-only non-request event
+        if: steps.request.outputs.executable != 'true'
+        run: echo 'Static gate PASS; not the exact request-only commit; zero provider reads/writes.'
+
+      - name: Claim one logical Auth activation
+        if: steps.request.outputs.executable == 'true'
+        id: claim
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          existing=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/statuses" --paginate --jq '[.[] | select(.context=="cxorbia/c6-auth-activation-dev/claim")] | length')
+          if [ "$existing" != '0' ]; then echo 'claimed=false' >> "$GITHUB_OUTPUT"; exit 0; fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" \
+            -f state='pending' -f context='cxorbia/c6-auth-activation-dev/claim' \
+            -f description='CLAIMED_ONE_C6_AUTH_ACTIVATION_DEV' \
+            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+          echo 'claimed=true' >> "$GITHUB_OUTPUT"
+
+      - name: Validate exact authorized request
+        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs'); const {execFileSync}=require('child_process');
+          const x=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(); const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const ensure=(v,c)=>{if(!v)throw new Error(c)};
+          ensure(x.requestId==='c6-auth-activation-dev-20260807-01','REQUEST_ID');
+          ensure(x.authorizedBy==='Paula'&&x.enabled===true&&x.consumed===false&&Number(x.allowedExecutions)===1,'AUTHORIZATION');
+          ensure(x.targetHeadSha===parent&&head===process.env.HEAD_SHA&&changed.length===1&&changed[0]===process.env.REQUEST_FILE,'REQUEST_SOURCE_LOCK');
+          ensure(x.repository==='paulaosoriof86/demoCXOrbia'&&x.branch==='docs-tya-v6-v71-audit'&&Number(x.pullRequest)===7,'LANE');
+          ensure(x.firebaseProjectId==='cxorbia-backend-dev'&&x.tenantId==='tya'&&x.projectId==='cinepolis','TARGET');
+          ensure(x.freezeManifest===process.env.FREEZE_FILE&&x.contract===process.env.CONTRACT_FILE&&x.finalPlan===process.env.FINAL_PLAN_FILE,'PATHS');
+          ensure(x.keeperCandidateFingerprint==='4e6d26551d11db444bd0'&&x.retireAccessCandidateFingerprint==='9b2b7ca1bd72c1301d29','ADJUDICATION');
+          ensure(x.scope?.authReads===true&&x.scope?.authWrites===true&&x.scope?.firestoreReads===true&&x.scope?.firestoreWrites===false,'SCOPE');
+          for(const key of ['hrWrites','visitsWrites','certificationsWrites','liquidationsWrites','rulesWrites','storageWrites','hostingDeploys','cloudRunDeploys','cloudBuilds','makeCalls','geminiCalls','paymentWrites'])ensure(Number(x.safeState?.[key])===0,'UNSAFE_'+key);
+          ensure(x.safeState?.merge===false&&x.safeState?.production===false,'RELEASE_SCOPE');
+          NODE
+
+      - name: Materialize final 340-row source-safe plan
+        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$SOURCE_DIR" "$EXPORT_DIR"
+          gh api "/repos/${GITHUB_REPOSITORY}/actions/artifacts/8968941587" > "$SOURCE_DIR/artifact-meta.json"
+          node <<'NODE'
+          const fs=require('fs'); const m=JSON.parse(fs.readFileSync(process.env.SOURCE_DIR+'/artifact-meta.json','utf8'));
+          if(m.expired!==false)throw new Error('SOURCE_ARTIFACT_EXPIRED');
+          if(m.digest!=='sha256:02e36c355b3f2d1c9d1e6f1be7fece93259251ddb0f981cdaac35f2262fcb264')throw new Error('SOURCE_ARTIFACT_DIGEST_DRIFT');
+          NODE
+          gh run download 31104541809 -n cxorbia-c6-equivalent-universe-provider-v22-31104541809 -D "$SOURCE_DIR/source-artifact"
+          node <<'NODE'
+          const fs=require('fs'),crypto=require('crypto');
+          const sha=v=>crypto.createHash('sha256').update(v).digest('hex'); const ensure=(v,c)=>{if(!v)throw new Error(c)};
+          const freeze=JSON.parse(fs.readFileSync(process.env.FREEZE_FILE,'utf8'));
+          const source=JSON.parse(fs.readFileSync(process.env.SOURCE_DIR+'/source-artifact/plan-340-source-safe.json','utf8'));
+          ensure(source.length===340&&new Set(source.map(r=>r.profileFp)).size===340,'SOURCE_PLAN_340');
+          ensure(sha(JSON.stringify(source))==='acc93da842d1a5d3244327680f88539f0651cb101bae09dd231fd8b5008bea92','SOURCE_PLAN_DIGEST');
+          const map=freeze.transform.uniqueEffectiveAuthToNoOp; const preserve=new Set(freeze.transform.preserveNoAuth); const a=freeze.transform.tenantAdjudication;
+          const expectedHolds=new Set([...Object.keys(map),...preserve,a.profileFingerprint]);
+          const actualHolds=new Set(source.filter(r=>r.primary==='HOLD').map(r=>r.profileFp));
+          ensure(actualHolds.size===13&&[...actualHolds].every(x=>expectedHolds.has(x))&&[...expectedHolds].every(x=>actualHolds.has(x)),'HOLD_SET_DRIFT');
+          const rows=source.map(r=>{
+            const o={profileFp:r.profileFp,primary:r.primary,changes:{email:Boolean(r.changes?.email),password:Boolean(r.changes?.password),claims:Boolean(r.changes?.claims)},baseLoginFp:r.baseLoginFp??null,targetLoginFp:r.targetLoginFp??null};
+            if(Object.hasOwn(map,r.profileFp)){o.primary='NO_OP';o.changes={email:false,password:false,claims:false};o.preserveAuthCandidateFingerprint=map[r.profileFp];}
+            else if(preserve.has(r.profileFp)){o.primary='PRESERVE_NO_AUTH';o.changes={email:false,password:false,claims:false};}
+            else if(r.profileFp===a.profileFingerprint){o.primary='NO_OP';o.changes={email:false,password:false,claims:false};o.preserveAuthCandidateFingerprint=a.keeperCandidateFingerprint;o.secondaryAuthDisposition={keeperCandidateFingerprint:a.keeperCandidateFingerprint,retireAccessCandidateFingerprint:a.retireAccessCandidateFingerprint,retirementMode:'DISABLE_AUTH_AFTER_SNAPSHOT_PREWRITE_PASS'};}
+            return o;
+          });
+          const counts={CREATE_AUTH:0,UPDATE_AUTH:0,NO_OP:0,HOLD:0,PRESERVE_NO_AUTH:0},sub={email:0,password:0,claims:0};
+          for(const r of rows){counts[r.primary]++;for(const k of Object.keys(sub))if(r.changes[k])sub[k]++;}
+          ensure(JSON.stringify(counts)===JSON.stringify({CREATE_AUTH:81,UPDATE_AUTH:46,NO_OP:81,HOLD:0,PRESERVE_NO_AUTH:132}),'FINAL_COUNTS');
+          ensure(JSON.stringify(sub)===JSON.stringify({email:39,password:14,claims:38}),'FINAL_SUBCHANGES');
+          const digest=sha(JSON.stringify(rows)); ensure(digest==='68e26a5217957333d256f2cb547faf3e1eef74e2c789bfd85454d42dfd472dc3','FINAL_ROWS_DIGEST');
+          const plan={schemaVersion:'cxorbia.c6.shopper-auth-final-plan.v2',generatedAt:new Date().toISOString(),target:freeze.target,sourceLineage:freeze.sourceArtifact,tenantAdjudication:a,plan:{rows:340,uniqueRows:340,operationCounts:counts,subchangeCounts:sub,sourceSafeRowsDigestSha256:digest,onePrimaryOperationPerProfile:true,holdZero:true},rows,safety:{sourceSafe:true,containsPii:false,containsRawUid:false,containsRawEmail:false,containsRawPassword:false}};
+          fs.writeFileSync(process.env.FINAL_PLAN_FILE,JSON.stringify(plan,null,2)+'\n','utf8');
+          fs.writeFileSync(process.env.EXPORT_DIR+'/final-plan-source-safe.json',JSON.stringify(plan,null,2)+'\n','utf8');
+          console.log('PASS_C6_AUTH_FINAL_PLAN_340_HOLD0_MATERIALIZED '+digest);
+          NODE
+
+      - name: Install transient Firebase Admin dependency
+        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0
+
+      - name: Prepare clean-project credential privately
+        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$PRIVATE_DIR" "$EXPORT_DIR"
+          node <<'NODE'
+          const fs=require('fs'); const raw=process.env.EXISTING_DEV_JSON||''; let p=null;try{p=JSON.parse(raw)}catch{}
+          if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.client_email&&p.private_key))throw new Error('CREDENTIAL_INVALID');
+          fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
+          NODE
+
+      - name: Execute one Auth activation with prewrite fail-close
+        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
+        id: activation
+        continue-on-error: true
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/c6-auth-activation-dev-private/credentials.json
+          CXORBIA_TARGET_HEAD: ${{ steps.request.outputs.target }}
+          CXORBIA_AUTH_ACTIVATION_EXPORT_DIR: ${{ github.workspace }}/.tmp/c6-auth-activation-dev-export
+          CXORBIA_AUTH_ACTIVATION_PRIVATE_DIR: ${{ github.workspace }}/.tmp/c6-auth-activation-dev-private
+          CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+        run: |
+          set +e
+          node "$TOOL_FILE" "$REQUEST_FILE"
+          code=$?
+          decision=$(head -n 1 "$EXPORT_DIR/decision.txt" 2>/dev/null || echo HOLD_C6_AUTH_ACTIVATION_DEV_NO_DECISION)
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          echo "decision=$decision" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Capture repository delta evidence
+        if: always() && steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
+        run: |
+          mkdir -p "$EXPORT_DIR/repository-status"
+          git status --porcelain=v1 > "$EXPORT_DIR/repository-status/status.txt"
+          git diff --name-status > "$EXPORT_DIR/repository-status/tracked.txt"
+          git ls-files --others --exclude-standard > "$EXPORT_DIR/repository-status/untracked.txt"
+
+      - name: Upload terminal evidence
+        if: always() && steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-c6-auth-activation-dev-${{ github.run_id }}
+          path: .tmp/c6-auth-activation-dev-export
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+
+      - name: Publish observable activation status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXIT_CODE: ${{ steps.activation.outputs.exit_code }}
+          DECISION: ${{ steps.activation.outputs.decision }}
+        run: |
+          set -euo pipefail
+          STATE=success; DESC='PASS_C6_AUTH_ACTIVATION_DEV_STATIC_NON_REQUEST'
+          if [ '${{ steps.request.outputs.executable }}' = 'true' ] && [ '${{ steps.claim.outputs.claimed }}' != 'true' ]; then DESC='SKIPPED_DUPLICATE_EXECUTION_PREVENTED';
+          elif [ '${{ steps.request.outputs.executable }}' = 'true' ]; then
+            DESC="${DECISION:-HOLD_C6_AUTH_ACTIVATION_DEV_NO_DECISION}"
+            if [ "${EXIT_CODE:-999}" != '0' ]; then STATE=failure; fi
+          fi
+          DESC=$(printf '%s' "$DESC" | cut -c1-140)
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" -f state="$STATE" -f context='cxorbia/c6-auth-activation-dev/overall' -f description="$DESC" -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+
+      - name: Finalize claim status
+        if: always() && steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXIT_CODE: ${{ steps.activation.outputs.exit_code }}
+          DECISION: ${{ steps.activation.outputs.decision }}
+        run: |
+          state=success; desc='COMPLETED_ONE_C6_AUTH_ACTIVATION_DEV'
+          if [ "${EXIT_CODE:-999}" != '0' ]; then state=failure; desc="${DECISION:-COMPLETED_WITH_STOP_RETRY}"; fi
+          desc=$(printf '%s' "$desc" | cut -c1-140)
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" -f state="$state" -f context='cxorbia/c6-auth-activation-dev/claim' -f description="$desc" -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+
+      - name: Cleanup private material
+        if: always()
+        run: rm -rf "$PRIVATE_DIR"
+
+      - name: Enforce activation result
+        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
+        env:
+          EXIT_CODE: ${{ steps.activation.outputs.exit_code }}
+        run: test "${EXIT_CODE:-999}" = '0'
