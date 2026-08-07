@@ -1,8 +1,9 @@
 name: CXOrbia C6 SKIP13 Selftest Harness Source Only Once
 
 on:
-  pull_request:
-    types: [synchronize]
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
     paths:
       - 'tools/qa/cxorbia-c6-shopper-equivalent-universe.mjs'
 
@@ -26,18 +27,15 @@ env:
 jobs:
   gate:
     name: SKIP13 selftest harness source-only gate
-    if: >-
-      github.event.pull_request.number == 7 &&
-      github.event.pull_request.head.ref == 'docs-tya-v6-v71-audit' &&
-      github.event.pull_request.base.ref == 'release/cxorbia-tya-rc-20260630'
+    if: github.ref_name == 'docs-tya-v6-v71-audit'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Checkout exact PR head
+      - name: Checkout exact branch head
         uses: actions/checkout@v4
         with:
           fetch-depth: 2
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.sha }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
