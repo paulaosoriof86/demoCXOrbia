@@ -6,6 +6,7 @@ on:
       - docs-tya-v6-v71-audit
     paths:
       - 'tools/qa/cxorbia-c6-shopper-equivalent-universe.mjs'
+      - '.github/workflows/cxorbia-c6-skip13-selftest-harness-source-only-once.yml'
 
 permissions:
   contents: read
