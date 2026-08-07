@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-07  
-**Estado:** `C6_DIRECT_RUNNER_DEV_DEPLOY_PASS__PRIVATE_AUTHENTICATED__RUNTIME_ISOLATED__PROVIDER_BOUNDARY_OFF__AUTH_PLAN_FROZEN__NO_PRODUCTION`
+**Estado:** `C6_DIRECT_RUNNER_DEV_PASS__SKIP13_HOLD_FINGERPRINT_NAMESPACE_MISMATCH__ZERO_AUTH_MEMBERSHIP_READS__AUTH_PLAN_FROZEN__NO_PRODUCTION`
 
 ## 1. Rama y control
 
@@ -9,110 +9,86 @@
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
 - producción: intacta;
-- source lock vigente: `app/docs/SOURCE-LOCK-C6-DIRECT-RUNNER-DEV-DEPLOY-PASS-20260807.md`;
+- source lock vigente: `app/docs/SOURCE-LOCK-C6-SKIP13-FINGERPRINT-NAMESPACE-MISMATCH-STOP-RETRY-20260807.md`;
 - request direct runner ejecutable: ninguno;
 - request SKIP13 ejecutable: ninguno;
 - Auth ejecutado: no.
 
-## 2. Direct trusted runner DEV — desplegado PASS
+## 2. Direct trusted runner DEV — PASS
 
 ```text
 service=cxorbia-c6-direct-runner-dev
 region=us-central1
 sourceLock=5c467be8d7359e66b6362a07dd3908ada3cf1c17
-sourceGate=PASS_C6_DIRECT_RUNNER_SOURCE_GATE_V2
 deployDecision=PASS_C6_DIRECT_RUNNER_DEV_DEPLOY_V3
 revision=cxorbia-c6-direct-runner-dev-00001-2vz
-serviceUrl=https://cxorbia-c6-direct-runner-dev-mzgge2pnia-uc.a.run.app
 private=true
+runtime=cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com
+runtimeIsolation=PASS
 providerBoundaryEnabled=false
-allowedOperations=control_plane_self_test
 ```
 
-## 3. Ejecución terminal
+## 3. SKIP13 read-only — terminal HOLD
 
 ```text
-runId=31186229092
-jobId=92891340577
-cloudBuildId=2ae79aa7-574b-483f-90c1-25e6ee3161b0
-artifactId=8996863935
-artifactDigest=sha256:d1c5b954bc69c2874aeb1e77136b53bf2b3d1699e1e1b03efddf198d8c0d8a0d
-cloudBuildsExecuted=1
-cloudRunDeploysExecuted=1
+requestId=c6-skip13-auth-access-adjudication-20260807-06
+requestCommit=313597f561315ff9f8c75c5a7be741a8cbac5d70
+runId=31188368926
+jobId=92898589212
+artifactId=8997714548
+artifactDigest=sha256:9dd0cee0aa205071fa82afb22f69d0cdf29b54d9d8d4b2f6462c58c22fd1e30d
+decision=HOLD_C6_SKIP13_ADJUDICATION_TECHNICAL_ERROR
+error=all_skip13_profile_ids_resolved:0
 ```
 
-Todas las etapas del run terminaron success. No hubo segundo deploy.
+El baseline leído fue exactamente 340 shopper document IDs, pero 0/13 fingerprints coincidieron.
 
-## 4. Identidad runtime — preservada e aislada
-
-```text
-email=cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com
-uniqueId=112507526829412676643
-fingerprint=ed8f84baa824b89305a8e6ab16af43c51ff555c72e3c940aeb0ef1339e5c2460
-userManagedKeyCount=0
-directServiceAccountBindingCount=0
-projectRoleCount=0
-identityDecision=PASS_ISOLATED_RUNTIME_IDENTITY
-temporarySecurityReviewerRevoked=PASS
-```
-
-El deploy no creó bindings ni roles nuevos para la identidad runtime.
-
-## 5. Endpoint, autenticación, lease e idempotencia
+## 4. Lecturas consumidas
 
 ```text
-unauthenticated /health=HTTP 403
-authenticated /health=PASS
-environment=DEV
-runtimeSourceLock=5c467be8d7359e66b6362a07dd3908ada3cf1c17
-providerBoundaryEnabled=false
-providerReads=0
+profileIdIndexQueries=1
+shopperIdIndexBaseline=340
+authListPages=0
+membershipPointReads=0
+membershipFieldQueries=0
+hrReads=0
 providerWrites=0
 ```
 
-Primera invocación técnica:
+No se alcanzaron Auth, claims ni memberships. No hubo writes.
+
+## 5. Causa raíz demostrada
+
+El plan determinístico produce:
 
 ```text
-HTTP=202
-decision=PASS_C6_DIRECT_TRUSTED_RUNNER_TECHNICAL_VALIDATION
-leaseMode=single_instance_memory_dev
-leaseTtlMs=600000
+profileFp = fp('deterministic-suffix-plan-profile', profile.id)
 ```
 
-Duplicado:
+El adjudicador intentó resolver los mismos fingerprints con:
 
 ```text
-HTTP=409
-decision=HOLD_C6_DIRECT_RUNNER_DUPLICATE_REJECTED
+stableMemberFingerprint(profileId)
+namespace=shopper-collision-member-v1
 ```
 
-## 6. Rollback
+La segunda función corresponde a member provenance de grupos del universo equivalente. Los namespaces son válidos individualmente pero no interoperables.
 
-El servicio no existía antes del bloque.
+Además el contrato SKIP13 no fija explícitamente `profileFingerprintNamespace`, permitiendo el error de integración.
+
+## 6. Fail-close
 
 ```text
-rollbackType=DELETE_NEW_DEV_SERVICE
-runtimeIdentityPreserved=true
-rollbackPlan=PASS
-rollbackExecuted=false
+failCloseCommit=3966dac8a42404f35245c474f975f696c9cb9f0e
+requestEnabled=false
+requestConsumed=true
+allowedExecutions=0
+secondProviderAttempt=false
 ```
 
-## 7. SKIP13
+El workflow generado por el commit de fail-close (`runId=31188638266`) clasificó el evento como no ejecutable y saltó claim, credential preparation y adjudication.
 
-El workflow histórico SKIP13 se materializó como efecto del evento PR `edited`, pero reconoció que no era su request exacto y saltó la ejecución real:
-
-```text
-claim=SKIPPED
-credentialPreparation=SKIPPED
-providerAdjudication=SKIPPED
-SKIP13Executed=false
-providerReads=0
-providerWrites=0
-```
-
-El runner desplegado sigue deliberadamente sin provider boundary y su única operación actual es `control_plane_self_test`. La siguiente adjudicación SKIP13 debe ejecutarse, previa autorización nueva, mediante `backend/contracts/c6-skip13-auth-access-adjudication-v1.json` y `.github/workflows/cxorbia-c6-skip13-auth-access-adjudication-readonly.yml`. No requiere otro deploy del runner para ese read-only.
-
-## 8. Auth congelado
+## 7. Auth congelado
 
 ```text
 rows=340
@@ -127,45 +103,39 @@ freezeDecision=PASS_AUTH_PLAN_340_CRYPTOGRAPHIC_FREEZE
 AuthExecuted=false
 ```
 
-## 9. Fail-close
-
-```text
-workflowRemovalCommit=76dbc80634805e7ca4e77e423b2a846221014150
-requestDisableCommit=f088078ef915eeb07e524faefb701dc258216593
-workflowPresent=false
-requestEnabled=false
-requestConsumed=true
-allowedCloudBuilds=0
-allowedDeploys=0
-```
-
-## 10. Phase A preservada
+## 8. Phase A preservada
 
 Frontend acumulativo, Login, `CX.data`, HR, shoppers, postulaciones, certificaciones, visitas, liquidaciones, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto y Academia permanecen preservados.
 
-## 11. Siguiente cadena exacta
+## 9. Siguiente cadena exacta
 
-1. Autorizar una nueva adjudicación SKIP13 read-only explícita con el contrato/workflow source-safe existente.
-2. Con SKIP13 cerrado, ejecutar Auth sobre el plan congelado de 340 filas con snapshot/rollback.
-3. Smoke acumulativo Admin/Operaciones, Shopper y Cliente.
-4. Validación humana.
-5. Cutover/promoción autorizada a producción.
+1. Autorizar root-fix source-only del namespace SKIP13.
+2. Corregir el adjudicador para usar `deterministic-suffix-plan-profile` y declarar namespaces en contrato.
+3. Ejecutar self-test estático cross-namespace sin provider.
+4. Solo con PASS, autorizar una única nueva adjudicación SKIP13 read-only.
+5. Con SKIP13 cerrado, ejecutar Auth sobre el plan congelado de 340 filas con snapshot/rollback.
+6. Smoke acumulativo Admin/Operaciones, Shopper y Cliente.
+7. Validación humana.
+8. Cutover/promoción autorizada a producción.
 
-## 12. Estado seguro
+## 10. Estado seguro
 
 ```text
-CloudBuildsExecuted=1
-CloudRunDeploysExecuted=1
-HostingDeploys=0
-IAMWrites=0
-providerReads=0
-providerWrites=0
-SKIP13Executed=false
-AuthWrites=0
-HRWrites=0
-FirestoreWrites=0
-RulesWrites=0
-StorageWrites=0
+DirectRunnerDEV=PASS
+SKIP13 shopper-id index queries=1
+SKIP13 Auth reads=0
+SKIP13 claims reads=0
+SKIP13 membership reads=0
+HR reads=0
+provider writes=0
+Auth writes=0
+HR writes=0
+Firestore writes=0
+Rules writes=0
+Storage writes=0
+additional Cloud Builds=0
+additional Cloud Run deploys=0
+Hosting deploys=0
 merge=false
 production=false
 providerBoundaryEnabled=false
