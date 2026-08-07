@@ -2,31 +2,33 @@
 
 **Fecha:** 2026-08-07  
 **Estado:** ACTIVO Y RECONCILIADO  
-**Estado vivo:** `C6_DIRECT_RUNNER_DEV_DEPLOY_PASS__PRIVATE_AUTHENTICATED__RUNTIME_ISOLATED__PROVIDER_BOUNDARY_OFF__AUTH_PLAN_FROZEN__NO_PRODUCTION`
+**Estado vivo:** `C6_DIRECT_RUNNER_DEV_PASS__SKIP13_HOLD_FINGERPRINT_NAMESPACE_MISMATCH__ZERO_AUTH_MEMBERSHIP_READS__AUTH_PLAN_FROZEN__NO_PRODUCTION`
 
 ## 1. Orden de prevalencia
 
 1. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `app/docs/SOURCE-LOCK-C6-DIRECT-RUNNER-DEV-DEPLOY-PASS-20260807.md`;
-3. `backend/contracts/c6-direct-trusted-runner-dev-v2.json`;
-4. `backend/contracts/c6-execution-control-plane-v2.json`;
-5. `backend/contracts/c6-runtime-identity-isolated-final-v2.json`;
-6. `backend/config/c6-direct-trusted-runner-dev-deploy-request-v3.json` — consumido y deshabilitado;
-7. `backend/contracts/c6-skip13-auth-access-adjudication-v1.json`;
-8. `tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly.mjs`;
-9. `.github/workflows/cxorbia-c6-skip13-auth-access-adjudication-readonly.yml`;
-10. `app/docs/DIAGNOSTICO-CAUSA-RAIZ-C6-RUTA-PRODUCCION-20260807.md`;
-11. `app/docs/SOURCE-LOCK-C6-RUNTIME-IDENTITY-ISOLATED-REVIEWER-REVOKED-PASS-20260807.md`;
+2. `app/docs/SOURCE-LOCK-C6-SKIP13-FINGERPRINT-NAMESPACE-MISMATCH-STOP-RETRY-20260807.md`;
+3. `app/docs/DIAGNOSTICO-CAUSA-RAIZ-C6-RUTA-PRODUCCION-20260807.md`;
+4. `backend/config/c6-skip13-auth-access-adjudication-request.json` — consumido/deshabilitado;
+5. `backend/contracts/c6-skip13-auth-access-adjudication-v1.json`;
+6. `tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly.mjs`;
+7. `.github/workflows/cxorbia-c6-skip13-auth-access-adjudication-readonly.yml`;
+8. `app/docs/SOURCE-LOCK-C6-DIRECT-RUNNER-DEV-DEPLOY-PASS-20260807.md`;
+9. `backend/contracts/c6-direct-trusted-runner-dev-v2.json`;
+10. `backend/contracts/c6-execution-control-plane-v2.json`;
+11. `backend/contracts/c6-runtime-identity-isolated-final-v2.json`;
 12. `backend/runtime/c6-direct-trusted-runner/server.mjs`;
 13. `tools/qa/cxorbia-c6-direct-runner-source-gate-v2.mjs`;
 14. `backend/config/c6-shopper-auth-final-freeze-v1.json`;
 15. `backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json`;
 16. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json`;
-17. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-18. addenda vigentes de CAMBIOS, Claude, Pendientes, Academia y tracker;
-19. `AGENTS.md`, PR #7 y HEAD vivo.
+17. `tools/qa/cxorbia-c6-shopper-deterministic-suffix-readonly.mjs`;
+18. `tools/qa/cxorbia-c6-shopper-equivalent-universe.mjs`;
+19. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+20. addenda vigentes de CAMBIOS, Claude, Pendientes, Academia y tracker;
+21. `AGENTS.md`, PR #7 y HEAD vivo.
 
-## 2. Direct trusted runner DEV — PASS
+## 2. Direct trusted runner DEV — PASS preservado
 
 ```text
 service=cxorbia-c6-direct-runner-dev
@@ -36,9 +38,9 @@ runtimeUniqueId=112507526829412676643
 runtimeFingerprint=ed8f84baa824b89305a8e6ab16af43c51ff555c72e3c940aeb0ef1339e5c2460
 sourceLock=5c467be8d7359e66b6362a07dd3908ada3cf1c17
 decision=PASS_C6_DIRECT_RUNNER_DEV_DEPLOY_V3
+revision=cxorbia-c6-direct-runner-dev-00001-2vz
 private=true
 providerBoundaryEnabled=false
-allowedOperations=control_plane_self_test
 ```
 
 Evidencia terminal:
@@ -49,57 +51,69 @@ jobId=92891340577
 cloudBuildId=2ae79aa7-574b-483f-90c1-25e6ee3161b0
 artifactId=8996863935
 artifactDigest=sha256:d1c5b954bc69c2874aeb1e77136b53bf2b3d1699e1e1b03efddf198d8c0d8a0d
-image=gcr.io/cxorbia-backend-dev/cxorbia-c6-direct-runner-dev:5c467be8d7359e66b6362a07dd3908ada3cf1c17
-revision=cxorbia-c6-direct-runner-dev-00001-2vz
-serviceUrl=https://cxorbia-c6-direct-runner-dev-mzgge2pnia-uc.a.run.app
+cloudBuildsExecuted=1
+cloudRunDeploysExecuted=1
 ```
 
-Exactamente un Cloud Build y un Cloud Run deploy fueron ejecutados.
-
-## 3. Validaciones del runner
+## 3. SKIP13 — STOP_RETRY por namespace
 
 ```text
-sourceGate=PASS_C6_DIRECT_RUNNER_SOURCE_GATE_V2
-predeploy=PASS
-runtimeIdentityAttached=PASS
-privateService=PASS
-unauthenticatedHealthHTTP=403
-authenticatedHealth=PASS
-lease=PASS
-firstTechnicalInvocationHTTP=202
-firstTechnicalDecision=PASS_C6_DIRECT_TRUSTED_RUNNER_TECHNICAL_VALIDATION
-duplicateHTTP=409
-duplicateDecision=HOLD_C6_DIRECT_RUNNER_DUPLICATE_REJECTED
-rollbackPlan=PASS_DELETE_NEW_DEV_SERVICE_PRESERVE_RUNTIME_IDENTITY
-rollbackExecuted=false
+requestId=c6-skip13-auth-access-adjudication-20260807-06
+requestCommit=313597f561315ff9f8c75c5a7be741a8cbac5d70
+runId=31188368926
+jobId=92898589212
+artifactId=8997714548
+artifactDigest=sha256:9dd0cee0aa205071fa82afb22f69d0cdf29b54d9d8d4b2f6462c58c22fd1e30d
+decision=HOLD_C6_SKIP13_ADJUDICATION_TECHNICAL_ERROR
+error=all_skip13_profile_ids_resolved:0
 ```
 
-## 4. Identidad runtime e IAM
+Lecturas consumidas:
 
 ```text
-identityDecision=PASS_ISOLATED_RUNTIME_IDENTITY
-userManagedKeyCount=0
-directServiceAccountBindingCount=0
-projectRoleCount=0
-temporarySecurityReviewerRevocation=PASS
-IAMWritesDuringDeploy=0
+shopperIdIndexBaseline=340
+profileIdIndexQueries=1
+resolvedSkip13Profiles=0
+authListPages=0
+membershipPointReads=0
+membershipFieldQueries=0
+hrReads=0
 ```
 
-No se otorgaron roles provider/Firebase/Auth/Firestore/Storage/HR a la identidad runtime.
+No se alcanzaron Auth, claims ni memberships.
 
-## 5. SKIP13 y Auth
+## 4. Causa raíz SKIP13
 
-El evento del deploy materializó un workflow histórico de SKIP13, pero éste detectó que no era su request exacto y saltó claim, credencial y adjudicación:
+El plan Auth genera el `profileFp` mediante:
 
 ```text
-SKIP13 logical execution=false
-SKIP13 provider reads=0
-SKIP13 provider writes=0
+fp('deterministic-suffix-plan-profile', profile.id)
 ```
 
-El runner desplegado no tiene provider boundary habilitado y solo acepta `control_plane_self_test`; por ello no se usará su runtime actual para leer SKIP13. La adjudicación SKIP13 deberá usar el contrato/workflow read-only source-safe ya existentes con una nueva autorización one-shot.
+El adjudicador intentó resolver ese set con:
 
-Plan Auth vigente:
+```text
+stableMemberFingerprint(profileId)
+namespace=shopper-collision-member-v1
+```
+
+Son namespaces distintos. El namespace `shopper-collision-member-v1` corresponde a member provenance de grupos del universo equivalente, no al profile fingerprint del plan de Auth.
+
+El contrato de adjudicación tampoco declara explícitamente el namespace de `profileFingerprint`, lo que permitió el cruce semántico.
+
+## 5. Fail-close SKIP13
+
+```text
+failCloseCommit=3966dac8a42404f35245c474f975f696c9cb9f0e
+requestEnabled=false
+requestConsumed=true
+allowedExecutions=0
+secondProviderAttempt=false
+```
+
+El run posterior `31188638266`, provocado por el commit de fail-close, saltó claim, credential preparation y adjudication; no hubo segunda lectura provider.
+
+## 6. Auth congelado
 
 ```text
 rows=340
@@ -113,40 +127,34 @@ freezeDecision=PASS_AUTH_PLAN_340_CRYPTOGRAPHIC_FREEZE
 AuthExecuted=false
 ```
 
-## 6. Fail-close del deploy
-
-```text
-workflowRemovalCommit=76dbc80634805e7ca4e77e423b2a846221014150
-requestDisableCommit=f088078ef915eeb07e524faefb701dc258216593
-requestExecutable=false
-allowedCloudBuilds=0
-allowedDeploys=0
-secondDeploy=0
-```
-
 ## 7. Pendiente real
 
-1. Autorizar una nueva adjudicación SKIP13 read-only explícita mediante el contrato/workflow source-safe ya existentes, sin provider writes.
-2. Con SKIP13 cerrado, ejecutar Auth sobre el plan congelado de 340 filas con snapshot/rollback y gates.
-3. Smoke acumulativo Admin/Operaciones, Shopper y Cliente.
-4. Validación humana.
-5. Cutover/promoción autorizada a producción.
+1. Root-fix source-only del namespace SKIP13: `deterministic-suffix-plan-profile`.
+2. Declarar namespaces explícitos en el contrato y agregar self-test cross-namespace.
+3. Solo con source gate PASS y autorización nueva, una única adjudicación SKIP13 read-only corregida.
+4. Con SKIP13 cerrado, ejecutar Auth sobre las 340 filas con snapshot/rollback.
+5. Smoke acumulativo Admin/Operaciones, Shopper y Cliente.
+6. Validación humana.
+7. Cutover/promoción autorizada a producción.
 
 ## 8. Estado seguro
 
 ```text
-CloudBuildsExecuted=1
-CloudRunDeploysExecuted=1
-HostingDeploys=0
-IAMWrites=0
-providerReads=0
-providerWrites=0
-SKIP13Executed=false
-AuthWrites=0
-HRWrites=0
-FirestoreWrites=0
-RulesWrites=0
-StorageWrites=0
+DirectRunnerDEV=PASS
+SKIP13 shopper-id index queries=1
+SKIP13 Auth reads=0
+SKIP13 claims reads=0
+SKIP13 membership reads=0
+HR reads=0
+provider writes=0
+Auth writes=0
+Firestore writes=0
+Rules writes=0
+Storage writes=0
+HR writes=0
+Hosting deploys=0
+additional Cloud Builds=0
+additional Cloud Run deploys=0
 merge=false
 production=false
 providerBoundaryEnabled=false
