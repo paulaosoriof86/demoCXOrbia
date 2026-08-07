@@ -1,0 +1,274 @@
+name: CXOrbia C6 IAM Admin Runtime Identity Create Once V1
+
+on:
+  pull_request:
+    types: [synchronize]
+    paths:
+      - 'backend/config/c6-iam-admin-runtime-identity-create-request-v1.json'
+
+permissions:
+  contents: read
+  statuses: write
+  id-token: write
+
+concurrency:
+  group: cxorbia-c6-iam-admin-runtime-identity-create-once-v1
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  REQUEST_FILE: backend/config/c6-iam-admin-runtime-identity-create-request-v1.json
+  OUT_DIR: .tmp/c6-iam-admin-runtime-identity-create-v1
+  GCP_PROJECT_ID: cxorbia-backend-dev
+  TARGET_SA_NAME: cxorbia-c6-runner-dev
+  TARGET_SA_EMAIL: cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com
+  PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+  ADMIN_CREDENTIALS: ${{ secrets.CXORBIA_BACKEND_DEV_IAM_ADMIN || secrets.GCP_ADMIN_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV || secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV_ADMIN || secrets.GOOGLE_CLOUD_ADMIN_CREDENTIALS_CXORBIA_BACKEND_DEV || secrets.GCP_ADMIN_CREDENTIALS_CXORBIA_BACKEND_DEV || secrets.CXORBIA_GCP_ADMIN_SERVICE_ACCOUNT || secrets.GCP_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV_ADMIN || secrets.GOOGLE_CREDENTIALS_CXORBIA_BACKEND_DEV_ADMIN }}
+
+jobs:
+  create-runtime-identity:
+    name: Create isolated runtime identity only in DEV
+    if: >-
+      github.event.pull_request.number == 7 &&
+      github.event.pull_request.head.ref == 'docs-tya-v6-v71-audit' &&
+      github.event.pull_request.base.ref == 'release/cxorbia-tya-rc-20260630'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Validate exact one-shot IAM ADMIN request
+        id: request
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs');
+          const {execFileSync}=require('child_process');
+          const p=process.env.REQUEST_FILE;
+          const x=JSON.parse(fs.readFileSync(p,'utf8'));
+          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const falseKeys=['deploy','providerReads','providerWrites','skip13Execution','authReads','authWrites','hrReads','hrWrites','firestoreReads','firestoreWrites','rulesWrites','storageReads','storageWrites','hostingDeploy','cloudRunDeploy','cloudBuildWrites','merge','production','make','gemini','payments'];
+          const ok=
+            x.schemaVersion==='cxorbia.c6.iam-admin-runtime-identity-create.request.v1' &&
+            x.requestId==='c6-iam-admin-runtime-identity-create-20260806-01' &&
+            x.enabled===true && x.consumed===false && x.status==='authorized_execute_once' &&
+            x.authorizedBy==='Paula' && Number(x.allowedCreations)===1 &&
+            x.repository==='paulaosoriof86/demoCXOrbia' &&
+            x.branch==='docs-tya-v6-v71-audit' && Number(x.pullRequest)===7 &&
+            x.environment==='DEV' && x.providerProject==='cxorbia-backend-dev' &&
+            x.targetServiceAccount==='cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com' &&
+            x.sourceLockMode==='github.event.pull_request.head.sha' &&
+            x.expectedParentHeadSha===parent && head===process.env.PR_HEAD_SHA &&
+            changed.length===1 && changed[0]===p &&
+            x.scope?.createSingleServiceAccount===true &&
+            x.scope?.createKeys===false && x.scope?.assignRoles===false &&
+            x.scope?.readbackIdentity===true && x.scope?.readbackKeys===true &&
+            x.scope?.readbackDirectBindings===true && x.scope?.rollbackOnFailure===true &&
+            falseKeys.every(k=>x.safeState?.[k]===false);
+          if(!ok) throw new Error('IAM_ADMIN_RUNTIME_IDENTITY_REQUEST_INVALID');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`request_id=${x.requestId}\nsource_lock=${head}\nparent_head=${parent}\n`);
+          fs.writeFileSync(process.env.OUT_DIR+'/request-source-safe.json',JSON.stringify({requestId:x.requestId,sourceLock:head,parent,changed,target:x.targetServiceAccount,scope:x.scope,safeState:x.safeState},null,2)+'\n');
+          NODE
+
+      - name: Claim the single IAM ADMIN creation
+        id: claim
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          existing=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${PR_HEAD_SHA}/statuses" --paginate --jq '[.[] | select(.context=="cxorbia/c6-iam-admin-runtime-identity-create-v1/claim")] | length')
+          if [ "$existing" != '0' ]; then
+            echo 'claimed=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${PR_HEAD_SHA}" \
+            -f state='pending' \
+            -f context='cxorbia/c6-iam-admin-runtime-identity-create-v1/claim' \
+            -f description='CLAIMED_SINGLE_IAM_ADMIN_RUNTIME_IDENTITY_CREATION' \
+            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+          echo 'claimed=true' >> "$GITHUB_OUTPUT"
+
+      - name: Stop duplicate before Google Cloud
+        if: steps.claim.outputs.claimed != 'true'
+        run: exit 2
+
+      - name: Validate administrative credential envelope
+        id: admin
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const crypto=require('crypto');
+          const raw=process.env.ADMIN_CREDENTIALS||'';
+          if(!raw) throw new Error('ADMIN_CREDENTIAL_NOT_AVAILABLE');
+          const x=JSON.parse(raw);
+          if(x.type!=='service_account') throw new Error('ADMIN_CREDENTIAL_NOT_SERVICE_ACCOUNT');
+          if(x.project_id!=='cxorbia-backend-dev') throw new Error('ADMIN_CREDENTIAL_WRONG_PROJECT');
+          if(!x.client_email || !x.private_key) throw new Error('ADMIN_CREDENTIAL_INCOMPLETE');
+          const forbidden=[
+            'firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com',
+            '87461567267-compute@developer.gserviceaccount.com',
+            'cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com'
+          ];
+          if(forbidden.includes(x.client_email)) throw new Error('ADMIN_CREDENTIAL_IS_FORBIDDEN_IDENTITY');
+          const principalFingerprint=crypto.createHash('sha256').update(`${x.client_email}|${x.project_id}|${x.client_id||''}`).digest('hex');
+          fs.writeFileSync(process.env.OUT_DIR+'/admin-principal-source-safe.json',JSON.stringify({clientEmail:x.client_email,projectId:x.project_id,clientId:String(x.client_id||''),principalFingerprint},null,2)+'\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`client_email=${x.client_email}\nprincipal_fingerprint=${principalFingerprint}\n`);
+          NODE
+
+      - name: Authenticate administrative identity
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ env.ADMIN_CREDENTIALS }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: cxorbia-backend-dev
+
+      - name: Capture exact pre-state
+        id: prestate
+        run: |
+          set -euo pipefail
+          active=$(gcloud auth list --filter=status:ACTIVE --format='value(account)')
+          test "$active" = "${{ steps.admin.outputs.client_email }}"
+          if gcloud iam service-accounts describe "$TARGET_SA_EMAIL" --project "$GCP_PROJECT_ID" --format=json > "$OUT_DIR/preexisting-service-account.json" 2>/dev/null; then
+            echo 'existing=true' >> "$GITHUB_OUTPUT"
+            echo 'preexisting=true' > "$OUT_DIR/prestate.txt"
+          else
+            echo 'existing=false' >> "$GITHUB_OUTPUT"
+            echo 'preexisting=false' > "$OUT_DIR/prestate.txt"
+          fi
+
+      - name: Create exactly one isolated runtime service account
+        if: steps.prestate.outputs.existing == 'false'
+        run: |
+          set -euo pipefail
+          gcloud iam service-accounts create "$TARGET_SA_NAME" \
+            --project "$GCP_PROJECT_ID" \
+            --display-name 'CXOrbia C6 Direct Runner DEV isolated runtime' \
+            --description 'Technical DEV runtime identity; no provider or project roles' \
+            --quiet
+          touch "$OUT_DIR/created.marker"
+          echo 'creationCount=1' > "$OUT_DIR/creation-count.txt"
+
+      - name: Record idempotent existing state
+        if: steps.prestate.outputs.existing == 'true'
+        run: |
+          set -euo pipefail
+          echo 'creationCount=0' > "$OUT_DIR/creation-count.txt"
+          echo 'identityAlreadyExisted=true' > "$OUT_DIR/idempotency.txt"
+
+      - name: Read back identity keys and direct bindings
+        run: |
+          set -euo pipefail
+          gcloud iam service-accounts describe "$TARGET_SA_EMAIL" \
+            --project "$GCP_PROJECT_ID" --format=json > "$OUT_DIR/service-account-readback.json"
+          gcloud iam service-accounts keys list \
+            --iam-account "$TARGET_SA_EMAIL" --project "$GCP_PROJECT_ID" \
+            --format=json > "$OUT_DIR/service-account-keys.json"
+          gcloud iam service-accounts get-iam-policy "$TARGET_SA_EMAIL" \
+            --project "$GCP_PROJECT_ID" --format=json > "$OUT_DIR/service-account-iam-policy.json"
+          gcloud projects get-iam-policy "$GCP_PROJECT_ID" \
+            --format=json > "$OUT_DIR/project-iam-policy-readback.json"
+
+      - name: Validate isolation and produce fingerprint
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const crypto=require('crypto');
+          const dir=process.env.OUT_DIR;
+          const sa=JSON.parse(fs.readFileSync(dir+'/service-account-readback.json','utf8'));
+          const keys=JSON.parse(fs.readFileSync(dir+'/service-account-keys.json','utf8'));
+          const saPolicy=JSON.parse(fs.readFileSync(dir+'/service-account-iam-policy.json','utf8'));
+          const projectPolicy=JSON.parse(fs.readFileSync(dir+'/project-iam-policy-readback.json','utf8'));
+          const target=process.env.TARGET_SA_EMAIL;
+          const userKeys=(Array.isArray(keys)?keys:[]).filter(k=>String(k.keyType||'').toUpperCase()==='USER_MANAGED');
+          const saBindings=Array.isArray(saPolicy.bindings)?saPolicy.bindings:[];
+          const projectBindings=(Array.isArray(projectPolicy.bindings)?projectPolicy.bindings:[])
+            .filter(b=>(b.members||[]).includes('serviceAccount:'+target))
+            .map(b=>({role:b.role,condition:b.condition||null}));
+          const active=sa.disabled!==true && sa.email===target;
+          const pass=active && userKeys.length===0 && saBindings.length===0 && projectBindings.length===0;
+          const canonical={email:sa.email,uniqueId:String(sa.uniqueId||''),disabled:sa.disabled===true,userManagedKeys:userKeys.map(k=>k.name).sort(),serviceAccountBindings:saBindings,projectBindings};
+          const fingerprint=crypto.createHash('sha256').update(JSON.stringify(canonical)).digest('hex');
+          const result={
+            schemaVersion:'cxorbia.c6.iam-admin-runtime-identity-create.result.v1',
+            decision:pass?'PASS_C6_RUNTIME_IDENTITY_ISOLATED':'HOLD_C6_RUNTIME_IDENTITY_UNEXPECTED_STATE',
+            sourceLock:process.env.PR_HEAD_SHA,
+            target,
+            active,
+            userManagedKeyCount:userKeys.length,
+            serviceAccountBindingCount:saBindings.length,
+            projectBindingCount:projectBindings.length,
+            fingerprint,
+            canonical,
+            inheritedOrgFolderBindingsAssessed:false,
+            safeState:{deploys:0,providerReads:0,providerWrites:0,skip13Executed:false,merge:false,production:false}
+          };
+          fs.writeFileSync(dir+'/runtime-identity-validation.json',JSON.stringify(result,null,2)+'\n');
+          fs.writeFileSync(dir+'/decision.txt',result.decision+'\n');
+          if(!pass) throw new Error(result.decision);
+          NODE
+
+      - name: Roll back newly created identity on failure
+        if: failure()
+        run: |
+          set +e
+          mkdir -p "$OUT_DIR"
+          if [ -f "$OUT_DIR/created.marker" ]; then
+            gcloud iam service-accounts describe "$TARGET_SA_EMAIL" --project "$GCP_PROJECT_ID" --format=json > "$OUT_DIR/rollback-predelete-readback.json" 2>"$OUT_DIR/rollback-predelete-error.txt"
+            gcloud iam service-accounts delete "$TARGET_SA_EMAIL" --project "$GCP_PROJECT_ID" --quiet > "$OUT_DIR/rollback-delete-output.txt" 2>"$OUT_DIR/rollback-delete-error.txt"
+            delete_rc=$?
+            if gcloud iam service-accounts describe "$TARGET_SA_EMAIL" --project "$GCP_PROJECT_ID" --format=json > "$OUT_DIR/rollback-postdelete-unexpected.json" 2>/dev/null; then
+              echo 'rollback=FAILED_IDENTITY_STILL_PRESENT' > "$OUT_DIR/rollback-result.txt"
+              exit 1
+            fi
+            if [ "$delete_rc" -ne 0 ]; then
+              echo 'rollback=FAILED_DELETE_COMMAND' > "$OUT_DIR/rollback-result.txt"
+              exit 1
+            fi
+            echo 'rollback=PASS_NEW_IDENTITY_DELETED' > "$OUT_DIR/rollback-result.txt"
+          else
+            echo 'rollback=NOT_REQUIRED_NO_CREATION' > "$OUT_DIR/rollback-result.txt"
+          fi
+
+      - name: Upload terminal evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-c6-iam-admin-runtime-identity-create-v1-${{ github.run_id }}
+          path: ${{ env.OUT_DIR }}
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 14
+
+      - name: Publish terminal statuses
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB_STATE: ${{ job.status }}
+        run: |
+          set -euo pipefail
+          state=failure
+          desc='HOLD_C6_IAM_ADMIN_RUNTIME_IDENTITY_CREATE_V1'
+          if [ "$JOB_STATE" = 'success' ]; then state=success; desc='PASS_C6_IAM_ADMIN_RUNTIME_IDENTITY_CREATE_V1'; fi
+          for context in cxorbia/c6-iam-admin-runtime-identity-create-v1/overall cxorbia/c6-iam-admin-runtime-identity-create-v1/claim; do
+            gh api --method POST -H 'Accept: application/vnd.github+json' \
+              "/repos/${GITHUB_REPOSITORY}/statuses/${PR_HEAD_SHA}" \
+              -f state="$state" -f context="$context" -f description="$desc" \
+              -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+          done
