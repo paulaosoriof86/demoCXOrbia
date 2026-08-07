@@ -9,9 +9,9 @@
 1. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 2. `app/docs/SOURCE-LOCK-C6-IAM-POSTCREATE-READBACK-INCOMPLETE-STOP-RETRY-20260806.md`;
 3. `backend/contracts/c6-runtime-identity-postcreate-verification-v1.json`;
-4. `backend/config/c6-iam-runtime-identity-postcreate-readonly-request-v1.json` — consumido y deshabilitado;
-5. `app/docs/SOURCE-LOCK-C6-IAM-ADMIN-CREDENTIAL-NOT-AVAILABLE-STOP-RETRY-20260806.md`;
-6. `backend/contracts/c6-direct-runner-runtime-identity-decision-v1.json`;
+4. `backend/contracts/c6-direct-runner-runtime-identity-decision-v1.json`;
+5. `backend/config/c6-iam-runtime-identity-postcreate-readonly-request-v1.json` — consumido y deshabilitado;
+6. `app/docs/SOURCE-LOCK-C6-IAM-ADMIN-CREDENTIAL-NOT-AVAILABLE-STOP-RETRY-20260806.md`;
 7. `backend/config/c6-iam-admin-runtime-identity-create-request-v1.json` — consumido y deshabilitado;
 8. `app/docs/SOURCE-LOCK-C6-IAM-READONLY-INVENTORY-ADMIN-IDENTITY-CREATION-REQUIRED-20260806.md`;
 9. `backend/config/c6-iam-readonly-inventory-request-v1.json` — consumido y deshabilitado;
