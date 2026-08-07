@@ -1,0 +1,155 @@
+{
+  "schemaVersion": "cxorbia.c6.multi-auth-final-discriminator.evidence.v1",
+  "generatedAt": "2026-08-07T16:57:11.970Z",
+  "decision": "STOP_RETRY_C6_MULTI_AUTH_FINAL_DISCRIMINATOR_TENANT_ADJUDICATION_REQUIRED",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "authorizationSource": "current_conversation_c6_multi_auth_final_discriminator_readonly_2026-08-07",
+  "target": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "profileFingerprint": "7cc28c78de9bfda01d14",
+    "candidateFingerprints": [
+      "4e6d26551d11db444bd0",
+      "9b2b7ca1bd72c1301d29"
+    ]
+  },
+  "execution": {
+    "sourceHead": "f6c18173c028a3f04e08c16b027a211ce8cbc526",
+    "requestCommitSha": "1a2c2f95334ae1869d8ba8d7f665f31c080ad4e2",
+    "workflowRunId": 31199988897,
+    "workflowJobId": 92937409808,
+    "artifactId": 9002409950,
+    "artifactDigest": "sha256:0387c7323cf16b50f8d0596fff7bb19bec4aba94e830b2d998761041f5d723e5",
+    "technicalConclusion": "success",
+    "secondAttempt": 0
+  },
+  "providerRead": {
+    "authListPages": 1,
+    "authUsersScannedForFingerprintOnly": 110,
+    "targetCandidatesInspected": 2,
+    "nonTargetAttributesInspected": false,
+    "firestoreReads": 0,
+    "membershipReads": 0,
+    "hrReads": 0,
+    "storageReads": 0,
+    "legacyCredentialReads": 0
+  },
+  "candidateVectors": [
+    {
+      "candidateFingerprint": "4e6d26551d11db444bd0",
+      "tenantAllowed": true,
+      "projectAssigned": true,
+      "roleShopper": true,
+      "passwordProvider": true,
+      "shopperIdPresent": true,
+      "shopperIdValueFingerprint": "37eddd3b0db728c2b0b565b3",
+      "namespaceShopper": false,
+      "inspectedAllowlistedClaimKeys": [
+        "projectId",
+        "projectIds",
+        "role",
+        "shopperId",
+        "tenantId"
+      ],
+      "sourceSafeMarkerFingerprintCount": 0,
+      "decisiveMatches": [],
+      "decisiveMatchCount": 0
+    },
+    {
+      "candidateFingerprint": "9b2b7ca1bd72c1301d29",
+      "tenantAllowed": true,
+      "projectAssigned": true,
+      "roleShopper": true,
+      "passwordProvider": true,
+      "shopperIdPresent": true,
+      "shopperIdValueFingerprint": "37eddd3b0db728c2b0b565b3",
+      "namespaceShopper": false,
+      "inspectedAllowlistedClaimKeys": [
+        "projectId",
+        "projectIds",
+        "role",
+        "shopperId",
+        "tenantId"
+      ],
+      "sourceSafeMarkerFingerprintCount": 0,
+      "decisiveMatches": [],
+      "decisiveMatchCount": 0
+    }
+  ],
+  "discriminator": {
+    "forbiddenSelectorsUsed": false,
+    "bothCandidatesRetainExpectedTechnicalScope": true,
+    "bothCandidatesShareSameShopperIdClaimFingerprint": true,
+    "decisiveCandidateCount": 0,
+    "keeperCandidateFingerprint": null,
+    "accessToRetireCandidateFingerprint": null,
+    "reason": "Neither target candidate contains any allowlisted source, batch, migration or import marker capable of proving a unique canonical anchor. Both expose the same allowlisted claim shape projectId/projectIds/role/shopperId/tenantId and remain technically equivalent for the authorized discriminator.",
+    "tenantAdjudicationRequired": true
+  },
+  "freeze": {
+    "rows": 340,
+    "uniqueRows": 340,
+    "operationCounts": {
+      "CREATE_AUTH": 81,
+      "UPDATE_AUTH": 46,
+      "NO_OP": 73,
+      "HOLD": 0,
+      "PRESERVE_NO_AUTH": 140
+    },
+    "digest": "6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b",
+    "modified": false,
+    "executed": false
+  },
+  "provisionalReconciliationPlan": {
+    "rows": 340,
+    "uniqueRows": 340,
+    "onePrimaryOperationPerProfile": true,
+    "operationCounts": {
+      "CREATE_AUTH": 81,
+      "UPDATE_AUTH": 46,
+      "NO_OP": 80,
+      "HOLD": 1,
+      "PRESERVE_NO_AUTH": 132
+    },
+    "holdProfiles": [
+      "7cc28c78de9bfda01d14"
+    ],
+    "targetHoldZeroSatisfied": false,
+    "finalPlanProduced": false,
+    "executable": false
+  },
+  "failClose": {
+    "requestConsumeCommit": "f587489c0d025ab47085a1bc7074e7345d891f0b",
+    "workflowRemovalCommit": "55c9777698594815ef18bb380a0f0fad79f6f4b8",
+    "requestEnabled": false,
+    "requestConsumed": true,
+    "allowedExecutions": 0,
+    "workflowPresent": false,
+    "automaticRetry": false
+  },
+  "safety": {
+    "providerWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "claimsWrites": 0,
+    "membershipWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "cloudBuilds": 0,
+    "cloudRunDeploys": 0,
+    "hostingDeploys": 0,
+    "merge": false,
+    "production": false,
+    "rawUidExported": false,
+    "rawNameExported": false,
+    "rawEmailExported": false,
+    "rawPasswordExported": false,
+    "rawShopperIdExported": false,
+    "rawClaimsExported": false
+  },
+  "nextGate": "EXPLICIT_TENANT_ADJUDICATION_OF_KEEPER_BY_CANDIDATE_FINGERPRINT_ONLY"
+}
