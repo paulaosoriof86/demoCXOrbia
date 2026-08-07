@@ -5,6 +5,8 @@
   "consumed": false,
   "status": "authorized_execute_once",
   "issuedAt": "2026-08-06T18:59:30-06:00",
+  "transportRearmedAt": "2026-08-06T19:00:30-06:00",
+  "transportCorrection": "removed_large_pr_path_filter_before_any_provider_execution",
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_c6_iam_visibility_temporary_security_reviewer_2026-08-06",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -16,7 +18,7 @@
   "reviewerServiceAccount": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com",
   "temporaryRole": "roles/iam.securityReviewer",
   "sourceLockMode": "github.event.pull_request.head.sha",
-  "expectedParentHeadSha": "3a1bb800950e00ac5caa0482afa26d69429d7047",
+  "expectedParentHeadSha": "338dd13d73920b372d005092afd2cce6375152d9",
   "allowedExecutions": 1,
   "allowedIamWrites": 2,
   "scope": {
