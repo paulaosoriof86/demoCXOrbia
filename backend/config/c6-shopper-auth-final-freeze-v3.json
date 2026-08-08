@@ -38,7 +38,7 @@
     "from": "UPDATE_AUTH",
     "to": "CREATE_AUTH",
     "changesAfter": {"email": false, "password": false, "claims": false},
-    "basis": "TARGET_SPECIFIC_EXISTING_AUTH_CANDIDATE_COUNT_0_AFTER_EXACT_LINEAGE_PASS",
+    "basis": "TARGET_SPECIFIC_EXISTING_AUTH_CANDIDATE_COUNT_0_AFTER_LINEAGE_PASS",
     "peerMustRemainUnchanged": "a8dd7db89a02ff180674"
   },
   "finalPlan": {
