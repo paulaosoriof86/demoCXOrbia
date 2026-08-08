@@ -39,6 +39,7 @@ function rootfix(oldPlan,evidence,freeze){
   ensure(freeze?.schemaVersion==='cxorbia.c6.shopper-auth-final-freeze.v3','FREEZE_SCHEMA');
   ensure(freeze?.rootCauseEvidence?.targetSpecificExistingAuthCandidateCount===0,'FREEZE_TARGET_ZERO');
   ensure(freeze?.transform?.profileFingerprint===TARGET&&freeze?.transform?.peerMustRemainUnchanged===PEER,'FREEZE_TRANSFORM');
+  ensure(freeze?.transform?.basis==='TARGET_SPECIFIC_EXISTING_AUTH_CANDIDATE_COUNT_0_AFTER_LINEAGE_PASS','FREEZE_CANONICAL_ANNOTATION');
 
   const next=structuredClone(oldPlan);
   next.schemaVersion='cxorbia.c6.shopper-auth-final-plan.v3';
@@ -51,7 +52,7 @@ function rootfix(oldPlan,evidence,freeze){
   ensure(peerBefore?.primary==='UPDATE_AUTH','PEER_OLD_CLASS');
   target.primary='CREATE_AUTH';
   target.changes={email:false,password:false,claims:false};
-  target.rootCauseReclassification='TARGET_SPECIFIC_EXISTING_AUTH_CANDIDATE_COUNT_0_AFTER_EXACT_LINEAGE_PASS';
+  target.rootCauseReclassification='TARGET_SPECIFIC_EXISTING_AUTH_CANDIDATE_COUNT_0_AFTER_LINEAGE_PASS';
   ensure(same(next.rows.find(r=>r.profileFp===PEER),peerBefore),'PEER_MUTATED');
 
   const changed=oldPlan.rows.map((row,index)=>same(row,next.rows[index])?null:row.profileFp).filter(Boolean);
@@ -77,8 +78,9 @@ function selfTest(){
     {profileFp:TARGET,primary:'UPDATE_AUTH',changes:{email:true,password:true,claims:true},targetLoginFp:'bd8d7019d612b4421366'},
     {profileFp:PEER,primary:'UPDATE_AUTH',changes:{email:false,password:true,claims:false}}
   ];
-  const clone=structuredClone(rows);clone[0].primary='CREATE_AUTH';clone[0].changes={email:false,password:false,claims:false};
+  const clone=structuredClone(rows);clone[0].primary='CREATE_AUTH';clone[0].changes={email:false,password:false,claims:false};clone[0].rootCauseReclassification='TARGET_SPECIFIC_EXISTING_AUTH_CANDIDATE_COUNT_0_AFTER_LINEAGE_PASS';
   ensure(clone[0].primary==='CREATE_AUTH'&&clone[1].primary==='UPDATE_AUTH','SELFTEST_RECLASSIFICATION');
+  ensure(clone[0].rootCauseReclassification==='TARGET_SPECIFIC_EXISTING_AUTH_CANDIDATE_COUNT_0_AFTER_LINEAGE_PASS','SELFTEST_CANONICAL_ANNOTATION');
   ensure(rows[0].primary==='UPDATE_AUTH','SELFTEST_INPUT_MUTATED');
   console.log('PASS_C6_AUTH_PRINCIPAL_UNIQUENESS_ROOTFIX_SELFTEST');
 }
@@ -96,7 +98,7 @@ if(process.argv.includes('--self-test')){
   const freeze=JSON.parse(fs.readFileSync(freezePath,'utf8'));
   const plan=rootfix(oldPlan,evidence,freeze);
   fs.writeFileSync(path.join(outDir,'final-plan-v3-source-safe.json'),JSON.stringify(plan,null,2)+'\n','utf8');
-  const sourceSafe={schemaVersion:'cxorbia.c6.auth-principal-uniqueness-rootfix.source-only.evidence.v1',decision:'PASS_C6_AUTH_PRINCIPAL_UNIQUENESS_ROOTFIX_SOURCE_ONLY',rows:plan.plan.rows,uniqueRows:plan.plan.uniqueRows,operationCounts:plan.plan.operationCounts,subchangeCounts:plan.plan.subchangeCounts,digest:plan.plan.sourceSafeRowsDigestSha256,expectedAuthUsersBefore:plan.plan.expectedAuthUsersBefore,expectedAuthUsersAfter:plan.plan.expectedAuthUsersAfter,targetReclassified:true,peerPreserved:true,rootCause:'CROSS_ROW_EXISTING_AUTH_PRINCIPAL_ALIAS_IN_OLD_PREWRITE',providerReads:0,providerWrites:0,authWrites:0,firestoreWrites:0,hrWrites:0,merge:false,production:false};
+  const sourceSafe={schemaVersion:'cxorbia.c6.auth-principal-uniqueness-rootfix.source-only.evidence.v1',decision:'PASS_C6_AUTH_PRINCIPAL_UNIQUENESS_ROOTFIX_SOURCE_ONLY',rows:plan.plan.rows,uniqueRows:plan.plan.uniqueRows,operationCounts:plan.plan.operationCounts,subchangeCounts:plan.plan.subchangeCounts,digest:plan.plan.sourceSafeRowsDigestSha256,expectedAuthUsersBefore:plan.plan.expectedAuthUsersBefore,expectedAuthUsersAfter:plan.plan.expectedAuthUsersAfter,targetReclassified:true,peerPreserved:true,canonicalAnnotation:'TARGET_SPECIFIC_EXISTING_AUTH_CANDIDATE_COUNT_0_AFTER_LINEAGE_PASS',rootCause:'CROSS_ROW_EXISTING_AUTH_PRINCIPAL_ALIAS_IN_OLD_PREWRITE',providerReads:0,providerWrites:0,authWrites:0,firestoreWrites:0,hrWrites:0,merge:false,production:false};
   fs.writeFileSync(path.join(outDir,'source-phase-evidence.json'),JSON.stringify(sourceSafe,null,2)+'\n','utf8');
   fs.writeFileSync(path.join(outDir,'source-phase-decision.txt'),sourceSafe.decision+'\n','utf8');
   console.log(sourceSafe.decision);
