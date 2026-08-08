@@ -16,16 +16,21 @@
 8. `tools/qa/cxorbia-c6-auth-principal-uniqueness-rootfix-source-only.mjs`;
 9. `tools/qa/cxorbia-c6-auth-activation-dev-v2.mjs`;
 10. `backend/config/c6-auth-principal-uniqueness-rootfix-activation-dev-request-v1.json` — consumido/deshabilitado;
-11. `backend/config/c6-shopper-auth-final-freeze-v2.json` — plan previo preservado, no ejecutable;
-12. `backend/contracts/c6-auth-activation-dev-v1.json` — contrato previo obsoleto para ejecución;
-13. `app/docs/SOURCE-LOCK-C6-MULTI-AUTH-FINAL-DISCRIMINATOR-TENANT-ADJUDICATION-STOP-RETRY-20260807.md`;
-14. `backend/config/c6-skip13-access-reconciliation-overlay-v1.json`;
-15. `backend/contracts/c6-skip13-auth-access-adjudication-v2.json`;
-16. `app/docs/SOURCE-LOCK-C6-DIRECT-RUNNER-DEV-DEPLOY-PASS-20260807.md`;
-17. `backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json`;
-18. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json`;
-19. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-20. addenda vigentes y PR #7.
+11. `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-AUTH-PRINCIPAL-UNIQUENESS-PHASE1-DIGEST-HOLD-20260807.md`;
+12. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-AUTH-PRINCIPAL-UNIQUENESS-PHASE1-DIGEST-HOLD-20260807.md`;
+13. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-AUTH-PRINCIPAL-UNIQUENESS-PHASE1-DIGEST-HOLD-20260807.md`;
+14. `app/docs/ACADEMIA-ADDENDUM-C6-AUTH-PRINCIPAL-UNIQUENESS-PHASE1-DIGEST-HOLD-20260807.md`;
+15. `app/docs/PHASE-A-TRACKER-ADDENDUM-C6-AUTH-PRINCIPAL-UNIQUENESS-PHASE1-DIGEST-HOLD-20260807.md`;
+16. `backend/config/c6-shopper-auth-final-freeze-v2.json` — plan previo preservado, no ejecutable;
+17. `backend/contracts/c6-auth-activation-dev-v1.json` — contrato previo obsoleto para ejecución;
+18. `app/docs/SOURCE-LOCK-C6-MULTI-AUTH-FINAL-DISCRIMINATOR-TENANT-ADJUDICATION-STOP-RETRY-20260807.md`;
+19. `backend/config/c6-skip13-access-reconciliation-overlay-v1.json`;
+20. `backend/contracts/c6-skip13-auth-access-adjudication-v2.json`;
+21. `app/docs/SOURCE-LOCK-C6-DIRECT-RUNNER-DEV-DEPLOY-PASS-20260807.md`;
+22. `backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json`;
+23. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json`;
+24. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+25. addenda vigentes y PR #7.
 
 ## 2. Estado rector
 
