@@ -51,6 +51,8 @@ Cuatro runs fallaron antes de preparar provider por gates auxiliares del harness
 
 El run provider terminal `31236820249` produjo `PASS_C6_AUTH_UPDATE_UNIVERSE_BATCH_REVALIDATION_PLAN_V4`; el workflow global quedó failure únicamente porque un regex posterior confundió `subchangeCounts.email=2` con correo crudo. El artefacto fue validado estructuralmente offline sin raw UID/shopperId/passwordHash/passwordSalt/email value ni strings sensibles; no se repitió provider.
 
+Después del cierre hubo un intento documental `GitHub.update_file` con SHA obsoleto sobre este mismo addendum; GitHub respondió HTTP 409. Fue un no-op: no mutó repo, provider ni estado funcional. Se releyó el blob vigente antes de esta actualización correcta.
+
 ## Seguridad
 
 ```text
@@ -74,3 +76,11 @@ production=false
 - **Claude/prototipo:** sin cambio frontend; no tocar módulos UI.
 - **Academia:** documentar cambio de contrato Auth y criterio antibucles cuando corresponda actualizar material técnico.
 - **Sin impacto Claude:** ejecución provider read-only y congelamiento del plan v4.
+
+## Cierre de bloque
+
+- plan v4 congelado y documentado;
+- índice y checkpoint avanzados a v4;
+- PR #7 debe reflejar este mismo estado y permanecer abierto/draft/sin merge;
+- pendiente real: `C6 AUTH PLAN V4 PREWRITE + ACTIVATION DEV` bajo autorización separada;
+- circuit breaker: no volver a clasificar los 45 UPDATE del plan v3 salvo evidencia nueva que contradiga el freeze v4.
