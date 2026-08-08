@@ -184,7 +184,9 @@ production=false
 
 `C6 AUTH PLAN V4 PREWRITE + ACTIVATION DEV` bajo nueva autorización.
 
-Debe usar exclusivamente freeze v4/digest `c0c31fad...93ba4`, validar 118 CREATE y 9 UPDATE, rollback exacto para 8 password updates, snapshot cifrado antes del primer Auth write, principal/candidate uniqueness, colisiones, duplicate disable-only adjudicado y población 110->228. Solo con PREWRITE PASS ejecutar Auth DEV, readback y rollback dry-run.
+Debe usar exclusivamente freeze v4/digest `c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4`, validar 118 CREATE y 9 UPDATE, rollback exacto para los 8 password updates existentes, snapshot cifrado antes del primer Auth write, principal/candidate uniqueness, colisiones, duplicate disable-only adjudicado y población 110->228. Solo con PREWRITE PASS ejecutar Auth DEV, readback y rollback dry-run.
+
+**Circuit breaker:** cualquier nueva investigación de los 45 UPDATE del plan v3, SKIP13, multi-Auth o lineage `ac93...` es desvío salvo evidencia reproducible nueva que contradiga el freeze v4. El siguiente bloque no debe volver a reconstruir identidades; debe consumir directamente el plan v4.
 
 ## 9. Phase A preservada
 
