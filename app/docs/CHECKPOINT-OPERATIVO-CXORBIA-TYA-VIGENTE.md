@@ -1,22 +1,22 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-07  
-**Estado:** `C6_AUTH_PRINCIPAL_UNIQUENESS_ROOTFIX_STATIC_PASS__PHASE1_NEW_DIGEST_STOP_RETRY__ZERO_PROVIDER__ZERO_WRITES__AUTH_NOT_EXECUTED__NO_PRODUCTION`
+**Estado:** `C6_AUTH_ROOTFIX_DIGEST_CANONICALIZATION_PASS__PLAN_V3_340_HOLD0__PHASE2_PREWRITE_STOP_UPDATE_CANDIDATE_DRIFT__SYSTEMIC_SUFFIX_COLLISION_RISK_36__ZERO_AUTH_WRITES__NO_PRODUCTION`
 
 ## 1. Control
 
 - repo: `paulaosoriof86/demoCXOrbia`;
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
-- source lock vigente: `app/docs/SOURCE-LOCK-C6-AUTH-PRINCIPAL-UNIQUENESS-PHASE1-DIGEST-STOP-RETRY-20260807.md`;
-- evidencia terminal: `app/docs/evidence/C6-AUTH-PRINCIPAL-UNIQUENESS-ROOTFIX-ACTIVATION-PHASE1-DIGEST-STOP-RETRY-20260807.json`;
+- source lock vigente: `app/docs/SOURCE-LOCK-C6-AUTH-DIGEST-PASS-PHASE2-PREWRITE-SYSTEMIC-UPDATE-RISK-STOP-RETRY-20260807.md`;
+- evidencia sistémica: `app/docs/evidence/C6-AUTH-ACTIVATION-V2-PREWRITE-SYSTEMIC-SUFFIX-COLLISION-RISK-20260807.json`;
 - request ejecutable: ninguno;
-- workflow one-shot macro: eliminado;
+- workflows one-shot del bloque: retirados;
 - producción: intacta;
 - Auth ejecutado: no;
 - write boundary alcanzado: no.
 
-## 2. Identidad cerrada
+## 2. Identidad ya cerrada
 
 ```text
 SKIP13=closed 13/13
@@ -24,110 +24,61 @@ multiAuthProfile=7cc28c78de9bfda01d14
 keeper=4e6d26551d11db444bd0
 duplicateAccessToRetire=9b2b7ca1bd72c1301d29
 retirementMode=DISABLE_ONLY_NO_DELETE
-targetLineage=PASS profile+visit
+targetLineage(ac93)=PASS profile+visit
 crossRowPrincipalAliasRootCause=true
 ```
 
-No reabrir SKIP13, multi-Auth ni lineage.
+No reabrir SKIP13, multi-Auth ni lineage de `ac93d90d9e41512acdcd`.
 
-## 3. Plan previo preservado y no ejecutable
+## 3. FASE 1 — canonicalización digest source-only
+
+Canonical annotation rector:
+
+```text
+TARGET_SPECIFIC_EXISTING_AUTH_CANDIDATE_COUNT_0_AFTER_LINEAGE_PASS
+```
+
+Se alinearon exclusivamente:
+
+- `tools/qa/cxorbia-c6-auth-principal-uniqueness-rootfix-source-only.mjs`;
+- `backend/config/c6-shopper-auth-final-freeze-v3.json`.
+
+### Incidencia de harness v1
+
+```text
+runId=31234567894
+jobId=93044626041
+classification=SOURCE_ONLY_HARNESS_MISSING_FIREBASE_ADMIN_DEPENDENCY
+requestValidation=PASS
+rootfixSelfTest=PASS
+materializationStarted=false
+providerCredentialPrepared=false
+providerReads=0
+providerWrites=0
+AuthWrites=0
+```
+
+El workflow source-only intentó importar `tools/qa/cxorbia-c6-auth-activation-dev-v2.mjs` para su self-test sin haber instalado `firebase-admin`. No se cruzó provider. Request v1 consumido y workflow retirado.
+
+### FASE 1 corregida — PASS
+
+```text
+requestId=c6-auth-rootfix-digest-canonicalization-source-only-20260807-02
+runId=31234681163
+jobId=93044913507
+artifactId=9014970238
+artifactDigest=sha256:3a91b60612b67198b1109eaae53deb66720d1614d673e361cc657822f9317395
+decision=PASS_C6_AUTH_PRINCIPAL_UNIQUENESS_ROOTFIX_SOURCE_ONLY
+providerReads=0
+providerWrites=0
+AuthWrites=0
+```
+
+Plan v3 canónico:
 
 ```text
 rows=340
 uniqueRows=340
-CREATE_AUTH=81
-UPDATE_AUTH=46
-NO_OP=81
-HOLD=0
-PRESERVE_NO_AUTH=132
-emailChanges=39
-passwordChanges=14
-claimsChanges=38
-rowsDigest=68e26a5217957333d256f2cb547faf3e1eef74e2c789bfd85454d42dfd472dc3
-AuthExecuted=false
-status=FROZEN_BUT_NOT_EXECUTABLE_PENDING_PRINCIPAL_UNIQUENESS_ROOT_FIX
-```
-
-## 4. Rootfix materializado en source
-
-Archivos vigentes:
-
-- `backend/config/c6-shopper-auth-final-freeze-v3.json`;
-- `backend/contracts/c6-auth-activation-dev-v2.json`;
-- `tools/qa/cxorbia-c6-auth-principal-uniqueness-rootfix-source-only.mjs`;
-- `tools/qa/cxorbia-c6-auth-activation-dev-v2.mjs`.
-
-Correcciones estructurales:
-
-1. principal Auth existente no puede pertenecer a dos profile rows;
-2. candidate fingerprint tampoco puede reutilizarse entre profiles;
-3. selector de Auth usa solo claims exactos, credentials mapeados target-specific y targetLogin único; `baseLogin` compartido queda fuera como selector independiente;
-4. `ac93...` solo puede pasar a CREATE_AUTH por evidencia terminal candidateCount=0 + targetLogin único;
-5. `a8dd...` se preserva como peer dueño del login base;
-6. rollback exacto distingue `PROVIDER_HASH_CONFIG_EXACT` de `LEGACY_SHA256_ROUNDS1_SALTLESS_EXACT`.
-
-## 5. FASE 1 terminal
-
-```text
-requestId=c6-auth-principal-uniqueness-rootfix-activation-dev-20260807-01
-requestCommit=18c988ff3aa8cc59aa2fa0476b0647fd051ed30c
-runId=31228513906
-jobId=93027465078
-requestValidation=PASS
-rootfixSyntax=PASS
-activationV2Syntax=PASS
-rootfixSelfTest=PASS
-activationV2SelfTest=PASS
-staticNoLoopGate=PASS
-oldFinalPlanArtifactDownload=PASS
-materialization=FAIL_NEW_DIGEST
-phase1Pass=false
-```
-
-Causa:
-
-```text
-freezeAnnotation=TARGET_SPECIFIC_EXISTING_AUTH_CANDIDATE_COUNT_0_AFTER_LINEAGE_PASS
-transformAnnotation=TARGET_SPECIFIC_EXISTING_AUTH_CANDIDATE_COUNT_0_AFTER_EXACT_LINEAGE_PASS
-classification=SOURCE_SAFE_DIGEST_ANNOTATION_STRING_MISMATCH
-```
-
-No es drift provider ni nuevo problema de identidad. El digest incluye ese campo audit-only y el guard cerró correctamente.
-
-## 6. FASE 2 no inició
-
-```text
-credentialPrepared=false
-providerAttempts=0
-providerReads=0
-AuthReads=0
-FirestoreReads=0
-HRReads=0
-writeBoundaryEntered=false
-AuthCreates=0
-AuthUpdates=0
-duplicateDisables=0
-providerWrites=0
-```
-
-Se obedeció `FASE 1 no PASS => STOP_RETRY con cero provider`.
-
-## 7. Fail-close
-
-```text
-requestEnabled=false
-requestConsumed=true
-allowedExecutions=0
-requestConsumeCommit=781b5a0be084178cc0caf093715723b964a6be7c
-oneShotWorkflowPresent=false
-workflowRemovalCommit=3ec94117525a3cc1285cbf459805411937f0d5be
-secondProviderAttempt=false
-```
-
-## 8. Valores v3 propuestos, todavía no ejecutables
-
-```text
-rows=340
 CREATE_AUTH=82
 UPDATE_AUTH=45
 NO_OP=81
@@ -138,28 +89,115 @@ passwordChanges=13
 claimsChanges=37
 expectedAuthUsersBefore=110
 expectedAuthUsersAfter=192
+rowsDigest=7b92fa73946e74ec4058bcdcbcfca25fe90e0504db6b6b22e797fbad066bd749
 ```
 
-No usar estos counts para ejecutar hasta que FASE 1 cierre PASS con digest canónico.
+`ac93d90d9e41512acdcd` quedó materializado source-only como `CREATE_AUTH`. El peer `a8dd7db89a02ff180674` permaneció `UPDATE_AUTH`.
 
-## 9. Documentación acumulativa
+## 4. FASE 2 — único PREWRITE provider attempt
 
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-AUTH-PRINCIPAL-UNIQUENESS-PHASE1-DIGEST-HOLD-20260807.md`;
-- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-AUTH-PRINCIPAL-UNIQUENESS-PHASE1-DIGEST-HOLD-20260807.md`;
-- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-AUTH-PRINCIPAL-UNIQUENESS-PHASE1-DIGEST-HOLD-20260807.md`;
-- `app/docs/ACADEMIA-ADDENDUM-C6-AUTH-PRINCIPAL-UNIQUENESS-PHASE1-DIGEST-HOLD-20260807.md`;
-- `app/docs/PHASE-A-TRACKER-ADDENDUM-C6-AUTH-PRINCIPAL-UNIQUENESS-PHASE1-DIGEST-HOLD-20260807.md`.
+```text
+requestId=c6-auth-principal-uniqueness-activation-dev-phase2-20260807-01
+requestCommit=d27723b2d5eb1506d8e11acdd1ac97d18cc98422
+runId=31234830218
+jobId=93045302944
+artifactId=9015012896
+artifactDigest=sha256:a282b089e7bbdd1760e1d426fe837b9992857e3951e3efa837719ab9917dd68f
+workflowConclusion=success
+providerAttempts=1
+secondProviderAttempt=false
+```
 
-## 10. Próximo bloque exacto
+Pasaron request gate, artifact gate, activation-v2 self-test y static no-loop gate. Luego el PREWRITE se detuvo con:
 
-Canonicalización source-only del annotation/digest y reejecución de FASE 1. Solo con PASS emitir un request nuevo/no solapado para FASE 2 PREWRITE + Auth Activation DEV. No repetir lectura de lineage ni password target.
+```text
+decision=STOP_RETRY_C6_AUTH_ACTIVATION_DEV_V2_PREWRITE
+blocker=UPDATE_AUTH_AUTH_CANDIDATE_DRIFT:19f2a621b1b350db911b:0
+prewritePass=false
+writeBoundaryEntered=false
+AuthCreates=0
+AuthUpdates=0
+duplicateDisables=0
+providerWriteCalls=0
+```
 
-## 11. Phase A preservada y seguridad
+No hubo readback ni rollback dry-run porque no se alcanzó el write boundary. No hubo Auth writes.
+
+## 5. Hallazgo sistémico antibucles
+
+La fila `19f2a621b1b350db911b` es miembro suffixado de un grupo de dos perfiles que comparte `baseLoginFp=bff198e33dfa528bdaec`; su peer `04639cf5545a0941e5d5` conserva el login base y actualmente es `NO_OP`.
+
+La revisión source-only del universo congelado muestra:
+
+```text
+old suffix-applied UPDATE rows sharing baseLogin with exactly one unsuffixed peer=37
+already reclassified ac93...=1
+remaining current UPDATE rows in same structural risk class=36
+peer primary NO_OP=32
+peer primary UPDATE_AUTH=4
+```
+
+Clasificación:
+
+```text
+SYSTEMIC_SUFFIXED_UPDATE_SHARED_BASELOGIN_ALIAS_RISK
+```
+
+No se afirma que las 36 carezcan de Auth propio. Sí se considera demostrado que continuar resolviendo un perfil por vez puede repetir el mismo defecto y producir otro bucle. La siguiente revalidación debe cubrir las 45 `UPDATE_AUTH` actuales en un solo universo antes de volver a mutar el plan.
+
+## 6. Fail-close
+
+```text
+sourceRequestV1=consumed/disabled
+sourceRequestV2=consumed/disabled
+phase2Request=consumed/disabled
+sourceOneShotWorkflowsPresent=false
+phase2OneShotWorkflowPresent=false
+phase2ProviderAttempts=1
+secondProviderAttempt=false
+writeBoundaryEntered=false
+AuthCreates=0
+AuthUpdates=0
+duplicateDisables=0
+providerWriteCalls=0
+```
+
+No existe autorización latente ni workflow one-shot residual del bloque.
+
+## 7. Documentación acumulativa
+
+- `app/docs/SOURCE-LOCK-C6-AUTH-DIGEST-PASS-PHASE2-PREWRITE-SYSTEMIC-UPDATE-RISK-STOP-RETRY-20260807.md`;
+- `app/docs/evidence/C6-AUTH-ACTIVATION-V2-PREWRITE-SYSTEMIC-SUFFIX-COLLISION-RISK-20260807.json`;
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-AUTH-DIGEST-PASS-PHASE2-SYSTEMIC-UPDATE-RISK-20260807.md`;
+- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-AUTH-DIGEST-PASS-PHASE2-SYSTEMIC-UPDATE-RISK-20260807.md`;
+- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-AUTH-DIGEST-PASS-PHASE2-SYSTEMIC-UPDATE-RISK-20260807.md`;
+- `app/docs/ACADEMIA-ADDENDUM-C6-AUTH-DIGEST-PASS-PHASE2-SYSTEMIC-UPDATE-RISK-20260807.md`;
+- `app/docs/PHASE-A-TRACKER-ADDENDUM-C6-AUTH-DIGEST-PASS-PHASE2-SYSTEMIC-UPDATE-RISK-20260807.md`.
+
+## 8. Próximo bloque exacto
+
+`C6 AUTH UPDATE-UNIVERSE BATCH REVALIDATION + PLAN REBUILD`.
+
+Debe:
+
+1. tomar las 45 filas `UPDATE_AUTH` del plan v3;
+2. resolver todas en un único provider attempt read-only con anclas target-specific;
+3. tratar `baseLogin` compartido solo como señal de colisión, nunca como selector independiente;
+4. clasificar candidateCount `0/1/>1` para las 45 antes de alterar una sola fila;
+5. exigir global principal/candidate uniqueness;
+6. incluir explícitamente las 36 filas suffixadas del riesgo sistémico;
+7. reconstruir source-only las 340 filas una sola vez a partir de la clasificación completa;
+8. recalcular counts, subchanges, expectedAuth population y digest una sola vez;
+9. congelar el plan resultante antes de cualquier nuevo PREWRITE/Auth write.
+
+No Auth writes en ese próximo bloque. No volver a lineage, SKIP13, multi-Auth ni password target bajo el plan viejo.
+
+## 9. Phase A preservada y seguridad
 
 Frontend acumulativo, Login, `CX.data`, HR histórico, shoppers, postulaciones, certificaciones, visitas, liquidaciones/pagos, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto, sincronización HR/plataforma y Academia permanecen preservados.
 
 ```text
-providerWrites=0
+AuthExecuted=false
 AuthWrites=0
 FirestoreWrites=0
 membershipWrites=0
