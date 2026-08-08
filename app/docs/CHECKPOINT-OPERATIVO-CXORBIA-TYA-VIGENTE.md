@@ -9,6 +9,7 @@
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
 - source lock vigente: `app/docs/SOURCE-LOCK-C6-AUTH-PRINCIPAL-UNIQUENESS-PHASE1-DIGEST-STOP-RETRY-20260807.md`;
+- evidencia terminal: `app/docs/evidence/C6-AUTH-PRINCIPAL-UNIQUENESS-ROOTFIX-ACTIVATION-PHASE1-DIGEST-STOP-RETRY-20260807.json`;
 - request ejecutable: ninguno;
 - workflow one-shot macro: eliminado;
 - producción: intacta;
@@ -141,11 +142,19 @@ expectedAuthUsersAfter=192
 
 No usar estos counts para ejecutar hasta que FASE 1 cierre PASS con digest canónico.
 
-## 9. Próximo bloque exacto
+## 9. Documentación acumulativa
+
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-AUTH-PRINCIPAL-UNIQUENESS-PHASE1-DIGEST-HOLD-20260807.md`;
+- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-AUTH-PRINCIPAL-UNIQUENESS-PHASE1-DIGEST-HOLD-20260807.md`;
+- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-AUTH-PRINCIPAL-UNIQUENESS-PHASE1-DIGEST-HOLD-20260807.md`;
+- `app/docs/ACADEMIA-ADDENDUM-C6-AUTH-PRINCIPAL-UNIQUENESS-PHASE1-DIGEST-HOLD-20260807.md`;
+- `app/docs/PHASE-A-TRACKER-ADDENDUM-C6-AUTH-PRINCIPAL-UNIQUENESS-PHASE1-DIGEST-HOLD-20260807.md`.
+
+## 10. Próximo bloque exacto
 
 Canonicalización source-only del annotation/digest y reejecución de FASE 1. Solo con PASS emitir un request nuevo/no solapado para FASE 2 PREWRITE + Auth Activation DEV. No repetir lectura de lineage ni password target.
 
-## 10. Phase A preservada y seguridad
+## 11. Phase A preservada y seguridad
 
 Frontend acumulativo, Login, `CX.data`, HR histórico, shoppers, postulaciones, certificaciones, visitas, liquidaciones/pagos, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto, sincronización HR/plataforma y Academia permanecen preservados.
 
