@@ -1,9 +1,10 @@
 {
   "schemaVersion": "cxorbia.c6.auth-update-universe-batch-revalidation.request.v1",
   "requestId": "c6-auth-update-universe-batch-revalidation-20260807-03",
-  "enabled": true,
-  "consumed": false,
-  "allowedExecutions": 1,
+  "enabled": false,
+  "consumed": true,
+  "status": "consumed_pre_provider_filtered_risk_list_shape_gate",
+  "allowedExecutions": 0,
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-07_c6_auth_update_universe_batch_revalidation_plan_rebuild",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -33,6 +34,20 @@
       "providerWrites": 0
     }
   ],
+  "terminalAttempt": {
+    "runId": 31236374380,
+    "jobId": 93049503508,
+    "classification": "PRE_PROVIDER_FILTERED_RISK_LIST_SHAPE_GATE_MISMATCH",
+    "requestGatePass": true,
+    "selfTestPass": true,
+    "staticReadOnlyGatePass": true,
+    "canonicalPlanDownloadPass": true,
+    "providerCredentialPrepared": false,
+    "providerAttempts": 0,
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0
+  },
   "inputPlanRunId": 31234681163,
   "inputPlanArtifactId": 9014970238,
   "inputPlanDigest": "7b92fa73946e74ec4058bcdcbcfca25fe90e0504db6b6b22e797fbad066bd749",
