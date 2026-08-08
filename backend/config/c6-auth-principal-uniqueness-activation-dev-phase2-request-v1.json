@@ -1,10 +1,10 @@
 {
   "schemaVersion": "cxorbia.c6.auth-principal-uniqueness-rootfix-activation-dev.request.v1",
   "requestId": "c6-auth-principal-uniqueness-activation-dev-phase2-20260807-01",
-  "enabled": true,
-  "consumed": false,
-  "status": "authorized_execute_once_after_source_phase_pass",
-  "allowedExecutions": 1,
+  "enabled": false,
+  "consumed": true,
+  "status": "consumed_stop_retry_prewrite_update_auth_candidate_drift",
+  "allowedExecutions": 0,
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-07_c6_auth_rootfix_digest_canonicalization_activation_dev_resume",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -34,6 +34,7 @@
   },
   "phase2": {
     "providerAttemptsMax": 1,
+    "providerAttemptsConsumed": 1,
     "secondProviderAttempt": false,
     "prewriteRequired": true,
     "writesOnlyAfterPrewritePass": true,
@@ -45,6 +46,21 @@
     "readbackRequired": true,
     "rollbackDryRunRequired": true,
     "realRollbackAuthorized": false
+  },
+  "terminalExecution": {
+    "runId": 31234830218,
+    "jobId": 93045302944,
+    "artifactId": 9015012896,
+    "artifactDigest": "sha256:a282b089e7bbdd1760e1d426fe837b9992857e3951e3efa837719ab9917dd68f",
+    "workflowConclusion": "success",
+    "decision": "STOP_RETRY_C6_AUTH_ACTIVATION_DEV_V2_PREWRITE",
+    "blocker": "UPDATE_AUTH_AUTH_CANDIDATE_DRIFT:19f2a621b1b350db911b:0",
+    "prewritePass": false,
+    "writeBoundaryEntered": false,
+    "authCreates": 0,
+    "authUpdates": 0,
+    "duplicateDisables": 0,
+    "providerWriteCalls": 0
   },
   "safety": {
     "hrWrites": 0,
