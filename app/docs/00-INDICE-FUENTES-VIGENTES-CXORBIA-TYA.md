@@ -2,23 +2,23 @@
 
 **Fecha:** 2026-08-07  
 **Estado:** ACTIVO Y RECONCILIADO  
-**Estado vivo:** `C6_AUTH_UPDATE_UNIVERSE_BATCH_PASS__PLAN_V4_340_HOLD0__36_ZERO_9_UNIQUE__ZERO_AUTH_WRITES__NO_PRODUCTION`
+**Estado vivo:** `C6_AUTH_PLAN_V4_PREWRITE_STOP_HASH_CONFIG_REQUEST_SHAPE__ZERO_AUTH_WRITES__NO_SECOND_PROVIDER_ATTEMPT__NO_PRODUCTION`
 
 ## 1. Orden de prevalencia
 
 1. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `app/docs/SOURCE-LOCK-C6-AUTH-UPDATE-UNIVERSE-BATCH-PLAN-V4-PASS-20260807.md`;
-3. `app/docs/evidence/C6-AUTH-UPDATE-UNIVERSE-BATCH-REVALIDATION-PLAN-V4-PASS-20260807.json`;
-4. `backend/config/c6-shopper-auth-final-freeze-v4.json` — freeze rector actual;
-5. `backend/contracts/c6-auth-update-universe-batch-revalidation-v1.json`;
-6. `tools/qa/cxorbia-c6-auth-update-universe-batch-revalidation-v3.mjs` — herramienta terminal del batch;
-7. `backend/config/c6-auth-update-universe-batch-revalidation-request-v5.json` — consumido/deshabilitado;
-8. `backend/config/c6-shopper-auth-final-freeze-v3.json` — plan v3 histórico, sustituido por v4;
-9. `backend/contracts/c6-auth-activation-dev-v2.json` — histórico del PREWRITE v3; no ejecutar contra v4 sin contrato actualizado;
-10. `app/docs/SOURCE-LOCK-C6-AUTH-DIGEST-PASS-PHASE2-PREWRITE-SYSTEMIC-UPDATE-RISK-STOP-RETRY-20260807.md` — histórico que originó el batch;
-11. `app/docs/evidence/C6-AUTH-ACTIVATION-V2-PREWRITE-SYSTEMIC-SUFFIX-COLLISION-RISK-20260807.json`;
-12. `app/docs/SOURCE-LOCK-C6-AUTH-TARGET-ADAPTIVE-LINEAGE-ROOT-CAUSE-CROSS-ROW-PRINCIPAL-ALIAS-STOP-RETRY-20260807.md`;
-13. `app/docs/SOURCE-LOCK-C6-MULTI-AUTH-FINAL-DISCRIMINATOR-TENANT-ADJUDICATION-STOP-RETRY-20260807.md`;
+2. `app/docs/SOURCE-LOCK-C6-AUTH-PLAN-V4-PREWRITE-HASH-CONFIG-STOP-RETRY-20260807.md`;
+3. `app/docs/evidence/C6-AUTH-PLAN-V4-PREWRITE-HASH-CONFIG-STOP-RETRY-20260807.json`;
+4. `backend/config/c6-shopper-auth-final-freeze-v4.json` — freeze rector actual, sin cambios;
+5. `backend/contracts/c6-auth-plan-v4-activation-dev-v1.json`;
+6. `tools/qa/cxorbia-c6-auth-plan-v4-activation-dev-v1.mjs`;
+7. `backend/config/c6-auth-plan-v4-activation-dev-request-v1.json` — consumido/deshabilitado;
+8. `app/docs/SOURCE-LOCK-C6-AUTH-UPDATE-UNIVERSE-BATCH-PLAN-V4-PASS-20260807.md` — histórico inmediato que congeló v4;
+9. `app/docs/evidence/C6-AUTH-UPDATE-UNIVERSE-BATCH-REVALIDATION-PLAN-V4-PASS-20260807.json`;
+10. `backend/contracts/c6-auth-update-universe-batch-revalidation-v1.json`;
+11. `tools/qa/cxorbia-c6-auth-update-universe-batch-revalidation-v3.mjs`;
+12. `backend/config/c6-shopper-auth-final-freeze-v3.json` — histórico, no ejecutar;
+13. `app/docs/SOURCE-LOCK-C6-MULTI-AUTH-FINAL-DISCRIMINATOR-TENANT-ADJUDICATION-STOP-RETRY-20260807.md` — identidad cerrada;
 14. `app/docs/SOURCE-LOCK-C6-DIRECT-RUNNER-DEV-DEPLOY-PASS-20260807.md`;
 15. `backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json`;
 16. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json`;
@@ -29,19 +29,22 @@
 
 ```text
 DirectRunnerDEV=PASS
+AuthPlanV4=FROZEN
+AuthPlanV4Digest=c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4
 AuthExecuted=false
 Production=false
 SKIP13=closed 13/13
 MultiAuthAdjudication=closed
 TargetLineage(ac93)=closed
-CrossRowPrincipalAliasRootCause=closed
-UpdateUniverseBatch=PASS
-ProviderAttemptsCurrentBatch=1
+UpdateUniverseBatch=closed PASS
+PlanV4Prewrite=STOP_RETRY_HASH_CONFIG_HTTP_400
+ProviderAttemptsCurrentBlock=1
 SecondProviderAttempt=false
-AuthWritesCurrentBatch=0
+WriteBoundaryEntered=false
+AuthWritesCurrentBlock=0
 ```
 
-## 3. Plan v4 congelado
+## 3. Plan v4 congelado e inmutable
 
 ```text
 rows=340
@@ -57,38 +60,78 @@ claimsChanges=1
 expectedAuthUsersBefore=110
 expectedAuthUsersAfter=228
 digest=c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4
-executable=false
-reason=BATCH_REVALIDATION_COMPLETE_PENDING_SEPARATE_PREWRITE_AUTH_AUTHORIZATION
 ```
 
-## 4. Batch terminal
+No reabrir el universo de 45 UPDATE del plan v3, SKIP13, multi-Auth ni lineage `ac93...`.
+
+## 4. PREWRITE v4 terminal
 
 ```text
-runId=31236820249
-jobId=93050768996
-artifactId=9015681941
-artifactDigest=sha256:6c1d93c58853c01682ce54bafab5f03d116a0586b9658d59323bfae7d3db3263
-providerDecision=PASS_C6_AUTH_UPDATE_UNIVERSE_BATCH_REVALIDATION_PLAN_V4
-rowsClassified=45
-candidateCount0=36
-candidateCount1=9
-candidateCount>1=0
-unresolved=0
-crossRow=0
+requestId=c6-auth-plan-v4-activation-dev-20260807-01
+requestCommit=d5453fceefdee1bd026e059cdb6187486d75a918
+runId=31240353678
+jobId=93060168241
+artifactId=9016808823
+artifactDigest=sha256:1f4a22df9448b873838f3de6480bcaa954916cf148c40c5ec9f2cdd01e9dec4f
+decision=STOP_RETRY_C6_AUTH_PLAN_V4_PREWRITE
+errorCode=HASH_CONFIG_HTTP_400
+errorFingerprint=9a3b817f725d9b53b23e097b
+providerAttempts=1
+secondProviderAttempt=false
+prewritePass=false
+writeBoundaryEntered=false
+passwordMaterialInspectedRows=0
+snapshotProduced=false
+AuthCreates=0
+AuthUpdates=0
+duplicateDisables=0
+providerWriteCalls=0
 ```
 
-El workflow global terminó `failure` solo por `SOURCE_SAFE_VERIFIER_FALSE_POSITIVE_CHANGE_COUNT_EMAIL_KEY`: el regex confundió `subchangeCounts.email=2` con correo crudo. Validación estructural offline del artefacto: raw UID/shopperId/passwordHash/passwordSalt=0; email values sensibles=0. No hubo segundo provider attempt.
+El workflow técnico completó sus gates y el STOP controlado; los status contexts quedaron `failure` a propósito porque no hubo PASS de activación.
 
-## 5. Fail-close
+## 5. Causa raíz y verifier
 
-Todos los requests v1..v5 del batch están consumidos/deshabilitados. Todos los workflows one-shot v1..v5 fueron retirados. No hay ejecución latente. Provider/Auth/Firestore/HR/Rules/Storage writes=0; deploys=0; merge=false; production=false.
+El fallo se produjo en la lectura administrativa de configuración de hash. La herramienta usó `GET .../config?mask=hashConfig`; la referencia oficial de Identity Platform define `projects.getConfig` como GET del recurso `projects/*/config` con request body vacío y no documenta `mask` en GET. `updateMask` pertenece al PATCH `projects.updateConfig`.
 
-## 6. Siguiente acción exacta
+Clasificación source-only:
 
-Solo bajo nueva autorización: `C6 AUTH PLAN V4 PREWRITE + ACTIVATION DEV`.
+```text
+GET_CONFIG_QUERY_MASK_UNSUPPORTED_OR_MALFORMED_REQUEST_SHAPE
+```
 
-Debe partir exclusivamente del freeze v4/digest `c0c31fad...93ba4`, validar 118 CREATE y 9 UPDATE, comprobar rollback exacto solo para 8 password updates existentes, generar snapshot cifrado antes del write boundary, exigir principal/candidate uniqueness y población 110->228. Solo con PREWRITE PASS ejecutar Auth DEV. No reabrir las 45 UPDATE del plan v3 ni volver a SKIP13/multi-Auth/lineage.
+No hubo provider re-test. El verificador source-safe estructural corregido sí pasó y dejó de confundir contadores `email` con PII.
 
-## 7. Phase A preservada
+## 6. Fail-close
+
+El request quedó consumido/deshabilitado y el workflow one-shot fue retirado. No existe autorización latente.
+
+```text
+providerAttempts=1
+secondProviderAttempt=false
+AuthExecuted=false
+AuthWrites=0
+FirestoreWrites=0
+membershipWrites=0
+HRWrites=0
+RulesWrites=0
+StorageWrites=0
+CloudBuild=0
+CloudRun=0
+Hosting=0
+Make=0
+Gemini=0
+payments=0
+merge=false
+production=false
+```
+
+## 7. Siguiente acción exacta
+
+Solo bajo autorización nueva: `C6 AUTH PLAN V4 HASH-CONFIG GET SHAPE REPAIR + PREWRITE RETRY`.
+
+Debe corregir source-only la forma de `projects.getConfig` sin `mask`, validar que solo lea/extraiga `hashConfig`, conservar exactamente freeze/digest v4 y, mediante request nuevo, ejecutar como máximo un provider PREWRITE. Solo con PREWRITE PASS, rollback exacto para 8 password updates y snapshot cifrado roundtrip podrá cruzarse el Auth write boundary. No reconstruir identidades.
+
+## 8. Phase A preservada
 
 Frontend, Login, `CX.data`, HR histórico, shoppers, postulaciones, certificaciones, visitas, liquidaciones/pagos, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto, sincronización HR/plataforma y Academia permanecen preservados.
