@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "cxorbia.c6.auth-update-suffix-collision-risk.source-only.v1",
+  "generatedAt": "2026-08-07T20:25:00-06:00",
+  "classification": "SYSTEMIC_SUFFIXED_UPDATE_SHARED_BASELOGIN_ALIAS_RISK",
+  "decision": "STOP_RETRY_C6_AUTH_ACTIVATION_DEV_V2_PREWRITE_SYSTEMIC_UPDATE_REVALIDATION_REQUIRED",
+  "sourceArtifacts": {
+    "equivalentUniverse": {
+      "runId": 31104541809,
+      "artifactId": 8968941587,
+      "artifactDigest": "sha256:02e36c355b3f2d1c9d1e6f1be7fece93259251ddb0f981cdaac35f2262fcb264",
+      "file": "plan-340-source-safe.json"
+    },
+    "canonicalPlanV3": {
+      "runId": 31234681163,
+      "jobId": 93044913507,
+      "artifactId": 9014970238,
+      "artifactDigest": "sha256:3a91b60612b67198b1109eaae53deb66720d1614d673e361cc657822f9317395",
+      "planDigest": "7b92fa73946e74ec4058bcdcbcfca25fe90e0504db6b6b22e797fbad066bd749"
+    }
+  },
+  "terminalProviderAttempt": {
+    "runId": 31234830218,
+    "jobId": 93045302944,
+    "artifactId": 9015012896,
+    "artifactDigest": "sha256:a282b089e7bbdd1760e1d426fe837b9992857e3951e3efa837719ab9917dd68f",
+    "decision": "STOP_RETRY_C6_AUTH_ACTIVATION_DEV_V2_PREWRITE",
+    "blocker": "UPDATE_AUTH_AUTH_CANDIDATE_DRIFT:19f2a621b1b350db911b:0",
+    "prewritePass": false,
+    "writeBoundaryEntered": false,
+    "providerWriteCalls": 0,
+    "authCreates": 0,
+    "authUpdates": 0,
+    "duplicateDisables": 0
+  },
+  "systemicFinding": {
+    "oldSuffixAppliedUpdateRowsSharingBaseLoginWithExactlyOneUnsuffixedPeer": 37,
+    "alreadyReclassifiedTarget": "ac93d90d9e41512acdcd",
+    "remainingCurrentUpdateRowsInSameStructuralRiskClass": 36,
+    "remainingPeerPrimaryCounts": {
+      "NO_OP": 32,
+      "UPDATE_AUTH": 4
+    },
+    "firstObservedRuntimeDrift": {
+      "profileFp": "19f2a621b1b350db911b",
+      "baseLoginFp": "bff198e33dfa528bdaec",
+      "targetLoginFp": "5bf5f315df46b1ca4c27",
+      "peerProfileFp": "04639cf5545a0941e5d5",
+      "peerPrimaryCurrent": "NO_OP",
+      "candidateCount": 0
+    },
+    "interpretation": "The first post-rootfix UPDATE drift belongs to the same structural class as the already-proven cross-row baseLogin alias defect. Source-only evidence shows 36 remaining UPDATE_AUTH rows are suffixed members of two-row baseLogin collision groups. This does not prove all 36 lack target-specific Auth principals, but it proves a row-by-row retry strategy is unsafe and likely to loop."
+  },
+  "remainingRiskRows": [
+    {"profileFp":"0054158b6972349fd78b","baseLoginFp":"2847c13c9d5a6f11504e","targetLoginFp":"a59dbef9d2f1066eb2c9","peerProfileFp":"9454092bdae098cce5d5","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"07b0121460e5a6a3d08a","baseLoginFp":"845f55be69634ce58dab","targetLoginFp":"44d531173b8cf98c5716","peerProfileFp":"8bf9fdb6a1db79f6ca0b","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"0e4a757125765fe9b630","baseLoginFp":"21e34fcce7c1f55080f3","targetLoginFp":"d308732cd4b568642e88","peerProfileFp":"d36c81fd7971dbfca88d","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"19f2a621b1b350db911b","baseLoginFp":"bff198e33dfa528bdaec","targetLoginFp":"5bf5f315df46b1ca4c27","peerProfileFp":"04639cf5545a0941e5d5","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"1d89318965b64ec0ff68","baseLoginFp":"ec55daf8a7d979211087","targetLoginFp":"b1c8e882d83fad1ef498","peerProfileFp":"118840d6d399620c78f2","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"247210cff80a94cb4d90","baseLoginFp":"784294962c8852010354","targetLoginFp":"27d717f5a1791061c75e","peerProfileFp":"fc20a2e98c4613510705","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"28c4f25542af3589fe7f","baseLoginFp":"0d54903d8ab945c82b42","targetLoginFp":"78957a6ee95612c98986","peerProfileFp":"3776bdda72d99e9c62d9","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"3a4ffa4f47fa83ba14bf","baseLoginFp":"e44bda9249172042ad1e","targetLoginFp":"0e1bc3000cb682f578be","peerProfileFp":"6485f2adfdba762006a1","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"4b70ea815aba46f390bb","baseLoginFp":"4802c6349cc41f883c07","targetLoginFp":"cce662c6909efa8e880d","peerProfileFp":"368cb687673890eb30c7","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"51ea059349022a2bb852","baseLoginFp":"1c6dddc39262829e62b8","targetLoginFp":"e2a5f0f474dd7082e7ec","peerProfileFp":"d1119fc3441942572810","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"55f2238300eea34e5346","baseLoginFp":"a12f47dd6d5cbe4568d6","targetLoginFp":"256db134011798dfda2f","peerProfileFp":"05a380c9f05fb7b13d77","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"5b0fc32cd281b091b21a","baseLoginFp":"864582a142ef07b3c3e5","targetLoginFp":"ce13e19be99cc7475a8b","peerProfileFp":"f5930ddba077750fcb7b","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"647f9c081741b4fc3ffd","baseLoginFp":"06cd2fd6cd07c9931887","targetLoginFp":"1190803ea4b4eb8ef6fe","peerProfileFp":"9ce9adcf04cd66161ca0","peerPrimaryCurrent":"UPDATE_AUTH","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"64a9bfd351af2f0d47f5","baseLoginFp":"3cf004a4229558bec5b8","targetLoginFp":"49ae33c0c663887aad32","peerProfileFp":"28e047c99e28d7132d55","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"681721cf992c1abc9038","baseLoginFp":"f3f20b244262fa74d9f7","targetLoginFp":"e81ed235ed06229ab8a5","peerProfileFp":"b60453562bb0768dfe5a","peerPrimaryCurrent":"UPDATE_AUTH","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"6a3f918b7b1e0069ea90","baseLoginFp":"18dca56374f6b928bd6e","targetLoginFp":"88f718640aff973a05b9","peerProfileFp":"de7976650ab3315922c7","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"737db70b400a198c121e","baseLoginFp":"066a4677908d2c5b4a8a","targetLoginFp":"bb0801db71e523256afb","peerProfileFp":"db60d8da5710b31504b3","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"759122aed854735a9434","baseLoginFp":"07e8b619d02140b5acfe","targetLoginFp":"67a3a888f9267416fb9f","peerProfileFp":"8200cc51cc163822ce55","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"76e646ff88f50d4266f7","baseLoginFp":"af59f64433ce96a4aa79","targetLoginFp":"3a6949368cb5d4d5bf21","peerProfileFp":"10a7954364678f72a215","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"7baea7b08658374e4eb3","baseLoginFp":"3fbc07e28af721174011","targetLoginFp":"159bef4b42d873e8cd3b","peerProfileFp":"d978ee29bd5fbb14706b","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"7ce278d72cd36888ead5","baseLoginFp":"61b91fae8917a06cd063","targetLoginFp":"e023458b9fae78c92ba4","peerProfileFp":"e12fab112433e923fbd5","peerPrimaryCurrent":"UPDATE_AUTH","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"89732f9bdfdd87738b97","baseLoginFp":"e75e9a8b90705f4ed554","targetLoginFp":"955203492a21e87fbdbd","peerProfileFp":"1ef459e2d4111f219969","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"8c53a0bec0ddda14d7a8","baseLoginFp":"b978b9d2cb5b367fd76a","targetLoginFp":"2d9d577fa5995452c053","peerProfileFp":"4eb5b6064a143b148c27","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"9a483474d627d442a377","baseLoginFp":"9ee82ea9caf014a1a8d0","targetLoginFp":"677970b53be828e423d7","peerProfileFp":"01664274d2d68128ca34","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"9b827db51e70c481dbf7","baseLoginFp":"9123c6c7fa078f52d005","targetLoginFp":"fd72387b3effdf015ba9","peerProfileFp":"42ac139545b7c0ea57f7","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"a0f148de47dccfa2b8a0","baseLoginFp":"267b351165981c59d7b8","targetLoginFp":"55c5931c9d30d1a32e14","peerProfileFp":"d76cf056774f8bbdddbb","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"aa9875503a98d950ca57","baseLoginFp":"328c3408a626a268ea1f","targetLoginFp":"5baf7ea21485a1514320","peerProfileFp":"0f2c7d228a351d889c03","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"b70433f95b5bec55a070","baseLoginFp":"0f2c0cc3922f7a13868f","targetLoginFp":"fabed67bc41c9a2c0d2a","peerProfileFp":"fc0ec54029024e1851e7","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"c7144e9dbf4f957a77a8","baseLoginFp":"84e5ef64341c9a1e20dc","targetLoginFp":"90d5f2882499e62fbd49","peerProfileFp":"3bf76ddcfafdaf115cc3","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"ca002f9c55e7b5f91ba0","baseLoginFp":"6139a320426e94d6ae21","targetLoginFp":"675b3ad73d2ea2c10d11","peerProfileFp":"7a70e6dbe11993c58a4b","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"d4c84ccb5a63364ab45d","baseLoginFp":"f8b117c532859cb74ad5","targetLoginFp":"2ce6f39e1bb2c8333919","peerProfileFp":"8f537d39d9f3fbf500bd","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"e06188a61d3ff67cbbad","baseLoginFp":"15fd35b41820a6c3f4bd","targetLoginFp":"291627ad29744df03082","peerProfileFp":"74ed1e6a962b441e519d","peerPrimaryCurrent":"UPDATE_AUTH","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"ede073649877829dd9c0","baseLoginFp":"0624cadb0884a39ed559","targetLoginFp":"7aea32a59e6dae8c833c","peerProfileFp":"3671b93a6111d4c8a8d7","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"f3025660631f42be8c89","baseLoginFp":"6cb23e67232f69d9520f","targetLoginFp":"ac34a7ba86a85730c919","peerProfileFp":"a5c4a6cf3fd4a9ba7a00","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"f67ed794d5648a715a67","baseLoginFp":"8f5f87be47186eee0b91","targetLoginFp":"09f409ba1c50253d2d61","peerProfileFp":"c0a76a3fd5095400d465","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"ff1b191c37fcf31bbe13","baseLoginFp":"7359ca964277c30381dd","targetLoginFp":"cb601efc2eb8f9492438","peerProfileFp":"79980ff2d72880e83b84","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]},
+    {"profileFp":"ffbc10a74b94ddabbf19","baseLoginFp":"32fe6611d95b3b4ef98c","targetLoginFp":"6ffadc5140b9284bc787","peerProfileFp":"d42eeb250f3a61ecac30","peerPrimaryCurrent":"NO_OP","currentChanges":{"email":true,"password":false,"claims":true},"sourceSafeSurnameBasis":"multi_source_full_name_consensus","resolutionBases":["deterministic_technical_suffix"]}
+  ],
+  "requiredNextMethod": {
+    "mode": "ONE_BATCH_REVALIDATION_NOT_PER_ROW",
+    "scope": "all 45 current UPDATE_AUTH rows, with explicit emphasis on the 36 suffix-collision risk rows",
+    "rules": [
+      "resolve every current UPDATE_AUTH row with target-specific anchors only",
+      "shared baseLogin may be collision evidence only, never an independent selector",
+      "enforce global existing-principal uniqueness across all rows",
+      "classify candidateCount 0/1/>1 for all 45 rows before changing any plan row",
+      "rebuild all 340 rows once from the complete batch result",
+      "recalculate CREATE/UPDATE/NO_OP/PRESERVE/HOLD, password changes, expected population and digest once",
+      "do not execute Auth in the same provider attempt unless the rebuilt plan was already frozen before provider; therefore the next block should stop after comprehensive revalidation and source rebuild unless an exact two-stage request contract is precommitted"
+    ]
+  },
+  "safety": {
+    "additionalProviderReadsAfterTerminalAttempt": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "merge": false,
+    "production": false,
+    "piiExported": false
+  }
+}
