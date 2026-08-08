@@ -1,0 +1,161 @@
+name: CXOrbia C6 Auth Update-Universe Batch Revalidation V4 Once
+
+on:
+  push:
+    branches: [docs-tya-v6-v71-audit]
+    paths:
+      - 'backend/config/c6-auth-update-universe-batch-revalidation-request-v4.json'
+
+permissions:
+  contents: read
+  actions: read
+  statuses: write
+
+concurrency:
+  group: cxorbia-c6-auth-update-universe-batch-revalidation-v4-once
+  cancel-in-progress: false
+
+jobs:
+  batch-revalidate-and-rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      REQUEST_FILE: backend/config/c6-auth-update-universe-batch-revalidation-request-v4.json
+      CONTRACT_FILE: backend/contracts/c6-auth-update-universe-batch-revalidation-v1.json
+      TOOL: tools/qa/cxorbia-c6-auth-update-universe-batch-revalidation-v2.mjs
+      RISK_EVIDENCE: app/docs/evidence/C6-AUTH-ACTIVATION-V2-PREWRITE-SYSTEMIC-SUFFIX-COLLISION-RISK-20260807.json
+      SOURCE_DIR: .tmp/c6-auth-update-universe-v4/source
+      OUT_DIR: .tmp/c6-auth-update-universe-v4/out
+    steps:
+      - name: Checkout exact request commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate exact v4 authorization and request-only commit
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');const {execFileSync}=require('child_process');
+          const r=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const ok=(v,m)=>{if(!v)throw new Error(m)};
+          ok(r.schemaVersion==='cxorbia.c6.auth-update-universe-batch-revalidation.request.v1','REQUEST_SCHEMA');
+          ok(r.requestId==='c6-auth-update-universe-batch-revalidation-20260807-04','REQUEST_ID');
+          ok(r.enabled===true&&r.consumed===false&&r.allowedExecutions===1&&r.authorizedBy==='Paula','REQUEST_AUTH');
+          ok(r.repository==='paulaosoriof86/demoCXOrbia'&&r.branch==='docs-tya-v6-v71-audit'&&r.pullRequest===7&&r.firebaseProjectId==='cxorbia-backend-dev','LANE');
+          ok(r.targetHeadSha===parent&&changed.length===1&&changed[0]===process.env.REQUEST_FILE,'REQUEST_ONLY_COMMIT');
+          ok(r.contract===process.env.CONTRACT_FILE&&r.tool===process.env.TOOL,'FILES');
+          ok(Array.isArray(r.preProviderAttempts)&&r.preProviderAttempts.length===3&&r.preProviderAttempts.every(x=>x.providerAttempts===0&&x.providerReads===0&&x.providerWrites===0),'PREVIOUS_FAIL_CLOSED');
+          ok(r.inputPlanDigest==='7b92fa73946e74ec4058bcdcbcfca25fe90e0504db6b6b22e797fbad066bd749'&&r.updateRows===45&&r.systemicRiskRows===36,'SCOPE');
+          ok(r.providerAttemptsMax===1&&r.providerReadOnly===true&&r.authWrites===0&&r.providerWrites===0,'READ_ONLY');
+          console.log('PASS_C6_AUTH_UPDATE_UNIVERSE_REQUEST_V4_GATE');
+          NODE
+
+      - name: Install pinned Firebase Admin SDK
+        run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+
+      - name: Syntax self-test and strict read-only gate
+        run: |
+          set -euo pipefail
+          node --check "$TOOL"
+          node "$TOOL" --self-test | tee /tmp/batch-selftest.txt
+          grep -q 'PASS_C6_AUTH_UPDATE_UNIVERSE_BATCH_V2_SELFTEST' /tmp/batch-selftest.txt
+          node <<'NODE'
+          const fs=require('fs');const s=fs.readFileSync(process.env.TOOL,'utf8');const risk=JSON.parse(fs.readFileSync(process.env.RISK_EVIDENCE,'utf8'));
+          for(const x of ['gatherCandidatesTargetSpecific','deriveSystemicRiskRows','candidateRows','uidRows','protectedCandidateOwners','classification.length===EXPECTED_UPDATE_ROWS'])if(!s.includes(x))throw new Error('MISSING_BATCH_GUARD:'+x);
+          if(risk.classification!=='SYSTEMIC_SUFFIXED_UPDATE_SHARED_BASELOGIN_ALIAS_RISK'||risk.systemicFinding?.remainingCurrentUpdateRowsInSameStructuralRiskClass!==36)throw new Error('RISK_SUMMARY_DRIFT');
+          for(const bad of ['auth.createUser(','auth.updateUser(','auth.setCustomUserClaims(','auth.deleteUser(','passwordHash','passwordSalt','passwordSignInEmail'])if(s.includes(bad))throw new Error('READ_ONLY_VIOLATION_LITERAL:'+bad);
+          if(s.includes('gatherCandidates(profile.id,credentials,names.baseLogin,targetLogin)'))throw new Error('SHARED_BASELOGIN_SELECTOR_REINTRODUCED');
+          console.log('PASS_C6_AUTH_UPDATE_UNIVERSE_V4_STATIC_READ_ONLY_GATE');
+          NODE
+
+      - name: Download canonical plan v3 and validate source risk universe
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$SOURCE_DIR" "$OUT_DIR"
+          gh run download 31234681163 -n cxorbia-c6-auth-rootfix-digest-canonicalization-source-only-v2-31234681163 -D "$SOURCE_DIR"
+          test -f "$SOURCE_DIR/final-plan-v3-source-safe.json"
+          node <<'NODE'
+          const p=require('./.tmp/c6-auth-update-universe-v4/source/final-plan-v3-source-safe.json');
+          if(p.plan?.sourceSafeRowsDigestSha256!=='7b92fa73946e74ec4058bcdcbcfca25fe90e0504db6b6b22e797fbad066bd749'||p.plan?.rows!==340||p.plan?.uniqueRows!==340||p.plan?.operationCounts?.UPDATE_AUTH!==45)throw new Error('SOURCE_PLAN_DRIFT');
+          const groups=new Map();for(const row of p.rows){if(!row.baseLoginFp)continue;if(!groups.has(row.baseLoginFp))groups.set(row.baseLoginFp,[]);groups.get(row.baseLoginFp).push(row);}
+          const risk=p.rows.filter(row=>row.primary==='UPDATE_AUTH'&&row.suffixApplied===true&&row.baseLoginFp&&(groups.get(row.baseLoginFp)||[]).length===2&&(groups.get(row.baseLoginFp)||[]).some(peer=>peer.profileFp!==row.profileFp&&peer.suffixApplied!==true));
+          if(risk.length!==36)throw new Error('DERIVED_SOURCE_RISK_NOT_36');
+          console.log(JSON.stringify({planRows:340,updateRows:45,derivedRiskRows:36,sourceOnly:true}));
+          NODE
+
+      - name: Load canonical DEV credential privately
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/c6-auth-update-universe-v4-private
+          node <<'NODE'
+          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw)}catch{}
+          if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.client_email&&p.private_key))throw new Error('DEV_CREDENTIAL_INVALID');
+          fs.writeFileSync('.tmp/c6-auth-update-universe-v4-private/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.tmp/c6-auth-update-universe-v4-private/credentials.json" >> "$GITHUB_ENV"
+
+      - name: Execute only provider read-only batch attempt and rebuild once
+        id: batch
+        run: |
+          set +e
+          CXORBIA_C6_UPDATE_BATCH_PLAN="$SOURCE_DIR/final-plan-v3-source-safe.json" \
+          CXORBIA_C6_UPDATE_BATCH_OUT="$OUT_DIR" \
+          node "$TOOL" "$REQUEST_FILE" "$SOURCE_DIR/final-plan-v3-source-safe.json" "$RISK_EVIDENCE"
+          code=$?
+          decision=$(head -n 1 "$OUT_DIR/decision.txt" 2>/dev/null || echo STOP_RETRY_C6_AUTH_UPDATE_UNIVERSE_BATCH_NO_DECISION)
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          echo "decision=$decision" >> "$GITHUB_OUTPUT"
+          if [ "$code" != '0' ] && [ "$code" != '2' ]; then exit "$code"; fi
+          exit 0
+
+      - name: Verify complete batch evidence and zero writes
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const e=require('./.tmp/c6-auth-update-universe-v4/out/batch-classification-source-safe.json');
+          const p=require('./.tmp/c6-auth-update-universe-v4/out/final-plan-v4-source-safe.json');
+          if(e.classificationSummary?.rows!==45||e.classificationSummary?.all45UpdateRowsClassified!==true||!Array.isArray(e.classification)||e.classification.length!==45)throw new Error('CLASSIFICATION_NOT_45');
+          if(e.classificationSummary?.riskRows!==36||e.systemicRisk?.coveredByFullUpdateUniverse!==true)throw new Error('RISK_NOT_36');
+          if(p.plan?.rows!==340||p.plan?.uniqueRows!==340)throw new Error('REBUILD_NOT_340');
+          if(e.safety?.providerWrites!==0||e.safety?.authWrites!==0||e.safety?.firestoreWrites!==0||e.safety?.hrWrites!==0||e.safety?.rulesWrites!==0||e.safety?.storageWrites!==0||e.safety?.merge!==false||e.safety?.production!==false)throw new Error('SAFETY_DRIFT');
+          if(e.passwordPolicy?.materialInspected!==false||e.passwordPolicy?.signInProbeUsed!==false)throw new Error('PASSWORD_SCOPE_DRIFT');
+          const raw=JSON.stringify(e);if(/"uid"\s*:|"email"\s*:|"shopperId"\s*:|passwordHash|passwordSalt/.test(raw))throw new Error('SOURCE_SAFE_LEAK');
+          console.log(JSON.stringify({decision:e.decision,classificationSummary:e.classificationSummary,rebuiltPlan:e.rebuiltPlan,providerWrites:0,authWrites:0}));
+          NODE
+
+      - name: Upload terminal batch evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-c6-auth-update-universe-batch-revalidation-v4-${{ github.run_id }}
+          path: .tmp/c6-auth-update-universe-v4/out
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Publish observable decision
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DECISION: ${{ steps.batch.outputs.decision }}
+        run: |
+          set -euo pipefail
+          STATE=success
+          DESC=$(printf '%s' "${DECISION:-STOP_RETRY_C6_AUTH_UPDATE_UNIVERSE_BATCH_NO_DECISION}" | cut -c1-140)
+          if [ '${{ job.status }}' != 'success' ]; then STATE=failure; fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/c6-auth-update-universe-batch-revalidation-v4' -f description="$DESC" -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+
+      - name: Cleanup credential
+        if: always()
+        run: rm -rf .tmp/c6-auth-update-universe-v4-private
