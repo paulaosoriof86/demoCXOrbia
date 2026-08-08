@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "cxorbia.c6.auth-rootfix-digest-canonicalization-source-only.request.v1",
+  "requestId": "c6-auth-rootfix-digest-canonicalization-source-only-20260807-01",
+  "enabled": true,
+  "consumed": false,
+  "allowedExecutions": 1,
+  "authorizedBy": "Paula",
+  "authorizationSource": "current_conversation_2026-08-07_c6_auth_rootfix_digest_canonicalization_activation_dev_resume",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "targetHeadSha": "e540c77d069aac1d2e076da5d6df9014fcdd4f33",
+  "phase": "PHASE_1_SOURCE_ONLY",
+  "canonicalAnnotation": "TARGET_SPECIFIC_EXISTING_AUTH_CANDIDATE_COUNT_0_AFTER_LINEAGE_PASS",
+  "oldPlanDigest": "68e26a5217957333d256f2cb547faf3e1eef74e2c789bfd85454d42dfd472dc3",
+  "expectedNewPlanDigest": "7b92fa73946e74ec4058bcdcbcfca25fe90e0504db6b6b22e797fbad066bd749",
+  "expectedRows": 340,
+  "expectedOperationCounts": {
+    "CREATE_AUTH": 82,
+    "UPDATE_AUTH": 45,
+    "NO_OP": 81,
+    "HOLD": 0,
+    "PRESERVE_NO_AUTH": 132
+  },
+  "expectedSubchangeCounts": {
+    "email": 38,
+    "password": 13,
+    "claims": 37
+  },
+  "expectedAuthUsersBefore": 110,
+  "expectedAuthUsersAfter": 192,
+  "providerReads": 0,
+  "providerWrites": 0,
+  "authWrites": 0,
+  "firestoreWrites": 0,
+  "hrWrites": 0,
+  "merge": false,
+  "production": false
+}
