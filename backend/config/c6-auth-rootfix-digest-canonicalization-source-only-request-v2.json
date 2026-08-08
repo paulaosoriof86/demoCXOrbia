@@ -1,9 +1,10 @@
 {
   "schemaVersion": "cxorbia.c6.auth-rootfix-digest-canonicalization-source-only.request.v1",
   "requestId": "c6-auth-rootfix-digest-canonicalization-source-only-20260807-02",
-  "enabled": true,
-  "consumed": false,
-  "allowedExecutions": 1,
+  "enabled": false,
+  "consumed": true,
+  "allowedExecutions": 0,
+  "status": "consumed_phase1_pass",
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-07_c6_auth_rootfix_digest_canonicalization_activation_dev_resume",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -20,6 +21,16 @@
     "providerWrites": 0,
     "authWrites": 0,
     "materializationStarted": false
+  },
+  "terminalExecution": {
+    "runId": 31234681163,
+    "jobId": 93044913507,
+    "artifactId": 9014970238,
+    "artifactDigest": "sha256:3a91b60612b67198b1109eaae53deb66720d1614d673e361cc657822f9317395",
+    "decision": "PASS_C6_AUTH_PRINCIPAL_UNIQUENESS_ROOTFIX_SOURCE_ONLY",
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0
   },
   "oldPlanDigest": "68e26a5217957333d256f2cb547faf3e1eef74e2c789bfd85454d42dfd472dc3",
   "expectedNewPlanDigest": "7b92fa73946e74ec4058bcdcbcfca25fe90e0504db6b6b22e797fbad066bd749",
