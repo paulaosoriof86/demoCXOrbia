@@ -1,0 +1,160 @@
+{
+  "contractId": "phase-a-runtime-dev-switch-plan-v1",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "mode": "runtime_switch_plan_only_no_execution",
+  "createdAt": "2026-07-09",
+  "purpose": "Definir el plan separado para un futuro runtime DEV switch Phase A, sin ejecutarlo y sin mezclarlo con la solicitud GO.",
+  "separationPrinciples": {
+    "goRequestGateIsSeparate": true,
+    "runtimeSwitchPlanDoesNotExecute": true,
+    "runtimeSwitchRequiresExactPaulaGoAlreadyRecorded": true,
+    "devOnlyNotProduction": true,
+    "productionRemainsBlocked": true,
+    "rollbackPlanRequiredBeforeSwitch": true,
+    "smokeRequiredAfterSwitch": true,
+    "protectedUiModulesCannotBePatchedHere": true,
+    "cxDataInterfaceMustRemainStable": true,
+    "switchPointMustBeSingleAndExplicit": true,
+    "noOldDatabaseConnection": true,
+    "newCleanDatabaseOnly": true
+  },
+  "requiredInputsBeforeSwitchPlanCanProceed": [
+    {
+      "inputId": "paula_go_recorded",
+      "required": true,
+      "source": "phase-a-runtime-dev-go-request-gate",
+      "expected": "PAULA_GO_RECORDED_READY_FOR_SEPARATE_RUNTIME_SWITCH_PR"
+    },
+    {
+      "inputId": "runtime_go_nogo_clean",
+      "required": true,
+      "source": "tools/contracts/tya-runtime-dev-preview-go-nogo-validate.mjs",
+      "expected": "clean_go_nogo_report"
+    },
+    {
+      "inputId": "accumulated_readiness_clean",
+      "required": true,
+      "source": "tools/contracts/tya-phase-a-accumulated-readiness-gate.mjs",
+      "expected": "GO_PHASE_A_ACCUMULATED_READINESS_NO_RUNTIME"
+    },
+    {
+      "inputId": "rollback_smoke_plan_clean",
+      "required": true,
+      "source": "rollback_smoke_plan_or_preflight_validation",
+      "expected": "rollback_plan_present_and_smoke_checklist_ready"
+    },
+    {
+      "inputId": "runtime_adapter_contract_present",
+      "required": true,
+      "source": "backend/contracts_or_adapter_docs",
+      "expected": "cxdata_interface_stable_single_switch_point"
+    }
+  ],
+  "allowedDevSwitchScope": {
+    "environment": "DEV preview only",
+    "production": false,
+    "hostingDeploy": false,
+    "firestoreWrites": false,
+    "hrWrites": false,
+    "imports": false,
+    "makeLive": false,
+    "geminiLive": false,
+    "paymentsLive": false,
+    "storageEvidenceLive": false,
+    "authProductionLive": false,
+    "oldDatabaseConnection": false
+  },
+  "futureSwitchStepsPreparedOnly": [
+    {
+      "step": "confirm_branch_and_pr",
+      "description": "Confirmar rama/PR correctos, sin merge y sin deploy.",
+      "executesNow": false
+    },
+    {
+      "step": "confirm_single_cxdata_switch_point",
+      "description": "Confirmar el punto unico futuro donde CX.data cambia de localStorage a adapter real sin romper interfaz.",
+      "executesNow": false
+    },
+    {
+      "step": "confirm_backend_adapter_dev_disabled_by_default",
+      "description": "Confirmar que adapter backend DEV existe o estara detras de gate apagado por defecto.",
+      "executesNow": false
+    },
+    {
+      "step": "confirm_source_safe_seed_or_preview_input",
+      "description": "Confirmar que cualquier input DEV es source-safe y no fixture usado como real ni tmp derivado.",
+      "executesNow": false
+    },
+    {
+      "step": "enable_dev_runtime_preview_under_gate",
+      "description": "Paso futuro separado: habilitar preview DEV solo despues de GO y validaciones. No se ejecuta en este contrato.",
+      "executesNow": false
+    },
+    {
+      "step": "run_manual_smoke_dev",
+      "description": "Smoke manual controlado: login, roles, dashboard, postulaciones/asignaciones, certificaciones, liquidaciones, colas, no writes reales.",
+      "executesNow": false
+    },
+    {
+      "step": "rollback_if_smoke_fails",
+      "description": "Volver a modo localStorage/adapter apagado si smoke falla.",
+      "executesNow": false
+    }
+  ],
+  "manualSmokeChecklistFuture": [
+    "login_roles_visible_no_auth_production_switch",
+    "navigation_modules_load_no_regression",
+    "cxdata_interface_unchanged",
+    "hr_source_safe_preview_visible_if_enabled",
+    "assignments_do_not_duplicate",
+    "conflicts_show_review_queue",
+    "certifications_preserved_not_requested_again",
+    "june_liquidations_show_control_not_real_payment",
+    "questionnaire_routes_configurable",
+    "no_make_gemini_live_claims",
+    "no_real_emails_whatsapp_payments",
+    "rollback_toggle_available"
+  ],
+  "rollbackRequirements": [
+    "single_switch_point_can_be_disabled",
+    "no_data_loss_on_disable",
+    "localStorage_interface_fallback_available_until_final_cutover",
+    "no_firestore_or_hr_write_happened_before_rollback",
+    "rollback_documented_in_cambios_backend"
+  ],
+  "hardStops": [
+    "paulaGoMissing",
+    "paulaGoAmbiguous",
+    "runtimeGoNoGoMissingOrDirty",
+    "accumulatedReadinessDirty",
+    "adapterTouchesAppModulesDirectly",
+    "cxDataInterfaceChanged",
+    "multipleRuntimeSwitchPoints",
+    "fixtureUsedAsRealDevInput",
+    "derivedTmpUsedAsOriginalInput",
+    "firestoreWritesEnabled",
+    "hrWritesEnabled",
+    "makeGeminiLiveEnabled",
+    "paymentsEnabled",
+    "productionDeployAttempt",
+    "oldDatabaseConnectionAttempt",
+    "rollbackMissing"
+  ],
+  "safeStateExpectedNow": {
+    "runtimeConnected": false,
+    "switchExecuted": false,
+    "firestoreWrites": false,
+    "hrWrites": false,
+    "importsExecuted": false,
+    "deploy": false,
+    "production": false,
+    "makeWebhookLive": false,
+    "geminiLive": false,
+    "paymentProviderLive": false,
+    "realPayments": false,
+    "rawSensitiveDataInRepo": false,
+    "uiModulesModified": false,
+    "appCoreModified": false
+  }
+}

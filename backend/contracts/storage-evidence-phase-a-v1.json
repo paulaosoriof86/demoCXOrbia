@@ -1,0 +1,148 @@
+{
+  "contractId": "storage-evidence-phase-a-v1",
+  "status": "draft_safe_not_connected",
+  "generatedAt": "2026-07-08",
+  "purpose": "Define Phase A evidence and sensitive-document storage policy for a clean backend without activating real Storage yet.",
+  "safeState": {
+    "storageProviderConnected": false,
+    "frontendConnected": false,
+    "uploadsEnabled": false,
+    "downloadsEnabled": false,
+    "signedUrlsEnabled": false,
+    "productionEnabled": false,
+    "containsSecrets": false,
+    "containsSensitiveData": false
+  },
+  "storageRootPattern": "tenants/{tenantId}/projects/{projectId}/{bucketScope}/{entityId}/{documentId}",
+  "metadataFirestorePattern": "tenants/{tenantId}/projects/{projectId}/documents/{documentId}",
+  "requiredPathKeys": [
+    "tenantId",
+    "projectId",
+    "bucketScope",
+    "entityId",
+    "documentId"
+  ],
+  "requiredMetadataKeys": [
+    "tenantId",
+    "projectId",
+    "documentId",
+    "entityType",
+    "entityId",
+    "documentType",
+    "sensitivity",
+    "status",
+    "createdAt",
+    "createdBy",
+    "auditRef"
+  ],
+  "bucketScopes": {
+    "visitEvidence": {
+      "phaseA": true,
+      "allowedEntityTypes": ["visit", "assignment"],
+      "allowedDocumentTypes": ["photoEvidence", "videoEvidence", "receiptEvidence", "questionnaireSupport"],
+      "defaultSensitivity": "operationalRestricted",
+      "notes": "Evidence for mystery shopping visits. Metadata only in Firestore contract; binary files stay in Storage when gate is active."
+    },
+    "shopperDocuments": {
+      "phaseA": true,
+      "allowedEntityTypes": ["shopper"],
+      "allowedDocumentTypes": ["nda", "certificationProof", "profileSupport", "eligibilitySupport"],
+      "defaultSensitivity": "sensitiveRestricted",
+      "notes": "No raw DPI or bank information in repo. Any sensitive document requires protected rules and explicit gate."
+    },
+    "hrImports": {
+      "phaseA": true,
+      "allowedEntityTypes": ["hrImport"],
+      "allowedDocumentTypes": ["sourceSnapshot", "sanitizedImport", "validationReport"],
+      "defaultSensitivity": "internalRestricted",
+      "notes": "Historical import control. Raw HR files with personal data cannot be committed to repo."
+    },
+    "liquidationSupports": {
+      "phaseA": true,
+      "allowedEntityTypes": ["liquidation", "paymentBatch"],
+      "allowedDocumentTypes": ["paymentSupport", "reimbursementSupport", "adminReviewSupport"],
+      "defaultSensitivity": "financialRestricted",
+      "notes": "Payment evidence only; no real payment execution through preview."
+    },
+    "academyAssets": {
+      "phaseA": true,
+      "allowedEntityTypes": ["course", "manual", "certification"],
+      "allowedDocumentTypes": ["courseAsset", "manualAsset", "questionBankSupport", "reviewAttachment"],
+      "defaultSensitivity": "internalRestricted",
+      "notes": "Academia materials and human review attachments. Gemini drafts remain review-gated."
+    }
+  },
+  "sensitivityLevels": {
+    "publicProduct": {
+      "description": "Reusable non-client-sensitive product assets.",
+      "downloadPolicy": "cacheableAfterApproval"
+    },
+    "internalRestricted": {
+      "description": "Internal operational materials visible only to authorized tenant/project roles.",
+      "downloadPolicy": "authenticatedRoleRequired"
+    },
+    "operationalRestricted": {
+      "description": "Visit evidence and assignment materials restricted by tenant/project/role.",
+      "downloadPolicy": "signedUrlShortTtlAfterAudit"
+    },
+    "sensitiveRestricted": {
+      "description": "Shopper documents, NDA and protected evidence requiring stricter access controls.",
+      "downloadPolicy": "noPublicUrlSignedUrlShortTtlAuditRequired"
+    },
+    "financialRestricted": {
+      "description": "Payment/liquidation supports, never public and never committed to repo.",
+      "downloadPolicy": "financeRoleAndAuditRequired"
+    }
+  },
+  "forbiddenInRepo": [
+    "rawDpi",
+    "rawPassport",
+    "rawBankAccount",
+    "signedNdaFile",
+    "privateStorageUrl",
+    "signedUrl",
+    "providerToken",
+    "serviceAccountJson",
+    "rawEvidenceBinary",
+    "base64Evidence"
+  ],
+  "fileNamePolicy": {
+    "allowedPattern": "{documentId}.{safeExtension}",
+    "forbidPersonalDataInFileName": true,
+    "forbidShopperNameInFileName": true,
+    "forbidDpiBankInFileName": true,
+    "notes": "Sensitive information belongs in protected metadata or encrypted/secured store, not in filenames or repo."
+  },
+  "gates": {
+    "devStorageConfig": {
+      "status": "pending",
+      "requirements": ["cleanProject", "rulesDraft", "noProductionFiles", "rollbackDoc"]
+    },
+    "devUploads": {
+      "status": "blocked",
+      "requirements": ["explicitApproval", "testFilesOnly", "auditLog", "maxSizePolicy"]
+    },
+    "stagingEvidenceImport": {
+      "status": "blocked",
+      "requirements": ["sanitizedManifest", "reviewedSensitivity", "noRawSensitiveRepoPayload"]
+    },
+    "productionEvidenceCutover": {
+      "status": "blocked",
+      "requirements": ["PaulaGO", "smokeGO", "rulesReview", "rollback", "noCriticalNO_GO"]
+    }
+  },
+  "auditRequirements": [
+    "all uploads require actorId, role, reason, entityRef and auditRef",
+    "all sensitive downloads require auditRef and short TTL",
+    "delete is soft-delete by metadata status unless retention policy allows purge",
+    "evidence replacement creates new documentId and preserves previous auditRef",
+    "no silent overwrite of evidence or NDA"
+  ],
+  "retentionPolicy": {
+    "visitEvidence": "projectConfigured",
+    "shopperDocuments": "tenantPolicyAndLegalReview",
+    "hrImports": "auditPeriodConfigured",
+    "liquidationSupports": "financialRetentionConfigured",
+    "academyAssets": "versionedUntilArchived"
+  }
+}

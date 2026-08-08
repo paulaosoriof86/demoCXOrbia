@@ -1,0 +1,74 @@
+name: CXOrbia Post-V96 Runtime Empalme
+
+# One-shot controlled runtime empalme. No deploy, providers, imports or database writes.
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/config/phase-a-post-v96-empalme-request.source-safe.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cxorbia-post-v96-runtime-empalme
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  empalme:
+    name: Empalme runtime source lock post-V96
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout authorized branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate explicit empalme authorization
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const file = 'backend/config/phase-a-post-v96-empalme-request.source-safe.json';
+          const request = JSON.parse(fs.readFileSync(file, 'utf8'));
+          const expected = {
+            kind: 'cxorbia.phaseA.postV96RuntimeEmpalmeRequest',
+            version: 1,
+            authorizedBy: 'Paula',
+            authorization: 'EMPALME_RUNTIME_POST_V96',
+            sourceLockSha256: '80feb7c7809d28657b5eec243aa187f678c023ecd471a9f9404e52d285bd2663',
+            targetBranch: 'docs-tya-v6-v71-audit'
+          };
+          for (const [key, value] of Object.entries(expected)) {
+            if (request[key] !== value) throw new Error(`Invalid authorization field ${key}`);
+          }
+          const safe = request.safeState || {};
+          for (const key of ['deploy', 'production', 'providers', 'databaseWrites', 'imports', 'authActivation', 'firestoreActivation']) {
+            if (safe[key] !== false) throw new Error(`Safe-state field ${key} must be false`);
+          }
+          console.log('Explicit post-V96 runtime empalme authorization validated.');
+          NODE
+
+      - name: Apply and validate source-lock runtime
+        run: bash tools/empalme/tya-apply-post-v96-source-lock.sh
+
+      - name: Upload empalme evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: post-v96-runtime-empalme-report
+          path: .tmp/post-v96-empalme
+          if-no-files-found: ignore
+          retention-days: 14

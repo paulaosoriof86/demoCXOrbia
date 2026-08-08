@@ -1,0 +1,350 @@
+{
+  "schemaVersion": "cxorbia.canonical-backend-anomaly-probe.v2",
+  "generatedAt": "2026-07-29T23:33:12.081Z",
+  "projectId": "cxorbia-backend-dev",
+  "readOnly": true,
+  "providerWrites": 0,
+  "projects": [
+    {
+      "projectId": "cinepolis-abril-26",
+      "expectedVisits": 34,
+      "observedVisits": 35,
+      "delta": 1,
+      "sourceRow": {
+        "present": 35,
+        "unique": 35,
+        "min": 0,
+        "max": 35,
+        "duplicateGroups": [],
+        "gaps": [
+          1
+        ]
+      },
+      "sourceKey": {
+        "present": 34,
+        "duplicateGroups": []
+      },
+      "sourceSheet": {
+        "distinct": [
+          "ABRIL 26"
+        ]
+      },
+      "records": [
+        {
+          "id": "hr-94466495d87a0d3d",
+          "sourceRow": 2,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-fb3a347bd3a7ed85",
+          "sourceRow": 3,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-6d0d3d40b8b3d381",
+          "sourceRow": 4,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-862c23e646605e28",
+          "sourceRow": 5,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-6a2298bd05ee88bc",
+          "sourceRow": 6,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-8cb24d032fc4a44f",
+          "sourceRow": 7,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-1508cd6cd58d6836",
+          "sourceRow": 8,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-ac7e44dfcbf18de8",
+          "sourceRow": 9,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-201a235fb3b22a37",
+          "sourceRow": 10,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-7d0083dcba89148e",
+          "sourceRow": 11,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-4e08d5f53c2966a5",
+          "sourceRow": 12,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-f1f77dd7775744d2",
+          "sourceRow": 13,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-019164f5d22fc032",
+          "sourceRow": 14,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-6dbf99069903295c",
+          "sourceRow": 15,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-1dfb5d65ad2ed210",
+          "sourceRow": 16,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-2083745ba8c8a0ec",
+          "sourceRow": 17,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-05e72ed19d9d5c57",
+          "sourceRow": 18,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-f34e2fb28be887c8",
+          "sourceRow": 19,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-2d5532fdb2b8302d",
+          "sourceRow": 20,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-6e45241ffe5a9880",
+          "sourceRow": 21,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-169f606288372023",
+          "sourceRow": 22,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-ef26fcd2f3148823",
+          "sourceRow": 23,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-42875a99acff1123",
+          "sourceRow": 24,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-658e4703ffa3e308",
+          "sourceRow": 25,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-f79c65b40b34571c",
+          "sourceRow": 26,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-577e06288974050e",
+          "sourceRow": 27,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-14dfad39f7fbedc8",
+          "sourceRow": 28,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-5823f5744d6793a3",
+          "sourceRow": 29,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-b562720e4f1082bb",
+          "sourceRow": 30,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-cb9a62a79d186be5",
+          "sourceRow": 31,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-0190796980c3585a",
+          "sourceRow": 32,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-215f5f816f5c9b6e",
+          "sourceRow": 33,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-7420e6bd4a8deb96",
+          "sourceRow": 34,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "hr-27fbb39acb6543e6",
+          "sourceRow": 35,
+          "sourceKeyPresent": true,
+          "sourceSheet": "ABRIL 26"
+        },
+        {
+          "id": "sprint5-visit-mutation-no-real-data",
+          "sourceRow": null,
+          "sourceKeyPresent": false,
+          "sourceSheet": null
+        }
+      ],
+      "recordsWithShopperId": 35
+    },
+    {
+      "projectId": "cinepolis-junio-26-hn",
+      "expectedVisits": 10,
+      "observedVisits": 11,
+      "delta": 1,
+      "sourceRow": {
+        "present": 11,
+        "unique": 11,
+        "min": 2,
+        "max": 12,
+        "duplicateGroups": [],
+        "gaps": []
+      },
+      "sourceKey": {
+        "present": 11,
+        "duplicateGroups": []
+      },
+      "sourceSheet": {
+        "distinct": [
+          "JUNIO 26 HN"
+        ]
+      },
+      "records": [
+        {
+          "id": "hr-a0b66347030dc42b",
+          "sourceRow": 2,
+          "sourceKeyPresent": true,
+          "sourceSheet": "JUNIO 26 HN"
+        },
+        {
+          "id": "hr-074e8762c5ef6e7a",
+          "sourceRow": 3,
+          "sourceKeyPresent": true,
+          "sourceSheet": "JUNIO 26 HN"
+        },
+        {
+          "id": "hr-263956c31dab71bd",
+          "sourceRow": 4,
+          "sourceKeyPresent": true,
+          "sourceSheet": "JUNIO 26 HN"
+        },
+        {
+          "id": "hr-6697d557acb579b3",
+          "sourceRow": 5,
+          "sourceKeyPresent": true,
+          "sourceSheet": "JUNIO 26 HN"
+        },
+        {
+          "id": "hr-cbcf3f481473da98",
+          "sourceRow": 6,
+          "sourceKeyPresent": true,
+          "sourceSheet": "JUNIO 26 HN"
+        },
+        {
+          "id": "hr-bb069c82c275d882",
+          "sourceRow": 7,
+          "sourceKeyPresent": true,
+          "sourceSheet": "JUNIO 26 HN"
+        },
+        {
+          "id": "hr-02ad5397e4106202",
+          "sourceRow": 8,
+          "sourceKeyPresent": true,
+          "sourceSheet": "JUNIO 26 HN"
+        },
+        {
+          "id": "hr-ed4a63cafe53712d",
+          "sourceRow": 9,
+          "sourceKeyPresent": true,
+          "sourceSheet": "JUNIO 26 HN"
+        },
+        {
+          "id": "hr-fc81c63167fa1de0",
+          "sourceRow": 10,
+          "sourceKeyPresent": true,
+          "sourceSheet": "JUNIO 26 HN"
+        },
+        {
+          "id": "hr-efdd1b6c1c01f566",
+          "sourceRow": 11,
+          "sourceKeyPresent": true,
+          "sourceSheet": "JUNIO 26 HN"
+        },
+        {
+          "id": "hr-58fb469666080189",
+          "sourceRow": 12,
+          "sourceKeyPresent": true,
+          "sourceSheet": "JUNIO 26 HN"
+        }
+      ],
+      "recordsWithShopperId": 11
+    }
+  ],
+  "conclusion": "TWO_OVERAGES_LOCATED__REVIEW_STABLE_KEYS_BEFORE_ANY_WRITE",
+  "safety": {
+    "documentWrites": 0,
+    "authWrites": 0,
+    "storageWrites": 0,
+    "rulesWrites": 0,
+    "hostingDeploys": 0,
+    "production": false,
+    "merge": false,
+    "piiExported": false
+  }
+}

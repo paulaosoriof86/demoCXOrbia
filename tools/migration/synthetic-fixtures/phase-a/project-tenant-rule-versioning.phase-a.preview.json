@@ -1,0 +1,37 @@
+{
+  "sourceSafe": true,
+  "containsRawSensitiveData": false,
+  "isSyntheticOrSanitized": true,
+  "ruleSets": [
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "ruleSetId": "ruleset-visit-lifecycle-preview-001",
+      "ruleSetVersion": "v1-preview",
+      "ruleSetType": "visit_lifecycle_rules",
+      "status": "ready_for_review",
+      "effectiveFrom": "2026-07-01",
+      "createdByRef": "user-ref-paula-preview",
+      "reviewedByRef": "reviewer-ref-backend-preview",
+      "sourceRuleRef": "source-rule-ref-visit-lifecycle-preview",
+      "changeType": "non_breaking_addition",
+      "previousRuleSetId": "ruleset-visit-lifecycle-preview-000",
+      "previousRuleSetVersion": "v0-preview"
+    },
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "ruleSetId": "ruleset-payment-preview-001",
+      "ruleSetVersion": "v1-preview",
+      "ruleSetType": "liquidation_payment_rules",
+      "status": "human_review_required",
+      "effectiveFrom": "2026-07-01",
+      "createdByRef": "user-ref-paula-preview",
+      "reviewedByRef": "reviewer-ref-finance-preview",
+      "sourceRuleRef": "source-rule-ref-liquidation-payment-preview",
+      "changeType": "payment_rule_change",
+      "previousRuleSetId": "ruleset-payment-preview-000",
+      "previousRuleSetVersion": "v0-preview"
+    }
+  ]
+}

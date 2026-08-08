@@ -1,0 +1,177 @@
+name: CXOrbia C6 Human Login Shopper Identity Audit
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - backend/config/corte6-human-login-shopper-identity-audit.json
+
+permissions:
+  contents: read
+  statuses: write
+
+concurrency:
+  group: cxorbia-c6-human-login-shopper-identity-audit
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  REQUEST_FILE: backend/config/corte6-human-login-shopper-identity-audit.json
+  PRIVATE_DIR: .tmp/c6-human-login-shopper-identity-private
+  OUT_DIR: .tmp/c6-human-login-shopper-identity-audit
+  DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+
+jobs:
+  audit:
+    name: Audit human login and all Shopper identities read-only
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Checkout exact live branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: docs-tya-v6-v71-audit
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Exclude ephemeral evidence
+        run: printf '%s\n' '.tmp/' 'gha-creds-*.json' >> .git/info/exclude
+
+      - name: Read request state
+        id: request
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const x=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${x.enabled===true?'true':'false'}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`target=${x.targetHeadSha||''}\n`);
+          NODE
+
+      - name: Record disabled request safely
+        if: steps.request.outputs.enabled != 'true'
+        run: echo "Controlled identity audit request disabled; no provider reads executed."
+
+      - name: Validate exact one-shot authorization
+        if: steps.request.outputs.enabled == 'true'
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const {execFileSync}=require('child_process');
+          const x=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          if(x.schemaVersion!=='cxorbia.c6.human-login-shopper-identity-audit.v1')throw new Error('request_schema_invalid');
+          if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7)throw new Error('repository_lane_invalid');
+          if(x.enabled!==true||x.consumed!==false||x.status!=='authorized_execute_once'||x.authorizedBy!=='Paula')throw new Error('authorization_state_invalid');
+          if(x.targetHeadSha!==parent||!x.targetHeadSha||head===parent)throw new Error('target_head_invalid');
+          if(changed.length!==1||changed[0]!==process.env.REQUEST_FILE)throw new Error('request_commit_scope_invalid:'+changed.join(','));
+          if(Number(x.allowedExecutions)!==1||x.providerReads!==true||x.providerWrites!==false)throw new Error('readonly_scope_invalid');
+          for(const key of ['repositoryWrites','dataWrites','deploy','merge','production','firestoreWrites','authWrites','passwordChanges','passwordResets','rulesWrites','storageWrites','hrWrites','make','gemini','payments']){
+            if(x.safeState?.[key]!==false)throw new Error('unsafe_scope_'+key);
+          }
+          NODE
+
+      - name: Install transient audit dependency
+        if: steps.request.outputs.enabled == 'true'
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0
+
+      - name: Prepare existing DEV credential privately
+        if: steps.request.outputs.enabled == 'true'
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$PRIVATE_DIR" "$OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs');
+          const raw=process.env.EXISTING_DEV_JSON||'';
+          let p=null;try{p=JSON.parse(raw);}catch{}
+          if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.client_email&&p.private_key))throw new Error('credential_invalid');
+          fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
+          NODE
+
+      - name: Execute source-safe identity audit
+        if: steps.request.outputs.enabled == 'true'
+        id: audit
+        continue-on-error: true
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/c6-human-login-shopper-identity-private/credentials.json
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+          CXORBIA_AUDIT_TARGET_HEAD: ${{ steps.request.outputs.target }}
+        run: |
+          set +e
+          node --check tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs
+          check_code=$?
+          if [ "$check_code" != '0' ]; then
+            echo "exit_code=$check_code" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          node tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs "$REQUEST_FILE"
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Capture repository delta evidence
+        if: always() && steps.request.outputs.enabled == 'true'
+        run: |
+          mkdir -p .tmp/c6-human-login-shopper-identity-audit/repository-status
+          git status --porcelain=v1 > .tmp/c6-human-login-shopper-identity-audit/repository-status/status.txt
+          git diff --name-status > .tmp/c6-human-login-shopper-identity-audit/repository-status/tracked.txt
+          git ls-files --others --exclude-standard > .tmp/c6-human-login-shopper-identity-audit/repository-status/untracked.txt
+
+      - name: Upload sanitized evidence
+        if: always() && steps.request.outputs.enabled == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-c6-human-login-shopper-identity-audit-${{ github.run_id }}
+          path: |
+            .tmp/c6-human-login-shopper-identity-audit
+            .tmp/cxorbia-readonly-post-gates-runner
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Publish observable commit status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          AUDIT_EXIT_CODE: ${{ steps.audit.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          ENABLED='${{ steps.request.outputs.enabled }}'
+          STATE=success
+          DESC='SKIPPED_DISABLED_REQUEST'
+          if [ "$ENABLED" = 'true' ]; then
+            if [ "${AUDIT_EXIT_CODE:-999}" = '0' ]; then
+              DESC='PASS_C6_HUMAN_LOGIN_SHOPPER_IDENTITY_AUDIT'
+            else
+              STATE=failure
+              DESC='HOLD_C6_HUMAN_LOGIN_SHOPPER_IDENTITY_AUDIT_STOP_RETRY'
+            fi
+          fi
+          gh api --method POST \
+            -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="$STATE" \
+            -f context='cxorbia/c6-human-login-shopper-identity-audit/overall' \
+            -f description="$DESC" \
+            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+
+      - name: Cleanup private material
+        if: always()
+        run: rm -rf "$PRIVATE_DIR"
+
+      - name: Enforce audit result
+        if: steps.request.outputs.enabled == 'true'
+        run: test "${{ steps.audit.outputs.exit_code }}" = "0"

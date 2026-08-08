@@ -1,0 +1,133 @@
+{
+  "configId": "phase-a-dev-auth-firestore-activation-readiness-post-v96-source-safe",
+  "status": "source_safe_readiness_only_not_connected",
+  "generatedAt": "2026-07-10",
+  "sourceLockRef": "app/docs/SOURCE-LOCK-EMPALME-PROTOTIPO-POST-V96-20260710.md",
+  "environment": {
+    "name": "firebase_dev_new_clean_pending",
+    "projectId": null,
+    "databaseId": null,
+    "authDomain": null,
+    "storageBucket": null,
+    "configuredOutsideRepo": false,
+    "legacyProjectAllowed": false
+  },
+  "activationFlags": {
+    "authProvider": false,
+    "authUsers": false,
+    "claimsWrite": false,
+    "firestoreConnection": false,
+    "rulesDeploy": false,
+    "protectedReads": false,
+    "protectedWrites": false,
+    "cxDataSwitch": false,
+    "realImport": false,
+    "hrWriteback": false,
+    "make": false,
+    "gemini": false,
+    "storage": false,
+    "payments": false,
+    "production": false
+  },
+  "activationArtifacts": {
+    "claimSource": "backend/contracts/phase-a-auth-dev-claims-taxonomy-seed-v2.json",
+    "personaSource": "backend/config/phase-a-role-taxonomy-personas.source-safe.json",
+    "projectSeed": "backend/config/tya-phase-a-platform-project-config.source-safe.json",
+    "protectedCollections": "backend/config/phase-a-protected-firestore-collections.source-safe.json",
+    "protectedRoutes": "backend/config/phase-a-protected-read-access.routes.source-safe.json",
+    "sourceSafeCandidates": "backend/config/phase-a-hr-source-safe-to-protected-candidates.source-safe.json",
+    "moduleReadiness": "backend/config/phase-a-module-readiness-matrix.source-safe.json",
+    "readinessBuckets": "backend/config/phase-a-readiness-buckets.source-safe.json",
+    "connectionReadiness": "backend/config/phase-a-real-connection-readiness-map.source-safe.json",
+    "rulesDraft": "backend/rules/firestore.phase-a-protected-dev.rules.draft"
+  },
+  "requiredPersonas": [
+    "tenantOwner",
+    "franchiseOwner",
+    "countryRepresentative",
+    "operationsCoordinator",
+    "projectCoordinator",
+    "fieldRepresentative",
+    "financeOperator",
+    "certificationOperator",
+    "clientBrandAdmin",
+    "clientBrandViewer",
+    "shopperEvaluator"
+  ],
+  "requiredTechnicalRoles": [
+    "tenantAdmin",
+    "projectAdmin",
+    "financeAdmin",
+    "certificationAdmin",
+    "clientAdmin",
+    "clientViewer",
+    "shopper"
+  ],
+  "requiredProtectedDomains": [
+    "shopperProtectedProfiles",
+    "shopperIdentityLinks",
+    "certificationAttempts",
+    "certificationCarryovers",
+    "protectedLiquidations",
+    "protectedPaymentBatches",
+    "reviewQueue",
+    "protectedReadAudit"
+  ],
+  "requiredSourceSafeCandidateGroups": [
+    "shopperPublicRefs",
+    "shopperIdentityLinkCandidates",
+    "certificationCarryoverCandidates",
+    "protectedLiquidationCandidates",
+    "protectedPaymentBatchCandidates",
+    "reviewQueueCandidates",
+    "auditEventCandidates"
+  ],
+  "tenantProjectCheck": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "seedOnly": true,
+    "projectIsNotPeriod": true,
+    "periodIsProjectFilter": true,
+    "globalHardcodeAllowed": false
+  },
+  "postV96Checks": {
+    "adminModulesFailClosed": true,
+    "clientMultiProject": true,
+    "unknownRoleDefaultsDeny": true,
+    "unknownPersonaDefaultsDeny": true,
+    "customRoleRequiresExplicitMapping": true,
+    "visualSmokePending": true,
+    "productionGo": false
+  },
+  "allowedNow": [
+    "static contract validation",
+    "JSON and script syntax validation",
+    "source-safe readiness report generation",
+    "human review of role and collection matrix"
+  ],
+  "blockedNow": [
+    "Firebase project configuration",
+    "Auth provider configuration",
+    "Auth user creation",
+    "custom claims write",
+    "Firestore rule deploy",
+    "Firestore read or write",
+    "CX.data runtime switch",
+    "real import",
+    "HR writeback",
+    "Make, Gemini or Storage activation",
+    "payment execution",
+    "production"
+  ],
+  "safety": {
+    "sourceSafe": true,
+    "containsSecrets": false,
+    "containsSensitiveData": false,
+    "containsRawEmails": false,
+    "containsPasswords": false,
+    "containsRawHr": false,
+    "containsBankData": false,
+    "containsDpi": false,
+    "containsPrivateUrls": false
+  }
+}

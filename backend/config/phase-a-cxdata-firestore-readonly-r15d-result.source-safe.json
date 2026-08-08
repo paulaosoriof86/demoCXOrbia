@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "1.0.0",
+  "reportId": "phase-a-cxdata-firestore-readonly-r15d-result",
+  "generatedAt": "2026-07-13T18:10:55.204Z",
+  "decision": "PASS_WITH_REVIEW_READONLY_CXDATA_ADAPTER_FALLBACK_R15D",
+  "target": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "preferredProjectId": "cinepolis",
+    "preferredProjectFound": false,
+    "knownFallbackSelected": true
+  },
+  "snapshot": {
+    "projects": 29,
+    "shoppers": 215,
+    "visits": 619,
+    "postulations": 3,
+    "certifications": 0,
+    "liquidations": 255,
+    "shopperBenefits": 572
+  },
+  "facade": {
+    "requiredMembers": 19,
+    "presentMembers": 19,
+    "missingMembers": 0,
+    "compatible": true,
+    "selectedProjectExists": true,
+    "selectedProjectVisits": 36,
+    "selectedProjectPostulations": 0,
+    "synchronousReadsOperational": true
+  },
+  "security": {
+    "forbiddenFieldViolations": 0,
+    "allowlistedProjectionSafe": true,
+    "rawRecordsPersisted": false,
+    "identifiersPersisted": false,
+    "piiPersisted": false
+  },
+  "writeGates": {
+    "checkedMethods": 7,
+    "allBlocked": true,
+    "writesExecuted": 0
+  },
+  "summary": {
+    "basePass": true,
+    "readOnlyFacadeReadyForControlledConnectionPoint": true,
+    "frontendConnectionExecuted": false,
+    "nextGate": "CONTROLLED_SINGLE_CXDATA_CONNECTION_POINT_READONLY"
+  },
+  "evidence": {
+    "workflowRunId": 29273404696,
+    "artifactDigest": "sha256:4d4259de299651a4c85a9dea4b527a6f9b1aaa717e15ca66ebad1596c12f4250"
+  },
+  "safeState": {
+    "providerReads": true,
+    "firestoreWrites": false,
+    "authWrites": false,
+    "claimsWrites": false,
+    "storageWrites": false,
+    "imports": false,
+    "deploy": false,
+    "runtimeSwitch": false,
+    "production": false,
+    "piiOutput": false
+  }
+}

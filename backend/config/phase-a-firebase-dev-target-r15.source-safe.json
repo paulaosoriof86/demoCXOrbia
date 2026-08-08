@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0.0",
+  "configId": "phase-a-firebase-dev-target-r15",
+  "generatedAt": "2026-07-13T16:50:50.143Z",
+  "target": {
+    "projectId": "cxorbia-tya-dev-260713-r15a",
+    "environment": "DEV",
+    "newProjectCreated": false,
+    "firebaseAdded": false,
+    "emptyBaselineVerified": false
+  },
+  "sourceRun": {
+    "decision": "BLOCKED_TARGET_PROJECT_EXISTENCE_UNVERIFIED",
+    "report": "backend/config/phase-a-firebase-dev-new-empty-r15.source-safe.json"
+  },
+  "gates": {
+    "adapterConfigurationAllowed": false,
+    "providerWriteMaterializationAllowed": false,
+    "authInitializationAllowed": false,
+    "firestoreInitializationAllowed": false,
+    "storageInitializationAllowed": false,
+    "importsAllowed": false,
+    "deployAllowed": false,
+    "productionAllowed": false
+  },
+  "safeState": {
+    "sourceSafe": true,
+    "secretsIncluded": false,
+    "credentialIncluded": false,
+    "piiIncluded": false,
+    "imports": false,
+    "deploy": false,
+    "production": false
+  }
+}

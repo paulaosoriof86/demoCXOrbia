@@ -1,0 +1,96 @@
+{
+  "contractId": "phase-a-go-dev-decision-status-matrix-v1",
+  "project": "CXOrbia TyA",
+  "date": "2026-07-09",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pr": 7,
+  "status": "documented_only",
+  "purpose": "Classify the current GO DEV decision status by item without requesting manual action yet.",
+  "decisionNow": "need_local_evidence_before_ready_to_request_go_dev",
+  "decisionIsNot": [
+    "go_dev_authorized",
+    "dev_active",
+    "production_ready",
+    "blocked_by_known_hard_stop"
+  ],
+  "matrix": [
+    {
+      "item": "pr_7_state",
+      "status": "ready",
+      "evidence": "PR open draft no merge"
+    },
+    {
+      "item": "baseline_v91",
+      "status": "ready",
+      "evidence": "baseline and PR body documented"
+    },
+    {
+      "item": "automated_gates",
+      "status": "ready_on_prior_head",
+      "evidence": "PR body records recent gates success on prior head"
+    },
+    {
+      "item": "human_smoke_console",
+      "status": "pending_evidence",
+      "reason": "PR body still lists focused human smoke as next block before RC decision"
+    },
+    {
+      "item": "clean_database_target",
+      "status": "pending_go_dev",
+      "reason": "Clean backend resources are only allowed after explicit GO DEV"
+    },
+    {
+      "item": "secrets_out_of_repo",
+      "status": "ready_as_policy",
+      "reason": "Policy documented; actual secrets not requested yet"
+    },
+    {
+      "item": "cx_data_single_switch",
+      "status": "prepared_not_executed",
+      "reason": "Adapter plan exists; not enabled"
+    },
+    {
+      "item": "source_safe_input_path",
+      "status": "pending_evidence_or_later_input",
+      "reason": "Do not request unless needed for dry-run or GO DEV"
+    },
+    {
+      "item": "dry_run_import_plan",
+      "status": "prepared_not_executed",
+      "reason": "Dry-run plan exists; import not executed"
+    },
+    {
+      "item": "review_queue_audit_events",
+      "status": "ready_as_contract",
+      "reason": "ReviewQueue and audit plans documented"
+    },
+    {
+      "item": "rollback_disable_path",
+      "status": "ready_as_contract",
+      "reason": "Rollback/audit plan documented"
+    },
+    {
+      "item": "claude_academia_impact",
+      "status": "documented",
+      "reason": "Addenda created for Claude and Academia"
+    },
+    {
+      "item": "hard_stops",
+      "status": "no_known_hard_stop_from_docs",
+      "reason": "Known state remains document-only with no runtime/write/deploy"
+    }
+  ],
+  "nextDecisionBoundary": "focused_human_smoke_or_equivalent_evidence_then_ready_to_request_go_dev",
+  "manualRequestPolicy": "Do not request manual action until this is the next necessary blocker.",
+  "paulaNeededNow": false,
+  "stateSafe": {
+    "runtimeActive": false,
+    "devConnectionActive": false,
+    "imports": false,
+    "writes": false,
+    "deploy": false,
+    "production": false,
+    "payments": false
+  }
+}

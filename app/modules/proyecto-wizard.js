@@ -4,14 +4,21 @@
    Crea un proyecto persistente y AISLADO (no afecta a los existentes). */
 window.CX = window.CX || {};
 
+/* qMode: normaliza el modo de cuestionario legacy → canónico */
+function qMode(m){ if(m==='externa')return 'externo_general'; if(m==='link')return 'externo_visita'; return m||'interna'; }
+
 CX.projectWizard = function(data, ui){
   const st = {
     step:1, total:5,
     name:'', industry:'', countries:[], currency:{},
     honRecibe:{}, honPaga:{}, boleto:{}, comboAmt:{}, combo:'',
     modelo:'directo', isr:5, regalias:0,
+    frecuencia:'mensual', periodoMedicion:'igual', ventanas:'',
     cuestModo:'interna', cuestUrl:'',
     hrFuente:'Hoja creada en plataforma',
+    revision:{consultora:true, cliente:false},
+    submitido:{quien:'plataforma', rol:'hr'},
+    contactos:{evidencias:'', soporte:'', coordinacion:''},
     scenarios:'', restriccion:'', diasPago:30, conocimiento:'',
   };
   const wrap=ui.el('div');
@@ -54,10 +61,12 @@ CX.projectWizard = function(data, ui){
 
     if(st.step===3) return `
       <label class="lbl">Modelo del proyecto</label>
-      <div class="grid g2" style="gap:10px;margin-bottom:14px">
+      <div class="cards-grid" style="margin-bottom:14px">
         <label class="card hov card-p" style="cursor:pointer;${st.modelo==='directo'?'border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light)':''}"><input type="radio" name="wmod" value="directo" ${st.modelo==='directo'?'checked':''} style="margin-right:6px"><b>Facturado directamente</b><div style="font-size:11.5px;color:var(--t3);margin-top:4px">Tú facturas al cliente. Se registran costos: honorarios, ISR/impuestos, regalías.</div></label>
-        <label class="card hov card-p" style="cursor:pointer;${st.modelo==='delegado'?'border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light)':''}"><input type="radio" name="wmod" value="delegado" ${st.modelo==='delegado'?'checked':''} style="margin-right:6px"><b>Delegado (franquicia)</b><div style="font-size:11.5px;color:var(--t3);margin-top:4px">Solo se relaciona el honorario recibido y los pagos asociados.</div></label>
+        <label class="card hov card-p" style="cursor:pointer;${st.modelo==='delegado'?'border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light)':''}"><input type="radio" name="wmod" value="delegado" ${st.modelo==='delegado'?'checked':''} style="margin-right:6px"><b>Delegado</b><div style="font-size:11.5px;color:var(--t3);margin-top:4px">Coordinacion delegada a un aliado; remuneracion configurada por proyecto.</div></label>
+        <label class="card hov card-p" style="cursor:pointer;${st.modelo==='regional'?'border-color:var(--brand);box-shadow:0 0 0 2px var(--brand-light)':''}"><input type="radio" name="wmod" value="regional" ${st.modelo==='regional'?'checked':''} style="margin-right:6px"><b>Regional</b><div style="font-size:11.5px;color:var(--t3);margin-top:4px">Operacion multipais coordinada a nivel regional; reparto configurable cuando corresponda.</div></label>
       </div>
+      <div class="bdg bdg-n" style="margin-bottom:10px">Los valores se configuran por proyecto; esta pantalla no calcula montos ni porcentajes.</div>
       <div id="directoCosts" style="${st.modelo==='directo'?'':'display:none'}">
         <div class="grid g2" style="gap:10px">
           <div><label class="lbl">ISR / impuesto local (%)</label><input class="inp" id="f_isr" type="number" value="${st.isr}"></div>
@@ -71,10 +80,10 @@ CX.projectWizard = function(data, ui){
       <label class="lbl">Modo del cuestionario</label>
       <select class="sel" id="f_cmodo" style="margin-bottom:10px">
         <option value="interna" ${st.cuestModo==='interna'?'selected':''}>En la plataforma (se llena dentro)</option>
-        <option value="externa" ${st.cuestModo==='externa'?'selected':''}>Plataforma externa (con credenciales)</option>
-        <option value="link" ${st.cuestModo==='link'?'selected':''}>Link distinto por cada visita</option>
+        <option value="externo_general" ${(st.cuestModo==='externo_general'||st.cuestModo==='externa')?'selected':''}>Externo · link general del proyecto</option>
+        <option value="externo_visita" ${(st.cuestModo==='externo_visita'||st.cuestModo==='link')?'selected':''}>Externo · link distinto por cada visita (desde HR)</option>
       </select>
-      <div id="cUrlWrap" style="${st.cuestModo==='interna'?'display:none':''};margin-bottom:12px"><label class="lbl">URL base / plataforma externa</label><input class="inp" id="f_curl" value="${st.cuestUrl}" placeholder="https://..."></div>
+      <div id="cUrlWrap" style="${(qMode(st.cuestModo)==='interna'||qMode(st.cuestModo)==='externo_visita')?'display:none':''};margin-bottom:12px"><label class="lbl">URL general del cuestionario (link único del proyecto)</label><input class="inp" id="f_curl" value="${st.cuestUrl}" placeholder="https://..."></div>
       <label class="lbl">Origen de la Hoja de Ruta</label>
       <select class="sel" id="f_hr" style="margin-bottom:12px">
         <option ${st.hrFuente==='Hoja creada en plataforma'?'selected':''}>Hoja creada en plataforma</option>
@@ -83,7 +92,13 @@ CX.projectWizard = function(data, ui){
       </select>
       <div style="margin-bottom:6px"><label class="lbl">Escenarios (separados por coma)</label><input class="inp" id="f_scn" value="${st.scenarios}" placeholder="Compra estándar, Fin de semana, Incógnito"></div>
       <div class="flex" style="gap:8px;margin:8px 0"><button class="btn btn-soft btn-sm" id="f_import" type="button">📥 Importar instructivo / HR (IA)</button></div>
-      <div style="font-size:11.5px;color:var(--t3)">Los cuestionarios pueden tener versiones por escenario, marca o tipo de establecimiento (editables luego en el módulo Cuestionarios).</div>`;
+      <div style="font-size:11.5px;color:var(--t3);margin-bottom:14px">Los cuestionarios pueden tener versiones por escenario, marca o tipo de establecimiento (editables luego en el módulo Cuestionarios).</div>
+      <label class="lbl">Frecuencia del programa</label>
+      <select class="sel" id="f_freq" style="margin-bottom:10px">${['mensual','bimensual','trimestral','semestral','anual','campaña'].map(f=>`<option value="${f}" ${st.frecuencia===f?'selected':''}>${f[0].toUpperCase()+f.slice(1)}</option>`).join('')}</select>
+      <label class="lbl">Periodo de medición</label>
+      <select class="sel" id="f_medi" style="margin-bottom:10px">${[['igual','Igual a la frecuencia'],['semanal','Semanal'],['quincenal','Quincenal'],['mensual','Mensual'],['personalizado','Personalizado']].map(([v,l])=>`<option value="${v}" ${st.periodoMedicion===v?'selected':''}>${l}</option>`).join('')}</select>
+      <div style="margin-bottom:6px"><label class="lbl">Ventanas de medición (opcional, separadas por coma — ej. Quincena 1, Quincena 2)</label><input class="inp" id="f_vent" value="${st.ventanas}" placeholder="Se deja vacío si no aplica"></div>
+      <div style="font-size:11px;color:var(--t3)">La Hoja de Ruta determina a qué ventana pertenece cada visita; esta lista solo sirve para alertas/metas, nunca asume 50/50 automático.</div>`;
 
     // step 5
     const recOK=st.countries.every(c=>st.honRecibe[c]!=null);
@@ -96,7 +111,8 @@ CX.projectWizard = function(data, ui){
         <div style="font-size:12px;color:var(--t2);line-height:1.7">
           <b>${st.name||'(sin nombre)'}</b> · ${st.industry||'—'}<br>
           Países: ${st.countries.join(', ')||'—'} · Modelo: <b>${st.modelo}</b>${st.modelo==='directo'?` (ISR ${st.isr}% · regalías ${st.regalias}%)`:''}<br>
-          Cuestionario: ${st.cuestModo} · HR: ${st.hrFuente} · pago ≈ ${st.diasPago} días
+          Cuestionario: ${st.cuestModo} · HR: ${st.hrFuente} · pago ≈ ${st.diasPago} días<br>
+          Frecuencia: <b>${st.frecuencia}</b> · Medición: <b>${st.periodoMedicion==='igual'?'igual a la frecuencia':st.periodoMedicion}</b>${st.ventanas?' · Ventanas: '+st.ventanas:''}
         </div>
       </div>
       ${ui.aiBox('Al crear, se genera un proyecto AISLADO con su propio dashboard, KPIs, reglas y finanzas. No afecta a los proyectos existentes.','Proyecto aislado e inteligente')}`;
@@ -118,7 +134,8 @@ CX.projectWizard = function(data, ui){
     if(st.step===3){ const r=wrap.querySelector('input[name="wmod"]:checked'); if(r)st.modelo=r.value;
       if(g('f_isr')!=null)st.isr=+g('f_isr')||0; if(g('f_reg')!=null)st.regalias=+g('f_reg')||0; }
     if(st.step===4){ if(g('f_cmodo')!=null)st.cuestModo=g('f_cmodo'); if(g('f_curl')!=null)st.cuestUrl=g('f_curl');
-      if(g('f_hr')!=null)st.hrFuente=g('f_hr'); if(g('f_scn')!=null)st.scenarios=g('f_scn'); }
+      if(g('f_hr')!=null)st.hrFuente=g('f_hr'); if(g('f_scn')!=null)st.scenarios=g('f_scn');
+      if(g('f_freq')!=null)st.frecuencia=g('f_freq'); if(g('f_medi')!=null)st.periodoMedicion=g('f_medi'); if(g('f_vent')!=null)st.ventanas=g('f_vent'); }
     if(st.step===5){ if(g('f_res')!=null)st.restriccion=g('f_res'); if(g('f_dias')!=null)st.diasPago=+g('f_dias')||30; if(g('f_con')!=null)st.conocimiento=g('f_con'); }
   };
 
@@ -130,12 +147,18 @@ CX.projectWizard = function(data, ui){
       name:st.name, client:st.name, industry:st.industry||'Proyecto', countries:st.countries,
       currency:st.currency, honorario:st.honPaga, honRecibe:st.honRecibe, boleto:st.boleto, comboAmt:st.comboAmt, combo:st.combo||null,
       modelo:st.modelo, isr:st.isr, regalias:st.regalias,
+      frecuencia:st.frecuencia, periodoMedicion:st.periodoMedicion,
+      periodicidad:st.frecuencia.charAt(0).toUpperCase()+st.frecuencia.slice(1),
+      periodoCumpl:st.periodoMedicion==='igual'?'Igual a la ronda':(st.periodoMedicion.charAt(0).toUpperCase()+st.periodoMedicion.slice(1)),
+      ventanas:(st.ventanas||'').split(',').map(s=>s.trim()).filter(Boolean),
       scenarios:(st.scenarios||'General').split(',').map(s=>s.trim()).filter(Boolean),
       canales:['Presencial','Online'], formato:'Evaluación', ronda:'JUN 26',
       restriccion:st.restriccion, conocimiento:st.conocimiento,
-      cuestionario:{modo:st.cuestModo,url:st.cuestUrl,label:st.cuestModo==='interna'?'Cuestionario en plataforma':st.cuestModo==='link'?'Link por visita':'Plataforma externa'},
+      cuestionario:{modo:qMode(st.cuestModo),url:st.cuestUrl,visitLinkField:'questionnaireLink',label:qMode(st.cuestModo)==='interna'?'Cuestionario en plataforma':qMode(st.cuestModo)==='externo_visita'?'Link por visita':'Externo · link general'},
       pago:{diasPago:st.diasPago,logica:'Pago ~'+st.diasPago+' días tras submitir',moneda:'local'},
       hrMap:{fuente:st.hrFuente,cols:['Sucursal','Ciudad','País','Escenario']},
+      hrFuente:{origen:st.hrFuente==='Hoja creada en plataforma'?'nativa':'externa', etiqueta:st.hrFuente},
+      revision:st.revision, submitido:st.submitido, contactos:st.contactos,
       geoloc:false, accent:'#2196d3', quincenas:['Quincena 1','Quincena 2'], nVisitas:0,
     };
     const p=data.addProject(cfg);
@@ -148,7 +171,7 @@ CX.projectWizard = function(data, ui){
     const back=wrap.querySelector('#wBack'); if(back)back.addEventListener('click',()=>{persist();st.step=Math.max(1,st.step-1);render();});
     wrap.querySelector('#wNext').addEventListener('click',()=>{persist();if(st.step===st.total){create();}else{st.step++;render();}});
     const modR=wrap.querySelectorAll('input[name="wmod"]'); modR.forEach(r=>r.addEventListener('change',()=>{st.modelo=r.value;const d=wrap.querySelector('#directoCosts');if(d)d.style.display=st.modelo==='directo'?'':'none';}));
-    const cm=wrap.querySelector('#f_cmodo'); if(cm)cm.addEventListener('change',()=>{const w=wrap.querySelector('#cUrlWrap');if(w)w.style.display=cm.value==='interna'?'none':'';});
+    const cm=wrap.querySelector('#f_cmodo'); if(cm)cm.addEventListener('change',()=>{const w=wrap.querySelector('#cUrlWrap');if(w){const m=qMode(cm.value);w.style.display=(m==='interna'||m==='externo_visita')?'none':'';}});
     const ps=wrap.querySelector('#f_paisSearch'); if(ps)ps.addEventListener('input',()=>{const q=ps.value.toLowerCase();wrap.querySelectorAll('.wPaisRow').forEach(l=>{l.style.display=l.dataset.n.includes(q)?'':'none';});});
     const imp=wrap.querySelector('#f_import'); if(imp)imp.addEventListener('click',()=>importWizard());
   };

@@ -1,0 +1,217 @@
+{
+  "contract": "visit-reservation-window-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "hrWriteAllowed": false,
+  "authRealAllowed": false,
+  "purpose": "Define visit reservation, proposed dates, scheduling and rescheduling window control by availableFrom, franja and quincena, including admin/ops override and shopper score impact placeholders.",
+  "appliesTo": [
+    "postulation proposed date",
+    "admin assignment with proposed schedule",
+    "shopper scheduling",
+    "shopper rescheduling",
+    "ops/admin rescheduling",
+    "reservation hold before confirmed schedule"
+  ],
+  "collections": {
+    "visits": "tenants/{tenantId}/projects/{projectId}/visits/{visitId}",
+    "reservations": "tenants/{tenantId}/projects/{projectId}/visitReservations/{reservationId}",
+    "scheduleRequests": "tenants/{tenantId}/projects/{projectId}/scheduleRequests/{requestId}",
+    "overrideApprovals": "tenants/{tenantId}/projects/{projectId}/overrideApprovals/{approvalId}",
+    "shopperScoreEvents": "tenants/{tenantId}/projects/{projectId}/shopperScoreEvents/{scoreEventId}",
+    "auditEvents": "tenants/{tenantId}/projects/{projectId}/auditEvents/{eventId}"
+  },
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "visitId",
+    "hrRowId",
+    "reservationId",
+    "scheduleRequestId",
+    "assignmentId",
+    "postulationId",
+    "shopperId",
+    "country",
+    "periodId",
+    "quincena",
+    "franja",
+    "availableFrom",
+    "proposedDate",
+    "scheduledAt",
+    "reservationStatus",
+    "scheduleValidationStatus",
+    "overrideApprovalId",
+    "authorizedBy",
+    "authorizedReason",
+    "scoreImpactStatus"
+  ],
+  "reservationStatuses": [
+    "not_reserved",
+    "reserved_pending_schedule",
+    "reserved_with_proposed_date",
+    "scheduled_confirmed",
+    "reschedule_requested",
+    "rescheduled_confirmed",
+    "reservation_expired",
+    "released",
+    "cancelled",
+    "conflict_review_required"
+  ],
+  "scheduleValidationStatuses": [
+    "valid",
+    "before_available_from",
+    "outside_franja",
+    "outside_quincena",
+    "outside_project_rules",
+    "missing_required_date",
+    "future_or_past_rule_conflict",
+    "override_required",
+    "override_approved",
+    "override_rejected",
+    "conflict_review_required"
+  ],
+  "franjaRules": {
+    "WK": {
+      "label": "weekday",
+      "allowedDays": ["monday", "tuesday", "wednesday", "thursday", "friday"],
+      "defaultForCinepolis": true
+    },
+    "WKND": {
+      "label": "weekend",
+      "allowedDays": ["saturday", "sunday"],
+      "defaultForCinepolis": true
+    },
+    "projectConfigurable": true,
+    "notes": [
+      "Franja must be project-configurable, not hard-coded only to Cinepolis.",
+      "For Cinepolis, WK and WKND must validate against HR franja."
+    ]
+  },
+  "quincenaRules": {
+    "Q1": {
+      "allowedDayRange": "1-15"
+    },
+    "Q2": {
+      "allowedDayRange": "16-last_day_of_month"
+    },
+    "projectConfigurable": true,
+    "notes": [
+      "Date must be inside assigned quincena unless an authorized override exists.",
+      "Month and period must come from project/HR assignment context."
+    ]
+  },
+  "validationRules": [
+    "proposedDate from postulation must be >= availableFrom when availableFrom exists.",
+    "scheduledAt must be >= availableFrom when availableFrom exists.",
+    "rescheduledAt must be >= availableFrom when availableFrom exists.",
+    "proposedDate/scheduledAt/rescheduledAt must match visit franja (WK/WKND) unless override approved.",
+    "proposedDate/scheduledAt/rescheduledAt must be inside assigned quincena unless override approved.",
+    "A reservation does not mean HR was written.",
+    "A reservation must prevent duplicate visible availability for the same visit while active.",
+    "Expired reservations may release the visit only according to project rules.",
+    "All override approvals must preserve authorizedBy, authorizedAt, authorizedReason and overrideScope.",
+    "No silent overwrite between shopper request, admin approval and HR source."
+  ],
+  "overrideApproval": {
+    "allowedActors": ["super", "admin", "ops"],
+    "requiredFields": [
+      "tenantId",
+      "projectId",
+      "visitId",
+      "shopperId",
+      "requestedDate",
+      "failedRules",
+      "authorizedBy",
+      "authorizedAt",
+      "authorizedReason",
+      "overrideScope",
+      "scoreImpactDecision"
+    ],
+    "overrideScopes": [
+      "available_from",
+      "franja",
+      "quincena",
+      "project_rules",
+      "multiple_rules"
+    ],
+    "rules": [
+      "Admin/ops may approve an out-of-window visit only with reason and authorizer.",
+      "Override must be auditable and visible for backend review.",
+      "Override does not imply shopper fault unless explicitly classified."
+    ]
+  },
+  "shopperScoreImpact": {
+    "status": "placeholder_pending_scoring_contract",
+    "scoreImpactStatuses": [
+      "no_score_impact",
+      "shopper_fault_penalty_pending_rules",
+      "admin_authorized_no_penalty",
+      "external_or_client_authorized_no_penalty",
+      "manual_review_required"
+    ],
+    "rules": [
+      "If out-of-window scheduling is authorized for operational/client reasons, no automatic shopper penalty.",
+      "If out-of-window scheduling is caused by shopper fault, create score event for later ranking rules.",
+      "Exact shopper scoring criteria are pending a dedicated ranking/scoring contract and Paula validation.",
+      "Do not reduce score automatically until scoring rules are approved."
+    ]
+  },
+  "actions": {
+    "reserveVisitFromPostulation": {
+      "writesAllowedNow": false,
+      "requires": ["tenantId", "projectId", "visitId", "postulationId", "shopperId", "proposedDate"],
+      "validates": ["availableFrom", "franja", "quincena", "projectRules"]
+    },
+    "scheduleVisit": {
+      "writesAllowedNow": false,
+      "requires": ["tenantId", "projectId", "visitId", "assignmentId", "shopperId", "scheduledAt"],
+      "validates": ["availableFrom", "franja", "quincena", "projectRules"]
+    },
+    "requestReschedule": {
+      "writesAllowedNow": false,
+      "requires": ["tenantId", "projectId", "visitId", "assignmentId", "shopperId", "requestedDate", "reason"],
+      "validates": ["availableFrom", "franja", "quincena", "projectRules"]
+    },
+    "approveOutOfWindow": {
+      "writesAllowedNow": false,
+      "requires": ["tenantId", "projectId", "visitId", "shopperId", "authorizedBy", "authorizedReason", "failedRules"],
+      "sets": {
+        "scheduleValidationStatus": "override_approved"
+      }
+    },
+    "rejectOutOfWindow": {
+      "writesAllowedNow": false,
+      "requires": ["tenantId", "projectId", "visitId", "shopperId", "authorizedBy", "authorizedReason", "failedRules"],
+      "sets": {
+        "scheduleValidationStatus": "override_rejected"
+      }
+    }
+  },
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "shopper", "client", "consultant_partner"],
+    "manualsToUpdate": ["Reservations", "Scheduling windows", "Postulation proposed dates", "Rescheduling", "Out-of-window authorization", "Shopper ranking basics"],
+    "coursesToUpdate": ["Shopper scheduling rules", "Ops schedule validation", "Admin override approvals", "Cinepolis franja/quincena rules"],
+    "newLessons": [
+      "What reservation means",
+      "How availableFrom works",
+      "How WK and WKND franja works",
+      "How quincena validation works",
+      "How to request and approve out-of-window dates",
+      "When shopper score may be affected"
+    ]
+  },
+  "hardStops": [
+    "Do not call Make from this contract.",
+    "Do not write HR from this contract.",
+    "Do not write Firestore from this contract.",
+    "Do not auto-penalize shopper score until scoring rules are approved.",
+    "Do not treat a reservation as confirmed HR sync.",
+    "Do not allow out-of-window approval without authorizedBy and authorizedReason."
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "contractId": "liquidations-payments-phase-a-v1",
+  "status": "draft_safe_not_connected",
+  "generatedAt": "2026-07-08",
+  "purpose": "Define Phase A liquidations and payment-state control without executing real payments or exposing sensitive banking data.",
+  "phaseAContext": {
+    "visitsThroughJuneExecuted": true,
+    "junePendingIsPaymentsNotVisits": true,
+    "hrIsOperationalSource": true,
+    "multiProjectRequired": true,
+    "multiCountryCurrencyRequired": true
+  },
+  "safeState": {
+    "paymentProviderConnected": false,
+    "frontendConnected": false,
+    "paymentExecutionEnabled": false,
+    "paymentStateWritesEnabled": false,
+    "bankDataStoredInRepo": false,
+    "productionEnabled": false,
+    "containsSecrets": false,
+    "containsSensitiveData": false
+  },
+  "collections": {
+    "liquidations": {
+      "path": "tenants/{tenantId}/projects/{projectId}/liquidations/{liquidationId}",
+      "phaseA": true,
+      "notes": "One or more visit/assignment payment obligations grouped by period, shopper and project."
+    },
+    "paymentBatches": {
+      "path": "tenants/{tenantId}/projects/{projectId}/paymentBatches/{paymentBatchId}",
+      "phaseA": true,
+      "notes": "Prepared batch only; no real bank transfer execution from platform preview."
+    },
+    "paymentStateAudit": {
+      "path": "tenants/{tenantId}/projects/{projectId}/paymentStateAudit/{auditId}",
+      "phaseA": true,
+      "notes": "Immutable audit trail for payment/liquidation state transitions."
+    },
+    "paymentConflicts": {
+      "path": "tenants/{tenantId}/projects/{projectId}/paymentConflicts/{conflictId}",
+      "phaseA": true,
+      "notes": "Conflicts or mismatches between HR, visit state, questionnaire submit and liquidation state."
+    }
+  },
+  "requiredLiquidationKeys": [
+    "tenantId",
+    "projectId",
+    "liquidationId",
+    "shopperId",
+    "visitId",
+    "hrRowId",
+    "assignmentId",
+    "country",
+    "currency",
+    "periodKey",
+    "quincena",
+    "honorariumAmount",
+    "reimbursementAmount",
+    "totalAmount",
+    "status",
+    "source",
+    "auditRef"
+  ],
+  "requiredPaymentBatchKeys": [
+    "tenantId",
+    "projectId",
+    "paymentBatchId",
+    "periodKey",
+    "country",
+    "currency",
+    "status",
+    "liquidationIds",
+    "totalAmount",
+    "createdBy",
+    "createdAt",
+    "auditRef"
+  ],
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "liquidationId",
+    "paymentBatchId",
+    "shopperId",
+    "visitId",
+    "hrRowId",
+    "assignmentId",
+    "periodKey",
+    "country",
+    "currency"
+  ],
+  "statusModel": {
+    "liquidationStatuses": {
+      "pending_source_review": "Waiting for HR/source validation.",
+      "calculated_preview": "Amounts calculated as preview, not approved.",
+      "review_required": "Needs manual review due to mismatch, missing submit date or conflict.",
+      "approved_for_batch": "Approved to enter a prepared batch.",
+      "batched_prepared": "Included in a prepared batch, not paid.",
+      "payment_scheduled": "Payment date scheduled, not paid.",
+      "payment_reprogrammed": "Payment date changed with audit reason.",
+      "paid_confirmed_audited": "Payment marked paid only after evidence/audit.",
+      "disputed": "Shopper/admin dispute requires review.",
+      "cancelled_with_audit": "Cancelled with reason and audit reference."
+    },
+    "paymentBatchStatuses": {
+      "draft_preview": "Batch draft, not approved.",
+      "review_required": "Batch blocked by conflicts/missing evidence.",
+      "approved_prepared": "Prepared for payment workflow, not executed.",
+      "scheduled": "Scheduled but not paid.",
+      "partially_paid_audited": "Some liquidation items paid with evidence.",
+      "paid_confirmed_audited": "All items paid with evidence/audit.",
+      "cancelled_with_audit": "Batch cancelled with reason."
+    }
+  },
+  "sourceValidation": {
+    "hrQuestionnaireCompletedRequired": true,
+    "hrSubmittedDateRequiredForFinalPayment": true,
+    "estimatedPaymentDateRule": "Friday plus 15 days after submit date, configurable by project.",
+    "juneInitialCut": {
+      "required": true,
+      "notes": "June payment status must be represented for initial Phase A cutover because June visits are executed and pending item is payment control."
+    },
+    "conflictExamples": [
+      "visit marked paid without submit date",
+      "duplicate liquidation for same visit/shopper/period",
+      "HR assignment differs from platform assignment",
+      "amount mismatch against project rules",
+      "currency/country mismatch",
+      "payment support missing for paid state"
+    ]
+  },
+  "amountModel": {
+    "honorariumAmount": {
+      "type": "money",
+      "source": "projectPaymentRulesOrHR",
+      "required": true
+    },
+    "reimbursementAmount": {
+      "type": "money",
+      "source": "projectPaymentRulesOrHR",
+      "required": true
+    },
+    "totalAmount": {
+      "type": "money",
+      "formula": "honorariumAmount + reimbursementAmount",
+      "required": true
+    },
+    "currency": {
+      "type": "projectConfiguredCurrency",
+      "required": true
+    }
+  },
+  "forbiddenInRepo": [
+    "rawBankAccount",
+    "rawAccountNumber",
+    "bankRoutingRaw",
+    "dpiRaw",
+    "paymentReceiptBinary",
+    "paymentReceiptBase64",
+    "privateBankPortalUrl",
+    "paymentProviderToken",
+    "signedPaymentInstruction",
+    "rawShopperEmail",
+    "rawShopperPhone"
+  ],
+  "stateTransitionRules": {
+    "calculated_preview": ["review_required", "approved_for_batch", "cancelled_with_audit"],
+    "review_required": ["approved_for_batch", "cancelled_with_audit", "disputed"],
+    "approved_for_batch": ["batched_prepared", "review_required", "cancelled_with_audit"],
+    "batched_prepared": ["payment_scheduled", "review_required", "cancelled_with_audit"],
+    "payment_scheduled": ["payment_reprogrammed", "paid_confirmed_audited", "disputed"],
+    "payment_reprogrammed": ["payment_scheduled", "paid_confirmed_audited", "disputed"],
+    "paid_confirmed_audited": [],
+    "disputed": ["review_required", "cancelled_with_audit"],
+    "cancelled_with_audit": []
+  },
+  "gates": {
+    "devCalculationPreview": {
+      "status": "allowed",
+      "requirements": ["noPaymentExecution", "noSensitiveBankData", "auditRecord", "sourceTrace"]
+    },
+    "devPaymentStateWrite": {
+      "status": "blocked",
+      "requirements": ["explicitApproval", "testDataOnly", "auditLog", "rollback"]
+    },
+    "stagingPaymentOps": {
+      "status": "blocked",
+      "requirements": ["sanitizedBatch", "evidencePolicy", "financeReview", "conflictReview"]
+    },
+    "productionPaymentState": {
+      "status": "blocked",
+      "requirements": ["PaulaGO", "smokeGO", "financeAudit", "rollback", "noCriticalNO_GO"]
+    },
+    "realPaymentExecution": {
+      "status": "blocked_out_of_scope_phase_a_preview",
+      "requirements": ["separateLegalFinancialApproval", "providerContract", "bankSecurityReview"]
+    }
+  },
+  "auditRequirements": [
+    "all payment state changes require actorId, role, reason, timestamp and auditRef",
+    "paid_confirmed_audited requires evidenceRef or externalPaymentRef",
+    "payment_reprogrammed requires oldDate, newDate and reason",
+    "batch changes require before/after liquidationIds",
+    "conflicts cannot be overwritten silently",
+    "shopper-visible paid state must come from audited state, not preview calculation"
+  ],
+  "copyRules": {
+    "calculated_preview": "Liquidacion calculada/preparada, no pagada.",
+    "batched_prepared": "Lote preparado, pago pendiente.",
+    "payment_scheduled": "Pago programado, pendiente de confirmacion.",
+    "paid_confirmed_audited": "Pagado solo si existe auditoria/evidencia.",
+    "review_required": "Requiere revision antes de avanzar."
+  }
+}

@@ -60,7 +60,7 @@ window.CX = window.CX || {};
 
     /* construye visitas candidatas a partir de rows + mapeo */
     build(parsed, map, p){
-      p=p||CX.data.project();
+      p=p||CX.data.period();
       const col={}; Object.keys(map).forEach(i=>col[map[i]]=+i);
       const cur=(p.currency&&p.currency[p.countries[0]])||'$';
       const get=(r,f)=>col[f]!=null?r[col[f]]:'';
@@ -88,13 +88,29 @@ window.CX = window.CX || {};
       if(m=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/)){ const y=m[3].length===2?'20'+m[3]:m[3]; return `${y}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`; }
       return s||''; },
 
-    /* detecta duplicados contra las visitas existentes del proyecto (LLAVE NATURAL estable) */
+    /* detecta duplicados contra las visitas existentes del proyecto (LLAVE NATURAL estable).
+       OLA2 (paquete V114→V120, backlog importador): antes cualquier match de llave natural se
+       trataba como "duplicado" y se omitía en silencio — incluyendo el caso real de CONFLICTO
+       (misma sucursal+fecha, pero shopper u honorario distinto entre HR y la visita ya existente
+       en la plataforma), que debía quedar visible para revisión humana, no descartado igual que
+       un duplicado exacto. Y las filas sin sucursal/fecha (dato insuficiente para dedupe real)
+       ahora se separan como `discarded`, no se cuelan como "nuevo". */
     diff(cands, p){
-      p=p||CX.data.project();
+      p=p||CX.data.period();
       const idx=CX.dedupe?CX.dedupe.indexProject(p.id):{};
-      const nuevos=[], dups=[];
-      cands.forEach(c=>{ const hit=CX.dedupe&&((CX.dedupe.idKey(c)&&idx[CX.dedupe.idKey(c)])||idx[CX.dedupe.natKey(c)]); (hit?dups:nuevos).push(c); });
-      return {nuevos, dups};
+      const nuevos=[], dups=[], conflicts=[], discarded=[];
+      cands.forEach(c=>{
+        if(!c.sucursal || c.sucursal.startsWith('Sucursal ') || !c.fecha){ discarded.push(c); return; }
+        const hitId = CX.dedupe && CX.dedupe.idKey(c) && idx[CX.dedupe.idKey(c)];
+        const hitNat = CX.dedupe && idx[CX.dedupe.natKey(c)];
+        const hit = hitId || hitNat;
+        if(!hit){ nuevos.push(c); return; }
+        const existing = hit;
+        const differs = existing && ((existing.shopper||'')!==(c.shopper||'') || Number(existing.honorario||0)!==Number(c.honorario||0));
+        if(differs){ conflicts.push(Object.assign({}, c, {_conflictWith:existing})); }
+        else { dups.push(c); }
+      });
+      return {nuevos, dups, conflicts, discarded};
     },
 
     /* normaliza un nombre para mostrar (Title Case, espacios colapsados) */
@@ -106,7 +122,7 @@ window.CX = window.CX || {};
 
     /* commit: crea visitas (y shoppers faltantes) en el proyecto; sincroniza */
     commit(cands, p){
-      p=p||CX.data.project();
+      p=p||CX.data.period();
       let creadas=0, shoppersNuevos=0, shoppersFusionados=0;
       const base=CX.data._visitas.filter(v=>v.projectId===p.id).length;
       // índice de shoppers por clave de identidad (para deduplicar e integrar)

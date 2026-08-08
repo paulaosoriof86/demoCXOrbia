@@ -1,0 +1,41 @@
+{
+  "sourceSafe": true,
+  "containsRawSensitiveData": false,
+  "isSyntheticOrSanitized": true,
+  "visits": [
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "visitId": "visit-preview-001",
+      "hrRowId": "hr-row-preview-001",
+      "sourceVisitRef": "hr-ref-preview-001",
+      "assignmentId": "assignment-preview-001",
+      "shopperId": "shopper-preview-001",
+      "reservationId": "reservation-preview-001",
+      "scheduleRequestId": "schedule-request-preview-001",
+      "actionType": "schedule_visit",
+      "franja": "WK",
+      "quincena": "Q1",
+      "availableFrom": "2026-06-03",
+      "proposedDate": "2026-06-10",
+      "scheduledAt": "2026-06-10",
+      "assignmentSyncOutcome": "already_reflected_no_duplicate"
+    },
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "visitId": "visit-preview-004",
+      "hrRowId": "hr-row-preview-004",
+      "sourceVisitRef": "hr-ref-preview-004",
+      "assignmentId": "assignment-preview-004",
+      "shopperId": "shopper-preview-004",
+      "actionType": "mark_questionnaire_completed",
+      "franja": "WK",
+      "quincena": "Q2",
+      "availableFrom": "2026-06-16",
+      "performedAt": "2026-06-20",
+      "questionnaireCompletedAt": "2026-06-21",
+      "assignmentSyncOutcome": "already_reflected_no_duplicate"
+    }
+  ]
+}

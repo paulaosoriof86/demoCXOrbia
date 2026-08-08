@@ -2,7 +2,11 @@
 CX.supportStore = CX.supportStore || {
   _t:null,
   TIPOS:['Plataforma','Capacitación plataforma','Capacitación personal','Técnica','Comercial','Servicio','Otra'],
-  seed(){ return [
+  /* P0-2 (paquete genérico 20260711): fixtures de ejemplo — solo visibles en modo demo (guard de
+     segunda capa; el shell ya bloquea el render 100% fuera de demo). */
+  seed(){
+    if(!(CX.dataSource ? CX.dataSource.showFixtures() : true)) return [];
+    return [
     {id:'t1',de:'Evaluador 03',rol:'shopper',tipo:'Plataforma',asunto:'No puedo subir evidencia',estado:'abierto',prio:'alta',fecha:'2026-06-22'},
     {id:'t2',de:'Cliente Retail',rol:'cliente',tipo:'Comercial',asunto:'Solicito propuesta para 2 marcas más',estado:'abierto',prio:'media',fecha:'2026-06-21'},
     {id:'t3',de:'Evaluador 07',rol:'shopper',tipo:'Capacitación personal',asunto:'Dudas sobre el protocolo de tiempos',estado:'en_proceso',prio:'media',fecha:'2026-06-20'},
@@ -21,7 +25,7 @@ CX.supportStore = CX.supportStore || {
 };
 
 CX.module('soporte', ({data,role,ui})=>{
-  const p=data.project();
+  const p=data.period();
   const ctx=`Proyecto activo: ${p.name} (${p.industry}), países ${p.countries.join('/')}, escenarios: ${p.scenarios.join(', ')}. Honorario GT Q60 + combo + boleto reembolsados. Rango de visita típico 12–18 jun.`;
   const host=document.createElement('div');
   let tab=role==='admin'?'bandeja':'ia';
@@ -90,7 +94,7 @@ CX.module('soporte', ({data,role,ui})=>{
   const wireNueva=()=>{ const b=host.querySelector('#spSend'); if(b)b.addEventListener('click',()=>{
     const asunto=host.querySelector('#spAsunto').value.trim(); if(!asunto){ui.toast('Escribe el asunto','warn');return;}
     CX.supportStore.add({de:(CX.session.user&&CX.session.user.name)||'Usuario',rol:role,tipo:host.querySelector('#spTipo').value,asunto,prio:host.querySelector('#spPrio').value});
-    ui.toast('Solicitud enviada al equipo de soporte','ok',3200); tab='ia'; draw();
+    ui.toast('Solicitud registrada · el equipo la verá en su bandeja de soporte','ok',3200); tab='ia'; draw();
   }); };
 
   const wireBandeja=()=>{
@@ -123,12 +127,12 @@ CX.module('soporte', ({data,role,ui})=>{
               <div style="text-align:right"><button class="btn btn-pr btn-sm" id="rspSave">Asignar</button></div>
             `,{onMount:(o3,c3)=>o3.querySelector('#rspSave').addEventListener('click',()=>{
               CX.automations.asignar({titulo:'Soporte: '+t.asunto,detalle:o3.querySelector('#rspNota').value||t.asunto,responsable:o3.querySelector('#rspName').value||'—',responsableRol:o3.querySelector('#rspRol').value,nav:'soporte'});
-              c3();ui.toast('Responsable asignado · notificado y visible en Mi Día','ok',3500);
+              c3();ui.toast('Responsable asignado · notificado (in-app) y visible en Mi Día','ok',3500);
             })});
           });
           ov.querySelector('#spDetWa').addEventListener('click',()=>{
             const hasHook=!!(CX.automations&&CX.automations.hook&&CX.automations.hook());
-            if(hasHook){CX.automations&&CX.automations._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '),canal:'whatsapp',evento:'soporte',titulo:'Respuesta soporte: '+t.asunto,txt:t.de,hook:CX.automations.hook()});ui.toast('Respuesta enviada vía Make','ok');}
+            if(hasHook){CX.automations&&CX.automations._pushLog({fecha:new Date().toISOString().slice(0,16).replace('T',' '),canal:'whatsapp',evento:'soporte',titulo:'Respuesta soporte: '+t.asunto,txt:t.de,hook:CX.automations.hook()});ui.toast('Respuesta preparada vía Make · se enviará cuando el gate esté activo','ok');}
             else{const msg=encodeURIComponent('Hola '+t.de+', sobre tu solicitud "'+t.asunto+'": '+(ov.querySelector('#spNota').value||'nos ponemos en contacto.'));window.open('https://wa.me/?text='+msg,'_blank');}
           });
         }});

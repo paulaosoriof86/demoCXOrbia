@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "cxorbia.august-delta-readonly-plan.v4",
+  "generatedAt": "2026-07-31T01:04:09.365Z",
+  "decision": "HOLD_AUGUST_REQUIRED_PROVIDER_TABS_MISSING",
+  "releaseReadiness": "SOURCE_TABS_MISSING",
+  "target": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "periodKey": "2026-08"
+  },
+  "contract": {
+    "expectedByCountry": {
+      "GT": 34,
+      "HN": 10
+    },
+    "requiredTabs": {
+      "GT": "AGOSTO 26",
+      "HN": "AGOSTO 26 HN"
+    },
+    "doNotRepeatHistoricalWrites": 1406,
+    "deltaOnly": true
+  },
+  "providerTabRegistry": {
+    "observedAt": "2026-07-30T23:58:00Z",
+    "monthlyTabs": 28,
+    "tabPresence": {
+      "GT": false,
+      "HN": false
+    },
+    "requiredAugustTabsPresent": false
+  },
+  "source": {
+    "generatedAt": "2026-07-31T01:04:05.892Z",
+    "accessMode": "public_gviz_csv_cache_busted",
+    "sourceSafe": true,
+    "tabRegistryEnforced": true,
+    "phantomTabsRejected": [
+      "AGOSTO 26",
+      "AGOSTO 26 HN"
+    ],
+    "observedAugust": {
+      "GT": 0,
+      "HN": 0,
+      "total": 0
+    }
+  },
+  "countryGate": {
+    "status": "NOT_APPLICABLE_UNTIL_PROVIDER_TABS_EXIST"
+  },
+  "identityResolution": {
+    "canonicalMappingEntries": 208,
+    "requiredSourceShopperRefs": 0,
+    "mappedSourceShopperRefs": 0,
+    "unmappedSourceShopperRefs": 0,
+    "targetShopperProfiles": 0,
+    "existingTargetShopperProfiles": 0,
+    "missingTargetShopperProfiles": 0
+  },
+  "providerCompare": {
+    "currentCanonicalVisits": 616,
+    "periodAlreadyExists": false,
+    "acceptedCandidates": 0,
+    "newVisitWritesPlanned": 0,
+    "alreadyExistingAccepted": 0
+  },
+  "operational": {
+    "acceptedStatusCounts": {},
+    "assigned": 0,
+    "unassigned": 0,
+    "scheduled": 0,
+    "realized": 0,
+    "submitted": 0
+  },
+  "holds": [
+    {
+      "country": "GT",
+      "reason": "required_provider_tab_missing",
+      "tab": "AGOSTO 26",
+      "sourceRows": 0
+    },
+    {
+      "country": "HN",
+      "reason": "required_provider_tab_missing",
+      "tab": "AGOSTO 26 HN",
+      "sourceRows": 0
+    }
+  ],
+  "blockers": [],
+  "exactDelta": {
+    "acceptedCountries": [],
+    "visitIds": [],
+    "hrRowIds": [],
+    "shopperMappings": [],
+    "excludedCountries": [
+      "GT",
+      "HN"
+    ]
+  },
+  "safety": {
+    "readOnly": true,
+    "providerReads": true,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesDeploys": 0,
+    "hostingDeploys": 0,
+    "production": false,
+    "merge": false,
+    "pii": false,
+    "secrets": false
+  }
+}

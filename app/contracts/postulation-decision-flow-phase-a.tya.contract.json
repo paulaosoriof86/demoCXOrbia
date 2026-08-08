@@ -1,0 +1,52 @@
+{
+  "contract": "postulation-decision-flow-phase-a-tya",
+  "date": "2026-07-06",
+  "status": "draft_contract_no_runtime",
+  "phase": "Phase A",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "realDataAllowed": false,
+  "purpose": "Define applicant decision flow before real assignment or source sync.",
+  "identity": {
+    "tenantId": "required",
+    "projectId": "required",
+    "visitId": "required",
+    "shopperId": "required",
+    "postulationId": "required",
+    "hrRowId": "optional"
+  },
+  "postulationStatus": [
+    "draft",
+    "submitted_preview",
+    "pending_review",
+    "selected_preview",
+    "not_selected_preview",
+    "needs_more_info",
+    "withdrawn",
+    "cancelled"
+  ],
+  "decisionState": {
+    "decisionBy": "optional",
+    "decisionAt": "optional",
+    "decisionReason": "optional",
+    "createsAssignment": false,
+    "requiresAssignmentContract": true
+  },
+  "assignmentBridge": {
+    "contractRef": "app/contracts/assignment-sync-phase-a.tya.contract.json",
+    "assignmentSourceWhenSelected": "platform_postulation",
+    "assignmentSyncStatusWhenSelected": "pending_make_sync",
+    "writesAllowedNow": false
+  },
+  "notificationState": {
+    "outboxStatus": ["not_created", "draft_ready", "queued_preview", "blocked"],
+    "realSendAllowed": false
+  },
+  "rules": [
+    "Selecting a postulation only creates preview intent until backend gates are open.",
+    "No source sync is performed from this contract.",
+    "No real notification is sent from this contract.",
+    "If multiple applicants conflict for one visit, send to review."
+  ],
+  "notes": ["Contract only. No runtime operation.", "Does not authorize production, import, deploy, merge, or providers."]
+}

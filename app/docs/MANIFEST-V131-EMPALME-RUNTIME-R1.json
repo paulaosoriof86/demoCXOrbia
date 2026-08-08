@@ -1,0 +1,394 @@
+{
+  "schemaVersion": "1.0.0",
+  "package": "CXORBIA-V131-EMPALME-RUNTIME-R1",
+  "project": "CXOrbia",
+  "baseline": "V131 interna empalmada sobre baseline viva V110",
+  "generatedAt": "2026-07-14",
+  "sourceZipSha256": "19424b2b709a4bff457454bbeff6abe47cd1c52c0f0388fd1a380008c8adc740",
+  "candidateInternalVersion": "V131",
+  "externalTransportName": "Prototype development request CXOrbia V121.zip",
+  "fileCount": 71,
+  "aggregateSha256": "077f366fc17953a46be7927f416ed8b05531b96ae0c55ff958f4dff3dd4645bc",
+  "aggregateAlgorithm": "sha256(sorted(path + NUL + sha256 + LF))",
+  "reconciliations": [
+    {
+      "path": "core/finanzas-core.js",
+      "decision": "preservar separacion proyecto-periodo"
+    },
+    {
+      "path": "core/topbar.js",
+      "decision": "aceptar V131"
+    },
+    {
+      "path": "modules/importador.js",
+      "decision": "usar CX.dataSource.sourceContract()"
+    }
+  ],
+  "exclusionsDeclared": [
+    {
+      "path": "core/build-lock.js",
+      "reason": "referencia circular"
+    },
+    {
+      "path": "docs/**",
+      "reason": "documentacion fuera del runtime lock"
+    }
+  ],
+  "files": [
+    {
+      "path": ".gitignore",
+      "size": 322,
+      "sha256": "704cfe8eb822891095dbab2659baeb9207e667f6942356d231f51044bb5b8850"
+    },
+    {
+      "path": "README.md",
+      "size": 5125,
+      "sha256": "bf5ecabfd521f37b3a95cdbbef74b41ffc60ed50702e683c000a4a2c272c4bfc"
+    },
+    {
+      "path": "app.js",
+      "size": 24611,
+      "sha256": "277fdcea8742d877b70ad8eb66ab91737fda58fe0e0d164a443dce7efd3636c4"
+    },
+    {
+      "path": "core/automations.js",
+      "size": 21320,
+      "sha256": "2a4ea22b3f28b042464d411778585f7b11a4f6739ca2744eab2843444830c30f"
+    },
+    {
+      "path": "core/cliente-data.js",
+      "size": 17211,
+      "sha256": "2c221d76bd2a0a4c44da2a36564cfa3b014855f4aa8c0384c5e026262234df1e"
+    },
+    {
+      "path": "core/config.js",
+      "size": 28720,
+      "sha256": "1773bfe7f6d4588b3fd7e67d243772273da5b3bfe7f36dec533c1b3765d0dc4a"
+    },
+    {
+      "path": "core/costos.js",
+      "size": 5052,
+      "sha256": "413cc78f984aeddaec374a2031f29cce66fd5347d5d9628b28cbcda84116b33b"
+    },
+    {
+      "path": "core/data-source.js",
+      "size": 8407,
+      "sha256": "01dee7b902006a66ccb9c954cccdd7ca07460172a09542667f1ad6cff11574c5"
+    },
+    {
+      "path": "core/data.js",
+      "size": 40415,
+      "sha256": "ba8fa1c9f6946c1522b2ade8500a22594a53b3a2789f2aa45fe7eeb389d4d258"
+    },
+    {
+      "path": "core/dedupe.js",
+      "size": 1607,
+      "sha256": "e0d11c6a8e9f0e352cf73b46e36942583b2b193cd3f1e5c8307ae777ac73c475"
+    },
+    {
+      "path": "core/finanzas-core.js",
+      "size": 10114,
+      "sha256": "8fe50ee569c4a68f82ca55b15c42c9e0c64561b871b7993374b3d34617decad8"
+    },
+    {
+      "path": "core/geo.js",
+      "size": 7846,
+      "sha256": "ca3527879a9e165a4dfc9f5c6f2f84ec6a5f599df9d36d61ab625f1abab5018c"
+    },
+    {
+      "path": "core/hr.js",
+      "size": 6999,
+      "sha256": "dd8c069317be6e3aed528b56380c84a808318fcd5263403246dc610320d1e3c0"
+    },
+    {
+      "path": "core/importador.js",
+      "size": 10418,
+      "sha256": "77a5b691b21835f4d61090fa9fcd75f948af93492c438b9d16b2c2c8de271505"
+    },
+    {
+      "path": "core/liquidacion.js",
+      "size": 4604,
+      "sha256": "eec0fd4caada5f6990f01c8d7f8c14f5a9ff6af9739fa408af571d0dd47614a6"
+    },
+    {
+      "path": "core/manuales-data.js",
+      "size": 48424,
+      "sha256": "98de09dff118c30b5c0b473ea419987657db26dee304d80f54a2d0082be16b6d"
+    },
+    {
+      "path": "core/notif.js",
+      "size": 2846,
+      "sha256": "cf6b33dac8456cc8466c32a1c76e8618816f1980a18386541f1efc7e2ee2b1fb"
+    },
+    {
+      "path": "core/permissions.js",
+      "size": 12258,
+      "sha256": "8c56a8454532f37f9667d95b89bc6432817c807d920a46fe36d8ed6e417f15e7"
+    },
+    {
+      "path": "core/programa.js",
+      "size": 8359,
+      "sha256": "3503cae34e8461d23b011801276645823cc5658347ec05bf78b0be9d694a7490"
+    },
+    {
+      "path": "core/pwa.js",
+      "size": 12815,
+      "sha256": "a2ed24551558f5e875780a6b926921deaf581339fc64ac0f617f68943ad2295f"
+    },
+    {
+      "path": "core/router.js",
+      "size": 14954,
+      "sha256": "4abf9931d1819b4c5cca1f296201a3ce360c910a45630895b52f09d5b053b6a2"
+    },
+    {
+      "path": "core/shoppers-store.js",
+      "size": 7031,
+      "sha256": "8a02b84f6a1ceaf07b7b8174a454475638f7980973d798d6b4cbb208b5fe4321"
+    },
+    {
+      "path": "core/store.js",
+      "size": 2667,
+      "sha256": "8a52be0f3b7f7e23f39d2d9a61d8142791529d1d14eb4d2d16e9a90fbf15f204"
+    },
+    {
+      "path": "core/topbar.js",
+      "size": 12530,
+      "sha256": "d13385fe127dd8ef3b4deaaf5acb48f1e0e7455e63f5b2a4ef0e19110367c8de"
+    },
+    {
+      "path": "core/ui.js",
+      "size": 9995,
+      "sha256": "047e315c986970971391c62e9ddcb1698730f67a05d460067ed48089acddd670"
+    },
+    {
+      "path": "demo/index.html",
+      "size": 256166,
+      "sha256": "95e515a95cb838b8b364413b1c8a3c44aa703d091a45bc126f154d3c4e018bfd"
+    },
+    {
+      "path": "index.html",
+      "size": 5500,
+      "sha256": "62bb6ef5643a2bc1a3f31482e24fe282927f3d1e39812e8b5b0169849a3ee890"
+    },
+    {
+      "path": "manifest.webmanifest",
+      "size": 524,
+      "sha256": "7f5d726058474bcc102ead713df1a21711e29c21c8e8ed907ccc70be5e2c4d82"
+    },
+    {
+      "path": "modules/academia.js",
+      "size": 301178,
+      "sha256": "cee730c83bc4deeab958066a148a8552fc4b18bbdd7d7b69810cadbfee4e1376"
+    },
+    {
+      "path": "modules/administrabilidad.js",
+      "size": 17162,
+      "sha256": "b032f4be54976be4442e0ade00861fdc88c8b0b7a35da2f18b7b87fd9049d510"
+    },
+    {
+      "path": "modules/automatizaciones.js",
+      "size": 14664,
+      "sha256": "e1fff15a8e2f345014f2eb3e9ec1688709b610406914c74b2c87a83f87da0bd7"
+    },
+    {
+      "path": "modules/beneficios.js",
+      "size": 7448,
+      "sha256": "e763ceed1924d5dee69399df575781161c43ff084bb12594b0c8f926d34c6867"
+    },
+    {
+      "path": "modules/cert.js",
+      "size": 27095,
+      "sha256": "8104e2e37bb50ee9534d8b31e5dfb8461791b08b6bb27445cec75e233e33131d"
+    },
+    {
+      "path": "modules/cliente-extra.js",
+      "size": 14704,
+      "sha256": "50c6f0f87277f2673a7aee26b8c4c1f9c1ab514e6faff41ef1f4d74b38e3cabc"
+    },
+    {
+      "path": "modules/cliente-insights.js",
+      "size": 13936,
+      "sha256": "2b32bd6e09354f3e872b01ad59323af93abd588b3f3cad27d4066e9a76d18003"
+    },
+    {
+      "path": "modules/cliente.js",
+      "size": 34568,
+      "sha256": "bd1b2dbc571064820ee2603818222eb894fbf8fe2bb29bdc4feb738c9626d3a4"
+    },
+    {
+      "path": "modules/clientes.js",
+      "size": 20966,
+      "sha256": "5e316172b93f78773ee6c4d4d87a1bc3310e4c0a5eac46f2cfb922a975bd895b"
+    },
+    {
+      "path": "modules/comercial.js",
+      "size": 19117,
+      "sha256": "116b21039ccd54aca613c0e535981a9a82177dc8d8226fa8927ac5c6a4a58d17"
+    },
+    {
+      "path": "modules/configuracion.js",
+      "size": 57202,
+      "sha256": "af257642495f644222ab554597fcd8013aa822b87cf1cb0caff889c0cd444607"
+    },
+    {
+      "path": "modules/correo.js",
+      "size": 27964,
+      "sha256": "59dc79aa3670ae795d7afdeee8a649be2a53657272daf3aa76cd86a342ba7a40"
+    },
+    {
+      "path": "modules/crm.js",
+      "size": 71219,
+      "sha256": "e01addece4a774b387ec8c85c2323499bff0f6ef9f2a5aa9f77f2ed5bf5e031c"
+    },
+    {
+      "path": "modules/cuestionario-shopper.js",
+      "size": 9322,
+      "sha256": "1240f2a5128748535e83c26dcaab8a1cda6bd6daa84c1bfe6b7564c058c2ecbc"
+    },
+    {
+      "path": "modules/dashboard.js",
+      "size": 40651,
+      "sha256": "7251d41370a7d07cd82f3629025033bf0c2ef1533d42159a9bdb4b9b3601a906"
+    },
+    {
+      "path": "modules/diagnostico.js",
+      "size": 31376,
+      "sha256": "a1170fefa28b381f2ccdcbf595422e006d9ef87276f93489f33acdcc1a61e6c2"
+    },
+    {
+      "path": "modules/documentos.js",
+      "size": 21746,
+      "sha256": "e8f824e40a346a1764041aa891ba2541686e2a3e6b0941918fdce8f5ef6485f8"
+    },
+    {
+      "path": "modules/finanzas.js",
+      "size": 73523,
+      "sha256": "177226a9c1177b7608225a591f0465327cb036b7589878bd76ed6f5f1da2cc35"
+    },
+    {
+      "path": "modules/historico.js",
+      "size": 7905,
+      "sha256": "05840c1e19b5408689db2ed43eee0be3822e92219d66a4ee7e1339dd5e0b68ee"
+    },
+    {
+      "path": "modules/hr-source.js",
+      "size": 20519,
+      "sha256": "1e0ef152b8b8b5dbddec6255fed3144c4c93455063569a146043c8a707d6abff"
+    },
+    {
+      "path": "modules/importador.js",
+      "size": 46363,
+      "sha256": "da618a836e8d124f5849dfb305371bef6921e0723c34a0c4abbeb487165d5ffa"
+    },
+    {
+      "path": "modules/integraciones.js",
+      "size": 21446,
+      "sha256": "149ed4434c9d0c7d5e179aad5155a12e3f006587ab510ae40b8adf19130956a0"
+    },
+    {
+      "path": "modules/marca.js",
+      "size": 15139,
+      "sha256": "62ca4774860786ac3d408369e29003a7a67d0b8f253072ef3c63136ef758cae8"
+    },
+    {
+      "path": "modules/marketing.js",
+      "size": 19827,
+      "sha256": "4ce7a81acc1ab83bc9714b0148aa817c84a474cb4b56e0898435e6e2b2595ee3"
+    },
+    {
+      "path": "modules/midia.js",
+      "size": 15465,
+      "sha256": "d000780b7927f331da748efae8e785fbbb4676105adfb506c2275708eb42abb0"
+    },
+    {
+      "path": "modules/misvisitas.js",
+      "size": 13888,
+      "sha256": "bdba5b24be0d577db4c4be126a3e747444d46fcedcc43e58be0c3e7b2d268a60"
+    },
+    {
+      "path": "modules/novedades.js",
+      "size": 7933,
+      "sha256": "160ab3739ffbfd406d7fa0fbebcc9bfdec1881f86fa31b9c2b709c13592b518f"
+    },
+    {
+      "path": "modules/operacion-extra.js",
+      "size": 31851,
+      "sha256": "8f3761615b4986f25a61a04f11679b89eb3095357bbd53ee0bc476d13a7d00da"
+    },
+    {
+      "path": "modules/periodos.js",
+      "size": 6783,
+      "sha256": "6988fc687704b542eb57640b59c1d1f6f492880b182cd06fd16d8341e205c4c3"
+    },
+    {
+      "path": "modules/postulaciones.js",
+      "size": 36707,
+      "sha256": "fdec3aace418d7718c8ad67d66fd436593e1155d7d447d9a1044eae1ec32caf8"
+    },
+    {
+      "path": "modules/proyecto-wizard.js",
+      "size": 16330,
+      "sha256": "4917e2b525f729610571c2ab061dd842785220de894114df870434aa9d4d0989"
+    },
+    {
+      "path": "modules/proyectos.js",
+      "size": 16712,
+      "sha256": "8895c6e4b1eed25f73c28d429a1f30b4649cb1e10f4c2c5842f40dd78d893525"
+    },
+    {
+      "path": "modules/reservas.js",
+      "size": 18738,
+      "sha256": "0b61922a3daad2d1618506b5b85feb5187ac882be69ecc84239c77d2c526e395"
+    },
+    {
+      "path": "modules/revision-admin.js",
+      "size": 6772,
+      "sha256": "366000de7b5935665b9b42878aa4ba6a6b12c1138866eb43e600d31a554a598c"
+    },
+    {
+      "path": "modules/saas-console.js",
+      "size": 9100,
+      "sha256": "ffb40345349ba6c982792499cca8705ebaca1804a1ca802ecbcbb67e1c0ef5cf"
+    },
+    {
+      "path": "modules/shoppers.js",
+      "size": 24072,
+      "sha256": "1ac2d9aaf1acff62369bf982ca0624f8f4170fd711130ab5d0f3db6f99107509"
+    },
+    {
+      "path": "modules/soporte.js",
+      "size": 15573,
+      "sha256": "cf7a281a5ab1aed36c065af946ab0de565f85fa4280dae73f3535ef3d891bf06"
+    },
+    {
+      "path": "modules/tablon.js",
+      "size": 8038,
+      "sha256": "f303978fc5e7a23176973f0127926de7e111f4aabab5de788fe559021fddb9b3"
+    },
+    {
+      "path": "modules/visita-detalle.js",
+      "size": 7650,
+      "sha256": "feee8e4662e9b01d7f2b51b4388a5a480d43f85c085fefff84b8aa2d7fec5e2f"
+    },
+    {
+      "path": "modules/visitas.js",
+      "size": 21032,
+      "sha256": "758a4e64b47cf97375c7d8a147f10dbc0f56da584576ce7fc82e91a5e5cc07d2"
+    },
+    {
+      "path": "styles/layout.css",
+      "size": 24678,
+      "sha256": "c4b503900dbea4e7c45b8a4d9a203fc94944f23f5ebcb382f225f415228211b2"
+    },
+    {
+      "path": "styles/theme.css",
+      "size": 11471,
+      "sha256": "3527c0e3aed67f37905428c17eabc3a5d5268d596157a68f9e7daf429b21547e"
+    },
+    {
+      "path": "sw.js",
+      "size": 2690,
+      "sha256": "eadb9e68f2c4298d6ab7d75606ea0535dd936cbb754cf7b5ed81f62d6f0a47ea"
+    }
+  ]
+}

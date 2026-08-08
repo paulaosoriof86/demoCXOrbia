@@ -1,0 +1,88 @@
+{
+  "contract": "cxorbia.phase-a.liquidation-payment-control",
+  "version": "1.0.0",
+  "createdAt": "2026-07-11",
+  "status": "prepared_not_executed",
+  "scope": {
+    "multiTenant": true,
+    "multiProject": true,
+    "initialTenantId": "tya",
+    "initialProjectId": "cinepolis",
+    "initialCut": "2026-06"
+  },
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "periodKey",
+    "visitId",
+    "hrRowId",
+    "shopperId",
+    "liquidationId",
+    "paymentBatchId"
+  ],
+  "liquidationStates": [
+    "not_ready",
+    "ready_for_review",
+    "approved",
+    "liquidated",
+    "conflict"
+  ],
+  "paymentStates": [
+    "not_scheduled",
+    "scheduled",
+    "pending_confirmation",
+    "paid",
+    "reprogrammed",
+    "failed",
+    "conflict"
+  ],
+  "hardRules": [
+    "A visit with estado=liquidada is not equivalent to paymentState=paid.",
+    "A visit realization date must never be used as paidAt.",
+    "paymentState=paid requires paidAt, paymentBatchId, paymentSource, confirmedBy and auditRef.",
+    "Payment references must be opaque and must not expose bank account or sensitive identity data.",
+    "June 2026 is an initial payment/liquidation control cut; its visits are not pending execution.",
+    "Conflicts are sent to human review and are never overwritten silently."
+  ],
+  "requiredForPaid": [
+    "tenantId",
+    "projectId",
+    "liquidationId",
+    "paymentBatchId",
+    "paymentState",
+    "paidAt",
+    "paymentSource",
+    "confirmedBy",
+    "auditRef"
+  ],
+  "forbiddenFallbacks": [
+    "realizada as paidAt",
+    "liquidada as paid",
+    "synthetic payment batch",
+    "synthetic bank reference",
+    "visual-name deduplication"
+  ],
+  "gate": {
+    "enabled": false,
+    "requires": [
+      "new_clean_backend",
+      "source_safe_payment_input",
+      "human_review",
+      "explicit_deploy_authorization",
+      "audit_log"
+    ]
+  },
+  "uiStates": {
+    "prepared": "Control preparado; no pago ejecutado.",
+    "pending_source": "Pendiente fuente de pago.",
+    "pending_review": "Pendiente revisión humana.",
+    "paid": "Pago confirmado por backend con referencia opaca.",
+    "conflict": "Conflicto visible; no sobrescribir."
+  },
+  "security": {
+    "rawBankDataInRepo": false,
+    "rawIdentityDataInLogs": false,
+    "providerWrites": false,
+    "production": false
+  }
+}

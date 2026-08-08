@@ -1,0 +1,140 @@
+{
+  "schemaVersion": "1.2.0",
+  "id": "phase-a-corte1-context-history-reports-v1",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "activeBaseline": "V161C",
+  "integratedCandidate": {
+    "version": "V164",
+    "commit": "f708515a637a3998eefdbe39ef66d37a3f130fb6",
+    "technicalStatus": "integrated_pending_visual",
+    "visualValidated": false
+  },
+  "sourceScope": {
+    "sourceSafeRequired": true,
+    "production": false,
+    "imported": false,
+    "periodStart": "2025-06",
+    "periodEnd": "2026-07",
+    "expectedPeriods": 14,
+    "expectedVisits": 616,
+    "countries": ["GT", "HN"]
+  },
+  "identity": {
+    "tenantKey": "tenantId",
+    "projectKey": "projectId",
+    "periodKey": "periodKey",
+    "countryKeys": ["pais", "country"],
+    "branchKeys": ["sucursal", "branchName"],
+    "cityKeys": ["ciudad", "city"],
+    "visitKey": "id",
+    "hrRowKeys": ["hrRowId", "sourceTab", "sourceRow"]
+  },
+  "projectionLevels": {
+    "periodCountry": {
+      "dimensions": ["tenantId", "projectId", "periodKey", "country"],
+      "required": true
+    },
+    "branch": {
+      "dimensions": ["tenantId", "projectId", "periodKey", "country", "branchName", "city"],
+      "required": true,
+      "piiAllowed": false
+    }
+  },
+  "reportMeasures": [
+    "visits",
+    "assigned",
+    "unassigned",
+    "performed",
+    "questionnaire",
+    "submitted",
+    "paymentConfirmed"
+  ],
+  "reportCatalog": [
+    {
+      "id": "executive_operational_summary",
+      "label": "Resumen ejecutivo operativo",
+      "projectionLevel": "periodCountry",
+      "availability": "available",
+      "forbiddenClaims": ["score", "nps", "benchmark"]
+    },
+    {
+      "id": "branch_operational_status",
+      "label": "Estado operativo por sucursal",
+      "projectionLevel": "branch",
+      "availability": "available",
+      "forbiddenClaims": ["scorecard", "weighted_score"]
+    },
+    {
+      "id": "country_coverage",
+      "label": "Cobertura por país",
+      "projectionLevel": "periodCountry",
+      "availability": "available",
+      "forbiddenClaims": ["region"]
+    },
+    {
+      "id": "period_trend",
+      "label": "Tendencia operativa por periodo",
+      "projectionLevel": "periodCountry",
+      "availability": "available",
+      "forbiddenClaims": ["external_benchmark"]
+    },
+    {
+      "id": "action_plans",
+      "label": "Planes de acción",
+      "projectionLevel": null,
+      "availability": "pending_source",
+      "requiredSource": "action_plan_records"
+    },
+    {
+      "id": "training_gaps",
+      "label": "Brechas y capacitación",
+      "projectionLevel": null,
+      "availability": "pending_source",
+      "requiredSource": "questionnaire_section_scores"
+    },
+    {
+      "id": "brand_scorecard",
+      "label": "Scorecard de marca",
+      "projectionLevel": null,
+      "availability": "pending_source",
+      "requiredSource": "validated_questionnaire_scores"
+    }
+  ],
+  "history": {
+    "defaultExcludesLatestActivePeriod": true,
+    "allVerifiedPeriodsRemainQueryable": true,
+    "countryFilterRequired": true,
+    "periodFilterRequired": true
+  },
+  "exports": {
+    "sanitizedFormats": ["json", "csv"],
+    "frontendFormatsReady": ["pdf", "xlsx", "pptx"],
+    "frontendFormatsPending": [],
+    "mustRespectScope": true,
+    "mustRespectReportAvailability": true,
+    "mustUseSameScopedRowsAcrossFormats": true,
+    "mustNotInventScores": true,
+    "mustNotInferPayments": true,
+    "mustNotRelabelCountryAsRegion": true,
+    "pendingSourceBehavior": "disable_export_and_show_pending_source"
+  },
+  "forbiddenRecordFields": [
+    "email",
+    "mail",
+    "phone",
+    "telefono",
+    "whatsapp",
+    "dpi",
+    "banco",
+    "cuenta",
+    "ctaNum",
+    "direccion",
+    "address"
+  ],
+  "visualGate": {
+    "requiredAfterCut": true,
+    "requiredBeforeFreeze": true,
+    "requiredBeforeNextCut": true
+  }
+}

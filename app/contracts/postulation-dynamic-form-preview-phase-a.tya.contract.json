@@ -1,0 +1,180 @@
+{
+  "contract": "postulation-dynamic-form-preview-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "storageWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "hrWriteAllowed": false,
+  "importRealDataAllowed": false,
+  "dependsOn": [
+    "sensitive-data-policy-phase-a-tya",
+    "assignment-sync-conflict-preview-phase-a-tya",
+    "visit-lifecycle-reservation-preview-phase-a-tya",
+    "project-wizard-phase-a-tya"
+  ],
+  "purpose": "Define source-safe preview validation for dynamic postulation forms by tenant/project/role without enabling runtime writes or raw sensitive file handling.",
+  "sourceSafety": {
+    "requiresSyntheticOrSanitizedInput": true,
+    "forbidsRawSensitiveData": true,
+    "requiredInputMetadata": [
+      "sourceSafe=true",
+      "containsRawSensitiveData=false",
+      "isSyntheticOrSanitized=true"
+    ],
+    "rawAttachmentsAllowed": false,
+    "rawSensitiveFieldsAllowed": false,
+    "manualReviewForAmbiguousMapping": true
+  },
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "formId",
+    "formVersion",
+    "fieldId",
+    "postulationId",
+    "shopperId",
+    "visitId",
+    "hrRowId",
+    "sourceVisitRef",
+    "assignmentId",
+    "reservationId",
+    "scheduleRequestId",
+    "reviewId",
+    "sourceSafeRef",
+    "lastUpdatedAt"
+  ],
+  "formScopes": [
+    "tenant_default",
+    "project_default",
+    "project_visit_type",
+    "project_country",
+    "project_role",
+    "manual_admin_override"
+  ],
+  "fieldTypes": [
+    "text",
+    "textarea",
+    "number",
+    "date",
+    "select",
+    "multi_select",
+    "checkbox",
+    "radio",
+    "url",
+    "email_alias",
+    "phone_alias",
+    "file_ref_pending_storage",
+    "private_file_ref",
+    "computed_readonly",
+    "hidden_safe_ref"
+  ],
+  "fieldSensitivityLevels": [
+    "public_operational",
+    "shopper_private",
+    "admin_restricted",
+    "finance_restricted",
+    "sensitive_blocked_phase_a",
+    "source_safe_ref_only"
+  ],
+  "previewInputShape": {
+    "sourceSafe": true,
+    "containsRawSensitiveData": false,
+    "isSyntheticOrSanitized": true,
+    "forms": [],
+    "postulations": []
+  },
+  "requiredFormConfigFields": [
+    "tenantId",
+    "projectId",
+    "formId",
+    "formVersion",
+    "title",
+    "status",
+    "fields"
+  ],
+  "allowedFormStatuses": [
+    "draft",
+    "preview_ready",
+    "published_preview_only",
+    "archived",
+    "manual_review_required"
+  ],
+  "requiredFieldConfigFields": [
+    "fieldId",
+    "label",
+    "type",
+    "required",
+    "sensitivityLevel",
+    "shopperVisible",
+    "adminVisible"
+  ],
+  "fieldRules": [
+    "Every dynamic field must have a stable fieldId and formVersion.",
+    "Sensitive or private document fields must use file_ref_pending_storage or private_file_ref, never raw files or base64.",
+    "Fields classified admin_restricted or finance_restricted must not be shopperVisible after submission unless explicitly safe.",
+    "Phase A must not request raw bank, identity document, NDA, address, WhatsApp body or attachment content in preview input.",
+    "Project-specific fields must be driven by project configuration, not hard-coded to Cinepolis.",
+    "Questionnaire destination fields must remain separate from postulation form fields.",
+    "ProposedDate fields must be validated later by visit lifecycle/reservation rules.",
+    "Visit references must use visitId, hrRowId or sourceVisitRef; no visual dedupe."
+  ],
+  "postulationRules": [
+    "A postulation must include tenantId, projectId, formId, formVersion, postulationId and shopperId.",
+    "A postulation that targets a visit must include visitId, hrRowId or sourceVisitRef.",
+    "Missing required non-sensitive fields returns missing_required_fields.",
+    "Missing or ambiguous stable references returns manual_review_required.",
+    "Sensitive raw field names or raw file values return sensitive_field_review_required.",
+    "Valid postulation preview is not an assignment and does not imply HR sync.",
+    "Approval moves to assignment sync gate later; this preview does not call Make or write HR."
+  ],
+  "previewOutcomes": [
+    "form_config_ready",
+    "form_config_review_required",
+    "postulation_ready_for_review",
+    "missing_required_fields",
+    "sensitive_field_review_required",
+    "manual_review_required",
+    "conflict_review_required"
+  ],
+  "claudePrototypeImpact": [
+    "Postulation UI must be dynamic by project and formVersion.",
+    "Do not hard-code front/back fields only for Cinepolis.",
+    "Show safe states for private fields: protected, pending backend, private reference or requires authorization.",
+    "Do not show uploaded/raw sensitive files while Storage gates are off.",
+    "Approval should say prepared/pending HR sync later, not HR synchronized.",
+    "Academia must explain dynamic form configuration, field sensitivity and postulation review by role."
+  ],
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "shopper", "client", "consultant_partner"],
+    "manualsToUpdate": ["Dynamic postulation forms", "Field sensitivity", "Shopper application flow", "Admin review", "Project configuration", "Storage pending state"],
+    "coursesToUpdate": ["Shopper postulation", "Ops postulation review", "Admin form configuration", "Superadmin project setup"],
+    "newLessons": [
+      "How a project defines its postulation form",
+      "What a shopper sees before applying",
+      "How required fields work",
+      "How private fields are protected",
+      "Why postulation is not assignment",
+      "How approval later enters assignment sync"
+    ],
+    "interactiveChecklists": [
+      "Before publishing a postulation form",
+      "Before approving a postulation",
+      "Before requesting private data",
+      "Before changing a form version"
+    ]
+  },
+  "hardStops": [
+    "Do not call Make from this preview.",
+    "Do not write HR from this preview.",
+    "Do not write Firestore from this preview.",
+    "Do not upload Storage files from this preview.",
+    "Do not process raw sensitive fields.",
+    "Do not treat postulation as assignment.",
+    "Do not mark HR synchronized while sync gates are off."
+  ]
+}

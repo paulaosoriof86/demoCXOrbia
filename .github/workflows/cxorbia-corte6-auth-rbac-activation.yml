@@ -1,0 +1,267 @@
+name: CXOrbia Corte 6 Auth RBAC Activation
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/cxorbia-firebase-requests/corte6-auth-rbac-activation.json'
+      - 'tools/release/cxorbia-corte6-auth-claims-normalize.mjs'
+      - 'tools/release/cxorbia-corte6-firestore-rules-deploy.mjs'
+      - 'tools/qa/cxorbia-corte6-rules-iam-diagnostic.mjs'
+      - 'tools/qa/cxorbia-corte6-protected-shopper-identity-readonly.mjs'
+      - 'app/core/backend-browser-auth.js'
+      - 'app/core/backend-config-preview-dev.js'
+      - 'app/core/backend-firebase.js'
+      - 'app/index-backend-dev.html'
+      - 'firestore.rules'
+      - '.github/workflows/cxorbia-corte6-auth-rbac-activation.yml'
+
+permissions:
+  contents: write
+  statuses: write
+
+concurrency:
+  group: cxorbia-corte6-auth-rbac-activation
+  cancel-in-progress: false
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate static runtime syntax
+        id: syntax
+        run: |
+          set -euo pipefail
+          node --check app/core/backend-browser-auth.js
+          node --check app/core/backend-config-preview-dev.js
+          node --check app/core/backend-firebase.js
+          node --check tools/release/cxorbia-corte6-auth-claims-normalize.mjs
+          node --check tools/release/cxorbia-corte6-firestore-rules-deploy.mjs
+          node --check tools/qa/cxorbia-corte6-rules-iam-diagnostic.mjs
+          node --check tools/qa/cxorbia-corte6-protected-shopper-identity-readonly.mjs
+
+      - name: Read fail-closed request
+        id: req
+        run: |
+          set -euo pipefail
+          node <<'NODE' >> "$GITHUB_OUTPUT"
+          const r=require('./.github/cxorbia-firebase-requests/corte6-auth-rbac-activation.json');
+          if(r.schemaVersion!=='cxorbia.corte6-auth-rbac-activation.request.v1') throw new Error('bad_schema');
+          if(r.targetProjectId!=='cxorbia-backend-dev'||r.tenantId!=='tya'||r.canonicalProjectId!=='cinepolis') throw new Error('bad_target');
+          if(r.maxAuthClaimWrites!==5||r.expectedClientClaimUpdates!==2||r.expectedShopperClaimUpdates!==3) throw new Error('bad_caps');
+          if(r.allowCreateUsers!==false||r.allowPasswordChanges!==false||r.allowDeletes!==false||r.hostingDeploy!==false||r.firestoreDataWrites!==false||r.storageWrites!==false||r.production!==false||r.merge!==false) throw new Error('unsafe_request');
+          const execute=r.enabled===true&&r.consumed===false&&typeof r.authorizationId==='string'&&r.authorizationId.startsWith('PAULA_CURRENT_CONVERSATION_')&&r.deployFirestoreRules===true;
+          console.log(`execute=${execute?'true':'false'}`);
+          console.log(`authorization_id=${execute?r.authorizationId:'NONE'}`);
+          NODE
+
+      - name: Load canonical DEV credential
+        id: credential
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/corte6-private
+          node <<'NODE'
+          const fs=require('fs');
+          const raw=process.env.EXISTING_DEV_JSON||'';
+          let p=null; try{p=JSON.parse(raw);}catch{}
+          if(!(p&&p.type==='service_account'&&p.project_id&&p.client_email&&p.private_key)) throw new Error('credential_invalid');
+          if(p.project_id!=='cxorbia-backend-dev') throw new Error('wrong_service_account_project:'+p.project_id);
+          fs.writeFileSync('.tmp/corte6-private/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.tmp/corte6-private/credentials.json" >> "$GITHUB_ENV"
+
+      - name: Install transient provider tooling
+        id: tooling
+        run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+
+      - name: Read-only Firestore Rules IAM diagnostic
+        id: rulesdiag
+        if: steps.req.outputs.execute != 'true'
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_RULES_IAM_REPORT: app/docs/evidence/CORTE6-RULES-IAM-DIAGNOSTIC-LATEST.json
+        run: |
+          set -euo pipefail
+          node tools/qa/cxorbia-corte6-rules-iam-diagnostic.mjs
+          node <<'NODE' >> "$GITHUB_OUTPUT"
+          const r=require('./app/docs/evidence/CORTE6-RULES-IAM-DIAGNOSTIC-LATEST.json');
+          const p=r.iamTest&&r.iamTest.permissions||{};
+          const v=r.sourceValidation||{};
+          const bit=k=>p[k]===true?'1':'0';
+          const code=[
+            'RSC'+bit('firebaserules.rulesets.create'),
+            'RST'+bit('firebaserules.rulesets.test'),
+            'RRG'+bit('firebaserules.rulesets.get'),
+            'RRU'+bit('firebaserules.releases.update'),
+            'SU'+bit('serviceusage.services.use'),
+            'RPG'+bit('resourcemanager.projects.get'),
+            'REL'+String(r.firebaserulesRead?.releaseStatus||0),
+            'RSL'+String(r.firebaserulesRead?.rulesetsStatus||0),
+            'TST'+String(v.status||0),
+            'E'+String(v.errorCount||0),
+            'L'+String(v.firstError?.line||0)
+          ].join('_');
+          console.log('code='+code);
+          NODE
+
+      - name: Dry-run direct Firestore Rules deployment
+        id: rulesdry
+        if: steps.req.outputs.execute == 'true'
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_EXECUTE_FIRESTORE_RULES: 'false'
+          CXORBIA_RULES_DEPLOY_REPORT: app/docs/evidence/CORTE6-FIRESTORE-RULES-DEPLOY-LATEST.json
+        run: node tools/release/cxorbia-corte6-firestore-rules-deploy.mjs
+
+      - name: Dry-run exact claim target selection
+        id: dryrun
+        if: steps.req.outputs.execute == 'true'
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_EXECUTE_AUTH_CLAIMS: 'false'
+          CXORBIA_EXPECTED_CLIENTS: '2'
+          CXORBIA_EXPECTED_SHOPPERS: '3'
+          CXORBIA_AUTH_EXECUTION_REPORT: app/docs/evidence/CORTE6-AUTH-CLAIMS-NORMALIZATION-LATEST.json
+        run: node tools/release/cxorbia-corte6-auth-claims-normalize.mjs
+
+      - name: Read-only protected shopper identity release gate
+        id: protectedidentity
+        if: steps.req.outputs.execute != 'true'
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_PROTECTED_IDENTITY_REPORT: app/docs/evidence/CORTE6-PROTECTED-SHOPPER-IDENTITY-READONLY-LATEST.json
+        run: node tools/qa/cxorbia-corte6-protected-shopper-identity-readonly.mjs
+
+      - name: Persist sanitized protected identity evidence
+        if: always() && steps.req.outputs.execute != 'true' && hashFiles('app/docs/evidence/CORTE6-PROTECTED-SHOPPER-IDENTITY-READONLY-LATEST.json') != ''
+        run: |
+          set -euo pipefail
+          cp app/docs/evidence/CORTE6-PROTECTED-SHOPPER-IDENTITY-READONLY-LATEST.json /tmp/c6-protected-identity.json
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          cp /tmp/c6-protected-identity.json app/docs/evidence/CORTE6-PROTECTED-SHOPPER-IDENTITY-READONLY-LATEST.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/docs/evidence/CORTE6-PROTECTED-SHOPPER-IDENTITY-READONLY-LATEST.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'evidence: Corte 6 protected shopper identity read-only gate'
+            git push origin HEAD:docs-tya-v6-v71-audit
+          fi
+
+      - name: Deploy only Firestore rules via direct Rules API
+        id: rules
+        if: steps.req.outputs.execute == 'true'
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_EXECUTE_FIRESTORE_RULES: 'true'
+          CXORBIA_RULES_DEPLOY_REPORT: app/docs/evidence/CORTE6-FIRESTORE-RULES-DEPLOY-LATEST.json
+        run: node tools/release/cxorbia-corte6-firestore-rules-deploy.mjs
+
+      - name: Execute exact existing-user claim normalization
+        id: claims
+        if: steps.req.outputs.execute == 'true'
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_EXECUTE_AUTH_CLAIMS: 'true'
+          CXORBIA_EXPECTED_CLIENTS: '2'
+          CXORBIA_EXPECTED_SHOPPERS: '3'
+          CXORBIA_AUTH_EXECUTION_REPORT: app/docs/evidence/CORTE6-AUTH-CLAIMS-NORMALIZATION-LATEST.json
+        run: node tools/release/cxorbia-corte6-auth-claims-normalize.mjs
+
+      - name: Reconcile Auth after provider change
+        id: reconcile
+        if: steps.req.outputs.execute == 'true'
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_AUTH_RBAC_JSON: app/docs/evidence/CORTE6-AUTH-RBAC-READONLY-RECONCILIATION-LATEST.json
+          CXORBIA_AUTH_RBAC_MD: app/docs/evidence/CORTE6-AUTH-RBAC-READONLY-RECONCILIATION-LATEST.md
+        run: node tools/qa/cxorbia-auth-rbac-readonly-reconcile.mjs
+
+      - name: Verify post-change readiness
+        id: verify
+        if: steps.req.outputs.execute == 'true'
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const r=require('./app/docs/evidence/CORTE6-AUTH-RBAC-READONLY-RECONCILIATION-LATEST.json');
+          const a=r.auth&&r.auth.readiness||{};
+          if(!(a.operatorLoginReady>0&&a.clientLoginReady===2&&a.shopperLoginReady===3&&a.allRequiredRoleFamiliesHaveAtLeastOne===true)) throw new Error('post_auth_readiness_failed:'+JSON.stringify(a));
+          NODE
+
+      - name: Freeze one-shot request and commit sanitized evidence
+        id: freeze
+        if: steps.req.outputs.execute == 'true'
+        run: |
+          set -euo pipefail
+          cp app/docs/evidence/CORTE6-FIRESTORE-RULES-DEPLOY-LATEST.json /tmp/corte6-rules.json
+          cp app/docs/evidence/CORTE6-AUTH-CLAIMS-NORMALIZATION-LATEST.json /tmp/corte6-claims.json
+          cp app/docs/evidence/CORTE6-AUTH-RBAC-READONLY-RECONCILIATION-LATEST.json /tmp/corte6-rbac.json
+          cp app/docs/evidence/CORTE6-AUTH-RBAC-READONLY-RECONCILIATION-LATEST.md /tmp/corte6-rbac.md
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          cp /tmp/corte6-rules.json app/docs/evidence/CORTE6-FIRESTORE-RULES-DEPLOY-LATEST.json
+          cp /tmp/corte6-claims.json app/docs/evidence/CORTE6-AUTH-CLAIMS-NORMALIZATION-LATEST.json
+          cp /tmp/corte6-rbac.json app/docs/evidence/CORTE6-AUTH-RBAC-READONLY-RECONCILIATION-LATEST.json
+          cp /tmp/corte6-rbac.md app/docs/evidence/CORTE6-AUTH-RBAC-READONLY-RECONCILIATION-LATEST.md
+          node <<'NODE'
+          const fs=require('fs');
+          const p='.github/cxorbia-firebase-requests/corte6-auth-rbac-activation.json';
+          const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          r.enabled=false; r.consumed=true; r.deployFirestoreRules=false; r.consumedAt=new Date().toISOString(); delete r.diagnosticHold;
+          fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n','utf8');
+          NODE
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .github/cxorbia-firebase-requests/corte6-auth-rbac-activation.json app/docs/evidence/CORTE6-FIRESTORE-RULES-DEPLOY-LATEST.json app/docs/evidence/CORTE6-AUTH-CLAIMS-NORMALIZATION-LATEST.json app/docs/evidence/CORTE6-AUTH-RBAC-READONLY-RECONCILIATION-LATEST.json app/docs/evidence/CORTE6-AUTH-RBAC-READONLY-RECONCILIATION-LATEST.md
+          git commit -m 'evidence: freeze Corte 6 Auth/RBAC activation'
+          git push origin HEAD:docs-tya-v6-v71-audit
+
+      - name: Publish gate status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          STATE=success
+          DESC='PASS_CORTE6_AUTH_RBAC_PREPARED_NO_PROVIDER_WRITE'
+          if [ '${{ steps.req.outputs.execute }}' = 'true' ]; then DESC='PASS_CORTE6_AUTH_RBAC_ACTIVATED';
+          elif [ '${{ steps.protectedidentity.outcome }}' = 'success' ]; then DESC='PASS_C6_PROTECTED_IDENTITY_READONLY';
+          elif [ '${{ steps.protectedidentity.outcome }}' = 'failure' ]; then STATE=error; DESC='HOLD_C6_PROTECTED_IDENTITY_READONLY';
+          elif [ '${{ steps.rulesdiag.outcome }}' = 'success' ]; then DESC='DIAG_C6_${{ steps.rulesdiag.outputs.code }}'; fi
+          if [ '${{ job.status }}' != 'success' ]; then
+            STATE=error
+            if [ "$DESC" = 'PASS_CORTE6_AUTH_RBAC_PREPARED_NO_PROVIDER_WRITE' ]; then DESC='FAIL_C6_UNKNOWN'; fi
+            if [ '${{ steps.syntax.outcome }}' = 'failure' ]; then DESC='FAIL_C6_SYNTAX';
+            elif [ '${{ steps.req.outcome }}' = 'failure' ]; then DESC='FAIL_C6_REQUEST';
+            elif [ '${{ steps.credential.outcome }}' = 'failure' ]; then DESC='FAIL_C6_CREDENTIAL';
+            elif [ '${{ steps.tooling.outcome }}' = 'failure' ]; then DESC='FAIL_C6_TOOLING';
+            elif [ '${{ steps.rulesdiag.outcome }}' = 'failure' ]; then DESC='FAIL_C6_RULES_IAM_DIAG';
+            elif [ '${{ steps.rulesdry.outcome }}' = 'failure' ]; then DESC='FAIL_C6_RULES_DIRECT_DRYRUN';
+            elif [ '${{ steps.dryrun.outcome }}' = 'failure' ]; then DESC='FAIL_C6_DRYRUN_SELECTION';
+            elif [ '${{ steps.protectedidentity.outcome }}' = 'failure' ]; then DESC='HOLD_C6_PROTECTED_IDENTITY_READONLY';
+            elif [ '${{ steps.rules.outcome }}' = 'failure' ]; then DESC='FAIL_C6_RULES_DEPLOY';
+            elif [ '${{ steps.claims.outcome }}' = 'failure' ]; then DESC='FAIL_C6_CLAIMS';
+            elif [ '${{ steps.reconcile.outcome }}' = 'failure' ]; then DESC='FAIL_C6_RECONCILE';
+            elif [ '${{ steps.verify.outcome }}' = 'failure' ]; then DESC='FAIL_C6_READINESS';
+            elif [ '${{ steps.freeze.outcome }}' = 'failure' ]; then DESC='FAIL_C6_FREEZE'; fi
+          fi
+          CONTEXT="cxorbia/corte6-auth-rbac/${DESC}"
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="$CONTEXT" -f description="$DESC" >/dev/null
+
+      - name: Cleanup credential
+        if: always()
+        run: rm -rf .tmp/corte6-private

@@ -1,0 +1,237 @@
+{
+  "schemaVersion": "tya.remaining-shopper-identity-reconciliation.readonly.v5",
+  "generatedAt": "2026-07-30T02:47:02.262Z",
+  "authorizationScope": "READ_ONLY_REAL_IDENTITY_RECONCILIATION_9_REFS",
+  "sources": {
+    "legacy": {
+      "projectId": "tya-plataforma",
+      "databaseType": "Firebase Realtime Database",
+      "node": "tya_shoppers_extra",
+      "readOnly": true,
+      "rawRepresentationsScanned": 282
+    },
+    "hr": {
+      "spreadsheetIdMasked": "1h307t...8vU4",
+      "readOnly": true,
+      "accessMode": "public_gviz_csv_cache_busted",
+      "tabsRead": 28,
+      "realIdentityUsedInMemoryOnly": true,
+      "rawIdentityPersisted": false
+    },
+    "canonical": {
+      "projectId": "cxorbia-backend-dev",
+      "tenantId": "tya",
+      "readOnly": true,
+      "projectsScanned": 29,
+      "shoppersScanned": 215,
+      "visitsScanned": 616
+    }
+  },
+  "policy": {
+    "realIdentityRequiredInOperationalPlatform": true,
+    "rawPiiInGitHub": false,
+    "nameOnlyAutoMerge": false,
+    "r20NameHashMayRecoverIdentitySurfaceButNeverSoleMerge": true,
+    "strongExistingReuseRequiresStableIdOrContactOrCorroboratedMultiSurface": true,
+    "unresolvedIdentityAllowedAsHold": true
+  },
+  "counts": {
+    "total": 9,
+    "identitySourceFound": 6,
+    "identitySourceNotFound": 3,
+    "reuseExisting": 0,
+    "linkLegacyCreate": 2,
+    "holdReview": 7
+  },
+  "decisions": [
+    {
+      "plannedShopperId": "shopper_gt_0c0ba8856e",
+      "action": "HOLD_IDENTITY_REVIEW",
+      "canonicalShopperId": null,
+      "legacyShopperId": null,
+      "evidence": [],
+      "identitySource": [
+        "live_hr"
+      ],
+      "identitySourceFound": true,
+      "liveHrMatches": 1,
+      "legacyCurrentMatches": 0,
+      "legacyActiveMatches": 0,
+      "deletedMarkerMatches": 0,
+      "canonicalProfileMatches": 0,
+      "canonicalVisitShopperMatches": 0,
+      "hrVisitCount": 1,
+      "identityFingerprint": "477f74117e88073e5a5bb9ff"
+    },
+    {
+      "plannedShopperId": "shopper_gt_1a6d9c9779",
+      "action": "HOLD_IDENTITY_REVIEW",
+      "canonicalShopperId": null,
+      "legacyShopperId": null,
+      "evidence": [],
+      "identitySource": [],
+      "identitySourceFound": false,
+      "liveHrMatches": 0,
+      "legacyCurrentMatches": 0,
+      "legacyActiveMatches": 0,
+      "deletedMarkerMatches": 0,
+      "canonicalProfileMatches": 0,
+      "canonicalVisitShopperMatches": 0,
+      "hrVisitCount": 6,
+      "identityFingerprint": "f0417c0114668ca6e222c955"
+    },
+    {
+      "plannedShopperId": "shopper_gt_319cd82eaf",
+      "action": "HOLD_IDENTITY_REVIEW",
+      "canonicalShopperId": null,
+      "legacyShopperId": null,
+      "evidence": [],
+      "identitySource": [
+        "live_hr"
+      ],
+      "identitySourceFound": true,
+      "liveHrMatches": 2,
+      "legacyCurrentMatches": 0,
+      "legacyActiveMatches": 0,
+      "deletedMarkerMatches": 0,
+      "canonicalProfileMatches": 0,
+      "canonicalVisitShopperMatches": 0,
+      "hrVisitCount": 1,
+      "identityFingerprint": "a8c7dbe3104294445f6b9dfb"
+    },
+    {
+      "plannedShopperId": "shopper_gt_a5fec782ee",
+      "action": "LINK_TO_LEGACY_PROFILE_CREATE_CANDIDATE",
+      "canonicalShopperId": null,
+      "legacyShopperId": "HRSH_CE214C77",
+      "evidence": [
+        "exact_r20_identity_hash_to_current_legacy",
+        "country_compatible",
+        "no_existing_canonical_identity_target"
+      ],
+      "identitySource": [
+        "legacy_current_raw",
+        "live_hr"
+      ],
+      "identitySourceFound": true,
+      "liveHrMatches": 1,
+      "legacyCurrentMatches": 1,
+      "legacyActiveMatches": 1,
+      "deletedMarkerMatches": 0,
+      "canonicalProfileMatches": 0,
+      "canonicalVisitShopperMatches": 0,
+      "hrVisitCount": 1,
+      "identityFingerprint": "b6d6abea7c94e4cf524c0050"
+    },
+    {
+      "plannedShopperId": "shopper_gt_b23d8dedea",
+      "action": "HOLD_IDENTITY_REVIEW",
+      "canonicalShopperId": null,
+      "legacyShopperId": null,
+      "evidence": [],
+      "identitySource": [],
+      "identitySourceFound": false,
+      "liveHrMatches": 0,
+      "legacyCurrentMatches": 0,
+      "legacyActiveMatches": 0,
+      "deletedMarkerMatches": 0,
+      "canonicalProfileMatches": 0,
+      "canonicalVisitShopperMatches": 0,
+      "hrVisitCount": 1,
+      "identityFingerprint": "7d80d5b13d0684a26812e338"
+    },
+    {
+      "plannedShopperId": "shopper_gt_ec7b992054",
+      "action": "LINK_TO_LEGACY_PROFILE_CREATE_CANDIDATE",
+      "canonicalShopperId": null,
+      "legacyShopperId": "HRSH_F3089F42",
+      "evidence": [
+        "exact_r20_identity_hash_to_current_legacy",
+        "country_compatible",
+        "no_existing_canonical_identity_target"
+      ],
+      "identitySource": [
+        "legacy_current_raw"
+      ],
+      "identitySourceFound": true,
+      "liveHrMatches": 0,
+      "legacyCurrentMatches": 1,
+      "legacyActiveMatches": 1,
+      "deletedMarkerMatches": 0,
+      "canonicalProfileMatches": 0,
+      "canonicalVisitShopperMatches": 0,
+      "hrVisitCount": 1,
+      "identityFingerprint": "be2858bb905595b19707aa47"
+    },
+    {
+      "plannedShopperId": "shopper_hn_1a6d9c9779",
+      "action": "HOLD_IDENTITY_REVIEW",
+      "canonicalShopperId": null,
+      "legacyShopperId": null,
+      "evidence": [],
+      "identitySource": [],
+      "identitySourceFound": false,
+      "liveHrMatches": 0,
+      "legacyCurrentMatches": 0,
+      "legacyActiveMatches": 0,
+      "deletedMarkerMatches": 0,
+      "canonicalProfileMatches": 0,
+      "canonicalVisitShopperMatches": 0,
+      "hrVisitCount": 3,
+      "identityFingerprint": "629c51a924c4ed05bca5ea16"
+    },
+    {
+      "plannedShopperId": "shopper_hn_7a5a21048b",
+      "action": "HOLD_IDENTITY_REVIEW",
+      "canonicalShopperId": null,
+      "legacyShopperId": null,
+      "evidence": [],
+      "identitySource": [
+        "live_hr"
+      ],
+      "identitySourceFound": true,
+      "liveHrMatches": 1,
+      "legacyCurrentMatches": 0,
+      "legacyActiveMatches": 0,
+      "deletedMarkerMatches": 0,
+      "canonicalProfileMatches": 0,
+      "canonicalVisitShopperMatches": 0,
+      "hrVisitCount": 1,
+      "identityFingerprint": "e02ff7259f8d3c6f5e0e46bc"
+    },
+    {
+      "plannedShopperId": "shopper_hn_ba49cafa91",
+      "action": "HOLD_IDENTITY_REVIEW",
+      "canonicalShopperId": null,
+      "legacyShopperId": null,
+      "evidence": [],
+      "identitySource": [
+        "live_hr"
+      ],
+      "identitySourceFound": true,
+      "liveHrMatches": 1,
+      "legacyCurrentMatches": 0,
+      "legacyActiveMatches": 0,
+      "deletedMarkerMatches": 0,
+      "canonicalProfileMatches": 0,
+      "canonicalVisitShopperMatches": 0,
+      "hrVisitCount": 1,
+      "identityFingerprint": "51ef2008d6bfc5c957e87c7e"
+    }
+  ],
+  "safety": {
+    "legacyWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false,
+    "rawNamesExported": false,
+    "rawEmailsExported": false,
+    "rawPhonesExported": false,
+    "identityDocumentsExported": false,
+    "bankDataExported": false
+  }
+}

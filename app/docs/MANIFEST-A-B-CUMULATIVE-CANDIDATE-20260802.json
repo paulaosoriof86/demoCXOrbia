@@ -1,0 +1,23 @@
+{
+  "schema": "cxorbia.cumulative-candidate-provenance.v1",
+  "candidateId": "CXORBIA-TYA-A-B-CUMULATIVE-20260802",
+  "status": "SUPERSEDED_PARTIAL_MANIFEST_NOT_SUFFICIENT_FOR_PHASE_A_FREEZE",
+  "supersededBy": "app/docs/MANIFEST-PHASE-A-COMPLETA-INVENTARIO-VIVO-20260803.json",
+  "supersedingContract": "app/docs/ADDENDUM-MAESTRO-CORRECCION-RECONSTRUCCION-PHASE-A-COMPLETA-20260803.md",
+  "reason": "The A+B scope prioritized post-Phase-A CRM/commercial modules and did not certify the complete approved Phase A operation, profiles, finance, portals and reports composition.",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "preservation": {
+    "deleteAppliedABWork": false,
+    "treatAsPostPhaseAWorkstream": true,
+    "useAsFinalCandidate": false,
+    "useAsVisualApprovalGate": false
+  },
+  "safeState": {
+    "functionalChanges": 0,
+    "deploys": 0,
+    "providerWrites": 0,
+    "merge": false,
+    "production": false
+  }
+}

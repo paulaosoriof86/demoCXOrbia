@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "phase-a-certification-carryover-import-source-safe-v1",
+  "purpose": "Normalize and dry-run previously presented certifications while preventing inferred eligibility.",
+  "acceptedFormats": ["json", "csv", "xlsx", "xlsm"],
+  "stableMatchPriority": ["shopperId", "shopperCode"],
+  "automaticMatchDisallowed": ["shopperName", "visual_similarity"],
+  "requiredForCarryover": [
+    "exactShopperMatch",
+    "projectId",
+    "certificationId",
+    "presentedAt",
+    "sourceRef",
+    "reviewedBy",
+    "reviewedAt",
+    "reviewDecisionAccepted",
+    "auditRef"
+  ],
+  "states": ["pending_review", "carried_over", "expired", "failed", "conflict"],
+  "dedupe": {
+    "exactRecord": "collapse",
+    "differentRecordsSameShopperCertification": "review_required",
+    "nameOnly": "review_required"
+  },
+  "outputs": [
+    "certification-carryover.source-safe.json",
+    "tya-certification-carryover-source-safe.js",
+    "certification-candidates.source-safe.json",
+    "review-queue.source-safe.json",
+    "audit-events.source-safe.json",
+    "phase-a-source-safe-import-report.json"
+  ],
+  "security": {
+    "sensitiveColumnsExcluded": ["dpi", "document", "phone", "email", "address", "bank", "account"],
+    "rawEvidence": false,
+    "rawRowsInOutput": false
+  },
+  "safeState": {
+    "dryRun": true,
+    "writes": false,
+    "imported": false,
+    "production": false,
+    "providers": false,
+    "eligibilityInferred": false
+  }
+}

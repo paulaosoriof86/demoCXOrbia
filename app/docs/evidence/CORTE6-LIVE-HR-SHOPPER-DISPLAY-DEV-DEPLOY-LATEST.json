@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "cxorbia.c6-live-hr-shopper-display-dev-deploy.v1",
+  "generatedAt": "2026-07-31T03:15:20.734Z",
+  "decision": "PASS_C6_LIVE_HR_AUTOMONTH_AND_SHOPPER_DISPLAY_DEV",
+  "requestId": "c6-live-hr-shopper-display-dev-redeploy-20260731-01",
+  "target": {
+    "projectId": "cxorbia-backend-dev",
+    "cloudRunService": "cxorbia-live-hr-dev",
+    "cloudRunRegion": "us-central1",
+    "hostingSite": "cxorbia-backend-dev",
+    "hostingTarget": "cxorbia-dev"
+  },
+  "cloudRun": {
+    "deployExecutions": 1,
+    "revision": "cxorbia-live-hr-dev-00008-8mf",
+    "url": "https://cxorbia-live-hr-dev-mzgge2pnia-uc.a.run.app"
+  },
+  "hosting": {
+    "deployExecutions": 1,
+    "releaseName": "sites/cxorbia-backend-dev/releases/1785467713768000",
+    "versionName": "sites/cxorbia-backend-dev/versions/22e81c2b783f697a",
+    "url": "https://cxorbia-backend-dev.web.app"
+  },
+  "remote": {
+    "periods": 14,
+    "visits": 616,
+    "latestPeriodKey": "2026-07",
+    "tabRegistryAutoDiscovery": true,
+    "tabRegistryMode": "live_provider_metadata_auto_refresh",
+    "operationalDisplayIdentityReady": true,
+    "operationalDisplayIdentityCount": 208,
+    "humanCredentialPrompt": false,
+    "displayIdentityScope": "display_name_only"
+  },
+  "safety": {
+    "hrOpenReadPreserved": true,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "newProjects": 0,
+    "newHostingSites": 0,
+    "merge": false,
+    "production": false,
+    "sensitiveShopperFieldsExposed": false
+  }
+}

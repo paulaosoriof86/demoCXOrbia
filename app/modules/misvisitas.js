@@ -2,19 +2,21 @@
    instructivo → certificar → agendar → realizar → cuestionario → submit
    Cada acción sincroniza estado de visita y liquidación. */
 CX.module('misvisitas', ({data,ui})=>{
-  const p=data.project();
-  /* P0: SIEMPRE filtrar por el shopper autenticado (shopperId, no nombre) */
-  const sid=(CX.session.user&&CX.session.user.shopperId)||'sh1';
-  const base=(data.visitsForShopper?data.visitsForShopper(sid):data.visitas());
+  const p=data.period();
+  /* P0 (V172): identidad fail-closed. Sin shopperId verificable NO se listan ni ejecutan
+     acciones; nunca 'sh1'. Si visitsForShopper no existe, se usa [] (nunca visitas() global). */
+  const sid=(CX.session.user&&CX.session.user.shopperId)||null;
+  const identityOk=!!sid;
+  const base=identityOk?(data.visitsForShopper?data.visitsForShopper(sid):[]):[];
   const asignada = base.find(v=>v.estado==='asignada');
   const agendada = base.find(v=>v.estado==='agendada');
   const realizada= base.find(v=>['realizada','cuestionario'].includes(v.estado));
 
   /* pasos del flujo, dependientes del proyecto (certificación una vez por proyecto) */
   const flowSteps=(estado)=>{
-    const order=['asignada','instructivo','certificacion','agendada','realizada','cuestionario','submit','liquidada'];
-    const labels={asignada:'Asignada',instructivo:'Instructivo y documentos',certificacion:'Certificación del proyecto',agendada:'Visita agendada',realizada:'Visita realizada',cuestionario:'Cuestionario',submit:'Submitida',liquidada:'Liquidada'};
-    const idx={asignada:0,agendada:3,realizada:4,cuestionario:5,liquidada:7}[estado]??0;
+    const order=['asignada','instructivo','certificacion','agendada','realizada','cuestionario','revision','submit','liquidada'];
+    const labels={asignada:'Asignada',instructivo:'Instructivo y documentos',certificacion:'Certificación del proyecto',agendada:'Visita agendada',realizada:'Visita realizada',cuestionario:'Cuestionario',revision:'Revisión',submit:'Submitida',liquidada:'Liquidada'};
+    const idx={asignada:0,agendada:3,realizada:4,cuestionario:5,revision:6,submit:7,liquidada:8}[estado]??0;
     return order.map((s,i)=>({label:labels[s],state:i<idx?'done':i===idx?'now':'todo'}));
   };
 
@@ -27,12 +29,12 @@ CX.module('misvisitas', ({data,ui})=>{
       <button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button>
       <button class="btn btn-soft btn-sm" data-cert="${v.id}">🏆 Certificarme</button>
       <button class="btn btn-pr btn-sm" data-sched="${v.id}">📅 Agendar</button>
-      <button class="btn btn-ghost btn-sm" data-reprog="${v.id}">🔄 Reprogramar</button>`;
+      <button class="btn btn-ghost btn-sm" data-reprog="${v.id}">🔄 Reprogramar</button>${geoBtn(v)}`;
     else if(kind==='agendada') actions=`
       <button class="btn btn-green btn-sm" data-done="${v.id}">✅ Marcar realizada</button>
       <button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button>
       <button class="btn btn-ghost btn-sm" data-reprog="${v.id}">🔄 Reprogramar</button>
-      <button class="btn btn-ghost btn-sm" data-cancel="${v.id}">✕ Cancelar</button>`;
+      <button class="btn btn-ghost btn-sm" data-cancel="${v.id}">✕ Cancelar</button>${geoBtn(v)}`;
     else actions=`
       <button class="btn btn-pr btn-sm" data-quest="${v.id}">📝 ${cfg.modo==='interna'?'Llenar cuestionario':'Abrir cuestionario'}</button>
       <button class="btn btn-ghost btn-sm" data-doc="${v.id}">📄 Instructivo</button>`;
@@ -51,20 +53,33 @@ CX.module('misvisitas', ({data,ui})=>{
     </div>`;
   };
 
-  const mine=(data.visitsForShopper?data.visitsForShopper(sid):base);
+  const mine=identityOk?(data.visitsForShopper?data.visitsForShopper(sid):[]):[];
+  const geoOn=!!(CX.addons&&CX.addons.on('geo_checkin','shopper'));
+  const geoBtn=(v)=>{ if(!geoOn||!v)return ''; const g=v.geoCheckin;
+    return g?`<button class="btn btn-soft btn-sm" data-geo="${v.id}" title="Check-in preparado (pendiente de backend)">⏳ Check-in ${g.ts||''}</button>`
+      :`<button class="btn btn-green btn-sm" data-geo="${v.id}">📍 Check-in geolocalizado</button>`; };
   const histVis=mine.filter(v=>['liquidada','cancelada'].includes(v.estado));
   const activasN=[asignada,agendada,realizada].filter(Boolean).length;
   let view='activas';
   const host=ui.el('div');
 
+  /* Estado seguro: sesión Shopper sin identidad verificable → cero datos, cero acciones. */
+  const blockedHTML=()=>`
+    ${ui.ph('Mis Visitas', p.name)}
+    <div class="card card-p" style="border-left:3px solid var(--red)">
+      <div class="flex" style="gap:8px;align-items:center;margin-bottom:6px"><span style="font-size:20px">🔒</span><b>Identidad de evaluador no verificable</b></div>
+      <div style="font-size:12.5px;color:var(--t2)">No hay un <code>shopperId</code> verificable en esta sesión. Por seguridad no se muestran ni se ejecutan visitas de ningún evaluador. Inicia sesión con una identidad real para ver tus visitas.</div>
+    </div>`;
+
   const activeHTML=()=>`
     ${ui.ph('Mis Visitas', p.name+' · agenda, ejecuta y da seguimiento')}
     <div class="flex" style="margin-bottom:14px;gap:8px"><button class="btn btn-sm ${view==='activas'?'btn-pr':'btn-ghost'}" data-view="activas">Activas ${activasN}</button> <button class="btn btn-sm ${view==='historial'?'btn-pr':'btn-ghost'}" data-view="historial">Historial ${histVis.length}</button></div>
+    ${geoOn?`<div class="card card-p" style="margin-bottom:12px;border-left:3px solid var(--green)"><div class="flex" style="gap:8px;align-items:center;margin-bottom:4px"><span style="font-size:18px">📍</span><b style="font-size:13px">Check-in con foto geolocalizada</b><span class="bdg bdg-a" style="font-size:10px">Pendiente de backend/Storage</span></div><div style="font-size:11.5px;color:var(--t2)">Prepara tu llegada con foto (vista previa local) + GPS y hora desde el botón 📍 de cada visita activa. La <b>evidencia definitiva se guarda cuando el backend/Storage esté activo</b>; aquí no se almacena la foto ni datos sensibles.</div></div>`:''}
     ${visitCard(asignada,'asignada')}
     ${visitCard(agendada,'agendada')}
     ${visitCard(realizada,'realizada')}
     <div class="card card-p">
-      ${ui.aiBox('Cada acción que marcas (agendar, realizar, enviar cuestionario) actualiza la visita, notifica al equipo, sincroniza la hoja de ruta y mueve el estado de tu liquidación con fecha estimada de pago según las reglas de '+p.name+'.','Ejecución guiada y sincronizada')}
+      ${ui.aiBox('Cada acción que marcas (agendar, realizar, completar cuestionario) actualiza tu visita y prepara la notificación al equipo. La sincronía con la hoja de ruta y el movimiento de tu liquidación se reflejan cuando la conexión esté activa (pendiente de activación); mientras tanto verás una vista previa con fecha estimada según las reglas de '+p.name+'.','Ejecución guiada · vista previa')}
     </div>`;
 
   const histHTML=()=>`
@@ -72,12 +87,21 @@ CX.module('misvisitas', ({data,ui})=>{
     <div class="flex" style="margin-bottom:14px;gap:8px"><button class="btn btn-sm ${view==='activas'?'btn-pr':'btn-ghost'}" data-view="activas">Activas ${activasN}</button> <button class="btn btn-sm ${view==='historial'?'btn-pr':'btn-ghost'}" data-view="historial">Historial ${histVis.length}</button></div>
     <div class="card card-p">
       <div class="card-h"><div class="card-t">Historial de visitas</div><span class="muted" style="font-size:11px">visitas liquidadas y cerradas</span></div>
-      ${histVis.length?`<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Sucursal</th><th>Escenario</th><th>Fecha</th><th>Honorario</th><th>Estado</th></tr></thead><tbody>
-        ${histVis.map(v=>`<tr><td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.escenario}</td><td style="font-size:12px">${v.realizada||v.fechaPago||v.agendada||'—'}</td><td>${ui.money(v.currency,v.honorario)}</td><td>${ui.estadoBadge(v.estado)}</td></tr>`).join('')}
+      ${histVis.length?`<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Sucursal</th><th>Escenario</th><th>Fecha</th><th>Honorario</th><th>Estado</th><th>Pago</th></tr></thead><tbody>
+        ${histVis.map(v=>{
+          /* OLA1 (paquete V120→V121, consumidor real de CX.data.visitContract(v)): columna de
+             pago derivada del contrato de Visita — nunca infiere "pagado" solo por el estado
+             operativo (preview vs. confirmado con sourceRef, igual criterio que Finanzas). */
+          const vc=data.visitContract?data.visitContract(v):null;
+          const payLbl = !vc||vc.paymentState==='no_aplica' ? '<span class="muted" style="font-size:11px">—</span>'
+            : vc.paymentState==='confirmado' ? ui.bdg('Pagado (confirmado)','g') : ui.bdg('Pagado (preview)','a');
+          return `<tr><td><b>${v.sucursal}</b><div style="font-size:10px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td><td style="font-size:12px">${v.escenario}</td><td style="font-size:12px">${v.realizada||v.fechaPago||v.agendada||'—'}</td><td>${ui.money(v.currency,v.honorario)}</td><td>${ui.estadoBadge(v.estado)}</td><td>${payLbl}</td></tr>`;
+        }).join('')}
       </tbody></table></div>`:ui.empty('🗒️','Aún no tienes visitas en tu historial. Cuando una visita se liquida o cierra, aparece aquí.')}
     </div>`;
 
-  const draw=()=>{ host.innerHTML = view==='historial'?histHTML():activeHTML();
+  const draw=()=>{ if(!identityOk){ host.innerHTML=blockedHTML(); return; }
+    host.innerHTML = view==='historial'?histHTML():activeHTML();
     host.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{view=b.dataset.view;draw();}));
     if(view==='activas') bindActive();
   };
@@ -87,6 +111,38 @@ CX.module('misvisitas', ({data,ui})=>{
     const today=new Date().toISOString().slice(0,10);
     host.querySelectorAll('[data-doc]').forEach(b=>b.addEventListener('click',()=>CX.router.nav('documentos')));
     host.querySelectorAll('[data-cert]').forEach(b=>b.addEventListener('click',()=>CX.router.nav('cert')));
+    host.querySelectorAll('[data-geo]').forEach(b=>b.addEventListener('click',()=>{
+      const v=find(b.dataset.geo); if(!v)return; const g=v.geoCheckin;
+      ui.modal('📍 Check-in geolocalizado · '+v.sucursal,`
+        <div style="background:var(--amber-bg,#fffbeb);border-radius:9px;padding:9px 12px;font-size:11.5px;color:#8a5b00;margin-bottom:12px">⏳ <b>Pendiente de backend/Storage.</b> Puedes previsualizar la foto y sellar GPS + hora localmente, pero la evidencia definitiva se guarda cuando el almacenamiento seguro esté activo. No se almacena la foto ni datos sensibles en este dispositivo.</div>
+        <input type="file" accept="image/*" capture="environment" class="inp" id="geoPhoto" style="padding:6px;font-size:12px;margin-bottom:8px">
+        <div id="geoPrev" style="margin-bottom:10px"></div>
+        <button class="btn btn-soft btn-sm" id="geoLoc" type="button" style="width:100%;justify-content:center;margin-bottom:6px">${g?('⏳ '+(g.lat!=null?g.lat.toFixed(5)+', '+g.lon.toFixed(5):'ubicación')+' · '+g.ts):'📍 Capturar ubicación GPS'}</button>
+        <div id="geoMsg" style="font-size:11px;color:var(--t3);min-height:16px">${g?'Check-in preparado (pendiente de sincronizar al backend).':''}</div>
+        <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="geoSave" disabled>Preparar check-in</button></div>`,
+      {onMount:(ov,close)=>{
+        let cap=null; let photoOk=false; let previewUrl=null;
+        const save=ov.querySelector('#geoSave');
+        const refresh=()=>{ save.disabled=!(cap&&cap.lat!=null&&photoOk); }; /* fail-closed: exige GPS válido + foto */
+        ov.querySelector('#geoPhoto').addEventListener('change',e=>{const f=e.target.files[0]; const prev=ov.querySelector('#geoPrev');
+          if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=null;}
+          if(f){ photoOk=true; previewUrl=URL.createObjectURL(f); prev.innerHTML='<img src="'+previewUrl+'" style="max-width:100%;max-height:150px;border-radius:8px"><div style="font-size:10.5px;color:var(--t3);margin-top:4px">Vista previa local — no se almacena en el dispositivo.</div>'; }
+          else { photoOk=false; prev.innerHTML=''; }
+          refresh(); });
+        ov.querySelector('#geoLoc').addEventListener('click',()=>{ const btn=ov.querySelector('#geoLoc'); btn.textContent='📍 Obteniendo GPS…'; btn.disabled=true;
+          if(navigator.geolocation){ navigator.geolocation.getCurrentPosition(
+            pos=>{ const ts=new Date().toLocaleString('es-GT'); cap={lat:pos.coords.latitude,lon:pos.coords.longitude,ts,acc:pos.coords.accuracy}; btn.disabled=false; btn.innerHTML='✅ '+cap.lat.toFixed(5)+', '+cap.lon.toFixed(5)+' · '+ts; refresh(); ui.toast('📍 Ubicación capturada','ok',2500); },
+            err=>{ cap=null; btn.disabled=false; btn.textContent='📍 Capturar ubicación GPS'; refresh(); ui.toast('GPS no disponible ('+err.code+') · sin ubicación no se puede preparar el check-in','warn',3500); },
+            {enableHighAccuracy:true,timeout:8000}); }
+          else { cap=null; btn.disabled=false; refresh(); ui.toast('Este dispositivo no expone GPS · no se puede preparar el check-in','warn',3500); } });
+        save.addEventListener('click',()=>{ if(!(cap&&cap.lat!=null&&photoOk)){ui.toast('Se requieren foto y GPS válidos','warn');return;}
+          /* No se persiste foto ni PII: solo metadatos mínimos no sensibles del estado de preparación. */
+          v.geoCheckin={lat:cap.lat,lon:cap.lon,ts:cap.ts,acc:cap.acc,pending:true};
+          if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=null;}
+          CX.notif&&CX.notif.push({to:'admin',tipo:'checkin',icon:'⏳',tono:'a',titulo:'Check-in preparado (pendiente de backend)',txt:(v.shopper||CX.session.user.name)+' · '+v.sucursal+' · '+v.geoCheckin.ts,nav:'postulaciones'});
+          close(); draw(); ui.toast('Check-in preparado · se guardará como evidencia cuando el backend/Storage esté activo','ok',3600); });
+      }});
+    }));
     host.querySelectorAll('[data-quest]').forEach(b=>b.addEventListener('click',()=>CX.shopperQuestionnaire(data,p,find(b.dataset.quest),ui)));
 
     host.querySelectorAll('[data-sched]').forEach(b=>b.addEventListener('click',()=>{
@@ -103,7 +159,7 @@ CX.module('misvisitas', ({data,ui})=>{
           const f=ov.querySelector('#schD').value||today;
           data.setVisitState(v.id,'agendada','agendada',f);
           CX.automations&&CX.automations.fire('agenda',{shopper:v.shopper||CX.session.user.name,sucursal:v.sucursal,fecha:f});
-          close(); draw(); ui.toast('Visita agendada · equipo notificado · HR y liquidación sincronizadas','ok',3600);
+          close(); draw(); ui.toast('Visita agendada · equipo notificado (in-app) · liquidación actualizada','ok',3400);
           CX.notif&&CX.notif.push({to:'admin',tipo:'agenda',icon:'📅',tono:'b',titulo:'Visita agendada',txt:(v.shopper||CX.session.user.name)+' · '+v.sucursal+' · '+f,nav:'postulaciones'});
         });
       }});
@@ -118,8 +174,24 @@ CX.module('misvisitas', ({data,ui})=>{
       {onMount:(ov,close)=>{ ov.querySelector('#doneOk').addEventListener('click',()=>{
         data.setVisitState(v.id,'realizada','realizada',ov.querySelector('#doneD').value||today);
         CX.automations&&CX.automations.fire('realizada',{shopper:v.shopper||CX.session.user.name,sucursal:v.sucursal});
-        close(); draw(); ui.toast('Visita realizada · cuestionario habilitado · liquidación actualizada','ok',3600);
         CX.notif&&CX.notif.push({to:'admin',tipo:'realizada',icon:'✅',tono:'g',titulo:'Visita realizada',txt:(v.shopper||CX.session.user.name)+' · '+v.sucursal,nav:'postulaciones'});
+        close();
+        /* PhaseA-5: ventana posterior con cuestionario + contacto de evidencias */
+        const cfg=p.cuestionario||{modo:'interna'};
+        const wa=(p.contactos&&(p.contactos.evidencias||p.contactos.coordinacion))||'';
+        const waLink=wa?('https://wa.me/'+(''+wa).replace(/[^0-9]/g,'')+'?text='+encodeURIComponent('Evidencias de visita · '+v.sucursal+' · '+(v.escenario||''))):'';
+        ui.modal('✅ Visita realizada · '+v.sucursal,`
+          <div style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Fecha registrada. Ahora completa el cuestionario y envía tus evidencias.</div>
+          <div class="flex" style="gap:8px;flex-wrap:wrap">
+            <button class="btn btn-pr btn-sm" id="pqQuest">📝 ${cfg.modo==='interna'?'Llenar cuestionario':'Abrir cuestionario'}</button>
+            ${waLink?`<a class="btn btn-green btn-sm" href="${waLink}" target="_blank" style="text-decoration:none">📲 Enviar evidencias (WhatsApp)</a>`:`<button class="btn btn-ghost btn-sm" id="pqNoWa">📲 Configurar contacto de evidencias</button>`}
+          </div>
+          <div style="font-size:10.5px;color:var(--t3);margin-top:10px">El contacto de evidencias lo define el equipo del proyecto. Si aún no está configurado, usa el botón para definirlo.</div>`,
+        {onMount:(o2,c2)=>{
+          o2.querySelector('#pqQuest')&&o2.querySelector('#pqQuest').addEventListener('click',()=>{c2();draw();const qb=host.querySelector('[data-quest]');qb&&qb.click();});
+          o2.querySelector('#pqNoWa')&&o2.querySelector('#pqNoWa').addEventListener('click',()=>{c2();CX.router.nav('proyectos');});
+        }});
+        draw(); ui.toast('Visita realizada · fecha guardada','ok',2600);
       }); }});
     }));
 

@@ -3,6 +3,7 @@ node_modules/
 firebase-debug.log*
 firestore-debug.log*
 ui-debug.log*
+.tmp/
 
 app/core/backend-dev-auth.local.js
 app/core/backend-dev-auth.local.*

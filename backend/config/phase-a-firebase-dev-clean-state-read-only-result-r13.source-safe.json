@@ -1,0 +1,77 @@
+{
+  "gate": "cxorbia-firebase-dev-clean-state-read-only",
+  "generatedAt": "2026-07-13T03:27:02.610Z",
+  "decision": "NONEMPTY_REVIEW_REQUIRED",
+  "target": {
+    "expectedProjectId": "cxorbia-backend-dev",
+    "expectedBucketConfigured": true,
+    "projectIdMatch": true,
+    "serviceAccountDomainMatch": true
+  },
+  "checks": {
+    "authUsers": {
+      "id": "authUsers",
+      "available": true,
+      "totalCount": 17,
+      "empty": false
+    },
+    "authConfiguration": {
+      "id": "authConfiguration",
+      "available": true,
+      "emailPasswordEnabled": true,
+      "anonymousEnabled": false,
+      "phoneEnabled": false
+    },
+    "firestoreRootCollections": {
+      "id": "firestoreRootCollections",
+      "available": true,
+      "rootCollectionCount": 1,
+      "anyDocumentDetected": true,
+      "empty": false
+    },
+    "firestoreDatabases": {
+      "id": "firestoreDatabases",
+      "available": false,
+      "errorCategory": "400"
+    },
+    "storageObjects": {
+      "id": "storageObjects",
+      "available": false,
+      "errorCategory": "NOT_FOUND_OR_API_NOT_INITIALIZED"
+    },
+    "cloudFunctions": {
+      "id": "cloudFunctions",
+      "available": false,
+      "errorCategory": "PERMISSION_DENIED"
+    },
+    "rulesReleases": {
+      "id": "rulesReleases",
+      "available": true,
+      "releaseCount": 1
+    }
+  },
+  "summary": {
+    "mandatoryChecks": 4,
+    "unavailableMandatoryCount": 2,
+    "nonEmptySignalCount": 2,
+    "allMandatoryAvailable": false,
+    "cleanStateConfirmed": false
+  },
+  "safeState": {
+    "providerCallsExecuted": true,
+    "authWrites": false,
+    "claimsWrites": false,
+    "firestoreDocumentFieldsRead": false,
+    "firestoreWrites": false,
+    "storageObjectNamesOutput": false,
+    "storageWrites": false,
+    "functionNamesOutput": false,
+    "functionWritesOrInvocations": false,
+    "rulesDeploy": false,
+    "hostingDeploy": false,
+    "imports": false,
+    "production": false,
+    "piiOutput": false,
+    "credentialsOutput": false
+  }
+}

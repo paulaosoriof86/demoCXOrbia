@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0.0",
+  "targetType": "emulator",
+  "targetProjectId": "replace-with-emulator-project-id",
+  "cleanState": true,
+  "checkedAt": "2026-07-11T00:00:00Z",
+  "checkedBy": "user:replace-authenticated-actor",
+  "allowedPlanId": "replace-plan-id",
+  "allowedPlanSha256": "replace-plan-sha256",
+  "writesAuthorized": false,
+  "expiresAt": "2026-07-12T00:00:00Z",
+  "notes": "Example only. Not an authorization. Never commit a live approval token."
+}

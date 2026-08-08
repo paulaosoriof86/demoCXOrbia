@@ -1,0 +1,15 @@
+name: CXOrbia Corte 4 P0 VIS-01 Revalidation — authorization consumed
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  p0-vis01-revalidate:
+    name: HOLD · authorization c4-p0-vis01-revalidate-20260729-01 consumed
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'P0-C4-VIS-01 focused fix and single Hosting DEV revalidation already consumed; no redeploy permitted.'

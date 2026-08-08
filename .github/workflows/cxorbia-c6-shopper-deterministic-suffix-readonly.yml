@@ -1,0 +1,18 @@
+name: CXOrbia C6 Shopper Diagnostic Contract V2 Provider Readonly — Frozen
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - backend/config/corte6-shopper-deterministic-suffix-readonly-request-retired.json
+
+permissions:
+  contents: read
+  statuses: write
+
+jobs:
+  frozen:
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo 'One-shot provider revalidation consumed with STOP_RETRY; a new explicit authorization and workflow restoration are required.'

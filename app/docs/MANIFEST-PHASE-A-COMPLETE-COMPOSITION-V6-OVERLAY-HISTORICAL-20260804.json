@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "cxorbia.phase-a-complete-composition.v6-overlay.v1",
+  "candidateId": "CXORBIA-TYA-PHASE-A-COMPLETE-COMPOSITION-CLOUD-V6-20260804",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "headBeforeEmpalme": "a2ccfb0c3709cad6f5e6a9c16dcb7f9293532d6e",
+  "empalmeCommit": "f961253f18c388ae04619bb5175269015c8349c3",
+  "candidateSha256": "0a8c26e2b780a6feffeeb9d77d5efbcca94e79e2c3b17ee1a2c1446be5e1d407",
+  "candidateAggregateSha256": "1f1af3a316c9dabf1df1ef5b07a7abd2fe62a8da09e704719912be7af328e825",
+  "baseManifest": "app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json",
+  "cloudManifest": "app/docs/MANIFEST-CLOUD-V6-CORE-OPS-SHOPPER-20260804.json",
+  "status": "V6_EMPALMED__VISUAL_HOLD__SOURCE_GATE_MARKER_FIX_MATERIALIZED_PENDING_RERUN__NO_DEPLOY",
+  "criticalFileOverrides": [
+    {
+      "path": "app/app.js",
+      "gitBlob": "e345e1f81fc8064d16b80605611601cb5ce269cd",
+      "authority": "CLOUD_V6_EMPALME_COMMIT_F961253",
+      "decision": "PRESERVE_PENDING_VISUAL_CORRECTION_DELTA"
+    },
+    {
+      "path": "app/core/build-lock.js",
+      "gitBlob": "74bbc85d94b5b31c0be65c22ae9df8f9f2b78c87",
+      "authority": "CLOUD_V6_RUNTIME_LOCK",
+      "decision": "PRESERVE"
+    },
+    {
+      "path": "app/styles/layout.css",
+      "gitBlob": "7fd40bd7edd6f8452654800d3afd3462c350484d",
+      "authority": "CLOUD_V6_EMPALME_COMMIT_F961253",
+      "decision": "PRESERVE_PENDING_VISUAL_CORRECTION_DELTA"
+    },
+    {
+      "path": "app/modules/proyecto-wizard.js",
+      "gitBlob": "f46378a1fb79a6355cf39fbf364d2f09398861a6",
+      "authority": "CLOUD_V6_REGIONAL_PRESENTATION_DELTA",
+      "decision": "PRESERVE"
+    },
+    {
+      "path": "app/modules/shoppers.js",
+      "gitBlob": "92f834bb2b7fcf5d8674acb717ce6b4e920c5766",
+      "authority": "CLOUD_V6_SHOPPER_PRESENTATION_DELTA",
+      "decision": "PRESERVE"
+    }
+  ],
+  "additionalCriticalFiles": [
+    {
+      "path": "app/index.html",
+      "gitBlob": "bda55ef224653afde6b2b87d98828dde1fc8f418",
+      "authority": "CLOUD_V6_DEMO_ENTRY_LOAD_ORDER",
+      "decision": "GATE"
+    },
+    {
+      "path": "app/core/frontend-export-helpers.js",
+      "gitBlob": "6b376d79798ec8d004db2b1cfb9ef5f97fc68d0a",
+      "authority": "CLOUD_V6_EXPORT_PRESENTATION_HELPER",
+      "decision": "GATE_SOURCE_ONLY"
+    },
+    {
+      "path": "app/core/dev-scenario-lab.js",
+      "gitBlob": "dee47d449ef4849ccadd422cad143a1ad007f5c3",
+      "authority": "CHATGPT_DEV_LAB_HONEST_EVIDENCE_SHELL_WITH_STATIC_OBSERVABILITY_MARKER",
+      "decision": "REQUIRE_CONTROLLED_RUNNER_EVIDENCE"
+    },
+    {
+      "path": "app/core/backend-dev-auth.local.js",
+      "gitBlob": "6b2e3ce079552fad247c7202df684328ad7dac7b",
+      "authority": "REPO_SAFE_FAIL_CLOSED_PLACEHOLDER",
+      "decision": "PRESERVE_NO_SECRETS"
+    }
+  ],
+  "visualDecision": {
+    "status": "HOLD_FRONTEND_VISUAL",
+    "reason": "The integrated login does not yet match the approved Emergent composition and must receive a cumulative Cloud correction delta before DEV visual approval."
+  },
+  "runtimeDecision": {
+    "scenarioLab": "VISIBLE_SHELL_READY__REAL_CONTROLLED_RUNNER_PENDING",
+    "deployAllowedByThisManifest": false
+  },
+  "safety": {
+    "secrets": false,
+    "providerWrites": false,
+    "deploy": false,
+    "merge": false,
+    "production": false
+  }
+}

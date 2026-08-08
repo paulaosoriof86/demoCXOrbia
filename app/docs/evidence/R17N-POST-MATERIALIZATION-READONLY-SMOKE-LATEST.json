@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "cxorbia.r17n-post-materialization-readonly-smoke.v2",
+  "generatedAt": "2026-07-30T12:55:29.219Z",
+  "decision": "PASS_R17N_POST_MATERIALIZATION_READONLY_AND_CXDATA_SMOKE",
+  "runId": 30544595440,
+  "artifactId": 8760141578,
+  "artifactDigest": "sha256:337c4e8b07786effea5c326c77dfb31f9edc2fa49e09d7e46e18fa4c8dacbc98",
+  "target": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "canonicalProjectId": "cinepolis"
+  },
+  "postCompare": {
+    "expectedPaths": 1406,
+    "existingPaths": 1406,
+    "missing": 0,
+    "wrongAuthorization": 0,
+    "productionTrue": 0,
+    "groups": {
+      "project": 1,
+      "hrImport": 1,
+      "period": 14,
+      "visit": 616,
+      "liquidation": 572,
+      "legacyProfile": 120,
+      "currentHrProfile": 5,
+      "certification": 77
+    },
+    "rootProjectRecords": 30,
+    "tenantShoppers": 340,
+    "canonicalPeriods": 14,
+    "canonicalVisits": 616,
+    "canonicalLiquidations": 572,
+    "canonicalCertifications": 77,
+    "payments": 0,
+    "lots": 0,
+    "tenantUntouchedByAuthorization": true
+  },
+  "identity": {
+    "sourceRefs": 208,
+    "expectedSourceRefs": 208,
+    "canonicalTargetShopperIds": 194,
+    "expectedCanonicalTargetShopperIds": 194,
+    "visitsWithRealName": 616,
+    "visitsWithExistingShopper": 616,
+    "referencedProfilesWithRealName": 194,
+    "certificationsWithExistingShopper": 77,
+    "placeholderVisitNames": 0
+  },
+  "liquidation": {
+    "controls": 572,
+    "paymentControlOnly": 572,
+    "paidTrue": 0
+  },
+  "cxdataSmoke": {
+    "source": "firestore",
+    "fallbackUsed": false,
+    "interfacePreserved": true,
+    "projects": 1,
+    "periods": 14,
+    "visits": 616,
+    "shoppers": 340,
+    "posts": 0,
+    "currentProjectId": "cinepolis",
+    "currentPeriodId": "2026-07",
+    "readOnly": true,
+    "writeMode": "disabled",
+    "readGuardAnomalies": 0,
+    "providerProjectRecords": 30,
+    "canonicalPeriods": 14,
+    "adapterPeriodIdsMatchCanonical": true,
+    "currentPeriodIsCanonical": true,
+    "canonicalParentProjectLoaded": true,
+    "demoProjectVisible": false
+  },
+  "blockers": {
+    "provider": [],
+    "identity": [],
+    "adapter": [],
+    "periodModel": [],
+    "all": []
+  },
+  "fix": {
+    "p0": "P0-C5-CXDATA-PERIOD-MODEL",
+    "runtimeFile": "app/core/backend-firebase.js",
+    "runtimeCommit": "96cb7601559a76595d6203724a4bcf2d0b35b390",
+    "summary": "CX.data now reads canonical period documents from tenants/tya/projects/cinepolis/periods for the active project and replaces stale currentPeriodId values with a canonical period id. Project documents are no longer transformed into periods."
+  },
+  "instrumentation": {
+    "firstPostFixRunId": 30544254033,
+    "firstPostFixArtifactId": 8760004920,
+    "firstPostFixResult": "TEST_HARNESS_SNAPSHOT_OMITTED_PERIODS",
+    "runtimeRegressionProven": false,
+    "qaFixCommit": "21ce464772bfe6543b3672ad4b6d7deafd564adc",
+    "qaFix": "The read-only in-memory provider snapshot was extended to include the canonical periods collection already read from Firestore. No runtime/provider data was changed."
+  },
+  "safety": {
+    "providerReads": true,
+    "providerWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "legacyWrites": 0,
+    "deletes": 0,
+    "payments": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false,
+    "rawPiiWrittenToRepo": false,
+    "rawPiiWrittenToArtifacts": false
+  }
+}

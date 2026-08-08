@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1.0.0",
+  "reportId": "tya-shopper-reference-builder-lineage-r11c",
+  "generatedAt": "2026-07-12T21:37:50.152782+00:00",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "decision": "SOURCE_SNAPSHOT_DRIFT_NOT_BUILDER_DRIFT",
+  "r5Evidence": {
+    "commit": "fa3214505f8875d543319293b969a9556016b5cb",
+    "committedAt": "2026-07-11T14:53:26-06:00",
+    "summaryPath": "backend/config/phase-a-firestore-materialization-r5-summary.source-safe.json",
+    "planId": "phasea_e2f248c15355824a",
+    "sourceSha256": "e2f248c15355824a5ddd8fda1ee25f9cec8618de9cc9182ccd2cc5611335aa0a",
+    "planSha256": "27ce1785f6913e37d34b6331e134207ff142535278f63af5a3f1c529f150d292",
+    "counts": {
+      "operations": 1418,
+      "batches": 4,
+      "byDomain": {
+        "tenant": 1,
+        "project": 1,
+        "hrImport": 1,
+        "period": 14,
+        "shopper": 213,
+        "visit": 616,
+        "liquidation": 572
+      }
+    },
+    "verification": {
+      "ok": true,
+      "duplicatePaths": 0,
+      "sensitiveFields": 0,
+      "paidWithoutConfirmedSource": 0,
+      "lotEligibleWithoutConfirmedSource": 0,
+      "invalidVisitPeriodLinks": 0,
+      "invalidLiquidationVisitLinks": 0
+    }
+  },
+  "lineage": {
+    "hrBuilder": {
+      "path": "tools/hr-source/tya-build-live-hr-source-safe-static.mjs",
+      "r5Blob": "b22d4c42b49395cf5f36de678b343c8eaab6f9ae",
+      "currentBlob": "b22d4c42b49395cf5f36de678b343c8eaab6f9ae",
+      "r5Sha256": "7f5befa2eef950c501e70d1448a39bed468dcdcded06e39f5c967244c5e87cbb",
+      "currentSha256": "7f5befa2eef950c501e70d1448a39bed468dcdcded06e39f5c967244c5e87cbb",
+      "same": true
+    },
+    "xlsxHelper": {
+      "path": "tools/hr-source/tya-hr-source-xlsx-lite.mjs",
+      "r5Blob": "190bdab3c15db114ca446656bf046aa652ce88bb",
+      "currentBlob": "190bdab3c15db114ca446656bf046aa652ce88bb",
+      "r5Sha256": "50a1e7e41ee5450fc7b3379d84e3996e9f2538b94d38973294071f6930f4f836",
+      "currentSha256": "50a1e7e41ee5450fc7b3379d84e3996e9f2538b94d38973294071f6930f4f836",
+      "same": true
+    },
+    "materializationPlanBuilder": {
+      "path": "tools/migration/tya-phase-a-build-firestore-materialization-plan.mjs",
+      "r5Blob": null,
+      "currentBlob": "036f85a831015b58926021574c4c0f7da4d62d18",
+      "r5Sha256": null,
+      "currentSha256": "d7c6667b14e30dfa82e65953dcbaa078bcda40c502eab8d070aacef7ec38e418",
+      "same": false
+    }
+  },
+  "interpretation": "R5 and current HR parser lineage are identical; the 213\u2192210 difference must be reconciled as source snapshot/reference drift, not frontend or builder regression.",
+  "policy": {
+    "noNameMatching": true,
+    "noAutomaticMerge": true,
+    "noAutomaticDelete": true,
+    "noFixtureBackfill": true,
+    "materializationHold": true
+  },
+  "safeState": {
+    "writes": false,
+    "imported": false,
+    "production": false,
+    "providers": false,
+    "paymentsExecuted": false
+  }
+}

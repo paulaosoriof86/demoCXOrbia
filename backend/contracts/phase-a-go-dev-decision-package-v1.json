@@ -1,0 +1,80 @@
+{
+  "contractId": "phase-a-go-dev-decision-package-v1",
+  "project": "CXOrbia TyA",
+  "date": "2026-07-09",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pr": 7,
+  "status": "documented_only",
+  "purpose": "Prepare the GO DEV decision package without requesting authorization yet.",
+  "lane": "D_GO_DEV_backend_real",
+  "currentDecision": "not_requested",
+  "currentSafeState": {
+    "devGoRequested": false,
+    "devGoAuthorized": false,
+    "runtimeActive": false,
+    "devConnectionActive": false,
+    "imports": false,
+    "writes": false,
+    "hrWrites": false,
+    "providerLive": false,
+    "payments": false,
+    "deploy": false,
+    "production": false,
+    "sensitiveDataInRepo": false
+  },
+  "decisionOptions": [
+    "hold",
+    "need_local_evidence",
+    "ready_to_request_go_dev",
+    "go_dev_authorized",
+    "blocked"
+  ],
+  "readyToAskWhen": [
+    "pr_state_confirmed",
+    "clean_database_target_ready_or_decision_ready",
+    "single_cx_data_switch_plan_ready",
+    "source_safe_input_path_known_or_explicitly_pending",
+    "dry_run_plan_ready",
+    "rollback_audit_review_queue_ready",
+    "claude_academia_impacts_documented",
+    "hard_stops_clear"
+  ],
+  "askPaulaOnlyFor": [
+    "explicit_go_dev",
+    "source_safe_input_if_missing",
+    "local_smoke_if_github_cannot_validate",
+    "undocumented_operational_decision"
+  ],
+  "doNotAskPaulaFor": [
+    "already_documented_hr_rules",
+    "already_documented_shoppers",
+    "already_documented_certifications",
+    "already_documented_june_payment_rule",
+    "already_prepared_adapter_or_builder_from_zero"
+  ],
+  "ifGoDevAuthorizedThenOnly": [
+    "prepare_clean_dev_backend_resources",
+    "wire_cx_data_adapter_in_dev_mode",
+    "run_source_safe_dry_run",
+    "write_dev_only_records_if_gate_allows",
+    "record_audit_events",
+    "populate_dev_review_queue"
+  ],
+  "notAllowedByGoDev": [
+    "production_deploy",
+    "merge_final",
+    "real_payments",
+    "copy_old_database",
+    "commit_sensitive_data",
+    "silent_hr_overwrite",
+    "hardcode_cinepolis_global_logic"
+  ],
+  "phaseAValue": [
+    "moves_from_preparation_to_precise_decision_boundary",
+    "prevents_manual_requests_without_need",
+    "separates_dev_from_production",
+    "keeps_tya_real_operation_first",
+    "keeps_cinepolis_project_configurable"
+  ]
+}

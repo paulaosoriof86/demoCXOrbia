@@ -1,0 +1,226 @@
+name: CXOrbia C6 Postdeploy Read-Only Revalidation
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/config/corte6-postdeploy-readonly-revalidation-request.json'
+      - 'tools/qa/tya-c6-postdeploy-real-users-revalidation.mjs'
+      - '.github/workflows/cxorbia-corte6-postdeploy-readonly-revalidation.yml'
+
+permissions:
+  contents: write
+  issues: write
+  statuses: write
+
+concurrency:
+  group: cxorbia-c6-postdeploy-readonly-revalidation
+  cancel-in-progress: false
+
+env:
+  REQUEST: backend/config/corte6-postdeploy-readonly-revalidation-request.json
+  OUT_DIR: .tmp/c6-postdeploy-readonly
+  PRIVATE_DIR: .tmp/c6-postdeploy-readonly-private
+  PRIVATE_E2E: .tmp/c6-postdeploy-readonly-private/private-e2e.json
+  DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+  EVIDENCE_PASS: app/docs/evidence/CORTE6-P0-DATOS-POSTDEPLOY-READONLY-REVALIDATION-LATEST.json
+  EVIDENCE_FAIL: app/docs/evidence/CORTE6-P0-DATOS-POSTDEPLOY-READONLY-REVALIDATION-FAILURE-LATEST.json
+
+jobs:
+  postdeploy-readonly-revalidation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Checkout exact live branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Read controlled request
+        id: gate
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT_DIR" "$PRIVATE_DIR"
+          node <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync(process.env.REQUEST,'utf8'));
+          if(r.schemaVersion!=='cxorbia.corte6.postdeploy-readonly-revalidation.v1')throw new Error('request_schema_mismatch');
+          const execute=r.enabled===true&&r.consumed===false&&r.status==='ready_readonly_revalidation';
+          console.log('execute='+(execute?'true':'false'));
+          NODE
+
+      - name: Validate exact read-only scope and lineage
+        if: steps.gate.outputs.execute == 'true'
+        run: |
+          set -euo pipefail
+          echo validate_scope > "$OUT_DIR/stage"
+          node <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync(process.env.REQUEST,'utf8'));
+          if(r.repository!=='paulaosoriof86/demoCXOrbia'||r.branch!=='docs-tya-v6-v71-audit'||r.pullRequest!==7)throw new Error('repository_target_mismatch');
+          if(r.firebaseProjectId!=='cxorbia-backend-dev'||r.hostingSite!=='cxorbia-backend-dev'||r.hostingTarget!=='cxorbia-dev'||r.tenantId!=='tya'||r.projectId!=='cinepolis')throw new Error('provider_target_mismatch');
+          if(r.deployedRootFixCommit!=='f642b2143c102e4b9b375680072c52545b607ba9'||r.failedGateCommit!=='9817d13ff53193a673a3a6748d093b23fc973ca8')throw new Error('lineage_mismatch');
+          if(r.expectedPeriods!==14||r.expectedVisits!==616||r.expectedShoppers!==208||r.expectedReloads!==3)throw new Error('canonical_invariant_mismatch');
+          for(const k of ['hostingDeploys','authUserCreates','authWrites','passwordChanges','firestoreWrites','rulesDeploys','cloudRunDeploys','storageWrites','hrWrites','legacyWrites','makeWrites','geminiCalls','paymentsWrites','reservationsWrites','newFirebaseProjects','newHostingSites']){
+            if(Number(r[k]||0)!==0)throw new Error('unsafe_scope:'+k);
+          }
+          if(r.credentialsExported!==false||r.tokensExported!==false||r.piiExported!==false||r.merge!==false||r.production!==false)throw new Error('unsafe_scope');
+          NODE
+          ROOT_FIX="$(node -p "require('./$REQUEST').deployedRootFixCommit")"
+          git merge-base --is-ancestor "$ROOT_FIX" HEAD
+          if git diff --name-only "$ROOT_FIX"..HEAD | grep -Eq '^app/(modules|core|adapters|data|styles)/|^app/(index-backend-dev\.html|app\.js)$'; then
+            echo 'Runtime app changed after the deployed root-fix commit.'
+            exit 2
+          fi
+          node --check tools/qa/tya-c6-dev-entry-browser-smoke.mjs
+          node --check tools/qa/tya-c6-postdeploy-real-users-revalidation.mjs
+
+      - name: Load existing DEV credential privately
+        if: steps.gate.outputs.execute == 'true'
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          echo load_private_credential > "$OUT_DIR/stage"
+          node <<'NODE'
+          const fs=require('fs');
+          const raw=process.env.EXISTING_DEV_JSON||'';
+          let parsed=null;try{parsed=JSON.parse(raw);}catch{}
+          if(!(parsed&&parsed.type==='service_account'&&parsed.project_id==='cxorbia-backend-dev'&&parsed.client_email&&parsed.private_key))throw new Error('credential_invalid');
+          fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/${PRIVATE_DIR}/credentials.json" >> "$GITHUB_ENV"
+
+      - name: Install transient read-only tooling
+        id: tooling
+        if: steps.gate.outputs.execute == 'true'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          echo install_tooling > "$OUT_DIR/stage"
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null
+          node - <<'NODE'
+          const fs=require('fs');const {chromium}=require('playwright');const p=chromium.executablePath();if(!p||!fs.existsSync(p))throw new Error('chromium_not_installed');
+          NODE
+
+      - name: Run remote human and real-user postdeploy revalidation
+        id: revalidation
+        if: steps.gate.outputs.execute == 'true' && steps.tooling.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          echo select_existing_credentials > "$OUT_DIR/stage"
+          export CXORBIA_EXPECTED_PROJECT=cxorbia-backend-dev
+          export CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E"
+          node tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs > "$OUT_DIR/credential-selection.source-safe.json"
+          chmod 600 "$PRIVATE_E2E"
+          node <<'NODE'
+          const fs=require('fs');const s=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection.source-safe.json','utf8'));
+          if(s.decision!=='PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION'||s.authWrites!==0||s.passwordChanges!==0||s.valuesExported!==false)throw new Error('credential_selection_not_safe_pass');
+          NODE
+
+          echo remote_asset_parity > "$OUT_DIR/stage"
+          mkdir -p "$OUT_DIR/remote/adapters"
+          for asset in index-backend-dev.html app.js adapters/tya-dev-entry-auth-gate-v1.js adapters/tya-live-source-refresh-watch-v2.js adapters/tya-dev-full-visual-bridge.js adapters/tya-protected-auth-hr-authority-bridge-v1.js; do
+            mkdir -p "$OUT_DIR/remote/$(dirname "$asset")"
+            curl -fsSL --retry 10 --retry-delay 3 "$DEV_ROOT_URL/$asset" -o "$OUT_DIR/remote/$asset"
+            cmp "app/$asset" "$OUT_DIR/remote/$asset"
+          done
+
+          echo remote_human_14_616_208 > "$OUT_DIR/stage"
+          CXORBIA_HUMAN_GATE_OUTPUT="$OUT_DIR/remote-human.source-safe.json" node tools/qa/tya-c6-dev-entry-browser-smoke.mjs "$DEV_ROOT_URL"
+          node <<'NODE'
+          const fs=require('fs');const h=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/remote-human.source-safe.json','utf8'));
+          if(h.decision!=='PASS_C6_HUMAN_DIRECT_ROLE_AND_CANONICAL_DATA_14_616_208'||h.canonical?.periods!==14||h.canonical?.visits!==616||h.canonical?.shoppers!==208||h.reloads?.length!==3||h.emptyShell!==false||h.dataSourceBlocked!==false)throw new Error('remote_human_gate_not_pass');
+          NODE
+
+          echo remote_real_users_reload_newtab > "$OUT_DIR/stage"
+          CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E" node tools/qa/tya-c6-postdeploy-real-users-revalidation.mjs "$DEV_ROOT_URL" > "$OUT_DIR/remote-real-users.source-safe.json"
+          node <<'NODE'
+          const fs=require('fs');const e=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/remote-real-users.source-safe.json','utf8'));
+          if(e.decision!=='PASS_C6_POSTDEPLOY_REAL_USERS_RELOAD_NEWTAB_READONLY'||e.staff?.visits!==616||e.staff?.shoppers!==208||e.shopper?.visits!==616||e.shopper?.shoppers!==208||e.shopper?.ownVisits<1||e.staff?.reloadDocumentCommitted!==true||e.shopper?.reloadDocumentCommitted!==true||e.staff?.reloadPreserved!==true||e.shopper?.reloadPreserved!==true||e.staff?.newTabPreserved!==true||e.shopper?.newTabPreserved!==true||e.credentialsExposed!==false||e.tokensExposed!==false)throw new Error('remote_real_users_revalidation_not_pass');
+          NODE
+
+          echo build_pass_evidence > "$OUT_DIR/stage"
+          node <<'NODE'
+          const fs=require('fs');
+          const request=JSON.parse(fs.readFileSync(process.env.REQUEST,'utf8'));
+          const human=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/remote-human.source-safe.json','utf8'));
+          const technical=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/remote-real-users.source-safe.json','utf8'));
+          const evidence={
+            schemaVersion:'cxorbia.corte6.p0-data-postdeploy-readonly-revalidation.v1',
+            generatedAt:new Date().toISOString(),
+            decision:'PASS_C6_P0_DATA_POSTDEPLOY_READONLY_REVALIDATION',
+            requestId:request.requestId,
+            deployedRootFixCommit:request.deployedRootFixCommit,
+            priorFailureCommit:request.failedGateCommit,
+            assetParity:true,
+            human:{decision:human.decision,periods:human.canonical.periods,visits:human.canonical.visits,shoppers:human.canonical.shoppers,reloads:human.reloads.length,emptyShell:human.emptyShell},
+            technical,
+            hostingDeploys:0,authUserCreates:0,authWrites:0,passwordChanges:0,firestoreWrites:0,rulesDeploys:0,cloudRunDeploys:0,storageWrites:0,hrWrites:0,newFirebaseProjects:0,newHostingSites:0,
+            credentialsExported:false,tokensExported:false,piiExported:false,merge:false,production:false
+          };
+          fs.mkdirSync('app/docs/evidence',{recursive:true});
+          fs.writeFileSync(process.env.EVIDENCE_PASS,JSON.stringify(evidence,null,2)+'\n','utf8');
+          NODE
+          echo pass > "$OUT_DIR/stage"
+
+      - name: Persist sanitized result and consume read-only request
+        if: always() && steps.gate.outputs.execute == 'true'
+        run: |
+          set -euo pipefail
+          RESULT=fail
+          if [ '${{ steps.tooling.outcome }}' = 'success' ] && [ '${{ steps.revalidation.outcome }}' = 'success' ] && [ -f "$EVIDENCE_PASS" ]; then RESULT=pass; fi
+          STAGE="$(cat "$OUT_DIR/stage" 2>/dev/null || echo unknown_stage)"
+          if [ "$RESULT" = fail ]; then
+            node <<'NODE'
+            const fs=require('fs');
+            const request=JSON.parse(fs.readFileSync(process.env.REQUEST,'utf8'));
+            const evidence={schemaVersion:'cxorbia.corte6.p0-data-postdeploy-readonly-revalidation-failure.v1',generatedAt:new Date().toISOString(),decision:'FAIL_C6_P0_DATA_POSTDEPLOY_READONLY_REVALIDATION',requestId:request.requestId,deployedRootFixCommit:request.deployedRootFixCommit,priorFailureCommit:request.failedGateCommit,failedStage:String(fs.existsSync(process.env.OUT_DIR+'/stage')?fs.readFileSync(process.env.OUT_DIR+'/stage','utf8').trim():'unknown_stage'),hostingDeploys:0,authUserCreates:0,authWrites:0,passwordChanges:0,firestoreWrites:0,rulesDeploys:0,cloudRunDeploys:0,storageWrites:0,hrWrites:0,newFirebaseProjects:0,newHostingSites:0,credentialsExported:false,tokensExported:false,piiExported:false,merge:false,production:false};
+            fs.mkdirSync('app/docs/evidence',{recursive:true});fs.writeFileSync(process.env.EVIDENCE_FAIL,JSON.stringify(evidence,null,2)+'\n','utf8');
+            NODE
+          fi
+          cp "$EVIDENCE_PASS" /tmp/c6-postdeploy-pass.json 2>/dev/null || true
+          cp "$EVIDENCE_FAIL" /tmp/c6-postdeploy-fail.json 2>/dev/null || true
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          [ ! -f /tmp/c6-postdeploy-pass.json ] || cp /tmp/c6-postdeploy-pass.json "$EVIDENCE_PASS"
+          [ ! -f /tmp/c6-postdeploy-fail.json ] || cp /tmp/c6-postdeploy-fail.json "$EVIDENCE_FAIL"
+          node - "$RESULT" <<'NODE'
+          const fs=require('fs');const result=process.argv[2];const p=process.env.REQUEST;const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          r.status=result==='pass'?'consumed_pass_readonly':'consumed_fail_readonly';r.enabled=false;r.consumed=true;r.consumedAt=new Date().toISOString();r.decision=result==='pass'?'PASS_C6_P0_DATA_POSTDEPLOY_READONLY_REVALIDATION':'FAIL_C6_P0_DATA_POSTDEPLOY_READONLY_REVALIDATION';
+          fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n','utf8');
+          NODE
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$REQUEST" app/docs/evidence/CORTE6-P0-DATOS-POSTDEPLOY-READONLY-REVALIDATION-*.json
+          git commit -m "evidence: C6 postdeploy readonly revalidation $RESULT"
+          git push origin HEAD:docs-tya-v6-v71-audit
+          echo "result=$RESULT" >> "$GITHUB_ENV"
+
+      - name: Report sanitized result in PR 7
+        if: always() && steps.gate.outputs.execute == 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          STATE="${result:-fail}"
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/issues/7/comments" -f body="## Corte 6 — postdeploy read-only revalidation\n\nResultado: \`${STATE}\`.\n\nAlcance: paridad de assets, entrada humana 14/616/208 con tres recargas y E2E remoto staff/shopper con reload y nueva pestaña.\n\nSin deploy adicional, sin writes de Auth/Firestore/Rules/Cloud Run/HR/Storage, sin merge y sin producción."
+
+      - name: Cleanup private material
+        if: always()
+        run: rm -rf "$PRIVATE_DIR"
+
+      - name: Enforce revalidation result
+        if: steps.gate.outputs.execute == 'true'
+        run: test "${result:-fail}" = pass

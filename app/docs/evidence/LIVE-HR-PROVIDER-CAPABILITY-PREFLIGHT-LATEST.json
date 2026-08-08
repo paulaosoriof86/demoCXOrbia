@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "cxorbia.live-hr-provider-capability-preflight.v2",
+  "generatedAt": "2026-07-31T02:26:46.862Z",
+  "decision": "PASS_SHEETS_API_AND_CANONICAL_HR_READER",
+  "target": {
+    "projectId": "cxorbia-backend-dev",
+    "projectNumber": "87461567267",
+    "serviceAccountEmail": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com"
+  },
+  "googleSheetsApi": {
+    "httpStatus": 200,
+    "state": "ENABLED",
+    "enabled": true,
+    "errorReason": null
+  },
+  "spreadsheetAccess": {
+    "httpStatus": 200,
+    "accessible": true,
+    "title": "HR Guatemala - Sincronizacion Google Sheets",
+    "totalTabs": 30,
+    "monthlyTabs": 28,
+    "latestMonthlyTab": "JULIO 26 HN",
+    "errorStatus": null,
+    "errorReason": null
+  },
+  "driveMetadataAccess": {
+    "httpStatus": 403,
+    "accessible": false,
+    "errorStatus": "PERMISSION_DENIED",
+    "errorReason": "accessNotConfigured",
+    "note": "Drive API is not required for HR runtime reads; sharing is validated separately through Drive permission metadata."
+  },
+  "iam": {
+    "testHttpStatus": 200,
+    "granted": [
+      "cloudbuild.builds.create",
+      "iam.serviceAccounts.actAs",
+      "run.services.get",
+      "run.services.update",
+      "serviceusage.services.get"
+    ],
+    "missing": [
+      "artifactregistry.repositories.uploadArtifacts",
+      "serviceusage.services.enable"
+    ],
+    "canEnableSheetsApi": false,
+    "canUpdateCloudRun": true,
+    "canActAs": true,
+    "canStartCloudBuild": true
+  },
+  "safety": {
+    "providerReads": true,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "production": false,
+    "merge": false,
+    "secretsExported": false
+  }
+}

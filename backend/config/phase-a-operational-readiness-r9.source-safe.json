@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "1.0.0",
+  "readinessId": "tya-cinepolis-v106-r9",
+  "baseline": {
+    "identity": {
+      "receivedPackage": "Prototype development request CXOrbia V105.zip",
+      "internalBuild": "V106",
+      "continuityStatus": "baseline_auditada_empalmada",
+      "sourceLockFinal": false,
+      "backendRuntime": "R5",
+      "materializationPlan": "R6",
+      "executor": "R8"
+    },
+    "checkpointPath": "app/docs/CHECKPOINT-BASELINE-VIVA-EMPALMADA-V106-R8-20260711.md",
+    "materializationSummaryPath": "backend/config/phase-a-firestore-materialization-r5-summary.source-safe.json",
+    "expected": {
+      "tenantId": "tya",
+      "projectId": "cinepolis",
+      "operations": 1418,
+      "periods": 14,
+      "shoppers": 213,
+      "visits": 616,
+      "liquidations": 572
+    }
+  },
+  "evidence": {
+    "cleanStateReportPath": ".tmp/firebase-dev-clean-state-read-only-report/firebase-dev-clean-state-read-only-report.json",
+    "requiredCleanDecision": "CLEAN_STATE_VERIFIED_READ_ONLY",
+    "importReportPath": ".tmp/phase-a-source-safe-import/phase-a-source-safe-import-report.json",
+    "smokeReportPath": ".tmp/phase-a-source-safe-smoke/actual-runtime-validation.json"
+  },
+  "sourceRequirements": {
+    "minimumAcceptedPaid": 1,
+    "minimumCarriedOver": 1,
+    "financialStableKeys": ["visitId", "hrRowId", "paymentItemId"],
+    "certificationStableKeys": ["shopperId", "shopperCode"]
+  },
+  "currentKnownState": {
+    "baseline": "ready",
+    "firebaseDevCleanState": "pending_explicit_read_only_authorization",
+    "payments": "pending_clean_export",
+    "certifications": "pending_clean_export",
+    "postEmpalmeSmoke": "pending_reproducible_artifact",
+    "materialization": "hold",
+    "writes": false,
+    "imported": false,
+    "production": false
+  }
+}

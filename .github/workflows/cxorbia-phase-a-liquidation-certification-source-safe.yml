@@ -1,0 +1,53 @@
+name: CXOrbia Phase A Liquidation Certification Source Safe
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'app/core/tya-phase-a-liquidation-certification-integrity.js'
+      - 'app/data/tya-financial-control-source-safe.js'
+      - 'app/data/tya-certification-carryover-source-safe.js'
+      - 'backend/contracts/phase-a-liquidation-payment-source-safe-projection-v1.json'
+      - 'backend/contracts/phase-a-certification-carryover-source-safe-projection-v1.json'
+      - 'backend/config/phase-a-liquidation-certification-projection-summary.source-safe.json'
+      - 'tools/release/tya-phase-a-liquidation-certification-source-safe-validate.mjs'
+      - '.github/workflows/cxorbia-phase-a-liquidation-certification-source-safe.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'app/core/tya-phase-a-liquidation-certification-integrity.js'
+      - 'app/data/tya-financial-control-source-safe.js'
+      - 'app/data/tya-certification-carryover-source-safe.js'
+      - 'backend/contracts/phase-a-liquidation-payment-source-safe-projection-v1.json'
+      - 'backend/contracts/phase-a-certification-carryover-source-safe-projection-v1.json'
+      - 'backend/config/phase-a-liquidation-certification-projection-summary.source-safe.json'
+      - 'tools/release/tya-phase-a-liquidation-certification-source-safe-validate.mjs'
+      - '.github/workflows/cxorbia-phase-a-liquidation-certification-source-safe.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate runtime adapter syntax
+        run: node --check app/core/tya-phase-a-liquidation-certification-integrity.js
+      - name: Validate source-safe projection
+        run: node tools/release/tya-phase-a-liquidation-certification-source-safe-validate.mjs --out .tmp/liquidation-certification-source-safe
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-a-liquidation-certification-source-safe-report
+          path: .tmp/liquidation-certification-source-safe
+          if-no-files-found: error
+          retention-days: 14

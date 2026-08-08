@@ -1,0 +1,90 @@
+{
+  "contractId": "phase-a-human-smoke-single-run-package-v1",
+  "project": "CXOrbia TyA",
+  "date": "2026-07-09",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pr": 7,
+  "status": "prepared_not_requested",
+  "purpose": "Prepare a single focused human smoke package without asking Paula to run it yet.",
+  "lane": "C_local_validation_if_needed",
+  "manualExecutionRequestedNow": false,
+  "whyPrepared": "The GO DEV status matrix classified current state as needing local evidence before ready_to_request_go_dev.",
+  "preconditions": [
+    "pr_7_open_draft_no_merge",
+    "use_current_preview_or_validation_url_only_if_available",
+    "do_not_change_code",
+    "do_not_deploy",
+    "do_not_connect_providers",
+    "do_not_enter_sensitive_data"
+  ],
+  "routesToCheck": [
+    "login_admin",
+    "base_navigation",
+    "dashboard",
+    "postulaciones",
+    "reservas",
+    "automatizaciones",
+    "cuestionario_shopper",
+    "finanzas_liquidaciones_pagos",
+    "academia",
+    "diagnostico_readiness",
+    "administrabilidad"
+  ],
+  "academiaChecks": [
+    "admin_actions_visible_edit_duplicate_version_status_archive_audit",
+    "create_ai_opens_modal",
+    "create_ai_creates_preview_or_in_review_draft_without_gemini_real"
+  ],
+  "copyChecks": [
+    "no_real_sync_claim",
+    "no_real_payment_claim",
+    "no_real_provider_claim",
+    "no_real_gemini_claim",
+    "no_real_make_claim",
+    "no_real_import_claim"
+  ],
+  "consoleChecks": [
+    "no_white_screen",
+    "no_critical_js_error_on_route_open",
+    "no_guard_breaking_render"
+  ],
+  "goIf": [
+    "critical_routes_open",
+    "academia_opens",
+    "diagnostico_opens",
+    "administrabilidad_opens",
+    "create_ai_preview_only_ok",
+    "no_critical_console_errors",
+    "copy_honest_for_pending_integrations"
+  ],
+  "noGoIf": [
+    "white_screen",
+    "critical_js_error",
+    "base_navigation_fails",
+    "guard_breaks_render",
+    "academia_fails",
+    "diagnostico_or_administrabilidad_fails",
+    "create_ai_promises_real_gemini_or_fails",
+    "visible_real_sync_payment_provider_claim",
+    "sensitive_data_visible",
+    "provider_activation_without_gate"
+  ],
+  "singleReportShape": {
+    "overall": "GO | GO_WITH_WARNINGS | NO_GO",
+    "url_or_environment": "string",
+    "routes_failed": [],
+    "console_errors": [],
+    "copy_issues": [],
+    "academia_issues": [],
+    "notes": "string"
+  },
+  "stateSafe": {
+    "runtimeActive": false,
+    "imports": false,
+    "writes": false,
+    "deploy": false,
+    "production": false,
+    "payments": false
+  }
+}

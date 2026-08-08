@@ -1,0 +1,59 @@
+{
+  "configId": "phase-a-protected-read-access-routes-source-safe",
+  "status": "source_safe_preview_not_connected",
+  "generatedAt": "2026-07-09",
+  "notes": "Route/resource matrix for protected read adapter. No tenant-specific names, no PII, no secrets.",
+  "routes": {
+    "admin.shoppers.protectedProfile": {
+      "resource": "shopperProtectedProfile",
+      "visibleStateWhenGateOff": "requires_access_pending_auth",
+      "allowedPersonas": ["tenantOwner", "franchiseOwner", "countryRepresentative", "operationsCoordinator", "projectCoordinator", "financeOperator", "certificationOperator"],
+      "blockedPersonas": ["clientBrandAdmin", "clientBrandViewer"],
+      "shopperAllowedOnlyOwnRecord": true
+    },
+    "admin.certifications.attempts": {
+      "resource": "certificationAttempts",
+      "visibleStateWhenGateOff": "protected_certification_history_pending_auth",
+      "allowedPersonas": ["tenantOwner", "franchiseOwner", "countryRepresentative", "operationsCoordinator", "projectCoordinator", "certificationOperator", "shopperEvaluator"]
+    },
+    "admin.certifications.carryover": {
+      "resource": "certificationCarryovers",
+      "visibleStateWhenGateOff": "certification_carryover_protected_pending_auth",
+      "allowedPersonas": ["tenantOwner", "franchiseOwner", "countryRepresentative", "operationsCoordinator", "projectCoordinator", "certificationOperator", "shopperEvaluator"]
+    },
+    "finance.liquidations.protected": {
+      "resource": "protectedLiquidations",
+      "visibleStateWhenGateOff": "protected_payment_state_pending_auth",
+      "allowedPersonas": ["tenantOwner", "franchiseOwner", "countryRepresentative", "operationsCoordinator", "projectCoordinator", "financeOperator", "shopperEvaluator"],
+      "rawBankDataVisible": false
+    },
+    "finance.paymentBatches.protected": {
+      "resource": "protectedPaymentBatches",
+      "visibleStateWhenGateOff": "payment_batch_prepared_no_execution",
+      "allowedPersonas": ["tenantOwner", "franchiseOwner", "countryRepresentative", "operationsCoordinator", "projectCoordinator", "financeOperator"],
+      "paymentExecutionEnabled": false
+    },
+    "ops.reviewQueue": {
+      "resource": "reviewQueue",
+      "visibleStateWhenGateOff": "review_queue_pending_auth",
+      "allowedPersonas": ["tenantOwner", "franchiseOwner", "countryRepresentative", "operationsCoordinator", "projectCoordinator", "financeOperator", "certificationOperator"]
+    },
+    "audit.protectedReads": {
+      "resource": "protectedReadsAudit",
+      "visibleStateWhenGateOff": "audit_log_pending_auth",
+      "allowedPersonas": ["tenantOwner", "franchiseOwner", "countryRepresentative"]
+    }
+  },
+  "forbiddenInPreview": [
+    "rawEmail",
+    "rawPhone",
+    "rawIdentityDocument",
+    "rawBankAccount",
+    "rawNda",
+    "privateSourceUrl",
+    "rawWorkbook",
+    "paymentReceiptBase64",
+    "providerToken",
+    "password"
+  ]
+}

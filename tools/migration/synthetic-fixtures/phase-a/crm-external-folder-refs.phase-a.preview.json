@@ -1,0 +1,32 @@
+{
+  "sourceSafe": true,
+  "containsRawSensitiveData": false,
+  "isSyntheticOrSanitized": true,
+  "crmEntities": [
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "crmEntityId": "crm-entity-preview-visit-001",
+      "crmEntityType": "visit",
+      "displayLabelRef": "visit-label-ref-001",
+      "crmPipelineId": "crm-pipeline-preview-ops",
+      "crmStageId": "crm-stage-preview-review",
+      "ownerRole": "ops",
+      "visibilityScope": "project_admin_ops",
+      "reviewStatus": "preview_ready"
+    }
+  ],
+  "externalFolderRefs": [
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "externalFolderRefId": "folder-ref-preview-001",
+      "crmEntityId": "crm-entity-preview-visit-001",
+      "crmEntityType": "visit",
+      "externalProviderType": "local_placeholder_ref",
+      "externalFolderRef": "external-folder-ref-preview-001",
+      "visibilityScope": "project_admin_ops",
+      "accessStatus": "ref_preview_only"
+    }
+  ]
+}

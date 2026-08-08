@@ -1,0 +1,185 @@
+{
+  "contractId": "tya-level2-sanitized-operational-phase-a-v1",
+  "status": "draft_safe_not_connected",
+  "generatedAt": "2026-07-09",
+  "purpose": "Define Level 2 sanitized operational payload for TyA/Cinepolis: shoppers, certification preservation and liquidation candidates for DEV preview without raw PII, old DB connection, imports, writes or runtime switch.",
+  "sourcePrinciple": "Recover useful current-platform/legacy logic and documented HR outputs, but do not copy old architecture, old database or raw sensitive data.",
+  "safeState": {
+    "runtimeConnected": false,
+    "frontendModified": false,
+    "modulesModified": false,
+    "firestoreWrites": false,
+    "importsExecuted": false,
+    "hrWrites": false,
+    "oldDatabaseConnected": false,
+    "productionEnabled": false,
+    "containsSecrets": false,
+    "containsRawPii": false,
+    "containsRawHrRows": false,
+    "containsRawWorkbook": false,
+    "containsOldDatabaseDump": false,
+    "containsRawPaymentData": false
+  },
+  "level": {
+    "id": "level2_sanitizedOperationalPreview",
+    "canRenderProject": true,
+    "canRenderPeriods": true,
+    "canRenderVisits": true,
+    "canRenderShoppers": true,
+    "canRenderCertifications": true,
+    "canRenderLiquidationCandidates": true,
+    "productionAllowed": false
+  },
+  "requiredTopLevelKeys": [
+    "projectConfig",
+    "periods",
+    "visits",
+    "shoppers",
+    "certificationPreservation",
+    "liquidationCandidates",
+    "issues",
+    "meta"
+  ],
+  "shopperFields": {
+    "required": [
+      "shopperId",
+      "shopperCode",
+      "country",
+      "cityRef",
+      "status",
+      "certificationStatus",
+      "sourceConfidence",
+      "reviewRequired",
+      "sourceRefs"
+    ],
+    "allowedStatuses": [
+      "active_preview",
+      "certified_preview",
+      "pending_review",
+      "inactive_preview",
+      "duplicate_review_required",
+      "access_pending"
+    ],
+    "rules": [
+      "No DPI raw",
+      "No bank raw",
+      "No raw phone/email/name",
+      "No visual-name-only dedupe",
+      "SHOPPER_REVIEW mismatch remains review_required until stable key review resolves it"
+    ]
+  },
+  "certificationPreservationFields": {
+    "required": [
+      "shopperRef",
+      "projectId",
+      "certificationId",
+      "status",
+      "presentedAtRef",
+      "sourceRef",
+      "reviewRequired",
+      "preserveWithoutRetake"
+    ],
+    "allowedStatuses": [
+      "presented_preserved_preview",
+      "approved_preserved_preview",
+      "pending_mapping_review",
+      "not_presented",
+      "rule_requires_retake_review"
+    ],
+    "rules": [
+      "Already presented/approved certification must not be requested again without explicit project rule",
+      "Gemini output is draft only until human review",
+      "Certification preservation must map to shopperRef, not raw name"
+    ]
+  },
+  "liquidationCandidateFields": {
+    "required": [
+      "liquidationCandidateId",
+      "visitId",
+      "shopperRef",
+      "projectId",
+      "periodId",
+      "country",
+      "currency",
+      "honorariumAmount",
+      "reimbursementAmount",
+      "totalAmount",
+      "status",
+      "requiresFinanceCrosscheck",
+      "auditRef"
+    ],
+    "allowedStatuses": [
+      "payment_control_preview",
+      "submitted_liquidation_candidate",
+      "pending_submit_review",
+      "review_required",
+      "excluded_preparation_period",
+      "paid_requires_audit_evidence"
+    ],
+    "rules": [
+      "June pending is payment/liquidation control, not pending visits",
+      "Paid state is not allowed without external finance crosscheck and audit/evidence",
+      "Amounts are allowed only as operational totals without bank data",
+      "Honorarium, reimbursement and total must be separate"
+    ]
+  },
+  "requiredIssues": [
+    "sensitive_shopper_data_policy",
+    "questionnaire_marks_duplicate_postulations",
+    "shopper_canonical_mismatch",
+    "junio_26_hn_review_required",
+    "liquidations_require_finance_crosscheck",
+    "certification_preservation_mapping_required"
+  ],
+  "forbiddenFieldsAnywhere": [
+    "rawDpi",
+    "dpi",
+    "rawBankAccount",
+    "bankAccount",
+    "accountNumber",
+    "routingNumber",
+    "rawPhone",
+    "phone",
+    "telefono",
+    "rawEmail",
+    "email",
+    "mail",
+    "rawShopperName",
+    "shopperName",
+    "nombreShopper",
+    "fullName",
+    "rawHrWorkbook",
+    "rawCsv",
+    "privateHrUrl",
+    "spreadsheetFileId",
+    "serviceAccountJson",
+    "signedNdaFile",
+    "rawEvidence",
+    "base64Evidence",
+    "paymentReceiptBinary",
+    "paymentProviderToken",
+    "makeWebhookUrl",
+    "geminiApiKey",
+    "oldRtdbDump",
+    "legacyDatabaseExport"
+  ],
+  "goNoGo": {
+    "goForDevPreview": [
+      "Level1 visits payload exists and validates",
+      "shoppers are opaque sanitized refs only",
+      "certification preservation is mapped or explicitly review_required",
+      "liquidation candidates are preview/payment-control only",
+      "all required issues are present",
+      "runtime switch remains blocked until Paula GO"
+    ],
+    "noGoForDevPreview": [
+      "raw PII appears in payload",
+      "bank/DPI/phone/email appears in payload",
+      "old RTDB dump or old database export is used directly",
+      "shopper dedupe uses visual name only",
+      "certified shopper is forced to retake preserved certification without rule",
+      "payment is marked paid without audit/evidence",
+      "June is treated as pending visits instead of payment control"
+    ]
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "cxorbia.corte6-protected-shopper-identity-readonly.v1",
+  "generatedAt": "2026-08-05T19:47:07.726Z",
+  "decision": "PASS_C6_PROTECTED_IDENTITY_READONLY_RUNTIME_READY",
+  "target": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "projectId": "cinepolis"
+  },
+  "protectedFirestore": {
+    "tenantShopperDocs": 340,
+    "shopperProfilesWithVisibleRealName": 340,
+    "shopperProfilesWithPlaceholderName": 0,
+    "shopperProfilesWithoutVisibleName": 0,
+    "canonicalVisits": 616,
+    "canonicalVisitsWithRealName": 616,
+    "canonicalVisitsWithPlaceholderName": 0,
+    "canonicalVisitsWithoutName": 0,
+    "canonicalVisitsWithoutShopperId": 0,
+    "referencedCanonicalShopperIds": 194,
+    "referencedProfilesExisting": 194,
+    "referencedProfilesWithRealName": 194,
+    "referencedProfilesWithPlaceholderName": 0,
+    "referencedProfilesWithoutVisibleName": 0
+  },
+  "staticChecks": {
+    "shopperRuleProtected": true,
+    "denyByDefault": true,
+    "adapterLoadsProtectedShoppers": true,
+    "adapterUsesRealNameFields": true,
+    "publicSourceSafeStillMasked": true,
+    "deployedRulesVerified": true,
+    "localRulesMatchDeployedEvidence": true
+  },
+  "blockers": [],
+  "releaseRule": "Source-safe public preview may remain masked; protected authenticated Admin/Operativo runtime must use Firestore identity and must not render Shopper protegido for canonical referenced shoppers.",
+  "safety": {
+    "providerReads": true,
+    "authWrites": 0,
+    "firestoreDataWrites": 0,
+    "rulesDeploys": 0,
+    "hostingDeploys": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "legacyWrites": 0,
+    "payments": 0,
+    "functionsDeploys": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "merge": false,
+    "production": false,
+    "piiExported": false,
+    "identifiersExported": false,
+    "secretsExported": false
+  }
+}

@@ -1,0 +1,195 @@
+{
+  "contractId": "phase-a-dev-auth-firestore-activation-readiness-post-v96-v1",
+  "status": "draft_safe_not_connected",
+  "generatedAt": "2026-07-10",
+  "sourceLock": {
+    "document": "app/docs/SOURCE-LOCK-EMPALME-PROTOTIPO-POST-V96-20260710.md",
+    "candidate": "Prototype development request.zip",
+    "decision": "source_lock_operativo_actualizado",
+    "productionGo": false
+  },
+  "purpose": "Orchestrate the controlled DEV activation readiness of a new clean Firebase Auth and Firestore environment from the post-V96 source lock, without configuring providers, creating users, deploying rules, writing documents, importing real data, switching CX.data, or touching production.",
+  "safeState": {
+    "firebaseDevProjectCreated": false,
+    "authProviderConnected": false,
+    "authUsersCreated": false,
+    "customClaimsWritten": false,
+    "firestoreConnected": false,
+    "firestoreRulesDeployed": false,
+    "firestoreReadsEnabled": false,
+    "firestoreWritesEnabled": false,
+    "frontendConnected": false,
+    "cxDataRuntimeSwitched": false,
+    "importsEnabled": false,
+    "hrWritebackEnabled": false,
+    "makeEnabled": false,
+    "geminiEnabled": false,
+    "storageEnabled": false,
+    "paymentExecutionEnabled": false,
+    "productionEnabled": false,
+    "containsSecrets": false,
+    "containsSensitiveData": false
+  },
+  "extends": [
+    "phase-a-role-taxonomy-org-scope-v1",
+    "phase-a-auth-dev-claims-taxonomy-seed-v2",
+    "phase-a-protected-firestore-schema-dev-readiness-v1",
+    "phase-a-protected-firestore-rules-dev-draft-v1",
+    "phase-a-protected-read-access-adapter-v1",
+    "phase-a-hr-source-safe-to-protected-candidates-v1",
+    "phase-a-module-readiness-matrix-v1",
+    "phase-a-readiness-bucket-evaluator-v1",
+    "phase-a-real-connection-readiness-gate-v1",
+    "phase-a-human-review-conflict-queue-plan-v1",
+    "phase-a-dev-rollback-audit-plan-v1"
+  ],
+  "activationSourceOfTruth": {
+    "claimContract": "phase-a-auth-dev-claims-taxonomy-seed-v2",
+    "roleContract": "phase-a-role-taxonomy-org-scope-v1",
+    "firestoreSchemaContract": "phase-a-protected-firestore-schema-dev-readiness-v1",
+    "firestoreRulesContract": "phase-a-protected-firestore-rules-dev-draft-v1",
+    "protectedReadContract": "phase-a-protected-read-access-adapter-v1",
+    "legacyClaimsSeedV1": "reference_only_not_activation_source"
+  },
+  "claimModel": {
+    "required": ["tenantId", "role", "personaType", "scope", "permissionsVersion"],
+    "optional": ["projectIds", "countryIds", "shopperId", "clientId", "staffId", "franchiseId", "representativeId"],
+    "technicalRolesPhaseA": ["tenantAdmin", "projectAdmin", "financeAdmin", "certificationAdmin", "clientAdmin", "clientViewer", "shopper"],
+    "unknownRolePolicy": "deny",
+    "unknownPersonaPolicy": "deny",
+    "missingScopePolicy": "deny",
+    "missingTenantPolicy": "deny",
+    "scopeExpansionPolicy": "human_review_and_audit_required",
+    "forbidden": ["email", "password", "phone", "rawName", "documentRaw", "bankAccountRaw", "signedNdaRaw", "providerToken", "privateWebhookUrl", "sourcePrivateUrl", "workbookRaw"]
+  },
+  "frontendRoleAlignmentPostV96": {
+    "admin": { "personaType": "tenantOwner", "technicalRole": "tenantAdmin", "scope": "tenant" },
+    "coordinador": { "personaType": "operationsCoordinator", "technicalRole": "projectAdmin", "scope": "tenantProjectOrCountry" },
+    "aliado": { "mapping": "explicit_by_tenant_config", "allowedPersonaTypes": ["franchiseOwner", "countryRepresentative", "fieldRepresentative"], "defaultAccess": "deny" },
+    "cliente": { "mapping": "explicit_by_client_entitlement", "allowedPersonaTypes": ["clientBrandAdmin", "clientBrandViewer"], "defaultAccess": "deny" },
+    "shopper": { "personaType": "shopperEvaluator", "technicalRole": "shopper", "scope": "ownTenantOrProject" },
+    "custom": { "mapping": "explicit_role_persona_scope_required", "defaultAccess": "deny" },
+    "unknownModule": { "policy": "deny_unless_explicit_allowlist", "postV96Residual": true }
+  },
+  "tenantProjectSeed": {
+    "configFile": "backend/config/tya-phase-a-platform-project-config.source-safe.json",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "seedOnly": true,
+    "hardcodedGlobalLogic": false,
+    "projectIsConfigurationEntity": true,
+    "periodIsProjectFilter": true,
+    "countries": ["GT", "HN"],
+    "currencySource": "project_country_configuration",
+    "hrSource": "project_configured_source_ref",
+    "questionnaire": "project_or_visit_configured",
+    "certification": "project_configured_with_carryover",
+    "payments": "project_configured_control_only"
+  },
+  "phaseADomains": {
+    "shoppers": {
+      "source": "HR historical source-safe candidates",
+      "publicPreview": "opaque refs only",
+      "protectedRead": "Auth and RBAC required",
+      "write": "blocked"
+    },
+    "certifications": {
+      "carryoverRequired": true,
+      "retakeDefault": false,
+      "gemini": "gate_off_human_review_required",
+      "write": "blocked"
+    },
+    "liquidationsPayments": {
+      "throughMay": "historically_paid_source_control",
+      "june": "payment_and_liquidation_control_not_pending_visits",
+      "honorariumSeparated": true,
+      "reimbursementsSeparated": true,
+      "countryCurrencySeparated": true,
+      "paymentExecution": "blocked"
+    },
+    "reviewQueue": {
+      "requiredBeforeImport": true,
+      "silentOverwrite": false,
+      "write": "blocked"
+    },
+    "auditEvents": {
+      "candidateGenerationAllowed": true,
+      "protectedReadAuditRequired": true,
+      "realWrite": "blocked"
+    }
+  },
+  "readinessStages": [
+    {
+      "stage": "contract_validation",
+      "status": "allowed_validator_only",
+      "providerCalls": false,
+      "writes": false
+    },
+    {
+      "stage": "clean_dev_project_identity",
+      "status": "pending_explicit_authorization",
+      "requirements": ["new empty Firebase project", "no legacy database connection", "secrets outside repo", "environment identity documented"]
+    },
+    {
+      "stage": "auth_provider_configuration",
+      "status": "blocked",
+      "requirements": ["Paula explicit GO", "DEV only", "test users only", "provider and recovery plan reviewed"]
+    },
+    {
+      "stage": "rules_emulator_or_static_review",
+      "status": "prepared_not_executed",
+      "requirements": ["draft rules", "role taxonomy v2", "protected resources", "all writes denied", "client protected access denied unless explicitly modeled"]
+    },
+    {
+      "stage": "claims_dry_run",
+      "status": "allowed_validator_only",
+      "requirements": ["source-safe opaque refs", "v2 claim shape", "no raw emails or passwords", "deny unknown role/persona/scope"]
+    },
+    {
+      "stage": "protected_read_activation",
+      "status": "blocked",
+      "requirements": ["Auth DEV configured", "rules reviewed", "test data authorization", "audit plan", "rollback plan", "human smoke by role"]
+    },
+    {
+      "stage": "protected_write_or_import",
+      "status": "blocked",
+      "requirements": ["separate explicit GO", "dry-run pass", "reviewQueue reviewed", "auditEvents ready", "rollback", "no sensitive data in repo"]
+    },
+    {
+      "stage": "production",
+      "status": "blocked",
+      "requirements": ["separate production GO", "source-safe real-data proof", "visual smoke", "security review", "no critical blocker"]
+    }
+  ],
+  "hardStops": [
+    "source lock post-V96 missing or marked production GO",
+    "legacy claims seed v1 used as activation source",
+    "unknown role/persona/module defaults to allow",
+    "tenantId or scope missing",
+    "period modeled as project",
+    "Cinepolis hardcoded as global product logic",
+    "rules allow any protected write",
+    "client or shopper can read another shopper protected data",
+    "reviewQueue or auditEvents path missing",
+    "certification carryover path missing",
+    "June represented as visits pending execution",
+    "sensitive data, secrets, private URLs or raw HR committed",
+    "CX.data runtime switched before explicit GO",
+    "provider, import, payment or production gate enabled"
+  ],
+  "knownNonBlockingPostV96Items": [
+    "client cli_* module categorization remains a Claude/prototype P1",
+    "unknown module fallback should become absolute false unless allowlisted before production",
+    "minor honest-copy sweep remains in Soporte, Mis Visitas and HR Source",
+    "visual smoke by admin, coordinator/partner/custom, client and shopper remains pending"
+  ],
+  "activationDecision": {
+    "current": "READINESS_PREPARED_NOT_ACTIVATED",
+    "allowsProviderConfiguration": false,
+    "allowsAuthWrites": false,
+    "allowsFirestoreReads": false,
+    "allowsFirestoreWrites": false,
+    "allowsImport": false,
+    "allowsProduction": false
+  }
+}

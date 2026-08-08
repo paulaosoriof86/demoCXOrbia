@@ -1,0 +1,47 @@
+{
+  "configId": "phase-a-real-connection-readiness-map-source-safe",
+  "status": "source_safe_not_connected",
+  "tenantTemplate": {
+    "tenantId": "tya",
+    "tenantType": "franchise_or_operator",
+    "countriesConfigured": true,
+    "brandConfigured": true,
+    "rolesConfigured": true,
+    "projectsConfigured": true,
+    "sourcesConfigured": true
+  },
+  "projectTemplate": {
+    "projectId": "cinepolis",
+    "projectIsSingleConfigEntity": true,
+    "periodsComeFromSourceTabsOrProjectPeriodConfig": true,
+    "questionnaireRoutingConfigurable": true,
+    "certificationConfigurable": true,
+    "schedulingRulesConfigurable": true,
+    "paymentRulesConfigurable": true,
+    "integrationGatesConfigurable": true
+  },
+  "moduleReadinessMap": {
+    "projects": ["tenant", "project", "period", "source", "brand", "countries", "currency"],
+    "usersRoles": ["personaType", "role", "scope", "countryIds", "projectIds", "permissionsVersion"],
+    "academyCourses": ["courseConfig", "rolePath", "projectPath", "manual", "checklist", "glossary", "publishGate"],
+    "certifications": ["questionBank", "attempts", "carryover", "humanReview", "geminiGate"],
+    "questionnaires": ["projectDefault", "visitOverride", "externalLink", "sourceTrace"],
+    "shoppers": ["publicRef", "protectedProfile", "identityLink", "ownProfileAccess", "reviewQueue"],
+    "visitsAssignments": ["visitId", "hrRowId", "assignmentSource", "assignmentSyncStatus", "lastSyncedAt"],
+    "liquidationsPayments": ["liquidationPreview", "paymentBatchPrepared", "paymentStateAudit", "noExecutionGate"],
+    "notificationsOutbox": ["template", "preparedMessage", "providerGate", "auditTrace"],
+    "reviewQueue": ["identity", "certification", "assignment", "payment", "sourceMismatch"],
+    "auditEvents": ["configChange", "protectedRead", "roleChange", "candidateReview", "paymentStateView"]
+  },
+  "connectionReadinessAssertions": {
+    "noPeriodProjects": true,
+    "noPIIInPreview": true,
+    "noImplicitWrites": true,
+    "noProviderExecution": true,
+    "noProductionCutover": true,
+    "sourceSafeCandidatesBeforeProtectedImport": true,
+    "reviewRequiredBeforeConflictResolution": true,
+    "allModulesHaveConfigPath": true,
+    "allGatesAreExplicit": true
+  }
+}

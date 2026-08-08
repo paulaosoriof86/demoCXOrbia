@@ -1,0 +1,99 @@
+{
+  "contractId": "phase-a-protected-shopper-profile-dev-readiness-v1",
+  "project": "CXOrbia Phase A",
+  "date": "2026-07-09",
+  "status": "draft_safe_not_connected",
+  "purpose": "Define the DEV protected shopper profile boundary so real shopper information can later be shown only behind Auth/RBAC, without exposing PII in public static preview.",
+  "buildsOn": [
+    "auth-rbac-phase-a-v1",
+    "phase-a-tenant-project-config-from-platform-v1",
+    "phase-a-human-review-conflict-queue-plan-v1",
+    "phase-a-source-safe-domain-mapping-v1"
+  ],
+  "safeState": {
+    "authProviderConnected": false,
+    "frontendConnectedToProtectedProfile": false,
+    "firestoreWritesEnabled": false,
+    "productionEnabled": false,
+    "containsSecrets": false,
+    "containsSensitiveData": false,
+    "hrWriteback": false,
+    "payments": false
+  },
+  "identityKeys": {
+    "required": ["tenantId", "projectId", "shopperId", "userId"],
+    "recommended": ["country", "status", "sourceRef", "lastVerifiedAt"],
+    "neverDedupeBy": ["displayNameOnly", "phoneOnly", "emailOnly", "visualSimilarity"]
+  },
+  "publicPreviewAllowed": [
+    "shopperRef",
+    "country",
+    "periodStatsSourceSafe",
+    "assignmentCountsSourceSafe",
+    "certificationStatusSourceSafe",
+    "paymentEligibilityStatusSourceSafe"
+  ],
+  "protectedProfileAllowedWithAuth": [
+    "fullName",
+    "email",
+    "phone",
+    "country",
+    "cityOrRegion",
+    "projectHistory",
+    "visitHistory",
+    "certificationAttempts",
+    "assignmentHistory",
+    "liquidationStatus",
+    "paymentBatchStatus",
+    "communicationHistory"
+  ],
+  "restrictedOrEncrypted": [
+    "idDocumentRaw",
+    "bankAccountRaw",
+    "signedNdaRaw",
+    "evidenceRawFiles",
+    "privateHrUrl",
+    "workbookRaw"
+  ],
+  "roleAccess": {
+    "tenantAdmin": ["readProtectedProfile", "reviewIdentityConflict", "assignProjectRole", "viewAudit"],
+    "projectAdmin": ["readProjectScopedProfile", "reviewProjectHistory", "manageAssignments", "viewCertifications"],
+    "financeAdmin": ["readLiquidationAndPaymentState", "preparePaymentBatch", "markPaymentStateWithAudit"],
+    "certificationAdmin": ["readCertificationAttempts", "reviewCertificationStatus"],
+    "shopper": ["readOwnProfile", "readOwnVisits", "readOwnCertifications", "readOwnBenefits"]
+  },
+  "gates": {
+    "devAuthConfig": "pending",
+    "devProtectedProfileRead": "blocked_until_dev_auth_config_and_rules_review",
+    "devSensitiveFieldRead": "blocked_until_encryption_policy",
+    "devWrites": "blocked_until_explicit_go",
+    "productionCutover": "blocked"
+  },
+  "reviewQueueTriggers": [
+    "multipleShopperRefsMatchSamePerson",
+    "sameEmailDifferentShopperIds",
+    "sameNameDifferentCountryOrProject",
+    "hrShopperWithoutUserAccount",
+    "userAccountWithoutConfirmedShopperRef",
+    "certificationCarryoverAmbiguous",
+    "paymentIdentityMismatch"
+  ],
+  "auditEvents": [
+    "protectedProfileRead",
+    "roleGranted",
+    "roleRevoked",
+    "identityLinked",
+    "identityConflictSentToReviewQueue",
+    "paymentStateViewed",
+    "certificationCarryoverApplied"
+  ],
+  "acceptanceCriteria": [
+    "public preview continues source-safe only",
+    "full shopper profile is only available behind Auth/RBAC",
+    "tenantId and projectId scope every read",
+    "no shopper full data in JS static files",
+    "conflicts go to reviewQueue and are not silently merged",
+    "auditEvents are required for protected reads and admin changes",
+    "new tenants and projects can reuse the same model"
+  ]
+}

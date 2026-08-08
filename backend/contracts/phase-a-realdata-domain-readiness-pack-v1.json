@@ -1,0 +1,216 @@
+{
+  "contractId": "phase-a-realdata-domain-readiness-pack-v1",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "mode": "realdata_readiness_pack_contract_only_no_import",
+  "createdAt": "2026-07-09",
+  "purpose": "Definir el paquete de readiness dry-run para evaluar si una fuente TyA real/sanitizada original cumple el source-safe domain mapping antes de habilitar lecturas DEV por CX.data adapter.",
+  "scope": {
+    "phase": "Phase A",
+    "dataType": "real_or_original_sanitized_tya_source",
+    "environment": "local_or_dev_preview_dry_run_only",
+    "runtimeReadsEnabledNow": false,
+    "writesEnabledNow": false,
+    "importsEnabledNow": false,
+    "productionEnabledNow": false
+  },
+  "requiredContracts": [
+    "backend/contracts/phase-a-source-safe-domain-mapping-v1.json",
+    "backend/contracts/phase-a-cxdata-dev-adapter-contract-v1.json",
+    "backend/contracts/phase-a-accumulated-readiness-gate-v1.json",
+    "backend/contracts/phase-a-operational-queues-contract-v1.json",
+    "backend/contracts/phase-a-admin-actions-audit-contract-v1.json"
+  ],
+  "readinessInputShape": {
+    "requiredTopLevelFields": [
+      "tenantId",
+      "projectId",
+      "sourceType",
+      "sourceRef",
+      "sourceSafety",
+      "domains",
+      "generatedAt"
+    ],
+    "sourceTypeAllowed": [
+      "hr_source_safe_full_flow",
+      "original_sanitized_tya_export",
+      "validated_hr_dry_run"
+    ],
+    "sourceSafetyRequired": {
+      "rawSensitiveData": false,
+      "rawHrRows": false,
+      "syntheticFixture": false,
+      "derivedTmpOutput": false,
+      "oldDatabaseSource": false,
+      "canImport": false,
+      "canWrite": false
+    }
+  },
+  "domainReadinessChecks": [
+    {
+      "domain": "tenant_project_config",
+      "required": true,
+      "minimumRecordCount": 1,
+      "mustHaveFields": ["tenantId", "projectId", "projectName", "countries", "currencies", "periods", "hrOriginRef", "questionnaireOrigin"],
+      "statusIfMissing": "blocked_missing_project_config"
+    },
+    {
+      "domain": "hr_source_status",
+      "required": true,
+      "minimumRecordCount": 1,
+      "mustHaveFields": ["tenantId", "projectId", "sourceRef", "readiness", "lastReadAt", "tabsRead", "rowsReadSafeCount", "canImport"],
+      "mustRemainFalse": ["canImport"],
+      "statusIfMissing": "blocked_missing_hr_source_status"
+    },
+    {
+      "domain": "visits",
+      "required": true,
+      "minimumRecordCount": 1,
+      "mustHaveFields": ["tenantId", "projectId", "visitId", "hrRowId", "country", "periodId", "quincena", "franja", "status", "assignmentSource", "assignmentSyncStatus"],
+      "stableKeyFields": ["tenantId", "projectId", "visitId", "hrRowId"],
+      "statusIfMissing": "blocked_missing_visits"
+    },
+    {
+      "domain": "shoppers",
+      "required": true,
+      "minimumRecordCount": 1,
+      "mustHaveFields": ["tenantId", "shopperId", "projectIds", "status", "certificationStatus", "paymentControlStatus", "sourceRef", "reviewStatus"],
+      "stableKeyFields": ["tenantId", "shopperId"],
+      "statusIfMissing": "blocked_missing_shoppers"
+    },
+    {
+      "domain": "applications_assignments",
+      "required": true,
+      "minimumRecordCount": 0,
+      "mustHaveFields": ["tenantId", "projectId", "visitId", "hrRowId", "shopperId", "assignmentSource", "assignmentSyncStatus", "reviewStatus"],
+      "stableKeyFields": ["tenantId", "projectId", "visitId", "hrRowId", "shopperId"],
+      "statusIfMissing": "warning_no_applications_assignments_yet"
+    },
+    {
+      "domain": "certifications",
+      "required": true,
+      "minimumRecordCount": 1,
+      "mustHaveFields": ["tenantId", "projectId", "shopperId", "certificationId", "status", "preservedAlreadyPresented", "reviewRequired", "sourceRef"],
+      "stableKeyFields": ["tenantId", "projectId", "shopperId", "certificationId"],
+      "statusIfMissing": "blocked_missing_certification_preservation"
+    },
+    {
+      "domain": "liquidations_payments_june",
+      "required": true,
+      "minimumRecordCount": 1,
+      "mustHaveFields": ["tenantId", "projectId", "liquidationId", "visitId", "hrRowId", "shopperId", "periodId", "country", "currency", "paymentStatus", "paymentControlOnly"],
+      "mustRemainTrue": ["paymentControlOnly"],
+      "stableKeyFields": ["tenantId", "projectId", "visitId", "hrRowId", "shopperId", "liquidationId"],
+      "statusIfMissing": "blocked_missing_june_payment_control"
+    },
+    {
+      "domain": "questionnaire_routes",
+      "required": true,
+      "minimumRecordCount": 1,
+      "mustHaveFields": ["tenantId", "projectId", "routeMode", "projectQuestionnaireOrigin", "routeStatus"],
+      "statusIfMissing": "blocked_missing_questionnaire_routes"
+    },
+    {
+      "domain": "operational_queues",
+      "required": true,
+      "minimumRecordCount": 0,
+      "mustHaveFields": ["tenantId", "projectId", "queueItemId", "queueType", "severity", "status", "stableKeys", "sourceRef", "gateStatus"],
+      "statusIfMissing": "warning_no_queue_items_yet"
+    },
+    {
+      "domain": "audit_preview",
+      "required": true,
+      "minimumRecordCount": 0,
+      "mustHaveFields": ["tenantId", "projectId", "auditId", "action", "entityType", "beforeState", "afterState", "reasonCode", "sourceRef", "gateStatus"],
+      "statusIfMissing": "warning_no_audit_preview_yet"
+    }
+  ],
+  "forbiddenMarkersAnywhere": [
+    "rawDpi",
+    "dpi",
+    "rawBankAccount",
+    "bankAccount",
+    "rawPhone",
+    "phone",
+    "rawEmail",
+    "email",
+    "rawShopperName",
+    "rawHrRow",
+    "rawWorkbook",
+    "rawCsv",
+    "serviceAccountJson",
+    "makeWebhookUrl",
+    "geminiApiKey",
+    "paymentProviderToken",
+    "rawEvidence",
+    "base64Evidence"
+  ],
+  "phaseABusinessAssertions": [
+    {
+      "assertionId": "june_pending_is_payment_control",
+      "required": true,
+      "description": "Si el periodo es junio y la visita ya fue ejecutada/submitted, el pendiente debe ser liquidacion/pago, no ejecucion de visita."
+    },
+    {
+      "assertionId": "certifications_preserved_before_re_request",
+      "required": true,
+      "description": "Certificaciones ya presentadas deben conservarse o revisarse antes de pedir repetir."
+    },
+    {
+      "assertionId": "hr_platform_assignment_no_duplicate",
+      "required": true,
+      "description": "Asignaciones HR/plataforma no deben duplicar disponibilidad ni sobrescribir conflictos."
+    },
+    {
+      "assertionId": "questionnaire_route_configurable",
+      "required": true,
+      "description": "Cuestionario debe resolverse por proyecto/visita o bloquearse honestamente."
+    },
+    {
+      "assertionId": "cinepolis_configured_project",
+      "required": true,
+      "description": "Cinepolis debe estar configurado como proyecto TyA, no logica global unica."
+    }
+  ],
+  "readinessVerdicts": [
+    "NO_GO_REALDATA_DOMAIN_READINESS_BLOCKED",
+    "GO_REALDATA_DOMAIN_READINESS_DRY_RUN_ONLY",
+    "GO_READY_FOR_CXDATA_DEV_ADAPTER_READ_REQUEST_NO_RUNTIME"
+  ],
+  "hardStops": [
+    "missingInput",
+    "inputNotSourceSafe",
+    "sourceIsSyntheticFixture",
+    "sourceIsDerivedTmpOutput",
+    "sourceIsOldDatabase",
+    "rawSensitiveMarkerFound",
+    "requiredDomainMissing",
+    "requiredFieldMissing",
+    "stableKeyMissing",
+    "canImportTrue",
+    "canWriteTrue",
+    "paymentControlOnlyFalse",
+    "juneVisitPendingExecutionInsteadOfPayment",
+    "certificationReRequestWithoutReview",
+    "assignmentDuplicateWithoutConflict",
+    "questionnaireRouteMissingWithoutBlockedStatus"
+  ],
+  "safeStateExpectedNow": {
+    "adapterEnabled": false,
+    "runtimeConnected": false,
+    "domainImportExecuted": false,
+    "dryRunOnly": true,
+    "firestoreWrites": false,
+    "hrWrites": false,
+    "importsExecuted": false,
+    "deploy": false,
+    "production": false,
+    "makeWebhookLive": false,
+    "geminiLive": false,
+    "paymentProviderLive": false,
+    "realPayments": false,
+    "rawSensitiveDataInRepo": false,
+    "uiModulesModified": false,
+    "appCoreModified": false
+  }
+}

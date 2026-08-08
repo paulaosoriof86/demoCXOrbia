@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "cxorbia.tya-live-tab-registry-enforcement.v2",
+  "generatedAt": "2026-07-31T01:04:08.447Z",
+  "decision": "PASS_PROVIDER_TAB_REGISTRY_ENFORCED",
+  "accessMode": "public_gviz_csv_cache_busted",
+  "registryMode": "last_provider_metadata_fail_closed",
+  "autoDiscovery": false,
+  "providerMetadataFallbackReason": "Sheets API failed: HTTP 403 {\"error\":{\"code\":403,\"message\":\"Google Sheets API has not been used in project 87461567267 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/sheets.googleapis.com/overview?project=87461567267 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.\",\"status\":\"PERMISSION_DENIED\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"SERVICE_DISAB",
+  "registryObservedAt": "2026-07-30T23:58:00Z",
+  "monthlyTabs": 28,
+  "requiredAugustTabsPresent": false,
+  "before": {
+    "tabs": 30,
+    "periods": 15,
+    "visits": 684,
+    "shoppers": 236
+  },
+  "after": {
+    "tabs": 28,
+    "periods": 14,
+    "visits": 616,
+    "shoppers": 208
+  },
+  "phantomTabsRejected": [
+    "AGOSTO 26",
+    "AGOSTO 26 HN"
+  ],
+  "counts": {
+    "periods": 14,
+    "tabs": 28,
+    "visits": 616,
+    "shoppers": 208,
+    "byStatus": {
+      "submitida": 546,
+      "cuestionario": 61,
+      "agendada": 4,
+      "realizada": 4,
+      "fuera_rango": 1
+    },
+    "byCountry": {
+      "GT": 476,
+      "HN": 140
+    },
+    "assigned": 616,
+    "unassigned": 0,
+    "scheduled": 615,
+    "realized": 611,
+    "questionnaireCompleted": 607,
+    "submitted": 546,
+    "liquidationCandidatesPendingFinancialMatch": 546,
+    "liquidationConfirmed": 0,
+    "paymentConfirmed": 0,
+    "reviewRequired": 0
+  },
+  "safety": {
+    "providerReads": true,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "hostingDeploys": 0,
+    "production": false,
+    "merge": false,
+    "pii": false,
+    "secrets": false
+  }
+}

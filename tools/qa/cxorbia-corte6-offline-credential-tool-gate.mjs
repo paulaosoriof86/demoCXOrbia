@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+const file='tools/local/cxorbia-legacy-credential-inventory.html';
+const html=fs.readFileSync(file,'utf8');
+if(!html.includes('<meta charset="utf-8">')) throw new Error('utf8_meta_missing');
+const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
+if(scripts.length!==1) throw new Error(`unexpected_script_blocks:${scripts.length}`);
+new Function(scripts[0]);
+const forbidden=[/\bfetch\s*\(/,/XMLHttpRequest/,/WebSocket/,/sendBeacon/,/firebase\./,/localStorage/,/sessionStorage/];
+for(const rx of forbidden) if(rx.test(scripts[0])) throw new Error(`offline_violation:${rx}`);
+for(const sensitive of ['passwordValuesExported:false','hashValuesExported:false','piiValuesExported:false','networkRequests:0','providerWrites:0']) if(!html.includes(sensitive)) throw new Error(`safety_marker_missing:${sensitive}`);
+if(!html.includes('tya_shoppers_extra')||!html.includes('tya_users')) throw new Error('legacy_nodes_missing');
+console.log(JSON.stringify({ok:true,decision:'PASS_C6_OFFLINE_CREDENTIAL_INVENTORY_TOOL_STATIC_GATE',file,scriptBlocks:1,networkPrimitivesDetected:0,storageWritesDetected:0,providerWrites:0}));

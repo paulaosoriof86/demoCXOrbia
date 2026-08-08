@@ -1,0 +1,267 @@
+{
+  "contractId": "cxorbia-controlled-runners-v1",
+  "schemaVersion": "1.8.0",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "baseBranch": "release/cxorbia-tya-rc-20260630",
+  "authorizedRunners": {
+    "atomicApply": {
+      "name": "CXORBIA_ATOMIC_APPLY_RUNNER",
+      "workflow": ".github/workflows/cxorbia-atomic-apply-runner.yml",
+      "requestPath": ".github/cxorbia-apply-requests/request.json",
+      "script": "tools/release/cxorbia-atomic-apply-runner.mjs",
+      "contentsPermission": "write",
+      "allowedExecutionsPerRequest": 1,
+      "functionalCommitCount": 1,
+      "requestCommitMayBeEphemeral": true,
+      "requestMustBeRemovedInFunctionalCommit": true,
+      "allowedModes": [
+        "blob_delta_v1",
+        "focal_text_patch_v1",
+        "source_lock_regenerate_v1"
+      ],
+      "sourceLockRegeneration": {
+        "script": "tools/release/cxorbia-source-lock-atomic-apply.mjs",
+        "proposalScript": "tools/release/tya-v174-r20-source-lock-proposal.mjs",
+        "exactTargetPaths": [
+          "app/core/build-lock.js",
+          "app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json"
+        ],
+        "verifier": "tools/release/tya-v174-corte2a-empalme-directo-verify.mjs",
+        "requestMustBeRemovedInCommit": true
+      }
+    },
+    "readonlyPostGates": {
+      "name": "CXORBIA_READONLY_POST_GATES_RUNNER",
+      "workflow": ".github/workflows/cxorbia-readonly-post-gates-runner.yml",
+      "requestPath": ".github/cxorbia-gate-requests/request.json",
+      "script": "tools/release/cxorbia-readonly-post-gates-runner.mjs",
+      "contentsPermission": "read",
+      "issuesPermission": "write",
+      "statusesPermission": "write",
+      "browser": "playwright-chromium",
+      "profile": "V174_R20_M1_CORTE2A",
+      "profiles": [
+        "V174_R20_M1_CORTE2A",
+        "CORTE3_FINANCIAL_RECONCILIATION_R20",
+        "CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23",
+        "CORTE4_CXDATA_FIRESTORE_READONLY",
+        "C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC"
+      ],
+      "stableVisitIdentity": {
+        "version": "tya-stable-visit-id-r20-row-identity-v1",
+        "helper": "tools/hr-source/tya-stable-visit-id-r20.mjs",
+        "applyScript": "tools/hr-source/tya-stabilize-source-safe-visit-ids-r20.mjs",
+        "runtimeInventoryFilter": "tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs",
+        "contractGate": "tools/qa/tya-stable-visit-id-r20-gate.mjs",
+        "payloadGate": "tools/qa/tya-source-safe-stable-visit-payload-r20-gate.mjs",
+        "canonicalFields": [
+          "tenantId",
+          "projectId",
+          "periodKey",
+          "country",
+          "sourceRow"
+        ],
+        "mutableFieldsExcluded": [
+          "cinemaId",
+          "shopping",
+          "quincena",
+          "franja",
+          "shopper",
+          "dates",
+          "amounts"
+        ],
+        "requiredInProfiles": [
+          "V174_R20_M1_CORTE2A",
+          "CORTE3_FINANCIAL_RECONCILIATION_R20",
+          "CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23"
+        ]
+      },
+      "profileDefinitions": {
+        "V174_R20_M1_CORTE2A": {
+          "browserRequired": true,
+          "stableVisitIdentityRequired": true,
+          "runtimeInventoryFilterRequired": true,
+          "purpose": "R20, stable visit identity, M1, Corte 2A and V174 verification"
+        },
+        "CORTE3_FINANCIAL_RECONCILIATION_R20": {
+          "browserRequired": false,
+          "providerReads": true,
+          "stableVisitIdentityRequired": true,
+          "runtimeInventoryFilterRequired": true,
+          "reviewContract": "backend/contracts/tya-corte3-financial-r20-delta-review-v1.json",
+          "purpose": "Refresh live source-safe HR R20 ephemerally, stabilize visit identity, reconcile the source-safe financial workbook and fail closed on any unreviewed substantive link drift",
+          "liveHrRefreshScript": "tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs",
+          "inputs": [
+            "backend/contracts/tya-hr-tab-inventory-r20-v1.json",
+            "backend/config/phase-a-financial-workbook-source-safe-r14.json",
+            "backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json",
+            "backend/contracts/tya-corte3-financial-r20-delta-review-v1.json"
+          ],
+          "ephemeralGeneratedInputs": [
+            "app/data/tya-hr-source-safe-periods.js"
+          ],
+          "outputs": [
+            ".tmp/tya-corte3-runtime-inventory-filter-r20",
+            ".tmp/tya-corte3-stable-visit-id-r20",
+            ".tmp/phase-a-financial-r14c-live-hr",
+            ".tmp/tya-corte3-financial-reconciliation-r20"
+          ]
+        },
+        "CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23": {
+          "browserRequired": true,
+          "providerReads": false,
+          "stableVisitIdentityRequired": true,
+          "runtimeInventoryFilterRequired": false,
+          "purpose": "Validate the canonical source-safe finance snapshot and unique adapter in the exact DEV entrypoint, proving that Finanzas and Beneficios consume one truth while payments remain fail-closed",
+          "inputs": [
+            "app/index-backend-dev.html",
+            "app/data/tya-financial-canonical-source-safe.js",
+            "app/data/tya-financial-canonical-source-safe-final.js",
+            "app/adapters/tya-financial-canonical-source-safe-adapter.js"
+          ],
+          "outputs": [
+            ".tmp/tya-corte3-canonical-finance-ui-export-r23"
+          ]
+        },
+        "CORTE4_CXDATA_FIRESTORE_READONLY": {
+          "browserRequired": false,
+          "providerReads": false,
+          "stableVisitIdentityRequired": false,
+          "runtimeInventoryFilterRequired": false,
+          "purpose": "Validate Corte 3 active baseline, strict CX.data interface preservation, fail-closed empty Firestore behavior, zero write paths and the non-deployed read-only Rules candidate without connecting to or activating Firebase",
+          "inputs": [
+            "app/docs/ACTIVE-BASELINE-CORTE3-V182-20260729.json",
+            "backend/contracts/cxdata-firestore-readonly-corte4-v1.json",
+            "backend/rules/firestore.corte4-readonly.rules",
+            "app/core/backend-config.js",
+            "app/core/backend-config-preview-dev.js",
+            "app/core/backend-cxdata-readonly-corte4.js",
+            "app/index-backend-dev.html",
+            "firestore.rules",
+            "firebase.json",
+            ".firebaserc"
+          ],
+          "outputs": [
+            ".tmp/cxdata-firestore-readonly-corte4-gate/report.json"
+          ]
+        },
+        "C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC": {
+          "browserRequired": true,
+          "providerReads": true,
+          "stableVisitIdentityRequired": false,
+          "runtimeInventoryFilterRequired": false,
+          "purpose": "Capture session.view, nav existence and active state, view existence, page header, view text length and render exceptions separately to classify the remote client_route_wait failure as product, harness or inconclusive without deploy or writes.",
+          "inputs": [
+            "app/index-backend-dev.html",
+            "app/core/router.js",
+            "app/modules/cliente.js",
+            "tools/qa/tya-c6-client-route-wait-diagnostic.mjs"
+          ],
+          "outputs": [
+            ".tmp/c6-client-route-wait-diagnostic/report.json",
+            ".tmp/cxorbia-readonly-post-gates-runner/report.json"
+          ]
+        }
+      },
+      "sourceLockCoordinator": {
+        "enabled": true,
+        "jobId": "atomic-source-lock-bridge",
+        "triggerPath": ".github/cxorbia-apply-requests/request.json",
+        "invokesAuthorizedAtomicMode": "source_lock_regenerate_v1",
+        "script": "tools/release/cxorbia-source-lock-atomic-apply.mjs",
+        "contentsPermission": "write",
+        "statusesPermission": "write",
+        "exactTargetPaths": [
+          "app/core/build-lock.js",
+          "app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json"
+        ],
+        "functionalDeltaAllowed": false,
+        "dataWrites": false,
+        "deploy": false,
+        "merge": false,
+        "production": false
+      }
+    }
+  },
+  "atomicApplyPolicy": {
+    "allowedRequestSchema": "cxorbia.atomic-apply-request.v1",
+    "allowedOperations": ["create", "replace", "delete"],
+    "maxFiles": 80,
+    "maxFileBytes": 5242880,
+    "allowedTargetPrefixes": [
+      "app/"
+    ],
+    "alwaysProtectedPrefixes": [
+      "backend/",
+      "tools/",
+      ".github/",
+      "functions/",
+      "public/"
+    ],
+    "alwaysProtectedExactPaths": [
+      "app/core/build-lock.js",
+      "app/core/tya-phase-a-source-safe-preview.js",
+      "app/core/tya-phase-a-source-safe-runtime-guard.js",
+      "app/data/tya-hr-source-safe-periods.js"
+    ],
+    "sourceLockModeExactException": [
+      "app/core/build-lock.js",
+      "app/docs/MANIFEST-V174-CORTE2A-EMPALME-DIRECTO-20260722.json"
+    ],
+    "requiredEvidence": [
+      "candidateSha256",
+      "packageSha256",
+      "expectedParentSha",
+      "sourceLockDocument",
+      "files[].path",
+      "files[].operation",
+      "files[].sha256",
+      "files[].expectedCurrentSha256"
+    ],
+    "gitBlobInputAllowed": true,
+    "directFunctionalTreeMutationOutsideRunner": false,
+    "sequentialContentsApiFunctionalWrites": false,
+    "newBranch": false,
+    "newPullRequest": false,
+    "forcePush": false
+  },
+  "readonlyGatePolicy": {
+    "allowedRequestSchema": "cxorbia.readonly-post-gates-request.v1",
+    "providerReads": true,
+    "repositoryWrites": false,
+    "commitStatusTelemetry": true,
+    "issueCommentTelemetry": true,
+    "sourceLockCoordinatorException": {
+      "enabled": true,
+      "repositoryContentWrites": true,
+      "mode": "source_lock_regenerate_v1",
+      "exactTargetsOnly": true,
+      "functionalDeltaAllowed": false,
+      "requestConsumedAtomically": true
+    },
+    "dataWrites": false,
+    "deploy": false,
+    "merge": false,
+    "production": false,
+    "imports": false,
+    "payments": false,
+    "make": false,
+    "gemini": false,
+    "firestoreWrites": false,
+    "authWrites": false,
+    "storageWrites": false,
+    "hrWrites": false
+  },
+  "safeState": {
+    "containsPii": false,
+    "containsSecrets": false,
+    "deploy": false,
+    "merge": false,
+    "production": false,
+    "providerWrites": false,
+    "dataWrites": false,
+    "functionalDeltaWritesByCoordinator": false
+  }
+}

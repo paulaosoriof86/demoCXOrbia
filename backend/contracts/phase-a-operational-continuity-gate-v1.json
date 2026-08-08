@@ -1,0 +1,115 @@
+{
+  "contractId": "phase-a-operational-continuity-gate-v1",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "mode": "source_safe_contract_only",
+  "createdAt": "2026-07-09",
+  "purpose": "Mantener Phase A encaminada a produccion real controlada sin repetir Level 0/1, sin aceptar fixtures como evidencia real y sin activar runtime/imports/deploy antes de gates finales.",
+  "scope": {
+    "phase": "Phase A",
+    "platform": "CXOrbia",
+    "client": "TyA",
+    "project": "Cinepolis",
+    "countries": ["GT", "HN"],
+    "multiProjectRequired": true,
+    "hrAsOperationalSource": true
+  },
+  "nonReversionLocks": {
+    "level0ProjectPeriodReadinessRecognized": true,
+    "level1PreviouslyWorkedNoRestart": true,
+    "doNotUseSyntheticFixturesAsRealEvidence": true,
+    "doNotUseDerivedTmpOutputsAsOriginalEvidence": true,
+    "doNotAskAgainForDocumentedInputs": [
+      "HR rules",
+      "shoppers",
+      "already presented certifications",
+      "June liquidations/payment control",
+      "project rules already documented"
+    ]
+  },
+  "requiredSourceSafeBlocks": [
+    {
+      "blockId": "hr_source_full_flow",
+      "required": true,
+      "evidenceFile": "app/docs/HR-SOURCE-PRIVATE-FULL-FLOW-20260703.md",
+      "runner": "tools/hr-source/tya-hr-source-private-full-flow.mjs",
+      "statusExpected": "available_no_runtime"
+    },
+    {
+      "blockId": "assignment_sync",
+      "required": true,
+      "evidenceFile": "app/docs/HR-PLATFORM-SYNC-CONTRACT-PHASE-A-TYA-20260704.md",
+      "statusExpected": "contracted_conflict_review_required"
+    },
+    {
+      "blockId": "certification_preservation",
+      "required": true,
+      "evidenceFile": "app/docs/CERTIFICATION-CARRYOVER-CONTRACT-CXORBIA-20260707.md",
+      "statusExpected": "preserve_already_presented"
+    },
+    {
+      "blockId": "june_liquidations_payment_control",
+      "required": true,
+      "evidenceFile": "app/docs/LIQUIDATIONS-PAYMENTS-PHASE-A-CONTRACT-V1-20260708.md",
+      "statusExpected": "candidate_control_not_real_payment"
+    },
+    {
+      "blockId": "questionnaire_routing",
+      "required": true,
+      "evidenceFile": "app/docs/QUESTIONNAIRE-ROUTING-CONTRACT-CXORBIA-20260708.md",
+      "statusExpected": "configurable_by_project_visit"
+    },
+    {
+      "blockId": "project_config_multi_project",
+      "required": true,
+      "evidenceFile": "app/docs/PROJECT-CONFIG-CONTRACT-REUSABLE-CXORBIA-20260707.md",
+      "statusExpected": "cinepolis_as_project_not_global_logic"
+    },
+    {
+      "blockId": "no_reversion_checkpoint",
+      "required": true,
+      "evidenceFile": "app/docs/CHECKPOINT-NO-REVERSION-LEVEL0-LEVEL1-PHASE-A-TYA-20260709.md",
+      "statusExpected": "registered"
+    },
+    {
+      "blockId": "operational_realdatapreview_checkpoint",
+      "required": true,
+      "evidenceFile": "app/docs/CHECKPOINT-OPERATIVO-REALDATA-PREVIEW-TYA-20260709.md",
+      "statusExpected": "aligned_no_reprocess"
+    }
+  ],
+  "hardStops": [
+    "runtimeConnected",
+    "productionDeploy",
+    "firestoreWrites",
+    "hrWrites",
+    "importsExecuted",
+    "oldDatabaseConnected",
+    "makeWebhookLive",
+    "geminiProviderLive",
+    "realPaymentsExecuted",
+    "rawSensitiveDataInRepo",
+    "syntheticFixtureUsedAsRealEvidence",
+    "derivedTmpOutputUsedAsOriginalEvidence"
+  ],
+  "safeStateExpected": {
+    "runtimeConnected": false,
+    "production": false,
+    "deploy": false,
+    "firestoreWrites": false,
+    "hrWrites": false,
+    "importsExecuted": false,
+    "oldDatabaseConnected": false,
+    "rawPii": false,
+    "makeGeminiLive": false,
+    "realPayments": false
+  },
+  "nextOperationalSequence": [
+    "Preserve no-reversion checkpoint for Level 0/1.",
+    "Continue from HR source-safe/full-flow evidence and original safe outputs.",
+    "Validate assignment sync conflict policy with stable keys before any write path.",
+    "Validate certification preservation before asking shoppers to re-certify.",
+    "Validate June liquidation/payment control as candidate state, not paid state.",
+    "Only after clean gates, request explicit Paula GO for DEV runtime preview."
+  ]
+}

@@ -1,95 +1,48 @@
 # PENDIENTES-PROTOTIPO.md
 
-> Lista viva de mejoras del prototipo CXOrbia, priorizada. Actualizada 2026-07-01.
-> Clasificación: P0 crítico · P1 importante · P2 posterior · [TyA] específico · [CX] generalizable
-> El detalle de CÓMO se resolvió cada ítem está en CAMBIOS-PROTOTIPO.md (entradas 1–25+).
+**Última actualización:** 2026-08-04  
+**Estado vivo:** `LAB_SOURCE_CONTRACT_PASS__CLOUD_V7_1_HOLD__NO_EMPALME__NO_DEPLOY__NO_PRODUCTION`
 
-## ✅ RESUELTOS Y VERIFICADOS (sesiones 50–63)
+## Cloud V7.1
 
-### Núcleo / white-label / IA
-- IA multi-proveedor sin sesgo + comparativo costo/beneficio [CX]
-- IA REAL: `CX.ai.ask` llama Gemini/OpenAI/Anthropic; `readAttachment` lee PDF/texto adjunto [CX]
-- PWA auto-install + favicon = logo de la consultora [CX]
-- Login white-label: logo cliente + banderitas (chips) + "Desarrollado por CXOrbia" [CX]
-- Logo del cliente en topbar + propuestas [CX]
-- Temas: 4 paletas nuevas (gris oscuro/claro, índigo, teal) + tipografías [CX]
-- Roles franquicia (coordinador/aliado/representante) con scopeCountry + NDA por rol [CX]
-- Permisos por rol que gobiernan navegación real (matriz `cx_perm` persistente) [CX]
+P0:
 
-### Operación
-- Mis Visitas / Mis Beneficios filtran por shopper autenticado [CX]
-- Acciones operativas persistibles + bitácora de auditoría (`automations.logAction`) [CX]
-- Postulaciones: solicitar ajuste, gestión visitas aprobadas, reasignar con buscador, perfil real [CX]
-- Reservas/Asignación: cruce reserva↔postulación, notificaciones bidireccionales [CX]
-- Botón "Asignar responsable" → notifica + aparece en Mi Día [CX]
-- Dashboard operativo: KPIs vivos, avance real vs ideal por país, sin hardcode de mes/2026 [CX]
-- Estado operativo de visitas: detalle real por visita, editar/borrar inline [CX]
-- Visitas disponibles multi-proyecto para shopper [CX]
+- `#login` mantiene flex/centrado/padding bajo 900 px;
+- clipping lateral y controles fuera del scroll real;
+- evidencia de viewports incompleta.
 
-### Finanzas
-- CxC/CxP clickeables: detalle, editar saldo, cambiar estado, eliminar [CX]
-- Pago de lote = movimiento por shopper (no "pago lote" genérico) [CX]
-- Financiamiento con concepto; presupuesto mensual; análisis crítico [CX]
-- Fecha de pago = viernes + N días configurable; liquidación reacciona a cuestionario+submit [CX]
-- Importador Excel real (.xlsx) con SheetJS [CX]
+V7.1 no se envía a Codex.
 
-### Comercial
-- CRM completo estilo Orbit: Dashboard/Insights, Pipeline, Leads, Cuentas, Contactos, Actividades, Reportes [CX]
-- Ficha 360 hub a pantalla completa con pestañas + trazabilidad de correos + proyectos/propuestas vinculados [CX]
-- Clientes ↔ Cuentas CRM sincronizados (misma entidad) [CX]
-- Costos/Propuestas: cargar plantilla, redactar IA, investigar cliente web, exportar PDF, enviar; propuestas vinculadas al cliente con estado [CX]
-- Marketing: generar mes IA con temáticas/embudo/objetivo/CTA/hashtags + elegir herramienta [CX]
+## Laboratorio
 
-### Capacitación / contenido
-- Academia: 16 cursos (7 admin + 5 shopper + 4 cliente), lecciones profundas + quiz, 9 categorías [CX]
-- Admin ve/edita/dirige cursos de TODAS las audiencias (selector de audiencia) [CX]
-- Crear curso/lección/categoría con IA; embeber video/imagen/documento inline [CX]
-- Manuales: 10 con visibilidad por rol, visor a pantalla completa; 3 profundos (Automatizaciones/Add-ons/Integraciones) [CX]
-- Certificación: crear banco con IA desde instructivo, examen shopper, recertificación con notificación [CX]
-- Documentos → "Recursos del proyecto": visor pantalla completa + generación IA + IA en edición [CX]
-- Reportes: crear/editar, exportar CSV real, generar con IA [CX]
-- Soporte: bandeja viva, cambiar estado notifica al solicitante, asignar responsable [CX]
+PASS source-only:
 
-### Config / gobierno
-- Config: Centro de autoadministración + listas desplegables administrables (rubros/tipos/canales/conceptos/estados) [CX]
-- Usuarios: crear/editar, correo cualquier dominio, roles personalizados [CX]
-- Set-up inteligente: elegir QUÉ ítems generar (instructivo/cuestionario/cert/HR/evidencias) [CX]
-- NDA/Legal: versionado + auditoría + textos por rol (incl. coordinador/aliado/representante/socio) [CX]
-- Modo demo/piloto + proyecto inicial configurable [CX]
-- Impresión/PDF limpia (sin topbar, @media print) [CX]
-- Add-ons: catálogo in-app + evidencia geolocalizada + docs comerciales [CX]
+```text
+PASS_READONLY_POST_GATES
+PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS
+PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT
+```
 
-## 🔴 PENDIENTE — Paquete V63/V64 (P0, próximas sesiones)
-- ✅ Selector Proyecto = programa (no meses) + sub-selector Periodo — HECHO V64
-- **Submódulo "Periodos"**: crear/cerrar/archivar/duplicar/comparar periodos de un programa [CX]
-- **Vista de Histórico**: consultable sin mezclarse con operación activa (por proyecto/país/periodo/comparativos) [CX]
-- **Detección de periodo en importador HR**: proyecto nuevo/existente, periodo nuevo/existente, duplicados, errores, con panel de confirmación [CX]
-- **Centro de Actualizaciones/Novedades** SaaS multi-tenant: vista admin (releases, estado por tenant) + vista cliente (banner, historial, confirmación lectura) [CX]
-- **Sincronía de filtros** proyecto/periodo/país entre TODOS los módulos (un solo estado, sin mezclar) [CX]
+Run `30971991900`, artifact `8916850770`.
 
-## 🔴 PENDIENTE — Estados honestos (P1, V63/V64)
-- Correo: "correo simulado / borrador / pendiente backend" (no "enviado") [CX]
-- Automatizaciones: activa/pausada/pendiente backend/error/simulada, última/próxima ejecución [CX]
-- Integraciones: conectado/pendiente/simulado honesto por cada una [CX]
-- IA: "pendiente de backend/IA real" cuando no hay API key conectada [CX]
+Pendiente no bloqueante: actualizar cuatro source paths esperados del mapa de rutas.
 
-## 🔴 PENDIENTE — Fichas ampliadas (P1, V63/V64)
-- Ficha de Periodo, Ficha de Visita ampliada, Ficha de Sucursal (histórico/scores/hallazgos/comparativo) [CX]
+## Secuencia
 
-## 🔵 BACKEND (fuera de alcance del prototipo — lo hace ChatGPT)
-- Persistencia real (hoy localStorage), Auth, Storage de evidencias
-- Make/WhatsApp/correo/HR-online reales; Gemini server-side
-- Importación que persista; migración de datos reales
+```text
+CLOUD V7.2
+→ AUDITORÍA FINAL
+→ GO SIN P0
+→ CODEX SOLO EMPALME
+→ SOURCE/STATIC FINAL + GATE LAB
+→ ÚNICO HOSTING DEV
+→ LABORATORIO REAL
+→ CLEANUP
+→ VALIDACIÓN HUMANA
+```
 
-## 🟡 PROFUNDIDAD DE CONTENIDO (ampliable, no bloqueante)
-- Más cursos extensos en Academia por industria; más analítica en Finanzas/portal cliente
+## Estado seguro
 
----
-
-## Pendientes despues de aplicar V66 â€” ChatGPT/backend 2026-07-02
-
-- [CX] Mantener el prototipo comercializable y generalizable. TyA/Cinepolis es tenant DEV; no endurecer reglas como si fueran el unico cliente.
-- [Backend] Implementar segmentacion real por tenant, projectId, programId, periodId, pais, rol, permisos y feature flags.
-- [Backend] Sprint 9 sigue pendiente: no marcar como cerrado hasta validar Firebase DEV real.
-- [Claude] Revisar textos de acciones operativas, WhatsApp, correo, Make e IA para que digan claramente `simulado`, `preview` o `pendiente backend` cuando no haya conexion real.
-- [Claude] Validar visualmente reglas operativas por periodo/pais/quincena sin convertirlas en logica exclusiva de TyA.
+- empalme: 0;
+- runtime/datos AUDIT: 0;
+- deploy/producción: 0.

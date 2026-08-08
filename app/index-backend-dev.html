@@ -11,52 +11,84 @@
 <link rel="stylesheet" href="styles/layout.css">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#2196d3">
+<script id="cxDevEntryCanonicalBootstrap">
+(function(){
+  const path=String(location.pathname||'');
+  if(!/\/index-backend-dev\.html$/.test(path)) return;
+  const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV';
+  const PROTECTED='YES_PAULA_20260730_PROTECTED_DEV';
+  const FULL_VISUAL='YES_PAULA_20260731_FULL_PROFILE_DEV';
+  const TECHNICAL='YES_PAULA_20260801_REAL_USERS_E2E';
+  const params=new URLSearchParams(location.search||'');
+  const technical=params.get('cxTechnicalAuthE2E')===TECHNICAL;
+  let changed=false;
+
+  if(params.get('cxBackendPreview')!==PREVIEW){params.set('cxBackendPreview',PREVIEW);changed=true;}
+  if(!params.get('cxProjectId')){params.set('cxProjectId','cinepolis');changed=true;}
+
+  if(technical){
+    if(params.get('cxProtectedRuntime')!==PROTECTED){params.set('cxProtectedRuntime',PROTECTED);changed=true;}
+    if(params.has('cxHumanFullVisual')){params.delete('cxHumanFullVisual');changed=true;}
+  }else{
+    /*
+      Corte 6 P0 root recovery:
+      the normal human route is the authenticated canonical runtime.
+      It uses the same visible product login validated in C6 single-login,
+      HR live as operational authority, and protected Firestore only as
+      exact identity/profile/certification overlay. No reduced source-safe
+      shell and no hidden visual-session token are allowed.
+    */
+    if(params.get('cxProtectedRuntime')!==PROTECTED){params.set('cxProtectedRuntime',PROTECTED);changed=true;}
+    if(params.get('cxHumanFullVisual')!==FULL_VISUAL){params.set('cxHumanFullVisual',FULL_VISUAL);changed=true;}
+    if(params.has('cxTechnicalAuthNamespace')){params.delete('cxTechnicalAuthNamespace');changed=true;}
+    if(params.has('cxTechnicalAuthE2E')){params.delete('cxTechnicalAuthE2E');changed=true;}
+    try{
+      sessionStorage.removeItem('CXORBIA_C6_FULL_VISUAL_TOKEN');
+      const stale=JSON.parse(localStorage.getItem('cx_session')||'null');
+      const synthetic=stale&&(
+        stale.user?.name==='Admin Demo'||
+        stale.user?.name==='Cliente Demo'||
+        stale.user?.name==='Evaluador (sin identidad)'||
+        (stale.role==='shopper'&&!stale.user?.shopperId)
+      );
+      if(synthetic)localStorage.removeItem('cx_session');
+    }catch(_){}
+  }
+
+  if(changed) history.replaceState(null,'',path+'?'+params.toString());
+  window.CX_DEV_ENTRY_CANONICAL={
+    canonical:true,
+    lane:technical?'protected-technical-e2e':'authenticated-human-canonical',
+    projectId:params.get('cxProjectId')||null,
+    fullVisual:!technical&&params.get('cxHumanFullVisual')===FULL_VISUAL,
+    technicalAuth:technical,
+    protectedRuntime:params.get('cxProtectedRuntime')===PROTECTED,
+    singleVisibleProductLogin:!technical,
+    hrAuthority:'live-all-periods',
+    protectedOverlay:'exact-identity-profile-certification',
+    canonicalDataRequired:{source:'live-hr',allDetectedPeriods:true,uniqueVisitKeys:true,shopperIdentity:'exact-crosswalk'},
+    at:new Date().toISOString()
+  };
+})();
+</script>
 </head>
 <body>
-<template id="__bundler_thumbnail">
-<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#0d2740"></rect><circle cx="50" cy="50" r="20" fill="none" stroke="#4ab4e6" stroke-width="5" stroke-dasharray="80 30"></circle><circle cx="66" cy="36" r="4.5" fill="#fff"></circle></svg>
-</template>
-
-<!-- LOGIN -->
+<template id="__bundler_thumbnail"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" rx="14" fill="#0d2740"></rect><circle cx="50" cy="50" r="20" fill="none" stroke="#4ab4e6" stroke-width="5" stroke-dasharray="80 30"></circle><circle cx="66" cy="36" r="4.5" fill="#fff"></circle></svg></template>
 <div id="login"></div>
-
-<!-- APP SHELL -->
-<div id="app">
-  <aside class="rail" id="rail"></aside>
-  <div class="scrim" onclick="document.body.classList.remove('nav-open')"></div>
-  <div class="canvas">
-    <div class="topbar">
-      <button class="btn btn-ghost btn-icon menu-btn" onclick="document.body.classList.toggle('nav-open')">☰</button>
-      <div class="tb-crumb" id="crumb"></div>
-      <div class="spacer"></div>
-      <div class="tb-client-logo" id="tbClientLogo" style="display:none"></div>
-      <button class="tb-bell" id="tbSupport" title="Soporte" aria-label="Soporte">
-        <span style="font-size:16px">🆘</span>
-      </button>
-      <button class="tb-bell" id="tbMail" title="Correo" aria-label="Correo">
-        <span style="font-size:16px">✉️</span>
-        <span class="tb-bell-badge" id="tbMailBadge" style="display:none">0</span>
-      </button>
-      <button class="tb-bell" id="tbBell" title="Novedades" aria-label="Novedades">
-        <span style="font-size:17px">🔔</span>
-        <span class="tb-bell-badge" id="tbBellBadge" style="display:none">0</span>
-      </button>
-      <div class="tb-demo"><span class="d"></span> Preview backend DEV</div>
-    </div>
-    <main class="content"><div id="view"></div></main>
-  </div>
-</div>
-
-<!-- FIREBASE SDK COMPAT SOLO PARA PREVIEW DEV -->
+<div id="app"><aside class="rail" id="rail"></aside><div class="scrim" onclick="document.body.classList.remove('nav-open')"></div><div class="canvas"><div class="topbar"><button class="btn btn-ghost btn-icon menu-btn" onclick="document.body.classList.toggle('nav-open')">☰</button><div class="tb-crumb" id="crumb"></div><div class="spacer"></div><div class="tb-client-logo" id="tbClientLogo" style="display:none"></div><button class="tb-bell" id="tbPwa" title="Instalar app" aria-label="Instalar app" style="display:none"><span style="font-size:16px">📲</span></button><button class="tb-bell" id="tbSupport" title="Soporte" aria-label="Soporte"><span style="font-size:16px">🆘</span></button><button class="tb-bell" id="tbMail" title="Correo" aria-label="Correo"><span style="font-size:16px">✉️</span><span class="tb-bell-badge" id="tbMailBadge" style="display:none">0</span></button><button class="tb-bell" id="tbBell" title="Novedades" aria-label="Novedades"><span style="font-size:17px">🔔</span><span class="tb-bell-badge" id="tbBellBadge" style="display:none">0</span></button><div class="tb-demo" id="tbDataBadge"><span class="d"></span> Preview backend DEV</div></div><main class="content"><div id="view"></div></main></div></div>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-
-<!-- CORE -->
+<script src="/__/firebase/init.js"></script>
+<script src="data/tya-hr-source-safe-periods.js"></script>
+<script src="core/build-lock.js"></script>
 <script src="core/config.js"></script>
 <script src="core/geo.js"></script>
 <script src="core/store.js"></script>
 <script src="core/data.js"></script>
+<script src="core/tya-phase-a-source-safe-preview.js"></script>
+<script src="adapters/tya-project-financial-model-contract-v1.js"></script>
+<script src="core/data-source.js"></script>
 <script src="core/dedupe.js"></script>
 <script src="core/shoppers-store.js"></script>
 <script src="core/programa.js"></script>
@@ -64,65 +96,64 @@
 <script src="core/hr.js"></script>
 <script src="core/costos.js"></script>
 <script src="core/automations.js"></script>
+<script src="core/permissions.js"></script>
 <script src="core/manuales-data.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="vendor/pptxgenjs.min.js"></script>
 <script src="core/importador.js"></script>
 <script src="core/ui.js"></script>
+<script src="data/tya-financial-canonical-source-safe.js"></script>
+<script src="data/tya-financial-canonical-source-safe-liq-01.js"></script>
+<script src="data/tya-financial-canonical-source-safe-liq-02.js"></script>
+<script src="data/tya-financial-canonical-source-safe-liq-03.js"></script>
+<script src="data/tya-financial-canonical-source-safe-review-01.js"></script>
+<script src="data/tya-financial-canonical-source-safe-review-02.js"></script>
+<script src="data/tya-financial-canonical-source-safe-evidence.js"></script>
+<script src="data/tya-financial-canonical-source-safe-final.js"></script>
+<script src="data/tya-payment-history-source-safe.js"></script>
 <script src="core/liquidacion.js"></script>
 <script src="core/finanzas-core.js"></script>
 <script src="core/notif.js"></script>
+<script>window.CX_TYA_LIVE_SOURCE_URL='/api/tya/cinepolis/hr-live?view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV';window.CX_TYA_LIVE_POLL_MS=20000;</script>
+<script src="adapters/tya-live-source-inplace-apply.js"></script>
+<script src="adapters/tya-live-source-refresh-watch-v2.js"></script>
+<script src="adapters/tya-cumulative-read-model-v2.js"></script>
+<script src="adapters/tya-canonical-state-semantics-v2.js"></script>
 <script src="core/backend-config.js"></script>
 <script src="core/backend-config-preview-dev.js"></script>
+<script src="core/backend-protected-dev-mode.js"></script>
+<script src="core/backend-protected-dev-session-continuity.js"></script>
 <script src="core/backend-v57-extra-config.js"></script>
-<!-- Optional local-only auth helper. Ignored by git. Safe if missing. -->
 <script src="core/backend-dev-auth.local.js"></script>
+<script src="core/backend-browser-auth.js"></script>
+<script src="adapters/tya-dev-technical-auth-e2e-v1.js"></script>
 <script src="core/backend-firebase.js"></script>
+<script src="adapters/tya-protected-auth-hr-authority-bridge-v2.js"></script>
 <script src="core/backend-cxdata-read-guard.js"></script>
 <script src="core/backend-finance-benefits.js"></script>
 <script src="core/backend-cxdata-finance-read.js"></script>
 <script src="core/backend-operational-actions.js"></script>
+<script src="core/backend-cxdata-readonly-corte4.js"></script>
 <script src="core/backend-ui-action-bridge.js"></script>
 <script src="core/backend-bulletins.js"></script>
 <script src="core/backend-automations.js"></script>
 <script src="core/backend-preview-status.js"></script>
+<script src="core/backend-hr-source-bridge.js"></script>
+<script src="adapters/tya-financial-canonical-source-safe-adapter.js"></script>
+<script src="adapters/tya-canonical-finance-read-model-v2.js"></script>
+<script src="adapters/tya-delegated-coordination-finance-guard-v1.js"></script>
 <script src="core/topbar.js"></script>
 <script src="core/pwa.js"></script>
 <script src="core/router.js"></script>
-
-<!-- MODULES -->
-<script src="modules/midia.js"></script>
-<script src="modules/dashboard.js"></script>
-<script src="modules/proyectos.js"></script>
-<script src="modules/proyecto-wizard.js"></script>
-<script src="modules/visitas.js"></script>
-<script src="modules/visita-detalle.js"></script>
-<script src="modules/cuestionario-shopper.js"></script>
-<script src="modules/postulaciones.js"></script>
-<script src="modules/shoppers.js"></script>
-<script src="modules/misvisitas.js"></script>
-<script src="modules/beneficios.js"></script>
-<script src="modules/tablon.js"></script>
-<script src="modules/cert.js"></script>
-<script src="modules/documentos.js"></script>
-<script src="modules/academia.js"></script>
-<script src="modules/soporte.js"></script>
-<script src="modules/operacion-extra.js"></script>
-<script src="modules/finanzas.js"></script>
-<script src="modules/configuracion.js"></script>
-<script src="modules/cliente.js"></script>
-<script src="modules/cliente-extra.js"></script>
-<script src="modules/clientes.js"></script>
-<script src="modules/importador.js"></script>
-<script src="modules/comercial.js"></script>
-<script src="modules/crm.js"></script>
-<script src="modules/marketing.js"></script>
-<script src="modules/reservas.js"></script>
-<script src="modules/integraciones.js"></script>
-<script src="modules/automatizaciones.js"></script>
-<script src="modules/correo.js"></script>
-<script src="modules/marca.js"></script>
-
-<!-- BOOT -->
+<script src="modules/midia.js"></script><script src="modules/dashboard.js"></script><script src="modules/proyectos.js"></script><script src="modules/periodos.js"></script><script src="modules/historico.js"></script><script src="modules/hr-source.js"></script><script src="modules/proyecto-wizard.js"></script><script src="modules/visitas.js"></script><script src="modules/visita-detalle.js"></script><script src="modules/revision-admin.js"></script><script src="modules/cuestionario-shopper.js"></script><script src="modules/postulaciones.js"></script><script src="modules/shoppers.js"></script><script src="modules/misvisitas.js"></script><script src="modules/beneficios.js"></script><script src="modules/tablon.js"></script><script src="modules/cert.js"></script><script src="modules/documentos.js"></script><script src="modules/academia.js"></script><script src="modules/soporte.js"></script><script src="modules/operacion-extra.js"></script><script src="modules/finanzas.js"></script><script src="modules/configuracion.js"></script><script src="modules/saas-console.js"></script><script src="modules/cliente.js"></script><script src="modules/cliente-extra.js"></script><script src="modules/cliente-insights.js"></script><script src="modules/novedades.js"></script><script src="modules/clientes.js"></script><script src="modules/importador.js"></script><script src="modules/comercial.js"></script><script src="modules/crm.js"></script><script src="modules/marketing.js"></script><script src="modules/reservas.js"></script><script src="modules/integraciones.js"></script><script src="modules/automatizaciones.js"></script><script src="modules/correo.js"></script><script src="modules/marca.js"></script><script src="modules/diagnostico.js"></script><script src="modules/administrabilidad.js"></script>
+<script src="adapters/tya-ab-cumulative-composition-v1.js"></script>
+<script src="adapters/tya-c6-domain-consistency-bridge.js"></script>
+<script src="adapters/tya-canonical-shopper-portal-v2.js"></script>
+<script src="adapters/tya-canonical-reservations-guard-v2.js"></script>
+<script src="adapters/tya-c6-unified-human-runtime-v1.js"></script>
+<script src="adapters/tya-c6-shopper-auth-click-guard-v1.js"></script>
+<script src="core/backend-corte4-empty-shell-guard.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

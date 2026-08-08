@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "cxorbia.r17n-final-dev-materialization.hold.v1",
+  "generatedAt": "2026-07-30T03:47:41.661Z",
+  "decision": "HOLD_R17N_FINAL_DEV_MATERIALIZATION",
+  "phase": "preflight",
+  "detail": "live_identity_207",
+  "firestoreWritesObserved": 0,
+  "maxAuthorizedWrites": 1406,
+  "pii": false,
+  "deploys": 0,
+  "merge": false,
+  "production": false
+}

@@ -11,7 +11,7 @@ window.CX = window.CX || {};
 CX.reservas = {
   _r:{},                 // reservas: { pid: [ {id, sucursalId, sucursal, ciudad, pais, periodo, shopperId, shopper, estado, fecha} ] }
   _seeded:{},
-  _key(pid){ return pid || CX.data.currentProjectId; },
+  _key(pid){ return pid || CX.data.currentPeriodId; },
 
   /* sucursales del proyecto disponibles para reservar en un periodo (derivadas de las visitas) */
   sucursales(pid){
@@ -27,7 +27,12 @@ CX.reservas = {
   list(pid){ pid=this._key(pid); if(!this._r[pid]){ try{ this._r[pid]=JSON.parse(localStorage.getItem('cx_reservas_'+pid)||'null')||this._seed(pid); }catch(e){ this._r[pid]=this._seed(pid); } } return this._r[pid]; },
   _persist(pid){ try{ localStorage.setItem('cx_reservas_'+pid, JSON.stringify(this._r[pid]||[])); }catch(e){} },
 
+  /* Frontend gen\u00e9rico (correcci\u00f3n 20260711): bug real \u2014 se sembraban 2 reservas "demo"
+     (Evaluador 01/02) SIN gate de modo, visibles tambi\u00e9n fuera de demo. Ahora solo se siembran en
+     demo; fuera de demo, sin reservas reales todav\u00eda, la lista empieza vac\u00eda (honesto). */
   _seed(pid){
+    const allowSynthetic = CX.dataSource ? CX.dataSource.showFixtures() : true;
+    if(!allowSynthetic) return [];
     const sucs=this.sucursales(pid).slice(0,4);
     const per=this.periodoActual();
     return sucs.slice(0,2).map((s,i)=>({id:'rsv'+i+Date.now().toString(36).slice(-3), sucursalId:s.id, sucursal:s.sucursal, ciudad:s.ciudad, pais:s.pais, periodo:per, shopperId:'sh'+(i+1), shopper:'Evaluador 0'+(i+1), estado:'solicitada', fecha:new Date().toISOString().slice(0,10)}));
@@ -62,7 +67,7 @@ CX.reservas = {
         const s=CX.data.getShopper && CX.data.getShopper(r.shopperId);
         v.shopperId=r.shopperId; v.shopper=r.shopper||(s&&s.nombre); v.shopperCode=s&&s.code; v.estado='asignada';
         r.estado='cruzada'; r.visitaId=v.id; cruzadas++;
-        CX.hr&&CX.hr.writeBack&&CX.hr.writeBack(CX.data.project(), v);
+        CX.hr&&CX.hr.writeBack&&CX.hr.writeBack(CX.data.period(), v);
       }
     });
     this._persist(pid); CX.bus&&CX.bus.emit('visit-flow'); CX.bus&&CX.bus.emit('reservas');
@@ -79,11 +84,13 @@ CX.reservas = {
 
 /* ============== Módulo: Reservas de Visita (admin + shopper) ============== */
 CX.module('reservas', ({data,role,ui})=>{
-  const p=data.project(), pid=p.id;
+  const p=data.period(), pid=p.id;
   const host=ui.el('div');
   const ESTLBL={solicitada:'Solicitada',asignada:'Asignada',aprobada:'Aprobada',cruzada:'✓ Cruzada con visita',rechazada:'Rechazada'};
   const ESTTONE={solicitada:'a',asignada:'b',aprobada:'g',cruzada:'g',rechazada:'r'};
-  const sid=()=> (CX.session.user&&CX.session.user.shopperId)||'sh1';
+  /* P0 (V172): identidad fail-closed — sin shopperId verificable no hay sid; nunca 'sh1'. */
+  const sid=()=> (CX.session.user&&CX.session.user.shopperId)||null;
+  const shopperIdentityOk=()=>!!sid();
 
   const periodos=()=>{ const s=new Set([CX.reservas.periodoActual()]); CX.reservas.list(pid).forEach(r=>s.add(r.periodo)); return [...s].sort().reverse(); };
   let per=CX.reservas.periodoActual();
@@ -94,6 +101,10 @@ CX.module('reservas', ({data,role,ui})=>{
     const R=CX.reservas.resumen(pid);
 
     if(role==='shopper'){
+      if(!shopperIdentityOk()){
+        host.innerHTML=`${ui.ph('Reservar Visitas', p.name)}<div class="card card-p" style="border-left:3px solid var(--red)"><div class="flex" style="gap:8px;align-items:center;margin-bottom:6px"><span style="font-size:20px">🔒</span><b>Identidad de evaluador no verificable</b></div><div style="font-size:12.5px;color:var(--t2)">Sin un <code>shopperId</code> verificable no se muestran, crean, aprueban ni cancelan reservas. Inicia sesión con una identidad real.</div></div>`;
+        return;
+      }
       const sucs=CX.reservas.sucursales(pid);
       host.innerHTML=`
         ${ui.ph('Reservar Visitas', p.name+' · pide las sucursales que quieres evaluar este periodo')}
@@ -173,7 +184,7 @@ CX.module('reservas', ({data,role,ui})=>{
         CX.notif&&CX.notif.push({to:'shopper',tipo:'reserva_aprobada',icon:'✅',tono:'g',titulo:'¡Tu reserva fue aprobada!',txt:'Sucursal: '+r.sucursal+' · '+r.periodo+'. Ya puedes ver la visita en Mis Visitas.',nav:'misvisitas'});
         CX.automations&&CX.automations.fire('aprobacion',{shopper:r.shopper,sucursal:r.sucursal,periodo:r.periodo});
         if(!hasHook){const wa=(data.getShopper&&data.getShopper(r.shopperId)||{}).whatsapp||'';if(wa){const msg=encodeURIComponent('¡Hola '+r.shopper+'! Tu reserva para '+r.sucursal+' ('+r.periodo+') fue aprobada. Revisa tu visita en la plataforma.');window.open('https://wa.me/'+wa.replace(/[^0-9]/g,'')+'?text='+msg,'_blank');}}
-        ui.toast('Reserva aprobada · visita asignada · shopper notificado','ok',3600);
+        ui.toast('Reserva aprobada · visita asignada · notificación preparada, pendiente de envío','ok',3600);
       } else ui.toast('Estado actualizado','ok');
       draw();
     }));

@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "cxorbia.c6.shopper-equivalent-universe-member-provenance-source-static.v1",
+  "generatedAt": "2026-08-05T22:12:00-06:00",
+  "decision": "PASS_C6_EQUIVALENT_UNIVERSE_MEMBER_PROVENANCE_INTEGRATION_SOURCE_STATIC",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "sourceProviderRun": 31069282511,
+  "integration": {
+    "sharedHelper": "tools/qa/cxorbia-c6-shopper-equivalent-universe.mjs",
+    "plannerIntegrated": true,
+    "classifierIntegrated": true,
+    "contractVersion": "v2.2",
+    "universeVersion": "shopper-equivalent-universe-v1",
+    "populationEquivalent": true,
+    "activityEquivalent": true,
+    "linkingEquivalent": true,
+    "completenessEquivalent": true,
+    "deltaOnlyMemberProvenance": true,
+    "multiAuthCandidateFingerprints": true
+  },
+  "priorStatePreserved": {
+    "providerPlanRows": 340,
+    "providerHoldRows": 13,
+    "readyForAuthRepair": false,
+    "executable": false,
+    "partialExecutionAllowed": false
+  },
+  "safety": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "membershipWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "production": false
+  },
+  "nextGate": "NEW_EXPLICIT_PROVIDER_READONLY_REVALIDATION_OR_TENANT_ADJUDICATION_PREPARATION_REQUIRED"
+}

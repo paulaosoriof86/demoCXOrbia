@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "cxorbia.c6.production-fast-track-preflight.v1",
+  "generatedAt": "2026-08-06T13:03:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "observedHead": "0eb2a0e403657943386b12a54be216acb698f31d",
+  "decision": "HOLD_PRODUCTION_WITH_PARALLEL_SOURCE_ONLY_PREPARATION_COMPLETE",
+  "checks": {
+    "prDraftOpenNoMerge": true,
+    "frontendAndCxDataPreserved": true,
+    "shopperIdentityPlanHoldZero": true,
+    "liveHrV4TerminalEvidenceResolved": false,
+    "authExecutionCompleted": false,
+    "accumulativeSmokeCompleted": false,
+    "humanValidationCompleted": false,
+    "productionAuthorizationPresent": false,
+    "productionTargetMaterializedInRepository": false
+  },
+  "productionConfiguration": {
+    "firebasercBlobSha": "35e381ceb8db2a6143623f42b92de649a10dda40",
+    "firebaseJsonBlobSha": "3501332042fc3736d35f88e9ca5befee72589256",
+    "defaultProject": "cxorbia-backend-dev",
+    "configuredProjectAliases": ["default", "dev"],
+    "hostingTarget": "cxorbia-dev",
+    "hostingSite": "cxorbia-backend-dev",
+    "cloudRunRewriteService": "cxorbia-live-hr-dev",
+    "productionAliasConfigured": false,
+    "productionHostingTargetConfigured": false,
+    "productionCloudRunServiceConfigured": false
+  },
+  "liveHr": {
+    "requestCommit": "ac2032ec224e6d56bf087788b949691b6690c437",
+    "requestBlobSha": "0c55cae69c51deb63f64de2a37992f3cec2713e0",
+    "commitStatusesObservedNow": 0,
+    "terminalEvidence": false,
+    "providerReadConsumption": "UNKNOWN_NO_RUN_JOB_OR_CHECKPOINT_EVIDENCE",
+    "secondTriggerEmitted": false
+  },
+  "shopperIdentity": {
+    "profiles": 340,
+    "createAuth": 81,
+    "updateAuth": 46,
+    "noOp": 73,
+    "preserveNoAuth": 140,
+    "hold": 0,
+    "authWritesExecuted": false
+  },
+  "blockingChain": [
+    "RECONCILE_LIVE_HR_V4_TERMINAL_EVIDENCE",
+    "CONFIRM_2026_08_GT_HN_HISTORY_AND_SOURCE_REVISION",
+    "EXECUTE_AUTH_WITH_SEPARATE_WRITE_GATE",
+    "RUN_ACCUMULATIVE_ROLE_SMOKE",
+    "COMPLETE_HUMAN_VALIDATION",
+    "MATERIALIZE_AND_VERIFY_PRODUCTION_TARGET",
+    "OBTAIN_EXPLICIT_PRODUCTION_AUTHORIZATION"
+  ],
+  "parallelProgressCompleted": [
+    "REVALIDATED_CURRENT_CANONICAL_SOURCES",
+    "REVALIDATED_REQUEST_V4_UNCHANGED",
+    "REVALIDATED_NO_COMMIT_STATUS_FOR_REQUEST_V4",
+    "AUDITED_FIREBASE_CONFIGURATION_AS_DEV_ONLY",
+    "IDENTIFIED_PRODUCTION_TARGET_AS_UNMATERIALIZED",
+    "PRESERVED_NO_SECOND_TRIGGER_AND_NO_PROVIDER_WRITE"
+  ],
+  "safety": {
+    "providerReadsExecutedByThisPreflight": 0,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "merge": false,
+    "production": false
+  }
+}

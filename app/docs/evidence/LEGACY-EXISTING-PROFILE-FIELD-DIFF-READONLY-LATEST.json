@@ -1,0 +1,477 @@
+{
+  "schemaVersion": "tya.legacy-existing-profile-field-diff.readonly.v1",
+  "generatedAt": "2026-07-30T01:12:28.378Z",
+  "authorizationScope": "READ_ONLY_LEGACY_TYA_SHOPPERS_CERTIFICATIONS_ONLY",
+  "legacySnapshotSha256": "a4988e2ad473f724248ac9999b6f8ba6edd94f8aba5c7145c09da88159a200c4",
+  "canonicalProjectId": "cxorbia-backend-dev",
+  "policy": {
+    "stableMatchedProfilesOnly": true,
+    "fillMissingOnly": true,
+    "overwriteNonEmpty": false,
+    "nameOnlyDedupe": false,
+    "fields": [
+      "code",
+      "name",
+      "email",
+      "phone",
+      "country",
+      "city"
+    ],
+    "stateFieldsExcluded": true
+  },
+  "counts": {
+    "matchedProfiles": 22,
+    "updateFillMissingOnly": 0,
+    "noop": 0,
+    "holdExistingValueConflict": 22,
+    "holdSourceDrift": 0,
+    "holdCanonicalDrift": 0
+  },
+  "changedFieldCounts": {
+    "email": 8,
+    "phone": 22
+  },
+  "conflictFieldCounts": {
+    "code": 22,
+    "name": 2,
+    "city": 1
+  },
+  "results": [
+    {
+      "legacyShopperId": "S3",
+      "canonicalDocId": "s3",
+      "sourceBasis": "deterministic_technical_id_normalization",
+      "action": "HOLD_EXISTING_VALUE_CONFLICT",
+      "reason": "nonempty_values_differ_no_overwrite",
+      "fillMissingFields": [
+        "email",
+        "phone"
+      ],
+      "conflictFields": [
+        "code"
+      ],
+      "sameFields": [
+        "city",
+        "country",
+        "name"
+      ],
+      "legacyFingerprint": "10ea522e53ded0db849a4cadcc6f69c4598f5fd85558fa3a1506def963f5bf78"
+    },
+    {
+      "legacyShopperId": "SHR_1780546721743_ef1r",
+      "canonicalDocId": "shr-1780546721743-ef1r",
+      "sourceBasis": "deterministic_technical_id_normalization",
+      "action": "HOLD_EXISTING_VALUE_CONFLICT",
+      "reason": "nonempty_values_differ_no_overwrite",
+      "fillMissingFields": [
+        "phone"
+      ],
+      "conflictFields": [
+        "code"
+      ],
+      "sameFields": [
+        "city",
+        "country",
+        "name"
+      ],
+      "legacyFingerprint": "ae31ea0bc1c543dc6f7c059cd20fc565e0f8a47ed9399b6179bac7a267af7f6a"
+    },
+    {
+      "legacyShopperId": "SHR_1780546721749_2r1s",
+      "canonicalDocId": "shr-1780546721749-2r1s",
+      "sourceBasis": "deterministic_technical_id_normalization",
+      "action": "HOLD_EXISTING_VALUE_CONFLICT",
+      "reason": "nonempty_values_differ_no_overwrite",
+      "fillMissingFields": [
+        "phone"
+      ],
+      "conflictFields": [
+        "code"
+      ],
+      "sameFields": [
+        "city",
+        "country",
+        "name"
+      ],
+      "legacyFingerprint": "4a1fc172b41de1a6f093cbfa1946f340a615c83569d3d2043767a319ce8b148b"
+    },
+    {
+      "legacyShopperId": "SHR_1780546721750_1x5f",
+      "canonicalDocId": "shr-1780546721750-1x5f",
+      "sourceBasis": "deterministic_technical_id_normalization",
+      "action": "HOLD_EXISTING_VALUE_CONFLICT",
+      "reason": "nonempty_values_differ_no_overwrite",
+      "fillMissingFields": [
+        "email",
+        "phone"
+      ],
+      "conflictFields": [
+        "code"
+      ],
+      "sameFields": [
+        "city",
+        "country",
+        "name"
+      ],
+      "legacyFingerprint": "05dfab8feeef2286e1e4fb7b65c098615874e5a4efecbe2a6ed5461e72f23aa1"
+    },
+    {
+      "legacyShopperId": "SHR_1780546721751_tds7",
+      "canonicalDocId": "shr-1780546721751-tds7",
+      "sourceBasis": "deterministic_technical_id_normalization",
+      "action": "HOLD_EXISTING_VALUE_CONFLICT",
+      "reason": "nonempty_values_differ_no_overwrite",
+      "fillMissingFields": [
+        "phone"
+      ],
+      "conflictFields": [
+        "code"
+      ],
+      "sameFields": [
+        "city",
+        "country",
+        "name"
+      ],
+      "legacyFingerprint": "8e86da0eb1eca2066e9d8a991b8e324f31c6f2530fa380b0ca79adda739554bc"
+    },
+    {
+      "legacyShopperId": "SHR_1780546721752_7v5a",
+      "canonicalDocId": "shr-1780546721752-7v5a",
+      "sourceBasis": "deterministic_technical_id_normalization",
+      "action": "HOLD_EXISTING_VALUE_CONFLICT",
+      "reason": "nonempty_values_differ_no_overwrite",
+      "fillMissingFields": [
+        "phone"
+      ],
+      "conflictFields": [
+        "code",
+        "name"
+      ],
+      "sameFields": [
+        "city",
+        "country"
+      ],
+      "legacyFingerprint": "1b86d32850b0f4cca75e14e650243ca20622bd4df2666ad7fa4621aeb97e854e"
+    },
+    {
+      "legacyShopperId": "SHR_1780546721754_9uaz",
+      "canonicalDocId": "shr-1780546721754-9uaz",
+      "sourceBasis": "deterministic_technical_id_normalization",
+      "action": "HOLD_EXISTING_VALUE_CONFLICT",
+      "reason": "nonempty_values_differ_no_overwrite",
+      "fillMissingFields": [
+        "phone"
+      ],
+      "conflictFields": [
+        "code"
+      ],
+      "sameFields": [
+        "city",
+        "country",
+        "name"
+      ],
+      "legacyFingerprint": "2004e7e9d3b7bfa20f34620e0f5d22987efc46e336380278f9dbbaa5a73b2a79"
+    },
+    {
+      "legacyShopperId": "SHR_1780546721754_d1pq",
+      "canonicalDocId": "shr-1780546721754-d1pq",
+      "sourceBasis": "deterministic_technical_id_normalization",
+      "action": "HOLD_EXISTING_VALUE_CONFLICT",
+      "reason": "nonempty_values_differ_no_overwrite",
+      "fillMissingFields": [
+        "email",
+        "phone"
+      ],
+      "conflictFields": [
+        "code"
+      ],
+      "sameFields": [
+        "city",
+        "country",
+        "name"
+      ],
+      "legacyFingerprint": "bacddb815536c48acf835fa6f328d54ce1dff0ff4fe9d626e3408350fcb28f0a"
+    },
+    {
+      "legacyShopperId": "SHR_1780546721755_jsb2",
+      "canonicalDocId": "shr-1780546721755-jsb2",
+      "sourceBasis": "deterministic_technical_id_normalization",
+      "action": "HOLD_EXISTING_VALUE_CONFLICT",
+      "reason": "nonempty_values_differ_no_overwrite",
+      "fillMissingFields": [
+        "email",
+        "phone"
+      ],
+      "conflictFields": [
+        "city",
+        "code"
+      ],
+      "sameFields": [
+        "country",
+        "name"
+      ],
+      "legacyFingerprint": "d864ed447486ce8b527a41c80ef8667f118c665b7c995517dbcebd09ba6493a8"
+    },
+    {
+      "legacyShopperId": "SHR_1780546721755_mqqe",
+      "canonicalDocId": "shr-1780546721755-mqqe",
+      "sourceBasis": "deterministic_technical_id_normalization",
+      "action": "HOLD_EXISTING_VALUE_CONFLICT",
+      "reason": "nonempty_values_differ_no_overwrite",
+      "fillMissingFields": [
+        "email",
+        "phone"
+      ],
+      "conflictFields": [
+        "code"
+      ],
+      "sameFields": [
+        "city",
+        "country",
+        "name"
+      ],
+      "legacyFingerprint": "d00dd3dc4593a9e82e4d6d1675b19a047c6ccdc7cde98ccc98aff6a7794973c6"
+    },
+    {
+      "legacyShopperId": "SHR_1780549926665_pwqe",
+      "canonicalDocId": "shr-1780549926665-pwqe",
+      "sourceBasis": "deterministic_technical_id_normalization",
+      "action": "HOLD_EXISTING_VALUE_CONFLICT",
+      "reason": "nonempty_values_differ_no_overwrite",
+      "fillMissingFields": [
+        "phone"
+      ],
+      "conflictFields": [
+        "code"
+      ],
+      "sameFields": [
+        "city",
+        "country",
+        "name"
+      ],
+      "legacyFingerprint": "488a2ad382fc5b305c1261723337f8ac7463179c9084878767fbe1edcbecd0a8"
+    },
+    {
+      "legacyShopperId": "SHR_1780549926672_2u1g",
+      "canonicalDocId": "shr-1780549926672-2u1g",
+      "sourceBasis": "deterministic_technical_id_normalization",
+      "action": "HOLD_EXISTING_VALUE_CONFLICT",
+      "reason": "nonempty_values_differ_no_overwrite",
+      "fillMissingFields": [
+        "phone"
+      ],
+      "conflictFields": [
+        "code"
+      ],
+      "sameFields": [
+        "city",
+        "country",
+        "name"
+      ],
+      "legacyFingerprint": "8449540be3c640a5952a731c2958b8fb3e5f9f215f7d6286740396d4408f8e7c"
+    },
+    {
+      "legacyShopperId": "SHR_1780549926672_ivq9",
+      "canonicalDocId": "shr-1780549926672-ivq9",
+      "sourceBasis": "deterministic_technical_id_normalization",
+      "action": "HOLD_EXISTING_VALUE_CONFLICT",
+      "reason": "nonempty_values_differ_no_overwrite",
+      "fillMissingFields": [
+        "email",
+        "phone"
+      ],
+      "conflictFields": [
+        "code"
+      ],
+      "sameFields": [
+        "city",
+        "country",
+        "name"
+      ],
+      "legacyFingerprint": "5ecc2828ea3ad8288cccdffa55cee140bb292154b5c1d25b56b62ab55434ec3a"
+    },
+    {
+      "legacyShopperId": "SHR_1780611985059_49vr",
+      "canonicalDocId": "shr-1780611985059-49vr",
+      "sourceBasis": "deterministic_technical_id_normalization",
+      "action": "HOLD_EXISTING_VALUE_CONFLICT",
+      "reason": "nonempty_values_differ_no_overwrite",
+      "fillMissingFields": [
+        "phone"
+      ],
+      "conflictFields": [
+        "code"
+      ],
+      "sameFields": [
+        "city",
+        "country",
+        "name"
+      ],
+      "legacyFingerprint": "466dad524e59f7275740a5c4ec3d08a04170fc8edb56448807e70de31dff286e"
+    },
+    {
+      "legacyShopperId": "SHR_1780611985067_d3cb",
+      "canonicalDocId": "shr-1780611985067-d3cb",
+      "sourceBasis": "deterministic_technical_id_normalization",
+      "action": "HOLD_EXISTING_VALUE_CONFLICT",
+      "reason": "nonempty_values_differ_no_overwrite",
+      "fillMissingFields": [
+        "phone"
+      ],
+      "conflictFields": [
+        "code"
+      ],
+      "sameFields": [
+        "city",
+        "country",
+        "name"
+      ],
+      "legacyFingerprint": "be51aef66d638d43352675e3c7a98888aa71999307534357c20a4bf63d724b29"
+    },
+    {
+      "legacyShopperId": "SHR_1780611985070_u770",
+      "canonicalDocId": "shr-1780611985070-u770",
+      "sourceBasis": "deterministic_technical_id_normalization",
+      "action": "HOLD_EXISTING_VALUE_CONFLICT",
+      "reason": "nonempty_values_differ_no_overwrite",
+      "fillMissingFields": [
+        "phone"
+      ],
+      "conflictFields": [
+        "code"
+      ],
+      "sameFields": [
+        "city",
+        "country",
+        "name"
+      ],
+      "legacyFingerprint": "2129d4608f0e85a6c3e564d31313fdcae5bf4cfca61a5aa6d769e2af1ae123b5"
+    },
+    {
+      "legacyShopperId": "SHR_1780611985098_ials",
+      "canonicalDocId": "shr-1780611985098-ials",
+      "sourceBasis": "deterministic_technical_id_normalization",
+      "action": "HOLD_EXISTING_VALUE_CONFLICT",
+      "reason": "nonempty_values_differ_no_overwrite",
+      "fillMissingFields": [
+        "phone"
+      ],
+      "conflictFields": [
+        "code"
+      ],
+      "sameFields": [
+        "city",
+        "country",
+        "name"
+      ],
+      "legacyFingerprint": "8ecf1eead6fed4474a9cb976318b7881a4784f0643c31f86eba54acf94bc436c"
+    },
+    {
+      "legacyShopperId": "SHR_1780611985131_ce0m",
+      "canonicalDocId": "shr-1780611985131-ce0m",
+      "sourceBasis": "deterministic_technical_id_normalization",
+      "action": "HOLD_EXISTING_VALUE_CONFLICT",
+      "reason": "nonempty_values_differ_no_overwrite",
+      "fillMissingFields": [
+        "phone"
+      ],
+      "conflictFields": [
+        "code"
+      ],
+      "sameFields": [
+        "city",
+        "country",
+        "name"
+      ],
+      "legacyFingerprint": "2e089915134a5b89124afcc64dee828fdf49f04b6bad08a8cbd2b23b0eb29210"
+    },
+    {
+      "legacyShopperId": "SHR_1780611985157_2r5u",
+      "canonicalDocId": "shr-1780611985157-2r5u",
+      "sourceBasis": "deterministic_technical_id_normalization",
+      "action": "HOLD_EXISTING_VALUE_CONFLICT",
+      "reason": "nonempty_values_differ_no_overwrite",
+      "fillMissingFields": [
+        "email",
+        "phone"
+      ],
+      "conflictFields": [
+        "code"
+      ],
+      "sameFields": [
+        "city",
+        "country",
+        "name"
+      ],
+      "legacyFingerprint": "f9dc06dcabfa2315e03720a46b7db28c13c3513b99747f1d04fec3e79f8f259b"
+    },
+    {
+      "legacyShopperId": "SHR_1780611985164_81sm",
+      "canonicalDocId": "shr-1780611985164-81sm",
+      "sourceBasis": "deterministic_technical_id_normalization",
+      "action": "HOLD_EXISTING_VALUE_CONFLICT",
+      "reason": "nonempty_values_differ_no_overwrite",
+      "fillMissingFields": [
+        "email",
+        "phone"
+      ],
+      "conflictFields": [
+        "code"
+      ],
+      "sameFields": [
+        "city",
+        "country",
+        "name"
+      ],
+      "legacyFingerprint": "e4a1201376068456b0f3cdfd4403b695ead3a37e3812b3b34fecf359a40482eb"
+    },
+    {
+      "legacyShopperId": "SHR_1780611985170_c4zb",
+      "canonicalDocId": "shr-1780611985170-c4zb",
+      "sourceBasis": "deterministic_technical_id_normalization",
+      "action": "HOLD_EXISTING_VALUE_CONFLICT",
+      "reason": "nonempty_values_differ_no_overwrite",
+      "fillMissingFields": [
+        "phone"
+      ],
+      "conflictFields": [
+        "code"
+      ],
+      "sameFields": [
+        "city",
+        "country",
+        "name"
+      ],
+      "legacyFingerprint": "80ee1e0fcb99a46611a80adef29a82390f766d65125ec5eed4c3fa091adc5c10"
+    },
+    {
+      "legacyShopperId": "SHR_1781110700287_66hv7",
+      "canonicalDocId": "shr-1781110700287-66hv7",
+      "sourceBasis": "deterministic_technical_id_normalization",
+      "action": "HOLD_EXISTING_VALUE_CONFLICT",
+      "reason": "nonempty_values_differ_no_overwrite",
+      "fillMissingFields": [
+        "phone"
+      ],
+      "conflictFields": [
+        "code",
+        "name"
+      ],
+      "sameFields": [
+        "city",
+        "country"
+      ],
+      "legacyFingerprint": "dcd032f2e3d8251d4743b873ba5b6a8ea1a1e722203d95b964b0c130139b2da0"
+    }
+  ],
+  "safety": {
+    "legacyProviderWrites": 0,
+    "canonicalProviderWrites": 0,
+    "authWrites": 0,
+    "storageWrites": 0,
+    "deploys": 0,
+    "production": false,
+    "merge": false,
+    "rawPiiExported": false
+  }
+}

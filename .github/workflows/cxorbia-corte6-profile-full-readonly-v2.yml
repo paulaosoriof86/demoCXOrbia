@@ -1,0 +1,150 @@
+name: CXOrbia Corte 6 Full Shopper Profile Read-Only V2
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/private-inbox/corte6-profile-full-v2-parts/READY.json'
+
+permissions:
+  contents: write
+  statuses: write
+
+concurrency:
+  group: cxorbia-corte6-profile-full-readonly-v2
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout active branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Assemble encrypted bundle from connector-safe chunks
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/c6-profile-full-v2
+          node <<'NODE'
+          const fs=require('fs');
+          const crypto=require('crypto');
+          const base='backend/private-inbox/corte6-profile-full-v2-parts';
+          const m=JSON.parse(fs.readFileSync(base+'/READY.json','utf8'));
+          if(m.schemaVersion!=='cxorbia.corte6.profile-full-v2-chunk-manifest.v1')throw new Error('bad_chunk_manifest_schema');
+          if(!Array.isArray(m.partFiles)||m.partFiles.length!==Number(m.partCount)||m.partFiles.length<1)throw new Error('bad_chunk_manifest_parts');
+          if(m.safety?.encryptedOnly!==true||m.safety?.plaintextProfileValues!==false||Number(m.safety?.providerWrites)!==0)throw new Error('unsafe_chunk_manifest');
+          let assembled='';
+          for(const name of m.partFiles){
+            if(!/^part-\d{3}\.txt$/.test(name))throw new Error('unsafe_part_name:'+name);
+            const p=base+'/'+name;
+            if(!fs.existsSync(p))throw new Error('missing_part:'+name);
+            assembled+=fs.readFileSync(p,'utf8');
+          }
+          if(assembled.length!==Number(m.totalChars))throw new Error('assembled_length_mismatch');
+          const sha=crypto.createHash('sha256').update(Buffer.from(assembled,'utf8')).digest('hex');
+          if(sha!==m.sourceSha256)throw new Error('assembled_sha256_mismatch');
+          const env=JSON.parse(assembled);
+          if(env.schemaVersion!=='cxorbia.corte6.profile-full-handoff-envelope.v2'||env.targetProjectId!=='cxorbia-backend-dev'||env.tenantId!=='tya')throw new Error('assembled_envelope_target_mismatch');
+          fs.writeFileSync('.tmp/c6-profile-full-v2/corte6-profile-full-bundle-v2.enc.json',assembled,{mode:0o600});
+          console.log(JSON.stringify({assembled:true,partCount:m.partCount,totalChars:m.totalChars,sha256:sha,schemaVersion:env.schemaVersion,targetProjectId:env.targetProjectId,tenantId:env.tenantId}));
+          NODE
+
+      - name: Validate read-only request
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const r=require('./backend/config/corte6-profile-full-readonly-v2-request.json');
+          if(r.schemaVersion!=='cxorbia.corte6.profile-full-readonly-request.v2')throw new Error('bad_schema');
+          if(r.repository!=='paulaosoriof86/demoCXOrbia'||r.branch!=='docs-tya-v6-v71-audit'||Number(r.pullRequest)!==7||r.firebaseProjectId!=='cxorbia-backend-dev'||r.tenantId!=='tya'||r.projectId!=='cinepolis')throw new Error('target_mismatch');
+          if(r.enabled!==true||r.consumed!==false||r.status!=='waiting_encrypted_full_profile_bundle_v2'||r.expectedEnvelopePath!=='backend/private-inbox/corte6-profile-full-bundle-v2.enc.json')throw new Error('request_not_ready');
+          if(r.operatorMayViewFullShopperProfile!==true||r.passwordMayBeDisplayedInProtectedOperationalProfile!==true)throw new Error('profile_scope_missing');
+          for(const k of ['providerWrites','firestoreWrites','authWrites','passwordChanges','rulesDeploys','hostingDeploys','cloudRunDeploys','storageWrites','hrWrites','legacyWrites','makeWrites','geminiCalls','paymentsWrites'])if(r[k]!==0)throw new Error('unsafe_write_flag:'+k);
+          if(r.providerReads!==true||r.production!==false||r.merge!==false||r.piiExported!==false||r.profileValuesExported!==false||r.passwordValuesExported!==false||r.secretsExported!==false)throw new Error('unsafe_scope');
+          NODE
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Load canonical DEV credential
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/c6-profile-full-v2
+          node <<'NODE'
+          const fs=require('fs');
+          const raw=process.env.EXISTING_DEV_JSON||'';
+          let p=null;try{p=JSON.parse(raw);}catch{}
+          if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.client_email&&p.private_key))throw new Error('credential_invalid');
+          fs.writeFileSync('.tmp/c6-profile-full-v2/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.tmp/c6-profile-full-v2/credentials.json" >> "$GITHUB_ENV"
+
+      - name: Run encrypted full profile read-only reconciliation
+        id: reconcile
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_TENANT_ID: tya
+          CXORBIA_PROJECT_ID: cinepolis
+          CXORBIA_PROFILE_FULL_ENVELOPE: .tmp/c6-profile-full-v2/corte6-profile-full-bundle-v2.enc.json
+          CXORBIA_PROFILE_FULL_OUT: app/docs/evidence/CORTE6-PROFILE-FULL-HANDOFF-READONLY-LATEST.json
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+          node --check tools/qa/cxorbia-corte6-profile-full-handoff-dryrun-v2.mjs
+          node tools/qa/cxorbia-corte6-profile-full-handoff-dryrun-v2.mjs
+
+      - name: Persist sanitized evidence and consume request
+        if: steps.reconcile.outcome == 'success'
+        run: |
+          set -euo pipefail
+          cp app/docs/evidence/CORTE6-PROFILE-FULL-HANDOFF-READONLY-LATEST.json /tmp/c6-profile-full-v2.json
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          cp /tmp/c6-profile-full-v2.json app/docs/evidence/CORTE6-PROFILE-FULL-HANDOFF-READONLY-LATEST.json
+          node <<'NODE'
+          const fs=require('fs');
+          const requestPath='backend/config/corte6-profile-full-readonly-v2-request.json';
+          const evidencePath='app/docs/evidence/CORTE6-PROFILE-FULL-HANDOFF-READONLY-LATEST.json';
+          const r=JSON.parse(fs.readFileSync(requestPath,'utf8'));
+          const e=JSON.parse(fs.readFileSync(evidencePath,'utf8'));
+          r.status='consumed_readonly';
+          r.enabled=false;
+          r.consumed=true;
+          r.consumedAt=new Date().toISOString();
+          r.decision=e.decision;
+          r.exactProfiles=e.matching&&e.matching.exact||0;
+          r.missingCanonical=e.matching&&e.matching.missingCanonical||0;
+          r.docsWithPlannedChanges=e.totals&&e.totals.docsWithPlannedChanges||0;
+          r.fieldWritesPlanned=e.totals&&e.totals.fieldWritesPlanned||0;
+          r.passwordProfilesPresent=e.totals&&e.totals.passwordProfilesPresent||0;
+          r.sensitiveProfilesPresent=e.totals&&e.totals.sensitiveProfilesPresent||0;
+          r.nextGate='PREPARE_EXACT_FULL_PROFILE_FIRESTORE_WRITE_PLAN_AND_REQUEST_EXPLICIT_AUTHORIZATION';
+          fs.writeFileSync(requestPath,JSON.stringify(r,null,2)+'\n','utf8');
+          NODE
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/docs/evidence/CORTE6-PROFILE-FULL-HANDOFF-READONLY-LATEST.json backend/config/corte6-profile-full-readonly-v2-request.json
+          git commit -m 'evidence: Corte 6 full shopper profile v2 readonly reconciliation'
+          git push origin HEAD:docs-tya-v6-v71-audit
+
+      - name: Publish status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          STATE=success;DESC='PASS_C6_PROFILE_FULL_V2_READONLY'
+          if [ '${{ job.status }}' != 'success' ]; then STATE=error;DESC='FAIL_C6_PROFILE_FULL_V2_READONLY'; fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/corte6-profile-full-v2/${DESC}" -f description="$DESC" >/dev/null
+
+      - name: Cleanup credential and assembled envelope
+        if: always()
+        run: rm -rf .tmp/c6-profile-full-v2

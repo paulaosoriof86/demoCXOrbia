@@ -1,0 +1,292 @@
+name: CXOrbia Corte 6 Human Full Visual DEV Redeploy
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/config/corte6-human-full-visual-execute.json'
+
+permissions:
+  contents: write
+  statuses: write
+  id-token: write
+
+concurrency:
+  group: cxorbia-c6-human-full-visual-dev
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  GCP_PROJECT_ID: cxorbia-backend-dev
+  GCP_REGION: us-central1
+  CLOUD_RUN_SERVICE: cxorbia-live-hr-dev
+  CLOUD_RUN_RUNTIME_SA: firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com
+  FIREBASE_HOSTING_TARGET: cxorbia-dev
+  HOSTING_SITE: cxorbia-backend-dev
+  DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+  DEPLOY_REQUEST: backend/config/corte6-human-full-visual-redeploy-request.json
+  EXECUTE_MARKER: backend/config/corte6-human-full-visual-execute.json
+  OUT_DIR: .tmp/c6-human-full-visual-dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - name: Checkout exact live branch
+        uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+          fetch-depth: 0
+
+      - name: Validate exact authorization and one-shot state
+        id: gate
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT_DIR"
+          node <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync(process.env.DEPLOY_REQUEST,'utf8'));
+          const x=JSON.parse(fs.readFileSync(process.env.EXECUTE_MARKER,'utf8'));
+          if(r.schemaVersion!=='cxorbia.corte6.human-full-visual-redeploy.v1')throw new Error('request_schema_mismatch');
+          if(x.schemaVersion!=='cxorbia.corte6.human-full-visual-execute.v1')throw new Error('execute_schema_mismatch');
+          for(const o of [r,x]){
+            if(o.repository!=='paulaosoriof86/demoCXOrbia'||o.branch!=='docs-tya-v6-v71-audit'||o.firebaseProjectId!=='cxorbia-backend-dev'||o.cloudRunService!=='cxorbia-live-hr-dev'||o.cloudRunRegion!=='us-central1'||o.hostingSite!=='cxorbia-backend-dev'||o.hostingTarget!=='cxorbia-dev'||o.tenantId!=='tya'||o.projectId!=='cinepolis')throw new Error('target_identity_mismatch');
+          }
+          if(r.pullRequest!==7||r.scope!=='one_cloud_run_and_one_hosting_dev_redeploy_for_no_credential_full_visual'||r.humanVisualMode!=='prototype_auto_entry_plus_server_side_readonly_full_profile'||r.browserFirebaseCredentialsRequired!==false||r.firebaseAuthProviderGatePreservedSeparately!==true||r.fullProfileFieldsRequired!==true||r.shopperDevPickerRequired!==true)throw new Error('scope_contract_mismatch');
+          if(r.singleCloudRunDeployMax!==1||r.singleHostingDeployMax!==1||r.newFirebaseProjects!==0||r.newHostingSites!==0)throw new Error('one_shot_target_mismatch');
+          if(r.authorizedBy!=='Paula'||!r.authorizationId||!r.authorizationText||r.authorizationText.length<40||r.enabled!==true||r.consumed!==false)throw new Error('authorization_missing');
+          if(x.enabled!==true||x.consumed!==false||x.requestId!==r.requestId||x.authorizationId!==r.authorizationId)throw new Error('execute_marker_invalid');
+          for(const k of ['firestoreWrites','authWrites','authResets','rulesDeploys','storageWrites','hrWrites','legacyWrites','makeWrites','geminiCalls','paymentsWrites'])if(Number(r[k]||0)!==0||Number(x[k]||0)!==0)throw new Error('unsafe_scope:'+k);
+          if(r.merge!==false||r.production!==false||x.merge!==false||x.production!==false)throw new Error('unsafe_scope');
+          if(!/^[a-f0-9]{64}$/.test(String(r.visualTokenHashSha256||'')))throw new Error('visual_token_hash_invalid');
+          if(!r.visualTokenExpiresAt||Date.parse(r.visualTokenExpiresAt)<=Date.now())throw new Error('visual_token_expired');
+          const cr=Number(r.cloudRunDeployExecutions||0),ho=Number(r.hostingDeployExecutions||0);
+          let mode='invalid';
+          if(r.status==='authorized_waiting_cloud_run'&&cr===0&&ho===0)mode='full';
+          else if(r.status==='cloud_run_deployed_smoke_pending'&&cr===1&&ho===0)mode='cloud_smoke_then_hosting';
+          else if(r.status==='cloud_run_pass_hosting_pending'&&cr===1&&ho===0)mode='hosting';
+          else if(r.status==='hosting_deployed_smoke_pending'&&cr===1&&ho===1)mode='hosting_smoke';
+          else if(r.status==='consumed_pass'&&r.enabled===false&&r.consumed===true&&cr===1&&ho===1)mode='noop_consumed';
+          if(mode==='invalid')throw new Error(`one_shot_state_invalid:${r.status}:${cr}:${ho}`);
+          console.log(`mode=${mode}`);
+          console.log(`active=${mode==='noop_consumed'?'false':'true'}`);
+          console.log(`cloud_deploy=${mode==='full'?'true':'false'}`);
+          console.log(`cloud_smoke=${['full','cloud_smoke_then_hosting'].includes(mode)?'true':'false'}`);
+          console.log(`hosting_deploy=${['full','cloud_smoke_then_hosting','hosting'].includes(mode)?'true':'false'}`);
+          console.log(`hosting_smoke=${['full','cloud_smoke_then_hosting','hosting','hosting_smoke'].includes(mode)?'true':'false'}`);
+          console.log(`visual_hash=${r.visualTokenHashSha256}`);
+          console.log(`visual_expiry=${r.visualTokenExpiresAt}`);
+          NODE
+
+      - name: Stop safely when authorization already consumed
+        if: steps.gate.outputs.active != 'true'
+        run: echo 'One-shot no-credential visual redeploy already consumed; no provider mutation executed.'
+
+      - name: Setup Node
+        if: steps.gate.outputs.active == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Authenticate to existing Google Cloud DEV
+        if: steps.gate.outputs.active == 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+
+      - name: Setup gcloud
+        if: steps.gate.outputs.active == 'true'
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: cxorbia-backend-dev
+
+      - name: Static contract and provider read-only preflight
+        if: steps.gate.outputs.active == 'true'
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          node --check backend/runtime/hr-live-service/server.mjs
+          node --check backend/runtime/hr-live-service/dev-visual.mjs
+          node --check app/adapters/tya-dev-full-visual-bridge.js
+          node --check app/adapters/tya-live-source-refresh-watch.js
+          grep -q "maybeHandleDevVisualRequest" backend/runtime/hr-live-service/server.mjs
+          grep -q "CXORBIA_DEV_VISUAL_PROFILE_TOKEN_SHA256" backend/runtime/hr-live-service/dev-visual.mjs
+          grep -q "firestore-server-side-dev-visual" app/adapters/tya-dev-full-visual-bridge.js
+          grep -q "browserFirebaseCredentialsRequired:false" app/adapters/tya-dev-full-visual-bridge.js
+          grep -q "devShopperAccess:true" app/adapters/tya-dev-full-visual-bridge.js
+          grep -q "tya-dev-full-visual-bridge.js" app/index-backend-dev.html
+          grep -q "full-visual-server-proxy-owns-cxdata" app/adapters/tya-live-source-refresh-watch.js
+          grep -q "humanCredentialPrompt: false" app/core/backend-config-preview-dev.js
+          grep -q "this.pickShopperDev()" app/app.js
+          gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json > "$OUT_DIR/cloud-run-before.json"
+          enabled="$(gcloud services list --enabled --project "$GCP_PROJECT_ID" --format='value(config.name)')"
+          for api in run.googleapis.com cloudbuild.googleapis.com firebasehosting.googleapis.com firestore.googleapis.com; do echo "$enabled" | grep -qx "$api" || { echo "Required API not enabled: $api"; exit 2; }; done
+          npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+          node <<'NODE'
+          const fs=require('fs'),admin=require('firebase-admin');
+          const raw=process.env.FIREBASE_SERVICE_ACCOUNT_JSON||'';const sa=JSON.parse(raw);
+          if(sa.project_id!=='cxorbia-backend-dev')throw new Error('wrong_service_account_project');
+          admin.initializeApp({credential:admin.credential.cert(sa),projectId:'cxorbia-backend-dev'});
+          const db=admin.firestore();
+          (async()=>{
+            const shoppers=await db.collection('tenants').doc('tya').collection('shoppers').get();
+            const visits=await db.collection('tenants').doc('tya').collection('projects').doc('cinepolis').collection('visits').get();
+            if(shoppers.size<120||visits.size!==616)throw new Error(`protected_baseline_invalid:${shoppers.size}:${visits.size}`);
+            const report={schemaVersion:'cxorbia.corte6.human-full-visual-preflight.v1',generatedAt:new Date().toISOString(),decision:'PASS_READONLY_FIRESTORE_AND_STATIC_CONTRACT',shoppers:shoppers.size,visits:visits.size,providerWrites:0,production:false};
+            fs.writeFileSync(process.env.OUT_DIR+'/preflight.source-safe.json',JSON.stringify(report,null,2)+'\n','utf8');
+            console.log(JSON.stringify(report));
+          })().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+
+      - name: Build Cloud Run image once
+        if: steps.gate.outputs.cloud_deploy == 'true'
+        run: |
+          set -euo pipefail
+          IMAGE_URI="gcr.io/${GCP_PROJECT_ID}/${CLOUD_RUN_SERVICE}:c6-full-visual-${GITHUB_SHA}"
+          echo "$IMAGE_URI" > "$OUT_DIR/image-uri.txt"
+          gcloud builds submit . --project "$GCP_PROJECT_ID" --config backend/runtime/hr-live-service/cloudbuild.yaml --substitutions "_IMAGE=$IMAGE_URI" --quiet
+
+      - name: Update existing Cloud Run DEV service once
+        id: cloud_deploy
+        if: steps.gate.outputs.cloud_deploy == 'true'
+        run: |
+          set -euo pipefail
+          IMAGE_URI="$(cat "$OUT_DIR/image-uri.txt")"
+          gcloud run services update "$CLOUD_RUN_SERVICE" \
+            --project "$GCP_PROJECT_ID" \
+            --region "$GCP_REGION" \
+            --image "$IMAGE_URI" \
+            --service-account "$CLOUD_RUN_RUNTIME_SA" \
+            --update-env-vars "CXORBIA_LIVE_HR_CACHE_MS=15000,CXORBIA_HR_LIVE_MAX_ROW=140,CXORBIA_HR_LIVE_MAX_COL=AI,CXORBIA_HR_EARLIEST_PERIOD=2025-06,CXORBIA_DEV_OPERATIONAL_NAMES=true,CXORBIA_DEV_VISUAL_PROFILE_TOKEN_SHA256=${{ steps.gate.outputs.visual_hash }},CXORBIA_DEV_VISUAL_PROFILE_TOKEN_EXPIRES_AT=${{ steps.gate.outputs.visual_expiry }}" \
+            --quiet
+          gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json > "$OUT_DIR/cloud-run-after-deploy.json"
+
+      - name: Persist Cloud Run provider mutation immediately
+        if: steps.cloud_deploy.outcome == 'success'
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');const p=process.env.DEPLOY_REQUEST;const r=JSON.parse(fs.readFileSync(p,'utf8'));const svc=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/cloud-run-after-deploy.json','utf8'));
+          r.cloudRunDeployExecutions=1;r.status='cloud_run_deployed_smoke_pending';r.cloudRunDeployedAt=new Date().toISOString();r.cloudRunRevision=svc.status?.latestReadyRevisionName||svc.status?.latestCreatedRevisionName||null;r.cloudRunUrl=svc.status?.url||null;
+          fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n','utf8');
+          NODE
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$DEPLOY_REQUEST"; git commit -m 'gate: record C6 full visual Cloud Run DEV one-shot'; git push origin HEAD:docs-tya-v6-v71-audit
+
+      - name: Smoke Cloud Run without exposing visual token
+        id: cloud_smoke
+        if: steps.gate.outputs.cloud_smoke == 'true'
+        run: |
+          set -euo pipefail
+          base="$(gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format='value(status.url)')"
+          curl -fsS --retry 8 --retry-delay 3 "$base/health" > "$OUT_DIR/cloud-run-health.json"
+          code="$(curl -sS -o "$OUT_DIR/cloud-run-unauthorized.json" -w '%{http_code}' "$base/v1/tenants/tya/projects/cinepolis/hr-live?view=full-profile&scope=admin")"
+          test "$code" = '401'
+          curl -fsS --retry 8 --retry-delay 3 "$base/v1/tenants/tya/projects/cinepolis/hr-live?format=meta" > "$OUT_DIR/cloud-run-meta.json"
+          node <<'NODE'
+          const fs=require('fs');const h=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/cloud-run-health.json','utf8'));const u=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/cloud-run-unauthorized.json','utf8'));const m=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/cloud-run-meta.json','utf8'));
+          if(h.ok!==true||h.devFullVisualEndpoint!==true||u.error!=='dev_visual_authorization_required'||m.runtimeRead!==true||m.sourceSafe!==true||m.visits!==616)throw new Error('cloud_run_smoke_invalid');
+          console.log(JSON.stringify({decision:'PASS_CLOUD_RUN_DEV_FULL_VISUAL_GATE_REMOTE',unauthorizedFailClosed:true,sourceSafeBaselinePreserved:true,visits:m.visits,providerWrites:0,production:false}));
+          NODE
+
+      - name: Persist Cloud Run smoke PASS and unlock Hosting
+        if: steps.cloud_smoke.outcome == 'success' && steps.gate.outputs.hosting_deploy == 'true'
+        run: |
+          set -euo pipefail
+          git fetch origin docs-tya-v6-v71-audit; git reset --hard origin/docs-tya-v6-v71-audit
+          node <<'NODE'
+          const fs=require('fs');const p=process.env.DEPLOY_REQUEST;const r=JSON.parse(fs.readFileSync(p,'utf8'));if(r.cloudRunDeployExecutions!==1)throw new Error('cloud_run_execution_not_persisted');r.status='cloud_run_pass_hosting_pending';r.cloudRunSmokePassedAt=new Date().toISOString();fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n','utf8');
+          NODE
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$DEPLOY_REQUEST"; git commit -m 'gate: Cloud Run full visual smoke PASS'; git push origin HEAD:docs-tya-v6-v71-audit
+
+      - name: Prepare existing Hosting DEV config
+        if: steps.gate.outputs.hosting_deploy == 'true'
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const config={hosting:{target:'cxorbia-dev',public:'app',ignore:['firebase.json','**/.*','**/node_modules/**'],rewrites:[{source:'/api/tya/cinepolis/hr-live',run:{serviceId:'cxorbia-live-hr-dev',region:'us-central1'}},{source:'**',destination:'/index.html'}],headers:[{source:'**',headers:[{key:'Cache-Control',value:'no-store'}]},{source:'**/*.html',headers:[{key:'Content-Type',value:'text/html; charset=utf-8'}]},{source:'**/*.js',headers:[{key:'Content-Type',value:'application/javascript; charset=utf-8'}]},{source:'**/*.css',headers:[{key:'Content-Type',value:'text/css; charset=utf-8'}]},{source:'**/*.json',headers:[{key:'Content-Type',value:'application/json; charset=utf-8'}]}]}};
+          fs.writeFileSync(process.env.OUT_DIR+'/firebase.hosting.json',JSON.stringify(config,null,2)+'\n','utf8');
+          NODE
+          grep -q 'adapters/tya-dev-full-visual-bridge.js' app/index-backend-dev.html
+          grep -q 'humanCredentialPrompt: false' app/core/backend-config-preview-dev.js
+          grep -q 'devShopperAccess:true' app/adapters/tya-dev-full-visual-bridge.js
+
+      - name: Deploy existing Hosting DEV once
+        id: hosting_deploy
+        if: steps.gate.outputs.hosting_deploy == 'true'
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts firebase-tools@latest >/dev/null 2>&1
+          cp "$OUT_DIR/firebase.hosting.json" firebase.c6-dev.json
+          npx firebase deploy --config firebase.c6-dev.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$GCP_PROJECT_ID" --non-interactive
+          rm -f firebase.c6-dev.json
+
+      - name: Persist Hosting provider mutation immediately
+        if: steps.hosting_deploy.outcome == 'success'
+        run: |
+          set -euo pipefail
+          git fetch origin docs-tya-v6-v71-audit; git reset --hard origin/docs-tya-v6-v71-audit
+          node <<'NODE'
+          const fs=require('fs');const p=process.env.DEPLOY_REQUEST;const r=JSON.parse(fs.readFileSync(p,'utf8'));if(r.cloudRunDeployExecutions!==1)throw new Error('cloud_run_not_recorded');r.hostingDeployExecutions=1;r.status='hosting_deployed_smoke_pending';r.hostingDeployedAt=new Date().toISOString();fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n','utf8');
+          NODE
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$DEPLOY_REQUEST"; git commit -m 'gate: record C6 full visual Hosting DEV one-shot'; git push origin HEAD:docs-tya-v6-v71-audit
+
+      - name: Smoke Hosting assets and gated route
+        id: hosting_smoke
+        if: steps.gate.outputs.hosting_smoke == 'true'
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 8 --retry-delay 3 "$DEV_ROOT_URL/index-backend-dev.html" -o "$OUT_DIR/index.html"
+          curl -fsSL --retry 8 --retry-delay 3 "$DEV_ROOT_URL/adapters/tya-dev-full-visual-bridge.js" -o "$OUT_DIR/full-visual.js"
+          curl -fsSL --retry 8 --retry-delay 3 "$DEV_ROOT_URL/adapters/tya-live-source-refresh-watch.js" -o "$OUT_DIR/watcher.js"
+          grep -q 'tya-dev-full-visual-bridge.js' "$OUT_DIR/index.html"
+          grep -q 'firestore-server-side-dev-visual' "$OUT_DIR/full-visual.js"
+          grep -q 'browserFirebaseCredentialsRequired:false' "$OUT_DIR/full-visual.js"
+          grep -q 'full-visual-server-proxy-owns-cxdata' "$OUT_DIR/watcher.js"
+          code="$(curl -sS -o "$OUT_DIR/hosting-unauthorized.json" -w '%{http_code}' "$DEV_ROOT_URL/api/tya/cinepolis/hr-live?view=full-profile&scope=admin")"
+          test "$code" = '401'
+          node <<'NODE'
+          const fs=require('fs');const u=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/hosting-unauthorized.json','utf8'));if(u.error!=='dev_visual_authorization_required')throw new Error('hosting_rewrite_gate_invalid');
+          console.log(JSON.stringify({decision:'PASS_HOSTING_DEV_FULL_VISUAL_ASSETS_AND_GATE',humanCredentialPromptRequired:false,unauthorizedFailClosed:true,providerWrites:0,production:false}));
+          NODE
+
+      - name: Persist sanitized evidence and consume authorization
+        if: steps.hosting_smoke.outcome == 'success'
+        run: |
+          set -euo pipefail
+          git fetch origin docs-tya-v6-v71-audit; git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          node <<'NODE'
+          const fs=require('fs');const rp=process.env.DEPLOY_REQUEST,xp=process.env.EXECUTE_MARKER;const r=JSON.parse(fs.readFileSync(rp,'utf8')),x=JSON.parse(fs.readFileSync(xp,'utf8'));
+          if(r.cloudRunDeployExecutions!==1||r.hostingDeployExecutions!==1)throw new Error('provider_execution_count_mismatch');
+          const e={schemaVersion:'cxorbia.corte6.human-full-visual-redeploy-evidence.v1',generatedAt:new Date().toISOString(),decision:'PASS_EXISTING_DEV_CLOUD_RUN_HOSTING_NO_CREDENTIAL_FULL_VISUAL_REMOTE_READY',authorizationId:r.authorizationId,requestId:r.requestId,projectId:'cxorbia-backend-dev',cloudRunService:'cxorbia-live-hr-dev',hostingSite:'cxorbia-backend-dev',hostingTarget:'cxorbia-dev',cloudRunDeployExecutions:1,hostingDeployExecutions:1,remote:{fullVisualEndpoint:true,authorizationFailClosed:true,fullVisualAdapter:true,prototypeAutoEntryPreserved:true,humanFirebaseCredentialPromptRequired:false,shopperDevPicker:true,sourceSafeDefaultPreserved:true},visualSession:{rawTokenCommitted:false,expiresAt:r.visualTokenExpiresAt},safety:{firestoreWrites:0,authWrites:0,authResets:0,rulesDeploys:0,storageWrites:0,hrWrites:0,legacyWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,newFirebaseProjects:0,newHostingSites:0,production:false,merge:false}};
+          fs.writeFileSync('app/docs/evidence/CORTE6-HUMAN-FULL-VISUAL-REDEPLOY-LATEST.json',JSON.stringify(e,null,2)+'\n','utf8');
+          for(const o of [r,x]){o.status='consumed_pass';o.enabled=false;o.consumed=true;o.consumedAt=new Date().toISOString();o.decision=e.decision;o.nextGate='HUMAN_VISUAL_ADMIN_SHOPPER_NO_CREDENTIALS';}
+          fs.writeFileSync(rp,JSON.stringify(r,null,2)+'\n','utf8');fs.writeFileSync(xp,JSON.stringify(x,null,2)+'\n','utf8');
+          NODE
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/docs/evidence/CORTE6-HUMAN-FULL-VISUAL-REDEPLOY-LATEST.json "$DEPLOY_REQUEST" "$EXECUTE_MARKER"
+          git commit -m 'evidence: C6 no-credential full visual DEV PASS'; git push origin HEAD:docs-tya-v6-v71-audit
+
+      - name: Publish status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          STATE=success;DESC='PASS_C6_HUMAN_FULL_VISUAL_DEV'
+          if [ '${{ job.status }}' != 'success' ]; then STATE=error;DESC='FAIL_C6_HUMAN_FULL_VISUAL_DEV'; fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/corte6-human-full-visual/$DESC" -f description="$DESC" >/dev/null
+
+      - name: Cleanup
+        if: always()
+        run: rm -rf "$OUT_DIR" firebase.c6-dev.json

@@ -1,0 +1,79 @@
+{
+  "contractId": "phase-a-postulation-eligibility-r21-v1",
+  "schemaVersion": "1.0.0",
+  "scope": "reusable_cxorbia",
+  "purpose": "Separate unassigned visits from publishable opportunities and validate proposed dates consistently for internal or external route-sheet sources.",
+  "sourceTypes": [
+    "google_sheets_live_multitab",
+    "external_sheet",
+    "uploaded_file",
+    "platform_internal_route_sheet",
+    "api_external"
+  ],
+  "canonicalInputs": {
+    "tenantId": "required",
+    "projectId": "required",
+    "periodKey": "required",
+    "measurementWindowId": "required_when_project_uses_windows",
+    "measurementWindowStart": "required_when_project_uses_windows",
+    "measurementWindowEnd": "required_when_project_uses_windows",
+    "shopperId": "nullable",
+    "availableFromRaw": "source_evidence",
+    "disponibleDesde": "validated_iso_date_or_null",
+    "availabilityState": "required",
+    "availabilityDependency": "nullable",
+    "franjaRaw": "source_evidence",
+    "franjaCode": "WK_or_WKND",
+    "proposedDate": "validated_iso_date"
+  },
+  "availabilityStates": [
+    "eligible_from_date",
+    "blocked_previous_measurement_window",
+    "blocked_missing_availability",
+    "not_applicable_assigned"
+  ],
+  "rules": [
+    "unassigned does not automatically mean available",
+    "an opportunity is publishable only when unassigned and availabilityState is eligible_from_date",
+    "recognized prior-window tokens such as P1Q or P x visita previa block publication until the dependency is resolved",
+    "a proposed date must be on or after disponibleDesde",
+    "a proposed date must fall inside measurementWindowStart and measurementWindowEnd when the project uses measurement windows",
+    "WK accepts Monday through Friday only",
+    "WKND accepts Saturday and Sunday only",
+    "assignment, availability, scheduling and measurement-window eligibility remain independent dimensions",
+    "missing or invalid source evidence never creates an inferred date",
+    "the same contract applies whether the route sheet is external or created inside CXOrbia"
+  ],
+  "result": {
+    "ok": "boolean",
+    "reasons": "unique_reason_codes",
+    "availableFrom": "iso_date_or_null",
+    "measurementWindowStart": "iso_date_or_null",
+    "measurementWindowEnd": "iso_date_or_null",
+    "franjaCode": "WK_or_WKND_or_null",
+    "sourceType": "declared_source_type"
+  },
+  "cinépolisConfiguration": {
+    "measurementCadence": "fortnightly",
+    "q1": {"startDay": 1, "endDay": 15},
+    "q2": {"startDay": 16, "endDay": "last_day_of_month"},
+    "previousMeasurementWindowTokens": ["P1Q", "P x visita previa"],
+    "sourceOfTruth": "HR project route sheet",
+    "hardcodedGlobally": false
+  },
+  "frontendConsumption": {
+    "requiredFunction": "CX.data.postulationEligibility(visit, proposedDate)",
+    "submitButtonPolicy": "block_when_ok_false",
+    "displayPolicy": "show source-derived date/window/franja and exact rejection reason",
+    "noFrontendRecalculation": true
+  },
+  "safeState": {
+    "sourceSafe": true,
+    "writes": false,
+    "imports": false,
+    "deploy": false,
+    "production": false,
+    "providers": false,
+    "payments": false
+  }
+}

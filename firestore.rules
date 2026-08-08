@@ -115,7 +115,10 @@ service cloud.firestore {
     }
 
     function isAvailableVisitForShopper(projectId) {
-      return isShopperRole() && projectAssigned(projectId) && resource.data.estado == 'disponible';
+      return isShopperRole() && projectAssigned(projectId) && (
+        (resource.data.status is string && resource.data.status == 'disponible') ||
+        (resource.data.estado is string && resource.data.estado == 'disponible')
+      );
     }
 
     // Deny by default. Every collection below must prove tenant, project and role.
@@ -319,70 +322,6 @@ service cloud.firestore {
             resource.data.toRole == role()
           );
           allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
-        }
-
-        match /responsibilityLog/{logId} {
-          allow read: if tenantAllowed(tenantId) && isOperator();
-          allow create: if tenantAllowed(tenantId) && isOperator() &&
-            request.resource.data.tenantId == tenantId &&
-            request.resource.data.projectId == projectId;
-          allow update, delete: if false;
-        }
-
-        match /questionnaires/{questionnaireId} {
-          allow read: if tenantAllowed(tenantId) && canReadProject(projectId);
-          allow list: if tenantAllowed(tenantId) && isOperator();
-          allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
-        }
-
-        match /responses/{responseId} {
-          allow read: if tenantAllowed(tenantId) && (
-            isOperator() ||
-            isClient() && projectAssigned(projectId) ||
-            isOwnResource()
-          );
-          allow create: if tenantAllowed(tenantId) && (
-            isOperator() ||
-            isOwnIncomingResource()
-          );
-          allow update, delete: if tenantAllowed(tenantId) && isOperator();
-        }
-
-        match /liquidations/{liquidationId} {
-          allow read: if tenantAllowed(tenantId) && (
-            isAdmin() ||
-            isOps() ||
-            isOwnResource()
-          );
-          allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
-        }
-
-        match /lots/{lotId} {
-          allow read: if tenantAllowed(tenantId) && isOperator();
-          allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
-        }
-
-        match /finance/{movementId} {
-          allow read: if tenantAllowed(tenantId) && isAdmin();
-          allow create, update, delete: if tenantAllowed(tenantId) && isAdmin();
-        }
-
-        match /documents/{documentId} {
-          allow read: if tenantAllowed(tenantId) && canReadProject(projectId);
-          allow list: if tenantAllowed(tenantId) && isOperator();
-          allow create, update, delete: if tenantAllowed(tenantId) && isOperator();
-        }
-
-        match /certifications/{certificationId} {
-          allow read: if tenantAllowed(tenantId) && (
-            isOperator() ||
-            isOwnResource()
-          );
-          allow create: if tenantAllowed(tenantId) && (
-            isOperator() ||
-            isOwnIncomingResource()
-          );
-          allow update, delete: if tenantAllowed(tenantId) && isOperator();
         }
       }
     }

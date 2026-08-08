@@ -1,0 +1,166 @@
+rules_version = '2';
+
+// CXOrbia Phase A DEV/staging rules draft.
+// Draft only: do not deploy from this file.
+// Scope: tenant/project isolation, Phase A collections and safe write gates.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function tenantClaim(tenantId) {
+      return signedIn() && request.auth.token.tenantId == tenantId;
+    }
+
+    function roleIn(roles) {
+      return signedIn() && request.auth.token.role in roles;
+    }
+
+    function projectClaim(projectId) {
+      return signedIn() && (
+        request.auth.token.projectId == projectId ||
+        (request.auth.token.projectIds is list && projectId in request.auth.token.projectIds)
+      );
+    }
+
+    function tenantMember(tenantId) {
+      return tenantClaim(tenantId) || roleIn(['super']);
+    }
+
+    function projectMember(tenantId, projectId) {
+      return tenantMember(tenantId) && (projectClaim(projectId) || roleIn(['admin','super']));
+    }
+
+    function adminForProject(tenantId, projectId) {
+      return projectMember(tenantId, projectId) && roleIn(['admin','super','coordinador']);
+    }
+
+    function shopperSelf(tenantId, shopperId) {
+      return tenantMember(tenantId) && signedIn() && request.auth.token.shopperId == shopperId;
+    }
+
+    function noRawSensitiveKeys() {
+      return !request.resource.data.keys().hasAny([
+        'dpi', 'governmentId', 'bankAccount', 'bankNumber', 'accountNumber',
+        'iban', 'ndaRaw', 'password', 'secret', 'apiKey', 'token'
+      ]);
+    }
+
+    function hasTenantProject(tenantId, projectId) {
+      return request.resource.data.tenantId == tenantId && request.resource.data.projectId == projectId;
+    }
+
+    function hasTenantOnly(tenantId) {
+      return request.resource.data.tenantId == tenantId;
+    }
+
+    match /tenants/{tenantId} {
+      allow read: if tenantMember(tenantId);
+      allow create, update: if roleIn(['super']) && hasTenantOnly(tenantId) && noRawSensitiveKeys();
+      allow delete: if false;
+
+      match /shoppers/{shopperId} {
+        allow read: if adminForTenant(tenantId) || shopperSelf(tenantId, shopperId);
+        allow create, update: if adminForTenant(tenantId) && hasTenantOnly(tenantId) && noRawSensitiveKeys();
+        allow delete: if false;
+      }
+
+      match /projects/{projectId} {
+        allow read: if projectMember(tenantId, projectId);
+        allow create, update: if adminForProject(tenantId, projectId) && hasTenantProject(tenantId, projectId) && noRawSensitiveKeys();
+        allow delete: if false;
+
+        match /hrSources/{hrSourceId} {
+          allow read: if adminForProject(tenantId, projectId);
+          allow create, update: if adminForProject(tenantId, projectId) && hasTenantProject(tenantId, projectId) && noRawSensitiveKeys();
+          allow delete: if false;
+        }
+
+        match /visits/{visitId} {
+          allow read: if projectMember(tenantId, projectId);
+          allow create, update: if adminForProject(tenantId, projectId) && hasTenantProject(tenantId, projectId) && noRawSensitiveKeys();
+          allow delete: if false;
+        }
+
+        match /postulations/{postulationId} {
+          allow read: if projectMember(tenantId, projectId);
+          allow create: if projectMember(tenantId, projectId) && hasTenantProject(tenantId, projectId) && noRawSensitiveKeys();
+          allow update: if adminForProject(tenantId, projectId) && hasTenantProject(tenantId, projectId) && noRawSensitiveKeys();
+          allow delete: if false;
+        }
+
+        match /assignments/{assignmentId} {
+          allow read: if projectMember(tenantId, projectId);
+          allow create, update: if adminForProject(tenantId, projectId) && hasTenantProject(tenantId, projectId) && noRawSensitiveKeys();
+          allow delete: if false;
+        }
+
+        match /projectShoppers/{shopperId} {
+          allow read: if adminForProject(tenantId, projectId) || shopperSelf(tenantId, shopperId);
+          allow create, update: if adminForProject(tenantId, projectId) && hasTenantProject(tenantId, projectId) && noRawSensitiveKeys();
+          allow delete: if false;
+        }
+
+        match /certificationBanks/{bankId} {
+          allow read: if projectMember(tenantId, projectId);
+          allow create, update: if adminForProject(tenantId, projectId) && hasTenantProject(tenantId, projectId) && noRawSensitiveKeys();
+          allow delete: if false;
+        }
+
+        match /certifications/{certificationId} {
+          allow read: if projectMember(tenantId, projectId);
+          allow create, update: if adminForProject(tenantId, projectId) && hasTenantProject(tenantId, projectId) && noRawSensitiveKeys();
+          allow delete: if false;
+        }
+
+        match /reviews/{reviewId} {
+          allow read: if projectMember(tenantId, projectId);
+          allow create, update: if adminForProject(tenantId, projectId) && hasTenantProject(tenantId, projectId) && noRawSensitiveKeys();
+          allow delete: if false;
+        }
+
+        match /liquidations/{liquidationId} {
+          allow read: if projectMember(tenantId, projectId);
+          allow create, update: if adminForProject(tenantId, projectId) && hasTenantProject(tenantId, projectId) && noRawSensitiveKeys();
+          allow delete: if false;
+        }
+
+        match /contacts/{contactType} {
+          allow read: if projectMember(tenantId, projectId);
+          allow create, update: if adminForProject(tenantId, projectId) && hasTenantProject(tenantId, projectId) && noRawSensitiveKeys();
+          allow delete: if false;
+        }
+
+        match /notificationTemplates/{templateId} {
+          allow read: if projectMember(tenantId, projectId);
+          allow create, update: if adminForProject(tenantId, projectId) && hasTenantProject(tenantId, projectId) && noRawSensitiveKeys();
+          allow delete: if false;
+        }
+
+        match /notificationEvents/{eventId} {
+          allow read: if adminForProject(tenantId, projectId);
+          allow create, update: if adminForProject(tenantId, projectId) && hasTenantProject(tenantId, projectId) && noRawSensitiveKeys();
+          allow delete: if false;
+        }
+
+        match /communicationsHistory/{historyId} {
+          allow read: if adminForProject(tenantId, projectId);
+          allow create, update: if adminForProject(tenantId, projectId) && hasTenantProject(tenantId, projectId) && noRawSensitiveKeys();
+          allow delete: if false;
+        }
+
+        match /syncEvents/{syncEventId} {
+          allow read: if adminForProject(tenantId, projectId);
+          allow create: if adminForProject(tenantId, projectId) && hasTenantProject(tenantId, projectId) && noRawSensitiveKeys();
+          allow update, delete: if false;
+        }
+      }
+    }
+
+    function adminForTenant(tenantId) {
+      return tenantMember(tenantId) && roleIn(['admin','super','coordinador']);
+    }
+  }
+}

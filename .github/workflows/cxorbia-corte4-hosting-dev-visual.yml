@@ -1,0 +1,15 @@
+name: CXOrbia Corte 4 Hosting DEV Visual — authorization consumed
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  hosting-dev-visual:
+    name: HOLD · authorization c4-hosting-visual-20260729-01 consumed
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'Corte 4 Hosting DEV one-shot authorization already consumed; no redeploy permitted.'

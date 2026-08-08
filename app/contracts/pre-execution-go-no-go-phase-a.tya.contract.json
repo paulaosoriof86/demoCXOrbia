@@ -1,0 +1,37 @@
+{
+  "contract": "pre-execution-go-no-go-phase-a-tya",
+  "date": "2026-07-05",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "storageWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "emailSendAllowed": false,
+  "whatsappSendAllowed": false,
+  "geminiAllowed": false,
+  "importRealDataAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "goCriteria": [
+    "repo_local_confirmed",
+    "folder_confirmed",
+    "branch_known",
+    "purpose_is_preview_only",
+    "no_production_action",
+    "no_real_import",
+    "no_sensitive_output_required"
+  ],
+  "noGoCriteria": [
+    "waiting_claude_only",
+    "folder_unknown",
+    "branch_unknown",
+    "production_or_deploy_requested",
+    "real_import_requested",
+    "provider_write_requested",
+    "sensitive_data_expected"
+  ],
+  "purpose": "Decision gate before asking Paula to run local readiness commands."
+}

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedAt": "29530690147",
+  "headSha": "431b5d4aca56b724490cc07885854984a28111fa",
+  "expectedPayloadSha256": "d96784fac04b5ca03613fa790a46e63c5ca512da9d82b4cf4b6b0ad540d3a020",
+  "expectedPatchSha256": "8bfb2a85e1c42d095f56fbac7367da54b2872503effb2a7af939aa8a471b9347",
+  "payload": {
+    "exists": true,
+    "size": 10000,
+    "sha256": "28857c46971596d573a83af4029a99a326698ef413405c083c33e1ea46173d8c"
+  },
+  "decodedGzip": {
+    "exists": true,
+    "size": 7500,
+    "sha256": "62a1dc7ce9aceadc61cc7be1a049b8868d3a9fc8eeb37f2ed295caeea9bca5a9"
+  },
+  "decodedPatch": {
+    "exists": true,
+    "size": 18570,
+    "sha256": "ffc0ac800eee03eed9a770c3698f91e5570911a6b9c7141dfb441b0f5d96020c"
+  },
+  "base64Status": 0,
+  "gzipStatus": 1,
+  "decodeStatus": 1,
+  "applyCheckStatus": 128,
+  "diffPathCount": 5,
+  "diffPaths": [
+    "app/app.js",
+    "app/core/automations.js",
+    "app/core/build-lock.js",
+    "app/core/config.js",
+    "app/core/data.js"
+  ],
+  "applyCheckTail": "error: corrupt patch at .tmp/v156-payload-diagnostic/payload.patch:238",
+  "payloadMatchesExpected": false,
+  "patchMatchesExpected": false,
+  "decision": "HOLD_UNUSABLE_PAYLOAD"
+}

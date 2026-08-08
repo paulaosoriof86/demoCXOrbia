@@ -1,0 +1,42 @@
+{
+  "contract": "local-readiness-execution-report-phase-a-tya",
+  "date": "2026-07-05",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "storageWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "emailSendAllowed": false,
+  "whatsappSendAllowed": false,
+  "geminiAllowed": false,
+  "importRealDataAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "requiredLocalSteps": [
+    "consistency_check",
+    "preflight",
+    "runbook_preview",
+    "manual_output_review",
+    "optional_preview_validators"
+  ],
+  "allowedEvidence": [
+    "status_summary",
+    "file_names",
+    "exit_codes",
+    "sanitized_markdown_summary",
+    "sanitized_json_summary"
+  ],
+  "forbiddenEvidence": [
+    "raw_personal_data",
+    "credentials",
+    "tokens",
+    "provider_payloads",
+    "bank_data",
+    "raw_hr_exports",
+    "unreviewed_local_diagnostics"
+  ],
+  "purpose": "Template for documenting a future local readiness execution without copying raw diagnostics or enabling production."
+}

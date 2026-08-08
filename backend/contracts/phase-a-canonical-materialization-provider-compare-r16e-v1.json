@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "phase-a-canonical-materialization-provider-compare-r16e-v1",
+  "purpose": "Compare the source-aligned R16D canonical plan against the existing CXOrbia Firebase DEV project after quota is available, using read-only allowlisted queries and without executing materialization.",
+  "scope": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "expectedServiceAccountEmailSuffix": "@cxorbia-backend-dev.iam.gserviceaccount.com",
+    "tenantId": "tya",
+    "projectId": "cinepolis"
+  },
+  "authorization": {
+    "confirmation": "CANONICAL_PROVIDER_COMPARE_READ_ONLY_R16E",
+    "providerReads": true,
+    "writes": false,
+    "deletes": false,
+    "imports": false,
+    "deploy": false,
+    "production": false,
+    "payments": false
+  },
+  "requiredPlan": {
+    "decision": "PASS_R14C_FINANCIAL_OVERLAY_REVIEW_PLAN_R16D",
+    "operations": 1415,
+    "financialExactOverlays": 196,
+    "financialReviewQueue": 92,
+    "shopperGap": 3,
+    "certificationCandidateShoppers": 213,
+    "paymentConfirmed": 0,
+    "hardStops": 0
+  },
+  "providerReadPolicy": {
+    "documentIdQueriesOnly": true,
+    "maxIdsPerQuery": 10,
+    "allowlistedFieldsOnly": true,
+    "persistProviderValues": false,
+    "persistRawResponses": false,
+    "preserveExtraExistingDocuments": true,
+    "deleteExtraExistingDocuments": false
+  },
+  "classifications": ["create", "update", "noop", "review"],
+  "reviewPolicy": {
+    "reviewExcludedFromWrites": true,
+    "noopExcludedFromWrites": true,
+    "noNameMatching": true,
+    "noAutomaticMerge": true,
+    "paidNotInferred": true,
+    "certificationNotInferred": true
+  },
+  "decisions": {
+    "passWithReview": "PASS_WITH_REVIEW_CANONICAL_PROVIDER_COMPARE_R16E",
+    "reviewRequired": "REVIEW_REQUIRED_CANONICAL_PROVIDER_COMPARE_R16E",
+    "quotaBlocked": "BLOCKED_FIRESTORE_QUOTA_CANONICAL_PROVIDER_COMPARE_R16E",
+    "hardStop": "HARD_STOP_CANONICAL_PROVIDER_COMPARE_R16E"
+  },
+  "safeState": {
+    "providerReads": true,
+    "writes": false,
+    "deletes": false,
+    "imports": false,
+    "deploy": false,
+    "production": false,
+    "paymentsExecuted": false,
+    "piiIncluded": false
+  }
+}

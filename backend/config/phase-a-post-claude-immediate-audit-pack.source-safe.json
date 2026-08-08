@@ -1,0 +1,54 @@
+{
+  "configId": "phase-a-post-claude-immediate-audit-pack-source-safe",
+  "sourceSafe": true,
+  "production": false,
+  "containsSensitiveData": false,
+  "auditProtocol": {
+    "sequence": [
+      "Confirm candidate identity and source lock.",
+      "Compare file inventory against current candidate/baseline.",
+      "Classify added/modified/deleted files by module.",
+      "Review semantic behavior, not only file names.",
+      "Contrast against full generic Claude package.",
+      "Contrast against post-package backend additions.",
+      "Separate TyA-specific config from reusable prototype patterns.",
+      "Prepare short Claude response with P0/P1 only after preserving what was done well."
+    ],
+    "mustCompareAgainst": {
+      "baseline": ["currentCandidate", "liveBaseline", "sourceLock"],
+      "packages": ["fullGenericClaudePackage", "v92DeepReaudit", "p0p1ResponseForClaude"],
+      "postPackageBackend": [
+        "roleTaxonomyOrgScope",
+        "authClaimsTaxonomySeedV2",
+        "protectedReadAccessAdapter",
+        "hrSourceSafeProtectedCandidates",
+        "realConnectionReadinessGate",
+        "moduleReadinessMatrix",
+        "claudeCandidateForensicAuditReadiness",
+        "readinessBucketEvaluator"
+      ]
+    }
+  },
+  "moduleChecklist": {
+    "tenantProjectPeriod": ["projectIsEntity", "periodIsFilter", "noPeriodAsProject", "tenantConfigEditable", "projectConfigEditable"],
+    "hrSource": ["maskedSource", "multiSheetSource", "sourceSafePayload", "noPrivateUrl", "tabsDetected", "lastReadStatus"],
+    "usersRolesScopes": ["personasConfigurable", "rolesTechnicalSeparated", "countryScope", "projectScope", "clientRoles", "shopperOwnScope"],
+    "academia": ["coursesEditable", "manualsByRole", "checklists", "glossary", "certificationLinks", "roleRoutes"],
+    "certifications": ["questionBanksConfigurable", "carryoverPath", "humanReviewGate", "noGeminiRealIfGateOff"],
+    "shoppers": ["publicRefsOnlyInPreview", "protectedProfileRequiresAuth", "identityLinkCandidate", "noRawPII"],
+    "visitsAssignments": ["stableVisitKeys", "assignmentSource", "assignmentSyncStatus", "noDuplicateOnHrReflection", "schedulingRulesConfigurable"],
+    "liquidationsPayments": ["previewBeforePay", "paymentBatchGateOff", "financeNoRawBank", "juneCutInitial", "statusVisible"],
+    "reviewAudit": ["reviewQueueBeforeWrite", "auditEventsForProtectedReads", "conflictNoSilentOverwrite"],
+    "providersGates": ["makeGateOff", "geminiGateOff", "paymentsGateOff", "outboxPreparedNoSend"],
+    "pwaBranding": ["dynamicBrand", "dynamicManifest", "favicon", "installCta", "fallbackCxorbiaOnly"],
+    "cxDataSwitch": ["interfacePreserved", "singleFutureConnectionPoint", "noUiPatchFromBackend"]
+  },
+  "claudeResponseShape": [
+    "Preservar lo que si hizo",
+    "P0 exactos para corregir ahora",
+    "P1 si aun tiene capacidad",
+    "No rehacer backend preparado",
+    "TyA queda como configuracion seed, no hardcode",
+    "Reusable CXOrbia debe quedar configurable"
+  ]
+}

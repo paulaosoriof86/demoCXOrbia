@@ -1,0 +1,73 @@
+{
+  "contract": "controlled-production-matrix-phase-a-tya",
+  "date": "2026-07-05",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "storageWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "emailSendAllowed": false,
+  "whatsappSendAllowed": false,
+  "geminiAllowed": false,
+  "importRealDataAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "dependsOn": [
+    "release-readiness-sanitized-report-phase-a-tya",
+    "release-readiness-snapshot-preview-phase-a-tya",
+    "readiness-map-to-release-snapshot-bridge-phase-a-tya"
+  ],
+  "purpose": "Define the cumulative controlled-production decision matrix for Phase A, separating frontend P0, backend preview, local execution pending, post-P0 P1, Academia, and source-lock blockers without authorizing production.",
+  "matrixSections": [
+    "frontend_p0_required",
+    "backend_preview_ready",
+    "backend_local_execution_pending",
+    "post_p0_p1",
+    "academia_later",
+    "source_lock_blockers",
+    "production_decision"
+  ],
+  "priorities": ["P0", "P1", "P2", "Later"],
+  "allowedStatuses": [
+    "blocked",
+    "required_before_source_lock",
+    "preview_ready",
+    "pending_local_execution",
+    "manual_review_required",
+    "deferred_until_after_p0",
+    "not_applicable_phase_a"
+  ],
+  "requiredMatrixFields": [
+    "section",
+    "priority",
+    "item",
+    "status",
+    "owner",
+    "evidenceRef",
+    "nextAction",
+    "productionImpact"
+  ],
+  "ownerTypes": [
+    "Claude_frontend",
+    "ChatGPT_backend",
+    "Paula_manual_decision",
+    "Future_provider_activation",
+    "Not_applicable"
+  ],
+  "productionImpactValues": [
+    "blocks_source_lock",
+    "blocks_production",
+    "does_not_block_if_documented",
+    "deferred_post_p0",
+    "preview_only"
+  ],
+  "hardStops": [
+    "Do not treat matrix completion as production authorization.",
+    "Do not clear frontend P0 without a new candidate with real delta and forensic audit.",
+    "Do not activate real providers, imports, writes, deploy or merge from this matrix.",
+    "Do not remove source-lock blocker while prototype audit is blocked_prototype_pending."
+  ]
+}

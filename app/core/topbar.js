@@ -39,6 +39,7 @@ CX.topbar = {
     el.innerHTML=`
       <div class="tb-pop-h">
         <b>Novedades</b>
+        <span style="font-size:9.5px;color:var(--t3)" title="Contrato de contexto único">${(()=>{const c=CX.data&&CX.data.ctx?CX.data.ctx():null;return c?c.projectId+' · '+c.role:'';})()}</span>
         <button class="btn btn-ghost btn-sm" id="tbReadAll" style="padding:2px 8px">Marcar todo leído</button>
       </div>
       <div class="tb-pop-body">
@@ -72,7 +73,23 @@ CX.topbar = {
 
   /* correo (bandeja básica con trazabilidad) */
   _mails:null,
-  mailStore(){ if(!this._mails)try{this._mails=JSON.parse(localStorage.getItem('cx_mails')||'null')||[{id:'m1',de:'cliente@marca.com',para:'equipo',asunto:'Consulta sobre el programa',cuerpo:'Hola, quería consultar sobre la próxima ronda de evaluaciones. ¿Cuándo empezamos?',fecha:'2026-06-23 09:12',leido:true,proyecto:'Proyecto Retail'},{id:'m2',de:'shopper@gmail.com',para:'equipo',asunto:'Duda sobre mi visita agendada',cuerpo:'Buenos días, tengo una duda: ¿puedo cambiar la franja de mi visita del viernes? Me surgió un compromiso.',fecha:'2026-06-24 14:35',leido:false,proyecto:'Proyecto Retail'},{id:'m3',de:'nuevo_cliente@empresa.com',para:'equipo',asunto:'Solicitud de información - programa de evaluaciones',cuerpo:'Hola, somos una cadena de 12 puntos de venta y nos interesa implementar mystery shopping. ¿Podría enviarnos información?',fecha:'2026-06-25 08:20',leido:false,proyecto:null}];}catch(e){this._mails=[];} return this._mails; },
+  /* Bloque 2 (corrección V103, 20260711): bug real — la bandeja sembraba 3 correos "demo"
+     (cliente@marca.com, shopper@gmail.com, nuevo_cliente@empresa.com) SIN gate de modo demo,
+     visibles también fuera de demo. Ahora el seed solo aplica si CX.dataSource.showFixtures()
+     es true; fuera de demo la bandeja empieza vacía (honesto, sin correos ficticios). */
+  mailStore(){
+    if(!this._mails){
+      try{
+        const stored=JSON.parse(localStorage.getItem('cx_mails')||'null');
+        if(stored){ this._mails=stored; }
+        else {
+          const allowSynthetic = CX.dataSource ? CX.dataSource.showFixtures() : true;
+          this._mails = allowSynthetic ? [{id:'m1',de:'cliente@marca.com',para:'equipo',asunto:'Consulta sobre el programa',cuerpo:'Hola, quería consultar sobre la próxima ronda de evaluaciones. ¿Cuándo empezamos?',fecha:'2026-06-23 09:12',leido:true,proyecto:'Proyecto Retail'},{id:'m2',de:'shopper@gmail.com',para:'equipo',asunto:'Duda sobre mi visita agendada',cuerpo:'Buenos días, tengo una duda: ¿puedo cambiar la franja de mi visita del viernes? Me surgió un compromiso.',fecha:'2026-06-24 14:35',leido:false,proyecto:'Proyecto Retail'},{id:'m3',de:'nuevo_cliente@empresa.com',para:'equipo',asunto:'Solicitud de información - programa de evaluaciones',cuerpo:'Hola, somos una cadena de 12 puntos de venta y nos interesa implementar mystery shopping. ¿Podría enviarnos información?',fecha:'2026-06-25 08:20',leido:false,proyecto:null}] : [];
+        }
+      }catch(e){this._mails=[];}
+    }
+    return this._mails;
+  },
   mailUnread(){ return this.mailStore().filter(m=>!m.leido).length; },
   mailBadge(){ const b=document.getElementById('tbMailBadge');if(!b)return;const n=this.mailUnread();b.textContent=n>9?'9+':n;b.style.display=n?'flex':'none'; },
   openMail(){ const mails=this.mailStore();
@@ -93,7 +110,7 @@ CX.topbar = {
           <div style="font-size:12px;color:var(--t3);margin-bottom:10px">De: ${m.de} · ${m.fecha}${m.proyecto?' · '+m.proyecto:''}</div>
           <div style="font-size:13.5px;color:var(--t2);line-height:1.7;padding:14px;background:var(--panel-2,#f8f9fa);border-radius:10px;margin-bottom:12px">${m.cuerpo}</div>
           <div class="flex" style="gap:8px;justify-content:flex-end">
-            <button class="btn btn-ghost btn-sm" id="replyWa">📲 Responder WA</button>
+            <button class="btn btn-ghost btn-sm" id="replyWa" title="Abre WhatsApp Web con un borrador manual — no es envío automático">📲 Responder WA (borrador manual)</button>
             <button class="btn btn-pr btn-sm" id="replyMail">↩ Responder correo</button>
           </div>
         `,{onMount:(ov2,close2)=>{
@@ -105,10 +122,10 @@ CX.topbar = {
         <label class="lbl">Para</label><input class="inp" id="mcTo" placeholder="correo@destinatario.com" style="margin-bottom:8px">
         <label class="lbl">Asunto</label><input class="inp" id="mcSub" style="margin-bottom:8px">
         <label class="lbl">Mensaje</label><textarea class="inp" id="mcBody" rows="5" style="margin-bottom:12px"></textarea>
-        <div class="between"><button class="btn btn-soft btn-sm" id="mcWa">📲 Enviar por WA</button><button class="btn btn-pr btn-sm" id="mcSend">Enviar correo</button></div>
+        <div class="between"><button class="btn btn-soft btn-sm" id="mcWa" title="Abre WhatsApp Web con un borrador manual — no es envío automático">📲 WA (borrador manual)</button><button class="btn btn-pr btn-sm" id="mcSend">Enviar correo</button></div>
       `,{onMount:(ov3,close3)=>{
         ov3.querySelector('#mcWa').addEventListener('click',()=>{const msg=encodeURIComponent(ov3.querySelector('#mcBody').value||'');window.open('https://wa.me/?text='+msg,'_blank');close3();});
-        ov3.querySelector('#mcSend').addEventListener('click',()=>{const to=(ov3.querySelector('#mcTo').value||'').trim();if(!to){CX.ui.toast('Ingresa el destinatario','warn');return;}const newMail={id:'ms'+Date.now().toString(36),de:'equipo@consultora.com',para:to,asunto:ov3.querySelector('#mcSub').value||'(sin asunto)',cuerpo:ov3.querySelector('#mcBody').value||'',fecha:new Date().toISOString().slice(0,16).replace('T',' '),leido:true};mails.unshift(newMail);try{localStorage.setItem('cx_mails',JSON.stringify(mails));}catch(e){}close3();CX.ui.toast('Correo enviado a '+to,'ok');});
+        ov3.querySelector('#mcSend').addEventListener('click',()=>{const to=(ov3.querySelector('#mcTo').value||'').trim();if(!to){CX.ui.toast('Ingresa el destinatario','warn');return;}const newMail={id:'ms'+Date.now().toString(36),de:'equipo@consultora.com',para:to,asunto:ov3.querySelector('#mcSub').value||'(sin asunto)',cuerpo:ov3.querySelector('#mcBody').value||'',fecha:new Date().toISOString().slice(0,16).replace('T',' '),leido:true};mails.unshift(newMail);try{localStorage.setItem('cx_mails',JSON.stringify(mails));}catch(e){}close3();CX.ui.toast('Correo preparado · envío pendiente de activación ('+to+')','ok');});
       }});});
     }});
   },
@@ -140,6 +157,14 @@ CX.topbar = {
     if(sup&&!sup._wired){ sup._wired=true; sup.addEventListener('click',()=>this.support()); }
     const ml=document.getElementById('tbMail');
     if(ml&&!ml._wired){ ml._wired=true; ml.addEventListener('click',()=>{ if(CX.router&&CX.router.nav) CX.router.nav('correo'); else this.openMail(); }); }
+    /* R19 P0-3.D (20260715): control discreto de "Instalar app" DENTRO de la app (antes solo
+       existía en la pantalla de login) — para reintentar cuando el navegador ya lo permite
+       (deferredPrompt disponible) o mostrar la guía de iOS. Se oculta si ya está instalada
+       (standalone) o si el navegador no ofrece ningún camino de instalación. */
+    const pw=document.getElementById('tbPwa');
+    if(pw&&!pw._wired){ pw._wired=true; pw.addEventListener('click',()=>CX.pwa&&CX.pwa.openInstall(CX.ui));
+      this.updatePwaBtn(); window.addEventListener('appinstalled',()=>this.updatePwaBtn());
+      setTimeout(()=>this.updatePwaBtn(),400); }
     if(!document._tbDocWired){ document._tbDocWired=true;
       document.addEventListener('click',(e)=>{ const p=document.getElementById('tbBellPanel'); if(this._open&&p&&!p.contains(e.target)&&e.target.id!=='tbBell'&&!(e.target.closest&&e.target.closest('#tbBell')))this.close(); });
       window.addEventListener('resize',()=>{ if(this._open)this.position(); });
@@ -148,6 +173,13 @@ CX.topbar = {
     CX.bus&&CX.bus.on('route',()=>{ this.badge(); this.mailBadge(); });
     CX.bus&&CX.bus.on('login',()=>{ this.badge(); this.mailBadge(); });
     this.badge(); this.mailBadge();
+  },
+  updatePwaBtn(){
+    const pw=document.getElementById('tbPwa'); if(!pw)return;
+    const std=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;
+    if(std){ pw.style.display='none'; return; }
+    const isIOS=/iPad|iPhone|iPod/i.test(navigator.userAgent);
+    pw.style.display=(CX.pwa&&CX.pwa.installable())||isIOS ? 'flex' : 'none';
   },
 };
 

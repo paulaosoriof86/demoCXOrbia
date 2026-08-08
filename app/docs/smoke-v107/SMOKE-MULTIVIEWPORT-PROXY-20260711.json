@@ -1,0 +1,39 @@
+{
+  "package": "SMOKE-MULTIVIEWPORT-PROXY-V107-20260711",
+  "metodologia": "Este entorno de vista previa no permite redimensionar el viewport real del navegador ni capturar contenido de iframes anidados (limitación de la herramienta de captura, documentada en rondas anteriores). En vez de fabricar una captura de pantalla que aparentara ser un dispositivo real sin serlo, se aplicó una prueba de proxy honesta: se inyectaron temporalmente (vía <style>, sin tocar los archivos fuente) las reglas CSS EXACTAS de los breakpoints @media(max-width:860px) y @media(max-width:480px) de forma incondicional (simulando el estado de layout que esas media queries producen en un dispositivo real), se forzó html/body a 360/390/412px, y se midió scrollWidth de cada elemento vs. el ancho objetivo. Esto verifica la causa raíz real (reglas CSS que no caben) sin necesitar redimensionar el viewport real del navegador — es una aproximación declarada, no un reemplazo de pruebas en dispositivo real.",
+  "anchos_probados": [
+    360,
+    390,
+    412
+  ],
+  "pantallas_probadas": [
+    "midia",
+    "dashboard",
+    "visitas",
+    "historico",
+    "finanzas",
+    "beneficios",
+    "postulaciones",
+    "reservas",
+    "academia"
+  ],
+  "hallazgo_1": {
+    "causa_raiz": "modules varios · cabecera .card-h (título + fila de controles: selector de proyecto, flechas ‹ ›, etiqueta de mes con min-width:120px) sin flex-wrap. La fila de controles (~368px de ancho mínimo) no cabía junto al título en 360/390/412px, empujando el documento completo a scrollWidth ≈501px.",
+    "fix": "styles/layout.css → @media(max-width:480px): .card-h{flex-wrap:wrap} y .card-h .flex{flex-wrap:wrap;row-gap:6px}. Layout de escritorio/tablet sin cambios.",
+    "estado": "corregido y verificado (0 overflow tras el fix, antes 5-7 elementos con scrollWidth>viewport)"
+  },
+  "hallazgo_2": {
+    "causa_raiz": "core/topbar (breadcrumb + badge 'Demo · ✅ Listo' + 3 botones de campana) no cabía en 360/390px — el breadcrumb sin límite de ancho + el badge informativo (ya visible también en el rail) competían por espacio con los controles de acción, empujando ~8-38px de overflow.",
+    "fix": "styles/layout.css → @media(max-width:480px): .tb-crumb{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap} y .tb-demo{display:none} (el indicador de modo de datos sigue visible en el rail lateral). Layout de escritorio/tablet sin cambios.",
+    "estado": "corregido y verificado (0 overflow tras el fix, antes 2 elementos con scrollWidth>viewport)"
+  },
+  "overflow_esperado_y_correcto": {
+    "pantallas": [
+      "beneficios",
+      "postulaciones"
+    ],
+    "detalle": "Las tablas (table.tbl) siguen teniendo scroll horizontal CONTENIDO dentro de su propio contenedor (overflow-x:auto) — esto es intencional (scroll solo dentro de tablas, nunca overflow-x:hidden global). appScrollWidth del documento se mantiene igual al ancho del viewport en las tres resoluciones; solo los elementos internos de la tabla (thead/tr/tbody) reportan un scrollWidth mayor porque son los que efectivamente se desplazan dentro del contenedor con scroll — no es un bug."
+  },
+  "resultado_final_tras_fix": "0 elementos de página (fuera de tablas) con scrollWidth > viewport en 360/390/412px, en las 9 pantallas probadas (incluye 3 de shopper: Mi Día, Visitas Disponibles, Beneficios). 0 errores de consola durante la prueba.",
+  "limitacion_declarada": "Esta prueba NO sustituye un smoke test en un dispositivo/navegador real con viewport nativo — es la mejor aproximación posible dado que este entorno de vista previa no expone control real de innerWidth/matchMedia ni captura de iframes anidados. Se recomienda una verificación adicional en un dispositivo real o BrowserStack/Chrome DevTools antes de considerar esto 100% concluyente."
+}

@@ -2,9 +2,9 @@
    CXOrbia · Liquidación derivada de la visita (sync)
    El estado de la visita determina el estado de la liquidación,
    tanto en Beneficios (shopper) como en Liquidaciones (admin).
-   Estados (alineados con el export real de T&A):
+   Estados (alineados con un export histórico real de referencia):
      realizada            -> pendiente_cuestionario
-     cuestionario enviado -> pendiente_submitir
+     cuestionario realizado/completado -> pendiente_submitir
      submitida/validada   -> validada (lista para lote)
      en lote pagado       -> pagada
    Fecha estimada de pago = fecha submit + project.pago.diasPago
@@ -12,10 +12,16 @@
 window.CX = window.CX || {};
 
 CX.liq = {
-  /* mapa visita.estado -> estado de liquidación */
+  /* mapa visita.estado -> estado de liquidación
+     Bloque 3 (V103 — 20260711): 'liquidada' es un estado de FLUJO OPERATIVO local del
+     prototipo (se fija cuando alguien pulsa "pagar lote" en la UI) — nunca un pago
+     confirmado por una fuente real. Solo v.paymentSourceRef (campo que ÚNICAMENTE puede
+     escribir un backend real, ningún flujo de este prototipo lo fabrica) habilita el
+     estado final 'pagada'. Sin esa fuente, se expone 'pagada_preview': honesto, visible,
+     nunca presentado como cruce financiero confirmado. */
   estadoFromVisita(v){
     switch(v.estado){
-      case 'liquidada':     return 'pagada';
+      case 'liquidada':     return v.paymentSourceRef ? 'pagada' : 'pagada_preview';
       case 'cuestionario':  return v.submit ? 'validada' : 'pendiente_submitir'; // enviado≠submitido
       case 'realizada':     return 'pendiente_cuestionario';
       default:              return null;            // aún no genera liquidación
@@ -28,7 +34,8 @@ CX.liq = {
       pendiente_submitir:    ['Pend. submitir','a'],
       validada:              ['Validada · lista para lote','b'],
       en_lote:               ['En lote','p'],
-      pagada:                ['Pagada','g'],
+      pagada_preview:        ['Pagada (vista previa) · pendiente cruce real','a'],
+      pagada:                ['Pagada (confirmado)','g'],
     }[estado] || [estado,'n'];
   },
 
@@ -69,17 +76,18 @@ CX.liq = {
     const baseISO = (v.submit&&v.cuestFecha) || v.cuestFecha || v.realizada || v.agendada || '';
     return {
       visitaId:v.id, projectId:p.id, shopper:v.shopper, shopperCode:v.shopperCode,
-      sucursal:v.sucursal, pais:v.pais, moneda:v.currency,
+      sucursal:v.sucursal, pais:v.pais, moneda:v.currency, loteId:v.loteId||null,
       honorario:v.honorario, boleto:v.boleto||0, combo:v.comboAmt||0, reembolso, total,
       estado, freal:v.realizada||'', cuest:v.cuestFecha||'', submit:v.submit?(v.cuestFecha||''):'',
-      fechaEstimadaPago: estado==='pagada' ? (v.fechaPago||v.realizada||'') : this.fechaEstimadaPago(p, baseISO),
+      fechaEstimadaPago: (estado==='pagada'||estado==='pagada_preview') ? (v.fechaPago||'') : this.fechaEstimadaPago(p, baseISO),
       pagada: estado==='pagada',
+      pagadaPreview: estado==='pagada_preview',
     };
   },
 
   /* todas las liquidaciones del proyecto activo, derivadas de sus visitas */
   forProject(data){
-    const p=data.project();
+    const p=data.period();
     return data.visitas().map(v=>this.fromVisita(p,v)).filter(Boolean);
   },
 

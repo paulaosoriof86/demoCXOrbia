@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "phase-a-corte1-approved-report-overrides-v164",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "technicalGateRun": 29768206645,
+  "technicalGateCommit": "cf0dbf735522f5ae2ed67d865dfb97d1a37335f2",
+  "artifactId": 8471655866,
+  "artifactDigest": "sha256:37d3a6cc41fcd431ec54ca2cea2d306528e29459ddc48e47a5805ab477e600ac",
+  "scope": "source_safe_report_projection_only",
+  "reason": "Preserve the exact approved Corte 1 report projection while the visual DEV build reuses the frozen V161C source-safe payload.",
+  "branchOverrides": [
+    {
+      "periodKey": "2026-04",
+      "country": "HN",
+      "branchName": "C. Altara",
+      "measure": "submitted",
+      "from": 1,
+      "to": 2
+    },
+    {
+      "periodKey": "2026-04",
+      "country": "HN",
+      "branchName": "C. Mall Premier",
+      "measure": "submitted",
+      "from": 1,
+      "to": 2
+    },
+    {
+      "periodKey": "2026-04",
+      "country": "HN",
+      "branchName": "C. VIP Las Cascadas",
+      "measure": "submitted",
+      "from": 1,
+      "to": 2
+    }
+  ],
+  "expectedTotals": {
+    "visits": 616,
+    "assigned": 611,
+    "unassigned": 5,
+    "performed": 592,
+    "questionnaire": 590,
+    "submitted": 527,
+    "paymentConfirmed": 0
+  },
+  "production": false,
+  "pii": false,
+  "dataWrites": false
+}

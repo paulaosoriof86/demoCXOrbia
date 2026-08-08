@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "phase-a-firestore-materialization-plan-v1",
+  "purpose": "Build a deterministic, zero-write Firestore materialization plan from source-safe Phase A domains before any authorized import.",
+  "requiredInputs": [
+    "hrSourceSafe",
+    "financialControlSourceSafe",
+    "certificationCarryoverSourceSafe"
+  ],
+  "materializableDomains": [
+    "tenant",
+    "project",
+    "hrImport",
+    "periods",
+    "visits",
+    "shoppers",
+    "liquidations"
+  ],
+  "blockedUntilConfirmedSource": [
+    "payments",
+    "paymentLots",
+    "financeMovements",
+    "certifications",
+    "outbox",
+    "providerLogs"
+  ],
+  "writePlan": {
+    "operation": "create",
+    "precondition": "exists_false",
+    "maxOperationsPerBatch": 400,
+    "deterministicIds": true,
+    "duplicatePaths": "hard_stop",
+    "overwriteExisting": false
+  },
+  "security": {
+    "denyFieldNamesContaining": [
+      "dpi",
+      "document",
+      "bank",
+      "account",
+      "iban",
+      "swift",
+      "phone",
+      "email",
+      "address",
+      "card",
+      "password",
+      "token",
+      "secret",
+      "apikey"
+    ],
+    "rawSourceRows": false,
+    "rawBankData": false,
+    "rawEvidence": false
+  },
+  "safeState": {
+    "dryRun": true,
+    "writes": false,
+    "imported": false,
+    "production": false,
+    "providers": false,
+    "paymentsExecuted": false
+  }
+}

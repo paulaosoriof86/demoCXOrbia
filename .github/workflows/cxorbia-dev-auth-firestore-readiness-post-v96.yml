@@ -1,0 +1,101 @@
+name: CXOrbia DEV Auth Firestore Readiness Post-V96
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/contracts/auth-rbac-phase-a-v1.json'
+      - 'backend/contracts/phase-a-role-taxonomy-org-scope-v1.json'
+      - 'backend/contracts/phase-a-auth-dev-claims-taxonomy-seed-v2.json'
+      - 'backend/contracts/phase-a-dev-auth-firestore-activation-readiness-post-v96-v1.json'
+      - 'backend/contracts/phase-a-protected-firestore-schema-dev-readiness-v1.json'
+      - 'backend/contracts/phase-a-protected-firestore-rules-dev-draft-v1.json'
+      - 'backend/contracts/phase-a-hr-source-safe-to-protected-candidates-v1.json'
+      - 'backend/contracts/phase-a-module-readiness-matrix-v1.json'
+      - 'backend/contracts/phase-a-real-connection-readiness-gate-v1.json'
+      - 'backend/config/phase-a-role-taxonomy-personas.source-safe.json'
+      - 'backend/config/phase-a-auth-dev-claims-taxonomy-seed.source-safe.json'
+      - 'backend/config/phase-a-dev-auth-firestore-activation-readiness-post-v96.source-safe.json'
+      - 'backend/config/tya-phase-a-platform-project-config.source-safe.json'
+      - 'backend/rules/firestore.phase-a-protected-dev.rules.draft'
+      - 'tools/release/tya-auth-rbac-contract-validate.mjs'
+      - 'tools/release/tya-role-taxonomy-org-scope-validate.mjs'
+      - 'tools/release/tya-auth-dev-claims-taxonomy-seed-validate.mjs'
+      - 'tools/release/tya-dev-auth-firestore-activation-readiness-post-v96-validate.mjs'
+      - '.github/workflows/cxorbia-dev-auth-firestore-readiness-post-v96.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'backend/contracts/auth-rbac-phase-a-v1.json'
+      - 'backend/contracts/phase-a-role-taxonomy-org-scope-v1.json'
+      - 'backend/contracts/phase-a-auth-dev-claims-taxonomy-seed-v2.json'
+      - 'backend/contracts/phase-a-dev-auth-firestore-activation-readiness-post-v96-v1.json'
+      - 'backend/config/phase-a-role-taxonomy-personas.source-safe.json'
+      - 'backend/config/phase-a-auth-dev-claims-taxonomy-seed.source-safe.json'
+      - 'backend/config/phase-a-dev-auth-firestore-activation-readiness-post-v96.source-safe.json'
+      - 'backend/config/tya-phase-a-platform-project-config.source-safe.json'
+      - 'backend/rules/firestore.phase-a-protected-dev.rules.draft'
+      - 'tools/release/tya-auth-rbac-contract-validate.mjs'
+      - 'tools/release/tya-role-taxonomy-org-scope-validate.mjs'
+      - 'tools/release/tya-auth-dev-claims-taxonomy-seed-validate.mjs'
+      - 'tools/release/tya-dev-auth-firestore-activation-readiness-post-v96-validate.mjs'
+      - '.github/workflows/cxorbia-dev-auth-firestore-readiness-post-v96.yml'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  readiness:
+    name: DEV Auth Firestore readiness safe-only
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate JSON syntax
+        run: |
+          node -e "const fs=require('fs'); const files=[
+            'backend/contracts/auth-rbac-phase-a-v1.json',
+            'backend/contracts/phase-a-role-taxonomy-org-scope-v1.json',
+            'backend/contracts/phase-a-auth-dev-claims-taxonomy-seed-v2.json',
+            'backend/contracts/phase-a-dev-auth-firestore-activation-readiness-post-v96-v1.json',
+            'backend/config/phase-a-role-taxonomy-personas.source-safe.json',
+            'backend/config/phase-a-auth-dev-claims-taxonomy-seed.source-safe.json',
+            'backend/config/phase-a-dev-auth-firestore-activation-readiness-post-v96.source-safe.json',
+            'backend/config/tya-phase-a-platform-project-config.source-safe.json'
+          ]; for (const f of files) JSON.parse(fs.readFileSync(f,'utf8')); console.log('JSON_OK', files.length);"
+
+      - name: Validate RBAC contract
+        run: node tools/release/tya-auth-rbac-contract-validate.mjs --out .tmp/dev-auth-firestore-readiness/rbac
+
+      - name: Validate role taxonomy
+        run: node tools/release/tya-role-taxonomy-org-scope-validate.mjs --out .tmp/dev-auth-firestore-readiness/taxonomy
+
+      - name: Validate claims taxonomy seed
+        run: node tools/release/tya-auth-dev-claims-taxonomy-seed-validate.mjs --out .tmp/dev-auth-firestore-readiness/claims
+
+      - name: Validate accumulated post-V96 readiness
+        run: node tools/release/tya-dev-auth-firestore-activation-readiness-post-v96-validate.mjs --out .tmp/dev-auth-firestore-readiness/accumulated
+
+      - name: Upload readiness reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dev-auth-firestore-readiness-post-v96
+          path: .tmp/dev-auth-firestore-readiness
+          if-no-files-found: ignore
+          retention-days: 14

@@ -1,0 +1,59 @@
+name: CXOrbia R17 Human Findings Semantic Gate
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'tools/qa/tya-r17-human-findings-semantic-gate.mjs'
+      - '.github/workflows/cxorbia-r17-human-findings-semantic-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: cxorbia-r17-human-findings-semantic-gate-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  semantic-gate:
+    name: R17 semantic data mapping gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install Playwright Chromium
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts playwright@1.47.2
+          npx playwright install --with-deps chromium
+
+      - name: Run fail-closed semantic visual gate
+        env:
+          CXORBIA_BASE_URL: https://cxorbia-backend-dev.web.app/index.html?cxTyaPhaseA=1&r17=visible&semanticAudit=1
+        run: |
+          set -euo pipefail
+          node tools/qa/tya-r17-human-findings-semantic-gate.mjs \
+            --out .tmp/tya-r17-human-findings-semantic-gate
+
+      - name: Upload semantic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tya-r17-human-findings-semantic-gate-report
+          path: .tmp/tya-r17-human-findings-semantic-gate
+          if-no-files-found: error
+          retention-days: 14

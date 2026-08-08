@@ -1,0 +1,149 @@
+{
+  "schemaVersion": "cxorbia.c6.auth-plan-v4-activation-dev.contract.v1",
+  "generatedAt": "2026-08-07T22:38:00-06:00",
+  "authorizationSource": "current_conversation_2026-08-07_c6_auth_plan_v4_prewrite_activation_dev",
+  "target": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "docs-tya-v6-v71-audit",
+    "pullRequest": 7,
+    "productionStrategy": "PROMOTE_EXISTING_CLEAN_PROJECT"
+  },
+  "inputFreeze": {
+    "path": "backend/config/c6-shopper-auth-final-freeze-v4.json",
+    "schemaVersion": "cxorbia.c6.shopper-auth-final-freeze.v4",
+    "planArtifactRunId": 31236820249,
+    "planArtifactId": 9015681941,
+    "planArtifactName": "cxorbia-c6-auth-update-universe-batch-revalidation-v5-31236820249",
+    "planSchemaVersion": "cxorbia.c6.shopper-auth-final-plan.v4",
+    "rows": 340,
+    "uniqueRows": 340,
+    "operationCounts": {
+      "CREATE_AUTH": 118,
+      "UPDATE_AUTH": 9,
+      "NO_OP": 81,
+      "HOLD": 0,
+      "PRESERVE_NO_AUTH": 132
+    },
+    "subchangeCounts": {
+      "email": 2,
+      "password": 8,
+      "claims": 1
+    },
+    "expectedAuthUsersBefore": 110,
+    "expectedAuthUsersAfter": 228,
+    "rowsDigestSha256": "c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4"
+  },
+  "identityCircuitBreaker": {
+    "reopenPlanV3UpdateUniverse": false,
+    "reopenSkip13": false,
+    "reopenMultiAuthAdjudication": false,
+    "reopenAc93Lineage": false,
+    "allowedPrewriteScope": [
+      "118_CREATE_TARGET_SPECIFIC_CANDIDATE_COUNT_ZERO",
+      "9_UPDATE_TARGET_SPECIFIC_CANDIDATE_COUNT_ONE",
+      "GLOBAL_UID_AND_CANDIDATE_UNIQUENESS",
+      "TARGET_EMAIL_COLLISION_ZERO",
+      "EXACT_V4_CHANGE_FLAGS",
+      "8_UPDATE_PASSWORD_ROLLBACK_ENTRIES",
+      "ADJUDICATED_DUPLICATE_DISABLE_ONLY"
+    ]
+  },
+  "prewrite": {
+    "required": true,
+    "providerAttemptsMaximum": 1,
+    "expectedAuthPopulation": 110,
+    "createRows": 118,
+    "updateRows": 9,
+    "createCandidateCount": 0,
+    "updateCandidateCount": 1,
+    "emailChanges": 2,
+    "passwordChanges": 8,
+    "claimsChanges": 1,
+    "passwordDifferenceValidation": {
+      "signInProbeRows": 9,
+      "expectedCompatibleRows": 1,
+      "expectedIncompatibleRows": 8,
+      "hashSaltInspectionRows": 8,
+      "hashSaltInspectionOnlyAfterAll127CandidateClassificationsPass": true
+    },
+    "passwordRollbackModes": {
+      "PROVIDER_HASH_CONFIG_EXACT": "passwordHash present plus non-empty salt plus readable provider hashConfig",
+      "LEGACY_SHA256_ROUNDS1_SALTLESS_EXACT": "passwordHash present plus empty/null salt plus exactly one mapped legacy SHA256 hash match for same profile"
+    },
+    "snapshot": {
+      "requiredBeforeWriteBoundary": true,
+      "mutableExistingUsersExpected": 10,
+      "updateUsersExpected": 9,
+      "duplicateRetireUserExpected": 1,
+      "passwordMaterialUsersExpected": 8,
+      "encryption": "AES-256-GCM_HKDF-SHA256_FROM_EXISTING_DEV_SERVICE_ACCOUNT_PRIVATE_KEY_RANDOM_SALT",
+      "repositoryForbidden": true,
+      "roundtripRequired": true
+    }
+  },
+  "tenantAdjudication": {
+    "profileFingerprint": "7cc28c78de9bfda01d14",
+    "keeperCandidateFingerprint": "4e6d26551d11db444bd0",
+    "retireAccessCandidateFingerprint": "9b2b7ca1bd72c1301d29",
+    "retirementAction": "DISABLE_ONLY_NO_DELETE"
+  },
+  "writes": {
+    "authorizedOnlyAfterPrewritePass": true,
+    "authCreatesExact": 118,
+    "authUpdatesExact": 9,
+    "duplicateDisableExact": 1,
+    "deleteExistingAuth": false,
+    "firestoreWrites": 0,
+    "membershipWrites": 0,
+    "hrWrites": 0,
+    "visitsWrites": 0,
+    "certificationsWrites": 0,
+    "liquidationsWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "cloudBuild": 0,
+    "cloudRun": 0,
+    "hosting": 0,
+    "make": 0,
+    "gemini": 0,
+    "payments": 0,
+    "merge": false,
+    "production": false
+  },
+  "readback": {
+    "required": true,
+    "authUsersAfter": 228,
+    "createdRowsValidated": 118,
+    "updatedRowsValidated": 9,
+    "changedPasswordSignInsValidated": 8,
+    "keeperActive": true,
+    "duplicateDisabled": true,
+    "noCrossRowPrincipalAlias": true,
+    "noUnexpectedTargetCollision": true
+  },
+  "rollbackDryRun": {
+    "required": true,
+    "realRollbackAuthorized": false,
+    "createdUidJournalEncrypted": true,
+    "deleteCreatedCountExpected": 118,
+    "restoreExistingUserCountExpected": 10,
+    "passwordHashRestoreEntriesExpected": 8,
+    "providerHashConfigCapturedEncrypted": true,
+    "encryptedPayloadRoundtripRequired": true
+  },
+  "sourceSafeVerifier": {
+    "structural": true,
+    "rawUidForbidden": true,
+    "rawEmailStringForbidden": true,
+    "rawShopperIdForbidden": true,
+    "rawClaimsForbidden": true,
+    "rawPasswordForbidden": true,
+    "rawPasswordHashForbidden": true,
+    "rawPasswordSaltForbidden": true,
+    "numericOrBooleanEmailKeysAllowed": true,
+    "emailChangesAndSubchangeCountsEmailAreNotPii": true
+  }
+}

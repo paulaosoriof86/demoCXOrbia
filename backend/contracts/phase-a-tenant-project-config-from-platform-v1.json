@@ -1,0 +1,114 @@
+{
+  "contractId": "phase-a-tenant-project-config-from-platform-v1",
+  "project": "CXOrbia TyA",
+  "date": "2026-07-09",
+  "purpose": "Define how tenant and project data must be stored as if configured manually from the platform, not hardcoded in preview files.",
+  "status": "contract_ready_frontend_ui_pending",
+  "sourceOfTruth": {
+    "tenant": "platform_tenant_config",
+    "projects": "platform_project_config",
+    "hrSources": "platform_project_hr_source_config",
+    "periods": "derived_from_live_hr_tabs",
+    "runtimeData": "backend_or_source_safe_payload_by_gate"
+  },
+  "tenantConfigRequiredFields": [
+    "tenantId",
+    "displayName",
+    "brand.logoRef",
+    "brand.primaryColor",
+    "countries",
+    "defaultCountry",
+    "enabledRoles",
+    "createdBy",
+    "createdAt",
+    "updatedAt",
+    "status"
+  ],
+  "projectConfigRequiredFields": [
+    "tenantId",
+    "projectId",
+    "displayName",
+    "status",
+    "countries",
+    "currenciesByCountry",
+    "hrSource.type",
+    "hrSource.visibility",
+    "hrSource.urlRef",
+    "hrSource.spreadsheetIdMasked",
+    "hrSource.tabPattern",
+    "periods.source",
+    "questionnaire.mode",
+    "certification.mode",
+    "payments.mode",
+    "integrations.make.status",
+    "integrations.gemini.status",
+    "createdBy",
+    "createdAt",
+    "updatedAt"
+  ],
+  "phaseAInitialTenant": {
+    "tenantId": "tya",
+    "displayName": "TyA",
+    "countries": ["GT", "HN"],
+    "brand": {
+      "logoRef": "tenant_configured_logo_ref",
+      "primaryColor": "tenant_configured_primary_color",
+      "mustPropagateTo": ["login", "topbar", "sidebar", "client_portal", "exports"]
+    }
+  },
+  "phaseAInitialProject": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "displayName": "Cinépolis",
+    "countries": ["GT", "HN"],
+    "currenciesByCountry": { "GT": "Q", "HN": "L" },
+    "hrSource": {
+      "type": "google_sheets_live_multitab",
+      "visibility": "protected_config_visible_masked_in_ui",
+      "urlRef": "project.hrSource.url protected value",
+      "spreadsheetIdMasked": "1h307t...vU4",
+      "tabPattern": "<MES> <YY> and <MES> <YY> HN",
+      "serviceAccountAccess": "required_for_backend_reader",
+      "publicXlsxFallback": "allowed_only_for_source_safe_preview_when_sheet_is_shared_by_link"
+    },
+    "periods": {
+      "source": "derived_from_hr_tabs",
+      "projectSelectorMustNotContainPeriod": true,
+      "periodSelectorMustFilterKpisAndLists": true,
+      "allProjectsOptionMustAggregateProjectsOnlyNotPeriods": true
+    },
+    "questionnaire": {
+      "mode": "configurable_by_project_or_visit",
+      "allowedOrigins": ["CXOrbia", "TyAOnline", "external", "general_link", "hr_per_visit_link"]
+    },
+    "payments": {
+      "mode": "control_only_until_payment_gate",
+      "juneIsPaymentsNotVisitsToRepeat": true
+    },
+    "integrations": {
+      "make": { "status": "gate_off" },
+      "gemini": { "status": "gate_off_human_review_required" }
+    }
+  },
+  "uiRequirementsForClaude": {
+    "projectSettingsMustShowHrSource": true,
+    "projectSelectorMustShowOnlyProjects": true,
+    "periodSelectorMustShowOnlyPeriods": true,
+    "kpisMustRespectSelectedPeriod": true,
+    "sidebarPeriodControlMustSyncWithDashboardPeriodControl": true,
+    "tenantBrandMustPropagateToLoginAndTopbar": true,
+    "loginMustNotDuplicateTenantTitle": true,
+    "flagsMustComeFromTenantCountries": true,
+    "shopperFullDataRequiresAuthRoles": true
+  },
+  "safeState": {
+    "production": false,
+    "mergeFinal": false,
+    "firestoreWrites": false,
+    "hrWrites": false,
+    "payments": false,
+    "makeLive": false,
+    "geminiLive": false,
+    "sensitiveDataInRepo": false
+  }
+}

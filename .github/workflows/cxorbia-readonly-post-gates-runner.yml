@@ -1,0 +1,323 @@
+name: CXORBIA_READONLY_POST_GATES_RUNNER
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - .github/cxorbia-gate-requests/request.json
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    types:
+      - synchronize
+    paths:
+      - .github/cxorbia-gate-requests/request.json
+      - .github/workflows/cxorbia-readonly-post-gates-runner.yml
+      - tools/release/cxorbia-readonly-post-gates-runner.mjs
+      - tools/release/cxorbia-phase-a-complete-composition-source-static-runner.mjs
+      - tools/release/cxorbia-phase-a-runtime-multirole-runner.mjs
+      - tools/qa/tya-phase-a-complete-composition-source-gate.mjs
+      - tools/qa/tya-c6-remote-parity-gate.mjs
+      - tools/qa/tya-c6-unified-human-auth-browser-smoke.mjs
+      - tools/qa/tya-c6-remote-domain-finance-portals-reservations-gate.mjs
+      - tools/qa/tya-c6-client-route-wait-diagnostic.mjs
+      - tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs
+      - tools/qa/cxorbia-c6-existing-client-e2e-credential.mjs
+      - tools/qa/tya-corte3-financial-reconciliation-r20-gate.mjs
+      - tools/qa/tya-corte3-canonical-finance-ui-export-r23-gate.mjs
+
+permissions:
+  contents: read
+  issues: write
+  statuses: write
+
+concurrency:
+  group: cxorbia-readonly-post-gates-runner-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  post-gates:
+    name: Run authorized CXOrbia read-only profile
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout exact live branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: docs-tya-v6-v71-audit
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Exclude ephemeral gate evidence from repository delta
+        run: echo ".tmp/" >> .git/info/exclude
+
+      - name: Validate controlled runner contract
+        run: node tools/qa/cxorbia-controlled-runners-contract-gate.mjs
+
+      - name: Read request state
+        id: request
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const p = '.github/cxorbia-gate-requests/request.json';
+          const x = JSON.parse(fs.readFileSync(p, 'utf8'));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `enabled=${x.enabled === true ? 'true' : 'false'}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `profile=${x.profile || ''}\n`);
+          NODE
+
+      - name: Install transient tooling for browser profiles
+        if: >-
+          steps.request.outputs.enabled == 'true' &&
+          (steps.request.outputs.profile == 'V174_R20_M1_CORTE2A' ||
+           steps.request.outputs.profile == 'CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23' ||
+           steps.request.outputs.profile == 'PHASE_A_COMPLETE_RUNTIME_MULTIROLE' ||
+           steps.request.outputs.profile == 'C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC')
+        run: |
+          if [ "${{ steps.request.outputs.profile }}" = "PHASE_A_COMPLETE_RUNTIME_MULTIROLE" ] || [ "${{ steps.request.outputs.profile }}" = "C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC" ]; then
+            npm install --no-save --ignore-scripts --package-lock=false playwright@1.55.0 firebase-admin@13.4.0
+          else
+            npm install --no-save --ignore-scripts --package-lock=false playwright@1.55.0
+          fi
+          npx playwright install --with-deps chromium
+
+      - name: Prepare exact V174 source-safe binding for Corte 3 UI
+        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.profile == 'CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23'
+        run: |
+          echo "app/adapters/tya-phase-a-source-safe-dev-adapter.js" >> .git/info/exclude
+          node tools/release/tya-source-safe-binding-build-r15g.mjs \
+            --html app/index-backend-dev.html \
+            --app-dir app \
+            --out .tmp/tya-corte3-canonical-finance-source-safe-binding-r23
+
+      - name: Prepare existing DEV credentials privately for runtime profile
+        if: >-
+          steps.request.outputs.enabled == 'true' &&
+          (steps.request.outputs.profile == 'PHASE_A_COMPLETE_RUNTIME_MULTIROLE' ||
+           steps.request.outputs.profile == 'C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC')
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          PRIVATE_DIR=.tmp/phase-a-runtime-private
+          PRIVATE_E2E=$PRIVATE_DIR/private-e2e.json
+          mkdir -p "$PRIVATE_DIR" .tmp/phase-a-runtime-multirole .tmp/c6-client-route-wait-diagnostic
+          node <<'NODE'
+          const fs=require('fs');
+          const raw=process.env.EXISTING_DEV_JSON||'';
+          let parsed=null;try{parsed=JSON.parse(raw);}catch{}
+          if(!(parsed&&parsed.type==='service_account'&&parsed.project_id==='cxorbia-backend-dev'&&parsed.client_email&&parsed.private_key))throw new Error('credential_invalid');
+          fs.writeFileSync('.tmp/phase-a-runtime-private/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/$PRIVATE_DIR/credentials.json" >> "$GITHUB_ENV"
+          echo "CXORBIA_EXPECTED_PROJECT=cxorbia-backend-dev" >> "$GITHUB_ENV"
+          echo "CXORBIA_DEV_ROOT_URL=https://cxorbia-backend-dev.web.app" >> "$GITHUB_ENV"
+          echo "CXORBIA_E2E_PRIVATE_CREDENTIALS=$PRIVATE_E2E" >> "$GITHUB_ENV"
+          echo "PRIVATE_DIR=$PRIVATE_DIR" >> "$GITHUB_ENV"
+          echo "OUT_DIR=.tmp/phase-a-runtime-multirole" >> "$GITHUB_ENV"
+
+          GOOGLE_APPLICATION_CREDENTIALS="${GITHUB_WORKSPACE}/$PRIVATE_DIR/credentials.json" \
+          CXORBIA_EXPECTED_PROJECT=cxorbia-backend-dev \
+          CXORBIA_DEV_ROOT_URL=https://cxorbia-backend-dev.web.app \
+          CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E" \
+          PRIVATE_DIR="$PRIVATE_DIR" OUT_DIR=.tmp/phase-a-runtime-multirole \
+          node tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs \
+            > .tmp/phase-a-runtime-multirole/credential-selection-staff-shopper.source-safe.json
+
+          GOOGLE_APPLICATION_CREDENTIALS="${GITHUB_WORKSPACE}/$PRIVATE_DIR/credentials.json" \
+          CXORBIA_EXPECTED_PROJECT=cxorbia-backend-dev \
+          CXORBIA_DEV_ROOT_URL=https://cxorbia-backend-dev.web.app \
+          CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E" \
+          PRIVATE_DIR="$PRIVATE_DIR" OUT_DIR=.tmp/phase-a-runtime-multirole \
+          node tools/qa/cxorbia-c6-existing-client-e2e-credential.mjs \
+            > .tmp/phase-a-runtime-multirole/credential-selection-client.source-safe.json
+
+          node <<'NODE'
+          const fs=require('fs');
+          const a=JSON.parse(fs.readFileSync('.tmp/phase-a-runtime-multirole/credential-selection-staff-shopper.source-safe.json','utf8'));
+          const b=JSON.parse(fs.readFileSync('.tmp/phase-a-runtime-multirole/credential-selection-client.source-safe.json','utf8'));
+          const p=JSON.parse(fs.readFileSync('.tmp/phase-a-runtime-private/private-e2e.json','utf8'));
+          if(a.decision!=='PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION'||a.authWrites!==0||a.passwordChanges!==0||a.valuesExported!==false)throw new Error('staff_shopper_credential_selection_not_safe_pass');
+          if(b.decision!=='PASS_C6_EXISTING_CLIENT_CREDENTIAL_SELECTION'||b.authWrites!==0||b.passwordChanges!==0||b.valuesExported!==false)throw new Error('client_credential_selection_not_safe_pass');
+          if(!p?.staff?.login||!p?.staff?.password||!p?.shopper?.login||!p?.shopper?.password||!p?.client?.login||!p?.client?.password)throw new Error('private_e2e_bundle_incomplete');
+          NODE
+          chmod 600 "$PRIVATE_E2E"
+
+      - name: Execute authorized read-only gate profile
+        if: steps.request.outputs.enabled == 'true'
+        id: gates
+        continue-on-error: true
+        run: |
+          set +e
+          if [ "${{ steps.request.outputs.profile }}" = "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC" ]; then
+            node tools/release/cxorbia-phase-a-complete-composition-source-static-runner.mjs \
+              .github/cxorbia-gate-requests/request.json
+          elif [ "${{ steps.request.outputs.profile }}" = "PHASE_A_COMPLETE_RUNTIME_MULTIROLE" ]; then
+            node tools/release/cxorbia-phase-a-runtime-multirole-runner.mjs \
+              .github/cxorbia-gate-requests/request.json
+          elif [ "${{ steps.request.outputs.profile }}" = "C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC" ]; then
+            node tools/qa/tya-c6-client-route-wait-diagnostic.mjs \
+              .github/cxorbia-gate-requests/request.json
+          else
+            node tools/release/cxorbia-readonly-post-gates-runner.mjs \
+              .github/cxorbia-gate-requests/request.json
+          fi
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Capture exact repository delta evidence
+        if: always() && steps.request.outputs.enabled == 'true'
+        run: |
+          mkdir -p .tmp/cxorbia-repository-status
+          git status --porcelain=v1 > .tmp/cxorbia-repository-status/status-porcelain.txt
+          git diff --name-status > .tmp/cxorbia-repository-status/tracked-delta.txt
+          git ls-files --others --exclude-standard > .tmp/cxorbia-repository-status/untracked.txt
+          printf '%s\n' '--- status --porcelain ---'
+          cat .tmp/cxorbia-repository-status/status-porcelain.txt
+          printf '%s\n' '--- tracked delta ---'
+          cat .tmp/cxorbia-repository-status/tracked-delta.txt
+          printf '%s\n' '--- untracked ---'
+          cat .tmp/cxorbia-repository-status/untracked.txt
+
+      - name: Record disabled request safely
+        if: steps.request.outputs.enabled != 'true'
+        run: echo "Controlled gate request disabled; no gates executed."
+
+      - name: Upload sanitized gate evidence
+        if: always() && steps.request.outputs.enabled == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-readonly-post-gates-${{ github.run_id }}
+          path: |
+            .tmp/cxorbia-readonly-post-gates-runner
+            .tmp/cxorbia-repository-status
+            .tmp/phase-a-complete-composition-source-static
+            .tmp/phase-a-runtime-multirole
+            .tmp/c6-client-route-wait-diagnostic
+            .tmp/tya-project-period-kpi-history-r20
+            .tmp/tya-corte2a-shopper-operation-canonical
+            .tmp/tya-corte1-report-frontend-runtime
+            .tmp/r20-source-safe-gates
+            .tmp/phase-a-financial-r14c-live-hr
+            .tmp/tya-corte3-financial-reconciliation-r20
+            .tmp/tya-corte3-canonical-finance-source-safe-binding-r23
+            .tmp/tya-corte3-canonical-finance-ui-export-r23
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Publish observable commit status
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const requestPath = '.github/cxorbia-gate-requests/request.json';
+          const request = fs.existsSync(requestPath)
+            ? JSON.parse(fs.readFileSync(requestPath, 'utf8'))
+            : { enabled: false, requestId: null };
+          const reportPath = '.tmp/cxorbia-readonly-post-gates-runner/report.json';
+          const report = fs.existsSync(reportPath)
+            ? JSON.parse(fs.readFileSync(reportPath, 'utf8'))
+            : {
+                status: request.enabled ? 'HOLD_REPORT_MISSING' : 'SKIPPED_DISABLED_REQUEST',
+                requestId: request.requestId || null,
+                requestCommitSha: process.env.GITHUB_SHA,
+                targetHeadSha: request.targetHeadSha || null,
+                checks: [],
+                blockers: request.enabled ? ['report_missing_or_preflight_failed'] : []
+              };
+          const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+          const sha = report.requestCommitSha || process.env.GITHUB_SHA;
+          const runUrl = `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+          const enabled = request.enabled === true;
+          const success = enabled && report.status === 'PASS_READONLY_POST_GATES';
+          const status = {
+            state: enabled ? (success ? 'success' : 'failure') : 'success',
+            context: 'cxorbia/readonly-post-gates/overall',
+            description: enabled
+              ? `${report.status}; profile=${report.profile || 'n/a'}; checks=${Array.isArray(report.checks) ? report.checks.length : 0}; blockers=${Array.isArray(report.blockers) ? report.blockers.length : 0}`.slice(0, 140)
+              : 'SKIPPED_DISABLED_REQUEST',
+            target_url: runUrl
+          };
+          fetch(`${process.env.GITHUB_API_URL}/repos/${owner}/${repo}/statuses/${sha}`, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+              Accept: 'application/vnd.github+json',
+              'X-GitHub-Api-Version': '2022-11-28',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(status)
+          }).then(async response => {
+            if (!response.ok) throw new Error(`status_failed_HTTP_${response.status}:${await response.text()}`);
+          }).catch(error => { console.error(error); process.exitCode = 1; });
+          NODE
+
+      - name: Report result in PR 7
+        if: always() && steps.request.outputs.enabled == 'true'
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GATES_EXIT_CODE: ${{ steps.gates.outputs.exit_code }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const reportPath = '.tmp/cxorbia-readonly-post-gates-runner/report.json';
+          const report = fs.existsSync(reportPath)
+            ? JSON.parse(fs.readFileSync(reportPath, 'utf8'))
+            : { status: 'HOLD_REPORT_MISSING', requestId: null, targetHeadSha: null, checks: [], blockers: ['report_missing'] };
+          const checkLines = Array.isArray(report.checks) && report.checks.length
+            ? report.checks.map(value => `- PASS: \`${value}\``)
+            : ['- none'];
+          const body = [
+            '## CXORBIA_READONLY_POST_GATES_RUNNER',
+            '',
+            `- Run: ${process.env.GITHUB_RUN_ID}`,
+            `- Event: ${process.env.GITHUB_EVENT_NAME}`,
+            `- Estado: \`${report.status}\``,
+            `- Request: \`${report.requestId || 'n/a'}\``,
+            `- Profile: \`${report.profile || 'n/a'}\``,
+            `- Target HEAD: \`${report.targetHeadSha || 'n/a'}\``,
+            `- Exit code: ${process.env.GATES_EXIT_CODE || 'n/a'}`,
+            '',
+            'Checks:',
+            ...checkLines,
+            '',
+            'Blockers:',
+            ...(report.blockers?.length ? report.blockers.map(x => `- ${x}`) : ['- none']),
+            '',
+            'Ejecución read-only: cero commit/push, deploy, merge, producción, importaciones o writes reales.'
+          ].join('\n');
+          const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+          fetch(`${process.env.GITHUB_API_URL}/repos/${owner}/${repo}/issues/7/comments`, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+              Accept: 'application/vnd.github+json',
+              'X-GitHub-Api-Version': '2022-11-28',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ body })
+          }).then(async response => {
+            if (!response.ok) throw new Error(`comment_failed_HTTP_${response.status}:${await response.text()}`);
+          }).catch(error => { console.error(error); process.exitCode = 1; });
+          NODE
+
+      - name: Cleanup private runtime material
+        if: always()
+        run: rm -rf .tmp/phase-a-runtime-private
+
+      - name: Enforce gate result
+        if: always() && steps.request.outputs.enabled == 'true'
+        run: test "${{ steps.gates.outputs.exit_code }}" = "0"

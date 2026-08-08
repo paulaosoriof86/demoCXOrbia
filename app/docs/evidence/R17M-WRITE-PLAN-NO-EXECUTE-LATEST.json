@@ -1,0 +1,200 @@
+{
+  "schemaVersion": "cxorbia.r17m-write-plan-no-execute.v1",
+  "generatedAt": "2026-07-30T00:20:00Z",
+  "status": "PLAN_READY_NOT_AUTHORIZED_NOT_EXECUTABLE",
+  "target": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "environment": "DEV_CANONICAL"
+  },
+  "strategy": {
+    "mode": "canonical-shadow-materialization-preserve-prior-dev-topology",
+    "reason": "Create the canonical parent-project topology alongside the prior period-country DEV topology, keep the prior materialization untouched for rollback, and switch CX.data reads only after idempotence and smoke pass.",
+    "deletePriorTopology": false,
+    "reuseExistingBackend": true,
+    "newFirebaseProject": false,
+    "productionCutover": false
+  },
+  "sourceEvidence": {
+    "r16eRunId": 29282169628,
+    "r16eJobId": 90741969389,
+    "r16eArtifactId": 8743659430,
+    "r16eArtifactDigest": "sha256:290b2eb9f956bb8af422ffae8832aa617125d70eab244188f206bd682ad68584",
+    "planId": "r16d_f471a6b486f3a269b0dd",
+    "planSha256": "a9fe01f72d84908ed0c1663dde6c25e1a45ae9b57454536cec949ab20f9cd7d3",
+    "r16eDecision": "PASS_WITH_REVIEW_CANONICAL_MATERIALIZATION_DRY_RUN_R16"
+  },
+  "r16eClassification": {
+    "totalCandidates": 1415,
+    "create": 1414,
+    "update": 1,
+    "noop": 0,
+    "recordReview": 0,
+    "extraExistingPreserved": 244,
+    "deleteCandidates": 0
+  },
+  "operationGroups": [
+    {
+      "groupId": "R17M-TENANT-UPDATE-HOLD",
+      "domain": "tenant",
+      "r16eAction": "update",
+      "operationRange": ["op_00001", "op_00001"],
+      "count": 1,
+      "classificationSha256": "336d3e15022e462c8cda105223c1923becd479f04fbc0b22a3549f3867447838",
+      "state": "HOLD_EXISTING_TENANT_FIELD_REVIEW",
+      "changedFields": ["configurable", "name", "schemaVersion"],
+      "writeAuthorized": false
+    },
+    {
+      "groupId": "R17M-PROJECT-CREATE",
+      "domain": "project",
+      "r16eAction": "create",
+      "operationRange": ["op_00002", "op_00002"],
+      "count": 1,
+      "classificationSha256": "f50f375afca778448e319692ae88afa60497f8f2954fea68fd82c4ebf8ebda6d",
+      "state": "READY_FOR_OFFLINE_IDEMPOTENCE_GATE",
+      "canonicalPath": "tenants/tya/projects/cinepolis",
+      "writeAuthorized": false
+    },
+    {
+      "groupId": "R17M-HRIMPORT-CREATE",
+      "domain": "hrImport",
+      "r16eAction": "create",
+      "operationRange": ["op_00003", "op_00003"],
+      "count": 1,
+      "classificationSha256": "2b36b81a1861a950f8fdefff4733ff7aaec02e18387e583313f15f847717cbaa",
+      "state": "READY_FOR_OFFLINE_IDEMPOTENCE_GATE",
+      "writeAuthorized": false
+    },
+    {
+      "groupId": "R17M-PERIODS-CREATE",
+      "domain": "period",
+      "r16eAction": "create",
+      "operationRange": ["op_00004", "op_00017"],
+      "count": 14,
+      "classificationSha256": "3e9bbbebdd3a70ae772d4b4325cbe787c4bd1232e42daabf747340cec6221c47",
+      "state": "READY_FOR_OFFLINE_IDEMPOTENCE_GATE",
+      "periodRange": "2025-06..2026-07",
+      "writeAuthorized": false
+    },
+    {
+      "groupId": "R17M-SHOPPERS-HOLD",
+      "domain": "shopper",
+      "r16eAction": "create",
+      "operationRange": ["op_00018", "op_00227"],
+      "count": 210,
+      "classificationSha256": "546a59a046417092ce37d9e772445d0321f1a36457f2fc13934a9f5489deedf7",
+      "state": "HOLD_LEGACY_REFRESH_AND_STABLE_KEY_DIFF",
+      "existingBackendShoppers": 215,
+      "liveHrProtectedReferences": 236,
+      "legacyRefreshRequired": true,
+      "nameMatchingForbidden": true,
+      "automaticMergeForbidden": true,
+      "writeAuthorized": false
+    },
+    {
+      "groupId": "R17M-VISITS-CREATE",
+      "domain": "visit",
+      "r16eAction": "create",
+      "operationRange": ["op_00228", "op_00843"],
+      "count": 616,
+      "classificationSha256": "3b0287804ec895cc8ad0c908c0cb5a44e55973437ab36af9d0850c0db101f0b3",
+      "state": "READY_FOR_OFFLINE_IDEMPOTENCE_GATE",
+      "source": "HR_FIRST_SOURCE_LOCK_THROUGH_2026_07",
+      "currentPeriodJuly": {"GT": 34, "HN": 10, "total": 44},
+      "preservePriorPeriodCountryVisitsForRollback": true,
+      "writeAuthorized": false
+    },
+    {
+      "groupId": "R17M-LIQUIDATIONS-CREATE",
+      "domain": "liquidation",
+      "r16eAction": "create",
+      "operationRange": ["op_00844", "op_01415"],
+      "count": 572,
+      "classificationSha256": "6858a8828363f9a3bd11a9b428b145816167db0ad88d5d6a461390177c4cf18e",
+      "state": "READY_FOR_OFFLINE_IDEMPOTENCE_GATE",
+      "paymentControlOnly": true,
+      "paymentsConfirmedOrInferred": 0,
+      "financialExactLinks": 196,
+      "financialReviewQueue": 92,
+      "writeAuthorized": false
+    }
+  ],
+  "preserveWithoutWrite": {
+    "existingExtras": {
+      "projects": 29,
+      "shoppers": 215,
+      "total": 244
+    },
+    "nonCanonicalPilotProjects": ["julio-pilot", "r1", "tya-piloto"],
+    "cleanupCandidatesHold": [
+      {
+        "id": "sprint5-visit-mutation-no-real-data",
+        "reason": "synthetic record without HR source keys",
+        "action": "HOLD_NO_DELETE"
+      },
+      {
+        "id": "hr-58fb469666080189",
+        "reason": "June HN sourceRow 12 absent from current live HR",
+        "action": "HOLD_NO_DELETE"
+      }
+    ]
+  },
+  "sourceHolds": [
+    {
+      "source": "AGOSTO 26 HN",
+      "state": "HOLD_COUNTRY_TAB_MISMATCH",
+      "rows": 34,
+      "expectedCountry": "HN",
+      "observedCountry": "GT",
+      "materialize": false,
+      "sync": false,
+      "blocksJuly": false
+    }
+  ],
+  "pendingLegacyDelta": {
+    "scope": ["shoppers_new_or_updated", "certifications_presented_approved_failed"],
+    "visitsFromLegacy": false,
+    "visitsSource": "HR",
+    "currentBackendCertifications": 0,
+    "requiredBeforeFinalWriteAuthorization": true
+  },
+  "preWriteGates": [
+    "LEGACY_SHOPPER_CERT_DELTA_REFRESH",
+    "STABLE_KEY_SHOPPER_DIFF",
+    "REBUILD_CANONICAL_PLAN_WITH_REFRESHED_SHOPPER_CERT_DELTA",
+    "OFFLINE_IDEMPOTENCE_HASH_GATE",
+    "CANONICAL_READ_PATH_BINDING_GATE",
+    "EXACT_WRITE_AUTHORIZATION_BY_GROUP_AND_COUNT"
+  ],
+  "potentialAfterGates": {
+    "foundationCreateCandidates": 16,
+    "visitCreateCandidates": 616,
+    "liquidationControlCreateCandidates": 572,
+    "subtotalBeforeShopperAndTenantReview": 1204,
+    "shopperCandidatesHeld": 210,
+    "tenantUpdateHeld": 1,
+    "totalR16ECandidates": 1415
+  },
+  "execution": {
+    "executeAllowed": false,
+    "authorizedWrites": 0,
+    "authorizedDeletes": 0,
+    "authorizedDeploys": 0,
+    "authorizedProduction": false
+  },
+  "safeState": {
+    "providerReadsInThisR17Plan": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "deletes": 0,
+    "imports": 0,
+    "deploys": 0,
+    "production": false,
+    "merge": false
+  },
+  "nextGate": "LEGACY_SHOPPER_CERT_REFRESH_AND_R17M_OFFLINE_IDEMPOTENCE"
+}

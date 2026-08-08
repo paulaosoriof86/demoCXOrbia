@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0.0",
+  "mapId": "phase-a-firestore-collection-map-v1",
+  "paths": {
+    "tenant": "tenants/{tenantId}",
+    "shopper": "tenants/{tenantId}/shoppers/{shopperId}",
+    "project": "tenants/{tenantId}/projects/{projectId}",
+    "period": "tenants/{tenantId}/projects/{projectId}/periods/{periodId}",
+    "hrImport": "tenants/{tenantId}/projects/{projectId}/hrImports/{importId}",
+    "visit": "tenants/{tenantId}/projects/{projectId}/visits/{visitId}",
+    "liquidation": "tenants/{tenantId}/projects/{projectId}/liquidations/{liquidationId}",
+    "paymentLot": "tenants/{tenantId}/projects/{projectId}/lots/{lotId}",
+    "financeMovement": "tenants/{tenantId}/projects/{projectId}/finance/{movementId}",
+    "certification": "tenants/{tenantId}/projects/{projectId}/certifications/{certificationId}",
+    "audit": "tenants/{tenantId}/auditLogs/{auditId}"
+  },
+  "currentRulesCompatibility": {
+    "tenant": true,
+    "shopper": true,
+    "project": true,
+    "period": true,
+    "hrImport": true,
+    "visit": true,
+    "liquidation": true,
+    "paymentLot": true,
+    "financeMovement": true,
+    "certification": true,
+    "audit": true
+  },
+  "notes": [
+    "Project path uses the configurable base projectId; periods remain subdocuments rather than synthetic projects.",
+    "No payment, lot, finance or certification document is planned until a confirmed separate source exists.",
+    "The plan never writes and never changes current Firestore rules."
+  ]
+}

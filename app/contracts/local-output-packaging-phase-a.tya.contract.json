@@ -1,0 +1,28 @@
+{
+  "contract": "local-output-packaging-phase-a-tya",
+  "date": "2026-07-06",
+  "status": "draft_tool_no_remote_write",
+  "phase": "Phase A",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "realDataAllowed": false,
+  "providerActionsAllowed": false,
+  "purpose": "Package local diagnostic outputs into a review folder after explicit GO execution.",
+  "inputCandidates": [
+    "_diagnosticos/tya-safe-audit-bundle/safe-audit-bundle.json",
+    "_diagnosticos/tya-safe-audit-bundle/safe-audit-bundle.md",
+    "_diagnosticos/tya-safe-audit-normalized/safe-audit-normalized.json",
+    "_diagnosticos/tya-safe-audit-normalized/safe-audit-normalized.md"
+  ],
+  "outputFolder": "_diagnosticos/tya-local-output-package",
+  "outputs": [
+    "package-manifest.json",
+    "package-summary.md"
+  ],
+  "notes": [
+    "Does not execute diagnostics.",
+    "Does not deploy, merge, import real data, or call providers."
+  ]
+}

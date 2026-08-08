@@ -1,0 +1,159 @@
+{
+  "schemaVersion": "cxorbia.c6.auth-target-anchor-lineage-rootfix-source-only.evidence.v1",
+  "generatedAt": "2026-08-07T16:14:00-06:00",
+  "decision": "STOP_RETRY_C6_AUTH_TARGET_ANCHOR_LINEAGE_ROOT_FIX_SOURCE_ONLY_EXACT_CONSENSUS_BASES_NOT_VERSIONED",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "target": {
+    "profileFingerprint": "ac93d90d9e41512acdcd",
+    "baseLoginFingerprint": "493f2b26360648693c37",
+    "targetLoginFingerprint": "bd8d7019d612b4421366"
+  },
+  "sourceInputs": {
+    "frozenPlanRunId": 31104541809,
+    "frozenPlanArtifactId": 8968941587,
+    "frozenPlanArtifactDigest": "sha256:02e36c355b3f2d1c9d1e6f1be7fece93259251ddb0f981cdaac35f2262fcb264",
+    "frozenPlanDigest": "acc93da842d1a5d3244327680f88539f0651cb101bae09dd231fd8b5008bea92",
+    "frozenPlannerCommit": "9d26344f55809d95023a33aeb3111802adb15d26",
+    "frozenPlanner": "tools/qa/cxorbia-c6-shopper-deterministic-suffix-readonly.mjs",
+    "equivalentUniverseHelper": "tools/qa/cxorbia-c6-shopper-equivalent-universe.mjs",
+    "versionedEvidenceReviewed": [
+      "app/docs/evidence/CORTE6-SHOPPER-EQUIVALENT-UNIVERSE-MEMBER-PROVENANCE-SOURCE-STATIC-PASS-LATEST.json",
+      "app/docs/evidence/CORTE6-SHOPPER-GROUP-PROVENANCE-RESIDUAL-IDENTITY-SOURCE-ONLY-LATEST.json",
+      "app/docs/evidence/CORTE6-SHOPPER-EQUIVALENT-UNIVERSE-PROVIDER-V22-HOLD-LATEST.json",
+      "app/docs/evidence/CORTE6-SHOPPER-DETERMINISTIC-SUFFIX-PROVIDER-REVALIDATION-HOLD-LATEST.json",
+      "app/docs/evidence/CORTE6-SHOPPER-IDENTITY-SOURCE-SAFE-RESOLUTION-HOLD-LATEST.json",
+      "app/docs/evidence/CORTE6-SHOPPER-IDENTITY-FOCAL-RESOLUTION-HOLD-LATEST.json",
+      "app/docs/evidence/CORTE6-SHOPPER-LOGIN-COLLISION-CLASSIFICATION-HOLD-LATEST.json"
+    ]
+  },
+  "frozenTargetRow": {
+    "profileFp": "ac93d90d9e41512acdcd",
+    "baseLoginFp": "493f2b26360648693c37",
+    "targetLoginFp": "bd8d7019d612b4421366",
+    "suffixApplied": true,
+    "suffixLength": 4,
+    "primary": "UPDATE_AUTH",
+    "changes": {
+      "email": true,
+      "password": true,
+      "claims": true
+    },
+    "sourceSafeSurnameBasis": "multi_source_full_name_consensus",
+    "resolutionBases": ["deterministic_technical_suffix"],
+    "diagnostics": null
+  },
+  "collisionPeer": {
+    "profileFp": "a8dd7db89a02ff180674",
+    "sameBaseLoginFingerprint": true,
+    "targetLoginFp": "c27cb5ff144b2d91540b",
+    "suffixApplied": false,
+    "suffixLength": 0,
+    "primary": "UPDATE_AUTH",
+    "sourceSafeSurnameBasis": "explicit_or_technical",
+    "resolutionBases": ["unique_technical_holder_preserves_unsuffixed_login"]
+  },
+  "lineageDemonstrated": {
+    "baseLoginFormula": "first + '.' + surname",
+    "surnameBasis": "multi_source_full_name_consensus",
+    "consensusRule": "one surname token corroborated by at least two distinct source bases",
+    "possibleFullNameConsensusBases": ["profile", "hr", "visit", "certification", "liquidation"],
+    "credentialTechnicalLoginParticipatesInFullNameConsensus": false,
+    "linkedSourceModes": ["direct_shopper_id", "exact_technical_anchor"],
+    "collisionGroupSize": 2,
+    "targetIsSuffixedMember": true,
+    "peerIsUnsuffixedTechnicalKeeper": true,
+    "suffixAlgorithm": "sha256(tenantId + NUL + shopperId), first collision-free length from 4/6/8",
+    "suffixLength": 4,
+    "baseLoginLineageStructurallyDemonstrated": true,
+    "targetLoginLineageStructurallyDemonstrated": true
+  },
+  "sourceOnlyGap": {
+    "exactConsensusBasisSetReconstructible": false,
+    "rawBaseLoginReconstructibleFromFingerprint": false,
+    "reason": [
+      "The target is UPDATE_AUTH, so the frozen planner exports diagnostics=null for this row.",
+      "The source-safe group matrix preserves aggregate group shape but not target memberVectors for unchanged groups.",
+      "The member-provenance contract was delta-only and therefore does not version target-specific corroborating bases for this unchanged group.",
+      "baseLoginFp and targetLoginFp are one-way fingerprints and cannot be inverted without re-reading the linked source values that created them."
+    ]
+  },
+  "minimumPiiFreeAnchorClassification": {
+    "classification": "VERIFIED_RECONSTRUCTED_TARGET_LOGIN_FINGERPRINT_WITH_UNIQUE_PLAN_ASSOCIATION",
+    "requiredFrozenChecks": {
+      "profileFingerprint": "ac93d90d9e41512acdcd",
+      "baseLoginFingerprint": "493f2b26360648693c37",
+      "targetLoginFingerprint": "bd8d7019d612b4421366",
+      "suffixLength": 4,
+      "targetLoginUniqueInFrozenPlan": true
+    },
+    "rawIdentityExportRequired": false,
+    "authCandidateCanBeResolvedSourceOnly": false
+  },
+  "minimumFutureProviderSources": {
+    "authorizationRequired": true,
+    "providerExecutionThisBlock": false,
+    "stageA": {
+      "purpose": "reproduce only the target's two-or-more-basis full-name consensus and verify frozen base/target login fingerprints before Auth",
+      "sourceFamilies": [
+        "tenants/tya/shoppers",
+        "tenants/tya/projects/cinepolis/hrImports target-linked records only",
+        "tenants/tya/projects/cinepolis/visits target-linked records only",
+        "collectionGroup(certifications) target-linked records only",
+        "collectionGroup(liquidations) target-linked records only"
+      ],
+      "adaptiveShortCircuit": "stop as soon as exactly one surname candidate is corroborated by at least two distinct bases and the reconstructed baseLoginFp and targetLoginFp both equal the frozen fingerprints",
+      "authReads": 0
+    },
+    "stageBOnlyAfterStageAPass": {
+      "authDirectoryPagesMax": 1,
+      "candidateCountRequired": 1,
+      "otherPlanRowAssociationRequired": 0,
+      "exportOnlyCandidateFingerprint": true
+    },
+    "stageCOnlyAfterStageBPass": {
+      "hashConfigReadsMax": 1,
+      "passwordTargetCount": 1,
+      "encryptedRollbackSnapshotRequired": true
+    }
+  },
+  "planPreserved": {
+    "rows": 340,
+    "uniqueRows": 340,
+    "CREATE_AUTH": 81,
+    "UPDATE_AUTH": 46,
+    "NO_OP": 81,
+    "HOLD": 0,
+    "PRESERVE_NO_AUTH": 132,
+    "finalDigest": "68e26a5217957333d256f2cb547faf3e1eef74e2c789bfd85454d42dfd472dc3",
+    "AuthExecuted": false
+  },
+  "safety": {
+    "providerReads": 0,
+    "authReads": 0,
+    "firestoreReads": 0,
+    "hrReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "cloudBuilds": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "production": false,
+    "rawNamesExported": false,
+    "rawSurnamesExported": false,
+    "rawLoginsExported": false,
+    "rawEmailsExported": false,
+    "uidsExported": false,
+    "passwordsExported": false
+  },
+  "nextGate": "NEW_EXPLICIT_PROVIDER_READONLY_AUTHORIZATION_FOR_ADAPTIVE_TARGET_LINKED_LINEAGE_RESOLUTION_REQUIRED"
+}

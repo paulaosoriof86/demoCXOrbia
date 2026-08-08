@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "cxorbia.production-promotion-contract.v1",
+  "authorizationId": null,
+  "authorizedAt": null,
+  "authorizedBy": null,
+  "authorizationSource": "current_conversation",
+  "authorized": false,
+  "strategy": null,
+  "allowedStrategies": [
+    "PROMOTE_EXISTING_CLEAN_PROJECT",
+    "SEPARATE_CLEAN_PROD_PROJECT"
+  ],
+  "legacyProjectReuseForBackend": false,
+  "productionProjectId": null,
+  "productionHostingTarget": null,
+  "productionHostingSite": null,
+  "productionCloudRunService": null,
+  "productionCloudRunRegion": "us-central1",
+  "acceptCurrentIdentifiersAndUrlAsProduction": false,
+  "requiresSeparateProdFiles": null,
+  "requiredPreCutoverGates": [
+    "LIVE_HR_CURRENT_PERIOD_AND_HISTORY_REVISION_PASS",
+    "SHOPPER_AUTH_REPAIR_PASS",
+    "ACCUMULATIVE_MULTIROLE_SMOKE_PASS",
+    "HUMAN_VALIDATION_PASS",
+    "ROLLBACK_READY",
+    "EXPLICIT_CUTOVER_AUTHORIZATION"
+  ],
+  "writesAuthorizedByThisContract": false,
+  "deployAuthorizedByThisContract": false,
+  "mergeAuthorizedByThisContract": false,
+  "productionCutoverAuthorizedByThisContract": false
+}

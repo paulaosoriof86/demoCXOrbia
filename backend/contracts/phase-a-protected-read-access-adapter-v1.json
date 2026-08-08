@@ -1,0 +1,85 @@
+{
+  "contractId": "phase-a-protected-read-access-adapter-v1",
+  "status": "draft_safe_not_connected",
+  "generatedAt": "2026-07-09",
+  "purpose": "Define a functional read-policy adapter for protected Phase A data before connecting real Firestore/Auth.",
+  "safeState": {
+    "firebaseImported": false,
+    "firestoreConnected": false,
+    "authConnected": false,
+    "frontendConnected": false,
+    "writesEnabled": false,
+    "productionEnabled": false,
+    "containsSecrets": false,
+    "containsSensitiveData": false
+  },
+  "requiredContextKeys": ["tenantId", "role", "personaType", "scope", "permissionsVersion"],
+  "optionalContextKeys": ["userId", "projectIds", "countryIds", "shopperId", "clientId", "staffId", "franchiseId", "representativeId", "reason"],
+  "protectedResources": {
+    "shopperProtectedProfile": {
+      "pathTemplate": "tenants/{tenantId}/shoppers/{shopperId}/protected/profile",
+      "allowedRoles": ["tenantAdmin", "projectAdmin", "financeAdmin", "certificationAdmin", "shopper"],
+      "allowedPersonas": ["tenantOwner", "franchiseOwner", "countryRepresentative", "operationsCoordinator", "projectCoordinator", "financeOperator", "certificationOperator", "shopperEvaluator"],
+      "requiresAudit": true,
+      "ownRecordRule": "shopper can read only when context.shopperId equals requested shopperId"
+    },
+    "certificationAttempts": {
+      "pathTemplate": "tenants/{tenantId}/projects/{projectId}/certificationAttempts/{attemptId}",
+      "allowedRoles": ["tenantAdmin", "projectAdmin", "certificationAdmin", "shopper"],
+      "allowedPersonas": ["tenantOwner", "franchiseOwner", "countryRepresentative", "operationsCoordinator", "projectCoordinator", "certificationOperator", "shopperEvaluator"],
+      "requiresProjectScope": true,
+      "requiresAudit": true
+    },
+    "certificationCarryovers": {
+      "pathTemplate": "tenants/{tenantId}/projects/{projectId}/certificationCarryovers/{carryoverId}",
+      "allowedRoles": ["tenantAdmin", "projectAdmin", "certificationAdmin", "shopper"],
+      "allowedPersonas": ["tenantOwner", "franchiseOwner", "countryRepresentative", "operationsCoordinator", "projectCoordinator", "certificationOperator", "shopperEvaluator"],
+      "requiresProjectScope": true,
+      "requiresAudit": true
+    },
+    "protectedLiquidations": {
+      "pathTemplate": "tenants/{tenantId}/projects/{projectId}/protectedLiquidations/{liquidationId}",
+      "allowedRoles": ["tenantAdmin", "projectAdmin", "financeAdmin", "shopper"],
+      "allowedPersonas": ["tenantOwner", "franchiseOwner", "countryRepresentative", "operationsCoordinator", "projectCoordinator", "financeOperator", "shopperEvaluator"],
+      "requiresProjectScope": true,
+      "requiresAudit": true,
+      "rawBankDataVisible": false
+    },
+    "protectedPaymentBatches": {
+      "pathTemplate": "tenants/{tenantId}/projects/{projectId}/protectedPaymentBatches/{paymentBatchId}",
+      "allowedRoles": ["tenantAdmin", "projectAdmin", "financeAdmin"],
+      "allowedPersonas": ["tenantOwner", "franchiseOwner", "countryRepresentative", "operationsCoordinator", "projectCoordinator", "financeOperator"],
+      "requiresProjectScope": true,
+      "requiresAudit": true,
+      "paymentExecutionEnabled": false
+    },
+    "reviewQueue": {
+      "pathTemplate": "tenants/{tenantId}/reviewQueue/{reviewId}",
+      "allowedRoles": ["tenantAdmin", "projectAdmin", "financeAdmin", "certificationAdmin"],
+      "allowedPersonas": ["tenantOwner", "franchiseOwner", "countryRepresentative", "operationsCoordinator", "projectCoordinator", "financeOperator", "certificationOperator"],
+      "requiresAudit": true
+    },
+    "protectedReadsAudit": {
+      "pathTemplate": "tenants/{tenantId}/audit/protectedReads/{auditId}",
+      "allowedRoles": ["tenantAdmin"],
+      "allowedPersonas": ["tenantOwner", "franchiseOwner", "countryRepresentative"],
+      "requiresAudit": false
+    }
+  },
+  "denyRules": [
+    "deny if safeState writes/deploy flags are requested",
+    "deny if role is not allowed for resource",
+    "deny if personaType is not allowed for resource",
+    "deny if project scoped resource lacks requested projectId inside context.projectIds",
+    "deny shopper reading another shopperId",
+    "deny clientViewer/clientAdmin protected shopper/payment data unless a later client report resource contract explicitly allows it",
+    "deny if request asks for raw bank, raw identity, private source URL or workbook raw fields"
+  ],
+  "auditEventShape": ["actorUserId", "tenantId", "role", "personaType", "scope", "entityType", "entityId", "projectId", "countryId", "reason", "timestamp", "source"],
+  "classification": {
+    "reusableCxorbia": true,
+    "exclusiveClient": false,
+    "claudePrototypeImpact": true,
+    "academiaImpact": true
+  }
+}
