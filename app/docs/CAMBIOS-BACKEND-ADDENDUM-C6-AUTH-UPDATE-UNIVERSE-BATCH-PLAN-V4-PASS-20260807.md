@@ -45,13 +45,13 @@ AuthExecuted=false
 
 Los workflows one-shot del bloque fueron retirados al cierre.
 
-## Incidencias de harness
+## Incidencias de harness y conector
 
 Cuatro runs fallaron antes de preparar provider por gates auxiliares del harness (`31236133879`, `31236248638`, `31236374380`, `31236622306`). Todos tuvieron providerAttempts=0 y writes=0. No fueron fallos de datos ni nuevas causas raíz.
 
 El run provider terminal `31236820249` produjo `PASS_C6_AUTH_UPDATE_UNIVERSE_BATCH_REVALIDATION_PLAN_V4`; el workflow global quedó failure únicamente porque un regex posterior confundió `subchangeCounts.email=2` con correo crudo. El artefacto fue validado estructuralmente offline sin raw UID/shopperId/passwordHash/passwordSalt/email value ni strings sensibles; no se repitió provider.
 
-Después del cierre hubo un intento documental `GitHub.update_file` con SHA obsoleto sobre este mismo addendum; GitHub respondió HTTP 409. Fue un no-op: no mutó repo, provider ni estado funcional. Se releyó el blob vigente antes de esta actualización correcta.
+Después del cierre hubo dos intentos documentales `GitHub.update_file` con blob SHA obsoleto: uno sobre este addendum y otro sobre `PENDIENTES-PROTOTIPO-ADDENDUM-C6-AUTH-UPDATE-UNIVERSE-BATCH-PLAN-V4-PASS-20260807.md`. Ambos respondieron HTTP 409 y fueron no-op: no mutaron repo, provider ni estado funcional. Este addendum se actualizó luego con el blob vigente. No se requiere repetir la segunda actualización porque el circuit breaker ya está rector en checkpoint/source lock.
 
 ## Seguridad
 
