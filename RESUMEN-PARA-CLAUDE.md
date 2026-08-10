@@ -1,15 +1,16 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-10  
-**Estado vivo:** `C6_AUTH_DUPLICATE_OWNERSHIP_RECONCILIATION_HUMAN_DECISION_REQUIRED_4__AUTH_DEV_228_PRESERVED__ZERO_PROVIDER_READS__ZERO_DATA_WRITES__NO_PRODUCTION`
+**Estado vivo:** `C6_AUTH_DUPLICATE_HUMAN_OWNERSHIP_DECISION_CAPTURE_READY__PAULA_DECISION_REQUIRED__ZERO_PROVIDER_READS__ZERO_REPAIR__NO_PRODUCTION`
 
 ## 1. Fuente vigente
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-3. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-OWNERSHIP-ANCHOR-SOURCE-SAFE-HUMAN-DECISION-REQUIRED-20260810.md`;
-4. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-AUTH-DUPLICATE-OWNERSHIP-SOURCE-SAFE-HUMAN-DECISION-20260810.md`;
-5. PR #7 y HEAD vivo.
+3. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-HUMAN-OWNERSHIP-DECISION-CAPTURE-PENDING-PAULA-20260810.md`;
+4. `app/docs/C6-AUTH-DUPLICATE-HUMAN-OWNERSHIP-DECISION-MATRIX-20260810.md`;
+5. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-AUTH-DUPLICATE-HUMAN-OWNERSHIP-DECISION-CAPTURE-20260810.md`;
+6. PR #7 y HEAD vivo.
 
 ## 2. No reabrir
 
@@ -19,7 +20,7 @@
 - PREWRITE, Activation, readback y rollback dry-run;
 - Auth DEV 228;
 - HashConfig y lifecycle del smoke;
-- grupo `fd891...` ya cerrado sin acceso TyA efectivo.
+- `fd891...` cerrado sin acceso TyA efectivo.
 
 ## 3. Estado backend
 
@@ -28,25 +29,21 @@ AuthUsersAfter=228
 Activation=PASS
 Readback=PASS
 RollbackDryRun=PASS
-OwnershipReconciliationProviderReads=0
-OwnershipUniqueKeeperAnchors=0
-OwnershipHumanDecisionRequiredGroups=4
-AuthWrites=0
+HumanOwnershipDecisionMatrix=READY
+CapturedDecisions=0/4
+ProviderReadsCurrentBlock=0
+RepairExecuted=false
 Production=false
 ```
 
-A–C: los candidates son legacy/pre-import namespace `NONE`; ninguno coincide con los principals staff canónicos importados namespace `staff`, pero la evidencia no permite elegir entre los dos members de cada par.
+A–C: cada par contiene dos principals históricos legacy/pre-import equivalentes; la evidencia no puede escoger member. La matriz exige decisión humana si se desea `KEEP_ONE_MEMBER`, o permite preservar ambos; retiro de ambos exige confirmar un principal canónico externo correcto.
 
-D `ae2f...`: ambos candidates son históricos. El Cliente canónico actual es un principal separado ya materializado/validado; no existe keeper member-level demostrable dentro del par histórico.
-
-Resultado para los cuatro grupos: `HUMAN_OWNERSHIP_DECISION_REQUIRED`.
+D `ae2f...`: los dos principals son históricos y existe un Cliente canónico externo ya validado. Paula puede aprobar ese principal como único canónico y clasificar ambos históricos como no canónicos pendientes de repair posterior.
 
 ## 4. Claude/prototipo
 
-No hacer parche frontend, selector alternativo, copy técnico ni relajación de RBAC para resolver este conflicto. La decisión es de ownership backend y debe mantenerse fuera de UI hasta una decisión humana y, si corresponde, un repair focal separado.
+No hacer parche frontend, selector de duplicados, copy técnico visible ni relajación de RBAC. No mostrar fingerprints en producto. Este es un flujo de gobierno backend, no UX.
 
 ## 5. Siguiente bloque backend
 
-`C6 AUTH DUPLICATE HUMAN OWNERSHIP DECISION CAPTURE — NO PROVIDER / NO REPAIR`.
-
-Capturar una decisión humana mínima/source-safe de ownership o disposition para los cuatro grupos. No provider, repair, PREWRITE/Activation, smoke, deploy, merge ni producción.
+Esperar las cuatro decisiones humanas mínimas de Paula. Después, si una decisión implica cambio Auth, preparar un repair focal separado con snapshot/readback/rollback y autorización expresa. No repair dentro del bloque actual.
