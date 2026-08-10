@@ -1,51 +1,48 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-10  
-**Estado vivo:** `C6_AUTH_FINDINGS_ADJUDICATION_STOP_ONE_AMBIGUOUS_DUPLICATE__AUTH_DEV_228_PRESERVED__ZERO_WRITES__NO_SECOND_READ__NO_PRODUCTION`
+**Estado vivo:** `C6_AUTH_DUPLICATE_KEEPER_SOURCE_GATE_STOP_PRE_PROVIDER_FALSE_POSITIVE__AUTH_DEV_228_PRESERVED__ZERO_PROVIDER_READS__NO_REQUEST__NO_PRODUCTION`
 
 ## 1. Fuente vigente
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-3. `app/docs/SOURCE-LOCK-C6-AUTH-SMOKE-FINDINGS-ADJUDICATION-AMBIGUITY-STOP-RETRY-20260810.md`;
-4. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-AUTH-FINDINGS-ADJUDICATION-STOP-20260810.md`;
+3. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-KEEPER-SOURCE-GATE-PREPROVIDER-STOP-RETRY-20260810.md`;
+4. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-AUTH-DUPLICATE-KEEPER-PREPROVIDER-STOP-20260810.md`;
 5. PR #7 y HEAD vivo.
 
 ## 2. No reabrir
 
 - frontend acumulativo, Login, `/app/modules/*`, `/app/core/*` y `CX.data`;
-- SKIP13, multi-Auth cerrado, target lineage `ac93...` y plan v3;
+- SKIP13, multi-Auth, target lineage `ac93...` y plan v3;
 - freeze Auth v4 340/HOLD=0;
 - PREWRITE, Activation, readback y rollback dry-run;
 - Auth DEV 228;
 - HashConfig y lifecycle del smoke;
-- Finanzas, Liquidaciones, Portal Cliente, Portal Shopper y Reservas;
 - estrategia `PROMOTE_EXISTING_CLEAN_PROJECT`.
 
-## 3. Backend Auth actual
+## 3. Estado backend
 
 ```text
-rows=340
-CREATE_AUTH=118
-UPDATE_AUTH=9
-HOLD=0
 AuthUsersAfter=228
 Activation=PASS
 Readback=PASS
 RollbackDryRun=PASS
-PlanDigest=c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4
+FiveDuplicateGroups=FROZEN
+CurrentProviderReads=0
+ProviderRequestEmitted=false
+AuthWrites=0
+Production=false
 ```
 
-## 4. Hallazgo runtime adjudicado
+La adjudicación previa de los cinco pares sigue vigente. El bloque más reciente no los volvió a leer: se detuvo pre-provider al detectar que el source gate confundía los flags seguros `creationTimeUsed:false` / `lastSignInTimeUsed:false` con uso real de metadatos temporales.
 
-Una única lectura provider source-safe confirmó cinco grupos de provider email duplicado. Cuatro grupos tienen dos principals habilitados con claims/scope habilitantes —tres Admin/Operaciones y uno Cliente— y requieren adjudicación focal de keeper/retire. El quinto grupo tiene dos principals habilitados pero ninguno con acceso TyA efectivo; sigue ambiguo respecto de keeper/histórico/técnico.
+## 4. Claude/prototipo
 
-Los cuatro roles fuera de contrato no tienen acceso efectivo; el Admin cross-tenant solapa con el grupo ambiguo; el Shopper outlier carece de shopperId/target scope y tampoco tiene acceso efectivo.
-
-No compensar estos casos desde frontend ni relajar `ROLE_NOT_ALLOWED`, `TENANT_NOT_ALLOWED`, `SHOPPER_SCOPE_REQUIRED` o aislamiento por proyecto.
+No hacer ningún parche frontend ni relajar `ROLE_NOT_ALLOWED`, `TENANT_NOT_ALLOWED`, `PROJECT_SCOPE_REQUIRED` o `SHOPPER_SCOPE_REQUIRED`. Las 20/20 superficies Phase A source-side siguen preservadas.
 
 ## 5. Siguiente bloque backend
 
-`C6 AUTH DUPLICATE KEEPER + TARGET-SCOPE ADJUDICATION READ-ONLY FOCAL`.
+`C6 AUTH DUPLICATE KEEPER SOURCE-GATE FALSE-POSITIVE ROOTFIX → ONE READ FOCAL`.
 
-Sin repair, nuevo smoke, PREWRITE/Activation, writes, merge ni producción hasta nueva autorización.
+Corregir únicamente el falso positivo del gate. Solo con PASS source-only se podrá emitir un request nuevo para máximo una lectura de los mismos diez candidates. Sin repair, PREWRITE/Activation, nuevo smoke, writes, deploy, merge ni producción.
