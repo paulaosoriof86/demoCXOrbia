@@ -1,15 +1,16 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-10  
-**Estado:** `C6_AUTH_DUPLICATE_KEEPER_SOURCE_GATE_STOP_PRE_PROVIDER_FALSE_POSITIVE__AUTH_DEV_228_PRESERVED__ZERO_PROVIDER_READS__NO_REQUEST__NO_PRODUCTION`
+**Estado:** `C6_AUTH_DUPLICATE_KEEPER_ONE_READ_STOP_4_ANCHOR_AMBIGUITIES__FD891_POLICY_CLOSED__AUTH_DEV_228_PRESERVED__NO_SECOND_READ__ZERO_WRITES__NO_PRODUCTION`
 
 ## 1. Control
 
 - repo: `paulaosoriof86/demoCXOrbia`;
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
-- source lock vigente: `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-KEEPER-SOURCE-GATE-PREPROVIDER-STOP-RETRY-20260810.md`;
-- evidencia vigente: `app/docs/evidence/C6-AUTH-DUPLICATE-KEEPER-SOURCE-GATE-PREPROVIDER-STOP-RETRY-20260810.json`;
+- source lock vigente: `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-KEEPER-ONE-READ-FOCAL-STOP-RETRY-20260810.md`;
+- evidencia vigente: `app/docs/evidence/C6-AUTH-DUPLICATE-KEEPER-ONE-READ-FOCAL-STOP-RETRY-20260810.json`;
+- request terminal: `backend/config/c6-auth-duplicate-keeper-targetscope-one-read-request-v2.json` consumido/deshabilitado;
 - freeze rector: `backend/config/c6-shopper-auth-final-freeze-v4.json`;
 - digest rector: `c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4`;
 - producción: intacta.
@@ -43,9 +44,35 @@ SmokeCredentialLifecycle=closed PASS
 
 No reconstruir las 340 identidades.
 
-## 3. Hallazgo previo que sigue vigente
+## 3. Rootfix source-only cerrado PASS
 
-La adjudicación anterior confirmó cinco grupos de provider email duplicado. Cuatro grupos tienen dos principals habilitados con claims/scope habilitantes; el quinto tiene dos principals habilitados sin acceso TyA efectivo.
+El falso positivo anterior fue corregido sin provider:
+
+```text
+toolRestoreCommit=ed7ba0d61dc2c52594bfdbf6361ed5c3e141d300
+sourceGateCommit=72478e582dd917f287f16d6447b3b5f14b8ad26f
+sourceGateRunId=31441607796
+sourceGateJobId=93627306098
+sourceGate=PASS_C6_AUTH_DUPLICATE_KEEPER_TARGET_SCOPE_SOURCE_ROOTFIX_ZERO_WRITES_ONE_READ_NO_PII
+```
+
+La aserción ahora bloquea uso real de `user.metadata.creationTime` o `user.metadata.lastSignInTime`, pero admite los flags negativos de seguridad. `node --check`, self-test, frozen-universe, lineage, zero-writes y zero-PII pasaron.
+
+## 4. Única lectura focal ejecutada
+
+```text
+requestId=c6-auth-duplicate-keeper-targetscope-one-read-20260810-01
+requestCommit=f186b5a440b8c3db5fd2c747daeb7a37c6e0901b
+runId=31441779926
+jobId=93627815703
+artifactId=9083100724
+artifactDigest=sha256:8c3a2026027e678deb1aa0dfc828c45cdf1a251b9cee1617eaa9feb10c82eba2
+providerReads=1
+secondProviderRead=false
+AuthPopulation=228
+```
+
+Universo exacto preservado:
 
 ```text
 1acdcb3782b7cf351056 -> 6dee7f31c738218ce63a / b561d9c46660715e214f
@@ -55,52 +82,46 @@ ae2f920fe6d9ce1fdd82 -> ca9e2f644334833ab572 / 360af509dcdcd1880f04
 fd891812eca020d27ee3 -> e1773a24c98d6bbe26c3 / 50d360f17c1fbdd69770
 ```
 
-Source lock histórico inmediato: `app/docs/SOURCE-LOCK-C6-AUTH-SMOKE-FINDINGS-ADJUDICATION-AMBIGUITY-STOP-RETRY-20260810.md`.
-
-## 4. Bloque actual — detenido pre-provider
-
-Se preparó source-only un adjudicador focal y su gate, pero el gate contenía una aserción textual demasiado amplia:
+## 5. Resultado terminal — STOP_RETRY
 
 ```text
-!tool.includes('creationTime') && !tool.includes('lastSignInTime')
+decision=STOP_RETRY_C6_AUTH_DUPLICATE_KEEPER_TARGET_SCOPE_ADJUDICATION
+resolvedAccessGroups=0
+ambiguousAccessGroups=4
+blockedPolicyClosed=1
+errorCode=KEEPER_ANCHOR_INSUFFICIENT_4
+errorFingerprint=e892496d8de6ed9a2705b24c
 ```
 
-La herramienta solo declaraba los flags negativos:
+### Tres grupos Admin/Operaciones
+
+`1acd...`, `2c4d...` y `542...` contienen pares que resultaron equivalentes bajo los discriminadores autorizados: habilitación, provider PASSWORD, clase de dirección externa, mismo rol/familia, mismo namespace, tenant/project class, acceso efectivo, cero marcadores técnicos y ninguna coincidencia con `canonicalImportedStaffClass`.
+
+Clasificación en los tres: `AMBIGUOUS_STAFF_KEEPER_NO_UNIQUE_ALLOWED_ANCHOR`.
+
+### Grupo Cliente `ae2f...`
+
+Ambos principals están habilitados, son PASSWORD/external, rol Cliente, tenant TyA, target project y acceso efectivo. Ninguno coincide con la lineage canónica de readback y ambos coinciden con los dos hashes históricos normalizados.
+
+Clasificación: `AMBIGUOUS_CLIENT_KEEPER_LINEAGE`.
+
+### Grupo `fd891...`
+
+Política técnica cerrada sin seleccionar keeper:
 
 ```text
-creationTimeUsed:false
-lastSignInTimeUsed:false
+e1773a24c98d6bbe26c3 = OUTSIDE_CONTRACT + OTHER_TENANT + effectiveTyaAccess=false
+50d360f17c1fbdd69770 = ADMIN_OPERACIONES + OTHER_TENANT + effectiveTyaAccess=false
+classification=POLICY_CLOSED_NO_TYA_EFFECTIVE_ACCESS
+policy=NO_TYA_REPAIR_IN_CURRENT_SCOPE__PRESERVE_BLOCKED_PRINCIPALS_UNCHANGED_PENDING_OWNER_OR_TENANT_POLICY
 ```
 
-Por tanto la comprobación habría producido un falso positivo aunque esos metadatos no fueran usados como selectores.
+No requiere repair TyA dentro del alcance actual.
+
+## 6. Fail-close y seguridad
 
 ```text
-classification=PRE_PROVIDER_SOURCE_GATE_FALSE_POSITIVE_TEMPORAL_SAFETY_FLAG_MATCH
-toolCommit=57e610901e524cf4e551bea031b9aba9c0634b6c
-sourceGateCommit=b6e562fa548bb69bf11d1638f5f1dd48315fc318
-sourceGatePass=false
-providerRequestEmitted=false
-providerWorkflowCreated=false
-providerReadsCurrentBlock=0
-```
-
-## 5. Lineage source-safe preparado, no adjudicado
-
-Antes del stop se confirmó únicamente desde evidencia existente:
-
-- Cliente: fingerprint UID canónico con readback + password sign-in PASS;
-- Cliente histórico: dos hashes técnicos de principals normalizados;
-- staff importado: `super=1`, `coordinador=2`, namespace `staff`, identificador interno namespaced;
-- continuidad post-import: `namespace none=17`, `staff=3`.
-
-No se aplicó esta información a ningún candidate porque no se alcanzó provider.
-
-## 6. Fail-close
-
-```text
-sourceGateRemovalCommit=b4c2840759b8fe8258ec7d8d071afbc0ae647803
-toolRemovalCommit=0850e078d8d9e6eea47eb2ac096b79c22a3b61f4
-providerReads=0
+providerReads=1
 secondProviderRead=false
 providerWrites=0
 AuthWrites=0
@@ -112,39 +133,54 @@ StorageWrites=0
 PREWRITE=false
 Activation=false
 newSmoke=false
-CloudBuild=0
-CloudRun=0
-Hosting=0
 Make=0
 Gemini=0
 payments=0
+deploys=0
 merge=false
 production=false
-rawPIIExported=false
+PII/credentials exported=false
+creationTimeUsed=false
+lastSignInTimeUsed=false
+resultOrderUsed=false
 ```
 
-No existe request provider ni workflow provider de este bloque.
+```text
+providerWorkflowRemoved=3c22b00e54191b0a032f4808b20a1fec81f592f1
+requestConsumed=0320dfee318fd52aa4cc3b5eb78bb5b71336dc3c
+request.enabled=false
+request.consumed=true
+request.allowedExecutions=0
+sourceGateWorkflowRemoved=220067139b3b1540f53a0c38429d56093b832d85
+```
 
-## 7. Próximo bloque exacto
+La autorización one-read está consumida. No ejecutar segunda lectura ni repair.
+
+## 7. Causa raíz pendiente
+
+Ya no existe un fallo de harness ni falta una observación provider. Los discriminadores técnicos permitidos son iguales para los tres pares staff y no únicos para Cliente. Repetir la lectura no agrega evidencia.
+
+## 8. Próximo bloque exacto
 
 Solo bajo nueva autorización:
 
-`C6 AUTH DUPLICATE KEEPER SOURCE-GATE FALSE-POSITIVE ROOTFIX → ONE READ FOCAL`
+`C6 AUTH DUPLICATE OWNERSHIP ANCHOR SOURCE-SAFE EVIDENCE RECONCILIATION — NO PROVIDER`
 
-Corregir exclusivamente la aserción temporal source-only para bloquear acceso real a `user.metadata.creationTime`/`lastSignInTime` sin bloquear flags negativos. Solo con PASS podrá emitirse un request nuevo/no superpuesto para máximo una lectura provider de los mismos diez candidate fingerprints. Ante empate o fallo: `STOP_RETRY`, sin segundo provider read.
+Usar exclusivamente evidencia/source-safe existente para buscar una ancla de propiedad/lineage no temporal, no PII y reproducible para los cuatro grupos A–D. Cero provider reads. Si no existe una ancla única, declarar `HUMAN_OWNERSHIP_DECISION_REQUIRED`; no inferir keeper.
 
 Cero repair, PREWRITE, Activation, nuevo smoke, Auth/IAM/Firestore/HR/Rules/Storage writes, Make, Gemini, pagos, deploy, merge o producción.
 
-## 8. Phase A preservada
+## 9. Phase A preservada
 
-Frontend acumulativo, Login, `CX.data`, HR histórico, shoppers, postulaciones, certificaciones, visitas, liquidaciones/pagos, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto, sincronización HR/plataforma, Academia y las 20/20 superficies Phase A source-side permanecen preservadas.
+Frontend acumulativo, Login, `CX.data`, HR histórico, shoppers, postulaciones, certificaciones, visitas, liquidaciones/pagos, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto, sincronización HR/plataforma, Academia y Auth DEV=228 permanecen preservados.
 
-## 9. Cierre
+## 10. Cierre obligatorio
 
-- **Qué se hizo:** preparación source-only focal y revisión de lineage ya existente.
-- **Avance Phase A:** Auth DEV 228 permanece PASS; no hubo retroceso funcional.
-- **Qué se preservó:** cero provider reads/writes, frontend y producción.
-- **Claude/Academia:** addenda actualizados; sin parche frontend.
-- **Pendiente real:** corregir una aserción de gate y adjudicar los cinco pares.
-- **Estado seguro:** archivos transitorios retirados; ningún request provider emitido.
-- **Bloqueo comprobado:** falso positivo source-gate pre-provider, no problema de Auth.
+- **Qué se hizo:** rootfix source-only PASS y una lectura focal one-shot.
+- **Avance Phase A:** `fd891...` cerrado para TyA; cuatro casos reducidos a problema de ownership anchor.
+- **Qué se preservó:** Auth 228, digest v4, frontend y operación Phase A.
+- **Claude/prototipo:** sin cambio frontend ni relajación RBAC.
+- **Academia:** patrón fail-close/keeper proof documentado.
+- **Pendiente real:** ancla de ownership para cuatro grupos.
+- **Estado seguro:** request consumido, workflows temporales retirados, cero writes/producción.
+- **Bloqueo comprobado:** `KEEPER_ANCHOR_INSUFFICIENT_4`.
