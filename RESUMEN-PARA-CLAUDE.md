@@ -1,14 +1,14 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-10  
-**Estado vivo:** `C6_AUTH_DUPLICATE_KEEPER_SOURCE_GATE_STOP_PRE_PROVIDER_FALSE_POSITIVE__AUTH_DEV_228_PRESERVED__ZERO_PROVIDER_READS__NO_REQUEST__NO_PRODUCTION`
+**Estado vivo:** `C6_AUTH_DUPLICATE_KEEPER_ONE_READ_STOP_4_ANCHOR_AMBIGUITIES__FD891_POLICY_CLOSED__AUTH_DEV_228_PRESERVED__NO_SECOND_READ__ZERO_WRITES__NO_PRODUCTION`
 
 ## 1. Fuente vigente
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-3. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-KEEPER-SOURCE-GATE-PREPROVIDER-STOP-RETRY-20260810.md`;
-4. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-AUTH-DUPLICATE-KEEPER-PREPROVIDER-STOP-20260810.md`;
+3. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-KEEPER-ONE-READ-FOCAL-STOP-RETRY-20260810.md`;
+4. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-AUTH-DUPLICATE-KEEPER-ONE-READ-STOP-20260810.md`;
 5. PR #7 y HEAD vivo.
 
 ## 2. No reabrir
@@ -28,21 +28,26 @@ AuthUsersAfter=228
 Activation=PASS
 Readback=PASS
 RollbackDryRun=PASS
-FiveDuplicateGroups=FROZEN
-CurrentProviderReads=0
-ProviderRequestEmitted=false
+DuplicateKeeperSourceRootfix=PASS
+DuplicateKeeperProviderReads=1
+SecondProviderRead=false
+ResolvedKeeperGroups=0/4
+fd891PolicyClosed=true
+CurrentDecision=STOP_RETRY_KEEPER_ANCHOR_INSUFFICIENT_4
 AuthWrites=0
 Production=false
 ```
 
-La adjudicación previa de los cinco pares sigue vigente. El bloque más reciente no los volvió a leer: se detuvo pre-provider al detectar que el source gate confundía los flags seguros `creationTimeUsed:false` / `lastSignInTimeUsed:false` con uso real de metadatos temporales.
+La única lectura focal autorizada demostró que los tres pares Admin/Operaciones son equivalentes bajo los discriminadores permitidos y que el par Cliente tiene lineage no única: ninguno coincide con la lineage canónica disponible y ambos coinciden con los dos hashes históricos. Por tanto no existe keeper reproducible para esos cuatro grupos.
+
+El grupo `fd891...` sí quedó cerrado como `POLICY_CLOSED_NO_TYA_EFFECTIVE_ACCESS`: ambos principals carecen de acceso TyA efectivo y no requieren repair TyA en el alcance actual.
 
 ## 4. Claude/prototipo
 
-No hacer ningún parche frontend ni relajar `ROLE_NOT_ALLOWED`, `TENANT_NOT_ALLOWED`, `PROJECT_SCOPE_REQUIRED` o `SHOPPER_SCOPE_REQUIRED`. Las 20/20 superficies Phase A source-side siguen preservadas.
+No hacer ningún parche frontend ni relajar `ROLE_NOT_ALLOWED`, `TENANT_NOT_ALLOWED`, `PROJECT_SCOPE_REQUIRED` o `SHOPPER_SCOPE_REQUIRED`. No agregar selectores para escoger entre duplicados ni compensar este problema en UI. Las 20/20 superficies Phase A source-side siguen preservadas.
 
 ## 5. Siguiente bloque backend
 
-`C6 AUTH DUPLICATE KEEPER SOURCE-GATE FALSE-POSITIVE ROOTFIX → ONE READ FOCAL`.
+`C6 AUTH DUPLICATE OWNERSHIP ANCHOR SOURCE-SAFE EVIDENCE RECONCILIATION — NO PROVIDER`.
 
-Corregir únicamente el falso positivo del gate. Solo con PASS source-only se podrá emitir un request nuevo para máximo una lectura de los mismos diez candidates. Sin repair, PREWRITE/Activation, nuevo smoke, writes, deploy, merge ni producción.
+Trabajar solo sobre evidencia source-safe existente para buscar una ancla no temporal, no PII y reproducible de propiedad/lineage para los cuatro grupos A–D. Si no existe, declarar `HUMAN_OWNERSHIP_DECISION_REQUIRED`. Cero provider reads, repair, PREWRITE/Activation, nuevo smoke, writes, deploy, merge o producción.
