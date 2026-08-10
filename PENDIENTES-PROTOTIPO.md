@@ -1,60 +1,52 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-10  
-**Estado vivo:** `C6_AUTH_FINDINGS_ADJUDICATION_STOP_ONE_AMBIGUOUS_DUPLICATE__AUTH_DEV_228_PRESERVED__ZERO_WRITES__NO_SECOND_READ__NO_PRODUCTION`
+**Estado vivo:** `C6_AUTH_DUPLICATE_KEEPER_SOURCE_GATE_STOP_PRE_PROVIDER_FALSE_POSITIVE__AUTH_DEV_228_PRESERVED__ZERO_PROVIDER_READS__NO_REQUEST__NO_PRODUCTION`
 
 ## 1. Fuente de verdad
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-3. `app/docs/SOURCE-LOCK-C6-AUTH-SMOKE-FINDINGS-ADJUDICATION-AMBIGUITY-STOP-RETRY-20260810.md`;
-4. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-AUTH-FINDINGS-ADJUDICATION-STOP-20260810.md`;
+3. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-KEEPER-SOURCE-GATE-PREPROVIDER-STOP-RETRY-20260810.md`;
+4. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-AUTH-DUPLICATE-KEEPER-PREPROVIDER-STOP-20260810.md`;
 5. PR #7 y HEAD vivo.
 
 ## 2. Cerrado y protegido
 
 - frontend acumulativo y módulos Phase A;
-- freeze Auth v4: 340 filas, HOLD=0, digest `c0c31f...`;
-- SKIP13, multi-Auth y lineage `ac93...` cerrados;
-- PREWRITE, Activation, readback y rollback dry-run PASS;
-- Auth DEV 228;
-- HashConfig y lifecycle del smoke cerrados;
-- 20/20 superficies Phase A source-side preservadas;
+- freeze Auth v4 340/HOLD=0;
+- Auth DEV 228, Activation/readback/rollback dry-run PASS;
+- SKIP13, multi-Auth, `ac93...`, HashConfig y lifecycle de credencial cerrados;
+- 20/20 superficies Phase A source-side;
 - estrategia `PROMOTE_EXISTING_CLEAN_PROJECT`.
 
 ## 3. P0 vivo
 
-`C6 AUTH DUPLICATE KEEPER + TARGET-SCOPE ADJUDICATION READ-ONLY FOCAL`.
+`C6 AUTH DUPLICATE KEEPER SOURCE-GATE FALSE-POSITIVE ROOTFIX → ONE READ FOCAL`.
 
-La única adjudicación provider actual produjo:
+La adjudicación anterior dejó cinco pares congelados. El último bloque no alcanzó provider porque el gate source-only buscaba por substring `creationTime`/`lastSignInTime` y chocaba con flags negativos de seguridad.
 
 ```text
-duplicateGroups=5
-claimScopeDuplicateDefects=4
-ambiguousDuplicateGroups=1
-unknownRoleNoEffectiveAccess=4
-adminCrossTenantNoTyaAccess=1
-shopperMissingScopeNoEffectiveAccess=1
-providerReads=1
-secondProviderRead=false
+providerReadsCurrentBlock=0
+providerRequestEmitted=false
+providerWorkflowCreated=false
+sourceGate/tool transitorios=removed
 ```
-
-Cuatro grupos tienen dos principals habilitados con claims/scope habilitantes, pero todavía no existe keeper/retire reproducible ni sign-in probe. El quinto grupo tiene dos principals habilitados sin acceso TyA efectivo y quedó ambiguo respecto de keeper/histórico/técnico.
 
 ## 4. No hacer
 
-- no reconstruir las 340 identidades;
+- no reconstruir 340 identidades;
 - no repetir PREWRITE ni Activation;
-- no ejecutar repair ni nuevo smoke con la autorización consumida;
+- no repair ni nuevo smoke con la autorización consumida;
 - no compensar duplicados desde frontend;
-- no relajar roles/tenant/shopper scope;
-- no crear proyecto nuevo, rama nueva ni PR nuevo;
+- no relajar roles/tenant/project/shopper scope;
+- no nuevo proyecto, rama o PR;
 - no deploy, merge ni producción sin autorización específica.
 
-## 5. Después del P0
+## 5. Ruta corta
 
-Si la adjudicación focal demuestra keeper/retire inequívocos, solicitar repair Auth mínimo con snapshot/readback/rollback. Solo después ejecutar un smoke acumulativo read-only nuevo; luego validación humana y gate específico de cutover.
+Corregir solo la aserción temporal del source gate. Con PASS, realizar una única lectura provider de los mismos diez candidate fingerprints. Si keeper/retire queda inequívoco, recién entonces solicitar un repair Auth mínimo separado con snapshot/readback/rollback; después, un smoke acumulativo read-only y gate de cutover.
 
 ## 6. Seguridad
 
-El bloque actual terminó con un provider read, cero writes, cero deploy, cero merge y producción intacta. Request consumido/deshabilitado y workflows temporales retirados.
+El bloque más reciente terminó pre-provider con cero reads/writes, cero deploy, cero merge y producción intacta.
