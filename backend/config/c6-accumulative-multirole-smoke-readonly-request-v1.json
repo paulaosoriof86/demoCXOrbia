@@ -1,10 +1,10 @@
 {
   "schemaVersion": "cxorbia.c6.accumulative-multirole-smoke-readonly.request.v1",
   "requestId": "c6-accumulative-multirole-smoke-readonly-20260810-01",
-  "enabled": true,
-  "consumed": false,
-  "status": "authorized_execute_once",
-  "allowedExecutions": 1,
+  "enabled": false,
+  "consumed": true,
+  "status": "consumed_terminal_stop_retry_identity_scope_findings",
+  "allowedExecutions": 0,
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-10_c6_smoke_readonly_rootfix",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -46,5 +46,54 @@
   "secondSmokeProviderAttempt": false,
   "freshEphemeralCredentialRequired": true,
   "zeroPiiExportRequired": true,
-  "requiredDecision": "PASS_ACCUMULATIVE_MULTIROLE_SMOKE"
+  "requiredDecision": "PASS_ACCUMULATIVE_MULTIROLE_SMOKE",
+  "terminal": {
+    "runId": 31424532292,
+    "jobId": 93572980396,
+    "artifactId": 9076650610,
+    "artifactDigest": "sha256:78844e2fd0a0ce6137543f14802a91522377926ab04bb4cb8ce5bd7789f0545c",
+    "decision": "STOP_RETRY_C6_ACCUMULATIVE_MULTIROLE_SMOKE_READONLY",
+    "errorCode": "DUPLICATE_PROVIDER_EMAILS",
+    "errorFingerprint": "ce53ab4ec34141e4e696e3c7",
+    "providerSmokeAttempts": 1,
+    "secondSmokeProviderAttempt": false,
+    "providerReads": 1,
+    "authPopulation": 228,
+    "enabled": 227,
+    "disabled": 1,
+    "duplicateProviderEmailGroups": 5,
+    "unknownEnabledRoles": 4,
+    "adminOperaciones": {
+      "enabled": 11,
+      "tenantAllowed": 10,
+      "namespaceCompatible": 11
+    },
+    "shopper": {
+      "enabled": 209,
+      "tenantAllowed": 209,
+      "projectScoped": 209,
+      "targetScoped": 208,
+      "shopperScopePresent": 208,
+      "namespaceCompatible": 209,
+      "duplicateShopperScopes": 0
+    },
+    "cliente": {
+      "enabled": 3,
+      "tenantAllowed": 3,
+      "projectScoped": 3,
+      "targetScoped": 3,
+      "namespaceCompatible": 3
+    },
+    "phaseASurfacesRequired": 20,
+    "phaseASurfacesPresent": 20,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "iamWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "rawPiiExported": false,
+    "production": false
+  }
 }
