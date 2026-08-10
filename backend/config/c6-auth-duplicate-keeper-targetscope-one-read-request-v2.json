@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.c6.auth-duplicate-keeper-targetscope-one-read.request.v2",
   "requestId": "c6-auth-duplicate-keeper-targetscope-one-read-20260810-01",
-  "enabled": true,
-  "consumed": false,
-  "allowedExecutions": 1,
+  "enabled": false,
+  "consumed": true,
+  "allowedExecutions": 0,
   "authorizationSource": "current_conversation_2026-08-10_c6_auth_duplicate_keeper_source_gate_rootfix_one_read_focal",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
@@ -43,5 +43,19 @@
   "payments": 0,
   "deploys": 0,
   "merge": false,
-  "production": false
+  "production": false,
+  "terminal": {
+    "runId": 31441779926,
+    "jobId": 93627815703,
+    "artifactId": 9083100724,
+    "artifactDigest": "sha256:8c3a2026027e678deb1aa0dfc828c45cdf1a251b9cee1617eaa9feb10c82eba2",
+    "decision": "STOP_RETRY_C6_AUTH_DUPLICATE_KEEPER_TARGET_SCOPE_ADJUDICATION",
+    "providerReads": 1,
+    "secondProviderRead": false,
+    "resolvedAccessGroups": 0,
+    "ambiguousAccessGroups": 4,
+    "blockedPolicyClosed": 1,
+    "errorCode": "KEEPER_ANCHOR_INSUFFICIENT_4",
+    "errorFingerprint": "e892496d8de6ed9a2705b24c"
+  }
 }
