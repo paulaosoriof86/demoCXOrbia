@@ -2,27 +2,26 @@
 
 **Fecha:** 2026-08-10  
 **Estado:** ACTIVO Y RECONCILIADO  
-**Estado vivo:** `C6_AUTH_PLAN_V4_PREWRITE_STOP_HASH_CONFIG_EMPTY__GET_SHAPE_REPAIR_PASS__ZERO_AUTH_WRITES__NO_SECOND_PROVIDER_ATTEMPT__NO_PRODUCTION`
+**Estado vivo:** `C6_AUTH_HASHCONFIG_READINESS_STOP_PRE_PROVIDER_SYNTAX__ZERO_PROVIDER_READS__ZERO_AUTH_WRITES__NO_REQUEST_EMITTED__NO_PRODUCTION`
 
 ## 1. Orden de prevalencia
 
 1. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `app/docs/SOURCE-LOCK-C6-AUTH-PLAN-V4-PREWRITE-HASH-CONFIG-EMPTY-STOP-RETRY-20260810.md`;
-3. `app/docs/evidence/C6-AUTH-PLAN-V4-PREWRITE-HASH-CONFIG-EMPTY-STOP-RETRY-20260810.json`;
+2. `app/docs/SOURCE-LOCK-C6-AUTH-HASHCONFIG-READINESS-PREPROVIDER-SYNTAX-STOP-RETRY-20260810.md`;
+3. `app/docs/evidence/C6-AUTH-HASHCONFIG-READINESS-PREPROVIDER-SYNTAX-STOP-RETRY-20260810.json`;
 4. `backend/config/c6-shopper-auth-final-freeze-v4.json` — freeze rector actual, sin cambios;
-5. `backend/config/c6-auth-plan-v4-activation-dev-request-v2.json` — consumido/deshabilitado;
-6. `tools/qa/cxorbia-c6-auth-plan-v4-activation-dev-v2.mjs` — wrapper source-only actual, no ejecutable sin request nuevo;
-7. `backend/contracts/c6-auth-plan-v4-activation-dev-v1.json`;
-8. `app/docs/SOURCE-LOCK-C6-AUTH-PLAN-V4-PREWRITE-HASH-CONFIG-STOP-RETRY-20260807.md` — histórico inmediato;
-9. `app/docs/evidence/C6-AUTH-PLAN-V4-PREWRITE-HASH-CONFIG-STOP-RETRY-20260807.json`;
+5. `backend/contracts/c6-auth-plan-v4-activation-dev-v1.json`;
+6. `app/docs/SOURCE-LOCK-C6-AUTH-PLAN-V4-PREWRITE-HASH-CONFIG-EMPTY-STOP-RETRY-20260810.md` — histórico inmediato;
+7. `app/docs/evidence/C6-AUTH-PLAN-V4-PREWRITE-HASH-CONFIG-EMPTY-STOP-RETRY-20260810.json`;
+8. `backend/config/c6-auth-plan-v4-activation-dev-request-v2.json` — consumido/deshabilitado;
+9. `tools/qa/cxorbia-c6-auth-plan-v4-activation-dev-v2.mjs` — histórico source-only, no ejecutar sin nuevo contrato;
 10. `app/docs/SOURCE-LOCK-C6-AUTH-UPDATE-UNIVERSE-BATCH-PLAN-V4-PASS-20260807.md` — histórico que congeló v4;
-11. `app/docs/evidence/C6-AUTH-UPDATE-UNIVERSE-BATCH-REVALIDATION-PLAN-V4-PASS-20260807.json`;
-12. `app/docs/SOURCE-LOCK-C6-MULTI-AUTH-FINAL-DISCRIMINATOR-TENANT-ADJUDICATION-STOP-RETRY-20260807.md` — identidad cerrada;
-13. `app/docs/SOURCE-LOCK-C6-DIRECT-RUNNER-DEV-DEPLOY-PASS-20260807.md`;
-14. `backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json`;
-15. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json`;
-16. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-17. addenda vigentes y PR #7.
+11. `app/docs/SOURCE-LOCK-C6-MULTI-AUTH-FINAL-DISCRIMINATOR-TENANT-ADJUDICATION-STOP-RETRY-20260807.md` — identidad cerrada;
+12. `app/docs/SOURCE-LOCK-C6-DIRECT-RUNNER-DEV-DEPLOY-PASS-20260807.md`;
+13. `backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json`;
+14. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json`;
+15. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+16. addenda vigentes y PR #7.
 
 ## 2. Estado rector
 
@@ -37,11 +36,14 @@ MultiAuthAdjudication=closed
 TargetLineage(ac93)=closed
 UpdateUniverseBatch=closed PASS
 HashConfigGetShapeRepair=PASS_SOURCE_ONLY
-PlanV4Prewrite=STOP_RETRY_HASH_CONFIG_EMPTY
-ProviderAttemptsCurrentBlock=1
+HashConfigResponsePathDiagnosis=OPEN_SOURCE_ONLY
+CurrentBlock=STOP_RETRY_PRE_PROVIDER_SYNTAX
+ProviderReadsCurrentBlock=0
+ProviderPrewriteAttemptsCurrentBlock=0
 SecondProviderAttempt=false
 WriteBoundaryEntered=false
 AuthWritesCurrentBlock=0
+RequestV3Emitted=false
 ```
 
 ## 3. Plan v4 congelado e inmutable
@@ -64,80 +66,43 @@ digest=c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4
 
 No reabrir plan v3, SKIP13, multi-Auth, lineage `ac93...` ni reconstrucción de identidad.
 
-## 4. Reparación source-only y PREWRITE terminal
-
-Reparación de forma GET:
+## 4. Terminal del bloque vigente
 
 ```text
-sourceRepairHead=c6d4fdb83303a0293b1c6adce375b522d0c29db8
-sourceRepairRunId=31402335372
-decision=PASS_C6_HASH_CONFIG_SOURCE_REPAIR_STATIC_ZERO_WRITES
-```
-
-Único PREWRITE autorizado:
-
-```text
-requestId=c6-auth-plan-v4-activation-dev-20260810-02
-requestCommit=f0f655608f6fe53a976096f53d64e9c95670ec64
-runId=31402395938
-jobId=93500386091
-artifactId=9068194459
-artifactDigest=sha256:a469cf5d2d6607e8a205af52cbef78042a814886d7be5229480cfadce05013a9
-decision=STOP_RETRY_C6_AUTH_PLAN_V4_PREWRITE
-errorCode=HASH_CONFIG_EMPTY
-errorFingerprint=e9514406bb62df47b26382a9
-providerAttempts=1
-secondProviderAttempt=false
-prewritePass=false
-writeBoundaryEntered=false
-snapshotProduced=false
-AuthCreates=0
-AuthUpdates=0
-duplicateDisables=0
-providerWriteCalls=0
-runtimeSmokeExecuted=false
-```
-
-## 5. Diagnóstico vigente
-
-El HTTP 400 por `?mask=hashConfig` quedó superado. El siguiente defecto está en la extracción de respuesta: el ejecutor busca `body.hashConfig || body.hash_config`, mientras el esquema oficial `Config` ubica `hashConfig` bajo `signIn.hashConfig`.
-
-Antes de un nuevo provider PREWRITE también debe comprobarse read-only/source-only la disponibilidad del permiso `firebaseauth.configs.getHashConfig` del principal exacto. No se realizó segundo provider attempt.
-
-## 6. Fail-close
-
-```text
-request=consumed/disabled
-allowedExecutions=0
-oneShotWorkflow=removed
-sourceRepairWorkflow=removed
-providerAttempts=1
-secondProviderAttempt=false
-AuthExecuted=false
+sourceGateCommit=4c5d91c34401e8cc239594be7b907966e133b6cb
+runId=31415767771
+jobId=93544290309
+classification=PRE_PROVIDER_WRAPPER_SYNTAX_ERROR
+error=SyntaxError: missing ) after argument list
+principalLoad=SKIPPED
+iamReadiness=SKIPPED
+identityToolkitConfigRead=SKIPPED
+providerReads=0
+providerPrewriteAttempts=0
+requestV3Emitted=false
 AuthWrites=0
-FirestoreWrites=0
-membershipWrites=0
-HRWrites=0
-RulesWrites=0
-StorageWrites=0
-CloudBuild=0
-CloudRun=0
-Hosting=0
-Make=0
-Gemini=0
-payments=0
-merge=false
-production=false
 ```
 
-## 7. Siguiente acción exacta
+El STOP ocurrió en `node --check`, antes de credenciales/proveedor. Por contrato no se corrigió ni reintentó dentro del mismo macrobloque.
 
-Solo bajo autorización nueva:
+## 5. Fail-close
 
-`C6 AUTH V4 HASH CONFIG RESPONSE PATH + PERMISSION READINESS SOURCE-ONLY → SINGLE PREWRITE RETRY`.
+Se retiraron el workflow, el wrapper v3 y el probe readiness creados temporalmente. No existe autorización latente ni request nuevo ejecutable.
 
-Debe corregir únicamente la ruta de extracción al esquema `Config.signIn.hashConfig`, verificar read-only el permiso/disponibilidad de hash config del principal exacto, mantener freeze/digest v4 y permitir como máximo un PREWRITE nuevo. Solo con PREWRITE PASS, exactamente 8 rollback entries y snapshot cifrado roundtrip se cruza el Auth write boundary; después readback, idempotencia, rollback dry-run y smoke acumulativo Admin/Operaciones, Shopper y Cliente.
+```text
+workflowRemovalCommit=223677b589cf77607672bb4058c6ea6654ef9183
+v3WrapperRemovalCommit=fa1b42bcaa2d2139f2460d7984153bb7d727cace
+readinessProbeRemovalCommit=b6afe84cb67e8b207fe724d428a0afe7f403b1c8
+```
 
-## 8. Phase A preservada
+## 6. Siguiente acción exacta
+
+Solo bajo nueva autorización:
+
+`C6 AUTH V4 HASHCONFIG HARNESS SYNTAX ROOTFIX SOURCE-ONLY → READINESS READ-ONLY → SINGLE PREWRITE`.
+
+Primero debe existir PASS offline de sintaxis y contrato; solo entonces se permite la lectura read-only de permiso/material. Solo con readiness PASS se emite request PREWRITE. Ante cualquier fallo: `STOP_RETRY`, sin segundo provider attempt.
+
+## 7. Phase A preservada
 
 Frontend, Login, `CX.data`, HR histórico, shoppers, postulaciones, certificaciones, visitas, liquidaciones/pagos, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto, sincronización HR/plataforma y Academia permanecen preservados.
