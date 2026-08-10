@@ -1,22 +1,24 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-10  
-**Estado:** `C6_AUTH_HASHCONFIG_READINESS_STOP_PRE_PROVIDER_SYNTAX__ZERO_PROVIDER_READS__ZERO_AUTH_WRITES__NO_REQUEST_EMITTED__NO_PRODUCTION`
+**Estado:** `C6_AUTH_V4_ACTIVATED_DEV__READBACK_ROLLBACK_DRYRUN_PASS__SMOKE_STOP_CREDENTIAL_LIFECYCLE__NO_SECOND_PROVIDER_ATTEMPT__NO_PRODUCTION`
 
 ## 1. Control
 
 - repo: `paulaosoriof86/demoCXOrbia`;
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
-- source lock vigente: `app/docs/SOURCE-LOCK-C6-AUTH-HASHCONFIG-READINESS-PREPROVIDER-SYNTAX-STOP-RETRY-20260810.md`;
-- evidencia terminal: `app/docs/evidence/C6-AUTH-HASHCONFIG-READINESS-PREPROVIDER-SYNTAX-STOP-RETRY-20260810.json`;
+- source lock vigente: `app/docs/SOURCE-LOCK-C6-AUTH-V4-ACTIVATION-PASS-SMOKE-CREDENTIAL-LIFECYCLE-STOP-RETRY-20260810.md`;
+- evidencia terminal: `app/docs/evidence/C6-AUTH-V4-ACTIVATION-PASS-SMOKE-CREDENTIAL-LIFECYCLE-STOP-RETRY-20260810.json`;
 - freeze rector: `backend/config/c6-shopper-auth-final-freeze-v4.json`;
 - digest rector: `c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4`;
-- request ejecutable nuevo: ninguno;
-- workflow del bloque: retirado;
+- request v3: consumido/deshabilitado;
+- allowedExecutions: 0;
+- workflows temporales de source gate/readiness/activation: retirados;
 - producción: intacta;
-- Auth ejecutado: no;
-- write boundary alcanzado: no.
+- Auth DEV ejecutado: sí;
+- write boundary alcanzado: sí;
+- rollback real ejecutado: no.
 
 ## 2. Identidad cerrada — no reabrir
 
@@ -24,13 +26,13 @@
 SKIP13=closed 13/13
 multiAuthProfile=7cc28c78de9bfda01d14
 keeper=4e6d26551d11db444bd0
-duplicateAccessToRetire=9b2b7ca1bd72c1301d29
+duplicateAccessRetired=9b2b7ca1bd72c1301d29
 retirementMode=DISABLE_ONLY_NO_DELETE
 targetLineage(ac93)=closed
 updateUniversePlanV3=closed
 ```
 
-No reconstruir identidad ni plan.
+No reconstruir identidad, no regenerar plan y no repetir PREWRITE por el fallo posterior del smoke.
 
 ## 3. Freeze v4 rector
 
@@ -48,65 +50,130 @@ claimsChanges=1
 expectedAuthUsersBefore=110
 expectedAuthUsersAfter=228
 rowsDigest=c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4
-AuthExecuted=false
 ```
 
-## 4. Diagnóstico previo preservado
+## 4. HashConfig rootfix y readiness
 
-El `HASH_CONFIG_HTTP_400` ya había quedado superado y el bloqueo anterior se redujo a `HASH_CONFIG_RESPONSE_PATH_MISMATCH`: el ejecutor heredado esperaba `body.hashConfig || body.hash_config`, mientras el esquema oficial ubica el material bajo `Config.signIn.hashConfig`.
-
-## 5. Macrobloque autorizado actual — terminal
-
-Se preparó un harness v3 para corregir exclusivamente esa extracción y, solo después de un PASS offline, validar read-only `firebaseauth.configs.getHashConfig` y disponibilidad del material.
-
-Ejecución:
+Harness source-only:
 
 ```text
-sourceGateCommit=4c5d91c34401e8cc239594be7b907966e133b6cb
-runId=31415767771
-jobId=93544290309
-failedStep=Static response-path repair and zero-write gate
-classification=PRE_PROVIDER_WRAPPER_SYNTAX_ERROR
-error=SyntaxError: missing ) after argument list
+sourceGateCommit=893cac95b8b3b37039d1644de3c2412c5a97b763
+sourceGateRunId=31422977255
+decision=PASS_C6_AUTH_V4_HASHCONFIG_SYNTAX_ROOTFIX_OFFLINE_ZERO_WRITES
 ```
 
-El fallo ocurrió en `node --check` antes de cargar la credencial DEV. Por contrato se aplicó `STOP_RETRY` inmediato.
-
-## 6. Evidencia de no-provider
+Readiness read-only:
 
 ```text
-Load exact PREWRITE DEV principal privately=SKIPPED
-Read-only effective permission and material readiness=SKIPPED
-providerReads=0
-iamPermissionReads=0
-identityToolkitConfigReads=0
-providerPrewriteAttempts=0
+runId=31423058271
+jobId=93568185004
+artifactId=9076091180
+artifactDigest=sha256:42683577206460058a2d780de39e2a67e1979d6f1f19c36d37c0b285e5f5d7c3
+principalFp=ab70b5da53a2d545a74c
+firebaseauth.configs.getHashConfig=true
+hashConfigPresent=true
+algorithmClass=SCRYPT
+providerReads=2
+IAMWrites=0
+AuthWrites=0
+decision=PASS_C6_AUTH_HASHCONFIG_PERMISSION_AND_MATERIAL_READINESS
+```
+
+## 5. PREWRITE + Activation Auth DEV — PASS
+
+```text
+requestId=c6-auth-plan-v4-activation-dev-20260810-03
+requestCommit=1f32ff486d2bc4d31493401f8e156fb61f49c5a9
+runId=31423272374
+jobId=93568868141
+artifactId=9076197092
+artifactDigest=sha256:2dc787b14e009cb10358f4a6734fe0712f794df00387ae69a401922450e45af5
+providerPrewriteAttempts=1
 secondProviderAttempt=false
-requestV3Emitted=false
-writeBoundaryEntered=false
-AuthCreates=0
-AuthUpdates=0
-duplicateDisables=0
-providerWriteCalls=0
 ```
 
-Por tanto, el run no aporta evidencia nueva sobre permisos ni proveedor; tampoco contradice el diagnóstico de la ruta de respuesta.
+PREWRITE:
+
+```text
+pass=true
+authUsersBefore=110
+shopperProfiles=340
+targetRowsClassified=127
+createRows=118
+updateRows=9
+passwordMaterialInspectedRows=8
+hashConfigReadable=true
+passwordRollbackModes.providerExact=5
+passwordRollbackModes.legacySaltlessExact=3
+mutableExistingSnapshotUsers=10
+snapshotPasswordEntries=8
+snapshotRoundtripVerified=true
+duplicatePairExact=true
+```
+
+Activation/readback:
+
+```text
+decision=PASS_C6_AUTH_PLAN_V4_ACTIVATION_DEV
+AuthExecuted=true
+writeBoundaryEntered=true
+AuthCreates=118
+AuthUpdates=9
+duplicateDisables=1
+providerWriteCalls=247
+readbackPass=true
+AuthUsersAfter=228
+createdValidated=118
+updatesValidated=9
+changedPasswordSignInsValidated=8
+keeperActive=true
+duplicateDisabled=true
+noCrossRowPrincipalAlias=true
+noUnexpectedTargetCollision=true
+```
+
+Rollback dry-run:
+
+```text
+pass=true
+realRollbackExecuted=false
+deleteCreatedCount=118
+restoreExistingUserCount=10
+passwordHashRestoreEntries=8
+providerHashConfigPresent=true
+encryptedPayloadsDecryptAndDigestVerify=true
+```
+
+El one-shot/idempotency guard quedó consumido. No se efectuó segunda activación.
+
+## 6. Smoke acumulativo — STOP_RETRY por lifecycle de credencial
+
+El smoke posterior a Auth PASS falló antes de su primera lectura Auth:
+
+```text
+classification=POSTWRITE_SMOKE_HARNESS_CREDENTIAL_PATH_MISSING
+errorCode=ENOENT
+missingPath=.tmp/c6-auth-plan-v4-v3/private/credentials.json
+smokeProviderReads=0
+AdminOperacionesValidated=false
+ShopperValidated=false
+ClienteValidated=false
+```
+
+Causa: el ejecutor de activación eliminó su directorio privado temporal al finalizar; el paso de smoke intentó reutilizar la misma ruta `GOOGLE_APPLICATION_CREDENTIALS` ya inexistente.
+
+Este STOP no invalida PREWRITE, Activation, readback ni rollback dry-run. Tampoco demuestra una regresión de roles o frontend. Por autorización, no hubo segundo smoke/provider attempt.
 
 ## 7. Fail-close
 
-Preparación temporal retirada:
-
 ```text
-workflowRemovalCommit=223677b589cf77607672bb4058c6ea6654ef9183
-v3WrapperRemovalCommit=fa1b42bcaa2d2139f2460d7984153bb7d727cace
-readinessProbeRemovalCommit=b6afe84cb67e8b207fe724d428a0afe7f403b1c8
-```
-
-Estado seguro:
-
-```text
-AuthExecuted=false
-AuthWrites=0
+requestV3=consumed/disabled
+allowedExecutions=0
+activationWorkflow=removed
+sourceGateWorkflow=removed
+readinessWorkflow=removed
+secondProviderAttempt=false
+realRollbackExecuted=false
 FirestoreWrites=0
 membershipWrites=0
 HRWrites=0
@@ -123,35 +190,43 @@ Gemini=0
 payments=0
 merge=false
 production=false
+rawPIIExported=false
 ```
 
 ## 8. Documentación acumulativa
 
-- `app/docs/SOURCE-LOCK-C6-AUTH-HASHCONFIG-READINESS-PREPROVIDER-SYNTAX-STOP-RETRY-20260810.md`;
-- `app/docs/evidence/C6-AUTH-HASHCONFIG-READINESS-PREPROVIDER-SYNTAX-STOP-RETRY-20260810.json`;
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-AUTH-HASHCONFIG-READINESS-PREPROVIDER-STOP-20260810.md`;
-- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-AUTH-HASHCONFIG-READINESS-PREPROVIDER-STOP-20260810.md`;
-- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-AUTH-HASHCONFIG-READINESS-PREPROVIDER-STOP-20260810.md`;
-- `app/docs/ACADEMIA-ADDENDUM-C6-AUTH-HASHCONFIG-READINESS-PREPROVIDER-STOP-20260810.md`;
-- `app/docs/PHASE-A-TRACKER-ADDENDUM-C6-AUTH-HASHCONFIG-READINESS-PREPROVIDER-STOP-20260810.md`.
+- `app/docs/SOURCE-LOCK-C6-AUTH-V4-ACTIVATION-PASS-SMOKE-CREDENTIAL-LIFECYCLE-STOP-RETRY-20260810.md`;
+- `app/docs/evidence/C6-AUTH-V4-ACTIVATION-PASS-SMOKE-CREDENTIAL-LIFECYCLE-STOP-RETRY-20260810.json`;
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-AUTH-V4-ACTIVATION-PASS-SMOKE-STOP-20260810.md`;
+- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-AUTH-V4-ACTIVATION-PASS-SMOKE-STOP-20260810.md`;
+- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-AUTH-V4-ACTIVATION-PASS-SMOKE-STOP-20260810.md`;
+- `app/docs/ACADEMIA-ADDENDUM-C6-AUTH-V4-ACTIVATION-PASS-SMOKE-STOP-20260810.md`;
+- `app/docs/PHASE-A-TRACKER-ADDENDUM-C6-AUTH-V4-ACTIVATION-PASS-SMOKE-STOP-20260810.md`;
+- `backend/config/c6-auth-plan-v4-activation-dev-request-v3.json` — consumido/deshabilitado.
 
 ## 9. Próximo bloque exacto
 
 Solo bajo nueva autorización:
 
-`C6 AUTH V4 HASHCONFIG HARNESS SYNTAX ROOTFIX SOURCE-ONLY → READINESS READ-ONLY → SINGLE PREWRITE`.
+`C6 SMOKE READ-ONLY CREDENTIAL LIFECYCLE ROOTFIX -> SINGLE ACCUMULATIVE MULTIROLE SMOKE`
 
-Secuencia obligatoria:
+Debe corregir source-only exclusivamente el ciclo de vida de la credencial del smoke y ejecutar un único smoke read-only sobre los **228 usuarios Auth DEV ya activados**. Debe validar Admin/Operaciones, Shopper y Cliente, claims/scopes, `tenantId/projectId`, aislamiento de rol y cero PII.
 
-1. corregir únicamente el error sintáctico del harness;
-2. validar offline `node --check`, sustitución exacta a `Config.signIn.hashConfig`, freeze/digest y cero writes;
-3. solo con PASS cargar la identidad exacta y ejecutar readiness read-only;
-4. solo con readiness PASS emitir un request nuevo y no superpuesto;
-5. máximo un PREWRITE provider;
-6. solo con PREWRITE PASS, 8 rollback entries exactas + snapshot cifrado roundtrip antes del write boundary;
-7. activación Auth DEV, readback, idempotencia, rollback dry-run y smoke acumulativo Admin/Operaciones, Shopper y Cliente;
-8. ante cualquier fallo: `STOP_RETRY` sin segundo provider attempt.
+Prohibido en ese bloque: PREWRITE, Auth create/update/disable, IAM writes, reconstrucción de identidad, deploy, merge o producción.
+
+Ante cualquier fallo: `STOP_RETRY` sin segundo smoke provider.
 
 ## 10. Phase A preservada
 
 Frontend acumulativo, Login, `CX.data`, HR histórico, shoppers, postulaciones, certificaciones, visitas, liquidaciones/pagos, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto, sincronización HR/plataforma y Academia permanecen preservados.
+
+## 11. Cierre de bloque
+
+- **Qué se hizo:** se cerraron source rootfix, permission/material readiness, PREWRITE y Activation Auth DEV con readback/rollback dry-run PASS.
+- **Avance Phase A:** Auth deja de ser preparación y queda materializado en DEV con 228 usuarios.
+- **Qué se preservó:** freeze v4, identidad cerrada y todos los módulos Phase A fuera de Auth.
+- **Claude/Academia:** sin parche frontend; se documentó el nuevo estado Auth y el troubleshooting por capas.
+- **Pendiente real:** solo el smoke acumulativo multirol, bloqueado por lifecycle del harness, no por Auth.
+- **Siguiente bloque:** rootfix source-only del smoke + una ejecución read-only.
+- **Estado seguro:** sin producción/merge/deploy adicional ni writes fuera del Auth expresamente autorizado.
+- **Bloqueo comprobado:** `ENOENT` de credencial temporal post-activación antes de cualquier lectura de smoke.
