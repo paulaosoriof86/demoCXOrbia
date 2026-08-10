@@ -1,14 +1,14 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-10  
-**Estado vivo:** `C6_AUTH_DUPLICATE_KEEPER_ONE_READ_STOP_4_ANCHOR_AMBIGUITIES__FD891_POLICY_CLOSED__AUTH_DEV_228_PRESERVED__NO_SECOND_READ__ZERO_WRITES__NO_PRODUCTION`
+**Estado vivo:** `C6_AUTH_DUPLICATE_OWNERSHIP_RECONCILIATION_HUMAN_DECISION_REQUIRED_4__AUTH_DEV_228_PRESERVED__ZERO_PROVIDER_READS__ZERO_DATA_WRITES__NO_PRODUCTION`
 
 ## 1. Fuente de verdad
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-3. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-KEEPER-ONE-READ-FOCAL-STOP-RETRY-20260810.md`;
-4. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-AUTH-DUPLICATE-KEEPER-ONE-READ-STOP-20260810.md`;
+3. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-OWNERSHIP-ANCHOR-SOURCE-SAFE-HUMAN-DECISION-REQUIRED-20260810.md`;
+4. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-AUTH-DUPLICATE-OWNERSHIP-SOURCE-SAFE-HUMAN-DECISION-20260810.md`;
 5. PR #7 y HEAD vivo.
 
 ## 2. Cerrado y protegido
@@ -16,47 +16,46 @@
 - frontend acumulativo y módulos Phase A;
 - freeze Auth v4 340/HOLD=0;
 - Auth DEV 228, Activation/readback/rollback dry-run PASS;
-- SKIP13, multi-Auth, `ac93...`, HashConfig y lifecycle de credencial cerrados;
-- falso positivo temporal del duplicate-keeper source gate corregido y PASS;
-- una lectura provider focal consumida, sin segunda lectura;
-- `fd891...` cerrado como `POLICY_CLOSED_NO_TYA_EFFECTIVE_ACCESS`;
+- SKIP13, multi-Auth, `ac93...`, HashConfig y lifecycle de credencial;
+- duplicate-keeper source rootfix PASS;
+- provider one-read anterior consumido, sin segunda lectura;
+- `fd891...` cerrado sin acceso TyA efectivo;
 - 20/20 superficies Phase A source-side;
 - estrategia `PROMOTE_EXISTING_CLEAN_PROJECT`.
 
-## 3. P0 vivo
+## 3. Pendiente vivo
 
-`C6 AUTH DUPLICATE OWNERSHIP ANCHOR SOURCE-SAFE EVIDENCE RECONCILIATION — NO PROVIDER`.
+`C6 AUTH DUPLICATE HUMAN OWNERSHIP DECISION CAPTURE — NO PROVIDER / NO REPAIR`.
 
-Cuatro grupos continúan sin keeper único:
+La reconciliación source-safe vigente cerró:
 
 ```text
-1acdcb3782b7cf351056 = AMBIGUOUS_STAFF_KEEPER_NO_UNIQUE_ALLOWED_ANCHOR
-2c4d19f2b066835473d3 = AMBIGUOUS_STAFF_KEEPER_NO_UNIQUE_ALLOWED_ANCHOR
-54225792eeb65f6739c0 = AMBIGUOUS_STAFF_KEEPER_NO_UNIQUE_ALLOWED_ANCHOR
-ae2f920fe6d9ce1fdd82 = AMBIGUOUS_CLIENT_KEEPER_LINEAGE
+1acdcb3782b7cf351056 = HUMAN_OWNERSHIP_DECISION_REQUIRED
+2c4d19f2b066835473d3 = HUMAN_OWNERSHIP_DECISION_REQUIRED
+54225792eeb65f6739c0 = HUMAN_OWNERSHIP_DECISION_REQUIRED
+ae2f920fe6d9ce1fdd82 = HUMAN_OWNERSHIP_DECISION_REQUIRED
 ```
 
-La lectura focal ya demostró que repetir los mismos discriminadores no resolverá el empate: los tres pares staff son equivalentes y Cliente tiene lineage histórica 2/2, canónica 0/2.
+A–C: ninguno de los candidates corresponde al staff canónico importado; no existe ancla para elegir entre los dos históricos de cada par.
+
+D: ambos candidates son históricos; el Cliente canónico actual es otro principal ya materializado/validado. No existe ancla para escoger uno de los históricos como keeper.
 
 ## 4. No hacer
 
-- no ejecutar segundo provider read con la autorización consumida;
+- no repetir provider para obtener los mismos discriminadores;
 - no reconstruir 340 identidades;
-- no repetir PREWRITE ni Activation;
-- no repair Auth sin keeper reproducible;
+- no PREWRITE/Activation;
+- no repair Auth sin decisión humana inequívoca;
 - no nuevo smoke;
-- no compensar duplicados desde frontend;
-- no relajar roles/tenant/project/shopper scope;
-- no elegir keeper por antigüedad, orden, nombre, email, UID o visual;
-- no nuevo proyecto, rama o PR;
-- no deploy, merge ni producción sin autorización específica.
+- no compensar desde frontend ni relajar RBAC;
+- no usar antigüedad, orden, nombre, email/UID/shopperId crudos o visual como desempate;
+- no nuevo proyecto/rama/PR;
+- no deploy, merge ni producción.
 
 ## 5. Ruta corta
 
-Buscar solo en evidencia/source-safe existente una ancla no temporal y no PII de ownership/lineage para A–D. Si no aparece una ancla única, cerrar el diagnóstico con `HUMAN_OWNERSHIP_DECISION_REQUIRED` y pedir únicamente la decisión humana mínima necesaria, sin otra lectura provider.
-
-Solo después de keeper inequívoco podría solicitarse un repair Auth mínimo separado con snapshot/readback/rollback; posteriormente smoke acumulativo read-only y gate de cutover.
+Capturar únicamente una decisión humana de ownership/disposition para los cuatro grupos. Después, si la decisión implica una acción técnica inequívoca, preparar un repair focal separado con snapshot/readback/rollback. Si la decisión determina que un par debe conservarse solo como histórico porque existe un principal canónico externo, preparar solo la disposición correspondiente.
 
 ## 6. Seguridad
 
-El bloque terminó con exactamente un provider read, cero writes, cero deploy, cero merge y producción intacta. Request consumido/deshabilitado y workflows temporales retirados.
+Bloque de reconciliación vigente: providerReads0, Auth/IAM/Firestore/HR/Rules/Storage writes0, deploy0, merge=false, production=false.
