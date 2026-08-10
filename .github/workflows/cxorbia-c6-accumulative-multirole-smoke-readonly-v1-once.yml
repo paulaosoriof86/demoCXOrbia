@@ -1,0 +1,179 @@
+name: CXOrbia C6 Accumulative Multirole Smoke Read-Only Once
+
+on:
+  push:
+    branches: [docs-tya-v6-v71-audit]
+    paths:
+      - 'backend/config/c6-accumulative-multirole-smoke-readonly-request-v1.json'
+
+permissions:
+  contents: read
+  actions: read
+  statuses: write
+
+concurrency:
+  group: cxorbia-c6-accumulative-multirole-smoke-readonly-v1-once
+  cancel-in-progress: false
+
+jobs:
+  smoke-readonly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      REQUEST_FILE: backend/config/c6-accumulative-multirole-smoke-readonly-request-v1.json
+      TOOL: tools/qa/cxorbia-c6-accumulative-multirole-smoke-readonly-v1.mjs
+      MATRIX_FILE: backend/config/c6-accumulative-multirole-smoke-matrix-v1.json
+      AUTH_REQUEST_TERMINAL: backend/config/c6-auth-plan-v4-activation-dev-request-v3.json
+      PRIVATE_DIR: .tmp/c6-accumulative-smoke-readonly/private
+      OUT_DIR: .tmp/c6-accumulative-smoke-readonly/out
+      EXPECTED_AUTH_USERS: '228'
+      PLAN_DIGEST: c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4
+    steps:
+      - name: Checkout exact request commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate request-only commit, frozen Auth state and source gate lineage
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          node --check "$TOOL"
+          node <<'NODE'
+          const fs=require('fs');
+          const {execFileSync}=require('child_process');
+          const r=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          const terminal=JSON.parse(fs.readFileSync(process.env.AUTH_REQUEST_TERMINAL,'utf8'));
+          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const ok=(v,m)=>{if(!v)throw new Error(m)};
+          ok(r.schemaVersion==='cxorbia.c6.accumulative-multirole-smoke-readonly.request.v1','REQUEST_SCHEMA');
+          ok(r.requestId==='c6-accumulative-multirole-smoke-readonly-20260810-01','REQUEST_ID');
+          ok(r.enabled===true&&r.consumed===false&&r.status==='authorized_execute_once'&&r.allowedExecutions===1&&r.authorizedBy==='Paula','REQUEST_AUTH');
+          ok(r.authorizationSource==='current_conversation_2026-08-10_c6_smoke_readonly_rootfix','AUTH_SOURCE');
+          ok(r.repository==='paulaosoriof86/demoCXOrbia'&&r.branch==='docs-tya-v6-v71-audit'&&r.pullRequest===7,'LANE');
+          ok(r.firebaseProjectId==='cxorbia-backend-dev'&&r.tenantId==='tya'&&r.projectId==='cinepolis','TARGET');
+          ok(r.targetHeadSha===parent&&r.sourceGateCommit===parent,'SOURCE_GATE_HEAD_DRIFT');
+          ok(changed.length===1&&changed[0]===process.env.REQUEST_FILE,'REQUEST_ONLY_COMMIT');
+          ok(r.tool===process.env.TOOL&&r.matrix===process.env.MATRIX_FILE,'FILES');
+          ok(r.expectedAuthUsers===228&&r.authPlanDigest===process.env.PLAN_DIGEST,'AUTH_STATE_SCOPE');
+          ok(r.prewriteAllowed===false&&r.authWrites===0&&r.iamWrites===0&&r.firestoreWrites===0&&r.hrWrites===0&&r.rulesWrites===0&&r.storageWrites===0,'WRITE_SCOPE');
+          ok(r.deploys===0&&r.make===0&&r.gemini===0&&r.payments===0&&r.merge===false&&r.production===false,'PROHIBITED_SCOPE');
+          ok(r.providerSmokeAttemptsMax===1&&r.secondSmokeProviderAttempt===false,'ONE_SHOT_SCOPE');
+          ok(terminal.enabled===false&&terminal.consumed===true&&terminal.allowedExecutions===0,'AUTH_REQUEST_NOT_TERMINAL');
+          ok(terminal.terminal?.authActivationDecision==='PASS_C6_AUTH_PLAN_V4_ACTIVATION_DEV'&&terminal.terminal?.authUsersAfter===228&&terminal.terminal?.readbackPass===true&&terminal.terminal?.rollbackDryRunPass===true,'AUTH_DEV_TERMINAL_DRIFT');
+          ok(terminal.planDigest===process.env.PLAN_DIGEST,'AUTH_DIGEST_DRIFT');
+          console.log('PASS_C6_SMOKE_READONLY_REQUEST_AND_AUTH_STATE_GATE');
+          NODE
+          parent=$(git rev-parse HEAD^)
+          state=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${parent}/status" --jq '.statuses[] | select(.context=="cxorbia/c6-smoke-readonly-source-gate") | .state' | head -n1)
+          test "$state" = 'success' || { echo "SOURCE_GATE_NOT_PASS:${state:-missing}"; exit 1; }
+          echo PASS_C6_SMOKE_READONLY_SOURCE_GATE_LINEAGE
+
+      - name: Claim one-shot smoke before provider
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          existing=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/status" --jq '.statuses[] | select(.context=="cxorbia/c6-smoke-readonly/claim") | .state' 2>/dev/null || true)
+          test -z "$existing" || { echo "ONE_SHOT_SMOKE_ALREADY_CLAIMED:$existing"; exit 1; }
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state='pending' -f context='cxorbia/c6-smoke-readonly/claim' -f description='C6 read-only multirole smoke claimed before provider' -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+          echo PASS_C6_SMOKE_READONLY_ONE_SHOT_CLAIM
+
+      - name: Install pinned Firebase Admin SDK
+        run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+
+      - name: Load fresh ephemeral DEV credential for smoke only
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$PRIVATE_DIR" "$OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs');
+          const raw=process.env.EXISTING_DEV_JSON||'';
+          let p=null;try{p=JSON.parse(raw)}catch{}
+          if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.client_email&&p.private_key))throw new Error('SMOKE_DEV_CREDENTIAL_INVALID');
+          fs.writeFileSync(`${process.env.PRIVATE_DIR}/credentials.json`,raw,{mode:0o600});
+          console.log('PASS_C6_SMOKE_FRESH_EPHEMERAL_CREDENTIAL_LOADED_PRIVATE');
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/${PRIVATE_DIR}/credentials.json" >> "$GITHUB_ENV"
+
+      - name: Execute single accumulative multirole smoke read-only
+        id: smoke
+        run: |
+          set +e
+          CXORBIA_SMOKE_MATRIX="$MATRIX_FILE" \
+          CXORBIA_EXPECTED_AUTH_USERS="$EXPECTED_AUTH_USERS" \
+          CXORBIA_FIREBASE_PROJECT='cxorbia-backend-dev' \
+          CXORBIA_TENANT_ID='tya' \
+          CXORBIA_PROJECT_ID='cinepolis' \
+          node "$TOOL" > "$OUT_DIR/report-source-safe.json"
+          code=$?
+          decision=$(node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/report-source-safe.json','utf8'));process.stdout.write(r.decision||'STOP_RETRY_C6_ACCUMULATIVE_MULTIROLE_SMOKE_READONLY')")
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          echo "decision=$decision" >> "$GITHUB_OUTPUT"
+          cat "$OUT_DIR/report-source-safe.json"
+          exit 0
+
+      - name: Verify source-safe terminal evidence and zero writes
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync(`${process.env.OUT_DIR}/report-source-safe.json`,'utf8'));
+          const ok=(v,m)=>{if(!v)throw new Error(m)};
+          ok(r.schemaVersion==='cxorbia.c6.accumulative-multirole-smoke-readonly.v1','REPORT_SCHEMA');
+          ok(r.auth?.population===228,'AUTH_POPULATION');
+          ok(r.safety?.providerReads===1,'PROVIDER_READ_COUNT');
+          ok(r.safety?.providerWrites===0&&r.safety?.authWrites===0&&r.safety?.iamWrites===0&&r.safety?.firestoreWrites===0&&r.safety?.hrWrites===0&&r.safety?.rulesWrites===0&&r.safety?.storageWrites===0,'WRITE_DRIFT');
+          ok(r.safety?.cloudBuild===0&&r.safety?.cloudRun===0&&r.safety?.hosting===0&&r.safety?.make===0&&r.safety?.gemini===0&&r.safety?.payments===0&&r.safety?.merge===false&&r.safety?.production===false,'PROHIBITED_DRIFT');
+          ok(r.safety?.rawUidExported===false&&r.safety?.rawEmailExported===false&&r.safety?.rawShopperIdExported===false&&r.safety?.rawClaimsExported===false&&r.safety?.rawCredentialExported===false,'PII_DRIFT');
+          ok(r.phaseASurfaces?.pass===true,'PHASE_A_SOURCE_SURFACES');
+          if(r.decision==='PASS_ACCUMULATIVE_MULTIROLE_SMOKE'){
+            ok(r.roleSurfaces?.adminOperaciones?.enabled>0,'ADMIN_OPS_MISSING');
+            ok(r.roleSurfaces?.shopper?.enabled>0&&r.roleSurfaces?.shopper?.targetScoped>0,'SHOPPER_MISSING');
+            ok(r.roleSurfaces?.cliente?.enabled>0&&r.roleSurfaces?.cliente?.targetScoped>0,'CLIENT_MISSING');
+          }
+          console.log(JSON.stringify({decision:r.decision,auth:r.auth,roleSurfaces:r.roleSurfaces,phaseASurfaces:r.phaseASurfaces,safety:r.safety,error:r.error||null}));
+          NODE
+
+      - name: Upload terminal source-safe smoke evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-c6-accumulative-multirole-smoke-readonly-v1-${{ github.run_id }}
+          path: .tmp/c6-accumulative-smoke-readonly/out
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Publish terminal smoke decision and close claim
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DECISION: ${{ steps.smoke.outputs.decision }}
+        run: |
+          set -euo pipefail
+          decision="${DECISION:-STOP_RETRY_C6_ACCUMULATIVE_MULTIROLE_SMOKE_READONLY}"
+          state=failure
+          if [ "$decision" = 'PASS_ACCUMULATIVE_MULTIROLE_SMOKE' ] && [ '${{ job.status }}' = 'success' ]; then state=success; fi
+          desc=$(printf '%s' "$decision" | cut -c1-140)
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$state" -f context='cxorbia/c6-smoke-readonly/claim' -f description="$desc" -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$state" -f context='cxorbia/c6-smoke-readonly/terminal' -f description="$desc" -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+
+      - name: Cleanup ephemeral smoke credential
+        if: always()
+        run: rm -rf "$PRIVATE_DIR"
+
+      - name: Enforce single smoke PASS
+        if: always()
+        env:
+          DECISION: ${{ steps.smoke.outputs.decision }}
+        run: |
+          test "${DECISION:-}" = 'PASS_ACCUMULATIVE_MULTIROLE_SMOKE' || { echo "STOP_RETRY:${DECISION:-NO_DECISION}"; exit 1; }
