@@ -13,9 +13,9 @@
 - Se clasificaron los cuatro grupos como `HUMAN_OWNERSHIP_DECISION_REQUIRED` sin inferir keeper.
 - Se creó evidencia terminal y source lock nuevos; se reconciliaron checkpoint, índice, CAMBIOS-BACKEND, Claude, pendientes, Academia y tracker Phase A.
 
-## Incidente de herramienta sin mutación
+## Incidentes de herramienta sin mutación
 
-Durante una verificación posterior se emitió por error una llamada `update_file` con SHA `PLACEHOLDER` contra la evidencia terminal. GitHub respondió HTTP 409 antes de cualquier commit; el archivo no fue modificado. No afectó provider, Auth, datos ni producción.
+Durante verificaciones posteriores hubo dos llamadas `update_file` inválidas contra la evidencia terminal: una con SHA `PLACEHOLDER` y otra usando por error el SHA de commit de creación en lugar del blob SHA. Ambas devolvieron HTTP 409 antes de cualquier commit y no modificaron el archivo. Se verificó después mediante `fetch_file` que la evidencia seguía intacta. No afectaron provider, Auth, datos ni producción.
 
 ## Seguridad
 
