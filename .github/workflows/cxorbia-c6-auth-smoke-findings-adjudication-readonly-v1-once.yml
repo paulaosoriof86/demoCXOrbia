@@ -1,0 +1,208 @@
+name: CXOrbia C6 Auth Smoke Findings Adjudication Read-Only Once
+
+on:
+  push:
+    branches: [docs-tya-v6-v71-audit]
+    paths:
+      - 'backend/config/c6-auth-smoke-findings-adjudication-readonly-request-v1.json'
+
+permissions:
+  contents: read
+  actions: read
+  statuses: write
+
+concurrency:
+  group: cxorbia-c6-auth-smoke-findings-adjudication-readonly-v1-once
+  cancel-in-progress: false
+
+jobs:
+  adjudicate-readonly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      REQUEST_FILE: backend/config/c6-auth-smoke-findings-adjudication-readonly-request-v1.json
+      TOOL: tools/qa/cxorbia-c6-auth-smoke-findings-adjudication-readonly-v1.mjs
+      FREEZE_FILE: backend/config/c6-shopper-auth-final-freeze-v4.json
+      AUTH_TERMINAL: backend/config/c6-auth-plan-v4-activation-dev-request-v3.json
+      SMOKE_TERMINAL: backend/config/c6-accumulative-multirole-smoke-readonly-request-v1.json
+      PLAN_DIR: .tmp/c6-auth-smoke-findings-adjudication/source
+      OUT_DIR: .tmp/c6-auth-smoke-findings-adjudication/out
+      PRIVATE_DIR: .tmp/c6-auth-smoke-findings-adjudication/private
+      EXPECTED_AUTH_USERS: '228'
+      PLAN_DIGEST: c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4
+      SOURCE_GATE_COMMIT: 2fcc0cc79ecf4cf77a32f45245020dc4e2b8cef0
+      SOURCE_GATE_RUN_ID: '31432971654'
+    steps:
+      - name: Checkout exact request commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate request-only commit, closed baselines and source gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          node --check "$TOOL"
+          node <<'NODE'
+          const fs=require('fs');
+          const {execFileSync}=require('child_process');
+          const r=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          const f=JSON.parse(fs.readFileSync(process.env.FREEZE_FILE,'utf8'));
+          const a=JSON.parse(fs.readFileSync(process.env.AUTH_TERMINAL,'utf8'));
+          const s=JSON.parse(fs.readFileSync(process.env.SMOKE_TERMINAL,'utf8'));
+          const tool=fs.readFileSync(process.env.TOOL,'utf8');
+          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const ok=(v,m)=>{if(!v)throw new Error(m)};
+          ok(r.schemaVersion==='cxorbia.c6.auth-smoke-findings-adjudication-readonly.request.v1','REQUEST_SCHEMA');
+          ok(r.requestId==='c6-auth-smoke-findings-adjudication-readonly-20260810-01','REQUEST_ID');
+          ok(r.enabled===true&&r.consumed===false&&r.status==='authorized_execute_once'&&r.allowedExecutions===1&&r.authorizedBy==='Paula','REQUEST_AUTH');
+          ok(r.authorizationSource==='current_conversation_2026-08-10_c6_auth_readonly_smoke_findings_adjudication','AUTH_SOURCE');
+          ok(r.repository==='paulaosoriof86/demoCXOrbia'&&r.branch==='docs-tya-v6-v71-audit'&&r.pullRequest===7,'LANE');
+          ok(r.targetHeadSha===parent&&changed.length===1&&changed[0]===process.env.REQUEST_FILE,'REQUEST_ONLY_COMMIT');
+          ok(r.sourceGateCommit===process.env.SOURCE_GATE_COMMIT&&String(r.sourceGateRunId)===process.env.SOURCE_GATE_RUN_ID,'SOURCE_GATE_LINEAGE');
+          ok(r.firebaseProjectId==='cxorbia-backend-dev'&&r.tenantId==='tya'&&r.projectId==='cinepolis','TARGET');
+          ok(r.expectedAuthUsers===228&&r.expectedDuplicateProviderEmailGroups===5&&r.expectedUnknownEnabledRoles===4&&r.expectedAdminTenantOutliers===1&&r.expectedShopperScopeOutliers===1,'EXPECTED_FINDINGS');
+          ok(r.providerReadsMax===1&&r.secondProviderRead===false&&r.newSmoke===false&&r.prewrite===false&&r.activation===false,'ONE_READ_SCOPE');
+          ok(r.authWrites===0&&r.iamWrites===0&&r.firestoreWrites===0&&r.hrWrites===0&&r.rulesWrites===0&&r.storageWrites===0&&r.deploys===0&&r.make===0&&r.gemini===0&&r.payments===0&&r.merge===false&&r.production===false,'PROHIBITED_SCOPE');
+          ok(r.rawPiiExportAllowed===false&&r.reconstructUniverse340===false,'PII_OR_RECONSTRUCTION_SCOPE');
+          ok(f.finalPlanV4?.rows===340&&f.finalPlanV4?.rowsDigestSha256===process.env.PLAN_DIGEST&&f.finalPlanV4?.expectedAuthUsersAfter===228,'FREEZE_DRIFT');
+          ok(a.enabled===false&&a.consumed===true&&a.allowedExecutions===0&&a.terminal?.authActivationDecision==='PASS_C6_AUTH_PLAN_V4_ACTIVATION_DEV'&&a.terminal?.authUsersAfter===228,'AUTH_BASELINE_DRIFT');
+          ok(s.enabled===false&&s.consumed===true&&s.allowedExecutions===0&&s.terminal?.providerReads===1&&s.terminal?.duplicateProviderEmailGroups===5&&s.terminal?.unknownEnabledRoles===4,'SMOKE_BASELINE_DRIFT');
+          for(const token of ['createUser(','updateUser(','deleteUser(','setCustomUserClaims(','setIamPolicy','updateIamPolicy','firestore().','getFirestore(','bucket(','firebase deploy','gcloud run deploy']) ok(!tool.includes(token),`WRITE_TOKEN:${token}`);
+          ok((tool.match(/\.listUsers\(/g)||[]).length===1,'LIST_USERS_CALL_COUNT_NOT_ONE');
+          console.log('PASS_C6_AUTH_SMOKE_FINDINGS_ADJUDICATION_REQUEST_GATE');
+          NODE
+          state=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${SOURCE_GATE_COMMIT}/status" --jq '.statuses[] | select(.context=="cxorbia/c6-auth-smoke-findings-adjudication-source") | .state' | head -n1)
+          test "$state" = 'success' || { echo "SOURCE_GATE_NOT_PASS:${state:-missing}"; exit 1; }
+          echo PASS_C6_AUTH_SMOKE_FINDINGS_ADJUDICATION_SOURCE_LINEAGE
+
+      - name: Claim one-shot provider read
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          existing=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/status" --jq '.statuses[] | select(.context=="cxorbia/c6-auth-smoke-findings-adjudication/claim") | .state' 2>/dev/null || true)
+          test -z "$existing" || { echo "ONE_SHOT_ALREADY_CLAIMED:$existing"; exit 1; }
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state='pending' -f context='cxorbia/c6-auth-smoke-findings-adjudication/claim' \
+            -f description='C6 Auth findings adjudication single provider read claimed' \
+            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+          echo PASS_C6_AUTH_SMOKE_FINDINGS_ADJUDICATION_ONE_SHOT_CLAIM
+
+      - name: Install pinned Firebase Admin SDK
+        run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+
+      - name: Download exact frozen final plan v4 source-safe artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$PLAN_DIR" "$OUT_DIR" "$PRIVATE_DIR"
+          gh run download 31236820249 -n cxorbia-c6-auth-update-universe-batch-revalidation-v5-31236820249 -D "$PLAN_DIR"
+          test -f "$PLAN_DIR/final-plan-v4-source-safe.json"
+          node <<'NODE'
+          const fs=require('fs'),crypto=require('crypto');
+          const p=JSON.parse(fs.readFileSync(`${process.env.PLAN_DIR}/final-plan-v4-source-safe.json`,'utf8'));
+          const digest=crypto.createHash('sha256').update(JSON.stringify(p.rows)).digest('hex');
+          if(p.schemaVersion!=='cxorbia.c6.shopper-auth-final-plan.v4'||p.rows?.length!==340||digest!==process.env.PLAN_DIGEST||p.plan?.sourceSafeRowsDigestSha256!==process.env.PLAN_DIGEST)throw new Error('FINAL_PLAN_V4_ARTIFACT_DRIFT');
+          console.log('PASS_C6_AUTH_SMOKE_FINDINGS_ADJUDICATION_PLAN_ARTIFACT');
+          NODE
+
+      - name: Load fresh ephemeral DEV credential privately
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const raw=process.env.EXISTING_DEV_JSON||'';
+          let p=null;try{p=JSON.parse(raw)}catch{}
+          if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.client_email&&p.private_key))throw new Error('ADJUDICATION_DEV_CREDENTIAL_INVALID');
+          fs.writeFileSync(`${process.env.PRIVATE_DIR}/credentials.json`,raw,{mode:0o600});
+          console.log('PASS_C6_AUTH_SMOKE_FINDINGS_ADJUDICATION_EPHEMERAL_CREDENTIAL');
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/${PRIVATE_DIR}/credentials.json" >> "$GITHUB_ENV"
+
+      - name: Execute single provider read and source-safe adjudication
+        id: adjudication
+        run: |
+          set +e
+          CXORBIA_FINAL_PLAN_V4="$PLAN_DIR/final-plan-v4-source-safe.json" \
+          CXORBIA_FINAL_FREEZE_V4="$FREEZE_FILE" \
+          CXORBIA_FIREBASE_PROJECT='cxorbia-backend-dev' \
+          CXORBIA_TENANT_ID='tya' \
+          CXORBIA_PROJECT_ID='cinepolis' \
+          CXORBIA_EXPECTED_AUTH_USERS='228' \
+          CXORBIA_EXPECTED_DUPLICATE_GROUPS='5' \
+          CXORBIA_EXPECTED_UNKNOWN_ENABLED_ROLES='4' \
+          CXORBIA_EXPECTED_ADMIN_TENANT_OUTLIERS='1' \
+          CXORBIA_EXPECTED_SHOPPER_SCOPE_OUTLIERS='1' \
+          node "$TOOL" > "$OUT_DIR/report-source-safe.json"
+          code=$?
+          decision=$(node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/report-source-safe.json','utf8'));process.stdout.write(r.decision||'STOP_RETRY_C6_AUTH_SMOKE_FINDINGS_ADJUDICATION')")
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          echo "decision=$decision" >> "$GITHUB_OUTPUT"
+          cat "$OUT_DIR/report-source-safe.json"
+          exit 0
+
+      - name: Verify source-safe evidence, one read and zero writes
+        id: verify
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync(`${process.env.OUT_DIR}/report-source-safe.json`,'utf8'));
+          const ok=(v,m)=>{if(!v)throw new Error(m)};
+          ok(r.schemaVersion==='cxorbia.c6.auth-smoke-findings-adjudication-readonly.v1','REPORT_SCHEMA');
+          ok(r.observed?.authPopulation===228,'AUTH_POPULATION');
+          ok(r.observed?.duplicateProviderEmailGroups===5&&r.observed?.unknownEnabledRoles===4&&r.observed?.adminTenantOutliers===1&&r.observed?.shopperScopeOutliers===1,'FINDING_COUNT_DRIFT');
+          ok(r.provider?.reads===1&&r.safety?.providerReads===1,'PROVIDER_READ_COUNT');
+          ok(r.provider?.writes===0&&r.safety?.providerWrites===0&&r.safety?.authWrites===0&&r.safety?.iamWrites===0&&r.safety?.firestoreWrites===0&&r.safety?.hrWrites===0&&r.safety?.rulesWrites===0&&r.safety?.storageWrites===0,'WRITE_DRIFT');
+          ok(r.safety?.prewrite===false&&r.safety?.activation===false&&r.safety?.newSmoke===false&&r.safety?.deploys===0&&r.safety?.merge===false&&r.safety?.production===false,'PROHIBITED_DRIFT');
+          ok(r.safety?.rawUidExported===false&&r.safety?.rawEmailExported===false&&r.safety?.rawShopperIdExported===false&&r.safety?.rawNameExported===false&&r.safety?.rawClaimsExported===false&&r.safety?.rawCredentialExported===false,'PII_FLAG_DRIFT');
+          const serialized=JSON.stringify(r);
+          if(/@[A-Za-z0-9._-]+/.test(serialized))throw new Error('EMAIL_LIKE_VALUE_EXPORTED');
+          for(const key of ['"uid"','"email"','"shopperId"','"displayName"','"password"','"passwordHash"','"passwordSalt"','"customClaims"']) if(serialized.includes(key))throw new Error(`RAW_SENSITIVE_KEY:${key}`);
+          console.log(JSON.stringify({decision:r.decision,observed:r.observed,adjudication:r.adjudication,overlaps:r.overlaps,error:r.error||null}));
+          NODE
+
+      - name: Upload terminal source-safe adjudication evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-c6-auth-smoke-findings-adjudication-readonly-v1-${{ github.run_id }}
+          path: .tmp/c6-auth-smoke-findings-adjudication/out
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Publish terminal decision and close claim
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DECISION: ${{ steps.adjudication.outputs.decision }}
+        run: |
+          set -euo pipefail
+          decision="${DECISION:-STOP_RETRY_C6_AUTH_SMOKE_FINDINGS_ADJUDICATION}"
+          state=failure
+          if [ "$decision" = 'PASS_C6_AUTH_SMOKE_FINDINGS_ADJUDICATION' ]; then state=success; fi
+          desc=$(printf '%s' "$decision" | cut -c1-140)
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$state" -f context='cxorbia/c6-auth-smoke-findings-adjudication/claim' -f description="$desc" -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$state" -f context='cxorbia/c6-auth-smoke-findings-adjudication/terminal' -f description="$desc" -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+
+      - name: Cleanup ephemeral credential
+        if: always()
+        run: rm -rf "$PRIVATE_DIR"
+
+      - name: Enforce adjudication PASS or STOP_RETRY
+        if: always()
+        env:
+          DECISION: ${{ steps.adjudication.outputs.decision }}
+        run: |
+          test "${DECISION:-}" = 'PASS_C6_AUTH_SMOKE_FINDINGS_ADJUDICATION' || { echo "STOP_RETRY:${DECISION:-NO_DECISION}"; exit 1; }
