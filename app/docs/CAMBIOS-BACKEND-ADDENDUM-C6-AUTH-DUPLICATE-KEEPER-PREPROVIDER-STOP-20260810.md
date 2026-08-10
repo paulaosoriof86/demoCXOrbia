@@ -25,6 +25,10 @@ CREATED_THEN_REMOVED .github/workflows/cxorbia-c6-auth-duplicate-keeper-targetsc
   remove=b4c2840759b8fe8258ec7d8d071afbc0ae647803
 ```
 
+## Incidentes de herramienta sin mutación
+
+Durante el cierre documental hubo dos llamadas `update_file` mal formadas con SHA placeholder/invalid. Ambas devolvieron HTTP 409 antes de cualquier commit y no modificaron archivos. Se corrigió el flujo usando los addenda válidos y los SHA recuperados mediante `fetch_file`. Estos incidentes no afectaron provider, Auth, datos ni producción.
+
 ## Seguridad
 
 ```text
