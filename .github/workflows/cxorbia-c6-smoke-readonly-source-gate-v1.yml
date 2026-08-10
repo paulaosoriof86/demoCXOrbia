@@ -1,0 +1,86 @@
+name: CXOrbia C6 Smoke Read-Only Credential Lifecycle Source Gate
+
+on:
+  push:
+    branches: [docs-tya-v6-v71-audit]
+    paths:
+      - 'tools/qa/cxorbia-c6-accumulative-multirole-smoke-readonly-v1.mjs'
+      - '.github/workflows/cxorbia-c6-accumulative-multirole-smoke-readonly-v1-once.yml'
+      - '.github/workflows/cxorbia-c6-smoke-readonly-source-gate-v1.yml'
+
+permissions:
+  contents: read
+  statuses: write
+
+concurrency:
+  group: cxorbia-c6-smoke-readonly-source-gate-v1
+  cancel-in-progress: false
+
+jobs:
+  source-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TOOL: tools/qa/cxorbia-c6-accumulative-multirole-smoke-readonly-v1.mjs
+      EXEC_WORKFLOW: .github/workflows/cxorbia-c6-accumulative-multirole-smoke-readonly-v1-once.yml
+      MATRIX_FILE: backend/config/c6-accumulative-multirole-smoke-matrix-v1.json
+      AUTH_REQUEST_TERMINAL: backend/config/c6-auth-plan-v4-activation-dev-request-v3.json
+      PLAN_DIGEST: c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4
+    steps:
+      - name: Checkout exact source gate commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Syntax and zero-write gate
+        run: |
+          set -euo pipefail
+          node --check "$TOOL"
+          node <<'NODE'
+          const fs=require('fs');
+          const tool=fs.readFileSync(process.env.TOOL,'utf8');
+          const wf=fs.readFileSync(process.env.EXEC_WORKFLOW,'utf8');
+          const matrix=JSON.parse(fs.readFileSync(process.env.MATRIX_FILE,'utf8'));
+          const terminal=JSON.parse(fs.readFileSync(process.env.AUTH_REQUEST_TERMINAL,'utf8'));
+          const ok=(v,m)=>{if(!v)throw new Error(m)};
+          ok(tool.includes('await auth.listUsers(1000, pageToken)'),'READ_ONLY_LIST_USERS_MISSING');
+          ok(tool.includes("decision = 'PASS_ACCUMULATIVE_MULTIROLE_SMOKE'"),'PASS_DECISION_MISSING');
+          ok(tool.includes("'SMOKE_EPHEMERAL_CREDENTIAL_MISSING'"),'FRESH_CREDENTIAL_GATE_MISSING');
+          const forbiddenTool=[
+            'auth.createUser(', 'auth.updateUser(', 'auth.deleteUser(', 'auth.setCustomUserClaims(',
+            '.setCustomUserClaims(', '.revokeRefreshTokens(', '.deleteUsers(',
+            'setIamPolicy', 'updateIamPolicy', 'firestore().doc(', '.set({', '.update({', '.delete()'
+          ];
+          for(const token of forbiddenTool) ok(!tool.includes(token),`WRITE_TOKEN_IN_TOOL:${token}`);
+          const forbiddenWorkflow=[
+            'cxorbia-c6-auth-plan-v4-activation-dev-v4.mjs', 'PREWRITE', 'auth.createUser(', 'auth.updateUser(',
+            'setCustomUserClaims(', 'firebase deploy', 'gcloud run deploy', 'gcloud builds submit', 'setIamPolicy'
+          ];
+          for(const token of forbiddenWorkflow) ok(!wf.includes(token),`WRITE_OR_REEXEC_TOKEN_IN_WORKFLOW:${token}`);
+          ok(wf.includes('Load fresh ephemeral DEV credential for smoke only'),'FRESH_CREDENTIAL_LIFECYCLE_STEP_MISSING');
+          ok(wf.includes('Cleanup ephemeral smoke credential'),'CREDENTIAL_CLEANUP_STEP_MISSING');
+          ok(wf.includes("paths:\n      - 'backend/config/c6-accumulative-multirole-smoke-readonly-request-v1.json'"),'REQUEST_ONLY_TRIGGER_DRIFT');
+          ok(matrix.schemaVersion==='cxorbia.c6.accumulative-multirole-smoke-matrix.v1'&&matrix.firebaseProjectId==='cxorbia-backend-dev','MATRIX_DRIFT');
+          ok(Array.isArray(matrix.personas)&&matrix.personas.map(p=>p.persona).join('|')==='ADMIN_OPERACIONES|SHOPPER|CLIENTE','MATRIX_PERSONA_DRIFT');
+          ok(terminal.enabled===false&&terminal.consumed===true&&terminal.allowedExecutions===0,'AUTH_REQUEST_NOT_CONSUMED');
+          ok(terminal.terminal?.authActivationDecision==='PASS_C6_AUTH_PLAN_V4_ACTIVATION_DEV'&&terminal.terminal?.authUsersAfter===228,'AUTH_DEV_NOT_FROZEN_228');
+          ok(terminal.terminal?.readbackPass===true&&terminal.terminal?.rollbackDryRunPass===true,'AUTH_DEV_TERMINAL_GATES');
+          ok(terminal.planDigest===process.env.PLAN_DIGEST,'AUTH_DIGEST_DRIFT');
+          const combined=tool+'\n'+wf;
+          ok(!/-----BEGIN (?:RSA |EC |)PRIVATE KEY-----/.test(combined),'PRIVATE_KEY_LITERAL_FOUND');
+          ok(!/\bAIza[0-9A-Za-z_-]{20,}\b/.test(combined),'API_KEY_LITERAL_FOUND');
+          ok(!/\bgh[pousr]_[A-Za-z0-9_]{20,}\b/.test(combined),'GITHUB_TOKEN_LITERAL_FOUND');
+          ok(!/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i.test(combined),'EMAIL_LITERAL_FOUND');
+          console.log('PASS_C6_SMOKE_READONLY_CREDENTIAL_LIFECYCLE_SOURCE_ZERO_WRITES_NO_PII');
+          NODE
+
+      - name: Publish source gate PASS
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state='success' -f context='cxorbia/c6-smoke-readonly-source-gate' -f description='PASS syntax zero-writes no-secret/PII fresh credential lifecycle' -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
