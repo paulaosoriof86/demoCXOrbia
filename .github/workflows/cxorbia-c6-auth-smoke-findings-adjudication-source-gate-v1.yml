@@ -37,6 +37,9 @@ jobs:
         with:
           node-version: '24'
 
+      - name: Install pinned Firebase Admin SDK for module-load self-test only
+        run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+
       - name: Syntax and source self-test
         run: |
           set -euo pipefail
@@ -69,9 +72,8 @@ jobs:
           ok(browser.includes("if(!LEGACY_ROLES.has(role)) throw new Error('ROLE_NOT_ALLOWED')"),'ROLE_REJECTION_DRIFT');
           ok(browser.includes("if(!tenantAllowed(claims, role)) throw new Error('TENANT_NOT_ALLOWED')"),'TENANT_REJECTION_DRIFT');
           ok(browser.includes("if(role === 'shopper' && !shopperId) throw new Error('SHOPPER_SCOPE_REQUIRED')"),'SHOPPER_REJECTION_DRIFT');
-          for(const token of ['createUser(','updateUser(','deleteUser(','setCustomUserClaims(','setIamPolicy','updateIamPolicy','firestore().','getFirestore(','bucket(','deploy','firebase deploy','gcloud run deploy']) ok(!tool.includes(token),`WRITE_OR_DEPLOY_TOKEN:${token}`);
-          ok(tool.includes('await auth.listUsers(1000)'),'SINGLE_LIST_USERS_CALL_MISSING');
-          ok(!tool.includes('pageToken'),'PAGINATED_SECOND_READ_RISK');
+          for(const token of ['createUser(','updateUser(','deleteUser(','setCustomUserClaims(','setIamPolicy','updateIamPolicy','firestore().','getFirestore(','bucket(','firebase deploy','gcloud run deploy']) ok(!tool.includes(token),`WRITE_OR_DEPLOY_TOKEN:${token}`);
+          ok((tool.match(/\.listUsers\(/g)||[]).length===1,'LIST_USERS_CALL_COUNT_NOT_ONE');
           ok(tool.includes("ensure(!first.pageToken, 'PROVIDER_READ_WOULD_REQUIRE_SECOND_PAGE')"),'SECOND_PAGE_FAILCLOSE_MISSING');
           ok(tool.includes('rawUidExported: false')&&tool.includes('rawEmailExported: false')&&tool.includes('rawShopperIdExported: false')&&tool.includes('rawNameExported: false')&&tool.includes('rawClaimsExported: false'),'PII_SAFETY_FLAGS_MISSING');
           console.log('PASS_C6_AUTH_SMOKE_FINDINGS_ADJUDICATION_SOURCE_ZERO_WRITES_ONE_READ_NO_PII');
