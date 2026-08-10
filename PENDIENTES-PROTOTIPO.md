@@ -1,15 +1,16 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-10  
-**Estado vivo:** `C6_AUTH_DUPLICATE_OWNERSHIP_RECONCILIATION_HUMAN_DECISION_REQUIRED_4__AUTH_DEV_228_PRESERVED__ZERO_PROVIDER_READS__ZERO_DATA_WRITES__NO_PRODUCTION`
+**Estado vivo:** `C6_AUTH_DUPLICATE_HUMAN_OWNERSHIP_DECISION_CAPTURE_READY__PAULA_DECISION_REQUIRED__ZERO_PROVIDER_READS__ZERO_REPAIR__NO_PRODUCTION`
 
 ## 1. Fuente de verdad
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-3. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-OWNERSHIP-ANCHOR-SOURCE-SAFE-HUMAN-DECISION-REQUIRED-20260810.md`;
-4. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-AUTH-DUPLICATE-OWNERSHIP-SOURCE-SAFE-HUMAN-DECISION-20260810.md`;
-5. PR #7 y HEAD vivo.
+3. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-HUMAN-OWNERSHIP-DECISION-CAPTURE-PENDING-PAULA-20260810.md`;
+4. `app/docs/C6-AUTH-DUPLICATE-HUMAN-OWNERSHIP-DECISION-MATRIX-20260810.md`;
+5. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-AUTH-DUPLICATE-HUMAN-OWNERSHIP-DECISION-CAPTURE-20260810.md`;
+6. PR #7 y HEAD vivo.
 
 ## 2. Cerrado y protegido
 
@@ -17,35 +18,33 @@
 - freeze Auth v4 340/HOLD=0;
 - Auth DEV 228, Activation/readback/rollback dry-run PASS;
 - SKIP13, multi-Auth, `ac93...`, HashConfig y lifecycle de credencial;
-- duplicate-keeper source rootfix PASS;
 - provider one-read anterior consumido, sin segunda lectura;
 - `fd891...` cerrado sin acceso TyA efectivo;
+- ownership source-safe reconciliation cerrada;
 - 20/20 superficies Phase A source-side;
 - estrategia `PROMOTE_EXISTING_CLEAN_PROJECT`.
 
 ## 3. Pendiente vivo
 
-`C6 AUTH DUPLICATE HUMAN OWNERSHIP DECISION CAPTURE — NO PROVIDER / NO REPAIR`.
-
-La reconciliación source-safe vigente cerró:
+La matriz de decisión humana está lista. Falta una disposición por grupo:
 
 ```text
-1acdcb3782b7cf351056 = HUMAN_OWNERSHIP_DECISION_REQUIRED
-2c4d19f2b066835473d3 = HUMAN_OWNERSHIP_DECISION_REQUIRED
-54225792eeb65f6739c0 = HUMAN_OWNERSHIP_DECISION_REQUIRED
-ae2f920fe6d9ce1fdd82 = HUMAN_OWNERSHIP_DECISION_REQUIRED
+1acdcb3782b7cf351056 = PAULA_DECISION_REQUIRED
+2c4d19f2b066835473d3 = PAULA_DECISION_REQUIRED
+54225792eeb65f6739c0 = PAULA_DECISION_REQUIRED
+ae2f920fe6d9ce1fdd82 = PAULA_DECISION_REQUIRED
 ```
 
-A–C: ninguno de los candidates corresponde al staff canónico importado; no existe ancla para elegir entre los dos históricos de cada par.
+A–C: `KEEP_ONE_MEMBER` requiere que Paula seleccione el fingerprint exacto; `PRESERVE_BOTH_PENDING_OWNER_MAPPING` no requiere distinguir members; `RETIRE_BOTH_IF_CANONICAL_EXTERNAL_EXISTS` requiere confirmar el principal canónico externo correcto.
 
-D: ambos candidates son históricos; el Cliente canónico actual es otro principal ya materializado/validado. No existe ancla para escoger uno de los históricos como keeper.
+D: existe un Cliente canónico externo ya validado; Paula puede aprobar `CANONICAL_EXTERNAL_KEEP_HISTORICAL_PAIR_NONCANONICAL_PENDING_RETIRE` sin seleccionar entre los dos históricos.
 
 ## 4. No hacer
 
-- no repetir provider para obtener los mismos discriminadores;
-- no reconstruir 340 identidades;
+- no provider read;
+- no reconstrucción de 340 identidades;
 - no PREWRITE/Activation;
-- no repair Auth sin decisión humana inequívoca;
+- no repair Auth dentro de este bloque;
 - no nuevo smoke;
 - no compensar desde frontend ni relajar RBAC;
 - no usar antigüedad, orden, nombre, email/UID/shopperId crudos o visual como desempate;
@@ -54,8 +53,8 @@ D: ambos candidates son históricos; el Cliente canónico actual es otro princip
 
 ## 5. Ruta corta
 
-Capturar únicamente una decisión humana de ownership/disposition para los cuatro grupos. Después, si la decisión implica una acción técnica inequívoca, preparar un repair focal separado con snapshot/readback/rollback. Si la decisión determina que un par debe conservarse solo como histórico porque existe un principal canónico externo, preparar solo la disposición correspondiente.
+Capturar las cuatro decisiones humanas. Solo después, si alguna implica cambio Auth inequívoco, solicitar un repair focal separado con snapshot/readback/idempotencia/rollback dry-run.
 
 ## 6. Seguridad
 
-Bloque de reconciliación vigente: providerReads0, Auth/IAM/Firestore/HR/Rules/Storage writes0, deploy0, merge=false, production=false.
+Bloque actual: providerReads0, Auth/IAM/Firestore/HR/Rules/Storage writes0, repair=false, deploy0, merge=false, production=false.
