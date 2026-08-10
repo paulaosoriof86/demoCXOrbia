@@ -1,0 +1,282 @@
+name: CXOrbia C6 Auth Plan V4 HashConfig Repair + PREWRITE + Activation DEV V2 Once
+
+on:
+  push:
+    branches: [docs-tya-v6-v71-audit]
+    paths:
+      - 'tools/qa/cxorbia-c6-auth-plan-v4-activation-dev-v2.mjs'
+      - '.github/workflows/cxorbia-c6-auth-plan-v4-activation-dev-v2-once.yml'
+      - 'backend/config/c6-auth-plan-v4-activation-dev-request-v2.json'
+
+permissions:
+  contents: read
+  actions: read
+  statuses: write
+
+concurrency:
+  group: cxorbia-c6-auth-plan-v4-activation-dev-v2-once
+  cancel-in-progress: false
+
+jobs:
+  source-repair-gate:
+    runs-on: ubuntu-latest
+    outputs:
+      request_only: ${{ steps.classify.outputs.request_only }}
+    env:
+      REQUEST_FILE: backend/config/c6-auth-plan-v4-activation-dev-request-v2.json
+      CONTRACT_FILE: backend/contracts/c6-auth-plan-v4-activation-dev-v1.json
+      FREEZE_FILE: backend/config/c6-shopper-auth-final-freeze-v4.json
+      BASE_TOOL: tools/qa/cxorbia-c6-auth-plan-v4-activation-dev-v1.mjs
+      TOOL: tools/qa/cxorbia-c6-auth-plan-v4-activation-dev-v2.mjs
+      PLAN_DIGEST: c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4
+    steps:
+      - name: Checkout exact push commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Classify source-only versus request-only commit
+        id: classify
+        shell: bash
+        run: |
+          set -euo pipefail
+          changed=$(git diff --name-only HEAD^ HEAD)
+          count=$(printf '%s\n' "$changed" | sed '/^$/d' | wc -l | tr -d ' ')
+          if [ "$count" = '1' ] && [ "$changed" = "$REQUEST_FILE" ]; then
+            echo 'request_only=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'request_only=false' >> "$GITHUB_OUTPUT"
+          fi
+          printf 'changed files:\n%s\n' "$changed"
+
+      - name: Static source-only root-cause repair gate
+        run: |
+          set -euo pipefail
+          node --check "$TOOL"
+          node "$TOOL" --source-repair-self-test
+          node <<'NODE'
+          const fs=require('fs');
+          const base=fs.readFileSync(process.env.BASE_TOOL,'utf8');
+          const wrapper=fs.readFileSync(process.env.TOOL,'utf8');
+          const freeze=JSON.parse(fs.readFileSync(process.env.FREEZE_FILE,'utf8'));
+          const contract=JSON.parse(fs.readFileSync(process.env.CONTRACT_FILE,'utf8'));
+          const ok=(v,m)=>{if(!v)throw new Error(m)};
+          const bad='?mask=hashConfig';
+          ok((base.split(bad).length-1)===1,'BASE_MASK_OCCURRENCE_DRIFT');
+          const patched=base.replace(bad,'');
+          ok(!patched.includes(bad),'MASK_NOT_REMOVED');
+          ok(patched.includes('admin/v2/projects/${encodeURIComponent(projectId)}/config`'),'GET_RESOURCE_DRIFT');
+          ok(patched.includes('const body=await response.json(),hashConfig=body?.hashConfig||body?.hash_config'),'HASH_EXTRACTION_DRIFT');
+          ok(wrapper.includes("const bad = '?mask=hashConfig'"),'WRAPPER_NOT_EXACT_REPAIR');
+          ok(freeze.finalPlanV4?.rows===340&&freeze.finalPlanV4?.uniqueRows===340&&freeze.finalPlanV4?.rowsDigestSha256===process.env.PLAN_DIGEST,'FREEZE_DRIFT');
+          ok(freeze.finalPlanV4?.operationCounts?.CREATE_AUTH===118&&freeze.finalPlanV4?.operationCounts?.UPDATE_AUTH===9&&freeze.finalPlanV4?.operationCounts?.HOLD===0,'FREEZE_COUNT_DRIFT');
+          ok(contract.inputFreeze?.rowsDigestSha256===process.env.PLAN_DIGEST&&contract.prewrite?.passwordChanges===8,'CONTRACT_DRIFT');
+          const pre=patched.indexOf('sourceSafe.prewrite={pass:true');
+          const boundary=patched.indexOf('state.writeBoundaryEntered=true');
+          const writes=['await auth.createUser','await auth.updateUser','await auth.setCustomUserClaims'];
+          ok(pre>=0&&boundary>pre,'PREWRITE_BOUNDARY_ORDER');
+          for(const token of writes){const i=patched.indexOf(token);ok(i>boundary,`WRITE_BEFORE_BOUNDARY:${token}`);}
+          const beforeBoundary=patched.slice(0,boundary);
+          ok(!beforeBoundary.includes('auth.createUser(')&&!beforeBoundary.includes('auth.updateUser(')&&!beforeBoundary.includes('auth.setCustomUserClaims('),'PROVIDER_WRITE_BEFORE_BOUNDARY');
+          console.log('PASS_C6_AUTH_PLAN_V4_HASH_CONFIG_REPAIR_STATIC_ZERO_WRITES');
+          NODE
+
+  prewrite-and-activate:
+    needs: source-repair-gate
+    if: needs.source-repair-gate.outputs.request_only == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      REQUEST_FILE: backend/config/c6-auth-plan-v4-activation-dev-request-v2.json
+      CONTRACT_FILE: backend/contracts/c6-auth-plan-v4-activation-dev-v1.json
+      FREEZE_FILE: backend/config/c6-shopper-auth-final-freeze-v4.json
+      TOOL: tools/qa/cxorbia-c6-auth-plan-v4-activation-dev-v2.mjs
+      PLAN_DIR: .tmp/c6-auth-plan-v4-v2/source
+      OUT_DIR: .tmp/c6-auth-plan-v4-v2/out
+      PRIVATE_DIR: .tmp/c6-auth-plan-v4-v2/private
+      PLAN_DIGEST: c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4
+    steps:
+      - name: Checkout exact request commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate new non-overlapping authorization and request-only commit
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');const {execFileSync}=require('child_process');
+          const r=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const ok=(v,m)=>{if(!v)throw new Error(m)};
+          ok(r.schemaVersion==='cxorbia.c6.auth-plan-v4-activation-dev.request.v1','REQUEST_SCHEMA');
+          ok(r.requestId==='c6-auth-plan-v4-activation-dev-20260810-02','REQUEST_ID');
+          ok(r.enabled===true&&r.consumed===false&&r.status==='authorized_execute_once'&&r.allowedExecutions===1&&r.authorizedBy==='Paula','REQUEST_AUTH');
+          ok(r.authorizationSource==='current_conversation_2026-08-10_c6_auth_dev_root_cause_close','AUTH_SOURCE');
+          ok(r.repository==='paulaosoriof86/demoCXOrbia'&&r.branch==='docs-tya-v6-v71-audit'&&r.pullRequest===7&&r.firebaseProjectId==='cxorbia-backend-dev','LANE');
+          ok(r.targetHeadSha===parent&&changed.length===1&&changed[0]===process.env.REQUEST_FILE,'REQUEST_ONLY_COMMIT');
+          ok(r.contract===process.env.CONTRACT_FILE&&r.freeze===process.env.FREEZE_FILE&&r.tool===process.env.TOOL,'FILES');
+          ok(r.planDigest===process.env.PLAN_DIGEST&&r.createRows===118&&r.updateRows===9&&r.passwordUpdateRows===8,'PLAN_SCOPE');
+          ok(r.providerAttemptsMax===1&&r.executeAuthOnlyAfterPrewritePass===true&&r.snapshotEncryptedBeforeWriteBoundary===true&&r.rollbackDryRunOnly===true,'EXECUTION_GATES');
+          ok(r.production===false&&r.merge===false&&r.hrWrites===0&&r.rulesWrites===0&&r.storageWrites===0&&r.make===0&&r.gemini===0&&r.payments===0,'PROHIBITED_SCOPE');
+          console.log('PASS_C6_AUTH_PLAN_V4_REQUEST_V2_GATE');
+          NODE
+
+      - name: Claim one-shot execution before provider
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          existing=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/status" --jq '.statuses[] | select(.context=="cxorbia/c6-auth-plan-v4-activation-v2/claim") | .state' 2>/dev/null || true)
+          test -z "$existing" || { echo "ONE_SHOT_ALREADY_CLAIMED:$existing"; exit 1; }
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state='pending' -f context='cxorbia/c6-auth-plan-v4-activation-v2/claim' -f description='C6 Auth plan v4 v2 one-shot claimed before provider' -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+          echo PASS_C6_AUTH_PLAN_V4_V2_ONE_SHOT_CLAIM
+
+      - name: Install pinned Firebase Admin SDK
+        run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+
+      - name: Syntax self-test and identity circuit breaker
+        run: |
+          set -euo pipefail
+          node --check "$TOOL"
+          node "$TOOL" --self-test | tee /tmp/c6-v4-v2-selftest.txt
+          grep -q 'PASS_C6_AUTH_PLAN_V4_ACTIVATION_SELFTEST' /tmp/c6-v4-v2-selftest.txt
+          node <<'NODE'
+          const fs=require('fs');const c=JSON.parse(fs.readFileSync(process.env.CONTRACT_FILE,'utf8'));const f=JSON.parse(fs.readFileSync(process.env.FREEZE_FILE,'utf8'));
+          const ok=(v,m)=>{if(!v)throw new Error(m)};
+          ok(c.inputFreeze?.rowsDigestSha256===process.env.PLAN_DIGEST&&f.finalPlanV4?.rowsDigestSha256===process.env.PLAN_DIGEST,'V4_DIGEST_DRIFT');
+          ok(c.identityCircuitBreaker?.reopenPlanV3UpdateUniverse===false&&c.identityCircuitBreaker?.reopenSkip13===false&&c.identityCircuitBreaker?.reopenMultiAuthAdjudication===false&&c.identityCircuitBreaker?.reopenAc93Lineage===false,'CIRCUIT_BREAKER_DRIFT');
+          console.log('PASS_C6_AUTH_PLAN_V4_V2_CIRCUIT_BREAKER');
+          NODE
+
+      - name: Download exact frozen plan v4 artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$PLAN_DIR" "$OUT_DIR"
+          gh run download 31236820249 -n cxorbia-c6-auth-update-universe-batch-revalidation-v5-31236820249 -D "$PLAN_DIR"
+          test -f "$PLAN_DIR/final-plan-v4-source-safe.json"
+          node <<'NODE'
+          const fs=require('fs'),crypto=require('crypto');const p=JSON.parse(fs.readFileSync(`${process.env.PLAN_DIR}/final-plan-v4-source-safe.json`,'utf8'));const f=JSON.parse(fs.readFileSync(process.env.FREEZE_FILE,'utf8'));
+          const digest=crypto.createHash('sha256').update(JSON.stringify(p.rows)).digest('hex');
+          const ok=(v,m)=>{if(!v)throw new Error(m)};
+          ok(p.schemaVersion==='cxorbia.c6.shopper-auth-final-plan.v4'&&p.rows?.length===340&&new Set(p.rows.map(r=>r.profileFp)).size===340,'PLAN_V4_SHAPE');
+          ok(digest===process.env.PLAN_DIGEST&&p.plan?.sourceSafeRowsDigestSha256===process.env.PLAN_DIGEST&&f.finalPlanV4?.rowsDigestSha256===process.env.PLAN_DIGEST,'PLAN_V4_DIGEST');
+          ok(p.plan?.operationCounts?.CREATE_AUTH===118&&p.plan?.operationCounts?.UPDATE_AUTH===9&&p.plan?.operationCounts?.HOLD===0,'PLAN_V4_COUNTS');
+          ok(p.plan?.subchangeCounts?.password===8,'PLAN_V4_PASSWORD_COUNT');
+          console.log('PASS_C6_AUTH_PLAN_V4_V2_ARTIFACT_GATE');
+          NODE
+
+      - name: Load canonical DEV credential privately
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$PRIVATE_DIR"
+          node <<'NODE'
+          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw)}catch{}
+          if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.client_email&&p.private_key))throw new Error('DEV_CREDENTIAL_INVALID');
+          fs.writeFileSync(`${process.env.PRIVATE_DIR}/credentials.json`,raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/${PRIVATE_DIR}/credentials.json" >> "$GITHUB_ENV"
+
+      - name: Execute single repaired PREWRITE and conditional Auth activation
+        id: activation
+        run: |
+          set +e
+          CXORBIA_FINAL_PLAN_V4="$PLAN_DIR/final-plan-v4-source-safe.json" \
+          CXORBIA_FINAL_FREEZE_V4="$FREEZE_FILE" \
+          CXORBIA_AUTH_PLAN_V4_EXPORT_DIR="$OUT_DIR" \
+          CXORBIA_AUTH_PLAN_V4_PRIVATE_DIR="$PRIVATE_DIR" \
+          node "$TOOL" "$REQUEST_FILE"
+          code=$?
+          decision=$(head -n 1 "$OUT_DIR/decision.txt" 2>/dev/null || echo STOP_RETRY_C6_AUTH_PLAN_V4_NO_DECISION)
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          echo "decision=$decision" >> "$GITHUB_OUTPUT"
+          if [ "$code" != '0' ] && [ "$code" != '2' ]; then exit "$code"; fi
+          exit 0
+
+      - name: Structural source-safe verifier and terminal gate
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs'),path=require('path');const out=process.env.OUT_DIR;
+          const report=JSON.parse(fs.readFileSync(path.join(out,'report-source-safe.json'),'utf8'));
+          const decision=report.decision;
+          const allowedPrimitive=(k,v)=>k==='email'&&(typeof v==='number'||typeof v==='boolean'||v===null);
+          function scan(v,p=[]){if(Array.isArray(v)){for(let i=0;i<v.length;i++)scan(v[i],[...p,String(i)]);return;}if(!v||typeof v!=='object')return;for(const [k,val] of Object.entries(v)){if(['uid','shopperId','passwordHash','passwordSalt','customClaims','password'].includes(k)&&val!=null)throw new Error(`RAW_SENSITIVE_KEY:${[...p,k].join('.')}`);if(k==='email'&&val!=null&&!allowedPrimitive(k,val))throw new Error(`RAW_EMAIL_VALUE:${[...p,k].join('.')}`);if(typeof val==='string'&&val.includes('@'))throw new Error(`EMAIL_LIKE_STRING:${[...p,k].join('.')}`);scan(val,[...p,k]);}}
+          for(const f of ['report-source-safe.json','prewrite-source-safe.json','rollback-dry-run-source-safe.json']){const q=path.join(out,f);if(fs.existsSync(q))scan(JSON.parse(fs.readFileSync(q,'utf8')),[f]);}
+          for(const f of ['rollback-snapshot-prewrite.enc.json','rollback-created-users.enc.json']){const q=path.join(out,f);if(!fs.existsSync(q))continue;const e=JSON.parse(fs.readFileSync(q,'utf8'));if(e.algorithm!=='AES-256-GCM'||e.kdf!=='HKDF-SHA256'||typeof e.ciphertextBase64!=='string'||!e.ciphertextBase64||Object.hasOwn(e,'users')||Object.hasOwn(e,'createdUsers'))throw new Error(`ENVELOPE_STRUCTURE:${f}`);}
+          if(decision==='PASS_C6_AUTH_PLAN_V4_ACTIVATION_DEV'){
+            if(report.prewrite?.pass!==true||report.prewrite?.createRows!==118||report.prewrite?.updateRows!==9||report.prewrite?.passwordMaterialInspectedRows!==8||report.prewrite?.snapshotRoundtripVerified!==true)throw new Error('PASS_PREWRITE_SHAPE');
+            if(report.writes?.authCreates!==118||report.writes?.authUpdates!==9||report.writes?.duplicateDisables!==1||report.readback?.authUsersAfter!==228||report.readback?.pass!==true||report.rollbackDryRun?.pass!==true||report.rollbackDryRun?.passwordHashRestoreEntries!==8)throw new Error('PASS_TERMINAL_SHAPE');
+          } else if(decision==='STOP_RETRY_C6_AUTH_PLAN_V4_PREWRITE'){
+            if(report.safety?.writeBoundaryEntered!==false||report.safety?.authCreates!==0||report.safety?.authUpdates!==0||report.safety?.duplicateDisables!==0||report.safety?.providerWriteCalls!==0)throw new Error('PREWRITE_STOP_NOT_CLEAN');
+          } else if(decision==='HOLD_C6_AUTH_PLAN_V4_POSTWRITE_STOP_RETRY'){
+            if(report.safety?.writeBoundaryEntered!==true)throw new Error('POSTWRITE_HOLD_WITHOUT_WRITE_BOUNDARY');
+          } else throw new Error(`UNKNOWN_DECISION:${decision}`);
+          if(report.safety?.firestoreWrites!==0||report.safety?.hrWrites!==0||report.safety?.visitsWrites!==0||report.safety?.certificationsWrites!==0||report.safety?.liquidationsWrites!==0||report.safety?.rulesWrites!==0||report.safety?.storageWrites!==0||report.safety?.cloudBuild!==0||report.safety?.cloudRun!==0||report.safety?.hosting!==0||report.safety?.merge!==false||report.safety?.production!==false)throw new Error('PROHIBITED_WRITE_DRIFT');
+          console.log(JSON.stringify({decision,prewrite:report.prewrite,writes:report.writes,readback:report.readback,rollbackDryRun:report.rollbackDryRun,safety:report.safety}));
+          NODE
+
+      - name: Accumulative runtime role surface smoke after Auth PASS
+        if: steps.activation.outputs.decision == 'PASS_C6_AUTH_PLAN_V4_ACTIVATION_DEV'
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';import admin from 'firebase-admin';
+          const sa=JSON.parse(fs.readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS,'utf8'));
+          if(!admin.apps.length)admin.initializeApp({credential:admin.credential.cert(sa),projectId:'cxorbia-backend-dev'});
+          const auth=admin.auth();let users=[],pageToken;do{const page=await auth.listUsers(1000,pageToken);users.push(...page.users);pageToken=page.pageToken;}while(pageToken);
+          const norm=x=>String(x||'').trim().toLowerCase();
+          const enabled=users.filter(u=>!u.disabled);const role=u=>norm(u.customClaims?.role);const tenant=u=>norm(u.customClaims?.tenantId);const projects=u=>Array.isArray(u.customClaims?.projectIds)?u.customClaims.projectIds.map(norm):[];
+          const scoped=u=>tenant(u)==='tya'&&projects(u).includes('cinepolis');
+          const adminOps=enabled.filter(u=>['super','super_admin','admin','admin_tya','ops','operaciones','coordinador'].includes(role(u)));
+          const shoppers=enabled.filter(u=>role(u)==='shopper'&&scoped(u));
+          const clients=enabled.filter(u=>['cliente','cliente_externo','client'].includes(role(u))&&(tenant(u)==='tya'||scoped(u)));
+          if(users.length!==228)throw new Error(`ROLE_SMOKE_AUTH_POPULATION_${users.length}`);
+          if(adminOps.length<1)throw new Error('ROLE_SMOKE_ADMIN_OPS_MISSING');
+          if(shoppers.length<1)throw new Error('ROLE_SMOKE_SHOPPER_MISSING');
+          if(clients.length<1)throw new Error('ROLE_SMOKE_CLIENT_MISSING');
+          console.log(JSON.stringify({decision:'PASS_C6_ACCUMULATIVE_RUNTIME_ROLE_SURFACE_SMOKE',authUsers:users.length,adminOps:adminOps.length,shoppers:shoppers.length,clients:clients.length,rawPiiExported:false}));
+          NODE
+
+      - name: Upload terminal evidence and encrypted rollback payloads
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-c6-auth-plan-v4-activation-dev-v2-${{ github.run_id }}
+          path: .tmp/c6-auth-plan-v4-v2/out
+          if-no-files-found: warn
+          retention-days: 14
+          compression-level: 6
+
+      - name: Publish terminal decision and close claim
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DECISION: ${{ steps.activation.outputs.decision }}
+        run: |
+          set -euo pipefail
+          decision="${DECISION:-STOP_RETRY_C6_AUTH_PLAN_V4_NO_DECISION}"
+          state=failure
+          if [ "$decision" = 'PASS_C6_AUTH_PLAN_V4_ACTIVATION_DEV' ] && [ '${{ job.status }}' = 'success' ]; then state=success; fi
+          desc=$(printf '%s' "$decision" | cut -c1-140)
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$state" -f context='cxorbia/c6-auth-plan-v4-activation-v2/claim' -f description="$desc" -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$state" -f context='cxorbia/c6-auth-plan-v4-activation-dev-v2' -f description="$desc" -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+
+      - name: Cleanup credential
+        if: always()
+        run: rm -rf "$PRIVATE_DIR"
