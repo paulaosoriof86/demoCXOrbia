@@ -1,106 +1,51 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-06  
-**Estado vivo:** `C6_SKIP13_ADJUDICATION_REQUEST_EMITTED__20M_NO_TERMINAL_EVIDENCE__CONSUMPTION_UNKNOWN__STOP_RETRY__AUTH_PLAN_FROZEN__PRODUCTION_PROMOTION_PASS__LIVE_HR_V4_UNRESOLVED__NO_PRODUCTION`
+**Última actualización:** 2026-08-10  
+**Estado vivo:** `C6_AUTH_FINDINGS_ADJUDICATION_STOP_ONE_AMBIGUOUS_DUPLICATE__AUTH_DEV_228_PRESERVED__ZERO_WRITES__NO_SECOND_READ__NO_PRODUCTION`
 
 ## 1. Fuente vigente
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-3. `app/docs/SOURCE-LOCK-C6-SKIP13-AUTH-ACCESS-ADJUDICATION-20M-NO-RUN-EVIDENCE-20260806.md`;
-4. `app/docs/evidence/C6-SKIP13-AUTH-ACCESS-ADJUDICATION-20M-NO-RUN-EVIDENCE-LATEST.json`;
-5. `backend/config/c6-skip13-auth-access-adjudication-request.json`;
-6. `app/docs/SOURCE-LOCK-C6-AUTH-SMOKE-FINAL-PREPARATION-HOLD-20260806.md`;
-7. `backend/config/c6-shopper-auth-final-freeze-v1.json`;
-8. `backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json`;
-9. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json`;
-10. `app/docs/SOURCE-LOCK-C6-PRODUCTION-PROMOTION-PASS-20260806.md`;
-11. `app/docs/SOURCE-LOCK-C6-LIVE-HR-V4-REQUEST-30M-NO-RUN-EVIDENCE-20260806.md`;
-12. PR #7 y HEAD vivo.
+3. `app/docs/SOURCE-LOCK-C6-AUTH-SMOKE-FINDINGS-ADJUDICATION-AMBIGUITY-STOP-RETRY-20260810.md`;
+4. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-AUTH-FINDINGS-ADJUDICATION-STOP-20260810.md`;
+5. PR #7 y HEAD vivo.
 
 ## 2. No reabrir
 
-- frontend acumulativo y composición canónica;
-- Login y contratos Auth/RBAC;
-- universo Shopper 65/65;
+- frontend acumulativo, Login, `/app/modules/*`, `/app/core/*` y `CX.data`;
+- SKIP13, multi-Auth cerrado, target lineage `ac93...` y plan v3;
+- freeze Auth v4 340/HOLD=0;
+- PREWRITE, Activation, readback y rollback dry-run;
+- Auth DEV 228;
+- HashConfig y lifecycle del smoke;
 - Finanzas, Liquidaciones, Portal Cliente, Portal Shopper y Reservas;
-- estrategia `PROMOTE_EXISTING_CLEAN_PROJECT`;
-- ninguna nueva candidata, rama, PR o shell paralela.
+- estrategia `PROMOTE_EXISTING_CLEAN_PROJECT`.
 
-## 3. Backend Auth preparado
+## 3. Backend Auth actual
 
 ```text
 rows=340
-CREATE_AUTH=81
-UPDATE_AUTH=46
-NO_OP=73
+CREATE_AUTH=118
+UPDATE_AUTH=9
 HOLD=0
-PRESERVE_NO_AUTH=140
-planDigest=6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b
-freeze=PASS_AUTH_PLAN_340_CRYPTOGRAPHIC_FREEZE
-idempotency=PASS_PREWRITE_IDEMPOTENCY_CONTRACT
-snapshot/rollback=PREPARED_NOT_EXECUTABLE
-smoke=PREPARED_NOT_EXECUTED
+AuthUsersAfter=228
+Activation=PASS
+Readback=PASS
+RollbackDryRun=PASS
+PlanDigest=c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4
 ```
 
-No modificar `/app/modules/*`, `/app/core/*` ni `CX.data`.
+## 4. Hallazgo runtime adjudicado
 
-## 4. Adjudicación SKIP13
+Una única lectura provider source-safe confirmó cinco grupos de provider email duplicado. Cuatro grupos tienen dos principals habilitados con claims/scope habilitantes —tres Admin/Operaciones y uno Cliente— y requieren adjudicación focal de keeper/retire. El quinto grupo tiene dos principals habilitados pero ninguno con acceso TyA efectivo; sigue ambiguo respecto de keeper/histórico/técnico.
 
-```text
-requestCommit=2eef8b70f2bd2d8570a7f3cc117e217851dd6964
-skipProfiles=13
-blockingFingerprint=7cc28c78de9bfda01d14
-blockingCandidates=2
-secondTrigger=0
-```
+Los cuatro roles fuera de contrato no tienen acceso efectivo; el Admin cross-tenant solapa con el grupo ambiguo; el Shopper outlier carece de shopperId/target scope y tampoco tiene acceso efectivo.
 
-Tras 1,227 segundos no se recuperaron runId, jobId, steps, artifact ni status terminal.
+No compensar estos casos desde frontend ni relajar `ROLE_NOT_ALLOWED`, `TENANT_NOT_ALLOWED`, `SHOPPER_SCOPE_REQUIRED` o aislamiento por proyecto.
 
-```text
-workflowRunExistence=UNKNOWN_AFTER_20M_OBSERVATION
-providerReadConsumption=UNKNOWN_NO_RUN_JOB_STATUS_OR_CHECKPOINT_EVIDENCE
-adjudicationCompleted=false
-unplannedEffectiveAccessDetermined=false
-STOP_RETRY=true
-```
+## 5. Siguiente bloque backend
 
-No ocultar ni compensar este bloqueo desde frontend. Auth no debe ejecutarse y no debe emitirse otro trigger. Cualquier evidencia tardía se reconcilia exclusivamente contra el request exacto.
+`C6 AUTH DUPLICATE KEEPER + TARGET-SCOPE ADJUDICATION READ-ONLY FOCAL`.
 
-## 5. Smoke futuro
-
-La matriz preparada cubre Admin/Operaciones, Shopper y Cliente. Exige tres recargas, nueva pestaña, aislamiento por rol, mismo `tenantId/projectId`, una sola `sourceRevision`, ausencia de duplicados y UTF-8. No ha sido ejecutada.
-
-## 6. HR v4
-
-```text
-requestCommit=ac2032ec224e6d56bf087788b949691b6690c437
-providerReadConsumption=UNKNOWN_NO_RUN_JOB_OR_CHECKPOINT_EVIDENCE
-STOP_RETRY=true
-segundo trigger=0
-```
-
-## 7. Siguiente cadena real
-
-```text
-RECONCILIAR EVIDENCIA TARDÍA SKIP13 DEL REQUEST EXACTO
-→ DETERMINAR ACCESO EFECTIVO RESIDUAL
-→ RECONCILIAR HR V4 Y CONFIRMAR HR VIVA
-→ AUTORIZACIÓN SEPARADA SNAPSHOT + AUTH
-→ READBACK + ROLLBACK
-→ SMOKE MULTIROL
-→ VALIDACIÓN HUMANA
-→ AUTORIZACIÓN ESPECÍFICA DE CUTOVER
-```
-
-## 8. Seguridad
-
-```text
-provider read consumption SKIP13=UNKNOWN
-provider writes=0
-HR reads del bloque=0
-HR/Firestore/Auth/Rules/Storage writes=0
-Hosting/Cloud Run deploys=0
-merge=false
-production=false
-```
+Sin repair, nuevo smoke, PREWRITE/Activation, writes, merge ni producción hasta nueva autorización.
