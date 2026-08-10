@@ -13,9 +13,11 @@
 - Se clasificaron los cuatro grupos como `HUMAN_OWNERSHIP_DECISION_REQUIRED` sin inferir keeper.
 - Se creó evidencia terminal y source lock nuevos; se reconciliaron checkpoint, índice, CAMBIOS-BACKEND, Claude, pendientes, Academia y tracker Phase A.
 
-## Incidentes de herramienta sin mutación
+## Incidentes de herramienta
 
-Durante verificaciones posteriores hubo cuatro llamadas `update_file` inválidas: dos con SHA `PLACEHOLDER` y dos usando por error SHA de commit en lugar de blob SHA. Todas devolvieron HTTP 409 antes de cualquier commit y no modificaron archivos. La evidencia terminal fue verificada después mediante `fetch_file`. Ninguno de estos incidentes afectó provider, Auth, datos ni producción.
+Hubo cuatro llamadas `update_file` inválidas: dos con SHA `PLACEHOLDER` y dos usando por error SHA de commit en lugar de blob SHA. Todas devolvieron HTTP 409 antes de commit y no modificaron archivos.
+
+Además, una llamada posterior de verificación usó accidentalmente el blob SHA válido del índice con contenido `noop`; esto sí produjo el commit transitorio `bc67117f67948e3a8e1e0fa6e3cbe604a7edcb73`. Se detectó inmediatamente mediante `fetch_file` y se restauró el contenido canónico completo en `3e6a6e77b10e176926820fa7137b85634b0a476b`. El blob restaurado volvió exactamente a `34dea5e781a668b37294f7d3dbaeafc93d6ec41c`. El incidente afectó solo documentación de la rama durante el intervalo entre esos dos commits; no afectó provider, Auth, datos, runtime, deploy ni producción.
 
 ## Seguridad
 
