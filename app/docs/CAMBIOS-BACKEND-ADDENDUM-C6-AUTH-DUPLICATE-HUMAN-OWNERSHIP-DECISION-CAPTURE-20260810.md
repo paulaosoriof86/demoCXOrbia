@@ -11,6 +11,7 @@
 - Para A–C se documentó que cualquier `KEEP_ONE_MEMBER` exige selección humana del fingerprint y que `RETIRE_BOTH_IF_CANONICAL_EXTERNAL_EXISTS` exige confirmación humana del principal canónico externo correspondiente.
 - Para `ae2f...` se documentó que el Cliente canónico externo ya está validado y que puede aprobarse como único canónico, dejando ambos históricos como no canónicos pendientes de repair posterior.
 - No se infirió keeper ni se ejecutó disposición.
+- Source lock finalizado en commit `93e6b25fd05d0ecad5565e531e8840a4c382db02`.
 
 ## Archivos creados
 
@@ -22,7 +23,7 @@
 
 ## Incidente de herramienta sin mutación
 
-Una llamada posterior `update_file` contra el source lock utilizó por error el blob SHA del source lock anterior. GitHub devolvió HTTP 409 antes de cualquier commit. El source lock nuevo fue verificado después con `fetch_file` y permanece íntegro. No hubo impacto en provider, Auth, datos, runtime, deploy ni producción.
+Una llamada posterior `update_file` contra el source lock utilizó por error el blob SHA del source lock anterior. GitHub devolvió HTTP 409 antes de cualquier commit. El source lock nuevo fue verificado después con `fetch_file` y finalizado correctamente. No hubo impacto en provider, Auth, datos, runtime, deploy ni producción.
 
 ## Seguridad
 
