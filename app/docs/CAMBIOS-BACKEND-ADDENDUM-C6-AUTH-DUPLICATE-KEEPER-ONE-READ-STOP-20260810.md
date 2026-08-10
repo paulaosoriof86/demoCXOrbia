@@ -55,12 +55,12 @@ errorCode=KEEPER_ANCHOR_INSUFFICIENT_4
 
 ## Incidentes de herramienta sin mutación
 
-Durante el cierre documental se produjeron dos llamadas de herramienta incorrectas:
+Durante el cierre documental se produjeron tres llamadas de herramienta incorrectas:
 
-1. un `update_file` intencionalmente mal formado con SHA `PLACEHOLDER`, que devolvió HTTP 409 antes de commit;
-2. una llamada al esquema `update_file` usada accidentalmente con argumentos de lectura, rechazada por validación de schema antes de llegar a GitHub.
+1. un `update_file` con SHA `PLACEHOLDER`, que devolvió HTTP 409 antes de commit;
+2. dos llamadas al esquema `update_file` usadas accidentalmente con argumentos de lectura, rechazadas por validación de schema antes de llegar a GitHub.
 
-Ninguna de las dos modificó archivos, creó commits, accedió al provider ni alteró Auth/datos/producción. El flujo se corrigió recuperando primero el SHA real con `fetch_file`.
+Ninguna modificó archivos, creó commits, accedió al provider ni alteró Auth/datos/producción. El flujo válido siguió usando `fetch_file` para recuperar el SHA real antes de cualquier actualización.
 
 ## Impacto Phase A
 
