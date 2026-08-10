@@ -1,0 +1,106 @@
+name: CXOrbia C6 Auth Duplicate Keeper Target-Scope Source Gate
+
+on:
+  push:
+    branches: [docs-tya-v6-v71-audit]
+    paths:
+      - 'tools/qa/cxorbia-c6-auth-duplicate-keeper-targetscope-adjudication-readonly-v1.mjs'
+      - '.github/workflows/cxorbia-c6-auth-duplicate-keeper-targetscope-source-gate-v1.yml'
+
+permissions:
+  contents: read
+  statuses: write
+
+concurrency:
+  group: cxorbia-c6-auth-duplicate-keeper-targetscope-source-gate-v1
+  cancel-in-progress: false
+
+jobs:
+  source-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TOOL: tools/qa/cxorbia-c6-auth-duplicate-keeper-targetscope-adjudication-readonly-v1.mjs
+      INDEX_FILE: app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md
+      CHECKPOINT_FILE: app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md
+      PRIOR_LOCK: app/docs/SOURCE-LOCK-C6-AUTH-SMOKE-FINDINGS-ADJUDICATION-AMBIGUITY-STOP-RETRY-20260810.md
+      CLIENT_READBACK: app/docs/evidence/CORTE6-CLIENT-AUTH-READBACK-LATEST.json
+      CLAIM_NORMALIZATION: app/docs/evidence/CORTE6-AUTH-CLAIMS-NORMALIZATION-LATEST.json
+      CREDENTIAL_IMPORT: app/docs/evidence/CORTE6-CREDENTIAL-IMPORT-LATEST.json
+      CREDENTIAL_CONTINUITY: app/docs/evidence/CORTE6-CREDENTIAL-CONTINUITY-READONLY-LATEST.json
+      BROWSER_AUTH: app/core/backend-browser-auth.js
+      PLAN_DIGEST: c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4
+    steps:
+      - name: Checkout exact source commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Syntax and offline self-test
+        run: |
+          set -euo pipefail
+          node --check "$TOOL"
+          node "$TOOL" --source-self-test | tee /tmp/c6-keeper-source-selftest.txt
+          grep -q 'PASS_C6_AUTH_DUPLICATE_KEEPER_TARGET_SCOPE_SOURCE_SELFTEST' /tmp/c6-keeper-source-selftest.txt
+
+      - name: Frozen universe lineage zero-write gate
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const ok=(v,m)=>{if(!v)throw new Error(m)};
+          const tool=fs.readFileSync(process.env.TOOL,'utf8');
+          const idx=fs.readFileSync(process.env.INDEX_FILE,'utf8');
+          const cp=fs.readFileSync(process.env.CHECKPOINT_FILE,'utf8');
+          const lock=fs.readFileSync(process.env.PRIOR_LOCK,'utf8');
+          const client=JSON.parse(fs.readFileSync(process.env.CLIENT_READBACK,'utf8'));
+          const claims=JSON.parse(fs.readFileSync(process.env.CLAIM_NORMALIZATION,'utf8'));
+          const imported=JSON.parse(fs.readFileSync(process.env.CREDENTIAL_IMPORT,'utf8'));
+          const continuity=JSON.parse(fs.readFileSync(process.env.CREDENTIAL_CONTINUITY,'utf8'));
+          const browser=fs.readFileSync(process.env.BROWSER_AUTH,'utf8');
+          ok(idx.includes('AuthUsersAfter=228')&&idx.includes(process.env.PLAN_DIGEST),'INDEX_BASELINE_DRIFT');
+          ok(cp.includes('AuthUsersAfter=228')&&cp.includes('PREWRITE repeated=false')&&cp.includes('Activation repeated=false'),'CHECKPOINT_BASELINE_DRIFT');
+          const groups={
+            '1acdcb3782b7cf351056':['6dee7f31c738218ce63a','b561d9c46660715e214f'],
+            '2c4d19f2b066835473d3':['aa5cbada6c5388ee1d8b','f8405e17df357c121ccc'],
+            '54225792eeb65f6739c0':['ce178298b2df136541d4','19937aedc77af3404bdc'],
+            'ae2f920fe6d9ce1fdd82':['ca9e2f644334833ab572','360af509dcd1880f04'],
+            'fd891812eca020d27ee3':['e1773a24c98d6bbe26c3','50d360f17c1fbdd69770']
+          };
+          for(const [g,members] of Object.entries(groups)){
+            ok(lock.includes(g),`PRIOR_GROUP_MISSING:${g}`);
+            ok(tool.includes(g),`TOOL_GROUP_MISSING:${g}`);
+            for(const fp of members){ok(lock.includes(fp),`PRIOR_MEMBER_MISSING:${fp}`);ok(tool.includes(fp),`TOOL_MEMBER_MISSING:${fp}`);}
+          }
+          ok(client.decision==='PASS_C6_CLIENT_AUTH_READBACK'&&client.target?.claimsExact===true&&client.passwordSignIn===true,'CLIENT_LINEAGE_DRIFT');
+          ok(typeof client.target?.uidFingerprint==='string'&&client.target.uidFingerprint.length===64,'CLIENT_UID_FP_DRIFT');
+          ok(claims.mode==='EXECUTED'&&claims.selected?.clients===2,'CLIENT_NORMALIZATION_DRIFT');
+          ok((claims.changes||[]).filter(x=>x.kind==='client').length===2,'CLIENT_HISTORY_DRIFT');
+          ok(imported.decision==='PASS_EXACT_AUTH_IMPORT_READBACK'&&imported.targetRoleCounts?.super===1&&imported.targetRoleCounts?.coordinador===2&&imported.targetNamespaceCounts?.staff===3,'STAFF_IMPORT_DRIFT');
+          ok(continuity.firebaseAuth?.users===108&&continuity.firebaseAuth?.namespaceCounts?.none===17&&continuity.firebaseAuth?.namespaceCounts?.staff===3,'STAFF_NAMESPACE_DRIFT');
+          ok(browser.includes("const LEGACY_ROLES = new Set(['super','admin','ops','coordinador','cliente','client','shopper'])"),'ROLE_CONTRACT_DRIFT');
+          ok(browser.includes("if(!LEGACY_ROLES.has(role)) throw new Error('ROLE_NOT_ALLOWED')"),'ROLE_REJECTION_DRIFT');
+          ok(browser.includes("if(!tenantAllowed(claims, role)) throw new Error('TENANT_NOT_ALLOWED')"),'TENANT_REJECTION_DRIFT');
+          for(const token of ['createUser(','updateUser(','deleteUser(','setCustomUserClaims(','revokeRefreshTokens(','setIamPolicy','updateIamPolicy','firestore().','getFirestore(','bucket(','firebase deploy','gcloud run deploy']) ok(!tool.includes(token),`WRITE_OR_DEPLOY_TOKEN:${token}`);
+          ok((tool.match(/\.listUsers\(/g)||[]).length===1,'LIST_USERS_CALL_COUNT_NOT_ONE');
+          ok(tool.includes("ensure(!page.pageToken,'PROVIDER_READ_WOULD_REQUIRE_SECOND_PAGE')"),'SECOND_PAGE_FAILCLOSE_MISSING');
+          ok(!tool.includes('creationTime')&&!tool.includes('lastSignInTime'),'FORBIDDEN_TEMPORAL_SELECTOR_PRESENT');
+          for(const flag of ['rawUidExported:false','rawEmailExported:false','rawShopperIdExported:false','rawNameExported:false','rawClaimsExported:false','creationTimeUsed:false','resultOrderUsed:false']) ok(tool.includes(flag),`SAFETY_FLAG_MISSING:${flag}`);
+          console.log('PASS_C6_AUTH_DUPLICATE_KEEPER_TARGET_SCOPE_SOURCE_ZERO_WRITES_ONE_READ_NO_PII');
+          NODE
+
+      - name: Publish source gate PASS
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state='success' \
+            -f context='cxorbia/c6-auth-duplicate-keeper-targetscope-source' \
+            -f description='PASS source-only frozen 5 pairs one read max zero writes no PII' \
+            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
