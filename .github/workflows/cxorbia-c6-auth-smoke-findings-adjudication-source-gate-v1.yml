@@ -1,0 +1,89 @@
+name: CXOrbia C6 Auth Smoke Findings Adjudication Source Gate
+
+on:
+  push:
+    branches: [docs-tya-v6-v71-audit]
+    paths:
+      - 'tools/qa/cxorbia-c6-auth-smoke-findings-adjudication-readonly-v1.mjs'
+      - '.github/workflows/cxorbia-c6-auth-smoke-findings-adjudication-source-gate-v1.yml'
+
+permissions:
+  contents: read
+  statuses: write
+
+concurrency:
+  group: cxorbia-c6-auth-smoke-findings-adjudication-source-gate-v1
+  cancel-in-progress: false
+
+jobs:
+  source-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TOOL: tools/qa/cxorbia-c6-auth-smoke-findings-adjudication-readonly-v1.mjs
+      FREEZE_FILE: backend/config/c6-shopper-auth-final-freeze-v4.json
+      AUTH_TERMINAL: backend/config/c6-auth-plan-v4-activation-dev-request-v3.json
+      SMOKE_TERMINAL: backend/config/c6-accumulative-multirole-smoke-readonly-request-v1.json
+      BROWSER_AUTH: app/core/backend-browser-auth.js
+      PLAN_DIGEST: c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4
+    steps:
+      - name: Checkout exact source commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Syntax and source self-test
+        run: |
+          set -euo pipefail
+          node --check "$TOOL"
+          node "$TOOL" --source-self-test | tee /tmp/c6-adjudication-source-selftest.txt
+          grep -q 'PASS_C6_AUTH_SMOKE_FINDINGS_ADJUDICATION_SOURCE_SELFTEST' /tmp/c6-adjudication-source-selftest.txt
+
+      - name: Zero-write, scope and closed-lineage gate
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const tool=fs.readFileSync(process.env.TOOL,'utf8');
+          const freeze=JSON.parse(fs.readFileSync(process.env.FREEZE_FILE,'utf8'));
+          const authTerminal=JSON.parse(fs.readFileSync(process.env.AUTH_TERMINAL,'utf8'));
+          const smokeTerminal=JSON.parse(fs.readFileSync(process.env.SMOKE_TERMINAL,'utf8'));
+          const browser=fs.readFileSync(process.env.BROWSER_AUTH,'utf8');
+          const ok=(v,m)=>{if(!v)throw new Error(m)};
+          ok(freeze.finalPlanV4?.rows===340&&freeze.finalPlanV4?.rowsDigestSha256===process.env.PLAN_DIGEST&&freeze.finalPlanV4?.expectedAuthUsersAfter===228,'FREEZE_DRIFT');
+          ok(freeze.tenantAdjudication?.profileFingerprint==='7cc28c78de9bfda01d14','CLOSED_PROFILE_DRIFT');
+          ok(freeze.tenantAdjudication?.keeperCandidateFingerprint==='4e6d26551d11db444bd0','CLOSED_KEEPER_DRIFT');
+          ok(freeze.tenantAdjudication?.retireAccessCandidateFingerprint==='9b2b7ca1bd72c1301d29','CLOSED_RETIRE_DRIFT');
+          ok(authTerminal.enabled===false&&authTerminal.consumed===true&&authTerminal.allowedExecutions===0,'AUTH_TERMINAL_NOT_CLOSED');
+          ok(authTerminal.terminal?.authActivationDecision==='PASS_C6_AUTH_PLAN_V4_ACTIVATION_DEV'&&authTerminal.terminal?.authUsersAfter===228&&authTerminal.terminal?.readbackPass===true&&authTerminal.terminal?.rollbackDryRunPass===true,'AUTH_BASELINE_DRIFT');
+          ok(smokeTerminal.enabled===false&&smokeTerminal.consumed===true&&smokeTerminal.allowedExecutions===0,'SMOKE_TERMINAL_NOT_CLOSED');
+          ok(smokeTerminal.terminal?.duplicateProviderEmailGroups===5&&smokeTerminal.terminal?.unknownEnabledRoles===4,'SMOKE_FINDING_DRIFT');
+          ok(smokeTerminal.terminal?.adminOperaciones?.enabled===11&&smokeTerminal.terminal?.adminOperaciones?.tenantAllowed===10,'ADMIN_FINDING_DRIFT');
+          ok(smokeTerminal.terminal?.shopper?.enabled===209&&smokeTerminal.terminal?.shopper?.targetScoped===208&&smokeTerminal.terminal?.shopper?.shopperScopePresent===208,'SHOPPER_FINDING_DRIFT');
+          ok(browser.includes("const LEGACY_ROLES = new Set(['super','admin','ops','coordinador','cliente','client','shopper'])"),'BROWSER_ROLE_CONTRACT_DRIFT');
+          ok(browser.includes("if(!LEGACY_ROLES.has(role)) throw new Error('ROLE_NOT_ALLOWED')"),'ROLE_REJECTION_DRIFT');
+          ok(browser.includes("if(!tenantAllowed(claims, role)) throw new Error('TENANT_NOT_ALLOWED')"),'TENANT_REJECTION_DRIFT');
+          ok(browser.includes("if(role === 'shopper' && !shopperId) throw new Error('SHOPPER_SCOPE_REQUIRED')"),'SHOPPER_REJECTION_DRIFT');
+          for(const token of ['createUser(','updateUser(','deleteUser(','setCustomUserClaims(','setIamPolicy','updateIamPolicy','firestore().','getFirestore(','bucket(','deploy','firebase deploy','gcloud run deploy']) ok(!tool.includes(token),`WRITE_OR_DEPLOY_TOKEN:${token}`);
+          ok(tool.includes('await auth.listUsers(1000)'),'SINGLE_LIST_USERS_CALL_MISSING');
+          ok(!tool.includes('pageToken'),'PAGINATED_SECOND_READ_RISK');
+          ok(tool.includes("ensure(!first.pageToken, 'PROVIDER_READ_WOULD_REQUIRE_SECOND_PAGE')"),'SECOND_PAGE_FAILCLOSE_MISSING');
+          ok(tool.includes('rawUidExported: false')&&tool.includes('rawEmailExported: false')&&tool.includes('rawShopperIdExported: false')&&tool.includes('rawNameExported: false')&&tool.includes('rawClaimsExported: false'),'PII_SAFETY_FLAGS_MISSING');
+          console.log('PASS_C6_AUTH_SMOKE_FINDINGS_ADJUDICATION_SOURCE_ZERO_WRITES_ONE_READ_NO_PII');
+          NODE
+
+      - name: Publish source gate PASS
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state='success' \
+            -f context='cxorbia/c6-auth-smoke-findings-adjudication-source' \
+            -f description='PASS source-only zero writes one provider read max no PII' \
+            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
