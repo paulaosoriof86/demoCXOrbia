@@ -11,7 +11,11 @@
 - Se comprobó que A–C contienen candidates legacy/pre-import namespace `NONE`; ninguno coincide con los principals staff canónicos importados namespace `staff`, pero la evidencia no distingue un miembro del otro.
 - Se comprobó que ambos members de `ae2f...` son históricos y que el Cliente canónico actual es un principal separado ya materializado/validado; tampoco existe ancla única dentro del par.
 - Se clasificaron los cuatro grupos como `HUMAN_OWNERSHIP_DECISION_REQUIRED` sin inferir keeper.
-- Se creó evidencia terminal y source lock nuevos.
+- Se creó evidencia terminal y source lock nuevos; se reconciliaron checkpoint, índice, CAMBIOS-BACKEND, Claude, pendientes, Academia y tracker Phase A.
+
+## Incidente de herramienta sin mutación
+
+Durante una verificación posterior se emitió por error una llamada `update_file` con SHA `PLACEHOLDER` contra la evidencia terminal. GitHub respondió HTTP 409 antes de cualquier commit; el archivo no fue modificado. No afectó provider, Auth, datos ni producción.
 
 ## Seguridad
 
