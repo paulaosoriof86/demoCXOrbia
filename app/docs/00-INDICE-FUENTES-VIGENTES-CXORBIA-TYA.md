@@ -2,27 +2,24 @@
 
 **Fecha:** 2026-08-10  
 **Estado:** ACTIVO Y RECONCILIADO  
-**Estado vivo:** `C6_AUTH_V4_ACTIVATED_DEV__READBACK_ROLLBACK_DRYRUN_PASS__SMOKE_STOP_CREDENTIAL_LIFECYCLE__NO_SECOND_PROVIDER_ATTEMPT__NO_PRODUCTION`
+**Estado vivo:** `C6_SMOKE_READONLY_STOP_IDENTITY_SCOPE_FINDINGS__AUTH_DEV_228_PRESERVED__ZERO_WRITES__NO_SECOND_SMOKE__NO_PRODUCTION`
 
 ## 1. Orden de prevalencia
 
 1. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `app/docs/SOURCE-LOCK-C6-AUTH-V4-ACTIVATION-PASS-SMOKE-CREDENTIAL-LIFECYCLE-STOP-RETRY-20260810.md`;
-3. `app/docs/evidence/C6-AUTH-V4-ACTIVATION-PASS-SMOKE-CREDENTIAL-LIFECYCLE-STOP-RETRY-20260810.json`;
-4. `backend/config/c6-shopper-auth-final-freeze-v4.json` — freeze rector, sin cambios;
-5. `backend/config/c6-auth-plan-v4-activation-dev-request-v3.json` — consumido/deshabilitado;
-6. `tools/qa/cxorbia-c6-auth-plan-v4-activation-dev-v4.mjs` — rootfix fuente actual, no volver a ejecutar Activation sin nueva autorización expresa;
-7. `tools/qa/cxorbia-c6-auth-hashconfig-readiness-v2.mjs` — readiness read-only histórico del bloque;
-8. `backend/contracts/c6-auth-plan-v4-activation-dev-v1.json`;
-9. `app/docs/SOURCE-LOCK-C6-AUTH-HASHCONFIG-READINESS-PREPROVIDER-SYNTAX-STOP-RETRY-20260810.md` — histórico inmediato;
-10. `app/docs/SOURCE-LOCK-C6-AUTH-PLAN-V4-PREWRITE-HASH-CONFIG-EMPTY-STOP-RETRY-20260810.md` — histórico;
-11. `app/docs/SOURCE-LOCK-C6-AUTH-UPDATE-UNIVERSE-BATCH-PLAN-V4-PASS-20260807.md` — histórico que congeló v4;
-12. `app/docs/SOURCE-LOCK-C6-MULTI-AUTH-FINAL-DISCRIMINATOR-TENANT-ADJUDICATION-STOP-RETRY-20260807.md` — identidad cerrada;
-13. `app/docs/SOURCE-LOCK-C6-DIRECT-RUNNER-DEV-DEPLOY-PASS-20260807.md`;
-14. `backend/config/c6-shopper-auth-snapshot-rollback-manifest-v1.json`;
-15. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json`;
-16. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-17. addenda vigentes y PR #7.
+2. `app/docs/SOURCE-LOCK-C6-ACCUMULATIVE-MULTIROLE-SMOKE-READONLY-IDENTITY-SCOPE-STOP-RETRY-20260810.md`;
+3. `app/docs/evidence/C6-ACCUMULATIVE-MULTIROLE-SMOKE-READONLY-IDENTITY-SCOPE-STOP-RETRY-20260810.json`;
+4. `backend/config/c6-accumulative-multirole-smoke-readonly-request-v1.json` — consumido/deshabilitado;
+5. `tools/qa/cxorbia-c6-accumulative-multirole-smoke-readonly-v1.mjs` — herramienta source-only actual, sin workflow provider activo;
+6. `backend/config/c6-shopper-auth-final-freeze-v4.json` — freeze Auth rector;
+7. `backend/config/c6-auth-plan-v4-activation-dev-request-v3.json` — Activation Auth PASS, consumido/deshabilitado;
+8. `app/docs/SOURCE-LOCK-C6-AUTH-V4-ACTIVATION-PASS-SMOKE-CREDENTIAL-LIFECYCLE-STOP-RETRY-20260810.md` — histórico inmediato previo;
+9. `app/docs/evidence/C6-AUTH-V4-ACTIVATION-PASS-SMOKE-CREDENTIAL-LIFECYCLE-STOP-RETRY-20260810.json`;
+10. `backend/config/c6-accumulative-multirole-smoke-matrix-v1.json` — matriz rectora de superficies;
+11. `backend/contracts/c6-auth-plan-v4-activation-dev-v1.json`;
+12. source locks históricos de HashConfig, update-universe, multi-Auth y direct runner;
+13. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+14. addenda vigentes y PR #7.
 
 ## 2. Estado rector
 
@@ -32,106 +29,93 @@ AuthPlanV4=FROZEN
 AuthPlanV4Digest=c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4
 AuthExecuted=true
 AuthUsersAfter=228
+Readback=PASS
+RollbackDryRun=PASS
 Production=false
 SKIP13=closed 13/13
 MultiAuthAdjudication=closed
 TargetLineage(ac93)=closed
-UpdateUniverseBatch=closed PASS
-HashConfigSyntaxRootfix=PASS_SOURCE_ONLY
-HashConfigPermissionReadiness=PASS_READ_ONLY
-PlanV4Prewrite=PASS
-AuthActivationDEV=PASS
-Readback=PASS
-RollbackDryRun=PASS
-RealRollbackExecuted=false
-CurrentBlock=STOP_RETRY_POSTWRITE_SMOKE_CREDENTIAL_LIFECYCLE
-SmokeProviderReads=0
-SecondProviderAttempt=false
-RequestV3=consumed/disabled
+HashConfig=closed PASS
+SmokeCredentialLifecycle=PASS_SOURCE_ONLY_AND_RUNTIME
+SmokeProviderAttempts=1
+SmokeProviderReads=1
+SecondSmokeProviderAttempt=false
+CurrentBlock=STOP_RETRY_IDENTITY_SCOPE_FINDINGS
+DuplicateProviderEmailGroups=5
+UnknownEnabledRoles=4
+AdminTenantScopeOutliers=1
+ShopperTargetOrIdentityScopeOutliers=1
+PhaseASourceSurfaces=20/20
+SmokeRequest=consumed/disabled
 ```
 
-## 3. Plan v4 congelado e inmutable
+## 3. Auth baseline protegido
 
 ```text
 rows=340
-uniqueRows=340
 CREATE_AUTH=118
 UPDATE_AUTH=9
-NO_OP=81
 HOLD=0
-PRESERVE_NO_AUTH=132
-emailChanges=2
 passwordChanges=8
-claimsChanges=1
-expectedAuthUsersBefore=110
 expectedAuthUsersAfter=228
 digest=c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4
 ```
 
-No reabrir plan v3, SKIP13, multi-Auth, lineage `ac93...` ni reconstrucción de identidad.
+No repetir PREWRITE, Activation ni reconstrucción completa de identidad.
 
-## 4. Auth DEV terminal
-
-```text
-readinessRunId=31423058271
-readinessDecision=PASS_C6_AUTH_HASHCONFIG_PERMISSION_AND_MATERIAL_READINESS
-requestId=c6-auth-plan-v4-activation-dev-20260810-03
-requestCommit=1f32ff486d2bc4d31493401f8e156fb61f49c5a9
-activationRunId=31423272374
-activationJobId=93568868141
-activationArtifactId=9076197092
-activationArtifactDigest=sha256:2dc787b14e009cb10358f4a6734fe0712f794df00387ae69a401922450e45af5
-providerPrewriteAttempts=1
-prewritePass=true
-snapshotPasswordEntries=8
-snapshotRoundtripVerified=true
-writeBoundaryEntered=true
-AuthCreates=118
-AuthUpdates=9
-duplicateDisables=1
-readbackPass=true
-AuthUsersAfter=228
-rollbackDryRunPass=true
-passwordHashRestoreEntries=8
-secondProviderAttempt=false
-```
-
-## 5. Bloqueo vivo
-
-El smoke multirol posterior a la activación falló antes de leer Auth porque la ruta efímera de `GOOGLE_APPLICATION_CREDENTIALS` ya había sido eliminada por el lifecycle del ejecutor:
+## 4. Terminal del smoke actual
 
 ```text
-classification=POSTWRITE_SMOKE_HARNESS_CREDENTIAL_PATH_MISSING
-errorCode=ENOENT
-smokeProviderReads=0
-AdminOperacionesValidated=false
-ShopperValidated=false
-ClienteValidated=false
+sourceGateCommit=51dd4fb37a45caaf949392418dbbbc58a8823ac0
+sourceGateRunId=31424489260
+requestCommit=b577d8fcefc57c6743cf2dd3689c51a22e691a5b
+runId=31424532292
+jobId=93572980396
+artifactId=9076650610
+artifactDigest=sha256:78844e2fd0a0ce6137543f14802a91522377926ab04bb4cb8ce5bd7789f0545c
+decision=STOP_RETRY_C6_ACCUMULATIVE_MULTIROLE_SMOKE_READONLY
+errorCode=DUPLICATE_PROVIDER_EMAILS
+providerReads=1
+providerWrites=0
+AuthWrites=0
+rawPIIExported=false
 ```
 
-No es un fallo demostrado de Auth, claims, roles, tenant/proyecto o frontend. Auth DEV permanece en el readback validado de 228 usuarios.
+## 5. Hallazgos source-safe
+
+```text
+AuthPopulation=228
+Enabled=227
+Disabled=1
+DuplicateProviderEmailGroups=5
+UnknownEnabledRoles=4
+AdminOperaciones.enabled=11
+AdminOperaciones.tenantAllowed=10
+Shopper.enabled=209
+Shopper.targetScoped=208
+Shopper.shopperScopePresent=208
+Cliente.enabled=3
+Cliente.targetScoped=3
+PhaseASourceSurfaces=20/20
+```
+
+Estos conjuntos no han sido adjudicados individualmente y pueden solaparse.
 
 ## 6. Fail-close
 
 ```text
-requestV3=consumed/disabled
+requestSmoke=consumed/disabled
 allowedExecutions=0
-activationWorkflow=removed
+executionWorkflow=removed
 sourceGateWorkflow=removed
-readinessWorkflow=removed
-secondProviderAttempt=false
-realRollbackExecuted=false
+secondSmokeProviderAttempt=false
+AuthWrites=0
+IAMWrites=0
 FirestoreWrites=0
-membershipWrites=0
 HRWrites=0
 RulesWrites=0
 StorageWrites=0
-CloudBuild=0
-CloudRun=0
-Hosting=0
-Make=0
-Gemini=0
-payments=0
+deploys=0
 merge=false
 production=false
 ```
@@ -140,11 +124,9 @@ production=false
 
 Solo bajo autorización nueva:
 
-`C6 SMOKE READ-ONLY CREDENTIAL LIFECYCLE ROOTFIX -> SINGLE ACCUMULATIVE MULTIROLE SMOKE`.
+`C6 AUTH READ-ONLY SMOKE FINDINGS ADJUDICATION`.
 
-Debe corregir source-only solo el lifecycle de credencial y después ejecutar un único smoke read-only sobre los 228 usuarios actuales. No se permite reejecutar PREWRITE ni Auth writes. Validar Admin/Operaciones, Shopper y Cliente, claims/scopes, tenant/project isolation y cero PII.
-
-Ante fallo: `STOP_RETRY` sin segundo smoke provider.
+Debe adjudicar exclusivamente los cinco grupos de email duplicado, cuatro roles habilitados fuera de contrato, un Admin/Operaciones fuera de tenant scope y un Shopper con scope objetivo incompleto. Una sola lectura provider, source-safe, sin PII ni writes y sin ejecutar nuevo smoke.
 
 ## 8. Phase A preservada
 
