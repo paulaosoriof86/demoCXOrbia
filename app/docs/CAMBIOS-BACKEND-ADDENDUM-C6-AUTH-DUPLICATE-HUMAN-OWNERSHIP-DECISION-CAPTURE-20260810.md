@@ -23,7 +23,7 @@
 
 ## Incidentes de herramienta sin mutación
 
-Hubo dos llamadas `update_file` rechazadas por GitHub con HTTP 409 antes de cualquier commit: una contra el source lock usando por error el blob SHA del source lock anterior, y otra contra el tracker usando por error un SHA que no correspondía a su blob vigente. Ninguna modificó archivos. El source lock fue verificado y finalizado correctamente; el tracker ya había sido creado correctamente y no requirió corrección. No hubo impacto en provider, Auth, datos, runtime, deploy ni producción.
+Hubo tres llamadas `update_file` rechazadas por GitHub con HTTP 409 antes de cualquier commit: una contra el source lock usando por error el blob SHA del source lock anterior, una contra el tracker usando un SHA que no correspondía a su blob vigente y una contra el addendum Academia con el mismo tipo de error de SHA. Ninguna modificó archivos. Los tres archivos habían sido creados correctamente; el source lock fue además verificado y finalizado correctamente. No hubo impacto en provider, Auth, datos, runtime, deploy ni producción.
 
 ## Seguridad
 
