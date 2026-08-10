@@ -5,20 +5,19 @@
 
 ## Estado actual
 
-`C6_AUTH_FINDINGS_ADJUDICATION_STOP_ONE_AMBIGUOUS_DUPLICATE__AUTH_DEV_228_PRESERVED__ZERO_WRITES__NO_SECOND_READ__NO_PRODUCTION`
+`C6_AUTH_DUPLICATE_HUMAN_OWNERSHIP_DECISION_CAPTURE_READY__PAULA_DECISION_REQUIRED__ZERO_PROVIDER_READS__ZERO_REPAIR__NO_PRODUCTION`
 
 El detalle acumulativo del bloque actual está en:
 
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-AUTH-FINDINGS-ADJUDICATION-STOP-20260810.md`;
-- `app/docs/SOURCE-LOCK-C6-AUTH-SMOKE-FINDINGS-ADJUDICATION-AMBIGUITY-STOP-RETRY-20260810.md`;
-- `app/docs/evidence/C6-AUTH-SMOKE-FINDINGS-ADJUDICATION-AMBIGUITY-STOP-RETRY-20260810.json`.
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-AUTH-DUPLICATE-HUMAN-OWNERSHIP-DECISION-CAPTURE-20260810.md`;
+- `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-HUMAN-OWNERSHIP-DECISION-CAPTURE-PENDING-PAULA-20260810.md`;
+- `app/docs/C6-AUTH-DUPLICATE-HUMAN-OWNERSHIP-DECISION-MATRIX-20260810.md`;
+- `app/docs/evidence/C6-AUTH-DUPLICATE-HUMAN-OWNERSHIP-DECISION-MATRIX-20260810.json`.
 
 ## Resumen vigente
 
-Auth DEV permanece materializado con 228 usuarios, readback PASS y rollback dry-run PASS. La adjudicación read-only actual consumió exactamente una lectura provider y clasificó cuatro grupos duplicados con dos principals habilitados y claims/scope habilitantes, más un único grupo ambiguo sin acceso TyA efectivo. Cero Auth/IAM/Firestore/HR/Rules/Storage writes, cero PREWRITE/Activation/smoke adicional, cero deploy, merge o producción.
+Auth DEV permanece en 228 usuarios con Activation/readback/rollback dry-run PASS. El diagnóstico técnico de los cuatro grupos duplicados quedó cerrado y convertido en una matriz humana source-safe de ownership/disposition. No se ejecutó provider read, repair, Auth/IAM/Firestore/HR/Rules/Storage write, PREWRITE, Activation, smoke, deploy, merge o producción en este bloque.
 
-## Siguiente bloque exacto
+## Siguiente acción exacta
 
-`C6 AUTH DUPLICATE KEEPER + TARGET-SCOPE ADJUDICATION READ-ONLY FOCAL`.
-
-No ejecutar repair ni nuevo smoke sin autorización separada.
+Esperar las cuatro decisiones humanas mínimas de Paula. Solo después, si alguna decisión implica una mutación Auth inequívoca, solicitar un repair focal separado con snapshot/readback/idempotencia/rollback dry-run.
