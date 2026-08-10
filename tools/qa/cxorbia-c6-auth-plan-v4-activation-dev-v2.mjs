@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// C6 source-gate trigger: 2026-08-10 root-cause close authorization.
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
