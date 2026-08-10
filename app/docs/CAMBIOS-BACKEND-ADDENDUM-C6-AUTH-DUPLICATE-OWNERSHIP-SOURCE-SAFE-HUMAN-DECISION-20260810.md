@@ -15,7 +15,7 @@
 
 ## Incidentes de herramienta sin mutación
 
-Durante verificaciones posteriores hubo dos llamadas `update_file` inválidas contra la evidencia terminal: una con SHA `PLACEHOLDER` y otra usando por error el SHA de commit de creación en lugar del blob SHA. Ambas devolvieron HTTP 409 antes de cualquier commit y no modificaron el archivo. Se verificó después mediante `fetch_file` que la evidencia seguía intacta. No afectaron provider, Auth, datos ni producción.
+Durante verificaciones posteriores hubo tres llamadas `update_file` inválidas: una contra la evidencia con SHA `PLACEHOLDER`, otra contra la misma evidencia usando por error el SHA de commit de creación en lugar del blob SHA y una tercera contra el source lock con SHA `PLACEHOLDER`. Las tres devolvieron HTTP 409 antes de cualquier commit y no modificaron archivos. La evidencia fue verificada después mediante `fetch_file`. Ninguno de estos incidentes afectó provider, Auth, datos ni producción.
 
 ## Seguridad
 
