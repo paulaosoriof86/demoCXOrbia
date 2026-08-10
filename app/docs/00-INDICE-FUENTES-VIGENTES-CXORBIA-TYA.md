@@ -2,17 +2,17 @@
 
 **Fecha:** 2026-08-10  
 **Estado:** ACTIVO Y RECONCILIADO  
-**Estado vivo:** `C6_AUTH_DUPLICATE_KEEPER_ONE_READ_STOP_4_ANCHOR_AMBIGUITIES__FD891_POLICY_CLOSED__AUTH_DEV_228_PRESERVED__NO_SECOND_READ__ZERO_WRITES__NO_PRODUCTION`
+**Estado vivo:** `C6_AUTH_DUPLICATE_OWNERSHIP_RECONCILIATION_HUMAN_DECISION_REQUIRED_4__AUTH_DEV_228_PRESERVED__ZERO_PROVIDER_READS__ZERO_DATA_WRITES__NO_PRODUCTION`
 
 ## 1. Orden de prevalencia
 
 1. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-KEEPER-ONE-READ-FOCAL-STOP-RETRY-20260810.md`;
-3. `app/docs/evidence/C6-AUTH-DUPLICATE-KEEPER-ONE-READ-FOCAL-STOP-RETRY-20260810.json`;
-4. `backend/config/c6-auth-duplicate-keeper-targetscope-one-read-request-v2.json` — consumido/deshabilitado;
-5. `tools/qa/cxorbia-c6-auth-duplicate-keeper-targetscope-adjudication-readonly-v1.mjs` — herramienta source-safe sin trigger provider activo;
-6. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-KEEPER-SOURCE-GATE-PREPROVIDER-STOP-RETRY-20260810.md` — histórico del falso positivo ya corregido;
-7. `app/docs/SOURCE-LOCK-C6-AUTH-SMOKE-FINDINGS-ADJUDICATION-AMBIGUITY-STOP-RETRY-20260810.md` — hallazgos previos de los cinco pares;
+2. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-OWNERSHIP-ANCHOR-SOURCE-SAFE-HUMAN-DECISION-REQUIRED-20260810.md`;
+3. `app/docs/evidence/C6-AUTH-DUPLICATE-OWNERSHIP-ANCHOR-SOURCE-SAFE-RECONCILIATION-20260810.json`;
+4. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-KEEPER-ONE-READ-FOCAL-STOP-RETRY-20260810.md` — provider one-read histórico inmediato;
+5. `app/docs/evidence/C6-AUTH-DUPLICATE-KEEPER-ONE-READ-FOCAL-STOP-RETRY-20260810.json`;
+6. `backend/config/c6-auth-duplicate-keeper-targetscope-one-read-request-v2.json` — consumido/deshabilitado;
+7. `tools/qa/cxorbia-c6-auth-duplicate-keeper-targetscope-adjudication-readonly-v1.mjs` — sin trigger provider activo;
 8. `backend/config/c6-shopper-auth-final-freeze-v4.json` — freeze Auth rector;
 9. `backend/config/c6-auth-plan-v4-activation-dev-request-v3.json` — Activation Auth PASS, consumido/deshabilitado;
 10. `backend/config/c6-accumulative-multirole-smoke-readonly-request-v1.json` — smoke histórico consumido/deshabilitado;
@@ -39,13 +39,13 @@ targetLineage(ac93)=closed
 HashConfig=closed PASS
 SmokeCredentialLifecycle=closed PASS
 PhaseASourceSurfaces=20/20
-DuplicateKeeperSourceRootfix=PASS
-DuplicateKeeperProviderReads=1
+DuplicateKeeperPriorProviderReads=1
 DuplicateKeeperSecondRead=false
-DuplicateKeeperResolvedAccessGroups=0
-DuplicateKeeperAmbiguousAccessGroups=4
 fd891BlockedPolicyClosed=1
-CurrentBlock=STOP_RETRY_KEEPER_ANCHOR_INSUFFICIENT_4
+OwnershipReconciliationProviderReads=0
+OwnershipUniqueKeeperAnchors=0
+OwnershipHumanDecisionRequiredGroups=4
+CurrentBlock=HUMAN_OWNERSHIP_DECISION_REQUIRED_4
 ```
 
 ## 3. Auth baseline protegido
@@ -64,54 +64,27 @@ digest=c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4
 
 No repetir PREWRITE, Activation ni reconstrucción completa de identidad.
 
-## 4. Rootfix y lectura focal
+## 4. Reconciliación ownership vigente
 
-Source-only:
+Universo actual:
 
 ```text
-sourceGateCommit=72478e582dd917f287f16d6447b3b5f14b8ad26f
-sourceGateRunId=31441607796
-sourceGate=PASS_C6_AUTH_DUPLICATE_KEEPER_TARGET_SCOPE_SOURCE_ROOTFIX_ZERO_WRITES_ONE_READ_NO_PII
+1acdcb3782b7cf351056 = HUMAN_OWNERSHIP_DECISION_REQUIRED
+2c4d19f2b066835473d3 = HUMAN_OWNERSHIP_DECISION_REQUIRED
+54225792eeb65f6739c0 = HUMAN_OWNERSHIP_DECISION_REQUIRED
+ae2f920fe6d9ce1fdd82 = HUMAN_OWNERSHIP_DECISION_REQUIRED
 ```
 
-Provider one-shot:
+A–C: ambos members de cada par pertenecen a la clase legacy/pre-import namespace `NONE`; ninguno coincide con el staff canónico importado namespace `staff`. No hay ancla member-level única.
+
+D: ambos members son históricos. El Cliente canónico actual es un principal separado ya materializado/validado, por lo que tampoco existe keeper único demostrable dentro del par histórico.
+
+`fd891812eca020d27ee3` permanece cerrado y fuera del universo actual como `POLICY_CLOSED_NO_TYA_EFFECTIVE_ACCESS`.
+
+## 5. Seguridad del bloque vigente
 
 ```text
-requestId=c6-auth-duplicate-keeper-targetscope-one-read-20260810-01
-runId=31441779926
-jobId=93627815703
-artifactId=9083100724
-artifactDigest=sha256:8c3a2026027e678deb1aa0dfc828c45cdf1a251b9cee1617eaa9feb10c82eba2
-providerReads=1
-secondProviderRead=false
-decision=STOP_RETRY_C6_AUTH_DUPLICATE_KEEPER_TARGET_SCOPE_ADJUDICATION
-errorCode=KEEPER_ANCHOR_INSUFFICIENT_4
-```
-
-## 5. Resultado de los cinco grupos
-
-```text
-1acdcb3782b7cf351056 = AMBIGUOUS_STAFF_KEEPER_NO_UNIQUE_ALLOWED_ANCHOR
-2c4d19f2b066835473d3 = AMBIGUOUS_STAFF_KEEPER_NO_UNIQUE_ALLOWED_ANCHOR
-54225792eeb65f6739c0 = AMBIGUOUS_STAFF_KEEPER_NO_UNIQUE_ALLOWED_ANCHOR
-ae2f920fe6d9ce1fdd82 = AMBIGUOUS_CLIENT_KEEPER_LINEAGE
-fd891812eca020d27ee3 = POLICY_CLOSED_NO_TYA_EFFECTIVE_ACCESS
-```
-
-Los tres pares staff son equivalentes bajo los discriminadores autorizados y ninguno coincide con `canonicalImportedStaffClass`. En Cliente, ninguno coincide con la lineage canónica y ambos coinciden con los dos hashes históricos. No existe keeper reproducible para A–D.
-
-`fd891...` queda sin repair TyA: uno de sus principals está fuera del contrato de rol y el otro está scopeado a otro tenant; ambos tienen `effectiveTyaAccess=false`.
-
-## 6. Fail-close
-
-```text
-request.enabled=false
-request.consumed=true
-request.allowedExecutions=0
-providerWorkflowActive=false
-sourceGateWorkflowActive=false
-providerReads=1
-secondProviderRead=false
+providerReads=0
 providerWrites=0
 AuthWrites=0
 IAMWrites=0
@@ -122,25 +95,25 @@ StorageWrites=0
 PREWRITE=false
 Activation=false
 newSmoke=false
+Make=0
+Gemini=0
+payments=0
 deploys=0
 merge=false
 production=false
-PII/credentials exported=false
-creationTimeUsed=false
-lastSignInTimeUsed=false
-resultOrderUsed=false
+rawPIIExported=false
 ```
 
-## 7. Siguiente acción exacta
+No se creó request provider ni workflow provider. No se usaron antigüedad, orden, PII cruda o metadatos temporales para desempatar.
+
+## 6. Siguiente acción exacta
 
 Solo bajo nueva autorización:
 
-`C6 AUTH DUPLICATE OWNERSHIP ANCHOR SOURCE-SAFE EVIDENCE RECONCILIATION — NO PROVIDER`.
+`C6 AUTH DUPLICATE HUMAN OWNERSHIP DECISION CAPTURE — NO PROVIDER / NO REPAIR`.
 
-Usar únicamente evidencia/source-safe ya existente para intentar encontrar una ancla no temporal, no PII y reproducible de propiedad/lineage para los cuatro grupos A–D. Cero provider reads. Si no existe ancla única, declarar `HUMAN_OWNERSHIP_DECISION_REQUIRED`; no inferir keeper.
+Capturar una decisión humana mínima/source-safe de ownership o disposition para los cuatro grupos. No ejecutar repair en el mismo bloque. Si la decisión no produce un keeper inequívoco, conservar HOLD y documentar únicamente la disposición.
 
-No repair, PREWRITE, Activation, nuevo smoke, Auth/IAM/Firestore/HR/Rules/Storage writes, Make, Gemini, pagos, deploy, merge ni producción.
-
-## 8. Phase A preservada
+## 7. Phase A preservada
 
 Frontend, Login, `CX.data`, HR histórico, shoppers, postulaciones, certificaciones, visitas, liquidaciones/pagos, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto, sincronización HR/plataforma y Academia permanecen preservados.
