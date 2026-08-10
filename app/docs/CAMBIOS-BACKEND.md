@@ -1,59 +1,54 @@
 # CAMBIOS-BACKEND.md
 
-> Registro principal de cambios backend. Para detalle vigente consultar el índice y los addenda fechados.
+> Registro principal de cambios backend. Los bloques históricos completos permanecen versionados en Git y en sus addenda fechados. Para el estado operativo actual consultar primero el índice vigente.
 
-## Estado vigente 2026-07-30
+## Estado vigente — 2026-08-10
 
-Estado: `P0_PROVEN_C6_CREDENTIAL_CONTINUITY_GAP__AUTH_RULES_HOSTING_TECH_PASS__NO_PRODUCTION`.
+Estado:
 
-Fuentes principales:
-- `CORTE6-P0-CONTINUIDAD-CREDENCIALES-LEGACY-A-FIREBASE-20260730.md`;
-- `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-- `evidence/CORTE6-CREDENTIAL-CONTINUITY-READONLY-LATEST.json`;
-- `evidence/CORTE6-AUTH-CLAIMS-NORMALIZATION-LATEST.json`;
-- `evidence/CORTE6-FIRESTORE-RULES-DEPLOY-LATEST.json`;
-- `evidence/CORTE6-HOSTING-DEV-DEPLOY-LATEST.json`.
+`C6_AUTH_DUPLICATE_OWNERSHIP_RECONCILIATION_HUMAN_DECISION_REQUIRED_4__AUTH_DEV_228_PRESERVED__ZERO_PROVIDER_READS__ZERO_DATA_WRITES__NO_PRODUCTION`
 
-### Corte 6 técnico cerrado
-- Auth custom claims: 5/5 updates autorizados sobre usuarios existentes (2 cliente +3 shopper exactos).
-- Usuario nuevo/password/delete: 0/0/0.
-- Post-readback: operador ready7, cliente ready2, shopper ready3.
-- Firestore data writes Corte6: 0.
-- Firestore Rules desplegada y verificada por API oficial.
-- Hosting DEV existente: 1/1 deploy consumido, sin crear Firebase/Hosting nuevo.
-- Release `sites/cxorbia-backend-dev/releases/1785431702100000` / version `sites/cxorbia-backend-dev/versions/b00728c729452665` FINALIZED.
-- Remote proof/config/browser Auth/entrypoint explícito: PASS.
+Fuentes rectoras actuales:
 
-### Hallazgo nuevo — continuidad de credenciales
-Se comprobó que el nuevo formulario `Correo + Contraseña` del entrypoint DEV es un mecanismo técnico de Firebase Auth y no puede tomarse como contrato final del producto.
+- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
+- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
+- `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-OWNERSHIP-ANCHOR-SOURCE-SAFE-HUMAN-DECISION-REQUIRED-20260810.md`;
+- `app/docs/evidence/C6-AUTH-DUPLICATE-OWNERSHIP-ANCHOR-SOURCE-SAFE-RECONCILIATION-20260810.json`;
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-AUTH-DUPLICATE-OWNERSHIP-SOURCE-SAFE-HUMAN-DECISION-20260810.md`.
 
-Inventario read-only agregado en `cxorbia-backend-dev`:
-- `tenants/tya/shoppers`: 340 docs; `user/username/login`=0; `pass/password`=0;
-- `tenants/tya/users`: 0 docs;
-- tenant profile: 0 claves de login;
-- Firebase Auth: 17 users, todos password provider y todos con identificador email.
+### Auth protegido
 
-Conclusión: la fuente legacy de credenciales no fue materializada en el backend canónico. No crear cuenta Gmail nueva ni pedir a Paula credenciales DEV ficticias.
+```text
+AuthUsersAfter=228
+Activation=PASS
+Readback=PASS
+RollbackDryRun=PASS
+PlanV4Digest=c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4
+```
 
-### Archivos creados/tocados en este bloque
-- `tools/qa/cxorbia-corte6-credential-continuity-readonly.mjs`: inventario source-safe de presencia de campos de credenciales; no exporta valores.
-- `backend/config/corte6-credential-continuity-readonly-request.json`: request read-only consumido.
-- `.github/workflows/cxorbia-corte6-credential-continuity-readonly.yml`: ejecución read-only con evidencia sanitizada.
-- `app/docs/evidence/CORTE6-CREDENTIAL-CONTINUITY-READONLY-LATEST.json`: evidencia de conteos/presencia sin PII/credenciales.
-- `app/docs/CORTE6-P0-CONTINUIDAD-CREDENCIALES-LEGACY-A-FIREBASE-20260730.md`: decisión de raíz y contrato de migración.
-- índice/checkpoint/Claude/PENDIENTES/tracker/Academia/PR: reconciliación del source lock.
+No reabrir las 340 identidades, SKIP13, multi-Auth, `ac93...`, HashConfig, PREWRITE ni Activation.
 
-### Decisión de raíz
-- Firebase Auth/claims se preserva.
-- Login visible objetivo: `Usuario + Contraseña`, no correo obligatorio.
-- Adapter interno resuelve identidad Firebase.
-- Fuente legacy de credenciales solo por export/import controlado; nunca runtime contra la base vieja.
-- Credenciales/hashes fuera de repo, logs, artifacts y conversación.
+### Bloque vigente
 
-### Gate siguiente
-`EXPORT CREDENCIALES LEGACY CONTROLADO → INVENTARIO/HASH-TYPE → PLAN AUTH IMPORT IDEMPOTENTE → AUTORIZACIÓN ÚNICA PROVIDER → IMPORT/READBACK → LOGIN USUARIO+CONTRASEÑA → SMOKE → FREEZE CORTE6 → AGOSTO`.
+La reconciliación source-safe sin provider concluyó que los cuatro grupos pendientes carecen de una ancla member-level única. Resultado:
+
+```text
+1acdcb3782b7cf351056 = HUMAN_OWNERSHIP_DECISION_REQUIRED
+2c4d19f2b066835473d3 = HUMAN_OWNERSHIP_DECISION_REQUIRED
+54225792eeb65f6739c0 = HUMAN_OWNERSHIP_DECISION_REQUIRED
+ae2f920fe6d9ce1fdd82 = HUMAN_OWNERSHIP_DECISION_REQUIRED
+```
+
+A–C son principals legacy/pre-import namespace `NONE` y ninguno coincide con el staff canónico importado namespace `staff`; la evidencia no permite elegir entre los dos members de cada par. D contiene dos principals históricos, mientras el Cliente canónico vigente es un principal separado ya materializado/validado.
+
+No se usaron provider reads, PII cruda, antigüedad, orden de resultados ni metadatos temporales para desempatar.
+
+### Siguiente gate
+
+`C6 AUTH DUPLICATE HUMAN OWNERSHIP DECISION CAPTURE — NO PROVIDER / NO REPAIR`.
+
+Capturar únicamente la decisión humana mínima de ownership/disposition. Cualquier repair Auth debe ser un bloque posterior, focal y expresamente autorizado.
 
 ### Estado seguro
-Histórico R17N 1,406 data writes cerrado. Corte6: Auth claim writes5 ya autorizados; usuarios nuevos0; password changes0; Firestore data writes0; Rules release1; Hosting deploy1/1; inventario adicional provider writes0; Storage/HR/legacy0; pagos/Make/Gemini0; merge=false; producción=false; credenciales crudas0.
 
-Los registros históricos completos previos permanecen en Git y addenda; no reabrir ni repetir materialización.
+Provider reads0; Auth/IAM/Firestore/HR/Rules/Storage writes0; PREWRITE/Activation/smoke0; Make/Gemini/pagos/deploy/merge/producción0. Frontend y Phase A permanecen preservados.
