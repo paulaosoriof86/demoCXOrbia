@@ -20,6 +20,10 @@
 - este addendum;
 - addenda de Claude, pendientes, Academia y tracker Phase A.
 
+## Incidente de herramienta sin mutación
+
+Una llamada posterior `update_file` contra el source lock utilizó por error el blob SHA del source lock anterior. GitHub devolvió HTTP 409 antes de cualquier commit. El source lock nuevo fue verificado después con `fetch_file` y permanece íntegro. No hubo impacto en provider, Auth, datos, runtime, deploy ni producción.
+
 ## Seguridad
 
 ```text
