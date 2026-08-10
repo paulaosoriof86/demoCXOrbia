@@ -53,6 +53,15 @@ blockedPolicyClosed=1
 errorCode=KEEPER_ANCHOR_INSUFFICIENT_4
 ```
 
+## Incidentes de herramienta sin mutación
+
+Durante el cierre documental se produjeron dos llamadas de herramienta incorrectas:
+
+1. un `update_file` intencionalmente mal formado con SHA `PLACEHOLDER`, que devolvió HTTP 409 antes de commit;
+2. una llamada al esquema `update_file` usada accidentalmente con argumentos de lectura, rechazada por validación de schema antes de llegar a GitHub.
+
+Ninguna de las dos modificó archivos, creó commits, accedió al provider ni alteró Auth/datos/producción. El flujo se corrigió recuperando primero el SHA real con `fetch_file`.
+
 ## Impacto Phase A
 
 Corte 6 Auth/RBAC avanza porque el problema se redujo: ya no hay defecto de harness pendiente y `fd891...` quedó técnicamente cerrado para TyA. Quedan cuatro duplicados con acceso potencial que no pueden repararse sin keeper reproducible.
