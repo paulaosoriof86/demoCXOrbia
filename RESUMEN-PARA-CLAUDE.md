@@ -1,52 +1,40 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-10  
-**Estado vivo:** `C6_AUTH_CANONICAL_STAFF_MINIMUM_OWNER_INPUT_CONTRACT_READY__BUSINESS_OWNER_AND_SCOPE_INPUT_REQUIRED__A_REUSE_CONDITIONAL__BC_NEW_EPHEMERAL_FIXED__D_PRESERVED__DOCS_ONLY__NO_PRODUCTION`
+**Última actualización:** 2026-08-11  
+**Estado vivo:** `C6_AUTH_CANONICAL_STAFF_OWNER_INPUT_PARTIAL_CAPTURED__PROJECT_ENTITLEMENTS_PENDING__NO_PROVIDER__NO_REPAIR__NO_PRODUCTION`
 
 ## 1. Fuente vigente
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-3. `app/docs/SOURCE-LOCK-C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-READY-20260810.md`;
-4. `app/docs/evidence/C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-SOURCE-SAFE-20260810.json`;
-5. `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-20260810.md`;
-6. PR #7 y HEAD vivo.
+3. PR #7 y HEAD vivo.
 
 ## 2. No reabrir
 
 - frontend acumulativo, Login, `/app/modules/*`, `/app/core/*` y `CX.data`;
-- SKIP13, multi-Auth, target lineage `ac93...`;
+- SKIP13, multi-Auth, target lineage, HashConfig y direct runner;
 - freeze Auth v4 y Auth DEV 228;
 - PREWRITE/Activation/smoke históricos;
-- D `ae2f...` ya `REPAIR_PLAN_READY`;
-- `fd891...` cerrado sin acceso TyA efectivo.
+- D repair-ready.
 
 ## 3. Estado backend
 
-```text
-AuthUsersAfter=228
-A=BUSINESS_OWNER_AND_SCOPE_INPUT_REQUIRED / role=super
-B=BUSINESS_OWNER_AND_SCOPE_INPUT_REQUIRED / role=admin
-C=BUSINESS_OWNER_AND_SCOPE_INPUT_REQUIRED / role=ops
-A credential=reuse canonical super only if independent owner binding matches, else new ephemeral
-B credential=new ephemeral
-C credential=new ephemeral
-D=REPAIR_PLAN_READY_PRESERVED
-ProviderReadsCurrentBlock=0
-RepairExecuted=false
-Production=false
-```
+Las referencias empresariales A/B/C y un acceso adicional de Operaciones fueron recibidas en conversación. No volver a pedir nombres ni correos. No persistir referencias humanas, correos o credenciales como constantes o configuración técnica.
 
-El input humano pendiente quedó reducido a seis respuestas comprensibles: titular + alcance para Superadministración, Administración y Operaciones. Backend convierte esas respuestas a anchors/digests source-safe y no persiste la referencia humana cruda.
+Pendiente únicamente el scope exacto de proyecto para los cuatro accesos iniciales: `TYA_COMPLETE` o `SPECIFIC_PROJECTS`.
 
-## 4. Claude/prototipo
+## 4. Regla frontend/autoadministrabilidad
 
-No hacer selector de duplicados, fallback legacy, copy técnico visible, pantalla adicional ni relajación de RBAC. No exponer fingerprints, claims, owner anchors, credenciales o preguntas técnicas. No asumir Cinépolis ni copiar scope histórico. Este flujo es exclusivamente backend.
+No hardcodear usuarios, nombres, correos, roles o proyectos en UI. Los usuarios staff iniciales son bootstrap de datos vivos. La plataforma debe permitir, bajo RBAC, administrar usuarios y asignaciones de rol/scope. La deshabilitación debe preservar auditoría; no introducir delete irreversible por defecto.
 
-## 5. Siguiente bloque backend
+No crear selector técnico, fallback legacy, copy con fingerprints/claims, pantalla adicional ni relajación de RBAC.
 
-Después de recibir las seis respuestas empresariales mínimas:
+## 5. Métrica de cierre
 
-`C6 AUTH CANONICAL STAFF OWNER INPUT CAPTURE AND TARGET DIGEST — SOURCE-SAFE / NO PROVIDER / NO REPAIR`.
+Avance certificado vigente: **72%**. Restante: **28%**. La escala estable está documentada en el checkpoint vivo y no se recalcula por sesión.
 
-Cerrar owner anchors, exact entitlement, target claims y expected-claims digests. Sin frontend changes.
+## 6. Siguiente bloque backend
+
+`C6 AUTH CANONICAL STAFF OWNER INPUT CAPTURE AND TARGET DIGEST — COMPLETE PROJECT ENTITLEMENTS, SOURCE-SAFE / NO PROVIDER / NO REPAIR`.
+
+Sin frontend changes hasta verificar si la superficie de administración existente ya cubre CRUD/disable/role/scope; cualquier faltante real se documenta por archivo/módulo y no se parchea desde backend.
