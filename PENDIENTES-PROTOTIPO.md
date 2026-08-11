@@ -1,80 +1,86 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-11  
-**Estado vivo:** `PASS_C6_LIVE_USER_ADMIN_STATIC_SOURCE_GATE_TERMINAL__STAFF_REPAIR_BOOTSTRAP_PREWRITE_CONTRACT_READY__PROVIDER_SNAPSHOT_PENDING__NO_PROVIDER_READS__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `PASS_C6_STAFF_REPAIR_BOOTSTRAP_PROVIDER_SNAPSHOT__AUTH_228__A_REUSE_BOUND__BCD_CREATE__R4_PRESERVED__WRITE_BUDGET_FROZEN__ROLLBACK_DRYRUN_PASS__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Cerrado y protegido
 
 - frontend acumulativo y módulos Phase A;
 - Auth 228 + Activation/readback/rollback PASS;
-- SKIP13, multi-Auth, HashConfig y direct runner;
+- SKIP13, MultiAuth, HashConfig y direct runner;
+- M4 owners/scopes iniciales: `TYA_COMPLETE` para los cuatro;
 - HR viva M6: 34 GT + 10 HN = 44;
-- referencias empresariales A/B/C/D;
-- scope inicial: `TYA_COMPLETE` para los cuatro;
-- target claims/digests source-safe A/B/C/D;
-- contrato live-user-admin v1.1;
-- backend executable source materializado;
-- **static live-user-admin source gate = PASS terminal**.
+- live-user-admin contract + executable source;
+- static live-user-admin gate PASS;
+- provider snapshot focal PASS y consumido una sola vez;
+- write budget exacto + rollback dry-run congelados.
 
-## 2. Evidencia static gate
+## 2. Provider snapshot cerrado
 
 ```text
-checkoutHead=9d16521ac67c7a9fa7cd6de393e778bc6a05876b
-runId=31513528713
-jobId=93852916856
-decision=PASS_CXORBIA_CONTROLLED_RUNNERS_CONTRACT
-blockers=[]
-warnings=[]
+AuthPopulation=228
+AuthListObservations=1
+FirestoreDocumentReads=2
+A=REUSE_EXISTING_CANONICAL owner-bound
+B=CREATE_NEW_EPHEMERAL
+C=CREATE_NEW_EPHEMERAL
+D=CREATE_NEW_EPHEMERAL
+R4 canonical Cliente=preserved exact
+historicalEnabled=8
 ```
 
-El preflight obligatorio valida el gate live-user-admin y no habilitó perfil provider/browser.
+Budget:
+
+```text
+Auth creates=3
+claims=3
+disables=8
+Auth total=14
+Auth deletes=0
+userDocs=4
+auditLogs=12
+Firestore total=16
+Firestore deletes=0
+rollbackDryRun=PASS
+```
+
+No repetir provider snapshot.
 
 ## 3. Regla de alcance de usuarios — cerrada
 
-Cada alta exige `TyA completo` o `Proyectos específicos`; el alcance es editable después. `SPECIFIC_PROJECTS` usa inventario vivo; `TYA_COMPLETE` usa projectIds exactos, sin wildcard, y requiere revisión explícita ante proyecto nuevo.
+Cada alta exige `TyA completo` o `Proyectos específicos`; editable después. `SPECIFIC_PROJECTS` usa inventario vivo; `TYA_COMPLETE` usa projectIds exactos, sin wildcard, y requiere revisión explícita ante proyecto nuevo.
 
-## 4. Prewrite focal source-only — preparado
+## 4. Pendiente vivo inmediato
 
-Nuevo contrato:
+1. autorización exacta `C6 STAFF REPAIR/BOOTSTRAP` con budget Auth=14 / Firestore=16 y cero deletes;
+2. ejecución focal create-before-retire + readback + rollback evidence;
+3. wiring localizado de `app/modules/configuracion.js#usuarios` al adapter vivo;
+4. M7 smoke acumulativo multirol contra HR viva;
+5. M8 validación humana;
+6. M9 cutover autorizado;
+7. M10 post-smoke/freeze.
 
-```text
-backend/contracts/c6-staff-repair-bootstrap-prewrite-v1.json
-```
+No falta nueva información empresarial para solicitar la autorización del punto 1.
 
-Distingue target D adicional de Operaciones del histórico `R4_CLIENT_HISTORICAL`, preserva disable-only/no-delete y deja snapshot/readback/rollback antes de cualquier write. El viejo cap Auth=14 no se reutiliza; el cap final queda pendiente del snapshot read-only.
-
-## 5. Pendiente vivo inmediato
-
-1. `C6 STAFF REPAIR/BOOTSTRAP PROVIDER SNAPSHOT READ-ONLY`;
-2. congelar write budget exacto + rollback dry-run con PASS;
-3. autorización específica de repair/bootstrap Auth/Firestore;
-4. ejecución focal + readback/rollback;
-5. wiring localizado de `app/modules/configuracion.js#usuarios` al adapter vivo;
-6. M7 smoke acumulativo multirol contra HR viva;
-7. M8 validación humana;
-8. M9 cutover autorizado;
-9. M10 post-smoke/freeze.
-
-El snapshot debe detenerse antes de writes ante drift, colisión o input transitorio faltante; no reabre el universo 340.
-
-## 6. Métrica estable
+## 5. Métrica estable
 
 ```text
 M4=5/5 COMPLETE
-M5=3/8 COMPLETE
+M5=4/8 COMPLETE
 M6=5/5 COMPLETE
 ```
 
-**Avance certificado: 83%. Restante: 17%.**
+**Avance certificado: 84%. Restante: 16%.**
 
-## 7. No hacer
+## 6. No hacer
 
 - no volver a pedir owners/scopes/HR;
-- no repetir el static gate;
+- no repetir static gate ni provider snapshot;
 - no hardcodear staff, emails o projectIds en UI;
 - no wildcard de proyectos;
 - no reabrir Auth histórico/340 identidades;
 - no nueva candidata/rama/PR;
 - no rediseñar Usuarios & Permisos;
-- no provider writes antes de snapshot/prewrite PASS y autorización específica;
+- no Auth/Firestore writes sin autorización exacta;
+- no deletes;
 - no deploy/merge/producción sin gate correspondiente.
