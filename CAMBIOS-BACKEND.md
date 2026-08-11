@@ -13,37 +13,15 @@ Auth 228, Activation/readback/rollback, SKIP13, MultiAuth, HashConfig, DirectRun
 
 ## Archivos creados/tocados en este bloque
 
-```text
-backend/contracts/c6-staff-repair-bootstrap-exact-write-v1.json
-tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write.mjs
-.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write.json
-.github/workflows/cxorbia-corte6-auth-rbac-activation.yml
-app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-EXACT-WRITE-LATEST.json
-app/docs/SOURCE-LOCK-C6-STAFF-REPAIR-BOOTSTRAP-STOP-PRIVATE-IDENTITY-B-20260811.md
-app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md
-app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md
-RESUMEN-PARA-CLAUDE.md
-PENDIENTES-PROTOTIPO.md
-app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md
-app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md
-app/docs/ACADEMIA-ADDENDUM-C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-20260810.md
-```
+`backend/contracts/c6-staff-repair-bootstrap-exact-write-v1.json`, `tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write.mjs`, `.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write.json`, workflow existente `.github/workflows/cxorbia-corte6-auth-rbac-activation.yml`, evidencia exact-write, source lock STOP, índice/checkpoint, RESUMEN, PENDIENTES, plan/tracker Phase A y addendum Academia.
 
-Se reutilizó el workflow existente; no se creó workflow, rama, PR ni candidata nueva.
+No se creó workflow, rama, PR ni candidata nueva.
 
-## Self-test y exact write
-
-Self-test source-only previo:
+## Self-test y ejecución autorizada
 
 ```text
-runId=31534430007
-decision=PASS_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_SOURCE_PREFLIGHT
-providerWrite=0
-```
-
-Ejecución autorizada:
-
-```text
+sourceSelfTestRunId=31534430007
+sourceSelfTest=PASS_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_SOURCE_PREFLIGHT
 requestId=c6-staff-repair-bootstrap-exact-write-20260811-01
 requestCommit=ac82cfc4a74d70dbedb8ab099bd430a6e5c372b7
 runId=31534505451
@@ -55,7 +33,7 @@ identityResolutionPass=false
 providerStatePass=false
 ```
 
-El executor pasó contrato, budget, snapshot authority, service account privada y descifrado protegido en memoria, pero se detuvo antes del primer provider write porque no encontró una coincidencia exacta para el `visibleLogin` de B dentro de las fuentes privadas permitidas.
+El executor pasó contrato, budget, snapshot authority, service account privada y descifrado protegido en memoria, pero se detuvo antes del primer provider write porque las fuentes privadas permitidas no aportaron una coincidencia exacta para el `visibleLogin` de B.
 
 ## Writes reales
 
