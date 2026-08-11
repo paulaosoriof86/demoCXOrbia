@@ -25,7 +25,7 @@ No reejecutar ese request y no repetir provider snapshot.
 ## Pendiente vivo inmediato
 
 1. `C6 STAFF TARGET PRIVATE IDENTITY RECOVERY SOURCE-ONLY`: recuperar/validar A-D desde fuentes privadas existentes, sin provider writes ni PII emitida;
-2. solo con recovery PASS, preparar una **nueva** autorización focal de exact write bajo el mismo budget congelado y sin deletes;
+2. solo con recovery PASS, preparar una nueva autorización focal de exact write bajo el mismo budget congelado y sin deletes;
 3. ejecutar repair/bootstrap + readback/rollback;
 4. wiring localizado de `app/modules/configuracion.js#usuarios`;
 5. M7 smoke acumulativo multirol contra HR viva;
