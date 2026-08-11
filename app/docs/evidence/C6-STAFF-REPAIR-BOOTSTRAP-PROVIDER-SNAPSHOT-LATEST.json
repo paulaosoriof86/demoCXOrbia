@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "cxorbia.c6.staff-repair-bootstrap-provider-snapshot.evidence.v1",
+  "generatedAt": "2026-08-11T11:43:01-06:00",
+  "decision": "PASS_C6_STAFF_REPAIR_BOOTSTRAP_PREWRITE",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "requestId": "c6-staff-repair-bootstrap-provider-snapshot-readonly-20260811-02-harness-rootfix",
+  "requestCommitSha": "6632ecbdb8593126c094178154fca9b0913592af",
+  "targetHeadSha": "c09a3e33858ee5d49751c6bf52433c3c78265121",
+  "workflowRunId": 31518927950,
+  "workflowJobId": 93870945840,
+  "artifactId": 9112228351,
+  "artifactDigest": "sha256:044b9f90df50cb633b90cb87721e22c9a913804ba337227d95eaa1cdea198776",
+  "provider": {
+    "projectId": "cxorbia-backend-dev",
+    "authListObservations": 1,
+    "firestoreDocumentReads": 2,
+    "writes": 0,
+    "authPopulation": 228
+  },
+  "targetDecisions": {
+    "A": {
+      "role": "super",
+      "ownerBindingVerified": true,
+      "roleUniquenessUsed": false,
+      "providerCollisionCount": 1,
+      "action": "REUSE_EXISTING_CANONICAL",
+      "claimsExact": true,
+      "userDocAction": "CREATE_CANONICAL_USER_DOC"
+    },
+    "B": {
+      "role": "admin",
+      "ownerBindingVerified": true,
+      "roleUniquenessUsed": false,
+      "providerCollisionCount": 0,
+      "action": "CREATE_NEW_EPHEMERAL",
+      "userDocAction": "CREATE_CANONICAL_USER_DOC"
+    },
+    "C": {
+      "role": "ops",
+      "ownerBindingVerified": true,
+      "roleUniquenessUsed": false,
+      "providerCollisionCount": 0,
+      "action": "CREATE_NEW_EPHEMERAL",
+      "userDocAction": "CREATE_CANONICAL_USER_DOC"
+    },
+    "D": {
+      "role": "ops",
+      "ownerBindingVerified": true,
+      "roleUniquenessUsed": false,
+      "providerCollisionCount": 0,
+      "action": "CREATE_NEW_EPHEMERAL",
+      "userDocAction": "CREATE_CANONICAL_USER_DOC"
+    }
+  },
+  "historicalRetirement": {
+    "R1_SUPER": {"enabledMembers": 2, "mode": "DISABLE_ONLY_NO_DELETE"},
+    "R2_ADMIN": {"enabledMembers": 2, "mode": "DISABLE_ONLY_NO_DELETE"},
+    "R3_OPS": {"enabledMembers": 2, "mode": "DISABLE_ONLY_NO_DELETE"},
+    "R4_CLIENT_HISTORICAL": {"enabledMembers": 2, "mode": "DISABLE_ONLY_NO_DELETE"},
+    "totalEnabledHistoricalPrincipals": 8
+  },
+  "r4Canonical": {
+    "enabled": true,
+    "claimsExact": true,
+    "membershipExact": true,
+    "mutation": "FORBIDDEN"
+  },
+  "frozenForwardWriteBudget": {
+    "authCreates": 3,
+    "customClaimsWrites": 3,
+    "authDisableWrites": 8,
+    "authWritesTotal": 14,
+    "userDocWrites": 4,
+    "auditLogWrites": 12,
+    "firestoreWritesTotal": 16,
+    "authDeletes": 0,
+    "firestoreDeletes": 0
+  },
+  "rollbackDryRun": {
+    "decision": "PASS",
+    "uniqueInverseActions": 12,
+    "authReenableWrites": 8,
+    "authDisableCreatedWrites": 3,
+    "userDocDeactivateWrites": 4,
+    "auditRollbackWrites": 12,
+    "authDeletes": 0,
+    "firestoreDeletes": 0,
+    "validatedClientCanonicalMutation": "NONE"
+  },
+  "blockers": [],
+  "sourceSafe": {
+    "rawNames": false,
+    "rawLogins": false,
+    "rawEmails": false,
+    "rawUids": false,
+    "rawPasswords": false,
+    "rawClaims": false,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrReads": 0,
+    "hrWrites": 0,
+    "deletes": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false
+  },
+  "nextGate": "C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_AUTHORIZATION"
+}
