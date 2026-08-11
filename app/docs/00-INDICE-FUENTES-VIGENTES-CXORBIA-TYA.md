@@ -7,7 +7,7 @@ Prevalencia: checkpoint -> source lock STOP B -> exact-write evidence/request/co
 
 Auth baseline228; M4=5/5; M5=4/8; M6=5/5; exact-write run31534505451 STOP_RETRY `PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B`; privacy PASS; identityResolution=false; Auth0/Firestore0/deletes0; production=false.
 
-Causa raíz: B no recuperable exactamente desde fuentes privadas contra digest SHA-256 one-way; no inferir identidad.
+Causa raíz: B no recuperable exactamente desde fuentes privadas contra SHA-256 one-way; no inferir/sustituir identidad.
 
 **Phase A84%; restante16%.**
 
