@@ -5,7 +5,7 @@
 
 No reabrir frontend/Auth228/Activation/SKIP13/MultiAuth/HashConfig/direct runner/M4/HR M6/static/provider snapshot.
 
-Exact-write consumido paró pre-write: `PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B`; privacy PASS; identityResolution false; Auth0/Firestore0/deletes0; A/R4/ocho históricos intactos.
+Exact-write consumido paró pre-write: `PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B`; privacy PASS; identityResolution=false; Auth0/Firestore0/deletes0; A/R4/ocho históricos intactos.
 
 Claude: no pantalla nueva/rediseño/fallback/hardcode. `app/modules/configuracion.js#usuarios` sigue sin tocar. Wiring solo tras bootstrap/readback PASS; mantener scope vivo/editable y no exponer datos técnicos.
 
