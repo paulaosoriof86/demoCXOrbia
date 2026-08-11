@@ -2,22 +2,24 @@
 
 **Fecha:** 2026-08-10  
 **Estado:** ACTIVO Y RECONCILIADO  
-**Estado vivo:** `C6_AUTH_DUPLICATE_CANONICAL_TARGET_INPUT_RESOLUTION_COMPLETE__A_OWNER_ANCHOR_AND_PROJECT_ENTITLEMENT_REQUIRED__BC_OWNER_ANCHOR_PROJECT_ENTITLEMENT_CREDENTIAL_INPUT_REQUIRED__D_PRESERVED_REPAIR_READY__ZERO_PROVIDER_READS__ZERO_WRITES__NO_PRODUCTION`
+**Estado vivo:** `C6_AUTH_CANONICAL_STAFF_MINIMUM_OWNER_INPUT_CONTRACT_READY__BUSINESS_OWNER_AND_SCOPE_INPUT_REQUIRED__A_REUSE_CONDITIONAL__BC_NEW_EPHEMERAL_FIXED__D_PRESERVED__DOCS_ONLY__NO_PRODUCTION`
 
 ## 1. Orden de prevalencia
 
 1. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-REQUIRED-20260810.md`;
-3. `app/docs/evidence/C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-SOURCE-SAFE-20260810.json`;
-4. `app/docs/C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-SOURCE-SAFE-20260810.md`;
-5. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-CANONICAL-REPLACEMENT-REPAIR-PLAN-PARTIAL-READY-20260810.md`;
-6. `app/docs/C6-AUTH-DUPLICATE-CANONICAL-REPLACEMENT-REPAIR-PLAN-SOURCE-ONLY-20260810.md`;
-7. `app/docs/evidence/C6-AUTH-DUPLICATE-CANONICAL-REPLACEMENT-REPAIR-PLAN-SOURCE-ONLY-20260810.json`;
-8. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-CANONICAL-REPLACEMENT-RESOLUTION-SOURCE-SAFE-20260810.md`;
-9. `backend/config/c6-shopper-auth-final-freeze-v4.json` — freeze Auth rector;
-10. source locks históricos de Activation, HashConfig, update-universe, SKIP13, multi-Auth y direct runner;
-11. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-12. addenda maestras vigentes, documentación Claude/Academia/tracker y PR #7.
+2. `app/docs/SOURCE-LOCK-C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-READY-20260810.md`;
+3. `app/docs/evidence/C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-SOURCE-SAFE-20260810.json`;
+4. `app/docs/C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-20260810.md`;
+5. `backend/config/c6-auth-canonical-staff-minimum-owner-input-contract-v1.json`;
+6. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-REQUIRED-20260810.md`;
+7. `app/docs/evidence/C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-SOURCE-SAFE-20260810.json`;
+8. `app/docs/C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-SOURCE-SAFE-20260810.md`;
+9. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-CANONICAL-REPLACEMENT-REPAIR-PLAN-PARTIAL-READY-20260810.md`;
+10. `app/docs/C6-AUTH-DUPLICATE-CANONICAL-REPLACEMENT-REPAIR-PLAN-SOURCE-ONLY-20260810.md`;
+11. `backend/config/c6-shopper-auth-final-freeze-v4.json` — freeze Auth rector;
+12. source locks históricos de Activation, HashConfig, update-universe, SKIP13, multi-Auth y direct runner;
+13. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+14. addenda maestras vigentes, documentación Claude/Academia/tracker y PR #7.
 
 ## 2. Estado rector
 
@@ -35,13 +37,13 @@ MultiAuthAdjudication=closed
 targetLineage(ac93)=closed
 HashConfig=closed PASS
 PhaseASourceSurfaces=20/20
-TargetInputProviderReads=0
-A=OWNER_ANCHOR_REQUIRED+PROJECT_ENTITLEMENT_REQUIRED
-B=OWNER_ANCHOR_REQUIRED+PROJECT_ENTITLEMENT_REQUIRED+CREDENTIAL_INPUT_REQUIRED
-C=OWNER_ANCHOR_REQUIRED+PROJECT_ENTITLEMENT_REQUIRED+CREDENTIAL_INPUT_REQUIRED
+CurrentBlockProviderReads=0
+A=BUSINESS_OWNER_AND_SCOPE_INPUT_REQUIRED / role=super / credential=reuse canonical super only if owner binding matches else new ephemeral
+B=BUSINESS_OWNER_AND_SCOPE_INPUT_REQUIRED / role=admin / credential=new ephemeral
+C=BUSINESS_OWNER_AND_SCOPE_INPUT_REQUIRED / role=ops / credential=new ephemeral
 D=REPAIR_PLAN_READY_PRESERVED
 RepairExecuted=false
-CurrentBlock=CANONICAL_TARGET_INPUT_RESOLUTION_COMPLETE
+CurrentBlock=CANONICAL_STAFF_MINIMUM_OWNER_INPUT_CONTRACT_READY
 ```
 
 ## 3. Auth baseline protegido
@@ -59,17 +61,23 @@ digest=c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4
 
 No repetir PREWRITE, Activation, smoke ni reconstrucción completa de identidad.
 
-## 4. Resolución vigente A–C
+## 4. Contrato mínimo vigente A–C
 
-A `1acd...`: existe un credential path canónico `super`, pero no hay owner association independiente; no se reutiliza por rol. Además falta entitlement exacto.
+El pendiente humano quedó reducido a seis respuestas empresariales:
 
-B `2c4d...`: falta owner anchor, entitlement exacto y credencial nueva efímera; el import canónico creó cero `admin`.
+```text
+A Superadministración = titular + TyA completo/proyectos específicos
+B Administración      = titular + TyA completo/proyectos específicos
+C Operaciones          = titular + TyA completo/proyectos específicos
+```
 
-C `542...`: falta owner anchor, entitlement exacto y credencial nueva efímera; el import canónico creó cero `ops`.
+No se pide fingerprint, UID, email técnico, keeper ni cuenta legacy. La respuesta de titular se convierte de forma transitoria a `ownerIdentityAnchor` y `ownerRoleBindingDigest`; la referencia humana cruda no se persiste.
 
-No hay expected-claims digest para A–C porque ningún target está cerrado. No se infiere `cinepolis`, no se copia scope legacy y no se selecciona keeper.
+`TYA_COMPLETE` no genera wildcard: antes de cerrar el target debe expandirse a los `projectIds` canónicos source-safe exactos. `SPECIFIC_PROJECTS` exige mapeo 1:1 a IDs canónicos. No se copia scope legacy ni se asume Cinépolis.
 
-D `ae2f...` permanece `REPAIR_PLAN_READY` sin reabrirse.
+Claims A–C: `authNamespace=staff`, `tenantId=tya`, rol exacto, `projectIds` exactos y sin `shopperId`. `expectedClaimsDigest` se genera solo después de owner + entitlement exactos mediante serialización canónica determinística.
+
+A puede reutilizar el `super` canónico existente solo si un owner binding independiente prueba asociación exacta; de lo contrario usa credencial nueva efímera. B/C usarán credencial nueva efímera. D `ae2f...` permanece `REPAIR_PLAN_READY` sin reabrirse.
 
 ## 5. Seguridad del bloque vigente
 
@@ -84,7 +92,7 @@ RulesWrites=0
 StorageWrites=0
 PREWRITE=false
 Activation=false
-newSmoke=false
+smoke=false
 repair=false
 Make=0
 Gemini=0
@@ -92,16 +100,17 @@ payments=0
 deploys=0
 merge=false
 production=false
-rawPIIExported=false
+rawPIIStored=false
+credentialsStored=false
 ```
 
 ## 6. Siguiente acción exacta
 
-Solo bajo nueva autorización:
+Después de recibir las seis respuestas empresariales mínimas:
 
-`C6 AUTH CANONICAL STAFF MINIMUM OWNER INPUT CONTRACT — SOURCE-SAFE / NO PROVIDER / NO REPAIR`.
+`C6 AUTH CANONICAL STAFF OWNER INPUT CAPTURE AND TARGET DIGEST — SOURCE-SAFE / NO PROVIDER / NO REPAIR`.
 
-Definir el mínimo input empresarial A–C sin fingerprints legacy ni PII en repo. Luego cerrar targets/digests y pasar, bajo autorización separada, al repair focal.
+Convertir inmediatamente las respuestas a owner anchors, entitlement exacto, target claims y expected-claims digests; A evalúa reutilización del `super` canónico únicamente por owner binding independiente. No ejecutar repair.
 
 ## 7. Phase A preservada
 
