@@ -17,7 +17,9 @@
   "callerPolicy": {
     "authenticated": true,
     "tenantClaimRequired": "tya",
-    "mutatingRoles": ["super"],
+    "mutatingRoles": [
+      "super"
+    ],
     "adminMayMutateSuper": false,
     "opsMayMutateUsers": false,
     "clientMayMutateUsers": false,
@@ -29,7 +31,7 @@
     "visibleLoginIsRuntimeInput": true,
     "visibleLoginStoredInRepo": false,
     "normalizeLogin": "trim+lowercase",
-    "internalFirebaseEmail": "sha256(tenantId + \\"\\u0000\\" + authNamespace + \\"\\u0000\\" + normalizedVisibleLogin)[0:48] + \\"@auth.cxorbia.invalid\\"",
+    "internalFirebaseEmail": "sha256(tenantId + NUL + authNamespace + NUL + normalizedVisibleLogin)[0:48] + @auth.cxorbia.invalid",
     "rawProviderEmailExposedToUi": false,
     "contactEmailIsLiveTenantData": true,
     "contactEmailEditable": true,
@@ -39,19 +41,48 @@
     "passwordStoredInRepoArtifactOrLog": false
   },
   "claimsContract": {
-    "required": ["authNamespace", "tenantId", "role", "projectIds"],
+    "required": [
+      "authNamespace",
+      "tenantId",
+      "role",
+      "projectIds"
+    ],
     "authNamespace": "staff",
     "tenantId": "tya",
-    "allowedRoles": ["super", "admin", "ops", "coordinador", "cliente"],
+    "allowedRoles": [
+      "super",
+      "admin",
+      "ops",
+      "coordinador",
+      "cliente"
+    ],
     "projectIds": "exact sorted unique canonical entitlement",
     "shopperIdForStaff": "absent",
     "wildcardProjectScopeAllowed": false,
     "defaultProjectAssumptionAllowed": false
   },
   "tenantUserDocumentContract": {
-    "requiredFields": ["tenantId", "role", "projectIds", "active", "createdAt", "updatedAt"],
-    "optionalProtectedFields": ["displayName", "contactEmail", "countries", "clientId", "personLabel"],
-    "technicalFields": ["authNamespace", "providerUidFingerprint", "claimsDigest", "lastAdminActionId"],
+    "requiredFields": [
+      "tenantId",
+      "role",
+      "projectIds",
+      "active",
+      "createdAt",
+      "updatedAt"
+    ],
+    "optionalProtectedFields": [
+      "displayName",
+      "contactEmail",
+      "countries",
+      "clientId",
+      "personLabel"
+    ],
+    "technicalFields": [
+      "authNamespace",
+      "providerUidFingerprint",
+      "claimsDigest",
+      "lastAdminActionId"
+    ],
     "rawPasswordAllowed": false,
     "rawProviderTokenAllowed": false,
     "rawProviderHashAllowed": false
@@ -59,7 +90,9 @@
   "operations": {
     "list": {
       "providerWrite": false,
-      "requiresRole": ["super"],
+      "requiresRole": [
+        "super"
+      ],
       "returnsProtectedTenantUserData": true
     },
     "create": {
@@ -79,7 +112,13 @@
       "ephemeralCredentialRequired": true
     },
     "updateProfile": {
-      "editableFields": ["displayName", "contactEmail", "countries", "clientId", "personLabel"],
+      "editableFields": [
+        "displayName",
+        "contactEmail",
+        "countries",
+        "clientId",
+        "personLabel"
+      ],
       "claimsWrite": false,
       "readbackRequired": true
     },
@@ -134,7 +173,14 @@
     "redesignRequired": false,
     "productionPersistence": "live admin adapter",
     "localStorageAllowedAsProductionAuthority": false,
-    "requiredActions": ["list", "create", "updateProfile", "changeRoleOrProjectScope", "disable", "reactivate"],
+    "requiredActions": [
+      "list",
+      "create",
+      "updateProfile",
+      "changeRoleOrProjectScope",
+      "disable",
+      "reactivate"
+    ],
     "newTechnicalFieldsVisibleToUser": false
   },
   "sourceSafe": {
