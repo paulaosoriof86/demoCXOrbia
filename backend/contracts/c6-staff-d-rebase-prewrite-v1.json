@@ -5,14 +5,14 @@
   "branch": "docs-tya-v6-v71-audit",
   "tenantId": "tya",
   "authNamespace": "staff",
-  "state": "PASS_SOURCE_ONLY_D_REBASE_PREWRITE_READY",
+  "state": "PASS_SOURCE_ONLY_D_REBASE__PRIVATE_EXECUTION_HANDOFF_PENDING",
   "prerequisites": {
     "authBaseline": 228,
     "providerSnapshotRunId": 31518927950,
     "providerSnapshotDecision": "PASS_C6_STAFF_REPAIR_BOOTSTRAP_PREWRITE",
     "providerSnapshotRepeatRequired": false,
     "exactWriteConsumedRequestReuse": false,
-    "abcPrivateRecovery": "EXACT",
+    "abcPrivateRecovery": "EXACT_SOURCE_ONLY_TRANSIENT_NOT_PERSISTED",
     "dHistoricalVisibleLogin": "DECLARED_UNRECOVERABLE",
     "dTechnicalRebase": "PASS_SOURCE_SAFE_ZERO_COLLISION"
   },
@@ -54,6 +54,17 @@
     "newDProviderEmailDigestVsABC": "NO_COLLISION",
     "newDOwnerTechnicalBindingVsABC": "NO_COLLISION",
     "decision": "PASS_SOURCE_SAFE_ZERO_COLLISION"
+  },
+  "privateExecutionHandoffBoundary": {
+    "reason": "A/B/C exact visible-login values were recovered transiently in source-only context and intentionally not persisted. The current GitHub execution lane cannot receive those private values without a separately authorized private handoff mechanism. D no longer depends on historical visible-login and is regenerable deterministically.",
+    "A": "PRIVATE_TRANSIENT_HANDOFF_REQUIRED_AT_EXECUTION",
+    "B": "PRIVATE_TRANSIENT_HANDOFF_REQUIRED_AT_EXECUTION",
+    "C": "PRIVATE_TRANSIENT_HANDOFF_REQUIRED_AT_EXECUTION",
+    "D": "DETERMINISTIC_REGENERATION_READY",
+    "rawLoginInRepo": false,
+    "rawLoginInArtifact": false,
+    "rawLoginInLog": false,
+    "exactWriteReadyNow": false
   },
   "futureExactWriteBoundary": {
     "newAuthorizationRequired": true,
@@ -99,5 +110,5 @@
     "passwordHashPersisted": false,
     "rawNamePersisted": false
   },
-  "nextGate": "C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2_AUTHORIZATION"
+  "nextGate": "C6_STAFF_PRIVATE_EXECUTION_HANDOFF_SOURCE_ONLY"
 }
