@@ -2,15 +2,15 @@
 
 **Fecha:** 2026-08-10  
 **Estado:** ACTIVO Y RECONCILIADO  
-**Estado vivo:** `C6_AUTH_DUPLICATE_HUMAN_OWNERSHIP_DECISION_CAPTURE_READY__PAULA_DECISION_REQUIRED__ZERO_PROVIDER_READS__ZERO_REPAIR__NO_PRODUCTION`
+**Estado vivo:** `C6_AUTH_DUPLICATE_CANONICAL_REPLACEMENT_RESOLVED__ABC_CREATE_CANONICAL_REPLACEMENT_REQUIRED__D_KEEP_VALIDATED_EXTERNAL_CANONICAL_RETIRE_BOTH_HISTORICAL__ZERO_PROVIDER_READS__ZERO_WRITES__NO_PRODUCTION`
 
 ## 1. Orden de prevalencia
 
 1. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-HUMAN-OWNERSHIP-DECISION-CAPTURE-PENDING-PAULA-20260810.md`;
-3. `app/docs/C6-AUTH-DUPLICATE-HUMAN-OWNERSHIP-DECISION-MATRIX-20260810.md`;
-4. `app/docs/evidence/C6-AUTH-DUPLICATE-HUMAN-OWNERSHIP-DECISION-MATRIX-20260810.json`;
-5. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-OWNERSHIP-ANCHOR-SOURCE-SAFE-HUMAN-DECISION-REQUIRED-20260810.md` — reconciliación source-safe anterior;
+2. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-CANONICAL-REPLACEMENT-RESOLUTION-SOURCE-SAFE-20260810.md`;
+3. `app/docs/evidence/C6-AUTH-DUPLICATE-CANONICAL-REPLACEMENT-RESOLUTION-SOURCE-SAFE-20260810.json`;
+4. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-HUMAN-OWNERSHIP-DECISION-CAPTURE-PENDING-PAULA-20260810.md` — matriz humana histórica ya superada por resolución técnica;
+5. `app/docs/C6-AUTH-DUPLICATE-HUMAN-OWNERSHIP-DECISION-MATRIX-20260810.md`;
 6. `app/docs/evidence/C6-AUTH-DUPLICATE-OWNERSHIP-ANCHOR-SOURCE-SAFE-RECONCILIATION-20260810.json`;
 7. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-KEEPER-ONE-READ-FOCAL-STOP-RETRY-20260810.md` — provider one-read histórico;
 8. `backend/config/c6-auth-duplicate-keeper-targetscope-one-read-request-v2.json` — consumido/deshabilitado;
@@ -40,12 +40,11 @@ HashConfig=closed PASS
 SmokeCredentialLifecycle=closed PASS
 PhaseASourceSurfaces=20/20
 fd891BlockedPolicyClosed=1
-OwnershipSourceSafeReconciliation=HUMAN_DECISION_REQUIRED_4
-HumanOwnershipDecisionMatrix=READY
-HumanOwnershipCapturedDecisions=0/4
-HumanOwnershipProviderReads=0
-HumanOwnershipRepairExecuted=false
-CurrentBlock=PAULA_MINIMUM_OWNERSHIP_DECISION_REQUIRED
+CanonicalReplacementProviderReads=0
+CanonicalReplacementABC=CREATE_CANONICAL_REPLACEMENT_REQUIRED
+CanonicalReplacementD=KEEP_VALIDATED_EXTERNAL_CANONICAL_RETIRE_BOTH_HISTORICAL
+RepairExecuted=false
+CurrentBlock=CANONICAL_REPLACEMENT_RESOLVED_SOURCE_SAFE
 ```
 
 ## 3. Auth baseline protegido
@@ -64,20 +63,22 @@ digest=c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4
 
 No repetir PREWRITE, Activation ni reconstrucción completa de identidad.
 
-## 4. Matriz de decisión humana vigente
+## 4. Resolución canónica vigente
 
 ```text
-1acdcb3782b7cf351056 = PAULA_DECISION_REQUIRED
-2c4d19f2b066835473d3 = PAULA_DECISION_REQUIRED
-54225792eeb65f6739c0 = PAULA_DECISION_REQUIRED
-ae2f920fe6d9ce1fdd82 = PAULA_DECISION_REQUIRED
+1acdcb3782b7cf351056 = CREATE_CANONICAL_REPLACEMENT_REQUIRED
+2c4d19f2b066835473d3 = CREATE_CANONICAL_REPLACEMENT_REQUIRED
+54225792eeb65f6739c0 = CREATE_CANONICAL_REPLACEMENT_REQUIRED
+ae2f920fe6d9ce1fdd82 = KEEP_VALIDATED_EXTERNAL_CANONICAL_RETIRE_BOTH_HISTORICAL
 ```
 
-Opciones formalizadas: `KEEP_ONE_MEMBER`, `RETIRE_BOTH_IF_CANONICAL_EXTERNAL_EXISTS`, `PRESERVE_BOTH_PENDING_OWNER_MAPPING` y, para Cliente, `CANONICAL_EXTERNAL_KEEP_HISTORICAL_PAIR_NONCANONICAL_PENDING_RETIRE`.
+A: existe un `super` namespaced importado, pero no hay mapping source-safe owner-level que lo asocie inequívocamente al grupo. No se reutiliza por rol.
 
-A–C: cualquier `KEEP_ONE_MEMBER` exige selección humana del fingerprint; `RETIRE_BOTH...` exige confirmación del principal canónico externo correcto. La evidencia no puede seleccionar automáticamente.
+B/C: el import canónico agregó cero `admin` y cero `ops`; los principals observados de esos roles pertenecen al universo pre-import. No se promueve ninguno por inferencia.
 
-D `ae2f...`: existe un Cliente canónico externo ya validado con fingerprint `6a74d2b7c77f7b3f026b9ad0bef86183bc4e028b67f429ee36ab772587e5953c`, fuera del par histórico. Puede aprobarse como único canónico sin elegir entre los dos históricos; la disposición técnica se ejecutaría solo en un repair posterior autorizado.
+D: el Cliente canónico externo ya está validado con namespace `staff`, scope `tya/cinepolis`, sign-in/readback/idempotencia/membresía PASS.
+
+Todo retiro futuro será `DISABLE_ONLY_NO_DELETE` y solo tras snapshot, idempotencia, readback y rollback dry-run.
 
 `fd891812eca020d27ee3` permanece cerrado como `POLICY_CLOSED_NO_TYA_EFFECTIVE_ACCESS`.
 
@@ -104,13 +105,13 @@ production=false
 rawPIIExported=false
 ```
 
-No se creó request provider ni workflow provider. No se usaron antigüedad, orden, PII cruda, metadatos temporales ni inferencia visual.
-
 ## 6. Siguiente acción exacta
 
-Esperar una decisión humana mínima de Paula para cada uno de los cuatro grupos, usando únicamente la matriz vigente. Si una decisión produce una acción Auth inequívoca, preparar después un repair focal separado con snapshot/readback/rollback y autorización expresa.
+Solo bajo nueva autorización:
 
-No ejecutar repair, PREWRITE, Activation, smoke, deploy, merge ni producción dentro de la autorización actual.
+`C6 AUTH DUPLICATE CANONICAL REPLACEMENT REPAIR PLAN — SOURCE-ONLY / NO EXECUTE`.
+
+Preparar el plan exacto de targets/gates para A–D. No provider read, repair, PREWRITE, Activation, smoke, deploy, merge ni producción en ese bloque.
 
 ## 7. Phase A preservada
 
