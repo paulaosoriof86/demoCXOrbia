@@ -1,88 +1,91 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-11  
-**Estado vivo:** `C6_HR_LIVE_DIRECT_READ_PASS__LIVE_USER_ADMIN_CONTRACT_SOURCE_ONLY_PASS__PROJECT_ENTITLEMENTS_PENDING__BACKEND_EXECUTABLE_PENDING__NO_REPAIR__NO_PRODUCTION`
+**Estado vivo:** `PASS_C6_M4_STAFF_TYA_COMPLETE_TARGET_DIGESTS__LIVE_USER_ADMIN_EXECUTABLE_SOURCE_PREPARED__STATIC_GATE_EXECUTION_PENDING__NO_PROVIDER__NO_RUNTIME_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Cerrado y protegido
 
 - frontend acumulativo y módulos Phase A;
-- freeze Auth v4 y Auth DEV 228;
-- Activation/readback/rollback dry-run PASS;
-- SKIP13, multi-Auth, HashConfig, direct runner y lifecycle de credencial;
-- D preservado repair-ready;
-- referencias empresariales A/B/C recibidas;
-- acceso adicional de Operaciones recibido;
-- contrato source-only de administración viva de usuarios cerrado PASS;
-- **HR viva actual cerrada M6: agosto 2026 = 34 GT + 10 HN = 44**.
+- Auth 228 + Activation/readback/rollback PASS;
+- SKIP13, multi-Auth, HashConfig y direct runner;
+- HR viva M6: 34 GT + 10 HN = 44;
+- referencias empresariales A/B/C/D;
+- scope inicial: `TYA_COMPLETE` para los cuatro;
+- projectIds actuales source-safe resueltos a `[cinepolis]` sin wildcard;
+- target claims/digests source-safe A/B/C/D;
+- contrato live-user-admin v1.1;
+- backend executable source materializado.
 
-## 2. HR ya no es pendiente
+## 2. Regla de alcance de usuarios — ya definida
 
-La clasificación anterior `reconciliación HR final de producción` fue retirada. El antiguo bloqueo era de observabilidad del workflow, no de mapeo o conexión de la HR.
-
-Fuente compartida leída directamente el 2026-08-11, GT/HN correctos, 44 filas actuales. No pedir otra exportación, enlace ni remapeo.
-
-Pendiente posterior relacionado con HR: únicamente que M7 verifique que el build final multirol consume la misma fuente viva. No crear un bloque HR separado.
-
-## 3. Pendiente vivo inmediato
-
-Cerrar exclusivamente los scopes de proyecto de los cuatro accesos iniciales:
+Cada alta debe exigir:
 
 ```text
-A / Superadministración -> TYA_COMPLETE o SPECIFIC_PROJECTS
-B / Administración      -> TYA_COMPLETE o SPECIFIC_PROJECTS
-C / Operaciones          -> TYA_COMPLETE o SPECIFIC_PROJECTS
-additional Ops user      -> TYA_COMPLETE o SPECIFIC_PROJECTS
+TyA completo
+or
+Proyectos específicos
 ```
 
-No volver a pedir nombres, correos, UIDs, fingerprints ni cuentas técnicas.
+Y el usuario autorizado debe poder modificar ese alcance posteriormente.
 
-## 4. Gap probado de producción — Usuarios & Permisos
-
-La UI ya existe y es autoadministrable visualmente, pero hoy guarda usuarios/roles/permisos en `localStorage`. No existe todavía en `app/core/backend-firebase.js` el path vivo para crear/editar/deshabilitar Firebase Auth ni cambiar claims/scope.
-
-Contrato ya cerrado:
+Criterio:
 
 ```text
+create -> scope obligatorio
+edit -> scope editable
+SPECIFIC_PROJECTS -> multiselect desde inventario vivo
+TYA_COMPLETE -> projectIds exactos, no wildcard
+nuevo proyecto + TYA_COMPLETE existente -> scopeReviewRequired hasta confirmar
+save -> claims + tenant user doc + audit + readback
+```
+
+No hardcodear `cinepolis` en la UI: es únicamente el projectId canónico actual demostrado.
+
+## 3. Backend source ya preparado
+
+```text
+backend/runtime/hr-live-service/user-admin.mjs
+backend/runtime/hr-live-service/server.mjs
+backend/runtime/hr-live-service/package.json
+backend/runtime/hr-live-service/Dockerfile
+firebase.json
 backend/contracts/c6-live-user-admin-v1.json
-PASS_C6_LIVE_USER_ADMIN_CONTRACT_SOURCE_ONLY
+tools/qa/cxorbia-c6-live-user-admin-source-gate.mjs
 ```
 
-Pendiente: backend executable/admin adapter y wiring localizado de la UI existente; sin rediseño.
+No hay deploy ni writes provider.
 
-Criterio de cierre:
+## 4. Pendiente vivo inmediato
+
+1. ejecutar terminalmente `tools/qa/cxorbia-c6-live-user-admin-source-gate.mjs` contra el checkout vivo;
+2. únicamente con PASS, construir PREWRITE focal A-D + bootstrap adicional con snapshot y rollback dry-run;
+3. autorización específica para Auth/Firestore writes;
+4. readback/rollback;
+5. wiring localizado de `app/modules/configuracion.js#usuarios` al adapter vivo;
+6. M7 smoke acumulativo multirol contra HR viva;
+7. M8 validación humana;
+8. M9 cutover autorizado;
+9. M10 post-smoke/freeze.
+
+No falta información empresarial para el punto 1.
+
+## 5. Métrica estable
 
 ```text
-create user from authorized admin UI -> Auth + scope live
-edit user -> live readback
-change role/project scope -> live readback + RBAC
-set inactive -> disabled/auditable, no default hard delete
-reload/new tab -> state survives without localStorage authority
-no hardcoded staff or projectIds
+M4=5/5 COMPLETE
+M5=2/8 COMPLETE
+M6=5/5 COMPLETE
 ```
 
-## 5. Ruta corta restante
+**Avance certificado: 82%. Restante: 18%.**
 
-1. scopes exactos A/B/C + acceso adicional Ops;
-2. target claims/digests source-safe;
-3. backend executable/admin adapter + wiring localizado;
-4. repair focal A-D con snapshot/readback/rollback;
-5. smoke acumulativo multirol final M7 contra la HR viva ya cerrada;
-6. validación humana/rollback ready;
-7. autorización y único cutover;
-8. smoke post-cutover/freeze.
+## 6. No hacer
 
-## 6. Métrica estable
-
-**Avance certificado: 78%. Restante: 22%.** M6 = COMPLETE 5/5.
-
-## 7. No hacer
-
-- no hardcodear staff;
-- no persistir correos/credenciales;
-- no reabrir 340 identidades/SKIP13/MultiAuth;
-- no repetir PREWRITE/Activation general;
-- no volver a mapear HR ni pedir su enlace;
-- no nueva candidata/rama/PR por rutina;
-- no repair Auth antes de scopes exactos;
-- no rediseñar `configuracion.js` desde backend;
+- no volver a pedir owners/scopes/HR;
+- no hardcodear staff, emails o projectIds en UI;
+- no wildcard de proyectos;
+- no reabrir Auth histórico;
+- no nueva candidata/rama/PR;
+- no rediseñar Usuarios & Permisos;
+- no provider/Auth/Firestore writes antes del gate y autorización;
 - no deploy/merge/producción sin gate correspondiente.
