@@ -69,7 +69,7 @@ A, R4 canónico y los ocho históricos no fueron mutados.
 
 ## 5. Causa raíz
 
-Los target logins se preservaron como digests source-safe; el exact write necesita el `visibleLogin` real para materializar el tenant user doc. Las fuentes privadas permitidas que el executor pudo consultar no produjeron una coincidencia exacta para B. SHA-256 no es reversible. Inferir o sustituir el valor rompería owner-binding e identidad.
+Los target logins se preservaron como digests source-safe; el exact write necesita el `visibleLogin` real. Las fuentes privadas permitidas no produjeron una coincidencia exacta para B. SHA-256 no es reversible. Inferir o sustituir el valor rompería owner-binding e identidad.
 
 ## 6. M5 y progreso
 
@@ -80,19 +80,6 @@ M5c static terminal gate                    = COMPLETE 1/8
 M5d provider snapshot + exact prewrite      = COMPLETE 1/8
 M5 exact write                              = STOP / NOT CREDITED
 M5 current                                  = 4/8 COMPLETE
-```
-
-```text
-M1 35 COMPLETE
-M2 20 COMPLETE
-M3 15 COMPLETE
-M4  5 COMPLETE
-M5  4/8 COMPLETE
-M6  5 COMPLETE
-M7  0/5
-M8  0/3
-M9  0/3
-M10 0/1
 ```
 
 **Avance certificado: 84%. Restante: 16%.**
