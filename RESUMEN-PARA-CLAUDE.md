@@ -1,26 +1,27 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-11  
-**Estado vivo:** `PASS_C6_M4_STAFF_TYA_COMPLETE_TARGET_DIGESTS__LIVE_USER_ADMIN_EXECUTABLE_SOURCE_PREPARED__STATIC_GATE_EXECUTION_PENDING__NO_PROVIDER__NO_RUNTIME_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `PASS_C6_LIVE_USER_ADMIN_STATIC_SOURCE_GATE_TERMINAL__STAFF_REPAIR_BOOTSTRAP_PREWRITE_CONTRACT_READY__PROVIDER_SNAPSHOT_PENDING__NO_PROVIDER_READS__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Fuente vigente
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-3. `app/docs/SOURCE-LOCK-C6-STAFF-TYA-COMPLETE-AND-LIVE-USER-ADMIN-SOURCE-20260811.md`;
-4. `backend/contracts/c6-live-user-admin-v1.json`;
-5. `backend/config/c6-staff-bootstrap-targets-v1.json`;
-6. PR #7 y HEAD vivo.
+3. `app/docs/SOURCE-LOCK-C6-LIVE-USER-ADMIN-STATIC-PASS-PREWRITE-READY-20260811.md`;
+4. `app/docs/evidence/C6-LIVE-USER-ADMIN-STATIC-GATE-LATEST.json`;
+5. `backend/contracts/c6-staff-repair-bootstrap-prewrite-v1.json`;
+6. `backend/contracts/c6-live-user-admin-v1.json`;
+7. PR #7 y HEAD vivo.
 
 ## 2. No reabrir
 
 - frontend acumulativo y módulos Phase A;
 - Auth 228, Activation/readback/rollback, SKIP13, multi-Auth, HashConfig y direct runner;
 - HR viva M6;
-- owners iniciales;
-- scope inicial de A/B/C/D: **TYA_COMPLETE para los cuatro**.
+- owners y scopes iniciales: `TYA_COMPLETE` para los cuatro;
+- static source gate live-user-admin: **PASS terminal**.
 
-## 3. Backend ya preparado
+## 3. Backend ya preparado y validado source-only
 
 Existe source executable para administración viva de usuarios:
 
@@ -28,54 +29,57 @@ Existe source executable para administración viva de usuarios:
 backend/runtime/hr-live-service/user-admin.mjs
 ```
 
-Y source de routing/packaging preparado en:
+Routing/packaging source preparado en `server.mjs`, `package.json`, `Dockerfile` y `firebase.json`.
+
+El gate terminal se ejecutó en el checkout vivo mediante el runner read-only existente:
 
 ```text
-backend/runtime/hr-live-service/server.mjs
-backend/runtime/hr-live-service/package.json
-backend/runtime/hr-live-service/Dockerfile
-firebase.json
+runId=31513528713
+jobId=93852916856
+PASS_CXORBIA_CONTROLLED_RUNNERS_CONTRACT
 ```
 
-Backend resuelve proyectos desde inventario vivo, valida caller `super`, tenant + authNamespace, actualiza claims y documento de usuario, audita, hace readback y conserva rollback/compensación. No está desplegado por este bloque.
+No se habilitó perfil provider/browser y no hubo deploy.
 
 ## 4. Tarea Claude/prototipo localizada — Usuarios & Permisos
 
-**No crear pantalla nueva y no rediseñar.** Trabajar únicamente sobre la superficie existente `app/modules/configuracion.js#usuarios` cuando backend quede autorizado/deployado.
+**No crear pantalla nueva y no rediseñar.** Trabajar únicamente sobre `app/modules/configuracion.js#usuarios` cuando backend tenga autorización/runtime correspondiente.
 
-Cambios funcionales requeridos:
+Cambios requeridos:
 
-1. Sustituir `localStorage` como autoridad de usuarios por el adapter vivo autorizado.
-2. En **crear/invitar usuario**, hacer obligatorio el campo visible `Alcance de proyectos` con dos opciones:
-   - `TyA completo`;
-   - `Proyectos específicos`.
-3. Si elige `Proyectos específicos`, mostrar multiselección basada en la lista viva de proyectos del tenant.
-4. En **editar usuario**, permitir cambiar el mismo alcance y el rol; guardar mediante la operación backend de scope.
-5. Mostrar de forma humana el alcance efectivo; no mostrar claims, fingerprints, provider email ni UIDs técnicos.
-6. Si backend devuelve `scopeReviewRequired=true`, mostrar aviso accionable de revisión porque el inventario de proyectos cambió desde la última confirmación.
-7. Mantener alta, edición de perfil, deshabilitación y reactivación; no hard delete por defecto.
-8. Después de guardar, refrescar/readback para mostrar el estado confirmado; no fingir éxito local.
+1. sustituir `localStorage` como autoridad por el adapter vivo autorizado;
+2. en alta, exigir `Alcance de proyectos`: `TyA completo` o `Proyectos específicos`;
+3. `Proyectos específicos` usa multiselección desde inventario vivo;
+4. en edición permitir cambiar alcance y rol mediante backend;
+5. no mostrar claims, fingerprints, provider email ni UIDs técnicos;
+6. mostrar `scopeReviewRequired` como aviso humano/accionable;
+7. mantener alta, edición, deshabilitación y reactivación; no hard delete por defecto;
+8. hacer readback después de guardar; no fingir éxito local.
 
-`TYA_COMPLETE` nunca es wildcard silencioso. El backend expande a projectIds exactos. En el inventario canónico actual existe un proyecto (`cinepolis`), pero **no hardcodear ese ID en la UI**.
+`TYA_COMPLETE` se expande a projectIds exactos; no hardcodear `cinepolis` ni otro projectId en UI.
 
-## 5. HR
+## 5. Prewrite backend
 
-M6 permanece COMPLETE: HR viva ya cerrada. M7 solo validará consumo runtime final; no remapear ni pedir enlace.
+`backend/contracts/c6-staff-repair-bootstrap-prewrite-v1.json` distingue target D adicional de Operaciones del histórico `R4_CLIENT_HISTORICAL`. El cap viejo Auth=14 no se reutiliza; el cap final se congela después del provider snapshot read-only.
 
-## 6. Métrica
+Esto es backend/seguridad y **no cambia la UI**.
 
-**Avance certificado: 82%. Restante: 18%.**
+## 6. HR
+
+M6 permanece COMPLETE. M7 validará consumo runtime final; no remapear ni pedir enlace.
+
+## 7. Métrica
+
+**Avance certificado: 83%. Restante: 17%.**
 
 ```text
 M4=5/5 COMPLETE
-M5=2/8 COMPLETE
+M5=3/8 COMPLETE
 M6=5/5 COMPLETE
 ```
 
-M5 no recibe el punto del gate estático hasta demostrar su ejecución terminal.
+## 8. Siguiente bloque backend
 
-## 7. Siguiente bloque backend
+`C6 STAFF REPAIR/BOOTSTRAP PROVIDER SNAPSHOT READ-ONLY`.
 
-`C6 LIVE USER ADMIN STATIC SOURCE GATE -> STAFF REPAIR/BOOTSTRAP PREWRITE`.
-
-Claude no debe adelantarse a runtime no desplegado ni crear fallback paralelo. El wiring se aplica únicamente cuando el backend tenga gate/autorización correspondiente.
+Claude no debe adelantarse a un runtime no desplegado ni crear fallback paralelo. El wiring se aplica únicamente cuando backend tenga gate/autorización correspondiente.
