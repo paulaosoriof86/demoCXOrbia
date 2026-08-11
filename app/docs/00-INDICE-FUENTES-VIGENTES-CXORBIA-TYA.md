@@ -25,7 +25,8 @@
 17. `PENDIENTES-PROTOTIPO.md`;
 18. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
 19. `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md`;
-20. PR #7 y HEAD de `docs-tya-v6-v71-audit`.
+20. `app/docs/ACADEMIA-ADDENDUM-C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-20260810.md`;
+21. PR #7 y HEAD de `docs-tya-v6-v71-audit`.
 
 Toda fuente previa que presente el exact write como pendiente de autorización queda superseded por el STOP terminal del request consumido.
 
