@@ -33,7 +33,7 @@ No reejecutar ese request y no repetir provider snapshot.
 7. M9 cutover autorizado;
 8. M10 post-smoke/freeze.
 
-No volver a pedir owners/scopes/HR. Tampoco inventar el login faltante; primero agotar recuperación privada source-only.
+No volver a pedir owners/scopes/HR. No inventar el login faltante; primero agotar recuperación privada source-only.
 
 ## Métrica
 
