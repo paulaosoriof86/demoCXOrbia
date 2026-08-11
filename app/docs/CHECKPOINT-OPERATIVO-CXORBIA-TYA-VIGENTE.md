@@ -1,21 +1,14 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-10  
-**Estado:** `C6_AUTH_CANONICAL_STAFF_MINIMUM_OWNER_INPUT_CONTRACT_READY__BUSINESS_OWNER_AND_SCOPE_INPUT_REQUIRED__A_REUSE_CONDITIONAL__BC_NEW_EPHEMERAL_FIXED__D_PRESERVED__DOCS_ONLY__NO_PRODUCTION`
+**Fecha:** 2026-08-11  
+**Estado:** `C6_AUTH_CANONICAL_STAFF_OWNER_INPUT_PARTIAL_CAPTURED__OWNER_REFERENCES_RECEIVED__PROJECT_ENTITLEMENTS_PENDING__NO_PROVIDER__NO_REPAIR__NO_PRODUCTION`
 
 ## 1. Control
 
 - repo: `paulaosoriof86/demoCXOrbia`;
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
-- source lock vigente: `app/docs/SOURCE-LOCK-C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-READY-20260810.md`;
-- evidencia vigente: `app/docs/evidence/C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-SOURCE-SAFE-20260810.json`;
-- reporte vigente: `app/docs/C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-20260810.md`;
-- contrato ejecutable-no-write: `backend/config/c6-auth-canonical-staff-minimum-owner-input-contract-v1.json`;
-- source lock anterior preservado: `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-REQUIRED-20260810.md`;
-- repair plan anterior preservado: `app/docs/C6-AUTH-DUPLICATE-CANONICAL-REPLACEMENT-REPAIR-PLAN-SOURCE-ONLY-20260810.md`;
-- freeze rector: `backend/config/c6-shopper-auth-final-freeze-v4.json`;
-- digest rector: `c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4`;
+- HEAD verificado al inicio de la sesión: `e62f62e6c4161216b2cb32071fda036ba700a020`;
 - producción: intacta.
 
 ## 2. Baseline Auth protegido
@@ -37,80 +30,92 @@ targetLineage(ac93)=closed
 HashConfig=closed PASS
 ```
 
-No reconstruir las 340 identidades ni repetir PREWRITE/Activation/smoke.
+No reconstruir las 340 identidades ni repetir PREWRITE/Activation/smoke históricos.
 
-## 3. Contrato mínimo A–C listo
+## 3. Input empresarial recibido el 2026-08-11
 
-La brecha ya no es una decisión técnica de duplicados. Paula no debe escoger fingerprints, UIDs, emails técnicos ni keepers legacy.
-
-El único input pendiente es:
+Se recibió de Paula la designación empresarial humana para los roles staff canónicos:
 
 ```text
-A / Superadministración = quién es el titular + TyA completo o proyectos específicos
-B / Administración      = quién es el titular + TyA completo o proyectos específicos
-C / Operaciones          = quién es el titular + TyA completo o proyectos específicos
+A / Superadministración = Paula Andrea Osorio Franco
+B / Administración      = Paula Andrea Osorio Franco
+C / Operaciones          = Carlos Castro
+additionalOpsAccess      = Samuel Daza
 ```
 
-Son seis respuestas de negocio.
+Estas referencias son de negocio y se usan solo transitoriamente para resolver owner anchors/role bindings. **No deben persistirse en código, configuración ejecutable ni claims como datos hardcodeados.** Los correos compartidos en conversación tampoco se persisten en este checkpoint ni deben usarse como identidad técnica canónica por defecto.
 
-## 4. Conversión source-safe
+La observación de Samuel Daza se clasifica como **usuario adicional de Operaciones**, no como sustitución automática del titular C. Debe materializarse posteriormente como dato administrable en la plataforma, no como constante de código.
 
-La designación humana se usa transitoriamente y se convierte a:
+## 4. Autoadministrabilidad obligatoria
+
+La creación inicial de A/B/C y del acceso adicional de Operaciones es un bootstrap operativo, no una definición estructural permanente.
+
+Contrato obligatorio:
 
 ```text
-ownerIdentityAnchor
-ownerRoleBindingDigest
+usersAndRoleAssignmentsAreLiveData=true
+hardcodedStaffUsers=false
+editableFromAuthorizedAdminSurface=true
+roleAndProjectScopeEditable=true
+disableInsteadOfHardDeleteByDefault=true
+technicalIdentityDerivedAtRuntime=true
+rawCredentialsInRepo=false
 ```
 
-La referencia humana cruda no se persiste.
+Paula debe poder crear, editar, cambiar roles/scope, deshabilitar y administrar usuarios desde la plataforma con RBAC. La desactivación debe preservar auditoría; eliminación física queda separada y protegida.
 
-El alcance se convierte así:
+## 5. Pendiente mínimo real
+
+Faltan únicamente los **alcances de proyecto** para cerrar el target de A/B/C:
 
 ```text
-TYA_COMPLETE -> enumerar projectIds canónicos TyA exactos source-safe; no wildcard
-SPECIFIC_PROJECTS -> resolver 1:1 cada proyecto a projectId canónico
+A / Superadministración -> TYA_COMPLETE o SPECIFIC_PROJECTS
+B / Administración      -> TYA_COMPLETE o SPECIFIC_PROJECTS
+C / Operaciones          -> TYA_COMPLETE o SPECIFIC_PROJECTS
+Samuel / Operaciones     -> TYA_COMPLETE o SPECIFIC_PROJECTS
 ```
 
-No copiar scope legacy, no asumir Cinépolis y no inferir por rol.
+`TYA_COMPLETE` debe expandirse a projectIds canónicos exactos; no wildcard. `SPECIFIC_PROJECTS` exige resolución 1:1 a projectIds canónicos. No asumir Cinépolis.
 
-Claims objetivo:
+## 6. Progreso de cierre a producción — métrica estable
+
+Se adopta para las sesiones restantes una métrica de 100 puntos, sin recalcular el denominador:
 
 ```text
-authNamespace=staff
-tenantId=tya
-A role=super
-B role=admin
-C role=ops
-projectIds=exact sorted unique entitlement
-shopperId=absent
+M1 Baseline acumulativa/Phase A preservada        35 pts = COMPLETE
+M2 Auth V4 activation/readback/rollback           20 pts = COMPLETE
+M3 SKIP13/MultiAuth/HashConfig/direct runner      15 pts = COMPLETE
+M4 Owners + exact project entitlements             5 pts = PARTIAL (owners recibidos; scopes pendientes)
+M5 Repair focal A-D + readback/rollback             8 pts = PENDING
+M6 HR final production evidence                     5 pts = PENDING
+M7 Final accumulative multirole smoke               5 pts = PENDING
+M8 Human validation + rollback ready                3 pts = PENDING
+M9 Explicit cutover + one production promotion      3 pts = PENDING
+M10 Post-cutover smoke + freeze                     1 pt  = PENDING
 ```
 
-`expectedClaimsDigest` se genera únicamente después de resolver owner + entitlement exactos, usando serialización canónica con orden `authNamespace,projectIds,role,tenantId`.
+Avance certificado antes de cerrar M4: **70% completo + 2/5 de M4 capturado = 72% operativo de cierre**.
 
-## 5. Credenciales
+Esta escala se conserva en adelante. Solo aumenta cuando un milestone obtiene evidencia terminal; un STOP_RETRY no reduce porcentaje ya ganado salvo P0 demostrado que invalide evidencia previa.
 
-A:
+## 7. Circuit breaker anti-bucle
 
-```text
-reuse existing canonical super only if independent owner binding matches
-else new ephemeral credential
-```
+1. No reabrir milestones M1-M3 sin P0 reproducible.
+2. No volver a preguntar owner names ya recibidos.
+3. No convertir staff inicial en constantes de código.
+4. No crear nueva candidata, rama o PR.
+5. No repetir PREWRITE/Activation general.
+6. No ejecutar provider/repair hasta cerrar scopes exactos.
+7. Cada interacción reportará: `avance nuevo`, `porcentaje acumulado`, `porcentaje restante`, `siguiente gate exacto`.
 
-No se permite reutilización por unicidad de rol.
+## 8. Siguiente bloque exacto
 
-B/C:
+`C6 AUTH CANONICAL STAFF OWNER INPUT CAPTURE AND TARGET DIGEST — COMPLETE PROJECT ENTITLEMENTS, SOURCE-SAFE / NO PROVIDER / NO REPAIR`.
 
-```text
-new ephemeral credential at separately authorized execution
-```
+Una vez recibidos los cuatro scopes, convertir owner references a anchors/digests, enumerar projectIds exactos, generar target claims + expectedClaimsDigest y preparar el repair focal reversible. No provider ni repair en ese bloque.
 
-No se persiste login/secret crudo.
-
-## 6. D preservado
-
-`ae2f920fe6d9ce1fdd82` no se reabrió. Permanece `REPAIR_PLAN_READY` con Cliente canónico externo validado y retiro futuro `DISABLE_ONLY_NO_DELETE`.
-
-## 7. Seguridad
+## 9. Estado seguro
 
 ```text
 providerReadsCurrentBlock=0
@@ -131,30 +136,5 @@ payments=0
 deploys=0
 merge=false
 production=false
-rawPIIStored=false
-credentialsStored=false
+rawCredentialsStored=false
 ```
-
-Solo hubo commits documentales/contractuales source-safe.
-
-## 8. Próximo bloque exacto
-
-Después de recibir las seis respuestas empresariales mínimas:
-
-`C6 AUTH CANONICAL STAFF OWNER INPUT CAPTURE AND TARGET DIGEST — SOURCE-SAFE / NO PROVIDER / NO REPAIR`.
-
-Debe convertir inmediatamente las respuestas a owner anchors, exact entitlement, target claims y expected-claims digests. A evalúa reutilización del `super` canónico solo por owner binding independiente. No ejecutar repair.
-
-## 9. Phase A preservada
-
-Frontend acumulativo, Login, `CX.data`, HR histórico, shoppers, postulaciones, certificaciones, visitas, liquidaciones/pagos, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto, sincronización HR/plataforma, Academia y Auth DEV=228 permanecen preservados.
-
-## 10. Cierre obligatorio
-
-- **Qué se hizo:** contrato mínimo de input empresarial A–C y conversión source-safe completa.
-- **Avance Phase A:** el bloqueo quedó reducido a seis decisiones de negocio comprensibles; no falta investigación técnica adicional para formularlas.
-- **Qué se preservó:** Auth 228, digest v4, D repair-ready, frontend y producción.
-- **Claude/prototipo:** sin cambios frontend ni relajación RBAC.
-- **Academia:** patrón de identidad/rol/scope y least privilege documentado.
-- **Pendiente real:** titular + alcance A/B/C.
-- **Estado seguro:** cero provider reads y cero Auth/data/provider writes.
