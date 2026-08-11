@@ -1,20 +1,20 @@
 # CAMBIOS-BACKEND.md
 
 **Última actualización:** 2026-08-11  
-**Estado:** `STOP_C6_STAFF_TARGET_PRIVATE_IDENTITY_RECOVERY__ABC_EXACT__D_VISIBLE_LOGIN_UNRESOLVED__NO_PROVIDER__NO_WRITES__NO_PRODUCTION`
+**Estado:** `PASS_C6_STAFF_D_TECHNICAL_LOGIN_REBASE_SOURCE_ONLY__ZERO_SOURCE_COLLISION__PRIVATE_EXECUTION_HANDOFF_PENDING__NO_PROVIDER__NO_WRITES__NO_PRODUCTION`
 
 Baseline cerrado: Auth228, Activation/readback/rollback, SKIP13/MultiAuth/HashConfig/direct runner, M4, HR M6, static live-user-admin y provider snapshot PASS31518927950.
 
-Bloque ejecutado: `C6 STAFF TARGET PRIVATE IDENTITY RECOVERY SOURCE-ONLY`. Se compararon referencias privadas previamente entregadas y fuentes privadas existentes únicamente contra owner anchors, owner-role bindings, technical-login digests y owner-technical bindings ya congelados. No se emitió ni persistió login/email/UID/password/hash/nombre.
+Bloque ejecutado: D historical visible-login declarado no recuperable; creado `backend/contracts/c6-staff-d-technical-login-rebase-v1.json`; actualizado únicamente el binding técnico D en `backend/config/c6-staff-provider-collision-targets-v1.json` y recalculado mecánicamente su fingerprint provider derivado; creado `backend/contracts/c6-staff-d-rebase-prewrite-v1.json`, source gate y evidencia; source lock `SOURCE-LOCK-C6-STAFF-D-TECHNICAL-LOGIN-REBASE-PASS-20260811.md`.
 
-Resultado: A/B/C = exact match completo. D = owner anchor y owner-role binding exactos, pero ninguna de las cuatro referencias privadas únicas previamente suministradas reproduce el technical-login digest congelado. No se generaron variantes ni inferencias.
+Preservado sin cambios: ownerIdentityAnchor, ownerRoleBindingDigest, role, entitlementMode, projectIds, expectedClaimsDigest, A/B/C y R4 canónico.
 
-Writes/efectos: provider reads0; provider/Auth/Firestore/HR/Rules/Storage writes0; Make/Gemini/Payments0; deletes0; deploy0; merge=false; production=false. El exact-write request consumido no se reutilizó y snapshot31518927950 no se repitió.
+Validación source-safe: cero colisiones del nuevo D technical digest, provider collision fingerprint y owner technical binding contra A/B/C y D superseded. Provider reads0; provider/Auth/Firestore/HR/Rules/Storage writes0; Make/Gemini/Payments0; deletes0; deploy0; merge=false; production=false. No raw login/email/UID/password/password-hash/nombre persistido.
 
-Causa residual: queda exclusivamente el exact visible-login reference de D. Owner/rol/scope/projectIds/claims target permanecen cerrados.
+Causa D cerrada: D ya es regenerable determinísticamente sin referencia histórica.
 
-Archivos creados: `app/docs/evidence/C6-STAFF-TARGET-PRIVATE-IDENTITY-RECOVERY-LATEST.json` y `app/docs/SOURCE-LOCK-C6-STAFF-TARGET-PRIVATE-IDENTITY-RECOVERY-STOP-D-20260811.md`. Índice/checkpoint/documentación viva reconciliados.
+Boundary restante detectado antes de write: A/B/C exact visible-login fueron recuperados transient y deliberadamente no persistidos; el carril GitHub no tiene aún un canal privado autorizado para entregarlos al runtime sin repo/artifact/log. Esto es transporte privado, no nueva decisión de identidad.
 
-**Phase A84%; restante16%; M5=4/8.** No se acredita peso adicional porque recovery A-D no quedó completo.
+**Phase A84%; restante16%; M5=4/8.** No se acredita peso adicional hasta write/readback.
 
-Siguiente gate: `HUMAN PRIVATE D VISIBLE-LOGIN REFERENCE`. No pedir nada más del negocio.
+Siguiente gate: `C6 STAFF PRIVATE EXECUTION HANDOFF SOURCE-ONLY`. No repetir D rebase, snapshot ni request exact-write consumido.
