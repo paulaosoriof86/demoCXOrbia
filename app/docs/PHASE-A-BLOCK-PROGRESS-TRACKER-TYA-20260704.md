@@ -1,84 +1,97 @@
 # PHASE A — Tracker de avance por bloques TyA
 
-**Actualización:** 2026-08-06  
-**Estado:** `C6_EQUIVALENT_UNIVERSE_PROVIDER_V22_HOLD__65_65_EXACT_MATCH__12_SURNAME__1_MULTI_AUTH_TIE__NO_WRITES__NO_DEPLOY`
+**Actualización:** 2026-08-11  
+**Estado:** `C6_HR_LIVE_DIRECT_READ_PASS__AUTH228_PRESERVED__LIVE_USER_ADMIN_CONTRACT_PASS__SCOPES_PENDING__NO_PRODUCTION`
 
-## Microbloques de salida
+## 1. Corrección de tracker
 
-| Microbloque | Estado | Evidencia |
-|---|---|---|
-| 0 — Carril único | COMPLETADO | rama viva y PR #7 preservados |
-| 1 — Auditoría focalizada V7.2 | COMPLETADO | P0 selector reproducible |
-| 2 — Empalme/composición acumulativa | COMPLETADO | V7.2-P0F1 empalmada |
-| 3 — Root fix selector Login | COMPLETADO | entrada canónica |
-| 4 — Reconciliación de pins | COMPLETADO | overlays activos reconciliados |
-| 5 — Hosting DEV raíz | COMPLETADO | despliegue anterior preservado |
-| 6 — Formulario humano único | SOURCE PREPARED | no desplegado |
-| 7 — Contrato Shopper TyA | CERRADO | `nombre.apellido / Nombre123*`, sin membership |
-| 8 — Censo 340 perfiles | PASS PROVIDER | run 31104541809 |
-| 9 — Clasificación inicial | REFERENCIA HISTÓRICA | 64/141 y 83 pre-consenso |
-| 10 — Regla tenant | COMPLETADA | `DETERMINISTIC_TECHNICAL_SUFFIX` |
-| 11 — Root fix crosswalk | PASS PROVIDER | paridad 101/8 |
-| 12 — Contrato diagnóstico v2 | PASS SOURCE/STATIC | métricas y namespace |
-| 13 — Provider v2 inicial | HOLD STOP_RETRY | run 31069282511 |
-| 14 — Métrica 83=71+12 | PASS PROVIDER | identidad válida |
-| 15 — Doce apellidos | HOLD CONFIRMADO | cero evidencia de apellido |
-| 16 — Multi-Auth | HOLD CONFIRMADO | dos candidatos 5016/5016 |
-| 17 — Set de grupos 64/65 | CAUSA CERRADA | universos distintos en comparador anterior |
-| 18 — Plan 340 | PASS ESTRUCTURAL / NO EJECUTABLE | 13 HOLD |
-| 19 — Vector de procedencia | CONTRATO v2.1 | fingerprints + pre/post |
-| 20 — Clasificación source-only | PASS | run 31070193278 |
-| 21 — Helper universo equivalente | PASS SOURCE/STATIC | `shopper-equivalent-universe-v1` |
-| 22 — Integración planner/clasificador | PASS SOURCE/STATIC | run 31071318363 |
-| 23 — Contrato diagnóstico v2.2 | PASS SOURCE/STATIC | universo equivalente + delta-only |
-| 24 — Candidate fingerprints multi-Auth | PASS PROVIDER | dos fingerprints source-safe |
-| 25 — Revalidación provider v2.2 | HOLD STOP_RETRY | run 31104541809 |
-| 26 — Universo equivalente 65/65 | PASS PROVIDER | added 0 / removed 0 |
-| 27 — Antiguo grupo +1 | CERRADO | unchanged en ambos conjuntos |
-| 28 — Evidencia/adjudicación tenant | PENDIENTE AUTORIZACIÓN | no operativa |
-| 29 — Auth DEV repair | BLOQUEADO | writes `0` |
-| 30 — Hosting DEV single-form | NO EJECUTADO | deploys `0` |
-| 31 — Validación humana | BLOQUEADA | requiere plan sin HOLD |
-| 32 — Producción | PENDIENTE | intacta |
+Este tracker estaba desactualizado desde el 2026-08-06 y todavía mostraba el plan Auth antiguo con 13 HOLD. Esa representación queda superseded por el índice/checkpoint vigentes.
 
-## Resultado provider vigente
+No usar estados históricos del tracker para reabrir SKIP13, multi-Auth, HashConfig, Activation, direct runner o HR mapping.
+
+## 2. Baseline vigente cerrada
 
 ```text
-run=31104541809
-job=92626188022
-artifact=8968941587
-profiles=340
-crosswalk=101/8 parity=true
-metric=83=71+12 valid=true
-reference/planner=65/65
-added/removed=0/0
-unchanged=65
-providerExecutions=1
-secondAttempt=0
+Phase A cumulative baseline=preserved
+Auth plan V4=FROZEN
+AuthUsersAfter=228
+Activation=PASS
+Auth Readback=PASS
+RollbackDryRun=PASS
+SKIP13=closed 13/13
+MultiAuth=closed
+HashConfig=PASS
+DirectRunnerDEV=PASS
 ```
 
-## Estado operacional
+## 3. HR viva — M6 COMPLETE
+
+Lectura directa actual 2026-08-11:
 
 ```text
-CREATE_AUTH=81
-UPDATE_AUTH=46
-NO_OP=73
-HOLD=13
-PRESERVE_NO_AUTH=127
-planDigest=acc93da842d1a5d3244327680f88539f0651cb101bae09dd231fd8b5008bea92
-readyForAuthRepair=false
-executable=false
-partialExecutionAllowed=false
-12 surnames=AUTHORITATIVE_SURNAME_SOURCE_ENRICHMENT_REQUIRED
-1 multiAuth=SOURCE_SAFE_ACCOUNT_ADJUDICATION_REQUIRED
+source=shared Google Sheets live
+period=2026-08
+GT=34
+HN=10
+total=44
+country validation=PASS/PASS
+source live=true
+remap required=false
 ```
 
-## Estado seguro
+El antiguo source lock de observabilidad HR queda histórico. No volver a poner HR en HOLD por ausencia de un run del workflow anterior.
 
-Request consumido y trigger provider congelado. Frontend y Phase A preservados. Provider reads `1`; provider writes, Auth/password/membership/Firestore/Rules/Storage/HR writes, Hosting, Cloud Run, Make, Gemini, pagos, merge y producción: `0/false`.
+## 4. Staff canónico/autoadministrable
 
-## Siguiente bloque
+```text
+owner references A/B/C=received transiently
+additional Ops access=received transiently
+project entitlements=pending
+live user-admin UI=exists
+live user-admin contract=PASS SOURCE-ONLY
+live user-admin executable backend=pending
+Auth repair focal=pending after exact scopes
+```
 
-No existe autorización residual. Requiere autorización expresa para:
+Pendiente humano mínimo: `TYA_COMPLETE` o `SPECIFIC_PROJECTS` para A, B, C y acceso adicional Ops.
 
-`NON-OPERATIONAL TENANT EVIDENCE/ADJUDICATION PREPARATION`, usando únicamente los profile/candidate fingerprints source-safe ya generados y corrigiendo source-only el falso positivo del validador sin provider rerun.
+## 5. Tracker estable de 100 puntos
+
+| Milestone | Peso | Estado |
+|---|---:|---|
+| M1 Baseline acumulativa/Phase A | 35 | COMPLETE |
+| M2 Auth V4 activation/readback/rollback | 20 | COMPLETE |
+| M3 SKIP13/MultiAuth/HashConfig/direct runner | 15 | COMPLETE |
+| M4 Owners + exact project entitlements | 5 | 2/5 COMPLETE |
+| M5 Staff repair/bootstrap + live admin + rollback | 8 | 1/8 COMPLETE |
+| M6 HR live current production evidence | 5 | COMPLETE |
+| M7 Final accumulative multirole smoke | 5 | PENDING |
+| M8 Human validation + rollback ready | 3 | PENDING |
+| M9 Explicit cutover + one production promotion | 3 | PENDING |
+| M10 Post-cutover smoke + freeze | 1 | PENDING |
+
+**Avance certificado: 78%. Restante: 22%.**
+
+## 6. Cadena única restante
+
+```text
+M4 exact scopes/digests
+→ M5 live-user-admin executable + focal repair/readback/rollback
+→ M7 final multirole smoke using the already-live HR
+→ M8 human validation/rollback ready
+→ M9 explicit cutover
+→ M10 post-cutover smoke/freeze
+```
+
+## 7. Anti-bucle
+
+- M1-M3 y M6 no se reabren sin P0 reproducible.
+- No repetir PREWRITE/Activation general.
+- No pedir nuevamente HR ni remapearla.
+- No volver a preguntar owner names.
+- No nueva candidata/rama/PR por rutina.
+- El denominador de 100 puntos no cambia.
+
+## 8. Estado seguro
+
+Lecturas HR directas sin writes. Cero Auth/Firestore/HR/Rules/Storage writes, deploy, merge y producción en este bloque.
