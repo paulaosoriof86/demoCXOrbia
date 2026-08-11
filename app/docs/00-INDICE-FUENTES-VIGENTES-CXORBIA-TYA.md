@@ -2,18 +2,18 @@
 
 **Fecha:** 2026-08-11  
 **Estado:** ACTIVO Y RECONCILIADO  
-**Estado vivo:** `C6_STAFF_PROVIDER_SNAPSHOT_HARNESS_REPAIRED__FIRST_REQUEST_ABORTED_PRE_PROVIDER_READS_0__ONE_AUTHORIZED_PROVIDER_OBSERVATION_STILL_PENDING__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `PASS_C6_STAFF_REPAIR_BOOTSTRAP_PROVIDER_SNAPSHOT__AUTH_228__A_REUSE_BOUND__BCD_CREATE__R4_PRESERVED__WRITE_BUDGET_FROZEN__ROLLBACK_DRYRUN_PASS__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Orden de prevalencia
 
 1. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `app/docs/SOURCE-LOCK-C6-STAFF-PROVIDER-SNAPSHOT-HARNESS-REPAIRED-20260811.md`;
-3. `backend/contracts/c6-staff-provider-snapshot-runner-v1.json`;
+2. `app/docs/SOURCE-LOCK-C6-STAFF-PROVIDER-SNAPSHOT-PASS-20260811.md`;
+3. `app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-PROVIDER-SNAPSHOT-LATEST.json`;
 4. `backend/contracts/c6-staff-repair-bootstrap-prewrite-v1.json`;
 5. `backend/config/c6-staff-provider-collision-targets-v1.json`;
-6. `app/docs/SOURCE-LOCK-C6-LIVE-USER-ADMIN-STATIC-PASS-PREWRITE-READY-20260811.md`;
-7. `app/docs/evidence/C6-LIVE-USER-ADMIN-STATIC-GATE-LATEST.json`;
-8. `app/docs/SOURCE-LOCK-C6-STAFF-TYA-COMPLETE-AND-LIVE-USER-ADMIN-SOURCE-20260811.md`;
+6. `backend/contracts/c6-staff-provider-snapshot-runner-v1.json`;
+7. `app/docs/SOURCE-LOCK-C6-STAFF-PROVIDER-SNAPSHOT-HARNESS-REPAIRED-20260811.md`;
+8. `app/docs/SOURCE-LOCK-C6-LIVE-USER-ADMIN-STATIC-PASS-PREWRITE-READY-20260811.md`;
 9. `backend/config/c6-staff-bootstrap-targets-v1.json`;
 10. `backend/contracts/c6-live-user-admin-v1.json` + `backend/runtime/hr-live-service/user-admin.mjs`;
 11. `app/docs/SOURCE-LOCK-C6-HR-LIVE-DIRECT-READ-PASS-20260811.md` y su evidencia;
@@ -23,7 +23,7 @@
 15. `PENDIENTES-PROTOTIPO.md`;
 16. PR #7 y HEAD de `docs-tya-v6-v71-audit`.
 
-Fuentes históricas que indiquen scopes, HR, SKIP13, HashConfig, direct runner, Activation o static live-user-admin como pendientes quedan superseded.
+Fuentes históricas que indiquen provider snapshot, scopes, HR, SKIP13, HashConfig, direct runner, Activation o static live-user-admin como pendientes quedan superseded.
 
 ## 2. Estado rector
 
@@ -40,74 +40,88 @@ HashConfig=closed PASS
 HRSourceMapped=true
 HRSourceLive=true
 M4=COMPLETE 5/5
-M5=3/8 COMPLETE
+M5=4/8 COMPLETE
 M6=COMPLETE 5/5
 InitialStaffEntitlement=TYA_COMPLETE_ALL_FOUR
 CanonicalCurrentProjectIds=[cinepolis]
-LiveUserAdminContract=v1.1
-LiveUserAdminBackendSource=materialized
 LiveUserAdminStaticGate=PASS_TERMINAL
-StaffRepairBootstrapPrewriteContract=READY_SOURCE_ONLY
-ProviderSnapshot=AUTHORIZED_NOT_YET_EFFECTIVELY_OBSERVED
-ProviderReadsEffective=0
+StaffProviderSnapshot=PASS
+ProviderAuthPopulation=228
+ProviderAuthListObservations=1
+ProviderFirestoreReads=2
+ProviderWrites=0
+A=REUSE_EXISTING_CANONICAL_OWNER_BOUND
+B=CREATE_NEW_EPHEMERAL
+C=CREATE_NEW_EPHEMERAL
+D=CREATE_NEW_EPHEMERAL
+R4Canonical=PRESERVED_EXACT
+FrozenAuthWriteBudget=14
+FrozenFirestoreWriteBudget=16
+RollbackDryRun=PASS
 Production=false
 ```
 
-## 3. Provider snapshot — harness incident does not consume observation
-
-El primer request autorizado llegó hasta source preflight + request gate, pero abortó por parseo del shell antes de iniciar el script provider:
+## 3. Provider snapshot terminal
 
 ```text
-runId=31518115944
-jobId=93868277963
-rootCause=NESTED_HEREDOC_DELIMITER_INDENTATION
-providerScriptStarted=false
-authListObservations=0
-firestoreProviderReads=0
+requestId=c6-staff-repair-bootstrap-provider-snapshot-readonly-20260811-02-harness-rootfix
+runId=31518927950
+jobId=93870945840
+artifactId=9112228351
+decision=PASS_C6_STAFF_REPAIR_BOOTSTRAP_PREWRITE
+blockers=[]
 ```
 
-El request quedó cerrado como `HARNESS_ABORTED_PRE_PROVIDER_READS_0`. El status failure de ese commit es telemetría y no una observación provider.
+Se consumió una sola observación Auth efectiva. El request quedó disabled/consumed; no hay segundo provider read autorizado.
 
-El root fix reutiliza el mismo workflow existente con `tools/qa/cxorbia-c6-staff-provider-snapshot-runner-report.mjs`. Validación con request deshabilitado:
+A fue adjudicado para reutilización solo por owner-binding independiente + claims exactos; no por unicidad de rol. B/C/D no tienen colisión técnica y requieren canonical nuevo. Los ocho históricos focales siguen enabled y solo podrán retirarse `DISABLE_ONLY_NO_DELETE` después del canonical readback correspondiente. El canónico Cliente permanece exacto e inmutable.
+
+## 4. Write budget congelado
 
 ```text
-runId=31518696584
-jobId=93870136421
-conclusion=success
-providerProfileExecuted=false
+Auth creates=3
+customClaims writes=3
+Auth disables=8
+Auth writes total=14
+Auth deletes=0
+userDocs=4
+auditLogs=12
+Firestore writes total=16
+Firestore deletes=0
 ```
 
-La autorización vigente conserva una sola observación provider efectiva todavía pendiente. Si esa observación detecta drift, faltante, colisión o ambigüedad, se aplica `STOP_RETRY` sin segundo provider read.
+El 14 actual fue recalculado desde snapshot y solo coincide numéricamente con el antiguo cap; no es reutilización del presupuesto histórico superseded.
 
-## 4. Scope de usuarios — regla vigente
+## 5. Rollback
 
-El alta de cualquier usuario staff exige `TyA completo` o `Proyectos específicos`. El alcance es editable; `TYA_COMPLETE` se materializa en projectIds exactos y nunca wildcard. Proyecto nuevo requiere revisión explícita antes de expandir claims.
+Rollback dry-run PASS con 12 inverse actions; cero deletes; canónico Cliente no se modifica.
 
-## 5. HR viva
+## 6. HR y usuarios
 
-M6 permanece cerrado: periodo 2026-08, 34 GT + 10 HN = 44. No pedir enlace, export ni remapeo.
+M6 permanece cerrado: 2026-08 = 34 GT + 10 HN = 44. Alta staff sigue exigiendo `TyA completo` o `Proyectos específicos`, editable y sin wildcard/herencia silenciosa.
 
-## 6. Progreso estable
+## 7. Progreso estable
 
-**Avance certificado: 83%. Restante: 17%.** El incidente pre-provider no cambia la métrica.
+**Avance certificado: 84%. Restante: 16%.**
 
-## 7. Pendiente exacto
+## 8. Pendiente exacto
 
-`C6 STAFF REPAIR/BOOTSTRAP PROVIDER SNAPSHOT READ-ONLY` — primera y única observación efectiva.
+`C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE AUTHORIZATION`.
 
-Con PASS: congelar write budget + rollback dry-run -> autorización específica de repair/bootstrap -> ejecución focal/readback -> wiring localizado -> M7 -> M8 -> M9 -> M10.
+Con autorización: ejecutar una sola operación focal dentro del budget congelado -> readback/rollback evidence -> wiring localizado Usuarios & Permisos -> M7 -> M8 -> M9 -> M10.
 
-## 8. Circuit breaker anti-bucle
+## 9. Circuit breaker anti-bucle
 
-- no reabrir M1-M4 ni M6 sin P0 reproducible;
+- no reabrir M1-M4 ni M6;
+- no repetir provider snapshot;
 - no repetir static gate;
-- no volver a pedir owners, scopes iniciales o HR;
+- no volver a pedir owners/scopes/HR;
 - no nueva candidata/rama/PR;
-- no provider writes antes de snapshot PASS + autorización específica;
-- no segundo provider read después de una observación efectiva;
+- no Auth/Firestore writes sin autorización exacta;
+- no deletes;
 - no rediseñar Usuarios & Permisos;
-- no deploy/merge/producción sin gate/autorización.
+- no deploy/merge/producción sin gate explícito.
 
-## 9. Estado seguro
+## 10. Estado seguro
 
-Hasta este punto: provider reads efectivos 0; provider/Auth/Firestore/HR/Rules/Storage writes 0; deletes 0; deploy 0; merge false; production false.
+Provider snapshot realizó 1 Auth list + 2 Firestore reads; provider/Auth/Firestore/HR/Rules/Storage writes 0; deletes 0; deploy 0; merge false; production false.
