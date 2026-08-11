@@ -4,14 +4,23 @@
 
 Este bloque no cambia cursos, rutas, certificaciones ni UI de Academia antes de producción.
 
-Principios reutilizables: identidad/rol/alcance separados; `TyA completo` no es wildcard; scope explícito y editable; proyectos desde inventario vivo; no expansión silenciosa; audit/readback; disable-before-delete; no exponer credenciales/claims/fingerprints.
+Principios preservados: identidad/rol/alcance separados; `TyA completo` no es wildcard; scope explícito/editable; proyectos desde inventario vivo; audit/readback; disable antes de delete; no exponer credenciales/claims/fingerprints.
 
-Provider snapshot focal PASS con población Auth 228. A solo se adopta como canonical por binding independiente + claims exactos, nunca por unicidad de rol; B/C/D requieren canonical nuevo; R4 Cliente permanece exacto.
+Provider snapshot focal sigue PASS: Auth 228; A reusable solo por owner-binding independiente; B/C/D requieren canonical nuevo; R4 Cliente canónico exacto; budget Auth=14 / Firestore=16 / deletes=0; rollback dry-run PASS.
 
-Presupuesto final recalculado: Auth writes 14, Firestore writes 16, deletes 0, rollback dry-run PASS. Principio reusable: snapshot real -> adjudicación -> budget exacto -> rollback -> autorización de write.
+## Lección del exact write fail-closed
 
-El primer request abortó pre-provider por un error shell y no consumió provider reads; se corrigió la causa raíz y la única observación efectiva posterior terminó PASS. Diferenciar telemetría del harness de evidencia real de datos.
+El request exact-write autorizado se detuvo antes del primer provider write porque el runtime no pudo resolver exactamente el `visibleLogin` de B desde las fuentes privadas permitidas, aunque el manejo criptográfico privado sí quedó PASS.
 
-Usuarios & Permisos debe explicar `TyA completo`, `Proyectos específicos`, revisión ante cambio de proyectos y diferencia entre deshabilitar/eliminar, sin detalles técnicos de Auth.
+Esto demuestra una distinción reusable:
 
-M6 HR permanece cerrado. **Impacto Academia:** conceptual/documental, no bloqueante. **Avance certificado: 84%.**
+- un digest SHA-256 es adecuado para comparar identidad sin exponerla;
+- un digest one-way no sustituye el dato vivo cuando una operación posterior necesita materializarlo;
+- si el dato operativo debe usarse después, debe existir un canal privado recuperable y gobernado, separado de repo/docs/evidencia pública;
+- cuando el dato exacto no puede recuperarse, el sistema debe detenerse antes de escribir en lugar de inferirlo.
+
+Ejecución observada: Auth writes 0, Firestore writes 0, deletes 0, deploy/merge/producción 0.
+
+Usuarios & Permisos sigue pendiente hasta bootstrap PASS. No crear fallback ni hardcodear identidades.
+
+M6 HR permanece cerrado. **Impacto Academia:** conceptual/documental y no bloqueante para contenidos. **Avance certificado Phase A: 84%.**
