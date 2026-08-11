@@ -1,111 +1,90 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-11  
-**Estado:** `PASS_C6_STAFF_REPAIR_BOOTSTRAP_PROVIDER_SNAPSHOT__AUTH_228__A_REUSE_BOUND__BCD_CREATE__R4_PRESERVED__WRITE_BUDGET_FROZEN__ROLLBACK_DRYRUN_PASS__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `STOP_RETRY_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE__PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B__AUTH_WRITES_0__FIRESTORE_WRITES_0__NO_DELETE__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Control
 
 - repo: `paulaosoriof86/demoCXOrbia`;
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
-- source lock vigente: `app/docs/SOURCE-LOCK-C6-STAFF-PROVIDER-SNAPSHOT-PASS-20260811.md`;
+- source lock vigente: `app/docs/SOURCE-LOCK-C6-STAFF-REPAIR-BOOTSTRAP-STOP-PRIVATE-IDENTITY-B-20260811.md`;
 - producción: intacta.
 
 ## 2. Baseline protegido
 
 ```text
-AuthUsersAfter=228
+AuthUsersFrozenBaseline=228
 Activation=PASS
 Readback=PASS
 RollbackDryRun=PASS
 SKIP13=closed 13/13
 MultiAuth=closed
-HashConfig=closed PASS
+HashConfig=PASS
 DirectRunnerDEV=PASS
 HRSourceMapped=true
 HRSourceLive=true
 M4=COMPLETE
 M6=COMPLETE
+ProviderSnapshot=PASS run 31518927950
+FrozenAuthBudget=14
+FrozenFirestoreBudget=16
 ```
 
-No reconstruir Auth, no reabrir HR y no repetir PREWRITE/Activation históricos.
+No reconstruir Auth, no reabrir HR ni repetir provider snapshot.
 
-## 3. M5 provider snapshot — PASS
+## 3. Exact write consumido — STOP pre-write
 
 ```text
-requestId=c6-staff-repair-bootstrap-provider-snapshot-readonly-20260811-02-harness-rootfix
-requestCommit=6632ecbdb8593126c094178154fca9b0913592af
-runId=31518927950
-jobId=93870945840
-artifactId=9112228351
-decision=PASS_C6_STAFF_REPAIR_BOOTSTRAP_PREWRITE
-AuthPopulation=228
-AuthListObservations=1
-FirestoreDocumentReads=2
-providerWrites=0
-blockers=[]
+requestId=c6-staff-repair-bootstrap-exact-write-20260811-01
+requestCommit=ac82cfc4a74d70dbedb8ab099bd430a6e5c372b7
+runId=31534505451
+jobId=93922274430
+decision=STOP_RETRY_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE
+blocker=PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B
+credentialPrivacyPass=true
+identityResolutionPass=false
+providerStatePass=false
 ```
 
-El request quedó disabled/consumed. No repetir provider snapshot.
+El request quedó `enabled=false`, `consumed=true`, `nextGate=STOP_RETRY_NO_SECOND_ATTEMPT`.
 
-## 4. Adjudicación focal
+## 4. Writes ejecutados
 
 ```text
-A super: REUSE_EXISTING_CANONICAL
-  ownerBindingVerified=true
-  roleUniquenessUsed=false
-  claimsExact=true
-  userDocAction=CREATE_CANONICAL_USER_DOC
-B admin: CREATE_NEW_EPHEMERAL, collision=0
-C ops: CREATE_NEW_EPHEMERAL, collision=0
-D ops adicional: CREATE_NEW_EPHEMERAL, collision=0
-R4 client canonical: enabled + claims exact + membership exact + mutation forbidden
+AuthCreates=0
+CustomClaimsWrites=0
+AuthDisables=0
+AuthWritesTotal=0
+TenantUserWrites=0
+AuditLogWrites=0
+FirestoreWritesTotal=0
+AuthDeletes=0
+FirestoreDeletes=0
+HR/Rules/Storage/Make/Gemini/Payments writes=0
+Deploy=0
+Merge=false
+Production=false
 ```
 
-R1/R2/R3/R4 históricos mantienen 2 principals enabled cada uno. Retiro futuro: `DISABLE_ONLY_NO_DELETE` y solo después del canonical readback correspondiente.
+A, R4 canónico y los ocho históricos no fueron mutados.
 
-## 5. Budget exacto congelado
+## 5. Causa raíz
 
-```text
-Auth creates=3
-custom claims writes=3
-Auth disable writes=8
-Auth writes total=14
-Auth deletes=0
+Los target logins se preservaron como digests source-safe; el exact write necesita el `visibleLogin` real para el tenant user doc. Las fuentes privadas permitidas que el executor pudo consultar no produjeron una coincidencia exacta para B. El digest técnico SHA-256 no puede revertirse. Inferir o sustituir el login habría roto el contrato de identidad, por lo que el STOP antes del primer write fue correcto.
 
-user document writes=4
-audit log writes=12
-Firestore writes total=16
-Firestore deletes=0
-```
-
-El total Auth=14 es un resultado nuevo del snapshot real; no reabre ni reutiliza el antiguo cap de 14. La coincidencia numérica ocurre porque A se reutiliza y B/C/D se crean.
-
-## 6. Rollback dry-run
-
-```text
-PASS
-uniqueInverseActions=12
-authReenableWrites=8
-authDisableCreatedWrites=3
-userDocDeactivateWrites=4
-auditRollbackWrites=12
-authDeletes=0
-firestoreDeletes=0
-validatedClientCanonicalMutation=NONE
-```
-
-## 7. M5 subasignación
+## 6. M5
 
 ```text
 M5a contract source-only                    = COMPLETE 1/8
 M5b executable backend source materialized = COMPLETE 1/8
 M5c static terminal gate                    = COMPLETE 1/8
 M5d provider snapshot + exact prewrite      = COMPLETE 1/8
-M5 remaining                                = PENDING 4/8
+M5 exact write                              = NOT CREDITED
+M5 current                                  = 4/8 COMPLETE
 ```
 
-## 8. Progreso
+## 7. Progreso
 
 ```text
 M1 35 COMPLETE
@@ -122,24 +101,12 @@ M10 0/1
 
 **Avance certificado: 84%. Restante: 16%.**
 
-## 9. Siguiente gate exacto
+## 8. Siguiente bloque exacto
 
-`C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE AUTHORIZATION`.
+`C6 STAFF TARGET PRIVATE IDENTITY RECOVERY SOURCE-ONLY`.
 
-Debe autorizar únicamente el budget congelado, create-before-retire, readback antes de cada disable, cero deletes y rollback pactado. No requiere volver a leer provider antes de los writes salvo que el executor detecte drift mediante precondition/readback dentro de la misma ejecución autorizada.
+Debe intentar recuperar/validar A-D desde fuentes privadas existentes, sin provider writes y sin emitir PII. No pedir nuevamente owners/scopes/HR ni reusar el request consumido. Solo con resolución exacta podrá prepararse una nueva autorización focal de write.
 
-## 10. Estado seguro
+## 9. Estado seguro
 
-```text
-providerReadsConsumed=1 Auth list + 2 focal Firestore docs
-providerWrites=0
-AuthWrites=0
-FirestoreWrites=0
-HRWrites=0
-RulesWrites=0
-StorageWrites=0
-deletes=0
-deploys=0
-merge=false
-production=false
-```
+No hubo write provider alguno en el request consumido; producción y baseline permanecen intactos.
