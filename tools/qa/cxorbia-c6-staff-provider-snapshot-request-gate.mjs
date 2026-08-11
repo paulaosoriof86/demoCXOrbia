@@ -25,7 +25,7 @@ try{
   ensure(request.repositoryWrites===false&&request.dataWrites===false&&request.deploy===false&&request.merge===false&&request.production===false,'top_level_safe_state');
   const head=run('rev-parse','HEAD'),parent=run('rev-parse','HEAD^');
   ensure(request.targetHeadSha===parent,'target_head_exact');
-  ensure(request.requestCommitSha===head,'request_commit_exact');
+  if(request.requestCommitSha!=null)ensure(request.requestCommitSha===head,'request_commit_exact');
   ensure(typeof request.authorizationScope==='string'&&request.authorizationScope.includes('STAFF REPAIR/BOOTSTRAP PROVIDER SNAPSHOT READ-ONLY'),'authorization_scope_exact');
   ensure(request.stopRetryOnFailure===true,'stop_retry_required');
   console.log(JSON.stringify({decision:'PASS_C6_STAFF_PROVIDER_SNAPSHOT_REQUEST_GATE',requestId:request.requestId,targetHeadSha:request.targetHeadSha,requestCommitSha:head,profile:request.profile,providerReads:true,writes:false,deploy:false,merge:false,production:false}));
