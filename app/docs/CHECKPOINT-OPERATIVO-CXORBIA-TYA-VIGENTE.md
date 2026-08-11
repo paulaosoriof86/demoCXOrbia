@@ -3,39 +3,21 @@
 **Fecha:** 2026-08-11  
 **Estado:** `STOP_RETRY_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE__PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B__AUTH_WRITES_0__FIRESTORE_WRITES_0__NO_DELETE__NO_DEPLOY__NO_PRODUCTION`
 
-## 1. Control
+## Control
 
-- repo: `paulaosoriof86/demoCXOrbia`;
-- rama viva: `docs-tya-v6-v71-audit`;
-- PR #7: draft/open/no merge;
-- source lock vigente: `app/docs/SOURCE-LOCK-C6-STAFF-REPAIR-BOOTSTRAP-STOP-PRIVATE-IDENTITY-B-20260811.md`;
-- producción: intacta.
+Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; source lock vigente `app/docs/SOURCE-LOCK-C6-STAFF-REPAIR-BOOTSTRAP-STOP-PRIVATE-IDENTITY-B-20260811.md`; producción intacta.
 
-## 2. Baseline protegido
+## Baseline protegido
 
-```text
-AuthUsersFrozenBaseline=228
-Activation/Readback/Rollback=PASS
-SKIP13=closed 13/13
-MultiAuth=closed
-HashConfig=PASS
-DirectRunnerDEV=PASS
-HRSourceMapped=true
-HRSourceLive=true
-M4=COMPLETE
-M6=COMPLETE
-ProviderSnapshot=PASS run 31518927950
-FrozenAuthBudget=14
-FrozenFirestoreBudget=16
-```
+Auth 228; Activation/readback/rollback PASS; SKIP13 13/13; MultiAuth/HashConfig/direct runner closed; M4 COMPLETE; HR M6 COMPLETE; provider snapshot PASS run 31518927950; budgets Auth14/Firestore16 frozen.
 
-## 3. Exact write consumido — STOP pre-write
+## Exact write consumido
 
 ```text
-requestId=c6-staff-repair-bootstrap-exact-write-20260811-01
+request=c6-staff-repair-bootstrap-exact-write-20260811-01
 requestCommit=ac82cfc4a74d70dbedb8ab099bd430a6e5c372b7
-runId=31534505451
-jobId=93922274430
+run=31534505451
+job=93922274430
 decision=STOP_RETRY_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE
 blocker=PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B
 credentialPrivacyPass=true
@@ -43,42 +25,20 @@ identityResolutionPass=false
 providerStatePass=false
 ```
 
-El request quedó `enabled=false`, `consumed=true`, `nextGate=STOP_RETRY_NO_SECOND_ATTEMPT`.
+Request disabled/consumed; no second attempt.
 
-## 4. Writes ejecutados
+## Writes ejecutados
 
-```text
-AuthCreates=0
-CustomClaimsWrites=0
-AuthDisables=0
-AuthWritesTotal=0
-TenantUserWrites=0
-AuditLogWrites=0
-FirestoreWritesTotal=0
-AuthDeletes=0
-FirestoreDeletes=0
-HR/Rules/Storage/Make/Gemini/Payments writes=0
-Deploy=0
-Merge=false
-Production=false
-```
+Auth writes 0; Firestore writes 0; deletes 0; HR/Rules/Storage/Make/Gemini/Payments writes 0; deploy 0; merge false; production false. A, R4 canónico y los ocho históricos permanecen sin mutación.
 
-A, R4 canónico y los ocho históricos no fueron mutados.
+## Causa raíz
 
-## 5. Causa raíz
+El write necesita el `visibleLogin` exacto; el target B solo quedó disponible como digest SHA-256 source-safe y las fuentes privadas accesibles no reprodujeron ese digest. No se permite inferir o sustituir identidad.
 
-Los target logins se preservaron como digests source-safe; el exact write necesita el `visibleLogin` real. Las fuentes privadas permitidas no produjeron una coincidencia exacta para B. SHA-256 no es reversible. Inferir o sustituir el valor rompería owner-binding e identidad.
+## Progreso
 
-## 6. Progreso
+**84% certificado; 16% restante. M5=4/8.**
 
-**Avance certificado: 84%. Restante: 16%. M5=4/8.**
+## Siguiente bloque exacto
 
-## 7. Siguiente bloque exacto
-
-`C6 STAFF TARGET PRIVATE IDENTITY RECOVERY SOURCE-ONLY`.
-
-Debe recuperar/validar A-D desde fuentes privadas existentes, sin provider writes y sin emitir PII. No pedir nuevamente owners/scopes/HR ni reusar el request consumido. Solo con resolución exacta podrá prepararse una nueva autorización focal de write.
-
-## 8. Estado seguro
-
-No hubo write provider alguno en el request consumido; producción y baseline permanecen intactos.
+`C6 STAFF TARGET PRIVATE IDENTITY RECOVERY SOURCE-ONLY`: recuperar/validar A-D desde fuentes privadas existentes, sin provider writes/PII emitida. Nueva autorización exact-write únicamente con recovery PASS.
