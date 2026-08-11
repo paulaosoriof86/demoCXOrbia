@@ -1,0 +1,135 @@
+{
+  "schemaVersion": "cxorbia.c6.auth-duplicate-canonical-replacement-resolution.source-safe.v1",
+  "generatedAt": "2026-08-10T18:16:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "entryHeadSha": "3d77017f4457ccec9725addeb4d48d82ee4202e9",
+  "decision": "PASS_C6_CANONICAL_REPLACEMENT_RESOLUTION_SOURCE_SAFE_NO_REPAIR",
+  "state": "C6_AUTH_DUPLICATE_CANONICAL_REPLACEMENT_RESOLVED__ABC_CREATE_CANONICAL_REPLACEMENT_REQUIRED__D_KEEP_VALIDATED_EXTERNAL_CANONICAL_RETIRE_BOTH_HISTORICAL__ZERO_PROVIDER_READS__ZERO_WRITES__NO_PRODUCTION",
+  "baseline": {
+    "authUsers": 228,
+    "activation": "PASS",
+    "readback": "PASS",
+    "rollbackDryRun": "PASS",
+    "planDigest": "c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4",
+    "reconstructedUniverse340": false
+  },
+  "authorizedUniverse": {
+    "groups": {
+      "1acdcb3782b7cf351056": ["6dee7f31c738218ce63a", "b561d9c46660715e214f"],
+      "2c4d19f2b066835473d3": ["aa5cbada6c5388ee1d8b", "f8405e17df357c121ccc"],
+      "54225792eeb65f6739c0": ["ce178298b2df136541d4", "19937aedc77af3404bdc"],
+      "ae2f920fe6d9ce1fdd82": ["ca9e2f644334833ab572", "360af509dcdcd1880f04"]
+    },
+    "excludedPreviouslyClosedGroup": "fd891812eca020d27ee3"
+  },
+  "sourceSafeEvidence": {
+    "credentialInventory": {
+      "path": "app/docs/evidence/CORTE6-CREDENTIAL-INVENTORY-SOURCE-SAFE-V3.json",
+      "staffSourceRecords": 4,
+      "roles": {"superadmin": 1, "coordinador": 2, "demo": 1},
+      "namespacedRecords": 4
+    },
+    "credentialImport": {
+      "path": "app/docs/evidence/CORTE6-CREDENTIAL-IMPORT-LATEST.json",
+      "authUsersBefore": 17,
+      "authUsersAfter": 108,
+      "imported": 91,
+      "targetRoleCounts": {"shopper": 88, "super": 1, "coordinador": 2},
+      "targetNamespaceCounts": {"shopper": 88, "staff": 3},
+      "identifierContract": "visible profile + username/password -> deterministic namespaced internal Firebase email",
+      "collisionPolicy": "FAIL_CLOSED_NO_OVERWRITE"
+    },
+    "credentialContinuity": {
+      "path": "app/docs/evidence/CORTE6-CREDENTIAL-CONTINUITY-READONLY-LATEST.json",
+      "authUsers": 108,
+      "roleCounts": {"admin": 3, "cliente": 2, "coordinador": 2, "externo": 1, "none": 2, "ops": 2, "shopper": 92, "super": 4},
+      "namespaceCounts": {"none": 17, "shopper": 88, "staff": 3}
+    },
+    "priorOwnershipReconciliation": "app/docs/evidence/C6-AUTH-DUPLICATE-OWNERSHIP-ANCHOR-SOURCE-SAFE-RECONCILIATION-20260810.json"
+  },
+  "resolution": [
+    {
+      "groupFp": "1acdcb3782b7cf351056",
+      "role": "super",
+      "legacyPairClass": "LEGACY_NONCANONICAL_PENDING_CANONICAL_REPLACEMENT",
+      "canonicalImportedRoleExists": true,
+      "canonicalImportedCountForRole": 1,
+      "ownerLevelSourceSafeAssociationToGroup": false,
+      "reusableCanonicalPrincipalResolved": false,
+      "reason": "A single imported canonical super principal exists, but available source-safe evidence does not associate that principal reproducibly to the owner represented by this legacy duplicate group. Role uniqueness is not owner identity proof and is insufficient for reuse.",
+      "disposition": "CREATE_CANONICAL_REPLACEMENT_REQUIRED",
+      "futureLegacyDisposition": "DISABLE_ONLY_NO_DELETE_AFTER_CANONICAL_VALIDATION"
+    },
+    {
+      "groupFp": "2c4d19f2b066835473d3",
+      "role": "admin",
+      "legacyPairClass": "LEGACY_NONCANONICAL_PENDING_CANONICAL_REPLACEMENT",
+      "canonicalImportedRoleExists": false,
+      "canonicalImportedCountForRole": 0,
+      "ownerLevelSourceSafeAssociationToGroup": false,
+      "reusableCanonicalPrincipalResolved": false,
+      "reason": "The canonical credential import added no admin staff principal. Existing admin principals remain in the pre-import namespace-none population and cannot be promoted by inference.",
+      "disposition": "CREATE_CANONICAL_REPLACEMENT_REQUIRED",
+      "futureLegacyDisposition": "DISABLE_ONLY_NO_DELETE_AFTER_CANONICAL_VALIDATION"
+    },
+    {
+      "groupFp": "54225792eeb65f6739c0",
+      "role": "ops",
+      "legacyPairClass": "LEGACY_NONCANONICAL_PENDING_CANONICAL_REPLACEMENT",
+      "canonicalImportedRoleExists": false,
+      "canonicalImportedCountForRole": 0,
+      "ownerLevelSourceSafeAssociationToGroup": false,
+      "reusableCanonicalPrincipalResolved": false,
+      "reason": "The canonical credential import added no ops staff principal. Existing ops principals remain in the pre-import namespace-none population and cannot be promoted by inference.",
+      "disposition": "CREATE_CANONICAL_REPLACEMENT_REQUIRED",
+      "futureLegacyDisposition": "DISABLE_ONLY_NO_DELETE_AFTER_CANONICAL_VALIDATION"
+    },
+    {
+      "groupFp": "ae2f920fe6d9ce1fdd82",
+      "role": "cliente",
+      "legacyPairClass": "HISTORICAL_NONCANONICAL_PENDING_RETIRE",
+      "validatedExternalCanonicalPrincipalFp": "6a74d2b7c77f7b3f026b9ad0bef86183bc4e028b67f429ee36ab772587e5953c",
+      "validatedExternalCanonicalNamespace": "staff",
+      "validatedExternalCanonicalScope": "tya/cinepolis",
+      "validatedExternalCanonicalSignIn": true,
+      "validatedExternalCanonicalReadback": true,
+      "validatedExternalCanonicalIdempotency": true,
+      "validatedExternalCanonicalMembership": true,
+      "disposition": "KEEP_VALIDATED_EXTERNAL_CANONICAL_RETIRE_BOTH_HISTORICAL",
+      "futureLegacyDisposition": "DISABLE_ONLY_NO_DELETE"
+    }
+  ],
+  "repairContractPrepared": {
+    "executeNow": false,
+    "abc": "materialize or otherwise resolve one clean canonical staff principal per owner, validate login/role/tenant/project scope, then retire both legacy principals",
+    "d": "preserve validated external canonical Client and retire both historical principals",
+    "retirementMode": "DISABLE_ONLY_NO_DELETE",
+    "requiredFutureGates": ["SNAPSHOT", "IDEMPOTENCY", "READBACK", "ROLLBACK_DRY_RUN"]
+  },
+  "safety": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "iamWrites": 0,
+    "firestoreReads": 0,
+    "firestoreWrites": 0,
+    "hrReads": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "prewrite": false,
+    "activation": false,
+    "newSmoke": false,
+    "make": 0,
+    "gemini": 0,
+    "payments": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false,
+    "rawPiiExported": false,
+    "credentialsExported": false
+  },
+  "next": "C6_AUTH_DUPLICATE_CANONICAL_REPLACEMENT_REPAIR_PLAN_SOURCE_ONLY_NO_EXECUTE"
+}
