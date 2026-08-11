@@ -5,7 +5,7 @@
 
 ## Fuente vigente
 
-Consultar índice, checkpoint, source lock `SOURCE-LOCK-C6-STAFF-REPAIR-BOOTSTRAP-STOP-PRIVATE-IDENTITY-B-20260811.md` y evidencia `C6-STAFF-REPAIR-BOOTSTRAP-EXACT-WRITE-LATEST.json`.
+Consultar índice, checkpoint, `SOURCE-LOCK-C6-STAFF-REPAIR-BOOTSTRAP-STOP-PRIVATE-IDENTITY-B-20260811.md` y evidencia `C6-STAFF-REPAIR-BOOTSTRAP-EXACT-WRITE-LATEST.json`.
 
 ## No reabrir
 
@@ -13,7 +13,7 @@ Frontend acumulativo, Auth 228, Activation/readback/rollback, SKIP13, MultiAuth,
 
 ## Estado backend
 
-El exact write autorizado se detuvo **antes del primer provider write**:
+El exact write autorizado se detuvo antes del primer provider write:
 
 ```text
 blocker=PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B
@@ -32,13 +32,7 @@ No existe reparación parcial: A, R4 y los ocho históricos permanecen sin mutac
 
 El wiring localizado a backend vivo sigue pendiente hasta que el bootstrap staff termine con readback PASS. No hardcodear B, no inventar login, no derivarlo por rol/nombre y no usar `cinepolis` como scope hardcodeado en UI.
 
-Cuando el backend quede reparado, el contrato UI sigue siendo:
-
-- alta con `TyA completo` o `Proyectos específicos`;
-- scope editable y multiselect desde inventario vivo;
-- no exponer claims/fingerprints/provider IDs;
-- alta/edición/disable/reactivate con readback;
-- sin hard delete por defecto.
+Contrato futuro preservado: alta con `TyA completo` o `Proyectos específicos`, scope editable desde inventario vivo, no exponer claims/fingerprints/provider IDs, alta/edición/disable/reactivate con readback y sin hard delete por defecto.
 
 ## HR
 
