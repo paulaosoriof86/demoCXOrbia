@@ -1,15 +1,15 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-10  
-**Estado vivo:** `C6_AUTH_DUPLICATE_CANONICAL_TARGET_INPUT_RESOLUTION_COMPLETE__A_OWNER_ANCHOR_AND_PROJECT_ENTITLEMENT_REQUIRED__BC_OWNER_ANCHOR_PROJECT_ENTITLEMENT_CREDENTIAL_INPUT_REQUIRED__D_PRESERVED_REPAIR_READY__ZERO_PROVIDER_READS__ZERO_WRITES__NO_PRODUCTION`
+**Estado vivo:** `C6_AUTH_CANONICAL_STAFF_MINIMUM_OWNER_INPUT_CONTRACT_READY__BUSINESS_OWNER_AND_SCOPE_INPUT_REQUIRED__A_REUSE_CONDITIONAL__BC_NEW_EPHEMERAL_FIXED__D_PRESERVED__DOCS_ONLY__NO_PRODUCTION`
 
 ## 1. Fuente de verdad
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-3. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-REQUIRED-20260810.md`;
-4. `app/docs/evidence/C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-SOURCE-SAFE-20260810.json`;
-5. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-20260810.md`;
+3. `app/docs/SOURCE-LOCK-C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-READY-20260810.md`;
+4. `app/docs/evidence/C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-SOURCE-SAFE-20260810.json`;
+5. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-20260810.md`;
 6. PR #7 y HEAD vivo.
 
 ## 2. Cerrado y protegido
@@ -20,34 +20,49 @@
 - SKIP13, multi-Auth, `ac93...`, HashConfig y lifecycle de credencial;
 - ownership por fingerprints no se traslada a Paula;
 - repair gates/write budget ya definidos;
-- D `ae2f...` preservado `REPAIR_PLAN_READY`.
+- D `ae2f...` preservado `REPAIR_PLAN_READY`;
+- investigación técnica A–C source-safe agotada;
+- contrato mínimo de input empresarial A–C creado.
 
 ## 3. Pendiente vivo
 
+Solo seis respuestas empresariales:
+
 ```text
-1acd... = OWNER_ANCHOR_REQUIRED + PROJECT_ENTITLEMENT_REQUIRED
-2c4d... = OWNER_ANCHOR_REQUIRED + PROJECT_ENTITLEMENT_REQUIRED + CREDENTIAL_INPUT_REQUIRED
-542...  = OWNER_ANCHOR_REQUIRED + PROJECT_ENTITLEMENT_REQUIRED + CREDENTIAL_INPUT_REQUIRED
+A / Superadministración = titular + TyA completo o proyectos específicos
+B / Administración      = titular + TyA completo o proyectos específicos
+C / Operaciones          = titular + TyA completo o proyectos específicos
 ```
 
-A tiene un posible credential path canónico `super`, pero solo puede reutilizarse si una owner anchor independiente prueba asociación exacta. B/C necesitan credencial nueva efímera. Falta entitlement exacto A–C y por eso no existe expected-claims digest todavía.
+No se requiere que Paula identifique cuentas técnicas. Backend convierte esas respuestas a `ownerIdentityAnchor`, `ownerRoleBindingDigest`, entitlement exacto, target claims y `expectedClaimsDigest` sin persistir PII cruda.
 
-## 4. No hacer
+## 4. Credenciales
 
-- no pedir a Paula escoger fingerprints;
+- A: reutilizar `super` canónico existente solo si un owner binding independiente prueba asociación exacta; si no, credencial nueva efímera.
+- B/C: credencial nueva efímera obligatoria durante futura ejecución separadamente autorizada.
+- Nunca persistir secretos en repo/artifact/log.
+
+## 5. No hacer
+
+- no pedir fingerprints/UIDs/emails técnicos a Paula;
 - no promover principals legacy por rol;
-- no inferir owner por orden/antigüedad;
-- no copiar scope legacy ni asumir `cinepolis`;
-- no provider read sin autorización;
-- no PREWRITE/Activation/repair;
+- no inferir owner por unicidad, orden o antigüedad;
+- no copiar scope legacy ni asumir Cinépolis;
+- no wildcard silencioso para TyA completo;
+- no provider read;
+- no PREWRITE/Activation/smoke/repair;
 - no frontend workaround ni relajación RBAC;
 - no deletes; retiro futuro `DISABLE_ONLY_NO_DELETE`;
 - no deploy, merge ni producción.
 
-## 5. Ruta corta
+## 6. Ruta corta
 
-Crear un contrato mínimo source-safe para capturar owner anchor + entitlement exacto A–C y estrategia de credencial sin PII en repo. Después cerrar targets/digests y, bajo autorización separada, ejecutar repair focal.
+Después de las seis respuestas, ejecutar únicamente:
 
-## 6. Seguridad
+`C6 AUTH CANONICAL STAFF OWNER INPUT CAPTURE AND TARGET DIGEST — SOURCE-SAFE / NO PROVIDER / NO REPAIR`.
 
-Provider reads 0 y todos los data/provider writes 0; repair=false, deploy0, merge=false, production=false.
+Cerrar A–C source-safe y luego pedir autorización separada para repair focal reversible.
+
+## 7. Seguridad
+
+Provider reads 0; Auth/IAM/Firestore/HR/Rules/Storage writes 0; repair=false; deploy0; merge=false; production=false.
