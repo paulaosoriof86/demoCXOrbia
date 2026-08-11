@@ -18,15 +18,40 @@ Este bloque no cambia cursos, rutas, certificaciones ni UI de Academia antes de 
 
 ## Estado técnico reusable
 
-El contrato `backend/contracts/c6-live-user-admin-v1.json` v1.1 y el handler `backend/runtime/hr-live-service/user-admin.mjs` formalizan scope obligatorio/editable, inventario vivo, RBAC, audit/readback/rollback y no hard delete por defecto.
+El contrato live user-admin y su handler formalizan scope obligatorio/editable, inventario vivo, RBAC, audit/readback/rollback y no hard delete por defecto. El static source gate está PASS terminal.
 
-El static source gate se ejecutó terminalmente sobre la rama viva y quedó PASS mediante el runner read-only existente. La lección metodológica reusable es diferenciar **source preparado** de **gate terminal demostrado**; no debe declararse listo un componente solo porque el script exista.
+## Provider snapshot y adjudicación de identidad
 
-## Prewrite y migración de identidad
+El provider snapshot focal se ejecutó una sola vez y quedó PASS con población Auth exacta 228. La adjudicación reusable demuestra que una cuenta existente solo puede adoptarse como canonical cuando existe binding independiente de identidad + claims exactos; la unicidad de rol nunca es prueba suficiente.
 
-El nuevo `backend/contracts/c6-staff-repair-bootstrap-prewrite-v1.json` separa aliases de negocio de grupos históricos para impedir confusiones semánticas. Antes de cualquier write exige snapshot source-safe, create-before-retire, readback e inverse action calculable.
+En este caso técnico source-safe:
 
-El presupuesto de writes se congela únicamente después de observar el estado real; no se recicla un cap histórico cuando cambia el alcance del bloque.
+```text
+A=REUSE_EXISTING_CANONICAL por owner-binding independiente
+B/C/D=CREATE_NEW_EPHEMERAL sin colisión
+R4 Cliente canónico=preservado exacto
+```
+
+No se documentan identidades, correos, UIDs, passwords ni claims crudos en materiales académicos.
+
+## Presupuesto y reversibilidad
+
+El presupuesto final se congela después de observar el estado real, no antes:
+
+```text
+Auth writes=14
+Firestore writes=16
+Auth/Firestore deletes=0
+rollback dry-run=PASS
+```
+
+La coincidencia numérica con un presupuesto histórico no significa que este se haya reutilizado; el valor actual fue recalculado por composición efectiva.
+
+Principio reusable: **snapshot real -> adjudicación -> presupuesto exacto -> rollback calculable -> autorización de write**.
+
+## Incidente de harness
+
+Un request inicial abortó antes del provider por un error de delimitación shell. El error no se confundió con un fallo de datos ni consumió la observación provider. Se corrigió la causa raíz y luego se ejecutó una única observación efectiva. Lección metodológica: separar telemetría/control-plane de evidencia real de acceso a datos.
 
 ## Manuales futuros
 
@@ -45,4 +70,4 @@ M6 permanece cerrado. La HR viva y la observabilidad de una ejecución siguen si
 
 **Impacto Academia:** conceptual/documental. No bloquea producción ni exige una nueva lección antes del cutover.
 
-**Avance de cierre certificado:** 83%.
+**Avance de cierre certificado:** 84%.
