@@ -13,50 +13,9 @@ Auth 228, Activation/readback/rollback, SKIP13, MultiAuth, HashConfig, DirectRun
 
 ## Live user-admin y static gate
 
-Se preservan:
-
-```text
-backend/contracts/c6-live-user-admin-v1.json
-backend/runtime/hr-live-service/user-admin.mjs
-backend/runtime/hr-live-service/server.mjs
-backend/runtime/hr-live-service/package.json
-backend/runtime/hr-live-service/Dockerfile
-firebase.json
-```
-
-Static live-user-admin source gate continúa PASS terminal.
-
-## Prewrite/provider source creado
-
-```text
-backend/contracts/c6-staff-repair-bootstrap-prewrite-v1.json
-backend/config/c6-staff-provider-collision-targets-v1.json
-backend/contracts/c6-staff-provider-snapshot-runner-v1.json
-tools/qa/cxorbia-c6-staff-repair-bootstrap-provider-snapshot-readonly.mjs
-tools/qa/cxorbia-c6-staff-provider-snapshot-request-gate.mjs
-tools/qa/cxorbia-c6-staff-provider-snapshot-runner-report.mjs
-```
-
-Se reutilizó `.github/workflows/cxorbia-readonly-post-gates-runner.yml`; no se creó workflow/rama/PR nuevo.
-
-## Incidente de harness cerrado
-
-Primer request `...-01`: source preflight + request gate PASS, pero abort pre-provider por `NESTED_HEREDOC_DELIMITER_INDENTATION`.
-
-```text
-runId=31518115944
-jobId=93868277963
-providerScriptStarted=false
-authListObservations=0
-firestoreProviderReads=0
-repositoryDelta=false
-```
-
-Request congelado como `HARNESS_ABORTED_PRE_PROVIDER_READS_0`. El root fix eliminó nested-heredoc y fue validado con request disabled en run `31518696584`, job `93870136421`, success. Source lock: `app/docs/SOURCE-LOCK-C6-STAFF-PROVIDER-SNAPSHOT-HARNESS-REPAIRED-20260811.md`.
+Se preservan contrato, handler, routing/packaging y static live-user-admin source gate PASS terminal. No se modificó UI desde backend.
 
 ## Provider snapshot terminal — PASS
-
-Request corregido consumido una sola vez:
 
 ```text
 requestId=c6-staff-repair-bootstrap-provider-snapshot-readonly-20260811-02-harness-rootfix
@@ -73,25 +32,22 @@ providerWrites=0
 blockers=[]
 ```
 
-Evidencia persistida: `app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-PROVIDER-SNAPSHOT-LATEST.json`.
-
+Evidencia: `app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-PROVIDER-SNAPSHOT-LATEST.json`.
 Source lock: `app/docs/SOURCE-LOCK-C6-STAFF-PROVIDER-SNAPSHOT-PASS-20260811.md`.
+
+El request quedó disabled/consumed. No repetir provider snapshot.
 
 ## Adjudicación
 
 ```text
-A super = REUSE_EXISTING_CANONICAL
-  ownerBindingVerified=true
-  roleUniquenessUsed=false
-  claimsExact=true
-  userDocAction=CREATE_CANONICAL_USER_DOC
-B admin = CREATE_NEW_EPHEMERAL, collision=0
-C ops   = CREATE_NEW_EPHEMERAL, collision=0
-D ops   = CREATE_NEW_EPHEMERAL, collision=0
-R4 Cliente canónico = preserved exact, mutation forbidden
+A super = REUSE_EXISTING_CANONICAL; owner-bound; roleUniquenessUsed=false; claims exact
+B admin = CREATE_NEW_EPHEMERAL; collision=0
+C ops   = CREATE_NEW_EPHEMERAL; collision=0
+D ops   = CREATE_NEW_EPHEMERAL; collision=0
+R4 Cliente canónico = preserved exact; mutation forbidden
 ```
 
-Los ocho históricos focales siguen enabled. Futuro retiro: `DISABLE_ONLY_NO_DELETE` y solo después del canonical readback.
+Los ocho históricos focales siguen enabled. Retiro futuro: `DISABLE_ONLY_NO_DELETE` después de canonical readback.
 
 ## Budget exacto congelado
 
@@ -105,31 +61,19 @@ userDocs=4
 auditLogs=12
 Firestore writes TOTAL=16
 Firestore deletes=0
-```
-
-El Auth=14 actual fue recalculado desde el snapshot real; solo coincide numéricamente con el cap histórico superseded porque A es reusable y B/C/D requieren create+claims.
-
-## Rollback dry-run
-
-```text
-PASS
+rollbackDryRun=PASS
 uniqueInverseActions=12
-authReenableWrites=8
-authDisableCreatedWrites=3
-userDocDeactivateWrites=4
-auditRollbackWrites=12
-authDeletes=0
-firestoreDeletes=0
-validatedClientCanonicalMutation=NONE
 ```
 
-## UI / Claude
+El Auth=14 actual fue recalculado desde el snapshot real; solo coincide numéricamente con el cap histórico superseded porque A se reutiliza y B/C/D se crean.
 
-No se modificó `app/modules/configuracion.js` desde backend. El wiring localizado sigue pendiente después del repair/bootstrap y runtime autorizado.
+## Incidente de harness cerrado
 
-## HR
+El request `...-01` abortó antes de provider por `NESTED_HEREDOC_DELIMITER_INDENTATION`: provider reads efectivos 0. Se corrigió el mismo workflow con normalizador shell-safe y luego se consumió la única observación efectiva en el request `...-02`. No hubo segundo provider read.
 
-M6 continúa COMPLETE: 2026-08 = 34 GT + 10 HN = 44.
+## HR / Claude / Academia
+
+M6 sigue COMPLETE (34 GT + 10 HN = 44). No se tocó `app/modules/configuracion.js`; wiring Usuarios & Permisos sigue localizado para después del repair/bootstrap. Impacto Academia actualizado como conceptual/no bloqueante.
 
 ## Métrica estable
 
@@ -152,8 +96,8 @@ M10 0/1
 
 `C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE AUTHORIZATION`.
 
-No requiere repetir provider snapshot. Cualquier ejecución debe respetar el budget congelado, create-before-retire, readback y rollback, sin deletes. Auth/Firestore writes, deploy, merge y producción siguen sin autorización.
+No requiere repetir provider snapshot. Cualquier ejecución debe respetar budget Auth=14 / Firestore=16, create-before-retire, readback, rollback y cero deletes. Auth/Firestore writes, deploy, merge y producción siguen sin autorización.
 
 ## Seguridad
 
-Provider snapshot consumió 1 Auth list y 2 Firestore document reads. Provider/Auth/Firestore/Rules/Storage/HR writes=0; deletes=0; deploy=0; merge=false; production=false.
+Provider snapshot consumió 1 Auth list y 2 Firestore reads. Provider/Auth/Firestore/Rules/Storage/HR writes=0; deletes=0; deploy=0; merge=false; production=false.
