@@ -3,8 +3,6 @@
 **Actualización:** 2026-08-11  
 **Estado:** `STOP_RETRY_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE__PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B__AUTH_WRITES_0__FIRESTORE_WRITES_0__NO_PRODUCTION`
 
-Baseline preservada: Auth 228; Activation/readback/rollback PASS; SKIP13/MultiAuth/HashConfig/direct runner cerrados; M4 COMPLETE; HR M6 COMPLETE; live-user-admin static PASS; provider snapshot PASS.
-
 Exact write request consumido: run `31534505451`, blocker `PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B`, credential privacy PASS, identity resolution FAIL, Auth writes 0, Firestore writes 0, deletes 0. M5 no suma punto.
 
 | Milestone | Peso | Estado |
