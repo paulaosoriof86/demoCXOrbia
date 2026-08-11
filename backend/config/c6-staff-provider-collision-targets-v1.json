@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "cxorbia.c6.staff-provider-collision-targets.v1",
+  "generatedAt": "2026-08-11",
+  "tenantId": "tya",
+  "authNamespace": "staff",
+  "purpose": "Persist only source-safe technical digests derived transiently from previously supplied/approved visible staff login references so the authorized provider snapshot can test deterministic Firebase identity collisions without storing raw names, logins, emails, UIDs or credentials.",
+  "derivationContract": {
+    "normalization": "trim+lowercase",
+    "technicalLoginDigest": "sha256(tenantId + NUL + authNamespace + NUL + normalizedVisibleLogin)",
+    "providerInternalEmail": "technicalLoginDigest[0:48] + @auth.cxorbia.invalid",
+    "providerEmailSha256": "sha256(providerInternalEmail)",
+    "ownerTechnicalBindingDigest": "sha256(cxorbia-owner-login-bind-v1 + NUL + tenantId + NUL + ownerIdentityAnchor + NUL + technicalLoginDigest)",
+    "rawVisibleLoginPersisted": false,
+    "rawContactEmailPersisted": false,
+    "rawNamePersisted": false,
+    "rawUidPersisted": false
+  },
+  "targets": [
+    {
+      "targetAlias": "A",
+      "role": "super",
+      "ownerIdentityAnchor": "10f6d1891b5b75c444b925cbb4ce0a009c67ce8d778457a23316d0a6a90c852a",
+      "technicalLoginDigest": "bf5f1f5b2c873b016622d65d9f8d66287b84c2b62dc5547b6382cd3d1b97c1f3",
+      "providerEmailSha256": "99fbbea64ec12ab0f99125e622a917b33cc28701938ff874104a03824e06a626",
+      "ownerTechnicalBindingDigest": "ac682179bc0cb3a094e5fafffedd19e7fd1fb7df6dd004a03267c2dbfedb9ed3",
+      "expectedClaimsDigest": "992352c0b92516ee46fbc61456a75ef24ee8336a17c6cad965663e9d89110760",
+      "reusePolicy": "REUSE_ONLY_IF_PROVIDER_EMAIL_DIGEST_MATCHES_THIS_OWNER_BOUND_TECHNICAL_DIGEST_AND_CLAIMS_ARE_EXACT"
+    },
+    {
+      "targetAlias": "B",
+      "role": "admin",
+      "ownerIdentityAnchor": "10f6d1891b5b75c444b925cbb4ce0a009c67ce8d778457a23316d0a6a90c852a",
+      "technicalLoginDigest": "c0ae9ca29c85f908d1664f68039b96b430bb9ea18716b1e0e79a844b13967891",
+      "providerEmailSha256": "f0656c58212350c47102e8f9359489aa17894ccdf086cddc46a9f1d0739ebada",
+      "ownerTechnicalBindingDigest": "3910213138e943fe36f1367df5ea07fa48abf5860a0e48c2d8abc8a4dfa75b7a",
+      "expectedClaimsDigest": "a9ecbfd0c79fc86e8319d76384289d25004308968e731e0e4dbe9aa65be83fcc",
+      "reusePolicy": "NEW_EPHEMERAL_TARGET_REQUIRES_ZERO_PROVIDER_COLLISION"
+    },
+    {
+      "targetAlias": "C",
+      "role": "ops",
+      "ownerIdentityAnchor": "a58fcc6fec147ad2466a7ead6bf80bd0888a9a34174dc5aa7519d73f7f53342c",
+      "technicalLoginDigest": "f940d71b49404dceab826d311419030f9e42e84d621295585ed2ef6558a35e90",
+      "providerEmailSha256": "2ee0ba8e55ef8c24b0b07fe09ad01d274fbf44f9d24f0c56688d2c01bbd7127c",
+      "ownerTechnicalBindingDigest": "2ebdd0f42af722a483246c711cc76249f5af51be830e533af32e3840e8b6079a",
+      "expectedClaimsDigest": "ced1e555cb2729b62a30d8beb9cc049e6522c734557cfbd79800ba8af31227b2",
+      "reusePolicy": "NEW_EPHEMERAL_TARGET_REQUIRES_ZERO_PROVIDER_COLLISION"
+    },
+    {
+      "targetAlias": "D",
+      "role": "ops",
+      "ownerIdentityAnchor": "25c93b828009c939b81b9757633343d8c6dd92e06af43a78dd60101b5c564973",
+      "technicalLoginDigest": "a1ad7c594ada3c0c0dcadaa35033ae381ca3d99ea25157df9db079bd13e3d6a3",
+      "providerEmailSha256": "d6d25d87567b8cf66f82b61903d8e7e2807cc089b55671165c73345a63a196c8",
+      "ownerTechnicalBindingDigest": "bd1f57122d0b56cc02c6dc66e4dc60a564326ec462e61f44649bf22aa0a5aa59",
+      "expectedClaimsDigest": "ced1e555cb2729b62a30d8beb9cc049e6522c734557cfbd79800ba8af31227b2",
+      "reusePolicy": "NEW_EPHEMERAL_TARGET_REQUIRES_ZERO_PROVIDER_COLLISION"
+    }
+  ],
+  "sourceSafe": {
+    "containsRawPii": false,
+    "containsSecrets": false,
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false
+  }
+}
