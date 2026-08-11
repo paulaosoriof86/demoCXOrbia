@@ -1,11 +1,11 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-11  
-**Estado vivo:** `PASS_C6_STAFF_REPAIR_BOOTSTRAP_PROVIDER_SNAPSHOT__AUTH_228__A_REUSE_BOUND__BCD_CREATE__R4_PRESERVED__WRITE_BUDGET_FROZEN__ROLLBACK_DRYRUN_PASS__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `STOP_RETRY_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE__PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B__AUTH_WRITES_0__FIRESTORE_WRITES_0__NO_DELETE__NO_DEPLOY__NO_PRODUCTION`
 
 ## Fuente vigente
 
-Consultar índice, checkpoint, `SOURCE-LOCK-C6-STAFF-PROVIDER-SNAPSHOT-PASS-20260811.md`, evidencia provider snapshot y contratos live-user-admin/prewrite.
+Consultar índice, checkpoint, source lock `SOURCE-LOCK-C6-STAFF-REPAIR-BOOTSTRAP-STOP-PRIVATE-IDENTITY-B-20260811.md` y evidencia `C6-STAFF-REPAIR-BOOTSTRAP-EXACT-WRITE-LATEST.json`.
 
 ## No reabrir
 
@@ -13,31 +13,36 @@ Frontend acumulativo, Auth 228, Activation/readback/rollback, SKIP13, MultiAuth,
 
 ## Estado backend
 
+El exact write autorizado se detuvo **antes del primer provider write**:
+
 ```text
-A=REUSE_EXISTING_CANONICAL owner-bound
-B/C/D=CREATE_NEW_EPHEMERAL
-R4 canonical Cliente=preserved exact
-AuthWriteBudget=14
-FirestoreWriteBudget=16
-RollbackDryRun=PASS
+blocker=PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B
+credentialPrivacyPass=true
+identityResolutionPass=false
+AuthWrites=0
+FirestoreWrites=0
+Deletes=0
 ```
 
-No hubo provider writes. Siguiente gate: autorización exacta repair/bootstrap.
+No existe reparación parcial: A, R4 y los ocho históricos permanecen sin mutación.
 
-## Tarea Claude/prototipo localizada
+## Tarea Claude/prototipo
 
-**No crear pantalla nueva y no rediseñar.** Trabajar únicamente sobre `app/modules/configuracion.js#usuarios` después del repair/bootstrap/readback PASS:
+**No crear pantalla nueva, no rediseñar y no aplicar fallback local.** `app/modules/configuracion.js#usuarios` permanece sin tocar desde backend.
 
-- sustituir localStorage como autoridad por adapter vivo;
-- alta exige `TyA completo` o `Proyectos específicos`;
-- scope editable y multiselect vivo;
+El wiring localizado a backend vivo sigue pendiente hasta que el bootstrap staff termine con readback PASS. No hardcodear B, no inventar login, no derivarlo por rol/nombre y no usar `cinepolis` como scope hardcodeado en UI.
+
+Cuando el backend quede reparado, el contrato UI sigue siendo:
+
+- alta con `TyA completo` o `Proyectos específicos`;
+- scope editable y multiselect desde inventario vivo;
 - no exponer claims/fingerprints/provider IDs;
-- mantener alta, edición, disable/reactivate y readback;
-- no hardcodear `cinepolis` ni otro projectId.
+- alta/edición/disable/reactivate con readback;
+- sin hard delete por defecto.
 
 ## HR
 
-M6 COMPLETE; M7 validará consumo runtime final. No remapear ni pedir enlace.
+M6 COMPLETE. No remapear ni pedir enlace.
 
 ## Métrica
 
@@ -45,6 +50,6 @@ M6 COMPLETE; M7 validará consumo runtime final. No remapear ni pedir enlace.
 
 ## Siguiente bloque backend
 
-`C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE AUTHORIZATION`.
+`C6 STAFF TARGET PRIVATE IDENTITY RECOVERY SOURCE-ONLY`.
 
-Claude no se adelanta al runtime ni crea fallback paralelo.
+Claude no debe adelantarse a ese cierre ni crear una identidad sustituta.
