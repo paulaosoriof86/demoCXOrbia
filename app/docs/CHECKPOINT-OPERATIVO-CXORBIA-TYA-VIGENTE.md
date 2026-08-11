@@ -29,8 +29,6 @@ FrozenAuthBudget=14
 FrozenFirestoreBudget=16
 ```
 
-No reconstruir Auth, no reabrir HR ni repetir provider snapshot.
-
 ## 3. Exact write consumido — STOP pre-write
 
 ```text
@@ -71,18 +69,9 @@ A, R4 canónico y los ocho históricos no fueron mutados.
 
 Los target logins se preservaron como digests source-safe; el exact write necesita el `visibleLogin` real. Las fuentes privadas permitidas no produjeron una coincidencia exacta para B. SHA-256 no es reversible. Inferir o sustituir el valor rompería owner-binding e identidad.
 
-## 6. M5 y progreso
+## 6. Progreso
 
-```text
-M5a contract source-only                    = COMPLETE 1/8
-M5b executable backend source materialized = COMPLETE 1/8
-M5c static terminal gate                    = COMPLETE 1/8
-M5d provider snapshot + exact prewrite      = COMPLETE 1/8
-M5 exact write                              = STOP / NOT CREDITED
-M5 current                                  = 4/8 COMPLETE
-```
-
-**Avance certificado: 84%. Restante: 16%.**
+**Avance certificado: 84%. Restante: 16%. M5=4/8.**
 
 ## 7. Siguiente bloque exacto
 
