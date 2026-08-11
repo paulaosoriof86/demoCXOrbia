@@ -42,11 +42,13 @@
   },
   "prewrite": {
     "contract": "backend/contracts/c6-staff-d-rebase-prewrite-v1.json",
-    "state": "PASS_SOURCE_ONLY_D_REBASE_PREWRITE_READY",
+    "state": "PASS_SOURCE_ONLY_D_REBASE__PRIVATE_EXECUTION_HANDOFF_PENDING",
     "providerSnapshotRepeatRequired": false,
     "frozenAuthWriteBudget": 14,
     "frozenFirestoreWriteBudget": 16,
-    "deletes": 0
+    "deletes": 0,
+    "exactWriteReadyNow": false,
+    "reason": "A/B/C exact visible-login values remain transient by design and the current GitHub write lane has no authorized private injection channel. D is deterministically regenerable and no longer contributes to that dependency."
   },
   "safety": {
     "providerReads": 0,
@@ -76,5 +78,5 @@
     "m5": "4/8",
     "newWeightedCredit": 0
   },
-  "nextGate": "C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2_AUTHORIZATION"
+  "nextGate": "C6_STAFF_PRIVATE_EXECUTION_HANDOFF_SOURCE_ONLY"
 }
