@@ -23,7 +23,9 @@
 15. `CAMBIOS-BACKEND.md`;
 16. `RESUMEN-PARA-CLAUDE.md`;
 17. `PENDIENTES-PROTOTIPO.md`;
-18. PR #7 y HEAD de `docs-tya-v6-v71-audit`.
+18. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+19. `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md`;
+20. PR #7 y HEAD de `docs-tya-v6-v71-audit`.
 
 Toda fuente previa que presente el exact write como pendiente de autorización queda superseded por el STOP terminal del request consumido.
 
@@ -58,7 +60,7 @@ Production=false
 
 ## 3. Causa raíz y estado seguro
 
-El request autorizado pasó los gates source-only, cargó credenciales privadas y validó el canal criptográfico, pero se detuvo antes del primer provider write porque las fuentes privadas disponibles no resolvieron exactamente el `visibleLogin` B contra el digest congelado. SHA-256 no es reversible y no se permite inferir ni sustituir identidad.
+El request autorizado pasó gates source-only, cargó credenciales privadas y validó el canal criptográfico, pero se detuvo antes del primer provider write porque las fuentes privadas disponibles no resolvieron exactamente el `visibleLogin` B contra el digest congelado. SHA-256 no es reversible y no se permite inferir ni sustituir identidad.
 
 ```text
 AuthCreates=0
@@ -74,7 +76,7 @@ Merge=false
 Production=false
 ```
 
-R4 Cliente canónico, A, los ocho históricos y el baseline permanecen sin mutación por este request.
+R4 Cliente canónico, A, los ocho históricos y el baseline permanecen sin mutación.
 
 ## 4. Progreso estable
 
