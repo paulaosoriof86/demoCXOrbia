@@ -15,9 +15,7 @@
 
 ```text
 AuthUsersFrozenBaseline=228
-Activation=PASS
-Readback=PASS
-RollbackDryRun=PASS
+Activation/Readback/Rollback=PASS
 SKIP13=closed 13/13
 MultiAuth=closed
 HashConfig=PASS
@@ -71,20 +69,18 @@ A, R4 canónico y los ocho históricos no fueron mutados.
 
 ## 5. Causa raíz
 
-Los target logins se preservaron como digests source-safe; el exact write necesita el `visibleLogin` real para el tenant user doc. Las fuentes privadas permitidas que el executor pudo consultar no produjeron una coincidencia exacta para B. El digest técnico SHA-256 no puede revertirse. Inferir o sustituir el login habría roto el contrato de identidad, por lo que el STOP antes del primer write fue correcto.
+Los target logins se preservaron como digests source-safe; el exact write necesita el `visibleLogin` real para materializar el tenant user doc. Las fuentes privadas permitidas que el executor pudo consultar no produjeron una coincidencia exacta para B. SHA-256 no es reversible. Inferir o sustituir el valor rompería owner-binding e identidad.
 
-## 6. M5
+## 6. M5 y progreso
 
 ```text
 M5a contract source-only                    = COMPLETE 1/8
 M5b executable backend source materialized = COMPLETE 1/8
 M5c static terminal gate                    = COMPLETE 1/8
 M5d provider snapshot + exact prewrite      = COMPLETE 1/8
-M5 exact write                              = NOT CREDITED
+M5 exact write                              = STOP / NOT CREDITED
 M5 current                                  = 4/8 COMPLETE
 ```
-
-## 7. Progreso
 
 ```text
 M1 35 COMPLETE
@@ -101,12 +97,12 @@ M10 0/1
 
 **Avance certificado: 84%. Restante: 16%.**
 
-## 8. Siguiente bloque exacto
+## 7. Siguiente bloque exacto
 
 `C6 STAFF TARGET PRIVATE IDENTITY RECOVERY SOURCE-ONLY`.
 
-Debe intentar recuperar/validar A-D desde fuentes privadas existentes, sin provider writes y sin emitir PII. No pedir nuevamente owners/scopes/HR ni reusar el request consumido. Solo con resolución exacta podrá prepararse una nueva autorización focal de write.
+Debe recuperar/validar A-D desde fuentes privadas existentes, sin provider writes y sin emitir PII. No pedir nuevamente owners/scopes/HR ni reusar el request consumido. Solo con resolución exacta podrá prepararse una nueva autorización focal de write.
 
-## 9. Estado seguro
+## 8. Estado seguro
 
 No hubo write provider alguno en el request consumido; producción y baseline permanecen intactos.
