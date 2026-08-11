@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "cxorbia.c6.staff-bootstrap-targets.v1",
+  "generatedAt": "2026-08-11",
+  "tenantId": "tya",
+  "authNamespace": "staff",
+  "entitlementDecision": "TYA_COMPLETE_FOR_ALL_FOUR",
+  "canonicalProjectInventory": {
+    "sourceEvidence": "app/docs/evidence/R17N-POST-MATERIALIZATION-READONLY-SMOKE-LATEST.json",
+    "sourceSafeCurrentProjectIds": ["cinepolis"],
+    "count": 1,
+    "wildcard": false,
+    "futureProjectSilentInheritance": false
+  },
+  "targets": [
+    {
+      "targetAlias": "A",
+      "role": "super",
+      "ownerIdentityAnchor": "10f6d1891b5b75c444b925cbb4ce0a009c67ce8d778457a23316d0a6a90c852a",
+      "ownerRoleBindingDigest": "21a268f63f7aa7f00b1204c0ead112e7ed641c560b7b58461ed851d5e4132b4f",
+      "entitlementMode": "TYA_COMPLETE",
+      "projectIds": ["cinepolis"],
+      "expectedClaimsDigest": "992352c0b92516ee46fbc61456a75ef24ee8336a17c6cad965663e9d89110760",
+      "credentialStrategy": "REUSE_EXISTING_CANONICAL_SUPER_ONLY_IF_INDEPENDENT_OWNER_BINDING_MATCHES_OTHERWISE_NEW_EPHEMERAL"
+    },
+    {
+      "targetAlias": "B",
+      "role": "admin",
+      "ownerIdentityAnchor": "10f6d1891b5b75c444b925cbb4ce0a009c67ce8d778457a23316d0a6a90c852a",
+      "ownerRoleBindingDigest": "3f7375bba0e71d97b305a38b480f0374168e55c19e3c9d605384a81bb21cd542",
+      "entitlementMode": "TYA_COMPLETE",
+      "projectIds": ["cinepolis"],
+      "expectedClaimsDigest": "a9ecbfd0c79fc86e8319d76384289d25004308968e731e0e4dbe9aa65be83fcc",
+      "credentialStrategy": "NEW_EPHEMERAL_AT_SEPARATELY_AUTHORIZED_EXECUTION"
+    },
+    {
+      "targetAlias": "C",
+      "role": "ops",
+      "ownerIdentityAnchor": "a58fcc6fec147ad2466a7ead6bf80bd0888a9a34174dc5aa7519d73f7f53342c",
+      "ownerRoleBindingDigest": "377479fcf6276d8ec144129b13fdbe883282a49ce0de625d187bfed6fc6fb831",
+      "entitlementMode": "TYA_COMPLETE",
+      "projectIds": ["cinepolis"],
+      "expectedClaimsDigest": "ced1e555cb2729b62a30d8beb9cc049e6522c734557cfbd79800ba8af31227b2",
+      "credentialStrategy": "NEW_EPHEMERAL_AT_SEPARATELY_AUTHORIZED_EXECUTION"
+    },
+    {
+      "targetAlias": "D",
+      "role": "ops",
+      "ownerIdentityAnchor": "25c93b828009c939b81b9757633343d8c6dd92e06af43a78dd60101b5c564973",
+      "ownerRoleBindingDigest": "788ca1a663fc99e14e778061cf69c2c3b5a06131637fc0894f021a00ac3439da",
+      "entitlementMode": "TYA_COMPLETE",
+      "projectIds": ["cinepolis"],
+      "expectedClaimsDigest": "ced1e555cb2729b62a30d8beb9cc049e6522c734557cfbd79800ba8af31227b2",
+      "credentialStrategy": "NEW_EPHEMERAL_AT_SEPARATELY_AUTHORIZED_EXECUTION"
+    }
+  ],
+  "canonicalClaimsOrder": ["authNamespace", "projectIds", "role", "tenantId"],
+  "sourceSafe": {
+    "rawNamesStored": false,
+    "rawEmailsStored": false,
+    "rawCredentialsStored": false,
+    "rawUidsStored": false,
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false
+  }
+}
