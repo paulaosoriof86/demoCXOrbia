@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-08-11  
 **Estado:** ACTIVO Y RECONCILIADO  
-**Estado vivo:** `C6_AUTH_CANONICAL_STAFF_OWNER_INPUT_PARTIAL_CAPTURED__PROJECT_ENTITLEMENTS_PENDING__NO_PROVIDER__NO_REPAIR__NO_PRODUCTION`
+**Estado vivo:** `C6_AUTH_CANONICAL_STAFF_OWNER_INPUT_PARTIAL_CAPTURED__PROJECT_ENTITLEMENTS_PENDING__LIVE_USER_ADMIN_BACKEND_GAP_PROVEN__NO_PROVIDER__NO_REPAIR__NO_PRODUCTION`
 
 ## 1. Orden de prevalencia
 
@@ -34,15 +34,22 @@ CurrentBlock=CANONICAL_STAFF_OWNER_INPUT_PARTIAL_CAPTURED
 OwnerReferences=received transiently
 ProjectEntitlements=pending
 AdditionalOpsUser=received transiently
+LiveUserAdminUI=exists
+LiveUserAdminBackend=false
+ProductionBlocker=LIVE_USER_ADMIN_BACKEND_GAP
 ```
 
 ## 3. Regla de datos vivos
 
 Las identidades humanas, correos, roles y scopes del staff no se hardcodean. Los accesos iniciales son bootstrap y deben quedar como datos vivos administrables bajo RBAC. Las referencias humanas recibidas se usan transitoriamente; no se persisten como constantes técnicas.
 
-## 4. Pendiente exacto
+## 4. Gap focal probado
 
-Resolver únicamente el alcance de proyecto de cuatro accesos iniciales:
+`app/modules/configuracion.js` ya contiene **Usuarios & Permisos**, pero persiste usuarios/roles/permisos en localStorage y la invitación sigue en modo vista previa. `app/core/backend-firebase.js` no contiene create/update/disable de Firebase Auth ni write de claims/scope. El cierre se absorbe dentro de M5; no abre una nueva metodología ni reauditoría general.
+
+## 5. Pendiente exacto
+
+Primero resolver únicamente el alcance de proyecto de cuatro accesos iniciales:
 
 - A Superadministración;
 - B Administración;
@@ -51,21 +58,22 @@ Resolver únicamente el alcance de proyecto de cuatro accesos iniciales:
 
 Cada uno debe clasificarse `TYA_COMPLETE` o `SPECIFIC_PROJECTS`. No asumir Cinépolis ni usar wildcard.
 
-Después: target digests source-safe -> repair focal A-D -> HR final evidence -> smoke final -> validación humana/rollback -> cutover autorizado -> post-smoke/freeze.
+Después: target digests source-safe -> live user-admin contract/backend + wiring localizado -> repair focal A-D -> HR final evidence -> smoke final -> validación humana/rollback -> cutover autorizado -> post-smoke/freeze.
 
-## 5. Progreso estable
+## 6. Progreso estable
 
 **Avance certificado: 72%. Restante: 28%.** El denominador de 100 puntos y los milestones están congelados en el checkpoint vigente. No se recalculan por conversación.
 
-## 6. Circuit breaker anti-bucle
+## 7. Circuit breaker anti-bucle
 
 - no reabrir M1-M3 sin P0 reproducible;
 - no repetir preguntas ya respondidas;
-- no nueva candidata/rama/PR;
+- no nueva candidata/rama/PR por rutina;
 - no PREWRITE/Activation general de nuevo;
 - no provider/repair antes de scope exacto;
+- no rediseñar UI para corregir el gap de persistencia;
 - solo la cadena de cierre vigente puede bloquear producción.
 
-## 7. Estado seguro
+## 8. Estado seguro
 
 Sin provider writes, Auth/Firestore/HR/Rules/Storage writes del bloque, deploy, merge ni producción.
