@@ -160,7 +160,21 @@ La futura ejecución debe respetar exactamente el budget congelado, create-befor
 
 Provider/Auth/Firestore writes siguen **NO AUTORIZADOS** hasta aprobación explícita del siguiente gate. Tampoco hay deploy, merge o producción autorizados.
 
-## 10. Clasificación
+## 10. Cierre obligatorio
+
+```text
+que_se_hizo=provider snapshot focal + adjudicación A-D + budget exacto + rollback dry-run
+avance_Phase_A=84%
+que_se_preservo=frontend acumulativo; Auth 228; M1-M4; M6/HR viva; canónico R4; PR7 sin merge
+Claude=sin cambios UI; wiring Usuarios & Permisos localizado y pendiente
+Academia=impacto conceptual documentado; no bloqueante
+pendiente_real=autorización exacta de repair/bootstrap y ejecución focal
+siguiente_bloque=C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE AUTHORIZATION
+estado_seguro=provider/Auth/Firestore writes 0; deletes 0; deploy 0; merge false; production false
+bloqueo_comprobado=writes bloqueados únicamente por autorización explícita del siguiente gate
+```
+
+## 11. Clasificación
 
 - **Reusable CXOrbia:** owner-bound canonical reuse, collision gate, exact budget after snapshot, disable-only retirement, reversible rollback.
 - **Exclusivo TyA:** Auth 228, focales R1/R2/R3/D/R4 y budget exacto resultante.
