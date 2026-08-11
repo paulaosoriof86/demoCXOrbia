@@ -1,14 +1,14 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-11  
-**Estado:** `PASS_C6_M4_STAFF_TYA_COMPLETE_TARGET_DIGESTS__LIVE_USER_ADMIN_EXECUTABLE_SOURCE_PREPARED__STATIC_GATE_EXECUTION_PENDING__NO_PROVIDER__NO_RUNTIME_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `PASS_C6_LIVE_USER_ADMIN_STATIC_SOURCE_GATE_TERMINAL__STAFF_REPAIR_BOOTSTRAP_PREWRITE_CONTRACT_READY__PROVIDER_SNAPSHOT_PENDING__NO_PROVIDER_READS__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Control
 
 - repo: `paulaosoriof86/demoCXOrbia`;
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
-- source lock vigente: `app/docs/SOURCE-LOCK-C6-STAFF-TYA-COMPLETE-AND-LIVE-USER-ADMIN-SOURCE-20260811.md`;
+- source lock vigente: `app/docs/SOURCE-LOCK-C6-LIVE-USER-ADMIN-STATIC-PASS-PREWRITE-READY-20260811.md`;
 - producción: intacta.
 
 ## 2. Baseline protegido
@@ -29,27 +29,9 @@ M6=COMPLETE
 
 No reconstruir Auth, no reabrir HR y no repetir PREWRITE/Activation históricos.
 
-## 3. M4 — staff inicial cerrado
+## 3. M4 — COMPLETE
 
-La decisión empresarial vigente es:
-
-```text
-A / Superadministración -> TYA_COMPLETE
-B / Administración      -> TYA_COMPLETE
-C / Operaciones          -> TYA_COMPLETE
-D / Operaciones adicional-> TYA_COMPLETE
-```
-
-No volver a pedir owner names, correos o scope inicial.
-
-El inventario canónico source-safe materializado vigente contiene un único projectId TyA:
-
-```text
-projectIds=[cinepolis]
-count=1
-```
-
-`TYA_COMPLETE` se convierte a projectIds exactos; nunca wildcard. Los cuatro target digests quedaron materializados source-safe en `backend/config/c6-staff-bootstrap-targets-v1.json` y `app/docs/evidence/C6-STAFF-TYA-COMPLETE-TARGET-DIGESTS-LATEST.json`.
+Los cuatro accesos iniciales permanecen `TYA_COMPLETE`, convertidos a projectIds canónicos exactos y sin wildcard. No volver a pedir owner names, correos o scope inicial.
 
 ```text
 M4=5/5 COMPLETE
@@ -65,13 +47,11 @@ Alcance de proyectos:
 - Proyectos específicos
 ```
 
-El alcance es obligatorio en alta y editable después. `Proyectos específicos` usa el inventario vivo de proyectos. `TyA completo` también persiste projectIds exactos; si aparecen proyectos nuevos, no hay herencia silenciosa: se marca revisión de scope hasta confirmar la expansión.
+El alcance es obligatorio y editable. `Proyectos específicos` usa inventario vivo. `TyA completo` persiste projectIds exactos y marca `scopeReviewRequired` si el inventario cambia; no existe herencia silenciosa.
 
-Cada cambio de rol/scope debe actualizar claims + documento vivo + auditoría + readback.
+## 5. M5 — static gate PASS
 
-## 5. M5 — backend source preparado
-
-Contrato v1.1 y backend executable source ya existen:
+Source ya preservado:
 
 ```text
 backend/contracts/c6-live-user-admin-v1.json
@@ -83,27 +63,51 @@ firebase.json
 tools/qa/cxorbia-c6-live-user-admin-source-gate.mjs
 ```
 
-Se reutiliza el servicio backend existente; no se creó servicio, proyecto, rama ni PR nuevo.
+Ejecución terminal:
+
+```text
+checkoutHead=9d16521ac67c7a9fa7cd6de393e778bc6a05876b
+workflowRunId=31513528713
+workflowJobId=93852916856
+controlledRunnerDecision=PASS_CXORBIA_CONTROLLED_RUNNERS_CONTRACT
+blockers=[]
+warnings=[]
+providerProfileEnabled=false
+```
+
+El preflight obligatorio incorpora el gate live-user-admin y falla si su decisión/safe-state no son exactos.
 
 Subasignación:
 
 ```text
 M5a contract source-only                    = COMPLETE 1/8
 M5b executable backend source materialized = COMPLETE 1/8
-M5c static terminal gate                    = PENDING
-M5 remaining repair/bootstrap/readback/rollback/wiring = PENDING
+M5c static terminal gate                    = COMPLETE 1/8
+M5 remaining                               = PENDING 5/8
 ```
 
-No se declara el gate estático PASS hasta ejecutar el script contra el checkout vivo.
+## 6. Prewrite focal listo
 
-## 6. Progreso de cierre
+Nuevo contrato: `backend/contracts/c6-staff-repair-bootstrap-prewrite-v1.json`.
+
+Se distinguen explícitamente:
+
+- R1/Super -> target A;
+- R2/Admin -> target B;
+- R3/Ops -> target C;
+- target D = acceso adicional de Operaciones, sin legacy pair;
+- `R4_CLIENT_HISTORICAL` = viejo grupo histórico Cliente, distinto del target D.
+
+El cap histórico de 14 Auth writes queda superseded. El contrato solo registra un peor caso teórico de 16 antes del snapshot; **no es autorización ni cap final**. El cap exacto se congela después del provider snapshot read-only.
+
+## 7. Progreso de cierre
 
 ```text
 M1 Baseline acumulativa/Phase A preservada        35 = COMPLETE
 M2 Auth V4 activation/readback/rollback           20 = COMPLETE
 M3 SKIP13/MultiAuth/HashConfig/direct runner      15 = COMPLETE
 M4 Owners + exact project entitlements             5 = COMPLETE
-M5 Staff repair/bootstrap + live admin + rollback  8 = 2/8 COMPLETE
+M5 Staff repair/bootstrap + live admin + rollback  8 = 3/8 COMPLETE
 M6 HR live current production evidence              5 = COMPLETE
 M7 Final accumulative multirole smoke               5 = PENDING
 M8 Human validation + rollback ready                3 = PENDING
@@ -111,25 +115,26 @@ M9 Explicit cutover + one production promotion      3 = PENDING
 M10 Post-cutover smoke + freeze                     1 = PENDING
 ```
 
-**Avance certificado: 82%. Restante: 18%.** El denominador no cambia.
+**Avance certificado: 83%. Restante: 17%.**
 
-## 7. Circuit breaker anti-bucle
+## 8. Circuit breaker anti-bucle
 
 1. No reabrir M1-M4 ni M6 sin P0 reproducible.
 2. No volver a pedir owners, scopes iniciales ni HR.
-3. No hardcodear staff/emails/projectIds en runtime UI.
-4. No nueva candidata/rama/PR por rutina.
-5. No provider/Auth/Firestore repair antes del gate source-only terminal.
-6. No rediseñar Usuarios & Permisos; wiring localizado únicamente.
-7. No producción sin autorización explícita de cutover.
+3. No repetir el static gate ya PASS.
+4. No hardcodear staff/emails/projectIds en runtime UI.
+5. No nueva candidata/rama/PR por rutina.
+6. No provider writes antes de provider snapshot/prewrite PASS y autorización específica.
+7. No rediseñar Usuarios & Permisos; wiring localizado únicamente.
+8. No producción sin autorización explícita de cutover.
 
-## 8. Siguiente gate exacto
+## 9. Siguiente gate exacto
 
-`C6 LIVE USER ADMIN STATIC SOURCE GATE -> STAFF REPAIR/BOOTSTRAP PREWRITE`.
+`C6 STAFF REPAIR/BOOTSTRAP PROVIDER SNAPSHOT READ-ONLY`.
 
-El siguiente paso no requiere información empresarial adicional. Debe ejecutar el gate source-only y, únicamente con PASS, construir snapshot + plan exacto de repair/bootstrap + rollback dry-run. Las mutaciones provider siguen sin autorización.
+Debe observar una sola vez los focales Auth source-safe, resolver reutilización de A solo con owner-binding independiente, verificar colisiones técnicas con inputs transitorios, congelar write budget exacto y producir rollback dry-run. Si falta un input transitorio, STOP antes de writes y sin reabrir las 340 identidades.
 
-## 9. Estado seguro
+## 10. Estado seguro
 
 ```text
 providerReadsCurrentBlock=0
