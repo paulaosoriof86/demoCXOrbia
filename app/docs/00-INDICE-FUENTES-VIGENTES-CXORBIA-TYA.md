@@ -3,14 +3,14 @@
 **Fecha:** 2026-08-11  
 **Estado vivo:** `STOP_RETRY_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE__PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B__AUTH_WRITES_0__FIRESTORE_WRITES_0__NO_DELETE__NO_DEPLOY__NO_PRODUCTION`
 
-Prevalencia: checkpoint -> source lock STOP B -> evidencia exact-write -> request consumido -> exact contract/executor -> provider snapshot PASS31518927950 -> live-user-admin static PASS -> HR live PASS -> Auth freezes -> CAMBIOS/RESUMEN/PENDIENTES/plan/tracker/Academia -> PR#7/HEAD.
+Prevalencia: checkpoint -> source lock STOP B -> exact-write evidence/request/contract/executor -> provider snapshot PASS31518927950 -> live-user-admin static PASS -> HR live PASS -> Auth freezes -> CAMBIOS/RESUMEN/PENDIENTES/plan/tracker/Academia -> PR#7/HEAD.
 
-Estado: Auth baseline228; M4 5/5; M5 4/8; M6 5/5; provider snapshot PASS31518927950; budget Auth14/Firestore16; exact-write run31534505451 STOP_RETRY; blocker `PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B`; privacy PASS; identity resolution false; Auth0/Firestore0/deletes0; production false.
+Auth baseline228; M4=5/5; M5=4/8; M6=5/5; exact-write run31534505451 STOP_RETRY `PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B`; privacy PASS; identityResolution=false; Auth0/Firestore0/deletes0; production=false.
 
-Causa raíz: B no se resolvió exactamente desde fuentes privadas contra SHA-256 one-way; no inferir/sustituir identidad.
+Causa raíz: B no recuperable exactamente desde fuentes privadas contra digest SHA-256 one-way; no inferir identidad.
 
 **Phase A84%; restante16%.**
 
 Siguiente: `C6 STAFF TARGET PRIVATE IDENTITY RECOVERY SOURCE-ONLY`.
 
-Anti-bucle: no reejecutar request consumido; no repetir provider/static/HR/owners/scopes/Auth340; no nueva candidata/rama/PR/workflow; no writes hasta recovery PASS + autorización; no deletes/deploy/merge/producción.
+No reejecutar request/provider/static/HR/owners/scopes/Auth340; no nueva candidata/rama/PR/workflow; no writes hasta recovery PASS + nueva autorización; no deletes/deploy/merge/producción.
