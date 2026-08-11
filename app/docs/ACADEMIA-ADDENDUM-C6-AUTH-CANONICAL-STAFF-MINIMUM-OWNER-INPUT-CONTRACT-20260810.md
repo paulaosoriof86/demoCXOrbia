@@ -6,9 +6,11 @@ Sin cambios a cursos/rutas/certificaciones/UI.
 
 Provider snapshot PASS: Auth228; A reusable owner-bound; B/C/D canonical targets definidos; R4 exacto; budget Auth14/Firestore16/deletes0; rollback PASS.
 
-Recovery source-only posterior al exact-write STOP permitió validar A/B/C exactamente contra los bindings/digests congelados sin provider reads ni PII persistida. D conserva owner/rol/scope/projectIds, pero no se recuperó su visible-login exacto desde las referencias privadas disponibles.
+D technical login rebase source-only PASS: el visible-login histórico se declaró no recuperable y se sustituyó por una derivación determinística source-safe, regenerable sin persistir el valor crudo. Owner/rol/scope/projectIds/claims permanecen iguales y la validación de colisión source-safe quedó en cero.
 
-Lección reusable: el modelo correcto separa dato visible privado de digest source-safe. Una referencia privada puede recuperarse y validarse transient sin persistirla; si no existe match exacto, el sistema debe declarar el único dato faltante y detenerse, no generar variantes ni aproximaciones.
+Lección reusable: cuando un identificador visible histórico no puede recuperarse, puede sustituirse por una derivación técnica determinística basada solo en anchors source-safe, siempre que la decisión de negocio permanezca intacta, la colisión sea cero y el dato crudo no se persista.
+
+Boundary adicional: A/B/C exact visible-login siguen transient y el runtime necesita un handoff privado sin repo/artifact/log antes del write. Esto es transporte seguro, no nueva decisión de identidad.
 
 Efectos: provider/Auth/Firestore/HR/Rules/Storage writes0; deletes0; deploy/merge/production0. Usuarios & Permisos sigue pendiente hasta bootstrap PASS; HR M6 cerrado.
 
