@@ -44,6 +44,7 @@ CanonicalCurrentProjectIds=[cinepolis]
 LiveUserAdminContract=v1.1
 LiveUserAdminBackendSource=materialized
 LiveUserAdminStaticGate=PASS_TERMINAL
+StaticGateRequest=CONSUMED_FROZEN
 StaffRepairBootstrapPrewriteContract=READY_SOURCE_ONLY
 ProviderSnapshot=PENDING
 Production=false
@@ -62,7 +63,7 @@ blockers=[]
 warnings=[]
 ```
 
-El preflight incluye el gate `tools/qa/cxorbia-c6-live-user-admin-source-gate.mjs` y falla si su decisión o su safe-state no son exactos. No se habilitó perfil provider/browser.
+El preflight incluye `tools/qa/cxorbia-c6-live-user-admin-source-gate.mjs` y falla si su decisión o safe-state no son exactos. No se habilitó perfil provider/browser. El request quedó posteriormente congelado como `consumed_pass_control_plane_static_gate_only`; esa congelación no habilita ejecución residual.
 
 ## 4. Scope de usuarios — regla vigente
 
@@ -74,11 +75,11 @@ or
 Proyectos específicos
 ```
 
-El alcance es editable posteriormente. El backend resuelve projectIds desde `tenants/{tenantId}/projects`, nunca con wildcard ni default silencioso. Los usuarios `TYA_COMPLETE` que queden desfasados frente a un proyecto nuevo deben marcarse `scopeReviewRequired` hasta confirmación autorizada.
+El alcance es editable posteriormente. El backend resuelve projectIds desde `tenants/{tenantId}/projects`, nunca con wildcard ni default silencioso. Los usuarios `TYA_COMPLETE` desfasados frente a un proyecto nuevo deben marcarse `scopeReviewRequired` hasta confirmación autorizada.
 
 ## 5. Prewrite focal
 
-`backend/contracts/c6-staff-repair-bootstrap-prewrite-v1.json` unifica los tres repairs históricos staff, el acceso adicional de Operaciones y el repair histórico Cliente sin confundir alias. El antiguo hard cap Auth=14 no se reutiliza; el cap final se congela solo después del snapshot provider read-only.
+`backend/contracts/c6-staff-repair-bootstrap-prewrite-v1.json` unifica los tres repairs históricos staff, el acceso adicional de Operaciones y el repair histórico Cliente sin confundir alias. El hard cap Auth histórico de 14 no se reutiliza; el cap final se congela solo después del snapshot provider read-only.
 
 ## 6. HR viva
 
@@ -88,7 +89,7 @@ M6 permanece cerrado: periodo 2026-08, 34 GT + 10 HN = 44. No pedir enlace, expo
 
 **Avance certificado: 83%. Restante: 17%.**
 
-M5 pasó 2/8 -> 3/8 por PASS terminal del static gate. El prewrite contract está preparado pero no suma un punto adicional hasta que exista snapshot/prewrite provider read-only PASS.
+M5 pasó 2/8 -> 3/8 por PASS terminal del static gate. El prewrite contract está preparado pero no suma un punto adicional hasta snapshot/prewrite provider read-only PASS.
 
 ## 8. Pendiente exacto
 
