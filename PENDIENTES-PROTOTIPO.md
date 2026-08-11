@@ -1,7 +1,7 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-11  
-**Estado vivo:** `C6_AUTH_CANONICAL_STAFF_OWNER_INPUT_PARTIAL_CAPTURED__PROJECT_ENTITLEMENTS_PENDING__LIVE_USER_ADMIN_BACKEND_GAP_PROVEN__NO_PROVIDER__NO_REPAIR__NO_PRODUCTION`
+**Estado vivo:** `C6_LIVE_USER_ADMIN_CONTRACT_SOURCE_ONLY_PASS__OWNER_REFERENCES_RECEIVED__PROJECT_ENTITLEMENTS_PENDING__BACKEND_EXECUTABLE_PENDING__NO_PROVIDER__NO_REPAIR__NO_PRODUCTION`
 
 ## 1. Cerrado y protegido
 
@@ -11,7 +11,8 @@
 - SKIP13, multi-Auth, HashConfig, direct runner y lifecycle de credencial;
 - D preservado repair-ready;
 - referencias empresariales A/B/C recibidas en conversación;
-- acceso adicional de Operaciones recibido en conversación.
+- acceso adicional de Operaciones recibido en conversación;
+- contrato source-only de administración viva de usuarios cerrado PASS.
 
 ## 2. Pendiente vivo inmediato
 
@@ -30,7 +31,14 @@ No volver a pedir nombres, correos, UIDs, fingerprints ni cuentas técnicas.
 
 La UI ya existe y es autoadministrable visualmente, pero hoy guarda usuarios/roles/permisos en `localStorage`. No existe todavía en `app/core/backend-firebase.js` el path vivo para crear/editar/deshabilitar Firebase Auth ni cambiar claims/scope.
 
-Este gap bloquea producción porque el requisito vigente exige datos vivos administrables. No requiere rediseño: debe resolverse con backend/contrato y un ajuste localizado del módulo existente.
+Contrato ya cerrado:
+
+```text
+backend/contracts/c6-live-user-admin-v1.json
+PASS_C6_LIVE_USER_ADMIN_CONTRACT_SOURCE_ONLY
+```
+
+Pendiente: backend executable/admin adapter y wiring localizado de la UI existente; sin rediseño.
 
 Criterio de cierre:
 
@@ -47,7 +55,7 @@ no hardcoded staff or projectIds
 
 1. scopes exactos A/B/C + acceso adicional Ops;
 2. target claims/digests source-safe;
-3. contrato/backend de administración viva + wiring localizado del módulo existente;
+3. backend executable/admin adapter + wiring localizado;
 4. repair focal A-D con snapshot/readback/rollback;
 5. reconciliación HR final de producción;
 6. smoke acumulativo multirol final;
@@ -59,7 +67,7 @@ Estos pasos permanecen absorbidos en M4-M10; no crean una nueva fase ni cambian 
 
 ## 5. Métrica estable
 
-**Avance certificado: 72%. Restante: 28%.** No recalcular el denominador en sesiones futuras; solo sumar puntos con evidencia terminal.
+**Avance certificado: 73%. Restante: 27%.** M5a source-only contract = PASS.
 
 ## 6. No hacer
 
