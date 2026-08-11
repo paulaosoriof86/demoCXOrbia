@@ -58,9 +58,7 @@ Production=false
 
 ## 3. Causa raíz y estado seguro
 
-El request autorizado llegó hasta validación de contrato, carga privada de service account y descifrado protegido en memoria. Se detuvo antes del primer write porque el runtime no pudo resolver una referencia exacta de `visibleLogin` para B contra el digest técnico congelado. El digest SHA-256 no es reversible y no se permite inferir o sustituir la identidad.
-
-El STOP demuestra:
+El request autorizado pasó los gates source-only, cargó credenciales privadas y validó el canal criptográfico, pero se detuvo antes del primer provider write porque las fuentes privadas disponibles no resolvieron exactamente el `visibleLogin` B contra el digest congelado. SHA-256 no es reversible y no se permite inferir ni sustituir identidad.
 
 ```text
 AuthCreates=0
@@ -80,13 +78,13 @@ R4 Cliente canónico, A, los ocho históricos y el baseline permanecen sin mutac
 
 ## 4. Progreso estable
 
-**Avance certificado: 84%. Restante: 16%.** M5 permanece 4/8 porque no hubo ejecución provider efectiva.
+**Avance certificado: 84%. Restante: 16%.** M5 permanece 4/8.
 
 ## 5. Pendiente exacto
 
 `C6 STAFF TARGET PRIVATE IDENTITY RECOVERY SOURCE-ONLY`.
 
-Recuperar/validar los owner-target visible-login inputs exactos desde fuentes privadas ya existentes, sin provider writes ni PII emitida y sin cambiar owners, roles, scopes o digests. Solo con A-D resueltos exactamente podrá prepararse una nueva autorización de exact write.
+Recuperar/validar A-D desde fuentes privadas existentes, sin provider writes ni PII emitida y sin cambiar owners, roles, scopes o digests. Solo con recovery PASS podrá prepararse una nueva autorización de exact write.
 
 ## 6. Circuit breaker anti-bucle
 
@@ -96,5 +94,5 @@ Recuperar/validar los owner-target visible-login inputs exactos desde fuentes pr
 - no inferir B por rol/nombre/coincidencia aproximada;
 - no crear login sustituto ni hardcode;
 - no nueva candidata/rama/PR/workflow;
-- no Auth/Firestore writes hasta recuperación privada PASS + nueva autorización explícita;
+- no Auth/Firestore writes hasta recovery PASS + nueva autorización explícita;
 - no deletes/deploy/merge/producción.
