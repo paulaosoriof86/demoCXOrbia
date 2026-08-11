@@ -1,19 +1,12 @@
 # PHASE A — Tracker de avance por bloques TyA
 
 **Actualización:** 2026-08-11  
-**Estado:** `C6_HR_LIVE_DIRECT_READ_PASS__AUTH228_PRESERVED__LIVE_USER_ADMIN_CONTRACT_PASS__SCOPES_PENDING__NO_PRODUCTION`
+**Estado:** `PASS_C6_M4_STAFF_TYA_COMPLETE_TARGET_DIGESTS__LIVE_USER_ADMIN_EXECUTABLE_SOURCE_PREPARED__STATIC_GATE_EXECUTION_PENDING__NO_PRODUCTION`
 
-## 1. Corrección de tracker
-
-Este tracker estaba desactualizado desde el 2026-08-06 y todavía mostraba el plan Auth antiguo con 13 HOLD. Esa representación queda superseded por el índice/checkpoint vigentes.
-
-No usar estados históricos del tracker para reabrir SKIP13, multi-Auth, HashConfig, Activation, direct runner o HR mapping.
-
-## 2. Baseline vigente cerrada
+## 1. Baseline vigente
 
 ```text
 Phase A cumulative baseline=preserved
-Auth plan V4=FROZEN
 AuthUsersAfter=228
 Activation=PASS
 Auth Readback=PASS
@@ -22,76 +15,78 @@ SKIP13=closed 13/13
 MultiAuth=closed
 HashConfig=PASS
 DirectRunnerDEV=PASS
+HR live M6=COMPLETE
 ```
 
-## 3. HR viva — M6 COMPLETE
+Estados históricos anteriores no reabren estos bloques.
 
-Lectura directa actual 2026-08-11:
+## 2. M4 staff — cerrado
 
 ```text
-source=shared Google Sheets live
-period=2026-08
-GT=34
-HN=10
-total=44
-country validation=PASS/PASS
-source live=true
-remap required=false
+A scope=TYA_COMPLETE
+B scope=TYA_COMPLETE
+C scope=TYA_COMPLETE
+D scope=TYA_COMPLETE
+canonical current projectIds=[cinepolis]
+target digests=PASS SOURCE-SAFE
+M4=5/5 COMPLETE
 ```
 
-El antiguo source lock de observabilidad HR queda histórico. No volver a poner HR en HOLD por ausencia de un run del workflow anterior.
+No volver a preguntar owners ni scopes iniciales.
 
-## 4. Staff canónico/autoadministrable
+## 3. Administración viva de usuarios
 
 ```text
-owner references A/B/C=received transiently
-additional Ops access=received transiently
-project entitlements=pending
-live user-admin UI=exists
-live user-admin contract=PASS SOURCE-ONLY
-live user-admin executable backend=pending
-Auth repair focal=pending after exact scopes
+scope required on create=true
+scope editable later=true
+modes=TYA_COMPLETE|SPECIFIC_PROJECTS
+wildcard=false
+future-project silent inheritance=false
+backend executable source=materialized
+static gate script=prepared
+static terminal gate=PENDING
 ```
 
-Pendiente humano mínimo: `TYA_COMPLETE` o `SPECIFIC_PROJECTS` para A, B, C y acceso adicional Ops.
+El backend source usa inventario vivo de proyectos; la UI no debe hardcodear el projectId actual.
 
-## 5. Tracker estable de 100 puntos
+## 4. Tracker estable de 100 puntos
 
 | Milestone | Peso | Estado |
 |---|---:|---|
 | M1 Baseline acumulativa/Phase A | 35 | COMPLETE |
 | M2 Auth V4 activation/readback/rollback | 20 | COMPLETE |
 | M3 SKIP13/MultiAuth/HashConfig/direct runner | 15 | COMPLETE |
-| M4 Owners + exact project entitlements | 5 | 2/5 COMPLETE |
-| M5 Staff repair/bootstrap + live admin + rollback | 8 | 1/8 COMPLETE |
+| M4 Owners + exact project entitlements | 5 | COMPLETE |
+| M5 Staff repair/bootstrap + live admin + rollback | 8 | 2/8 COMPLETE |
 | M6 HR live current production evidence | 5 | COMPLETE |
 | M7 Final accumulative multirole smoke | 5 | PENDING |
 | M8 Human validation + rollback ready | 3 | PENDING |
 | M9 Explicit cutover + one production promotion | 3 | PENDING |
 | M10 Post-cutover smoke + freeze | 1 | PENDING |
 
-**Avance certificado: 78%. Restante: 22%.**
+**Avance certificado: 82%. Restante: 18%.**
 
-## 6. Cadena única restante
+## 5. Cadena única restante
 
 ```text
-M4 exact scopes/digests
-→ M5 live-user-admin executable + focal repair/readback/rollback
-→ M7 final multirole smoke using the already-live HR
-→ M8 human validation/rollback ready
-→ M9 explicit cutover
-→ M10 post-cutover smoke/freeze
+M5c static source gate
+→ M5 repair/bootstrap PREWRITE + autorización + readback/rollback
+→ wiring localizado Usuarios & Permisos
+→ M7 final smoke con HR viva
+→ M8
+→ M9
+→ M10
 ```
 
-## 7. Anti-bucle
+## 6. Anti-bucle
 
-- M1-M3 y M6 no se reabren sin P0 reproducible.
+- M1-M4 y M6 no se reabren sin P0 reproducible.
 - No repetir PREWRITE/Activation general.
-- No pedir nuevamente HR ni remapearla.
-- No volver a preguntar owner names.
-- No nueva candidata/rama/PR por rutina.
+- No pedir HR, owners ni scopes iniciales otra vez.
+- No nueva candidata/rama/PR.
+- No provider writes antes del gate/autorización.
 - El denominador de 100 puntos no cambia.
 
-## 8. Estado seguro
+## 7. Estado seguro
 
-Lecturas HR directas sin writes. Cero Auth/Firestore/HR/Rules/Storage writes, deploy, merge y producción en este bloque.
+Cero provider/Auth/Firestore/HR/Rules/Storage writes, deploy, merge y producción en este bloque.
