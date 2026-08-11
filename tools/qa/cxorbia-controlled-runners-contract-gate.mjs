@@ -14,6 +14,7 @@ const requireFile=(rel,code)=>{if(!exists(rel))add(blockers,code,rel||'undefined
 const has=(text,pattern,code)=>{if(!pattern.test(text))add(blockers,code);};
 const lacks=(text,pattern,code)=>{if(pattern.test(text))add(blockers,code);};
 const clientRouteGate='tools/qa/tya-c6-client-route-source-static-gate.mjs';
+const liveUserAdminGate='tools/qa/cxorbia-c6-live-user-admin-source-gate.mjs';
 
 let contract=null;
 try{contract=JSON.parse(read('backend/contracts/cxorbia-controlled-runners-v1.json'));}
@@ -70,6 +71,7 @@ if(contract){
   requireFile('tools/release/tya-v174-r20-source-lock-proposal.mjs','source_lock_proposal_missing');
   requireFile('tools/release/tya-v174-corte2a-empalme-directo-verify.mjs','canonical_source_lock_verify_missing');
   requireFile(clientRouteGate,'c6_client_route_source_static_gate_missing');
+  requireFile(liveUserAdminGate,'c6_live_user_admin_source_static_gate_missing');
 
   if(!blockers.length){
     const atomicYml=read(atomic.workflow),atomicScript=read(atomic.script);
@@ -152,6 +154,21 @@ if(!blockers.length){
       if(result.decision!=='PASS_C6_CLIENT_ROUTE_SOURCE_STATIC')add(blockers,'c6_client_route_source_static_decision_invalid',String(result.decision||''));
     }catch(error){
       add(blockers,'c6_client_route_source_static_output_invalid',error.message);
+    }
+  }
+}
+
+if(!blockers.length){
+  const run=spawnSync(process.execPath,[liveUserAdminGate],{cwd:root,encoding:'utf8',maxBuffer:16*1024*1024});
+  if(run.status!==0){
+    add(blockers,'c6_live_user_admin_source_static_gate_failed',String(run.stderr||run.stdout||'').replace(/\s+/g,' ').slice(0,1200));
+  }else{
+    try{
+      const result=JSON.parse(run.stdout);
+      if(result.decision!=='PASS_C6_STAFF_TARGET_DIGEST_AND_LIVE_USER_ADMIN_BACKEND_SOURCE_ONLY')add(blockers,'c6_live_user_admin_source_static_decision_invalid',String(result.decision||''));
+      if(Number(result.providerReads)!==0||Number(result.providerWrites)!==0||Number(result.authWrites)!==0||Number(result.firestoreWrites)!==0||Number(result.deploys)!==0||result.production!==false)add(blockers,'c6_live_user_admin_source_static_safety_invalid');
+    }catch(error){
+      add(blockers,'c6_live_user_admin_source_static_output_invalid',error.message);
     }
   }
 }
