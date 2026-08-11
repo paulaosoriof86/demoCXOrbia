@@ -7,6 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
 import { maybeHandleDevVisualRequest } from './dev-visual.mjs';
+import { isLiveUserAdminPath, maybeHandleLiveUserAdminRequest } from './user-admin.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ROOT=path.resolve(HERE,'../../..');
@@ -135,10 +136,6 @@ async function refreshSnapshot(){
       CXORBIA_HR_OPERATIONAL_IDENTITY_OUT:identityFile
     };
     try{
-      /* Provider metadata is refreshed first. In GitHub gates this uses the
-         explicit DEV service-account secret; in Cloud Run it uses the runtime
-         service-account metadata token. This is what makes new monthly tabs
-         discoverable without chat/manual configuration. */
       await runNode(['tools/hr-source/tya-live-provider-registry-identity-dev.mjs'],env);
       await runNode(['tools/hr-source/tya-build-live-hr-source-safe-r20.mjs'],env);
       await runNode(['tools/hr-source/tya-enforce-live-tab-registry.mjs'],env);
@@ -226,15 +223,19 @@ loadBootstrap();
 const server=http.createServer(async(req,res)=>{
   const origin=String(req.headers.origin||'');
   setCommonHeaders(res,origin);
+  const url=new URL(req.url||'/',`http://${req.headers.host||'localhost'}`);
   if(req.method==='OPTIONS'){
     res.statusCode=204;
-    res.setHeader('Access-Control-Allow-Methods','GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers','Authorization, Content-Type');
+    res.setHeader('Access-Control-Allow-Methods','GET, POST, PATCH, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers','Authorization, Content-Type, Idempotency-Key');
     return res.end();
   }
+  if(isLiveUserAdminPath(url.pathname)){
+    await maybeHandleLiveUserAdminRequest(req,res,url);
+    return;
+  }
   if(req.method!=='GET')return sendJson(res,405,{ok:false,error:'method_not_allowed'});
-  const url=new URL(req.url||'/',`http://${req.headers.host||'localhost'}`);
-  if(url.pathname==='/health')return sendJson(res,200,{ok:true,service:'cxorbia-live-hr-source-safe',cacheMs:CACHE_MS,bootstrapReady:Boolean(cache),revisionStable:true,autoMonthProviderRegistry:true,operationalDisplayIdentityDev:DEV_OPERATIONAL_NAMES,devFullVisualEndpoint:true,lastRefreshError,writes:false,production:false});
+  if(url.pathname==='/health')return sendJson(res,200,{ok:true,service:'cxorbia-live-hr-source-safe',cacheMs:CACHE_MS,bootstrapReady:Boolean(cache),revisionStable:true,autoMonthProviderRegistry:true,operationalDisplayIdentityDev:DEV_OPERATIONAL_NAMES,devFullVisualEndpoint:true,liveUserAdminSourceReady:true,lastRefreshError,writes:false,production:false});
   if(!ENDPOINT_PATHS.has(url.pathname))return sendJson(res,404,{ok:false,error:'not_found'});
   if(await maybeHandleDevVisualRequest(req,res,url,{sendJson}))return;
   try{
