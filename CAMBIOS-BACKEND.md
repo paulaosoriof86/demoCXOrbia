@@ -5,23 +5,30 @@
 
 ## Estado actual
 
-`C6_AUTH_DUPLICATE_CANONICAL_TARGET_INPUT_RESOLUTION_COMPLETE__A_OWNER_ANCHOR_AND_PROJECT_ENTITLEMENT_REQUIRED__BC_OWNER_ANCHOR_PROJECT_ENTITLEMENT_CREDENTIAL_INPUT_REQUIRED__D_PRESERVED_REPAIR_READY__ZERO_PROVIDER_READS__ZERO_WRITES__NO_PRODUCTION`
+`C6_AUTH_CANONICAL_STAFF_MINIMUM_OWNER_INPUT_CONTRACT_READY__BUSINESS_OWNER_AND_SCOPE_INPUT_REQUIRED__A_REUSE_CONDITIONAL__BC_NEW_EPHEMERAL_FIXED__D_PRESERVED__DOCS_ONLY__NO_PRODUCTION`
 
 El detalle del bloque está en:
 
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-20260810.md`;
-- `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-REQUIRED-20260810.md`;
-- `app/docs/C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-SOURCE-SAFE-20260810.md`;
-- `app/docs/evidence/C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-SOURCE-SAFE-20260810.json`.
+- `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-20260810.md`;
+- `app/docs/SOURCE-LOCK-C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-READY-20260810.md`;
+- `app/docs/C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-20260810.md`;
+- `app/docs/evidence/C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-SOURCE-SAFE-20260810.json`;
+- `backend/config/c6-auth-canonical-staff-minimum-owner-input-contract-v1.json`.
 
 ## Resumen vigente
 
-Auth DEV permanece en 228 con Activation/readback/rollback dry-run PASS. Se agotó la evidencia source-safe de A–C sin provider. A requiere `OWNER_ANCHOR_REQUIRED` y `PROJECT_ENTITLEMENT_REQUIRED`; existe un credential path canónico `super`, pero no puede asociarse por unicidad del rol. B/C requieren además `CREDENTIAL_INPUT_REQUIRED`, porque el import canónico creó cero `admin` y cero `ops` y el plaintext password no es recuperable de Firebase Auth.
+Auth DEV permanece en 228 con Activation/readback/rollback dry-run PASS. A–C ya no requieren otra investigación técnica ni selección de principals legacy. El input humano se redujo a seis respuestas empresariales: titular + alcance para Superadministración, Administración y Operaciones.
 
-No se generaron expected-claims digests porque ningún target A–C quedó cerrado. D permanece `REPAIR_PLAN_READY` y no se reabrió. Provider/data writes=0, repair=false, deploy0, merge=false, production=false.
+La conversión source-safe quedó definida: designación humana transitoria -> `ownerIdentityAnchor`/`ownerRoleBindingDigest`; alcance `TYA_COMPLETE` o `SPECIFIC_PROJECTS` -> `projectIds` exactos, ordenados y sin duplicados; claims canónicos -> `expectedClaimsDigest` determinístico. No se persiste PII cruda.
+
+A conserva como primera opción la reutilización del `super` canónico existente únicamente si un owner binding independiente demuestra asociación exacta. B/C quedan con credencial nueva efímera obligatoria durante una futura ejecución autorizada. D permanece `REPAIR_PLAN_READY` y no se reabrió.
+
+Provider reads=0; Auth/IAM/Firestore/HR/Rules/Storage writes=0; PREWRITE/Activation/smoke/repair=false; deploy0; merge=false; production=false.
 
 ## Siguiente acción exacta
 
-`C6 AUTH CANONICAL STAFF MINIMUM OWNER INPUT CONTRACT — SOURCE-SAFE / NO PROVIDER / NO REPAIR`.
+Después de recibir las seis respuestas empresariales mínimas:
 
-Definir el mínimo input empresarial source-safe A–C sin fingerprints legacy ni PII en repo. No ejecutar provider ni repair sin autorización separada.
+`C6 AUTH CANONICAL STAFF OWNER INPUT CAPTURE AND TARGET DIGEST — SOURCE-SAFE / NO PROVIDER / NO REPAIR`.
+
+Convertir inmediatamente las respuestas a owner anchors, entitlement exacto, target claims y expected-claims digests. No ejecutar provider ni repair.
