@@ -1,12 +1,12 @@
 # CXOrbia TyA — PLAN PHASE A SIN DESVIACIÓN
 
 **Fecha original:** 2026-07-04  
-**Actualización prevalente:** 2026-08-06  
-**Estado:** `C6_SKIP13_ADJUDICATION_REQUEST_EMITTED__20M_NO_TERMINAL_EVIDENCE__CONSUMPTION_UNKNOWN__STOP_RETRY__AUTH_PLAN_FROZEN__PRODUCTION_PROMOTION_PASS__LIVE_HR_V4_UNRESOLVED__NO_PRODUCTION`
+**Actualización prevalente:** 2026-08-11  
+**Estado:** `C6_AUTH_CANONICAL_STAFF_OWNER_INPUT_PARTIAL_CAPTURED__PROJECT_ENTITLEMENTS_PENDING__NO_PROVIDER__NO_REPAIR__NO_PRODUCTION`
 
 ## 1. Objetivo operativo
 
-Cerrar una única baseline acumulativa sobre `docs-tya-v6-v71-audit` y llevar Phase A a producción sin reabrir módulos preservados, crear carriles paralelos ni sustituir HR viva por snapshots o datos fijados.
+Cerrar una única baseline acumulativa sobre `docs-tya-v6-v71-audit` y llevar Phase A a producción sin reabrir módulos preservados, crear carriles paralelos ni sustituir datos vivos por hardcode/snapshots permanentes.
 
 ## 2. Preservado
 
@@ -26,114 +26,88 @@ project=cxorbia-backend-dev
 promotionGate=PASS_PRODUCTION_PROMOTION_CONTRACT_EXISTING_CLEAN_PROJECT
 ```
 
-Los identificadores actuales se aceptan como producción futura. El contrato no autoriza writes, deploy, merge ni cutover.
+Los identificadores actuales se aceptan como producción futura. El contrato no sustituye los gates finales ni la autorización de cutover.
 
-## 4. Plan Auth congelado
+## 4. Auth congelado y ya ejecutado
 
 ```text
 rows=340
-uniqueRows=340
-CREATE_AUTH=81
-UPDATE_AUTH=46
-NO_OP=73
+CREATE_AUTH=118
+UPDATE_AUTH=9
+NO_OP=81
 HOLD=0
-PRESERVE_NO_AUTH=140
-planDigest=6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b
-freezeDecision=PASS_AUTH_PLAN_340_CRYPTOGRAPHIC_FREEZE
-idempotencyDecision=PASS_PREWRITE_IDEMPOTENCY_CONTRACT
+PRESERVE_NO_AUTH=132
+AuthUsersAfter=228
+Activation=PASS
+Readback=PASS
+RollbackDryRun=PASS
+SKIP13=closed 13/13
+MultiAuth=closed
+HashConfig=closed PASS
+DirectRunnerDEV=PASS
 ```
 
-SKIP13 conserva historia, visitas, certificaciones y liquidaciones. No se copiaron filas crudas ni PII al repositorio.
+No reabrir PREWRITE/Activation general ni reconstrucción de 340 identidades sin P0 reproducible.
 
-## 5. Adjudicación de acceso SKIP13
+## 5. Bloque vivo — staff canónico administrable
 
-Se preparó y emitió un único request read-only:
+Las referencias empresariales A/B/C y un acceso adicional de Operaciones fueron recibidas transitoriamente en conversación. No volver a pedirlas ni persistirlas como constantes.
+
+Falta únicamente el scope de proyecto de los cuatro accesos:
 
 ```text
-requestCommit=2eef8b70f2bd2d8570a7f3cc117e217851dd6964
-targetHead=9e7b53f8b468970d8ee174e114693074bfc7a67a
-skipProfiles=13
-blockingFingerprint=7cc28c78de9bfda01d14
-blockingCandidates=2
-secondTrigger=0
+TYA_COMPLETE
+or
+SPECIFIC_PROJECTS
 ```
 
-Tras 1,227 segundos no se recuperaron runId, jobId, steps, artifact ni status terminal.
+`TYA_COMPLETE` se expande a IDs canónicos exactos; no wildcard. `SPECIFIC_PROJECTS` se resuelve 1:1. No asumir Cinépolis.
+
+Los usuarios iniciales son bootstrap de **datos vivos**. Deben ser administrables desde la plataforma bajo RBAC: crear, editar, cambiar rol/scope y deshabilitar preservando auditoría. No hardcodear nombres/correos/usuarios en frontend o backend.
+
+## 6. Cadena única restante
 
 ```text
-workflowRunExistence=UNKNOWN_AFTER_20M_OBSERVATION
-providerReadConsumption=UNKNOWN_NO_RUN_JOB_STATUS_OR_CHECKPOINT_EVIDENCE
-adjudicationCompleted=false
-unplannedEffectiveAccessDetermined=false
-STOP_RETRY=true
+M4 scopes exactos + target digests
+-> M5 repair focal A-D + readback/rollback
+-> M6 HR final production evidence
+-> M7 final accumulative multirole smoke
+-> M8 human validation + rollback ready
+-> M9 explicit cutover + one production promotion
+-> M10 post-cutover smoke + freeze
 ```
 
-`HOLD=0` en el plan no prueba ausencia de acceso efectivo. Auth continúa no ejecutable. No se permite segundo trigger ni ejecución parcial.
+No insertar nuevas auditorías generales entre esos pasos.
 
-## 6. Snapshot, rollback y smoke
-
-- manifest de snapshot/rollback: preparado, no ejecutable;
-- idempotency key y run marker: obligatorios;
-- cambios de contraseña: bloqueados si no existe captura/restauración autorizada de hash/salt;
-- smoke acumulativo: preparado para Admin/Operaciones, Shopper y Cliente;
-- smoke exige tres recargas, nueva pestaña, aislamiento por rol y una misma `sourceRevision`.
-
-## 7. Request HR viva v4
+## 7. Métrica estable
 
 ```text
-requestCommit=ac2032ec224e6d56bf087788b949691b6690c437
-providerReadConsumption=UNKNOWN_NO_RUN_JOB_OR_CHECKPOINT_EVIDENCE
-STOP_RETRY=true
-segundo trigger=0
+M1 Baseline acumulativa/Phase A preservada        35 = COMPLETE
+M2 Auth V4 activation/readback/rollback           20 = COMPLETE
+M3 SKIP13/MultiAuth/HashConfig/direct runner      15 = COMPLETE
+M4 Owners + exact project entitlements             5 = PARTIAL
+M5 Repair focal A-D                                 8 = PENDING
+M6 HR final production evidence                     5 = PENDING
+M7 Final accumulative multirole smoke               5 = PENDING
+M8 Human validation + rollback ready                3 = PENDING
+M9 Explicit cutover + one production promotion      3 = PENDING
+M10 Post-cutover smoke + freeze                     1 = PENDING
 ```
 
-No están confirmados `2026-08`, GT/HN, mutación histórica ni `sourceRevision` transversal.
+**Avance certificado: 72%. Restante: 28%.** El denominador queda congelado. Solo se suma con evidencia terminal; no se pierde avance salvo P0 que invalide evidencia previa.
 
-## 8. Cadena única restante
+## 8. Circuit breakers
 
-### Bloque A — Cerrar riesgo SKIP13
-
-1. Reconciliar únicamente evidencia tardía vinculada a `2eef8b70...`.
-2. Confirmar o bloquear acceso efectivo no previsto.
-3. No repetir la lectura ni modificar cuentas, claims o memberships.
-
-### Bloque B — Cerrar HR v4
-
-1. Reconciliar evidencia terminal del request exacto.
-2. Confirmar periodo activo, tabs GT/HN, historia y `sourceRevision`.
-3. No emitir segundo trigger sin clasificación terminal.
-
-### Bloque C — Auth y smoke
-
-1. Autorización separada para snapshot y repair Auth.
-2. Gate pre-write, idempotencia, writes acotados y readback.
-3. Rollback listo.
-4. Smoke Admin/Operaciones, Shopper y Cliente.
-5. Tres recargas, nueva pestaña y estabilidad.
-
-### Bloque D — Cutover
-
-Validación humana, rollback final, autorización específica y único deploy/cutover sobre el proyecto limpio promovido.
-
-## 9. Circuit breakers
-
-- No ejecutar Auth mientras el acceso SKIP13 no esté determinado.
-- No emitir segundo trigger SKIP13 ni segundo request HR sin cierre terminal.
-- No declarar lectura cero o consumida sin run/job/steps.
-- No desplegar por efecto de contratos source-only.
+- No reabrir M1-M3 sin P0 reproducible.
+- No repetir preguntas ya respondidas.
+- No hardcodear staff ni scopes.
+- No crear nueva candidata, rama o PR.
+- No ejecutar provider/repair antes de scope exacto.
+- No repetir PREWRITE/Activation general.
 - No conectar ni copiar la base legacy.
-- No reabrir 65/65 ni regenerar el plan sin causa probada.
-- No pedir nueva candidata, rama o PR.
-- No hardcodear periodos o conteos HR.
+- No hardcodear periodos HR.
+- Cada interacción debe reportar avance nuevo, porcentaje acumulado, porcentaje restante y siguiente gate exacto.
 
-## 10. Estado seguro
+## 9. Estado seguro
 
-```text
-provider read consumption SKIP13=UNKNOWN
-provider writes=0
-HR reads del bloque=0
-Auth/data/HR writes=0
-Hosting/Cloud Run deploys=0
-merge=false
-production=false
-```
+Sin provider/HR/Auth/Firestore/Rules/Storage writes, deploy, merge ni producción en el bloque actual.
