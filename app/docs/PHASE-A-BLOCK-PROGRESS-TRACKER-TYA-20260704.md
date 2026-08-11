@@ -1,22 +1,11 @@
-# PHASE A — Tracker de avance por bloques TyA
+# PHASE A — Tracker TyA
 
 **Actualización:** 2026-08-11  
 **Estado:** `STOP_RETRY_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE__PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B__AUTH_WRITES_0__FIRESTORE_WRITES_0__NO_PRODUCTION`
 
-Exact write consumido run31534505451: blocker `PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B`, privacy PASS, identityResolution false, Auth0/Firestore0/deletes0. M5 no suma punto.
+Exact-write consumido run31534505451: blocker `PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B`, privacy PASS, identityResolution false, Auth0/Firestore0/deletes0. M5 no suma.
 
-| Milestone | Peso | Estado |
-|---|---:|---|
-| M1 Baseline | 35 | COMPLETE |
-| M2 Auth | 20 | COMPLETE |
-| M3 identity gates | 15 | COMPLETE |
-| M4 owners/scopes | 5 | COMPLETE |
-| M5 staff repair/live admin/rollback | 8 | 4/8 COMPLETE |
-| M6 HR live | 5 | COMPLETE |
-| M7 final smoke | 5 | PENDING |
-| M8 human validation | 3 | PENDING |
-| M9 cutover | 3 | PENDING |
-| M10 post-smoke/freeze | 1 | PENDING |
+M1 35 COMPLETE; M2 20 COMPLETE; M3 15 COMPLETE; M4 5 COMPLETE; M5 4/8 COMPLETE; M6 5 COMPLETE; M7 0/5; M8 0/3; M9 0/3; M10 0/1.
 
 **84% certificado; 16% restante.**
 
