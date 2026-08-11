@@ -3,7 +3,7 @@
 **Actualización:** 2026-08-11  
 **Estado:** `STOP_RETRY_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE__PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B__AUTH_WRITES_0__FIRESTORE_WRITES_0__NO_PRODUCTION`
 
-Exact write request consumido: run `31534505451`, blocker `PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B`, credential privacy PASS, identity resolution FAIL, Auth writes 0, Firestore writes 0, deletes 0. M5 no suma punto.
+Exact write request consumido run `31534505451`: blocker `PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B`; credential privacy PASS; identity resolution FAIL; Auth writes0; Firestore writes0; deletes0. M5 no suma punto.
 
 | Milestone | Peso | Estado |
 |---|---:|---|
@@ -21,5 +21,3 @@ Exact write request consumido: run `31534505451`, blocker `PRIVATE_VISIBLE_LOGIN
 **84% certificado; 16% restante.**
 
 Cadena única: `C6 STAFF TARGET PRIVATE IDENTITY RECOVERY SOURCE-ONLY -> recovery PASS -> nueva autorización exact-write -> repair/readback/rollback -> wiring Usuarios & Permisos -> M7 -> M8 -> M9 -> M10`.
-
-Anti-bucle: no reejecutar request consumido; no repetir provider snapshot/static/HR/owners/scopes; no reabrir Auth 340; no inferir B; no rama/PR/candidata/workflow nuevo; no writes sin recovery PASS + nueva autorización; no deletes.
