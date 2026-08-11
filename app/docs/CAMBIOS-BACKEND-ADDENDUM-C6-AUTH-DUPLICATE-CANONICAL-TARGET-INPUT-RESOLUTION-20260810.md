@@ -34,7 +34,7 @@
 
 ## Incidentes de herramienta
 
-Una llamada `update_file` fue rechazada con HTTP 409 por SHA no vigente y no mutó el repo. Después se produjeron tres commits documentales redundantes durante el intento de cierre de este mismo addendum; no tocaron provider, Auth, datos, frontend, deploy ni producción. Regla correctiva: no volver a emitir updates no-op; usar `update_pull_request` directamente para metadata del PR.
+Una llamada `update_file` fue rechazada con HTTP 409 por SHA no vigente y no mutó el repo. Después se produjeron cuatro commits documentales redundantes durante el intento de cierre de este mismo addendum; no tocaron provider, Auth, datos, frontend, deploy ni producción. Regla correctiva: detener el loop documental; no emitir más updates a este archivo en este bloque y usar `update_pull_request` únicamente para el PR.
 
 ## Seguridad
 
