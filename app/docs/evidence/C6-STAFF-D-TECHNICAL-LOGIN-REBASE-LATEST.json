@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "cxorbia.c6.staff-d-technical-login-rebase.evidence.v1",
+  "generatedAt": "2026-08-11T17:23:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "decision": "PASS_C6_STAFF_D_TECHNICAL_LOGIN_REBASE_SOURCE_ONLY",
+  "targetAlias": "D",
+  "historicalVisibleLogin": "DECLARED_UNRECOVERABLE",
+  "deterministicCanonicalLogin": {
+    "derivationVersion": "cxorbia-canonical-visible-login-v1",
+    "regenerableWithoutHistoricalReference": true,
+    "rawVisibleLoginEmitted": false,
+    "rawVisibleLoginPersisted": false,
+    "derivationMatchesCanonicalTechnicalDigest": true,
+    "ownerTechnicalBindingMatches": true,
+    "derivedProviderCollisionFingerprintMatches": true
+  },
+  "preservedExactly": {
+    "ownerIdentityAnchor": true,
+    "ownerRoleBindingDigest": true,
+    "role": true,
+    "entitlementMode": true,
+    "projectIds": true,
+    "expectedClaimsDigest": true,
+    "A": true,
+    "B": true,
+    "C": true
+  },
+  "sourceSafeCollisionValidation": {
+    "technicalLoginDigestCollisionsAgainstABC": 0,
+    "technicalLoginDigestCollisionAgainstSupersededD": false,
+    "providerEmailDigestCollisionsAgainstABC": 0,
+    "providerEmailDigestCollisionAgainstSupersededD": false,
+    "ownerTechnicalBindingDigestCollisionsAgainstABC": 0,
+    "ownerTechnicalBindingDigestCollisionAgainstSupersededD": false,
+    "decision": "PASS_SOURCE_SAFE_ZERO_COLLISION"
+  },
+  "derivedFieldNote": {
+    "providerEmailSha256Recomputed": true,
+    "independentIdentityDecision": false,
+    "reason": "mechanical consequence of the existing provider collision derivation contract after the authorized technicalLoginDigest replacement"
+  },
+  "prewrite": {
+    "contract": "backend/contracts/c6-staff-d-rebase-prewrite-v1.json",
+    "state": "PASS_SOURCE_ONLY_D_REBASE_PREWRITE_READY",
+    "providerSnapshotRepeatRequired": false,
+    "frozenAuthWriteBudget": 14,
+    "frozenFirestoreWriteBudget": 16,
+    "deletes": 0
+  },
+  "safety": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "deletes": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false,
+    "loginPersisted": false,
+    "emailPersisted": false,
+    "uidPersisted": false,
+    "passwordPersisted": false,
+    "passwordHashPersisted": false,
+    "rawNamePersisted": false
+  },
+  "progress": {
+    "phaseA": 84,
+    "remaining": 16,
+    "m5": "4/8",
+    "newWeightedCredit": 0
+  },
+  "nextGate": "C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2_AUTHORIZATION"
+}
