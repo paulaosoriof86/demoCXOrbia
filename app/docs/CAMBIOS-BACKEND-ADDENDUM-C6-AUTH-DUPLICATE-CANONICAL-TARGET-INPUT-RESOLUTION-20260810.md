@@ -20,7 +20,7 @@ Actualizados: checkpoint, índice vigente, `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-C
 
 ## Incidentes de herramienta
 
-Una llamada `update_file` fue rechazada HTTP 409 antes de commit. Después se produjeron seis commits documentales redundantes sobre este mismo addendum durante un error de cierre de herramienta. No hubo provider/Auth/data/frontend/deploy/production effect. Regla correctiva: este addendum queda congelado; no volver a tocarlo en el bloque actual.
+Una llamada `update_file` fue rechazada HTTP 409 antes de commit. Después se produjeron siete commits documentales redundantes sobre este mismo addendum durante un error de cierre de herramienta. No hubo provider/Auth/data/frontend/deploy/production effect. Regla correctiva: detener por completo las escrituras a este addendum durante el resto del bloque.
 
 ## Seguridad
 
