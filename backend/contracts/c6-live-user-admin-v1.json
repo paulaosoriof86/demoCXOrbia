@@ -1,0 +1,151 @@
+{
+  "schemaVersion": "cxorbia.c6.live-user-admin.contract.v1",
+  "purpose": "Provide a live, tenant-scoped and auditable user administration contract for the existing Usuarios & Permisos UI without hardcoded staff identities or localStorage authority in production.",
+  "target": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "docs-tya-v6-v71-audit",
+    "pullRequest": 7
+  },
+  "authoritativeStores": {
+    "authentication": "Firebase Auth",
+    "tenantUserDocument": "tenants/{tenantId}/users/{uid}",
+    "auditTrail": "tenants/{tenantId}/auditLogs/{auditId}",
+    "browserLocalStorageAuthority": false
+  },
+  "callerPolicy": {
+    "authenticated": true,
+    "tenantClaimRequired": "tya",
+    "mutatingRoles": ["super"],
+    "adminMayMutateSuper": false,
+    "opsMayMutateUsers": false,
+    "clientMayMutateUsers": false,
+    "shopperMayMutateUsers": false,
+    "selfServiceIncluded": false
+  },
+  "identityContract": {
+    "authNamespace": "staff",
+    "visibleLoginIsRuntimeInput": true,
+    "visibleLoginStoredInRepo": false,
+    "normalizeLogin": "trim+lowercase",
+    "internalFirebaseEmail": "sha256(tenantId + \\"\\u0000\\" + authNamespace + \\"\\u0000\\" + normalizedVisibleLogin)[0:48] + \\"@auth.cxorbia.invalid\\"",
+    "rawProviderEmailExposedToUi": false,
+    "contactEmailIsLiveTenantData": true,
+    "contactEmailEditable": true,
+    "contactEmailChangeDoesNotRequireProviderIdentityChange": true,
+    "visibleLoginEditableByPrivilegedOperation": true,
+    "visibleLoginChangeRequiresCollisionCheckAndProviderEmailUpdate": true,
+    "passwordStoredInRepoArtifactOrLog": false
+  },
+  "claimsContract": {
+    "required": ["authNamespace", "tenantId", "role", "projectIds"],
+    "authNamespace": "staff",
+    "tenantId": "tya",
+    "allowedRoles": ["super", "admin", "ops", "coordinador", "cliente"],
+    "projectIds": "exact sorted unique canonical entitlement",
+    "shopperIdForStaff": "absent",
+    "wildcardProjectScopeAllowed": false,
+    "defaultProjectAssumptionAllowed": false
+  },
+  "tenantUserDocumentContract": {
+    "requiredFields": ["tenantId", "role", "projectIds", "active", "createdAt", "updatedAt"],
+    "optionalProtectedFields": ["displayName", "contactEmail", "countries", "clientId", "personLabel"],
+    "technicalFields": ["authNamespace", "providerUidFingerprint", "claimsDigest", "lastAdminActionId"],
+    "rawPasswordAllowed": false,
+    "rawProviderTokenAllowed": false,
+    "rawProviderHashAllowed": false
+  },
+  "operations": {
+    "list": {
+      "providerWrite": false,
+      "requiresRole": ["super"],
+      "returnsProtectedTenantUserData": true
+    },
+    "create": {
+      "sequence": [
+        "validate caller RBAC",
+        "validate exact project entitlement",
+        "normalize visible login",
+        "derive internal Firebase email",
+        "collision check",
+        "create Auth principal",
+        "set exact custom claims",
+        "write tenant user document",
+        "write audit log",
+        "readback Auth + claims + tenant user document"
+      ],
+      "hardcodedInputAllowed": false,
+      "ephemeralCredentialRequired": true
+    },
+    "updateProfile": {
+      "editableFields": ["displayName", "contactEmail", "countries", "clientId", "personLabel"],
+      "claimsWrite": false,
+      "readbackRequired": true
+    },
+    "changeRoleOrProjectScope": {
+      "sequence": [
+        "validate caller RBAC",
+        "validate target role",
+        "resolve exact canonical projectIds",
+        "snapshot previous claims",
+        "set exact custom claims",
+        "update tenant user document",
+        "write audit log",
+        "readback exact claims digest"
+      ],
+      "silentWildcardAllowed": false
+    },
+    "disable": {
+      "providerAction": "disable Auth principal",
+      "tenantUserDocumentActive": false,
+      "deleteAuthUser": false,
+      "deleteTenantUserDocument": false,
+      "auditRequired": true,
+      "readbackRequired": true
+    },
+    "reactivate": {
+      "providerAction": "enable existing Auth principal",
+      "tenantUserDocumentActive": true,
+      "claimsReadbackRequired": true,
+      "auditRequired": true
+    },
+    "hardDelete": {
+      "enabled": false,
+      "reason": "Preserve audit/history; destructive deletion requires a separate explicit contract and authorization."
+    }
+  },
+  "idempotency": {
+    "required": true,
+    "operationKey": "sha256(tenantId + operation + targetStableKey + canonicalPayloadDigest)",
+    "duplicateSamePayload": "NO_OP_OR_READBACK",
+    "collisionDifferentPayload": "STOP_RETRY_COLLISION"
+  },
+  "rollback": {
+    "snapshotBeforeMutation": true,
+    "createInverse": "disable newly created principal; do not delete",
+    "updateInverse": "restore previous claims/profile from snapshot",
+    "disableInverse": "re-enable only if pre-snapshot state was enabled",
+    "deleteRequired": false,
+    "dryRunBeforeProductionWrite": true
+  },
+  "frontendIntegration": {
+    "existingModule": "app/modules/configuracion.js#usuarios",
+    "redesignRequired": false,
+    "productionPersistence": "live admin adapter",
+    "localStorageAllowedAsProductionAuthority": false,
+    "requiredActions": ["list", "create", "updateProfile", "changeRoleOrProjectScope", "disable", "reactivate"],
+    "newTechnicalFieldsVisibleToUser": false
+  },
+  "sourceSafe": {
+    "rawNamesInContract": false,
+    "rawEmailsInContract": false,
+    "rawUidsInContract": false,
+    "rawCredentialsInContract": false,
+    "providerWritesAuthorizedByThisContract": false,
+    "firestoreWritesAuthorizedByThisContract": false,
+    "deployAuthorizedByThisContract": false,
+    "mergeAuthorizedByThisContract": false,
+    "productionAuthorizedByThisContract": false
+  }
+}
