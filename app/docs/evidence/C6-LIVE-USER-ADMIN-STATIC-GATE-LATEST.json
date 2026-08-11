@@ -7,6 +7,8 @@
   "pullRequest": 7,
   "checkoutHeadSha": "9d16521ac67c7a9fa7cd6de393e778bc6a05876b",
   "gateSourceCommitSha": "674d20e7f00df0d8763e1c9cbf80eed5e013eb3b",
+  "requestCommitSha": "9d16521ac67c7a9fa7cd6de393e778bc6a05876b",
+  "requestFrozenAsConsumedAtCommit": "aaf4c66843711854352dadab8064e853fddfad82",
   "workflow": "CXORBIA_READONLY_POST_GATES_RUNNER",
   "workflowRunId": 31513528713,
   "workflowJobId": 93852916856,
@@ -22,7 +24,8 @@
     "preflightFailsIfLiveUserAdminGateFails": true,
     "controlledRunnerPass": true,
     "providerProfileEnabled": false,
-    "browserProfileExecuted": false
+    "browserProfileExecuted": false,
+    "requestTerminalState": "consumed_pass_control_plane_static_gate_only"
   },
   "safety": {
     "providerReads": 0,
