@@ -5,13 +5,11 @@
 
 ## Estado actual
 
-`PASS_C6_LIVE_USER_ADMIN_STATIC_SOURCE_GATE_TERMINAL__STAFF_REPAIR_BOOTSTRAP_PREWRITE_CONTRACT_READY__PROVIDER_SNAPSHOT_PENDING__NO_PROVIDER_READS__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+`C6_STAFF_PROVIDER_SNAPSHOT_HARNESS_REPAIRED__FIRST_REQUEST_ABORTED_PRE_PROVIDER_READS_0__ONE_AUTHORIZED_PROVIDER_OBSERVATION_STILL_PENDING__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
-## Bloque 2026-08-11 — static live-user-admin PASS
+## Bloque cerrado previo — static live-user-admin PASS
 
-Se cerró terminalmente el gate source-only preparado en el bloque anterior, reutilizando el runner read-only ya existente y sin crear workflow nuevo.
-
-Evidencia:
+Se mantiene terminalmente cerrado:
 
 ```text
 checkoutHead=9d16521ac67c7a9fa7cd6de393e778bc6a05876b
@@ -22,52 +20,78 @@ blockers=[]
 warnings=[]
 ```
 
-`tools/qa/cxorbia-controlled-runners-contract-gate.mjs` ahora exige también `tools/qa/cxorbia-c6-live-user-admin-source-gate.mjs` y falla si la decisión o el safe-state live-user-admin no son exactos.
+M5c permanece COMPLETE. No reabrir.
 
-El request de control quedó deshabilitado para perfiles provider/browser: el bloque ejecutó solo el preflight source-only obligatorio.
+## Prewrite focal preservado
 
-Archivo creado:
+`backend/contracts/c6-staff-repair-bootstrap-prewrite-v1.json` continúa distinguiendo:
+
+- R1/Super -> target A;
+- R2/Admin -> target B;
+- R3/Ops -> target C;
+- target D adicional de Operaciones;
+- `R4_CLIENT_HISTORICAL` separado del target D.
+
+El viejo cap Auth=14 sigue superseded. El cap final solo se congela con el provider snapshot efectivo.
+
+## Bloque 2026-08-11 — provider snapshot: incidente pre-provider y root fix
+
+Se prepararon, sin PII cruda:
 
 ```text
-app/docs/evidence/C6-LIVE-USER-ADMIN-STATIC-GATE-LATEST.json
+backend/config/c6-staff-provider-collision-targets-v1.json
+tools/qa/cxorbia-c6-staff-repair-bootstrap-provider-snapshot-readonly.mjs
+backend/contracts/c6-staff-provider-snapshot-runner-v1.json
+tools/qa/cxorbia-c6-staff-provider-snapshot-request-gate.mjs
+tools/qa/cxorbia-c6-staff-provider-snapshot-runner-report.mjs
 ```
 
-## Prewrite focal preparado
-
-Se creó:
+Se reutilizó el workflow existente:
 
 ```text
-backend/contracts/c6-staff-repair-bootstrap-prewrite-v1.json
+.github/workflows/cxorbia-readonly-post-gates-runner.yml
 ```
 
-El contrato reconcilia sin superposición:
+No se creó workflow, rama o PR nuevo.
 
-- R1/Super con target A;
-- R2/Admin con target B;
-- R3/Ops con target C;
-- target D como acceso adicional de Operaciones;
-- `R4_CLIENT_HISTORICAL` como viejo repair Cliente, distinto del target D.
+### Primer request abortado antes de provider
 
-Se preservan create-before-retire, `DISABLE_ONLY_NO_DELETE`, idempotencia, readback y rollback dry-run.
+Request: `c6-staff-repair-bootstrap-provider-snapshot-readonly-20260811-01`.
 
-### Corrección de write budget
+```text
+runId=31518115944
+jobId=93868277963
+requestCommit=6b3b554ed254a2abecf28cfea5386ee2d7e01b47
+sourcePreflight=PASS
+requestGate=PASS
+rootCause=NESTED_HEREDOC_DELIMITER_INDENTATION
+providerScriptStarted=false
+authListObservations=0
+firestoreProviderReads=0
+providerWrites=0
+repositoryDelta=false
+```
 
-El viejo hard cap Auth=14 queda superseded porque excluía el target D adicional y precede el contrato live user-doc/audit. El nuevo prewrite registra **16 únicamente como peor caso teórico antes del snapshot**; no autoriza writes y no es cap final. El cap final se congela después del provider snapshot read-only.
+El request quedó congelado permanentemente como `HARNESS_ABORTED_PRE_PROVIDER_READS_0`, `enabled=false`, `consumed=true`, `providerObservationConsumed=false`. El status de consumo failure asociado a ese commit es telemetría del harness y no cuenta como provider read.
+
+### Root fix aplicado
+
+Se sustituyó el nested-heredoc por `tools/qa/cxorbia-c6-staff-provider-snapshot-runner-report.mjs`; el consumo durable ahora solo se finaliza cuando el reporte source-safe demuestra `authListObservations=1`.
+
+Validación del workflow corregido con request deshabilitado:
+
+```text
+runId=31518696584
+jobId=93870136421
+conclusion=success
+providerProfileExecuted=false
+```
+
+Source lock: `app/docs/SOURCE-LOCK-C6-STAFF-PROVIDER-SNAPSHOT-HARNESS-REPAIRED-20260811.md`.
 
 ## Reglas de usuario preservadas
 
 Los cuatro accesos iniciales siguen `TYA_COMPLETE`. El alta futura exige `TyA completo` o `Proyectos específicos`, editable después; sin wildcard ni herencia silenciosa. No se vuelve a pedir scope inicial.
-
-Backend source preservado, todavía sin deploy:
-
-```text
-backend/contracts/c6-live-user-admin-v1.json
-backend/runtime/hr-live-service/user-admin.mjs
-backend/runtime/hr-live-service/server.mjs
-backend/runtime/hr-live-service/package.json
-backend/runtime/hr-live-service/Dockerfile
-firebase.json
-```
 
 No se modificó `app/modules/configuracion.js` desde backend.
 
@@ -90,24 +114,25 @@ M9  3 = PENDING
 M10 1 = PENDING
 ```
 
-**Avance certificado: 83%. Restante: 17%.**
+**Avance certificado: 83%. Restante: 17%.** El abort pre-provider no suma ni resta progreso.
 
 ## Siguiente acción exacta
 
-`C6 STAFF REPAIR/BOOTSTRAP PROVIDER SNAPSHOT READ-ONLY`.
+Emitir un request corregido contra el HEAD vivo y consumir la **primera y única observación provider efectiva** de `C6 STAFF REPAIR/BOOTSTRAP PROVIDER SNAPSHOT READ-ONLY`.
 
-Debe realizar una sola observación Auth focal source-safe, adjudicar reutilización de A únicamente con owner-binding independiente, verificar colisiones técnicas con inputs transitorios y congelar write budget + rollback dry-run. No reabrir las 340 identidades.
+Si la observación efectiva detecta drift, faltante, colisión o ambigüedad: `STOP_RETRY` sin segundo provider read.
 
-## Seguridad
+## Seguridad acumulada del bloque hasta aquí
 
 ```text
-providerReadsCurrentBlock=0
+providerReadsEffective=0
 providerWrites=0
 AuthWrites=0
 FirestoreWrites=0
 HRWrites=0
 RulesWrites=0
 StorageWrites=0
+deletes=0
 deploys=0
 merge=false
 production=false
