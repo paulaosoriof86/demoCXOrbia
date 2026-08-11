@@ -33,7 +33,7 @@ Auth writes 0; Firestore writes 0; deletes 0; HR/Rules/Storage/Make/Gemini/Payme
 
 ## Causa raíz
 
-El write necesita el `visibleLogin` exacto; el target B solo quedó disponible como digest SHA-256 source-safe y las fuentes privadas accesibles no reprodujeron ese digest. No se permite inferir o sustituir identidad.
+El write necesita el `visibleLogin` exacto; B solo pudo contrastarse mediante digest SHA-256 source-safe y las fuentes privadas accesibles no aportaron una coincidencia exacta. No se permite inferir o sustituir identidad.
 
 ## Progreso
 
