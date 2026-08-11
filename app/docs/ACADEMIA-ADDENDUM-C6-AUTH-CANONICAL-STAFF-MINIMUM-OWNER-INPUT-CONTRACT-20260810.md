@@ -12,9 +12,9 @@ Provider snapshot focal sigue PASS: Auth 228; A reusable solo por owner-binding 
 
 El request exact-write autorizado se detuvo antes del primer provider write porque el runtime no pudo resolver exactamente el `visibleLogin` de B desde las fuentes privadas permitidas, aunque el manejo criptográfico privado sí quedó PASS.
 
-Esto demuestra una distinción reusable:
+Esto demuestra:
 
-- un digest SHA-256 permite comparar identidad sin exponerla;
+- SHA-256 permite comparar identidad sin exponerla;
 - un digest one-way no sustituye el dato vivo cuando una operación posterior necesita materializarlo;
 - si el dato operativo debe usarse después, debe existir un canal privado recuperable y gobernado, separado de repo/docs/evidencia pública;
 - cuando el dato exacto no puede recuperarse, el sistema debe detenerse antes de escribir en lugar de inferirlo.
