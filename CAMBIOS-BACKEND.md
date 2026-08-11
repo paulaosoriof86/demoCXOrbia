@@ -9,7 +9,7 @@
 
 ## Baseline preservado
 
-Auth 228, Activation/readback/rollback, SKIP13, MultiAuth, HashConfig, DirectRunnerDEV, M4, HR M6, live-user-admin static PASS y provider snapshot PASS siguen cerrados. No reabrir.
+Auth 228, Activation/readback/rollback, SKIP13, MultiAuth, HashConfig, DirectRunnerDEV, M4, HR M6, live-user-admin static PASS y provider snapshot PASS siguen cerrados.
 
 ## Archivos creados/tocados en este bloque
 
@@ -20,20 +20,28 @@ tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write.mjs
 .github/workflows/cxorbia-corte6-auth-rbac-activation.yml
 app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-EXACT-WRITE-LATEST.json
 app/docs/SOURCE-LOCK-C6-STAFF-REPAIR-BOOTSTRAP-STOP-PRIVATE-IDENTITY-B-20260811.md
+app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md
+app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md
+RESUMEN-PARA-CLAUDE.md
+PENDIENTES-PROTOTIPO.md
+app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md
+app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md
+app/docs/ACADEMIA-ADDENDUM-C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-20260810.md
 ```
 
 Se reutilizó el workflow existente; no se creó workflow, rama, PR ni candidata nueva.
 
-## Source self-test
+## Self-test y exact write
 
-Antes de habilitar el request se ejecutó un self-test source-only con cero provider writes:
+Self-test source-only previo:
 
 ```text
 runId=31534430007
 decision=PASS_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_SOURCE_PREFLIGHT
+providerWrite=0
 ```
 
-## Exact write autorizado — STOP pre-write
+Ejecución autorizada:
 
 ```text
 requestId=c6-staff-repair-bootstrap-exact-write-20260811-01
@@ -47,9 +55,9 @@ identityResolutionPass=false
 providerStatePass=false
 ```
 
-El executor verificó contrato, budget, snapshot authority, service account privada y descifrado protegido en memoria. Se detuvo antes del primer provider write porque las fuentes privadas permitidas no aportaron una coincidencia exacta para el `visibleLogin` de B contra el digest congelado.
+El executor pasó contrato, budget, snapshot authority, service account privada y descifrado protegido en memoria, pero se detuvo antes del primer provider write porque no encontró una coincidencia exacta para el `visibleLogin` de B dentro de las fuentes privadas permitidas.
 
-## Seguridad y writes reales
+## Writes reales
 
 ```text
 AuthCreates=0
@@ -72,39 +80,26 @@ Merge=false
 Production=false
 ```
 
-No se persistieron ni exportaron login, password, password hash, UID o nombre crudo. A, R4 canónico y los ocho históricos permanecen sin mutación.
+No se persistieron ni exportaron login/password/hash/UID/nombre crudos. A, R4 canónico y los ocho históricos permanecen sin mutación.
 
 ## Causa raíz
 
-El modelo source-safe anterior redujo los owner target logins a SHA-256 no reversibles. El write real necesita `visibleLogin` para materializar el tenant user doc y requiere resolución exacta antes del write boundary. Para B no existe actualmente una referencia privada accesible al executor que reproduzca el digest. No es un drift de Auth/HR/Firestore ni un fallo del snapshot.
+Los owner-target logins quedaron deliberadamente como digests SHA-256 source-safe. El write real necesita el `visibleLogin` exacto, pero la fuente cifrada histórica + documentos vivos accesibles al executor no resolvieron B. SHA-256 no es reversible. No es drift de Auth, HR, Firestore ni del snapshot.
 
-## Métrica estable
+## Métrica
 
-```text
-M1 35 COMPLETE
-M2 20 COMPLETE
-M3 15 COMPLETE
-M4  5 COMPLETE
-M5  4/8 COMPLETE
-M6  5 COMPLETE
-M7  0/5
-M8  0/3
-M9  0/3
-M10 0/1
-```
-
-**Avance certificado: 84%. Restante: 16%.** No se acredita M5 adicional porque no hubo write provider efectivo.
+**84% certificado; 16% restante. M5=4/8.** No se suma progreso por un STOP pre-write.
 
 ## Siguiente acción exacta
 
 `C6 STAFF TARGET PRIVATE IDENTITY RECOVERY SOURCE-ONLY`.
 
-Primero recuperar/validar A-D desde fuentes privadas ya existentes sin provider writes ni PII emitida. El request consumido no se reejecuta. Una nueva autorización de exact write solo se prepara si la recuperación termina PASS.
+No reejecutar el request consumido ni repetir provider snapshot. Recuperar/validar A-D desde fuentes privadas existentes sin provider writes; solo con PASS podrá prepararse nueva autorización exact-write.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** fail-closed pre-write, digest one-way y recuperación privada controlada.
-- **Exclusivo TyA:** target B y presupuesto focal C6.
-- **Claude/prototipo:** sin cambios UI; wiring sigue bloqueado.
-- **Academia:** impacto conceptual de privacidad y trazabilidad.
-- **Sin impacto Claude:** executor/request/evidence técnicos.
+- **Reusable CXOrbia:** fail-closed, digest one-way, separación source-safe/dato operativo recuperable.
+- **Exclusivo TyA:** target B y budget C6.
+- **Claude/prototipo:** sin cambios UI; wiring pendiente.
+- **Academia:** lección conceptual documentada.
+- **Sin impacto Claude:** executor/request/evidence.
