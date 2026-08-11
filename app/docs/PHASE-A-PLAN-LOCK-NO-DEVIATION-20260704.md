@@ -2,7 +2,7 @@
 
 **Fecha original:** 2026-07-04  
 **Actualización prevalente:** 2026-08-11  
-**Estado:** `C6_LIVE_USER_ADMIN_CONTRACT_SOURCE_ONLY_PASS__OWNER_REFERENCES_RECEIVED__PROJECT_ENTITLEMENTS_PENDING__BACKEND_EXECUTABLE_PENDING__NO_PROVIDER__NO_REPAIR__NO_PRODUCTION`
+**Estado:** `C6_HR_LIVE_DIRECT_READ_PASS__LIVE_USER_ADMIN_CONTRACT_SOURCE_ONLY_PASS__PROJECT_ENTITLEMENTS_PENDING__BACKEND_EXECUTABLE_PENDING__NO_REPAIR__NO_PRODUCTION`
 
 ## 1. Objetivo operativo
 
@@ -43,9 +43,23 @@ DirectRunnerDEV=PASS
 
 No reabrir PREWRITE/Activation general ni reconstrucción de 340 identidades sin P0 reproducible.
 
-## 5. Bloque vivo — staff canónico administrable
+## 5. HR viva cerrada — M6 COMPLETE
 
-Las referencias empresariales A/B/C y un acceso adicional de Operaciones fueron recibidas transitoriamente en conversación. No volver a pedirlas ni persistirlas como constantes.
+La fuente compartida previamente fue leída directamente el 2026-08-11. La HR está mapeada y viva; agosto 2026 devuelve 34 visitas GT + 10 HN = 44 y ambos tabs validan el país correcto.
+
+```text
+HR_SOURCE_MAPPED=true
+HR_SOURCE_LIVE=true
+CURRENT_PERIOD=2026-08
+CURRENT_VISITS=44
+M6=COMPLETE
+```
+
+El antiguo bloqueo de observabilidad HR del 2026-08-06 era un problema de control-plane, no un pendiente de mapeo. No volver a pedir enlace, export, inventario ni nuevo mapeo salvo P0 reproducible.
+
+## 6. Bloque vivo — staff canónico administrable
+
+Las referencias empresariales A/B/C y un acceso adicional de Operaciones fueron recibidas transitoriamente. No volver a pedirlas ni persistirlas como constantes.
 
 Falta únicamente el scope de proyecto de los cuatro accesos:
 
@@ -57,7 +71,7 @@ SPECIFIC_PROJECTS
 
 `TYA_COMPLETE` se expande a IDs canónicos exactos; no wildcard. `SPECIFIC_PROJECTS` se resuelve 1:1. No asumir Cinépolis.
 
-## 6. Administración viva de usuarios
+## 7. Administración viva de usuarios
 
 La UI existente `app/modules/configuracion.js#usuarios` ya cubre el flujo visual, pero actualmente usa localStorage y modo preview. El contrato source-only de backend ya está cerrado PASS:
 
@@ -68,21 +82,20 @@ app/docs/SOURCE-LOCK-C6-LIVE-USER-ADMIN-CONTRACT-SOURCE-ONLY-20260811.md
 
 No rediseñar UI. El siguiente cierre técnico es backend executable/admin adapter + wiring localizado, con Auth/tenant user doc/audit trail, RBAC, idempotencia, readback y rollback.
 
-## 7. Cadena única restante
+## 8. Cadena única restante
 
 ```text
 M4 scopes exactos + target digests
 -> M5 backend executable/admin wiring + repair/bootstrap/readback/rollback
--> M6 HR final production evidence
--> M7 final accumulative multirole smoke
+-> M7 final accumulative multirole smoke contra la HR viva ya cerrada
 -> M8 human validation + rollback ready
 -> M9 explicit cutover + one production promotion
 -> M10 post-cutover smoke + freeze
 ```
 
-No insertar nuevas auditorías generales entre esos pasos.
+M6 fue retirado de la cola porque ya está COMPLETE. No insertar nuevas auditorías HR generales entre esos pasos.
 
-## 8. Métrica estable
+## 9. Métrica estable
 
 ```text
 M1 Baseline acumulativa/Phase A preservada        35 = COMPLETE
@@ -90,27 +103,27 @@ M2 Auth V4 activation/readback/rollback           20 = COMPLETE
 M3 SKIP13/MultiAuth/HashConfig/direct runner      15 = COMPLETE
 M4 Owners + exact project entitlements             5 = 2/5 COMPLETE
 M5 Staff repair/bootstrap + live admin + rollback  8 = 1/8 COMPLETE
-M6 HR final production evidence                     5 = PENDING
+M6 HR live current production evidence              5 = COMPLETE
 M7 Final accumulative multirole smoke               5 = PENDING
 M8 Human validation + rollback ready                3 = PENDING
 M9 Explicit cutover + one production promotion      3 = PENDING
 M10 Post-cutover smoke + freeze                     1 = PENDING
 ```
 
-**Avance certificado: 73%. Restante: 27%.** El denominador queda congelado.
+**Avance certificado: 78%. Restante: 22%.** El denominador queda congelado.
 
-## 9. Circuit breakers
+## 10. Circuit breakers
 
-- No reabrir M1-M3 sin P0 reproducible.
+- No reabrir M1-M3 ni M6 sin P0 reproducible.
 - No repetir preguntas ya respondidas.
+- No pedir nuevamente HR ni hardcodear periodos/conteos HR.
 - No hardcodear staff ni scopes.
 - No crear nueva candidata, rama o PR por rutina.
-- No ejecutar provider/repair antes de scope exacto.
+- No ejecutar repair Auth antes de scope exacto.
 - No repetir PREWRITE/Activation general.
 - No conectar ni copiar la base legacy.
-- No hardcodear periodos HR.
 - Cada interacción debe reportar avance nuevo, porcentaje acumulado, porcentaje restante y siguiente gate exacto.
 
-## 10. Estado seguro
+## 11. Estado seguro
 
-Sin provider/HR/Auth/Firestore/Rules/Storage writes, deploy, merge ni producción en el bloque actual.
+Lectura HR actual realizada sin writes. Sin Auth/Firestore/Rules/Storage/HR writes, deploy, merge ni producción.
