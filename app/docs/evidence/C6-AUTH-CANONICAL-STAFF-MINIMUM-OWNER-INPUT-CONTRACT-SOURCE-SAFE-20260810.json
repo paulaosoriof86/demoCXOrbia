@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "cxorbia.c6.auth-canonical-staff-minimum-owner-input-contract.evidence.v1",
+  "generatedAt": "2026-08-10T18:57:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "entryHeadSha": "0f0ced120b3554bc97bbcffdca667176438db809",
+  "decision": "PASS_C6_AUTH_CANONICAL_STAFF_MINIMUM_OWNER_INPUT_CONTRACT_READY",
+  "state": "C6_AUTH_CANONICAL_STAFF_MINIMUM_OWNER_INPUT_CONTRACT_READY__BUSINESS_OWNER_AND_SCOPE_INPUT_REQUIRED__A_REUSE_CONDITIONAL__BC_NEW_EPHEMERAL_FIXED__D_PRESERVED__DOCS_ONLY__NO_PRODUCTION",
+  "baseline": {
+    "authUsers": 228,
+    "activation": "PASS",
+    "readback": "PASS",
+    "rollbackDryRun": "PASS",
+    "planDigest": "c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4"
+  },
+  "inputsFrozen": {
+    "A": ["OWNER_ANCHOR_REQUIRED", "PROJECT_ENTITLEMENT_REQUIRED"],
+    "B": ["OWNER_ANCHOR_REQUIRED", "PROJECT_ENTITLEMENT_REQUIRED", "CREDENTIAL_INPUT_REQUIRED"],
+    "C": ["OWNER_ANCHOR_REQUIRED", "PROJECT_ENTITLEMENT_REQUIRED", "CREDENTIAL_INPUT_REQUIRED"]
+  },
+  "humanDecisionSurface": {
+    "technicalFingerprintSelectionRequiredFromPaula": false,
+    "legacyKeeperDecisionRequiredFromPaula": false,
+    "questions": 6,
+    "businessDimensions": ["owner", "scope"],
+    "questionsByTarget": {
+      "A": ["Who is the TyA Superadministration owner?", "TyA-wide or specific projects?"],
+      "B": ["Who is the TyA Administration owner?", "TyA-wide or specific projects?"],
+      "C": ["Who is the TyA Operations owner?", "TyA-wide or specific projects?"]
+    }
+  },
+  "conversion": {
+    "owner": {
+      "rawHumanReferencePersisted": false,
+      "ownerIdentityAnchor": "sha256('cxorbia-owner-v1\\0tya\\0' + NFKC/lowercase/trim/collapseWhitespace(answer))",
+      "ownerRoleBinding": "sha256('cxorbia-owner-role-v1\\0tya\\0' + role + '\\0' + ownerIdentityAnchor)"
+    },
+    "entitlement": {
+      "businessModes": ["TYA_COMPLETE", "SPECIFIC_PROJECTS"],
+      "wildcardClaimsAllowed": false,
+      "exactCanonicalProjectIdsRequiredBeforeDigest": true,
+      "legacyScopeInferenceAllowed": false,
+      "cinepolisDefaultAllowed": false
+    },
+    "claims": {
+      "fixed": {"authNamespace": "staff", "tenantId": "tya"},
+      "roles": {"A": "super", "B": "admin", "C": "ops"},
+      "projectIds": "exact sorted unique owner entitlement",
+      "shopperId": "absent",
+      "canonicalKeyOrder": ["authNamespace", "projectIds", "role", "tenantId"],
+      "expectedClaimsDigest": "sha256(UTF8(compact canonical JSON))"
+    }
+  },
+  "credentialStrategy": {
+    "A": "REUSE_EXISTING_CANONICAL_SUPER_ONLY_IF_INDEPENDENT_OWNER_BINDING_MATCHES_ELSE_NEW_EPHEMERAL",
+    "B": "NEW_EPHEMERAL_CREDENTIAL",
+    "C": "NEW_EPHEMERAL_CREDENTIAL",
+    "secretPersistence": "FORBIDDEN"
+  },
+  "D": {
+    "groupFp": "ae2f920fe6d9ce1fdd82",
+    "status": "REPAIR_PLAN_READY",
+    "reopened": false
+  },
+  "targetDigestsGenerated": 0,
+  "reasonTargetDigestsNotGenerated": "Business owner and exact project entitlement answers have not yet been supplied; generating digests before those answers would require prohibited inference.",
+  "safety": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "iamWrites": 0,
+    "firestoreReads": 0,
+    "firestoreWrites": 0,
+    "hrReads": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "prewrite": false,
+    "activation": false,
+    "smoke": false,
+    "repair": false,
+    "make": 0,
+    "gemini": 0,
+    "payments": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false,
+    "rawPiiStored": false,
+    "credentialsStored": false
+  },
+  "next": "CAPTURE_SIX_MINIMUM_BUSINESS_ANSWERS_THEN_SOURCE_SAFE_TARGET_DIGEST_CLOSE_NO_PROVIDER_NO_REPAIR"
+}
