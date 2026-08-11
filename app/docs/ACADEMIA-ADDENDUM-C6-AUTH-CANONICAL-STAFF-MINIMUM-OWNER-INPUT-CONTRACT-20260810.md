@@ -4,12 +4,12 @@
 
 Sin cambios a cursos/rutas/certificaciones/UI.
 
-Provider snapshot sigue PASS: Auth228; A reusable por owner-binding independiente; B/C/D canonical nuevos; R4 Cliente exacto; budget Auth14/Firestore16/deletes0; rollback PASS.
+Provider snapshot PASS: Auth228; A reusable owner-bound; B/C/D canonical nuevos; R4 exacto; budget Auth14/Firestore16/deletes0; rollback PASS.
 
-Exact-write autorizado se detuvo antes del primer provider write: `PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B`; privacidad criptográfica PASS, resolución identidad FAIL, Auth/Firestore writes0, deletes0, deploy/merge/producción0.
+Exact-write consumido se detuvo antes del primer provider write por `PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B`; privacidad PASS, resolución identidad FAIL, Auth0/Firestore0/deletes0/deploy0/merge0/production0.
 
-Lección reusable: SHA-256 compara sin exponer, pero un digest one-way no reemplaza el dato vivo cuando debe materializarse. Debe existir canal privado recuperable; si no se recupera el dato exacto, detener antes de escribir en vez de inferirlo.
+Lección: SHA-256 permite comparar sin exponer, pero un digest one-way no sustituye el dato operativo recuperable. Si el dato exacto no se recupera desde un canal privado gobernado, detener antes de escribir en vez de inferirlo.
 
-Usuarios & Permisos pendiente hasta bootstrap PASS; no fallback/hardcode. HR M6 cerrado.
+Usuarios & Permisos sigue pendiente hasta bootstrap PASS; no fallback/hardcode. HR M6 cerrado.
 
-**Impacto Academia:** conceptual/no bloqueante. **Phase A84%.**
+**Impacto Academia conceptual/no bloqueante. Phase A84%.**
