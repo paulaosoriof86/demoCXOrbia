@@ -1,13 +1,15 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-11  
-**Estado vivo:** `C6_AUTH_CANONICAL_STAFF_OWNER_INPUT_PARTIAL_CAPTURED__PROJECT_ENTITLEMENTS_PENDING__LIVE_USER_ADMIN_BACKEND_GAP_PROVEN__NO_PROVIDER__NO_REPAIR__NO_PRODUCTION`
+**Estado vivo:** `C6_LIVE_USER_ADMIN_CONTRACT_SOURCE_ONLY_PASS__OWNER_REFERENCES_RECEIVED__PROJECT_ENTITLEMENTS_PENDING__BACKEND_EXECUTABLE_PENDING__NO_PROVIDER__NO_REPAIR__NO_PRODUCTION`
 
 ## 1. Fuente vigente
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-3. PR #7 y HEAD vivo.
+3. `app/docs/SOURCE-LOCK-C6-LIVE-USER-ADMIN-CONTRACT-SOURCE-ONLY-20260811.md`;
+4. `backend/contracts/c6-live-user-admin-v1.json`;
+5. PR #7 y HEAD vivo.
 
 ## 2. No reabrir
 
@@ -32,18 +34,20 @@ Pendiente inmediato: scope exacto de proyecto para los cuatro accesos iniciales 
 - alta muestra `Invitación preparada (vista previa)`;
 - `app/core/backend-firebase.js` no expone create/update/disable de Firebase Auth ni claims/scope de usuarios.
 
+El contrato backend source-only ya está cerrado PASS en `backend/contracts/c6-live-user-admin-v1.json`.
+
 ### Tarea Claude/prototipo localizada
 
-No crear pantalla nueva. Cuando backend entregue el contrato vivo de administración de usuarios, sustituir únicamente el almacenamiento preview del módulo `usuarios` por el adapter autorizado, conservando el diseño, flujos y controles existentes. Debe quedar capacidad de alta, edición, cambio de rol/scope y deshabilitación. No hardcodear personas, correos, roles ni projectIds.
+No crear pantalla nueva. Cuando backend entregue el adapter vivo, sustituir únicamente la autoridad localStorage del módulo `usuarios` por el adapter autorizado, conservando diseño, flujos y controles. Debe quedar capacidad de alta, edición, cambio de rol/scope, deshabilitación y reactivación. No hardcodear personas, correos, roles ni projectIds.
 
 No hacer fallback legacy, selector técnico, copy con fingerprints/claims ni relajación RBAC.
 
 ## 5. Métrica de cierre
 
-**Avance certificado vigente: 72%. Restante: 28%.** El gap de administración viva forma parte de M5 y no crea una fase adicional.
+**Avance certificado vigente: 73%. Restante: 27%.** M5a contrato live-user-admin source-only = PASS. El denominador no cambia.
 
 ## 6. Siguiente bloque backend
 
-`C6 STAFF TARGET DIGEST + LIVE USER ADMIN BACKEND CONTRACT — SOURCE-SAFE / NO PROVIDER / NO REPAIR`.
+`C6 STAFF TARGET DIGEST + LIVE USER ADMIN BACKEND EXECUTABLE SOURCE-ONLY`.
 
-Primero cerrar scopes exactos; después preparar contrato/admin adapter backend con RBAC, snapshot, idempotencia, readback y rollback. Sin provider ni repair en ese bloque.
+Primero cerrar scopes exactos; después preparar backend/admin adapter con RBAC, snapshot, idempotencia, readback y rollback. Sin provider ni repair en ese bloque.
