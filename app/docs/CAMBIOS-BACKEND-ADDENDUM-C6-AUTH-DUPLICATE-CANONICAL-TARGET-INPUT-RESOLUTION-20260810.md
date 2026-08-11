@@ -18,7 +18,23 @@
 - `app/docs/C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-SOURCE-SAFE-20260810.md`;
 - `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-REQUIRED-20260810.md`;
 - este addendum;
-- addenda Claude, Pendientes, Academia y Phase A tracker del mismo bloque.
+- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-20260810.md`;
+- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-20260810.md`;
+- `app/docs/ACADEMIA-ADDENDUM-C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-20260810.md`;
+- `app/docs/PHASE-A-TRACKER-ADDENDUM-C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-20260810.md`.
+
+## Archivos actualizados
+
+- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
+- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
+- `CAMBIOS-BACKEND.md`;
+- `RESUMEN-PARA-CLAUDE.md`;
+- `PENDIENTES-PROTOTIPO.md`;
+- PR #7 metadata/body al cierre.
+
+## Incidente de herramienta sin mutación
+
+Una llamada `update_file` a este addendum fue rechazada con HTTP 409 por SHA no vigente. Falló antes de commit; se recuperó el blob SHA actual mediante `fetch_file` y se actualizó correctamente. Sin efecto en provider, Auth, datos, frontend, deploy o producción.
 
 ## Seguridad
 
