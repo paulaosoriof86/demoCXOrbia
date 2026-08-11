@@ -1,0 +1,183 @@
+{
+  "schemaVersion": "cxorbia.c6.auth-duplicate-canonical-target-input-resolution.source-safe.v1",
+  "generatedAt": "2026-08-10T18:42:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "entryHeadSha": "2ff9649c7dd91a5cc2f164675aa37a34e4da1ba7",
+  "decision": "PASS_C6_CANONICAL_TARGET_INPUT_SOURCE_SAFE_RECONCILIATION_WITH_REQUIRED_INPUTS",
+  "state": "C6_AUTH_DUPLICATE_CANONICAL_TARGET_INPUT_RESOLUTION_COMPLETE__A_OWNER_ANCHOR_AND_PROJECT_ENTITLEMENT_REQUIRED__BC_OWNER_ANCHOR_PROJECT_ENTITLEMENT_CREDENTIAL_INPUT_REQUIRED__D_PRESERVED_REPAIR_READY__ZERO_PROVIDER_READS__ZERO_WRITES__NO_PRODUCTION",
+  "baseline": {
+    "authUsers": 228,
+    "activation": "PASS",
+    "readback": "PASS",
+    "rollbackDryRun": "PASS",
+    "planDigest": "c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4",
+    "universe340Reconstructed": false
+  },
+  "authorizedGroups": [
+    "1acdcb3782b7cf351056",
+    "2c4d19f2b066835473d3",
+    "54225792eeb65f6739c0"
+  ],
+  "excludedPreservedGroup": {
+    "groupFp": "ae2f920fe6d9ce1fdd82",
+    "status": "REPAIR_PLAN_READY",
+    "reopened": false
+  },
+  "sourcesReviewed": [
+    "app/docs/C6-AUTH-DUPLICATE-CANONICAL-REPLACEMENT-REPAIR-PLAN-SOURCE-ONLY-20260810.md",
+    "app/docs/evidence/C6-AUTH-DUPLICATE-CANONICAL-REPLACEMENT-REPAIR-PLAN-SOURCE-ONLY-20260810.json",
+    "app/docs/evidence/C6-AUTH-DUPLICATE-OWNERSHIP-ANCHOR-SOURCE-SAFE-RECONCILIATION-20260810.json",
+    "app/docs/evidence/CORTE6-CREDENTIAL-INVENTORY-SOURCE-SAFE-V3.json",
+    "app/docs/evidence/CORTE6-CREDENTIAL-HANDOFF-DRYRUN-LATEST.json",
+    "app/docs/evidence/CORTE6-CREDENTIAL-IMPORT-LATEST.json",
+    "app/docs/evidence/CORTE6-CREDENTIAL-CONTINUITY-READONLY-LATEST.json",
+    "app/docs/evidence/CORTE6-AUTH-CLAIMS-NORMALIZATION-LATEST.json",
+    "app/docs/evidence/C6-AUTH-SMOKE-FINDINGS-ADJUDICATION-AMBIGUITY-STOP-RETRY-20260810.json",
+    "app/contracts/auth-claims-phase-a.tya.contract.json",
+    "backend/contracts/auth-rbac-phase-a-v1.json",
+    "backend/config/phase-a-role-taxonomy-personas.source-safe.json",
+    "app/core/backend-browser-auth.js",
+    "firestore.rules"
+  ],
+  "sourceSafeFindings": {
+    "ownerAnchor": {
+      "uniqueOwnerLevelAnchorForA": false,
+      "uniqueOwnerLevelAnchorForB": false,
+      "uniqueOwnerLevelAnchorForC": false,
+      "roleUniquenessAcceptedAsIdentityProof": false,
+      "legacyMemberSelectionUsed": false,
+      "rawIdentitySelectorsUsed": false
+    },
+    "credentialInventory": {
+      "sourceStaffRecords": 4,
+      "sourceStaffRoles": {"superadmin": 1, "coordinador": 2, "demo": 1},
+      "eligibleImportedStaff": 3,
+      "eligibleImportedStaffRoles": {"super": 1, "coordinador": 2},
+      "importedAdmin": 0,
+      "importedOps": 0,
+      "plaintextPasswordRecoverableFromFirebaseAuth": false,
+      "rawCredentialValuesExported": false
+    },
+    "projectScope": {
+      "genericRoleContractsExist": true,
+      "ownerSpecificEntitlementForA": false,
+      "ownerSpecificEntitlementForB": false,
+      "ownerSpecificEntitlementForC": false,
+      "legacyScopeCopied": false,
+      "cinepolisInferred": false,
+      "note": "Generic RBAC/runtime rules describe permitted scope shapes but do not prove the exact business entitlement of any focal owner. The newer repair contract therefore remains fail-closed on exact owner entitlement."
+    }
+  },
+  "targets": [
+    {
+      "groupFp": "1acdcb3782b7cf351056",
+      "role": "super",
+      "knownContract": {
+        "authNamespace": "staff",
+        "tenantId": "tya",
+        "shopperId": "ABSENT"
+      },
+      "targetResolved": false,
+      "blockingInputs": [
+        "OWNER_ANCHOR_REQUIRED",
+        "PROJECT_ENTITLEMENT_REQUIRED"
+      ],
+      "credentialInputContract": {
+        "status": "BLOCKED_BY_OWNER_ANCHOR",
+        "existingEncryptedCanonicalSourceCredentialCandidateExists": true,
+        "reuseAllowedOnlyIfIndependentOwnerAnchorProvesExactAssociation": true,
+        "roleUniquenessAloneForbidden": true,
+        "otherwise": "CREDENTIAL_INPUT_REQUIRED",
+        "secretHandling": "EPHEMERAL_ONLY_NO_REPO_NO_ARTIFACT_NO_LOG"
+      },
+      "expectedClaimsDigest": null,
+      "reason": "A single canonical imported super credential path exists, but no independent source-safe owner-level anchor associates it with group A. Reusing it because it is the only imported super would violate the authorization. Exact project entitlement is also not owner-proven."
+    },
+    {
+      "groupFp": "2c4d19f2b066835473d3",
+      "role": "admin",
+      "knownContract": {
+        "authNamespace": "staff",
+        "tenantId": "tya",
+        "shopperId": "ABSENT"
+      },
+      "targetResolved": false,
+      "blockingInputs": [
+        "OWNER_ANCHOR_REQUIRED",
+        "PROJECT_ENTITLEMENT_REQUIRED",
+        "CREDENTIAL_INPUT_REQUIRED"
+      ],
+      "credentialInputContract": {
+        "status": "CREDENTIAL_INPUT_REQUIRED",
+        "existingCanonicalImportedAdminCredential": false,
+        "plaintextLegacyPasswordRecoverable": false,
+        "requiredFutureMode": "NEW_EPHEMERAL_CREDENTIAL_AT_AUTHORIZED_EXECUTION",
+        "secretHandling": "EPHEMERAL_ONLY_NO_REPO_NO_ARTIFACT_NO_LOG"
+      },
+      "expectedClaimsDigest": null,
+      "reason": "No source-safe owner anchor or exact project entitlement exists for group B. The canonical credential import created zero admin principals, and Firebase Auth cannot provide plaintext password material for a new canonical principal."
+    },
+    {
+      "groupFp": "54225792eeb65f6739c0",
+      "role": "ops",
+      "knownContract": {
+        "authNamespace": "staff",
+        "tenantId": "tya",
+        "shopperId": "ABSENT"
+      },
+      "targetResolved": false,
+      "blockingInputs": [
+        "OWNER_ANCHOR_REQUIRED",
+        "PROJECT_ENTITLEMENT_REQUIRED",
+        "CREDENTIAL_INPUT_REQUIRED"
+      ],
+      "credentialInputContract": {
+        "status": "CREDENTIAL_INPUT_REQUIRED",
+        "existingCanonicalImportedOpsCredential": false,
+        "plaintextLegacyPasswordRecoverable": false,
+        "requiredFutureMode": "NEW_EPHEMERAL_CREDENTIAL_AT_AUTHORIZED_EXECUTION",
+        "secretHandling": "EPHEMERAL_ONLY_NO_REPO_NO_ARTIFACT_NO_LOG"
+      },
+      "expectedClaimsDigest": null,
+      "reason": "No source-safe owner anchor or exact project entitlement exists for group C. The canonical credential import created zero ops principals, and Firebase Auth cannot provide plaintext password material for a new canonical principal."
+    }
+  ],
+  "prohibitedInferenceChecks": {
+    "roleUniqueness": false,
+    "creationTime": false,
+    "lastSignInTime": false,
+    "resultOrder": false,
+    "rawName": false,
+    "rawEmail": false,
+    "rawUid": false,
+    "legacyScopeAsEntitlement": false,
+    "legacyKeeperSelection": false
+  },
+  "currentBlockSafety": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "iamWrites": 0,
+    "firestoreReads": 0,
+    "firestoreWrites": 0,
+    "hrReads": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "prewrite": false,
+    "activation": false,
+    "newSmoke": false,
+    "repair": false,
+    "make": 0,
+    "gemini": 0,
+    "payments": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false,
+    "rawPiiExported": false,
+    "credentialsExported": false
+  },
+  "next": "C6_AUTH_CANONICAL_STAFF_MINIMUM_OWNER_INPUT_CONTRACT_SOURCE_SAFE_NO_PROVIDER_NO_REPAIR"
+}
