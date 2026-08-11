@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "cxorbia.c6.live-user-admin-static-terminal-evidence.v1",
+  "generatedAt": "2026-08-11T10:39:21-06:00",
+  "decision": "PASS_C6_LIVE_USER_ADMIN_STATIC_SOURCE_GATE_TERMINAL",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "checkoutHeadSha": "9d16521ac67c7a9fa7cd6de393e778bc6a05876b",
+  "gateSourceCommitSha": "674d20e7f00df0d8763e1c9cbf80eed5e013eb3b",
+  "workflow": "CXORBIA_READONLY_POST_GATES_RUNNER",
+  "workflowRunId": 31513528713,
+  "workflowJobId": 93852916856,
+  "executionLane": "EXISTING_CONTROLLED_RUNNER_MANDATORY_PREFLIGHT",
+  "controlledRunnerDecision": "PASS_CXORBIA_CONTROLLED_RUNNERS_CONTRACT",
+  "blockers": [],
+  "warnings": [],
+  "liveUserAdminGate": "tools/qa/cxorbia-c6-live-user-admin-source-gate.mjs",
+  "liveUserAdminExpectedDecision": "PASS_C6_STAFF_TARGET_DIGEST_AND_LIVE_USER_ADMIN_BACKEND_SOURCE_ONLY",
+  "proof": {
+    "exactLiveBranchCheckout": true,
+    "mandatoryPreflightCompleted": true,
+    "preflightFailsIfLiveUserAdminGateFails": true,
+    "controlledRunnerPass": true,
+    "providerProfileEnabled": false,
+    "browserProfileExecuted": false
+  },
+  "safety": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false,
+    "containsPii": false,
+    "containsSecrets": false
+  }
+}
