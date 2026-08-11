@@ -8,35 +8,41 @@ Este bloque no cambia cursos, rutas, certificaciones ni UI de Academia antes de 
 
 - identidad empresarial, rol y alcance son dimensiones separadas;
 - `TyA completo` no equivale a wildcard;
-- el alcance de un usuario debe definirse explícitamente al crearlo y poder modificarse después bajo autorización;
-- `Proyectos específicos` debe venir de un inventario vivo y auditable, no de texto libre ni IDs hardcodeados;
-- `TyA completo` se materializa como projectIds exactos;
-- un proyecto nuevo no debe ampliar privilegios silenciosamente: los usuarios con alcance completo requieren revisión/confirmación explícita de expansión;
-- cambios de rol/alcance deben dejar audit trail y readback;
-- alta, edición, deshabilitación y reactivación son operaciones diferentes;
-- credenciales y claims técnicos no se enseñan ni exponen como contenido de usuario.
+- el alcance se define explícitamente al crear un usuario y puede modificarse después bajo autorización;
+- `Proyectos específicos` proviene de inventario vivo y auditable, no de IDs hardcodeados;
+- un proyecto nuevo no amplía privilegios silenciosamente;
+- cambios de rol/alcance dejan audit trail y readback;
+- alta, edición, deshabilitación y reactivación son operaciones distintas;
+- retiro histórico preferente = deshabilitar y conservar trazabilidad, no borrar;
+- credenciales, claims, fingerprints, provider email y UIDs técnicos no se muestran como contenido de usuario.
 
-## Estado de staff inicial
+## Estado técnico reusable
 
-La decisión empresarial de los cuatro accesos iniciales quedó cerrada como `TYA_COMPLETE`. Solo se documentan aliases/digests source-safe; no nombres, correos, UIDs ni credenciales.
+El contrato `backend/contracts/c6-live-user-admin-v1.json` v1.1 y el handler `backend/runtime/hr-live-service/user-admin.mjs` formalizan scope obligatorio/editable, inventario vivo, RBAC, audit/readback/rollback y no hard delete por defecto.
 
-## Backend reusable
+El static source gate se ejecutó terminalmente sobre la rama viva y quedó PASS mediante el runner read-only existente. La lección metodológica reusable es diferenciar **source preparado** de **gate terminal demostrado**; no debe declararse listo un componente solo porque el script exista.
 
-El contrato `backend/contracts/c6-live-user-admin-v1.json` v1.1 y el handler `backend/runtime/hr-live-service/user-admin.mjs` formalizan:
+## Prewrite y migración de identidad
 
-- scope obligatorio en alta;
-- scope editable;
-- inventario canónico vivo;
-- RBAC;
-- audit/readback/rollback;
-- cero hard delete por defecto.
+El nuevo `backend/contracts/c6-staff-repair-bootstrap-prewrite-v1.json` separa aliases de negocio de grupos históricos para impedir confusiones semánticas. Antes de cualquier write exige snapshot source-safe, create-before-retire, readback e inverse action calculable.
 
-Para manuales futuros, la pantalla Usuarios & Permisos debe explicar en lenguaje humano la diferencia entre `TyA completo` y `Proyectos específicos`, incluida la revisión cuando aparezcan proyectos nuevos. No mostrar fingerprints, claims, provider email ni detalles de implementación.
+El presupuesto de writes se congela únicamente después de observar el estado real; no se recicla un cap histórico cuando cambia el alcance del bloque.
+
+## Manuales futuros
+
+Usuarios & Permisos debe explicar en lenguaje humano:
+
+- `TyA completo`;
+- `Proyectos específicos`;
+- revisión requerida cuando cambia el inventario de proyectos;
+- diferencia entre deshabilitar y eliminar.
+
+No mostrar detalles técnicos de Auth.
 
 ## HR viva
 
-M6 permanece cerrado. La HR viva y su observabilidad siguen siendo conceptos separados; no repetir mapeo por fallos de telemetría.
+M6 permanece cerrado. La HR viva y la observabilidad de una ejecución siguen siendo conceptos separados; no repetir mapeo por fallos de telemetría.
 
 **Impacto Academia:** conceptual/documental. No bloquea producción ni exige una nueva lección antes del cutover.
 
-**Avance de cierre certificado:** 82%.
+**Avance de cierre certificado:** 83%.
