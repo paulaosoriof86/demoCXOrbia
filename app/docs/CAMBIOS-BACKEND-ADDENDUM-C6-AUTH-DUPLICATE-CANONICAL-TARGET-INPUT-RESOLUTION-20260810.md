@@ -29,12 +29,11 @@
 - `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 - `CAMBIOS-BACKEND.md`;
 - `RESUMEN-PARA-CLAUDE.md`;
-- `PENDIENTES-PROTOTIPO.md`;
-- PR #7 metadata/body al cierre.
+- `PENDIENTES-PROTOTIPO.md`.
 
 ## Incidentes de herramienta
 
-Una llamada `update_file` fue rechazada con HTTP 409 por SHA no vigente y no mutó el repo. Después se produjeron cuatro commits documentales redundantes durante el intento de cierre de este mismo addendum; no tocaron provider, Auth, datos, frontend, deploy ni producción. Regla correctiva: detener el loop documental; no emitir más updates a este archivo en este bloque y usar `update_pull_request` únicamente para el PR.
+Una llamada `update_file` fue rechazada con HTTP 409 por SHA no vigente y no mutó el repo. Después se produjeron cinco commits documentales redundantes durante el intento de cierre de este mismo addendum. No tocaron provider, Auth, datos, frontend, deploy ni producción. Este archivo queda ahora congelado: no emitir más updates en este bloque.
 
 ## Seguridad
 
