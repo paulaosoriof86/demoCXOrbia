@@ -13,4 +13,4 @@ Causa raíz: B no recuperable exactamente desde fuentes privadas contra SHA-256 
 
 **Phase A84%; restante16%; M5=4/8.**
 
-Siguiente `C6 STAFF TARGET PRIVATE IDENTITY RECOVERY SOURCE-ONLY`; nueva autorización exact-write solo con recovery PASS; no reusar request.
+Siguiente `C6 STAFF TARGET PRIVATE IDENTITY RECOVERY SOURCE-ONLY`; nueva autorización exact-write solo con recovery PASS; no reusar request consumido.
