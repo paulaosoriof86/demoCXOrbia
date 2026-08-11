@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-11  
-**Estado:** `C6_AUTH_CANONICAL_STAFF_OWNER_INPUT_PARTIAL_CAPTURED__OWNER_REFERENCES_RECEIVED__PROJECT_ENTITLEMENTS_PENDING__NO_PROVIDER__NO_REPAIR__NO_PRODUCTION`
+**Estado:** `C6_AUTH_CANONICAL_STAFF_OWNER_INPUT_PARTIAL_CAPTURED__OWNER_REFERENCES_RECEIVED_TRANSIENTLY__PROJECT_ENTITLEMENTS_PENDING__NO_PROVIDER__NO_REPAIR__NO_PRODUCTION`
 
 ## 1. Control
 
@@ -9,6 +9,7 @@
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
 - HEAD verificado al inicio de la sesión: `e62f62e6c4161216b2cb32071fda036ba700a020`;
+- commit documental de captura inicial: `9013be65f1e06628343aa796b7deeb2746dbb08a`;
 - producción: intacta.
 
 ## 2. Baseline Auth protegido
@@ -34,18 +35,20 @@ No reconstruir las 340 identidades ni repetir PREWRITE/Activation/smoke históri
 
 ## 3. Input empresarial recibido el 2026-08-11
 
-Se recibió de Paula la designación empresarial humana para los roles staff canónicos:
+La conversación actual entregó las designaciones humanas para A/B/C y un usuario adicional de Operaciones. Conforme al contrato source-safe vigente, **las referencias humanas y correos se consideran datos transitorios y no se persisten en este documento, código, configuración ejecutable, claims, artifacts ni logs**.
+
+Estado de captura:
 
 ```text
-A / Superadministración = Paula Andrea Osorio Franco
-B / Administración      = Paula Andrea Osorio Franco
-C / Operaciones          = Carlos Castro
-additionalOpsAccess      = Samuel Daza
+A / Superadministración = OWNER_REFERENCE_RECEIVED_TRANSIENTLY
+B / Administración      = OWNER_REFERENCE_RECEIVED_TRANSIENTLY
+C / Operaciones          = OWNER_REFERENCE_RECEIVED_TRANSIENTLY
+additionalOpsAccess      = ADDITIONAL_USER_REFERENCE_RECEIVED_TRANSIENTLY
+rawOwnerReferencesStored = false
+rawEmailsStored          = false
 ```
 
-Estas referencias son de negocio y se usan solo transitoriamente para resolver owner anchors/role bindings. **No deben persistirse en código, configuración ejecutable ni claims como datos hardcodeados.** Los correos compartidos en conversación tampoco se persisten en este checkpoint ni deben usarse como identidad técnica canónica por defecto.
-
-La observación de Samuel Daza se clasifica como **usuario adicional de Operaciones**, no como sustitución automática del titular C. Debe materializarse posteriormente como dato administrable en la plataforma, no como constante de código.
+El usuario adicional de Operaciones se clasifica como acceso adicional administrable y no como sustitución automática del titular C.
 
 ## 4. Autoadministrabilidad obligatoria
 
@@ -63,17 +66,17 @@ technicalIdentityDerivedAtRuntime=true
 rawCredentialsInRepo=false
 ```
 
-Paula debe poder crear, editar, cambiar roles/scope, deshabilitar y administrar usuarios desde la plataforma con RBAC. La desactivación debe preservar auditoría; eliminación física queda separada y protegida.
+Los usuarios, roles y scopes deben quedar administrables desde la plataforma bajo RBAC. Deshabilitar preserva auditoría; eliminación física queda separada y protegida.
 
 ## 5. Pendiente mínimo real
 
-Faltan únicamente los **alcances de proyecto** para cerrar el target de A/B/C:
+Faltan únicamente los **alcances de proyecto** para cerrar los targets staff iniciales:
 
 ```text
 A / Superadministración -> TYA_COMPLETE o SPECIFIC_PROJECTS
 B / Administración      -> TYA_COMPLETE o SPECIFIC_PROJECTS
 C / Operaciones          -> TYA_COMPLETE o SPECIFIC_PROJECTS
-Samuel / Operaciones     -> TYA_COMPLETE o SPECIFIC_PROJECTS
+additional Ops user      -> TYA_COMPLETE o SPECIFIC_PROJECTS
 ```
 
 `TYA_COMPLETE` debe expandirse a projectIds canónicos exactos; no wildcard. `SPECIFIC_PROJECTS` exige resolución 1:1 a projectIds canónicos. No asumir Cinépolis.
@@ -86,7 +89,7 @@ Se adopta para las sesiones restantes una métrica de 100 puntos, sin recalcular
 M1 Baseline acumulativa/Phase A preservada        35 pts = COMPLETE
 M2 Auth V4 activation/readback/rollback           20 pts = COMPLETE
 M3 SKIP13/MultiAuth/HashConfig/direct runner      15 pts = COMPLETE
-M4 Owners + exact project entitlements             5 pts = PARTIAL (owners recibidos; scopes pendientes)
+M4 Owners + exact project entitlements             5 pts = PARTIAL
 M5 Repair focal A-D + readback/rollback             8 pts = PENDING
 M6 HR final production evidence                     5 pts = PENDING
 M7 Final accumulative multirole smoke               5 pts = PENDING
@@ -95,15 +98,15 @@ M9 Explicit cutover + one production promotion      3 pts = PENDING
 M10 Post-cutover smoke + freeze                     1 pt  = PENDING
 ```
 
-Avance certificado antes de cerrar M4: **70% completo + 2/5 de M4 capturado = 72% operativo de cierre**.
+Avance certificado actual: **72%**. Restante: **28%**.
 
-Esta escala se conserva en adelante. Solo aumenta cuando un milestone obtiene evidencia terminal; un STOP_RETRY no reduce porcentaje ya ganado salvo P0 demostrado que invalide evidencia previa.
+La escala se conserva en adelante. Solo aumenta con evidencia terminal; un STOP_RETRY no reduce porcentaje ya ganado salvo P0 demostrado que invalide evidencia previa.
 
 ## 7. Circuit breaker anti-bucle
 
-1. No reabrir milestones M1-M3 sin P0 reproducible.
-2. No volver a preguntar owner names ya recibidos.
-3. No convertir staff inicial en constantes de código.
+1. No reabrir M1-M3 sin P0 reproducible.
+2. No volver a preguntar las referencias humanas ya recibidas.
+3. No persistir usuarios iniciales como constantes de código.
 4. No crear nueva candidata, rama o PR.
 5. No repetir PREWRITE/Activation general.
 6. No ejecutar provider/repair hasta cerrar scopes exactos.
@@ -113,7 +116,7 @@ Esta escala se conserva en adelante. Solo aumenta cuando un milestone obtiene ev
 
 `C6 AUTH CANONICAL STAFF OWNER INPUT CAPTURE AND TARGET DIGEST — COMPLETE PROJECT ENTITLEMENTS, SOURCE-SAFE / NO PROVIDER / NO REPAIR`.
 
-Una vez recibidos los cuatro scopes, convertir owner references a anchors/digests, enumerar projectIds exactos, generar target claims + expectedClaimsDigest y preparar el repair focal reversible. No provider ni repair en ese bloque.
+Una vez recibidos los cuatro scopes, convertir en memoria transitoria las referencias humanas a anchors/digests, enumerar projectIds exactos, generar target claims + expectedClaimsDigest y preparar el repair focal reversible. No provider ni repair en ese bloque.
 
 ## 9. Estado seguro
 
@@ -136,5 +139,6 @@ payments=0
 deploys=0
 merge=false
 production=false
+rawPIIStored=false
 rawCredentialsStored=false
 ```
