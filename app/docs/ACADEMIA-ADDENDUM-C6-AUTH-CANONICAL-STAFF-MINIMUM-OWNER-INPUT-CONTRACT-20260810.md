@@ -4,10 +4,12 @@
 
 Sin cambios a cursos/rutas/certificaciones/UI.
 
-Provider snapshot PASS: Auth228; A reusable owner-bound; B/C/D canonical nuevos; R4 exacto; budget Auth14/Firestore16/deletes0; rollback PASS.
+Provider snapshot PASS: Auth228; A reusable owner-bound; B/C/D canonical targets definidos; R4 exacto; budget Auth14/Firestore16/deletes0; rollback PASS.
 
-Exact-write run31534505451 se detuvo pre-write por `PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B`; privacidad PASS, resolución identidad FAIL, Auth0/Firestore0/deletes0/deploy0/merge0/production0.
+Recovery source-only posterior al exact-write STOP permitió validar A/B/C exactamente contra los bindings/digests congelados sin provider reads ni PII persistida. D conserva owner/rol/scope/projectIds, pero no se recuperó su visible-login exacto desde las referencias privadas disponibles.
 
-Lección: SHA-256 compara sin exponer pero no sustituye un dato operativo recuperable. Si no se recupera exactamente por canal privado, detener antes de escribir y no inferir.
+Lección reusable: el modelo correcto separa dato visible privado de digest source-safe. Una referencia privada puede recuperarse y validarse transient sin persistirla; si no existe match exacto, el sistema debe declarar el único dato faltante y detenerse, no generar variantes ni aproximaciones.
 
-Usuarios & Permisos pendiente hasta bootstrap PASS; HR M6 cerrado. **Impacto conceptual/no bloqueante; Phase A84%.**
+Efectos: provider/Auth/Firestore/HR/Rules/Storage writes0; deletes0; deploy/merge/production0. Usuarios & Permisos sigue pendiente hasta bootstrap PASS; HR M6 cerrado.
+
+**Impacto Academia conceptual/no bloqueante; Phase A84%.**
