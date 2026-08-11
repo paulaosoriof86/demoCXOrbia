@@ -1,26 +1,37 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
   "requestId": "c6-staff-repair-bootstrap-provider-snapshot-readonly-20260811-02-harness-rootfix",
-  "enabled": true,
+  "enabled": false,
   "issuedAt": "2026-08-11T11:42:00-06:00",
-  "consumed": false,
+  "consumedAt": "2026-08-11T11:43:01-06:00",
+  "consumed": true,
   "providerObservationOrdinal": 1,
+  "providerObservationConsumed": true,
   "priorAbortedRequestId": "c6-staff-repair-bootstrap-provider-snapshot-readonly-20260811-01",
   "priorAbortedProviderReads": 0,
-  "status": "AUTHORIZED_PENDING_FIRST_AND_ONLY_EFFECTIVE_PROVIDER_OBSERVATION",
+  "status": "CONSUMED_PASS_C6_STAFF_REPAIR_BOOTSTRAP_PREWRITE",
+  "decision": "PASS_C6_STAFF_REPAIR_BOOTSTRAP_PREWRITE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "targetHeadSha": "c09a3e33858ee5d49751c6bf52433c3c78265121",
-  "requestCommitSha": null,
+  "requestCommitSha": "6632ecbdb8593126c094178154fca9b0913592af",
+  "workflowRunId": 31518927950,
+  "workflowJobId": 93870945840,
+  "artifactId": 9112228351,
+  "artifactDigest": "sha256:044b9f90df50cb633b90cb87721e22c9a913804ba337227d95eaa1cdea198776",
   "profile": "C6_STAFF_REPAIR_BOOTSTRAP_PROVIDER_SNAPSHOT_READONLY",
   "allowedProfiles": [
     "C6_STAFF_REPAIR_BOOTSTRAP_PROVIDER_SNAPSHOT_READONLY"
   ],
-  "allowedExecutions": 1,
+  "allowedExecutions": 0,
   "repositoryWrites": false,
   "dataWrites": false,
   "providerReads": true,
+  "providerReadsExecuted": {
+    "authListObservations": 1,
+    "firestoreDocumentReads": 2
+  },
   "providerWrites": false,
   "deploy": false,
   "merge": false,
@@ -32,6 +43,7 @@
   "runnerContract": "backend/contracts/c6-staff-provider-snapshot-runner-v1.json",
   "collisionTargets": "backend/config/c6-staff-provider-collision-targets-v1.json",
   "harnessNormalizer": "tools/qa/cxorbia-c6-staff-provider-snapshot-runner-report.mjs",
+  "evidence": "app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-PROVIDER-SNAPSHOT-LATEST.json",
   "safeState": {
     "repositoryWrites": false,
     "dataWrites": false,
@@ -56,6 +68,13 @@
   "authorizationScope": "C6 STAFF REPAIR/BOOTSTRAP PROVIDER SNAPSHOT READ-ONLY sobre cxorbia-backend-dev, limitado exclusivamente a R1/Super, R2/Admin, R3/Ops, target D adicional de Operaciones y R4_CLIENT_HISTORICAL; verificar población Auth esperada 228 o STOP_RETRY ante drift, estados disabled y claims source-safe, canónico Cliente preservado, reutilización A únicamente mediante owner-binding independiente y nunca por unicidad de rol, colisiones técnicas A-D usando inputs transitorios sin emitir login, email, UID, password o nombre, y congelar write budget exacto + rollback dry-run. Cero Auth/Firestore/Rules/Storage/HR writes, deletes, deploy, merge o producción. Ante faltante, drift, colisión o ambigüedad, STOP_RETRY sin segundo provider read.",
   "repositoryUnchangedByGate": true,
   "stopRetryOnFailure": true,
-  "nextGateOnPass": "C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_AUTHORIZATION",
-  "purpose": "Consume the first and only effective provider observation authorized by Paula after the prior request was permanently closed with provider reads zero due to a pre-provider harness parse abort."
+  "frozenWriteBudget": {
+    "authWritesTotal": 14,
+    "firestoreWritesTotal": 16,
+    "authDeletes": 0,
+    "firestoreDeletes": 0
+  },
+  "rollbackDryRun": "PASS",
+  "nextGate": "C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_AUTHORIZATION",
+  "purpose": "Frozen successful consumption of the first and only effective provider snapshot observation authorized in this block."
 }
