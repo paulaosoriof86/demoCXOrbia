@@ -32,9 +32,9 @@
 - `PENDIENTES-PROTOTIPO.md`;
 - PR #7 metadata/body al cierre.
 
-## Incidente de herramienta sin mutación
+## Incidentes de herramienta
 
-Una llamada `update_file` a este addendum fue rechazada con HTTP 409 por SHA no vigente. Falló antes de commit; se recuperó el blob SHA actual mediante `fetch_file` y se actualizó correctamente. Sin efecto en provider, Auth, datos, frontend, deploy o producción.
+Una llamada `update_file` fue rechazada con HTTP 409 por SHA no vigente y no mutó el repo. Después hubo dos updates documentales redundantes del mismo contenido, ambos sin cambio de blob pero con commit registrado por la API. No afectaron provider, Auth, datos, frontend, deploy ni producción. No repetir actualizaciones no-op en bloques siguientes.
 
 ## Seguridad
 
