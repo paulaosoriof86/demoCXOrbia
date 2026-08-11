@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "cxorbia.c6.live-user-admin.contract.v1",
+  "schemaVersion": "cxorbia.c6.live-user-admin.contract.v1.1",
   "purpose": "Provide a live, tenant-scoped and auditable user administration contract for the existing Usuarios & Permisos UI without hardcoded staff identities or localStorage authority in production.",
   "target": {
     "firebaseProjectId": "cxorbia-backend-dev",
@@ -12,14 +12,13 @@
     "authentication": "Firebase Auth",
     "tenantUserDocument": "tenants/{tenantId}/users/{uid}",
     "auditTrail": "tenants/{tenantId}/auditLogs/{auditId}",
+    "projectInventory": "tenants/{tenantId}/projects/{projectId}",
     "browserLocalStorageAuthority": false
   },
   "callerPolicy": {
     "authenticated": true,
-    "tenantClaimRequired": "tya",
-    "mutatingRoles": [
-      "super"
-    ],
+    "tenantClaimRequired": "request tenantId",
+    "mutatingRoles": ["super"],
     "adminMayMutateSuper": false,
     "opsMayMutateUsers": false,
     "clientMayMutateUsers": false,
@@ -30,6 +29,7 @@
     "authNamespace": "staff",
     "visibleLoginIsRuntimeInput": true,
     "visibleLoginStoredInRepo": false,
+    "visibleLoginIsProtectedLiveTenantData": true,
     "normalizeLogin": "trim+lowercase",
     "internalFirebaseEmail": "sha256(tenantId + NUL + authNamespace + NUL + normalizedVisibleLogin)[0:48] + @auth.cxorbia.invalid",
     "rawProviderEmailExposedToUi": false,
@@ -40,49 +40,36 @@
     "visibleLoginChangeRequiresCollisionCheckAndProviderEmailUpdate": true,
     "passwordStoredInRepoArtifactOrLog": false
   },
+  "projectEntitlementContract": {
+    "selectionRequiredOnCreate": true,
+    "selectionEditableAfterCreate": true,
+    "modes": ["TYA_COMPLETE", "SPECIFIC_PROJECTS"],
+    "businessQuestion": "Alcance de proyectos",
+    "businessOptions": ["TyA completo", "Proyectos específicos"],
+    "tyaCompleteResolution": "resolve all current canonical tenant project documents server-side to exact sorted unique projectIds",
+    "specificProjectsResolution": "validate selected projectIds against current canonical tenant project documents",
+    "wildcardAllowed": false,
+    "silentDefaultAllowed": false,
+    "futureProjectSilentInheritance": false,
+    "futureProjectBehaviorForTyaComplete": "flag scopeReviewRequired until an authorized explicit entitlement expansion is saved",
+    "scopeChangeRequiresClaimsWrite": true,
+    "scopeChangeRequiresAudit": true,
+    "scopeChangeRequiresReadback": true
+  },
   "claimsContract": {
-    "required": [
-      "authNamespace",
-      "tenantId",
-      "role",
-      "projectIds"
-    ],
+    "required": ["authNamespace", "tenantId", "role", "projectIds"],
     "authNamespace": "staff",
-    "tenantId": "tya",
-    "allowedRoles": [
-      "super",
-      "admin",
-      "ops",
-      "coordinador",
-      "cliente"
-    ],
+    "allowedRoles": ["super", "admin", "ops", "coordinador", "cliente"],
     "projectIds": "exact sorted unique canonical entitlement",
     "shopperIdForStaff": "absent",
     "wildcardProjectScopeAllowed": false,
-    "defaultProjectAssumptionAllowed": false
+    "defaultProjectAssumptionAllowed": false,
+    "canonicalDigestKeyOrder": ["authNamespace", "projectIds", "role", "tenantId"]
   },
   "tenantUserDocumentContract": {
-    "requiredFields": [
-      "tenantId",
-      "role",
-      "projectIds",
-      "active",
-      "createdAt",
-      "updatedAt"
-    ],
-    "optionalProtectedFields": [
-      "displayName",
-      "contactEmail",
-      "countries",
-      "clientId",
-      "personLabel"
-    ],
-    "technicalFields": [
-      "authNamespace",
-      "providerUidFingerprint",
-      "claimsDigest",
-      "lastAdminActionId"
-    ],
+    "requiredFields": ["tenantId", "authNamespace", "visibleLogin", "role", "entitlementMode", "projectIds", "active", "createdAt", "updatedAt"],
+    "optionalProtectedFields": ["displayName", "contactEmail", "countries", "clientId", "personLabel"],
+    "technicalFields": ["providerUidFingerprint", "claimsDigest", "lastAdminActionId"],
     "rawPasswordAllowed": false,
     "rawProviderTokenAllowed": false,
     "rawProviderHashAllowed": false
@@ -90,21 +77,22 @@
   "operations": {
     "list": {
       "providerWrite": false,
-      "requiresRole": [
-        "super"
-      ],
-      "returnsProtectedTenantUserData": true
+      "requiresRole": ["super"],
+      "returnsProtectedTenantUserData": true,
+      "returnsScopeReviewRequired": true,
+      "returnsCurrentCanonicalProjectIds": true
     },
     "create": {
       "sequence": [
-        "validate caller RBAC",
-        "validate exact project entitlement",
+        "validate caller Firebase ID token and exact tenant RBAC",
+        "require entitlement mode selection",
+        "resolve exact project entitlement from live canonical project inventory",
         "normalize visible login",
         "derive internal Firebase email",
         "collision check",
         "create Auth principal",
         "set exact custom claims",
-        "write tenant user document",
+        "write tenant user document including entitlementMode",
         "write audit log",
         "readback Auth + claims + tenant user document"
       ],
@@ -112,13 +100,7 @@
       "ephemeralCredentialRequired": true
     },
     "updateProfile": {
-      "editableFields": [
-        "displayName",
-        "contactEmail",
-        "countries",
-        "clientId",
-        "personLabel"
-      ],
+      "editableFields": ["displayName", "contactEmail", "countries", "clientId", "personLabel"],
       "claimsWrite": false,
       "readbackRequired": true
     },
@@ -126,10 +108,11 @@
       "sequence": [
         "validate caller RBAC",
         "validate target role",
+        "require entitlement mode",
         "resolve exact canonical projectIds",
-        "snapshot previous claims",
+        "snapshot previous claims and tenant user document",
         "set exact custom claims",
-        "update tenant user document",
+        "update tenant user document including entitlementMode",
         "write audit log",
         "readback exact claims digest"
       ],
@@ -168,19 +151,31 @@
     "deleteRequired": false,
     "dryRunBeforeProductionWrite": true
   },
+  "backendExecutable": {
+    "serviceSource": "backend/runtime/hr-live-service",
+    "handler": "backend/runtime/hr-live-service/user-admin.mjs",
+    "routes": [
+      "GET /api/tenants/{tenantId}/users",
+      "POST /api/tenants/{tenantId}/users",
+      "PATCH /api/tenants/{tenantId}/users/{uid}/profile",
+      "PATCH /api/tenants/{tenantId}/users/{uid}/scope",
+      "POST /api/tenants/{tenantId}/users/{uid}:disable",
+      "POST /api/tenants/{tenantId}/users/{uid}:reactivate"
+    ],
+    "hostingRewritePreparedSourceOnly": true,
+    "deployed": false
+  },
   "frontendIntegration": {
     "existingModule": "app/modules/configuracion.js#usuarios",
     "redesignRequired": false,
     "productionPersistence": "live admin adapter",
     "localStorageAllowedAsProductionAuthority": false,
-    "requiredActions": [
-      "list",
-      "create",
-      "updateProfile",
-      "changeRoleOrProjectScope",
-      "disable",
-      "reactivate"
-    ],
+    "createMustAskProjectScope": true,
+    "editMustAllowProjectScopeChange": true,
+    "specificProjectsUsesLiveProjectMultiselect": true,
+    "tyaCompleteShowsEffectiveProjectSet": true,
+    "futureProjectScopeReviewMustBeVisible": true,
+    "requiredActions": ["list", "create", "updateProfile", "changeRoleOrProjectScope", "disable", "reactivate"],
     "newTechnicalFieldsVisibleToUser": false
   },
   "sourceSafe": {
