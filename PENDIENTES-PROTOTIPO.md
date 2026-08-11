@@ -1,38 +1,39 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-11  
-**Estado vivo:** `PASS_C6_STAFF_REPAIR_BOOTSTRAP_PROVIDER_SNAPSHOT__AUTH_228__A_REUSE_BOUND__BCD_CREATE__R4_PRESERVED__WRITE_BUDGET_FROZEN__ROLLBACK_DRYRUN_PASS__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `STOP_RETRY_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE__PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B__AUTH_WRITES_0__FIRESTORE_WRITES_0__NO_DELETE__NO_DEPLOY__NO_PRODUCTION`
 
-## Cerrado
+## Cerrado y protegido
 
-Frontend acumulativo; Auth 228; Activation/readback/rollback; SKIP13; MultiAuth; HashConfig; direct runner; M4; HR M6; live-user-admin source + static gate; provider snapshot focal PASS; write budget + rollback dry-run.
+Frontend acumulativo; Auth 228; Activation/readback/rollback; SKIP13; MultiAuth; HashConfig; direct runner; M4; HR M6; live-user-admin source + static gate; provider snapshot PASS; budget Auth=14/Firestore=16 y rollback dry-run PASS.
 
-## Provider snapshot
+## Exact write consumido
 
 ```text
-AuthPopulation=228
-A=REUSE_EXISTING_CANONICAL owner-bound
-B/C/D=CREATE_NEW_EPHEMERAL
-R4 canonical Cliente=preserved exact
-historicalEnabled=8
-AuthWriteBudget=14
-FirestoreWriteBudget=16
-RollbackDryRun=PASS
+request=c6-staff-repair-bootstrap-exact-write-20260811-01
+run=31534505451
+blocker=PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B
+credentialPrivacyPass=true
+identityResolutionPass=false
+AuthWrites=0
+FirestoreWrites=0
+Deletes=0
 ```
 
-No repetir provider snapshot.
+No reejecutar ese request y no repetir provider snapshot.
 
-## Pendiente vivo
+## Pendiente vivo inmediato
 
-1. autorización exacta C6 STAFF REPAIR/BOOTSTRAP con Auth=14 / Firestore=16 / deletes=0;
-2. ejecución focal create-before-retire + readback/rollback evidence;
-3. wiring localizado Usuarios & Permisos;
-4. M7 smoke acumulativo multirol con HR viva;
-5. M8 validación humana;
-6. M9 cutover;
-7. M10 post-smoke/freeze.
+1. `C6 STAFF TARGET PRIVATE IDENTITY RECOVERY SOURCE-ONLY`: recuperar/validar A-D desde fuentes privadas existentes, sin provider writes ni PII emitida;
+2. solo con recovery PASS, preparar una **nueva** autorización focal de exact write bajo el mismo budget congelado y sin deletes;
+3. ejecutar repair/bootstrap + readback/rollback;
+4. wiring localizado de `app/modules/configuracion.js#usuarios`;
+5. M7 smoke acumulativo multirol contra HR viva;
+6. M8 validación humana;
+7. M9 cutover autorizado;
+8. M10 post-smoke/freeze.
 
-No falta información empresarial para solicitar el punto 1.
+No volver a pedir owners/scopes/HR. Tampoco inventar el login faltante; primero agotar recuperación privada source-only.
 
 ## Métrica
 
@@ -40,4 +41,4 @@ No falta información empresarial para solicitar el punto 1.
 
 ## No hacer
 
-No repetir owner/scope/HR/static/provider; no hardcode; no wildcard; no reabrir 340; no nueva rama/PR/candidata; no Auth/Firestore writes sin autorización exacta; no deletes; no deploy/merge/producción sin gate.
+No reejecutar request consumido; no repetir static/provider snapshot; no reabrir Auth 340/SKIP13/MultiAuth/HR; no inferir B por nombre/rol; no hardcode/wildcard; no nueva candidata/rama/PR/workflow; no Auth/Firestore writes hasta recovery PASS + nueva autorización; no deletes/deploy/merge/producción.
