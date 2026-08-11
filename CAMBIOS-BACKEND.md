@@ -5,75 +5,78 @@
 
 ## Estado actual
 
-`PASS_C6_STAFF_REPAIR_BOOTSTRAP_PROVIDER_SNAPSHOT__AUTH_228__A_REUSE_BOUND__BCD_CREATE__R4_PRESERVED__WRITE_BUDGET_FROZEN__ROLLBACK_DRYRUN_PASS__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+`STOP_RETRY_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE__PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B__AUTH_WRITES_0__FIRESTORE_WRITES_0__NO_DELETE__NO_DEPLOY__NO_PRODUCTION`
 
 ## Baseline preservado
 
-Auth 228, Activation/readback/rollback, SKIP13, MultiAuth, HashConfig, DirectRunnerDEV, M4 y HR M6 siguen cerrados. No reabrir.
+Auth 228, Activation/readback/rollback, SKIP13, MultiAuth, HashConfig, DirectRunnerDEV, M4, HR M6, live-user-admin static PASS y provider snapshot PASS siguen cerrados. No reabrir.
 
-## Live user-admin y static gate
-
-Se preservan contrato, handler, routing/packaging y static live-user-admin source gate PASS terminal. No se modificó UI desde backend.
-
-## Provider snapshot terminal — PASS
+## Archivos creados/tocados en este bloque
 
 ```text
-requestId=c6-staff-repair-bootstrap-provider-snapshot-readonly-20260811-02-harness-rootfix
-requestCommit=6632ecbdb8593126c094178154fca9b0913592af
-runId=31518927950
-jobId=93870945840
-artifactId=9112228351
-artifactDigest=sha256:044b9f90df50cb633b90cb87721e22c9a913804ba337227d95eaa1cdea198776
-decision=PASS_C6_STAFF_REPAIR_BOOTSTRAP_PREWRITE
-AuthPopulation=228
-AuthListObservations=1
-FirestoreDocumentReads=2
-providerWrites=0
-blockers=[]
+backend/contracts/c6-staff-repair-bootstrap-exact-write-v1.json
+tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write.mjs
+.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write.json
+.github/workflows/cxorbia-corte6-auth-rbac-activation.yml
+app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-EXACT-WRITE-LATEST.json
+app/docs/SOURCE-LOCK-C6-STAFF-REPAIR-BOOTSTRAP-STOP-PRIVATE-IDENTITY-B-20260811.md
 ```
 
-Evidencia: `app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-PROVIDER-SNAPSHOT-LATEST.json`.
-Source lock: `app/docs/SOURCE-LOCK-C6-STAFF-PROVIDER-SNAPSHOT-PASS-20260811.md`.
+Se reutilizó el workflow existente; no se creó workflow, rama, PR ni candidata nueva.
 
-El request quedó disabled/consumed. No repetir provider snapshot.
+## Source self-test
 
-## Adjudicación
+Antes de habilitar el request se ejecutó un self-test source-only con cero provider writes:
 
 ```text
-A super = REUSE_EXISTING_CANONICAL; owner-bound; roleUniquenessUsed=false; claims exact
-B admin = CREATE_NEW_EPHEMERAL; collision=0
-C ops   = CREATE_NEW_EPHEMERAL; collision=0
-D ops   = CREATE_NEW_EPHEMERAL; collision=0
-R4 Cliente canónico = preserved exact; mutation forbidden
+runId=31534430007
+decision=PASS_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_SOURCE_PREFLIGHT
 ```
 
-Los ocho históricos focales siguen enabled. Retiro futuro: `DISABLE_ONLY_NO_DELETE` después de canonical readback.
-
-## Budget exacto congelado
+## Exact write autorizado — STOP pre-write
 
 ```text
-Auth creates=3
-customClaims writes=3
-Auth disables=8
-Auth writes TOTAL=14
-Auth deletes=0
-userDocs=4
-auditLogs=12
-Firestore writes TOTAL=16
-Firestore deletes=0
-rollbackDryRun=PASS
-uniqueInverseActions=12
+requestId=c6-staff-repair-bootstrap-exact-write-20260811-01
+requestCommit=ac82cfc4a74d70dbedb8ab099bd430a6e5c372b7
+runId=31534505451
+jobId=93922274430
+decision=STOP_RETRY_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE
+blocker=PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B
+credentialPrivacyPass=true
+identityResolutionPass=false
+providerStatePass=false
 ```
 
-El Auth=14 actual fue recalculado desde el snapshot real; solo coincide numéricamente con el cap histórico superseded porque A se reutiliza y B/C/D se crean.
+El executor verificó contrato, budget, snapshot authority, service account privada y descifrado protegido en memoria. Se detuvo antes del primer provider write porque las fuentes privadas permitidas no aportaron una coincidencia exacta para el `visibleLogin` de B contra el digest congelado.
 
-## Incidente de harness cerrado
+## Seguridad y writes reales
 
-El request `...-01` abortó antes de provider por `NESTED_HEREDOC_DELIMITER_INDENTATION`: provider reads efectivos 0. Se corrigió el mismo workflow con normalizador shell-safe y luego se consumió la única observación efectiva en el request `...-02`. No hubo segundo provider read.
+```text
+AuthCreates=0
+CustomClaimsWrites=0
+AuthDisables=0
+AuthWritesTotal=0
+TenantUserWrites=0
+AuditLogWrites=0
+FirestoreWritesTotal=0
+AuthDeletes=0
+FirestoreDeletes=0
+HRWrites=0
+RulesWrites=0
+StorageWrites=0
+MakeWrites=0
+GeminiCalls=0
+PaymentsWrites=0
+Deploy=0
+Merge=false
+Production=false
+```
 
-## HR / Claude / Academia
+No se persistieron ni exportaron login, password, password hash, UID o nombre crudo. A, R4 canónico y los ocho históricos permanecen sin mutación.
 
-M6 sigue COMPLETE (34 GT + 10 HN = 44). No se tocó `app/modules/configuracion.js`; wiring Usuarios & Permisos sigue localizado para después del repair/bootstrap. Impacto Academia actualizado como conceptual/no bloqueante.
+## Causa raíz
+
+El modelo source-safe anterior redujo los owner target logins a SHA-256 no reversibles. El write real necesita `visibleLogin` para materializar el tenant user doc y requiere resolución exacta antes del write boundary. Para B no existe actualmente una referencia privada accesible al executor que reproduzca el digest. No es un drift de Auth/HR/Firestore ni un fallo del snapshot.
 
 ## Métrica estable
 
@@ -90,14 +93,18 @@ M9  0/3
 M10 0/1
 ```
 
-**Avance certificado: 84%. Restante: 16%.**
+**Avance certificado: 84%. Restante: 16%.** No se acredita M5 adicional porque no hubo write provider efectivo.
 
 ## Siguiente acción exacta
 
-`C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE AUTHORIZATION`.
+`C6 STAFF TARGET PRIVATE IDENTITY RECOVERY SOURCE-ONLY`.
 
-No requiere repetir provider snapshot. Cualquier ejecución debe respetar budget Auth=14 / Firestore=16, create-before-retire, readback, rollback y cero deletes. Auth/Firestore writes, deploy, merge y producción siguen sin autorización.
+Primero recuperar/validar A-D desde fuentes privadas ya existentes sin provider writes ni PII emitida. El request consumido no se reejecuta. Una nueva autorización de exact write solo se prepara si la recuperación termina PASS.
 
-## Seguridad
+## Clasificación
 
-Provider snapshot consumió 1 Auth list y 2 Firestore reads. Provider/Auth/Firestore/Rules/Storage/HR writes=0; deletes=0; deploy=0; merge=false; production=false.
+- **Reusable CXOrbia:** fail-closed pre-write, digest one-way y recuperación privada controlada.
+- **Exclusivo TyA:** target B y presupuesto focal C6.
+- **Claude/prototipo:** sin cambios UI; wiring sigue bloqueado.
+- **Academia:** impacto conceptual de privacidad y trazabilidad.
+- **Sin impacto Claude:** executor/request/evidence técnicos.
