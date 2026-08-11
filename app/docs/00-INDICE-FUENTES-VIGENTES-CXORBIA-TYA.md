@@ -1,16 +1,16 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
 **Fecha:** 2026-08-11  
-**Estado vivo:** `STOP_RETRY_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE__PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B__AUTH_WRITES_0__FIRESTORE_WRITES_0__NO_DELETE__NO_DEPLOY__NO_PRODUCTION`
+**Estado vivo:** `STOP_C6_STAFF_TARGET_PRIVATE_IDENTITY_RECOVERY__ABC_EXACT__D_VISIBLE_LOGIN_UNRESOLVED__NO_PROVIDER__NO_WRITES__NO_PRODUCTION`
 
-Prevalencia: checkpoint -> source lock STOP B -> exact-write evidence/request/contract/executor -> provider snapshot PASS31518927950 -> live-user-admin static PASS -> HR live PASS -> Auth freezes -> CAMBIOS/RESUMEN/PENDIENTES/plan/tracker/Academia -> PR#7/HEAD.
+Prevalencia: checkpoint -> `SOURCE-LOCK-C6-STAFF-TARGET-PRIVATE-IDENTITY-RECOVERY-STOP-D-20260811.md` -> recovery evidence -> previous exact-write STOP source lock/evidence/request -> provider snapshot PASS31518927950 -> live-user-admin static PASS -> HR live PASS -> Auth freezes -> CAMBIOS/RESUMEN/PENDIENTES/plan/tracker/Academia -> PR#7/HEAD.
 
-Auth baseline228; M4=5/5; M5=4/8; M6=5/5; exact-write run31534505451 STOP_RETRY `PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B`; privacy PASS; identityResolution=false; Auth0/Firestore0/deletes0; production=false.
+Estado rector: Auth baseline228; M4=5/5; M5=4/8; M6=5/5; provider snapshot PASS31518927950; budget Auth14/Firestore16; exact-write consumed with zero provider writes; private recovery source-only resolved A/B/C exactly; D exact visible-login unresolved; provider reads/writes0; Auth/Firestore/HR/Rules/Storage writes0; deletes0; production=false.
 
-Causa raíz: B no recuperable exactamente desde fuentes privadas contra SHA-256 one-way; no inferir/sustituir identidad.
+Causa residual: D conserva owner anchor y owner-role binding exactos, pero ninguna referencia privada disponible reproduce el digest técnico congelado. No inferir ni sustituir identidad.
 
 **Phase A84%; restante16%.**
 
-Siguiente: `C6 STAFF TARGET PRIVATE IDENTITY RECOVERY SOURCE-ONLY`.
+Siguiente gate: `HUMAN PRIVATE D VISIBLE-LOGIN REFERENCE` únicamente. No pedir owner/rol/scope/projectIds/password/UID/HR/snapshot.
 
-No reejecutar request/provider/static/HR/owners/scopes/Auth340; no nueva candidata/rama/PR/workflow; no writes hasta recovery PASS + nueva autorización; no deletes/deploy/merge/producción.
+Anti-bucle: no reabrir A/B/C; no reusar exact-write request; no repetir snapshot/provider/static/HR/owners/scopes/Auth340; no generar variantes de D; no nueva candidata/rama/PR/workflow; no provider/Auth/Firestore writes hasta recovery completo PASS + nueva autorización; no deletes/deploy/merge/producción.
