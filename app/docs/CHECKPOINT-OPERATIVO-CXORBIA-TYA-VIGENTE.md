@@ -1,14 +1,14 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-11  
-**Estado:** `C6_STAFF_PROVIDER_SNAPSHOT_HARNESS_REPAIRED__FIRST_REQUEST_ABORTED_PRE_PROVIDER_READS_0__ONE_AUTHORIZED_PROVIDER_OBSERVATION_STILL_PENDING__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `PASS_C6_STAFF_REPAIR_BOOTSTRAP_PROVIDER_SNAPSHOT__AUTH_228__A_REUSE_BOUND__BCD_CREATE__R4_PRESERVED__WRITE_BUDGET_FROZEN__ROLLBACK_DRYRUN_PASS__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Control
 
 - repo: `paulaosoriof86/demoCXOrbia`;
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
-- source lock vigente: `app/docs/SOURCE-LOCK-C6-STAFF-PROVIDER-SNAPSHOT-HARNESS-REPAIRED-20260811.md`;
+- source lock vigente: `app/docs/SOURCE-LOCK-C6-STAFF-PROVIDER-SNAPSHOT-PASS-20260811.md`;
 - producción: intacta.
 
 ## 2. Baseline protegido
@@ -30,65 +30,89 @@ M6=COMPLETE
 
 No reconstruir Auth, no reabrir HR y no repetir PREWRITE/Activation históricos.
 
-## 3. M5 preservado
+## 3. M5 provider snapshot — PASS
+
+```text
+requestId=c6-staff-repair-bootstrap-provider-snapshot-readonly-20260811-02-harness-rootfix
+requestCommit=6632ecbdb8593126c094178154fca9b0913592af
+runId=31518927950
+jobId=93870945840
+artifactId=9112228351
+decision=PASS_C6_STAFF_REPAIR_BOOTSTRAP_PREWRITE
+AuthPopulation=228
+AuthListObservations=1
+FirestoreDocumentReads=2
+providerWrites=0
+blockers=[]
+```
+
+El request quedó disabled/consumed. No repetir provider snapshot.
+
+## 4. Adjudicación focal
+
+```text
+A super: REUSE_EXISTING_CANONICAL
+  ownerBindingVerified=true
+  roleUniquenessUsed=false
+  claimsExact=true
+  userDocAction=CREATE_CANONICAL_USER_DOC
+B admin: CREATE_NEW_EPHEMERAL, collision=0
+C ops: CREATE_NEW_EPHEMERAL, collision=0
+D ops adicional: CREATE_NEW_EPHEMERAL, collision=0
+R4 client canonical: enabled + claims exact + membership exact + mutation forbidden
+```
+
+R1/R2/R3/R4 históricos mantienen 2 principals enabled cada uno. Retiro futuro: `DISABLE_ONLY_NO_DELETE` y solo después del canonical readback correspondiente.
+
+## 5. Budget exacto congelado
+
+```text
+Auth creates=3
+custom claims writes=3
+Auth disable writes=8
+Auth writes total=14
+Auth deletes=0
+
+user document writes=4
+audit log writes=12
+Firestore writes total=16
+Firestore deletes=0
+```
+
+El total Auth=14 es un resultado nuevo del snapshot real; no reabre ni reutiliza el antiguo cap de 14. La coincidencia numérica ocurre porque A se reutiliza y B/C/D se crean.
+
+## 6. Rollback dry-run
+
+```text
+PASS
+uniqueInverseActions=12
+authReenableWrites=8
+authDisableCreatedWrites=3
+userDocDeactivateWrites=4
+auditRollbackWrites=12
+authDeletes=0
+firestoreDeletes=0
+validatedClientCanonicalMutation=NONE
+```
+
+## 7. M5 subasignación
 
 ```text
 M5a contract source-only                    = COMPLETE 1/8
 M5b executable backend source materialized = COMPLETE 1/8
 M5c static terminal gate                    = COMPLETE 1/8
-M5 remaining                                = PENDING 5/8
+M5d provider snapshot + exact prewrite      = COMPLETE 1/8
+M5 remaining                                = PENDING 4/8
 ```
 
-El prewrite focal `backend/contracts/c6-staff-repair-bootstrap-prewrite-v1.json` permanece READY. El viejo hard cap Auth=14 está superseded y el cap final sigue pendiente del snapshot efectivo.
-
-## 4. Autorización provider vigente y primer request abortado
-
-Autorización: una sola observación read-only sobre `cxorbia-backend-dev`, focal R1/R2/R3, target D adicional y `R4_CLIENT_HISTORICAL`; 228 Auth esperado; A solo reusable con owner-binding independiente; A-D collision check source-safe; STOP_RETRY ante drift/faltante/colisión/ambigüedad; cero writes/deploy/merge/producción.
-
-Primer request:
-
-```text
-requestId=c6-staff-repair-bootstrap-provider-snapshot-readonly-20260811-01
-runId=31518115944
-jobId=93868277963
-sourcePreflight=PASS
-requestGate=PASS
-rootCause=NESTED_HEREDOC_DELIMITER_INDENTATION
-providerScriptStarted=false
-authListObservations=0
-firestoreProviderReads=0
-providerObservationConsumed=false
-```
-
-Ese request quedó cerrado permanentemente y no se reutiliza. Su status failure es telemetría del harness abortado.
-
-## 5. Root fix del harness
-
-Se añadió `tools/qa/cxorbia-c6-staff-provider-snapshot-runner-report.mjs` y se corrigió el workflow existente, sin crear workflow/rama/PR nuevo. El consumo durable solo se finaliza si el reporte demuestra una observación Auth real.
-
-Validación corregida con request disabled:
-
-```text
-runId=31518696584
-jobId=93870136421
-conclusion=success
-providerProfileExecuted=false
-```
-
-La primera y única observación provider efectiva de la autorización sigue pendiente.
-
-## 6. Alcance de usuarios
-
-Los cuatro accesos iniciales siguen `TYA_COMPLETE`. Alta futura: `TyA completo` o `Proyectos específicos`; editable; sin wildcard; sin herencia silenciosa.
-
-## 7. Progreso
+## 8. Progreso
 
 ```text
 M1 35 COMPLETE
 M2 20 COMPLETE
 M3 15 COMPLETE
 M4  5 COMPLETE
-M5  3/8 COMPLETE
+M5  4/8 COMPLETE
 M6  5 COMPLETE
 M7  0/5
 M8  0/3
@@ -96,18 +120,18 @@ M9  0/3
 M10 0/1
 ```
 
-**Avance certificado: 83%. Restante: 17%.** El abort pre-provider no modifica la métrica.
+**Avance certificado: 84%. Restante: 16%.**
 
-## 8. Siguiente gate exacto
+## 9. Siguiente gate exacto
 
-Emitir un request corregido contra el HEAD exacto vivo y ejecutar una sola vez `C6_STAFF_REPAIR_BOOTSTRAP_PROVIDER_SNAPSHOT_READONLY`.
+`C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE AUTHORIZATION`.
 
-Si la observación efectiva produce cualquier drift, faltante, colisión o ambigüedad: `STOP_RETRY` sin segundo provider read. Con PASS: congelar budget exacto + rollback dry-run y solicitar únicamente autorización focal de writes.
+Debe autorizar únicamente el budget congelado, create-before-retire, readback antes de cada disable, cero deletes y rollback pactado. No requiere volver a leer provider antes de los writes salvo que el executor detecte drift mediante precondition/readback dentro de la misma ejecución autorizada.
 
-## 9. Estado seguro
+## 10. Estado seguro
 
 ```text
-providerReadsEffective=0
+providerReadsConsumed=1 Auth list + 2 focal Firestore docs
 providerWrites=0
 AuthWrites=0
 FirestoreWrites=0
