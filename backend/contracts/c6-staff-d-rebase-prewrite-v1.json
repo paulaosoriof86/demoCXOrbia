@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "cxorbia.c6.staff-d-rebase-prewrite.v1",
+  "generatedAt": "2026-08-11",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "tenantId": "tya",
+  "authNamespace": "staff",
+  "state": "PASS_SOURCE_ONLY_D_REBASE_PREWRITE_READY",
+  "prerequisites": {
+    "authBaseline": 228,
+    "providerSnapshotRunId": 31518927950,
+    "providerSnapshotDecision": "PASS_C6_STAFF_REPAIR_BOOTSTRAP_PREWRITE",
+    "providerSnapshotRepeatRequired": false,
+    "exactWriteConsumedRequestReuse": false,
+    "abcPrivateRecovery": "EXACT",
+    "dHistoricalVisibleLogin": "DECLARED_UNRECOVERABLE",
+    "dTechnicalRebase": "PASS_SOURCE_SAFE_ZERO_COLLISION"
+  },
+  "inputs": {
+    "staffTargets": "backend/config/c6-staff-bootstrap-targets-v1.json",
+    "providerCollisionTargets": "backend/config/c6-staff-provider-collision-targets-v1.json",
+    "dRebaseContract": "backend/contracts/c6-staff-d-technical-login-rebase-v1.json",
+    "previousProviderSnapshotEvidence": "app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-PROVIDER-SNAPSHOT-LATEST.json",
+    "previousPrivateRecoveryEvidence": "app/docs/evidence/C6-STAFF-TARGET-PRIVATE-IDENTITY-RECOVERY-LATEST.json"
+  },
+  "preservedBusinessContract": {
+    "A": "UNCHANGED",
+    "B": "UNCHANGED",
+    "C": "UNCHANGED",
+    "D": {
+      "ownerIdentityAnchor": "UNCHANGED",
+      "ownerRoleBindingDigest": "UNCHANGED",
+      "role": "UNCHANGED",
+      "entitlementMode": "UNCHANGED",
+      "projectIds": "UNCHANGED",
+      "expectedClaimsDigest": "UNCHANGED"
+    },
+    "r4CanonicalClient": "PRESERVE_EXACT_NO_MUTATION"
+  },
+  "dTechnicalRebase": {
+    "technicalLoginDigestSource": "providerCollisionTargets.D.technicalLoginDigest",
+    "ownerTechnicalBindingDigestSource": "providerCollisionTargets.D.ownerTechnicalBindingDigest",
+    "providerEmailSha256Source": "providerCollisionTargets.D.providerEmailSha256",
+    "providerEmailSha256Classification": "MECHANICALLY_DERIVED_COLLISION_FINGERPRINT_NOT_INDEPENDENT_IDENTITY_DECISION",
+    "transientVisibleLoginSource": "derive at execution time from c6-staff-d-technical-login-rebase-v1 canonicalVisibleLoginDerivation",
+    "rawVisibleLoginPersistence": false,
+    "historicalDVisibleLoginDependency": false
+  },
+  "sourceSafeCollisionGate": {
+    "newDTechnicalDigestVsA": "NO_COLLISION",
+    "newDTechnicalDigestVsB": "NO_COLLISION",
+    "newDTechnicalDigestVsC": "NO_COLLISION",
+    "newDTechnicalDigestVsSupersededD": "NO_COLLISION",
+    "newDProviderEmailDigestVsABC": "NO_COLLISION",
+    "newDOwnerTechnicalBindingVsABC": "NO_COLLISION",
+    "decision": "PASS_SOURCE_SAFE_ZERO_COLLISION"
+  },
+  "futureExactWriteBoundary": {
+    "newAuthorizationRequired": true,
+    "providerSnapshotMustNotBeRepeated": true,
+    "providerPreconditionInsideAuthorizedWrite": true,
+    "expectedAuthPopulationBefore": 228,
+    "stopOnPopulationDrift": true,
+    "dTransientLoginMustRegenerateToFrozenTechnicalDigest": true,
+    "dCredentialStrategy": "NEW_EPHEMERAL_AT_SEPARATELY_AUTHORIZED_EXECUTION",
+    "dHistoricalCredentialLookupRequired": false,
+    "createBeforeRetire": true,
+    "canonicalReadbackBeforeHistoricalDisable": true,
+    "r4CanonicalMutation": "FORBIDDEN"
+  },
+  "frozenWriteBudget": {
+    "authCreates": 3,
+    "customClaimsWrites": 3,
+    "authDisableWrites": 8,
+    "authWritesMax": 14,
+    "tenantUserWrites": 4,
+    "auditLogWrites": 12,
+    "firestoreWritesMax": 16,
+    "authDeletes": 0,
+    "firestoreDeletes": 0,
+    "changedByDRebase": false
+  },
+  "safety": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "deletes": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false,
+    "rawLoginPersisted": false,
+    "contactEmailPersisted": false,
+    "uidPersisted": false,
+    "passwordPersisted": false,
+    "passwordHashPersisted": false,
+    "rawNamePersisted": false
+  },
+  "nextGate": "C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2_AUTHORIZATION"
+}
