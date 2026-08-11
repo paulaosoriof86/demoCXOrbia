@@ -2,26 +2,22 @@
 
 **Fecha:** 2026-08-10  
 **Estado:** ACTIVO Y RECONCILIADO  
-**Estado vivo:** `C6_AUTH_DUPLICATE_CANONICAL_REPLACEMENT_REPAIR_PLAN_PARTIAL_READY__ABC_CANONICAL_TARGET_INPUT_REQUIRED__D_REPAIR_READY__ZERO_PROVIDER_READS__ZERO_WRITES__NO_PRODUCTION`
+**Estado vivo:** `C6_AUTH_DUPLICATE_CANONICAL_TARGET_INPUT_RESOLUTION_COMPLETE__A_OWNER_ANCHOR_AND_PROJECT_ENTITLEMENT_REQUIRED__BC_OWNER_ANCHOR_PROJECT_ENTITLEMENT_CREDENTIAL_INPUT_REQUIRED__D_PRESERVED_REPAIR_READY__ZERO_PROVIDER_READS__ZERO_WRITES__NO_PRODUCTION`
 
 ## 1. Orden de prevalencia
 
 1. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-2. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-CANONICAL-REPLACEMENT-REPAIR-PLAN-PARTIAL-READY-20260810.md`;
-3. `app/docs/C6-AUTH-DUPLICATE-CANONICAL-REPLACEMENT-REPAIR-PLAN-SOURCE-ONLY-20260810.md`;
-4. `app/docs/evidence/C6-AUTH-DUPLICATE-CANONICAL-REPLACEMENT-REPAIR-PLAN-SOURCE-ONLY-20260810.json`;
-5. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-CANONICAL-REPLACEMENT-RESOLUTION-SOURCE-SAFE-20260810.md`;
-6. `app/docs/evidence/C6-AUTH-DUPLICATE-CANONICAL-REPLACEMENT-RESOLUTION-SOURCE-SAFE-20260810.json`;
-7. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-HUMAN-OWNERSHIP-DECISION-CAPTURE-PENDING-PAULA-20260810.md` — histórico, superado por resolución técnica;
-8. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-KEEPER-ONE-READ-FOCAL-STOP-RETRY-20260810.md` — provider one-read histórico;
-9. `backend/config/c6-auth-duplicate-keeper-targetscope-one-read-request-v2.json` — consumido/deshabilitado;
-10. `backend/config/c6-shopper-auth-final-freeze-v4.json` — freeze Auth rector;
-11. `backend/config/c6-auth-plan-v4-activation-dev-request-v3.json` — Activation PASS consumido/deshabilitado;
-12. `backend/config/c6-accumulative-multirole-smoke-readonly-request-v1.json` — smoke histórico consumido/deshabilitado;
-13. `backend/contracts/c6-auth-plan-v4-activation-dev-v1.json`;
-14. source locks históricos de Activation, HashConfig, update-universe, multi-Auth y direct runner;
-15. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-16. addenda maestras vigentes, documentación Claude/Academia/tracker y PR #7.
+2. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-REQUIRED-20260810.md`;
+3. `app/docs/evidence/C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-SOURCE-SAFE-20260810.json`;
+4. `app/docs/C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-SOURCE-SAFE-20260810.md`;
+5. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-CANONICAL-REPLACEMENT-REPAIR-PLAN-PARTIAL-READY-20260810.md`;
+6. `app/docs/C6-AUTH-DUPLICATE-CANONICAL-REPLACEMENT-REPAIR-PLAN-SOURCE-ONLY-20260810.md`;
+7. `app/docs/evidence/C6-AUTH-DUPLICATE-CANONICAL-REPLACEMENT-REPAIR-PLAN-SOURCE-ONLY-20260810.json`;
+8. `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-CANONICAL-REPLACEMENT-RESOLUTION-SOURCE-SAFE-20260810.md`;
+9. `backend/config/c6-shopper-auth-final-freeze-v4.json` — freeze Auth rector;
+10. source locks históricos de Activation, HashConfig, update-universe, SKIP13, multi-Auth y direct runner;
+11. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
+12. addenda maestras vigentes, documentación Claude/Academia/tracker y PR #7.
 
 ## 2. Estado rector
 
@@ -38,15 +34,14 @@ SKIP13=closed 13/13
 MultiAuthAdjudication=closed
 targetLineage(ac93)=closed
 HashConfig=closed PASS
-SmokeCredentialLifecycle=closed PASS
 PhaseASourceSurfaces=20/20
-fd891BlockedPolicyClosed=1
-RepairPlanProviderReads=0
-RepairPlanABC=CANONICAL_TARGET_INPUT_REQUIRED
-RepairPlanD=REPAIR_PLAN_READY
-FutureAuthWritesHardCap=14
+TargetInputProviderReads=0
+A=OWNER_ANCHOR_REQUIRED+PROJECT_ENTITLEMENT_REQUIRED
+B=OWNER_ANCHOR_REQUIRED+PROJECT_ENTITLEMENT_REQUIRED+CREDENTIAL_INPUT_REQUIRED
+C=OWNER_ANCHOR_REQUIRED+PROJECT_ENTITLEMENT_REQUIRED+CREDENTIAL_INPUT_REQUIRED
+D=REPAIR_PLAN_READY_PRESERVED
 RepairExecuted=false
-CurrentBlock=CANONICAL_REPLACEMENT_REPAIR_PLAN_PARTIAL_READY
+CurrentBlock=CANONICAL_TARGET_INPUT_RESOLUTION_COMPLETE
 ```
 
 ## 3. Auth baseline protegido
@@ -58,43 +53,25 @@ UPDATE_AUTH=9
 NO_OP=81
 HOLD=0
 PRESERVE_NO_AUTH=132
-passwordChanges=8
 expectedAuthUsersAfter=228
 digest=c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4
 ```
 
-No repetir PREWRITE, Activation ni reconstrucción completa de identidad.
+No repetir PREWRITE, Activation, smoke ni reconstrucción completa de identidad.
 
-## 4. Repair plan vigente
+## 4. Resolución vigente A–C
 
-```text
-1acdcb3782b7cf351056 = CANONICAL_TARGET_INPUT_REQUIRED
-2c4d19f2b066835473d3 = CANONICAL_TARGET_INPUT_REQUIRED
-54225792eeb65f6739c0 = CANONICAL_TARGET_INPUT_REQUIRED
-ae2f920fe6d9ce1fdd82 = REPAIR_PLAN_READY
-```
+A `1acd...`: existe un credential path canónico `super`, pero no hay owner association independiente; no se reutiliza por rol. Además falta entitlement exacto.
 
-A–C: role, namespace y tenant están fijados (`super/admin/ops`, `staff`, `tya`), pero owner anchor y project entitlement no están demostrados source-safe. No se infiere `cinepolis`, no se copia scope legacy y no se selecciona keeper.
+B `2c4d...`: falta owner anchor, entitlement exacto y credencial nueva efímera; el import canónico creó cero `admin`.
 
-D: se preserva el Cliente canónico externo validado con scope `tya/cinepolis`; el plan solo contempla `DISABLE_ONLY_NO_DELETE` de ambos históricos.
+C `542...`: falta owner anchor, entitlement exacto y credencial nueva efímera; el import canónico creó cero `ops`.
 
-Gates vigentes: snapshot, collision proof, idempotency, readback y rollback dry-run. Secuencia A–C: `CANONICAL_VALIDATED -> DISABLE_BOTH_LEGACY`.
+No hay expected-claims digest para A–C porque ningún target está cerrado. No se infiere `cinepolis`, no se copia scope legacy y no se selecciona keeper.
 
-## 5. Write budget futuro
+D `ae2f...` permanece `REPAIR_PLAN_READY` sin reabrirse.
 
-```text
-A=4 Auth writes
-B=4 Auth writes
-C=4 Auth writes
-D=2 Auth writes
-TOTAL HARD CAP=14
-Auth deletes=0
-Firestore/IAM/HR/Rules/Storage writes=0
-```
-
-No constituye autorización de ejecución.
-
-## 6. Seguridad del bloque vigente
+## 5. Seguridad del bloque vigente
 
 ```text
 providerReads=0
@@ -118,14 +95,14 @@ production=false
 rawPIIExported=false
 ```
 
-## 7. Siguiente acción exacta
+## 6. Siguiente acción exacta
 
 Solo bajo nueva autorización:
 
-`C6 AUTH DUPLICATE CANONICAL TARGET INPUT RESOLUTION — SOURCE-SAFE / NO PROVIDER / NO REPAIR`.
+`C6 AUTH CANONICAL STAFF MINIMUM OWNER INPUT CONTRACT — SOURCE-SAFE / NO PROVIDER / NO REPAIR`.
 
-Resolver únicamente inputs canónicos A–C. D no se reabre. Sin provider read, repair, PREWRITE, Activation, smoke, deploy, merge ni producción.
+Definir el mínimo input empresarial A–C sin fingerprints legacy ni PII en repo. Luego cerrar targets/digests y pasar, bajo autorización separada, al repair focal.
 
-## 8. Phase A preservada
+## 7. Phase A preservada
 
 Frontend, Login, `CX.data`, HR histórico, shoppers, postulaciones, certificaciones, visitas, liquidaciones/pagos, Finanzas, Portal Cliente, Portal Shopper, Reservas, multi-tenant, multi-proyecto, sincronización HR/plataforma y Academia permanecen preservados.
