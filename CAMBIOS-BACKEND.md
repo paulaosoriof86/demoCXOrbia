@@ -11,13 +11,9 @@
 
 Auth 228, Activation/readback/rollback, SKIP13, MultiAuth, HashConfig, DirectRunnerDEV, M4, HR M6, live-user-admin static PASS y provider snapshot PASS siguen cerrados.
 
-## Archivos creados/tocados en este bloque
+## Bloque exact-write
 
-`backend/contracts/c6-staff-repair-bootstrap-exact-write-v1.json`, `tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write.mjs`, `.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write.json`, workflow existente `.github/workflows/cxorbia-corte6-auth-rbac-activation.yml`, evidencia exact-write, source lock STOP, índice/checkpoint, RESUMEN, PENDIENTES, plan/tracker Phase A y addendum Academia.
-
-No se creó workflow, rama, PR ni candidata nueva.
-
-## Self-test y ejecución autorizada
+Se materializaron contrato, executor y request exactos, y se reutilizó el workflow existente. No se creó workflow/rama/PR/candidata.
 
 ```text
 sourceSelfTestRunId=31534430007
@@ -33,7 +29,7 @@ identityResolutionPass=false
 providerStatePass=false
 ```
 
-El executor pasó contrato, budget, snapshot authority, service account privada y descifrado protegido en memoria, pero se detuvo antes del primer provider write porque las fuentes privadas permitidas no aportaron una coincidencia exacta para el `visibleLogin` de B.
+El executor se detuvo antes del primer provider write porque las fuentes privadas permitidas no aportaron una coincidencia exacta para el `visibleLogin` de B contra el digest congelado.
 
 ## Writes reales
 
@@ -47,32 +43,23 @@ AuditLogWrites=0
 FirestoreWritesTotal=0
 AuthDeletes=0
 FirestoreDeletes=0
-HRWrites=0
-RulesWrites=0
-StorageWrites=0
-MakeWrites=0
-GeminiCalls=0
-PaymentsWrites=0
+HR/Rules/Storage/Make/Gemini/Payments writes=0
 Deploy=0
 Merge=false
 Production=false
 ```
 
-No se persistieron ni exportaron login/password/hash/UID/nombre crudos. A, R4 canónico y los ocho históricos permanecen sin mutación.
+A, R4 canónico y los ocho históricos permanecen sin mutación. No se persistió ni exportó PII/credencial cruda.
 
 ## Causa raíz
 
-Los owner-target logins quedaron deliberadamente como digests SHA-256 source-safe. El write real necesita el `visibleLogin` exacto, pero la fuente cifrada histórica + documentos vivos accesibles al executor no resolvieron B. SHA-256 no es reversible. No es drift de Auth, HR, Firestore ni del snapshot.
+Los owner-target logins quedaron como SHA-256 source-safe. El write necesita el `visibleLogin` exacto y las fuentes privadas accesibles no resolvieron B. SHA-256 no es reversible. No es drift de Auth/HR/Firestore/snapshot.
 
-## Métrica
+## Métrica y siguiente acción
 
-**84% certificado; 16% restante. M5=4/8.** No se suma progreso por un STOP pre-write.
+**84% certificado; 16% restante. M5=4/8.**
 
-## Siguiente acción exacta
-
-`C6 STAFF TARGET PRIVATE IDENTITY RECOVERY SOURCE-ONLY`.
-
-No reejecutar el request consumido ni repetir provider snapshot. Recuperar/validar A-D desde fuentes privadas existentes sin provider writes; solo con PASS podrá prepararse nueva autorización exact-write.
+Siguiente bloque: `C6 STAFF TARGET PRIVATE IDENTITY RECOVERY SOURCE-ONLY`. No reejecutar el request consumido ni repetir provider snapshot. Nueva autorización exact-write solo después de recovery PASS.
 
 ## Clasificación
 
