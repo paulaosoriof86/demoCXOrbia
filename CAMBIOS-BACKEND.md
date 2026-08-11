@@ -1,34 +1,46 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-10  
+**Última actualización:** 2026-08-11  
 **Fuente operativa vigente:** `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`.
 
 ## Estado actual
 
-`C6_AUTH_CANONICAL_STAFF_MINIMUM_OWNER_INPUT_CONTRACT_READY__BUSINESS_OWNER_AND_SCOPE_INPUT_REQUIRED__A_REUSE_CONDITIONAL__BC_NEW_EPHEMERAL_FIXED__D_PRESERVED__DOCS_ONLY__NO_PRODUCTION`
+`C6_AUTH_CANONICAL_STAFF_OWNER_INPUT_PARTIAL_CAPTURED__PROJECT_ENTITLEMENTS_PENDING__NO_PROVIDER__NO_REPAIR__NO_PRODUCTION`
 
-El detalle del bloque está en:
+## Avance del bloque 2026-08-11
 
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-20260810.md`;
-- `app/docs/SOURCE-LOCK-C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-READY-20260810.md`;
-- `app/docs/C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-20260810.md`;
-- `app/docs/evidence/C6-AUTH-CANONICAL-STAFF-MINIMUM-OWNER-INPUT-CONTRACT-SOURCE-SAFE-20260810.json`;
-- `backend/config/c6-auth-canonical-staff-minimum-owner-input-contract-v1.json`.
+- Se recibieron en conversación las referencias empresariales para A/Superadministración, B/Administración, C/Operaciones y un acceso adicional de Operaciones.
+- No se vuelven a solicitar esas referencias humanas.
+- No se persisten correos ni credenciales en documentación o configuración ejecutable.
+- Los usuarios staff iniciales se clasifican como **bootstrap de datos vivos**, no como constantes del frontend/backend.
+- Queda obligatorio que usuarios, roles y scopes sean administrables desde la plataforma bajo RBAC.
+- El pendiente mínimo para cerrar el target es el alcance de proyecto de los cuatro accesos: `TYA_COMPLETE` o `SPECIFIC_PROJECTS`.
 
-## Resumen vigente
+## Corrección inmediata de higiene source-safe
 
-Auth DEV permanece en 228 con Activation/readback/rollback dry-run PASS. A–C ya no requieren otra investigación técnica ni selección de principals legacy. El input humano se redujo a seis respuestas empresariales: titular + alcance para Superadministración, Administración y Operaciones.
+El primer commit documental de esta sesión (`9013be65f1e06628343aa796b7deeb2746dbb08a`) incluyó transitoriamente referencias humanas en texto del checkpoint. Se corrigió inmediatamente en `b9178b318f97a7e7b8459d4b275e6b0988cb35d2`, eliminándolas del contenido vivo y manteniendo correos/credenciales fuera del repo.
 
-La conversión source-safe quedó definida: designación humana transitoria -> `ownerIdentityAnchor`/`ownerRoleBindingDigest`; alcance `TYA_COMPLETE` o `SPECIFIC_PROJECTS` -> `projectIds` exactos, ordenados y sin duplicados; claims canónicos -> `expectedClaimsDigest` determinístico. No se persiste PII cruda.
+No se afirma borrado de historia Git: la corrección disponible en el carril actual elimina el dato del estado vivo, pero el commit anterior sigue formando parte del historial de la rama. No se hará history rewrite/force push sin autorización expresa y porque el lock vigente prohíbe `force`. Este incidente queda documentado y no se repetirá.
 
-A conserva como primera opción la reutilización del `super` canónico existente únicamente si un owner binding independiente demuestra asociación exacta. B/C quedan con credencial nueva efímera obligatoria durante una futura ejecución autorizada. D permanece `REPAIR_PLAN_READY` y no se reabrió.
+## Métrica estable de cierre
 
-Provider reads=0; Auth/IAM/Firestore/HR/Rules/Storage writes=0; PREWRITE/Activation/smoke/repair=false; deploy0; merge=false; production=false.
+```text
+M1 Baseline/Phase A preservada                     35 = COMPLETE
+M2 Auth V4 activation/readback/rollback            20 = COMPLETE
+M3 SKIP13/MultiAuth/HashConfig/direct runner       15 = COMPLETE
+M4 Owners + exact project entitlements              5 = PARTIAL
+M5 Repair focal A-D                                 8 = PENDING
+M6 HR final production evidence                     5 = PENDING
+M7 Final accumulative multirole smoke               5 = PENDING
+M8 Human validation + rollback ready                3 = PENDING
+M9 Explicit cutover + one production promotion      3 = PENDING
+M10 Post-cutover smoke + freeze                      1 = PENDING
+```
+
+**Avance certificado: 72%. Restante: 28%.** El denominador queda congelado para las sesiones restantes.
 
 ## Siguiente acción exacta
 
-Después de recibir las seis respuestas empresariales mínimas:
+`C6 AUTH CANONICAL STAFF OWNER INPUT CAPTURE AND TARGET DIGEST — COMPLETE PROJECT ENTITLEMENTS, SOURCE-SAFE / NO PROVIDER / NO REPAIR`.
 
-`C6 AUTH CANONICAL STAFF OWNER INPUT CAPTURE AND TARGET DIGEST — SOURCE-SAFE / NO PROVIDER / NO REPAIR`.
-
-Convertir inmediatamente las respuestas a owner anchors, entitlement exacto, target claims y expected-claims digests. No ejecutar provider ni repair.
+No provider, Auth write, Firestore write, deploy, merge ni producción hasta cerrar los scopes exactos.
