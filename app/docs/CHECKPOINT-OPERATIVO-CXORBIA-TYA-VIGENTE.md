@@ -1,15 +1,13 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-11  
-**Estado:** `C6_AUTH_CANONICAL_STAFF_OWNER_INPUT_PARTIAL_CAPTURED__OWNER_REFERENCES_RECEIVED_TRANSIENTLY__PROJECT_ENTITLEMENTS_PENDING__NO_PROVIDER__NO_REPAIR__NO_PRODUCTION`
+**Estado:** `C6_AUTH_CANONICAL_STAFF_OWNER_INPUT_PARTIAL_CAPTURED__PROJECT_ENTITLEMENTS_PENDING__LIVE_USER_ADMIN_BACKEND_GAP_PROVEN__NO_PROVIDER__NO_REPAIR__NO_PRODUCTION`
 
 ## 1. Control
 
 - repo: `paulaosoriof86/demoCXOrbia`;
 - rama viva: `docs-tya-v6-v71-audit`;
 - PR #7: draft/open/no merge;
-- HEAD verificado al inicio de la sesión: `e62f62e6c4161216b2cb32071fda036ba700a020`;
-- commit documental de captura inicial: `9013be65f1e06628343aa796b7deeb2746dbb08a`;
 - producción: intacta.
 
 ## 2. Baseline Auth protegido
@@ -29,30 +27,27 @@ SKIP13=closed 13/13
 MultiAuth=closed
 targetLineage(ac93)=closed
 HashConfig=closed PASS
+DirectRunnerDEV=PASS
 ```
 
 No reconstruir las 340 identidades ni repetir PREWRITE/Activation/smoke históricos.
 
 ## 3. Input empresarial recibido el 2026-08-11
 
-La conversación actual entregó las designaciones humanas para A/B/C y un usuario adicional de Operaciones. Conforme al contrato source-safe vigente, **las referencias humanas y correos se consideran datos transitorios y no se persisten en este documento, código, configuración ejecutable, claims, artifacts ni logs**.
-
-Estado de captura:
+La conversación actual entregó las designaciones humanas para A/B/C y un usuario adicional de Operaciones. Conforme al contrato source-safe vigente, las referencias humanas y correos se consideran datos transitorios y no se persisten en el estado vivo de documentación/configuración ejecutable/claims/artifacts/logs.
 
 ```text
 A / Superadministración = OWNER_REFERENCE_RECEIVED_TRANSIENTLY
 B / Administración      = OWNER_REFERENCE_RECEIVED_TRANSIENTLY
 C / Operaciones          = OWNER_REFERENCE_RECEIVED_TRANSIENTLY
 additionalOpsAccess      = ADDITIONAL_USER_REFERENCE_RECEIVED_TRANSIENTLY
-rawOwnerReferencesStored = false
-rawEmailsStored          = false
 ```
 
-El usuario adicional de Operaciones se clasifica como acceso adicional administrable y no como sustitución automática del titular C.
+No volver a pedir estas referencias humanas.
 
-## 4. Autoadministrabilidad obligatoria
+## 4. Autoadministrabilidad obligatoria y hallazgo reproducible
 
-La creación inicial de A/B/C y del acceso adicional de Operaciones es un bootstrap operativo, no una definición estructural permanente.
+La creación inicial de staff es bootstrap operativo, no configuración hardcodeada.
 
 Contrato obligatorio:
 
@@ -66,11 +61,33 @@ technicalIdentityDerivedAtRuntime=true
 rawCredentialsInRepo=false
 ```
 
-Los usuarios, roles y scopes deben quedar administrables desde la plataforma bajo RBAC. Deshabilitar preserva auditoría; eliminación física queda separada y protegida.
+### Evidencia actual
 
-## 5. Pendiente mínimo real
+`app/modules/configuracion.js` ya contiene la UI de **Usuarios & Permisos** con alta, edición, cambio de rol, activación/desactivación, proyecto y matriz de permisos. Sin embargo, su persistencia actual es exclusivamente:
 
-Faltan únicamente los **alcances de proyecto** para cerrar los targets staff iniciales:
+```text
+cx_users -> localStorage
+cx_custom_roles -> localStorage
+cx_perm -> localStorage
+```
+
+El flujo de alta muestra además `Invitación preparada (vista previa)`. `app/core/backend-firebase.js` envuelve/persiste actualmente proyectos, shoppers y visitas, pero no expone una operación backend para crear/editar/deshabilitar usuarios Auth ni sus claims/scope.
+
+Clasificación:
+
+```text
+LIVE_USER_ADMIN_UI_EXISTS=true
+LIVE_USER_ADMIN_FIREBASE_AUTH_WRITE_PATH=false
+LIVE_USER_ADMIN_CLAIMS_SCOPE_WRITE_PATH=false
+LOCALSTORAGE_PREVIEW_ONLY=true
+PRODUCTION_BLOCKER=true
+```
+
+Este gap **no reabre frontend general ni Auth V4**. Se incorpora dentro de M5 como corrección focal de bootstrap/admin de usuarios. No crear nueva metodología.
+
+## 5. Pendiente mínimo de M4
+
+Faltan únicamente los alcances de proyecto para cerrar los targets staff iniciales:
 
 ```text
 A / Superadministración -> TYA_COMPLETE o SPECIFIC_PROJECTS
@@ -79,18 +96,16 @@ C / Operaciones          -> TYA_COMPLETE o SPECIFIC_PROJECTS
 additional Ops user      -> TYA_COMPLETE o SPECIFIC_PROJECTS
 ```
 
-`TYA_COMPLETE` debe expandirse a projectIds canónicos exactos; no wildcard. `SPECIFIC_PROJECTS` exige resolución 1:1 a projectIds canónicos. No asumir Cinépolis.
+`TYA_COMPLETE` debe expandirse a projectIds canónicos exactos; no wildcard. `SPECIFIC_PROJECTS` exige resolución 1:1. No asumir Cinépolis.
 
 ## 6. Progreso de cierre a producción — métrica estable
-
-Se adopta para las sesiones restantes una métrica de 100 puntos, sin recalcular el denominador:
 
 ```text
 M1 Baseline acumulativa/Phase A preservada        35 pts = COMPLETE
 M2 Auth V4 activation/readback/rollback           20 pts = COMPLETE
 M3 SKIP13/MultiAuth/HashConfig/direct runner      15 pts = COMPLETE
 M4 Owners + exact project entitlements             5 pts = PARTIAL
-M5 Repair focal A-D + readback/rollback             8 pts = PENDING
+M5 Staff repair/bootstrap + live admin + rollback  8 pts = PENDING
 M6 HR final production evidence                     5 pts = PENDING
 M7 Final accumulative multirole smoke               5 pts = PENDING
 M8 Human validation + rollback ready                3 pts = PENDING
@@ -98,25 +113,26 @@ M9 Explicit cutover + one production promotion      3 pts = PENDING
 M10 Post-cutover smoke + freeze                     1 pt  = PENDING
 ```
 
-Avance certificado actual: **72%**. Restante: **28%**.
-
-La escala se conserva en adelante. Solo aumenta con evidencia terminal; un STOP_RETRY no reduce porcentaje ya ganado salvo P0 demostrado que invalide evidencia previa.
+**Avance certificado actual: 72%. Restante: 28%.** El denominador no cambia. El nuevo gap se incorpora como condición interna de M5; no crea puntos ni fases nuevas.
 
 ## 7. Circuit breaker anti-bucle
 
 1. No reabrir M1-M3 sin P0 reproducible.
-2. No volver a preguntar las referencias humanas ya recibidas.
-3. No persistir usuarios iniciales como constantes de código.
-4. No crear nueva candidata, rama o PR.
+2. No volver a preguntar owner names ya recibidos.
+3. No persistir staff inicial como constantes de código.
+4. No crear nueva candidata, rama o PR por este gap.
 5. No repetir PREWRITE/Activation general.
 6. No ejecutar provider/repair hasta cerrar scopes exactos.
-7. Cada interacción reportará: `avance nuevo`, `porcentaje acumulado`, `porcentaje restante`, `siguiente gate exacto`.
+7. Resolver el gap de administración en un único carril: backend/contrato source-only + ajuste frontend localizado por archivo/módulo, sin rediseño.
+8. Cada interacción reportará avance nuevo, porcentaje acumulado, porcentaje restante y siguiente gate exacto.
 
 ## 8. Siguiente bloque exacto
 
-`C6 AUTH CANONICAL STAFF OWNER INPUT CAPTURE AND TARGET DIGEST — COMPLETE PROJECT ENTITLEMENTS, SOURCE-SAFE / NO PROVIDER / NO REPAIR`.
+Primero cerrar los cuatro scopes empresariales. Inmediatamente después:
 
-Una vez recibidos los cuatro scopes, convertir en memoria transitoria las referencias humanas a anchors/digests, enumerar projectIds exactos, generar target claims + expectedClaimsDigest y preparar el repair focal reversible. No provider ni repair en ese bloque.
+`C6 STAFF TARGET DIGEST + LIVE USER ADMIN BACKEND CONTRACT — SOURCE-SAFE / NO PROVIDER / NO REPAIR`.
+
+Debe producir target claims/digests y un contrato backend administrable para create/update/disable/role/project-scope con RBAC, snapshot, idempotencia, readback y rollback; sin hardcodear usuarios ni credenciales.
 
 ## 9. Estado seguro
 
@@ -139,6 +155,5 @@ payments=0
 deploys=0
 merge=false
 production=false
-rawPIIStored=false
 rawCredentialsStored=false
 ```
