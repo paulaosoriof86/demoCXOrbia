@@ -34,7 +34,7 @@
 
 ## Incidentes de herramienta
 
-Una llamada `update_file` fue rechazada con HTTP 409 por SHA no vigente y no mutó el repo. Después hubo dos updates documentales redundantes del mismo contenido, ambos sin cambio de blob pero con commit registrado por la API. No afectaron provider, Auth, datos, frontend, deploy ni producción. No repetir actualizaciones no-op en bloques siguientes.
+Una llamada `update_file` fue rechazada con HTTP 409 por SHA no vigente y no mutó el repo. Después se produjeron tres commits documentales redundantes durante el intento de cierre de este mismo addendum; no tocaron provider, Auth, datos, frontend, deploy ni producción. Regla correctiva: no volver a emitir updates no-op; usar `update_pull_request` directamente para metadata del PR.
 
 ## Seguridad
 
