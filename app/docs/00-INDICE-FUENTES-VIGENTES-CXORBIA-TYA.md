@@ -10,15 +10,13 @@
 2. `app/docs/SOURCE-LOCK-C6-STAFF-REPAIR-BOOTSTRAP-STOP-PRIVATE-IDENTITY-B-20260811.md`;
 3. `app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-EXACT-WRITE-LATEST.json`;
 4. `.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write.json`;
-5. `backend/contracts/c6-staff-repair-bootstrap-exact-write-v1.json` + executor;
-6. provider snapshot PASS run `31518927950` y su source lock/evidence;
-7. live-user-admin static PASS, contracts y runtime source;
-8. HR live PASS y evidencia;
-9. freeze Auth/Activation/SKIP13/MultiAuth/HashConfig/direct runner;
-10. `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, plan/tracker Phase A, Academia;
+5. exact-write contract/executor;
+6. provider snapshot PASS run `31518927950` + source lock/evidence;
+7. live-user-admin static PASS + contracts/runtime;
+8. HR live PASS;
+9. Auth/Activation/SKIP13/MultiAuth/HashConfig/direct runner freeze;
+10. CAMBIOS/RESUMEN/PENDIENTES/plan/tracker/Academia;
 11. PR #7 y HEAD vivo.
-
-Toda fuente previa que presente el exact write como pendiente de autorización queda superseded.
 
 ## Estado rector
 
@@ -43,16 +41,10 @@ ExactWriteDeletes=0
 Production=false
 ```
 
-## Causa raíz
-
-El request pasó gates source-only y privacidad criptográfica, pero se detuvo antes del primer provider write porque las fuentes privadas disponibles no resolvieron el `visibleLogin` B exactamente contra el digest SHA-256 congelado. El digest no es reversible y no se permite inferir identidad.
-
-## Progreso
+Causa raíz: `visibleLogin` B no pudo resolverse exactamente desde fuentes privadas contra digest SHA-256 one-way. No inferir ni sustituir identidad.
 
 **84% certificado; 16% restante.**
 
-## Siguiente bloque
+Siguiente bloque: `C6 STAFF TARGET PRIVATE IDENTITY RECOVERY SOURCE-ONLY`.
 
-`C6 STAFF TARGET PRIVATE IDENTITY RECOVERY SOURCE-ONLY`.
-
-No reejecutar request consumido; no repetir provider snapshot/static/HR/owners/scopes/Auth 340; no inferir B; no nueva candidata/rama/PR/workflow; no Auth/Firestore writes hasta recovery PASS + nueva autorización; no deletes/deploy/merge/producción.
+No reejecutar request consumido; no repetir provider/static/HR/owners/scopes/Auth 340; no inferir B; no nueva candidata/rama/PR/workflow; no Auth/Firestore writes hasta recovery PASS + nueva autorización; no deletes/deploy/merge/producción.
