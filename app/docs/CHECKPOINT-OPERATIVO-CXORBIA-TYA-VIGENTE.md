@@ -51,18 +51,6 @@ El alcance es obligatorio y editable. `Proyectos específicos` usa inventario vi
 
 ## 5. M5 — static gate PASS
 
-Source ya preservado:
-
-```text
-backend/contracts/c6-live-user-admin-v1.json
-backend/runtime/hr-live-service/user-admin.mjs
-backend/runtime/hr-live-service/server.mjs
-backend/runtime/hr-live-service/package.json
-backend/runtime/hr-live-service/Dockerfile
-firebase.json
-tools/qa/cxorbia-c6-live-user-admin-source-gate.mjs
-```
-
 Ejecución terminal:
 
 ```text
@@ -75,7 +63,7 @@ warnings=[]
 providerProfileEnabled=false
 ```
 
-El preflight obligatorio incorpora el gate live-user-admin y falla si su decisión/safe-state no son exactos.
+El preflight obligatorio incorpora el gate live-user-admin y falla si su decisión/safe-state no son exactos. El request que disparó el control quedó congelado como `consumed_pass_control_plane_static_gate_only`, `enabled=false`, sin ejecución residual.
 
 Subasignación:
 
@@ -90,13 +78,7 @@ M5 remaining                               = PENDING 5/8
 
 Nuevo contrato: `backend/contracts/c6-staff-repair-bootstrap-prewrite-v1.json`.
 
-Se distinguen explícitamente:
-
-- R1/Super -> target A;
-- R2/Admin -> target B;
-- R3/Ops -> target C;
-- target D = acceso adicional de Operaciones, sin legacy pair;
-- `R4_CLIENT_HISTORICAL` = viejo grupo histórico Cliente, distinto del target D.
+Se distinguen R1/Super->A, R2/Admin->B, R3/Ops->C, target D adicional Ops y `R4_CLIENT_HISTORICAL` como viejo repair Cliente.
 
 El cap histórico de 14 Auth writes queda superseded. El contrato solo registra un peor caso teórico de 16 antes del snapshot; **no es autorización ni cap final**. El cap exacto se congela después del provider snapshot read-only.
 
