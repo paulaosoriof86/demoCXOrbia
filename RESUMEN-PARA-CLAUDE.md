@@ -1,68 +1,81 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-11  
-**Estado vivo:** `C6_HR_LIVE_DIRECT_READ_PASS__LIVE_USER_ADMIN_CONTRACT_SOURCE_ONLY_PASS__PROJECT_ENTITLEMENTS_PENDING__BACKEND_EXECUTABLE_PENDING__NO_REPAIR__NO_PRODUCTION`
+**Estado vivo:** `PASS_C6_M4_STAFF_TYA_COMPLETE_TARGET_DIGESTS__LIVE_USER_ADMIN_EXECUTABLE_SOURCE_PREPARED__STATIC_GATE_EXECUTION_PENDING__NO_PROVIDER__NO_RUNTIME_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Fuente vigente
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-3. `app/docs/SOURCE-LOCK-C6-HR-LIVE-DIRECT-READ-PASS-20260811.md`;
-4. `app/docs/SOURCE-LOCK-C6-LIVE-USER-ADMIN-CONTRACT-SOURCE-ONLY-20260811.md`;
-5. `backend/contracts/c6-live-user-admin-v1.json`;
+3. `app/docs/SOURCE-LOCK-C6-STAFF-TYA-COMPLETE-AND-LIVE-USER-ADMIN-SOURCE-20260811.md`;
+4. `backend/contracts/c6-live-user-admin-v1.json`;
+5. `backend/config/c6-staff-bootstrap-targets-v1.json`;
 6. PR #7 y HEAD vivo.
 
 ## 2. No reabrir
 
-- frontend acumulativo, Login, `/app/modules/*`, `/app/core/*` y `CX.data` en general;
-- SKIP13, multi-Auth, target lineage, HashConfig y direct runner;
-- freeze Auth v4 y Auth DEV 228;
-- PREWRITE/Activation históricos;
-- D repair-ready;
-- **mapeo/conexión de HR viva**.
+- frontend acumulativo y módulos Phase A;
+- Auth 228, Activation/readback/rollback, SKIP13, multi-Auth, HashConfig y direct runner;
+- HR viva M6;
+- owners iniciales;
+- scope inicial de A/B/C/D: **TYA_COMPLETE para los cuatro**.
 
-## 3. HR viva — cerrada
+## 3. Backend ya preparado
 
-Se leyó directamente la fuente compartida previamente el 2026-08-11:
+Existe source executable para administración viva de usuarios:
 
 ```text
-currentPeriod=2026-08
-GT=34
-HN=10
-total=44
-country split=PASS
-M6=COMPLETE
+backend/runtime/hr-live-service/user-admin.mjs
 ```
 
-La fuente es Google Sheets live y fue modificada el 2026-08-10. No solicitar otra exportación ni nuevo enlace y no crear otro flujo para re-mapearla. El antiguo lock de observabilidad HR del 2026-08-06 queda histórico: era un problema de telemetría del workflow, no de autoridad de datos.
+Y source de routing/packaging preparado en:
 
-M7 sí debe verificar que el build final consume esta misma fuente viva, pero eso es smoke runtime, no mapeo HR.
+```text
+backend/runtime/hr-live-service/server.mjs
+backend/runtime/hr-live-service/package.json
+backend/runtime/hr-live-service/Dockerfile
+firebase.json
+```
 
-## 4. Estado backend de usuarios
+Backend resuelve proyectos desde inventario vivo, valida caller `super`, tenant + authNamespace, actualiza claims y documento de usuario, audita, hace readback y conserva rollback/compensación. No está desplegado por este bloque.
 
-Las referencias empresariales A/B/C y un acceso adicional de Operaciones fueron recibidas. No volver a pedir nombres ni correos. Pendiente inmediato: scope exacto de proyecto para los cuatro accesos (`TYA_COMPLETE` o `SPECIFIC_PROJECTS`).
+## 4. Tarea Claude/prototipo localizada — Usuarios & Permisos
 
-## 5. Hallazgo frontend/backend localizado
+**No crear pantalla nueva y no rediseñar.** Trabajar únicamente sobre la superficie existente `app/modules/configuracion.js#usuarios` cuando backend quede autorizado/deployado.
 
-`app/modules/configuracion.js` ya contiene la UI aprobada **Usuarios & Permisos** y no debe rediseñarse. El gap es exclusivamente de persistencia/ejecución:
+Cambios funcionales requeridos:
 
-- `_uSave()` guarda usuarios y roles en `localStorage`;
-- `cx_perm` también es localStorage;
-- alta muestra invitación en vista previa;
-- `app/core/backend-firebase.js` no expone create/update/disable de Firebase Auth ni claims/scope.
+1. Sustituir `localStorage` como autoridad de usuarios por el adapter vivo autorizado.
+2. En **crear/invitar usuario**, hacer obligatorio el campo visible `Alcance de proyectos` con dos opciones:
+   - `TyA completo`;
+   - `Proyectos específicos`.
+3. Si elige `Proyectos específicos`, mostrar multiselección basada en la lista viva de proyectos del tenant.
+4. En **editar usuario**, permitir cambiar el mismo alcance y el rol; guardar mediante la operación backend de scope.
+5. Mostrar de forma humana el alcance efectivo; no mostrar claims, fingerprints, provider email ni UIDs técnicos.
+6. Si backend devuelve `scopeReviewRequired=true`, mostrar aviso accionable de revisión porque el inventario de proyectos cambió desde la última confirmación.
+7. Mantener alta, edición de perfil, deshabilitación y reactivación; no hard delete por defecto.
+8. Después de guardar, refrescar/readback para mostrar el estado confirmado; no fingir éxito local.
 
-El contrato backend source-only ya está cerrado PASS en `backend/contracts/c6-live-user-admin-v1.json`.
+`TYA_COMPLETE` nunca es wildcard silencioso. El backend expande a projectIds exactos. En el inventario canónico actual existe un proyecto (`cinepolis`), pero **no hardcodear ese ID en la UI**.
 
-### Tarea Claude/prototipo localizada
+## 5. HR
 
-Cuando backend entregue el adapter vivo, sustituir únicamente la autoridad localStorage del módulo `usuarios` por el adapter autorizado, conservando diseño, flujos y controles. Debe quedar alta, edición, cambio de rol/scope, deshabilitación y reactivación. No hardcodear personas, correos, roles ni projectIds.
+M6 permanece COMPLETE: HR viva ya cerrada. M7 solo validará consumo runtime final; no remapear ni pedir enlace.
 
-## 6. Métrica de cierre
+## 6. Métrica
 
-**Avance certificado vigente: 78%. Restante: 22%.** M6 HR live = COMPLETE. El denominador no cambia.
+**Avance certificado: 82%. Restante: 18%.**
+
+```text
+M4=5/5 COMPLETE
+M5=2/8 COMPLETE
+M6=5/5 COMPLETE
+```
+
+M5 no recibe el punto del gate estático hasta demostrar su ejecución terminal.
 
 ## 7. Siguiente bloque backend
 
-`C6 STAFF TARGET DIGEST + LIVE USER ADMIN BACKEND EXECUTABLE SOURCE-ONLY`.
+`C6 LIVE USER ADMIN STATIC SOURCE GATE -> STAFF REPAIR/BOOTSTRAP PREWRITE`.
 
-Cerrar scopes exactos; después backend/admin adapter, repair focal y smoke final M7 usando la HR viva ya cerrada.
+Claude no debe adelantarse a runtime no desplegado ni crear fallback paralelo. El wiring se aplica únicamente cuando el backend tenga gate/autorización correspondiente.
