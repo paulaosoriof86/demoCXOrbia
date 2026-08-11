@@ -13,11 +13,13 @@ Patrones reutilizables a conservar como principios internos de seguridad y opera
 - credenciales nuevas se manejan como secretos efímeros y nunca como contenido de documentación;
 - fingerprints, claims internos y detalles de repair no deben exponerse a shoppers/clientes;
 - los usuarios staff iniciales son **bootstrap de datos vivos**, no constantes de código;
-- la administración autorizada de usuarios debe permitir crear, editar, cambiar rol/scope y deshabilitar preservando trazabilidad;
+- la administración autorizada de usuarios debe permitir crear, editar, cambiar rol/scope, deshabilitar y reactivar preservando trazabilidad;
 - la deshabilitación es distinta de la eliminación física y debe enseñarse como práctica de gobierno/auditoría.
+
+El contrato source-only de administración viva quedó materializado en `backend/contracts/c6-live-user-admin-v1.json`: Firebase Auth como autoridad, documento vivo de usuario por tenant y audit trail, sin PII real en repo.
 
 La conversación actual entregó referencias empresariales para los accesos iniciales, pero esas referencias humanas y sus correos no forman parte de Academia ni deben persistirse en documentación técnica.
 
-**Impacto Academia:** conceptual únicamente. Manuales futuros deben reflejar la diferencia entre identidad, rol, scope, alta, edición y deshabilitación; sin PII ni detalles internos de Auth.
+**Impacto Academia:** conceptual únicamente. Manuales futuros deben reflejar la diferencia entre identidad, rol, scope, alta, edición, deshabilitación y reactivación; sin PII ni detalles internos de Auth.
 
-**Avance de cierre a producción certificado:** 72%.
+**Avance de cierre a producción certificado:** 73%.
