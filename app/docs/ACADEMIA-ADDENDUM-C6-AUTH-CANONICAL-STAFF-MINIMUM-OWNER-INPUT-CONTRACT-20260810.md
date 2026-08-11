@@ -4,10 +4,10 @@
 
 Sin cambios a cursos/rutas/certificaciones/UI.
 
-Provider snapshot PASS: Auth228, A reusable owner-bound, B/C/D canonical nuevos, R4 exacto, budget Auth14/Firestore16/deletes0, rollback PASS.
+Provider snapshot PASS: Auth228; A reusable owner-bound; B/C/D canonical nuevos; R4 exacto; budget Auth14/Firestore16/deletes0; rollback PASS.
 
-Exact-write consumido se detuvo pre-write por `PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B`; privacidad PASS, resolución identidad FAIL, Auth0/Firestore0/deletes0/deploy0/merge0/production0.
+Exact-write run31534505451 se detuvo pre-write por `PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B`; privacidad PASS, resolución identidad FAIL, Auth0/Firestore0/deletes0/deploy0/merge0/production0.
 
-Lección: SHA-256 compara sin exponer pero no sustituye un dato operativo recuperable; si no se recupera exactamente por canal privado, detener antes de escribir, no inferir.
+Lección: SHA-256 compara sin exponer pero no sustituye un dato operativo recuperable. Si no se recupera exactamente por canal privado, detener antes de escribir y no inferir.
 
 Usuarios & Permisos pendiente hasta bootstrap PASS; HR M6 cerrado. **Impacto conceptual/no bloqueante; Phase A84%.**
