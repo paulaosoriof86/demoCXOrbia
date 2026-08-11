@@ -6,43 +6,30 @@
 ## Hecho
 
 - Se trabajó exclusivamente A `1acd...`, B `2c4d...` y C `542...`.
-- Se agotaron fuentes source-safe relevantes de ownership, inventario/handoff/import/continuidad de credenciales, claims, RBAC/taxonomía y runtime de Auth.
-- A quedó con `OWNER_ANCHOR_REQUIRED` + `PROJECT_ENTITLEMENT_REQUIRED`; su único credential path canónico `super` no se puede asociar por unicidad de rol.
-- B y C quedaron con `OWNER_ANCHOR_REQUIRED` + `PROJECT_ENTITLEMENT_REQUIRED` + `CREDENTIAL_INPUT_REQUIRED`; no hay canónicos importados `admin` ni `ops`.
-- No se generó expected-claims digest porque ningún target quedó resuelto.
+- Se agotaron fuentes source-safe relevantes de ownership, credenciales, claims, RBAC/taxonomía y runtime de Auth.
+- A: `OWNER_ANCHOR_REQUIRED` + `PROJECT_ENTITLEMENT_REQUIRED`; credential path `super` condicionado a owner proof independiente.
+- B/C: `OWNER_ANCHOR_REQUIRED` + `PROJECT_ENTITLEMENT_REQUIRED` + `CREDENTIAL_INPUT_REQUIRED`.
 - D no se reabrió y conserva `REPAIR_PLAN_READY`.
+- No se generaron expected-claims digests porque ningún target A–C quedó resuelto.
 
-## Archivos creados
+## Archivos del bloque
 
-- `app/docs/evidence/C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-SOURCE-SAFE-20260810.json`;
-- `app/docs/C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-SOURCE-SAFE-20260810.md`;
-- `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-REQUIRED-20260810.md`;
-- este addendum;
-- `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-20260810.md`;
-- `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-20260810.md`;
-- `app/docs/ACADEMIA-ADDENDUM-C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-20260810.md`;
-- `app/docs/PHASE-A-TRACKER-ADDENDUM-C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-20260810.md`.
+Creados: evidencia, reporte, source lock y addenda de CAMBIOS, Claude, Pendientes, Academia y Phase A tracker con sufijo `C6-AUTH-DUPLICATE-CANONICAL-TARGET-INPUT-RESOLUTION-20260810`.
 
-## Archivos actualizados
-
-- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
-- `CAMBIOS-BACKEND.md`;
-- `RESUMEN-PARA-CLAUDE.md`;
-- `PENDIENTES-PROTOTIPO.md`.
+Actualizados: checkpoint, índice vigente, `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md` y `PENDIENTES-PROTOTIPO.md`.
 
 ## Incidentes de herramienta
 
-Una llamada `update_file` fue rechazada con HTTP 409 por SHA no vigente y no mutó el repo. Después se produjeron cinco commits documentales redundantes durante el intento de cierre de este mismo addendum. No tocaron provider, Auth, datos, frontend, deploy ni producción. Este archivo queda ahora congelado: no emitir más updates en este bloque.
+Una llamada `update_file` fue rechazada HTTP 409 antes de commit. Después se produjeron seis commits documentales redundantes sobre este mismo addendum durante un error de cierre de herramienta. No hubo provider/Auth/data/frontend/deploy/production effect. Regla correctiva: este addendum queda congelado; no volver a tocarlo en el bloque actual.
 
 ## Seguridad
 
-Provider reads 0; Auth/IAM/Firestore/HR/Rules/Storage writes 0; PREWRITE/Activation/smoke/repair false; deploy/merge/production 0/false/false. Solo hubo commits documentales source-safe.
+Provider reads 0; Auth/IAM/Firestore/HR/Rules/Storage writes 0; PREWRITE/Activation/smoke/repair false; deploy/merge/production 0/false/false. Solo commits documentales source-safe.
 
 ## Clasificación
 
 - **Reusable CXOrbia:** identidad owner, scope y credencial se resuelven por separado y sin inferencia.
 - **Exclusivo cliente:** tres grupos staff TyA.
 - **Claude/prototipo:** sin cambios frontend.
-- **Academia:** principio interno de least privilege.
-- **Sin impacto Claude:** reconciliación y source lock.
+- **Academia:** least privilege.
+- **Sin impacto Claude:** reconciliación/source lock.
