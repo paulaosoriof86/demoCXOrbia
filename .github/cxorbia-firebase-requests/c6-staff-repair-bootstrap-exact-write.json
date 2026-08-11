@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.c6.staff-repair-bootstrap.exact-write.request.v1",
   "requestId": "c6-staff-repair-bootstrap-exact-write-20260811-01",
-  "enabled": true,
-  "consumed": false,
-  "status": "AUTHORIZED_EXACT_WRITE_PENDING_ONE_EXECUTION",
+  "enabled": false,
+  "consumed": true,
+  "status": "STOP_RETRY_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE",
   "issuedAt": "2026-08-11T14:22:00-06:00",
   "sourceSelfTestRequestedAt": "2026-08-11T14:43:00-06:00",
   "sourceSelfTestRoutedAt": "2026-08-11T14:45:00-06:00",
@@ -17,7 +17,7 @@
   "tenantId": "tya",
   "snapshotWorkflowRunId": 31518927950,
   "targetHeadSha": "071eee958532c47dd4953924e179041a1f755319",
-  "requestCommitSha": null,
+  "requestCommitSha": "ac82cfc4a74d70dbedb8ab099bd430a6e5c372b7",
   "allowedExecutions": 1,
   "authWritesMax": 14,
   "firestoreWritesMax": 16,
@@ -38,5 +38,14 @@
   "contract": "backend/contracts/c6-staff-repair-bootstrap-exact-write-v1.json",
   "executor": "tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write.mjs",
   "evidencePath": "app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-EXACT-WRITE-LATEST.json",
-  "nextGateOnPass": "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_LOCALIZED"
+  "nextGateOnPass": "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_LOCALIZED",
+  "consumedAt": "2026-08-11T20:45:22.452Z",
+  "decision": "STOP_RETRY_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE",
+  "executedWrites": {
+    "auth": 0,
+    "firestore": 0,
+    "authDeletes": 0,
+    "firestoreDeletes": 0
+  },
+  "nextGate": "STOP_RETRY_NO_SECOND_ATTEMPT"
 }
