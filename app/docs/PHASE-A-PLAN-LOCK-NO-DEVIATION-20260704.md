@@ -2,7 +2,7 @@
 
 **Fecha original:** 2026-07-04  
 **Actualización prevalente:** 2026-08-11  
-**Estado:** `PASS_C6_M4_STAFF_TYA_COMPLETE_TARGET_DIGESTS__LIVE_USER_ADMIN_EXECUTABLE_SOURCE_PREPARED__STATIC_GATE_EXECUTION_PENDING__NO_PROVIDER__NO_RUNTIME_WRITES__NO_DEPLOY__NO_PRODUCTION`
+**Estado:** `PASS_C6_LIVE_USER_ADMIN_STATIC_SOURCE_GATE_TERMINAL__STAFF_REPAIR_BOOTSTRAP_PREWRITE_CONTRACT_READY__PROVIDER_SNAPSHOT_PENDING__NO_PROVIDER_READS__NO_WRITES__NO_DEPLOY__NO_PRODUCTION`
 
 ## 1. Objetivo operativo
 
@@ -41,62 +41,58 @@ HashConfig=closed PASS
 DirectRunnerDEV=PASS
 HR_SOURCE_MAPPED=true
 HR_SOURCE_LIVE=true
+M4=COMPLETE
 M6=COMPLETE
+LIVE_USER_ADMIN_STATIC_GATE=PASS_TERMINAL
 ```
 
-No reabrir M1-M3 ni M6 sin P0 reproducible.
+No reabrir M1-M4 ni M6 sin P0 reproducible.
 
-## 5. M4 staff — COMPLETE
-
-Los cuatro accesos iniciales tienen decisión empresarial `TYA_COMPLETE`.
-
-El inventario canónico actual demostrado contiene:
-
-```text
-projectIds=[cinepolis]
-count=1
-```
-
-No es wildcard. Los target digests A/B/C/D quedaron cerrados source-safe.
-
-```text
-M4=5/5 COMPLETE
-```
-
-## 6. Regla permanente de alcance por usuario
+## 5. Regla permanente de alcance por usuario
 
 Cada alta debe preguntar `TyA completo` o `Proyectos específicos`; el valor debe poder modificarse después.
 
-`TYA_COMPLETE` se expande server-side al inventario vivo exacto. `SPECIFIC_PROJECTS` valida el multiselect contra ese mismo inventario. Un nuevo proyecto no se hereda silenciosamente por usuarios `TYA_COMPLETE`: requiere revisión/confirmación explícita antes de expandir claims.
+`TYA_COMPLETE` se expande server-side al inventario vivo exacto. `SPECIFIC_PROJECTS` valida multiselect contra ese inventario. Un proyecto nuevo no se hereda silenciosamente: requiere revisión/confirmación explícita antes de expandir claims.
 
-## 7. M5 — backend executable source
+## 6. M5 — estado actual
 
-Materializado source-only:
-
-```text
-backend/runtime/hr-live-service/user-admin.mjs
-backend/runtime/hr-live-service/server.mjs
-backend/runtime/hr-live-service/package.json
-backend/runtime/hr-live-service/Dockerfile
-firebase.json
-backend/contracts/c6-live-user-admin-v1.json
-tools/qa/cxorbia-c6-live-user-admin-source-gate.mjs
-```
-
-Se reutiliza el servicio backend existente; no se creó infraestructura nueva. No se modificó UI desde backend.
+Backend source materializado y static gate terminal PASS:
 
 ```text
-M5a contract=1/8 COMPLETE
-M5b executable source=1/8 COMPLETE
-M5c static terminal gate=PENDING
-M5 total=2/8 COMPLETE
+M5a contract source-only                    = 1/8 COMPLETE
+M5b executable backend source materialized = 1/8 COMPLETE
+M5c static terminal gate                    = 1/8 COMPLETE
+M5 total                                    = 3/8 COMPLETE
 ```
+
+Evidencia terminal:
+
+```text
+runId=31513528713
+jobId=93852916856
+checkoutHead=9d16521ac67c7a9fa7cd6de393e778bc6a05876b
+PASS_CXORBIA_CONTROLLED_RUNNERS_CONTRACT
+```
+
+No se habilitó provider/browser profile.
+
+## 7. Prewrite focal
+
+Preparado source-only:
+
+```text
+backend/contracts/c6-staff-repair-bootstrap-prewrite-v1.json
+```
+
+Distingue R1/R2/R3 staff, target D adicional Ops y `R4_CLIENT_HISTORICAL`. El cap Auth histórico de 14 no se reutiliza. El máximo teórico pre-snapshot es 16, sin autorización de writes; el cap final se congela tras provider snapshot read-only.
 
 ## 8. Cadena única restante
 
 ```text
-M5c static source gate
--> M5 PREWRITE focal + autorización + repair/bootstrap/readback/rollback
+C6 STAFF REPAIR/BOOTSTRAP PROVIDER SNAPSHOT READ-ONLY
+-> freeze exact write budget + rollback dry-run
+-> autorización específica repair/bootstrap
+-> focal repair/bootstrap + readback/rollback
 -> wiring localizado Usuarios & Permisos
 -> M7 final accumulative multirole smoke contra HR viva
 -> M8 human validation + rollback ready
@@ -113,7 +109,7 @@ M1 35 = COMPLETE
 M2 20 = COMPLETE
 M3 15 = COMPLETE
 M4  5 = COMPLETE
-M5  8 = 2/8 COMPLETE
+M5  8 = 3/8 COMPLETE
 M6  5 = COMPLETE
 M7  5 = PENDING
 M8  3 = PENDING
@@ -121,20 +117,20 @@ M9  3 = PENDING
 M10 1 = PENDING
 ```
 
-**Avance certificado: 82%. Restante: 18%.** El denominador queda congelado.
+**Avance certificado: 83%. Restante: 17%.** El denominador queda congelado.
 
 ## 10. Circuit breakers
 
 - No reabrir M1-M4 ni M6 sin P0 reproducible.
-- No repetir owners/scopes/HR.
+- No repetir owners/scopes/HR ni static gate.
 - No hardcodear staff ni projectIds en UI.
 - No wildcard de proyectos.
 - No crear nueva candidata, rama o PR por rutina.
-- No provider/Auth/Firestore repair antes del gate terminal y autorización específica.
+- No provider writes antes de snapshot/prewrite PASS y autorización específica.
 - No repetir PREWRITE/Activation general.
 - No conectar/copiar base legacy.
 - Cada interacción reporta avance, acumulado, restante y siguiente gate.
 
 ## 11. Estado seguro
 
-Sin provider/Auth/Firestore/Rules/Storage/HR writes, deploy, merge ni producción en este bloque.
+Sin provider reads/writes, Auth/Firestore/Rules/Storage/HR writes, deploy, merge ni producción en el bloque cerrado.
