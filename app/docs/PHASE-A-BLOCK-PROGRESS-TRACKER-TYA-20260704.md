@@ -3,57 +3,11 @@
 **Actualización:** 2026-08-11  
 **Estado:** `PASS_C6_STAFF_REPAIR_BOOTSTRAP_PROVIDER_SNAPSHOT__AUTH_228__A_REUSE_BOUND__BCD_CREATE__R4_PRESERVED__WRITE_BUDGET_FROZEN__ROLLBACK_DRYRUN_PASS__NO_PRODUCTION`
 
-## 1. Baseline vigente
+Baseline preservada: Auth 228; Activation/readback/rollback PASS; SKIP13/MultiAuth/HashConfig/direct runner cerrados; M4 COMPLETE; HR M6 COMPLETE.
 
-```text
-Phase A cumulative baseline=preserved
-AuthUsersAfter=228
-Activation=PASS
-Auth Readback=PASS
-RollbackDryRun=PASS
-SKIP13=closed 13/13
-MultiAuth=closed
-HashConfig=PASS
-DirectRunnerDEV=PASS
-HR live M6=COMPLETE
-M4=COMPLETE
-```
+Live-user-admin: source materializado; static gate PASS; provider snapshot PASS.
 
-Estados históricos anteriores no reabren estos bloques.
-
-## 2. Administración viva de usuarios
-
-```text
-scope required on create=true
-scope editable later=true
-modes=TYA_COMPLETE|SPECIFIC_PROJECTS
-wildcard=false
-future-project silent inheritance=false
-backend executable source=materialized
-static terminal gate=PASS
-provider snapshot=PASS
-```
-
-## 3. Provider snapshot/prewrite
-
-```text
-runId=31518927950
-jobId=93870945840
-AuthPopulation=228
-A=REUSE_EXISTING_CANONICAL owner-bound
-B=CREATE_NEW_EPHEMERAL
-C=CREATE_NEW_EPHEMERAL
-D=CREATE_NEW_EPHEMERAL
-R4 canonical Cliente=preserved exact
-historicalEnabled=8
-AuthWriteBudget=14
-FirestoreWriteBudget=16
-RollbackDryRun=PASS
-```
-
-No repetir provider snapshot. No hay writes autorizados todavía.
-
-## 4. Tracker estable de 100 puntos
+Provider snapshot: Auth population 228; A reutiliza canonical por owner-binding independiente; B/C/D crean canonical nuevo; R4 Cliente preservado exacto; 8 históricos enabled. Budget: Auth=14, Firestore=16, deletes=0; rollback dry-run PASS.
 
 | Milestone | Peso | Estado |
 |---|---:|---|
@@ -68,30 +22,8 @@ No repetir provider snapshot. No hay writes autorizados todavía.
 | M9 Explicit cutover + one production promotion | 3 | PENDING |
 | M10 Post-cutover smoke + freeze | 1 | PENDING |
 
-**Avance certificado: 84%. Restante: 16%.**
+**84% certificado; 16% restante.**
 
-## 5. Cadena única restante
+Cadena única: `C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE AUTHORIZATION -> repair/readback/rollback -> wiring Usuarios & Permisos -> M7 -> M8 -> M9 -> M10`.
 
-```text
-C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE AUTHORIZATION
-→ repair/bootstrap focal + readback/rollback
-→ wiring localizado Usuarios & Permisos
-→ M7 final smoke con HR viva
-→ M8
-→ M9
-→ M10
-```
-
-## 6. Anti-bucle
-
-- M1-M4 y M6 no se reabren.
-- No repetir static gate ni provider snapshot.
-- No repetir PREWRITE/Activation general, HR, owners ni scopes.
-- No nueva candidata/rama/PR.
-- No Auth/Firestore writes sin autorización exacta.
-- No deletes.
-- El denominador de 100 puntos no cambia.
-
-## 7. Estado seguro
-
-Una observación Auth provider + dos reads Firestore focales consumidos; cero provider/Auth/Firestore/HR/Rules/Storage writes, deploy, merge y producción.
+Anti-bucle: no reabrir M1-M4/M6, static/provider snapshot, HR/owners/scopes; no rama/PR/candidata nueva; no writes sin autorización; no deletes.
