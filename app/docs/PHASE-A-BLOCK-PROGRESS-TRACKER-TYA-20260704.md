@@ -1,13 +1,11 @@
 # PHASE A — Tracker de avance por bloques TyA
 
 **Actualización:** 2026-08-11  
-**Estado:** `PASS_C6_STAFF_REPAIR_BOOTSTRAP_PROVIDER_SNAPSHOT__AUTH_228__A_REUSE_BOUND__BCD_CREATE__R4_PRESERVED__WRITE_BUDGET_FROZEN__ROLLBACK_DRYRUN_PASS__NO_PRODUCTION`
+**Estado:** `STOP_RETRY_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE__PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B__AUTH_WRITES_0__FIRESTORE_WRITES_0__NO_PRODUCTION`
 
-Baseline preservada: Auth 228; Activation/readback/rollback PASS; SKIP13/MultiAuth/HashConfig/direct runner cerrados; M4 COMPLETE; HR M6 COMPLETE.
+Baseline preservada: Auth 228; Activation/readback/rollback PASS; SKIP13/MultiAuth/HashConfig/direct runner cerrados; M4 COMPLETE; HR M6 COMPLETE; live-user-admin static PASS; provider snapshot PASS.
 
-Live-user-admin: source materializado; static gate PASS; provider snapshot PASS.
-
-Provider snapshot: Auth population 228; A reutiliza canonical por owner-binding independiente; B/C/D crean canonical nuevo; R4 Cliente preservado exacto; 8 históricos enabled. Budget: Auth=14, Firestore=16, deletes=0; rollback dry-run PASS.
+Exact write request consumido: run `31534505451`, blocker `PRIVATE_VISIBLE_LOGIN_UNRESOLVED_B`, credential privacy PASS, identity resolution FAIL, Auth writes 0, Firestore writes 0, deletes 0. M5 no suma punto.
 
 | Milestone | Peso | Estado |
 |---|---:|---|
@@ -24,6 +22,6 @@ Provider snapshot: Auth population 228; A reutiliza canonical por owner-binding 
 
 **84% certificado; 16% restante.**
 
-Cadena única: `C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE AUTHORIZATION -> repair/readback/rollback -> wiring Usuarios & Permisos -> M7 -> M8 -> M9 -> M10`.
+Cadena única: `C6 STAFF TARGET PRIVATE IDENTITY RECOVERY SOURCE-ONLY -> recovery PASS -> nueva autorización exact-write -> repair/readback/rollback -> wiring Usuarios & Permisos -> M7 -> M8 -> M9 -> M10`.
 
-Anti-bucle: no reabrir M1-M4/M6, static/provider snapshot, HR/owners/scopes; no rama/PR/candidata nueva; no writes sin autorización; no deletes.
+Anti-bucle: no reejecutar request consumido; no repetir provider snapshot/static/HR/owners/scopes; no reabrir Auth 340; no inferir B; no rama/PR/candidata/workflow nuevo; no writes sin recovery PASS + nueva autorización; no deletes.
