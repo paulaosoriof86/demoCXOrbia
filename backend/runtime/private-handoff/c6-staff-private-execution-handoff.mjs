@@ -9,6 +9,7 @@ const DEFAULT_PUBLIC='backend/secure/corte6-credential-handoff-public.json';
 const DEFAULT_PRIVATE='backend/secure/corte6-credential-handoff-private.enc.json';
 const DEFAULT_CONTRACT='backend/contracts/c6-staff-private-execution-handoff-v1.json';
 const DEFAULT_COLLISION='backend/config/c6-staff-provider-collision-targets-v1.json';
+const DEFAULT_TARGETS='backend/config/c6-staff-bootstrap-targets-v1.json';
 const DEFAULT_D_REBASE='backend/contracts/c6-staff-d-technical-login-rebase-v1.json';
 
 const readJson=p=>JSON.parse(fs.readFileSync(p,'utf8').replace(/^\uFEFF/,''));
@@ -18,14 +19,15 @@ const ensure=(v,c)=>{if(!v)throw new Error(c);};
 const loginDigest=v=>sha(`${TENANT}\0${NS}\0${norm(v)}`);
 const ownerBinding=(anchor,digest)=>sha(`cxorbia-owner-login-bind-v1\0${TENANT}\0${anchor}\0${digest}`);
 
-function deriveD(dRebase,collisionD){
+function deriveD(dRebase,collisionD,targetD){
   const d=dRebase.canonicalVisibleLoginDerivation;
   ensure(d?.version==='cxorbia-canonical-visible-login-v1','D_DERIVATION_VERSION');
-  const seed=sha(`${d.version}\0${TENANT}\0${NS}\0D\0${collisionD.ownerIdentityAnchor}\0${collisionD.ownerRoleBindingDigest||''}\0${collisionD.role}`);
+  ensure(targetD.ownerIdentityAnchor===collisionD.ownerIdentityAnchor&&targetD.role===collisionD.role,'D_FROZEN_TARGET_BIND');
+  const seed=sha(`${d.version}\0${TENANT}\0${NS}\0D\0${targetD.ownerIdentityAnchor}\0${targetD.ownerRoleBindingDigest}\0${targetD.role}`);
   const visibleLogin=`cxu-${seed.slice(0,24)}`;
   const digest=loginDigest(visibleLogin);
-  ensure(digest===dRebase.replacement.technicalLoginDigest,'D_TECHNICAL_DIGEST');
-  ensure(ownerBinding(collisionD.ownerIdentityAnchor,digest)===dRebase.replacement.ownerTechnicalBindingDigest,'D_OWNER_BINDING');
+  ensure(digest===dRebase.replacement.technicalLoginDigest&&digest===collisionD.technicalLoginDigest,'D_TECHNICAL_DIGEST');
+  ensure(ownerBinding(targetD.ownerIdentityAnchor,digest)===dRebase.replacement.ownerTechnicalBindingDigest&&dRebase.replacement.ownerTechnicalBindingDigest===collisionD.ownerTechnicalBindingDigest,'D_OWNER_BINDING');
   return visibleLogin;
 }
 
@@ -66,10 +68,11 @@ export function loadStaffPrivateExecutionHandoff(options={}){
     privateKey:options.privateKeyPath||DEFAULT_PRIVATE,
     contract:options.contractPath||DEFAULT_CONTRACT,
     collision:options.collisionPath||DEFAULT_COLLISION,
+    targets:options.targetsPath||DEFAULT_TARGETS,
     dRebase:options.dRebasePath||DEFAULT_D_REBASE
   };
   for(const p of Object.values(paths))ensure(fs.existsSync(p),`HANDOFF_SOURCE_MISSING_${p}`);
-  const sa=readJson(credentialPath),envelope=readJson(paths.envelope),pub=readJson(paths.publicKey),encPriv=readJson(paths.privateKey),contract=readJson(paths.contract),collision=readJson(paths.collision),dRebase=readJson(paths.dRebase);
+  const sa=readJson(credentialPath),envelope=readJson(paths.envelope),pub=readJson(paths.publicKey),encPriv=readJson(paths.privateKey),contract=readJson(paths.contract),collision=readJson(paths.collision),targets=readJson(paths.targets),dRebase=readJson(paths.dRebase);
   ensure(contract.schemaVersion==='cxorbia.c6.staff-private-execution-handoff.v1','HANDOFF_CONTRACT_SCHEMA');
   ensure(envelope.schemaVersion==='cxorbia.c6.staff-private-execution-handoff-envelope.v1','HANDOFF_ENVELOPE_SCHEMA');
   ensure(envelope.tenantId===TENANT&&envelope.authNamespace===NS,'HANDOFF_NAMESPACE');
@@ -78,18 +81,20 @@ export function loadStaffPrivateExecutionHandoff(options={}){
   ensure(JSON.stringify(payload.targets?.map(x=>x.targetAlias))===JSON.stringify(['A','B','C']),'HANDOFF_ALIAS_SET');
   const byAlias=new Map();
   const collisionMap=new Map(collision.targets.map(x=>[x.targetAlias,x]));
+  const targetMap=new Map(targets.targets.map(x=>[x.targetAlias,x]));
   for(const row of payload.targets){
     ensure(typeof row.visibleLogin==='string'&&row.visibleLogin.length>0,`HANDOFF_VALUE_MISSING_${row.targetAlias}`);
-    const cfg=collisionMap.get(row.targetAlias),expected=contract.targetValidation[row.targetAlias];
-    ensure(cfg&&expected,`HANDOFF_TARGET_CONFIG_${row.targetAlias}`);
+    const cfg=collisionMap.get(row.targetAlias),expected=contract.targetValidation[row.targetAlias],target=targetMap.get(row.targetAlias);
+    ensure(cfg&&expected&&target,`HANDOFF_TARGET_CONFIG_${row.targetAlias}`);
+    ensure(cfg.ownerIdentityAnchor===target.ownerIdentityAnchor&&cfg.role===target.role,`HANDOFF_OWNER_ROLE_${row.targetAlias}`);
     const digest=loginDigest(row.visibleLogin);
     ensure(digest===expected.technicalLoginDigest&&digest===cfg.technicalLoginDigest,`HANDOFF_DIGEST_${row.targetAlias}`);
-    ensure(ownerBinding(cfg.ownerIdentityAnchor,digest)===expected.ownerTechnicalBindingDigest&&expected.ownerTechnicalBindingDigest===cfg.ownerTechnicalBindingDigest,`HANDOFF_OWNER_BIND_${row.targetAlias}`);
+    ensure(ownerBinding(target.ownerIdentityAnchor,digest)===expected.ownerTechnicalBindingDigest&&expected.ownerTechnicalBindingDigest===cfg.ownerTechnicalBindingDigest,`HANDOFF_OWNER_BIND_${row.targetAlias}`);
     byAlias.set(row.targetAlias,norm(row.visibleLogin));
   }
-  const dCfg=collisionMap.get('D');
-  ensure(dCfg,'HANDOFF_D_CONFIG');
-  byAlias.set('D',deriveD(dRebase,dCfg));
+  const dCfg=collisionMap.get('D'),dTarget=targetMap.get('D');
+  ensure(dCfg&&dTarget,'HANDOFF_D_CONFIG');
+  byAlias.set('D',deriveD(dRebase,dCfg,dTarget));
   let disposed=false;
   return {
     getVisibleLogin(alias){ensure(!disposed,'HANDOFF_DISPOSED');ensure(byAlias.has(alias),'HANDOFF_ALIAS_UNKNOWN');return byAlias.get(alias);},
