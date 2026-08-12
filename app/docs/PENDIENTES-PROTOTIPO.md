@@ -1,12 +1,13 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-12 17:17 -06:00  
-**Estado:** `C6_RUNTIME_07_STOP_RETRY_PRE_HOSTING__SOURCE_REPAIR_APPLIED__PHASE_A_88`
+**Última actualización:** 2026-08-12 17:29 -06:00  
+**Estado:** `C6_RUNTIME_08_STOP_RETRY_POINTER_INTERCEPT__SOURCE_REPAIR_APPLIED__HOSTING_1_OF_1__PHASE_A_88`
 
 ## Pendiente vivo único de continuidad
 
 ```text
 NEW HOSTING_RUNTIME_ONCE Staff sobre HEAD reparado
+→ preflight v3 (shell + canonical keyboard submit)
 → C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF
 → M7
 → M8
@@ -25,39 +26,42 @@ NEW HOSTING_RUNTIME_ONCE Staff sobre HEAD reparado
 - Selector Staff dedicado sin Shopper/HR/Firestore.
 - Smoke Staff dedicado sin transformaciones textuales.
 - Preflight Staff antes de provider.
-- Reparación shell del paso Hosting: sin heredocs Node anidados.
-- Preflight ampliado: `bash -n` del script Hosting exacto antes de provider.
+- Shell Hosting sin heredocs Node anidados.
+- `bash -n` del script Hosting exacto antes de provider.
+- Submit QA canónico por teclado para evitar interferencia del pill diagnóstico Preview DEV sin modificar UI.
 
 No reabrir sin drift reproducible.
 
-## Resultado runtime 07
+## Resultado runtime 08
 
-Run `31649967019`, job `94291913408`, artifact `9162195599`, digest `sha256:91af7648302218477177f7e2785b4b32bea517e2cdebe0b41cc60d082136891e`.
+Run `31650715194`, job `94294235029`, artifact `9162485896`, digest `sha256:e30accedd8e8c571066319572267e84856752577b7cd4cd63e0cd1f3c7d20194`.
 
-- preflight Staff: PASS;
+- preflight Staff v2: PASS;
+- `bash -n`: PASS;
 - Google Cloud auth: PASS;
 - selector Staff dedicado: PASS (`coordinador`);
-- Hosting intentado=false;
-- Hosting=`0/1`;
-- runtime=null;
+- source parity: PASS;
+- Hosting DEV: **deploy físico PASS, 1/1 consumido**;
+- remote parity: PASS exact=true;
+- runtime: FAIL antes de submit de credenciales;
 - artifact=`FAIL_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME`;
-- nuevos provider/data writes=0;
+- nuevos Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes=0;
 - producción=false.
 
-Causa raíz: `PREFLIGHT_SHELL_SYNTAX_COVERAGE_GAP__NESTED_HEREDOC_INDENTATION`. Bash falló antes de source gate/deploy/runtime. No hay nuevo fallo demostrado de producto/Auth/Firestore/membership/HR.
+Causa raíz: `QA_POINTER_INTERCEPTION_BY_BACKEND_PREVIEW_STATUS_OVERLAY`. `#cxBackendPreviewStatus` se superpuso a `#lgSubmit` e interceptó pointer events. No hay fallo nuevo demostrado de Auth/claims/membership/Firestore/HR porque el submit no llegó a ejecutarse.
 
 `STOP_RETRY` aplicado: no rerun, no segundo request, no segundo Hosting.
 
 ## Reparación ya aplicada
 
-- workflow `66cffe4a0f236097264d2e0b2f361115464c8e34`: heredocs anidados eliminados;
-- preflight `b024fd97cd7360a90a32041eb57bd0b003a029a2`: extracción del shell real + `bash -n` PASS obligatorio + bloqueo de heredoc anidado.
+- smoke Staff commit `ccf759c2a82a5baf82397cef02c3ca7851e13ce8`: submit del mismo formulario canónico mediante Enter desde `#lgPass`, sin mutar/ocultar UI;
+- preflight v3 commit `7cab212e5583ed7e2b4dc8b132b0d2b5bf953c19`: exige keyboard-submit, bloquea pointer click sobre `#lgSubmit` y confirma binding canónico `submit` en `backend-browser-auth.js`.
 
-No se ejecutó otro workflow después de la reparación.
+No se ejecutó otro runtime después de la reparación.
 
 ## Pendiente inmediato
 
-Nueva autorización explícita para un nuevo `HOSTING_RUNTIME_ONCE` Staff, bound al HEAD vivo reparado, con action exacta `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`. El preflight actualizado debe PASS antes de provider; luego máximo un Hosting DEV y runtime canónico con reload x3/new-tab. Ante fallo post-provider: `STOP_RETRY`.
+Nueva autorización explícita para un nuevo `HOSTING_RUNTIME_ONCE` Staff, bound al HEAD vivo reparado, con action exacta `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`. El preflight v3 debe PASS antes de provider; luego máximo un Hosting DEV y runtime canónico con reload x3/new-tab. Ante fallo post-provider: `STOP_RETRY`.
 
 ## Pendiente frontend heredado separado
 
@@ -67,8 +71,8 @@ Nueva autorización explícita para un nuevo `HOSTING_RUNTIME_ONCE` Staff, bound
 
 `M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1`
 
-**88% certificado | 12% restante | delta certificado runtime 07=+0%.**
+**88% certificado | 12% restante | delta certificado runtime 08=+0%.**
 
 ## Claude / Academia
 
-Cero cambio frontend en este bloque. No pedir candidata. Academia se actualiza únicamente después del runtime Staff PASS.
+Cero cambio frontend/producto en esta reparación. No pedir candidata. Mantener el pill diagnóstico Preview DEV; QA se adaptó sin tocar UI. Academia se actualiza únicamente después del runtime Staff PASS.
