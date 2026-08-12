@@ -3,4 +3,4 @@
 **Actualización:** 2026-08-11  
 **Estado:** `PASS_C6_STAFF_PRIVATE_EXECUTION_HANDOFF_SOURCE_ONLY__ABC_ENCRYPTED_EXACT__D_DETERMINISTIC__NO_PROVIDER__NO_WRITES__NO_PRODUCTION`
 
-Baseline y handoff PASS protegidos. **M5=4/8; Phase A84%; restante16%.** Cadena: `C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION -> exact write/readback/rollback -> wiring -> M7 -> M8 -> M9 -> M10`.
+**M5=4/8; Phase A84%; restante16%.** Cadena: `C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION -> exact write/readback/rollback -> wiring -> M7 -> M8 -> M9 -> M10`.
