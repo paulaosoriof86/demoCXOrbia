@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "cxorbia.c6.staff-private-execution-handoff.v1",
+  "generatedAt": "2026-08-11",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "tenantId": "tya",
+  "authNamespace": "staff",
+  "purpose": "Provide an encrypted-at-rest, memory-only-at-runtime handoff for the already recovered exact A/B/C visible-login references while D is regenerated from the deterministic technical rebase contract.",
+  "authority": {
+    "providerSnapshotRunId": 31518927950,
+    "providerSnapshotRepeatRequired": false,
+    "previousExactWriteRequestReuse": false,
+    "dRebaseDecision": "PASS_C6_STAFF_D_TECHNICAL_LOGIN_REBASE_SOURCE_ONLY",
+    "privateRecoveryABC": "EXACT"
+  },
+  "envelope": {
+    "path": "backend/private-inbox/c6-staff-private-execution-handoff.enc.json",
+    "schemaVersion": "cxorbia.c6.staff-private-execution-handoff-envelope.v1",
+    "aad": "cxorbia-c6-staff-private-execution-handoff-v1",
+    "keyFingerprintSha256": "c767f9d0413ff7547f5a2e95ae6d210f4fd1cc0ea34484c62320681ce9fb0ecd",
+    "keyWrap": "RSA-OAEP-3072-SHA256",
+    "content": "A256GCM",
+    "compression": "gzip",
+    "encryptedTargets": ["A", "B", "C"],
+    "rawVisibleLoginInRepo": false,
+    "rawVisibleLoginInArtifact": false,
+    "rawVisibleLoginInLog": false
+  },
+  "targetValidation": {
+    "A": {
+      "technicalLoginDigest": "bf5f1f5b2c873b016622d65d9f8d66287b84c2b62dc5547b6382cd3d1b97c1f3",
+      "ownerTechnicalBindingDigest": "ac682179bc0cb3a094e5fafffedd19e7fd1fb7df6dd004a03267c2dbfedb9ed3",
+      "identityChange": false
+    },
+    "B": {
+      "technicalLoginDigest": "c0ae9ca29c85f908d1664f68039b96b430bb9ea18716b1e0e79a844b13967891",
+      "ownerTechnicalBindingDigest": "3910213138e943fe36f1367df5ea07fa48abf5860a0e48c2d8abc8a4dfa75b7a",
+      "identityChange": false
+    },
+    "C": {
+      "technicalLoginDigest": "f940d71b49404dceab826d311419030f9e42e84d621295585ed2ef6558a35e90",
+      "ownerTechnicalBindingDigest": "2ebdd0f42af722a483246c711cc76249f5af51be830e533af32e3840e8b6079a",
+      "identityChange": false
+    },
+    "D": {
+      "strategy": "DETERMINISTIC_REGENERATION_ONLY",
+      "contract": "backend/contracts/c6-staff-d-technical-login-rebase-v1.json",
+      "technicalLoginDigest": "9673243ee85a119f8f830d59846659b81d9068fc49a4647e16da08801e6d804a",
+      "ownerTechnicalBindingDigest": "3e6506f4496872b9c04cfc52f9ac4a466cfc512583754af23fed363e2f49d5ee",
+      "historicalVisibleLoginRequired": false
+    }
+  },
+  "runtime": {
+    "privateKeyMaterial": "backend/secure/corte6-credential-handoff-private.enc.json",
+    "publicKeyMaterial": "backend/secure/corte6-credential-handoff-public.json",
+    "kekSource": "existing canonical DEV service-account private key loaded only in authorized runner",
+    "plaintextLifetime": "MEMORY_ONLY_FOR_EXACT_DIGEST_VALIDATION_AND_WRITE_CALL",
+    "returnShape": "in-memory alias-to-visibleLogin map; never serialized",
+    "validateTechnicalDigestAfterDecrypt": true,
+    "validateOwnerTechnicalBindingAfterDecrypt": true,
+    "validateAliasesExactly": ["A", "B", "C"],
+    "regenerateDAndValidateDigest": true,
+    "clearReferencesAfterUse": "BEST_EFFORT_DROP_IN_MEMORY_REFERENCES",
+    "providerAccessRequiredForHandoff": false
+  },
+  "writeBoundary": {
+    "writesAuthorizedByThisContract": false,
+    "exactWriteV2RequiresSeparateAuthorization": true,
+    "authWritesMaxPreserved": 14,
+    "firestoreWritesMaxPreserved": 16,
+    "authDeletes": 0,
+    "firestoreDeletes": 0,
+    "r4CanonicalMutation": "FORBIDDEN"
+  },
+  "safety": {
+    "containsRawPii": false,
+    "containsSecrets": false,
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "deletes": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false
+  }
+}
