@@ -46,7 +46,7 @@ function baseReport(){return {
 let report=baseReport();
 function recalc(){report.writes.authWritesTotal=report.writes.authCreates+report.writes.customClaimsWrites+report.writes.authDisableWrites;report.writes.firestoreWritesTotal=report.writes.tenantUserWrites+report.writes.auditLogWrites;}
 function writeReport(){recalc();const dir=OUT.includes('/')?OUT.slice(0,OUT.lastIndexOf('/')):'.';fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(OUT,JSON.stringify(report,null,2)+'\n','utf8');}
-function fail(code,error){report.decision=code;report.generatedAt=nowIso();if(error)report.blockers.push(safeErr(error));writeReport();throw Object.assign(new Error(code),{cxStop:true});}
+function fail(code,error){report.decision=code;report.generatedAt=nowIso();if(error)report.blockers.push(safeErr(error));writeReport();if(SOURCE_SELF_TEST)console.error(JSON.stringify({decision:report.decision,blockers:report.blockers}));throw Object.assign(new Error(code),{cxStop:true});}
 
 function sourcePreflight(){
   const required=[REQUEST_PATH,CONTRACT_PATH,TARGETS_PATH,COLLISION_PATH,PREWRITE_PATH,SNAPSHOT_PATH,HANDOFF_CONTRACT_PATH,D_REBASE_PATH,'backend/runtime/private-handoff/c6-staff-private-execution-handoff.mjs','backend/private-inbox/c6-staff-private-execution-handoff.enc.json'];
@@ -72,7 +72,7 @@ function sourcePreflight(){
     ensure(t.role===c.role&&t.ownerIdentityAnchor===c.ownerIdentityAnchor&&t.expectedClaimsDigest===c.expectedClaimsDigest,`TARGET_BIND_${alias}`);
     ensure(t.expectedClaimsDigest===claimsDigest(t.role),`TARGET_CLAIMS_${alias}`);
     ensure(sha(providerEmailFor(c))===c.providerEmailSha256,`TARGET_PROVIDER_DIGEST_${alias}`);
-    if(alias==='A')ensure(t.credentialStrategy==='REUSE_EXISTING_CANONICAL_IF_OWNER_BINDING_EXACT','A_CREDENTIAL_STRATEGY');
+    if(alias==='A')ensure(t.credentialStrategy==='REUSE_EXISTING_CANONICAL_SUPER_ONLY_IF_INDEPENDENT_OWNER_BINDING_MATCHES_OTHERWISE_NEW_EPHEMERAL','A_CREDENTIAL_STRATEGY');
     else ensure(t.credentialStrategy==='NEW_EPHEMERAL_AT_SEPARATELY_AUTHORIZED_EXECUTION','BCD_CREDENTIAL_STRATEGY');
   }
   const gm=new Map(prewrite.legacyRepairGroups.map(x=>[x.repairAlias,x]));
