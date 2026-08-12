@@ -80,14 +80,17 @@ ensure(sources.staffSmoke.includes("if(action!==exactAction)throw new Error('STA
 ensure(sources.staffSmoke.includes("await page.goto(root+'/'"),'STAFF_SMOKE_ROOT_ENTRY_NOT_DIRECT');
 ensure(!sources.staffSmoke.includes('#cxIntegratedAuthLogin'),'STAFF_SMOKE_LEGACY_LOGIN_SELECTOR_REINTRODUCED');
 ensure(!sources.staffSmoke.includes('#cxIntegratedAuthPassword'),'STAFF_SMOKE_LEGACY_PASSWORD_SELECTOR_REINTRODUCED');
+ensure(!sources.staffSmoke.includes("await page.click('#lgSubmit')"),'STAFF_SMOKE_POINTER_SUBMIT_REINTRODUCED');
+ensure(sources.staffSmoke.includes("await page.press('#lgPass','Enter')"),'STAFF_SMOKE_CANONICAL_KEYBOARD_SUBMIT_MISSING');
 
 for(const id of ['loginForm','lgUser','lgPass','lgSubmit']){
   ensure(sources.browserAuth.includes(`getElementById('${id}')`),'PRODUCT_CANONICAL_SELECTOR_MISSING_'+id);
 }
 ensure(sources.browserAuth.includes('removeLegacyCredentialOverlay'),'PRODUCT_LEGACY_OVERLAY_REMOVAL_MISSING');
+ensure(sources.browserAuth.includes("visible.form.addEventListener('submit'"),'PRODUCT_CANONICAL_FORM_SUBMIT_BINDING_MISSING');
 
 const result={
-  schemaVersion:'cxorbia.c6.staff-lane-source-preflight.v2',
+  schemaVersion:'cxorbia.c6.staff-lane-source-preflight.v3',
   generatedAt:new Date().toISOString(),
   decision:'PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT',
   action:exactAction,
@@ -101,7 +104,10 @@ const result={
     staffSelectorNoShopperHrFirestoreDependency:true,
     staffRuntimeNoTextPatching:true,
     staffCanonicalFormSelectors:true,
-    productCanonicalSelectorsPresent:true
+    staffCanonicalKeyboardSubmit:true,
+    staffPointerSubmitCollisionAvoided:true,
+    productCanonicalSelectorsPresent:true,
+    productCanonicalSubmitBindingPresent:true
   },
   safety:{
     providerCalls:0,
