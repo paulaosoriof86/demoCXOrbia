@@ -3,8 +3,6 @@
 **Actualización:** 2026-08-11  
 **Estado:** `PASS_C6_STAFF_PRIVATE_EXECUTION_HANDOFF_SOURCE_ONLY__ABC_ENCRYPTED_EXACT__D_DETERMINISTIC__NO_PROVIDER__NO_WRITES__NO_PRODUCTION`
 
-Protegido: baseline Auth228, M4/M6, provider snapshot, private recovery, D rebase, handoff, budgets Auth14/Firestore16/deletes0 y R4.
+Baseline y bloques cerrados protegidos. A/B/C exactos cifrados/memory-only; D determinístico; budgets Auth14/Firestore16/deletes0; R4 intacto.
 
 **M5=4/8; Phase A84%; restante16%.** Cadena: `C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION -> exact write/readback/rollback -> wiring -> M7 -> M8 -> M9 -> M10`.
-
-No repetir bloques cerrados; no writes sin autorización v2; no deletes/deploy/merge/producción.
