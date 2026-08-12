@@ -5,8 +5,8 @@
 
 Prevalencia: checkpoint -> `SOURCE-LOCK-C6-STAFF-PRIVATE-EXECUTION-HANDOFF-PASS-20260811.md` -> handoff evidence/contract/encrypted envelope/runtime helper -> D rebase PASS -> private recovery -> previous exact-write STOP -> provider snapshot PASS31518927950 -> live-user-admin static PASS -> HR live PASS -> Auth freezes -> CAMBIOS/RESUMEN/PENDIENTES/plan/tracker/Academia -> PR#7/HEAD.
 
-Auth baseline228; M4=5/5; M5=4/8; M6=5/5; budget Auth14/Firestore16/deletes0. A/B/C exactos tienen handoff cifrado recuperable/memory-only; D determinístico. Raw protected values no emitidos/persistidos; provider/Auth/Firestore/HR/Rules/Storage writes0; production=false.
+Auth baseline228; M4=5/5; M5=4/8; M6=5/5; Auth14/Firestore16/deletes0. A/B/C exactos tienen handoff cifrado/memory-only; D determinístico. Raw protected values no emitidos/persistidos; provider/Auth/Firestore/HR/Rules/Storage writes0; production=false.
 
 **Phase A84%; restante16%.** Siguiente: `C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION`.
 
-No repetir bloques cerrados, snapshot31518927950 ni request consumido; no nueva candidata/rama/PR/workflow; no writes hasta autorización v2; no deletes/deploy/merge/producción.
+No repetir bloques cerrados ni request consumido; no nueva candidata/rama/PR/workflow; no writes hasta autorización v2; no deletes/deploy/merge/producción.
