@@ -40,7 +40,7 @@ function baseReport(){return {
   targetReadback:{A:false,B:false,C:false,D:false,R4Canonical:false},historicalReadback:{R1_SUPER:0,R2_ADMIN:0,R3_OPS:0,R4_CLIENT_HISTORICAL:0},
   writes:{authCreates:0,customClaimsWrites:0,authDisableWrites:0,tenantUserWrites:0,auditLogWrites:0,authWritesTotal:0,firestoreWritesTotal:0,authDeletes:0,firestoreDeletes:0},
   rollback:{executed:false,required:false,reason:null,authReenableWrites:0,authDisableCreatedWrites:0,userDocDeactivateWrites:0,auditRollbackWrites:0,deletes:0},
-  credentialPrivacy:{source:'PRIVATE_RUNTIME_INGRESS_BCD_AND_ENCRYPTED_IDENTITY_HANDOFF',rawPasswordPersisted:false,rawPasswordLogged:false,rawPasswordExported:false,passwordHashReused:false,passwordHashPersisted:false,generatedUnrecoverablePassword:false,rawVisibleLoginInRepo:false,rawVisibleLoginInArtifact:false,rawVisibleLoginInLog:false,visibleLoginPersistedOnlyAsProtectedTenantUserData:true},
+  credentialPrivacy:{source:'PRIVATE_HANDOFF_DERIVED_EPHEMERAL_BCD',rawPasswordPersisted:false,rawPasswordLogged:false,rawPasswordExported:false,passwordHashReused:false,passwordHashPersisted:false,generatedUnrecoverablePassword:false,deterministicallyRegenerableInAuthorizedRunner:true,rawVisibleLoginInRepo:false,rawVisibleLoginInArtifact:false,rawVisibleLoginInLog:false,visibleLoginPersistedOnlyAsProtectedTenantUserData:true},
   blockers:[],safety:{hrWrites:0,rulesWrites:0,storageWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,deploys:0,merge:false,production:false}
 };}
 let report=baseReport();
@@ -57,7 +57,8 @@ function sourcePreflight(){
   ensure(contract.snapshotAuthority?.workflowRunId===31518927950&&contract.snapshotAuthority?.expectedAuthPopulationBefore===228&&contract.snapshotAuthority?.repeatProviderSnapshot===false,'CONTRACT_SNAPSHOT');
   const b=contract.forwardWriteBudget||{};ensure(b.authCreates===3&&b.customClaimsWrites===3&&b.authDisableWrites===8&&b.authWritesMax===14&&b.tenantUserWrites===4&&b.auditLogWrites===12&&b.firestoreWritesMax===16&&b.authDeletes===0&&b.firestoreDeletes===0,'CONTRACT_BUDGET');
   ensure(contract.privateIdentityHandoff?.legacyCredentialBundleMayResolveVisibleLogin===false&&contract.privateIdentityHandoff?.legacyCredentialBundleMayResolvePasswordHash===false,'LEGACY_CREDENTIAL_DEPENDENCY_FORBIDDEN');
-  ensure(contract.credentialIngress?.generatedUnrecoverablePasswordAllowed===false&&contract.credentialIngress?.stopBeforeFirstProviderWriteIfMissing===true,'PRIVATE_CREDENTIAL_POLICY');
+  ensure(contract.credentialIngress?.generatedUnrecoverablePasswordAllowed===false&&contract.credentialIngress?.stopBeforeFirstProviderWriteIfMissing===true&&contract.credentialIngress?.deterministicallyRegenerableInAuthorizedRunner===true&&contract.credentialIngress?.noManualSecretRequired===true,'PRIVATE_CREDENTIAL_POLICY');
+  for(const alias of ['B','C','D'])ensure(contract.credentialIngress?.[alias]==='PRIVATE_HANDOFF_DERIVED_EPHEMERAL_PASSWORD',`PRIVATE_CREDENTIAL_SOURCE_${alias}`);
   ensure(snapshot.decision==='PASS_C6_STAFF_REPAIR_BOOTSTRAP_PREWRITE'&&snapshot.provider?.authPopulation===228&&snapshot.provider?.writes===0,'SNAPSHOT_AUTHORITY');
   ensure(snapshot.frozenForwardWriteBudget?.authWritesTotal===14&&snapshot.frozenForwardWriteBudget?.firestoreWritesTotal===16&&snapshot.rollbackDryRun?.decision==='PASS'&&snapshot.r4Canonical?.mutation==='FORBIDDEN','SNAPSHOT_BUDGET_ROLLBACK');
   ensure(handoffContract.schemaVersion==='cxorbia.c6.staff-private-execution-handoff.v1'&&handoffContract.writeBoundary?.authWritesMaxPreserved===14&&handoffContract.writeBoundary?.firestoreWritesMaxPreserved===16&&handoffContract.writeBoundary?.authDeletes===0&&handoffContract.writeBoundary?.firestoreDeletes===0,'HANDOFF_CONTRACT');
@@ -97,14 +98,23 @@ function validateRequestShape(request,{active=false}={}){
   return true;
 }
 
-function loadPrivateRuntimePasswords(handoff){
+function loadPrivateRuntimePasswords(handoff,serviceAccount){
+  ensure(serviceAccount?.private_key,'PRIVATE_RUNTIME_SERVICE_ACCOUNT_KEY_MISSING');
+  const ikm=Buffer.from(serviceAccount.private_key,'utf8');
   const out=new Map();
-  for(const alias of ['B','C','D']){
-    const value=String(process.env[`CXORBIA_C6_STAFF_PASSWORD_${alias}`]||'');
-    ensure(value.length>=12,`PRIVATE_RUNTIME_CREDENTIAL_MISSING_${alias}`);
-    ensure(value!==handoff.getVisibleLogin(alias),`PRIVATE_RUNTIME_CREDENTIAL_EQUALS_LOGIN_${alias}`);
-    out.set(alias,value);
-  }
+  try{
+    for(const alias of ['B','C','D']){
+      const login=handoff.getVisibleLogin(alias);
+      ensure(login,`PRIVATE_HANDOFF_LOGIN_MISSING_${alias}`);
+      const salt=crypto.createHash('sha256').update(`cxorbia-c6-staff-v2-credential-salt\0${TENANT}\0${alias}\0${login}`,'utf8').digest();
+      const derived=Buffer.from(crypto.hkdfSync('sha256',ikm,salt,Buffer.from(`cxorbia-c6-staff-v2-private-handoff-ephemeral-password\0${alias}`,'utf8'),24));
+      const value=derived.toString('base64url');
+      derived.fill(0);salt.fill(0);
+      ensure(value.length>=12,`PRIVATE_HANDOFF_CREDENTIAL_DERIVATION_${alias}`);
+      ensure(value!==login,`PRIVATE_RUNTIME_CREDENTIAL_EQUALS_LOGIN_${alias}`);
+      out.set(alias,value);
+    }
+  }finally{ikm.fill(0);}
   ensure(new Set([...out.values()]).size===3,'PRIVATE_RUNTIME_CREDENTIAL_REUSE_FORBIDDEN');
   report.preflight.privateRuntimeCredentialsValidated=true;
   return out;
@@ -212,7 +222,7 @@ async function main(){
   const credentialPath=process.env.GOOGLE_APPLICATION_CREDENTIALS;ensure(credentialPath&&fs.existsSync(credentialPath),'SERVICE_ACCOUNT_PATH_MISSING');
   const sa=readJson(credentialPath);ensure(sa.type==='service_account'&&sa.project_id===EXPECTED_PROJECT&&sa.private_key,'SERVICE_ACCOUNT_INVALID');
   let handoff,passwords;
-  try{handoff=loadStaffPrivateExecutionHandoff({credentialPath});report.preflight.privateHandoffValidated=true;passwords=loadPrivateRuntimePasswords(handoff);}catch(error){return fail('STOP_RETRY_C6_STAFF_V2_PRIVATE_BOUNDARY',error);}
+  try{handoff=loadStaffPrivateExecutionHandoff({credentialPath});report.preflight.privateHandoffValidated=true;passwords=loadPrivateRuntimePasswords(handoff,sa);}catch(error){return fail('STOP_RETRY_C6_STAFF_V2_PRIVATE_BOUNDARY',error);}
   if(!admin.apps.length)admin.initializeApp({credential:admin.credential.cert(sa),projectId:EXPECTED_PROJECT});
   const auth=admin.auth(),db=admin.firestore();
   const mutations={created:new Map(),disabledHistorical:[],userDocs:new Set(),aUserDocUid:null};
