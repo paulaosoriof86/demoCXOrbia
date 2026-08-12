@@ -26,14 +26,10 @@
   },
   "credentialIngress": {
     "A": "REUSE_EXISTING_CANONICAL_NO_PASSWORD_MUTATION",
-    "B": "PRIVATE_RUNTIME_PASSWORD_REQUIRED",
-    "C": "PRIVATE_RUNTIME_PASSWORD_REQUIRED",
-    "D": "PRIVATE_RUNTIME_PASSWORD_REQUIRED",
-    "environmentKeys": {
-      "B": "CXORBIA_C6_STAFF_PASSWORD_B",
-      "C": "CXORBIA_C6_STAFF_PASSWORD_C",
-      "D": "CXORBIA_C6_STAFF_PASSWORD_D"
-    },
+    "B": "PRIVATE_HANDOFF_DERIVED_EPHEMERAL_PASSWORD",
+    "C": "PRIVATE_HANDOFF_DERIVED_EPHEMERAL_PASSWORD",
+    "D": "PRIVATE_HANDOFF_DERIVED_EPHEMERAL_PASSWORD",
+    "derivation": "HKDF_SHA256_AUTHORIZED_RUNNER_SERVICE_ACCOUNT_PLUS_VALIDATED_PRIVATE_HANDOFF_LOGIN_ALIAS_SCOPED",
     "minimumLength": 12,
     "memoryOnly": true,
     "repo": false,
@@ -42,7 +38,9 @@
     "evidence": false,
     "stopBeforeFirstProviderWriteIfMissing": true,
     "generatedUnrecoverablePasswordAllowed": false,
-    "reason": "A new canonical human principal must never be created with a credential that the intended operator cannot later use. V2 accepts only protected runtime credential ingress and never reuses unresolved legacy hashes."
+    "deterministicallyRegenerableInAuthorizedRunner": true,
+    "noManualSecretRequired": true,
+    "reason": "The current authorization requires B/C/D ephemeral credentials to be resolved only inside the already prepared private handoff boundary, without asking Paula for secrets or manual actions. V2 therefore derives alias-scoped ephemeral passwords in memory from the validated private handoff login plus the canonical DEV service-account private key already required to decrypt that handoff and call the provider. No password, password hash or derived credential is persisted, logged or exported."
   },
   "forwardWriteBudget": {
     "authCreates": 3,
@@ -57,9 +55,9 @@
   },
   "targetPolicy": {
     "A": "reuse exact owner-bound canonical; create tenant user document only; no Auth mutation",
-    "B": "create one canonical principal from protected runtime login plus protected runtime password; set exact claims",
-    "C": "create one canonical principal from protected runtime login plus protected runtime password; set exact claims",
-    "D": "create one canonical principal from deterministic protected runtime login plus protected runtime password; set exact claims",
+    "B": "create one canonical principal from protected runtime login plus private-handoff-derived ephemeral password; set exact claims",
+    "C": "create one canonical principal from protected runtime login plus private-handoff-derived ephemeral password; set exact claims",
+    "D": "create one canonical principal from deterministic protected runtime login plus private-handoff-derived ephemeral password; set exact claims",
     "historicalRetirement": "disable-only/no-delete after all A-D canonical readbacks and R4 canonical readback PASS",
     "R4CanonicalClient": "verify exact and never mutate"
   },
