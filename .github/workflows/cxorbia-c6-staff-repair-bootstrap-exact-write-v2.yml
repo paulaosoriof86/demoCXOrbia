@@ -1,0 +1,151 @@
+name: CXOrbia C6 Staff Repair Bootstrap Exact Write V2
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json'
+
+permissions:
+  contents: write
+  statuses: write
+
+concurrency:
+  group: cxorbia-c6-staff-repair-bootstrap-exact-write-v2
+  cancel-in-progress: false
+
+jobs:
+  exact-write-v2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Gate exact one-shot V2 request
+        id: req
+        run: |
+          set -euo pipefail
+          node <<'NODE' >> "$GITHUB_OUTPUT"
+          const fs=require('fs'),{execFileSync}=require('child_process');
+          const p='.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json';
+          const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(r.schemaVersion!=='cxorbia.c6.staff-repair-bootstrap.exact-write.request.v2')throw new Error('bad_schema');
+          if(r.repository!=='paulaosoriof86/demoCXOrbia'||r.branch!=='docs-tya-v6-v71-audit'||r.firebaseProjectId!=='cxorbia-backend-dev'||r.tenantId!=='tya'||r.pullRequest!==7)throw new Error('bad_target');
+          if(r.snapshotWorkflowRunId!==31518927950||r.authWritesMax!==14||r.firestoreWritesMax!==16||r.authDeletes!==0||r.firestoreDeletes!==0)throw new Error('bad_budget');
+          for(const k of ['rulesWrites','storageWrites','hrWrites','makeWrites','geminiCalls','paymentsWrites'])if(r[k]!==0)throw new Error('unsafe_'+k);
+          if(r.deploy!==false||r.merge!==false||r.production!==false||r.stopRetry!==true||r.allowedExecutions!==1)throw new Error('unsafe_scope');
+          if(JSON.stringify(r.privateRuntimeCredentialsRequired)!==JSON.stringify(['B','C','D'])||r.privateRuntimeCredentialsPersisted!==false)throw new Error('bad_private_boundary');
+          const execute=r.enabled===true&&r.consumed===false&&r.authorizedBy==='Paula'&&typeof r.authorizationText==='string'&&r.authorizationText.includes('STAFF REPAIR/BOOTSTRAP EXACT WRITE V2');
+          if(execute){
+            const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+            if(r.targetHeadSha!==parent)throw new Error('target_head_mismatch');
+          }
+          console.log(`execute=${execute?'true':'false'}`);
+          console.log(`request_id=${r.requestId}`);
+          NODE
+
+      - name: Static V2 source checks
+        run: |
+          set -euo pipefail
+          node --check tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.mjs
+          node - <<'NODE'
+          const c=require('./backend/contracts/c6-staff-repair-bootstrap-exact-write-v2.json');
+          if(c.forwardWriteBudget.authWritesMax!==14||c.forwardWriteBudget.firestoreWritesMax!==16||c.forwardWriteBudget.authDeletes!==0||c.forwardWriteBudget.firestoreDeletes!==0)process.exit(2);
+          if(c.credentialIngress.noManualSecretRequired!==true||c.credentialIngress.deterministicallyRegenerableInAuthorizedRunner!==true)process.exit(3);
+          NODE
+
+      - name: Install transient provider tooling
+        run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+
+      - name: Source self-test before provider credential
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_C6_STAFF_WRITE_REQUEST: .github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json
+          CXORBIA_C6_STAFF_WRITE_OUT: .tmp/c6-staff-repair-bootstrap-exact-write-v2/source-self-test.json
+        run: node tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.mjs --source-self-test
+
+      - name: Load canonical DEV service account privately
+        if: steps.req.outputs.execute == 'true'
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/c6-staff-v2-private
+          node <<'NODE'
+          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw)}catch{}
+          if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.private_key))throw new Error('credential_invalid');
+          fs.writeFileSync('.tmp/c6-staff-v2-private/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.tmp/c6-staff-v2-private/credentials.json" >> "$GITHUB_ENV"
+
+      - name: Execute exact V2 once
+        id: exactwrite
+        if: steps.req.outputs.execute == 'true'
+        continue-on-error: true
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_C6_STAFF_WRITE_REQUEST: .github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json
+          CXORBIA_C6_STAFF_WRITE_OUT: .tmp/c6-staff-repair-bootstrap-exact-write-v2/report.json
+        run: node tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.mjs
+
+      - name: Freeze V2 request and persist sanitized evidence
+        if: always() && steps.req.outputs.execute == 'true'
+        run: |
+          set -euo pipefail
+          REPORT=.tmp/c6-staff-repair-bootstrap-exact-write-v2/report.json
+          if [ ! -f "$REPORT" ]; then
+            mkdir -p .tmp/c6-staff-repair-bootstrap-exact-write-v2
+            node <<'NODE'
+          const fs=require('fs');
+          fs.writeFileSync('.tmp/c6-staff-repair-bootstrap-exact-write-v2/report.json',JSON.stringify({schemaVersion:'cxorbia.c6.staff-repair-bootstrap.exact-write.evidence.v2',generatedAt:new Date().toISOString(),decision:'STOP_RETRY_C6_STAFF_REPAIR_BOOTSTRAP_V2_HARNESS_NO_REPORT',writes:{authWritesTotal:'UNKNOWN',firestoreWritesTotal:'UNKNOWN',authDeletes:0,firestoreDeletes:0},blockers:[{code:'HARNESS_NO_REPORT'}],safety:{hrWrites:0,rulesWrites:0,storageWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,deploys:0,merge:false,production:false}},null,2)+'\n');
+          NODE
+          fi
+          cp "$REPORT" /tmp/c6-staff-v2-evidence.json
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          cp /tmp/c6-staff-v2-evidence.json app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-EXACT-WRITE-V2-LATEST.json
+          node <<'NODE'
+          const fs=require('fs');
+          const p='.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json';
+          const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          const e=JSON.parse(fs.readFileSync('app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-EXACT-WRITE-V2-LATEST.json','utf8'));
+          if(r.requestId!=='c6-staff-repair-bootstrap-exact-write-v2-20260812-01')throw new Error('request_identity_drift');
+          r.enabled=false;r.consumed=true;r.consumedAt=new Date().toISOString();r.status=e.decision;r.decision=e.decision;r.requestCommitSha=process.env.GITHUB_SHA;
+          r.executedWrites={auth:e.writes?.authWritesTotal??'UNKNOWN',firestore:e.writes?.firestoreWritesTotal??'UNKNOWN',authDeletes:e.writes?.authDeletes??0,firestoreDeletes:e.writes?.firestoreDeletes??0};
+          r.nextGate=e.decision==='PASS_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2_READBACK'?'C6_LIVE_USER_ADMIN_FRONTEND_WIRING_LOCALIZED':'STOP_RETRY_NO_SECOND_ATTEMPT';
+          fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n','utf8');
+          NODE
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-EXACT-WRITE-V2-LATEST.json
+          git commit -m 'evidence: freeze C6 staff repair bootstrap exact write V2'
+          git push origin HEAD:docs-tya-v6-v71-audit
+
+      - name: Publish V2 status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          STATE=success;DESC='PREPARED_C6_STAFF_REPAIR_BOOTSTRAP_V2_NO_EXECUTE'
+          if [ '${{ steps.req.outputs.execute }}' = 'true' ]; then
+            if [ '${{ steps.exactwrite.outcome }}' = 'success' ]; then DESC='PASS_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2';
+            else STATE=error;DESC='STOP_RETRY_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2'; fi
+          fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/c6-staff-repair-bootstrap-v2/$DESC" -f description="$DESC" >/dev/null
+
+      - name: Cleanup all private material
+        if: always()
+        run: rm -rf .tmp/c6-staff-v2-private
+
+      - name: Enforce exact-write result
+        if: always() && steps.req.outputs.execute == 'true'
+        run: test '${{ steps.exactwrite.outcome }}' = 'success'
