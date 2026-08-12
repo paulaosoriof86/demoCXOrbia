@@ -1,70 +1,34 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-04  
-**Estado frontend:** `V7_2_RECEIVED_PREFLIGHT__FINAL_AUDIT_PENDING__DO_NOT_CREATE_NEW_CANDIDATE`
+**Última actualización:** 2026-08-11 18:45 -06:00  
+**Estado:** `PASS_C6_STAFF_PRIVATE_EXECUTION_HANDOFF_SOURCE_ONLY__ABC_ENCRYPTED_EXACT__D_DETERMINISTIC__NO_PROVIDER__NO_WRITES__NO_PRODUCTION`
 
-## Alcance
+## Estado vigente
 
-Cloud/Claude no debe generar V7.3 ni tocar backend, core, módulos, adapters, contratos, Laboratorio, datos, GitHub, deploy o producción.
+Backend C6 private execution handoff: PASS. A/B/C están protegidos mediante handoff cifrado y memory-only; D se regenera de forma técnica determinística. El handoff no ejecutó provider/Auth/Firestore/HR/Rules/Storage writes ni deploy/merge/producción.
 
-V7.2 ya fue recibida. Su delta declarado es exclusivamente:
+Provider snapshot rector: `31518927950`. Auth protegido: 228. Budget del siguiente repair: Auth máximo 14 / Firestore máximo 16 / deletes 0. R4 canónico permanece inmutable.
 
-- `app/app.js`;
-- `app/styles/layout.css`.
+**Phase A: 84% certificado | 16% restante | M5=4/8.**
 
-## Qué se preserva
+## Frontend / Claude
 
-- composición canónica acumulativa;
-- desktop;
-- órbita;
-- países dinámicos 1/2/8/12;
-- tres perfiles y formulario;
-- Login único;
-- todos los módulos y autoridades fijadas por el manifiesto canónico;
-- backend, HR, Auth, Finanzas, Shopper, Reservas, Academia y ReportKit.
+No generar nueva candidata ni modificar UI por este bloque. No reabrir Login, D rebase, Auth340, SKIP13, MultiAuth, HR, M4/static gate ni el handoff privado ya cerrado. Claude mantiene la composición frontend vigente hasta que el bootstrap/readback técnico produzca una diferencia reproducible que requiera ajuste localizado.
 
-## V7.2 recibida
+## Alineación documental
 
-- SHA-256 `d3b7551b3b0b30e1b071dfc74beb20009c9c523c2955cce760148da6b8727686`;
-- 23,243 bytes;
-- cuatro entradas;
-- anulación responsive solicitada presente en CSS;
-- `app/app.js` pasa `node --check` en preflight;
-- faltan PNG contractuales de cinco viewports y escenarios 1/2/8/12.
+`DOC_ALIGNMENT_PASS_20260811`.
 
-La ausencia de capturas no requiere nueva candidata. La auditoría final debe generarlas en el mismo carril que permitirá el empalme directo.
+`app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md` y `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md` mandan para continuidad. Las copias raíz de CAMBIOS/RESUMEN/PENDIENTES son mirrors de compatibilidad y deben coincidir en estado, porcentaje y siguiente acción. Cualquier divergencia futura es `BLOCK_DOC_ALIGNMENT`, no motivo para reiniciar metodología o auditorías funcionales.
 
-## Siguiente acción exclusiva de Codex/backend
+## Siguiente acción exacta
 
-```text
-EXECUTION_LANE_READY
-→ AUDITORÍA FINAL FOCALIZADA V7.2
-→ GO SIN P0
-→ APPLY_DELTA_DIRECTLY
-→ GATES FINALES
-→ ÚNICO HOSTING DEV
-→ LABORATORIO REAL
-→ VALIDACIÓN HUMANA
-```
+`C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION → exact write único → readback acumulativo → rollback verificable → wiring`.
 
-## Prohibiciones
+Después: `M7 → M8 → M9 → M10`.
 
-- no nueva candidata;
-- no rediseño del Login;
-- no cambios adicionales por rutina;
-- no shell reducido;
-- no versión paralela;
-- no tocar módulos aprobados;
-- no afirmar GO o responsive PASS sin evidencia geométrica real.
+La corrección documental de esta iteración no cambia el tracker funcional: `+0%`.
 
-## Criterios finales
+## Academia
 
-- `strip.top >= 0`;
-- `aside.left >= 0`;
-- `main.left >= 0`;
-- `main.width <= viewportWidth`;
-- `scrollWidth == viewportWidth`;
-- `scrollHeight >= goReg.bottom`;
-- cero clipping lateral;
-- registro alcanzable por scroll natural;
-- desktop y países dinámicos preservados.
+Sin modificación de contenido en este bloque. Mantener rutas por rol, permisos, notificaciones y manuales alineados cuando el wiring/runtime posterior cambie comportamiento visible.
