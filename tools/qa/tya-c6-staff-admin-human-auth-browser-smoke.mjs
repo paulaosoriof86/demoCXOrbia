@@ -15,7 +15,7 @@ if(!credentials?.staff?.login||!credentials?.staff?.password)throw new Error('PR
 if(credentials?.shopper||credentials?.client)throw new Error('PRIVATE_E2E_STAFF_SCOPE_EXCEEDED');
 
 const assert=(ok,message)=>{if(!ok)throw new Error(message);};
-const clean=v=>String(v??'').replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+/g,'REDACTED_EMAIL').replace(/[^A-Za-z0-9_.:/=-]+/g,'_').replace(/_+/g,'_').slice(0,1200);
+const clean=v=>String(v??'').replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+/g,'REDACTED_EMAIL').replace(/[^A-Za-z0-9_.:/=-]+/g,'_').replace(/_+/g,'_').slice(0,1600);
 const persist=value=>{
   if(!outputFile)return;
   fs.mkdirSync(path.dirname(outputFile),{recursive:true});
@@ -27,14 +27,20 @@ async function waitReady(page,label){
     await page.waitForFunction(()=>{
       const ctx=window.CX?.backendAuth?.context?.()||null;
       const authority=window.CX_PROTECTED_AUTH_HR_AUTHORITY||null;
+      const handoff=window.CX_C6_LIVE_USER_ADMIN_FRONTEND_HANDOFF||null;
       const d=window.CX?.data||{};
       return Boolean(
         ctx?.authenticated===true&&ctx?.authNamespace==='staff'&&
+        window.CX?.session?.user?.membershipVerified===true&&
         authority?.applied===true&&authority?.periods>0&&authority?.hrVisits>0&&
+        handoff?.status==='entered'&&handoff?.membershipVerified===true&&
         Array.isArray(d.projects)&&d.projects.length===authority.periods&&
         Array.isArray(d._visitas)&&d._visitas.length===authority.hrVisits&&
         d.currentProjectId&&d.currentPeriodId&&
-        document.getElementById('app')?.classList.contains('on')===true
+        window.CX_BACKEND_LAST_STATE?.empty!==true&&
+        window.CX_CORTE4_READONLY?.empty!==true&&
+        document.getElementById('app')?.classList.contains('on')===true&&
+        document.getElementById('login')?.classList.contains('hidden')===true
       );
     },null,{timeout:90000});
   }catch{
@@ -47,6 +53,7 @@ async function snapshot(page,label){
   return page.evaluate(label=>{
     const ctx=window.CX?.backendAuth?.context?.()||null;
     const authority=window.CX_PROTECTED_AUTH_HR_AUTHORITY||null;
+    const handoff=window.CX_C6_LIVE_USER_ADMIN_FRONTEND_HANDOFF||null;
     const d=window.CX?.data||{};
     const ds=window.CX?.dataSource||{};
     const view=document.getElementById('view')?.innerText||'';
@@ -57,6 +64,8 @@ async function snapshot(page,label){
       namespace:ctx?.authNamespace||null,
       tenantId:ctx?.tenantId||null,
       projectIds:Array.isArray(ctx?.projectIds)?ctx.projectIds.slice():[],
+      membershipVerified:window.CX?.session?.user?.membershipVerified===true,
+      membershipSource:window.CX?.session?.user?.membershipSource||null,
       periods:Array.isArray(d.projects)?d.projects.length:-1,
       visits:Array.isArray(d._visitas)?d._visitas.length:-1,
       shoppers:Array.isArray(d.shoppers)?d.shoppers.length:-1,
@@ -70,8 +79,13 @@ async function snapshot(page,label){
       latestPeriod:authority?.latestPeriod||null,
       duplicateVisitKeys:Number(authority?.duplicateVisitKeys||0),
       duplicateShopperIds:Number(authority?.duplicateShopperIds||0),
+      frontendHandoffStatus:handoff?.status||null,
+      frontendHandoffMembershipVerified:handoff?.membershipVerified===true,
+      staleBackendEmpty:window.CX_BACKEND_LAST_STATE?.empty===true,
+      staleCorte4Empty:window.CX_CORTE4_READONLY?.empty===true,
       dataStatus:ds.status||null,
       dataMode:ds.mode||null,
+      dataSourceRef:ds.sourceRef||null,
       appOn:document.getElementById('app')?.classList.contains('on')===true,
       loginHidden:document.getElementById('login')?.classList.contains('hidden')===true,
       emptyShell:window.CX_C4_EMPTY_SHELL_STATE?.active===true,
@@ -91,6 +105,9 @@ async function snapshot(page,label){
 function validate(state,label,first=null){
   assert(state.appOn,label+'_APP_NOT_ON');
   assert(state.loginHidden,label+'_LOGIN_NOT_HIDDEN');
+  assert(state.membershipVerified,label+'_MEMBERSHIP_NOT_VERIFIED');
+  assert(state.frontendHandoffStatus==='entered'&&state.frontendHandoffMembershipVerified,label+'_FRONTEND_HANDOFF_NOT_ENTERED');
+  assert(!state.staleBackendEmpty&&!state.staleCorte4Empty,label+'_STALE_PROVIDER_EMPTY_STATE');
   assert(state.authorityApplied,label+'_HR_AUTHORITY_NOT_APPLIED');
   assert(state.periods===state.authorityPeriods&&state.periods>0,label+'_PERIODS_NOT_DYNAMIC_AUTHORITY');
   assert(state.visits===state.authorityVisits&&state.visits>0,label+'_VISITS_NOT_DYNAMIC_AUTHORITY');
@@ -180,6 +197,9 @@ async function runStaff(){
       latestPeriod:first.latestPeriod,
       projectId:first.currentProjectId,
       periodId:first.currentPeriodId,
+      membershipVerified:first.membershipVerified,
+      frontendHandoffStatus:first.frontendHandoffStatus,
+      staleProviderEmptyCleared:!first.staleBackendEmpty&&!first.staleCorte4Empty,
       loginProtectedBy:before.firebaseWrapper?'official_wrapper':before.earlyGuardInstalled?'early_guard':'unknown',
       canonicalForm:true,
       canonicalSelectors:['#loginForm','#lgUser','#lgPass','#lgSubmit'],
@@ -201,7 +221,7 @@ async function runStaff(){
 try{
   const staff=await runStaff();
   const evidence={
-    schemaVersion:'cxorbia.c6.unified-human-auth-staff-admin-readonly.v2',
+    schemaVersion:'cxorbia.c6.unified-human-auth-staff-admin-readonly.v3',
     generatedAt:new Date().toISOString(),
     decision:'PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY',
     action:exactAction,
@@ -226,7 +246,7 @@ try{
   console.log(JSON.stringify(evidence));
 }catch(error){
   const failure={
-    schemaVersion:'cxorbia.c6.unified-human-auth-staff-admin-readonly.failure.v2',
+    schemaVersion:'cxorbia.c6.unified-human-auth-staff-admin-readonly.failure.v3',
     generatedAt:new Date().toISOString(),
     decision:'FAIL_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY',
     action:exactAction,
