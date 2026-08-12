@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-12 15:05 -06:00  
-**Estado:** `C6_LIVE_USER_ADMIN_RUNTIME_SCOPE_CORRECTED__PROOF_PENDING__PHASE_A_88__HOSTING_0_OF_1__NO_PRODUCTION`
+**Fecha:** 2026-08-12 15:23 -06:00  
+**Estado:** `C6_STAFF_ADMIN_SELECTOR_CHAIN_ROOTCAUSE_FIXED__PREDEPLOY_PROOF_FAILED__PHASE_A_88__HOSTING_0_OF_1__NO_PRODUCTION`
 
 ## Repositorio y seguridad
 
@@ -26,50 +26,81 @@
 
 ## C6 live user/admin wiring — SOURCE IMPLEMENTADO
 
-El recorrido humano DEV ya contiene el wiring fail-closed `Firebase Auth → claims → tenants/tya/users/{uid} → CX.session/RBAC → backend read → frontend` para Staff. No se modificó `app/modules`.
+El recorrido humano DEV contiene el wiring fail-closed `Firebase Auth → claims → tenants/tya/users/{uid} → CX.session/RBAC → backend read → frontend` para Staff. No se modificó `app/modules`.
 
-## Corrección de causa raíz del proof — STAFF/ADMIN ONLY
+## Corrección del scope Staff/admin
 
-Se corrigió exclusivamente la orquestación del action:
+El action exacto es:
 
-`C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`
+`C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`.
 
-La causa raíz era doble: el selector privado intentaba resolver Staff + Shopper y el runtime wrapper exigía Staff + Shopper + Client, aunque este proof autorizado corresponde únicamente a Staff/admin. El Shopper quedaba en `HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194`, por lo que corregir solo una capa habría trasladado el bloqueo a la siguiente.
+Se corrigieron tres capas action-scoped:
 
-Corrección aplicada:
+1. `.github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml`: para este action no selecciona Client ni exige Shopper/Client.
+2. `tools/qa/cxorbia-phase-a-existing-users-e2e-credentials-dynamic.mjs`: genera bundle privado Staff-only y corta antes de HR/visitas/Shopper.
+3. `tools/qa/tya-c6-dev-root-runtime-wrapper.mjs`: ejecuta únicamente paridad de raíz + autenticación Staff/admin + reload/new-tab; omite Shopper/Client/domain/finance/reservations únicamente para este action.
 
-- `.github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml`: deriva el action exacto desde la autorización y, solo para ese action, selecciona/valida exclusivamente Staff; no ejecuta selector Client ni exige Shopper/Client.
-- `tools/qa/cxorbia-phase-a-existing-users-e2e-credentials-dynamic.mjs`: para el action exacto genera un bundle privado Staff-only y corta antes de cualquier selección Shopper. Fuera del action conserva la selección dinámica Staff+Shopper.
-- `tools/qa/tya-c6-dev-root-runtime-wrapper.mjs`: para el action exacto ejecuta únicamente paridad de raíz + autenticación humana Staff/admin + estabilidad reload/new-tab; omite Shopper/Client/domain/finance/reservations. Fuera del action conserva el runtime acumulativo original.
+Fuera del action exacto se conserva la lógica genérica Staff+Shopper+Client.
 
-No se modificó frontend ni la lógica genérica Shopper/Client fuera del action exacto.
+## Ejecución one-shot 31642038173 — fallo pre-deploy
+
+Se rearmó el request contra el HEAD corregido y el workflow `31642038173` pasó:
+
+- checkout exacto;
+- lectura del request;
+- autorización y one-shot scope;
+- autenticación Google Cloud DEV;
+- instalación de tooling.
+
+Falló en `Select existing DEV credentials privately` antes del paso de deploy. El artifact sanitizado certifica:
+
+- `deploy.attempted=false`;
+- `hostingDeploysThisRun=0`;
+- runtime no ejecutado;
+- Firestore/Auth/HR/Rules/Storage/Make/Gemini/pagos writes=0;
+- merge=false;
+- production=false.
+
+### Tercera causa raíz reproducible
+
+El wrapper `tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs` todavía imponía incondicionalmente la decisión genérica `PASS_PHASE_A_EXISTING_E2E_CREDENTIAL_SELECTION_DYNAMIC` y la reescribía como `PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION`.
+
+Por eso, aunque el selector dinámico ya producía correctamente `PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY`, el wrapper superior lo rechazaba antes del Hosting.
+
+### Corrección aplicada
+
+Commit fuente: `1dae2e5e2718d49e607e24ad38be692c945b921f`.
+
+`tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs` ahora:
+
+- reconoce el action exacto Staff/admin;
+- acepta únicamente `PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY` para ese action;
+- conserva writes/passwordChanges=0 y valuesExported=false;
+- no reescribe la decisión Staff/admin;
+- preserva sin cambio funcional el comportamiento genérico fuera del action.
 
 ## Progreso Phase A
 
 `M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1`
 
-**TOTAL CERTIFICADO=88% | RESTANTE=12%. Delta certificado de esta iteración: +0%.**
+**TOTAL CERTIFICADO=88% | RESTANTE=12%. Delta certificado: +0%.**
 
-Sí hubo avance técnico: se eliminó la causa raíz de selección/orquestación que impedía llegar al proof Staff. El porcentaje no sube hasta ejecutar y certificar el runtime remoto.
+El avance técnico de esta iteración fue eliminar una tercera dependencia superpuesta antes del Hosting. El porcentaje no aumenta hasta el proof remoto.
 
 ## Siguiente bloque exacto
 
-Rearmar de forma idempotente el request de una sola ejecución contra el HEAD corregido y ejecutar el **mismo único Hosting DEV ya autorizado** para:
+El único Hosting DEV autorizado permanece físicamente **sin consumir: 0/1**. Sin embargo, el request one-shot `31642038173` terminó en failure y llevaba `stopRetryOnFailure=true`; por ello no se ejecuta un segundo request automáticamente.
 
-`C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`.
-
-El proof debe demostrar para Staff canónico:
-
-`Firebase Auth → claims → tenants/tya/users/{uid} → CX.session/RBAC → backend read → frontend`.
+Siguiente acción segura: nueva autorización puntual para rearmar un request one-shot contra el HEAD vigente y consumir, como máximo, el mismo único Hosting DEV todavía disponible para `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** scope de persona por action exacto, fail-closed, preservando el comportamiento genérico fuera del action.
+- **Reusable CXOrbia:** scope por action exacto atravesando toda la cadena de wrappers, fail-closed.
 - **Exclusivo cliente:** proof TyA Staff/admin sobre `cxorbia-backend-dev`.
-- **Claude/prototipo:** cero frontend modificado en esta corrección.
-- **Academia:** sin cambio de contenido; la actualización de rutas/manuales depende del proof real.
-- **Sin impacto Claude:** selector privado, orquestación workflow y runtime QA.
+- **Claude/prototipo:** cero frontend modificado.
+- **Academia:** sin cambio de contenido hasta runtime PASS.
+- **Sin impacto Claude:** selector/orquestación/runtime QA.
 
 ## Estado seguro
 
-En esta corrección: Hosting DEV consumido `0/1`; nuevos Firestore/Auth/HR/Rules/Storage/Make/Gemini/pagos writes `0`; segundo Exact Write `0`; merge `false`; producción `false`.
+Hosting DEV consumido `0/1`; nuevos Firestore/Auth/HR/Rules/Storage/Make/Gemini/pagos writes `0`; segundo Exact Write `0`; merge `false`; producción `false`.
