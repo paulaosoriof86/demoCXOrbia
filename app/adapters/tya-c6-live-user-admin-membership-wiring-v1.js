@@ -1,7 +1,7 @@
 /* CXOrbia TyA — C6 live user/admin membership wiring v1.
    Source-only / DEV read-only.
    Closes the canonical chain for Staff:
-   Firebase principal + claims -> tenants/tya/users/{uid} -> CX.session/RBAC -> backend reads.
+   Firebase principal + claims -> tenants/tya/users/{uid} -> CX.session/RBAC -> backend reads -> frontend.
    No UI module changes. No provider writes. No secrets or visibleLogin exposed.
 */
 window.CX=window.CX||{};
@@ -10,12 +10,14 @@ window.CX=window.CX||{};
   const STAFF_ROLES=new Set(['super','admin','ops','coordinador']);
   const TENANT='tya';
   const ENTITLEMENT='TYA_COMPLETE';
+  const CANONICAL_SOURCE='hr-live-all-periods+firestore-authenticated-exact-overlay';
   const str=v=>String(v==null?'':v).trim();
   const lower=v=>str(v).toLowerCase();
   const list=v=>Array.isArray(v)?v.map(String).map(x=>x.trim()).filter(Boolean):[];
   const uniqSorted=v=>Array.from(new Set(list(v))).sort();
   let lastVerifiedKey='';
   let lastVerifiedContext=null;
+  let frontendFinalizing=false;
 
   function enabled(){
     try{
@@ -144,6 +146,86 @@ window.CX=window.CX||{};
     return Object.assign({},ctx,contextPatch);
   }
 
+  function publishFrontendHandoff(status,detail){
+    window.CX_C6_LIVE_USER_ADMIN_FRONTEND_HANDOFF=Object.assign({
+      version:'v1',status,tenantId:TENANT,providerWrites:0,firestoreWrites:0,production:false,
+      at:new Date().toISOString()
+    },detail||{});
+  }
+
+  function reconcileCanonicalReadyState(authority){
+    const projects=Array.isArray(CX.data?.projects)?CX.data.projects:[];
+    const visits=Array.isArray(CX.data?._visitas)?CX.data._visitas:[];
+    if(!authority?.applied||!projects.length||!visits.length)throw new Error('FRONTEND_HANDOFF_AUTHORITY_DATA_NOT_READY');
+    if(projects.length!==Number(authority.periods||0)||visits.length!==Number(authority.hrVisits||0)){
+      throw new Error('FRONTEND_HANDOFF_AUTHORITY_COUNTS_MISMATCH');
+    }
+    const priorBackendEmpty=window.CX_BACKEND_LAST_STATE?.empty===true;
+    const priorCorte4Empty=window.CX_CORTE4_READONLY?.empty===true;
+    window.CX_BACKEND_DATA_SOURCE=CANONICAL_SOURCE;
+    window.CX_BACKEND_LAST_STATE=Object.assign({},window.CX_BACKEND_LAST_STATE||{}, {
+      source:CANONICAL_SOURCE,empty:false,readOnly:true,writes:false,fallbackUsed:false,
+      providerEmptyObserved:priorBackendEmpty,
+      counts:{projects:projects.length,periods:projects.length,visits:visits.length,shoppers:Array.isArray(CX.data?.shoppers)?CX.data.shoppers.length:0},
+      reason:'c6-staff-canonical-authority-ready',at:new Date().toISOString()
+    });
+    window.CX_CORTE4_READONLY=Object.assign({},window.CX_CORTE4_READONLY||{}, {
+      ready:true,source:CANONICAL_SOURCE,empty:false,readOnly:true,writeMode:'disabled',
+      preserveCxDataInterface:true,fallbackUsed:false,providerEmptyObserved:priorCorte4Empty,
+      state:'c6-staff-canonical-authority-ready',at:new Date().toISOString()
+    });
+    if(CX.dataSource){
+      CX.dataSource.mode='connected';
+      CX.dataSource.status='ready';
+      CX.dataSource.sourceRef=CANONICAL_SOURCE;
+      CX.dataSource.blockers=[];
+      CX.dataSource.updatedAt=new Date().toISOString();
+      CX.dataSource.runtimeReadActive=true;
+      CX.dataSource.runtimeSyncActive=false;
+    }
+    return {priorBackendEmpty,priorCorte4Empty,projects:projects.length,visits:visits.length};
+  }
+
+  async function finalizeStaffFrontend(reason){
+    if(frontendFinalizing)return;
+    const ctx=(()=>{try{return CX.backendAuth?.context?.()||null;}catch(_){return null;}})();
+    const role=lower(ctx?.role);
+    const authority=window.CX_PROTECTED_AUTH_HR_AUTHORITY||null;
+    if(!ctx?.authenticated||!STAFF_ROLES.has(role)||lower(ctx.tenantId)!==TENANT||!uniqSorted(ctx.projectIds).includes('cinepolis')||authority?.applied!==true)return;
+    frontendFinalizing=true;
+    publishFrontendHandoff('verifying',{reason:reason||'authority-ready',role});
+    try{
+      const verifiedCtx=await reconcile(ctx);
+      if(verifiedCtx?.membershipVerified!==true||CX.session?.user?.membershipVerified!==true){
+        throw new Error('FRONTEND_HANDOFF_MEMBERSHIP_NOT_VERIFIED');
+      }
+      const state=reconcileCanonicalReadyState(authority);
+      if(!CX.app||typeof CX.app.enter!=='function')throw new Error('FRONTEND_HANDOFF_APP_ENTER_REQUIRED');
+      CX.app.enter();
+      const appOn=document.getElementById('app')?.classList.contains('on')===true;
+      const loginHidden=document.getElementById('login')?.classList.contains('hidden')===true;
+      if(!appOn||!loginHidden)throw new Error('FRONTEND_HANDOFF_ENTRY_NOT_VISIBLE');
+      publishFrontendHandoff('entered',{
+        reason:reason||'authority-ready',role,membershipVerified:true,authorityApplied:true,
+        appOn:true,loginHidden:true,projects:state.projects,visits:state.visits,
+        staleBackendEmptyCleared:state.priorBackendEmpty,staleCorte4EmptyCleared:state.priorCorte4Empty
+      });
+      emit('c6-live-user-admin-frontend-ready',{tenantId:TENANT,role,projects:state.projects,visits:state.visits,verified:true});
+    }catch(error){
+      publishFrontendHandoff('blocked',{reason:reason||'authority-ready',role,error:str(error?.message||error)});
+      console.error('[CX.c6-live-user-admin-frontend-handoff]',error);
+    }finally{
+      frontendFinalizing=false;
+    }
+  }
+
+  function bindFrontendHandoff(){
+    if(window.CX_C6_LIVE_USER_ADMIN_FRONTEND_HANDOFF_BOUND===true)return;
+    window.CX_C6_LIVE_USER_ADMIN_FRONTEND_HANDOFF_BOUND=true;
+    window.addEventListener('cx:protected-auth-hr-authority-ready',()=>{void finalizeStaffFrontend('protected-auth-hr-authority-ready');});
+    if(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true)setTimeout(()=>{void finalizeStaffFrontend('authority-already-ready');},0);
+  }
+
   function install(){
     if(!CX.backendAuth||CX.backendAuth.__c6LiveMembershipWiring)return false;
     const originalEnsure=typeof CX.backendAuth.ensureAuthenticated==='function'?CX.backendAuth.ensureAuthenticated.bind(CX.backendAuth):null;
@@ -155,6 +237,7 @@ window.CX=window.CX||{};
     }
     CX.backendAuth.verifyCanonicalMembership=reconcile;
     CX.backendAuth.__c6LiveMembershipWiring=true;
+    bindFrontendHandoff();
     window.CX_C6_LIVE_USER_ADMIN_WIRING={
       version:'v1',status:'installed_waiting_principal',tenantId:TENANT,
       providerWrites:0,firestoreWrites:0,production:false,at:new Date().toISOString()
@@ -162,5 +245,5 @@ window.CX=window.CX||{};
     return true;
   }
 
-  if(!install())setTimeout(install,0);
+  if(!install())setTimeout(()=>{if(install())bindFrontendHandoff();},0);
 })();
