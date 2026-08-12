@@ -1,50 +1,56 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-11 18:45 -06:00  
-**Estado:** `PASS_C6_STAFF_PRIVATE_EXECUTION_HANDOFF_SOURCE_ONLY__ABC_ENCRYPTED_EXACT__D_DETERMINISTIC__NO_PROVIDER__NO_WRITES__NO_PRODUCTION`
+**Última actualización:** 2026-08-12 12:00 -06:00  
+**Estado:** `PASS_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2_READBACK__M5_COMPLETE`
 
-## Alineación documental vigente
+## Bloque ejecutado
 
-`DOC_ALIGNMENT_PASS_20260811`
+`C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2` sobre `cxorbia-backend-dev`, limitado a Staff y consumido una sola vez.
 
-La autoridad de continuidad es, en este orden: `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md` → `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md` → source lock/evidencia/contratos vigentes → estos tres documentos vivos (`CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`) → tracker/Academia → PR #7/HEAD.
+### Archivos creados/modificados en la remediación y ejecución
 
-Las copias de estos tres documentos en la raíz del repositorio son mirrors de compatibilidad y deben conservar el mismo estado operativo, porcentaje y siguiente acción. Una diferencia futura entre raíz y `app/docs/` se clasifica `BLOCK_DOC_ALIGNMENT` y se corrige antes de abrir un diagnóstico funcional nuevo.
+- `backend/contracts/c6-staff-repair-bootstrap-exact-write-v2.json`: boundary privado de credenciales efímeras B/C/D, memory-only, sin secreto manual.
+- `tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.mjs`: executor V2 conectado al private handoff, create-before-retire, readback y rollback.
+- `.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml`: harness one-shot acotado al request V2.
+- `.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json`: autorización consumida y congelada con PASS.
+- `app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-EXACT-WRITE-V2-LATEST.json`: evidencia sanitizada del write/readback.
+- `tools/qa/verify-phase-a-live-execution-checkpoint.mjs`: alineado al estado post-write consumido.
+- índice, checkpoint, tracker, plan, CAMBIOS, RESUMEN y PENDIENTES: actualizados a 88/12.
 
-## Estado técnico comprobado
+## Evidencia técnica
 
-- Handoff privado C6: PASS.
-- A/B/C: referencias exactas recuperadas, cifradas at-rest y materializables solo memory-only en runtime autorizado.
-- D: regeneración técnica determinística; no depende del visible-login histórico.
-- Provider snapshot rector: `31518927950`; no repetir por rutina.
-- Auth protegido: 228.
-- Budget exact-write preservado: Auth máximo 14; Firestore máximo 16; deletes 0.
-- R4 canónico: inmutable/verificación solamente.
-- Provider/Auth/Firestore/HR/Rules/Storage writes del handoff: 0.
-- Deploy/merge/producción: 0/false/false.
+Decision: `PASS_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2_READBACK`.
+
+- Private handoff y credenciales runtime B/C/D: PASS.
+- Provider preflight: PASS.
+- Canonical readback antes de retire: A/B/C/D/R4 PASS.
+- Historical readback: 2/2 por R1_SUPER, R2_ADMIN, R3_OPS y R4_CLIENT_HISTORICAL.
+- Auth creates=3; claims=3; disables=8; Auth total=14.
+- Tenant user docs=4; audit logs=12; Firestore total=16.
+- Deletes=0.
+- Rollback no requerido; inversas preservadas.
+- Blockers=0.
+- HR/Rules/Storage/Make/Gemini/pagos writes=0.
+- Deploy/merge/producción=0/false/false.
 
 ## Progreso Phase A
 
-`M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=4/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1`
+`M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1`
 
-**TOTAL=84% | RESTANTE=16%.**
-
-La alineación documental no altera el tracker funcional: delta de esta corrección documental `+0%`.
+**TOTAL=88% | RESTANTE=12%. Delta funcional: +4%.**
 
 ## No reabrir
 
-No repetir D rebase, provider snapshot `31518927950`, universo Auth 340, SKIP13, MultiAuth, HR, M4/static gate ni el private execution handoff ya aprobado, salvo drift nuevo reproducible.
+Exact Write V2 está consumido y no admite segundo intento. No repetir private handoff, D rebase, snapshot `31518927950`, Auth340, SKIP13, MultiAuth, HR ni M4 sin drift nuevo reproducible.
 
 ## Siguiente frontera exacta
 
-`C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION → exact write único → readback acumulativo → rollback verificable → wiring → M7 → M8 → M9 → M10`.
-
-El exact write conserva create-before-retire, idempotencia, readback canónico antes de disable histórico, máximo Auth 14 / Firestore 16 / deletes 0, STOP_RETRY y cero segundo intento.
+`C6_LIVE_USER_ADMIN_FRONTEND_WIRING_LOCALIZED → M7 → M8 → M9 → M10`.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** autoridad documental única, mirrors sincronizados, `BLOCK_DOC_ALIGNMENT`, idempotencia/readback/rollback.
-- **Exclusivo cliente:** tenant `tya`, staff C6 y budget del repair vigente.
-- **Claude/prototipo:** sin cambio UI; mantener frontend congelado hasta bootstrap/readback PASS.
-- **Academia:** sin cambio de contenido en este bloque; conservar impacto por rol para gates posteriores.
-- **Sin impacto Claude:** alineación documental y controles backend internos.
+- **Reusable CXOrbia:** credenciales efímeras derivadas dentro de boundary privado; one-shot bounded write; create-before-retire; canonical/cumulative readback; rollback sin deletes.
+- **Exclusivo cliente:** tenant TyA/Cinépolis, Staff A-D y grupos históricos.
+- **Claude/prototipo:** no se cambió UI; siguiente bloque es wiring localizado y cualquier diferencia visible se documenta por archivo/módulo.
+- **Academia:** sin cambio de contenido en este write; actualizar manuales/rutas por rol cuando el wiring haga visible la administración real.
+- **Sin impacto Claude:** provider writes, boundary privado, evidencia y rollback técnico.
