@@ -5,6 +5,4 @@
 
 Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR#7 draft/open/no merge; producción intacta. Auth228; M4/M6 complete; provider snapshot31518927950; Auth14/Firestore16/deletes0.
 
-A/B/C handoff cifrado/memory-only; D determinístico; raw protected values no emitidos/persistidos; provider/Auth/Firestore writes0.
-
-**Phase A84%; restante16%; M5=4/8.** Siguiente `C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION`.
+A/B/C handoff cifrado/memory-only; D determinístico; no provider/Auth/Firestore writes. **Phase A84%; restante16%; M5=4/8.** Siguiente `C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION`.
