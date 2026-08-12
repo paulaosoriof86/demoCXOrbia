@@ -1,7 +1,7 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-12  
-**Estado:** `C6_STAFF_SINGLE_VISIBLE_FORM_QA_ROOTCAUSE_FIXED__STOP_RETRY__PHASE_A_88__HOSTING_1_OF_1`
+**Última actualización:** 2026-08-12 16:41 -06:00  
+**Estado:** `C6_STAFF_ACTION_METADATA_SUFFIX_ROOTCAUSE_PROVEN__STOP_RETRY__PHASE_A_88`
 
 ## Pendiente vivo único de continuidad
 
@@ -13,65 +13,51 @@ C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF
 → M10
 ```
 
-## Wiring C6 ya implementado en source
+## Ya implementado y no reabrir
 
-- Staff permanece fail-closed contra `tenants/tya/users/{uid}` antes del consumo backend.
-- `app/core/backend-browser-auth.js` usa el único formulario visible `#loginForm/#lgUser/#lgPass/#lgSubmit`.
-- Cero módulos UI modificados en este bloque.
+- Wiring Staff fail-closed contra `tenants/tya/users/{uid}`.
+- Formulario único `#loginForm/#lgUser/#lgPass/#lgSubmit`.
+- Repair QA Staff `5c9663dd6b1174cf8d59186484eb09e83316e862`.
+- Exact Write V2/canonical readback.
+- D technical-login rebase/private handoff.
+- Auth340, SKIP13, MultiAuth, HR y M4/static.
+- Heredoc shell blocker y exclusión `gha-creds-*.json`.
 
-## Resultado del one-shot autorizado
+No reabrir sin drift reproducible.
 
-Run `31646324988`:
+## Resultado one-shot 05
 
-- selector Staff/admin: PASS;
-- source gate: PASS;
-- Hosting DEV: PASS;
-- root parity: `PASS_C6_DEV_ROOT_ENTRYPOINT_REMOTE_PARITY`;
-- Hosting consumido: **1/1**;
-- runtime Staff: FAIL antes de enviar credenciales;
-- reload/new-tab: no alcanzados;
-- nuevos provider/data writes: 0;
+Run `31647758560`:
+
+- checkout/autorización/GCP/tooling: PASS;
+- selector privado: FAIL antes de Staff-only;
+- Hosting intentado=false;
+- Hosting de este one-shot=`0/1`;
+- runtime=null;
+- nuevos provider/data writes=0;
 - production=false.
 
-Se aplicó `STOP_RETRY`; no hubo segundo intento.
+Artifact `9161420264`, digest `sha256:38136897ad4a6c973577bbf4f608afa4ee03466370d7feb2183570c1cc908594`.
 
-## Nueva causa raíz — cerrada en source, pendiente de reprobar
+`STOP_RETRY` aplicado; no hubo segundo intento.
 
-El harness Staff aún buscaba un overlay legado (`#cxIntegratedAuthStep/#cxIntegratedAuthLogin/...`) que ya no forma parte del contrato real. El producto usa un único formulario visible.
+## Causa raíz nueva
 
-Clasificación: `QA_HARNESS_CONTRACT_DRIFT`.
+`REQUEST_ACTION_METADATA_SUFFIX_DRIFT`.
 
-Corrección source-only:
+El workflow resuelve Staff-only solo cuando `authorizationSource` termina exactamente en `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`. El request 05 añadió `_single_visible_login_form` después de ese token; la action quedó vacía y el workflow cayó a la rama genérica Staff+Shopper, cuyo stage se detuvo en el HOLD Shopper histórico.
 
-`5c9663dd6b1174cf8d59186484eb09e83316e862`
-
-sobre `tools/qa/tya-c6-dev-root-runtime-wrapper.mjs`.
-
-El Staff-only generado ahora usa `#loginForm/#lgUser/#lgPass/#lgSubmit`; Shopper/Client genérico se conserva. No hubo rerun/deploy tras la corrección.
-
-## Ya no está pendiente
-
-- Exact Write V2 y canonical readback.
-- D technical-login rebase y private handoff.
-- Auth340, SKIP13, MultiAuth, HR y M4/static.
-- Scope Staff-only del selector dinámico.
-- Heredoc shell blocker.
-- Bloqueo latente `gha-creds-*.json` contra clean-worktree.
-- Desalineación QA Staff con formulario único: **corregida source-only**, aún no certificada en runtime.
-
-No reabrir estos puntos sin drift reproducible.
+El repair Staff QA no falló porque no fue alcanzado. No hay nuevo fallo provider/Auth/membership/datos demostrado.
 
 ## Pendiente inmediato
 
-Certificar realmente Staff canónico mediante un nuevo one-shot que llegue a:
+Nuevo one-shot Staff, bound al HEAD vivo, con `authorizationSource` terminando exactamente en la action Staff, sin sufijos, y verificación de la action resuelta antes del selector/deploy.
 
-`Firebase Auth → claims → tenants/tya/users/{uid} → CX.session/RBAC → backend read → frontend → reload → new-tab`.
+Aunque Hosting quedó físicamente `0/1`, `STOP_RETRY` cerró la autorización 05; requiere nueva autorización explícita. No rerunear `31647758560` ni reutilizar request 05.
 
-No puede ejecutarse con la autorización actual: Hosting DEV fue consumido `1/1` y `STOP_RETRY` prohíbe segundo intento. Requiere nueva autorización explícita.
+## Pendiente frontend heredado separado
 
-## Pendiente frontend heredado, separado de C6
-
-`app/modules/cliente-extra.js` mantiene PDF print, XLSX y PPTX como pendientes Claude/prototipo. No son causa del wiring y no bloquean este proof.
+`app/modules/cliente-extra.js`: PDF print, XLSX y PPTX. No bloquea este proof C6.
 
 ## Progreso
 
@@ -81,4 +67,4 @@ No puede ejecutarse con la autorización actual: Hosting DEV fue consumido `1/1`
 
 ## Claude / Academia
 
-No pedir nueva candidata. No tocar frontend para satisfacer el harness antiguo. Academia se actualiza cuando el runtime Staff certifique el flujo real; documentar entonces el formulario único canónico y no el overlay legado.
+Cero cambio frontend por este fallo. No pedir candidata. Academia se actualiza únicamente después del runtime Staff PASS.
