@@ -1,77 +1,71 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-12 17:05 -06:00  
-**Estado:** `PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT__PHASE_A_88__C6_LANE_READY_100`
+**Última actualización:** 2026-08-12 17:16 -06:00  
+**Estado:** `C6_RUNTIME_07_STOP_RETRY_NESTED_HEREDOC_PRE_HOSTING__PHASE_A_88__SOURCE_REPAIR_APPLIED`
 
 ## Bloque ejecutado
 
-Hardening source-only integral del carril `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`.
+One-shot `HOSTING_RUNTIME_ONCE` para `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`.
 
-## Cambios aplicados
+## Resultado runtime 07
 
-1. `.github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml`
-   - action explícita en request;
-   - eliminada derivación por `authorizationSource.endsWith(...)`;
-   - nuevo modo `SOURCE_PREFLIGHT_ONLY`;
-   - futura ejecución real separada como `HOSTING_RUNTIME_ONCE`;
-   - preflight antes de Google Cloud/provider;
-   - selector y runtime Staff fail-closed, sin fallback genérico.
-2. `tools/qa/cxorbia-c6-existing-staff-admin-e2e-credential.mjs`
-   - selector Staff dedicado;
-   - no Shopper, HR ni Firestore.
-3. `tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs`
-   - Staff enruta directamente al selector dedicado.
-4. `tools/qa/tya-c6-staff-admin-human-auth-browser-smoke.mjs`
-   - smoke Staff dedicado;
-   - formulario canónico `#loginForm/#lgUser/#lgPass/#lgSubmit`;
-   - reload x3 + new-tab.
-5. `tools/qa/tya-c6-dev-root-runtime-wrapper.mjs`
-   - Staff ya no modifica el smoke genérico mediante reemplazos de texto.
-6. `tools/qa/cxorbia-c6-staff-lane-source-preflight.mjs`
-   - gate source-only determinista/fail-closed.
-7. `backend/config/corte6-dev-root-entrypoint-hosting-execute.json`
-   - request source-only 06, bound a `d1951c7cee58070dd2b3714b6636552e429a691f`.
-8. Evidencia durable `app/docs/evidence/c6-staff-lane-source-preflight-31649467657.json`.
+Request `c6-live-user-admin-membership-runtime-proof-20260812-07` → run `31649967019` / job `94291913408` / artifact `9162195599` / digest `sha256:91af7648302218477177f7e2785b4b32bea517e2cdebe0b41cc60d082136891e`.
 
-No se modificó `/app/modules` ni UI de producto.
+PASS antes del fallo:
+- request/action/mode exactos;
+- `PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT`;
+- Google Cloud DEV auth;
+- selector Staff dedicado;
+- role `coordinador`;
+- Shopper/Cliente selection=false;
+- Auth/password writes=0.
 
-## Ejecución certificada
+El bloque Hosting falló al parsear bash antes de source gate/deploy/runtime: `here-document ... wanted NODE` + `syntax error: unexpected end of file`.
 
-Run `31649467657` / job `94290390013` / artifact `9162011590` / digest `sha256:50b1b0be7d47594456e4b131099107ba7716906ca06655ce2ebf861d1979c9b1`.
+Artifact decisivo: `FAIL_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME`, `deploy.attempted=false`, Hosting=0, runtime=null.
 
-Resultado:
-- workflow `success`;
-- `PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT_RUN`;
-- preflight `PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT`;
-- action explícita/fail-closed PASS;
-- derivación por sufijo eliminada PASS;
-- preflight-before-provider PASS;
-- selector Staff dedicado PASS;
-- no Shopper/HR/Firestore dependency PASS;
-- Staff runtime sin text patching PASS;
-- selectores canónicos producto/smoke PASS;
-- repo limpio PASS.
+Clasificación: `PREFLIGHT_SHELL_SYNTAX_COVERAGE_GAP__NESTED_HEREDOC_INDENTATION`.
 
-Google Cloud Auth, instalación tooling protegido, selector privado y Hosting/runtime: **skipped**. Provider calls=0; Hosting=0; Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos=0; merge=false; producción=false.
+## Reparación aplicada después de STOP_RETRY
 
-## Progreso
+Sin rerun ni provider adicional:
+1. `.github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml` — commit `66cffe4a0f236097264d2e0b2f361115464c8e34`:
+   - eliminados heredocs Node dentro del subshell Hosting;
+   - asserts sustituidos por `node -e`, evitando dependencia de indentación heredoc.
+2. `tools/qa/cxorbia-c6-staff-lane-source-preflight.mjs` — commit `b024fd97cd7360a90a32041eb57bd0b003a029a2`:
+   - extrae el `run:` exacto del paso Hosting;
+   - exige `bash -n` PASS antes del provider;
+   - bloquea reintroducción de `node <<'NODE'` en ese paso.
+3. Evidencia durable: `app/docs/evidence/c6-live-user-admin-runtime-proof-31649967019.json`.
+
+No se modificó `/app/modules` ni UI de producto. Los commits source-only posteriores no dispararon un nuevo workflow.
+
+## Seguridad
+
+- Hosting runtime 07: `0/1` físicamente consumido.
+- Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes nuevos: `0`.
+- Segundo Exact Write: `0`.
+- Segundo intento: `0`.
+- merge=false; producción=false; secretos/tokens expuestos=false.
+
+## Progreso Phase A
 
 `M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1`
 
-**Phase A=88% | restante=12% | delta certificado=+0%.** El carril C6 source-only quedó **100% ready**; el porcentaje oficial no sube hasta runtime real.
+**TOTAL CERTIFICADO=88% | RESTANTE=12% | DELTA CERTIFICADO=+0%.**
 
 ## No reabrir
 
-Exact Write V2, private handoff, provider snapshot, D rebase, Auth340, SKIP13, MultiAuth, HR y M4 permanecen cerrados salvo drift reproducible.
+Exact Write V2, private handoff, D rebase, provider snapshot, Auth340, SKIP13, MultiAuth, HR y M4 permanecen cerrados salvo drift reproducible.
 
 ## Siguiente frontera exacta
 
-Nueva autorización explícita para un único `HOSTING_RUNTIME_ONCE` Staff sobre HEAD vivo. El preflight debe pasar primero; luego máximo un Hosting DEV y prueba canónica `Firebase Auth → claims → tenants/tya/users/{uid} → CX.session/RBAC → backend read → frontend`. PASS cierra M7 y continúa M8 → M9 → M10.
+No rerunear `31649967019`. Nueva autorización explícita para un nuevo `HOSTING_RUNTIME_ONCE` bound al HEAD vivo reparado. El preflight actualizado debe compilar el shell Hosting con `bash -n` antes de provider. Con PASS real cerrar M7 y continuar M8 → M9 → M10.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** action explícita, preflight fail-closed, selector/smoke Staff dedicados.
-- **Exclusivo cliente:** futuro runtime TyA Staff en `cxorbia-backend-dev`.
+- **Reusable CXOrbia:** validación shell real pre-provider y eliminación de heredocs anidados.
+- **Exclusivo cliente:** próximo runtime Staff TyA.
 - **Claude/prototipo:** cero frontend modificado.
-- **Academia:** sin cambio de contenido hasta runtime PASS.
-- **Sin impacto Claude:** workflow, QA tooling, request, evidencia y docs.
+- **Academia:** sin cambio hasta runtime PASS.
+- **Sin impacto Claude:** workflow/QA/evidencia/docs.
