@@ -11,7 +11,8 @@ const files={
   staffSelector:'tools/qa/cxorbia-c6-existing-staff-admin-e2e-credential.mjs',
   runtimeWrapper:'tools/qa/tya-c6-dev-root-runtime-wrapper.mjs',
   staffSmoke:'tools/qa/tya-c6-staff-admin-human-auth-browser-smoke.mjs',
-  browserAuth:'app/core/backend-browser-auth.js'
+  browserAuth:'app/core/backend-browser-auth.js',
+  membershipWiring:'app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js'
 };
 
 const read=p=>{
@@ -82,6 +83,10 @@ ensure(!sources.staffSmoke.includes('#cxIntegratedAuthLogin'),'STAFF_SMOKE_LEGAC
 ensure(!sources.staffSmoke.includes('#cxIntegratedAuthPassword'),'STAFF_SMOKE_LEGACY_PASSWORD_SELECTOR_REINTRODUCED');
 ensure(!sources.staffSmoke.includes("await page.click('#lgSubmit')"),'STAFF_SMOKE_POINTER_SUBMIT_REINTRODUCED');
 ensure(sources.staffSmoke.includes("await page.press('#lgPass','Enter')"),'STAFF_SMOKE_CANONICAL_KEYBOARD_SUBMIT_MISSING');
+ensure(sources.staffSmoke.includes('membershipVerified:window.CX?.session?.user?.membershipVerified===true'),'STAFF_SMOKE_MEMBERSHIP_ASSERTION_MISSING');
+ensure(sources.staffSmoke.includes("handoff?.status==='entered'"),'STAFF_SMOKE_FRONTEND_HANDOFF_ASSERTION_MISSING');
+ensure(sources.staffSmoke.includes('window.CX_BACKEND_LAST_STATE?.empty!==true'),'STAFF_SMOKE_BACKEND_EMPTY_RECONCILE_ASSERTION_MISSING');
+ensure(sources.staffSmoke.includes('window.CX_CORTE4_READONLY?.empty!==true'),'STAFF_SMOKE_CORTE4_EMPTY_RECONCILE_ASSERTION_MISSING');
 
 for(const id of ['loginForm','lgUser','lgPass','lgSubmit']){
   ensure(sources.browserAuth.includes(`getElementById('${id}')`),'PRODUCT_CANONICAL_SELECTOR_MISSING_'+id);
@@ -89,8 +94,17 @@ for(const id of ['loginForm','lgUser','lgPass','lgSubmit']){
 ensure(sources.browserAuth.includes('removeLegacyCredentialOverlay'),'PRODUCT_LEGACY_OVERLAY_REMOVAL_MISSING');
 ensure(sources.browserAuth.includes("visible.form.addEventListener('submit'"),'PRODUCT_CANONICAL_FORM_SUBMIT_BINDING_MISSING');
 
+ensure(sources.membershipWiring.includes("window.addEventListener('cx:protected-auth-hr-authority-ready'"),'MEMBERSHIP_WIRING_AUTHORITY_HANDOFF_LISTENER_MISSING');
+ensure(sources.membershipWiring.includes("await reconcile(ctx)"),'MEMBERSHIP_WIRING_FINAL_MEMBERSHIP_RECONCILE_MISSING');
+ensure(sources.membershipWiring.includes("CX.session?.user?.membershipVerified!==true"),'MEMBERSHIP_WIRING_MEMBERSHIP_FAIL_CLOSED_MISSING');
+ensure(sources.membershipWiring.includes("window.CX_BACKEND_LAST_STATE=Object.assign"),'MEMBERSHIP_WIRING_BACKEND_EMPTY_RECONCILE_MISSING');
+ensure(sources.membershipWiring.includes("window.CX_CORTE4_READONLY=Object.assign"),'MEMBERSHIP_WIRING_CORTE4_EMPTY_RECONCILE_MISSING');
+ensure(sources.membershipWiring.includes("CX.app.enter();"),'MEMBERSHIP_WIRING_CANONICAL_APP_ENTER_MISSING');
+ensure(sources.membershipWiring.includes("publishFrontendHandoff('entered'"),'MEMBERSHIP_WIRING_HANDOFF_EVIDENCE_MISSING');
+ensure(!sources.membershipWiring.includes("document.getElementById('app').classList.add"),'MEMBERSHIP_WIRING_DIRECT_UI_MUTATION_FORBIDDEN');
+
 const result={
-  schemaVersion:'cxorbia.c6.staff-lane-source-preflight.v3',
+  schemaVersion:'cxorbia.c6.staff-lane-source-preflight.v4',
   generatedAt:new Date().toISOString(),
   decision:'PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT',
   action:exactAction,
@@ -107,7 +121,12 @@ const result={
     staffCanonicalKeyboardSubmit:true,
     staffPointerSubmitCollisionAvoided:true,
     productCanonicalSelectorsPresent:true,
-    productCanonicalSubmitBindingPresent:true
+    productCanonicalSubmitBindingPresent:true,
+    membershipAuthorityFrontendHandoff:true,
+    membershipVerifiedBeforeFrontendEntry:true,
+    staleBackendEmptyStateReconciled:true,
+    canonicalAppEnterReused:true,
+    directUiMutationAbsent:true
   },
   safety:{
     providerCalls:0,
