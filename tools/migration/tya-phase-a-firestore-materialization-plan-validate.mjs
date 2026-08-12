@@ -47,8 +47,16 @@ check('batch_operation_sum', plan.batches.reduce((sum, batch) => sum + batch.ope
 check('tenant_count', domainCounts.tenant === 1);
 check('project_count', domainCounts.project === 1);
 check('hr_import_count', domainCounts.hrImport === 1);
-check('period_count', domainCounts.period === 14, String(domainCounts.period));
-check('visit_count', domainCounts.visit === 616, String(domainCounts.visit));
+check(
+  'period_count_matches_canonical_source',
+  Number(sourceCounts.periods) > 0 && domainCounts.period === sourceCounts.periods,
+  `planned=${domainCounts.period};source=${sourceCounts.periods}`
+);
+check(
+  'visit_count_matches_canonical_source',
+  Number(sourceCounts.visits) > 0 && domainCounts.visit === sourceCounts.visits,
+  `planned=${domainCounts.visit};source=${sourceCounts.visits}`
+);
 check(
   'shopper_count_matches_canonical_source',
   Number(sourceCounts.shoppers) > 0 && domainCounts.shopper === sourceCounts.shoppers,
