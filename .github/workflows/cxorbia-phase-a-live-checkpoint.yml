@@ -12,6 +12,10 @@ on:
       - 'app/docs/SOURCE-LOCK-C6-STAFF-PRIVATE-EXECUTION-HANDOFF-PASS-20260811.md'
       - 'backend/contracts/c6-staff-repair-bootstrap-exact-write-v2.json'
       - '.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json'
+      - 'tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.mjs'
+      - 'backend/contracts/c6-staff-private-execution-handoff-v1.json'
+      - 'backend/runtime/private-handoff/c6-staff-private-execution-handoff.mjs'
+      - 'backend/contracts/c6-staff-d-technical-login-rebase-v1.json'
       - 'tools/qa/verify-phase-a-live-execution-checkpoint.mjs'
       - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
   pull_request:
@@ -24,6 +28,10 @@ on:
       - 'app/docs/SOURCE-LOCK-C6-STAFF-PRIVATE-EXECUTION-HANDOFF-PASS-20260811.md'
       - 'backend/contracts/c6-staff-repair-bootstrap-exact-write-v2.json'
       - '.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json'
+      - 'tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.mjs'
+      - 'backend/contracts/c6-staff-private-execution-handoff-v1.json'
+      - 'backend/runtime/private-handoff/c6-staff-private-execution-handoff.mjs'
+      - 'backend/contracts/c6-staff-d-technical-login-rebase-v1.json'
       - 'tools/qa/verify-phase-a-live-execution-checkpoint.mjs'
       - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
 
@@ -39,5 +47,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - name: Install transient source-check dependency
+        run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+      - name: Validate Exact Write V2 source syntax
+        run: node --check tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.mjs
+      - name: Validate Exact Write V2 source preflight only
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_C6_STAFF_WRITE_REQUEST: .github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json
+          CXORBIA_C6_STAFF_WRITE_OUT: .tmp/c6-staff-v2-source-preflight/report.json
+        run: node tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.mjs --source-self-test
       - name: Verify Phase A current operational checkpoint
         run: node tools/qa/verify-phase-a-live-execution-checkpoint.mjs
