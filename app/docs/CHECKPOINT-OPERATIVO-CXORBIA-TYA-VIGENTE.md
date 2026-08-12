@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-12 15:23 -06:00  
-**Estado:** `C6_STAFF_ADMIN_SELECTOR_CHAIN_ROOTCAUSE_FIXED__PREDEPLOY_PROOF_FAILED__PHASE_A_88__HOSTING_0_OF_1__NO_PRODUCTION`
+**Fecha:** 2026-08-12 15:54 -06:00  
+**Estado:** `C6_STAFF_ADMIN_SHELL_HEREDOC_ROOTCAUSE_FIXED__STOP_RETRY__PHASE_A_88__HOSTING_0_OF_1__NO_PRODUCTION`
 
 ## Repositorio y seguridad
 
@@ -28,78 +28,91 @@
 
 El recorrido humano DEV contiene el wiring fail-closed `Firebase Auth → claims → tenants/tya/users/{uid} → CX.session/RBAC → backend read → frontend` para Staff. No se modificó `app/modules`.
 
-## Corrección del scope Staff/admin
-
-El action exacto es:
+El action exacto permanece:
 
 `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`.
 
-Se corrigieron tres capas action-scoped:
+## Ejecución autorizada 31644318836 — STOP_RETRY aplicado
 
-1. `.github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml`: para este action no selecciona Client ni exige Shopper/Client.
-2. `tools/qa/cxorbia-phase-a-existing-users-e2e-credentials-dynamic.mjs`: genera bundle privado Staff-only y corta antes de HR/visitas/Shopper.
-3. `tools/qa/tya-c6-dev-root-runtime-wrapper.mjs`: ejecuta únicamente paridad de raíz + autenticación Staff/admin + reload/new-tab; omite Shopper/Client/domain/finance/reservations únicamente para este action.
+Request one-shot:
 
-Fuera del action exacto se conserva la lógica genérica Staff+Shopper+Client.
+- request commit: `3a44ae709e2e0728c26e3351f4ddff98319ac699`;
+- target HEAD: `9f9779d7adac30a72058464d819dcb94aa5e1b42`;
+- autorización exacta Staff/admin;
+- `singleHostingDeployMax=1`;
+- `stopRetryOnFailure=true`.
 
-## Ejecución one-shot 31642038173 — fallo pre-deploy
+El workflow pasó checkout, request/authorization, Google Cloud DEV y tooling. El selector Staff/admin produjo correctamente:
 
-Se rearmó el request contra el HEAD corregido y el workflow `31642038173` pasó:
+`PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY`
 
-- checkout exacto;
-- lectura del request;
-- autorización y one-shot scope;
-- autenticación Google Cloud DEV;
-- instalación de tooling.
+con `authWrites=0`, `passwordChanges=0`, `valuesExported=false` y lógica genérica Shopper/Client preservada.
 
-Falló en `Select existing DEV credentials privately` antes del paso de deploy. El artifact sanitizado certifica:
+La ejecución falló inmediatamente después, todavía dentro de `Select existing DEV credentials privately`, antes de source gate, Hosting o runtime.
 
+Evidencia:
+
+- workflow: `31644318836`;
+- artifact: `9160122511`;
+- artifact digest: `sha256:909ef87970ece8fe972691765255e990b8c4314a8d154f26915f2c600c3c63ef`;
 - `deploy.attempted=false`;
 - `hostingDeploysThisRun=0`;
-- runtime no ejecutado;
+- runtime=null;
 - Firestore/Auth/HR/Rules/Storage/Make/Gemini/pagos writes=0;
 - merge=false;
 - production=false.
 
-### Tercera causa raíz reproducible
+No se ejecutó un segundo intento.
 
-El wrapper `tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs` todavía imponía incondicionalmente la decisión genérica `PASS_PHASE_A_EXISTING_E2E_CREDENTIAL_SELECTION_DYNAMIC` y la reescribía como `PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION`.
+## Cuarta causa raíz reproducible
 
-Por eso, aunque el selector dinámico ya producía correctamente `PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY`, el wrapper superior lo rechazaba antes del Hosting.
+La selección privada ya estaba corregida. El fallo real de `31644318836` fue sintáctico en el shell generado por el workflow:
 
-### Corrección aplicada
+`warning: here-document ... delimited by end-of-file (wanted 'NODE')`
 
-Commit fuente: `1dae2e5e2718d49e607e24ad38be692c945b921f`.
+seguido de:
 
-`tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs` ahora:
+`syntax error: unexpected end of file`.
 
-- reconoce el action exacto Staff/admin;
-- acepta únicamente `PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY` para ese action;
-- conserva writes/passwordChanges=0 y valuesExported=false;
-- no reescribe la decisión Staff/admin;
-- preserva sin cambio funcional el comportamiento genérico fuera del action.
+Causa: dos terminadores `NODE` dentro del `if/else` Staff/admin estaban indentados. Bash exige que el delimitador de cierre del heredoc quede en columna cero salvo el uso explícito de `<<-` con tabs. El shell no alcanzaba a ejecutar las validaciones privadas posteriores al selector, aunque el selector ya había producido PASS.
+
+## Corrección source aplicada después del STOP_RETRY
+
+Commit source-only: `f8efd98e92448739b458aa838cd1f6f8c6efbc6e`.
+
+Archivo:
+
+`.github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml`.
+
+Cambios:
+
+1. Se eliminaron los heredocs anidados dentro del `if/else` y se sustituyeron por validaciones `node -e`, evitando dependencia de indentación shell/YAML.
+2. Se agregó `gha-creds-*.json` a `.git/info/exclude`. El artifact del run fallido demostró que `google-github-actions/auth` crea temporalmente ese archivo como untracked; sin exclusión, el gate posterior `git status --porcelain` habría fallado incluso después de un Hosting/runtime exitoso. Esta dependencia latente quedó eliminada antes de consumir Hosting.
+3. No se cambió el alcance Staff/admin, no se modificó `app/modules` y no se ejecutó deploy con esta corrección.
 
 ## Progreso Phase A
 
 `M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1`
 
-**TOTAL CERTIFICADO=88% | RESTANTE=12%. Delta certificado: +0%.**
+**TOTAL CERTIFICADO=88% | RESTANTE=12%. Delta certificado de esta ejecución: +0%.**
 
-El avance técnico de esta iteración fue eliminar una tercera dependencia superpuesta antes del Hosting. El porcentaje no aumenta hasta el proof remoto.
+Sí hubo avance técnico: el selector Staff/admin quedó demostrado en PASS y se eliminaron el bloqueo shell reproducible y un bloqueo latente de limpieza del worktree. El porcentaje no aumenta hasta certificar el runtime remoto.
 
 ## Siguiente bloque exacto
 
-El único Hosting DEV autorizado permanece físicamente **sin consumir: 0/1**. Sin embargo, el request one-shot `31642038173` terminó en failure y llevaba `stopRetryOnFailure=true`; por ello no se ejecuta un segundo request automáticamente.
+El Hosting DEV autorizado permanece físicamente **sin consumir: 0/1**.
 
-Siguiente acción segura: nueva autorización puntual para rearmar un request one-shot contra el HEAD vigente y consumir, como máximo, el mismo único Hosting DEV todavía disponible para `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`.
+Por `STOP_RETRY`, no ejecutar automáticamente otro request ni rerun del workflow `31644318836`.
+
+Siguiente acción segura, únicamente con nueva autorización puntual: crear un nuevo request one-shot bound al HEAD vivo que incluya `f8efd98e92448739b458aa838cd1f6f8c6efbc6e` y volver a intentar una sola vez `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** scope por action exacto atravesando toda la cadena de wrappers, fail-closed.
+- **Reusable CXOrbia:** validaciones action-scoped sin heredocs frágiles; exclusión explícita de credenciales efímeras antes del clean-worktree gate.
 - **Exclusivo cliente:** proof TyA Staff/admin sobre `cxorbia-backend-dev`.
 - **Claude/prototipo:** cero frontend modificado.
 - **Academia:** sin cambio de contenido hasta runtime PASS.
-- **Sin impacto Claude:** selector/orquestación/runtime QA.
+- **Sin impacto Claude:** workflow, selector privado, gate de limpieza y runtime QA.
 
 ## Estado seguro
 
