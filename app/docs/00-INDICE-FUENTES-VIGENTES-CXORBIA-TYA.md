@@ -1,6 +1,6 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-12 17:50 -06:00  
+**Fecha:** 2026-08-12 17:51 -06:00  
 **Estado vivo:** `C6_RUNTIME_09_STOP_RETRY_POST_AUTH_FRONTEND_HANDOFF__HOSTING_1_OF_1__SOURCE_REPAIR_APPLIED__PHASE_A_88__NO_PRODUCTION`
 
 ## Prevalencia actual
@@ -13,7 +13,7 @@
 6. C6 Staff Exact Write V2 y canonical readback PASS, cerrados/no repetibles.
 7. `app/docs/CAMBIOS-BACKEND.md`, `app/docs/RESUMEN-PARA-CLAUDE.md`, `app/docs/PENDIENTES-PROTOTIPO.md` y mirrors raíz.
 8. Plan/tracker/Academia.
-9. PR #7 y HEAD vivo de `docs-tya-v6-v71-audit`.
+9. PR #7 y HEAD vivo de `docs-tya-v6-v71-audit` (resolver siempre en vivo; no fijar un SHA autorreferencial dentro de este índice).
 
 ## Estado técnico vigente
 
@@ -32,7 +32,6 @@
 - No se modificó `/app/modules` ni UI visual de producto.
 - Nuevos writes=0; merge=false; producción=false.
 - Verificación del workflow C6: `31651410812` sigue siendo el último run; no hubo segundo runtime tras STOP_RETRY.
-- Cadena documental/source-only posterior cerrada hasta commit `4036006ba6b1d7f089f55fd0864de4ea8cb14bfe`; este update solo fija continuidad del índice y no dispara el workflow C6.
 
 ## Progreso
 
