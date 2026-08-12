@@ -1,6 +1,6 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-12 17:43 -06:00  
+**Fecha:** 2026-08-12 17:49 -06:00  
 **Estado vivo:** `C6_RUNTIME_09_STOP_RETRY_POST_AUTH_FRONTEND_HANDOFF__HOSTING_1_OF_1__SOURCE_REPAIR_APPLIED__PHASE_A_88__NO_PRODUCTION`
 
 ## Prevalencia actual
@@ -31,6 +31,8 @@
 - Source repair aplicado sin rerun: Staff revalida membership al evento de autoridad, reconcilia stale empty state y reutiliza `CX.app.enter()`; smoke/preflight v4 exigen el handoff completo.
 - No se modificó `/app/modules` ni UI visual de producto.
 - Nuevos writes=0; merge=false; producción=false.
+- Verificación del workflow C6: `31651410812` sigue siendo el último run; no hubo segundo runtime tras STOP_RETRY.
+- HEAD vivo al cierre documental previo a esta actualización: `9c6122c9d04d87d5dbf745d091ac0708e5565ef4`; este archivo es el commit documental final posterior.
 
 ## Progreso
 
