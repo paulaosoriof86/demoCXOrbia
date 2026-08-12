@@ -1,7 +1,7 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-12 13:42 -06:00  
-**Estado:** `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_SOURCE_IMPLEMENTED__RUNTIME_PROOF_PENDING__PHASE_A_88`
+**Última actualización:** 2026-08-12 15:05 -06:00  
+**Estado:** `C6_LIVE_USER_ADMIN_RUNTIME_SCOPE_CORRECTED__PROOF_PENDING__PHASE_A_88`
 
 ## Pendiente vivo único de continuidad
 
@@ -15,23 +15,37 @@ C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF
 
 ## Wiring C6 ya implementado en source
 
-- `app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js` agregado.
-- `app/index-backend-dev.html` carga el adapter en el orden correcto: Auth bridge → membership wiring → Firebase backend.
+- `app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js` permanece implementado.
+- `app/index-backend-dev.html` mantiene el orden Auth bridge → membership wiring → Firebase backend.
 - Staff queda fail-closed contra la membresía canónica `tenants/tya/users/{uid}` antes del consumo backend.
-- Validaciones: active, tenant, namespace, role, entitlement, projectIds, claimsDigest y providerUidFingerprint.
-- Cero módulos UI tocados.
-- Cero provider/Firestore writes nuevos y cero deploy.
+- Cero módulos UI tocados en la corrección actual.
+
+## Causa raíz de orquestación corregida
+
+El proof autorizado es Staff/admin-only, pero el carril intentaba seleccionar Staff + Shopper + Client y el runtime acumulativo exigía las tres personas. El Shopper quedaba en `HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194`.
+
+Ya quedó corregido, únicamente para `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`:
+
+- selector privado Staff-only;
+- Client selector omitido;
+- runtime limitado a Staff/admin y paridad de raíz;
+- validación explícita de reload y new-tab para Staff;
+- Shopper/Client genéricos preservados fuera de este action.
 
 ## Ya no está pendiente
 
+- Diagnosticar selector Shopper como causa del proof Staff: cerrado.
+- Diagnosticar segunda dependencia en runtime wrapper: cerrado.
+- Corregir selector + orquestación + wrapper para el action Staff/admin-only: cerrado a nivel source.
 - C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2: PASS, consumido, no segundo intento.
 - Canonical/cumulative readback: PASS.
-- Rollback verificable: preparado y no requerido.
-- D technical-login rebase: PASS.
-- Private execution handoff: PASS.
-- Provider snapshot `31518927950`: PASS, no repetir por rutina.
-- Auth340, SKIP13, MultiAuth, HR, M4/static: no reabrir sin drift reproducible.
-- Diseño source del wiring claims→membership→RBAC: implementado.
+- D technical-login rebase, private handoff, Auth340, SKIP13, MultiAuth, HR y M4/static: no reabrir sin drift reproducible.
+
+## Pendiente inmediato
+
+Rearmar idempotentemente el request one-shot contra el HEAD corregido y ejecutar el **mismo único Hosting DEV ya autorizado**. No repetir selectores Shopper/Client para este action.
+
+Hosting DEV consumido en esta corrección: `0/1`.
 
 ## Pendiente frontend heredado, separado de C6
 
@@ -43,8 +57,8 @@ El gate R18A mantiene tres faltantes en `app/modules/cliente-extra.js`: PDF prin
 
 **88% certificado | 12% restante. Delta certificado de esta iteración: +0%.**
 
-El source avanzó materialmente, pero el porcentaje se mantiene hasta certificar en runtime DEV `Auth → membership → RBAC → frontend`.
+Hubo avance técnico real eliminando la causa raíz del bucle, pero el porcentaje permanece hasta certificar el runtime remoto.
 
 ## Claude / Academia
 
-No pedir nueva candidata. No tocar el frontend desde backend. Academia se actualiza al certificar que el wiring cambia comportamiento visible de roles/administración; entonces revisar rutas, manuales, cursos, permisos y errores frecuentes.
+No pedir nueva candidata. No tocar frontend desde backend. Academia se actualiza al certificar el comportamiento real de roles/administración en el proof Staff.
