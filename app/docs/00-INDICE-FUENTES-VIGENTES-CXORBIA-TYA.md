@@ -1,47 +1,37 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-12 16:41 -06:00  
-**Estado vivo:** `C6_STAFF_ACTION_METADATA_SUFFIX_ROOTCAUSE_PROVEN__STOP_RETRY__PHASE_A_88__HOSTING_0_OF_1_THIS_RUN__NO_PRODUCTION`
+**Fecha:** 2026-08-12 17:05 -06:00  
+**Estado vivo:** `PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT__PHASE_A_88__C6_LANE_READY_100__NO_PROVIDER__NO_PRODUCTION`
 
 ## Prevalencia actual
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`.
 2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`.
-3. Evidencia C6 Staff Exact Write V2 y request consumido; no repetir.
-4. Evidencia vigente del último intento Staff: `app/docs/evidence/c6-live-user-admin-runtime-proof-31647758560.json`.
-5. Workflow `31647758560`, job `94285159177`, artifact `9161420264`, digest `sha256:38136897ad4a6c973577bbf4f608afa4ee03466370d7feb2183570c1cc908594`.
-6. Repair QA Staff `5c9663dd6b1174cf8d59186484eb09e83316e862`.
-7. Contrato/executor V2, private handoff, provider snapshot y freezes Static/HR/Auth ya cerrados.
-8. `app/docs/CAMBIOS-BACKEND.md`, `app/docs/RESUMEN-PARA-CLAUDE.md`, `app/docs/PENDIENTES-PROTOTIPO.md` y mirrors raíz.
-9. Plan/tracker/Academia.
-10. PR #7 y HEAD vivo de `docs-tya-v6-v71-audit`.
+3. Evidencia vigente: `app/docs/evidence/c6-staff-lane-source-preflight-31649467657.json`.
+4. Run `31649467657`, job `94290390013`, artifact `9162011590`, digest `sha256:50b1b0be7d47594456e4b131099107ba7716906ca06655ce2ebf861d1979c9b1`.
+5. C6 Staff Exact Write V2 y canonical readback PASS, cerrados/no repetibles.
+6. `app/docs/CAMBIOS-BACKEND.md`, `app/docs/RESUMEN-PARA-CLAUDE.md`, `app/docs/PENDIENTES-PROTOTIPO.md` y mirrors raíz.
+7. Plan/tracker/Academia.
+8. PR #7 y HEAD vivo de `docs-tya-v6-v71-audit`.
 
 ## Estado técnico vigente
 
-- Exact Write V2: PASS y consumido; no segundo intento.
-- Auth writes históricos del Exact Write: 14; Firestore writes: 16; deletes: 0.
-- Canonical readback A/B/C/D/R4: PASS.
-- Wiring Staff: implementado; runtime end-to-end aún no certificado.
-- Repair QA Staff `5c9663...`: vigente y no alcanzado por el último run.
-- Run `31647758560`: checkout/autorización/GCP/tooling PASS; fallo en selector privado antes de Hosting.
-- Artifact: action resuelta `null`; stage genérico `select_existing_credentials_v6__HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194`.
-- Causa raíz: `REQUEST_ACTION_METADATA_SUFFIX_DRIFT`.
-- Request 05 añadió `_single_visible_login_form` después del token de action; el workflow usa `authorizationSource.endsWith(exactAction)` y por eso tomó rama genérica en vez de Staff-only.
-- Hosting de esta autorización físicamente consumido: **0/1**; autorización cerrada por `STOP_RETRY`.
-- Nuevos Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes: 0.
-- Segundo Exact Write/segundo intento: 0/0.
-- Merge/producción: false/false.
+- Phase A: **88% certificado / 12% restante**.
+- C6 Staff execution-lane source readiness: **100% PASS**.
+- `PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT_RUN` demostrado en GitHub Actions.
+- Action Staff ya es campo explícito/fail-closed; eliminado `authorizationSource.endsWith(...)`.
+- Ruta Staff no puede caer accidentalmente en selector Shopper.
+- Selector Staff dedicado sin dependencia HR/Firestore/Shopper.
+- Smoke Staff dedicado usa `#loginForm/#lgUser/#lgPass/#lgSubmit` y ya no depende de transformación textual del smoke genérico.
+- Preflight se ejecuta antes del provider.
+- Run 06 source-only: Google Cloud Auth/selector privado/Hosting/runtime skipped; provider=0; Hosting=0; writes=0; merge=false; producción=false.
 
 ## Progreso
 
 `M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1`
 
-**Phase A=88% | restante=12% | delta certificado del último intento=+0%.**
+**Phase A=88% | restante=12% | delta certificado último run=+0%.**
 
 ## Siguiente acción exacta
 
-No rerunear `31647758560` ni reutilizar request 05.
-
-Se requiere nueva autorización explícita para un nuevo one-shot Staff. El request deberá quedar bound al HEAD vivo y `authorizationSource` debe terminar exactamente en `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`, sin sufijo posterior. Verificar action resuelta exacta antes de selector/deploy. Solo tras PASS continuar `M7 → M8 → M9 → M10`.
-
-No nuevo diagnóstico general, nueva candidata, nueva rama/PR, PowerShell para Paula ni repetición de gates cerrados sin drift reproducible.
+No reabrir gates anteriores. Solicitar una nueva autorización explícita para un único request `HOSTING_RUNTIME_ONCE` bound al HEAD vivo, con `action: C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`. El preflight PASS corre primero; solo después puede autenticarse provider y ejecutarse máximo un Hosting DEV Staff-only. Con PASS: cerrar M7 y continuar M8 → M9 → M10.
