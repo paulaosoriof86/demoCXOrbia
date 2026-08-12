@@ -7,6 +7,8 @@ const script=fileURLToPath(new URL('./cxorbia-phase-a-existing-users-e2e-credent
 const original=process.env.CXORBIA_CREDENTIAL_ENVELOPE||'backend/private-inbox/corte6-credential-bundle.enc.json';
 const privateDir=process.env.PRIVATE_DIR||'.tmp/c6-real-users-e2e-private';
 const normalizedEnvelope=path.join(privateDir,'credential-envelope-target-normalized.json');
+const exactStaffAction='C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF';
+const staffOnly=String(process.env.CXORBIA_C6_ACTION||'').trim()===exactStaffAction;
 fs.mkdirSync(privateDir,{recursive:true});
 const envelope=JSON.parse(fs.readFileSync(original,'utf8'));
 if(!envelope.tenantId) envelope.tenantId='tya';
@@ -21,7 +23,13 @@ if(run.status!==0){
 }
 const lines=String(run.stdout||'').trim().split(/\r?\n/).filter(Boolean);
 const result=JSON.parse(lines.at(-1)||'{}');
-if(result.decision!=='PASS_PHASE_A_EXISTING_E2E_CREDENTIAL_SELECTION_DYNAMIC') throw new Error('credential_selector_dynamic_not_pass');
-result.decision='PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION';
-result.frozenVisitCountAssumed=false;
+if(staffOnly){
+  if(result.decision!=='PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY') throw new Error('credential_selector_staff_admin_not_pass');
+  if(result.authWrites!==0||result.passwordChanges!==0||result.valuesExported!==false) throw new Error('credential_selector_staff_admin_not_safe');
+  result.genericShopperClientLogicPreserved=true;
+}else{
+  if(result.decision!=='PASS_PHASE_A_EXISTING_E2E_CREDENTIAL_SELECTION_DYNAMIC') throw new Error('credential_selector_dynamic_not_pass');
+  result.decision='PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION';
+  result.frozenVisitCountAssumed=false;
+}
 console.log(JSON.stringify(result));
