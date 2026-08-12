@@ -4,11 +4,9 @@
 
 Sin cambios a cursos/rutas/certificaciones/UI.
 
-Provider snapshot PASS: Auth228; A reusable owner-bound; B/C/D canonical targets definidos; R4 exacto; budget Auth14/Firestore16/deletes0; rollback PASS. D technical rebase PASS y determinístico.
+Provider snapshot PASS; D rebase PASS determinístico; private execution handoff PASS para A/B/C cifrados/memory-only. Roles/scopes/projectIds/claims/R4/budgets permanecen cerrados.
 
-Private execution handoff source-only PASS: A/B/C exactos se revalidan antes de cifrar, persisten solo como ciphertext y se descifran en memoria con revalidación obligatoria; D se regenera sin referencia histórica. No raw valores protegidos persistidos/emitidos.
-
-Lección reusable: identidad visible privada, digest source-safe y transporte recuperable son capas separadas; el cifrado en reposo + materialización solo en memoria evita convertir PII/credenciales en configuración o evidencia pública.
+Lección reusable: identidad visible privada, digest source-safe y transporte recuperable son capas distintas; cifrado en reposo + materialización solo en memoria permite continuidad sin exponer PII/credenciales.
 
 Efectos: provider/Auth/Firestore/HR/Rules/Storage writes0; deletes0; deploy/merge/production0. Usuarios & Permisos pendiente hasta bootstrap PASS; HR M6 cerrado.
 
