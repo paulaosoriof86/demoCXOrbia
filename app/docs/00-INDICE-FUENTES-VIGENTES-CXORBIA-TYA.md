@@ -1,16 +1,16 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
 **Fecha:** 2026-08-11  
-**Estado vivo:** `PASS_C6_STAFF_D_TECHNICAL_LOGIN_REBASE_SOURCE_ONLY__ZERO_SOURCE_COLLISION__PRIVATE_EXECUTION_HANDOFF_PENDING__NO_PROVIDER__NO_WRITES__NO_PRODUCTION`
+**Estado vivo:** `PASS_C6_STAFF_PRIVATE_EXECUTION_HANDOFF_SOURCE_ONLY__ABC_ENCRYPTED_EXACT__D_DETERMINISTIC__NO_PROVIDER__NO_WRITES__NO_PRODUCTION`
 
-Prevalencia: checkpoint -> `SOURCE-LOCK-C6-STAFF-D-TECHNICAL-LOGIN-REBASE-PASS-20260811.md` -> D rebase evidence/contract/prewrite -> previous private recovery source lock/evidence -> previous exact-write STOP -> provider snapshot PASS31518927950 -> live-user-admin static PASS -> HR live PASS -> Auth freezes -> CAMBIOS/RESUMEN/PENDIENTES/plan/tracker/Academia -> PR#7/HEAD.
+Prevalencia: checkpoint -> `SOURCE-LOCK-C6-STAFF-PRIVATE-EXECUTION-HANDOFF-PASS-20260811.md` -> handoff evidence/contract/encrypted envelope/runtime helper -> D rebase PASS -> previous private recovery -> previous exact-write STOP -> provider snapshot PASS31518927950 -> live-user-admin static PASS -> HR live PASS -> Auth freezes -> CAMBIOS/RESUMEN/PENDIENTES/plan/tracker/Academia -> PR#7/HEAD.
 
-Estado rector: Auth baseline228; M4=5/5; M5=4/8; M6=5/5; provider snapshot PASS31518927950; budget Auth14/Firestore16; D deterministic technical rebase PASS with zero source-safe collision; D no longer depends on historical visible-login; provider reads/writes0; Auth/Firestore/HR/Rules/Storage writes0; deletes0; production=false.
+Estado rector: Auth baseline228; M4=5/5; M5=4/8; M6=5/5; provider snapshot PASS31518927950; budget Auth14/Firestore16/deletes0; A/B/C exact references now have encrypted-at-rest, memory-only runtime handoff; D is deterministic from rebase PASS; raw protected values are not emitted or persisted; provider/Auth/Firestore/HR/Rules/Storage writes0; production=false.
 
-El boundary restante no es una decisión de identidad: A/B/C exact visible-login fueron recuperados transient y no persistidos. Antes del exact-write se requiere un canal privado de ejecución que los entregue al runtime sin repo/artifact/log. D ya es regenerable determinísticamente.
+El boundary de transporte privado previo al exact-write queda resuelto source-only. El runtime v2 deberá descifrar A/B/C en memoria y volver a validar sus digests/bindings antes del primer write; D se regenera y valida determinísticamente. No se requiere nuevo GitHub secret ni nueva decisión de negocio.
 
 **Phase A84%; restante16%.**
 
-Siguiente gate: `C6 STAFF PRIVATE EXECUTION HANDOFF SOURCE-ONLY`.
+Siguiente gate: `C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION`.
 
-Anti-bucle: no repetir D rebase; no reabrir A/B/C como identidades; no reusar exact-write request; no repetir snapshot/provider/static/HR/owners/scopes/Auth340; no nueva candidata/rama/PR/workflow; no provider/Auth/Firestore writes hasta handoff PASS + nueva autorización; no deletes/deploy/merge/producción.
+Anti-bucle: no repetir handoff, D rebase, private recovery, snapshot/provider/static/HR/owners/scopes/Auth340; no reusar exact-write request consumido; no nueva candidata/rama/PR/workflow; no writes hasta autorización v2; no deletes/deploy/merge/producción.
