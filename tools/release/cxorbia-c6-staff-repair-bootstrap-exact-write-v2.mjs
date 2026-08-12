@@ -60,7 +60,7 @@ function sourcePreflight(){
   ensure(contract.credentialIngress?.generatedUnrecoverablePasswordAllowed===false&&contract.credentialIngress?.stopBeforeFirstProviderWriteIfMissing===true,'PRIVATE_CREDENTIAL_POLICY');
   ensure(snapshot.decision==='PASS_C6_STAFF_REPAIR_BOOTSTRAP_PREWRITE'&&snapshot.provider?.authPopulation===228&&snapshot.provider?.writes===0,'SNAPSHOT_AUTHORITY');
   ensure(snapshot.frozenForwardWriteBudget?.authWritesTotal===14&&snapshot.frozenForwardWriteBudget?.firestoreWritesTotal===16&&snapshot.rollbackDryRun?.decision==='PASS'&&snapshot.r4Canonical?.mutation==='FORBIDDEN','SNAPSHOT_BUDGET_ROLLBACK');
-  ensure(handoffContract.schemaVersion==='cxorbia.c6.staff-private-execution-handoff.v1'&&handoffContract.executionGate?.writeCap?.authWritesMax===14&&handoffContract.executionGate?.writeCap?.firestoreWritesMax===16,'HANDOFF_CONTRACT');
+  ensure(handoffContract.schemaVersion==='cxorbia.c6.staff-private-execution-handoff.v1'&&handoffContract.writeBoundary?.authWritesMaxPreserved===14&&handoffContract.writeBoundary?.firestoreWritesMaxPreserved===16&&handoffContract.writeBoundary?.authDeletes===0&&handoffContract.writeBoundary?.firestoreDeletes===0,'HANDOFF_CONTRACT');
   ensure(dRebase.schemaVersion==='cxorbia.c6.staff-d-technical-login-rebase.v1','D_REBASE_CONTRACT');
   ensure(targets.schemaVersion==='cxorbia.c6.staff-bootstrap-targets.v1'&&targets.targets?.length===4,'TARGETS_SCHEMA');
   ensure(collision.schemaVersion==='cxorbia.c6.staff-provider-collision-targets.v1'&&collision.targets?.length===4,'COLLISION_SCHEMA');
