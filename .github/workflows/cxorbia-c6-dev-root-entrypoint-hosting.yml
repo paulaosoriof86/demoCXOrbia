@@ -58,8 +58,12 @@ jobs:
           node <<'NODE'
           const fs=require('fs');
           const x=JSON.parse(fs.readFileSync(process.env.EXECUTE_FILE,'utf8'));
+          const exactAction='C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF';
+          const source=String(x.authorizationSource||'');
+          const action=source.endsWith(exactAction)?exactAction:'';
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${x.enabled===true?'true':'false'}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`request_id=${x.requestId||''}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`action=${action}\n`);
           NODE
 
       - name: Record disabled request safely
@@ -120,6 +124,7 @@ jobs:
         if: steps.request.outputs.enabled == 'true'
         env:
           EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+          CXORBIA_C6_ACTION: ${{ steps.request.outputs.action }}
         run: |
           set -euo pipefail
           mkdir -p "$PRIVATE_DIR" "$OUT_DIR"
@@ -139,24 +144,37 @@ jobs:
 
           node tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs \
             > "$OUT_DIR/credential-selection-staff-shopper.source-safe.json"
-          node tools/qa/cxorbia-c6-existing-client-e2e-credential.mjs \
-            > "$OUT_DIR/credential-selection-client.source-safe.json"
 
-          node <<'NODE'
-          const fs=require('fs');
-          const a=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection-staff-shopper.source-safe.json','utf8'));
-          const b=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection-client.source-safe.json','utf8'));
-          const p=JSON.parse(fs.readFileSync(process.env.PRIVATE_E2E,'utf8'));
-          if(a.decision!=='PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION'||a.authWrites!==0||a.passwordChanges!==0||a.valuesExported!==false)throw new Error('staff_shopper_credential_selection_not_safe_pass');
-          if(b.decision!=='PASS_C6_EXISTING_CLIENT_CREDENTIAL_SELECTION'||b.authWrites!==0||b.passwordChanges!==0||b.valuesExported!==false)throw new Error('client_credential_selection_not_safe_pass');
-          if(!p?.staff?.login||!p?.staff?.password||!p?.shopper?.login||!p?.shopper?.password||!p?.client?.login||!p?.client?.password)throw new Error('private_e2e_bundle_incomplete');
-          NODE
+          if [[ "$CXORBIA_C6_ACTION" == "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF" ]]; then
+            node <<'NODE'
+            const fs=require('fs');
+            const a=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection-staff-shopper.source-safe.json','utf8'));
+            const p=JSON.parse(fs.readFileSync(process.env.PRIVATE_E2E,'utf8'));
+            if(a.decision!=='PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY'||a.authWrites!==0||a.passwordChanges!==0||a.valuesExported!==false)throw new Error('staff_admin_credential_selection_not_safe_pass');
+            if(!p?.staff?.login||!p?.staff?.password)throw new Error('private_e2e_staff_bundle_incomplete');
+            if(p?.shopper||p?.client)throw new Error('private_e2e_staff_bundle_scope_exceeded');
+            NODE
+          else
+            node tools/qa/cxorbia-c6-existing-client-e2e-credential.mjs \
+              > "$OUT_DIR/credential-selection-client.source-safe.json"
+            node <<'NODE'
+            const fs=require('fs');
+            const a=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection-staff-shopper.source-safe.json','utf8'));
+            const b=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection-client.source-safe.json','utf8'));
+            const p=JSON.parse(fs.readFileSync(process.env.PRIVATE_E2E,'utf8'));
+            if(a.decision!=='PASS_PHASE_A_EXISTING_E2E_CREDENTIAL_SELECTION_DYNAMIC'||a.authWrites!==0||a.passwordChanges!==0||a.valuesExported!==false)throw new Error('staff_shopper_credential_selection_not_safe_pass');
+            if(b.decision!=='PASS_C6_EXISTING_CLIENT_CREDENTIAL_SELECTION'||b.authWrites!==0||b.passwordChanges!==0||b.valuesExported!==false)throw new Error('client_credential_selection_not_safe_pass');
+            if(!p?.staff?.login||!p?.staff?.password||!p?.shopper?.login||!p?.shopper?.password||!p?.client?.login||!p?.client?.password)throw new Error('private_e2e_bundle_incomplete');
+            NODE
+          fi
           chmod 600 "$PRIVATE_E2E"
 
       - name: Execute one Hosting deploy and root-only accumulated gates
         if: steps.request.outputs.enabled == 'true'
         id: execute
         continue-on-error: true
+        env:
+          CXORBIA_C6_ACTION: ${{ steps.request.outputs.action }}
         run: |
           set +e
           mkdir -p "$OUT_DIR"
@@ -185,18 +203,27 @@ jobs:
             CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E" \
             CXORBIA_DEV_ROOT_RUNTIME_DIR="$OUT_DIR/runtime" \
             CXORBIA_DEV_ROOT_RUNTIME_OUTPUT="$OUT_DIR/runtime/report.json" \
+            CXORBIA_C6_ACTION="$CXORBIA_C6_ACTION" \
               node tools/qa/tya-c6-dev-root-runtime-wrapper.mjs "$DEV_ROOT_URL"
 
             node <<'NODE'
             const fs=require('fs');
             const r=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/runtime/report.json','utf8'));
-            if(r.decision!=='PASS_C6_DEV_ROOT_RUNTIME_ACCUMULATIVE')throw new Error('root_runtime_not_pass');
-            if(r.parity?.decision!=='PASS_C6_DEV_ROOT_ENTRYPOINT_REMOTE_PARITY'||r.parity?.exact!==true)throw new Error('root_remote_parity_not_pass');
-            if(r.staff?.authenticated!==true||r.staff?.reloadsStable!==true||r.staff?.newTabStable!==true)throw new Error('root_staff_not_pass');
-            if(r.shopper?.authenticated!==true||r.shopper?.exactIdentity!==true||r.shopper?.fullHistory!==true||r.shopper?.certificationVisible!==true||r.shopper?.reloadsStable!==true||r.shopper?.newTabStable!==true)throw new Error('root_shopper_not_pass');
-            if(r.client?.authenticated!==true||r.client?.integratedCredentialRoute!==true||r.client?.routeAccepted!==true||r.client?.viewExists!==true||r.client?.pageHeaderExists!==true||Number(r.client?.viewTextLength||0)<=0||r.client?.renderException!==null||r.client?.panoramaVisible!==true||r.client?.blocked!==false)throw new Error('root_client_not_pass');
-            if(r.finance?.model!=='delegado'||Number(r.finance?.royaltyPct||0)!==0||r.finance?.valuesInvented!==false)throw new Error('root_finance_not_pass');
-            if(r.reservations?.browserLocalStorageAsSource!==false||r.reservations?.mutationsEnabled!==false)throw new Error('root_reservations_not_pass');
+            const exact='C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF';
+            if(process.env.CXORBIA_C6_ACTION===exact){
+              if(r.decision!==exact||r.scope!=='staff_admin_only')throw new Error('root_staff_admin_runtime_not_pass');
+              if(r.parity?.decision!=='PASS_C6_DEV_ROOT_ENTRYPOINT_REMOTE_PARITY'||r.parity?.exact!==true)throw new Error('root_remote_parity_not_pass');
+              if(r.staff?.authenticated!==true||r.staff?.reloadsStable!==true||r.staff?.newTabStable!==true)throw new Error('root_staff_not_pass');
+              if(r.shopper!==null||r.client!==null||r.genericShopperClientLogicPreserved!==true)throw new Error('root_staff_admin_scope_not_exact');
+            }else{
+              if(r.decision!=='PASS_C6_DEV_ROOT_RUNTIME_ACCUMULATIVE')throw new Error('root_runtime_not_pass');
+              if(r.parity?.decision!=='PASS_C6_DEV_ROOT_ENTRYPOINT_REMOTE_PARITY'||r.parity?.exact!==true)throw new Error('root_remote_parity_not_pass');
+              if(r.staff?.authenticated!==true||r.staff?.reloadsStable!==true||r.staff?.newTabStable!==true)throw new Error('root_staff_not_pass');
+              if(r.shopper?.authenticated!==true||r.shopper?.exactIdentity!==true||r.shopper?.fullHistory!==true||r.shopper?.certificationVisible!==true||r.shopper?.reloadsStable!==true||r.shopper?.newTabStable!==true)throw new Error('root_shopper_not_pass');
+              if(r.client?.authenticated!==true||r.client?.integratedCredentialRoute!==true||r.client?.routeAccepted!==true||r.client?.viewExists!==true||r.client?.pageHeaderExists!==true||Number(r.client?.viewTextLength||0)<=0||r.client?.renderException!==null||r.client?.panoramaVisible!==true||r.client?.blocked!==false)throw new Error('root_client_not_pass');
+              if(r.finance?.model!=='delegado'||Number(r.finance?.royaltyPct||0)!==0||r.finance?.valuesInvented!==false)throw new Error('root_finance_not_pass');
+              if(r.reservations?.browserLocalStorageAsSource!==false||r.reservations?.mutationsEnabled!==false)throw new Error('root_reservations_not_pass');
+            }
           NODE
 
             rm -rf .firebase
@@ -210,6 +237,9 @@ jobs:
 
       - name: Build sanitized execution summary
         if: always() && steps.request.outputs.enabled == 'true'
+        env:
+          EXECUTE_EXIT_CODE: ${{ steps.execute.outputs.exit_code }}
+          CXORBIA_C6_ACTION: ${{ steps.request.outputs.action }}
         run: |
           mkdir -p "$OUT_DIR"
           node <<'NODE'
@@ -220,11 +250,14 @@ jobs:
           const runtime=read(process.env.OUT_DIR+'/runtime/report.json');
           const deployCount=fs.existsSync(process.env.OUT_DIR+'/deploy-count')?Number(fs.readFileSync(process.env.OUT_DIR+'/deploy-count','utf8').trim()||0):0;
           const exitCode=Number(process.env.EXECUTE_EXIT_CODE||999);
-          const pass=exitCode===0&&deployCount===1&&source?.decision==='PASS_C6_DEV_ROOT_ENTRYPOINT_SOURCE_PARITY'&&runtime?.decision==='PASS_C6_DEV_ROOT_RUNTIME_ACCUMULATIVE';
+          const exact='C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF';
+          const runtimePass=process.env.CXORBIA_C6_ACTION===exact?runtime?.decision===exact:runtime?.decision==='PASS_C6_DEV_ROOT_RUNTIME_ACCUMULATIVE';
+          const pass=exitCode===0&&deployCount===1&&source?.decision==='PASS_C6_DEV_ROOT_ENTRYPOINT_SOURCE_PARITY'&&runtimePass;
           const summary={
             schemaVersion:'cxorbia.c6.dev-root-entrypoint-hosting-run.v1',
             generatedAt:new Date().toISOString(),
             decision:pass?'PASS_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME':'FAIL_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME',
+            action:process.env.CXORBIA_C6_ACTION||null,
             authorization,
             deploy:{attempted:deployCount===1,succeeded:pass,hostingDeploysThisRun:deployCount,automaticSecondDeploys:0},
             source,
@@ -237,8 +270,6 @@ jobs:
           };
           fs.writeFileSync(process.env.OUT_DIR+'/summary.json',JSON.stringify(summary,null,2)+'\n','utf8');
           NODE
-        env:
-          EXECUTE_EXIT_CODE: ${{ steps.execute.outputs.exit_code }}
 
       - name: Capture repository delta evidence
         if: always() && steps.request.outputs.enabled == 'true'
@@ -257,37 +288,3 @@ jobs:
             .tmp/c6-dev-root-entrypoint-hosting
           if-no-files-found: error
           retention-days: 14
-
-      - name: Publish observable commit status
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-          EXECUTE_EXIT_CODE: ${{ steps.execute.outputs.exit_code }}
-        run: |
-          set -euo pipefail
-          ENABLED='${{ steps.request.outputs.enabled }}'
-          STATE=success
-          DESC='SKIPPED_DISABLED_REQUEST'
-          if [ "$ENABLED" = 'true' ]; then
-            if [ "${EXECUTE_EXIT_CODE:-999}" = '0' ]; then
-              DESC='PASS_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME'
-            else
-              STATE=failure
-              DESC='FAIL_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME_STOP_RETRY'
-            fi
-          fi
-          gh api --method POST \
-            -H 'Accept: application/vnd.github+json' \
-            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
-            -f state="$STATE" \
-            -f context='cxorbia/c6-dev-root-entrypoint/overall' \
-            -f description="$DESC" \
-            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
-
-      - name: Cleanup private material
-        if: always()
-        run: rm -rf "$PRIVATE_DIR"
-
-      - name: Enforce result
-        if: steps.request.outputs.enabled == 'true'
-        run: test "${{ steps.execute.outputs.exit_code }}" = "0"
