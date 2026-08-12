@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.c6.dev-root-entrypoint-hosting.v1",
-  "requestId": "c6-live-user-admin-membership-runtime-proof-20260812-07",
+  "requestId": "c6-live-user-admin-membership-runtime-proof-20260812-08",
   "enabled": true,
   "mode": "HOSTING_RUNTIME_ONCE",
   "action": "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF",
   "consumed": false,
   "status": "authorized_execute_once",
-  "issuedAt": "2026-08-12T17:10:00-06:00",
+  "issuedAt": "2026-08-12T17:22:00-06:00",
   "authorizedBy": "Paula",
-  "authorizationSource": "current_conversation_2026-08-12_HOSTING_RUNTIME_ONCE_C6_DEV_Staff",
+  "authorizationSource": "current_conversation_2026-08-12_HOSTING_RUNTIME_ONCE_C6_DEV_Staff_after_shell_preflight_repair",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -19,7 +19,7 @@
   "rootPath": "/",
   "canonicalPath": "/index-backend-dev.html",
   "rootRedirectType": 302,
-  "targetHeadSha": "64816601f2cf780c6bc2b315a963d0318d38872b",
+  "targetHeadSha": "7c6c5d89cc5886ca3ef98602460f33724a177504",
   "allowedExecutions": 1,
   "singleHostingDeployMax": 1,
   "hostingDeployExecutions": 0,
@@ -35,6 +35,9 @@
   "staffLanePreflightJobId": 94290390013,
   "staffLanePreflightArtifactId": 9162011590,
   "staffLanePreflightArtifactDigest": "sha256:50b1b0be7d47594456e4b131099107ba7716906ca06655ce2ebf861d1979c9b1",
+  "updatedShellPreflightRequired": true,
+  "hostingExecuteBashSyntaxRequired": true,
+  "hostingExecuteNestedHeredocAbsentRequired": true,
   "cloudRunDeploys": 0,
   "firestoreWrites": 0,
   "authWrites": 0,
@@ -51,5 +54,5 @@
   "merge": false,
   "production": false,
   "stopRetryOnFailureAfterProvider": true,
-  "purpose": "Authorized one-shot C6 DEV Staff Hosting/runtime proof. Require PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT before provider; with PASS, execute maximum one Hosting DEV on cxorbia-backend-dev and certify only Firebase Auth -> claims -> tenants/tya/users/{uid} -> CX.session/RBAC -> backend read -> frontend using #loginForm/#lgUser/#lgPass/#lgSubmit with three reloads and a new-tab check. Zero Auth, Firestore, HR, Rules, Storage, Make, Gemini or payment writes; zero second Exact Write; no merge and no production. If source preflight fails before provider, provider and Hosting remain zero. Any failure after provider boundary applies STOP_RETRY without second attempt."
+  "purpose": "Authorized new one-shot C6 DEV Staff Hosting/runtime proof after source-only shell repair. Before any provider require PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT v2, including bash -n PASS of the exact Hosting execute script and absence of nested heredocs. Only with PASS, execute maximum one Hosting DEV on cxorbia-backend-dev and certify only Firebase Auth -> claims -> tenants/tya/users/{uid} -> CX.session/RBAC -> backend read -> frontend using #loginForm/#lgUser/#lgPass/#lgSubmit with three reloads and a new-tab check. Zero Auth, Firestore, HR, Rules, Storage, Make, Gemini or payment writes; zero second Exact Write; no merge and no production. Any failure after provider boundary applies STOP_RETRY without second attempt."
 }
