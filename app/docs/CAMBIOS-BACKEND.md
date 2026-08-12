@@ -1,81 +1,93 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-12 13:42 -06:00  
-**Estado:** `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_SOURCE_IMPLEMENTED__RUNTIME_PROOF_PENDING__PHASE_A_88`
+**Última actualización:** 2026-08-12 15:55 -06:00  
+**Estado:** `C6_STAFF_ADMIN_SHELL_HEREDOC_ROOTCAUSE_FIXED__STOP_RETRY__PHASE_A_88`
 
 ## Bloque actual
 
-`C6_LIVE_USER_ADMIN_FRONTEND_WIRING_LOCALIZED`.
+`C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`.
 
-Se cerró el hueco source entre el principal Firebase/claims y la membresía canónica materializada por Exact Write V2, sin reabrir Staff ni repetir provider writes.
+El wiring Staff ya estaba implementado en source. En esta iteración se autorizó y ejecutó un único one-shot para demostrar en DEV:
 
-### Archivos creados/modificados
+`Firebase Auth → claims → tenants/tya/users/{uid} → CX.session/RBAC → backend read → frontend`, incluyendo reload/new-tab.
 
-- `app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js`: adapter DEV read-only que reconcilia `Firebase principal + claims → tenants/tya/users/{uid} → CX.session/RBAC` para Staff.
-- `app/index-backend-dev.html`: agrega únicamente la carga del adapter después de `backend-browser-auth.js` y antes de `backend-firebase.js`.
+## Ejecución 31644318836
 
-### Validaciones source implementadas
+Request commit: `3a44ae709e2e0728c26e3351f4ddff98319ac699`.
 
-Para Staff (`super/admin/ops/coordinador`) el adapter exige, de forma fail-closed:
+Target source HEAD: `9f9779d7adac30a72058464d819dcb94aa5e1b42`.
 
-- usuario Firebase autenticado;
-- `tenantId=tya`;
-- `authNamespace=staff`;
-- rol exacto entre claim y membership;
-- `active=true`;
-- `entitlementMode=TYA_COMPLETE`;
-- `projectIds` exactos entre claims y membership;
-- `claimsDigest` canónico coincidente;
-- `providerUidFingerprint` coincidente.
+El workflow pasó:
 
-Solo después publica en sesión el estado sanitizado de membership/scope. No expone `visibleLogin`, UID ni secretos. Ante mismatch limpia sesión, cierra Auth y bloquea el recorrido.
+- checkout exacto;
+- validación de autorización y one-shot;
+- autenticación Google Cloud DEV;
+- instalación de tooling.
 
-## Causa raíz cerrada a nivel source
+El selector Staff/admin produjo `PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY`, con `authWrites=0`, `passwordChanges=0`, `valuesExported=false` y preservación de la lógica genérica Shopper/Client.
 
-El runtime previo validaba Firebase Auth + custom claims y usaba ese contexto directamente para lecturas/RBAC. Las Rules ya permitían al usuario leer su propio `tenants/{tenant}/users/{uid}`, y Exact Write V2 ya había creado/readback los cuatro user docs canónicos; faltaba consumir esa membresía en el recorrido humano. Ese hueco permitía que un PASS de materialización no equivaliera todavía a `Auth → membership → RBAC → frontend`.
+La ejecución se detuvo antes de Hosting/runtime por error shell reproducible:
 
-## Gates observados sobre el commit de wiring
+- heredoc `NODE` anidado dentro del `if/else` no cerró por indentación;
+- `syntax error: unexpected end of file`.
 
-PASS automáticos relevantes:
+Artifact sanitizado: `9160122511`, digest `sha256:909ef87970ece8fe972691765255e990b8c4314a8d154f26915f2c600c3c63ef`.
 
-- Phase A Visual Smoke;
-- Operational Readiness R9;
-- Auth Pre-activation Route Action Gate;
-- DEV Auth Firestore Readiness Post-V96;
-- Firebase DEV Clean-State Read-Only Gate;
-- READONLY_POST_GATES_RUNNER;
-- Live Execution Checkpoint;
-- Source Safe Runtime Guard;
-- Period History Integrity.
+Resultado seguro:
 
-El fallo R18A inspeccionado no proviene del wiring: corresponde a pendientes frontend heredados en `app/modules/cliente-extra.js` (`pdf_print_flow_missing`, `xlsx_export_missing`, `pptx_export_missing`). No se corrige desde backend y no reabre C6.
+- deploy attempted=false;
+- Hosting consumido=0/1;
+- runtime=null;
+- nuevos Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes=0;
+- segundo Exact Write=0;
+- merge=false;
+- producción=false.
+
+`STOP_RETRY` aplicado: no se ejecutó segundo intento.
+
+## Causa raíz y corrección source
+
+Commit: `f8efd98e92448739b458aa838cd1f6f8c6efbc6e`.
+
+Archivo modificado:
+
+- `.github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml`.
+
+Cambios:
+
+1. Los dos heredocs anidados de validación privada se sustituyeron por `node -e`, eliminando el acoplamiento frágil entre indentación YAML y delimitadores Bash.
+2. Se agregó `gha-creds-*.json` a `.git/info/exclude`. El artifact del run fallido demostró que el action de Google genera temporalmente ese archivo como untracked; sin exclusión, el `git status --porcelain` final habría generado otro fallo después de un deploy/runtime correcto.
+
+No se modificó frontend ni `app/modules`.
 
 ## Progreso Phase A
 
 `M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1`
 
-**TOTAL CERTIFICADO=88% | RESTANTE=12%. Delta certificado de esta iteración: +0%.**
+**TOTAL CERTIFICADO=88% | RESTANTE=12% | DELTA CERTIFICADO=+0%.**
 
-El source del wiring está implementado, pero no se suma porcentaje hasta demostrar en el runtime DEV del mismo build la cadena real `Auth → membership → RBAC → consumo frontend`.
+Hubo avance técnico real: el selector Staff/admin quedó probado en PASS y se eliminaron el bloqueo shell y un bloqueo latente de worktree. El porcentaje no aumenta hasta el runtime remoto.
 
 ## No reabrir
 
-Exact Write V2, private handoff, D rebase, snapshot `31518927950`, Auth340, SKIP13, MultiAuth, HR y M4 permanecen cerrados salvo drift reproducible.
+Exact Write V2, private handoff, D rebase, provider snapshot, Auth340, SKIP13, MultiAuth, HR y M4 permanecen cerrados salvo drift reproducible.
 
 ## Siguiente frontera exacta
 
-`C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF` sobre el build que contiene este source. Requiere que ese build esté disponible en Hosting DEV; no autoriza deploy por sí mismo.
+No rerun automático ni reutilización del request fallido.
+
+Con nueva autorización puntual: nuevo request one-shot bound al HEAD vivo que incluya `f8efd98e92448739b458aa838cd1f6f8c6efbc6e`, máximo un Hosting DEV, mismo proof Staff/admin read-only.
 
 Después: `M7 → M8 → M9 → M10`.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** reconciliación fail-closed claims + membership + RBAC antes de consumo backend.
-- **Exclusivo cliente:** tenant `tya`, proyecto `cinepolis`, entitlement `TYA_COMPLETE` y Staff canónico A-D.
-- **Claude/prototipo:** cero módulos UI modificados; exportaciones PDF/XLSX/PPTX de Cliente siguen como pendiente frontend heredado.
-- **Academia:** no cambia contenido aún; al certificar runtime se revisan rutas/manuales de administración y permisos por rol.
-- **Sin impacto Claude:** validación criptográfica/digest/fingerprint, read-only membership gate y diagnóstico backend interno.
+- **Reusable CXOrbia:** workflow fail-closed sin heredocs anidados frágiles; credencial efímera excluida del clean-worktree gate.
+- **Exclusivo cliente:** TyA Staff/admin en `cxorbia-backend-dev`.
+- **Claude/prototipo:** cero frontend modificado.
+- **Academia:** sin cambio hasta runtime PASS.
+- **Sin impacto Claude:** workflow, selector y QA interno.
 
 ## Estado seguro
 
-Source-only/read-only. Nuevos Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes: 0. Deploy/merge/producción: 0/false/false.
+Hosting DEV consumido `0/1`; nuevos provider/data writes `0`; merge=false; producción=false.
