@@ -63,6 +63,25 @@ try{
     const credentialCount=humanRootSource.split(credentialNeedle).length-1;
     ensure(credentialCount===1,'STAFF_ONLY_CREDENTIAL_PATCH_SCOPE_INVALID_'+credentialCount);
     humanRootSource=humanRootSource.replace(credentialNeedle,"if(!credentials?.staff?.login||!credentials?.staff?.password)throw new Error('PRIVATE_E2E_STAFF_CREDENTIALS_INVALID');");
+
+    /*
+      Staff/admin C6 uses the canonical single visible product form owned by
+      backend-browser-auth.js (#loginForm/#lgUser/#lgPass/#lgSubmit). The
+      accumulated human smoke still carries the older overlay expectation
+      (#cxIntegratedAuthStep) for the generic client route. Patch only the
+      staff-only generated copy so the proof follows the live Staff contract
+      without weakening Shopper/Client generic gates or changing product UI.
+    */
+    const overlayGuardNeedle="if(!after.integratedStep||!after.integratedLogin){";
+    const overlayGuardCount=humanRootSource.split(overlayGuardNeedle).length-1;
+    ensure(overlayGuardCount===1,'STAFF_SINGLE_FORM_OVERLAY_GUARD_SCOPE_INVALID_'+overlayGuardCount);
+    humanRootSource=humanRootSource.replace(overlayGuardNeedle,"if(kind!=='staff'&&(!after.integratedStep||!after.integratedLogin)){");
+
+    const legacyStaffLoginNeedle="  await page.fill('#cxIntegratedAuthLogin',credential.login);\n  await page.fill('#cxIntegratedAuthPassword',credential.password);\n  await page.click('#cxIntegratedAuthSubmit');";
+    const legacyStaffLoginCount=humanRootSource.split(legacyStaffLoginNeedle).length-1;
+    ensure(legacyStaffLoginCount===1,'STAFF_SINGLE_FORM_LOGIN_PATCH_SCOPE_INVALID_'+legacyStaffLoginCount);
+    humanRootSource=humanRootSource.replace(legacyStaffLoginNeedle,`  if(kind==='staff'){\n    await page.waitForFunction(()=>document.getElementById('loginForm')?.dataset.selectedRole==='admin',null,{timeout:10000});\n    await page.waitForSelector('#lgUser',{state:'visible',timeout:10000});\n    await page.waitForSelector('#lgPass',{state:'visible',timeout:10000});\n    await page.fill('#lgUser',credential.login);\n    await page.fill('#lgPass',credential.password);\n    await page.click('#lgSubmit');\n  }else{\n    await page.fill('#cxIntegratedAuthLogin',credential.login);\n    await page.fill('#cxIntegratedAuthPassword',credential.password);\n    await page.click('#cxIntegratedAuthSubmit');\n  }`);
+
     const mainMarker="try{\n  const staff=await launchIsolated(browser=>loginPrincipal(browser,'staff','admin',credentials.staff,'staff'));";
     const mainCount=humanRootSource.split(mainMarker).length-1;
     ensure(mainCount===1,'STAFF_ONLY_HUMAN_MAIN_SCOPE_INVALID_'+mainCount);
