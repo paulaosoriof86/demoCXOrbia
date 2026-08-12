@@ -59,17 +59,55 @@ jobs:
           const fs=require('fs');
           const x=JSON.parse(fs.readFileSync(process.env.EXECUTE_FILE,'utf8'));
           const action=String(x.action||'').trim();
+          const mode=String(x.mode||'').trim();
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${x.enabled===true?'true':'false'}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`request_id=${x.requestId||''}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`action=${action}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`mode=${mode}\n`);
           NODE
 
       - name: Record disabled request safely
         if: steps.request.outputs.enabled != 'true'
-        run: echo "Controlled Hosting request disabled; no deploy or gates executed."
+        run: echo "Controlled C6 request disabled; no provider or gates executed."
+
+      - name: Validate source-only preflight request
+        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'SOURCE_PREFLIGHT_ONLY'
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs');
+          const {execFileSync}=require('child_process');
+          const x=JSON.parse(fs.readFileSync(process.env.EXECUTE_FILE,'utf8'));
+          const exactAction='C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF';
+          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          if(x.schemaVersion!=='cxorbia.c6.staff-lane-source-preflight.request.v1')throw new Error('source_preflight_schema_invalid');
+          if(x.mode!=='SOURCE_PREFLIGHT_ONLY')throw new Error('source_preflight_mode_invalid');
+          if(x.action!==exactAction)throw new Error('staff_action_not_exact');
+          if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7)throw new Error('repository_lane_invalid');
+          if(x.enabled!==true||x.authorizedBy!=='Paula')throw new Error('authorization_state_invalid');
+          if(x.targetHeadSha!==parent||!x.targetHeadSha||head===parent)throw new Error('target_head_invalid');
+          if(changed.length!==1||changed[0]!==process.env.EXECUTE_FILE)throw new Error('execute_commit_scope_invalid:'+changed.join(','));
+          for(const key of ['providerCalls','hostingDeploys','cloudRunDeploys','firestoreWrites','authWrites','hrReads','hrWrites','rulesWrites','storageWrites','makeCalls','geminiCalls','paymentWrites']){
+            if(Number(x[key]||0)!==0)throw new Error('unsafe_scope_'+key);
+          }
+          if(x.merge!==false||x.production!==false||x.containsPii!==false||x.containsSecrets!==false)throw new Error('unsafe_scope');
+          fs.writeFileSync(process.env.OUT_DIR+'/authorization.json',JSON.stringify({
+            requestId:x.requestId,
+            requestCommitSha:head,
+            targetHeadSha:parent,
+            action:x.action,
+            mode:x.mode,
+            authorizedBy:x.authorizedBy,
+            providerCalls:0,
+            hostingDeploys:0
+          },null,2)+'\n','utf8');
+          NODE
 
       - name: Validate exact authorization and one-shot scope
-        if: steps.request.outputs.enabled == 'true'
+        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'HOSTING_RUNTIME_ONCE'
         run: |
           set -euo pipefail
           mkdir -p "$OUT_DIR" "$PRIVATE_DIR"
@@ -82,6 +120,7 @@ jobs:
           const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
           if(x.schemaVersion!=='cxorbia.c6.dev-root-entrypoint-hosting.v1')throw new Error('request_schema_invalid');
+          if(x.mode!=='HOSTING_RUNTIME_ONCE')throw new Error('hosting_mode_invalid');
           if(x.action!==exactAction)throw new Error('staff_action_not_exact');
           if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7)throw new Error('repository_lane_invalid');
           if(x.firebaseProjectId!=='cxorbia-backend-dev'||x.hostingSite!=='cxorbia-backend-dev'||x.hostingTarget!=='cxorbia-dev'||x.devRootUrl!=='https://cxorbia-backend-dev.web.app')throw new Error('hosting_target_invalid');
@@ -101,6 +140,7 @@ jobs:
             requestCommitSha:head,
             targetHeadSha:parent,
             action:x.action,
+            mode:x.mode,
             sourceStaticRunId:x.sourceStaticRunId,
             sourceStaticArtifactId:x.sourceStaticArtifactId,
             authorizedBy:x.authorizedBy,
@@ -124,20 +164,20 @@ jobs:
             node tools/qa/cxorbia-c6-staff-lane-source-preflight.mjs
 
       - name: Authenticate existing Google Cloud DEV
-        if: steps.request.outputs.enabled == 'true'
+        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'HOSTING_RUNTIME_ONCE'
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
 
       - name: Install transient protected tooling
-        if: steps.request.outputs.enabled == 'true'
+        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'HOSTING_RUNTIME_ONCE'
         run: |
           set -euo pipefail
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase-tools@latest playwright@1.55.0
           npx playwright install --with-deps chromium
 
       - name: Select existing DEV Staff credential privately
-        if: steps.request.outputs.enabled == 'true'
+        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'HOSTING_RUNTIME_ONCE'
         env:
           EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
           CXORBIA_C6_ACTION: ${{ steps.request.outputs.action }}
@@ -169,7 +209,7 @@ jobs:
           chmod 600 "$PRIVATE_E2E"
 
       - name: Execute one Hosting deploy and Staff-only runtime gates
-        if: steps.request.outputs.enabled == 'true'
+        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'HOSTING_RUNTIME_ONCE'
         id: execute
         continue-on-error: true
         env:
@@ -227,8 +267,29 @@ jobs:
           echo "exit_code=$code" >> "$GITHUB_OUTPUT"
           exit 0
 
+      - name: Build sanitized source preflight summary
+        if: always() && steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'SOURCE_PREFLIGHT_ONLY'
+        run: |
+          mkdir -p "$OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs');
+          const read=p=>fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):null;
+          const authorization=read(process.env.OUT_DIR+'/authorization.json');
+          const preflight=read(process.env.OUT_DIR+'/staff-lane-source-preflight.json');
+          const pass=preflight?.decision==='PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT';
+          fs.writeFileSync(process.env.OUT_DIR+'/summary.json',JSON.stringify({
+            schemaVersion:'cxorbia.c6.staff-lane-source-preflight-run.v1',
+            generatedAt:new Date().toISOString(),
+            decision:pass?'PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT_RUN':'FAIL_C6_STAFF_LANE_SOURCE_PREFLIGHT_RUN',
+            authorization,
+            preflight,
+            safety:{providerCalls:0,hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,hrReads:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,production:false}
+          },null,2)+'\n','utf8');
+          if(!pass)process.exitCode=1;
+          NODE
+
       - name: Build sanitized execution summary
-        if: always() && steps.request.outputs.enabled == 'true'
+        if: always() && steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'HOSTING_RUNTIME_ONCE'
         env:
           EXECUTE_EXIT_CODE: ${{ steps.execute.outputs.exit_code }}
           CXORBIA_C6_ACTION: ${{ steps.request.outputs.action }}
