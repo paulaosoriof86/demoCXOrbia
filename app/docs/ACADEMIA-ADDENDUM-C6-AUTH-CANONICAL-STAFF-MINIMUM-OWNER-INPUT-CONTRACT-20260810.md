@@ -4,9 +4,9 @@
 
 Sin cambios a cursos/rutas/certificaciones/UI.
 
-Provider snapshot PASS; D rebase PASS determinístico; private execution handoff PASS para A/B/C cifrados/memory-only. Roles/scopes/projectIds/claims/R4/budgets permanecen cerrados.
+Provider snapshot PASS, D rebase PASS determinístico y private execution handoff PASS para A/B/C cifrados/memory-only. Roles/scopes/projectIds/claims/R4/budgets cerrados.
 
-Lección reusable: identidad visible privada, digest source-safe y transporte recuperable son capas distintas; cifrado en reposo + materialización solo en memoria permite continuidad sin exponer PII/credenciales.
+Lección reusable: identidad visible privada, digest source-safe y transporte recuperable deben separarse; cifrado en reposo + materialización solo en memoria evita exponer PII/credenciales.
 
 Efectos: provider/Auth/Firestore/HR/Rules/Storage writes0; deletes0; deploy/merge/production0. Usuarios & Permisos pendiente hasta bootstrap PASS; HR M6 cerrado.
 
