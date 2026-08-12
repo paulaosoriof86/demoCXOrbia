@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-12 15:54 -06:00  
-**Estado:** `C6_STAFF_ADMIN_SHELL_HEREDOC_ROOTCAUSE_FIXED__STOP_RETRY__PHASE_A_88__HOSTING_0_OF_1__NO_PRODUCTION`
+**Fecha:** 2026-08-12  
+**Estado:** `C6_STAFF_SINGLE_VISIBLE_FORM_QA_ROOTCAUSE_FIXED__STOP_RETRY__PHASE_A_88__HOSTING_1_OF_1__NO_PRODUCTION`
 
 ## Repositorio y seguridad
 
@@ -12,108 +12,105 @@
 - Exact Write V2: cerrado y no repetible.
 - Producción: intacta.
 
-## Estado C6 Staff
+## Gates cerrados que no se reabren
 
 `PASS_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2_READBACK` permanece válido.
 
-- Auth writes consumidos previamente por Exact Write V2: 14.
-- Firestore writes consumidos previamente por Exact Write V2: 16.
+- Auth writes históricos del Exact Write V2: 14.
+- Firestore writes históricos del Exact Write V2: 16.
 - Deletes: 0.
 - A/B/C/D/R4 canonical readback: PASS.
 - Ocho históricos deshabilitados con readback.
 - Rollback: no requerido.
 - No reabrir provider snapshot, private handoff, D rebase, Auth340, SKIP13, MultiAuth, HR o M4 sin drift reproducible.
 
-## C6 live user/admin wiring — SOURCE IMPLEMENTADO
+## One-shot autorizado y ejecutado
 
-El recorrido humano DEV contiene el wiring fail-closed `Firebase Auth → claims → tenants/tya/users/{uid} → CX.session/RBAC → backend read → frontend` para Staff. No se modificó `app/modules`.
+Action: `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`.
 
-El action exacto permanece:
+Request nuevo:
 
-`C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`.
-
-## Ejecución autorizada 31644318836 — STOP_RETRY aplicado
-
-Request one-shot:
-
-- request commit: `3a44ae709e2e0728c26e3351f4ddff98319ac699`;
-- target HEAD: `9f9779d7adac30a72058464d819dcb94aa5e1b42`;
-- autorización exacta Staff/admin;
+- requestId: `c6-live-user-admin-membership-runtime-proof-20260812-04`;
+- request commit: `eec93e7f1fe89d1a63ca2ea6e7bf8b99f2d6af7d`;
+- target HEAD autorizado: `33ad176fb886c51c0dd3d8d81afee3ac83ac4be9`;
+- run: `31646324988`;
+- artifact: `9160870076`;
+- digest: `sha256:e92ec72789ded9db63346bb6b1ca39e71861b4a28b14e35558940124f7e7782b`;
 - `singleHostingDeployMax=1`;
 - `stopRetryOnFailure=true`.
 
-El workflow pasó checkout, request/authorization, Google Cloud DEV y tooling. El selector Staff/admin produjo correctamente:
+El workflow pasó request/autorización, Google Cloud DEV, tooling, selector privado Staff/admin, source gate y Hosting DEV.
 
-`PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY`
+## Hosting DEV — PASS y consumido 1/1
 
-con `authWrites=0`, `passwordChanges=0`, `valuesExported=false` y lógica genérica Shopper/Client preservada.
+El deploy autorizado se ejecutó exactamente una vez:
 
-La ejecución falló inmediatamente después, todavía dentro de `Select existing DEV credentials privately`, antes de source gate, Hosting o runtime.
+- `deploy.attempted=true`;
+- exit code `0`;
+- `hostingDeploysThisRun=1`;
+- Hosting autorizado consumido: **1/1**.
 
-Evidencia:
+El gate remoto de entrada pasó:
 
-- workflow: `31644318836`;
-- artifact: `9160122511`;
-- artifact digest: `sha256:909ef87970ece8fe972691765255e990b8c4314a8d154f26915f2c600c3c63ef`;
-- `deploy.attempted=false`;
-- `hostingDeploysThisRun=0`;
-- runtime=null;
-- Firestore/Auth/HR/Rules/Storage/Make/Gemini/pagos writes=0;
-- merge=false;
-- production=false.
+`PASS_C6_DEV_ROOT_ENTRYPOINT_REMOTE_PARITY`
 
-No se ejecutó un segundo intento.
+con root 302 hacia `/index-backend-dev.html`, canonical 200 y paridad exacta `true`.
 
-## Cuarta causa raíz reproducible
+## Runtime Staff — FAIL antes de credenciales
 
-La selección privada ya estaba corregida. El fallo real de `31644318836` fue sintáctico en el shell generado por el workflow:
+El proof Staff terminó en:
 
-`warning: here-document ... delimited by end-of-file (wanted 'NODE')`
+`FAIL_C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`.
 
-seguido de:
+La cadena solicitada `Firebase Auth → claims → tenants/tya/users/{uid} → CX.session/RBAC → backend read → frontend` **no quedó certificada** porque el smoke falló antes de enviar credenciales. Reload y new-tab no fueron alcanzados.
 
-`syntax error: unexpected end of file`.
+El artifact demostró que el wrapper Firebase y la UI de login sí estaban presentes, pero el harness esperaba un contrato visual obsoleto: `#cxIntegratedAuthStep/#cxIntegratedAuthLogin/...`.
 
-Causa: dos terminadores `NODE` dentro del `if/else` Staff/admin estaban indentados. Bash exige que el delimitador de cierre del heredoc quede en columna cero salvo el uso explícito de `<<-` con tabs. El shell no alcanzaba a ejecutar las validaciones privadas posteriores al selector, aunque el selector ya había producido PASS.
+El contrato real vigente en `app/core/backend-browser-auth.js` usa el único formulario visible del producto:
 
-## Corrección source aplicada después del STOP_RETRY
+`#loginForm → #lgUser → #lgPass → #lgSubmit`.
 
-Commit source-only: `f8efd98e92448739b458aa838cd1f6f8c6efbc6e`.
+Por tanto, la causa raíz reproducible es `QA_HARNESS_CONTRACT_DRIFT`, no un fallo demostrado de provider, Auth, membership o datos.
 
-Archivo:
+## STOP_RETRY y corrección source-only
 
-`.github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml`.
+`STOP_RETRY` aplicado. No hubo rerun, segundo request ni segundo Hosting bajo esta autorización.
 
-Cambios:
+Después del fallo se corrigió únicamente el tooling de QA, sin ejecutar nuevamente:
 
-1. Se eliminaron los heredocs anidados dentro del `if/else` y se sustituyeron por validaciones `node -e`, evitando dependencia de indentación shell/YAML.
-2. Se agregó `gha-creds-*.json` a `.git/info/exclude`. El artifact del run fallido demostró que `google-github-actions/auth` crea temporalmente ese archivo como untracked; sin exclusión, el gate posterior `git status --porcelain` habría fallado incluso después de un Hosting/runtime exitoso. Esta dependencia latente quedó eliminada antes de consumir Hosting.
-3. No se cambió el alcance Staff/admin, no se modificó `app/modules` y no se ejecutó deploy con esta corrección.
+- commit source-only: `5c9663dd6b1174cf8d59186484eb09e83316e862`;
+- archivo: `tools/qa/tya-c6-dev-root-runtime-wrapper.mjs`;
+- Staff-only ahora sigue el formulario canónico `#loginForm/#lgUser/#lgPass/#lgSubmit`;
+- lógica genérica Shopper/Client preservada;
+- `app/modules` sin cambios;
+- cero deploy posterior a esta corrección.
+
+Evidencia durable: `app/docs/evidence/c6-live-user-admin-runtime-proof-31646324988.json`.
 
 ## Progreso Phase A
 
 `M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1`
 
-**TOTAL CERTIFICADO=88% | RESTANTE=12%. Delta certificado de esta ejecución: +0%.**
+**TOTAL CERTIFICADO=88% | RESTANTE=12% | DELTA CERTIFICADO DE ESTA EJECUCIÓN=+0%.**
 
-Sí hubo avance técnico: el selector Staff/admin quedó demostrado en PASS y se eliminaron el bloqueo shell reproducible y un bloqueo latente de limpieza del worktree. El porcentaje no aumenta hasta certificar el runtime remoto.
+Sí hubo avance técnico verificable: Hosting DEV y root parity pasaron, se aisló el drift exacto del QA y quedó corregido source-only. El porcentaje no aumenta porque el runtime Staff canónico aún no fue certificado.
 
 ## Siguiente bloque exacto
 
-El Hosting DEV autorizado permanece físicamente **sin consumir: 0/1**.
+No ejecutar nada más con la autorización consumida.
 
-Por `STOP_RETRY`, no ejecutar automáticamente otro request ni rerun del workflow `31644318836`.
+El source queda preparado para repetir exclusivamente `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`, pero requiere **una nueva autorización explícita** que habilite un nuevo Hosting DEV, porque el allowance anterior fue consumido `1/1` y `STOP_RETRY` prohíbe un segundo intento.
 
-Siguiente acción segura, únicamente con nueva autorización puntual: crear un nuevo request one-shot bound al HEAD vivo que incluya `f8efd98e92448739b458aa838cd1f6f8c6efbc6e` y volver a intentar una sola vez `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`.
+Después de un PASS real: `M7 → M8 → M9 → M10`.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** validaciones action-scoped sin heredocs frágiles; exclusión explícita de credenciales efímeras antes del clean-worktree gate.
-- **Exclusivo cliente:** proof TyA Staff/admin sobre `cxorbia-backend-dev`.
-- **Claude/prototipo:** cero frontend modificado.
+- **Reusable CXOrbia:** corrección del contrato QA Staff al formulario visible canónico.
+- **Exclusivo cliente:** Hosting/proof TyA Staff sobre `cxorbia-backend-dev`.
+- **Claude/prototipo:** cero cambios a frontend/producto; no reintroducir overlay Staff obsoleto.
 - **Academia:** sin cambio de contenido hasta runtime PASS.
-- **Sin impacto Claude:** workflow, selector privado, gate de limpieza y runtime QA.
+- **Sin impacto Claude:** tooling QA, evidencia y documentación operativa.
 
 ## Estado seguro
 
-Hosting DEV consumido `0/1`; nuevos Firestore/Auth/HR/Rules/Storage/Make/Gemini/pagos writes `0`; segundo Exact Write `0`; merge `false`; producción `false`.
+Hosting DEV de esta autorización `1/1`; nuevos Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes `0`; segundo Exact Write `0`; segundo intento `0`; merge `false`; producción `false`; secretos expuestos `false`.
