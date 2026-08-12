@@ -15,7 +15,8 @@ if(!root)throw new Error('DEV_ROOT_URL_REQUIRED');
 if(!fs.existsSync(privatePath))throw new Error('PRIVATE_E2E_CREDENTIALS_REQUIRED');
 fs.mkdirSync(outDir,{recursive:true});
 
-const humanSourcePath='tools/qa/tya-c6-unified-human-auth-browser-smoke.mjs';
+const genericHumanSourcePath='tools/qa/tya-c6-unified-human-auth-browser-smoke.mjs';
+const staffHumanSourcePath='tools/qa/tya-c6-staff-admin-human-auth-browser-smoke.mjs';
 const domainSourcePath='tools/qa/tya-c6-remote-domain-finance-portals-reservations-gate.mjs';
 const semanticWrapperPath='tools/qa/tya-phase-a-remote-domain-dynamic-wrapper.mjs';
 const parityGatePath='tools/qa/tya-c6-dev-root-entrypoint-remote-parity-gate.mjs';
@@ -52,63 +53,45 @@ try{
   const parity=readJson(parityPath);
   ensure(parity.decision==='PASS_C6_DEV_ROOT_ENTRYPOINT_REMOTE_PARITY','ROOT_REMOTE_PARITY_NOT_PASS');
 
-  const humanSource=fs.readFileSync(humanSourcePath,'utf8');
-  const humanNeedle="root+'/index-backend-dev.html'";
-  const humanCount=humanSource.split(humanNeedle).length-1;
-  ensure(humanCount===2,'HUMAN_ENTRY_PATCH_SCOPE_INVALID_'+humanCount);
-  let humanRootSource=humanSource.split(humanNeedle).join("root+'/'");
-
   if(staffOnly){
-    const credentialNeedle="if(!credentials?.staff?.login||!credentials?.staff?.password||!credentials?.shopper?.login||!credentials?.shopper?.password)throw new Error('PRIVATE_E2E_CREDENTIALS_INVALID');";
-    const credentialCount=humanRootSource.split(credentialNeedle).length-1;
-    ensure(credentialCount===1,'STAFF_ONLY_CREDENTIAL_PATCH_SCOPE_INVALID_'+credentialCount);
-    humanRootSource=humanRootSource.replace(credentialNeedle,"if(!credentials?.staff?.login||!credentials?.staff?.password)throw new Error('PRIVATE_E2E_STAFF_CREDENTIALS_INVALID');");
-
-    /*
-      Staff/admin C6 uses the canonical single visible product form owned by
-      backend-browser-auth.js (#loginForm/#lgUser/#lgPass/#lgSubmit). The
-      accumulated human smoke still carries the older overlay expectation
-      (#cxIntegratedAuthStep) for the generic client route. Patch only the
-      staff-only generated copy so the proof follows the live Staff contract
-      without weakening Shopper/Client generic gates or changing product UI.
-    */
-    const overlayGuardNeedle="if(!after.integratedStep||!after.integratedLogin){";
-    const overlayGuardCount=humanRootSource.split(overlayGuardNeedle).length-1;
-    ensure(overlayGuardCount===1,'STAFF_SINGLE_FORM_OVERLAY_GUARD_SCOPE_INVALID_'+overlayGuardCount);
-    humanRootSource=humanRootSource.replace(overlayGuardNeedle,"if(kind!=='staff'&&(!after.integratedStep||!after.integratedLogin)){");
-
-    const legacyStaffLoginNeedle="  await page.fill('#cxIntegratedAuthLogin',credential.login);\n  await page.fill('#cxIntegratedAuthPassword',credential.password);\n  await page.click('#cxIntegratedAuthSubmit');";
-    const legacyStaffLoginCount=humanRootSource.split(legacyStaffLoginNeedle).length-1;
-    ensure(legacyStaffLoginCount===1,'STAFF_SINGLE_FORM_LOGIN_PATCH_SCOPE_INVALID_'+legacyStaffLoginCount);
-    humanRootSource=humanRootSource.replace(legacyStaffLoginNeedle,`  if(kind==='staff'){\n    await page.waitForFunction(()=>document.getElementById('loginForm')?.dataset.selectedRole==='admin',null,{timeout:10000});\n    await page.waitForSelector('#lgUser',{state:'visible',timeout:10000});\n    await page.waitForSelector('#lgPass',{state:'visible',timeout:10000});\n    await page.fill('#lgUser',credential.login);\n    await page.fill('#lgPass',credential.password);\n    await page.click('#lgSubmit');\n  }else{\n    await page.fill('#cxIntegratedAuthLogin',credential.login);\n    await page.fill('#cxIntegratedAuthPassword',credential.password);\n    await page.click('#cxIntegratedAuthSubmit');\n  }`);
-
-    const mainMarker="try{\n  const staff=await launchIsolated(browser=>loginPrincipal(browser,'staff','admin',credentials.staff,'staff'));";
-    const mainCount=humanRootSource.split(mainMarker).length-1;
-    ensure(mainCount===1,'STAFF_ONLY_HUMAN_MAIN_SCOPE_INVALID_'+mainCount);
-    const mainIndex=humanRootSource.indexOf(mainMarker);
-    humanRootSource=humanRootSource.slice(0,mainIndex)+`try{\n  const staff=await launchIsolated(browser=>loginPrincipal(browser,'staff','admin',credentials.staff,'staff'));\n  const evidence={\n    schemaVersion:'cxorbia.c6.unified-human-auth-staff-admin-readonly.v1',\n    generatedAt:new Date().toISOString(),\n    decision:'PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY',\n    action:'${exactStaffAction}',\n    root,\n    local:isLocal,\n    principalIsolation:'fresh_browser_single_staff_principal',\n    lane:'authenticated-human-canonical',\n    staff,\n    shopper:null,\n    client:null,\n    hostingDeploys:0,\n    providerWrites:0,\n    authWrites:0,\n    firestoreWrites:0,\n    hrWrites:0,\n    credentialsExposed:false,\n    tokensExposed:false,\n    merge:false,\n    production:false\n  };\n  persist(evidence);\n  console.log(JSON.stringify(evidence));\n}catch(error){\n  persist({\n    schemaVersion:'cxorbia.c6.unified-human-auth-staff-admin-readonly.failure.v1',\n    generatedAt:new Date().toISOString(),\n    decision:'FAIL_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY',\n    action:'${exactStaffAction}',\n    error:clean(error&&error.message),\n    progress,\n    credentialsExposed:false,\n    tokensExposed:false,\n    hostingDeploys:0,\n    providerWrites:0,\n    authWrites:0,\n    firestoreWrites:0,\n    hrWrites:0,\n    merge:false,\n    production:false\n  });\n  throw error;\n}\n`;
+    run(process.execPath,['--check',staffHumanSourcePath]);
+    run(process.execPath,[staffHumanSourcePath,root],{
+      CXORBIA_E2E_PRIVATE_CREDENTIALS:privatePath,
+      CXORBIA_DEV_ROOT_URL:root,
+      CXORBIA_HUMAN_GATE_OUTPUT:humanPath,
+      CXORBIA_C6_ACTION:action
+    });
+  }else{
+    const humanSource=fs.readFileSync(genericHumanSourcePath,'utf8');
+    const humanNeedle="root+'/index-backend-dev.html'";
+    const humanCount=humanSource.split(humanNeedle).length-1;
+    ensure(humanCount===2,'HUMAN_ENTRY_PATCH_SCOPE_INVALID_'+humanCount);
+    const humanRootSource=humanSource.split(humanNeedle).join("root+'/'");
+    fs.writeFileSync(tempHumanPath,humanRootSource,'utf8');
+    run(process.execPath,['--check',tempHumanPath]);
+    run(process.execPath,[tempHumanPath,root],{
+      CXORBIA_E2E_PRIVATE_CREDENTIALS:privatePath,
+      CXORBIA_DEV_ROOT_URL:root,
+      CXORBIA_HUMAN_GATE_OUTPUT:humanPath,
+      CXORBIA_C6_ACTION:action
+    });
   }
 
-  fs.writeFileSync(tempHumanPath,humanRootSource,'utf8');
-  run(process.execPath,['--check',tempHumanPath]);
-  run(process.execPath,[tempHumanPath,root],{
-    CXORBIA_E2E_PRIVATE_CREDENTIALS:privatePath,
-    CXORBIA_DEV_ROOT_URL:root,
-    CXORBIA_HUMAN_GATE_OUTPUT:humanPath,
-    CXORBIA_C6_ACTION:action
-  });
   const human=readJson(humanPath);
 
   if(staffOnly){
     ensure(human.decision==='PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY','ROOT_STAFF_ADMIN_HUMAN_GATE_NOT_PASS');
+    ensure(human.action===exactStaffAction,'ROOT_STAFF_ACTION_NOT_EXACT');
+    ensure(human.staff?.canonicalForm===true,'ROOT_STAFF_CANONICAL_FORM_NOT_PASS');
     ensure(human.staff?.reloadsStable===true&&human.staff?.newTabStable===true,'ROOT_STAFF_CONTINUITY_NOT_PASS');
     ensure(['super','admin','ops','coordinador'].includes(String(human.staff?.role||'')),'ROOT_STAFF_ROLE_NOT_ADMIN_FAMILY');
+    ensure(human.shopper===null&&human.client===null&&human.genericShopperClientLogicPreserved===true,'ROOT_STAFF_SCOPE_NOT_EXACT');
 
     const status=spawnSync('git',['status','--porcelain'],{encoding:'utf8'});
     ensure(status.status===0&&String(status.stdout||'').trim()==='','REPOSITORY_CHANGED_BY_ROOT_RUNTIME_GATE');
 
     report={
-      schemaVersion:'cxorbia.c6.live-user-admin-frontend-wiring-runtime-readonly-proof.v1',
+      schemaVersion:'cxorbia.c6.live-user-admin-frontend-wiring-runtime-readonly-proof.v2',
       generatedAt:new Date().toISOString(),
       decision:exactStaffAction,
       action:exactStaffAction,
@@ -124,6 +107,8 @@ try{
         role:human.staff?.role||null,
         periods:human.staff?.periods||null,
         visits:human.staff?.visits||null,
+        canonicalForm:human.staff?.canonicalForm===true,
+        canonicalSelectors:Array.isArray(human.staff?.canonicalSelectors)?human.staff.canonicalSelectors:[],
         reloadsStable:human.staff?.reloadsStable===true,
         newTabStable:human.staff?.newTabStable===true
       },
@@ -251,7 +236,7 @@ try{
   console.log(JSON.stringify(report));
 }catch(error){
   try{
-    if(fs.existsSync(domainSourcePath)){
+    if(!staffOnly&&fs.existsSync(domainSourcePath)){
       const current=fs.readFileSync(domainSourcePath,'utf8');
       if(current.includes("root+'/?cxRemoteSemantic=1&ts='")){
         const restored=current.split("root+'/?cxRemoteSemantic=1&ts='").join("root+'/index-backend-dev.html?cxRemoteSemantic=1&ts='");
@@ -260,7 +245,7 @@ try{
     }
   }catch{}
   report={
-    schemaVersion:staffOnly?'cxorbia.c6.live-user-admin-frontend-wiring-runtime-readonly-proof.failure.v1':'cxorbia.c6.dev-root-runtime-accumulative.failure.v1',
+    schemaVersion:staffOnly?'cxorbia.c6.live-user-admin-frontend-wiring-runtime-readonly-proof.failure.v2':'cxorbia.c6.dev-root-runtime-accumulative.failure.v1',
     generatedAt:new Date().toISOString(),
     decision:staffOnly?'FAIL_C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF':'FAIL_C6_DEV_ROOT_RUNTIME_ACCUMULATIVE',
     action:staffOnly?exactStaffAction:null,
