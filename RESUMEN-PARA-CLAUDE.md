@@ -5,9 +5,9 @@
 
 No reabrir frontend/Auth228/Activation/SKIP13/MultiAuth/HashConfig/direct runner/M4/HR M6/static/provider snapshot/private recovery/D rebase/handoff.
 
-Backend: A/B/C exactos tienen handoff cifrado recuperable y memory-only; D se regenera determinísticamente. No raw valores protegidos persistidos/emitidos y no hubo provider/Auth/Firestore writes.
+Backend: A/B/C exactos tienen handoff cifrado/memory-only; D determinístico. No raw protected values persistidos/emitidos; no provider/Auth/Firestore writes.
 
-Claude: no pantalla nueva/rediseño/fallback/hardcode. `app/modules/configuracion.js#usuarios` sigue sin tocar. Wiring solo tras bootstrap/readback PASS; mantener scope vivo/editable y no exponer datos técnicos.
+Claude: no pantalla nueva/rediseño/fallback/hardcode. `app/modules/configuracion.js#usuarios` sigue sin tocar; wiring solo tras bootstrap/readback PASS.
 
 **84% certificado; 16% restante; M5=4/8.**
 
