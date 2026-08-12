@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.c6.staff-repair-bootstrap.exact-write.request.v2",
   "requestId": "c6-staff-repair-bootstrap-exact-write-v2-20260812-01",
-  "status": "AUTHORIZED_SINGLE_EXECUTION_PENDING_PROVIDER_PREFLIGHT",
-  "enabled": true,
-  "consumed": false,
+  "status": "PASS_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2_READBACK",
+  "enabled": false,
+  "consumed": true,
   "issuedAt": "2026-08-12T09:37:00-06:00",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
@@ -12,7 +12,7 @@
   "tenantId": "tya",
   "snapshotWorkflowRunId": 31518927950,
   "targetHeadSha": "d3f614eaa0c354a11eaec4becf7a0c0cddcb8b04",
-  "requestCommitSha": null,
+  "requestCommitSha": "8bcfc1a03b390390b57ad95da8c0c68da52efb66",
   "allowedExecutions": 1,
   "authWritesMax": 14,
   "firestoreWritesMax": 16,
@@ -30,10 +30,23 @@
   "stopRetry": true,
   "authorizedBy": "Paula",
   "authorizationText": "Autorizo un único C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 sobre cxorbia-backend-dev, limitado al universo Staff y al contrato V2 ya preparado: create-before-retire, idempotencia, canonical readback antes de historical disable, cumulative readback y rollback verificable; máximo 14 Auth writes y 16 Firestore writes, deletes 0, STOP_RETRY y cero segundo intento. Las credenciales efímeras deberán resolverse exclusivamente mediante el handoff privado ya preparado, sin pedirme secretos ni acciones manuales. Cero HR/Rules/Storage/Make/Gemini/pagos, deploy, merge o producción.",
-  "privateRuntimeCredentialsRequired": ["B", "C", "D"],
+  "privateRuntimeCredentialsRequired": [
+    "B",
+    "C",
+    "D"
+  ],
   "privateRuntimeCredentialsPersisted": false,
   "contract": "backend/contracts/c6-staff-repair-bootstrap-exact-write-v2.json",
   "executor": "tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.mjs",
   "evidencePath": "app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-EXACT-WRITE-V2-LATEST.json",
-  "nextGateOnPass": "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_LOCALIZED"
+  "nextGateOnPass": "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_LOCALIZED",
+  "consumedAt": "2026-08-12T17:58:54.550Z",
+  "decision": "PASS_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2_READBACK",
+  "executedWrites": {
+    "auth": 14,
+    "firestore": 16,
+    "authDeletes": 0,
+    "firestoreDeletes": 0
+  },
+  "nextGate": "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_LOCALIZED"
 }
