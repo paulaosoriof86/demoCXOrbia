@@ -1,34 +1,31 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-11 18:45 -06:00  
-**Estado:** `PASS_C6_STAFF_PRIVATE_EXECUTION_HANDOFF_SOURCE_ONLY__ABC_ENCRYPTED_EXACT__D_DETERMINISTIC__NO_PROVIDER__NO_WRITES__NO_PRODUCTION`
+**Última actualización:** 2026-08-12 12:00 -06:00  
+**Estado:** `PASS_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2_READBACK__PHASE_A_88`
 
 ## Estado vigente
 
-Backend C6 private execution handoff: PASS. A/B/C están protegidos mediante handoff cifrado y memory-only; D se regenera de forma técnica determinística. El handoff no ejecutó provider/Auth/Firestore/HR/Rules/Storage writes ni deploy/merge/producción.
+C6 Staff Exact Write V2 cerró con PASS real en `cxorbia-backend-dev`.
 
-Provider snapshot rector: `31518927950`. Auth protegido: 228. Budget del siguiente repair: Auth máximo 14 / Firestore máximo 16 / deletes 0. R4 canónico permanece inmutable.
+- Auth writes=14; Firestore writes=16; deletes=0.
+- Canonical readback A/B/C/D/R4=PASS antes del historical disable.
+- Ocho históricos deshabilitados con readback 2/2 por grupo.
+- Rollback no requerido; inversas verificables preservadas.
+- Credenciales efímeras B/C/D resueltas memory-only dentro del private handoff; no secretos manuales, persistencia, logs ni export.
+- HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/producción: sin cambios.
 
-**Phase A: 84% certificado | 16% restante | M5=4/8.**
+**Phase A: 88% certificado | 12% restante | M5=8/8.**
 
 ## Frontend / Claude
 
-No generar nueva candidata ni modificar UI por este bloque. No reabrir Login, D rebase, Auth340, SKIP13, MultiAuth, HR, M4/static gate ni el handoff privado ya cerrado. Claude mantiene la composición frontend vigente hasta que el bootstrap/readback técnico produzca una diferencia reproducible que requiera ajuste localizado.
+No generar nueva candidata ni reabrir Login, D rebase, Auth340, SKIP13, MultiAuth, HR, M4/static, handoff o Exact Write V2. Este bloque no modificó UI.
 
-## Alineación documental
-
-`DOC_ALIGNMENT_PASS_20260811`.
-
-`app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md` y `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md` mandan para continuidad. Las copias raíz de CAMBIOS/RESUMEN/PENDIENTES son mirrors de compatibilidad y deben coincidir en estado, porcentaje y siguiente acción. Cualquier divergencia futura es `BLOCK_DOC_ALIGNMENT`, no motivo para reiniciar metodología o auditorías funcionales.
+La siguiente frontera es `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_LOCALIZED`. Solo si el wiring produce una diferencia visible reproducible debe documentarse el ajuste por archivo/módulo; no rediseñar ni reescribir módulos desde backend.
 
 ## Siguiente acción exacta
 
-`C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION → exact write único → readback acumulativo → rollback verificable → wiring`.
-
-Después: `M7 → M8 → M9 → M10`.
-
-La corrección documental de esta iteración no cambia el tracker funcional: `+0%`.
+`C6_LIVE_USER_ADMIN_FRONTEND_WIRING_LOCALIZED → M7 → M8 → M9 → M10`.
 
 ## Academia
 
-Sin modificación de contenido en este bloque. Mantener rutas por rol, permisos, notificaciones y manuales alineados cuando el wiring/runtime posterior cambie comportamiento visible.
+Sin cambio de contenido todavía. Cuando el wiring active comportamiento real de administración/roles, revisar manuales, cursos, rutas por rol, permisos, errores frecuentes y notificaciones afectadas.
