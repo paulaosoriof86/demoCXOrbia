@@ -1,6 +1,6 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-12 17:43 -06:00  
+**Última actualización:** 2026-08-12 17:52 -06:00  
 **Estado:** `C6_RUNTIME_09_STOP_RETRY_POST_AUTH_FRONTEND_HANDOFF__HOSTING_1_OF_1__SOURCE_REPAIR_APPLIED__PHASE_A_88`
 
 ## Bloque ejecutado
@@ -52,6 +52,8 @@ Sin rerun, provider ni Hosting adicional:
 No se modificó `/app/modules`, `app/core/backend-preview-status.js` ni UI visual del producto.
 
 Intento auxiliar local de validar raw GitHub falló por DNS (`raw.githubusercontent.com` no resolvió). Se declaró el fallo y no se abrió otro carril ni se tocó provider; el preflight v4 real queda obligatorio antes del próximo provider.
+
+Durante el cierre documental hubo una invocación del conector `update_file` con un SHA placeholder inválido sobre el request C6; GitHub respondió **409** antes de cualquier escritura. No cambió el archivo, no creó commit y no disparó workflow. El request 09 consumido no fue alterado.
 
 ## Seguridad
 
