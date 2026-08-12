@@ -1,7 +1,7 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-12 13:42 -06:00  
-**Estado:** `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_SOURCE_IMPLEMENTED__RUNTIME_PROOF_PENDING__PHASE_A_88`
+**Última actualización:** 2026-08-12 15:57 -06:00  
+**Estado:** `C6_STAFF_ADMIN_SHELL_HEREDOC_ROOTCAUSE_FIXED__STOP_RETRY__PHASE_A_88`
 
 ## Pendiente vivo único de continuidad
 
@@ -15,36 +15,63 @@ C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF
 
 ## Wiring C6 ya implementado en source
 
-- `app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js` agregado.
-- `app/index-backend-dev.html` carga el adapter en el orden correcto: Auth bridge → membership wiring → Firebase backend.
-- Staff queda fail-closed contra la membresía canónica `tenants/tya/users/{uid}` antes del consumo backend.
-- Validaciones: active, tenant, namespace, role, entitlement, projectIds, claimsDigest y providerUidFingerprint.
-- Cero módulos UI tocados.
-- Cero provider/Firestore writes nuevos y cero deploy.
+- `app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js` permanece implementado.
+- `app/index-backend-dev.html` mantiene el orden Auth bridge → membership wiring → Firebase backend.
+- Staff queda fail-closed contra `tenants/tya/users/{uid}` antes del consumo backend.
+- Cero módulos UI modificados.
+
+## Resultado de la ejecución autorizada
+
+Run `31644318836`:
+
+- selector Staff/admin: `PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY`;
+- Auth/password writes=0;
+- Hosting intentado=false;
+- Hosting consumido=0/1;
+- runtime no ejecutado;
+- production=false.
+
+Se aplicó `STOP_RETRY`; no hubo segundo intento.
+
+## Nueva causa raíz cerrada a nivel source
+
+El workflow tenía dos heredocs `NODE` dentro del `if/else` Staff/admin con terminadores indentados. El shell terminó con `syntax error: unexpected end of file` antes de Hosting.
+
+Commit correctivo source-only:
+
+`f8efd98e92448739b458aa838cd1f6f8c6efbc6e`.
+
+Además se cerró preventivamente un bloqueo latente: `google-github-actions/auth` crea `gha-creds-*.json` temporal en el worktree; el artifact del run lo mostró como untracked y el gate final de limpieza habría fallado. Ese patrón ya está excluido localmente en el workflow.
 
 ## Ya no está pendiente
 
-- C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2: PASS, consumido, no segundo intento.
-- Canonical/cumulative readback: PASS.
-- Rollback verificable: preparado y no requerido.
-- D technical-login rebase: PASS.
-- Private execution handoff: PASS.
-- Provider snapshot `31518927950`: PASS, no repetir por rutina.
-- Auth340, SKIP13, MultiAuth, HR, M4/static: no reabrir sin drift reproducible.
-- Diseño source del wiring claims→membership→RBAC: implementado.
+- Exact Write V2 y canonical readback.
+- D technical-login rebase y private handoff.
+- Auth340, SKIP13, MultiAuth, HR y M4/static.
+- Scope Staff-only del selector dinámico.
+- Wrapper superior de selección Staff-only.
+- Runtime wrapper Staff-only.
+- Heredoc shell blocker del workflow.
+- Bloqueo latente `gha-creds-*.json` contra clean-worktree.
+
+No reabrir estos puntos sin drift reproducible.
+
+## Pendiente inmediato
+
+No rerunear `31644318836` ni reutilizar su request.
+
+Con nueva autorización puntual: crear un nuevo request one-shot bound al HEAD vivo que contenga el commit `f8efd98e92448739b458aa838cd1f6f8c6efbc6e` y ejecutar como máximo un Hosting DEV para el mismo proof Staff/admin read-only.
 
 ## Pendiente frontend heredado, separado de C6
 
-El gate R18A mantiene tres faltantes en `app/modules/cliente-extra.js`: PDF print, export XLSX y export PPTX. Se clasifica Claude/prototipo y no es causa del wiring ni motivo para reabrir Staff.
+`app/modules/cliente-extra.js` mantiene PDF print, XLSX y PPTX como pendientes Claude/prototipo. No son causa del wiring y no bloquean este proof.
 
 ## Progreso
 
 `M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1`
 
-**88% certificado | 12% restante. Delta certificado de esta iteración: +0%.**
-
-El source avanzó materialmente, pero el porcentaje se mantiene hasta certificar en runtime DEV `Auth → membership → RBAC → frontend`.
+**88% certificado | 12% restante | delta certificado +0%.**
 
 ## Claude / Academia
 
-No pedir nueva candidata. No tocar el frontend desde backend. Academia se actualiza al certificar que el wiring cambia comportamiento visible de roles/administración; entonces revisar rutas, manuales, cursos, permisos y errores frecuentes.
+No pedir nueva candidata. No tocar frontend desde backend. Academia se actualiza cuando el runtime Staff certifique comportamiento real de roles/administración.
