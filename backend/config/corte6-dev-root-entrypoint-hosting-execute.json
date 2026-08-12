@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.c6.dev-root-entrypoint-hosting.v1",
-  "requestId": "c6-live-user-admin-membership-runtime-proof-20260812-04",
+  "requestId": "c6-live-user-admin-membership-runtime-proof-20260812-05",
   "enabled": true,
   "consumed": false,
   "status": "authorized_execute_once",
-  "issuedAt": "2026-08-12T16:13:00-06:00",
+  "issuedAt": "2026-08-12T16:36:00-06:00",
   "authorizedBy": "Paula",
-  "authorizationSource": "current_conversation_2026-08-12_one_shot_new_C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF",
+  "authorizationSource": "current_conversation_2026-08-12_one_shot_new_C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF_single_visible_login_form",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -17,7 +17,7 @@
   "rootPath": "/",
   "canonicalPath": "/index-backend-dev.html",
   "rootRedirectType": 302,
-  "targetHeadSha": "33ad176fb886c51c0dd3d8d81afee3ac83ac4be9",
+  "targetHeadSha": "8162460c41446f956ac66c9bd594b5e6fa2e07cd",
   "allowedExecutions": 1,
   "singleHostingDeployMax": 1,
   "hostingDeployExecutions": 0,
@@ -48,5 +48,5 @@
   "merge": false,
   "production": false,
   "stopRetryOnFailure": true,
-  "purpose": "Single newly authorized one-shot Hosting DEV deploy on the live HEAD containing f8efd98e92448739b458aa838cd1f6f8c6efbc6e to prove the canonical Staff path Firebase Auth -> claims -> tenants/tya/users/{uid} -> CX.session/RBAC -> backend read -> frontend, including reload and new-tab stability. Hosted app bytes remain unchanged from the exact build provenance; intervening changes are workflow/request/docs only. Read-only smoke/readback only; no Shopper/Client credential selection for this action; no Auth, Firestore, HR, Rules, Storage, Make, Gemini or payment writes; no second Exact Write, merge or production; STOP_RETRY on any failure."
+  "purpose": "Single newly authorized one-shot Hosting DEV deploy on the live HEAD containing Staff QA repair 5c9663dd6b1174cf8d59186484eb09e83316e862. Prove exclusively the canonical Staff path Firebase Auth -> claims -> tenants/tya/users/{uid} -> CX.session/RBAC -> backend read -> frontend, including reload and new-tab stability, using the single canonical visible form #loginForm/#lgUser/#lgPass/#lgSubmit. Read-only smoke/readback only; no Shopper/Client credential selection for this action; no Auth, Firestore, HR, Rules, Storage, Make, Gemini or payment writes; no second Exact Write, merge or production; STOP_RETRY on any failure."
 }
