@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 
 const exactAction='C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF';
 const outputFile=String(process.env.CXORBIA_C6_STAFF_PREFLIGHT_OUTPUT||'').trim();
@@ -18,8 +19,29 @@ const read=p=>{
   return fs.readFileSync(p,'utf8');
 };
 const ensure=(ok,code)=>{if(!ok)throw new Error(code);};
-const count=(source,needle)=>source.split(needle).length-1;
 const sources=Object.fromEntries(Object.entries(files).map(([k,p])=>[k,read(p)]));
+
+function workflowRunScript(workflow,stepName){
+  const lines=workflow.split(/\r?\n/);
+  const marker=`      - name: ${stepName}`;
+  const start=lines.findIndex(line=>line===marker);
+  ensure(start>=0,'WORKFLOW_STEP_MISSING_'+stepName.replace(/[^A-Za-z0-9]+/g,'_'));
+  let end=lines.length;
+  for(let i=start+1;i<lines.length;i++){
+    if(lines[i].startsWith('      - name: ')){end=i;break;}
+  }
+  const step=lines.slice(start,end);
+  const runIndex=step.findIndex(line=>line==='        run: |');
+  ensure(runIndex>=0,'WORKFLOW_STEP_RUN_BLOCK_MISSING_'+stepName.replace(/[^A-Za-z0-9]+/g,'_'));
+  const runLines=[];
+  for(const line of step.slice(runIndex+1)){
+    if(line.startsWith('          ')) runLines.push(line.slice(10));
+    else if(line.trim()==='') runLines.push('');
+    else break;
+  }
+  ensure(runLines.length>0,'WORKFLOW_STEP_RUN_BLOCK_EMPTY_'+stepName.replace(/[^A-Za-z0-9]+/g,'_'));
+  return runLines.join('\n')+'\n';
+}
 
 ensure(sources.workflow.includes("const action=String(x.action||'').trim();"),'WORKFLOW_ACTION_NOT_EXPLICIT_FIELD');
 ensure(!sources.workflow.includes('endsWith(exactAction)'),'WORKFLOW_ACTION_STILL_SUFFIX_DERIVED');
@@ -29,6 +51,13 @@ const preflightIndex=sources.workflow.indexOf('Run Staff lane source preflight b
 const providerIndex=sources.workflow.indexOf('uses: google-github-actions/auth@v2');
 ensure(preflightIndex>=0&&providerIndex>=0&&preflightIndex<providerIndex,'WORKFLOW_PREFLIGHT_NOT_BEFORE_PROVIDER');
 ensure(sources.workflow.includes(`if [[ "$CXORBIA_C6_ACTION" != "${exactAction}" ]]; then`),'WORKFLOW_SELECTOR_NOT_FAIL_CLOSED');
+
+const executeScript=workflowRunScript(sources.workflow,'Execute one Hosting deploy and Staff-only runtime gates');
+const bashCheck=spawnSync('bash',['-n'],{input:executeScript,encoding:'utf8'});
+ensure(bashCheck.status===0,'WORKFLOW_HOSTING_EXECUTE_BASH_SYNTAX_INVALID_'+String(bashCheck.stderr||'').replace(/[^A-Za-z0-9]+/g,'_').slice(0,160));
+ensure(!executeScript.includes("node <<'NODE'"),'WORKFLOW_HOSTING_EXECUTE_NESTED_HEREDOC_REINTRODUCED');
+ensure(executeScript.includes("node -e \"const r=require('./'+process.env.OUT_DIR+'/root-entrypoint-source.json')"),'WORKFLOW_HOSTING_SOURCE_ASSERT_NOT_INLINE');
+ensure(executeScript.includes("node -e \"const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/runtime/report.json'"),'WORKFLOW_HOSTING_RUNTIME_ASSERT_NOT_INLINE');
 
 ensure(sources.selectorWrapper.includes("./cxorbia-c6-existing-staff-admin-e2e-credential.mjs"),'SELECTOR_WRAPPER_NOT_DEDICATED_STAFF');
 ensure(sources.selectorWrapper.includes('const script=staffOnly?staffScript:genericScript;'),'SELECTOR_WRAPPER_STAFF_ROUTE_NOT_EXPLICIT');
@@ -58,7 +87,7 @@ for(const id of ['loginForm','lgUser','lgPass','lgSubmit']){
 ensure(sources.browserAuth.includes('removeLegacyCredentialOverlay'),'PRODUCT_LEGACY_OVERLAY_REMOVAL_MISSING');
 
 const result={
-  schemaVersion:'cxorbia.c6.staff-lane-source-preflight.v1',
+  schemaVersion:'cxorbia.c6.staff-lane-source-preflight.v2',
   generatedAt:new Date().toISOString(),
   decision:'PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT',
   action:exactAction,
@@ -66,6 +95,8 @@ const result={
     actionExplicitAndFailClosed:true,
     suffixDerivationRemoved:true,
     preflightBeforeProvider:true,
+    hostingExecuteBashSyntax:true,
+    hostingExecuteNestedHeredocAbsent:true,
     staffSelectorDedicated:true,
     staffSelectorNoShopperHrFirestoreDependency:true,
     staffRuntimeNoTextPatching:true,
