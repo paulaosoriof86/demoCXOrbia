@@ -6,16 +6,24 @@ on:
     branches:
       - docs-tya-v6-v71-audit
     paths:
-      - 'app/docs/PHASE-A-LIVE-EXECUTION-CHECKPOINT-TYA-20260713.md'
-      - 'backend/contracts/phase-a-live-execution-checkpoint-v1.json'
+      - 'app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md'
+      - 'app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md'
+      - 'app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md'
+      - 'app/docs/SOURCE-LOCK-C6-STAFF-PRIVATE-EXECUTION-HANDOFF-PASS-20260811.md'
+      - 'backend/contracts/c6-staff-repair-bootstrap-exact-write-v2.json'
+      - '.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json'
       - 'tools/qa/verify-phase-a-live-execution-checkpoint.mjs'
       - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
   pull_request:
     branches:
       - release/cxorbia-tya-rc-20260630
     paths:
-      - 'app/docs/PHASE-A-LIVE-EXECUTION-CHECKPOINT-TYA-20260713.md'
-      - 'backend/contracts/phase-a-live-execution-checkpoint-v1.json'
+      - 'app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md'
+      - 'app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md'
+      - 'app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md'
+      - 'app/docs/SOURCE-LOCK-C6-STAFF-PRIVATE-EXECUTION-HANDOFF-PASS-20260811.md'
+      - 'backend/contracts/c6-staff-repair-bootstrap-exact-write-v2.json'
+      - '.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json'
       - 'tools/qa/verify-phase-a-live-execution-checkpoint.mjs'
       - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
 
@@ -31,5 +39,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Verify Phase A live execution checkpoint
+      - name: Verify Phase A current operational checkpoint
         run: node tools/qa/verify-phase-a-live-execution-checkpoint.mjs
