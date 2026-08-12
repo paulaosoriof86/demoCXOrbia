@@ -1,54 +1,50 @@
 # CAMBIOS-BACKEND.md
 
-> Registro principal de cambios backend. Los bloques históricos completos permanecen versionados en Git y en sus addenda fechados. Para el estado operativo actual consultar primero el índice vigente.
+**Última actualización:** 2026-08-11 18:45 -06:00  
+**Estado:** `PASS_C6_STAFF_PRIVATE_EXECUTION_HANDOFF_SOURCE_ONLY__ABC_ENCRYPTED_EXACT__D_DETERMINISTIC__NO_PROVIDER__NO_WRITES__NO_PRODUCTION`
 
-## Estado vigente — 2026-08-10
+## Alineación documental vigente
 
-Estado:
+`DOC_ALIGNMENT_PASS_20260811`
 
-`C6_AUTH_DUPLICATE_OWNERSHIP_RECONCILIATION_HUMAN_DECISION_REQUIRED_4__AUTH_DEV_228_PRESERVED__ZERO_PROVIDER_READS__ZERO_DATA_WRITES__NO_PRODUCTION`
+La autoridad de continuidad es, en este orden: `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md` → `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md` → source lock/evidencia/contratos vigentes → estos tres documentos vivos (`CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`) → tracker/Academia → PR #7/HEAD.
 
-Fuentes rectoras actuales:
+Las copias de estos tres documentos en la raíz del repositorio son mirrors de compatibilidad y deben conservar el mismo estado operativo, porcentaje y siguiente acción. Una diferencia futura entre raíz y `app/docs/` se clasifica `BLOCK_DOC_ALIGNMENT` y se corrige antes de abrir un diagnóstico funcional nuevo.
 
-- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
-- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-- `app/docs/SOURCE-LOCK-C6-AUTH-DUPLICATE-OWNERSHIP-ANCHOR-SOURCE-SAFE-HUMAN-DECISION-REQUIRED-20260810.md`;
-- `app/docs/evidence/C6-AUTH-DUPLICATE-OWNERSHIP-ANCHOR-SOURCE-SAFE-RECONCILIATION-20260810.json`;
-- `app/docs/CAMBIOS-BACKEND-ADDENDUM-C6-AUTH-DUPLICATE-OWNERSHIP-SOURCE-SAFE-HUMAN-DECISION-20260810.md`.
+## Estado técnico comprobado
 
-### Auth protegido
+- Handoff privado C6: PASS.
+- A/B/C: referencias exactas recuperadas, cifradas at-rest y materializables solo memory-only en runtime autorizado.
+- D: regeneración técnica determinística; no depende del visible-login histórico.
+- Provider snapshot rector: `31518927950`; no repetir por rutina.
+- Auth protegido: 228.
+- Budget exact-write preservado: Auth máximo 14; Firestore máximo 16; deletes 0.
+- R4 canónico: inmutable/verificación solamente.
+- Provider/Auth/Firestore/HR/Rules/Storage writes del handoff: 0.
+- Deploy/merge/producción: 0/false/false.
 
-```text
-AuthUsersAfter=228
-Activation=PASS
-Readback=PASS
-RollbackDryRun=PASS
-PlanV4Digest=c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4
-```
+## Progreso Phase A
 
-No reabrir las 340 identidades, SKIP13, multi-Auth, `ac93...`, HashConfig, PREWRITE ni Activation.
+`M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=4/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1`
 
-### Bloque vigente
+**TOTAL=84% | RESTANTE=16%.**
 
-La reconciliación source-safe sin provider concluyó que los cuatro grupos pendientes carecen de una ancla member-level única. Resultado:
+La alineación documental no altera el tracker funcional: delta de esta corrección documental `+0%`.
 
-```text
-1acdcb3782b7cf351056 = HUMAN_OWNERSHIP_DECISION_REQUIRED
-2c4d19f2b066835473d3 = HUMAN_OWNERSHIP_DECISION_REQUIRED
-54225792eeb65f6739c0 = HUMAN_OWNERSHIP_DECISION_REQUIRED
-ae2f920fe6d9ce1fdd82 = HUMAN_OWNERSHIP_DECISION_REQUIRED
-```
+## No reabrir
 
-A–C son principals legacy/pre-import namespace `NONE` y ninguno coincide con el staff canónico importado namespace `staff`; la evidencia no permite elegir entre los dos members de cada par. D contiene dos principals históricos, mientras el Cliente canónico vigente es un principal separado ya materializado/validado.
+No repetir D rebase, provider snapshot `31518927950`, universo Auth 340, SKIP13, MultiAuth, HR, M4/static gate ni el private execution handoff ya aprobado, salvo drift nuevo reproducible.
 
-No se usaron provider reads, PII cruda, antigüedad, orden de resultados ni metadatos temporales para desempatar.
+## Siguiente frontera exacta
 
-### Siguiente gate
+`C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION → exact write único → readback acumulativo → rollback verificable → wiring → M7 → M8 → M9 → M10`.
 
-`C6 AUTH DUPLICATE HUMAN OWNERSHIP DECISION CAPTURE — NO PROVIDER / NO REPAIR`.
+El exact write conserva create-before-retire, idempotencia, readback canónico antes de disable histórico, máximo Auth 14 / Firestore 16 / deletes 0, STOP_RETRY y cero segundo intento.
 
-Capturar únicamente la decisión humana mínima de ownership/disposition. Cualquier repair Auth debe ser un bloque posterior, focal y expresamente autorizado.
+## Clasificación
 
-### Estado seguro
-
-Provider reads0; Auth/IAM/Firestore/HR/Rules/Storage writes0; PREWRITE/Activation/smoke0; Make/Gemini/pagos/deploy/merge/producción0. Frontend y Phase A permanecen preservados.
+- **Reusable CXOrbia:** autoridad documental única, mirrors sincronizados, `BLOCK_DOC_ALIGNMENT`, idempotencia/readback/rollback.
+- **Exclusivo cliente:** tenant `tya`, staff C6 y budget del repair vigente.
+- **Claude/prototipo:** sin cambio UI; mantener frontend congelado hasta bootstrap/readback PASS.
+- **Academia:** sin cambio de contenido en este bloque; conservar impacto por rol para gates posteriores.
+- **Sin impacto Claude:** alineación documental y controles backend internos.
