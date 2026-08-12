@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "cxorbia.c6.staff-repair-bootstrap.exact-write.v2",
+  "generatedAt": "2026-08-12",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "firebaseProjectId": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "canonicalProjectId": "cinepolis",
+  "snapshotAuthority": {
+    "workflowRunId": 31518927950,
+    "decision": "PASS_C6_STAFF_REPAIR_BOOTSTRAP_PREWRITE",
+    "expectedAuthPopulationBefore": 228,
+    "evidence": "app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-PROVIDER-SNAPSHOT-LATEST.json",
+    "repeatProviderSnapshot": false
+  },
+  "privateIdentityHandoff": {
+    "contract": "backend/contracts/c6-staff-private-execution-handoff-v1.json",
+    "runtime": "backend/runtime/private-handoff/c6-staff-private-execution-handoff.mjs",
+    "envelope": "backend/private-inbox/c6-staff-private-execution-handoff.enc.json",
+    "abc": "encrypted_at_rest_memory_only",
+    "d": "deterministic_from_c6_staff_d_technical_login_rebase_v1",
+    "postDecryptValidationRequiredImmediatelyBeforeProviderPreflight": true,
+    "legacyCredentialBundleMayResolveVisibleLogin": false,
+    "legacyCredentialBundleMayResolvePasswordHash": false
+  },
+  "credentialIngress": {
+    "A": "REUSE_EXISTING_CANONICAL_NO_PASSWORD_MUTATION",
+    "B": "PRIVATE_RUNTIME_PASSWORD_REQUIRED",
+    "C": "PRIVATE_RUNTIME_PASSWORD_REQUIRED",
+    "D": "PRIVATE_RUNTIME_PASSWORD_REQUIRED",
+    "environmentKeys": {
+      "B": "CXORBIA_C6_STAFF_PASSWORD_B",
+      "C": "CXORBIA_C6_STAFF_PASSWORD_C",
+      "D": "CXORBIA_C6_STAFF_PASSWORD_D"
+    },
+    "minimumLength": 12,
+    "memoryOnly": true,
+    "repo": false,
+    "artifact": false,
+    "log": false,
+    "evidence": false,
+    "stopBeforeFirstProviderWriteIfMissing": true,
+    "generatedUnrecoverablePasswordAllowed": false,
+    "reason": "A new canonical human principal must never be created with a credential that the intended operator cannot later use. V2 accepts only protected runtime credential ingress and never reuses unresolved legacy hashes."
+  },
+  "forwardWriteBudget": {
+    "authCreates": 3,
+    "customClaimsWrites": 3,
+    "authDisableWrites": 8,
+    "authWritesMax": 14,
+    "tenantUserWrites": 4,
+    "auditLogWrites": 12,
+    "firestoreWritesMax": 16,
+    "authDeletes": 0,
+    "firestoreDeletes": 0
+  },
+  "targetPolicy": {
+    "A": "reuse exact owner-bound canonical; create tenant user document only; no Auth mutation",
+    "B": "create one canonical principal from protected runtime login plus protected runtime password; set exact claims",
+    "C": "create one canonical principal from protected runtime login plus protected runtime password; set exact claims",
+    "D": "create one canonical principal from deterministic protected runtime login plus protected runtime password; set exact claims",
+    "historicalRetirement": "disable-only/no-delete after all A-D canonical readbacks and R4 canonical readback PASS",
+    "R4CanonicalClient": "verify exact and never mutate"
+  },
+  "providerPreflight": {
+    "expectedAuthPopulation": 228,
+    "singlePageRequired": true,
+    "AExactExistingCollision": 1,
+    "BCDExactExistingCollision": 0,
+    "allEightHistoricalEnabled": true,
+    "R4CanonicalExact": true,
+    "targetTenantUserDocsMustNotExist": true,
+    "privateCredentialIngressValidatedBeforeFirstWrite": true,
+    "stopRetryOnDrift": true
+  },
+  "execution": {
+    "createBeforeRetire": true,
+    "allCanonicalReadbackBeforeAnyHistoricalDisable": true,
+    "cumulativeReadbackRequired": true,
+    "idempotencyRequired": true,
+    "rollbackSnapshotsInMemory": true,
+    "rollbackAuthority": "app/docs/SOURCE-LOCK-C6-STAFF-PROVIDER-SNAPSHOT-PASS-20260811.md",
+    "stopRetry": true,
+    "secondAttemptAllowed": false
+  },
+  "rollback": {
+    "newCanonicalInverse": "disable newly created Auth principal; never delete",
+    "historicalInverse": "re-enable only if enabled in pre-snapshot",
+    "tenantUserDocInverse": "mark inactive/rollback only; never delete",
+    "R4CanonicalInverse": "NO_MUTATION",
+    "audit": "append rollback audit entries only if rollback executes"
+  },
+  "authorization": {
+    "providerWritesAuthorizedByThisContract": false,
+    "separateCurrentConversationAuthorizationRequired": true,
+    "request": ".github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json",
+    "allowedExecutions": 1
+  },
+  "forbidden": {
+    "legacyPasswordHashReuse": true,
+    "rawCredentialPersistence": true,
+    "hrWrites": true,
+    "rulesWrites": true,
+    "storageWrites": true,
+    "makeWrites": true,
+    "geminiCalls": true,
+    "paymentsWrites": true,
+    "deploy": true,
+    "merge": true,
+    "production": true,
+    "authDeletes": true,
+    "firestoreDeletes": true
+  }
+}
