@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "cxorbia.c6.live-user-admin-runtime-proof-evidence.v1",
+  "date": "2026-08-12",
+  "action": "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "providerTarget": "cxorbia-backend-dev",
+  "request": {
+    "requestId": "c6-live-user-admin-membership-runtime-proof-20260812-04",
+    "requestCommit": "eec93e7f1fe89d1a63ca2ea6e7bf8b99f2d6af7d",
+    "targetHeadSha": "33ad176fb886c51c0dd3d8d81afee3ac83ac4be9",
+    "singleHostingDeployMax": 1,
+    "stopRetryOnFailure": true
+  },
+  "execution": {
+    "workflowRunId": 31646324988,
+    "artifactId": 9160870076,
+    "artifactDigest": "sha256:e92ec72789ded9db63346bb6b1ca39e71861b4a28b14e35558940124f7e7782b",
+    "proofDecision": "FAIL_C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF",
+    "stopRetryApplied": true,
+    "secondAttempt": false
+  },
+  "hosting": {
+    "deployAttempted": true,
+    "deployExitCode": 0,
+    "hostingDeploysThisRun": 1,
+    "authorizedHostingConsumed": "1/1",
+    "rootParityDecision": "PASS_C6_DEV_ROOT_ENTRYPOINT_REMOTE_PARITY",
+    "rootRedirect": 302,
+    "canonicalStatus": 200,
+    "exactParity": true
+  },
+  "runtime": {
+    "canonicalStaffChainCertified": false,
+    "credentialSubmissionReached": false,
+    "reloadReached": false,
+    "newTabReached": false,
+    "failureCode": "STAFF_RUNTIME_QA_CONTRACT_MISMATCH_SINGLE_VISIBLE_LOGIN_FORM",
+    "observed": {
+      "firebaseWrapper": true,
+      "loginUiVisible": true,
+      "adminRoleButtonCount": 1,
+      "shopperRoleButtonCount": 1,
+      "clientRoleButtonCount": 1,
+      "obsoleteIntegratedStepPresent": false,
+      "obsoleteIntegratedLoginPresent": false
+    }
+  },
+  "rootCause": {
+    "classification": "QA_HARNESS_CONTRACT_DRIFT",
+    "productContract": "app/core/backend-browser-auth.js uses the single visible product form #loginForm/#lgUser/#lgPass/#lgSubmit and intentionally does not create a second Staff credential overlay.",
+    "staleHarnessContract": "tools/qa/tya-c6-unified-human-auth-browser-smoke.mjs still expected #cxIntegratedAuthStep/#cxIntegratedAuthLogin/#cxIntegratedAuthPassword/#cxIntegratedAuthSubmit before Staff credential submission.",
+    "providerOrDataFailureDemonstrated": false
+  },
+  "sourceOnlyRepair": {
+    "commit": "5c9663dd6b1174cf8d59186484eb09e83316e862",
+    "file": "tools/qa/tya-c6-dev-root-runtime-wrapper.mjs",
+    "scope": "Staff action only; generated Staff proof now follows #loginForm/#lgUser/#lgPass/#lgSubmit. Generic Shopper/Client behavior is preserved.",
+    "appModulesChanged": false,
+    "frontendProductChanged": false,
+    "rerunAfterRepair": false,
+    "deployAfterRepair": false
+  },
+  "safety": {
+    "newAuthWrites": 0,
+    "newFirestoreWrites": 0,
+    "newHrWrites": 0,
+    "newRulesWrites": 0,
+    "newStorageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "secondExactWrite": 0,
+    "secretsExposed": false,
+    "valuesExported": false,
+    "merge": false,
+    "production": false
+  },
+  "phaseA": {
+    "certifiedPercent": 88,
+    "remainingPercent": 12,
+    "certifiedDeltaThisExecution": 0,
+    "tracker": "M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1"
+  },
+  "nextGate": {
+    "status": "BLOCKED_PENDING_NEW_EXPLICIT_AUTHORIZATION",
+    "reason": "The authorized Hosting DEV allowance was consumed 1/1 and STOP_RETRY forbids a second attempt under the current authorization.",
+    "preparedSourceHeadContainsRepair": true
+  }
+}
