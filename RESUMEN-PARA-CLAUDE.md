@@ -9,6 +9,4 @@ Backend: A/B/C exactos tienen handoff cifrado/memory-only; D determinístico. No
 
 Claude: no pantalla nueva/rediseño/fallback/hardcode. `app/modules/configuracion.js#usuarios` sigue sin tocar; wiring solo tras bootstrap/readback PASS.
 
-**84% certificado; 16% restante; M5=4/8.**
-
-Siguiente backend: `C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION`.
+**84% certificado; 16% restante; M5=4/8.** Siguiente backend: `C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION`.
