@@ -2,6 +2,4 @@
 
 **Actualización:** 2026-08-11
 
-Sin cambios a Academia. Handoff source-only PASS: A/B/C cifrados/memory-only, D determinístico, no writes. Lección: separar identidad visible privada, digest source-safe y transporte cifrado recuperable.
-
-**Impacto conceptual/no bloqueante; Phase A84%.**
+Sin cambios a Academia. Handoff source-only PASS; A/B/C cifrados/memory-only, D determinístico, no writes. **Impacto conceptual/no bloqueante; Phase A84%.**
