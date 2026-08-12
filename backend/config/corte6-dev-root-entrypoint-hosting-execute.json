@@ -1,10 +1,10 @@
 {
   "schemaVersion": "cxorbia.c6.dev-root-entrypoint-hosting.v1",
-  "requestId": "c6-live-user-admin-membership-runtime-proof-20260812-01",
+  "requestId": "c6-live-user-admin-membership-runtime-proof-20260812-02",
   "enabled": true,
   "consumed": false,
   "status": "authorized_execute_once",
-  "issuedAt": "2026-08-12T14:17:00-06:00",
+  "issuedAt": "2026-08-12T15:17:00-06:00",
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-12_C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -17,7 +17,7 @@
   "rootPath": "/",
   "canonicalPath": "/index-backend-dev.html",
   "rootRedirectType": 302,
-  "targetHeadSha": "9b0c4bcadcf7471163329dee6dc4dedc626c7ebc",
+  "targetHeadSha": "b008281d7cd2e28bac9ddee1a0240cbd519ba101",
   "allowedExecutions": 1,
   "singleHostingDeployMax": 1,
   "hostingDeployExecutions": 0,
@@ -28,7 +28,7 @@
   "sourceStaticRunId": 31037730522,
   "sourceStaticArtifactId": 8943265325,
   "sourceStaticArtifactDigest": "sha256:2b7a3619d45054ef0c296b396172df01001063d53f247852aef082373a313ff0",
-  "exactBuildHeadSha": "9b0c4bcadcf7471163329dee6dc4dedc626c7ebc",
+  "exactBuildHeadSha": "b008281d7cd2e28bac9ddee1a0240cbd519ba101",
   "exactBuildVisualSmokeRunId": 31635668359,
   "exactBuildVisualSmokeArtifactId": 9156849648,
   "exactBuildVisualSmokeArtifactDigest": "sha256:67a9889401e3fb05ebf7ac398d24d1c0aa207756f889022cd2c57f31eac7a3e7",
@@ -48,5 +48,5 @@
   "merge": false,
   "production": false,
   "stopRetryOnFailure": true,
-  "purpose": "Single authorized Hosting DEV deploy of the exact live build to prove Firebase Auth -> claims -> tenants/tya/users/{uid} -> CX.session/RBAC -> backend read -> frontend for canonical Staff. Read-only smoke/readback only; no Auth, Firestore, HR, Rules, Storage, Make, Gemini or payment writes; no second Exact Write, merge or production."
+  "purpose": "Single authorized Hosting DEV deploy of the exact live build to prove Firebase Auth -> claims -> tenants/tya/users/{uid} -> CX.session/RBAC -> backend read -> frontend for canonical Staff only. Read-only smoke/readback only; no Shopper/Client credential selection for this action; no Auth, Firestore, HR, Rules, Storage, Make, Gemini or payment writes; no second Exact Write, merge or production."
 }
