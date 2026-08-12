@@ -58,9 +58,7 @@ jobs:
           node <<'NODE'
           const fs=require('fs');
           const x=JSON.parse(fs.readFileSync(process.env.EXECUTE_FILE,'utf8'));
-          const exactAction='C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF';
-          const source=String(x.authorizationSource||'');
-          const action=source.endsWith(exactAction)?exactAction:'';
+          const action=String(x.action||'').trim();
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${x.enabled===true?'true':'false'}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`request_id=${x.requestId||''}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`action=${action}\n`);
@@ -79,10 +77,12 @@ jobs:
           const fs=require('fs');
           const {execFileSync}=require('child_process');
           const x=JSON.parse(fs.readFileSync(process.env.EXECUTE_FILE,'utf8'));
+          const exactAction='C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF';
           const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
           const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
           if(x.schemaVersion!=='cxorbia.c6.dev-root-entrypoint-hosting.v1')throw new Error('request_schema_invalid');
+          if(x.action!==exactAction)throw new Error('staff_action_not_exact');
           if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7)throw new Error('repository_lane_invalid');
           if(x.firebaseProjectId!=='cxorbia-backend-dev'||x.hostingSite!=='cxorbia-backend-dev'||x.hostingTarget!=='cxorbia-dev'||x.devRootUrl!=='https://cxorbia-backend-dev.web.app')throw new Error('hosting_target_invalid');
           if(x.rootPath!=='/'||x.canonicalPath!=='/index-backend-dev.html'||Number(x.rootRedirectType)!==302)throw new Error('entrypoint_contract_invalid');
@@ -100,12 +100,28 @@ jobs:
             requestId:x.requestId,
             requestCommitSha:head,
             targetHeadSha:parent,
+            action:x.action,
             sourceStaticRunId:x.sourceStaticRunId,
             sourceStaticArtifactId:x.sourceStaticArtifactId,
             authorizedBy:x.authorizedBy,
             singleHostingDeployMax:1
           },null,2)+'\n','utf8');
           NODE
+
+      - name: Run Staff lane source preflight before provider
+        if: steps.request.outputs.enabled == 'true'
+        env:
+          CXORBIA_C6_ACTION: ${{ steps.request.outputs.action }}
+        run: |
+          set -euo pipefail
+          test "$CXORBIA_C6_ACTION" = "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF"
+          node --check tools/qa/cxorbia-c6-existing-staff-admin-e2e-credential.mjs
+          node --check tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs
+          node --check tools/qa/tya-c6-staff-admin-human-auth-browser-smoke.mjs
+          node --check tools/qa/tya-c6-dev-root-runtime-wrapper.mjs
+          node --check tools/qa/cxorbia-c6-staff-lane-source-preflight.mjs
+          CXORBIA_C6_STAFF_PREFLIGHT_OUTPUT="$OUT_DIR/staff-lane-source-preflight.json" \
+            node tools/qa/cxorbia-c6-staff-lane-source-preflight.mjs
 
       - name: Authenticate existing Google Cloud DEV
         if: steps.request.outputs.enabled == 'true'
@@ -120,13 +136,17 @@ jobs:
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase-tools@latest playwright@1.55.0
           npx playwright install --with-deps chromium
 
-      - name: Select existing DEV credentials privately
+      - name: Select existing DEV Staff credential privately
         if: steps.request.outputs.enabled == 'true'
         env:
           EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
           CXORBIA_C6_ACTION: ${{ steps.request.outputs.action }}
         run: |
           set -euo pipefail
+          if [[ "$CXORBIA_C6_ACTION" != "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF" ]]; then
+            echo "STAFF_ACTION_NOT_EXACT" >&2
+            exit 1
+          fi
           mkdir -p "$PRIVATE_DIR" "$OUT_DIR"
           node <<'NODE'
           const fs=require('fs');
@@ -143,18 +163,12 @@ jobs:
           export OUT_DIR="$OUT_DIR"
 
           node tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs \
-            > "$OUT_DIR/credential-selection-staff-shopper.source-safe.json"
+            > "$OUT_DIR/credential-selection-staff.source-safe.json"
 
-          if [[ "$CXORBIA_C6_ACTION" == "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF" ]]; then
-            node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection-staff-shopper.source-safe.json','utf8'));const p=JSON.parse(fs.readFileSync(process.env.PRIVATE_E2E,'utf8'));if(a.decision!=='PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY'||a.authWrites!==0||a.passwordChanges!==0||a.valuesExported!==false)throw new Error('staff_admin_credential_selection_not_safe_pass');if(!p?.staff?.login||!p?.staff?.password)throw new Error('private_e2e_staff_bundle_incomplete');if(p?.shopper||p?.client)throw new Error('private_e2e_staff_bundle_scope_exceeded');"
-          else
-            node tools/qa/cxorbia-c6-existing-client-e2e-credential.mjs \
-              > "$OUT_DIR/credential-selection-client.source-safe.json"
-            node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection-staff-shopper.source-safe.json','utf8'));const b=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection-client.source-safe.json','utf8'));const p=JSON.parse(fs.readFileSync(process.env.PRIVATE_E2E,'utf8'));if(a.decision!=='PASS_PHASE_A_EXISTING_E2E_CREDENTIAL_SELECTION_DYNAMIC'||a.authWrites!==0||a.passwordChanges!==0||a.valuesExported!==false)throw new Error('staff_shopper_credential_selection_not_safe_pass');if(b.decision!=='PASS_C6_EXISTING_CLIENT_CREDENTIAL_SELECTION'||b.authWrites!==0||b.passwordChanges!==0||b.valuesExported!==false)throw new Error('client_credential_selection_not_safe_pass');if(!p?.staff?.login||!p?.staff?.password||!p?.shopper?.login||!p?.shopper?.password||!p?.client?.login||!p?.client?.password)throw new Error('private_e2e_bundle_incomplete');"
-          fi
+          node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection-staff.source-safe.json','utf8'));const p=JSON.parse(fs.readFileSync(process.env.PRIVATE_E2E,'utf8'));const exact='C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF';if(a.decision!=='PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY'||a.action!==exact||a.authWrites!==0||a.passwordChanges!==0||a.valuesExported!==false||a.shopperSelection!==false||a.clientSelection!==false)throw new Error('staff_admin_credential_selection_not_safe_pass');if(!p?.staff?.login||!p?.staff?.password)throw new Error('private_e2e_staff_bundle_incomplete');if(p?.shopper||p?.client)throw new Error('private_e2e_staff_bundle_scope_exceeded');"
           chmod 600 "$PRIVATE_E2E"
 
-      - name: Execute one Hosting deploy and root-only accumulated gates
+      - name: Execute one Hosting deploy and Staff-only runtime gates
         if: steps.request.outputs.enabled == 'true'
         id: execute
         continue-on-error: true
@@ -165,9 +179,11 @@ jobs:
           mkdir -p "$OUT_DIR"
           (
             set -euo pipefail
+            test "$CXORBIA_C6_ACTION" = "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF"
             node --check tools/qa/tya-c6-dev-root-entrypoint-source-gate.mjs
             node --check tools/qa/tya-c6-dev-root-entrypoint-remote-parity-gate.mjs
             node --check tools/qa/tya-c6-dev-root-runtime-wrapper.mjs
+            node --check tools/qa/tya-c6-staff-admin-human-auth-browser-smoke.mjs
             node --check tools/qa/tya-dev-scenario-lab-source-contract-gate.mjs
 
             CXORBIA_ROOT_ENTRY_SOURCE_OUTPUT="$OUT_DIR/root-entrypoint-source.json" \
@@ -175,7 +191,7 @@ jobs:
             node <<'NODE'
             const r=require('./'+process.env.OUT_DIR+'/root-entrypoint-source.json');
             if(r.decision!=='PASS_C6_DEV_ROOT_ENTRYPOINT_SOURCE_PARITY')throw new Error('root_source_gate_not_pass');
-          NODE
+            NODE
 
             npx firebase deploy \
               --config firebase.json \
@@ -195,21 +211,12 @@ jobs:
             const fs=require('fs');
             const r=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/runtime/report.json','utf8'));
             const exact='C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF';
-            if(process.env.CXORBIA_C6_ACTION===exact){
-              if(r.decision!==exact||r.scope!=='staff_admin_only')throw new Error('root_staff_admin_runtime_not_pass');
-              if(r.parity?.decision!=='PASS_C6_DEV_ROOT_ENTRYPOINT_REMOTE_PARITY'||r.parity?.exact!==true)throw new Error('root_remote_parity_not_pass');
-              if(r.staff?.authenticated!==true||r.staff?.reloadsStable!==true||r.staff?.newTabStable!==true)throw new Error('root_staff_not_pass');
-              if(r.shopper!==null||r.client!==null||r.genericShopperClientLogicPreserved!==true)throw new Error('root_staff_admin_scope_not_exact');
-            }else{
-              if(r.decision!=='PASS_C6_DEV_ROOT_RUNTIME_ACCUMULATIVE')throw new Error('root_runtime_not_pass');
-              if(r.parity?.decision!=='PASS_C6_DEV_ROOT_ENTRYPOINT_REMOTE_PARITY'||r.parity?.exact!==true)throw new Error('root_remote_parity_not_pass');
-              if(r.staff?.authenticated!==true||r.staff?.reloadsStable!==true||r.staff?.newTabStable!==true)throw new Error('root_staff_not_pass');
-              if(r.shopper?.authenticated!==true||r.shopper?.exactIdentity!==true||r.shopper?.fullHistory!==true||r.shopper?.certificationVisible!==true||r.shopper?.reloadsStable!==true||r.shopper?.newTabStable!==true)throw new Error('root_shopper_not_pass');
-              if(r.client?.authenticated!==true||r.client?.integratedCredentialRoute!==true||r.client?.routeAccepted!==true||r.client?.viewExists!==true||r.client?.pageHeaderExists!==true||Number(r.client?.viewTextLength||0)<=0||r.client?.renderException!==null||r.client?.panoramaVisible!==true||r.client?.blocked!==false)throw new Error('root_client_not_pass');
-              if(r.finance?.model!=='delegado'||Number(r.finance?.royaltyPct||0)!==0||r.finance?.valuesInvented!==false)throw new Error('root_finance_not_pass');
-              if(r.reservations?.browserLocalStorageAsSource!==false||r.reservations?.mutationsEnabled!==false)throw new Error('root_reservations_not_pass');
-            }
-          NODE
+            if(process.env.CXORBIA_C6_ACTION!==exact)throw new Error('runtime_action_not_exact');
+            if(r.decision!==exact||r.scope!=='staff_admin_only')throw new Error('root_staff_admin_runtime_not_pass');
+            if(r.parity?.decision!=='PASS_C6_DEV_ROOT_ENTRYPOINT_REMOTE_PARITY'||r.parity?.exact!==true)throw new Error('root_remote_parity_not_pass');
+            if(r.staff?.authenticated!==true||r.staff?.canonicalForm!==true||r.staff?.reloadsStable!==true||r.staff?.newTabStable!==true)throw new Error('root_staff_not_pass');
+            if(r.shopper!==null||r.client!==null||r.genericShopperClientLogicPreserved!==true)throw new Error('root_staff_admin_scope_not_exact');
+            NODE
 
             rm -rf .firebase
             rm -f firebase-debug.log
@@ -231,19 +238,21 @@ jobs:
           const fs=require('fs');
           const read=p=>fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):null;
           const authorization=read(process.env.OUT_DIR+'/authorization.json');
+          const preflight=read(process.env.OUT_DIR+'/staff-lane-source-preflight.json');
           const source=read(process.env.OUT_DIR+'/root-entrypoint-source.json');
           const runtime=read(process.env.OUT_DIR+'/runtime/report.json');
           const deployCount=fs.existsSync(process.env.OUT_DIR+'/deploy-count')?Number(fs.readFileSync(process.env.OUT_DIR+'/deploy-count','utf8').trim()||0):0;
           const exitCode=Number(process.env.EXECUTE_EXIT_CODE||999);
           const exact='C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF';
-          const runtimePass=process.env.CXORBIA_C6_ACTION===exact?runtime?.decision===exact:runtime?.decision==='PASS_C6_DEV_ROOT_RUNTIME_ACCUMULATIVE';
-          const pass=exitCode===0&&deployCount===1&&source?.decision==='PASS_C6_DEV_ROOT_ENTRYPOINT_SOURCE_PARITY'&&runtimePass;
+          const runtimePass=process.env.CXORBIA_C6_ACTION===exact&&runtime?.decision===exact&&runtime?.scope==='staff_admin_only';
+          const pass=exitCode===0&&deployCount===1&&preflight?.decision==='PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT'&&source?.decision==='PASS_C6_DEV_ROOT_ENTRYPOINT_SOURCE_PARITY'&&runtimePass;
           const summary={
-            schemaVersion:'cxorbia.c6.dev-root-entrypoint-hosting-run.v1',
+            schemaVersion:'cxorbia.c6.dev-root-entrypoint-hosting-run.v2',
             generatedAt:new Date().toISOString(),
             decision:pass?'PASS_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME':'FAIL_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME',
             action:process.env.CXORBIA_C6_ACTION||null,
             authorization,
+            preflight,
             deploy:{attempted:deployCount===1,succeeded:pass,hostingDeploysThisRun:deployCount,automaticSecondDeploys:0},
             source,
             runtime,
