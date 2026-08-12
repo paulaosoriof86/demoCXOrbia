@@ -18,16 +18,15 @@ for(const p of [currentCheckpoint,tracker,plan,handoffLock,v2Contract,v2Request]
 
 const cp=read(currentCheckpoint),tr=read(tracker),pl=read(plan),lock=read(handoffLock);
 const c=JSON.parse(read(v2Contract)),r=JSON.parse(read(v2Request));
-const requiredCp=[
-  'paulaosoriof86/demoCXOrbia','docs-tya-v6-v71-audit','PR #7','cxorbia-backend-dev',
-  'M5=4/8','84%','16%','31518927950','Auth 228','Auth=14','Firestore=16','deletes=0',
-  'C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION'
-];
-for(const marker of requiredCp)ensure(cp.includes(marker),`CURRENT_CHECKPOINT_MARKER_MISSING:${marker}`);
+for(const marker of ['paulaosoriof86/demoCXOrbia','docs-tya-v6-v71-audit','PR #7','M5=4/8','31518927950','C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION'])ensure(cp.includes(marker),`CURRENT_CHECKPOINT_MARKER_MISSING:${marker}`);
+ensure(/Auth protegido:\s*228/i.test(cp),'CURRENT_CHECKPOINT_AUTH_228_MISSING');
+ensure(/Auth (?:máximo|maximo) 14\s*\/\s*Firestore (?:máximo|maximo) 16\s*\/\s*deletes 0/i.test(cp),'CURRENT_CHECKPOINT_WRITE_BUDGET_MISSING');
+ensure(/TOTAL=84%\s*\|\s*RESTANTE=16%/i.test(cp),'CURRENT_CHECKPOINT_PROGRESS_MISSING');
 ensure(tr.includes('M5=4/8')&&tr.includes('84%')&&tr.includes('16%'),'TRACKER_PROGRESS_DRIFT');
 ensure(pl.includes('M5=4/8')&&pl.includes('84%')&&pl.includes('16%'),'PLAN_PROGRESS_DRIFT');
 ensure(lock.includes('PASS_C6_STAFF_PRIVATE_EXECUTION_HANDOFF')&&lock.includes('C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION'),'HANDOFF_LOCK_DRIFT');
 ensure(c.schemaVersion==='cxorbia.c6.staff-repair-bootstrap.exact-write.v2','V2_CONTRACT_SCHEMA');
+ensure(c.firebaseProjectId==='cxorbia-backend-dev'&&c.tenantId==='tya'&&c.canonicalProjectId==='cinepolis','V2_TARGET_DRIFT');
 ensure(c.snapshotAuthority?.workflowRunId===31518927950&&c.snapshotAuthority?.expectedAuthPopulationBefore===228,'V2_SNAPSHOT_DRIFT');
 ensure(c.forwardWriteBudget?.authWritesMax===14&&c.forwardWriteBudget?.firestoreWritesMax===16&&c.forwardWriteBudget?.authDeletes===0&&c.forwardWriteBudget?.firestoreDeletes===0,'V2_BUDGET_DRIFT');
 ensure(c.authorization?.providerWritesAuthorizedByThisContract===false,'V2_SOURCE_ONLY_AUTHORIZATION_DRIFT');
