@@ -5,12 +5,12 @@
 
 Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR#7 draft/open/no merge; producción intacta.
 
-Baseline protegido: Auth228; Activation/readback/rollback PASS; SKIP13/MultiAuth/HashConfig/direct runner closed; M4/M6 complete; live-user-admin static PASS; provider snapshot PASS31518927950; budgets Auth14/Firestore16/deletes0 frozen.
+Baseline: Auth228; Activation/readback/rollback PASS; SKIP13/MultiAuth/HashConfig/direct runner closed; M4/M6 complete; live-user-admin static PASS; provider snapshot PASS31518927950; budgets Auth14/Firestore16/deletes0 frozen.
 
-Handoff source-only PASS: A/B/C fueron revalidados transient contra digests/bindings congelados y materializados únicamente como ciphertext usando el keypair existente; el runtime helper descifra en memoria y debe revalidar antes del primer write. D se regenera exclusivamente desde D rebase PASS. Raw login/email/UID/password/hash/nombre no se emitieron ni persistieron.
+Handoff PASS: A/B/C exactos fueron revalidados transient y cifrados con keypair existente; solo ciphertext queda persistido. Runtime helper descifra exclusivamente en memoria y vuelve a validar digest/binding. D se regenera exclusivamente desde D rebase PASS. No raw login/email/UID/password/hash/nombre emitido/persistido.
 
-Seguridad: provider reads0; provider/Auth/Firestore/HR/Rules/Storage writes0; deletes0; deploy0; merge=false; production=false. Snapshot31518927950 no se repitió y el exact-write request consumido no se reusa.
+Seguridad: provider reads0; provider/Auth/Firestore/HR/Rules/Storage writes0; deletes0; deploy0; merge=false; production=false. No snapshot repeat, no request exact-write reuse.
 
 **Phase A84%; restante16%; M5=4/8.**
 
-Siguiente gate exacto: `C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION`. El v2 deberá descifrar/revalidar A/B/C en memoria, regenerar/revalidar D, preservar R4 y budget Auth14/Firestore16/deletes0, y STOP pre-write ante cualquier mismatch.
+Siguiente: `C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION`; pre-write debe revalidar handoff ABC + D determinístico y STOP antes de escribir ante mismatch.
