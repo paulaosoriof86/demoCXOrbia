@@ -1,20 +1,22 @@
 # CAMBIOS-BACKEND.md
 
 **Última actualización:** 2026-08-11  
-**Estado:** `PASS_C6_STAFF_D_TECHNICAL_LOGIN_REBASE_SOURCE_ONLY__ZERO_SOURCE_COLLISION__PRIVATE_EXECUTION_HANDOFF_PENDING__NO_PROVIDER__NO_WRITES__NO_PRODUCTION`
+**Estado:** `PASS_C6_STAFF_PRIVATE_EXECUTION_HANDOFF_SOURCE_ONLY__ABC_ENCRYPTED_EXACT__D_DETERMINISTIC__NO_PROVIDER__NO_WRITES__NO_PRODUCTION`
 
-Baseline cerrado: Auth228, Activation/readback/rollback, SKIP13/MultiAuth/HashConfig/direct runner, M4, HR M6, static live-user-admin y provider snapshot PASS31518927950.
+Baseline cerrado: Auth228, Activation/readback/rollback, SKIP13/MultiAuth/HashConfig/direct runner, M4, HR M6, static live-user-admin, provider snapshot PASS31518927950 y D technical rebase PASS.
 
-Bloque ejecutado: D historical visible-login declarado no recuperable; creado `backend/contracts/c6-staff-d-technical-login-rebase-v1.json`; actualizado únicamente el binding técnico D en `backend/config/c6-staff-provider-collision-targets-v1.json` y recalculado mecánicamente su fingerprint provider derivado; creado `backend/contracts/c6-staff-d-rebase-prewrite-v1.json`, source gate y evidencia; source lock `SOURCE-LOCK-C6-STAFF-D-TECHNICAL-LOGIN-REBASE-PASS-20260811.md`.
+Bloque ejecutado: `C6 STAFF PRIVATE EXECUTION HANDOFF SOURCE-ONLY`. Se reutilizó el keypair cifrado ya existente y probado; se añadió el AAD focal de staff, se materializó `backend/private-inbox/c6-staff-private-execution-handoff.enc.json` con ciphertext únicamente, contrato `backend/contracts/c6-staff-private-execution-handoff-v1.json`, runtime helper memory-only y source/runtime gates. A/B/C fueron revalidados transient contra digests y owner-bindings congelados antes del cifrado; D se mantiene exclusivamente determinístico desde su rebase PASS.
 
-Preservado sin cambios: ownerIdentityAnchor, ownerRoleBindingDigest, role, entitlementMode, projectIds, expectedClaimsDigest, A/B/C y R4 canónico.
+Privacidad: raw login/email/UID/password/password-hash/nombre no emitido ni persistido; ciphertext cifrado sí queda persistido como transporte recuperable. No se creó GitHub secret, rama, PR o workflow nuevo.
 
-Validación source-safe: cero colisiones del nuevo D technical digest, provider collision fingerprint y owner technical binding contra A/B/C y D superseded. Provider reads0; provider/Auth/Firestore/HR/Rules/Storage writes0; Make/Gemini/Payments0; deletes0; deploy0; merge=false; production=false. No raw login/email/UID/password/password-hash/nombre persistido.
+Writes/efectos: provider reads0; provider/Auth/Firestore/HR/Rules/Storage writes0; Make/Gemini/Payments0; deletes0; deploy0; merge=false; production=false. Snapshot31518927950 no se repitió, exact-write request consumido no se reutilizó y no se reabrieron Auth340/SKIP13/MultiAuth/HR/M4/static.
 
-Causa D cerrada: D ya es regenerable determinísticamente sin referencia histórica.
+Causa de transporte cerrada: el futuro runtime puede obtener A/B/C exclusivamente por decrypt in-memory con el keypair existente y volver a validar digests/bindings; D se regenera determinísticamente. La evidencia previa `CORTE6-CREDENTIAL-HANDOFF-DRYRUN-LATEST.json` conserva la prueba histórica del mismo key fingerprint/decrypt path.
 
-Boundary restante detectado antes de write: A/B/C exact visible-login fueron recuperados transient y deliberadamente no persistidos; el carril GitHub no tiene aún un canal privado autorizado para entregarlos al runtime sin repo/artifact/log. Esto es transporte privado, no nueva decisión de identidad.
+Archivos creados/tocados en este bloque: public key usage domain, encrypted handoff envelope, handoff contract, runtime helper, source gate, runtime gate, evidence `C6-STAFF-PRIVATE-EXECUTION-HANDOFF-LATEST.json`, source lock `SOURCE-LOCK-C6-STAFF-PRIVATE-EXECUTION-HANDOFF-PASS-20260811.md` y documentación viva.
 
-**Phase A84%; restante16%; M5=4/8.** No se acredita peso adicional hasta write/readback.
+**Phase A84%; restante16%; M5=4/8.** No se acredita peso adicional hasta write/readback real.
 
-Siguiente gate: `C6 STAFF PRIVATE EXECUTION HANDOFF SOURCE-ONLY`. No repetir D rebase, snapshot ni request exact-write consumido.
+Siguiente gate: `C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION`.
+
+Clasificación: Reusable CXOrbia=encrypted-at-rest/memory-only handoff; Exclusivo TyA=targets/budgets focales; Claude=sin cambios UI; Academia=separación identidad/digest/transporte cifrado; Sin impacto Claude=runtime helper/gates/evidence.
