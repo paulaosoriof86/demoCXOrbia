@@ -144,7 +144,12 @@ async function runStaff(){
 
     await page.fill('#lgUser',credentials.staff.login);
     await page.fill('#lgPass',credentials.staff.password);
-    await page.click('#lgSubmit');
+    // Submit through the canonical HTML form keyboard path instead of a pointer click.
+    // Preview DEV intentionally renders #cxBackendPreviewStatus at z-index 99999;
+    // that diagnostic pill may overlap #lgSubmit and intercept pointer events even
+    // though the product form is visible/enabled. Enter exercises the same bound
+    // submit event in backend-browser-auth.js without mutating or hiding product UI.
+    await page.press('#lgPass','Enter');
     await waitReady(page,'staff_first');
     const first=await snapshot(page,'staff_first');
     validate(first,'staff_first');
@@ -178,6 +183,7 @@ async function runStaff(){
       loginProtectedBy:before.firebaseWrapper?'official_wrapper':before.earlyGuardInstalled?'early_guard':'unknown',
       canonicalForm:true,
       canonicalSelectors:['#loginForm','#lgUser','#lgPass','#lgSubmit'],
+      submitInteraction:'canonical_form_enter_from_password',
       reloadsStable:reloads.length===3,
       newTabStable:newTab.appOn===true,
       credentialsExposed:false,
