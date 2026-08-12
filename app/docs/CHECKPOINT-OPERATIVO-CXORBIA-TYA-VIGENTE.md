@@ -5,10 +5,8 @@
 
 Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR#7 draft/open/no merge; producción intacta.
 
-Baseline: Auth228; Activation/readback/rollback PASS; SKIP13/MultiAuth/HashConfig/direct runner closed; M4/M6 complete; live-user-admin static PASS; provider snapshot PASS31518927950; budgets Auth14/Firestore16/deletes0 frozen.
+Baseline: Auth228; Activation/readback/rollback PASS; SKIP13/MultiAuth/HashConfig/direct runner closed; M4/M6 complete; provider snapshot PASS31518927950; Auth14/Firestore16/deletes0.
 
-Handoff PASS: A/B/C exactos revalidados transient, cifrados con keypair existente y solo memory-only al ejecutar; D se regenera desde D rebase PASS. Raw protected values no emitidos/persistidos. Provider reads0; provider/Auth/Firestore/HR/Rules/Storage writes0; deletes0; deploy0; merge=false; production=false.
+Handoff PASS: A/B/C exactos cifrados/memory-only con revalidación pre-write; D determinístico. Raw protected values no emitidos/persistidos; provider/Auth/Firestore/HR/Rules/Storage writes0; deploy0; merge=false; production=false.
 
-**Phase A84%; restante16%; M5=4/8.**
-
-Siguiente gate: `C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION`; pre-write debe revalidar ABC decrypt + D deterministic y STOP ante mismatch.
+**Phase A84%; restante16%; M5=4/8.** Siguiente: `C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION`.
