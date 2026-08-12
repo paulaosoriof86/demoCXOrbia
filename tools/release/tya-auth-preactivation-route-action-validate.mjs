@@ -57,8 +57,8 @@ if(live.backendExecutable?.deployed!==false)add(warnings,'live_user_admin_contra
 
 const rbac=parsed.rbac||{};
 const taxonomy=parsed.taxonomy||{};
-if(!rbac.schemaVersion)add(hardFails,'rbac_schema_missing');
-if(!taxonomy.schemaVersion)add(hardFails,'taxonomy_schema_missing');
+if(rbac.contractId!=='auth-rbac-phase-a-v1')add(hardFails,'rbac_contract_id_drift',{detail:rbac.contractId||null});
+if(taxonomy.contractId!=='phase-a-role-taxonomy-org-scope-v1')add(hardFails,'taxonomy_contract_id_drift',{detail:taxonomy.contractId||null});
 
 for(const blocker of parsed.matrix?.knownBlockers||parsed.matrix?.activationBlockers||[]){
   const message=typeof blocker==='string'?blocker:blocker?.message;
