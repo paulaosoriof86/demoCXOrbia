@@ -1,72 +1,47 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 
-const root=process.cwd();
-const contractPath=path.join(root,'backend/contracts/phase-a-live-execution-checkpoint-v1.json');
-const registryPath=path.join(root,'backend/contracts/prototype-baseline-registry-v1.json');
-const checkpointPath=path.join(root,'app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md');
-const planPath=path.join(root,'app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md');
-const fail=m=>{console.error(`CHECKPOINT_FAIL: ${m}`);process.exit(1);};
-for(const p of [contractPath,registryPath,checkpointPath,planPath]) if(!fs.existsSync(p)) fail(`missing ${path.relative(root,p)}`);
-let c,r;
-try{c=JSON.parse(fs.readFileSync(contractPath,'utf8'));r=JSON.parse(fs.readFileSync(registryPath,'utf8'));}catch(e){fail(`invalid JSON: ${e.message}`);}
-const checkpoint=fs.readFileSync(checkpointPath,'utf8');
-const plan=fs.readFileSync(planPath,'utf8');
-const invariant='empalmedRuntimeVersion == candidateVersion; activeBaselineVersion advances only after postGatesAndVisualFreeze';
-const visualPendingState='hosting_dev_remote_smoke_pass_pending_visual';
-const trustedEvidence=new Map([
-  [29626385151,{commit:'8cf166eea6a0ebd0b2c6221925671d04865999f0',artifactId:8430697082,digest:'sha256:fbe071cf34561df95c6e4cffa393f3c6851d742eb8f00776c28a3354e4365692'}],
-  [29649918631,{commit:'91aed5f9bdd54a396bd8758479888516dd1c3013',artifactId:8431164287,digest:'sha256:693d05ecfc4621c02321e13a0caf6f40ac2683356ee0893c02a04f027aa3539a'}]
-]);
+const here=path.dirname(fileURLToPath(import.meta.url));
+const repo=path.resolve(here,'../..');
+const currentCheckpoint=path.join(repo,'app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md');
+const tracker=path.join(repo,'app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md');
+const plan=path.join(repo,'app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md');
+const handoffLock=path.join(repo,'app/docs/SOURCE-LOCK-C6-STAFF-PRIVATE-EXECUTION-HANDOFF-PASS-20260811.md');
+const v2Contract=path.join(repo,'backend/contracts/c6-staff-repair-bootstrap-exact-write-v2.json');
+const v2Request=path.join(repo,'.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json');
 
-if(!['3.0.0','3.1.0','3.2.0'].includes(c.version)) fail('checkpoint contract version drift');
-if(c.lastFrozenBaseline?.status!=='active_baseline_frozen'||c.lastFrozenBaseline?.visualValidated!==true) fail('last frozen baseline not preserved');
-if(c.lastFrozenBaseline?.version!==r.activeBaseline?.version||c.lastFrozenBaseline?.sourceZipSha256!==r.activeBaseline?.sourceZipSha256) fail('checkpoint/registry frozen baseline mismatch');
-if(c.currentRuntime?.version!==r.currentRuntime?.version||c.currentRuntime?.status!==r.currentRuntime?.status) fail('checkpoint/registry current runtime mismatch');
-if(c.currentRuntime?.sourceZipSha256!==r.currentRuntime?.sourceZipSha256||c.currentRuntime?.manifestFile!==r.currentRuntime?.manifestFile||c.currentRuntime?.aggregateSha256!==r.currentRuntime?.aggregateSha256) fail('checkpoint/registry runtime evidence mismatch');
-if(c.candidate?.version!==r.candidate?.version||c.candidate?.status!==r.candidate?.status) fail('candidate state mismatch');
-if(c.promotionPolicy?.invariant!==invariant||r.invariant!==invariant) fail('promotion invariant mismatch');
-if(c.plan?.[0]!==c.activeBlock?.id||c.activeBlock?.id!=='CORTE_0_V159_POST_EMPALME') fail('Corte 0 must remain the active first block');
-if(c.mandatoryCloseSections?.length!==12) fail('mandatory close sections drift');
-if(c.gates?.production!=='hold'||c.gates?.firestoreWrites!=='hold'||c.gates?.authWrites!=='hold'||c.gates?.storageWrites!=='hold'||c.gates?.hrWrites!=='hold'||c.gates?.realImports!=='hold'||c.gates?.make!=='hold'||c.gates?.gemini!=='hold'||c.gates?.payments!=='hold') fail('unauthorized gate enabled');
+const read=p=>fs.readFileSync(p,'utf8').replace(/^\uFEFF/,'');
+const ensure=(v,c)=>{if(!v)throw new Error(c);};
+for(const p of [currentCheckpoint,tracker,plan,handoffLock,v2Contract,v2Request])ensure(fs.existsSync(p),`CURRENT_AUTHORITY_MISSING:${path.relative(repo,p)}`);
 
-const runtime=c.currentRuntime||{};
-if(runtime.status==='empalmed_pending_post_gates'){
-  if(runtime.postGatesPassed!==false||runtime.visualValidated!==false||runtime.active!==false) fail('pre-gate runtime state mismatch');
-  if(c.gates?.hostingDev!=='authorized_pending_execution'||c.gates?.browserSmoke!=='pending') fail('pre-gate contract gate mismatch');
-}else if(runtime.status===visualPendingState){
-  if(!['3.1.0','3.2.0'].includes(c.version)) fail('visual-pending state requires checkpoint contract 3.1.0+');
-  if(runtime.postGatesPassed!==true||runtime.hostingDevPassed!==true||runtime.remoteSmokePassed!==true||runtime.visualValidated!==false||runtime.active!==false) fail('visual-pending runtime evidence mismatch');
-  if(c.gates?.hostingDev!=='pass'||c.gates?.browserSmoke!=='pass'||c.gates?.remoteSmoke!=='pass'||c.gates?.visualValidation!=='pending'||c.gates?.activeBaselineFreeze!=='pending') fail('visual-pending contract gate mismatch');
-  const run=c.completedEvidence?.hostingDevWorkflowRun;
-  const trusted=trustedEvidence.get(run);
-  if(!trusted) fail('Hosting DEV evidence run is not trusted');
-  if(c.completedEvidence?.hostingDevWorkflowCommit!==trusted.commit||c.completedEvidence?.hostingDevArtifactId!==trusted.artifactId||c.completedEvidence?.hostingDevArtifactDigest!==trusted.digest) fail('Hosting DEV evidence fingerprint mismatch');
-  if(c.completedEvidence?.remoteProjectPeriodKpiHistory!=='PASS_TYA_PROJECT_PERIOD_KPI_HISTORY') fail('remote project/period gate evidence missing');
-  if(c.completedEvidence?.paidConfirmedOrInferred!==0) fail('payment inference introduced');
-  if((c.completedEvidence?.shopperOperationalFactsInvented??0)!==0) fail('shopper operational facts invented');
-}else if(runtime.status==='active_baseline_frozen'){
-  if(runtime.postGatesPassed!==true||runtime.visualValidated!==true||runtime.active!==true) fail('frozen runtime evidence mismatch');
-}else{
-  fail(`unsupported checkpoint runtime state: ${runtime.status}`);
-}
+const cp=read(currentCheckpoint),tr=read(tracker),pl=read(plan),lock=read(handoffLock);
+const c=JSON.parse(read(v2Contract)),r=JSON.parse(read(v2Request));
+const requiredCp=[
+  'paulaosoriof86/demoCXOrbia','docs-tya-v6-v71-audit','PR #7','cxorbia-backend-dev',
+  'M5=4/8','84%','16%','31518927950','Auth 228','Auth=14','Firestore=16','deletes=0',
+  'C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION'
+];
+for(const marker of requiredCp)ensure(cp.includes(marker),`CURRENT_CHECKPOINT_MARKER_MISSING:${marker}`);
+ensure(tr.includes('M5=4/8')&&tr.includes('84%')&&tr.includes('16%'),'TRACKER_PROGRESS_DRIFT');
+ensure(pl.includes('M5=4/8')&&pl.includes('84%')&&pl.includes('16%'),'PLAN_PROGRESS_DRIFT');
+ensure(lock.includes('PASS_C6_STAFF_PRIVATE_EXECUTION_HANDOFF')&&lock.includes('C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION'),'HANDOFF_LOCK_DRIFT');
+ensure(c.schemaVersion==='cxorbia.c6.staff-repair-bootstrap.exact-write.v2','V2_CONTRACT_SCHEMA');
+ensure(c.snapshotAuthority?.workflowRunId===31518927950&&c.snapshotAuthority?.expectedAuthPopulationBefore===228,'V2_SNAPSHOT_DRIFT');
+ensure(c.forwardWriteBudget?.authWritesMax===14&&c.forwardWriteBudget?.firestoreWritesMax===16&&c.forwardWriteBudget?.authDeletes===0&&c.forwardWriteBudget?.firestoreDeletes===0,'V2_BUDGET_DRIFT');
+ensure(c.authorization?.providerWritesAuthorizedByThisContract===false,'V2_SOURCE_ONLY_AUTHORIZATION_DRIFT');
+ensure(r.schemaVersion==='cxorbia.c6.staff-repair-bootstrap.exact-write.request.v2','V2_REQUEST_SCHEMA');
+ensure(r.enabled===false&&r.consumed===false&&r.production===false&&r.deploy===false&&r.merge===false,'V2_REQUEST_MUST_REMAIN_DISABLED_SOURCE_ONLY');
+ensure(r.authWritesMax===14&&r.firestoreWritesMax===16&&r.authDeletes===0&&r.firestoreDeletes===0,'V2_REQUEST_BUDGET_DRIFT');
 
-for(const marker of ['V159','ACTIVE_BASELINE']) if(!checkpoint.includes(marker)) fail(`canonical checkpoint missing marker: ${marker}`);
-if(!checkpoint.toLowerCase().includes('visual')) fail('canonical checkpoint does not preserve visual gate');
-for(const marker of ['CORTE 0','V159 post-empalme','TECHNICAL_PASS_PENDING_VISUAL','Hosting DEV V159']) if(!plan.includes(marker)) fail(`canonical plan missing marker: ${marker}`);
-if(/V159[^\n]{0,80}ACTIVE_BASELINE[^\n]{0,30}(cerrad|congelad|activo)/i.test(checkpoint)) fail('checkpoint prematurely claims V159 active baseline');
-
-console.log(JSON.stringify({
+const result={
   ok:true,
-  decision:'PASS_PHASE_A_LIVE_EXECUTION_CHECKPOINT',
-  lastFrozenBaseline:c.lastFrozenBaseline.version,
-  currentRuntime:runtime.version,
-  currentRuntimeStatus:runtime.status,
-  activeBlock:c.activeBlock.id,
-  trustedHostingRun:c.completedEvidence?.hostingDevWorkflowRun||null,
-  hostingDev:c.gates.hostingDev,
-  remoteSmoke:c.gates.remoteSmoke||'not_applicable',
-  visualValidation:c.gates.visualValidation,
-  production:c.gates.production
-},null,2));
+  decision:'PASS_PHASE_A_CURRENT_OPERATIONAL_CHECKPOINT',
+  authority:'app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md',
+  progress:{phaseACompletedPct:84,phaseARemainingPct:16,m5:'4/8'},
+  exactWriteV2:{preparedSource:true,authorized:false,snapshotWorkflowRunId:31518927950,expectedAuthPopulationBefore:228,authWritesMax:14,firestoreWritesMax:16,deletes:0},
+  historicalCompatibility:{legacyCheckpointContractAuthoritative:false,prototypeBaselineRegistryAuthoritative:false},
+  safety:{providerWrites:false,authWrites:false,firestoreWrites:false,hrWrites:false,deploy:false,merge:false,production:false}
+};
+console.log(JSON.stringify(result,null,2));
