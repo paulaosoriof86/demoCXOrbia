@@ -228,10 +228,7 @@ jobs:
 
             CXORBIA_ROOT_ENTRY_SOURCE_OUTPUT="$OUT_DIR/root-entrypoint-source.json" \
               node tools/qa/tya-c6-dev-root-entrypoint-source-gate.mjs
-            node <<'NODE'
-            const r=require('./'+process.env.OUT_DIR+'/root-entrypoint-source.json');
-            if(r.decision!=='PASS_C6_DEV_ROOT_ENTRYPOINT_SOURCE_PARITY')throw new Error('root_source_gate_not_pass');
-            NODE
+            node -e "const r=require('./'+process.env.OUT_DIR+'/root-entrypoint-source.json');if(r.decision!=='PASS_C6_DEV_ROOT_ENTRYPOINT_SOURCE_PARITY')throw new Error('root_source_gate_not_pass');"
 
             npx firebase deploy \
               --config firebase.json \
@@ -247,16 +244,7 @@ jobs:
             CXORBIA_C6_ACTION="$CXORBIA_C6_ACTION" \
               node tools/qa/tya-c6-dev-root-runtime-wrapper.mjs "$DEV_ROOT_URL"
 
-            node <<'NODE'
-            const fs=require('fs');
-            const r=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/runtime/report.json','utf8'));
-            const exact='C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF';
-            if(process.env.CXORBIA_C6_ACTION!==exact)throw new Error('runtime_action_not_exact');
-            if(r.decision!==exact||r.scope!=='staff_admin_only')throw new Error('root_staff_admin_runtime_not_pass');
-            if(r.parity?.decision!=='PASS_C6_DEV_ROOT_ENTRYPOINT_REMOTE_PARITY'||r.parity?.exact!==true)throw new Error('root_remote_parity_not_pass');
-            if(r.staff?.authenticated!==true||r.staff?.canonicalForm!==true||r.staff?.reloadsStable!==true||r.staff?.newTabStable!==true)throw new Error('root_staff_not_pass');
-            if(r.shopper!==null||r.client!==null||r.genericShopperClientLogicPreserved!==true)throw new Error('root_staff_admin_scope_not_exact');
-            NODE
+            node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/runtime/report.json','utf8'));const exact='C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF';if(process.env.CXORBIA_C6_ACTION!==exact)throw new Error('runtime_action_not_exact');if(r.decision!==exact||r.scope!=='staff_admin_only')throw new Error('root_staff_admin_runtime_not_pass');if(r.parity?.decision!=='PASS_C6_DEV_ROOT_ENTRYPOINT_REMOTE_PARITY'||r.parity?.exact!==true)throw new Error('root_remote_parity_not_pass');if(r.staff?.authenticated!==true||r.staff?.canonicalForm!==true||r.staff?.reloadsStable!==true||r.staff?.newTabStable!==true)throw new Error('root_staff_not_pass');if(r.shopper!==null||r.client!==null||r.genericShopperClientLogicPreserved!==true)throw new Error('root_staff_admin_scope_not_exact');"
 
             rm -rf .firebase
             rm -f firebase-debug.log
