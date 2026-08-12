@@ -1,12 +1,13 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-12 16:41 -06:00  
-**Estado:** `C6_STAFF_ACTION_METADATA_SUFFIX_ROOTCAUSE_PROVEN__STOP_RETRY__PHASE_A_88`
+**Última actualización:** 2026-08-12 17:05 -06:00  
+**Estado:** `PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT__PHASE_A_88__C6_LANE_READY_100`
 
 ## Pendiente vivo único de continuidad
 
 ```text
-C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF
+HOSTING_RUNTIME_ONCE Staff
+→ C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF
 → M7
 → M8
 → M9
@@ -17,43 +18,35 @@ C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF
 
 - Wiring Staff fail-closed contra `tenants/tya/users/{uid}`.
 - Formulario único `#loginForm/#lgUser/#lgPass/#lgSubmit`.
-- Repair QA Staff `5c9663dd6b1174cf8d59186484eb09e83316e862`.
 - Exact Write V2/canonical readback.
 - D technical-login rebase/private handoff.
 - Auth340, SKIP13, MultiAuth, HR y M4/static.
-- Heredoc shell blocker y exclusión `gha-creds-*.json`.
+- Causa raíz `REQUEST_ACTION_METADATA_SUFFIX_DRIFT` corregida estructuralmente.
+- Action explícita/fail-closed.
+- Selector Staff dedicado sin Shopper/HR/Firestore.
+- Smoke Staff dedicado sin transformaciones textuales.
+- Preflight Staff antes de provider.
 
 No reabrir sin drift reproducible.
 
-## Resultado one-shot 05
+## Gate source-only cerrado
 
-Run `31647758560`:
+Run `31649467657`:
+- `PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT_RUN`;
+- job `94290390013`;
+- artifact `9162011590`;
+- digest `sha256:50b1b0be7d47594456e4b131099107ba7716906ca06655ce2ebf861d1979c9b1`;
+- provider=0;
+- Hosting=0;
+- Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos=0;
+- merge=false;
+- producción=false.
 
-- checkout/autorización/GCP/tooling: PASS;
-- selector privado: FAIL antes de Staff-only;
-- Hosting intentado=false;
-- Hosting de este one-shot=`0/1`;
-- runtime=null;
-- nuevos provider/data writes=0;
-- production=false.
-
-Artifact `9161420264`, digest `sha256:38136897ad4a6c973577bbf4f608afa4ee03466370d7feb2183570c1cc908594`.
-
-`STOP_RETRY` aplicado; no hubo segundo intento.
-
-## Causa raíz nueva
-
-`REQUEST_ACTION_METADATA_SUFFIX_DRIFT`.
-
-El workflow resuelve Staff-only solo cuando `authorizationSource` termina exactamente en `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`. El request 05 añadió `_single_visible_login_form` después de ese token; la action quedó vacía y el workflow cayó a la rama genérica Staff+Shopper, cuyo stage se detuvo en el HOLD Shopper histórico.
-
-El repair Staff QA no falló porque no fue alcanzado. No hay nuevo fallo provider/Auth/membership/datos demostrado.
+Google Cloud Auth, selector privado y Hosting/runtime fueron skipped por diseño. El carril C6 Staff quedó source-ready al **100%**.
 
 ## Pendiente inmediato
 
-Nuevo one-shot Staff, bound al HEAD vivo, con `authorizationSource` terminando exactamente en la action Staff, sin sufijos, y verificación de la action resuelta antes del selector/deploy.
-
-Aunque Hosting quedó físicamente `0/1`, `STOP_RETRY` cerró la autorización 05; requiere nueva autorización explícita. No rerunear `31647758560` ni reutilizar request 05.
+Nueva autorización explícita para un único `HOSTING_RUNTIME_ONCE` Staff, bound al HEAD vivo, con action exacta `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`. El preflight debe PASS antes de provider; luego máximo un Hosting DEV y runtime canónico con reload/new-tab. Ante fallo post-provider: `STOP_RETRY`.
 
 ## Pendiente frontend heredado separado
 
@@ -63,8 +56,8 @@ Aunque Hosting quedó físicamente `0/1`, `STOP_RETRY` cerró la autorización 0
 
 `M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1`
 
-**88% certificado | 12% restante | delta certificado +0%.**
+**88% certificado | 12% restante | delta certificado +0% | readiness C6 source-only 100%.**
 
 ## Claude / Academia
 
-Cero cambio frontend por este fallo. No pedir candidata. Academia se actualiza únicamente después del runtime Staff PASS.
+Cero cambio frontend en este bloque. No pedir candidata. Academia se actualiza únicamente después del runtime Staff PASS.
