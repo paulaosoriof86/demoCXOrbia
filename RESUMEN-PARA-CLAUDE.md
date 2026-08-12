@@ -1,69 +1,63 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-12 17:29 -06:00  
-**Estado:** `C6_RUNTIME_08_STOP_RETRY_POINTER_INTERCEPT__SOURCE_REPAIR_APPLIED__PHASE_A_88__NO_FRONTEND_CHANGE`
+**Última actualización:** 2026-08-12 17:44 -06:00  
+**Estado:** `C6_RUNTIME_09_STOP_RETRY_POST_AUTH_HANDOFF__SOURCE_REPAIR_APPLIED__PHASE_A_88__NO_MODULE_UI_CHANGE`
 
 ## Estado vigente
 
-C6 Staff Exact Write V2 permanece cerrado con PASS real en `cxorbia-backend-dev`. El wiring fuente `Firebase Auth → claims → tenants/tya/users/{uid} → CX.session/RBAC → backend read → frontend` sigue implementado.
+C6 Staff Exact Write V2 permanece cerrado con PASS real. El runtime 09 avanzó hasta autenticación/contexto Staff y autoridad HR viva completa, pero no cerró la entrada final al shell visible.
 
-El runtime Staff 08 avanzó más que los intentos anteriores: preflight v2 PASS, Google Cloud DEV PASS, selector Staff dedicado PASS, source parity PASS, Hosting DEV deploy PASS y remote parity PASS. El fallo ocurrió únicamente en la interacción del smoke antes de enviar credenciales.
+## Runtime 09
 
-## Runtime 08
-
-Run `31650715194`, job `94294235029`, artifact `9162485896`, digest `sha256:e30accedd8e8c571066319572267e84856752577b7cd4cd63e0cd1f3c7d20194`.
+Run `31651410812`, job `94296350609`, artifact `9162751195`, digest `sha256:16970fb360a1fc54d3b94f7a6ff87138afa959ac6b6fa31f7299b78dfeee48d8`.
 
 PASS:
 - action/mode exactos;
-- `PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT` v2;
-- `bash -n` del shell Hosting exacto;
-- Google Cloud DEV auth;
-- selector Staff dedicado (`coordinador`);
-- Shopper/Cliente selection=false;
-- source parity;
-- Hosting DEV deploy completo 1/1;
-- remote parity exact=true.
+- preflight v3 (`bash -n`, no heredoc anidado, keyboard-submit, binding canónico);
+- Google Cloud DEV + selector Staff `coordinador`;
+- Hosting DEV 1/1;
+- remote parity exact=true;
+- login submitido;
+- contexto `coordinador / staff / tya / cinepolis`;
+- HR authority: **15 periodos / 660 visitas / 211 shoppers**, `2025-06 → 2026-08`, duplicados=0.
 
-FAIL de QA:
-- `#lgSubmit` visible/enabled;
-- el pill diagnóstico `#cxBackendPreviewStatus` se superpuso al botón e interceptó pointer events;
-- las credenciales no llegaron a enviarse;
-- no hay fallo nuevo demostrado de Auth/claims/membership/Firestore/HR.
+FAIL final:
+- `appOn=false`, `loginHidden=false`;
+- el marcador Firestore vacío seguía `true` pese a la autoridad HR ya poblada.
 
-Clasificación: `QA_POINTER_INTERCEPTION_BY_BACKEND_PREVIEW_STATUS_OVERLAY`.
+Causa raíz: `C6_POST_AUTH_HR_AUTHORITY_FRONTEND_ENTRY_HANDOFF_GAP__STALE_FIRESTORE_EMPTY_STATE`.
 
-## Reparación sin tocar frontend
+## Reparación sin alterar módulos/UI
 
-- `tools/qa/tya-c6-staff-admin-human-auth-browser-smoke.mjs` commit `ccf759c2a82a5baf82397cef02c3ca7851e13ce8`: submit canónico mediante Enter desde `#lgPass`, preservando `#loginForm/#lgUser/#lgPass/#lgSubmit` y el mismo evento `submit` del producto.
-- `tools/qa/cxorbia-c6-staff-lane-source-preflight.mjs` commit `7cab212e5583ed7e2b4dc8b132b0d2b5bf953c19`: preflight v3 exige keyboard-submit y bloquea reintroducción del pointer click sobre `#lgSubmit`.
-- No se modificó `app/core/backend-preview-status.js` para acomodar QA.
-- No se disparó segundo runtime después del STOP_RETRY.
+- `app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js` commit `a89ec134fe1b3b9cd0a8f014b39133d7a72ccd5a`: al completar la autoridad HR, revalida membership Staff, reconcilia los markers stale de vacío y reutiliza `CX.app.enter()`.
+- `tools/qa/tya-c6-staff-admin-human-auth-browser-smoke.mjs` commit `87bcddebeb74147dc0862ff3115186795978f058`: exige membership + authority + handoff `entered` + shell visible + reload x3/new-tab.
+- `tools/qa/cxorbia-c6-staff-lane-source-preflight.mjs` commit `84e736b064d66bf7f7bde3d54955d98fb0f0a9a9`: preflight v4 valida el nuevo contrato antes de provider.
+- No se modificó `/app/modules`, `app/core/backend-preview-status.js` ni diseño/flujo visual del prototipo.
 
 ## Frontend / Claude
 
-- **Cero archivo frontend/producto modificado por esta reparación.**
 - No generar nueva candidata.
 - No modificar `app/modules` por C6.
-- Mantener el formulario único de `app/core/backend-browser-auth.js`: `#loginForm/#lgUser/#lgPass/#lgSubmit`.
-- Mantener el pill Preview DEV; la adaptación corresponde al QA, no al producto.
-- No reintroducir overlays legacy para Staff.
-- No reabrir Login, Exact Write V2, D rebase, Auth340, SKIP13, MultiAuth, HR ni M4/static.
-- PDF/XLSX/PPTX de `app/modules/cliente-extra.js` siguen como pendiente frontend heredado separado y no bloquean C6 Staff.
+- Mantener formulario único `#loginForm/#lgUser/#lgPass/#lgSubmit`.
+- No reintroducir overlays legacy Staff.
+- El adapter C6 puede reconciliar estado técnico y llamar al `CX.app.enter()` ya existente; no debe pintar ni mutar directamente la UI.
+- No reabrir Exact Write V2, D rebase, Auth340, SKIP13, MultiAuth, HR ni M4/static.
+- Pendientes heredados de `app/modules/cliente-extra.js` continúan separados y no bloquean C6 Staff.
 
 ## Seguridad
 
-Runtime 08: Hosting `1/1` físicamente consumido y deploy PASS; nuevos Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes=0; segundo Exact Write=0; segundo intento=0; merge=false; producción=false; secretos/tokens expuestos=false.
+Runtime 09: Hosting `1/1` físicamente consumido; nuevos Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes=0; segundo Exact Write=0; segundo intento=0; merge=false; producción=false; secretos/tokens expuestos=false.
 
 ## Progreso
 
 `M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1`
 
-**Phase A=88% | restante=12% | delta certificado runtime 08=+0%.**
+**Phase A=88% | restante=12% | delta certificado runtime 09=+0%.**
 
 ## Siguiente acción exacta
 
-No rerunear `31650715194`. Por STOP_RETRY se requiere un nuevo `HOSTING_RUNTIME_ONCE` Staff bound al HEAD vivo reparado. El preflight v3 debe validar shell + submit canónico antes de provider; con PASS, máximo un Hosting DEV y runtime. Con PASS real cerrar M7 y continuar M8 → M9 → M10.
+No rerunear `31651410812`. Se requiere nuevo `HOSTING_RUNTIME_ONCE` Staff sobre HEAD vivo reparado; preflight v4 obligatorio antes de provider. Con PASS real cerrar M7 y continuar M8 → M9 → M10.
 
 ## Academia
 
-Sin cambio de contenido todavía. Tras runtime PASS, actualizar manuales/cursos sobre formulario único, rutas por rol, permisos, errores de acceso y notificaciones. No documentar overlays legacy.
+Sin cambio de contenido todavía. Tras runtime PASS, actualizar manuales/cursos sobre formulario único, rutas por rol, permisos, continuidad de sesión y estados de acceso. No documentar overlays legacy ni mecanismos QA.
