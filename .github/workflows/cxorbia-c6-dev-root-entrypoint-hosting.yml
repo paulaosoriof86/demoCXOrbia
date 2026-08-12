@@ -50,7 +50,7 @@ jobs:
 
       - name: Exclude ephemeral material
         run: |
-          printf '%s\n' '.tmp/' '.firebase/' 'firebase-debug.log' >> .git/info/exclude
+          printf '%s\n' '.tmp/' '.firebase/' 'firebase-debug.log' 'gha-creds-*.json' >> .git/info/exclude
 
       - name: Read execute state
         id: request
@@ -146,26 +146,11 @@ jobs:
             > "$OUT_DIR/credential-selection-staff-shopper.source-safe.json"
 
           if [[ "$CXORBIA_C6_ACTION" == "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF" ]]; then
-            node <<'NODE'
-            const fs=require('fs');
-            const a=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection-staff-shopper.source-safe.json','utf8'));
-            const p=JSON.parse(fs.readFileSync(process.env.PRIVATE_E2E,'utf8'));
-            if(a.decision!=='PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY'||a.authWrites!==0||a.passwordChanges!==0||a.valuesExported!==false)throw new Error('staff_admin_credential_selection_not_safe_pass');
-            if(!p?.staff?.login||!p?.staff?.password)throw new Error('private_e2e_staff_bundle_incomplete');
-            if(p?.shopper||p?.client)throw new Error('private_e2e_staff_bundle_scope_exceeded');
-            NODE
+            node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection-staff-shopper.source-safe.json','utf8'));const p=JSON.parse(fs.readFileSync(process.env.PRIVATE_E2E,'utf8'));if(a.decision!=='PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY'||a.authWrites!==0||a.passwordChanges!==0||a.valuesExported!==false)throw new Error('staff_admin_credential_selection_not_safe_pass');if(!p?.staff?.login||!p?.staff?.password)throw new Error('private_e2e_staff_bundle_incomplete');if(p?.shopper||p?.client)throw new Error('private_e2e_staff_bundle_scope_exceeded');"
           else
             node tools/qa/cxorbia-c6-existing-client-e2e-credential.mjs \
               > "$OUT_DIR/credential-selection-client.source-safe.json"
-            node <<'NODE'
-            const fs=require('fs');
-            const a=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection-staff-shopper.source-safe.json','utf8'));
-            const b=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection-client.source-safe.json','utf8'));
-            const p=JSON.parse(fs.readFileSync(process.env.PRIVATE_E2E,'utf8'));
-            if(a.decision!=='PASS_PHASE_A_EXISTING_E2E_CREDENTIAL_SELECTION_DYNAMIC'||a.authWrites!==0||a.passwordChanges!==0||a.valuesExported!==false)throw new Error('staff_shopper_credential_selection_not_safe_pass');
-            if(b.decision!=='PASS_C6_EXISTING_CLIENT_CREDENTIAL_SELECTION'||b.authWrites!==0||b.passwordChanges!==0||b.valuesExported!==false)throw new Error('client_credential_selection_not_safe_pass');
-            if(!p?.staff?.login||!p?.staff?.password||!p?.shopper?.login||!p?.shopper?.password||!p?.client?.login||!p?.client?.password)throw new Error('private_e2e_bundle_incomplete');
-            NODE
+            node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection-staff-shopper.source-safe.json','utf8'));const b=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection-client.source-safe.json','utf8'));const p=JSON.parse(fs.readFileSync(process.env.PRIVATE_E2E,'utf8'));if(a.decision!=='PASS_PHASE_A_EXISTING_E2E_CREDENTIAL_SELECTION_DYNAMIC'||a.authWrites!==0||a.passwordChanges!==0||a.valuesExported!==false)throw new Error('staff_shopper_credential_selection_not_safe_pass');if(b.decision!=='PASS_C6_EXISTING_CLIENT_CREDENTIAL_SELECTION'||b.authWrites!==0||b.passwordChanges!==0||b.valuesExported!==false)throw new Error('client_credential_selection_not_safe_pass');if(!p?.staff?.login||!p?.staff?.password||!p?.shopper?.login||!p?.shopper?.password||!p?.client?.login||!p?.client?.password)throw new Error('private_e2e_bundle_incomplete');"
           fi
           chmod 600 "$PRIVATE_E2E"
 
