@@ -1,15 +1,15 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-12 17:30 -06:00  
-**Estado vivo:** `C6_RUNTIME_08_STOP_RETRY_POINTER_INTERCEPT__HOSTING_1_OF_1__SOURCE_REPAIR_APPLIED__PHASE_A_88__NO_PRODUCTION`
+**Fecha:** 2026-08-12 17:43 -06:00  
+**Estado vivo:** `C6_RUNTIME_09_STOP_RETRY_POST_AUTH_FRONTEND_HANDOFF__HOSTING_1_OF_1__SOURCE_REPAIR_APPLIED__PHASE_A_88__NO_PRODUCTION`
 
 ## Prevalencia actual
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`.
 2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`.
-3. Evidencia runtime 08: `app/docs/evidence/c6-live-user-admin-runtime-proof-31650715194.json`.
-4. Run `31650715194`, job `94294235029`, artifact `9162485896`, digest `sha256:e30accedd8e8c571066319572267e84856752577b7cd4cd63e0cd1f3c7d20194`.
-5. Reparación source-only posterior: smoke commit `ccf759c2a82a5baf82397cef02c3ca7851e13ce8`; preflight v3 commit `7cab212e5583ed7e2b4dc8b132b0d2b5bf953c19`.
+3. Evidencia runtime 09: `app/docs/evidence/c6-live-user-admin-runtime-proof-31651410812.json`.
+4. Run `31651410812`, job `94296350609`, artifact `9162751195`, digest `sha256:16970fb360a1fc54d3b94f7a6ff87138afa959ac6b6fa31f7299b78dfeee48d8`.
+5. Reparación source-only posterior: membership/frontend handoff commit `a89ec134fe1b3b9cd0a8f014b39133d7a72ccd5a`; smoke commit `87bcddebeb74147dc0862ff3115186795978f058`; preflight v4 commit `84e736b064d66bf7f7bde3d54955d98fb0f0a9a9`.
 6. C6 Staff Exact Write V2 y canonical readback PASS, cerrados/no repetibles.
 7. `app/docs/CAMBIOS-BACKEND.md`, `app/docs/RESUMEN-PARA-CLAUDE.md`, `app/docs/PENDIENTES-PROTOTIPO.md` y mirrors raíz.
 8. Plan/tracker/Academia.
@@ -18,18 +18,18 @@
 ## Estado técnico vigente
 
 - Phase A: **88% certificado / 12% restante**.
-- Runtime 08: STOP_RETRY después de Hosting y antes de submit de credenciales.
-- Preflight Staff v2 PASS incluyendo `bash -n` del shell Hosting exacto y ausencia de heredoc anidado.
+- Runtime 09: STOP_RETRY después de Hosting y después de autenticación/contexto/autoridad HR, pero antes de entrada final visible al shell.
+- Preflight Staff v3 PASS: `bash -n`, no heredoc anidado, keyboard submit y binding canónico.
 - Google Cloud auth PASS y selector Staff dedicado PASS (`coordinador`).
-- Source parity PASS.
 - Firebase Hosting DEV deploy físico **PASS, 1/1 consumido**.
-- Remote parity `PASS_C6_DEV_ROOT_ENTRYPOINT_REMOTE_PARITY`, exact=true, root 302 y canonical 200.
+- Remote parity PASS exact=true, root 302 y canonical 200.
+- Submit canónico ejecutado; contexto `coordinador/staff/tya/cinepolis` alcanzado.
+- Autoridad HR viva aplicada: **15 periodos / 660 visitas / 211 shoppers**, `2025-06 → 2026-08`, duplicados=0.
 - Artifact decisivo: `FAIL_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME`.
-- Causa raíz: `QA_POINTER_INTERCEPTION_BY_BACKEND_PREVIEW_STATUS_OVERLAY`.
-- `#cxBackendPreviewStatus` se superpuso a `#lgSubmit` e interceptó pointer events; el formulario canónico nunca llegó a submitirse.
-- No hay fallo nuevo demostrado de Auth/claims/membership/Firestore/HR.
-- Source repair ya aplicado sin rerun: el smoke usa Enter desde `#lgPass` para activar el mismo submit canónico y el preflight v3 bloquea la regresión al pointer click.
-- No se modificó producto/UI, `/app/modules` ni `app/core/backend-preview-status.js`.
+- Causa raíz: `C6_POST_AUTH_HR_AUTHORITY_FRONTEND_ENTRY_HANDOFF_GAP__STALE_FIRESTORE_EMPTY_STATE`.
+- Snapshot de fallo: `appOn=false`, `loginHidden=false`, `backendEmpty=true` pese a autoridad HR ya poblada.
+- Source repair aplicado sin rerun: Staff revalida membership al evento de autoridad, reconcilia stale empty state y reutiliza `CX.app.enter()`; smoke/preflight v4 exigen el handoff completo.
+- No se modificó `/app/modules` ni UI visual de producto.
 - Nuevos writes=0; merge=false; producción=false.
 
 ## Progreso
@@ -40,4 +40,4 @@
 
 ## Siguiente acción exacta
 
-No reabrir gates anteriores ni rerunear `31650715194`. Por STOP_RETRY se requiere nueva autorización explícita para un nuevo `HOSTING_RUNTIME_ONCE` Staff bound al HEAD vivo reparado, con `action: C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`. El preflight v3 debe PASS antes del provider, incluyendo shell válido y submit canónico por teclado; solo entonces máximo un Hosting DEV Staff-only. Con PASS real: M7 → M8 → M9 → M10.
+No reabrir gates anteriores ni rerunear `31651410812`. Por STOP_RETRY se requiere nueva autorización explícita para un nuevo `HOSTING_RUNTIME_ONCE` Staff bound al HEAD vivo reparado. El preflight v4 debe PASS antes del provider; solo entonces máximo un Hosting DEV Staff-only. Con PASS real: M7 → M8 → M9 → M10.
