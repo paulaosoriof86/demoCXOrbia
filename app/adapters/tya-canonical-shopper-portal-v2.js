@@ -22,8 +22,11 @@
     ];
     return [...new Set(values.flatMap(flatten).map(str).filter(Boolean))];
   }
+  function authContext(){
+    try{return CX.backendAuth?.context?.()||null;}catch(_){return null;}
+  }
   function sessionShopperId(){
-    return str(CX.session?.user?.shopperId||window.CX_BACKEND_AUTH?.currentContext?.()?.shopperId);
+    return str(CX.session?.user?.shopperId||authContext()?.shopperId);
   }
   function resolveSessionShopper(data){
     const raw=sessionShopperId(),map=data?.__identityMap||{},rows=arr(data?.shoppers);
@@ -47,7 +50,7 @@
     return {ok:true,reason:'unique_exact_identity',raw,canonical,row,tokens:[...tokens],matches};
   }
   function authorityPending(){
-    const ctx=window.CX_BACKEND_AUTH?.currentContext?.();
+    const ctx=authContext();
     return !!(ctx?.authenticated&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied!==true);
   }
   function rows(vs,ui){return vs.length?`<div style="overflow:auto"><table class="tbl"><thead><tr><th>Periodo</th><th>Visita</th><th>Estado</th><th>Fecha</th><th>País</th></tr></thead><tbody>${vs.map(v=>{const st=stage(v);return `<tr><td>${esc(v.periodLabel||v.periodKey)}</td><td><b>${esc(v.sucursal)}</b><div style="font-size:10px;color:var(--t3)">${esc(v.escenario)} · ${esc(v.ciudad)}</div></td><td><span class="bdg bdg-${st[1]}">${esc(st[0])}</span></td><td>${esc(v.realizada||v.cuestFecha||v.submittedAt||v.agendada||v.disponibleDesde||'—')}</td><td>${esc(v.pais||v.country||'—')}</td></tr>`;}).join('')}</tbody></table></div>`:ui.empty('🗒️','Sin visitas en esta categoría.');}
@@ -89,6 +92,6 @@
     };
     draw();return host;
   }
-  function install(){if(!CX.modules)return;CX.modules.miperfil=render;window.CX_TYA_CANONICAL_SHOPPER_PORTAL={ready:true,version:'canonical-shopper-portal-v2-p0-exact-identity',exactIdentityOnly:true,fullHistory:true,certificationVisible:true,providerWrites:0,production:false,resolveExactSessionShopper:resolveSessionShopper};}
+  function install(){if(!CX.modules)return;CX.modules.miperfil=render;window.CX_TYA_CANONICAL_SHOPPER_PORTAL={ready:true,version:'canonical-shopper-portal-v2-p0-canonical-auth-context',exactIdentityOnly:true,fullHistory:true,certificationVisible:true,providerWrites:0,production:false,resolveExactSessionShopper:resolveSessionShopper,currentAuthContext:authContext,isAuthorityPending:authorityPending};}
   install();document.addEventListener('DOMContentLoaded',install,{once:true});window.addEventListener('cx:full-visual-ready',install);
 })();
