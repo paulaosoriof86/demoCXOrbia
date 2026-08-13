@@ -8,7 +8,7 @@ const outputFile=String(process.env.CXORBIA_C6_STAFF_PREFLIGHT_OUTPUT||'').trim(
 const files={
   workflow:'.github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml',
   selectorWrapper:'tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs',
-  staffSelector:'tools/qa/cxorbia-c6-existing-staff-admin-e2e-credential.mjs',
+  staffSelector:'tools/qa/cxorbia-c6-canonical-staff-admin-e2e-credential.mjs',
   runtimeWrapper:'tools/qa/tya-c6-dev-root-runtime-wrapper.mjs',
   staffSmoke:'tools/qa/tya-c6-staff-admin-human-auth-browser-smoke.mjs',
   browserAuth:'app/core/backend-browser-auth.js',
@@ -60,9 +60,18 @@ ensure(!executeScript.includes("node <<'NODE'"),'WORKFLOW_HOSTING_EXECUTE_NESTED
 ensure(executeScript.includes("node -e \"const r=require('./'+process.env.OUT_DIR+'/root-entrypoint-source.json')"),'WORKFLOW_HOSTING_SOURCE_ASSERT_NOT_INLINE');
 ensure(executeScript.includes("node -e \"const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/runtime/report.json'"),'WORKFLOW_HOSTING_RUNTIME_ASSERT_NOT_INLINE');
 
-ensure(sources.selectorWrapper.includes("./cxorbia-c6-existing-staff-admin-e2e-credential.mjs"),'SELECTOR_WRAPPER_NOT_DEDICATED_STAFF');
+ensure(sources.selectorWrapper.includes("./cxorbia-c6-canonical-staff-admin-e2e-credential.mjs"),'SELECTOR_WRAPPER_NOT_EXACT_WRITE_CANONICAL_STAFF');
 ensure(sources.selectorWrapper.includes('const script=staffOnly?staffScript:genericScript;'),'SELECTOR_WRAPPER_STAFF_ROUTE_NOT_EXPLICIT');
-ensure(sources.staffSelector.includes("if(action!==exactAction)stageFail('STAFF_ACTION_NOT_EXACT');"),'STAFF_SELECTOR_ACTION_NOT_FAIL_CLOSED');
+ensure(sources.selectorWrapper.includes("result.canonicalTargetAlias!=='B'"),'SELECTOR_WRAPPER_CANONICAL_ALIAS_B_ASSERTION_MISSING');
+ensure(sources.selectorWrapper.includes("result.staffRole!=='admin'"),'SELECTOR_WRAPPER_CANONICAL_ADMIN_ASSERTION_MISSING');
+ensure(sources.staffSelector.includes("const TARGET_ALIAS='B';"),'STAFF_SELECTOR_CANONICAL_ALIAS_B_MISSING');
+ensure(sources.staffSelector.includes("const TARGET_ROLE='admin';"),'STAFF_SELECTOR_CANONICAL_ADMIN_ROLE_MISSING');
+ensure(sources.staffSelector.includes('loadStaffPrivateExecutionHandoff'),'STAFF_SELECTOR_PRIVATE_HANDOFF_MISSING');
+ensure(sources.staffSelector.includes('cxorbia-c6-staff-v2-private-handoff-ephemeral-password'),'STAFF_SELECTOR_EXACT_WRITE_V2_DERIVATION_MISSING');
+ensure(sources.staffSelector.includes('exactWriteCanonical:true'),'STAFF_SELECTOR_CANONICAL_FLAG_MISSING');
+ensure(sources.staffSelector.includes('legacyCredentialBundleUsed:false'),'STAFF_SELECTOR_LEGACY_BUNDLE_GUARD_MISSING');
+ensure(!sources.staffSelector.includes('corte6-credential-bundle.enc.json'),'STAFF_SELECTOR_LEGACY_CREDENTIAL_BUNDLE_REINTRODUCED');
+ensure(!sources.staffSelector.includes('staffPasswordCandidates'),'STAFF_SELECTOR_LEGACY_PASSWORD_GUESSING_REINTRODUCED');
 ensure(!sources.staffSelector.includes('HOLD_SHOPPER'),'STAFF_SELECTOR_CONTAINS_SHOPPER_HOLD');
 ensure(!sources.staffSelector.includes('fetchLiveHrWithRetry'),'STAFF_SELECTOR_CONTAINS_HR_SELECTOR_DEPENDENCY');
 ensure(!sources.staffSelector.includes("admin.firestore()"),'STAFF_SELECTOR_CONTAINS_FIRESTORE_DEPENDENCY');
@@ -115,6 +124,9 @@ const result={
     hostingExecuteBashSyntax:true,
     hostingExecuteNestedHeredocAbsent:true,
     staffSelectorDedicated:true,
+    staffSelectorExactWriteCanonicalAliasB:true,
+    staffSelectorPrivateHandoffDerived:true,
+    staffSelectorLegacyBundleForbidden:true,
     staffSelectorNoShopperHrFirestoreDependency:true,
     staffRuntimeNoTextPatching:true,
     staffCanonicalFormSelectors:true,
