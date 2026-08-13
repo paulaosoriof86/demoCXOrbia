@@ -1,20 +1,30 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-13 11:18 -06:00
-**Estado:** `DEV_QUALIFIED__OWNER_VISUAL_ACCEPTANCE_PENDING__NO_FRONTEND_PATCH`
+**Última actualización:** 2026-08-13 12:24 -06:00
+**Estado:** `OWNER_VISIBLE_DEV_LAB_HOSTED__OWNER_ACCEPTANCE_PENDING__NO_PRODUCT_FRONTEND_PATCH`
 
 M1–M10 completaron la calificación técnica del entorno DEV limpio. **No se ha reemplazado la plataforma/hosting real vigente de TyA.** El cutover real permanece pendiente.
 
-Antes del go-live real se hará aceptación visual en DEV con Paula observando y pruebas E2E con datos sintéticos, más reconciliación read-only de HR viva, shoppers y visitas disponibles.
+## Laboratorio DEV visible ya publicado
 
-Para Claude:
-- no modificar `/app/modules` ni `/app/core` por esta corrección;
-- no crear candidata nueva;
-- mantener exactamente `CX.data`;
-- mantener Cinépolis como proyecto configurable dentro de tenant TyA;
-- cualquier defecto de tenant, módulos, roles, navegación, Academia o flujo que aparezca en la aceptación visual debe documentarse por archivo/módulo y corregirse por el carril frontend correspondiente, no mediante parche backend;
-- mantener el consentimiento de confidencialidad como acción humana.
+Se creó y publicó `app/dev-validation/index.html` como superficie independiente de observabilidad para que Paula vea las pruebas ejecutarse en vivo. Run DEV `31730303749`, job `94548821932`: `SUCCESS`.
 
-El 100% existente en el tracker debe interpretarse como **100% de calificación técnica DEV**, no como go-live real completado.
+La superficie muestra PASS/FAIL/BLOCKED y bitácora, consulta HR viva read-only con opción de lectura fresca, presenta períodos/visitas/shoppers/disponibles, comprueba entrypoint/build y módulos críticos, y embebe la aplicación DEV canónica para validación humana de sesión, rol, tenant, proyecto, período, fuente y navegación.
 
-Academia: durante la aceptación visual se validará que los accesos/rutas visibles correspondan al rol y configuración TyA; sin cambios de contenido en este bloque documental.
+## Contrato para frontend/prototipo
+
+- El laboratorio es DEV-only y no forma parte de la navegación productiva.
+- No se tocaron módulos del producto ni el core para implementarlo.
+- No se crea candidata nueva por este bloque.
+- `CX.data` se conserva.
+- Cinépolis continúa como proyecto configurable dentro del tenant TyA.
+- Cualquier diferencia visual reproducible que Paula observe se registra por archivo/módulo y se corrige por el carril frontend correspondiente.
+- El consentimiento de confidencialidad continúa siendo acción humana.
+
+## Pendiente
+
+La aceptación visual de Paula aún no está otorgada. El E2E con escrituras sintéticas temporales no se ejecutó y queda bloqueado hasta gate separado con cleanup exacto.
+
+El 100% del tracker sigue significando **100% de calificación técnica DEV**, no go-live real completado.
+
+Academia: el laboratorio verifica que la superficie esté publicada; durante la sesión visual se validarán acceso, ruta y contenido por rol/configuración TyA.
