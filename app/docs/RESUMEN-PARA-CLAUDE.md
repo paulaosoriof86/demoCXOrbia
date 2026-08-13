@@ -1,57 +1,51 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-13 05:21 -06:00  
-**Estado:** `M8_PASS__PHASE_A_96__NO_FRONTEND_MODULE_CHANGE`
+**Última actualización:** 2026-08-13 05:31 -06:00  
+**Estado:** `M9_PRECUTOVER_PASS__PHASE_A_96__NO_FRONTEND_CHANGE__AWAIT_CUTOVER_GATE`
 
 ## Estado vigente
 
-C6/M7 permanece cerrado con PASS real. M8 también quedó cerrado con PASS mediante navegador real, HR viva y rollback-readiness, sin modificar módulos frontend.
+C6/M7 y M8 permanecen cerrados con PASS. La fase provider pre-cutover read-only de M9 también dio PASS. Producción no ha sido mutada.
 
 **Phase A certificado: 96% / restante: 4%.**
 
-## M8 — PASS
+## M9 provider pre-cutover — PASS
 
-Run `31694998731`, job `94430661554`, artifact `9178957729`, digest `sha256:296a404470dc692d2b01679550d2e19b3429ca281f7c9333655ebf3bb8b1f85b`.
+Run `31695760214`, job `94433057739`, artifact `9179228696`, digest `sha256:83233d83fa56e3ca1f1afb437fccdce16fd368efbb362e0ffb1db51afede95c1`.
 
 PASS:
-- Admin canónico `B`, contexto `admin / staff / tya / cinepolis`, membership verificada.
-- HR viva: 15 periodos, 660 visitas, `2025-06 → 2026-08`.
-- Perfiles protegidos 197; identity map 211; revisión de identidad 0.
-- Duplicados visita/shopperId=0.
-- Siete rutas requeridas PASS: Dashboard, Proyectos, Visitas, Postulaciones, Certificación, Financiero y Academia.
-- Financiero/Beneficios por rol PASS.
-- Dos reconciliaciones HR frescas PASS sin agregar/eliminar visitas ni duplicarlas.
-- Cero errores page/HTTP/request.
-- Rollback readiness source gate PASS y listo para captura provider en M9.
-
-## Confidencialidad
-
-La ausencia de navegación observada durante M8 no era una regresión del producto. Era el gate humano esperado `CX.confidencialidad.pending(admin)` antes del callback que monta el router. QA no registró aceptación ni escribió localStorage en nombre de ningún usuario. Se validó downstream únicamente en la sesión efímera de QA, manteniendo el consentimiento intacto.
+- estrategia `PROMOTE_EXISTING_CLEAN_PROJECT`;
+- build M8 exacto preservado: `ecc725866acc3eb8`;
+- runtime drift después de M8=0;
+- release pre-cutover capturada: `sites/cxorbia-backend-dev/releases/1786585552096000`;
+- rollback version capturada/finalizada: `sites/cxorbia-backend-dev/versions/a9670bb8a19862cd`;
+- provider rollback readiness verificada;
+- cero provider writes, deploys, merge o producción.
 
 ## Frontend / Claude
 
-- **No modificar `/app/modules` ni `/app/core` por M8.**
+- **No se modificó `/app/modules` ni `/app/core` para M8/M9.**
 - No se requiere candidata frontend nueva.
-- Mantener el formulario único `#loginForm/#lgUser/#lgPass/#lgSubmit`.
-- Mantener el gate humano de confidencialidad; no convertirlo en aceptación automática.
-- No reintroducir overlays legacy Staff ni credenciales técnicas visibles.
 - Mantener exactamente la interfaz pública de `CX.data`.
-- No reabrir C6/M7/M8 salvo drift reproducible.
+- Mantener el gate humano de confidencialidad; no automatizar consentimiento.
+- No reabrir C6/M7/M8 ni la captura provider M9 salvo drift reproducible.
 
 ## Seguridad
 
-M8: consentimiento QA=false; browser-local writes QA=0; provider writes=0; Hosting/Cloud Run deploys=0; Auth/Firestore/HR/Rules/Storage writes=0; Make/Gemini/pagos=0; merge=false; producción=false; secretos/tokens expuestos=false.
+M9 provider readiness: Hosting GETs autenticados=2; provider writes=0; Hosting/Cloud Run deploys=0; Auth/Firestore/HR/Rules/Storage writes=0; Make/Gemini/pagos=0; rollback execution=false; merge=false; production mutation=false.
 
 ## Progreso
 
 `M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=5/5 | M8=3/3 | M9=0/3 | M10=0/1`
 
-**Phase A=96% | restante=4% | delta certificado M8=+3 puntos.**
+**Phase A=96% | restante=4%.**
+
+M9 aún vale 0/3 porque el cutover productivo no se ejecuta sin gate explícito; la preparación read-only no sustituye esa frontera.
 
 ## Siguiente acción exacta
 
-M9 inicia con captura provider read-only de la release/version productiva actual y verificación de rollback soportado. Cualquier promoción a producción queda fuera de este cierre y requiere el gate productivo explícito definido por el contrato. Luego M10 smoke/freeze final.
+Esperar exclusivamente el gate `M9_EXPLICIT_CUTOVER_ONE_PRODUCTION_PROMOTION`. Una vez autorizado, ejecutar una única promoción ligada al build probado por M8 y a la release/version pre-cutover capturada; después smoke inmediato y cierre M9. M10 sigue como smoke/freeze final de Phase A.
 
 ## Academia
 
-Puede documentarse: `Auth → membership/RBAC → HR viva → siete rutas`, gate humano de confidencialidad y reconciliación HR idempotente. No incluir credenciales, source locks internos ni mecanismos QA de bypass de interacción.
+Sin nueva modificación funcional. Puede documentarse el patrón de pre-cutover/rollback y la preservación del consentimiento humano, sin comandos internos ni identificadores sensibles.
