@@ -5,7 +5,7 @@ on:
     branches:
       - docs-tya-v6-v71-audit
     paths:
-      - backend/config/m9-provider-precutover-readonly-execute.json
+      - backend/config/m10-final-readonly-smoke-execute.json
 
 permissions:
   contents: read
@@ -19,7 +19,7 @@ defaults:
     shell: bash
 
 env:
-  EXECUTE_FILE: backend/config/m9-provider-precutover-readonly-execute.json
+  EXECUTE_FILE: backend/config/m10-final-readonly-smoke-execute.json
   M9_EVIDENCE: app/docs/evidence/m9-retry-production-pass-31721147260.json
   OUT_DIR: .tmp/m10-final
   PRIVATE_DIR: .tmp/m10-final/private
