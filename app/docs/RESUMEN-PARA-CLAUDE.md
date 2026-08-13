@@ -13,19 +13,7 @@ C6 Staff Exact Write V2 permanece cerrado con PASS real. Runtime 12 cerró adem�
 
 Run `31658676280`, job `94318658180`, artifact `9165383310`, digest `sha256:a327b0d5e0a592d41417dce7ff934984ab51d3d5927dbee9ba774200eee5befe`.
 
-PASS:
-- preflight v4 reforzado;
-- selector canónico exacto `B=admin`;
-- `exactWriteCanonical=true`, `legacyCredentialBundleUsed=false`;
-- Hosting DEV 1/1 y remote parity exact=true;
-- Auth/contexto `admin / staff / tya / cinepolis`;
-- membership `tenants/tya/users/self` verificada y preservada después de `CX.app.enter()`;
-- datos runtime **15 periodos / 660 visitas / 197 shoppers**, `2025-06 → 2026-08`;
-- frontend handoff `entered` y stale provider empty limpiado;
-- primera carga PASS;
-- **3 reloads PASS**;
-- **new-tab PASS**;
-- formulario canónico `#loginForm/#lgUser/#lgPass/#lgSubmit`.
+PASS: B/admin canónico; `exactWriteCanonical=true`; `legacyCredentialBundleUsed=false`; Hosting DEV 1/1; remote parity exact=true; Auth/contexto `admin / staff / tya / cinepolis`; membership `tenants/tya/users/self` verificada y preservada después de `CX.app.enter()`; datos runtime **15 periodos / 660 visitas / 197 shoppers**, `2025-06 → 2026-08`; frontend `entered`; primera carga + 3 reloads + new-tab PASS.
 
 ## Frontend / Claude
 
@@ -34,9 +22,7 @@ PASS:
 - Mantener el formulario único `#loginForm/#lgUser/#lgPass/#lgSubmit`.
 - No reintroducir overlays legacy Staff ni credenciales técnicas visibles.
 - Mantener la interfaz exacta de `CX.data`.
-- El adapter backend C6 conserva la membership/RBAC después de `CX.app.enter()` sin mutación directa de UI.
-- No reabrir C6/M7, Exact Write V2, D rebase, Auth340, SKIP13, MultiAuth, HR ni M4/static salvo drift reproducible.
-- Los pendientes frontend heredados continúan separados y no bloquearon M7.
+- No reabrir C6/M7 ni gates cerrados salvo drift reproducible.
 
 ## Seguridad
 
