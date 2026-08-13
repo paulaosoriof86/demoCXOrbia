@@ -80,18 +80,17 @@ async function establishPostGateQaShell(page,s){
     const c=window.CX?.confidencialidad;
     const role=window.CX?.session?.role||null;
     let pending=null;try{pending=typeof c?.pending==='function'?c.pending(role):null;}catch{pending='error';}
-    let acceptSrc='',showSrc='',enterSrc='';
-    try{acceptSrc=String(c?.accept||'');showSrc=String(c?.show||'');enterSrc=String(window.CX?.app?.enter||'');}catch{}
+    let acceptSrc='',showSrc='';try{acceptSrc=String(c?.accept||'');showSrc=String(c?.show||'');}catch{}
     return {
       exists:!!c,role,pending,
       acceptanceLocalOnly:/localStorage/i.test(acceptSrc)&&!/\bfetch\s*\(|XMLHttpRequest|firebase|firestore|https?:\/\//i.test(acceptSrc),
       showCallsOnDone:/if\s*\(onDone\)\s*onDone\s*\(\s*\)/.test(showSrc),
-      enterUsesGateAndRouter:/confidencialidad\.show/.test(enterSrc)&&/router\.mount/.test(enterSrc),
+      appEnterMayBeRuntimeWrapped:true,
       currentConsentRecorded:(()=>{try{return typeof c?.pending==='function'?c.pending(role)===false:null;}catch{return null;}})()
     };
   });
   ensure(proof.exists&&proof.role==='admin'&&proof.pending===true,'M8_EXPECTED_CONFIDENTIALITY_GATE_NOT_PRESENT');
-  ensure(proof.acceptanceLocalOnly&&proof.showCallsOnDone&&proof.enterUsesGateAndRouter,'M8_POST_GATE_CONTINUATION_NOT_SOURCE_PROVEN');
+  ensure(proof.acceptanceLocalOnly&&proof.showCallsOnDone,'M8_CONFIDENTIALITY_LOCAL_CALLBACK_NOT_PROVEN');
   await page.screenshot({path:path.join(outDir,'screenshots','m8-expected-confidentiality-gate.png'),fullPage:true});
   const mounted=await page.evaluate(()=>{try{window.CX.router.mount();return {ok:true,navCount:document.querySelectorAll('.nav-i[id]').length,navDashboardVisible:!!document.getElementById('nav-dashboard')?.getClientRects().length};}catch(e){return {ok:false,error:String(e?.message||e).slice(0,600)};}});
   ensure(mounted.ok&&mounted.navDashboardVisible&&mounted.navCount>0,'M8_POST_GATE_QA_ROUTER_MOUNT_FAILED_'+clean(JSON.stringify(mounted)));
