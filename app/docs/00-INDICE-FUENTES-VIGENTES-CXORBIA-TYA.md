@@ -7,13 +7,14 @@
 
 1. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`
 2. `app/docs/evidence/dev-visual-acceptance-clarification-20260813.json`
-3. `app/docs/evidence/m10-final-phase-a-freeze-31721769360.json`
-4. `app/docs/evidence/m9-retry-production-pass-31721147260.json`
-5. `app/docs/CAMBIOS-BACKEND.md`
-6. `app/docs/RESUMEN-PARA-CLAUDE.md`
-7. `app/docs/PENDIENTES-PROTOTIPO.md`
-8. `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md`
-9. PR #7.
+3. `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-DEV-VISUAL-20260813.md` — prevalece para pendientes pre-go-live porque el reemplazo directo del archivo principal fue bloqueado por la herramienta.
+4. `app/docs/evidence/m10-final-phase-a-freeze-31721769360.json`
+5. `app/docs/evidence/m9-retry-production-pass-31721147260.json`
+6. `app/docs/CAMBIOS-BACKEND.md`
+7. `app/docs/RESUMEN-PARA-CLAUDE.md`
+8. `app/docs/PENDIENTES-PROTOTIPO.md`
+9. `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md`
+10. PR #7.
 
 ## Corrección de alcance prevalente
 
