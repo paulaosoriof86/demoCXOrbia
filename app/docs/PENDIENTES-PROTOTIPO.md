@@ -1,20 +1,27 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-13 12:38 -06:00
-**Estado:** `HUMAN_SHOPPER_P0__OWNER_ACCEPTANCE_REJECTED`
+**Última actualización:** 2026-08-13 13:29 -06:00
+**Estado:** `HUMAN_SHOPPER_P0_OPEN__STOP_RETRY__SECOND_PROVIDER_READ_NOT_AUTHORIZED`
 
-La calificación técnica DEV permanece preservada, pero la aceptación funcional humana fue rechazada.
+La calificación técnica DEV permanece preservada, pero la aceptación funcional humana está rechazada.
 
-## Pendiente P0 inmediato
+## P0 inmediato
 
-Paula ingresó con un perfil Shopper real. La navegación Shopper aparece, pero `Mi Perfil` informa que la identidad de la sesión no está vinculada al read model canónico y la vista autenticada no presenta el contexto operacional esperado de HR viva.
+El Shopper real autentica, pero `Mi Perfil` no resuelve la identidad contra el read model canónico y la vista autenticada no carga el contexto HR esperado. Evidencia: `app/docs/evidence/p0-human-shopper-canonical-binding-failure-20260813.json`.
 
-Evidencia: `app/docs/evidence/p0-human-shopper-canonical-binding-failure-20260813.json`.
+El único diagnóstico read-only autorizado falló en run `31735473752` sin dejar artifact ni causa raíz persistida. El request fue neutralizado y no se ejecutó segundo intento. Evidencia: `app/docs/evidence/p0-human-shopper-readonly-run-failure-31735473752.json`.
 
-Resolver primero este enlace post-login y repetir la validación humana Shopper. El resultado verde previo del laboratorio no sustituye esta prueba porque comprobaba Hosting, lectura HR y assets, no el comportamiento funcional completo del principal humano autenticado.
+## Antes de cualquier nuevo provider read
 
-El `0` de visitas disponibles mostrado por el laboratorio queda sin certificar hasta evaluarlo con la semántica canónica de estados.
+- Corregir source-only el mecanismo diagnóstico para que capture el error aun si el proceso falla.
+- Separar la recuperación offline del usuario visible Admin B de la lectura del Shopper.
+- Solo si todavía es necesaria otra lectura, solicitar un gate explícito nuevo.
 
-Después del P0: validar Admin/Operaciones, ejecutar el E2E sintético bajo su gate separado y solo entonces evaluar el cutover real TyA.
+## Después de resolver el P0
 
-No crear candidata nueva ni rediseñar frontend. Corregir únicamente la causa reproducible por el carril autorizado.
+- Repetir validación humana Shopper: perfil, país, histórico, disponibles, reservas/asignación, mis visitas y Academia según alcance.
+- Validar Admin/Operaciones.
+- Ejecutar E2E sintético bajo gate separado.
+- Evaluar cutover real únicamente después de PASS humano y funcional.
+
+No crear candidata nueva ni rediseñar frontend; no inferir identidades por nombre.
