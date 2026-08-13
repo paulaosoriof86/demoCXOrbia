@@ -34,7 +34,14 @@ window.CX = window.CX || {};
     }catch(_){ return {ready:false, authReady:false, email:''}; }
   }
 
+  function finalAuthority(){
+    return window.CX_PROTECTED_AUTH_HR_AUTHORITY && window.CX_PROTECTED_AUTH_HR_AUTHORITY.applied === true
+      ? window.CX_PROTECTED_AUTH_HR_AUTHORITY
+      : null;
+  }
+
   function inferSource(status, eventName){
+    if(finalAuthority()) return 'hr-live-all-periods+firestore-authenticated-exact-overlay';
     const live = window.CX_BACKEND_DATA_SOURCE || '';
     if(live && live !== 'localStorage/demo') return live;
     if(status === 'ready' || eventName === 'backend-ready' || eventName === 'backend-read-guard-ready') return 'firestore';
@@ -52,7 +59,7 @@ window.CX = window.CX || {};
     if(pill) return pill;
     pill = document.createElement('div');
     pill.id = 'cxBackendPreviewStatus';
-    pill.style.cssText = 'position:fixed;right:18px;bottom:18px;z-index:99999;padding:10px 13px;border-radius:12px;font:600 12px system-ui,-apple-system,Segoe UI,sans-serif;background:#0d2740;color:#fff;box-shadow:0 8px 30px rgba(13,39,64,.22);max-width:470px;line-height:1.35;border:1px solid rgba(255,255,255,.18)';
+    pill.style.cssText = 'position:fixed;right:18px;bottom:18px;z-index:99999;padding:10px 13px;border-radius:12px;font:600 12px system-ui,-apple-system,Segoe UI,sans-serif;background:#0d2740;color:#fff;box-shadow:0 8px 30px rgba(13,39,64,.22);max-width:500px;line-height:1.35;border:1px solid rgba(255,255,255,.18)';
     document.body.appendChild(pill);
     return pill;
   }
@@ -72,35 +79,42 @@ window.CX = window.CX || {};
     if(!isPreview() || !document.body) return;
     const c = counts();
     const f = firebaseState();
+    const authority = finalAuthority();
     const source = inferSource(status, eventName);
     const tenant = (payload && payload.tenantId) || (CX.BACKEND && CX.BACKEND.tenantId) || (CX.backend && CX.backend.tenantId && CX.backend.tenantId()) || 'tya';
+    const isCanonical = !!authority;
     const isFirestore = source.indexOf('firestore') === 0;
     const isSourceSafe = source === 'hr-source-safe' || source.indexOf('source-safe') >= 0;
     const isError = status === 'error';
-    const tone = isFirestore ? (isError ? '#d97706' : '#16a05c') : isSourceSafe ? '#2a6fdb' : isError ? '#c8232c' : '#d97706';
-    const label = isFirestore
-      ? (isError ? 'Firestore protegido · sin fallback' : 'Firestore activo')
-      : isSourceSafe ? 'HR source-safe · validación visual'
-      : isError ? 'Fuente no disponible' : 'Validando fuente';
-    const authLabel = isSourceSafe ? 'validado por gate separado' : (f.email ? f.email : 'pendiente');
+    const tone = isCanonical ? '#16a05c' : isFirestore ? (isError ? '#d97706' : '#16a05c') : isSourceSafe ? '#2a6fdb' : isError ? '#c8232c' : '#d97706';
+    const label = isCanonical
+      ? 'HR viva + overlay protegido'
+      : isFirestore
+        ? (isError ? 'Firestore protegido · sin fallback' : 'Firestore protegido · slice transitorio')
+        : isSourceSafe ? 'HR source-safe · validación visual'
+        : isError ? 'Fuente no disponible' : 'Validando fuente';
+    const authLabel = isSourceSafe ? 'validado por gate separado' : (f.email ? 'autenticado' : 'pendiente');
+    const periodsLabel = isCanonical ? String(authority.periods || c.projects) : 'pendiente';
 
     STATE.status = status || STATE.status;
     STATE.source = source;
     STATE.tenantId = tenant;
     STATE.authEmail = f.email || '';
     STATE.lastEvent = eventName || STATE.lastEvent || '';
-    STATE.lastError = payload && payload.message ? payload.message : (isSourceSafe ? '' : STATE.lastError);
+    STATE.lastError = payload && payload.message ? payload.message : (isCanonical ? '' : STATE.lastError);
     STATE.at = new Date().toISOString();
 
     const pill = ensurePill();
     pill.innerHTML = '<div style="display:flex;gap:8px;align-items:center;margin-bottom:3px"><span style="width:8px;height:8px;border-radius:99px;background:'+tone+';display:inline-block"></span><b>Backend DEV · '+label+'</b></div>'+ 
       '<div>Fuente: <b>'+source+'</b> · Tenant: <b>'+tenant+'</b> · Auth: <b>'+authLabel+'</b></div>'+ 
-      '<div>Proyecto: <b>'+(c.projectId || 'pendiente')+'</b> · Proyectos: '+c.projects+' · Visitas: '+c.visits+' · Shoppers: '+c.shoppers+' · Postulaciones: '+c.posts+'</div>'+ 
+      '<div>Proyecto operativo: <b>'+(c.projectId || 'pendiente')+'</b> · Periodos HR: <b>'+periodsLabel+'</b> · Visitas: '+c.visits+' · Shoppers: '+c.shoppers+' · Postulaciones: '+c.posts+'</div>'+ 
+      (!isCanonical && isFirestore ? '<div style="opacity:.78">Estado transitorio: esperando autoridad HR viva antes de considerar definitivas estas cifras.</div>' : '')+
+      (authority && authority.firstPeriod && authority.latestPeriod ? '<div>Rango HR: <b>'+authority.firstPeriod+' → '+authority.latestPeriod+'</b></div>' : '')+
       (c.periodId ? '<div>Periodo activo: <b>'+c.periodId+'</b></div>' : '')+
       guardLine()+
       (STATE.lastError ? '<div style="opacity:.78;margin-top:2px">Último error: '+STATE.lastError+'</div>' : '');
 
-    window.CX_BACKEND_PREVIEW_STATUS = {status:STATE.status, source, counts:c, firebase:f, tenantId:tenant, event:STATE.lastEvent, error:STATE.lastError, at:STATE.at, guard:window.CX_BACKEND_READ_GUARD || null};
+    window.CX_BACKEND_PREVIEW_STATUS = {status:STATE.status, source, counts:c, firebase:f, tenantId:tenant, event:STATE.lastEvent, error:STATE.lastError, authority, at:STATE.at, guard:window.CX_BACKEND_READ_GUARD || null};
   }
 
   function bindBus(){
@@ -126,9 +140,11 @@ window.CX = window.CX || {};
   function start(){
     if(!isPreview()) return;
     bindBus();
-    render('starting', {}, 'start');
-    setTimeout(function(){ render(STATE.status || 'starting', {}, 'tick-1s'); }, 1000);
-    setTimeout(function(){ render(STATE.status || 'starting', {}, 'tick-3s'); }, 3000);
+    window.addEventListener('cx:protected-auth-hr-authority-ready', function(event){ render('ready', event.detail || {}, 'protected-auth-hr-authority-ready'); });
+    window.addEventListener('cx:live-source-updated', function(event){ render(finalAuthority() ? 'ready' : 'starting', event.detail || {}, 'live-source-updated'); });
+    render(finalAuthority() ? 'ready' : 'starting', {}, 'start');
+    setTimeout(function(){ render(finalAuthority() ? 'ready' : (STATE.status || 'starting'), {}, 'tick-1s'); }, 1000);
+    setTimeout(function(){ render(finalAuthority() ? 'ready' : (STATE.status || 'starting'), {}, 'tick-3s'); }, 3000);
   }
 
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
