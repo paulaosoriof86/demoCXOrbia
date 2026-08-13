@@ -5,7 +5,7 @@
 
 M1–M10 completaron la calificación técnica del entorno DEV limpio. **No se ha reemplazado la plataforma/hosting real vigente de TyA.** El cutover real permanece pendiente.
 
-Antes de producción real se hará aceptación visual en DEV con Paula observando y pruebas E2E con datos sintéticos, más reconciliación read-only de HR viva, shoppers y visitas disponibles.
+Antes del go-live real se hará aceptación visual en DEV con Paula observando y pruebas E2E con datos sintéticos, más reconciliación read-only de HR viva, shoppers y visitas disponibles.
 
 Para Claude:
 - no modificar `/app/modules` ni `/app/core` por esta corrección;
