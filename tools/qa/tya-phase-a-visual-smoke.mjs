@@ -24,8 +24,37 @@ const report = {
   hardFails: [],
   warnings: [],
   p0ShopperExactIdentity: null,
+  p0ShopperAuthorityHandoffSource: null,
   safeState: { deploy: false, production: false, providers: false, databaseWrites: false, imports: false }
 };
+
+/* P0 2026-08-13: this gate is intentionally source-only. The legacy visual role smoke below
+   uses prototype role selection and therefore cannot certify Firebase Auth -> HR authority.
+   These assertions make the canonical handoff contract mandatory in the same CI gate. */
+{
+  const shopperSource=fs.readFileSync('app/adapters/tya-canonical-shopper-portal-v2.js','utf8');
+  const authSource=fs.readFileSync('app/core/backend-browser-auth.js','utf8');
+  const authoritySource=fs.readFileSync('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js','utf8');
+  const statusSource=fs.readFileSync('app/core/backend-preview-status.js','utf8');
+  const checks={
+    canonicalAuthContextPublished: authSource.includes('context: function(){ return currentContext; }'),
+    shopperUsesCanonicalAuthContext: shopperSource.includes('CX.backendAuth?.context?.()'),
+    shopperRejectsObsoleteAuthApi: !shopperSource.includes('window.CX_BACKEND_AUTH'),
+    shopperWaitsForHrAuthority: shopperSource.includes('CX_PROTECTED_AUTH_HR_AUTHORITY?.applied!==true'),
+    shopperSchedulesHrReconcile: shopperSource.includes('CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE'),
+    shopperRerendersOnAuthorityReady: shopperSource.includes('cx:protected-auth-hr-authority-ready'),
+    authorityReplacesVisitsWithCanonicalHr: authoritySource.includes('CX.data._visitas=clone(result.visits)'),
+    authorityReplacesShoppersWithCanonicalHr: authoritySource.includes('CX.data.shoppers=clone(result.shoppers)'),
+    authorityPublishesCanonicalSource: authoritySource.includes("sourceRef='hr-live-all-periods+firestore-authenticated-exact-overlay'"),
+    authorityEmitsReadyEvent: authoritySource.includes('cx:protected-auth-hr-authority-ready'),
+    devStatusListensFinalAuthority: statusSource.includes('cx:protected-auth-hr-authority-ready'),
+    devStatusSeparatesProjectAndHrPeriods: statusSource.includes('Proyecto operativo:')&&statusSource.includes('Periodos HR:'),
+    devStatusMarksFirestoreAsTransient: statusSource.includes('slice transitorio')&&statusSource.includes('esperando autoridad HR viva')
+  };
+  const failed=Object.entries(checks).filter(([,pass])=>!pass).map(([id])=>id);
+  report.p0ShopperAuthorityHandoffSource={pass:failed.length===0,checks,failed,providerCalls:0,writes:0};
+  if(failed.length) report.hardFails.push(`p0-shopper-authority-handoff-source:${failed.join(',')}`);
+}
 
 const roleSpecs = [
   { id: 'admin', enter: 'admin', shell: 'admin', expect: { projectSelector: true } },
@@ -198,6 +227,7 @@ const md = [
   `Hard fails: ${report.hardFails.length}`,
   `Warnings: ${report.warnings.length}`,
   `P0 Shopper exact identity: ${report.p0ShopperExactIdentity?.pass ? 'PASS' : 'FAIL'}`,
+  `P0 Shopper HR authority source handoff: ${report.p0ShopperAuthorityHandoffSource?.pass ? 'PASS' : 'FAIL'}`,
   '', '## Roles',
   ...report.roles.map(role => `- ${role.id}: ${role.status}${role.error ? ` — ${role.error}` : ''}`),
   '', '## Hard fails', ...(report.hardFails.length ? report.hardFails.map(x => `- ${x}`) : ['- none']),
