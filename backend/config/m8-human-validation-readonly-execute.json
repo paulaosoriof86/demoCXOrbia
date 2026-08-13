@@ -1,26 +1,27 @@
 {
   "schemaVersion": "cxorbia.m8.human-validation-readonly.request.v1",
-  "requestId": "m8-human-validation-rollback-ready-20260812-05",
+  "requestId": "m8-human-validation-rollback-ready-20260813-06",
   "enabled": true,
   "consumed": false,
   "status": "authorized_execute_once",
   "mode": "READONLY_HUMAN_RUNTIME_ONCE",
   "action": "M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY",
-  "issuedAt": "2026-08-12T23:34:00-06:00",
+  "issuedAt": "2026-08-13T05:02:00-06:00",
   "authorizedBy": "Paula",
-  "authorizationSource": "current_conversation_2026-08-12_continue_same_readonly_M8_scope_root_cause_confidentiality_diagnostic",
+  "authorizationSource": "current_conversation_2026-08-13_0502_continue_M8_solution_after_confidentiality_root_cause",
   "priorAttempts": [
     {"requestId":"m8-human-validation-rollback-ready-20260812-01","workflowRunId":31668960811,"artifactId":9168995033,"classification":"SOURCE_GATE_FALSE_POSITIVE_APP_DOCS_ONLY","browserReached":false,"freshHrReconciliationsReached":0,"writes":0,"deploys":0,"production":false},
     {"requestId":"m8-human-validation-rollback-ready-20260812-02","workflowRunId":31669133417,"artifactId":9169058995,"classification":"TEST_ASSERTION_FALSE_POSITIVE_HUMAN_FULL_VISUAL_DATA_MODE","browserReached":true,"freshHrReconciliationsReached":0,"writes":0,"deploys":0,"production":false},
     {"requestId":"m8-human-validation-rollback-ready-20260812-03","workflowRunId":31669616621,"artifactId":9169218542,"classification":"VISIBLE_SHELL_NAV_DASHBOARD_NOT_OBSERVED_AFTER_CANONICAL_HANDOFF","browserReached":true,"canonicalLiveHrHealthy":true,"latestPeriod":"2026-08","periods":15,"visits":660,"shoppers":197,"freshHrReconciliationsReached":0,"writes":0,"deploys":0,"production":false},
-    {"requestId":"m8-human-validation-rollback-ready-20260812-04","workflowRunId":31670132520,"artifactId":9169390442,"classification":"RAIL_PRESENT_NAV_NOT_MOUNTED__DIAGNOSTIC_ROUTER_MOUNT_CREATED_34_NAV_ITEMS","browserReached":true,"canonicalLiveHrHealthy":true,"latestPeriod":"2026-08","periods":15,"visits":660,"shoppers":197,"freshHrReconciliationsReached":0,"writes":0,"deploys":0,"production":false}
+    {"requestId":"m8-human-validation-rollback-ready-20260812-04","workflowRunId":31670132520,"artifactId":9169390442,"classification":"RAIL_PRESENT_NAV_NOT_MOUNTED__DIAGNOSTIC_ROUTER_MOUNT_CREATED_34_NAV_ITEMS","browserReached":true,"canonicalLiveHrHealthy":true,"latestPeriod":"2026-08","periods":15,"visits":660,"shoppers":197,"freshHrReconciliationsReached":0,"writes":0,"deploys":0,"production":false},
+    {"requestId":"m8-human-validation-rollback-ready-20260812-05","workflowRunId":31670513715,"artifactId":9169513707,"classification":"CONFIDENTIALITY_GATE_PENDING_BEFORE_ROUTER_MOUNT","browserReached":true,"canonicalLiveHrHealthy":true,"latestPeriod":"2026-08","periods":15,"visits":660,"shoppers":211,"freshHrReconciliationsReached":0,"confidentialityLocalOnly":true,"writes":0,"deploys":0,"production":false}
   ],
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "firebaseProjectId": "cxorbia-backend-dev",
   "devRootUrl": "https://cxorbia-backend-dev.web.app",
-  "targetHeadSha": "3e0aa7f050a1ec8b3b43507804e2c3442d12b5ee",
+  "targetHeadSha": "b9910aed178c7eee3f37a944aa36d94985478c49",
   "allowedExecutions": 1,
   "humanBrowserExecutions": 1,
   "freshHrReconciliations": 2,
@@ -32,8 +33,10 @@
   "requiredRoutes": ["dashboard","proyectos","visitas","postulaciones","cert","financiero","aprendizaje"],
   "stableVisitKeyPriority": ["hrRowId","sourceTab::sourceRow","visitId","id"],
   "rollbackReadinessRequired": true,
-  "diagnosticOnly": true,
-  "diagnosticQuestion": "Is CX.confidencialidad.pending(admin) the exact gate preventing the normal CX.app.enter() go() callback from mounting CX.router, and is the acceptance mechanism local-only or provider-backed?",
+  "diagnosticOnly": false,
+  "postGateQaWithoutConsent": true,
+  "confidentialityConsentByQa": false,
+  "browserLocalStorageWritesByQa": 0,
   "humanClicksAfterLogin": 0,
   "hostingDeploys": 0,
   "cloudRunDeploys": 0,
@@ -51,5 +54,5 @@
   "production": false,
   "containsPii": false,
   "containsSecrets": false,
-  "purpose": "One read-only real-browser root-cause diagnostic. After canonical Admin B login and healthy live HR authority, inspect CX.confidencialidad, pending(admin), the visible dialog/buttons, matching browser-local keys, and the runtime function source. Do not accept, do not call router.mount, do not reconcile HR, do not write or deploy. The goal is to prove or reject the confidentiality-gate hypothesis before another M8 execution."
+  "purpose": "One final M8 read-only real-browser execution. Keep the expected confidentiality consent gate intact and do not record consent on behalf of a user. After proving from runtime source that the gate is local-only and that CX.app.enter resumes with the router callback, establish the non-consent QA post-gate shell, validate the seven required routes, perform exactly two fresh live-HR reconciliations, require zero duplicate visit keys and shopper IDs, and bind the result to rollback readiness. Zero provider writes, deploys, merge or production."
 }
