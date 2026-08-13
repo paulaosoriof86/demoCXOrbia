@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-12 19:48 -06:00  
-**Estado:** `C6_RUNTIME_12_PASS_M7__CANONICAL_B_ADMIN_FULL_STABLE__PHASE_A_93__NO_PRODUCTION`
+**Fecha:** 2026-08-13 05:21 -06:00  
+**Estado:** `M8_PASS__PHASE_A_96__M9_PROVIDER_PRECUTOVER_NEXT__NO_PRODUCTION`
 
 ## Estado vivo
 
@@ -9,40 +9,60 @@
 - Rama: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
 - Producción: intacta.
-- Exact Write V2: PASS cerrado/no repetible.
-- C6/M7: **PASS cerrado** salvo drift nuevo reproducible.
-- Phase A certificado: **93%**; restante **7%**.
+- C6/M7: PASS cerrado.
+- M8: **PASS cerrado** salvo drift reproducible.
+- Phase A certificado: **96%**; restante **4%**.
 
-## Runtime 12 — PASS
+## M7 — PASS preservado
 
-Request `c6-live-user-admin-membership-runtime-proof-20260812-12`; request commit `51e7a5e814bcb5e31c3cf06c81b358e65d918868`; target `8fcc29bc4ce48e7198b8ae55223817eae6052b06`; run `31658676280`; job `94318658180`; artifact `9165383310`; digest `sha256:a327b0d5e0a592d41417dce7ff934984ab51d3d5927dbee9ba774200eee5befe`.
+Runtime 12: run `31658676280`, job `94318658180`, artifact `9165383310`, digest `sha256:a327b0d5e0a592d41417dce7ff934984ab51d3d5927dbee9ba774200eee5befe`.
 
-PASS demostrado: preflight v4; B/admin canónico; `exactWriteCanonical=true`; `legacyCredentialBundleUsed=false`; Hosting DEV 1/1; remote parity exact=true; Auth/contexto `admin/staff/tya/cinepolis`; membership `tenants/tya/users/self` verificada y persistida después de `CX.app.enter()`; datos runtime **15 periodos / 660 visitas / 197 shoppers**, `2025-06 → 2026-08`; frontend `entered`; primera carga + **3 reloads + new-tab PASS**.
+## M8 — PASS
 
-## Cierre M7
+Request `m8-human-validation-rollback-ready-20260813-08`; target source `62edaf552c2a62a8964671f691d600a417ae63f8`; request commit `098cc860ce497a1e1017528ef6072ef218753fa0`; run `31694998731`; job `94430661554`; artifact `9178957729`; digest `sha256:296a404470dc692d2b01679550d2e19b3429ca281f7c9333655ebf3bb8b1f85b`.
 
-Decisión canónica: `PASS_M7_C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`.
+Decisión: `PASS_M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY`.
 
-Runtime 12 demuestra que la reparación post-enter preserva membership/RBAC y que el flujo se mantiene estable en primera carga, tres reloads y nueva pestaña. C6/M7 no se vuelve a ejecutar sin drift reproducible.
+PASS demostrado:
+- principal B/admin, `admin/staff/tya/cinepolis`, membership verificada;
+- HR viva 15 periodos / 660 visitas, `2025-06 → 2026-08`;
+- 197 perfiles protegidos y identity-map de 211; `identityReviewCount=0`;
+- duplicate visit keys=0; duplicate shopper IDs=0;
+- siete rutas requeridas PASS;
+- separación Financiero/Beneficios por rol PASS;
+- dos reconciliaciones HR frescas: 660→660→660, sin altas/bajas de visit keys;
+- page errors=0; same-origin HTTP errors=0; request failures=0;
+- source/build lock preservado; runtime app parity con M7=true;
+- rollback readiness `READY_FAIL_CLOSED_FOR_M9_PROVIDER_CAPTURE`.
+
+## Gate de confidencialidad
+
+El gate pendiente antes de router era comportamiento esperado, no P0. QA comprobó que la aceptación es browser-local y el callback posterior monta la navegación. No registró consentimiento, no escribió localStorage y no cambió el frontend. La validación downstream se realizó de forma efímera en el navegador QA conservando el overlay humano.
 
 ## Seguridad
 
-Auth/Firestore/HR/Rules/Storage writes nuevos=0; Make/Gemini/pagos=0; Cloud Run deploys=0; segundo Exact Write=0; segundo Hosting=0; credenciales/tokens expuestos=false; merge=false; producción=false.
+Provider writes=0; Hosting deploys=0; Cloud Run deploys=0; Auth/Firestore/HR/Rules/Storage writes=0; Make/Gemini/pagos=0; consentimiento QA=false; browser localStorage writes QA=0; credenciales/tokens expuestos=false; merge=false; producción=false.
 
 ## Progreso
 
-`M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=5/5 | M8=0/3 | M9=0/3 | M10=0/1`
+`M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=5/5 | M8=3/3 | M9=0/3 | M10=0/1`
 
-**Phase A=93% | restante=7% | avance certificado Runtime 12=+5 puntos.**
+**Phase A=96% | restante=4% | avance certificado M8=+3 puntos.**
 
-## Siguiente bloque exacto
+## Siguiente bloque exacto — M9
 
-Continuar con `M8`, luego `M9` y `M10`, sin auditoría general y sin reabrir gates cerrados. Resolver el contrato exacto de cada milestone desde las fuentes vigentes antes de cualquier provider/write/deploy/merge/producción adicional.
+Antes de cualquier producción:
+1. provider read-only para capturar release/version productiva actual;
+2. verificar rollback soportado hacia esa release;
+3. bind exacto entre eventual promoción y source/build lock probado por M8;
+4. STOP si alguno falla.
+
+Solo después corresponde el gate explícito de promoción productiva definido por el contrato M8. Luego M10 smoke/freeze final.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** membership/RBAC persistente a través de entrada/reloads/new-tab.
-- **Exclusivo cliente:** TyA DEV B/admin.
+- **Reusable CXOrbia:** QA detrás de consentimiento humano sin aceptar por el usuario; rollback fail-closed.
+- **Exclusivo cliente:** TyA DEV B/admin y HR viva.
 - **Claude/prototipo:** sin cambios UI.
-- **Academia:** cadena Staff real certificada.
-- **Sin impacto Claude:** C6 QA/evidencia/backend.
+- **Academia:** flujo humano de confidencialidad + siete rutas validadas.
+- **Sin impacto Claude:** QA/evidencia/rollback backend.
