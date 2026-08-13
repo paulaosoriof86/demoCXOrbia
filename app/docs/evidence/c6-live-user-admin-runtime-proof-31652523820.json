@@ -100,6 +100,11 @@
     "finding": "app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js performs membership reconcile before stale-empty reconciliation and CX.app.enter(). The observed blocked handoff plus membershipVerified=false and stale-empty=true localizes the failure before final state reconciliation/entry, but the exact failClosed code was not emitted into the runtime artifact.",
     "nextDiagnosticNeed": "Capture frontendHandoff.error plus CX_C6_LIVE_USER_ADMIN_WIRING.status/code and both context/session membershipVerified in a source-only diagnostic contract before authorizing another provider run."
   },
+  "documentationTooling": {
+    "rootPendingMirrorUpdateConflict": true,
+    "rootPendingMirrorUpdateConflictStatus": 409,
+    "rootPendingMirrorUpdateConflictImpact": "No provider call, no workflow trigger, no production impact; GitHub rejected the stale blob SHA before writing. The canonical app/docs/PENDIENTES-PROTOTIPO.md is already current."
+  },
   "safety": {
     "authWrites": 0,
     "firestoreWrites": 0,
