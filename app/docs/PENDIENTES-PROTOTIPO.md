@@ -1,14 +1,16 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-12 17:44 -06:00  
-**Estado:** `C6_RUNTIME_09_STOP_RETRY_POST_AUTH_HANDOFF__SOURCE_REPAIR_APPLIED__HOSTING_1_OF_1__PHASE_A_88`
+**Última actualización:** 2026-08-12 18:00 -06:00  
+**Estado:** `C6_RUNTIME_10_STOP_RETRY_MEMBERSHIP_RECONCILE_BLOCKED__HOSTING_1_OF_1__PHASE_A_88`
 
 ## Pendiente vivo único de continuidad
 
 ```text
-NEW HOSTING_RUNTIME_ONCE Staff sobre HEAD reparado
-→ preflight v4 (shell + keyboard submit + membership/authority/frontend handoff)
-→ C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF
+SOURCE-ONLY membership failure subcode capture · provider=0
+→ demostrar error/code exacto del reconcile/handoff
+→ corregir únicamente la causa reproducible
+→ preflight actualizado PASS
+→ nueva autorización HOSTING_RUNTIME_ONCE Staff
 → M7
 → M8
 → M9
@@ -21,48 +23,44 @@ NEW HOSTING_RUNTIME_ONCE Staff sobre HEAD reparado
 - Formulario único `#loginForm/#lgUser/#lgPass/#lgSubmit`.
 - Action explícita/fail-closed.
 - Selector Staff dedicado sin Shopper/HR/Firestore.
-- Shell Hosting validado con `bash -n`, sin heredocs anidados.
+- Shell Hosting con `bash -n`, sin heredocs anidados.
 - Submit QA canónico por Enter desde `#lgPass`.
 - Wiring Staff fail-closed contra `tenants/tya/users/{uid}`.
-- Nuevo handoff post-auth: authority-ready → membership reverify → stale-empty reconcile → `CX.app.enter()` existente.
-- Smoke v3: membership + authority + frontend handoff + shell + reload x3/new-tab.
-- Preflight v4: valida todo lo anterior antes de provider y prohíbe mutación directa de UI desde el adapter.
+- Handoff authority-ready → membership reverify → stale-empty reconcile → `CX.app.enter()` existente.
+- Preflight v4 antes de provider.
 - D technical-login rebase/private handoff, Auth340, SKIP13, MultiAuth, HR y M4/static.
 
 No reabrir sin drift reproducible.
 
-## Resultado runtime 09
+## Resultado runtime 10
 
-Run `31651410812`, job `94296350609`, artifact `9162751195`, digest `sha256:16970fb360a1fc54d3b94f7a6ff87138afa959ac6b6fa31f7299b78dfeee48d8`.
+Run `31652523820`, job `94299776053`, artifact `9163167746`, digest `sha256:be83f65bf5484858fa42844ede9f56f0952bcef06a775fd4244524cc5880799f`.
 
-- preflight Staff v3: PASS;
+- preflight Staff v4: PASS;
 - Google Cloud auth: PASS;
-- selector Staff: PASS (`coordinador`);
+- selector Staff: PASS (`coordinador`, Shopper/Cliente=false);
 - source parity: PASS;
 - Hosting DEV: **deploy físico PASS, 1/1 consumido**;
 - remote parity: PASS exact=true;
 - submit: ejecutado;
 - contexto Staff: PASS (`coordinador/staff/tya/cinepolis`);
 - HR authority: PASS, **15 periodos / 660 visitas / 211 shoppers**, duplicados=0;
-- frontend final: FAIL (`appOn=false`, `loginHidden=false`, stale `backendEmpty=true`);
+- membership final: FAIL-CLOSED (`membershipVerified=false`, source=null);
+- frontend handoff: `blocked`;
+- stale empty: backend=true, Corte4=true;
+- shell: `appOn=false`, `loginHidden=false`;
 - artifact=`FAIL_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME`;
 - nuevos writes=0; producción=false.
 
-Causa raíz: `C6_POST_AUTH_HR_AUTHORITY_FRONTEND_ENTRY_HANDOFF_GAP__STALE_FIRESTORE_EMPTY_STATE`.
+Frontera causal: `C6_CANONICAL_MEMBERSHIP_RECONCILE_BLOCKED_POST_AUTHORITY__EXACT_SUBCODE_NOT_CAPTURED`.
 
-`STOP_RETRY` aplicado: no rerun, no segundo request, no segundo Hosting.
+El artifact actual no expone de forma sanitizada el subcódigo exacto de `reconcile(ctx)`, por lo que no debe abrirse otro Hosting hasta identificarlo.
 
-## Reparación ya aplicada
-
-- membership/frontend handoff: `a89ec134fe1b3b9cd0a8f014b39133d7a72ccd5a`;
-- smoke con verificación completa del handoff: `87bcddebeb74147dc0862ff3115186795978f058`;
-- preflight v4: `84e736b064d66bf7f7bde3d54955d98fb0f0a9a9`.
-
-No se ejecutó otro runtime después de la reparación.
+`STOP_RETRY` aplicado: provider ya inició; no rerun, no segundo request, no segundo Hosting bajo esta autorización.
 
 ## Pendiente inmediato
 
-Nueva autorización explícita para un `HOSTING_RUNTIME_ONCE` Staff bound al HEAD vivo reparado. Exigir preflight v4 antes de provider; luego máximo un Hosting DEV. Con PASS real, cerrar M7 y continuar inmediatamente M8 → M9 → M10. Ante fallo post-provider: `STOP_RETRY`.
+Bloque source-only/cero provider para capturar `CX_C6_LIVE_USER_ADMIN_FRONTEND_HANDOFF.error`, `CX_C6_LIVE_USER_ADMIN_WIRING.status/code`, `context.membershipVerified` y `session.user.membershipVerified`. Con esa evidencia se corrige únicamente la causa exacta y se prepara un nuevo one-shot. No reauditar producto ni reabrir gates cerrados.
 
 ## Pendiente frontend heredado separado
 
@@ -72,8 +70,8 @@ Nueva autorización explícita para un `HOSTING_RUNTIME_ONCE` Staff bound al HEA
 
 `M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1`
 
-**88% certificado | 12% restante | delta certificado runtime 09=+0%.**
+**88% certificado | 12% restante | delta certificado runtime 10=+0%.**
 
 ## Claude / Academia
 
-Cero cambios en `/app/modules` o UI visual. No pedir candidata. Academia se actualiza únicamente después del runtime Staff PASS.
+Cero cambios a `/app/modules` o UI visual en este cierre. No pedir candidata. Academia se actualiza únicamente después del runtime Staff PASS.
