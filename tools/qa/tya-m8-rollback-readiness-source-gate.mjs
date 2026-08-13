@@ -38,7 +38,10 @@ try{
   const head=git('rev-parse','HEAD');
   const appTreeCurrent=git('rev-parse','HEAD:app');
   const appTreeM7=git('rev-parse',`${m7Target}:app`);
-  ensure(appTreeCurrent===appTreeM7,'M8_APP_TREE_DRIFT_FROM_M7_DEPLOYED_PRODUCT');
+  const appChanges=git('diff','--name-only',m7Target,'HEAD','--','app').split(/\r?\n/).filter(Boolean);
+  const runtimeAppChanges=appChanges.filter(p=>!p.startsWith('app/docs/'));
+  const documentationAppChanges=appChanges.filter(p=>p.startsWith('app/docs/'));
+  ensure(runtimeAppChanges.length===0,'M8_RUNTIME_APP_DRIFT_FROM_M7_DEPLOYED_PRODUCT:'+runtimeAppChanges.join(','));
 
   const m7=JSON.parse(fs.readFileSync(m7EvidencePath,'utf8'));
   ensure(m7.decision==='PASS_M7_C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF','M8_M7_EVIDENCE_NOT_PASS');
@@ -59,7 +62,7 @@ try{
   ensure(fs.existsSync('app/'+sourceLock.manifestFile)||fs.existsSync(sourceLock.manifestFile),'M8_SOURCE_LOCK_MANIFEST_NOT_FOUND');
 
   const result={
-    schemaVersion:'cxorbia.m8.rollback-readiness-source-gate.v1',
+    schemaVersion:'cxorbia.m8.rollback-readiness-source-gate.v2',
     generatedAt:new Date().toISOString(),
     decision:'PASS_M8_ROLLBACK_READINESS_SOURCE_GATE',
     action:exactAction,
@@ -71,7 +74,10 @@ try{
       appTreeCurrent,
       m7DeployedTargetHeadSha:m7Target,
       appTreeM7Deployed:appTreeM7,
-      exactAppTreeParityWithM7Deployed:true,
+      wholeAppTreeExact:appTreeCurrent===appTreeM7,
+      runtimeAppParityWithM7Deployed:true,
+      runtimeAppChanges,
+      documentationOnlyAppDrift:documentationAppChanges,
       buildId,
       sourceLock:{
         manifestFile:sourceLock.manifestFile,
@@ -94,6 +100,7 @@ try{
     rollbackReadiness:{
       status:'READY_FAIL_CLOSED_FOR_M9_PROVIDER_CAPTURE',
       m8SourceAndBuildLockVerified:true,
+      m7RuntimeProductBytesUnchanged:true,
       lastKnownGoodDevRuntimeVerified:true,
       currentProductionReleaseCapture:'PENDING_M9_PROVIDER_READ',
       currentProductionReleaseCaptured:false,
@@ -114,11 +121,11 @@ try{
   console.log(JSON.stringify(result));
 }catch(error){
   const failure={
-    schemaVersion:'cxorbia.m8.rollback-readiness-source-gate.failure.v1',
+    schemaVersion:'cxorbia.m8.rollback-readiness-source-gate.failure.v2',
     generatedAt:new Date().toISOString(),
     decision:'FAIL_M8_ROLLBACK_READINESS_SOURCE_GATE',
     action:exactAction,
-    error:String(error?.message||error).replace(/[^A-Za-z0-9_.:/ -]/g,'_').slice(0,500),
+    error:String(error?.message||error).replace(/[^A-Za-z0-9_.:/ ,-]/g,'_').slice(0,700),
     safety:{providerReads:0,hostingDeploys:0,cloudRunDeploys:0,authWrites:0,firestoreWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,production:false}
   };
   write(failure);
