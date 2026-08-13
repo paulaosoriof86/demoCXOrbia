@@ -1,68 +1,62 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-13 05:21 -06:00  
-**Estado:** `M8_PASS__PHASE_A_96__M9_PROVIDER_PRECUTOVER_NEXT__NO_PRODUCTION`
+**Fecha:** 2026-08-13 05:31 -06:00  
+**Estado:** `M9_PRECUTOVER_PASS__PHASE_A_96__AWAIT_EXPLICIT_CUTOVER_GATE__NO_PRODUCTION_MUTATION`
 
 ## Estado vivo
 
 - Repo: `paulaosoriof86/demoCXOrbia`.
 - Rama: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
-- Producción: intacta.
+- Producción: sin mutación por M9 pre-cutover.
 - C6/M7: PASS cerrado.
-- M8: **PASS cerrado** salvo drift reproducible.
+- M8: PASS cerrado.
+- M9 provider pre-cutover: **PASS cerrado**.
+- M9 cutover: **pendiente de gate explícito**.
 - Phase A certificado: **96%**; restante **4%**.
 
-## M7 — PASS preservado
+## M8 — PASS preservado
 
-Runtime 12: run `31658676280`, job `94318658180`, artifact `9165383310`, digest `sha256:a327b0d5e0a592d41417dce7ff934984ab51d3d5927dbee9ba774200eee5befe`.
+Run `31694998731`, job `94430661554`, artifact `9178957729`, digest `sha256:296a404470dc692d2b01679550d2e19b3429ca281f7c9333655ebf3bb8b1f85b`.
 
-## M8 — PASS
+## M9 provider pre-cutover — PASS
 
-Request `m8-human-validation-rollback-ready-20260813-08`; target source `62edaf552c2a62a8964671f691d600a417ae63f8`; request commit `098cc860ce497a1e1017528ef6072ef218753fa0`; run `31694998731`; job `94430661554`; artifact `9178957729`; digest `sha256:296a404470dc692d2b01679550d2e19b3429ca281f7c9333655ebf3bb8b1f85b`.
+Request `m9-provider-precutover-readiness-20260813-01`; target `a6463030019efa8311406a433f8717ce24be3e24`; request commit `e444298f65504d3a4bf16366e7548be55d06ce12`; run `31695760214`; job `94433057739`; artifact `9179228696`; digest `sha256:83233d83fa56e3ca1f1afb437fccdce16fd368efbb362e0ffb1db51afede95c1`.
 
-Decisión: `PASS_M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY`.
+Decisión: `PASS_M9_PROVIDER_PRECUTOVER_READINESS_READONLY`.
 
-PASS demostrado:
-- principal B/admin, `admin/staff/tya/cinepolis`, membership verificada;
-- HR viva 15 periodos / 660 visitas, `2025-06 → 2026-08`;
-- 197 perfiles protegidos y identity-map de 211; `identityReviewCount=0`;
-- duplicate visit keys=0; duplicate shopper IDs=0;
-- siete rutas requeridas PASS;
-- separación Financiero/Beneficios por rol PASS;
-- dos reconciliaciones HR frescas: 660→660→660, sin altas/bajas de visit keys;
-- page errors=0; same-origin HTTP errors=0; request failures=0;
-- source/build lock preservado; runtime app parity con M7=true;
-- rollback readiness `READY_FAIL_CLOSED_FOR_M9_PROVIDER_CAPTURE`.
+## Captura pre-cutover
 
-## Gate de confidencialidad
-
-El gate pendiente antes de router era comportamiento esperado, no P0. QA comprobó que la aceptación es browser-local y el callback posterior monta la navegación. No registró consentimiento, no escribió localStorage y no cambió el frontend. La validación downstream se realizó de forma efímera en el navegador QA conservando el overlay humano.
+- Estrategia: `PROMOTE_EXISTING_CLEAN_PROJECT`.
+- Project/site: `cxorbia-backend-dev`; Hosting target: `cxorbia-dev`.
+- Cloud Run: `cxorbia-live-hr-dev`, `us-central1`.
+- M8 bind: target `62edaf552c2a62a8964671f691d600a417ae63f8`, build `ecc725866acc3eb8`, aggregate SHA `ecc725866acc3eb8aab292000be3ec31d1c46b5c14a53c8889fa7d6716a997e2`.
+- Runtime app drift después de M8: 0.
+- Release actual capturada: `sites/cxorbia-backend-dev/releases/1786585552096000`.
+- Version actual/rollback capturada: `sites/cxorbia-backend-dev/versions/a9670bb8a19862cd`, `FINALIZED`.
+- Rollback readiness: `READY_CAPTURED_FINALIZED_VERSION_PROVIDER_METHOD_VERIFIED`.
+- Rollback ejecutado=false; autorizado=false.
 
 ## Seguridad
 
-Provider writes=0; Hosting deploys=0; Cloud Run deploys=0; Auth/Firestore/HR/Rules/Storage writes=0; Make/Gemini/pagos=0; consentimiento QA=false; browser localStorage writes QA=0; credenciales/tokens expuestos=false; merge=false; producción=false.
+Authenticated provider GETs=2; provider writes=0; Hosting deploys=0; Cloud Run deploys=0; Auth/Firestore/HR/Rules/Storage writes=0; Make/Gemini/pagos=0; rollback execution=false; merge=false; production mutation=false; credenciales/tokens expuestos=false.
 
 ## Progreso
 
 `M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=5/5 | M8=3/3 | M9=0/3 | M10=0/1`
 
-**Phase A=96% | restante=4% | avance certificado M8=+3 puntos.**
+**Phase A=96% | restante=4%.**
 
-## Siguiente bloque exacto — M9
+## Siguiente bloque exacto
 
-Antes de cualquier producción:
-1. provider read-only para capturar release/version productiva actual;
-2. verificar rollback soportado hacia esa release;
-3. bind exacto entre eventual promoción y source/build lock probado por M8;
-4. STOP si alguno falla.
+No queda una auditoría técnica general pendiente. La siguiente frontera es únicamente el gate explícito `M9_EXPLICIT_CUTOVER_ONE_PRODUCTION_PROMOTION`. Debe ligar una única promoción al build M8 exacto y a la release/version pre-cutover capturada. Para reducir el riesgo operativo y evitar otra espera durante una contingencia, el mismo gate puede autorizar de forma condicional un único rollback a `a9670bb8a19862cd` si el smoke inmediato falla.
 
-Solo después corresponde el gate explícito de promoción productiva definido por el contrato M8. Luego M10 smoke/freeze final.
+Tras cutover PASS: M9=3/3 y Phase A=99%. Después M10 smoke/freeze final → 100%.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** QA detrás de consentimiento humano sin aceptar por el usuario; rollback fail-closed.
-- **Exclusivo cliente:** TyA DEV B/admin y HR viva.
-- **Claude/prototipo:** sin cambios UI.
-- **Academia:** flujo humano de confidencialidad + siete rutas validadas.
-- **Sin impacto Claude:** QA/evidencia/rollback backend.
+- **Reusable CXOrbia:** pre-cutover capture + rollback readiness fail-closed.
+- **Exclusivo cliente:** target/release/version TyA.
+- **Claude/prototipo:** sin cambio UI.
+- **Academia:** patrón de continuidad operativa/rollback.
+- **Sin impacto Claude:** provider read-only/evidencia/gates.
