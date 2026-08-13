@@ -101,9 +101,11 @@
     "nextDiagnosticNeed": "Capture frontendHandoff.error plus CX_C6_LIVE_USER_ADMIN_WIRING.status/code and both context/session membershipVerified in a source-only diagnostic contract before authorizing another provider run."
   },
   "documentationTooling": {
-    "rootPendingMirrorUpdateConflict": true,
-    "rootPendingMirrorUpdateConflictStatus": 409,
-    "rootPendingMirrorUpdateConflictImpact": "No provider call, no workflow trigger, no production impact; GitHub rejected the stale blob SHA before writing. The canonical app/docs/PENDIENTES-PROTOTIPO.md is already current."
+    "rootPendingMirrorInitialConflict": true,
+    "rootPendingMirrorInitialConflictStatus": 409,
+    "rootPendingMirrorCurrentReadback": "PASS_CURRENT_RUNTIME10_CONTENT",
+    "rootPendingMirrorNoOpVerificationCommit": "0f2ed0326f7d101160099b947209828686e099d7",
+    "rootPendingMirrorImpact": "No provider call, no workflow trigger and no production impact."
   },
   "safety": {
     "authWrites": 0,
