@@ -1,4 +1,4 @@
-name: CXOrbia M9 Authorized Single Retry Promotion
+name: CXOrbia M10 Final Read Only Smoke Freeze
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: cxorbia-m9-authorized-single-retry
+  group: cxorbia-m10-final-readonly-smoke-freeze
   cancel-in-progress: false
 
 defaults:
@@ -20,25 +20,22 @@ defaults:
 
 env:
   EXECUTE_FILE: backend/config/m9-provider-precutover-readonly-execute.json
-  SOURCE_GATE_EVIDENCE: app/docs/evidence/m9-production-hosting-entry-source-31718479981.json
-  M8_EVIDENCE: app/docs/evidence/m8-human-validation-rollback-ready-31694998731.json
-  OUT_DIR: .tmp/m9-retry
-  PRIVATE_DIR: .tmp/m9-retry/private
-  PRIVATE_E2E: .tmp/m9-retry/private/private-e2e.json
-  PRODUCT_DIR: .tmp/m9-retry/product
-  CUTOVER_CONFIG: firebase.m9-retry.json
+  M9_EVIDENCE: app/docs/evidence/m9-retry-production-pass-31721147260.json
+  OUT_DIR: .tmp/m10-final
+  PRIVATE_DIR: .tmp/m10-final/private
+  PRIVATE_E2E: .tmp/m10-final/private/private-e2e.json
   GCP_PROJECT_ID: cxorbia-backend-dev
-  HOSTING_TARGET: cxorbia-dev
+  HOSTING_SITE: cxorbia-backend-dev
   ROOT_URL: https://cxorbia-backend-dev.web.app
   TESTED_TARGET: 62edaf552c2a62a8964671f691d600a417ae63f8
   EXPECTED_BUILD_ID: ecc725866acc3eb8
   EXPECTED_AGGREGATE_SHA: ecc725866acc3eb8aab292000be3ec31d1c46b5c14a53c8889fa7d6716a997e2
 
 jobs:
-  retry:
-    name: Exactly one retry deploy and immediate real-root smoke
+  final-smoke-freeze:
+    name: Final production read-only smoke and source freeze
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
         with:
@@ -49,64 +46,47 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Validate exact retry request
+      - name: Validate M10 read-only request and M9 PASS
         run: |
           set -euo pipefail
-          mkdir -p "$OUT_DIR" "$PRIVATE_DIR" "$PRODUCT_DIR"
+          mkdir -p "$OUT_DIR" "$PRIVATE_DIR"
           chmod 700 "$PRIVATE_DIR"
           node <<'NODE'
           const fs=require('fs'),cp=require('child_process');
           const x=JSON.parse(fs.readFileSync(process.env.EXECUTE_FILE,'utf8'));
-          const g=JSON.parse(fs.readFileSync(process.env.SOURCE_GATE_EVIDENCE,'utf8'));
-          const m=JSON.parse(fs.readFileSync(process.env.M8_EVIDENCE,'utf8'));
+          const m9=JSON.parse(fs.readFileSync(process.env.M9_EVIDENCE,'utf8'));
           const head=cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
           const parent=cp.execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const changed=cp.execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
-          if(x.schemaVersion!=='cxorbia.m9.retry-after-hosting-entry-parity-pass.request.v1'||x.action!=='M9_RETRY_AFTER_HOSTING_ENTRY_PARITY_PASS')throw new Error('M9_RETRY_REQUEST_INVALID');
-          if(x.enabled!==true||x.consumed!==false||x.status!=='authorized_execute_once'||x.authorizedBy!=='Paula'||x.paulaExplicitCurrentConversation!==true)throw new Error('M9_RETRY_AUTH_INVALID');
-          if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7||x.targetHeadSha!==parent)throw new Error('M9_RETRY_LANE_INVALID');
-          if(changed.length!==1||changed[0]!==process.env.EXECUTE_FILE)throw new Error('M9_RETRY_TRIGGER_SCOPE_INVALID');
-          if(x.firebaseProjectId!==process.env.GCP_PROJECT_ID||x.hostingTarget!==process.env.HOSTING_TARGET||x.testedTargetHeadSha!==process.env.TESTED_TARGET||x.buildId!==process.env.EXPECTED_BUILD_ID||x.aggregateSha256!==process.env.EXPECTED_AGGREGATE_SHA)throw new Error('M9_RETRY_BIND_INVALID');
-          if(Number(x.maxProductionPromotions)!==1||Number(x.maxConditionalRollbacks)!==1||x.rollbackOnlyIfImmediateSmokeFails!==true||x.noFurtherProductionAttemptAfterThis!==true||x.merge!==false)throw new Error('M9_RETRY_LIMIT_INVALID');
-          for(const k of ['cloudRunDeploys','authWrites','firestoreWrites','hrWrites','rulesWrites','storageWrites','makeCalls','geminiCalls','paymentWrites'])if(Number(x[k]||0)!==0)throw new Error('M9_RETRY_UNSAFE_'+k);
-          if(g.decision!=='PASS_M9_PRODUCTION_HOSTING_ENTRY_PARITY_SOURCE_GATE'||g.checks?.rootRedirectParity!==true||g.checks?.tenantsRewriteParity!==true||g.checks?.liveHrRewriteParity!==true||g.checks?.runtimeAppBytesUnchanged!==true)throw new Error('M9_RETRY_SOURCE_GATE_INVALID');
-          if(m.decision!=='PASS_M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY'||m.sourceLock?.buildId!==process.env.EXPECTED_BUILD_ID||m.sourceLock?.aggregateSha256!==process.env.EXPECTED_AGGREGATE_SHA)throw new Error('M9_RETRY_M8_INVALID');
-          fs.writeFileSync(process.env.OUT_DIR+'/authorization.json',JSON.stringify({requestId:x.requestId,requestCommitSha:head,targetHeadSha:parent,action:x.action,authorizedBy:x.authorizedBy,buildId:x.buildId,aggregateSha256:x.aggregateSha256,maxProductionPromotions:1,maxConditionalRollbacks:1,noFurtherProductionAttemptAfterThis:true},null,2)+'\n');
-          NODE
-
-      - name: Stage exact M8 bytes and certified Hosting config
-        run: |
-          set -euo pipefail
-          git archive --format=tar "$TESTED_TARGET" app | tar -x -C "$PRODUCT_DIR"
-          node <<'NODE'
-          const fs=require('fs'),vm=require('vm');
-          const f=process.env.PRODUCT_DIR+'/app/core/build-lock.js';const src=fs.readFileSync(f,'utf8'),ctx={window:{}};vm.createContext(ctx);vm.runInContext(src,ctx,{timeout:2000});
-          const lock=ctx.CX_SOURCE_LOCK||ctx.window?.CX?.SOURCE_LOCK;const build=ctx.CX_BUILD_ID||ctx.window?.CX?.BUILD_ID;
-          if(build!==process.env.EXPECTED_BUILD_ID||lock?.aggregateSha256!==process.env.EXPECTED_AGGREGATE_SHA)throw new Error('M9_RETRY_STAGED_BUILD_INVALID');
-          const fb=JSON.parse(fs.readFileSync('firebase.deploy.json','utf8'));
-          if(!fb.hosting.redirects?.some(x=>x.source==='/'&&x.destination==='/index-backend-dev.html'&&Number(x.type)===302))throw new Error('M9_RETRY_ROOT_REDIRECT_MISSING');
-          if(!fb.hosting.rewrites?.some(x=>x.source==='/api/tenants/**')||!fb.hosting.rewrites?.some(x=>x.source==='/api/tya/cinepolis/hr-live'))throw new Error('M9_RETRY_API_REWRITE_MISSING');
-          fb.hosting.public=process.env.PRODUCT_DIR+'/app';fs.writeFileSync(process.env.CUTOVER_CONFIG,JSON.stringify(fb,null,2)+'\n');
-          fs.writeFileSync(process.env.OUT_DIR+'/staged.json',JSON.stringify({testedTarget:process.env.TESTED_TARGET,buildId:build,aggregateSha256:lock.aggregateSha256,rootRedirect:true,tenantRewrite:true,hrRewrite:true},null,2)+'\n');
+          if(x.schemaVersion!=='cxorbia.m10.post-cutover-smoke-freeze-final-readonly.request.v1'||x.action!=='M10_POST_CUTOVER_SMOKE_FREEZE_FINAL_READONLY')throw new Error('M10_REQUEST_INVALID');
+          if(x.enabled!==true||x.status!=='execute_once_readonly'||x.mode!=='PRODUCTION_READONLY_SMOKE_FREEZE')throw new Error('M10_MODE_INVALID');
+          if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7||x.targetHeadSha!==parent)throw new Error('M10_LANE_INVALID');
+          if(changed.length!==1||changed[0]!==process.env.EXECUTE_FILE)throw new Error('M10_TRIGGER_SCOPE_INVALID');
+          if(x.firebaseProjectId!==process.env.GCP_PROJECT_ID||x.hostingSite!==process.env.HOSTING_SITE||x.testedTargetHeadSha!==process.env.TESTED_TARGET||x.buildId!==process.env.EXPECTED_BUILD_ID||x.aggregateSha256!==process.env.EXPECTED_AGGREGATE_SHA)throw new Error('M10_BIND_INVALID');
+          if(Number(x.maxAuthenticatedProviderGets)!==2||x.productionMutation!==false||x.hostingDeploys!==0||x.cloudRunDeploys!==0||x.authWrites!==0||x.firestoreWrites!==0||x.hrWrites!==0||x.rulesWrites!==0||x.storageWrites!==0||x.makeCalls!==0||x.geminiCalls!==0||x.paymentWrites!==0||x.merge!==false)throw new Error('M10_NOT_READONLY');
+          if(m9.decision!=='PASS_M9_RETRY_AFTER_HOSTING_ENTRY_PARITY_PASS'||Number(m9.phaseA?.certifiedPercent)!==99||m9.build?.buildId!==process.env.EXPECTED_BUILD_ID||m9.build?.aggregateSha256!==process.env.EXPECTED_AGGREGATE_SHA)throw new Error('M10_M9_EVIDENCE_INVALID');
+          const drift=cp.execFileSync('git',['diff','--name-only',process.env.TESTED_TARGET,'HEAD','--','app'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean).filter(p=>!p.startsWith('app/docs/'));
+          if(drift.length)throw new Error('M10_RUNTIME_APP_DRIFT:'+drift.join(','));
+          fs.writeFileSync(process.env.OUT_DIR+'/authorization.json',JSON.stringify({requestId:x.requestId,requestCommitSha:head,targetHeadSha:parent,action:x.action,mode:x.mode,buildId:x.buildId,aggregateSha256:x.aggregateSha256,runtimeAppDrift:[],safety:{providerGetsMax:2,providerWrites:0,hostingDeploys:0,merge:false}},null,2)+'\n');
           NODE
 
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
 
-      - name: Install transient tooling
+      - name: Install transient read-only smoke tooling
         run: |
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase-tools@latest playwright@1.55.0 >/dev/null
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 google-auth-library@9.15.1 >/dev/null
           npx playwright install --with-deps chromium >/dev/null
 
-      - name: Select canonical Admin credential privately
+      - name: Materialize credentials privately and select canonical Admin
         env:
           EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
           CXORBIA_C6_ACTION: C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF
         run: |
           set -euo pipefail
           node <<'NODE'
-          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';const p=JSON.parse(raw);if(p.project_id!==process.env.GCP_PROJECT_ID)throw new Error('M9_RETRY_CREDENTIAL_PROJECT_INVALID');fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
+          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';const p=JSON.parse(raw);if(p.project_id!==process.env.GCP_PROJECT_ID)throw new Error('M10_CREDENTIAL_PROJECT_INVALID');fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
           NODE
           export GOOGLE_APPLICATION_CREDENTIALS="${GITHUB_WORKSPACE}/${PRIVATE_DIR}/credentials.json"
           export CXORBIA_EXPECTED_PROJECT="$GCP_PROJECT_ID"
@@ -114,43 +94,45 @@ jobs:
           export PRIVATE_DIR="$PRIVATE_DIR"
           export OUT_DIR="$OUT_DIR"
           node tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs > "$OUT_DIR/credential-selection.json"
-          node -e "const a=require('./'+process.env.OUT_DIR+'/credential-selection.json');const p=require('./'+process.env.PRIVATE_E2E);if(a.decision!=='PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY'||a.canonicalTargetAlias!=='B'||a.staffRole!=='admin'||!p?.staff?.login||!p?.staff?.password)throw new Error('M9_RETRY_ADMIN_SELECTION_INVALID');"
+          node -e "const a=require('./'+process.env.OUT_DIR+'/credential-selection.json');const p=require('./'+process.env.PRIVATE_E2E);if(a.decision!=='PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY'||a.canonicalTargetAlias!=='B'||a.staffRole!=='admin'||!p?.staff?.login||!p?.staff?.password)throw new Error('M10_ADMIN_SELECTION_INVALID');"
 
-      - name: Execute one authorized retry promotion
+      - name: Capture current live Hosting release and finalized version read-only
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/m10-final/private/credentials.json
         run: |
           set -euo pipefail
-          npx firebase deploy --config "$CUTOVER_CONFIG" --only "hosting:$HOSTING_TARGET" --project "$GCP_PROJECT_ID" --non-interactive | tee "$OUT_DIR/deploy.log"
-          echo 1 > "$OUT_DIR/promotion-count"
+          node <<'NODE'
+          const fs=require('fs');const {GoogleAuth}=require('google-auth-library');
+          (async()=>{const auth=new GoogleAuth({keyFile:process.env.GOOGLE_APPLICATION_CREDENTIALS,scopes:['https://www.googleapis.com/auth/firebase.hosting']});const client=await auth.getClient();const list=`https://firebasehosting.googleapis.com/v1beta1/sites/${process.env.HOSTING_SITE}/releases?pageSize=20`;const a=await client.request({url:list,method:'GET'});const live=(a.data.releases||[]).filter(x=>x.releaseTime).sort((x,y)=>Date.parse(y.releaseTime)-Date.parse(x.releaseTime))[0];if(!live?.version?.name)throw new Error('M10_LIVE_RELEASE_MISSING');const get=`https://firebasehosting.googleapis.com/v1beta1/${live.version.name}`;const b=await client.request({url:get,method:'GET'});if(b.data?.status!=='FINALIZED')throw new Error('M10_LIVE_VERSION_NOT_FINALIZED');const root=await fetch(process.env.ROOT_URL,{redirect:'manual'});if(root.status!==302||root.headers.get('location')!=='/index-backend-dev.html')throw new Error('M10_ROOT_ENTRY_INVALID');fs.writeFileSync(process.env.OUT_DIR+'/provider-freeze.json',JSON.stringify({releaseName:live.name,versionName:live.version.name,releaseTime:live.releaseTime,releaseType:live.type||null,versionStatus:b.data.status,versionCreateTime:b.data.createTime||null,versionFinalizeTime:b.data.finalizeTime||null,rootHttpStatus:root.status,rootLocation:root.headers.get('location')},null,2)+'\n');})().catch(e=>{console.error(e);process.exit(1)});
+          NODE
 
-      - name: Immediate smoke from real production root
+      - name: Execute final browser smoke from production root
         env:
           CXORBIA_M8_ACTION: M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY
           CXORBIA_DEV_ROOT_URL: ${{ env.ROOT_URL }}
           CXORBIA_E2E_PRIVATE_CREDENTIALS: ${{ env.PRIVATE_E2E }}
-          CXORBIA_M8_OUTPUT_DIR: .tmp/m9-retry/smoke
-          CXORBIA_M8_OUTPUT: .tmp/m9-retry/smoke/report.json
+          CXORBIA_M8_OUTPUT_DIR: .tmp/m10-final/smoke
+          CXORBIA_M8_OUTPUT: .tmp/m10-final/smoke/report.json
         run: |
           set -euo pipefail
           node tools/qa/tya-m8-human-validation-rollback-ready-browser-v2.mjs "$ROOT_URL" | tee "$OUT_DIR/smoke.log"
-          node -e "const r=require('./'+process.env.OUT_DIR+'/smoke/report.json');if(r.decision!=='PASS_M8_HUMAN_BROWSER_LIVE_HR_RECONCILIATION_READONLY'||r.principal?.role!=='admin'||r.principal?.membershipVerified!==true||r.liveHr?.latestPeriod!=='2026-08'||Number(r.liveHr?.duplicateVisitKeys||0)!==0||Number(r.liveHr?.duplicateShopperIds||0)!==0||!Array.isArray(r.routes)||r.routes.length!==7||r.confidentialityGate?.consentRecordedByQa!==false||r.sourceLock?.buildId!==process.env.EXPECTED_BUILD_ID||r.sourceLock?.aggregateSha256!==process.env.EXPECTED_AGGREGATE_SHA)throw new Error('M9_RETRY_SMOKE_NOT_PASS');"
+          node -e "const r=require('./'+process.env.OUT_DIR+'/smoke/report.json');if(r.decision!=='PASS_M8_HUMAN_BROWSER_LIVE_HR_RECONCILIATION_READONLY'||r.principal?.role!=='admin'||r.principal?.membershipVerified!==true||r.liveHr?.periods!==15||r.liveHr?.visits!==660||r.liveHr?.latestPeriod!=='2026-08'||Number(r.liveHr?.duplicateVisitKeys||0)!==0||Number(r.liveHr?.duplicateShopperIds||0)!==0||!Array.isArray(r.routes)||r.routes.length!==7||r.diagnostics?.consoleErrorCount!==0||r.diagnostics?.pageErrorCount!==0||r.confidentialityGate?.consentRecordedByQa!==false||r.sourceLock?.buildId!==process.env.EXPECTED_BUILD_ID||r.sourceLock?.aggregateSha256!==process.env.EXPECTED_AGGREGATE_SHA)throw new Error('M10_FINAL_SMOKE_NOT_PASS');"
 
-      - name: Build PASS summary
+      - name: Build final freeze summary
         run: |
           node <<'NODE'
-          const fs=require('fs');const smoke=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/smoke/report.json','utf8'));const summary={schemaVersion:'cxorbia.m9.retry.final.v1',generatedAt:new Date().toISOString(),decision:'PASS_M9_RETRY_AFTER_HOSTING_ENTRY_PARITY_PASS',promotionCount:1,conditionalRollbackCount:0,buildId:process.env.EXPECTED_BUILD_ID,aggregateSha256:process.env.EXPECTED_AGGREGATE_SHA,immediateSmoke:smoke,phaseA:{entryPercent:96,m9Points:3,certifiedPercent:99,remainingPercent:1},next:'M10_POST_CUTOVER_SMOKE_FREEZE_FINAL',safety:{cloudRunDeploys:0,authWrites:0,firestoreWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false}};fs.writeFileSync(process.env.OUT_DIR+'/summary.json',JSON.stringify(summary,null,2)+'\n');
+          const fs=require('fs');const provider=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/provider-freeze.json','utf8'));const smoke=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/smoke/report.json','utf8'));const summary={schemaVersion:'cxorbia.m10.post-cutover-smoke-freeze-final.v1',generatedAt:new Date().toISOString(),decision:'PASS_M10_POST_CUTOVER_SMOKE_FREEZE_FINAL',phaseA:{entryPercent:99,m10Points:1,certifiedPercent:100,remainingPercent:0},freeze:{buildId:process.env.EXPECTED_BUILD_ID,aggregateSha256:process.env.EXPECTED_AGGREGATE_SHA,productionRelease:provider.releaseName,productionVersion:provider.versionName,versionStatus:provider.versionStatus,rootHttpStatus:provider.rootHttpStatus,rootLocation:provider.rootLocation},smoke:{decision:smoke.decision,principal:smoke.principal,liveHr:smoke.liveHr,routes:smoke.routes.map(x=>x.id),confidentialityConsentRecorded:smoke.confidentialityGate?.consentRecordedByQa,diagnostics:smoke.diagnostics},safety:{authenticatedProviderGets:2,providerWrites:0,hostingDeploys:0,cloudRunDeploys:0,authWrites:0,firestoreWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,credentialsExposed:false,tokensExposed:false},next:'PHASE_A_COMPLETE_100_NO_MERGE'};fs.writeFileSync(process.env.OUT_DIR+'/summary.json',JSON.stringify(summary,null,2)+'\n');
           NODE
 
       - name: Remove private material
         if: always()
-        run: |
-          rm -rf "$PRIVATE_DIR" .firebase
-          rm -f "$CUTOVER_CONFIG" firebase-debug.log
+        run: rm -rf "$PRIVATE_DIR"
 
-      - name: Upload sanitized evidence
+      - name: Upload sanitized final evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-m9-retry-${{ github.run_id }}
-          path: .tmp/m9-retry
+          name: cxorbia-m10-final-${{ github.run_id }}
+          path: .tmp/m10-final
           if-no-files-found: error
           retention-days: 30
