@@ -1,38 +1,27 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-13 05:31 -06:00  
-**Estado:** `M9_PRECUTOVER_PASS__PHASE_A_96__NO_FRONTEND_CHANGE__AWAIT_CUTOVER_GATE`
+**Última actualización:** 2026-08-13 09:54 -06:00  
+**Estado:** `M9_CUTOVER_SMOKE_FAIL__ROLLBACK_PASS__PHASE_A_96__NO_FRONTEND_CHANGE`
 
 ## Estado vigente
 
-C6/M7 y M8 permanecen cerrados con PASS. La fase provider pre-cutover read-only de M9 también dio PASS. Producción no ha sido mutada.
+C6/M7 y M8 siguen cerrados con PASS. M9 pre-cutover read-only también permanece PASS. La única promoción productiva autorizada se ejecutó, pero su smoke inmediato no certificó M9 y se ejecutó el rollback autorizado a la versión pre-cutover.
 
 **Phase A certificado: 96% / restante: 4%.**
 
-## M9 provider pre-cutover — PASS
+## Hallazgo M9
 
-Run `31695760214`, job `94433057739`, artifact `9179228696`, digest `sha256:83233d83fa56e3ca1f1afb437fccdce16fd368efbb362e0ffb1db51afede95c1`.
+El smoke reutilizado pertenecía al carril DEV protegido y exigía flags DEV antes del login. En producción falló con `M8_ENTRY_LANE_FLAGS_INVALID`, por lo que no constituye evidencia válida de fallo funcional del frontend. El instrumento de cutover tuvo además un error de sintaxis en su encadenamiento automático de rollback; el rollback autorizado se ejecutó después y dio PASS.
 
-PASS:
-- estrategia `PROMOTE_EXISTING_CLEAN_PROJECT`;
-- build M8 exacto preservado: `ecc725866acc3eb8`;
-- runtime drift después de M8=0;
-- release pre-cutover capturada: `sites/cxorbia-backend-dev/releases/1786585552096000`;
-- rollback version capturada/finalizada: `sites/cxorbia-backend-dev/versions/a9670bb8a19862cd`;
-- provider rollback readiness verificada;
-- cero provider writes, deploys, merge o producción.
+Producción volvió a la versión pre-cutover `a9670bb8a19862cd` y no hubo segunda promoción.
 
 ## Frontend / Claude
 
-- **No se modificó `/app/modules` ni `/app/core` para M8/M9.**
-- No se requiere candidata frontend nueva.
-- Mantener exactamente la interfaz pública de `CX.data`.
-- Mantener el gate humano de confidencialidad; no automatizar consentimiento.
-- No reabrir C6/M7/M8 ni la captura provider M9 salvo drift reproducible.
-
-## Seguridad
-
-M9 provider readiness: Hosting GETs autenticados=2; provider writes=0; Hosting/Cloud Run deploys=0; Auth/Firestore/HR/Rules/Storage writes=0; Make/Gemini/pagos=0; rollback execution=false; merge=false; production mutation=false.
+- No se modificó `/app/modules` ni `/app/core` para resolver este bloque.
+- No crear candidata nueva ni parchear UI desde backend.
+- Mantener la interfaz pública exacta de `CX.data`.
+- Mantener el consentimiento de confidencialidad como acción humana.
+- Antes de otro cutover, backend/QA debe demostrar una entrada productiva real sin depender de flags DEV.
 
 ## Progreso
 
@@ -40,12 +29,10 @@ M9 provider readiness: Hosting GETs autenticados=2; provider writes=0; Hosting/C
 
 **Phase A=96% | restante=4%.**
 
-M9 aún vale 0/3 porque el cutover productivo no se ejecuta sin gate explícito; la preparación read-only no sustituye esa frontera.
-
 ## Siguiente acción exacta
 
-Esperar exclusivamente el gate `M9_EXPLICIT_CUTOVER_ONE_PRODUCTION_PROMOTION`. Una vez autorizado, ejecutar una única promoción ligada al build probado por M8 y a la release/version pre-cutover capturada; después smoke inmediato y cierre M9. M10 sigue como smoke/freeze final de Phase A.
+Construir y ejecutar primero un smoke productivo read-only que siga la entrada real del sitio y diagnostique si el runtime productivo requiere una configuración distinta al carril DEV. Cero nuevo deploy bajo la autorización ya consumida.
 
 ## Academia
 
-Sin nueva modificación funcional. Puede documentarse el patrón de pre-cutover/rollback y la preservación del consentimiento humano, sin comandos internos ni identificadores sensibles.
+Registrar el patrón de pre-cutover, smoke independiente del entorno y rollback verificado. No incluir credenciales ni mecanismos internos de QA.
