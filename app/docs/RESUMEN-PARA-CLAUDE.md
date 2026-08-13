@@ -1,30 +1,18 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-13 12:24 -06:00
-**Estado:** `OWNER_VISIBLE_DEV_LAB_HOSTED__OWNER_ACCEPTANCE_PENDING__NO_PRODUCT_FRONTEND_PATCH`
+**Última actualización:** 2026-08-13 12:38 -06:00
+**Estado:** `HUMAN_SHOPPER_P0_FOUND__OWNER_ACCEPTANCE_REJECTED__NO_PRODUCT_PATCH_YET`
 
-M1–M10 completaron la calificación técnica del entorno DEV limpio. **No se ha reemplazado la plataforma/hosting real vigente de TyA.** El cutover real permanece pendiente.
+M1–M10 siguen siendo calificación técnica DEV. No equivalen a aprobación funcional ni al go-live real de TyA.
 
-## Laboratorio DEV visible ya publicado
+## Hallazgo humano vigente
 
-Se creó y publicó `app/dev-validation/index.html` como superficie independiente de observabilidad para que Paula vea las pruebas ejecutarse en vivo. Run DEV `31730303749`, job `94548821932`: `SUCCESS`.
+Durante la aceptación visible en DEV, Paula ingresó con un perfil Shopper real. El menú Shopper se mostró, pero `Mi Perfil` quedó bloqueado con el mensaje `La identidad de esta sesión no está vinculada al read model canónico.` La vista autenticada no presentó el contexto operacional esperado de HR viva.
 
-La superficie muestra PASS/FAIL/BLOCKED y bitácora, consulta HR viva read-only con opción de lectura fresca, presenta períodos/visitas/shoppers/disponibles, comprueba entrypoint/build y módulos críticos, y embebe la aplicación DEV canónica para validación humana de sesión, rol, tenant, proyecto, período, fuente y navegación.
+Evidencia: `app/docs/evidence/p0-human-shopper-canonical-binding-failure-20260813.json`.
 
-## Contrato para frontend/prototipo
+## Para Claude/prototipo
 
-- El laboratorio es DEV-only y no forma parte de la navegación productiva.
-- No se tocaron módulos del producto ni el core para implementarlo.
-- No se crea candidata nueva por este bloque.
-- `CX.data` se conserva.
-- Cinépolis continúa como proyecto configurable dentro del tenant TyA.
-- Cualquier diferencia visual reproducible que Paula observe se registra por archivo/módulo y se corrige por el carril frontend correspondiente.
-- El consentimiento de confidencialidad continúa siendo acción humana.
+No rediseñar ni generar candidata nueva. No corregir por apariencia. El hallazgo debe tratarse como P0 focal de enlace entre la sesión Shopper y el read model canónico. Mantener `CX.data`, tenant TyA, Cinépolis configurable y la autoridad operacional de HR. Cualquier cambio frontend posterior debe limitarse al archivo/adaptador causal demostrado.
 
-## Pendiente
-
-La aceptación visual de Paula aún no está otorgada. El E2E con escrituras sintéticas temporales no se ejecutó y queda bloqueado hasta gate separado con cleanup exacto.
-
-El 100% del tracker sigue significando **100% de calificación técnica DEV**, no go-live real completado.
-
-Academia: el laboratorio verifica que la superficie esté publicada; durante la sesión visual se validarán acceso, ruta y contenido por rol/configuración TyA.
+Academia tampoco queda aprobada para Shopper hasta que el contexto de sesión sea correcto. La plataforma real vigente de TyA no ha recibido cutover.
