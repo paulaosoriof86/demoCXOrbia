@@ -105,7 +105,7 @@ jobs:
           node --check tools/qa/tya-m8-rollback-readiness-source-gate.mjs
           node --check tools/qa/tya-m8-human-validation-rollback-ready-browser.mjs
           node tools/qa/tya-m8-rollback-readiness-source-gate.mjs
-          node -e "const r=require('./.tmp/m8-human-validation/rollback-readiness.json');if(r.decision!=='PASS_M8_ROLLBACK_READINESS_SOURCE_GATE'||r.productIdentity?.exactAppTreeParityWithM7Deployed!==true||r.rollbackReadiness?.status!=='READY_FAIL_CLOSED_FOR_M9_PROVIDER_CAPTURE')throw new Error('M8_ROLLBACK_SOURCE_GATE_NOT_PASS');"
+          node -e "const r=require('./.tmp/m8-human-validation/rollback-readiness.json');if(r.decision!=='PASS_M8_ROLLBACK_READINESS_SOURCE_GATE'||r.productIdentity?.runtimeAppParityWithM7Deployed!==true||r.rollbackReadiness?.status!=='READY_FAIL_CLOSED_FOR_M9_PROVIDER_CAPTURE')throw new Error('M8_ROLLBACK_SOURCE_GATE_NOT_PASS');"
 
       - name: Install transient browser tooling only
         run: |
@@ -167,7 +167,7 @@ jobs:
           const runtime=read(process.env.OUT_DIR+'/runtime/report.json');
           const exitCode=Number(process.env.RUNTIME_EXIT_CODE??999);
           const runtimePass=exitCode===0&&runtime?.decision==='PASS_M8_HUMAN_BROWSER_LIVE_HR_RECONCILIATION_READONLY';
-          const rollbackPass=rollback?.decision==='PASS_M8_ROLLBACK_READINESS_SOURCE_GATE'&&rollback?.productIdentity?.exactAppTreeParityWithM7Deployed===true;
+          const rollbackPass=rollback?.decision==='PASS_M8_ROLLBACK_READINESS_SOURCE_GATE'&&rollback?.productIdentity?.runtimeAppParityWithM7Deployed===true;
           const safetyPass=runtime?.safety?.hostingDeploys===0&&runtime?.safety?.firestoreWrites===0&&runtime?.safety?.hrWrites===0&&runtime?.safety?.production===false&&rollback?.safety?.production===false;
           const pass=runtimePass&&rollbackPass&&safetyPass&&credential?.decision==='PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY';
           const summary={
