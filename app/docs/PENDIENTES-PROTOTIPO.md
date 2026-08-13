@@ -1,43 +1,46 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-12 19:48 -06:00  
-**Estado:** `C6_RUNTIME_12_PASS_M7__PHASE_A_93__NEXT_M8`
+**Última actualización:** 2026-08-13 05:21 -06:00  
+**Estado:** `M8_PASS__PHASE_A_96__NEXT_M9`
 
 ## Pendiente vivo de continuidad
 
 ```text
-M8 (3 puntos, definición canónica por recuperar de fuentes vigentes)
-→ M9 (3 puntos)
-→ M10 (1 punto)
+M9 (3 puntos: provider pre-cutover + promoción productiva bajo gate explícito)
+→ M10 (1 punto: smoke/freeze final)
 → Phase A 100%
 ```
 
-No reabrir C6/M7 ni repetir Hosting Runtime 12: el gate ya tiene PASS completo.
+No reabrir C6/M7/M8 ni repetir sus one-shots salvo drift reproducible.
 
 ## Cerrado y no reabrir
 
-Exact Write V2/canonical readback; principal canónico `B=admin`; formulario único; selector Staff sin bundle/password guessing legacy; membership/RBAC persistida después de `CX.app.enter()`; handoff backend/HR/frontend; preflight v4; D rebase/private handoff/Auth340/SKIP13/MultiAuth/HR/M4; **M7 Runtime Staff PASS Runtime 12**.
+Exact Write V2/canonical readback; principal canónico `B=admin`; formulario único; membership/RBAC; handoff backend/HR/frontend; Auth340/SKIP13/MultiAuth; HR/M4; M7 Runtime 12; **M8 Human Validation + Rollback Ready**.
 
-Runtime 12: run `31658676280`, job `94318658180`, artifact `9165383310`, digest `sha256:a327b0d5e0a592d41417dce7ff934984ab51d3d5927dbee9ba774200eee5befe`.
+M8 PASS: run `31694998731`, job `94430661554`, artifact `9178957729`, digest `sha256:296a404470dc692d2b01679550d2e19b3429ca281f7c9333655ebf3bb8b1f85b`.
 
-PASS: B/admin canónico; Hosting DEV 1/1; remote parity exact=true; Auth/contexto `admin/staff/tya/cinepolis`; membership persistida; **15 periodos / 660 visitas / 197 shoppers**, `2025-06 → 2026-08`; frontend `entered`; primera carga + 3 reloads + new-tab PASS; nuevos writes=0; producción=false.
+M8 demostró navegador real, Admin canónico, HR viva agosto 2026, 15 periodos/660 visitas, 197 perfiles protegidos/211 identity-map, cero duplicados, siete rutas PASS, dos reconciliaciones frescas estables y rollback readiness fail-closed. El gate de confidencialidad es esperado; QA no registró consentimiento ni browser-local writes.
 
-## Pendiente inmediato
+## Pendiente inmediato — M9
 
-Localizar en las fuentes vigentes la definición exacta de `M8`. Ejecutar directamente cualquier parte source-only/read-only; si el milestone requiere provider/write/deploy/merge/producción, solicitar únicamente el gate específico faltante.
+Antes de cualquier promoción:
+1. capturar read-only la release/version exacta actualmente productiva;
+2. verificar una ruta de rollback soportada por el proveedor hacia esa release;
+3. ligar cualquier request productivo a los bytes/source-lock exactos probados por M8;
+4. STOP si release capture o rollback capability no pueden demostrarse.
 
-No iniciar nueva auditoría general, nueva candidata, nueva rama/PR ni reauditar C6.
+La promoción productiva sigue requiriendo gate explícito independiente. No adivinar comandos de rollback ni reconstruir artefactos.
 
 ## Pendiente frontend heredado separado
 
-`app/modules/cliente-extra.js`: PDF print, XLSX y PPTX. No bloqueó M7 y no se considera automáticamente parte de M8/M9/M10 sin fuente canónica que lo establezca.
+`app/modules/cliente-extra.js`: PDF print, XLSX y PPTX. No bloqueó M7/M8 y no forma parte automáticamente de M9/M10 sin fuente canónica que lo establezca.
 
 ## Progreso
 
-`M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=5/5 | M8=0/3 | M9=0/3 | M10=0/1`
+`M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=5/5 | M8=3/3 | M9=0/3 | M10=0/1`
 
-**93% certificado | 7% restante | delta certificado Runtime 12=+5%.**
+**96% certificado | 4% restante | delta certificado M8=+3 puntos.**
 
 ## Claude / Academia
 
-Cero cambios a `/app/modules` o UI visual por Runtime 12. Academia puede actualizar el flujo Staff real; no incluir mecanismos internos QA/credenciales.
+Cero cambios a `/app/modules` o UI visual por M8. Academia puede documentar las siete rutas y el gate humano de confidencialidad; no incluir instrumentación interna QA.
