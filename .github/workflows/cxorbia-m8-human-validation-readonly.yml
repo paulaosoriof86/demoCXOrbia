@@ -103,7 +103,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check tools/qa/tya-m8-rollback-readiness-source-gate.mjs
-          node --check tools/qa/tya-m8-human-validation-rollback-ready-browser.mjs
+          node --check tools/qa/tya-m8-human-validation-rollback-ready-browser-v2.mjs
           node tools/qa/tya-m8-rollback-readiness-source-gate.mjs
           node -e "const r=require('./.tmp/m8-human-validation/rollback-readiness.json');if(r.decision!=='PASS_M8_ROLLBACK_READINESS_SOURCE_GATE'||r.productIdentity?.runtimeAppParityWithM7Deployed!==true||r.rollbackReadiness?.status!=='READY_FAIL_CLOSED_FOR_M9_PROVIDER_CAPTURE')throw new Error('M8_ROLLBACK_SOURCE_GATE_NOT_PASS');"
 
@@ -147,7 +147,7 @@ jobs:
           CXORBIA_M8_OUTPUT: .tmp/m8-human-validation/runtime/report.json
         run: |
           set +e
-          node tools/qa/tya-m8-human-validation-rollback-ready-browser.mjs "$DEV_ROOT_URL"
+          node tools/qa/tya-m8-human-validation-rollback-ready-browser-v2.mjs "$DEV_ROOT_URL"
           code=$?
           echo "exit_code=$code" >> "$GITHUB_OUTPUT"
           exit 0
