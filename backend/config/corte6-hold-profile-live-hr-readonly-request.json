@@ -12,9 +12,9 @@
   "tenantId": "tya",
   "projectId": "cinepolis",
   "mode": "p0_human_shopper_auth_hr_readonly",
-  "enabled": true,
-  "consumed": false,
-  "status": "authorized_execute_once",
+  "enabled": false,
+  "consumed": true,
+  "status": "consumed_failed_stop_retry",
   "targetHeadSha": "954eae43cebcf05592f00ea8d43f5405417fca7b",
   "observedLoginWindowUtc": {
     "start": "2026-08-13T18:33:00Z",
@@ -33,6 +33,7 @@
     "profileLinked": false
   },
   "providerReadsAuthorizedMax": 1,
+  "providerReadExecutionsConsumed": 1,
   "secondAttempt": 0,
   "rerunAllowed": false,
   "providerWrites": 0,
@@ -51,11 +52,20 @@
   "merge": false,
   "production": false,
   "rawNamesInGitHub": false,
-  "privateOwnerArtifact": true,
+  "privateOwnerArtifact": false,
   "emailsExported": false,
   "phonesExported": false,
   "passwordsExported": false,
   "uidsExported": false,
   "stopRetry": true,
-  "nextGate": "P0_MINIMAL_REPAIR_ONLY_AFTER_CAUSE_ROOT_EVIDENCE"
+  "runId": 31735473752,
+  "jobId": 94565926738,
+  "result": "FAILED_EXECUTION_NO_PERSISTED_EVIDENCE",
+  "failureStage": "Execute targeted read-only inspection",
+  "artifactPersisted": false,
+  "sanitizedEvidencePersisted": false,
+  "adminVisibleLoginRecovered": false,
+  "shopperRootCausePersisted": false,
+  "consumedAt": "2026-08-13T13:24:00-06:00",
+  "nextGate": "NEW_EXPLICIT_AUTHORIZATION_REQUIRED_BEFORE_ANY_SECOND_PROVIDER_READ"
 }
