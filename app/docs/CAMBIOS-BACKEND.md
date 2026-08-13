@@ -1,42 +1,38 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-13 09:53 -06:00  
-**Estado:** `M9_CUTOVER_SMOKE_FAIL__ROLLBACK_PASS__PHASE_A_96`
+**Última actualización:** 2026-08-13 10:02 -06:00  
+**Estado:** `M9_ROLLBACK_PASS__HOSTING_ENTRY_SOURCE_PASS__PHASE_A_96`
 
-## Resultado M9
+## Resultado vigente
 
-Se ejecutó la única promoción autorizada del build M8 `ecc725866acc3eb8`. La promoción se completó, pero el smoke inmediato no certificó M9 porque el runner reutilizado exigía flags exclusivos del carril DEV y falló en `M8_ENTRY_LANE_FLAGS_INVALID` antes de completar la validación productiva.
+La primera tentativa M9 no certificó el milestone y el rollback autorizado quedó verificado. Producción volvió a la versión pre-cutover y no hubo una segunda promoción.
 
-El mismo run reveló además un error de sintaxis en el bloque automatizado que debía encadenar el rollback. No hubo segundo intento de promoción.
+## Causa raíz source-only
 
-## Rollback autorizado
+La diferencia reproducible estaba en la configuración Hosting. La configuración canónica conservaba el redirect de `/` hacia `/index-backend-dev.html` y el rewrite `/api/tenants/**`, mientras la configuración de deploy usada en la tentativa los omitía.
 
-La porción de rollback incluida expresamente en la autorización vigente se ejecutó después en un bloque separado y quedó verificada con decisión `PASS_M9_AUTHORIZED_CONDITIONAL_ROLLBACK`.
+Se corrigió `firebase.deploy.json` para mantener esas mismas reglas sin modificar los bytes runtime de `app/`.
 
-Producción volvió a servir la versión pre-cutover capturada `a9670bb8a19862cd`; el root respondió HTTP 302 hacia `/index-backend-dev.html`. Promociones consumidas=1; rollbacks=1; segunda promoción=0.
+Gate source-only: run `31718479981`, artifact `9188264814`, digest `sha256:ce405e543c48df991becf8f02d9ff66619a908e08b77ae327e8da3e72a326923`, decisión `PASS_M9_PRODUCTION_HOSTING_ENTRY_PARITY_SOURCE_GATE`.
 
-Evidencia durable: `app/docs/evidence/m9-production-cutover-rollback-20260813.json`.
+El gate confirmó paridad de redirect raíz, rewrites API, fallback SPA, bootstrap backend y build/source-lock, con runtime app drift=0 y cero acceso o mutación de proveedor.
+
+Evidencias: `app/docs/evidence/m9-production-cutover-rollback-20260813.json` y `app/docs/evidence/m9-production-hosting-entry-source-31718479981.json`.
 
 ## Seguridad
 
-Cloud Run deploys=0; Auth/Firestore/HR/Rules/Storage writes=0; Make/Gemini/pagos=0; merge=false; secretos/tokens expuestos=false.
+Provider reads/writes=0 y deploys=0 durante el cierre source-only. Cloud Run/Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos=0; merge=false.
 
 ## Progreso Phase A
 
 `M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=5/5 | M8=3/3 | M9=0/3 | M10=0/1`
 
-**TOTAL CERTIFICADO=96% | RESTANTE=4% | DELTA CERTIFICADO=0.**
-
-M9 permanece abierto porque el smoke productivo no dio PASS. El rollback seguro preserva el estado anterior, pero no concede los 3 puntos.
-
-## Siguiente frontera exacta
-
-No repetir la promoción bajo el gate ya consumido. Primero debe cerrarse un smoke productivo read-only compatible con la entrada real, sin depender de flags DEV y sin mutar producción. Solo después correspondería un futuro gate productivo separado.
+**TOTAL CERTIFICADO=96% | RESTANTE=4%.**
 
 ## Clasificación
 
-- **Reusable CXOrbia:** rollback verificado y separación entre fallo del producto y fallo del instrumento de smoke.
-- **Exclusivo cliente:** target y versión TyA.
-- **Claude/prototipo:** cero cambios en `/app/modules` o UI.
-- **Academia:** continuidad operacional, cutover fail-closed y rollback verificado.
-- **Sin impacto Claude:** QA, gates, evidencia y documentación M9.
+- **Reusable CXOrbia:** paridad entre configuración desplegable y entrypoint probado.
+- **Exclusivo cliente:** target/version TyA.
+- **Claude/prototipo:** cero cambios frontend.
+- **Academia:** continuidad, causa raíz y rollback verificable.
+- **Sin impacto Claude:** Firebase Hosting config, QA y evidencia.
