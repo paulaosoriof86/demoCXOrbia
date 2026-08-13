@@ -1,36 +1,36 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-13 10:41 -06:00
-**Estado:** `PHASE_A_COMPLETE_100__M10_PASS__NO_MERGE`
+**Última actualización:** 2026-08-13 11:18 -06:00
+**Estado:** `DEV_TECHNICAL_QUALIFICATION_100__VISUAL_ACCEPTANCE_PENDING__REAL_TYA_CUTOVER_NOT_EXECUTED`
 
-## Cierre Phase A
+## Corrección de estado 2026-08-13
 
-M9 quedó cerrado con PASS y M10 también terminó con `PASS_M10_POST_CUTOVER_SMOKE_FREEZE_FINAL`.
+Por corrección explícita de Paula, M9/M10 se reclasifican correctamente como cierre de **calificación técnica del entorno DEV limpio** (`cxorbia-backend-dev` / target Hosting `cxorbia-dev`). No constituyen reemplazo del hosting/plataforma vigente de TyA.
 
-M10: run `31721769360`, job `94520228757`, artifact `9189626304`, digest `sha256:646c380fdbc53e081fc689335c825c97304ee9354e2913086007897f90edb6f2`.
+La plataforma actual de TyA no ha sido reemplazada. El cutover real no se ha ejecutado.
 
-Freeze final: build `ecc725866acc3eb8`, aggregate SHA `ecc725866acc3eb8aab292000be3ec31d1c46b5c14a53c8889fa7d6716a997e2`, release `1786638785456000`, version `cd1e5b7d42cb846b`, estado `FINALIZED`, raíz HTTP 302 hacia `/index-backend-dev.html`.
+Evidencia de aclaración: `app/docs/evidence/dev-visual-acceptance-clarification-20260813.json`.
 
-Smoke final PASS: Admin canónico, membership verificada, tenant `tya`, proyecto `cinepolis`, 15 periodos, 660 visitas, 197 perfiles protegidos, 211 shoppers de autoridad, histórico 2025-06→2026-08, duplicados=0 y siete rutas requeridas PASS. Consola/page/HTTP/request failures=0. El consentimiento de confidencialidad permaneció humano y QA no lo registró.
+## Evidencia técnica DEV preservada
 
-Evidencias durables:
-- `app/docs/evidence/m9-retry-production-pass-31721147260.json`.
-- `app/docs/evidence/m10-final-phase-a-freeze-31721769360.json`.
+M9 y M10 siguen siendo PASS válidos dentro de DEV. M10: run `31721769360`, job `94520228757`, artifact `9189626304`, digest `sha256:646c380fdbc53e081fc689335c825c97304ee9354e2913086007897f90edb6f2`.
+
+Build DEV `ecc725866acc3eb8`; release DEV `1786638785456000`; version DEV `cd1e5b7d42cb846b`, `FINALIZED`.
+
+El smoke técnico DEV confirmó Admin canónico, membership, tenant `tya`, proyecto `cinepolis`, 15 periodos, 660 visitas, 197 perfiles protegidos, 211 shoppers de autoridad, histórico 2025-06→2026-08, duplicados=0 y siete rutas. Esto no sustituye la aceptación visual de Paula ni el E2E sintético compartido previo al cutover real.
+
+## Próximo bloque
+
+Ejecutar aceptación visual DEV con Paula observando: tenant/módulos, flujos con datos sintéticos aislados y reconciliación read-only de HR viva, shoppers y visitas disponibles. El cutover real TyA permanece bloqueado hasta ese PASS y un gate posterior separado.
 
 ## Seguridad
 
-M10 fue read-only: provider GETs=2; provider writes=0; Hosting deploys=0; Cloud Run deploys=0; Auth/Firestore/HR/Rules/Storage writes=0; Make/Gemini/pagos=0; merge=false; credenciales/tokens expuestos=false.
-
-## Progreso
-
-`M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=5/5 | M8=3/3 | M9=3/3 | M10=1/1`
-
-**PHASE A = 100% CERTIFICADO | RESTANTE = 0%.**
+Esta corrección documental no ejecutó deploy, provider write, HR/Auth/Firestore/Rules/Storage write, Make, Gemini, pagos, merge ni cutover real.
 
 ## Clasificación
 
-- Reusable CXOrbia: freeze verificable y smoke final read-only.
-- Exclusivo cliente: entorno TyA.
-- Claude/prototipo: cero cambios frontend en M9/M10.
-- Academia: rutas y continuidad final verificadas.
-- Sin impacto Claude: QA, provider read-only, evidencia y documentación.
+- **Reusable CXOrbia:** separación verificable DEV/pre-go-live vs cutover real y aceptación visual previa.
+- **Exclusivo cliente:** TyA/Cinépolis, shoppers, HR y visitas disponibles.
+- **Claude/prototipo:** hallazgos visuales futuros se documentan, no se parchean desde backend.
+- **Academia:** se validará visibilidad/ruta por rol en aceptación visual.
+- **Sin impacto Claude:** esta corrección documental.
