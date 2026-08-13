@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "cxorbia.m8.human-validation-rollback-readiness.v1",
+  "milestone": "M8",
+  "title": "Human validation + rollback ready",
+  "points": 3,
+  "phaseAEntryPercent": 93,
+  "phaseAExitPercentOnPass": 96,
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "dev": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "hostingSite": "cxorbia-backend-dev",
+    "rootUrl": "https://cxorbia-backend-dev.web.app",
+    "canonicalPrincipal": {
+      "targetAlias": "B",
+      "role": "admin",
+      "authNamespace": "staff",
+      "tenantId": "tya",
+      "projectId": "cinepolis"
+    }
+  },
+  "requiredRuntimeChecks": {
+    "realChromiumBrowser": true,
+    "canonicalHumanLogin": true,
+    "membershipVerified": true,
+    "liveHrAuthority": true,
+    "latestPeriodRequired": "2026-08",
+    "routes": [
+      "dashboard",
+      "proyectos",
+      "visitas",
+      "postulaciones",
+      "cert",
+      "financiero",
+      "aprendizaje"
+    ],
+    "financeBenefitsRoleSplit": {
+      "adminFinanceRoute": "financiero",
+      "shopperBenefitsRoute": "beneficios",
+      "adminMustNotExposeShopperBenefitsNav": true
+    },
+    "freshHrReconciliations": 2,
+    "stableVisitKeyPriority": [
+      "hrRowId",
+      "sourceTab::sourceRow",
+      "visitId",
+      "id"
+    ],
+    "duplicateVisitKeysAllowed": 0,
+    "duplicateShopperIdsAllowed": 0,
+    "capturePageErrors": true,
+    "captureSameOriginHttpErrors": true,
+    "captureSameOriginRequestFailures": true,
+    "captureConsoleErrorsForEvidence": true,
+    "screenshotsRequired": true
+  },
+  "rollbackReadiness": {
+    "m8Requirement": "Prove the tested DEV product bytes are exactly bound to the M7 deployed app tree and source/build lock; prepare a fail-closed M9 pre-cutover requirement without touching production.",
+    "m9PreCutoverRequirements": [
+      "Capture the exact current production Hosting release/version before promotion.",
+      "Verify a provider-supported rollback path to the captured pre-cutover release before promotion.",
+      "Bind the one production promotion to the exact M8-tested product/source lock.",
+      "Stop before production if either release capture or rollback capability cannot be verified."
+    ],
+    "guessedRollbackCommandForbidden": true,
+    "productionReleaseCaptureInM8": false,
+    "productionRollbackInM8": false
+  },
+  "safety": {
+    "authReads": "existing login/session only",
+    "firestoreReads": "existing protected runtime only",
+    "hrReads": "live read-only",
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "production": false
+  },
+  "passDecision": "PASS_M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY",
+  "failDecision": "FAIL_M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY",
+  "nextOnPass": "M9_EXPLICIT_CUTOVER_ONE_PRODUCTION_PROMOTION_REQUIRES_NEW_EXPLICIT_GATE"
+}
