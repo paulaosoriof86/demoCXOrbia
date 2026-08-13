@@ -8,7 +8,21 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "redirects": [
+      {
+        "source": "/",
+        "destination": "/index-backend-dev.html",
+        "type": 302
+      }
+    ],
     "rewrites": [
+      {
+        "source": "/api/tenants/**",
+        "run": {
+          "serviceId": "cxorbia-live-hr-dev",
+          "region": "us-central1"
+        }
+      },
       {
         "source": "/api/tya/cinepolis/hr-live",
         "run": {
