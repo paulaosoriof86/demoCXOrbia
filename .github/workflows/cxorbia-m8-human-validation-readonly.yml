@@ -1,4 +1,4 @@
-name: CXOrbia M9 Authorized Conditional Rollback
+name: CXOrbia M9 Production Hosting Entry Source Gate
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: cxorbia-m9-authorized-conditional-rollback
+  group: cxorbia-m9-production-hosting-entry-source-gate
   cancel-in-progress: false
 
 defaults:
@@ -20,27 +20,20 @@ defaults:
 
 env:
   EXECUTE_FILE: backend/config/m9-provider-precutover-readonly-execute.json
-  OUT_DIR: .tmp/m9-authorized-rollback
-  PRIVATE_DIR: .tmp/m9-authorized-rollback/private
-  ACTION_NAME: M9_CONDITIONAL_ROLLBACK_AFTER_IMMEDIATE_SMOKE_FAILURE
-  GCP_PROJECT_ID: cxorbia-backend-dev
-  HOSTING_SITE: cxorbia-backend-dev
-  ROOT_URL: https://cxorbia-backend-dev.web.app
-  FAILED_PROMOTION_RELEASE: sites/cxorbia-backend-dev/releases/1786636051550000
-  FAILED_PROMOTION_VERSION: sites/cxorbia-backend-dev/versions/f3fc141f68856ede
-  ROLLBACK_VERSION: sites/cxorbia-backend-dev/versions/a9670bb8a19862cd
+  OUT_DIR: .tmp/m9-production-hosting-entry-source-gate
+  ACTION_NAME: M9_PRODUCTION_HOSTING_ENTRY_PARITY_SOURCE_GATE
 
 jobs:
-  rollback:
-    name: Exactly one authorized rollback, no production promotion
+  source-gate:
+    name: Verify production Hosting entry semantics, zero provider calls
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
 
     steps:
       - name: Checkout live branch
         uses: actions/checkout@v4
         with:
-          fetch-depth: 20
+          fetch-depth: 150
           ref: docs-tya-v6-v71-audit
 
       - name: Setup Node
@@ -48,15 +41,10 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Exclude ephemeral material
-        run: |
-          printf '%s\n' '.tmp/' 'node_modules/' 'gha-creds-*.json' >> .git/info/exclude
-
-      - name: Validate exact rollback authorization and no-second-promotion boundary
+      - name: Validate source-only request and exact trigger scope
         run: |
           set -euo pipefail
-          mkdir -p "$OUT_DIR" "$PRIVATE_DIR"
-          chmod 700 "$PRIVATE_DIR"
+          mkdir -p "$OUT_DIR"
           node <<'NODE'
           const fs=require('fs');
           const cp=require('child_process');
@@ -64,137 +52,33 @@ jobs:
           const head=cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
           const parent=cp.execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const changed=cp.execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
-          if(x.schemaVersion!=='cxorbia.m9.authorized-conditional-rollback.request.v1')throw new Error('M9_ROLLBACK_REQUEST_SCHEMA_INVALID');
-          if(x.action!==process.env.ACTION_NAME||x.mode!=='ROLLBACK_ONLY_AFTER_FAILED_IMMEDIATE_SMOKE')throw new Error('M9_ROLLBACK_ACTION_OR_MODE_INVALID');
-          if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7)throw new Error('M9_ROLLBACK_LANE_INVALID');
-          if(x.enabled!==true||x.consumed!==false||x.status!=='authorized_execute_once'||x.authorizedBy!=='Paula'||x.paulaExplicitCurrentConversation!==true)throw new Error('M9_ROLLBACK_AUTHORIZATION_INVALID');
-          if(x.authorizationParentGate!=='M9_EXPLICIT_CUTOVER_ONE_PRODUCTION_PROMOTION'||x.conditionObserved!=='IMMEDIATE_SMOKE_FAILED_AFTER_PRODUCTION_PROMOTION')throw new Error('M9_ROLLBACK_CONDITION_NOT_BOUND');
-          if(x.targetHeadSha!==parent||head===parent)throw new Error('M9_ROLLBACK_TARGET_HEAD_INVALID');
-          if(changed.length!==1||changed[0]!==process.env.EXECUTE_FILE)throw new Error('M9_ROLLBACK_TRIGGER_SCOPE_INVALID:'+changed.join(','));
-          if(x.firebaseProjectId!==process.env.GCP_PROJECT_ID||x.hostingSite!==process.env.HOSTING_SITE)throw new Error('M9_ROLLBACK_TARGET_INVALID');
-          if(x.failedPromotionRelease!==process.env.FAILED_PROMOTION_RELEASE||x.failedPromotionVersion!==process.env.FAILED_PROMOTION_VERSION||x.rollbackVersion!==process.env.ROLLBACK_VERSION)throw new Error('M9_ROLLBACK_VERSION_BIND_INVALID');
-          if(Number(x.productionPromotionsConsumed)!==1||Number(x.productionPromotionsRemaining)!==0||Number(x.maxRollbackExecutions)!==1||x.noSecondProductionPromotion!==true)throw new Error('M9_ROLLBACK_LIMIT_INVALID');
-          for(const k of ['hostingDeploys','cloudRunDeploys','authWrites','firestoreWrites','hrWrites','rulesWrites','storageWrites','makeCalls','geminiCalls','paymentWrites'])if(Number(x[k]||0)!==0)throw new Error('M9_ROLLBACK_UNSAFE_SCOPE_'+k);
-          if(x.merge!==false||x.containsPii!==false||x.containsSecrets!==false)throw new Error('M9_ROLLBACK_UNSAFE_SCOPE');
-          fs.writeFileSync(process.env.OUT_DIR+'/authorization.json',JSON.stringify({schemaVersion:'cxorbia.m9.authorized-rollback.authorization.v1',requestId:x.requestId,requestCommitSha:head,targetHeadSha:parent,action:x.action,authorizedBy:x.authorizedBy,authorizationSource:x.authorizationSource,conditionObserved:x.conditionObserved,failedPromotion:{release:x.failedPromotionRelease,version:x.failedPromotionVersion},rollbackVersion:x.rollbackVersion,limits:{productionPromotionsConsumed:1,productionPromotionsRemaining:0,maxRollbackExecutions:1,noSecondProductionPromotion:true}},null,2)+'\n','utf8');
+          if(x.schemaVersion!=='cxorbia.m9.production-hosting-entry-source-gate.request.v1')throw new Error('M9_SOURCE_GATE_REQUEST_SCHEMA_INVALID');
+          if(x.action!==process.env.ACTION_NAME||x.mode!=='SOURCE_ONLY_NO_PROVIDER')throw new Error('M9_SOURCE_GATE_ACTION_INVALID');
+          if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7)throw new Error('M9_SOURCE_GATE_LANE_INVALID');
+          if(x.enabled!==true||x.status!=='execute_once_source_only'||x.targetHeadSha!==parent)throw new Error('M9_SOURCE_GATE_TARGET_INVALID');
+          if(changed.length!==1||changed[0]!==process.env.EXECUTE_FILE)throw new Error('M9_SOURCE_GATE_TRIGGER_SCOPE_INVALID:'+changed.join(','));
+          if(x.productionPromotionsRemaining!==0||x.providerReads!==0||x.providerWrites!==0||x.hostingDeploys!==0||x.productionMutation!==false||x.merge!==false)throw new Error('M9_SOURCE_GATE_NOT_SOURCE_ONLY');
+          fs.writeFileSync(process.env.OUT_DIR+'/authorization.json',JSON.stringify({requestId:x.requestId,requestCommitSha:head,targetHeadSha:parent,action:x.action,mode:x.mode,safety:{providerReads:0,providerWrites:0,hostingDeploys:0,productionMutation:false,merge:false}},null,2)+'\n');
           NODE
 
-      - name: Authenticate existing production target identity
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-
-      - name: Install transient read/write Hosting API client
+      - name: Execute Hosting entry parity source gate
         run: |
           set -euo pipefail
-          npm install --no-save --ignore-scripts --package-lock=false google-auth-library@9.15.1 >/dev/null
+          node --check tools/qa/tya-m9-production-hosting-entry-parity-source-gate.mjs
+          node tools/qa/tya-m9-production-hosting-entry-parity-source-gate.mjs > "$OUT_DIR/report.json"
+          node -e "const r=require('./'+process.env.OUT_DIR+'/report.json');if(r.decision!=='PASS_M9_PRODUCTION_HOSTING_ENTRY_PARITY_SOURCE_GATE')throw new Error('M9_SOURCE_GATE_NOT_PASS:'+JSON.stringify(r));console.log(JSON.stringify({decision:r.decision,classification:r.classification,next:r.next,checks:r.checks}));"
 
-      - name: Materialize credential privately
-        env:
-          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const fs=require('fs');
-          const raw=process.env.EXISTING_DEV_JSON||'';
-          let p=null;try{p=JSON.parse(raw);}catch{}
-          if(!(p&&p.type==='service_account'&&p.project_id===process.env.GCP_PROJECT_ID&&p.client_email&&p.private_key))throw new Error('M9_ROLLBACK_CREDENTIAL_INVALID');
-          fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
-          NODE
-
-      - name: Verify failed promoted release is still live before rollback
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/m9-authorized-rollback/private/credentials.json
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const fs=require('fs');
-          const {GoogleAuth}=require('google-auth-library');
-          (async()=>{
-            const auth=new GoogleAuth({keyFile:process.env.GOOGLE_APPLICATION_CREDENTIALS,scopes:['https://www.googleapis.com/auth/firebase.hosting']});
-            const client=await auth.getClient();
-            const url=`https://firebasehosting.googleapis.com/v1beta1/sites/${process.env.HOSTING_SITE}/releases?pageSize=20`;
-            const r=await client.request({url,method:'GET'});
-            const live=(r.data.releases||[]).filter(x=>x.releaseTime).sort((a,b)=>Date.parse(b.releaseTime)-Date.parse(a.releaseTime))[0];
-            if(!live||live.name!==process.env.FAILED_PROMOTION_RELEASE||live.version?.name!==process.env.FAILED_PROMOTION_VERSION)throw new Error('M9_ROLLBACK_LIVE_RELEASE_DRIFT');
-            fs.writeFileSync(process.env.OUT_DIR+'/before-rollback.json',JSON.stringify({releaseName:live.name,versionName:live.version?.name,releaseTime:live.releaseTime},null,2)+'\n');
-          })().catch(e=>{console.error(e);process.exit(1)});
-          NODE
-
-      - name: Execute exactly one rollback release
-        id: rollback
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/m9-authorized-rollback/private/credentials.json
-        run: |
-          set -euo pipefail
-          echo 0 > "$OUT_DIR/rollback-count"
-          node <<'NODE'
-          const fs=require('fs');
-          const {GoogleAuth}=require('google-auth-library');
-          (async()=>{
-            const auth=new GoogleAuth({keyFile:process.env.GOOGLE_APPLICATION_CREDENTIALS,scopes:['https://www.googleapis.com/auth/firebase.hosting']});
-            const client=await auth.getClient();
-            const url=`https://firebasehosting.googleapis.com/v1beta1/sites/${process.env.HOSTING_SITE}/releases?versionName=${encodeURIComponent(process.env.ROLLBACK_VERSION)}`;
-            const r=await client.request({url,method:'POST',data:{}});
-            fs.writeFileSync(process.env.OUT_DIR+'/rollback-create.json',JSON.stringify({releaseName:r.data?.name||null,versionName:r.data?.version?.name||process.env.ROLLBACK_VERSION,type:r.data?.type||null,releaseTime:r.data?.releaseTime||null},null,2)+'\n');
-          })().catch(e=>{console.error(e);process.exit(1)});
-          NODE
-          echo 1 > "$OUT_DIR/rollback-count"
-
-      - name: Verify rollback version is live and root responds
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/m9-authorized-rollback/private/credentials.json
-        run: |
-          set -euo pipefail
-          sleep 2
-          node <<'NODE'
-          const fs=require('fs');
-          const {GoogleAuth}=require('google-auth-library');
-          (async()=>{
-            const auth=new GoogleAuth({keyFile:process.env.GOOGLE_APPLICATION_CREDENTIALS,scopes:['https://www.googleapis.com/auth/firebase.hosting']});
-            const client=await auth.getClient();
-            const url=`https://firebasehosting.googleapis.com/v1beta1/sites/${process.env.HOSTING_SITE}/releases?pageSize=20`;
-            const r=await client.request({url,method:'GET'});
-            const live=(r.data.releases||[]).filter(x=>x.releaseTime).sort((a,b)=>Date.parse(b.releaseTime)-Date.parse(a.releaseTime))[0];
-            if(!live||live.version?.name!==process.env.ROLLBACK_VERSION)throw new Error('M9_ROLLBACK_VERSION_NOT_LIVE');
-            const root=await fetch(process.env.ROOT_URL,{redirect:'manual'});
-            if(![200,301,302,303,307,308].includes(root.status))throw new Error('M9_ROLLBACK_ROOT_HTTP_INVALID_'+root.status);
-            fs.writeFileSync(process.env.OUT_DIR+'/verification.json',JSON.stringify({decision:'PASS_M9_AUTHORIZED_CONDITIONAL_ROLLBACK',liveReleaseName:live.name,liveVersionName:live.version?.name,releaseTime:live.releaseTime,rootHttpStatus:root.status,rootLocation:root.headers.get('location')||null,productionPromotionsConsumed:1,rollbackExecutions:1,secondProductionPromotions:0},null,2)+'\n');
-          })().catch(e=>{console.error(e);process.exit(1)});
-          NODE
-
-      - name: Build sanitized rollback summary
+      - name: Capture repository status
         if: always()
         run: |
-          node <<'NODE'
-          const fs=require('fs');
-          const read=p=>fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):null;
-          const authorization=read(process.env.OUT_DIR+'/authorization.json');
-          const before=read(process.env.OUT_DIR+'/before-rollback.json');
-          const created=read(process.env.OUT_DIR+'/rollback-create.json');
-          const verification=read(process.env.OUT_DIR+'/verification.json');
-          const count=Number(fs.existsSync(process.env.OUT_DIR+'/rollback-count')?fs.readFileSync(process.env.OUT_DIR+'/rollback-count','utf8').trim():0);
-          const pass=count===1&&verification?.decision==='PASS_M9_AUTHORIZED_CONDITIONAL_ROLLBACK'&&verification?.liveVersionName===process.env.ROLLBACK_VERSION&&verification?.secondProductionPromotions===0;
-          const summary={schemaVersion:'cxorbia.m9.authorized-conditional-rollback.final-run.v1',generatedAt:new Date().toISOString(),decision:pass?'PASS_M9_AUTHORIZED_CONDITIONAL_ROLLBACK':'FAIL_M9_AUTHORIZED_CONDITIONAL_ROLLBACK',authorization,beforeRollback:before,rollbackRelease:created,verification,counts:{productionPromotionsConsumed:1,rollbackExecutions:count,secondProductionPromotions:0},phaseA:{certifiedPercent:96,remainingPercent:4,m9Points:0,m9State:'CUTOVER_SMOKE_FAILED_ROLLBACK_REQUIRED_AND_'+(pass?'COMPLETED':'NOT_VERIFIED')},next:pass?'PRODUCTION_COMPATIBLE_READONLY_SMOKE_REQUIRED_BEFORE_ANY_FUTURE_CUTOVER_GATE':'STOP_ROLLBACK_NOT_VERIFIED',safety:{hostingDeploys:0,cloudRunDeploys:0,authWrites:0,firestoreWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,credentialsExposed:false,tokensExposed:false}};
-          fs.writeFileSync(process.env.OUT_DIR+'/summary.json',JSON.stringify(summary,null,2)+'\n','utf8');
-          NODE
+          git status --porcelain=v1 > "$OUT_DIR/status.txt"
 
-      - name: Remove private credentials
-        if: always()
-        run: |
-          rm -rf "$PRIVATE_DIR"
-
-      - name: Upload sanitized rollback evidence
+      - name: Upload source-only evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-m9-authorized-rollback-${{ github.run_id }}
+          name: cxorbia-m9-production-hosting-entry-source-${{ github.run_id }}
           path: |
-            .tmp/m9-authorized-rollback
+            .tmp/m9-production-hosting-entry-source-gate
           if-no-files-found: error
           retention-days: 30
-
-      - name: Assert rollback PASS
-        if: always()
-        run: |
-          node -e "const r=require('./.tmp/m9-authorized-rollback/summary.json');if(r.decision!=='PASS_M9_AUTHORIZED_CONDITIONAL_ROLLBACK')throw new Error('M9_ROLLBACK_NOT_PASS:'+JSON.stringify(r));console.log(JSON.stringify({decision:r.decision,phaseA:r.phaseA,next:r.next,verification:r.verification,counts:r.counts}));"
