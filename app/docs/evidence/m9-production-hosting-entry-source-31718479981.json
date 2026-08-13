@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "cxorbia.m9.production-hosting-entry-parity-source-gate.durable.v1",
+  "generatedAt": "2026-08-13T16:01:01.047Z",
+  "decision": "PASS_M9_PRODUCTION_HOSTING_ENTRY_PARITY_SOURCE_GATE",
+  "workflowRunId": 31718479981,
+  "artifactId": 9188264814,
+  "artifactDigest": "sha256:ce405e543c48df991becf8f02d9ff66619a908e08b77ae327e8da3e72a326923",
+  "testedTarget": "62edaf552c2a62a8964671f691d600a417ae63f8",
+  "buildId": "ecc725866acc3eb8",
+  "aggregateSha256": "ecc725866acc3eb8aab292000be3ec31d1c46b5c14a53c8889fa7d6716a997e2",
+  "classification": "ROOT_CAUSE_CLOSED_SOURCE_ONLY__DEPLOY_CONFIG_HAD_DROPPED_TESTED_ROOT_REDIRECT_AND_TENANT_REWRITE",
+  "checks": {
+    "targetParity": true,
+    "publicParity": true,
+    "rootRedirectParity": true,
+    "tenantsRewriteParity": true,
+    "liveHrRewriteParity": true,
+    "spaFallbackParity": true,
+    "backendEntryCanonicalBootstrap": true,
+    "backendEntrySelfSetsProtectedRuntime": true,
+    "backendEntryLiveHr": true,
+    "backendEntryFirebase": true,
+    "genericEntryNotBackendBootstrap": true,
+    "runtimeAppBytesUnchanged": true,
+    "buildIdStillBound": true,
+    "aggregateStillBound": true
+  },
+  "runtimeAppDriftAfterM8": [],
+  "safety": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "merge": false,
+    "productionMutation": false
+  },
+  "next": "NEW_EXPLICIT_GATE_REQUIRED_BEFORE_ANY_FUTURE_PRODUCTION_PROMOTION"
+}
