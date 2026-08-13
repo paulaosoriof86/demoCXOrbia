@@ -1,43 +1,46 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-12 19:48 -06:00  
-**Estado vivo:** `C6_RUNTIME_12_PASS_M7__CANONICAL_B_ADMIN_FULL_STABLE__PHASE_A_93__NO_PRODUCTION`
+**Fecha:** 2026-08-13 05:21 -06:00  
+**Estado vivo:** `M8_PASS__PHASE_A_96__M9_PROVIDER_PRECUTOVER_NEXT__NO_PRODUCTION`
 
 ## Prevalencia actual
 
 1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`.
 2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`.
-3. Evidencia Runtime 12: `app/docs/evidence/c6-live-user-admin-runtime-proof-31658676280.json`.
-4. Runtime 12: run `31658676280`, job `94318658180`, artifact `9165383310`, digest `sha256:a327b0d5e0a592d41417dce7ff934984ab51d3d5927dbee9ba774200eee5befe`.
-5. C6 Staff Exact Write V2 canonical readback PASS, cerrado/no repetible.
-6. CAMBIOS/RESUMEN/PENDIENTES y mirrors vigentes.
-7. Phase A tracker/plan/Academia.
-8. PR #7 y HEAD vivo de `docs-tya-v6-v71-audit`.
+3. Evidencia M8: `app/docs/evidence/m8-human-validation-rollback-ready-31694998731.json`.
+4. M8 run `31694998731`, job `94430661554`, artifact `9178957729`, digest `sha256:296a404470dc692d2b01679550d2e19b3429ca281f7c9333655ebf3bb8b1f85b`.
+5. Evidencia M7 Runtime 12: `app/docs/evidence/c6-live-user-admin-runtime-proof-31658676280.json` y run `31658676280`.
+6. C6 Staff Exact Write V2 canonical readback PASS, cerrado/no repetible.
+7. CAMBIOS/RESUMEN/PENDIENTES y Phase A tracker vigentes.
+8. Fuentes maestras/addenda activos y PR #7 sobre la rama viva `docs-tya-v6-v71-audit`.
 
 ## Estado técnico vigente
 
-- Phase A: **93% certificado / 7% restante**.
-- `M7=5/5 COMPLETE`; C6 runtime cerrado salvo drift nuevo reproducible.
-- Runtime 12: `PASS_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME`.
-- Preflight Staff v4: PASS.
-- Principal exacto `B=admin`; `exactWriteCanonical=true`; `legacyCredentialBundleUsed=false`.
-- Hosting DEV físico 1/1; remote parity exact=true, root 302 / canonical 200.
-- Auth/contexto `admin / staff / tya / cinepolis`.
-- Membership `tenants/tya/users/self` verificada y persistida post-`CX.app.enter()`.
-- Datos runtime: **15 periodos / 660 visitas / 197 shoppers**, `2025-06 → 2026-08`.
-- Frontend handoff `entered`; stale provider empty limpiado.
-- Primera carga + **3 reloads + new-tab PASS**.
+- Phase A: **96% certificado / 4% restante**.
+- `M7=5/5 COMPLETE`; `M8=3/3 COMPLETE`.
+- M8 decisión: `PASS_M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY`.
+- Principal `B=admin`; contexto `admin / staff / tya / cinepolis`; membership verificada.
+- HR viva: **15 periodos / 660 visitas**, `2025-06 → 2026-08`.
+- Perfiles protegidos=197; identity-map=211; identity review=0.
+- Duplicate visit keys=0; duplicate shopper IDs=0.
+- Rutas PASS: dashboard, proyectos, visitas, postulaciones, cert, financiero, aprendizaje.
+- Dos reconciliaciones HR frescas PASS, sin altas/bajas de visit keys.
+- Financiero/Beneficios por rol PASS.
+- Errores page/HTTP/request=0.
+- Gate humano de confidencialidad validado como comportamiento esperado; consentimiento no registrado por QA.
+- Source/build lock preservado; runtime app parity con M7=true.
+- Rollback readiness: `READY_FAIL_CLOSED_FOR_M9_PROVIDER_CAPTURE`.
 
 ## Seguridad
 
-Nuevos Auth/Firestore/HR/Rules/Storage writes=0; Make/Gemini/pagos=0; Cloud Run deploys=0; segundo Exact Write=0; segundo Hosting=0; credenciales/tokens expuestos=false; merge=false; producción=false.
+Provider writes=0; Hosting deploys=0; Cloud Run deploys=0; nuevos Auth/Firestore/HR/Rules/Storage writes=0; Make/Gemini/pagos=0; browser-local consent writes QA=0; credenciales/tokens expuestos=false; merge=false; producción=false.
 
 ## Progreso
 
-`M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=5/5 | M8=0/3 | M9=0/3 | M10=0/1`
+`M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=5/5 | M8=3/3 | M9=0/3 | M10=0/1`
 
-**Phase A=93% | restante=7% | delta certificado Runtime 12=+5 puntos.**
+**Phase A=96% | restante=4% | delta certificado M8=+3 puntos.**
 
 ## Siguiente acción exacta
 
-Continuar inmediatamente `M8 → M9 → M10`, sin auditoría general ni reapertura de gates cerrados. Resolver la definición canónica exacta de cada milestone desde las fuentes vigentes; no inventar su alcance.
+Continuar inmediatamente con M9, sin reabrir M7/M8: capturar read-only la release/version productiva vigente, verificar rollback soportado por el proveedor y preparar el bind exacto a los bytes/source-lock M8. Si esos controles pasan, solicitar/usar únicamente el gate explícito de una promoción productiva. Después M10 smoke/freeze final.
