@@ -1,55 +1,54 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-13 14:16 -06:00
-**Estado:** `P0_SHOPPER_EXACT_IDENTITY_SOURCE_FIX_APPLIED__DEV_DEPLOY_PENDING__CUTOVER_BLOCKED`
+**Última actualización:** 2026-08-13 16:15 -06:00
+**Estado:** `P0_SHOPPER_CANONICAL_AUTH_HR_HANDOFF_SOURCE_PASS__DEV_REDEPLOY_PENDING`
 
-## P0 Shopper — reparación source-only aplicada
+## Bloque P0 2026-08-13 — reparación source-only cerrada
 
-La aceptación humana de Paula demostró que un Shopper real autenticaba y veía el menú, pero `Mi Perfil` mostraba `La identidad de esta sesión no está vinculada al read model canónico.` El laboratorio, al mismo tiempo, sí leía HR viva completa. Este P0 continúa siendo el bloqueador del go-live real.
+La prueba humana real encontró que Shopper autenticaba pero quedaba temporalmente en Firestore (`1 proyecto / 0 visitas / 1 shopper / 0 postulaciones`) y luego `Mi Perfil` declaraba que la identidad no estaba vinculada al read model canónico.
 
-Se aisló un defecto reproducible en `app/adapters/tya-canonical-shopper-portal-v2.js`: el portal resolvía la sesión únicamente con `identityMap[rawShopperId] || rawShopperId` y podía renderizar el bloqueo antes de que terminara la reconciliación Auth → Firestore protegido → HR viva. Ese comportamiento no cubría todas las llaves técnicas exactas ya admitidas por los contratos de identidad y convertía una reconciliación todavía pendiente en un falso bloqueo visual.
+### Causa raíz reproducible
 
-Commit de reparación: `d435d33fbf548b8021ad5604acc4b2686f75d6b5`.
+`app/adapters/tya-canonical-shopper-portal-v2.js` consultaba `window.CX_BACKEND_AUTH?.currentContext?.()`, API inexistente en este runtime. La autoridad real publicada por `app/core/backend-browser-auth.js` es `CX.backendAuth.context()`. Por ello el portal podía interpretar que HR ya no estaba pendiente cuando la composición Auth → Firestore protegido → HR viva todavía no había finalizado.
 
-### Cambio focal
+El panel `app/core/backend-preview-status.js` tampoco escuchaba el evento final `cx:protected-auth-hr-authority-ready` y llamaba `Proyectos` a registros que, en la composición histórica, representan periodos. Esto generó el alarmante pero incorrecto `14 proyectos`.
 
-- El resolver Shopper ahora usa exclusivamente relaciones técnicas exactas: `id`, `shopperId`, `legacyShopperId`, `legacyId`, `sourceId`, `sourceKey`, `externalShopperId`, `canonicalLegacyIds`, `legacyLiveShopperIds`, `sourceShopperIds`, `hrShopperIds`, `externalShopperIds`, `identityAliases`, `aliases`, `exactAliases` y aliases técnicos de crosswalk/identity/profile.
-- Se soporta lookup directo, `identityMap` forward y relación exacta inversa cuando es única.
-- Si existe más de una coincidencia exacta, se bloquea como ambigua; nunca se une por nombre, correo o coincidencia visual.
-- Si la autoridad HR aún no terminó de aplicar, `Mi Perfil` muestra estado de validación y fuerza la reconciliación read-only; al recibir `cx:protected-auth-hr-authority-ready`, vuelve a renderizar con `CX.data` ya compuesto.
-- El alias resuelto se conserva solo en memoria dentro de `CX.data.__identityMap`; no existe write a proveedor.
-- Se eliminó la exposición visual de contraseña/credencial cruda en esta superficie y se muestra `Protegida`.
+### Archivos tocados
 
-### Gate de regresión source-only
+- `app/adapters/tya-canonical-shopper-portal-v2.js` — commit `2da1a1571a253d2868325ee55374e0948b573ea1`: Auth canónico, espera HR, reconcile read-only y rerender final.
+- `app/core/backend-preview-status.js` — commit `bb6dae78e8fb79ce1995010368ceaf342e0a71e3`: proyecto y periodos separados, Firestore identificado como slice transitorio, actualización por handoff HR.
+- `tools/qa/cxorbia-p0-shopper-hr-authority-source-gate.mjs` — commit `adeda3a70907706ef5e709c18c4bc0686833ec98`: gate source-only independiente.
+- `tools/qa/tya-phase-a-visual-smoke.mjs` — commit `23a708c27ef4abc4ef93d2a027f3dfd7c40b4ee8`: el gate existente ahora bloquea regresiones del handoff Auth/HR.
+- `app/docs/evidence/p0-shopper-canonical-auth-hr-handoff-source-pass-31749008509.json` — evidencia durable del PASS.
 
-Se amplió `tools/qa/tya-phase-a-visual-smoke.mjs` en commit `9ca59feb68583ec1de3ccf590e6b9ea6c0f2fd5b` con una prueba browser-only que exige:
+### Resultado reproducible
 
-1. ID canónico directo → PASS.
-2. HR/live ID → canonical por identityMap → PASS.
-3. alias técnico exacto (`sourceKey`) → PASS.
-4. dos perfiles con el mismo alias exacto → BLOCKED por ambigüedad.
-5. nombres iguales sin llave técnica → NO RESUELVE.
+`CXOrbia Phase A Visual Smoke` run `31749008509` terminó `SUCCESS` sobre `23a708c27ef4abc4ef93d2a027f3dfd7c40b4ee8`. Artifact `9200168093`, digest `sha256:cffb33d875f190b8b30e906932b9f44458ddccb5d394ba5b742913ddeb03c1ca`.
 
-El gate no usa proveedores, no importa datos y no escribe base.
+- `p0ShopperAuthorityHandoffSource.pass=true`.
+- 13/13 checks del handoff canónico en PASS.
+- `p0ShopperExactIdentity.pass=true`.
+- `hardFails=[]`.
+- Cero proveedor, escrituras, deploy o producción.
 
-## Diagnóstico/provider anterior preservado
+La advertencia restante del smoke (`custom_role_visible_nav_items:1`) pertenece al smoke demo estructural heredado y no invalida este P0 source-only. Ese smoke demo ya no se acepta como certificación de Firebase humano.
 
-El único provider-read P0 autorizado fue run `31735473752`; falló sin persistir la causa y se considera consumido. No se repitió. La recuperación offline del Admin B sí produjo internamente `PASS_P0_ADMIN_B_VISIBLE_LOGIN_RECOVERED_OFFLINE` con `providerReads=0`, pero su artifact no persistió por el fallo instrumental `tee_target_directory_missing`.
+## Qué se preservó
 
-El request offline heredado sigue pendiente de neutralización documental: el intento de actualizarlo fue bloqueado por la herramienta. No se afirma que haya quedado neutralizado en HEAD actual y no se volverá a tocar como parte del fix funcional sin necesidad.
+No se reabrieron ni recrearon identidades Shopper; no se reimportó HR. Cinépolis sigue siendo un único proyecto configurable. La HR canónica certificada conserva 15 periodos / 660 visitas hasta agosto 2026. M1–M10 siguen como 100% técnico DEV, no como aprobación funcional humana.
 
 ## Seguridad
 
-Desde el hallazgo P0: cero Auth/Firestore/HR/Rules/Storage writes, cero Make/Gemini/pagos, cero merge, cero producción y cero cutover real. El fix actual es source-only y todavía NO está desplegado en Hosting DEV.
-
-## Siguiente bloque exacto
-
-Cerrar el nuevo smoke source-only. Si PASS, desplegar exclusivamente los commits del fix P0 a `cxorbia-backend-dev` bajo autorización específica de Paula, repetir inmediatamente la misma validación humana Shopper y solo después continuar Admin/Operaciones y E2E.
+Cero Auth/Firestore/HR/Rules/Storage writes, cero provider reads en este bloque, cero deploy, Make/Gemini/pagos, merge o producción.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** resolución de identidad humana exacta, fail-closed por ambigüedad y espera explícita de autoridad antes de renderizar histórico.
-- **Exclusivo cliente:** Shopper TyA/Cinépolis, HR e histórico.
-- **Claude/prototipo:** no rediseñar; la reparación vive en adapter y preserva módulos.
-- **Academia:** ruta Shopper se revalida después del deploy DEV.
-- **Sin impacto Claude:** gate source-only y seguridad.
+- **Reusable CXOrbia:** Firestore del principal es transitorio; HR final debe completar el handoff antes de aceptar el contexto operacional.
+- **Exclusivo cliente:** identidad e histórico TyA/Cinépolis.
+- **Claude/prototipo:** no rediseñar módulos; corregido solo adapter/diagnóstico. No llamar proyectos a los periodos.
+- **Academia:** revalidar acceso por rol después del próximo deploy DEV.
+- **Sin impacto Claude:** CI, evidencia y seguridad.
+
+## Siguiente bloque exacto
+
+Deploy único del HEAD vigente al Hosting DEV `cxorbia-backend-dev`, luego validación remota read-only y aceptación humana Shopper + Admin/Operaciones/Cliente/Academia. Requiere autorización específica porque el deploy DEV anterior ya fue consumido.
