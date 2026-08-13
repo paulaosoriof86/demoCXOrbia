@@ -103,7 +103,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check tools/qa/tya-m8-rollback-readiness-source-gate.mjs
-          node --check tools/qa/tya-m8-human-validation-rollback-ready-browser-v2.mjs
+          node --check tools/qa/tya-m8-confidentiality-root-cause-browser.mjs
           node tools/qa/tya-m8-rollback-readiness-source-gate.mjs
           node -e "const r=require('./.tmp/m8-human-validation/rollback-readiness.json');if(r.decision!=='PASS_M8_ROLLBACK_READINESS_SOURCE_GATE'||r.productIdentity?.runtimeAppParityWithM7Deployed!==true||r.rollbackReadiness?.status!=='READY_FAIL_CLOSED_FOR_M9_PROVIDER_CAPTURE')throw new Error('M8_ROLLBACK_SOURCE_GATE_NOT_PASS');"
 
@@ -136,7 +136,7 @@ jobs:
           node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection-staff.source-safe.json','utf8'));const p=JSON.parse(fs.readFileSync(process.env.PRIVATE_E2E,'utf8'));if(a.decision!=='PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY'||a.canonicalTargetAlias!=='B'||a.staffRole!=='admin'||a.exactWriteCanonical!==true||a.legacyCredentialBundleUsed!==false||a.valuesExported!==false)throw new Error('M8_CANONICAL_CREDENTIAL_SELECTION_NOT_PASS');if(!p?.staff?.login||!p?.staff?.password||p?.shopper||p?.client)throw new Error('M8_PRIVATE_STAFF_BUNDLE_INVALID');"
           chmod 600 "$PRIVATE_E2E"
 
-      - name: Execute M8 real browser validation and two fresh HR reconciliations
+      - name: Execute M8 confidentiality root-cause diagnostic in real browser
         id: runtime
         continue-on-error: true
         env:
@@ -147,12 +147,12 @@ jobs:
           CXORBIA_M8_OUTPUT: .tmp/m8-human-validation/runtime/report.json
         run: |
           set +e
-          node tools/qa/tya-m8-human-validation-rollback-ready-browser-v2.mjs "$DEV_ROOT_URL"
+          node tools/qa/tya-m8-confidentiality-root-cause-browser.mjs "$DEV_ROOT_URL"
           code=$?
           echo "exit_code=$code" >> "$GITHUB_OUTPUT"
           exit 0
 
-      - name: Build sanitized M8 execution summary
+      - name: Build sanitized M8 diagnostic summary
         if: always()
         env:
           RUNTIME_EXIT_CODE: ${{ steps.runtime.outputs.exit_code }}
@@ -165,20 +165,15 @@ jobs:
           const rollback=read(process.env.OUT_DIR+'/rollback-readiness.json');
           const credential=read(process.env.OUT_DIR+'/credential-selection-staff.source-safe.json');
           const runtime=read(process.env.OUT_DIR+'/runtime/report.json');
-          const exitCode=Number(process.env.RUNTIME_EXIT_CODE??999);
-          const runtimePass=exitCode===0&&runtime?.decision==='PASS_M8_HUMAN_BROWSER_LIVE_HR_RECONCILIATION_READONLY';
-          const rollbackPass=rollback?.decision==='PASS_M8_ROLLBACK_READINESS_SOURCE_GATE'&&rollback?.productIdentity?.runtimeAppParityWithM7Deployed===true;
-          const safetyPass=runtime?.safety?.hostingDeploys===0&&runtime?.safety?.firestoreWrites===0&&runtime?.safety?.hrWrites===0&&runtime?.safety?.production===false&&rollback?.safety?.production===false;
-          const pass=runtimePass&&rollbackPass&&safetyPass&&credential?.decision==='PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY';
           const summary={
-            schemaVersion:'cxorbia.m8.human-validation-run.v1',
+            schemaVersion:'cxorbia.m8.confidentiality-diagnostic-run.v1',
             generatedAt:new Date().toISOString(),
-            decision:pass?'PASS_M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY':'FAIL_M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY',
+            decision:'DIAGNOSTIC_M8_NOT_CLOSED',
             authorization,
             credentialSelection:credential,
             rollbackReadiness:rollback,
             runtime,
-            phaseA:pass?{entryPercent:93,m8Points:3,certifiedPercent:96,remainingPercent:4}:{entryPercent:93,m8Points:0,certifiedPercent:93,remainingPercent:7},
+            phaseA:{entryPercent:93,m8Points:0,certifiedPercent:93,remainingPercent:7},
             safety:{hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,passwordChanges:0,passwordResets:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,production:false,credentialsExposed:false,tokensExposed:false}
           };
           fs.writeFileSync(process.env.OUT_DIR+'/summary.json',JSON.stringify(summary,null,2)+'\n','utf8');
@@ -198,7 +193,7 @@ jobs:
           git diff --name-status > "$OUT_DIR/repository-status/tracked-delta.txt"
           git ls-files --others --exclude-standard > "$OUT_DIR/repository-status/untracked.txt"
 
-      - name: Upload sanitized M8 evidence
+      - name: Upload sanitized M8 diagnostic evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -208,7 +203,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      - name: Enforce M8 PASS
+      - name: Keep M8 open after diagnostic
         if: always()
         run: |
-          node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync('.tmp/m8-human-validation/summary.json','utf8'));if(r.decision!=='PASS_M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY')throw new Error('M8_NOT_PASS:'+JSON.stringify({decision:r.decision,runtime:r.runtime?.decision,rollback:r.rollbackReadiness?.decision}));"
+          node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync('.tmp/m8-human-validation/summary.json','utf8'));if(r.decision!=='DIAGNOSTIC_M8_NOT_CLOSED')throw new Error('M8_DIAGNOSTIC_SUMMARY_MISSING');throw new Error('M8_DIAGNOSTIC_COMPLETE_NOT_PASS:'+JSON.stringify({classification:r.runtime?.classification||null}));"
