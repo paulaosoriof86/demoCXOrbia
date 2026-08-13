@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.c6.dev-root-entrypoint-hosting.v1",
-  "requestId": "c6-live-user-admin-membership-runtime-proof-20260812-12",
+  "requestId": "owner-visible-dev-validation-lab-20260813-01",
   "enabled": true,
   "mode": "HOSTING_RUNTIME_ONCE",
   "action": "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF",
   "consumed": false,
   "status": "authorized_execute_once",
-  "issuedAt": "2026-08-12T19:42:00-06:00",
+  "issuedAt": "2026-08-13T12:02:00-06:00",
   "authorizedBy": "Paula",
-  "authorizationSource": "current_conversation_2026-08-12_HOSTING_RUNTIME_ONCE_C6_DEV_Staff_exact_write_v2_B_admin_post_enter_membership_persisted",
+  "authorizationSource": "current_conversation_2026-08-13_owner_requested_finanzas_style_live_DEV_hosting_visible_tests",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -19,7 +19,7 @@
   "rootPath": "/",
   "canonicalPath": "/index-backend-dev.html",
   "rootRedirectType": 302,
-  "targetHeadSha": "8fcc29bc4ce48e7198b8ae55223817eae6052b06",
+  "targetHeadSha": "0083be8c2be8b0deb15bbe5e7f8f8410f972dbc1",
   "allowedExecutions": 1,
   "singleHostingDeployMax": 1,
   "hostingDeployExecutions": 0,
@@ -69,5 +69,5 @@
   "production": false,
   "stopRetryOnFailureAfterProvider": true,
   "sourceOnlyPreProviderRepairAuthorized": false,
-  "purpose": "Authorized one-shot C6 DEV Staff Hosting/runtime proof on the live final repaired HEAD, exclusively with Exact Write V2 canonical principal B=admin. Before provider require PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT v4 with staffSelectorExactWriteCanonicalAliasB=true, membershipRepublishedAfterCanonicalAppEnter=true, canonicalAppEnterReused=true and directUiMutationAbsent=true. The selected credential must report canonicalTargetAlias=B, staffRole=admin, exactWriteCanonical=true and legacyCredentialBundleUsed=false. With PASS execute maximum one Hosting DEV on cxorbia-backend-dev and certify Firebase Auth -> claims -> tenants/tya/users/{uid} -> CX.session/RBAC with membership persisted after CX.app.enter() -> backend read -> HR authority -> frontend, including first load, three reloads and new-tab. Zero Auth, Firestore, HR, Rules, Storage, Make, Gemini or payment writes; zero second Exact Write; no merge and no production. Once provider starts, any failure applies STOP_RETRY with no second attempt. With real PASS close M7, update Phase A to 93 percent and continue M8 -> M9 -> M10 without general reaudit or reopening closed gates."
+  "purpose": "Publish the owner-visible DEV validation laboratory already committed under app/dev-validation/index.html to cxorbia-backend-dev only, while preserving the canonical Staff read-only Hosting/runtime proof. The page executes visible same-origin checks, live HR read-only reconciliation and module availability without provider writes. Zero Auth, Firestore, HR, Rules, Storage, Make, Gemini or payment writes; no merge, no production and no TyA official-domain cutover."
 }
