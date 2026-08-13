@@ -109,6 +109,12 @@ ensure(sources.membershipWiring.includes("CX.session?.user?.membershipVerified!=
 ensure(sources.membershipWiring.includes("window.CX_BACKEND_LAST_STATE=Object.assign"),'MEMBERSHIP_WIRING_BACKEND_EMPTY_RECONCILE_MISSING');
 ensure(sources.membershipWiring.includes("window.CX_CORTE4_READONLY=Object.assign"),'MEMBERSHIP_WIRING_CORTE4_EMPTY_RECONCILE_MISSING');
 ensure(sources.membershipWiring.includes("CX.app.enter();"),'MEMBERSHIP_WIRING_CANONICAL_APP_ENTER_MISSING');
+ensure(sources.membershipWiring.includes("const postEnterCtx=await reconcile(verifiedCtx);"),'MEMBERSHIP_WIRING_POST_ENTER_SESSION_REPUBLISH_MISSING');
+ensure(sources.membershipWiring.includes("FRONTEND_HANDOFF_MEMBERSHIP_LOST_AFTER_APP_ENTER"),'MEMBERSHIP_WIRING_POST_ENTER_FAIL_CLOSED_MISSING');
+const appEnterIndex=sources.membershipWiring.indexOf("CX.app.enter();");
+const postEnterRepublishIndex=sources.membershipWiring.indexOf("const postEnterCtx=await reconcile(verifiedCtx);");
+ensure(appEnterIndex>=0&&postEnterRepublishIndex>appEnterIndex,'MEMBERSHIP_WIRING_POST_ENTER_REPUBLISH_ORDER_INVALID');
+ensure(sources.membershipWiring.includes("sessionMembershipRepublishedAfterAppEnter:true"),'MEMBERSHIP_WIRING_POST_ENTER_EVIDENCE_MISSING');
 ensure(sources.membershipWiring.includes("publishFrontendHandoff('entered'"),'MEMBERSHIP_WIRING_HANDOFF_EVIDENCE_MISSING');
 ensure(!sources.membershipWiring.includes("document.getElementById('app').classList.add"),'MEMBERSHIP_WIRING_DIRECT_UI_MUTATION_FORBIDDEN');
 
@@ -136,6 +142,7 @@ const result={
     productCanonicalSubmitBindingPresent:true,
     membershipAuthorityFrontendHandoff:true,
     membershipVerifiedBeforeFrontendEntry:true,
+    membershipRepublishedAfterCanonicalAppEnter:true,
     staleBackendEmptyStateReconciled:true,
     canonicalAppEnterReused:true,
     directUiMutationAbsent:true
