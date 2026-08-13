@@ -1,101 +1,83 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-12 19:25 -06:00  
-**Estado:** `C6_RUNTIME_11_STOP_RETRY_CANONICAL_B_ADMIN_PASS_TO_FRONTEND__SESSION_MEMBERSHIP_REAPPLY_ROOTCAUSE_PROVEN__SOURCE_REPAIR_PREFLIGHT_PASS__PHASE_A_88__NO_PRODUCTION`
+**Fecha:** 2026-08-12 19:47 -06:00  
+**Estado:** `C6_RUNTIME_12_PASS_M7__CANONICAL_B_ADMIN_FULL_STABLE__PHASE_A_93__NO_PRODUCTION`
 
 ## Estado vivo
 
 - Repo: `paulaosoriof86/demoCXOrbia`.
 - Rama: `docs-tya-v6-v71-audit`.
 - PR #7: draft/open/no merge.
-- Exact Write V2: PASS cerrado/no repetible.
 - Producción: intacta.
-- Phase A certificado: **88%**; restante **12%**.
+- Exact Write V2: PASS cerrado/no repetible.
+- C6/M7: **PASS cerrado** salvo drift nuevo reproducible.
+- Phase A certificado: **93%**; restante **7%**.
 
-## Runtime 11
+## Runtime 12 — PASS
 
-Request `c6-live-user-admin-membership-runtime-proof-20260812-11`, target `df1e966111ab5e5ea4b307d1c67941bd83df7294`, request commit `e63bb9d4af63126abce69e3954a136f2c7e4f8f9`.
+- Request: `c6-live-user-admin-membership-runtime-proof-20260812-12`.
+- Request commit: `51e7a5e814bcb5e31c3cf06c81b358e65d918868`.
+- Target HEAD: `8fcc29bc4ce48e7198b8ae55223817eae6052b06`.
+- Run: `31658676280`.
+- Job: `94318658180`.
+- Artifact: `9165383310`.
+- Digest: `sha256:a327b0d5e0a592d41417dce7ff934984ab51d3d5927dbee9ba774200eee5befe`.
+- Workflow conclusion: `success`.
+- Artifact decision: `PASS_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME`.
 
-- run: `31657144378`;
-- job: `94313999305`;
-- artifact: `9164843371`;
-- digest: `sha256:cf8433f80bbc363eebc303a6dffda961c51f6180d16438f8a8d4d874d6c87d07`.
-
-PASS demostrado antes del fallo:
-- autorización y one-shot scope;
-- `PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT` v4 reforzado;
-- selector exacto `B=admin`;
+PASS demostrado:
+- `PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT` v4;
+- shell exacto `bash -n` PASS y heredoc anidado ausente;
+- selector Staff canónico exacto `B=admin`;
 - `exactWriteCanonical=true`;
 - `legacyCredentialBundleUsed=false`;
 - Google Cloud DEV auth;
-- source parity;
-- Hosting DEV físico 1/1;
-- remote parity exact=true, root 302/canonical 200;
-- Auth/contexto `admin/staff/tya/cinepolis`;
-- HR authority **15 periodos / 660 visitas / 211 shoppers**, duplicados=0;
-- frontend handoff `entered` con `membershipVerified=true`;
-- stale backend/Corte4 empty false;
-- `appOn=true`, `loginHidden=true`.
+- Hosting DEV físico `1/1`;
+- remote parity exact=true, root 302 / canonical 200;
+- Firebase Auth/contexto `admin / staff / tya / cinepolis`;
+- membership canónica verificada y persistida en `CX.session/RBAC` después de `CX.app.enter()`;
+- runtime de datos: **15 periodos / 660 visitas / 197 shoppers**, `2025-06 → 2026-08`;
+- frontend handoff `entered` y stale provider-empty limpiado;
+- primera carga PASS;
+- **3 reloads PASS**;
+- **new-tab PASS**;
+- formulario canónico `#loginForm/#lgUser/#lgPass/#lgSubmit`;
+- Shopper/Cliente fuera del alcance Staff y lógica genérica preservada.
 
-El primer `waitReady` no cerró porque el snapshot final del mismo estado tenía `CX.session.user.membershipVerified=false` y `membershipSource=null` aunque el handoff ya había entrado. Por eso no hubo 3 reloads ni new-tab y M7 no puede certificarse todavía.
+## Cierre de la causa raíz anterior
 
-## Causa raíz demostrada
+Runtime 11 había demostrado que `app/core/backend-browser-auth.js` reconstruía `CX.session` dentro de `CX.app.enter()` y eliminaba la metadata de membership recién verificada. La reparación focal quedó en `app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js`: republica desde el cache de membership ya verificado después de la entrada y falla cerrado si no persiste.
 
-`C6_SESSION_MEMBERSHIP_METADATA_OVERWRITTEN_BY_BACKEND_BROWSER_AUTH_APP_ENTER_REAPPLY`
+Runtime 12 certifica que esa reparación funciona bajo primera carga, tres reloads y new-tab. No se requiere ni se autoriza reabrir C6 por ese defecto.
 
-Secuencia reproducible por source + runtime:
+## Seguridad
 
-1. `reconcile(ctx)` verifica el membership canónico y `publishSession()` escribe `membershipVerified=true`.
-2. `finalizeStaffFrontend()` llama `CX.app.enter()`.
-3. El wrapper existente de `app/core/backend-browser-auth.js` intercepta `CX.app.enter()` y ejecuta `applyCxSession(currentContext)`.
-4. `applyCxSession()` hace `CX.session.clear()` y reconstruye `CX.session.user` desde claims; esa reconstrucción no incluye `membershipVerified`, `membershipSource` ni `entitlementMode` del documento canónico.
-5. El shell permanece visible y el handoff ya había sido válido, pero la metadata de membership se pierde en `CX.session/RBAC`, exactamente el requisito que el smoke exige.
-
-No hay nuevo fallo demostrado de credencial B, Auth, claims, membership document previo a enter, HR authority, Hosting, remote parity ni shell frontend.
-
-## Reparación source-only posterior a STOP_RETRY
-
-Sin segundo provider ni Hosting:
-
-- `app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js` — commit `28f6a544f122b658d8ac2d47b4c9a89ebe09010e`:
-  - después de `CX.app.enter()`, vuelve a `reconcile(verifiedCtx)` por el cache ya verificado;
-  - republica membership sobre la sesión reconstruida;
-  - fail-closed si no persiste;
-  - no toca `/app/core` ni `/app/modules`.
-- `tools/qa/cxorbia-c6-staff-lane-source-preflight.mjs` — commit `e56a2371a474ed1c02f6bf16e763c8d190592f1d`:
-  - exige el orden `CX.app.enter()` → republicación membership;
-  - exige fail-closed post-enter y evidencia explícita.
-- Source-only request commit `27a2a0105cfdbeffe5ee06a70b0f05767ef6de2c`.
-- Source preflight run `31657552661`, job `94315231295`, artifact `9164940552`, digest `sha256:bc9b7f204673475d39e519d358cdaed596be015a5672b5ecdc07d270bc5c5acc`: **SUCCESS / PASS**.
-- En ese source preflight: Google Cloud auth, selector provider, Hosting y runtime quedaron skipped; provider calls=0 y Hosting=0.
-
-Evidencia durable: `app/docs/evidence/c6-live-user-admin-runtime-proof-31657144378.json`.
-
-## STOP_RETRY y seguridad
-
-- Runtime 11 Hosting: 1/1 consumido.
-- Segundo Hosting/runtime 11: 0.
-- Nuevos Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes: 0.
-- Segundo Exact Write: 0.
-- Source repair/preflight posterior: provider 0, Hosting 0.
-- Credenciales/tokens expuestos: false.
-- Merge: false.
-- Producción: false.
+Runtime 12:
+- Auth writes nuevos `0`;
+- Firestore writes nuevos `0`;
+- HR/Rules/Storage writes `0`;
+- Make/Gemini/pagos `0`;
+- Cloud Run deploys `0`;
+- segundo Exact Write `0`;
+- segundo Hosting `0`;
+- credenciales/tokens expuestos `false`;
+- merge `false`;
+- producción `false`.
 
 ## Progreso
 
-`M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1`
+`M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=5/5 | M8=0/3 | M9=0/3 | M10=0/1`
 
-**Phase A=88% | restante=12% | delta certificado runtime 11=+0%.** M7 es atómico y exige primera carga + 3 reloads + new-tab completos.
+**Phase A=93% | restante=7% | avance certificado de Runtime 12: +5 puntos.**
 
 ## Siguiente bloque exacto
 
-No nueva auditoría general. No reabrir Exact Write V2, Auth340, SKIP13, MultiAuth, HR ni gates cerrados. La siguiente acción es una nueva autorización explícita para un único `HOSTING_RUNTIME_ONCE` Staff sobre el HEAD vivo final reparado, usando exclusivamente `B=admin` canónico. Con PASS de membership persistida post-enter y estabilidad 3 reloads/new-tab, cerrar M7 y llevar Phase A a **93%**, después continuar M8 → M9 → M10.
+Continuar con `M8`, luego `M9` y `M10`, sin auditoría general y sin reabrir Exact Write/Auth340/SKIP13/MultiAuth/HR/M4/C6. Resolver el contrato exacto de cada milestone desde las fuentes vigentes antes de cualquier provider/write/deploy/merge/producción adicional.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** metadata de autorización canónica debe sobrevivir cualquier rehidratación de sesión posterior a autenticación.
-- **Exclusivo cliente:** principal Staff TyA B/admin en DEV.
-- **Claude/prototipo:** no se modificó UI ni módulos frontend.
-- **Academia:** sin cambio de contenido hasta M7 PASS.
-- **Sin impacto Claude:** adapter/preflight/evidencia C6.
+- **Reusable CXOrbia:** QA de una identidad canónica debe preservar membership/RBAC a través de entrada, reloads y nuevas pestañas.
+- **Exclusivo cliente:** TyA DEV, principal canónico B/admin y datos operativos TyA.
+- **Claude/prototipo:** sin cambios UI ni módulos frontend.
+- **Academia:** cadena Auth→membership→HR→frontend ya certificada para Phase A.
+- **Sin impacto Claude:** runtime QA, adapter backend y evidencia C6.
