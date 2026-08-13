@@ -1,40 +1,45 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-13 13:29 -06:00
-**Estado:** `P0_HUMAN_SHOPPER_OPEN__READONLY_ATTEMPT_CONSUMED_FAILED__STOP_RETRY__REAL_CUTOVER_BLOCKED`
+**Fecha:** 2026-08-13 16:15 -06:00
+**Estado:** `P0_SHOPPER_SOURCE_FIX_PASS__DEV_REDEPLOY_REQUIRED__REAL_CUTOVER_BLOCKED`
 
 ## Estado vivo
 
 - Repo `paulaosoriof86/demoCXOrbia`.
 - Rama `docs-tya-v6-v71-audit`.
 - PR #7 draft/open/no merge.
-- Build técnico calificado `ecc725866acc3eb8`.
-- M1–M10: 100% de calificación técnica DEV, no aprobación funcional.
-- Laboratorio DEV visible publicado en `/dev-validation/index.html`.
-- Plataforma/hosting real vigente de TyA: sin reemplazar.
+- M1–M10: 100% de calificación técnica DEV; no equivalen a aprobación funcional.
+- Plataforma/hosting oficial vigente de TyA: sin reemplazar.
+- Último deploy DEV visible anterior al fix actual: ya consumido; el nuevo source fix todavía no está publicado en Hosting DEV.
 
-## P0 vigente
+## P0 humano y causa raíz
 
-Paula autenticó con un Shopper real, pero `Mi Perfil` quedó separado del read model canónico y la vista permaneció Firestore-only con cero visitas, pese a que el laboratorio read-only leyó la HR viva completa. Aceptación humana: **RECHAZADA**.
+Paula autenticó con un Shopper real y reprodujo dos estados incorrectos: primero datos históricos desactualizados y luego el slice Firestore transitorio `1 proyecto / 0 visitas / 1 shopper / 0 postulaciones`, seguido de `La identidad de esta sesión no está vinculada al read model canónico.`
 
-Evidencia primaria: `app/docs/evidence/p0-human-shopper-canonical-binding-failure-20260813.json`.
+La auditoría aisló que el portal Shopper consultaba una API Auth inexistente (`window.CX_BACKEND_AUTH`) en lugar de la API canónica `CX.backendAuth.context()`. Eso podía convertir una reconciliación HR todavía pendiente en un falso bloqueo visual. El diagnóstico DEV, además, llamaba `Proyectos` a registros que en la composición HR representan periodos.
 
-## Bloque read-only autorizado — cerrado con fallo
+## Reparación source-only completada
 
-Request `p0-human-shopper-auth-hr-readonly-20260813-01` ejecutó run `31735473752`, job `94565926738`. La etapa de inspección falló y no persistió artifact ni diagnóstico sanitizado. El error específico no está disponible por el conector, por lo que la causa raíz no se declara.
+- `2da1a1571a253d2868325ee55374e0948b573ea1`: Shopper usa contexto Auth canónico y espera la autoridad HR antes de declarar no-vinculación.
+- `bb6dae78e8fb79ce1995010368ceaf342e0a71e3`: panel DEV escucha el handoff final, distingue Proyecto operativo de Periodos HR y marca Firestore como slice transitorio.
+- `23a708c27ef4abc4ef93d2a027f3dfd7c40b4ee8`: el visual smoke existente ahora exige el contrato Auth → HR authority y falla si reaparece la regresión.
 
-El único intento se considera consumido y se aplicó `STOP_RETRY`. El request quedó deshabilitado en `97e8f25a9119e0a67252dd6e568d8afc7c0a533c`. La verificación `31735810704` confirmó que la inspección de proveedor quedó `SKIPPED`, sin segundo intento. El runner histórico fue restaurado y los archivos preliminares no usados fueron retirados.
+Workflow `CXOrbia Phase A Visual Smoke` run `31749008509`: **SUCCESS**. Nuevo gate `p0ShopperAuthorityHandoffSource.pass=true`, gate de identidad exacta `pass=true`, `hardFails=0`, proveedores=0, writes=0. Artifact `9200168093`, digest `sha256:cffb33d875f190b8b30e906932b9f44458ddccb5d394ba5b742913ddeb03c1ca`.
 
-Evidencia del cierre seguro: `app/docs/evidence/p0-human-shopper-readonly-run-failure-31735473752.json`.
+Evidencia durable: `app/docs/evidence/p0-shopper-canonical-auth-hr-handoff-source-pass-31749008509.json`.
+
+## Interpretación correcta de cifras
+
+Cinépolis sigue siendo **un proyecto operativo configurable**. En la composición histórica `CX.data.projects` contiene registros de periodo para compatibilidad con la interfaz existente; por eso el viejo panel podía mostrar `14 proyectos`. El estado HR canónico certificado antes del hallazgo contiene 15 periodos y 660 visitas, hasta agosto 2026.
 
 ## Pendiente real
 
-Siguen sin demostrarse el principal exacto Shopper, su enlace técnico HR/read-model, el fallo concreto del bridge y el usuario visible del Admin B. No se adivinan. Una segunda lectura de proveedor exige autorización explícita nueva.
-
-## Siguiente bloque exacto
-
-Preparar primero, source-only, un mecanismo diagnóstico que capture evidencia aun cuando falle y separe la recuperación offline del usuario Admin B de la lectura Shopper. Solo después puede solicitarse un nuevo gate focal si sigue siendo necesaria otra lectura.
+El source fix ya pasó. Falta publicarlo en `cxorbia-backend-dev` y repetir validación humana real: Shopper primero; después Admin/Operaciones/Cliente/Academia sobre la misma fuente final. No se reabren las identidades ni se reimporta HR salvo nueva evidencia reproducible.
 
 ## Seguridad
 
-Cero writes de datos, cero cambios de contraseña, cero deploy, cero Make/Gemini/pagos, cero merge y cero producción.
+Este bloque fue source-only. Cero Auth/Firestore/HR/Rules/Storage writes, cero proveedor, cero deploy, cero Make/Gemini/pagos, cero merge y cero producción.
+
+## Siguiente bloque exacto
+
+Un único deploy del HEAD vigente al Hosting DEV `cxorbia-backend-dev`, seguido de validación remota read-only y aceptación humana por roles. Requiere gate específico de deploy porque el deploy anterior ya fue consumido.
