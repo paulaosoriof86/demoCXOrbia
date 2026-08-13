@@ -5,7 +5,7 @@ on:
     branches:
       - docs-tya-v6-v71-audit
     paths:
-      - backend/config/m9-explicit-production-cutover-execute.json
+      - backend/config/m9-provider-precutover-readonly-execute.json
 
 permissions:
   contents: read
@@ -19,7 +19,7 @@ defaults:
     shell: bash
 
 env:
-  EXECUTE_FILE: backend/config/m9-explicit-production-cutover-execute.json
+  EXECUTE_FILE: backend/config/m9-provider-precutover-readonly-execute.json
   CONTRACT_FILE: backend/contracts/m9-provider-precutover-readiness-v1.json
   PROMOTION_FILE: backend/config/cxorbia-production-promotion-contract.json
   M8_EVIDENCE: app/docs/evidence/m8-human-validation-rollback-ready-31694998731.json
@@ -94,14 +94,7 @@ jobs:
           if(p.strategy!=='PROMOTE_EXISTING_CLEAN_PROJECT'||p.productionProjectId!==process.env.GCP_PROJECT_ID||p.productionHostingSite!==process.env.HOSTING_SITE)throw new Error('M9_CUTOVER_PROMOTION_STRATEGY_INVALID');
           if(m8.decision!=='PASS_M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY'||m8.execution?.targetHeadSha!==process.env.TESTED_TARGET||m8.sourceLock?.buildId!==process.env.EXPECTED_BUILD_ID||m8.sourceLock?.aggregateSha256!==process.env.EXPECTED_AGGREGATE_SHA)throw new Error('M9_CUTOVER_M8_EVIDENCE_INVALID');
           if(m9.decision!=='PASS_M9_PROVIDER_PRECUTOVER_READINESS_READONLY'||m9.preCutoverRelease?.releaseName!==process.env.PRECUTOVER_RELEASE||m9.preCutoverRelease?.versionName!==process.env.ROLLBACK_VERSION||m9.rollbackReadiness?.status!=='READY_CAPTURED_FINALIZED_VERSION_PROVIDER_METHOD_VERIFIED')throw new Error('M9_CUTOVER_PRECUTOVER_EVIDENCE_INVALID');
-          fs.writeFileSync(process.env.OUT_DIR+'/authorization.json',JSON.stringify({
-            schemaVersion:'cxorbia.m9.explicit-production-cutover.authorization.v1',requestId:x.requestId,requestCommitSha:head,targetHeadSha:parent,authorizedBy:x.authorizedBy,authorizationSource:x.authorizationSource,action:x.action,mode:x.mode,
-            build:{testedTargetHeadSha:x.testedTargetHeadSha,buildId:x.buildId,aggregateSha256:x.aggregateSha256},
-            target:{firebaseProjectId:x.firebaseProjectId,hostingTarget:x.hostingTarget,hostingSite:x.hostingSite},
-            recovery:{preCutoverRelease:x.preCutoverRelease,rollbackVersion:x.rollbackVersion,maxConditionalRollbacks:1,rollbackOnlyIfImmediateSmokeFails:true},
-            limits:{maxProductionPromotions:1,noSecondPromotionAttempt:true},
-            safety:{cloudRunDeploys:0,authWrites:0,firestoreWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false}
-          },null,2)+'\n','utf8');
+          fs.writeFileSync(process.env.OUT_DIR+'/authorization.json',JSON.stringify({schemaVersion:'cxorbia.m9.explicit-production-cutover.authorization.v1',requestId:x.requestId,requestCommitSha:head,targetHeadSha:parent,authorizedBy:x.authorizedBy,authorizationSource:x.authorizationSource,action:x.action,mode:x.mode,build:{testedTargetHeadSha:x.testedTargetHeadSha,buildId:x.buildId,aggregateSha256:x.aggregateSha256},target:{firebaseProjectId:x.firebaseProjectId,hostingTarget:x.hostingTarget,hostingSite:x.hostingSite},recovery:{preCutoverRelease:x.preCutoverRelease,rollbackVersion:x.rollbackVersion,maxConditionalRollbacks:1,rollbackOnlyIfImmediateSmokeFails:true},limits:{maxProductionPromotions:1,noSecondPromotionAttempt:true},safety:{cloudRunDeploys:0,authWrites:0,firestoreWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false}},null,2)+'\n','utf8');
           NODE
 
       - name: Verify exact M8 bytes and build immutable staging
@@ -114,19 +107,7 @@ jobs:
           mkdir -p "$PRODUCT_DIR"
           git archive --format=tar "$TESTED_TARGET" app | tar -x -C "$PRODUCT_DIR"
           node <<'NODE'
-          const fs=require('fs'),vm=require('vm');
-          const f=process.env.PRODUCT_DIR+'/app/core/build-lock.js';
-          if(!fs.existsSync(f))throw new Error('M9_CUTOVER_STAGED_BUILD_LOCK_MISSING');
-          const src=fs.readFileSync(f,'utf8'),ctx={window:{}};vm.createContext(ctx);vm.runInContext(src,ctx,{timeout:2000});
-          const lock=ctx.CX_SOURCE_LOCK||ctx.window?.CX?.SOURCE_LOCK||null;
-          const build=ctx.CX_BUILD_ID||ctx.window?.CX?.BUILD_ID||null;
-          if(build!==process.env.EXPECTED_BUILD_ID||lock?.aggregateSha256!==process.env.EXPECTED_AGGREGATE_SHA)throw new Error('M9_CUTOVER_STAGED_BUILD_IDENTITY_MISMATCH');
-          if(lock?.repository!=='paulaosoriof86/demoCXOrbia'||lock?.branch!=='docs-tya-v6-v71-audit'||Number(lock?.pullRequest)!==7)throw new Error('M9_CUTOVER_STAGED_SOURCE_LOCK_IDENTITY_INVALID');
-          const fb=JSON.parse(fs.readFileSync('firebase.deploy.json','utf8'));
-          if(fb?.hosting?.target!==process.env.HOSTING_TARGET||fb?.hosting?.public!=='app')throw new Error('M9_CUTOVER_FIREBASE_DEPLOY_CONFIG_INVALID');
-          const out=structuredClone(fb);out.hosting.public=process.env.PRODUCT_DIR+'/app';
-          fs.writeFileSync(process.env.CUTOVER_CONFIG,JSON.stringify(out,null,2)+'\n','utf8');
-          fs.writeFileSync(process.env.OUT_DIR+'/staged-product.json',JSON.stringify({testedTargetHeadSha:process.env.TESTED_TARGET,buildId:build,aggregateSha256:lock.aggregateSha256,publicDirectory:out.hosting.public},null,2)+'\n');
+          const fs=require('fs'),vm=require('vm');const f=process.env.PRODUCT_DIR+'/app/core/build-lock.js';if(!fs.existsSync(f))throw new Error('M9_CUTOVER_STAGED_BUILD_LOCK_MISSING');const src=fs.readFileSync(f,'utf8'),ctx={window:{}};vm.createContext(ctx);vm.runInContext(src,ctx,{timeout:2000});const lock=ctx.CX_SOURCE_LOCK||ctx.window?.CX?.SOURCE_LOCK||null;const build=ctx.CX_BUILD_ID||ctx.window?.CX?.BUILD_ID||null;if(build!==process.env.EXPECTED_BUILD_ID||lock?.aggregateSha256!==process.env.EXPECTED_AGGREGATE_SHA)throw new Error('M9_CUTOVER_STAGED_BUILD_IDENTITY_MISMATCH');if(lock?.repository!=='paulaosoriof86/demoCXOrbia'||lock?.branch!=='docs-tya-v6-v71-audit'||Number(lock?.pullRequest)!==7)throw new Error('M9_CUTOVER_STAGED_SOURCE_LOCK_IDENTITY_INVALID');const fb=JSON.parse(fs.readFileSync('firebase.deploy.json','utf8'));if(fb?.hosting?.target!==process.env.HOSTING_TARGET||fb?.hosting?.public!=='app')throw new Error('M9_CUTOVER_FIREBASE_DEPLOY_CONFIG_INVALID');const out=structuredClone(fb);out.hosting.public=process.env.PRODUCT_DIR+'/app';fs.writeFileSync(process.env.CUTOVER_CONFIG,JSON.stringify(out,null,2)+'\n','utf8');fs.writeFileSync(process.env.OUT_DIR+'/staged-product.json',JSON.stringify({testedTargetHeadSha:process.env.TESTED_TARGET,buildId:build,aggregateSha256:lock.aggregateSha256,publicDirectory:out.hosting.public},null,2)+'\n');
           NODE
           node --check "$PRODUCT_DIR/app/core/build-lock.js"
 
@@ -148,9 +129,7 @@ jobs:
         run: |
           set -euo pipefail
           node <<'NODE'
-          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw);}catch{}
-          if(!(p&&p.type==='service_account'&&p.project_id===process.env.GCP_PROJECT_ID&&p.client_email&&p.private_key))throw new Error('M9_CUTOVER_CREDENTIAL_SECRET_INVALID');
-          fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
+          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw);}catch{}if(!(p&&p.type==='service_account'&&p.project_id===process.env.GCP_PROJECT_ID&&p.client_email&&p.private_key))throw new Error('M9_CUTOVER_CREDENTIAL_SECRET_INVALID');fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
           NODE
           export GOOGLE_APPLICATION_CREDENTIALS="${GITHUB_WORKSPACE}/${PRIVATE_DIR}/credentials.json"
           export CXORBIA_EXPECTED_PROJECT="$GCP_PROJECT_ID"
@@ -167,8 +146,7 @@ jobs:
         run: |
           set -euo pipefail
           node <<'NODE'
-          const fs=require('fs');const {GoogleAuth}=require('google-auth-library');
-          (async()=>{const auth=new GoogleAuth({keyFile:process.env.GOOGLE_APPLICATION_CREDENTIALS,scopes:['https://www.googleapis.com/auth/firebase.hosting']});const client=await auth.getClient();const url=`https://firebasehosting.googleapis.com/v1beta1/sites/${process.env.HOSTING_SITE}/releases?pageSize=20`;const r=await client.request({url,method:'GET'});const rel=(r.data.releases||[]).filter(x=>x.releaseTime).sort((a,b)=>Date.parse(b.releaseTime)-Date.parse(a.releaseTime))[0];if(!rel||rel.name!==process.env.PRECUTOVER_RELEASE||rel.version?.name!==process.env.ROLLBACK_VERSION)throw new Error('M9_CUTOVER_PRECUTOVER_RELEASE_DRIFT');fs.writeFileSync(process.env.OUT_DIR+'/predeploy-live-release.json',JSON.stringify({releaseName:rel.name,versionName:rel.version?.name,releaseTime:rel.releaseTime},null,2)+'\n');})().catch(e=>{console.error(e);process.exit(1)});
+          const fs=require('fs');const {GoogleAuth}=require('google-auth-library');(async()=>{const auth=new GoogleAuth({keyFile:process.env.GOOGLE_APPLICATION_CREDENTIALS,scopes:['https://www.googleapis.com/auth/firebase.hosting']});const client=await auth.getClient();const url=`https://firebasehosting.googleapis.com/v1beta1/sites/${process.env.HOSTING_SITE}/releases?pageSize=20`;const r=await client.request({url,method:'GET'});const rel=(r.data.releases||[]).filter(x=>x.releaseTime).sort((a,b)=>Date.parse(b.releaseTime)-Date.parse(a.releaseTime))[0];if(!rel||rel.name!==process.env.PRECUTOVER_RELEASE||rel.version?.name!==process.env.ROLLBACK_VERSION)throw new Error('M9_CUTOVER_PRECUTOVER_RELEASE_DRIFT');fs.writeFileSync(process.env.OUT_DIR+'/predeploy-live-release.json',JSON.stringify({releaseName:rel.name,versionName:rel.version?.name,releaseTime:rel.releaseTime},null,2)+'\n');})().catch(e=>{console.error(e);process.exit(1)});
           NODE
 
       - name: Execute single production promotion, immediate smoke, conditional rollback
@@ -185,47 +163,38 @@ jobs:
           : > "$OUT_DIR/execution.log"
           echo 0 > "$OUT_DIR/promotion-count"
           echo 0 > "$OUT_DIR/rollback-count"
-
           npx firebase deploy --config "$CUTOVER_CONFIG" --only "hosting:$HOSTING_TARGET" --project "$GCP_PROJECT_ID" --non-interactive >> "$OUT_DIR/execution.log" 2>&1
           deploy_code=$?
           if [ "$deploy_code" -eq 0 ]; then echo 1 > "$OUT_DIR/promotion-count"; fi
-
           export DEPLOY_CODE="$deploy_code"
           node <<'NODE'
-          const fs=require('fs');const {GoogleAuth}=require('google-auth-library');
-          (async()=>{const auth=new GoogleAuth({keyFile:process.env.GOOGLE_APPLICATION_CREDENTIALS,scopes:['https://www.googleapis.com/auth/firebase.hosting']});const client=await auth.getClient();const url=`https://firebasehosting.googleapis.com/v1beta1/sites/${process.env.HOSTING_SITE}/releases?pageSize=20`;const r=await client.request({url,method:'GET'});const rel=(r.data.releases||[]).filter(x=>x.releaseTime).sort((a,b)=>Date.parse(b.releaseTime)-Date.parse(a.releaseTime))[0]||null;fs.writeFileSync(process.env.OUT_DIR+'/postdeploy-live-release.json',JSON.stringify({deployCode:Number(process.env.DEPLOY_CODE),releaseName:rel?.name||null,versionName:rel?.version?.name||null,releaseTime:rel?.releaseTime||null,changedFromPreCutover:rel?.name!==process.env.PRECUTOVER_RELEASE},null,2)+'\n');})().catch(e=>{console.error(e);process.exit(1)});
+          const fs=require('fs');const {GoogleAuth}=require('google-auth-library');(async()=>{const auth=new GoogleAuth({keyFile:process.env.GOOGLE_APPLICATION_CREDENTIALS,scopes:['https://www.googleapis.com/auth/firebase.hosting']});const client=await auth.getClient();const url=`https://firebasehosting.googleapis.com/v1beta1/sites/${process.env.HOSTING_SITE}/releases?pageSize=20`;const r=await client.request({url,method:'GET'});const rel=(r.data.releases||[]).filter(x=>x.releaseTime).sort((a,b)=>Date.parse(b.releaseTime)-Date.parse(a.releaseTime))[0]||null;fs.writeFileSync(process.env.OUT_DIR+'/postdeploy-live-release.json',JSON.stringify({deployCode:Number(process.env.DEPLOY_CODE),releaseName:rel?.name||null,versionName:rel?.version?.name||null,releaseTime:rel?.releaseTime||null,changedFromPreCutover:rel?.name!==process.env.PRECUTOVER_RELEASE},null,2)+'\n');})().catch(e=>{console.error(e);process.exit(1)});
           NODE
           capture_code=$?
-
           smoke_code=99
           if [ "$deploy_code" -eq 0 ] && [ "$capture_code" -eq 0 ]; then
             node tools/qa/tya-m8-human-validation-rollback-ready-browser-v2.mjs "$ROOT_URL" >> "$OUT_DIR/execution.log" 2>&1
             smoke_code=$?
           fi
-
           needs_rollback=0
           if [ "$smoke_code" -ne 0 ]; then
             post_changed=$(node -e "const r=require('./'+process.env.OUT_DIR+'/postdeploy-live-release.json');process.stdout.write(r.changedFromPreCutover?'1':'0')" 2>/dev/null || echo 0)
             if [ "$deploy_code" -eq 0 ] || [ "$post_changed" = "1" ]; then needs_rollback=1; fi
           fi
-
           rollback_code=0
           if [ "$needs_rollback" -eq 1 ]; then
             node <<'NODE'
-            const fs=require('fs');const {GoogleAuth}=require('google-auth-library');
-            (async()=>{const auth=new GoogleAuth({keyFile:process.env.GOOGLE_APPLICATION_CREDENTIALS,scopes:['https://www.googleapis.com/auth/firebase.hosting']});const client=await auth.getClient();const parent=`sites/${process.env.HOSTING_SITE}`;const url=`https://firebasehosting.googleapis.com/v1beta1/${parent}/releases?versionName=${encodeURIComponent(process.env.ROLLBACK_VERSION)}`;const r=await client.request({url,method:'POST',data:{}});fs.writeFileSync(process.env.OUT_DIR+'/rollback-release-create.json',JSON.stringify({name:r.data?.name||null,type:r.data?.type||null,versionName:r.data?.version?.name||process.env.ROLLBACK_VERSION},null,2)+'\n');})().catch(e=>{console.error(e);process.exit(1)});
+            const fs=require('fs');const {GoogleAuth}=require('google-auth-library');(async()=>{const auth=new GoogleAuth({keyFile:process.env.GOOGLE_APPLICATION_CREDENTIALS,scopes:['https://www.googleapis.com/auth/firebase.hosting']});const client=await auth.getClient();const parent=`sites/${process.env.HOSTING_SITE}`;const url=`https://firebasehosting.googleapis.com/v1beta1/${parent}/releases?versionName=${encodeURIComponent(process.env.ROLLBACK_VERSION)}`;const r=await client.request({url,method:'POST',data:{}});fs.writeFileSync(process.env.OUT_DIR+'/rollback-release-create.json',JSON.stringify({name:r.data?.name||null,type:r.data?.type||null,versionName:r.data?.version?.name||process.env.ROLLBACK_VERSION},null,2)+'\n');})().catch(e=>{console.error(e);process.exit(1)});
             NODE
             rollback_code=$?
             if [ "$rollback_code" -eq 0 ]; then echo 1 > "$OUT_DIR/rollback-count"; fi
             sleep 2
             node <<'NODE'
-            const fs=require('fs');const {GoogleAuth}=require('google-auth-library');
-            (async()=>{const auth=new GoogleAuth({keyFile:process.env.GOOGLE_APPLICATION_CREDENTIALS,scopes:['https://www.googleapis.com/auth/firebase.hosting']});const client=await auth.getClient();const url=`https://firebasehosting.googleapis.com/v1beta1/sites/${process.env.HOSTING_SITE}/releases?pageSize=20`;const r=await client.request({url,method:'GET'});const rel=(r.data.releases||[]).filter(x=>x.releaseTime).sort((a,b)=>Date.parse(b.releaseTime)-Date.parse(a.releaseTime))[0];const ok=rel?.version?.name===process.env.ROLLBACK_VERSION;fs.writeFileSync(process.env.OUT_DIR+'/rollback-verification.json',JSON.stringify({verified:ok,releaseName:rel?.name||null,versionName:rel?.version?.name||null},null,2)+'\n');if(!ok)throw new Error('M9_CUTOVER_ROLLBACK_VERSION_NOT_RESTORED');})().catch(e=>{console.error(e);process.exit(1)});
+            const fs=require('fs');const {GoogleAuth}=require('google-auth-library');(async()=>{const auth=new GoogleAuth({keyFile:process.env.GOOGLE_APPLICATION_CREDENTIALS,scopes:['https://www.googleapis.com/auth/firebase.hosting']});const client=await auth.getClient();const url=`https://firebasehosting.googleapis.com/v1beta1/sites/${process.env.HOSTING_SITE}/releases?pageSize=20`;const r=await client.request({url,method:'GET'});const rel=(r.data.releases||[]).filter(x=>x.releaseTime).sort((a,b)=>Date.parse(b.releaseTime)-Date.parse(a.releaseTime))[0];const ok=rel?.version?.name===process.env.ROLLBACK_VERSION;fs.writeFileSync(process.env.OUT_DIR+'/rollback-verification.json',JSON.stringify({verified:ok,releaseName:rel?.name||null,versionName:rel?.version?.name||null},null,2)+'\n');if(!ok)throw new Error('M9_CUTOVER_ROLLBACK_VERSION_NOT_RESTORED');})().catch(e=>{console.error(e);process.exit(1)});
             NODE
             rollback_verify_code=$?
             if [ "$rollback_verify_code" -ne 0 ]; then rollback_code="$rollback_verify_code"; fi
           fi
-
           echo "deploy_code=$deploy_code" >> "$GITHUB_OUTPUT"
           echo "capture_code=$capture_code" >> "$GITHUB_OUTPUT"
           echo "smoke_code=$smoke_code" >> "$GITHUB_OUTPUT"
@@ -243,18 +212,7 @@ jobs:
           ROLLBACK_CODE: ${{ steps.cutover.outputs.rollback_code }}
         run: |
           node <<'NODE'
-          const fs=require('fs');const read=p=>fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):null;
-          const authorization=read(process.env.OUT_DIR+'/authorization.json');const staged=read(process.env.OUT_DIR+'/staged-product.json');const pre=read(process.env.OUT_DIR+'/predeploy-live-release.json');const post=read(process.env.OUT_DIR+'/postdeploy-live-release.json');const smoke=read(process.env.OUT_DIR+'/smoke/report.json');const rollback=read(process.env.OUT_DIR+'/rollback-verification.json');
-          const promotionCount=Number(fs.existsSync(process.env.OUT_DIR+'/promotion-count')?fs.readFileSync(process.env.OUT_DIR+'/promotion-count','utf8').trim():0);const rollbackCount=Number(fs.existsSync(process.env.OUT_DIR+'/rollback-count')?fs.readFileSync(process.env.OUT_DIR+'/rollback-count','utf8').trim():0);
-          const deployCode=Number(process.env.DEPLOY_CODE||99),captureCode=Number(process.env.CAPTURE_CODE||99),smokeCode=Number(process.env.SMOKE_CODE||99),needsRollback=Number(process.env.NEEDS_ROLLBACK||0),rollbackCode=Number(process.env.ROLLBACK_CODE||0);
-          const smokePass=smokeCode===0&&smoke?.decision==='PASS_M8_HUMAN_BROWSER_LIVE_HR_RECONCILIATION_READONLY'&&smoke?.liveHr?.latestPeriod==='2026-08'&&Number(smoke?.liveHr?.duplicateVisitKeys||0)===0&&Number(smoke?.liveHr?.duplicateShopperIds||0)===0&&Array.isArray(smoke?.routes)&&smoke.routes.length===7&&smoke?.principal?.role==='admin'&&smoke?.principal?.membershipVerified===true&&smoke?.confidentialityGate?.consentRecordedByQa===false&&smoke?.safety?.providerWrites===0;
-          const exactBuild=smoke?.sourceLock?.buildId===process.env.EXPECTED_BUILD_ID&&smoke?.sourceLock?.aggregateSha256===process.env.EXPECTED_AGGREGATE_SHA;
-          const pass=deployCode===0&&captureCode===0&&promotionCount===1&&post?.changedFromPreCutover===true&&smokePass&&needsRollback===0&&rollbackCount===0&&staged?.buildId===process.env.EXPECTED_BUILD_ID&&staged?.aggregateSha256===process.env.EXPECTED_AGGREGATE_SHA&&exactBuild;
-          let decision='FAIL_M9_EXPLICIT_CUTOVER_ONE_PRODUCTION_PROMOTION';
-          if(pass)decision='PASS_M9_EXPLICIT_CUTOVER_ONE_PRODUCTION_PROMOTION';
-          else if(needsRollback===1&&rollbackCount===1&&rollbackCode===0&&rollback?.verified===true)decision='ROLLBACK_EXECUTED_AFTER_M9_IMMEDIATE_SMOKE_FAILURE';
-          const summary={schemaVersion:'cxorbia.m9.explicit-production-cutover.final-run.v1',generatedAt:new Date().toISOString(),decision,authorization,stagedProduct:staged,preCutoverRelease:pre,postPromotionRelease:post,immediateSmoke:smoke,rollback:{needed:needsRollback===1,executed:rollbackCount===1,verification:rollback},counts:{productionPromotions:promotionCount,conditionalRollbacks:rollbackCount,secondPromotionAttempts:0},phaseA:{entryPercent:96,m9Points:pass?3:0,certifiedPercent:pass?99:96,remainingPercent:pass?1:4},next:pass?'M10_POST_CUTOVER_SMOKE_FREEZE_FINAL':'M9_STOP_NO_SECOND_PROMOTION',safety:{cloudRunDeploys:0,authWrites:0,firestoreWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,credentialsExposed:false,tokensExposed:false}};
-          fs.writeFileSync(process.env.OUT_DIR+'/summary.json',JSON.stringify(summary,null,2)+'\n','utf8');
+          const fs=require('fs');const read=p=>fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):null;const authorization=read(process.env.OUT_DIR+'/authorization.json');const staged=read(process.env.OUT_DIR+'/staged-product.json');const pre=read(process.env.OUT_DIR+'/predeploy-live-release.json');const post=read(process.env.OUT_DIR+'/postdeploy-live-release.json');const smoke=read(process.env.OUT_DIR+'/smoke/report.json');const rollback=read(process.env.OUT_DIR+'/rollback-verification.json');const promotionCount=Number(fs.existsSync(process.env.OUT_DIR+'/promotion-count')?fs.readFileSync(process.env.OUT_DIR+'/promotion-count','utf8').trim():0);const rollbackCount=Number(fs.existsSync(process.env.OUT_DIR+'/rollback-count')?fs.readFileSync(process.env.OUT_DIR+'/rollback-count','utf8').trim():0);const deployCode=Number(process.env.DEPLOY_CODE||99),captureCode=Number(process.env.CAPTURE_CODE||99),smokeCode=Number(process.env.SMOKE_CODE||99),needsRollback=Number(process.env.NEEDS_ROLLBACK||0),rollbackCode=Number(process.env.ROLLBACK_CODE||0);const smokePass=smokeCode===0&&smoke?.decision==='PASS_M8_HUMAN_BROWSER_LIVE_HR_RECONCILIATION_READONLY'&&smoke?.liveHr?.latestPeriod==='2026-08'&&Number(smoke?.liveHr?.duplicateVisitKeys||0)===0&&Number(smoke?.liveHr?.duplicateShopperIds||0)===0&&Array.isArray(smoke?.routes)&&smoke.routes.length===7&&smoke?.principal?.role==='admin'&&smoke?.principal?.membershipVerified===true&&smoke?.confidentialityGate?.consentRecordedByQa===false&&smoke?.safety?.providerWrites===0;const exactBuild=smoke?.sourceLock?.buildId===process.env.EXPECTED_BUILD_ID&&smoke?.sourceLock?.aggregateSha256===process.env.EXPECTED_AGGREGATE_SHA;const pass=deployCode===0&&captureCode===0&&promotionCount===1&&post?.changedFromPreCutover===true&&smokePass&&needsRollback===0&&rollbackCount===0&&staged?.buildId===process.env.EXPECTED_BUILD_ID&&staged?.aggregateSha256===process.env.EXPECTED_AGGREGATE_SHA&&exactBuild;let decision='FAIL_M9_EXPLICIT_CUTOVER_ONE_PRODUCTION_PROMOTION';if(pass)decision='PASS_M9_EXPLICIT_CUTOVER_ONE_PRODUCTION_PROMOTION';else if(needsRollback===1&&rollbackCount===1&&rollbackCode===0&&rollback?.verified===true)decision='ROLLBACK_EXECUTED_AFTER_M9_IMMEDIATE_SMOKE_FAILURE';const summary={schemaVersion:'cxorbia.m9.explicit-production-cutover.final-run.v1',generatedAt:new Date().toISOString(),decision,authorization,stagedProduct:staged,preCutoverRelease:pre,postPromotionRelease:post,immediateSmoke:smoke,rollback:{needed:needsRollback===1,executed:rollbackCount===1,verification:rollback},counts:{productionPromotions:promotionCount,conditionalRollbacks:rollbackCount,secondPromotionAttempts:0},phaseA:{entryPercent:96,m9Points:pass?3:0,certifiedPercent:pass?99:96,remainingPercent:pass?1:4},next:pass?'M10_POST_CUTOVER_SMOKE_FREEZE_FINAL':'M9_STOP_NO_SECOND_PROMOTION',safety:{cloudRunDeploys:0,authWrites:0,firestoreWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,credentialsExposed:false,tokensExposed:false}};fs.writeFileSync(process.env.OUT_DIR+'/summary.json',JSON.stringify(summary,null,2)+'\n','utf8');
           NODE
 
       - name: Remove private material and ephemeral deploy config
