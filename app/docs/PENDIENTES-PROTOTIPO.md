@@ -1,77 +1,73 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-12 18:00 -06:00  
-**Estado:** `C6_RUNTIME_10_STOP_RETRY_MEMBERSHIP_RECONCILE_BLOCKED__HOSTING_1_OF_1__PHASE_A_88`
+**Última actualización:** 2026-08-12 19:48 -06:00  
+**Estado:** `C6_RUNTIME_12_PASS_M7__PHASE_A_93__NEXT_M8`
 
-## Pendiente vivo único de continuidad
+## Pendiente vivo de continuidad
 
 ```text
-SOURCE-ONLY membership failure subcode capture · provider=0
-→ demostrar error/code exacto del reconcile/handoff
-→ corregir únicamente la causa reproducible
-→ preflight actualizado PASS
-→ nueva autorización HOSTING_RUNTIME_ONCE Staff
-→ M7
-→ M8
-→ M9
-→ M10
+M8 (3 puntos, definición canónica por recuperar de fuentes vigentes)
+→ M9 (3 puntos)
+→ M10 (1 punto)
+→ Phase A 100%
 ```
 
-## Ya implementado y no reabrir
+No reabrir C6/M7 ni repetir Hosting Runtime 12: el gate ya tiene PASS completo.
+
+## Cerrado y no reabrir
 
 - Exact Write V2/canonical readback.
+- Principal canónico Runtime Staff `B=admin`.
 - Formulario único `#loginForm/#lgUser/#lgPass/#lgSubmit`.
 - Action explícita/fail-closed.
-- Selector Staff dedicado sin Shopper/HR/Firestore.
+- Selector Staff canónico sin bundle/password guessing legacy.
 - Shell Hosting con `bash -n`, sin heredocs anidados.
 - Submit QA canónico por Enter desde `#lgPass`.
 - Wiring Staff fail-closed contra `tenants/tya/users/{uid}`.
-- Handoff authority-ready → membership reverify → stale-empty reconcile → `CX.app.enter()` existente.
+- Handoff authority-ready → membership → stale-empty reconcile → `CX.app.enter()`.
+- Republicación post-`CX.app.enter()` de la membership ya verificada.
 - Preflight v4 antes de provider.
 - D technical-login rebase/private handoff, Auth340, SKIP13, MultiAuth, HR y M4/static.
+- **M7 Runtime Staff: PASS Runtime 12.**
 
 No reabrir sin drift reproducible.
 
-## Resultado runtime 10
+## Resultado Runtime 12
 
-Run `31652523820`, job `94299776053`, artifact `9163167746`, digest `sha256:be83f65bf5484858fa42844ede9f56f0952bcef06a775fd4244524cc5880799f`.
+Run `31658676280`, job `94318658180`, artifact `9165383310`, digest `sha256:a327b0d5e0a592d41417dce7ff934984ab51d3d5927dbee9ba774200eee5befe`.
 
 - preflight Staff v4: PASS;
+- selector canónico: `B=admin`, `exactWriteCanonical=true`, `legacyCredentialBundleUsed=false`;
 - Google Cloud auth: PASS;
-- selector Staff: PASS (`coordinador`, Shopper/Cliente=false);
-- source parity: PASS;
-- Hosting DEV: **deploy físico PASS, 1/1 consumido**;
+- Hosting DEV: **1/1 PASS**;
 - remote parity: PASS exact=true;
-- submit: ejecutado;
-- contexto Staff: PASS (`coordinador/staff/tya/cinepolis`);
-- HR authority: PASS, **15 periodos / 660 visitas / 211 shoppers**, duplicados=0;
-- membership final: FAIL-CLOSED (`membershipVerified=false`, source=null);
-- frontend handoff: `blocked`;
-- stale empty: backend=true, Corte4=true;
-- shell: `appOn=false`, `loginHidden=false`;
-- artifact=`FAIL_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME`;
-- nuevos writes=0; producción=false.
-
-Frontera causal: `C6_CANONICAL_MEMBERSHIP_RECONCILE_BLOCKED_POST_AUTHORITY__EXACT_SUBCODE_NOT_CAPTURED`.
-
-El artifact actual no expone de forma sanitizada el subcódigo exacto de `reconcile(ctx)`, por lo que no debe abrirse otro Hosting hasta identificarlo.
-
-`STOP_RETRY` aplicado: provider ya inició; no rerun, no segundo request, no segundo Hosting bajo esta autorización.
+- Auth/contexto: `admin/staff/tya/cinepolis`;
+- membership: PASS y persistida en `CX.session/RBAC` después de `CX.app.enter()`;
+- datos runtime: **15 periodos / 660 visitas / 197 shoppers**, `2025-06 → 2026-08`;
+- frontend handoff: `entered`;
+- stale provider empty: limpiado;
+- primera carga: PASS;
+- **3 reloads: PASS**;
+- **new-tab: PASS**;
+- nuevos Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes=0;
+- segundo Hosting=0; segundo Exact Write=0; merge=false; producción=false.
 
 ## Pendiente inmediato
 
-Bloque source-only/cero provider para capturar `CX_C6_LIVE_USER_ADMIN_FRONTEND_HANDOFF.error`, `CX_C6_LIVE_USER_ADMIN_WIRING.status/code`, `context.membershipVerified` y `session.user.membershipVerified`. Con esa evidencia se corrige únicamente la causa exacta y se prepara un nuevo one-shot. No reauditar producto ni reabrir gates cerrados.
+Localizar en las fuentes vigentes la definición exacta de `M8`. Ejecutar directamente cualquier parte source-only/read-only ya autorizada por continuidad; si el milestone requiere provider/write/deploy/merge/producción, solicitar únicamente el gate específico faltante.
+
+No iniciar nueva auditoría general, nueva candidata, nueva rama/PR ni reauditar C6.
 
 ## Pendiente frontend heredado separado
 
-`app/modules/cliente-extra.js`: PDF print, XLSX y PPTX. No bloquea este proof C6.
+`app/modules/cliente-extra.js`: PDF print, XLSX y PPTX. No bloqueó M7 y no se considera automáticamente parte de M8/M9/M10 sin fuente canónica que lo establezca.
 
 ## Progreso
 
-`M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1`
+`M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=5/5 | M8=0/3 | M9=0/3 | M10=0/1`
 
-**88% certificado | 12% restante | delta certificado runtime 10=+0%.**
+**93% certificado | 7% restante | delta certificado Runtime 12=+5%.**
 
 ## Claude / Academia
 
-Cero cambios a `/app/modules` o UI visual en este cierre. No pedir candidata. Academia se actualiza únicamente después del runtime Staff PASS.
+Cero cambios a `/app/modules` o UI visual por Runtime 12. No pedir candidata. Academia puede actualizar el flujo Staff real: formulario único, Auth/membership/RBAC, acceso a datos operativos y continuidad de sesión; no incluir mecanismos internos QA/credenciales.
