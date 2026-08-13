@@ -1,17 +1,17 @@
-name: CXOrbia M8 Human Validation Read Only
+name: CXOrbia M9 Provider Precutover Read Only
 
 on:
   push:
     branches:
       - docs-tya-v6-v71-audit
     paths:
-      - backend/config/m8-human-validation-readonly-execute.json
+      - backend/config/m9-provider-precutover-readonly-execute.json
 
 permissions:
   contents: read
 
 concurrency:
-  group: cxorbia-m8-human-validation-readonly
+  group: cxorbia-m9-provider-precutover-readonly
   cancel-in-progress: false
 
 defaults:
@@ -19,27 +19,26 @@ defaults:
     shell: bash
 
 env:
-  EXECUTE_FILE: backend/config/m8-human-validation-readonly-execute.json
-  CONTRACT_FILE: backend/contracts/m8-human-validation-rollback-readiness-v1.json
-  OUT_DIR: .tmp/m8-human-validation
-  RUNTIME_DIR: .tmp/m8-human-validation/runtime
-  PRIVATE_DIR: .tmp/m8-human-validation/private
-  PRIVATE_E2E: .tmp/m8-human-validation/private/private-e2e.json
-  DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+  EXECUTE_FILE: backend/config/m9-provider-precutover-readonly-execute.json
+  CONTRACT_FILE: backend/contracts/m9-provider-precutover-readiness-v1.json
+  PROMOTION_FILE: backend/config/cxorbia-production-promotion-contract.json
+  OUT_DIR: .tmp/m9-provider-precutover
+  PRIVATE_DIR: .tmp/m9-provider-precutover/private
+  M9_ACTION: M9_PROVIDER_PRECUTOVER_READINESS_READONLY
   GCP_PROJECT_ID: cxorbia-backend-dev
-  M8_ACTION: M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY
+  HOSTING_SITE: cxorbia-backend-dev
 
 jobs:
-  m8-human-validation:
-    name: Final real browser + live HR + rollback readiness, zero provider writes
+  m9-provider-precutover:
+    name: Capture current Hosting release and rollback path, zero production mutation
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 20
 
     steps:
       - name: Checkout exact live branch
         uses: actions/checkout@v4
         with:
-          fetch-depth: 60
+          fetch-depth: 100
           ref: docs-tya-v6-v71-audit
 
       - name: Setup Node
@@ -51,139 +50,112 @@ jobs:
         run: |
           printf '%s\n' '.tmp/' 'node_modules/' '.firebase/' 'firebase-debug.log' 'gha-creds-*.json' >> .git/info/exclude
 
-      - name: Validate exact final M8 authorization and commit scope
-        id: request
+      - name: Validate exact M9 read-only authorization and commit scope
         run: |
           set -euo pipefail
-          mkdir -p "$OUT_DIR" "$RUNTIME_DIR" "$PRIVATE_DIR"
+          mkdir -p "$OUT_DIR" "$PRIVATE_DIR"
+          chmod 700 "$PRIVATE_DIR"
           node <<'NODE'
           const fs=require('fs');
           const {execFileSync}=require('child_process');
           const x=JSON.parse(fs.readFileSync(process.env.EXECUTE_FILE,'utf8'));
           const c=JSON.parse(fs.readFileSync(process.env.CONTRACT_FILE,'utf8'));
+          const p=JSON.parse(fs.readFileSync(process.env.PROMOTION_FILE,'utf8'));
           const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
           const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
-          if(x.schemaVersion!=='cxorbia.m8.human-validation-readonly.request.v1')throw new Error('M8_REQUEST_SCHEMA_INVALID');
-          if(x.mode!=='READONLY_HUMAN_RUNTIME_ONCE'||x.action!==process.env.M8_ACTION)throw new Error('M8_REQUEST_MODE_OR_ACTION_INVALID');
-          if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7)throw new Error('M8_REPOSITORY_LANE_INVALID');
-          if(x.firebaseProjectId!=='cxorbia-backend-dev'||x.devRootUrl!==process.env.DEV_ROOT_URL)throw new Error('M8_DEV_TARGET_INVALID');
-          if(x.enabled!==true||x.consumed!==false||x.status!=='authorized_execute_once'||x.authorizedBy!=='Paula')throw new Error('M8_AUTHORIZATION_STATE_INVALID');
-          if(x.targetHeadSha!==parent||!x.targetHeadSha||head===parent)throw new Error('M8_TARGET_HEAD_INVALID');
-          if(changed.length!==1||changed[0]!==process.env.EXECUTE_FILE)throw new Error('M8_EXECUTE_COMMIT_SCOPE_INVALID:'+changed.join(','));
-          if(Number(x.allowedExecutions)!==1||Number(x.humanBrowserExecutions)!==1||Number(x.freshHrReconciliations)!==2)throw new Error('M8_ONE_SHOT_CONTRACT_INVALID');
-          if(x.diagnosticOnly!==false||x.postGateQaWithoutConsent!==true||Number(x.humanClicksAfterLogin||0)!==0)throw new Error('M8_FINAL_MODE_INVALID');
-          if(x.confidentialityConsentByQa!==false||x.browserLocalStorageWritesByQa!==0)throw new Error('M8_CONFIDENTIALITY_SAFETY_INVALID');
-          for(const key of ['hostingDeploys','cloudRunDeploys','firestoreWrites','authWrites','passwordChanges','passwordResets','hrWrites','rulesWrites','storageWrites','makeCalls','geminiCalls','paymentWrites']){
-            if(Number(x[key]||0)!==0)throw new Error('M8_UNSAFE_SCOPE_'+key);
-          }
-          if(x.merge!==false||x.production!==false||x.containsPii!==false||x.containsSecrets!==false)throw new Error('M8_UNSAFE_SCOPE');
-          if(x.authReadsAllowed!==true||x.firestoreReadsAllowed!==true||x.hrReadsAllowed!==true)throw new Error('M8_READ_SCOPE_NOT_EXPLICIT');
-          if(c.schemaVersion!=='cxorbia.m8.human-validation-rollback-readiness.v1'||c.milestone!=='M8'||Number(c.points)!==3)throw new Error('M8_CONTRACT_INVALID');
-          if(c.safety?.hostingDeploys!==0||c.safety?.firestoreWrites!==0||c.safety?.hrWrites!==0||c.safety?.production!==false)throw new Error('M8_CONTRACT_NOT_READONLY');
+          if(x.schemaVersion!=='cxorbia.m9.provider-precutover-readonly.request.v1')throw new Error('M9_REQUEST_SCHEMA_INVALID');
+          if(x.mode!=='PROVIDER_READONLY_PRECUTOVER_ONCE'||x.action!==process.env.M9_ACTION)throw new Error('M9_REQUEST_MODE_INVALID');
+          if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7)throw new Error('M9_LANE_INVALID');
+          if(x.firebaseProjectId!==process.env.GCP_PROJECT_ID||x.hostingSite!==process.env.HOSTING_SITE)throw new Error('M9_TARGET_INVALID');
+          if(x.enabled!==true||x.consumed!==false||x.status!=='authorized_execute_once'||x.authorizedBy!=='Paula')throw new Error('M9_AUTHORIZATION_STATE_INVALID');
+          if(x.targetHeadSha!==parent||!x.targetHeadSha||head===parent)throw new Error('M9_TARGET_HEAD_INVALID');
+          if(changed.length!==1||changed[0]!==process.env.EXECUTE_FILE)throw new Error('M9_EXECUTE_COMMIT_SCOPE_INVALID:'+changed.join(','));
+          if(Number(x.allowedExecutions)!==1||x.productionReadsAllowed!==true||Number(x.maxAuthenticatedHostingGets)!==2)throw new Error('M9_READ_SCOPE_INVALID');
+          for(const key of ['hostingDeploys','cloudRunDeploys','firestoreWrites','authWrites','hrWrites','rulesWrites','storageWrites','makeCalls','geminiCalls','paymentWrites'])if(Number(x[key]||0)!==0)throw new Error('M9_UNSAFE_SCOPE_'+key);
+          if(x.rollbackExecution!==false||x.productionMutation!==false||x.merge!==false||x.containsPii!==false||x.containsSecrets!==false)throw new Error('M9_UNSAFE_SCOPE');
+          if(c.schemaVersion!=='cxorbia.m9.provider-precutover-readiness.v1'||c.milestone!=='M9'||Number(c.points)!==3)throw new Error('M9_CONTRACT_INVALID');
+          if(c.providerReadPhase?.passDecision!=='PASS_M9_PROVIDER_PRECUTOVER_READINESS_READONLY'||c.promotionPhase?.explicitNewGateRequired!==true||c.promotionPhase?.authorizedByThisContract!==false)throw new Error('M9_CONTRACT_BOUNDARY_INVALID');
+          if(p.strategy!=='PROMOTE_EXISTING_CLEAN_PROJECT'||p.productionProjectId!==process.env.GCP_PROJECT_ID||p.productionHostingSite!==process.env.HOSTING_SITE||p.productionCutoverAuthorizedByThisContract!==false)throw new Error('M9_PROMOTION_CONTRACT_INVALID');
           fs.writeFileSync(process.env.OUT_DIR+'/authorization.json',JSON.stringify({
-            schemaVersion:'cxorbia.m8.authorization.v2',requestId:x.requestId,requestCommitSha:head,targetHeadSha:parent,action:x.action,mode:x.mode,authorizedBy:x.authorizedBy,authorizationSource:x.authorizationSource,
-            postGateQaWithoutConsent:true,humanBrowserExecutions:1,freshHrReconciliations:2,
-            safety:{confidentialityConsentByQa:false,browserLocalStorageWritesByQa:0,hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,production:false}
+            schemaVersion:'cxorbia.m9.provider-precutover.authorization.v1',requestId:x.requestId,requestCommitSha:head,targetHeadSha:parent,authorizedBy:x.authorizedBy,authorizationSource:x.authorizationSource,action:x.action,mode:x.mode,
+            scope:{productionReadsAllowed:true,maxAuthenticatedHostingGets:2,publicDiscoveryGets:1},
+            safety:{hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,rollbackExecution:false,productionMutation:false,merge:false}
           },null,2)+'\n','utf8');
           NODE
 
-      - name: Validate M8 source and rollback readiness before runtime
-        env:
-          CXORBIA_M8_ACTION: ${{ env.M8_ACTION }}
-          CXORBIA_M8_ROLLBACK_OUTPUT: .tmp/m8-human-validation/rollback-readiness.json
+      - name: Validate production target source-only before provider read
         run: |
           set -euo pipefail
-          node --check tools/qa/tya-m8-rollback-readiness-source-gate.mjs
-          node --check tools/qa/tya-m8-human-validation-rollback-ready-browser-v2.mjs
-          node tools/qa/tya-m8-rollback-readiness-source-gate.mjs
-          node -e "const r=require('./.tmp/m8-human-validation/rollback-readiness.json');if(r.decision!=='PASS_M8_ROLLBACK_READINESS_SOURCE_GATE'||r.productIdentity?.runtimeAppParityWithM7Deployed!==true||r.rollbackReadiness?.status!=='READY_FAIL_CLOSED_FOR_M9_PROVIDER_CAPTURE')throw new Error('M8_ROLLBACK_SOURCE_GATE_NOT_PASS');"
+          node --check tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs
+          node --check tools/qa/tya-m9-provider-precutover-readiness-readonly.mjs
+          node tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs --out "$OUT_DIR/source-preflight.json" || true
+          node -e "const r=require('./.tmp/m9-provider-precutover/source-preflight.json');if(r.decision!=='PASS_PRODUCTION_PROMOTION_CONTRACT_EXISTING_CLEAN_PROJECT')throw new Error('M9_SOURCE_PREFLIGHT_NOT_PASS:'+r.decision);"
 
-      - name: Install transient browser tooling only
-        run: |
-          set -euo pipefail
-          npm install --no-save --ignore-scripts --package-lock=false playwright@1.55.0
-          npx playwright install --with-deps chromium
-
-      - name: Derive canonical B admin credential privately without provider call
+      - name: Materialize existing service account privately for read-only Hosting API
         env:
           EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-          CXORBIA_C6_ACTION: C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF
         run: |
           set -euo pipefail
           node <<'NODE'
           const fs=require('fs');
           const raw=process.env.EXISTING_DEV_JSON||'';
           let p=null;try{p=JSON.parse(raw);}catch{}
-          if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.client_email&&p.private_key))throw new Error('M8_CREDENTIAL_SECRET_INVALID');
+          if(!(p&&p.type==='service_account'&&p.project_id===process.env.GCP_PROJECT_ID&&p.client_email&&p.private_key))throw new Error('M9_CREDENTIAL_SECRET_INVALID');
           fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
           NODE
-          export GOOGLE_APPLICATION_CREDENTIALS="${GITHUB_WORKSPACE}/${PRIVATE_DIR}/credentials.json"
-          export CXORBIA_EXPECTED_PROJECT="$GCP_PROJECT_ID"
-          export CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E"
-          export PRIVATE_DIR="$PRIVATE_DIR"
-          export OUT_DIR="$OUT_DIR"
-          node tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs > "$OUT_DIR/credential-selection-staff.source-safe.json"
-          node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection-staff.source-safe.json','utf8'));const p=JSON.parse(fs.readFileSync(process.env.PRIVATE_E2E,'utf8'));if(a.decision!=='PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY'||a.canonicalTargetAlias!=='B'||a.staffRole!=='admin'||a.exactWriteCanonical!==true||a.legacyCredentialBundleUsed!==false||a.valuesExported!==false)throw new Error('M8_CANONICAL_CREDENTIAL_SELECTION_NOT_PASS');if(!p?.staff?.login||!p?.staff?.password||p?.shopper||p?.client)throw new Error('M8_PRIVATE_STAFF_BUNDLE_INVALID');"
-          chmod 600 "$PRIVATE_E2E"
 
-      - name: Execute final M8 runtime in real browser
-        id: runtime
+      - name: Execute M9 provider pre-cutover read-only gate
+        id: m9
         continue-on-error: true
         env:
-          CXORBIA_M8_ACTION: ${{ env.M8_ACTION }}
-          CXORBIA_DEV_ROOT_URL: ${{ env.DEV_ROOT_URL }}
-          CXORBIA_E2E_PRIVATE_CREDENTIALS: ${{ env.PRIVATE_E2E }}
-          CXORBIA_M8_OUTPUT_DIR: ${{ env.RUNTIME_DIR }}
-          CXORBIA_M8_OUTPUT: .tmp/m8-human-validation/runtime/report.json
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/m9-provider-precutover/private/credentials.json
+          CXORBIA_M9_ACTION: ${{ env.M9_ACTION }}
+          CXORBIA_M9_CONTRACT: ${{ env.CONTRACT_FILE }}
+          CXORBIA_PRODUCTION_PROMOTION_CONTRACT: ${{ env.PROMOTION_FILE }}
+          CXORBIA_M9_OUTPUT: .tmp/m9-provider-precutover/report.json
         run: |
           set +e
-          node tools/qa/tya-m8-human-validation-rollback-ready-browser-v2.mjs "$DEV_ROOT_URL"
+          node tools/qa/tya-m9-provider-precutover-readiness-readonly.mjs
           code=$?
           echo "exit_code=$code" >> "$GITHUB_OUTPUT"
           exit 0
 
-      - name: Build sanitized final M8 summary
+      - name: Build sanitized M9 summary
         if: always()
         env:
-          RUNTIME_EXIT_CODE: ${{ steps.runtime.outputs.exit_code }}
+          M9_EXIT_CODE: ${{ steps.m9.outputs.exit_code }}
         run: |
-          mkdir -p "$OUT_DIR"
           node <<'NODE'
           const fs=require('fs');
           const read=p=>fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):null;
           const authorization=read(process.env.OUT_DIR+'/authorization.json');
-          const rollback=read(process.env.OUT_DIR+'/rollback-readiness.json');
-          const credential=read(process.env.OUT_DIR+'/credential-selection-staff.source-safe.json');
-          const runtime=read(process.env.OUT_DIR+'/runtime/report.json');
-          const runtimePass=runtime?.decision==='PASS_M8_HUMAN_BROWSER_LIVE_HR_RECONCILIATION_READONLY'
-            &&runtime?.principal?.role==='admin'&&runtime?.principal?.tenantId==='tya'&&runtime?.principal?.projectId==='cinepolis'&&runtime?.principal?.membershipVerified===true
-            &&runtime?.runtimeSourceMode==='live_hr_runtime'&&runtime?.liveHr?.latestPeriod==='2026-08'
-            &&Number(runtime?.liveHr?.duplicateVisitKeys||0)===0&&Number(runtime?.liveHr?.duplicateShopperIds||0)===0
-            &&Array.isArray(runtime?.routes)&&runtime.routes.length===7
-            &&runtime?.confidentialityGate?.consentRecordedByQa===false
-            &&runtime?.confidentialityGate?.postGateQa?.method==='non_consent_post_gate_qa_router_continuation'
-            &&runtime?.safety?.providerWrites===0&&runtime?.safety?.production===false;
-          const rollbackPass=rollback?.decision==='PASS_M8_ROLLBACK_READINESS_SOURCE_GATE'
-            &&rollback?.productIdentity?.runtimeAppParityWithM7Deployed===true
-            &&rollback?.rollbackReadiness?.status==='READY_FAIL_CLOSED_FOR_M9_PROVIDER_CAPTURE';
-          const pass=runtimePass&&rollbackPass&&String(process.env.RUNTIME_EXIT_CODE||'1')==='0';
+          const sourcePreflight=read(process.env.OUT_DIR+'/source-preflight.json');
+          const provider=read(process.env.OUT_DIR+'/report.json');
+          const pass=String(process.env.M9_EXIT_CODE||'1')==='0'
+            &&provider?.decision==='PASS_M9_PROVIDER_PRECUTOVER_READINESS_READONLY'
+            &&provider?.preCutoverRelease?.versionStatus==='FINALIZED'
+            &&provider?.rollbackReadiness?.status==='READY_CAPTURED_FINALIZED_VERSION_PROVIDER_METHOD_VERIFIED'
+            &&provider?.rollbackReadiness?.executionAuthorized===false
+            &&provider?.safety?.providerWrites===0
+            &&provider?.safety?.productionMutation===false
+            &&sourcePreflight?.decision==='PASS_PRODUCTION_PROMOTION_CONTRACT_EXISTING_CLEAN_PROJECT';
           const summary={
-            schemaVersion:'cxorbia.m8.final-run.v1',generatedAt:new Date().toISOString(),
-            decision:pass?'PASS_M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY':'FAIL_M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY',
-            authorization,credentialSelection:credential,rollbackReadiness:rollback,runtime,
-            phaseA:{entryPercent:93,m8Points:pass?3:0,certifiedPercent:pass?96:93,remainingPercent:pass?4:7},
-            next:pass?'M9_PROVIDER_PRECUTOVER_READINESS_THEN_EXPLICIT_PRODUCTION_GATE':'M8_ROOT_CAUSE_ONLY_NO_RETRY_WITHOUT_EVIDENCE',
-            safety:{confidentialityConsentByQa:false,browserLocalStorageWritesByQa:0,hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,passwordChanges:0,passwordResets:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,production:false,credentialsExposed:false,tokensExposed:false}
+            schemaVersion:'cxorbia.m9.provider-precutover.final-run.v1',generatedAt:new Date().toISOString(),
+            decision:pass?'PASS_M9_PROVIDER_PRECUTOVER_READINESS_READONLY':'FAIL_M9_PROVIDER_PRECUTOVER_READINESS_READONLY',
+            authorization,sourcePreflight,provider,
+            phaseA:{entryPercent:96,m9PointsCertifiedNow:0,certifiedPercent:96,remainingPercent:4,m9State:pass?'PRECUTOVER_READY_AWAITING_EXPLICIT_PROMOTION_GATE':'PRECUTOVER_NOT_READY'},
+            next:pass?'M9_EXPLICIT_CUTOVER_ONE_PRODUCTION_PROMOTION_REQUIRES_NEW_EXPLICIT_GATE':'M9_STOP_BEFORE_PRODUCTION',
+            safety:{hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,rollbackExecution:false,productionMutation:false,merge:false,credentialsExposed:false,tokensExposed:false}
           };
           fs.writeFileSync(process.env.OUT_DIR+'/summary.json',JSON.stringify(summary,null,2)+'\n','utf8');
           NODE
 
-      - name: Remove private credentials before artifact
+      - name: Remove private credential before artifact
         if: always()
         run: |
           rm -rf "$PRIVATE_DIR"
-          test ! -e "$PRIVATE_E2E"
+          test ! -e "$PRIVATE_DIR/credentials.json"
 
       - name: Capture repository delta evidence
         if: always()
@@ -193,17 +165,17 @@ jobs:
           git diff --name-status > "$OUT_DIR/repository-status/tracked-delta.txt"
           git ls-files --others --exclude-standard > "$OUT_DIR/repository-status/untracked.txt"
 
-      - name: Upload sanitized M8 evidence
+      - name: Upload sanitized M9 pre-cutover evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-m8-human-validation-${{ github.run_id }}
+          name: cxorbia-m9-provider-precutover-${{ github.run_id }}
           path: |
-            .tmp/m8-human-validation
+            .tmp/m9-provider-precutover
           if-no-files-found: error
           retention-days: 14
 
-      - name: Assert final M8 PASS
+      - name: Assert M9 provider pre-cutover PASS
         if: always()
         run: |
-          node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync('.tmp/m8-human-validation/summary.json','utf8'));if(r.decision!=='PASS_M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY')throw new Error('M8_FINAL_NOT_PASS:'+JSON.stringify({decision:r.decision,error:r.runtime?.error||null}));console.log(JSON.stringify({decision:r.decision,phaseA:r.phaseA,next:r.next}));"
+          node -e "const r=require('./.tmp/m9-provider-precutover/summary.json');if(r.decision!=='PASS_M9_PROVIDER_PRECUTOVER_READINESS_READONLY')throw new Error('M9_PRECUTOVER_NOT_PASS:'+JSON.stringify({decision:r.decision,error:r.provider?.error||null}));console.log(JSON.stringify({decision:r.decision,phaseA:r.phaseA,next:r.next,release:r.provider?.preCutoverRelease?.releaseName,version:r.provider?.preCutoverRelease?.versionName}));"
