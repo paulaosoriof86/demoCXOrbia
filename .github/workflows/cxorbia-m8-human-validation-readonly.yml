@@ -1,0 +1,214 @@
+name: CXOrbia M8 Human Validation Read Only
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - backend/config/m8-human-validation-readonly-execute.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cxorbia-m8-human-validation-readonly
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  EXECUTE_FILE: backend/config/m8-human-validation-readonly-execute.json
+  CONTRACT_FILE: backend/contracts/m8-human-validation-rollback-readiness-v1.json
+  OUT_DIR: .tmp/m8-human-validation
+  RUNTIME_DIR: .tmp/m8-human-validation/runtime
+  PRIVATE_DIR: .tmp/m8-human-validation/private
+  PRIVATE_E2E: .tmp/m8-human-validation/private/private-e2e.json
+  DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+  GCP_PROJECT_ID: cxorbia-backend-dev
+  M8_ACTION: M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY
+
+jobs:
+  m8-human-validation:
+    name: Real browser + live HR + rollback readiness, zero writes
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout exact live branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 40
+          ref: docs-tya-v6-v71-audit
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Exclude ephemeral material
+        run: |
+          printf '%s\n' '.tmp/' 'node_modules/' '.firebase/' 'firebase-debug.log' 'gha-creds-*.json' >> .git/info/exclude
+
+      - name: Validate exact M8 authorization and commit scope
+        id: request
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT_DIR" "$RUNTIME_DIR" "$PRIVATE_DIR"
+          node <<'NODE'
+          const fs=require('fs');
+          const {execFileSync}=require('child_process');
+          const x=JSON.parse(fs.readFileSync(process.env.EXECUTE_FILE,'utf8'));
+          const c=JSON.parse(fs.readFileSync(process.env.CONTRACT_FILE,'utf8'));
+          const exactAction=process.env.M8_ACTION;
+          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          if(x.schemaVersion!=='cxorbia.m8.human-validation-readonly.request.v1')throw new Error('M8_REQUEST_SCHEMA_INVALID');
+          if(x.mode!=='READONLY_HUMAN_RUNTIME_ONCE'||x.action!==exactAction)throw new Error('M8_REQUEST_MODE_OR_ACTION_INVALID');
+          if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7)throw new Error('M8_REPOSITORY_LANE_INVALID');
+          if(x.firebaseProjectId!=='cxorbia-backend-dev'||x.devRootUrl!==process.env.DEV_ROOT_URL)throw new Error('M8_DEV_TARGET_INVALID');
+          if(x.enabled!==true||x.consumed!==false||x.status!=='authorized_execute_once'||x.authorizedBy!=='Paula')throw new Error('M8_AUTHORIZATION_STATE_INVALID');
+          if(x.targetHeadSha!==parent||!x.targetHeadSha||head===parent)throw new Error('M8_TARGET_HEAD_INVALID');
+          if(changed.length!==1||changed[0]!==process.env.EXECUTE_FILE)throw new Error('M8_EXECUTE_COMMIT_SCOPE_INVALID:'+changed.join(','));
+          if(Number(x.allowedExecutions)!==1||Number(x.humanBrowserExecutions)!==1||Number(x.freshHrReconciliations)!==2)throw new Error('M8_ONE_SHOT_CONTRACT_INVALID');
+          for(const key of ['hostingDeploys','cloudRunDeploys','firestoreWrites','authWrites','passwordChanges','passwordResets','hrWrites','rulesWrites','storageWrites','makeCalls','geminiCalls','paymentWrites']){
+            if(Number(x[key]||0)!==0)throw new Error('M8_UNSAFE_SCOPE_'+key);
+          }
+          if(x.merge!==false||x.production!==false||x.containsPii!==false||x.containsSecrets!==false)throw new Error('M8_UNSAFE_SCOPE');
+          if(x.authReadsAllowed!==true||x.firestoreReadsAllowed!==true||x.hrReadsAllowed!==true)throw new Error('M8_READ_SCOPE_NOT_EXPLICIT');
+          if(c.schemaVersion!=='cxorbia.m8.human-validation-rollback-readiness.v1'||c.milestone!=='M8'||Number(c.points)!==3)throw new Error('M8_CONTRACT_INVALID');
+          if(c.safety?.hostingDeploys!==0||c.safety?.firestoreWrites!==0||c.safety?.hrWrites!==0||c.safety?.production!==false)throw new Error('M8_CONTRACT_NOT_READONLY');
+          fs.writeFileSync(process.env.OUT_DIR+'/authorization.json',JSON.stringify({
+            schemaVersion:'cxorbia.m8.authorization.v1',
+            requestId:x.requestId,
+            requestCommitSha:head,
+            targetHeadSha:parent,
+            action:x.action,
+            mode:x.mode,
+            authorizedBy:x.authorizedBy,
+            authorizationSource:x.authorizationSource,
+            humanBrowserExecutions:1,
+            freshHrReconciliations:2,
+            safety:{hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,production:false}
+          },null,2)+'\n','utf8');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'enabled=true\n');
+          NODE
+
+      - name: Validate M8 source and rollback readiness before runtime
+        env:
+          CXORBIA_M8_ACTION: ${{ env.M8_ACTION }}
+          CXORBIA_M8_ROLLBACK_OUTPUT: .tmp/m8-human-validation/rollback-readiness.json
+        run: |
+          set -euo pipefail
+          node --check tools/qa/tya-m8-rollback-readiness-source-gate.mjs
+          node --check tools/qa/tya-m8-human-validation-rollback-ready-browser.mjs
+          node tools/qa/tya-m8-rollback-readiness-source-gate.mjs
+          node -e "const r=require('./.tmp/m8-human-validation/rollback-readiness.json');if(r.decision!=='PASS_M8_ROLLBACK_READINESS_SOURCE_GATE'||r.productIdentity?.exactAppTreeParityWithM7Deployed!==true||r.rollbackReadiness?.status!=='READY_FAIL_CLOSED_FOR_M9_PROVIDER_CAPTURE')throw new Error('M8_ROLLBACK_SOURCE_GATE_NOT_PASS');"
+
+      - name: Install transient browser tooling only
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Derive canonical B admin credential privately without provider call
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+          CXORBIA_C6_ACTION: C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF
+        run: |
+          set -euo pipefail
+          mkdir -p "$PRIVATE_DIR" "$OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs');
+          const raw=process.env.EXISTING_DEV_JSON||'';
+          let p=null;try{p=JSON.parse(raw);}catch{}
+          if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.client_email&&p.private_key))throw new Error('M8_CREDENTIAL_SECRET_INVALID');
+          fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
+          NODE
+          export GOOGLE_APPLICATION_CREDENTIALS="${GITHUB_WORKSPACE}/${PRIVATE_DIR}/credentials.json"
+          export CXORBIA_EXPECTED_PROJECT="$GCP_PROJECT_ID"
+          export CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E"
+          export PRIVATE_DIR="$PRIVATE_DIR"
+          export OUT_DIR="$OUT_DIR"
+          node tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs > "$OUT_DIR/credential-selection-staff.source-safe.json"
+          node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection-staff.source-safe.json','utf8'));const p=JSON.parse(fs.readFileSync(process.env.PRIVATE_E2E,'utf8'));if(a.decision!=='PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY'||a.canonicalTargetAlias!=='B'||a.staffRole!=='admin'||a.exactWriteCanonical!==true||a.legacyCredentialBundleUsed!==false||a.valuesExported!==false)throw new Error('M8_CANONICAL_CREDENTIAL_SELECTION_NOT_PASS');if(!p?.staff?.login||!p?.staff?.password||p?.shopper||p?.client)throw new Error('M8_PRIVATE_STAFF_BUNDLE_INVALID');"
+          chmod 600 "$PRIVATE_E2E"
+
+      - name: Execute M8 real browser validation and two fresh HR reconciliations
+        id: runtime
+        continue-on-error: true
+        env:
+          CXORBIA_M8_ACTION: ${{ env.M8_ACTION }}
+          CXORBIA_DEV_ROOT_URL: ${{ env.DEV_ROOT_URL }}
+          CXORBIA_E2E_PRIVATE_CREDENTIALS: ${{ env.PRIVATE_E2E }}
+          CXORBIA_M8_OUTPUT_DIR: ${{ env.RUNTIME_DIR }}
+          CXORBIA_M8_OUTPUT: .tmp/m8-human-validation/runtime/report.json
+        run: |
+          set +e
+          node tools/qa/tya-m8-human-validation-rollback-ready-browser.mjs "$DEV_ROOT_URL"
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Build sanitized M8 execution summary
+        if: always()
+        env:
+          RUNTIME_EXIT_CODE: ${{ steps.runtime.outputs.exit_code }}
+        run: |
+          mkdir -p "$OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs');
+          const read=p=>fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):null;
+          const authorization=read(process.env.OUT_DIR+'/authorization.json');
+          const rollback=read(process.env.OUT_DIR+'/rollback-readiness.json');
+          const credential=read(process.env.OUT_DIR+'/credential-selection-staff.source-safe.json');
+          const runtime=read(process.env.OUT_DIR+'/runtime/report.json');
+          const exitCode=Number(process.env.RUNTIME_EXIT_CODE??999);
+          const runtimePass=exitCode===0&&runtime?.decision==='PASS_M8_HUMAN_BROWSER_LIVE_HR_RECONCILIATION_READONLY';
+          const rollbackPass=rollback?.decision==='PASS_M8_ROLLBACK_READINESS_SOURCE_GATE'&&rollback?.productIdentity?.exactAppTreeParityWithM7Deployed===true;
+          const safetyPass=runtime?.safety?.hostingDeploys===0&&runtime?.safety?.firestoreWrites===0&&runtime?.safety?.hrWrites===0&&runtime?.safety?.production===false&&rollback?.safety?.production===false;
+          const pass=runtimePass&&rollbackPass&&safetyPass&&credential?.decision==='PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY';
+          const summary={
+            schemaVersion:'cxorbia.m8.human-validation-run.v1',
+            generatedAt:new Date().toISOString(),
+            decision:pass?'PASS_M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY':'FAIL_M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY',
+            authorization,
+            credentialSelection:credential,
+            rollbackReadiness:rollback,
+            runtime,
+            phaseA:pass?{entryPercent:93,m8Points:3,certifiedPercent:96,remainingPercent:4}:{entryPercent:93,m8Points:0,certifiedPercent:93,remainingPercent:7},
+            safety:{hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,passwordChanges:0,passwordResets:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,production:false,credentialsExposed:false,tokensExposed:false}
+          };
+          fs.writeFileSync(process.env.OUT_DIR+'/summary.json',JSON.stringify(summary,null,2)+'\n','utf8');
+          NODE
+
+      - name: Remove private credentials before artifact
+        if: always()
+        run: |
+          rm -rf "$PRIVATE_DIR"
+          test ! -e "$PRIVATE_E2E"
+
+      - name: Capture repository delta evidence
+        if: always()
+        run: |
+          mkdir -p "$OUT_DIR/repository-status"
+          git status --porcelain=v1 > "$OUT_DIR/repository-status/status-porcelain.txt"
+          git diff --name-status > "$OUT_DIR/repository-status/tracked-delta.txt"
+          git ls-files --others --exclude-standard > "$OUT_DIR/repository-status/untracked.txt"
+
+      - name: Upload sanitized M8 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-m8-human-validation-${{ github.run_id }}
+          path: |
+            .tmp/m8-human-validation
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Enforce M8 PASS
+        if: always()
+        run: |
+          node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync('.tmp/m8-human-validation/summary.json','utf8'));if(r.decision!=='PASS_M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY')throw new Error('M8_NOT_PASS:'+JSON.stringify({decision:r.decision,runtime:r.runtime?.decision,rollback:r.rollbackReadiness?.decision}));"
