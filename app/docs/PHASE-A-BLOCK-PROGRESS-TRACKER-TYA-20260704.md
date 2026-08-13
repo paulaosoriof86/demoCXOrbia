@@ -1,28 +1,39 @@
 # PHASE A — Tracker TyA
 
-**Actualización:** 2026-08-12 19:26 -06:00  
-**Estado:** `C6_RUNTIME_11_STOP_RETRY_POST_ENTER_SESSION_MEMBERSHIP_LOSS__ROOTCAUSE_REPAIRED__SOURCE_PREFLIGHT_PASS__PHASE_A_88`
+**Actualización:** 2026-08-12 19:47 -06:00  
+**Estado:** `PASS_M7_C6_RUNTIME_12__PHASE_A_93__NEXT_M8`
 
-M1=35 COMPLETE; M2=20 COMPLETE; M3=15 COMPLETE; M4=5 COMPLETE; M5=8/8 COMPLETE; M6=5 COMPLETE; M7=0/5; M8=0/3; M9=0/3; M10=0/1. **88% certificado; 12% restante.**
+M1=35 COMPLETE; M2=20 COMPLETE; M3=15 COMPLETE; M4=5 COMPLETE; M5=8/8 COMPLETE; M6=5/5 COMPLETE; **M7=5/5 COMPLETE**; M8=0/3; M9=0/3; M10=0/1. **93% certificado; 7% restante.**
 
 ## Hitos cerrados
 
-`C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2`: PASS único y consumido. Auth writes=14; Firestore writes=16; deletes=0. Canonical readback A/B/C/D/R4 PASS; ocho históricos deshabilitados con readback; rollback no requerido.
+`C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2`: PASS único y consumido. Auth writes históricos=14; Firestore writes históricos=16; deletes=0. Canonical readback A/B/C/D/R4 PASS; ocho históricos deshabilitados con readback; rollback no requerido.
 
-`C6 STAFF RUNTIME SELECTOR CANONICALIZATION`: cerrado source-only. El carril Staff ya no usa bundle/password guessing legacy; selecciona exclusivamente `B=admin` con private handoff y derivación Exact Write V2. Runtime 11 certificó `canonicalTargetAlias=B`, `staffRole=admin`, `exactWriteCanonical=true`, `legacyCredentialBundleUsed=false`.
+`C6 STAFF RUNTIME SELECTOR CANONICALIZATION`: cerrado. El carril Staff usa exclusivamente el principal canónico Exact Write V2 `B=admin`, con private handoff y derivación Exact Write V2; bundle/password guessing legacy prohibidos.
 
-`RUNTIME 11`: run `31657144378`, artifact `9164843371`. PASS hasta Hosting, remote parity, Auth B/admin, membership/frontend handoff `entered`, HR authority 15 periodos/660 visitas/211 shoppers, stale empty limpiado y shell visible. FAIL únicamente porque `CX.app.enter()` fue interceptado por backend-browser-auth, que reaplicó `CX.session` desde claims y eliminó metadata `membershipVerified/membershipSource` después del PASS canónico. STOP_RETRY respetado; Hosting 1/1; writes=0.
+`C6 POST-ENTER SESSION MEMBERSHIP REPAIR`: cerrado. El adapter republica después de `CX.app.enter()` la membership ya verificada para preservar `CX.session/RBAC`, sin tocar `/app/core` ni `/app/modules`.
 
-`C6 POST-ENTER SESSION MEMBERSHIP REPAIR`: source-only aplicado en adapter, sin tocar `/app/core` ni `/app/modules`. Después de `CX.app.enter()`, republica la membership ya verificada mediante cache y falla cerrado si no persiste. Preflight reforzado exige ese orden.
+`M7 — C6 LIVE USER/ADMIN FRONTEND WIRING RUNTIME READONLY PROOF`: **PASS Runtime 12**.
 
-`POST-REPAIR SOURCE PREFLIGHT`: run `31657552661`, artifact `9164940552`, **PASS**. Provider/Google Auth/Hosting/runtime skipped; provider calls=0, Hosting=0, writes=0.
+- Run `31658676280` / job `94318658180`.
+- Artifact `9165383310`, digest `sha256:a327b0d5e0a592d41417dce7ff934984ab51d3d5927dbee9ba774200eee5befe`.
+- Principal: `B=admin`, `exactWriteCanonical=true`, `legacyCredentialBundleUsed=false`.
+- Hosting DEV 1/1; remote parity exact=true.
+- Auth/contexto `admin/staff/tya/cinepolis`.
+- Membership `tenants/tya/users/self` verificada y persistida post-`CX.app.enter()`.
+- Datos runtime: **15 periodos / 660 visitas / 197 shoppers**, `2025-06 → 2026-08`.
+- Frontend handoff `entered`.
+- Primera carga + **3 reloads + new-tab: PASS**.
+- Nuevos Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes=0; merge=false; producción=false.
 
-## Por qué Phase A sigue en 88%
+## Progreso certificado
 
-M7 permanece atómico: solo suma sus 5 puntos cuando la misma ejecución real completa primera carga + membership persistida en `CX.session/RBAC` + HR authority + frontend + **3 reloads + new-tab**. Runtime 11 no llegó a reloads/new-tab porque el smoke detuvo correctamente el primer wait ante la pérdida post-enter de metadata.
+`35 + 20 + 15 + 5 + 8 + 5 + 5 = 93`.
+
+Pendiente: `M8=3 + M9=3 + M10=1 = 7` puntos.
 
 ## Siguiente bloque exacto
 
-`NUEVO HOSTING_RUNTIME_ONCE Staff B=admin sobre HEAD vivo reparado → M7 PASS esperado → Phase A 93% → M8 → M9 → M10`.
+`M8 → M9 → M10`.
 
-No reabrir Exact Write V2, handoff, provider snapshot, Auth340, SKIP13, MultiAuth, HR ni M4 sin drift nuevo reproducible. No nueva auditoría general.
+No reabrir C6/Exact Write V2/private handoff/provider snapshot/Auth340/SKIP13/MultiAuth/HR/M4 sin drift nuevo reproducible. No inventar el alcance de M8/M9/M10: resolver sus contratos exactos desde las fuentes vigentes y ejecutar primero cualquier parte source-only/read-only que no requiera un gate adicional.
