@@ -1,55 +1,40 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-13 12:24 -06:00
-**Estado:** `OWNER_VISIBLE_DEV_LAB_HOSTED__READONLY_VISUAL_ACCEPTANCE_PENDING__REAL_CUTOVER_PENDING`
+**Fecha:** 2026-08-13 13:29 -06:00
+**Estado:** `P0_HUMAN_SHOPPER_OPEN__READONLY_ATTEMPT_CONSUMED_FAILED__STOP_RETRY__REAL_CUTOVER_BLOCKED`
 
 ## Estado vivo
 
 - Repo `paulaosoriof86/demoCXOrbia`.
 - Rama `docs-tya-v6-v71-audit`.
 - PR #7 draft/open/no merge.
-- M1–M10: calificación técnica DEV completa.
 - Build técnico calificado `ecc725866acc3eb8`.
-- DEV root `https://cxorbia-backend-dev.web.app/`.
-- Laboratorio visible publicado en `/dev-validation/index.html`.
-- Commit del laboratorio `0083be8c2be8b0deb15bbe5e7f8f8410f972dbc1`.
-- Commit de ejecución Hosting DEV `68d8af9a4bf6373696b281dbc5a9ac94c2bbfffb`.
-- Run Hosting DEV `31730303749`, job `94548821932`: `SUCCESS`.
-- Artifact `9192996410`, digest `sha256:1302982ffc68e2d9aedf39dafdce0514d70a0f11e362ab3cc5b731c98dab9474`.
+- M1–M10: 100% de calificación técnica DEV, no aprobación funcional.
+- Laboratorio DEV visible publicado en `/dev-validation/index.html`.
+- Plataforma/hosting real vigente de TyA: sin reemplazar.
 
-## Avance real de esta iteración
+## P0 vigente
 
-Ya no estamos únicamente en planificación. Se implementó y publicó un laboratorio DEV visible para que Paula abra el servidor de pruebas y observe la ejecución, siguiendo el patrón reutilizable de Finanzas.
+Paula autenticó con un Shopper real, pero `Mi Perfil` quedó separado del read model canónico y la vista permaneció Firestore-only con cero visitas, pese a que el laboratorio read-only leyó la HR viva completa. Aceptación humana: **RECHAZADA**.
 
-La superficie visible:
-1. ejecuta controles read-only al cargar;
-2. genera bitácora PASS/FAIL/BLOCKED en la misma pantalla;
-3. consulta HR viva mediante el endpoint DEV read-only y permite `fresh=1`;
-4. muestra períodos, visitas, shoppers y visitas disponibles calculadas desde la lectura recibida;
-5. verifica entrypoint canónico, build/source lock y superficies Dashboard, Proyectos, Visitas, Postulaciones, Certificación, Finanzas y Academia;
-6. incorpora la plataforma DEV canónica en la misma superficie para login humano;
-7. permite comprobar sesión, rol, tenant, proyecto, período, fuente y navegación visible después del login.
+Evidencia primaria: `app/docs/evidence/p0-human-shopper-canonical-binding-failure-20260813.json`.
 
-## Pendiente inmediato
+## Bloque read-only autorizado — cerrado con fallo
 
-1. Paula abre `/dev-validation/index.html` y observa la ejecución read-only real.
-2. Paula inicia sesión dentro de la plataforma DEV embebida y pulsa `Comprobar sesión y módulos visibles`.
-3. Se registra `APROBADO` o una diferencia reproducible.
-4. El E2E que requiere escrituras sintéticas temporales permanece `BLOCKED` hasta un gate separado con cleanup exacto; no se simula como PASS.
-5. Después de aceptación visual y del E2E autorizado que corresponda, se prepara el gate separado de cutover real TyA.
+Request `p0-human-shopper-auth-hr-readonly-20260813-01` ejecutó run `31735473752`, job `94565926738`. La etapa de inspección falló y no persistió artifact ni diagnóstico sanitizado. El error específico no está disponible por el conector, por lo que la causa raíz no se declara.
 
-## Corrección de alcance preservada
+El único intento se considera consumido y se aplicó `STOP_RETRY`. El request quedó deshabilitado en `97e8f25a9119e0a67252dd6e568d8afc7c0a533c`. La verificación `31735810704` confirmó que la inspección de proveedor quedó `SKIPPED`, sin segundo intento. El runner histórico fue restaurado y los archivos preliminares no usados fueron retirados.
 
-El 100% M1–M10 corresponde a calificación técnica DEV. La plataforma actual de TyA todavía no ha sido reemplazada y el dominio/hosting real vigente no ha recibido cutover.
+Evidencia del cierre seguro: `app/docs/evidence/p0-human-shopper-readonly-run-failure-31735473752.json`.
+
+## Pendiente real
+
+Siguen sin demostrarse el principal exacto Shopper, su enlace técnico HR/read-model, el fallo concreto del bridge y el usuario visible del Admin B. No se adivinan. Una segunda lectura de proveedor exige autorización explícita nueva.
+
+## Siguiente bloque exacto
+
+Preparar primero, source-only, un mecanismo diagnóstico que capture evidencia aun cuando falle y separe la recuperación offline del usuario Admin B de la lectura Shopper. Solo después puede solicitarse un nuevo gate focal si sigue siendo necesaria otra lectura.
 
 ## Seguridad
 
-Este bloque publicó exclusivamente Hosting DEV. Cero Cloud Run deploy adicional, cero HR/Auth/Firestore/Rules/Storage writes, cero Make/Gemini/pagos, cero merge y cero cutover real TyA.
-
-## Clasificación
-
-- Reusable CXOrbia: laboratorio visible de aceptación pre-go-live y bitácora ejecutable en Hosting DEV.
-- Exclusivo cliente: TyA/Cinépolis, HR viva, shoppers, visitas y módulos Phase A.
-- Claude/prototipo: el laboratorio no parchea módulos del producto; cualquier diferencia visual se documentará por archivo/módulo.
-- Academia: la superficie comprueba que Academia esté publicada; contenido y rol se validan en aceptación humana.
-- Sin impacto Claude: workflow, evidencia, gate y documentación de seguridad.
+Cero writes de datos, cero cambios de contraseña, cero deploy, cero Make/Gemini/pagos, cero merge y cero producción.
