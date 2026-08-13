@@ -23,6 +23,7 @@ const report = {
   roles: [],
   hardFails: [],
   warnings: [],
+  p0ShopperExactIdentity: null,
   safeState: { deploy: false, production: false, providers: false, databaseWrites: false, imports: false }
 };
 
@@ -145,6 +146,44 @@ for (const spec of roleSpecs) {
   }
 }
 
+/* P0 regression: exact Shopper identity must resolve by technical identifiers only.
+   This is source-only and provider-free. It deliberately proves name-only collisions do not resolve. */
+{
+  const context = await browser.newContext({ serviceWorkers: 'block' });
+  const page = await context.newPage();
+  try {
+    const u = new URL(baseUrl);
+    u.searchParams.set('cxHumanFullVisual', 'YES_PAULA_20260731_FULL_PROFILE_DEV');
+    await page.goto(u.toString(), { waitUntil: 'domcontentloaded', timeout: 20000 });
+    await page.addScriptTag({ path: path.resolve('app/adapters/tya-canonical-shopper-portal-v2.js') });
+    const p0 = await page.evaluate(() => {
+      const resolver = window.CX_TYA_CANONICAL_SHOPPER_PORTAL?.resolveExactSessionShopper;
+      if (typeof resolver !== 'function') return { pass:false, reason:'resolver_not_exposed' };
+      const run = (shopperId, data) => {
+        window.CX.session = { user:{ shopperId } };
+        const result = resolver(data);
+        return { ok:result.ok, reason:result.reason, canonical:result.canonical || null, matchCount:(result.matches || []).length };
+      };
+      const row = { id:'canonical-001', shopperId:'canonical-001', legacyLiveShopperIds:['hr-001'], sourceKey:'route-001', nombre:'Nombre repetible no usado' };
+      const directData = { shoppers:[row], __identityMap:{'hr-001':'canonical-001'}, getShopper:id => id==='canonical-001'?row:null };
+      const direct = run('canonical-001', directData);
+      const forward = run('hr-001', directData);
+      const alias = run('route-001', { shoppers:[row], __identityMap:{}, getShopper:()=>null });
+      const ambiguous = run('shared-exact', { shoppers:[{id:'a',aliases:['shared-exact']},{id:'b',aliases:['shared-exact']}], __identityMap:{}, getShopper:()=>null });
+      const nameOnly = run('no-technical-match', { shoppers:[{id:'a',nombre:'Mismo Nombre'},{id:'b',nombre:'Mismo Nombre'}], __identityMap:{}, getShopper:()=>null });
+      const pass = direct.ok&&direct.canonical==='canonical-001'&&forward.ok&&forward.canonical==='canonical-001'&&alias.ok&&alias.canonical==='canonical-001'&&!ambiguous.ok&&ambiguous.reason==='ambiguous_exact_identity'&&!nameOnly.ok&&nameOnly.reason==='no_exact_identity';
+      return { pass, direct, forward, alias, ambiguous, nameOnly, providerCalls:0, writes:0 };
+    });
+    report.p0ShopperExactIdentity = p0;
+    if (!p0.pass) report.hardFails.push(`p0-shopper-exact-identity:${p0.reason || JSON.stringify(p0)}`);
+  } catch (error) {
+    report.p0ShopperExactIdentity = { pass:false, error:String(error.message || error), providerCalls:0, writes:0 };
+    report.hardFails.push(`p0-shopper-exact-identity:${String(error.message || error)}`);
+  } finally {
+    await context.close();
+  }
+}
+
 await browser.close();
 for (const role of report.roles) {
   for (const warning of role.warnings || []) report.warnings.push(`${role.id}:${warning}`);
@@ -158,6 +197,7 @@ const md = [
   `Verdict: ${report.verdict}`,
   `Hard fails: ${report.hardFails.length}`,
   `Warnings: ${report.warnings.length}`,
+  `P0 Shopper exact identity: ${report.p0ShopperExactIdentity?.pass ? 'PASS' : 'FAIL'}`,
   '', '## Roles',
   ...report.roles.map(role => `- ${role.id}: ${role.status}${role.error ? ` — ${role.error}` : ''}`),
   '', '## Hard fails', ...(report.hardFails.length ? report.hardFails.map(x => `- ${x}`) : ['- none']),
