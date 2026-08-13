@@ -1,40 +1,36 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-13 10:34 -06:00
-**Estado:** `M9_PASS__PHASE_A_99__M10_PENDING`
+**Última actualización:** 2026-08-13 10:41 -06:00
+**Estado:** `PHASE_A_COMPLETE_100__M10_PASS__NO_MERGE`
 
-## Resultado M9
+## Cierre Phase A
 
-M9 quedó cerrado con `PASS_M9_RETRY_AFTER_HOSTING_ENTRY_PARITY_PASS`.
+M9 quedó cerrado con PASS y M10 también terminó con `PASS_M10_POST_CUTOVER_SMOKE_FREEZE_FINAL`.
 
-Ejecución: run `31721147260`, job `94518159616`, artifact `9189392132`, digest `sha256:fd878f783c5d47fa68598090ecf67262a194aea6fae1c2b9cf7db88461a9fe1e`.
+M10: run `31721769360`, job `94520228757`, artifact `9189626304`, digest `sha256:646c380fdbc53e081fc689335c825c97304ee9354e2913086007897f90edb6f2`.
 
-Build validado: `ecc725866acc3eb8`; aggregate SHA `ecc725866acc3eb8aab292000be3ec31d1c46b5c14a53c8889fa7d6716a997e2`.
+Freeze final: build `ecc725866acc3eb8`, aggregate SHA `ecc725866acc3eb8aab292000be3ec31d1c46b5c14a53c8889fa7d6716a997e2`, release `1786638785456000`, version `cd1e5b7d42cb846b`, estado `FINALIZED`, raíz HTTP 302 hacia `/index-backend-dev.html`.
 
-El smoke inmediato desde la raíz real terminó PASS con Admin canónico, membership verificada, tenant `tya`, proyecto `cinepolis`, 15 periodos, 660 visitas, 197 perfiles protegidos, 211 shoppers de autoridad, histórico 2025-06→2026-08, duplicados=0 y siete rutas requeridas PASS. El consentimiento de confidencialidad permaneció humano y QA no lo registró.
+Smoke final PASS: Admin canónico, membership verificada, tenant `tya`, proyecto `cinepolis`, 15 periodos, 660 visitas, 197 perfiles protegidos, 211 shoppers de autoridad, histórico 2025-06→2026-08, duplicados=0 y siete rutas requeridas PASS. Consola/page/HTTP/request failures=0. El consentimiento de confidencialidad permaneció humano y QA no lo registró.
 
-Dos reconciliaciones HR frescas conservaron 660→660→660 visitas, added=0 y removed=0. No fue necesario rollback.
-
-Evidencia durable: `app/docs/evidence/m9-retry-production-pass-31721147260.json`.
+Evidencias durables:
+- `app/docs/evidence/m9-retry-production-pass-31721147260.json`.
+- `app/docs/evidence/m10-final-phase-a-freeze-31721769360.json`.
 
 ## Seguridad
 
-Cloud Run deploys=0; Auth/Firestore/HR/Rules/Storage writes=0; Make/Gemini/pagos=0; merge=false; credenciales/tokens expuestos=false.
+M10 fue read-only: provider GETs=2; provider writes=0; Hosting deploys=0; Cloud Run deploys=0; Auth/Firestore/HR/Rules/Storage writes=0; Make/Gemini/pagos=0; merge=false; credenciales/tokens expuestos=false.
 
 ## Progreso
 
-`M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=5/5 | M8=3/3 | M9=3/3 | M10=0/1`
+`M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=5/5 | M8=3/3 | M9=3/3 | M10=1/1`
 
-**Phase A=99% certificado | 1% restante.**
-
-## Siguiente bloque
-
-`M10_POST_CUTOVER_SMOKE_FREEZE_FINAL`: validación final read-only y freeze documental. Sin nueva promoción ni merge.
+**PHASE A = 100% CERTIFICADO | RESTANTE = 0%.**
 
 ## Clasificación
 
-- Reusable CXOrbia: paridad de entrega y smoke post-cutover.
+- Reusable CXOrbia: freeze verificable y smoke final read-only.
 - Exclusivo cliente: entorno TyA.
-- Claude/prototipo: cero cambios frontend.
-- Academia: continuidad post-cutover verificada.
-- Sin impacto Claude: QA, evidencia y gates.
+- Claude/prototipo: cero cambios frontend en M9/M10.
+- Academia: rutas y continuidad final verificadas.
+- Sin impacto Claude: QA, provider read-only, evidencia y documentación.
