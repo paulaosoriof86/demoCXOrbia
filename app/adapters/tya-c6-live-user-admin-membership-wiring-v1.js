@@ -202,11 +202,22 @@ window.CX=window.CX||{};
       const state=reconcileCanonicalReadyState(authority);
       if(!CX.app||typeof CX.app.enter!=='function')throw new Error('FRONTEND_HANDOFF_APP_ENTER_REQUIRED');
       CX.app.enter();
+      /* backend-browser-auth wraps CX.app.enter() and intentionally reapplies the provider
+         session. That canonical reapplication clears transient membership metadata because
+         it rebuilds CX.session.user from Auth claims. Re-publish the already verified,
+         cached membership immediately after enter so CX.session/RBAC remains the same
+         canonical identity that passed tenants/tya/users/{uid}; this cache path performs
+         no provider/Firestore write and no second membership read. */
+      const postEnterCtx=await reconcile(verifiedCtx);
+      if(postEnterCtx?.membershipVerified!==true||CX.session?.user?.membershipVerified!==true){
+        throw new Error('FRONTEND_HANDOFF_MEMBERSHIP_LOST_AFTER_APP_ENTER');
+      }
       const appOn=document.getElementById('app')?.classList.contains('on')===true;
       const loginHidden=document.getElementById('login')?.classList.contains('hidden')===true;
       if(!appOn||!loginHidden)throw new Error('FRONTEND_HANDOFF_ENTRY_NOT_VISIBLE');
       publishFrontendHandoff('entered',{
         reason:reason||'authority-ready',role,membershipVerified:true,authorityApplied:true,
+        sessionMembershipRepublishedAfterAppEnter:true,
         appOn:true,loginHidden:true,projects:state.projects,visits:state.visits,
         staleBackendEmptyCleared:state.priorBackendEmpty,staleCorte4EmptyCleared:state.priorCorte4Empty
       });
