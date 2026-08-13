@@ -1,55 +1,55 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-13 13:29 -06:00
-**Estado:** `P0_HUMAN_SHOPPER_OPEN__READONLY_DIAGNOSTIC_ATTEMPT_CONSUMED_FAILED__STOP_RETRY__CUTOVER_BLOCKED`
+**Última actualización:** 2026-08-13 14:16 -06:00
+**Estado:** `P0_SHOPPER_EXACT_IDENTITY_SOURCE_FIX_APPLIED__DEV_DEPLOY_PENDING__CUTOVER_BLOCKED`
 
-## Bloque P0 DEV read-only autorizado — resultado real
+## P0 Shopper — reparación source-only aplicada
 
-Paula autorizó una única lectura focal para diagnosticar el Shopper humano que autenticó pero quedó separado del read model canónico y para recuperar únicamente el usuario visible del Admin canónico B.
+La aceptación humana de Paula demostró que un Shopper real autenticaba y veía el menú, pero `Mi Perfil` mostraba `La identidad de esta sesión no está vinculada al read model canónico.` El laboratorio, al mismo tiempo, sí leía HR viva completa. Este P0 continúa siendo el bloqueador del go-live real.
 
-Se reutilizó el runner existente `CXOrbia C6 Hold Profiles + Live HR Read-Only`, sin crear rama, PR, deploy ni ruta productiva nueva. Request one-shot: `p0-human-shopper-auth-hr-readonly-20260813-01`, commit `2dd2d693daa21287023d50a03748c1ccd4ae373d`, ligado al HEAD `954eae43cebcf05592f00ea8d43f5405417fca7b`.
+Se aisló un defecto reproducible en `app/adapters/tya-canonical-shopper-portal-v2.js`: el portal resolvía la sesión únicamente con `identityMap[rawShopperId] || rawShopperId` y podía renderizar el bloqueo antes de que terminara la reconciliación Auth → Firestore protegido → HR viva. Ese comportamiento no cubría todas las llaves técnicas exactas ya admitidas por los contratos de identidad y convertía una reconciliación todavía pendiente en un falso bloqueo visual.
 
-### Ejecución
+Commit de reparación: `d435d33fbf548b8021ad5604acc4b2686f75d6b5`.
 
-- Run `31735473752`.
-- Job `94565926738`.
-- Setup, checkout, request gate e instalación transitoria: PASS.
-- `Execute targeted read-only inspection`: **FAIL** después de aproximadamente 7 segundos.
-- El workflow no publicó artifact privado ni evidencia sanitizada porque esas etapas estaban condicionadas al éxito de la inspección.
-- Los logs accesibles por el conector no exponen el error específico; por tanto no se inventa causa raíz.
+### Cambio focal
 
-La autorización se trata conservadoramente como **consumida**: la ejecución alcanzó la etapa que contiene las lecturas de proveedor. No se ejecutó ni se ejecutará un segundo intento con este gate.
+- El resolver Shopper ahora usa exclusivamente relaciones técnicas exactas: `id`, `shopperId`, `legacyShopperId`, `legacyId`, `sourceId`, `sourceKey`, `externalShopperId`, `canonicalLegacyIds`, `legacyLiveShopperIds`, `sourceShopperIds`, `hrShopperIds`, `externalShopperIds`, `identityAliases`, `aliases`, `exactAliases` y aliases técnicos de crosswalk/identity/profile.
+- Se soporta lookup directo, `identityMap` forward y relación exacta inversa cuando es única.
+- Si existe más de una coincidencia exacta, se bloquea como ambigua; nunca se une por nombre, correo o coincidencia visual.
+- Si la autoridad HR aún no terminó de aplicar, `Mi Perfil` muestra estado de validación y fuerza la reconciliación read-only; al recibir `cx:protected-auth-hr-authority-ready`, vuelve a renderizar con `CX.data` ya compuesto.
+- El alias resuelto se conserva solo en memoria dentro de `CX.data.__identityMap`; no existe write a proveedor.
+- Se eliminó la exposición visual de contraseña/credencial cruda en esta superficie y se muestra `Protegida`.
 
-### Neutralización y limpieza completadas
+### Gate de regresión source-only
 
-- Request deshabilitado/consumido con `STOP_RETRY`: commit `97e8f25a9119e0a67252dd6e568d8afc7c0a533c`.
-- Run de verificación de neutralización `31735810704`, job `94567043982`: SUCCESS; setup de proveedor e inspección fueron `SKIPPED`, por lo que no hubo segunda lectura.
-- Herramienta histórica `tools/qa/cxorbia-c6-hold-profile-live-hr-readonly.mjs` restaurada exactamente a su blob previo `3c9e229bd10a24fac971562091c6050094d4c8a6`; commit `1db3df5db63c89773e2aaba1866f4bc62be5e0f3`.
-- Se eliminaron los dos diagnósticos preliminares no usados.
-- Evidencia del fallo: `app/docs/evidence/p0-human-shopper-readonly-run-failure-31735473752.json`.
+Se amplió `tools/qa/tya-phase-a-visual-smoke.mjs` en commit `9ca59feb68583ec1de3ccf590e6b9ea6c0f2fd5b` con una prueba browser-only que exige:
 
-### Qué NO quedó demostrado
+1. ID canónico directo → PASS.
+2. HR/live ID → canonical por identityMap → PASS.
+3. alias técnico exacto (`sourceKey`) → PASS.
+4. dos perfiles con el mismo alias exacto → BLOCKED por ambigüedad.
+5. nombres iguales sin llave técnica → NO RESUELVE.
 
-No existe resultado persistido para claims/shopperId/membership del Shopper, crosswalk exacto con HR, causa del bridge ni usuario visible del Admin B. No se adivina ninguno de esos datos.
+El gate no usa proveedores, no importa datos y no escribe base.
 
-### Seguridad
+## Diagnóstico/provider anterior preservado
 
-Cero cambios sobre Auth, Firestore, HR, Rules o Storage; cero cambios de contraseña; cero deploy; cero Make/Gemini/pagos; cero merge; cero producción. La plataforma real vigente de TyA permanece intacta.
+El único provider-read P0 autorizado fue run `31735473752`; falló sin persistir la causa y se considera consumido. No se repitió. La recuperación offline del Admin B sí produjo internamente `PASS_P0_ADMIN_B_VISIBLE_LOGIN_RECOVERED_OFFLINE` con `providerReads=0`, pero su artifact no persistió por el fallo instrumental `tee_target_directory_missing`.
 
-## P0 humano vigente
+El request offline heredado sigue pendiente de neutralización documental: el intento de actualizarlo fue bloqueado por la herramienta. No se afirma que haya quedado neutralizado en HEAD actual y no se volverá a tocar como parte del fix funcional sin necesidad.
 
-La aceptación visual sigue rechazada: el Shopper real autenticó, pero `Mi Perfil` mostró `La identidad de esta sesión no está vinculada al read model canónico.` La vista quedó Firestore-only con cero visitas mientras el laboratorio leyó HR viva completa. Evidencia primaria: `app/docs/evidence/p0-human-shopper-canonical-binding-failure-20260813.json`.
+## Seguridad
 
-M1–M10 continúan como 100% de calificación técnica DEV del build `ecc725866acc3eb8`; no equivalen a aprobación funcional ni a go-live.
+Desde el hallazgo P0: cero Auth/Firestore/HR/Rules/Storage writes, cero Make/Gemini/pagos, cero merge, cero producción y cero cutover real. El fix actual es source-only y todavía NO está desplegado en Hosting DEV.
 
 ## Siguiente bloque exacto
 
-`STOP_RETRY`. Cualquier segunda lectura de proveedor requiere autorización explícita nueva. Antes de solicitarla, el siguiente diseño debe corregir el mecanismo de captura para garantizar evidencia incluso ante fallo y separar el recuperador offline del usuario Admin B de la lectura Shopper, evitando consumir otro gate sin diagnóstico persistente.
+Cerrar el nuevo smoke source-only. Si PASS, desplegar exclusivamente los commits del fix P0 a `cxorbia-backend-dev` bajo autorización específica de Paula, repetir inmediatamente la misma validación humana Shopper y solo después continuar Admin/Operaciones y E2E.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** runner diagnóstico debe persistir evidencia de fallo y no perder el resultado por un exit no controlado.
-- **Exclusivo cliente:** identidad Shopper TyA/Cinépolis y autoridad HR.
-- **Claude/prototipo:** ningún parche funcional aplicado; P0 sigue abierto.
-- **Academia:** acceso Shopper continúa no aprobado.
-- **Sin impacto Claude:** neutralización, restauración del runner y documentación.
+- **Reusable CXOrbia:** resolución de identidad humana exacta, fail-closed por ambigüedad y espera explícita de autoridad antes de renderizar histórico.
+- **Exclusivo cliente:** Shopper TyA/Cinépolis, HR e histórico.
+- **Claude/prototipo:** no rediseñar; la reparación vive en adapter y preserva módulos.
+- **Academia:** ruta Shopper se revalida después del deploy DEV.
+- **Sin impacto Claude:** gate source-only y seguridad.
