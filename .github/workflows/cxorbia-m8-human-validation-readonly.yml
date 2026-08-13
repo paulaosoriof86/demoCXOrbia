@@ -1,17 +1,17 @@
-name: CXOrbia M9 Provider Precutover Read Only
+name: CXOrbia M9 Explicit Production Cutover
 
 on:
   push:
     branches:
       - docs-tya-v6-v71-audit
     paths:
-      - backend/config/m9-provider-precutover-readonly-execute.json
+      - backend/config/m9-explicit-production-cutover-execute.json
 
 permissions:
   contents: read
 
 concurrency:
-  group: cxorbia-m9-provider-precutover-readonly
+  group: cxorbia-m9-explicit-production-cutover
   cancel-in-progress: false
 
 defaults:
@@ -19,26 +19,38 @@ defaults:
     shell: bash
 
 env:
-  EXECUTE_FILE: backend/config/m9-provider-precutover-readonly-execute.json
+  EXECUTE_FILE: backend/config/m9-explicit-production-cutover-execute.json
   CONTRACT_FILE: backend/contracts/m9-provider-precutover-readiness-v1.json
   PROMOTION_FILE: backend/config/cxorbia-production-promotion-contract.json
-  OUT_DIR: .tmp/m9-provider-precutover
-  PRIVATE_DIR: .tmp/m9-provider-precutover/private
-  M9_ACTION: M9_PROVIDER_PRECUTOVER_READINESS_READONLY
+  M8_EVIDENCE: app/docs/evidence/m8-human-validation-rollback-ready-31694998731.json
+  M9_PRECUTOVER_EVIDENCE: app/docs/evidence/m9-provider-precutover-readiness-31695760214.json
+  OUT_DIR: .tmp/m9-production-cutover
+  PRIVATE_DIR: .tmp/m9-production-cutover/private
+  PRIVATE_E2E: .tmp/m9-production-cutover/private/private-e2e.json
+  PRODUCT_DIR: .tmp/m9-production-cutover/product
+  CUTOVER_CONFIG: firebase.m9-cutover.json
+  ACTION_NAME: M9_EXPLICIT_CUTOVER_ONE_PRODUCTION_PROMOTION
   GCP_PROJECT_ID: cxorbia-backend-dev
+  HOSTING_TARGET: cxorbia-dev
   HOSTING_SITE: cxorbia-backend-dev
+  ROOT_URL: https://cxorbia-backend-dev.web.app
+  TESTED_TARGET: 62edaf552c2a62a8964671f691d600a417ae63f8
+  EXPECTED_BUILD_ID: ecc725866acc3eb8
+  EXPECTED_AGGREGATE_SHA: ecc725866acc3eb8aab292000be3ec31d1c46b5c14a53c8889fa7d6716a997e2
+  PRECUTOVER_RELEASE: sites/cxorbia-backend-dev/releases/1786585552096000
+  ROLLBACK_VERSION: sites/cxorbia-backend-dev/versions/a9670bb8a19862cd
 
 jobs:
-  m9-provider-precutover:
-    name: Capture current Hosting release and rollback path, zero production mutation
+  m9-cutover:
+    name: One exact Hosting production promotion + smoke + conditional rollback
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
 
     steps:
-      - name: Checkout exact live branch
+      - name: Checkout live branch
         uses: actions/checkout@v4
         with:
-          fetch-depth: 100
+          fetch-depth: 150
           ref: docs-tya-v6-v71-audit
 
       - name: Setup Node
@@ -48,114 +60,209 @@ jobs:
 
       - name: Exclude ephemeral material
         run: |
-          printf '%s\n' '.tmp/' 'node_modules/' '.firebase/' 'firebase-debug.log' 'gha-creds-*.json' >> .git/info/exclude
+          printf '%s\n' '.tmp/' 'node_modules/' '.firebase/' 'firebase-debug.log' 'firebase.m9-cutover.json' 'gha-creds-*.json' >> .git/info/exclude
 
-      - name: Validate exact M9 read-only authorization and commit scope
+      - name: Validate exact current authorization and one-shot scope
         run: |
           set -euo pipefail
-          mkdir -p "$OUT_DIR" "$PRIVATE_DIR"
+          mkdir -p "$OUT_DIR" "$PRIVATE_DIR" "$PRODUCT_DIR"
           chmod 700 "$PRIVATE_DIR"
           node <<'NODE'
           const fs=require('fs');
-          const {execFileSync}=require('child_process');
+          const cp=require('child_process');
           const x=JSON.parse(fs.readFileSync(process.env.EXECUTE_FILE,'utf8'));
           const c=JSON.parse(fs.readFileSync(process.env.CONTRACT_FILE,'utf8'));
           const p=JSON.parse(fs.readFileSync(process.env.PROMOTION_FILE,'utf8'));
-          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
-          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
-          if(x.schemaVersion!=='cxorbia.m9.provider-precutover-readonly.request.v1')throw new Error('M9_REQUEST_SCHEMA_INVALID');
-          if(x.mode!=='PROVIDER_READONLY_PRECUTOVER_ONCE'||x.action!==process.env.M9_ACTION)throw new Error('M9_REQUEST_MODE_INVALID');
-          if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7)throw new Error('M9_LANE_INVALID');
-          if(x.firebaseProjectId!==process.env.GCP_PROJECT_ID||x.hostingSite!==process.env.HOSTING_SITE)throw new Error('M9_TARGET_INVALID');
-          if(x.enabled!==true||x.consumed!==false||x.status!=='authorized_execute_once'||x.authorizedBy!=='Paula')throw new Error('M9_AUTHORIZATION_STATE_INVALID');
-          if(x.targetHeadSha!==parent||!x.targetHeadSha||head===parent)throw new Error('M9_TARGET_HEAD_INVALID');
-          if(changed.length!==1||changed[0]!==process.env.EXECUTE_FILE)throw new Error('M9_EXECUTE_COMMIT_SCOPE_INVALID:'+changed.join(','));
-          if(Number(x.allowedExecutions)!==1||x.productionReadsAllowed!==true||Number(x.maxAuthenticatedHostingGets)!==2)throw new Error('M9_READ_SCOPE_INVALID');
-          for(const key of ['hostingDeploys','cloudRunDeploys','firestoreWrites','authWrites','hrWrites','rulesWrites','storageWrites','makeCalls','geminiCalls','paymentWrites'])if(Number(x[key]||0)!==0)throw new Error('M9_UNSAFE_SCOPE_'+key);
-          if(x.rollbackExecution!==false||x.productionMutation!==false||x.merge!==false||x.containsPii!==false||x.containsSecrets!==false)throw new Error('M9_UNSAFE_SCOPE');
-          if(c.schemaVersion!=='cxorbia.m9.provider-precutover-readiness.v1'||c.milestone!=='M9'||Number(c.points)!==3)throw new Error('M9_CONTRACT_INVALID');
-          if(c.providerReadPhase?.passDecision!=='PASS_M9_PROVIDER_PRECUTOVER_READINESS_READONLY'||c.promotionPhase?.explicitNewGateRequired!==true||c.promotionPhase?.authorizedByThisContract!==false)throw new Error('M9_CONTRACT_BOUNDARY_INVALID');
-          if(p.strategy!=='PROMOTE_EXISTING_CLEAN_PROJECT'||p.productionProjectId!==process.env.GCP_PROJECT_ID||p.productionHostingSite!==process.env.HOSTING_SITE||p.productionCutoverAuthorizedByThisContract!==false)throw new Error('M9_PROMOTION_CONTRACT_INVALID');
+          const m8=JSON.parse(fs.readFileSync(process.env.M8_EVIDENCE,'utf8'));
+          const m9=JSON.parse(fs.readFileSync(process.env.M9_PRECUTOVER_EVIDENCE,'utf8'));
+          const head=cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const parent=cp.execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=cp.execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          if(x.schemaVersion!=='cxorbia.m9.explicit-production-cutover.request.v1')throw new Error('M9_CUTOVER_REQUEST_SCHEMA_INVALID');
+          if(x.action!==process.env.ACTION_NAME||x.mode!=='ONE_EXACT_HOSTING_PRODUCTION_PROMOTION_WITH_SMOKE_AND_CONDITIONAL_ROLLBACK')throw new Error('M9_CUTOVER_ACTION_OR_MODE_INVALID');
+          if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7)throw new Error('M9_CUTOVER_LANE_INVALID');
+          if(x.enabled!==true||x.consumed!==false||x.status!=='authorized_execute_once'||x.authorizedBy!=='Paula'||x.paulaExplicitCurrentConversation!==true)throw new Error('M9_CUTOVER_AUTHORIZATION_STATE_INVALID');
+          if(x.targetHeadSha!==parent||head===parent)throw new Error('M9_CUTOVER_TARGET_HEAD_INVALID');
+          if(changed.length!==1||changed[0]!==process.env.EXECUTE_FILE)throw new Error('M9_CUTOVER_EXECUTE_COMMIT_SCOPE_INVALID:'+changed.join(','));
+          if(x.firebaseProjectId!==process.env.GCP_PROJECT_ID||x.hostingTarget!==process.env.HOSTING_TARGET||x.hostingSite!==process.env.HOSTING_SITE)throw new Error('M9_CUTOVER_TARGET_INVALID');
+          if(x.testedTargetHeadSha!==process.env.TESTED_TARGET||x.buildId!==process.env.EXPECTED_BUILD_ID||x.aggregateSha256!==process.env.EXPECTED_AGGREGATE_SHA)throw new Error('M9_CUTOVER_M8_BUILD_BIND_INVALID');
+          if(x.preCutoverRelease!==process.env.PRECUTOVER_RELEASE||x.rollbackVersion!==process.env.ROLLBACK_VERSION)throw new Error('M9_CUTOVER_ROLLBACK_BIND_INVALID');
+          if(Number(x.maxProductionPromotions)!==1||Number(x.maxConditionalRollbacks)!==1||x.rollbackOnlyIfImmediateSmokeFails!==true||x.noSecondPromotionAttempt!==true)throw new Error('M9_CUTOVER_ONE_SHOT_LIMIT_INVALID');
+          for(const k of ['cloudRunDeploys','authWrites','firestoreWrites','hrWrites','rulesWrites','storageWrites','makeCalls','geminiCalls','paymentWrites'])if(Number(x[k]||0)!==0)throw new Error('M9_CUTOVER_UNSAFE_SCOPE_'+k);
+          if(x.merge!==false||x.containsPii!==false||x.containsSecrets!==false)throw new Error('M9_CUTOVER_UNSAFE_SCOPE');
+          if(c.schemaVersion!=='cxorbia.m9.provider-precutover-readiness.v1'||c.promotionPhase?.nextGateName!==process.env.ACTION_NAME||Number(c.promotionPhase?.singleProductionPromotionMaximum)!==1)throw new Error('M9_CUTOVER_CONTRACT_INVALID');
+          if(p.strategy!=='PROMOTE_EXISTING_CLEAN_PROJECT'||p.productionProjectId!==process.env.GCP_PROJECT_ID||p.productionHostingSite!==process.env.HOSTING_SITE)throw new Error('M9_CUTOVER_PROMOTION_STRATEGY_INVALID');
+          if(m8.decision!=='PASS_M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY'||m8.execution?.targetHeadSha!==process.env.TESTED_TARGET||m8.sourceLock?.buildId!==process.env.EXPECTED_BUILD_ID||m8.sourceLock?.aggregateSha256!==process.env.EXPECTED_AGGREGATE_SHA)throw new Error('M9_CUTOVER_M8_EVIDENCE_INVALID');
+          if(m9.decision!=='PASS_M9_PROVIDER_PRECUTOVER_READINESS_READONLY'||m9.preCutoverRelease?.releaseName!==process.env.PRECUTOVER_RELEASE||m9.preCutoverRelease?.versionName!==process.env.ROLLBACK_VERSION||m9.rollbackReadiness?.status!=='READY_CAPTURED_FINALIZED_VERSION_PROVIDER_METHOD_VERIFIED')throw new Error('M9_CUTOVER_PRECUTOVER_EVIDENCE_INVALID');
           fs.writeFileSync(process.env.OUT_DIR+'/authorization.json',JSON.stringify({
-            schemaVersion:'cxorbia.m9.provider-precutover.authorization.v1',requestId:x.requestId,requestCommitSha:head,targetHeadSha:parent,authorizedBy:x.authorizedBy,authorizationSource:x.authorizationSource,action:x.action,mode:x.mode,
-            scope:{productionReadsAllowed:true,maxAuthenticatedHostingGets:2,publicDiscoveryGets:1},
-            safety:{hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,rollbackExecution:false,productionMutation:false,merge:false}
+            schemaVersion:'cxorbia.m9.explicit-production-cutover.authorization.v1',requestId:x.requestId,requestCommitSha:head,targetHeadSha:parent,authorizedBy:x.authorizedBy,authorizationSource:x.authorizationSource,action:x.action,mode:x.mode,
+            build:{testedTargetHeadSha:x.testedTargetHeadSha,buildId:x.buildId,aggregateSha256:x.aggregateSha256},
+            target:{firebaseProjectId:x.firebaseProjectId,hostingTarget:x.hostingTarget,hostingSite:x.hostingSite},
+            recovery:{preCutoverRelease:x.preCutoverRelease,rollbackVersion:x.rollbackVersion,maxConditionalRollbacks:1,rollbackOnlyIfImmediateSmokeFails:true},
+            limits:{maxProductionPromotions:1,noSecondPromotionAttempt:true},
+            safety:{cloudRunDeploys:0,authWrites:0,firestoreWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false}
           },null,2)+'\n','utf8');
           NODE
 
-      - name: Validate production target source-only before provider read
+      - name: Verify exact M8 bytes and build immutable staging
         run: |
           set -euo pipefail
-          node --check tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs
-          node --check tools/qa/tya-m9-provider-precutover-readiness-readonly.mjs
-          node tools/qa/cxorbia-c6-production-target-preflight-source-only.mjs --out "$OUT_DIR/source-preflight.json" || true
-          node -e "const r=require('./.tmp/m9-provider-precutover/source-preflight.json');if(r.decision!=='PASS_PRODUCTION_PROMOTION_CONTRACT_EXISTING_CLEAN_PROJECT')throw new Error('M9_SOURCE_PREFLIGHT_NOT_PASS:'+r.decision);"
+          git cat-file -e "$TESTED_TARGET^{commit}"
+          runtime_drift="$(git diff --name-only "$TESTED_TARGET..HEAD" -- app | grep -v '^app/docs/' || true)"
+          test -z "$runtime_drift"
+          rm -rf "$PRODUCT_DIR"
+          mkdir -p "$PRODUCT_DIR"
+          git archive --format=tar "$TESTED_TARGET" app | tar -x -C "$PRODUCT_DIR"
+          node <<'NODE'
+          const fs=require('fs'),vm=require('vm');
+          const f=process.env.PRODUCT_DIR+'/app/core/build-lock.js';
+          if(!fs.existsSync(f))throw new Error('M9_CUTOVER_STAGED_BUILD_LOCK_MISSING');
+          const src=fs.readFileSync(f,'utf8'),ctx={window:{}};vm.createContext(ctx);vm.runInContext(src,ctx,{timeout:2000});
+          const lock=ctx.CX_SOURCE_LOCK||ctx.window?.CX?.SOURCE_LOCK||null;
+          const build=ctx.CX_BUILD_ID||ctx.window?.CX?.BUILD_ID||null;
+          if(build!==process.env.EXPECTED_BUILD_ID||lock?.aggregateSha256!==process.env.EXPECTED_AGGREGATE_SHA)throw new Error('M9_CUTOVER_STAGED_BUILD_IDENTITY_MISMATCH');
+          if(lock?.repository!=='paulaosoriof86/demoCXOrbia'||lock?.branch!=='docs-tya-v6-v71-audit'||Number(lock?.pullRequest)!==7)throw new Error('M9_CUTOVER_STAGED_SOURCE_LOCK_IDENTITY_INVALID');
+          const fb=JSON.parse(fs.readFileSync('firebase.deploy.json','utf8'));
+          if(fb?.hosting?.target!==process.env.HOSTING_TARGET||fb?.hosting?.public!=='app')throw new Error('M9_CUTOVER_FIREBASE_DEPLOY_CONFIG_INVALID');
+          const out=structuredClone(fb);out.hosting.public=process.env.PRODUCT_DIR+'/app';
+          fs.writeFileSync(process.env.CUTOVER_CONFIG,JSON.stringify(out,null,2)+'\n','utf8');
+          fs.writeFileSync(process.env.OUT_DIR+'/staged-product.json',JSON.stringify({testedTargetHeadSha:process.env.TESTED_TARGET,buildId:build,aggregateSha256:lock.aggregateSha256,publicDirectory:out.hosting.public},null,2)+'\n');
+          NODE
+          node --check "$PRODUCT_DIR/app/core/build-lock.js"
 
-      - name: Materialize existing service account privately for read-only Hosting API
+      - name: Authenticate existing production target identity
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+
+      - name: Install transient cutover tooling
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase-tools@latest playwright@1.55.0 google-auth-library@9.15.1
+          npx playwright install --with-deps chromium >/dev/null
+
+      - name: Materialize credential privately and preflight canonical Admin smoke principal
         env:
           EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+          CXORBIA_C6_ACTION: C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF
         run: |
           set -euo pipefail
           node <<'NODE'
-          const fs=require('fs');
-          const raw=process.env.EXISTING_DEV_JSON||'';
-          let p=null;try{p=JSON.parse(raw);}catch{}
-          if(!(p&&p.type==='service_account'&&p.project_id===process.env.GCP_PROJECT_ID&&p.client_email&&p.private_key))throw new Error('M9_CREDENTIAL_SECRET_INVALID');
+          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw);}catch{}
+          if(!(p&&p.type==='service_account'&&p.project_id===process.env.GCP_PROJECT_ID&&p.client_email&&p.private_key))throw new Error('M9_CUTOVER_CREDENTIAL_SECRET_INVALID');
           fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
           NODE
+          export GOOGLE_APPLICATION_CREDENTIALS="${GITHUB_WORKSPACE}/${PRIVATE_DIR}/credentials.json"
+          export CXORBIA_EXPECTED_PROJECT="$GCP_PROJECT_ID"
+          export CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E"
+          export PRIVATE_DIR="$PRIVATE_DIR"
+          export OUT_DIR="$OUT_DIR"
+          node tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs > "$OUT_DIR/credential-selection-staff.source-safe.json"
+          node -e "const a=require('./'+process.env.OUT_DIR+'/credential-selection-staff.source-safe.json');const p=require('./'+process.env.PRIVATE_E2E);if(a.decision!=='PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY'||a.canonicalTargetAlias!=='B'||a.staffRole!=='admin'||a.exactWriteCanonical!==true||a.legacyCredentialBundleUsed!==false||a.valuesExported!==false)throw new Error('M9_CUTOVER_CANONICAL_ADMIN_PREFLIGHT_NOT_PASS');if(!p?.staff?.login||!p?.staff?.password||p?.shopper||p?.client)throw new Error('M9_CUTOVER_PRIVATE_ADMIN_BUNDLE_INVALID');"
+          chmod 600 "$PRIVATE_E2E"
 
-      - name: Execute M9 provider pre-cutover read-only gate
-        id: m9
-        continue-on-error: true
+      - name: Guard captured release has not drifted before promotion
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/m9-provider-precutover/private/credentials.json
-          CXORBIA_M9_ACTION: ${{ env.M9_ACTION }}
-          CXORBIA_M9_CONTRACT: ${{ env.CONTRACT_FILE }}
-          CXORBIA_PRODUCTION_PROMOTION_CONTRACT: ${{ env.PROMOTION_FILE }}
-          CXORBIA_M9_OUTPUT: .tmp/m9-provider-precutover/report.json
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/m9-production-cutover/private/credentials.json
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');const {GoogleAuth}=require('google-auth-library');
+          (async()=>{const auth=new GoogleAuth({keyFile:process.env.GOOGLE_APPLICATION_CREDENTIALS,scopes:['https://www.googleapis.com/auth/firebase.hosting']});const client=await auth.getClient();const url=`https://firebasehosting.googleapis.com/v1beta1/sites/${process.env.HOSTING_SITE}/releases?pageSize=20`;const r=await client.request({url,method:'GET'});const rel=(r.data.releases||[]).filter(x=>x.releaseTime).sort((a,b)=>Date.parse(b.releaseTime)-Date.parse(a.releaseTime))[0];if(!rel||rel.name!==process.env.PRECUTOVER_RELEASE||rel.version?.name!==process.env.ROLLBACK_VERSION)throw new Error('M9_CUTOVER_PRECUTOVER_RELEASE_DRIFT');fs.writeFileSync(process.env.OUT_DIR+'/predeploy-live-release.json',JSON.stringify({releaseName:rel.name,versionName:rel.version?.name,releaseTime:rel.releaseTime},null,2)+'\n');})().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+
+      - name: Execute single production promotion, immediate smoke, conditional rollback
+        id: cutover
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/m9-production-cutover/private/credentials.json
+          CXORBIA_M8_ACTION: M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY
+          CXORBIA_DEV_ROOT_URL: ${{ env.ROOT_URL }}
+          CXORBIA_E2E_PRIVATE_CREDENTIALS: ${{ env.PRIVATE_E2E }}
+          CXORBIA_M8_OUTPUT_DIR: .tmp/m9-production-cutover/smoke
+          CXORBIA_M8_OUTPUT: .tmp/m9-production-cutover/smoke/report.json
         run: |
           set +e
-          node tools/qa/tya-m9-provider-precutover-readiness-readonly.mjs
-          code=$?
-          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          : > "$OUT_DIR/execution.log"
+          echo 0 > "$OUT_DIR/promotion-count"
+          echo 0 > "$OUT_DIR/rollback-count"
+
+          npx firebase deploy --config "$CUTOVER_CONFIG" --only "hosting:$HOSTING_TARGET" --project "$GCP_PROJECT_ID" --non-interactive >> "$OUT_DIR/execution.log" 2>&1
+          deploy_code=$?
+          if [ "$deploy_code" -eq 0 ]; then echo 1 > "$OUT_DIR/promotion-count"; fi
+
+          export DEPLOY_CODE="$deploy_code"
+          node <<'NODE'
+          const fs=require('fs');const {GoogleAuth}=require('google-auth-library');
+          (async()=>{const auth=new GoogleAuth({keyFile:process.env.GOOGLE_APPLICATION_CREDENTIALS,scopes:['https://www.googleapis.com/auth/firebase.hosting']});const client=await auth.getClient();const url=`https://firebasehosting.googleapis.com/v1beta1/sites/${process.env.HOSTING_SITE}/releases?pageSize=20`;const r=await client.request({url,method:'GET'});const rel=(r.data.releases||[]).filter(x=>x.releaseTime).sort((a,b)=>Date.parse(b.releaseTime)-Date.parse(a.releaseTime))[0]||null;fs.writeFileSync(process.env.OUT_DIR+'/postdeploy-live-release.json',JSON.stringify({deployCode:Number(process.env.DEPLOY_CODE),releaseName:rel?.name||null,versionName:rel?.version?.name||null,releaseTime:rel?.releaseTime||null,changedFromPreCutover:rel?.name!==process.env.PRECUTOVER_RELEASE},null,2)+'\n');})().catch(e=>{console.error(e);process.exit(1)});
+          NODE
+          capture_code=$?
+
+          smoke_code=99
+          if [ "$deploy_code" -eq 0 ] && [ "$capture_code" -eq 0 ]; then
+            node tools/qa/tya-m8-human-validation-rollback-ready-browser-v2.mjs "$ROOT_URL" >> "$OUT_DIR/execution.log" 2>&1
+            smoke_code=$?
+          fi
+
+          needs_rollback=0
+          if [ "$smoke_code" -ne 0 ]; then
+            post_changed=$(node -e "const r=require('./'+process.env.OUT_DIR+'/postdeploy-live-release.json');process.stdout.write(r.changedFromPreCutover?'1':'0')" 2>/dev/null || echo 0)
+            if [ "$deploy_code" -eq 0 ] || [ "$post_changed" = "1" ]; then needs_rollback=1; fi
+          fi
+
+          rollback_code=0
+          if [ "$needs_rollback" -eq 1 ]; then
+            node <<'NODE'
+            const fs=require('fs');const {GoogleAuth}=require('google-auth-library');
+            (async()=>{const auth=new GoogleAuth({keyFile:process.env.GOOGLE_APPLICATION_CREDENTIALS,scopes:['https://www.googleapis.com/auth/firebase.hosting']});const client=await auth.getClient();const parent=`sites/${process.env.HOSTING_SITE}`;const url=`https://firebasehosting.googleapis.com/v1beta1/${parent}/releases?versionName=${encodeURIComponent(process.env.ROLLBACK_VERSION)}`;const r=await client.request({url,method:'POST',data:{}});fs.writeFileSync(process.env.OUT_DIR+'/rollback-release-create.json',JSON.stringify({name:r.data?.name||null,type:r.data?.type||null,versionName:r.data?.version?.name||process.env.ROLLBACK_VERSION},null,2)+'\n');})().catch(e=>{console.error(e);process.exit(1)});
+            NODE
+            rollback_code=$?
+            if [ "$rollback_code" -eq 0 ]; then echo 1 > "$OUT_DIR/rollback-count"; fi
+            sleep 2
+            node <<'NODE'
+            const fs=require('fs');const {GoogleAuth}=require('google-auth-library');
+            (async()=>{const auth=new GoogleAuth({keyFile:process.env.GOOGLE_APPLICATION_CREDENTIALS,scopes:['https://www.googleapis.com/auth/firebase.hosting']});const client=await auth.getClient();const url=`https://firebasehosting.googleapis.com/v1beta1/sites/${process.env.HOSTING_SITE}/releases?pageSize=20`;const r=await client.request({url,method:'GET'});const rel=(r.data.releases||[]).filter(x=>x.releaseTime).sort((a,b)=>Date.parse(b.releaseTime)-Date.parse(a.releaseTime))[0];const ok=rel?.version?.name===process.env.ROLLBACK_VERSION;fs.writeFileSync(process.env.OUT_DIR+'/rollback-verification.json',JSON.stringify({verified:ok,releaseName:rel?.name||null,versionName:rel?.version?.name||null},null,2)+'\n');if(!ok)throw new Error('M9_CUTOVER_ROLLBACK_VERSION_NOT_RESTORED');})().catch(e=>{console.error(e);process.exit(1)});
+            NODE
+            rollback_verify_code=$?
+            if [ "$rollback_verify_code" -ne 0 ]; then rollback_code="$rollback_verify_code"; fi
+          fi
+
+          echo "deploy_code=$deploy_code" >> "$GITHUB_OUTPUT"
+          echo "capture_code=$capture_code" >> "$GITHUB_OUTPUT"
+          echo "smoke_code=$smoke_code" >> "$GITHUB_OUTPUT"
+          echo "needs_rollback=$needs_rollback" >> "$GITHUB_OUTPUT"
+          echo "rollback_code=$rollback_code" >> "$GITHUB_OUTPUT"
           exit 0
 
-      - name: Build sanitized M9 summary
+      - name: Build sanitized cutover summary
         if: always()
         env:
-          M9_EXIT_CODE: ${{ steps.m9.outputs.exit_code }}
+          DEPLOY_CODE: ${{ steps.cutover.outputs.deploy_code }}
+          CAPTURE_CODE: ${{ steps.cutover.outputs.capture_code }}
+          SMOKE_CODE: ${{ steps.cutover.outputs.smoke_code }}
+          NEEDS_ROLLBACK: ${{ steps.cutover.outputs.needs_rollback }}
+          ROLLBACK_CODE: ${{ steps.cutover.outputs.rollback_code }}
         run: |
           node <<'NODE'
-          const fs=require('fs');
-          const read=p=>fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):null;
-          const authorization=read(process.env.OUT_DIR+'/authorization.json');
-          const sourcePreflight=read(process.env.OUT_DIR+'/source-preflight.json');
-          const provider=read(process.env.OUT_DIR+'/report.json');
-          const pass=String(process.env.M9_EXIT_CODE||'1')==='0'
-            &&provider?.decision==='PASS_M9_PROVIDER_PRECUTOVER_READINESS_READONLY'
-            &&provider?.preCutoverRelease?.versionStatus==='FINALIZED'
-            &&provider?.rollbackReadiness?.status==='READY_CAPTURED_FINALIZED_VERSION_PROVIDER_METHOD_VERIFIED'
-            &&provider?.rollbackReadiness?.executionAuthorized===false
-            &&provider?.safety?.providerWrites===0
-            &&provider?.safety?.productionMutation===false
-            &&sourcePreflight?.decision==='PASS_PRODUCTION_PROMOTION_CONTRACT_EXISTING_CLEAN_PROJECT';
-          const summary={
-            schemaVersion:'cxorbia.m9.provider-precutover.final-run.v1',generatedAt:new Date().toISOString(),
-            decision:pass?'PASS_M9_PROVIDER_PRECUTOVER_READINESS_READONLY':'FAIL_M9_PROVIDER_PRECUTOVER_READINESS_READONLY',
-            authorization,sourcePreflight,provider,
-            phaseA:{entryPercent:96,m9PointsCertifiedNow:0,certifiedPercent:96,remainingPercent:4,m9State:pass?'PRECUTOVER_READY_AWAITING_EXPLICIT_PROMOTION_GATE':'PRECUTOVER_NOT_READY'},
-            next:pass?'M9_EXPLICIT_CUTOVER_ONE_PRODUCTION_PROMOTION_REQUIRES_NEW_EXPLICIT_GATE':'M9_STOP_BEFORE_PRODUCTION',
-            safety:{hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,rollbackExecution:false,productionMutation:false,merge:false,credentialsExposed:false,tokensExposed:false}
-          };
+          const fs=require('fs');const read=p=>fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):null;
+          const authorization=read(process.env.OUT_DIR+'/authorization.json');const staged=read(process.env.OUT_DIR+'/staged-product.json');const pre=read(process.env.OUT_DIR+'/predeploy-live-release.json');const post=read(process.env.OUT_DIR+'/postdeploy-live-release.json');const smoke=read(process.env.OUT_DIR+'/smoke/report.json');const rollback=read(process.env.OUT_DIR+'/rollback-verification.json');
+          const promotionCount=Number(fs.existsSync(process.env.OUT_DIR+'/promotion-count')?fs.readFileSync(process.env.OUT_DIR+'/promotion-count','utf8').trim():0);const rollbackCount=Number(fs.existsSync(process.env.OUT_DIR+'/rollback-count')?fs.readFileSync(process.env.OUT_DIR+'/rollback-count','utf8').trim():0);
+          const deployCode=Number(process.env.DEPLOY_CODE||99),captureCode=Number(process.env.CAPTURE_CODE||99),smokeCode=Number(process.env.SMOKE_CODE||99),needsRollback=Number(process.env.NEEDS_ROLLBACK||0),rollbackCode=Number(process.env.ROLLBACK_CODE||0);
+          const smokePass=smokeCode===0&&smoke?.decision==='PASS_M8_HUMAN_BROWSER_LIVE_HR_RECONCILIATION_READONLY'&&smoke?.liveHr?.latestPeriod==='2026-08'&&Number(smoke?.liveHr?.duplicateVisitKeys||0)===0&&Number(smoke?.liveHr?.duplicateShopperIds||0)===0&&Array.isArray(smoke?.routes)&&smoke.routes.length===7&&smoke?.principal?.role==='admin'&&smoke?.principal?.membershipVerified===true&&smoke?.confidentialityGate?.consentRecordedByQa===false&&smoke?.safety?.providerWrites===0;
+          const exactBuild=smoke?.sourceLock?.buildId===process.env.EXPECTED_BUILD_ID&&smoke?.sourceLock?.aggregateSha256===process.env.EXPECTED_AGGREGATE_SHA;
+          const pass=deployCode===0&&captureCode===0&&promotionCount===1&&post?.changedFromPreCutover===true&&smokePass&&needsRollback===0&&rollbackCount===0&&staged?.buildId===process.env.EXPECTED_BUILD_ID&&staged?.aggregateSha256===process.env.EXPECTED_AGGREGATE_SHA&&exactBuild;
+          let decision='FAIL_M9_EXPLICIT_CUTOVER_ONE_PRODUCTION_PROMOTION';
+          if(pass)decision='PASS_M9_EXPLICIT_CUTOVER_ONE_PRODUCTION_PROMOTION';
+          else if(needsRollback===1&&rollbackCount===1&&rollbackCode===0&&rollback?.verified===true)decision='ROLLBACK_EXECUTED_AFTER_M9_IMMEDIATE_SMOKE_FAILURE';
+          const summary={schemaVersion:'cxorbia.m9.explicit-production-cutover.final-run.v1',generatedAt:new Date().toISOString(),decision,authorization,stagedProduct:staged,preCutoverRelease:pre,postPromotionRelease:post,immediateSmoke:smoke,rollback:{needed:needsRollback===1,executed:rollbackCount===1,verification:rollback},counts:{productionPromotions:promotionCount,conditionalRollbacks:rollbackCount,secondPromotionAttempts:0},phaseA:{entryPercent:96,m9Points:pass?3:0,certifiedPercent:pass?99:96,remainingPercent:pass?1:4},next:pass?'M10_POST_CUTOVER_SMOKE_FREEZE_FINAL':'M9_STOP_NO_SECOND_PROMOTION',safety:{cloudRunDeploys:0,authWrites:0,firestoreWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,credentialsExposed:false,tokensExposed:false}};
           fs.writeFileSync(process.env.OUT_DIR+'/summary.json',JSON.stringify(summary,null,2)+'\n','utf8');
           NODE
 
-      - name: Remove private credential before artifact
+      - name: Remove private material and ephemeral deploy config
         if: always()
         run: |
-          rm -rf "$PRIVATE_DIR"
-          test ! -e "$PRIVATE_DIR/credentials.json"
+          rm -rf "$PRIVATE_DIR" .firebase
+          rm -f "$CUTOVER_CONFIG" firebase-debug.log
+          test ! -e "$PRIVATE_E2E"
 
       - name: Capture repository delta evidence
         if: always()
@@ -165,17 +272,17 @@ jobs:
           git diff --name-status > "$OUT_DIR/repository-status/tracked-delta.txt"
           git ls-files --others --exclude-standard > "$OUT_DIR/repository-status/untracked.txt"
 
-      - name: Upload sanitized M9 pre-cutover evidence
+      - name: Upload sanitized M9 cutover evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-m9-provider-precutover-${{ github.run_id }}
+          name: cxorbia-m9-production-cutover-${{ github.run_id }}
           path: |
-            .tmp/m9-provider-precutover
+            .tmp/m9-production-cutover
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 30
 
-      - name: Assert M9 provider pre-cutover PASS
+      - name: Assert M9 cutover outcome
         if: always()
         run: |
-          node -e "const r=require('./.tmp/m9-provider-precutover/summary.json');if(r.decision!=='PASS_M9_PROVIDER_PRECUTOVER_READINESS_READONLY')throw new Error('M9_PRECUTOVER_NOT_PASS:'+JSON.stringify({decision:r.decision,error:r.provider?.error||null}));console.log(JSON.stringify({decision:r.decision,phaseA:r.phaseA,next:r.next,release:r.provider?.preCutoverRelease?.releaseName,version:r.provider?.preCutoverRelease?.versionName}));"
+          node -e "const r=require('./.tmp/m9-production-cutover/summary.json');if(r.decision!=='PASS_M9_EXPLICIT_CUTOVER_ONE_PRODUCTION_PROMOTION')throw new Error('M9_CUTOVER_NOT_PASS:'+JSON.stringify({decision:r.decision,counts:r.counts,rollback:r.rollback}));console.log(JSON.stringify({decision:r.decision,phaseA:r.phaseA,next:r.next,counts:r.counts,release:r.postPromotionRelease}));"
