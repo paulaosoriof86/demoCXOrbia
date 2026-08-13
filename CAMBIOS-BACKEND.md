@@ -9,20 +9,9 @@ Se ejecutó el one-shot autorizado `HOSTING_RUNTIME_ONCE` para `C6_LIVE_USER_ADM
 
 ## Resultado Runtime 12 — PASS
 
-Request `c6-live-user-admin-membership-runtime-proof-20260812-12` → commit `51e7a5e814bcb5e31c3cf06c81b358e65d918868` → run `31658676280` / job `94318658180` / artifact `9165383310` / digest `sha256:a327b0d5e0a592d41417dce7ff934984ab51d3d5927dbee9ba774200eee5befe`.
+Run `31658676280`, job `94318658180`, artifact `9165383310`, digest `sha256:a327b0d5e0a592d41417dce7ff934984ab51d3d5927dbee9ba774200eee5befe`.
 
-Decisión artifact: `PASS_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME`.
-
-PASS demostrado:
-- `PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT` v4;
-- selector canónico `canonicalTargetAlias=B`, `staffRole=admin`;
-- `exactWriteCanonical=true`, `legacyCredentialBundleUsed=false`;
-- Hosting DEV físico **1/1** y remote parity exact=true;
-- Firebase Auth/contexto `admin/staff/tya/cinepolis`;
-- membership `tenants/tya/users/self` verificada y persistida después de `CX.app.enter()`;
-- runtime de datos **15 periodos / 660 visitas / 197 shoppers**, `2025-06 → 2026-08`;
-- frontend handoff `entered`;
-- primera carga + **3 reloads + new-tab PASS**.
+PASS: B/admin canónico; Hosting DEV 1/1; remote parity exact=true; Auth/contexto `admin/staff/tya/cinepolis`; membership `tenants/tya/users/self` persistida después de `CX.app.enter()`; 15 periodos / 660 visitas / 197 shoppers; frontend `entered`; primera carga + 3 reloads + new-tab PASS.
 
 ## Seguridad
 
@@ -34,14 +23,6 @@ Nuevos Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes=0; segundo Hosti
 
 **TOTAL CERTIFICADO=93% | RESTANTE=7% | DELTA CERTIFICADO RUNTIME 12=+5%.**
 
-## Siguiente frontera exacta
+## Siguiente frontera
 
-`M8 → M9 → M10`. No reabrir C6/M7 ni gates cerrados sin drift reproducible. Resolver los contratos exactos de los milestones restantes desde fuentes vigentes antes de cualquier provider/write/deploy/merge/producción.
-
-## Clasificación
-
-- **Reusable CXOrbia:** membership/RBAC persistente a través de entrada/reloads/new-tab.
-- **Exclusivo cliente:** TyA DEV B/admin.
-- **Claude/prototipo:** sin ajuste frontend.
-- **Academia:** cadena Staff real certificada.
-- **Sin impacto Claude:** QA/evidencia/backend.
+M8 → M9 → M10. No reabrir C6/M7 ni gates cerrados sin drift reproducible; resolver alcance exacto desde fuentes vigentes.
