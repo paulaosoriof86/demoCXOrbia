@@ -13,57 +13,20 @@ Request `c6-live-user-admin-membership-runtime-proof-20260812-12` → commit `51
 
 Decisión artifact: `PASS_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME`.
 
-PASS demostrado:
-- `PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT` v4;
-- `hostingExecuteBashSyntax=true`;
-- `hostingExecuteNestedHeredocAbsent=true`;
-- `staffSelectorExactWriteCanonicalAliasB=true`;
-- `membershipRepublishedAfterCanonicalAppEnter=true`;
-- `canonicalAppEnterReused=true`;
-- `directUiMutationAbsent=true`;
-- selector canónico `canonicalTargetAlias=B`, `staffRole=admin`;
-- `exactWriteCanonical=true`, `legacyCredentialBundleUsed=false`;
-- Google Cloud DEV auth;
-- Hosting DEV físico **1/1**;
-- remote parity exact=true, root 302 / canonical 200;
-- Firebase Auth/contexto `admin/staff/tya/cinepolis`;
-- membership `tenants/tya/users/self` verificada y persistida después de `CX.app.enter()`;
-- runtime de datos **15 periodos / 660 visitas / 197 shoppers**, `2025-06 → 2026-08`;
-- frontend handoff `entered`;
-- stale provider empty limpiado;
-- formulario canónico `#loginForm/#lgUser/#lgPass/#lgSubmit`, submit con Enter desde `#lgPass`;
-- primera carga PASS;
-- **3 reloads PASS**;
-- **new-tab PASS**;
-- Shopper/Cliente null dentro del gate Staff y lógica genérica preservada.
+PASS demostrado: preflight Staff v4; B/admin canónico; `exactWriteCanonical=true`; `legacyCredentialBundleUsed=false`; Hosting DEV 1/1; remote parity exact=true; Auth/contexto `admin/staff/tya/cinepolis`; membership `tenants/tya/users/self` verificada y persistida después de `CX.app.enter()`; datos runtime **15 periodos / 660 visitas / 197 shoppers**, `2025-06 → 2026-08`; frontend handoff `entered`; primera carga + **3 reloads + new-tab PASS**.
 
-## Archivos creados/tocados en este cierre
+## Archivos creados/tocados en el cierre
 
-- `backend/config/corte6-dev-root-entrypoint-hosting-execute.json`: request Runtime 12 autorizado/consumido fácticamente por run único; no volver a tocar para evitar retrigger.
-- `app/docs/evidence/c6-live-user-admin-runtime-proof-31658676280.json`: evidencia durable Runtime 12/M7 PASS.
-- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`: estado canónico a 93%.
-- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`: cierre M7 y siguiente M8.
-- `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md`: `M7=5/5`, Phase A 93%.
-- `app/docs/CAMBIOS-BACKEND.md`: este registro.
-- `app/docs/RESUMEN-PARA-CLAUDE.md`: estado backend/prototipo actualizado.
-- `app/docs/PENDIENTES-PROTOTIPO.md`: cierre del pendiente C6/M7.
-- PR #7: título/body deben reflejar Runtime 12 PASS y 93%.
+- `backend/config/corte6-dev-root-entrypoint-hosting-execute.json`: request Runtime 12; no volver a tocar para evitar retrigger.
+- `app/docs/evidence/c6-live-user-admin-runtime-proof-31658676280.json`: evidencia durable.
+- índice/checkpoint/tracker/CAMBIOS/RESUMEN/PENDIENTES y mirrors: actualizados a M7 PASS / Phase A 93%.
+- PR #7: estado debe reflejar Runtime 12 PASS y siguiente M8.
 
-No se modificó `/app/modules`, `/app/core`, UI visual ni interfaz pública de `CX.data` en este cierre documental.
+No se modificó `/app/modules`, `/app/core`, UI visual ni interfaz pública de `CX.data`.
 
 ## Seguridad
 
-- Hosting Runtime 12: **1/1**.
-- Segundo Hosting Runtime 12: `0`.
-- Auth writes nuevos: `0`.
-- Firestore writes nuevos: `0`.
-- HR/Rules/Storage writes: `0`.
-- Make/Gemini/pagos: `0`.
-- Cloud Run deploys: `0`.
-- Segundo Exact Write: `0`.
-- Credenciales/tokens expuestos: `false`.
-- merge: `false`.
-- producción: `false`.
+Hosting Runtime 12=1/1; segundo Hosting=0; nuevos Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes=0; Cloud Run deploys=0; segundo Exact Write=0; credenciales/tokens expuestos=false; merge=false; producción=false.
 
 ## Progreso Phase A
 
@@ -81,7 +44,7 @@ Resolver y ejecutar `M8`, después `M9` y `M10`, utilizando únicamente la defin
 
 ## Clasificación
 
-- **Reusable CXOrbia:** identidad canónica y membership/RBAC deben persistir a través de `CX.app.enter()`, reloads y new-tab.
+- **Reusable CXOrbia:** identidad canónica y membership/RBAC persisten a través de `CX.app.enter()`, reloads y new-tab.
 - **Exclusivo cliente:** TyA DEV `B=admin`, tenant `tya`, proyecto `cinepolis`.
 - **Claude/prototipo:** sin ajuste frontend requerido por Runtime 12.
 - **Academia:** cadena Auth→membership→backend/HR→frontend certificada para Phase A.
