@@ -3,7 +3,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { GoogleAuth } from 'google-auth-library';
 
 const ACTION='M9_PROVIDER_PRECUTOVER_READINESS_READONLY';
 const contractPath=process.env.CXORBIA_M9_CONTRACT||'backend/contracts/m9-provider-precutover-readiness-v1.json';
@@ -15,10 +14,34 @@ const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
 const sha=v=>crypto.createHash('sha256').update(String(v||''),'utf8').digest('hex');
 const git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
 const persist=v=>{fs.mkdirSync(path.dirname(outPath),{recursive:true});fs.writeFileSync(outPath,JSON.stringify(v,null,2)+'\n','utf8');};
-const liveReleaseName=(site,name)=>new RegExp(`^sites/${site.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}/releases/[^/]+$`).test(String(name||''));
+const escapeRx=s=>String(s).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const liveReleaseName=(site,name)=>new RegExp(`^sites/${escapeRx(site)}/releases/[^/]+$`).test(String(name||''));
 const sanitizeUser=u=>u?.email?{emailSha256:sha(String(u.email).toLowerCase())}:null;
+const b64url=v=>Buffer.from(v).toString('base64').replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
 
-const safety={authenticatedProviderGets:0,publicCapabilityGets:0,providerWrites:0,hostingDeploys:0,cloudRunDeploys:0,authWrites:0,firestoreWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,productionMutation:false,credentialsExposed:false,tokensExposed:false};
+async function serviceAccountAccessToken(credential){
+  const now=Math.floor(Date.now()/1000);
+  const header=b64url(JSON.stringify({alg:'RS256',typ:'JWT'}));
+  const payload=b64url(JSON.stringify({iss:credential.client_email,scope:'https://www.googleapis.com/auth/firebase.hosting',aud:'https://oauth2.googleapis.com/token',iat:now,exp:now+3600}));
+  const unsigned=`${header}.${payload}`;
+  const signature=crypto.sign('RSA-SHA256',Buffer.from(unsigned),credential.private_key);
+  const assertion=`${unsigned}.${b64url(signature)}`;
+  const body=new URLSearchParams({grant_type:'urn:ietf:params:oauth:grant-type:jwt-bearer',assertion});
+  const response=await fetch('https://oauth2.googleapis.com/token',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body});
+  ensure(response.ok,'M9_OAUTH_TOKEN_EXCHANGE_FAILED_'+response.status);
+  const json=await response.json();
+  ensure(typeof json.access_token==='string'&&json.access_token.length>40,'M9_OAUTH_ACCESS_TOKEN_INVALID');
+  return json.access_token;
+}
+
+async function providerGet(url,token,safety){
+  const r=await fetch(url,{method:'GET',headers:{authorization:`Bearer ${token}`}});
+  safety.authenticatedProviderGets++;
+  if(!r.ok){const body=(await r.text()).slice(0,800);throw new Error(`M9_PROVIDER_GET_FAILED_${r.status}_${sha(body).slice(0,16)}`);}
+  return r.json();
+}
+
+const safety={oauthTokenExchanges:0,authenticatedProviderGets:0,publicCapabilityGets:0,providerWrites:0,hostingDeploys:0,cloudRunDeploys:0,authWrites:0,firestoreWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,productionMutation:false,credentialsExposed:false,tokensExposed:false};
 let report={schemaVersion:'cxorbia.m9.provider-precutover-readiness.failure.v1',generatedAt:new Date().toISOString(),decision:'FAIL_M9_PROVIDER_PRECUTOVER_READINESS_READONLY',action,safety};
 
 try{
@@ -44,24 +67,21 @@ try{
   const credentialPath=process.env.GOOGLE_APPLICATION_CREDENTIALS||'';
   ensure(credentialPath&&fs.existsSync(credentialPath),'M9_GOOGLE_CREDENTIAL_MISSING');
   const credential=read(credentialPath);
-  ensure(credential.type==='service_account'&&credential.project_id===c.production.firebaseProjectId,'M9_GOOGLE_CREDENTIAL_PROJECT_INVALID');
-  const auth=new GoogleAuth({keyFile:credentialPath,scopes:['https://www.googleapis.com/auth/firebase.hosting']});
-  const client=await auth.getClient();
+  ensure(credential.type==='service_account'&&credential.project_id===c.production.firebaseProjectId&&credential.client_email&&credential.private_key,'M9_GOOGLE_CREDENTIAL_PROJECT_INVALID');
+  const token=await serviceAccountAccessToken(credential);
+  safety.oauthTokenExchanges++;
   const site=c.production.hostingSite;
   const base='https://firebasehosting.googleapis.com/v1beta1';
 
-  const listResp=await client.request({url:`${base}/sites/${encodeURIComponent(site)}/releases?pageSize=100`,method:'GET'});
-  safety.authenticatedProviderGets++;
-  const releases=Array.isArray(listResp.data?.releases)?listResp.data.releases:[];
+  const listData=await providerGet(`${base}/sites/${encodeURIComponent(site)}/releases?pageSize=100`,token,safety);
+  const releases=Array.isArray(listData?.releases)?listData.releases:[];
   const live=releases.filter(r=>liveReleaseName(site,r?.name)&&r?.releaseTime).sort((a,b)=>Date.parse(b.releaseTime)-Date.parse(a.releaseTime));
   ensure(live.length>0,'M9_NO_LIVE_HOSTING_RELEASE_FOUND');
   const current=live[0];
   const versionName=String(current?.version?.name||'');
-  ensure(new RegExp(`^sites/${site.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}/versions/[^/]+$`).test(versionName),'M9_CURRENT_RELEASE_VERSION_INVALID');
+  ensure(new RegExp(`^sites/${escapeRx(site)}/versions/[^/]+$`).test(versionName),'M9_CURRENT_RELEASE_VERSION_INVALID');
 
-  const versionResp=await client.request({url:`https://firebasehosting.googleapis.com/v1beta1/${versionName}`,method:'GET'});
-  safety.authenticatedProviderGets++;
-  const version=versionResp.data||{};
+  const version=await providerGet(`https://firebasehosting.googleapis.com/v1beta1/${versionName}`,token,safety);
   ensure(version.name===versionName&&version.status==='FINALIZED','M9_PRECUTOVER_VERSION_NOT_FINALIZED');
 
   const discovery=await fetch('https://firebasehosting.googleapis.com/$discovery/rest?version=v1beta1');
@@ -95,7 +115,7 @@ try{
     mechanism:'create a new live-site release referring to the captured same-site finalized version',
     method:create.httpMethod,
     discoveryPathTemplate:create.path,
-    versionNameParameterRequired:Boolean(create.parameters.versionName?.required),
+    versionNameParameterPresent:true,
     capturedRollbackVersionName:versionName,
     capturedPreCutoverReleaseName:current.name,
     executionAuthorized:false,
