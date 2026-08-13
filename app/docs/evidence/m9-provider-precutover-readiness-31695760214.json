@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "cxorbia.m9.provider-precutover.durable-evidence.v1",
+  "generatedAt": "2026-08-13T11:30:05Z",
+  "milestone": "M9",
+  "state": "PRECUTOVER_READY_AWAITING_EXPLICIT_PROMOTION_GATE",
+  "decision": "PASS_M9_PROVIDER_PRECUTOVER_READINESS_READONLY",
+  "phaseA": {
+    "entryPercent": 96,
+    "m9PointsCertifiedNow": 0,
+    "certifiedPercent": 96,
+    "remainingPercent": 4,
+    "reason": "M9 remains open until the explicitly gated production promotion passes"
+  },
+  "execution": {
+    "requestId": "m9-provider-precutover-readiness-20260813-01",
+    "requestCommitSha": "e444298f65504d3a4bf16366e7548be55d06ce12",
+    "targetHeadSha": "a6463030019efa8311406a433f8717ce24be3e24",
+    "workflowRunId": 31695760214,
+    "jobId": 94433057739,
+    "artifactId": 9179228696,
+    "artifactDigest": "sha256:83233d83fa56e3ca1f1afb437fccdce16fd368efbb362e0ffb1db51afede95c1"
+  },
+  "promotionStrategy": "PROMOTE_EXISTING_CLEAN_PROJECT",
+  "productionTarget": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "hostingTarget": "cxorbia-dev",
+    "hostingSite": "cxorbia-backend-dev",
+    "cloudRunService": "cxorbia-live-hr-dev",
+    "cloudRunRegion": "us-central1"
+  },
+  "sourceBinding": {
+    "m8Decision": "PASS_M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY",
+    "m8TargetHeadSha": "62edaf552c2a62a8964671f691d600a417ae63f8",
+    "buildId": "ecc725866acc3eb8",
+    "aggregateSha256": "ecc725866acc3eb8aab292000be3ec31d1c46b5c14a53c8889fa7d6716a997e2",
+    "runtimeChangesAfterM8": []
+  },
+  "preCutoverRelease": {
+    "site": "cxorbia-backend-dev",
+    "releaseName": "sites/cxorbia-backend-dev/releases/1786585552096000",
+    "releaseId": "1786585552096000",
+    "releaseTime": "2026-08-13T01:45:52.096Z",
+    "releaseType": "DEPLOY",
+    "versionName": "sites/cxorbia-backend-dev/versions/a9670bb8a19862cd",
+    "versionId": "a9670bb8a19862cd",
+    "versionStatus": "FINALIZED",
+    "versionCreateTime": "2026-08-13T01:45:47.656461Z",
+    "versionFinalizeTime": "2026-08-13T01:45:52.168296Z",
+    "versionFileCount": "2927",
+    "versionBytes": "5940881",
+    "versionLabels": {
+      "deployment-tool": "cli-firebase"
+    }
+  },
+  "rollbackReadiness": {
+    "status": "READY_CAPTURED_FINALIZED_VERSION_PROVIDER_METHOD_VERIFIED",
+    "provider": "Firebase Hosting REST v1beta1",
+    "mechanism": "create a new live-site release referring to the captured same-site finalized version",
+    "capturedRollbackVersionName": "sites/cxorbia-backend-dev/versions/a9670bb8a19862cd",
+    "capturedPreCutoverReleaseName": "sites/cxorbia-backend-dev/releases/1786585552096000",
+    "executionAuthorized": false,
+    "executed": false,
+    "guessedCommandUsed": false
+  },
+  "safety": {
+    "oauthTokenExchanges": 1,
+    "authenticatedProviderGets": 2,
+    "publicCapabilityGets": 1,
+    "providerWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "rollbackExecution": false,
+    "productionMutation": false,
+    "merge": false,
+    "credentialsExposed": false,
+    "tokensExposed": false
+  },
+  "next": "M9_EXPLICIT_CUTOVER_ONE_PRODUCTION_PROMOTION_REQUIRES_NEW_EXPLICIT_GATE"
+}
