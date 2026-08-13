@@ -1,30 +1,20 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-13 12:24 -06:00
-**Estado:** `OWNER_VISIBLE_DEV_LAB_HOSTED__VISUAL_ACCEPTANCE_PENDING`
+**Última actualización:** 2026-08-13 12:38 -06:00
+**Estado:** `HUMAN_SHOPPER_P0__OWNER_ACCEPTANCE_REJECTED`
 
-La calificación técnica DEV M1–M10 está completa y el laboratorio visible pre-go-live ya está publicado en Hosting DEV. El go-live real TyA todavía no está completado.
+La calificación técnica DEV permanece preservada, pero la aceptación funcional humana fue rechazada.
 
-## Ya no pendiente
+## Pendiente P0 inmediato
 
-- Crear la superficie visible de pruebas: completado.
-- Publicarla en `cxorbia-backend-dev`: completado.
-- Run de Hosting DEV `31730303749`: `SUCCESS`.
-- Bitácora visible PASS/FAIL/BLOCKED: disponible.
-- Lectura HR viva read-only y lectura fresca desde la superficie: disponible.
-- Comprobación de entrypoint/build y módulos críticos: disponible.
-- Aplicación DEV canónica embebida para login y comprobación de sesión/módulos: disponible.
+Paula ingresó con un perfil Shopper real. La navegación Shopper aparece, pero `Mi Perfil` informa que la identidad de la sesión no está vinculada al read model canónico y la vista autenticada no presenta el contexto operacional esperado de HR viva.
 
-## Pendiente inmediato pre-go-live
+Evidencia: `app/docs/evidence/p0-human-shopper-canonical-binding-failure-20260813.json`.
 
-- Paula debe abrir `/dev-validation/index.html` en Hosting DEV y observar la ejecución real.
-- Tras login, comprobar desde la misma superficie rol, tenant TyA, proyecto, período, fuente y módulos visibles.
-- Confirmar que períodos, shoppers, visitas y disponibles representados coincidan con la HR viva observada.
-- Registrar `APROBADO` o una diferencia reproducible.
-- Ejecutar el E2E funcional con datos sintéticos que requiera escrituras solo después de un gate separado de escrituras temporales + cleanup exacto.
-- Validar consistencia cruzada/reload/new-tab dentro de ese E2E cuando sea autorizado.
-- Documentar cualquier hallazgo frontend por archivo/módulo sin parche backend.
+Resolver primero este enlace post-login y repetir la validación humana Shopper. El resultado verde previo del laboratorio no sustituye esta prueba porque comprobaba Hosting, lectura HR y assets, no el comportamiento funcional completo del principal humano autenticado.
 
-Solo después de PASS visual + funcional se prepara un gate separado para reemplazar la plataforma/hosting real vigente de TyA.
+El `0` de visitas disponibles mostrado por el laboratorio queda sin certificar hasta evaluarlo con la semántica canónica de estados.
 
-No crear candidata nueva ni reabrir frontend sin un hallazgo reproducible de la aceptación visual.
+Después del P0: validar Admin/Operaciones, ejecutar el E2E sintético bajo su gate separado y solo entonces evaluar el cutover real TyA.
+
+No crear candidata nueva ni rediseñar frontend. Corregir únicamente la causa reproducible por el carril autorizado.
