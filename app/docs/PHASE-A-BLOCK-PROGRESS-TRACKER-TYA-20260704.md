@@ -1,7 +1,7 @@
 # PHASE A — Tracker TyA
 
-**Actualización:** 2026-08-13 13:29 -06:00
-**Estado:** `DEV_TECHNICAL_QUALIFICATION_100__HUMAN_SHOPPER_P0_OPEN__STOP_RETRY__REAL_CUTOVER_BLOCKED`
+**Actualización:** 2026-08-13 16:16 -06:00
+**Estado:** `DEV_TECHNICAL_QUALIFICATION_100__SHOPPER_P0_SOURCE_FIX_PASS__DEV_REDEPLOY_PENDING`
 
 M1=35 COMPLETE; M2=20 COMPLETE; M3=15 COMPLETE; M4=5 COMPLETE; M5=8/8 COMPLETE; M6=5/5 COMPLETE; M7=5/5 COMPLETE; M8=3/3 COMPLETE; M9=3/3 COMPLETE; M10=1/1 COMPLETE.
 
@@ -10,10 +10,13 @@ M1=35 COMPLETE; M2=20 COMPLETE; M3=15 COMPLETE; M4=5 COMPLETE; M5=8/8 COMPLETE; 
 ## Pre-go-live fuera de M1–M10
 
 - Laboratorio visible DEV: COMPLETE.
-- Aceptación humana Shopper: FAIL/P0.
-- Diagnóstico focal autorizado: FAILED sin resultado persistido; STOP_RETRY aplicado.
-- E2E sintético: pendiente.
+- P0 humano Shopper: reproducido.
+- Reparación source-only del contexto Auth + handoff HR: PASS.
+- Run `31749008509`: SUCCESS, `p0ShopperAuthorityHandoffSource.pass=true`, `p0ShopperExactIdentity.pass=true`, hard fails 0.
+- Deploy DEV del nuevo fix: PENDIENTE DE GATE.
+- Aceptación humana Shopper post-fix: PENDIENTE.
+- Regresión humana Admin/Operaciones/Cliente/Academia: PENDIENTE.
+- E2E sintético con escrituras temporales: PENDIENTE DE GATE SEPARADO.
 - Cutover real: BLOCKED.
 
-Evidencia humana: `app/docs/evidence/p0-human-shopper-canonical-binding-failure-20260813.json`.
-Evidencia de cierre seguro: `app/docs/evidence/p0-human-shopper-readonly-run-failure-31735473752.json`.
+Evidencia vigente: `app/docs/evidence/p0-shopper-canonical-auth-hr-handoff-source-pass-31749008509.json`.
