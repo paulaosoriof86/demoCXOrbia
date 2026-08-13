@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-12 17:58 -06:00  
-**Estado:** `C6_RUNTIME_10_STOP_RETRY_CANONICAL_MEMBERSHIP_RECONCILE_BLOCKED__HOSTING_1_OF_1__PHASE_A_88__NO_PRODUCTION`
+**Fecha:** 2026-08-12 18:36 -06:00  
+**Estado:** `C6_RUNTIME_10_ROOTCAUSE_PROVEN_WRONG_STAFF_CREDENTIAL_LANE__SOURCE_REPAIR_APPLIED__PHASE_A_88__NO_PRODUCTION`
 
 ## Estado vivo
 
@@ -12,86 +12,66 @@
 - Producción: intacta.
 - Phase A certificado: **88%**; restante **12%**.
 
-## One-shot runtime 10
+## Runtime 10 cerrado
 
-Request `c6-live-user-admin-membership-runtime-proof-20260812-10`, target `5ef71ef68634730acd3d1d49e9b311159a38b2c2`, request commit `7d2f2e7b6c161c9d62fa6454c1eac5a74635c42e`.
+Run `31652523820`, job `94299776053`, artifact `9163167746`.
 
-- run: `31652523820`;
-- job: `94299776053`;
-- artifact: `9163167746`;
-- digest: `sha256:be83f65bf5484858fa42844ede9f56f0952bcef06a775fd4244524cc5880799f`.
+PASS antes del fallo: preflight v4, `bash -n`, keyboard submit, Google Cloud DEV auth, source parity, Hosting DEV 1/1, remote parity, contexto `coordinador/staff/tya/cinepolis` y HR viva **15 periodos / 660 visitas / 211 shoppers**. El cierre quedó `membershipVerified=false`, `frontendHandoffStatus=blocked`; STOP_RETRY fue respetado y no hubo segundo intento.
 
-PASS demostrado antes del fallo final:
-- autorización/action/mode exactos;
-- `PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT` **v4**;
-- `bash -n` del shell Hosting exacto: PASS;
-- ausencia de heredoc anidado: PASS;
-- submit canónico mediante Enter desde `#lgPass`: PASS;
-- binding `submit` de `#loginForm`: contrato PASS;
-- contrato membership→authority→frontend y uso de `CX.app.enter()`: source preflight PASS;
-- Google Cloud DEV auth: PASS;
-- selector Staff dedicado: PASS (`coordinador`, Shopper/Cliente=false);
-- source parity: PASS;
-- Hosting DEV: **deploy físico PASS, 1/1 consumido**;
-- remote parity: `PASS_C6_DEV_ROOT_ENTRYPOINT_REMOTE_PARITY`, exact=true, root 302 y canonical 200;
-- formulario canónico sí submitido;
-- contexto autenticado: `coordinador / staff / tya / cinepolis`;
-- autoridad HR viva aplicada: **15 periodos / 660 visitas / 211 shoppers**, `2025-06 → 2026-08`, duplicados de visitas/shoppers=0.
+## Causa raíz demostrada después del STOP_RETRY
 
-## STOP_RETRY y frontera causal exacta disponible
+La membership no estaba siendo probada con la misma identidad canónica reparada por Exact Write V2.
 
-El runtime llegó hasta contexto Auth y autoridad HR, y el handoff reparado sí se ejecutó, pero terminó `blocked`. El snapshot final registró:
+1. Exact Write V2 creó/certificó memberships canónicas para `A=super`, `B=admin`, `C=ops`, `D=ops`.
+2. El selector runtime Staff anterior `tools/qa/cxorbia-c6-existing-staff-admin-e2e-credential.mjs` dependía de `backend/private-inbox/corte6-credential-bundle.enc.json`, calculaba candidatos de contraseña legacy y aceptaba `super/admin/ops/coordinador`.
+3. Runtime 10 reportó `staffRole=coordinador`.
+4. Ese rol no pertenece al conjunto de targets A/B/C/D congelado por Exact Write V2. Por ello el runtime podía autenticar un principal Staff válido y cargar HR, pero no estaba certificado que ese principal tuviera el `tenants/tya/users/{uid}` canónico materializado por Exact Write V2.
 
-- `membershipVerified=false`;
-- `membershipSource=null`;
-- `frontendHandoffStatus=blocked`;
-- `frontendHandoffMembershipVerified=false`;
-- `staleBackendEmpty=true`;
-- `staleCorte4Empty=true`;
-- `appOn=false`;
-- `loginHidden=false`;
-- `dataStatus=ready` y autoridad HR aplicada.
+Causa raíz: `C6_STAFF_RUNTIME_SELECTOR_NOT_BOUND_TO_EXACT_WRITE_CANONICAL_PRINCIPAL`.
 
-Clasificación vigente: `C6_CANONICAL_MEMBERSHIP_RECONCILE_BLOCKED_POST_AUTHORITY__EXACT_SUBCODE_NOT_CAPTURED`.
+## Reparación source-only aplicada
 
-La secuencia source confirma que `finalizeStaffFrontend()` revalida primero la membership; únicamente después limpia stale-empty y llama a `CX.app.enter()`. Por eso el estado observado localiza el fallo antes de la entrada final. Sin embargo, el artifact actual no incluye `CX_C6_LIVE_USER_ADMIN_FRONTEND_HANDOFF.error` ni `CX_C6_LIVE_USER_ADMIN_WIRING.code`, por lo que **no se puede afirmar todavía** cuál subcausa exacta de membership disparó el fail-closed.
+- Nuevo `tools/qa/cxorbia-c6-canonical-staff-admin-e2e-credential.mjs`:
+  - target exacto `B`;
+  - rol `admin`;
+  - visible login desde private handoff vigente;
+  - contraseña efímera regenerada con la misma HKDF del Exact Write V2;
+  - cero bundle legacy/password guessing;
+  - cero provider writes.
+- `tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs` enruta la acción Staff exacta al nuevo selector canónico y conserva la ruta genérica Shopper/Cliente sin cambio.
+- `tools/qa/cxorbia-c6-staff-lane-source-preflight.mjs` v4 quedó reforzado para bloquear cualquier retorno a selector legacy y exigir alias B/admin + handoff privado + derivación Exact Write V2.
 
-No se demostró fallo nuevo de login, Firebase Auth principal, contexto claims, HR, Hosting o remote parity.
+Commits:
+- `41cbdda28ed85531590d6ebe8b73b26751189e4e`;
+- `172d56780b25f749870644db9727a76e2dfd0981`;
+- `670810930de72929407fe0b3c83c78232aa3856c`.
 
-Artifact decisivo: `FAIL_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME`. El `success` exterior del workflow no sustituye el artifact sanitizado.
-
-`STOP_RETRY` aplicado: provider ya había iniciado, por lo que no hubo rerun, segundo request ni segundo Hosting bajo runtime 10.
-
-## Evidencia durable
-
-`app/docs/evidence/c6-live-user-admin-runtime-proof-31652523820.json` documenta el estado completo, la ausencia del subcódigo exacto y el siguiente diagnóstico permitido.
-
-No se modificó source/producto/QA después del STOP_RETRY; únicamente evidencia y documentación de cierre. No se tocó `/app/modules` ni UI visual del prototipo.
+No se tocó `/app/modules`, UI visual, `CX.data` interface ni gates cerrados.
 
 ## Seguridad
 
-- Hosting runtime 10: **1/1 físicamente consumido y deploy PASS**.
-- Nuevos Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes: `0`.
-- Segundo Exact Write: `0`.
-- Segundo intento runtime 10: `0`.
-- Secretos/tokens expuestos: `false`.
-- Merge: `false`.
-- Producción: `false`.
+Desde el STOP_RETRY runtime 10:
+- provider calls nuevos: `0`;
+- Hosting nuevos: `0`;
+- Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes: `0`;
+- segundo Exact Write: `0`;
+- merge: `false`;
+- producción: `false`.
 
 ## Progreso
 
 `M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1`
 
-**Phase A=88% | restante=12% | delta certificado runtime 10=+0%.** M7 no se cierra porque membership→frontend no quedó certificada, aunque preflight v4, Hosting, Auth/contexto, HR authority y remote parity sí están demostrados.
+**Phase A=88% | restante=12%.** El porcentaje no cambia todavía porque M7 exige evidencia runtime real, pero el bloqueo dejó de ser una causa abierta: ya hay causa raíz demostrada y reparación focal aplicada.
 
 ## Siguiente bloque exacto
 
-No repetir Hosting todavía. El siguiente bloque debe ser **source-only, cero provider**, para capturar de forma sanitizada el subcódigo real de `reconcile(ctx)`/handoff (`frontendHandoff.error`, wiring `status/code`, membershipVerified contexto/sesión) y convertir esta frontera en causa raíz reproducible. Con la causa exacta demostrada, corregir source-only y solo después preparar una nueva autorización de provider one-shot. M8 → M9 → M10 no comienzan hasta M7 PASS.
+Único paso productivo restante para M7: nueva autorización explícita de un `HOSTING_RUNTIME_ONCE` Staff bound al HEAD vivo final. Antes de provider, el preflight v4 reforzado debe PASS y el selector debe demostrar `canonicalTargetAlias=B`, `staffRole=admin`, `exactWriteCanonical=true`, `legacyCredentialBundleUsed=false`. Con PASS de la cadena completa y estabilidad 3 reloads/new-tab, cerrar M7 (+5 puntos) y continuar inmediatamente M8 → M9 → M10 sin auditoría general ni reapertura de gates cerrados.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** diagnóstico fail-closed de membership y evidencia de handoff sin inferencias.
-- **Exclusivo cliente:** identidad/membership Staff TyA en DEV.
-- **Claude/prototipo:** cero módulos/UI visual modificados en este cierre.
-- **Academia:** sin cambio de contenido hasta runtime PASS.
-- **Sin impacto Claude:** evidencia/documentación runtime 10.
+- **Reusable CXOrbia:** QA debe usar la misma identidad canónica que materializó el gate de Auth/membership; no credenciales legacy oportunistas.
+- **Exclusivo cliente:** Staff TyA DEV alias B/admin.
+- **Claude/prototipo:** sin cambios UI.
+- **Academia:** sin cambio hasta runtime PASS.
+- **Sin impacto Claude:** selector/preflight/evidencia C6.
