@@ -1,60 +1,57 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-12 17:59 -06:00  
-**Estado:** `C6_RUNTIME_10_STOP_RETRY_MEMBERSHIP_RECONCILE_BLOCKED__PHASE_A_88__NO_MODULE_UI_CHANGE`
+**Última actualización:** 2026-08-12 19:48 -06:00  
+**Estado:** `C6_RUNTIME_12_PASS_M7__PHASE_A_93__NO_FRONTEND_MODULE_CHANGE`
 
 ## Estado vigente
 
-C6 Staff Exact Write V2 permanece cerrado con PASS real. Runtime 10 probó nuevamente la ruta canónica hasta Firebase Auth/contexto Staff y autoridad HR viva, pero la verificación final de membership quedó fail-closed y por ello el shell no entró.
+C6 Staff Exact Write V2 permanece cerrado con PASS real. Runtime 12 cerró además `M7=5/5`: la ruta canónica completa quedó probada con el principal Exact Write V2 `B=admin` desde Firebase Auth y membership hasta HR/frontend, incluyendo persistencia de sesión, tres reloads y nueva pestaña.
 
-## Runtime 10
+**Phase A certificado: 93% / restante: 7%.**
 
-Run `31652523820`, job `94299776053`, artifact `9163167746`, digest `sha256:be83f65bf5484858fa42844ede9f56f0952bcef06a775fd4244524cc5880799f`.
+## Runtime 12 — PASS
+
+Run `31658676280`, job `94318658180`, artifact `9165383310`, digest `sha256:a327b0d5e0a592d41417dce7ff934984ab51d3d5927dbee9ba774200eee5befe`.
 
 PASS:
-- preflight v4 completo antes de provider;
-- `bash -n`, no heredoc anidado, keyboard submit y binding del formulario canónico;
-- Google Cloud DEV + selector Staff `coordinador`;
-- Hosting DEV físico 1/1;
-- remote parity exact=true;
-- login submitido;
-- contexto `coordinador / staff / tya / cinepolis`;
-- HR authority: **15 periodos / 660 visitas / 211 shoppers**, `2025-06 → 2026-08`, duplicados=0.
-
-FAIL final:
-- `membershipVerified=false` y `membershipSource=null`;
-- handoff `blocked`;
-- stale `backendEmpty/corte4Empty=true`;
-- `appOn=false`, `loginHidden=false`.
-
-Frontera causal demostrada: `C6_CANONICAL_MEMBERSHIP_RECONCILE_BLOCKED_POST_AUTHORITY__EXACT_SUBCODE_NOT_CAPTURED`.
-
-El artifact no incluye todavía el error/code exacto de membership; no atribuir el fallo a un campo/regla específica sin esa evidencia.
+- preflight v4 reforzado;
+- selector canónico exacto `B=admin`;
+- `exactWriteCanonical=true`, `legacyCredentialBundleUsed=false`;
+- Hosting DEV 1/1 y remote parity exact=true;
+- Auth/contexto `admin / staff / tya / cinepolis`;
+- membership `tenants/tya/users/self` verificada y preservada después de `CX.app.enter()`;
+- datos runtime **15 periodos / 660 visitas / 197 shoppers**, `2025-06 → 2026-08`;
+- frontend handoff `entered` y stale provider empty limpiado;
+- primera carga PASS;
+- **3 reloads PASS**;
+- **new-tab PASS**;
+- formulario canónico `#loginForm/#lgUser/#lgPass/#lgSubmit`.
 
 ## Frontend / Claude
 
-- **Cero cambio a `/app/modules` o UI visual durante el cierre runtime 10.**
-- No generar nueva candidata.
+- **No se modificó `/app/modules` ni `/app/core` para cerrar Runtime 12.**
+- No se requiere candidata frontend nueva por este gate.
 - Mantener el formulario único `#loginForm/#lgUser/#lgPass/#lgSubmit`.
-- No reintroducir overlays legacy Staff.
-- El adapter C6 sigue siendo el único responsable técnico del handoff membership→authority→`CX.app.enter()`; no debe pintar directamente la UI.
-- No reabrir Exact Write V2, D rebase, Auth340, SKIP13, MultiAuth, HR ni M4/static.
-- `app/modules/cliente-extra.js` y sus pendientes heredados siguen separados; no bloquearon runtime 10.
+- No reintroducir overlays legacy Staff ni credenciales técnicas visibles.
+- Mantener la interfaz exacta de `CX.data`.
+- El adapter backend C6 conserva la membership/RBAC después de `CX.app.enter()` sin mutación directa de UI.
+- No reabrir C6/M7, Exact Write V2, D rebase, Auth340, SKIP13, MultiAuth, HR ni M4/static salvo drift reproducible.
+- Los pendientes frontend heredados continúan separados y no bloquearon M7.
 
 ## Seguridad
 
-Runtime 10: Hosting `1/1` físicamente consumido; nuevos Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes=0; segundo Exact Write=0; segundo intento=0; merge=false; producción=false; secretos/tokens expuestos=false.
+Runtime 12: Hosting `1/1`; segundo Hosting=0; nuevos Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes=0; segundo Exact Write=0; merge=false; producción=false; secretos/tokens expuestos=false.
 
 ## Progreso
 
-`M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1`
+`M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=5/5 | M8=0/3 | M9=0/3 | M10=0/1`
 
-**Phase A=88% | restante=12% | delta certificado runtime 10=+0%.**
+**Phase A=93% | restante=7% | delta certificado Runtime 12=+5%.**
 
 ## Siguiente acción exacta
 
-No hacer otro Hosting a ciegas. Primero source-only/cero provider: capturar de forma sanitizada `frontendHandoff.error`, wiring `status/code` y membershipVerified de contexto/sesión para identificar el subcódigo exacto. Después corregir únicamente la causa probada y volver al one-shot. M8 → M9 → M10 esperan M7 PASS.
+Continuar con M8 → M9 → M10 sin nueva auditoría general. La definición exacta de esos milestones debe recuperarse de las fuentes vigentes antes de pedir o aplicar cambios; no inferirla desde frontend ni reabrir C6.
 
 ## Academia
 
-Sin cambio de contenido funcional todavía. Tras M7 PASS, actualizar manuales/cursos sobre formulario único, rutas por rol, permisos, continuidad de sesión y estados de acceso; no documentar mecanismos QA internos.
+La cadena real `Auth → membership/RBAC → backend/HR → frontend` ya puede documentarse como certificada en DEV para Staff. Manuales/cursos deben describir el formulario único, rutas por rol, permisos y continuidad de sesión; no documentar credenciales, private handoff ni mecanismos internos QA.
