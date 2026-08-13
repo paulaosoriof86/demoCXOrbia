@@ -1,27 +1,32 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-13 13:29 -06:00
-**Estado:** `HUMAN_SHOPPER_P0_OPEN__STOP_RETRY__SECOND_PROVIDER_READ_NOT_AUTHORIZED`
+**Última actualización:** 2026-08-13 16:15 -06:00
+**Estado:** `SHOPPER_P0_SOURCE_FIX_PASS__DEV_REDEPLOY_AND_HUMAN_RETEST_PENDING`
 
-La calificación técnica DEV permanece preservada, pero la aceptación funcional humana está rechazada.
+## P0 vigente
 
-## P0 inmediato
+La causa source-level del bloqueo Shopper quedó corregida y protegida por gate. El portal ahora usa `CX.backendAuth.context()`, espera la autoridad HR y vuelve a renderizar después del handoff final. El diagnóstico DEV distingue el proyecto operativo de los periodos HR y marca Firestore como slice transitorio.
 
-El Shopper real autentica, pero `Mi Perfil` no resuelve la identidad contra el read model canónico y la vista autenticada no carga el contexto HR esperado. Evidencia: `app/docs/evidence/p0-human-shopper-canonical-binding-failure-20260813.json`.
+Evidencia PASS: `app/docs/evidence/p0-shopper-canonical-auth-hr-handoff-source-pass-31749008509.json`.
 
-El único diagnóstico read-only autorizado falló en run `31735473752` sin dejar artifact ni causa raíz persistida. El request fue neutralizado y no se ejecutó segundo intento. Evidencia: `app/docs/evidence/p0-human-shopper-readonly-run-failure-31735473752.json`.
+Workflow `31749008509`: SUCCESS, `hardFails=0`, identidad exacta PASS y handoff Auth/HR PASS.
 
-## Antes de cualquier nuevo provider read
+## Pendiente real inmediato
 
-- Corregir source-only el mecanismo diagnóstico para que capture el error aun si el proceso falla.
-- Separar la recuperación offline del usuario visible Admin B de la lectura del Shopper.
-- Solo si todavía es necesaria otra lectura, solicitar un gate explícito nuevo.
+El fix todavía no está en el Hosting DEV que Paula está visualizando. Falta un nuevo deploy DEV autorizado del HEAD vigente y repetir la prueba humana con el mismo Shopper.
 
-## Después de resolver el P0
+La aceptación debe exigir:
+- identidad y país correctos;
+- histórico real;
+- visitas disponibles según semántica canónica;
+- Reservas & Asignación;
+- Mis Visitas;
+- Academia/Certificación;
+- Mis Beneficios según alcance real;
+- panel DEV mostrando fuente final HR viva + overlay protegido, no el slice Firestore transitorio.
 
-- Repetir validación humana Shopper: perfil, país, histórico, disponibles, reservas/asignación, mis visitas y Academia según alcance.
-- Validar Admin/Operaciones.
-- Ejecutar E2E sintético bajo gate separado.
-- Evaluar cutover real únicamente después de PASS humano y funcional.
+Después se ejecuta regresión humana dirigida Admin/Operaciones/Cliente/Academia sobre el mismo build.
 
-No crear candidata nueva ni rediseñar frontend; no inferir identidades por nombre.
+## No reabrir
+
+No rehacer 340 identidades, no deduplicar por nombre, no reimportar HR, no crear candidata, rama o PR nuevos y no rediseñar módulos sin nueva evidencia reproducible.
