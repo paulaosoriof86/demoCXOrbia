@@ -1,78 +1,35 @@
 {
   "schemaVersion": "cxorbia.m8.human-validation-readonly.request.v1",
-  "requestId": "m8-human-validation-rollback-ready-20260812-03",
+  "requestId": "m8-human-validation-rollback-ready-20260812-04",
   "enabled": true,
   "consumed": false,
   "status": "authorized_execute_once",
   "mode": "READONLY_HUMAN_RUNTIME_ONCE",
   "action": "M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY",
-  "issuedAt": "2026-08-12T23:14:00-06:00",
+  "issuedAt": "2026-08-12T23:28:00-06:00",
   "authorizedBy": "Paula",
-  "authorizationSource": "current_conversation_2026-08-12_continue_same_readonly_M8_scope_after_source_confirmed_test_gate_correction",
+  "authorizationSource": "current_conversation_2026-08-12_continue_same_readonly_M8_scope_capture_exact_visible_shell_root_cause",
   "priorAttempts": [
-    {
-      "requestId": "m8-human-validation-rollback-ready-20260812-01",
-      "workflowRunId": 31668960811,
-      "artifactId": 9168995033,
-      "decision": "FAIL_M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY",
-      "failure": "M8_APP_TREE_DRIFT_FROM_M7_DEPLOYED_PRODUCT",
-      "classification": "SOURCE_GATE_FALSE_POSITIVE_APP_DOCS_ONLY",
-      "browserReached": false,
-      "freshHrReconciliationsReached": 0,
-      "writes": 0,
-      "deploys": 0,
-      "production": false
-    },
-    {
-      "requestId": "m8-human-validation-rollback-ready-20260812-02",
-      "workflowRunId": 31669133417,
-      "artifactId": 9169058995,
-      "decision": "FAIL_M8_HUMAN_VALIDATION_ROLLBACK_READY_READONLY",
-      "failure": "M8_INITIAL_DATA_SOURCE_NOT_READY_CONNECTED",
-      "classification": "TEST_ASSERTION_FALSE_POSITIVE_HUMAN_FULL_VISUAL_DATA_MODE",
-      "sourceConfirmedCause": "The protected HR authority bridge can set dataSource.mode=connected, while tya-live-source-refresh-watch-v2 intentionally sets source_safe_preview in the non-technical human full-visual lane. Both retain status=ready, hr-live sourceRef, runtimeReadActive=true and runtimeSyncActive=false. M8 must validate the live authority, not a race-sensitive presentation mode.",
-      "browserReached": true,
-      "freshHrReconciliationsReached": 0,
-      "writes": 0,
-      "deploys": 0,
-      "production": false
-    }
+    {"requestId":"m8-human-validation-rollback-ready-20260812-01","workflowRunId":31668960811,"artifactId":9168995033,"classification":"SOURCE_GATE_FALSE_POSITIVE_APP_DOCS_ONLY","browserReached":false,"freshHrReconciliationsReached":0,"writes":0,"deploys":0,"production":false},
+    {"requestId":"m8-human-validation-rollback-ready-20260812-02","workflowRunId":31669133417,"artifactId":9169058995,"classification":"TEST_ASSERTION_FALSE_POSITIVE_HUMAN_FULL_VISUAL_DATA_MODE","browserReached":true,"freshHrReconciliationsReached":0,"writes":0,"deploys":0,"production":false},
+    {"requestId":"m8-human-validation-rollback-ready-20260812-03","workflowRunId":31669616621,"artifactId":9169218542,"classification":"VISIBLE_SHELL_NAV_DASHBOARD_NOT_OBSERVED_AFTER_CANONICAL_HANDOFF","browserReached":true,"canonicalLiveHrHealthy":true,"latestPeriod":"2026-08","periods":15,"visits":660,"shoppers":197,"freshHrReconciliationsReached":0,"writes":0,"deploys":0,"production":false}
   ],
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "firebaseProjectId": "cxorbia-backend-dev",
   "devRootUrl": "https://cxorbia-backend-dev.web.app",
-  "targetHeadSha": "e6ce2a53dc14b14c951f31df9245e64762cda524",
+  "targetHeadSha": "a69b01167cd120bde38b25a74a8ed15011a7523e",
   "allowedExecutions": 1,
   "humanBrowserExecutions": 1,
   "freshHrReconciliations": 2,
   "authReadsAllowed": true,
   "firestoreReadsAllowed": true,
   "hrReadsAllowed": true,
-  "expectedPrincipal": {
-    "canonicalTargetAlias": "B",
-    "role": "admin",
-    "authNamespace": "staff",
-    "tenantId": "tya",
-    "projectId": "cinepolis"
-  },
+  "expectedPrincipal": {"canonicalTargetAlias":"B","role":"admin","authNamespace":"staff","tenantId":"tya","projectId":"cinepolis"},
   "requiredLatestPeriod": "2026-08",
-  "requiredRoutes": [
-    "dashboard",
-    "proyectos",
-    "visitas",
-    "postulaciones",
-    "cert",
-    "financiero",
-    "aprendizaje"
-  ],
-  "stableVisitKeyPriority": [
-    "hrRowId",
-    "sourceTab::sourceRow",
-    "visitId",
-    "id"
-  ],
+  "requiredRoutes": ["dashboard","proyectos","visitas","postulaciones","cert","financiero","aprendizaje"],
+  "stableVisitKeyPriority": ["hrRowId","sourceTab::sourceRow","visitId","id"],
   "rollbackReadinessRequired": true,
   "hostingDeploys": 0,
   "cloudRunDeploys": 0,
@@ -90,5 +47,5 @@
   "production": false,
   "containsPii": false,
   "containsSecrets": false,
-  "purpose": "Execute the same M8 read-only human validation after correcting only the QA assertion that falsely required dataSource.mode=connected. Source code proves the human full-visual watcher may intentionally present source_safe_preview while the authenticated protected authority remains live. Validate canonical Admin B, TyA/Cinepolis, live HR through August 2026, all required routes, two fresh read-only HR reconciliations, stable-key duplicate safety, runtime/network evidence and rollback readiness. Zero deploys, zero writes, zero production and zero merge."
+  "purpose": "Continue the already authorized M8 read-only validation without reopening M7. Capture the exact visible shell state after canonical Admin B login and live HR authority. If nav is healthy, continue route checks and two fresh HR reconciliations. If nav is absent, capture whether the shell was replaced, empty-guarded, or simply not mounted and perform only a DOM-only diagnostic router mount to prove localization; do not count diagnostic recovery as PASS. Zero deploys, zero provider writes, zero production and zero merge."
 }
