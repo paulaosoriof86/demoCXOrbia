@@ -1,36 +1,60 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-13 11:18 -06:00
-**Estado:** `DEV_TECHNICAL_QUALIFICATION_100__VISUAL_ACCEPTANCE_PENDING__REAL_TYA_CUTOVER_NOT_EXECUTED`
+**Última actualización:** 2026-08-13 12:24 -06:00
+**Estado:** `OWNER_VISIBLE_DEV_LAB_HOSTED__VISUAL_ACCEPTANCE_PENDING__REAL_TYA_CUTOVER_NOT_EXECUTED`
 
-## Corrección de estado 2026-08-13
+## Bloque ejecutado 2026-08-13 — laboratorio visible pre-go-live
 
-Por corrección explícita de Paula, M9/M10 se reclasifican correctamente como cierre de **calificación técnica del entorno DEV limpio** (`cxorbia-backend-dev` / target Hosting `cxorbia-dev`). No constituyen reemplazo del hosting/plataforma vigente de TyA.
+Se avanzó desde planificación a ejecución real en DEV.
 
-La plataforma actual de TyA no ha sido reemplazada. El cutover real no se ha ejecutado.
+### Archivos creados/tocados
 
-Evidencia de aclaración: `app/docs/evidence/dev-visual-acceptance-clarification-20260813.json`.
+- `app/dev-validation/index.html` — nueva superficie DEV visible de pruebas; commit `0083be8c2be8b0deb15bbe5e7f8f8410f972dbc1`.
+- `backend/config/corte6-dev-root-entrypoint-hosting-execute.json` — request one-shot para publicar el laboratorio exclusivamente en `cxorbia-backend-dev`; commit `68d8af9a4bf6373696b281dbc5a9ac94c2bbfffb`.
+- `app/docs/evidence/owner-visible-dev-validation-lab-20260813.json` — evidencia durable del bloque.
+- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`, `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md` e índice vigente — continuidad.
+
+### Publicación DEV comprobada
+
+Workflow `CXOrbia C6 DEV Root Entrypoint Hosting`:
+- run `31730303749`;
+- job `94548821932`;
+- conclusión `SUCCESS`;
+- artifact `9192996410`;
+- digest `sha256:1302982ffc68e2d9aedf39dafdce0514d70a0f11e362ab3cc5b731c98dab9474`.
+
+El paso `Execute one Hosting deploy and Staff-only runtime gates` terminó `SUCCESS`.
+
+### Qué hace el laboratorio
+
+- Se abre directamente desde Hosting DEV en `/dev-validation/index.html`.
+- Ejecuta y muestra en pantalla `PASS/FAIL/BLOCKED` y bitácora temporal.
+- Lee HR viva en modo read-only; permite forzar lectura fresca con `fresh=1`.
+- Muestra períodos, visitas, shoppers y conteo de disponibles derivado de la lectura actual.
+- Comprueba entrypoint canónico, build/source lock y superficies de Dashboard, Proyectos, Visitas, Postulaciones, Certificación, Finanzas y Academia.
+- Embebe `/index-backend-dev.html` para que Paula pueda iniciar sesión y comprobar el mismo runtime DEV, rol, tenant, proyecto, período, fuente y navegación visible.
+
+### Qué NO se ejecutó
+
+El E2E que requiere escrituras sintéticas temporales no se presenta como completado: queda `BLOCKED_PENDING_SEPARATE_TEMPORARY_WRITE_AND_CLEANUP_GATE`. No se crearon postulaciones, asignaciones, liquidaciones ni pagos de prueba.
 
 ## Evidencia técnica DEV preservada
 
-M9 y M10 siguen siendo PASS válidos dentro de DEV. M10: run `31721769360`, job `94520228757`, artifact `9189626304`, digest `sha256:646c380fdbc53e081fc689335c825c97304ee9354e2913086007897f90edb6f2`.
-
-Build DEV `ecc725866acc3eb8`; release DEV `1786638785456000`; version DEV `cd1e5b7d42cb846b`, `FINALIZED`.
-
-El smoke técnico DEV confirmó Admin canónico, membership, tenant `tya`, proyecto `cinepolis`, 15 periodos, 660 visitas, 197 perfiles protegidos, 211 shoppers de autoridad, histórico 2025-06→2026-08, duplicados=0 y siete rutas. Esto no sustituye la aceptación visual de Paula ni el E2E sintético compartido previo al cutover real.
-
-## Próximo bloque
-
-Ejecutar aceptación visual DEV con Paula observando: tenant/módulos, flujos con datos sintéticos aislados y reconciliación read-only de HR viva, shoppers y visitas disponibles. El cutover real TyA permanece bloqueado hasta ese PASS y un gate posterior separado.
+M1–M10 siguen siendo PASS de calificación técnica DEV. Build calificado `ecc725866acc3eb8`. La publicación del laboratorio no convierte ese 100% en go-live real TyA.
 
 ## Seguridad
 
-Esta corrección documental no ejecutó deploy, provider write, HR/Auth/Firestore/Rules/Storage write, Make, Gemini, pagos, merge ni cutover real.
+- Cero Cloud Run deploy adicional.
+- Cero HR writes.
+- Cero Auth/Firestore/Rules/Storage writes.
+- Cero Make/Gemini/pagos.
+- Cero merge.
+- Cero cutover del dominio/hosting real vigente de TyA.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** separación verificable DEV/pre-go-live vs cutover real y aceptación visual previa.
-- **Exclusivo cliente:** TyA/Cinépolis, shoppers, HR y visitas disponibles.
-- **Claude/prototipo:** hallazgos visuales futuros se documentan, no se parchean desde backend.
-- **Academia:** se validará visibilidad/ruta por rol en aceptación visual.
-- **Sin impacto Claude:** esta corrección documental.
+- **Reusable CXOrbia:** patrón Finanzas de laboratorio visible trasladado a CXOrbia sin copiar lógica financiera.
+- **Exclusivo cliente:** TyA/Cinépolis y reconciliación HR viva.
+- **Claude/prototipo:** no se modificaron `/app/modules` ni `/app/core`; hallazgos visuales se documentarán focalizadamente.
+- **Academia:** se comprueba publicación del módulo y se validará acceso/ruta por rol con Paula.
+- **Sin impacto Claude:** deploy DEV, workflow/evidencia y documentación.
