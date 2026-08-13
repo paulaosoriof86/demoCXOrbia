@@ -1,16 +1,24 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-13 10:42 -06:00
+**Fecha:** 2026-08-13 11:18 -06:00
+**Estado vivo:** `DEV_TECHNICAL_QUALIFICATION_100__OWNER_VISUAL_ACCEPTANCE_PENDING__REAL_TYA_CUTOVER_NOT_EXECUTED`
 
-**Phase A: 100% certificado.**
+## Fuentes vigentes
 
-Fuentes vigentes:
-- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`
-- `app/docs/evidence/m10-final-phase-a-freeze-31721769360.json`
-- `app/docs/evidence/m9-retry-production-pass-31721147260.json`
-- `app/docs/CAMBIOS-BACKEND.md`
-- `app/docs/RESUMEN-PARA-CLAUDE.md`
-- `app/docs/PENDIENTES-PROTOTIPO.md`
-- `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md`
+1. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`
+2. `app/docs/evidence/dev-visual-acceptance-clarification-20260813.json`
+3. `app/docs/evidence/m10-final-phase-a-freeze-31721769360.json`
+4. `app/docs/evidence/m9-retry-production-pass-31721147260.json`
+5. `app/docs/CAMBIOS-BACKEND.md`
+6. `app/docs/RESUMEN-PARA-CLAUDE.md`
+7. `app/docs/PENDIENTES-PROTOTIPO.md`
+8. `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md`
+9. PR #7.
 
-M1–M10 completos. Restante: 0%.
+## Corrección de alcance prevalente
+
+M1–M10 completaron la **calificación técnica del entorno DEV limpio** (`cxorbia-backend-dev` / Hosting target `cxorbia-dev`). Ese 100% no significa que la plataforma actual de TyA haya sido reemplazada ni que el hosting real vigente de TyA haya recibido el cutover.
+
+La plataforma actual de TyA permanece sin reemplazar. El cutover real queda bloqueado hasta completar, con Paula visualizando el DEV, la aceptación funcional con datos sintéticos y la reconciliación read-only de HR viva, shoppers, visitas disponibles, tenant y módulos TyA.
+
+**Estado:** calificación técnica DEV 100%; aceptación visual de propietaria pendiente; cutover real TyA no ejecutado; merge no autorizado.
