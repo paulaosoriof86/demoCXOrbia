@@ -1,14 +1,14 @@
 {
   "schemaVersion": "cxorbia.c6.dev-root-entrypoint-hosting.v1",
-  "requestId": "owner-visible-dev-validation-lab-20260813-01",
+  "requestId": "p0-shopper-identity-fix-dev-deploy-20260813-01",
   "enabled": true,
   "mode": "HOSTING_RUNTIME_ONCE",
   "action": "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF",
   "consumed": false,
   "status": "authorized_execute_once",
-  "issuedAt": "2026-08-13T12:02:00-06:00",
+  "issuedAt": "2026-08-13T14:39:00-06:00",
   "authorizedBy": "Paula",
-  "authorizationSource": "current_conversation_2026-08-13_owner_requested_finanzas_style_live_DEV_hosting_visible_tests",
+  "authorizationSource": "current_conversation_2026-08-13_p0_shopper_fix_dev_hosting_once_remote_readonly_human_validation",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -19,7 +19,7 @@
   "rootPath": "/",
   "canonicalPath": "/index-backend-dev.html",
   "rootRedirectType": 302,
-  "targetHeadSha": "0083be8c2be8b0deb15bbe5e7f8f8410f972dbc1",
+  "targetHeadSha": "d6a8a2e4b890d617aa5f817744445e074f679ed2",
   "allowedExecutions": 1,
   "singleHostingDeployMax": 1,
   "hostingDeployExecutions": 0,
@@ -69,5 +69,5 @@
   "production": false,
   "stopRetryOnFailureAfterProvider": true,
   "sourceOnlyPreProviderRepairAuthorized": false,
-  "purpose": "Publish the owner-visible DEV validation laboratory already committed under app/dev-validation/index.html to cxorbia-backend-dev only, while preserving the canonical Staff read-only Hosting/runtime proof. The page executes visible same-origin checks, live HR read-only reconciliation and module availability without provider writes. Zero Auth, Firestore, HR, Rules, Storage, Make, Gemini or payment writes; no merge, no production and no TyA official-domain cutover."
+  "purpose": "Deploy exactly once to cxorbia-backend-dev Hosting the current P0 Shopper exact-identity and HR-authority reconciliation fix already committed on the live branch. After deploy run only the existing remote read-only runtime gates. Zero Auth, Firestore, HR, Rules, Storage, Make, Gemini or payment writes; no merge, no official TyA domain and no production cutover."
 }
