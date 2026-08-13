@@ -1,60 +1,45 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-12 17:59 -06:00  
-**Estado:** `C6_RUNTIME_10_STOP_RETRY_MEMBERSHIP_RECONCILE_BLOCKED__PHASE_A_88__NO_MODULE_UI_CHANGE`
+**Última actualización:** 2026-08-12 19:48 -06:00  
+**Estado:** `C6_RUNTIME_12_PASS_M7__PHASE_A_93__NO_FRONTEND_MODULE_CHANGE`
 
 ## Estado vigente
 
-C6 Staff Exact Write V2 permanece cerrado con PASS real. Runtime 10 probó nuevamente la ruta canónica hasta Firebase Auth/contexto Staff y autoridad HR viva, pero la verificación final de membership quedó fail-closed y por ello el shell no entró.
+Runtime 12 cerró `M7=5/5` con el principal canónico Exact Write V2 `B=admin`: Firebase Auth → membership/RBAC → backend/HR → frontend, con membership persistida después de `CX.app.enter()`, primera carga, 3 reloads y new-tab PASS.
 
-## Runtime 10
+**Phase A=93% certificado / 7% restante.**
 
-Run `31652523820`, job `94299776053`, artifact `9163167746`, digest `sha256:be83f65bf5484858fa42844ede9f56f0952bcef06a775fd4244524cc5880799f`.
+## Evidencia
 
-PASS:
-- preflight v4 completo antes de provider;
-- `bash -n`, no heredoc anidado, keyboard submit y binding del formulario canónico;
-- Google Cloud DEV + selector Staff `coordinador`;
-- Hosting DEV físico 1/1;
-- remote parity exact=true;
-- login submitido;
-- contexto `coordinador / staff / tya / cinepolis`;
-- HR authority: **15 periodos / 660 visitas / 211 shoppers**, `2025-06 → 2026-08`, duplicados=0.
+Run `31658676280`, job `94318658180`, artifact `9165383310`, digest `sha256:a327b0d5e0a592d41417dce7ff934984ab51d3d5927dbee9ba774200eee5befe`.
 
-FAIL final:
-- `membershipVerified=false` y `membershipSource=null`;
-- handoff `blocked`;
-- stale `backendEmpty/corte4Empty=true`;
-- `appOn=false`, `loginHidden=false`.
-
-Frontera causal demostrada: `C6_CANONICAL_MEMBERSHIP_RECONCILE_BLOCKED_POST_AUTHORITY__EXACT_SUBCODE_NOT_CAPTURED`.
-
-El artifact no incluye todavía el error/code exacto de membership; no atribuir el fallo a un campo/regla específica sin esa evidencia.
+- `B=admin`, `exactWriteCanonical=true`, `legacyCredentialBundleUsed=false`.
+- Hosting DEV 1/1; remote parity exact=true.
+- Contexto `admin/staff/tya/cinepolis`.
+- Membership `tenants/tya/users/self` persistida.
+- 15 periodos / 660 visitas / 197 shoppers, `2025-06 → 2026-08`.
+- Frontend `entered`; primera carga + 3 reloads + new-tab PASS.
 
 ## Frontend / Claude
 
-- **Cero cambio a `/app/modules` o UI visual durante el cierre runtime 10.**
-- No generar nueva candidata.
-- Mantener el formulario único `#loginForm/#lgUser/#lgPass/#lgSubmit`.
-- No reintroducir overlays legacy Staff.
-- El adapter C6 sigue siendo el único responsable técnico del handoff membership→authority→`CX.app.enter()`; no debe pintar directamente la UI.
-- No reabrir Exact Write V2, D rebase, Auth340, SKIP13, MultiAuth, HR ni M4/static.
-- `app/modules/cliente-extra.js` y sus pendientes heredados siguen separados; no bloquearon runtime 10.
+- Cero cambios a `/app/modules` o `/app/core` para este cierre.
+- Mantener formulario único `#loginForm/#lgUser/#lgPass/#lgSubmit`.
+- Mantener interfaz exacta de `CX.data`.
+- No reintroducir overlays/credenciales técnicas legacy.
+- No crear candidata frontend por M7.
 
 ## Seguridad
 
-Runtime 10: Hosting `1/1` físicamente consumido; nuevos Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes=0; segundo Exact Write=0; segundo intento=0; merge=false; producción=false; secretos/tokens expuestos=false.
+Nuevos Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes=0; segundo Hosting=0; segundo Exact Write=0; merge=false; producción=false.
 
 ## Progreso
 
-`M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1`
+`M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=5/5 | M8=0/3 | M9=0/3 | M10=0/1`
 
-**Phase A=88% | restante=12% | delta certificado runtime 10=+0%.**
+## Siguiente acción
 
-## Siguiente acción exacta
-
-No hacer otro Hosting a ciegas. Primero source-only/cero provider: capturar de forma sanitizada `frontendHandoff.error`, wiring `status/code` y membershipVerified de contexto/sesión para identificar el subcódigo exacto. Después corregir únicamente la causa probada y volver al one-shot. M8 → M9 → M10 esperan M7 PASS.
+M8 → M9 → M10. No reabrir C6/gates cerrados. La definición exacta de cada milestone se recupera de fuentes vigentes; no se infiere desde frontend.
 
 ## Academia
 
-Sin cambio de contenido funcional todavía. Tras M7 PASS, actualizar manuales/cursos sobre formulario único, rutas por rol, permisos, continuidad de sesión y estados de acceso; no documentar mecanismos QA internos.
+Ya puede documentarse el flujo Staff real y continuidad de sesión; no documentar private handoff, credenciales ni QA interno.
