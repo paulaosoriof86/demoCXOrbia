@@ -1,14 +1,16 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-13 10:03 -06:00
-**Estado:** `M9_SOURCE_VALIDATION_PASS__PHASE_A_96__NO_FRONTEND_CHANGE`
+**Última actualización:** 2026-08-13 10:35 -06:00
+**Estado:** `M9_PASS__PHASE_A_99__NO_FRONTEND_CHANGE`
 
-M1–M8 permanecen cerrados. M9 continúa abierto y Phase A permanece en **96% certificado / 4% restante**.
+M1–M9 están cerrados. Phase A queda en **99% certificado / 1% restante**.
 
-La revisión posterior al rollback confirmó que el incidente estaba fuera de los módulos frontend. Se corrigió una diferencia entre las configuraciones de Hosting y la validación source-only posterior terminó PASS, sin cambios en los bytes runtime M8.
+M9 terminó con `PASS_M9_RETRY_AFTER_HOSTING_ENTRY_PARITY_PASS` sobre el build `ecc725866acc3eb8`. El smoke desde la raíz real verificó Admin canónico, membership, HR vivo completo, siete rutas requeridas y cero duplicados. No fue necesario rollback.
 
-Para Claude: no modificar `/app/modules` ni `/app/core` por este incidente; mantener la interfaz pública de `CX.data` y el consentimiento de confidencialidad como acción humana.
+Para Claude: no modificar `/app/modules` ni `/app/core`; no crear candidata nueva por este bloque; mantener exactamente la interfaz pública de `CX.data` y el consentimiento de confidencialidad como acción humana.
 
-Progreso: `M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=5/5 | M8=3/3 | M9=0/3 | M10=0/1`.
+Progreso: `M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=5/5 | M8=3/3 | M9=3/3 | M10=0/1`.
 
-Academia: registrar la separación entre producto, configuración operativa, validación y recuperación.
+Siguiente bloque: `M10_POST_CUTOVER_SMOKE_FREEZE_FINAL`, read-only y documental.
+
+Academia: las rutas operativas y de aprendizaje siguen disponibles; no hay cambio funcional de contenido por M9.
