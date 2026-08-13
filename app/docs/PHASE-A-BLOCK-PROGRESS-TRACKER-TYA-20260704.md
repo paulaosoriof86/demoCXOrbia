@@ -1,38 +1,18 @@
 # PHASE A — Tracker TyA
 
-**Actualización:** 2026-08-13 05:31 -06:00  
-**Estado:** `M9_PRECUTOVER_PASS__PHASE_A_96__AWAIT_EXPLICIT_PRODUCTION_GATE`
+**Actualización:** 2026-08-13 09:55 -06:00  
+**Estado:** `M9_NOT_CERTIFIED__ROLLBACK_PASS__PHASE_A_96`
 
-M1=35 COMPLETE; M2=20 COMPLETE; M3=15 COMPLETE; M4=5 COMPLETE; M5=8/8 COMPLETE; M6=5/5 COMPLETE; M7=5/5 COMPLETE; M8=3/3 COMPLETE; **M9=0/3 PRECUTOVER_READY**; M10=0/1. **96% certificado; 4% restante.**
+M1=35 COMPLETE; M2=20 COMPLETE; M3=15 COMPLETE; M4=5 COMPLETE; M5=8/8 COMPLETE; M6=5/5 COMPLETE; M7=5/5 COMPLETE; M8=3/3 COMPLETE; **M9=0/3 OPEN**; M10=0/1.
 
-## M8 cerrado
+**96% certificado; 4% restante.**
 
-Run `31694998731`, job `94430661554`, artifact `9178957729`, digest `sha256:296a404470dc692d2b01679550d2e19b3429ca281f7c9333655ebf3bb8b1f85b`.
+## M9
 
-## M9 provider pre-cutover cerrado con PASS
+La tentativa productiva no certificó M9 porque el smoke utilizado era específico del entorno DEV. El rollback autorizado quedó verificado y no hubo un segundo intento de promoción.
 
-Run `31695760214`, job `94433057739`, artifact `9179228696`, digest `sha256:83233d83fa56e3ca1f1afb437fccdce16fd368efbb362e0ffb1db51afede95c1`.
+El estado certificado permanece en 96%. El rollback preserva el estado anterior pero no agrega ni resta puntos.
 
-Decisión: `PASS_M9_PROVIDER_PRECUTOVER_READINESS_READONLY`.
+## Próximo cierre técnico
 
-Capturado y verificado:
-- target `cxorbia-backend-dev` / `cxorbia-dev`;
-- build M8 `ecc725866acc3eb8`, sin runtime drift;
-- release pre-cutover `1786585552096000`;
-- version FINALIZED de rollback `a9670bb8a19862cd`;
-- rollback provider readiness PASS;
-- cero provider writes/deploys/production mutation.
-
-## Progreso certificado
-
-`35 + 20 + 15 + 5 + 8 + 5 + 5 + 3 = 96`.
-
-Pendiente: `M9=3 + M10=1 = 4` puntos.
-
-La preparación provider read-only de M9 no otorga puntos por sí sola. M9 se certifica 3/3 únicamente después del cutover productivo bajo gate explícito y su smoke inmediato.
-
-## Siguiente bloque exacto
-
-`M9_EXPLICIT_CUTOVER_ONE_PRODUCTION_PROMOTION → M10`.
-
-No reabrir M7/M8 ni repetir pre-cutover M9 sin drift reproducible.
+Validar primero una prueba read-only compatible con la entrada productiva real. M9 permanece abierto hasta contar con evidencia productiva válida.
