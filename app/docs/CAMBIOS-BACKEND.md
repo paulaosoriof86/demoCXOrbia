@@ -1,60 +1,42 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-13 12:24 -06:00
-**Estado:** `OWNER_VISIBLE_DEV_LAB_HOSTED__VISUAL_ACCEPTANCE_PENDING__REAL_TYA_CUTOVER_NOT_EXECUTED`
+**Última actualización:** 2026-08-13 12:38 -06:00
+**Estado:** `P0_HUMAN_SHOPPER_CANONICAL_BINDING_FAILURE__OWNER_ACCEPTANCE_REJECTED__REAL_TYA_CUTOVER_BLOCKED`
 
-## Bloque ejecutado 2026-08-13 — laboratorio visible pre-go-live
+## P0 comprobado 2026-08-13 — Shopper humano autenticado sin contexto operativo canónico
 
-Se avanzó desde planificación a ejecución real en DEV.
+La validación humana de Paula rechazó el pre-go-live. Con un perfil Shopper real, Firebase Auth permite entrar y renderiza la navegación Shopper, pero `Mi Perfil` muestra exactamente: `La identidad de esta sesión no está vinculada al read model canónico.` El runtime visible posterior al login permanece en `Fuente: firestore`, con `Projects: 1`, `Visitas: 0`, `Shoppers: 1`, `Postulaciones: 0` y sin país asignado.
 
-### Archivos creados/tocados
+Esto contradice el contrato Phase A: tras autenticar, HR viva debe seguir siendo autoridad operacional y Firestore solo un overlay exacto de identidad/perfil/certificación. El laboratorio read-only, en la misma sesión de aceptación, sí leyó 15 períodos, 660 visitas y 211 shoppers desde HR viva. Por tanto, el problema no es ausencia general de HR: el P0 está en la ruta autenticada Shopper / composición de identidad y autoridad.
 
-- `app/dev-validation/index.html` — nueva superficie DEV visible de pruebas; commit `0083be8c2be8b0deb15bbe5e7f8f8410f972dbc1`.
-- `backend/config/corte6-dev-root-entrypoint-hosting-execute.json` — request one-shot para publicar el laboratorio exclusivamente en `cxorbia-backend-dev`; commit `68d8af9a4bf6373696b281dbc5a9ac94c2bbfffb`.
-- `app/docs/evidence/owner-visible-dev-validation-lab-20260813.json` — evidencia durable del bloque.
-- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`, `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md` e índice vigente — continuidad.
+Evidencia durable: `app/docs/evidence/p0-human-shopper-canonical-binding-failure-20260813.json`.
 
-### Publicación DEV comprobada
+### Diagnóstico source-only ya aislado
 
-Workflow `CXOrbia C6 DEV Root Entrypoint Hosting`:
-- run `31730303749`;
-- job `94548821932`;
-- conclusión `SUCCESS`;
-- artifact `9192996410`;
-- digest `sha256:1302982ffc68e2d9aedf39dafdce0514d70a0f11e362ab3cc5b731c98dab9474`.
+- `app/adapters/tya-canonical-shopper-portal-v2.js` bloquea deliberadamente `Mi Perfil` cuando el `shopperId` de sesión no resuelve contra `CX.data.__identityMap` / shopper canónico.
+- `app/adapters/tya-protected-auth-hr-authority-bridge-v2.js` debería, para un principal autenticado TyA/Cinépolis, reemplazar el slice Firestore-only por HR viva completa + overlay Firestore exacto. Esa composición no fue efectiva en la sesión humana observada.
+- M10 fue un smoke final con Admin canónico; no certificó este perfil Shopper humano concreto.
+- Existe antecedente técnico de colisiones de identidad Shopper: el audit histórico `HOLD_C6_SHOPPER_LOGIN_COLLISION_CLASSIFICATION` probó 64 grupos de identidades activas distintas que compartían login visible y afectaban 141 identidades. La corrección actual no puede adivinar por nombre.
+- El `0` de disponibles del laboratorio no se acepta todavía como conteo canónico porque la superficie visible usa un subconjunto literal de estados; debe verificarse mediante la semántica canónica antes de aprobarlo.
 
-El paso `Execute one Hosting deploy and Staff-only runtime gates` terminó `SUCCESS`.
+### Estado de seguridad
 
-### Qué hace el laboratorio
+No se modificó código funcional por este hallazgo. No se ejecutaron Auth/Firestore/HR/Rules/Storage writes, Cloud Run, Make, Gemini, pagos, merge ni cutover real. El P0 se documentó antes de cualquier reparación.
 
-- Se abre directamente desde Hosting DEV en `/dev-validation/index.html`.
-- Ejecuta y muestra en pantalla `PASS/FAIL/BLOCKED` y bitácora temporal.
-- Lee HR viva en modo read-only; permite forzar lectura fresca con `fresh=1`.
-- Muestra períodos, visitas, shoppers y conteo de disponibles derivado de la lectura actual.
-- Comprueba entrypoint canónico, build/source lock y superficies de Dashboard, Proyectos, Visitas, Postulaciones, Certificación, Finanzas y Academia.
-- Embebe `/index-backend-dev.html` para que Paula pueda iniciar sesión y comprobar el mismo runtime DEV, rol, tenant, proyecto, período, fuente y navegación visible.
+## Bloque anterior — laboratorio visible pre-go-live
 
-### Qué NO se ejecutó
+Se creó `app/dev-validation/index.html` y se publicó exclusivamente en `cxorbia-backend-dev`. Workflow `CXOrbia C6 DEV Root Entrypoint Hosting`: run `31730303749`, job `94548821932`, `SUCCESS`; artifact `9192996410`, digest `sha256:1302982ffc68e2d9aedf39dafdce0514d70a0f11e362ab3cc5b731c98dab9474`.
 
-El E2E que requiere escrituras sintéticas temporales no se presenta como completado: queda `BLOCKED_PENDING_SEPARATE_TEMPORARY_WRITE_AND_CLEANUP_GATE`. No se crearon postulaciones, asignaciones, liquidaciones ni pagos de prueba.
+M1–M10 continúan como evidencia de calificación técnica DEV del build `ecc725866acc3eb8`; ya no pueden interpretarse como aprobación funcional de Shopper ni como autorización de cutover.
 
-## Evidencia técnica DEV preservada
+## Siguiente bloque exacto
 
-M1–M10 siguen siendo PASS de calificación técnica DEV. Build calificado `ecc725866acc3eb8`. La publicación del laboratorio no convierte ese 100% en go-live real TyA.
-
-## Seguridad
-
-- Cero Cloud Run deploy adicional.
-- Cero HR writes.
-- Cero Auth/Firestore/Rules/Storage writes.
-- Cero Make/Gemini/pagos.
-- Cero merge.
-- Cero cutover del dominio/hosting real vigente de TyA.
+Gate focal P0 read-only sobre el principal Shopper humano y el handoff Staff existente: recuperar claims/shopperId/membership efectivos, comprobar su enlace exacto al read model/HR canónico, capturar por qué el bridge queda en Firestore-only y recuperar únicamente el usuario visible del Admin canónico alias B (nunca contraseña). Con esa evidencia se define una única reparación mínima y reproducible antes de cualquier nuevo deploy DEV.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** patrón Finanzas de laboratorio visible trasladado a CXOrbia sin copiar lógica financiera.
-- **Exclusivo cliente:** TyA/Cinépolis y reconciliación HR viva.
-- **Claude/prototipo:** no se modificaron `/app/modules` ni `/app/core`; hallazgos visuales se documentarán focalizadamente.
-- **Academia:** se comprueba publicación del módulo y se validará acceso/ruta por rol con Paula.
-- **Sin impacto Claude:** deploy DEV, workflow/evidencia y documentación.
+- **Reusable CXOrbia:** gate humano por rol debe certificar composición post-auth, no solo disponibilidad de assets.
+- **Exclusivo cliente:** identidad Shopper TyA/Cinépolis, HR viva, visitas y país.
+- **Claude/prototipo:** P0 documentado; cualquier reparación frontend se limita al archivo/adaptador causal, sin rediseño.
+- **Academia:** acceso Shopper no puede darse por aprobado mientras el principal no resuelva al contexto canónico.
+- **Sin impacto Claude:** documentación y evidencia del P0.
