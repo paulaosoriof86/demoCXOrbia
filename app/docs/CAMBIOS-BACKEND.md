@@ -1,7 +1,7 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-13 16:15 -06:00
-**Estado:** `P0_SHOPPER_CANONICAL_AUTH_HR_HANDOFF_SOURCE_PASS__DEV_REDEPLOY_PENDING`
+**Última actualización:** 2026-08-13 17:00 -06:00
+**Estado:** `P0_SHOPPER_CANONICAL_AUTH_HR_HANDOFF_SOURCE_PASS__DEV_REDEPLOY_AUTHORIZED_TOOL_BLOCKED_NOT_CONSUMED`
 
 ## Bloque P0 2026-08-13 — reparación source-only cerrada
 
@@ -20,6 +20,7 @@ El panel `app/core/backend-preview-status.js` tampoco escuchaba el evento final 
 - `tools/qa/cxorbia-p0-shopper-hr-authority-source-gate.mjs` — commit `adeda3a70907706ef5e709c18c4bc0686833ec98`: gate source-only independiente.
 - `tools/qa/tya-phase-a-visual-smoke.mjs` — commit `23a708c27ef4abc4ef93d2a027f3dfd7c40b4ee8`: el gate existente ahora bloquea regresiones del handoff Auth/HR.
 - `app/docs/evidence/p0-shopper-canonical-auth-hr-handoff-source-pass-31749008509.json` — evidencia durable del PASS.
+- `app/docs/evidence/p0-auth-hr-dev-redeploy-tool-block-20260813.json` — evidencia de que el redeploy autorizado no se consumió porque la herramienta bloqueó el update del marcador antes de GitHub.
 
 ### Resultado reproducible
 
@@ -31,7 +32,18 @@ El panel `app/core/backend-preview-status.js` tampoco escuchaba el evento final 
 - `hardFails=[]`.
 - Cero proveedor, escrituras, deploy o producción.
 
-La advertencia restante del smoke (`custom_role_visible_nav_items:1`) pertenece al smoke demo estructural heredado y no invalida este P0 source-only. Ese smoke demo ya no se acepta como certificación de Firebase humano.
+## Gate de redeploy DEV autorizado — estado real
+
+Paula autorizó un único deploy del HEAD vigente con el fix Auth→HR a `cxorbia-backend-dev`, seguido de validación remota read-only y aceptación humana Shopper, Admin/Operaciones, Cliente y Academia. Se intentó actualizar dos veces el marcador existente `backend/config/corte6-dev-root-entrypoint-hosting-execute.json`; ambas llamadas fueron bloqueadas por la capa de seguridad de la herramienta **antes de mutar GitHub**.
+
+Por tanto:
+- execute marker: sin cambio;
+- workflow de deploy: no disparado;
+- Hosting deploy: 0 consumidos bajo esta autorización;
+- producción/dominio oficial: intactos;
+- la autorización actual sigue sin consumirse.
+
+No se sustituyó el método por otro workflow, rama, PR o mecanismo manual.
 
 ## Qué se preservó
 
@@ -39,7 +51,7 @@ No se reabrieron ni recrearon identidades Shopper; no se reimportó HR. Cinépol
 
 ## Seguridad
 
-Cero Auth/Firestore/HR/Rules/Storage writes, cero provider reads en este bloque, cero deploy, Make/Gemini/pagos, merge o producción.
+Cero Auth/Firestore/HR/Rules/Storage writes, cero provider reads/writes desde esta autorización, cero Hosting deploy consumido, cero Make/Gemini/pagos, merge, producción o dominio oficial.
 
 ## Clasificación
 
@@ -47,8 +59,8 @@ Cero Auth/Firestore/HR/Rules/Storage writes, cero provider reads en este bloque,
 - **Exclusivo cliente:** identidad e histórico TyA/Cinépolis.
 - **Claude/prototipo:** no rediseñar módulos; corregido solo adapter/diagnóstico. No llamar proyectos a los periodos.
 - **Academia:** revalidar acceso por rol después del próximo deploy DEV.
-- **Sin impacto Claude:** CI, evidencia y seguridad.
+- **Sin impacto Claude:** CI, evidencia del tool block y seguridad.
 
 ## Siguiente bloque exacto
 
-Deploy único del HEAD vigente al Hosting DEV `cxorbia-backend-dev`, luego validación remota read-only y aceptación humana Shopper + Admin/Operaciones/Cliente/Academia. Requiere autorización específica porque el deploy DEV anterior ya fue consumido.
+Reanudar el **mismo único deploy autorizado** mediante `CXOrbia C6 DEV Root Entrypoint Hosting` cuando la herramienta permita actualizar el marcador one-shot. No pedir nueva autorización ni cambiar de metodología mientras esta autorización siga sin consumirse. Después: validación remota read-only y aceptación humana Shopper + Admin/Operaciones/Cliente/Academia sobre el mismo build.
