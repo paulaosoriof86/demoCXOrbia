@@ -1,74 +1,64 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-12 17:52 -06:00  
-**Estado:** `C6_RUNTIME_09_STOP_RETRY_POST_AUTH_FRONTEND_HANDOFF__HOSTING_1_OF_1__SOURCE_REPAIR_APPLIED__PHASE_A_88`
+**Última actualización:** 2026-08-12 17:59 -06:00  
+**Estado:** `C6_RUNTIME_10_STOP_RETRY_CANONICAL_MEMBERSHIP_RECONCILE_BLOCKED__HOSTING_1_OF_1__PHASE_A_88`
 
 ## Bloque ejecutado
 
-One-shot `HOSTING_RUNTIME_ONCE` para `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`.
+One-shot `HOSTING_RUNTIME_ONCE` para `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`, conforme a autorización explícita de Paula.
 
-## Resultado runtime 09
+## Resultado runtime 10
 
-Request `c6-live-user-admin-membership-runtime-proof-20260812-09` → run `31651410812` / job `94296350609` / artifact `9162751195` / digest `sha256:16970fb360a1fc54d3b94f7a6ff87138afa959ac6b6fa31f7299b78dfeee48d8`.
+Request `c6-live-user-admin-membership-runtime-proof-20260812-10` → run `31652523820` / job `94299776053` / artifact `9163167746` / digest `sha256:be83f65bf5484858fa42844ede9f56f0952bcef06a775fd4244524cc5880799f`.
 
 PASS demostrado:
 - request/action/mode exactos;
-- preflight Staff v3 con `bash -n`, no nested heredoc, keyboard-submit y binding `submit`;
+- `PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT` v4 antes de provider;
+- `bash -n`, no nested heredoc, keyboard submit y binding `submit` canónico;
+- contract checks membership→authority→frontend, stale-empty reconciliation, `CX.app.enter()` y no direct UI mutation;
 - Google Cloud DEV auth;
 - selector Staff dedicado (`coordinador`), Shopper/Cliente=false;
 - source parity PASS;
-- Firebase Hosting DEV deploy completo: **1/1**;
+- Firebase Hosting DEV deploy físico **PASS, 1/1**;
 - remote parity PASS exact=true, root 302 y canonical 200;
-- submit canónico ejecutado;
-- contexto Staff alcanzado: `coordinador`, namespace `staff`, tenant `tya`, proyecto `cinepolis`;
-- HR authority aplicada: **15 periodos, 660 visitas, 211 shoppers**, `2025-06` a `2026-08`, duplicados=0.
+- formulario canónico submitido;
+- contexto `coordinador/staff/tya/cinepolis`;
+- HR authority: **15 periodos / 660 visitas / 211 shoppers**, `2025-06 → 2026-08`, duplicados=0.
 
-FAIL runtime final:
-- `appOn=false`;
-- `loginHidden=false`;
-- `CX_BACKEND_LAST_STATE.empty=true` persistió aunque `CX.data` ya contenía 15 periodos/660 visitas;
+FAIL final:
+- `membershipVerified=false`, `membershipSource=null`;
+- `frontendHandoffStatus=blocked`;
+- `staleBackendEmpty=true`, `staleCorte4Empty=true`;
+- `appOn=false`, `loginHidden=false`;
 - artifact decisivo: `FAIL_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME`.
 
-Clasificación: `C6_POST_AUTH_HR_AUTHORITY_FRONTEND_ENTRY_HANDOFF_GAP__STALE_FIRESTORE_EMPTY_STATE`.
+Clasificación: `C6_CANONICAL_MEMBERSHIP_RECONCILE_BLOCKED_POST_AUTHORITY__EXACT_SUBCODE_NOT_CAPTURED`.
 
-No se demostró fallo nuevo de credenciales, claims, membership, Firestore read o HR. El fallo está localizado en el handoff final post-auth/authority hacia el shell visible.
+El handoff post-authority fue alcanzado, pero quedó fail-closed en la verificación canónica de membership antes de limpiar stale-empty y antes de la entrada visible. El artifact no captura el `error/code` exacto del handoff, por lo que no se atribuye sin evidencia a self-read, documento faltante/inactivo, tenant/namespace/role/entitlement/project scope, claimsDigest, providerUidFingerprint o post-check.
 
-## Reparación aplicada después de STOP_RETRY
+No se demostró fallo nuevo de login, Firebase Auth principal, contexto claims, HR authority, Hosting o remote parity.
 
-Sin rerun, provider ni Hosting adicional:
-1. `app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js` — commit `a89ec134fe1b3b9cd0a8f014b39133d7a72ccd5a`:
-   - escucha `cx:protected-auth-hr-authority-ready`;
-   - revalida fail-closed la membership Staff canónica;
-   - reconcilia `CX_BACKEND_LAST_STATE.empty` y `CX_CORTE4_READONLY.empty` únicamente cuando la autoridad HR canónica está poblada y consistente;
-   - reutiliza `CX.app.enter()`; no agrega mutación directa de UI.
-2. `tools/qa/tya-c6-staff-admin-human-auth-browser-smoke.mjs` — commit `87bcddebeb74147dc0862ff3115186795978f058`:
-   - exige membership verificada + handoff `entered` + stale empty=false + `appOn/loginHidden`;
-   - conserva keyboard submit, 3 reloads y new-tab.
-3. `tools/qa/cxorbia-c6-staff-lane-source-preflight.mjs` — commit `84e736b064d66bf7f7bde3d54955d98fb0f0a9a9`:
-   - preflight v4 incorpora contract checks membership→authority→frontend;
-   - bloquea mutación directa del shell desde el adapter.
-4. Evidencia durable: `app/docs/evidence/c6-live-user-admin-runtime-proof-31651410812.json`.
+## Evidencia y cierre
 
-No se modificó `/app/modules`, `app/core/backend-preview-status.js` ni UI visual del producto.
+Creado `app/docs/evidence/c6-live-user-admin-runtime-proof-31652523820.json` con request/run/artifact, preflight v4, Hosting/parity, snapshot runtime, frontera causal, ausencia del subcódigo exacto, seguridad y STOP_RETRY.
 
-Intento auxiliar local de validar raw GitHub falló por DNS (`raw.githubusercontent.com` no resolvió). Se declaró el fallo y no se abrió otro carril ni se tocó provider; el preflight v4 real queda obligatorio antes del próximo provider.
+Después del fallo post-provider no se hizo otra modificación source/producto/QA ni se disparó segundo workflow. Este cierre modifica exclusivamente evidencia/documentación.
 
-Durante el cierre documental hubo una invocación del conector `update_file` con un SHA placeholder inválido sobre el request C6; GitHub respondió **409** antes de cualquier escritura. No cambió el archivo, no creó commit y no disparó workflow. El request 09 consumido no fue alterado.
+No se modificó `/app/modules`, UI visual ni `app/core/backend-preview-status.js`.
 
 ## Seguridad
 
-- Hosting runtime 09: **1/1 físicamente consumido y deploy PASS**.
+- Hosting runtime 10: **1/1 físicamente consumido y deploy PASS**.
 - Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes nuevos: `0`.
 - Segundo Exact Write: `0`.
 - Segundo intento: `0`.
-- Provider/Hosting posteriores al STOP_RETRY: `0`.
 - merge=false; producción=false; secretos/tokens expuestos=false.
 
 ## Progreso Phase A
 
 `M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1`
 
-**TOTAL CERTIFICADO=88% | RESTANTE=12% | DELTA CERTIFICADO=+0%.**
+**TOTAL CERTIFICADO=88% | RESTANTE=12% | DELTA CERTIFICADO RUNTIME 10=+0%.**
 
 ## No reabrir
 
@@ -76,12 +66,12 @@ Exact Write V2, private handoff, D rebase, provider snapshot, Auth340, SKIP13, M
 
 ## Siguiente frontera exacta
 
-No rerunear `31651410812`. Nueva autorización explícita para un nuevo `HOSTING_RUNTIME_ONCE` Staff bound al HEAD vivo reparado. El preflight v4 debe PASS antes de provider. Con PASS real cerrar M7 y continuar M8 → M9 → M10.
+Antes de otro Hosting: bloque source-only, cero provider, para capturar sanitizadamente el subcódigo real de membership/handoff (`CX_C6_LIVE_USER_ADMIN_FRONTEND_HANDOFF.error`, `CX_C6_LIVE_USER_ADMIN_WIRING.status/code`, membershipVerified contexto/sesión). Solo después de causa raíz reproducible corresponde corregir y preparar otro one-shot. M8 → M9 → M10 siguen detrás de M7.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** handoff canónico fail-closed y reconciliación de stale provider-empty contra autoridad operativa poblada.
-- **Exclusivo cliente:** próximo runtime Staff TyA.
-- **Claude/prototipo:** adapter C6 únicamente; cero `/app/modules` o UI visual modificada.
-- **Academia:** sin cambio hasta runtime PASS.
-- **Sin impacto Claude:** QA/evidencia/docs.
+- **Reusable CXOrbia:** trazabilidad exacta del fail-closed de membership/handoff.
+- **Exclusivo cliente:** membership Staff TyA DEV.
+- **Claude/prototipo:** cero cambio UI/módulos en este cierre.
+- **Academia:** sin actualización funcional hasta M7 PASS.
+- **Sin impacto Claude:** QA ya desplegado, evidencia y docs de runtime 10.
