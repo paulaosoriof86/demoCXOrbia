@@ -1,0 +1,150 @@
+{
+  "schemaVersion": "cxorbia.p0.exact-identity-readonly-gate-hold-and-source-repair.v1",
+  "generatedAt": "2026-08-13T20:24:00-06:00",
+  "decision": "HOLD_P0_REAL_IDENTITY_VALIDATION__ONE_READ_CONSUMED__V1_PROVIDER_VERDICT_INVALIDATED__SOURCE_CHAIN_REPAIRED__REAL_E2E_PENDING",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "authorization": {
+    "authorizedBy": "Paula",
+    "authorizedAt": "2026-08-13T19:51:00-06:00",
+    "scope": "one DEV read-only gate to revalidate Auth/claims/profiles/HR exact identity and execute one real Shopper Firebase Auth to profile to HR to history E2E including Academia/Certification",
+    "writesAuthorized": false,
+    "deployAuthorized": false,
+    "mergeAuthorized": false,
+    "productionAuthorized": false
+  },
+  "providerGate": {
+    "frozenTargetHeadSha": "dc0eef6167afc99d80e7b2b69a0e43b0c0768a90",
+    "requestCommitSha": "de273fde69879292b82f07dfd06a6558a65fad50",
+    "runId": 31762716234,
+    "jobId": 94652243857,
+    "artifactId": 9205200319,
+    "artifactDigest": "sha256:7d49035d2610dc35e1bf6b1bca73d49c0ba8487e6242014c01269f0bf8f3526c",
+    "providerReadExecutionsConsumed": 1,
+    "stopRetry": true,
+    "rawObservedUniverse": {
+      "authUsersReviewed": 231,
+      "effectiveShopperPrincipals": 209,
+      "firestoreProfiles": 340,
+      "protectedVisits": 616,
+      "liquidations": 572,
+      "certifications": 77,
+      "hrPeriods": 15,
+      "hrVisits": 660,
+      "hrShoppers": 212
+    },
+    "v1RawMappingOutput": {
+      "unique": 62,
+      "missingProfile": 0,
+      "unmapped": 137,
+      "ambiguousOrReview": 10,
+      "withHistory": 62,
+      "withoutHistory": 0,
+      "issueCount": 147,
+      "diagnosticOnly": true,
+      "authoritativeUniverseVerdict": false,
+      "reasonInvalidated": "The v1 audit prefiltered linked protected rows by claim before composition, and a provider-free regression then proved the runtime composer itself did not canonicalize linked protected owner aliases before constructing live-HR relations. Therefore 62/137/10 cannot be interpreted as 147 real broken identities."
+    },
+    "independentSameRunRelationshipEvidence": {
+      "sourceSafeCode": "HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194",
+      "exactProtectedLiveVisitMatches": 616,
+      "uniqueLiveHrToProtectedShopperRelations": 208,
+      "protectedShoppersWithHistory": 194,
+      "interpretation": "This independent selector evidence demonstrates materially broader exact protected/HR relationships than the v1 62-unique result, but does not prove that all 209 effective Auth principals are uniquely mapped."
+    },
+    "credentialSelection": {
+      "historicalCredentialRecordsReviewed": 109,
+      "matchingAuthUsers": 104,
+      "eligibleHistoricalCandidate": 1,
+      "profileDocumentPresent": true,
+      "passwordHashMatches": 0,
+      "signIns": 0,
+      "privateCredentialProduced": false,
+      "valuesExported": false,
+      "classification": "HISTORICAL_PRIVATE_HANDOFF_STALE_FOR_CURRENT_REAL_E2E"
+    },
+    "realShopperE2E": {
+      "executed": false,
+      "failed": false,
+      "skipped": true,
+      "reason": "No valid current private Shopper credential was produced; STOP_RETRY prevented forcing a second provider attempt or password change/reset.",
+      "academiaCertificationValidated": false
+    }
+  },
+  "neutralization": {
+    "requestEnabled": false,
+    "requestConsumed": true,
+    "requestStatus": "consumed_hold_stop_retry",
+    "neutralizationCommitSha": "9675cf96cddecbfe829d4d6b8c47f55df3a1b660",
+    "safeDisabledRunId": 31762822792,
+    "providerStepsSkipped": true,
+    "secondProviderReadExecuted": false
+  },
+  "sourceDiagnosisAfterConsumedGate": {
+    "v1HarnessDefect": "protected linked rows were filtered by claim before exact cross-source composition",
+    "runtimeDefect": "tya-cumulative-read-model-v2 added relation(base.liveShopperId, protectedVisit.shopperId) without canonicalizing the protected linked owner through the shared exact profile index",
+    "consequence": "valid exact chains such as profileId -> profile.legacyId -> protectedVisit.shopperId -> hrRowId -> live HR shopper could terminate at a legacy owner token rather than the canonical profile id",
+    "providerRereadUsedToDiagnose": false
+  },
+  "sourceRepair": {
+    "sharedIdentityContract": "app/adapters/cxorbia-exact-identity-contract-v1.js",
+    "runtimeSeam": "app/adapters/tya-canonical-state-semantics-v2.js",
+    "normalizerVersion": "cxorbia-exact-linked-owner-normalizer-v1",
+    "behavior": "Before cumulative HR composition, all protected linked sources are resolved through the shared exact identity contract; unique exact owners are canonicalized to profile id, ambiguous/unresolved owners stay fail-closed and are not merged by similarity.",
+    "providerFreeRegression": "tools/qa/cxorbia-p0-global-composition-source-selftest.mjs",
+    "authoritativeSourceHeadSha": "6712ea4d6ebd1ad33ee3772340fbfe3f593943e3",
+    "sourceRunId": 31763545130,
+    "sourceJobId": 94654691101,
+    "sourceRunConclusion": "success",
+    "sourceArtifactId": 9205478201,
+    "sourceArtifactDigest": "sha256:12c5196203588c70ebe2f2ba86774f77965d7fbb5dbdcdb27007aa916272706a",
+    "decisions": [
+      "PASS_P0_EXACT_IDENTITY_CONTRACT_SOURCE",
+      "PASS_P0_GLOBAL_COMPOSITION_SOURCE",
+      "PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE",
+      "GO_WITH_WARNINGS_VISUAL_SMOKE_POST_V96"
+    ],
+    "hardFails": 0,
+    "knownNonBlockingWarning": "custom:custom_role_visible_nav_items:1",
+    "testedExactChain": "profile_claim_to_profile_alias_to_protected_visit_to_hr_row_to_live_hr",
+    "providerReads": 0,
+    "writes": 0,
+    "deploys": 0
+  },
+  "limitations": {
+    "correctedV2ProviderUniverseEmpiricallyRevalidated": false,
+    "realAuthenticatedShopperE2EExecuted": false,
+    "academiaCertificationRealShopperValidated": false,
+    "sourceRepairDeployedToDev": false,
+    "publicDevContainsRepair": false,
+    "goLiveUnblocked": false
+  },
+  "classification": {
+    "reusableCXOrbia": "shared exact identity contract plus exact linked-owner canonicalization and provider-free regression chain",
+    "exclusiveClient": "actual TyA Auth-to-HR mapping and current valid Shopper credential cohort",
+    "claudePrototype": "no UI redesign or candidate change required",
+    "academia": "source route checks ready; real authenticated Shopper validation still pending",
+    "sinImpactoClaude": "request neutralization, runner hardening and evidence"
+  },
+  "safety": {
+    "providerReadExecutions": 1,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "production": false
+  },
+  "nextBlock": "SOURCE_ONLY_CURRENT_SHOPPER_CREDENTIAL_HANDOFF_RECONCILIATION",
+  "nextProviderGateRequiresNewExplicitAuthorization": true
+}
