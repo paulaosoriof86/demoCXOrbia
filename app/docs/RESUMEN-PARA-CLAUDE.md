@@ -1,82 +1,65 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-14 10:08 -06:00  
-**Estado:** `FORENSIC_ROOT_CAUSE_LOCKED__SAME_CANDIDATE__TWO_FRONTEND_P0_SURGICAL_TASKS__NO_REDESIGN`
+**Última actualización:** 2026-08-14 10:42 -06:00  
+**Estado:** `ITERATION_1_SOURCE_ONLY_PASS__AUTH_INTEGRATION_FIXED_WITHOUT_UI_REWRITE__MISVISITAS_P0_NEXT`
 
 ## Regla principal
 
-No nueva candidata, rama ni PR. No rediseñar. Toda corrección frontend indispensable se aplica quirúrgicamente sobre la misma candidata/source lock en `docs-tya-v6-v71-audit`, preservando backend, adapters, tools, contratos y documentación.
-
-Backend no debe reconstruirse desde frontend. HR/reglas/datos no se reinterpretan.
+No nueva candidata, rama ni PR. No rediseñar. Toda corrección frontend indispensable continúa sobre `docs-tya-v6-v71-audit`, preservando backend/adapters/tools/contratos/documentación.
 
 Plan rector: `app/docs/ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md`.
 
-## Trabajo Auth que NO se reprocesa
+## Auth — NO REPROCESO y estado actual
 
-Preservar:
+Se preservan formulario visible único, Firebase Auth, namespaces staff/shopper, role/tenant/project/shopper scope, Admin/Exact Write V2, membership/RBAC Staff, exact identity contract, HR live authority/protected overlay, cumulative read model y portal Shopper canónico.
 
-- formulario visible único `#loginForm/#lgUser/#lgPass/#lgSubmit`;
-- Firebase Auth como autoridad;
-- namespaces `staff/shopper`;
-- role/tenant/project/shopper scope;
-- principal Admin canónico/Exact Write V2;
-- membership/RBAC Staff y `tya-c6-live-user-admin-membership-wiring-v1.js`;
-- `cxorbia-exact-identity-contract-v1.js` y matching solo por anclas técnicas exactas;
-- HR live authority + protected overlay;
-- cumulative read model/portal Shopper canónico;
-- source repair Shopper ya PASS source-only.
+Iteración 1 corrigió la integración sin reescribir `app.js`:
+
+- `app/adapters/tya-c6-shopper-auth-click-guard-v1.js` ahora delega todos los roles humanos protegidos a `core/backend-browser-auth.js` como owner efectivo;
+- no captura clicks;
+- no envuelve `authenticate`;
+- no crea overlay Cliente separado;
+- hace que `_isDevAccess()` resulte false únicamente en la ruta humana protegida, por lo que `pickShopperDev()` queda preservado para lab/demo explícito pero no puede interceptar Auth real.
+
+Gate source-only: `PASS_ROOT_CAUSE_CORRECTION_ITERATION1_SOURCE_ONLY`, workflow run `31820315435` SUCCESS.
 
 No volver a bundle/password guessing legacy, identidad por nombre/email/teléfono/similitud ni snapshot operacional pre-Auth.
 
-## P0 frontend 1 — `app/app.js`
+## P0 frontend pendiente — `app/modules/misvisitas.js`
 
-Problema reproducible documentado: el handler de tarjetas conserva `pickShopperDev()` para Shopper DEV antes de la ruta normal `selectRole()`. En runtime humano protegido eso generó bypass/race y obligó a guards correctivos.
+Sigue reproducible y visible: usa `find()` para asignada/agendada/realizada y estados literales, por lo que puede mostrar como máximo una visita por categoría y divergir del read model canónico.
 
-Corrección esperada:
+Corrección quirúrgica requerida en Iteración 2, MISMA candidata:
 
-- si el runtime protegido/Auth está activo, Shopper/Admin/Cliente/roles visibles delegan únicamente al controlador canónico de Auth;
-- `pickShopperDev()` queda disponible solo para preview/laboratorio explícito NO protegido;
-- no crear otra pantalla de login;
-- no almacenar credenciales;
-- cuando el owner único quede probado, los guards transitorios deben poder retirarse/aislarse sin cambiar UX.
+- conservar shopperId exacto fail-closed;
+- listas completas, no `find()`;
+- derivar categorías desde `visitFacets()`/facets canónicas;
+- histórico coherente con portal/Admin/Finanzas;
+- no mostrar visitas de otro Shopper/proyecto;
+- acciones existentes deben resolver por `CX.data` -> command adapter y mostrar éxito únicamente tras ACK real;
+- con writes cerrados: blocked, cero mutación local y cero success toast.
 
-Validación:
+No rediseñar UX ni reinterpretar HR.
 
-- click rápido/tardío/reload/new-tab nunca entra por picker DEV;
-- una sola transición Auth;
-- error de role/scope fail-closed;
-- mismo comportamiento desktop/móvil.
+## Backend reusable ya preparado
 
-## P0 frontend 2 — `app/modules/misvisitas.js`
+- `cxorbia-command-adapter-v1.js`;
+- `cxorbia-shopper-admin-command-contract-v1.js`;
+- `cxorbia-hr-write-adapter-contract-v1.js`;
+- Finance v2 por runtime contract, no hostname.
 
-Problema reproducible documentado: usa `find()` para asignada/agendada/realizada y estados literales, por lo que puede mostrar como máximo una visita por categoría y divergir del read model canónico.
+Estos contratos son tenant/project scoped y no hardcodean Cinépolis como arquitectura global.
 
-Corrección esperada:
+## Porcentaje
 
-- conservar identidad fail-closed por `shopperId` exacto;
-- derivar listas completas de visitas del Shopper;
-- consumir `visitFacets()`/contrato canónico para categorías operativas, cuestionario, submit, liquidación, pago y cancelación;
-- mostrar todas las activas aplicables, no una sola por estado;
-- histórico completo coherente con Mi Perfil/Admin/Finanzas;
-- acciones existentes conservan UX, pero su éxito debe depender del command adapter/ACK cuando backend lo active.
+Tracker productivo vigente: `app/docs/GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`.
 
-Validación:
-
-- Shopper con múltiples visitas del mismo estado las ve todas;
-- conteos coinciden con portal canónico/read model;
-- no aparecen visitas de otro Shopper/proyecto;
-- reload/new-tab conserva lectura correcta.
-
-## Reusable CXOrbia
-
-Ninguna de estas correcciones puede hardcodear TyA/Cinépolis. La decisión de runtime protegido, project scope y facets debe venir de contratos/configuración.
+**15% completado / 85% pendiente.**
 
 ## Academia
 
-Actualizar únicamente los contenidos/rutas afectados cuando los cambios estén activos: login real, errores de acceso, Mis Visitas con listas completas y estados canónicos. No crear contenido superficial ni prometer writes/sync no activados.
+No prometer writes aún. Preparar actualización posterior de login real, Mis Visitas con listas completas/facets, alta Shopper persistente, mensajes fail-closed y estados HR/Finanzas reales.
 
 ## Siguiente frontera
 
-Backend: `ITERACION_1_SOURCE_ONLY_ROOT_CAUSE_CONSOLIDATION`.
-
-Frontend/Claude: ejecutar únicamente estos P0 cuando el bloque de corrección los requiera, sobre la misma candidata, sin paquete/rediseño paralelo.
+Backend + ajuste frontend P0 focalizado: `ITERACION_2_CANONICAL_PERSISTENCE_AND_TRANSVERSAL_REGRESSION`.
