@@ -18,15 +18,19 @@ const ensure=(condition,code)=>{if(!condition)throw new Error(code);};
 
 function sourceSelfTest(){
   const source=fs.readFileSync(new URL(import.meta.url),'utf8');
+  const realBranchMarker="}else{\n  ensure(authorization==='YES_SOURCE_APPROVED_REAL_READONLY_E2E'";
+  const markerIndex=source.indexOf(realBranchMarker);
+  const realExecution=markerIndex>=0?source.slice(markerIndex):'';
   const checks={
-    noPrototypeRoleEntry:!source.includes('CX.app.selectRole(')&&!source.includes('window.CX.app.selectRole('),
-    realCredentialFields:source.includes('autocomplete="username"')&&source.includes('autocomplete="current-password"'),
-    canonicalAuthContextRequired:source.includes('CX.backendAuth?.context?.()'),
-    hrAuthorityRequired:source.includes('CX_PROTECTED_AUTH_HR_AUTHORITY'),
-    identityMapRequired:source.includes('__identityMap'),
-    reviewQueueChecked:source.includes('__identityReviewQueue'),
-    historyRequired:source.includes('visitsForShopper'),
-    noWriteApis:!/(firebase-admin|admin\.auth\(|admin\.firestore\(|createUser\(|updateUser\(|deleteUser\(|setCustomUserClaims\(|firebase\s+deploy|gcloud\s+run\s+deploy)/i.test(source)
+    noPrototypeRoleEntry:!realExecution.includes('CX.app.selectRole(')&&!realExecution.includes('window.CX.app.selectRole('),
+    realCredentialFields:realExecution.includes('autocomplete="username"')&&realExecution.includes('autocomplete="current-password"'),
+    canonicalAuthContextRequired:realExecution.includes('CX.backendAuth?.context?.()'),
+    hrAuthorityRequired:realExecution.includes('CX_PROTECTED_AUTH_HR_AUTHORITY'),
+    identityMapRequired:realExecution.includes('__identityMap'),
+    reviewQueueChecked:realExecution.includes('__identityReviewQueue'),
+    historyRequired:realExecution.includes('visitsForShopper'),
+    explicitRealBranchFound:Boolean(realExecution),
+    noWriteApis:!/(firebase-admin|admin\.auth\(|admin\.firestore\(|createUser\(|updateUser\(|deleteUser\(|setCustomUserClaims\(|firebase\s+deploy|gcloud\s+run\s+deploy)/i.test(realExecution)
   };
   const failed=Object.entries(checks).filter(([,pass])=>!pass).map(([id])=>id);
   return {schemaVersion:'cxorbia.p0.real-shopper-auth-e2e.source.v1',decision:failed.length?'FAIL_P0_REAL_SHOPPER_AUTH_E2E_SOURCE':'PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE',checks,failed,safety:safe};
