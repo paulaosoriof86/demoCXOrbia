@@ -1,74 +1,94 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-13 19:20 -06:00
-**Estado:** `P0_SHOPPER_GENERIC_IDENTITY_SOURCE_REPAIR_PASS__REAL_AUTH_E2E_PENDING__NO_DEPLOY`
+**Última actualización:** 2026-08-13 20:26 -06:00
+**Estado:** `P0_READONLY_GATE_HOLD_INCONCLUSIVE__V1_MAPPING_INVALIDATED__EXACT_LINKED_OWNER_SOURCE_REPAIR_PASS__NO_DEPLOY`
 
-## Bloque 2026-08-13 — reparación estructural source-only del P0 Shopper
+## Bloque 2026-08-13 — gate real read-only + corrección source posterior
 
-Partiendo de la causa raíz forense `P0_PROVEN_IDENTITY_CONTRACT_SPLIT_AND_STALE_PREAUTH_BOOTSTRAP`, se aplicó una reparación genérica en la rama viva `docs-tya-v6-v71-audit`. No se creó candidata, rama ni PR nuevos; no se modificaron módulos UI funcionales.
+Se ejecutó **una sola vez** el gate DEV read-only autorizado para revalidar Auth/claims/perfiles/HR y preparar E2E Shopper real. No se autorizó ni ejecutó ningún write o deploy.
 
-### Archivos creados
+### Ejecución real consumida
 
-- `app/adapters/cxorbia-exact-identity-contract-v1.js`: contrato reusable de identidad exacta para CXOrbia.
-- `tools/qa/cxorbia-p0-exact-identity-contract-source-gate.mjs`: gate source que compara runtime con el universo técnico Auth y controla bootstrap humano.
-- `tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs`: E2E preparado para formulario Firebase real; por defecto solo self-test source y exige gate explícito para ejecución real.
-- `app/docs/evidence/p0-exact-identity-contract-source-repair-pass-31761257145.json`: evidencia durable del PASS.
-- `app/docs/ACADEMIA-ADDENDUM-P0-SHOPPER-IDENTITY-CONTRACT-SOURCE-READY-20260813.md`: impacto y revalidación requerida en Academia/Certificación.
+Workflow existente `CXOrbia C6 Human Login Shopper Identity Audit`:
+- run `31762716234`;
+- job `94652243857`;
+- artifact `9205200319`;
+- digest `sha256:7d49035d2610dc35e1bf6b1bca73d49c0ba8487e6242014c01269f0bf8f3526c`;
+- provider read executions: **1/1 consumido**.
 
-### Archivos modificados
+Inventario leído: 231 Auth users, 209 principals Shopper efectivos, 340 perfiles, 616 visitas protegidas, 572 liquidaciones, 77 certificaciones, HR 15 periodos / 660 visitas / 212 shoppers.
 
-- `app/adapters/tya-cumulative-read-model-v2.js`: consume `CX_EXACT_IDENTITY_CONTRACT`, construye el índice canónico desde fuentes técnicas exactas y publica diagnóstico del contrato/conflictos.
-- `app/adapters/tya-canonical-shopper-portal-v2.js`: resolución Shopper por el mismo contrato exacto; no adjudica por nombre/correo/teléfono.
-- `app/adapters/tya-live-source-refresh-watch-v2.js`: la ruta humana protegida espera Auth antes de leer HR operacional y reintenta tras `backend-auth-ready`.
-- `app/index-backend-dev.html`: elimina del entrypoint humano la carga del snapshot source-safe viejo y del mutador preview; preserva ambos archivos para contextos source-safe/laboratorio; carga el contrato exacto antes del compositor y declara `preAuthOperationalData:'none'`.
-- `.github/workflows/cxorbia-phase-a-visual-smoke.yml`: se reforzó el workflow existente; no se creó workflow nuevo. Ejecuta los gates P0 source antes del smoke local.
-- Documentación viva: índice, checkpoint, CAMBIOS, RESUMEN, PENDIENTES, tracker y addendum Academia.
+El auditor v1 emitió `62 unique / 137 unmapped / 10 ambiguous-review`, pero **esa distribución quedó invalidada como resultado autoritativo**. No debe traducirse en “147 identidades rotas”. El mismo run entregó evidencia independiente `M616/L208/P194`: 616 matches exactos de visita, 208 relaciones únicas HR→shopper protegido y 194 shoppers protegidos con histórico.
 
-## Contrato exacto reusable
+### Causa del HOLD/inconsistencia
 
-El contrato comparte exactamente estas 11 llaves con el activador Auth:
+Se aislaron source-only dos brechas:
 
-`shopperId · legacyShopperId · legacyId · externalShopperId · externalId · sourceId · sourceKey · hrRowId · personId · profileId · shopperDocId`.
+1. `tools/qa/cxorbia-p0-exact-identity-provider-readonly.mjs` v1 hacía prefiltrado por claim antes de la composición exacta completa.
+2. `app/adapters/tya-cumulative-read-model-v2.js` podía relacionar una visita HR con `match.row.shopperId` todavía expresado como alias técnico legacy, sin canonicalizar ese owner a profile id antes de alimentar `liveToCanonical`.
 
-Reglas:
-- match exacto único únicamente;
-- múltiples propietarios exactos => revisión/fail-closed;
-- nombre, correo, teléfono, WhatsApp, username/login y similitud no son selectores de identidad;
-- reusable tenant/project; TyA/Cinépolis no define la semántica global.
+La segunda brecha fue reproducida por un self-test sin proveedor y falló antes de la corrección. Esto demuestra que la salida 62/137/10 mezclaba defecto del instrumento + defecto source y no medía limpiamente el universo real.
 
-## Gate autoritativo
+### Reparación reusable aplicada
 
-Workflow `CXOrbia Phase A Visual Smoke`, run `31761257145`, job `94647914674`: **SUCCESS**.
+Se reforzó `app/adapters/tya-canonical-state-semantics-v2.js`, que ya se carga inmediatamente después del compositor. Antes de la composición acumulativa ahora:
+- construye el índice mediante `CX_EXACT_IDENTITY_CONTRACT`;
+- recorre owners de `visits`, `certifications`, `liquidations`, `postulations`, `applications` y `posts`;
+- canonicaliza únicamente owners con match técnico exacto único;
+- preserva el owner técnico original como diagnóstico cuando cambia;
+- deja ambiguos/no resueltos fail-closed;
+- no usa nombre, correo, teléfono, username ni similitud.
 
-- `PASS_P0_EXACT_IDENTITY_CONTRACT_SOURCE` — hard fails 0.
-- `PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE` — E2E real source-ready, no ejecutado contra proveedor.
-- Smoke local: `GO_WITH_WARNINGS_VISUAL_SMOKE_POST_V96`, hard fails 0.
-- Warning no bloqueante existente: `custom:custom_role_visible_nav_items:1`.
-- Artifact `9204689215`.
-- Digest `sha256:0ec1c5fb23c894d89b6c80838303a2befb7f0e58c0fac9f774df407fc75d4402`.
+No se dejó un adapter paralelo: el archivo temporal `app/adapters/cxorbia-exact-linked-owner-normalizer-v1.js` fue eliminado después de integrar el seam en el adapter existente.
 
-Dos runs previos (`31760905131`, `31761151928`) aislaron falsos positivos del harness nuevo; no hubo proveedor/writes/deploy. Los detectores fueron corregidos y el run autoritativo posterior quedó SUCCESS.
+### Gates creados/reforzados
 
-## Qué NO se hizo
+- `tools/qa/cxorbia-p0-exact-identity-provider-readonly.mjs`: auditor v2 preparado para composición global antes de clasificar principals; no se ha reejecutado contra proveedor.
+- `tools/qa/cxorbia-p0-local-readonly-proxy.mjs`: servidor local GET/HEAD-only para ejecutar source reparado contra rutas DEV sin deploy.
+- `tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs`: soporte de handoff privado y rutas Academia/Certificación; E2E real aún no ejecutado.
+- `tools/qa/cxorbia-p0-global-composition-source-selftest.mjs`: regresión provider-free de la cadena exacta profile→alias→visita protegida→hrRowId→HR.
+- `.github/workflows/cxorbia-phase-a-visual-smoke.yml`: workflow existente reforzado; no se creó workflow nuevo.
+- `.github/workflows/cxorbia-c6-human-login-shopper-identity-audit.yml`: workflow existente reforzado para modo one-shot read-only; no se creó workflow nuevo.
 
-No se desplegó el source repair. No se ejecutó el E2E Firebase real. No se releyó proveedor. No se modificaron claims, perfiles, passwords, HR, Firestore, Rules o Storage. No se reimportó HR. No se tocó producción, dominio oficial, main ni merge.
+### PASS source posterior
 
-El DEV visible que falló humanamente sigue correspondiendo al deploy anterior; **no pedir retest humano sobre ese build como validación de este source repair**.
+Run `31763545130`, job `94654691101`: **SUCCESS**.
+
+- `PASS_P0_EXACT_IDENTITY_CONTRACT_SOURCE`.
+- `PASS_P0_GLOBAL_COMPOSITION_SOURCE`.
+- `PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE`.
+- Visual smoke: `GO_WITH_WARNINGS_VISUAL_SMOKE_POST_V96`.
+- Hard fails: 0.
+- Warning no bloqueante: `custom:custom_role_visible_nav_items:1`.
+- Artifact `9205478201`.
+- Digest `sha256:12c5196203588c70ebe2f2ba86774f77965d7fbb5dbdcdb27007aa916272706a`.
+
+## E2E real y credenciales
+
+El selector privado existente usa un handoff histórico de 109 credenciales. No obtuvo credencial Shopper vigente; no hubo exportación de valores ni sign-in. Por eso el E2E real y Academia/Certificación real se **omitieron**, no se clasifican como FAIL.
+
+## Seguridad / STOP_RETRY
+
+Request real consumido/deshabilitado. Run seguro `31762822792` confirmó que la neutralización omite proveedor. No hubo segundo provider read.
+
+- provider read executions: 1;
+- provider writes: 0;
+- Auth/Firestore/HR/Rules/Storage writes: 0;
+- password changes/resets: 0;
+- Hosting/Cloud Run deploy: 0;
+- Make/Gemini/pagos: 0;
+- merge/producción: false.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** contrato técnico exacto único, fail-closed y gate real de identidad.
-- **Exclusivo cliente:** crosswalk efectivo TyA, datos HR y resultado concreto del Shopper humano, todavía por revalidar read-only.
-- **Claude/prototipo:** no rediseño de módulos; el prototipo se preserva. El entrypoint humano ya no recibe snapshot operativo pre-auth.
-- **Academia:** contenido sin cambios; debe revalidarse por la misma identidad exacta en la sesión real.
-- **Sin impacto Claude:** CI source-only, evidencia y seguridad.
+- **Reusable CXOrbia:** contrato exacto compartido + canonicalización de owners vinculados + regresión source.
+- **Exclusivo cliente:** universo real TyA y cohorte de credenciales vigentes, aún no revalidados con v2.
+- **Claude/prototipo:** sin rediseño UI, sin candidata nueva; no requiere parche frontend.
+- **Academia:** rutas incorporadas al E2E source; validación real pendiente.
+- **Sin impacto Claude:** request, CI, auditoría y evidencia.
 
-## Avance y siguiente bloque
+## Pendiente exacto
 
-- M1–M10 técnico DEV: 100% preservado.
-- Forense causa raíz P0: 100%.
-- Reparación estructural source-only: **100% / PASS**.
-- Validación empírica del universo real + Shopper Firebase real: **pendiente**.
-- Go-live: **BLOCKED**.
+Siguiente bloque source-only: resolver el **handoff privado Shopper vigente** a partir de material ya existente, sin tocar proveedor ni contraseñas. Después hará falta una nueva autorización one-shot para ejecutar auditor v2 + E2E real. El source repair no se despliega hasta ese PASS.
 
-Siguiente gate: una única validación DEV read-only de Auth/claims/perfiles/HR bajo el contrato común + E2E real Shopper → perfil → HR → histórico/Academia/Certificación. Cero writes, cambios/reset de contraseña o deploy. Solo después de ese PASS se solicita deploy DEV separado.
+Evidencia: `app/docs/evidence/p0-exact-identity-readonly-gate-hold-and-source-repair-20260813.json`.
