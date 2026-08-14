@@ -8,7 +8,7 @@
 - Repo `paulaosoriof86/demoCXOrbia`.
 - Rama `docs-tya-v6-v71-audit`.
 - PR #7 draft/open/no merge.
-- M1–M10 mantienen 100% de calificación técnica DEV; **no equivalen a aceptación funcional**.
+- M1–M10: 100% de calificación técnica DEV; no equivalen a aprobación funcional.
 - Plataforma/hosting oficial TyA: sin reemplazar.
 - Redeploy DEV del fix previo: técnicamente PASS, run `31758046539`, job `94638091029`, exactamente 1 Hosting deploy a `cxorbia-backend-dev`.
 - Aceptación humana post-deploy: **RECHAZADA**. El mismo Shopper vuelve a perder identidad/histórico después de que HR viva termina de componer.
@@ -40,6 +40,10 @@ La brecha fue posible porque el bridge de perfil del 31-jul resolvió solo 120 p
 ### P0-C — cobertura de gate insuficiente
 
 El gate anterior validó presencia de `CX.backendAuth.context()`, espera HR, evento final y un fixture sintético de alias. El visual smoke sigue entrando a roles mediante `CX.app.selectRole(...)`. No comparó el conjunto real de llaves de Auth con el conjunto de aliases runtime y no ejecutó un Shopper Firebase real de extremo a extremo. Su PASS no certificaba el universo de identidad real.
+
+## Relación con la candidata canónica
+
+El source lock de la candidata frontend preserva el prototipo y sus módulos. La capa Firebase Auth/claims/crosswalk fue agregada posteriormente desde backend. La regresión actual se ubica en esa integración posterior: **no demuestra que la candidata haya perdido su lógica Shopper ni autoriza reescribirla**.
 
 ## Qué NO es la causa raíz
 
