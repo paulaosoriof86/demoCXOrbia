@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-13 19:07 -06:00
-**Estado:** `P0_SHOPPER_POSTDEPLOY_ACCEPTANCE_REJECTED__IDENTITY_CONTRACT_SPLIT_PROVEN__PREAUTH_STALE_BOOTSTRAP_PROVEN__REAL_CUTOVER_BLOCKED`
+**Fecha:** 2026-08-13 19:20 -06:00
+**Estado:** `P0_SHOPPER_SOURCE_REPAIR_PASS__REAL_PROVIDER_IDENTITY_E2E_PENDING__REAL_CUTOVER_BLOCKED`
 
 ## Estado vivo
 
@@ -10,55 +10,70 @@
 - PR #7 draft/open/no merge.
 - M1–M10: 100% de calificación técnica DEV; no equivalen a aprobación funcional.
 - Plataforma/hosting oficial TyA: sin reemplazar.
-- Redeploy DEV del fix previo: técnicamente PASS, run `31758046539`, job `94638091029`, exactamente 1 Hosting deploy a `cxorbia-backend-dev`.
-- Aceptación humana post-deploy: **RECHAZADA**. El mismo Shopper vuelve a perder identidad/histórico después de que HR viva termina de componer.
-- Segundo deploy: no autorizado. Marcador one-shot consumido y deshabilitado; run de neutralización `31759552694` no ejecutó proveedor ni deploy.
+- Deploy DEV anterior: run `31758046539`, exactamente 1 Hosting deploy; aceptación humana posterior **RECHAZADA**.
+- Segundo deploy: no autorizado; request previo consumido/deshabilitado.
+- P0 forense post-deploy: causa raíz demostrada en `app/docs/evidence/p0-shopper-postdeploy-forensic-rootcause-20260813.json`.
+- Reparación estructural source-only: **PASS** en run `31761257145`, job `94647914674`.
+- El source repair actual **todavía no está desplegado en DEV**.
 
-## Evidencia humana post-deploy
+## Reparación source-only cerrada
 
-Secuencia reproducida:
+### 1. Contrato único reusable de identidad exacta
 
-1. Firestore protegido transitorio encuentra el documento del Shopper autenticado y muestra nombre/país; visitas e histórico aparecen en cero mientras `Periodos HR` está pendiente.
-2. La autoridad HR termina correctamente: fuente final `hr-live-all-periods+firestore-authenticated-exact-overlay`, 15 periodos, 660 visitas, rango 2025-06 → 2026-08.
-3. Inmediatamente después, el portal muestra `La identidad de esta sesión no está vinculada al read model canónico` y el país vuelve a quedar sin asignar.
-4. Antes del login, el entrypoint aún puede mostrar el snapshot empaquetado viejo de julio: 616 visitas / 210 shoppers / 42 postulaciones / periodo 2026-07.
+Se creó `app/adapters/cxorbia-exact-identity-contract-v1.js`, reusable tenant/project. Define exactamente el mismo universo técnico que el activador Auth:
 
-## Causa raíz forense demostrada
+`shopperId · legacyShopperId · legacyId · externalShopperId · externalId · sourceId · sourceKey · hrRowId · personId · profileId · shopperDocId`.
 
-### P0-A — contrato de identidad dividido
+No usa nombre, correo, teléfono, WhatsApp, username o similitud para adjudicar identidad. Un anchor exacto único se propaga; múltiples propietarios exactos quedan fail-closed/revisión.
 
-La activación Auth ejecutada en DEV (`PASS_C6_AUTH_PLAN_V4_ACTIVATION_DEV`) creó 118 usuarios y actualizó 9, llegando a 228 Auth users. Su resolver usa llaves técnicas `shopperId`, `legacyShopperId`, `legacyId`, `externalShopperId`, `externalId`, `sourceId`, `sourceKey`, `hrRowId`, `personId`, `profileId` y `shopperDocId`; los claims canónicos fijan `shopperId = profile.id` del documento Firestore.
+`app/adapters/tya-cumulative-read-model-v2.js` y `app/adapters/tya-canonical-shopper-portal-v2.js` consumen el mismo contrato. El compositor publica diagnóstico de versión/llaves/conflictos del contrato.
 
-El compositor browser `tya-cumulative-read-model-v2.js`, en cambio, acepta un conjunto menor de aliases para cruzar HR→perfil. Si el perfil protegido no es consumido por ese crosswalk, lo excluye de la lista operacional con `reason: no_exact_hr_crosswalk`. Por ello Auth puede ser correcto y el documento Firestore puede existir, mientras el mismo principal desaparece al tomar autoridad HR.
+### 2. Bootstrap humano pre-auth corregido
 
-La brecha fue posible porque el bridge de perfil del 31-jul resolvió solo 120 perfiles exactos y dejó 31 holds, con `technicalBridgeResolved=0`, `authBridgeResolved=0` e `identityLinksPlanned=0`; el write posterior actualizó solo esos 120. La activación Auth del 10-ago fue Auth-only y realizó 0 Firestore writes: el crosswalk técnico más amplio que usó para activar Auth no quedó materializado para el runtime.
+`app/index-backend-dev.html` ya no carga en la ruta humana canónica:
+- `data/tya-hr-source-safe-periods.js`;
+- `core/tya-phase-a-source-safe-preview.js`.
 
-### P0-B — bootstrap pre-auth obsoleto en entrypoint canónico
+Los archivos source-safe se preservan; no fueron borrados ni se rediseñó el prototipo. El entrypoint declara `preAuthOperationalData:'none'` y carga el contrato exacto antes del compositor.
 
-`app/index-backend-dev.html` carga `data/tya-hr-source-safe-periods.js` y luego `core/tya-phase-a-source-safe-preview.js` antes de resolver Auth. El payload empaquetado fue generado el 13-jul y el preview adapter muta `CX.data` automáticamente en el host DEV. Esto explica la cifra vieja 616/2026-07 en el login. El entrypoint humano canónico no debe adoptar un snapshot estático como estado operacional previo a Auth.
+`app/adapters/tya-live-source-refresh-watch-v2.js` no inicia lectura HR operacional en la ruta humana protegida hasta que exista contexto Auth válido; se reactiva al evento `backend-auth-ready`.
 
-### P0-C — cobertura de gate insuficiente
+### 3. Gate de aceptación real preparado
 
-El gate anterior validó presencia de `CX.backendAuth.context()`, espera HR, evento final y un fixture sintético de alias. El visual smoke sigue entrando a roles mediante `CX.app.selectRole(...)`. No comparó el conjunto real de llaves de Auth con el conjunto de aliases runtime y no ejecutó un Shopper Firebase real de extremo a extremo. Su PASS no certificaba el universo de identidad real.
+`tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs` quedó preparado para una ejecución real read-only por formulario visible Firebase. Por contrato no usa `CX.app.selectRole`; exige Auth canónico, autoridad HR final, identidad exacta única, ausencia en review queue, país, fuente HR final e histórico. La ejecución real requiere un gate explícito y credenciales privadas; **no se ejecutó contra proveedor en este bloque**.
 
-## Relación con la candidata canónica
+## Evidencia autoritativa del bloque
 
-El source lock de la candidata frontend preserva el prototipo y sus módulos. La capa Firebase Auth/claims/crosswalk fue agregada posteriormente desde backend. La regresión actual se ubica en esa integración posterior: **no demuestra que la candidata haya perdido su lógica Shopper ni autoriza reescribirla**.
+Workflow `CXOrbia Phase A Visual Smoke`:
+- run `31761257145`;
+- job `94647914674`;
+- conclusión SUCCESS;
+- `PASS_P0_EXACT_IDENTITY_CONTRACT_SOURCE`;
+- `PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE`;
+- smoke local `GO_WITH_WARNINGS_VISUAL_SMOKE_POST_V96`;
+- hard fails 0;
+- warning conocido `custom:custom_role_visible_nav_items:1`;
+- artifact `9204689215`;
+- digest `sha256:0ec1c5fb23c894d89b6c80838303a2befb7f0e58c0fac9f774df407fc75d4402`.
 
-## Qué NO es la causa raíz
+Los runs intermedios `31760905131` y `31761151928` fallaron únicamente por falsos positivos del harness source y no ejecutaron proveedor, writes ni deploy. Fueron corregidos antes del run autoritativo.
 
-- HR viva sí llega y conserva 15/660.
-- El deploy sí fue correcto.
-- Firebase Auth sí autentica.
-- La corrección previa de `window.CX_BACKEND_AUTH` → `CX.backendAuth.context()` fue válida, pero parcial.
-- No hay evidencia para culpar a un módulo UI específico ni corresponde unir identidades por nombre/correo.
+## Qué está probado y qué no
+
+**Probado:** contrato source único, equivalencia de las 11 llaves con Auth, fail-closed en ambigüedad, entrada humana sin snapshot viejo, HR humana condicionada a Auth, E2E real preparado sin rol sintético y smoke local sin hard fails.
+
+**No probado todavía:** que el universo real actual de Auth/claims/perfiles/HR tenga crosswalk exacto completo; que el Shopper humano fallido resuelva después del source repair; que todos los principals Shopper efectivos estén mapeados uno-a-uno; que el build desplegado contenga este repair. Por ello no se declara aceptación humana ni go-live.
+
+## Academia
+
+No se modificaron cursos, manuales, bancos de preguntas ni UI. Academia/Certificación deben resolverse por el mismo principal canónico y se revalidarán en la misma sesión Shopper real. Ver `app/docs/ACADEMIA-ADDENDUM-P0-SHOPPER-IDENTITY-CONTRACT-SOURCE-READY-20260813.md`.
 
 ## Seguridad
 
-Desde la evidencia humana fallida: provider reads 0, provider writes 0, Auth/Firestore/HR/Rules/Storage writes 0, Hosting deploys adicionales 0, Make/Gemini/pagos 0, merge false, producción false.
+Este bloque: provider reads 0, provider writes 0, Auth/Firestore/HR/Rules/Storage writes 0, Hosting/Cloud Run deploys 0, Make/Gemini/pagos 0, merge false, producción false.
 
 ## Siguiente bloque exacto
 
-**Source-only, sin deploy:** consolidar un único contrato reutilizable de identidad exacta para migración/Auth/Firestore/runtime; hacer que el compositor use exactamente la misma semántica de llaves técnicas o un crosswalk canónico persistido/servido; impedir que el entrypoint humano canónico cargue el snapshot source-safe viejo como `CX.data`; y reemplazar el falso cierre de smoke por un gate que exija Auth Shopper real → perfil Firestore → crosswalk HR único → histórico. Después de demostrar PASS source-only, pedir un único gate específico para la lectura/revalidación real que haga falta y, solo después, deploy DEV.
+Un único gate DEV read-only para: (a) revalidar el universo efectivo Auth/claims/perfiles/HR usando exactamente `cxorbia-exact-identity-contract-v1`; y (b) ejecutar un Shopper Firebase real → perfil Firestore → HR exacta → histórico, incluyendo Academia/Certificación. Sin writes, cambios/reset de contraseña ni deploy. Si ese gate da PASS, el siguiente gate separado será deploy DEV del source repair y aceptación humana/regresión dirigida.
 
-Evidencia vigente: `app/docs/evidence/p0-shopper-postdeploy-forensic-rootcause-20260813.json`.
+Evidencia vigente: `app/docs/evidence/p0-exact-identity-contract-source-repair-pass-31761257145.json`.
