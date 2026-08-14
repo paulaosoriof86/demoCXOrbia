@@ -1,7 +1,7 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
 **Fecha:** 2026-08-14 13:24 -06:00  
-**Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__I1_PASS__I2_PASS__I3_CREDENTIAL_RECOVERY_PASS__ADMIN_LOGIN_POINTER_STOP_RETRY__GO_LIVE_35__PAULA_REVIEW_REQUIRED`
+**Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__I1_PASS__I2_PASS__I3_RECOVERY_PASS__ADMIN_POINTER_ROOT_FIXED__HARNESS_DURABILITY_PASS__GO_LIVE_35__PROVIDER_GATE_REQUIRED`
 
 ## 1. Lectura obligatoria y prevalente
 
@@ -16,59 +16,50 @@
 9. `ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md`
 10. `SOURCE-LOCK-ITERATION2-CANONICAL-PERSISTENCE-PASS-20260814.md`
 11. `SOURCE-LOCK-ITERATION3-STOP-RETRY-POST-CREDENTIAL-RECOVERY-ADMIN-LOGIN-POINTER-20260814.md`
-12. `GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`
-13. `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, PR #7 y HEAD vivo.
+12. `SOURCE-LOCK-ITERATION3-HARNESS-DURABILITY-PASS-20260814.md`
+13. `GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`
+14. `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, PR #7 y HEAD vivo.
 
 ## 2. Decisión vigente
 
-I1 e I2 están cerradas y no se reprocesan. I3 continúa en la misma candidata `docs-tya-v6-v71-audit` / PR #7; no nueva candidata, rama, PR, Auth rebuild ni reauditoría general.
+I1 e I2 están cerradas y no se reprocesan. I3 continúa en la misma candidata `docs-tya-v6-v71-audit` / PR #7.
 
-La autorización focalizada de Paula fue ejecutada una vez en run `31833696707`, job `94875097700`.
+El run `31833696707` ejecutó PASS el único recovery/reset histórico autorizado y la reconciliación exacta, pero se detuvo antes del alta Shopper nuevo porque `#cxBackendPreviewStatus` interceptó el click Admin. No hubo retry automático.
 
-## 3. I3 — avance real y STOP_RETRY nuevo
+## 3. Causa nueva ya corregida source-only
 
-PASS dentro del run:
+La causa fue `app/core/backend-preview-status.js`: panel DEV fixed/z-index alto sin `pointer-events:none`.
 
-- único principal Shopper histórico exacto resuelto;
-- único credential recovery/reset autorizado ejecutado;
-- UID/claims/shopperId/profile/historia preservados y otras identidades modificadas `0`;
-- reconciliación exacta membership/crosswalk PASS;
-- provider y proxy local PASS.
+Ya quedó corregido sin provider retry:
 
-Nuevo blocker reproducible:
+- overlay no interactivo;
+- E2E verifica `pointer-events:none` y no usa force-click;
+- Admin/new-Shopper E2E quedó desacoplado del password histórico.
 
-`I3_ADMIN_LOGIN_CLICK_BLOCKED_BY_CX_BACKEND_PREVIEW_STATUS_POINTER_INTERCEPTION`.
+## 4. Harness durability — PASS source-only
 
-Playwright resolvió `#lgSubmit` visible/habilitado, pero `#cxBackendPreviewStatus` interceptó los eventos de puntero durante 30 s. El fallo ocurrió antes de crear el Shopper nuevo.
+Se corrigió el orden del workflow existente:
 
-Causa source localizada en `app/core/backend-preview-status.js`: overlay DEV fixed/z-index alto sin `pointer-events:none`.
+`exact recovery → historical Shopper real login/history E2E → sanitized checkpoint → Admin create/update → new Shopper login/reload/new-tab/second context`.
 
-Corrección source-only ya aplicada en la misma candidata: overlay no interactivo + E2E que exige `pointer-events:none`. No se hizo provider retry.
+Si un paso posterior al histórico falla, el failure handler puede preservar únicamente evidencia sanitizada del subgate histórico PASS y parkear el request. Así no se pierde otra vez el progreso histórico ni se requiere repetir recovery por un fallo posterior de Admin.
 
-## 4. Credencial histórica después del run
+Source lock: `SOURCE-LOCK-ITERATION3-HARNESS-DURABILITY-PASS-20260814.md`.
 
-El password temporal recuperado se mantuvo únicamente en el boundary privado del runner y fue eliminado por cleanup. No fue expuesto ni persistido. Como el E2E histórico estaba después del paso Admin, quedó SKIPPED; por tanto el login histórico todavía no está certificado y la credencial temporal ya no puede recuperarse.
+## 5. Credencial histórica del run ya consumido
 
-Cualquier nueva modificación de contraseña requiere autorización nueva expresa. El siguiente harness debe ejecutar y preservar evidencia sanitizada del login histórico inmediatamente después de establecer una credencial autorizada, antes del flujo Admin.
+La contraseña temporal del run `31833696707` fue destruida correctamente en cleanup y no fue expuesta/persistida. Como el histórico no alcanzó a probarse en ese run, su login sigue pendiente. Establecer otra contraseña requiere autorización nueva expresa sobre el mismo principal exacto.
 
-## 5. Seguridad
+## 6. Seguridad
 
-- un password update/reset exacto ejecutado sobre el único Shopper autorizado;
-- otras identidades modificadas: `0`;
-- reconciliación Firestore exacta PASS; conteo final no persistido, dentro de máximo 0–2 por código;
-- Shopper nuevo: `NO`;
-- HR/Rules/Storage/Make/Gemini/pagos: `0`;
-- deploy: `0`; merge: `false`; producción: `false`;
-- segundo intento automático: `NO`.
+Desde el STOP_RETRY hasta este cierre source-only no hubo nuevos provider writes. En el run previo hubo exactamente un password update/reset del principal histórico autorizado; otras identidades `0`; Shopper nuevo `NO`; HR/Rules/Storage/Make/Gemini/pagos `0`; deploy `0`; merge/producción false.
 
-## 6. Porcentaje vigente
+## 7. Porcentaje
 
-**GO-LIVE: 35% completado / 65% pendiente.**
+**GO-LIVE: 35% completado / 65% pendiente.** I3 no suma sus 25 puntos hasta PASS completo.
 
-I1 15 PASS / I2 20 PASS / I3 25 todavía no cerrado / I4 25 pendiente / I5 15 pendiente.
+## 8. Siguiente gate exacto
 
-## 7. Siguiente acción exacta
+`PAULA_REVIEW_REQUIRED_FOR_I3_DURABLE_HISTORICAL_LOGIN_AND_ADMIN_NEW_SHOPPER_RESUME`.
 
-`PAULA_REVIEW_REQUIRED_FOR_I3_POST_RECOVERY_LOGIN_AND_ADMIN_NEW_SHOPPER_RESUME`.
-
-Primero se termina source-only la protección anti-repetición del harness; después, solo con gate nuevo, se reanuda I3 sin I1/I2 ni diagnóstico general.
+No se solicita ni autoriza nueva candidata, Auth rebuild, HR/Make/Storage/pagos, deploy, merge o producción.
