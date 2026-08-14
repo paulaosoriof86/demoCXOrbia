@@ -1,6 +1,6 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-14 11:20 -06:00  
+**Fecha:** 2026-08-14 11:22 -06:00  
 **Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__ITERATION_2_CANONICAL_PERSISTENCE_PASS__SOURCE_READY_FOR_DEV_WRITE_GATES__GO_LIVE_35__ITERATION_3_NEXT`
 
 ## 1. Lectura obligatoria y prevalente
@@ -42,7 +42,11 @@ Marker: `PASS_ROOT_CAUSE_CORRECTION_ITERATION2_CANONICAL_PERSISTENCE`.
 
 Cierre: `SOURCE_READY_FOR_DEV_WRITE_GATES`.
 
-Evidencia: workflow existente `CXOrbia Phase A Live Execution Checkpoint`, run `31823098359`, **SUCCESS**.
+Evidencia del workflow existente `CXOrbia Phase A Live Execution Checkpoint`:
+
+- run source I2 `31823098359`: SUCCESS;
+- run final con checkpoint/documentación I2 `31823620461`: SUCCESS;
+- el run final verificó `goLiveCorrectionCompletedPct=35`, `goLiveCorrectionRemainingPct=65`, `iteration=2/5`, misma candidata, no Auth rebuild, no nueva rama/PR y cero provider/deploy/producción writes.
 
 Cerrado:
 
