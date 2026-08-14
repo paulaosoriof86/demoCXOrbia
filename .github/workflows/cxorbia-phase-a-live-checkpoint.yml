@@ -16,12 +16,18 @@ on:
       - 'backend/contracts/c6-staff-private-execution-handoff-v1.json'
       - 'backend/runtime/private-handoff/c6-staff-private-execution-handoff.mjs'
       - 'backend/contracts/c6-staff-d-technical-login-rebase-v1.json'
+      - 'app/index-backend-dev.html'
+      - 'app/core/shoppers-store.js'
+      - 'app/modules/misvisitas.js'
       - 'app/adapters/tya-c6-shopper-auth-click-guard-v1.js'
       - 'app/adapters/tya-canonical-finance-read-model-v2.js'
       - 'app/adapters/cxorbia-command-adapter-v1.js'
       - 'app/adapters/cxorbia-shopper-admin-command-contract-v1.js'
       - 'app/adapters/cxorbia-hr-write-adapter-contract-v1.js'
+      - 'app/adapters/cxorbia-cxdata-command-boundary-v1.js'
+      - 'app/adapters/cxorbia-canonical-write-firewall-v1.js'
       - 'tools/qa/verify-root-cause-correction-iteration1.mjs'
+      - 'tools/qa/verify-root-cause-correction-iteration2.mjs'
       - 'tools/qa/verify-phase-a-live-execution-checkpoint.mjs'
       - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
   pull_request:
@@ -38,12 +44,18 @@ on:
       - 'backend/contracts/c6-staff-private-execution-handoff-v1.json'
       - 'backend/runtime/private-handoff/c6-staff-private-execution-handoff.mjs'
       - 'backend/contracts/c6-staff-d-technical-login-rebase-v1.json'
+      - 'app/index-backend-dev.html'
+      - 'app/core/shoppers-store.js'
+      - 'app/modules/misvisitas.js'
       - 'app/adapters/tya-c6-shopper-auth-click-guard-v1.js'
       - 'app/adapters/tya-canonical-finance-read-model-v2.js'
       - 'app/adapters/cxorbia-command-adapter-v1.js'
       - 'app/adapters/cxorbia-shopper-admin-command-contract-v1.js'
       - 'app/adapters/cxorbia-hr-write-adapter-contract-v1.js'
+      - 'app/adapters/cxorbia-cxdata-command-boundary-v1.js'
+      - 'app/adapters/cxorbia-canonical-write-firewall-v1.js'
       - 'tools/qa/verify-root-cause-correction-iteration1.mjs'
+      - 'tools/qa/verify-root-cause-correction-iteration2.mjs'
       - 'tools/qa/verify-phase-a-live-execution-checkpoint.mjs'
       - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
 
@@ -79,5 +91,14 @@ jobs:
           node --check tools/qa/verify-root-cause-correction-iteration1.mjs
       - name: Verify Iteration 1 root-cause source contract
         run: node tools/qa/verify-root-cause-correction-iteration1.mjs
+      - name: Validate Iteration 2 canonical persistence syntax
+        run: |
+          node --check app/adapters/cxorbia-cxdata-command-boundary-v1.js
+          node --check app/adapters/cxorbia-canonical-write-firewall-v1.js
+          node --check app/core/shoppers-store.js
+          node --check app/modules/misvisitas.js
+          node --check tools/qa/verify-root-cause-correction-iteration2.mjs
+      - name: Verify Iteration 2 canonical persistence and transversal source contract
+        run: node tools/qa/verify-root-cause-correction-iteration2.mjs
       - name: Verify Phase A current operational checkpoint
         run: node tools/qa/verify-phase-a-live-execution-checkpoint.mjs
