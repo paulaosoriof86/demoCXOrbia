@@ -1,7 +1,7 @@
 # ADDENDUM MAESTRO — PLAN DE CORRECCIÓN RAÍZ, GO-LIVE Y DURABILIDAD CXORBIA TyA
 
-**Fecha:** 2026-08-14 10:08 -06:00  
-**Estado:** `ACTIVO__PREVALENTE_PARA_CORRECCION_RAIZ_Y_GO_LIVE__NO_REPROCESO__MISMA_CANDIDATA`
+**Fecha:** 2026-08-14 14:00 -06:00  
+**Estado:** `ACTIVO__PREVALENTE_PARA_CORRECCION_RAIZ_Y_GO_LIVE__NO_REPROCESO__MISMA_CANDIDATA__I3_LEGAL_GATE_AWARE`
 
 ## 0. Propósito y lock
 
@@ -10,8 +10,7 @@ Este addendum convierte la auditoría forense integral del 14-ago en un plan de 
 - repo: `paulaosoriof86/demoCXOrbia`;
 - rama: `docs-tya-v6-v71-audit`;
 - PR existente: `#7` draft/open/no merge;
-- base: `release/cxorbia-tya-rc-20260630`;
-- HEAD al iniciar este plan: `cd02fcba934db84004c5b6e5d2f1855e1c4fadb4`.
+- base: `release/cxorbia-tya-rc-20260630`.
 
 Prohibido crear nueva candidata, rama, PR, composite paralelo o reconstrucción para resolver estas causas raíz. Si un cambio frontend P0 es indispensable, se corrige quirúrgicamente sobre esta misma candidata/source lock y se documenta por archivo/módulo; no se inicia otro ciclo de empalme.
 
@@ -29,30 +28,23 @@ Objetivo de producto: plataforma no-code/configurable por tenant/proyecto.
 
 No se reconstruye Auth desde cero. Se preserva y reutiliza lo ya implementado y probado:
 
-1. `core/backend-browser-auth.js`: Firebase Auth como autoridad, login visible único, namespace `staff/shopper`, validación de role/tenant/project/shopper scope y sesión sin password/token/UID en localStorage.
-2. `adapters/tya-c6-live-user-admin-membership-wiring-v1.js`: principal Staff + claims + membership `tenants/tya/users/{uid}` + RBAC + handoff frontend fail-closed.
-3. Principal Admin canónico/Exact Write V2 ya probado anteriormente, incluyendo membership persistida después de `CX.app.enter()` y reload/new-tab.
-4. `adapters/cxorbia-exact-identity-contract-v1.js`: contrato reusable de identidad por llaves técnicas exactas; prohibido matching por nombre, email, teléfono, WhatsApp, username/login o similitud.
+1. `core/backend-browser-auth.js`: Firebase Auth como autoridad, login visible único, namespaces `staff/shopper`, validación role/tenant/project/shopper scope y sesión sin password/token/UID en localStorage.
+2. `adapters/tya-c6-live-user-admin-membership-wiring-v1.js`: principal Staff + claims + membership + RBAC + handoff frontend fail-closed.
+3. Principal Admin canónico/Exact Write V2 y membership persistida después de `CX.app.enter()` y reload/new-tab.
+4. `adapters/cxorbia-exact-identity-contract-v1.js`: identidad exclusivamente por llaves técnicas exactas; prohibido matching por nombre, email, teléfono, WhatsApp, username/login o similitud.
 5. `adapters/tya-protected-auth-hr-authority-bridge-v2.js`: HR live como autoridad operacional y Firestore como overlay exacto de identidad/perfil/certificación.
-6. `adapters/tya-cumulative-read-model-v2.js` y portal Shopper canónico que consumen el contrato de identidad exacta.
-7. Reparación source-only de la cadena Shopper ya registrada como PASS; permanece pendiente de deploy/E2E real del mismo source lock.
-8. Manifests, build-locks, rollback, source locks, reviewQueue y gates previos no se reinician.
+6. `adapters/tya-cumulative-read-model-v2.js` y portal Shopper canónico.
+7. Reparación source-only de cadena Shopper, command HTTP transport, Shopper membership wiring, Shopper command provider y source patcher I3.
+8. Manifests, build-locks, rollback, source locks, reviewQueue y gates previos.
+9. I1/I2 PASS: `CX.data` command boundary, no local fallback productivo, provider ACK, Shopper store provider-only, Mis Visitas arrays/facets/ACK y firewall fail-closed.
 
-### Lo que sí se corrige en Auth
-
-No es un rediseño de Auth. Es consolidación de integración:
-
-- un solo propietario efectivo del ingreso humano protegido;
-- `pickShopperDev()` queda excluido de la ruta humana protegida;
-- los guards/interceptores transitorios dejan de ser arquitectura permanente cuando el controlador único quede probado;
-- Auth + claims + membership + shopper/profile + crosswalk deben resolver una única identidad atómica;
-- la reparación source-only debe quedar en el mismo build que se despliega y prueba.
+No se regeneran usuarios ni se sustituyen identidades para facilitar las pruebas.
 
 ## 3. Arquitectura durable/no-code obligatoria
 
 ### 3.1 `CX.data` permanece estable
 
-La interfaz pública de `CX.data` no cambia. El cambio durable ocurre detrás de esa interfaz.
+La interfaz pública de `CX.data` no cambia.
 
 Lecturas:
 
@@ -66,168 +58,128 @@ Con write gate cerrado: resultado `blocked`, cero mutación local, cero localSto
 
 ### 3.2 Configuración por tenant/proyecto
 
-Todo comando/lectura reusable debe recibir como mínimo:
-
-- `tenantId`;
-- `projectId`;
-- `actorId/role`;
-- `country` cuando aplique;
-- `sourceType/sourceRef`;
-- `expectedVersion` o equivalente;
-- `idempotencyKey` en writes;
-- llave de entidad (`visitId/hrRowId`, `shopperId`, etc.).
+Todo comando/lectura reusable recibe como mínimo tenantId, projectId, actor/role, country cuando aplique, sourceType/sourceRef, expectedVersion, idempotencyKey en writes y llave estable de entidad.
 
 Configurables por proyecto: HR/origen/mapping, países, monedas, cuestionario/origen/link, certificación, documentos, agendamiento, reprogramación/cancelación, pagos/liquidaciones, evidencias e integraciones.
 
 ### 3.3 Proveedores por adapter
 
-HR TyA/Google Sheets es una implementación de fuente externa, no la arquitectura completa. El mismo contrato debe admitir Sheets, API, archivo, CRM u otra fuente. Make, Gemini, Storage y otros proveedores no se llaman desde módulos UI y permanecen detrás de adapters/gates.
+HR TyA/Google Sheets es una implementación, no la arquitectura. El mismo contrato debe admitir Sheets, API, archivo, CRM u otra fuente. Make, Gemini, Storage y otros proveedores permanecen detrás de adapters/gates.
 
 ### 3.4 Persistencia Shopper
 
-Alta/edición administrativa reusable:
+`Admin -> command create/update Shopper -> validación exacta -> Auth -> claims -> membership -> profile/shopper -> crosswalk -> ACK -> refresh`
 
-`Admin -> command create/update shopper -> validación exacta -> Auth -> claims -> membership -> profile/shopper -> crosswalk -> ACK -> refresh`
+Nunca password/token en navegador. Nunca localStorage como persistencia productiva.
 
-Nunca almacenar password/token en navegador. Nunca considerar localStorage persistencia productiva.
+### 3.5 HR/plataforma
 
-### 3.5 Sincronización HR/plataforma
-
-Llaves mínimas: `tenantId`, `projectId`, `visitId/hrRowId`, `shopperId`, `assignmentSource`, `assignmentSyncStatus`, `lastSyncedAt`.
-
-Conflictos van a review; no overwrite silencioso. La UI solo confirma éxito después de ACK real.
+Llaves mínimas: `tenantId`, `projectId`, `visitId/hrRowId`, `shopperId`, `assignmentSource`, `assignmentSyncStatus`, `lastSyncedAt`. Conflictos a review; no overwrite silencioso; UI solo confirma tras ACK real.
 
 ## 4. Plan de ejecución — cinco iteraciones base
 
-La ruta normal desde este corte queda cerrada en **5 iteraciones de ejecución**. Una sexta iteración no se abre por rutina: solo puede existir por un P0 nuevo reproducible o por un gate externo realmente bloqueado, y debe quedar documentado con evidencia.
+La ruta normal queda cerrada en 5 iteraciones. Una sexta no se abre por rutina, solo por P0 nuevo reproducible o gate externo comprobado.
 
-### ITERACIÓN 1 — Consolidación source-only y no-reproceso
+### ITERACIÓN 1 — source-only root-cause consolidation — PASS 15/15
 
-Objetivo: corregir la arquitectura fuente sin tocar proveedores.
+Cerró Auth owner, runtime, Finance activation contract, command adapter, Shopper contract, HR writer interface y P0 source. No reprocesar.
 
-- congelar inventario de Auth reutilizable y marcar explícitamente `PRESERVE/DO_NOT_REBUILD`;
-- consolidar controlador humano protegido y excluir bypass DEV de la ruta canónica;
-- eliminar dependencia funcional de hostname para Finance v2 y activar por runtime contract;
-- definir command adapter canónico de `CX.data` con fail-closed y sin mutación local;
-- preparar contrato reusable de creación/edición Shopper;
-- preparar writer HR real como interfaz gated, sin ejecutarlo;
-- registrar los únicos P0 frontend quirúrgicos en Claude/prototipo sobre la MISMA candidata: `app.js` (bypass DEV protegido) y `modules/misvisitas.js` (listas completas/facets canónicas en vez de `find()`/estados literales).
+### ITERACIÓN 2 — canonical persistence + transversal regression — PASS 20/20
 
-Cierre: source/static/unit gates y cero proveedor write.
+Cerró split-brain/false-success source, `CX.data` command boundary, provider ACK, fail-closed, Mis Visitas y regresión transversal. Marker `SOURCE_READY_FOR_DEV_WRITE_GATES`. No reprocesar.
 
-### ITERACIÓN 2 — Persistencia canónica preparada y regresión transversal
+### ITERACIÓN 3 — DEV Auth/Firestore Shopper persistence — EN CURSO 0/25 hasta PASS completo
 
-Objetivo: eliminar split-brain y false-success antes de activar writes.
+Debe cerrar:
 
-- todas las mutaciones Phase A de `CX.data` resuelven al command adapter;
-- `addShopper/updateShopper/setVisitState/assignVisit/postulaciones/reprogramación/cancelación` quedan sin fallback local productivo;
-- idempotencia, RBAC, tenant/project scope, expectedVersion, audit y ACK contract;
-- pruebas de reload/new-tab con writes bloqueados demuestran cero falsa persistencia;
-- gates de multi-tenant/multi-proyecto demuestran que no existe condición reusable exclusiva `cinepolis` salvo configuración/dato del proyecto actual;
-- regresión de Dashboard, HR, Shopper, Finanzas, Certificación y Academia sobre read path.
+- Shopper histórico exacto: Auth real + claims + membership + profile/shopper + crosswalk + historia;
+- Admin create/update de un único Shopper nuevo por provider ACK;
+- Auth/claims/membership/profile/crosswalk del nuevo Shopper;
+- provider readback;
+- login nuevo + reload/new-tab + segundo contexto;
+- cero fuzzy matching, otras identidades, false-success o writes fuera de scope.
 
-Cierre: `SOURCE_READY_FOR_DEV_WRITE_GATES`.
+#### I3 — reglas durables aprendidas y ya source-locked
 
-### ITERACIÓN 3 — Activación DEV Auth/Firestore y Shopper administrativo
+1. Un credential reset histórico autorizado se hace únicamente sobre el mismo UID exacto.
+2. La evidencia sanitizada de Auth/identity/HR/history debe congelarse inmediatamente después de ese subgate y antes de Admin/new Shopper.
+3. Un fallo posterior no obliga a repetir un subgate histórico ya preservado.
+4. Overlays diagnósticos DEV son no interactivos; no `force:true` para esconder defectos.
+5. **El gate legal/NDA es distinto del gate Auth/history.** `CX.app.enter()` puede diferir `CX.router.mount()` mientras `CX.confidencialidad.pending(...)` esté activo.
+6. El E2E histórico valida primero Auth exacto + identity + reviewQueue + HR authority + historia.
+7. Si el NDA está pendiente, debe existir un diálogo legal visible y el workspace queda `legal-gate-pending`; las rutas se difieren sin declararlas PASS.
+8. El harness jamás acepta, firma o guarda el consentimiento legal automáticamente.
+9. Si no hay NDA pendiente, Academia y Certificación siguen siendo rutas E2E obligatorias.
+10. Un gate legal pendiente no se presenta como PASS de Academia/Certificación; solo evita clasificarlo falsamente como fallo de Auth/history.
 
-Requiere gate explícito de writes DEV.
+Locks I3 actuales:
 
-- reconciliación efectiva de Auth/claims/membership/profile/crosswalk;
-- validar universo histórico sin adjudicar por similitud;
-- crear/editar un Shopper de prueba por el flujo Admin real;
-- comprobar login del Shopper creado, persistencia en segundo contexto, reload/new-tab y lectura de su perfil;
-- comprobar Shopper histórico real con identidad exacta;
-- reparar solo casos exactos/review necesarios; no regenerar todo Auth.
+- `SOURCE-LOCK-ITERATION3-HARNESS-DURABILITY-PASS-20260814.md`;
+- `SOURCE-LOCK-ITERATION3-HISTORICAL-LEGAL-GATE-AWARE-HARNESS-PASS-20260814.md`.
 
-Cierre: Admin + Shopper histórico + Shopper nuevo PASS en DEV con persistencia provider real.
+### ITERACIÓN 4 — HR bidirectional + Phase A E2E + Finance — 25%
 
-### ITERACIÓN 4 — HR bidireccional, operación Phase A y Finanzas
+Requiere gate HR/Make DEV cuando llegue el write real. Debe preservar lectura HR viva, activar writer real idempotente, probar sync sin duplicación/conflictos silenciosos, Finance v2 por runtime contract y E2E de Phase A.
 
-Requiere gate específico HR/Make DEV cuando llegue el write real.
+### ITERACIÓN 5 — exact build + preproduction + go-live — 15%
 
-- HR->plataforma conserva lectura viva actual;
-- plataforma->HR usa writer real idempotente, nunca `CX.hr._ext`;
-- asignación, agenda, reprogramación/cancelación y estados sobreviven reload y se reflejan según autoridad;
-- no duplicación plataforma/HR y conflictos a review;
-- Finance v2 activo por runtime contract; liquidación != pago; pago solo por fuente exacta;
-- E2E de módulos Phase A: Dashboard, histórico, visitas, disponibles, postulaciones, Shopper, Certificación, Academia, Finanzas y liquidaciones;
-- prueba de configurabilidad con un segundo projectId/fixture source-safe/config-only para demostrar patrón multi-proyecto sin inventar datos reales de otro cliente.
-
-Cierre: `PHASE_A_DEV_E2E_READY_FOR_EXACT_DEPLOY`.
-
-### ITERACIÓN 5 — Build exacto, preproducción y go-live
-
-Requiere gates de deploy/producción correspondientes.
-
-- congelar SHA/source lock;
-- manifest + build-lock + verificador;
-- desplegar exactamente ese SHA;
-- verificar paridad remota;
-- E2E real automatizado del MISMO build: Admin, Ops/Coordinación, Shopper histórico, Shopper nuevo y Cliente;
-- validar HR viva, histórico, disponibles, persistencia, Finanzas, Certificación, Academia, reload/new-tab y rechazo de scopes incorrectos;
-- cero false-success;
-- rollback listo;
-- solo con PASS final solicitar/consumir autorización productiva y ejecutar cutover;
-- smoke postproducción sobre el mismo build.
+Requiere gates de deploy/producción. Congela SHA, manifest/build-lock, despliega exactamente ese SHA, verifica paridad remota y ejecuta E2E real del mismo build antes de cutover y smoke.
 
 Cierre válido: `ACTIVE_BASELINE_PHASE_A_PRODUCTION`.
 
 ## 5. Circuit breakers contra el bucle
 
 1. No volver a auditoría general.
-2. Cada iteración debe terminar en commit/HEAD documentado o bloqueo exacto; una conversación sin cambio de estado no cuenta como avance.
-3. Un gate fallido no reinicia el plan: produce corrección focalizada dentro de la misma iteración.
+2. Cada bloque termina en commit/HEAD documentado o blocker exacto.
+3. Un gate fallido no reinicia el plan; produce corrección focal dentro de la misma iteración.
 4. No repetir un gate PASS salvo drift reproducible.
-5. No pedir a Paula visualizar un build cuyo SHA no coincide con la reparación.
-6. No porcentaje productivo por contratos estáticos. El 100% solo existe después de E2E remoto del mismo SHA y persistencia real.
-7. No nueva candidata para aplicar estas correcciones.
-8. No parche acumulativo como arquitectura: los guards transitorios deben desaparecer o quedar explícitamente aislados a DEV cuando el owner canónico pase.
+5. No pedir a Paula visualizar una build cuyo SHA no coincide con la reparación.
+6. No porcentaje productivo por contratos estáticos.
+7. No nueva candidata.
+8. No guards acumulativos como arquitectura.
 9. No hardcodear Cinépolis en componentes reutilizables.
 10. No éxito UI antes de ACK real.
+11. No autoaceptar NDA/confidencialidad para hacer pasar E2E.
 
 ## 6. Gate de durabilidad para futuros proyectos/tenants
 
-Antes de congelar Phase A, los contratos nuevos deben pasar una matriz reusable:
+Antes de congelar Phase A, los contratos nuevos deben probar:
 
-- cambiar `tenantId/projectId` no rompe rutas ni scopes;
-- país/moneda vienen de configuración;
-- fuente HR es intercambiable por adapter;
-- cuestionario es configurable;
-- Auth/RBAC no depende de nombres TyA/Cinépolis;
-- command adapter no depende de localStorage;
-- módulos reciben estados/facets canónicos;
-- conflictos son trazables/reviewable;
-- providers permanecen gated;
-- Academia/manuales/rutas por rol pueden asociarse a tenant/proyecto;
-- ningún secreto/PII sensible queda en repo/browser storage.
-
-Esto es el puente directo al prototipo comercializable/no-code y al siguiente tenant.
+- cambio de tenantId/projectId sin romper rutas/scopes;
+- país/moneda desde configuración;
+- HR intercambiable por adapter;
+- cuestionario configurable;
+- Auth/RBAC sin dependencia TyA/Cinépolis;
+- command adapter sin localStorage;
+- estados/facets canónicos;
+- conflictos trazables/reviewable;
+- providers gated;
+- Academia/manuales/rutas por rol asociables a tenant/proyecto;
+- gates legales configurables separados de Auth;
+- cero secreto/PII sensible en repo/browser storage.
 
 ## 7. Phase A vs postproducción
 
-### Sale ahora en Phase A
+Sale ahora la operación necesaria de TyA/Cinépolis: ingreso por roles, HR/histórico, shoppers, visitas, postulaciones/asignaciones, certificación, liquidaciones/Finanzas requeridas, Academia y sincronización necesaria para operar.
 
-Operación TyA/Cinépolis necesaria para ingreso por roles, HR/histórico, shoppers, ciclo de visitas, postulaciones/asignaciones, certificación, liquidaciones/Finanzas requeridas, Academia y sincronización necesaria para operar.
+Módulos no indispensables, proveedores no activados, P1/P2, hardening adicional y expansión comercial quedan para postproducción/Phase B, reutilizando la misma arquitectura.
 
-### Permanece para postproducción/Phase B
+## 8. Documentación obligatoria por bloque
 
-Módulos no indispensables para la operación inicial, proveedores no activados, mejoras P1/P2, hardening adicional y expansión comercial. Deben reutilizar los mismos contratos/command adapters/configuración; no se crea una segunda arquitectura.
+Actualizar `CAMBIOS-BACKEND.md`, checkpoint, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, tracker/source lock/build-lock según corresponda, más impacto Academia/manuales/cursos/rutas/notificaciones.
 
-## 8. Documentación por iteración
+Clasificación: Reusable CXOrbia, Exclusivo cliente, Claude/prototipo, Academia y Sin impacto Claude.
 
-Cada iteración actualiza obligatoriamente:
+## 9. Estado seguro y avance vigente
 
-- `CAMBIOS-BACKEND.md`;
-- `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-- `RESUMEN-PARA-CLAUDE.md`;
-- `PENDIENTES-PROTOTIPO.md`;
-- tracker/source lock/build-lock según corresponda;
-- impacto Academia/manuales/cursos/rutas/notificaciones.
+Último provider run: `31835742956`, job `94881540163`.
 
-Clasificación obligatoria de cada cambio: `Reusable CXOrbia`, `Exclusivo cliente`, `Claude/prototipo`, `Academia`, `Sin impacto Claude`.
+El segundo reset exacto fue consumido y el browser alcanzó contexto Firebase Shopper autenticado y `CX_PROTECTED_AUTH_HR_AUTHORITY.applied===true`, pero el histórico no generó checkpoint porque el E2E agotó timeout esperando `#nav-aprendizaje` antes de contemplar el gate legal del producto. Admin/new Shopper no se ejecutó.
 
-## 9. Estado seguro actual
+Ese defecto source del harness ya quedó corregido y validado source-only con marker `PASS_I3_HISTORICAL_LEGAL_GATE_AWARE_SOURCE`.
 
-Este addendum solo fija el plan. No autoriza merge, producción, deploy, Auth/Firestore/HR/Storage/Make/Gemini/pagos writes ni cambios de credenciales.
+La autorización `...-03` está consumida/parked; no hay retry automático. Desde el STOP_RETRY solo hubo source/docs: cero nuevos provider writes, deploy, merge o producción.
 
-**Siguiente acción exacta:** `ITERACION_1_SOURCE_ONLY_ROOT_CAUSE_CONSOLIDATION`.
+**GO-LIVE: 35% completado / 65% pendiente.** I3 no suma hasta PASS completo.
+
+**Siguiente acción exacta:** `PAULA_REVIEW_REQUIRED_FOR_I3_LEGAL_GATE_AWARE_HISTORICAL_CHECKPOINT_AND_ADMIN_NEW_SHOPPER_RESUME`.
