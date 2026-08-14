@@ -1,7 +1,7 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-14 13:24 -06:00  
-**Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__I1_PASS__I2_PASS__I3_RECOVERY_PASS__ADMIN_POINTER_ROOT_FIXED__HARNESS_DURABILITY_PASS__GO_LIVE_35__PROVIDER_GATE_REQUIRED`
+**Fecha:** 2026-08-14 14:00 -06:00  
+**Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__I1_PASS__I2_PASS__I3_RESET2_CONSUMED__HISTORICAL_NAV_FALSE_NEGATIVE_LOCALIZED__LEGAL_GATE_AWARE_HARNESS_PASS__GO_LIVE_35__PROVIDER_GATE_REQUIRED`
 
 ## 1. Lectura obligatoria y prevalente
 
@@ -17,49 +17,59 @@
 10. `SOURCE-LOCK-ITERATION2-CANONICAL-PERSISTENCE-PASS-20260814.md`
 11. `SOURCE-LOCK-ITERATION3-STOP-RETRY-POST-CREDENTIAL-RECOVERY-ADMIN-LOGIN-POINTER-20260814.md`
 12. `SOURCE-LOCK-ITERATION3-HARNESS-DURABILITY-PASS-20260814.md`
-13. `GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`
-14. `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, PR #7 y HEAD vivo.
+13. `SOURCE-LOCK-ITERATION3-HISTORICAL-LEGAL-GATE-AWARE-HARNESS-PASS-20260814.md`
+14. `GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`
+15. `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, PR #7 y HEAD vivo.
 
 ## 2. Decisión vigente
 
-I1 e I2 están cerradas y no se reprocesan. I3 continúa en la misma candidata `docs-tya-v6-v71-audit` / PR #7.
+I1 e I2 están cerradas y no se reprocesan. I3 continúa en la misma candidata `docs-tya-v6-v71-audit` / PR #7. No nueva candidata, rama, PR, Auth rebuild ni reauditoría general.
 
-El run `31833696707` ejecutó PASS el único recovery/reset histórico autorizado y la reconciliación exacta, pero se detuvo antes del alta Shopper nuevo porque `#cxBackendPreviewStatus` interceptó el click Admin. No hubo retry automático.
+El segundo gate durable autorizado por Paula fue consumido una única vez en run `31835742956`, job `94881540163`.
 
-## 3. Causa nueva ya corregida source-only
+PASS antes del STOP_RETRY:
 
-La causa fue `app/core/backend-preview-status.js`: panel DEV fixed/z-index alto sin `pointer-events:none`.
+- mismo único Shopper histórico exacto;
+- un nuevo credential reset exacto autorizado;
+- UID/claims/shopperId/profile/history preservados;
+- other identities modified `0`;
+- membership/crosswalk exactos reconciliados;
+- proxy del source exacto activo;
+- contexto Firebase Shopper autenticado y `CX_PROTECTED_AUTH_HR_AUTHORITY.applied===true` alcanzados.
 
-Ya quedó corregido sin provider retry:
+El run se detuvo esperando `#nav-aprendizaje`; Admin/new Shopper quedó SKIPPED y no se creó checkpoint histórico sanitizado.
 
-- overlay no interactivo;
-- E2E verifica `pointer-events:none` y no usa force-click;
-- Admin/new-Shopper E2E quedó desacoplado del password histórico.
+## 3. Causa source del falso negativo localizada
 
-## 4. Harness durability — PASS source-only
+El E2E histórico imponía Academia/Certificación como prerrequisito incondicional antes de cerrar identidad + HR + historia. Sin embargo, `CX.app.enter()` puede diferir `CX.router.mount()` cuando `CX.confidencialidad.pending(CX.session.role)` está activo.
 
-Se corrigió el orden del workflow existente:
+Por tanto, un primer acceso con NDA/confidencialidad pendiente puede tener Auth/HR/historia válidos sin que todavía existan los nodos `#nav-aprendizaje` / `#nav-cert`. El harness no distinguía esos estados.
 
-`exact recovery → historical Shopper real login/history E2E → sanitized checkpoint → Admin create/update → new Shopper login/reload/new-tab/second context`.
+## 4. Harness legal-gate-aware — PASS source-only
 
-Si un paso posterior al histórico falla, el failure handler puede preservar únicamente evidencia sanitizada del subgate histórico PASS y parkear el request. Así no se pierde otra vez el progreso histórico ni se requiere repetir recovery por un fallo posterior de Admin.
+`tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs` ahora:
 
-Source lock: `SOURCE-LOCK-ITERATION3-HARNESS-DURABILITY-PASS-20260814.md`.
+- valida primero Auth exacto, scope, identity, reviewQueue, HR authority, sourceRef e historia;
+- consulta el mismo `CX.confidencialidad.pending('shopper')` del producto;
+- si el gate legal está pendiente, exige que el diálogo legal sea visible, preserva el principal y difiere rutas sin declararlas PASS;
+- si no hay gate legal pendiente, Academia y Certificación siguen siendo obligatorias;
+- jamás acepta/firma/guarda NDA automáticamente;
+- no usa force-click ni write APIs.
 
-## 5. Credencial histórica del run ya consumido
+Source lock: `SOURCE-LOCK-ITERATION3-HISTORICAL-LEGAL-GATE-AWARE-HARNESS-PASS-20260814.md`.
 
-La contraseña temporal del run `31833696707` fue destruida correctamente en cleanup y no fue expuesta/persistida. Como el histórico no alcanzó a probarse en ese run, su login sigue pendiente. Establecer otra contraseña requiere autorización nueva expresa sobre el mismo principal exacto.
+## 5. Seguridad
 
-## 6. Seguridad
+La autorización `...-03` quedó consumida/parked. No hubo retry automático. Admin/new Shopper no corrió.
 
-Desde el STOP_RETRY hasta este cierre source-only no hubo nuevos provider writes. En el run previo hubo exactamente un password update/reset del principal histórico autorizado; otras identidades `0`; Shopper nuevo `NO`; HR/Rules/Storage/Make/Gemini/pagos `0`; deploy `0`; merge/producción false.
+Después del run, la corrección fue solo source/docs: cero nuevos Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes, deploy, merge o producción.
 
-## 7. Porcentaje
+## 6. Porcentaje
 
 **GO-LIVE: 35% completado / 65% pendiente.** I3 no suma sus 25 puntos hasta PASS completo.
 
-## 8. Siguiente gate exacto
+## 7. Siguiente gate exacto
 
-`PAULA_REVIEW_REQUIRED_FOR_I3_DURABLE_HISTORICAL_LOGIN_AND_ADMIN_NEW_SHOPPER_RESUME`.
+`PAULA_REVIEW_REQUIRED_FOR_I3_LEGAL_GATE_AWARE_HISTORICAL_CHECKPOINT_AND_ADMIN_NEW_SHOPPER_RESUME`.
 
-No se solicita ni autoriza nueva candidata, Auth rebuild, HR/Make/Storage/pagos, deploy, merge o producción.
+No se autoriza nueva candidata, Auth rebuild, aceptación legal automatizada, HR/Make/Storage/pagos, deploy, merge ni producción.
