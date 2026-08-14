@@ -26,6 +26,12 @@ function patched(){
   let provider=fs.readFileSync(files.provider,'utf8');
   const bad="fs.mkdirSync(new URL('file://'+PRIVATE_NEW).pathname.split('/').slice(0,-1).join('/')||'.',{recursive:true});";
   if(provider.includes(bad))provider=provider.replace(bad,"fs.mkdirSync(PRIVATE_NEW.split('/').slice(0,-1).join('/')||'.',{recursive:true});");
+  const oldMembership="const ms=await memberRef.get();if(ms.exists){const m=ms.data()||{};if(m.tenantId!==r.tenantId||m.role!=='shopper'||m.authNamespace!=='shopper'||m.shopperId!==shopperId)throw new Error('I3_HISTORICAL_MEMBERSHIP_CONFLICT');}else{await memberRef.set(membershipDoc(user.uid,canonicalClaims(shopperId,r.tenantId,r.projectId)));writes++;}";
+  const newMembership="const ms=await memberRef.get();const desiredMembership=membershipDoc(user.uid,canonicalClaims(shopperId,r.tenantId,r.projectId));if(ms.exists){const m=ms.data()||{};if(m.tenantId!==r.tenantId||m.role!=='shopper'||m.authNamespace!=='shopper'||m.shopperId!==shopperId)throw new Error('I3_HISTORICAL_MEMBERSHIP_CONFLICT');const needs=m.active!==true||JSON.stringify(uniq(m.projectIds))!==JSON.stringify([r.projectId])||str(m.providerUidFingerprint)!==uidFingerprint(user.uid)||str(m.claimsDigest)!==claimsDigest(canonicalClaims(shopperId,r.tenantId,r.projectId));if(needs){await memberRef.set(desiredMembership,{merge:true});writes++;}}else{await memberRef.set(desiredMembership);writes++;}";
+  if(provider.includes(oldMembership))provider=provider.replace(oldMembership,newMembership);
+  const oldCross="const cs=await crossRef.get();if(cs.exists){const c=cs.data()||{};if(c.tenantId!==r.tenantId||c.shopperId!==shopperId||c.providerUidFingerprint!==uidFingerprint(user.uid))throw new Error('I3_HISTORICAL_CROSSWALK_CONFLICT');}else{await crossRef.set(crosswalkDoc(user.uid,canonicalClaims(shopperId,r.tenantId,r.projectId),profile));writes++;}";
+  const newCross="const cs=await crossRef.get();const desiredCross=crosswalkDoc(user.uid,canonicalClaims(shopperId,r.tenantId,r.projectId),Object.assign({},profile,{user:profile.user||h.login}));if(cs.exists){const c=cs.data()||{};if(c.tenantId!==r.tenantId||c.shopperId!==shopperId||c.providerUidFingerprint!==uidFingerprint(user.uid))throw new Error('I3_HISTORICAL_CROSSWALK_CONFLICT');const needs=c.identityMode!=='exact_technical_keys_only'||c.fuzzyMatching!==false||JSON.stringify(uniq(c.projectIds))!==JSON.stringify([r.projectId]);if(needs){await crossRef.set(desiredCross,{merge:true});writes++;}}else{await crossRef.set(desiredCross);writes++;}";
+  if(provider.includes(oldCross))provider=provider.replace(oldCross,newCross);
   return {index,shoppers,provider};
 }
 const out=patched();
@@ -34,6 +40,6 @@ for(const [key,content] of Object.entries(out)){
   ensure(!content.startsWith('\uFEFF'),'UTF8_BOM_'+key);
   if(key==='index'){ensure(content.includes('cxorbia-shopper-membership-wiring-v1.js'),'SHOPPER_MEMBERSHIP_NOT_LOADED');ensure(content.includes('cxorbia-command-http-transport-v1.js'),'COMMAND_TRANSPORT_NOT_LOADED');}
   if(key==='shoppers'){ensure(content.includes("reason:'i3-admin-shopper-create'"),'SHOPPER_CREATE_ACK_MISSING');ensure(content.includes("reason:'i3-admin-shopper-update'"),'SHOPPER_UPDATE_ACK_MISSING');ensure(content.includes('providerAck!==true'),'SHOPPER_PROVIDER_ACK_MISSING');}
-  if(key==='provider')ensure(content.includes("PRIVATE_NEW.split('/').slice(0,-1)"),'PRIVATE_PATH_PATCH_MISSING');
+  if(key==='provider'){ensure(content.includes("PRIVATE_NEW.split('/').slice(0,-1)"),'PRIVATE_PATH_PATCH_MISSING');ensure(content.includes('desiredMembership'),'HISTORICAL_MEMBERSHIP_REPAIR_MISSING');ensure(content.includes('desiredCross'),'HISTORICAL_CROSSWALK_REPAIR_MISSING');}
 }
 console.log(JSON.stringify({decision:mode==='--apply'?'PASS_I3_SOURCE_PATCH_APPLIED':'PASS_I3_SOURCE_PATCH_VERIFIED',sameCandidate:true,files:Object.values(files),providerWrites:0,deploys:0,production:false}));
