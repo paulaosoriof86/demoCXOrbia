@@ -12,9 +12,23 @@ const tenantId=String(process.env.CXORBIA_P0_E2E_TENANT_ID||'tya');
 const projectId=String(process.env.CXORBIA_P0_E2E_PROJECT_ID||'cinepolis');
 const requireHistory=String(process.env.CXORBIA_P0_E2E_REQUIRE_HISTORY||'1')==='1';
 const authorization=String(process.env.CXORBIA_P0_REAL_AUTH_E2E_AUTHORIZED||'');
+const privateCredentialsPath=String(process.env.CXORBIA_P0_E2E_PRIVATE_CREDENTIALS||'');
 
-const safe={providerWrites:0,authWrites:0,firestoreWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,deploys:0,merge:false,production:false};
+const safe={providerWrites:0,authWrites:0,firestoreWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,passwordChanges:0,passwordResets:0,deploys:0,merge:false,production:false};
 const ensure=(condition,code)=>{if(!condition)throw new Error(code);};
+
+function privateCredential(){
+  let login=String(process.env.CXORBIA_P0_E2E_LOGIN||'');
+  let password=String(process.env.CXORBIA_P0_E2E_PASSWORD||'');
+  if((!login||!password)&&privateCredentialsPath){
+    ensure(fs.existsSync(privateCredentialsPath),'PRIVATE_E2E_CREDENTIAL_FILE_MISSING');
+    const envelope=JSON.parse(fs.readFileSync(privateCredentialsPath,'utf8'));
+    login=String(envelope?.shopper?.login||'');
+    password=String(envelope?.shopper?.password||'');
+  }
+  ensure(login&&password,'PRIVATE_E2E_CREDENTIALS_REQUIRED');
+  return {login,password};
+}
 
 function sourceSelfTest(){
   const source=fs.readFileSync(new URL(import.meta.url),'utf8');
@@ -24,16 +38,32 @@ function sourceSelfTest(){
   const checks={
     noPrototypeRoleEntry:!realExecution.includes('CX.app.selectRole(')&&!realExecution.includes('window.CX.app.selectRole('),
     realCredentialFields:realExecution.includes('autocomplete="username"')&&realExecution.includes('autocomplete="current-password"'),
+    privateCredentialFileSupported:source.includes('CXORBIA_P0_E2E_PRIVATE_CREDENTIALS')&&source.includes('envelope?.shopper?.login')&&source.includes('envelope?.shopper?.password'),
     canonicalAuthContextRequired:realExecution.includes('backendAuth?.context?.()'),
     hrAuthorityRequired:realExecution.includes('CX_PROTECTED_AUTH_HR_AUTHORITY'),
     identityMapRequired:realExecution.includes('__identityMap'),
     reviewQueueChecked:realExecution.includes('__identityReviewQueue'),
     historyRequired:realExecution.includes('visitsForShopper'),
+    academiaRouteRequired:realExecution.includes("#nav-aprendizaje")&&realExecution.includes("expectedView:'aprendizaje'"),
+    certificationRouteRequired:realExecution.includes("#nav-cert")&&realExecution.includes("expectedView:'cert'"),
     explicitRealBranchFound:Boolean(realExecution),
     noWriteApis:!/(firebase-admin|admin\.auth\(|admin\.firestore\(|createUser\(|updateUser\(|deleteUser\(|setCustomUserClaims\(|firebase\s+deploy|gcloud\s+run\s+deploy)/i.test(realExecution)
   };
   const failed=Object.entries(checks).filter(([,pass])=>!pass).map(([id])=>id);
-  return {schemaVersion:'cxorbia.p0.real-shopper-auth-e2e.source.v1',decision:failed.length?'FAIL_P0_REAL_SHOPPER_AUTH_E2E_SOURCE':'PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE',checks,failed,safety:safe};
+  return {schemaVersion:'cxorbia.p0.real-shopper-auth-e2e.source.v2',decision:failed.length?'FAIL_P0_REAL_SHOPPER_AUTH_E2E_SOURCE':'PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE',checks,failed,safety:safe};
+}
+
+async function verifyRoute(page,{selector,expectedView}){
+  const item=page.locator(selector);
+  await item.waitFor({state:'visible',timeout:15000});
+  await item.click();
+  await page.waitForFunction(view=>window.CX?.session?.view===view,expectedView,{timeout:15000});
+  return page.evaluate(expectedView=>{
+    const ctx=window.CX?.backendAuth?.context?.()||null;
+    const text=String(document.querySelector('#view')?.innerText||'').trim();
+    const lock=text.includes('La identidad de esta sesión no está vinculada al read model canónico.');
+    return {view:String(window.CX?.session?.view||''),rendered:text.length>20,authenticated:ctx?.authenticated===true,role:String(ctx?.role||''),lockMessage:lock};
+  },expectedView);
 }
 
 if(!executeReal){
@@ -42,9 +72,7 @@ if(!executeReal){
   process.exitCode=result.failed.length?1:0;
 }else{
   ensure(authorization==='YES_SOURCE_APPROVED_REAL_READONLY_E2E','REAL_E2E_EXPLICIT_GATE_REQUIRED');
-  const login=String(process.env.CXORBIA_P0_E2E_LOGIN||'');
-  const password=String(process.env.CXORBIA_P0_E2E_PASSWORD||'');
-  ensure(login&&password,'PRIVATE_E2E_CREDENTIALS_REQUIRED');
+  const {login,password}=privateCredential();
 
   const url=new URL(rootUrl+'/index-backend-dev.html');
   url.searchParams.set('cxProjectId',projectId);
@@ -92,11 +120,23 @@ if(!executeReal){
         return aliases.includes(raw)||aliases.includes(canonical);
       });
       const review=Array.isArray(window.CX?.data?.__identityReviewQueue)?window.CX.data.__identityReviewQueue:[];
-      const inReview=review.some(item=>JSON.stringify(item).includes(raw)||JSON.stringify(item).includes(canonical));
+      const inReview=review.some(item=>{
+        if(!item||typeof item!=='object')return false;
+        return String(item.liveShopperId||'')===raw||String(item.profileId||'')===raw||String(item.shopperId||'')===raw||
+          (Array.isArray(item.candidates)&&item.candidates.map(String).includes(raw))||
+          (Array.isArray(item.shopperIds)&&item.shopperIds.map(String).includes(raw));
+      });
       const visits=canonical&&typeof window.CX?.data?.visitsForShopper==='function'?window.CX.data.visitsForShopper(canonical,false):[];
       const sourceRef=String(window.CX?.dataSource?.sourceRef||'');
       const bodyText=document.body.innerText||'';
       const country=String(matches[0]?.pais||matches[0]?.country||'').trim();
+      const certRows=Array.isArray(window.CX?.data?.__protectedCertifications)?window.CX.data.__protectedCertifications:[];
+      const certForPrincipal=certRows.filter(row=>{
+        const id=String(row?.shopperId||row?.profileId||row?.shopperDocId||'').trim();
+        if(id===raw||id===canonical)return true;
+        const aliases=contract?.collectExactValues?.(row)||[];
+        return aliases.includes(raw)||aliases.includes(canonical);
+      }).length;
       const pass=Boolean(
         ctx?.authenticated===true&&ctx?.tenantId===tenantId&&ctx?.role==='shopper'&&ctx?.projectIds?.includes(projectId)&&
         raw&&matches.length===1&&!inReview&&country&&
@@ -105,11 +145,22 @@ if(!executeReal){
         !bodyText.includes('La identidad de esta sesión no está vinculada al read model canónico.')&&
         (!requireHistory||visits.length>0)
       );
-      return {pass,tenantId,projectId,auth:true,shopperIdentityPresent:Boolean(raw),canonicalResolved:matches.length===1,reviewRequired:inReview,countryAssigned:Boolean(country),historyCount:visits.length,historyRequired:requireHistory,authorityApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,sourceRef,periods:Number(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.periods||0),hrVisits:Number(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.hrVisits||0),identityContractVersion:contract?.version||null,visibleLockMessage:bodyText.includes('La identidad de esta sesión no está vinculada al read model canónico.'),safety:{providerWrites:0,writes:0,deploys:0,production:false}};
+      return {pass,tenantId,projectId,auth:true,shopperIdentityPresent:Boolean(raw),canonicalResolved:matches.length===1,reviewRequired:inReview,countryAssigned:Boolean(country),historyCount:visits.length,historyRequired:requireHistory,authorityApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,sourceRef,periods:Number(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.periods||0),hrVisits:Number(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.hrVisits||0),identityContractVersion:contract?.version||null,certificationRecordsForPrincipal:certForPrincipal,visibleLockMessage:bodyText.includes('La identidad de esta sesión no está vinculada al read model canónico.'),safety:{providerWrites:0,writes:0,deploys:0,production:false}};
     },{tenantId,projectId,requireHistory});
+
+    const academia=await verifyRoute(page,{selector:'#nav-aprendizaje',expectedView:'aprendizaje'});
+    const certification=await verifyRoute(page,{selector:'#nav-cert',expectedView:'cert'});
+    const samePrincipal=await page.evaluate(({tenantId,projectId})=>{
+      const ctx=window.CX?.backendAuth?.context?.()||null;
+      return Boolean(ctx?.authenticated===true&&ctx?.tenantId===tenantId&&ctx?.role==='shopper'&&ctx?.projectIds?.includes(projectId)&&String(ctx?.shopperId||'').trim());
+    },{tenantId,projectId});
+
     ensure(pageErrors.length===0,'PAGE_ERRORS_PRESENT');
     ensure(result.pass,'REAL_SHOPPER_AUTH_TO_HR_E2E_FAILED');
-    console.log(JSON.stringify({schemaVersion:'cxorbia.p0.real-shopper-auth-e2e.result.v1',decision:'PASS_P0_REAL_SHOPPER_AUTH_TO_HR_E2E',...result,safety:safe},null,2));
+    ensure(academia.rendered&&academia.authenticated&&academia.role==='shopper'&&!academia.lockMessage,'ACADEMIA_REAL_SHOPPER_ROUTE_FAILED');
+    ensure(certification.rendered&&certification.authenticated&&certification.role==='shopper'&&!certification.lockMessage,'CERTIFICATION_REAL_SHOPPER_ROUTE_FAILED');
+    ensure(samePrincipal,'SHOPPER_PRINCIPAL_NOT_PRESERVED_ACROSS_ACADEMIA_CERTIFICATION');
+    console.log(JSON.stringify({schemaVersion:'cxorbia.p0.real-shopper-auth-e2e.result.v2',decision:'PASS_P0_REAL_SHOPPER_AUTH_TO_HR_E2E',...result,academia:{rendered:true,view:academia.view,sameAuthenticatedShopper:true},certification:{rendered:true,view:certification.view,sameAuthenticatedShopper:true,recordsForPrincipal:result.certificationRecordsForPrincipal},credentialsExposed:false,tokensExposed:false,safety:safe},null,2));
   }finally{
     await context.close();
     await browser.close();
