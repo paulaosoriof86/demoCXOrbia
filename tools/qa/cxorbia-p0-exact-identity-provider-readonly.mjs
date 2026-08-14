@@ -13,7 +13,7 @@ const outPath=process.env.CXORBIA_P0_PROVIDER_AUDIT_OUTPUT||'.tmp/c6-human-login
 const tenantId='tya',projectId='cinepolis',expectedProject='cxorbia-backend-dev';
 const contractPath='app/adapters/cxorbia-exact-identity-contract-v1.js';
 const composerPath='app/adapters/tya-cumulative-read-model-v2.js';
-const normalizerPath='app/adapters/cxorbia-exact-linked-owner-normalizer-v1.js';
+const normalizerPath='app/adapters/tya-canonical-state-semantics-v2.js';
 const str=v=>String(v==null?'':v).trim();
 const list=v=>Array.isArray(v)?v.map(str).filter(Boolean):(typeof v==='string'?v.split(',').map(str).filter(Boolean):[]);
 const hash=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex').slice(0,16);
