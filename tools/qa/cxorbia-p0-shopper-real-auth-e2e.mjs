@@ -46,11 +46,13 @@ function sourceSelfTest(){
     historyRequired:realExecution.includes('visitsForShopper'),
     academiaRouteRequired:realExecution.includes("#nav-aprendizaje")&&realExecution.includes("expectedView:'aprendizaje'"),
     certificationRouteRequired:realExecution.includes("#nav-cert")&&realExecution.includes("expectedView:'cert'"),
+    legalGateAware:realExecution.includes('confidencialidad')&&realExecution.includes("pending('shopper')")&&realExecution.includes('workspaceState'),
+    legalConsentNotAutomated:!realExecution.includes('confidencialidad.accept(')&&!realExecution.includes('confidencialidad.aceptar(')&&!realExecution.includes('confidencialidad.setAccepted(')&&realExecution.includes('acceptanceAutomated:false'),
     explicitRealBranchFound:Boolean(realExecution),
     noWriteApis:!/(firebase-admin|admin\.auth\(|admin\.firestore\(|createUser\(|updateUser\(|deleteUser\(|setCustomUserClaims\(|firebase\s+deploy|gcloud\s+run\s+deploy)/i.test(realExecution)
   };
   const failed=Object.entries(checks).filter(([,pass])=>!pass).map(([id])=>id);
-  return {schemaVersion:'cxorbia.p0.real-shopper-auth-e2e.source.v2',decision:failed.length?'FAIL_P0_REAL_SHOPPER_AUTH_E2E_SOURCE':'PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE',checks,failed,safety:safe};
+  return {schemaVersion:'cxorbia.p0.real-shopper-auth-e2e.source.v3',decision:failed.length?'FAIL_P0_REAL_SHOPPER_AUTH_E2E_SOURCE':'PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE',checks,failed,safety:safe};
 }
 
 async function verifyRoute(page,{selector,expectedView}){
@@ -148,19 +150,51 @@ if(!executeReal){
       return {pass,tenantId,projectId,auth:true,shopperIdentityPresent:Boolean(raw),canonicalResolved:matches.length===1,reviewRequired:inReview,countryAssigned:Boolean(country),historyCount:visits.length,historyRequired:requireHistory,authorityApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,sourceRef,periods:Number(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.periods||0),hrVisits:Number(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.hrVisits||0),identityContractVersion:contract?.version||null,certificationRecordsForPrincipal:certForPrincipal,visibleLockMessage:bodyText.includes('La identidad de esta sesión no está vinculada al read model canónico.'),safety:{providerWrites:0,writes:0,deploys:0,production:false}};
     },{tenantId,projectId,requireHistory});
 
-    const academia=await verifyRoute(page,{selector:'#nav-aprendizaje',expectedView:'aprendizaje'});
-    const certification=await verifyRoute(page,{selector:'#nav-cert',expectedView:'cert'});
+    ensure(pageErrors.length===0,'PAGE_ERRORS_PRESENT');
+    ensure(result.pass,'REAL_SHOPPER_AUTH_TO_HR_E2E_FAILED');
+
+    /* I3 durable checkpoint: a first-login legal/NDA gate is a real product gate, not an
+       Auth/history failure. Never accept it automatically. If it is pending, certify the exact
+       principal + HR/history and defer workspace route checks until the human legal gate is
+       completed. If no legal gate is pending, Academia/Certification remain mandatory. */
+    const legalGate=await page.evaluate(()=>{
+      const c=window.CX?.confidencialidad;
+      const supported=Boolean(c&&typeof c.pending==='function');
+      let pending=false;
+      if(supported){try{pending=Boolean(c.pending('shopper'));}catch(_){pending=false;}}
+      const candidates=[...document.querySelectorAll('.cx-ov,[role="dialog"]')];
+      const modal=candidates.find(el=>{
+        const text=String(el.innerText||'');
+        if(!/(confidencial|\bnda\b|acuerdo)/i.test(text))return false;
+        const style=getComputedStyle(el);const box=el.getBoundingClientRect();
+        return style.display!=='none'&&style.visibility!=='hidden'&&Number(style.opacity||1)!==0&&box.width>0&&box.height>0;
+      })||null;
+      const ctx=window.CX?.backendAuth?.context?.()||null;
+      return {supported,pending,visible:Boolean(modal),role:String(window.CX?.session?.role||''),shopperId:String(ctx?.shopperId||'')};
+    });
+
+    let academia,certification;
+    if(legalGate.pending){
+      ensure(legalGate.supported,'LEGAL_GATE_PENDING_WITHOUT_CANONICAL_CONTRACT');
+      ensure(legalGate.visible,'LEGAL_GATE_PENDING_BUT_DIALOG_NOT_VISIBLE');
+      academia={rendered:false,deferredByLegalGate:true,view:null,sameAuthenticatedShopper:true};
+      certification={rendered:false,deferredByLegalGate:true,view:null,sameAuthenticatedShopper:true,recordsForPrincipal:result.certificationRecordsForPrincipal};
+    }else{
+      academia=await verifyRoute(page,{selector:'#nav-aprendizaje',expectedView:'aprendizaje'});
+      certification=await verifyRoute(page,{selector:'#nav-cert',expectedView:'cert'});
+      ensure(academia.rendered&&academia.authenticated&&academia.role==='shopper'&&!academia.lockMessage,'ACADEMIA_REAL_SHOPPER_ROUTE_FAILED');
+      ensure(certification.rendered&&certification.authenticated&&certification.role==='shopper'&&!certification.lockMessage,'CERTIFICATION_REAL_SHOPPER_ROUTE_FAILED');
+      academia={rendered:true,view:academia.view,sameAuthenticatedShopper:true,deferredByLegalGate:false};
+      certification={rendered:true,view:certification.view,sameAuthenticatedShopper:true,recordsForPrincipal:result.certificationRecordsForPrincipal,deferredByLegalGate:false};
+    }
+
     const samePrincipal=await page.evaluate(({tenantId,projectId})=>{
       const ctx=window.CX?.backendAuth?.context?.()||null;
       return Boolean(ctx?.authenticated===true&&ctx?.tenantId===tenantId&&ctx?.role==='shopper'&&ctx?.projectIds?.includes(projectId)&&String(ctx?.shopperId||'').trim());
     },{tenantId,projectId});
+    ensure(samePrincipal,'SHOPPER_PRINCIPAL_NOT_PRESERVED_ACROSS_WORKSPACE_GATE');
 
-    ensure(pageErrors.length===0,'PAGE_ERRORS_PRESENT');
-    ensure(result.pass,'REAL_SHOPPER_AUTH_TO_HR_E2E_FAILED');
-    ensure(academia.rendered&&academia.authenticated&&academia.role==='shopper'&&!academia.lockMessage,'ACADEMIA_REAL_SHOPPER_ROUTE_FAILED');
-    ensure(certification.rendered&&certification.authenticated&&certification.role==='shopper'&&!certification.lockMessage,'CERTIFICATION_REAL_SHOPPER_ROUTE_FAILED');
-    ensure(samePrincipal,'SHOPPER_PRINCIPAL_NOT_PRESERVED_ACROSS_ACADEMIA_CERTIFICATION');
-    console.log(JSON.stringify({schemaVersion:'cxorbia.p0.real-shopper-auth-e2e.result.v2',decision:'PASS_P0_REAL_SHOPPER_AUTH_TO_HR_E2E',...result,academia:{rendered:true,view:academia.view,sameAuthenticatedShopper:true},certification:{rendered:true,view:certification.view,sameAuthenticatedShopper:true,recordsForPrincipal:result.certificationRecordsForPrincipal},credentialsExposed:false,tokensExposed:false,safety:safe},null,2));
+    console.log(JSON.stringify({schemaVersion:'cxorbia.p0.real-shopper-auth-e2e.result.v3',decision:'PASS_P0_REAL_SHOPPER_AUTH_TO_HR_E2E',...result,workspaceState:legalGate.pending?'legal-gate-pending':'mounted',legalGate:{supported:legalGate.supported,pending:legalGate.pending,visible:legalGate.visible,acceptanceAutomated:false},academia,certification,credentialsExposed:false,tokensExposed:false,safety:safe},null,2));
   }finally{
     await context.close();
     await browser.close();
