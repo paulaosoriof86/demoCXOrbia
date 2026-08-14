@@ -1,75 +1,57 @@
 # GO-LIVE PROGRESS TRACKER — ROOT-CAUSE PLAN CXORBIA TyA
 
-**Fecha:** 2026-08-14 11:22 -06:00  
-**Estado:** `ITERATION_2_CANONICAL_PERSISTENCE_PASS__35_PERCENT__ITERATION_3_NEXT`
+**Fecha:** 2026-08-14 12:04 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_STOP_RETRY_HISTORICAL_CREDENTIAL_H0_S0__35_PERCENT__PAULA_REVIEW_REQUIRED`
 
 ## Regla de medición
 
-Este tracker reemplaza cualquier uso de M1–M10 como porcentaje de readiness productivo. El trabajo técnico anterior se conserva como evidencia y no se pierde, pero no vuelve a sumar porcentaje hasta que forme parte de un gate productivo real del plan forense.
-
-El porcentaje solo avanza cuando una iteración cierra su gate. No se otorgan porcentajes por diagnóstico, documentación aislada o pruebas sobre un build distinto al source lock.
+Este tracker reemplaza cualquier uso de M1–M10 como readiness productivo. El porcentaje solo avanza cuando una iteración cierra su gate real; preparación source, provider-read incompleto o STOP_RETRY no reciben puntos parciales.
 
 ## Pesos
 
 - Iteración 1 — source-only root-cause consolidation: **15%**.
-- Iteración 2 — canonical persistence + transversal regression: **20%**. Acumulado: **35%**.
-- Iteración 3 — DEV Auth/Firestore Shopper persistence: **25%**. Acumulado: **60%**.
-- Iteración 4 — HR bidirectional + Phase A E2E + Finance: **25%**. Acumulado: **85%**.
-- Iteración 5 — exact build + preprod + go-live: **15%**. Acumulado: **100%**.
-
-La ponderación da más peso a persistencia/provider real y operación E2E que a preparación estática, para evitar repetir el error de declarar readiness con contratos source-only.
+- Iteración 2 — canonical persistence + transversal regression: **20%**. Acumulado **35%**.
+- Iteración 3 — DEV Auth/Firestore Shopper persistence: **25%**. Acumulado objetivo **60%**.
+- Iteración 4 — HR bidirectional + Phase A E2E + Finance: **25%**. Acumulado **85%**.
+- Iteración 5 — exact build + preprod + go-live: **15%**. Acumulado **100%**.
 
 ## Estado actual
 
 **35% completado / 65% pendiente para producción.**
 
-### Iteración 1 — PASS (15/15)
+### I1 — PASS 15/15
 
-Marker: `PASS_ROOT_CAUSE_CORRECTION_ITERATION1_SOURCE_ONLY`.
+`PASS_ROOT_CAUSE_CORRECTION_ITERATION1_SOURCE_ONLY`. No reprocesar.
 
-Preservado: Auth owner protegido único efectivo, Finance v2 por runtime contract, command adapter, contrato Shopper Admin, HR writer y source gate I1. No se reprocesa.
+### I2 — PASS 20/20
 
-### Iteración 2 — PASS (20/20)
+`PASS_ROOT_CAUSE_CORRECTION_ITERATION2_CANONICAL_PERSISTENCE` / `SOURCE_READY_FOR_DEV_WRITE_GATES`. No reprocesar.
 
-Marker: `PASS_ROOT_CAUSE_CORRECTION_ITERATION2_CANONICAL_PERSISTENCE`.
+### I3 — STOP_RETRY 0/25 todavía
 
-Cierre: `SOURCE_READY_FOR_DEV_WRITE_GATES`.
+Autorización real alcanzó provider-read en run `31826443230`, job `94851603411` y se detuvo antes de cualquier write con:
 
-Evidencia:
+`HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194`.
 
-- source lock: `app/docs/SOURCE-LOCK-ITERATION2-CANONICAL-PERSISTENCE-PASS-20260814.md`;
-- workflow existente `CXOrbia Phase A Live Execution Checkpoint`;
-- run source I2 `31823098359`: **SUCCESS**;
-- run final de checkpoint/documentación I2 `31823620461`: **SUCCESS**, verificando `35/65` y `iteration=2/5`.
+Confirmado:
 
-El gate confirmó:
+- una identidad Shopper histórica exacta con claims, perfil e historia;
+- 616 relaciones de visita exactas y 208 relaciones exactas Shopper;
+- cero fuzzy matching;
+- cero password reconstruible desde las fuentes aprobadas para ese principal (`H0`);
+- cero sign-in histórico exitoso (`S0`);
+- Auth writes `0`;
+- Firestore writes `0`;
+- password changes/resets `0`;
+- Shopper nuevo creado `NO`;
+- no HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/producción.
 
-- `CX.data` conserva nombres públicos y su mutación canónica pasa por command boundary;
-- `localMutationFallback=false`;
-- Shopper localStorage desactivado en runtime canónico;
-- provider ACK obligatorio;
-- tenant/project/role/shopper scope fail-closed;
-- Mis Visitas usa listas completas/facets canónicas;
-- controles legacy direct-write no convertidos quedan fail-closed, sin falso éxito;
-- contrato multi-tenant/multi-proyecto source-safe;
-- provider writes=0, deploy=0, producción=false.
+La importación histórica Auth preservó `passwordHashHex` SHA256 mediante `importUsers()`, pero no plaintext. La selección E2E no puede certificar login humano sin una credencial exacta recuperable.
 
-## Iteración 3 — siguiente (25 puntos)
+Source lock vigente: `app/docs/SOURCE-LOCK-ITERATION3-STOP-RETRY-HISTORICAL-SHOPPER-CREDENTIAL-20260814.md`.
 
-`ITERACION_3_DEV_AUTH_FIRESTORE_SHOPPER_PERSISTENCE`
+## Siguiente gate
 
-Requiere gate explícito de writes DEV.
+`PAULA_REVIEW_REQUIRED_FOR_I3_HISTORICAL_SHOPPER_CREDENTIAL_RECOVERY`.
 
-Cierre requerido para llegar a **60%**:
-
-- transporte provider real del command boundary limitado a Shopper/Admin/identidad;
-- creación y edición de Shopper desde Admin con Auth + claims + membership + profile/crosswalk;
-- Shopper histórico exacto, sin matching por similitud;
-- Shopper nuevo puede iniciar sesión;
-- persistencia real verificada por provider readback;
-- reload/new-tab y segundo contexto;
-- cero duplicados/colisiones silenciosas; ambigüedad a review.
-
-## Estado seguro
-
-Provider/Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes=0. Cambios/reset de credenciales=0. Deploy=0. Merge=false. Producción=false.
+I3 se reanuda, no se reinicia, únicamente con autorización nueva focalizada para resolver la credencial del principal histórico exacto. El provider lane está PARKED y no existe segundo intento automático.
