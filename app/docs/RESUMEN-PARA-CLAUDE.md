@@ -9,6 +9,10 @@ El patrón reproducido es: Firestore autenticado encuentra el perfil y país del
 
 Además, el entrypoint humano canónico todavía carga antes de Auth `data/tya-hr-source-safe-periods.js` (payload empaquetado 13-jul) y `core/tya-phase-a-source-safe-preview.js`, que escribe ese snapshot en `CX.data`. Esto explica las cifras viejas 616 / julio 2026 visibles en login.
 
+### De dónde viene la regresión
+
+El source lock de la candidata frontend preserva el prototipo y sus módulos, pero la capa Firebase Auth/claims/crosswalk fue construida posteriormente en backend. La activación Auth de agosto resolvió identidades con un universo técnico más amplio que el compositor browser actual. Por tanto no corresponde atribuir este P0 a una reescritura del módulo Shopper de la candidata; es una incompatibilidad introducida en la integración backend posterior.
+
 ### Para Claude
 
 - **No rediseñar módulos ni crear candidata.**
