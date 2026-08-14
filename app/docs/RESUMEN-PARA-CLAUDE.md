@@ -1,7 +1,7 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-14 10:42 -06:00  
-**Estado:** `ITERATION_1_SOURCE_ONLY_PASS__AUTH_INTEGRATION_FIXED_WITHOUT_UI_REWRITE__MISVISITAS_P0_NEXT`
+**Última actualización:** 2026-08-14 11:20 -06:00  
+**Estado:** `ITERATION_2_CANONICAL_PERSISTENCE_PASS__MISVISITAS_P0_CLOSED__SAME_CANDIDATE__ITERATION_3_NEXT`
 
 ## Regla principal
 
@@ -9,57 +9,86 @@ No nueva candidata, rama ni PR. No rediseñar. Toda corrección frontend indispe
 
 Plan rector: `app/docs/ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md`.
 
-## Auth — NO REPROCESO y estado actual
+Source lock I2: `app/docs/SOURCE-LOCK-ITERATION2-CANONICAL-PERSISTENCE-PASS-20260814.md`.
+
+## Auth — NO REPROCESO
 
 Se preservan formulario visible único, Firebase Auth, namespaces staff/shopper, role/tenant/project/shopper scope, Admin/Exact Write V2, membership/RBAC Staff, exact identity contract, HR live authority/protected overlay, cumulative read model y portal Shopper canónico.
 
-Iteración 1 corrigió la integración sin reescribir `app.js`:
+`core/backend-browser-auth.js` continúa como owner efectivo. No volver a bundle/password guessing legacy, identidad por nombre/email/teléfono/similitud ni snapshot operacional pre-Auth.
 
-- `app/adapters/tya-c6-shopper-auth-click-guard-v1.js` ahora delega todos los roles humanos protegidos a `core/backend-browser-auth.js` como owner efectivo;
-- no captura clicks;
-- no envuelve `authenticate`;
-- no crea overlay Cliente separado;
-- hace que `_isDevAccess()` resulte false únicamente en la ruta humana protegida, por lo que `pickShopperDev()` queda preservado para lab/demo explícito pero no puede interceptar Auth real.
+## Iteración 2 — PASS
 
-Gate source-only: `PASS_ROOT_CAUSE_CORRECTION_ITERATION1_SOURCE_ONLY`, workflow run `31820315435` SUCCESS.
+Marker: `PASS_ROOT_CAUSE_CORRECTION_ITERATION2_CANONICAL_PERSISTENCE`.
 
-No volver a bundle/password guessing legacy, identidad por nombre/email/teléfono/similitud ni snapshot operacional pre-Auth.
+### `app/modules/misvisitas.js` — P0 CERRADO
 
-## P0 frontend pendiente — `app/modules/misvisitas.js`
+No volver a corregir el antiguo `find()` por estado. La misma candidata ya contiene `CX_MISVISITAS_CANONICAL_V2`:
 
-Sigue reproducible y visible: usa `find()` para asignada/agendada/realizada y estados literales, por lo que puede mostrar como máximo una visita por categoría y divergir del read model canónico.
+- shopperId exacto fail-closed;
+- listas completas de asignadas/agendadas/realizadas;
+- facets canónicas;
+- histórico coherente con contrato de visita/pago;
+- agenda/realizada/reprogramación/cancelación dependen de command adapter + ACK;
+- no success UI si no existe ACK real;
+- check-in no muta la visita local; Storage sigue pendiente explícito.
 
-Corrección quirúrgica requerida en Iteración 2, MISMA candidata:
+Preservar UX/layout. No reconstruir el módulo.
 
-- conservar shopperId exacto fail-closed;
-- listas completas, no `find()`;
-- derivar categorías desde `visitFacets()`/facets canónicas;
-- histórico coherente con portal/Admin/Finanzas;
-- no mostrar visitas de otro Shopper/proyecto;
-- acciones existentes deben resolver por `CX.data` -> command adapter y mostrar éxito únicamente tras ACK real;
-- con writes cerrados: blocked, cero mutación local y cero success toast.
+## Persistencia canónica que Claude debe respetar
 
-No rediseñar UX ni reinterpretar HR.
+En runtime canónico:
 
-## Backend reusable ya preparado
+`CX.data -> cxorbia-cxdata-command-boundary-v1 -> cxorbia-command-adapter-v1 -> provider gated -> ACK -> refresh`.
 
-- `cxorbia-command-adapter-v1.js`;
-- `cxorbia-shopper-admin-command-contract-v1.js`;
-- `cxorbia-hr-write-adapter-contract-v1.js`;
-- Finance v2 por runtime contract, no hostname.
+Con writes cerrados: blocked, cero mutación local/localStorage y cero toast de éxito.
 
-Estos contratos son tenant/project scoped y no hardcodean Cinépolis como arquitectura global.
+No reactivar `backend-firebase.wrapDataMethods()` como local-first ni `cx_shoppers` como verdad productiva.
+
+## Frontend pendiente funcional para I3/I4
+
+### I3 — Shopper/Admin
+
+Cuando el provider DEV sea autorizado:
+
+- `modules/shoppers.js`: alta/edición debe consumir el `CX.data` command boundary en modo ACK-aware y refrescar solo después de provider ACK;
+- registro Shopper de `app.js`: mismo flujo canónico; no crear segundo registro/login;
+- error/provider conflict debe mostrarse como estado bloqueado/review, nunca inventar credencial ni mostrar éxito antes de ACK;
+- password/reset es operación protegida separada, no browser-generated/localStorage.
+
+### I3/I4 — Postulaciones
+
+El firewall ya enruta status simple y reprogramación/cancelación al command boundary. Edición/reasignación compleja, asignación manual y sync HR permanecen fail-closed hasta su conversión ACK-aware. No desbloquearlos con mutación de closure.
+
+### I4 — Cuestionario/evidencias/Reservas/HR
+
+- submit de cuestionario permanece fail-closed hasta persistencia/evidencia canónica;
+- Reservas no puede persistir en `cx_reservas_*` en runtime canónico;
+- HR write real se activa por adapter/gate, nunca `CX.hr._ext`;
+- Storage/evidencias se activan con su gate; preview de foto/GPS no equivale a evidencia persistida.
+
+## Reusable CXOrbia
+
+Ninguna corrección puede hardcodear TyA/Cinépolis dentro de contracts reusables. Tenant/project, país/moneda, fuente HR, cuestionario, certificación, pagos/evidencias e integraciones son configuración/adapters.
 
 ## Porcentaje
 
-Tracker productivo vigente: `app/docs/GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`.
+**35% completado / 65% pendiente.**
 
-**15% completado / 85% pendiente.**
+I1 15 PASS + I2 20 PASS. I3 vale 25 puntos y es el siguiente bloque.
 
 ## Academia
 
-No prometer writes aún. Preparar actualización posterior de login real, Mis Visitas con listas completas/facets, alta Shopper persistente, mensajes fail-closed y estados HR/Finanzas reales.
+Actualizar solo cuando el provider correspondiente quede activo/probado:
+
+- alta/edición Shopper persistente y errores reales;
+- Mis Visitas con múltiples visitas/facets canónicas;
+- significado de ACK/persistencia;
+- cuestionario/evidencias y HR sync real vs bloqueado;
+- rutas por rol/proyecto.
+
+No prometer writes todavía.
 
 ## Siguiente frontera
 
-Backend + ajuste frontend P0 focalizado: `ITERACION_2_CANONICAL_PERSISTENCE_AND_TRANSVERSAL_REGRESSION`.
+`ITERACION_3_DEV_AUTH_FIRESTORE_SHOPPER_PERSISTENCE` — requiere gate explícito DEV write. No reconstruir Auth; activar/probar el contrato existente.
