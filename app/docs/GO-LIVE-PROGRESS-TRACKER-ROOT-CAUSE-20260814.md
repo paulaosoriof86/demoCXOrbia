@@ -3,6 +3,8 @@
 **Fecha:** 2026-08-14 14:00 -06:00  
 **Estado:** `I1_PASS__I2_PASS__I3_RESET2_CONSUMED__HISTORICAL_AUTH_REACHED__LEGAL_GATE_AWARE_HARNESS_PASS__35_PERCENT__PROVIDER_GATE_REQUIRED`
 
+Plan rector: `app/docs/ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md`.
+
 ## Regla de medición
 
 El porcentaje solo avanza cuando una iteración cierra su gate completo. PASS internos de I3 no suman puntos parciales.
