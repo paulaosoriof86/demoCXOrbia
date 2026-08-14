@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "cxorbia.p0.shopper.postdeploy-forensic-rootcause.v1",
+  "generatedAt": "2026-08-13T18:54:00-06:00",
+  "decision": "P0_PROVEN_IDENTITY_CONTRACT_SPLIT_AND_STALE_PREAUTH_BOOTSTRAP",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "humanEvidence": {
+    "sameShopperAfterRedeploy": true,
+    "transientFirestore": {
+      "profileRendered": true,
+      "countryRendered": "GT",
+      "visits": 0,
+      "shopperRecords": 1,
+      "hrPeriods": "pending"
+    },
+    "finalHrAuthority": {
+      "source": "hr-live-all-periods+firestore-authenticated-exact-overlay",
+      "periods": 15,
+      "visits": 660,
+      "shopperRecords": 212,
+      "firstPeriod": "2025-06",
+      "latestPeriod": "2026-08",
+      "identityResolved": false,
+      "countryAfterComposition": "unassigned",
+      "visibleFailure": "La identidad de esta sesión no está vinculada al read model canónico."
+    },
+    "preAuthBootstrap": {
+      "staleVisits": 616,
+      "staleShoppers": 210,
+      "stalePosts": 42,
+      "staleActivePeriod": "2026-07"
+    }
+  },
+  "forensicFindings": [
+    {
+      "code": "IDENTITY_CONTRACT_SPLIT_AUTH_VS_RUNTIME",
+      "severity": "P0",
+      "proven": true,
+      "detail": "The Auth activation pipeline and the canonical runtime do not use the same exact-identity key contract. Auth activation defines TECH_KEYS as shopperId, legacyShopperId, legacyId, externalShopperId, externalId, sourceId, sourceKey, hrRowId, personId, profileId and shopperDocId, and writes canonical Shopper claims with shopperId equal to the Firestore profile document id. The runtime cumulative composer accepts only a narrower alias set and builds identityMap only when a live HR shopper can be matched by that narrower set or an exact protected-visit relation."
+    },
+    {
+      "code": "AUTH_PROFILE_ID_IS_NOT_SUFFICIENT_HR_CROSSWALK",
+      "severity": "P0",
+      "proven": true,
+      "detail": "backend-firebase loads the authenticated Shopper profile directly from tenants/{tenant}/shoppers/{claim.shopperId}; therefore the transient protected profile can render correctly. After HR authority, the cumulative composer excludes meaningful protected profiles that were not consumed by an exact HR crosswalk and classifies them as no_exact_hr_crosswalk. This exactly explains profile-visible-before-HR then identity-missing-after-HR."
+    },
+    {
+      "code": "PROFILE_ENRICHMENT_AND_AUTH_ACTIVATION_WERE_SEPARATE_UNIVERSES",
+      "severity": "P0",
+      "proven": true,
+      "detail": "The July full-profile identity bridge resolved 120 exact profiles and left 31 identity holds, with technicalBridgeResolved=0, authBridgeResolved=0 and identityLinksPlanned=0. The subsequent profile Firestore write updated only 120 exact documents. Later, the August Auth activation successfully created 118 and updated 9 Auth principals, reaching 228 Auth users, but performed zero Firestore writes. Therefore Auth principal activation did not materialize the broader technical crosswalk into profile documents/runtime aliases."
+    },
+    {
+      "code": "STALE_PREAUTH_SOURCE_SAFE_BOOTSTRAP_IN_CANONICAL_ENTRY",
+      "severity": "P0",
+      "proven": true,
+      "detail": "index-backend-dev.html unconditionally loads data/tya-hr-source-safe-periods.js and core/tya-phase-a-source-safe-preview.js before authenticated backend resolution. The bundled source-safe payload was generated 2026-07-13 and the preview adapter mutates CX.data automatically on the DEV host. Consequently the canonical human login can display a historical bundled July state before Auth/HR live takes authority."
+    },
+    {
+      "code": "PRIOR_SOURCE_GATE_COVERAGE_GAP",
+      "severity": "P0_PROCESS",
+      "proven": true,
+      "detail": "The prior P0 gate checked code-shape conditions such as use of CX.backendAuth.context(), wait-for-HR and final-event wiring. Its exact-identity smoke used synthetic rows and prototype role selection; it did not compare the Auth TECH_KEYS contract against the runtime exactAliases contract and did not execute a real authenticated Shopper through Auth -> Firestore profile -> HR crosswalk -> history. Therefore its PASS could not certify the actual identity universe."
+    }
+  ],
+  "sourceFacts": {
+    "authActivation": {
+      "runId": 31423272374,
+      "decision": "PASS_C6_AUTH_PLAN_V4_ACTIVATION_DEV",
+      "authCreates": 118,
+      "authUpdates": 9,
+      "authUsersAfter": 228,
+      "firestoreWrites": 0,
+      "claimsShopperIdSemantics": "Firestore shopper profile document id"
+    },
+    "profileIdentityBridge": {
+      "finalExactProfiles": 120,
+      "remainingHold": 31,
+      "technicalBridgeResolved": 0,
+      "authBridgeResolved": 0,
+      "identityLinksPlanned": 0
+    },
+    "profileFirestoreWrite": {
+      "documentsWritten": 120,
+      "missingCanonicalHold": 31,
+      "readbackMismatches": 0
+    },
+    "runtimeComposer": {
+      "unmatchedProtectedProfileDisposition": "no_exact_hr_crosswalk",
+      "unmatchedProfilesExcludedFromOperationalList": true,
+      "identityMapSource": "live HR shopper id -> protected profile id only after exact runtime crosswalk"
+    },
+    "latestDevDeploy": {
+      "runId": 31758046539,
+      "jobId": 94638091029,
+      "hostingDeploys": 1,
+      "remoteParity": "PASS",
+      "humanAcceptance": "REJECTED"
+    }
+  },
+  "rootCause": {
+    "primary": "The clean DEV backend has two independently correct-but-incompatible identity contracts: the Auth activation contract resolves technical ownership using a broad key universe and stores claim.shoppertId as the Firestore profile id, while the browser cumulative HR composer reconstructs identity with a narrower alias universe. The crosswalk proven offline during Auth activation was not persisted as a canonical reusable identity mapping consumed by runtime.",
+    "secondary": "The canonical human entrypoint still executes the old source-safe preview bootstrap before authentication, so stale bundled data temporarily becomes CX.data and is visible on the login screen.",
+    "notRootCause": [
+      "HR live availability",
+      "Hosting deploy failure",
+      "missing Firebase authentication",
+      "the previously corrected CX.backendAuth API reference",
+      "a TyA-specific UI module defect",
+      "name-based deduplication"
+    ]
+  },
+  "requiredGenericRepairContract": {
+    "singleIdentityContract": true,
+    "tenantReusable": true,
+    "projectReusable": true,
+    "sameExactTechnicalKeySetAcrossMigrationAuthAndRuntime": true,
+    "persistOrServeCanonicalCrosswalk": true,
+    "oneToOneAuthProfileHrAssertionBeforeGoLive": true,
+    "nameEmailVisualMatchingForbidden": true,
+    "canonicalHumanEntrypointMustNotSeedCxDataFromBundledPreviewBeforeAuth": true,
+    "realAuthenticatedShopperE2ERequired": true,
+    "syntheticRoleSmokeInsufficient": true
+  },
+  "safety": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hostingDeploysAfterHumanFailure": 0,
+    "merge": false,
+    "production": false
+  },
+  "nextGate": "SOURCE_ONLY_GENERIC_IDENTITY_CONTRACT_REPAIR_AND_REAL_E2E_GATE_PREPARATION_NO_DEPLOY"
+}
