@@ -44,8 +44,12 @@ jobs:
           if(r.deploy!==false||r.merge!==false||r.production!==false||r.stopRetry!==true||r.allowedExecutions!==1)throw new Error('unsafe_scope');
           if(JSON.stringify(r.privateRuntimeCredentialsRequired)!==JSON.stringify(['B','C','D'])||r.privateRuntimeCredentialsPersisted!==false)throw new Error('bad_private_boundary');
           const execute=r.enabled===true&&r.consumed===false&&r.authorizedBy==='Paula'&&typeof r.authorizationText==='string'&&r.authorizationText.includes('STAFF REPAIR/BOOTSTRAP EXACT WRITE V2');
-          if(execute){const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();if(r.targetHeadSha!==parent)throw new Error('target_head_mismatch');}
-          console.log(`execute=${execute?'true':'false'}`);console.log(`request_id=${r.requestId}`);
+          if(execute){
+            const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+            if(r.targetHeadSha!==parent)throw new Error('target_head_mismatch');
+          }
+          console.log(`execute=${execute?'true':'false'}`);
+          console.log(`request_id=${r.requestId}`);
           NODE
 
       - name: Static V2 source checks
@@ -110,13 +114,21 @@ jobs:
           mkdir -p app/docs/evidence
           cp /tmp/c6-staff-v2-evidence.json app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-EXACT-WRITE-V2-LATEST.json
           node <<'NODE'
-          const fs=require('fs');const p='.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json';const r=JSON.parse(fs.readFileSync(p,'utf8'));const e=JSON.parse(fs.readFileSync('app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-EXACT-WRITE-V2-LATEST.json','utf8'));
+          const fs=require('fs');
+          const p='.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json';
+          const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          const e=JSON.parse(fs.readFileSync('app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-EXACT-WRITE-V2-LATEST.json','utf8'));
           if(r.requestId!=='c6-staff-repair-bootstrap-exact-write-v2-20260812-01')throw new Error('request_identity_drift');
-          r.enabled=false;r.consumed=true;r.consumedAt=new Date().toISOString();r.status=e.decision;r.decision=e.decision;r.requestCommitSha=process.env.GITHUB_SHA;r.executedWrites={auth:e.writes?.authWritesTotal??'UNKNOWN',firestore:e.writes?.firestoreWritesTotal??'UNKNOWN',authDeletes:e.writes?.authDeletes??0,firestoreDeletes:e.writes?.firestoreDeletes??0};r.nextGate=e.decision==='PASS_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2_READBACK'?'C6_LIVE_USER_ADMIN_FRONTEND_WIRING_LOCALIZED':'STOP_RETRY_NO_SECOND_ATTEMPT';fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n','utf8');
+          r.enabled=false;r.consumed=true;r.consumedAt=new Date().toISOString();r.status=e.decision;r.decision=e.decision;r.requestCommitSha=process.env.GITHUB_SHA;
+          r.executedWrites={auth:e.writes?.authWritesTotal??'UNKNOWN',firestore:e.writes?.firestoreWritesTotal??'UNKNOWN',authDeletes:e.writes?.authDeletes??0,firestoreDeletes:e.writes?.firestoreDeletes??0};
+          r.nextGate=e.decision==='PASS_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2_READBACK'?'C6_LIVE_USER_ADMIN_FRONTEND_WIRING_LOCALIZED':'STOP_RETRY_NO_SECOND_ATTEMPT';
+          fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n','utf8');
           NODE
-          git config user.name 'github-actions[bot]';git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add .github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-EXACT-WRITE-V2-LATEST.json
-          git commit -m 'evidence: freeze C6 staff repair bootstrap exact write V2';git push origin HEAD:docs-tya-v6-v71-audit
+          git commit -m 'evidence: freeze C6 staff repair bootstrap exact write V2'
+          git push origin HEAD:docs-tya-v6-v71-audit
 
       - name: Publish V2 status
         if: always()
@@ -125,7 +137,10 @@ jobs:
         run: |
           set -euo pipefail
           STATE=success;DESC='PREPARED_C6_STAFF_REPAIR_BOOTSTRAP_V2_NO_EXECUTE'
-          if [ '${{ steps.req.outputs.execute }}' = 'true' ]; then if [ '${{ steps.exactwrite.outcome }}' = 'success' ]; then DESC='PASS_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2'; else STATE=error;DESC='STOP_RETRY_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2'; fi; fi
+          if [ '${{ steps.req.outputs.execute }}' = 'true' ]; then
+            if [ '${{ steps.exactwrite.outcome }}' = 'success' ]; then DESC='PASS_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2';
+            else STATE=error;DESC='STOP_RETRY_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2'; fi
+          fi
           gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/c6-staff-repair-bootstrap-v2/$DESC" -f description="$DESC" >/dev/null
 
       - name: Cleanup all private material
@@ -160,14 +175,15 @@ jobs:
           node-version: '24'
 
       - name: Gate Paula I3 exact one-shot request
-        id: i3gate
         run: |
           set -euo pipefail
           mkdir -p "$I3_PRIVATE" "$I3_OUT"
           printf '%s\n' '.tmp/' 'gha-creds-*.json' >> .git/info/exclude
           node <<'NODE'
-          const fs=require('fs'),{execFileSync}=require('child_process');const p=process.env.I3_REQUEST,r=JSON.parse(fs.readFileSync(p,'utf8'));
-          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const fs=require('fs'),{execFileSync}=require('child_process');
+          const p=process.env.I3_REQUEST,r=JSON.parse(fs.readFileSync(p,'utf8'));
+          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
           if(r.schemaVersion!=='cxorbia.i3.shopper-persistence-exact-write.request.v1'||r.repository!=='paulaosoriof86/demoCXOrbia'||r.branch!=='docs-tya-v6-v71-audit'||Number(r.pullRequest)!==7)throw new Error('I3_LANE_INVALID');
           if(r.targetHeadSha!==parent||changed.length!==1||changed[0]!==p)throw new Error('I3_REQUEST_COMMIT_SCOPE_INVALID:'+changed.join(','));
           if(r.enabled!==true||r.consumed!==false||r.status!=='authorized_execute_once'||r.authorizedBy!=='Paula'||r.allowedExecutions!==1)throw new Error('I3_AUTHORIZATION_INVALID');
@@ -207,7 +223,10 @@ jobs:
         run: |
           set -euo pipefail
           node <<'NODE'
-          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw)}catch{};if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.private_key&&p.client_email))throw new Error('I3_CREDENTIAL_INVALID');fs.writeFileSync(process.env.I3_PRIVATE+'/credentials.json',raw,{mode:0o600});
+          const fs=require('fs');
+          const raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw)}catch{}
+          if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.private_key&&p.client_email))throw new Error('I3_CREDENTIAL_INVALID');
+          fs.writeFileSync(process.env.I3_PRIVATE+'/credentials.json',raw,{mode:0o600});
           NODE
           echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/${I3_PRIVATE}/credentials.json" >> "$GITHUB_ENV"
 
@@ -240,16 +259,20 @@ jobs:
           CXORBIA_I3_ALLOW_LOCAL_ORIGIN: http://127.0.0.1:4175
         run: |
           set -euo pipefail
-          node backend/runtime/cxorbia-shopper-command-provider-v1.mjs --serve > "$I3_OUT/provider.log" 2>&1 & echo $! > "$I3_OUT/provider.pid"
+          node backend/runtime/cxorbia-shopper-command-provider-v1.mjs --serve > "$I3_OUT/provider.log" 2>&1 &
+          echo $! > "$I3_OUT/provider.pid"
           for i in $(seq 1 30); do if curl -fsS http://127.0.0.1:4180/health >/dev/null; then exit 0; fi; sleep 1; done
-          cat "$I3_OUT/provider.log"; exit 1
+          cat "$I3_OUT/provider.log"
+          exit 1
 
       - name: Start repaired HEAD local source proxy
         run: |
           set -euo pipefail
-          CXORBIA_P0_LOCAL_PORT=4175 CXORBIA_P0_UPSTREAM_ROOT="$DEV_ROOT_URL" node tools/qa/cxorbia-p0-local-readonly-proxy.mjs > "$I3_OUT/proxy.log" 2>&1 & echo $! > "$I3_OUT/proxy.pid"
+          CXORBIA_P0_LOCAL_PORT=4175 CXORBIA_P0_UPSTREAM_ROOT="$DEV_ROOT_URL" node tools/qa/cxorbia-p0-local-readonly-proxy.mjs > "$I3_OUT/proxy.log" 2>&1 &
+          echo $! > "$I3_OUT/proxy.pid"
           for i in $(seq 1 30); do if curl -fsS "$LOCAL_ROOT_URL/index-backend-dev.html" >/dev/null; then exit 0; fi; sleep 1; done
-          cat "$I3_OUT/proxy.log"; exit 1
+          cat "$I3_OUT/proxy.log"
+          exit 1
 
       - name: Execute Admin create update and new Shopper real Auth E2E
         env:
@@ -282,11 +305,21 @@ jobs:
           set -euo pipefail
           mkdir -p app/docs/evidence app/docs
           node <<'NODE'
-          const fs=require('fs');const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));const hist=read(process.env.I3_OUT+'/historical-reconcile.source-safe.json'),n=read(process.env.I3_OUT+'/new-shopper-e2e.source-safe.json'),h=read(process.env.I3_OUT+'/historical-shopper-e2e.source-safe.json'),rb=read(process.env.I3_OUT+'/new-provider-readback.source-safe.json'),req=read(process.env.I3_REQUEST);if(hist.decision!=='PASS_I3_HISTORICAL_EXACT_RECONCILIATION'||n.decision!=='PASS_I3_ADMIN_CREATE_UPDATE_NEW_SHOPPER_AUTH_E2E'||h.decision!=='PASS_P0_REAL_SHOPPER_AUTH_TO_HR_E2E'||rb.decision!=='PASS_I3_NEW_SHOPPER_PROVIDER_READBACK')throw new Error('I3_EVIDENCE_GATE_FAILED');
-          const evidence={schemaVersion:'cxorbia.i3.shopper-persistence-exact-write.evidence.v1',generatedAt:new Date().toISOString(),decision:'PASS_I3_DEV_AUTH_FIRESTORE_SHOPPER_PERSISTENCE',repository:req.repository,branch:req.branch,pullRequest:req.pullRequest,targetHeadSha:req.targetHeadSha,requestCommitSha:process.env.GITHUB_SHA,workflowRunId:Number(process.env.GITHUB_RUN_ID),historical:{exactIdentity:true,claims:true,profile:true,membership:true,crosswalk:true,historyE2E:true,shopperIdFingerprint:hist.shopperIdFingerprint},newShopper:{adminCreateProviderAck:true,adminUpdateProviderAck:true,profileVersion:rb.profileVersion,claims:true,membership:true,crosswalk:true,login:true,reload:true,newTab:true,secondContext:true,shopperIdFingerprint:rb.shopperIdFingerprint},writes:{authWrites:2,firestoreWrites:6+Number(hist.firestoreWrites||0),authDeletes:0,passwordChanges:0,passwordResets:0},safety:{fuzzyMatching:false,hrWrites:0,rulesWrites:0,storageWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,deploys:0,merge:false,production:false,credentialsExposed:false,tokensExposed:false},nextGate:'ITERACION_4_HR_BIDIRECTIONAL_PHASE_A_E2E_FINANCE'};if(evidence.writes.firestoreWrites>req.firestoreWritesMax||evidence.writes.authWrites>req.authWritesMax)throw new Error('I3_WRITE_BUDGET_EXCEEDED');fs.writeFileSync('app/docs/evidence/ITERATION3-DEV-AUTH-FIRESTORE-SHOPPER-PERSISTENCE-LATEST.json',JSON.stringify(evidence,null,2)+'\n','utf8');
+          const fs=require('fs');
+          const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+          const hist=read(process.env.I3_OUT+'/historical-reconcile.source-safe.json');
+          const n=read(process.env.I3_OUT+'/new-shopper-e2e.source-safe.json');
+          const h=read(process.env.I3_OUT+'/historical-shopper-e2e.source-safe.json');
+          const rb=read(process.env.I3_OUT+'/new-provider-readback.source-safe.json');
+          const req=read(process.env.I3_REQUEST);
+          if(hist.decision!=='PASS_I3_HISTORICAL_EXACT_RECONCILIATION'||n.decision!=='PASS_I3_ADMIN_CREATE_UPDATE_NEW_SHOPPER_AUTH_E2E'||h.decision!=='PASS_P0_REAL_SHOPPER_AUTH_TO_HR_E2E'||rb.decision!=='PASS_I3_NEW_SHOPPER_PROVIDER_READBACK')throw new Error('I3_EVIDENCE_GATE_FAILED');
+          const evidence={schemaVersion:'cxorbia.i3.shopper-persistence-exact-write.evidence.v1',generatedAt:new Date().toISOString(),decision:'PASS_I3_DEV_AUTH_FIRESTORE_SHOPPER_PERSISTENCE',repository:req.repository,branch:req.branch,pullRequest:req.pullRequest,targetHeadSha:req.targetHeadSha,requestCommitSha:process.env.GITHUB_SHA,workflowRunId:Number(process.env.GITHUB_RUN_ID),historical:{exactIdentity:true,claims:true,profile:true,membership:true,crosswalk:true,historyE2E:true,shopperIdFingerprint:hist.shopperIdFingerprint},newShopper:{adminCreateProviderAck:true,adminUpdateProviderAck:true,profileVersion:rb.profileVersion,claims:true,membership:true,crosswalk:true,login:true,reload:true,newTab:true,secondContext:true,shopperIdFingerprint:rb.shopperIdFingerprint},writes:{authWrites:2,firestoreWrites:6+Number(hist.firestoreWrites||0),authDeletes:0,passwordChanges:0,passwordResets:0},safety:{fuzzyMatching:false,hrWrites:0,rulesWrites:0,storageWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,deploys:0,merge:false,production:false,credentialsExposed:false,tokensExposed:false},nextGate:'ITERACION_4_HR_BIDIRECTIONAL_PHASE_A_E2E_FINANCE'};
+          if(evidence.writes.firestoreWrites>req.firestoreWritesMax||evidence.writes.authWrites>req.authWritesMax)throw new Error('I3_WRITE_BUDGET_EXCEEDED');
+          fs.writeFileSync('app/docs/evidence/ITERATION3-DEV-AUTH-FIRESTORE-SHOPPER-PERSISTENCE-LATEST.json',JSON.stringify(evidence,null,2)+'\n','utf8');
           const lock=`# SOURCE LOCK — ITERATION 3 DEV AUTH/FIRESTORE SHOPPER PERSISTENCE — 2026-08-14\n\n**Estado:** \`LOCKED__PASS_I3_DEV_AUTH_FIRESTORE_SHOPPER_PERSISTENCE__GO_LIVE_60\`\n\n- Repo: \`${req.repository}\`\n- Rama/candidata: \`${req.branch}\`\n- PR: #${req.pullRequest} draft/open/no merge\n- Source target I3: \`${req.targetHeadSha}\`\n- Request commit: \`${process.env.GITHUB_SHA}\`\n- Workflow run: \`${process.env.GITHUB_RUN_ID}\`\n- Evidence: \`app/docs/evidence/ITERATION3-DEV-AUTH-FIRESTORE-SHOPPER-PERSISTENCE-LATEST.json\`\n\nPASS: Admin create/update por CX.data -> HTTP command transport -> provider ACK; principal Auth + claims + membership + profile + crosswalk; un Shopper histórico exacto con historia real; un Shopper nuevo con login, reload, new-tab y segundo contexto.\n\nNo fuzzy matching, password reset, HR/Rules/Storage/Make/Gemini/pagos writes, deploy, merge ni producción.\n\nSiguiente bloque: \`ITERACION_4_HR_BIDIRECTIONAL_PHASE_A_E2E_FINANCE\`.\n`;
           fs.writeFileSync('app/docs/SOURCE-LOCK-ITERATION3-DEV-AUTH-FIRESTORE-SHOPPER-PERSISTENCE-PASS-20260814.md',lock,'utf8');
-          req.enabled=false;req.consumed=true;req.status=evidence.decision;req.decision=evidence.decision;req.consumedAt=evidence.generatedAt;req.workflowRunId=evidence.workflowRunId;req.evidence='app/docs/evidence/ITERATION3-DEV-AUTH-FIRESTORE-SHOPPER-PERSISTENCE-LATEST.json';req.executedWrites=evidence.writes;req.nextGate=evidence.nextGate;fs.writeFileSync(process.env.I3_REQUEST,JSON.stringify(req,null,2)+'\n','utf8');
+          req.enabled=false;req.consumed=true;req.status=evidence.decision;req.decision=evidence.decision;req.consumedAt=evidence.generatedAt;req.workflowRunId=evidence.workflowRunId;req.evidence='app/docs/evidence/ITERATION3-DEV-AUTH-FIRESTORE-SHOPPER-PERSISTENCE-LATEST.json';req.executedWrites=evidence.writes;req.nextGate=evidence.nextGate;
+          fs.writeFileSync(process.env.I3_REQUEST,JSON.stringify(req,null,2)+'\n','utf8');
           NODE
 
       - name: Commit I3 PASS directly on same live branch
@@ -294,7 +327,8 @@ jobs:
           set -euo pipefail
           git fetch origin docs-tya-v6-v71-audit
           test "$(git rev-parse origin/docs-tya-v6-v71-audit)" = "$GITHUB_SHA"
-          git config user.name 'github-actions[bot]';git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add app/index-backend-dev.html app/modules/shoppers.js backend/runtime/cxorbia-shopper-command-provider-v1.mjs "$I3_REQUEST" app/docs/evidence/ITERATION3-DEV-AUTH-FIRESTORE-SHOPPER-PERSISTENCE-LATEST.json app/docs/SOURCE-LOCK-ITERATION3-DEV-AUTH-FIRESTORE-SHOPPER-PERSISTENCE-PASS-20260814.md
           git diff --cached --check
           git commit -m 'feat(i3): persist exact Shopper Auth Firestore flow and evidence'
@@ -304,7 +338,8 @@ jobs:
         if: success()
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state='success' -f context='cxorbia/i3-shopper-auth-firestore/overall' -f description='PASS_I3_DEV_AUTH_FIRESTORE_SHOPPER_PERSISTENCE' -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+        run: |
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state='success' -f context='cxorbia/i3-shopper-auth-firestore/overall' -f description='PASS_I3_DEV_AUTH_FIRESTORE_SHOPPER_PERSISTENCE' -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
 
       - name: Cleanup private I3 material
         if: always()
