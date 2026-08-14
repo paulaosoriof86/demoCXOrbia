@@ -1,6 +1,6 @@
 # GO-LIVE PROGRESS TRACKER — ROOT-CAUSE PLAN CXORBIA TyA
 
-**Fecha:** 2026-08-14 10:40 -06:00  
+**Fecha:** 2026-08-14 10:45 -06:00  
 **Estado:** `ITERATION_1_SOURCE_ONLY_PASS__15_PERCENT__ITERATION_2_NEXT`
 
 ## Regla de medición
@@ -34,7 +34,7 @@ Evidencia fuente:
 - `cxorbia-shopper-admin-command-contract-v1.js` creado para Auth + claims + membership + profile/crosswalk, sin password/token/localStorage en navegador.
 - `cxorbia-hr-write-adapter-contract-v1.js` creado gated/idempotente, con conflictos a review y cero overwrite silencioso.
 - `tools/qa/verify-root-cause-correction-iteration1.mjs` creado.
-- Workflow existente `CXOrbia Phase A Live Execution Checkpoint` extendido; run `31820315435` completó SUCCESS, incluyendo sintaxis de los archivos corregidos, `PASS_ROOT_CAUSE_CORRECTION_ITERATION1_SOURCE_ONLY` y checkpoint actual.
+- Workflow existente `CXOrbia Phase A Live Execution Checkpoint`: run `31820315435` SUCCESS tras corregir el verificador histórico; run final de documentación/checkpoint `31820514862` SUCCESS. Marker: `PASS_ROOT_CAUSE_CORRECTION_ITERATION1_SOURCE_ONLY`.
 
 ## Iteración 2 — siguiente
 
