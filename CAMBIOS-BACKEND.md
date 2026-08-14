@@ -1,6 +1,6 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-14 11:20 -06:00  
+**Última actualización:** 2026-08-14 11:22 -06:00  
 **Estado:** `ITERATION_2_CANONICAL_PERSISTENCE_PASS__SOURCE_READY_FOR_DEV_WRITE_GATES__GO_LIVE_35__NO_PRODUCTION`
 
 ## Bloque ejecutado
@@ -60,16 +60,19 @@ Los flujos complejos que aún mutaban closure/localStorage directamente no se de
 
 ## Evidencia
 
-Workflow existente `CXOrbia Phase A Live Execution Checkpoint`, run `31823098359`: **SUCCESS**.
+Workflow existente `CXOrbia Phase A Live Execution Checkpoint`:
 
-Pasaron:
+- run source I2 `31823098359`: SUCCESS;
+- run final con checkpoint/documentación I2 `31823620461`: SUCCESS.
 
-- Exact Write V2 source syntax/preflight preservado;
-- I1 source gate;
-- sintaxis I2;
+El run final confirmó:
+
+- `PASS_ROOT_CAUSE_CORRECTION_ITERATION1_SOURCE_ONLY`;
 - `PASS_ROOT_CAUSE_CORRECTION_ITERATION2_CANONICAL_PERSISTENCE`;
-- regresión VM: write gate cerrado no muta visita; caller no convertido falla cerrado; mock provider ACK no muta local-first; scope de proyecto incorrecto se bloquea;
-- checkpoint forense vigente.
+- `PASS_PHASE_A_CURRENT_OPERATIONAL_CHECKPOINT_FORENSIC_PLAN`;
+- `goLiveCorrectionCompletedPct=35`, `goLiveCorrectionRemainingPct=65`, `iteration=2/5`;
+- same candidate / no general rediagnosis / no Auth rebuild / no new branch or PR;
+- Auth/Firestore/HR/Rules/Storage writes=false; deploy/merge/production=false.
 
 ## Porcentaje productivo
 
