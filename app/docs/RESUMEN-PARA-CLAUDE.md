@@ -1,7 +1,7 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-14 12:05 -06:00  
-**Estado:** `I2_PASS__MISVISITAS_CLOSED__I3_SOURCE_PREPARED__I3_STOP_RETRY_CREDENTIAL_H0_S0__SAME_CANDIDATE`
+**Última actualización:** 2026-08-14 13:24 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_RECOVERY_PASS__ADMIN_LOGIN_POINTER_FIXED_SOURCE_ONLY__I3_NOT_CLOSED__SAME_CANDIDATE`
 
 ## Regla principal
 
@@ -9,64 +9,55 @@ No nueva candidata, rama ni PR. No rediseñar ni reconstruir Auth. Todo continú
 
 Plan rector: `app/docs/ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md`.
 
-I3 lock: `app/docs/SOURCE-LOCK-ITERATION3-STOP-RETRY-HISTORICAL-SHOPPER-CREDENTIAL-20260814.md`.
+Último I3 lock: `app/docs/SOURCE-LOCK-ITERATION3-STOP-RETRY-POST-CREDENTIAL-RECOVERY-ADMIN-LOGIN-POINTER-20260814.md`.
 
 ## Cerrado / NO TOCAR
 
 - Firebase Auth owner `core/backend-browser-auth.js`.
 - exact identity / no fuzzy.
+- I1 contracts.
 - I2 command boundary + provider ACK/fail-closed.
-- `app/modules/misvisitas.js` P0 arrays/facets/ACK ya cerrado.
-- localStorage no vuelve a ser verdad productiva.
+- `modules/misvisitas.js` arrays/facets/ACK P0 cerrado.
+- source I3 transport/membership/provider/E2E/patcher; no reconstruir.
 
-## I3 source ya preparado — NO RECONSTRUIR
+## I3 latest real execution
 
-- `app/adapters/cxorbia-command-http-transport-v1.js`
-- `app/adapters/cxorbia-shopper-membership-wiring-v1.js`
-- `backend/runtime/cxorbia-shopper-command-provider-v1.mjs`
-- `tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs`
-- `tools/qa/cxorbia-i3-source-patcher.mjs`
+Run `31833696707`, job `94875097700`.
 
-El patcher aplica exactamente, sobre esta candidata y sin rediseño:
+El único recovery/reset de credencial autorizado para el Shopper histórico exacto PASS. También PASS la preservación de identidad y la reconciliación exacta membership/crosswalk. No se modificó otra identidad.
 
-1. scripts canónicos de transport/membership al entrypoint;
-2. alta Shopper de `modules/shoppers.js` como async/ACK-aware;
-3. edición Shopper como async/ACK-aware;
-4. refresh solo después de provider ACK;
-5. cero toast de éxito sin persistencia confirmada.
+El run se detuvo después, antes de entrar a Administración, porque el panel diagnóstico DEV `#cxBackendPreviewStatus` interceptó el click sobre `#lgSubmit`.
 
-El runner se detuvo antes de commitear ese patch aplicado; **reutilizar el patcher**, no rehacer manualmente.
+## Corrección localizada, sin rediseño
 
-## I3 STOP_RETRY
+Archivo backend DEV: `app/core/backend-preview-status.js`.
 
-Run real `31826443230` / job `94851603411` llegó a provider-read y detuvo el flujo en selección exacta de credencial histórica:
+El panel ahora es no interactivo (`pointer-events:none`, `aria-hidden=true`, `user-select:none`). Esto corrige una interferencia real del overlay diagnóstico sin alterar layout, módulos ni producto. El E2E I3 ahora verifica esta condición y no usa `force click`.
 
-`HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194`.
+No corresponde a Claude reconstruir login ni aplicar otro parche de UI.
 
-Existe una identidad Shopper histórica exacta con claims, perfil e historia. El bloqueo es credential plaintext unavailable: el Auth histórico fue importado con hash SHA256, mientras el selector solo puede reconstruir password desde `pass/password` protegido o `FirstName123*`; no hay coincidencia para el candidato exacto.
+## Importante sobre la credencial histórica
 
-No usar identidad por nombre/email/teléfono ni inventar otra cuenta para sortearlo.
+El password temporal generado estuvo únicamente en `.tmp` privado del runner y fue eliminado por cleanup. Como el E2E histórico estaba programado después del paso Admin, quedó SKIPPED. No declarar login histórico PASS.
 
-## Seguridad
+El próximo harness debe ejecutar login histórico inmediatamente después de una nueva credencial autorizada y conservar evidencia sanitizada aunque falle un paso posterior.
 
-I3 Auth/Firestore writes `0/0`; password changes/resets `0`; identidades modificadas `0`; Shopper nuevo `NO`; HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/producción sin cambios.
+## Shopper nuevo
 
-El workflow provider está PARKED. No ejecutar de nuevo sin nueva autorización Paula.
+No fue creado: el fallo ocurrió en login Admin antes del alta. El patch ACK-aware de `modules/shoppers.js` sigue preparado por `tools/qa/cxorbia-i3-source-patcher.mjs`; no rehacerlo manualmente.
 
-## Reusable / no-code
+## Reusable CXOrbia
 
-El transport/provider preparado sigue reusable por tenant/project, RBAC, idempotencia, expectedVersion, ACK y exact identity. No hardcodear Cinépolis en contracts reusables.
+Se mantiene tenant/project scope, RBAC, idempotencia, expectedVersion, exact identity, provider ACK, protected-data boundary y fail-closed. Cinépolis sigue siendo configuración del proyecto TyA, no arquitectura global.
 
 ## Academia
 
-Todavía no declarar alta/login Shopper real como activo. Mantener distinción: Mis Visitas multi-registro = source cerrado; credential/login histórico = pendiente de recovery; provider writes = no ejecutados.
+No declarar todavía login/alta Shopper real como activo. Mis Visitas multi-registro sigue cerrado en source. La validación histórica Academia/Certificación del principal Shopper quedó SKIPPED en el último run y se retomará dentro de I3.
 
 ## Porcentaje
 
-**35% completado / 65% pendiente.** I3 permanece 0/25 hasta PASS completo.
+**35% completado / 65% pendiente.** I3 no suma puntos hasta PASS completo.
 
 ## Siguiente frontera
 
-`PAULA_REVIEW_REQUIRED_FOR_I3_HISTORICAL_SHOPPER_CREDENTIAL_RECOVERY`.
-
-Después del gate focalizado, reanudar la MISMA I3 desde el blocker y reutilizar el source preparado; no iniciar otra iteración ni reauditar módulos cerrados.
+`I3_SOURCE_ONLY_HARNESS_DURABILITY_AFTER_RECOVERY_FAILURE`; después gate nuevo focalizado para terminar I3, no otra auditoría ni candidata.
