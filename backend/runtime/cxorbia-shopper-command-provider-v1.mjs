@@ -36,9 +36,12 @@ function request(){
   if(r.schemaVersion!=='cxorbia.i3.shopper-persistence-exact-write.request.v1'||r.repository!=='paulaosoriof86/demoCXOrbia'||r.branch!=='docs-tya-v6-v71-audit'||Number(r.pullRequest)!==7)throw new Error('I3_REQUEST_LANE_INVALID');
   if(r.firebaseProjectId!==PROJECT||r.tenantId!=='tya'||r.projectId!=='cinepolis')throw new Error('I3_REQUEST_PROVIDER_TARGET_INVALID');
   if(r.enabled!==true||r.consumed!==false||r.authorizedBy!=='Paula'||r.allowedExecutions!==1||r.status!=='authorized_execute_once')throw new Error('I3_REQUEST_NOT_AUTHORIZED');
-  if(r.authWritesMax!==2||r.firestoreWritesMax!==10||r.authDeletesMax!==1||r.stopRetry!==true)throw new Error('I3_REQUEST_BUDGET_INVALID');
+  const recovery=r.continuationMode==='historical_credential_recovery_resume';
+  if(recovery&&(r.continuationOfRequestId!=='cxorbia-i3-shopper-persistence-20260814-01'||r.priorStopRetryCode!=='HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194'))throw new Error('I3_RECOVERY_CONTINUATION_INVALID');
+  const expectedAuthWrites=recovery?3:2;const expectedPasswordResets=recovery?1:0;
+  if(r.authWritesMax!==expectedAuthWrites||r.firestoreWritesMax!==10||r.authDeletesMax!==1||r.stopRetry!==true)throw new Error('I3_REQUEST_BUDGET_INVALID');
   for(const k of ['hrWrites','rulesWrites','storageWrites','makeWrites','geminiCalls','paymentsWrites','deploys'])if(r[k]!==0)throw new Error('I3_UNSAFE_SCOPE_'+k);
-  if(r.merge!==false||r.production!==false||r.fuzzyMatchingAllowed!==false||r.passwordResets!==0)throw new Error('I3_UNSAFE_POLICY');
+  if(r.merge!==false||r.production!==false||r.fuzzyMatchingAllowed!==false||r.passwordResets!==expectedPasswordResets)throw new Error('I3_UNSAFE_POLICY');
   return r;
 }
 function init(){
@@ -80,7 +83,7 @@ async function createShopper(auth,db,r,command){
     await auth.createUser({uid,email,password,emailVerified:false,disabled:false});created=true;await auth.setCustomUserClaims(uid,claims);
     const p={id:shopperId,shopperId,tenantId:r.tenantId,projectIds:[r.projectId],firstName:str(profile.firstName),lastName:str(profile.lastName),nombre:str(profile.nombre)||`${str(profile.firstName)} ${str(profile.lastName)}`.trim(),whatsapp:str(profile.whatsapp),email:str(profile.email),pais:str(profile.pais||profile.country),country:str(profile.country||profile.pais),depto:str(profile.depto),ciudad:str(profile.ciudad),sexo:str(profile.sexo),edad:str(profile.edad),estado:str(profile.estado)||'Pendiente',sourceType:'platform',createdVia:'manual',user:login,perfilCompleto:false,version:1,testFixture:true,createdAt:admin.firestore.FieldValue.serverTimestamp(),updatedAt:admin.firestore.FieldValue.serverTimestamp()};
     const batch=db.batch();batch.set(profileRef,p);batch.set(memberRef,membershipDoc(uid,claims));batch.set(crossRef,crosswalkDoc(uid,claims,p));batch.set(rec.ref,{status:'committed',commandDigest:rec.digest,entityId:shopperId,commandType:command.commandType,providerAck:true,updatedAt:admin.firestore.FieldValue.serverTimestamp()});await batch.commit();
-    fs.mkdirSync(new URL('file://'+PRIVATE_NEW).pathname.split('/').slice(0,-1).join('/')||'.',{recursive:true});fs.writeFileSync(PRIVATE_NEW,JSON.stringify({schemaVersion:'cxorbia.i3.private-new-shopper.v1',login,password,shopperId,uid})+'\n',{encoding:'utf8',mode:0o600});
+    fs.mkdirSync(PRIVATE_NEW.split('/').slice(0,-1).join('/')||'.',{recursive:true});fs.writeFileSync(PRIVATE_NEW,JSON.stringify({schemaVersion:'cxorbia.i3.private-new-shopper.v1',login,password,shopperId,uid})+'\n',{encoding:'utf8',mode:0o600});
     return ack(command,shopperId,{visibleLogin:login,profileVersion:1});
   }catch(error){if(created){try{await auth.deleteUser(uid);}catch(_){}}throw error;}
 }
@@ -97,12 +100,33 @@ async function executeCommand(token,command){
   const r=request();if(command?.version!=='cxorbia-command-adapter-v1'||!['shopper.create','shopper.update'].includes(command?.commandType))throw new Error('I3_COMMAND_NOT_ALLOWED');if(command.tenantId!==r.tenantId||command.projectId!==r.projectId)throw new Error('I3_COMMAND_SCOPE_MISMATCH');
   const {auth,db}=init();await exactActor(auth,db,token,r.tenantId,r.projectId);return command.commandType==='shopper.create'?createShopper(auth,db,r,command):updateShopper(auth,db,r,command);
 }
+async function recoverHistoricalCredential(){
+  const r=request();if(r.continuationMode!=='historical_credential_recovery_resume'||r.passwordResets!==1)throw new Error('I3_RECOVERY_NOT_AUTHORIZED');
+  if(!fs.existsSync(PRIVATE_EXISTING))throw new Error('I3_HISTORICAL_PRIVATE_CREDENTIAL_MISSING');const envelope=JSON.parse(fs.readFileSync(PRIVATE_EXISTING,'utf8'));const h=envelope.shopper||{};
+  if(!h.credentialRecoveryRequired||str(h.password)||!str(h.login)||!str(h.uid)||!str(h.shopperId||h.canonicalShopperId))throw new Error('I3_RECOVERY_CANDIDATE_INVALID');
+  const shopperId=str(h.canonicalShopperId||h.shopperId);const {auth,db}=init();const byUid=await auth.getUser(str(h.uid));const byEmail=await auth.getUserByEmail(internalEmail(h.login,r.tenantId));
+  if(byUid.uid!==byEmail.uid)throw new Error('I3_RECOVERY_UID_EMAIL_CONFLICT');const claimsBefore=clean(byUid.customClaims||{});if(!claimsSemanticallyExact(claimsBefore,shopperId,r.tenantId,r.projectId))throw new Error('I3_RECOVERY_CLAIMS_NOT_EXACT');
+  const profileRef=db.collection('tenants').doc(r.tenantId).collection('shoppers').doc(shopperId);const memberRef=db.collection('tenants').doc(r.tenantId).collection('users').doc(byUid.uid);const crossRef=db.collection('tenants').doc(r.tenantId).collection('shopperIdentityCrosswalk').doc(shopperId);const historyRef=db.collection('tenants').doc(r.tenantId).collection('projects').doc(r.projectId).collection('visits');
+  const [profileBefore,memberBefore,crossBefore,historyBefore]=await Promise.all([profileRef.get(),memberRef.get(),crossRef.get(),historyRef.where('shopperId','==',shopperId).get()]);if(!profileBefore.exists)throw new Error('I3_RECOVERY_PROFILE_MISSING');if(historyBefore.size<1)throw new Error('I3_RECOVERY_HISTORY_MISSING');
+  if(memberBefore.exists){const m=memberBefore.data()||{};if(m.tenantId!==r.tenantId||m.role!=='shopper'||m.authNamespace!=='shopper'||m.shopperId!==shopperId)throw new Error('I3_RECOVERY_MEMBERSHIP_CONFLICT');}
+  if(crossBefore.exists){const c=crossBefore.data()||{};if(c.tenantId!==r.tenantId||c.shopperId!==shopperId||c.providerUidFingerprint!==uidFingerprint(byUid.uid))throw new Error('I3_RECOVERY_CROSSWALK_CONFLICT');}
+  const fingerprints={profile:sha(clean(profileBefore.data()||{})),membership:memberBefore.exists?sha(clean(memberBefore.data()||{})):null,crosswalk:crossBefore.exists?sha(clean(crossBefore.data()||{})):null,history:sha(historyBefore.docs.map(d=>({id:d.id,data:clean(d.data()||{})})))};
+  const password=crypto.randomBytes(24).toString('base64url')+'!Aa1';await auth.updateUser(byUid.uid,{password});
+  const [after,profileAfter,memberAfter,crossAfter,historyAfter]=await Promise.all([auth.getUser(byUid.uid),profileRef.get(),memberRef.get(),crossRef.get(),historyRef.where('shopperId','==',shopperId).get()]);
+  if(after.uid!==byUid.uid||str(after.email).toLowerCase()!==str(byUid.email).toLowerCase()||sha(clean(after.customClaims||{}))!==sha(claimsBefore))throw new Error('I3_RECOVERY_AUTH_IDENTITY_DRIFT');
+  if(!profileAfter.exists||sha(clean(profileAfter.data()||{}))!==fingerprints.profile)throw new Error('I3_RECOVERY_PROFILE_DRIFT');
+  if(memberAfter.exists!==memberBefore.exists||(memberAfter.exists&&sha(clean(memberAfter.data()||{}))!==fingerprints.membership))throw new Error('I3_RECOVERY_MEMBERSHIP_DRIFT');
+  if(crossAfter.exists!==crossBefore.exists||(crossAfter.exists&&sha(clean(crossAfter.data()||{}))!==fingerprints.crosswalk))throw new Error('I3_RECOVERY_CROSSWALK_DRIFT');
+  if(historyAfter.size!==historyBefore.size||sha(historyAfter.docs.map(d=>({id:d.id,data:clean(d.data()||{})})))!==fingerprints.history)throw new Error('I3_RECOVERY_HISTORY_DRIFT');
+  envelope.shopper={...h,password,credentialRecoveryRequired:false,credentialRecovered:true};fs.writeFileSync(PRIVATE_EXISTING,JSON.stringify(envelope,null,2)+'\n',{encoding:'utf8',mode:0o600});
+  return {decision:'PASS_I3_HISTORICAL_EXACT_CREDENTIAL_RECOVERY',shopperIdFingerprint:fp('shopper',shopperId),uidFingerprint:fp('uid',byUid.uid),uidPreserved:true,claimsPreserved:true,profilePreserved:true,membershipPreserved:true,crosswalkPreserved:true,historyPreserved:true,historyCount:historyAfter.size,authWrites:1,passwordChanges:1,passwordResets:1,otherIdentitiesModified:0,fuzzyMatching:false,credentialsExposed:false};
+}
 async function reconcileHistorical(){
   const r=request();if(!fs.existsSync(PRIVATE_EXISTING))throw new Error('I3_HISTORICAL_PRIVATE_CREDENTIAL_MISSING');const envelope=JSON.parse(fs.readFileSync(PRIVATE_EXISTING,'utf8'));const h=envelope.shopper||{};if(!str(h.login)||!str(h.shopperId||h.canonicalShopperId))throw new Error('I3_HISTORICAL_PRIVATE_IDENTITY_INCOMPLETE');const shopperId=str(h.canonicalShopperId||h.shopperId);const {auth,db}=init();const user=await auth.getUserByEmail(internalEmail(h.login,r.tenantId));const claims=user.customClaims||{};
   if(!claimsSemanticallyExact(claims,shopperId,r.tenantId,r.projectId))throw new Error('I3_HISTORICAL_CLAIMS_NOT_EXACT');const profileRef=db.collection('tenants').doc(r.tenantId).collection('shoppers').doc(shopperId);const ps=await profileRef.get();if(!ps.exists)throw new Error('I3_HISTORICAL_PROFILE_MISSING');const profile={id:ps.id,...(ps.data()||{})};
   const memberRef=db.collection('tenants').doc(r.tenantId).collection('users').doc(user.uid);const crossRef=db.collection('tenants').doc(r.tenantId).collection('shopperIdentityCrosswalk').doc(shopperId);let writes=0;
-  const ms=await memberRef.get();if(ms.exists){const m=ms.data()||{};if(m.tenantId!==r.tenantId||m.role!=='shopper'||m.authNamespace!=='shopper'||m.shopperId!==shopperId)throw new Error('I3_HISTORICAL_MEMBERSHIP_CONFLICT');}else{await memberRef.set(membershipDoc(user.uid,canonicalClaims(shopperId,r.tenantId,r.projectId)));writes++;}
-  const cs=await crossRef.get();if(cs.exists){const c=cs.data()||{};if(c.tenantId!==r.tenantId||c.shopperId!==shopperId||c.providerUidFingerprint!==uidFingerprint(user.uid))throw new Error('I3_HISTORICAL_CROSSWALK_CONFLICT');}else{await crossRef.set(crosswalkDoc(user.uid,canonicalClaims(shopperId,r.tenantId,r.projectId),profile));writes++;}
+  const ms=await memberRef.get();const desiredMembership=membershipDoc(user.uid,canonicalClaims(shopperId,r.tenantId,r.projectId));if(ms.exists){const m=ms.data()||{};if(m.tenantId!==r.tenantId||m.role!=='shopper'||m.authNamespace!=='shopper'||m.shopperId!==shopperId)throw new Error('I3_HISTORICAL_MEMBERSHIP_CONFLICT');const needs=m.active!==true||JSON.stringify(uniq(m.projectIds))!==JSON.stringify([r.projectId])||str(m.providerUidFingerprint)!==uidFingerprint(user.uid)||str(m.claimsDigest)!==claimsDigest(canonicalClaims(shopperId,r.tenantId,r.projectId));if(needs){await memberRef.set(desiredMembership,{merge:true});writes++;}}else{await memberRef.set(desiredMembership);writes++;}
+  const cs=await crossRef.get();const desiredCross=crosswalkDoc(user.uid,canonicalClaims(shopperId,r.tenantId,r.projectId),Object.assign({},profile,{user:profile.user||h.login}));if(cs.exists){const c=cs.data()||{};if(c.tenantId!==r.tenantId||c.shopperId!==shopperId||c.providerUidFingerprint!==uidFingerprint(user.uid))throw new Error('I3_HISTORICAL_CROSSWALK_CONFLICT');const needs=c.identityMode!=='exact_technical_keys_only'||c.fuzzyMatching!==false||JSON.stringify(uniq(c.projectIds))!==JSON.stringify([r.projectId]);if(needs){await crossRef.set(desiredCross,{merge:true});writes++;}}else{await crossRef.set(desiredCross);writes++;}
   return {decision:'PASS_I3_HISTORICAL_EXACT_RECONCILIATION',shopperIdFingerprint:fp('shopper',shopperId),uidFingerprint:fp('uid',user.uid),profile:true,claims:true,membership:true,crosswalk:true,authWrites:0,firestoreWrites:writes,passwordChanges:0,passwordResets:0,fuzzyMatching:false};
 }
 async function readbackNew(){
@@ -115,6 +139,7 @@ async function serve(){request();init();const server=http.createServer(async(req
 
 const mode=process.argv[2]||'--serve';
 if(mode==='--self-test'){request();console.log(JSON.stringify({decision:'PASS_I3_SHOPPER_COMMAND_PROVIDER_SOURCE',version:VERSION,fuzzyMatching:false,hrWrites:0,storageWrites:0,deploys:0,production:false}));}
+else if(mode==='--recover-historical-credential')console.log(JSON.stringify(await recoverHistoricalCredential()));
 else if(mode==='--reconcile-historical')console.log(JSON.stringify(await reconcileHistorical()));
 else if(mode==='--readback-new')console.log(JSON.stringify(await readbackNew()));
 else await serve();
