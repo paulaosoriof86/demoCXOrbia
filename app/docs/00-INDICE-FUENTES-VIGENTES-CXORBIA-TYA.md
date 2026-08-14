@@ -1,7 +1,7 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-14 12:15 -06:00  
-**Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__ITERATION_2_CANONICAL_PERSISTENCE_PASS__ITERACION_3_DEV_AUTH_FIRESTORE_SHOPPER_PERSISTENCE_STOP_RETRY_CREDENTIAL_H0_S0__GO_LIVE_35__PAULA_REVIEW_REQUIRED`
+**Fecha:** 2026-08-14 13:24 -06:00  
+**Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__I1_PASS__I2_PASS__I3_CREDENTIAL_RECOVERY_PASS__ADMIN_LOGIN_POINTER_STOP_RETRY__GO_LIVE_35__PAULA_REVIEW_REQUIRED`
 
 ## 1. Lectura obligatoria y prevalente
 
@@ -15,48 +15,60 @@
 8. `AUDITORIA-FORENSE-INTEGRAL-PREPRODUCCION-CXORBIA-TYA-20260814.md`
 9. `ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md`
 10. `SOURCE-LOCK-ITERATION2-CANONICAL-PERSISTENCE-PASS-20260814.md`
-11. `SOURCE-LOCK-ITERATION3-STOP-RETRY-HISTORICAL-SHOPPER-CREDENTIAL-20260814.md`
+11. `SOURCE-LOCK-ITERATION3-STOP-RETRY-POST-CREDENTIAL-RECOVERY-ADMIN-LOGIN-POINTER-20260814.md`
 12. `GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`
 13. `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, PR #7 y HEAD vivo.
 
 ## 2. Decisión vigente
 
-`ITERACION_1_SOURCE_ONLY_ROOT_CAUSE_CONSOLIDATION` e `ITERATION_2_CANONICAL_PERSISTENCE_PASS` están cerradas y no se reprocesan.
+I1 e I2 están cerradas y no se reprocesan. I3 continúa en la misma candidata `docs-tya-v6-v71-audit` / PR #7; no nueva candidata, rama, PR, Auth rebuild ni reauditoría general.
 
-`ITERACION_3_DEV_AUTH_FIRESTORE_SHOPPER_PERSISTENCE` está en STOP_RETRY focalizado, no en PASS. Toda continuidad permanece en `docs-tya-v6-v71-audit` / PR #7. No nueva candidata, rama, PR, Auth rebuild ni reauditoría general.
+La autorización focalizada de Paula fue ejecutada una vez en run `31833696707`, job `94875097700`.
 
-## 3. I3 — STOP_RETRY focalizado
+## 3. I3 — avance real y STOP_RETRY nuevo
 
-Run `31826443230`, job `94851603411`.
+PASS dentro del run:
 
-Blocker reproducible:
+- único principal Shopper histórico exacto resuelto;
+- único credential recovery/reset autorizado ejecutado;
+- UID/claims/shopperId/profile/historia preservados y otras identidades modificadas `0`;
+- reconciliación exacta membership/crosswalk PASS;
+- provider y proxy local PASS.
 
-`HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194`.
+Nuevo blocker reproducible:
 
-Existe una identidad Shopper histórica exacta con claims, perfil e historia protegida. El bloqueo no es identidad ni fuzzy matching: la contraseña plaintext necesaria para certificar el login humano no es reconstruible desde las fuentes aprobadas retenidas. La importación histórica Auth conservó el hash SHA256 en Firebase, no el password plano.
+`I3_ADMIN_LOGIN_CLICK_BLOCKED_BY_CX_BACKEND_PREVIEW_STATUS_POINTER_INTERCEPTION`.
 
-I3 provider writes: Auth `0`, Firestore `0`; password changes/resets `0`; Shopper nuevo `NO`; HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/producción `0`/false.
+Playwright resolvió `#lgSubmit` visible/habilitado, pero `#cxBackendPreviewStatus` interceptó los eventos de puntero durante 30 s. El fallo ocurrió antes de crear el Shopper nuevo.
 
-El provider lane quedó PARKED y no se hizo segundo intento automático.
+Causa source localizada en `app/core/backend-preview-status.js`: overlay DEV fixed/z-index alto sin `pointer-events:none`.
 
-## 4. Source I3 que se preserva
+Corrección source-only ya aplicada en la misma candidata: overlay no interactivo + E2E que exige `pointer-events:none`. No se hizo provider retry.
 
-No rehacer: command HTTP transport, Shopper membership wiring, Shopper command provider, E2E I3, source patcher y patch ACK-aware preparado para `modules/shoppers.js`/entrypoint. Se reutilizan Auth, exact identity, command boundary y todos los cierres I1/I2.
+## 4. Credencial histórica después del run
 
-## 5. Porcentaje vigente
+El password temporal recuperado se mantuvo únicamente en el boundary privado del runner y fue eliminado por cleanup. No fue expuesto ni persistido. Como el E2E histórico estaba después del paso Admin, quedó SKIPPED; por tanto el login histórico todavía no está certificado y la credencial temporal ya no puede recuperarse.
+
+Cualquier nueva modificación de contraseña requiere autorización nueva expresa. El siguiente harness debe ejecutar y preservar evidencia sanitizada del login histórico inmediatamente después de establecer una credencial autorizada, antes del flujo Admin.
+
+## 5. Seguridad
+
+- un password update/reset exacto ejecutado sobre el único Shopper autorizado;
+- otras identidades modificadas: `0`;
+- reconciliación Firestore exacta PASS; conteo final no persistido, dentro de máximo 0–2 por código;
+- Shopper nuevo: `NO`;
+- HR/Rules/Storage/Make/Gemini/pagos: `0`;
+- deploy: `0`; merge: `false`; producción: `false`;
+- segundo intento automático: `NO`.
+
+## 6. Porcentaje vigente
 
 **GO-LIVE: 35% completado / 65% pendiente.**
 
-I1 15 PASS / I2 20 PASS / I3 25 STOP_RETRY / I4 25 pendiente / I5 15 pendiente.
+I1 15 PASS / I2 20 PASS / I3 25 todavía no cerrado / I4 25 pendiente / I5 15 pendiente.
 
-I3 no suma porcentaje hasta cerrar su gate real.
+## 7. Siguiente acción exacta
 
-## 6. Siguiente acción exacta
+`PAULA_REVIEW_REQUIRED_FOR_I3_POST_RECOVERY_LOGIN_AND_ADMIN_NEW_SHOPPER_RESUME`.
 
-`PAULA_REVIEW_REQUIRED_FOR_I3_HISTORICAL_SHOPPER_CREDENTIAL_RECOVERY`
-
-La ruta focalizada es autorizar un único recovery/reset de contraseña para el único principal Shopper histórico exacto ya resuelto, preservando uid/claims/shopperId/profile/history y cero fuzzy matching; después reanudar la misma I3 desde el punto bloqueado, no desde cero.
-
-## 7. Gates
-
-No provider retry sin nueva autorización de Paula. HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/producción permanecen bloqueados.
+Primero se termina source-only la protección anti-repetición del harness; después, solo con gate nuevo, se reanuda I3 sin I1/I2 ni diagnóstico general.
