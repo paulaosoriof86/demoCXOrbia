@@ -1,28 +1,73 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-12 19:48 -06:00  
-**Estado:** `C6_RUNTIME_12_PASS_M7__PHASE_A_93__NO_PRODUCTION`
+**Última actualización:** 2026-08-14 10:08 -06:00  
+**Estado:** `FORENSIC_ROOT_CAUSE_LOCKED__DURABLE_GO_LIVE_PLAN_DOCUMENTED__ITERATION_1_NEXT__NO_PRODUCTION`
 
-## Bloque ejecutado
+## Bloque documental ejecutado
 
-Se ejecutó el one-shot autorizado `HOSTING_RUNTIME_ONCE` para `C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF`, exclusivamente con el principal canónico Exact Write V2 `B=admin`.
+Se convirtió la auditoría forense integral del 14-ago en un plan rector durable de corrección/go-live, sin crear candidata, rama ni PR nuevos y sin ejecutar provider writes/deploy/producción.
 
-## Resultado Runtime 12 — PASS
+Documento creado:
 
-Run `31658676280`, job `94318658180`, artifact `9165383310`, digest `sha256:a327b0d5e0a592d41417dce7ff934984ab51d3d5927dbee9ba774200eee5befe`.
+- `app/docs/ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md`
 
-PASS: B/admin canónico; Hosting DEV 1/1; remote parity exact=true; Auth/contexto `admin/staff/tya/cinepolis`; membership `tenants/tya/users/self` persistida después de `CX.app.enter()`; 15 periodos / 660 visitas / 197 shoppers; frontend `entered`; primera carga + 3 reloads + new-tab PASS.
+Documentos vivos actualizados:
+
+- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
+- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
+- `PENDIENTES-PROTOTIPO.md`;
+- `app/docs/RESUMEN-PARA-CLAUDE.md`;
+- `CAMBIOS-BACKEND.md`.
+
+## Commits de este corte
+
+- addendum plan: `9b143f184b48c276b832a7f2853449058d5d391f`;
+- índice activo: `c87272846e6f64c23af3f86defaa31cd7d836973`;
+- checkpoint: `15a1a895d801315bf61e247b30ee874650dc079f`;
+- pendientes: `5297be0d618568b7c2f1163de22bd74f9ba8b80a`;
+- Claude/prototipo: `015c7b7e075bb0cb8a7a36dccb0619a06f2ba3ed`.
+
+## Corrección metodológica
+
+El porcentaje técnico M1–M10 anterior se conserva como evidencia histórica, pero no equivale a readiness productivo. El único cierre productivo válido exige mismo SHA/source-lock/build remoto + E2E real + persistencia + reload/new-tab + roles/scopes + HR/Finanzas.
+
+No se reabre Auth desde cero. Se preservan Firebase Auth bridge, principal Admin/Exact Write V2, membership/RBAC Staff, exact identity contract, HR live authority, cumulative read model, portal Shopper canónico, source repair ya PASS y gates/rollback/source locks sin drift.
+
+## Plan de ejecución fijado
+
+Cinco iteraciones base:
+
+1. source-only root-cause consolidation;
+2. canonical persistence + transversal regression;
+3. DEV Auth/Firestore Shopper persistence;
+4. HR bidirectional + Phase A E2E + Finance;
+5. exact build + preproduction + go-live.
+
+Una sexta iteración solo se justifica por P0 nuevo reproducible o bloqueo externo comprobado. Un gate fallido produce corrección focalizada, no reinicio del plan.
+
+## Reusable CXOrbia
+
+El plan obliga a conservar la interfaz exacta `CX.data` y mover persistencia detrás de command adapters con tenant/project scope, RBAC, idempotencia, expectedVersion, audit y ACK. Cinépolis queda como proyecto configurable; HR/proveedores/cuestionario/pagos/evidencias deben ser adapters configurables para futuros proyectos/tenants/no-code.
+
+## Exclusivo cliente
+
+TyA/Cinépolis aporta la configuración y los datos operativos reales/sanitizados de Phase A. No se transforma en lógica global del producto.
+
+## Claude/prototipo
+
+Se documentaron dos P0 quirúrgicos sobre la misma candidata, sin rediseño:
+
+- `app/app.js`: excluir `pickShopperDev()` de la ruta humana protegida y dejar un owner Auth único;
+- `app/modules/misvisitas.js`: listas completas + facets canónicas, no `find()`/estados literales.
+
+## Academia
+
+Cada activación real debe actualizar login/errores, ciclo Mis Visitas, creación Shopper persistente, sync HR real y semántica financiera, manteniendo contenido por rol y estados honestos.
 
 ## Seguridad
 
-Nuevos Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes=0; segundo Hosting=0; segundo Exact Write=0; credenciales/tokens expuestos=false; merge=false; producción=false.
+En este corte: Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes=0; cambios/reset de contraseña=0; deploy=0; merge=false; producción=false.
 
-## Progreso Phase A
+## Siguiente acción exacta
 
-`M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=5/5 | M8=0/3 | M9=0/3 | M10=0/1`
-
-**TOTAL CERTIFICADO=93% | RESTANTE=7% | DELTA CERTIFICADO RUNTIME 12=+5%.**
-
-## Siguiente frontera
-
-M8 → M9 → M10. No reabrir C6/M7 ni gates cerrados sin drift reproducible; resolver alcance exacto desde fuentes vigentes.
+`ITERACION_1_SOURCE_ONLY_ROOT_CAUSE_CONSOLIDATION`.
