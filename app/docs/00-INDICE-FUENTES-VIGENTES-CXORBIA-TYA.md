@@ -1,7 +1,7 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-14 12:04 -06:00  
-**Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__I1_PASS__I2_PASS__I3_STOP_RETRY_CREDENTIAL_H0_S0__GO_LIVE_35__PAULA_REVIEW_REQUIRED`
+**Fecha:** 2026-08-14 12:15 -06:00  
+**Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__ITERATION_2_CANONICAL_PERSISTENCE_PASS__ITERACION_3_DEV_AUTH_FIRESTORE_SHOPPER_PERSISTENCE_STOP_RETRY_CREDENTIAL_H0_S0__GO_LIVE_35__PAULA_REVIEW_REQUIRED`
 
 ## 1. Lectura obligatoria y prevalente
 
@@ -21,9 +21,9 @@
 
 ## 2. Decisión vigente
 
-I1 e I2 están PASS y no se reprocesan. I3 alcanzó provider-read real y se detuvo fail-closed, conforme a la autorización de Paula, antes de cualquier write.
+`ITERACION_1_SOURCE_ONLY_ROOT_CAUSE_CONSOLIDATION` e `ITERATION_2_CANONICAL_PERSISTENCE_PASS` están cerradas y no se reprocesan.
 
-Toda continuidad permanece en `docs-tya-v6-v71-audit` / PR #7. No nueva candidata, rama, PR, Auth rebuild ni reauditoría general.
+`ITERACION_3_DEV_AUTH_FIRESTORE_SHOPPER_PERSISTENCE` está en STOP_RETRY focalizado, no en PASS. Toda continuidad permanece en `docs-tya-v6-v71-audit` / PR #7. No nueva candidata, rama, PR, Auth rebuild ni reauditoría general.
 
 ## 3. I3 — STOP_RETRY focalizado
 
