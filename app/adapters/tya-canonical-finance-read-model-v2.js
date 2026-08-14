@@ -7,7 +7,9 @@
   'use strict';
   window.CX=window.CX||{};
   const params=new URLSearchParams(location.search||'');
-  const enabled=location.hostname==='cxorbia-backend-dev.web.app'||params.get('cxTyaPhaseA')==='1';
+  const entry=window.CX_DEV_ENTRY_CANONICAL||{};
+  const enabled=(entry.canonical===true&&entry.protectedRuntime===true)
+    ||params.get('cxTyaPhaseA')==='1';
   if(!enabled||!CX.liq||!CX.data)return;
   const engine=window.CX_TYA_CUMULATIVE_READ_MODEL;
   const facets=v=>engine?.facets?engine.facets(v):(v?.canonicalFacets||{});
@@ -18,6 +20,9 @@
   const previousLabel=typeof CX.liq.label==='function'?CX.liq.label.bind(CX.liq):s=>[s,'n'];
   function visitKey(v){return str(v?.id||v?.visitId)||str(v?.hrRowId);}
   function liqKey(l){return str(l?.visitaId||l?.visitId)||str(l?.hrRowId);}
+  function rootProjectId(project){
+    return str(project?.parentProjectId||project?.rootProjectId||project?.program||entry.projectId||project?.id)||null;
+  }
   function operationalState(f){
     if(f.paymentConfirmed)return 'pagada';
     if(f.liquidationConfirmed)return 'conciliada_pendiente_pago';
@@ -43,7 +48,7 @@
       return merged;
     }
     return {
-      visitaId:v.id||v.visitId,visitId:v.id||v.visitId,hrRowId:v.hrRowId||null,projectId:project.id,rootProjectId:'cinepolis',periodKey:v.periodKey||project.periodKey||null,
+      visitaId:v.id||v.visitId,visitId:v.id||v.visitId,hrRowId:v.hrRowId||null,projectId:project.id,rootProjectId:rootProjectId(project),periodKey:v.periodKey||project.periodKey||null,
       shopperId:v.shopperId||null,shopper:v.shopper||null,shopperCode:v.shopperCode||null,sucursal:v.sucursal||'Visita HR',pais:v.pais||v.country||null,moneda:v.currency||v.moneda||null,loteId:null,
       honorario,boleto,combo,reembolso,total,estado,operationalVisitStage:f.submitted?'submitida':f.questionnaire?'cuestionario':f.realized?'realizada':'pendiente',
       liquidationState:'pending_financial_source',paymentState:'pending_source_confirmation',paymentConfirmed:false,paymentSourceRef:null,
@@ -72,5 +77,17 @@
   };
   const originalResumen=typeof CX.liq.resumen==='function'?CX.liq.resumen.bind(CX.liq):null;
   CX.liq.resumen=function(list){const base=originalResumen?originalResumen(list):{};base.pendiente_fuente_financiera=arr(list).filter(l=>l.estado==='pendiente_fuente_financiera').length;base.realizadas=arr(list).length;base.submitidas=arr(list).filter(l=>l.canonicalFacets?.submitted===true).length;return base;};
-  window.CX_TYA_CANONICAL_FINANCE_READ_MODEL={ready:true,version:'canonical-finance-v2',realizedVisitsIncluded:true,submittedVisitsNeverOmitted:true,exactFinancialSourceAuthority:true,paymentExecutionAllowed:false,providerWrites:0,production:false};
+  window.CX_TYA_CANONICAL_FINANCE_READ_MODEL={
+    ready:true,
+    version:'canonical-finance-v2',
+    activation:'canonical-runtime-contract',
+    canonicalEntry:Boolean(entry.canonical),
+    runtimeProjectId:entry.projectId||null,
+    realizedVisitsIncluded:true,
+    submittedVisitsNeverOmitted:true,
+    exactFinancialSourceAuthority:true,
+    paymentExecutionAllowed:false,
+    providerWrites:0,
+    production:false
+  };
 })();
