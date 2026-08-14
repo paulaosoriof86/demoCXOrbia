@@ -1,33 +1,40 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-13 19:20 -06:00
-**Estado:** `SHOPPER_P0_SOURCE_REPAIR_PASS__REAL_IDENTITY_UNIVERSE_AND_AUTH_E2E_PENDING`
+**Última actualización:** 2026-08-13 20:26 -06:00
+**Estado:** `SHOPPER_P0_GATE_CONSUMED_HOLD_INCONCLUSIVE__SOURCE_CHAIN_REPAIR_PASS__CURRENT_PRIVATE_CREDENTIAL_HANDOFF_PENDING`
 
-## Cerrado en source-only
+## Cerrado / demostrado
 
-- Contrato único exacto reusable creado y alineado con las 11 llaves de activación Auth.
-- Compositor HR y portal Shopper consumen el mismo contrato.
-- Ambigüedades exactas pasan a review/fail-closed; nombre/correo/teléfono/similitud no resuelven identidad.
-- Entry humano canónico ya no carga el snapshot empaquetado de julio ni el mutador source-safe pre-auth.
-- Watcher HR humano espera Auth y se reactiva tras `backend-auth-ready`.
-- E2E Firebase real preparado sin `CX.app.selectRole`.
-- Gate source autoritativo run `31761257145`: SUCCESS, hard fails 0.
+- Contrato único exacto reusable con las 11 llaves de Auth: PASS source.
+- Entry humano sin snapshot operacional pre-auth: PASS source.
+- HR humana condicionada a Auth: PASS source.
+- Brecha exacta de linked owner reproducida source-only: PROVEN.
+- Canonicalización reusable de owner protegido antes de composición: APPLIED.
+- Regresión `profile → alias → protected visit → hrRowId → HR`: `PASS_P0_GLOBAL_COMPOSITION_SOURCE`.
+- Run source `31763545130`: SUCCESS, hard fails 0.
+- Único provider read autorizado: consumido 1/1; STOP_RETRY activo; no segundo intento.
 
-Evidencia: `app/docs/evidence/p0-exact-identity-contract-source-repair-pass-31761257145.json`.
+## Resultado que NO debe usarse como verdad
+
+La salida v1 `62 unique / 137 unmapped / 10 ambiguous-review` quedó **invalidada como veredicto del universo real** por defectos demostrados del harness/cadena. No existe evidencia suficiente para declarar 147 shoppers rotos.
+
+La misma ejecución sí produjo evidencia independiente de 616 matches exactos de visitas, 208 relaciones HR→shopper protegido y 194 shoppers protegidos con histórico. Esto tampoco demuestra por sí solo que los 209 principals Auth estén todos reconciliados: hará falta una futura validación v2, con nueva autorización.
 
 ## Pendiente P0 inmediato
 
-1. Revalidar read-only el universo actual de principals Shopper efectivos, claims, perfiles protegidos y HR con `cxorbia-exact-identity-contract-v1`.
-2. Cuantificar sin PII: principal con match exacto único, ambiguo y sin crosswalk/revisión; no asumir que los 228 Auth users ya están todos reconciliados.
-3. Ejecutar un Shopper Firebase real por el formulario visible → Auth canónico → perfil Firestore → autoridad HR → identidad exacta → histórico.
-4. En la misma sesión, verificar país/alcance, Visitas Disponibles, Reservas & Asignación, Mis Visitas, Academia, Certificación y beneficios según alcance real.
-5. Solo si lo anterior da PASS, solicitar un gate separado para desplegar este source repair a DEV.
-6. Después del deploy, ejecutar aceptación humana/regresión dirigida sobre el build nuevo; no reutilizar el build anterior rechazado.
+1. **Source-only:** localizar/reconciliar el handoff privado vigente de credenciales Shopper usando material ya existente; no proveedor, no reset/cambio de contraseña, no PII en repo.
+2. Confirmar que el selector ya no depende únicamente del bundle histórico de 109 credenciales.
+3. Solo después solicitar una nueva autorización one-shot para ejecutar auditor v2 con composición global exacta + un Shopper Firebase real.
+4. En ese E2E real verificar perfil, país/alcance, histórico, Visitas Disponibles, Reservas, Mis Visitas, Academia, Certificación y beneficios según alcance real.
+5. Solo tras PASS real solicitar gate separado de deploy DEV.
+6. Después del deploy, hacer aceptación humana/regresión dirigida sobre el build nuevo.
 
 ## No hacer
 
-No desplegar todavía. No crear candidata/rama/PR/workflow nuevos. No reimportar HR. No modificar Auth/claims/perfiles/passwords bajo el gate read-only. No deduplicar por nombre/correo. No pedir a Paula que pruebe otra vez el DEV actual como si contuviera este repair. No confundir `PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE` con un E2E real ejecutado.
+No repetir el provider read consumido. No usar `137+10` como backlog real. No desplegar todavía. No crear candidata/rama/PR/workflow nuevo. No modificar contraseñas/claims/perfiles. No reimportar HR. No deduplicar por nombre/correo. No pedir retest humano sobre el DEV actual, que aún contiene el build anterior rechazado.
 
 ## Estado seguro
 
-Producción, dominio oficial y merge intactos. En este bloque: provider reads 0, writes 0, deploy 0, Make/Gemini/pagos 0.
+Provider read executions 1; provider writes 0; Auth/Firestore/HR/Rules/Storage writes 0; password changes/resets 0; deploy 0; Make/Gemini/pagos 0; merge false; producción false.
+
+Evidencia: `app/docs/evidence/p0-exact-identity-readonly-gate-hold-and-source-repair-20260813.json`.
