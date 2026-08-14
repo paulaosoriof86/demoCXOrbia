@@ -15,6 +15,7 @@ Por tanto:
 - Academia/Certificación real **no pasó ni falló**; quedó SKIPPED.
 - No se debe asociar contenido/certificaciones por nombre, correo, teléfono o similitud.
 - No se debe inferir que `62/137/10` describe el universo real de usuarios; ese output v1 fue invalidado como veredicto autoritativo.
+- El request real quedó consumido/deshabilitado y el run `31763754714` confirmó que no hubo segundo provider read ni segundo E2E.
 
 ## Source reusable corregido
 
@@ -22,12 +23,7 @@ Por tanto:
 
 La regresión provider-free `tools/qa/cxorbia-p0-global-composition-source-selftest.mjs` pasó la cadena profile→alias→visita protegida→HR.
 
-Run source `31763545130`, job `94654691101`: SUCCESS. También `PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE`, cuyo instrumento exige en la misma sesión real:
-- Auth Shopper canónico;
-- perfil + HR exacta + histórico;
-- ruta `aprendizaje` visible bajo el mismo principal;
-- ruta `cert` visible bajo el mismo principal;
-- ausencia del lock de identidad.
+Run source `31763545130`, job `94654691101`: SUCCESS. También `PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE`, cuyo instrumento exige en la misma sesión real Auth Shopper, perfil + HR exacta + histórico, ruta `aprendizaje`, ruta `cert` y ausencia del lock de identidad.
 
 ## Clasificación
 
