@@ -1,7 +1,7 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-14 13:24 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_RECOVERY_PASS__POINTER_ROOT_FIXED__HARNESS_DURABILITY_PASS__SAME_CANDIDATE__GO_LIVE_35`
+**Última actualización:** 2026-08-14 14:00 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_RESET2_CONSUMED__HISTORICAL_AUTH_REACHED__LEGAL_GATE_AWARE_HARNESS_PASS__SAME_CANDIDATE__GO_LIVE_35`
 
 ## Decisión vigente
 
@@ -11,7 +11,8 @@ Tracker: `app/docs/GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`.
 
 Locks I3 vigentes:
 - `app/docs/SOURCE-LOCK-ITERATION3-STOP-RETRY-POST-CREDENTIAL-RECOVERY-ADMIN-LOGIN-POINTER-20260814.md`;
-- `app/docs/SOURCE-LOCK-ITERATION3-HARNESS-DURABILITY-PASS-20260814.md`.
+- `app/docs/SOURCE-LOCK-ITERATION3-HARNESS-DURABILITY-PASS-20260814.md`;
+- `app/docs/SOURCE-LOCK-ITERATION3-HISTORICAL-LEGAL-GATE-AWARE-HARNESS-PASS-20260814.md`.
 
 **35% completado / 65% pendiente.**
 
@@ -20,43 +21,65 @@ Locks I3 vigentes:
 - Auth owner / exact identity / Staff membership.
 - I1.
 - I2: command boundary, provider ACK, no local fallback, Mis Visitas arrays/facets/ACK.
-- I3 source: transport, Shopper membership wiring, provider, E2E y patcher ACK-aware.
-- Root cause del overlay DEV que bloqueó Admin: corregida con `pointer-events:none`; E2E lo valida con click real.
-- Harness durability: histórico se prueba inmediatamente después de recovery y su checkpoint sanitizado puede sobrevivir a un fallo posterior.
+- I3 source: transport, Shopper membership wiring, provider, patcher ACK-aware.
+- Root cause del overlay DEV: corregida.
+- Harness durability: histórico antes de Admin y checkpoint sanitizado preservable.
+- Harness histórico legal-gate-aware: identidad/HR/historia separadas del consentimiento legal, sin autoaceptación.
 
 ## Último provider run
 
-`31833696707` / `94875097700`.
+`31835742956` / `94881540163`.
 
-PASS: one exact historical recovery/reset, identity preservation, other identities 0, membership/crosswalk reconciliation.
+PASS internos:
 
-STOP_RETRY posterior: overlay DEV interceptó `#lgSubmit`; Shopper nuevo no se creó. Request consumido/parked, no retry.
+- mismo Shopper histórico exacto;
+- one exact reset autorizado;
+- identity preservation;
+- other identities 0;
+- membership/crosswalk reconciliation;
+- authenticated Shopper context;
+- protected HR authority alcanzada.
+
+STOP_RETRY: timeout esperando `#nav-aprendizaje`. Admin/new Shopper no fue ejecutado. Request `...-03` consumido/parked, sin retry.
+
+## Causa source corregida
+
+El E2E histórico asumía que Academia/Certificación debían existir inmediatamente después de Auth. Pero el producto puede retener `CX.router.mount()` mientras `CX.confidencialidad.pending(...)` esté activo.
+
+El harness ahora:
+
+1. certifica primero Auth exacto + identity + reviewQueue + HR authority + historia;
+2. detecta el gate legal canónico;
+3. si está pendiente, exige diálogo legal visible y difiere rutas sin autoaceptar;
+4. si no está pendiente, Academia/Certificación siguen obligatorias;
+5. preserva zero fuzzy / zero write APIs / no force-click.
 
 ## Pendiente I3 real
 
-La contraseña temporal del recovery anterior fue destruida en cleanup antes de que se ejecutara el login histórico; no está expuesta ni disponible. Se requiere gate nuevo expreso para un único reset adicional del mismo UID exacto.
+La credencial temporal del último reset volvió a ser eliminada correctamente en cleanup y no existe checkpoint histórico sanitizado. Por eso una siguiente ejecución real necesita gate expreso para un único reset adicional del mismo UID exacto.
 
-Después, el harness ya endurecido debe cerrar en este orden:
+Después debe cerrar en este orden:
 
-1. exact recovery;
-2. historical Shopper login/history + Academia/Certificación real;
-3. checkpoint sanitizado;
+1. exact recovery/reset;
+2. Auth/identity/HR/history histórica real PASS con harness legal-gate-aware;
+3. checkpoint sanitizado inmediato;
 4. Admin create/update Shopper nuevo con provider ACK/readback;
-5. Shopper nuevo login + reload/new-tab/segundo contexto.
+5. Shopper nuevo login + reload/new-tab/segundo contexto;
+6. si existe NDA pendiente, no autoaceptarlo; las rutas de workspace quedan para la aceptación humana legítima.
 
-Si el histórico pasa y algo posterior falla, no repetir histórico/recovery: continuar desde el checkpoint preservado.
+Si el checkpoint histórico llega a PASS y algo posterior falla, no repetir histórico/recovery.
 
 ## Seguridad
 
-Desde el STOP_RETRY: solo source/docs, cero provider writes. No HR/Rules/Storage/Make/Gemini/pagos, deploy, merge ni producción.
+Después del último STOP_RETRY: solo source/docs, cero provider writes. No HR/Rules/Storage/Make/Gemini/pagos, deploy, merge ni producción.
 
 ## Reusable CXOrbia / no-code
 
-Mantener tenant/project config, exact identity, RBAC, idempotencia, expectedVersion, audit, ACK y providers detrás de adapters. Cinépolis sigue configuración, no hardcode global.
+Mantener tenant/project config, exact identity, RBAC, idempotencia, expectedVersion, audit, ACK, providers detrás de adapters y gates legales configurables separados de Auth.
 
 ## Academia
 
-No declarar alta/login Shopper real como activo hasta I3 PASS. Mis Visitas multi-registro sí permanece cerrado desde I2.
+No declarar rutas Academia/Certificación PASS si están bloqueadas por NDA pendiente. No pedir a Claude que suprima o simule el consentimiento.
 
 ## Pendiente heredado no bloqueante
 
@@ -64,4 +87,4 @@ No declarar alta/login Shopper real como activo hasta I3 PASS. Mis Visitas multi
 
 ## Siguiente gate
 
-`PAULA_REVIEW_REQUIRED_FOR_I3_DURABLE_HISTORICAL_LOGIN_AND_ADMIN_NEW_SHOPPER_RESUME`.
+`PAULA_REVIEW_REQUIRED_FOR_I3_LEGAL_GATE_AWARE_HISTORICAL_CHECKPOINT_AND_ADMIN_NEW_SHOPPER_RESUME`.
