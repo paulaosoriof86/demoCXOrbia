@@ -8,6 +8,7 @@
   const protectedRuntime=params.get('cxProtectedRuntime')==='YES_PAULA_20260730_PROTECTED_DEV';
   const technicalAuthE2E=protectedRuntime&&params.get('cxTechnicalAuthE2E')==='YES_PAULA_20260801_REAL_USERS_E2E';
   const fullVisual=params.get('cxHumanFullVisual')==='YES_PAULA_20260731_FULL_PROFILE_DEV';
+  const authenticatedHumanRuntime=protectedRuntime&&fullVisual&&!technicalAuthE2E;
   if(technicalAuthE2E){const reason='protected-technical-auth-owns-cxdata';window.CX_TYA_LIVE_SOURCE_WATCH_DISABLED_REASON=reason;window.CX_TYA_CHECK_LIVE_SOURCE=async()=>({ok:false,skipped:true,reason});return;}
   const endpoint=window.CX_TYA_LIVE_SOURCE_URL||'/api/tya/cinepolis/hr-live';
   const pollMs=Math.max(15000,Number(window.CX_TYA_LIVE_POLL_MS||20000));
@@ -15,6 +16,10 @@
   const VOLATILE=new Set(['generatedAt','sourceReadAt','sourceSnapshotAt','lastSnapshotAt','tabRegistryObservedAt','observedAt','refreshedAt','loadedAt','updatedAt','cacheAgeMs','refreshStartedAt','refreshFinishedAt','refreshDurationMs']);
   function stableValue(v){if(Array.isArray(v))return v.map(stableValue);if(v&&typeof v==='object'){const o={};for(const k of Object.keys(v).sort()){if(!VOLATILE.has(k)&&k!=='_runtime')o[k]=stableValue(v[k]);}return o;}return v;}
   function signature(snapshot){try{return JSON.stringify(stableValue({periods:snapshot?.periods||[],visits:snapshot?.visits||[],shoppers:snapshot?.shoppers||[],periodOperationalSummary:snapshot?.periodOperationalSummary||[]}));}catch(_){return '';}}
+  function canonicalHumanAuthReady(){
+    if(!authenticatedHumanRuntime)return true;
+    try{const ctx=CX.backendAuth?.context?.();return !!(ctx&&ctx.authenticated===true&&ctx.tenantId==='tya');}catch(_){return false;}
+  }
   function refreshBadge(){try{const el=document.getElementById('tbDataBadge');if(el&&CX.dataSource){const b=CX.dataSource.badge();el.innerHTML='<span class="d" style="background:'+b.c+'"></span> '+b.t;}}catch(_){}}
   function markUpdating(){if(CX.dataSource){CX.dataSource.updating=true;CX.dataSource.runtimeReadActive=true;}refreshBadge();}
   function canonicalBaselineReady(){return !!(CX.data&&Array.isArray(CX.data.projects)&&CX.data.projects.length===14&&Array.isArray(CX.data._visitas)&&CX.data._visitas.length===616&&Array.isArray(CX.data.shoppers)&&CX.data.shoppers.length===208);}
@@ -46,6 +51,7 @@
   function applySilent(snapshot,runtime,reason){const fn=window.CX_TYA_APPLY_LIVE_SNAPSHOT;if(typeof fn!=='function')throw new Error('Adapter in-place no disponible');const state=capture(),original=CX.bus?.emit;let intercepted=0;if(original)CX.bus.emit=function(event,...args){if(event==='visit-flow'){intercepted++;return;}return original.call(CX.bus,event,...args);};try{return {result:fn(snapshot,runtime,{reason}),state,intercepted};}finally{if(original)CX.bus.emit=original;}}
   function recompose(reason){if(!fullVisual)return {ok:true,skipped:true};const fn=window.CX_TYA_REAPPLY_FULL_VISUAL_OVERLAY;if(typeof fn!=='function')return {ok:false,skipped:true,reason:'overlay_not_ready'};return fn(reason);}
   async function check(reason){
+    if(authenticatedHumanRuntime&&!canonicalHumanAuthReady())return {ok:false,skipped:true,reason:'authenticated_human_context_required'};
     if(checking)return {ok:true,skipped:true,reason:'check_in_progress'};checking=true;markUpdating();
     try{
       const meta=await getJson('meta',{fresh:'1'});if(meta.sourceSafe!==true||meta.runtimeRead!==true||!meta.revision)throw new Error('Respuesta live inválida');
@@ -65,6 +71,7 @@
   }
   window.CX_TYA_REQUEST_STABLE_RERENDER=(reason,detail)=>emitOnce(reason||'manual_stable_rerender',detail||{},capture());
   window.CX_TYA_FLUSH_PENDING_STABLE_RERENDER=flush;window.CX_TYA_CAPTURE_UI_STATE=capture;window.CX_TYA_CHECK_LIVE_SOURCE=check;
-  if(window.CX_TYA_HR_LIVE_META?.runtimeRead===true)markLive(window.CX_TYA_HR_LIVE_META);else if(CX.dataSource){CX.dataSource.warnings=['Validando lectura HR viva…'];refreshBadge();}
+  if(window.CX_TYA_HR_LIVE_META?.runtimeRead===true&&canonicalHumanAuthReady())markLive(window.CX_TYA_HR_LIVE_META);else if(CX.dataSource){CX.dataSource.warnings=[authenticatedHumanRuntime?'Esperando autenticación antes de leer HR viva…':'Validando lectura HR viva…'];refreshBadge();}
+  if(CX.bus?.on)CX.bus.on('backend-auth-ready',()=>check('backend_auth_ready'));
   window.addEventListener('focus',()=>check('window_focus'));document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')check('visibility_resume');});document.addEventListener('focusout',()=>setTimeout(flush,0));window.addEventListener('load',()=>setTimeout(()=>check('initial_load'),300),{once:true});setInterval(()=>check('poll'),pollMs);
 })();
