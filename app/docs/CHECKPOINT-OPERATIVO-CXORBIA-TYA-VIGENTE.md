@@ -8,6 +8,7 @@
 - Repo `paulaosoriof86/demoCXOrbia`.
 - Rama `docs-tya-v6-v71-audit`.
 - PR #7 draft/open/no merge.
+- HEAD documentado de cierre source-repair: `32ab6ca22f78cd9448f495f7f0c7f50c1fb796e5` antes de este pin documental; verificar HEAD otra vez antes del siguiente gate.
 - M1–M10: 100% de calificación técnica DEV; no equivalen a aprobación funcional.
 - Plataforma/hosting oficial TyA: sin reemplazar.
 - Deploy DEV anterior: run `31758046539`, exactamente 1 Hosting deploy; aceptación humana posterior **RECHAZADA**.
