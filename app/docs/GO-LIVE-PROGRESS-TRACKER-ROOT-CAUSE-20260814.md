@@ -1,19 +1,19 @@
 # GO-LIVE PROGRESS TRACKER — ROOT-CAUSE PLAN CXORBIA TyA
 
 **Fecha:** 2026-08-14 13:24 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_RECOVERY_PASS_ADMIN_LOGIN_POINTER_STOP_RETRY__35_PERCENT__PAULA_REVIEW_REQUIRED`
+**Estado:** `I1_PASS__I2_PASS__I3_INTERNAL_RECOVERY_PASS__HARNESS_DURABILITY_PASS__35_PERCENT__PROVIDER_GATE_REQUIRED`
 
 ## Regla de medición
 
-El porcentaje solo avanza cuando una iteración cierra su gate completo. Un PASS interno de I3 no recibe puntos parciales si I3 todavía no certifica todo el flujo acordado.
+El porcentaje solo avanza cuando una iteración cierra su gate completo. PASS internos de I3 no suman puntos parciales.
 
 ## Pesos
 
-- Iteración 1 — source-only root-cause consolidation: **15%**.
-- Iteración 2 — canonical persistence + transversal regression: **20%**. Acumulado **35%**.
-- Iteración 3 — DEV Auth/Firestore Shopper persistence: **25%**. Acumulado objetivo **60%**.
-- Iteración 4 — HR bidirectional + Phase A E2E + Finance: **25%**. Acumulado objetivo **85%**.
-- Iteración 5 — exact build + preprod + go-live: **15%**. Acumulado objetivo **100%**.
+- I1 source-only root-cause consolidation: 15%.
+- I2 canonical persistence + regression: 20%. Acumulado 35%.
+- I3 DEV Auth/Firestore Shopper persistence: 25%. Acumulado objetivo 60%.
+- I4 HR bidirectional + Phase A E2E + Finance: 25%. Acumulado objetivo 85%.
+- I5 exact build + preprod + go-live: 15%. Acumulado objetivo 100%.
 
 ## Estado actual
 
@@ -21,54 +21,52 @@ El porcentaje solo avanza cuando una iteración cierra su gate completo. Un PASS
 
 ### I1 — PASS 15/15
 
-`PASS_ROOT_CAUSE_CORRECTION_ITERATION1_SOURCE_ONLY`. No reprocesar.
+No reprocesar.
 
 ### I2 — PASS 20/20
 
-`PASS_ROOT_CAUSE_CORRECTION_ITERATION2_CANONICAL_PERSISTENCE`. No reprocesar.
+No reprocesar.
 
-### I3 — 0/25 todavía, con avance interno real
+### I3 — 0/25 todavía, con avance interno certificado
 
-Run focalizado: `31833696707`, job `94875097700`.
+Último provider run: `31833696707`, job `94875097700`.
 
-PASS internos alcanzados:
+PASS alcanzado dentro de I3:
 
-- único historical Shopper exacto;
-- único credential recovery/reset autorizado;
+- exact historical Shopper;
+- one credential recovery/reset autorizado;
 - UID/claims/shopperId/profile/history preservados;
-- otras identidades modificadas `0`;
-- membership/crosswalk reconciliation PASS;
-- provider/proxy local PASS.
+- other identities modified 0;
+- exact membership/crosswalk reconciliation.
 
-STOP_RETRY posterior:
+STOP_RETRY posterior: `#cxBackendPreviewStatus` bloqueó el click de Admin antes de crear el Shopper nuevo.
 
-`I3_ADMIN_LOGIN_CLICK_BLOCKED_BY_CX_BACKEND_PREVIEW_STATUS_POINTER_INTERCEPTION`.
+## Root fix + antirepetición source-only — PASS
 
-`#cxBackendPreviewStatus` interceptó el click de `#lgSubmit`. El fallo fue antes de crear el Shopper nuevo. El request quedó consumido/parked y no hubo retry.
+- overlay DEV ahora `pointer-events:none`;
+- E2E valida click real sin force;
+- Admin/new Shopper E2E desacoplado del password histórico;
+- provider restringido a lineage exacta;
+- workflow existente ahora ejecuta `recovery → historical login/history E2E → sanitized checkpoint → Admin/new Shopper`;
+- si Admin falla después del histórico, el failure handler preserva el subgate histórico sanitizado y no exige otro recovery en una continuación posterior;
+- exact checkout por event SHA y zero automatic retry.
 
-Causa source localizada y corregida sin provider retry: `backend-preview-status.js` ahora usa `pointer-events:none` y el E2E exige que el overlay sea no interactivo.
+Source lock: `app/docs/SOURCE-LOCK-ITERATION3-HARNESS-DURABILITY-PASS-20260814.md`.
 
-El password temporal del recovery fue correctamente eliminado en cleanup y no fue expuesto; como el login histórico estaba después del paso Admin, quedó SKIPPED y no puede certificarse con esa credencial ya descartada. Un nuevo reset requiere autorización nueva.
+## Lo que falta para I3 PASS / +25 puntos
 
-## Lo que falta para que I3 sume 25 puntos
+1. Un nuevo gate expreso para un único reset adicional del mismo principal histórico, porque la contraseña temporal del run anterior fue destruida en cleanup antes del E2E histórico.
+2. Login/historia histórica real PASS y checkpoint sanitizado.
+3. Admin create/update Shopper nuevo con provider ACK/readback.
+4. Shopper nuevo login + reload/new-tab/segundo contexto.
+5. Zero fuzzy, false success, other identities, providers prohibidos.
 
-1. Establecer una nueva credencial exacta solo con autorización expresa.
-2. Certificar inmediatamente login histórico real y preservar evidencia sanitizada.
-3. Admin real: alta Shopper nuevo con provider ACK.
-4. Edición Shopper nuevo con provider ACK/readback.
-5. Shopper nuevo login real.
-6. Persistencia reload/new-tab/segundo contexto.
-7. Cero fuzzy matching, false-success, otros identities writes y providers prohibidos.
+Al cerrar todo: **60% completado / 40% pendiente**.
 
-## Seguridad del último run
+## Seguridad actual
 
-- one exact historical password update/reset: `1`;
-- other identities modified: `0`;
-- Shopper nuevo: `NO`;
-- HR/Rules/Storage/Make/Gemini/pagos: `0`;
-- deploy `0`, merge false, producción false;
-- retry automático: `NO`.
+Desde el STOP_RETRY: source/docs only, cero provider writes/deploy/merge/producción. El request anterior permanece consumido/parked.
 
-## Siguiente frontera
+## Siguiente gate
 
-`I3_SOURCE_ONLY_HARNESS_DURABILITY_AFTER_RECOVERY_FAILURE` → luego `PAULA_REVIEW_REQUIRED_FOR_I3_POST_RECOVERY_LOGIN_AND_ADMIN_NEW_SHOPPER_RESUME`.
+`PAULA_REVIEW_REQUIRED_FOR_I3_DURABLE_HISTORICAL_LOGIN_AND_ADMIN_NEW_SHOPPER_RESUME`.
