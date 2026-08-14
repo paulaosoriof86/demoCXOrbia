@@ -16,6 +16,7 @@ const outPath=process.env.CXORBIA_E2E_PRIVATE_CREDENTIALS||'.tmp/c6-users-e2e-pr
 const remoteRoot=process.env.CXORBIA_DEV_ROOT_URL||'https://cxorbia-backend-dev.web.app';
 const remoteInitUrl=process.env.CXORBIA_FIREBASE_INIT_URL||remoteRoot+'/__/firebase/init.js';
 const liveUrl=process.env.CXORBIA_LIVE_HR_URL||remoteRoot+'/api/tya/cinepolis/hr-live?view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV&fresh=1';
+const recoveryAuthorized=process.env.CXORBIA_I3_HISTORICAL_CREDENTIAL_RECOVERY_AUTHORIZED==='YES_PAULA_I3_EXACT_HISTORICAL_SHOPPER_RESET';
 
 function stageFail(message){
   const safe=String(message||'unknown').replace(/[^A-Z0-9_:-]/gi,'_').slice(0,180);
@@ -203,6 +204,7 @@ if(identityConflicts>0||visitConflicts>0)stageFail(`PROTECTED_VISIT_RELATION_CON
 const shopperSnap=await db.collection('tenants').doc(tenantId).collection('shoppers').get();
 const shopperById=new Map(shopperSnap.docs.map(doc=>[doc.id,doc.data()||{}]));
 let shopper=null;
+const recoveryCandidates=new Map();
 let shopperRecords=0,authUsers=0,claimHistory=0,profiles=0,hashMatches=0,signIns=0;
 for(const record of Array.isArray(bundle.records)?bundle.records:[]){
   if(record?.kind!=='shopper')continue;
@@ -216,6 +218,8 @@ for(const record of Array.isArray(bundle.records)?bundle.records:[]){
   claimHistory++;
   const profile=shopperById.get(shopperId);if(!profile)continue;
   profiles++;
+  const recoveryKey=`${user.uid}\0${shopperId}\0${login}`;
+  recoveryCandidates.set(recoveryKey,{login,namespace:'shopper',role:'shopper',shopperId,canonicalShopperId:shopperId,expectedOwnVisits:protectedHistoryCounts.get(shopperId)||0,uid:user.uid,credentialRecoveryRequired:true});
   for(const candidate of shopperPasswordCandidates(profile)){
     if(sha256Hex(candidate)!==hash)continue;
     hashMatches++;
@@ -226,8 +230,18 @@ for(const record of Array.isArray(bundle.records)?bundle.records:[]){
   }
   if(shopper)break;
 }
-if(!shopper)stageFail(`HOLD_SHOPPER_R${shopperRecords}_U${authUsers}_V${claimHistory}_D${profiles}_H${hashMatches}_S${signIns}_M${exactVisitMatches}_L${uniqueLiveToProtected.size}_P${protectedHistoryCounts.size}`);
+if(!shopper){
+  const exactRecovery=[...recoveryCandidates.values()];
+  if(recoveryAuthorized&&exactRecovery.length===1&&claimHistory===1&&profiles===1&&hashMatches===0&&signIns===0){
+    shopper=exactRecovery[0];
+    fs.mkdirSync(path.dirname(outPath),{recursive:true});
+    fs.writeFileSync(outPath,JSON.stringify({schemaVersion:'cxorbia.c6.e2e-private-credentials.v7',staff,shopper},null,2)+'\n',{encoding:'utf8',mode:0o600});
+    console.log(JSON.stringify({decision:'PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION_V6',staffRole:staff.role,shopperRole:shopper.role,shopperOwnVisits:shopper.expectedOwnVisits,credentialRecoveryRequired:true,exactRecoveryCandidateCount:1,liveVisits:baseVisits.length,protectedVisits:protectedVisits.length,exactVisitMatches,liveShopperRelations:uniqueLiveToProtected.size,protectedShoppersWithHistory:protectedHistoryCounts.size,authWrites:0,passwordChanges:0,valuesExported:false}));
+    process.exit(0);
+  }
+  stageFail(`HOLD_SHOPPER_R${shopperRecords}_U${authUsers}_V${claimHistory}_D${profiles}_H${hashMatches}_S${signIns}_M${exactVisitMatches}_L${uniqueLiveToProtected.size}_P${protectedHistoryCounts.size}`);
+}
 
 fs.mkdirSync(path.dirname(outPath),{recursive:true});
 fs.writeFileSync(outPath,JSON.stringify({schemaVersion:'cxorbia.c6.e2e-private-credentials.v7',staff,shopper},null,2)+'\n',{encoding:'utf8',mode:0o600});
-console.log(JSON.stringify({decision:'PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION_V6',staffRole:staff.role,shopperRole:shopper.role,shopperOwnVisits:shopper.expectedOwnVisits,liveVisits:baseVisits.length,protectedVisits:protectedVisits.length,exactVisitMatches,liveShopperRelations:uniqueLiveToProtected.size,protectedShoppersWithHistory:protectedHistoryCounts.size,authWrites:0,passwordChanges:0,valuesExported:false}));
+console.log(JSON.stringify({decision:'PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION_V6',staffRole:staff.role,shopperRole:shopper.role,shopperOwnVisits:shopper.expectedOwnVisits,credentialRecoveryRequired:false,liveVisits:baseVisits.length,protectedVisits:protectedVisits.length,exactVisitMatches,liveShopperRelations:uniqueLiveToProtected.size,protectedShoppersWithHistory:protectedHistoryCounts.size,authWrites:0,passwordChanges:0,valuesExported:false}));
