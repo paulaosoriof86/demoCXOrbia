@@ -1,73 +1,74 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-13 19:07 -06:00
-**Estado:** `P0_SHOPPER_POSTDEPLOY_FORENSIC_ROOTCAUSE_PROVEN__NO_REPAIR_OR_REDEPLOY_YET`
+**Última actualización:** 2026-08-13 19:20 -06:00
+**Estado:** `P0_SHOPPER_GENERIC_IDENTITY_SOURCE_REPAIR_PASS__REAL_AUTH_E2E_PENDING__NO_DEPLOY`
 
-## Bloque 2026-08-13 — auditoría forense post-deploy
+## Bloque 2026-08-13 — reparación estructural source-only del P0 Shopper
 
-La aceptación humana del build desplegado por run `31758046539` volvió a fallar. El fix previo corrigió un defecto real de temporización/API y mejoró el diagnóstico, pero **no era la causa raíz completa**.
+Partiendo de la causa raíz forense `P0_PROVEN_IDENTITY_CONTRACT_SPLIT_AND_STALE_PREAUTH_BOOTSTRAP`, se aplicó una reparación genérica en la rama viva `docs-tya-v6-v71-audit`. No se creó candidata, rama ni PR nuevos; no se modificaron módulos UI funcionales.
 
-### Evidencia nueva
+### Archivos creados
 
-- Firestore transitorio encuentra el Shopper autenticado y muestra perfil/país, pero 0 visitas.
-- HR viva termina correctamente en 15 periodos / 660 visitas / agosto 2026.
-- Después del handoff HR la identidad desaparece del read model y el país queda sin asignar.
-- El login canónico todavía muestra antes de Auth el snapshot viejo 616/210/42 de julio.
+- `app/adapters/cxorbia-exact-identity-contract-v1.js`: contrato reusable de identidad exacta para CXOrbia.
+- `tools/qa/cxorbia-p0-exact-identity-contract-source-gate.mjs`: gate source que compara runtime con el universo técnico Auth y controla bootstrap humano.
+- `tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs`: E2E preparado para formulario Firebase real; por defecto solo self-test source y exige gate explícito para ejecución real.
+- `app/docs/evidence/p0-exact-identity-contract-source-repair-pass-31761257145.json`: evidencia durable del PASS.
+- `app/docs/ACADEMIA-ADDENDUM-P0-SHOPPER-IDENTITY-CONTRACT-SOURCE-READY-20260813.md`: impacto y revalidación requerida en Academia/Certificación.
 
-Evidencia durable: `app/docs/evidence/p0-shopper-postdeploy-forensic-rootcause-20260813.json`.
+### Archivos modificados
 
-## Causa raíz P0-A — contrato de identidad dividido
+- `app/adapters/tya-cumulative-read-model-v2.js`: consume `CX_EXACT_IDENTITY_CONTRACT`, construye el índice canónico desde fuentes técnicas exactas y publica diagnóstico del contrato/conflictos.
+- `app/adapters/tya-canonical-shopper-portal-v2.js`: resolución Shopper por el mismo contrato exacto; no adjudica por nombre/correo/teléfono.
+- `app/adapters/tya-live-source-refresh-watch-v2.js`: la ruta humana protegida espera Auth antes de leer HR operacional y reintenta tras `backend-auth-ready`.
+- `app/index-backend-dev.html`: elimina del entrypoint humano la carga del snapshot source-safe viejo y del mutador preview; preserva ambos archivos para contextos source-safe/laboratorio; carga el contrato exacto antes del compositor y declara `preAuthOperationalData:'none'`.
+- `.github/workflows/cxorbia-phase-a-visual-smoke.yml`: se reforzó el workflow existente; no se creó workflow nuevo. Ejecuta los gates P0 source antes del smoke local.
+- Documentación viva: índice, checkpoint, CAMBIOS, RESUMEN, PENDIENTES y tracker.
 
-La activación Auth v4 usa un universo técnico amplio:
+## Contrato exacto reusable
 
-`shopperId · legacyShopperId · legacyId · externalShopperId · externalId · sourceId · sourceKey · hrRowId · personId · profileId · shopperDocId`
+El contrato comparte exactamente estas 11 llaves con el activador Auth:
 
-y fija el claim `shopperId` al id del documento de perfil Firestore. Run de activación `31423272374`: PASS, 118 creates + 9 updates, 228 Auth users finales, 0 Firestore writes.
+`shopperId · legacyShopperId · legacyId · externalShopperId · externalId · sourceId · sourceKey · hrRowId · personId · profileId · shopperDocId`.
 
-El compositor runtime `app/adapters/tya-cumulative-read-model-v2.js` reconstruye HR→perfil con un conjunto menor de aliases. `identityMap` solo contiene los live HR ids que pueden resolverse exactamente con ese conjunto o por relación exacta de visita. Los perfiles protegidos significativos que no entran al crosswalk se clasifican `no_exact_hr_crosswalk` y se excluyen de la lista operacional.
+Reglas:
+- match exacto único únicamente;
+- múltiples propietarios exactos => revisión/fail-closed;
+- nombre, correo, teléfono, WhatsApp, username/login y similitud no son selectores de identidad;
+- reusable tenant/project; TyA/Cinépolis no define la semántica global.
 
-Esto crea el fallo observado: `backend-firebase.js` sí puede leer `tenants/tya/shoppers/{claim.shopperId}` y mostrar el perfil transitorio, pero al llegar HR el mismo perfil desaparece si su id Firestore no tiene un alias runtime exacto hacia el live HR shopper.
+## Gate autoritativo
 
-## Causa raíz P0-B — el crosswalk de activación Auth no fue materializado para runtime
+Workflow `CXOrbia Phase A Visual Smoke`, run `31761257145`, job `94647914674`: **SUCCESS**.
 
-El bridge full-profile del 31-jul dejó:
-- 120 perfiles exactos;
-- 31 identity holds;
-- `technicalBridgeResolved=0`;
-- `authBridgeResolved=0`;
-- `identityLinksPlanned=0`.
+- `PASS_P0_EXACT_IDENTITY_CONTRACT_SOURCE` — hard fails 0.
+- `PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE` — E2E real source-ready, no ejecutado contra proveedor.
+- Smoke local: `GO_WITH_WARNINGS_VISUAL_SMOKE_POST_V96`, hard fails 0.
+- Warning no bloqueante existente: `custom:custom_role_visible_nav_items:1`.
+- Artifact `9204689215`.
+- Digest `sha256:0ec1c5fb23c894d89b6c80838303a2befb7f0e58c0fac9f774df407fc75d4402`.
 
-El write Firestore posterior actualizó 120 documentos exactos y mantuvo 31 holds. La activación Auth posterior resolvió un universo mayor reconstruyendo llaves técnicas desde HR/visitas/certificaciones/liquidaciones, pero fue Auth-only. Por diseño no persistió ese crosswalk ampliado en Firestore. De ahí la incompatibilidad entre el principal activado y el compositor del navegador.
+Dos runs previos (`31760905131`, `31761151928`) aislaron falsos positivos del harness nuevo; no hubo proveedor/writes/deploy. Los detectores fueron corregidos y el run autoritativo posterior quedó SUCCESS.
 
-## Causa raíz P0-C — bootstrap source-safe viejo dentro del entrypoint humano
+## Qué NO se hizo
 
-`app/index-backend-dev.html` carga antes de Auth:
-1. `data/tya-hr-source-safe-periods.js` — payload empaquetado generado `2026-07-13`;
-2. `core/tya-phase-a-source-safe-preview.js` — activo automáticamente en `cxorbia-backend-dev.web.app` y escritor de `CX.data`.
+No se desplegó el source repair. No se ejecutó el E2E Firebase real. No se releyó proveedor. No se modificaron claims, perfiles, passwords, HR, Firestore, Rules o Storage. No se reimportó HR. No se tocó producción, dominio oficial, main ni merge.
 
-Por eso el login humano puede presentar 616 visitas y julio 2026 antes de que la HR viva autenticada reemplace ese estado. El snapshot source-safe debe quedar para laboratorio/preview explícito, no como semilla del runtime humano canónico.
-
-## Por qué el gate anterior dio PASS
-
-`tools/qa/cxorbia-p0-shopper-hr-authority-source-gate.mjs` verifica forma del código: API Auth correcta, espera HR, evento final y rótulos. `tools/qa/tya-phase-a-visual-smoke.mjs` usa `CX.app.selectRole(...)` en el smoke de roles y prueba identidad con un fixture sintético. Ninguno comparaba `TECH_KEYS` de activación Auth contra `exactAliases` del runtime ni realizaba Auth Firebase Shopper real → Firestore → HR → histórico.
-
-Ese gate fue insuficiente y no debe volver a usarse como prueba de cierre del P0 humano.
-
-## Seguridad y cierre del deploy consumido
-
-- Deploy DEV consumido: exactamente 1, run `31758046539`.
-- Marcador one-shot neutralizado: `enabled=false`, `consumed=true`, `hostingDeployExecutions=1`.
-- Run de neutralización `31759552694`: SUCCESS; pasos de proveedor/deploy omitidos.
-- Desde la aceptación humana fallida: 0 provider reads/writes, 0 Auth/Firestore/HR/Rules/Storage writes, 0 deploy adicional, 0 Make/Gemini/pagos, 0 merge, 0 producción.
+El DEV visible que falló humanamente sigue correspondiendo al deploy anterior; **no pedir retest humano sobre ese build como validación de este source repair**.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** un único contrato técnico de identidad debe ser compartido por migración, Auth, perfil protegido y runtime; un tenant no puede definir un crosswalk diferente en cada capa.
-- **Exclusivo cliente:** datos HR, 340 perfiles y su crosswalk concreto.
-- **Claude/prototipo:** no rediseñar módulos. El frontend canónico debe recibir una identidad ya resuelta; el snapshot source-safe empaquetado queda fuera del entrypoint humano.
-- **Academia:** no revalidar funcionalmente hasta que la identidad canónica Shopper sea estable; certificaciones/histórico dependen del mismo crosswalk.
-- **Sin impacto Claude:** neutralización del request, evidencia y gates backend.
+- **Reusable CXOrbia:** contrato técnico exacto único, fail-closed y gate real de identidad.
+- **Exclusivo cliente:** crosswalk efectivo TyA, datos HR y resultado concreto del Shopper humano, todavía por revalidar read-only.
+- **Claude/prototipo:** no rediseño de módulos; el prototipo se preserva. El entrypoint humano ya no recibe snapshot operativo pre-auth.
+- **Academia:** contenido sin cambios; debe revalidarse por la misma identidad exacta en la sesión real.
+- **Sin impacto Claude:** CI source-only, evidencia y seguridad.
 
-## Siguiente bloque exacto
+## Avance y siguiente bloque
 
-Preparar source-only la reparación genérica del contrato de identidad y el gate E2E real. **Cero deploy y cero proveedor** hasta probar que el mismo conjunto de llaves técnicas gobierna Auth y runtime y que el entrypoint humano no adopta el snapshot estático pre-auth.
+- M1–M10 técnico DEV: 100% preservado.
+- Forense causa raíz P0: 100%.
+- Reparación estructural source-only: **100% / PASS**.
+- Validación empírica del universo real + Shopper Firebase real: **pendiente**.
+- Go-live: **BLOCKED**.
+
+Siguiente gate: una única validación DEV read-only de Auth/claims/perfiles/HR bajo el contrato común + E2E real Shopper → perfil → HR → histórico/Academia/Certificación. Cero writes o deploy. Solo después de ese PASS se solicita deploy DEV separado.
