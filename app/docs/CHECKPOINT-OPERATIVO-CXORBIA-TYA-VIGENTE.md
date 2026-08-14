@@ -1,6 +1,6 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-14 10:42 -06:00  
+**Fecha:** 2026-08-14 10:44 -06:00  
 **Estado:** `FORENSIC_ROOT_CAUSE_LOCKED__ITERATION_1_SOURCE_ONLY_PASS__GO_LIVE_15__ITERATION_2_NEXT`
 
 ## Autoridad vigente
@@ -50,7 +50,8 @@ Cambios fuente cerrados:
 
 ## Evidencia
 
-Workflow existente `CXOrbia Phase A Live Execution Checkpoint`, run `31820315435`: SUCCESS.
+- Run de corrección source-only `31820315435`: SUCCESS después de corregir el verificador histórico.
+- Run final del workflow existente después de actualizar los documentos vivos `31820514862`: SUCCESS.
 
 PASS en:
 
@@ -59,7 +60,7 @@ PASS en:
 - `PASS_ROOT_CAUSE_CORRECTION_ITERATION1_SOURCE_ONLY`;
 - checkpoint operativo forense vigente.
 
-No provider write/deploy/producción fue ejecutado por este gate.
+No provider write/deploy/producción fue ejecutado por estos gates.
 
 ## Porcentaje productivo vigente
 
