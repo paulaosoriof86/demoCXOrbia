@@ -22,7 +22,8 @@
   "providerWrites": false,
   "allowedExecutions": 0,
   "providerReadExecutionsConsumed": 1,
-  "auditDecision": "HOLD_P0_EXACT_IDENTITY_PROVIDER_UNIVERSE",
+  "auditDecision": "HOLD_P0_EXACT_IDENTITY_PROVIDER_UNIVERSE_V1_DIAGNOSTIC_ONLY",
+  "authoritativeMappingVerdict": false,
   "auditRunId": 31762716234,
   "auditJobId": 94652243857,
   "auditArtifactId": 9205200319,
@@ -38,26 +39,52 @@
     "hrVisits": 660,
     "hrShoppers": 212
   },
-  "observedMapping": {
+  "observedMappingV1DiagnosticOnly": {
     "unique": 62,
     "missingProfile": 0,
     "unmapped": 137,
     "ambiguousOrReview": 10,
     "withHistory": 62,
     "withoutHistory": 0,
-    "issueCount": 147
+    "issueCount": 147,
+    "authoritative": false,
+    "invalidatedReason": "The v1 audit prefiltered linked protected rows by claim, and source-only regression proved that linked owner aliases were not canonicalized before HR composition. These numbers must not be interpreted as 147 real broken identities."
+  },
+  "independentRelationshipEvidence": {
+    "sourceSafeCode": "HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194",
+    "exactProtectedLiveVisitMatches": 616,
+    "uniqueLiveHrToProtectedShopperRelations": 208,
+    "protectedShoppersWithHistory": 194
   },
   "credentialSelection": {
-    "status": "HOLD",
-    "sourceSafeCode": "HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194",
+    "status": "HOLD_HISTORICAL_PRIVATE_HANDOFF_STALE",
+    "historicalCredentialRecordsReviewed": 109,
+    "matchingAuthUsers": 104,
+    "passwordHashMatches": 0,
+    "signIns": 0,
     "privateCredentialProduced": false,
     "valuesExported": false
   },
   "realShopperE2E": {
     "executed": false,
-    "reason": "credential_selection_hold_after_provider_universe_hold",
+    "failed": false,
+    "skipped": true,
+    "reason": "current_private_shopper_credential_not_available_from_historical_handoff",
     "proxyStarted": false,
     "academiaCertificationValidated": false
+  },
+  "sourceRepairAfterConsumedGate": {
+    "runtimeSeam": "app/adapters/tya-canonical-state-semantics-v2.js",
+    "normalizerVersion": "cxorbia-exact-linked-owner-normalizer-v1",
+    "providerFreeRegression": "tools/qa/cxorbia-p0-global-composition-source-selftest.mjs",
+    "sourceRunId": 31763545130,
+    "sourceJobId": 94654691101,
+    "sourceArtifactId": 9205478201,
+    "sourceArtifactDigest": "sha256:12c5196203588c70ebe2f2ba86774f77965d7fbb5dbdcdb27007aa916272706a",
+    "decision": "PASS_P0_GLOBAL_COMPOSITION_SOURCE",
+    "providerReads": 0,
+    "writes": 0,
+    "deploys": 0
   },
   "safeState": {
     "repositoryWrites": false,
@@ -79,6 +106,8 @@
   "containsPii": false,
   "containsSecrets": false,
   "stopRetryOnFailure": true,
-  "nextGate": "SOURCE_ONLY_RECONCILIATION_PLAN_FOR_147_EXACT_IDENTITY_HOLDS_BEFORE_ANY_PROVIDER_REREAD_OR_DEPLOY",
-  "purpose": "Consumed after exactly one authorized DEV provider read-only gate. The exact identity universe held: 62 of 209 effective Shopper principals resolve uniquely, 137 are unmapped, 10 are ambiguous/review, and no profile document is missing. Existing private credential selection also held, so real browser E2E was not executed. STOP_RETRY; zero provider writes, password changes/resets, deploy, merge or production."
+  "secondProviderReadExecuted": false,
+  "nextBlock": "SOURCE_ONLY_CURRENT_SHOPPER_CREDENTIAL_HANDOFF_RECONCILIATION",
+  "nextProviderGateRequiresNewExplicitAuthorization": true,
+  "purpose": "Consumed exactly once. Provider v1 output is retained only as diagnostic because source-only regression invalidated 62/137/10 as authoritative mapping truth and exposed an exact linked-owner propagation defect, now repaired source-only with PASS. Real Shopper E2E remained skipped because the available private credential handoff was historical/stale. STOP_RETRY remains in force; zero provider writes, password changes/resets, deploy, merge or production."
 }
