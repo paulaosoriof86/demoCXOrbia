@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "cxorbia.p0.shopper.auth-hr.dev-redeploy.pass.v1",
+  "generatedAt": "2026-08-14T00:40:20Z",
+  "decision": "PASS_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "requestCommitSha": "9624171d1df9f9d0eb9ac2ab72120c9347c9033e",
+  "targetHeadSha": "ee8ac4d5b450aa615109e1d97d77f3acaa9f9abc",
+  "workflow": "CXOrbia C6 DEV Root Entrypoint Hosting",
+  "runId": 31758046539,
+  "jobId": 94638091029,
+  "artifactId": 9203525557,
+  "artifactDigest": "sha256:e17b2b6060e32a9d5d464ad42729421df1d43a44ef718f6a73faae52f3c2959a",
+  "hosting": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "hostingSite": "cxorbia-backend-dev",
+    "hostingTarget": "cxorbia-dev",
+    "url": "https://cxorbia-backend-dev.web.app",
+    "hostingDeploysThisRun": 1,
+    "automaticSecondDeploys": 0
+  },
+  "remoteParity": {
+    "decision": "PASS_C6_DEV_ROOT_ENTRYPOINT_REMOTE_PARITY",
+    "rootStatus": 302,
+    "canonicalPath": "/index-backend-dev.html",
+    "finalStatus": 200,
+    "exact": true,
+    "sha256": "0ac057e48f872b75a239b5aa276813881c9313383b6b3c761c301623bc7ab14b"
+  },
+  "staffRuntime": {
+    "decision": "PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY",
+    "authenticated": true,
+    "role": "admin",
+    "projectId": "cinepolis",
+    "periods": 15,
+    "visits": 660,
+    "shoppers": 198,
+    "firstPeriod": "2025-06",
+    "latestPeriod": "2026-08",
+    "periodId": "cinepolis-2026-08",
+    "membershipVerified": true,
+    "reloadsStable": true,
+    "newTabStable": true,
+    "credentialsExposed": false,
+    "tokensExposed": false
+  },
+  "safety": {
+    "cloudRunDeploys": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "production": false
+  },
+  "humanAcceptance": {
+    "shopper": "PENDING_POST_DEPLOY",
+    "adminOperations": "PENDING_DIRECTED_REGRESSION",
+    "client": "PENDING_DIRECTED_REGRESSION",
+    "academia": "PENDING_DIRECTED_REGRESSION"
+  }
+}
