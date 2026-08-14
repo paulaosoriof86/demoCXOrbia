@@ -1,7 +1,7 @@
 # GO-LIVE PROGRESS TRACKER — ROOT-CAUSE PLAN CXORBIA TyA
 
-**Fecha:** 2026-08-14 13:24 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_INTERNAL_RECOVERY_PASS__HARNESS_DURABILITY_PASS__35_PERCENT__PROVIDER_GATE_REQUIRED`
+**Fecha:** 2026-08-14 14:00 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_RESET2_CONSUMED__HISTORICAL_AUTH_REACHED__LEGAL_GATE_AWARE_HARNESS_PASS__35_PERCENT__PROVIDER_GATE_REQUIRED`
 
 ## Regla de medición
 
@@ -27,46 +27,50 @@ No reprocesar.
 
 No reprocesar.
 
-### I3 — 0/25 todavía, con avance interno certificado
+### I3 — 0/25 todavía, con avance interno real
 
-Último provider run: `31833696707`, job `94875097700`.
+Último provider run: `31835742956`, job `94881540163`.
 
 PASS alcanzado dentro de I3:
 
-- exact historical Shopper;
-- one credential recovery/reset autorizado;
+- mismo Shopper histórico exacto;
+- un nuevo reset exacto autorizado;
 - UID/claims/shopperId/profile/history preservados;
-- other identities modified 0;
-- exact membership/crosswalk reconciliation.
+- other identities modified `0`;
+- exact membership/crosswalk reconciliation;
+- contexto Auth Shopper exacto alcanzado;
+- `CX_PROTECTED_AUTH_HR_AUTHORITY.applied===true` alcanzado.
 
-STOP_RETRY posterior: `#cxBackendPreviewStatus` bloqueó el click de Admin antes de crear el Shopper nuevo.
+STOP_RETRY: timeout esperando `#nav-aprendizaje`. Admin/new Shopper quedó SKIPPED y el checkpoint histórico no llegó a persistirse.
 
-## Root fix + antirepetición source-only — PASS
+## Root correction source-only — PASS
 
-- overlay DEV ahora `pointer-events:none`;
-- E2E valida click real sin force;
-- Admin/new Shopper E2E desacoplado del password histórico;
-- provider restringido a lineage exacta;
-- workflow existente ahora ejecuta `recovery → historical login/history E2E → sanitized checkpoint → Admin/new Shopper`;
-- si Admin falla después del histórico, el failure handler preserva el subgate histórico sanitizado y no exige otro recovery en una continuación posterior;
-- exact checkout por event SHA y zero automatic retry.
+Se probó un conflicto de contrato entre producto y harness: `CX.app.enter()` puede diferir el montaje del router mientras `CX.confidencialidad.pending(...)` esté activo, pero el E2E exigía Academia/Certificación incondicionalmente antes de cerrar identidad/HR/historia.
 
-Source lock: `app/docs/SOURCE-LOCK-ITERATION3-HARNESS-DURABILITY-PASS-20260814.md`.
+El harness histórico ahora:
+
+- valida primero Auth exacto + identity + HR + historia;
+- reconoce el gate legal canónico sin aceptarlo automáticamente;
+- si el NDA está pendiente, exige el diálogo visible y difiere rutas;
+- si no está pendiente, mantiene Academia/Certificación obligatorias;
+- conserva cero fuzzy, zero write APIs y click real.
+
+Source lock: `app/docs/SOURCE-LOCK-ITERATION3-HISTORICAL-LEGAL-GATE-AWARE-HARNESS-PASS-20260814.md`.
 
 ## Lo que falta para I3 PASS / +25 puntos
 
-1. Un nuevo gate expreso para un único reset adicional del mismo principal histórico, porque la contraseña temporal del run anterior fue destruida en cleanup antes del E2E histórico.
-2. Login/historia histórica real PASS y checkpoint sanitizado.
+1. Gate expreso para un único reset adicional del mismo principal histórico, porque la credencial temporal del run consumido fue destruida en cleanup y no existe checkpoint sanitizado.
+2. Auth/identity/HR/history histórica real PASS y checkpoint sanitizado inmediato, legal-gate-aware.
 3. Admin create/update Shopper nuevo con provider ACK/readback.
 4. Shopper nuevo login + reload/new-tab/segundo contexto.
-5. Zero fuzzy, false success, other identities, providers prohibidos.
+5. Cero fuzzy, false success, otras identidades, proveedores prohibidos y aceptación legal automatizada.
 
 Al cerrar todo: **60% completado / 40% pendiente**.
 
 ## Seguridad actual
 
-Desde el STOP_RETRY: source/docs only, cero provider writes/deploy/merge/producción. El request anterior permanece consumido/parked.
+Request `...-03` consumido/parked, no retry automático. Después del run: source/docs only, cero nuevos provider writes/deploy/merge/producción.
 
 ## Siguiente gate
 
-`PAULA_REVIEW_REQUIRED_FOR_I3_DURABLE_HISTORICAL_LOGIN_AND_ADMIN_NEW_SHOPPER_RESUME`.
+`PAULA_REVIEW_REQUIRED_FOR_I3_LEGAL_GATE_AWARE_HISTORICAL_CHECKPOINT_AND_ADMIN_NEW_SHOPPER_RESUME`.
