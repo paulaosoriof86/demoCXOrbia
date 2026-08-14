@@ -19,7 +19,13 @@ const errors=[];
 async function pageWithTransport(context){const p=await context.newPage();p.on('pageerror',e=>errors.push(String(e?.message||e)));return p;}
 async function login(page,role,cred){
   await page.evaluate(r=>window.CX?.backendAuth?.showForRole?.(r),role);
-  await page.locator('#lgUser').fill(cred.login);await page.locator('#lgPass').fill(cred.password);await page.locator('#lgSubmit').click();
+  await page.locator('#lgUser').fill(cred.login);await page.locator('#lgPass').fill(cred.password);
+  const overlay=page.locator('#cxBackendPreviewStatus');
+  if(await overlay.count()){
+    const pointerEvents=await overlay.evaluate(el=>getComputedStyle(el).pointerEvents);
+    ensure(pointerEvents==='none','I3_DEV_STATUS_OVERLAY_INTERACTIVE_'+pointerEvents);
+  }
+  await page.locator('#lgSubmit').click();
   await page.waitForFunction(r=>{const c=window.CX?.backendAuth?.context?.();return c?.authenticated===true&&(r==='admin'?['super','admin'].includes(c.role):c.role===r);},role,{timeout:30000});
 }
 async function shopperCheck(page,shopperId){
