@@ -23,6 +23,7 @@
     };
     walk(value);return uniq(out);
   };
+  const identityContract=()=>root.CX_EXACT_IDENTITY_CONTRACT||null;
   const normalizedName=s=>{
     const direct=first(s,['nombre','displayName','display_name','fullName','shopperName','name','profile.nombre','profile.displayName','profile.fullName']);
     if(has(direct))return str(direct);
@@ -31,6 +32,8 @@
     return [a,b].filter(has).map(str).join(' ').trim();
   };
   function exactAliases(s){
+    const contract=identityContract();
+    if(contract&&typeof contract.collectExactValues==='function')return uniq(contract.collectExactValues(s));
     return uniq([
       first(s,['id','shopperId']),
       first(s,['legacyShopperId','legacy.shopperId','legacy.id']),
@@ -123,6 +126,11 @@
     const hr=clone(input&&input.hr||{}),payload=clone(input&&input.protectedPayload||{});
     const projects=arr(hr.projects),baseVisits=arr(hr.visits||hr._visitas),baseShoppers=arr(hr.shoppers),basePosts=arr(hr.posts||hr._posts);
     const protectedVisits=arr(payload.visits),profiles=arr(payload.shoppers).map(normalizeProfile);
+    const contract=identityContract();
+    const linkedIdentitySources=[...protectedVisits,...arr(payload.certifications),...arr(payload.liquidations),...arr(payload.postulations),...arr(payload.applications),...arr(payload.posts)];
+    const canonicalProfileIndex=contract&&typeof contract.buildCanonicalProfileIndex==='function'
+      ?contract.buildCanonicalProfileIndex(profiles,linkedIdentitySources)
+      :null;
     const visitIndexes={id:uniqueIndex(protectedVisits,v=>v&&(v.visitId||v.id)),hrRow:uniqueIndex(protectedVisits,v=>v&&v.hrRowId),coord:uniqueIndex(protectedVisits,sourceCoord)};
     const relation=new Map(),protectedVisitToHrVisit=new Map(),matches=new Map(),visitConflicts=[];
     for(const base of baseVisits){
@@ -137,6 +145,9 @@
       const liveId=str(s.shopperId||s.id);if(!liveId)continue;const candidates=new Set();
       const direct=onlyUnique(profilesById,liveId);if(direct)candidates.add(str(direct.id));
       const alias=onlyUnique(profilesByAlias,liveId);if(alias)candidates.add(str(alias.id));
+      const contractResolution=canonicalProfileIndex?.resolve?.(s);
+      if(contractResolution?.ok)candidates.add(str(contractResolution.canonicalId));
+      else if(contractResolution?.candidates?.length>1)identityConflicts.push({liveShopperId:liveId,candidates:contractResolution.candidates,reason:'ambiguous_exact_technical_anchor'});
       const rel=relation.get(liveId);if(rel&&rel.size===1)candidates.add([...rel][0]);
       if(candidates.size===1)liveToCanonical.set(liveId,[...candidates][0]);
       else if(candidates.size>1)identityConflicts.push({liveShopperId:liveId,candidates:[...candidates].sort(),reason:'conflicting_exact_crosswalk'});
@@ -188,7 +199,7 @@
     const sameDisplayNameGroups=[...nameGroups.entries()].filter(([,ids])=>ids.length>1).map(([normalizedName,ids])=>({normalizedName,shopperIds:ids.sort(),reason:'display_name_collision_not_auto_merged'}));
     const uniqueVisitKeys=new Set(composedVisits.map(visitKey).filter(Boolean)),uniqueShopperIds=new Set(composedShoppers.map(s=>str(s.id)).filter(Boolean));
     const summaries=periodSummary(composedVisits);
-    const diagnostics={hrProjects:projects.length,hrVisits:baseVisits.length,hrShoppers:baseShoppers.length,hrPosts:basePosts.length,protectedVisits:protectedVisits.length,protectedProfiles:profiles.length,matchedProtectedVisits:matches.size,unmatchedProtectedVisits:Math.max(0,protectedVisits.length-matches.size),crosswalkLiveToCanonical:liveToCanonical.size,identityConflicts,visitConflicts,platformOnlyProfiles:platformOnlyProfiles.length,sameDisplayNameGroups,outputVisits:composedVisits.length,outputShoppers:composedShoppers.length,outputPosts:postMap.size,uniqueVisitKeys:uniqueVisitKeys.size,duplicateVisitKeys:composedVisits.length-uniqueVisitKeys.size,uniqueShopperIds:uniqueShopperIds.size,duplicateShopperIds:composedShoppers.length-uniqueShopperIds.size,protectedVisitsAppended:0,idempotentDesign:true,hrOwnsOperationalState:true,canonicalFacetSource:true,unmatchedProfilesExcludedFromOperationalList:true};
+    const diagnostics={hrProjects:projects.length,hrVisits:baseVisits.length,hrShoppers:baseShoppers.length,hrPosts:basePosts.length,protectedVisits:protectedVisits.length,protectedProfiles:profiles.length,matchedProtectedVisits:matches.size,unmatchedProtectedVisits:Math.max(0,protectedVisits.length-matches.size),crosswalkLiveToCanonical:liveToCanonical.size,identityConflicts,visitConflicts,platformOnlyProfiles:platformOnlyProfiles.length,sameDisplayNameGroups,outputVisits:composedVisits.length,outputShoppers:composedShoppers.length,outputPosts:postMap.size,uniqueVisitKeys:uniqueVisitKeys.size,duplicateVisitKeys:composedVisits.length-uniqueVisitKeys.size,uniqueShopperIds:uniqueShopperIds.size,duplicateShopperIds:composedShoppers.length-uniqueShopperIds.size,protectedVisitsAppended:0,idempotentDesign:true,hrOwnsOperationalState:true,canonicalFacetSource:true,unmatchedProfilesExcludedFromOperationalList:true,identityContractVersion:contract?.version||'legacy-fallback',identityTechnicalKeyCount:arr(contract?.technicalKeys).length,canonicalProfileIndexConflicts:arr(canonicalProfileIndex?.conflicts).length};
     return {projects,visits:composedVisits,shoppers:composedShoppers,posts:[...postMap.values()],periodOperationalSummary:summaries,currentPeriodId:hr.currentPeriodId||null,currentProjectId:hr.currentProjectId||'cinepolis',sourceRevision:hr.sourceRevision||null,identityMap:Object.fromEntries(liveToCanonical),identityReviewQueue:[...identityConflicts,...platformOnlyProfiles,...sameDisplayNameGroups],platformOnlyProfiles,diagnostics};
   }
   function signature(result){const d=result&&result.diagnostics||{};return JSON.stringify({visits:d.outputVisits,shoppers:d.outputShoppers,posts:d.outputPosts,uniqueVisitKeys:d.uniqueVisitKeys,duplicateVisitKeys:d.duplicateVisitKeys,uniqueShopperIds:d.uniqueShopperIds,duplicateShopperIds:d.duplicateShopperIds,visitIds:arr(result&&result.visits).map(visitKey).filter(Boolean).sort(),shopperIds:arr(result&&result.shoppers).map(s=>str(s.id)).filter(Boolean).sort(),periodSummary:result&&result.periodOperationalSummary});}
