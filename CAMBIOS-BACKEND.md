@@ -1,119 +1,73 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-14 11:22 -06:00  
-**Estado:** `ITERATION_2_CANONICAL_PERSISTENCE_PASS__SOURCE_READY_FOR_DEV_WRITE_GATES__GO_LIVE_35__NO_PRODUCTION`
+**Última actualización:** 2026-08-14 12:05 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_STOP_RETRY_HISTORICAL_SHOPPER_CREDENTIAL_H0_S0__GO_LIVE_35__NO_PRODUCTION`
 
 ## Bloque ejecutado
 
-Se ejecutó y cerró `ITERACION_2_CANONICAL_PERSISTENCE_AND_TRANSVERSAL_REGRESSION` sobre la misma candidata canónica `docs-tya-v6-v71-audit` / PR #7. No se creó candidata, rama, PR ni workflow nuevo.
+Se consumió una única autorización I3 DEV hasta provider-read sobre la misma candidata `docs-tya-v6-v71-audit` / PR #7. No nueva candidata, rama, PR, deploy ni producción.
 
-Marker: `PASS_ROOT_CAUSE_CORRECTION_ITERATION2_CANONICAL_PERSISTENCE`.
+La ejecución se detuvo fail-closed antes de toda escritura con `HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194`. No hubo segundo intento automático.
 
-Cierre: `SOURCE_READY_FOR_DEV_WRITE_GATES`.
+## Source I3 creado/preparado — preservar
 
-## Archivos creados/tocados en Iteración 2
+- `app/adapters/cxorbia-command-http-transport-v1.js`: transporte HTTP autenticado por Firebase ID token detrás del command adapter; no activa writes por sí mismo.
+- `app/adapters/cxorbia-shopper-membership-wiring-v1.js`: verifica Shopper principal/claims/membership/shopperId/projectIds/fingerprints de forma exacta y fail-closed.
+- `backend/runtime/cxorbia-shopper-command-provider-v1.mjs`: provider DEV para create/update Shopper con actor Staff exacto, idempotencia, expectedVersion, Auth/claims/membership/profile/crosswalk y provider ACK.
+- `tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs`: E2E Admin create/update + Shopper nuevo login/reload/new-tab/segundo contexto.
+- `tools/qa/cxorbia-i3-source-patcher.mjs`: patch determinista sobre misma candidata para entrypoint + alta/edición Shopper ACK-aware; no rediseño.
+- `.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml`: workflow existente reutilizado; después del STOP_RETRY quedó PARKED (`workflow_dispatch` read-only), preservando el harness completo en git history.
+- `.github/cxorbia-firebase-requests/cxorbia-i3-shopper-persistence-exact-write-v1.json`: autorización congelada como consumida/STOP_RETRY.
+- `app/docs/SOURCE-LOCK-ITERATION3-STOP-RETRY-HISTORICAL-SHOPPER-CREDENTIAL-20260814.md`: source lock del blocker real.
 
-- `app/adapters/cxorbia-cxdata-command-boundary-v1.js` — creado; commit `4d1e88ddab6fa6eb23cb43cdc5b38a81c49842b3`.
-- `app/adapters/cxorbia-command-adapter-v1.js` — reforzado scope/autorización/ACK; commit `56a967ec4fa43edbb964ee92f45ad868ee4f39ec`.
-- `app/adapters/cxorbia-shopper-admin-command-contract-v1.js` — datos protegidos + cifrado/backend-only; commit `2644f40dc401d834521af43737ee0c4be1e29a97`.
-- `app/core/shoppers-store.js` — localStorage solo demo/lab; canonical provider-only; commit `f403b4b4cbaf19546e22d882b69ceaccceca9070`.
-- `app/adapters/cxorbia-canonical-write-firewall-v1.js` — creado como fail-closed para direct writes legacy; commit `c975ce8783c191ae09e8ba49d6145a9c88a3d65b`.
-- `app/modules/misvisitas.js` — P0 de una sola visita/estados literales corregido; listas completas + facets + ACK; commit `9d8f44b0fea7f2513018339e54a0bef4ae152ea0`.
-- `app/index-backend-dev.html` — carga real de command/shopper/HR contracts + final mutation owner + firewall; commit `e531f679c627ce9c28e5746c0b7480c569334eda`.
-- `tools/qa/verify-root-cause-correction-iteration1.mjs` — conserva I1 y reconoce sucesor I2 de Mis Visitas; commit `aded9dd0adfbd32a52f482564a92817db248d079`.
-- `tools/qa/verify-root-cause-correction-iteration2.mjs` — creado; commit `32379e07008b0220f86dcb08110e33e400d350c6`.
-- `.github/workflows/cxorbia-phase-a-live-checkpoint.yml` — workflow existente extendido con gate I2; commit `3f4b1ae39bde4a57973f9cd8a8987dd5bc527c8e`.
-- `tools/qa/verify-phase-a-live-execution-checkpoint.mjs` — reconoce I2/35% como estado forense vigente; commit `3f0b9c7a81e76012bfcadf54d5b8f68f87680d2d`.
-- `app/docs/SOURCE-LOCK-ITERATION2-CANONICAL-PERSISTENCE-PASS-20260814.md` — source lock I2 creado; commit `2a2b0878d25a18a2335871d02100a45959809e23`.
-- documentos vivos de checkpoint/tracker/índice/Claude/pendientes/CAMBIOS actualizados después del gate.
+## Ejecución real I3
 
-## Qué cambió de fondo
+Workflow run `31826443230`, job `94851603411`.
 
-### Persistencia canónica
+Pasaron gate de autorización, source preflight, patch same-candidate, tooling y service account privada. El selector exacto de credenciales existentes alcanzó provider-read y falló con:
 
-En runtime canónico el contrato queda:
+`R109 U104 V1 D1 H0 S0 M616 L208 P194`.
 
-`CX.data -> canonical command boundary -> RBAC/scope -> provider transport gated -> provider ACK -> refresh`.
+La identidad histórica existe y es exacta: un candidato con claims, perfil e historia. Lo no disponible es el plaintext de password que permita certificar login humano.
 
-Con write gate cerrado: `blocked`, cero mutación local, cero localStorage como verdad y cero success UI.
+## Causa raíz de credencial
 
-Los nombres públicos de `CX.data` se conservan. El patrón local-first de `backend-firebase.wrapDataMethods()` ya no puede apropiarse del flujo canónico porque el boundary final marca `__firebaseWrapped` y se reinstala después de eventos del guard read-only.
+El import histórico usó `firebase-admin.auth().importUsers()` con `passwordHashHex` SHA256. Se importó el hash de contraseña, no el plaintext. El selector E2E actual solo puede recuperar password desde `profile.pass/profile.password` o el patrón exacto `FirstName123*`; ninguno coincide con el hash del único Shopper histórico exacto (`H0`).
 
-### Shopper Admin
-
-La alta/edición no puede considerarse persistente por `cx_shoppers` ni `cx_shopper_patches`. Ese mecanismo queda únicamente para demo/lab. El contrato productivo exige Auth + claims + membership + profile + exact crosswalk + provider ACK. DPI/banco/cuenta se tratan como datos protegidos backend-only/cifrados.
-
-### Mis Visitas
-
-Se cerró el P0 forense sin rediseño:
-
-- shopperId exacto fail-closed;
-- todas las visitas activas se renderizan como arrays completos;
-- facets canónicas reemplazan la clasificación literal principal;
-- histórico usa contrato canónico de visita/pago;
-- agenda/realizada/reprogramación/cancelación son ACK-aware;
-- check-in no muta visita local; Storage sigue explícitamente pendiente.
-
-### Controles legacy restantes
-
-Los flujos complejos que aún mutaban closure/localStorage directamente no se declaran funcionales. El firewall canónico los bloquea antes de la mutación/falso éxito. Los casos simples de Postulaciones se enrutan al command boundary. La activación real de los demás se hace en I3/I4 con provider ACK, no con otra arquitectura.
-
-## Evidencia
-
-Workflow existente `CXOrbia Phase A Live Execution Checkpoint`:
-
-- run source I2 `31823098359`: SUCCESS;
-- run final con checkpoint/documentación I2 `31823620461`: SUCCESS.
-
-El run final confirmó:
-
-- `PASS_ROOT_CAUSE_CORRECTION_ITERATION1_SOURCE_ONLY`;
-- `PASS_ROOT_CAUSE_CORRECTION_ITERATION2_CANONICAL_PERSISTENCE`;
-- `PASS_PHASE_A_CURRENT_OPERATIONAL_CHECKPOINT_FORENSIC_PLAN`;
-- `goLiveCorrectionCompletedPct=35`, `goLiveCorrectionRemainingPct=65`, `iteration=2/5`;
-- same candidate / no general rediagnosis / no Auth rebuild / no new branch or PR;
-- Auth/Firestore/HR/Rules/Storage writes=false; deploy/merge/production=false.
-
-## Porcentaje productivo
-
-**GO-LIVE: 35% completado / 65% pendiente.**
-
-I1=15 PASS · I2=20 PASS · I3=25 pendiente · I4=25 pendiente · I5=15 pendiente.
+No se debe tratar esto como Auth perdido ni reconstruir usuarios.
 
 ## Reusable CXOrbia
 
-Command boundary, scope, idempotencia, expectedVersion, provider ACK, protected-data policy y source adapters son multi-tenant/multi-proyecto. Los adapters nuevos no hardcodean Cinépolis como arquitectura global.
+El source I3 mantiene tenant/project scope, exact identity, idempotencia, expectedVersion, provider ACK, separation of protected data y fail-closed. Cinépolis sigue configuración del primer proyecto TyA.
 
-## Exclusivo cliente
+## Exclusivo TyA
 
-TyA/Cinépolis conserva su configuración real en el entrypoint y su HR live. El endpoint/identificador Cinépolis permanece como configuración de este proyecto, no se trasladó a los contracts reusables.
+El blocker afecta la validación de login de un Shopper histórico exacto TyA/Cinépolis. No cambia el patrón reusable del backend.
 
 ## Claude/prototipo
 
-`app/modules/misvisitas.js` ya fue corregido en la misma candidata. **No volver a aplicar el P0 `find()`; está cerrado.**
+El patch ACK-aware de `modules/shoppers.js` está preparado en el mismo source, pero el run se detuvo antes de commitear el patch aplicado por el runner. **No reconstruirlo**: reutilizar `tools/qa/cxorbia-i3-source-patcher.mjs` cuando I3 sea reautorizada.
 
-Pendiente de conversión ACK-aware funcional en I3/I4, sin rediseño:
-
-- alta/edición Shopper UI y registro para consumir provider real;
-- edición/reasignación compleja de Postulaciones;
-- submit de cuestionario/evidencias;
-- mutaciones de Reservas;
-- sync HR real.
-
-Mientras no estén activados, el runtime canónico debe permanecer fail-closed; no reactivar localStorage/local mutation para “hacerlos funcionar”.
+Mis Visitas P0 sigue cerrado desde I2 y no se toca.
 
 ## Academia
 
-Actualizar materiales/rutas cuando I3/I4 active provider real: creación Shopper, errores de persistencia, Mis Visitas multi-registro, ACK real, cuestionario/evidencias y sync HR. No documentar como activo lo que hoy está fail-closed.
+No actualizar como activo el alta/login Shopper real todavía. Documentar únicamente que identidad exacta existe, pero la certificación del login histórico está bloqueada por credential recovery pendiente. Mis Visitas multi-registro permanece cerrado en source.
 
 ## Sin impacto Claude
 
-Gates QA, workflow y documentos/source locks no requieren reconstrucción frontend.
+Freeze del request, PARK del workflow, source lock y docs no cambian UX.
 
 ## Seguridad
 
-Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes=0; cambios/reset de credenciales=0; deploy=0; merge=false; producción=false.
+I3 Auth writes `0`; Firestore writes `0`; Auth deletes `0`; password changes/resets `0`; Shopper nuevo `NO`; HR/Rules/Storage/Make/Gemini/pagos writes `0`; deploy `0`; merge=false; production=false.
+
+## Porcentaje
+
+**GO-LIVE: 35% completado / 65% pendiente.** I3 no suma puntos mientras siga STOP_RETRY.
 
 ## Siguiente acción exacta
 
-`ITERACION_3_DEV_AUTH_FIRESTORE_SHOPPER_PERSISTENCE` — requiere gate explícito DEV write.
+`PAULA_REVIEW_REQUIRED_FOR_I3_HISTORICAL_SHOPPER_CREDENTIAL_RECOVERY`.
+
+Con autorización focalizada se recupera/reset únicamente la contraseña del principal Shopper histórico exacto, preservando uid/claims/shopperId/profile/history, y se reanuda el mismo I3 desde el punto bloqueado.
