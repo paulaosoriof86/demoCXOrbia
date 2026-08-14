@@ -3,6 +3,8 @@
 **Última actualización:** 2026-08-14 14:00 -06:00  
 **Estado:** `I1_PASS__I2_PASS__I3_RESET2_CONSUMED__HISTORICAL_AUTH_REACHED__LEGAL_GATE_AWARE_HARNESS_PASS__GO_LIVE_35__NO_PRODUCTION`
 
+Plan rector actualizado: `app/docs/ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md`.
+
 ## Provider run ejecutado — autorización durable `...-03`
 
 Run `31835742956`, job `94881540163`, sobre la misma candidata `docs-tya-v6-v71-audit` / PR #7.
@@ -42,9 +44,11 @@ El run no capturó si el NDA estaba efectivamente pendiente, por lo que no se af
 
 Gate source: `node --check` PASS + `PASS_I3_HISTORICAL_LEGAL_GATE_AWARE_SOURCE`.
 
-### Source lock nuevo
+### Source locks
 
-`app/docs/SOURCE-LOCK-ITERATION3-HISTORICAL-LEGAL-GATE-AWARE-HARNESS-PASS-20260814.md`.
+- `app/docs/SOURCE-LOCK-ITERATION3-STOP-RETRY-POST-CREDENTIAL-RECOVERY-ADMIN-LOGIN-POINTER-20260814.md` — blocker histórico/cerrado.
+- `app/docs/SOURCE-LOCK-ITERATION3-HARNESS-DURABILITY-PASS-20260814.md` — orden durable/checkpoint.
+- `app/docs/SOURCE-LOCK-ITERATION3-HISTORICAL-LEGAL-GATE-AWARE-HARNESS-PASS-20260814.md` — lock prevalente del subgate histórico.
 
 ## Writes y seguridad
 
