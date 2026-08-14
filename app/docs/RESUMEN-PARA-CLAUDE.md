@@ -1,6 +1,6 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-14 11:20 -06:00  
+**Última actualización:** 2026-08-14 11:22 -06:00  
 **Estado:** `ITERATION_2_CANONICAL_PERSISTENCE_PASS__MISVISITAS_P0_CLOSED__SAME_CANDIDATE__ITERATION_3_NEXT`
 
 ## Regla principal
@@ -20,6 +20,11 @@ Se preservan formulario visible único, Firebase Auth, namespaces staff/shopper,
 ## Iteración 2 — PASS
 
 Marker: `PASS_ROOT_CAUSE_CORRECTION_ITERATION2_CANONICAL_PERSISTENCE`.
+
+Workflow `CXOrbia Phase A Live Execution Checkpoint`:
+
+- run source I2 `31823098359`: SUCCESS;
+- run final de checkpoint/documentación `31823620461`: SUCCESS, `35%/65%`, `iteration=2/5`.
 
 ### `app/modules/misvisitas.js` — P0 CERRADO
 
