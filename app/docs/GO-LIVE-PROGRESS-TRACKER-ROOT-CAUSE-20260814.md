@@ -1,6 +1,6 @@
 # GO-LIVE PROGRESS TRACKER — ROOT-CAUSE PLAN CXORBIA TyA
 
-**Fecha:** 2026-08-14 11:20 -06:00  
+**Fecha:** 2026-08-14 11:22 -06:00  
 **Estado:** `ITERATION_2_CANONICAL_PERSISTENCE_PASS__35_PERCENT__ITERATION_3_NEXT`
 
 ## Regla de medición
@@ -39,7 +39,8 @@ Evidencia:
 
 - source lock: `app/docs/SOURCE-LOCK-ITERATION2-CANONICAL-PERSISTENCE-PASS-20260814.md`;
 - workflow existente `CXOrbia Phase A Live Execution Checkpoint`;
-- run I2 `31823098359`: **SUCCESS**.
+- run source I2 `31823098359`: **SUCCESS**;
+- run final de checkpoint/documentación I2 `31823620461`: **SUCCESS**, verificando `35/65` y `iteration=2/5`.
 
 El gate confirmó:
 
