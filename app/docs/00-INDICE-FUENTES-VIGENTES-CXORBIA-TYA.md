@@ -13,6 +13,6 @@
 8. `app/docs/ACADEMIA-ADDENDUM-P0-SHOPPER-IDENTITY-CONTRACT-SOURCE-READY-20260813.md`
 9. PR #7.
 
-Estado: gate real `31762716234` consumió 1/1 provider read y quedó HOLD/inconcluso; `62/137/10` está invalidado como veredicto real. Evidencia independiente 616 exact matches / 208 HR→protected relations / 194 protected shoppers with history. Linked-owner canonicalization fue reparada source-only; run `31763545130` SUCCESS con `PASS_P0_GLOBAL_COMPOSITION_SOURCE`. Handoff privado histórico no produjo credencial vigente; E2E real/Academia/Certificación SKIPPED. Request neutralizado; run `31763754714` SUCCESS con provider/E2E skipped; no segundo provider read. Source repair no desplegado. Producción/merge intactos.
+Estado: gate real `31762716234` consumió 1/1 provider read y quedó HOLD/inconcluso; `62/137/10` invalidado como veredicto. Evidencia independiente 616/208/194. Linked-owner canonicalization repaired source-only; run `31763545130` SUCCESS con `PASS_P0_GLOBAL_COMPOSITION_SOURCE`. Handoff histórico sin credencial vigente; E2E real/Academia/Certificación SKIPPED. Request neutralizado; run `31763754714` provider/E2E skipped; no segundo read. Source repair no desplegado. Producción/merge intactos.
 
 Siguiente bloque: `SOURCE_ONLY_CURRENT_SHOPPER_CREDENTIAL_HANDOFF_RECONCILIATION`. Nueva lectura v2/E2E requiere nueva autorización explícita one-shot.
