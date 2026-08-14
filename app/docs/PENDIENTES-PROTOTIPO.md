@@ -1,30 +1,32 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-13 18:42 -06:00
-**Estado:** `SHOPPER_P0_SOURCE_FIX_DEPLOYED_DEV_PASS__HUMAN_RETEST_PENDING`
+**Última actualización:** 2026-08-13 19:07 -06:00
+**Estado:** `SHOPPER_P0_POSTDEPLOY_ACCEPTANCE_REJECTED__GENERIC_IDENTITY_CONTRACT_REPAIR_PENDING`
 
 ## P0 vigente
 
-La causa source-level del bloqueo Shopper quedó corregida y protegida por gate. El portal usa `CX.backendAuth.context()`, espera la autoridad HR y vuelve a renderizar después del handoff final. El diagnóstico DEV distingue el proyecto operativo de los periodos HR y marca Firestore como slice transitorio.
+La aceptación humana del Shopper **falló después del redeploy técnicamente PASS**. El problema ya no se clasifica como simple temporización del portal.
 
-Gate source `31749008509`: SUCCESS, `hardFails=0`, identidad exacta PASS y handoff Auth/HR PASS.
+La auditoría forense demuestra:
+- Auth y el perfil Firestore funcionan lo suficiente para mostrar el Shopper transitorio.
+- HR viva funciona y llega a 15 periodos / 660 visitas.
+- La identidad se pierde al componer HR porque el runtime no consume el mismo universo de llaves técnicas que usó la activación Auth.
+- Los perfiles protegidos sin crosswalk runtime exacto se excluyen como `no_exact_hr_crosswalk`.
+- El login humano sigue sembrando `CX.data` con un snapshot source-safe empaquetado de julio antes de Auth, causando 616 visitas / periodo 2026-07 en pantalla.
 
-El fix ya está desplegado en Hosting DEV. Workflow `CXOrbia C6 DEV Root Entrypoint Hosting` run `31758046539`, job `94638091029`: SUCCESS. Exactamente 1 deploy a `cxorbia-backend-dev`; paridad remota PASS; runtime Staff/Admin read-only PASS con 15 periodos, 660 visitas y agosto 2026 vigente. Artifact `9203525557`, digest `sha256:e17b2b6060e32a9d5d464ad42729421df1d43a44ef718f6a73faae52f3c2959a`.
+Evidencia: `app/docs/evidence/p0-shopper-postdeploy-forensic-rootcause-20260813.json`.
 
 ## Pendiente real inmediato
 
-Repetir la prueba humana con el mismo Shopper sobre el build recién desplegado. La aceptación debe exigir:
-- identidad y país correctos;
-- histórico real;
-- Visitas Disponibles según semántica canónica;
-- Reservas & Asignación;
-- Mis Visitas;
-- Academia/Certificación;
-- Mis Beneficios según alcance real;
-- panel DEV mostrando fuente final HR viva + overlay protegido, no el slice Firestore transitorio.
+1. Consolidar source-only un contrato único de identidad exacta reutilizable para todos los tenants/proyectos.
+2. Hacer que migración/activación Auth y compositor runtime consuman exactamente la misma semántica de llaves/crosswalk.
+3. No persistir ni aceptar un Auth Shopper si `claim.shopperId` no puede llegar a exactamente un perfil protegido y exactamente una identidad HR operacional cuando el proyecto usa HR.
+4. Sacar el snapshot source-safe empaquetado del entrypoint humano canónico; conservarlo solo en laboratorio/preview explícito.
+5. Reemplazar el smoke de cierre por E2E real de Shopper Firebase Auth → perfil Firestore → HR live → histórico/certificación/visitas.
+6. Solo después del PASS source-only solicitar el gate mínimo de provider read-only necesario para reconciliar el universo real; no escribir ni redeployar todavía.
 
-Después se ejecuta regresión humana dirigida Admin/Operaciones, Cliente y Academia sobre el mismo build.
+## No hacer
 
-## No reabrir
+No rehacer UI, no crear candidata/rama/PR, no reimportar HR, no deduplicar por nombre/correo, no parchear únicamente a TyA, no reutilizar el smoke sintético como prueba de aceptación y no ejecutar un segundo deploy bajo el gate ya consumido.
 
-No rehacer identidades, no deduplicar por nombre, no reimportar HR, no crear candidata, rama o PR nuevos y no rediseñar módulos sin nueva evidencia reproducible. Producción, merge y dominio oficial siguen bloqueados.
+Producción, merge y dominio oficial permanecen bloqueados.
