@@ -23,7 +23,7 @@ Run autoritativo source `31763545130`, job `94654691101`: **SUCCESS**; `PASS_P0_
 
 ## E2E, STOP_RETRY y seguridad
 
-El handoff privado disponible era histórico (109 credenciales) y no produjo credencial Shopper vigente. El E2E real, Academia y Certificación quedaron SKIPPED, no FAIL.
+El handoff privado disponible era histórico (109 credenciales) y no produjo credencial Shopper vigente. E2E real/Academia/Certificación SKIPPED.
 
 Request disabled/consumido, 0 ejecuciones restantes. Run final `31763754714`: SUCCESS, todos los pasos provider/credencial/proxy/E2E skipped. **No hubo segundo provider read.**
 
