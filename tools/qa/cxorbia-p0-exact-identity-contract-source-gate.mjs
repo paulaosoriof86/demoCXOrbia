@@ -44,9 +44,13 @@ check('human_live_hr_waits_for_auth',watcher.includes('authenticated_human_conte
 check('human_live_hr_restarts_after_auth',watcher.includes("CX.bus.on('backend-auth-ready'"));
 
 const realE2E=read('tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs');
-check('real_e2e_does_not_use_select_role',!realE2E.includes('CX.app.selectRole(')&&!realE2E.includes('window.CX.app.selectRole('));
-check('real_e2e_requires_auth_hr_identity_history',realE2E.includes('CX.backendAuth?.context?.()')&&realE2E.includes('CX_PROTECTED_AUTH_HR_AUTHORITY')&&realE2E.includes('__identityMap')&&realE2E.includes('visitsForShopper'));
-check('real_e2e_explicit_execution_gate',realE2E.includes('YES_SOURCE_APPROVED_REAL_READONLY_E2E')&&realE2E.includes('PRIVATE_E2E_CREDENTIALS_REQUIRED'));
+const realBranchMarker="}else{\n  ensure(authorization==='YES_SOURCE_APPROVED_REAL_READONLY_E2E'";
+const realMarkerIndex=realE2E.indexOf(realBranchMarker);
+const realExecution=realMarkerIndex>=0?realE2E.slice(realMarkerIndex):'';
+check('real_e2e_executable_branch_detected',Boolean(realExecution));
+check('real_e2e_does_not_use_select_role',!realExecution.includes('CX.app.selectRole(')&&!realExecution.includes('window.CX.app.selectRole('));
+check('real_e2e_requires_auth_hr_identity_history',realExecution.includes('CX.backendAuth?.context?.()')&&realExecution.includes('CX_PROTECTED_AUTH_HR_AUTHORITY')&&realExecution.includes('__identityMap')&&realExecution.includes('visitsForShopper'));
+check('real_e2e_explicit_execution_gate',realExecution.includes('YES_SOURCE_APPROVED_REAL_READONLY_E2E')&&realExecution.includes('PRIVATE_E2E_CREDENTIALS_REQUIRED'));
 
 if(contract?.buildCanonicalProfileIndex){
   const index=contract.buildCanonicalProfileIndex(
