@@ -1,28 +1,32 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-13 19:07 -06:00
-**Estado:** `SHOPPER_P0_POSTDEPLOY_ACCEPTANCE_REJECTED__BACKEND_IDENTITY_CONTRACT_SPLIT__NO_UI_REDESIGN`
+**Última actualización:** 2026-08-13 19:20 -06:00
+**Estado:** `SHOPPER_P0_BACKEND_SOURCE_REPAIR_PASS__NO_UI_REDESIGN__REAL_AUTH_E2E_PENDING`
 
-La aceptación humana post-deploy volvió a fallar. **No es un defecto que Claude deba resolver parcheando UI.** La auditoría forense backend demostró una ruptura entre el contrato de identidad usado para activar Firebase Auth y el contrato de aliases exactos usado después por el compositor HR del navegador.
+El P0 Shopper no se resolvió parcheando UI. La causa forense fue una incompatibilidad backend entre el universo técnico usado para activar Firebase Auth y el que el browser utilizaba después para cruzar perfil protegido con HR, además de un snapshot viejo que se cargaba pre-auth en el entrypoint humano.
 
-El patrón reproducido es: Firestore autenticado encuentra el perfil y país del Shopper; cuando llega HR viva (15 periodos / 660 visitas), el perfil deja de tener crosswalk operacional y `Mi Perfil` muestra que la identidad no está vinculada. El compositor excluye perfiles protegidos sin relación exacta como `no_exact_hr_crosswalk`.
+## Backend ya corregido source-only
 
-Además, el entrypoint humano canónico todavía carga antes de Auth `data/tya-hr-source-safe-periods.js` (payload empaquetado 13-jul) y `core/tya-phase-a-source-safe-preview.js`, que escribe ese snapshot en `CX.data`. Esto explica las cifras viejas 616 / julio 2026 visibles en login.
+Se creó `app/adapters/cxorbia-exact-identity-contract-v1.js` como contrato reusable. Comparte con Auth exactamente 11 llaves técnicas: `shopperId`, `legacyShopperId`, `legacyId`, `externalShopperId`, `externalId`, `sourceId`, `sourceKey`, `hrRowId`, `personId`, `profileId`, `shopperDocId`.
 
-### De dónde viene la regresión
+El compositor `tya-cumulative-read-model-v2.js` y el portal `tya-canonical-shopper-portal-v2.js` consumen ese contrato. No se permite adjudicación por nombre, correo, teléfono o similitud; ambigüedad exacta queda fail-closed/revisión.
 
-El source lock de la candidata frontend preserva el prototipo y sus módulos, pero la capa Firebase Auth/claims/crosswalk fue construida posteriormente en backend. La activación Auth de agosto resolvió identidades con un universo técnico más amplio que el compositor browser actual. Por tanto no corresponde atribuir este P0 a una reescritura del módulo Shopper de la candidata; es una incompatibilidad introducida en la integración backend posterior.
+El entrypoint humano `index-backend-dev.html` ya no carga el snapshot empaquetado `data/tya-hr-source-safe-periods.js` ni el mutador `core/tya-phase-a-source-safe-preview.js`. Esos archivos se preservan para laboratorio/preview explícito. La ruta humana declara `preAuthOperationalData:'none'` y el watcher HR espera Auth antes de iniciar lectura operacional.
 
-### Para Claude
+Gate source autoritativo: run `31761257145`, job `94647914674`, SUCCESS; `PASS_P0_EXACT_IDENTITY_CONTRACT_SOURCE`, `PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE`, smoke local hard fails 0. Evidencia: `app/docs/evidence/p0-exact-identity-contract-source-repair-pass-31761257145.json`.
 
-- **No rediseñar módulos ni crear candidata.**
+## Para Claude
+
+- **No crear candidata ni rediseñar módulos.**
 - No hardcodear TyA/Cinépolis como solución general.
-- No unir identidades por nombre, correo, teléfono ni similitud.
-- Preservar el prototipo y sus rutas por rol.
-- El backend debe entregar una identidad canónica ya resuelta mediante un contrato técnico reusable tenant/project.
-- El snapshot source-safe empaquetado debe quedar solo en laboratorio/preview explícito; no debe sembrar `CX.data` en el entrypoint humano autenticado.
-- Academia/Certificación no se considera aceptada hasta que el Shopper real recupere identidad, histórico y alcance correctos.
+- No volver a introducir snapshot/demo/source-safe como estado operacional previo a Auth en el entrypoint humano.
+- No unir identidades por nombre/correo/teléfono/username.
+- Preservar las rutas y UX del prototipo; la integración backend debe entregar identidad canónica exacta.
+- Academia/Certificación no requiere rediseño por este P0; solo revalidación funcional una vez que la identidad real quede probada.
+- El build DEV visible actual todavía es el deploy anterior cuya aceptación Shopper fue RECHAZADA. **El source repair PASS no está desplegado todavía.**
 
-Evidencia: `app/docs/evidence/p0-shopper-postdeploy-forensic-rootcause-20260813.json`.
+## Pendiente backend real
 
-Pendiente backend: reparación source-only del contrato único de identidad y gate E2E con Shopper Firebase real. Cero deploy/proveedor/writes por ahora. Producción y merge bloqueados.
+El E2E `tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs` está source-ready pero no ha autenticado contra Firebase en este bloque. Falta gate read-only para revalidar el universo real Auth/claims/perfiles/HR y ejecutar un Shopper real → perfil → HR → histórico/Academia/Certificación. Después, y solo si PASS, gate separado de deploy DEV.
+
+Producción, merge, dominio oficial y writes permanecen bloqueados/cero.
