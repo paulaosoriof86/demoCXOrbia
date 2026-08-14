@@ -1,6 +1,6 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-13 20:26 -06:00
+**Última actualización:** 2026-08-13 20:29 -06:00
 **Estado:** `SHOPPER_P0_GATE_CONSUMED_HOLD_INCONCLUSIVE__SOURCE_CHAIN_REPAIR_PASS__CURRENT_PRIVATE_CREDENTIAL_HANDOFF_PENDING`
 
 ## Cerrado / demostrado
@@ -12,7 +12,7 @@
 - Canonicalización reusable de owner protegido antes de composición: APPLIED.
 - Regresión `profile → alias → protected visit → hrRowId → HR`: `PASS_P0_GLOBAL_COMPOSITION_SOURCE`.
 - Run source `31763545130`: SUCCESS, hard fails 0.
-- Único provider read autorizado: consumido 1/1; STOP_RETRY activo; no segundo intento.
+- Único provider read autorizado: consumido 1/1; STOP_RETRY activo; no segundo intento. Run disabled `31763754714` confirmó provider/E2E skipped.
 
 ## Resultado que NO debe usarse como verdad
 
