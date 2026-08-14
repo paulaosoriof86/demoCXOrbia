@@ -15,6 +15,8 @@
   const flatten=v=>{const out=[];const walk=x=>{if(x==null)return;if(Array.isArray(x)){x.forEach(walk);return;}if(typeof x==='object'){Object.values(x).forEach(walk);return;}const s=str(x);if(s)out.push(s);};walk(v);return out;};
   function technicalAliases(row){
     if(!row||typeof row!=='object')return [];
+    const contract=window.CX_EXACT_IDENTITY_CONTRACT;
+    if(contract&&typeof contract.collectExactValues==='function')return contract.collectExactValues(row);
     const values=[
       row.id,row.shopperId,row.legacyShopperId,row.legacyId,row.sourceId,row.sourceKey,row.externalShopperId,
       row.canonicalLegacyIds,row.legacyLiveShopperIds,row.sourceShopperIds,row.hrShopperIds,row.externalShopperIds,
@@ -92,6 +94,6 @@
     };
     draw();return host;
   }
-  function install(){if(!CX.modules)return;CX.modules.miperfil=render;window.CX_TYA_CANONICAL_SHOPPER_PORTAL={ready:true,version:'canonical-shopper-portal-v2-p0-canonical-auth-context',exactIdentityOnly:true,fullHistory:true,certificationVisible:true,providerWrites:0,production:false,resolveExactSessionShopper:resolveSessionShopper,currentAuthContext:authContext,isAuthorityPending:authorityPending};}
+  function install(){if(!CX.modules)return;CX.modules.miperfil=render;window.CX_TYA_CANONICAL_SHOPPER_PORTAL={ready:true,version:'canonical-shopper-portal-v2-p0-shared-identity-contract',exactIdentityOnly:true,identityContractVersion:window.CX_EXACT_IDENTITY_CONTRACT?.version||'legacy-fallback',fullHistory:true,certificationVisible:true,providerWrites:0,production:false,resolveExactSessionShopper:resolveSessionShopper,currentAuthContext:authContext,isAuthorityPending:authorityPending};}
   install();document.addEventListener('DOMContentLoaded',install,{once:true});window.addEventListener('cx:full-visual-ready',install);
 })();
