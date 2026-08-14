@@ -22,7 +22,7 @@ Partiendo de la causa raíz forense `P0_PROVEN_IDENTITY_CONTRACT_SPLIT_AND_STALE
 - `app/adapters/tya-live-source-refresh-watch-v2.js`: la ruta humana protegida espera Auth antes de leer HR operacional y reintenta tras `backend-auth-ready`.
 - `app/index-backend-dev.html`: elimina del entrypoint humano la carga del snapshot source-safe viejo y del mutador preview; preserva ambos archivos para contextos source-safe/laboratorio; carga el contrato exacto antes del compositor y declara `preAuthOperationalData:'none'`.
 - `.github/workflows/cxorbia-phase-a-visual-smoke.yml`: se reforzó el workflow existente; no se creó workflow nuevo. Ejecuta los gates P0 source antes del smoke local.
-- Documentación viva: índice, checkpoint, CAMBIOS, RESUMEN, PENDIENTES y tracker.
+- Documentación viva: índice, checkpoint, CAMBIOS, RESUMEN, PENDIENTES, tracker y addendum Academia.
 
 ## Contrato exacto reusable
 
@@ -71,4 +71,4 @@ El DEV visible que falló humanamente sigue correspondiendo al deploy anterior; 
 - Validación empírica del universo real + Shopper Firebase real: **pendiente**.
 - Go-live: **BLOCKED**.
 
-Siguiente gate: una única validación DEV read-only de Auth/claims/perfiles/HR bajo el contrato común + E2E real Shopper → perfil → HR → histórico/Academia/Certificación. Cero writes o deploy. Solo después de ese PASS se solicita deploy DEV separado.
+Siguiente gate: una única validación DEV read-only de Auth/claims/perfiles/HR bajo el contrato común + E2E real Shopper → perfil → HR → histórico/Academia/Certificación. Cero writes, cambios/reset de contraseña o deploy. Solo después de ese PASS se solicita deploy DEV separado.
