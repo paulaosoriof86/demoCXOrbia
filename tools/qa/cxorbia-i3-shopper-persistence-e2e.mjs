@@ -11,7 +11,7 @@ const authorized=process.env.CXORBIA_I3_REAL_E2E_AUTHORIZED==='YES_PAULA_I3_DEV_
 const ensure=(v,c)=>{if(!v)throw new Error(c);};
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 ensure(authorized,'I3_REAL_E2E_GATE_REQUIRED');ensure(fs.existsSync(existingPath),'I3_EXISTING_PRIVATE_CREDENTIALS_MISSING');
-const existing=JSON.parse(fs.readFileSync(existingPath,'utf8'));ensure(existing.staff?.login&&existing.staff?.password,'I3_ADMIN_CREDENTIAL_MISSING');ensure(existing.shopper?.login&&existing.shopper?.password,'I3_HISTORICAL_SHOPPER_CREDENTIAL_MISSING');
+const existing=JSON.parse(fs.readFileSync(existingPath,'utf8'));ensure(existing.staff?.login&&existing.staff?.password,'I3_ADMIN_CREDENTIAL_MISSING');
 const suffix=crypto.createHash('sha256').update(String(process.env.GITHUB_RUN_ID||Date.now())).digest('hex').slice(0,8);
 const testProfile={firstName:'I3Test',lastName:'Shopper'+suffix,whatsapp:'0000000000',pais:'GT',ciudad:'Guatemala',estado:'Pendiente'};
 const browser=await chromium.launch({headless:true});
