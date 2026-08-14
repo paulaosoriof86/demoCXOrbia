@@ -26,7 +26,7 @@ function sourceSelfTest(){
     identityMapRequired:source.includes('__identityMap'),
     reviewQueueChecked:source.includes('__identityReviewQueue'),
     historyRequired:source.includes('visitsForShopper'),
-    noWriteApis:!/(createUser\(|updateUser\(|setCustomUserClaims\(|\.set\(|\.update\(|\.delete\(|firebase deploy|gcloud run deploy)/.test(source)
+    noWriteApis:!/(firebase-admin|admin\.auth\(|admin\.firestore\(|createUser\(|updateUser\(|deleteUser\(|setCustomUserClaims\(|firebase\s+deploy|gcloud\s+run\s+deploy)/i.test(source)
   };
   const failed=Object.entries(checks).filter(([,pass])=>!pass).map(([id])=>id);
   return {schemaVersion:'cxorbia.p0.real-shopper-auth-e2e.source.v1',decision:failed.length?'FAIL_P0_REAL_SHOPPER_AUTH_E2E_SOURCE':'PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE',checks,failed,safety:safe};
