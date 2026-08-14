@@ -1,6 +1,6 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-14 11:20 -06:00  
+**Fecha:** 2026-08-14 11:22 -06:00  
 **Estado:** `FORENSIC_ROOT_CAUSE_LOCKED__ITERATION_2_CANONICAL_PERSISTENCE_PASS__SOURCE_READY_FOR_DEV_WRITE_GATES__GO_LIVE_35__ITERATION_3_NEXT`
 
 ## Autoridad vigente
@@ -65,17 +65,23 @@ Cambios fuente cerrados:
 
 Workflow existente `CXOrbia Phase A Live Execution Checkpoint`.
 
-Run source I2: `31823098359` — **SUCCESS**.
+- Run source I2 `31823098359`: **SUCCESS**.
+- Run final con checkpoint/tracker/documentación I2 `31823620461`: **SUCCESS**.
 
-Pasaron:
+El run final confirmó simultáneamente:
 
-- Exact Write V2 source syntax/preflight histórico preservado;
 - `PASS_ROOT_CAUSE_CORRECTION_ITERATION1_SOURCE_ONLY`;
-- sintaxis I2;
 - `PASS_ROOT_CAUSE_CORRECTION_ITERATION2_CANONICAL_PERSISTENCE`;
-- checkpoint operativo forense.
-
-El gate I2 confirmó `sourceReadyForDevWriteGates=true`, nombres públicos `CX.data` preservados, `localMutationFallback=false`, `shopperLocalStorageCanonical=false`, listas/facets canónicas en Mis Visitas, provider ACK obligatorio, legacy direct UI writes fail-closed y contrato multi-tenant/multi-proyecto.
+- `PASS_PHASE_A_CURRENT_OPERATIONAL_CHECKPOINT_FORENSIC_PLAN`;
+- `goLiveCorrectionCompletedPct=35`;
+- `goLiveCorrectionRemainingPct=65`;
+- `iteration=2/5`;
+- sameCandidate=true;
+- noGeneralRediagnosis=true;
+- noAuthRebuild=true;
+- noNewBranchOrPr=true;
+- Auth/Firestore/HR/Rules/Storage writes=false;
+- deploy=false, merge=false, production=false.
 
 ## Alcance honesto de I2
 
