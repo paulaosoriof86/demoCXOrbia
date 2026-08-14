@@ -13,9 +13,10 @@
 6. `app/docs/PENDIENTES-PROTOTIPO.md`
 7. `app/docs/RESUMEN-PARA-CLAUDE.md`
 8. `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md`
-9. `app/docs/evidence/p0-human-shopper-canonical-binding-failure-20260813.json`
-10. `app/docs/evidence/m10-final-phase-a-freeze-31721769360.json`
-11. PR #7.
+9. `backend/config/corte6-dev-root-entrypoint-hosting-execute.json` — consumido/deshabilitado; 1/1 deploy.
+10. `app/docs/evidence/p0-human-shopper-canonical-binding-failure-20260813.json`
+11. `app/docs/evidence/m10-final-phase-a-freeze-31721769360.json`
+12. PR #7.
 
 ## Estado operativo prevalente
 
