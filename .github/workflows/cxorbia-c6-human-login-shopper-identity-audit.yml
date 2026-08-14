@@ -23,13 +23,15 @@ env:
   REQUEST_FILE: backend/config/corte6-human-login-shopper-identity-audit.json
   PRIVATE_DIR: .tmp/c6-human-login-shopper-identity-private
   OUT_DIR: .tmp/c6-human-login-shopper-identity-audit
+  PRIVATE_E2E: .tmp/c6-human-login-shopper-identity-private/private-e2e.json
   DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+  LOCAL_ROOT_URL: http://127.0.0.1:4175
 
 jobs:
   audit:
-    name: Audit human login and all Shopper identities read-only
+    name: Audit exact Shopper identity and real Auth read-only
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
 
     steps:
       - name: Checkout exact live branch
@@ -54,6 +56,7 @@ jobs:
           const x=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${x.enabled===true?'true':'false'}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`target=${x.targetHeadSha||''}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`mode=${x.mode||''}\n`);
           NODE
 
       - name: Record disabled request safely
@@ -64,6 +67,7 @@ jobs:
         if: steps.request.outputs.enabled == 'true'
         run: |
           set -euo pipefail
+          mkdir -p "$OUT_DIR" "$PRIVATE_DIR"
           node <<'NODE'
           const fs=require('fs');
           const {execFileSync}=require('child_process');
@@ -77,14 +81,39 @@ jobs:
           if(x.targetHeadSha!==parent||!x.targetHeadSha||head===parent)throw new Error('target_head_invalid');
           if(changed.length!==1||changed[0]!==process.env.REQUEST_FILE)throw new Error('request_commit_scope_invalid:'+changed.join(','));
           if(Number(x.allowedExecutions)!==1||x.providerReads!==true||x.providerWrites!==false)throw new Error('readonly_scope_invalid');
+          const p0=x.mode==='p0_exact_identity_provider_readonly_and_real_e2e';
+          const expectedContract=p0?'app/adapters/cxorbia-exact-identity-contract-v1.js':'backend/contracts/c6-shopper-identity-canonicalization-v1.json';
+          if(x.canonicalIdentityContract!==expectedContract)throw new Error('canonical_contract_invalid');
+          if(x.tenantId!=='tya'||x.projectId!=='cinepolis'||x.firebaseProjectId!=='cxorbia-backend-dev')throw new Error('provider_target_invalid');
           for(const key of ['repositoryWrites','dataWrites','deploy','merge','production','firestoreWrites','authWrites','passwordChanges','passwordResets','rulesWrites','storageWrites','hrWrites','make','gemini','payments']){
             if(x.safeState?.[key]!==false)throw new Error('unsafe_scope_'+key);
           }
           NODE
 
-      - name: Install transient audit dependency
+      - name: Install transient read-only dependencies
         if: steps.request.outputs.enabled == 'true'
-        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.54.2 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null
+
+      - name: Source-only preflight before provider access
+        if: steps.request.outputs.enabled == 'true'
+        run: |
+          set -euo pipefail
+          node --check tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs
+          if [ "${{ steps.request.outputs.mode }}" = 'p0_exact_identity_provider_readonly_and_real_e2e' ]; then
+            node --check tools/qa/cxorbia-p0-exact-identity-provider-readonly.mjs
+            node --check tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs
+            node --check tools/qa/cxorbia-p0-local-readonly-proxy.mjs
+            node tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs > "$OUT_DIR/e2e-source-preflight.source-safe.json"
+          fi
+
+      - name: Authenticate existing DEV read-only tooling
+        if: steps.request.outputs.enabled == 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
 
       - name: Prepare existing DEV credential privately
         if: steps.request.outputs.enabled == 'true'
@@ -101,7 +130,7 @@ jobs:
           fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
           NODE
 
-      - name: Execute source-safe identity audit
+      - name: Execute source-safe identity provider audit
         if: steps.request.outputs.enabled == 'true'
         id: audit
         continue-on-error: true
@@ -110,15 +139,65 @@ jobs:
           CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
           CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
           CXORBIA_AUDIT_TARGET_HEAD: ${{ steps.request.outputs.target }}
+          CXORBIA_P0_PROVIDER_AUDIT_OUTPUT: .tmp/c6-human-login-shopper-identity-audit/p0-provider-universe.source-safe.json
         run: |
           set +e
-          node --check tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs
-          check_code=$?
-          if [ "$check_code" != '0' ]; then
-            echo "exit_code=$check_code" >> "$GITHUB_OUTPUT"
-            exit 0
+          if [ "${{ steps.request.outputs.mode }}" = 'p0_exact_identity_provider_readonly_and_real_e2e' ]; then
+            node tools/qa/cxorbia-p0-exact-identity-provider-readonly.mjs "$REQUEST_FILE"
+          else
+            node tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs "$REQUEST_FILE"
           fi
-          node tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs "$REQUEST_FILE"
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Select one existing Shopper credential privately
+        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'p0_exact_identity_provider_readonly_and_real_e2e'
+        id: credential
+        continue-on-error: true
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/c6-human-login-shopper-identity-private/credentials.json
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+          CXORBIA_E2E_PRIVATE_CREDENTIALS: .tmp/c6-human-login-shopper-identity-private/private-e2e.json
+          PRIVATE_DIR: .tmp/c6-human-login-shopper-identity-private
+        run: |
+          set -euo pipefail
+          node tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs > "$OUT_DIR/credential-selection.source-safe.json"
+          chmod 600 "$PRIVATE_E2E"
+          node <<'NODE'
+          const fs=require('fs');
+          const s=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection.source-safe.json','utf8'));
+          if(s.decision!=='PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION'||s.authWrites!==0||s.passwordChanges!==0||s.valuesExported!==false)throw new Error('credential_selection_not_safe_pass');
+          NODE
+
+      - name: Start repaired HEAD local read-only proxy
+        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'p0_exact_identity_provider_readonly_and_real_e2e' && steps.credential.outcome == 'success'
+        run: |
+          set -euo pipefail
+          CXORBIA_P0_LOCAL_PORT=4175 CXORBIA_P0_UPSTREAM_ROOT="$DEV_ROOT_URL" node tools/qa/cxorbia-p0-local-readonly-proxy.mjs > "$OUT_DIR/local-readonly-proxy.source-safe.log" 2>&1 &
+          echo $! > "$OUT_DIR/local-readonly-proxy.pid"
+          for attempt in $(seq 1 30); do
+            if curl -fsS "$LOCAL_ROOT_URL/index-backend-dev.html" >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat "$OUT_DIR/local-readonly-proxy.source-safe.log" || true
+          exit 1
+
+      - name: Execute real Shopper Auth to HR E2E on repaired HEAD
+        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'p0_exact_identity_provider_readonly_and_real_e2e' && steps.credential.outcome == 'success'
+        id: e2e
+        continue-on-error: true
+        env:
+          CXORBIA_P0_REAL_AUTH_E2E_AUTHORIZED: YES_SOURCE_APPROVED_REAL_READONLY_E2E
+          CXORBIA_P0_E2E_ROOT_URL: http://127.0.0.1:4175
+          CXORBIA_P0_E2E_PRIVATE_CREDENTIALS: .tmp/c6-human-login-shopper-identity-private/private-e2e.json
+          CXORBIA_P0_E2E_TENANT_ID: tya
+          CXORBIA_P0_E2E_PROJECT_ID: cinepolis
+          CXORBIA_P0_E2E_REQUIRE_HISTORY: '1'
+        run: |
+          set +e
+          node tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs --execute-real > "$OUT_DIR/real-shopper-auth-hr-e2e.source-safe.json"
           code=$?
           echo "exit_code=$code" >> "$GITHUB_OUTPUT"
           exit 0
@@ -126,10 +205,10 @@ jobs:
       - name: Capture repository delta evidence
         if: always() && steps.request.outputs.enabled == 'true'
         run: |
-          mkdir -p .tmp/c6-human-login-shopper-identity-audit/repository-status
-          git status --porcelain=v1 > .tmp/c6-human-login-shopper-identity-audit/repository-status/status.txt
-          git diff --name-status > .tmp/c6-human-login-shopper-identity-audit/repository-status/tracked.txt
-          git ls-files --others --exclude-standard > .tmp/c6-human-login-shopper-identity-audit/repository-status/untracked.txt
+          mkdir -p "$OUT_DIR/repository-status"
+          git status --porcelain=v1 > "$OUT_DIR/repository-status/status.txt"
+          git diff --name-status > "$OUT_DIR/repository-status/tracked.txt"
+          git ls-files --others --exclude-standard > "$OUT_DIR/repository-status/untracked.txt"
 
       - name: Upload sanitized evidence
         if: always() && steps.request.outputs.enabled == 'true'
@@ -147,13 +226,23 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           AUDIT_EXIT_CODE: ${{ steps.audit.outputs.exit_code }}
+          E2E_EXIT_CODE: ${{ steps.e2e.outputs.exit_code }}
+          CREDENTIAL_OUTCOME: ${{ steps.credential.outcome }}
+          MODE: ${{ steps.request.outputs.mode }}
         run: |
           set -euo pipefail
           ENABLED='${{ steps.request.outputs.enabled }}'
           STATE=success
           DESC='SKIPPED_DISABLED_REQUEST'
           if [ "$ENABLED" = 'true' ]; then
-            if [ "${AUDIT_EXIT_CODE:-999}" = '0' ]; then
+            if [ "$MODE" = 'p0_exact_identity_provider_readonly_and_real_e2e' ]; then
+              if [ "${AUDIT_EXIT_CODE:-999}" = '0' ] && [ "$CREDENTIAL_OUTCOME" = 'success' ] && [ "${E2E_EXIT_CODE:-999}" = '0' ]; then
+                DESC='PASS_P0_EXACT_IDENTITY_PROVIDER_AND_REAL_E2E'
+              else
+                STATE=failure
+                DESC='HOLD_P0_EXACT_IDENTITY_PROVIDER_OR_REAL_E2E_STOP_RETRY'
+              fi
+            elif [ "${AUDIT_EXIT_CODE:-999}" = '0' ]; then
               DESC='PASS_C6_HUMAN_LOGIN_SHOPPER_IDENTITY_AUDIT'
             else
               STATE=failure
@@ -170,8 +259,23 @@ jobs:
 
       - name: Cleanup private material
         if: always()
-        run: rm -rf "$PRIVATE_DIR"
+        run: |
+          if [ -f "$OUT_DIR/local-readonly-proxy.pid" ]; then kill "$(cat "$OUT_DIR/local-readonly-proxy.pid")" 2>/dev/null || true; fi
+          rm -rf "$PRIVATE_DIR"
 
       - name: Enforce audit result
         if: steps.request.outputs.enabled == 'true'
-        run: test "${{ steps.audit.outputs.exit_code }}" = "0"
+        env:
+          AUDIT_EXIT_CODE: ${{ steps.audit.outputs.exit_code }}
+          E2E_EXIT_CODE: ${{ steps.e2e.outputs.exit_code }}
+          CREDENTIAL_OUTCOME: ${{ steps.credential.outcome }}
+          MODE: ${{ steps.request.outputs.mode }}
+        run: |
+          set -euo pipefail
+          if [ "$MODE" = 'p0_exact_identity_provider_readonly_and_real_e2e' ]; then
+            test "${AUDIT_EXIT_CODE:-999}" = '0'
+            test "$CREDENTIAL_OUTCOME" = 'success'
+            test "${E2E_EXIT_CODE:-999}" = '0'
+          else
+            test "${AUDIT_EXIT_CODE:-999}" = '0'
+          fi
