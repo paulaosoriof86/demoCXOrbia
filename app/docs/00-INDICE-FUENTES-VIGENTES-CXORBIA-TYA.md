@@ -1,6 +1,6 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-13 20:26 -06:00
+**Fecha:** 2026-08-13 20:29 -06:00
 **Estado vivo:** `SHOPPER_P0_READONLY_GATE_CONSUMED_HOLD_INCONCLUSIVE__V1_MAPPING_INVALIDATED__SOURCE_CHAIN_REPAIRED_PASS__REAL_E2E_PENDING__CUTOVER_BLOCKED`
 
 ## Fuentes vigentes
@@ -24,7 +24,9 @@ El único gate DEV read-only autorizado se ejecutó una vez en run `31762716234`
 
 La salida v1 `62 unique / 137 unmapped / 10 ambiguous-review` **NO es un veredicto autoritativo del universo real**. El mismo run produjo evidencia independiente de 616 matches exactos de visita, 208 relaciones HR→shopper protegido y 194 shoppers protegidos con histórico. La revisión source-only demostró dos defectos del instrumento/cadena: el auditor v1 filtraba fuentes vinculadas antes de componer y el compositor no canonicalizaba el owner técnico de una fuente protegida antes de construir la relación HR. Por tanto está prohibido interpretar `137+10` como 147 identidades reales rotas.
 
-El request quedó `enabled=false`, `consumed=true`, `STOP_RETRY`; **no se ejecutó segundo provider read**. El selector privado disponible correspondía al handoff histórico de 109 credenciales y no produjo una credencial Shopper vigente, por lo que el E2E real se **omitió**, no falló. Academia/Certificación real tampoco se validó.
+El request quedó `enabled=false`, `consumed=true`, `STOP_RETRY`. Run de neutralización final `31763754714` terminó SUCCESS y omitió autorización, dependencias, credenciales, provider audit, selector, proxy y E2E; **no se ejecutó segundo provider read**.
+
+El selector privado disponible correspondía al handoff histórico de 109 credenciales y no produjo una credencial Shopper vigente, por lo que el E2E real se **omitió**, no falló. Academia/Certificación real tampoco se validó.
 
 La brecha source reusable sí quedó reparada después, sin proveedor: `app/adapters/tya-canonical-state-semantics-v2.js` canonicaliza owners de visitas/certificaciones/liquidaciones/postulaciones/aplicaciones/posts mediante `CX_EXACT_IDENTITY_CONTRACT` antes de la composición. Ambiguos/no resueltos permanecen fail-closed.
 
