@@ -1,60 +1,73 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-13 18:42 -06:00
-**Estado:** `P0_SHOPPER_CANONICAL_AUTH_HR_HANDOFF_DEPLOYED_DEV_PASS__HUMAN_ACCEPTANCE_PENDING`
+**Última actualización:** 2026-08-13 19:07 -06:00
+**Estado:** `P0_SHOPPER_POSTDEPLOY_FORENSIC_ROOTCAUSE_PROVEN__NO_REPAIR_OR_REDEPLOY_YET`
 
-## Bloque P0 2026-08-13 — reparación y deploy DEV cerrados
+## Bloque 2026-08-13 — auditoría forense post-deploy
 
-La prueba humana real encontró que Shopper autenticaba pero podía quedar temporalmente en Firestore y luego `Mi Perfil` declaraba que la identidad no estaba vinculada al read model canónico.
+La aceptación humana del build desplegado por run `31758046539` volvió a fallar. El fix previo corrigió un defecto real de temporización/API y mejoró el diagnóstico, pero **no era la causa raíz completa**.
 
-### Causa raíz reproducible
+### Evidencia nueva
 
-`app/adapters/tya-canonical-shopper-portal-v2.js` consultaba `window.CX_BACKEND_AUTH?.currentContext?.()`, API inexistente en este runtime. La autoridad real publicada por `app/core/backend-browser-auth.js` es `CX.backendAuth.context()`. El portal podía interpretar que HR ya no estaba pendiente cuando la composición Auth → Firestore protegido → HR viva todavía no había finalizado.
+- Firestore transitorio encuentra el Shopper autenticado y muestra perfil/país, pero 0 visitas.
+- HR viva termina correctamente en 15 periodos / 660 visitas / agosto 2026.
+- Después del handoff HR la identidad desaparece del read model y el país queda sin asignar.
+- El login canónico todavía muestra antes de Auth el snapshot viejo 616/210/42 de julio.
 
-El panel `app/core/backend-preview-status.js` tampoco escuchaba el evento final `cx:protected-auth-hr-authority-ready` y llamaba `Proyectos` a registros que, en la composición histórica, representan periodos. Esto generó el alarmante pero incorrecto `14 proyectos`.
+Evidencia durable: `app/docs/evidence/p0-shopper-postdeploy-forensic-rootcause-20260813.json`.
 
-### Archivos/contratos corregidos
+## Causa raíz P0-A — contrato de identidad dividido
 
-- `app/adapters/tya-canonical-shopper-portal-v2.js`: Auth canónico, espera HR, reconcile read-only y rerender final.
-- `app/core/backend-preview-status.js`: proyecto y periodos separados, Firestore identificado como slice transitorio, actualización por handoff HR.
-- `tools/qa/cxorbia-p0-shopper-hr-authority-source-gate.mjs`: gate source-only independiente.
-- `tools/qa/tya-phase-a-visual-smoke.mjs`: bloqueo de regresiones del handoff Auth/HR.
-- `app/docs/evidence/p0-shopper-canonical-auth-hr-handoff-source-pass-31749008509.json`: evidencia source PASS.
-- `app/docs/evidence/p0-shopper-auth-hr-dev-redeploy-pass-31758046539.json`: evidencia deploy/runtime PASS.
+La activación Auth v4 usa un universo técnico amplio:
 
-### Resultado source
+`shopperId · legacyShopperId · legacyId · externalShopperId · externalId · sourceId · sourceKey · hrRowId · personId · profileId · shopperDocId`
 
-`CXOrbia Phase A Visual Smoke` run `31749008509`: SUCCESS. `p0ShopperAuthorityHandoffSource.pass=true`, 13/13 checks PASS, `p0ShopperExactIdentity.pass=true`, `hardFails=[]`, cero proveedor/writes/deploy.
+y fija el claim `shopperId` al id del documento de perfil Firestore. Run de activación `31423272374`: PASS, 118 creates + 9 updates, 228 Auth users finales, 0 Firestore writes.
 
-### Resultado deploy DEV
+El compositor runtime `app/adapters/tya-cumulative-read-model-v2.js` reconstruye HR→perfil con un conjunto menor de aliases. `identityMap` solo contiene los live HR ids que pueden resolverse exactamente con ese conjunto o por relación exacta de visita. Los perfiles protegidos significativos que no entran al crosswalk se clasifican `no_exact_hr_crosswalk` y se excluyen de la lista operacional.
 
-Commit disparador `9624171d1df9f9d0eb9ac2ab72120c9347c9033e` modificó únicamente `backend/config/corte6-dev-root-entrypoint-hosting-execute.json`, apuntando al target `ee8ac4d5b450aa615109e1d97d77f3acaa9f9abc`.
+Esto crea el fallo observado: `backend-firebase.js` sí puede leer `tenants/tya/shoppers/{claim.shopperId}` y mostrar el perfil transitorio, pero al llegar HR el mismo perfil desaparece si su id Firestore no tiene un alias runtime exacto hacia el live HR shopper.
 
-Workflow `CXOrbia C6 DEV Root Entrypoint Hosting` run `31758046539`, job `94638091029`: SUCCESS.
+## Causa raíz P0-B — el crosswalk de activación Auth no fue materializado para runtime
 
-- Hosting target: `cxorbia-dev` / site `cxorbia-backend-dev`.
-- Deploys este run: exactamente 1.
-- Segundo deploy automático: 0.
-- Paridad remota: PASS, root 302 a `/index-backend-dev.html`, contenido canónico exacto.
-- Runtime Staff/Admin read-only: PASS, 15 periodos, 660 visitas, último periodo 2026-08, membership verificada, reloads y nueva pestaña estables.
-- Artifact `9203525557`, digest `sha256:e17b2b6060e32a9d5d464ad42729421df1d43a44ef718f6a73faae52f3c2959a`.
+El bridge full-profile del 31-jul dejó:
+- 120 perfiles exactos;
+- 31 identity holds;
+- `technicalBridgeResolved=0`;
+- `authBridgeResolved=0`;
+- `identityLinksPlanned=0`.
 
-## Qué se preservó
+El write Firestore posterior actualizó 120 documentos exactos y mantuvo 31 holds. La activación Auth posterior resolvió un universo mayor reconstruyendo llaves técnicas desde HR/visitas/certificaciones/liquidaciones, pero fue Auth-only. Por diseño no persistió ese crosswalk ampliado en Firestore. De ahí la incompatibilidad entre el principal activado y el compositor del navegador.
 
-No se reabrieron ni recrearon identidades Shopper; no se reimportó HR. Cinépolis sigue siendo un único proyecto configurable. M1–M10 siguen como 100% técnico DEV, no como aprobación funcional humana.
+## Causa raíz P0-C — bootstrap source-safe viejo dentro del entrypoint humano
 
-## Seguridad
+`app/index-backend-dev.html` carga antes de Auth:
+1. `data/tya-hr-source-safe-periods.js` — payload empaquetado generado `2026-07-13`;
+2. `core/tya-phase-a-source-safe-preview.js` — activo automáticamente en `cxorbia-backend-dev.web.app` y escritor de `CX.data`.
 
-1 Hosting deploy DEV consumido bajo la autorización vigente. Cero Cloud Run deploys, Auth/Firestore/HR/Rules/Storage writes, password changes/resets, Make/Gemini/pagos, merge, producción o dominio oficial. Credenciales/tokens no expuestos.
+Por eso el login humano puede presentar 616 visitas y julio 2026 antes de que la HR viva autenticada reemplace ese estado. El snapshot source-safe debe quedar para laboratorio/preview explícito, no como semilla del runtime humano canónico.
+
+## Por qué el gate anterior dio PASS
+
+`tools/qa/cxorbia-p0-shopper-hr-authority-source-gate.mjs` verifica forma del código: API Auth correcta, espera HR, evento final y rótulos. `tools/qa/tya-phase-a-visual-smoke.mjs` usa `CX.app.selectRole(...)` en el smoke de roles y prueba identidad con un fixture sintético. Ninguno comparaba `TECH_KEYS` de activación Auth contra `exactAliases` del runtime ni realizaba Auth Firebase Shopper real → Firestore → HR → histórico.
+
+Ese gate fue insuficiente y no debe volver a usarse como prueba de cierre del P0 humano.
+
+## Seguridad y cierre del deploy consumido
+
+- Deploy DEV consumido: exactamente 1, run `31758046539`.
+- Marcador one-shot neutralizado: `enabled=false`, `consumed=true`, `hostingDeployExecutions=1`.
+- Run de neutralización `31759552694`: SUCCESS; pasos de proveedor/deploy omitidos.
+- Desde la aceptación humana fallida: 0 provider reads/writes, 0 Auth/Firestore/HR/Rules/Storage writes, 0 deploy adicional, 0 Make/Gemini/pagos, 0 merge, 0 producción.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** Firestore del principal es transitorio; HR final debe completar el handoff antes de aceptar el contexto operacional.
-- **Exclusivo cliente:** identidad e histórico TyA/Cinépolis.
-- **Claude/prototipo:** no rediseñar módulos; mantener Proyecto/Periodo separados.
-- **Academia:** revalidar acceso por rol sobre el build desplegado.
-- **Sin impacto Claude:** CI, evidencia de deploy y seguridad.
+- **Reusable CXOrbia:** un único contrato técnico de identidad debe ser compartido por migración, Auth, perfil protegido y runtime; un tenant no puede definir un crosswalk diferente en cada capa.
+- **Exclusivo cliente:** datos HR, 340 perfiles y su crosswalk concreto.
+- **Claude/prototipo:** no rediseñar módulos. El frontend canónico debe recibir una identidad ya resuelta; el snapshot source-safe empaquetado queda fuera del entrypoint humano.
+- **Academia:** no revalidar funcionalmente hasta que la identidad canónica Shopper sea estable; certificaciones/histórico dependen del mismo crosswalk.
+- **Sin impacto Claude:** neutralización del request, evidencia y gates backend.
 
 ## Siguiente bloque exacto
 
-Aceptación humana post-deploy con Shopper real; después regresión dirigida Admin/Operaciones, Cliente y Academia sobre el mismo build. Producción continúa bloqueada hasta cerrar aceptación.
+Preparar source-only la reparación genérica del contrato de identidad y el gate E2E real. **Cero deploy y cero proveedor** hasta probar que el mismo conjunto de llaves técnicas gobierna Auth y runtime y que el entrypoint humano no adopta el snapshot estático pre-auth.
