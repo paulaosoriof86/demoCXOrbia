@@ -4,7 +4,7 @@
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "98640d5c1ed8bb075ac6e68641f35ee26d355e8a",
+  "targetHeadSha": "f0f4bea4a6247f6344f2bd8aa3409500d814247e",
   "firebaseProjectId": "cxorbia-backend-dev",
   "tenantId": "tya",
   "projectId": "cinepolis",
@@ -28,5 +28,13 @@
   "deploys": 0,
   "merge": false,
   "production": false,
-  "stopRetry": true
+  "stopRetry": true,
+  "preProviderHarnessHistory": {
+    "firstTriggerRunId": 31825981774,
+    "firstTriggerJobs": 0,
+    "providerCredentialLoaded": false,
+    "providerReads": 0,
+    "providerWrites": 0,
+    "reason": "WORKFLOW_YAML_PARSE_FAILURE_BEFORE_ANY_JOB"
+  }
 }
