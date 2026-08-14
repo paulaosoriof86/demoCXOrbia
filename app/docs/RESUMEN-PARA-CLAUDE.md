@@ -15,14 +15,7 @@ Run source `31763545130`, job `94654691101`: SUCCESS; `PASS_P0_EXACT_IDENTITY_CO
 
 El handoff privado disponible era histórico y no produjo credencial Shopper vigente; E2E real/Academia/Certificación quedaron SKIPPED. Request real consumido/deshabilitado; run `31763754714` confirmó todos los pasos provider/E2E skipped. No repetir bajo la autorización anterior.
 
-Para Claude:
-- no candidata/rama/PR nuevo;
-- no cambios UI por este P0;
-- no hardcode TyA/Cinépolis global;
-- no identidad por nombre/correo/teléfono/username;
-- no snapshot source-safe operacional pre-auth;
-- preservar rutas/UX;
-- Academia/Certificación no requiere rediseño.
+Para Claude: no candidata/rama/PR nuevo; no cambios UI; no hardcode TyA/Cinépolis global; no identidad por nombre/correo/teléfono/username; no snapshot source-safe operacional pre-auth; preservar rutas/UX; Academia/Certificación no requiere rediseño.
 
 El source reparado no está desplegado en el DEV actual.
 
