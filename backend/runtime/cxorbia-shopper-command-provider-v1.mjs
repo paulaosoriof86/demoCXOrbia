@@ -37,7 +37,12 @@ function request(){
   if(r.firebaseProjectId!==PROJECT||r.tenantId!=='tya'||r.projectId!=='cinepolis')throw new Error('I3_REQUEST_PROVIDER_TARGET_INVALID');
   if(r.enabled!==true||r.consumed!==false||r.authorizedBy!=='Paula'||r.allowedExecutions!==1||r.status!=='authorized_execute_once')throw new Error('I3_REQUEST_NOT_AUTHORIZED');
   const recovery=r.continuationMode==='historical_credential_recovery_resume';
-  if(recovery&&(r.continuationOfRequestId!=='cxorbia-i3-shopper-persistence-20260814-01'||r.priorStopRetryCode!=='HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194'))throw new Error('I3_RECOVERY_CONTINUATION_INVALID');
+  const lineage=[
+    ['cxorbia-i3-shopper-persistence-20260814-01','HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194'],
+    ['cxorbia-i3-shopper-persistence-20260814-02','I3_ADMIN_LOGIN_CLICK_BLOCKED_BY_CX_BACKEND_PREVIEW_STATUS_POINTER_INTERCEPTION']
+  ];
+  const lineageOk=lineage.some(([id,code])=>r.continuationOfRequestId===id&&r.priorStopRetryCode===code);
+  if(recovery&&!lineageOk)throw new Error('I3_RECOVERY_CONTINUATION_INVALID');
   const expectedAuthWrites=recovery?3:2;const expectedPasswordResets=recovery?1:0;
   if(r.authWritesMax!==expectedAuthWrites||r.firestoreWritesMax!==10||r.authDeletesMax!==1||r.stopRetry!==true)throw new Error('I3_REQUEST_BUDGET_INVALID');
   for(const k of ['hrWrites','rulesWrites','storageWrites','makeWrites','geminiCalls','paymentsWrites','deploys'])if(r[k]!==0)throw new Error('I3_UNSAFE_SCOPE_'+k);
