@@ -22,22 +22,12 @@
   const params=new URLSearchParams(location.search||'');
   const technical=params.get('cxTechnicalAuthE2E')===TECHNICAL;
   let changed=false;
-
   if(params.get('cxBackendPreview')!==PREVIEW){params.set('cxBackendPreview',PREVIEW);changed=true;}
   if(!params.get('cxProjectId')){params.set('cxProjectId','cinepolis');changed=true;}
-
   if(technical){
     if(params.get('cxProtectedRuntime')!==PROTECTED){params.set('cxProtectedRuntime',PROTECTED);changed=true;}
     if(params.has('cxHumanFullVisual')){params.delete('cxHumanFullVisual');changed=true;}
   }else{
-    /*
-      Corte 6 P0 root recovery:
-      the normal human route is the authenticated canonical runtime.
-      It uses the same visible product login validated in C6 single-login,
-      HR live as operational authority, and protected Firestore only as
-      exact identity/profile/certification overlay. No reduced source-safe
-      shell and no hidden visual-session token are allowed.
-    */
     if(params.get('cxProtectedRuntime')!==PROTECTED){params.set('cxProtectedRuntime',PROTECTED);changed=true;}
     if(params.get('cxHumanFullVisual')!==FULL_VISUAL){params.set('cxHumanFullVisual',FULL_VISUAL);changed=true;}
     if(params.has('cxTechnicalAuthNamespace')){params.delete('cxTechnicalAuthNamespace');changed=true;}
@@ -45,30 +35,17 @@
     try{
       sessionStorage.removeItem('CXORBIA_C6_FULL_VISUAL_TOKEN');
       const stale=JSON.parse(localStorage.getItem('cx_session')||'null');
-      const synthetic=stale&&(
-        stale.user?.name==='Admin Demo'||
-        stale.user?.name==='Cliente Demo'||
-        stale.user?.name==='Evaluador (sin identidad)'||
-        (stale.role==='shopper'&&!stale.user?.shopperId)
-      );
+      const synthetic=stale&&(stale.user?.name==='Admin Demo'||stale.user?.name==='Cliente Demo'||stale.user?.name==='Evaluador (sin identidad)'||(stale.role==='shopper'&&!stale.user?.shopperId));
       if(synthetic)localStorage.removeItem('cx_session');
     }catch(_){}
   }
-
-  if(changed) history.replaceState(null,'',path+'?'+params.toString());
+  if(changed)history.replaceState(null,'',path+'?'+params.toString());
   window.CX_DEV_ENTRY_CANONICAL={
-    canonical:true,
-    lane:technical?'protected-technical-e2e':'authenticated-human-canonical',
-    projectId:params.get('cxProjectId')||null,
-    fullVisual:!technical&&params.get('cxHumanFullVisual')===FULL_VISUAL,
-    technicalAuth:technical,
-    protectedRuntime:params.get('cxProtectedRuntime')===PROTECTED,
-    singleVisibleProductLogin:!technical,
-    preAuthOperationalData:'none',
-    hrAuthority:'live-all-periods',
-    protectedOverlay:'exact-identity-profile-certification',
+    canonical:true,lane:technical?'protected-technical-e2e':'authenticated-human-canonical',projectId:params.get('cxProjectId')||null,
+    fullVisual:!technical&&params.get('cxHumanFullVisual')===FULL_VISUAL,technicalAuth:technical,protectedRuntime:params.get('cxProtectedRuntime')===PROTECTED,
+    singleVisibleProductLogin:!technical,preAuthOperationalData:'none',hrAuthority:'live-all-periods',protectedOverlay:'exact-identity-profile-certification',
     canonicalDataRequired:{source:'live-hr',allDetectedPeriods:true,uniqueVisitKeys:true,shopperIdentity:'exact-crosswalk'},
-    at:new Date().toISOString()
+    persistenceRequired:{owner:'cx.data-command-boundary',localMutation:false,localStorageTruth:false,providerAck:true},at:new Date().toISOString()
   };
 })();
 </script>
@@ -135,7 +112,11 @@
 <script src="core/backend-finance-benefits.js"></script>
 <script src="core/backend-cxdata-finance-read.js"></script>
 <script src="core/backend-operational-actions.js"></script>
+<script src="adapters/cxorbia-command-adapter-v1.js"></script>
+<script src="adapters/cxorbia-shopper-admin-command-contract-v1.js"></script>
+<script src="adapters/cxorbia-hr-write-adapter-contract-v1.js"></script>
 <script src="core/backend-cxdata-readonly-corte4.js"></script>
+<script src="adapters/cxorbia-cxdata-command-boundary-v1.js"></script>
 <script src="core/backend-ui-action-bridge.js"></script>
 <script src="core/backend-bulletins.js"></script>
 <script src="core/backend-automations.js"></script>
@@ -144,6 +125,7 @@
 <script src="adapters/tya-financial-canonical-source-safe-adapter.js"></script>
 <script src="adapters/tya-canonical-finance-read-model-v2.js"></script>
 <script src="adapters/tya-delegated-coordination-finance-guard-v1.js"></script>
+<script src="adapters/cxorbia-canonical-write-firewall-v1.js"></script>
 <script src="core/topbar.js"></script>
 <script src="core/pwa.js"></script>
 <script src="core/router.js"></script>
