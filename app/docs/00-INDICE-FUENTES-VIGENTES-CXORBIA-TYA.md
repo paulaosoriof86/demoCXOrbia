@@ -1,7 +1,7 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-14 09:00 -06:00  
-**Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__PRODUCTION_BLOCKED__CORRECTION_EXECUTION_NEXT`
+**Fecha:** 2026-08-14 10:08 -06:00  
+**Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__DURABLE_GO_LIVE_PLAN_LOCKED__ITERATION_1_NEXT`
 
 ## 1. Lectura obligatoria y prevalente
 
@@ -13,13 +13,14 @@
 6. `PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`
 7. `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`
 8. `AUDITORIA-FORENSE-INTEGRAL-PREPRODUCCION-CXORBIA-TYA-20260814.md`
-9. `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, tracker, PR #7 y HEAD de la rama viva.
+9. `ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md`
+10. `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, tracker, PR #7 y HEAD de la rama viva.
 
 ## 2. Decisión vigente
 
-La auditoría forense integral del 14-ago reemplaza cualquier lectura previa de “candidata lista para producción”. Producción está bloqueada por causas raíz compartidas de release integrity, Auth/identity, persistencia, Shopper workspace, Finance activation y separación read/write.
+La auditoría forense integral del 14-ago reemplaza cualquier lectura previa de “candidata lista para producción”. El addendum de plan durable convierte esas causas raíz en una secuencia cerrada de cinco iteraciones base y prohíbe reprocesar Auth, crear otra candidata o reabrir diagnóstico general sin drift/P0 nuevo reproducible.
 
-No pedir a Paula otra visualización del build anterior. No nueva candidata, rama, PR ni auditoría general sin drift reproducible.
+Toda corrección continúa sobre `docs-tya-v6-v71-audit` y PR #7. Cinépolis permanece como primer proyecto configurable del tenant TyA; los patrones corregidos deben ser multi-tenant, multi-proyecto y reutilizables para el prototipo/no-code.
 
 ## 3. Causas raíz canónicas
 
@@ -34,18 +35,15 @@ No pedir a Paula otra visualización del build anterior. No nueva candidata, ram
 - `P1_HR_READ_OK_WRITE_PENDING`
 - `PROCESS_ROOT_CAUSE`
 
-Detalles y evidencia: `app/docs/AUDITORIA-FORENSE-INTEGRAL-PREPRODUCCION-CXORBIA-TYA-20260814.md`.
+Detalles/evidencia: `app/docs/AUDITORIA-FORENSE-INTEGRAL-PREPRODUCCION-CXORBIA-TYA-20260814.md`.
+
+Plan de ejecución durable: `app/docs/ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md`.
 
 ## 4. Siguiente acción exacta
 
-`ROOT_CAUSE_CORRECTION_EXECUTION_S1_S6`
+`ITERACION_1_SOURCE_ONLY_ROOT_CAUSE_CONSOLIDATION`
 
-1. Canonicalizar Auth/runtime y retirar bypass/owners redundantes.
-2. Pasar todas las mutaciones CX.data a adapter canónico; cero mutación local/false-success.
-3. Alta/edición Shopper persistente con Auth + claims + membership + profile/crosswalk.
-4. HR write real gated/idempotente, conservando HR live como autoridad de lectura.
-5. Finance v2 por runtime contract, no hostname.
-6. Deploy exacto + E2E real Admin/Ops/Shopper histórico/Shopper nuevo/Cliente + persistencia/reload/new-tab.
+Objetivo: preservar lo ya resuelto de Auth/HR/read models, consolidar un único control plane humano, preparar command adapter canónico CX.data, eliminar false-success, activar Finance por runtime contract y registrar los P0 frontend quirúrgicos sobre la misma candidata.
 
 ## 5. Gates
 
