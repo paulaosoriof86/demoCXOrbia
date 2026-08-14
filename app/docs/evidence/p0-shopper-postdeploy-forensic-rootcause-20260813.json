@@ -100,7 +100,7 @@
     }
   },
   "rootCause": {
-    "primary": "The clean DEV backend has two independently correct-but-incompatible identity contracts: the Auth activation contract resolves technical ownership using a broad key universe and stores claim.shoppertId as the Firestore profile id, while the browser cumulative HR composer reconstructs identity with a narrower alias universe. The crosswalk proven offline during Auth activation was not persisted as a canonical reusable identity mapping consumed by runtime.",
+    "primary": "The clean DEV backend has two independently valid but incompatible identity contracts: the Auth activation contract resolves technical ownership using a broad key universe and stores claim.shopperId as the Firestore profile id, while the browser cumulative HR composer reconstructs identity with a narrower alias universe. The crosswalk proven offline during Auth activation was not persisted as a canonical reusable identity mapping consumed by runtime.",
     "secondary": "The canonical human entrypoint still executes the old source-safe preview bootstrap before authentication, so stale bundled data temporarily becomes CX.data and is visible on the login screen.",
     "notRootCause": [
       "HR live availability",
