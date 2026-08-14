@@ -64,6 +64,7 @@
     technicalAuth:technical,
     protectedRuntime:params.get('cxProtectedRuntime')===PROTECTED,
     singleVisibleProductLogin:!technical,
+    preAuthOperationalData:'none',
     hrAuthority:'live-all-periods',
     protectedOverlay:'exact-identity-profile-certification',
     canonicalDataRequired:{source:'live-hr',allDetectedPeriods:true,uniqueVisitKeys:true,shopperIdentity:'exact-crosswalk'},
@@ -80,13 +81,11 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 <script src="/__/firebase/init.js"></script>
-<script src="data/tya-hr-source-safe-periods.js"></script>
 <script src="core/build-lock.js"></script>
 <script src="core/config.js"></script>
 <script src="core/geo.js"></script>
 <script src="core/store.js"></script>
 <script src="core/data.js"></script>
-<script src="core/tya-phase-a-source-safe-preview.js"></script>
 <script src="adapters/tya-project-financial-model-contract-v1.js"></script>
 <script src="core/data-source.js"></script>
 <script src="core/dedupe.js"></script>
@@ -118,6 +117,7 @@
 <script>window.CX_TYA_LIVE_SOURCE_URL='/api/tya/cinepolis/hr-live?view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV';window.CX_TYA_LIVE_POLL_MS=20000;</script>
 <script src="adapters/tya-live-source-inplace-apply.js"></script>
 <script src="adapters/tya-live-source-refresh-watch-v2.js"></script>
+<script src="adapters/cxorbia-exact-identity-contract-v1.js"></script>
 <script src="adapters/tya-cumulative-read-model-v2.js"></script>
 <script src="adapters/tya-canonical-state-semantics-v2.js"></script>
 <script src="core/backend-config.js"></script>
