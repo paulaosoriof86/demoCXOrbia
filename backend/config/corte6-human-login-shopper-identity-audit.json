@@ -1,24 +1,64 @@
 {
   "schemaVersion": "cxorbia.c6.human-login-shopper-identity-audit.v1",
   "requestId": "p0-exact-identity-provider-readonly-real-e2e-20260813-01",
-  "enabled": true,
-  "consumed": false,
-  "status": "authorized_execute_once",
+  "enabled": false,
+  "consumed": true,
+  "status": "consumed_hold_stop_retry",
   "mode": "p0_exact_identity_provider_readonly_and_real_e2e",
   "issuedAt": "2026-08-13T19:51:00-06:00",
+  "consumedAt": "2026-08-13T20:07:40-06:00",
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-13",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "targetHeadSha": "dc0eef6167afc99d80e7b2b69a0e43b0c0768a90",
+  "requestCommitSha": "de273fde69879292b82f07dfd06a6558a65fad50",
   "tenantId": "tya",
   "projectId": "cinepolis",
   "firebaseProjectId": "cxorbia-backend-dev",
   "canonicalIdentityContract": "app/adapters/cxorbia-exact-identity-contract-v1.js",
   "providerReads": true,
   "providerWrites": false,
-  "allowedExecutions": 1,
+  "allowedExecutions": 0,
+  "providerReadExecutionsConsumed": 1,
+  "auditDecision": "HOLD_P0_EXACT_IDENTITY_PROVIDER_UNIVERSE",
+  "auditRunId": 31762716234,
+  "auditJobId": 94652243857,
+  "auditArtifactId": 9205200319,
+  "auditArtifactDigest": "sha256:7d49035d2610dc35e1bf6b1bca73d49c0ba8487e6242014c01269f0bf8f3526c",
+  "observedUniverse": {
+    "authUsersReviewed": 231,
+    "effectiveShopperPrincipals": 209,
+    "firestoreProfiles": 340,
+    "protectedVisits": 616,
+    "liquidations": 572,
+    "certifications": 77,
+    "hrPeriods": 15,
+    "hrVisits": 660,
+    "hrShoppers": 212
+  },
+  "observedMapping": {
+    "unique": 62,
+    "missingProfile": 0,
+    "unmapped": 137,
+    "ambiguousOrReview": 10,
+    "withHistory": 62,
+    "withoutHistory": 0,
+    "issueCount": 147
+  },
+  "credentialSelection": {
+    "status": "HOLD",
+    "sourceSafeCode": "HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194",
+    "privateCredentialProduced": false,
+    "valuesExported": false
+  },
+  "realShopperE2E": {
+    "executed": false,
+    "reason": "credential_selection_hold_after_provider_universe_hold",
+    "proxyStarted": false,
+    "academiaCertificationValidated": false
+  },
   "safeState": {
     "repositoryWrites": false,
     "dataWrites": false,
@@ -39,5 +79,6 @@
   "containsPii": false,
   "containsSecrets": false,
   "stopRetryOnFailure": true,
-  "purpose": "One authorized DEV read-only gate: validate every effective Shopper Auth/claims/profile against the reusable exact identity contract and live HR, then execute one real Shopper Firebase Auth to exact HR history E2E including Academia and Certification. No provider writes, password change/reset, deploy, merge or production."
+  "nextGate": "SOURCE_ONLY_RECONCILIATION_PLAN_FOR_147_EXACT_IDENTITY_HOLDS_BEFORE_ANY_PROVIDER_REREAD_OR_DEPLOY",
+  "purpose": "Consumed after exactly one authorized DEV provider read-only gate. The exact identity universe held: 62 of 209 effective Shopper principals resolve uniquely, 137 are unmapped, 10 are ambiguous/review, and no profile document is missing. Existing private credential selection also held, so real browser E2E was not executed. STOP_RETRY; zero provider writes, password changes/resets, deploy, merge or production."
 }
