@@ -1,6 +1,6 @@
 # SOURCE LOCK — ITERATION 3 HARNESS DURABILITY PASS — 2026-08-14
 
-**Estado:** `LOCKED__I3_SOURCE_ONLY_HARNESS_DURABILITY_PASS__PROVIDER_GATE_REQUIRED`
+**Estado:** `LOCKED__I3_SOURCE_ONLY_HARNESS_DURABILITY_PASS__SUPERSEDED_FOR_HISTORICAL_WORKSPACE_GATE_BY_LEGAL_GATE_AWARE_LOCK`
 
 ## Propósito
 
@@ -25,7 +25,7 @@ Cerrar source-only la causa que desperdició la primera credencial recuperada y 
 4. `.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml`
    - checkout del SHA exacto del evento;
    - recovery exacto;
-   - **login histórico real inmediatamente después del recovery**;
+   - login histórico real inmediatamente después del recovery;
    - genera checkpoint sanitizado antes de Admin/new Shopper;
    - si un paso posterior falla, el failure handler preserva en repo únicamente el checkpoint sanitizado del subgate histórico PASS y parquea el request;
    - después ejecuta Admin create/update, nuevo Shopper, reload/new-tab/segundo contexto;
@@ -33,16 +33,22 @@ Cerrar source-only la causa que desperdició la primera credencial recuperada y 
 
 ## Por qué esto evita otro bucle de credencial
 
-En el run anterior la contraseña recuperada fue correctamente eliminada en cleanup antes de que se ejecutara el E2E histórico, porque Admin falló primero. Ahora el orden se invierte y el resultado histórico sanitizado queda preservable antes del flujo Admin.
+En el run anterior la contraseña recuperada fue correctamente eliminada en cleanup antes de que se ejecutara el E2E histórico, porque Admin falló primero. El orden quedó invertido para preservar el histórico antes de Admin.
 
-Si Admin/new Shopper falla después de que el histórico pase, un run futuro podrá continuar únicamente desde Admin/new Shopper sin requerir otra contraseña histórica.
+El siguiente provider run demostró un segundo requisito del harness: el producto puede mantener el workspace sin montar mientras existe un gate legal de confidencialidad/NDA. Ese caso no invalida este lock; añade una especialización del subgate histórico.
+
+## Lock sucesor prevalente para el subgate histórico
+
+Desde el run `31835742956`, para la validación histórica prevalece:
+
+`app/docs/SOURCE-LOCK-ITERATION3-HISTORICAL-LEGAL-GATE-AWARE-HARNESS-PASS-20260814.md`.
+
+Ese lock conserva este orden durable y además separa Auth/identity/HR/history del gate legal humano, sin automatizar consentimiento.
 
 ## Estado seguro
 
-Este source lock no ejecutó Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes, no desplegó, no hizo merge y no tocó producción. La autorización anterior permanece consumida/parked.
+Este source lock no ejecutó Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes, no desplegó, no hizo merge y no tocó producción.
 
-## Gate siguiente
+## Gate siguiente actualizado
 
-`PAULA_REVIEW_REQUIRED_FOR_I3_DURABLE_HISTORICAL_LOGIN_AND_ADMIN_NEW_SHOPPER_RESUME`.
-
-El nuevo gate, si Paula lo autoriza, debe permitir exactamente un nuevo password reset del mismo principal histórico exacto porque la credencial aleatoria del run anterior fue destruida en cleanup; después el harness recién cerrado certificará y preservará primero el login histórico y seguirá con Admin/new Shopper. Cero otras identidades, fuzzy matching, providers prohibidos, deploy, merge o producción.
+`PAULA_REVIEW_REQUIRED_FOR_I3_LEGAL_GATE_AWARE_HISTORICAL_CHECKPOINT_AND_ADMIN_NEW_SHOPPER_RESUME`.
