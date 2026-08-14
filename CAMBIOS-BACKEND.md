@@ -1,100 +1,95 @@
 # CAMBIOS-BACKEND.md
 
 **Última actualización:** 2026-08-14 13:24 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_RECOVERY_PASS__ADMIN_LOGIN_POINTER_STOP_RETRY__GO_LIVE_35__NO_PRODUCTION`
+**Estado:** `I1_PASS__I2_PASS__I3_RECOVERY_PASS__ADMIN_POINTER_ROOT_FIXED__HARNESS_DURABILITY_PASS__GO_LIVE_35__NO_PRODUCTION`
 
-## Bloque ejecutado
+## Provider run ejecutado
 
-Se consumió una única autorización focalizada de continuidad I3 DEV sobre la misma candidata `docs-tya-v6-v71-audit` / PR #7. Run `31833696707`, job `94875097700`. No nueva candidata, rama, PR, deploy, merge ni producción.
+Run `31833696707`, job `94875097700`, sobre la misma candidata `docs-tya-v6-v71-audit` / PR #7.
 
-## Cambios source realizados antes del gate
+PASS antes del STOP_RETRY:
 
-- `tools/qa/cxorbia-c6-existing-users-e2e-credentials-v6.mjs`: permite entregar al boundary privado el único candidato historical Shopper exacto para recovery cuando existe exactamente uno y H0/S0; cero fuzzy matching.
-- `backend/runtime/cxorbia-shopper-command-provider-v1.mjs`: añade continuación exacta de credential recovery, preservación post-reset y budgets focalizados; create/update Shopper existente se conserva.
-- `.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml`: reutiliza el workflow existente para una única continuación, fail-closed y park automático ante cualquier fallo.
-- `.github/cxorbia-firebase-requests/cxorbia-i3-shopper-persistence-exact-write-v1.json`: request único de Paula, después consumido/parked.
+- exact historical Shopper candidate;
+- one authorized credential recovery/reset;
+- UID/claims/shopperId/profile/history preservation;
+- other identities modified `0`;
+- exact membership/crosswalk reconciliation;
+- provider/proxy startup.
 
-## Resultado real del provider run
+El run se detuvo antes del alta Shopper nuevo porque `#cxBackendPreviewStatus` interceptó el click real sobre `#lgSubmit`. No hubo segundo intento automático.
 
-PASS:
+## Root fix source-only posterior
 
-1. gate exacto;
-2. source preflight / same-candidate patch;
-3. service account DEV privada;
-4. exact historical Shopper recovery candidate;
-5. **un único credential recovery/reset ejecutado**;
-6. preservación de uid/claims/shopperId/profile/historia y otras identidades modificadas `0`;
-7. exact membership/crosswalk reconciliation;
-8. provider y source proxy local.
+### `app/core/backend-preview-status.js`
 
-STOP_RETRY posterior:
+Panel diagnóstico DEV corregido a `pointer-events:none`, `aria-hidden=true`, `user-select:none`. El overlay ya no puede bloquear interacción humana.
 
-`Execute Admin create update and new Shopper real Auth E2E` falló al intentar pulsar `#lgSubmit`. Playwright comprobó que el botón era visible/habilitado/estable, pero `#cxBackendPreviewStatus` interceptó pointer events durante 30 s. El Shopper nuevo no se creó.
+### `tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs`
 
-El failure handler consumió/parked el request y no hubo segundo intento automático.
+- valida que el overlay DEV no intercepte puntero;
+- no usa force-click;
+- flujo Admin/new Shopper ya no depende de conservar el password histórico.
 
-## Causa raíz nueva y corrección focalizada source-only
+### `backend/runtime/cxorbia-shopper-command-provider-v1.mjs`
 
-`app/core/backend-preview-status.js` creaba el panel diagnóstico DEV como fixed/z-index 99999 sin neutralizar eventos de puntero. Era capaz de bloquear interacción humana real en Preview DEV.
+- lineage exacta de continuation/recovery;
+- no amplía identidades ni fuzzy matching;
+- mantiene budgets y fail-closed.
 
-Corrección aplicada:
+### `.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml`
 
-- `pointer-events:none`;
-- `aria-hidden=true`;
-- `user-select:none`.
+Harness existente endurecido, no se creó otro workflow:
 
-También se actualizó `tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs` para exigir que `#cxBackendPreviewStatus` sea no interactivo antes de pulsar Ingresar. No se usa `force click`, porque ocultaría el bug real.
+`recovery exacto → historical login/history E2E → checkpoint sanitizado → Admin create/update → new Shopper login/reload/new-tab/second context`.
 
-## Credencial histórica después del STOP_RETRY
+Checkout queda fijado al SHA exacto del evento. Si algo posterior falla después de que el histórico pasó, el failure handler puede persistir únicamente evidencia sanitizada del subgate histórico y parkear el request; así una continuación posterior no repite recovery histórico.
 
-La contraseña generada en el recovery existió únicamente en archivo privado `.tmp` del runner. Cleanup la eliminó y nunca se expuso o persistió. Como el E2E histórico estaba después del paso Admin, quedó SKIPPED.
+### Source locks
 
-Resultado correcto:
+- `app/docs/SOURCE-LOCK-ITERATION3-STOP-RETRY-POST-CREDENTIAL-RECOVERY-ADMIN-LOGIN-POINTER-20260814.md`.
+- `app/docs/SOURCE-LOCK-ITERATION3-HARNESS-DURABILITY-PASS-20260814.md`.
 
-- password reset exacto: PASS;
-- identidad histórica preservada: PASS;
-- login histórico posterior: todavía NO certificado;
-- password temporal: no recuperable desde repo/evidencia;
-- cualquier nuevo reset requiere gate expreso de Paula.
+## Credencial histórica
 
-El harness siguiente debe validar el login histórico inmediatamente después de un recovery autorizado y preservar evidencia sanitizada antes de continuar a Admin/new Shopper.
+La contraseña temporal generada en el run ya consumido estuvo solo en `.tmp` privado y cleanup la destruyó. El E2E histórico había quedado programado después de Admin y no llegó a ejecutarse. No existe una vía segura para recuperar esa contraseña.
 
-## Writes y seguridad reales
+Por eso un nuevo provider run, si Paula lo autoriza, necesitará exactamente un nuevo reset sobre el mismo UID histórico. La diferencia crítica es que ahora el login histórico se prueba y se checkpointa **antes** de Admin; no se vuelve a perder por un fallo posterior.
 
-- Auth password update/reset sobre principal histórico exacto: `1`;
-- otras identidades modificadas: `0`;
-- membership/crosswalk reconciliation: PASS; el run no persistió el conteo final, posible `0–2` Firestore writes dentro del budget;
-- Shopper nuevo creado: `NO`;
+## Writes y seguridad
+
+### Run `31833696707`
+
+- historical password update/reset: `1` exacto;
+- other identities: `0`;
+- membership/crosswalk reconciliation: PASS; posible 0–2 Firestore writes dentro del budget, conteo final no persistido por fallo posterior;
+- Shopper nuevo: `NO`;
 - HR/Rules/Storage/Make/Gemini/pagos: `0`;
-- deploy: `0`;
-- merge: `false`;
-- producción: `false`;
-- retry automático: `NO`.
+- deploy `0`; merge=false; production=false; retry automático `NO`.
+
+### Hardening posterior
+
+Solo source/docs. **Cero nuevos Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes, deploy, merge o producción.**
 
 ## Reusable CXOrbia
 
-Exact identity, provider boundary, tenant/project scope, idempotencia, expectedVersion, ACK, fail-closed y overlays de diagnóstico no interactivos son patrones reutilizables. Cinépolis sigue como configuración del primer proyecto TyA.
+Exact identity, provider boundary, tenant/project scope, idempotencia, expectedVersion, ACK, fail-closed, exact event SHA y overlays diagnósticos no interactivos son reutilizables.
 
-## Exclusivo cliente TyA
+## Exclusivo TyA
 
-El reset se ejecutó exclusivamente sobre el único Shopper histórico exacto resuelto para TyA/Cinépolis. Ninguna otra identidad fue modificada.
+El recovery ejecutado y cualquier futuro recovery autorizado se limitan al mismo único Shopper histórico exacto TyA/Cinépolis.
 
 ## Claude/prototipo
 
-No reconstruir Auth ni login. El fix fue en overlay backend DEV, no un rediseño de UI. El patch ACK-aware de `modules/shoppers.js` sigue preparado por `tools/qa/cxorbia-i3-source-patcher.mjs`; el último run no lo dejó commiteado porque se restauró al fallar.
+No reconstruir Auth/login. El fix fue en diagnóstico backend DEV. El patch ACK-aware de `modules/shoppers.js` sigue preparado por el patcher y solo se materializará dentro del gate I3 exitoso.
 
 ## Academia
 
-No declarar todavía login/alta Shopper real como activo. La ruta histórica Academia/Certificación quedó SKIPPED y debe certificarse dentro del cierre I3. Mis Visitas multi-registro permanece cerrado desde I2.
-
-## Sin impacto Claude
-
-Source locks, tracker, parked request y disciplina de evidencia no cambian UX del producto.
+No declarar login/alta Shopper real activo hasta I3 PASS. El siguiente run debe certificar también las rutas históricas Academia/Certificación antes de pasar a Admin.
 
 ## Porcentaje
 
-**GO-LIVE: 35% completado / 65% pendiente.** I3 no suma sus 25 puntos hasta PASS completo.
+**35% completado / 65% pendiente.** Al cerrar I3 completo sube a 60% / 40%.
 
-## Siguiente bloque exacto
+## Siguiente gate exacto
 
-`I3_SOURCE_ONLY_HARNESS_DURABILITY_AFTER_RECOVERY_FAILURE`, seguido únicamente de un nuevo gate focalizado de Paula para terminar I3 sin repetir I1/I2 ni reauditar.
+`PAULA_REVIEW_REQUIRED_FOR_I3_DURABLE_HISTORICAL_LOGIN_AND_ADMIN_NEW_SHOPPER_RESUME`.
