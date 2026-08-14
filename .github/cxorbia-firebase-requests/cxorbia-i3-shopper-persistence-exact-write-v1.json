@@ -13,9 +13,9 @@
   "firebaseProjectId": "cxorbia-backend-dev",
   "tenantId": "tya",
   "projectId": "cinepolis",
-  "enabled": true,
-  "consumed": false,
-  "status": "authorized_execute_once",
+  "enabled": false,
+  "consumed": true,
+  "status": "STOP_RETRY_I3_CONTINUATION_FAILED",
   "authorizedBy": "Paula",
   "authorizationText": "Autorizo una única continuación focalizada de la Iteración 3 DEV sobre docs-tya-v6-v71-audit / PR #7 y cxorbia-backend-dev, limitada a realizar un único credential recovery/reset de contraseña sobre el único Shopper histórico exacto ya resuelto por I3, preservando exactamente su uid, claims, shopperId, profile, membership, crosswalk e historia; después reanudar la misma I3 desde el checkpoint bloqueado para validar su login real y completar la alta/edición de un único Shopper nuevo desde Administración con Auth + claims + membership + profile/shopper + crosswalk, provider readback, login, reload/new-tab y segundo contexto. Prohibido modificar cualquier otra identidad, fuzzy matching, reconstruir Auth, HR/Make/Storage/pagos writes, deploy, merge o producción. Ante colisión, ambigüedad, drift o scope inesperado, fail-closed y sin segundo intento automático.",
   "allowedExecutions": 1,
@@ -36,5 +36,8 @@
   "production": false,
   "stopRetry": true,
   "automaticRetryAllowed": false,
-  "nextGate": "EXECUTE_I3_EXACT_HISTORICAL_CREDENTIAL_RECOVERY_AND_RESUME_ONCE"
+  "nextGate": "PAULA_REVIEW_REQUIRED_AFTER_I3_CONTINUATION_FAILURE",
+  "decision": "STOP_RETRY_I3_CONTINUATION_FAILED",
+  "consumedAt": "2026-08-14T19:33:47.475Z",
+  "workflowRunId": 31833696707
 }
