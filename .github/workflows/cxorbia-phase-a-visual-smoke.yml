@@ -16,6 +16,7 @@ on:
       - 'app/manifest.webmanifest'
       - 'tools/qa/tya-phase-a-visual-smoke.mjs'
       - 'tools/qa/cxorbia-p0-exact-identity-contract-source-gate.mjs'
+      - 'tools/qa/cxorbia-p0-exact-identity-provider-readonly.mjs'
       - 'tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs'
       - '.github/workflows/cxorbia-phase-a-visual-smoke.yml'
   pull_request:
@@ -32,6 +33,7 @@ on:
       - 'app/manifest.webmanifest'
       - 'tools/qa/tya-phase-a-visual-smoke.mjs'
       - 'tools/qa/cxorbia-p0-exact-identity-contract-source-gate.mjs'
+      - 'tools/qa/cxorbia-p0-exact-identity-provider-readonly.mjs'
       - 'tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs'
       - '.github/workflows/cxorbia-phase-a-visual-smoke.yml'
 
@@ -67,6 +69,7 @@ jobs:
         run: |
           set -euo pipefail
           node tools/qa/cxorbia-p0-exact-identity-contract-source-gate.mjs
+          node tools/qa/cxorbia-p0-exact-identity-provider-readonly.mjs --self-test
           node tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs
 
       - name: Start local static server
