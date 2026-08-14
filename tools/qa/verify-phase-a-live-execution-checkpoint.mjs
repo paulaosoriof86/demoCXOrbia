@@ -6,63 +6,66 @@ import {fileURLToPath} from 'node:url';
 const here=path.dirname(fileURLToPath(import.meta.url));
 const repo=path.resolve(here,'../..');
 const currentCheckpoint=path.join(repo,'app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md');
-const tracker=path.join(repo,'app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md');
-const plan=path.join(repo,'app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md');
+const sourceIndex=path.join(repo,'app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md');
+const forensic=path.join(repo,'app/docs/AUDITORIA-FORENSE-INTEGRAL-PREPRODUCCION-CXORBIA-TYA-20260814.md');
+const durablePlan=path.join(repo,'app/docs/ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md');
 const handoffLock=path.join(repo,'app/docs/SOURCE-LOCK-C6-STAFF-PRIVATE-EXECUTION-HANDOFF-PASS-20260811.md');
 const v2Contract=path.join(repo,'backend/contracts/c6-staff-repair-bootstrap-exact-write-v2.json');
 const v2Request=path.join(repo,'.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json');
-const v2Evidence=path.join(repo,'app/docs/evidence/C6-STAFF-REPAIR-BOOTSTRAP-EXACT-WRITE-V2-LATEST.json');
+const iteration1Gate=path.join(repo,'tools/qa/verify-root-cause-correction-iteration1.mjs');
 
 const read=p=>fs.readFileSync(p,'utf8').replace(/^\uFEFF/,'');
 const ensure=(v,c)=>{if(!v)throw new Error(c);};
-for(const p of [currentCheckpoint,tracker,plan,handoffLock,v2Contract,v2Request])ensure(fs.existsSync(p),`CURRENT_AUTHORITY_MISSING:${path.relative(repo,p)}`);
+for(const p of [currentCheckpoint,sourceIndex,forensic,durablePlan,handoffLock,v2Contract,v2Request,iteration1Gate]){
+  ensure(fs.existsSync(p),`CURRENT_AUTHORITY_MISSING:${path.relative(repo,p)}`);
+}
 
-const cp=read(currentCheckpoint),tr=read(tracker),pl=read(plan),lock=read(handoffLock);
+const cp=read(currentCheckpoint),idx=read(sourceIndex),audit=read(forensic),plan=read(durablePlan),lock=read(handoffLock);
 const c=JSON.parse(read(v2Contract)),r=JSON.parse(read(v2Request));
+
+// Current authority after the 2026-08-14 forensic cut. Old M1-M10 percentages/run IDs are historical only.
+for(const marker of ['paulaosoriof86/demoCXOrbia','docs-tya-v6-v71-audit','PR #7']){
+  ensure(cp.includes(marker),`CURRENT_CHECKPOINT_MARKER_MISSING:${marker}`);
+}
+ensure(cp.includes('ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md'),'DURABLE_PLAN_NOT_REFERENCED');
+ensure(cp.includes('NO REPROCESO'),'AUTH_NO_REPROCESS_LOCK_MISSING');
+ensure(cp.includes('ITERACION_1_SOURCE_ONLY_ROOT_CAUSE_CONSOLIDATION'),'ITERATION_1_CONTRACT_MISSING');
+ensure(cp.includes('ITERACION_5_EXACT_BUILD_PREPROD_AND_GO_LIVE'),'ITERATION_5_CONTRACT_MISSING');
+ensure(idx.includes('FORENSIC_ROOT_CAUSE_LOCKED'),'SOURCE_INDEX_FORENSIC_LOCK_MISSING');
+ensure(idx.includes('ROOT_CAUSE_CORRECTION_EXECUTION')||idx.includes('ITERACION_1'),'SOURCE_INDEX_CORRECTION_PATH_MISSING');
+ensure(audit.includes('P0_AUTH_CONTROL_PLANE_FRAGMENTATION'),'FORENSIC_AUTH_ROOT_CAUSE_MISSING');
+ensure(audit.includes('P0_PERSISTENCE_SPLIT_BRAIN'),'FORENSIC_PERSISTENCE_ROOT_CAUSE_MISSING');
+ensure(plan.includes('MISMA_CANDIDATA')&&plan.includes('NO REPROCESO'),'DURABLE_SAME_CANDIDATE_LOCK_DRIFT');
+ensure(plan.includes('5 iteraciones')||plan.includes('cinco iteraciones'),'DURABLE_ITERATION_COUNT_DRIFT');
+ensure(lock.includes('PASS_C6_STAFF_PRIVATE_EXECUTION_HANDOFF'),'HANDOFF_LOCK_DRIFT');
+
+// Exact Write V2 remains preserved historical evidence, not the current readiness percentage.
 const exactWritePass=r.enabled===false&&r.consumed===true&&r.decision==='PASS_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2_READBACK';
 const exactWritePrepared=r.enabled===false&&r.consumed===false;
 ensure(exactWritePass||exactWritePrepared,'V2_REQUEST_STATE_INVALID');
-
-for(const marker of ['paulaosoriof86/demoCXOrbia','docs-tya-v6-v71-audit','PR #7','31518927950'])ensure(cp.includes(marker),`CURRENT_CHECKPOINT_MARKER_MISSING:${marker}`);
-ensure(/Auth (?:máximo|maximo) 14\s*\/\s*Firestore (?:máximo|maximo) 16\s*\/\s*deletes 0/i.test(cp),'CURRENT_CHECKPOINT_WRITE_BUDGET_MISSING');
-ensure(lock.includes('PASS_C6_STAFF_PRIVATE_EXECUTION_HANDOFF'),'HANDOFF_LOCK_DRIFT');
 ensure(c.schemaVersion==='cxorbia.c6.staff-repair-bootstrap.exact-write.v2','V2_CONTRACT_SCHEMA');
 ensure(c.firebaseProjectId==='cxorbia-backend-dev'&&c.tenantId==='tya'&&c.canonicalProjectId==='cinepolis','V2_TARGET_DRIFT');
-ensure(c.snapshotAuthority?.workflowRunId===31518927950&&c.snapshotAuthority?.expectedAuthPopulationBefore===228,'V2_SNAPSHOT_DRIFT');
-ensure(c.forwardWriteBudget?.authWritesMax===14&&c.forwardWriteBudget?.firestoreWritesMax===16&&c.forwardWriteBudget?.authDeletes===0&&c.forwardWriteBudget?.firestoreDeletes===0,'V2_BUDGET_DRIFT');
 ensure(c.authorization?.providerWritesAuthorizedByThisContract===false,'V2_SOURCE_ONLY_AUTHORIZATION_DRIFT');
 ensure(r.schemaVersion==='cxorbia.c6.staff-repair-bootstrap.exact-write.request.v2','V2_REQUEST_SCHEMA');
-ensure(r.authWritesMax===14&&r.firestoreWritesMax===16&&r.authDeletes===0&&r.firestoreDeletes===0,'V2_REQUEST_BUDGET_DRIFT');
 
-let progress;
-if(exactWritePass){
-  ensure(fs.existsSync(v2Evidence),'V2_PASS_EVIDENCE_MISSING');
-  const e=JSON.parse(read(v2Evidence));
-  ensure(e.decision==='PASS_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2_READBACK','V2_EVIDENCE_DECISION');
-  ensure(e.writes?.authWritesTotal===14&&e.writes?.firestoreWritesTotal===16&&e.writes?.authDeletes===0&&e.writes?.firestoreDeletes===0,'V2_EVIDENCE_BUDGET');
-  ensure(e.preflight?.allCanonicalReadbackBeforeRetire===true&&Object.values(e.targetReadback||{}).every(Boolean),'V2_CANONICAL_READBACK');
-  ensure(Object.values(e.historicalReadback||{}).every(v=>v===2),'V2_HISTORICAL_READBACK');
-  ensure(e.rollback?.executed===false&&e.rollback?.required===false,'V2_UNEXPECTED_ROLLBACK');
-  ensure(cp.includes('PASS_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2_READBACK')&&cp.includes('M5=8/8'),'CURRENT_CHECKPOINT_V2_PASS_MISSING');
-  ensure(/TOTAL=88%\s*\|\s*RESTANTE=12%/i.test(cp),'CURRENT_CHECKPOINT_PROGRESS_MISSING');
-  ensure(tr.includes('M5=8/8')&&tr.includes('88%')&&tr.includes('12%'),'TRACKER_PROGRESS_DRIFT');
-  ensure(pl.includes('M5=8/8')&&pl.includes('88%')&&pl.includes('12%'),'PLAN_PROGRESS_DRIFT');
-  progress={phaseACompletedPct:88,phaseARemainingPct:12,m5:'8/8'};
-}else{
-  ensure(cp.includes('M5=4/8')&&cp.includes('C6 STAFF REPAIR/BOOTSTRAP EXACT WRITE V2 AUTHORIZATION'),'CURRENT_CHECKPOINT_PREPARED_STATE_MISSING');
-  ensure(/TOTAL=84%\s*\|\s*RESTANTE=16%/i.test(cp),'CURRENT_CHECKPOINT_PROGRESS_MISSING');
-  ensure(tr.includes('M5=4/8')&&tr.includes('84%')&&tr.includes('16%'),'TRACKER_PROGRESS_DRIFT');
-  ensure(pl.includes('M5=4/8')&&pl.includes('84%')&&pl.includes('16%'),'PLAN_PROGRESS_DRIFT');
-  progress={phaseACompletedPct:84,phaseARemainingPct:16,m5:'4/8'};
+const iteration1Pass=cp.includes('ITERATION_1_SOURCE_ONLY_PASS')||cp.includes('ITERACION_1_SOURCE_ONLY_PASS');
+const progress=iteration1Pass
+  ?{goLiveCorrectionCompletedPct:15,goLiveCorrectionRemainingPct:85,iteration:'1/5',basis:'durable-root-cause-go-live-plan'}
+  :{goLiveCorrectionCompletedPct:0,goLiveCorrectionRemainingPct:100,iteration:'0/5',basis:'durable-root-cause-go-live-plan'};
+
+if(iteration1Pass){
+  ensure(cp.includes('PASS_ROOT_CAUSE_CORRECTION_ITERATION1_SOURCE_ONLY'),'ITERATION_1_PASS_EVIDENCE_MARKER_MISSING');
+  ensure(cp.includes('ITERACION_2_CANONICAL_PERSISTENCE_AND_TRANSVERSAL_REGRESSION'),'ITERATION_2_NEXT_MISSING');
 }
 
 const result={
   ok:true,
-  decision:'PASS_PHASE_A_CURRENT_OPERATIONAL_CHECKPOINT',
+  decision:'PASS_PHASE_A_CURRENT_OPERATIONAL_CHECKPOINT_FORENSIC_PLAN',
   authority:'app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md',
   progress,
-  exactWriteV2:{preparedSource:true,authorized:exactWritePass,consumed:r.consumed===true,decision:r.decision||null,snapshotWorkflowRunId:31518927950,expectedAuthPopulationBefore:228,authWritesMax:14,firestoreWritesMax:16,deletes:0},
-  historicalCompatibility:{legacyCheckpointContractAuthoritative:false,prototypeBaselineRegistryAuthoritative:false},
-  safety:{hrWrites:false,rulesWrites:false,storageWrites:false,deploy:false,merge:false,production:false}
+  priorTechnicalProgress:{retained:true,authoritativeForProductionReadiness:false},
+  exactWriteV2:{preserved:true,consumed:r.consumed===true,decision:r.decision||null},
+  locks:{sameCandidate:true,noGeneralRediagnosis:true,noAuthRebuild:true,noNewBranchOrPr:true},
+  safety:{authWrites:false,firestoreWrites:false,hrWrites:false,rulesWrites:false,storageWrites:false,deploy:false,merge:false,production:false}
 };
 console.log(JSON.stringify(result,null,2));
