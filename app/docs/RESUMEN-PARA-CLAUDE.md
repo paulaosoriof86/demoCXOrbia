@@ -1,6 +1,6 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-13 20:26 -06:00
+**Última actualización:** 2026-08-13 20:29 -06:00
 **Estado:** `SHOPPER_P0_READONLY_GATE_HOLD_INCONCLUSIVE__BACKEND_SOURCE_CHAIN_REPAIRED__NO_UI_REDESIGN__REAL_E2E_PENDING`
 
 ## Estado para Claude
@@ -34,6 +34,8 @@ Run source autoritativo `31763545130`, job `94654691101`: SUCCESS; `PASS_P0_EXAC
 ## E2E real pendiente
 
 El handoff privado disponible es histórico (109 credenciales) y no produjo una credencial Shopper vigente. Por eso el navegador E2E real, Academia y Certificación se **omitieron**; no se consideran FAIL.
+
+El request real está consumido/deshabilitado y el run final `31763754714` omitió todos los pasos provider/credencial/E2E. No repetirlo bajo la autorización anterior.
 
 El source reparado **no está desplegado** en el DEV visible actual. No pedir prueba humana sobre ese build como si contuviera este cambio.
 
