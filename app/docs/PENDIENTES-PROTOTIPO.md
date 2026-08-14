@@ -1,32 +1,33 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-13 19:07 -06:00
-**Estado:** `SHOPPER_P0_POSTDEPLOY_ACCEPTANCE_REJECTED__GENERIC_IDENTITY_CONTRACT_REPAIR_PENDING`
+**Última actualización:** 2026-08-13 19:20 -06:00
+**Estado:** `SHOPPER_P0_SOURCE_REPAIR_PASS__REAL_IDENTITY_UNIVERSE_AND_AUTH_E2E_PENDING`
 
-## P0 vigente
+## Cerrado en source-only
 
-La aceptación humana del Shopper **falló después del redeploy técnicamente PASS**. El problema ya no se clasifica como simple temporización del portal.
+- Contrato único exacto reusable creado y alineado con las 11 llaves de activación Auth.
+- Compositor HR y portal Shopper consumen el mismo contrato.
+- Ambigüedades exactas pasan a review/fail-closed; nombre/correo/teléfono/similitud no resuelven identidad.
+- Entry humano canónico ya no carga el snapshot empaquetado de julio ni el mutador source-safe pre-auth.
+- Watcher HR humano espera Auth y se reactiva tras `backend-auth-ready`.
+- E2E Firebase real preparado sin `CX.app.selectRole`.
+- Gate source autoritativo run `31761257145`: SUCCESS, hard fails 0.
 
-La auditoría forense demuestra:
-- Auth y el perfil Firestore funcionan lo suficiente para mostrar el Shopper transitorio.
-- HR viva funciona y llega a 15 periodos / 660 visitas.
-- La identidad se pierde al componer HR porque el runtime no consume el mismo universo de llaves técnicas que usó la activación Auth.
-- Los perfiles protegidos sin crosswalk runtime exacto se excluyen como `no_exact_hr_crosswalk`.
-- El login humano sigue sembrando `CX.data` con un snapshot source-safe empaquetado de julio antes de Auth, causando 616 visitas / periodo 2026-07 en pantalla.
+Evidencia: `app/docs/evidence/p0-exact-identity-contract-source-repair-pass-31761257145.json`.
 
-Evidencia: `app/docs/evidence/p0-shopper-postdeploy-forensic-rootcause-20260813.json`.
+## Pendiente P0 inmediato
 
-## Pendiente real inmediato
-
-1. Consolidar source-only un contrato único de identidad exacta reutilizable para todos los tenants/proyectos.
-2. Hacer que migración/activación Auth y compositor runtime consuman exactamente la misma semántica de llaves/crosswalk.
-3. No persistir ni aceptar un Auth Shopper si `claim.shopperId` no puede llegar a exactamente un perfil protegido y exactamente una identidad HR operacional cuando el proyecto usa HR.
-4. Sacar el snapshot source-safe empaquetado del entrypoint humano canónico; conservarlo solo en laboratorio/preview explícito.
-5. Reemplazar el smoke de cierre por E2E real de Shopper Firebase Auth → perfil Firestore → HR live → histórico/certificación/visitas.
-6. Solo después del PASS source-only solicitar el gate mínimo de provider read-only necesario para reconciliar el universo real; no escribir ni redeployar todavía.
+1. Revalidar read-only el universo actual de principals Shopper efectivos, claims, perfiles protegidos y HR con `cxorbia-exact-identity-contract-v1`.
+2. Cuantificar sin PII: principal con match exacto único, ambiguo y sin crosswalk/revisión; no asumir que los 228 Auth users ya están todos reconciliados.
+3. Ejecutar un Shopper Firebase real por el formulario visible → Auth canónico → perfil Firestore → autoridad HR → identidad exacta → histórico.
+4. En la misma sesión, verificar país/alcance, Visitas Disponibles, Reservas & Asignación, Mis Visitas, Academia, Certificación y beneficios según alcance real.
+5. Solo si lo anterior da PASS, solicitar un gate separado para desplegar este source repair a DEV.
+6. Después del deploy, ejecutar aceptación humana/regresión dirigida sobre el build nuevo; no reutilizar el build anterior rechazado.
 
 ## No hacer
 
-No rehacer UI, no crear candidata/rama/PR, no reimportar HR, no deduplicar por nombre/correo, no parchear únicamente a TyA, no reutilizar el smoke sintético como prueba de aceptación y no ejecutar un segundo deploy bajo el gate ya consumido.
+No desplegar todavía. No crear candidata/rama/PR/workflow nuevos. No reimportar HR. No modificar Auth/claims/perfiles/passwords bajo el gate read-only. No deduplicar por nombre/correo. No pedir a Paula que pruebe otra vez el DEV actual como si contuviera este repair. No confundir `PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE` con un E2E real ejecutado.
 
-Producción, merge y dominio oficial permanecen bloqueados.
+## Estado seguro
+
+Producción, dominio oficial y merge intactos. En este bloque: provider reads 0, writes 0, deploy 0, Make/Gemini/pagos 0.
