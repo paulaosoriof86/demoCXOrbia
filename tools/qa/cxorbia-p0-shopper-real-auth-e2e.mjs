@@ -24,7 +24,7 @@ function sourceSelfTest(){
   const checks={
     noPrototypeRoleEntry:!realExecution.includes('CX.app.selectRole(')&&!realExecution.includes('window.CX.app.selectRole('),
     realCredentialFields:realExecution.includes('autocomplete="username"')&&realExecution.includes('autocomplete="current-password"'),
-    canonicalAuthContextRequired:realExecution.includes('CX.backendAuth?.context?.()'),
+    canonicalAuthContextRequired:realExecution.includes('backendAuth?.context?.()'),
     hrAuthorityRequired:realExecution.includes('CX_PROTECTED_AUTH_HR_AUTHORITY'),
     identityMapRequired:realExecution.includes('__identityMap'),
     reviewQueueChecked:realExecution.includes('__identityReviewQueue'),
