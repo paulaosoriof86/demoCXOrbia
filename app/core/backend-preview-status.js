@@ -59,7 +59,8 @@ window.CX = window.CX || {};
     if(pill) return pill;
     pill = document.createElement('div');
     pill.id = 'cxBackendPreviewStatus';
-    pill.style.cssText = 'position:fixed;right:18px;bottom:18px;z-index:99999;padding:10px 13px;border-radius:12px;font:600 12px system-ui,-apple-system,Segoe UI,sans-serif;background:#0d2740;color:#fff;box-shadow:0 8px 30px rgba(13,39,64,.22);max-width:500px;line-height:1.35;border:1px solid rgba(255,255,255,.18)';
+    pill.setAttribute('aria-hidden','true');
+    pill.style.cssText = 'position:fixed;right:18px;bottom:18px;z-index:99999;padding:10px 13px;border-radius:12px;font:600 12px system-ui,-apple-system,Segoe UI,sans-serif;background:#0d2740;color:#fff;box-shadow:0 8px 30px rgba(13,39,64,.22);max-width:500px;line-height:1.35;border:1px solid rgba(255,255,255,.18);pointer-events:none;user-select:none';
     document.body.appendChild(pill);
     return pill;
   }
