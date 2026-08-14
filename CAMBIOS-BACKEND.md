@@ -1,73 +1,57 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-14 10:08 -06:00  
-**Estado:** `FORENSIC_ROOT_CAUSE_LOCKED__DURABLE_GO_LIVE_PLAN_DOCUMENTED__ITERATION_1_NEXT__NO_PRODUCTION`
+**Última actualización:** 2026-08-14 10:42 -06:00  
+**Estado:** `ITERATION_1_SOURCE_ONLY_PASS__GO_LIVE_15__ITERATION_2_NEXT__NO_PRODUCTION`
 
-## Bloque documental ejecutado
+## Bloque ejecutado
 
-Se convirtió la auditoría forense integral del 14-ago en un plan rector durable de corrección/go-live, sin crear candidata, rama ni PR nuevos y sin ejecutar provider writes/deploy/producción.
+Se ejecutó `ITERACION_1_SOURCE_ONLY_ROOT_CAUSE_CONSOLIDATION` sobre la misma candidata canónica `docs-tya-v6-v71-audit` / PR #7. No se creó candidata, rama, PR ni workflow nuevo.
 
-Documento creado:
+## Cambios fuente
 
-- `app/docs/ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md`
+- `app/adapters/tya-c6-shopper-auth-click-guard-v1.js`: dejó de ser un interceptor permanente. En ruta humana protegida delega a `core/backend-browser-auth.js`, neutraliza `pickShopperDev()` solo allí y no envuelve `authenticate`.
+- `app/adapters/tya-canonical-finance-read-model-v2.js`: activación por contrato `CX_DEV_ENTRY_CANONICAL`, no hostname; root project reusable, sin hardcode global `cinepolis`.
+- `app/adapters/cxorbia-command-adapter-v1.js`: nuevo boundary reusable fail-closed, tenant/project, RBAC, idempotencyKey, expectedVersion, audit y success únicamente con provider ACK.
+- `app/adapters/cxorbia-shopper-admin-command-contract-v1.js`: contrato de alta/edición Shopper para Auth + claims + membership + profile/crosswalk, sin password/token/localStorage en navegador.
+- `app/adapters/cxorbia-hr-write-adapter-contract-v1.js`: writer HR reusable gated/idempotente, conflictos a review y cero overwrite silencioso.
+- `tools/qa/verify-root-cause-correction-iteration1.mjs`: gate source-only de durabilidad.
+- `.github/workflows/cxorbia-phase-a-live-checkpoint.yml`: se amplió el workflow existente para validar sintaxis y contrato de Iteración 1; no se creó otro workflow.
+- `tools/qa/verify-phase-a-live-execution-checkpoint.mjs`: se retiró la dependencia obsoleta del marcador histórico `31518927950`; ahora valida la autoridad forense vigente.
 
-Documentos vivos actualizados:
+## Evidencia
 
-- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
-- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-- `PENDIENTES-PROTOTIPO.md`;
-- `app/docs/RESUMEN-PARA-CLAUDE.md`;
-- `CAMBIOS-BACKEND.md`.
-
-## Commits de este corte
-
-- addendum plan: `9b143f184b48c276b832a7f2853449058d5d391f`;
-- índice activo: `c87272846e6f64c23af3f86defaa31cd7d836973`;
-- checkpoint: `15a1a895d801315bf61e247b30ee874650dc079f`;
-- pendientes: `5297be0d618568b7c2f1163de22bd74f9ba8b80a`;
-- Claude/prototipo: `015c7b7e075bb0cb8a7a36dccb0619a06f2ba3ed`.
+Run `31820315435` del workflow existente: SUCCESS. Pasaron sintaxis, source preflight histórico preservado, `PASS_ROOT_CAUSE_CORRECTION_ITERATION1_SOURCE_ONLY` y checkpoint operativo vigente.
 
 ## Corrección metodológica
 
-El porcentaje técnico M1–M10 anterior se conserva como evidencia histórica, pero no equivale a readiness productivo. El único cierre productivo válido exige mismo SHA/source-lock/build remoto + E2E real + persistencia + reload/new-tab + roles/scopes + HR/Finanzas.
+M1–M10 permanecen como evidencia histórica, no como porcentaje de producción. Tracker vigente: `app/docs/GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`.
 
-No se reabre Auth desde cero. Se preservan Firebase Auth bridge, principal Admin/Exact Write V2, membership/RBAC Staff, exact identity contract, HR live authority, cumulative read model, portal Shopper canónico, source repair ya PASS y gates/rollback/source locks sin drift.
+**GO-LIVE: 15% completado / 85% pendiente.**
 
-## Plan de ejecución fijado
-
-Cinco iteraciones base:
-
-1. source-only root-cause consolidation;
-2. canonical persistence + transversal regression;
-3. DEV Auth/Firestore Shopper persistence;
-4. HR bidirectional + Phase A E2E + Finance;
-5. exact build + preproduction + go-live.
-
-Una sexta iteración solo se justifica por P0 nuevo reproducible o bloqueo externo comprobado. Un gate fallido produce corrección focalizada, no reinicio del plan.
+Pesos: I1=15, I2=20, I3=25, I4=25, I5=15. El porcentaje solo avanza al cerrar el gate de cada iteración.
 
 ## Reusable CXOrbia
 
-El plan obliga a conservar la interfaz exacta `CX.data` y mover persistencia detrás de command adapters con tenant/project scope, RBAC, idempotencia, expectedVersion, audit y ACK. Cinépolis queda como proyecto configurable; HR/proveedores/cuestionario/pagos/evidencias deben ser adapters configurables para futuros proyectos/tenants/no-code.
+Los contratos nuevos no dependen de TyA/Cinépolis como lógica global. `tenantId/projectId`, scope, idempotencia, versionado, provider ACK y conflicto/review forman la base reusable para nuevos proyectos TyA y futuros tenants/no-code.
 
 ## Exclusivo cliente
 
-TyA/Cinépolis aporta la configuración y los datos operativos reales/sanitizados de Phase A. No se transforma en lógica global del producto.
+TyA/Cinépolis mantiene su configuración/datos operativos reales. No se incorporaron reglas de cliente como constantes globales en los contratos nuevos.
 
 ## Claude/prototipo
 
-Se documentaron dos P0 quirúrgicos sobre la misma candidata, sin rediseño:
+`app/modules/misvisitas.js` conserva un P0 reproducible: `find()` por estado y estados literales. No fue parchado desde backend. La corrección exacta sigue documentada para aplicarse quirúrgicamente sobre esta misma candidata en Iteración 2, consumiendo facets/listas canónicas y success solo tras ACK.
 
-- `app/app.js`: excluir `pickShopperDev()` de la ruta humana protegida y dejar un owner Auth único;
-- `app/modules/misvisitas.js`: listas completas + facets canónicas, no `find()`/estados literales.
+El P0 Auth no requirió reescribir `app.js`: se resolvió la integración desde el adapter de runtime protegido, preservando el frontend aprobado y el flujo DEV picker solo para lab/demo no protegido.
 
 ## Academia
 
-Cada activación real debe actualizar login/errores, ciclo Mis Visitas, creación Shopper persistente, sync HR real y semántica financiera, manteniendo contenido por rol y estados honestos.
+Sin activación visible nueva todavía. Cuando Iteración 2/3 cierre, actualizar login real, Mis Visitas multi-registro, alta Shopper persistente, errores fail-closed y sync real/pending sin promesas falsas.
 
 ## Seguridad
 
-En este corte: Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes=0; cambios/reset de contraseña=0; deploy=0; merge=false; producción=false.
+Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes=0; cambios/reset de credenciales=0; deploy=0; merge=false; producción=false.
 
 ## Siguiente acción exacta
 
-`ITERACION_1_SOURCE_ONLY_ROOT_CAUSE_CONSOLIDATION`.
+`ITERACION_2_CANONICAL_PERSISTENCE_AND_TRANSVERSAL_REGRESSION`.
