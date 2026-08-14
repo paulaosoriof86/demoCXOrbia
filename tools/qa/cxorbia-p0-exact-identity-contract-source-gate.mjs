@@ -50,7 +50,7 @@ const realExecution=realMarkerIndex>=0?realE2E.slice(realMarkerIndex):'';
 check('real_e2e_executable_branch_detected',Boolean(realExecution));
 check('real_e2e_does_not_use_select_role',!realExecution.includes('CX.app.selectRole(')&&!realExecution.includes('window.CX.app.selectRole('));
 check('real_e2e_requires_auth_hr_identity_history',realExecution.includes('backendAuth?.context?.()')&&realExecution.includes('CX_PROTECTED_AUTH_HR_AUTHORITY')&&realExecution.includes('__identityMap')&&realExecution.includes('visitsForShopper'));
-check('real_e2e_explicit_execution_gate',realExecution.includes('YES_SOURCE_APPROVED_REAL_READONLY_E2E')&&realExecution.includes('PRIVATE_E2E_CREDENTIALS_REQUIRED'));
+check('real_e2e_explicit_execution_gate',realExecution.includes('YES_SOURCE_APPROVED_REAL_READONLY_E2E')&&realExecution.includes('privateCredential()')&&realE2E.includes('PRIVATE_E2E_CREDENTIALS_REQUIRED'));
 
 if(contract?.buildCanonicalProfileIndex){
   const index=contract.buildCanonicalProfileIndex(
