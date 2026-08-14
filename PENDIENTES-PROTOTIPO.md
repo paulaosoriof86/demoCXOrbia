@@ -1,94 +1,83 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-14 11:20 -06:00  
-**Estado:** `ITERATION_2_CANONICAL_PERSISTENCE_PASS__SAME_CANDIDATE__ITERATION_3_NEXT__GO_LIVE_35`
+**Última actualización:** 2026-08-14 12:05 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_STOP_RETRY_HISTORICAL_CREDENTIAL_H0_S0__SAME_CANDIDATE__GO_LIVE_35`
 
 ## Decisión vigente
 
-El tracker técnico M1–M10 es histórico y no representa readiness productivo. El porcentaje vigente proviene del plan forense durable.
+No nueva candidata, rama ni PR. I1/I2 permanecen cerradas y no se reprocesan. I3 fue ejecutada una vez hasta provider-read y se detuvo fail-closed antes de writes.
 
-No nueva candidata, rama ni PR. Todas las correcciones continúan sobre `docs-tya-v6-v71-audit` / PR #7.
+Tracker: `app/docs/GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`.
 
-Plan rector: `app/docs/ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md`.
-
-Source lock I2: `app/docs/SOURCE-LOCK-ITERATION2-CANONICAL-PERSISTENCE-PASS-20260814.md`.
-
-Tracker productivo: `app/docs/GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`.
+I3 lock: `app/docs/SOURCE-LOCK-ITERATION3-STOP-RETRY-HISTORICAL-SHOPPER-CREDENTIAL-20260814.md`.
 
 **35% completado / 65% pendiente.**
 
 ## Cerrado y NO REPROCESAR
 
-- Exact Write V2/canonical readback.
-- Principal Staff Admin canónico.
-- Formulario visible único y Firebase Auth como autoridad.
-- Namespace staff/shopper + role/tenant/project/shopper scope.
-- Membership/RBAC Staff.
-- exact identity contract; cero matching por similitud.
-- HR live authority + protected overlay.
-- cumulative read model + portal Shopper canónico.
-- I1: Auth owner efectivo, Finance runtime contract, command/shopper/HR contracts.
-- I1 marker `PASS_ROOT_CAUSE_CORRECTION_ITERATION1_SOURCE_ONLY`.
-- I2: `CX.data` canonical command boundary como owner final de mutación.
-- I2: local mutation/localStorage fallback productivo desactivado.
-- I2: provider ACK obligatorio y scope multi-tenant/multi-proyecto fail-closed.
-- I2: Shopper localStorage queda solo demo/lab; perfil protegido exige backend/cifrado.
-- I2: `app/modules/misvisitas.js` P0 `find()` cerrado con listas completas/facets/ACK.
-- I2: direct-write legacy no convertido fail-closed, sin falso éxito.
-- I2 marker `PASS_ROOT_CAUSE_CORRECTION_ITERATION2_CANONICAL_PERSISTENCE`, run `31823098359` SUCCESS.
-- manifests/rollback/reviewQueue/source locks previos sin drift.
+- Exact Write V2 / Admin principal / Staff membership.
+- Firebase Auth owner y namespaces.
+- exact identity; cero similarity matching.
+- HR live/protected overlay + cumulative read model.
+- I1 source contracts.
+- I2 `CX.data` canonical command boundary, no local fallback, provider ACK, shopper store provider-only, Mis Visitas arrays/facets/ACK y firewall fail-closed.
+- Source I3 preparado: HTTP command transport, Shopper membership wiring, Shopper provider, E2E y patcher ACK-aware.
 
-## Pendiente inmediato — Iteración 3
+## I3 — STOP_RETRY actual
 
-`ITERACION_3_DEV_AUTH_FIRESTORE_SHOPPER_PERSISTENCE`
+Run `31826443230`, job `94851603411`.
 
-Requiere gate explícito de writes DEV antes de ejecutar provider changes.
+Blocker:
 
-Debe cerrar:
+`HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194`.
 
-1. registrar/activar el transporte provider real del command boundary para el alcance Shopper/Admin autorizado;
-2. Admin crea un Shopper real: validación exacta -> Auth principal -> claims -> membership -> shopper/profile -> crosswalk -> ACK;
-3. Admin edita el mismo Shopper con provider readback, sin localStorage;
-4. Shopper histórico real resuelve identidad exacta y puede iniciar sesión;
-5. Shopper nuevo inicia sesión con el flujo canónico;
-6. reload/new-tab y segundo contexto conservan identidad/perfil persistidos;
-7. colisiones o anclas ambiguas pasan a review; nunca matching por nombre/email/teléfono/similitud;
-8. no regenerar el universo Auth ni repetir Exact Write V2 ya cerrado.
+Se confirmó una identidad Shopper histórica exacta con claims/perfil/historia (`V1/D1`) y 616 visitas exactas. No existe una contraseña plaintext reconstruible desde las fuentes aprobadas para certificar el login (`H0/S0`).
 
-Cierre esperado: Admin + Shopper histórico + Shopper nuevo PASS en DEV con persistencia provider real y acumulado productivo **60%**.
+La importación Auth histórica usó password hash SHA256 con `importUsers`; el password plano no quedó almacenado en repo/evidencia. No reconstruir Auth ni escoger otro Shopper por similitud.
 
-## Flujos que siguen fail-closed hasta provider activation
+## Writes I3 realmente ejecutados
 
-Esto no es un P0 oculto ni local fallback. Es estado seguro deliberado después de I2:
+- Auth: `0`
+- Firestore: `0`
+- password changes/resets: `0`
+- deletes: `0`
+- identidades existentes modificadas: `0`
+- Shopper nuevo creado: `NO`
+- HR/Rules/Storage/Make/Gemini/pagos: `0`
+- deploy: `0`
+- merge/producción: `false`
 
-- alta/edición/registro Shopper todavía no puede mostrar éxito hasta I3/provider ACK;
-- edición/reasignación compleja de Postulaciones, asignación manual y sync HR requieren su command/provider flow;
-- submit de cuestionario/evidencias requiere persistencia/Storage real;
-- Reservas no puede usar localStorage como verdad canónica;
-- pagos/lotificación siguen gated por Finance/source exacta.
+No hubo segundo intento automático. El provider lane está PARKED.
 
-No reactivar mutaciones locales para sortear estos gates.
+## Pendiente inmediato
+
+`PAULA_REVIEW_REQUIRED_FOR_I3_HISTORICAL_SHOPPER_CREDENTIAL_RECOVERY`
+
+Ruta focalizada recomendada:
+
+1. autorizar un único recovery/reset de password exclusivamente para el único Shopper histórico exacto ya resuelto;
+2. mantener el mismo uid, claims, shopperId, profile, membership e historia;
+3. generar la credencial temporal/operativa solo en boundary privado, sin repo/browser logs;
+4. reanudar la misma I3 desde el punto bloqueado;
+5. certificar login histórico, Admin create/update Shopper nuevo, provider readback, login nuevo, reload/new-tab y segundo contexto;
+6. cerrar I3 solo si todo pasa; entonces GO-LIVE sube a 60%.
+
+No se reinicia I3 y no se repiten I1/I2.
+
+## Flujos restantes después de I3
+
+I4: HR bidireccional + Phase A E2E + Finance, incluidos Postulaciones complejas, cuestionario/evidencias/Reservas/sync según provider/gate.
+
+I5: exact build + preprod + go-live.
 
 ## Reusable CXOrbia / no-code
 
-Toda activación mantiene `tenantId/projectId`, país/moneda/configuración, source adapters, RBAC, idempotencia, expectedVersion, audit y ACK. Cinépolis es una instancia configurable, no lógica global.
+Mantener tenantId/projectId, source adapters, RBAC, idempotencia, expectedVersion, audit, ACK y protected-data boundary. Cinépolis es configuración, no arquitectura global.
 
 ## Academia
 
-Actualizar cuando I3/I4 cierre provider real: login/identidad, alta Shopper persistente, Mis Visitas multi-registro, mensajes fail-closed, sync HR/plataforma, liquidación != pago y evidencia persistida vs preview.
-
-## Plan restante
-
-- I3: 25% — DEV Auth/Firestore Shopper persistence, gate write.
-- I4: 25% — HR bidireccional + Phase A E2E + Finance.
-- I5: 15% — exact build + preprod + go-live.
-
-No sexta iteración por rutina.
+No declarar login/alta Shopper real como activo hasta cerrar I3. Mis Visitas multi-registro sí permanece cerrado en source desde I2.
 
 ## Pendiente frontend heredado no bloqueante
 
-`app/modules/cliente-extra.js`: PDF print, XLSX y PPTX. Fuera de los P0 forenses actuales salvo nueva evidencia reproducible.
-
-## Siguiente acción exacta
-
-`ITERACION_3_DEV_AUTH_FIRESTORE_SHOPPER_PERSISTENCE` — solicitar/consumir solo el gate DEV write específico; no desplegar ni tocar HR/Make/Storage/pagos/producción.
+`app/modules/cliente-extra.js`: PDF/XLSX/PPTX, fuera del blocker forense actual salvo evidencia nueva.
