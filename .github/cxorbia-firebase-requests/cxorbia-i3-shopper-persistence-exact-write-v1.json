@@ -13,9 +13,9 @@
   "firebaseProjectId": "cxorbia-backend-dev",
   "tenantId": "tya",
   "projectId": "cinepolis",
-  "enabled": true,
-  "consumed": false,
-  "status": "authorized_execute_once",
+  "enabled": false,
+  "consumed": true,
+  "status": "STOP_RETRY_I3_CONTINUATION_FAILED",
   "authorizedBy": "Paula",
   "authorizationText": "Autorizo una única continuación I3 request05 sobre docs-tya-v6-v71-audit / PR #7 y cxorbia-backend-dev, posterior al fallo pre-provider I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER, manteniendo exactamente el mismo alcance funcional y prohibiciones de mi autorización anterior: un único credential reset del mismo Shopper histórico exacto; checkpoint sanitizado Auth/identity/HR/history legal-gate-aware antes de Administración, sin automatizar consentimiento NDA; después, alta y edición de un único Shopper nuevo mediante provider ACK, Auth + claims + membership + profile/shopper + crosswalk, readback, login, reload/new-tab y segundo contexto. Cero fuzzy matching, otras identidades, HR/Rules/Storage/Make/Gemini/pagos writes, deploy, merge o producción. Fail-closed ante drift, colisión, ambigüedad o scope inesperado y sin segundo intento automático.",
   "allowedExecutions": 1,
@@ -37,5 +37,10 @@
   "production": false,
   "stopRetry": true,
   "automaticRetryAllowed": false,
-  "nextGate": "ITERACION_4_HR_BIDIRECTIONAL_PHASE_A_E2E_FINANCE"
+  "nextGate": "PAULA_REVIEW_REQUIRED_AFTER_I3_CONTINUATION_FAILURE",
+  "decision": "STOP_RETRY_I3_CONTINUATION_FAILED",
+  "consumedAt": "2026-08-15T19:03:08.801Z",
+  "workflowRunId": 31902822527,
+  "historicalLoginCheckpointPassed": false,
+  "historicalLoginCheckpoint": null
 }
