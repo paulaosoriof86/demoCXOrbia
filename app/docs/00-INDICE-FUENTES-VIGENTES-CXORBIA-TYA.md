@@ -1,6 +1,6 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-14 18:22 -06:00  
+**Fecha:** 2026-08-14 18:23 -06:00  
 **Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_FAIL_CLOSED__ZERO_PROVIDER_WRITES__SELFTEST_IMPORT_ORDER_FIXED__LINEAGE_PREWIRED__GO_LIVE_35__NEW_GATE_REQUIRED`
 
 ## 1. Lectura obligatoria y prevalente
@@ -16,50 +16,42 @@
 9. `ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md`
 10. `SOURCE-LOCK-ITERATION2-CANONICAL-PERSISTENCE-PASS-20260814.md`
 11. `SOURCE-LOCK-ITERATION3-HARNESS-DURABILITY-PASS-20260814.md` — histórico.
-12. `SOURCE-LOCK-ITERATION3-HISTORICAL-LEGAL-GATE-AWARE-HARNESS-PASS-20260814.md` — fix legal-gate-aware preservado, histórico para el estado actual.
+12. `SOURCE-LOCK-ITERATION3-HISTORICAL-LEGAL-GATE-AWARE-HARNESS-PASS-20260814.md` — histórico/fix preservado.
 13. **`SOURCE-LOCK-ITERATION3-PREPROVIDER-SELFTEST-FAIL-CLOSED-20260814.md` — lock I3 más reciente y prevalente.**
 14. `GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`
 15. `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, PR #7 y HEAD vivo.
 
 ## 2. Carril actual
 
-- Repo: `paulaosoriof86/demoCXOrbia`
-- Rama/candidata única: `docs-tya-v6-v71-audit`
-- PR #7: draft/open/no merge
-- Base: `release/cxorbia-tya-rc-20260630`
-- `EXECUTION_LANE_READY`: sí para source/docs; cualquier nuevo provider run requiere gate nuevo expreso porque request `...-04` quedó consumido por STOP_RETRY.
+Repo `paulaosoriof86/demoCXOrbia`, rama/candidata única `docs-tya-v6-v71-audit`, PR #7 draft/open/no merge, base `release/cxorbia-tya-rc-20260630`.
 
-No nueva candidata, rama, PR, Auth rebuild ni reauditoría general.
+`EXECUTION_LANE_READY`: sí para source/docs; cualquier nuevo provider run requiere gate nuevo porque request `...-04` quedó consumido.
 
-## 3. Request I3 `...-04` — STOP_RETRY antes de provider
+No nueva candidata/rama/PR/Auth rebuild/reauditoría general.
+
+## 3. Request `...-04`
 
 Run `31852717413`, job `94931417141`.
 
-PASS: checkout exacto del request commit y gate de Paula/repo/branch/PR/target/budgets/prohibiciones.
+Gate inicial PASS. STOP_RETRY en source preflight por `ERR_MODULE_NOT_FOUND` al importar Playwright antes del paso que lo instala. Service account/provider credentials todavía no se habían cargado.
 
-STOP_RETRY en `Static I3 source preflight before provider credentials` por `ERR_MODULE_NOT_FOUND` al importar `playwright` antes del paso que lo instala.
+Resultado exacto: reset 0, Auth writes 0, Firestore writes 0, otras identidades 0, Admin/new Shopper no ejecutado, HR/Rules/Storage/Make/Gemini/pagos 0, deploy 0, merge=false, producción=false, consentimiento legal automatizado 0, retry automático NO.
 
-Service account, selección de identidades, reset, Firestore, proxy, E2E y Admin/new Shopper quedaron SKIPPED.
+Request consumido/parked; no rerun.
 
-**Este run ejecutó 0 password resets, 0 Auth writes, 0 Firestore writes y 0 cambios de identidad.** El request quedó `consumed=true`, pero su presupuesto provider no fue utilizado.
+## 4. Fix posterior sin provider
 
-## 4. Corrección source-only posterior — sin retry
+- Playwright dinámico solo en `--execute-real`; source self-test con `playwrightDeferredToRealExecution`.
+- workflow existente prearma lineage `...-04` + `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
+- source patcher materializa/verifica esa lineage en provider antes de provider use.
+- cero provider gate posterior.
 
-- historical E2E: Playwright se carga dinámicamente solo dentro de `--execute-real`; source self-test ya no depende de Playwright instalado y verifica `playwrightDeferredToRealExecution`.
-- workflow existente: prearma lineage exacta desde `...-04` con `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
-- source patcher: materializa/verifica la misma lineage en command provider antes de cualquier provider use.
-- no se creó workflow, rama, PR ni candidata nuevos y no se ejecutó otro provider gate.
+## 5. Porcentaje
 
-## 5. Seguridad
+**GO-LIVE: 35% completado / 65% pendiente.** I3 0/25 hasta PASS completo.
 
-En run `31852717413`: reset 0, Auth 0, Firestore 0, otras identidades 0, HR/Rules/Storage/Make/Gemini/pagos 0, deploy 0, merge=false, producción=false, consentimiento legal automatizado 0 y retry automático NO.
-
-## 6. Porcentaje
-
-**GO-LIVE: 35% completado / 65% pendiente.** I3 permanece 0/25 hasta PASS completo.
-
-## 7. Siguiente gate exacto
+## 6. Siguiente gate exacto
 
 `PAULA_REVIEW_REQUIRED_FOR_I3_REQUEST05_AFTER_PREPROVIDER_MECHANISM_FAILURE`.
 
-Si Paula vuelve a autorizar, usar request nuevo `...-05` con el mismo alcance funcional de `...-04`: un único reset del mismo UID histórico, checkpoint histórico legal-gate-aware antes de Administración y luego un único Shopper nuevo con provider ACK/readback/login/reload/new-tab/segundo contexto. Sin fuzzy, otras identidades, aceptación legal automatizada, HR/Rules/Storage/Make/Gemini/pagos, deploy, merge o producción; fail-closed y cero retry automático.
+Si Paula vuelve a autorizar: request nuevo `...-05`, mismo alcance funcional de `...-04`, un único reset del mismo UID histórico, checkpoint legal-gate-aware antes de Administración y luego un único Shopper nuevo con provider ACK/readback/login/reload/new-tab/segundo contexto; sin fuzzy, otras identidades, aceptación legal automatizada, HR/Rules/Storage/Make/Gemini/pagos, deploy, merge o producción; fail-closed y sin retry automático.
