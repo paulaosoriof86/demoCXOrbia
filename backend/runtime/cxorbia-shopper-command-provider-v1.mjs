@@ -39,14 +39,15 @@ function request(){
   const recovery=r.continuationMode==='historical_credential_recovery_resume';
   const lineage=[
     ['cxorbia-i3-shopper-persistence-20260814-01','HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194'],
-    ['cxorbia-i3-shopper-persistence-20260814-02','I3_ADMIN_LOGIN_CLICK_BLOCKED_BY_CX_BACKEND_PREVIEW_STATUS_POINTER_INTERCEPTION']
+    ['cxorbia-i3-shopper-persistence-20260814-02','I3_ADMIN_LOGIN_CLICK_BLOCKED_BY_CX_BACKEND_PREVIEW_STATUS_POINTER_INTERCEPTION'],
+    ['cxorbia-i3-shopper-persistence-20260814-03','I3_HISTORICAL_NAV_TIMEOUT_BEFORE_LEGAL_GATE_AWARE_CHECKPOINT']
   ];
   const lineageOk=lineage.some(([id,code])=>r.continuationOfRequestId===id&&r.priorStopRetryCode===code);
   if(recovery&&!lineageOk)throw new Error('I3_RECOVERY_CONTINUATION_INVALID');
   const expectedAuthWrites=recovery?3:2;const expectedPasswordResets=recovery?1:0;
   if(r.authWritesMax!==expectedAuthWrites||r.firestoreWritesMax!==10||r.authDeletesMax!==1||r.stopRetry!==true)throw new Error('I3_REQUEST_BUDGET_INVALID');
   for(const k of ['hrWrites','rulesWrites','storageWrites','makeWrites','geminiCalls','paymentsWrites','deploys'])if(r[k]!==0)throw new Error('I3_UNSAFE_SCOPE_'+k);
-  if(r.merge!==false||r.production!==false||r.fuzzyMatchingAllowed!==false||r.passwordResets!==expectedPasswordResets)throw new Error('I3_UNSAFE_POLICY');
+  if(r.merge!==false||r.production!==false||r.fuzzyMatchingAllowed!==false||r.otherIdentitiesModifiedMax!==0||r.passwordResets!==expectedPasswordResets||r.legalAcceptanceAutomated!==false)throw new Error('I3_UNSAFE_POLICY');
   return r;
 }
 function init(){
