@@ -1,7 +1,7 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-15 17:03 -06:00  
-**Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__I1_PASS__I2_PASS__I3_HISTORICAL_PASS_FROZEN__REQUEST08_LEGAL_STOP__LEGAL_PROVIDER_WIRING_SOURCE_ONLY_PASS__GO_LIVE_35__HUMAN_LEGAL_GATE_NEXT`
+**Fecha:** 2026-08-15 17:31 -06:00  
+**Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__I1_PASS__I2_PASS__I3_HISTORICAL_PASS_FROZEN__REQUEST08_LEGAL_STOP__LEGAL_PROVIDER_WIRING_SOURCE_ONLY_PASS__LEGAL_DRAFT_V0_1_PREPARED__GO_LIVE_35__HUMAN_REVIEW_NEXT`
 
 ## Fuentes vigentes
 
@@ -17,13 +17,14 @@
 10. `SOURCE-LOCK-ITERATION2-CANONICAL-PERSISTENCE-PASS-20260814.md`
 11. `SOURCE-LOCK-ITERATION3-HISTORICAL-SHOPPER-LOGIN-PASS-20260814.md` — histórico PASS congelado.
 12. `SOURCE-LOCK-ITERATION3-REQUEST08-ADMIN-LEGAL-CONFIDENTIALITY-GATE-STOP-RETRY-20260815.md` — causa raíz request08 preservada.
-13. **`SOURCE-LOCK-ITERATION3-LEGAL-ACCEPTANCE-PROVIDER-WIRING-SOURCE-ONLY-PASS-20260815.md` — lock I3 vigente y prevalente.**
-14. `GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`
-15. `CAMBIOS-BACKEND.md`
-16. `RESUMEN-PARA-CLAUDE.md`
-17. `PENDIENTES-PROTOTIPO.md`
-18. `ACADEMIA-IMPACT-I3-LEGAL-PROVIDER-WIRING-SOURCE-ONLY-20260815.md`
-19. PR #7 y HEAD vivo.
+13. **`SOURCE-LOCK-ITERATION3-LEGAL-ACCEPTANCE-PROVIDER-WIRING-SOURCE-ONLY-PASS-20260815.md` — lock I3 técnico vigente y prevalente.**
+14. **`DRAFT-CONTENIDO-LEGAL-TYA-V0.1-REVISION-HUMANA-20260815.md` — borrador legal para revisión humana; NO aprobado, NO provider-authoritative.**
+15. `GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`
+16. `CAMBIOS-BACKEND.md`
+17. `RESUMEN-PARA-CLAUDE.md`
+18. `PENDIENTES-PROTOTIPO.md`
+19. `ACADEMIA-IMPACT-I3-LEGAL-PROVIDER-WIRING-SOURCE-ONLY-20260815.md`
+20. PR #7 y HEAD vivo.
 
 ## Carril
 
@@ -47,14 +48,16 @@ Gate canónico: run `31913700755`, job `95082399402`, `SUCCESS`. Gate PR: run `3
 
 Quedaron preparados contrato/read model/provider runtime/browser bridge para aceptación legal durable, exact-identity, versionada, human-only, provider-ACK y fail-closed. El bridge no está activado en el entrypoint productivo. Provider credentials/reads/writes reales `0/0/0`; Firestore/Auth/legal writes `0/0/0`; deploy/merge/producción `0/false/false`.
 
-El texto NDA demo/local actual no fue aprobado ni materializado como autoridad provider.
+## Borrador legal TyA V0.1 — preparado, no aprobado
+
+Paula autorizó únicamente preparar contenido para revisión humana, sin Firebase ni aceptación. Se creó `app/docs/DRAFT-CONTENIDO-LEGAL-TYA-V0.1-REVISION-HUMANA-20260815.md`, versión `tya-legal-bundle-v0.1-draft-20260815`, con acuerdo marco, confidencialidad, privacidad, propiedad intelectual, anexos por rol, anexos Guatemala/Honduras, texto de aceptación UI y checklist. El draft hash identifica solo el borrador y no es digest productivo.
+
+No se materializó `legalContents`, no hubo aceptación, provider IO, Auth/Firestore write, entrypoint activation, deploy, merge ni producción.
 
 ## Avance
 
 **GO-LIVE 35% completado / 65% pendiente. I3 = 0/25 hasta cierre integral.**
 
-## Siguiente gate exacto
+## Siguiente acción exacta
 
-`PAULA_REVIEW_REQUIRED_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_PROVIDER_WRITE_AND_ADMIN_NEW_SHOPPER_RESUME`
-
-Antes de cualquier write: revisión humana del contenido legal TyA exacto, versión/digest y autorización de materialización si aplica. Después, aceptación exclusivamente humana y reanudación de un único Shopper nuevo. No está autorizado todavía.
+Completar y revisar humanamente el borrador legal: identidad contractual TyA por país, canales oficiales, retención, proveedores activos al go-live, foro, titular/licenciante de CXOrbia, política de datos bancarios/documentos y uso real de grabaciones/geolocalización. Después asignar versión final y digest final y obtener aprobación humana. Solo entonces puede abrirse el gate `PAULA_REVIEW_REQUIRED_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_PROVIDER_WRITE_AND_ADMIN_NEW_SHOPPER_RESUME` para materialización/aceptación y reanudación del único Shopper nuevo.
