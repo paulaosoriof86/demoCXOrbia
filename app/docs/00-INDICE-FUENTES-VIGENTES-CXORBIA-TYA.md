@@ -22,13 +22,11 @@
 15. `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, PR #7 y HEAD vivo.
 
 ## Carril
-
 Repo `paulaosoriof86/demoCXOrbia`; rama/candidata `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`.
 
 `EXECUTION_LANE_READY`: source/docs sí; provider requiere gate nuevo porque request `...-04` está consumido. No nueva candidata/rama/PR/Auth rebuild/reauditoría general.
 
 ## Request `...-04`
-
 Run `31852717413`, job `94931417141`: gate inicial PASS; STOP_RETRY en source preflight por `ERR_MODULE_NOT_FOUND` al importar Playwright antes de instalarlo. Fallo antes de service account/provider credentials.
 
 Resultado exacto: reset 0, Auth 0, Firestore 0, otras identidades 0, Admin/new Shopper NO, HR/Rules/Storage/Make/Gemini/pagos 0, deploy 0, merge=false, producción=false, consent automation 0, retry NO.
@@ -36,18 +34,13 @@ Resultado exacto: reset 0, Auth 0, Firestore 0, otras identidades 0, Admin/new S
 Request consumido; no rerun.
 
 ## Fix source-only
-
 - Playwright dinámico solo con `--execute-real`; self-test con `playwrightDeferredToRealExecution`.
 - workflow existente prearma lineage `...-04` + `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
 - source patcher materializa/verifica lineage en provider antes de provider use.
 - cero provider gate posterior.
 
 ## Avance
-
 **GO-LIVE 35% / 65% pendiente. I3 = 0/25 hasta cierre completo.**
 
 ## Siguiente gate
-
 `PAULA_REVIEW_REQUIRED_FOR_I3_REQUEST05_AFTER_PREPROVIDER_MECHANISM_FAILURE`.
-
-Si Paula vuelve a autorizar: request nuevo `...-05`, mismo alcance funcional de `...-04`, un solo reset del mismo UID histórico, checkpoint legal-gate-aware antes de Admin y luego un Shopper nuevo con ACK/readback/login/reload/new-tab/second context; sin fuzzy/otras identidades/consent automation/providers prohibidos/deploy/merge/producción; fail-closed y no retry.
