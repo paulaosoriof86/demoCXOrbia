@@ -1,6 +1,6 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-15 13:14 -06:00  
+**Fecha:** 2026-08-15 13:16 -06:00  
 **Estado:** `I1_PASS__I2_PASS__I3_REQUEST05_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__SELFREFERENTIAL_SELFTEST_FIXED__SOURCE_ONLY_GATE_PASS__GO_LIVE_35__REQUEST06_GATE_REQUIRED`
 
 ## Autoridad
@@ -40,7 +40,7 @@ Request05 consumido; no rerun ni segundo intento automático.
 3. `verify-phase-a-live-execution-checkpoint.mjs` verifica autoridades vivas/compactas y conserva la métrica productiva correcta.
 4. Source patcher y workflow I3 prearman lineage `request05 + I3_PREPROVIDER_SOURCE_SELFTEST_SELF_REFERENTIAL_STATIC_IMPORT_CHECK` para un eventual request06.
 5. Run source-only `31903321622`, HEAD `64f7aa28d3d3728d2f7a3749d62373cff746ffd2`: `SUCCESS` completo en I1, I2, harness, patcher/lineage y checkpoint verifier.
-6. Después de ese gate solo hubo source/docs; cero provider writes.
+6. La documentación acumulativa e índice quedaron actualizados al mismo estado; después del STOP_RETRY solo hubo source/docs y cero provider writes.
 
 ## Iteraciones siguientes
 
