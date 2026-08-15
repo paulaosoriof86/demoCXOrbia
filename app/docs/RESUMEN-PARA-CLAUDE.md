@@ -1,45 +1,36 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-14 18:22 -06:00  
+**Última actualización:** 2026-08-14 18:23 -06:00  
 **Estado:** `I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__SELFTEST_IMPORT_ORDER_FIXED__LINEAGE_PREWIRED__SAME_CANDIDATE`
 
-## Regla principal
+No nueva candidata/rama/PR. No reconstruir Auth.
 
-No nueva candidata, rama ni PR. No rediseñar ni reconstruir Auth. Todo continúa sobre `docs-tya-v6-v71-audit` / PR #7.
+Lock actual: `app/docs/SOURCE-LOCK-ITERATION3-PREPROVIDER-SELFTEST-FAIL-CLOSED-20260814.md`.
 
-Lock I3 más reciente: `app/docs/SOURCE-LOCK-ITERATION3-PREPROVIDER-SELFTEST-FAIL-CLOSED-20260814.md`.
+## No tocar
 
-## Cerrado / NO TOCAR
-
-Firebase Auth owner, exact identity, I1, I2 command boundary/provider ACK, Mis Visitas arrays/facets/ACK, overlay DEV no interactivo y harness histórico legal-gate-aware. No automatizar NDA/confidencialidad.
+Auth owner/exact identity, I1, I2 provider ACK/fail-closed, Mis Visitas arrays/facets/ACK, overlay DEV, harness legal-gate-aware y gate NDA humano.
 
 ## Request `...-04`
 
-Run `31852717413` / job `94931417141` falló **antes de provider credentials** por import estático de Playwright dentro de un harness cuyo modo default es source-only. Por ello reset, Firestore, histórico, Admin y nuevo Shopper quedaron SKIPPED. Provider writes del run: 0.
+Run `31852717413` falló antes de provider credentials por import estático de Playwright en un source self-test. Reset/Auth/Firestore/identity changes = 0. Admin/new Shopper no ejecutado. Request consumido, no rerun.
 
-## Root fix sin impacto de prototipo
+## Fix QA
 
-- Playwright se carga dinámicamente solo con `--execute-real`; source self-test verifica `playwrightDeferredToRealExecution`.
-- workflow existente prearma lineage exacta desde request `...-04`.
-- source patcher materializa/verifica esa lineage en provider antes de provider use.
+- Playwright dinámico solo con `--execute-real`;
+- source self-test independiente de Playwright instalado;
+- workflow prearma lineage exacta desde `...-04`;
+- source patcher materializa/verifica lineage en provider antes de provider use.
 
-**Claude no debe corregir login, Academia, Certificación, NDA ni shoppers.js por este incidente.**
+**Sin cambio de UI. Claude no debe corregir login/NDA/Academia/Certificación/shoppers.js por este incidente.**
 
-## Shopper nuevo
+Shopper nuevo sigue NO creado.
 
-Todavía NO creado. El patch ACK-aware se materializa solo dentro de un futuro gate I3 autorizado.
-
-## Academia
-
-Sin cambio funcional. Si un NDA está pendiente, Academia/Certificación se difieren hasta aceptación humana legítima. El harness no acepta ni simula consentimiento.
-
-## Seguridad
-
-Request `...-04` consumido/parked. Reset/Auth/Firestore del run: 0/0/0. No retry. Cero HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/producción.
+Academia: si NDA está pendiente, rutas se difieren; no simular consentimiento.
 
 ## Porcentaje
 
-35% completado / 65% pendiente.
+35% / 65% pendiente.
 
 ## Siguiente frontera
 
