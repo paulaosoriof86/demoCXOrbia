@@ -2,50 +2,56 @@
 
 ## Estado
 
-El bloque source-only de aceptación legal durable quedó validado en source final `0602d6ca0f64280222a4b1522b36f3be77c65c87`, gate `31913700755` / job `95082399402` SUCCESS. No hubo provider IO ni aceptación real.
+Provider legal durable source-only validado: source final `0602d6ca0f64280222a4b1522b36f3be77c65c87`, gate `31913700755` / `95082399402` SUCCESS. No provider IO ni aceptación real.
 
-Con autorización de Paula también se preparó `app/docs/DRAFT-CONTENIDO-LEGAL-TYA-V0.1-REVISION-HUMANA-20260815.md`. Está marcado `NOT_APPROVED`; no es contenido provider-authoritative y no cambia todavía cursos/manuales visibles.
+Drafts legales:
+- base `DRAFT-CONTENIDO-LEGAL-TYA-V0.1-REVISION-HUMANA-20260815.md`;
+- decisiones vigentes `DRAFT-CONTENIDO-LEGAL-TYA-V0.2-NOCODE-REVISION-HUMANA-20260815.md`;
+- lock humano `DECISION-LOCK-TYA-LEGAL-V0.2-NOCODE-20260815.md`.
 
-## Qué podrá documentar Academia cuando el provider sea activado
+Todos siguen `NOT_APPROVED`; no son provider-authoritative y no cambian todavía cursos/manuales visibles.
 
-La aceptación NDA/confidencialidad productiva será una acción humana del usuario autenticado, ligada a identidad exacta, tenant/scope/rol y versión legal. La plataforma conservará un receipt provider-authoritative con timestamp de servidor y podrá volver a solicitar aceptación cuando cambie la versión legal.
+## Principios que Academia deberá reflejar cuando el provider sea real
 
-El draft V0.1 agrega temas que deberán reflejarse por rol cuando el texto final sea aprobado:
+- aceptación legal exclusivamente humana, autenticada, versionada y auditable;
+- nueva aceptación cuando un cambio jurídico material genere nueva versión;
+- rebranding neutral: manuales deben referirse a “la Plataforma” o al nombre visible dinámico, evitando fijar CXOrbia/Gravicentra como nombre perpetuo;
+- datos legales/contactos/proveedores/retención configurables no-code por tenant;
+- evidencias foto/video/audio/geolocalización/comprobantes configuradas por proyecto, no reglas globales;
 - confidencialidad y reserva de proyectos;
 - protección de credenciales y mínimo privilegio;
-- uso legítimo de evidencias;
-- prohibición de publicar o reutilizar evidencias;
-- privacidad y minimización de datos;
-- manejo reforzado de documentos, datos bancarios y evidencia privada;
+- privacidad/minimización;
+- datos bancarios completos solo para roles autorizados y mostrados enmascarados por defecto;
+- documentos únicamente cuando sean necesarios;
 - reporte de incidentes;
-- propiedad intelectual y software;
-- obligaciones especiales de Shopper, staff/admin y Cliente;
-- reaceptación por cambio material del contenido legal.
+- propiedad intelectual: marca visible no equivale a titularidad del software;
+- proveedores deshabilitados no se presentan como receptores actuales de datos.
+
+## Retención que deberá explicar Academia
+
+Para operación TyA, el default propuesto de evidencia cruda es 90 días después de aceptación final, con piso humano 60 días y posibilidad de override por proyecto. Esto no significa que todo dato se elimine a los 90 días: reportes, auditoría, pagos y documentos mercantiles/probatorios pueden conservarse por plazos mayores, incluida la referencia de cinco años cuando corresponda. Un legal hold suspende borrado.
+
+## Por rol
+
+**Shopper:** confidencialidad de escenarios, autenticidad de visitas, evidencia solo según proyecto, no compartir cuenta, no reutilizar material, cuidado con banco/documentos y reporte de incidentes.
+
+**Admin/Operaciones:** mínimo privilegio, no exportar sensibles sin necesidad, no fuzzy matching de identidad, no sobrescribir conflictos HR/plataforma, no revelar cuenta bancaria completa fuera del flujo autorizado, administrar legal/retención/proyecto solo según permisos.
+
+**Cliente:** confidencialidad recíproca, uso limitado de resultados, protección de identidad Shopper, no represalias/contacto fuera del flujo acordado y respeto de las reglas de evidencia del proyecto.
 
 ## Qué NO debe enseñar o simular
 
-- QA/GitHub/automatizaciones no aceptan ni firman por el usuario.
+- QA/GitHub/automatizaciones/Make/Gemini no aceptan ni firman por el usuario.
 - `#bnOk` no es consentimiento legal.
-- localStorage o una marca local del navegador no es autoridad de aceptación.
-- un receipt de otro usuario/rol/proyecto/versión no satisface el gate.
-- el texto demo/local actual no debe publicarse como acuerdo TyA definitivo.
-- el draft V0.1 tampoco debe publicarse como definitivo antes de completar datos, revisión humana y versión/digest final.
-- consentimientos opcionales no deben presentarse como obligatorios ni premarcados.
+- localStorage no es autoridad de aceptación.
+- receipt de otro usuario/rol/proyecto/versión no satisface el gate.
+- draft V0.1/V0.2 no es texto productivo aprobado.
+- consentimientos opcionales no van premarcados ni mezclados con términos obligatorios.
+- marca no registrada no se presenta como registrada.
+- Cinépolis o cualquier cliente no se convierte en regla global de evidencia.
 
-## Impacto en rutas/cursos/manuales
+## Impacto runtime/editorial
 
-Mantener el paso legal como gate humano previo al workspace cuando aplique. En manuales por rol, explicar que una nueva versión del acuerdo puede requerir nueva aceptación y que la evidencia anterior se conserva.
+No se modifica contenido de cursos, manuales visibles ni rutas de usuario en este bloque. La actualización editorial debe ocurrir después de consolidar/aprobar el texto legal final y activar/validar el provider legal real.
 
-Para Shopper: confidencialidad de escenarios, evidencias, autenticidad de visitas, no compartir cuenta y no reutilizar material.
-
-Para Admin/Operaciones: mínimo privilegio, no exportar datos sensibles sin necesidad, no resolver conflictos por fuzzy matching y no sobrescribir silenciosamente HR/plataforma.
-
-Para Cliente: confidencialidad recíproca, uso limitado de resultados, protección de identidad Shopper y prohibición de represalias/contacto fuera del flujo acordado.
-
-No incluir credenciales, hashes internos, rutas privadas, IDs de QA ni detalles del runner en Academia.
-
-Academia/Certificación del Shopper histórico permanecen diferidas y no se declaran PASS por este bloque.
-
-## Sin impacto runtime todavía
-
-No se cambia contenido de cursos, manuales visibles ni rutas de usuario en este bloque. La actualización editorial debe hacerse después de aprobar el contenido legal final, activar y validar el provider legal real.
+Academia/Certificación del Shopper histórico permanecen diferidas y no se declaran PASS.
