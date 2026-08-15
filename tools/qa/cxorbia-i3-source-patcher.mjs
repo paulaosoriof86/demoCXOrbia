@@ -44,7 +44,11 @@ function patched(){
   }
   if(!provider.includes("const adminResume=r.continuationMode==='admin_new_shopper_resume';")){
     provider=once(provider,"const recovery=r.continuationMode==='historical_credential_recovery_resume';","const recovery=r.continuationMode==='historical_credential_recovery_resume';\n  const adminResume=r.continuationMode==='admin_new_shopper_resume';",'I3_PROVIDER_ADMIN_RESUME_MODE');
-    provider=once(provider,"if(recovery&&!lineageOk)throw new Error('I3_RECOVERY_CONTINUATION_INVALID');","if(recovery&&!lineageOk)throw new Error('I3_RECOVERY_CONTINUATION_INVALID');\n  const adminResumeOk=r.continuationOfRequestId==='cxorbia-i3-shopper-persistence-20260814-06'&&r.priorStopRetryCode==='I3_ADMIN_NEW_SHOPPER_BUTTON_HIDDEN_BEFORE_COMMAND';\n  if(adminResume&&!adminResumeOk)throw new Error('I3_ADMIN_RESUME_CONTINUATION_INVALID');\n  if(!recovery&&!adminResume)throw new Error('I3_CONTINUATION_MODE_INVALID');",'I3_PROVIDER_ADMIN_RESUME_LINEAGE');
+    provider=once(provider,"if(recovery&&!lineageOk)throw new Error('I3_RECOVERY_CONTINUATION_INVALID');","if(recovery&&!lineageOk)throw new Error('I3_RECOVERY_CONTINUATION_INVALID');\n  const adminResumeOk=(r.continuationOfRequestId==='cxorbia-i3-shopper-persistence-20260814-06'&&r.priorStopRetryCode==='I3_ADMIN_NEW_SHOPPER_BUTTON_HIDDEN_BEFORE_COMMAND')||(r.continuationOfRequestId==='cxorbia-i3-shopper-persistence-20260815-07'&&r.priorStopRetryCode==='I3_ADMIN_NEW_SHOPPER_OVERLAY_POINTER_INTERCEPTION_BEFORE_CREATE');\n  if(adminResume&&!adminResumeOk)throw new Error('I3_ADMIN_RESUME_CONTINUATION_INVALID');\n  if(!recovery&&!adminResume)throw new Error('I3_CONTINUATION_MODE_INVALID');",'I3_PROVIDER_ADMIN_RESUME_LINEAGE');
+  }else if(!provider.includes("r.continuationOfRequestId==='cxorbia-i3-shopper-persistence-20260815-07'")){
+    const old="const adminResumeOk=r.continuationOfRequestId==='cxorbia-i3-shopper-persistence-20260814-06'&&r.priorStopRetryCode==='I3_ADMIN_NEW_SHOPPER_BUTTON_HIDDEN_BEFORE_COMMAND';";
+    const next="const adminResumeOk=(r.continuationOfRequestId==='cxorbia-i3-shopper-persistence-20260814-06'&&r.priorStopRetryCode==='I3_ADMIN_NEW_SHOPPER_BUTTON_HIDDEN_BEFORE_COMMAND')||(r.continuationOfRequestId==='cxorbia-i3-shopper-persistence-20260815-07'&&r.priorStopRetryCode==='I3_ADMIN_NEW_SHOPPER_OVERLAY_POINTER_INTERCEPTION_BEFORE_CREATE');";
+    provider=once(provider,old,next,'I3_PROVIDER_REQUEST07_OVERLAY_LINEAGE');
   }
   return {index,shoppers,provider};
 }
@@ -62,6 +66,7 @@ for(const [key,content] of Object.entries(out)){
     ensure(content.includes("['cxorbia-i3-shopper-persistence-20260814-05','I3_PREPROVIDER_SOURCE_SELFTEST_SELF_REFERENTIAL_STATIC_IMPORT_CHECK']"),'I3_PROVIDER_SELF_REFERENTIAL_LINEAGE_MISSING');
     ensure(content.includes("const adminResume=r.continuationMode==='admin_new_shopper_resume';"),'I3_PROVIDER_ADMIN_RESUME_MODE_MISSING');
     ensure(content.includes("r.continuationOfRequestId==='cxorbia-i3-shopper-persistence-20260814-06'"),'I3_PROVIDER_ADMIN_RESUME_LINEAGE_MISSING');
+    ensure(content.includes("r.continuationOfRequestId==='cxorbia-i3-shopper-persistence-20260815-07'"),'I3_PROVIDER_REQUEST07_OVERLAY_LINEAGE_MISSING');
   }
 }
 console.log(JSON.stringify({decision:mode==='--apply'?'PASS_I3_SOURCE_PATCH_APPLIED':'PASS_I3_SOURCE_PATCH_VERIFIED',sameCandidate:true,files:Object.values(files),providerWrites:0,deploys:0,production:false}));
