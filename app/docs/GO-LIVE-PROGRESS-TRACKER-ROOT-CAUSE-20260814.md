@@ -1,7 +1,7 @@
 # GO-LIVE PROGRESS TRACKER — ROOT-CAUSE PLAN CXORBIA TyA
 
-**Fecha:** 2026-08-14 18:18 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__SOURCE_FIX_READY__35_PERCENT__NEW_GATE_REQUIRED`
+**Fecha:** 2026-08-14 18:20 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__SOURCE_FIX_READY__LINEAGE_PREWIRED__35_PERCENT__NEW_GATE_REQUIRED`
 
 Plan rector: `app/docs/ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md`.
 
@@ -52,14 +52,15 @@ El request quedó consumido y no se rerun.
 
 - Playwright se carga dinámicamente solo con `--execute-real`.
 - Source self-test independiente de Playwright instalado y con check `playwrightDeferredToRealExecution`.
-- Workflow y source patcher prearman lineage exacta desde request `...-04` con `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
+- Workflow existente prearma lineage exacta desde request `...-04` con `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
+- Source patcher materializa/verifica la misma lineage en command provider antes de provider use.
 - Ningún provider gate fue ejecutado después del fix.
 
 Source lock vigente: `app/docs/SOURCE-LOCK-ITERATION3-PREPROVIDER-SELFTEST-FAIL-CLOSED-20260814.md`.
 
 ## Lo que falta para I3 PASS / +25 puntos
 
-1. Nuevo gate expreso + request `...-05`, porque `...-04` quedó consumido aunque no ejecutó reset.
+1. Nuevo gate expreso + request `...-05`.
 2. Un solo reset del mismo Shopper histórico exacto.
 3. Auth/identity/HR/history PASS con harness legal-gate-aware y checkpoint sanitizado inmediato.
 4. Admin create/update de un único Shopper nuevo con provider ACK/readback.
