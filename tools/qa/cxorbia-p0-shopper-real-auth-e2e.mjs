@@ -3,7 +3,6 @@
    Default mode is source-only self-test. Real execution requires explicit environment gate
    plus private credentials and performs browser reads only. It never calls CX.app.selectRole. */
 import fs from 'node:fs';
-import { chromium } from 'playwright';
 
 const args=new Set(process.argv.slice(2));
 const executeReal=args.has('--execute-real');
@@ -48,11 +47,12 @@ function sourceSelfTest(){
     certificationRouteRequired:realExecution.includes("#nav-cert")&&realExecution.includes("expectedView:'cert'"),
     legalGateAware:realExecution.includes('confidencialidad')&&realExecution.includes("pending('shopper')")&&realExecution.includes('workspaceState'),
     legalConsentNotAutomated:!realExecution.includes('confidencialidad.accept(')&&!realExecution.includes('confidencialidad.aceptar(')&&!realExecution.includes('confidencialidad.setAccepted(')&&realExecution.includes('acceptanceAutomated:false'),
+    playwrightDeferredToRealExecution:!source.includes("from 'playwright'")&&realExecution.includes("await import('playwright')"),
     explicitRealBranchFound:Boolean(realExecution),
     noWriteApis:!/(firebase-admin|admin\.auth\(|admin\.firestore\(|createUser\(|updateUser\(|deleteUser\(|setCustomUserClaims\(|firebase\s+deploy|gcloud\s+run\s+deploy)/i.test(realExecution)
   };
   const failed=Object.entries(checks).filter(([,pass])=>!pass).map(([id])=>id);
-  return {schemaVersion:'cxorbia.p0.real-shopper-auth-e2e.source.v3',decision:failed.length?'FAIL_P0_REAL_SHOPPER_AUTH_E2E_SOURCE':'PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE',checks,failed,safety:safe};
+  return {schemaVersion:'cxorbia.p0.real-shopper-auth-e2e.source.v4',decision:failed.length?'FAIL_P0_REAL_SHOPPER_AUTH_E2E_SOURCE':'PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE',checks,failed,safety:safe};
 }
 
 async function verifyRoute(page,{selector,expectedView}){
@@ -74,6 +74,7 @@ if(!executeReal){
   process.exitCode=result.failed.length?1:0;
 }else{
   ensure(authorization==='YES_SOURCE_APPROVED_REAL_READONLY_E2E','REAL_E2E_EXPLICIT_GATE_REQUIRED');
+  const {chromium}=await import('playwright');
   const {login,password}=privateCredential();
 
   const url=new URL(rootUrl+'/index-backend-dev.html');
