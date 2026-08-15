@@ -1,7 +1,7 @@
 # GO-LIVE PROGRESS TRACKER — ROOT-CAUSE PLAN CXORBIA TyA
 
-**Fecha:** 2026-08-14 18:12 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__35_PERCENT__NEW_GATE_REQUIRED`
+**Fecha:** 2026-08-14 18:18 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__SOURCE_FIX_READY__35_PERCENT__NEW_GATE_REQUIRED`
 
 Plan rector: `app/docs/ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md`.
 
@@ -34,9 +34,9 @@ No reprocesar.
 Último request: `cxorbia-i3-shopper-persistence-20260814-04`.  
 Run: `31852717413`. Job: `94931417141`.
 
-El gate de autorización/scope PASS, pero el run se detuvo en `Static I3 source preflight before provider credentials` por un import estático de Playwright en un harness cuyo modo default era source-only.
+Gate inicial PASS. STOP_RETRY en source preflight por import estático de Playwright antes del paso que instala Playwright.
 
-No se alcanzó ningún provider boundary en ese run:
+No se alcanzó ningún provider boundary:
 
 - reset: 0;
 - Auth writes: 0;
@@ -46,20 +46,20 @@ No se alcanzó ningún provider boundary en ese run:
 - HR/Rules/Storage/Make/Gemini/pagos: 0;
 - deploy/merge/producción: 0/false/false.
 
-El request quedó consumido por STOP_RETRY y no se rerun.
+El request quedó consumido y no se rerun.
 
 ## Fix mecánico source-only posterior
 
 - Playwright se carga dinámicamente solo con `--execute-real`.
-- El self-test source-only ya no requiere Playwright instalado y verifica `playwrightDeferredToRealExecution`.
-- Workflow y source patcher quedaron prearmados para una lineage exacta desde request `...-04` con código `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
-- No se activó ningún provider gate después del fix.
+- Source self-test independiente de Playwright instalado y con check `playwrightDeferredToRealExecution`.
+- Workflow y source patcher prearman lineage exacta desde request `...-04` con `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
+- Ningún provider gate fue ejecutado después del fix.
 
 Source lock vigente: `app/docs/SOURCE-LOCK-ITERATION3-PREPROVIDER-SELFTEST-FAIL-CLOSED-20260814.md`.
 
 ## Lo que falta para I3 PASS / +25 puntos
 
-1. Nuevo gate expreso y request `...-05`, porque `...-04` quedó consumido aunque no ejecutó reset.
+1. Nuevo gate expreso + request `...-05`, porque `...-04` quedó consumido aunque no ejecutó reset.
 2. Un solo reset del mismo Shopper histórico exacto.
 3. Auth/identity/HR/history PASS con harness legal-gate-aware y checkpoint sanitizado inmediato.
 4. Admin create/update de un único Shopper nuevo con provider ACK/readback.
