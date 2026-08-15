@@ -1,7 +1,7 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-15 17:03 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_PASS_FROZEN__REQUEST08_LEGAL_STOP__LEGAL_PROVIDER_WIRING_SOURCE_ONLY_PASS__GO_LIVE_35__NO_PRODUCTION`
+**Última actualización:** 2026-08-15 17:31 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_PASS_FROZEN__REQUEST08_LEGAL_STOP__LEGAL_PROVIDER_WIRING_SOURCE_ONLY_PASS__LEGAL_DRAFT_V0_1_PREPARED__GO_LIVE_35__NO_PRODUCTION`
 
 ## Preservado
 
@@ -45,33 +45,57 @@ Commit focal `0602d6ca0f64280222a4b1522b36f3be77c65c87`: añadió `authWrites=0`
 
 Gate canónico push `31913700755`, job `95082399402`: `SUCCESS` completo. Gate PR `31913704247`, job `95082407608`: `SUCCESS` completo.
 
+## Bloque 2026-08-15 — preparación de texto legal para revisión humana
+
+Autorización recibida: preparar texto legal completo TyA para revisión humana, **sin guardar en Firebase ni aceptar por ningún usuario**.
+
+Creado:
+- `app/docs/DRAFT-CONTENIDO-LEGAL-TYA-V0.1-REVISION-HUMANA-20260815.md`
+- commit inicial del draft: `7f67ee59bdf0d6de26b44a539f3f456a5a4e0445`.
+
+Contenido del draft:
+- acuerdo marco de uso de plataforma;
+- confidencialidad y secreto operacional;
+- evidencias y conducta de field operations;
+- privacidad/tratamiento de datos y minimización;
+- seguridad e incidentes;
+- propiedad intelectual de software, contenidos y secretos empresariales;
+- anexos por Shopper, staff/admin/operaciones, Cliente y roles transversales;
+- anexos país Guatemala/Honduras;
+- aviso resumido para pantalla;
+- copy de aceptación humana no premarcada;
+- matriz reusable de contenido legal por scope/rol/país;
+- checklist de aprobación y campos pendientes.
+
+Investigación jurídica de soporte: fuentes oficiales de Congreso de Guatemala, TSC/IAIP/Congreso de Honduras. Se documentó de forma conservadora la vigencia confirmada de marcos de firma electrónica y propiedad intelectual, y se evitó tratar iniciativas/anteproyectos de datos personales como ley confirmada.
+
+El draft version es `tya-legal-bundle-v0.1-draft-20260815`. El SHA-256 incluido identifica solo el borrador; no es digest productivo. Después de completar campos y aprobar el texto debe recalcularse el digest final.
+
 ## Seguridad / efectos reales
 
-Provider credentials/reads/writes `0/0/0`; Auth/Firestore/legal acceptance writes `0/0/0`; password resets `0`; historical credential access/reconciliation `0/0`; otras identidades `0`; HR/Rules/Storage/Make/Gemini/pagos `0`; deploy `0`; merge=false; producción=false.
+Provider credentials/reads/writes del bloque legal-draft `0/0/0`; Auth/Firestore/legal acceptance writes `0/0/0`; password resets `0`; historical credential access/reconciliation `0/0`; otras identidades `0`; HR/Rules/Storage/Make/Gemini/pagos `0`; product entrypoint activation `false`; deploy `0`; merge=false; producción=false.
 
-El texto NDA demo/local actual del prototipo no se aprobó ni materializó como contenido legal provider-authoritative.
+No se modificó `/app/modules` ni `/app/core`. No se aceptó, firmó ni materializó contenido legal.
 
 ## Documentación
 
-Lock prevalente:
+Lock técnico prevalente sigue siendo:
 `app/docs/SOURCE-LOCK-ITERATION3-LEGAL-ACCEPTANCE-PROVIDER-WIRING-SOURCE-ONLY-PASS-20260815.md`.
 
-Índice, checkpoint, tracker, RESUMEN-PARA-CLAUDE, PENDIENTES-PROTOTIPO y Academia quedan reconciliados con este estado.
+El borrador legal se incorpora como fuente de revisión, **no** como source lock ni autoridad productiva.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** receipt legal durable exact-identity/versioned/provider-authoritative; human-only; server timestamp; idempotencia; fail-closed; no localStorage authority.
-- **Exclusivo TyA:** contenido legal TyA exacto todavía requiere revisión humana y eventual materialización provider antes de aceptación real.
-- **Claude/prototipo:** no rediseñar frontend. El modal humano existente se preserva; cuando backend se active deberá leer/guardar contra autoridad provider. `#bnOk` sigue siendo solo informativo.
-- **Academia:** manuales/cursos deben mostrar aceptación humana real y persistente; QA nunca acepta legalmente por el usuario.
-- **Sin impacto Claude:** provider runtime, source verifier, gates y source lock.
+- **Reusable CXOrbia:** estructura legal versionada por `legalContentId`/scope/rol/país; aceptación humana; separación entre términos obligatorios y consentimientos opcionales; privacidad por minimización; anexos reutilizables.
+- **Exclusivo TyA:** identidad contractual, jurisdicción, retención, canales legales, proveedores efectivos y contenido final TyA/GT/HN.
+- **Claude/prototipo:** no rediseñar frontend. El modal humano existente se preserva; futuro copy debe usar casillas no premarcadas y aviso de versión cuando el backend legal sea realmente activado.
+- **Academia:** explicar confidencialidad por rol, protección de evidencias, seguridad de credenciales, privacidad y que cambios legales materiales pueden requerir nueva aceptación.
+- **Sin impacto Claude:** investigación normativa, draft hash, documentación y preparación de gate.
 
 ## Porcentaje
 
-**35% completado / 65% pendiente. I3 0/25 hasta PASS integral.**
+**35% completado / 65% pendiente. I3 0/25 hasta PASS integral.** Preparar el draft no suma puntaje I3 porque todavía no existe texto final aprobado, materialización provider, aceptación humana ni E2E Admin/new Shopper.
 
 ## Siguiente gate
 
-`PAULA_REVIEW_REQUIRED_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_PROVIDER_WRITE_AND_ADMIN_NEW_SHOPPER_RESUME`.
-
-Precondición: revisar contenido legal TyA exacto, versión y digest, y autorizar materialización si falta. No iniciar request09/provider write antes de ese gate.
+Primero: completar/revisar el draft legal V0.1 con datos humanos faltantes y aprobar texto exacto. Luego asignar versión final + digest final. Solo después solicitar `PAULA_REVIEW_REQUIRED_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_PROVIDER_WRITE_AND_ADMIN_NEW_SHOPPER_RESUME` para cualquier provider materialization/write/acceptance y continuación Admin/new Shopper.
