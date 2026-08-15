@@ -1,11 +1,11 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-15 15:14 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_SUBGATE_PASS_FROZEN__REQUEST07_ADMIN_OVERLAY_STOP_RETRY_BEFORE_CREATE__ZERO_NEW_WRITES__OVERLAY_AWARE_SOURCE_GATE_PASS__GO_LIVE_35__REQUEST08_GATE_REQUIRED`
+**Fecha:** 2026-08-15 15:22 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_SUBGATE_PASS_FROZEN__REQUEST08_ADMIN_LEGAL_CONFIDENTIALITY_GATE_STOP_RETRY_BEFORE_CREATE__ZERO_NEW_WRITES__GO_LIVE_35__DURABLE_LEGAL_ACCEPTANCE_SOURCE_BLOCK_NEXT`
 
 ## Autoridad
 
-Auditoría forense + plan durable + I1/I2 PASS + **`SOURCE-LOCK-ITERATION3-REQUEST07-ADMIN-OVERLAY-STOP-RETRY-OVERLAY-AWARE-SOURCE-GATE-PASS-20260815.md`** + tracker vigente.
+Auditoría forense + plan durable + I1/I2 PASS + **`SOURCE-LOCK-ITERATION3-REQUEST08-ADMIN-LEGAL-CONFIDENTIALITY-GATE-STOP-RETRY-20260815.md`** + tracker vigente.
 
 `NO REPROCESO`: no diagnóstico general, nueva candidata, rama/PR, Auth rebuild ni repetición del histórico I3.
 
@@ -23,55 +23,60 @@ Run `31906391682`, job `95064802332`: mismo Shopper exacto, un único credential
 
 Checkpoint: `app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json`.
 
-**No repetir reset, recovery, reconciliación ni acceso a credencial histórica. Toda continuación usa el checkpoint read-only y `passwordResets=0`.**
+**No repetir reset, recovery, reconciliación ni acceso a credencial histórica. Toda continuación futura usa el checkpoint read-only y `passwordResets=0`.**
 
-NDA/confidencialidad histórico: `legal-gate-pending`, visible, `acceptanceAutomated=false`; Academia y Certificación diferidas, no PASS.
+El histórico confirmó gate legal pendiente y `acceptanceAutomated=false`; Academia/Certificación quedaron diferidas, no PASS.
 
-## Request07 — ejecución Admin/new Shopper
+## Request08 — ejecución Admin/new Shopper
 
-Request commit `2ebc85af6c4becee15a93de8a8726cbc295464c3`; run `31907732888`; job `95068062981`.
+Request `cxorbia-i3-shopper-persistence-20260815-08` continuó exclusivamente desde request07 + `I3_ADMIN_NEW_SHOPPER_OVERLAY_POINTER_INTERCEPTION_BEFORE_CREATE`.
 
-PASS antes del fallo: frozen checkpoint, source patch, tooling, service account, Admin-only selection, proxy, command provider, login Admin y handoff canónico. El blocker request06 quedó superado: `#shNew` fue visible/enabled/stable.
+- request commit: `d21fb78aa012b1739fea03053a0a947fcd379ee4`
+- workflow run: `31909354336`
+- job: `95071998299`
+- parking commit: `8fa887900a5507b606b31dc0386a135060980837`
+
+PASS antes del fallo: frozen checkpoint, source overlay-aware preflight, source patch, tooling, service account, Admin-only selection, proxy, command provider y Auth/handoff Admin hasta el subgate pre-Alta.
 
 STOP_RETRY exacto:
-`I3_ADMIN_NEW_SHOPPER_OVERLAY_POINTER_INTERCEPTION_BEFORE_CREATE`.
 
-Playwright no pudo completar el click porque un `<div class="cx-ov">…</div>` interceptaba pointer events. El fallo ocurrió antes de `shopper.create`.
+`I3_ADMIN_LEGAL_CONFIDENTIALITY_GATE_PENDING_BEFORE_CREATE`
 
-Resultado request07:
+El harness verificó `CX.confidencialidad.pending('admin')===true` con gate legal visible y se detuvo. No aceptó, firmó, guardó ni automatizó consentimiento. No se trató el gate como banner `#bnOk`, no hubo `force:true` ni deshabilitación global de overlays.
+
+Resultado request08:
 - Shopper nuevo: `NO CREADO`;
+- `shopper.create`: `NO`;
+- update/readback/login nuevo: `NO` / `NO` / `NO`;
 - nuevos Auth writes: `0`;
 - nuevos Firestore writes: `0`;
-- update/readback/login nuevo: `NO`/`SKIPPED`/`NO`;
 - password resets: `0`;
-- histórico: intacto, sin credencial;
+- histórico: intacto, sin acceso a credencial ni reconciliación;
 - otras identidades: `0`;
 - HR/Rules/Storage/Make/Gemini/pagos: `0`;
-- deploy `0`, merge=false, producción=false.
+- deploy `0`, merge=false, producción=false;
+- request08 consumido/parked; no rerun ni segundo intento automático.
 
-Request07 consumido y parked en `6fb758130378adef1c14b6a2f1a1b22a8db87ca4`; no rerun.
+## Causa raíz focal posterior
 
-## Corrección focal source-only
+La fuente vigente confirma que `CX.app.enter()` no monta el router mientras `CX.confidencialidad.pending(role)` sea verdadero.
 
-`.cx-ov` es infraestructura modal legítima; queda prohibido apagarla globalmente o usar `force:true`. El run no capturó suficiente estructura para afirmar retrospectivamente si era NDA o banner.
+La superficie de Administración describe el NDA/versionado/aceptaciones actual como demo local y diferencia expresamente el futuro estado productivo firmado/auditado. La configuración simple de NDA también permanece frontend/local. Los adapters/backend protegidos revisados no demuestran aún un registro durable, account-scoped y cross-context de aceptación legal.
 
-El harness ahora decide fail-closed por estructura source-safe:
-1. gate legal/confidencialidad pendiente => STOP, cero aceptación/firma/guardado/automatización;
-2. único banner informativo no legal con botón exacto `#bnOk` => reconocimiento mediante click normal y continuación;
-3. overlay desconocido => STOP.
+**Inferencia técnica:** una aceptación que Paula haga solo en su navegador local no se usará como supuesto desbloqueo de un runner GitHub limpio. Para I3 se necesita primero una autoridad legal durable que sobreviva contextos y mantenga trazabilidad por persona/rol/versión.
 
-`cxorbia-i3-source-patcher.mjs` y el workflow I3 existente aceptan solo la lineage request07 + blocker overlay, mantienen `passwordResets=0`, frozen checkpoint y cero histórico credential access.
-
-Gate source-only independiente: run `31908665710`, job `95070327022`, HEAD `1e313d6f4d689ac01623f4bce90da5828f25f717`: `SUCCESS` completo, sin provider credentials/writes.
+No se afirma el archivo/llave interna exacta de `CX.confidencialidad` porque todavía no quedó localizada con evidencia suficiente.
 
 ## Avance
 
-**35% completado / 65% pendiente. I3 sigue 0/25 hasta PASS integral.** El histórico I3 está cerrado; únicamente Admin/new Shopper sigue vivo.
+**35% completado / 65% pendiente. I3 sigue 0/25 hasta PASS integral.** El histórico I3 está cerrado; Admin/new Shopper permanece pendiente detrás de la persistencia legal durable.
 
 ## Iteraciones siguientes
 
 I4 `HR_BIDIRECTIONAL_PHASE_A_E2E_FINANCE` después de I3 PASS. I5 exact build/preprod/go-live después de I4 PASS.
 
-## Siguiente gate exacto
+## Siguiente bloque exacto
 
-`PAULA_REVIEW_REQUIRED_FOR_I3_REQUEST08_OVERLAY_AWARE_ADMIN_NEW_SHOPPER_ONLY`.
+`I3_LEGAL_ACCEPTANCE_DURABLE_ACCOUNT_SCOPED_CONTRACT_AND_PRODUCTION_WIRING_SOURCE_ONLY`
+
+Debe preparar un contrato/read model/command path durable y reusable, con aceptación exclusivamente humana, versionado/auditoría y fail-closed. Este bloque no autoriza aceptación legal real ni provider writes. Para cualquier write posterior hará falta una nueva autorización explícita de Paula.
