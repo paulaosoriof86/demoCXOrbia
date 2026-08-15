@@ -1,7 +1,7 @@
 # ADDENDUM MAESTRO — PLAN DE CORRECCIÓN RAÍZ, GO-LIVE Y DURABILIDAD CXORBIA TyA
 
-**Fecha:** 2026-08-14 18:12 -06:00  
-**Estado:** `ACTIVO__PREVALENTE_PARA_CORRECCION_RAIZ_Y_GO_LIVE__NO_REPROCESO__MISMA_CANDIDATA__I3_PREPROVIDER_STOP_RETRY`
+**Fecha:** 2026-08-15 13:14 -06:00  
+**Estado:** `ACTIVO__PREVALENTE_PARA_CORRECCION_RAIZ_Y_GO_LIVE__NO_REPROCESO__MISMA_CANDIDATA__I3_REQUEST05_PREPROVIDER_SOURCE_FIX_PASS`
 
 ## 0. Propósito y lock
 
@@ -113,26 +113,42 @@ Debe cerrar:
 10. Un gate legal pendiente no se presenta como PASS de Academia/Certificación; solo evita clasificarlo falsamente como fallo de Auth/history.
 11. Un request `consumed=true` con `automaticRetryAllowed=false` nunca se rerun; cualquier nueva ejecución exige gate/request nuevo.
 12. Un source-only preflight debe poder ejecutarse antes de instalar dependencias runtime y antes de acceder a credenciales provider.
+13. Un source self-test de ausencia no puede incrustar como literal de búsqueda la misma firma cuya ausencia pretende demostrar; debe reconocer la estructura real del código.
+14. Antes de un nuevo provider gate, el harness y la lineage se prueban independientemente con el workflow Phase A source-only.
 
 Locks I3 actuales:
 
 - `SOURCE-LOCK-ITERATION3-HARNESS-DURABILITY-PASS-20260814.md`;
 - `SOURCE-LOCK-ITERATION3-HISTORICAL-LEGAL-GATE-AWARE-HARNESS-PASS-20260814.md`;
-- **`SOURCE-LOCK-ITERATION3-PREPROVIDER-SELFTEST-FAIL-CLOSED-20260814.md` — lock más reciente.**
+- `SOURCE-LOCK-ITERATION3-PREPROVIDER-SELFTEST-FAIL-CLOSED-20260814.md` — request04/histórico;
+- **`SOURCE-LOCK-ITERATION3-PREPROVIDER-SELFTEST-SELFREFERENCE-FIX-PASS-20260815.md` — lock más reciente y prevalente.**
 
-#### I3 — request `...-04`: fallo mecánico pre-provider
+#### I3 — request `...-04`: fallo mecánico pre-provider histórico
 
-Run `31852717413`, job `94931417141` pasó el gate de autorización/scope y falló en `Static I3 source preflight before provider credentials` con `ERR_MODULE_NOT_FOUND` porque `tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs`, aun teniendo modo default source-only, importaba Playwright estáticamente. El workflow instala Playwright deliberadamente después del preflight.
+Run `31852717413`, job `94931417141` pasó el gate de autorización/scope y falló en `Static I3 source preflight before provider credentials` con `ERR_MODULE_NOT_FOUND` porque el harness source-only importaba Playwright estáticamente antes de que el workflow lo instalara.
 
-Este fallo ocurrió antes de service account/provider access. Por tanto, en ese run hubo reset 0, Auth writes 0, Firestore writes 0, otras identidades 0 y Admin/new Shopper no ejecutado. El request quedó consumido por STOP_RETRY, pero el presupuesto provider no llegó a utilizarse.
+El fallo ocurrió antes de service account/provider. Reset 0, Auth 0, Firestore 0, otras identidades 0 y Admin/new Shopper no ejecutado. Request04 consumido; no rerun.
 
-Corrección focal ya aplicada sin rerun:
+Corrección: Playwright pasó a import dinámico únicamente en `--execute-real` y se prearmó lineage `request04 + I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
 
-- Playwright se carga dinámicamente solo dentro de `--execute-real` y después del gate explícito;
-- el self-test source-only incluye `playwrightDeferredToRealExecution`;
-- el workflow prearma lineage exacta para una futura continuación desde request `...-04` con código `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`;
-- `tools/qa/cxorbia-i3-source-patcher.mjs` materializa/verifica esa misma lineage en el command provider antes de cualquier provider use;
-- no se ejecutó un nuevo provider gate tras estas correcciones.
+#### I3 — request `...-05`: segundo fallo mecánico pre-provider, sin writes
+
+Paula autorizó request05 con el mismo alcance funcional. Run `31902822527`, job `95056069906` volvió a pasar el gate de autorización/carril y se detuvo en el mismo source preflight, todavía antes de tooling, service account o provider credentials.
+
+Causa exacta: el import estático real ya estaba eliminado, pero el propio `sourceSelfTest()` verificaba `!source.includes("from 'playwright'")`. Ese literal estaba contenido dentro de la expresión del test, por lo que el check `playwrightDeferredToRealExecution` siempre encontraba su propia cadena y se auto-invalidaba.
+
+Efectos request05: reset 0, Auth 0, Firestore 0, otras identidades 0, Admin/new Shopper no ejecutado, providers prohibidos 0, deploy 0, merge=false, producción=false y consentimiento automatizado 0. Request05 quedó consumido por STOP_RETRY; no se rerun.
+
+Corrección focal source-only posterior:
+
+- harness v5 detecta únicamente una línea de import estático real y conserva `await import('playwright')` dentro de `--execute-real`;
+- Phase A workflow existente prueba el harness sin Playwright/provider;
+- current checkpoint verifier usa fuentes vivas compactas y no literales históricos obsoletos;
+- source patcher y provider workflow prearman lineage `request05 + I3_PREPROVIDER_SOURCE_SELFTEST_SELF_REFERENTIAL_STATIC_IMPORT_CHECK`;
+- el provider workflow imprime el JSON del preflight antes de cualquier provider credential;
+- run source-only `31903321622` sobre HEAD `64f7aa28d3d3728d2f7a3749d62373cff746ffd2` terminó `SUCCESS` incluyendo I1, I2, harness, patcher/lineage y checkpoint verifier.
+
+No existe autorización actual para request06.
 
 ### ITERACIÓN 4 — HR bidirectional + Phase A E2E + Finance — 25%
 
@@ -159,6 +175,8 @@ Cierre válido: `ACTIVE_BASELINE_PHASE_A_PRODUCTION`.
 11. No autoaceptar NDA/confidencialidad para hacer pasar E2E.
 12. No rerun de requests consumidos.
 13. No source-preflight que dependa de una instalación runtime posterior.
+14. No source-self-test auto-referencial.
+15. Antes de otro provider request, source harness + patcher + lineage deben tener PASS independiente.
 
 ## 6. Gate de durabilidad para futuros proyectos/tenants
 
@@ -193,12 +211,14 @@ Clasificación: Reusable CXOrbia, Exclusivo cliente, Claude/prototipo, Academia 
 
 I1 e I2 permanecen PASS. I3 sigue abierta.
 
-Último request intentado: `cxorbia-i3-shopper-persistence-20260814-04`, run `31852717413`, job `94931417141`.
+Último provider-request intentado: `cxorbia-i3-shopper-persistence-20260814-05`, run `31902822527`, job `95056069906`.
 
-Ese request fue consumido por STOP_RETRY **antes de provider credentials**. Ejecutó 0 resets, 0 Auth writes, 0 Firestore writes y 0 cambios de identidad. No hay retry automático.
+Ese request quedó consumido por STOP_RETRY **antes de tooling/service account/provider credentials**. Ejecutó 0 resets, 0 Auth writes, 0 Firestore writes y 0 cambios de identidad. Admin/new Shopper no se ejecutó y no existe checkpoint histórico nuevo.
 
-Después del STOP_RETRY solo hubo source/docs y prearmado de lineage; cero provider writes, deploy, merge o producción.
+El defecto mecánico auto-referencial quedó corregido source-only. El gate independiente `31903321622` fue SUCCESS en harness, patcher/lineage y checkpoint. Después solo hubo source/docs; cero provider writes, deploy, merge o producción.
 
 **GO-LIVE: 35% completado / 65% pendiente.** I3 no suma hasta PASS completo.
 
-**Siguiente acción exacta:** `PAULA_REVIEW_REQUIRED_FOR_I3_REQUEST05_AFTER_PREPROVIDER_MECHANISM_FAILURE`.
+**Siguiente acción exacta:** `PAULA_REVIEW_REQUIRED_FOR_I3_REQUEST06_AFTER_SELFREFERENTIAL_PREPROVIDER_MECHANISM_FAILURE`.
+
+Si Paula autoriza request06, deberá continuar desde request05 con `priorStopRetryCode=I3_PREPROVIDER_SOURCE_SELFTEST_SELF_REFERENTIAL_STATIC_IMPORT_CHECK`, targetear el HEAD exacto vigente y cambiar únicamente el request JSON. Mantendrá un único reset del mismo UID histórico exacto, checkpoint legal-gate-aware antes de Administración, un solo Shopper nuevo y todas las prohibiciones previas.
