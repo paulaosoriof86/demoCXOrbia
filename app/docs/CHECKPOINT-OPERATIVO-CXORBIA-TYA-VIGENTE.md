@@ -1,6 +1,6 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-14 18:20 -06:00  
+**Fecha:** 2026-08-14 18:22 -06:00  
 **Estado:** `I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__SELFTEST_IMPORT_ORDER_FIXED__LINEAGE_PREWIRED__GO_LIVE_35__NEW_GATE_REQUIRED`
 
 ## Autoridad vigente
@@ -33,11 +33,9 @@ Run `31835742956`, job `94881540163` alcanzó el mismo Shopper histórico exacto
 
 Run `31852717413`, job `94931417141`.
 
-Gate inicial PASS. `Static I3 source preflight before provider credentials` falló con `ERR_MODULE_NOT_FOUND` para `playwright`.
+Gate inicial PASS. Source preflight falló con `ERR_MODULE_NOT_FOUND` para `playwright`, antes de tooling/provider credentials. Selección de identidades, reset, reconciliación, proxy/E2E, provider de comandos y Admin/new Shopper quedaron SKIPPED.
 
-El fallo ocurrió antes de tooling/provider credentials. Quedaron SKIPPED selección de identidades, reset, reconciliación, proxy/E2E, provider de comandos y Admin/new Shopper.
-
-Resultado exacto del run:
+Resultado exacto:
 
 - password reset: `0`;
 - Auth writes: `0`;
@@ -50,12 +48,12 @@ Resultado exacto del run:
 
 Request `...-04`: `enabled=false`, `consumed=true`, `STOP_RETRY_I3_CONTINUATION_FAILED`. No rerun.
 
-## Causa y corrección source-only ya aplicadas
+## Corrección source-only aplicada
 
-1. Historical E2E: Playwright se importa dinámicamente solo dentro de `--execute-real`, después del gate explícito; self-test incluye `playwrightDeferredToRealExecution`.
-2. Workflow existente: preflight permanece antes de provider credentials y lineage futura acepta `...-04` + `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
-3. Source patcher: materializa/verifica la misma lineage en command provider antes de cualquier provider use.
-4. No se ejecutó otro request ni provider después de estos fixes.
+1. Playwright se importa dinámicamente solo en `--execute-real`; source self-test verifica `playwrightDeferredToRealExecution`.
+2. Workflow existente prearma lineage futura `...-04` + `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
+3. Source patcher materializa/verifica esa misma lineage en command provider antes de provider use.
+4. No se ejecutó otro request ni provider después de los fixes.
 
 ## Porcentaje
 
