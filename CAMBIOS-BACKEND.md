@@ -1,101 +1,119 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-15 17:31 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_PASS_FROZEN__REQUEST08_LEGAL_STOP__LEGAL_PROVIDER_WIRING_SOURCE_ONLY_PASS__LEGAL_DRAFT_V0_1_PREPARED__GO_LIVE_35__NO_PRODUCTION`
+**Última actualización:** 2026-08-15 17:52 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_PASS_FROZEN__REQUEST08_LEGAL_STOP__LEGAL_PROVIDER_WIRING_SOURCE_ONLY_PASS__TYA_LEGAL_V0_2_NOCODE_DRAFT__GO_LIVE_35__NO_PRODUCTION`
 
 ## Preservado
 
-I1 PASS 15/15 e I2 PASS 20/20. Histórico I3 congelado desde run `31906391682`: exact identity, un único reset ya consumido, UID/claims/profile/membership/crosswalk/history, login real + HR authority + history E2E PASS. No repetir reset/reconcile ni acceder a credencial histórica; continuaciones `passwordResets=0`.
+I1 PASS 15/15 e I2 PASS 20/20. Histórico I3 congelado desde run `31906391682`; reset histórico único consumido; toda continuación `passwordResets=0`; sin acceso/reconcile/recovery histórico.
 
-## Request08 — STOP seguro
+Request08 run `31909354336` / job `95071998299`: STOP fail-closed `I3_ADMIN_LEGAL_CONFIDENTIALITY_GATE_PENDING_BEFORE_CREATE`; sin Shopper nuevo ni Auth/Firestore writes. Request consumido, no rerun.
 
-Request commit `d21fb78aa012b1739fea03053a0a947fcd379ee4`; run `31909354336`; job `95071998299`; parking commit `8fa887900a5507b606b31dc0386a135060980837`.
+## Autoridad legal durable source-only
 
-Bloqueo exacto antes de Alta:
-`I3_ADMIN_LEGAL_CONFIDENTIALITY_GATE_PENDING_BEFORE_CREATE`.
+Cadena técnica preservada:
+- `c3f8fc362a4b2dddb0a19fa3327170f87b5f9eed`
+- `09092fec7e95d6ccc33aefb780bffdc0b81ff1a0`
+- `0602d6ca0f64280222a4b1522b36f3be77c65c87`
 
-Se detuvo fail-closed, sin aceptar/firmar/guardar consentimiento, sin `shopper.create`, update, readback ni login de Shopper nuevo. Auth/Firestore writes nuevos `0/0`. Request08 consumido; no rerun.
+Gate canónico `31913700755` / `95082399402` SUCCESS; gate PR `31913704247` / `95082407608` SUCCESS. Exact identity, human-only, versioned receipt, server timestamp, provider ACK, idempotencia, read model fail-closed y cero localStorage authority preparados. Browser bridge no activado; provider/Auth/Firestore/legal writes reales `0`.
 
-## Cambios source-only de autoridad legal durable
+## Draft legal V0.1
 
-### Contrato y adapter durable
-Commit `c3f8fc362a4b2dddb0a19fa3327170f87b5f9eed`.
+Creado previamente para revisión humana:
+`app/docs/DRAFT-CONTENIDO-LEGAL-TYA-V0.1-REVISION-HUMANA-20260815.md`.
 
-- `backend/contracts/cxorbia-legal-acceptance-durable-v1.json`
-- `app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js`
-- `tools/qa/verify-i3-legal-acceptance-durable-source-only.mjs`
-- existing checkpoint workflow extendido para verificar el contrato.
+No aprobado, no materializado y sin aceptación.
 
-Define exact identity, human-only, provider authority, versioned receipt, server `acceptedAt`, fail-closed read model y cero localStorage authority.
+## Bloque 2026-08-15 17:52 — TyA V0.2 no-code / rebrand-safe
 
-### Provider runtime y bridge source-only
-Commit `09092fec7e95d6ccc33aefb780bffdc0b81ff1a0`.
+Paula confirmó las decisiones faltantes y reiteró que la plataforma debe ser **no-code** y que el producto tendrá **rebranding**. Se avanzó sin provider writes.
 
-- creado `backend/runtime/cxorbia-legal-acceptance-provider-v1.mjs`;
-- creado `app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js`;
-- actualizado el contrato con presupuestos/gates provider;
-- ampliado el verificador con fake provider store, idempotencia, actor spoof, acceptedAt spoof, versión/digest y gate-before-IO.
+### Archivos creados
 
-No se cargan credenciales al importar el módulo, no se importa `firebase-admin`, no se activó el bridge en el product entrypoint y no se tocaron `/app/modules` ni `/app/core`.
+1. `backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json`
+   - contrato reusable multi-tenant;
+   - valores específicos de TyA prohibidos en runtime code;
+   - perfil legal provider-authoritative editable desde UI autorizada;
+   - brand/rebrand dinámico;
+   - licenciante separado de marca;
+   - Provider Registry dinámico;
+   - política de retención tenant + override por proyecto;
+   - banco/documentos sensibles;
+   - evidencias por proyecto;
+   - controversias configurables;
+   - cambios materiales obligan evaluación/versionado sin reescribir históricos.
 
-### Corrección focal de gate
-El run `31913585259` falló únicamente en el `grep` contractual porque el reporte del verificador no incluía la llave explícita `firestoreWrites`, aunque el propio reporte ya mostraba provider IO real 0 y las pruebas source habían pasado. No fue una falla de provider/producto y no hubo ejecución provider.
+2. `app/docs/DRAFT-CONTENIDO-LEGAL-TYA-V0.2-NOCODE-REVISION-HUMANA-20260815.md`
+   - incorpora decisiones humanas y cláusulas de reemplazo;
+   - usa “la Plataforma” + `platform.displayName` dinámico en vez de hardcodear CXOrbia/Gravicentra;
+   - modelo de operador como comerciante individual/empresa mercantil individual;
+   - Honduras operada desde Guatemala por el mismo operador TyA;
+   - contactos editables;
+   - retención recomendada;
+   - proveedores derivados del estado real;
+   - arbitraje diferenciado B2B/individual;
+   - cuentas bancarias completas solo bajo controles reforzados;
+   - evidencia configurable por proyecto.
 
-Commit focal `0602d6ca0f64280222a4b1522b36f3be77c65c87`: añadió `authWrites=0` y `firestoreWrites=0` al reporte source-safe, sin cambiar la lógica provider.
+3. `app/docs/DECISION-LOCK-TYA-LEGAL-V0.2-NOCODE-20260815.md`
+   - congela decisiones humanas para no volver a preguntarlas;
+   - no contiene credenciales, banco ni documento de identidad crudos;
+   - no sustituye el source lock técnico de I3.
 
-Gate canónico push `31913700755`, job `95082399402`: `SUCCESS` completo. Gate PR `31913704247`, job `95082407608`: `SUCCESS` completo.
+### Decisiones humanas aplicadas
 
-## Bloque 2026-08-15 — preparación de texto legal para revisión humana
+- TyA es empresa mercantil individual establecida en Guatemala; la propietaria/comerciante individual es la contraparte contractual adecuada salvo revisión del abogado.
+- Honduras se opera desde Guatemala por el mismo Operador TyA; no se presume entidad hondureña.
+- El contacto inicial legal/privacidad/incidentes ya fue confirmado, pero debe materializarse luego como dato del tenant y permanecer editable sin deploy.
+- Rebranding: el nombre de producto no puede ser una constante jurídica perpetua.
+- Marca visible y titularidad/licencia de software son entidades distintas; no afirmar marca registrada si no existe referencia verificable.
+- Mientras no haya cesión formal a una futura entidad, la titularidad/licencia debe atribuirse a quien pueda acreditar los derechos; un cambio UI no transfiere IP.
+- Evidencia cruda: piso humano 60 días; default recomendado 90 días por proyecto.
+- Registros comerciales/financieros/auditoría/receipts: referencia conservadora de cinco años cuando corresponda; legal hold suspende borrado.
+- Números de cuenta completos permitidos con cifrado/protección, mínimo privilegio, máscara en UI y retención limitada; cero repo/logs/prompts IA.
+- Documentos: mínimo indispensable.
+- Foto/video/audio/geolocalización/comprobantes: configuración por proyecto desde Crear/Editar proyecto.
+- Make/Gemini no son receptores actuales mientras estén gated; Provider Registry reflejará solo proveedores realmente habilitados.
+- Preferencia por arbitraje: institucional en B2B; no imponer universalmente a Shoppers/individuales sin validación por país.
+- Revisión profesional final GT/HN: sí.
 
-Autorización recibida: preparar texto legal completo TyA para revisión humana, **sin guardar en Firebase ni aceptar por ningún usuario**.
+### Fundamento jurídico verificado en esta iteración
 
-Creado:
-- `app/docs/DRAFT-CONTENIDO-LEGAL-TYA-V0.1-REVISION-HUMANA-20260815.md`
-- commit inicial del draft: `7f67ee59bdf0d6de26b44a539f3f456a5a4e0445`.
+- Código de Comercio de Guatemala: comerciante individual ejerce en nombre propio; la empresa mercantil es una cosa mercantil; la personalidad jurídica propia y distinta corresponde a sociedades mercantiles constituidas como tales.
+- Código de Comercio art. 382: documentación de la empresa por no menos de cinco años, salvo ley especial.
+- Decreto 67-95: Ley de Arbitraje de Guatemala vigente; existe iniciativa de reforma en 2026, no tratada como ley vigente.
+- CRECIG y CENAC operan como centros institucionales de arbitraje/conciliación; V0.2 recomienda CRECIG para B2B como default de propuesta, sujeto al contrato y revisión legal.
+- Honduras: Decreto 161-2000 Ley de Conciliación y Arbitraje como referencia local.
+- Iniciativas guatemaltecas de protección integral de datos siguen en trámite en 2026; no se inventa una ley general vigente.
 
-Contenido del draft:
-- acuerdo marco de uso de plataforma;
-- confidencialidad y secreto operacional;
-- evidencias y conducta de field operations;
-- privacidad/tratamiento de datos y minimización;
-- seguridad e incidentes;
-- propiedad intelectual de software, contenidos y secretos empresariales;
-- anexos por Shopper, staff/admin/operaciones, Cliente y roles transversales;
-- anexos país Guatemala/Honduras;
-- aviso resumido para pantalla;
-- copy de aceptación humana no premarcada;
-- matriz reusable de contenido legal por scope/rol/país;
-- checklist de aprobación y campos pendientes.
+## Claude / prototipo
 
-Investigación jurídica de soporte: fuentes oficiales de Congreso de Guatemala, TSC/IAIP/Congreso de Honduras. Se documentó de forma conservadora la vigencia confirmada de marcos de firma electrónica y propiedad intelectual, y se evitó tratar iniciativas/anteproyectos de datos personales como ley confirmada.
+No se modificó `/app/modules` ni `/app/core` desde backend. Queda documentado para frontend:
+- `configuracion.js`: evolucionar de “Guardar NDA” local a Legal y cumplimiento provider-authoritative;
+- `administrabilidad.js`: retirar semántica demo/local solo después de provider real;
+- proyecto: Crear/Editar > Evidencias y privacidad;
+- integraciones: Provider Registry;
+- marca: rebranding y estado de marca separado de licenciante/IP.
 
-El draft version es `tya-legal-bundle-v0.1-draft-20260815`. El SHA-256 incluido identifica solo el borrador; no es digest productivo. Después de completar campos y aprobar el texto debe recalcularse el digest final.
+Todos los valores de tenant deben ser editables desde la plataforma viva, no desde código.
 
 ## Seguridad / efectos reales
 
-Provider credentials/reads/writes del bloque legal-draft `0/0/0`; Auth/Firestore/legal acceptance writes `0/0/0`; password resets `0`; historical credential access/reconciliation `0/0`; otras identidades `0`; HR/Rules/Storage/Make/Gemini/pagos `0`; product entrypoint activation `false`; deploy `0`; merge=false; producción=false.
+Tenant/provider/legalContent/legalAcceptance/Auth/Firestore/HR/Storage/Rules/Make/Gemini/pagos writes `0`; product entrypoint activation `0`; `/app/modules` changes `0`; `/app/core` changes `0`; deploy `0`; merge=false; producción=false.
 
-No se modificó `/app/modules` ni `/app/core`. No se aceptó, firmó ni materializó contenido legal.
+## Pendiente real
 
-## Documentación
-
-Lock técnico prevalente sigue siendo:
-`app/docs/SOURCE-LOCK-ITERATION3-LEGAL-ACCEPTANCE-PROVIDER-WIRING-SOURCE-ONLY-PASS-20260815.md`.
-
-El borrador legal se incorpora como fuente de revisión, **no** como source lock ni autoridad productiva.
+Domicilio comercial/legal público adecuado; nombre visible temporal/final si rebranding no está cerrado; revisión jurídica GT/HN; consolidación V0.1+V0.2; versión final + SHA-256 final; aprobación humana final. Solo después: gate provider para materialización, aceptación humana y continuación Admin → único Shopper nuevo.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** estructura legal versionada por `legalContentId`/scope/rol/país; aceptación humana; separación entre términos obligatorios y consentimientos opcionales; privacidad por minimización; anexos reutilizables.
-- **Exclusivo TyA:** identidad contractual, jurisdicción, retención, canales legales, proveedores efectivos y contenido final TyA/GT/HN.
-- **Claude/prototipo:** no rediseñar frontend. El modal humano existente se preserva; futuro copy debe usar casillas no premarcadas y aviso de versión cuando el backend legal sea realmente activado.
-- **Academia:** explicar confidencialidad por rol, protección de evidencias, seguridad de credenciales, privacidad y que cambios legales materiales pueden requerir nueva aceptación.
-- **Sin impacto Claude:** investigación normativa, draft hash, documentación y preparación de gate.
+- **Reusable CXOrbia / sucesor de marca:** contrato no-code legal multi-tenant, rebrand-safe, Provider Registry, retención y project evidence policy.
+- **Exclusivo TyA:** valores concretos del tenant, operación Guatemala/Honduras, preferencias y datos de contacto.
+- **Claude/prototipo:** superficies no-code por configuración/proyecto; sin parche backend de UI.
+- **Academia:** actualizar manuales cuando provider real esté activo, explicando versionado, rebranding, evidencias por proyecto y aceptación humana.
+- **Sin impacto Claude inmediato:** investigación legal, decision lock y documentación.
 
 ## Porcentaje
 
-**35% completado / 65% pendiente. I3 0/25 hasta PASS integral.** Preparar el draft no suma puntaje I3 porque todavía no existe texto final aprobado, materialización provider, aceptación humana ni E2E Admin/new Shopper.
-
-## Siguiente gate
-
-Primero: completar/revisar el draft legal V0.1 con datos humanos faltantes y aprobar texto exacto. Luego asignar versión final + digest final. Solo después solicitar `PAULA_REVIEW_REQUIRED_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_PROVIDER_WRITE_AND_ADMIN_NEW_SHOPPER_RESUME` para cualquier provider materialization/write/acceptance y continuación Admin/new Shopper.
+**35% completado / 65% pendiente. I3 0/25 hasta PASS integral.**
