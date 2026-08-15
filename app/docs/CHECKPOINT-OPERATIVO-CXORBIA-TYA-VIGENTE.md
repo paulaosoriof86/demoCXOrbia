@@ -1,16 +1,16 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-14 14:00 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_RESET2_CONSUMED__HISTORICAL_AUTH_REACHED__NAV_GATE_STOP_RETRY__LEGAL_GATE_AWARE_HARNESS_PASS__GO_LIVE_35__PROVIDER_GATE_REQUIRED`
+**Fecha:** 2026-08-14 18:12 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__SELFTEST_IMPORT_ORDER_FIXED__GO_LIVE_35__NEW_GATE_REQUIRED`
 
 ## Autoridad vigente
 
 - Auditoría forense: `app/docs/AUDITORIA-FORENSE-INTEGRAL-PREPRODUCCION-CXORBIA-TYA-20260814.md`
-- Plan durable actualizado: `app/docs/ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md`
+- Plan durable: `app/docs/ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md`
 - I2 PASS: `app/docs/SOURCE-LOCK-ITERATION2-CANONICAL-PERSISTENCE-PASS-20260814.md`
-- I3 pointer blocker histórico/cerrado: `app/docs/SOURCE-LOCK-ITERATION3-STOP-RETRY-POST-CREDENTIAL-RECOVERY-ADMIN-LOGIN-POINTER-20260814.md`
-- I3 harness durability PASS: `app/docs/SOURCE-LOCK-ITERATION3-HARNESS-DURABILITY-PASS-20260814.md`
-- I3 legal-gate-aware harness PASS: `app/docs/SOURCE-LOCK-ITERATION3-HISTORICAL-LEGAL-GATE-AWARE-HARNESS-PASS-20260814.md`
+- I3 harness durable: `app/docs/SOURCE-LOCK-ITERATION3-HARNESS-DURABILITY-PASS-20260814.md`
+- I3 legal-gate-aware: `app/docs/SOURCE-LOCK-ITERATION3-HISTORICAL-LEGAL-GATE-AWARE-HARNESS-PASS-20260814.md`
+- **I3 lock más reciente:** `app/docs/SOURCE-LOCK-ITERATION3-PREPROVIDER-SELFTEST-FAIL-CLOSED-20260814.md`
 - Tracker: `app/docs/GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`
 
 No volver a diagnóstico general, nueva candidata, rama/PR ni Auth rebuild.
@@ -26,73 +26,61 @@ No volver a diagnóstico general, nueva candidata, rama/PR ni Auth rebuild.
 
 I1 PASS 15/15. I2 PASS 20/20. No reprocesar Firebase Auth owner, exact identity, Staff membership, HR live/protected overlay, cumulative read model, `CX.data` command boundary, provider ACK, Mis Visitas arrays/facets/ACK ni firewall fail-closed.
 
-## I3 — último provider run consumido
+## I3 — antecedente provider real que se preserva
 
-Run `31835742956`, job `94881540163`.
+Run `31835742956`, job `94881540163` alcanzó el mismo Shopper histórico exacto, reset exacto autorizado, identidad preservada, membership/crosswalk reconciliation, contexto Auth Shopper y protected HR authority. Se detuvo por el falso negativo de navegación que motivó el harness legal-gate-aware. Ese run no se repite automáticamente.
 
-La autorización durable `cxorbia-i3-shopper-persistence-20260814-03` se consumió una única vez.
+## I3 — request `...-04` consumido sin llegar a provider
 
-PASS alcanzados antes del STOP_RETRY:
+Run `31852717413`, job `94931417141`.
 
-- checkout exacto del SHA de evento;
-- mismo único Shopper histórico exacto;
-- un credential reset exacto autorizado;
-- UID/claims/shopperId/profile/history preservados;
-- otras identidades modificadas `0`;
-- membership/crosswalk reconciliation PASS;
-- proxy del source exacto PASS;
-- login Firebase Shopper avanzó hasta contexto autenticado exacto;
-- `CX_PROTECTED_AUTH_HR_AUTHORITY.applied===true` fue alcanzado.
+El gate inicial PASS, pero `Static I3 source preflight before provider credentials` falló con:
 
-STOP_RETRY:
+`ERR_MODULE_NOT_FOUND: Cannot find package 'playwright' imported from tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs`.
 
-`tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs` agotó 15 s esperando que `#nav-aprendizaje` fuera visible. El flujo Admin/new Shopper no comenzó; provider de comandos, alta/edición, readback y login del nuevo Shopper quedaron SKIPPED.
+La secuencia demuestra que el fallo ocurrió **antes** de:
 
-El checkpoint histórico no fue materializado (`historicalLoginCheckpointPassed=false`) porque el harness exigía las rutas antes de declarar PASS del subgate.
+- instalación de Playwright/firebase-admin;
+- carga de service account;
+- selección del Shopper/Admin;
+- credential reset;
+- reconciliación Firestore;
+- proxy/E2E;
+- provider de comandos;
+- alta/edición de Shopper nuevo.
 
-## Causa de contrato source localizada
+Resultado real del run `31852717413`:
 
-`CX.app.enter()` no garantiza que `CX.router.mount()` ocurra inmediatamente después de Auth: si `CX.confidencialidad.pending(CX.session.role)` está activo, el producto muestra primero el gate legal y monta el workspace solo después de la aceptación humana.
+- password reset: `0`;
+- Auth writes: `0`;
+- Firestore writes: `0`;
+- other identities modified: `0`;
+- HR/Rules/Storage/Make/Gemini/pagos: `0`;
+- deploy: `0`; merge=false; production=false;
+- legal acceptance automated: `0`;
+- automatic retry: `NO`.
 
-El E2E histórico no conocía ese gate y exigía siempre `#nav-aprendizaje` / `#nav-cert` antes de cerrar Auth/HR/historia. Eso hacía posible un falso negativo de navegación aunque identidad y autoridad ya hubieran sido alcanzadas.
+El request `...-04` quedó `enabled=false`, `consumed=true`, `STOP_RETRY_I3_CONTINUATION_FAILED`. Su presupuesto provider no fue utilizado, pero el token de ejecución sí quedó consumido por el circuit breaker.
 
-No se afirma que el run fallido haya confirmado visualmente un NDA pendiente — el run no capturó ese estado. Lo probado es el conflicto de contrato source: el producto puede diferir el router y el harness no lo contemplaba.
+## Causa raíz focal y fix source-only
 
-## Corrección source-only cerrada
+El modo default de `tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs` es source self-test, pero el archivo importaba Playwright estáticamente. Eso hacía que un test que debía ser source-only exigiera una dependencia runtime que el workflow instala deliberadamente después.
 
-`tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs` fue corregido para:
+Correcciones ya aplicadas sin retry:
 
-1. validar y fallar/cerrar primero el subgate de Auth exacto + identity + reviewQueue + HR authority + historia;
-2. consultar después `CX.confidencialidad.pending('shopper')`;
-3. si está pendiente, exigir contrato y diálogo legal visible, preservar el principal y marcar `workspaceState=legal-gate-pending`;
-4. diferir Academia/Certificación sin declararlas PASS;
-5. si no está pendiente, mantener Academia/Certificación obligatorias;
-6. nunca aceptar/firmar/guardar el NDA automáticamente;
-7. cero force-click y cero write APIs.
+1. Playwright se importa dinámicamente solo dentro de `--execute-real` y después del gate explícito.
+2. El source self-test incluye `playwrightDeferredToRealExecution`.
+3. El workflow conserva el preflight antes de provider credentials y acepta una futura lineage exacta desde `...-04` con `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
+4. El source patcher materializa esa misma lineage en el command provider antes de cualquier provider use.
 
-Gate source: `PASS_I3_HISTORICAL_LEGAL_GATE_AWARE_SOURCE` + `node --check` PASS.
-
-## Seguridad
-
-En el provider run consumido:
-
-- un password reset exacto del mismo Shopper histórico;
-- otras identidades `0`;
-- membership/crosswalk reconciliation PASS;
-- Shopper nuevo `NO`;
-- Admin/new Shopper `NO EJECUTADO`;
-- HR/Rules/Storage/Make/Gemini/pagos `0`;
-- deploy `0`; merge=false; production=false;
-- no automatic retry.
-
-Después del run: únicamente source/docs, cero nuevos provider writes.
+No se ha ejecutado un nuevo request después de estas correcciones.
 
 ## Porcentaje
 
-**35% completado / 65% pendiente.** I3 mantiene 0/25 hasta cierre completo.
+**35% completado / 65% pendiente.** I3 sigue 0/25 hasta PASS completo.
 
 ## Siguiente gate exacto
 
-`PAULA_REVIEW_REQUIRED_FOR_I3_LEGAL_GATE_AWARE_HISTORICAL_CHECKPOINT_AND_ADMIN_NEW_SHOPPER_RESUME`.
+`PAULA_REVIEW_REQUIRED_FOR_I3_REQUEST05_AFTER_PREPROVIDER_MECHANISM_FAILURE`.
 
-Una nueva autorización, si Paula decide darla, debe limitarse a un único reset adicional del mismo UID histórico exacto, validar inmediatamente Auth/HR/historia con el harness legal-gate-aware y congelar el checkpoint sanitizado antes de continuar con Admin/new Shopper. Cero aceptación legal automatizada, otras identidades, fuzzy matching, providers prohibidos, deploy, merge o producción.
+Una nueva autorización debe mantener el mismo scope funcional de `...-04`, pero generar un request nuevo `...-05`; no se reusa ni se rerun `...-04`.
