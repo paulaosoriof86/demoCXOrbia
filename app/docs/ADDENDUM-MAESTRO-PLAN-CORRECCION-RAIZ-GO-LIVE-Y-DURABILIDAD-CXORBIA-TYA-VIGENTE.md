@@ -1,7 +1,7 @@
 # ADDENDUM MAESTRO — PLAN DE CORRECCIÓN RAÍZ, GO-LIVE Y DURABILIDAD CXORBIA TyA
 
-**Fecha:** 2026-08-14 14:00 -06:00  
-**Estado:** `ACTIVO__PREVALENTE_PARA_CORRECCION_RAIZ_Y_GO_LIVE__NO_REPROCESO__MISMA_CANDIDATA__I3_LEGAL_GATE_AWARE`
+**Fecha:** 2026-08-14 18:12 -06:00  
+**Estado:** `ACTIVO__PREVALENTE_PARA_CORRECCION_RAIZ_Y_GO_LIVE__NO_REPROCESO__MISMA_CANDIDATA__I3_PREPROVIDER_STOP_RETRY`
 
 ## 0. Propósito y lock
 
@@ -82,11 +82,11 @@ La ruta normal queda cerrada en 5 iteraciones. Una sexta no se abre por rutina, 
 
 ### ITERACIÓN 1 — source-only root-cause consolidation — PASS 15/15
 
-Cerró Auth owner, runtime, Finance activation contract, command adapter, Shopper contract, HR writer interface y P0 source. No reprocesar.
+Cerrada. No reprocesar.
 
 ### ITERACIÓN 2 — canonical persistence + transversal regression — PASS 20/20
 
-Cerró split-brain/false-success source, `CX.data` command boundary, provider ACK, fail-closed, Mis Visitas y regresión transversal. Marker `SOURCE_READY_FOR_DEV_WRITE_GATES`. No reprocesar.
+Cerrada. No reprocesar.
 
 ### ITERACIÓN 3 — DEV Auth/Firestore Shopper persistence — EN CURSO 0/25 hasta PASS completo
 
@@ -99,31 +99,48 @@ Debe cerrar:
 - login nuevo + reload/new-tab + segundo contexto;
 - cero fuzzy matching, otras identidades, false-success o writes fuera de scope.
 
-#### I3 — reglas durables aprendidas y ya source-locked
+#### I3 — reglas durables ya source-locked
 
 1. Un credential reset histórico autorizado se hace únicamente sobre el mismo UID exacto.
-2. La evidencia sanitizada de Auth/identity/HR/history debe congelarse inmediatamente después de ese subgate y antes de Admin/new Shopper.
+2. La evidencia sanitizada de Auth/identity/HR/history se congela inmediatamente después de ese subgate y antes de Admin/new Shopper.
 3. Un fallo posterior no obliga a repetir un subgate histórico ya preservado.
 4. Overlays diagnósticos DEV son no interactivos; no `force:true` para esconder defectos.
-5. **El gate legal/NDA es distinto del gate Auth/history.** `CX.app.enter()` puede diferir `CX.router.mount()` mientras `CX.confidencialidad.pending(...)` esté activo.
+5. El gate legal/NDA es distinto del gate Auth/history. `CX.app.enter()` puede diferir `CX.router.mount()` mientras `CX.confidencialidad.pending(...)` esté activo.
 6. El E2E histórico valida primero Auth exacto + identity + reviewQueue + HR authority + historia.
 7. Si el NDA está pendiente, debe existir un diálogo legal visible y el workspace queda `legal-gate-pending`; las rutas se difieren sin declararlas PASS.
 8. El harness jamás acepta, firma o guarda el consentimiento legal automáticamente.
 9. Si no hay NDA pendiente, Academia y Certificación siguen siendo rutas E2E obligatorias.
 10. Un gate legal pendiente no se presenta como PASS de Academia/Certificación; solo evita clasificarlo falsamente como fallo de Auth/history.
+11. Un request `consumed=true` con `automaticRetryAllowed=false` nunca se rerun; cualquier nueva ejecución exige gate/request nuevo.
+12. Un source-only preflight debe poder ejecutarse antes de instalar dependencias runtime y antes de acceder a credenciales provider.
 
 Locks I3 actuales:
 
 - `SOURCE-LOCK-ITERATION3-HARNESS-DURABILITY-PASS-20260814.md`;
-- `SOURCE-LOCK-ITERATION3-HISTORICAL-LEGAL-GATE-AWARE-HARNESS-PASS-20260814.md`.
+- `SOURCE-LOCK-ITERATION3-HISTORICAL-LEGAL-GATE-AWARE-HARNESS-PASS-20260814.md`;
+- **`SOURCE-LOCK-ITERATION3-PREPROVIDER-SELFTEST-FAIL-CLOSED-20260814.md` — lock más reciente.**
+
+#### I3 — request `...-04`: fallo mecánico pre-provider
+
+Run `31852717413`, job `94931417141` pasó el gate de autorización/scope y falló en `Static I3 source preflight before provider credentials` con `ERR_MODULE_NOT_FOUND` porque `tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs`, aun teniendo modo default source-only, importaba Playwright estáticamente. El workflow instala Playwright deliberadamente después del preflight.
+
+Este fallo ocurrió antes de service account/provider access. Por tanto, en ese run hubo reset 0, Auth writes 0, Firestore writes 0, otras identidades 0 y Admin/new Shopper no ejecutado. El request quedó consumido por STOP_RETRY, pero el presupuesto provider no llegó a utilizarse.
+
+Corrección focal ya aplicada sin rerun:
+
+- Playwright se carga dinámicamente solo dentro de `--execute-real` y después del gate explícito;
+- el self-test source-only incluye `playwrightDeferredToRealExecution`;
+- el workflow prearma lineage exacta para una futura continuación desde request `...-04` con código `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`;
+- `tools/qa/cxorbia-i3-source-patcher.mjs` materializa/verifica esa misma lineage en el command provider antes de cualquier provider use;
+- no se ejecutó un nuevo provider gate tras estas correcciones.
 
 ### ITERACIÓN 4 — HR bidirectional + Phase A E2E + Finance — 25%
 
-Requiere gate HR/Make DEV cuando llegue el write real. Debe preservar lectura HR viva, activar writer real idempotente, probar sync sin duplicación/conflictos silenciosos, Finance v2 por runtime contract y E2E de Phase A.
+No iniciar hasta I3 PASS. Requiere gate HR/Make DEV cuando llegue el write real. Debe preservar lectura HR viva, activar writer real idempotente, probar sync sin duplicación/conflictos silenciosos, Finance v2 por runtime contract y E2E de Phase A.
 
 ### ITERACIÓN 5 — exact build + preproduction + go-live — 15%
 
-Requiere gates de deploy/producción. Congela SHA, manifest/build-lock, despliega exactamente ese SHA, verifica paridad remota y ejecuta E2E real del mismo build antes de cutover y smoke.
+No iniciar hasta I4 PASS. Requiere gates de deploy/producción. Congela SHA, manifest/build-lock, despliega exactamente ese SHA, verifica paridad remota y ejecuta E2E real del mismo build antes de cutover y smoke.
 
 Cierre válido: `ACTIVE_BASELINE_PHASE_A_PRODUCTION`.
 
@@ -140,6 +157,8 @@ Cierre válido: `ACTIVE_BASELINE_PHASE_A_PRODUCTION`.
 9. No hardcodear Cinépolis en componentes reutilizables.
 10. No éxito UI antes de ACK real.
 11. No autoaceptar NDA/confidencialidad para hacer pasar E2E.
+12. No rerun de requests consumidos.
+13. No source-preflight que dependa de una instalación runtime posterior.
 
 ## 6. Gate de durabilidad para futuros proyectos/tenants
 
@@ -172,14 +191,14 @@ Clasificación: Reusable CXOrbia, Exclusivo cliente, Claude/prototipo, Academia 
 
 ## 9. Estado seguro y avance vigente
 
-Último provider run: `31835742956`, job `94881540163`.
+I1 e I2 permanecen PASS. I3 sigue abierta.
 
-El segundo reset exacto fue consumido y el browser alcanzó contexto Firebase Shopper autenticado y `CX_PROTECTED_AUTH_HR_AUTHORITY.applied===true`, pero el histórico no generó checkpoint porque el E2E agotó timeout esperando `#nav-aprendizaje` antes de contemplar el gate legal del producto. Admin/new Shopper no se ejecutó.
+Último request intentado: `cxorbia-i3-shopper-persistence-20260814-04`, run `31852717413`, job `94931417141`.
 
-Ese defecto source del harness ya quedó corregido y validado source-only con marker `PASS_I3_HISTORICAL_LEGAL_GATE_AWARE_SOURCE`.
+Ese request fue consumido por STOP_RETRY **antes de provider credentials**. Ejecutó 0 resets, 0 Auth writes, 0 Firestore writes y 0 cambios de identidad. No hay retry automático.
 
-La autorización `...-03` está consumida/parked; no hay retry automático. Desde el STOP_RETRY solo hubo source/docs: cero nuevos provider writes, deploy, merge o producción.
+Después del STOP_RETRY solo hubo source/docs y prearmado de lineage; cero provider writes, deploy, merge o producción.
 
 **GO-LIVE: 35% completado / 65% pendiente.** I3 no suma hasta PASS completo.
 
-**Siguiente acción exacta:** `PAULA_REVIEW_REQUIRED_FOR_I3_LEGAL_GATE_AWARE_HISTORICAL_CHECKPOINT_AND_ADMIN_NEW_SHOPPER_RESUME`.
+**Siguiente acción exacta:** `PAULA_REVIEW_REQUIRED_FOR_I3_REQUEST05_AFTER_PREPROVIDER_MECHANISM_FAILURE`.
