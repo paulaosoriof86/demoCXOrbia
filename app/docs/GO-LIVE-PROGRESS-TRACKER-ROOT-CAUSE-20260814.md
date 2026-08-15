@@ -1,30 +1,46 @@
 # GO-LIVE PROGRESS TRACKER — ROOT-CAUSE PLAN CXORBIA TyA
 
-**Fecha:** 2026-08-14 18:24 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__SOURCE_FIX_READY__LINEAGE_PREWIRED__35_PERCENT__NEW_GATE_REQUIRED`
+**Fecha:** 2026-08-15 13:14 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_REQUEST05_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__SELFREFERENTIAL_SELFTEST_FIXED__SOURCE_ONLY_GATE_PASS__35_PERCENT__REQUEST06_GATE_REQUIRED`
 
 ## Medición
+
 I1 15% · I2 20% · I3 25% · I4 25% · I5 15%. Solo avanza al cerrar iteración.
 
 ## Actual
-**35% completado / 65% pendiente.** I1/I2 PASS; I3 0/25.
 
-Request `...-04`, run `31852717413`, job `94931417141`: gate inicial PASS; STOP_RETRY en source preflight por Playwright antes de instalación/provider credentials.
+**35% completado / 65% pendiente.** I1 PASS 15/15; I2 PASS 20/20; I3 0/25 todavía.
 
-Provider effects: reset 0, Auth 0, Firestore 0, other identities 0, Shopper nuevo NO, providers prohibidos 0, deploy/merge/production 0/false/false. Request consumido; no rerun.
+## Request `...-05`
 
-## Fix source-only
-- Playwright dinámico solo con `--execute-real`; self-test `playwrightDeferredToRealExecution`.
-- workflow prearma lineage exacta desde `...-04` con `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
-- source patcher materializa/verifica lineage en provider antes de provider use.
-- no provider gate posterior.
+Run `31902822527`, job `95056069906`: autorización/carril PASS; STOP_RETRY en source preflight antes de tooling, service account o provider.
 
-Source lock: `app/docs/SOURCE-LOCK-ITERATION3-PREPROVIDER-SELFTEST-FAIL-CLOSED-20260814.md`.
+Causa: self-test auto-referencial de Playwright. La expresión que buscaba ausencia de `from 'playwright'` contenía ella misma ese literal, por lo que el check fallaba aunque el import estático ya hubiera sido eliminado.
+
+Efectos reales: reset `0`, Auth `0`, Firestore `0`, other identities `0`, Shopper nuevo `NO`, HR/Rules/Storage/Make/Gemini/pagos `0`, deploy `0`, merge=false, production=false, consentimiento automatizado `0`. Request consumido; no rerun.
+
+## Fix source-only certificado
+
+- Harness v5: detector estructural de import estático + `await import('playwright')` solo en `--execute-real`.
+- Legal gate sigue separado de Auth/history y `acceptanceAutomated=false`.
+- Phase A workflow valida el harness sin Playwright/provider.
+- Checkpoint verifier valida fuentes vivas compactas.
+- Source patcher y provider workflow prearman lineage `request05 + I3_PREPROVIDER_SOURCE_SELFTEST_SELF_REFERENTIAL_STATIC_IMPORT_CHECK`.
+- Run source-only `31903321622`, HEAD `64f7aa28d3d3728d2f7a3749d62373cff746ffd2`: `SUCCESS` en I1, I2, harness, patcher/lineage y checkpoint verifier.
+
+Source lock prevalente: `app/docs/SOURCE-LOCK-ITERATION3-PREPROVIDER-SELFTEST-SELFREFERENCE-FIX-PASS-20260815.md`.
 
 ## Pendiente I3
-Nuevo gate/request `...-05`; un reset exacto histórico; Auth/identity/HR/history legal-gate-aware + checkpoint; Admin create/update Shopper nuevo + ACK/readback; nuevo Shopper login/reload/new-tab/second context; cero fuzzy/otras identidades/consent automation/providers prohibidos.
 
-Cierre I3 => **60% / 40% pendiente**.
+1. Nuevo gate/request `...-06`, no rerun de `...-05`.
+2. Un único reset del mismo Shopper histórico exacto.
+3. Auth/identity/HR/history legal-gate-aware + checkpoint sanitizado inmediato.
+4. Admin create/update de un único Shopper nuevo con provider ACK/readback.
+5. Nuevo Shopper login + reload/new-tab + segundo contexto.
+6. Cero fuzzy, otras identidades, consentimiento automatizado o providers prohibidos.
+
+Cierre I3 => **60% completado / 40% pendiente**.
 
 ## Siguiente gate
-`PAULA_REVIEW_REQUIRED_FOR_I3_REQUEST05_AFTER_PREPROVIDER_MECHANISM_FAILURE`.
+
+`PAULA_REVIEW_REQUIRED_FOR_I3_REQUEST06_AFTER_SELFREFERENTIAL_PREPROVIDER_MECHANISM_FAILURE`.
