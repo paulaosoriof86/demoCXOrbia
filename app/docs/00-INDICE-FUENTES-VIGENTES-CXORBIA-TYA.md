@@ -1,6 +1,6 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-14 18:20 -06:00  
+**Fecha:** 2026-08-14 18:22 -06:00  
 **Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_FAIL_CLOSED__ZERO_PROVIDER_WRITES__SELFTEST_IMPORT_ORDER_FIXED__LINEAGE_PREWIRED__GO_LIVE_35__NEW_GATE_REQUIRED`
 
 ## 1. Lectura obligatoria y prevalente
@@ -37,20 +37,18 @@ Run `31852717413`, job `94931417141`.
 
 PASS: checkout exacto del request commit y gate de Paula/repo/branch/PR/target/budgets/prohibiciones.
 
-STOP_RETRY en `Static I3 source preflight before provider credentials` por:
+STOP_RETRY en `Static I3 source preflight before provider credentials` por `ERR_MODULE_NOT_FOUND` al importar `playwright` antes del paso que lo instala.
 
-`ERR_MODULE_NOT_FOUND: Cannot find package 'playwright' imported from tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs`.
-
-Playwright se instalaba deliberadamente después del preflight. Service account, selección de identidades, reset, Firestore, proxy, E2E y Admin/new Shopper quedaron SKIPPED.
+Service account, selección de identidades, reset, Firestore, proxy, E2E y Admin/new Shopper quedaron SKIPPED.
 
 **Este run ejecutó 0 password resets, 0 Auth writes, 0 Firestore writes y 0 cambios de identidad.** El request quedó `consumed=true`, pero su presupuesto provider no fue utilizado.
 
 ## 4. Corrección source-only posterior — sin retry
 
-- `tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs`: Playwright se carga dinámicamente solo dentro de `--execute-real`; el self-test source-only ya no depende de Playwright instalado y verifica `playwrightDeferredToRealExecution`.
-- `.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml`: mantiene el preflight antes de provider credentials y prearma lineage exacta desde `...-04` con `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
-- `tools/qa/cxorbia-i3-source-patcher.mjs`: materializa/verifica la misma lineage en el command provider antes de cualquier provider use.
-- No se creó workflow, rama, PR ni candidata nuevos y no se ejecutó otro provider gate.
+- historical E2E: Playwright se carga dinámicamente solo dentro de `--execute-real`; source self-test ya no depende de Playwright instalado y verifica `playwrightDeferredToRealExecution`.
+- workflow existente: prearma lineage exacta desde `...-04` con `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
+- source patcher: materializa/verifica la misma lineage en command provider antes de cualquier provider use.
+- no se creó workflow, rama, PR ni candidata nuevos y no se ejecutó otro provider gate.
 
 ## 5. Seguridad
 
@@ -64,4 +62,4 @@ En run `31852717413`: reset 0, Auth 0, Firestore 0, otras identidades 0, HR/Rule
 
 `PAULA_REVIEW_REQUIRED_FOR_I3_REQUEST05_AFTER_PREPROVIDER_MECHANISM_FAILURE`.
 
-Si Paula vuelve a autorizar, el alcance funcional puede ser exactamente el mismo que `...-04`, mediante request nuevo `...-05`: un único reset del mismo UID histórico, checkpoint histórico legal-gate-aware antes de Administración y luego un único Shopper nuevo con provider ACK/readback/login/reload/new-tab/segundo contexto. Sin fuzzy, otras identidades, aceptación legal automatizada, HR/Rules/Storage/Make/Gemini/pagos, deploy, merge o producción; fail-closed y cero retry automático.
+Si Paula vuelve a autorizar, usar request nuevo `...-05` con el mismo alcance funcional de `...-04`: un único reset del mismo UID histórico, checkpoint histórico legal-gate-aware antes de Administración y luego un único Shopper nuevo con provider ACK/readback/login/reload/new-tab/segundo contexto. Sin fuzzy, otras identidades, aceptación legal automatizada, HR/Rules/Storage/Make/Gemini/pagos, deploy, merge o producción; fail-closed y cero retry automático.
