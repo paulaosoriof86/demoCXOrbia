@@ -13,9 +13,9 @@
   "firebaseProjectId": "cxorbia-backend-dev",
   "tenantId": "tya",
   "projectId": "cinepolis",
-  "enabled": true,
-  "consumed": false,
-  "status": "authorized_execute_once",
+  "enabled": false,
+  "consumed": true,
+  "status": "STOP_RETRY_I3_ADMIN_NEW_SHOPPER_CONTINUATION_FAILED",
   "authorizedBy": "Paula",
   "authorizationText": "Autorizo una única continuación I3 request07 sobre docs-tya-v6-v71-audit / PR #7 y cxorbia-backend-dev, limitada exclusivamente al subgate pendiente de Administración/Shopper nuevo posterior a I3_ADMIN_NEW_SHOPPER_BUTTON_HIDDEN_BEFORE_COMMAND. Debe reutilizar sin modificar el checkpoint histórico congelado de run 31906391682; queda prohibido repetir credential reset, reabrir o reconciliar la identidad histórica o acceder a su credencial. Autoriza únicamente crear y editar un único Shopper nuevo desde Administración con provider ACK, Auth + claims + membership + profile/shopper + crosswalk, provider readback, login, reload/new-tab y segundo contexto. Cero fuzzy matching, otras identidades, password resets, HR/Rules/Storage/Make/Gemini/pagos writes, deploy, merge o producción. Fail-closed ante drift, colisión, ambigüedad o scope inesperado y sin segundo intento automático.",
   "allowedExecutions": 1,
@@ -40,5 +40,8 @@
   "historicalLoginCheckpointPassed": true,
   "historicalLoginCheckpoint": "app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json",
   "historicalResetRepeated": false,
-  "nextGate": "ITERACION_3_ADMIN_NEW_SHOPPER_EXECUTION"
+  "nextGate": "PAULA_REVIEW_REQUIRED_FOR_I3_ADMIN_NEW_SHOPPER_RESUME",
+  "decision": "STOP_RETRY_I3_ADMIN_NEW_SHOPPER_CONTINUATION_FAILED",
+  "consumedAt": "2026-08-15T20:50:52.539Z",
+  "workflowRunId": 31907732888
 }
