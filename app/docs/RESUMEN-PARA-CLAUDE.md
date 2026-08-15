@@ -1,6 +1,6 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-14 18:18 -06:00  
+**Última actualización:** 2026-08-14 18:20 -06:00  
 **Estado:** `I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__SELFTEST_IMPORT_ORDER_FIXED__LINEAGE_PREWIRED__SAME_CANDIDATE`
 
 ## Regla principal
@@ -29,9 +29,9 @@ Por ello quedaron SKIPPED reset, Firestore, E2E histórico, Admin y nuevo Shoppe
 
 ## Root fix sin impacto de prototipo
 
-- `tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs` carga Playwright dinámicamente solo con `--execute-real`.
+- historical E2E carga Playwright dinámicamente solo con `--execute-real` y verifica `playwrightDeferredToRealExecution`.
 - workflow existente prearma lineage exacta desde request `...-04` para un futuro request `...-05`.
-- `tools/qa/cxorbia-i3-source-patcher.mjs` materializa/verifica esa lineage en el provider antes de provider use.
+- source patcher materializa/verifica esa lineage en el provider antes de provider use.
 
 **Claude no debe corregir login, Academia, Certificación, NDA ni shoppers.js por este incidente.** No es un defecto visual/funcional de esos módulos.
 
