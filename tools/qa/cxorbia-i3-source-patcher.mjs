@@ -42,6 +42,10 @@ function patched(){
     const replacement="['cxorbia-i3-shopper-persistence-20260814-04','I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER'],\n    ['cxorbia-i3-shopper-persistence-20260814-05','I3_PREPROVIDER_SOURCE_SELFTEST_SELF_REFERENTIAL_STATIC_IMPORT_CHECK']\n  ];";
     provider=once(provider,anchor,replacement,'I3_PROVIDER_SELF_REFERENTIAL_LINEAGE_INSERT');
   }
+  if(!provider.includes("const adminResume=r.continuationMode==='admin_new_shopper_resume';")){
+    provider=once(provider,"const recovery=r.continuationMode==='historical_credential_recovery_resume';","const recovery=r.continuationMode==='historical_credential_recovery_resume';\n  const adminResume=r.continuationMode==='admin_new_shopper_resume';",'I3_PROVIDER_ADMIN_RESUME_MODE');
+    provider=once(provider,"if(recovery&&!lineageOk)throw new Error('I3_RECOVERY_CONTINUATION_INVALID');","if(recovery&&!lineageOk)throw new Error('I3_RECOVERY_CONTINUATION_INVALID');\n  const adminResumeOk=r.continuationOfRequestId==='cxorbia-i3-shopper-persistence-20260814-06'&&r.priorStopRetryCode==='I3_ADMIN_NEW_SHOPPER_BUTTON_HIDDEN_BEFORE_COMMAND';\n  if(adminResume&&!adminResumeOk)throw new Error('I3_ADMIN_RESUME_CONTINUATION_INVALID');\n  if(!recovery&&!adminResume)throw new Error('I3_CONTINUATION_MODE_INVALID');",'I3_PROVIDER_ADMIN_RESUME_LINEAGE');
+  }
   return {index,shoppers,provider};
 }
 const out=patched();
@@ -56,6 +60,8 @@ for(const [key,content] of Object.entries(out)){
     ensure(content.includes('desiredCross'),'HISTORICAL_CROSSWALK_REPAIR_MISSING');
     ensure(content.includes("['cxorbia-i3-shopper-persistence-20260814-04','I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER']"),'I3_PROVIDER_PREPROVIDER_LINEAGE_MISSING');
     ensure(content.includes("['cxorbia-i3-shopper-persistence-20260814-05','I3_PREPROVIDER_SOURCE_SELFTEST_SELF_REFERENTIAL_STATIC_IMPORT_CHECK']"),'I3_PROVIDER_SELF_REFERENTIAL_LINEAGE_MISSING');
+    ensure(content.includes("const adminResume=r.continuationMode==='admin_new_shopper_resume';"),'I3_PROVIDER_ADMIN_RESUME_MODE_MISSING');
+    ensure(content.includes("r.continuationOfRequestId==='cxorbia-i3-shopper-persistence-20260814-06'"),'I3_PROVIDER_ADMIN_RESUME_LINEAGE_MISSING');
   }
 }
 console.log(JSON.stringify({decision:mode==='--apply'?'PASS_I3_SOURCE_PATCH_APPLIED':'PASS_I3_SOURCE_PATCH_VERIFIED',sameCandidate:true,files:Object.values(files),providerWrites:0,deploys:0,production:false}));
