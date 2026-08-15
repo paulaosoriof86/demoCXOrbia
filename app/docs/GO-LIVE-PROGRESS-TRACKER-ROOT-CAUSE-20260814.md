@@ -9,13 +9,13 @@ I1 15% · I2 20% · I3 25% · I4 25% · I5 15%. Solo avanza al cerrar iteración
 ## Actual
 **35% completado / 65% pendiente.** I1/I2 PASS; I3 0/25.
 
-Request `...-04`, run `31852717413`, job `94931417141`: gate inicial PASS; STOP_RETRY en source preflight por Playwright importado antes de instalación. Fallo antes de provider credentials.
+Request `...-04`, run `31852717413`, job `94931417141`: gate inicial PASS; STOP_RETRY en source preflight por Playwright antes de instalación/provider credentials.
 
-Effects: reset 0, Auth 0, Firestore 0, other identities 0, Shopper nuevo NO, providers prohibidos 0, deploy/merge/production 0/false/false. Request consumido; no rerun.
+Provider effects: reset 0, Auth 0, Firestore 0, other identities 0, Shopper nuevo NO, providers prohibidos 0, deploy/merge/production 0/false/false. Request consumido; no rerun.
 
 ## Fix source-only
 - Playwright dinámico solo con `--execute-real`; self-test `playwrightDeferredToRealExecution`.
-- workflow prearma lineage `...-04` + `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
+- workflow prearma lineage exacta desde `...-04` con `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
 - source patcher materializa/verifica lineage en provider antes de provider use.
 - no provider gate posterior.
 
