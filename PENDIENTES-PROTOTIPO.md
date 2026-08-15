@@ -1,6 +1,6 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-14 18:18 -06:00  
+**Última actualización:** 2026-08-14 18:20 -06:00  
 **Estado:** `I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__SELFTEST_IMPORT_ORDER_FIXED__LINEAGE_PREWIRED__SAME_CANDIDATE__GO_LIVE_35`
 
 ## Decisión vigente
@@ -27,7 +27,7 @@ Lock I3 más reciente:
 
 Run `31852717413` / job `94931417141`.
 
-Gate inicial PASS. STOP_RETRY en source preflight porque el harness histórico importaba Playwright antes del paso que instala Playwright.
+Gate inicial PASS. STOP_RETRY en source preflight porque el harness importaba Playwright antes del paso que lo instala.
 
 El fallo ocurrió antes de service account/provider access. Por tanto:
 
@@ -44,9 +44,9 @@ Request `...-04` quedó consumido/parked y no se rerun.
 ## Causa corregida source-only
 
 1. Playwright ahora se importa dinámicamente solo en `--execute-real`.
-2. El self-test default queda independiente de Playwright instalado y verifica `playwrightDeferredToRealExecution`.
-3. Workflow existente ya prearma lineage exacta desde `...-04` con `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
-4. Source patcher materializa/verifica esa misma lineage en el command provider antes del primer provider use de una futura ejecución.
+2. Source self-test queda independiente de Playwright instalado y verifica `playwrightDeferredToRealExecution`.
+3. Workflow existente prearma lineage exacta desde `...-04` con `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
+4. Source patcher materializa/verifica esa misma lineage en command provider antes del primer provider use futuro.
 5. No se ha ejecutado provider después de este hardening.
 
 ## Pendiente I3 real
@@ -62,7 +62,7 @@ Una futura request `...-05` debe cerrar, en este orden:
 5. nuevo Shopper login + reload/new-tab/segundo contexto;
 6. cero fuzzy, otras identidades, false success o consentimiento legal automatizado.
 
-Si el checkpoint histórico llega a PASS y un paso posterior falla, no repetir histórico/reset; continuar desde el checkpoint preservado mediante gate focal posterior.
+Si el checkpoint histórico llega a PASS y un paso posterior falla, no repetir histórico/reset; continuar desde checkpoint preservado mediante gate focal posterior.
 
 ## Reusable CXOrbia / no-code
 
