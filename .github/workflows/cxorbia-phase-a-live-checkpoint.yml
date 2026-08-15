@@ -10,6 +10,8 @@ on:
       - 'app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md'
       - 'app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md'
       - 'app/docs/SOURCE-LOCK-C6-STAFF-PRIVATE-EXECUTION-HANDOFF-PASS-20260811.md'
+      - 'app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json'
+      - 'app/docs/SOURCE-LOCK-ITERATION3-HISTORICAL-SHOPPER-LOGIN-PASS-20260814.md'
       - 'backend/contracts/c6-staff-repair-bootstrap-exact-write-v2.json'
       - '.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json'
       - 'tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.mjs'
@@ -30,6 +32,7 @@ on:
       - 'tools/qa/verify-root-cause-correction-iteration2.mjs'
       - 'tools/qa/verify-phase-a-live-execution-checkpoint.mjs'
       - 'tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs'
+      - 'tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs'
       - 'tools/qa/cxorbia-i3-source-patcher.mjs'
       - '.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml'
       - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
@@ -41,6 +44,8 @@ on:
       - 'app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md'
       - 'app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md'
       - 'app/docs/SOURCE-LOCK-C6-STAFF-PRIVATE-EXECUTION-HANDOFF-PASS-20260811.md'
+      - 'app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json'
+      - 'app/docs/SOURCE-LOCK-ITERATION3-HISTORICAL-SHOPPER-LOGIN-PASS-20260814.md'
       - 'backend/contracts/c6-staff-repair-bootstrap-exact-write-v2.json'
       - '.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json'
       - 'tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.mjs'
@@ -61,6 +66,7 @@ on:
       - 'tools/qa/verify-root-cause-correction-iteration2.mjs'
       - 'tools/qa/verify-phase-a-live-execution-checkpoint.mjs'
       - 'tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs'
+      - 'tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs'
       - 'tools/qa/cxorbia-i3-source-patcher.mjs'
       - '.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml'
       - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
@@ -106,6 +112,13 @@ jobs:
           node --check tools/qa/verify-root-cause-correction-iteration2.mjs
       - name: Verify Iteration 2 canonical persistence and transversal source contract
         run: node tools/qa/verify-root-cause-correction-iteration2.mjs
+      - name: Verify frozen I3 historical checkpoint source-safe
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');const p='app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json';if(!fs.existsSync(p))throw new Error('I3_HISTORICAL_CHECKPOINT_MISSING');const c=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(c.decision!=='PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY'||Number(c.workflowRunId)!==31906391682||c.identity?.exact!==true||c.identity?.uidPreserved!==true||c.identity?.historyE2E!==true||c.legalGate?.acceptanceAutomated!==false||Number(c.writes?.authPasswordUpdates)!==1)throw new Error('I3_HISTORICAL_CHECKPOINT_DRIFT');
+          NODE
       - name: Validate I3 historical legal-gate-aware harness source syntax
         run: node --check tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs
       - name: Verify I3 historical harness source-only contract without Playwright or provider access
@@ -117,13 +130,18 @@ jobs:
           grep -q '"legalGateAware": true' .tmp-i3-harness-source.json
           grep -q '"legalConsentNotAutomated": true' .tmp-i3-harness-source.json
           grep -q '"playwrightDeferredToRealExecution": true' .tmp-i3-harness-source.json
-      - name: Verify I3 patcher and next exact continuation lineage source-only
+      - name: Verify I3 Admin remaining-subgate source and frozen-history resume contract
         run: |
           set -euo pipefail
+          node --check tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs
           node --check tools/qa/cxorbia-i3-source-patcher.mjs
           node tools/qa/cxorbia-i3-source-patcher.mjs --verify > .tmp-i3-patcher-source.json
           cat .tmp-i3-patcher-source.json
           grep -q 'PASS_I3_SOURCE_PATCH_VERIFIED' .tmp-i3-patcher-source.json
-          grep -q "cxorbia-i3-shopper-persistence-20260814-05','I3_PREPROVIDER_SOURCE_SELFTEST_SELF_REFERENTIAL_STATIC_IMPORT_CHECK" .github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml
+          grep -q 'adminFrontendHandoffAwaited:true' tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs
+          grep -q "continuationMode!=='admin_new_shopper_resume'" .github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml
+          grep -q "continuationOfRequestId!=='cxorbia-i3-shopper-persistence-20260814-06'" .github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml
+          grep -q "r.passwordResets!==0" .github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml
+          grep -q "Historical Shopper exact reset/login/history was frozen by request06 and MUST NOT repeat" .github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml
       - name: Verify Phase A current operational checkpoint
         run: node tools/qa/verify-phase-a-live-execution-checkpoint.mjs
