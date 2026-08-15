@@ -1,13 +1,13 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-15 13:16 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_REQUEST05_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__SELFREFERENTIAL_SELFTEST_FIXED__SOURCE_ONLY_GATE_PASS__GO_LIVE_35__REQUEST06_GATE_REQUIRED`
+**Fecha:** 2026-08-15 14:17 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_REQUEST06_HISTORICAL_SUBGATE_PASS_FROZEN__ADMIN_NEW_SHOPPER_STOP_RETRY_BUTTON_HIDDEN_BEFORE_COMMAND__ADMIN_RESUME_SOURCE_GATE_PASS__GO_LIVE_35__REQUEST07_GATE_REQUIRED`
 
 ## Autoridad
 
-Auditoría forense + `ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md` + I1/I2 PASS + `SOURCE-LOCK-ITERATION3-PREPROVIDER-SELFTEST-SELFREFERENCE-FIX-PASS-20260815.md` + tracker vigente.
+Auditoría forense + `ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md` + I1/I2 PASS + **`SOURCE-LOCK-ITERATION3-HISTORICAL-PASS-ADMIN-RESUME-SOURCE-GATE-PASS-20260815.md`** + tracker vigente.
 
-`NO REPROCESO`: no diagnóstico general, nueva candidata, rama/PR ni Auth rebuild.
+`NO REPROCESO`: no diagnóstico general, nueva candidata, rama/PR, Auth rebuild ni repetición del subgate histórico ya congelado.
 
 ## Carril
 
@@ -17,41 +17,77 @@ Repo `paulaosoriof86/demoCXOrbia`; candidata `docs-tya-v6-v71-audit`; PR #7 draf
 
 I1 PASS 15/15. I2 PASS 20/20. No reprocesar.
 
-## I3 preservado
+## I3 request06 — subgate histórico PASS
 
-El provider run histórico `31835742956` alcanzó el mismo Shopper histórico exacto, un reset autorizado, identidad preservada, membership/crosswalk, Auth Shopper y protected HR authority. El harness legal-gate-aware corrigió el falso negativo de navegación. Esto se preserva como antecedente y no reabre auditoría.
+Request `cxorbia-i3-shopper-persistence-20260814-06`, commit `701fedc184ccc98e08e7444adc0f04cd54247fce`, run `31906391682`, job `95064802332`.
 
-## Request `...-05`
+PASS antes de Administración:
 
-Run `31902822527`, job `95056069906`: gate de autorización/carril PASS. STOP_RETRY en `Static I3 source preflight before provider credentials`.
+- mismo Shopper histórico exacto;
+- un único credential reset sobre el mismo UID;
+- UID/claims/profile/membership/crosswalk/historia preservados;
+- login real + protected HR authority + history E2E PASS;
+- Firestore reconciliation histórica: `0` writes;
+- otras identidades: `0`;
+- fuzzy matching: `false`.
 
-Causa exacta: el self-test ya tenía Playwright dinámico, pero comprobaba ausencia mediante `source.includes("from 'playwright'")`; ese mismo literal estaba escrito dentro del propio test y lo auto-invalidaba.
+Checkpoint congelado:
+`app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json`.
 
-El fallo ocurrió antes de tooling/service account/provider. Selección de identidades, credential reset, Firestore reconciliation, proxy/E2E histórico, command provider, Administración y Shopper nuevo quedaron SKIPPED.
+**Este subgate no se repite. Todo request futuro lleva passwordResets=0 y no accede a la credencial histórica.**
 
-Resultado request05: reset `0` · Auth `0` · Firestore `0` · other identities `0` · HR/Rules/Storage/Make/Gemini/pagos `0` · deploy `0` · merge=false · production=false · legal consent automation `0` · retry `NO`.
+## Gate legal / Academia
 
-Request05 consumido; no rerun ni segundo intento automático.
+El Shopper histórico quedó en `legal-gate-pending`: diálogo soportado, pendiente y visible; `acceptanceAutomated=false`.
 
-## Fix source-only y prueba independiente
+Academia y Certificación quedaron diferidas por el gate legal. No se aceptó, firmó, guardó ni simuló consentimiento y esas rutas no se declaran PASS.
 
-1. Harness v5 detecta únicamente un import estático real mediante patrón estructural y mantiene `await import('playwright')` dentro de `--execute-real`.
-2. Phase A workflow existente valida el harness antes de cualquier provider y sin Playwright instalado.
-3. `verify-phase-a-live-execution-checkpoint.mjs` verifica autoridades vivas/compactas y conserva la métrica productiva correcta.
-4. Source patcher y workflow I3 prearman lineage `request05 + I3_PREPROVIDER_SOURCE_SELFTEST_SELF_REFERENTIAL_STATIC_IMPORT_CHECK` para un eventual request06.
-5. Run source-only `31903321622`, HEAD `64f7aa28d3d3728d2f7a3749d62373cff746ffd2`: `SUCCESS` completo en I1, I2, harness, patcher/lineage y checkpoint verifier.
-6. La documentación acumulativa e índice quedaron actualizados al mismo estado; después del STOP_RETRY solo hubo source/docs y cero provider writes.
+## I3 request06 — Administración/new Shopper STOP_RETRY
+
+Después del PASS histórico se inició el command provider. El E2E de Administración falló esperando `#shNew`: el botón existía en DOM pero permaneció oculto durante 20 segundos.
+
+Clasificación exacta:
+`I3_ADMIN_NEW_SHOPPER_BUTTON_HIDDEN_BEFORE_COMMAND`.
+
+El fallo ocurrió **antes del click y antes de cualquier comando `shopper.create`**. Por tanto:
+
+- Shopper nuevo creado: `NO`;
+- Auth writes de Shopper nuevo: `0`;
+- Firestore writes de Shopper nuevo: `0`;
+- update Shopper nuevo: `NO`;
+- provider readback nuevo: `SKIPPED`;
+- HR/Rules/Storage/Make/Gemini/pagos writes: `0`;
+- deploy: `0`;
+- merge=false;
+- production=false.
+
+Request06 quedó consumido/parked; no rerun ni segundo intento automático. Commit de parking: `05ac40c6376671fac5176cd6ff0d9cce7cc0ac83`.
+
+## Causa focal y corrección source-only
+
+La membership Admin podía quedar verificada antes de finalizar el handoff asíncrono `finalizeStaffFrontend() -> CX.app.enter() -> app visible -> frontend handoff=entered`. El E2E navegaba a Shoppers demasiado pronto.
+
+Corrección:
+
+1. `tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs` espera el frontend handoff canónico `entered`, HR authority, `#app.on` y `#login.hidden`; después navega y espera `CX.session.view='shoppers'`.
+2. `tools/qa/cxorbia-i3-source-patcher.mjs` prearma solo `admin_new_shopper_resume` desde request06.
+3. El workflow I3 existente quedó limitado al subgate Admin/new Shopper y exige `passwordResets=0`; verifica el checkpoint histórico antes de provider credentials y no vuelve a cargar credencial histórica.
+4. No se creó workflow, rama, PR ni candidata nuevos.
+
+Gate source-only independiente: run `31906801917`, job `95065826139`, HEAD `5971413f13ca5d6fbdd878e5c1d379f2ab5a22c9`: `SUCCESS` completo, sin provider credentials/writes.
 
 ## Iteraciones siguientes
 
-`ITERACION_3_DEV_AUTH_FIRESTORE_SHOPPER_PERSISTENCE` sigue abierta. Luego permanecen `ITERACION_4_HR_BIDIRECTIONAL_PHASE_A_E2E_FINANCE` y `ITERACION_5_EXACT_BUILD_PREPROD_AND_GO_LIVE`.
+`ITERACION_3_DEV_AUTH_FIRESTORE_SHOPPER_PERSISTENCE` sigue abierta únicamente por Admin/new Shopper. Luego permanecen `ITERACION_4_HR_BIDIRECTIONAL_PHASE_A_E2E_FINANCE` y `ITERACION_5_EXACT_BUILD_PREPROD_AND_GO_LIVE`.
 
 ## Avance
 
-**35% completado / 65% pendiente. I3 0/25.**
+**35% completado / 65% pendiente. I3 sigue 0/25 hasta PASS integral.**
+
+El subgate histórico está cerrado y congelado aunque la iteración completa todavía no suma porcentaje.
 
 ## Siguiente gate exacto
 
-`PAULA_REVIEW_REQUIRED_FOR_I3_REQUEST06_AFTER_SELFREFERENTIAL_PREPROVIDER_MECHANISM_FAILURE`.
+`PAULA_REVIEW_REQUIRED_FOR_I3_REQUEST07_ADMIN_NEW_SHOPPER_ONLY_AFTER_FROZEN_HISTORICAL_PASS`.
 
-Request06, si se autoriza expresamente, continuará desde request05 con un único reset del mismo UID histórico exacto, checkpoint Auth/identity/HR/history legal-gate-aware antes de Administración y luego un único Shopper nuevo con provider ACK/readback/login/reload-new-tab/segundo contexto. Mismas prohibiciones; fail-closed y sin retry automático.
+Request07 requiere autorización expresa nueva. Debe continuar solo Administración/new Shopper, reutilizar read-only el checkpoint histórico, `passwordResets=0`, crear/editar un único Shopper nuevo por provider ACK, readback y login/reload/new-tab/segundo contexto, con todas las prohibiciones previas y sin retry automático.
