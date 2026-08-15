@@ -18,6 +18,7 @@ on:
       - 'backend/contracts/c6-staff-private-execution-handoff-v1.json'
       - 'backend/runtime/private-handoff/c6-staff-private-execution-handoff.mjs'
       - 'backend/contracts/c6-staff-d-technical-login-rebase-v1.json'
+      - 'backend/contracts/cxorbia-legal-acceptance-durable-v1.json'
       - 'app/index-backend-dev.html'
       - 'app/core/shoppers-store.js'
       - 'app/modules/misvisitas.js'
@@ -28,12 +29,14 @@ on:
       - 'app/adapters/cxorbia-hr-write-adapter-contract-v1.js'
       - 'app/adapters/cxorbia-cxdata-command-boundary-v1.js'
       - 'app/adapters/cxorbia-canonical-write-firewall-v1.js'
+      - 'app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js'
       - 'tools/qa/verify-root-cause-correction-iteration1.mjs'
       - 'tools/qa/verify-root-cause-correction-iteration2.mjs'
       - 'tools/qa/verify-phase-a-live-execution-checkpoint.mjs'
       - 'tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs'
       - 'tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs'
       - 'tools/qa/cxorbia-i3-source-patcher.mjs'
+      - 'tools/qa/verify-i3-legal-acceptance-durable-source-only.mjs'
       - '.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml'
       - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
   pull_request:
@@ -52,6 +55,7 @@ on:
       - 'backend/contracts/c6-staff-private-execution-handoff-v1.json'
       - 'backend/runtime/private-handoff/c6-staff-private-execution-handoff.mjs'
       - 'backend/contracts/c6-staff-d-technical-login-rebase-v1.json'
+      - 'backend/contracts/cxorbia-legal-acceptance-durable-v1.json'
       - 'app/index-backend-dev.html'
       - 'app/core/shoppers-store.js'
       - 'app/modules/misvisitas.js'
@@ -62,12 +66,14 @@ on:
       - 'app/adapters/cxorbia-hr-write-adapter-contract-v1.js'
       - 'app/adapters/cxorbia-cxdata-command-boundary-v1.js'
       - 'app/adapters/cxorbia-canonical-write-firewall-v1.js'
+      - 'app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js'
       - 'tools/qa/verify-root-cause-correction-iteration1.mjs'
       - 'tools/qa/verify-root-cause-correction-iteration2.mjs'
       - 'tools/qa/verify-phase-a-live-execution-checkpoint.mjs'
       - 'tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs'
       - 'tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs'
       - 'tools/qa/cxorbia-i3-source-patcher.mjs'
+      - 'tools/qa/verify-i3-legal-acceptance-durable-source-only.mjs'
       - '.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml'
       - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
 
@@ -148,5 +154,17 @@ jobs:
           grep -q "I3_ADMIN_NEW_SHOPPER_OVERLAY_POINTER_INTERCEPTION_BEFORE_CREATE" .github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml
           grep -q "r.passwordResets!==0" .github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml
           grep -q "Historical Shopper exact reset/login/history was frozen by request06 and MUST NOT repeat" .github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml
+      - name: Verify I3 durable account-scoped legal acceptance source contract
+        run: |
+          set -euo pipefail
+          node --check app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js
+          node --check tools/qa/verify-i3-legal-acceptance-durable-source-only.mjs
+          node tools/qa/verify-i3-legal-acceptance-durable-source-only.mjs > .tmp-i3-legal-source.json
+          cat .tmp-i3-legal-source.json
+          grep -q 'PASS_I3_LEGAL_ACCEPTANCE_DURABLE_ACCOUNT_SCOPED_CONTRACT_SOURCE_ONLY' .tmp-i3-legal-source.json
+          grep -q '"automaticAcceptance": false' .tmp-i3-legal-source.json
+          grep -q '"firestoreWrites": 0' .tmp-i3-legal-source.json
+          grep -q '"legalAcceptanceWrites": 0' .tmp-i3-legal-source.json
+          grep -q '"productEntrypointChanged": false' .tmp-i3-legal-source.json
       - name: Verify Phase A current operational checkpoint
         run: node tools/qa/verify-phase-a-live-execution-checkpoint.mjs

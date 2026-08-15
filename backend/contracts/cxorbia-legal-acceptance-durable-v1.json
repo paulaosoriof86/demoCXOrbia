@@ -1,0 +1,164 @@
+{
+  "schemaVersion": "cxorbia.legal-acceptance.durable-contract.v1",
+  "status": "source_only_prepared_write_disabled",
+  "purpose": "Durable account-scoped human legal acceptance contract for CXOrbia multi-tenant runtimes.",
+  "invariants": {
+    "firebaseAuthActorIsAuthority": true,
+    "exactIdentityOnly": true,
+    "fuzzyMatching": false,
+    "humanAcceptanceOnly": true,
+    "automaticAcceptance": false,
+    "providerAckRequired": true,
+    "localStorageIsAuthority": false,
+    "browserLocalAcceptanceIsAuthority": false,
+    "failClosedOnMissingOrAmbiguousState": true,
+    "preserveHistoricalAcceptances": true,
+    "newLegalVersionReopensGate": true,
+    "passwordOrTokenPersistence": false,
+    "bnOkIsInformationalOnly": true
+  },
+  "scope": {
+    "tenantId": "required",
+    "scopeMode": ["tenant", "project"],
+    "projectId": "required_when_scopeMode_project",
+    "authNamespace": "required",
+    "role": "required",
+    "actorUid": "provider_derived_from_verified_firebase_id_token",
+    "actorMatch": "exact_only",
+    "audience": "configured_by_legal_content_not_hardcoded_by_tenant_or_project"
+  },
+  "legalContent": {
+    "legalContentId": "required_stable_key",
+    "legalVersion": "required_immutable_version_key",
+    "contentDigest": "required_sha256_of_canonical_legal_content",
+    "currentPointer": "provider_authoritative",
+    "versionMutation": "append_new_version_never_rewrite_prior_version",
+    "roleApplicability": "configured",
+    "projectApplicability": "configured",
+    "pathTemplates": {
+      "content": "tenants/{tenantId}/legalContents/{legalContentId}",
+      "version": "tenants/{tenantId}/legalContents/{legalContentId}/versions/{legalVersion}"
+    }
+  },
+  "acceptanceReceipt": {
+    "path": "tenants/{tenantId}/legalAcceptances/{receiptId}",
+    "receiptId": "provider_generated_deterministic_sha256_of_exact_scope_actor_and_version",
+    "receiptIdInputs": [
+      "tenantId",
+      "scopeMode",
+      "projectId_or_tenant_scope_marker",
+      "authNamespace",
+      "actorUid",
+      "role",
+      "legalContentId",
+      "legalVersion"
+    ],
+    "requiredFields": [
+      "tenantId",
+      "scopeMode",
+      "authNamespace",
+      "actorUid",
+      "role",
+      "legalContentId",
+      "legalVersion",
+      "contentDigest",
+      "acceptedAt",
+      "acceptanceMethod",
+      "source",
+      "status",
+      "auditVersion"
+    ],
+    "conditionalFields": {
+      "projectId": "required_when_scopeMode_project"
+    },
+    "serverFields": {
+      "acceptedAt": "provider_server_timestamp",
+      "acceptanceMethod": "human_ui",
+      "source": "authenticated_product_ui",
+      "status": "accepted",
+      "auditVersion": "cxorbia-legal-acceptance-audit-v1"
+    },
+    "immutableIdentityAndVersionFields": true,
+    "oldReceiptPreservedWhenVersionChanges": true
+  },
+  "readModel": {
+    "authority": "provider",
+    "browserPersistence": "memory_only_not_localStorage",
+    "preload": "before_CX_app_enter_or_equivalent_protected_workspace_mount",
+    "reloadBehavior": "re_read_provider_authority",
+    "newTabBehavior": "re_read_provider_authority",
+    "newContextBehavior": "re_read_provider_authority",
+    "syncPendingCompatibility": "pending_role_reads_preloaded_provider_snapshot_only",
+    "missingSnapshot": "pending_true_fail_closed",
+    "staleOrActorMismatch": "pending_true_fail_closed",
+    "currentVersionMismatch": "pending_true",
+    "contentDigestMismatch": "pending_true",
+    "exactAcceptedReceipt": "pending_false"
+  },
+  "command": {
+    "commandType": "legal.acceptance.record",
+    "entityType": "legalAcceptance",
+    "requireHumanConfirmation": true,
+    "acceptanceMethod": "human_ui",
+    "actorUidFromClientPayloadForbidden": true,
+    "providerMustDeriveActorFromVerifiedIdToken": true,
+    "idempotencyKeyRequired": true,
+    "expectedVersionRequired": true,
+    "providerEnforcementRequired": true,
+    "successRequiresCommittedProviderAck": true,
+    "writeGate": "disabled_in_this_source_only_block"
+  },
+  "providerAck": {
+    "required": true,
+    "committed": true,
+    "providerAck": true,
+    "mustReturn": [
+      "tenantId",
+      "scopeMode",
+      "legalContentId",
+      "legalVersion",
+      "acceptedAt",
+      "receiptFingerprint",
+      "subjectExact",
+      "status"
+    ],
+    "rawPassword": false,
+    "rawToken": false
+  },
+  "legacyCompatibilityBoundary": {
+    "existingCallSite": "CX.app.enter -> CX.confidencialidad.pending(role) -> CX.confidencialidad.show(role,onAccepted)",
+    "pendingMustUltimatelyUse": "durable_provider_read_model",
+    "showRemainsHumanUI": true,
+    "legacyLocalAcceptanceMayNotSatisfyProtectedRuntime": true,
+    "bnOk": "informational_banner_only_never_legal_acceptance",
+    "uiModuleRewriteInThisBlock": false,
+    "adapterActivationInThisBlock": false
+  },
+  "roles": {
+    "staffAndShopperReceiptsAreDistinct": true,
+    "oneActorCannotSatisfyAnotherActor": true,
+    "oneRoleCannotSatisfyAnotherRoleUnlessFutureLegalPolicyExplicitlyDefinesSharedAudienceAndProviderValidatesIt": true,
+    "selfAcceptanceOnly": true
+  },
+  "multiTenant": {
+    "tyaHardcoded": false,
+    "cinepolisHardcoded": false,
+    "tenantAndProjectComeFromAuthenticatedContextAndConfiguration": true
+  },
+  "safetyForThisBlock": {
+    "providerCredentials": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false,
+    "legalAcceptanceWrites": 0
+  },
+  "nextGate": "PAULA_REVIEW_REQUIRED_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_PROVIDER_WRITE_AND_ADMIN_NEW_SHOPPER_RESUME"
+}
