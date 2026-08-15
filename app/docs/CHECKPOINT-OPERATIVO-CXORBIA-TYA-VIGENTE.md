@@ -1,6 +1,6 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-14 18:18 -06:00  
+**Fecha:** 2026-08-14 18:20 -06:00  
 **Estado:** `I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__SELFTEST_IMPORT_ORDER_FIXED__LINEAGE_PREWIRED__GO_LIVE_35__NEW_GATE_REQUIRED`
 
 ## Autoridad vigente
@@ -33,31 +33,29 @@ Run `31835742956`, job `94881540163` alcanzó el mismo Shopper histórico exacto
 
 Run `31852717413`, job `94931417141`.
 
-Gate inicial PASS. El paso `Static I3 source preflight before provider credentials` falló con:
+Gate inicial PASS. `Static I3 source preflight before provider credentials` falló con `ERR_MODULE_NOT_FOUND` para `playwright`.
 
-`ERR_MODULE_NOT_FOUND: Cannot find package 'playwright' imported from tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs`.
-
-El fallo ocurrió antes de instalar tooling, antes de cargar la service account y antes de cualquier provider boundary. Quedaron SKIPPED selección de identidades, reset, reconciliación, proxy/E2E, provider de comandos y Admin/new Shopper.
+El fallo ocurrió antes de tooling/provider credentials. Quedaron SKIPPED selección de identidades, reset, reconciliación, proxy/E2E, provider de comandos y Admin/new Shopper.
 
 Resultado exacto del run:
 
 - password reset: `0`;
 - Auth writes: `0`;
 - Firestore writes: `0`;
-- otras identidades modificadas: `0`;
+- other identities modified: `0`;
 - HR/Rules/Storage/Make/Gemini/pagos: `0`;
 - deploy: `0`; merge=false; production=false;
-- aceptación legal automatizada: `0`;
+- legal acceptance automated: `0`;
 - automatic retry: `NO`.
 
 Request `...-04`: `enabled=false`, `consumed=true`, `STOP_RETRY_I3_CONTINUATION_FAILED`. No rerun.
 
 ## Causa y corrección source-only ya aplicadas
 
-1. `tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs`: Playwright dejó de importarse al cargar el módulo y se importa dinámicamente solo dentro de `--execute-real`, después del gate explícito. El self-test source-only incluye `playwrightDeferredToRealExecution`.
-2. `.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml`: conserva el preflight antes de provider credentials y preacepta una futura lineage exacta desde `...-04` con `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
-3. `tools/qa/cxorbia-i3-source-patcher.mjs`: materializa/verifica esa misma lineage en el command provider antes de cualquier provider use.
-4. No se ejecutó otro request ni ningún provider después de estos fixes.
+1. Historical E2E: Playwright se importa dinámicamente solo dentro de `--execute-real`, después del gate explícito; self-test incluye `playwrightDeferredToRealExecution`.
+2. Workflow existente: preflight permanece antes de provider credentials y lineage futura acepta `...-04` + `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
+3. Source patcher: materializa/verifica la misma lineage en command provider antes de cualquier provider use.
+4. No se ejecutó otro request ni provider después de estos fixes.
 
 ## Porcentaje
 
