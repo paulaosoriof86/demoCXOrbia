@@ -1,7 +1,7 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-14 18:12 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__SELFTEST_IMPORT_ORDER_FIXED__SAME_CANDIDATE__GO_LIVE_35`
+**Última actualización:** 2026-08-14 18:18 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__SELFTEST_IMPORT_ORDER_FIXED__LINEAGE_PREWIRED__SAME_CANDIDATE__GO_LIVE_35`
 
 ## Decisión vigente
 
@@ -27,9 +27,9 @@ Lock I3 más reciente:
 
 Run `31852717413` / job `94931417141`.
 
-Gate inicial PASS. STOP_RETRY en source preflight porque `tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs` importaba Playwright antes de que el workflow instalara esa dependencia.
+Gate inicial PASS. STOP_RETRY en source preflight porque el harness histórico importaba Playwright antes del paso que instala Playwright.
 
-Este fallo ocurrió antes de cargar service account y antes de cualquier provider access. Por tanto:
+El fallo ocurrió antes de service account/provider access. Por tanto:
 
 - reset histórico: 0;
 - Auth writes: 0;
@@ -44,13 +44,14 @@ Request `...-04` quedó consumido/parked y no se rerun.
 ## Causa corregida source-only
 
 1. Playwright ahora se importa dinámicamente solo en `--execute-real`.
-2. El self-test default queda independiente de Playwright instalado.
-3. Workflow y source patcher ya contemplan una futura lineage exacta desde `...-04` con `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
-4. No se ha ejecutado provider después de este hardening.
+2. El self-test default queda independiente de Playwright instalado y verifica `playwrightDeferredToRealExecution`.
+3. Workflow existente ya prearma lineage exacta desde `...-04` con `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
+4. Source patcher materializa/verifica esa misma lineage en el command provider antes del primer provider use de una futura ejecución.
+5. No se ha ejecutado provider después de este hardening.
 
 ## Pendiente I3 real
 
-Se necesita un nuevo gate expreso porque el request de ejecución quedó consumido aunque no gastó el reset provider.
+Se necesita un nuevo gate expreso porque el request quedó consumido aunque no gastó su reset provider.
 
 Una futura request `...-05` debe cerrar, en este orden:
 
