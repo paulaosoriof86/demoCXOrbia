@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.legal-acceptance.durable-contract.v1",
-  "status": "source_only_prepared_write_disabled",
+  "status": "source_only_provider_wiring_prepared_write_disabled",
   "purpose": "Durable account-scoped human legal acceptance contract for CXOrbia multi-tenant runtimes.",
   "invariants": {
     "firebaseAuthActorIsAuthority": true,
@@ -38,39 +38,21 @@
     "pathTemplates": {
       "content": "tenants/{tenantId}/legalContents/{legalContentId}",
       "version": "tenants/{tenantId}/legalContents/{legalContentId}/versions/{legalVersion}"
-    }
+    },
+    "providerRequiredFields": {
+      "content": ["legalContentId", "currentVersion", "currentDigest", "scopeMode", "roleApplicability"],
+      "version": ["legalVersion", "contentDigest", "scopeMode", "roleApplicability", "active"]
+    },
+    "materializationInThisBlock": false,
+    "currentTyALegalTextApprovedByThisBlock": false,
+    "note": "The source-only wiring does not promote the prototype demo/local NDA text into provider authority. Exact legal content/version must be reviewed before any provider materialization or human acceptance write."
   },
   "acceptanceReceipt": {
     "path": "tenants/{tenantId}/legalAcceptances/{receiptId}",
     "receiptId": "provider_generated_deterministic_sha256_of_exact_scope_actor_and_version",
-    "receiptIdInputs": [
-      "tenantId",
-      "scopeMode",
-      "projectId_or_tenant_scope_marker",
-      "authNamespace",
-      "actorUid",
-      "role",
-      "legalContentId",
-      "legalVersion"
-    ],
-    "requiredFields": [
-      "tenantId",
-      "scopeMode",
-      "authNamespace",
-      "actorUid",
-      "role",
-      "legalContentId",
-      "legalVersion",
-      "contentDigest",
-      "acceptedAt",
-      "acceptanceMethod",
-      "source",
-      "status",
-      "auditVersion"
-    ],
-    "conditionalFields": {
-      "projectId": "required_when_scopeMode_project"
-    },
+    "receiptIdInputs": ["tenantId", "scopeMode", "projectId_or_tenant_scope_marker", "authNamespace", "actorUid", "role", "legalContentId", "legalVersion"],
+    "requiredFields": ["tenantId", "scopeMode", "authNamespace", "actorUid", "role", "legalContentId", "legalVersion", "contentDigest", "acceptedAt", "acceptanceMethod", "source", "status", "auditVersion"],
+    "conditionalFields": {"projectId": "required_when_scopeMode_project"},
     "serverFields": {
       "acceptedAt": "provider_server_timestamp",
       "acceptanceMethod": "human_ui",
@@ -101,6 +83,7 @@
     "requireHumanConfirmation": true,
     "acceptanceMethod": "human_ui",
     "actorUidFromClientPayloadForbidden": true,
+    "acceptedAtFromClientPayloadForbidden": true,
     "providerMustDeriveActorFromVerifiedIdToken": true,
     "idempotencyKeyRequired": true,
     "expectedVersionRequired": true,
@@ -108,20 +91,28 @@
     "successRequiresCommittedProviderAck": true,
     "writeGate": "disabled_in_this_source_only_block"
   },
+  "providerRuntime": {
+    "source": "backend/runtime/cxorbia-legal-acceptance-provider-v1.mjs",
+    "browserBridge": "app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js",
+    "status": "source_only_prepared_not_activated",
+    "dependencyInjection": true,
+    "topLevelProviderCredentialLoad": false,
+    "firebaseAdminImportedBySourceModule": false,
+    "recordChecksGateBeforeTokenVerificationOrFirestoreIO": true,
+    "readModelRequiresVerifiedIdToken": true,
+    "writeGateExactCommand": "legal.acceptance.record",
+    "writeGateTargetProject": "cxorbia-backend-dev",
+    "writeBudget": {"legalAcceptanceWrites": 1, "firestoreWrites": 1, "authWrites": 0},
+    "forbiddenBudgets": {"passwordResets": 0, "historicalCredentialAccess": 0, "historicalReconciliationWrites": 0, "otherIdentityWrites": 0, "hrWrites": 0, "rulesWrites": 0, "storageWrites": 0, "makeWrites": 0, "geminiCalls": 0, "paymentWrites": 0},
+    "idempotentDuplicate": "returns committed provider ACK without second receipt write",
+    "receiptMutation": "create_only",
+    "priorVersionReceipt": "preserved"
+  },
   "providerAck": {
     "required": true,
     "committed": true,
     "providerAck": true,
-    "mustReturn": [
-      "tenantId",
-      "scopeMode",
-      "legalContentId",
-      "legalVersion",
-      "acceptedAt",
-      "receiptFingerprint",
-      "subjectExact",
-      "status"
-    ],
+    "mustReturn": ["tenantId", "scopeMode", "legalContentId", "legalVersion", "acceptedAt", "receiptFingerprint", "subjectExact", "status"],
     "rawPassword": false,
     "rawToken": false
   },
@@ -132,7 +123,8 @@
     "legacyLocalAcceptanceMayNotSatisfyProtectedRuntime": true,
     "bnOk": "informational_banner_only_never_legal_acceptance",
     "uiModuleRewriteInThisBlock": false,
-    "adapterActivationInThisBlock": false
+    "adapterActivationInThisBlock": false,
+    "productEntrypointWiringInThisBlock": false
   },
   "roles": {
     "staffAndShopperReceiptsAreDistinct": true,
@@ -147,6 +139,7 @@
   },
   "safetyForThisBlock": {
     "providerCredentials": 0,
+    "providerReads": 0,
     "authWrites": 0,
     "firestoreWrites": 0,
     "hrWrites": 0,
