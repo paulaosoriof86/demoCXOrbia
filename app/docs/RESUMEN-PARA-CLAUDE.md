@@ -1,51 +1,93 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-15 13:18 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_REQUEST05_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__SELFREFERENTIAL_SELFTEST_FIXED__SOURCE_ONLY_GATE_PASS__SAME_CANDIDATE`
+**Última actualización:** 2026-08-15 14:17 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_REQUEST06_HISTORICAL_PASS_FROZEN__ADMIN_NEW_SHOPPER_STOP_RETRY_BEFORE_COMMAND__ADMIN_RESUME_SOURCE_GATE_PASS__SAME_CANDIDATE`
 
 No nueva candidata/rama/PR. No reconstruir Auth.
 
-Lock actual: `app/docs/SOURCE-LOCK-ITERATION3-PREPROVIDER-SELFTEST-SELFREFERENCE-FIX-PASS-20260815.md`.
+Lock actual:
+`app/docs/SOURCE-LOCK-ITERATION3-HISTORICAL-PASS-ADMIN-RESUME-SOURCE-GATE-PASS-20260815.md`.
 
 ## No tocar / no reprocesar
 
-Auth owner/exact identity, Staff membership, I1, I2 provider ACK/fail-closed, Mis Visitas arrays/facets/ACK, overlay DEV, protected HR authority y harness legal-gate-aware.
+- Auth owner y exact identity;
+- Staff membership;
+- protected HR authority;
+- I1 e I2 provider ACK/fail-closed;
+- Mis Visitas arrays/facets/ACK;
+- overlay DEV;
+- historical Shopper exact identity;
+- **credential reset histórico de request06 y checkpoint histórico ya congelado**;
+- harness legal-gate-aware.
 
-## Request `...-05`
+## Request `...-06`
 
-Run `31902822527` falló en source preflight antes de Playwright/tooling, service account y provider credentials. Causa: el self-test de ausencia de import estático contenía en su propia expresión el literal que buscaba, por lo que se auto-invalidaba.
+Run `31906391682`, job `95064802332` sí llegó a provider.
 
-Reset/Auth/Firestore/other identities = `0/0/0/0`. Admin/new Shopper no ejecutado. Request consumido, no rerun.
+### Cerrado
+
+El mismo Shopper histórico exacto pasó:
+
+- un único credential reset del mismo UID;
+- UID preservado;
+- claims/profile/membership/crosswalk/history exactos;
+- login real;
+- HR authority;
+- history E2E.
+
+Checkpoint:
+`app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json`.
+
+**No repetir reset, Auth recovery, reconciliación histórica ni acceso a su credencial en continuaciones futuras.**
+
+## NDA / Academia / Certificación
+
+El checkpoint histórico quedó `legal-gate-pending` con diálogo visible y `acceptanceAutomated=false`.
+
+Academia y Certificación están diferidas por ese gate; no se declaran PASS. Claude no debe simular, aceptar ni guardar NDA para desbloquear rutas.
+
+## Admin/new Shopper — qué falló
+
+El E2E Admin llegó a la pantalla con `#shNew` existente pero oculto y agotó 20 s antes de hacer click.
+
+Clasificación:
+`I3_ADMIN_NEW_SHOPPER_BUTTON_HIDDEN_BEFORE_COMMAND`.
+
+No hubo `shopper.create`, Shopper nuevo, update ni readback; nuevos Auth/Firestore writes = `0/0`.
+
+## Causa focal
+
+El frontend Staff termina su entrada de forma asíncrona mediante `finalizeStaffFrontend() -> CX.app.enter() -> app visible -> frontend handoff=entered`.
+
+El test esperaba membership, pero navegaba a Shoppers antes de esperar ese handoff completo. Por eso el botón podía existir dentro de una app todavía oculta.
+
+**No existe evidencia suficiente para cambiar el producto/UI.** Este incidente se corrigió en el harness, no en el diseño de Shoppers.
 
 ## Fix QA/backend source-only
 
-- Harness v5 detecta un import estático real por patrón de línea; Playwright sigue dinámico solo en `--execute-real`.
-- Phase A workflow existente prueba el harness sin Playwright/provider.
-- Current checkpoint verifier quedó alineado a fuentes vivas y no a textos históricos extensos.
-- Source patcher prearma request05 + `I3_PREPROVIDER_SOURCE_SELFTEST_SELF_REFERENTIAL_STATIC_IMPORT_CHECK` en provider antes de un eventual request06.
-- Provider workflow existente acepta esa lineage futura y muestra el JSON de preflight antes de cualquier provider credential.
-- Run source-only `31903321622` sobre `64f7aa28d3d3728d2f7a3749d62373cff746ffd2`: PASS completo de harness, patcher/lineage y checkpoint verifier.
+- `tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs`: espera handoff canónico `entered`, HR authority, app visible y `session.view='shoppers'` antes de `#shNew`.
+- `tools/qa/cxorbia-i3-source-patcher.mjs`: prearma solo Admin resume desde request06.
+- workflow I3 existente: futuro gate Admin/new-Shopper-only, `passwordResets=0`, reutiliza frozen checkpoint y no carga credencial histórica.
+- source-only gate `31906801917` / `95065826139` sobre `5971413f13ca5d6fbdd878e5c1d379f2ab5a22c9`: `SUCCESS`.
 
 ## UI / Claude
 
-**No rediseñar login, NDA, Academia, Certificación ni módulos por este incidente.** No fue un defecto funcional de esas vistas.
-
-`app/modules/shoppers.js` sigue sin materializar el patch ACK-aware porque request05 no llegó al paso `Apply exact same-candidate I3 source patch before provider access`. El patch sigue preparado por `tools/qa/cxorbia-i3-source-patcher.mjs` para el gate provider autorizado correspondiente; no reconstruirlo manualmente ni crear otra candidata.
-
-Shopper nuevo sigue `NO CREADO`.
-
-## Academia
-
-Si NDA/confidencialidad está pendiente, el harness valida el gate legal visible pero no acepta, firma ni guarda consentimiento y difiere rutas. No simular consentimiento para pasar pruebas.
+1. **No rediseñar `app/modules/shoppers.js` por este fallo.**
+2. No crear nueva candidata por request06.
+3. No tocar login/NDA/Academia/Certificación para forzar el test.
+4. El patch ACK-aware de alta/edición Shopper sigue siendo el contrato aprobado para la ejecución provider; el siguiente gate debe demostrarlo antes de declararlo resuelto.
+5. Si un request Admin-only futuro vuelve a mostrar `#shNew` oculto después de `frontend handoff=entered` y `session.view='shoppers'`, entonces sí será nueva evidencia reproducible para evaluar un P0 frontend puntual.
 
 ## Seguridad
 
-Request05 consumido/parked: provider writes/resets `0`; providers prohibidos/deploy/merge/producción `0/0/false/false`. No retry automático.
+Request06 consumido/parked. Efecto histórico real: `1` password reset/Auth password update, `0` Firestore historical reconciliation, `0` otras identidades. Después del checkpoint, Admin/new Shopper produjo `0` Auth/Firestore writes. Cero HR/Rules/Storage/Make/Gemini/pagos, deploy, merge o producción.
 
 ## Porcentaje
 
-**35% completado / 65% pendiente. I3 0/25.**
+**35% completado / 65% pendiente. I3 0/25 hasta PASS integral.**
 
 ## Siguiente frontera
 
-`PAULA_REVIEW_REQUIRED_FOR_I3_REQUEST06_AFTER_SELFREFERENTIAL_PREPROVIDER_MECHANISM_FAILURE`.
+`PAULA_REVIEW_REQUIRED_FOR_I3_REQUEST07_ADMIN_NEW_SHOPPER_ONLY_AFTER_FROZEN_HISTORICAL_PASS`.
+
+El eventual request07 no puede repetir reset histórico: solo Admin create/update de un Shopper nuevo + ACK/readback/login/reload/new-tab/segundo contexto.
