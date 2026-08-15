@@ -1,42 +1,24 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-14 18:20 -06:00  
+**Última actualización:** 2026-08-14 18:22 -06:00  
 **Estado:** `I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__SELFTEST_IMPORT_ORDER_FIXED__LINEAGE_PREWIRED__GO_LIVE_35__NO_PRODUCTION`
 
 ## Request I3 `...-04`
 
-Run `31852717413`, job `94931417141`, sobre la misma candidata `docs-tya-v6-v71-audit` / PR #7.
+Run `31852717413`, job `94931417141`, misma candidata `docs-tya-v6-v71-audit` / PR #7.
 
-El gate de Paula y lane PASS. El run se detuvo en `Static I3 source preflight before provider credentials`.
-
-Error reproducible:
-
-`ERR_MODULE_NOT_FOUND: Cannot find package 'playwright' imported from tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs`.
+Gate de Paula/lane PASS. STOP_RETRY en `Static I3 source preflight before provider credentials` por `ERR_MODULE_NOT_FOUND` de `playwright`.
 
 La falla ocurrió antes de instalar tooling y antes de cargar service account/provider credentials. No hubo acceso provider ni modificación de identidad.
 
 ## Root fix source-only posterior
 
-### `tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs`
+- `tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs`: Playwright ahora se carga vía `await import('playwright')` solo dentro de `--execute-real`; source self-test verifica `playwrightDeferredToRealExecution`.
+- workflow existente: prearma lineage futura `...-04` + `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
+- source patcher: materializa/verifica esa misma lineage en command provider antes del primer provider use futuro.
+- no workflow/rama/PR/candidata nuevos; no provider retry.
 
-- eliminado import estático de Playwright;
-- Playwright se carga vía `await import('playwright')` solo dentro de `--execute-real`, después del gate explícito;
-- source self-test ya no depende de tooling runtime;
-- check `playwrightDeferredToRealExecution`.
-
-### `.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml`
-
-- conserva preflight antes de provider credentials;
-- prearma lineage futura `...-04` + `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`;
-- no se creó workflow nuevo.
-
-### `tools/qa/cxorbia-i3-source-patcher.mjs`
-
-- materializa/verifica esa misma lineage en el command provider antes del primer provider use de una futura ejecución.
-
-### Source lock
-
-`app/docs/SOURCE-LOCK-ITERATION3-PREPROVIDER-SELFTEST-FAIL-CLOSED-20260814.md`.
+Source lock: `app/docs/SOURCE-LOCK-ITERATION3-PREPROVIDER-SELFTEST-FAIL-CLOSED-20260814.md`.
 
 ## Writes y seguridad — run `31852717413`
 
@@ -52,23 +34,15 @@ La falla ocurrió antes de instalar tooling y antes de cargar service account/pr
 - legal acceptance automated: **0**;
 - retry automático: **NO**.
 
-Request `...-04` quedó consumido por failure handler. No se rerun.
+Request `...-04` consumido por failure handler; no rerun.
 
-## Reusable CXOrbia
+## Clasificación
 
-Los self-tests source-only no deben depender de dependencias runtime aún no instaladas. Provider boundary permanece detrás de preflight, gate, exact identity, tenant/project scope, idempotencia y ACK.
-
-## Exclusivo TyA
-
-Un futuro reset, si Paula vuelve a autorizarlo, sigue limitado al mismo único Shopper histórico exacto TyA/Cinépolis.
-
-## Claude/prototipo
-
-No reconstruir Auth/login, NDA, Academia, Certificación ni UI. La corrección actual es del harness/workflow/lineage QA.
-
-## Academia
-
-Sin cambio funcional. Gate legal/NDA continúa humano y separado de Auth; no se automatiza consentimiento.
+- **Reusable CXOrbia:** source-preflight independiente de tooling runtime; provider boundary detrás de gate exacto.
+- **Exclusivo TyA:** un futuro reset sigue limitado al mismo Shopper histórico exacto.
+- **Claude/prototipo:** sin UI changes; no reconstruir Auth/NDA/Academia/Certificación.
+- **Academia:** sin cambio funcional; consentimiento sigue humano.
+- **Sin impacto Claude:** harness/workflow/lineage QA.
 
 ## Porcentaje
 
