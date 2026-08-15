@@ -61,7 +61,8 @@ jobs:
             ['cxorbia-i3-shopper-persistence-20260814-01','HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194'],
             ['cxorbia-i3-shopper-persistence-20260814-02','I3_ADMIN_LOGIN_CLICK_BLOCKED_BY_CX_BACKEND_PREVIEW_STATUS_POINTER_INTERCEPTION'],
             ['cxorbia-i3-shopper-persistence-20260814-03','I3_HISTORICAL_NAV_TIMEOUT_BEFORE_LEGAL_GATE_AWARE_CHECKPOINT'],
-            ['cxorbia-i3-shopper-persistence-20260814-04','I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER']
+            ['cxorbia-i3-shopper-persistence-20260814-04','I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER'],
+            ['cxorbia-i3-shopper-persistence-20260814-05','I3_PREPROVIDER_SOURCE_SELFTEST_SELF_REFERENTIAL_STATIC_IMPORT_CHECK']
           ];
           if(r.continuationMode!=='historical_credential_recovery_resume'||!lineage.some(([id,code])=>r.continuationOfRequestId===id&&r.priorStopRetryCode===code))throw new Error('I3_CONTINUATION_INVALID');
           if(r.firebaseProjectId!=='cxorbia-backend-dev'||r.tenantId!=='tya'||r.projectId!=='cinepolis'||r.authWritesMax!==3||r.firestoreWritesMax!==10||r.authDeletesMax!==1||r.passwordResets!==1)throw new Error('I3_TARGET_OR_BUDGET_INVALID');
@@ -79,10 +80,15 @@ jobs:
           node --check tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs
           node --check tools/qa/cxorbia-i3-source-patcher.mjs
           node --check tools/qa/cxorbia-c6-existing-users-e2e-credentials-v6.mjs
-          node tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs > "$I3_OUT/historical-e2e-source-preflight.json"
+          if ! node tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs > "$I3_OUT/historical-e2e-source-preflight.json"; then
+            cat "$I3_OUT/historical-e2e-source-preflight.json" || true
+            exit 1
+          fi
+          cat "$I3_OUT/historical-e2e-source-preflight.json"
           grep -q 'PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE' "$I3_OUT/historical-e2e-source-preflight.json"
           grep -q '"legalGateAware": true' "$I3_OUT/historical-e2e-source-preflight.json"
           grep -q '"legalConsentNotAutomated": true' "$I3_OUT/historical-e2e-source-preflight.json"
+          grep -q '"playwrightDeferredToRealExecution": true' "$I3_OUT/historical-e2e-source-preflight.json"
           node tools/qa/cxorbia-i3-source-patcher.mjs --verify
           grep -q 'pointer-events:none' app/core/backend-preview-status.js
 
