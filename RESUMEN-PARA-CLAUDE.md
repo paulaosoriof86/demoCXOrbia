@@ -1,45 +1,54 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-12 19:48 -06:00  
-**Estado:** `C6_RUNTIME_12_PASS_M7__PHASE_A_93__NO_FRONTEND_MODULE_CHANGE`
+**Última actualización:** 2026-08-15 17:03 -06:00  
+**Estado vigente:** `PHASE_A_ROOT_CAUSE_TRACKER_35__I3_LEGAL_PROVIDER_SOURCE_ONLY_PASS__NO_FRONTEND_REDESIGN`
 
-## Estado vigente
+## Estado real
 
-Runtime 12 cerró `M7=5/5` con el principal canónico Exact Write V2 `B=admin`: Firebase Auth → membership/RBAC → backend/HR → frontend, con membership persistida después de `CX.app.enter()`, primera carga, 3 reloads y new-tab PASS.
+El porcentaje operativo vigente **no es 93%**. El tracker forense prevalente certifica I1 `15/15`, I2 `20/20`, I3 `0/25`, I4 `0/25`, I5 `0/15`: **35% completado / 65% pendiente**.
 
-**Phase A=93% certificado / 7% restante.**
+El Shopper histórico exacto de I3 está PASS y congelado en run `31906391682`. No repetir reset/recovery/reconcile ni acceder a su credencial; toda continuación `passwordResets=0`.
 
-## Evidencia
+Request08 (`31909354336` / `95071998299`) llegó al Admin real y se detuvo antes de Alta por `I3_ADMIN_LEGAL_CONFIDENTIALITY_GATE_PENDING_BEFORE_CREATE`. No hubo Shopper nuevo ni Auth/Firestore writes; no se automatizó consentimiento legal.
 
-Run `31658676280`, job `94318658180`, artifact `9165383310`, digest `sha256:a327b0d5e0a592d41417dce7ff934984ab51d3d5927dbee9ba774200eee5befe`.
+## Backend conectado/preparado en este bloque
 
-- `B=admin`, `exactWriteCanonical=true`, `legacyCredentialBundleUsed=false`.
-- Hosting DEV 1/1; remote parity exact=true.
-- Contexto `admin/staff/tya/cinepolis`.
-- Membership `tenants/tya/users/self` persistida.
-- 15 periodos / 660 visitas / 197 shoppers, `2025-06 → 2026-08`.
-- Frontend `entered`; primera carga + 3 reloads + new-tab PASS.
+Source final `0602d6ca0f64280222a4b1522b36f3be77c65c87`; gate push `31913700755` / job `95082399402` SUCCESS.
 
-## Frontend / Claude
+Quedó preparado source-only:
+- contrato durable de aceptación legal exact-identity/account-scoped/versioned;
+- provider runtime para `legal.acceptance.record`;
+- actor desde Firebase token verificado, no UID cliente;
+- `acceptedAt` server-side;
+- receipt create-only/idempotente con provider ACK;
+- read model provider-authoritative y fail-closed;
+- browser bridge memory-only, sin localStorage authority;
+- automaticAcceptance=false.
 
-- Cero cambios a `/app/modules` o `/app/core` para este cierre.
-- Mantener formulario único `#loginForm/#lgUser/#lgPass/#lgSubmit`.
-- Mantener interfaz exacta de `CX.data`.
-- No reintroducir overlays/credenciales técnicas legacy.
-- No crear candidata frontend por M7.
+No se activó este bridge en `app/index-backend-dev.html`, no hubo provider IO real y no se tocaron `/app/modules` ni `/app/core` en este bloque.
 
-## Seguridad
+## Claude / prototipo
 
-Nuevos Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos writes=0; segundo Hosting=0; segundo Exact Write=0; merge=false; producción=false.
+**No rediseñar Shoppers ni el gate legal.** El flujo humano del prototipo se conserva como superficie de aceptación. Cuando el backend sea autorizado/activado, esa superficie deberá consumir el read model provider y registrar el receipt por el command boundary; no debe inventarse otro modal, force-click ni aceptación automática.
 
-## Progreso
+`#bnOk` es un banner informativo, nunca consentimiento legal.
 
-`M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=5/5 | M8=0/3 | M9=0/3 | M10=0/1`
+En `app/modules/configuracion.js`, el texto NDA actual y “Guardar NDA” siguen siendo superficie demo/local; no son todavía contenido legal provider-authoritative. No asumir que ese texto es el acuerdo TyA definitivo ni publicarlo como tal. La revisión legal exacta, versión y digest es un gate humano previo.
 
-## Siguiente acción
+`app/modules/administrabilidad.js` conserva lenguaje de demo/local sobre aceptaciones. No corregirlo desde backend ahora; documentar su actualización futura solo cuando el provider legal real quede activado y validado.
 
-M8 → M9 → M10. No reabrir C6/gates cerrados. La definición exacta de cada milestone se recupera de fuentes vigentes; no se infiere desde frontend.
+Mantener intactas la interfaz pública de `CX.data`, el formulario canónico de login y la arquitectura modular aprobada.
 
-## Academia
+## Academia / manuales
 
-Ya puede documentarse el flujo Staff real y continuidad de sesión; no documentar private handoff, credenciales ni QA interno.
+Documentar únicamente que la aceptación legal productiva será humana, versionada y persistente por cuenta/scope con auditoría provider. No enseñar ni simular que QA/GitHub/automatizaciones aceptan por el usuario. Academia/Certificación del histórico siguen diferidas, no PASS.
+
+## Pendiente real
+
+Antes de reanudar Admin/new Shopper debe revisarse humanamente el contenido legal TyA exacto, versión y digest y, si aún no existe en provider, autorizar su materialización. Luego se requiere aceptación humana real con ACK provider y solo después continuar create/update/readback/login/reload/new-tab/segundo contexto del Shopper nuevo.
+
+## Siguiente gate
+
+`PAULA_REVIEW_REQUIRED_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_PROVIDER_WRITE_AND_ADMIN_NEW_SHOPPER_RESUME`
+
+PR #7 permanece draft/open/no merge. Sin deploy ni producción.

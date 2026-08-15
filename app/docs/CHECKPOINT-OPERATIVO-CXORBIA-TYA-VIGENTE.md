@@ -1,82 +1,50 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-15 15:22 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_SUBGATE_PASS_FROZEN__REQUEST08_ADMIN_LEGAL_CONFIDENTIALITY_GATE_STOP_RETRY_BEFORE_CREATE__ZERO_NEW_WRITES__GO_LIVE_35__DURABLE_LEGAL_ACCEPTANCE_SOURCE_BLOCK_NEXT`
+**Fecha:** 2026-08-15 17:03 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_PASS_FROZEN__REQUEST08_LEGAL_STOP_SAFE__LEGAL_PROVIDER_WIRING_SOURCE_ONLY_PASS__GO_LIVE_35__NO_PRODUCTION`
 
-## Autoridad
+## Carril vivo
 
-Auditoría forense + plan durable + I1/I2 PASS + **`SOURCE-LOCK-ITERATION3-REQUEST08-ADMIN-LEGAL-CONFIDENTIALITY-GATE-STOP-RETRY-20260815.md`** + tracker vigente.
+Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`; Firebase DEV `cxorbia-backend-dev`.
 
-`NO REPROCESO`: no diagnóstico general, nueva candidata, rama/PR, Auth rebuild ni repetición del histórico I3.
+## Cerrado y no reprocesar
 
-## Carril
+I1 PASS 15/15. I2 PASS 20/20. Shopper histórico I3 PASS congelado en run `31906391682`; un único reset histórico ya consumido. Prohibido repetir reset/recovery/reconcile o acceder a esa credencial. Toda continuación: `passwordResets=0`.
 
-Repo `paulaosoriof86/demoCXOrbia`; candidata `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`.
+## Request08
 
-## I1/I2
+Run `31909354336`, job `95071998299`: STOP seguro `I3_ADMIN_LEGAL_CONFIDENTIALITY_GATE_PENDING_BEFORE_CREATE`. Request consumido. No hubo `shopper.create`, update, readback ni login de Shopper nuevo; Auth/Firestore writes nuevos `0/0`; aceptación legal automática `0`.
 
-I1 PASS 15/15. I2 PASS 20/20. No reprocesar.
+## Bloque source-only legal durable
 
-## Histórico I3 — PASS congelado
+Source final `0602d6ca0f64280222a4b1522b36f3be77c65c87`.
 
-Run `31906391682`, job `95064802332`: mismo Shopper exacto, un único credential reset, UID/claims/profile/membership/crosswalk/historia preservados, login real + protected HR authority + history E2E PASS. Reconciliación histórica Firestore `0`; otras identidades `0`; fuzzy `false`.
+Gate push `31913700755` / job `95082399402`: `SUCCESS`. Gate PR `31913704247` / job `95082407608`: `SUCCESS`.
 
-Checkpoint: `app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json`.
+Preparado y verificado:
+- contrato durable account-scoped/versionado;
+- provider runtime `legal.acceptance.record` con gate previo a IO;
+- actor derivado del Firebase ID token verificado;
+- `acceptedAt` server-side;
+- receipt determinista create-only e idempotente;
+- read model provider-authoritative, memory-only, fail-closed;
+- browser bridge source-only, todavía no activado en product entrypoint;
+- no fuzzy matching, no automaticAcceptance, no `#bnOk` como aceptación.
 
-**No repetir reset, recovery, reconciliación ni acceso a credencial histórica. Toda continuación futura usa el checkpoint read-only y `passwordResets=0`.**
+Efectos reales del bloque: provider credentials/reads/writes `0/0/0`; Auth/Firestore/legal writes `0/0/0`; historical access/reset/reconcile `0/0/0`; HR/Rules/Storage/Make/Gemini/pagos `0`; deploy `0`; merge=false; producción=false.
 
-El histórico confirmó gate legal pendiente y `acceptanceAutomated=false`; Academia/Certificación quedaron diferidas, no PASS.
+## Límite legal
 
-## Request08 — ejecución Admin/new Shopper
+El texto demo/local de NDA que hoy existe en el prototipo no fue aprobado, versionado ni materializado como autoridad provider por este bloque. No se puede producir una aceptación durable válida hasta que el contenido exacto, versión y digest sean revisados humanamente y exista autoridad provider correspondiente.
 
-Request `cxorbia-i3-shopper-persistence-20260815-08` continuó exclusivamente desde request07 + `I3_ADMIN_NEW_SHOPPER_OVERLAY_POINTER_INTERCEPTION_BEFORE_CREATE`.
+## Progreso
 
-- request commit: `d21fb78aa012b1739fea03053a0a947fcd379ee4`
-- workflow run: `31909354336`
-- job: `95071998299`
-- parking commit: `8fa887900a5507b606b31dc0386a135060980837`
+I1 `15/15`; I2 `20/20`; I3 `0/25`; I4 `0/25`; I5 `0/15`.
 
-PASS antes del fallo: frozen checkpoint, source overlay-aware preflight, source patch, tooling, service account, Admin-only selection, proxy, command provider y Auth/handoff Admin hasta el subgate pre-Alta.
+**35% completado / 65% pendiente.** I3 sigue sin puntaje hasta PASS integral.
 
-STOP_RETRY exacto:
+## Siguiente bloque bloqueado por gate humano
 
-`I3_ADMIN_LEGAL_CONFIDENTIALITY_GATE_PENDING_BEFORE_CREATE`
+`PAULA_REVIEW_REQUIRED_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_PROVIDER_WRITE_AND_ADMIN_NEW_SHOPPER_RESUME`
 
-El harness verificó `CX.confidencialidad.pending('admin')===true` con gate legal visible y se detuvo. No aceptó, firmó, guardó ni automatizó consentimiento. No se trató el gate como banner `#bnOk`, no hubo `force:true` ni deshabilitación global de overlays.
-
-Resultado request08:
-- Shopper nuevo: `NO CREADO`;
-- `shopper.create`: `NO`;
-- update/readback/login nuevo: `NO` / `NO` / `NO`;
-- nuevos Auth writes: `0`;
-- nuevos Firestore writes: `0`;
-- password resets: `0`;
-- histórico: intacto, sin acceso a credencial ni reconciliación;
-- otras identidades: `0`;
-- HR/Rules/Storage/Make/Gemini/pagos: `0`;
-- deploy `0`, merge=false, producción=false;
-- request08 consumido/parked; no rerun ni segundo intento automático.
-
-## Causa raíz focal posterior
-
-La fuente vigente confirma que `CX.app.enter()` no monta el router mientras `CX.confidencialidad.pending(role)` sea verdadero.
-
-La superficie de Administración describe el NDA/versionado/aceptaciones actual como demo local y diferencia expresamente el futuro estado productivo firmado/auditado. La configuración simple de NDA también permanece frontend/local. Los adapters/backend protegidos revisados no demuestran aún un registro durable, account-scoped y cross-context de aceptación legal.
-
-**Inferencia técnica:** una aceptación que Paula haga solo en su navegador local no se usará como supuesto desbloqueo de un runner GitHub limpio. Para I3 se necesita primero una autoridad legal durable que sobreviva contextos y mantenga trazabilidad por persona/rol/versión.
-
-No se afirma el archivo/llave interna exacta de `CX.confidencialidad` porque todavía no quedó localizada con evidencia suficiente.
-
-## Avance
-
-**35% completado / 65% pendiente. I3 sigue 0/25 hasta PASS integral.** El histórico I3 está cerrado; Admin/new Shopper permanece pendiente detrás de la persistencia legal durable.
-
-## Iteraciones siguientes
-
-I4 `HR_BIDIRECTIONAL_PHASE_A_E2E_FINANCE` después de I3 PASS. I5 exact build/preprod/go-live después de I4 PASS.
-
-## Siguiente bloque exacto
-
-`I3_LEGAL_ACCEPTANCE_DURABLE_ACCOUNT_SCOPED_CONTRACT_AND_PRODUCTION_WIRING_SOURCE_ONLY`
-
-Debe preparar un contrato/read model/command path durable y reusable, con aceptación exclusivamente humana, versionado/auditoría y fail-closed. Este bloque no autoriza aceptación legal real ni provider writes. Para cualquier write posterior hará falta una nueva autorización explícita de Paula.
+Requiere revisión/confirmación humana del contenido legal TyA exacto, versión/digest y autorización de materialización si falta. Luego, y solo luego, una aceptación humana real provider-ACK y la reanudación Admin → un único Shopper nuevo. No iniciar request09 ni provider writes sin ese gate.
