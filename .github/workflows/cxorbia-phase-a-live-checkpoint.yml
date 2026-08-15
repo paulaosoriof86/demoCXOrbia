@@ -30,6 +30,8 @@ on:
       - 'tools/qa/verify-root-cause-correction-iteration2.mjs'
       - 'tools/qa/verify-phase-a-live-execution-checkpoint.mjs'
       - 'tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs'
+      - 'tools/qa/cxorbia-i3-source-patcher.mjs'
+      - '.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml'
       - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
   pull_request:
     branches:
@@ -59,6 +61,8 @@ on:
       - 'tools/qa/verify-root-cause-correction-iteration2.mjs'
       - 'tools/qa/verify-phase-a-live-execution-checkpoint.mjs'
       - 'tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs'
+      - 'tools/qa/cxorbia-i3-source-patcher.mjs'
+      - '.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml'
       - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
 
 permissions:
@@ -113,5 +117,13 @@ jobs:
           grep -q '"legalGateAware": true' .tmp-i3-harness-source.json
           grep -q '"legalConsentNotAutomated": true' .tmp-i3-harness-source.json
           grep -q '"playwrightDeferredToRealExecution": true' .tmp-i3-harness-source.json
+      - name: Verify I3 patcher and next exact continuation lineage source-only
+        run: |
+          set -euo pipefail
+          node --check tools/qa/cxorbia-i3-source-patcher.mjs
+          node tools/qa/cxorbia-i3-source-patcher.mjs --verify > .tmp-i3-patcher-source.json
+          cat .tmp-i3-patcher-source.json
+          grep -q 'PASS_I3_SOURCE_PATCH_VERIFIED' .tmp-i3-patcher-source.json
+          grep -q "cxorbia-i3-shopper-persistence-20260814-05','I3_PREPROVIDER_SOURCE_SELFTEST_SELF_REFERENTIAL_STATIC_IMPORT_CHECK" .github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml
       - name: Verify Phase A current operational checkpoint
         run: node tools/qa/verify-phase-a-live-execution-checkpoint.mjs
