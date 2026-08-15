@@ -13,9 +13,9 @@
   "firebaseProjectId": "cxorbia-backend-dev",
   "tenantId": "tya",
   "projectId": "cinepolis",
-  "enabled": true,
-  "consumed": false,
-  "status": "authorized_execute_once",
+  "enabled": false,
+  "consumed": true,
+  "status": "STOP_RETRY_I3_CONTINUATION_FAILED",
   "authorizedBy": "Paula",
   "authorizationText": "Autorizo una única continuación focalizada de la Iteración 3 DEV sobre docs-tya-v6-v71-audit / PR #7 y cxorbia-backend-dev, limitada a realizar un único nuevo credential reset sobre el mismo Shopper histórico exacto ya identificado, preservando exactamente uid, claims, shopperId, profile, membership, crosswalk e historia; validar inmediatamente Auth real, identidad exacta, autoridad HR e historia con el harness legal-gate-aware y congelar el checkpoint sanitizado antes de cualquier paso de Administración. Si existe un gate NDA/confidencialidad pendiente, verificarlo como gate legal visible sin aceptar, firmar, guardar ni automatizar consentimiento y sin exigir todavía las rutas diferidas. Después del checkpoint histórico PASS, completar en la misma ejecución el alta y edición de un único Shopper nuevo desde Administración mediante provider ACK, Auth + claims + membership + profile/shopper + crosswalk, provider readback, login, reload/new-tab y segundo contexto. Prohibido modificar cualquier otra identidad, fuzzy matching, reconstruir Auth, automatizar aceptación legal, HR/Rules/Storage/Make/Gemini/pagos writes, deploy, merge o producción. Ante colisión, ambigüedad, drift o scope inesperado, fail-closed y sin segundo intento automático.",
   "allowedExecutions": 1,
@@ -37,6 +37,10 @@
   "production": false,
   "stopRetry": true,
   "automaticRetryAllowed": false,
-  "nextGate": "EXECUTE_I3_LEGAL_GATE_AWARE_HISTORICAL_CHECKPOINT_THEN_ADMIN_NEW_SHOPPER_ONCE",
-  "decision": "AUTHORIZED_EXECUTE_ONCE"
+  "nextGate": "PAULA_REVIEW_REQUIRED_AFTER_I3_CONTINUATION_FAILURE",
+  "decision": "STOP_RETRY_I3_CONTINUATION_FAILED",
+  "consumedAt": "2026-08-15T00:09:13.910Z",
+  "workflowRunId": 31852717413,
+  "historicalLoginCheckpointPassed": false,
+  "historicalLoginCheckpoint": null
 }
