@@ -34,6 +34,7 @@ function sourceSelfTest(){
   const realBranchMarker="}else{\n  ensure(authorization==='YES_SOURCE_APPROVED_REAL_READONLY_E2E'";
   const markerIndex=source.indexOf(realBranchMarker);
   const realExecution=markerIndex>=0?source.slice(markerIndex):'';
+  const hasStaticPlaywrightImport=source.split(/\r?\n/).some(line=>/^\s*import\s+.+\s+from\s+['\"]playwright['\"]\s*;?\s*$/.test(line));
   const checks={
     noPrototypeRoleEntry:!realExecution.includes('CX.app.selectRole(')&&!realExecution.includes('window.CX.app.selectRole('),
     realCredentialFields:realExecution.includes('autocomplete="username"')&&realExecution.includes('autocomplete="current-password"'),
@@ -47,12 +48,12 @@ function sourceSelfTest(){
     certificationRouteRequired:realExecution.includes("#nav-cert")&&realExecution.includes("expectedView:'cert'"),
     legalGateAware:realExecution.includes('confidencialidad')&&realExecution.includes("pending('shopper')")&&realExecution.includes('workspaceState'),
     legalConsentNotAutomated:!realExecution.includes('confidencialidad.accept(')&&!realExecution.includes('confidencialidad.aceptar(')&&!realExecution.includes('confidencialidad.setAccepted(')&&realExecution.includes('acceptanceAutomated:false'),
-    playwrightDeferredToRealExecution:!source.includes("from 'playwright'")&&realExecution.includes("await import('playwright')"),
+    playwrightDeferredToRealExecution:!hasStaticPlaywrightImport&&realExecution.includes("await import('playwright')"),
     explicitRealBranchFound:Boolean(realExecution),
     noWriteApis:!/(firebase-admin|admin\.auth\(|admin\.firestore\(|createUser\(|updateUser\(|deleteUser\(|setCustomUserClaims\(|firebase\s+deploy|gcloud\s+run\s+deploy)/i.test(realExecution)
   };
   const failed=Object.entries(checks).filter(([,pass])=>!pass).map(([id])=>id);
-  return {schemaVersion:'cxorbia.p0.real-shopper-auth-e2e.source.v4',decision:failed.length?'FAIL_P0_REAL_SHOPPER_AUTH_E2E_SOURCE':'PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE',checks,failed,safety:safe};
+  return {schemaVersion:'cxorbia.p0.real-shopper-auth-e2e.source.v5',decision:failed.length?'FAIL_P0_REAL_SHOPPER_AUTH_E2E_SOURCE':'PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE',checks,failed,safety:safe};
 }
 
 async function verifyRoute(page,{selector,expectedView}){
