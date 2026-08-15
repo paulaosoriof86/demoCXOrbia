@@ -15,7 +15,7 @@ Request `...-04`, run `31852717413`, job `94931417141`: gate inicial PASS; STOP_
 
 Provider effects del run: reset 0, Auth 0, Firestore 0, other identities 0, Shopper nuevo NO, providers prohibidos 0, deploy/merge/production 0/false/false. Request consumido; no rerun.
 
-## Fix source-only
+## Fix source-only posterior
 
 - Playwright dinámico solo con `--execute-real`; self-test con `playwrightDeferredToRealExecution`.
 - workflow prearma lineage exacta desde `...-04` con `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
