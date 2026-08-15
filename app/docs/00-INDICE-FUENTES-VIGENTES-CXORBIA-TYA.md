@@ -1,7 +1,7 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-14 18:18 -06:00  
-**Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_FAIL_CLOSED__ZERO_PROVIDER_WRITES__SELFTEST_IMPORT_ORDER_FIXED__GO_LIVE_35__NEW_GATE_REQUIRED`
+**Fecha:** 2026-08-14 18:20 -06:00  
+**Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_FAIL_CLOSED__ZERO_PROVIDER_WRITES__SELFTEST_IMPORT_ORDER_FIXED__LINEAGE_PREWIRED__GO_LIVE_35__NEW_GATE_REQUIRED`
 
 ## 1. Lectura obligatoria y prevalente
 
@@ -15,8 +15,8 @@
 8. `AUDITORIA-FORENSE-INTEGRAL-PREPRODUCCION-CXORBIA-TYA-20260814.md`
 9. `ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md`
 10. `SOURCE-LOCK-ITERATION2-CANONICAL-PERSISTENCE-PASS-20260814.md`
-11. `SOURCE-LOCK-ITERATION3-HARNESS-DURABILITY-PASS-20260814.md` — histórico, no prevalece sobre locks I3 posteriores.
-12. `SOURCE-LOCK-ITERATION3-HISTORICAL-LEGAL-GATE-AWARE-HARNESS-PASS-20260814.md` — fix legal-gate-aware preservado, marcado como histórico para el estado actual.
+11. `SOURCE-LOCK-ITERATION3-HARNESS-DURABILITY-PASS-20260814.md` — histórico.
+12. `SOURCE-LOCK-ITERATION3-HISTORICAL-LEGAL-GATE-AWARE-HARNESS-PASS-20260814.md` — fix legal-gate-aware preservado, histórico para el estado actual.
 13. **`SOURCE-LOCK-ITERATION3-PREPROVIDER-SELFTEST-FAIL-CLOSED-20260814.md` — lock I3 más reciente y prevalente.**
 14. `GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`
 15. `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, PR #7 y HEAD vivo.
@@ -27,7 +27,7 @@
 - Rama/candidata única: `docs-tya-v6-v71-audit`
 - PR #7: draft/open/no merge
 - Base: `release/cxorbia-tya-rc-20260630`
-- `EXECUTION_LANE_READY`: sí para trabajo source/docs; cualquier nuevo provider run requiere gate nuevo expreso porque request `...-04` quedó consumido por STOP_RETRY.
+- `EXECUTION_LANE_READY`: sí para source/docs; cualquier nuevo provider run requiere gate nuevo expreso porque request `...-04` quedó consumido por STOP_RETRY.
 
 No nueva candidata, rama, PR, Auth rebuild ni reauditoría general.
 
@@ -35,31 +35,26 @@ No nueva candidata, rama, PR, Auth rebuild ni reauditoría general.
 
 Run `31852717413`, job `94931417141`.
 
-PASS:
+PASS: checkout exacto del request commit y gate de Paula/repo/branch/PR/target/budgets/prohibiciones.
 
-- checkout exacto del request commit;
-- gate de Paula / repo / branch / PR / target / budgets / prohibiciones;
-- no drift de scope.
+STOP_RETRY en `Static I3 source preflight before provider credentials` por:
 
-STOP_RETRY:
+`ERR_MODULE_NOT_FOUND: Cannot find package 'playwright' imported from tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs`.
 
-- falló `Static I3 source preflight before provider credentials`;
-- error: `ERR_MODULE_NOT_FOUND` por import estático de `playwright` en `tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs`;
-- Playwright se instalaba deliberadamente después del preflight;
-- service account, selección de identidades, reset, Firestore, proxy y E2E quedaron SKIPPED.
+Playwright se instalaba deliberadamente después del preflight. Service account, selección de identidades, reset, Firestore, proxy, E2E y Admin/new Shopper quedaron SKIPPED.
 
-Por tanto, este run ejecutó **0 password resets, 0 Auth writes y 0 Firestore writes**. El request quedó `consumed=true` por el circuit breaker, pero su presupuesto provider no fue utilizado.
+**Este run ejecutó 0 password resets, 0 Auth writes, 0 Firestore writes y 0 cambios de identidad.** El request quedó `consumed=true`, pero su presupuesto provider no fue utilizado.
 
 ## 4. Corrección source-only posterior — sin retry
 
-- `tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs`: Playwright ahora se carga dinámicamente solo dentro de `--execute-real`; el self-test source-only ya no depende de Playwright instalado.
-- `.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml`: mantiene el preflight antes de provider credentials y deja prearmada la lineage exacta para una futura continuación desde `...-04` con `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
-- `tools/qa/cxorbia-i3-source-patcher.mjs`: prepara la misma lineage en el command provider antes de cualquier provider use.
-- No se creó workflow, rama, PR ni candidata nuevos.
+- `tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs`: Playwright se carga dinámicamente solo dentro de `--execute-real`; el self-test source-only ya no depende de Playwright instalado y verifica `playwrightDeferredToRealExecution`.
+- `.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml`: mantiene el preflight antes de provider credentials y prearma lineage exacta desde `...-04` con `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
+- `tools/qa/cxorbia-i3-source-patcher.mjs`: materializa/verifica la misma lineage en el command provider antes de cualquier provider use.
+- No se creó workflow, rama, PR ni candidata nuevos y no se ejecutó otro provider gate.
 
 ## 5. Seguridad
 
-Desde el último provider run real `31835742956`, el request `...-04` **no añadió ningún provider write**. En run `31852717413`: reset 0, Auth 0, Firestore 0, otras identidades 0, HR/Rules/Storage/Make/Gemini/pagos 0, deploy 0, merge=false, producción=false, consentimiento legal automatizado 0 y retry automático NO.
+En run `31852717413`: reset 0, Auth 0, Firestore 0, otras identidades 0, HR/Rules/Storage/Make/Gemini/pagos 0, deploy 0, merge=false, producción=false, consentimiento legal automatizado 0 y retry automático NO.
 
 ## 6. Porcentaje
 
@@ -69,4 +64,4 @@ Desde el último provider run real `31835742956`, el request `...-04` **no añad
 
 `PAULA_REVIEW_REQUIRED_FOR_I3_REQUEST05_AFTER_PREPROVIDER_MECHANISM_FAILURE`.
 
-Si Paula vuelve a autorizar, el alcance funcional puede ser exactamente el mismo que `...-04`: un único reset del mismo UID histórico, checkpoint histórico legal-gate-aware antes de Administración y luego un único Shopper nuevo con provider ACK/readback/login/reload/new-tab/segundo contexto. Sin fuzzy, otras identidades, aceptación legal automatizada, HR/Rules/Storage/Make/Gemini/pagos, deploy, merge o producción; fail-closed y cero retry automático.
+Si Paula vuelve a autorizar, el alcance funcional puede ser exactamente el mismo que `...-04`, mediante request nuevo `...-05`: un único reset del mismo UID histórico, checkpoint histórico legal-gate-aware antes de Administración y luego un único Shopper nuevo con provider ACK/readback/login/reload/new-tab/segundo contexto. Sin fuzzy, otras identidades, aceptación legal automatizada, HR/Rules/Storage/Make/Gemini/pagos, deploy, merge o producción; fail-closed y cero retry automático.
