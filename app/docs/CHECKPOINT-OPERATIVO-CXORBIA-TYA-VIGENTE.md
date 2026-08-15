@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-15 17:03 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_PASS_FROZEN__REQUEST08_LEGAL_STOP_SAFE__LEGAL_PROVIDER_WIRING_SOURCE_ONLY_PASS__GO_LIVE_35__NO_PRODUCTION`
+**Fecha:** 2026-08-15 17:31 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_PASS_FROZEN__REQUEST08_LEGAL_STOP_SAFE__LEGAL_PROVIDER_WIRING_SOURCE_ONLY_PASS__LEGAL_DRAFT_V0_1_PREPARED__GO_LIVE_35__NO_PRODUCTION`
 
 ## Carril vivo
 
@@ -33,9 +33,27 @@ Preparado y verificado:
 
 Efectos reales del bloque: provider credentials/reads/writes `0/0/0`; Auth/Firestore/legal writes `0/0/0`; historical access/reset/reconcile `0/0/0`; HR/Rules/Storage/Make/Gemini/pagos `0`; deploy `0`; merge=false; producción=false.
 
-## Límite legal
+## Contenido legal — draft V0.1 preparado
 
-El texto demo/local de NDA que hoy existe en el prototipo no fue aprobado, versionado ni materializado como autoridad provider por este bloque. No se puede producir una aceptación durable válida hasta que el contenido exacto, versión y digest sean revisados humanamente y exista autoridad provider correspondiente.
+Con autorización expresa de Paula se creó únicamente para revisión humana:
+`app/docs/DRAFT-CONTENIDO-LEGAL-TYA-V0.1-REVISION-HUMANA-20260815.md`.
+
+Versión draft: `tya-legal-bundle-v0.1-draft-20260815`.
+Incluye acuerdo marco de uso/confidencialidad/datos/PI, anexos Shopper, staff/admin, Cliente y roles transversales, anexos Guatemala/Honduras, aviso resumido, copy de aceptación humana y matriz reusable de `legalContentId`/scope/audiencia.
+
+El draft está marcado `NOT_APPROVED`; su hash identifica solo el texto de revisión y **no es** el `contentDigest` productivo. No se materializó `legalContents`, no se registró aceptación y no hubo provider IO ni cambios de runtime.
+
+## Datos humanos que todavía faltan antes de aprobación
+
+- identidad contractual exacta del Operador TyA en Guatemala;
+- estructura/entidad contratante para Honduras;
+- correos legal, privacidad e incidentes;
+- tabla de retención;
+- proveedores que estarán realmente activos en go-live;
+- foro/resolución de controversias por país y tipo de relación;
+- titular/licenciante contractual del software CXOrbia;
+- política real de datos bancarios/documentos;
+- reglas reales de grabaciones/geolocalización.
 
 ## Progreso
 
@@ -43,8 +61,8 @@ I1 `15/15`; I2 `20/20`; I3 `0/25`; I4 `0/25`; I5 `0/15`.
 
 **35% completado / 65% pendiente.** I3 sigue sin puntaje hasta PASS integral.
 
-## Siguiente bloque bloqueado por gate humano
+## Siguiente bloque
 
-`PAULA_REVIEW_REQUIRED_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_PROVIDER_WRITE_AND_ADMIN_NEW_SHOPPER_RESUME`
+Revisión humana/completado del draft legal V0.1. Después de aprobar texto exacto, versión final y digest final, podrá solicitarse autorización específica para materialización provider-authoritative, una aceptación humana real y la reanudación Admin → un único Shopper nuevo bajo el gate `PAULA_REVIEW_REQUIRED_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_PROVIDER_WRITE_AND_ADMIN_NEW_SHOPPER_RESUME`.
 
-Requiere revisión/confirmación humana del contenido legal TyA exacto, versión/digest y autorización de materialización si falta. Luego, y solo luego, una aceptación humana real provider-ACK y la reanudación Admin → un único Shopper nuevo. No iniciar request09 ni provider writes sin ese gate.
+No iniciar request09, provider writes, deploy, merge ni producción antes de ese gate.
