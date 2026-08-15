@@ -28,6 +28,22 @@ async function login(page,role,cred){
   await page.locator('#lgSubmit').click();
   await page.waitForFunction(r=>{const c=window.CX?.backendAuth?.context?.();return c?.authenticated===true&&(r==='admin'?['super','admin'].includes(c.role):c.role===r);},role,{timeout:30000});
 }
+async function waitCanonicalAdminFrontend(page){
+  await page.waitForFunction(()=>{
+    const h=window.CX_C6_LIVE_USER_ADMIN_FRONTEND_HANDOFF;
+    const appOn=document.getElementById('app')?.classList.contains('on')===true;
+    const loginHidden=document.getElementById('login')?.classList.contains('hidden')===true;
+    return h?.status==='entered'&&h?.membershipVerified===true&&h?.authorityApplied===true&&appOn&&loginHidden;
+  },null,{timeout:45000});
+  const state=await page.evaluate(()=>({
+    handoffStatus:window.CX_C6_LIVE_USER_ADMIN_FRONTEND_HANDOFF?.status||null,
+    membershipVerified:window.CX?.session?.user?.membershipVerified===true,
+    appOn:document.getElementById('app')?.classList.contains('on')===true,
+    loginHidden:document.getElementById('login')?.classList.contains('hidden')===true
+  }));
+  ensure(state.handoffStatus==='entered'&&state.membershipVerified&&state.appOn&&state.loginHidden,'I3_ADMIN_FRONTEND_HANDOFF_NOT_ENTERED');
+  return state;
+}
 async function shopperCheck(page,shopperId){
   await page.waitForFunction(id=>{const c=window.CX?.backendAuth?.context?.();return c?.authenticated===true&&c.role==='shopper'&&c.shopperId===id&&window.CX_SHOPPER_MEMBERSHIP?.status==='verified';},shopperId,{timeout:30000});
   return page.evaluate(id=>{const c=window.CX?.backendAuth?.context?.();const p=window.CX?.data?.getShopper?.(id)||null;return{authenticated:c?.authenticated===true,role:c?.role,shopperIdExact:c?.shopperId===id,membershipVerified:window.CX_SHOPPER_MEMBERSHIP?.status==='verified',profileVisible:Boolean(p),profileVersion:Number(p?.version||0)};},shopperId);
@@ -36,7 +52,9 @@ try{
   const adminContext=await browser.newContext({serviceWorkers:'block'});await adminContext.addInitScript(endpoint=>{window.CX_COMMAND_ENDPOINT_OVERRIDE=endpoint;},commandEndpoint);const adminPage=await pageWithTransport(adminContext);
   await adminPage.goto(root+'/index-backend-dev.html?cxProjectId=cinepolis',{waitUntil:'domcontentloaded',timeout:30000});await login(adminPage,'admin',existing.staff);
   await adminPage.waitForFunction(()=>window.CX?.session?.user?.membershipVerified===true,null,{timeout:30000});
+  await waitCanonicalAdminFrontend(adminPage);
   await adminPage.evaluate(()=>{window.CX.BACKEND.enableCommandWrites=true;window.CX.commandHttpTransport?.activate?.();window.__I3_COMMITS=[];window.CX?.bus?.on?.('command-committed',r=>window.__I3_COMMITS.push({commandType:r.commandType,entityId:r.entityId,profileVersion:r.profileVersion||null,providerAck:r.providerAck===true}));window.CX?.router?.nav?.('shoppers');});
+  await adminPage.waitForFunction(()=>window.CX?.session?.view==='shoppers',null,{timeout:15000});
   await adminPage.locator('#shNew').waitFor({state:'visible',timeout:20000});await adminPage.locator('#shNew').click();await adminPage.locator('#al_first').fill(testProfile.firstName);await adminPage.locator('#al_last').fill(testProfile.lastName);await adminPage.locator('#al_wa').fill(testProfile.whatsapp);
   await adminPage.locator('#al_save').click();await adminPage.waitForFunction(()=>Array.isArray(window.__I3_COMMITS)&&window.__I3_COMMITS.some(x=>x.commandType==='shopper.create'&&x.providerAck),null,{timeout:30000});
   const createAck=await adminPage.evaluate(()=>window.__I3_COMMITS.find(x=>x.commandType==='shopper.create'));
@@ -51,5 +69,5 @@ try{
 
   const secondContext=await browser.newContext({serviceWorkers:'block'});const secondPage=await pageWithTransport(secondContext);await secondPage.goto(root+'/index-backend-dev.html?cxProjectId=cinepolis',{waitUntil:'domcontentloaded',timeout:30000});await login(secondPage,'shopper',newCred);const second=await shopperCheck(secondPage,newCred.shopperId);ensure(second.authenticated&&second.membershipVerified&&second.shopperIdExact,'I3_NEW_SHOPPER_SECOND_CONTEXT_FAILED');await secondContext.close();
   ensure(errors.length===0,'I3_BROWSER_PAGE_ERRORS:'+errors.slice(0,3).join('|'));
-  console.log(JSON.stringify({schemaVersion:'cxorbia.i3.shopper-persistence-e2e.v1',decision:'PASS_I3_ADMIN_CREATE_UPDATE_NEW_SHOPPER_AUTH_E2E',adminCreateProviderAck:true,adminUpdateProviderAck:true,newShopperLogin:true,reload:true,newTab:true,secondContext:true,shopperIdFingerprint:crypto.createHash('sha256').update(newCred.shopperId).digest('hex').slice(0,20),credentialsExposed:false,tokensExposed:false,fuzzyMatching:false,hrWrites:0,storageWrites:0,deploys:0,production:false},null,2));
+  console.log(JSON.stringify({schemaVersion:'cxorbia.i3.shopper-persistence-e2e.v2',decision:'PASS_I3_ADMIN_CREATE_UPDATE_NEW_SHOPPER_AUTH_E2E',adminFrontendHandoffAwaited:true,adminCreateProviderAck:true,adminUpdateProviderAck:true,newShopperLogin:true,reload:true,newTab:true,secondContext:true,shopperIdFingerprint:crypto.createHash('sha256').update(newCred.shopperId).digest('hex').slice(0,20),credentialsExposed:false,tokensExposed:false,fuzzyMatching:false,hrWrites:0,storageWrites:0,deploys:0,production:false},null,2));
 }finally{await browser.close();}
