@@ -1,7 +1,7 @@
 # GO-LIVE PROGRESS TRACKER — ROOT-CAUSE PLAN CXORBIA TyA
 
-**Fecha:** 2026-08-15 14:17 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_REQUEST06_HISTORICAL_PASS_FROZEN__ADMIN_NEW_SHOPPER_STOP_RETRY_BEFORE_COMMAND__ADMIN_RESUME_SOURCE_GATE_PASS__35_PERCENT__REQUEST07_GATE_REQUIRED`
+**Fecha:** 2026-08-15 15:14 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_PASS_FROZEN__REQUEST07_ADMIN_OVERLAY_STOP_RETRY__ZERO_NEW_WRITES__OVERLAY_AWARE_SOURCE_GATE_PASS__35_PERCENT__REQUEST08_GATE_REQUIRED`
 
 ## Medición
 
@@ -9,73 +9,50 @@ I1 15% · I2 20% · I3 25% · I4 25% · I5 15%. Solo avanza al cerrar una iterac
 
 ## Actual
 
-**35% completado / 65% pendiente.** I1 PASS 15/15; I2 PASS 20/20; I3 sigue 0/25 hasta cierre integral.
+**35% completado / 65% pendiente.** I1 PASS 15/15; I2 PASS 20/20; I3 0/25 hasta cierre integral.
 
-## Request `...-06` — histórico cerrado y congelado
+## I3 histórico — cerrado
 
-Run `31906391682`, job `95064802332` alcanzó provider y cerró el subgate histórico:
+Run `31906391682`: Shopper histórico exacto PASS, un único reset, identidad/claims/profile/membership/crosswalk/history preservados, Auth/HR/history E2E PASS. Checkpoint congelado y read-only. `passwordResets=0` para continuaciones; no credencial histórica.
 
-- un único reset del mismo UID histórico exacto;
-- Auth password updates `1`;
-- UID/claims/profile/membership/crosswalk/history preservados;
-- historical Firestore reconciliation writes `0`;
-- login real + HR authority + history E2E PASS;
-- other identities `0`;
-- fuzzy matching `false`.
+NDA histórico `legal-gate-pending`, `acceptanceAutomated=false`; Academia/Certificación diferidas, no PASS.
 
-Checkpoint canónico congelado:
-`app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json`.
+## Request07 — resultado
 
-Este subgate no vuelve a ejecutarse. Futuras continuaciones I3 deben tener `passwordResets=0` y no cargar la credencial histórica.
+Run `31907732888`, job `95068062981`. El arreglo anterior sí avanzó: `#shNew` dejó de estar oculto y llegó visible/enabled/stable.
 
-## NDA / Academia
+Nuevo STOP_RETRY antes de `shopper.create`:
+`I3_ADMIN_NEW_SHOPPER_OVERLAY_POINTER_INTERCEPTION_BEFORE_CREATE`.
 
-El checkpoint quedó en `legal-gate-pending`: diálogo visible y pendiente, `acceptanceAutomated=false`. Academia y Certificación están diferidas por ese gate y no se declaran PASS.
+Un `.cx-ov` interceptó el click. Shopper nuevo `NO`; nuevos Auth/Firestore writes `0/0`; password resets `0`; otras identidades `0`; providers prohibidos/deploy/merge/producción `0/0/false/false`. Request07 consumido; no rerun.
 
-## Request `...-06` — Admin/new Shopper pendiente
+## Corrección source-only certificada
 
-El E2E posterior falló antes del comando porque `#shNew` existía pero seguía oculto:
+- no force-click y no pointer-disable global de `.cx-ov`;
+- legal/confidencialidad pending => fail-closed sin consentimiento automático;
+- solo banner informativo no legal con botón exacto `#bnOk` puede reconocerse mediante click normal;
+- overlay desconocido => fail-closed;
+- request07 lineage prearmada con `passwordResets=0` y frozen checkpoint.
 
-`I3_ADMIN_NEW_SHOPPER_BUTTON_HIDDEN_BEFORE_COMMAND`.
-
-No hubo click, `shopper.create`, Shopper nuevo, update ni provider readback. Nuevos Auth/Firestore writes de Shopper nuevo: `0/0`.
-
-Request06 quedó consumido; no rerun ni retry automático.
-
-## Corrección focal source-only certificada
-
-- E2E Admin espera el handoff canónico completo `frontend handoff=entered`, membership, HR authority, app visible y login oculto antes de navegar a Shoppers.
-- Espera además `CX.session.view='shoppers'` antes de exigir `#shNew` visible.
-- Source patcher prearma únicamente `admin_new_shopper_resume` desde request06.
-- Workflow I3 existente verifica primero el checkpoint histórico y bloquea cualquier nuevo reset (`passwordResets=0`).
-- No vuelve a seleccionar/cargar la credencial histórica.
-
-Source-only gate:
-- run `31906801917`;
-- job `95065826139`;
-- HEAD `5971413f13ca5d6fbdd878e5c1d379f2ab5a22c9`;
-- resultado `SUCCESS`.
-
-PASS: I1, I2, frozen history, harness legal-gate-aware, Admin E2E source, handoff wait, patcher, Admin-only lineage y checkpoint verifier. Cero provider writes/resets/deploy/merge/producción.
+Source gate run `31908665710`, job `95070327022`, HEAD fuente `1e313d6f4d689ac01623f4bce90da5828f25f717`: **SUCCESS** en I1, I2, frozen history, legal-aware harness, Admin handoff, overlay classifier, no-force-click, lineage y checkpoint verifier. Cero provider writes.
 
 Source lock prevalente:
-`app/docs/SOURCE-LOCK-ITERATION3-HISTORICAL-PASS-ADMIN-RESUME-SOURCE-GATE-PASS-20260815.md`.
+`app/docs/SOURCE-LOCK-ITERATION3-REQUEST07-ADMIN-OVERLAY-STOP-RETRY-OVERLAY-AWARE-SOURCE-GATE-PASS-20260815.md`.
 
 ## Pendiente I3 real
 
-Solo queda el subgate Admin/new Shopper:
-
-1. gate/request nuevo `...-07`, no rerun de request06;
-2. reutilizar read-only el checkpoint histórico;
-3. `passwordResets=0` y cero acceso a credencial histórica;
-4. Admin create/update de un único Shopper nuevo con provider ACK;
+Solo Admin/new Shopper:
+1. request08 nuevo, no rerun request07;
+2. frozen histórico read-only, `passwordResets=0`, no credencial histórica;
+3. overlay pre-Alta: legal => STOP; `#bnOk` informativo => reconocer; desconocido => STOP;
+4. create/update de un único Shopper nuevo con provider ACK;
 5. Auth + claims + membership + profile/shopper + crosswalk;
 6. provider readback;
-7. nuevo Shopper login + reload/new-tab + segundo contexto;
+7. login + reload/new-tab + segundo contexto;
 8. cero fuzzy, otras identidades, consentimiento automatizado o providers prohibidos.
 
 Cierre I3 => **60% completado / 40% pendiente**.
 
 ## Siguiente gate
 
-`PAULA_REVIEW_REQUIRED_FOR_I3_REQUEST07_ADMIN_NEW_SHOPPER_ONLY_AFTER_FROZEN_HISTORICAL_PASS`.
+`PAULA_REVIEW_REQUIRED_FOR_I3_REQUEST08_OVERLAY_AWARE_ADMIN_NEW_SHOPPER_ONLY`.
