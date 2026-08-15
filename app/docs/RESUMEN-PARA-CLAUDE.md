@@ -1,7 +1,7 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-14 18:12 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__SELFTEST_IMPORT_ORDER_FIXED__SAME_CANDIDATE`
+**Última actualización:** 2026-08-14 18:18 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__SELFTEST_IMPORT_ORDER_FIXED__LINEAGE_PREWIRED__SAME_CANDIDATE`
 
 ## Regla principal
 
@@ -23,15 +23,15 @@ Lock I3 más reciente:
 
 ## Request `...-04`
 
-Run `31852717413` / job `94931417141` falló **antes de provider credentials**. El problema no fue UI ni Auth: el source self-test del harness histórico importaba Playwright estáticamente, aunque Playwright se instala más adelante y el modo default del harness es source-only.
+Run `31852717413` / job `94931417141` falló **antes de provider credentials**. El problema no fue UI ni Auth: el source self-test del harness histórico importaba Playwright estáticamente, aunque el workflow lo instala después y el modo default del harness es source-only.
 
-Por eso quedaron SKIPPED reset, Firestore, E2E histórico, Admin y nuevo Shopper. En ese run hubo 0 Auth writes, 0 Firestore writes y 0 cambios de identidad.
+Por ello quedaron SKIPPED reset, Firestore, E2E histórico, Admin y nuevo Shopper. En ese run hubo 0 Auth writes, 0 Firestore writes y 0 cambios de identidad.
 
 ## Root fix sin impacto de prototipo
 
-`tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs` carga Playwright dinámicamente solo con `--execute-real`.
-
-Workflow y source patcher quedaron prearmados para una futura lineage exacta desde request `...-04`, sin rerun automático y sin nuevo workflow.
+- `tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs` carga Playwright dinámicamente solo con `--execute-real`.
+- workflow existente prearma lineage exacta desde request `...-04` para un futuro request `...-05`.
+- `tools/qa/cxorbia-i3-source-patcher.mjs` materializa/verifica esa lineage en el provider antes de provider use.
 
 **Claude no debe corregir login, Academia, Certificación, NDA ni shoppers.js por este incidente.** No es un defecto visual/funcional de esos módulos.
 
