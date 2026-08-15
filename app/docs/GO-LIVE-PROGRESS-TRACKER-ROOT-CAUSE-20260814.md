@@ -1,13 +1,13 @@
 # GO-LIVE PROGRESS TRACKER — ROOT-CAUSE PLAN CXORBIA TyA
 
-**Fecha:** 2026-08-14 14:00 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_RESET2_CONSUMED__HISTORICAL_AUTH_REACHED__LEGAL_GATE_AWARE_HARNESS_PASS__35_PERCENT__PROVIDER_GATE_REQUIRED`
+**Fecha:** 2026-08-14 18:12 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__35_PERCENT__NEW_GATE_REQUIRED`
 
 Plan rector: `app/docs/ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md`.
 
 ## Regla de medición
 
-El porcentaje solo avanza cuando una iteración cierra su gate completo. PASS internos de I3 no suman puntos parciales.
+El porcentaje solo avanza cuando una iteración cierra su gate completo. PASS internos o fallos de mecanismo dentro de I3 no suman puntos parciales.
 
 ## Pesos
 
@@ -29,50 +29,45 @@ No reprocesar.
 
 No reprocesar.
 
-### I3 — 0/25 todavía, con avance interno real
+### I3 — 0/25 todavía
 
-Último provider run: `31835742956`, job `94881540163`.
+Último request: `cxorbia-i3-shopper-persistence-20260814-04`.  
+Run: `31852717413`. Job: `94931417141`.
 
-PASS alcanzado dentro de I3:
+El gate de autorización/scope PASS, pero el run se detuvo en `Static I3 source preflight before provider credentials` por un import estático de Playwright en un harness cuyo modo default era source-only.
 
-- mismo Shopper histórico exacto;
-- un nuevo reset exacto autorizado;
-- UID/claims/shopperId/profile/history preservados;
-- other identities modified `0`;
-- exact membership/crosswalk reconciliation;
-- contexto Auth Shopper exacto alcanzado;
-- `CX_PROTECTED_AUTH_HR_AUTHORITY.applied===true` alcanzado.
+No se alcanzó ningún provider boundary en ese run:
 
-STOP_RETRY: timeout esperando `#nav-aprendizaje`. Admin/new Shopper quedó SKIPPED y el checkpoint histórico no llegó a persistirse.
+- reset: 0;
+- Auth writes: 0;
+- Firestore writes: 0;
+- otras identidades: 0;
+- Shopper nuevo: NO;
+- HR/Rules/Storage/Make/Gemini/pagos: 0;
+- deploy/merge/producción: 0/false/false.
 
-## Root correction source-only — PASS
+El request quedó consumido por STOP_RETRY y no se rerun.
 
-Se probó un conflicto de contrato entre producto y harness: `CX.app.enter()` puede diferir el montaje del router mientras `CX.confidencialidad.pending(...)` esté activo, pero el E2E exigía Academia/Certificación incondicionalmente antes de cerrar identidad/HR/historia.
+## Fix mecánico source-only posterior
 
-El harness histórico ahora:
+- Playwright se carga dinámicamente solo con `--execute-real`.
+- El self-test source-only ya no requiere Playwright instalado y verifica `playwrightDeferredToRealExecution`.
+- Workflow y source patcher quedaron prearmados para una lineage exacta desde request `...-04` con código `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
+- No se activó ningún provider gate después del fix.
 
-- valida primero Auth exacto + identity + HR + historia;
-- reconoce el gate legal canónico sin aceptarlo automáticamente;
-- si el NDA está pendiente, exige el diálogo visible y difiere rutas;
-- si no está pendiente, mantiene Academia/Certificación obligatorias;
-- conserva cero fuzzy, zero write APIs y click real.
-
-Source lock: `app/docs/SOURCE-LOCK-ITERATION3-HISTORICAL-LEGAL-GATE-AWARE-HARNESS-PASS-20260814.md`.
+Source lock vigente: `app/docs/SOURCE-LOCK-ITERATION3-PREPROVIDER-SELFTEST-FAIL-CLOSED-20260814.md`.
 
 ## Lo que falta para I3 PASS / +25 puntos
 
-1. Gate expreso para un único reset adicional del mismo principal histórico, porque la credencial temporal del run consumido fue destruida en cleanup y no existe checkpoint sanitizado.
-2. Auth/identity/HR/history histórica real PASS y checkpoint sanitizado inmediato, legal-gate-aware.
-3. Admin create/update Shopper nuevo con provider ACK/readback.
-4. Shopper nuevo login + reload/new-tab/segundo contexto.
-5. Cero fuzzy, false success, otras identidades, proveedores prohibidos y aceptación legal automatizada.
+1. Nuevo gate expreso y request `...-05`, porque `...-04` quedó consumido aunque no ejecutó reset.
+2. Un solo reset del mismo Shopper histórico exacto.
+3. Auth/identity/HR/history PASS con harness legal-gate-aware y checkpoint sanitizado inmediato.
+4. Admin create/update de un único Shopper nuevo con provider ACK/readback.
+5. Shopper nuevo login + reload/new-tab/segundo contexto.
+6. Cero fuzzy, otras identidades, false success, aceptación legal automatizada y providers prohibidos.
 
 Al cerrar todo: **60% completado / 40% pendiente**.
 
-## Seguridad actual
-
-Request `...-03` consumido/parked, no retry automático. Después del run: source/docs only, cero nuevos provider writes/deploy/merge/producción.
-
 ## Siguiente gate
 
-`PAULA_REVIEW_REQUIRED_FOR_I3_LEGAL_GATE_AWARE_HISTORICAL_CHECKPOINT_AND_ADMIN_NEW_SHOPPER_RESUME`.
+`PAULA_REVIEW_REQUIRED_FOR_I3_REQUEST05_AFTER_PREPROVIDER_MECHANISM_FAILURE`.
