@@ -1,6 +1,6 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-14 18:18 -06:00  
+**Última actualización:** 2026-08-14 18:20 -06:00  
 **Estado:** `I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__SELFTEST_IMPORT_ORDER_FIXED__LINEAGE_PREWIRED__GO_LIVE_35__NO_PRODUCTION`
 
 ## Request I3 `...-04`
@@ -13,31 +13,26 @@ Error reproducible:
 
 `ERR_MODULE_NOT_FOUND: Cannot find package 'playwright' imported from tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs`.
 
-La falla ocurrió antes de `Install transient provider and browser tooling` y antes de `Load canonical DEV service account privately`. No hubo acceso provider ni modificación de identidad.
+La falla ocurrió antes de instalar tooling y antes de cargar service account/provider credentials. No hubo acceso provider ni modificación de identidad.
 
 ## Root fix source-only posterior
 
 ### `tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs`
 
 - eliminado import estático de Playwright;
-- Playwright se carga mediante `await import('playwright')` únicamente dentro de `--execute-real`, después del gate explícito;
-- el modo default source-only ya no depende de tooling runtime;
-- check nuevo: `playwrightDeferredToRealExecution`.
+- Playwright se carga vía `await import('playwright')` solo dentro de `--execute-real`, después del gate explícito;
+- source self-test ya no depende de tooling runtime;
+- check `playwrightDeferredToRealExecution`.
 
 ### `.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml`
 
 - conserva preflight antes de provider credentials;
-- lineage futura preparada para `cxorbia-i3-shopper-persistence-20260814-04` + `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`;
+- prearma lineage futura `...-04` + `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`;
 - no se creó workflow nuevo.
 
 ### `tools/qa/cxorbia-i3-source-patcher.mjs`
 
-- materializa/verifica la misma lineage exacta en el command provider antes de cualquier provider use de una futura request `...-05`.
-
-### `backend/runtime/cxorbia-shopper-command-provider-v1.mjs`
-
-- permanece endurecido con exact identity, scope, budgets, `otherIdentitiesModifiedMax=0` y `legalAcceptanceAutomated=false`;
-- la lineage futura se materializará por el patcher dentro del apply step antes del primer provider use.
+- materializa/verifica esa misma lineage en el command provider antes del primer provider use de una futura ejecución.
 
 ### Source lock
 
@@ -57,11 +52,11 @@ La falla ocurrió antes de `Install transient provider and browser tooling` y an
 - legal acceptance automated: **0**;
 - retry automático: **NO**.
 
-El request `...-04` quedó consumido por el failure handler. No se hará rerun del mismo request.
+Request `...-04` quedó consumido por failure handler. No se rerun.
 
 ## Reusable CXOrbia
 
-Los self-tests source-only no deben requerir dependencias runtime no instaladas. El provider boundary permanece detrás de preflight, gate, exact identity, tenant/project scope, idempotencia y ACK.
+Los self-tests source-only no deben depender de dependencias runtime aún no instaladas. Provider boundary permanece detrás de preflight, gate, exact identity, tenant/project scope, idempotencia y ACK.
 
 ## Exclusivo TyA
 
@@ -69,15 +64,15 @@ Un futuro reset, si Paula vuelve a autorizarlo, sigue limitado al mismo único S
 
 ## Claude/prototipo
 
-No reconstruir Auth/login, NDA, Academia, Certificación ni UI. La corrección actual es únicamente del harness/workflow/lineage QA.
+No reconstruir Auth/login, NDA, Academia, Certificación ni UI. La corrección actual es del harness/workflow/lineage QA.
 
 ## Academia
 
-Sin cambio funcional. El legal/NDA gate continúa humano y separado de Auth; no se automatiza consentimiento.
+Sin cambio funcional. Gate legal/NDA continúa humano y separado de Auth; no se automatiza consentimiento.
 
 ## Porcentaje
 
-**35% completado / 65% pendiente.** I3 solo sube a 60% cuando cierre completo.
+**35% completado / 65% pendiente.** I3 sube a 60% solo al cerrar completo.
 
 ## Siguiente gate exacto
 
