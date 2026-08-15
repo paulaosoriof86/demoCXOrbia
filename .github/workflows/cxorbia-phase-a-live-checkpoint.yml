@@ -29,6 +29,7 @@ on:
       - 'tools/qa/verify-root-cause-correction-iteration1.mjs'
       - 'tools/qa/verify-root-cause-correction-iteration2.mjs'
       - 'tools/qa/verify-phase-a-live-execution-checkpoint.mjs'
+      - 'tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs'
       - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
   pull_request:
     branches:
@@ -57,6 +58,7 @@ on:
       - 'tools/qa/verify-root-cause-correction-iteration1.mjs'
       - 'tools/qa/verify-root-cause-correction-iteration2.mjs'
       - 'tools/qa/verify-phase-a-live-execution-checkpoint.mjs'
+      - 'tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs'
       - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
 
 permissions:
@@ -100,5 +102,16 @@ jobs:
           node --check tools/qa/verify-root-cause-correction-iteration2.mjs
       - name: Verify Iteration 2 canonical persistence and transversal source contract
         run: node tools/qa/verify-root-cause-correction-iteration2.mjs
+      - name: Validate I3 historical legal-gate-aware harness source syntax
+        run: node --check tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs
+      - name: Verify I3 historical harness source-only contract without Playwright or provider access
+        run: |
+          set -euo pipefail
+          node tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs > .tmp-i3-harness-source.json
+          cat .tmp-i3-harness-source.json
+          grep -q 'PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE' .tmp-i3-harness-source.json
+          grep -q '"legalGateAware": true' .tmp-i3-harness-source.json
+          grep -q '"legalConsentNotAutomated": true' .tmp-i3-harness-source.json
+          grep -q '"playwrightDeferredToRealExecution": true' .tmp-i3-harness-source.json
       - name: Verify Phase A current operational checkpoint
         run: node tools/qa/verify-phase-a-live-execution-checkpoint.mjs
