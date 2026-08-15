@@ -1,8 +1,7 @@
 name: CXOrbia C6 Staff Repair Bootstrap Exact Write V2
 
-# Existing workflow reused for I3. It is request-triggered and fail-closed.
-# Durable order: exact recovery -> historical login proof -> sanitized checkpoint
-# -> Admin/new Shopper. No new workflow/branch/PR/deploy/merge/production path.
+# Existing I3 workflow, now locked to the remaining Admin/new-Shopper subgate.
+# Historical Shopper exact reset/login/history was frozen by request06 and MUST NOT repeat.
 on:
   push:
     branches:
@@ -29,6 +28,7 @@ jobs:
       I3_EXISTING: .tmp/cxorbia-i3-private/existing-e2e.json
       I3_ADMIN: .tmp/cxorbia-i3-private/admin-only.json
       I3_NEW: .tmp/cxorbia-i3-private/new-shopper.json
+      I3_HISTORICAL_CHECKPOINT: app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json
       DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
       LOCAL_ROOT_URL: http://127.0.0.1:4175
       COMMAND_URL: http://127.0.0.1:4180/v1/commands
@@ -42,7 +42,7 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Gate Paula I3 exact continuation request
+      - name: Gate Paula I3 Admin new-Shopper continuation only
         run: |
           set -euo pipefail
           mkdir -p "$I3_PRIVATE" "$I3_OUT"
@@ -57,39 +57,38 @@ jobs:
           if(r.schemaVersion!=='cxorbia.i3.shopper-persistence-exact-write.request.v1'||r.repository!=='paulaosoriof86/demoCXOrbia'||r.branch!=='docs-tya-v6-v71-audit'||Number(r.pullRequest)!==7)throw new Error('I3_LANE_INVALID');
           if(r.targetHeadSha!==parent||changed.length!==1||changed[0]!==p)throw new Error('I3_REQUEST_COMMIT_SCOPE_INVALID:'+changed.join(','));
           if(r.enabled!==true||r.consumed!==false||r.status!=='authorized_execute_once'||r.authorizedBy!=='Paula'||r.allowedExecutions!==1)throw new Error('I3_AUTHORIZATION_INVALID');
-          const lineage=[
-            ['cxorbia-i3-shopper-persistence-20260814-01','HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194'],
-            ['cxorbia-i3-shopper-persistence-20260814-02','I3_ADMIN_LOGIN_CLICK_BLOCKED_BY_CX_BACKEND_PREVIEW_STATUS_POINTER_INTERCEPTION'],
-            ['cxorbia-i3-shopper-persistence-20260814-03','I3_HISTORICAL_NAV_TIMEOUT_BEFORE_LEGAL_GATE_AWARE_CHECKPOINT'],
-            ['cxorbia-i3-shopper-persistence-20260814-04','I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER'],
-            ['cxorbia-i3-shopper-persistence-20260814-05','I3_PREPROVIDER_SOURCE_SELFTEST_SELF_REFERENTIAL_STATIC_IMPORT_CHECK']
-          ];
-          if(r.continuationMode!=='historical_credential_recovery_resume'||!lineage.some(([id,code])=>r.continuationOfRequestId===id&&r.priorStopRetryCode===code))throw new Error('I3_CONTINUATION_INVALID');
-          if(r.firebaseProjectId!=='cxorbia-backend-dev'||r.tenantId!=='tya'||r.projectId!=='cinepolis'||r.authWritesMax!==3||r.firestoreWritesMax!==10||r.authDeletesMax!==1||r.passwordResets!==1)throw new Error('I3_TARGET_OR_BUDGET_INVALID');
+          if(r.continuationMode!=='admin_new_shopper_resume'||r.continuationOfRequestId!=='cxorbia-i3-shopper-persistence-20260814-06'||r.priorStopRetryCode!=='I3_ADMIN_NEW_SHOPPER_BUTTON_HIDDEN_BEFORE_COMMAND')throw new Error('I3_ADMIN_RESUME_LINEAGE_INVALID');
+          if(r.firebaseProjectId!=='cxorbia-backend-dev'||r.tenantId!=='tya'||r.projectId!=='cinepolis'||r.authWritesMax!==2||r.firestoreWritesMax!==10||r.authDeletesMax!==1||r.passwordResets!==0)throw new Error('I3_TARGET_OR_BUDGET_INVALID');
           for(const k of ['hrWrites','rulesWrites','storageWrites','makeWrites','geminiCalls','paymentsWrites','deploys'])if(r[k]!==0)throw new Error('I3_UNSAFE_'+k);
           if(r.merge!==false||r.production!==false||r.fuzzyMatchingAllowed!==false||r.otherIdentitiesModifiedMax!==0||r.legalAcceptanceAutomated!==false||r.stopRetry!==true||r.automaticRetryAllowed!==false)throw new Error('I3_UNSAFE_POLICY');
           NODE
 
-      - name: Static I3 source preflight before provider credentials
+      - name: Verify frozen historical checkpoint before any provider credential
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');const p=process.env.I3_HISTORICAL_CHECKPOINT;
+          if(!fs.existsSync(p))throw new Error('I3_FROZEN_HISTORICAL_CHECKPOINT_MISSING');
+          const c=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(c.decision!=='PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY'||Number(c.workflowRunId)!==31906391682)throw new Error('I3_FROZEN_HISTORICAL_CHECKPOINT_INVALID');
+          if(c.identity?.exact!==true||c.identity?.uidPreserved!==true||c.identity?.claims!==true||c.identity?.profile!==true||c.identity?.membership!==true||c.identity?.crosswalk!==true||c.identity?.history!==true||c.identity?.historyE2E!==true)throw new Error('I3_FROZEN_HISTORICAL_IDENTITY_DRIFT');
+          if(c.legalGate?.acceptanceAutomated!==false||c.safety?.otherIdentitiesModified!==0||c.safety?.fuzzyMatching!==false||c.safety?.credentialsExposed!==false||c.safety?.tokensExposed!==false)throw new Error('I3_FROZEN_HISTORICAL_SAFETY_DRIFT');
+          if(Number(c.writes?.authPasswordUpdates)!==1||Number(c.writes?.firestoreReconciliation)!==0)throw new Error('I3_FROZEN_HISTORICAL_WRITE_LEDGER_DRIFT');
+          NODE
+
+      - name: Static I3 remaining-subgate source preflight before provider credentials
         run: |
           set -euo pipefail
           node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
-          node --check app/core/backend-preview-status.js
           node --check app/adapters/cxorbia-command-http-transport-v1.js
           node --check app/adapters/cxorbia-shopper-membership-wiring-v1.js
           node --check tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs
           node --check tools/qa/cxorbia-i3-source-patcher.mjs
-          node --check tools/qa/cxorbia-c6-existing-users-e2e-credentials-v6.mjs
-          if ! node tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs > "$I3_OUT/historical-e2e-source-preflight.json"; then
-            cat "$I3_OUT/historical-e2e-source-preflight.json" || true
-            exit 1
-          fi
-          cat "$I3_OUT/historical-e2e-source-preflight.json"
-          grep -q 'PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE' "$I3_OUT/historical-e2e-source-preflight.json"
-          grep -q '"legalGateAware": true' "$I3_OUT/historical-e2e-source-preflight.json"
-          grep -q '"legalConsentNotAutomated": true' "$I3_OUT/historical-e2e-source-preflight.json"
-          grep -q '"playwrightDeferredToRealExecution": true' "$I3_OUT/historical-e2e-source-preflight.json"
-          node tools/qa/cxorbia-i3-source-patcher.mjs --verify
+          node tools/qa/cxorbia-i3-source-patcher.mjs --verify > "$I3_OUT/patcher.source-safe.json"
+          cat "$I3_OUT/patcher.source-safe.json"
+          grep -q 'PASS_I3_SOURCE_PATCH_VERIFIED' "$I3_OUT/patcher.source-safe.json"
+          grep -q 'adminFrontendHandoffAwaited:true' tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs
+          grep -q "continuationOfRequestId==='cxorbia-i3-shopper-persistence-20260814-06'" tools/qa/cxorbia-i3-source-patcher.mjs
           grep -q 'pointer-events:none' app/core/backend-preview-status.js
 
       - name: Apply exact same-candidate I3 source patch before provider access
@@ -113,98 +112,36 @@ jobs:
         run: |
           set -euo pipefail
           node <<'NODE'
-          const fs=require('fs');
-          const raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw)}catch{}
+          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw)}catch{}
           if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.private_key&&p.client_email))throw new Error('I3_CREDENTIAL_INVALID');
           fs.writeFileSync(process.env.I3_PRIVATE+'/credentials.json',raw,{mode:0o600});
           NODE
           echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/${I3_PRIVATE}/credentials.json" >> "$GITHUB_ENV"
 
-      - name: Select exact historical Shopper recovery candidate and canonical Admin privately
+      - name: Select canonical Admin privately without historical Shopper credential access
         env:
           CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
           CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
-          CXORBIA_I3_HISTORICAL_CREDENTIAL_RECOVERY_AUTHORIZED: YES_PAULA_I3_EXACT_HISTORICAL_SHOPPER_RESET
           PRIVATE_DIR: .tmp/cxorbia-i3-private
           OUT_DIR: .tmp/cxorbia-i3-out
         run: |
           set -euo pipefail
-          CXORBIA_E2E_PRIVATE_CREDENTIALS="$I3_EXISTING" node tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs > "$I3_OUT/existing-selection.source-safe.json"
           CXORBIA_C6_ACTION='C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF' CXORBIA_E2E_PRIVATE_CREDENTIALS="$I3_ADMIN" node tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs > "$I3_OUT/admin-selection.source-safe.json"
           node <<'NODE'
-          const fs=require('fs');
-          const existing=JSON.parse(fs.readFileSync(process.env.I3_EXISTING,'utf8'));
-          const admin=JSON.parse(fs.readFileSync(process.env.I3_ADMIN,'utf8'));
-          const pub=JSON.parse(fs.readFileSync(process.env.I3_OUT+'/admin-selection.source-safe.json','utf8'));
-          if(!existing?.shopper?.login||!existing?.shopper?.uid||!existing?.shopper?.shopperId||existing?.shopper?.credentialRecoveryRequired!==true||existing?.shopper?.password)throw new Error('I3_HISTORICAL_EXACT_RECOVERY_CANDIDATE_MISSING');
+          const fs=require('fs');const admin=JSON.parse(fs.readFileSync(process.env.I3_ADMIN,'utf8'));const pub=JSON.parse(fs.readFileSync(process.env.I3_OUT+'/admin-selection.source-safe.json','utf8'));
           if(!admin?.staff?.login||!admin?.staff?.password||pub.staffRole!=='admin'||pub.exactWriteCanonical!==true)throw new Error('I3_CANONICAL_ADMIN_PRIVATE_SELECTION_MISSING');
-          existing.staff=admin.staff;
-          fs.writeFileSync(process.env.I3_EXISTING,JSON.stringify(existing)+'\n',{encoding:'utf8',mode:0o600});
+          fs.writeFileSync(process.env.I3_EXISTING,JSON.stringify({schemaVersion:'cxorbia.i3.private-admin-only.v1',staff:admin.staff})+'\n',{encoding:'utf8',mode:0o600});
           fs.rmSync(process.env.I3_ADMIN,{force:true});
           NODE
           chmod 600 "$I3_EXISTING"
-
-      - name: Recover exactly one historical Shopper credential
-        env:
-          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
-          CXORBIA_I3_REQUEST: .github/cxorbia-firebase-requests/cxorbia-i3-shopper-persistence-exact-write-v1.json
-          CXORBIA_I3_PRIVATE_EXISTING_CREDENTIALS: .tmp/cxorbia-i3-private/existing-e2e.json
-        run: |
-          set -euo pipefail
-          node backend/runtime/cxorbia-shopper-command-provider-v1.mjs --recover-historical-credential > "$I3_OUT/historical-credential-recovery.source-safe.json"
-          node <<'NODE'
-          const fs=require('fs');
-          const r=JSON.parse(fs.readFileSync(process.env.I3_OUT+'/historical-credential-recovery.source-safe.json','utf8'));
-          const p=JSON.parse(fs.readFileSync(process.env.I3_EXISTING,'utf8'));
-          if(r.decision!=='PASS_I3_HISTORICAL_EXACT_CREDENTIAL_RECOVERY'||r.authWrites!==1||r.passwordResets!==1||r.otherIdentitiesModified!==0)throw new Error('I3_RECOVERY_EVIDENCE_INVALID');
-          if(!p?.shopper?.password||p?.shopper?.credentialRecovered!==true||p?.shopper?.credentialRecoveryRequired!==false)throw new Error('I3_RECOVERED_PRIVATE_CREDENTIAL_MISSING');
-          NODE
-
-      - name: Reconcile one exact historical Shopper membership and crosswalk
-        env:
-          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
-          CXORBIA_I3_REQUEST: .github/cxorbia-firebase-requests/cxorbia-i3-shopper-persistence-exact-write-v1.json
-          CXORBIA_I3_PRIVATE_EXISTING_CREDENTIALS: .tmp/cxorbia-i3-private/existing-e2e.json
-        run: |
-          set -euo pipefail
-          node backend/runtime/cxorbia-shopper-command-provider-v1.mjs --reconcile-historical > "$I3_OUT/historical-reconcile.source-safe.json"
 
       - name: Start repaired HEAD local source proxy
         run: |
           set -euo pipefail
           CXORBIA_P0_LOCAL_PORT=4175 CXORBIA_P0_UPSTREAM_ROOT="$DEV_ROOT_URL" node tools/qa/cxorbia-p0-local-readonly-proxy.mjs > "$I3_OUT/proxy.log" 2>&1 &
           echo $! > "$I3_OUT/proxy.pid"
-          for i in $(seq 1 30); do
-            if curl -fsS "$LOCAL_ROOT_URL/index-backend-dev.html" >/dev/null; then exit 0; fi
-            sleep 1
-          done
-          cat "$I3_OUT/proxy.log"
-          exit 1
-
-      - name: Execute exact historical Shopper real Auth history E2E immediately after recovery
-        env:
-          CXORBIA_P0_REAL_AUTH_E2E_AUTHORIZED: YES_SOURCE_APPROVED_REAL_READONLY_E2E
-          CXORBIA_P0_E2E_ROOT_URL: http://127.0.0.1:4175
-          CXORBIA_P0_E2E_PRIVATE_CREDENTIALS: .tmp/cxorbia-i3-private/existing-e2e.json
-          CXORBIA_P0_E2E_TENANT_ID: tya
-          CXORBIA_P0_E2E_PROJECT_ID: cinepolis
-          CXORBIA_P0_E2E_REQUIRE_HISTORY: '1'
-        run: |
-          set -euo pipefail
-          node tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs --execute-real > "$I3_OUT/historical-shopper-e2e.source-safe.json"
-          node <<'NODE'
-          const fs=require('fs');
-          const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
-          const rec=read(process.env.I3_OUT+'/historical-credential-recovery.source-safe.json');
-          const hist=read(process.env.I3_OUT+'/historical-reconcile.source-safe.json');
-          const e2e=read(process.env.I3_OUT+'/historical-shopper-e2e.source-safe.json');
-          const req=read(process.env.I3_REQUEST);
-          if(rec.decision!=='PASS_I3_HISTORICAL_EXACT_CREDENTIAL_RECOVERY'||hist.decision!=='PASS_I3_HISTORICAL_EXACT_RECONCILIATION'||e2e.decision!=='PASS_P0_REAL_SHOPPER_AUTH_TO_HR_E2E')throw new Error('I3_HISTORICAL_CHECKPOINT_GATE_FAILED');
-          if(e2e.legalGate?.acceptanceAutomated!==false)throw new Error('I3_LEGAL_ACCEPTANCE_POLICY_INVALID');
-          if(e2e.workspaceState==='legal-gate-pending'&&!(e2e.legalGate?.supported===true&&e2e.legalGate?.pending===true&&e2e.legalGate?.visible===true))throw new Error('I3_LEGAL_GATE_EVIDENCE_INVALID');
-          const checkpoint={schemaVersion:'cxorbia.i3.historical-shopper-login-checkpoint.v2',generatedAt:new Date().toISOString(),decision:'PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY',repository:req.repository,branch:req.branch,pullRequest:req.pullRequest,targetHeadSha:req.targetHeadSha,requestCommitSha:process.env.GITHUB_SHA,workflowRunId:Number(process.env.GITHUB_RUN_ID),shopperIdFingerprint:hist.shopperIdFingerprint,uidFingerprint:hist.uidFingerprint,identity:{exact:true,uidPreserved:true,claims:true,profile:true,membership:true,crosswalk:true,history:true,historyE2E:true},workspaceState:e2e.workspaceState||'mounted',legalGate:{supported:e2e.legalGate?.supported===true,pending:e2e.legalGate?.pending===true,visible:e2e.legalGate?.visible===true,acceptanceAutomated:false},workspaceRoutes:{academiaDeferredByLegalGate:e2e.academia?.deferredByLegalGate===true,certificationDeferredByLegalGate:e2e.certification?.deferredByLegalGate===true},writes:{authPasswordUpdates:1,firestoreReconciliation:Number(hist.firestoreWrites||0)},safety:{otherIdentitiesModified:0,fuzzyMatching:false,credentialsExposed:false,tokensExposed:false,hrWrites:0,rulesWrites:0,storageWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,deploys:0,merge:false,production:false}};
-          fs.writeFileSync(process.env.I3_OUT+'/historical-login-checkpoint.source-safe.json',JSON.stringify(checkpoint,null,2)+'\n','utf8');
-          NODE
+          for i in $(seq 1 30); do if curl -fsS "$LOCAL_ROOT_URL/index-backend-dev.html" >/dev/null; then exit 0; fi; sleep 1; done
+          cat "$I3_OUT/proxy.log"; exit 1
 
       - name: Start protected I3 command provider locally
         env:
@@ -217,12 +154,8 @@ jobs:
           set -euo pipefail
           node backend/runtime/cxorbia-shopper-command-provider-v1.mjs --serve > "$I3_OUT/provider.log" 2>&1 &
           echo $! > "$I3_OUT/provider.pid"
-          for i in $(seq 1 30); do
-            if curl -fsS http://127.0.0.1:4180/health >/dev/null; then exit 0; fi
-            sleep 1
-          done
-          cat "$I3_OUT/provider.log"
-          exit 1
+          for i in $(seq 1 30); do if curl -fsS http://127.0.0.1:4180/health >/dev/null; then exit 0; fi; sleep 1; done
+          cat "$I3_OUT/provider.log"; exit 1
 
       - name: Execute Admin create update and new Shopper real Auth E2E
         env:
@@ -232,7 +165,9 @@ jobs:
           CXORBIA_I3_PRIVATE_EXISTING_CREDENTIALS: .tmp/cxorbia-i3-private/existing-e2e.json
           CXORBIA_I3_PRIVATE_NEW_CREDENTIAL: .tmp/cxorbia-i3-private/new-shopper.json
         run: |
+          set -euo pipefail
           node tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs > "$I3_OUT/new-shopper-e2e.source-safe.json"
+          cat "$I3_OUT/new-shopper-e2e.source-safe.json"
 
       - name: Provider readback for newly created Shopper
         env:
@@ -240,27 +175,24 @@ jobs:
           CXORBIA_I3_REQUEST: .github/cxorbia-firebase-requests/cxorbia-i3-shopper-persistence-exact-write-v1.json
           CXORBIA_I3_PRIVATE_NEW_CREDENTIAL: .tmp/cxorbia-i3-private/new-shopper.json
         run: |
+          set -euo pipefail
           node backend/runtime/cxorbia-shopper-command-provider-v1.mjs --readback-new > "$I3_OUT/new-provider-readback.source-safe.json"
+          cat "$I3_OUT/new-provider-readback.source-safe.json"
 
       - name: Build sanitized I3 evidence and source lock
         run: |
           set -euo pipefail
           mkdir -p app/docs/evidence app/docs
           node <<'NODE'
-          const fs=require('fs');
-          const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
-          const checkpoint=read(process.env.I3_OUT+'/historical-login-checkpoint.source-safe.json');
-          const hist=read(process.env.I3_OUT+'/historical-reconcile.source-safe.json');
-          const n=read(process.env.I3_OUT+'/new-shopper-e2e.source-safe.json');
-          const rb=read(process.env.I3_OUT+'/new-provider-readback.source-safe.json');
-          const req=read(process.env.I3_REQUEST);
+          const fs=require('fs');const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+          const checkpoint=read(process.env.I3_HISTORICAL_CHECKPOINT);const n=read(process.env.I3_OUT+'/new-shopper-e2e.source-safe.json');const rb=read(process.env.I3_OUT+'/new-provider-readback.source-safe.json');const req=read(process.env.I3_REQUEST);
           if(checkpoint.decision!=='PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY'||n.decision!=='PASS_I3_ADMIN_CREATE_UPDATE_NEW_SHOPPER_AUTH_E2E'||rb.decision!=='PASS_I3_NEW_SHOPPER_PROVIDER_READBACK')throw new Error('I3_EVIDENCE_GATE_FAILED');
-          const evidence={schemaVersion:'cxorbia.i3.shopper-persistence-exact-write.evidence.v4',generatedAt:new Date().toISOString(),decision:'PASS_I3_DEV_AUTH_FIRESTORE_SHOPPER_PERSISTENCE',repository:req.repository,branch:req.branch,pullRequest:req.pullRequest,targetHeadSha:req.targetHeadSha,requestCommitSha:process.env.GITHUB_SHA,workflowRunId:Number(process.env.GITHUB_RUN_ID),historical:{exactIdentity:true,credentialRecovery:true,uidPreserved:true,claims:true,profile:true,membership:true,crosswalk:true,historyE2E:true,workspaceState:checkpoint.workspaceState,legalGatePending:checkpoint.legalGate?.pending===true,legalAcceptanceAutomated:false,shopperIdFingerprint:checkpoint.shopperIdFingerprint},newShopper:{adminCreateProviderAck:true,adminUpdateProviderAck:true,profileVersion:rb.profileVersion,claims:true,membership:true,crosswalk:true,login:true,reload:true,newTab:true,secondContext:true,shopperIdFingerprint:rb.shopperIdFingerprint},writes:{authWrites:3,firestoreWrites:6+Number(hist.firestoreWrites||0),authDeletes:0,passwordChanges:1,passwordResets:1},safety:{otherIdentitiesModified:0,fuzzyMatching:false,legalAcceptanceAutomated:false,hrWrites:0,rulesWrites:0,storageWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,deploys:0,merge:false,production:false,credentialsExposed:false,tokensExposed:false},nextGate:'ITERACION_4_HR_BIDIRECTIONAL_PHASE_A_E2E_FINANCE'};
+          const evidence={schemaVersion:'cxorbia.i3.shopper-persistence-exact-write.evidence.v5',generatedAt:new Date().toISOString(),decision:'PASS_I3_DEV_AUTH_FIRESTORE_SHOPPER_PERSISTENCE',repository:req.repository,branch:req.branch,pullRequest:req.pullRequest,targetHeadSha:req.targetHeadSha,requestCommitSha:process.env.GITHUB_SHA,workflowRunId:Number(process.env.GITHUB_RUN_ID),historical:{frozenFromWorkflowRunId:Number(checkpoint.workflowRunId),repeated:false,exactIdentity:true,credentialRecovery:true,uidPreserved:true,claims:true,profile:true,membership:true,crosswalk:true,historyE2E:true,workspaceState:checkpoint.workspaceState,legalGatePending:checkpoint.legalGate?.pending===true,legalAcceptanceAutomated:false,shopperIdFingerprint:checkpoint.shopperIdFingerprint},newShopper:{adminFrontendHandoffAwaited:n.adminFrontendHandoffAwaited===true,adminCreateProviderAck:true,adminUpdateProviderAck:true,profileVersion:rb.profileVersion,claims:true,membership:true,crosswalk:true,login:true,reload:true,newTab:true,secondContext:true,shopperIdFingerprint:rb.shopperIdFingerprint},writes:{authWrites:2,firestoreWrites:6,authDeletes:0,passwordChanges:0,passwordResets:0},cumulativeHistoricalWrites:{authPasswordUpdates:1,firestoreReconciliation:0},safety:{otherIdentitiesModified:0,fuzzyMatching:false,legalAcceptanceAutomated:false,hrWrites:0,rulesWrites:0,storageWrites:0,makeWrites:0,geminiCalls:0,paymentsWrites:0,deploys:0,merge:false,production:false,credentialsExposed:false,tokensExposed:false},nextGate:'ITERACION_4_HR_BIDIRECTIONAL_PHASE_A_E2E_FINANCE'};
           if(evidence.writes.firestoreWrites>req.firestoreWritesMax||evidence.writes.authWrites>req.authWritesMax||evidence.writes.passwordResets>req.passwordResets)throw new Error('I3_WRITE_BUDGET_EXCEEDED');
           fs.writeFileSync('app/docs/evidence/ITERATION3-DEV-AUTH-FIRESTORE-SHOPPER-PERSISTENCE-LATEST.json',JSON.stringify(evidence,null,2)+'\n','utf8');
-          const lock=`# SOURCE LOCK — ITERATION 3 DEV AUTH/FIRESTORE SHOPPER PERSISTENCE — 2026-08-14\n\n**Estado:** \`LOCKED__PASS_I3_DEV_AUTH_FIRESTORE_SHOPPER_PERSISTENCE__GO_LIVE_60\`\n\n- Repo: \`${req.repository}\`\n- Rama/candidata: \`${req.branch}\`\n- PR: #${req.pullRequest} draft/open/no merge\n- Source target I3: \`${req.targetHeadSha}\`\n- Request commit: \`${process.env.GITHUB_SHA}\`\n- Workflow run: \`${process.env.GITHUB_RUN_ID}\`\n- Evidence: \`app/docs/evidence/ITERATION3-DEV-AUTH-FIRESTORE-SHOPPER-PERSISTENCE-LATEST.json\`\n- Historical workspace state: \`${checkpoint.workspaceState}\`\n- Legal acceptance automated: \`false\`\n\nPASS: historical exact recovery followed immediately by real historical Shopper Auth/identity/HR/history evidence; if a legal gate was pending it was observed but never autoaccepted and workspace routes remained deferred; Admin create/update via CX.data -> HTTP command transport -> provider ACK; new Shopper claims/membership/profile/crosswalk/readback/login/reload/new-tab/second context.\n\nCero fuzzy matching, other-identity modifications, legal-consent automation, HR/Rules/Storage/Make/Gemini/pagos writes, deploy, merge o producción.\n\nSiguiente bloque: \`ITERACION_4_HR_BIDIRECTIONAL_PHASE_A_E2E_FINANCE\`.\n`;
-          fs.writeFileSync('app/docs/SOURCE-LOCK-ITERATION3-DEV-AUTH-FIRESTORE-SHOPPER-PERSISTENCE-PASS-20260814.md',lock,'utf8');
-          req.enabled=false;req.consumed=true;req.status=evidence.decision;req.decision=evidence.decision;req.consumedAt=evidence.generatedAt;req.workflowRunId=evidence.workflowRunId;req.evidence='app/docs/evidence/ITERATION3-DEV-AUTH-FIRESTORE-SHOPPER-PERSISTENCE-LATEST.json';req.executedWrites=evidence.writes;req.nextGate=evidence.nextGate;
+          const lock=`# SOURCE LOCK — ITERATION 3 DEV AUTH/FIRESTORE SHOPPER PERSISTENCE — 2026-08-15\n\n**Estado:** \`LOCKED__PASS_I3_DEV_AUTH_FIRESTORE_SHOPPER_PERSISTENCE__GO_LIVE_60\`\n\n- Repo: \`${req.repository}\`\n- Rama/candidata: \`${req.branch}\`\n- PR: #${req.pullRequest} draft/open/no merge\n- Request commit: \`${process.env.GITHUB_SHA}\`\n- Workflow run final: \`${process.env.GITHUB_RUN_ID}\`\n- Historical checkpoint preserved from run: \`${checkpoint.workflowRunId}\`\n- Historical reset repeated: \`false\`\n- Evidence: \`app/docs/evidence/ITERATION3-DEV-AUTH-FIRESTORE-SHOPPER-PERSISTENCE-LATEST.json\`\n- Legal acceptance automated: \`false\`\n\nPASS: historical exact identity/Auth/HR/history reused exclusively from the frozen source-safe checkpoint; no second historical reset. Admin frontend canonical handoff awaited before navigation; one new Shopper create/update completed via CX.data -> HTTP command transport -> provider ACK, Auth/claims/membership/profile/crosswalk/readback/login/reload/new-tab/second context.\n\nCero fuzzy matching, other-identity modifications, legal-consent automation, HR/Rules/Storage/Make/Gemini/pagos writes, deploy, merge o producción.\n\nSiguiente bloque: \`ITERACION_4_HR_BIDIRECTIONAL_PHASE_A_E2E_FINANCE\`.\n`;
+          fs.writeFileSync('app/docs/SOURCE-LOCK-ITERATION3-DEV-AUTH-FIRESTORE-SHOPPER-PERSISTENCE-PASS-20260815.md',lock,'utf8');
+          req.enabled=false;req.consumed=true;req.status=evidence.decision;req.decision=evidence.decision;req.consumedAt=evidence.generatedAt;req.workflowRunId=evidence.workflowRunId;req.evidence='app/docs/evidence/ITERATION3-DEV-AUTH-FIRESTORE-SHOPPER-PERSISTENCE-LATEST.json';req.executedWrites=evidence.writes;req.historicalCheckpointReused=process.env.I3_HISTORICAL_CHECKPOINT;req.historicalResetRepeated=false;req.nextGate=evidence.nextGate;
           fs.writeFileSync(process.env.I3_REQUEST,JSON.stringify(req,null,2)+'\n','utf8');
           NODE
 
@@ -269,11 +201,10 @@ jobs:
           set -euo pipefail
           git fetch origin docs-tya-v6-v71-audit
           test "$(git rev-parse origin/docs-tya-v6-v71-audit)" = "$GITHUB_SHA"
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/index-backend-dev.html app/modules/shoppers.js backend/runtime/cxorbia-shopper-command-provider-v1.mjs "$I3_REQUEST" app/docs/evidence/ITERATION3-DEV-AUTH-FIRESTORE-SHOPPER-PERSISTENCE-LATEST.json app/docs/SOURCE-LOCK-ITERATION3-DEV-AUTH-FIRESTORE-SHOPPER-PERSISTENCE-PASS-20260814.md
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/index-backend-dev.html app/modules/shoppers.js backend/runtime/cxorbia-shopper-command-provider-v1.mjs "$I3_REQUEST" app/docs/evidence/ITERATION3-DEV-AUTH-FIRESTORE-SHOPPER-PERSISTENCE-LATEST.json app/docs/SOURCE-LOCK-ITERATION3-DEV-AUTH-FIRESTORE-SHOPPER-PERSISTENCE-PASS-20260815.md
           git diff --cached --check
-          git commit -m 'feat(i3): pass exact Shopper Auth Firestore continuation and evidence'
+          git commit -m 'feat(i3): pass Admin new-Shopper persistence after frozen historical gate'
           git push origin HEAD:docs-tya-v6-v71-audit
 
       - name: Publish I3 PASS status
@@ -283,37 +214,24 @@ jobs:
         run: |
           gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state='success' -f context='cxorbia/i3-shopper-auth-firestore/overall' -f description='PASS_I3_DEV_AUTH_FIRESTORE_SHOPPER_PERSISTENCE' -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
 
-      - name: Park I3 continuation after any failure and preserve historical PASS if reached
+      - name: Park I3 Admin continuation after any failure without reopening historical subgate
         if: failure()
         run: |
           set -euo pipefail
           git restore --staged --worktree . || true
           node <<'NODE'
-          const fs=require('fs');const p=process.env.I3_REQUEST;const r=JSON.parse(fs.readFileSync(p,'utf8'));
-          let historicalCheckpoint=null;
-          const temp=process.env.I3_OUT+'/historical-login-checkpoint.source-safe.json';
-          if(fs.existsSync(temp)){
-            const c=JSON.parse(fs.readFileSync(temp,'utf8'));
-            if(c.decision==='PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY'){
-              historicalCheckpoint=c;
-              fs.mkdirSync('app/docs/evidence',{recursive:true});
-              fs.writeFileSync('app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json',JSON.stringify(c,null,2)+'\n','utf8');
-              fs.writeFileSync('app/docs/SOURCE-LOCK-ITERATION3-HISTORICAL-SHOPPER-LOGIN-PASS-20260814.md',`# SOURCE LOCK — ITERATION 3 HISTORICAL SHOPPER LOGIN PASS — 2026-08-14\n\n**Estado:** \`LOCKED__PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY__ADMIN_NEW_SHOPPER_PENDING\`\n\n- Run: \`${process.env.GITHUB_RUN_ID}\`\n- Source target: \`${r.targetHeadSha}\`\n- Evidence: \`app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json\`\n- Workspace state: \`${c.workspaceState||'mounted'}\`\n- Legal acceptance automated: \`false\`\n\nPASS: exact principal, credential recovery, preserved UID/claims/profile/membership/crosswalk/history and real historical Shopper Auth/identity/HR/history E2E. If a legal gate was pending it was observed without accepting, signing or storing consent and the workspace routes remained deferred. No credentials or tokens persisted. This closes the historical subgate even if a later Admin/new-Shopper step fails.\n`,'utf8');
-            }
-          }
-          r.enabled=false;r.consumed=true;r.status='STOP_RETRY_I3_CONTINUATION_FAILED';r.decision='STOP_RETRY_I3_CONTINUATION_FAILED';r.consumedAt=new Date().toISOString();r.workflowRunId=Number(process.env.GITHUB_RUN_ID);r.historicalLoginCheckpointPassed=Boolean(historicalCheckpoint);r.historicalLoginCheckpoint=historicalCheckpoint?'app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json':null;r.nextGate=historicalCheckpoint?'PAULA_REVIEW_REQUIRED_FOR_I3_ADMIN_NEW_SHOPPER_RESUME':'PAULA_REVIEW_REQUIRED_AFTER_I3_CONTINUATION_FAILURE';
+          const fs=require('fs');const p=process.env.I3_REQUEST;const r=JSON.parse(fs.readFileSync(p,'utf8'));const cp=process.env.I3_HISTORICAL_CHECKPOINT;
+          if(!fs.existsSync(cp))throw new Error('I3_FROZEN_HISTORICAL_CHECKPOINT_LOST_WHILE_PARKING');
+          const c=JSON.parse(fs.readFileSync(cp,'utf8'));if(c.decision!=='PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY')throw new Error('I3_FROZEN_HISTORICAL_CHECKPOINT_DRIFT_WHILE_PARKING');
+          r.enabled=false;r.consumed=true;r.status='STOP_RETRY_I3_ADMIN_NEW_SHOPPER_CONTINUATION_FAILED';r.decision='STOP_RETRY_I3_ADMIN_NEW_SHOPPER_CONTINUATION_FAILED';r.consumedAt=new Date().toISOString();r.workflowRunId=Number(process.env.GITHUB_RUN_ID);r.historicalLoginCheckpointPassed=true;r.historicalLoginCheckpoint=cp;r.historicalResetRepeated=false;r.nextGate='PAULA_REVIEW_REQUIRED_FOR_I3_ADMIN_NEW_SHOPPER_RESUME';
           fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n','utf8');
           NODE
           git fetch origin docs-tya-v6-v71-audit
           test "$(git rev-parse origin/docs-tya-v6-v71-audit)" = "$GITHUB_SHA"
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add "$I3_REQUEST"
-          if [ -f app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json ]; then
-            git add app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json app/docs/SOURCE-LOCK-ITERATION3-HISTORICAL-SHOPPER-LOGIN-PASS-20260814.md
-          fi
           git diff --cached --check
-          git commit -m 'gate(i3): park continuation and preserve reached historical subgate'
+          git commit -m 'gate(i3): park Admin continuation and preserve frozen historical PASS'
           git push origin HEAD:docs-tya-v6-v71-audit
 
       - name: Cleanup private I3 material
