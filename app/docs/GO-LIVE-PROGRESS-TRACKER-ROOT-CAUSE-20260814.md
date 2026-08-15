@@ -11,7 +11,7 @@
 | I4 — Phase A operational flows | 25 | 0/25, NO INICIAR | Solo después de I3 PASS |
 | I5 — final go-live validation | 15 | 0/15, NO INICIAR | Solo después de I4 PASS |
 
-**TOTAL CERTIFICADO: 35% / 100%. Pendiente: 65%.**
+**35% completado / 65% pendiente.**
 
 ## I3 — evidencia acumulativa que NO se repite
 
@@ -42,7 +42,7 @@ Debe ocurrir, bajo autorización explícita y sin tocar histórico:
 7. login Shopper nuevo + reload + new-tab + segundo contexto;
 8. cero fuzzy matching, otros usuarios, password reset histórico o providers prohibidos.
 
-Hasta que todo lo anterior pase integralmente, I3 permanece `0/25` y el go-live formal permanece **35% / 65%**.
+Hasta que todo lo anterior pase integralmente, I3 permanece `0/25` y el go-live formal permanece **35% completado / 65% pendiente**.
 
 ## Gate siguiente
 
