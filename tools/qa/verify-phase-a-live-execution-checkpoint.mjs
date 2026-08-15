@@ -46,7 +46,7 @@ ensure(/65%\s*(?:pendiente|remaining)/i.test(cp),'CURRENT_REMAINING_65_MISSING')
 ensure(/35%\s*(?:completado|completed)/i.test(tracker),'TRACKER_PROGRESS_35_MISSING');
 ensure(/65%\s*(?:pendiente|remaining)/i.test(tracker),'TRACKER_REMAINING_65_MISSING');
 ensure(/I3[^\n]*(?:0\/25|EN CURSO|pendiente)/i.test(tracker),'TRACKER_I3_PENDING_MISSING');
-ensure(cp.includes('I3')&&cp.includes('request'),'CURRENT_I3_CONTINUATION_STATE_MISSING');
+ensure(/I3/i.test(cp)&&/request/i.test(cp),'CURRENT_I3_CONTINUATION_STATE_MISSING');
 ensure(idx.includes('SOURCE-LOCK-ITERATION3-'),'CURRENT_I3_SOURCE_LOCK_NOT_INDEXED');
 
 ensure(!/^\s*import\s+.+\s+from\s+['"]playwright['"]\s*;?\s*$/m.test(harness),'HISTORICAL_HARNESS_STATIC_PLAYWRIGHT_IMPORT');
