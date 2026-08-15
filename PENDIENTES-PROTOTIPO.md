@@ -1,20 +1,17 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-14 14:00 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_RESET2_CONSUMED__HISTORICAL_AUTH_REACHED__LEGAL_GATE_AWARE_HARNESS_PASS__SAME_CANDIDATE__GO_LIVE_35`
+**Última actualización:** 2026-08-14 18:12 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_REQUEST04_PREPROVIDER_STOP_RETRY__ZERO_PROVIDER_WRITES__SELFTEST_IMPORT_ORDER_FIXED__SAME_CANDIDATE__GO_LIVE_35`
 
 ## Decisión vigente
 
 No nueva candidata, rama ni PR. I1/I2 cerradas. I3 se termina en la misma candidata.
 
-Plan rector: `app/docs/ADDENDUM-MAESTRO-PLAN-CORRECCION-RAIZ-GO-LIVE-Y-DURABILIDAD-CXORBIA-TYA-VIGENTE.md`.
-
 Tracker: `app/docs/GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`.
 
-Locks I3 vigentes:
-- `app/docs/SOURCE-LOCK-ITERATION3-STOP-RETRY-POST-CREDENTIAL-RECOVERY-ADMIN-LOGIN-POINTER-20260814.md` — histórico/cerrado;
-- `app/docs/SOURCE-LOCK-ITERATION3-HARNESS-DURABILITY-PASS-20260814.md`;
-- `app/docs/SOURCE-LOCK-ITERATION3-HISTORICAL-LEGAL-GATE-AWARE-HARNESS-PASS-20260814.md` — prevalente del subgate histórico.
+Lock I3 más reciente:
+
+`app/docs/SOURCE-LOCK-ITERATION3-PREPROVIDER-SELFTEST-FAIL-CLOSED-20260814.md`.
 
 **35% completado / 65% pendiente.**
 
@@ -23,65 +20,56 @@ Locks I3 vigentes:
 - Auth owner / exact identity / Staff membership.
 - I1.
 - I2: command boundary, provider ACK, no local fallback, Mis Visitas arrays/facets/ACK.
-- I3 source: transport, Shopper membership wiring, provider, patcher ACK-aware.
-- Root cause del overlay DEV: corregida.
-- Harness durability: histórico antes de Admin y checkpoint sanitizado preservable.
-- Harness histórico legal-gate-aware: identidad/HR/historia separadas del consentimiento legal, sin autoaceptación.
+- overlay DEV no interactivo.
+- harness histórico legal-gate-aware: Auth/identity/HR/history antes de rutas y sin autoaceptación legal.
 
-## Último provider run
+## Último intento I3 — request `...-04`
 
-`31835742956` / `94881540163`.
+Run `31852717413` / job `94931417141`.
 
-PASS internos:
+Gate inicial PASS. STOP_RETRY en source preflight porque `tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs` importaba Playwright antes de que el workflow instalara esa dependencia.
 
-- mismo Shopper histórico exacto;
-- one exact reset autorizado;
-- identity preservation;
-- other identities 0;
-- membership/crosswalk reconciliation;
-- authenticated Shopper context;
-- protected HR authority alcanzada.
+Este fallo ocurrió antes de cargar service account y antes de cualquier provider access. Por tanto:
 
-STOP_RETRY: timeout esperando `#nav-aprendizaje`. Admin/new Shopper no fue ejecutado. Request `...-03` consumido/parked, sin retry.
+- reset histórico: 0;
+- Auth writes: 0;
+- Firestore writes: 0;
+- otras identidades: 0;
+- Admin/new Shopper: no ejecutado;
+- HR/Rules/Storage/Make/Gemini/pagos: 0;
+- deploy/merge/producción: 0/false/false.
 
-## Causa source corregida
+Request `...-04` quedó consumido/parked y no se rerun.
 
-El E2E histórico asumía que Academia/Certificación debían existir inmediatamente después de Auth. Pero el producto puede retener `CX.router.mount()` mientras `CX.confidencialidad.pending(...)` esté activo.
+## Causa corregida source-only
 
-El harness ahora:
-
-1. certifica primero Auth exacto + identity + reviewQueue + HR authority + historia;
-2. detecta el gate legal canónico;
-3. si está pendiente, exige diálogo legal visible y difiere rutas sin autoaceptar;
-4. si no está pendiente, Academia/Certificación siguen obligatorias;
-5. preserva zero fuzzy / zero write APIs / no force-click.
+1. Playwright ahora se importa dinámicamente solo en `--execute-real`.
+2. El self-test default queda independiente de Playwright instalado.
+3. Workflow y source patcher ya contemplan una futura lineage exacta desde `...-04` con `I3_PREPROVIDER_SOURCE_SELFTEST_PLAYWRIGHT_IMPORT_ORDER`.
+4. No se ha ejecutado provider después de este hardening.
 
 ## Pendiente I3 real
 
-La credencial temporal del último reset volvió a ser eliminada correctamente en cleanup y no existe checkpoint histórico sanitizado. Por eso una siguiente ejecución real necesita gate expreso para un único reset adicional del mismo UID exacto.
+Se necesita un nuevo gate expreso porque el request de ejecución quedó consumido aunque no gastó el reset provider.
 
-Después debe cerrar en este orden:
+Una futura request `...-05` debe cerrar, en este orden:
 
-1. exact recovery/reset;
-2. Auth/identity/HR/history histórica real PASS con harness legal-gate-aware;
+1. un único reset del mismo Shopper histórico exacto;
+2. Auth/identity/HR/history PASS con harness legal-gate-aware;
 3. checkpoint sanitizado inmediato;
-4. Admin create/update Shopper nuevo con provider ACK/readback;
-5. Shopper nuevo login + reload/new-tab/segundo contexto;
-6. si existe NDA pendiente, no autoaceptarlo; las rutas de workspace quedan para la aceptación humana legítima.
+4. Admin create/update de un único Shopper nuevo con provider ACK/readback;
+5. nuevo Shopper login + reload/new-tab/segundo contexto;
+6. cero fuzzy, otras identidades, false success o consentimiento legal automatizado.
 
-Si el checkpoint histórico llega a PASS y algo posterior falla, no repetir histórico/recovery.
-
-## Seguridad
-
-Después del último STOP_RETRY: solo source/docs, cero provider writes. No HR/Rules/Storage/Make/Gemini/pagos, deploy, merge ni producción.
+Si el checkpoint histórico llega a PASS y un paso posterior falla, no repetir histórico/reset; continuar desde el checkpoint preservado mediante gate focal posterior.
 
 ## Reusable CXOrbia / no-code
 
-Mantener tenant/project config, exact identity, RBAC, idempotencia, expectedVersion, audit, ACK, providers detrás de adapters y gates legales configurables separados de Auth.
+Mantener tenant/project config, exact identity, RBAC, idempotencia, expectedVersion, audit, ACK, providers detrás de adapters y gate legal separado del Auth.
 
 ## Academia
 
-No declarar rutas Academia/Certificación PASS si están bloqueadas por NDA pendiente. No pedir a Claude que suprima o simule el consentimiento.
+No declarar rutas Academia/Certificación PASS si están bloqueadas por NDA pendiente. No suprimir ni simular consentimiento.
 
 ## Pendiente heredado no bloqueante
 
@@ -89,4 +77,4 @@ No declarar rutas Academia/Certificación PASS si están bloqueadas por NDA pend
 
 ## Siguiente gate
 
-`PAULA_REVIEW_REQUIRED_FOR_I3_LEGAL_GATE_AWARE_HISTORICAL_CHECKPOINT_AND_ADMIN_NEW_SHOPPER_RESUME`.
+`PAULA_REVIEW_REQUIRED_FOR_I3_REQUEST05_AFTER_PREPROVIDER_MECHANISM_FAILURE`.
