@@ -1,63 +1,98 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-15 17:31 -06:00  
-**Estado vigente:** `PHASE_A_ROOT_CAUSE_TRACKER_35__I3_LEGAL_PROVIDER_SOURCE_ONLY_PASS__TYA_LEGAL_DRAFT_V0_1_PREPARED__NO_FRONTEND_REDESIGN`
+**Última actualización:** 2026-08-15 17:52 -06:00  
+**Estado vigente:** `PHASE_A_ROOT_CAUSE_TRACKER_35__I3_LEGAL_PROVIDER_SOURCE_ONLY_PASS__TYA_LEGAL_V0_2_NOCODE_DRAFT__NO_BACKEND_UI_PATCH`
 
 ## Estado real
 
-El porcentaje operativo vigente **no es 93%**. El tracker forense prevalente certifica I1 `15/15`, I2 `20/20`, I3 `0/25`, I4 `0/25`, I5 `0/15`: **35% completado / 65% pendiente**.
+Tracker prevalente: I1 `15/15`, I2 `20/20`, I3 `0/25`, I4 `0/25`, I5 `0/15`: **35% completado / 65% pendiente**.
 
-El Shopper histórico exacto de I3 está PASS y congelado en run `31906391682`. No repetir reset/recovery/reconcile ni acceder a su credencial; toda continuación `passwordResets=0`.
+Shopper histórico exacto I3 PASS y congelado en run `31906391682`; no repetir reset/recovery/reconcile ni acceder a credencial histórica; toda continuación `passwordResets=0`.
 
-Request08 (`31909354336` / `95071998299`) llegó al Admin real y se detuvo antes de Alta por `I3_ADMIN_LEGAL_CONFIDENTIALITY_GATE_PENDING_BEFORE_CREATE`. No hubo Shopper nuevo ni Auth/Firestore writes; no se automatizó consentimiento legal.
+Request08 `31909354336` / `95071998299`: STOP antes de Alta por `I3_ADMIN_LEGAL_CONFIDENTIALITY_GATE_PENDING_BEFORE_CREATE`; sin Shopper nuevo, sin Auth/Firestore writes, sin consentimiento automatizado. No rerun.
 
-## Backend conectado/preparado
+## Backend preparado
 
-Source final técnico `0602d6ca0f64280222a4b1522b36f3be77c65c87`; gate push `31913700755` / job `95082399402` SUCCESS.
+Source técnico legal durable final `0602d6ca0f64280222a4b1522b36f3be77c65c87`; gate `31913700755` / `95082399402` SUCCESS. Receipt legal exact-identity/versionado/human-only/provider-ACK y read model fail-closed preparados; bridge no activado.
 
-Quedó preparado source-only:
-- contrato durable de aceptación legal exact-identity/account-scoped/versioned;
-- provider runtime para `legal.acceptance.record`;
-- actor desde Firebase token verificado, no UID cliente;
-- `acceptedAt` server-side;
-- receipt create-only/idempotente con provider ACK;
-- read model provider-authoritative y fail-closed;
-- browser bridge memory-only, sin localStorage authority;
-- automaticAcceptance=false.
+Nuevo contrato reusable:
+`backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json`.
 
-No se activó este bridge en `app/index-backend-dev.html`, no hubo provider IO real y no se tocaron `/app/modules` ni `/app/core`.
+**Regla:** ningún dato TyA, país, proyecto, rebrand, correo, NIT, proveedor o evidencia debe quedar como constante global de runtime. Todo valor variable debe venir de configuración provider-authoritative multi-tenant administrable desde la Plataforma.
 
-## Draft legal TyA V0.1
+## Draft legal vigente para revisión
 
-Paula autorizó preparar contenido legal para revisión humana sin Firebase ni aceptación. Se creó:
+Base V0.1:
 `app/docs/DRAFT-CONTENIDO-LEGAL-TYA-V0.1-REVISION-HUMANA-20260815.md`.
 
-Incluye términos de uso, confidencialidad, privacidad, datos sensibles, evidencias, seguridad, propiedad intelectual, anexos por rol, anexos Guatemala/Honduras, aviso resumido y copy de aceptación humana. Está expresamente marcado `NOT_APPROVED`; no es contenido provider-authoritative.
+Decisiones V0.2:
+`app/docs/DRAFT-CONTENIDO-LEGAL-TYA-V0.2-NOCODE-REVISION-HUMANA-20260815.md`.
 
-## Claude / prototipo
+Lock humano:
+`app/docs/DECISION-LOCK-TYA-LEGAL-V0.2-NOCODE-20260815.md`.
 
-**No rediseñar Shoppers ni el gate legal.** El flujo humano del prototipo se conserva como superficie de aceptación. Cuando el backend sea autorizado/activado, esa superficie deberá consumir el read model provider y registrar el receipt por el command boundary; no debe inventarse otro modal, force-click ni aceptación automática.
+No están aprobados ni materializados. No copiarlos a UI como texto productivo antes de consolidación/revisión legal/aprobación humana.
 
-`#bnOk` es un banner informativo, nunca consentimiento legal.
+## Rebranding
 
-En `app/modules/configuracion.js`, el texto NDA actual y “Guardar NDA” siguen siendo superficie demo/local; no son contenido legal provider-authoritative. No sustituirlos todavía por el draft V0.1 ni publicarlo como acuerdo definitivo.
+El producto tendrá rebranding. No usar `CXOrbia` ni `Gravicentra` como nombre contractual rígido. En términos visibles usar principalmente “la Plataforma” y resolver el nombre comercial desde `platform.displayName`.
 
-Cuando exista versión final aprobada, el copy previsto exige acción humana afirmativa y controles no premarcados. Consentimientos opcionales deberán ir separados de los términos operativos obligatorios.
+Marca visible, estado de registro y titular/licenciante del software son campos separados. No afirmar “marca registrada” si no existe referencia verificada. Cambiar el nombre visible no transfiere derechos de software.
 
-`app/modules/administrabilidad.js` conserva lenguaje de demo/local sobre aceptaciones. No corregirlo desde backend ahora; documentar su actualización futura solo cuando el provider legal real quede activado y validado.
+## TyA — configuración tenant, no lógica global
 
-Mantener intactas la interfaz pública de `CX.data`, el formulario canónico de login y la arquitectura modular aprobada.
+Decisiones humanas ya resueltas:
+- empresa mercantil individual establecida en Guatemala;
+- Honduras administrada desde Guatemala por el mismo operador;
+- datos de identificación/contacto deben vivir en tenant legal profile y poder modificarse no-code;
+- evidencia cruda: default recomendado 90 días, con piso humano 60 y override por proyecto;
+- cuentas bancarias completas solo bajo cifrado/protección, mínimo privilegio, UI enmascarada y retención limitada;
+- documentos: mínimo indispensable;
+- arbitraje preferido para B2B, sin imponer universalmente a usuarios individuales sin validación local;
+- Make/Gemini no se describen como receptores mientras estén gated/deshabilitados;
+- foto/video/audio/geolocalización/comprobantes varían por proyecto.
+
+## Ajustes frontend futuros por archivo/módulo
+
+**No ejecutar desde backend. No rediseñar módulos.** Empalmar las superficies existentes con el contrato provider cuando llegue el bloque frontend autorizado.
+
+1. `app/modules/configuracion.js`
+   - evolucionar “NDA / Guardar NDA” local a `Legal y cumplimiento`;
+   - perfil legal tenant: operador, países, domicilio, contactos;
+   - retención;
+   - controversias;
+   - publicación/versionado;
+   - cero autoridad en localStorage.
+
+2. `app/modules/administrabilidad.js`
+   - retirar semántica “demo local” únicamente después de que provider legal real esté activado/validado.
+
+3. módulo de `proyectos`
+   - `Crear/Editar proyecto > Evidencias y privacidad`;
+   - foto/video/audio/geolocalización/comprobante/otros;
+   - retención heredada o override;
+   - ninguna regla Cinépolis hardcoded.
+
+4. `integraciones`
+   - Provider Registry;
+   - estado técnico activo debe provenir del runtime y no poder falsificarse manualmente;
+   - metadata legal sí administrable.
+
+5. `marca` / white-label
+   - nombre visible/rebranding;
+   - estado de registro de marca;
+   - titular/licenciante separado del branding.
+
+Mantener intactas la interfaz pública de `CX.data`, login canónico y arquitectura modular aprobada.
 
 ## Academia / manuales
 
-Preparar posteriormente contenidos por rol sobre confidencialidad, evidencias, credenciales, privacidad y nueva aceptación ante cambios legales materiales. No enseñar ni simular que QA/GitHub/automatizaciones aceptan por el usuario. Academia/Certificación del histórico siguen diferidas, no PASS.
+Cuando provider real esté activo, enseñar por rol: aceptación humana/versionada, confidencialidad, evidencia por proyecto, retención, seguridad de banco/documentos, rebranding neutral y nueva aceptación cuando un cambio legal sea material. QA/GitHub/Make/Gemini nunca aceptan por el usuario.
 
 ## Pendiente real
 
-Antes de reanudar Admin/new Shopper debe cerrarse humanamente el contenido legal TyA: identidad contractual por país, contactos, retención, proveedores activos, foro, titular/licenciante CXOrbia, política de datos bancarios/documentos y reglas de grabación/geolocalización. Después: versión final + digest final + aprobación humana. Solo entonces puede autorizarse materialización provider, aceptación humana real con ACK y el E2E Admin/new Shopper.
+Solo quedan antes de candidata legal final: domicilio comercial/legal público adecuado; nombre visible temporal/final si rebranding sigue abierto; revisión jurídica GT/HN; consolidación V0.1+V0.2; versión final + SHA-256 final; aprobación humana.
 
-## Siguiente gate
-
-`PAULA_REVIEW_REQUIRED_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_PROVIDER_WRITE_AND_ADMIN_NEW_SHOPPER_RESUME`
+Después podrá solicitarse `PAULA_REVIEW_REQUIRED_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_PROVIDER_WRITE_AND_ADMIN_NEW_SHOPPER_RESUME` para materialización provider, aceptación humana real y E2E Admin/new Shopper.
 
 PR #7 permanece draft/open/no merge. Sin deploy ni producción.
