@@ -1,7 +1,7 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-16 10:17 -06:00  
-**Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__I1_PASS__I2_PASS__I3_HISTORICAL_FROZEN__REQUEST08_LEGAL_STOP__LEGAL_DURABLE_SOURCE_PASS__LEGAL_V0_3_COUNSEL_SNAPSHOT_SOURCE_PASS__PRECOUNSEL_PRIMARY_SOURCE_VERIFICATION_PASS__FINAL_HEAD_CHECKPOINT_SUCCESS__GO_LIVE_35__HUMAN_COUNSEL_REVIEW_NEXT`
+**Fecha:** 2026-08-16 10:38 -06:00  
+**Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__I1_PASS__I2_PASS__I3_HISTORICAL_FROZEN__REQUEST08_CONSUMED__LEGAL_DURABLE_SOURCE_PASS__LEGAL_V0_4_INTERIM_GOLIVE__COUNSEL_DEFERRED_NONBLOCKING__GO_LIVE_35__PROVIDER_HUMAN_ACCEPTANCE_GATE_NEXT`
 
 ## Fuentes vigentes
 
@@ -18,35 +18,42 @@
 11. `SOURCE-LOCK-ITERATION3-HISTORICAL-SHOPPER-LOGIN-PASS-20260814.md` — histórico PASS congelado.
 12. `SOURCE-LOCK-ITERATION3-REQUEST08-ADMIN-LEGAL-CONFIDENTIALITY-GATE-STOP-RETRY-20260815.md` — request08 consumido.
 13. `SOURCE-LOCK-ITERATION3-LEGAL-ACCEPTANCE-PROVIDER-WIRING-SOURCE-ONLY-PASS-20260815.md` — acceptance durable source-only.
-14. `SOURCE-LOCK-ITERATION3-LEGAL-V0.3-COUNSEL-REVIEW-SNAPSHOT-SOURCE-ONLY-PASS-20260815.md` — V0.3 + snapshot inmutable source-only.
-15. **`SOURCE-LOCK-ITERATION3-LEGAL-V0.3-PRECOUNSEL-PRIMARY-SOURCE-VERIFICATION-PASS-20260816.md` — lock legal más reciente y prevalente.**
-16. `DRAFT-CONTENIDO-LEGAL-TYA-V0.1-REVISION-HUMANA-20260815.md` — antecedente.
-17. `DRAFT-CONTENIDO-LEGAL-TYA-V0.2-NOCODE-REVISION-HUMANA-20260815.md` — antecedente/decisiones no-code.
-18. `DECISION-LOCK-TYA-LEGAL-V0.2-NOCODE-20260815.md` — decisiones humanas congeladas.
-19. **`CANDIDATA-LEGAL-TYA-V0.3-CONSOLIDADA-REVISION-JURIDICA-20260815.md` — única candidata jurídica vigente; NO aprobada/publicada.**
-20. **`PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md` — preguntas GT/HN/X para counsel.**
-21. **`MATRIZ-PRE-REVISION-JURIDICA-TYA-V0.3-FUENTES-PRIMARIAS-20260816.md` — pre-verificación primaria; no sustituye counsel.**
-22. `backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json` — perfil legal mutable no-code.
-23. `backend/contracts/cxorbia-legal-publication-snapshot-v1.json` — snapshot público inmutable.
-24. `backend/contracts/cxorbia-legal-acceptance-durable-v1.json` — receipt humano durable.
-25. `GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`.
-26. `CAMBIOS-BACKEND.md`.
-27. `RESUMEN-PARA-CLAUDE.md`.
-28. `PENDIENTES-PROTOTIPO.md`.
-29. `ACADEMIA-IMPACT-I3-LEGAL-PROVIDER-WIRING-SOURCE-ONLY-20260815.md`.
-30. PR #7 y HEAD vivo.
+14. `SOURCE-LOCK-ITERATION3-LEGAL-V0.3-COUNSEL-REVIEW-SNAPSHOT-SOURCE-ONLY-PASS-20260815.md` — antecedente V0.3.
+15. `SOURCE-LOCK-ITERATION3-LEGAL-V0.3-PRECOUNSEL-PRIMARY-SOURCE-VERIFICATION-PASS-20260816.md` — pre-verificación primaria.
+16. **`DECISION-LOCK-TYA-LEGAL-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md` — decisión humana prevalente: counsel diferido y no bloqueante para go-live interino.**
+17. **`CANDIDATA-LEGAL-TYA-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md` — candidata interina vigente para preparación de publicación; sin marcadores internos de counsel en el texto visible.**
+18. **`PENDIENTE-LEGAL-POST-GOLIVE-TYA-GT-HN-V0.4-20260816.md` — registro jurídico post-go-live; no marcar como cerrado.**
+19. `PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md` — preguntas GT/HN/X conservadas para counsel posterior.
+20. `MATRIZ-PRE-REVISION-JURIDICA-TYA-V0.3-FUENTES-PRIMARIAS-20260816.md` — soporte primario.
+21. `backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json` — perfil legal mutable no-code.
+22. `backend/contracts/cxorbia-legal-publication-snapshot-v1.json` — snapshot público inmutable.
+23. `backend/contracts/cxorbia-legal-acceptance-durable-v1.json` — receipt humano durable.
+24. `GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`.
+25. `CAMBIOS-BACKEND.md`.
+26. `RESUMEN-PARA-CLAUDE.md`.
+27. `PENDIENTES-PROTOTIPO.md`.
+28. `ACADEMIA-IMPACT-I3-LEGAL-PROVIDER-WIRING-SOURCE-ONLY-20260815.md`.
+29. PR #7 y HEAD vivo.
 
 ## Carril
 
 Repo `paulaosoriof86/demoCXOrbia`; rama/candidata `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`.
 
-`EXECUTION_LANE_READY`: source/docs sí. Provider write NO. Request08 consumido/no rerun. No nueva candidata/rama/PR/workflow. Este bloque no modifica `/app/modules`, `/app/core` ni product entrypoint.
+`EXECUTION_LANE_READY`: source/docs sí. Provider write requiere gate técnico exacto. Request08 consumido/no rerun. No nueva candidata/rama/PR/workflow.
 
 ## I3 histórico preservado
 
 Run `31906391682`: Shopper histórico exacto PASS y congelado. Reset histórico único consumido. Toda continuación `passwordResets=0`; sin credential access/reconcile/recovery.
 
-## Legal durable + publicación no-code
+## Decisión legal operativa 2026-08-16
+
+Paula decidió no detener el go-live por ausencia temporal de abogado. La revisión profesional GT/HN queda diferida post-go-live y **no puede presentarse como completada**.
+
+Esto elimina exclusivamente el bloqueo `COUNSEL_REQUIRED_BEFORE_PROVIDER`; no elimina la aceptación humana, versionado, digest, provider ACK, seguridad ni los gates técnicos.
+
+V0.4 aplica lenguaje conservador y conserva como pendiente separado todos los códigos GT/HN/X.
+
+## Patrón no-code/rebrand-safe
 
 `tenantLegalProfile mutable no-code`
 → `snapshot de publicación con solo valores públicos aprobados`
@@ -54,23 +61,7 @@ Run `31906391682`: Shopper histórico exacto PASS y congelado. Reset histórico 
 → `SHA-256 post-render`
 → `receipt humano por legalVersion/contentDigest`.
 
-El perfil editable nunca reescribe una versión histórica. Placeholders sin resolver no son publicables. Domicilio registrado restringido no se autopublica. Provider disabled no figura como receptor actual.
-
-## Pre-counsel 2026-08-16
-
-La autorización `autorizado, continuemos` habilitó únicamente continuación source-only. No es aprobación legal final ni aceptación/materialización.
-
-Se verificaron fuentes primarias y se creó la matriz GT/HN/X. Nuevo hallazgo relevante: **Honduras Decreto 149-2014, Ley sobre Comercio Electrónico**, referencia adicional de `HN-02` sin inferir suficiencia jurídica de la UI.
-
-Drive/Gmail read-only no encontraron dictamen profesional V0.3/GT-HN. Ningún `LEGAL_REVIEW_REQUIRED` se elimina.
-
-## Gates certificados
-
-- V0.3/snapshot source: HEAD `768a1b43c10a054a254cfc2bd295aacdeae64c92`, run `31921002582`, job `95100754570`, SUCCESS.
-- Reconciliación V0.3: HEAD `1bf82ad949be12ac6bc2327eed0b2f40c38985b3`, run `31921159197`, job `95101127823`, SUCCESS.
-- Pre-counsel docs: HEAD `79d0333a381cbf49eafd5f8266e0332ba4f5d67d`, run `31957753972`, job `95190900983`, SUCCESS.
-- Source lock pre-counsel: HEAD `91e2cce4bcadf96352e7005ab7c3915bad1696a8`, run `31957810552`, job `95191044191`, SUCCESS.
-- Checkpoint final posterior: HEAD `bd54c8c4e635c4555c53ddd0c60412a1f781785a`, run `31957858906`, job `95191162679`, SUCCESS.
+Los datos concretos TyA deben quedar en autoridad viva provider/no-code, no como constantes de producto. El rebranding no reescribe aceptaciones históricas.
 
 ## Avance
 
@@ -78,9 +69,8 @@ Drive/Gmail read-only no encontraron dictamen profesional V0.3/GT-HN. Ningún `L
 
 ## Siguiente acción exacta
 
-`HUMAN_COUNSEL_REVIEW_TYA_GT_HN_AND_PAULA_APPROVAL_BEFORE_PROVIDER_MATERIALIZATION`.
+`PAULA_PROVIDER_WRITE_AND_HUMAN_ACCEPTANCE_RUNTIME_GATE_FOR_I3`.
 
-Después de decisiones profesionales GT/HN/X incorporadas y aprobación humana final podrá abrirse:
-`PAULA_REVIEW_REQUIRED_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_PROVIDER_WRITE_AND_ADMIN_NEW_SHOPPER_RESUME`.
+Objetivo: preparar/materializar la versión V0.4 y perfil/snapshot legal en `cxorbia-backend-dev`, habilitar el read model durable y dejar que la persona autenticada acepte exclusivamente desde UI humana. Después, continuar con Admin/new Shopper mediante una nueva continuación I3 sin tocar la identidad histórica.
 
-No request09/provider write/acceptance/deploy/merge/producción antes de esos gates.
+No aceptación automática. No reutilizar request08. No password reset histórico. Provider/Auth/Firestore/deploy/producción solo dentro de sus gates explícitos.
