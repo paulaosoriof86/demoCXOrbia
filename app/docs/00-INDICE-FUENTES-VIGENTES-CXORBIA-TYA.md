@@ -20,20 +20,21 @@
 13. `SOURCE-LOCK-ITERATION3-LEGAL-ACCEPTANCE-PROVIDER-WIRING-SOURCE-ONLY-PASS-20260815.md` — acceptance durable source-only.
 14. `SOURCE-LOCK-ITERATION3-LEGAL-V0.3-COUNSEL-REVIEW-SNAPSHOT-SOURCE-ONLY-PASS-20260815.md` — antecedente V0.3.
 15. `SOURCE-LOCK-ITERATION3-LEGAL-V0.3-PRECOUNSEL-PRIMARY-SOURCE-VERIFICATION-PASS-20260816.md` — pre-verificación primaria.
-16. **`DECISION-LOCK-TYA-LEGAL-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md` — decisión humana prevalente: counsel diferido y no bloqueante para go-live interino.**
-17. **`CANDIDATA-LEGAL-TYA-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md` — candidata interina vigente para preparación de publicación; sin marcadores internos de counsel en el texto visible.**
-18. **`PENDIENTE-LEGAL-POST-GOLIVE-TYA-GT-HN-V0.4-20260816.md` — registro jurídico post-go-live; no marcar como cerrado.**
-19. `PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md` — preguntas GT/HN/X conservadas para counsel posterior.
-20. `MATRIZ-PRE-REVISION-JURIDICA-TYA-V0.3-FUENTES-PRIMARIAS-20260816.md` — soporte primario.
-21. `backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json` — perfil legal mutable no-code.
-22. `backend/contracts/cxorbia-legal-publication-snapshot-v1.json` — snapshot público inmutable.
-23. `backend/contracts/cxorbia-legal-acceptance-durable-v1.json` — receipt humano durable.
-24. `GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`.
-25. `CAMBIOS-BACKEND.md`.
-26. `RESUMEN-PARA-CLAUDE.md`.
-27. `PENDIENTES-PROTOTIPO.md`.
-28. `ACADEMIA-IMPACT-I3-LEGAL-PROVIDER-WIRING-SOURCE-ONLY-20260815.md`.
-29. PR #7 y HEAD vivo.
+16. **`SOURCE-LOCK-ITERATION3-LEGAL-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-SOURCE-ONLY-PASS-20260816.md` — lock legal prevalente para ruta crítica.**
+17. **`DECISION-LOCK-TYA-LEGAL-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md` — counsel diferido y no bloqueante para go-live interino.**
+18. **`CANDIDATA-LEGAL-TYA-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md` — candidata interina vigente para preparación de publicación.**
+19. **`PENDIENTE-LEGAL-POST-GOLIVE-TYA-GT-HN-V0.4-20260816.md` — registro jurídico post-go-live; no marcar como cerrado.**
+20. `PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md` — preguntas GT/HN/X conservadas para counsel posterior.
+21. `MATRIZ-PRE-REVISION-JURIDICA-TYA-V0.3-FUENTES-PRIMARIAS-20260816.md` — soporte primario.
+22. `backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json` — perfil legal mutable no-code.
+23. `backend/contracts/cxorbia-legal-publication-snapshot-v1.json` — snapshot público inmutable.
+24. `backend/contracts/cxorbia-legal-acceptance-durable-v1.json` — receipt humano durable.
+25. `GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`.
+26. `CAMBIOS-BACKEND.md`.
+27. `RESUMEN-PARA-CLAUDE.md`.
+28. `PENDIENTES-PROTOTIPO.md`.
+29. `ACADEMIA-IMPACT-I3-LEGAL-PROVIDER-WIRING-SOURCE-ONLY-20260815.md`.
+30. PR #7 y HEAD vivo.
 
 ## Carril
 
@@ -49,9 +50,9 @@ Run `31906391682`: Shopper histórico exacto PASS y congelado. Reset histórico 
 
 Paula decidió no detener el go-live por ausencia temporal de abogado. La revisión profesional GT/HN queda diferida post-go-live y **no puede presentarse como completada**.
 
-Esto elimina exclusivamente el bloqueo `COUNSEL_REQUIRED_BEFORE_PROVIDER`; no elimina la aceptación humana, versionado, digest, provider ACK, seguridad ni los gates técnicos.
+Esto elimina exclusivamente el bloqueo `COUNSEL_REQUIRED_BEFORE_PROVIDER`; no elimina aceptación humana, versionado, digest, provider ACK, seguridad ni gates técnicos.
 
-V0.4 aplica lenguaje conservador y conserva como pendiente separado todos los códigos GT/HN/X.
+V0.4 usa lenguaje conservador y conserva todos los códigos GT/HN/X en registro post-go-live separado.
 
 ## Patrón no-code/rebrand-safe
 
@@ -71,6 +72,6 @@ Los datos concretos TyA deben quedar en autoridad viva provider/no-code, no como
 
 `PAULA_PROVIDER_WRITE_AND_HUMAN_ACCEPTANCE_RUNTIME_GATE_FOR_I3`.
 
-Objetivo: preparar/materializar la versión V0.4 y perfil/snapshot legal en `cxorbia-backend-dev`, habilitar el read model durable y dejar que la persona autenticada acepte exclusivamente desde UI humana. Después, continuar con Admin/new Shopper mediante una nueva continuación I3 sin tocar la identidad histórica.
+Objetivo: preparar/materializar V0.4 y perfil/snapshot legal en `cxorbia-backend-dev`, habilitar read model durable y dejar que la persona autenticada acepte exclusivamente desde UI humana. Después, continuar con Admin/new Shopper mediante una nueva continuación I3 sin tocar la identidad histórica.
 
 No aceptación automática. No reutilizar request08. No password reset histórico. Provider/Auth/Firestore/deploy/producción solo dentro de sus gates explícitos.
