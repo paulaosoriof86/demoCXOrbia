@@ -13,6 +13,7 @@
     "legalRelevantChangeRequiresVersionImpactEvaluation": true,
     "automaticHumanAcceptance": false,
     "projectEvidenceConfigurationAtProjectCreateOrEdit": true,
+    "registeredResidentialDomicileAutoPublished": false,
     "crossTenantReuse": true
   },
   "scope": {
@@ -32,7 +33,9 @@
       "operator.countryOfEstablishment",
       "operator.operatingCountries",
       "operator.franchiseModel",
-      "operator.legalDomicile",
+      "operator.registeredLegalDomicileRestricted",
+      "operator.publicLegalAddress",
+      "operator.publicLegalAddressMode",
       "contacts.legal",
       "contacts.privacy",
       "contacts.securityIncidents",
@@ -52,6 +55,15 @@
     ],
     "writeRule": "future_explicit_gate_required",
     "auditRule": "append_revision_audit_never_silent_overwrite"
+  },
+  "operatorAddressPolicy": {
+    "registeredLegalDomicileRestricted": "provider_encrypted_or_equivalently_protected_restricted_field",
+    "publicLegalAddress": "separate_explicitly_approved_public_value",
+    "publicLegalAddressMode": ["full_approved_address", "locality_only", "contact_channel_only_when_legally_sufficient"],
+    "registeredDomicileMayPopulatePublicAddressAutomatically": false,
+    "residentialAddressDefaultVisibility": "restricted",
+    "publicAddressChangeRequiresAudit": true,
+    "legalSufficiencyRequiresHumanOrCounselReview": true
   },
   "platformBrandProfile": {
     "displayName": "editable_no_code",
@@ -117,6 +129,7 @@
       "never_in_ai_prompts",
       "never_in_unapproved_exports"
     ],
+    "registeredResidentialDomicile": "restricted_not_public_by_default",
     "identityDocuments": "collect_only_fields_or_files_strictly_needed_by_configured_process",
     "documentMinimization": true,
     "rawSecretsInRepo": false
@@ -157,6 +170,7 @@
       "operator_identity",
       "contracting_person_or_entity",
       "country_scope",
+      "public_legal_address",
       "privacy_contact",
       "material_retention_change",
       "provider_activation_with_new_data_flow",
@@ -171,6 +185,7 @@
     "backendMustNotPatchUi": true,
     "requiredFutureProductSurfaces": [
       "Configuracion > Legal y cumplimiento > Perfil legal del tenant",
+      "Configuracion > Legal y cumplimiento > Domicilio registrado restringido vs direccion publica",
       "Configuracion > Marca > Nombre visible y estado de marca",
       "Configuracion > Legal y cumplimiento > Retencion",
       "Configuracion > Integraciones > Registro de proveedores y estado real",
