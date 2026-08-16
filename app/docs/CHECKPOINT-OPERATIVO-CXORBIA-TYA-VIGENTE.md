@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-16 10:10 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_PASS_FROZEN__REQUEST08_LEGAL_STOP_SAFE__LEGAL_DURABLE_SOURCE_PASS__LEGAL_V0_3_COUNSEL_SNAPSHOT_SOURCE_PASS__PRECOUNSEL_PRIMARY_SOURCE_VERIFICATION_PASS__GO_LIVE_35__HUMAN_COUNSEL_REVIEW_NEXT__NO_PRODUCTION`
+**Fecha:** 2026-08-16 10:15 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_PASS_FROZEN__REQUEST08_LEGAL_STOP_SAFE__LEGAL_DURABLE_SOURCE_PASS__LEGAL_V0_3_COUNSEL_SNAPSHOT_SOURCE_PASS__PRECOUNSEL_PRIMARY_SOURCE_VERIFICATION_PASS__FINAL_CHECKPOINT_SUCCESS__GO_LIVE_35__HUMAN_COUNSEL_REVIEW_NEXT__NO_PRODUCTION`
 
 ## Carril vivo
 
@@ -38,17 +38,29 @@ Archivos vigentes:
 
 V0.3 sigue `NOT_APPROVED / NOT_PUBLISHED`. Ningún marcador `LEGAL_REVIEW_REQUIRED` fue removido.
 
-## Evidencia técnica previa preservada
-
-HEAD `768a1b43c10a054a254cfc2bd295aacdeae64c92`: run `31921002582`, job `95100754570`, SUCCESS, incluido snapshot legal inmutable. Reconciliación documental HEAD `1bf82ad949be12ac6bc2327eed0b2f40c38985b3`: run `31921159197`, job `95101127823`, SUCCESS.
-
 ## Pre-counsel 2026-08-16
 
 La autorización de Paula `autorizado, continuemos` habilita continuación source-only, no aprobación jurídica final ni provider write/acceptance.
 
-La matriz primaria reduce el paquete de revisión sin sustituir counsel. Hecho nuevo relevante: Tribunal Superior de Cuentas de Honduras confirma **Decreto 149-2014, Ley sobre Comercio Electrónico**, añadido como referencia de `HN-02` junto con firmas electrónicas/reglamento.
+La matriz primaria reduce el paquete de revisión sin sustituir counsel. Hecho nuevo relevante: Tribunal Superior de Cuentas de Honduras confirma **Decreto 149-2014, Ley sobre Comercio Electrónico**, referencia adicional de `HN-02` junto con firmas electrónicas/reglamento.
 
 Drive/Gmail read-only no aportaron respuesta profesional sobre V0.3. El gate humano permanece abierto.
+
+## Evidencia técnica certificada
+
+Gate V0.3/snapshot previo: HEAD `768a1b43c10a054a254cfc2bd295aacdeae64c92`, run `31921002582`, job `95100754570`, SUCCESS.
+
+Reconciliación V0.3 previa: HEAD `1bf82ad949be12ac6bc2327eed0b2f40c38985b3`, run `31921159197`, job `95101127823`, SUCCESS.
+
+Pre-counsel docs antes del lock certificado: HEAD `79d0333a381cbf49eafd5f8266e0332ba4f5d67d`, run `31957753972`, job `95190900983`, SUCCESS.
+
+Source-lock certificado: commit `91e2cce4bcadf96352e7005ab7c3915bad1696a8`.
+
+Checkpoint canónico sobre ese HEAD:
+- run `31957810552`;
+- job `95191044191`;
+- conclusión `SUCCESS`;
+- pasos I1/I2/frozen I3/legal-aware/overlay-aware/durable legal/immutable publication/current checkpoint: PASS.
 
 ## Seguridad / efectos reales
 
