@@ -1,7 +1,7 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-15 17:52 -06:00  
-**Estado vigente:** `PHASE_A_ROOT_CAUSE_TRACKER_35__I3_LEGAL_PROVIDER_SOURCE_ONLY_PASS__TYA_LEGAL_V0_2_NOCODE_DRAFT__NO_BACKEND_UI_PATCH`
+**Última actualización:** 2026-08-15 18:05 -06:00  
+**Estado vigente:** `PHASE_A_ROOT_CAUSE_TRACKER_35__I3_LEGAL_PROVIDER_SOURCE_ONLY_PASS__TYA_LEGAL_V0_2_NOCODE_DRAFT__REGISTERED_DOMICILE_RESTRICTED__NO_BACKEND_UI_PATCH`
 
 ## Estado real
 
@@ -15,10 +15,10 @@ Request08 `31909354336` / `95071998299`: STOP antes de Alta por `I3_ADMIN_LEGAL_
 
 Source técnico legal durable final `0602d6ca0f64280222a4b1522b36f3be77c65c87`; gate `31913700755` / `95082399402` SUCCESS. Receipt legal exact-identity/versionado/human-only/provider-ACK y read model fail-closed preparados; bridge no activado.
 
-Nuevo contrato reusable:
+Contrato reusable no-code:
 `backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json`.
 
-**Regla:** ningún dato TyA, país, proyecto, rebrand, correo, NIT, proveedor o evidencia debe quedar como constante global de runtime. Todo valor variable debe venir de configuración provider-authoritative multi-tenant administrable desde la Plataforma.
+**Regla:** ningún dato TyA, país, proyecto, rebrand, correo, NIT, proveedor, domicilio o evidencia debe quedar como constante global de runtime. Todo valor variable debe venir de configuración provider-authoritative multi-tenant administrable desde la Plataforma.
 
 ## Draft legal vigente para revisión
 
@@ -52,13 +52,18 @@ Decisiones humanas ya resueltas:
 - Make/Gemini no se describen como receptores mientras estén gated/deshabilitados;
 - foto/video/audio/geolocalización/comprobantes varían por proyecto.
 
+El RTU vigente fue recuperado read-only y confirma el domicilio fiscal/comercial registrado de TyA. Como coincide con un domicilio residencial, **no copiar el valor exacto al código ni publicarlo automáticamente**. El contrato reusable separa ahora:
+- `operator.registeredLegalDomicileRestricted`: dato completo protegido/restringido;
+- `operator.publicLegalAddress`: valor público explícitamente aprobado;
+- `operator.publicLegalAddressMode`: full/locality/contact-only cuando sea jurídicamente suficiente.
+
 ## Ajustes frontend futuros por archivo/módulo
 
 **No ejecutar desde backend. No rediseñar módulos.** Empalmar las superficies existentes con el contrato provider cuando llegue el bloque frontend autorizado.
 
 1. `app/modules/configuracion.js`
    - evolucionar “NDA / Guardar NDA” local a `Legal y cumplimiento`;
-   - perfil legal tenant: operador, países, domicilio, contactos;
+   - perfil legal tenant: operador, países, domicilio registrado restringido, dirección pública y contactos;
    - retención;
    - controversias;
    - publicación/versionado;
@@ -87,11 +92,11 @@ Mantener intactas la interfaz pública de `CX.data`, login canónico y arquitect
 
 ## Academia / manuales
 
-Cuando provider real esté activo, enseñar por rol: aceptación humana/versionada, confidencialidad, evidencia por proyecto, retención, seguridad de banco/documentos, rebranding neutral y nueva aceptación cuando un cambio legal sea material. QA/GitHub/Make/Gemini nunca aceptan por el usuario.
+Cuando provider real esté activo, enseñar por rol: aceptación humana/versionada, confidencialidad, evidencia por proyecto, retención, seguridad de banco/documentos, separación domicilio restringido/público, rebranding neutral y nueva aceptación cuando un cambio legal sea material. QA/GitHub/Make/Gemini nunca aceptan por el usuario.
 
 ## Pendiente real
 
-Solo quedan antes de candidata legal final: domicilio comercial/legal público adecuado; nombre visible temporal/final si rebranding sigue abierto; revisión jurídica GT/HN; consolidación V0.1+V0.2; versión final + SHA-256 final; aprobación humana.
+No volver a pedir domicilio registrado. Solo falta validar con abogado qué nivel de dirección debe mostrarse públicamente; revisión jurídica GT/HN; consolidación V0.1+V0.2; versión final + SHA-256 final; aprobación humana. El nombre de rebranding no es bloqueo técnico porque `platform.displayName` es dinámico.
 
 Después podrá solicitarse `PAULA_REVIEW_REQUIRED_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_PROVIDER_WRITE_AND_ADMIN_NEW_SHOPPER_RESUME` para materialización provider, aceptación humana real y E2E Admin/new Shopper.
 
