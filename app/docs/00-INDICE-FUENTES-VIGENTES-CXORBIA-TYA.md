@@ -22,7 +22,7 @@
 15. `SOURCE-LOCK-ITERATION3-LEGAL-V0.3-PRECOUNSEL-PRIMARY-SOURCE-VERIFICATION-PASS-20260816.md` — pre-verificación primaria.
 16. `SOURCE-LOCK-ITERATION3-LEGAL-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-SOURCE-ONLY-PASS-20260816.md` — lock de decisión interina.
 17. **`SOURCE-LOCK-ITERATION3-LEGAL-V0.4-MATERIALIZATION-PROVIDER-SOURCE-ONLY-PASS-20260816.md` — source lock técnico prevalente de I3 legal.**
-18. `DECISION-LOCK-TYA-LEGAL-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md` — counsel diferido y no bloqueante para go-live interino.
+18. `DECISION-LOCK-TYA-LEGAL-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md` — counsel diferido y no bloqueante.
 19. `CANDIDATA-LEGAL-TYA-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md` — candidata interina vigente.
 20. `PENDIENTE-LEGAL-POST-GOLIVE-TYA-GT-HN-V0.4-20260816.md` — counsel post-go-live abierto.
 21. `PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md` — preguntas GT/HN/X conservadas.
@@ -30,8 +30,8 @@
 23. `backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json` — perfil legal mutable no-code.
 24. `backend/contracts/cxorbia-legal-publication-snapshot-v1.json` — snapshot público inmutable.
 25. `backend/contracts/cxorbia-legal-acceptance-durable-v1.json` — receipt humano durable.
-26. **`backend/contracts/cxorbia-legal-v04-interim-materialization-v1.json` — presupuesto exacto del bootstrap DEV.**
-27. **`backend/runtime/cxorbia-legal-publication-provider-v1.mjs` — provider de materialización source-only.**
+26. `backend/contracts/cxorbia-legal-v04-interim-materialization-v1.json` — presupuesto exacto del bootstrap DEV.
+27. `backend/runtime/cxorbia-legal-publication-provider-v1.mjs` — provider de materialización source-only.
 28. `GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`.
 29. `CAMBIOS-BACKEND.md`.
 30. `RESUMEN-PARA-CLAUDE.md`.
@@ -51,21 +51,22 @@ Run `31906391682`: Shopper histórico exacto PASS y congelado. Reset histórico 
 
 ## Legal interina + materialización preparada
 
-Paula decidió no detener el go-live por ausencia temporal de abogado. Counsel GT/HN queda `deferred_post_golive` y no puede presentarse como completado.
+Counsel GT/HN queda `deferred_post_golive` y no puede presentarse como completado. V0.4 está preparada como candidata interina.
 
-V0.4 está preparada como candidata interina. El nuevo provider source-only permite un bootstrap create-only exacto de cuatro documentos en `cxorbia-backend-dev`: perfil legal, Provider Registry core, legalContent y versión inmutable. El gate fuente rechaza placeholders, falso counsel, domicilio restringido, aceptación automática y cualquier write fuera del presupuesto.
+Provider source-only preparado para bootstrap create-only exacto de cuatro documentos en `cxorbia-backend-dev`: perfil legal, Provider Registry core, legalContent y versión inmutable. Rechaza placeholders, falso counsel, domicilio restringido, aceptación automática y budget drift.
 
-El command adapter fue corregido para permitir el comando self-scoped `legal.acceptance.record` a cualquier rol autenticado únicamente con confirmación humana explícita; los permisos operativos de Shopper/Cliente no se relajaron.
+`legal.acceptance.record` fue corregido en command boundary para cruzar como self-scoped human-confirmed command en cualquier rol autenticado; el provider sigue derivando el UID exacto del ID token y no se relajaron permisos operativos.
 
-Evidencia canónica del HEAD técnico `4cfd087fb49bb41d00caa9dd798bf7d02fa4f0d9`: workflow `31959900456`, job `95196342385`, `SUCCESS`, incluido `Verify I3 V0.4 interim materialization provider source contract`.
+## Evidencia canónica
+
+- HEAD técnico `4cfd087fb49bb41d00caa9dd798bf7d02fa4f0d9`: run `31959900456`, job `95196342385`, `SUCCESS`.
+- HEAD documental reconciliado `7862a4f67fe5ce526d5e4b465e9e19bff65a28d8`: run `31960246332`, job `95197007415`, `SUCCESS`.
+
+Ambos incluyen `Verify I3 V0.4 interim materialization provider source contract` PASS.
 
 ## Patrón no-code/rebrand-safe
 
-`tenantLegalProfile mutable provider-authoritative`
-→ `snapshot de publicación con valores públicos aprobados`
-→ `render canónico UTF-8/LF`
-→ `SHA-256 post-render`
-→ `receipt humano por legalVersion/contentDigest`.
+`tenantLegalProfile mutable provider-authoritative → snapshot de publicación inmutable → render canónico UTF-8/LF → SHA-256 post-render → receipt humano por legalVersion/contentDigest`.
 
 Los datos concretos TyA se materializan como configuración viva/no-code y no como constantes runtime. El rebranding no reescribe aceptaciones históricas.
 
@@ -81,4 +82,4 @@ Hasta este lock: provider credentials/reads/writes `0/0/0`; Firestore/Auth/legal
 
 `PAULA_PROVIDER_WRITE_AND_HUMAN_ACCEPTANCE_RUNTIME_GATE_FOR_I3`.
 
-Objetivo: autorizar el bootstrap DEV exacto de cuatro writes, resolver/renderizar V0.4 desde valores públicos TyA, activar el read model/runtime DEV y permitir que la persona autenticada acepte humanamente. Después se abre una continuación nueva de I3 para Admin/new Shopper, sin request08 ni acceso histórico.
+Objetivo: autorizar el bootstrap DEV exacto de cuatro writes, resolver/renderizar V0.4 desde valores públicos TyA, activar read model/runtime DEV y permitir que la persona autenticada acepte humanamente. Después se abre una continuación nueva de I3 para Admin/new Shopper, sin request08 ni acceso histórico.
