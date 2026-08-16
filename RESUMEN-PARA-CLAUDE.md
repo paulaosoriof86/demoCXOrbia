@@ -1,7 +1,7 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-16 10:10 -06:00  
-**Estado vigente:** `PHASE_A_ROOT_CAUSE_TRACKER_35__I3_LEGAL_V0_3_PRECOUNSEL_PRIMARY_SOURCE_PASS__COUNSEL_REVIEW_PENDING__NO_FRONTEND_REDESIGN`
+**Última actualización:** 2026-08-16 10:38 -06:00  
+**Estado vigente:** `PHASE_A_ROOT_CAUSE_TRACKER_35__I3_LEGAL_V0_4_INTERIM_GOLIVE__COUNSEL_DEFERRED_NONBLOCKING__PROVIDER_HUMAN_ACCEPTANCE_GATE_NEXT__NO_FRONTEND_REDESIGN`
 
 ## Estado real
 
@@ -16,108 +16,106 @@ Request08 `31909354336` / `95071998299`: STOP antes de Alta por `I3_ADMIN_LEGAL_
 Vigentes:
 - `backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json` — perfil legal mutable provider-authoritative/no-code;
 - `backend/contracts/cxorbia-legal-publication-snapshot-v1.json` — snapshot público inmutable;
-- `backend/contracts/cxorbia-legal-acceptance-durable-v1.json` — receipt humano durable por versión/digest.
+- `backend/contracts/cxorbia-legal-acceptance-durable-v1.json` — receipt humano durable por versión/digest;
+- `app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js` — contrato browser source-only;
+- `app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js` — bridge source-only todavía no product-wired.
 
 Regla reusable:
 `perfil editable no-code → snapshot público inmutable → render canónico → SHA-256 post-render → aceptación humana ligada a legalVersion/contentDigest`.
 
-No inyectar configuración mutable directamente en un documento histórico ya aceptado. Placeholders sin resolver no son publicables. Domicilio registrado restringido no se autopublica. Proveedores deshabilitados no aparecen como receptores actuales.
+## Decisión legal operativa vigente
 
-## Candidata jurídica y paquete de counsel
+Paula decidió continuar hacia go-live sin detener Phase A por indisponibilidad temporal del abogado. Counsel GT/HN queda **diferido post-go-live**, no cancelado ni marcado como aprobado.
 
-Documento consolidado:
-`app/docs/CANDIDATA-LEGAL-TYA-V0.3-CONSOLIDADA-REVISION-JURIDICA-20260815.md`.
+Autoridad:
+`app/docs/DECISION-LOCK-TYA-LEGAL-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md`.
 
-Paquete codificado GT/HN/X:
-`app/docs/PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md`.
+Candidata interina:
+`app/docs/CANDIDATA-LEGAL-TYA-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md`.
 
-Matriz primaria nueva:
-`app/docs/MATRIZ-PRE-REVISION-JURIDICA-TYA-V0.3-FUENTES-PRIMARIAS-20260816.md`.
+Registro post-go-live:
+`app/docs/PENDIENTE-LEGAL-POST-GOLIVE-TYA-GT-HN-V0.4-20260816.md`.
 
-Source lock vigente:
-`app/docs/SOURCE-LOCK-ITERATION3-LEGAL-V0.3-PRECOUNSEL-PRIMARY-SOURCE-VERIFICATION-PASS-20260816.md`.
+El paquete V0.3 y matriz primaria se conservan para revisión profesional posterior. No presentar V0.4 como revisada por abogado.
 
-V0.3 **NO está aprobada ni publicada**. Ningún `LEGAL_REVIEW_REQUIRED` se elimina sin counsel GT/HN + aprobación humana final.
+## V0.4 — reglas de producto
 
-## Pre-counsel 2026-08-16
+V0.4 usa lenguaje conservador y no muestra marcadores internos de counsel. No afirmar:
+- que cualquier clic equivale a firma electrónica avanzada;
+- que no existen obligaciones locales en Honduras;
+- arbitraje universal para usuarios individuales;
+- marca registrada sin referencia;
+- proveedor deshabilitado como receptor actual.
 
-La investigación primaria se separó de las decisiones jurídicas. Nuevo hecho relevante para la revisión: Honduras tiene **Decreto 149-2014, Ley sobre Comercio Electrónico**, que debe considerarse en `HN-02` junto con Decreto 149-2013 y Reglamento 41-2014. Esto no autoriza asumir que cualquier click/UI satisface formalidades.
-
-Google Drive y Gmail fueron consultados read-only antes de pedir trabajo manual; no se encontró dictamen profesional sobre esta V0.3. La frase humana `autorizado, continuemos` autoriza ejecución source-only y **no** se trata como aprobación legal final ni aceptación.
+Las evidencias siguen siendo configurables por proyecto. Tratamientos de alto impacto no se habilitan globalmente.
 
 ## Rebranding y no-code
 
-No usar `CXOrbia` ni `Gravicentra` como nombre contractual rígido. El texto permanente usa “la Plataforma”; `platform.displayName` es dinámico. Marca visible, registro de marca y titular/licenciante del software son objetos distintos. Un cambio de branding no transfiere IP ni reescribe versiones históricas.
+No usar `CXOrbia` ni `Gravicentra` como nombre contractual rígido. El texto permanente usa “la Plataforma”; `platform.displayName` es dinámico. Marca visible, registro marcario y titular/licenciante son objetos separados.
 
-Todos los valores concretos TyA pertenecen solo a ese tenant y deben venir de configuración provider-authoritative, no de código.
+Todos los valores concretos TyA pertenecen solo a ese tenant y deben venir de configuración provider-authoritative, no de código: operador, identificación tributaria, contacto, dirección pública, países, retención, controversias, proveedores, branding/licenciante y evidencia por proyecto.
 
-## Ajustes frontend futuros por archivo/módulo — NO ejecutar desde backend
+## Ajustes frontend futuros por archivo/módulo — NO parchear desde backend
 
 1. `app/modules/configuracion.js`
-   - evolucionar la superficie NDA/demo a `Legal y cumplimiento`;
-   - editar perfil legal del tenant, contactos, dirección pública, retención, controversias, licenciante/branding y metadata legal de proveedores;
+   - evolucionar NDA/demo a `Legal y cumplimiento`;
+   - editar perfil legal provider-authoritative;
    - mostrar versiones publicadas separadas del perfil mutable;
-   - flujo `previsualizar → revisión → publicar nueva versión`, nunca sobrescribir versión publicada;
-   - cero localStorage como autoridad.
+   - flujo `previsualizar → revisión → publicar nueva versión`;
+   - cero localStorage como autoridad legal.
 
 2. `app/modules/administrabilidad.js`
-   - retirar semántica demo/local solo después de provider legal real y validado;
-   - auditoría de cambios/revisiones sin exponer datos restringidos.
+   - auditoría legal sin exponer datos restringidos;
+   - retirar semántica demo/local solo después de provider real.
 
-3. módulo de `proyectos`
-   - `Crear/Editar > Evidencias y privacidad`;
-   - foto/video/audio/geolocalización/comprobante/otros;
-   - retención heredada/override y gate especial para alto impacto;
-   - ninguna regla cliente/proyecto hardcoded.
+3. proyecto/wizard
+   - `Evidencias y privacidad`: foto/video/audio/geolocalización/comprobante/otros;
+   - retención heredada/override;
+   - gate para alto impacto.
 
 4. `integraciones`
-   - Provider Registry: estado técnico activo derivado del runtime; metadata legal editable;
-   - provider disabled no puede mostrarse como receptor actual.
+   - Provider Registry con estado técnico real + metadata legal editable.
 
-5. `marca` / white-label
-   - `displayName`, estado registral y referencia de marca;
-   - licenciante/IP separado de branding.
+5. `marca`
+   - `displayName`, estado registral y licenciante/IP separados.
 
 6. gate legal visible
-   - contenido completo de versión publicada y versión visible;
-   - casillas afirmativas no premarcadas;
-   - botón solo después de acción humana;
+   - contenido completo de la versión publicada;
+   - versión visible;
+   - casillas no premarcadas;
+   - botón solo tras acción humana;
    - nunca `#bnOk` como aceptación.
 
 Mantener interfaz pública `CX.data`, login canónico y arquitectura modular aprobada.
 
 ## TyA — decisiones cerradas, no preguntar otra vez
 
-Empresa mercantil individual Guatemala; Honduras operada desde Guatemala; contacto legal editable; domicilio registrado recuperado/restringido; rebranding dinámico; evidencia cruda piso 60/default 90; banco completo bajo controles reforzados; documentos mínimos; evidencias por proyecto; Provider Registry dinámico; arbitraje preferido B2B y revisión diferenciada individual; revisión profesional GT/HN sí.
+Empresa mercantil individual Guatemala; Honduras operada desde Guatemala; contacto legal editable; domicilio registrado recuperado/restringido; rebranding dinámico; evidencia cruda piso 60/default 90; banco completo bajo controles reforzados; documentos mínimos; evidencias por proyecto; Provider Registry dinámico; arbitraje preferido B2B/no universal individual; counsel diferido post-go-live por decisión de Paula.
 
 ## Academia / manuales
 
-Después de provider legal real, enseñar por rol:
-- configuración editable vs versión legal publicada/inmutable;
-- aceptación humana/versionada y reaceptación ante cambios materiales;
-- evidencias configurables por proyecto;
-- seguridad bancaria/documental;
-- providers actuales según registro real;
+Después de provider legal real, enseñar:
+- configuración editable vs versión publicada inmutable;
+- aceptación humana/versionada;
+- reaceptación por cambio material;
+- evidencias por proyecto;
+- seguridad banco/documentos;
+- providers según registro real;
 - rebranding neutral;
-- privacidad del domicilio restringido.
-
-No enseñar hashes internos, rutas, IDs de QA ni implementación del runner.
-
-## Evidencia técnica preservada
-
-HEAD `768a1b43c10a054a254cfc2bd295aacdeae64c92`: run `31921002582`, job `95100754570`, SUCCESS, incluyendo snapshot legal inmutable. HEAD reconciliado `1bf82ad949be12ac6bc2327eed0b2f40c38985b3`: run `31921159197`, job `95101127823`, SUCCESS.
+- privacidad del domicilio;
+- diferencia entre `counsel pendiente` y `legalmente aprobado`.
 
 ## Pendiente real
 
-1. counsel GT resuelve `GT-01..GT-08`;
-2. counsel/revisor HN resuelve `HN-01..HN-06`, considerando expresamente Decreto 149-2014 en HN-02;
-3. revisión transversal `X-01..X-06`;
-4. incorporar cambios exactos y cerrar marcadores;
-5. generar versión publicable;
-6. aprobación humana final de Paula;
-7. solo después materialización provider + aceptación humana + E2E Admin/new Shopper.
+1. resolver snapshot público V0.4 desde provider/no-code;
+2. materializar V0.4 en `cxorbia-backend-dev` bajo gate exacto;
+3. habilitar read model durable en runtime sin localStorage como autoridad;
+4. persona autenticada acepta humanamente;
+5. crear nueva continuación I3 Admin/new Shopper sin reutilizar request08;
+6. provider readback + login/reload/new-tab/segundo contexto;
+7. counsel GT/HN posterior usando el registro diferido.
 
-Gate humano actual:
-`HUMAN_COUNSEL_REVIEW_TYA_GT_HN_AND_PAULA_APPROVAL_BEFORE_PROVIDER_MATERIALIZATION`.
+Gate actual:
+`PAULA_PROVIDER_WRITE_AND_HUMAN_ACCEPTANCE_RUNTIME_GATE_FOR_I3`.
 
-PR #7 permanece draft/open/no merge. Sin provider write, deploy ni producción.
+PR #7 permanece draft/open/no merge. Sin provider write/deploy/producción todavía.
