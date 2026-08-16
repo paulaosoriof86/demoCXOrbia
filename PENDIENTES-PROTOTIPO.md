@@ -1,15 +1,15 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-15 20:05 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_FROZEN__REQUEST08_LEGAL_STOP__LEGAL_V0_3_COUNSEL_SNAPSHOT_SOURCE_PASS__SAME_CANDIDATE__GO_LIVE_35`
+**Última actualización:** 2026-08-16 10:10 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_FROZEN__REQUEST08_LEGAL_STOP__LEGAL_V0_3_PRECOUNSEL_PRIMARY_SOURCE_PASS__SAME_CANDIDATE__GO_LIVE_35`
 
-No nueva candidata/rama/PR. I1/I2 cerradas. I3 continúa por cierre legal humano + provider materialization autorizada + Admin/new Shopper.
+No nueva candidata/rama/PR. I1/I2 cerradas. I3 continúa únicamente por counsel GT/HN/X + aprobación legal humana + provider materialization autorizada + Admin/new Shopper.
 
 Tracker: `app/docs/GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`.  
-Lock técnico legal: `app/docs/SOURCE-LOCK-ITERATION3-LEGAL-ACCEPTANCE-PROVIDER-WIRING-SOURCE-ONLY-PASS-20260815.md`.  
-Lock bloque V0.3: `app/docs/SOURCE-LOCK-ITERATION3-LEGAL-V0.3-COUNSEL-REVIEW-SNAPSHOT-SOURCE-ONLY-PASS-20260815.md`.  
+Lock legal vigente: `app/docs/SOURCE-LOCK-ITERATION3-LEGAL-V0.3-PRECOUNSEL-PRIMARY-SOURCE-VERIFICATION-PASS-20260816.md`.  
 Candidata jurídica: `app/docs/CANDIDATA-LEGAL-TYA-V0.3-CONSOLIDADA-REVISION-JURIDICA-20260815.md`.  
-Paquete abogado: `app/docs/PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md`.
+Paquete abogado: `app/docs/PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md`.  
+Matriz primaria: `app/docs/MATRIZ-PRE-REVISION-JURIDICA-TYA-V0.3-FUENTES-PRIMARIAS-20260816.md`.
 
 **35% completado / 65% pendiente. I3 0/25 hasta PASS integral.**
 
@@ -22,16 +22,17 @@ Auth owner/exact identity/Staff membership, I1/I2, Mis Visitas, protected HR aut
 - Provider legal durable exact-identity/versioned/human-only/ACK/fail-closed.
 - Perfil legal no-code provider-authoritative multi-tenant.
 - Rebranding dinámico y separado de IP/titularidad.
-- Domicilio registrado residencial recuperado y clasificado restringido; no volver a pedirlo ni autopublicarlo.
+- Domicilio registrado residencial recuperado/restringido; no volver a pedirlo ni autopublicarlo.
 - Evidencias/retención configurables por proyecto.
 - Provider Registry con estado técnico real.
-- **Nueva capa de publicación legal inmutable:** perfil mutable → snapshot público congelado → render UTF-8/LF → SHA-256 post-render → receipt humano por versión/digest.
+- Capa de publicación legal inmutable: perfil mutable → snapshot público congelado → render UTF-8/LF → SHA-256 post-render → receipt humano por versión/digest.
 - V0.1 + V0.2 consolidadas en V0.3 para revisión jurídica.
-- Paquete de abogado GT/HN concentrado.
+- Paquete counsel GT/HN/X concentrado.
+- Matriz primaria 20260816 creada para separar hechos confirmados de decisiones que siguen requiriendo counsel.
+- Honduras Decreto 149-2014, Ley sobre Comercio Electrónico, identificado como referencia primaria adicional de `HN-02`.
+- Búsqueda Drive/Gmail read-only no encontró dictamen profesional V0.3 existente.
 
-Gate fuente: HEAD `768a1b43c10a054a254cfc2bd295aacdeae64c92`, run `31921002582`, job `95100754570`, SUCCESS. Decisión snapshot: `PASS_I3_LEGAL_PUBLICATION_SNAPSHOT_NOCODE_IMMUTABLE_SOURCE_ONLY`.
-
-## Decisiones humanas cerradas — no preguntar otra vez
+## Decisiones humanas cerradas — no volver a preguntar
 
 1. TyA empresa mercantil individual Guatemala.
 2. Honduras administrada desde Guatemala por el mismo Operador TyA.
@@ -46,18 +47,19 @@ Gate fuente: HEAD `768a1b43c10a054a254cfc2bd295aacdeae64c92`, run `31921002582`,
 11. Proveedores: estado activo desde runtime; Make/Gemini no actuales mientras estén gated.
 12. Arbitraje preferido B2B, no universal para individuales sin validación local.
 13. Revisión profesional final GT/HN: sí.
+14. `autorizado, continuemos` del 2026-08-16 autoriza continuación source-only; no equivale a aprobación jurídica final ni aceptación.
 
-## Pendiente legal real — ya concentrado
+## Pendiente legal real — lista reducida
 
-1. Abogado GT responde `GT-01..GT-08`.
-2. Revisión HN responde `HN-01..HN-06`.
+1. Counsel GT responde `GT-01..GT-08` usando candidata + paquete + matriz primaria.
+2. Counsel/revisor HN responde `HN-01..HN-06`, incluyendo Decreto 149-2014 en `HN-02`.
 3. Revisión transversal responde `X-01..X-06`.
 4. Incorporar cambios exactos y eliminar todos los `LEGAL_REVIEW_REQUIRED`.
 5. Definir nivel de dirección pública, licenciante/IP, arbitraje, privacidad/retención/evidencias/proveedores.
 6. Generar versión publicable única.
 7. Paula aprueba humanamente el texto final.
 8. Solo después: snapshot provider real, valores públicos resueltos y SHA-256 final.
-9. Solo con gate explícito: materializar `tenantLegalProfile`/legalContents y registrar aceptación humana.
+9. Solo con gate explícito: materializar `tenantLegalProfile`/legalContents y registrar aceptación humana real.
 
 El nombre final del rebranding no bloquea: `platform.displayName` es dinámico y cada versión publicada conserva el nombre resuelto en su snapshot.
 
@@ -75,7 +77,7 @@ Después de receipt legal válido:
 
 No rediseñar UI desde backend. En futuro bloque frontend autorizado:
 - `configuracion.js`: Legal y cumplimiento no-code; separar perfil editable vs versiones publicadas;
-- `administrabilidad.js`: retirar semántica demo/local solo después de provider real;
+- `administrabilidad.js`: retirar demo/local solo después de provider real;
 - proyectos: Evidencias y privacidad;
 - integraciones: Provider Registry;
 - marca/white-label: displayName/estado registral/licenciante separados;
@@ -83,7 +85,7 @@ No rediseñar UI desde backend. En futuro bloque frontend autorizado:
 
 ## Academia
 
-Después de provider real: explicar versión publicada inmutable vs configuración editable; aceptación humana; reaceptación por cambio material; evidencia por proyecto; retención; banco/documentos; proveedores; rebranding y privacidad del domicilio.
+Después de provider real: explicar versión publicada inmutable vs configuración editable; aceptación humana; reaceptación por cambio material; evidencia por proyecto; retención; banco/documentos; providers; rebranding y privacidad del domicilio.
 
 ## Gate siguiente
 
