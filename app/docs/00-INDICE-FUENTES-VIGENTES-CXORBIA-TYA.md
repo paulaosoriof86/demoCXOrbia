@@ -1,7 +1,7 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
 **Fecha:** 2026-08-16 11:12 -06:00  
-**Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__I1_PASS__I2_PASS__I3_HISTORICAL_FROZEN__REQUEST08_CONSUMED__LEGAL_V0_4_DEV_MATERIALIZATION_PASS__4_WRITES_EXACT__REQUEST_CONSUMED__RUNTIME_SOURCE_WIRED__GO_LIVE_35__DEV_DEPLOY_HUMAN_ACCEPTANCE_GATE_NEXT`
+**Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__I1_PASS__I2_PASS__I3_HISTORICAL_FROZEN__REQUEST08_CONSUMED__LEGAL_V0_4_DEV_MATERIALIZATION_PASS__4_WRITES_EXACT__REQUEST_CONSUMED__RUNTIME_SOURCE_WIRED__CANONICAL_PASS__GO_LIVE_35__DEV_DEPLOY_HUMAN_ACCEPTANCE_GATE_NEXT`
 
 ## Fuentes vigentes
 
@@ -20,21 +20,22 @@
 13. `SOURCE-LOCK-ITERATION3-LEGAL-ACCEPTANCE-PROVIDER-WIRING-SOURCE-ONLY-PASS-20260815.md` — durable legal source.
 14. `SOURCE-LOCK-ITERATION3-LEGAL-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-SOURCE-ONLY-PASS-20260816.md` — V0.4 interina/counsel diferido.
 15. `SOURCE-LOCK-ITERATION3-LEGAL-V0.4-MATERIALIZATION-PROVIDER-SOURCE-ONLY-PASS-20260816.md` — preparación source-only anterior.
-16. **`SOURCE-LOCK-ITERATION3-LEGAL-V0.4-MATERIALIZATION-PROVIDER-DEV-PASS-20260816.md` — lock técnico prevalente: materialización REAL DEV PASS + runtime source wired.**
-17. `DECISION-LOCK-TYA-LEGAL-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md`.
-18. `CANDIDATA-LEGAL-TYA-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md`.
-19. `PENDIENTE-LEGAL-POST-GOLIVE-TYA-GT-HN-V0.4-20260816.md`.
-20. `backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json`.
-21. `backend/contracts/cxorbia-legal-publication-snapshot-v1.json`.
-22. `backend/contracts/cxorbia-legal-acceptance-durable-v1.json`.
-23. `backend/contracts/cxorbia-legal-v04-interim-materialization-v1.json`.
-24. `app/docs/evidence/ITERATION3-LEGAL-V04-MATERIALIZATION-DEV-LATEST.json` — evidencia real sanitizada.
-25. `GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`.
-26. `CAMBIOS-BACKEND.md`.
-27. `RESUMEN-PARA-CLAUDE.md`.
-28. `PENDIENTES-PROTOTIPO.md`.
-29. `ACADEMIA-IMPACT-I3-LEGAL-PROVIDER-WIRING-SOURCE-ONLY-20260815.md`.
-30. PR #7 y HEAD vivo.
+16. `SOURCE-LOCK-ITERATION3-LEGAL-V0.4-MATERIALIZATION-PROVIDER-DEV-PASS-20260816.md` — ejecución real DEV y detalle del wiring source.
+17. **`SOURCE-LOCK-ITERATION3-LEGAL-V0.4-DEV-MATERIALIZATION-AND-RUNTIME-SOURCE-CANONICAL-PASS-20260816.md` — source lock técnico prevalente: materialización REAL DEV + runtime source + gate canónico PASS.**
+18. `DECISION-LOCK-TYA-LEGAL-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md`.
+19. `CANDIDATA-LEGAL-TYA-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md`.
+20. `PENDIENTE-LEGAL-POST-GOLIVE-TYA-GT-HN-V0.4-20260816.md`.
+21. `backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json`.
+22. `backend/contracts/cxorbia-legal-publication-snapshot-v1.json`.
+23. `backend/contracts/cxorbia-legal-acceptance-durable-v1.json`.
+24. `backend/contracts/cxorbia-legal-v04-interim-materialization-v1.json`.
+25. `app/docs/evidence/ITERATION3-LEGAL-V04-MATERIALIZATION-DEV-LATEST.json` — evidencia real sanitizada.
+26. `GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`.
+27. `CAMBIOS-BACKEND.md`.
+28. `RESUMEN-PARA-CLAUDE.md`.
+29. `PENDIENTES-PROTOTIPO.md`.
+30. `ACADEMIA-IMPACT-I3-LEGAL-PROVIDER-WIRING-SOURCE-ONLY-20260815.md`.
+31. PR #7 y HEAD vivo.
 
 ## Carril
 
@@ -70,9 +71,11 @@ El gate humano mostrado en DEV exige versión completa, dos casillas no premarca
 
 Counsel GT/HN sigue `deferred_post_golive`, no `approved`, y no bloquea la ruta interina. Perfil legal editable provider-authoritative → snapshot publicado inmutable → SHA-256 → receipt humano por identidad/versión/digest. Rebranding no reescribe aceptaciones históricas.
 
-## Gate canónico y corrección documental
+## Gate canónico final
 
-HEAD source-wiring `c6e1e55d581f3eb15fc5bf430de4adb2de4e51ca`, run canónico push `31961999583`: I1/I2/frozen I3/durable legal/publication/V0.4 source PASS; único fallo `DURABLE_PLAN_NOT_INDEXED` en current checkpoint porque la versión reducida de este índice había omitido el addendum durable. Esta actualización restaura esa autoridad; no reabre diagnóstico ni toca provider.
+Tras corregir documentalmente `DURABLE_PLAN_NOT_INDEXED`, HEAD checkpoint `930ed9fb8597ba2f43ed8a32b24c0a0bec21abbe` pasó `CXOrbia Phase A Live Execution Checkpoint`: run `31962243842`, job `95201831257`, `SUCCESS`, incluyendo I1, I2, frozen I3, durable legal, immutable publication, V0.4 materialization source y current operational checkpoint.
+
+Commits posteriores del mismo bloque son documentación/handoff; no alteran runtime/producto certificado ni reejecutan el bootstrap.
 
 ## Avance
 
