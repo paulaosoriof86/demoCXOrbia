@@ -1,78 +1,83 @@
-# ACADEMIA — IMPACTO I3 LEGAL PROVIDER / V0.3 · 2026-08-15/16
+# ACADEMIA — IMPACTO I3 LEGAL PROVIDER / V0.4 · 2026-08-16
 
 ## Estado
 
-Provider legal durable source-only continúa PASS. V0.3 y su snapshot no-code/inmutable permanecen source-only y `NOT_APPROVED / NOT_PUBLISHED`; no provider IO ni aceptación real.
+Provider legal durable continúa source-only PASS. Paula decidió que la indisponibilidad temporal de counsel no bloqueará el go-live interino. La revisión profesional GT/HN queda diferida post-go-live y no debe presentarse como completada.
 
 Vigentes:
 - `backend/contracts/cxorbia-legal-publication-snapshot-v1.json`;
-- `CANDIDATA-LEGAL-TYA-V0.3-CONSOLIDADA-REVISION-JURIDICA-20260815.md`;
-- `PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md`;
-- `MATRIZ-PRE-REVISION-JURIDICA-TYA-V0.3-FUENTES-PRIMARIAS-20260816.md`.
+- `CANDIDATA-LEGAL-TYA-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md`;
+- `DECISION-LOCK-TYA-LEGAL-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md`;
+- `PENDIENTE-LEGAL-POST-GOLIVE-TYA-GT-HN-V0.4-20260816.md`;
+- V0.3 + paquete GT/HN/X + matriz primaria como soporte del counsel posterior.
 
-Gate canónico V0.3 previo: run `31921002582`, job `95100754570`, SUCCESS. Reconciliación previa: run `31921159197`, job `95101127823`, SUCCESS.
+## Regla editorial nueva
 
-## Actualización pre-counsel 2026-08-16
+Academia debe distinguir tres estados:
+1. **configuración legal editable no-code**;
+2. **versión legal publicada/inmutable aceptada por el usuario**;
+3. **revisión profesional pendiente/completada**.
 
-La pre-verificación primaria separa hechos normativos verificables de decisiones que siguen requiriendo abogado. No elimina `LEGAL_REVIEW_REQUIRED`.
+Una versión puede ser publicada operativamente sin poder afirmar que fue revisada por abogado. La interfaz, manuales y capacitación nunca deben convertir `counsel diferido` en `aprobado legalmente`.
 
-Nuevo punto futuro para Honduras: **Decreto 149-2014, Ley sobre Comercio Electrónico**, debe considerarse junto con Decreto 149-2013 de Firmas Electrónicas y Reglamento 41-2014 cuando se explique contratación/aceptación electrónica. Academia no debe traducir esta referencia en la afirmación simplista de que cualquier click constituye aceptación/firma suficiente.
+## Aceptación
 
-La autorización humana `autorizado, continuemos` se clasifica como autorización para continuar ejecución técnica/source-only, no como aprobación jurídica final ni aceptación legal.
+La aceptación continúa siendo exclusivamente humana. QA, GitHub Actions, Make, Gemini, IA, scripts o administradores técnicos no aceptan por el usuario. `#bnOk`, navegación y localStorage no son autoridad de consentimiento.
 
-## Patrón que Academia deberá explicar cuando el provider real esté activo
+El receipt válido queda ligado a identidad autenticada exacta, tenant/scope/rol, versión, digest y timestamp del servidor.
 
-Hay dos conceptos distintos:
+## No-code y rebranding
 
-1. **Configuración legal editable no-code:** datos de tenant, contactos, nombre visible, retención, dirección pública, providers y políticas configurables según permisos.
-2. **Versión legal publicada:** copia inmutable de los valores públicos y texto efectivamente aceptado. Se conserva con versión/digest y no cambia retroactivamente cuando cambia la configuración.
+Hay dos conceptos que no deben confundirse:
+- **perfil legal mutable:** operador, contactos, dirección pública, nombre visible, retención, providers, políticas y configuración por proyecto;
+- **versión publicada:** snapshot inmutable de los valores y texto que realmente aceptó el usuario.
 
-Un cambio material puede generar nueva versión y nueva aceptación humana. Un cambio no material no reescribe la historia.
+Rebranding, correo o configuración posterior no reescriben una versión histórica. Marca visible, registro marcario y titular/licenciante son conceptos separados.
 
 ## Por rol
 
-**Shopper:** entender qué versión acepta; confidencialidad; autenticidad de visitas; evidencia solo según proyecto; no compartir cuenta; no reutilizar material; seguridad bancaria/documental; reportar incidentes.
+**Shopper:** versión que acepta; confidencialidad; autenticidad de visita; evidencia solo según proyecto; no compartir cuenta; no reutilizar material; seguridad bancaria/documental; incidentes.
 
-**Admin/Operaciones:** mínimo privilegio; editar configuración legal solo con permiso; distinguir `borrador / en revisión / publicado`; no sobrescribir versiones publicadas; no fuzzy matching; no exponer domicilio/banco/documentos restringidos.
+**Admin/Operaciones:** mínimo privilegio; distinguir perfil editable vs versión publicada; no sobrescribir versiones; no fuzzy matching; no exponer domicilio/banco/documentos restringidos.
 
-**Cliente:** confidencialidad recíproca; protección de identidad Shopper; uso limitado de resultados; obligaciones de datos/evidencias del proyecto; no represalias/contacto fuera del flujo.
+**Cliente:** confidencialidad recíproca; protección de identidad Shopper; uso limitado de resultados; obligaciones de datos/evidencias; no represalias/contacto fuera del flujo.
 
-**Superadmin/tenant admin:** gestionar perfil no-code, Provider Registry, retención/evidencias y rebranding sin convertir decisiones de un tenant/proyecto en lógica global.
-
-## Rebranding
-
-Los manuales deben usar “la Plataforma” o el nombre visible dinámico. No fijar CXOrbia/Gravicentra como nombre perpetuo. Marca visible, registro marcario y titular/licenciante son conceptos separados.
+**Superadmin/tenant admin:** gestionar perfil no-code, Provider Registry, retención/evidencias y rebranding sin volver global una regla de tenant/proyecto.
 
 ## Evidencias y retención
 
-Foto/video/audio/geolocalización/comprobantes pertenecen al proyecto. Academia deberá enseñar dónde se configuran y cuándo un tratamiento de alto impacto exige revisión adicional.
+Foto/video/audio/geolocalización/comprobantes pertenecen al proyecto. Debe enseñarse dónde se configuran y que audio/biometría/reconocimiento facial u otros tratamientos de alto impacto requieren controles adicionales cuando corresponda.
 
-Para TyA, la propuesta inicial conserva piso 60 días/default 90 para evidencia cruda, pero no debe enseñar que todo dato se destruye a 90 días: documentación empresarial, pagos, auditoría y receipts pueden requerir plazos mayores/legal hold.
+Para TyA: piso 60/default 90 días para evidencia cruda como regla operativa. No enseñar que todo se borra a 90 días: documentación empresarial, pagos, auditoría y receipts pueden requerir plazos mayores o legal hold.
+
+## Honduras / fuentes
+
+Decreto 149-2014 sobre Comercio Electrónico se conserva como referencia junto con Decreto 149-2013 de Firmas Electrónicas y Reglamento 41-2014. Academia no debe resumir esto como “cualquier clic es firma válida”.
 
 ## Qué NO debe enseñar o simular
 
-- QA/GitHub/automatizaciones/Make/Gemini no aceptan ni firman por el usuario.
-- `#bnOk` y localStorage no son consentimiento legal.
-- Un receipt de otra cuenta/rol/proyecto/versión no satisface el gate.
-- V0.3 no es texto definitivo hasta revisión jurídica y aprobación humana.
-- Placeholders/template no son documento publicable.
-- Un cambio no-code nunca altera una versión histórica ya aceptada.
-- Domicilio registrado restringido no se muestra automáticamente.
-- Providers deshabilitados no son receptores actuales.
-- Marca no registrada no se presenta como registrada.
-- Cinépolis u otro proyecto no crea reglas globales.
-- Una fuente normativa verificada no sustituye opinión profesional sobre la cláusula concreta.
+- que V0.4 fue revisada por abogado;
+- que counsel post-go-live está cerrado;
+- aceptación automatizada;
+- `#bnOk`/localStorage como consentimiento;
+- provider deshabilitado como receptor actual;
+- domicilio restringido como información pública automática;
+- marca no registrada como registrada;
+- Cinépolis u otro proyecto como regla global;
+- cualquier click como firma avanzada;
+- arbitraje universal para todo usuario.
 
 ## Impacto editorial futuro
 
-Cuando el provider legal real quede activado/validado, actualizar:
-- ruta por rol sobre aceptación legal;
-- manual de `Legal y cumplimiento`;
-- manual `Crear/Editar proyecto > Evidencias y privacidad`;
-- checklist de publicación de nueva versión;
-- guía de Provider Registry;
-- errores frecuentes: versión pendiente, cambio material, provider no activo, dato restringido, aceptación faltante;
-- notificación de nueva versión cuando requiera reaceptación.
+Cuando provider legal real quede activado/validado, actualizar:
+- ruta por rol de aceptación legal;
+- manual `Legal y cumplimiento`;
+- `Crear/Editar proyecto > Evidencias y privacidad`;
+- checklist de publicación/versionado;
+- Provider Registry;
+- errores frecuentes: versión pendiente, cambio material, provider inactivo, dato restringido, aceptación faltante;
+- notificación de nueva versión cuando requiera reaceptación;
+- estado visible `revisión profesional pendiente/completada` sin exponer detalles técnicos internos.
 
 No incluir hashes internos, IDs de runs, credenciales, rutas privadas ni detalles del runner en Academia visible.
 
