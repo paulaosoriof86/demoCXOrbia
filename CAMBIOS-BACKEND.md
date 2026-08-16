@@ -1,7 +1,7 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-15 20:05 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_FROZEN__REQUEST08_LEGAL_STOP__LEGAL_PROVIDER_SOURCE_ONLY_PASS__LEGAL_V0_3_COUNSEL_PACKAGE_SNAPSHOT_SOURCE_ONLY_PASS__GO_LIVE_35__NO_PRODUCTION`
+**Última actualización:** 2026-08-16 10:10 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_FROZEN__REQUEST08_LEGAL_STOP__LEGAL_PROVIDER_SOURCE_PASS__LEGAL_V0_3_COUNSEL_SNAPSHOT_SOURCE_PASS__PRECOUNSEL_PRIMARY_SOURCE_VERIFICATION_PASS__GO_LIVE_35__NO_PRODUCTION`
 
 ## Preservado
 
@@ -18,92 +18,83 @@ Cadena técnica preservada:
 
 Gate `31913700755` / `95082399402` SUCCESS; gate PR `31913704247` SUCCESS. Aceptación exact-identity/versioned/human-only/provider-ACK/fail-closed preparada; bridge no activado; provider/Auth/Firestore/legal writes reales `0`.
 
-## V0.2 no-code / rebrand-safe preservada
+## V0.3 consolidada + publicación legal inmutable
 
-Vigentes como antecedentes y decisiones humanas:
+Archivos vigentes:
 - `backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json`;
-- `app/docs/DRAFT-CONTENIDO-LEGAL-TYA-V0.2-NOCODE-REVISION-HUMANA-20260815.md`;
-- `app/docs/DECISION-LOCK-TYA-LEGAL-V0.2-NOCODE-20260815.md`;
-- base V0.1.
+- `backend/contracts/cxorbia-legal-publication-snapshot-v1.json`;
+- `backend/contracts/cxorbia-legal-acceptance-durable-v1.json`;
+- `tools/qa/verify-i3-legal-publication-snapshot-source-only.mjs`;
+- `app/docs/CANDIDATA-LEGAL-TYA-V0.3-CONSOLIDADA-REVISION-JURIDICA-20260815.md`;
+- `app/docs/PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md`;
+- `app/docs/SOURCE-LOCK-ITERATION3-LEGAL-V0.3-COUNSEL-REVIEW-SNAPSHOT-SOURCE-ONLY-PASS-20260815.md`.
 
-No hardcode de datos TyA/país/proyecto/rebrand/contactos/proveedores/evidencias. Domicilio registrado residencial recuperado permanece restringido y separado de `publicLegalAddress`.
+Regla estructural:
+`tenantLegalProfile mutable no-code → snapshot de publicación inmutable → render canónico UTF-8/LF → SHA-256 post-render → receipt humano ligado a legalVersion + contentDigest`.
 
-## Bloque 2026-08-15 — V0.3 consolidada + publicación legal inmutable
+Gate source V0.3/snapshot: HEAD `768a1b43c10a054a254cfc2bd295aacdeae64c92`, run `31921002582`, job `95100754570`, SUCCESS. Reconciliación posterior HEAD `1bf82ad949be12ac6bc2327eed0b2f40c38985b3`, run `31921159197`, job `95101127823`, SUCCESS.
 
-### Nuevos archivos
+## Bloque 2026-08-16 — pre-counsel primary-source verification
 
-1. `backend/contracts/cxorbia-legal-publication-snapshot-v1.json`  
-   Commit `3c60a280c25b7651f091bc9007863dc1cd887f55`.
+### Archivos creados
 
-2. `tools/qa/verify-i3-legal-publication-snapshot-source-only.mjs`  
-   Commit `17d992115765ee1616cec199141dd911155c27e8`.
+1. `app/docs/MATRIZ-PRE-REVISION-JURIDICA-TYA-V0.3-FUENTES-PRIMARIAS-20260816.md`  
+   Commit `8c3d03b610494b343d8fe0848a8779598eaa3134`.
 
-3. `app/docs/CANDIDATA-LEGAL-TYA-V0.3-CONSOLIDADA-REVISION-JURIDICA-20260815.md`  
-   Commit `e7b7dc00b75d79b78a0016377a5a3fea73e70d48`.
+2. `app/docs/SOURCE-LOCK-ITERATION3-LEGAL-V0.3-PRECOUNSEL-PRIMARY-SOURCE-VERIFICATION-PASS-20260816.md`  
+   Commit `7f923b7929f755313ce44918eaae330e29603e62`.
 
-4. `app/docs/PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md`  
-   Commit `64266aa3e8be726a2e896163069827be652af1ce`.
+### Objetivo
 
-5. `.github/workflows/cxorbia-phase-a-live-checkpoint.yml` extendido, sin crear workflow nuevo.  
-   Commit `768a1b43c10a054a254cfc2bd295aacdeae64c92`.
+Reducir hechos que el abogado no necesita redescubrir sin usar investigación como sustituto de opinión profesional. La matriz clasifica todos los códigos `GT-01..GT-08`, `HN-01..HN-06`, `X-01..X-06` en:
+- `SOURCE_CONFIRMED_FACT`;
+- `SOURCE_SUPPORTS_DRAFT__COUNSEL_DECISION_REQUIRED`;
+- `COUNSEL_DECISION_REQUIRED`.
 
-6. Source lock del bloque:
-   `app/docs/SOURCE-LOCK-ITERATION3-LEGAL-V0.3-COUNSEL-REVIEW-SNAPSHOT-SOURCE-ONLY-PASS-20260815.md`.
+### Hallazgo adicional
 
-### Regla estructural nueva
+Fuente oficial del Tribunal Superior de Cuentas de Honduras confirma **Decreto 149-2014, Ley sobre Comercio Electrónico**. Se incorpora como referencia adicional de `HN-02`, junto con Decreto 149-2013 y Reglamento 41-2014. No se declara que la existencia de esas normas haga suficiente automáticamente la mecánica de aceptación UI.
 
-Se separan explícitamente:
+### Búsqueda read-only previa a pedir trabajo manual
 
-`tenantLegalProfile mutable no-code`
-→ `snapshot de publicación inmutable con solo valores públicos aprobados`
-→ `render canónico UTF-8/LF`
-→ `SHA-256 después del render`
-→ `receipt humano ligado a legalVersion + contentDigest`.
+- Google Drive: no se recuperó dictamen/revisión profesional V0.3 GT/HN.
+- Gmail: búsqueda TyA/T&A + abogado/legal/contrato/NDA/confidencialidad/términos/revisión, excluyendo GitHub, no recuperó respuesta de counsel sobre la candidata vigente.
 
-Así, editar datos no-code no reescribe contratos/aceptaciones históricas. Un cambio material se evalúa y puede generar nueva versión/reaceptación. El rebranding conserva evidencia histórica. Placeholders sin resolver no pueden publicarse. Domicilio registrado restringido y proveedores deshabilitados no entran al documento público automáticamente.
+Por tanto el gate de revisión profesional sigue abierto.
 
-### V0.3 jurídica
+### Interpretación de autorización
 
-V0.3 consolida V0.1+V0.2 como una única candidata de revisión profesional. Mantiene marcadores `LEGAL_REVIEW_REQUIRED` por GT/HN/transversales y está explícitamente `NOT_APPROVED / NOT_PUBLISHED`.
+`autorizado, continuemos` autoriza este bloque source-only. No se registra como aprobación legal final de V0.3, consentimiento, provider materialization, request09, Admin/new Shopper, deploy, merge o producción.
 
-El paquete de abogado concentra:
-- Guatemala `GT-01..GT-08`;
-- Honduras `HN-01..HN-06`;
-- transversales `X-01..X-06`;
-con respuestas esperadas `APROBADO SIN CAMBIO`, `CAMBIO REQUERIDO`, `NO APLICA` o `REQUIERE DOCUMENTO/HECHO ADICIONAL`.
+## Claude / prototipo
 
-## Gate técnico
-
-HEAD fuente `768a1b43c10a054a254cfc2bd295aacdeae64c92` pasó `CXOrbia Phase A Live Execution Checkpoint`:
-- run `31921002582`;
-- job `95100754570`;
-- conclusión `SUCCESS`;
-- paso nuevo de snapshot legal no-code/inmutable `SUCCESS`.
-
-Decisión: `PASS_I3_LEGAL_PUBLICATION_SNAPSHOT_NOCODE_IMMUTABLE_SOURCE_ONLY`.
-
-## Investigación legal de soporte
-
-Se verificaron únicamente fuentes oficiales/primarias como base de revisión: Decreto 47-2008, Decreto 67-95, Decreto 57-2000 y Código de Comercio art. 382 en Guatemala; la Iniciativa 6464 continuaba en discusión en julio de 2026. Para Honduras: Decreto 149-2013, Acuerdo Ejecutivo 41-2014, Decreto 161-2000, Ley sobre Justicia Constitucional/habeas data y fuentes IAIP que siguen identificando protección general de datos como anteproyecto. Esto no sustituye revisión profesional.
+No se modificó UI desde backend. Futuro bloque frontend autorizado debe empalmar:
+- `configuracion.js`: Legal y cumplimiento provider-authoritative; perfil mutable separado de versiones publicadas;
+- `administrabilidad.js`: auditoría de cambios sin datos restringidos y retiro de demo/local solo tras provider real;
+- proyectos: Evidencias y privacidad;
+- integraciones: Provider Registry;
+- marca/white-label: displayName/estado registral separado de IP/licenciante;
+- gate legal visible: texto completo, versión, casillas no premarcadas, nunca `#bnOk` como aceptación.
 
 ## Seguridad / efectos reales
 
 Provider credentials/reads/writes `0/0/0`; Auth/Firestore/legalContent/legalAcceptance writes `0`; password resets `0`; historical access/reconcile `0`; HR/Rules/Storage/Make/Gemini/pagos `0`; `/app/modules` cambios `0`; `/app/core` cambios `0`; product entrypoint activation `0`; deploy `0`; merge=false; producción=false.
 
+## Pendiente real
+
+Counsel GT/HN/X debe resolver los códigos del paquete; después se incorporan cambios, se eliminan marcadores, se genera versión publicable y Paula aprueba humanamente el texto final. Solo entonces podrá abrirse provider materialization/aceptación y Admin → único Shopper nuevo.
+
 ## Clasificación
 
-- **Reusable CXOrbia / sucesor de marca:** perfil legal mutable → snapshot público inmutable → digest post-render → receipt por versión/digest.
-- **Exclusivo TyA:** contenido/decisiones GT/HN y valores del tenant, sin hardcodearlos.
-- **Claude/prototipo:** futura superficie no-code de publicación legal, perfiles, proveedores y evidencias; no parcheada desde backend.
-- **Academia:** debe diferenciar configuración editable de documento publicado/inmutable cuando el provider real quede activo.
-- **Sin impacto Claude inmediato:** CI/verificador/source lock/paquete jurídico.
+- **Reusable CXOrbia / sucesor de marca:** matriz de revisión primaria y patrón perfil mutable → snapshot inmutable → digest → receipt.
+- **Exclusivo TyA:** hechos/decisiones GT/HN del tenant; valores no hardcodeados.
+- **Claude/prototipo:** sin cambio frontend en este bloque; superficies futuras documentadas.
+- **Academia:** impacto editorial diferido hasta provider legal real.
+- **Sin impacto Claude inmediato:** verificación normativa, búsquedas read-only, source lock y documentación.
 
-## Porcentaje y pendiente
+## Porcentaje
 
 **35% completado / 65% pendiente. I3 0/25 hasta PASS integral.**
 
-Siguiente gate humano:
+Gate vigente:
 `HUMAN_COUNSEL_REVIEW_TYA_GT_HN_AND_PAULA_APPROVAL_BEFORE_PROVIDER_MATERIALIZATION`.
-
-Solo después podrá abrirse:
-`PAULA_REVIEW_REQUIRED_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_PROVIDER_WRITE_AND_ADMIN_NEW_SHOPPER_RESUME`.
