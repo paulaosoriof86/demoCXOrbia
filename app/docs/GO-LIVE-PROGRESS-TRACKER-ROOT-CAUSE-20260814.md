@@ -7,50 +7,57 @@
 |---|---:|---|---|
 | I1 — Auth/authority/source correction | 15 | PASS 15/15 | Gate vigente conservado |
 | I2 — canonical persistence/transversal | 20 | PASS 20/20 | `SOURCE-LOCK-ITERATION2-CANONICAL-PERSISTENCE-PASS-20260814.md` |
-| I3 — Shopper persistence + real Auth continuity | 25 | 0/25, EN CURSO | Histórico PASS congelado; legal durable source PASS; V0.4 interina creada; counsel diferido no bloqueante; provider materialization + aceptación humana + Admin/new Shopper pendientes |
+| I3 — Shopper persistence + real Auth continuity | 25 | 0/25, EN CURSO | Histórico PASS congelado; durable legal PASS; V0.4 interim + **materialization provider SOURCE PASS**; counsel diferido; ejecución provider + aceptación humana + Admin/new Shopper pendientes |
 | I4 — Phase A operational flows | 25 | 0/25, NO INICIAR | Solo después de I3 PASS |
 | I5 — final go-live validation | 15 | 0/15, NO INICIAR | Solo después de I4 PASS |
 
 **35% completado / 65% pendiente.**
 
-## I3 — evidencia acumulativa que NO se repite
+## I3 — no repetir
 
-Historical exact Shopper PASS: run `31906391682`. Reset histórico consumido; toda continuación `passwordResets=0`, sin credential access/reconcile/recovery histórico.
+Historical exact Shopper PASS run `31906391682`; reset histórico consumido; `passwordResets=0`, cero credential access/reconcile/recovery. Request08 run `31909354336` / job `95071998299` consumido/no rerun.
 
-Request08: run `31909354336`, job `95071998299`, STOP `I3_ADMIN_LEGAL_CONFIDENTIALITY_GATE_PENDING_BEFORE_CREATE`; sin Shopper nuevo ni Auth/Firestore writes. Consumido, no rerun.
+## I3 — legal durable + V0.4
 
-## I3 — autoridad legal durable
+Durable acceptance source `0602d6ca0f64280222a4b1522b36f3be77c65c87`; gate `31913700755` / `95082399402` SUCCESS.
 
-Source `0602d6ca0f64280222a4b1522b36f3be77c65c87`; gate `31913700755` / `95082399402` SUCCESS. Receipt exact-identity/versioned/human-only/provider-ACK y read model fail-closed preparados; provider IO real 0.
+Counsel GT/HN diferido post-go-live, no aprobado. V0.4 interina vigente con registro jurídico posterior.
 
-## I3 — decisión V0.4 interina 2026-08-16
+## I3 — materialization provider SOURCE PASS
 
-Paula decidió no detener el go-live por indisponibilidad temporal de counsel. La revisión profesional GT/HN se conserva como pendiente post-go-live y **no se declara aprobada**.
+Source lock:
+`SOURCE-LOCK-ITERATION3-LEGAL-V0.4-MATERIALIZATION-PROVIDER-SOURCE-ONLY-PASS-20260816.md`.
 
-Vigentes:
-- `DECISION-LOCK-TYA-LEGAL-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md`;
-- `CANDIDATA-LEGAL-TYA-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md`;
-- `PENDIENTE-LEGAL-POST-GOLIVE-TYA-GT-HN-V0.4-20260816.md`.
+Preparados:
+- `backend/runtime/cxorbia-legal-publication-provider-v1.mjs`;
+- `backend/contracts/cxorbia-legal-v04-interim-materialization-v1.json`;
+- `tools/qa/verify-i3-legal-v04-materialization-source-only.mjs`.
 
-La V0.4 usa lenguaje conservador, no muestra marcadores de revisión al usuario y conserva todos los asuntos GT/HN/X en un registro separado. Counsel puede producir una versión posterior; un cambio material debe evaluarse para reaceptación.
+Bootstrap futuro exacto en `cxorbia-backend-dev`: Firestore `4` create-only = legalProfile `1` + Provider Registry `1` + legalContent/version `2`; legalAcceptance/Auth/passwordResets/historical/HR/Rules/Storage/Make/Gemini/payment `0`.
+
+El verifier bloquea placeholders, falso counsel, domicilio restringido público, collision/overwrite y budget drift. Readback provider preparado.
+
+`app/adapters/cxorbia-command-adapter-v1.js` corrigió el paso del comando self-scoped `legal.acceptance.record` para roles autenticados, sin abrir otros writes de Shopper/Cliente.
+
+CI canónico HEAD técnico `4cfd087fb49bb41d00caa9dd798bf7d02fa4f0d9`: run `31959900456`, job `95196342385`, SUCCESS.
 
 ## No-code/rebranding
 
-`perfil mutable provider-authoritative → snapshot público inmutable → render UTF-8/LF → SHA-256 post-render → aceptación humana por legalVersion/contentDigest`.
+`perfil mutable provider-authoritative → snapshot público inmutable → render UTF-8/LF → SHA-256 → aceptación humana por version/digest`.
 
-Los valores concretos TyA no se hardcodean. Rebranding, contacto u otra edición posterior no reescriben un acuerdo histórico.
+Valores TyA no hardcodeados. Rebranding/config posterior no reescribe acuerdos históricos.
 
 ## Pendiente ruta crítica I3
 
-1. resolver snapshot V0.4 con valores públicos vivos del tenant;
-2. materializar legalContent/version y perfil legal en `cxorbia-backend-dev` bajo un gate exacto;
-3. habilitar read model durable en runtime;
-4. aceptación exclusivamente humana con actor autenticado + provider ACK;
-5. crear nueva continuación I3, no rerun request08;
-6. Admin crea/edita un único Shopper nuevo;
-7. Auth + claims + membership + profile/shopper + crosswalk exactos;
-8. provider readback + login/reload/new-tab/segundo contexto;
-9. cero fuzzy, otras identidades, resets históricos, HR/Rules/Storage/Make/Gemini/pagos fuera de gate.
+1. gate exacto `PAULA_PROVIDER_WRITE_AND_HUMAN_ACCEPTANCE_RUNTIME_GATE_FOR_I3`;
+2. render/snapshot V0.4 con valores públicos TyA y digest final;
+3. reutilizar/extender carril existente para ejecución DEV, sin workflow nuevo;
+4. materializar 4 docs + readback;
+5. wiring/read model DEV durable;
+6. aceptación exclusivamente humana + provider ACK;
+7. nueva continuación I3 Admin/new Shopper, sin request08;
+8. Auth + claims + membership + profile/shopper + crosswalk exactos;
+9. login/reload/new-tab/segundo contexto.
 
 Counsel GT/HN/X queda post-go-live y no bloquea esta ruta interina.
 
@@ -60,4 +67,4 @@ Hasta cierre integral, I3 permanece `0/25` y GO-LIVE **35/65**.
 
 `PAULA_PROVIDER_WRITE_AND_HUMAN_ACCEPTANCE_RUNTIME_GATE_FOR_I3`
 
-Este gate no autoriza aceptación automática. La persona autenticada debe aceptar la versión publicada desde UI humana.
+No autoriza aceptación automática; el humano autenticado acepta desde UI.
