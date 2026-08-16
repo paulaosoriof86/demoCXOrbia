@@ -80,6 +80,15 @@
     const actor=currentActor();
     if(actor.tenantId&&command.tenantId&&actor.tenantId!==command.tenantId)return{ok:false,code:'COMMAND_TENANT_SCOPE_DENIED'};
     if(actor.projectIds.length&&command.requireProject!==false&&command.projectId&&!actor.projectIds.includes(command.projectId)&&actor.role!=='super')return{ok:false,code:'COMMAND_PROJECT_SCOPE_DENIED'};
+    /* Legal acceptance is a self-scoped command. The provider, not this browser adapter,
+       derives the actor UID from the verified Firebase ID token and enforces tenant/role/scope.
+       It must remain available to authenticated shoppers and clients even though their ordinary
+       operational write sets are intentionally narrow/closed. */
+    if(command.commandType==='legal.acceptance.record'){
+      if(command.entityType!=='legalAcceptance')return{ok:false,code:'COMMAND_LEGAL_ENTITY_INVALID'};
+      if(command.payload?.humanConfirmed!==true||command.authorization?.humanAcceptanceRequired!==true||command.authorization?.automaticAcceptanceForbidden!==true)return{ok:false,code:'COMMAND_LEGAL_HUMAN_CONFIRMATION_REQUIRED'};
+      return{ok:true};
+    }
     if(actor.role==='shopper'){
       const allowed=new Set(['visit.state.update','visit.reschedule','visit.cancel','visit.questionnaire.submit','application.create']);
       if(!allowed.has(command.commandType))return{ok:false,code:'COMMAND_ROLE_DENIED'};
