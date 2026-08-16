@@ -1,6 +1,6 @@
 # DECISION LOCK — TyA LEGAL V0.2 · NO-CODE / REBRAND-SAFE · 2026-08-15
 
-**Estado:** `HUMAN_DECISIONS_CAPTURED__DRAFT_NOT_APPROVED__NO_PROVIDER_MATERIALIZATION__GO_LIVE_35`
+**Estado:** `HUMAN_DECISIONS_CAPTURED__REGISTERED_DOMICILE_RECOVERED_RESTRICTED__DRAFT_NOT_APPROVED__NO_PROVIDER_MATERIALIZATION__GO_LIVE_35`
 
 ## Propósito
 
@@ -22,6 +22,7 @@ Congelar decisiones humanas ya entregadas para no volver a preguntarlas ni conve
 12. **Documentos:** guardar únicamente lo indispensable.
 13. **Evidencias:** foto/video/audio/geolocalización/comprobantes varían por proyecto y se seleccionan al crear/editar proyecto. No existe regla global Cinépolis ni cliente-específica en core.
 14. **Revisión profesional:** se realizará revisión jurídica final antes de publicación.
+15. **Domicilio:** se recuperó read-only la constancia RTU vigente y confirma el establecimiento TyA y un domicilio fiscal/comercial registrado. Como la dirección coincide con un domicilio residencial, el valor exacto queda clasificado como **dato restringido** y no se copia al repo ni se publica automáticamente. El perfil no-code deberá separar `registeredLegalDomicileRestricted` de `publicLegalAddress`. Para el aviso público se recomienda mostrar solo el nivel de ubicación jurídicamente suficiente + canal legal, hasta que abogado/Paula aprueben una dirección pública específica.
 
 ## Contratos/drafts asociados
 
@@ -31,8 +32,8 @@ Congelar decisiones humanas ya entregadas para no volver a preguntarlas ni conve
 
 ## Pendientes que sí siguen vivos
 
-- domicilio comercial/legal público adecuado;
-- elección definitiva del nombre visible al go-live, si el rebranding aún no está resuelto;
+- validación jurídica de qué nivel de domicilio debe mostrarse públicamente, preservando el domicilio completo como restringido;
+- elección definitiva del nombre visible al go-live, si el rebranding aún no está resuelto; **no bloquea técnicamente** porque el nombre es dinámico;
 - revisión jurídica Guatemala/Honduras;
 - consolidación V0.1 + V0.2 en texto único;
 - SHA-256 productivo final;
@@ -41,6 +42,6 @@ Congelar decisiones humanas ya entregadas para no volver a preguntarlas ni conve
 
 ## Seguridad y efectos
 
-Este lock no contiene datos bancarios, documento de identidad, credenciales ni secretos crudos. Tenant/provider/legal/Auth/Firestore/HR/Storage/Rules/Make/Gemini/pagos writes `0`; aceptación `0`; deploy `0`; merge=false; producción=false.
+Este lock no contiene dirección exacta, datos bancarios, documento de identidad, credenciales ni secretos crudos. Tenant/provider/legal/Auth/Firestore/HR/Storage/Rules/Make/Gemini/pagos writes `0`; aceptación `0`; deploy `0`; merge=false; producción=false.
 
 **GO-LIVE 35% completado / 65% pendiente; I3 0/25 hasta cierre integral.**
