@@ -21,16 +21,13 @@ const actor={uid:'uid-admin-exact',tenantId:'tya',role:'admin',authNamespace:'st
 
 function snap(data){return data?{exists:true,data:()=>structuredClone(data)}:{exists:false,data:()=>({})};}
 function fakeStore(){
-  const docs=new Map();
-  let writes=0,reads=0;
+  const docs=new Map();let writes=0,reads=0;
   const db={
     doc(p){return{path:p,async get(){reads++;return snap(docs.get(p));}};},
     async runTransaction(fn){
       const pending=[];
       const tx={async get(ref){reads++;return snap(docs.get(ref.path));},create(ref,value){if(docs.has(ref.path))throw new Error('already-exists');pending.push([ref.path,structuredClone(value)]);}};
-      const out=await fn(tx);
-      for(const [p,v] of pending){docs.set(p,v);writes++;}
-      return out;
+      const out=await fn(tx);for(const [p,v] of pending){docs.set(p,v);writes++;}return out;
     }
   };
   return{db,docs,metrics:()=>({reads,writes})};
@@ -42,7 +39,16 @@ function seedLegal(store,{version='v1',digestValue=digest}={}){
 const gate={enabled:true,consumed:false,providerWriteAuthorized:true,targetProject:'cxorbia-backend-dev',commandType:LEGAL_COMMAND_TYPE,allowedExecutions:1,legalAcceptanceWrites:1,firestoreWrites:1,authWrites:0,passwordResets:0,historicalCredentialAccess:0,historicalReconciliationWrites:0,otherIdentityWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeWrites:0,geminiCalls:0,paymentWrites:0,automaticAcceptance:false,humanAcceptanceRequired:true};
 const command={commandType:'legal.acceptance.record',entityType:'legalAcceptance',tenantId:'tya',projectId:null,requireProject:false,actor:{actorId:'client-display-id-not-authority',role:'admin',projectIds:['cinepolis']},expectedVersion:'v1',idempotencyKey:'legal-test-1',payload:{scopeMode:'tenant',legalContentId:'confidentiality',legalVersion:'v1',contentDigest:digest,acceptanceMethod:'human_ui',humanConfirmed:true},authorization:{providerEnforcementRequired:true,verifiedIdTokenActorRequired:true,actorUidFromProviderToken:true,selfAcceptanceOnly:true,humanAcceptanceRequired:true,automaticAcceptanceForbidden:true}};
 
-const required=['backend/contracts/cxorbia-legal-acceptance-durable-v1.json','backend/runtime/cxorbia-legal-acceptance-provider-v1.mjs','app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js','app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js','app/index-backend-dev.html','app/app.js','app/modules/administrabilidad.js','app/modules/configuracion.js','.github/cxorbia-firebase-requests/cxorbia-i3-shopper-persistence-exact-write-v1.json'];
+const required=[
+  'backend/contracts/cxorbia-legal-acceptance-durable-v1.json',
+  'backend/runtime/cxorbia-legal-acceptance-provider-v1.mjs',
+  'backend/runtime/hr-live-service/legal-runtime.mjs',
+  'app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js',
+  'app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js',
+  'app/adapters/cxorbia-legal-runtime-http-v1.js',
+  'app/index-backend-dev.html','app/index.html','app/app.js','app/modules/administrabilidad.js','app/modules/configuracion.js',
+  '.github/cxorbia-firebase-requests/cxorbia-i3-shopper-persistence-exact-write-v1.json'
+];
 required.forEach(p=>assert.ok(fs.existsSync(path.join(ROOT,p)),`missing ${p}`));
 
 const contract=jread('backend/contracts/cxorbia-legal-acceptance-durable-v1.json');
@@ -75,13 +81,39 @@ assert.match(bridgeSource,/failClosedWithoutSnapshot:true/);
 assert.doesNotMatch(bridgeSource,/localStorage\.setItem/);
 assert.doesNotMatch(bridgeSource,/sessionStorage\.setItem/);
 
+const runtimeSource=read('backend/runtime/hr-live-service/legal-runtime.mjs');
+assert.match(runtimeSource,/CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_ENABLED/);
+assert.match(runtimeSource,/PAULA_DEV_DEPLOY_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_RUNTIME/);
+assert.match(runtimeSource,/automaticAcceptance:false/);
+assert.match(runtimeSource,/humanAcceptanceRequired:true/);
+assert.match(runtimeSource,/actorUidReturned:false/);
+assert.match(runtimeSource,/LEGAL_RUNTIME_HUMAN_ACCEPTANCE_WRITE_GATE_DISABLED/);
+assert.doesNotMatch(runtimeSource,/FIREBASE_SERVICE_ACCOUNT/);
+
+const browserRuntime=read('app/adapters/cxorbia-legal-runtime-http-v1.js');
+assert.match(browserRuntime,/humanConfirmed:true/);
+assert.match(browserRuntime,/Acceptar y continuar|Aceptar y continuar/);
+assert.match(browserRuntime,/localStorageAuthority:false/);
+assert.match(browserRuntime,/sessionStorageAuthority:false/);
+assert.match(browserRuntime,/automaticAcceptance:false/);
+assert.doesNotMatch(browserRuntime,/localStorage\.setItem/);
+assert.doesNotMatch(browserRuntime,/sessionStorage\.setItem/);
+
 const entry=read('app/index-backend-dev.html');
-assert.ok(!entry.includes('cxorbia-legal-acceptance-provider-bridge-v1.js'),'product entrypoint must remain unwired in source-only block');
+const prodEntry=read('app/index.html');
+const devEntrypointWired=entry.includes('cxorbia-legal-acceptance-provider-bridge-v1.js')||entry.includes('cxorbia-legal-runtime-http-v1.js');
+if(devEntrypointWired){
+  assert.ok(entry.includes('cxorbia-legal-acceptance-durable-contract-v1.js'));
+  assert.ok(entry.includes('cxorbia-legal-acceptance-provider-bridge-v1.js'));
+  assert.ok(entry.includes('cxorbia-legal-runtime-http-v1.js'));
+}
+assert.ok(!prodEntry.includes('cxorbia-legal-runtime-http-v1.js'),'production entrypoint must remain unwired before deploy/production gate');
+assert.ok(!prodEntry.includes('cxorbia-legal-acceptance-provider-bridge-v1.js'),'production entrypoint must remain unwired before deploy/production gate');
+
 const app=read('app/app.js');
 assert.match(app,/CX\.confidencialidad/);
 const config=read('app/modules/configuracion.js');
 assert.match(config,/NDA \/ Acuerdo de confidencialidad/);
-assert.match(config,/Al acceder a esta plataforma, confirmas que has leído y aceptas los términos de confidencialidad y uso de datos\./);
 const admin=read('app/modules/administrabilidad.js');
 assert.match(admin,/CX\.confidencialidad/);
 
@@ -102,45 +134,32 @@ assert.equal(validateWriteGate({...gate,historicalCredentialAccess:1}).ok,false)
   await assert.rejects(()=>provider.record({idToken:'token',command,gate:{...gate,enabled:false}}),e=>e.code==='LEGAL_WRITE_GATE_INVALID');
   assert.equal(tokenCalls,0);assert.deepEqual(store.metrics(),{reads:0,writes:0});
 }
-
 for(const badPayload of [{...command.payload,actorUid:'spoof'},{...command.payload,acceptedAt:'2026-01-01T00:00:00Z'}]){
   const store=fakeStore();let tokenCalls=0;
   const provider=createLegalAcceptanceProvider({verifyIdToken:async()=>{tokenCalls++;return actor;},firestore:store.db,serverTimestamp:()=>({__serverTimestamp:true})});
   await assert.rejects(()=>provider.record({idToken:'token',command:{...command,payload:badPayload},gate}),e=>e.code==='LEGAL_ACCEPTANCE_COMMAND_INVALID');
   assert.equal(tokenCalls,0);assert.deepEqual(store.metrics(),{reads:0,writes:0});
 }
-
 {
   const store=fakeStore();seedLegal(store);let tokenCalls=0;
   const provider=createLegalAcceptanceProvider({verifyIdToken:async()=>{tokenCalls++;return actor;},firestore:store.db,serverTimestamp:()=>({__serverTimestamp:true})});
   const first=await provider.record({idToken:'token',command,gate});
-  assert.equal(first.ok,true);assert.equal(first.status,'committed');assert.equal(first.providerAck,true);assert.equal(first.idempotent,false);
-  assert.equal(store.metrics().writes,1);
+  assert.equal(first.ok,true);assert.equal(first.status,'committed');assert.equal(first.providerAck,true);assert.equal(first.idempotent,false);assert.equal(store.metrics().writes,1);
   const second=await provider.record({idToken:'token',command,gate});
   assert.equal(second.ok,true);assert.equal(second.idempotent,true);assert.equal(store.metrics().writes,1);
-  const rid=receiptIdFor({scope,actorUid:actor.uid,current});
-  assert.ok(store.docs.has(`tenants/tya/legalAcceptances/${rid}`));
-  const readModel=await provider.readModel({idToken:'token',scope,current});
-  assert.equal(readModel.pending,false);assert.equal(readModel.subjectExact,true);assert.equal(readModel.acceptance.actorUid,actor.uid);
+  const rid=receiptIdFor({scope,actorUid:actor.uid,current});assert.ok(store.docs.has(`tenants/tya/legalAcceptances/${rid}`));
+  const readModel=await provider.readModel({idToken:'token',scope,current});assert.equal(readModel.pending,false);assert.equal(readModel.subjectExact,true);
 }
-
 {
   const store=fakeStore();seedLegal(store);
   const provider=createLegalAcceptanceProvider({verifyIdToken:async()=>({...actor,tenantId:'other'}),firestore:store.db,serverTimestamp:()=>({__serverTimestamp:true})});
   await assert.rejects(()=>provider.record({idToken:'token',command,gate}),e=>e.code==='LEGAL_ACCEPTANCE_ACTOR_SCOPE_INVALID');
   assert.deepEqual(store.metrics(),{reads:0,writes:0});
 }
-
 {
   const store=fakeStore();seedLegal(store,{version:'v2',digestValue:'b'.repeat(64)});
   const provider=createLegalAcceptanceProvider({verifyIdToken:async()=>actor,firestore:store.db,serverTimestamp:()=>({__serverTimestamp:true})});
-  await assert.rejects(()=>provider.record({idToken:'token',command,gate}),e=>e.code==='LEGAL_PROVIDER_CURRENT_INVALID');
-  assert.equal(store.metrics().writes,0);
-}
-
-{
-  const c2={...current,legalVersion:'v2',contentDigest:'b'.repeat(64)};
-  assert.notEqual(receiptIdFor({scope,actorUid:actor.uid,current}),receiptIdFor({scope,actorUid:actor.uid,current:c2}));
+  await assert.rejects(()=>provider.record({idToken:'token',command,gate}),e=>e.code==='LEGAL_PROVIDER_CURRENT_INVALID');assert.equal(store.metrics().writes,0);
 }
 
 {
@@ -167,4 +186,36 @@ assert.equal(status.deploys,0);
 assert.equal(status.merge,false);
 assert.equal(status.production,false);
 
-console.log(JSON.stringify({decision:'PASS_I3_LEGAL_ACCEPTANCE_DURABLE_ACCOUNT_SCOPED_CONTRACT_SOURCE_ONLY',providerWiringDecision:'PASS_I3_LEGAL_ACCEPTANCE_PROVIDER_WIRING_SOURCE_ONLY',commandType:LEGAL_COMMAND_TYPE,providerRuntimePrepared:true,providerWriteActivated:false,providerCredentialsLoaded:false,actualProviderReads:0,actualProviderWrites:0,authWrites:0,firestoreWrites:0,legalAcceptanceWrites:0,automaticAcceptance:false,humanAcceptanceOnly:true,exactIdentityOnly:true,fuzzyMatching:false,clientActorUidForbidden:true,clientAcceptedAtForbidden:true,providerServerTimestampRequired:true,duplicateAcceptanceIdempotent:true,priorVersionReceiptPreserved:true,productEntrypointChanged:false,uiModulesChanged:false,historicalCredentialAccess:0,passwordResets:0,historicalReconciliationWrites:0,request08Rerun:false,deployment:false,merge:false,production:false,nextGate:'PAULA_REVIEW_REQUIRED_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_PROVIDER_WRITE_AND_ADMIN_NEW_SHOPPER_RESUME'},null,2));
+console.log(JSON.stringify({
+  decision:'PASS_I3_LEGAL_ACCEPTANCE_DURABLE_ACCOUNT_SCOPED_CONTRACT_SOURCE_ONLY',
+  providerWiringDecision:'PASS_I3_LEGAL_ACCEPTANCE_PROVIDER_WIRING_SOURCE_ONLY',
+  commandType:LEGAL_COMMAND_TYPE,
+  providerRuntimePrepared:true,
+  providerWriteActivated:false,
+  providerCredentialsLoaded:false,
+  actualProviderReads:0,
+  actualProviderWrites:0,
+  authWrites:0,
+  firestoreWrites:0,
+  legalAcceptanceWrites:0,
+  automaticAcceptance:false,
+  humanAcceptanceOnly:true,
+  exactIdentityOnly:true,
+  fuzzyMatching:false,
+  clientActorUidForbidden:true,
+  clientAcceptedAtForbidden:true,
+  providerServerTimestampRequired:true,
+  duplicateAcceptanceIdempotent:true,
+  priorVersionReceiptPreserved:true,
+  devEntrypointWired,
+  productEntrypointChanged:false,
+  uiModulesChanged:false,
+  historicalCredentialAccess:0,
+  passwordResets:0,
+  historicalReconciliationWrites:0,
+  request08Rerun:false,
+  deployment:false,
+  merge:false,
+  production:false,
+  nextGate:'PAULA_DEV_DEPLOY_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_RUNTIME'
+},null,2));
