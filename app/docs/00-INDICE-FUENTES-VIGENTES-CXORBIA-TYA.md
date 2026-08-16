@@ -49,30 +49,31 @@ Repo `paulaosoriof86/demoCXOrbia`; rama/candidata `docs-tya-v6-v71-audit`; PR #7
 
 Run `31906391682`: Shopper histórico exacto PASS y congelado. Reset histórico único consumido. Toda continuación `passwordResets=0`; sin credential access/reconcile/recovery.
 
-## Legal interina + materialización preparada
+## Legal interina + materialización SOURCE PASS
 
-Counsel GT/HN queda `deferred_post_golive` y no puede presentarse como completado. V0.4 está preparada como candidata interina.
+Counsel GT/HN queda `deferred_post_golive`; no puede presentarse como completado. V0.4 está preparada como candidata interina.
 
-Provider source-only preparado para bootstrap create-only exacto de cuatro documentos en `cxorbia-backend-dev`: perfil legal, Provider Registry core, legalContent y versión inmutable. Rechaza placeholders, falso counsel, domicilio restringido, aceptación automática y budget drift.
+Provider source-only preparado para cuatro documentos create-only en `cxorbia-backend-dev`: perfil legal, Provider Registry core, legalContent y versión inmutable. Rechaza placeholders, falso counsel, domicilio restringido, aceptación automática, overwrite y budget drift.
 
-`legal.acceptance.record` fue corregido en command boundary para cruzar como self-scoped human-confirmed command en cualquier rol autenticado; el provider sigue derivando el UID exacto del ID token y no se relajaron permisos operativos.
+`legal.acceptance.record` cruza el command boundary como self-scoped human-confirmed command para cualquier rol autenticado; provider deriva UID exacto del ID token y los permisos operativos ordinarios no se relajaron.
 
 ## Evidencia canónica
 
-- HEAD técnico `4cfd087fb49bb41d00caa9dd798bf7d02fa4f0d9`: run `31959900456`, job `95196342385`, `SUCCESS`.
-- HEAD documental reconciliado `7862a4f67fe5ce526d5e4b465e9e19bff65a28d8`: run `31960246332`, job `95197007415`, `SUCCESS`.
+- técnico `4cfd087fb49bb41d00caa9dd798bf7d02fa4f0d9`: run `31959900456`, job `95196342385`, SUCCESS;
+- documental `7862a4f67fe5ce526d5e4b465e9e19bff65a28d8`: run `31960246332`, job `95197007415`, SUCCESS;
+- **checkpoint final `d50fbbd07bedca89b03c667e97ab76a830d644bc`: run `31960342757`, job `95197241342`, SUCCESS.**
 
-Ambos incluyen `Verify I3 V0.4 interim materialization provider source contract` PASS.
+Todos incluyen `Verify I3 V0.4 interim materialization provider source contract` PASS.
 
 ## Patrón no-code/rebrand-safe
 
-`tenantLegalProfile mutable provider-authoritative → snapshot de publicación inmutable → render canónico UTF-8/LF → SHA-256 post-render → receipt humano por legalVersion/contentDigest`.
+`tenantLegalProfile mutable provider-authoritative → snapshot inmutable → render UTF-8/LF → SHA-256 post-render → receipt humano por legalVersion/contentDigest`.
 
-Los datos concretos TyA se materializan como configuración viva/no-code y no como constantes runtime. El rebranding no reescribe aceptaciones históricas.
+Los datos concretos TyA se materializan como configuración viva/no-code y no como constantes runtime. Rebranding no reescribe aceptaciones históricas.
 
 ## Efectos reales
 
-Hasta este lock: provider credentials/reads/writes `0/0/0`; Firestore/Auth/legalContent/legalAcceptance writes `0`; passwordResets `0`; histórico access/reconcile `0`; HR/Rules/Storage/Make/Gemini/pagos `0`; deploy `0`; merge=false; producción=false; aceptación automática=false.
+Provider credentials/reads/writes `0/0/0`; Firestore/Auth/legalContent/legalAcceptance writes `0`; passwordResets `0`; histórico access/reconcile `0`; HR/Rules/Storage/Make/Gemini/pagos `0`; deploy `0`; merge=false; producción=false; aceptación automática=false.
 
 ## Avance
 
@@ -82,4 +83,4 @@ Hasta este lock: provider credentials/reads/writes `0/0/0`; Firestore/Auth/legal
 
 `PAULA_PROVIDER_WRITE_AND_HUMAN_ACCEPTANCE_RUNTIME_GATE_FOR_I3`.
 
-Objetivo: autorizar el bootstrap DEV exacto de cuatro writes, resolver/renderizar V0.4 desde valores públicos TyA, activar read model/runtime DEV y permitir que la persona autenticada acepte humanamente. Después se abre una continuación nueva de I3 para Admin/new Shopper, sin request08 ni acceso histórico.
+Objetivo: autorizar bootstrap DEV exacto de cuatro writes, resolver/renderizar V0.4 desde valores públicos TyA, activar read model/runtime DEV y permitir aceptación exclusivamente humana. Después: continuación I3 nueva Admin/new Shopper, sin request08 ni acceso histórico.
