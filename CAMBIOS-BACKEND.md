@@ -1,7 +1,7 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-16 11:12 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_FROZEN__REQUEST08_CONSUMED__LEGAL_V0_4_DEV_MATERIALIZATION_PASS__RUNTIME_SOURCE_WIRED__GO_LIVE_35__NO_DEPLOY_NO_PRODUCTION`
+**Última actualización:** 2026-08-16 12:18 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_FROZEN__REQUEST08_CONSUMED__LEGAL_V0_4_MATERIALIZATION_PASS__RUNTIME_AND_HOSTING_DEV_DEPLOY_PASS__HUMAN_ACCEPTANCE_PENDING__GO_LIVE_35__NO_PRODUCTION`
 
 ## Preservado
 
@@ -12,35 +12,14 @@ Request08 run `31909354336` / job `95071998299` consumido/no rerun. Counsel GT/H
 Patrón no-code:
 `tenantLegalProfile mutable → snapshot publicado inmutable → render UTF-8/LF → SHA-256 → receipt humano por identidad/version/digest`.
 
-## Bloque autorizado — materialización REAL V0.4 en Firebase DEV
+## Bloque previo — materialización REAL V0.4 en Firebase DEV
 
-Gate humano recibido:
-`PAULA_PROVIDER_WRITE_AND_HUMAN_ACCEPTANCE_RUNTIME_GATE_FOR_I3`.
+Gate: `PAULA_PROVIDER_WRITE_AND_HUMAN_ACCEPTANCE_RUNTIME_GATE_FOR_I3`.
 
-### Carril/executor
+Run `31961266066`; job materialización `95199496314`; validación `95199496265`; `PASS_COMMITTED_READBACK`.
 
-Archivos creados/tocados:
-1. `tools/migration/tya-i3-legal-v04-materialize-dev.mjs` — commit `1865af59781dd17c0053b1a7bd1b05680d5880b6`.
-2. `tools/migration/tya-i3-legal-v04-request-control.mjs` — commit `b2ed739504af1227b8768fe69fc92b79531f7ff6`.
-3. `.github/workflows/cxorbia-phase-a-firestore-materialization-executor.yml` — carril existente extendido/corregido, commit canónico pre-request `1545807324ae71df0ae31a863797243afd45b7c9`; **no workflow nuevo**.
-4. `backend/requests/i3-legal-v04-materialization-dev.json` — request one-shot `i3-legal-v04-dev-20260816-01`, creación commit `5813cf50dbc8a2fd0cc69b18ecbc44caec45e64d`; luego consumido.
-5. `app/docs/evidence/ITERATION3-LEGAL-V04-MATERIALIZATION-DEV-LATEST.json` — evidencia sanitizada.
-6. `app/docs/SOURCE-LOCK-ITERATION3-LEGAL-V0.4-MATERIALIZATION-PROVIDER-DEV-PASS-20260816.md` — lock técnico prevalente.
-
-### Incidente declarado
-
-Commit `491042ba6eef90701799fa0f8eed2a1b7c66a1c8`, run `31961173013`: `FAILURE`, cero jobs, por YAML inválido antes de request/provider. Efecto: provider IO `0`, Firestore/Auth `0`, deploy `0`. Se corrigió la causa antes de crear el request.
-
-Pre-ejecución corregida: run `31961226214`, jobs `95199402826` y `95199402954`, SUCCESS; sin request todavía, por lo que ejecución provider correctamente omitida.
-
-### Ejecución real
-
-Run `31961266066`; job materialización `95199496314`; job validación `95199496265`; SUCCESS.
-
-Evidencia:
-- `status=PASS_COMMITTED_READBACK`;
-- providerAttempted/providerAck/committed/readbackReady = true;
-- Firestore writes `4` exactos create-only;
+Resultado exacto:
+- Firestore `4` create-only;
 - legalProfile `1`;
 - Provider Registry `1`;
 - legalContent/version `2`;
@@ -49,68 +28,110 @@ Evidencia:
 - digest `58d16a736495065a7244f8018d95a1faa87eae9a00e36d7ffc65a41edd58f58d`;
 - legalAcceptance/Auth/passwordResets/historical/HR/Rules/Storage/Make/Gemini/pagos `0`;
 - automaticAcceptance=false;
-- deploy `0`, merge=false, producción=false;
-- request consumido/noAutomaticRetry.
+- request `i3-legal-v04-dev-20260816-01` consumido/no retry;
+- merge=false; producción=false.
 
-No volver a ejecutar este bootstrap.
+Evidencia: `app/docs/evidence/ITERATION3-LEGAL-V04-MATERIALIZATION-DEV-LATEST.json`.
 
-## Runtime DEV provider-backed — SOURCE wired, sin deploy
+Incidente previo ya cerrado: commit `491042ba6eef90701799fa0f8eed2a1b7c66a1c8`, run `31961173013`, YAML inválido antes de request/provider, cero jobs y cero writes. Se corrigió antes de ejecutar la materialización real.
 
-Archivos:
-- `backend/runtime/hr-live-service/legal-runtime.mjs` — provider current/read model + endpoint humano, hardening commit `aa33d746657c5e3e2b63fd1d3e9f5ca93e559db3`;
-- `backend/runtime/hr-live-service/server.mjs` — routing dentro del servicio DEV existente, commit `2c91301ee5201e8aeb8d868af0de30c7021dd4b0`;
-- `app/adapters/cxorbia-legal-runtime-http-v1.js` — bridge browser DEV, commit `8c579d707d9b16c42baab92d8ed6ca1237a84a9a`;
-- `tools/qa/verify-i3-legal-acceptance-durable-source-only.mjs` — verificador runtime-aware, commit `90cd767da441e9ce1dc2ca84e67141c20a0ff0f9`;
-- `app/index-backend-dev.html` — wiring solo DEV protegido, commit `c6e1e55d581f3eb15fc5bf430de4adb2de4e51ca`.
+## Bloque 2026-08-16 — deploy REAL runtime legal + Hosting DEV
 
-Reglas preservadas:
-- Firebase ID token exacto; identidad derivada del provider;
-- current legal/version/digest leídos de Firestore;
-- fail-closed;
-- no localStorage/sessionStorage como autoridad legal;
-- texto legal completo;
-- dos casillas no premarcadas + clic explícito;
-- no aceptación automática;
-- endpoint de receipt bloqueado por env gate hasta deploy autorizado;
-- production `app/index.html` no tocado;
-- `/app/modules` cambios `0`;
-- `/app/core` cambios `0`.
+### Autorización exacta
 
-## Gate canónico posterior al wiring
+Gate recibido:
+`PAULA_DEV_DEPLOY_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_RUNTIME`.
 
-Run push `31961999583` sobre `c6e1e55d...`: I1/I2/frozen I3/durable legal/immutable publication/V0.4 materialization source PASS. Único FAIL: `DURABLE_PLAN_NOT_INDEXED` en current checkpoint, por omisión documental del addendum durable en el índice reducido. Se restauró la fuente en `00-INDICE...`; no implica reejecución provider.
+Alcance: actualizar/desplegar únicamente `cxorbia-live-hr-dev` y Hosting DEV de `cxorbia-backend-dev`; habilitar máximo `1` futuro receipt `legalAcceptance` solo después del clic humano de Paula; Auth/passwordResets/historical/HR/Rules/Storage/Make/Gemini/pagos `0`; no bootstrap V0.4, request08, identidad histórica, autoaceptación, merge ni producción.
+
+### Causa raíz detectada antes de desplegar
+
+`backend/runtime/hr-live-service/server.mjs` ya importaba el runtime legal, pero el `Dockerfile` existente no copiaba `backend/runtime/hr-live-service/legal-runtime.mjs` ni `backend/runtime/cxorbia-legal-acceptance-provider-v1.mjs`. Desplegar así habría producido una imagen sin el handler legal requerido.
+
+Corrección aplicada antes del build:
+- `backend/runtime/hr-live-service/Dockerfile` — commit `54741f3d7cef9c601db2c77e2b5d1d778cc25c27`.
+
+No se tocó `/app/modules`, `/app/core` ni production entrypoint.
+
+### Carril reutilizado
+
+No se creó workflow nuevo. Se reutilizó `.github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml` y se recondujo al gate I3, commit `9adc72ad573bc8a813b8b8ed4b63fdb9bb9f7e6a`.
+
+Archivos de control:
+- `backend/config/i3-legal-v04-runtime-deploy-dev-request.json` — request `i3-legal-v04-runtime-dev-20260816-01`, preparado commit `275cf08fe1711698921ea89e76b0abb9888a7913`, luego consumido;
+- `backend/config/i3-legal-v04-runtime-deploy-dev-execute.json` — execute marker commit `bfe762da8afa0c46dc4e7bd09ec8183dac01b089`;
+- `app/docs/evidence/ITERATION3-LEGAL-V04-RUNTIME-DEPLOY-DEV-LATEST.json` — evidencia sanitizada;
+- `app/docs/SOURCE-LOCK-ITERATION3-LEGAL-V0.4-DEV-RUNTIME-DEPLOY-PASS-HUMAN-ACCEPTANCE-PENDING-20260816.md` — lock técnico vigente.
+
+### Ejecución real PASS
+
+Workflow: `CXOrbia I3 Legal V0.4 DEV Runtime Deploy`.
+
+Run `31963932862`; job `95206055703`; `SUCCESS`.
+
+Todos los pasos pasaron: gate one-shot, provider preflight read-only, build, update Cloud Run, smoke fail-closed sin aceptación, Hosting deploy, smoke del rewrite legal, provider post-readback y consumo del request.
+
+Resultado:
+- Cloud Run service `cxorbia-live-hr-dev` actualizado una vez;
+- revision `cxorbia-live-hr-dev-00010-n78`;
+- Hosting DEV desplegado una vez;
+- DEV root `https://cxorbia-backend-dev.web.app`;
+- V0.4/version/digest preservados;
+- legalAcceptance writes durante deploy `0`;
+- acceptance count `0 → 0`;
+- futuro budget humano `1`;
+- Auth writes `0`;
+- passwordResets `0`;
+- historicalCredentialAccess/reconciliation `0/0`;
+- HR/Rules/Storage/Make/Gemini/pagos `0`;
+- automaticAcceptance=false;
+- merge=false;
+- producción=false.
+
+El request de deploy quedó `enabled=false`, `consumed=true`, `noAutomaticRetry=true`. **No rerun.**
+
+### Runtime humano activo en DEV
+
+Cloud Run quedó con:
+- `CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_ENABLED=true`;
+- `CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_GATE=PAULA_DEV_DEPLOY_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_RUNTIME`.
+
+El browser bridge del entrypoint DEV usa provider authority, Firebase ID token exacto, versión/digest Firestore, contenido completo, dos casillas no premarcadas y clic explícito. Sin acción humana no existe write. `localStorage/sessionStorage` no son autoridad legal.
 
 ## Claude/prototipo
 
-No se parcheó UI de módulos. El comportamiento legal se montó mediante adapter y entrypoint DEV autorizado. Sigue pendiente para frontend/no-code definitivo:
+No se parcheó ningún módulo UI desde backend. Sigue pendiente para el frontend/no-code definitivo:
 - `configuracion.js`: Legal y cumplimiento provider-authoritative;
+- `administrabilidad.js`: auditoría legal sin datos restringidos;
 - proyectos: Evidencias y privacidad;
 - integraciones: Provider Registry;
 - marca: displayName/estado registral/licenciante;
-- auditoría legal sin datos restringidos.
+- gate legal definitivo: versión completa + confirmaciones humanas.
+
+El runtime DEV ya está operativo; Claude no debe duplicar esa lógica ni mover autoridad a localStorage.
 
 ## Academia
 
-Actualizar cuando el runtime DEV esté desplegado y probado: configuración vs versión publicada, aceptación humana/versionada, reaceptación material, counsel pendiente/completado, evidencias por proyecto y rebranding neutral.
+El contenido futuro debe distinguir claramente: materialización, deploy del runtime y aceptación humana son tres hechos diferentes. El deploy PASS no equivale a consentimiento. La aceptación sigue pendiente hasta que Paula actúe en UI y exista provider ACK/readback del receipt.
 
-## Seguridad / efectos reales acumulados del bloque
+## Seguridad / efectos acumulados
 
-Único provider write autorizado ejecutado: Firestore `4` create-only. LegalAcceptance/Auth/passwordResets/historical/HR/Rules/Storage/Make/Gemini/pagos `0`. No secretos en repo. No domicilio residencial publicado. Deploy `0`; merge=false; producción=false.
+Materialización previa: Firestore `4` exactos. Deploy actual: Cloud Run `1`, Hosting `1`, Firestore writes `0`. LegalAcceptance total sigue `0` antes del clic humano. Auth/passwordResets/historical/HR/Rules/Storage/Make/Gemini/pagos `0`. No secretos ni domicilio restringido en repo. Production intacta. Merge=false.
 
 ## Pendiente real
 
-Gate siguiente:
-`PAULA_DEV_DEPLOY_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_RUNTIME`.
+Siguiente acción exacta:
+`HUMAN_PAULA_LEGAL_ACCEPTANCE_UI_CLICK`.
 
-Después: deploy DEV → readback browser autenticado → aceptación humana de Paula → 1 receipt exacto provider ACK → reload/new-tab → continuación I3 Admin/new Shopper.
+Después: provider ACK/readback del único receipt autorizado → reload/new-tab → continuación I3 Admin/new Shopper sin request08 → Auth/claims/membership/profile/shopper/crosswalk exactos → login/reload/new-tab/segundo contexto.
 
 ## Clasificación
 
-- **Reusable CXOrbia / sucesor de marca:** provider publication/read model, one-shot request, human receipt exacto, no-code/versionado.
-- **Exclusivo TyA:** valores V0.4 materializados en tenant `tya`, no constantes globales.
-- **Claude/prototipo:** entrypoint DEV + adapter; módulos sin parche.
-- **Academia:** actualización futura al cerrar runtime real.
-- **Sin impacto Claude:** executor, evidence, locks, request consumption.
+- **Reusable CXOrbia / sucesor de marca:** packaging seguro del runtime, gate humano exacto, deploy one-shot, provider readback, aceptación versionada/idempotente.
+- **Exclusivo TyA:** V0.4, tenant `tya`, versión/digest y counsel diferido.
+- **Claude/prototipo:** superficies no-code futuras documentadas; módulos sin parche.
+- **Academia:** materialización ≠ deploy ≠ aceptación; aceptación humana/versionada.
+- **Sin impacto Claude inmediato:** Cloud Run/Hosting executor, request consumption, evidence y source lock.
 
 ## Porcentaje
 
