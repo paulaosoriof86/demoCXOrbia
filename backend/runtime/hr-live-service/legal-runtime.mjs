@@ -131,12 +131,50 @@ function providerFor(auth,db){
   });
 }
 
+function safeAcceptanceSnapshot(snapshot){
+  const s=snapshot&&typeof snapshot==='object'?snapshot:{};
+  const receipt=s.acceptance&&typeof s.acceptance==='object'?s.acceptance:null;
+  return {
+    authority:str(s.authority)||'provider',
+    ready:s.ready===true,
+    ambiguous:s.ambiguous===true,
+    subjectExact:s.subjectExact===true,
+    tenantId:str(s.tenantId)||null,
+    scopeMode:str(s.scopeMode)||null,
+    projectId:str(s.projectId)||null,
+    role:str(s.role)||null,
+    authNamespace:str(s.authNamespace)||null,
+    legalContentId:str(s.legalContentId)||null,
+    legalVersion:str(s.legalVersion)||null,
+    contentDigest:str(s.contentDigest).toLowerCase()||null,
+    pending:s.pending!==false,
+    reasons:arr(s.reasons).map(str).filter(Boolean),
+    acceptance:receipt?{
+      status:str(receipt.status)||null,
+      acceptanceMethod:str(receipt.acceptanceMethod)||null,
+      subjectExact:receipt.subjectExact===true,
+      tenantId:str(receipt.tenantId)||null,
+      scopeMode:str(receipt.scopeMode)||null,
+      projectId:str(receipt.projectId)||null,
+      role:str(receipt.role)||null,
+      authNamespace:str(receipt.authNamespace)||null,
+      legalContentId:str(receipt.legalContentId)||null,
+      legalVersion:str(receipt.legalVersion)||null,
+      contentDigest:str(receipt.contentDigest).toLowerCase()||null,
+      acceptedAt:receipt.acceptedAt||null
+    }:null,
+    actorUidReturned:false,
+    rawToken:false
+  };
+}
+
 async function currentResponse(req,res,tenantId){
   const actor=await verifyActor(req,tenantId);
   const {auth,db}=ensureAdmin();
   const current=await resolveCurrentLegal(db,tenantId,actor.role);
   const scope={tenantId,scopeMode:'tenant',projectId:null,role:actor.role,authNamespace:actor.authNamespace};
-  const acceptance=await providerFor(auth,db).readModel({idToken:actor.idToken,scope,current});
+  const acceptanceRaw=await providerFor(auth,db).readModel({idToken:actor.idToken,scope,current});
+  const acceptance=safeAcceptanceSnapshot(acceptanceRaw);
   return sendJson(res,200,{
     ok:true,
     authority:'provider',
@@ -153,7 +191,9 @@ async function currentResponse(req,res,tenantId){
     acceptance,
     restrictedFieldsReturned:false,
     automaticAcceptance:false,
-    humanAcceptanceRequired:true
+    humanAcceptanceRequired:true,
+    actorUidReturned:false,
+    rawToken:false
   });
 }
 
@@ -245,6 +285,8 @@ export function legalRuntimeSourceStatus(){
     automaticAcceptance:false,
     humanAcceptanceRequired:true,
     clientActorUidForbidden:true,
+    actorUidReturned:false,
+    rawTokenReturned:false,
     localStorageAuthority:false,
     passwordResets:0,
     historicalCredentialAccess:0,
