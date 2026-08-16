@@ -1,7 +1,7 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-16 10:38 -06:00  
-**Estado vigente:** `PHASE_A_ROOT_CAUSE_TRACKER_35__I3_LEGAL_V0_4_INTERIM_GOLIVE__COUNSEL_DEFERRED_NONBLOCKING__PROVIDER_HUMAN_ACCEPTANCE_GATE_NEXT__NO_FRONTEND_REDESIGN`
+**Estado vigente:** `PHASE_A_ROOT_CAUSE_TRACKER_35__I3_LEGAL_V0_4_INTERIM_GOLIVE__MATERIALIZATION_PROVIDER_SOURCE_PASS__COUNSEL_DEFERRED_NONBLOCKING__PROVIDER_HUMAN_ACCEPTANCE_GATE_NEXT__NO_FRONTEND_REDESIGN`
 
 ## Estado real
 
@@ -9,111 +9,84 @@ I1 `15/15`, I2 `20/20`, I3 `0/25`, I4 `0/25`, I5 `0/15`: **35% completado / 65% 
 
 Shopper histórico I3 PASS congelado run `31906391682`; no repetir reset/recovery/reconcile ni acceder a credencial histórica; continuaciones `passwordResets=0`.
 
-Request08 `31909354336` / `95071998299`: STOP antes de Alta por `I3_ADMIN_LEGAL_CONFIDENTIALITY_GATE_PENDING_BEFORE_CREATE`; sin Shopper nuevo/Auth/Firestore writes/consentimiento automatizado. No rerun.
+Request08 `31909354336` / `95071998299`: STOP antes de Alta por `I3_ADMIN_LEGAL_CONFIDENTIALITY_GATE_PENDING_BEFORE_CREATE`; consumido/no rerun.
 
 ## Backend legal preparado
 
 Vigentes:
-- `backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json` — perfil legal mutable provider-authoritative/no-code;
+- `backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json` — perfil mutable/no-code;
 - `backend/contracts/cxorbia-legal-publication-snapshot-v1.json` — snapshot público inmutable;
-- `backend/contracts/cxorbia-legal-acceptance-durable-v1.json` — receipt humano durable por versión/digest;
-- `app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js` — contrato browser source-only;
-- `app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js` — bridge source-only todavía no product-wired.
+- `backend/contracts/cxorbia-legal-acceptance-durable-v1.json` — receipt humano durable;
+- `backend/contracts/cxorbia-legal-v04-interim-materialization-v1.json` — bootstrap DEV exacto;
+- `backend/runtime/cxorbia-legal-publication-provider-v1.mjs` — materialización create-only/readback;
+- `app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js`;
+- `app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js` — aún no product-wired.
 
 Regla reusable:
-`perfil editable no-code → snapshot público inmutable → render canónico → SHA-256 post-render → aceptación humana ligada a legalVersion/contentDigest`.
+`perfil editable provider-authoritative → snapshot público inmutable → render canónico → SHA-256 post-render → aceptación humana por legalVersion/contentDigest`.
 
-## Decisión legal operativa vigente
+## Counsel y V0.4
 
-Paula decidió continuar hacia go-live sin detener Phase A por indisponibilidad temporal del abogado. Counsel GT/HN queda **diferido post-go-live**, no cancelado ni marcado como aprobado.
-
-Autoridad:
-`app/docs/DECISION-LOCK-TYA-LEGAL-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md`.
-
-Candidata interina:
+Counsel GT/HN queda **diferido post-go-live**, no cancelado ni marcado como aprobado. V0.4 es la candidata interina vigente:
 `app/docs/CANDIDATA-LEGAL-TYA-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md`.
 
-Registro post-go-live:
+Registro posterior:
 `app/docs/PENDIENTE-LEGAL-POST-GOLIVE-TYA-GT-HN-V0.4-20260816.md`.
 
-El paquete V0.3 y matriz primaria se conservan para revisión profesional posterior. No presentar V0.4 como revisada por abogado.
+Source lock técnico actual:
+`app/docs/SOURCE-LOCK-ITERATION3-LEGAL-V0.4-MATERIALIZATION-PROVIDER-SOURCE-ONLY-PASS-20260816.md`.
 
-## V0.4 — reglas de producto
+No presentar V0.4 como revisada por abogado.
 
-V0.4 usa lenguaje conservador y no muestra marcadores internos de counsel. No afirmar:
-- que cualquier clic equivale a firma electrónica avanzada;
-- que no existen obligaciones locales en Honduras;
-- arbitraje universal para usuarios individuales;
-- marca registrada sin referencia;
-- proveedor deshabilitado como receptor actual.
+## Materialización provider — SOURCE PASS
 
-Las evidencias siguen siendo configurables por proyecto. Tratamientos de alto impacto no se habilitan globalmente.
+Preparado un bootstrap DEV de exactamente cuatro documentos:
+1. legal profile current;
+2. Provider Registry `firebase-google-core`;
+3. legalContent current;
+4. versión legal inmutable V0.4.
+
+Writes futuros máximos: Firestore `4`; legalAcceptance/Auth/passwordResets/historical `0`.
+
+El provider rechaza placeholders, falso counsel, domicilio restringido público, overwrite/collision y budget drift. Readback provider preparado.
+
+CI canónico del HEAD técnico `4cfd087fb49bb41d00caa9dd798bf7d02fa4f0d9`: run `31959900456`, job `95196342385`, `SUCCESS`, incluido V0.4 materialization provider source.
+
+## Command boundary corregido
+
+`app/adapters/cxorbia-command-adapter-v1.js` ahora permite `legal.acceptance.record` como comando **self-scoped** para cualquier rol autenticado únicamente si existe confirmación humana explícita y prohibición de aceptación automática. No se ampliaron otros writes de Shopper/Cliente. El provider sigue derivando UID desde el ID token verificado.
 
 ## Rebranding y no-code
 
-No usar `CXOrbia` ni `Gravicentra` como nombre contractual rígido. El texto permanente usa “la Plataforma”; `platform.displayName` es dinámico. Marca visible, registro marcario y titular/licenciante son objetos separados.
+No usar `CXOrbia` ni `Gravicentra` como nombre contractual rígido. `platform.displayName` es dinámico; marca visible, registro marcario y titular/licenciante son objetos distintos.
 
-Todos los valores concretos TyA pertenecen solo a ese tenant y deben venir de configuración provider-authoritative, no de código: operador, identificación tributaria, contacto, dirección pública, países, retención, controversias, proveedores, branding/licenciante y evidencia por proyecto.
+Todos los valores TyA pertenecen solo a ese tenant y deben venir de provider authority, no de runtime constants: operador, identificación tributaria, contacto, dirección pública, países, retención, controversias, providers, branding/licenciante y evidencias por proyecto.
 
 ## Ajustes frontend futuros por archivo/módulo — NO parchear desde backend
 
-1. `app/modules/configuracion.js`
-   - evolucionar NDA/demo a `Legal y cumplimiento`;
-   - editar perfil legal provider-authoritative;
-   - mostrar versiones publicadas separadas del perfil mutable;
-   - flujo `previsualizar → revisión → publicar nueva versión`;
-   - cero localStorage como autoridad legal.
-
-2. `app/modules/administrabilidad.js`
-   - auditoría legal sin exponer datos restringidos;
-   - retirar semántica demo/local solo después de provider real.
-
-3. proyecto/wizard
-   - `Evidencias y privacidad`: foto/video/audio/geolocalización/comprobante/otros;
-   - retención heredada/override;
-   - gate para alto impacto.
-
-4. `integraciones`
-   - Provider Registry con estado técnico real + metadata legal editable.
-
-5. `marca`
-   - `displayName`, estado registral y licenciante/IP separados.
-
-6. gate legal visible
-   - contenido completo de la versión publicada;
-   - versión visible;
-   - casillas no premarcadas;
-   - botón solo tras acción humana;
-   - nunca `#bnOk` como aceptación.
+1. `app/modules/configuracion.js`: Legal y cumplimiento no-code; perfil mutable vs versiones publicadas; cero localStorage como autoridad.
+2. `app/modules/administrabilidad.js`: auditoría y retiro de semántica demo/local solo tras provider real.
+3. proyecto/wizard: Evidencias y privacidad configurable.
+4. integraciones: Provider Registry.
+5. marca: displayName/estado registral/licenciante separados.
+6. gate legal: contenido completo/versionado, casillas no premarcadas, botón tras acción humana; nunca `#bnOk` como aceptación.
 
 Mantener interfaz pública `CX.data`, login canónico y arquitectura modular aprobada.
 
-## TyA — decisiones cerradas, no preguntar otra vez
-
-Empresa mercantil individual Guatemala; Honduras operada desde Guatemala; contacto legal editable; domicilio registrado recuperado/restringido; rebranding dinámico; evidencia cruda piso 60/default 90; banco completo bajo controles reforzados; documentos mínimos; evidencias por proyecto; Provider Registry dinámico; arbitraje preferido B2B/no universal individual; counsel diferido post-go-live por decisión de Paula.
-
 ## Academia / manuales
 
-Después de provider legal real, enseñar:
-- configuración editable vs versión publicada inmutable;
-- aceptación humana/versionada;
-- reaceptación por cambio material;
-- evidencias por proyecto;
-- seguridad banco/documentos;
-- providers según registro real;
-- rebranding neutral;
-- privacidad del domicilio;
-- diferencia entre `counsel pendiente` y `legalmente aprobado`.
+Después de provider real: configuración editable vs versión publicada inmutable; aceptación humana; reaceptación material; evidencias por proyecto; providers reales; rebranding; datos restringidos; `counsel pendiente` ≠ `aprobado`.
 
 ## Pendiente real
 
-1. resolver snapshot público V0.4 desde provider/no-code;
-2. materializar V0.4 en `cxorbia-backend-dev` bajo gate exacto;
-3. habilitar read model durable en runtime sin localStorage como autoridad;
-4. persona autenticada acepta humanamente;
-5. crear nueva continuación I3 Admin/new Shopper sin reutilizar request08;
-6. provider readback + login/reload/new-tab/segundo contexto;
-7. counsel GT/HN posterior usando el registro diferido.
+1. bajo gate exacto, resolver/renderizar snapshot público V0.4;
+2. materializar cuatro documentos en `cxorbia-backend-dev`;
+3. provider readback/digest;
+4. wiring/read model runtime DEV sin localStorage authority;
+5. persona autenticada acepta humanamente;
+6. nueva continuación I3 Admin/new Shopper, sin request08;
+7. login/reload/new-tab/segundo contexto;
+8. counsel GT/HN posterior.
 
 Gate actual:
 `PAULA_PROVIDER_WRITE_AND_HUMAN_ACCEPTANCE_RUNTIME_GATE_FOR_I3`.
