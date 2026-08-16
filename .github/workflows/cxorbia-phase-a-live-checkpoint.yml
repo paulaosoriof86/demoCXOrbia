@@ -13,6 +13,9 @@ on:
       - 'app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json'
       - 'app/docs/SOURCE-LOCK-ITERATION3-HISTORICAL-SHOPPER-LOGIN-PASS-20260814.md'
       - 'app/docs/CANDIDATA-LEGAL-TYA-V0.3-CONSOLIDADA-REVISION-JURIDICA-20260815.md'
+      - 'app/docs/CANDIDATA-LEGAL-TYA-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md'
+      - 'app/docs/DECISION-LOCK-TYA-LEGAL-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md'
+      - 'app/docs/SOURCE-LOCK-ITERATION3-LEGAL-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-SOURCE-ONLY-PASS-20260816.md'
       - 'app/docs/PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md'
       - 'backend/contracts/c6-staff-repair-bootstrap-exact-write-v2.json'
       - '.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json'
@@ -22,6 +25,8 @@ on:
       - 'backend/contracts/c6-staff-d-technical-login-rebase-v1.json'
       - 'backend/contracts/cxorbia-legal-acceptance-durable-v1.json'
       - 'backend/contracts/cxorbia-legal-publication-snapshot-v1.json'
+      - 'backend/contracts/cxorbia-legal-v04-interim-materialization-v1.json'
+      - 'backend/runtime/cxorbia-legal-publication-provider-v1.mjs'
       - 'app/index-backend-dev.html'
       - 'app/core/shoppers-store.js'
       - 'app/modules/misvisitas.js'
@@ -41,6 +46,7 @@ on:
       - 'tools/qa/cxorbia-i3-source-patcher.mjs'
       - 'tools/qa/verify-i3-legal-acceptance-durable-source-only.mjs'
       - 'tools/qa/verify-i3-legal-publication-snapshot-source-only.mjs'
+      - 'tools/qa/verify-i3-legal-v04-materialization-source-only.mjs'
       - '.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml'
       - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
   pull_request:
@@ -54,6 +60,9 @@ on:
       - 'app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json'
       - 'app/docs/SOURCE-LOCK-ITERATION3-HISTORICAL-SHOPPER-LOGIN-PASS-20260814.md'
       - 'app/docs/CANDIDATA-LEGAL-TYA-V0.3-CONSOLIDADA-REVISION-JURIDICA-20260815.md'
+      - 'app/docs/CANDIDATA-LEGAL-TYA-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md'
+      - 'app/docs/DECISION-LOCK-TYA-LEGAL-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md'
+      - 'app/docs/SOURCE-LOCK-ITERATION3-LEGAL-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-SOURCE-ONLY-PASS-20260816.md'
       - 'app/docs/PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md'
       - 'backend/contracts/c6-staff-repair-bootstrap-exact-write-v2.json'
       - '.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json'
@@ -63,6 +72,8 @@ on:
       - 'backend/contracts/c6-staff-d-technical-login-rebase-v1.json'
       - 'backend/contracts/cxorbia-legal-acceptance-durable-v1.json'
       - 'backend/contracts/cxorbia-legal-publication-snapshot-v1.json'
+      - 'backend/contracts/cxorbia-legal-v04-interim-materialization-v1.json'
+      - 'backend/runtime/cxorbia-legal-publication-provider-v1.mjs'
       - 'app/index-backend-dev.html'
       - 'app/core/shoppers-store.js'
       - 'app/modules/misvisitas.js'
@@ -82,6 +93,7 @@ on:
       - 'tools/qa/cxorbia-i3-source-patcher.mjs'
       - 'tools/qa/verify-i3-legal-acceptance-durable-source-only.mjs'
       - 'tools/qa/verify-i3-legal-publication-snapshot-source-only.mjs'
+      - 'tools/qa/verify-i3-legal-v04-materialization-source-only.mjs'
       - '.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml'
       - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
 
@@ -188,5 +200,20 @@ jobs:
           grep -q '"firestoreWrites": 0' .tmp-i3-legal-publication-source.json
           grep -q '"legalContentWrites": 0' .tmp-i3-legal-publication-source.json
           grep -q '"legalAcceptanceWrites": 0' .tmp-i3-legal-publication-source.json
+      - name: Verify I3 V0.4 interim materialization provider source contract
+        run: |
+          set -euo pipefail
+          node --check backend/runtime/cxorbia-legal-publication-provider-v1.mjs
+          node --check tools/qa/verify-i3-legal-v04-materialization-source-only.mjs
+          node tools/qa/verify-i3-legal-v04-materialization-source-only.mjs > .tmp-i3-legal-v04-materialization-source.json
+          cat .tmp-i3-legal-v04-materialization-source.json
+          grep -q 'PASS_I3_LEGAL_V04_INTERIM_MATERIALIZATION_PROVIDER_SOURCE_ONLY' .tmp-i3-legal-v04-materialization-source.json
+          grep -q '"exactBootstrapFirestoreWrites": 4' .tmp-i3-legal-v04-materialization-source.json
+          grep -q '"legalAcceptanceWrites": 0' .tmp-i3-legal-v04-materialization-source.json
+          grep -q '"authWrites": 0' .tmp-i3-legal-v04-materialization-source.json
+          grep -q '"passwordResets": 0' .tmp-i3-legal-v04-materialization-source.json
+          grep -q '"automaticAcceptance": false' .tmp-i3-legal-v04-materialization-source.json
+          grep -q '"humanAcceptanceRequired": true' .tmp-i3-legal-v04-materialization-source.json
+          grep -q '"providerWritesExecutedAgainstFirebase": 0' .tmp-i3-legal-v04-materialization-source.json
       - name: Verify Phase A current operational checkpoint
         run: node tools/qa/verify-phase-a-live-execution-checkpoint.mjs
