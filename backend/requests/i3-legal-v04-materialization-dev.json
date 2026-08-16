@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "cxorbia.i3.legal-v04-materialization-request.v1",
+  "requestId": "i3-legal-v04-dev-20260816-01",
+  "enabled": true,
+  "consumed": false,
+  "authorizationGate": "PAULA_PROVIDER_WRITE_AND_HUMAN_ACCEPTANCE_RUNTIME_GATE_FOR_I3",
+  "sourceHeadSha": "1545807324ae71df0ae31a863797243afd45b7c9",
+  "targetProject": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "commandType": "legal.publication.materialize",
+  "initialPublicProfile": {
+    "tenantId": "tya",
+    "operator": {
+      "legalDisplayName": "T&A Consultores C.A.",
+      "entityType": "individual_mercantile_enterprise",
+      "taxId": "10297888-3",
+      "countryOfEstablishment": "GT",
+      "operatingCountries": ["GT", "HN"],
+      "franchiseModel": "franchisee_managed_from_guatemala",
+      "publicLegalAddress": "",
+      "publicLegalAddressMode": "contact_channel_only_when_legally_sufficient"
+    },
+    "contacts": {
+      "legal": "posorio@tyaconsultores.com",
+      "privacy": "posorio@tyaconsultores.com",
+      "securityIncidents": "posorio@tyaconsultores.com"
+    },
+    "retentionPolicy": {
+      "rawFieldEvidenceDaysAfterFinalAcceptance": 90,
+      "rawFieldEvidenceMinimumFloorDays": 60,
+      "preciseGeolocationDaysAfterFinalAcceptance": 90,
+      "bankAccountFullDataDaysAfterFinalPaymentOrDeactivation": 180,
+      "commercialOperationalAuditYears": 5,
+      "financialLiquidationPaymentLedgerYears": 5,
+      "legalAcceptanceReceiptYearsAfterRelationshipEnd": 5,
+      "legalHoldOverridesDeletion": true
+    },
+    "disputePolicy": {
+      "b2bClients": "negotiation_then_institutional_arbitration_when_contractually_valid",
+      "individualUsers": "good_faith_resolution_then_applicable_courts_unless_valid_specific_agreement",
+      "nonArbitrableMatters": "competent_courts",
+      "defaultArbitrationSeat": "Ciudad de Guatemala, Guatemala"
+    },
+    "sensitiveDataPolicy": {
+      "fullBankAccountAllowed": true,
+      "fullBankAccountMaskedByDefault": true,
+      "documentMinimization": true,
+      "registeredResidentialDomicile": "restricted_not_public_by_default"
+    },
+    "platformBrandProfile": {
+      "displayName": "CXOrbia",
+      "legalGenericReference": "La Plataforma",
+      "rebrandSafe": true,
+      "registrationStatus": "unregistered",
+      "registrationReference": ""
+    }
+  },
+  "coreProvider": {
+    "providerKey": "firebase-google-core",
+    "technicalActiveState": true,
+    "displayName": "Google Firebase",
+    "purpose": "Autenticación y base de datos principal para la operación de la Plataforma",
+    "dataCategories": [
+      "cuentas_y_autenticacion",
+      "datos_operativos_tenant_proyecto",
+      "metadatos_legales_y_auditoria"
+    ]
+  },
+  "expectedWriteBudget": {
+    "firestoreWrites": 4,
+    "legalProfileWrites": 1,
+    "legalProviderWrites": 1,
+    "legalContentWrites": 2,
+    "legalAcceptanceWrites": 0,
+    "authWrites": 0,
+    "passwordResets": 0,
+    "historicalCredentialAccess": 0,
+    "historicalReconciliationWrites": 0,
+    "otherIdentityWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "deploys": 0,
+    "production": false,
+    "merge": false,
+    "automaticAcceptance": false,
+    "humanAcceptanceRequired": true
+  }
+}
