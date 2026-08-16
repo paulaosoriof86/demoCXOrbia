@@ -1,7 +1,7 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
 **Fecha:** 2026-08-16 10:38 -06:00  
-**Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__I1_PASS__I2_PASS__I3_HISTORICAL_FROZEN__REQUEST08_CONSUMED__LEGAL_DURABLE_SOURCE_PASS__LEGAL_V0_4_INTERIM_GOLIVE__COUNSEL_DEFERRED_NONBLOCKING__GO_LIVE_35__PROVIDER_HUMAN_ACCEPTANCE_GATE_NEXT`
+**Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__I1_PASS__I2_PASS__I3_HISTORICAL_FROZEN__REQUEST08_CONSUMED__LEGAL_DURABLE_SOURCE_PASS__LEGAL_V0_4_INTERIM_GOLIVE__MATERIALIZATION_PROVIDER_SOURCE_PASS__COUNSEL_DEFERRED_NONBLOCKING__GO_LIVE_35__PROVIDER_HUMAN_ACCEPTANCE_GATE_NEXT`
 
 ## Fuentes vigentes
 
@@ -20,49 +20,58 @@
 13. `SOURCE-LOCK-ITERATION3-LEGAL-ACCEPTANCE-PROVIDER-WIRING-SOURCE-ONLY-PASS-20260815.md` — acceptance durable source-only.
 14. `SOURCE-LOCK-ITERATION3-LEGAL-V0.3-COUNSEL-REVIEW-SNAPSHOT-SOURCE-ONLY-PASS-20260815.md` — antecedente V0.3.
 15. `SOURCE-LOCK-ITERATION3-LEGAL-V0.3-PRECOUNSEL-PRIMARY-SOURCE-VERIFICATION-PASS-20260816.md` — pre-verificación primaria.
-16. **`SOURCE-LOCK-ITERATION3-LEGAL-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-SOURCE-ONLY-PASS-20260816.md` — lock legal prevalente para ruta crítica.**
-17. **`DECISION-LOCK-TYA-LEGAL-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md` — counsel diferido y no bloqueante para go-live interino.**
-18. **`CANDIDATA-LEGAL-TYA-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md` — candidata interina vigente para preparación de publicación.**
-19. **`PENDIENTE-LEGAL-POST-GOLIVE-TYA-GT-HN-V0.4-20260816.md` — registro jurídico post-go-live; no marcar como cerrado.**
-20. `PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md` — preguntas GT/HN/X conservadas para counsel posterior.
-21. `MATRIZ-PRE-REVISION-JURIDICA-TYA-V0.3-FUENTES-PRIMARIAS-20260816.md` — soporte primario.
-22. `backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json` — perfil legal mutable no-code.
-23. `backend/contracts/cxorbia-legal-publication-snapshot-v1.json` — snapshot público inmutable.
-24. `backend/contracts/cxorbia-legal-acceptance-durable-v1.json` — receipt humano durable.
-25. `GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`.
-26. `CAMBIOS-BACKEND.md`.
-27. `RESUMEN-PARA-CLAUDE.md`.
-28. `PENDIENTES-PROTOTIPO.md`.
-29. `ACADEMIA-IMPACT-I3-LEGAL-PROVIDER-WIRING-SOURCE-ONLY-20260815.md`.
-30. PR #7 y HEAD vivo.
+16. `SOURCE-LOCK-ITERATION3-LEGAL-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-SOURCE-ONLY-PASS-20260816.md` — lock de decisión interina.
+17. **`SOURCE-LOCK-ITERATION3-LEGAL-V0.4-MATERIALIZATION-PROVIDER-SOURCE-ONLY-PASS-20260816.md` — source lock técnico prevalente de I3 legal.**
+18. `DECISION-LOCK-TYA-LEGAL-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md` — counsel diferido y no bloqueante para go-live interino.
+19. `CANDIDATA-LEGAL-TYA-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md` — candidata interina vigente.
+20. `PENDIENTE-LEGAL-POST-GOLIVE-TYA-GT-HN-V0.4-20260816.md` — counsel post-go-live abierto.
+21. `PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md` — preguntas GT/HN/X conservadas.
+22. `MATRIZ-PRE-REVISION-JURIDICA-TYA-V0.3-FUENTES-PRIMARIAS-20260816.md` — soporte primario.
+23. `backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json` — perfil legal mutable no-code.
+24. `backend/contracts/cxorbia-legal-publication-snapshot-v1.json` — snapshot público inmutable.
+25. `backend/contracts/cxorbia-legal-acceptance-durable-v1.json` — receipt humano durable.
+26. **`backend/contracts/cxorbia-legal-v04-interim-materialization-v1.json` — presupuesto exacto del bootstrap DEV.**
+27. **`backend/runtime/cxorbia-legal-publication-provider-v1.mjs` — provider de materialización source-only.**
+28. `GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`.
+29. `CAMBIOS-BACKEND.md`.
+30. `RESUMEN-PARA-CLAUDE.md`.
+31. `PENDIENTES-PROTOTIPO.md`.
+32. `ACADEMIA-IMPACT-I3-LEGAL-PROVIDER-WIRING-SOURCE-ONLY-20260815.md`.
+33. PR #7 y HEAD vivo.
 
 ## Carril
 
 Repo `paulaosoriof86/demoCXOrbia`; rama/candidata `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`.
 
-`EXECUTION_LANE_READY`: source/docs sí. Provider write requiere gate técnico exacto. Request08 consumido/no rerun. No nueva candidata/rama/PR/workflow.
+`EXECUTION_LANE_READY`: source/docs sí. Provider write requiere el gate exacto indicado abajo. Request08 consumido/no rerun. No nueva candidata/rama/PR/workflow.
 
 ## I3 histórico preservado
 
 Run `31906391682`: Shopper histórico exacto PASS y congelado. Reset histórico único consumido. Toda continuación `passwordResets=0`; sin credential access/reconcile/recovery.
 
-## Decisión legal operativa 2026-08-16
+## Legal interina + materialización preparada
 
-Paula decidió no detener el go-live por ausencia temporal de abogado. La revisión profesional GT/HN queda diferida post-go-live y **no puede presentarse como completada**.
+Paula decidió no detener el go-live por ausencia temporal de abogado. Counsel GT/HN queda `deferred_post_golive` y no puede presentarse como completado.
 
-Esto elimina exclusivamente el bloqueo `COUNSEL_REQUIRED_BEFORE_PROVIDER`; no elimina aceptación humana, versionado, digest, provider ACK, seguridad ni gates técnicos.
+V0.4 está preparada como candidata interina. El nuevo provider source-only permite un bootstrap create-only exacto de cuatro documentos en `cxorbia-backend-dev`: perfil legal, Provider Registry core, legalContent y versión inmutable. El gate fuente rechaza placeholders, falso counsel, domicilio restringido, aceptación automática y cualquier write fuera del presupuesto.
 
-V0.4 usa lenguaje conservador y conserva todos los códigos GT/HN/X en registro post-go-live separado.
+El command adapter fue corregido para permitir el comando self-scoped `legal.acceptance.record` a cualquier rol autenticado únicamente con confirmación humana explícita; los permisos operativos de Shopper/Cliente no se relajaron.
+
+Evidencia canónica del HEAD técnico `4cfd087fb49bb41d00caa9dd798bf7d02fa4f0d9`: workflow `31959900456`, job `95196342385`, `SUCCESS`, incluido `Verify I3 V0.4 interim materialization provider source contract`.
 
 ## Patrón no-code/rebrand-safe
 
-`tenantLegalProfile mutable no-code`
-→ `snapshot de publicación con solo valores públicos aprobados`
+`tenantLegalProfile mutable provider-authoritative`
+→ `snapshot de publicación con valores públicos aprobados`
 → `render canónico UTF-8/LF`
 → `SHA-256 post-render`
 → `receipt humano por legalVersion/contentDigest`.
 
-Los datos concretos TyA deben quedar en autoridad viva provider/no-code, no como constantes de producto. El rebranding no reescribe aceptaciones históricas.
+Los datos concretos TyA se materializan como configuración viva/no-code y no como constantes runtime. El rebranding no reescribe aceptaciones históricas.
+
+## Efectos reales
+
+Hasta este lock: provider credentials/reads/writes `0/0/0`; Firestore/Auth/legalContent/legalAcceptance writes `0`; passwordResets `0`; histórico access/reconcile `0`; HR/Rules/Storage/Make/Gemini/pagos `0`; deploy `0`; merge=false; producción=false; aceptación automática=false.
 
 ## Avance
 
@@ -72,6 +81,4 @@ Los datos concretos TyA deben quedar en autoridad viva provider/no-code, no como
 
 `PAULA_PROVIDER_WRITE_AND_HUMAN_ACCEPTANCE_RUNTIME_GATE_FOR_I3`.
 
-Objetivo: preparar/materializar V0.4 y perfil/snapshot legal en `cxorbia-backend-dev`, habilitar read model durable y dejar que la persona autenticada acepte exclusivamente desde UI humana. Después, continuar con Admin/new Shopper mediante una nueva continuación I3 sin tocar la identidad histórica.
-
-No aceptación automática. No reutilizar request08. No password reset histórico. Provider/Auth/Firestore/deploy/producción solo dentro de sus gates explícitos.
+Objetivo: autorizar el bootstrap DEV exacto de cuatro writes, resolver/renderizar V0.4 desde valores públicos TyA, activar el read model/runtime DEV y permitir que la persona autenticada acepte humanamente. Después se abre una continuación nueva de I3 para Admin/new Shopper, sin request08 ni acceso histórico.
