@@ -1,7 +1,7 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-16 10:38 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_PASS_FROZEN__REQUEST08_CONSUMED__LEGAL_DURABLE_SOURCE_PASS__LEGAL_V0_4_INTERIM_GOLIVE__MATERIALIZATION_PROVIDER_SOURCE_PASS__COUNSEL_DEFERRED_NONBLOCKING__GO_LIVE_35__PROVIDER_HUMAN_ACCEPTANCE_GATE_NEXT__NO_PRODUCTION_YET`
+**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_PASS_FROZEN__REQUEST08_CONSUMED__LEGAL_DURABLE_SOURCE_PASS__LEGAL_V0_4_INTERIM_GOLIVE__MATERIALIZATION_PROVIDER_SOURCE_PASS__DOCS_RECONCILED__COUNSEL_DEFERRED_NONBLOCKING__GO_LIVE_35__PROVIDER_HUMAN_ACCEPTANCE_GATE_NEXT__NO_PRODUCTION_YET`
 
 ## Carril vivo
 
@@ -19,12 +19,7 @@ Source durable `0602d6ca0f64280222a4b1522b36f3be77c65c87`; gate `31913700755` / 
 
 ## Decisión operativa legal 2026-08-16
 
-Paula decidió continuar hacia producción sin detener el go-live por disponibilidad temporal de abogado. La revisión profesional GT/HN queda diferida post-go-live y **no se declara completada**.
-
-Vigentes:
-- `DECISION-LOCK-TYA-LEGAL-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md`;
-- `CANDIDATA-LEGAL-TYA-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md`;
-- `PENDIENTE-LEGAL-POST-GOLIVE-TYA-GT-HN-V0.4-20260816.md`.
+Counsel GT/HN queda diferido post-go-live y **no se declara completado**. V0.4 es la candidata interina vigente, con registro jurídico posterior preservado.
 
 ## Materialización V0.4 — SOURCE PASS
 
@@ -34,31 +29,37 @@ Source lock prevalente:
 Preparado:
 - `backend/runtime/cxorbia-legal-publication-provider-v1.mjs`;
 - `backend/contracts/cxorbia-legal-v04-interim-materialization-v1.json`;
-- `tools/qa/verify-i3-legal-v04-materialization-source-only.mjs`.
+- `tools/qa/verify-i3-legal-v04-materialization-source-only.mjs`;
+- command boundary self-scoped para `legal.acceptance.record` en `app/adapters/cxorbia-command-adapter-v1.js`.
 
-Presupuesto del futuro bootstrap DEV: exactamente `4` Firestore writes create-only — perfil legal `1`, Provider Registry core `1`, legalContent + version `2`; legalAcceptance/Auth/passwordResets/historical writes `0`.
+Futuro bootstrap DEV: exactamente `4` Firestore create-only — legalProfile `1`, Provider Registry core `1`, legalContent/version `2`; legalAcceptance/Auth/passwordResets/historical `0`.
 
-El provider fuente rechaza placeholders, falso counsel, domicilio restringido público, colisión/overwrite y cualquier presupuesto fuera de gate. El provider readback queda preparado. La autoridad posterior al ACK será Firestore/provider, no el request/bootstrap.
+Provider rechaza placeholders, falso counsel, domicilio restringido público, colisión/overwrite y budget drift. Readback preparado. Después del ACK la autoridad será provider/Firestore, no el request ni código runtime.
 
-Se corrigió además `app/adapters/cxorbia-command-adapter-v1.js`: `legal.acceptance.record` puede llegar al provider para cualquier rol autenticado únicamente como self-scoped human-confirmed command. No se ampliaron permisos operativos Shopper/Cliente.
+## Evidencia canónica técnica
 
-## Evidencia canónica
+HEAD técnico `4cfd087fb49bb41d00caa9dd798bf7d02fa4f0d9`: workflow `31959900456`, job `95196342385`, `SUCCESS`, incluido `Verify I3 V0.4 interim materialization provider source contract`.
 
-HEAD técnico `4cfd087fb49bb41d00caa9dd798bf7d02fa4f0d9` pasó `CXOrbia Phase A Live Execution Checkpoint`:
-- run `31959900456`;
-- job `95196342385`;
-- conclusión `SUCCESS`;
-- nuevo paso V0.4 materialization provider source: `SUCCESS`.
+## Reconciliación documental posterior
+
+- source lock materialization: `86b8073e2349edff91d4e6401f93ce9981d2497c`;
+- índice vivo: `d5e6c328e38020e10f09a987e9383077544b9c86`;
+- checkpoint materialization: `b345b9a58fb419203972a53e208044e176fca8af`;
+- CAMBIOS: `fbbfefbcd02ff6b24656c047d0f7c6589452a912`;
+- RESUMEN-PARA-CLAUDE: `cf0df531669ad8d4222d8cf9d7a2e898247e562f`;
+- PENDIENTES-PROTOTIPO: `48752d130f5ae9d734c38c82ceadfeff3d1f14b6`;
+- tracker: `5e00697049a8759930fb8bc7996b56f19823a49e`;
+- Academia: `10207d5d950c984e127046f6e8496c42e602b37e`.
+
+## Infraestructura de ejecución existente
+
+`CXOrbia Phase A Firestore Materialization Executor` fue inspeccionado: hoy su `execute` real está limitado a `emulator`. No se declarará DEV materializado usando esa ruta sin gate/extension exactos. Se reutilizará un carril existente; no se creará workflow nuevo.
 
 ## Patrón no-code / rebrand-safe
 
-`perfil legal mutable provider-authoritative`
-→ `snapshot público inmutable`
-→ `render canónico UTF-8/LF`
-→ `SHA-256 post-render`
-→ `receipt humano por legalVersion/contentDigest`.
+`perfil legal mutable provider-authoritative → snapshot público inmutable → render UTF-8/LF → SHA-256 post-render → receipt humano por legalVersion/contentDigest`.
 
-Los valores TyA serán configuración viva y editable, no constantes runtime. Rebranding o cambios posteriores no reescriben versiones históricas.
+Los valores TyA serán configuración viva/editable y no constantes runtime. Rebranding/config posterior no reescriben versiones históricas.
 
 ## Seguridad / efectos reales hasta este checkpoint
 
@@ -74,10 +75,4 @@ I1 `15/15`; I2 `20/20`; I3 `0/25`; I4 `0/25`; I5 `0/15`.
 
 `PAULA_PROVIDER_WRITE_AND_HUMAN_ACCEPTANCE_RUNTIME_GATE_FOR_I3`.
 
-El próximo bloque autorizado debe:
-1. resolver/renderizar snapshot público V0.4 con valores iniciales TyA;
-2. ejecutar una sola materialización DEV con presupuesto exacto 4 writes;
-3. validar provider readback/digest;
-4. habilitar read model/runtime DEV sin localStorage como autoridad;
-5. mostrar la versión publicada y permitir **solo aceptación humana**;
-6. después crear una continuación I3 nueva para Admin/new Shopper, sin request08 ni tocar identidad histórica.
+El siguiente bloque debe resolver/renderizar V0.4, ejecutar un único bootstrap DEV de cuatro writes, validar readback/digest, habilitar runtime/read model DEV y dejar la aceptación exclusivamente a la persona autenticada. Después: continuación I3 nueva para Admin/new Shopper, sin request08 ni identidad histórica.
