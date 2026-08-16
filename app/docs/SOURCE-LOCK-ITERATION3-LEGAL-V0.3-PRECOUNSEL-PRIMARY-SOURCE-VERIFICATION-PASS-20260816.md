@@ -1,6 +1,6 @@
 # SOURCE LOCK — ITERATION 3 · LEGAL V0.3 PRE-COUNSEL PRIMARY-SOURCE VERIFICATION PASS · 2026-08-16
 
-**Estado:** `PASS_I3_LEGAL_V0_3_PRECOUNSEL_PRIMARY_SOURCE_VERIFICATION__COUNSEL_GATE_STILL_OPEN__NO_PROVIDER_IO__GO_LIVE_35`
+**Estado:** `PASS_I3_LEGAL_V0_3_PRECOUNSEL_PRIMARY_SOURCE_VERIFICATION__COUNSEL_GATE_STILL_OPEN__CANONICAL_CHECKPOINT_PASS__NO_PROVIDER_IO__GO_LIVE_35`
 
 ## 1. Carril preservado
 
@@ -74,7 +74,32 @@ Se revisaron conectores antes de pedir información a Paula:
 
 No existe evidencia recuperada que cierre `HUMAN_COUNSEL_REVIEW_TYA_GT_HN_AND_PAULA_APPROVAL_BEFORE_PROVIDER_MATERIALIZATION`.
 
-## 7. Qué NO se modificó
+## 7. Reconciliación documental
+
+Se reconciliaron después del hallazgo/matriz:
+- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
+- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
+- `app/docs/GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`;
+- `CAMBIOS-BACKEND.md`;
+- `RESUMEN-PARA-CLAUDE.md`;
+- `PENDIENTES-PROTOTIPO.md`;
+- `app/docs/ACADEMIA-IMPACT-I3-LEGAL-PROVIDER-WIRING-SOURCE-ONLY-20260815.md`.
+
+HEAD de reconciliación antes de este lock certificado:
+`79d0333a381cbf49eafd5f8266e0332ba4f5d67d`.
+
+## 8. Gate canónico
+
+`CXOrbia Phase A Live Execution Checkpoint` sobre HEAD `79d0333a381cbf49eafd5f8266e0332ba4f5d67d`:
+- run `31957753972`;
+- job `95190900983`;
+- conclusión `SUCCESS`.
+
+Pasaron I1/I2, frozen I3 historical, legal-gate-aware harness, overlay-aware remaining subgate, durable legal acceptance, immutable no-code legal publication snapshot y current operational checkpoint.
+
+Este run no ejecutó provider legal materialization ni aceptación humana.
+
+## 9. Qué NO se modificó
 
 - V0.3 sigue `NOT_APPROVED / NOT_PUBLISHED`.
 - No se retiró ningún `LEGAL_REVIEW_REQUIRED`.
@@ -85,17 +110,17 @@ No existe evidencia recuperada que cierre `HUMAN_COUNSEL_REVIEW_TYA_GT_HN_AND_PA
 
 El paquete profesional se entiende ahora como V0.3 + paquete GT/HN + matriz primaria 20260816.
 
-## 8. Seguridad / efectos reales
+## 10. Seguridad / efectos reales
 
 Provider credentials/reads/writes `0/0/0`; Auth/Firestore/legalContent/legalAcceptance writes `0`; passwordResets `0`; historical credential access/reconcile `0`; HR/Storage/Rules/Make/Gemini/pagos `0`; `/app/modules` cambios `0`; `/app/core` cambios `0`; entrypoint activation `0`; deploy `0`; merge=false; producción=false.
 
-## 9. Progreso
+## 11. Progreso
 
 I1 `15/15`; I2 `20/20`; I3 `0/25`; I4 `0/25`; I5 `0/15`.
 
 **GO-LIVE 35% completado / 65% pendiente.** El bloque reduce incertidumbre y carga de counsel, pero no suma I3.
 
-## 10. Gate vigente
+## 12. Gate vigente
 
 `HUMAN_COUNSEL_REVIEW_TYA_GT_HN_AND_PAULA_APPROVAL_BEFORE_PROVIDER_MATERIALIZATION`.
 
