@@ -1,7 +1,7 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-16 10:38 -06:00  
-**Estado vigente:** `PHASE_A_ROOT_CAUSE_TRACKER_35__I3_LEGAL_V0_4_INTERIM_GOLIVE__MATERIALIZATION_PROVIDER_SOURCE_PASS__COUNSEL_DEFERRED_NONBLOCKING__PROVIDER_HUMAN_ACCEPTANCE_GATE_NEXT__NO_FRONTEND_REDESIGN`
+**Última actualización:** 2026-08-16 11:12 -06:00  
+**Estado vigente:** `PHASE_A_ROOT_CAUSE_TRACKER_35__I3_LEGAL_V0_4_DEV_MATERIALIZATION_PASS__RUNTIME_SOURCE_WIRED__COUNSEL_DEFERRED_NONBLOCKING__DEV_DEPLOY_HUMAN_ACCEPTANCE_NEXT__NO_FRONTEND_REDESIGN`
 
 ## Estado real
 
@@ -9,86 +9,95 @@ I1 `15/15`, I2 `20/20`, I3 `0/25`, I4 `0/25`, I5 `0/15`: **35% completado / 65% 
 
 Shopper histórico I3 PASS congelado run `31906391682`; no repetir reset/recovery/reconcile ni acceder a credencial histórica; continuaciones `passwordResets=0`.
 
-Request08 `31909354336` / `95071998299`: STOP antes de Alta por `I3_ADMIN_LEGAL_CONFIDENTIALITY_GATE_PENDING_BEFORE_CREATE`; consumido/no rerun.
+Request08 `31909354336` / `95071998299` consumido/no rerun.
 
-## Backend legal preparado
+## V0.4 legal — REAL DEV ya materializada
 
-Vigentes:
-- `backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json` — perfil mutable/no-code;
-- `backend/contracts/cxorbia-legal-publication-snapshot-v1.json` — snapshot público inmutable;
-- `backend/contracts/cxorbia-legal-acceptance-durable-v1.json` — receipt humano durable;
-- `backend/contracts/cxorbia-legal-v04-interim-materialization-v1.json` — bootstrap DEV exacto;
-- `backend/runtime/cxorbia-legal-publication-provider-v1.mjs` — materialización create-only/readback;
-- `app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js`;
-- `app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js` — aún no product-wired.
+Source lock prevalente:
+`app/docs/SOURCE-LOCK-ITERATION3-LEGAL-V0.4-MATERIALIZATION-PROVIDER-DEV-PASS-20260816.md`.
 
-Regla reusable:
-`perfil editable provider-authoritative → snapshot público inmutable → render canónico → SHA-256 post-render → aceptación humana por legalVersion/contentDigest`.
+Gate humano ejecutado: `PAULA_PROVIDER_WRITE_AND_HUMAN_ACCEPTANCE_RUNTIME_GATE_FOR_I3`.
 
-## Counsel y V0.4
+Run `31961266066`; job `95199496314`; `PASS_COMMITTED_READBACK`.
 
-Counsel GT/HN queda **diferido post-go-live**, no cancelado ni marcado como aprobado. V0.4 es la candidata interina vigente:
-`app/docs/CANDIDATA-LEGAL-TYA-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md`.
-
-Registro posterior:
-`app/docs/PENDIENTE-LEGAL-POST-GOLIVE-TYA-GT-HN-V0.4-20260816.md`.
-
-Source lock técnico actual:
-`app/docs/SOURCE-LOCK-ITERATION3-LEGAL-V0.4-MATERIALIZATION-PROVIDER-SOURCE-ONLY-PASS-20260816.md`.
-
-No presentar V0.4 como revisada por abogado.
-
-## Materialización provider — SOURCE PASS
-
-Preparado un bootstrap DEV de exactamente cuatro documentos:
-1. legal profile current;
+En `cxorbia-backend-dev` quedaron exactamente `4` create-only writes:
+1. `legalProfile/current`;
 2. Provider Registry `firebase-google-core`;
-3. legalContent current;
-4. versión legal inmutable V0.4.
+3. `legalContents/tya-platform-master-terms`;
+4. versión `tya-legal-bundle-v0.4-interim-golive-20260816`.
 
-Writes futuros máximos: Firestore `4`; legalAcceptance/Auth/passwordResets/historical `0`.
+Digest canónico:
+`58d16a736495065a7244f8018d95a1faa87eae9a00e36d7ffc65a41edd58f58d`.
 
-El provider rechaza placeholders, falso counsel, domicilio restringido público, overwrite/collision y budget drift. Readback provider preparado.
+LegalAcceptance/Auth/passwordResets/historical/HR/Rules/Storage/Make/Gemini/pagos `0`; automaticAcceptance=false; request consumido/no retry; deploy `0`; merge=false; producción=false.
 
-CI canónico del HEAD técnico `4cfd087fb49bb41d00caa9dd798bf7d02fa4f0d9`: run `31959900456`, job `95196342385`, `SUCCESS`, incluido V0.4 materialization provider source.
+Counsel GT/HN continúa `deferred_post_golive`, no `approved`.
 
-## Command boundary corregido
+## Runtime DEV source wired — todavía NO desplegado
 
-`app/adapters/cxorbia-command-adapter-v1.js` ahora permite `legal.acceptance.record` como comando **self-scoped** para cualquier rol autenticado únicamente si existe confirmación humana explícita y prohibición de aceptación automática. No se ampliaron otros writes de Shopper/Cliente. El provider sigue derivando UID desde el ID token verificado.
+Source preparado:
+- `backend/runtime/hr-live-service/legal-runtime.mjs`;
+- `backend/runtime/hr-live-service/server.mjs`;
+- `app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js`;
+- `app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js`;
+- `app/adapters/cxorbia-legal-runtime-http-v1.js`;
+- `app/index-backend-dev.html`.
 
-## Rebranding y no-code
+Comportamiento DEV:
+- provider authority real;
+- Firebase ID token exacto; actor derivado del token;
+- current version/digest desde Firestore;
+- fail-closed;
+- cero localStorage/sessionStorage como autoridad legal;
+- contenido completo;
+- dos casillas humanas no premarcadas;
+- clic explícito;
+- receipt bloqueado hasta deploy gate separado;
+- no actor UID/raw token al browser;
+- no aceptación automática.
 
-No usar `CXOrbia` ni `Gravicentra` como nombre contractual rígido. `platform.displayName` es dinámico; marca visible, registro marcario y titular/licenciante son objetos distintos.
+Production `app/index.html` sigue sin wiring legal. No se modificó `/app/modules` ni `/app/core` en este bloque.
 
-Todos los valores TyA pertenecen solo a ese tenant y deben venir de provider authority, no de runtime constants: operador, identificación tributaria, contacto, dirección pública, países, retención, controversias, providers, branding/licenciante y evidencias por proyecto.
+## Regla reusable/no-code
 
-## Ajustes frontend futuros por archivo/módulo — NO parchear desde backend
+`perfil legal mutable provider-authoritative → snapshot publicado inmutable → render UTF-8/LF → SHA-256 → receipt humano por identidad/versión/digest`.
 
-1. `app/modules/configuracion.js`: Legal y cumplimiento no-code; perfil mutable vs versiones publicadas; cero localStorage como autoridad.
-2. `app/modules/administrabilidad.js`: auditoría y retiro de semántica demo/local solo tras provider real.
-3. proyecto/wizard: Evidencias y privacidad configurable.
-4. integraciones: Provider Registry.
+Rebranding no reescribe versiones históricas. Datos TyA concretos son tenant-only y provider-authoritative, no constantes globales.
+
+## Qué NO debe tocar Claude ahora
+
+- no rediseñar `/app/modules` ni `/app/core` desde backend;
+- no reemplazar `CX.data`;
+- no convertir localStorage en autoridad legal;
+- no autoaceptar NDA/términos;
+- no tocar identidad/credencial histórica;
+- no duplicar bootstrap V0.4;
+- no presentar counsel diferido como aprobado;
+- no publicar domicilio registrado restringido.
+
+## Frontend/no-code posterior por módulo
+
+1. `app/modules/configuracion.js`: Legal y cumplimiento provider-authoritative; perfil mutable vs versiones publicadas.
+2. `app/modules/administrabilidad.js`: auditoría legal sin datos restringidos.
+3. proyecto/wizard: Evidencias y privacidad.
+4. integraciones: Provider Registry dinámico.
 5. marca: displayName/estado registral/licenciante separados.
-6. gate legal: contenido completo/versionado, casillas no premarcadas, botón tras acción humana; nunca `#bnOk` como aceptación.
+6. gate legal definitivo: texto completo/versionado + casillas no premarcadas + acción humana.
 
-Mantener interfaz pública `CX.data`, login canónico y arquitectura modular aprobada.
+## Gate canónico source
 
-## Academia / manuales
-
-Después de provider real: configuración editable vs versión publicada inmutable; aceptación humana; reaceptación material; evidencias por proyecto; providers reales; rebranding; datos restringidos; `counsel pendiente` ≠ `aprobado`.
+Run push `31961999583` sobre `c6e1e55d...` pasó I1/I2/frozen I3/durable legal/publication/V0.4 source y falló solo `DURABLE_PLAN_NOT_INDEXED` en current checkpoint. La causa era documental: el índice reducido omitía el addendum durable. Se restauró; no es P0 funcional ni autoriza rerun provider.
 
 ## Pendiente real
 
-1. bajo gate exacto, resolver/renderizar snapshot público V0.4;
-2. materializar cuatro documentos en `cxorbia-backend-dev`;
-3. provider readback/digest;
-4. wiring/read model runtime DEV sin localStorage authority;
-5. persona autenticada acepta humanamente;
-6. nueva continuación I3 Admin/new Shopper, sin request08;
-7. login/reload/new-tab/segundo contexto;
-8. counsel GT/HN posterior.
+1. `PAULA_DEV_DEPLOY_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_RUNTIME`;
+2. deploy/update únicamente DEV del servicio/Hosting existente;
+3. Paula entra por login canónico y recibe la V0.4 desde provider;
+4. Paula acepta humanamente;
+5. exactamente 1 receipt legalAcceptance + provider ACK/readback;
+6. reload/new-tab de aceptación;
+7. nueva continuación I3 Admin/new Shopper sin request08;
+8. login/reload/new-tab/segundo contexto Shopper nuevo;
+9. counsel GT/HN post-go-live.
 
-Gate actual:
-`PAULA_PROVIDER_WRITE_AND_HUMAN_ACCEPTANCE_RUNTIME_GATE_FOR_I3`.
-
-PR #7 permanece draft/open/no merge. Sin provider write/deploy/producción todavía.
+PR #7 permanece draft/open/no merge. Sin deploy ni producción todavía.
