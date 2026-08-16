@@ -1,103 +1,118 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-15 18:05 -06:00  
-**Estado vigente:** `PHASE_A_ROOT_CAUSE_TRACKER_35__I3_LEGAL_PROVIDER_SOURCE_ONLY_PASS__TYA_LEGAL_V0_2_NOCODE_DRAFT__REGISTERED_DOMICILE_RESTRICTED__NO_BACKEND_UI_PATCH`
+**Última actualización:** 2026-08-15 20:05 -06:00  
+**Estado vigente:** `PHASE_A_ROOT_CAUSE_TRACKER_35__I3_LEGAL_V0_3_COUNSEL_SNAPSHOT_SOURCE_PASS__NO_FRONTEND_REDESIGN`
 
 ## Estado real
 
-Tracker prevalente: I1 `15/15`, I2 `20/20`, I3 `0/25`, I4 `0/25`, I5 `0/15`: **35% completado / 65% pendiente**.
+I1 `15/15`, I2 `20/20`, I3 `0/25`, I4 `0/25`, I5 `0/15`: **35% completado / 65% pendiente**.
 
-Shopper histórico exacto I3 PASS y congelado en run `31906391682`; no repetir reset/recovery/reconcile ni acceder a credencial histórica; toda continuación `passwordResets=0`.
+Shopper histórico I3 PASS congelado run `31906391682`; no repetir reset/recovery/reconcile ni acceder a credencial histórica; continuaciones `passwordResets=0`.
 
-Request08 `31909354336` / `95071998299`: STOP antes de Alta por `I3_ADMIN_LEGAL_CONFIDENTIALITY_GATE_PENDING_BEFORE_CREATE`; sin Shopper nuevo, sin Auth/Firestore writes, sin consentimiento automatizado. No rerun.
+Request08 `31909354336` / `95071998299`: STOP antes de Alta por `I3_ADMIN_LEGAL_CONFIDENTIALITY_GATE_PENDING_BEFORE_CREATE`; sin Shopper nuevo/Auth/Firestore writes/consentimiento automatizado. No rerun.
 
-## Backend preparado
+## Backend legal preparado
 
-Source técnico legal durable final `0602d6ca0f64280222a4b1522b36f3be77c65c87`; gate `31913700755` / `95082399402` SUCCESS. Receipt legal exact-identity/versionado/human-only/provider-ACK y read model fail-closed preparados; bridge no activado.
+Provider legal durable source-only permanece PASS. Además quedan vigentes:
+- `backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json` — perfil legal mutable provider-authoritative/no-code;
+- `backend/contracts/cxorbia-legal-publication-snapshot-v1.json` — snapshot público inmutable de publicación;
+- `backend/contracts/cxorbia-legal-acceptance-durable-v1.json` — receipt humano durable por versión/digest.
 
-Contrato reusable no-code:
-`backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json`.
+Regla reusable:
 
-**Regla:** ningún dato TyA, país, proyecto, rebrand, correo, NIT, proveedor, domicilio o evidencia debe quedar como constante global de runtime. Todo valor variable debe venir de configuración provider-authoritative multi-tenant administrable desde la Plataforma.
+`perfil editable no-code`
+→ `snapshot público inmutable`
+→ `render canónico`
+→ `SHA-256 post-render`
+→ `aceptación humana ligada a legalVersion/contentDigest`.
 
-## Draft legal vigente para revisión
+No inyectar configuración mutable directamente en un documento histórico ya aceptado. Placeholders sin resolver no son publicables. Domicilio registrado restringido no se autopublica. Proveedores deshabilitados no aparecen como receptores actuales.
 
-Base V0.1:
-`app/docs/DRAFT-CONTENIDO-LEGAL-TYA-V0.1-REVISION-HUMANA-20260815.md`.
+## Candidata jurídica vigente
 
-Decisiones V0.2:
-`app/docs/DRAFT-CONTENIDO-LEGAL-TYA-V0.2-NOCODE-REVISION-HUMANA-20260815.md`.
+Documento consolidado para revisión profesional:
+`app/docs/CANDIDATA-LEGAL-TYA-V0.3-CONSOLIDADA-REVISION-JURIDICA-20260815.md`.
 
-Lock humano:
-`app/docs/DECISION-LOCK-TYA-LEGAL-V0.2-NOCODE-20260815.md`.
+Paquete concentrado para abogado:
+`app/docs/PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md`.
 
-No están aprobados ni materializados. No copiarlos a UI como texto productivo antes de consolidación/revisión legal/aprobación humana.
+Source lock:
+`app/docs/SOURCE-LOCK-ITERATION3-LEGAL-V0.3-COUNSEL-REVIEW-SNAPSHOT-SOURCE-ONLY-PASS-20260815.md`.
 
-## Rebranding
+V0.3 **NO está aprobada ni publicada**. Los marcadores `LEGAL_REVIEW_REQUIRED` deben cerrarse con abogado GT/HN y aprobación humana antes de cualquier texto productivo/provider materialization.
 
-El producto tendrá rebranding. No usar `CXOrbia` ni `Gravicentra` como nombre contractual rígido. En términos visibles usar principalmente “la Plataforma” y resolver el nombre comercial desde `platform.displayName`.
+## Rebranding y no-code
 
-Marca visible, estado de registro y titular/licenciante del software son campos separados. No afirmar “marca registrada” si no existe referencia verificada. Cambiar el nombre visible no transfiere derechos de software.
+No usar `CXOrbia` ni `Gravicentra` como nombre contractual rígido. El texto permanente usa “la Plataforma”; `platform.displayName` es dinámico. Marca visible, registro de marca y titular/licenciante del software son objetos distintos. Un cambio de branding no transfiere IP ni reescribe versiones históricas.
 
-## TyA — configuración tenant, no lógica global
+Todos los valores concretos TyA pertenecen solo a ese tenant y deben venir de configuración provider-authoritative, no de código.
 
-Decisiones humanas ya resueltas:
-- empresa mercantil individual establecida en Guatemala;
-- Honduras administrada desde Guatemala por el mismo operador;
-- datos de identificación/contacto deben vivir en tenant legal profile y poder modificarse no-code;
-- evidencia cruda: default recomendado 90 días, con piso humano 60 y override por proyecto;
-- cuentas bancarias completas solo bajo cifrado/protección, mínimo privilegio, UI enmascarada y retención limitada;
-- documentos: mínimo indispensable;
-- arbitraje preferido para B2B, sin imponer universalmente a usuarios individuales sin validación local;
-- Make/Gemini no se describen como receptores mientras estén gated/deshabilitados;
-- foto/video/audio/geolocalización/comprobantes varían por proyecto.
-
-El RTU vigente fue recuperado read-only y confirma el domicilio fiscal/comercial registrado de TyA. Como coincide con un domicilio residencial, **no copiar el valor exacto al código ni publicarlo automáticamente**. El contrato reusable separa ahora:
-- `operator.registeredLegalDomicileRestricted`: dato completo protegido/restringido;
-- `operator.publicLegalAddress`: valor público explícitamente aprobado;
-- `operator.publicLegalAddressMode`: full/locality/contact-only cuando sea jurídicamente suficiente.
-
-## Ajustes frontend futuros por archivo/módulo
-
-**No ejecutar desde backend. No rediseñar módulos.** Empalmar las superficies existentes con el contrato provider cuando llegue el bloque frontend autorizado.
+## Ajustes frontend futuros por archivo/módulo — NO ejecutar desde backend
 
 1. `app/modules/configuracion.js`
-   - evolucionar “NDA / Guardar NDA” local a `Legal y cumplimiento`;
-   - perfil legal tenant: operador, países, domicilio registrado restringido, dirección pública y contactos;
-   - retención;
-   - controversias;
-   - publicación/versionado;
-   - cero autoridad en localStorage.
+   - evolucionar la superficie NDA/demo a `Legal y cumplimiento`;
+   - editar perfil legal del tenant, contactos, dirección pública, retención, controversias, licenciante/branding y metadata legal de proveedores;
+   - mostrar versiones publicadas separadas del perfil mutable;
+   - flujo explícito `previsualizar → revisión → publicar nueva versión`, nunca sobrescribir versión publicada;
+   - cero localStorage como autoridad.
 
 2. `app/modules/administrabilidad.js`
-   - retirar semántica “demo local” únicamente después de que provider legal real esté activado/validado.
+   - retirar semántica demo/local solo después de provider legal real y validado;
+   - auditoría de cambios/revisiones sin exponer datos restringidos.
 
 3. módulo de `proyectos`
-   - `Crear/Editar proyecto > Evidencias y privacidad`;
+   - `Crear/Editar > Evidencias y privacidad`;
    - foto/video/audio/geolocalización/comprobante/otros;
-   - retención heredada o override;
-   - ninguna regla Cinépolis hardcoded.
+   - retención heredada/override y gate especial para tratamientos de alto impacto;
+   - ninguna regla cliente/proyecto hardcoded.
 
 4. `integraciones`
-   - Provider Registry;
-   - estado técnico activo debe provenir del runtime y no poder falsificarse manualmente;
-   - metadata legal sí administrable.
+   - Provider Registry: estado técnico activo derivado del runtime; metadata legal editable;
+   - proveedor disabled no puede ser mostrado como receptor actual.
 
 5. `marca` / white-label
-   - nombre visible/rebranding;
-   - estado de registro de marca;
-   - titular/licenciante separado del branding.
+   - `displayName`, estado registral y referencia de marca;
+   - licenciante/IP separado de branding.
 
-Mantener intactas la interfaz pública de `CX.data`, login canónico y arquitectura modular aprobada.
+6. gate legal visible
+   - mostrar contenido completo de la versión publicada y su versión;
+   - casillas afirmativas no premarcadas;
+   - botón solo después de acción humana;
+   - nunca `#bnOk` como aceptación.
+
+Mantener interfaz pública `CX.data`, login canónico y arquitectura modular aprobada.
+
+## TyA — decisiones ya cerradas, no preguntar otra vez
+
+Empresa mercantil individual Guatemala; Honduras operada desde Guatemala; contacto legal editable; domicilio registrado recuperado/restringido; rebranding dinámico; evidencia cruda piso 60/default 90; banco completo bajo controles reforzados; documentos mínimos; evidencias por proyecto; Provider Registry dinámico; arbitraje preferido B2B y revisión diferenciada individual; revisión profesional GT/HN sí.
 
 ## Academia / manuales
 
-Cuando provider real esté activo, enseñar por rol: aceptación humana/versionada, confidencialidad, evidencia por proyecto, retención, seguridad de banco/documentos, separación domicilio restringido/público, rebranding neutral y nueva aceptación cuando un cambio legal sea material. QA/GitHub/Make/Gemini nunca aceptan por el usuario.
+Después de provider legal real, enseñar por rol:
+- diferencia entre configuración editable y versión legal publicada/inmutable;
+- aceptación humana/versionada y nueva aceptación ante cambios materiales;
+- evidencias configurables por proyecto;
+- seguridad bancaria/documental;
+- proveedores actuales según registro real;
+- rebranding neutral;
+- privacidad del domicilio restringido.
+
+No enseñar hashes internos, rutas, IDs de QA ni implementación del runner.
+
+## Evidencia técnica
+
+HEAD fuente `768a1b43c10a054a254cfc2bd295aacdeae64c92`: `CXOrbia Phase A Live Execution Checkpoint` run `31921002582`, job `95100754570`, SUCCESS, incluyendo `Verify I3 immutable no-code legal publication snapshot source contract`.
 
 ## Pendiente real
 
-No volver a pedir domicilio registrado. Solo falta validar con abogado qué nivel de dirección debe mostrarse públicamente; revisión jurídica GT/HN; consolidación V0.1+V0.2; versión final + SHA-256 final; aprobación humana. El nombre de rebranding no es bloqueo técnico porque `platform.displayName` es dinámico.
+1. revisión jurídica GT/HN mediante el paquete V0.3;
+2. incorporar correcciones exactas;
+3. cerrar domicilio público/licenciante/arbitraje/privacidad/evidencias/proveedores;
+4. generar versión publicable sin marcadores;
+5. aprobación humana de Paula;
+6. solo después materialización provider + aceptación humana + E2E Admin/new Shopper.
 
-Después podrá solicitarse `PAULA_REVIEW_REQUIRED_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_PROVIDER_WRITE_AND_ADMIN_NEW_SHOPPER_RESUME` para materialización provider, aceptación humana real y E2E Admin/new Shopper.
+Gate humano actual:
+`HUMAN_COUNSEL_REVIEW_TYA_GT_HN_AND_PAULA_APPROVAL_BEFORE_PROVIDER_MATERIALIZATION`.
 
-PR #7 permanece draft/open/no merge. Sin deploy ni producción.
+PR #7 permanece draft/open/no merge. Sin provider write, deploy ni producción.
