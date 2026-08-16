@@ -1,13 +1,13 @@
 # GO-LIVE PROGRESS TRACKER — ROOT CAUSE · CXORBIA TyA
 
-**Fecha de actualización:** 2026-08-16 10:10 -06:00  
+**Fecha de actualización:** 2026-08-16 10:38 -06:00  
 **Método:** una iteración solo suma su peso cuando cierra integralmente PASS; subgates parciales no inflan el porcentaje.
 
 | Iteración | Peso | Estado | Evidencia vigente |
 |---|---:|---|---|
 | I1 — Auth/authority/source correction | 15 | PASS 15/15 | Gate vigente conservado |
 | I2 — canonical persistence/transversal | 20 | PASS 20/20 | `SOURCE-LOCK-ITERATION2-CANONICAL-PERSISTENCE-PASS-20260814.md` |
-| I3 — Shopper persistence + real Auth continuity | 25 | 0/25, EN CURSO | Histórico PASS congelado; legal durable source PASS; V0.3 + snapshot source PASS; pre-counsel primary-source verification PASS; counsel/aprobación/materialización/aceptación + Admin/new Shopper pendientes |
+| I3 — Shopper persistence + real Auth continuity | 25 | 0/25, EN CURSO | Histórico PASS congelado; legal durable source PASS; V0.4 interina creada; counsel diferido no bloqueante; provider materialization + aceptación humana + Admin/new Shopper pendientes |
 | I4 — Phase A operational flows | 25 | 0/25, NO INICIAR | Solo después de I3 PASS |
 | I5 — final go-live validation | 15 | 0/15, NO INICIAR | Solo después de I4 PASS |
 
@@ -23,47 +23,41 @@ Request08: run `31909354336`, job `95071998299`, STOP `I3_ADMIN_LEGAL_CONFIDENTI
 
 Source `0602d6ca0f64280222a4b1522b36f3be77c65c87`; gate `31913700755` / `95082399402` SUCCESS. Receipt exact-identity/versioned/human-only/provider-ACK y read model fail-closed preparados; provider IO real 0.
 
-## I3 — legal no-code V0.3 source-only PASS
+## I3 — decisión V0.4 interina 2026-08-16
 
-Patrón cerrado:
-`perfil mutable → snapshot público inmutable → render UTF-8/LF → SHA-256 post-render → aceptación humana ligada a legalVersion/contentDigest`.
-
-Gate V0.3/snapshot: HEAD `768a1b43c10a054a254cfc2bd295aacdeae64c92`, workflow `31921002582`, job `95100754570`, SUCCESS. Reconciliación posterior HEAD `1bf82ad949be12ac6bc2327eed0b2f40c38985b3`, workflow `31921159197`, job `95101127823`, SUCCESS.
-
-## I3 — pre-counsel primary-source verification 2026-08-16
+Paula decidió no detener el go-live por indisponibilidad temporal de counsel. La revisión profesional GT/HN se conserva como pendiente post-go-live y **no se declara aprobada**.
 
 Vigentes:
-- `MATRIZ-PRE-REVISION-JURIDICA-TYA-V0.3-FUENTES-PRIMARIAS-20260816.md`;
-- `SOURCE-LOCK-ITERATION3-LEGAL-V0.3-PRECOUNSEL-PRIMARY-SOURCE-VERIFICATION-PASS-20260816.md`.
+- `DECISION-LOCK-TYA-LEGAL-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md`;
+- `CANDIDATA-LEGAL-TYA-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md`;
+- `PENDIENTE-LEGAL-POST-GOLIVE-TYA-GT-HN-V0.4-20260816.md`.
 
-La matriz clasifica `GT-01..GT-08`, `HN-01..HN-06`, `X-01..X-06` en hechos confirmados, soporte del draft con decisión de counsel pendiente o decisión exclusivamente profesional.
+La V0.4 usa lenguaje conservador, no muestra marcadores de revisión al usuario y conserva todos los asuntos GT/HN/X en un registro separado. Counsel puede producir una versión posterior; un cambio material debe evaluarse para reaceptación.
 
-Nuevo hecho primario: **Honduras Decreto 149-2014 — Ley sobre Comercio Electrónico** debe ser considerado expresamente en `HN-02` junto con Decreto 149-2013 y Reglamento 41-2014. No se infiere suficiencia del mecanismo UI.
+## No-code/rebranding
 
-Búsqueda read-only Drive/Gmail no encontró dictamen profesional V0.3/GT-HN. La autorización `autorizado, continuemos` no se usa como aprobación legal final ni aceptación.
+`perfil mutable provider-authoritative → snapshot público inmutable → render UTF-8/LF → SHA-256 post-render → aceptación humana por legalVersion/contentDigest`.
 
-Este PASS source-only **no suma puntos I3**.
+Los valores concretos TyA no se hardcodean. Rebranding, contacto u otra edición posterior no reescriben un acuerdo histórico.
 
-## Pendiente humano antes de provider write
+## Pendiente ruta crítica I3
 
-1. abogado GT resuelve `GT-01..GT-08`;
-2. revisión HN resuelve `HN-01..HN-06`;
-3. revisión transversal resuelve `X-01..X-06`;
-4. incorporar cambios y eliminar `LEGAL_REVIEW_REQUIRED`;
-5. definir dirección pública/licenciante/arbitraje/privacidad-retención/evidencias/proveedores;
-6. generar versión publicable;
-7. aprobación humana expresa de Paula;
-8. luego, bajo gate separado, snapshot/provider materialization y SHA-256 final;
-9. aceptación exclusivamente humana con provider ACK;
-10. Admin crea/edita un único Shopper nuevo;
-11. Auth + claims + membership + profile/shopper + crosswalk exactos;
-12. provider readback + login/reload/new-tab/segundo contexto.
+1. resolver snapshot V0.4 con valores públicos vivos del tenant;
+2. materializar legalContent/version y perfil legal en `cxorbia-backend-dev` bajo un gate exacto;
+3. habilitar read model durable en runtime;
+4. aceptación exclusivamente humana con actor autenticado + provider ACK;
+5. crear nueva continuación I3, no rerun request08;
+6. Admin crea/edita un único Shopper nuevo;
+7. Auth + claims + membership + profile/shopper + crosswalk exactos;
+8. provider readback + login/reload/new-tab/segundo contexto;
+9. cero fuzzy, otras identidades, resets históricos, HR/Rules/Storage/Make/Gemini/pagos fuera de gate.
+
+Counsel GT/HN/X queda post-go-live y no bloquea esta ruta interina.
 
 Hasta cierre integral, I3 permanece `0/25` y GO-LIVE **35/65**.
 
 ## Gate actual
 
-`HUMAN_COUNSEL_REVIEW_TYA_GT_HN_AND_PAULA_APPROVAL_BEFORE_PROVIDER_MATERIALIZATION`
+`PAULA_PROVIDER_WRITE_AND_HUMAN_ACCEPTANCE_RUNTIME_GATE_FOR_I3`
 
-Gate posterior, todavía no abierto:
-`PAULA_REVIEW_REQUIRED_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_PROVIDER_WRITE_AND_ADMIN_NEW_SHOPPER_RESUME`
+Este gate no autoriza aceptación automática. La persona autenticada debe aceptar la versión publicada desde UI humana.
