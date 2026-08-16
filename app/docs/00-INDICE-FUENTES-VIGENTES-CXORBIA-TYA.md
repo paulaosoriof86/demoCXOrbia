@@ -1,7 +1,7 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-16 10:10 -06:00  
-**Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__I1_PASS__I2_PASS__I3_HISTORICAL_FROZEN__REQUEST08_LEGAL_STOP__LEGAL_DURABLE_SOURCE_PASS__LEGAL_V0_3_COUNSEL_SNAPSHOT_SOURCE_PASS__PRECOUNSEL_PRIMARY_SOURCE_VERIFICATION_PASS__GO_LIVE_35__HUMAN_COUNSEL_REVIEW_NEXT`
+**Fecha:** 2026-08-16 10:17 -06:00  
+**Estado vivo:** `FORENSIC_ROOT_CAUSE_LOCKED__I1_PASS__I2_PASS__I3_HISTORICAL_FROZEN__REQUEST08_LEGAL_STOP__LEGAL_DURABLE_SOURCE_PASS__LEGAL_V0_3_COUNSEL_SNAPSHOT_SOURCE_PASS__PRECOUNSEL_PRIMARY_SOURCE_VERIFICATION_PASS__FINAL_HEAD_CHECKPOINT_SUCCESS__GO_LIVE_35__HUMAN_COUNSEL_REVIEW_NEXT`
 
 ## Fuentes vigentes
 
@@ -48,8 +48,6 @@ Run `31906391682`: Shopper histórico exacto PASS y congelado. Reset histórico 
 
 ## Legal durable + publicación no-code
 
-Patrón vigente:
-
 `tenantLegalProfile mutable no-code`
 → `snapshot de publicación con solo valores públicos aprobados`
 → `render canónico UTF-8/LF`
@@ -58,15 +56,21 @@ Patrón vigente:
 
 El perfil editable nunca reescribe una versión histórica. Placeholders sin resolver no son publicables. Domicilio registrado restringido no se autopublica. Provider disabled no figura como receptor actual.
 
-Gate V0.3/snapshot previo: HEAD `768a1b43c10a054a254cfc2bd295aacdeae64c92`, run `31921002582`, job `95100754570`, SUCCESS. Reconciliación posterior HEAD `1bf82ad949be12ac6bc2327eed0b2f40c38985b3`, run `31921159197`, job `95101127823`, SUCCESS.
-
 ## Pre-counsel 2026-08-16
 
 La autorización `autorizado, continuemos` habilitó únicamente continuación source-only. No es aprobación legal final ni aceptación/materialización.
 
-Se verificaron fuentes primarias y se creó la matriz GT/HN/X. Nuevo hallazgo normativo relevante: **Honduras Decreto 149-2014, Ley sobre Comercio Electrónico**, incorporado como referencia adicional para `HN-02` sin inferir suficiencia jurídica de la UI.
+Se verificaron fuentes primarias y se creó la matriz GT/HN/X. Nuevo hallazgo relevante: **Honduras Decreto 149-2014, Ley sobre Comercio Electrónico**, referencia adicional de `HN-02` sin inferir suficiencia jurídica de la UI.
 
-Búsqueda read-only en Drive/Gmail no encontró dictamen profesional V0.3/GT-HN. Por tanto el gate de counsel sigue genuinamente abierto y ningún `LEGAL_REVIEW_REQUIRED` se elimina.
+Drive/Gmail read-only no encontraron dictamen profesional V0.3/GT-HN. Ningún `LEGAL_REVIEW_REQUIRED` se elimina.
+
+## Gates certificados
+
+- V0.3/snapshot source: HEAD `768a1b43c10a054a254cfc2bd295aacdeae64c92`, run `31921002582`, job `95100754570`, SUCCESS.
+- Reconciliación V0.3: HEAD `1bf82ad949be12ac6bc2327eed0b2f40c38985b3`, run `31921159197`, job `95101127823`, SUCCESS.
+- Pre-counsel docs: HEAD `79d0333a381cbf49eafd5f8266e0332ba4f5d67d`, run `31957753972`, job `95190900983`, SUCCESS.
+- Source lock pre-counsel: HEAD `91e2cce4bcadf96352e7005ab7c3915bad1696a8`, run `31957810552`, job `95191044191`, SUCCESS.
+- Checkpoint final posterior: HEAD `bd54c8c4e635c4555c53ddd0c60412a1f781785a`, run `31957858906`, job `95191162679`, SUCCESS.
 
 ## Avance
 
@@ -76,7 +80,7 @@ Búsqueda read-only en Drive/Gmail no encontró dictamen profesional V0.3/GT-HN.
 
 `HUMAN_COUNSEL_REVIEW_TYA_GT_HN_AND_PAULA_APPROVAL_BEFORE_PROVIDER_MATERIALIZATION`.
 
-Después de recibir decisiones profesionales GT/HN/X, incorporar cambios y obtener aprobación humana final podrá abrirse:
+Después de decisiones profesionales GT/HN/X incorporadas y aprobación humana final podrá abrirse:
 `PAULA_REVIEW_REQUIRED_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_PROVIDER_WRITE_AND_ADMIN_NEW_SHOPPER_RESUME`.
 
 No request09/provider write/acceptance/deploy/merge/producción antes de esos gates.
