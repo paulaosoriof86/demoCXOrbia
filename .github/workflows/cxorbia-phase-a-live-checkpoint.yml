@@ -12,6 +12,8 @@ on:
       - 'app/docs/SOURCE-LOCK-C6-STAFF-PRIVATE-EXECUTION-HANDOFF-PASS-20260811.md'
       - 'app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json'
       - 'app/docs/SOURCE-LOCK-ITERATION3-HISTORICAL-SHOPPER-LOGIN-PASS-20260814.md'
+      - 'app/docs/CANDIDATA-LEGAL-TYA-V0.3-CONSOLIDADA-REVISION-JURIDICA-20260815.md'
+      - 'app/docs/PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md'
       - 'backend/contracts/c6-staff-repair-bootstrap-exact-write-v2.json'
       - '.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json'
       - 'tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.mjs'
@@ -19,6 +21,7 @@ on:
       - 'backend/runtime/private-handoff/c6-staff-private-execution-handoff.mjs'
       - 'backend/contracts/c6-staff-d-technical-login-rebase-v1.json'
       - 'backend/contracts/cxorbia-legal-acceptance-durable-v1.json'
+      - 'backend/contracts/cxorbia-legal-publication-snapshot-v1.json'
       - 'app/index-backend-dev.html'
       - 'app/core/shoppers-store.js'
       - 'app/modules/misvisitas.js'
@@ -37,6 +40,7 @@ on:
       - 'tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs'
       - 'tools/qa/cxorbia-i3-source-patcher.mjs'
       - 'tools/qa/verify-i3-legal-acceptance-durable-source-only.mjs'
+      - 'tools/qa/verify-i3-legal-publication-snapshot-source-only.mjs'
       - '.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml'
       - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
   pull_request:
@@ -49,6 +53,8 @@ on:
       - 'app/docs/SOURCE-LOCK-C6-STAFF-PRIVATE-EXECUTION-HANDOFF-PASS-20260811.md'
       - 'app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json'
       - 'app/docs/SOURCE-LOCK-ITERATION3-HISTORICAL-SHOPPER-LOGIN-PASS-20260814.md'
+      - 'app/docs/CANDIDATA-LEGAL-TYA-V0.3-CONSOLIDADA-REVISION-JURIDICA-20260815.md'
+      - 'app/docs/PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md'
       - 'backend/contracts/c6-staff-repair-bootstrap-exact-write-v2.json'
       - '.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json'
       - 'tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.mjs'
@@ -56,6 +62,7 @@ on:
       - 'backend/runtime/private-handoff/c6-staff-private-execution-handoff.mjs'
       - 'backend/contracts/c6-staff-d-technical-login-rebase-v1.json'
       - 'backend/contracts/cxorbia-legal-acceptance-durable-v1.json'
+      - 'backend/contracts/cxorbia-legal-publication-snapshot-v1.json'
       - 'app/index-backend-dev.html'
       - 'app/core/shoppers-store.js'
       - 'app/modules/misvisitas.js'
@@ -74,6 +81,7 @@ on:
       - 'tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs'
       - 'tools/qa/cxorbia-i3-source-patcher.mjs'
       - 'tools/qa/verify-i3-legal-acceptance-durable-source-only.mjs'
+      - 'tools/qa/verify-i3-legal-publication-snapshot-source-only.mjs'
       - '.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml'
       - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
 
@@ -166,5 +174,19 @@ jobs:
           grep -q '"firestoreWrites": 0' .tmp-i3-legal-source.json
           grep -q '"legalAcceptanceWrites": 0' .tmp-i3-legal-source.json
           grep -q '"productEntrypointChanged": false' .tmp-i3-legal-source.json
+      - name: Verify I3 immutable no-code legal publication snapshot source contract
+        run: |
+          set -euo pipefail
+          node --check tools/qa/verify-i3-legal-publication-snapshot-source-only.mjs
+          node tools/qa/verify-i3-legal-publication-snapshot-source-only.mjs > .tmp-i3-legal-publication-source.json
+          cat .tmp-i3-legal-publication-source.json
+          grep -q 'PASS_I3_LEGAL_PUBLICATION_SNAPSHOT_NOCODE_IMMUTABLE_SOURCE_ONLY' .tmp-i3-legal-publication-source.json
+          grep -q '"placeholdersPublishable": false' .tmp-i3-legal-publication-source.json
+          grep -q '"digestAfterRender": true' .tmp-i3-legal-publication-source.json
+          grep -q '"restrictedDomicileAutoPublished": false' .tmp-i3-legal-publication-source.json
+          grep -q '"providerWrites": 0' .tmp-i3-legal-publication-source.json
+          grep -q '"firestoreWrites": 0' .tmp-i3-legal-publication-source.json
+          grep -q '"legalContentWrites": 0' .tmp-i3-legal-publication-source.json
+          grep -q '"legalAcceptanceWrites": 0' .tmp-i3-legal-publication-source.json
       - name: Verify Phase A current operational checkpoint
         run: node tools/qa/verify-phase-a-live-execution-checkpoint.mjs
