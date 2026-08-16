@@ -1,13 +1,13 @@
 # GO-LIVE PROGRESS TRACKER — ROOT CAUSE · CXORBIA TyA
 
-**Fecha de actualización:** 2026-08-15 20:05 -06:00  
+**Fecha de actualización:** 2026-08-16 10:10 -06:00  
 **Método:** una iteración solo suma su peso cuando cierra integralmente PASS; subgates parciales no inflan el porcentaje.
 
 | Iteración | Peso | Estado | Evidencia vigente |
 |---|---:|---|---|
 | I1 — Auth/authority/source correction | 15 | PASS 15/15 | Gate vigente conservado |
 | I2 — canonical persistence/transversal | 20 | PASS 20/20 | `SOURCE-LOCK-ITERATION2-CANONICAL-PERSISTENCE-PASS-20260814.md` |
-| I3 — Shopper persistence + real Auth continuity | 25 | 0/25, EN CURSO | Histórico PASS congelado; legal durable source PASS; V0.3 counsel package + immutable publication snapshot source PASS; revisión/aprobación/materialización/aceptación + Admin/new Shopper pendientes |
+| I3 — Shopper persistence + real Auth continuity | 25 | 0/25, EN CURSO | Histórico PASS congelado; legal durable source PASS; V0.3 + snapshot source PASS; pre-counsel primary-source verification PASS; counsel/aprobación/materialización/aceptación + Admin/new Shopper pendientes |
 | I4 — Phase A operational flows | 25 | 0/25, NO INICIAR | Solo después de I3 PASS |
 | I5 — final go-live validation | 15 | 0/15, NO INICIAR | Solo después de I4 PASS |
 
@@ -25,22 +25,24 @@ Source `0602d6ca0f64280222a4b1522b36f3be77c65c87`; gate `31913700755` / `9508239
 
 ## I3 — legal no-code V0.3 source-only PASS
 
-Bloque vigente:
-- `backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json` — perfil mutable no-code;
-- `backend/contracts/cxorbia-legal-publication-snapshot-v1.json` — publicación inmutable;
-- `backend/contracts/cxorbia-legal-acceptance-durable-v1.json` — receipt por versión/digest;
-- `CANDIDATA-LEGAL-TYA-V0.3-CONSOLIDADA-REVISION-JURIDICA-20260815.md`;
-- `PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md`;
-- source lock `SOURCE-LOCK-ITERATION3-LEGAL-V0.3-COUNSEL-REVIEW-SNAPSHOT-SOURCE-ONLY-PASS-20260815.md`.
-
-Regla cerrada:
+Patrón cerrado:
 `perfil mutable → snapshot público inmutable → render UTF-8/LF → SHA-256 post-render → aceptación humana ligada a legalVersion/contentDigest`.
 
-Esto preserva no-code y rebranding sin reescribir aceptaciones históricas. Placeholders no pueden publicarse; domicilio restringido no se autopublica; provider disabled no figura como receptor actual.
+Gate V0.3/snapshot: HEAD `768a1b43c10a054a254cfc2bd295aacdeae64c92`, workflow `31921002582`, job `95100754570`, SUCCESS. Reconciliación posterior HEAD `1bf82ad949be12ac6bc2327eed0b2f40c38985b3`, workflow `31921159197`, job `95101127823`, SUCCESS.
 
-Gate source: HEAD `768a1b43c10a054a254cfc2bd295aacdeae64c92`; workflow `31921002582`; job `95100754570`; SUCCESS, incluido `Verify I3 immutable no-code legal publication snapshot source contract`.
+## I3 — pre-counsel primary-source verification 2026-08-16
 
-V0.3 sigue `NOT_APPROVED / NOT_PUBLISHED`. Este PASS **no suma puntos** I3.
+Vigentes:
+- `MATRIZ-PRE-REVISION-JURIDICA-TYA-V0.3-FUENTES-PRIMARIAS-20260816.md`;
+- `SOURCE-LOCK-ITERATION3-LEGAL-V0.3-PRECOUNSEL-PRIMARY-SOURCE-VERIFICATION-PASS-20260816.md`.
+
+La matriz clasifica `GT-01..GT-08`, `HN-01..HN-06`, `X-01..X-06` en hechos confirmados, soporte del draft con decisión de counsel pendiente o decisión exclusivamente profesional.
+
+Nuevo hecho primario: **Honduras Decreto 149-2014 — Ley sobre Comercio Electrónico** debe ser considerado expresamente en `HN-02` junto con Decreto 149-2013 y Reglamento 41-2014. No se infiere suficiencia del mecanismo UI.
+
+Búsqueda read-only Drive/Gmail no encontró dictamen profesional V0.3/GT-HN. La autorización `autorizado, continuemos` no se usa como aprobación legal final ni aceptación.
+
+Este PASS source-only **no suma puntos I3**.
 
 ## Pendiente humano antes de provider write
 
