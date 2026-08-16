@@ -1,7 +1,7 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-15 17:52 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_FROZEN__REQUEST08_LEGAL_STOP__LEGAL_PROVIDER_SOURCE_ONLY_PASS__TYA_LEGAL_V0_2_NOCODE_DRAFT__SAME_CANDIDATE__GO_LIVE_35`
+**Última actualización:** 2026-08-15 18:05 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_FROZEN__REQUEST08_LEGAL_STOP__LEGAL_PROVIDER_SOURCE_ONLY_PASS__TYA_LEGAL_V0_2_NOCODE_DRAFT__REGISTERED_DOMICILE_RECOVERED_RESTRICTED__SAME_CANDIDATE__GO_LIVE_35`
 
 No nueva candidata/rama/PR. I1/I2 cerradas. I3 continúa únicamente por cierre legal humano + Admin/new Shopper.
 
@@ -19,10 +19,12 @@ Auth owner/exact identity/Staff membership, I1/I2, Mis Visitas, protected HR aut
 ## Ya resuelto source-only
 
 - Provider legal durable exact-identity/versioned/human-only/ACK/fail-closed preparado y gateado.
-- Contrato no-code reusable creado: `backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json`.
+- Contrato no-code reusable: `backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json`.
 - Rebranding tratado como configuración; no nombre de plataforma rígido.
 - Tenant TyA separado de lógica global.
-- Evidencias definidas como política por proyecto, no por core.
+- Evidencias como política por proyecto, no por core.
+- Domicilio fiscal/comercial registrado recuperado read-only desde RTU; al coincidir con domicilio residencial queda clasificado como restringido y NO se copia al repo ni se publica automáticamente.
+- Contrato no-code separa ahora `registeredLegalDomicileRestricted` de `publicLegalAddress`.
 
 ## Decisiones humanas cerradas — no volver a preguntar
 
@@ -39,17 +41,19 @@ Auth owner/exact identity/Staff membership, I1/I2, Mis Visitas, protected HR aut
 11. Documentos: mínimo indispensable.
 12. Foto/video/audio/geolocalización/comprobantes: configurables al crear/editar proyecto.
 13. Revisión profesional final GT/HN: sí.
+14. Domicilio registrado exacto: recuperado; preservar como dato restringido y definir por configuración una dirección pública distinta o un nivel de localidad jurídicamente suficiente.
 
 ## Pendiente legal real — lista reducida
 
-1. Recuperar/confirmar domicilio comercial/legal público adecuado; evitar domicilio residencial si no es necesario.
-2. Definir nombre visible temporal/final para el primer go-live si el rebranding todavía no está cerrado.
-3. Obtener revisión jurídica Guatemala/Honduras.
-4. Incorporar correcciones del abogado/Paula.
-5. Consolidar V0.1 + V0.2 en un texto final único.
-6. Asignar versión final inmutable y SHA-256 final.
-7. Aprobación humana expresa del texto final.
-8. Solo con gate explícito: materializar `tenantLegalProfile`/legalContents provider-authoritative y registrar aceptación humana real.
+1. Validar con abogado qué nivel de domicilio debe mostrarse públicamente; no es necesario volver a pedir el domicilio registrado a Paula.
+2. Revisión jurídica Guatemala/Honduras.
+3. Incorporar correcciones del abogado/Paula.
+4. Consolidar V0.1 + V0.2 en un texto final único.
+5. Asignar versión final inmutable y SHA-256 final.
+6. Aprobación humana expresa del texto final.
+7. Solo con gate explícito: materializar `tenantLegalProfile`/legalContents provider-authoritative y registrar aceptación humana real.
+
+El nombre visible final del rebranding **no bloquea** el cierre técnico del texto porque el contrato usa “la Plataforma” + `platform.displayName` dinámico. Puede cambiarse posteriormente sin tocar código ni reescribir aceptaciones, salvo que el cambio implique además una modificación jurídica material.
 
 ## Pendiente I3 Admin/new Shopper
 
@@ -64,7 +68,7 @@ Después del receipt legal válido:
 ## Pendiente prototipo / Claude
 
 No rediseñar UI desde backend. Cuando llegue el bloque frontend autorizado:
-- `configuracion.js`: Legal y cumplimiento provider-authoritative, sin localStorage authority;
+- `configuracion.js`: Legal y cumplimiento provider-authoritative, incluyendo separación entre domicilio registrado restringido y dirección pública;
 - `administrabilidad.js`: retirar semántica demo/local después de provider real;
 - proyectos: Evidencias y privacidad no-code;
 - integraciones: Provider Registry;
