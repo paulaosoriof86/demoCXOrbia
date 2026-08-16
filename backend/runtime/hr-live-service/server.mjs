@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
 import { maybeHandleDevVisualRequest } from './dev-visual.mjs';
 import { isLiveUserAdminPath, maybeHandleLiveUserAdminRequest } from './user-admin.mjs';
+import { isLegalRuntimePath, maybeHandleLegalRuntimeRequest } from './legal-runtime.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ROOT=path.resolve(HERE,'../../..');
@@ -230,12 +231,16 @@ const server=http.createServer(async(req,res)=>{
     res.setHeader('Access-Control-Allow-Headers','Authorization, Content-Type, Idempotency-Key');
     return res.end();
   }
+  if(isLegalRuntimePath(url.pathname)){
+    await maybeHandleLegalRuntimeRequest(req,res,url);
+    return;
+  }
   if(isLiveUserAdminPath(url.pathname)){
     await maybeHandleLiveUserAdminRequest(req,res,url);
     return;
   }
   if(req.method!=='GET')return sendJson(res,405,{ok:false,error:'method_not_allowed'});
-  if(url.pathname==='/health')return sendJson(res,200,{ok:true,service:'cxorbia-live-hr-source-safe',cacheMs:CACHE_MS,bootstrapReady:Boolean(cache),revisionStable:true,autoMonthProviderRegistry:true,operationalDisplayIdentityDev:DEV_OPERATIONAL_NAMES,devFullVisualEndpoint:true,liveUserAdminSourceReady:true,lastRefreshError,writes:false,production:false});
+  if(url.pathname==='/health')return sendJson(res,200,{ok:true,service:'cxorbia-live-hr-source-safe',cacheMs:CACHE_MS,bootstrapReady:Boolean(cache),revisionStable:true,autoMonthProviderRegistry:true,operationalDisplayIdentityDev:DEV_OPERATIONAL_NAMES,devFullVisualEndpoint:true,liveUserAdminSourceReady:true,legalRuntimeSourceReady:true,lastRefreshError,writes:false,production:false});
   if(!ENDPOINT_PATHS.has(url.pathname))return sendJson(res,404,{ok:false,error:'not_found'});
   if(await maybeHandleDevVisualRequest(req,res,url,{sendJson}))return;
   try{
