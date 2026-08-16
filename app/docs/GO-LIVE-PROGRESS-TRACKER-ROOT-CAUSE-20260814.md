@@ -1,13 +1,13 @@
 # GO-LIVE PROGRESS TRACKER — ROOT CAUSE · CXORBIA TyA
 
-**Fecha de actualización:** 2026-08-15 17:52 -06:00  
+**Fecha de actualización:** 2026-08-15 18:05 -06:00  
 **Método:** una iteración solo suma su peso cuando cierra integralmente PASS; subgates parciales no inflan el porcentaje.
 
 | Iteración | Peso | Estado | Evidencia vigente |
 |---|---:|---|---|
 | I1 — Auth/authority/source correction | 15 | PASS 15/15 | Gate vigente conservado |
 | I2 — canonical persistence/transversal | 20 | PASS 20/20 | `SOURCE-LOCK-ITERATION2-CANONICAL-PERSISTENCE-PASS-20260814.md` |
-| I3 — Shopper persistence + real Auth continuity | 25 | 0/25, EN CURSO | Histórico PASS congelado; legal provider source-only PASS; TyA legal V0.2 no-code draft preparado; aprobación/materialización/aceptación + Admin/new Shopper pendientes |
+| I3 — Shopper persistence + real Auth continuity | 25 | 0/25, EN CURSO | Histórico PASS congelado; legal provider source-only PASS; TyA legal V0.2 no-code draft; domicilio registrado recuperado/restringido; aprobación/materialización/aceptación + Admin/new Shopper pendientes |
 | I4 — Phase A operational flows | 25 | 0/25, NO INICIAR | Solo después de I3 PASS |
 | I5 — final go-live validation | 15 | 0/15, NO INICIAR | Solo después de I4 PASS |
 
@@ -25,31 +25,32 @@ Source final `0602d6ca0f64280222a4b1522b36f3be77c65c87`. Gate push `31913700755`
 
 ## I3 — draft legal no-code
 
-Base: `DRAFT-CONTENIDO-LEGAL-TYA-V0.1-REVISION-HUMANA-20260815.md`.
-
 Vigente para revisión: `DRAFT-CONTENIDO-LEGAL-TYA-V0.2-NOCODE-REVISION-HUMANA-20260815.md` + `DECISION-LOCK-TYA-LEGAL-V0.2-NOCODE-20260815.md` + `backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json`.
 
 Quedaron resueltos humanamente, sin materialización provider: modelo de empresa individual/operador Guatemala; Honduras operada desde Guatemala; contacto editable; rebranding/no-code; retención 60 mínimo/90 default para crudo; proveedores dinámicos; arbitraje preferido B2B; licenciante separado de marca; banco completo bajo protección; documentos mínimos; evidencias por proyecto; revisión legal profesional final.
+
+El domicilio fiscal/comercial registrado fue recuperado read-only y, por coincidir con una residencia, queda restringido. No se publica ni se copia al repo. El contrato distingue domicilio registrado protegido de dirección pública configurable.
 
 Este avance documental/source-only **no suma puntos** I3.
 
 ## Pendiente real antes del gate de write
 
-1. domicilio comercial/legal público adecuado;
-2. nombre visible temporal/final si el rebranding aún no está definido;
-3. revisión jurídica Guatemala/Honduras;
-4. consolidar V0.1 + V0.2 en texto legal único;
-5. versión final inmutable + SHA-256 final;
-6. aprobación humana final.
+1. validar jurídicamente qué nivel de dirección debe ser público;
+2. revisión jurídica Guatemala/Honduras;
+3. consolidar V0.1 + V0.2 en texto legal único;
+4. versión final inmutable + SHA-256 final;
+5. aprobación humana final.
+
+El nombre final del rebranding no es bloqueo técnico: `platform.displayName` es dinámico y el contrato usa “la Plataforma”.
 
 Después, y solo después:
-7. materialización provider-authoritative autorizada;
-8. aceptación exclusivamente humana con provider ACK;
-9. Admin crea/edita un único Shopper nuevo;
-10. Auth + claims + membership + profile/shopper + crosswalk exactos;
-11. provider readback;
-12. login Shopper nuevo + reload + new-tab + segundo contexto;
-13. cero fuzzy matching, otros usuarios, password reset histórico o providers prohibidos.
+6. materialización provider-authoritative autorizada;
+7. aceptación exclusivamente humana con provider ACK;
+8. Admin crea/edita un único Shopper nuevo;
+9. Auth + claims + membership + profile/shopper + crosswalk exactos;
+10. provider readback;
+11. login Shopper nuevo + reload + new-tab + segundo contexto;
+12. cero fuzzy matching, otros usuarios, password reset histórico o providers prohibidos.
 
 Hasta cierre integral, I3 permanece `0/25` y GO-LIVE **35/65**.
 
