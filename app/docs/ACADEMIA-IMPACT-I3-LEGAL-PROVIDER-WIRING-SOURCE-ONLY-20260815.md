@@ -1,57 +1,67 @@
-# ACADEMIA — IMPACTO I3 LEGAL PROVIDER WIRING SOURCE-ONLY · 2026-08-15
+# ACADEMIA — IMPACTO I3 LEGAL PROVIDER / V0.3 · 2026-08-15
 
 ## Estado
 
-Provider legal durable source-only validado: source final `0602d6ca0f64280222a4b1522b36f3be77c65c87`, gate `31913700755` / `95082399402` SUCCESS. No provider IO ni aceptación real.
+Provider legal durable source-only continúa PASS. Este bloque añadió:
+- `backend/contracts/cxorbia-legal-publication-snapshot-v1.json`;
+- `CANDIDATA-LEGAL-TYA-V0.3-CONSOLIDADA-REVISION-JURIDICA-20260815.md`;
+- `PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md`.
 
-Drafts legales:
-- base `DRAFT-CONTENIDO-LEGAL-TYA-V0.1-REVISION-HUMANA-20260815.md`;
-- decisiones vigentes `DRAFT-CONTENIDO-LEGAL-TYA-V0.2-NOCODE-REVISION-HUMANA-20260815.md`;
-- lock humano `DECISION-LOCK-TYA-LEGAL-V0.2-NOCODE-20260815.md`.
+Gate canónico de fuente: run `31921002582`, job `95100754570`, SUCCESS. V0.3 sigue `NOT_APPROVED / NOT_PUBLISHED`; no provider IO ni aceptación real.
 
-Todos siguen `NOT_APPROVED`; no son provider-authoritative y no cambian todavía cursos/manuales visibles.
+## Patrón que Academia deberá explicar cuando el provider real esté activo
 
-## Principios que Academia deberá reflejar cuando el provider sea real
+Hay dos conceptos distintos que no deben confundirse:
 
-- aceptación legal exclusivamente humana, autenticada, versionada y auditable;
-- nueva aceptación cuando un cambio jurídico material genere nueva versión;
-- rebranding neutral: manuales deben referirse a “la Plataforma” o al nombre visible dinámico, evitando fijar CXOrbia/Gravicentra como nombre perpetuo;
-- datos legales/contactos/proveedores/retención configurables no-code por tenant;
-- evidencias foto/video/audio/geolocalización/comprobantes configuradas por proyecto, no reglas globales;
-- confidencialidad y reserva de proyectos;
-- protección de credenciales y mínimo privilegio;
-- privacidad/minimización;
-- datos bancarios completos solo para roles autorizados y mostrados enmascarados por defecto;
-- documentos únicamente cuando sean necesarios;
-- reporte de incidentes;
-- propiedad intelectual: marca visible no equivale a titularidad del software;
-- proveedores deshabilitados no se presentan como receptores actuales de datos.
+1. **Configuración legal editable no-code:** datos de tenant, contactos, nombre visible, retención, dirección pública, proveedores y políticas configurables según permisos.
+2. **Versión legal publicada:** copia inmutable de los valores públicos y texto que efectivamente aceptó el usuario. Se conserva con versión/digest y no cambia retroactivamente cuando un administrador modifica la configuración.
 
-## Retención que deberá explicar Academia
-
-Para operación TyA, el default propuesto de evidencia cruda es 90 días después de aceptación final, con piso humano 60 días y posibilidad de override por proyecto. Esto no significa que todo dato se elimine a los 90 días: reportes, auditoría, pagos y documentos mercantiles/probatorios pueden conservarse por plazos mayores, incluida la referencia de cinco años cuando corresponda. Un legal hold suspende borrado.
+Un cambio material puede generar nueva versión y nueva aceptación humana. Un cambio no material no reescribe la historia.
 
 ## Por rol
 
-**Shopper:** confidencialidad de escenarios, autenticidad de visitas, evidencia solo según proyecto, no compartir cuenta, no reutilizar material, cuidado con banco/documentos y reporte de incidentes.
+**Shopper:** entender qué versión acepta; confidencialidad; autenticidad de visitas; evidencia solo según proyecto; no compartir cuenta; no reutilizar material; seguridad bancaria/documental; reportar incidentes.
 
-**Admin/Operaciones:** mínimo privilegio, no exportar sensibles sin necesidad, no fuzzy matching de identidad, no sobrescribir conflictos HR/plataforma, no revelar cuenta bancaria completa fuera del flujo autorizado, administrar legal/retención/proyecto solo según permisos.
+**Admin/Operaciones:** mínimo privilegio; editar configuración legal solo con permiso; distinguir `borrador / en revisión / publicado`; no sobrescribir versiones publicadas; no fuzzy matching de identidad; no exponer domicilio/banco/documentos restringidos.
 
-**Cliente:** confidencialidad recíproca, uso limitado de resultados, protección de identidad Shopper, no represalias/contacto fuera del flujo acordado y respeto de las reglas de evidencia del proyecto.
+**Cliente:** confidencialidad recíproca; protección de identidad Shopper; uso limitado de resultados; obligaciones de datos/evidencias del proyecto; no represalias/contacto fuera del flujo.
+
+**Superadmin/tenant admin:** gestionar perfil no-code, Provider Registry, reglas de retención/evidencias y rebranding sin convertir decisiones de un tenant/proyecto en lógica global.
+
+## Rebranding
+
+Los manuales deben usar “la Plataforma” o el nombre visible dinámico. No fijar CXOrbia/Gravicentra como nombre perpetuo. Marca visible, registro marcario y titular/licenciante son conceptos separados.
+
+## Evidencias y retención
+
+Las reglas de foto/video/audio/geolocalización/comprobantes pertenecen al proyecto. Academia deberá enseñar dónde se configuran, qué significa opcional/obligatorio/no requerido y cuándo un tratamiento de alto impacto exige revisión adicional.
+
+Para TyA, la propuesta inicial conserva piso 60 días/default 90 para evidencia cruda, pero no debe enseñar que todo dato se destruye a 90 días: documentación empresarial, pagos, auditoría y receipts pueden requerir plazos mayores/legal hold.
 
 ## Qué NO debe enseñar o simular
 
 - QA/GitHub/automatizaciones/Make/Gemini no aceptan ni firman por el usuario.
-- `#bnOk` no es consentimiento legal.
-- localStorage no es autoridad de aceptación.
-- receipt de otro usuario/rol/proyecto/versión no satisface el gate.
-- draft V0.1/V0.2 no es texto productivo aprobado.
-- consentimientos opcionales no van premarcados ni mezclados con términos obligatorios.
-- marca no registrada no se presenta como registrada.
-- Cinépolis o cualquier cliente no se convierte en regla global de evidencia.
+- `#bnOk` y localStorage no son consentimiento legal.
+- Un receipt de otra cuenta/rol/proyecto/versión no satisface el gate.
+- V0.3 no es texto definitivo hasta revisión jurídica y aprobación humana.
+- Placeholders/template no son documento publicable.
+- Un cambio no-code nunca debe alterar una versión histórica ya aceptada.
+- Domicilio registrado restringido no se muestra automáticamente.
+- Proveedores deshabilitados no son receptores actuales.
+- Marca no registrada no se presenta como registrada.
+- Cinépolis u otro proyecto no crea reglas globales.
 
-## Impacto runtime/editorial
+## Impacto editorial futuro
 
-No se modifica contenido de cursos, manuales visibles ni rutas de usuario en este bloque. La actualización editorial debe ocurrir después de consolidar/aprobar el texto legal final y activar/validar el provider legal real.
+Cuando el provider legal real quede activado/validado, actualizar:
+- ruta por rol sobre aceptación legal;
+- manual de `Legal y cumplimiento`;
+- manual de `Crear/Editar proyecto > Evidencias y privacidad`;
+- checklist de publicación de nueva versión;
+- guía de Provider Registry;
+- errores frecuentes: versión pendiente, cambio material, proveedor no activo, dato restringido, aceptación faltante;
+- notificación de nueva versión legal cuando requiera reaceptación.
 
-Academia/Certificación del Shopper histórico permanecen diferidas y no se declaran PASS.
+No incluir hashes internos, IDs de runs, credenciales, rutas privadas ni detalles del runner en contenidos visibles de Academia.
+
+Academia/Certificación del Shopper histórico permanecen diferidas y no se declaran PASS por este bloque.
