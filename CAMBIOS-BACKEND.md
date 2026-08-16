@@ -1,7 +1,7 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-16 10:10 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_FROZEN__REQUEST08_LEGAL_STOP__LEGAL_PROVIDER_SOURCE_PASS__LEGAL_V0_3_COUNSEL_SNAPSHOT_SOURCE_PASS__PRECOUNSEL_PRIMARY_SOURCE_VERIFICATION_PASS__GO_LIVE_35__NO_PRODUCTION`
+**Última actualización:** 2026-08-16 10:38 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_FROZEN__REQUEST08_CONSUMED__LEGAL_PROVIDER_SOURCE_PASS__LEGAL_V0_4_INTERIM_GOLIVE__COUNSEL_DEFERRED_NONBLOCKING__GO_LIVE_35__NO_PRODUCTION_YET`
 
 ## Preservado
 
@@ -11,90 +11,77 @@ Request08 run `31909354336` / job `95071998299`: STOP fail-closed `I3_ADMIN_LEGA
 
 ## Autoridad legal durable previa
 
-Cadena técnica preservada:
-- `c3f8fc362a4b2dddb0a19fa3327170f87b5f9eed`;
-- `09092fec7e95d6ccc33aefb780bffdc0b81ff1a0`;
-- `0602d6ca0f64280222a4b1522b36f3be77c65c87`.
+Source durable `0602d6ca0f64280222a4b1522b36f3be77c65c87`; gate `31913700755` / `95082399402` SUCCESS. Aceptación exact-identity/versioned/human-only/provider-ACK/fail-closed preparada. Bridge no activado. Provider/Auth/Firestore/legal writes reales `0`.
 
-Gate `31913700755` / `95082399402` SUCCESS; gate PR `31913704247` SUCCESS. Aceptación exact-identity/versioned/human-only/provider-ACK/fail-closed preparada; bridge no activado; provider/Auth/Firestore/legal writes reales `0`.
+Patrón no-code:
+`tenantLegalProfile mutable → snapshot público inmutable → render UTF-8/LF → SHA-256 post-render → receipt humano por legalVersion/contentDigest`.
 
-## V0.3 consolidada + publicación legal inmutable
+## Bloque 2026-08-16 — decisión de no bloquear go-live por counsel
 
-Archivos vigentes:
-- `backend/contracts/cxorbia-tenant-legal-nocode-profile-v1.json`;
-- `backend/contracts/cxorbia-legal-publication-snapshot-v1.json`;
-- `backend/contracts/cxorbia-legal-acceptance-durable-v1.json`;
-- `tools/qa/verify-i3-legal-publication-snapshot-source-only.mjs`;
-- `app/docs/CANDIDATA-LEGAL-TYA-V0.3-CONSOLIDADA-REVISION-JURIDICA-20260815.md`;
-- `app/docs/PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md`;
-- `app/docs/SOURCE-LOCK-ITERATION3-LEGAL-V0.3-COUNSEL-REVIEW-SNAPSHOT-SOURCE-ONLY-PASS-20260815.md`.
-
-Regla estructural:
-`tenantLegalProfile mutable no-code → snapshot de publicación inmutable → render canónico UTF-8/LF → SHA-256 post-render → receipt humano ligado a legalVersion + contentDigest`.
-
-Gate source V0.3/snapshot: HEAD `768a1b43c10a054a254cfc2bd295aacdeae64c92`, run `31921002582`, job `95100754570`, SUCCESS. Reconciliación posterior HEAD `1bf82ad949be12ac6bc2327eed0b2f40c38985b3`, run `31921159197`, job `95101127823`, SUCCESS.
-
-## Bloque 2026-08-16 — pre-counsel primary-source verification
+Paula indicó que la plataforma no puede detenerse por indisponibilidad temporal del abogado. Se documentó la decisión como **counsel diferido post-go-live**, sin afirmar revisión jurídica inexistente.
 
 ### Archivos creados
 
-1. `app/docs/MATRIZ-PRE-REVISION-JURIDICA-TYA-V0.3-FUENTES-PRIMARIAS-20260816.md`  
-   Commit `8c3d03b610494b343d8fe0848a8779598eaa3134`.
+1. `app/docs/DECISION-LOCK-TYA-LEGAL-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md`  
+   Commit `66d1d99f19e32ae411fbf7ab1ed49c16a00ee296`.
 
-2. `app/docs/SOURCE-LOCK-ITERATION3-LEGAL-V0.3-PRECOUNSEL-PRIMARY-SOURCE-VERIFICATION-PASS-20260816.md`  
-   Commit `7f923b7929f755313ce44918eaae330e29603e62`.
+2. `app/docs/CANDIDATA-LEGAL-TYA-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md`  
+   Commit `9eeea214a34a840b66c5ce1ba5fd2fb163b0abc1`.
 
-### Objetivo
+3. `app/docs/PENDIENTE-LEGAL-POST-GOLIVE-TYA-GT-HN-V0.4-20260816.md`  
+   Commit `5032347c3cb54d2eb70c2e0e6d527feedd960546`.
 
-Reducir hechos que el abogado no necesita redescubrir sin usar investigación como sustituto de opinión profesional. La matriz clasifica todos los códigos `GT-01..GT-08`, `HN-01..HN-06`, `X-01..X-06` en:
-- `SOURCE_CONFIRMED_FACT`;
-- `SOURCE_SUPPORTS_DRAFT__COUNSEL_DECISION_REQUIRED`;
-- `COUNSEL_DECISION_REQUIRED`.
+### Regla
 
-### Hallazgo adicional
+El gate `HUMAN_COUNSEL_REVIEW_TYA_GT_HN_AND_PAULA_APPROVAL_BEFORE_PROVIDER_MATERIALIZATION` deja de ser bloqueo pre-go-live por decisión humana expresa. Counsel no queda cerrado: los códigos `GT-01..GT-08`, `HN-01..HN-06`, `X-01..X-06` permanecen en registro post-go-live y deberán producir una nueva versión si el abogado requiere cambios.
 
-Fuente oficial del Tribunal Superior de Cuentas de Honduras confirma **Decreto 149-2014, Ley sobre Comercio Electrónico**. Se incorpora como referencia adicional de `HN-02`, junto con Decreto 149-2013 y Reglamento 41-2014. No se declara que la existencia de esas normas haga suficiente automáticamente la mecánica de aceptación UI.
+### V0.4 interina
 
-### Búsqueda read-only previa a pedir trabajo manual
+V0.4:
+- no contiene marcadores internos `LEGAL_REVIEW_REQUIRED` dentro del texto destinado al usuario;
+- no afirma que exista revisión profesional;
+- evita afirmar suficiencia universal de un clic/firma;
+- no afirma ausencia de obligaciones locales hondureñas;
+- no impone arbitraje universal a usuarios individuales;
+- mantiene evidencia por proyecto y tratamientos de alto impacto bajo gate específico;
+- mantiene retención 60/90 para evidencia cruda separada de documentación financiera/mercantil;
+- preserva rebranding/no-code y separación marca vs IP/licenciante;
+- preserva domicilio registrado restringido;
+- Provider Registry solo muestra proveedores realmente activos.
 
-- Google Drive: no se recuperó dictamen/revisión profesional V0.3 GT/HN.
-- Gmail: búsqueda TyA/T&A + abogado/legal/contrato/NDA/confidencialidad/términos/revisión, excluyendo GitHub, no recuperó respuesta de counsel sobre la candidata vigente.
+## No-code / datos TyA
 
-Por tanto el gate de revisión profesional sigue abierto.
-
-### Interpretación de autorización
-
-`autorizado, continuemos` autoriza este bloque source-only. No se registra como aprobación legal final de V0.3, consentimiento, provider materialization, request09, Admin/new Shopper, deploy, merge o producción.
+Operador, identificación tributaria, contactos, dirección pública, países, retención, controversias, proveedor(es), branding/licenciante y evidencia por proyecto deben vivir en configuración provider-authoritative editable. No se convirtieron en constantes runtime ni seeds TyA dentro del código.
 
 ## Claude / prototipo
 
-No se modificó UI desde backend. Futuro bloque frontend autorizado debe empalmar:
-- `configuracion.js`: Legal y cumplimiento provider-authoritative; perfil mutable separado de versiones publicadas;
-- `administrabilidad.js`: auditoría de cambios sin datos restringidos y retiro de demo/local solo tras provider real;
+No se modificó `/app/modules` ni `/app/core`. Sigue documentado para frontend futuro:
+- `configuracion.js`: Legal y cumplimiento no-code, perfil mutable vs versiones publicadas;
+- `administrabilidad.js`: auditoría y retiro de autoridad local/demo tras provider real;
 - proyectos: Evidencias y privacidad;
 - integraciones: Provider Registry;
-- marca/white-label: displayName/estado registral separado de IP/licenciante;
-- gate legal visible: texto completo, versión, casillas no premarcadas, nunca `#bnOk` como aceptación.
+- marca/white-label: nombre visible/estado registral/licenciante separados;
+- gate legal: texto completo, versión, casillas no premarcadas y acción humana.
 
-## Seguridad / efectos reales
+## Seguridad / efectos reales del bloque
 
 Provider credentials/reads/writes `0/0/0`; Auth/Firestore/legalContent/legalAcceptance writes `0`; password resets `0`; historical access/reconcile `0`; HR/Rules/Storage/Make/Gemini/pagos `0`; `/app/modules` cambios `0`; `/app/core` cambios `0`; product entrypoint activation `0`; deploy `0`; merge=false; producción=false.
 
 ## Pendiente real
 
-Counsel GT/HN/X debe resolver los códigos del paquete; después se incorporan cambios, se eliminan marcadores, se genera versión publicable y Paula aprueba humanamente el texto final. Solo entonces podrá abrirse provider materialization/aceptación y Admin → único Shopper nuevo.
+Siguiente gate:
+`PAULA_PROVIDER_WRITE_AND_HUMAN_ACCEPTANCE_RUNTIME_GATE_FOR_I3`.
+
+Debe materializar V0.4/configuración legal en DEV bajo presupuesto exacto, habilitar autoridad durable en runtime y dejar la aceptación únicamente al humano autenticado. Después se crea nueva continuación I3 Admin/new Shopper; request08 no se reutiliza.
 
 ## Clasificación
 
-- **Reusable CXOrbia / sucesor de marca:** matriz de revisión primaria y patrón perfil mutable → snapshot inmutable → digest → receipt.
-- **Exclusivo TyA:** hechos/decisiones GT/HN del tenant; valores no hardcodeados.
-- **Claude/prototipo:** sin cambio frontend en este bloque; superficies futuras documentadas.
-- **Academia:** impacto editorial diferido hasta provider legal real.
-- **Sin impacto Claude inmediato:** verificación normativa, búsquedas read-only, source lock y documentación.
+- **Reusable CXOrbia / sucesor de marca:** counsel diferible sin falsificar revisión; perfil mutable → snapshot inmutable → digest → receipt.
+- **Exclusivo TyA:** V0.4 interina y decisiones GT/HN; valores no hardcodeados.
+- **Claude/prototipo:** superficies futuras documentadas; cero parche UI en este bloque.
+- **Academia:** revisión profesional pasa a pendiente post-go-live; aceptación humana/versionada continúa obligatoria.
+- **Sin impacto Claude inmediato:** decision lock, candidata legal, registro post-go-live y docs.
 
 ## Porcentaje
 
 **35% completado / 65% pendiente. I3 0/25 hasta PASS integral.**
-
-Gate vigente:
-`HUMAN_COUNSEL_REVIEW_TYA_GT_HN_AND_PAULA_APPROVAL_BEFORE_PROVIDER_MATERIALIZATION`.
