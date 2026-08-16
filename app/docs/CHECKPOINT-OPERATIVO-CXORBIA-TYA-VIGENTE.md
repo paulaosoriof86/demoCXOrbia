@@ -1,68 +1,94 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-16 11:12 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_PASS_FROZEN__REQUEST08_CONSUMED__LEGAL_V0_4_DEV_MATERIALIZATION_PASS__4_WRITES_EXACT__REQUEST_CONSUMED__RUNTIME_SOURCE_WIRED__GO_LIVE_35__DEV_DEPLOY_HUMAN_ACCEPTANCE_GATE_NEXT__NO_PRODUCTION_YET`
+**Fecha:** 2026-08-16 12:19 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_PASS_FROZEN__REQUEST08_CONSUMED__LEGAL_V0_4_MATERIALIZATION_PASS__RUNTIME_AND_HOSTING_DEV_DEPLOY_PASS__HUMAN_ACCEPTANCE_PENDING__GO_LIVE_35__NO_PRODUCTION_YET`
 
 ## Carril vivo
 
 Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`; DEV `cxorbia-backend-dev`.
 
+Source lock técnico prevalente:
+`app/docs/SOURCE-LOCK-ITERATION3-LEGAL-V0.4-DEV-RUNTIME-DEPLOY-PASS-HUMAN-ACCEPTANCE-PENDING-20260816.md`.
+
 ## Cerrado y no reprocesar
 
-I1 PASS `15/15`. I2 PASS `20/20`. Historical Shopper run `31906391682` PASS congelado; reset histórico único consumido; toda continuación `passwordResets=0`; cero credential access/reconcile/recovery histórico.
+I1 PASS `15/15`. I2 PASS `20/20`.
 
-Request08 run `31909354336`, job `95071998299` consumido/no rerun. No Shopper nuevo se creó por request08.
+Historical Shopper run `31906391682` PASS congelado; reset histórico único consumido; toda continuación `passwordResets=0`; cero credential access/reconcile/recovery histórico.
+
+Request08 run `31909354336`, job `95071998299` consumido/no rerun.
+
+Bootstrap V0.4 `i3-legal-v04-dev-20260816-01` consumido/no retry.
+
+Deploy V0.4 `i3-legal-v04-runtime-dev-20260816-01` consumido/no retry.
 
 ## Counsel / V0.4
 
-Counsel GT/HN `deferred_post_golive`, no `approved`, y no bloquea el go-live interino. V0.4 vigente: `CANDIDATA-LEGAL-TYA-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md`.
+Counsel GT/HN `deferred_post_golive`, no `approved`, y no bloquea el go-live interino.
 
-Source lock técnico prevalente:
-`app/docs/SOURCE-LOCK-ITERATION3-LEGAL-V0.4-MATERIALIZATION-PROVIDER-DEV-PASS-20260816.md`.
+V0.4:
+- legalContentId `tya-platform-master-terms`;
+- legalVersion `tya-legal-bundle-v0.4-interim-golive-20260816`;
+- digest `58d16a736495065a7244f8018d95a1faa87eae9a00e36d7ffc65a41edd58f58d`.
 
 ## Materialización REAL Firebase DEV — PASS
 
-Gate autorizado: `PAULA_PROVIDER_WRITE_AND_HUMAN_ACCEPTANCE_RUNTIME_GATE_FOR_I3`.
+Gate ejecutado: `PAULA_PROVIDER_WRITE_AND_HUMAN_ACCEPTANCE_RUNTIME_GATE_FOR_I3`.
 
-Request `i3-legal-v04-dev-20260816-01` ejecutado una sola vez y consumido; no automatic retry.
-
-Run `31961266066`; job materialización `95199496314`; job validación `95199496265`; `PASS_COMMITTED_READBACK`.
+Run `31961266066`; materialización `95199496314`; validación `95199496265`; `PASS_COMMITTED_READBACK`.
 
 Resultado:
 - Firestore writes `4` create-only;
 - legalProfile `1`;
 - Provider Registry `1`;
 - legalContent/version `2`;
-- `legalContentId=tya-platform-master-terms`;
-- `legalVersion=tya-legal-bundle-v0.4-interim-golive-20260816`;
-- digest `58d16a736495065a7244f8018d95a1faa87eae9a00e36d7ffc65a41edd58f58d`;
 - legalAcceptance `0`;
-- Auth `0`;
+- Auth/passwordResets/historical/HR/Rules/Storage/Make/Gemini/pagos `0`;
+- automaticAcceptance=false.
+
+Evidencia: `app/docs/evidence/ITERATION3-LEGAL-V04-MATERIALIZATION-DEV-LATEST.json`.
+
+## Runtime legal + Hosting DEV — PASS REAL
+
+Gate ejecutado:
+`PAULA_DEV_DEPLOY_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_RUNTIME`.
+
+Antes del deploy se detectó y corrigió una causa raíz: el Dockerfile no incluía `legal-runtime.mjs` ni el provider que `server.mjs` importaba. Se corrigió antes de construir/desplegar, commit `54741f3d7cef9c601db2c77e2b5d1d778cc25c27`.
+
+No se creó workflow nuevo. Se reutilizó `.github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml`.
+
+Run `31963932862`; job `95206055703`; `SUCCESS`.
+
+Resultado exacto:
+- Cloud Run service `cxorbia-live-hr-dev` actualizado una vez;
+- revision `cxorbia-live-hr-dev-00010-n78`;
+- Hosting DEV desplegado una vez;
+- DEV root `https://cxorbia-backend-dev.web.app`;
+- legalAcceptance writes durante deploy `0`;
+- acceptance count `0 → 0`;
+- futuro budget humano `1`;
+- Auth writes `0`;
 - passwordResets `0`;
 - historicalCredentialAccess/reconciliation `0/0`;
 - HR/Rules/Storage/Make/Gemini/pagos `0`;
 - automaticAcceptance=false;
-- deploy `0`, merge=false, producción=false.
+- merge=false;
+- producción=false.
 
-Evidencia: `app/docs/evidence/ITERATION3-LEGAL-V04-MATERIALIZATION-DEV-LATEST.json`.
+Evidencia:
+`app/docs/evidence/ITERATION3-LEGAL-V04-RUNTIME-DEPLOY-DEV-LATEST.json`.
 
-## Runtime DEV source — preparado, NO desplegado
+## Runtime humano listo
 
-Provider-backed legal runtime quedó integrado en fuente al servicio DEV existente y al entrypoint protegido `app/index-backend-dev.html`.
+El runtime DEV verifica Firebase ID token exacto, deriva actor del provider, lee V0.4/version/digest desde Firestore, falla cerrado, no usa localStorage/sessionStorage como autoridad legal y sirve el texto completo.
 
-El runtime verifica ID token exacto, deriva actor del provider, lee contenido/version/digest desde Firestore, falla cerrado y no usa localStorage como autoridad. La UI DEV muestra el texto completo y exige dos casillas no premarcadas + clic humano. El endpoint de receipt permanece deshabilitado hasta un gate de deploy separado.
+La UI exige dos casillas no premarcadas y clic explícito. El endpoint está habilitado únicamente para el receipt humano exacto autorizado. Sin clic humano no hay write.
 
-Production `app/index.html` no fue conectado. No se modificó `/app/modules` ni `/app/core` en este bloque.
+Production `app/index.html` permanece intacto. No se modificó `/app/modules` ni `/app/core` para este bloque.
 
-## Incidente no material
+## Seguridad / efectos acumulados
 
-Commit `491042ba6eef90701799fa0f8eed2a1b7c66a1c8`, run `31961173013`: FAILURE por YAML inválido antes de request/provider; cero jobs, cero provider IO y cero writes. Corregido antes de la ejecución real.
-
-Después del wiring source, run canónico push `31961999583` pasó los gates técnicos I1/I2/frozen I3/legal durable/publication/V0.4; falló únicamente current checkpoint con `DURABLE_PLAN_NOT_INDEXED` porque el índice había omitido el addendum durable. El índice ya fue reconciliado documentalmente. No se reejecuta el request V0.4.
-
-## Seguridad / efectos acumulados del bloque autorizado
-
-Bootstrap: Firestore `4` exactos; legalAcceptance/Auth/passwordResets/historical/HR/Rules/Storage/Make/Gemini/pagos `0`. Runtime source wiring no produjo provider IO adicional. Deploy `0`; merge=false; producción=false; automaticAcceptance=false.
+Materialización V0.4: Firestore `4` exactos. Deploy: Cloud Run `1`, Hosting `1`, Firestore/legalAcceptance writes `0`. El contador de aceptaciones sigue `0` antes de la acción humana. Auth/passwordResets/historical/HR/Rules/Storage/Make/Gemini/pagos `0`. Merge=false. Producción=false.
 
 ## Progreso
 
@@ -70,8 +96,8 @@ I1 `15/15`; I2 `20/20`; I3 `0/25`; I4 `0/25`; I5 `0/15`.
 
 **35% completado / 65% pendiente.** I3 no suma hasta PASS integral.
 
-## Gate siguiente
+## Acción siguiente exacta
 
-`PAULA_DEV_DEPLOY_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_RUNTIME`.
+`HUMAN_PAULA_LEGAL_ACCEPTANCE_UI_CLICK`.
 
-Debe autorizar exclusivamente deploy/update DEV del runtime/Hosting existente y habilitar el endpoint para `1` receipt legalAcceptance **solo después del clic humano de Paula**. No bootstrap V0.4 otra vez; no request08; Auth/passwordResets/historical/HR/Rules/Storage/Make/Gemini/pagos `0`; sin merge ni producción.
+Paula abre `https://cxorbia-backend-dev.web.app`, inicia sesión con su cuenta canónica, lee la V0.4, marca las dos confirmaciones y pulsa `Aceptar y continuar`. Esa es la única acción que puede generar el receipt legal autorizado. Después corresponde provider readback, reload/new-tab y continuación I3 Admin/new Shopper sin request08 ni identidad histórica.
