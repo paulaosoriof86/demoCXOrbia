@@ -10,6 +10,10 @@ on:
       - 'backend/config/phase-a-firestore-target-attestation.example.json'
       - 'tools/migration/tya-phase-a-firestore-materialization-executor.mjs'
       - 'tools/migration/tya-phase-a-firestore-materialization-executor-validate.mjs'
+      - 'backend/runtime/cxorbia-legal-publication-provider-v1.mjs'
+      - 'backend/contracts/cxorbia-legal-v04-interim-materialization-v1.json'
+      - 'tools/migration/tya-i3-legal-v04-materialize-dev.mjs'
+      - 'backend/requests/i3-legal-v04-materialization-dev.json'
       - '.github/workflows/cxorbia-phase-a-firestore-materialization-executor.yml'
   pull_request:
     branches:
@@ -19,6 +23,9 @@ on:
       - 'backend/config/phase-a-firestore-target-attestation.example.json'
       - 'tools/migration/tya-phase-a-firestore-materialization-executor.mjs'
       - 'tools/migration/tya-phase-a-firestore-materialization-executor-validate.mjs'
+      - 'backend/runtime/cxorbia-legal-publication-provider-v1.mjs'
+      - 'backend/contracts/cxorbia-legal-v04-interim-materialization-v1.json'
+      - 'tools/migration/tya-i3-legal-v04-materialize-dev.mjs'
       - '.github/workflows/cxorbia-phase-a-firestore-materialization-executor.yml'
 
 permissions:
@@ -43,3 +50,192 @@ jobs:
           path: .tmp/firestore-materialization-executor-validation
           if-no-files-found: error
           retention-days: 14
+
+  materialize-i3-legal-v04-dev:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout triggering commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Inspect exact one-shot request
+        id: inspect
+        shell: bash
+        run: |
+          set -euo pipefail
+          REQUEST='backend/requests/i3-legal-v04-materialization-dev.json'
+          echo 'should_execute=false' >> "$GITHUB_OUTPUT"
+          if [[ ! -f "$REQUEST" ]]; then
+            echo 'request absent; provider execution skipped'
+            exit 0
+          fi
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const request=JSON.parse(fs.readFileSync('backend/requests/i3-legal-v04-materialization-dev.json','utf8'));
+          const ok=request.schemaVersion==='cxorbia.i3.legal-v04-materialization-request.v1'
+            && request.enabled===true
+            && request.consumed===false
+            && request.authorizationGate==='PAULA_PROVIDER_WRITE_AND_HUMAN_ACCEPTANCE_RUNTIME_GATE_FOR_I3'
+            && request.targetProject==='cxorbia-backend-dev'
+            && request.tenantId==='tya'
+            && /^[a-f0-9]{40}$/.test(String(request.sourceHeadSha||''));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`should_execute=${ok?'true':'false'}\n`);
+          if(ok){
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,`source_sha=${request.sourceHeadSha}\n`);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,`request_id=${request.requestId}\n`);
+            fs.copyFileSync('backend/requests/i3-legal-v04-materialization-dev.json',`${process.env.RUNNER_TEMP}/i3-legal-v04-request.json`);
+          }
+NODE
+
+      - name: Checkout pinned authorized source
+        if: steps.inspect.outputs.should_execute == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin "${{ steps.inspect.outputs.source_sha }}"
+          git checkout --detach "${{ steps.inspect.outputs.source_sha }}"
+          test "$(git rev-parse HEAD)" = "${{ steps.inspect.outputs.source_sha }}"
+          test -f tools/migration/tya-i3-legal-v04-materialize-dev.mjs
+          test -f backend/runtime/cxorbia-legal-publication-provider-v1.mjs
+
+      - name: Authenticate exact Firebase DEV provider
+        if: steps.inspect.outputs.should_execute == 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+
+      - name: Set up Node
+        if: steps.inspect.outputs.should_execute == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install transient Firebase Admin dependency
+        if: steps.inspect.outputs.should_execute == 'true'
+        shell: bash
+        run: npm install --no-save --ignore-scripts firebase-admin@13.4.0
+
+      - name: Execute exact V0.4 DEV bootstrap and readback
+        id: execute
+        if: steps.inspect.outputs.should_execute == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/migration/tya-i3-legal-v04-materialize-dev.mjs \
+            --request "$RUNNER_TEMP/i3-legal-v04-request.json" \
+            --out "$RUNNER_TEMP/i3-legal-v04-result.json"
+
+      - name: Upload sanitized execution evidence
+        if: always() && steps.inspect.outputs.should_execute == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: i3-legal-v04-materialization-dev-${{ github.run_id }}
+          path: ${{ runner.temp }}/i3-legal-v04-result.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Consume request and persist sanitized evidence without retry
+        if: always() && steps.inspect.outputs.should_execute == 'true'
+        shell: bash
+        env:
+          BRANCH: docs-tya-v6-v71-audit
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          REQUEST_ID: ${{ steps.inspect.outputs.request_id }}
+          SOURCE_SHA: ${{ steps.inspect.outputs.source_sha }}
+        run: |
+          set -euo pipefail
+          RESULT="$RUNNER_TEMP/i3-legal-v04-result.json"
+          if [[ ! -f "$RESULT" ]]; then
+            cat > "$RESULT" <<JSON
+          {
+            "schemaVersion": "cxorbia.i3.legal-v04-materialization-result.v1",
+            "requestId": "$REQUEST_ID",
+            "sourceHeadSha": "$SOURCE_SHA",
+            "targetProject": "cxorbia-backend-dev",
+            "targetTenant": "tya",
+            "status": "WORKFLOW_FAILED_BEFORE_RESULT",
+            "providerAttempted": false,
+            "providerAck": false,
+            "committed": false,
+            "readbackReady": false,
+            "firestoreWrites": 0,
+            "legalProfileWrites": 0,
+            "legalProviderWrites": 0,
+            "legalContentWrites": 0,
+            "legalAcceptanceWrites": 0,
+            "authWrites": 0,
+            "passwordResets": 0,
+            "historicalCredentialAccess": 0,
+            "historicalReconciliationWrites": 0,
+            "hrWrites": 0,
+            "rulesWrites": 0,
+            "storageWrites": 0,
+            "makeWrites": 0,
+            "geminiCalls": 0,
+            "paymentWrites": 0,
+            "deploys": 0,
+            "automaticAcceptance": false,
+            "humanAcceptanceRequired": true,
+            "production": false,
+            "merge": false,
+            "blockers": ["WORKFLOW_FAILED_BEFORE_RESULT"]
+          }
+JSON
+          fi
+          git fetch origin "$BRANCH"
+          git checkout -B "$BRANCH" "origin/$BRANCH"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const requestPath='backend/requests/i3-legal-v04-materialization-dev.json';
+          const evidencePath='app/docs/evidence/ITERATION3-LEGAL-V04-MATERIALIZATION-DEV-LATEST.json';
+          const request=JSON.parse(fs.readFileSync(requestPath,'utf8'));
+          if(request.requestId!==process.env.REQUEST_ID) throw new Error('REQUEST_ID_DRIFT_BEFORE_CONSUME');
+          if(request.consumed===true) throw new Error('REQUEST_ALREADY_CONSUMED_BEFORE_EVIDENCE_PERSIST');
+          const result=JSON.parse(fs.readFileSync(`${process.env.RUNNER_TEMP}/i3-legal-v04-result.json`,'utf8'));
+          const evidence={...result,githubRunId:Number(process.env.RUN_ID),githubRunAttempt:Number(process.env.RUN_ATTEMPT),requestConsumed:true,noAutomaticRetry:true};
+          fs.mkdirSync('app/docs/evidence',{recursive:true});
+          fs.writeFileSync(evidencePath,JSON.stringify(evidence,null,2)+'\n','utf8');
+          const consumed={
+            schemaVersion:request.schemaVersion,
+            requestId:request.requestId,
+            enabled:false,
+            consumed:true,
+            authorizationGate:request.authorizationGate,
+            sourceHeadSha:request.sourceHeadSha,
+            targetProject:request.targetProject,
+            tenantId:request.tenantId,
+            commandType:request.commandType,
+            status:result.status,
+            providerAttempted:result.providerAttempted===true,
+            providerAck:result.providerAck===true,
+            committed:result.committed===true,
+            readbackReady:result.readbackReady===true,
+            legalContentId:result.legalContentId||null,
+            legalVersion:result.legalVersion||null,
+            contentDigest:result.contentDigest||null,
+            firestoreWrites:Number(result.firestoreWrites||0),
+            legalAcceptanceWrites:Number(result.legalAcceptanceWrites||0),
+            authWrites:Number(result.authWrites||0),
+            passwordResets:Number(result.passwordResets||0),
+            historicalCredentialAccess:Number(result.historicalCredentialAccess||0),
+            historicalReconciliationWrites:Number(result.historicalReconciliationWrites||0),
+            automaticAcceptance:false,
+            humanAcceptanceStillRequired:true,
+            githubRunId:Number(process.env.RUN_ID),
+            githubRunAttempt:Number(process.env.RUN_ATTEMPT),
+            noAutomaticRetry:true
+          };
+          fs.writeFileSync(requestPath,JSON.stringify(consumed,null,2)+'\n','utf8');
+NODE
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add backend/requests/i3-legal-v04-materialization-dev.json app/docs/evidence/ITERATION3-LEGAL-V04-MATERIALIZATION-DEV-LATEST.json
+          git commit -m "evidence(i3): consume legal V0.4 DEV materialization request"
+          git pull --rebase origin "$BRANCH"
+          git push origin "HEAD:$BRANCH"
