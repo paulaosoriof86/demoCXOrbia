@@ -1,61 +1,45 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-17 16:15 -06:00  
-**Estado:** `I3_5C_1_PERIOD_INDEPENDENT_IDENTITY_ROLL_FORWARD_SOURCE_PASS__CURRENT_TARGET_AUTHORITY_MATERIALIZATION_PENDING__I3_6_FROZEN_PASS__GO_LIVE_35__NO_PRODUCTION`
+**Fecha:** 2026-08-17 16:31 -06:00  
+**Estado:** `I3_5_PASS__I3_6_CLOSED_FROZEN__I3_7_PASS__I3_8_NEXT__PERIOD_INDEPENDENT_IDENTITY_PROVIDER_BACKED__GO_LIVE_35__NO_PRODUCTION`
 
 Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; DEV `cxorbia-backend-dev`.
 
 Plan: `ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
 
-Source lock: `SOURCE-LOCK-I3-5C-1-PERIOD-INDEPENDENT-IDENTITY-ROLL-FORWARD-SOURCE-PASS-20260817.md`.
+Source lock: `SOURCE-LOCK-I3-5C2-PERIOD-INDEPENDENT-LINK-PASS-I3-5-I3-6-CLOSED-20260817.md`.
 
-## Frozen
+## Frozen / PASS
 
-I1/I2/I3.1/I3.2/I3.3/I3.4/I3.7 PASS; Historical Shopper `31906391682` PASS/reset consumed; Admin `32049054855` PASS; HR 15/660; Finance V2/historical; exact identity contract; durable legal receipt V0.4. I3.6 product/evidence frozen PASS. No reproceso.
+I1/I2/I3.1/I3.2/I3.3/I3.4/I3.5/I3.6/I3.7 PASS. Historical Shopper `31906391682` frozen/no reset/recovery; Admin `32049054855` PASS; HR 15/660; Finance V2/historical; legal V0.4 durable.
 
-## I3.5B — provider validation consumida
+## I3.5C-2 provider result
 
-Run `32070767910`, job `95513264398`: `HOLD_I3_5B_NO_INDEPENDENT_PROVIDER_AUTHORITY` / `SAFE_HOLD_ZERO_WRITES`.
+Run `32076682895`, job `95531280631`, request `i3-5c2-tenant-adjudication-period-independent-link-20260817-01` consumed/no retry.
 
-Provider tenía 616 visits / 14 periods, 0 `shopperIdentityLinks`, 0 authority records exactos para agosto. Live HR 660/15. El gate está consumido y no se rerun.
+Provider materializó exactamente un link:
 
-## I3.5C-1 — corrección sistémica implementada
+- `identityLinkId=irl_3ed1b9a65d36c5873c1306bae1621e9d`;
+- sourceSystem `hr`;
+- projectScope `cinepolis`;
+- canonical `TYA_GT_0C0BA8856E`;
+- authority `tenant_adjudication`;
+- ACK/readback PASS;
+- identityLinks `0→1`;
+- writes Firestore/link `1/1`.
 
-Se implementó source-only un mecanismo reusable de identity roll-forward:
+Future-period validation: agosto PASS, septiembre PASS, mismo canonical PASS, mismo link PASS, segundo link `false`.
 
-- vínculo durable a nivel `tenants/{tenantId}/shopperIdentityLinks/{identityLinkId}`;
-- identidad canónica independiente del `periodKey`;
-- scope exacto tenant/project/sourceSystem;
-- project-specific o tenant-wide según naturaleza de la fuente;
-- conflicto = fail-closed;
-- source-safe ID sin autoridad persistida = review, nunca auto-match;
-- alta desde plataforma exige `platform_created` identity link + provider ACK;
-- protected DEV queda preparado para leer links autorizados y alimentar el composer exacto sin reautenticar históricos.
+## Safety
 
-Gate local PASS con `2026-08`, `2026-09`, `2027-01`, aislamiento entre tenants y entre proyectos.
+Historical Shopper access/login/recovery/reset 0; Auth/user/password writes 0; HR/Finance/Rules/Storage/Make/Gemini/payment writes 0; deploy 0; merge=false; production=false.
 
-No se hardcodea TyA/Cinépolis/agosto/septiembre en el contrato reusable.
+## Progress
 
-## Estado actual del target agosto
-
-El mecanismo anti-recurrencia ya existe en source, pero hoy todavía no hay un vínculo autoritativo materializado para el target que I3.5B dejó en HOLD.
-
-Por tanto:
-
-- no repetir Auth/Shopper histórico;
-- no repetir I3.5B;
-- no crear un link por similitud;
-- resolver una sola vez el vínculo actual con autoridad exacta;
-- después el mismo link deberá funcionar automáticamente en septiembre y períodos posteriores sin nueva adjudicación.
-
-## Progreso
-
-Formal **35% / 65%** porque I3 permanece 0/25 hasta I3.11.
-
-Operativamente: I3.5C-1 source PASS; el blocker se redujo a `I3.5C-2` one-time authority/materialization para el target actual.
+Formal **35% / 65%** porque I3 sigue 0/25 hasta I3.11. Operativamente I3.1→I3.7 están cerrados/PASS.
 
 ## Next
 
-`I3.5C-2_ONE_TIME_AUTHORITATIVE_ADJUDICATION_AND_PERIOD_INDEPENDENT_LINK_MATERIALIZATION`.
+`I3.8_ADMIN_CREATE_UPDATE_ONE_NEW_SHOPPER_PROVIDER_BACKED_PERIOD_INDEPENDENT_IDENTITY`.
 
-Requiere gate provider separado para máximo un upsert idempotente + ACK/readback, después test agosto + septiembre con el mismo link. Cero deploy/merge/producción en ese gate salvo autorización distinta.
+Requiere gate provider separado. Un solo Shopper nuevo, sin reutilizar histórico, con Auth+claims+membership+profile+identity link `platform_created`+provider ACK/readback. Luego I3.9→I3.11.
