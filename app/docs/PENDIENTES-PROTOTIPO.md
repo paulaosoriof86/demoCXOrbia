@@ -1,34 +1,33 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-17 14:55 -06:00  
-**Estado:** `I3_4_PASS__I3_5_EXACT_CROSSWALK_HOLD__I3_6_FROZEN_PASS_HARNESS_FIX__I3_7_PASS`
+**Última actualización:** 2026-08-17 15:11 -06:00  
+**Estado:** `I3_5_PROVIDER_CROSSWALK_REQUIRED__I3_6_PRODUCT_PASS_HARNESS_SOURCE_FIXED__I3_8_NEXT_AFTER_GATE`
 
 Plan: `ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
-Source lock: `SOURCE-LOCK-I3-4-I3-7-READONLY-RESULT-I3-4-I3-7-PASS-I3-5-HOLD-20260817.md`.
+Source lock: `SOURCE-LOCK-I3-5A-NO-INDEPENDENT-CROSSWALK-I3-6-HARNESS-SOURCE-FIX-20260817.md`.
 
 ## Closed/frozen
 
-I1/I2/I3.1/I3.2/I3.3/I3.4/I3.7 PASS; Historical Shopper `31906391682`; Admin `32049054855`; request08; HR 15/660; Finance V2/historical; legal durable V0.4 receipt.
+I1/I2/I3.1/I3.2/I3.3/I3.4/I3.7 PASS; Historical Shopper `31906391682`; Admin `32049054855`; request08; HR 15/660; Finance V2/historical; legal durable V0.4 receipt. I3.6 product/evidence frozen PASS; harness source defect fixed without Shopper reprocess.
 
 ## Current exact pending
 
-1. **I3.5A** find/reuse an independent exact technical crosswalk authority for August. Current target has `no_exact_hr_crosswalk`; live `shp-*` is name-text-derived and cannot be used as canonical identity authority.
-2. **I3.6 harness closure**: frozen Shopper evidence/source are unchanged; fix shallow checkout/reference comparison without Shopper login/access.
-3. If no exact crosswalk exists, declare `I3_5_PROVIDER_BACKED_CROSSWALK_MATERIALIZATION_REQUIRED` and obtain explicit write gate before materialization.
-4. I3.8/I3.9 new Shopper provider-backed create/update + E2E under write gate.
-5. I3.10 KPI/state semantics.
-6. I3.11 integral same-build close.
-7. I4 complete Phase A.
-8. I5 exact production cutover.
+1. **I3.5B** provider-backed exact crosswalk validation/materialization for one August target only. Prove independent exact authority first; if absent STOP zero writes; if present max one identity-link materialization/update + ACK/readback.
+2. **I3.6 closure evidence** may reuse frozen evidence + corrected harness; never historical Shopper login/recovery/reset.
+3. **I3.8/I3.9** new Shopper provider-backed create/update + E2E under separate write gate as plan requires.
+4. **I3.10** KPI/state semantics.
+5. **I3.11** integral same-build close.
+6. **I4** complete Phase A.
+7. **I5** exact production cutover.
 
-## Evidence
+## Identity rule
 
-Run `32066894011`: I3.4 PASS, I3.7 PASS, I3.5 exact HOLD, I3.6 harness-only issue. No deploy/writes/historical Shopper credential access.
+I3.5A source hunt found no independent materialized repo crosswalk. Existing `shopperIdentityLinkCandidates` are explicitly `not_written`. The live `shp-*`/shopperCode derive from HR text and cannot be the sole canonical authority. No fuzzy/name/email/phone/username/hash-derived mapping.
 
 ## Progress
 
-Formal **35% / 65%**. I3 integral →60%; I4→85%; I5→100%.
+Formal **35% / 65%** because I3 is not partially scored. Operationally I3.1/.2/.3/.4/.7 are PASS and I3.6 is frozen product PASS with source-fixed harness. The exact current blocker is I3.5 provider crosswalk.
 
 ## Acción actual
 
-`I3.5A_EXACT_TECHNICAL_CROSSWALK_SOURCE_HUNT__PLUS_I3.6_FROZEN_REFERENCE_HARNESS_FIX__SOURCE_ONLY`.
+`I3.5B_PROVIDER_BACKED_EXACT_CROSSWALK_VALIDATE_AND_MATERIALIZE_ONE_TARGET` — requires explicit provider-write gate.
