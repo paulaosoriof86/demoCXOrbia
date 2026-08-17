@@ -1,12 +1,13 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-17 14:19 -06:00  
-**Estado vivo:** `I1_PASS__I2_PASS__I3_1_PASS__I3_2B_EXACT_NO_PERIODS_ROOT_CAUSE_PROVEN__FOCAL_SOURCE_FIX_PASS__I3_2C_RUNTIME_GATE_NEXT__GO_LIVE_35`
+**Fecha:** 2026-08-17 14:17 -06:00  
+**Estado vivo:** `I1_PASS__I2_PASS__I3_1_PASS__I3_2_PASS__I3_3_PASS__I3_4_NEXT__GO_LIVE_35`
 
 ## Prevalencia
 
 Secuencia/porcentaje/subgates: `ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
-Source lock técnico actual: **`SOURCE-LOCK-I3-2B-NO-PERIODS-LIFECYCLE-ROOT-CAUSE-SOURCE-PASS-20260817.md`**.
+Source lock técnico actual: **`SOURCE-LOCK-I3-2C-EXACT-DEV-RUNTIME-PASS-20260817.md`**.
+Build-lock DEV: `app/docs/evidence/I3-2C-DEV-BUILD-LOCK-LATEST.json`.
 
 ## Carril
 
@@ -16,22 +17,34 @@ No nueva candidata/rama/PR/workflow; no reauditoría general.
 
 ## Frozen/no reprocess
 
-I1/I2 PASS; Historical Shopper `31906391682` PASS/reset consumed/`passwordResets=0`; TARGET_B Admin `32049054855` PASS; request08 consumed; HR 15/660 no reimport; Finance V2/historical no rebuild; canonical V2/exact identity preserved; legal previous materialization/deploy no rerun/autoaccept.
+I1/I2 PASS; I3.1/I3.2/I3.3 PASS; Historical Shopper `31906391682` PASS/reset consumed/`passwordResets=0`; TARGET_B Admin `32049054855` PASS; request08 consumed; HR 15/660 no reimport; Finance V2/historical no rebuild; canonical V2/exact identity preserved; legal prior materialization/deploy no rerun/autoaccept.
 
-## I3.2B exact result
+## I3.2C PASS
 
-Runtime run `32062886562` isolated **`staff_first_NO_PERIODS_VISIBLE`** while Staff membership, 15 periods, 660 visits, current August, authority/data, rail/view and project selector were all valid. Period selector alone was absent. Legal loaded/provider-backed/not pending.
+Request `i3-2c-exact-dev-runtime-confirm-no-periods-lifecycle-fix-20260817-01`; target source `9ebdca78d463e7e8032d8c75175f9829a45636a1`; request commit `9b9da36c7d3ff24640b1f71cec80345780adcef6`; run `32064468544`; job `95493109113`; artifact `9299444816`.
 
-Root cause: transient membership metadata loss inside canonical Auth wrapper before synchronous router mount; legacy period-id filter was used during that narrow window.
+PASS same-build DEV:
+- remote parity exact; SHA256 `952319a9a2cac7e61eff01f21c67f8e079de695e3bbc67767c4023c47f8271a7`;
+- Admin Staff membership verified;
+- 15 periods / 660 visits / 200 shoppers;
+- current `cinepolis` / `cinepolis-2026-08`;
+- project selector present;
+- period selector present;
+- router/shell mounted;
+- legal loaded/provider-backed/pending=false;
+- 3 reloads stable;
+- new-tab stable;
+- credentials/tokens not exposed.
 
-Fix source-only: `tya-phase-a-authority-compat-v1.js` commit `852ce453e7a65c5a49bdbfc378cdd1866ac0c697`, exact verified tenant/namespace/role/projectIds fallback only. QA commit `a3e130387ceb4148aac85053dd4a2af471202a95`; source-preflight `32063359036` PASS, zero provider/deploy/writes.
+Safety: one Hosting deploy; zero second deploy; zero Cloud Run/Auth/password/Firestore/HR/Rules/Storage/Make/Gemini/payment writes; Historical Shopper access 0; merge=false; production=false.
 
-## Progress
+## Progreso
 
 I1 `15/15`; I2 `20/20`; I3 formal `0/25`; I4 `0/25`; I5 `0/15` = **35%/65%**.
+I3.1→I3.3 are now closed and frozen. I3 integral →60%.
 
-## Next exact action
+## Siguiente acción exacta
 
-`I3.2C_EXACT_DEV_RUNTIME_CONFIRM_NO_PERIODS_LIFECYCLE_FIX`.
+`I3.4_POSTULATION_VS_HR_ASSIGNMENT_AUTHORITY_RUNTIME_READONLY`.
 
-Requires a new exact gate because I3.2B consumed its one deploy. PASS must certify period selector + 15/660/AGO + legal no-pending + 3 reloads + new-tab. Then close I3.2/I3.3 and continue I3.4→I3.7 directly.
+Then I3.5 exact August crosswalk → I3.6 Mi Perfil/history → I3.7 legal durable receipt, without general diagnosis or reopening frozen work.
