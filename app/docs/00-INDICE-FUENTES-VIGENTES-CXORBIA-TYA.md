@@ -1,70 +1,66 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-17 16:31 -06:00  
-**Estado vivo:** `I1_PASS__I2_PASS__I3_1_2_3_4_5_6_7_PASS__I3_8_NEXT__PERIOD_INDEPENDENT_IDENTITY_PROVIDER_BACKED__GO_LIVE_35`
+**Fecha:** 2026-08-17 17:45 -06:00  
+**Estado vivo:** `I1_PASS__I2_PASS__I3_1_TO_8_PASS__I3_9_PROVIDER_PRECONDITIONS_PASS__SHOPPER_MEMBERSHIP_LOADER_SOURCE_FIX_APPLIED_NOT_DEPLOYED__I3_9_10_11_DEV_GATE_REQUIRED__GO_LIVE_35`
 
 ## Prevalencia
 
-Secuencia/porcentaje/subgates: `ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
+Plan vigente: `ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
 
-Source lock técnico actual: **`SOURCE-LOCK-I3-5C2-PERIOD-INDEPENDENT-LINK-PASS-I3-5-I3-6-CLOSED-20260817.md`**.
+Source lock técnico actual: **`SOURCE-LOCK-I3-8-PASS-I3-9-MEMBERSHIP-LOADER-ROOT-CAUSE-SOURCE-FIX-PENDING-DEV-GATE-20260817.md`**.
 
-Evidencia provider I3.5C-2: `app/docs/evidence/ITERATION3-I3-5C2-PERIOD-INDEPENDENT-LINK-MATERIALIZATION-LATEST.json`.
-
-Último exact DEV build-lock desplegado: `app/docs/evidence/I3-2C-DEV-BUILD-LOCK-LATEST.json`.
+Evidencias principales:
+- `app/docs/evidence/ITERATION3-I3-8-NEW-SHOPPER-PROVIDER-BACKED-LATEST.json`;
+- `app/docs/evidence/ITERATION3-I3-8-PASS-I3-9-DIAGNOSTIC-LATEST.json`;
+- `app/docs/evidence/ITERATION3-I3-5C2-PERIOD-INDEPENDENT-LINK-MATERIALIZATION-LATEST.json`;
+- último DEV deploy exacto: `app/docs/evidence/I3-2C-DEV-BUILD-LOCK-LATEST.json`.
 
 ## Carril
 
 Repo `paulaosoriof86/demoCXOrbia`; rama única `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`; DEV `cxorbia-backend-dev`.
 
-No nueva candidata/rama/PR. No reauditoría general.
+No nueva candidata/rama/PR/workflow. No reauditoría general.
 
 ## Frozen / no reprocess
 
-I1/I2 PASS; I3.1/I3.2/I3.3/I3.4/I3.5/I3.6/I3.7 PASS; Historical Shopper `31906391682` PASS/reset consumed/`passwordResets=0`; TARGET_B Admin `32049054855` PASS; request08 consumed; HR 15/660 no reimport; Finance V2/historical no rebuild; legal V0.4 receipt durable PASS/no autoaccept.
+I1/I2 PASS; I3.1→I3.8 PASS; I3.5/I3.6 cerrados; Historical Shopper `31906391682` frozen PASS/reset consumed/`passwordResets=0`; TARGET_B Admin `32049054855` frozen PASS; request08 consumed; HR 15/660 no reimport; Finance V2/historical no rebuild; legal V0.4 durable PASS/no autoaccept; I3.5B/I3.5C-2 consumed/no rerun.
 
-## I3.5C-2 PASS
+## I3.8 PASS
 
-Gate consumido una sola vez:
-`I3.5C-2_ONE_TIME_AUTHORITATIVE_ADJUDICATION_AND_PERIOD_INDEPENDENT_LINK_MATERIALIZATION`.
+Run `32080412142`, job `95542161943`.
 
-Run `32076682895`, job `95531280631`.
-
-Resultado:
-`PASS_COMMITTED_READBACK_PERIOD_INDEPENDENT` / `PASS_I3_5C2_ONE_TIME_ADJUDICATION_PERIOD_INDEPENDENT_LINK`.
-
-Provider:
-
-- `shopperIdentityLinks` `0 → 1`;
-- identityLinkId `irl_3ed1b9a65d36c5873c1306bae1621e9d`;
+Un único Shopper sintético DEV fue creado y leído de vuelta correctamente:
+- Auth create `1`;
+- claims write `1`;
+- membership/profile/crosswalk Firestore `3`;
+- identityLinkId `irl_fd0e52a9792ef088aa275fa90e27c77d`;
+- authority `platform_created`;
+- period-independent `true`;
 - provider ACK/readback `true/true`;
-- Firestore writes `1`;
-- identity-link writes `1`;
-- agosto PASS;
-- septiembre PASS;
-- mismo canonical PASS;
-- mismo link PASS;
-- segundo link creado `false`.
+- exact Auth/claims/membership/profile/crosswalk readback PASS.
 
-La identidad queda durable y period-independent. El scope `cinepolis` es dato del vínculo del tenant actual; no existe lógica reusable hardcodeada por tenant/proyecto/mes.
+Request consumido; no rerun I3.8 y no crear otro Shopper bajo ese gate.
 
-## Seguridad
+## I3.9 estado real
 
-Historical Shopper access/login/recovery/reset `0`; Auth/user/password writes `0`; HR/Finance/Rules/Storage/Make/Gemini/payment writes `0`; deploy `0`; merge `false`; production `false`.
+Provider preconditions del Shopper nuevo fueron comprobadas repetidamente read-only y son PASS. El browser E2E visible todavía no está certificado.
 
-Request I3.5C-2 consumido; `noAutomaticRetry=true`.
+Los intentos custom-token se clasifican como harness/orchestration, no como falla demostrada de credenciales del producto. El último run `32081426357`, job `95545032005`, demostró visible login surface PASS y Firebase Hosting project exact PASS, pero terminó en timeout técnico antes de certificar el contexto CXOrbia; provider admin writes/password changes/resets/Historical access = `0`.
+
+## Hallazgo source
+
+El adapter reusable `app/adapters/cxorbia-shopper-membership-wiring-v1.js` existía pero no era cargado por `app/index-backend-dev.html`, incluido el source exacto desplegado en I3.2C.
+
+Corrección source aplicada en commit `c796597effac6d77422df888b63933ab865ab198`: el entrypoint protegido ahora carga el wiring Shopper. **No se desplegó**, porque el gate I3.8 prohibía deploy.
 
 ## Progreso
 
 I1 `15/15`; I2 `20/20`; I3 `0/25`; I4 `0/25`; I5 `0/15` = **35% / 65% formal**.
 
-El 35% permanece por scoring integral de I3. Operativamente I3.1→I3.7 ya están cerrados/PASS.
+Operativamente I3.1→I3.8 están PASS. I3.9 está acotado a validar el login visible canónico sobre el source corregido; I3.10/I3.11 siguen detrás.
 
 ## Siguiente frontera exacta
 
-`I3.8_ADMIN_CREATE_UPDATE_ONE_NEW_SHOPPER_PROVIDER_BACKED_PERIOD_INDEPENDENT_IDENTITY`.
+`I3.9_I3.10_I3.11_EXACT_DEV_DEPLOY_AND_SYNTHETIC_SHOPPER_VISIBLE_LOGIN_CLOSE`.
 
-Un único Shopper nuevo de prueba. Flujo obligatorio:
-`Admin create/update → exact validation → Auth → claims → membership → profile/shopper → period-independent identity link authorityType=platform_created → provider ACK/readback`.
-
-I3.8 requiere gate provider separado. Cero Historical Shopper reprocessing y cero unrelated writes.
+Requiere gate nuevo para máximo un Hosting DEV deploy exacto y máximo un `updateUser(password)` del Shopper sintético I3.8 exclusivamente; después login visible real, reload/new-tab/segundo contexto, KPI/state dinámico y cierre I3.11 sobre la misma build. Cero Historical Shopper, cero createUser/claims/Firestore/HR/Finance/Rules/Storage/Make/Gemini/pagos, cero merge/producción.
