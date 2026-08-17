@@ -1,36 +1,35 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-17 14:54 -06:00  
-**Estado:** `NO_REPROCESS__I3_4_PASS__I3_5_EXACT_CROSSWALK_HOLD__I3_6_FROZEN_PASS__I3_7_PASS__NO_UI_REBUILD`
+**Última actualización:** 2026-08-17 15:10 -06:00  
+**Estado:** `NO_REPROCESS__I3_5_PROVIDER_CROSSWALK_REQUIRED__I3_6_HARNESS_SOURCE_FIXED__NO_UI_REBUILD`
 
 Plan: `ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
-Source lock: `SOURCE-LOCK-I3-4-I3-7-READONLY-RESULT-I3-4-I3-7-PASS-I3-5-HOLD-20260817.md`.
+Source lock: `SOURCE-LOCK-I3-5A-NO-INDEPENDENT-CROSSWALK-I3-6-HARNESS-SOURCE-FIX-20260817.md`.
 
 ## No tocar
 
-No nueva candidata/rama/PR/workflow. No reconstruir Dashboard/Shoppers/Postulaciones/Finance/HR/Auth. No tocar `app/modules` ni `app/core` para I3.5. No presentar HR assignment como postulation, no autoaccept legal, no fuzzy identity.
+No nueva candidata/rama/PR/workflow. No reconstruir Dashboard/Shoppers/Postulaciones/Finance/HR/Auth. No tocar `app/modules` ni `app/core` para I3.5. No mostrar HR assignment como postulation, no autoaccept legal, no fuzzy identity.
 
-## Runtime authority result
+## Estado I3
 
-Run `32066894011`:
+I3.1/.2/.3/.4/.7 PASS. I3.6 historical Shopper product/evidence frozen PASS; harness shallow-checkout source defect fixed in `84d26871c6f0cff96eaa84a8789d78b462e190ee` without Shopper access/reset.
 
-- I3.4 PASS: platform posts 0, HR assignments 208, synthetic HR posts 0, separation stable.
-- I3.5 HOLD: exact target August crosswalk missing; 2 August visits remain on live source-safe ID and none map to canonical target.
-- I3.6 historical Shopper frozen PASS/source unchanged; only QA historical-reference checkout is shallow.
-- I3.7 PASS: durable provider-backed V0.4 human receipt exact and persistent.
+I3.5 source hunt completed: runtime exact target still has `no_exact_hr_crosswalk`. The live `shp-*` and shopperCode derive from HR Shopper text, so they cannot be promoted as independent canonical identity anchors. Existing source-safe contracts only define identity-link candidates as `not_written`; no materialized repo authority was found.
 
-Critical identity rule: live `shp-*`/`shopperCode` are generated from HR Shopper text and are not independent canonical anchors. Claude must NOT connect identities using those derived values, names, email, phone, WhatsApp or username.
+Decision: `I3_5_PROVIDER_BACKED_CROSSWALK_MATERIALIZATION_REQUIRED`.
+
+## Claude rule
+
+Do not solve this in UI, do not hardcode the target, do not merge profiles by name/email/phone/WhatsApp/username or derived hash. The next action is provider-backed exact validation/materialization behind a gate, not a frontend change.
 
 ## Frozen
 
-I1/I2/I3.1/I3.2/I3.3/I3.4/I3.7; Historical Shopper; Admin; HR 15/660; Finance V2/historical; exact identity; legal receipt.
+Historical Shopper `31906391682`; Admin `32049054855`; request08; HR 15/660; Finance V2/historical; exact identity; durable legal receipt.
 
 ## Progress
 
-Formal **35%/65%**. I3.5 is the real current blocker; I3.6 needs harness-only closure.
+Formal **35%/65%** because I3 is a single 25-point integral gate until I3.11. Operationally multiple I3 subgates are already closed; I3.5 is the current real blocker.
 
 ## Next frontier
 
-`I3.5A_EXACT_TECHNICAL_CROSSWALK_SOURCE_HUNT__PLUS_I3.6_FROZEN_REFERENCE_HARNESS_FIX__SOURCE_ONLY`.
-
-If no provider-independent exact crosswalk exists, document materialization requirement; do not invent UI/backend mapping.
+`I3.5B_PROVIDER_BACKED_EXACT_CROSSWALK_VALIDATE_AND_MATERIALIZE_ONE_TARGET` under explicit gate. First prove independent exact authority; if absent STOP zero writes; if present max one identity-link materialization/update + ACK/readback.
