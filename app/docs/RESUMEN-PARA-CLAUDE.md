@@ -1,59 +1,47 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-17 13:48 -06:00  
-**Estado:** `SAME_CANDIDATE__ADMIN_PASS_FROZEN__HISTORICAL_SHOPPER_PASS_FROZEN__I3_1_PASS__I3_2_DEPLOY_PARITY_PASS_RUNTIME_FOCAL_OPEN__NO_MODULE_REBUILD`
+**Última actualización:** 2026-08-17 14:06 -06:00  
+**Estado:** `NO_REPROCESS__I3_2B_NO_PERIODS_ROOT_CAUSE_PROVEN__FOCAL_ADAPTER_FIX_SOURCE_PASS__NO_UI_REBUILD`
 
-## Prevalencia
+## Fuente actual
 
-Secuencia: `ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
+Plan: `ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
+Source lock: `SOURCE-LOCK-I3-2B-NO-PERIODS-LIFECYCLE-ROOT-CAUSE-SOURCE-PASS-20260817.md`.
 
-Estado técnico: `SOURCE-LOCK-I3-2-DEV-DEPLOY-PARITY-PASS-RUNTIME-BLOCKER-DIAGNOSTICS-SOURCE-PASS-20260817.md`.
+## No tocar
 
-No nueva candidata/rama/PR/workflow. No reconstruir Auth, Shoppers, Finance, HR, KPI ni módulos ya resueltos. No tocar `app/modules` ni `app/core` para esconder el blocker actual.
+No nueva candidata/rama/PR/workflow. No reconstruir Dashboard/Shoppers/Postulaciones/Finance/HR/Auth. No tocar `app/modules` ni `app/core` por este blocker.
 
-## No reprocesar
+Preservar Historical Shopper `31906391682`, Admin `32049054855`, HR 15/660, Finance V2/historical, canonical V2/exact identity y legal previous gates.
 
-Historical Shopper `31906391682` PASS/reset consumido/`passwordResets=0`; TARGET_B Admin `32049054855` PASS; request08 consumido; I1/I2 PASS; HR 15/660 no reimport; Finance V2/historical no rebuild; exact identity no fuzzy; legal no autoaccept.
+## Hallazgo exacto
 
-## I3.1
+I3.2B runtime artifact aisló `staff_first_NO_PERIODS_VISIBLE` con 15 periodos/660 visitas correctos, current `cinepolis-2026-08`, rail/view montado, project selector sí y period selector no.
 
-PASS. Preservar `tya-phase-a-authority-compat-v1.js`: root-project/period scope + HR assignment distinto de postulación persistida.
+Legal estaba loaded=true, pending=false, providerAuthority=true y sin modal/error: no es el blocker actual.
 
-## I3.2
+## Causa
 
-Run `32058831910`, job `95475132736`:
+Dentro de `CX.app.enter()`, el wrapper Auth reconstruye temporalmente `CX.session.user`; el router monta antes del post-enter membership republish. En esa ventana, el compat bridge antiguo no veía `membershipVerified` y caía al legacy `p.id===scopeProjectId`; `cinepolis` no coincide con IDs de periodo `cinepolis-YYYY-MM`.
 
-- exact Firebase Hosting DEV deploy PASS;
-- remote parity PASS;
-- remote hash `952319a9a2cac7e61eff01f21c67f8e079de695e3bbc67767c4023c47f8271a7`;
-- authenticated Staff runtime FAIL focal `staff_first_VISIBLE_SHELL_OR_SOURCE_BLOCK`.
+## Fix permitido ya aplicado
 
-Readiness ya había confirmado Auth, membership, HR authority, data projects/visits no vacíos, current project/period y app visible/login hidden. El error anterior agrupaba empty shell/backend empty/no project/no period/source block. No hay evidencia para cambiar un módulo UI.
+`app/adapters/tya-phase-a-authority-compat-v1.js`, commit `852ce453e7a65c5a49bdbfc378cdd1866ac0c697`.
 
-Harness QA granular commit `58b39f0cff760a37cb00a0f4d4e2adabcea5c24e`; source preflight `32060010492` PASS, cero provider/deploy/writes.
+Fallback transitorio únicamente desde `CX_C6_LIVE_USER_ADMIN_WIRING` ya verificado y con contexto Auth tenant/namespace/role/projectIds exactamente iguales. Nunca raw scopeProjectId. Sin patch de rail/router/core/modules.
 
-## Legal
+QA source-only commit `a3e130387ceb4148aac85053dd4a2af471202a95`; run `32063359036` PASS, cero provider/deploy/writes.
 
-`CX.app.enter()` puede diferir `router.mount()` si legal sigue pending. Paula ya realizó la aceptación humana, pero I3.7 readback durable sigue pendiente y hubo doble presentación. Legal es hipótesis fuerte, NO causa probada hasta snapshot granular. No autoaccept ni eliminar modal.
+## Claude — prohibido
 
-## Claude — prohibiciones focales
-
-No copiar módulos antiguos; no quitar fail-closed guards; no inventar proyecto/periodo; no transformar assignment HR en postulación; no alterar legal para hacer pasar E2E; no cherry-pick/rollback de módulos completos.
-
-## Ruta restante
-
-I3.2B granular runtime → I3.3 project/periods/660 → I3.4 postulations authority → I3.5 exact crosswalk → I3.6 Mi Perfil/history → I3.7 legal receipt → I3.8/I3.9 new Shopper provider flow/login → I3.10 KPI → I3.11 closure → I4 completa → I5 producción.
+No ocultar `Sin periodos disponibles`, no hardcodear agosto/cinepolis en UI, no cambiar router/core para compensar, no autoaccept legal, no revertir adapters V2, no convertir assignment HR en postulación.
 
 ## Progreso
 
-I1 15/15; I2 20/20; I3 0/25; I4 0/25; I5 0/15 = **35%/65%**. I3.2 deploy/parity PASS no se repite. I3 integral lleva a 60%, I4 a 85%, I5 a 100%.
+Formal 35%/65%. I3.1 PASS; I3.2B causa exacta + source fix PASS; runtime post-fix pendiente.
 
-## Siguiente frontera
+## Siguiente acción
 
-`I3.2B_GRANULAR_AUTHENTICATED_STAFF_RUNTIME_RECHECK_AFTER_DIAGNOSTICS_SOURCE_PASS`.
+`I3.2C_EXACT_DEV_RUNTIME_CONFIRM_NO_PERIODS_LIFECYCLE_FIX` bajo nuevo gate. Si PASS, I3.2/I3.3 cierran y sigue I3.4→I3.7.
 
-El one-shot anterior está consumido. Nueva ejecución autenticada/deploy requiere gate nuevo.
-
-## Clasificación
-
-Reusable CXOrbia: parity+granular harness; Exclusivo cliente: TyA/legal; Claude/prototipo: preservar módulos; Academia: readiness efectivo; Sin impacto Claude: tooling/gates, salvo no revertir decisiones.
+Clasificación: Reusable = verified-scope lifecycle; Exclusivo cliente = TyA/Cinépolis; Claude/prototipo = no UI change; Academia = lifecycle race; Sin impacto Claude = tooling/gates excepto no revertir.
