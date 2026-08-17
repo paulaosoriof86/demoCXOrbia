@@ -28,9 +28,20 @@ window.CX = window.CX || {};
     return;
   }
 
+  function ensureIdentityRollForwardRuntime(){
+    if(document.getElementById('cxIdentityRollForwardRuntime')) return;
+    const script = document.createElement('script');
+    script.id = 'cxIdentityRollForwardRuntime';
+    script.src = 'adapters/cxorbia-identity-roll-forward-v1.js';
+    script.async = false;
+    script.dataset.scope = 'reusable-multi-tenant-multi-project-period-independent';
+    document.head.appendChild(script);
+  }
+
   /* P0 Corte6: si se pidió runtime protegido, este archivo NO toca CX.dataSource ni desactiva
      backend. backend-protected-dev-mode.js es el único dueño de esa configuración. */
   if(protectedRequested){
+    ensureIdentityRollForwardRuntime();
     window.CX_BACKEND_PREVIEW_LANE = 'protected-runtime';
     console.warn('[CX.backend-preview] Carril protegido solicitado; se omite forceHumanVisualSourceSafe().');
     return;
