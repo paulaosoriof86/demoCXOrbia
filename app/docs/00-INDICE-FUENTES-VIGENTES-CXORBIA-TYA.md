@@ -1,50 +1,41 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-17 14:17 -06:00  
-**Estado vivo:** `I1_PASS__I2_PASS__I3_1_PASS__I3_2_PASS__I3_3_PASS__I3_4_NEXT__GO_LIVE_35`
+**Fecha:** 2026-08-17 14:50 -06:00  
+**Estado vivo:** `I1_PASS__I2_PASS__I3_1_2_3_4_7_PASS__I3_5_HOLD_EXACT_CROSSWALK__I3_6_FROZEN_PASS_HARNESS_FIX__GO_LIVE_35`
 
 ## Prevalencia
 
 Secuencia/porcentaje/subgates: `ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
-Source lock técnico actual: **`SOURCE-LOCK-I3-2C-EXACT-DEV-RUNTIME-PASS-20260817.md`**.
-Build-lock DEV: `app/docs/evidence/I3-2C-DEV-BUILD-LOCK-LATEST.json`.
+Source lock técnico actual: **`SOURCE-LOCK-I3-4-I3-7-READONLY-RESULT-I3-4-I3-7-PASS-I3-5-HOLD-20260817.md`**.
+Último exact DEV build-lock: `app/docs/evidence/I3-2C-DEV-BUILD-LOCK-LATEST.json`.
 
 ## Carril
 
-Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`; DEV `cxorbia-backend-dev`.
+Repo `paulaosoriof86/demoCXOrbia`; rama única `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`; DEV `cxorbia-backend-dev`.
 
-No nueva candidata/rama/PR/workflow; no reauditoría general.
+No nueva candidata/rama/PR/workflow, no reauditoría general.
 
 ## Frozen/no reprocess
 
-I1/I2 PASS; I3.1/I3.2/I3.3 PASS; Historical Shopper `31906391682` PASS/reset consumed/`passwordResets=0`; TARGET_B Admin `32049054855` PASS; request08 consumed; HR 15/660 no reimport; Finance V2/historical no rebuild; canonical V2/exact identity preserved; legal prior materialization/deploy no rerun/autoaccept.
+I1/I2 PASS; I3.1/I3.2/I3.3/I3.4/I3.7 PASS; Historical Shopper `31906391682` PASS/reset consumed/`passwordResets=0`; TARGET_B Admin `32049054855` PASS; request08 consumed; HR 15/660 no reimport; Finance V2/historical no rebuild; canonical V2/exact identity preserved; legal V0.4 receipt durable PASS/no autoaccept.
 
-## I3.2C PASS
+## I3.4→I3.7 read-only result
 
-Request `i3-2c-exact-dev-runtime-confirm-no-periods-lifecycle-fix-20260817-01`; target source `9ebdca78d463e7e8032d8c75175f9829a45636a1`; request commit `9b9da36c7d3ff24640b1f71cec80345780adcef6`; run `32064468544`; job `95493109113`; artifact `9299444816`.
+Request `i3-4-7-staff-runtime-authority-readonly-20260817-01`; target `80156d25682ffa28c224bb36c328a55fb77aef5f`; request commit `3dc7363a0b361910538422fd0fd1a7ab7fb95e8e`; run `32066894011`; job `95500120283`; artifact `9300261023`.
 
-PASS same-build DEV:
-- remote parity exact; SHA256 `952319a9a2cac7e61eff01f21c67f8e079de695e3bbc67767c4023c47f8271a7`;
-- Admin Staff membership verified;
-- 15 periods / 660 visits / 200 shoppers;
-- current `cinepolis` / `cinepolis-2026-08`;
-- project selector present;
-- period selector present;
-- router/shell mounted;
-- legal loaded/provider-backed/pending=false;
-- 3 reloads stable;
-- new-tab stable;
-- credentials/tokens not exposed.
+- **I3.4 PASS:** platform posts `0`, HR assignment projection `208`, synthetic `hr-post-*` in platform posts `0`, assignmentsArePostulations=false, stable reload/new-tab.
+- **I3.5 HOLD:** identityMap `208`, reviewQueue `145`, reason `no_exact_hr_crosswalk`; target `shp-57d2e3769946` has no canonical map and retains 2 August visits; target canonical `TYA_GT_0C0BA8856E` has 0 August visits.
+- **I3.6 frozen PASS/no product drift:** historical checkpoint remains PASS; canonical Shopper portal and membership blobs unchanged. Runner failed only because shallow checkout could not resolve old frozen commit.
+- **I3.7 PASS:** V0.4 provider receipt accepted/human_ui, exact actor + current version/digest, provider-backed, pending=false, stable reload/new-tab.
 
-Safety: one Hosting deploy; zero second deploy; zero Cloud Run/Auth/password/Firestore/HR/Rules/Storage/Make/Gemini/payment writes; Historical Shopper access 0; merge=false; production=false.
+The source-safe live `shp-*` ID is generated as a hash of HR Shopper text, so it cannot itself be promoted to an independent canonical exact anchor. No fuzzy/name/email/phone/username/code matching.
 
 ## Progreso
 
-I1 `15/15`; I2 `20/20`; I3 formal `0/25`; I4 `0/25`; I5 `0/15` = **35%/65%**.
-I3.1→I3.3 are now closed and frozen. I3 integral →60%.
+I1 `15/15`; I2 `20/20`; I3 formal `0/25`; I4 `0/25`; I5 `0/15` = **35%/65%**. I3 integral →60%.
 
 ## Siguiente acción exacta
 
-`I3.4_POSTULATION_VS_HR_ASSIGNMENT_AUTHORITY_RUNTIME_READONLY`.
+`I3.5A_EXACT_TECHNICAL_CROSSWALK_SOURCE_HUNT__PLUS_I3.6_FROZEN_REFERENCE_HARNESS_FIX__SOURCE_ONLY`.
 
-Then I3.5 exact August crosswalk → I3.6 Mi Perfil/history → I3.7 legal durable receipt, without general diagnosis or reopening frozen work.
+No deploy/write/provider mutation. If no independent exact crosswalk authority exists, declare provider-backed materialization required and request a separate write gate.
