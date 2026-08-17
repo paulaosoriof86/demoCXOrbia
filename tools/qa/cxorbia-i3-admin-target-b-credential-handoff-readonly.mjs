@@ -20,7 +20,7 @@ const request=readJson(requestPath),sa=readJson(credentialPath);
 ensure(request.handoffPurpose==='TARGET_B_EXISTING_ADMIN_CREDENTIAL_RECOVERY'&&request.expectedTargetAlias==='B'&&request.expectedRole==='admin','TARGET_B_SCOPE');
 ensure(request.scope==='target_b_existing_admin_credential_recovery_readonly_encrypted_handoff','TARGET_B_REQUEST_SCOPE');
 ensure(request.providerWrites===0&&request.authWrites===0&&request.firestoreWrites===0&&request.production===false&&request.merge===false,'TARGET_B_WRITE_BUDGET');
-ensure(typeof request.handoffPublicKeyPem==='string'&&request.handoffPublicKeyPem.includes('BEGIN PUBLIC KEY'),'TARGET_B_PUBLIC_KEY_MISSING');
+ensure(typeof request.handoffPublicKeyPath==='string'&&fs.existsSync(request.handoffPublicKeyPath),'TARGET_B_PUBLIC_KEY_MISSING');
 ensure(sa.project_id===expectedProject&&typeof sa.private_key==='string','TARGET_B_SERVICE_ACCOUNT_INVALID');
 fs.mkdirSync(privateDir,{recursive:true});
 
@@ -49,7 +49,8 @@ try{
   let signIn={};try{signIn=await signInRes.json();}catch{}
   ensure(signInRes.ok&&String(signIn.localId||'')===String(user.uid),'TARGET_B_FIREBASE_CREDENTIAL_REJECTED');
 
-  const publicKey=crypto.createPublicKey(request.handoffPublicKeyPem),publicDer=publicKey.export({type:'spki',format:'der'});
+  const publicKeyPem=fs.readFileSync(request.handoffPublicKeyPath,'utf8');
+  const publicKey=crypto.createPublicKey(publicKeyPem),publicDer=publicKey.export({type:'spki',format:'der'});
   const aesKey=crypto.randomBytes(32),iv=crypto.randomBytes(12);
   const plaintext=Buffer.from(JSON.stringify({schemaVersion:'cxorbia.i3.admin-target-b.private-credential-handoff.v1',targetAlias:'B',role:'admin',login,password}),'utf8');
   const cipher=crypto.createCipheriv('aes-256-gcm',aesKey,iv),ciphertext=Buffer.concat([cipher.update(plaintext),cipher.final()]),tag=cipher.getAuthTag();
