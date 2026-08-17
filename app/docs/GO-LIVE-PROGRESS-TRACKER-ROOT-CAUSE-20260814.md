@@ -1,33 +1,34 @@
 # GO-LIVE PROGRESS TRACKER — ROOT CAUSE · CXORBIA TyA
 
-**Fecha:** 2026-08-17 14:14 -06:00
+**Fecha:** 2026-08-17 14:19 -06:00
 
 | Iteración | Peso | Estado |
 |---|---:|---|
 | I1 | 15 | PASS 15/15 |
 | I2 | 20 | PASS 20/20 |
-| I3 | 25 | 0/25 formal; I3.1 PASS; I3.2B exact blocker fixed source-only; I3.2C runtime next |
+| I3 | 25 | 0/25 formal; I3.1 PASS; I3.2 PASS; I3.3 PASS; I3.4 next |
 | I4 | 25 | 0/25 |
 | I5 | 15 | 0/15 |
 
 **GO-LIVE formal: 35% / 65%.** I3 integral →60%; I4 →85%; I5 →100%.
 
-## I3.2B
+## I3.2C exact runtime PASS
 
-Run `32062886562`, job `95488006557`, artifact `9298816339` isolated `staff_first_NO_PERIODS_VISIBLE`.
+Request `i3-2c-exact-dev-runtime-confirm-no-periods-lifecycle-fix-20260817-01`; run `32064468544`, job `95493109113`, artifact `9299444816`.
 
-Runtime already had 15 periods, 660 visits, current August, valid Staff membership/authority/data, rail/view mounted and project selector present. Only period selector was absent. Legal was loaded/provider-backed/not pending and is not the current blocker.
+Same-build DEV proved remote parity exact, Staff membership verified, 15 periods, 660 visits, 200 shoppers, August current, project+period selectors mounted, router/shell mounted, legal provider-backed/not pending, three reloads stable and new-tab stable.
 
-Root cause: canonical Auth wrapper rebuilds transient session state inside `CX.app.enter()` before synchronous `router.mount()`, while verified membership metadata is republished only after enter returns. The compat bridge therefore fell temporarily to legacy `p.id===scopeProjectId`, comparing `cinepolis` to period IDs.
+One Hosting deploy only; zero automatic second deploy; zero Cloud Run/Auth/password/Firestore/HR/Rules/Storage/Make/Gemini/payment writes/Historical Shopper access; merge/production false.
 
-Fix source-only: `tya-phase-a-authority-compat-v1.js` commit `852ce453e7a65c5a49bdbfc378cdd1866ac0c697`, using only already-verified membership with exact tenant/namespace/role/projectIds during that lifecycle window. No raw scopeProjectId, no UI/core/module patch.
-
-QA focal commit `a3e130387ceb4148aac85053dd4a2af471202a95`; source-preflight `32063359036` / `95489516680` PASS, zero provider/deploy/writes/Historical Shopper access.
+Therefore:
+- I3.2 = PASS/frozen;
+- I3.3 = PASS/frozen;
+- lifecycle NO_PERIODS blocker = closed.
 
 ## Frozen
 
-Historical Shopper `31906391682`; Admin `32049054855`; I1/I2; request08; HR 15/660; Finance V2/historical; canonical V2/exact identity; legal previous materialization/deploy.
+Historical Shopper `31906391682`; Admin `32049054855`; I1/I2/I3.1/I3.2/I3.3; request08; HR 15/660; Finance V2/historical; canonical V2/exact identity; legal previous materialization/deploy.
 
 ## Next
 
-`I3.2C_EXACT_DEV_RUNTIME_CONFIRM_NO_PERIODS_LIFECYCLE_FIX` under a new exact one-shot gate. PASS must certify period selector + 15/660/AGO + legal no-pending + reload/new-tab, then close I3.2/I3.3 and continue I3.4→I3.7 directly.
+`I3.4_POSTULATION_VS_HR_ASSIGNMENT_AUTHORITY_RUNTIME_READONLY`, then I3.5→I3.7 directly.
