@@ -1,39 +1,33 @@
 # ACADEMIA — ADDENDUM PLAN UNIFICADO PHASE A · NO DESVIACIÓN
 
 **Fecha:** 2026-08-17  
-**Última sincronización:** 2026-08-17 14:25 -06:00  
-**Estado:** `ALIGNED__I3_2_PASS__I3_3_PASS__I3_4_NEXT`
+**Última sincronización:** 2026-08-17 14:58 -06:00  
+**Estado:** `ALIGNED__I3_4_PASS__I3_5_HOLD__I3_6_FROZEN_PASS__I3_7_PASS`
 
 ## Regla
 
-Cortes 0B→8, S1→S6 e I1→I5 son una sola ruta. Cada cambio funcional PASS revisa manual, curso/lección, checklist, errores frecuentes, glosario, ruta por rol, notificaciones y publicación con revisión humana.
+Cortes 0B→8, S1→S6 e I1→I5 son una sola ruta. Cada cambio funcional PASS revisa manual, curso/lección, checklist, errores, glosario, ruta por rol y notificaciones.
 
-## I3.2C runtime PASS
+## Aprendizaje I3.4-I3.7
 
-El exact same-build DEV confirmó que el patrón lifecycle-safe resuelve la regresión sin UI patch:
+I3.4 runtime confirmó que una asignación HR no es una postulación de plataforma. Debe enseñarse/documentarse como autoridad operacional distinta.
 
-- Auth/membership Staff válidos;
-- 15 periodos y 660 visitas;
-- project selector + period selector presentes;
-- August 2026 activo;
-- router/shell montado;
-- legal loaded/provider-backed/pending=false;
-- tres reloads y new-tab estables.
+I3.5 deja un patrón reusable de identidad: un identificador source-safe puede ser técnicamente opaco y aun así derivar de un dato humano. Si `shp-*` se genera como hash del texto Shopper de HR, no se convierte por ello en ancla canónica independiente. La identidad canónica requiere un ancla técnica exacta independiente; no se permite nombre/email/teléfono/WhatsApp/username ni hashes derivados de esos campos para fusionar perfiles.
 
-Criterio reusable: un render canónico debe usar scope provider-backed ya verificado incluso durante transiciones de sesión, con coincidencia exacta tenant/namespace/role/projectIds. No raw scopeProjectId, no fuzzy identity, no hardcode UI.
+I3.6 preserva el principio de no reproceso: evidencia histórica PASS + source blobs sin drift se reutilizan; un problema de checkout del harness no autoriza repetir login/reset.
 
-## I4.10
-
-Sigue obligatorio revisar contenidos para documentos/instructivos, certificación histórica, disponibles/postulaciones, asignación/agenda/reprogramación/cancelación, realizada/cuestionario/submit, HR/plataforma, Finance, multi-proyecto/configuración, evidencias, roles y soporte/notificaciones.
+I3.7 confirma receipt legal provider-backed, aceptación humana, exact actor/current version+digest y persistencia reload/new-tab. Consentimiento legal nunca se automatiza.
 
 ## Progreso
 
-Formal 35%/65%. I3.1/I3.2/I3.3 PASS/frozen; I3.4 next. I3 integral →60%.
+Formal 35%/65%. I3.1-I3.4 e I3.7 PASS/frozen; I3.5 exact blocker; I3.6 harness-only closure.
 
-## Fuentes
+## Fuente
 
-Plan: `ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
-Source lock: `SOURCE-LOCK-I3-2C-EXACT-DEV-RUNTIME-PASS-20260817.md`.
-Build-lock: `app/docs/evidence/I3-2C-DEV-BUILD-LOCK-LATEST.json`.
+`SOURCE-LOCK-I3-4-I3-7-READONLY-RESULT-I3-4-I3-7-PASS-I3-5-HOLD-20260817.md`.
 
-Clasificación: Reusable CXOrbia = sí; Exclusivo cliente = TyA/Cinépolis; Claude/prototipo = no UI/core changes; Academia = actualizado; Sin impacto Claude = no, preservar lifecycle readiness.
+## Siguiente
+
+`I3.5A_EXACT_TECHNICAL_CROSSWALK_SOURCE_HUNT__PLUS_I3.6_FROZEN_REFERENCE_HARNESS_FIX__SOURCE_ONLY`.
+
+Clasificación: Reusable CXOrbia = sí; Exclusivo cliente = target agosto TyA; Claude/prototipo = no UI/fuzzy patches; Academia = actualizado; Sin impacto Claude = no, preservar separación de autoridad e identidad exacta.
