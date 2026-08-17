@@ -1,20 +1,26 @@
 # ACADEMIA — ADDENDUM PLAN UNIFICADO PHASE A · NO DESVIACIÓN
 
 **Fecha:** 2026-08-17  
-**Última sincronización:** 2026-08-17 14:10 -06:00  
-**Estado:** `ALIGNED__I3_2B_NO_PERIODS_ROOT_CAUSE_PROVEN__FOCAL_SOURCE_FIX_PASS__I3_2C_NEXT`
+**Última sincronización:** 2026-08-17 14:25 -06:00  
+**Estado:** `ALIGNED__I3_2_PASS__I3_3_PASS__I3_4_NEXT`
 
 ## Regla
 
 Cortes 0B→8, S1→S6 e I1→I5 son una sola ruta. Cada cambio funcional PASS revisa manual, curso/lección, checklist, errores frecuentes, glosario, ruta por rol, notificaciones y publicación con revisión humana.
 
-## Patrón I3.2B
+## I3.2C runtime PASS
 
-El runtime exacto mostró 15 periodos/660 visitas correctos y sesión/membership válidas, pero el rail no montó el selector de Periodo. La causa fue una ventana de lifecycle entre reconstrucción Auth de sesión, `CX.app.enter()`, `router.mount()` y república de membership verificada.
+El exact same-build DEV confirmó que el patrón lifecycle-safe resuelve la regresión sin UI patch:
 
-Criterio reusable: el primer render debe usar scope ya verificado; un fallback transitorio solo es válido si tenant, namespace, role y projectIds coinciden exactamente con la membership provider-backed ya verificada. Nunca raw `scopeProjectId`, fuzzy identity ni hardcode UI.
+- Auth/membership Staff válidos;
+- 15 periodos y 660 visitas;
+- project selector + period selector presentes;
+- August 2026 activo;
+- router/shell montado;
+- legal loaded/provider-backed/pending=false;
+- tres reloads y new-tab estables.
 
-Legal estaba loaded/provider-backed/not pending y no fue la causa del blocker actual. La aceptación sigue humana; receipt durable completo queda I3.7.
+Criterio reusable: un render canónico debe usar scope provider-backed ya verificado incluso durante transiciones de sesión, con coincidencia exacta tenant/namespace/role/projectIds. No raw scopeProjectId, no fuzzy identity, no hardcode UI.
 
 ## I4.10
 
@@ -22,12 +28,12 @@ Sigue obligatorio revisar contenidos para documentos/instructivos, certificació
 
 ## Progreso
 
-Formal 35%/65%. I3.2B causa exacta y fix source PASS; runtime post-fix I3.2C pendiente.
+Formal 35%/65%. I3.1/I3.2/I3.3 PASS/frozen; I3.4 next. I3 integral →60%.
 
 ## Fuentes
 
 Plan: `ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
-Source lock: `SOURCE-LOCK-I3-2B-NO-PERIODS-LIFECYCLE-ROOT-CAUSE-SOURCE-PASS-20260817.md`.
-Complemento: `ACADEMIA-ADDENDUM-I3-2B-NO-PERIODS-LIFECYCLE-20260817.md`.
+Source lock: `SOURCE-LOCK-I3-2C-EXACT-DEV-RUNTIME-PASS-20260817.md`.
+Build-lock: `app/docs/evidence/I3-2C-DEV-BUILD-LOCK-LATEST.json`.
 
-Clasificación: Reusable CXOrbia = sí; Exclusivo cliente = TyA/Cinépolis; Claude/prototipo = no UI/core changes; Academia = actualizado; Sin impacto Claude = no, debe preservar el criterio de lifecycle.
+Clasificación: Reusable CXOrbia = sí; Exclusivo cliente = TyA/Cinépolis; Claude/prototipo = no UI/core changes; Academia = actualizado; Sin impacto Claude = no, preservar lifecycle readiness.
