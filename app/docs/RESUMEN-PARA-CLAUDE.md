@@ -1,96 +1,59 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-17 13:34 -06:00  
-**Estado:** `UNIFIED_PHASE_A_PLAN__SAME_CANDIDATE__ADMIN_PASS_FROZEN__HISTORICAL_SHOPPER_PASS_FROZEN__I3_1_SOURCE_PASS__I3_2_DEV_DEPLOY_PARITY_PASS_RUNTIME_FOCAL_FAIL__NO_MODULE_REBUILD`
+**Última actualización:** 2026-08-17 13:48 -06:00  
+**Estado:** `SAME_CANDIDATE__ADMIN_PASS_FROZEN__HISTORICAL_SHOPPER_PASS_FROZEN__I3_1_PASS__I3_2_DEPLOY_PARITY_PASS_RUNTIME_FOCAL_OPEN__NO_MODULE_REBUILD`
 
-## Lock de continuidad
+## Prevalencia
 
-No nueva candidata/rama/PR. No reconstruir Auth, Shoppers, Finanzas, HR, KPI ni módulos ya resueltos. No tocar `app/modules` ni `app/core` por el blocker actual.
+Secuencia: `ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
 
-Plan de secuencia:
-`ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
+Estado técnico: `SOURCE-LOCK-I3-2-DEV-DEPLOY-PARITY-PASS-RUNTIME-BLOCKER-DIAGNOSTICS-SOURCE-PASS-20260817.md`.
 
-Source lock técnico:
-`SOURCE-LOCK-I3-2-DEV-DEPLOY-PARITY-PASS-RUNTIME-BLOCKER-DIAGNOSTICS-SOURCE-PASS-20260817.md`.
+No nueva candidata/rama/PR/workflow. No reconstruir Auth, Shoppers, Finance, HR, KPI ni módulos ya resueltos. No tocar `app/modules` ni `app/core` para esconder el blocker actual.
 
-## No tocar / no reprocesar
+## No reprocesar
 
-- Historical Shopper `31906391682` PASS; reset único consumido; `passwordResets=0`.
-- TARGET_B Admin sign-in PASS `32049054855`; Paula ingresó. No crear/rotar/reemplazar.
-- request08 consumido/no rerun.
-- I1/I2 PASS.
-- HR 15 periodos / 660 visitas; no reimportar.
-- Finance V2 + source-safe/historical payments; no reconstruir.
-- exact identity contract: no nombre/email/teléfono/WhatsApp/username como matching.
+Historical Shopper `31906391682` PASS/reset consumido/`passwordResets=0`; TARGET_B Admin `32049054855` PASS; request08 consumido; I1/I2 PASS; HR 15/660 no reimport; Finance V2/historical no rebuild; exact identity no fuzzy; legal no autoaccept.
 
-## Candidata canónica preservada
+## I3.1
 
-El entry vivo conserva cumulative read model V2, canonical Shopper portal V2, protected HR authority V2, state semantics V2, Finance V2 y financial source-safe adapter. La regresión actual sigue siendo de integración/runtime, no pérdida general de módulos.
+PASS. Preservar `tya-phase-a-authority-compat-v1.js`: root-project/period scope + HR assignment distinto de postulación persistida.
 
-## I3.1 — cerrado
+## I3.2
 
-Scope membership root-project/program compatible con period rows y assignment HR separado de postulación persistida. No revertir `tya-phase-a-authority-compat-v1.js` ni su wiring.
+Run `32058831910`, job `95475132736`:
 
-## I3.2 — avance y blocker
+- exact Firebase Hosting DEV deploy PASS;
+- remote parity PASS;
+- remote hash `952319a9a2cac7e61eff01f21c67f8e079de695e3bbc67767c4023c47f8271a7`;
+- authenticated Staff runtime FAIL focal `staff_first_VISIBLE_SHELL_OR_SOURCE_BLOCK`.
 
-Run `32058831910`, job `95475132736` desplegó una vez el source autorizado a Firebase Hosting DEV.
+Readiness ya había confirmado Auth, membership, HR authority, data projects/visits no vacíos, current project/period y app visible/login hidden. El error anterior agrupaba empty shell/backend empty/no project/no period/source block. No hay evidencia para cambiar un módulo UI.
 
-PASS:
-- source/preflight;
-- deploy DEV exacto;
-- remote parity root/direct;
-- remote hash `952319a9a2cac7e61eff01f21c67f8e079de695e3bbc67767c4023c47f8271a7`.
-
-FAIL focal:
-`staff_first_VISIBLE_SHELL_OR_SOURCE_BLOCK`.
-
-El readiness previo al FAIL ya confirmó Auth Staff, membership, protected HR authority, data projects/visits no vacíos, currentProjectId/currentPeriodId y app visible/login hidden. El harness antiguo juntaba en una sola aserción empty shell/backend empty/no project/no period/source block, así que no existe evidencia para rediseñar ningún módulo.
-
-## Focal source-only
-
-Solo se modificó `tools/qa/tya-c6-staff-admin-human-auth-browser-smoke.mjs` para separar errores y registrar snapshot sanitizado de:
-
-- router/shell mounted;
-- selector proyecto;
-- selector periodo;
-- empty/source flags;
-- legal loaded/pending/provider authority/error/modal.
-
-Commit `58b39f0cff760a37cb00a0f4d4e2adabcea5c24e`.
-
-Source-only preflight `32060010492` / `95478920028`: PASS, cero provider/deploy/writes.
+Harness QA granular commit `58b39f0cff760a37cb00a0f4d4e2adabcea5c24e`; source preflight `32060010492` PASS, cero provider/deploy/writes.
 
 ## Legal
 
-`CX.app.enter()` difiere `CX.router.mount()` mientras `CX.confidencialidad.pending(...)` esté activo. Paula ya hizo la aceptación humana V0.4, pero I3.7 durable provider readback sigue pendiente y hubo doble presentación. Legal es hipótesis fuerte del blocker, NO causa declarada hasta el siguiente snapshot granular. No autoaceptar ni esconder el modal.
+`CX.app.enter()` puede diferir `router.mount()` si legal sigue pending. Paula ya realizó la aceptación humana, pero I3.7 readback durable sigue pendiente y hubo doble presentación. Legal es hipótesis fuerte, NO causa probada hasta snapshot granular. No autoaccept ni eliminar modal.
 
-## Qué Claude NO debe hacer
+## Claude — prohibiciones focales
 
-- no copiar versiones antiguas de Dashboard/Shoppers/Postulaciones/Finanzas;
-- no quitar fail-closed guards para hacer pasar la prueba;
-- no convertir assignment HR en postulación;
-- no inventar proyecto/periodo en UI;
-- no tocar legal/NDA para autoaceptar;
-- no hacer cherry-pick/rollback de módulos completos.
+No copiar módulos antiguos; no quitar fail-closed guards; no inventar proyecto/periodo; no transformar assignment HR en postulación; no alterar legal para hacer pasar E2E; no cherry-pick/rollback de módulos completos.
 
-## I3 restante
+## Ruta restante
 
-I3.2B runtime granular → I3.3 proyecto/periodos/660 → I3.4 postulations authority → I3.5 exact crosswalk → I3.6 Mi Perfil/history → I3.7 legal receipt durable → I3.8/I3.9 new Shopper provider flow/login → I3.10 KPI semantics → I3.11 same-build closure.
+I3.2B granular runtime → I3.3 project/periods/660 → I3.4 postulations authority → I3.5 exact crosswalk → I3.6 Mi Perfil/history → I3.7 legal receipt → I3.8/I3.9 new Shopper provider flow/login → I3.10 KPI → I3.11 closure → I4 completa → I5 producción.
 
 ## Progreso
 
-Formal: I1 15/15; I2 20/20; I3 0/25; I4 0/25; I5 0/15 = **35% / 65%**. I3.2 partial no otorga puntos todavía; no se repite su deploy PASS.
+I1 15/15; I2 20/20; I3 0/25; I4 0/25; I5 0/15 = **35%/65%**. I3.2 deploy/parity PASS no se repite. I3 integral lleva a 60%, I4 a 85%, I5 a 100%.
 
 ## Siguiente frontera
 
 `I3.2B_GRANULAR_AUTHENTICATED_STAFF_RUNTIME_RECHECK_AFTER_DIAGNOSTICS_SOURCE_PASS`.
 
-El one-shot anterior está consumido. Una nueva ejecución autenticada/deploy requiere gate nuevo; no rerun automático.
+El one-shot anterior está consumido. Nueva ejecución autenticada/deploy requiere gate nuevo.
 
 ## Clasificación
 
-- Reusable CXOrbia: same-build parity, granular runtime diagnostics, router-mounted readiness.
-- Exclusivo cliente: TyA DEV/legal receipt.
-- Claude/prototipo: preservar módulos; P0 solo focal con evidencia.
-- Academia: handoff efectivo requiere router/contexto, no solo app visible.
-- Sin impacto Claude: tooling/gates; sí requiere no revertir decisiones.
+Reusable CXOrbia: parity+granular harness; Exclusivo cliente: TyA/legal; Claude/prototipo: preservar módulos; Academia: readiness efectivo; Sin impacto Claude: tooling/gates, salvo no revertir decisiones.
