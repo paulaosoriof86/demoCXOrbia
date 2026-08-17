@@ -12,7 +12,8 @@ const files={
   runtimeWrapper:'tools/qa/tya-c6-dev-root-runtime-wrapper.mjs',
   staffSmoke:'tools/qa/tya-c6-staff-admin-human-auth-browser-smoke.mjs',
   browserAuth:'app/core/backend-browser-auth.js',
-  membershipWiring:'app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js'
+  membershipWiring:'app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js',
+  authorityCompat:'app/adapters/tya-phase-a-authority-compat-v1.js'
 };
 
 const read=p=>{
@@ -96,6 +97,8 @@ ensure(sources.staffSmoke.includes('membershipVerified:window.CX?.session?.user?
 ensure(sources.staffSmoke.includes("handoff?.status==='entered'"),'STAFF_SMOKE_FRONTEND_HANDOFF_ASSERTION_MISSING');
 ensure(sources.staffSmoke.includes('window.CX_BACKEND_LAST_STATE?.empty!==true'),'STAFF_SMOKE_BACKEND_EMPTY_RECONCILE_ASSERTION_MISSING');
 ensure(sources.staffSmoke.includes('window.CX_CORTE4_READONLY?.empty!==true'),'STAFF_SMOKE_CORTE4_EMPTY_RECONCILE_ASSERTION_MISSING');
+ensure(sources.staffSmoke.includes("assert(!state.noPeriodsVisible,label+'_NO_PERIODS_VISIBLE');"),'STAFF_SMOKE_GRANULAR_NO_PERIODS_ASSERTION_MISSING');
+ensure(sources.staffSmoke.includes("assert(state.railPeriodSelect,label+'_PERIOD_SELECTOR_NOT_MOUNTED');"),'STAFF_SMOKE_PERIOD_SELECTOR_ASSERTION_MISSING');
 
 for(const id of ['loginForm','lgUser','lgPass','lgSubmit']){
   ensure(sources.browserAuth.includes(`getElementById('${id}')`),'PRODUCT_CANONICAL_SELECTOR_MISSING_'+id);
@@ -118,8 +121,21 @@ ensure(sources.membershipWiring.includes("sessionMembershipRepublishedAfterAppEn
 ensure(sources.membershipWiring.includes("publishFrontendHandoff('entered'"),'MEMBERSHIP_WIRING_HANDOFF_EVIDENCE_MISSING');
 ensure(!sources.membershipWiring.includes("document.getElementById('app').classList.add"),'MEMBERSHIP_WIRING_DIRECT_UI_MUTATION_FORBIDDEN');
 
+const authoritySyntax=spawnSync(process.execPath,['--check',files.authorityCompat],{encoding:'utf8'});
+ensure(authoritySyntax.status===0,'AUTHORITY_COMPAT_SYNTAX_INVALID_'+String(authoritySyntax.stderr||'').replace(/[^A-Za-z0-9]+/g,'_').slice(0,160));
+ensure(sources.authorityCompat.includes('function verifiedTransitionScope()'),'AUTHORITY_COMPAT_VERIFIED_TRANSITION_SCOPE_MISSING');
+ensure(sources.authorityCompat.includes("wiring.status!=='verified'"),'AUTHORITY_COMPAT_WIRING_VERIFIED_GUARD_MISSING');
+ensure(sources.authorityCompat.includes('wiring.membershipVerified!==true'),'AUTHORITY_COMPAT_MEMBERSHIP_VERIFIED_GUARD_MISSING');
+ensure(sources.authorityCompat.includes("lower(ctx.tenantId)!=='tya'"),'AUTHORITY_COMPAT_TENANT_GUARD_MISSING');
+ensure(sources.authorityCompat.includes("lower(ctx.authNamespace||'staff')!=='staff'"),'AUTHORITY_COMPAT_NAMESPACE_GUARD_MISSING');
+ensure(sources.authorityCompat.includes('lower(ctx.role)!==lower(wiring.role)'),'AUTHORITY_COMPAT_ROLE_MATCH_MISSING');
+ensure(sources.authorityCompat.includes('!sameList(ctx.projectIds,wiring.projectScope)'),'AUTHORITY_COMPAT_PROJECT_SCOPE_EXACT_MATCH_MISSING');
+ensure(sources.authorityCompat.includes('return verifiedTransitionScope();'),'AUTHORITY_COMPAT_TRANSITION_FALLBACK_NOT_USED');
+ensure(!sources.authorityCompat.includes('return uniq([user.scopeProjectId'), 'AUTHORITY_COMPAT_RAW_SCOPEPROJECTID_TRUST_FORBIDDEN');
+ensure(!sources.authorityCompat.includes("document.getElementById('rail')"),'AUTHORITY_COMPAT_DIRECT_RAIL_PATCH_FORBIDDEN');
+
 const result={
-  schemaVersion:'cxorbia.c6.staff-lane-source-preflight.v4',
+  schemaVersion:'cxorbia.c6.staff-lane-source-preflight.v5',
   generatedAt:new Date().toISOString(),
   decision:'PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT',
   action:exactAction,
@@ -138,6 +154,7 @@ const result={
     staffCanonicalFormSelectors:true,
     staffCanonicalKeyboardSubmit:true,
     staffPointerSubmitCollisionAvoided:true,
+    staffGranularNoPeriodsAssertion:true,
     productCanonicalSelectorsPresent:true,
     productCanonicalSubmitBindingPresent:true,
     membershipAuthorityFrontendHandoff:true,
@@ -145,6 +162,10 @@ const result={
     membershipRepublishedAfterCanonicalAppEnter:true,
     staleBackendEmptyStateReconciled:true,
     canonicalAppEnterReused:true,
+    authorityCompatSyntax:true,
+    authorityCompatVerifiedTransitionScope:true,
+    authorityCompatExactTenantRoleProjectMatch:true,
+    authorityCompatNoRawScopeProjectTrust:true,
     directUiMutationAbsent:true
   },
   safety:{
