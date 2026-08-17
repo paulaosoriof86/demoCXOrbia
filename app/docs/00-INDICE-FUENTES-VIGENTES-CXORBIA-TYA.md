@@ -1,50 +1,37 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-17 14:12 -06:00  
+**Fecha:** 2026-08-17 14:19 -06:00  
 **Estado vivo:** `I1_PASS__I2_PASS__I3_1_PASS__I3_2B_EXACT_NO_PERIODS_ROOT_CAUSE_PROVEN__FOCAL_SOURCE_FIX_PASS__I3_2C_RUNTIME_GATE_NEXT__GO_LIVE_35`
 
 ## Prevalencia
 
 Secuencia/porcentaje/subgates: `ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
-
 Source lock técnico actual: **`SOURCE-LOCK-I3-2B-NO-PERIODS-LIFECYCLE-ROOT-CAUSE-SOURCE-PASS-20260817.md`**.
 
 ## Carril
 
-Repo `paulaosoriof86/demoCXOrbia`; rama única `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`; DEV `cxorbia-backend-dev`.
+Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`; DEV `cxorbia-backend-dev`.
 
 No nueva candidata/rama/PR/workflow; no reauditoría general.
 
-## Congelado — NO REPROCESAR
+## Frozen/no reprocess
 
-I1/I2 PASS; Historical Shopper `31906391682` PASS/reset consumido/`passwordResets=0`; TARGET_B Admin `32049054855` PASS; request08 consumido; HR 15/660 no reimport; Finance V2/source-safe/historical no rebuild; canonical V2/exact identity preserved; legal materialization/deploy previos no rerun/autoaccept.
+I1/I2 PASS; Historical Shopper `31906391682` PASS/reset consumed/`passwordResets=0`; TARGET_B Admin `32049054855` PASS; request08 consumed; HR 15/660 no reimport; Finance V2/historical no rebuild; canonical V2/exact identity preserved; legal previous materialization/deploy no rerun/autoaccept.
 
-## I3.2B resultado exacto
+## I3.2B exact result
 
-Run `32062886562`, job `95488006557`, artifact `9298816339`.
+Runtime run `32062886562` isolated **`staff_first_NO_PERIODS_VISIBLE`** while Staff membership, 15 periods, 660 visits, current August, authority/data, rail/view and project selector were all valid. Period selector alone was absent. Legal loaded/provider-backed/not pending.
 
-Blocker runtime exacto: **`staff_first_NO_PERIODS_VISIBLE`**.
+Root cause: transient membership metadata loss inside canonical Auth wrapper before synchronous router mount; legacy period-id filter was used during that narrow window.
 
-Snapshot: Admin Staff/membership verified, 15 periodos, 660 visitas, current `cinepolis` / `cinepolis-2026-08`, authority/data ready, rail/view mounted, project selector sí, period selector no, empty/backend/source block false.
+Fix source-only: `tya-phase-a-authority-compat-v1.js` commit `852ce453e7a65c5a49bdbfc378cdd1866ac0c697`, exact verified tenant/namespace/role/projectIds fallback only. QA commit `a3e130387ceb4148aac85053dd4a2af471202a95`; source-preflight `32063359036` PASS, zero provider/deploy/writes.
 
-Legal quedó descartado como blocker actual: loaded=true, pending=false, providerAuthority=true, error=null, modal=false.
-
-## Root cause + fix
-
-Durante `CX.app.enter()`, backend-browser-auth reconstruye temporalmente `CX.session.user`; `router.mount()` corre antes del post-enter membership republish. El compat adapter perdía el scope verificado en esa ventana y caía al legacy `p.id===scopeProjectId`, por lo que root project `cinepolis` no coincidía con period ids `cinepolis-YYYY-MM`.
-
-Fix focal en `tya-phase-a-authority-compat-v1.js`, commit `852ce453e7a65c5a49bdbfc378cdd1866ac0c697`: fallback transitorio solo desde membership C6 ya verificada, con tenant/namespace/role/projectIds exactos. No raw scopeProjectId; no UI/core/modules.
-
-QA focal commit `a3e130387ceb4148aac85053dd4a2af471202a95`; source-preflight run `32063359036`, job `95489516680`: PASS; provider/deploy/writes/Historical Shopper access = 0.
-
-## Progreso
+## Progress
 
 I1 `15/15`; I2 `20/20`; I3 formal `0/25`; I4 `0/25`; I5 `0/15` = **35%/65%**.
 
-Avance interno: I3.1 PASS; I3.2B causa exacta + fix source PASS. Falta runtime post-fix para cerrar I3.2/I3.3.
-
-## Siguiente acción exacta
+## Next exact action
 
 `I3.2C_EXACT_DEV_RUNTIME_CONFIRM_NO_PERIODS_LIFECYCLE_FIX`.
 
-Requiere gate nuevo porque I3.2B consumió su único deploy. Debe certificar period selector + 15/660/AGO + legal no-pending + reload/new-tab. Si PASS: cerrar I3.2/I3.3 y continuar I3.4→I3.7 sin diagnóstico general.
+Requires a new exact gate because I3.2B consumed its one deploy. PASS must certify period selector + 15/660/AGO + legal no-pending + 3 reloads + new-tab. Then close I3.2/I3.3 and continue I3.4→I3.7 directly.
