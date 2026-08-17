@@ -26,24 +26,76 @@ const result={
   targetProject:'cxorbia-backend-dev',status:'NOT_STARTED',decision:'NOT_STARTED',authMode:'ephemeral_custom_token_existing_created_identity',
   providerReads:{authUser:0,membership:0,profile:0,crosswalk:0},customTokensMinted:0,providerAdminWrites:0,
   exactProvider:{user:false,claims:false,membership:false,profile:false,crosswalk:false,platformCreatedAuthority:false,periodIndependent:false,visibleLoginMappingFingerprint:false},
-  browser:{providerAuth:false,claimsContext:false,membershipVerified:false,shopperSession:false,projectScope:false,reload:false,newTab:false,secondLogicalContext:false,visibleLoginSurface:true,passwordRouteReusedFromGenericFrozenContract:true},
+  browser:{providerAuth:false,claimsContext:false,membershipVerified:false,shopperSession:false,projectScope:false,reload:false,newTab:false,secondLogicalContext:false,visibleLoginSurface:false,passwordRouteReusedFromGenericFrozenContract:true,authNetworkRetries:0,firebaseProjectExact:false,firebaseConfigFingerprint:null,restCustomTokenDiagnostic:null},
   runtime:{currentProjectId:null,currentPeriodId:null,projectIds:[],periodCount:0,visitCount:null,shopperProfileInCxData:null,dataSource:null},
   i3_10ShopperScope:{duplicateVisitIds:null,duplicateShopperIds:null,countsNonnegative:null,periodSummaryConsistent:null,status:'NOT_EVALUATED',decision:'NOT_EVALUATED'},
-  safety:{historicalShopperAccess:0,historicalShopperLogin:0,historicalShopperRecovery:0,historicalShopperReset:0,passwordChanges:0,passwordResets:0,userCreates:0,userUpdates:0,claimWrites:0,firestoreWrites:0,hrWrites:0,financeWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,deploys:0,merge:false,production:false,tokenPersisted:false,credentialPersisted:false},
+  safety:{historicalShopperAccess:0,historicalShopperLogin:0,historicalShopperRecovery:0,historicalShopperReset:0,passwordChanges:0,passwordResets:0,userCreates:0,userUpdates:0,claimWrites:0,firestoreWrites:0,hrWrites:0,financeWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,deploys:0,merge:false,production:false,tokenPersisted:false,credentialPersisted:false,apiKeyPersisted:false,idTokenPersisted:false,refreshTokenPersisted:false},
   blockers:[],notes:[]
 };
 const block=code=>{if(!result.blockers.includes(code))result.blockers.push(code);};
 const save=()=>{fs.mkdirSync(path.dirname(outPath),{recursive:true});fs.writeFileSync(outPath,stable(result),'utf8');};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
 async function waitFirebase(page){
-  await page.waitForFunction(()=>window.firebase&&firebase.auth&&firebase.firestore,{timeout:30000});
+  await page.waitForFunction(()=>window.firebase&&firebase.auth&&firebase.firestore&&firebase.apps?.length>0,{timeout:30000});
 }
-async function signInCustomAndReload(page,token,shopperId){
+async function waitVisibleLoginSurface(page){
+  for(const selector of ['#loginForm','#login .role-btn[data-role="shopper"]','#lgUser','#lgPass','#lgSubmit']){
+    await page.waitForSelector(selector,{state:'attached',timeout:30000});
+  }
+  const visible=await page.evaluate(()=>({form:!!document.querySelector('#loginForm'),role:!!document.querySelector('#login .role-btn[data-role="shopper"]'),user:!!document.querySelector('#lgUser'),pass:!!document.querySelector('#lgPass'),submit:!!document.querySelector('#lgSubmit')}));
+  if(!Object.values(visible).every(Boolean)) throw new Error('VISIBLE_LOGIN_SURFACE_INCOMPLETE_AFTER_WAIT');
+  result.browser.visibleLoginSurface=true;
+}
+async function firebaseBrowserConfig(page){
+  const cfg=await page.evaluate(()=>{const app=firebase.app();const o=app.options||{};return {name:app.name||'[DEFAULT]',projectId:String(o.projectId||''),authDomain:String(o.authDomain||''),apiKey:String(o.apiKey||'')};});
+  result.browser.firebaseProjectExact=cfg.projectId==='cxorbia-backend-dev';
+  result.browser.firebaseConfigFingerprint=sha([cfg.name,cfg.projectId,cfg.authDomain,sha(cfg.apiKey)].join('\0'));
+  if(!result.browser.firebaseProjectExact) throw new Error('BROWSER_FIREBASE_PROJECT_MISMATCH');
+  return cfg;
+}
+async function browserCustomTokenSignIn(page,tokens){
+  let last=null;
+  for(let i=0;i<tokens.length;i++){
+    try{
+      await page.evaluate(async token=>{
+        await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+        await firebase.auth().signInWithCustomToken(token);
+      },tokens[i]);
+      result.browser.authNetworkRetries+=i;
+      return true;
+    }catch(error){
+      last=error;
+      const text=str(error?.message||error);
+      if(!/network-request-failed|network AuthError|auth\/network-request-failed/i.test(text)) throw error;
+      await sleep(900*(i+1));
+    }
+  }
+  result.browser.authNetworkRetries+=Math.max(0,tokens.length-1);
+  throw last||new Error('CUSTOM_TOKEN_BROWSER_SIGNIN_FAILED');
+}
+async function restCustomTokenDiagnostic(apiKey,token){
+  if(!apiKey||!token)return {attempted:false,ok:false,status:null,errorCode:'MISSING_INPUT'};
+  try{
+    const response=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${encodeURIComponent(apiKey)}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token,returnSecureToken:true})});
+    if(response.ok){await response.arrayBuffer();return {attempted:true,ok:true,status:response.status,errorCode:null};}
+    let code='HTTP_'+response.status;try{const body=await response.json();code=str(body?.error?.message||code).replace(/[^A-Z0-9_:-]/gi,'_').slice(0,100);}catch{}
+    return {attempted:true,ok:false,status:response.status,errorCode:code};
+  }catch(error){return {attempted:true,ok:false,status:null,errorCode:str(error?.code||error?.message||error).replace(/[^A-Z0-9_:-]/gi,'_').slice(0,100)};}
+}
+async function signInCustomAndReload(page,tokens,shopperId){
   await page.goto(targetUrl,{waitUntil:'domcontentloaded',timeout:60000});
   await waitFirebase(page);
-  const visible=await page.evaluate(()=>({form:!!document.querySelector('#loginForm'),role:!!document.querySelector('#login .role-btn[data-role="shopper"]'),user:!!document.querySelector('#lgUser'),pass:!!document.querySelector('#lgPass'),submit:!!document.querySelector('#lgSubmit')}));
-  if(!Object.values(visible).every(Boolean)) throw new Error('VISIBLE_LOGIN_SURFACE_INCOMPLETE');
-  await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);await firebase.auth().signInWithCustomToken(t);},token);
+  await waitVisibleLoginSurface(page);
+  const cfg=await firebaseBrowserConfig(page);
+  try{
+    await browserCustomTokenSignIn(page,tokens);
+  }catch(error){
+    const diagnosticToken=tokens.at(-1);
+    result.browser.restCustomTokenDiagnostic=await restCustomTokenDiagnostic(cfg.apiKey,diagnosticToken);
+    throw error;
+  }
+  await page.waitForFunction(()=>firebase.auth().currentUser!=null,{timeout:30000});
   await page.reload({waitUntil:'domcontentloaded',timeout:60000});
   await page.waitForFunction(id=>{try{const c=window.CX?.backendAuth?.context?.();return !!(c&&c.authenticated&&c.role==='shopper'&&c.shopperId===id);}catch{return false;}},shopperId,{timeout:60000});
   await page.waitForFunction(()=>window.CX_SHOPPER_MEMBERSHIP?.status==='verified',{timeout:60000});
@@ -83,19 +135,21 @@ try{
   if(!Object.values(result.exactProvider).every(Boolean))block('EXACT_PROVIDER_PRE_E2E_READBACK_FAILED');
   if(result.blockers.length){result.status='SAFE_HOLD_READONLY';result.decision='HOLD_I3_9_PROVIDER_PRECONDITION';save();process.exit(0);}
 
-  const token1=await auth.createCustomToken(user.uid);const token2=await auth.createCustomToken(user.uid);result.customTokensMinted=2;
+  const tokens1=await Promise.all([1,2,3,4].map(()=>auth.createCustomToken(user.uid)));
+  const tokens2=await Promise.all([1,2,3,4].map(()=>auth.createCustomToken(user.uid)));
+  result.customTokensMinted=tokens1.length+tokens2.length;
   browser=await chromium.launch({headless:true});
-  const ctx1=await browser.newContext();const page1=await ctx1.newPage();await signInCustomAndReload(page1,token1,req.shopperId);let s1=await snap(page1,req.shopperId);
+  const ctx1=await browser.newContext();const page1=await ctx1.newPage();await signInCustomAndReload(page1,tokens1,req.shopperId);let s1=await snap(page1,req.shopperId);
   result.browser.providerAuth=s1.ctx?.authenticated===true&&s1.ctx?.provider==='firebase';result.browser.claimsContext=s1.ctx?.role==='shopper'&&s1.ctx?.tenantId===req.tenantId&&s1.ctx?.shopperId===req.shopperId&&Array.isArray(s1.ctx?.projectIds)&&s1.ctx.projectIds.includes(req.projectId);result.browser.membershipVerified=s1.membership?.status==='verified'&&s1.membership?.shopperIdVerified===true;result.browser.shopperSession=s1.sessionRole==='shopper'&&s1.sessionShopperId===req.shopperId;result.browser.projectScope=s1.currentProjectId===req.projectId&&s1.projectIds.includes(req.projectId);
   result.runtime={currentProjectId:s1.currentProjectId,currentPeriodId:s1.currentPeriodId,projectIds:s1.projectIds,periodCount:s1.periodCount,visitCount:s1.visitCount,shopperProfileInCxData:s1.shopperProfileInCxData,dataSource:s1.dataSource};
   await page1.reload({waitUntil:'domcontentloaded',timeout:60000});await page1.waitForFunction(id=>window.CX?.backendAuth?.context?.()?.shopperId===id,req.shopperId,{timeout:60000});await page1.waitForFunction(()=>window.CX_SHOPPER_MEMBERSHIP?.status==='verified',{timeout:60000});const sr=await snap(page1,req.shopperId);result.browser.reload=sr.ctx?.shopperId===req.shopperId&&sr.membership?.status==='verified';
   const popupPromise=ctx1.waitForEvent('page',{timeout:15000});await page1.evaluate(target=>window.open(target,'_blank'),targetUrl);const popup=await popupPromise;try{await popup.waitForLoadState('domcontentloaded',{timeout:30000});await popup.waitForFunction(id=>window.CX?.backendAuth?.context?.()?.shopperId===id,req.shopperId,{timeout:60000});await popup.waitForFunction(()=>window.CX_SHOPPER_MEMBERSHIP?.status==='verified',{timeout:60000});const sp=await snap(popup,req.shopperId);result.browser.newTab=sp.ctx?.shopperId===req.shopperId&&sp.membership?.status==='verified';}catch(e){result.notes.push('new-tab:'+str(e?.message||e).slice(0,120));}
-  const ctx2=await browser.newContext();const page2=await ctx2.newPage();await signInCustomAndReload(page2,token2,req.shopperId);const s2=await snap(page2,req.shopperId);result.browser.secondLogicalContext=s2.ctx?.shopperId===req.shopperId&&s2.membership?.status==='verified'&&s2.currentProjectId===req.projectId;
+  const ctx2=await browser.newContext();const page2=await ctx2.newPage();await signInCustomAndReload(page2,tokens2,req.shopperId);const s2=await snap(page2,req.shopperId);result.browser.secondLogicalContext=s2.ctx?.shopperId===req.shopperId&&s2.membership?.status==='verified'&&s2.currentProjectId===req.projectId;
 
   result.i3_10ShopperScope.duplicateVisitIds=s1.duplicateVisitIds;result.i3_10ShopperScope.duplicateShopperIds=s1.duplicateShopperIds;result.i3_10ShopperScope.countsNonnegative=s1.countsNonnegative;result.i3_10ShopperScope.periodSummaryConsistent=s1.periodSummaryConsistent;
   const kpiPass=s1.duplicateVisitIds===0&&s1.duplicateShopperIds===0&&s1.countsNonnegative===true&&s1.periodSummaryConsistent===true;result.i3_10ShopperScope.status=kpiPass?'PASS_SHOPPER_SCOPE':'HOLD';result.i3_10ShopperScope.decision=kpiPass?'PASS_I3_10_SHOPPER_SCOPE_INVARIANTS':'HOLD_I3_10_SHOPPER_SCOPE_INVARIANTS';
-  const browserPass=['providerAuth','claimsContext','membershipVerified','shopperSession','projectScope','reload','newTab','secondLogicalContext','visibleLoginSurface','passwordRouteReusedFromGenericFrozenContract'].every(k=>result.browser[k]===true);
+  const browserPass=['providerAuth','claimsContext','membershipVerified','shopperSession','projectScope','reload','newTab','secondLogicalContext','visibleLoginSurface','passwordRouteReusedFromGenericFrozenContract','firebaseProjectExact'].every(k=>result.browser[k]===true);
   if(!browserPass)block('BROWSER_E2E_INCOMPLETE');if(!kpiPass)block('SHOPPER_SCOPE_KPI_INVARIANTS_FAILED');
-  if(!result.blockers.length){result.status='PASS_READONLY_REAL_PROVIDER_IDENTITY_E2E';result.decision='PASS_I3_9_NEW_SHOPPER_REAL_E2E_NO_PASSWORD_MUTATION';result.notes.push('Real Firebase identity/session tested with ephemeral custom tokens because the I3.8 generated password was correctly destroyed after the prior harness dependency failure. No password reset/change was performed.');result.notes.push('Visible login surface and deterministic visible-login→provider-email fingerprint match were also validated; generic password route remains covered by frozen historical Shopper auth evidence without reprocessing that Shopper.');}else{result.status='HOLD_READONLY';result.decision='HOLD_I3_9_READONLY_E2E';}
+  if(!result.blockers.length){result.status='PASS_READONLY_REAL_PROVIDER_IDENTITY_E2E';result.decision='PASS_I3_9_NEW_SHOPPER_REAL_E2E_NO_PASSWORD_MUTATION';result.notes.push('Real Firebase identity/session tested with ephemeral custom tokens because the I3.8 generated password was correctly destroyed after the prior harness dependency failure. No password reset/change was performed.');result.notes.push('Visible login surface, exact Hosting Firebase project and deterministic visible-login→provider-email fingerprint were validated; generic password route remains covered by frozen historical Shopper auth evidence without reprocessing that Shopper.');}else{result.status='HOLD_READONLY';result.decision='HOLD_I3_9_READONLY_E2E';}
   save();await ctx2.close();await ctx1.close();await browser.close();process.exit(result.blockers.length?2:0);
 }catch(error){block('I3_9_TECHNICAL_ERROR');result.status='HOLD_TECHNICAL_READONLY';result.decision='HOLD_I3_9_TECHNICAL_READONLY';result.notes.push(str(error?.code||error?.message||error).slice(0,180));save();try{await browser?.close();}catch{}process.exit(2);}
