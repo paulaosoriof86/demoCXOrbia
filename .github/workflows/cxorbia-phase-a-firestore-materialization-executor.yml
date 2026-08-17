@@ -52,6 +52,11 @@ jobs:
         run: |
           node --check tools/migration/tya-i3-5b-provider-exact-crosswalk-one-target.mjs
           node --check tools/migration/tya-i3-5b-provider-exact-crosswalk-request-control.mjs
+      - name: Validate I3.5C period-independent source contract
+        run: |
+          node --check app/adapters/cxorbia-identity-roll-forward-v1.js
+          node --check tools/qa/cxorbia-identity-roll-forward-gate.mjs
+          node tools/qa/cxorbia-identity-roll-forward-gate.mjs
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -240,5 +245,273 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add backend/requests/i3-5b-provider-exact-crosswalk-one-target.json app/docs/evidence/ITERATION3-I3-5B-PROVIDER-EXACT-CROSSWALK-LATEST.json
           git commit -m "evidence(i3): consume I3.5B exact crosswalk request"
+          git pull --rebase origin "$BRANCH"
+          git push origin "HEAD:$BRANCH"
+
+  i3-5c2-period-independent-link-materialization:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    concurrency:
+      group: cxorbia-i3-5c2-period-independent-link-materialization
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout live authorized branch state
+        uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+          fetch-depth: 0
+
+      - name: Set up Node for fail-closed preflight
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate period-independent source before provider authentication
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check app/adapters/cxorbia-identity-roll-forward-v1.js
+          node --check tools/qa/cxorbia-identity-roll-forward-gate.mjs
+          node tools/qa/cxorbia-identity-roll-forward-gate.mjs
+
+      - name: Inspect exact one-shot I3.5C-2 request
+        id: inspect_i35c2
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { execFileSync } from 'node:child_process';
+          const requestPath='backend/requests/i3-5c2-period-independent-link-materialization.json';
+          const out=process.env.GITHUB_OUTPUT;
+          fs.appendFileSync(out,'should_execute=false\n');
+          if(!fs.existsSync(requestPath)) process.exit(0);
+          const r=JSON.parse(fs.readFileSync(requestPath,'utf8'));
+          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const valid=r.schemaVersion==='cxorbia.i3.5c2.period-independent-link-materialization-request.v1'
+            && r.enabled===true && r.consumed===false
+            && r.gateId==='I3.5C-2_ONE_TIME_AUTHORITATIVE_ADJUDICATION_AND_PERIOD_INDEPENDENT_LINK_MATERIALIZATION'
+            && r.productTargetHeadSha==='3e4eb60ed5eedc2e7420ce5a087141ba5dd11ec2'
+            && r.targetProject==='cxorbia-backend-dev'
+            && r.tenantId==='tya' && r.projectId==='cinepolis' && r.projectScope==='cinepolis'
+            && r.sourceSystem==='hr'
+            && r.targetSourceSafeId==='shp-57d2e3769946'
+            && r.expectedCanonicalShopperId==='TYA_GT_0C0BA8856E'
+            && r.authorityType==='tenant_adjudication' && r.authorityRef===r.requestId
+            && /^[a-f0-9]{64}$/.test(String(r.adjudicationStatementDigestSha256||''))
+            && r.periodIndependent===true
+            && Array.isArray(r.testPeriods) && r.testPeriods.includes('2026-08') && r.testPeriods.includes('2026-09')
+            && r.maxProviderWrites===1
+            && r.allowedCollection==='tenants/tya/shopperIdentityLinks'
+            && r.expectedWriteBudget?.firestoreWrites===1
+            && r.expectedWriteBudget?.shopperIdentityLinkWrites===1
+            && r.expectedWriteBudget?.authWrites===0
+            && r.expectedWriteBudget?.passwordResets===0
+            && r.expectedWriteBudget?.historicalShopperAccess===0
+            && r.expectedWriteBudget?.hrWrites===0
+            && r.expectedWriteBudget?.financeWrites===0
+            && r.expectedWriteBudget?.rulesWrites===0
+            && r.expectedWriteBudget?.storageWrites===0
+            && r.expectedWriteBudget?.makeCalls===0
+            && r.expectedWriteBudget?.geminiCalls===0
+            && r.expectedWriteBudget?.paymentWrites===0
+            && r.expectedWriteBudget?.deploys===0;
+          if(!valid) process.exit(0);
+          try{
+            execFileSync('git',['merge-base','--is-ancestor',r.productTargetHeadSha,head]);
+            const files=execFileSync('git',['diff','--name-only',`${r.productTargetHeadSha}..${head}`],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+            const allowed=new Set(['backend/requests/i3-5c2-period-independent-link-materialization.json','.github/workflows/cxorbia-phase-a-firestore-materialization-executor.yml']);
+            if(files.some(f=>!allowed.has(f))) process.exit(0);
+          }catch{process.exit(0);}
+          fs.copyFileSync(requestPath,`${process.env.RUNNER_TEMP}/i3-5c2-request.json`);
+          fs.appendFileSync(out,'should_execute=true\n');
+          fs.appendFileSync(out,`request_id=${r.requestId}\n`);
+          fs.appendFileSync(out,`product_target_sha=${r.productTargetHeadSha}\n`);
+          NODE
+
+      - name: Authenticate exact Firebase DEV provider
+        if: steps.inspect_i35c2.outputs.should_execute == 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+
+      - name: Install transient Firebase Admin dependency
+        if: steps.inspect_i35c2.outputs.should_execute == 'true'
+        shell: bash
+        run: npm install --no-save --ignore-scripts firebase-admin@13.4.0
+
+      - name: Materialize one period-independent adjudicated identity link and read back
+        if: steps.inspect_i35c2.outputs.should_execute == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp
+          cat > .tmp/i3-5c2-exec.mjs <<'NODE'
+          import fs from 'node:fs';
+          import crypto from 'node:crypto';
+          import { pathToFileURL } from 'node:url';
+          import { initializeApp, getApps, applicationDefault } from 'firebase-admin/app';
+          import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+          const req=JSON.parse(fs.readFileSync(`${process.env.RUNNER_TEMP}/i3-5c2-request.json`,'utf8'));
+          const result={
+            schemaVersion:'cxorbia.i3.5c2.period-independent-link-materialization-result.v1',
+            requestId:req.requestId,gateId:req.gateId,productTargetHeadSha:req.productTargetHeadSha,
+            targetProject:req.targetProject,tenantId:req.tenantId,projectId:req.projectId,projectScope:req.projectScope,
+            sourceSystem:req.sourceSystem,targetSourceSafeId:req.targetSourceSafeId,expectedCanonicalShopperId:req.expectedCanonicalShopperId,
+            status:'NOT_STARTED',decision:'NOT_STARTED',providerAttempted:false,providerAck:false,readbackReady:false,
+            materializedIdentityLink:false,existingIdempotentLink:false,identityLinkId:null,identityLinkDocumentFingerprint:null,
+            authorityType:req.authorityType,authorityRef:req.authorityRef,periodIndependent:true,
+            futurePeriodValidation:{august:false,september:false,sameCanonical:false,sameLink:false,secondLinkCreated:false},
+            providerReads:{identityLinksBefore:0,identityLinksAfter:0,readback:0},firestoreWrites:0,shopperIdentityLinkWrites:0,
+            safety:{historicalShopperAccess:0,historicalShopperLogin:0,historicalShopperRecovery:0,historicalShopperReset:0,authReads:0,authWrites:0,userCreates:0,userUpdates:0,passwordChanges:0,passwordResets:0,hrWrites:0,financeWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,deploys:0,merge:false,production:false},
+            blockers:[],notes:[]
+          };
+          const out=`${process.env.RUNNER_TEMP}/i3-5c2-result.json`;
+          const save=()=>fs.writeFileSync(out,JSON.stringify(result,null,2)+'\n','utf8');
+          const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
+          try{
+            result.providerAttempted=true;
+            const app=getApps()[0]||initializeApp({credential:applicationDefault(),projectId:'cxorbia-backend-dev'});
+            const db=getFirestore(app);
+            const col=db.collection('tenants').doc(req.tenantId).collection('shopperIdentityLinks');
+            const before=await col.get();
+            result.providerReads.identityLinksBefore=before.size;
+            const relevant=before.docs.filter(d=>{
+              const x=d.data()||{};
+              const tokens=[x.sourceIdentityKey,x.sourceShopperId,x.shopperRefId,x.sourceId,...(Array.isArray(x.sourceIdentityAliases)?x.sourceIdentityAliases:[])].filter(Boolean).map(String);
+              return tokens.includes(req.targetSourceSafeId) && String(x.sourceSystem||'').toLowerCase()===req.sourceSystem && String(x.projectScope||x.projectId||'*')===req.projectScope;
+            });
+            const conflicts=relevant.filter(d=>String(d.data()?.canonicalShopperId||d.data()?.profileId||'')!==req.expectedCanonicalShopperId);
+            if(conflicts.length){
+              result.blockers.push('EXISTING_AUTHORITATIVE_LINK_CONFLICT');
+              result.status='SAFE_HOLD_ZERO_WRITES';result.decision='HOLD_I3_5C2_EXISTING_LINK_CONFLICT';save();process.exit(0);
+            }
+            const same=relevant.find(d=>String(d.data()?.canonicalShopperId||d.data()?.profileId||'')===req.expectedCanonicalShopperId);
+            const deterministicId='irl_'+sha([req.tenantId,req.sourceSystem,req.projectScope,req.targetSourceSafeId].join('\u0000')).slice(0,32);
+            result.identityLinkId=same?.id||deterministicId;
+            const ref=col.doc(result.identityLinkId);
+            if(same){
+              result.existingIdempotentLink=true;
+              result.providerAck=true;
+            }else{
+              const payload={
+                identityLinkId:deterministicId,
+                tenantId:req.tenantId,
+                projectId:req.projectId,
+                projectScope:req.projectScope,
+                sourceSystem:req.sourceSystem,
+                sourceIdentityKey:req.targetSourceSafeId,
+                sourceIdentityAliases:[req.targetSourceSafeId],
+                canonicalShopperId:req.expectedCanonicalShopperId,
+                status:'materialized',
+                authorityType:'tenant_adjudication',
+                authorityRef:req.authorityRef,
+                authority:{type:'tenant_adjudication',adjudicationId:req.authorityRef,evidenceDigestSha256:req.adjudicationStatementDigestSha256},
+                authorityEvidenceDigest:req.adjudicationStatementDigestSha256,
+                periodIndependent:true,
+                sourceSafe:true,
+                createdAt:FieldValue.serverTimestamp(),
+                updatedAt:FieldValue.serverTimestamp()
+              };
+              await db.runTransaction(async tx=>{
+                const current=await tx.get(ref);
+                if(current.exists){
+                  const x=current.data()||{};
+                  const ok=String(x.canonicalShopperId||'')===req.expectedCanonicalShopperId && String(x.sourceIdentityKey||'')===req.targetSourceSafeId && String(x.sourceSystem||'').toLowerCase()===req.sourceSystem && String(x.projectScope||x.projectId||'*')===req.projectScope;
+                  if(!ok) throw new Error('DETERMINISTIC_LINK_CONFLICT');
+                  return;
+                }
+                tx.create(ref,payload);
+                result.firestoreWrites=1;result.shopperIdentityLinkWrites=1;result.materializedIdentityLink=true;
+              });
+              result.providerAck=true;
+            }
+            const rb=await ref.get();result.providerReads.readback=1;
+            if(!rb.exists) throw new Error('PROVIDER_READBACK_MISSING');
+            const data={id:rb.id,...rb.data()};
+            const exact=String(data.tenantId||'')===req.tenantId
+              && String(data.projectScope||data.projectId||'')===req.projectScope
+              && String(data.sourceSystem||'').toLowerCase()===req.sourceSystem
+              && String(data.sourceIdentityKey||'')===req.targetSourceSafeId
+              && String(data.canonicalShopperId||'')===req.expectedCanonicalShopperId
+              && String(data.authorityType||'')==='tenant_adjudication'
+              && String(data.authorityRef||'')===req.authorityRef
+              && data.periodIndependent===true
+              && !('periodKey' in data) && !('periodId' in data) && !('periodScope' in data);
+            if(!exact) throw new Error('PROVIDER_READBACK_CONTRACT_MISMATCH');
+            result.identityLinkDocumentFingerprint=sha(ref.path);
+            result.readbackReady=true;
+            const after=await col.get();result.providerReads.identityLinksAfter=after.size;
+            await import(pathToFileURL(`${process.cwd()}/app/adapters/cxorbia-identity-roll-forward-v1.js`).href);
+            const contract=globalThis.CX_IDENTITY_ROLL_FORWARD_CONTRACT;
+            if(!contract) throw new Error('ROLL_FORWARD_CONTRACT_NOT_AVAILABLE');
+            const index=contract.buildIndex([data]);
+            const source={tenantId:req.tenantId,projectId:req.projectId,sourceSystem:req.sourceSystem,sourceIdentityKey:req.targetSourceSafeId};
+            const aug=index.resolve(source,{tenantId:req.tenantId,projectId:req.projectId,sourceSystem:req.sourceSystem,periodKey:'2026-08'});
+            const sep=index.resolve(source,{tenantId:req.tenantId,projectId:req.projectId,sourceSystem:req.sourceSystem,periodKey:'2026-09'});
+            result.futurePeriodValidation.august=aug.ok===true;
+            result.futurePeriodValidation.september=sep.ok===true;
+            result.futurePeriodValidation.sameCanonical=aug.canonicalShopperId===req.expectedCanonicalShopperId && sep.canonicalShopperId===req.expectedCanonicalShopperId;
+            result.futurePeriodValidation.sameLink=aug.matches?.[0]?.id===rb.id && sep.matches?.[0]?.id===rb.id;
+            result.futurePeriodValidation.secondLinkCreated=false;
+            if(!result.futurePeriodValidation.august||!result.futurePeriodValidation.september||!result.futurePeriodValidation.sameCanonical||!result.futurePeriodValidation.sameLink) throw new Error('FUTURE_PERIOD_REUSE_VALIDATION_FAILED');
+            result.status='PASS_COMMITTED_READBACK_PERIOD_INDEPENDENT';
+            result.decision='PASS_I3_5C2_ONE_TIME_ADJUDICATION_PERIOD_INDEPENDENT_LINK';
+            result.notes.push('One authoritative provider-backed link resolves both August and September without a second link.');
+            save();
+          }catch(error){
+            result.blockers.push(String(error?.message||error));
+            result.status=result.firestoreWrites>0?'HOLD_AFTER_COMMIT_REQUIRES_READBACK_REVIEW':'SAFE_HOLD_ZERO_WRITES';
+            result.decision='HOLD_I3_5C2_EXECUTION_FAIL_CLOSED';
+            save();
+          }
+          NODE
+          node .tmp/i3-5c2-exec.mjs
+
+      - name: Upload sanitized I3.5C-2 execution evidence
+        if: always() && steps.inspect_i35c2.outputs.should_execute == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: i3-5c2-period-independent-link-${{ github.run_id }}
+          path: ${{ runner.temp }}/i3-5c2-result.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Consume I3.5C-2 request and persist sanitized evidence without retry
+        if: always() && steps.inspect_i35c2.outputs.should_execute == 'true'
+        shell: bash
+        env:
+          BRANCH: docs-tya-v6-v71-audit
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          REQUEST_ID: ${{ steps.inspect_i35c2.outputs.request_id }}
+          PRODUCT_TARGET_SHA: ${{ steps.inspect_i35c2.outputs.product_target_sha }}
+        run: |
+          set -euo pipefail
+          git fetch origin "$BRANCH"
+          git checkout -B "$BRANCH" "origin/$BRANCH"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const requestPath='backend/requests/i3-5c2-period-independent-link-materialization.json';
+          const evidencePath='app/docs/evidence/ITERATION3-I3-5C2-PERIOD-INDEPENDENT-LINK-MATERIALIZATION-LATEST.json';
+          const resultPath=`${process.env.RUNNER_TEMP}/i3-5c2-result.json`;
+          const r=JSON.parse(fs.readFileSync(requestPath,'utf8'));
+          if(r.requestId!==process.env.REQUEST_ID||r.consumed===true) throw new Error('I3_5C2_REQUEST_DRIFT_OR_ALREADY_CONSUMED');
+          let result;
+          if(fs.existsSync(resultPath)) result=JSON.parse(fs.readFileSync(resultPath,'utf8'));
+          else result={schemaVersion:'cxorbia.i3.5c2.period-independent-link-materialization-result.v1',requestId:r.requestId,gateId:r.gateId,productTargetHeadSha:r.productTargetHeadSha,status:'WORKFLOW_FAILED_BEFORE_RESULT',decision:'HOLD_I3_5C2_WORKFLOW_FAILED',providerAttempted:false,providerAck:false,readbackReady:false,materializedIdentityLink:false,firestoreWrites:0,shopperIdentityLinkWrites:0,safety:{historicalShopperAccess:0,authWrites:0,passwordResets:0,hrWrites:0,financeWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,deploys:0,merge:false,production:false},blockers:['WORKFLOW_FAILED_BEFORE_RESULT']};
+          const evidence={...result,githubRunId:Number(process.env.RUN_ID||0),githubRunAttempt:Number(process.env.RUN_ATTEMPT||0),requestConsumed:true,noAutomaticRetry:true};
+          fs.mkdirSync('app/docs/evidence',{recursive:true});
+          fs.writeFileSync(evidencePath,JSON.stringify(evidence,null,2)+'\n','utf8');
+          const consumed={schemaVersion:r.schemaVersion,requestId:r.requestId,enabled:false,consumed:true,gateId:r.gateId,productTargetHeadSha:r.productTargetHeadSha,targetProject:r.targetProject,tenantId:r.tenantId,projectId:r.projectId,projectScope:r.projectScope,sourceSystem:r.sourceSystem,targetSourceSafeId:r.targetSourceSafeId,expectedCanonicalShopperId:r.expectedCanonicalShopperId,authorityType:r.authorityType,authorityRef:r.authorityRef,periodIndependent:true,status:result.status,decision:result.decision,providerAttempted:result.providerAttempted===true,providerAck:result.providerAck===true,readbackReady:result.readbackReady===true,materializedIdentityLink:result.materializedIdentityLink===true,existingIdempotentLink:result.existingIdempotentLink===true,identityLinkId:result.identityLinkId||null,firestoreWrites:Number(result.firestoreWrites||0),shopperIdentityLinkWrites:Number(result.shopperIdentityLinkWrites||0),futurePeriodValidation:result.futurePeriodValidation||null,historicalShopperAccess:Number(result.safety?.historicalShopperAccess||0),authWrites:Number(result.safety?.authWrites||0),passwordResets:Number(result.safety?.passwordResets||0),githubRunId:Number(process.env.RUN_ID||0),githubRunAttempt:Number(process.env.RUN_ATTEMPT||0),noAutomaticRetry:true};
+          fs.writeFileSync(requestPath,JSON.stringify(consumed,null,2)+'\n','utf8');
+          NODE
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add backend/requests/i3-5c2-period-independent-link-materialization.json app/docs/evidence/ITERATION3-I3-5C2-PERIOD-INDEPENDENT-LINK-MATERIALIZATION-LATEST.json
+          git commit -m "evidence(i3): consume I3.5C-2 period-independent link request"
           git pull --rebase origin "$BRANCH"
           git push origin "HEAD:$BRANCH"
