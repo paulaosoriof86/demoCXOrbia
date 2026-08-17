@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "cxorbia.i3.8.new-shopper-provider-backed-request.v1",
+  "requestId": "i3-8-new-shopper-provider-backed-20260817-01",
+  "enabled": true,
+  "consumed": false,
+  "gateId": "I3.8_ADMIN_CREATE_UPDATE_ONE_NEW_SHOPPER_PROVIDER_BACKED_PERIOD_INDEPENDENT_IDENTITY",
+  "productTargetHeadSha": "d560d75144f9bc826e3c1332b7b3e260fdf107ae",
+  "targetProject": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "projectIds": ["cinepolis"],
+  "shopperId": "TYA_GT_393371F88D10F7A8",
+  "visibleLogin": "i38-shopper-dev-20260817-01",
+  "authNamespace": "shopper",
+  "sourceSystem": "platform",
+  "sourceIdentityKey": "platform:i3-8-new-shopper-provider-backed-20260817-01",
+  "projectScope": "*",
+  "authorityType": "platform_created",
+  "periodIndependent": true,
+  "maxNewShoppers": 1,
+  "expectedWriteBudget": {
+    "authCreates": 1,
+    "claimWrites": 1,
+    "firestoreWrites": 3,
+    "membershipWrites": 1,
+    "profileWrites": 1,
+    "shopperIdentityLinkWrites": 1,
+    "historicalShopperAccess": 0,
+    "hrWrites": 0,
+    "financeWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "deploys": 0
+  },
+  "authorization": {
+    "authorizedBy": "Paula",
+    "authorizedAt": "2026-08-17T17:13:00-06:00",
+    "currentConversation": true,
+    "continueI3_9ThroughI3_11WhereNoAdditionalGate": true
+  },
+  "safety": {
+    "historicalShopperFrozen": true,
+    "targetBAdminFrozen": true,
+    "credentialsInRepo": false,
+    "credentialsInEvidence": false,
+    "noDeploy": true,
+    "noMerge": true,
+    "noProduction": true
+  }
+}
