@@ -1,41 +1,41 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-17 14:15 -06:00  
-**Estado:** `NO_REPROCESS__I3_2B_NO_PERIODS_ROOT_CAUSE_PROVEN__FOCAL_ADAPTER_FIX_SOURCE_PASS__I3_2C_NEXT__NO_UI_REBUILD`
+**Última actualización:** 2026-08-17 14:21 -06:00  
+**Estado:** `NO_REPROCESS__I3_2_PASS__I3_3_PASS__I3_4_NEXT__NO_UI_REBUILD`
 
 Plan: `ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
-Source lock: `SOURCE-LOCK-I3-2B-NO-PERIODS-LIFECYCLE-ROOT-CAUSE-SOURCE-PASS-20260817.md`.
+Source lock: `SOURCE-LOCK-I3-2C-EXACT-DEV-RUNTIME-PASS-20260817.md`.
 
 ## No tocar
 
-No nueva candidata/rama/PR/workflow. No reconstruir Dashboard/Shoppers/Postulaciones/Finance/HR/Auth. No tocar `app/modules` ni `app/core` por este blocker.
+No nueva candidata/rama/PR/workflow. No reconstruir Dashboard/Shoppers/Postulaciones/Finance/HR/Auth. No tocar `app/modules` ni `app/core` por I3.2/I3.3: ya están PASS.
 
-Preservar Historical Shopper `31906391682`, Admin `32049054855`, HR 15/660, Finance V2/historical, canonical V2/exact identity y legal previous gates.
+Preservar Historical Shopper `31906391682`, Admin `32049054855`, HR 15/660, Finance V2/historical, canonical V2/exact identity y legal prior gates.
 
-## Hallazgo exacto
+## I3.2C runtime PASS
 
-I3.2B runtime artifact aisló `staff_first_NO_PERIODS_VISIBLE` con 15 periodos/660 visitas correctos, current `cinepolis-2026-08`, rail/view montado, project selector sí y period selector no.
+Run `32064468544`, job `95493109113`, artifact `9299444816` certified on exact DEV build:
+- 15 periods / 660 visits / 200 shoppers;
+- current `cinepolis-2026-08`;
+- project selector + period selector present;
+- router/shell mounted;
+- legal loaded/provider-backed/not pending;
+- three reloads stable;
+- new-tab stable;
+- no credential/token exposure.
 
-Legal loaded=true, pending=false, providerAuthority=true, error/modal ausentes: no es el blocker actual.
+Thus NO_PERIODS lifecycle regression is closed and I3.2/I3.3 are frozen PASS.
 
-## Causa y fix
+## Prohibited for Claude
 
-Dentro de canonical `CX.app.enter()`, Auth wrapper reconstruye temporalmente `CX.session.user`; `router.mount()` ocurre antes del post-enter membership republish. El compat bridge antiguo caía al legacy `p.id===scopeProjectId`, por lo que root project `cinepolis` no coincidía con period IDs `cinepolis-YYYY-MM`.
+No hardcode August/Cinépolis in UI, no rollback of authority compat, no fake posts from HR assignments, no legal autoaccept, no old modules, no fuzzy identity.
 
-Fix focal: `app/adapters/tya-phase-a-authority-compat-v1.js`, commit `852ce453e7a65c5a49bdbfc378cdd1866ac0c697`. Solo usa membership C6 ya verificada y backend Auth context exactamente coincidente en tenant/namespace/role/projectIds durante esa ventana. Nunca raw scopeProjectId. Sin patch rail/router/core/modules.
+## Progress
 
-QA focal commit `a3e130387ceb4148aac85053dd4a2af471202a95`; source-preflight `32063359036` PASS, provider/deploy/writes 0.
+Formal 35%/65%. I3.1→I3.3 PASS/frozen; I3.4 next. I3 integral →60%.
 
-## Prohibido para Claude
+## Next frontier
 
-No hardcodear agosto/cinepolis en UI, no ocultar estados fail-closed, no autoaccept legal, no revertir adapters V2, no transformar assignment HR en postulación, no copiar módulos anteriores.
+`I3.4_POSTULATION_VS_HR_ASSIGNMENT_AUTHORITY_RUNTIME_READONLY`, then I3.5 exact August crosswalk, I3.6 Mi Perfil/history, I3.7 durable legal receipt.
 
-## Progreso
-
-Formal 35%/65%. I3.1 PASS; I3.2B exact root cause + source fix PASS; post-fix runtime pending.
-
-## Siguiente frontera
-
-`I3.2C_EXACT_DEV_RUNTIME_CONFIRM_NO_PERIODS_LIFECYCLE_FIX` bajo gate nuevo. PASS closes I3.2/I3.3; then I3.4→I3.7 directly.
-
-Clasificación: Reusable = verified-scope lifecycle; Exclusivo cliente = TyA/Cinépolis; Claude/prototipo = no UI change; Academia = lifecycle race; Sin impacto Claude = tooling/gates except preserving fix.
+Classification: Reusable = same-build readiness; Exclusive client = TyA/Cinépolis; Claude/prototype = preserve UI; Academia = readiness; No impact Claude = tooling/gates except no reversion.
