@@ -1,52 +1,42 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-17 14:53 -06:00  
-**Estado:** `I3_4_PASS__I3_5_HOLD_EXACT_CROSSWALK__I3_6_FROZEN_PASS_HARNESS_FIX__I3_7_PASS__NO_REPROCESS`
+**Última actualización:** 2026-08-17 15:09 -06:00  
+**Estado:** `I3_5_PROVIDER_CROSSWALK_REQUIRED__I3_6_HARNESS_SOURCE_FIXED__NO_REPROCESS`
 
-## 2026-08-17 — I3.4→I3.7 Staff-only read-only authority block
+## 2026-08-17 — I3.5A source hunt + I3.6 frozen-reference harness fix
 
-Request `i3-4-7-staff-runtime-authority-readonly-20260817-01`; target `80156d25682ffa28c224bb36c328a55fb77aef5f`; request commit `3dc7363a0b361910538422fd0fd1a7ab7fb95e8e`; run `32066894011`; job `95500120283`; artifact `9300261023`; digest `sha256:dba8d25a325ffa51668faf66b219a3d86271e23f2c8fad5075513a04eeaaeafc`.
+### I3.5A
 
-Safety: Staff/Admin only; Historical Shopper access/Shopper credential selection/Client credential selection/user changes/password changes/resets/provider-data writes/deploy/merge/production = 0/false.
+Se revisaron contratos y fuentes repo de identidad/crosswalk sin provider write. La evidencia runtime previa permanece: `no_exact_hr_crosswalk`, target live `shp-57d2e3769946`, canonical esperado `TYA_GT_0C0BA8856E`, 2 visitas agosto residuales bajo live id y 0 bajo canonical.
 
-### I3.4 PASS
+El source-safe `shp-*`/shopperCode deriva de texto HR y no constituye ancla independiente. El contrato `phase-a-hr-source-safe-to-protected-candidates-v1` define `shopperIdentityLinkCandidates`, pero `writeStatus=not_written`, con writes/import/production bloqueados. No se localizó una autoridad materializada reutilizable para el target.
 
-Platform posts `0`; HR assignments `208`; synthetic `hr-post-*` inside platform posts `0`; `hrAssignmentsArePostulations=false`; stable across reloads/new-tab. HR assignment ≠ platform postulation is now runtime-certified.
+Decisión: `I3_5_PROVIDER_BACKED_CROSSWALK_MATERIALIZATION_REQUIRED`. No se inventó mapping ni se usó fuzzy/PII.
 
-### I3.5 HOLD exact
+### I3.6 harness
 
-IdentityMap `208`; reviewQueue `145`; reason `no_exact_hr_crosswalk`. Target live `shp-57d2e3769946` maps to no canonical ID, retains 2 August visits; canonical `TYA_GT_0C0BA8856E` has 0 August visits.
+Se modificó únicamente `tools/qa/tya-i3-staff-authority-readonly.mjs`.
 
-Source-only inspection proved `shp-*` and `shopperCode` are deterministic hashes of HR Shopper text, not independent provider identity anchors. They cannot be used to bridge the canonical profile under the anti-fuzzy rule. No name/email/phone/username/hash-derived shortcut is permitted.
+Commit `84d26871c6f0cff96eaa84a8789d78b462e190ee` añade resolución read-only del frozen commit en checkout shallow mediante `git fetch --no-tags --depth=1 origin <sha>` cuando el objeto no está disponible, antes de comparar blobs.
 
-### I3.6 underlying PASS / harness focal
+No se toca historical Shopper, producto, frontend, core, HR o Finance. Combined status observado del commit: success (`cxorbia/c6-skip13-auth-access-adjudication/overall`, run `32069217043`).
 
-Frozen checkpoint remains PASS; current canonical Shopper portal and shopper membership adapter blobs equal their frozen-source blobs. The runner failed only because checkout depth `2` could not resolve frozen commit `e4d6de3e...`. No historical Shopper re-login/recovery/reset.
+### Source lock
 
-### I3.7 PASS
+`SOURCE-LOCK-I3-5A-NO-INDEPENDENT-CROSSWALK-I3-6-HARNESS-SOURCE-FIX-20260817.md`.
 
-V0.4 provider receipt: accepted, `human_ui`, subject exact, actor exact, current content/version/digest exact, pending=false, provider authority, stable first load + 3 reloads + new-tab. No auto-consent.
+### Progreso
 
-### Tooling source-only
+Formal sigue 35%/65% porque I3 no entrega sus 25 puntos hasta I3.11. Operativamente I3.1/.2/.3/.4/.7 están PASS; I3.6 product/evidence PASS con harness source fixed; I3.5 es la frontera exacta actual.
 
-Added/reused Staff-only read-only I3 profile through existing `.github/workflows/cxorbia-readonly-post-gates-runner.yml`; no new workflow. Added `tools/qa/tya-i3-staff-authority-readonly.mjs`; extended Staff browser smoke and source preflight; controlled-runner contract updated. The read-only request was consumed/disabled in commit `1c4c85cd2c23b5b3f16a5fd7a2f5f5735369ab94`.
+### Siguiente
 
-### Current source lock
-
-`SOURCE-LOCK-I3-4-I3-7-READONLY-RESULT-I3-4-I3-7-PASS-I3-5-HOLD-20260817.md`.
-
-### Progress
-
-Formal **35% / 65%**. I3.1-4 and I3.7 PASS/frozen; I3.6 product frozen PASS/harness closure pending; I3.5 real blocker.
-
-### Next
-
-`I3.5A_EXACT_TECHNICAL_CROSSWALK_SOURCE_HUNT__PLUS_I3.6_FROZEN_REFERENCE_HARNESS_FIX__SOURCE_ONLY`.
+`I3.5B_PROVIDER_BACKED_EXACT_CROSSWALK_VALIDATE_AND_MATERIALIZE_ONE_TARGET`: primero provider exact-authority validation; STOP cero writes si no existe; si existe, máximo un identity-link materialization/update + ACK/readback. Requiere gate explícito.
 
 ## Frozen/no reprocess
 
-Historical Shopper `31906391682`; TARGET_B Admin `32049054855`; request08; HR 15/660; Finance V2/historical; canonical V2/exact identity; durable legal receipt. No fuzzy identity, HR reimport, Finance rebuild or autoaccept.
+Historical Shopper `31906391682`; TARGET_B Admin `32049054855`; request08; HR 15/660; Finance V2/historical; canonical V2/exact identity; durable legal receipt. No fuzzy, HR reimport, Finance rebuild, legal autoaccept, deploy/merge/production fuera de gate.
 
-## Classification
+## Clasificación
 
-Reusable CXOrbia: authority separation/exact-identity fail-closed/frozen evidence reuse. Exclusive client: TyA August technical crosswalk. Claude/prototype: no UI changes. Academia: distinguish source-safe derived ID from canonical identity anchor. No impact Claude: tooling except preserved authority rules.
+Reusable CXOrbia: exact identity fail-closed/provider crosswalk/frozen reference harness. Exclusivo cliente: target agosto TyA. Claude/prototipo: no UI patch. Academia: distinguir id source-safe derivado de ancla canónica. Sin impacto Claude: harness/provider gate.
