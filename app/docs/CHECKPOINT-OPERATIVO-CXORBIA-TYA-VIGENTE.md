@@ -1,33 +1,33 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-17 14:51 -06:00  
-**Estado:** `I3_4_PASS__I3_5_HOLD_EXACT_CROSSWALK__I3_6_FROZEN_PASS_HARNESS_FIX__I3_7_PASS__GO_LIVE_35__NO_PRODUCTION`
+**Fecha:** 2026-08-17 15:07 -06:00  
+**Estado:** `I3_4_PASS__I3_5_PROVIDER_CROSSWALK_REQUIRED__I3_6_PRODUCT_PASS_HARNESS_SOURCE_FIXED__I3_7_PASS__GO_LIVE_35__NO_PRODUCTION`
 
 Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; DEV `cxorbia-backend-dev`.
 
 Plan: `ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
-Source lock: `SOURCE-LOCK-I3-4-I3-7-READONLY-RESULT-I3-4-I3-7-PASS-I3-5-HOLD-20260817.md`.
+Source lock: `SOURCE-LOCK-I3-5A-NO-INDEPENDENT-CROSSWALK-I3-6-HARNESS-SOURCE-FIX-20260817.md`.
 
 ## Frozen
 
-I1/I2/I3.1/I3.2/I3.3/I3.4/I3.7 PASS; Historical Shopper `31906391682` PASS/reset consumed; Admin `32049054855` PASS; HR 15/660; Finance V2/historical; exact identity; durable legal receipt V0.4.
+I1/I2/I3.1/I3.2/I3.3/I3.4/I3.7 PASS; Historical Shopper `31906391682` PASS/reset consumed; Admin `32049054855` PASS; HR 15/660; Finance V2/historical; exact identity contract; durable legal receipt V0.4.
 
-## Current evidence
+## I3.5A result
 
-Run `32066894011`, job `95500120283`, artifact `9300261023` was Staff-only/read-only with no deploy, writes or Historical Shopper access.
+Source hunt completed. Runtime already proved `no_exact_hr_crosswalk` for the August target. The source-safe live `shp-*` id and shopperCode derive from HR text and cannot be used as an independent canonical identity anchor.
 
-I3.4 PASS: 0 platform posts vs 208 HR assignments; zero synthetic `hr-post-*`; separation stable.
+Repo contracts define `shopperIdentityLinkCandidates` but explicitly leave them `not_written`. No independent, materialized target crosswalk was found in repo/contracts. Therefore I3.5 is not another diagnostic loop: it has advanced to the exact state `I3_5_PROVIDER_BACKED_CROSSWALK_MATERIALIZATION_REQUIRED`.
 
-I3.5 HOLD: exact target August crosswalk absent (`targetCanonicalActual=null`; 2 residual August visits remain under `shp-57d2e3769946`; 0 under canonical `TYA_GT_0C0BA8856E`). Review reason is `no_exact_hr_crosswalk`. Source-safe `shp-*` is derived from HR Shopper text and is not an independent canonical anchor.
+## I3.6
 
-I3.6: underlying frozen historical Shopper PASS remains valid and relevant adapter blobs are unchanged. Only harness comparison failed due shallow checkout of frozen commit; no Shopper login/recovery is allowed.
-
-I3.7 PASS: provider-backed V0.4 receipt, human_ui, exact actor/current version+digest, pending=false, stable 3 reloads/new-tab.
+Historical Shopper product/evidence remains PASS. The shallow-checkout harness defect was fixed source-only in commit `84d26871c6f0cff96eaa84a8789d78b462e190ee` by fetching the exact frozen commit read-only when absent. Combined status for that commit observed success. No historical Shopper login/access/recovery/reset.
 
 ## Progress
 
-Formal **35% / 65%**. I3 remains 0/25 until I3.11. Internal PASS now includes I3.1-I3.4 and I3.7; I3.5 is the real blocker in this group.
+Formal **35% / 65%** because I3 is weighted as one 25-point integral gate and does not award partial points. Operationally, I3.1/.2/.3/.4/.7 are PASS and I3.6 is frozen product PASS with harness source fixed; the only current blocker before I3.8 is I3.5 exact crosswalk provider materialization.
 
 ## Next
 
-`I3.5A_EXACT_TECHNICAL_CROSSWALK_SOURCE_HUNT__PLUS_I3.6_FROZEN_REFERENCE_HARNESS_FIX__SOURCE_ONLY`.
+`I3.5B_PROVIDER_BACKED_EXACT_CROSSWALK_VALIDATE_AND_MATERIALIZE_ONE_TARGET`.
+
+Provider validation must prove an independent exact authority before any write. If absent, STOP with zero writes. If present, materialize/update only the single identity link required and read it back. No fuzzy identity and no unrelated provider writes/deploy/production.
