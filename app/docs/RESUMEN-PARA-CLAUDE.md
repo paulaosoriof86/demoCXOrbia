@@ -1,41 +1,36 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-17 14:21 -06:00  
-**Estado:** `NO_REPROCESS__I3_2_PASS__I3_3_PASS__I3_4_NEXT__NO_UI_REBUILD`
+**Última actualización:** 2026-08-17 14:54 -06:00  
+**Estado:** `NO_REPROCESS__I3_4_PASS__I3_5_EXACT_CROSSWALK_HOLD__I3_6_FROZEN_PASS__I3_7_PASS__NO_UI_REBUILD`
 
 Plan: `ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
-Source lock: `SOURCE-LOCK-I3-2C-EXACT-DEV-RUNTIME-PASS-20260817.md`.
+Source lock: `SOURCE-LOCK-I3-4-I3-7-READONLY-RESULT-I3-4-I3-7-PASS-I3-5-HOLD-20260817.md`.
 
 ## No tocar
 
-No nueva candidata/rama/PR/workflow. No reconstruir Dashboard/Shoppers/Postulaciones/Finance/HR/Auth. No tocar `app/modules` ni `app/core` por I3.2/I3.3: ya están PASS.
+No nueva candidata/rama/PR/workflow. No reconstruir Dashboard/Shoppers/Postulaciones/Finance/HR/Auth. No tocar `app/modules` ni `app/core` para I3.5. No presentar HR assignment como postulation, no autoaccept legal, no fuzzy identity.
 
-Preservar Historical Shopper `31906391682`, Admin `32049054855`, HR 15/660, Finance V2/historical, canonical V2/exact identity y legal prior gates.
+## Runtime authority result
 
-## I3.2C runtime PASS
+Run `32066894011`:
 
-Run `32064468544`, job `95493109113`, artifact `9299444816` certified on exact DEV build:
-- 15 periods / 660 visits / 200 shoppers;
-- current `cinepolis-2026-08`;
-- project selector + period selector present;
-- router/shell mounted;
-- legal loaded/provider-backed/not pending;
-- three reloads stable;
-- new-tab stable;
-- no credential/token exposure.
+- I3.4 PASS: platform posts 0, HR assignments 208, synthetic HR posts 0, separation stable.
+- I3.5 HOLD: exact target August crosswalk missing; 2 August visits remain on live source-safe ID and none map to canonical target.
+- I3.6 historical Shopper frozen PASS/source unchanged; only QA historical-reference checkout is shallow.
+- I3.7 PASS: durable provider-backed V0.4 human receipt exact and persistent.
 
-Thus NO_PERIODS lifecycle regression is closed and I3.2/I3.3 are frozen PASS.
+Critical identity rule: live `shp-*`/`shopperCode` are generated from HR Shopper text and are not independent canonical anchors. Claude must NOT connect identities using those derived values, names, email, phone, WhatsApp or username.
 
-## Prohibited for Claude
+## Frozen
 
-No hardcode August/Cinépolis in UI, no rollback of authority compat, no fake posts from HR assignments, no legal autoaccept, no old modules, no fuzzy identity.
+I1/I2/I3.1/I3.2/I3.3/I3.4/I3.7; Historical Shopper; Admin; HR 15/660; Finance V2/historical; exact identity; legal receipt.
 
 ## Progress
 
-Formal 35%/65%. I3.1→I3.3 PASS/frozen; I3.4 next. I3 integral →60%.
+Formal **35%/65%**. I3.5 is the real current blocker; I3.6 needs harness-only closure.
 
 ## Next frontier
 
-`I3.4_POSTULATION_VS_HR_ASSIGNMENT_AUTHORITY_RUNTIME_READONLY`, then I3.5 exact August crosswalk, I3.6 Mi Perfil/history, I3.7 durable legal receipt.
+`I3.5A_EXACT_TECHNICAL_CROSSWALK_SOURCE_HUNT__PLUS_I3.6_FROZEN_REFERENCE_HARNESS_FIX__SOURCE_ONLY`.
 
-Classification: Reusable = same-build readiness; Exclusive client = TyA/Cinépolis; Claude/prototype = preserve UI; Academia = readiness; No impact Claude = tooling/gates except no reversion.
+If no provider-independent exact crosswalk exists, document materialization requirement; do not invent UI/backend mapping.
