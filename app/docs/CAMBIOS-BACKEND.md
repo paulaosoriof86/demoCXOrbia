@@ -1,56 +1,52 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-17 14:20 -06:00  
-**Estado:** `I3_2_PASS__I3_3_PASS__I3_4_NEXT__NO_REPROCESS`
+**Última actualización:** 2026-08-17 14:53 -06:00  
+**Estado:** `I3_4_PASS__I3_5_HOLD_EXACT_CROSSWALK__I3_6_FROZEN_PASS_HARNESS_FIX__I3_7_PASS__NO_REPROCESS`
 
-## 2026-08-17 — I3.2C exact DEV runtime confirmation
+## 2026-08-17 — I3.4→I3.7 Staff-only read-only authority block
 
-Request `i3-2c-exact-dev-runtime-confirm-no-periods-lifecycle-fix-20260817-01`.
-Target source `9ebdca78d463e7e8032d8c75175f9829a45636a1`; request commit `9b9da36c7d3ff24640b1f71cec80345780adcef6`.
-Run `32064468544`; job `95493109113`; artifact `9299444816`; digest `sha256:ecc3b96d38e22c1d7b02bea8c4674d70a3fb937257267a3b44736f777eb6eb38`.
+Request `i3-4-7-staff-runtime-authority-readonly-20260817-01`; target `80156d25682ffa28c224bb36c328a55fb77aef5f`; request commit `3dc7363a0b361910538422fd0fd1a7ab7fb95e8e`; run `32066894011`; job `95500120283`; artifact `9300261023`; digest `sha256:dba8d25a325ffa51668faf66b219a3d86271e23f2c8fad5075513a04eeaaeafc`.
 
-### PASS
+Safety: Staff/Admin only; Historical Shopper access/Shopper credential selection/Client credential selection/user changes/password changes/resets/provider-data writes/deploy/merge/production = 0/false.
 
-- Firebase Hosting DEV exact one-shot succeeded;
-- root/direct remote parity exact, body SHA256 `952319a9a2cac7e61eff01f21c67f8e079de695e3bbc67767c4023c47f8271a7`;
-- Admin Staff authenticated/membership verified;
-- 15 periods / 660 visits / 200 shoppers;
-- current `cinepolis` / `cinepolis-2026-08`;
-- router/shell mounted;
-- Project selector mounted;
-- Period selector mounted;
-- legal loaded/provider-backed/pending=false;
-- canonical form;
-- three reloads stable;
-- new-tab stable;
-- no credentials/tokens exposed.
+### I3.4 PASS
 
-### Safety
+Platform posts `0`; HR assignments `208`; synthetic `hr-post-*` inside platform posts `0`; `hrAssignmentsArePostulations=false`; stable across reloads/new-tab. HR assignment ≠ platform postulation is now runtime-certified.
 
-Hosting deploys this run `1`; automatic second deploys `0`; Cloud Run/Auth/password/Firestore/HR/Rules/Storage/Make/Gemini/payment writes `0`; Historical Shopper access `0`; user creates/updates `0`; merge=false; production=false.
+### I3.5 HOLD exact
 
-### Result
+IdentityMap `208`; reviewQueue `145`; reason `no_exact_hr_crosswalk`. Target live `shp-57d2e3769946` maps to no canonical ID, retains 2 August visits; canonical `TYA_GT_0C0BA8856E` has 0 August visits.
 
-The lifecycle `NO_PERIODS_VISIBLE` regression is closed. I3.2 and I3.3 are PASS/frozen. No product module/core changes were required beyond the focal authority-compat adapter already source-PASSed.
+Source-only inspection proved `shp-*` and `shopperCode` are deterministic hashes of HR Shopper text, not independent provider identity anchors. They cannot be used to bridge the canonical profile under the anti-fuzzy rule. No name/email/phone/username/hash-derived shortcut is permitted.
 
-### Evidence/docs
+### I3.6 underlying PASS / harness focal
 
-- `SOURCE-LOCK-I3-2C-EXACT-DEV-RUNTIME-PASS-20260817.md`;
-- `app/docs/evidence/I3-2C-DEV-BUILD-LOCK-LATEST.json`;
-- index/checkpoint/tracker/Claude/PENDIENTES/unified plan/Academia/PR synchronized.
+Frozen checkpoint remains PASS; current canonical Shopper portal and shopper membership adapter blobs equal their frozen-source blobs. The runner failed only because checkout depth `2` could not resolve frozen commit `e4d6de3e...`. No historical Shopper re-login/recovery/reset.
+
+### I3.7 PASS
+
+V0.4 provider receipt: accepted, `human_ui`, subject exact, actor exact, current content/version/digest exact, pending=false, provider authority, stable first load + 3 reloads + new-tab. No auto-consent.
+
+### Tooling source-only
+
+Added/reused Staff-only read-only I3 profile through existing `.github/workflows/cxorbia-readonly-post-gates-runner.yml`; no new workflow. Added `tools/qa/tya-i3-staff-authority-readonly.mjs`; extended Staff browser smoke and source preflight; controlled-runner contract updated. The read-only request was consumed/disabled in commit `1c4c85cd2c23b5b3f16a5fd7a2f5f5735369ab94`.
+
+### Current source lock
+
+`SOURCE-LOCK-I3-4-I3-7-READONLY-RESULT-I3-4-I3-7-PASS-I3-5-HOLD-20260817.md`.
 
 ### Progress
 
-Formal I1 15/15; I2 20/20; I3 0/25 until I3.11; I4 0/25; I5 0/15 = **35%/65%**. Internally I3.1→I3.3 are now closed. I3 integral →60%.
+Formal **35% / 65%**. I3.1-4 and I3.7 PASS/frozen; I3.6 product frozen PASS/harness closure pending; I3.5 real blocker.
 
 ### Next
 
-`I3.4_POSTULATION_VS_HR_ASSIGNMENT_AUTHORITY_RUNTIME_READONLY`, then I3.5→I3.7 directly without general diagnosis.
+`I3.5A_EXACT_TECHNICAL_CROSSWALK_SOURCE_HUNT__PLUS_I3.6_FROZEN_REFERENCE_HARNESS_FIX__SOURCE_ONLY`.
 
 ## Frozen/no reprocess
 
-Historical Shopper `31906391682`; TARGET_B Admin `32049054855`; request08; HR 15/660; Finance V2/historical; canonical V2/exact identity; legal previous materialization/deploy. No reruns/rebuilds/fuzzy matching/autoaccept.
+Historical Shopper `31906391682`; TARGET_B Admin `32049054855`; request08; HR 15/660; Finance V2/historical; canonical V2/exact identity; durable legal receipt. No fuzzy identity, HR reimport, Finance rebuild or autoaccept.
 
 ## Classification
 
-Reusable CXOrbia: same-build runtime certification + lifecycle-safe scope. Exclusive client: TyA/Cinépolis. Claude/prototype: no UI/module/core rebuild. Academia: effective readiness. No impact Claude: tooling/gates except preserving the fix.
+Reusable CXOrbia: authority separation/exact-identity fail-closed/frozen evidence reuse. Exclusive client: TyA August technical crosswalk. Claude/prototype: no UI changes. Academia: distinguish source-safe derived ID from canonical identity anchor. No impact Claude: tooling except preserved authority rules.
