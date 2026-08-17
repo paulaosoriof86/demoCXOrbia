@@ -1,44 +1,33 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-17 14:18 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_1_PASS__I3_2_PASS__I3_3_PASS__I3_4_NEXT__GO_LIVE_35__NO_PRODUCTION`
+**Fecha:** 2026-08-17 14:51 -06:00  
+**Estado:** `I3_4_PASS__I3_5_HOLD_EXACT_CROSSWALK__I3_6_FROZEN_PASS_HARNESS_FIX__I3_7_PASS__GO_LIVE_35__NO_PRODUCTION`
 
 Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; DEV `cxorbia-backend-dev`.
 
 Plan: `ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
-Source lock: `SOURCE-LOCK-I3-2C-EXACT-DEV-RUNTIME-PASS-20260817.md`.
-Build lock: `app/docs/evidence/I3-2C-DEV-BUILD-LOCK-LATEST.json`.
+Source lock: `SOURCE-LOCK-I3-4-I3-7-READONLY-RESULT-I3-4-I3-7-PASS-I3-5-HOLD-20260817.md`.
 
-## Frozen/no reprocess
+## Frozen
 
-I1/I2 PASS; I3.1/I3.2/I3.3 PASS; Historical Shopper `31906391682` PASS/reset consumed/`passwordResets=0`; request08 consumed; TARGET_B Admin `32049054855` PASS; HR 15/660 no reimport; Finance V2/historical no rebuild; canonical V2/exact identity preserved; legal prior materialization/deploy no rerun/autoaccept.
+I1/I2/I3.1/I3.2/I3.3/I3.4/I3.7 PASS; Historical Shopper `31906391682` PASS/reset consumed; Admin `32049054855` PASS; HR 15/660; Finance V2/historical; exact identity; durable legal receipt V0.4.
 
-## I3.2C PASS
+## Current evidence
 
-Target source `9ebdca78d463e7e8032d8c75175f9829a45636a1`; request commit `9b9da36c7d3ff24640b1f71cec80345780adcef6`; run `32064468544`; job `95493109113`; artifact `9299444816`.
+Run `32066894011`, job `95500120283`, artifact `9300261023` was Staff-only/read-only with no deploy, writes or Historical Shopper access.
 
-PASS:
-- Hosting DEV exact one-shot succeeded;
-- remote root/direct parity exact;
-- Staff Admin authenticated and membership verified;
-- 15 periods, 660 visits, 200 shoppers;
-- current project `cinepolis`, period `cinepolis-2026-08`;
-- project selector mounted;
-- period selector mounted;
-- router/shell mounted;
-- legal loaded/provider-backed/not pending;
-- 3 reloads stable;
-- new-tab stable;
-- credentials/tokens not exposed.
+I3.4 PASS: 0 platform posts vs 208 HR assignments; zero synthetic `hr-post-*`; separation stable.
 
-Safety: zero Cloud Run/Auth/password/Firestore/HR/Rules/Storage/Make/Gemini/payment writes, Historical Shopper access 0, user creates/updates 0, merge=false, production=false.
+I3.5 HOLD: exact target August crosswalk absent (`targetCanonicalActual=null`; 2 residual August visits remain under `shp-57d2e3769946`; 0 under canonical `TYA_GT_0C0BA8856E`). Review reason is `no_exact_hr_crosswalk`. Source-safe `shp-*` is derived from HR Shopper text and is not an independent canonical anchor.
+
+I3.6: underlying frozen historical Shopper PASS remains valid and relevant adapter blobs are unchanged. Only harness comparison failed due shallow checkout of frozen commit; no Shopper login/recovery is allowed.
+
+I3.7 PASS: provider-backed V0.4 receipt, human_ui, exact actor/current version+digest, pending=false, stable 3 reloads/new-tab.
 
 ## Progress
 
-I1 15/15; I2 20/20; I3 0/25 formal; I4 0/25; I5 0/15 = **35%/65%**. I3.1→I3.3 closed/frozen. I3 integral →60%.
+Formal **35% / 65%**. I3 remains 0/25 until I3.11. Internal PASS now includes I3.1-I3.4 and I3.7; I3.5 is the real blocker in this group.
 
-## Next exact action
+## Next
 
-`I3.4_POSTULATION_VS_HR_ASSIGNMENT_AUTHORITY_RUNTIME_READONLY`.
-
-After PASS continue I3.5→I3.7 directly, no general diagnosis and no reopening frozen work.
+`I3.5A_EXACT_TECHNICAL_CROSSWALK_SOURCE_HUNT__PLUS_I3.6_FROZEN_REFERENCE_HARNESS_FIX__SOURCE_ONLY`.
