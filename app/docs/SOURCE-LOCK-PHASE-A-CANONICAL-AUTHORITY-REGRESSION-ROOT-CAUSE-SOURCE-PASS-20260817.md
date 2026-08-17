@@ -1,124 +1,154 @@
 # SOURCE LOCK — PHASE A CANONICAL AUTHORITY REGRESSION · ROOT CAUSE · SOURCE PASS
 
-**Fecha:** 2026-08-17 12:48 -06:00  
+**Fecha original:** 2026-08-17 12:48 -06:00  
+**Sincronización de plan:** 2026-08-17 13:28 -06:00  
 **Repo:** `paulaosoriof86/demoCXOrbia`  
 **Rama:** `docs-tya-v6-v71-audit`  
 **PR:** #7 draft/open/no merge  
-**Estado:** `SAME_CANDIDATE__NO_REPROCESS__ROOT_CAUSE_LOCALIZED__SOURCE_FIX_APPLIED__DEV_DEPLOY_NOT_EXECUTED`
+**Estado:** `SAME_CANDIDATE__NO_REPROCESS__ROOT_CAUSE_LOCALIZED__SOURCE_FIX_APPLIED__UNIFIED_PLAN_BOUND__DEV_DEPLOY_NOT_EXECUTED`
 
 ## 1. Decisión prevalente
 
 No crear candidata, rama, PR, usuario Admin ni Shopper histórico nuevos. No reconstruir Finanzas, HR, Auth, perfiles, certificaciones ni históricos ya resueltos. La candidata viva conserva los adapters canónicos V2 más recientes; el hallazgo actual es una regresión de **composición/compatibilidad de autoridades**, no una pérdida general de módulos.
 
-Congelados y no repetibles:
+Para **secuencia, porcentaje formal y pasos intermedios**, este source lock se ejecuta dentro del plan:
+
+`ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
+
+Ese addendum integra Cortes 0B→8 + S1→S6 + I1→I5. Este archivo conserva la autoridad sobre el delta técnico de composición/compatibilidad del 17-ago.
+
+## 2. Congelados y no repetibles
 
 - I1 PASS.
 - I2 PASS.
-- Historical Shopper run `31906391682` PASS, identidad/crosswalk/historia E2E preservados; reset único consumido; continuación `passwordResets=0`.
+- Historical Shopper run `31906391682` PASS; identidad/crosswalk/historia E2E preservados; reset único consumido; continuación `passwordResets=0`.
 - request08 consumido/no rerun.
 - TARGET_B Admin real sign-in PASS run `32049054855`; no crear/rotar/reemplazar Admin.
 - HR histórica/actual no se reimporta.
 - fuente financiera source-safe e histórico de pagos existentes no se reconstruyen.
+- materialización/deploy legal V0.4 previos no se rerun.
 
-## 2. Confirmación de candidata canónica
+## 3. Confirmación de candidata canónica
 
-El entry vivo `app/index-backend-dev.html` carga la línea canónica vigente, entre otros:
+El entry vivo `app/index-backend-dev.html` carga la línea canónica vigente, incluyendo:
 
-- `tya-cumulative-read-model-v2.js` — último cambio funcional observado 2026-08-14 (`8de42cd...`, shared exact identity contract).
-- `tya-canonical-shopper-portal-v2.js` — último cambio funcional observado 2026-08-14 (`e7ce5ae...`, shared identity contract).
-- `tya-canonical-finance-read-model-v2.js` — último cambio funcional observado 2026-08-14 (`c1e6a3e...`, runtime contract activation).
-- `tya-protected-auth-hr-authority-bridge-v2.js` — dynamic all-period HR authority + restored-session reconciliation.
-- `tya-canonical-state-semantics-v2.js` — actionable out-of-range + exact linked-owner normalization.
-- `tya-financial-canonical-source-safe-adapter.js` — exact financial links + historical payment truth.
+- `tya-cumulative-read-model-v2.js`;
+- `tya-canonical-shopper-portal-v2.js`;
+- `tya-canonical-finance-read-model-v2.js`;
+- `tya-protected-auth-hr-authority-bridge-v2.js`;
+- `tya-canonical-state-semantics-v2.js`;
+- `tya-financial-canonical-source-safe-adapter.js`.
 
 No existe evidencia de que el DEV mostrado sea una candidata frontend antigua. Se prohíbe cherry-pick/rollback de módulos completos para “traer versiones mejores” sin P0 reproducible por archivo.
 
-## 3. Causa raíz reproducible A — proyecto/periodos vacíos
+## 4. Causa raíz reproducible A — proyecto/periodos vacíos
 
-El contrato de Auth/membership publica `projectIds=['cinepolis']` como scope de **proyecto raíz/programa**. El core histórico del prototipo usa `CX.data.projects` como filas de **periodo**, cuyos IDs son `cinepolis-YYYY-MM`, y varios helpers heredados interpretaban `scopeProjectId` como si fuera el ID de una fila de periodo.
+El contrato Auth/membership publica `projectIds=['cinepolis']` como scope de **proyecto raíz/programa**. El core del prototipo usa `CX.data.projects` como filas de **periodo**, con IDs `cinepolis-YYYY-MM`. Helpers heredados interpretaban el scope como si fuera ID de periodo.
 
-Resultado: sesión y dashboard podían conocer `currentProjectId='cinepolis'` y `currentPeriodId='cinepolis-2026-08'`, mientras los selectores filtraban `p.id==='cinepolis'` y devolvían cero opciones.
+Resultado: sesión/dashboard podían conocer `currentProjectId='cinepolis'` y `currentPeriodId='cinepolis-2026-08'`, mientras selectores filtraban por `p.id==='cinepolis'` y devolvían cero.
 
-Esto es incompatibilidad semántica entre el nuevo scope backend y el contrato Proyecto(programa)/Periodo ya existente; no falta HR ni proyecto real.
+Esto es incompatibilidad semántica, no ausencia de HR/proyecto.
 
-## 4. Causa raíz reproducible B — falsas “postulaciones”
+## 5. Causa raíz reproducible B — falsas postulaciones
 
-`tya-live-source-inplace-apply.js` contiene `mapPosts(visits)`, que proyectaba asignaciones/agendamientos HR a registros sintéticos `hr-post-*`, estado pendiente/aprobada y `aprobadaPor='HR TyA'`, y los colocaba en `CX.data._posts`.
-
-La evidencia runtime mostraba `Posts proyecto: 0` mientras la UI presentaba aprobadas/reprogramaciones. Por lo tanto, la UI no estaba mostrando postulaciones persistidas de la plataforma: estaba consumiendo una proyección HR semánticamente incorrecta.
+`tya-live-source-inplace-apply.js` proyectaba asignaciones/agendamientos HR a registros sintéticos `hr-post-*`, incluso con `aprobadaPor='HR TyA'`, y los colocaba en `CX.data._posts`.
 
 Regla congelada: **asignación HR ≠ postulación Shopper ≠ postulación aprobada CXOrbia**.
 
-## 5. HR 660 vs overlay 616 — interpretación correcta
+## 6. HR 660 vs overlay 616
 
-La HR viva leída directamente contiene 15 periodos y 660 visitas hasta agosto-2026. Agosto = 44 visitas (GT 34 + HN 10). Los KPI estructurales verificados contra la HR fueron 44 total, 32 asignadas, 12 sin asignar, 25 agendadas, 7 sin agendar, 18 realizadas y 26 pendientes de realizar.
+HR viva contiene 15 periodos y 660 visitas hasta agosto-2026. Agosto = 44 (GT 34 + HN 10). KPI estructurales comprobados: 44 total, 32 asignadas, 12 sin asignar, 25 agendadas, 7 sin agendar, 18 realizadas y 26 pendientes de realizar.
 
-El estado protegido reporta 616 visitas, exactamente 44 menos. Esto demuestra que el overlay protegido persiste hasta un corte previo, mientras la HR operacional ya incluye agosto. El compositor V2 preserva las 660 visitas y solo enriquece por llaves exactas. No se debe reimportar HR ni rehacer las 616 visitas históricas para cerrar esa diferencia.
+Protected overlay observado = 616, exactamente 44 menos. Interpretación: overlay anterior + HR nueva. El compositor debe preservar 660 y enriquecer únicamente por llaves exactas.
 
-La consecuencia visible —IDs `shp-*`, histórico parcial o Mi Perfil no vinculado— se trata como **crosswalk exacto faltante en la composición del periodo nuevo**, no como permiso para deduplicar por nombre, email, teléfono, username o similitud ni para reprocesar Auth histórico.
+IDs `shp-*`, histórico parcial o Mi Perfil no vinculado se tratan como **crosswalk exacto faltante del periodo nuevo**, nunca como permiso para deduplicar por nombre/email/teléfono/username/similitud ni reprocesar Auth histórico.
 
-## 6. Finanzas — no reconstruir
+## 7. Finanzas — no reconstruir
 
-La rama conserva `tya-financial-canonical-source-safe-adapter.js` y `tya-canonical-finance-read-model-v2.js`. El modelo vigente incluye toda visita realizada, mantiene autoridad de la fuente financiera exacta y deja filas sin match como `pending_financial_source/reviewRequired`, sin permitir lote/pago silencioso.
+La rama conserva Finance V2 y el adapter source-safe/historical payments. Toda visita realizada sin match financiero exacto queda `pending_financial_source/reviewRequired` y no entra a lote/pago silencioso.
 
-La ausencia de fuente financiera exacta para una visita activa de agosto no invalida ni reemplaza el histórico financiero ya construido. Primero se recupera navegación por periodos y se valida que mayo/junio e histórico existente vuelvan a ser accesibles; solo una fuente nueva realmente faltante se incorpora después, sin reconstruir lo ya conciliado.
+Primero validar mayo/junio/histórico existentes después de recuperar navegación. Solo una fuente nueva realmente faltante de agosto se incorpora después; nunca se reconstruye lo conciliado.
 
-## 7. Delta source-only aplicado
+## 8. Delta source-only aplicado
 
 ### Nuevo adapter
 `app/adapters/tya-phase-a-authority-compat-v1.js`
 
-Responsabilidades limitadas:
+Responsabilidades:
 
-1. elimina de `CX.data._posts` únicamente registros sintéticos `hr-post-*` generados desde HR y conserva esa información por separado como `__hrAssignmentProjection` read-only;
-2. mantiene las postulaciones de plataforma como autoridad distinta;
-3. hace compatible el scope membership `projectIds` con proyecto raíz/programa y filas de periodo, comparando por ID exacto, `rootProjectId` o `programKey`;
-4. conserva filtros por país y no relaja tenant/project scope;
+1. retirar de `CX.data._posts` registros sintéticos `hr-post-*` y conservar assignments HR en `__hrAssignmentProjection` read-only;
+2. preservar postulaciones persistidas como autoridad separada;
+3. compatibilizar membership root-project/program con filas de periodo por ID/rootProjectId/programKey exactos;
+4. conservar scope país/proyecto;
 5. cero provider writes.
 
 ### Wiring
-`app/index-backend-dev.html` carga el adapter antes de `tya-protected-auth-hr-authority-bridge-v2.js`, para que la HR quede saneada antes de que el compositor capture `hrState.posts`.
 
-Commits source-only:
+`app/index-backend-dev.html` carga el adapter antes de `tya-protected-auth-hr-authority-bridge-v2.js`.
 
-- `8a0fa58105644b81e3e27f59a98774b025fded1f` — adapter.
-- `6594ef961177ede87dfabb0945f8dcc39c8920c8` — wiring.
+Commits source-only base:
+
+- `8a0fa58105644b81e3e27f59a98774b025fded1f`;
+- `6594ef961177ede87dfabb0945f8dcc39c8920c8`.
 
 Combined status observado para `6594ef...`: `cxorbia/c6-skip13-auth-access-adjudication/overall = success`.
 
-## 8. Límites del PASS
+## 9. Límites del PASS
 
 Este lock es **SOURCE PASS**, no runtime/DEV deploy PASS.
 
-En este bloque:
+En el delta funcional:
 
-- Auth writes: 0
-- password changes/resets: 0
-- Shopper provider writes: 0
-- Firestore writes: 0
-- HR writes/imports: 0
-- Rules/Storage/Make/Gemini/pagos: 0
-- deploy: 0
-- merge: false
-- producción: false
+- Auth writes: 0;
+- password changes/resets: 0;
+- Shopper provider writes: 0;
+- Firestore writes: 0;
+- HR writes/imports: 0;
+- Rules/Storage/Make/Gemini/pagos: 0;
+- deploy: 0;
+- merge: false;
+- producción: false.
 
-No se declara corregido en navegador hasta desplegar exactamente este HEAD bajo gate DEV y ejecutar E2E/readback.
+No declarar corregido en navegador hasta desplegar exactamente el HEAD vigente bajo gate DEV y ejecutar E2E/readback.
 
-## 9. Pendiente exacto, sin reproceso
+## 10. Integración obligatoria con S1→S6
 
-1. validar source/runtime contract de este delta contra el estado canónico ya existente;
-2. desplegar el mismo HEAD a DEV solo bajo gate autorizado;
-3. comprobar proyecto + 15 periodos visibles y agosto activo;
-4. comprobar `Posts proyecto = postulaciones persistidas` y que asignaciones HR permanezcan en Visitas/Reservas sin transformarse en postulaciones;
-5. inspeccionar `identityReviewQueue` y crosswalk exacto de agosto reutilizando perfiles/aliases existentes, sin tocar histórico PASS ni resetear credenciales;
-6. validar Mi Perfil/Histórico de una identidad exacta y luego Finanzas mayo/junio/agosto sobre sus fuentes ya existentes;
-7. validar KPI derivados `cuestPend`, `sinSubmitir`, `fueraRango` contra `tya-canonical-state-semantics-v2` y HR, sin reescribir dashboard;
-8. NDA doble queda P1 no bloqueante salvo que impida sesión/rutas.
+Este source lock corresponde principalmente a **S1 canonical runtime** y prepara la continuidad de S3/I3. No elimina S2→S6.
 
-## 10. Clasificación
+- S1: validar runtime exacto del delta actual en I3.2→I3.6/I3.10;
+- S2: persistencia CX.data ya cerrada arquitectónicamente en I2, se valida por flujo en I4;
+- S3: I3.8/I3.9 Shopper nuevo provider-backed siguen pendientes;
+- S4: HR bidireccional/Make queda I4;
+- S5: Finance queda I4 preservando fuentes;
+- S6: E2E same-build cierra I4 y se repite final en I5.
 
-- **Reusable CXOrbia:** compatibilidad root-project/period scope; separación assignment/postulation.
+## 11. Pendiente exacto dentro de I3
+
+1. I3.2 runtime validation + exact DEV deploy bajo gate;
+2. I3.3 proyecto + 15 periodos + AGO + 660;
+3. I3.4 posts persistidos separados de assignment HR;
+4. I3.5 identityReviewQueue/crosswalk exacto agosto;
+5. I3.6 Mi Perfil/Histórico;
+6. I3.7 legal receipt provider ACK/readback durable + reload/new-tab;
+7. I3.8 Admin create/update de un único Shopper nuevo provider-backed;
+8. I3.9 Shopper nuevo login/reload/new-tab/segundo contexto;
+9. I3.10 KPI derivados/state semantics;
+10. I3.11 cierre integral same-build.
+
+El Admin existente PASS y el Shopper histórico PASS no sustituyen I3.8/I3.9.
+
+## 12. P1 legal
+
+Paula realizó la interacción humana V0.4 y reportó doble presentación. Duplicidad = P1 mientras no impida sesión/rutas. No automatizar consentimiento. Receipt durable sigue pendiente I3.7.
+
+## 13. Clasificación
+
+- **Reusable CXOrbia:** compatibilidad root-project/period scope; separación assignment/postulation; crosswalk plan S1→S6.
 - **Exclusivo cliente:** datos TyA/Cinépolis, 660/616 y verificación agosto.
-- **Claude/prototipo:** no cambio de módulos/core; documentar que no debe reconstruir UI por estos hallazgos.
-- **Academia:** documentar patrón de autoridad semántica y no reproceso; sin cambio de contenidos de cursos.
-- **Sin impacto Claude:** lógica backend/adapters; sí requiere que Claude no revierta el delta en futuras candidatas.
+- **Claude/prototipo:** no cambio de módulos/core; no reconstruir UI por estos hallazgos.
+- **Academia:** reflejar autoridad semántica/no reproceso y cubrir I4.10.
+- **Sin impacto Claude:** lógica backend/adapters; sí requiere no revertir el delta.
+
+## 14. Siguiente acción exacta
+
+`I3.2_PHASE_A_AUTHORITY_COMPAT_RUNTIME_VALIDATION_AND_EXACT_DEV_DEPLOY_NO_REPROCESS`.
