@@ -1,6 +1,6 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Fecha:** 2026-08-17 14:03 -06:00  
+**Fecha:** 2026-08-17 14:12 -06:00  
 **Estado vivo:** `I1_PASS__I2_PASS__I3_1_PASS__I3_2B_EXACT_NO_PERIODS_ROOT_CAUSE_PROVEN__FOCAL_SOURCE_FIX_PASS__I3_2C_RUNTIME_GATE_NEXT__GO_LIVE_35`
 
 ## Prevalencia
@@ -23,9 +23,7 @@ I1/I2 PASS; Historical Shopper `31906391682` PASS/reset consumido/`passwordReset
 
 Run `32062886562`, job `95488006557`, artifact `9298816339`.
 
-Remote parity y deploy DEV ocurrieron una vez. El artifact runtime, no la conclusión genérica del job, determinó:
-
-**`staff_first_NO_PERIODS_VISIBLE`**.
+Blocker runtime exacto: **`staff_first_NO_PERIODS_VISIBLE`**.
 
 Snapshot: Admin Staff/membership verified, 15 periodos, 660 visitas, current `cinepolis` / `cinepolis-2026-08`, authority/data ready, rail/view mounted, project selector sí, period selector no, empty/backend/source block false.
 
@@ -33,22 +31,20 @@ Legal quedó descartado como blocker actual: loaded=true, pending=false, provide
 
 ## Root cause + fix
 
-Durante `CX.app.enter()`, backend-browser-auth reconstruye temporalmente `CX.session.user`; router.mount ocurre sincrónicamente antes del post-enter membership republish. El compat adapter perdía por esa ventana el scope verificado y caía al legacy `p.id===scopeProjectId`, por lo que `cinepolis` no coincidía con IDs `cinepolis-YYYY-MM`.
+Durante `CX.app.enter()`, backend-browser-auth reconstruye temporalmente `CX.session.user`; `router.mount()` corre antes del post-enter membership republish. El compat adapter perdía el scope verificado en esa ventana y caía al legacy `p.id===scopeProjectId`, por lo que root project `cinepolis` no coincidía con period ids `cinepolis-YYYY-MM`.
 
-Fix focal en `tya-phase-a-authority-compat-v1.js`: fallback transitorio únicamente desde membership C6 ya verificada y solo con tenant/namespace/role/projectIds exactos. No raw scopeProjectId, no rail/UI/core/module patch.
+Fix focal en `tya-phase-a-authority-compat-v1.js`, commit `852ce453e7a65c5a49bdbfc378cdd1866ac0c697`: fallback transitorio solo desde membership C6 ya verificada, con tenant/namespace/role/projectIds exactos. No raw scopeProjectId; no UI/core/modules.
 
-Source fix commit `852ce453e7a65c5a49bdbfc378cdd1866ac0c697`; QA focal commit `a3e130387ceb4148aac85053dd4a2af471202a95`.
-
-Source-preflight run `32063359036`, job `95489516680`: PASS; provider/deploy/writes/Historical Shopper access = 0.
+QA focal commit `a3e130387ceb4148aac85053dd4a2af471202a95`; source-preflight run `32063359036`, job `95489516680`: PASS; provider/deploy/writes/Historical Shopper access = 0.
 
 ## Progreso
 
 I1 `15/15`; I2 `20/20`; I3 formal `0/25`; I4 `0/25`; I5 `0/15` = **35%/65%**.
 
-Internamente I3.1 PASS; I3.2B aisló y corrigió la causa exacta, pero el fix nuevo aún necesita runtime post-deploy para cerrar I3.2/I3.3.
+Avance interno: I3.1 PASS; I3.2B causa exacta + fix source PASS. Falta runtime post-fix para cerrar I3.2/I3.3.
 
 ## Siguiente acción exacta
 
 `I3.2C_EXACT_DEV_RUNTIME_CONFIRM_NO_PERIODS_LIFECYCLE_FIX`.
 
-Requiere gate nuevo porque I3.2B consumió su único deploy. Debe desplegar exactamente el HEAD vigente y certificar period selector + 15/660/AGO + legal no-pending + reload/new-tab. Si PASS: cerrar I3.2/I3.3 y continuar I3.4→I3.7 sin diagnóstico general.
+Requiere gate nuevo porque I3.2B consumió su único deploy. Debe certificar period selector + 15/660/AGO + legal no-pending + reload/new-tab. Si PASS: cerrar I3.2/I3.3 y continuar I3.4→I3.7 sin diagnóstico general.
