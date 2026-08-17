@@ -64,9 +64,8 @@ function finalize(status){
 
 try{
   request=readJson(requestPath);
-  const head=git(['rev-parse','HEAD']);
   const parent=git(['rev-parse','HEAD^']);
-  if(request.schemaVersion!=='cxorbia.readonly-gate-request.v1')fail('REQUEST_SCHEMA');else pass('REQUEST_SCHEMA');
+  if(request.schemaVersion!=='cxorbia.readonly-post-gates-request.v1')fail('REQUEST_SCHEMA');else pass('REQUEST_SCHEMA');
   if(request.repository!=='paulaosoriof86/demoCXOrbia'||request.branch!=='docs-tya-v6-v71-audit'||Number(request.pullRequest)!==7)fail('REQUEST_TARGET');else pass('REQUEST_TARGET');
   if(request.enabled!==true||request.consumed!==false||request.allowedExecutions!==1)fail('REQUEST_SINGLE_USE');else pass('REQUEST_SINGLE_USE');
   if(request.profile!==profile||!Array.isArray(request.allowedProfiles)||!request.allowedProfiles.includes(profile))fail('PROFILE_EXACT');else pass('PROFILE_EXACT');
