@@ -1,11 +1,16 @@
 /* CXOrbia TyA — Phase A authority compatibility bridge v1.
    Source-only / DEV read compatibility. Preserves already completed Shopper/Finance/Auth work.
-   Fixes two integration regressions without touching prototype modules/core or provider data:
+   Fixes integration regressions without touching prototype modules/core or provider data:
    1) HR assignments are NOT platform postulations; synthetic hr-post-* rows are removed from CX.data._posts
       and retained only as a read-only assignment projection.
    2) Firebase membership projectIds are root-project/program scopes (e.g. cinepolis), while CX.data.projects
       stores period rows (e.g. cinepolis-2026-08). Scope filtering therefore matches exact program/rootProjectId
       as well as an exact period id, without weakening tenant/project isolation.
+   3) During canonical Staff entry, backend-browser-auth can rebuild CX.session.user synchronously before the
+      already-verified membership metadata is republished. Router mounting happens inside that same enter() call.
+      The bridge therefore accepts ONLY the already-verified C6 membership wiring as a transient exact-scope
+      fallback when provider context role/tenant/projectIds match byte-for-byte. This prevents the legacy
+      p.id===scopeProjectId filter from hiding all period rows during that narrow lifecycle window.
    No Auth/Firestore/HR/Rules/Storage/Make/Gemini/payment writes. No deploy/production/merge.
 */
 (function(root){
@@ -13,7 +18,10 @@
   root.CX=root.CX||{};
   const arr=v=>Array.isArray(v)?v:[];
   const str=v=>String(v==null?'':v).trim();
+  const lower=v=>str(v).toLowerCase();
   const uniq=v=>[...new Set(arr(v).map(str).filter(Boolean))];
+  const sorted=v=>uniq(v).sort();
+  const sameList=(a,b)=>JSON.stringify(sorted(a))===JSON.stringify(sorted(b));
 
   function isSyntheticHrPost(p){
     return !!(p&&/^hr-post-\d+$/i.test(str(p.id))&&p.sourceSafe===true&&str(p.aprobadaPor)==='HR TyA');
@@ -45,10 +53,24 @@
     return {removed:synthetic.length,platformPosts:data._posts.length};
   }
 
+  function verifiedTransitionScope(){
+    const wiring=root.CX_C6_LIVE_USER_ADMIN_WIRING||null;
+    let ctx=null;
+    try{ctx=CX.backendAuth&&typeof CX.backendAuth.context==='function'?CX.backendAuth.context():null;}catch(_){ctx=null;}
+    if(!ctx||ctx.authenticated!==true||lower(ctx.tenantId)!=='tya'||lower(ctx.authNamespace||'staff')!=='staff')return [];
+    if(!wiring||wiring.status!=='verified'||wiring.membershipVerified!==true||lower(wiring.tenantId)!=='tya')return [];
+    if(!lower(ctx.role)||lower(ctx.role)!==lower(wiring.role))return [];
+    if(!sameList(ctx.projectIds,wiring.projectScope))return [];
+    return sorted(ctx.projectIds);
+  }
+
   function projectScopeIds(){
     const user=CX.session&&CX.session.user;
-    if(!user||user.membershipVerified!==true)return [];
-    return uniq(user.projectIds);
+    if(user&&user.membershipVerified===true)return sorted(user.projectIds);
+    /* Narrow lifecycle fallback: membership was already provider-verified by the C6 wiring,
+       but CX.app.enter() is currently inside the canonical Auth wrapper and the transient
+       session metadata has not yet been republished. Never trust raw scopeProjectId alone. */
+    return verifiedTransitionScope();
   }
 
   function matchesProjectScope(data,period,scopeIds){
@@ -108,7 +130,8 @@
     const scopeIds=projectScopeIds();
     root.CX_TYA_PHASE_A_AUTHORITY_COMPAT={
       ready:true,version:'tya-phase-a-authority-compat-v1',reason:reason||'installed',
-      scopeProjectIds:scopeIds,periodRows:arr(CX.data&&CX.data.projects).length,
+      scopeProjectIds:scopeIds,verifiedTransitionScope:scopeIds.length>0&&!(CX.session&&CX.session.user&&CX.session.user.membershipVerified===true),
+      periodRows:arr(CX.data&&CX.data.projects).length,
       platformPosts:arr(CX.data&&CX.data._posts).length,hrAssignments:arr(CX.data&&CX.data.__hrAssignmentProjection).length,
       hrAssignmentsArePostulations:false,exactProjectScope:true,providerWrites:0,authWrites:0,hrWrites:0,
       rulesWrites:0,storageWrites:0,makeWrites:0,geminiCalls:0,paymentWrites:0,production:false,
