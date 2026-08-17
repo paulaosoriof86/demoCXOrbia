@@ -1,14 +1,19 @@
 {
   "schemaVersion": "cxorbia.corte6.auth-mapping-capability-readonly-request.v1",
-  "requestId": "corte6-auth-mapping-capability-readonly-20260730-02",
-  "status": "consumed_readonly",
-  "enabled": false,
-  "consumed": true,
+  "requestId": "i3-admin-target-b-credential-handoff-readonly-20260817-01",
+  "status": "ready",
+  "enabled": true,
+  "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "firebaseProjectId": "cxorbia-backend-dev",
   "tenantId": "tya",
-  "scope": "field_presence_and_stable_mapping_shape_counts_only",
+  "scope": "target_b_existing_admin_credential_recovery_readonly_encrypted_handoff",
+  "handoffPurpose": "TARGET_B_EXISTING_ADMIN_CREDENTIAL_RECOVERY",
+  "expectedTargetAlias": "B",
+  "expectedRole": "admin",
+  "authorizedBy": "Paula",
+  "authorizationId": "chat-20260817-i3-admin-target-b-existing-credential-recovery",
   "providerWrites": 0,
   "authWrites": 0,
   "firestoreWrites": 0,
@@ -22,5 +27,6 @@
   "piiExported": false,
   "valuesExported": false,
   "secretsExported": false,
-  "consumedAt": "2026-07-30T18:58:31.461Z"
+  "handoffPublicKeyPath": "backend/config/i3-admin-target-b-handoff-public.pem",
+  "nextGate": "TARGET_B_READONLY_VERIFY_SIGNIN_AND_ENCRYPTED_HANDOFF"
 }
