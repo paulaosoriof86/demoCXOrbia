@@ -99,6 +99,16 @@ ensure(sources.staffSmoke.includes('window.CX_BACKEND_LAST_STATE?.empty!==true')
 ensure(sources.staffSmoke.includes('window.CX_CORTE4_READONLY?.empty!==true'),'STAFF_SMOKE_CORTE4_EMPTY_RECONCILE_ASSERTION_MISSING');
 ensure(sources.staffSmoke.includes("assert(!state.noPeriodsVisible,label+'_NO_PERIODS_VISIBLE');"),'STAFF_SMOKE_GRANULAR_NO_PERIODS_ASSERTION_MISSING');
 ensure(sources.staffSmoke.includes("assert(state.railPeriodSelect,label+'_PERIOD_SELECTOR_NOT_MOUNTED');"),'STAFF_SMOKE_PERIOD_SELECTOR_ASSERTION_MISSING');
+ensure(sources.staffSmoke.includes('CXORBIA_I3_EXTENDED_READONLY'),'STAFF_SMOKE_I3_EXTENDED_MODE_MISSING');
+ensure(sources.staffSmoke.includes('postulationAuthorityReady'),'STAFF_SMOKE_POSTULATION_AUTHORITY_CAPTURE_MISSING');
+ensure(sources.staffSmoke.includes('syntheticHrPostsInPlatform'),'STAFF_SMOKE_SYNTHETIC_POST_GUARD_MISSING');
+ensure(sources.staffSmoke.includes('hrAssignmentsArePostulations'),'STAFF_SMOKE_ASSIGNMENT_POSTULATION_SEPARATION_MISSING');
+ensure(sources.staffSmoke.includes('exactIdentityContractPresent'),'STAFF_SMOKE_EXACT_IDENTITY_CAPTURE_MISSING');
+ensure(sources.staffSmoke.includes('targetCanonicalActual'),'STAFF_SMOKE_AUGUST_EXACT_TARGET_CAPTURE_MISSING');
+ensure(sources.staffSmoke.includes('legalAcceptanceProviderBridge?.snapshot'),'STAFF_SMOKE_DURABLE_LEGAL_SNAPSHOT_MISSING');
+ensure(sources.staffSmoke.includes('legalReceiptMatchesCurrent'),'STAFF_SMOKE_DURABLE_LEGAL_CURRENT_MATCH_MISSING');
+ensure(sources.staffSmoke.includes('legalReceiptMatchesActor'),'STAFF_SMOKE_DURABLE_LEGAL_ACTOR_MATCH_MISSING');
+ensure(sources.staffSmoke.includes('historicalShopperAccess:0'),'STAFF_SMOKE_HISTORICAL_SHOPPER_ZERO_GUARD_MISSING');
 
 for(const id of ['loginForm','lgUser','lgPass','lgSubmit']){
   ensure(sources.browserAuth.includes(`getElementById('${id}')`),'PRODUCT_CANONICAL_SELECTOR_MISSING_'+id);
@@ -135,7 +145,7 @@ ensure(!sources.authorityCompat.includes('return uniq([user.scopeProjectId'), 'A
 ensure(!sources.authorityCompat.includes("document.getElementById('rail')"),'AUTHORITY_COMPAT_DIRECT_RAIL_PATCH_FORBIDDEN');
 
 const result={
-  schemaVersion:'cxorbia.c6.staff-lane-source-preflight.v5',
+  schemaVersion:'cxorbia.c6.staff-lane-source-preflight.v6',
   generatedAt:new Date().toISOString(),
   decision:'PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT',
   action:exactAction,
@@ -155,6 +165,11 @@ const result={
     staffCanonicalKeyboardSubmit:true,
     staffPointerSubmitCollisionAvoided:true,
     staffGranularNoPeriodsAssertion:true,
+    staffExtendedI3ReadOnlyEvidence:true,
+    staffPostulationAuthorityCapture:true,
+    staffExactIdentityCapture:true,
+    staffDurableLegalReadbackCapture:true,
+    staffHistoricalShopperAccessZero:true,
     productCanonicalSelectorsPresent:true,
     productCanonicalSubmitBindingPresent:true,
     membershipAuthorityFrontendHandoff:true,
