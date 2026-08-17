@@ -1,18 +1,22 @@
 {
   "schemaVersion": "cxorbia.c6.staff-lane-source-preflight.request.v1",
   "requestId": "i3-2-runtime-granular-diagnostics-source-preflight-20260817-01",
-  "enabled": true,
+  "enabled": false,
   "mode": "SOURCE_PREFLIGHT_ONLY",
   "action": "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF",
-  "consumed": false,
-  "status": "authorized_source_preflight_once",
+  "consumed": true,
+  "status": "pass_source_preflight_consumed_no_provider_no_deploy",
   "issuedAt": "2026-08-17T13:14:00-06:00",
+  "consumedAt": "2026-08-17T13:24:00-06:00",
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_continue_i3_2_focal_source_only_no_reprocess",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "targetHeadSha": "58b39f0cff760a37cb00a0f4d4e2adabcea5c24e",
+  "sourcePreflightRunId": 32060010492,
+  "sourcePreflightJobId": 95478920028,
+  "sourcePreflightDecision": "PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT",
   "providerCalls": 0,
   "hostingDeploys": 0,
   "cloudRunDeploys": 0,
@@ -29,5 +33,5 @@
   "containsSecrets": false,
   "merge": false,
   "production": false,
-  "purpose": "Source-only validation of the granular Staff runtime blocker diagnostics after the consumed I3.2 DEV deploy. No provider access, no deploy, no data writes, no historical Shopper/Admin reprocessing."
+  "purpose": "Frozen source-only PASS for granular Staff runtime blocker diagnostics. The prior I3.2 DEV deploy remains consumed and is not rerun. Next provider/runtime execution requires a distinct exact gate; no historical Shopper/Admin/HR/Finance reprocessing."
 }
