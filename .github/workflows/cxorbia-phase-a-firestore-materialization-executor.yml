@@ -515,3 +515,140 @@ jobs:
           git commit -m "evidence(i3): consume I3.5C-2 period-independent link request"
           git pull --rebase origin "$BRANCH"
           git push origin "HEAD:$BRANCH"
+
+  i3-8-new-shopper-provider-backed-and-i3-9-e2e:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency:
+      group: cxorbia-i3-8-new-shopper-provider-backed
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout live authorized branch state
+        uses: actions/checkout@v4
+        with:
+          ref: docs-tya-v6-v71-audit
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Syntax-check I3.8 and I3.9 source
+        run: |
+          set -euo pipefail
+          node --check tools/migration/cxorbia-i3-8-new-shopper-provider-backed.mjs
+          node --check tools/migration/cxorbia-i3-8-request-control.mjs
+          node --check tools/qa/cxorbia-i3-9-new-shopper-e2e.mjs
+
+      - name: Inspect exact one-shot I3.8 request
+        id: inspect_i38
+        run: node tools/migration/cxorbia-i3-8-request-control.mjs --mode inspect
+
+      - name: Install transient browser dependency
+        if: steps.inspect_i38.outputs.should_execute == 'true'
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Preflight protected DEV browser before any provider write
+        if: steps.inspect_i38.outputs.should_execute == 'true'
+        run: |
+          node tools/qa/cxorbia-i3-9-new-shopper-e2e.mjs \
+            --mode preflight \
+            --out "$RUNNER_TEMP/i3-9-preflight.json"
+
+      - name: Authenticate exact Firebase DEV provider
+        if: steps.inspect_i38.outputs.should_execute == 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+
+      - name: Install transient Firebase Admin dependency
+        if: steps.inspect_i38.outputs.should_execute == 'true'
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0
+
+      - name: Execute one new Shopper provider-backed command and exact readback
+        if: steps.inspect_i38.outputs.should_execute == 'true'
+        run: |
+          set -euo pipefail
+          node tools/migration/cxorbia-i3-8-new-shopper-provider-backed.mjs \
+            --request "$RUNNER_TEMP/i3-8-request.json" \
+            --out "$RUNNER_TEMP/i3-8-result.json" \
+            --credential-out "$RUNNER_TEMP/i3-8-runtime-credential.json"
+
+      - name: Inspect I3.8 provider result
+        if: steps.inspect_i38.outputs.should_execute == 'true'
+        id: i38_result
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const x=JSON.parse(fs.readFileSync(`${process.env.RUNNER_TEMP}/i3-8-result.json`,'utf8'));
+          const pass=x.decision==='PASS_I3_8_NEW_SHOPPER_PROVIDER_BACKED_PERIOD_INDEPENDENT_IDENTITY'&&x.providerAck===true&&x.readbackReady===true;
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`pass=${pass?'true':'false'}\n`);
+          NODE
+
+      - name: Execute I3.9 real browser E2E and shopper-scope I3.10 invariants
+        if: steps.inspect_i38.outputs.should_execute == 'true' && steps.i38_result.outputs.pass == 'true'
+        id: i39
+        continue-on-error: true
+        run: |
+          node tools/qa/cxorbia-i3-9-new-shopper-e2e.mjs \
+            --mode e2e \
+            --credential "$RUNNER_TEMP/i3-8-runtime-credential.json" \
+            --out "$RUNNER_TEMP/i3-9-e2e-result.json"
+
+      - name: Upload sanitized I3.8/I3.9 evidence
+        if: always() && steps.inspect_i38.outputs.should_execute == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: i3-8-i3-9-new-shopper-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/i3-8-result.json
+            ${{ runner.temp }}/i3-9-e2e-result.json
+            ${{ runner.temp }}/i3-9-preflight.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Consume I3.8 request and persist sanitized evidence without retry
+        if: always() && steps.inspect_i38.outputs.should_execute == 'true'
+        env:
+          BRANCH: docs-tya-v6-v71-audit
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          REQUEST_ID: ${{ steps.inspect_i38.outputs.request_id }}
+          PRODUCT_TARGET_SHA: ${{ steps.inspect_i38.outputs.product_target_sha }}
+          EXECUTOR_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          git fetch origin "$BRANCH"
+          git checkout -B "$BRANCH" "origin/$BRANCH"
+          node tools/migration/cxorbia-i3-8-request-control.mjs \
+            --mode ensure-result \
+            --result "$RUNNER_TEMP/i3-8-result.json"
+          node tools/migration/cxorbia-i3-8-request-control.mjs \
+            --mode consume \
+            --result "$RUNNER_TEMP/i3-8-result.json" \
+            --e2e-result "$RUNNER_TEMP/i3-9-e2e-result.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add backend/requests/i3-8-new-shopper-provider-backed.json app/docs/evidence/ITERATION3-I3-8-NEW-SHOPPER-PROVIDER-BACKED-LATEST.json
+          if test -f app/docs/evidence/ITERATION3-I3-9-I3-10-NEW-SHOPPER-E2E-KPI-LATEST.json; then
+            git add app/docs/evidence/ITERATION3-I3-9-I3-10-NEW-SHOPPER-E2E-KPI-LATEST.json
+          fi
+          git commit -m "evidence(i3): consume I3.8 new Shopper request"
+          git pull --rebase origin "$BRANCH"
+          git push origin "HEAD:$BRANCH"
+
+      - name: Destroy runtime credential material
+        if: always()
+        run: rm -f "$RUNNER_TEMP/i3-8-runtime-credential.json" "$RUNNER_TEMP/i3-8-request.json"
+
+      - name: Enforce I3.8 and I3.9 result
+        if: steps.inspect_i38.outputs.should_execute == 'true'
+        run: |
+          test '${{ steps.i38_result.outputs.pass }}' = 'true'
+          test '${{ steps.i39.outcome }}' = 'success'
