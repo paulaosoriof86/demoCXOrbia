@@ -1,32 +1,42 @@
 # GO-LIVE PROGRESS TRACKER — ROOT CAUSE · CXORBIA TyA
 
-**Fecha:** 2026-08-17 14:52 -06:00
+**Fecha:** 2026-08-17 15:08 -06:00
 
-| Iteración | Peso | Estado |
-|---|---:|---|
-| I1 | 15 | PASS 15/15 |
-| I2 | 20 | PASS 20/20 |
-| I3 | 25 | 0/25 formal; I3.1-4 PASS; I3.5 HOLD; I3.6 frozen PASS/harness fix; I3.7 PASS |
-| I4 | 25 | 0/25 |
-| I5 | 15 | 0/15 |
+| Iteración | Peso | Estado formal | Estado operativo |
+|---|---:|---|---|
+| I1 | 15 | PASS 15/15 | frozen |
+| I2 | 20 | PASS 20/20 | frozen |
+| I3 | 25 | 0/25 hasta I3.11 | I3.1/.2/.3/.4/.7 PASS; I3.6 product PASS+harness source fixed; I3.5 provider crosswalk required |
+| I4 | 25 | 0/25 | pendiente después de I3 |
+| I5 | 15 | 0/15 | producción exacta después de I4 |
 
 **GO-LIVE formal: 35% / 65%.** I3 integral →60%; I4 →85%; I5 →100%.
 
-## I3.4→I3.7 run
+## Por qué el porcentaje parece detenido
 
-Run `32066894011`, job `95500120283`, artifact `9300261023`, Staff-only/read-only.
+El tracker pondera I3 como un bloque integral de 25 puntos: no entrega puntos parciales aunque varios subgates se cierren. Por eso el 35% no equivale a cero avance técnico.
 
-- I3.4 PASS: platform postulations and HR assignments separated; 0 synthetic HR posts in platform posts.
-- I3.5 HOLD: 145 identity reviews with `no_exact_hr_crosswalk`; target August live technical ID has no canonical exact mapping and retains 2 visits.
-- I3.6 underlying frozen PASS/source unchanged; harness shallow checkout issue only, no historical login/reset.
-- I3.7 PASS: durable provider-backed V0.4 human receipt exact and stable.
+## I3 actual
 
-The live `shp-*` source-safe identifier is a hash derived from HR Shopper text and cannot be used as an independent exact identity anchor.
+- I3.1 PASS.
+- I3.2 PASS.
+- I3.3 PASS.
+- I3.4 PASS: postulations/HR assignments separados, 0 synthetic HR posts.
+- I3.5: runtime `no_exact_hr_crosswalk`; source hunt completado; no independent materialized repo authority; estado `I3_5_PROVIDER_BACKED_CROSSWALK_MATERIALIZATION_REQUIRED`.
+- I3.6: historical Shopper product/evidence frozen PASS; harness shallow checkout fixed source-only commit `84d26871c6f0cff96eaa84a8789d78b462e190ee`; no Shopper reprocess.
+- I3.7 PASS: durable legal V0.4 provider receipt exact/human/persistent.
+- I3.8/I3.9 pending new Shopper provider-backed flow.
+- I3.10 pending KPI semantics.
+- I3.11 pending integral same-build closure.
+
+## Exact identity rule
+
+The live `shp-*` id derives from HR Shopper text and cannot serve as independent canonical authority. Existing source-safe candidate contract leaves `shopperIdentityLinkCandidates` as `not_written`. No fuzzy/name/email/phone/username/hash shortcut.
 
 ## Frozen
 
-I1/I2/I3.1/I3.2/I3.3/I3.4/I3.7; Historical Shopper `31906391682`; Admin `32049054855`; request08; HR 15/660; Finance V2/historical; exact identity; legal receipt.
+Historical Shopper `31906391682`; Admin `32049054855`; request08; HR 15/660; Finance V2/historical; I1/I2 and PASS I3 gates; legal receipt.
 
 ## Next
 
-`I3.5A_EXACT_TECHNICAL_CROSSWALK_SOURCE_HUNT__PLUS_I3.6_FROZEN_REFERENCE_HARNESS_FIX__SOURCE_ONLY`.
+`I3.5B_PROVIDER_BACKED_EXACT_CROSSWALK_VALIDATE_AND_MATERIALIZE_ONE_TARGET` under a narrow explicit provider-write gate. If exact independent authority is not demonstrated, STOP with zero writes.
