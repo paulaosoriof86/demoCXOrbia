@@ -1,56 +1,63 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-17 16:31 -06:00  
-**Estado vigente:** `PHASE_A_GO_LIVE_35__I3_1_TO_7_PASS__I3_8_NEXT__PERIOD_INDEPENDENT_IDENTITY_PROVIDER_BACKED__NO_FRONTEND_REDESIGN`
+**Última actualización:** 2026-08-17 17:45 -06:00  
+**Estado vigente:** `PHASE_A_GO_LIVE_35__I3_1_TO_8_PASS__I3_9_PROVIDER_STATE_PASS__SHOPPER_MEMBERSHIP_LOADER_SOURCE_FIX_NOT_DEPLOYED__NO_FRONTEND_REDESIGN`
 
 ## Estado real
 
 I1 `15/15`, I2 `20/20`, I3 `0/25`, I4 `0/25`, I5 `0/15`: **35% completado / 65% pendiente**.
 
-PASS/frozen y prohibido reprocesar: Historical Shopper `31906391682`, TARGET_B Admin `32049054855`, request08, HR 15/660, Finance V2/historical, I3.1→I3.7 y legal durable V0.4.
+PASS/frozen y prohibido reprocesar: Historical Shopper `31906391682`, TARGET_B Admin `32049054855`, request08, HR 15/660, Finance V2/historical, I3.1→I3.8 y legal durable V0.4.
 
 Source lock actual:
-`app/docs/SOURCE-LOCK-I3-5C2-PERIOD-INDEPENDENT-LINK-PASS-I3-5-I3-6-CLOSED-20260817.md`.
+`app/docs/SOURCE-LOCK-I3-8-PASS-I3-9-MEMBERSHIP-LOADER-ROOT-CAUSE-SOURCE-FIX-PENDING-DEV-GATE-20260817.md`.
 
-## Identidad — I3.5 cerrado
+## I3.8 cerrado PASS
 
-I3.5C-2 terminó PASS provider-backed:
+Nuevo Shopper sintético DEV provider-backed:
+- run `32080412142`, job `95542161943`;
+- Auth + claims + membership + profile + period-independent crosswalk `platform_created`;
+- identityLinkId `irl_fd0e52a9792ef088aa275fa90e27c77d`;
+- provider ACK/readback exacto PASS;
+- request consumido/no rerun.
 
-- run `32076682895`;
-- job `95531280631`;
-- `shopperIdentityLinks` `0→1`;
-- identityLinkId `irl_3ed1b9a65d36c5873c1306bae1621e9d`;
-- authority `tenant_adjudication`;
-- provider ACK/readback PASS;
-- agosto PASS;
-- septiembre PASS;
-- mismo canonical PASS;
-- mismo link PASS;
-- segundo link `false`.
+## I3.9 — qué se encontró
 
-La identidad ya no es mensual. El scope `cinepolis` está almacenado como dato provider del vínculo actual, no como lógica reusable. El contrato general sigue multi-tenant/multi-project y permite scope project-specific o tenant-wide según la fuente.
+El provider state del Shopper nuevo está correcto: Auth user, claims, membership, profile, crosswalk, authority `platform_created`, period-independent y visible-login mapping exactos PASS en lecturas posteriores.
 
-I3.5 = **PASS/CLOSED**. I3.6 = **CLOSED/FROZEN PASS**. No rerun de I3.5B/I3.5C-2 ni Historical Shopper.
+El browser E2E visible no se ha certificado aún. Los custom-token diagnostics son no-canónicos y encontraron fallas técnicas del harness/orquestación, sin demostrar una falla de la contraseña visible.
+
+Hallazgo source real: `app/adapters/cxorbia-shopper-membership-wiring-v1.js` ya existía, pero `app/index-backend-dev.html` no lo cargaba; el exact source desplegado I3.2C tampoco. El Staff wiring sí estaba cargado y declara roles no-Staff como no aplicables.
+
+Fix source aplicado en `c796597effac6d77422df888b63933ab865ab198`: `index-backend-dev.html` ahora carga el Shopper membership wiring reusable. **No desplegado todavía.**
 
 ## Qué NO debe tocar Claude
 
 - no rediseñar `/app/modules` ni `/app/core`;
-- no crear reglas por mes, tenant o nombre de proyecto;
-- no duplicar crosswalks por período;
-- no inferir identidad por nombre/email/teléfono/WhatsApp/username/shopperCode;
-- no volver a pedir credencial/reset/recovery del Historical Shopper;
-- no tratar Cinépolis como lógica global;
-- no cambiar `CX.data` como interfaz.
+- no duplicar ni reemplazar Shopper membership wiring;
+- no crear reglas por mes/tenant/proyecto;
+- no inferir identidad por PII;
+- no tocar Historical Shopper/Auth;
+- no recrear el Shopper sintético I3.8;
+- no cambiar `CX.data` como interfaz;
+- no parchear UI para sortear Auth.
 
-## Siguiente bloque
+## Frontend/prototipo
 
-I3.8: `ADMIN_CREATE_UPDATE_ONE_NEW_SHOPPER_PROVIDER_BACKED_PERIOD_INDEPENDENT_IDENTITY`.
+No se requiere rediseño. El hallazgo es integración de un adapter backend/Auth ya existente en el entrypoint protegido. Si Claude toca el prototipo en paralelo, debe preservar el script wiring y el flujo visible único de login.
 
-Contrato requerido:
-`Admin create/update → exact validation → Auth → claims → membership → profile/shopper → identity link authorityType=platform_created → provider ACK/readback`.
+## Siguiente bloque exacto
 
-El identity link del Shopper nuevo también debe ser period-independent y respetar tenant/project scope. I3.8 requiere gate provider separado.
+`I3.9_I3.10_I3.11_EXACT_DEV_DEPLOY_AND_SYNTHETIC_SHOPPER_VISIBLE_LOGIN_CLOSE`.
 
-Después: I3.9 real E2E → I3.10 KPI/state semantics → I3.11 same-build integral close. Si I3 integral pasa, el formal sube a 60%.
+Necesita gate adicional para:
+- máximo 1 Hosting DEV deploy del source exacto vigente;
+- máximo 1 password change del Shopper sintético I3.8 únicamente;
+- visible username/password login real;
+- claims/membership/profile/crosswalk/workspace + reload/new-tab/segundo contexto;
+- I3.10 KPI/state dinámico;
+- I3.11 same-build.
+
+Cero Historical Shopper, cero nuevo user/claims/Firestore/HR/Finance/Rules/Storage/Make/Gemini/payment writes, cero merge/producción. Si PASS integral, formal → **60%**.
 
 PR #7 permanece draft/open/no merge. Producción intacta.
