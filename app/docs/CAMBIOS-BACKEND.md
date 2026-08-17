@@ -1,76 +1,68 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-17 13:50 -06:00  
-**Estado:** `I3_2_DEV_DEPLOY_PARITY_PASS__STAFF_RUNTIME_FOCAL_FAIL__GRANULAR_DIAGNOSTICS_SOURCE_PASS__I3_2B_GATE_NEXT__NO_REPROCESS`
+**Última actualización:** 2026-08-17 14:08 -06:00  
+**Estado:** `I3_2B_NO_PERIODS_ROOT_CAUSE_PROVEN__FOCAL_SOURCE_FIX_PASS__I3_2C_GATE_NEXT__NO_REPROCESS`
 
-## 2026-08-17 — I3.2 exact DEV deploy + runtime focal diagnostics
+## 2026-08-17 — I3.2B granular runtime + focal lifecycle correction
 
-Se reutilizó `.github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml`; no nueva rama/PR/workflow.
+### Runtime ejecutado
 
-Request one-shot `i3-2-authority-compat-dev-deploy-20260817-01`, target source `245614e34bba033078342a43cecf489cbbaf7608`, request commit `ecafe08e48ab29b632e83f14fc51045a3977c3f9`.
+Request `i3-2b-granular-authenticated-staff-runtime-recheck-20260817-01`; run `32062886562`; job `95488006557`; artifact `9298816339`.
 
-Run `32058831910`, job `95475132736`, artifact `9297383869`, digest `sha256:621ed03757b029e48e803858e85895f1c8548618ff4353e44a85552aea80180c`.
+El step de workflow termina job success por `continue-on-error`, pero el artifact sanitizado es autoridad y reporta runtime FAIL exacto:
 
-PASS:
-- source/request preflight;
-- Firebase Hosting DEV deploy exacto `1`;
-- remote root/direct parity PASS;
-- remote hash `952319a9a2cac7e61eff01f21c67f8e079de695e3bbc67767c4023c47f8271a7`;
-- canonical Staff credential selection sin writes.
+`staff_first_NO_PERIODS_VISIBLE`.
 
-FAIL focal:
-`staff_first_VISIBLE_SHELL_OR_SOURCE_BLOCK` después de readiness Auth Staff + membership + HR authority + data non-empty + current project/period + app visible.
+Snapshot: Admin Staff, membership verified, 15 periods, 660 visits, current `cinepolis` / `cinepolis-2026-08`, authority/data ready, rail/view mounted, project selector present, period selector absent, no empty/backend/source block.
 
-La aserción agrupaba cinco causas; no se aplicó fix producto a ciegas.
+Legal estaba loaded/provider-backed/not pending, sin error/modal; no fue el blocker.
 
-### Tooling QA focal
+### Causa raíz exacta
 
-`tools/qa/tya-c6-staff-admin-human-auth-browser-smoke.mjs` commit `58b39f0cff760a37cb00a0f4d4e2adabcea5c24e`:
-- errores separados para empty shell/backend empty/no projects/no periods/source block;
-- router/shell + project/period selectors;
-- legal loaded/pending/provider authority/error/modal;
-- last sanitized snapshot on failure.
+`tya-c6-live-user-admin-membership-wiring-v1.js` verifica membership antes de `CX.app.enter()`. El wrapper Auth reconstruye `CX.session.user` dentro del enter y la república de membership ocurre después. Como router.mount corre sincrónicamente dentro de enter, existe una ventana en que el compat adapter no ve `membershipVerified` y cae al helper legacy que compara root project `cinepolis` con period ids `cinepolis-YYYY-MM`.
 
-Source-only preflight `32060010492` / `95478920028`: PASS, provider/deploy/Auth/Firestore/HR/Rules/Storage/Make/Gemini/payment writes `0`.
+Esto produce exactamente project selector montado + `Sin periodos disponibles` con data 15/660 correcta.
 
-Primer one-shot y preflight request quedan consumidos/disabled; no rerun.
+### Fix producto-adapter focal
 
-### Documentación sincronizada
+`app/adapters/tya-phase-a-authority-compat-v1.js`
 
-- `SOURCE-LOCK-I3-2-DEV-DEPLOY-PARITY-PASS-RUNTIME-BLOCKER-DIAGNOSTICS-SOURCE-PASS-20260817.md`;
-- índice;
-- plan unificado;
-- PHASE-A lock;
-- checkpoint;
-- tracker;
-- RESUMEN-PARA-CLAUDE;
-- PENDIENTES;
-- Academia plan + addendum I3.2;
-- source lock I3.1 marcado histórico/superseded para runtime;
-- PR #7 al cierre.
+Commit `852ce453e7a65c5a49bdbfc378cdd1866ac0c697`.
+
+Añadido fallback transitorio solo si C6 membership wiring ya está `verified` y backend Auth context coincide exactamente en tenant `tya`, namespace `staff`, role y projectIds. No raw scopeProjectId; no direct rail/router/UI; no `app/core`; no `app/modules`.
+
+### QA source-only
+
+`tools/qa/cxorbia-c6-staff-lane-source-preflight.mjs`
+
+Commit `a3e130387ceb4148aac85053dd4a2af471202a95`.
+
+Valida syntax, exact tenant/namespace/role/project scope, no raw scopeProjectId trust, no rail patch y las assertions runtime granular.
+
+Request `i3-2b-no-periods-lifecycle-fix-source-preflight-20260817-01`; run `32063359036`; job `95489516680`; artifact `9298942951`; PASS.
+
+Provider calls/deploys/Auth/Firestore/HR/Rules/Storage/Make/Gemini/payment writes/Historical Shopper access = 0.
+
+### Documentación
+
+Nuevo source lock `SOURCE-LOCK-I3-2B-NO-PERIODS-LIFECYCLE-ROOT-CAUSE-SOURCE-PASS-20260817.md`; índice/checkpoint/tracker/Claude/PENDIENTES/Academia/PR sincronizados.
 
 ### Progreso
 
-I1 15/15; I2 20/20; I3 formal 0/25; I4 0/25; I5 0/15 = **35%/65%**. I3.2 deploy/parity PASS no se repite. I3 integral →60%, I4→85%, I5→100%.
+Formal I1 15/15; I2 20/20; I3 0/25; I4 0/25; I5 0/15 = **35%/65%**. I3.1 PASS; I3.2B root cause exact + source fix PASS; runtime post-fix pending.
 
 ### Siguiente acción
 
-`I3.2B_GRANULAR_AUTHENTICATED_STAFF_RUNTIME_RECHECK_AFTER_DIAGNOSTICS_SOURCE_PASS`.
+`I3.2C_EXACT_DEV_RUNTIME_CONFIRM_NO_PERIODS_LIFECYCLE_FIX` bajo nuevo gate. El deploy I3.2B quedó consumido y no se repite.
 
-Nueva ejecución autenticada/deploy requiere gate nuevo porque el one-shot quedó consumido/STOP_RETRY.
+## Clasificación
 
-## 2026-08-17 — Plan unificado Phase A
+- Reusable CXOrbia: verified membership lifecycle bridge during synchronous enter/router mount.
+- Exclusivo cliente: TyA/Cinépolis 15/660.
+- Claude/prototipo: no module/core changes.
+- Academia: lifecycle/readiness pattern.
+- Sin impacto Claude: tooling/gates except preserving decisions.
 
-`ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md` integra Cortes 0B→8, S1→S6 e I1→I5 sin crear plan nuevo. Enumera I3.1→I3.11, I4.1→I4.12 e I5.1→I5.8. I3.7 legal durable receipt e I3.8/I3.9 Shopper nuevo permanecen obligatorios.
+## Congelado
 
-## 2026-08-17 — TARGET_B Admin
-
-Run `32049054855`, job `95443726801`: real Firebase password sign-in PASS, cero writes/password changes/resets. Paula ingresó. No crear/rotar/reemplazar.
-
-## Histórico preservado
-
-Historical Shopper `31906391682` PASS congelado; reset único consumido. HR 15/660 y Finance source-safe/historical preservados. No reprocesar.
-
-## Clasificación acumulada
-
-Reusable CXOrbia: same-build parity, granular diagnostics, STOP_RETRY, plan unificado. Exclusivo cliente: TyA DEV/legal. Claude/prototipo: sin módulos/core. Academia: readiness efectivo. Sin impacto Claude: tooling/gates/documentación salvo preservación de decisiones.
+Historical Shopper `31906391682`, Admin `32049054855`, I1/I2, request08, HR 15/660, Finance V2/historical, canonical V2/exact identity, legal previous materialization/deploy. No reprocessing.
