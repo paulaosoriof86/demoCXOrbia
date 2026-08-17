@@ -231,12 +231,23 @@
         return {ok:false,error:str(error?.message||error)};
       }finally{reading=false;}
     }
+    function scheduleInitialRead(){
+      let attempts=0;
+      const tick=async()=>{
+        attempts++;
+        const result=await readLinks('protected_runtime_boot');
+        if(result?.ok||attempts>=120)return;
+        setTimeout(tick,Math.min(1000,100+attempts*25));
+      };
+      setTimeout(tick,0);
+    }
     if(CX.bus?.on){
       CX.bus.on('backend-auth-ready',()=>setTimeout(()=>readLinks('backend_auth_ready'),0));
       CX.bus.on('backend-ready',()=>setTimeout(()=>readLinks('backend_ready'),0));
     }
     root.CX_REFRESH_IDENTITY_ROLL_FORWARD_LINKS=readLinks;
     state({ready:false,reason:'installed_waiting_for_authenticated_provider'});
+    scheduleInitialRead();
     return true;
   }
 
