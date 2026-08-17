@@ -1,51 +1,56 @@
 # CAMBIOS-BACKEND.md
 
 **Última actualización:** 2026-08-17 14:20 -06:00  
-**Estado:** `I3_2B_NO_PERIODS_ROOT_CAUSE_PROVEN__FOCAL_SOURCE_FIX_PASS__I3_2C_GATE_NEXT__NO_REPROCESS`
+**Estado:** `I3_2_PASS__I3_3_PASS__I3_4_NEXT__NO_REPROCESS`
 
-## I3.2B — granular runtime and exact lifecycle correction
+## 2026-08-17 — I3.2C exact DEV runtime confirmation
 
-- Runtime request `i3-2b-granular-authenticated-staff-runtime-recheck-20260817-01`.
-- Run `32062886562`, job `95488006557`, artifact `9298816339`.
-- Exact runtime blocker: `staff_first_NO_PERIODS_VISIBLE`.
-- Runtime simultaneously proved valid Admin Staff membership, 15 periods, 660 visits, current `cinepolis-2026-08`, authority/data ready, rail/view mounted and project selector present.
-- Period selector alone was absent; empty/backend/source block were false.
-- Legal was loaded/provider-backed/not pending, no error/modal.
+Request `i3-2c-exact-dev-runtime-confirm-no-periods-lifecycle-fix-20260817-01`.
+Target source `9ebdca78d463e7e8032d8c75175f9829a45636a1`; request commit `9b9da36c7d3ff24640b1f71cec80345780adcef6`.
+Run `32064468544`; job `95493109113`; artifact `9299444816`; digest `sha256:ecc3b96d38e22c1d7b02bea8c4674d70a3fb937257267a3b44736f777eb6eb38`.
 
-### Root cause
+### PASS
 
-Canonical Auth wrapper rebuilds transient session state inside `CX.app.enter()`; synchronous router mount occurs before post-enter verified membership republish. During this narrow window the old compatibility bridge fell to legacy `p.id===scopeProjectId`, comparing root scope `cinepolis` with period IDs `cinepolis-YYYY-MM`.
+- Firebase Hosting DEV exact one-shot succeeded;
+- root/direct remote parity exact, body SHA256 `952319a9a2cac7e61eff01f21c67f8e079de695e3bbc67767c4023c47f8271a7`;
+- Admin Staff authenticated/membership verified;
+- 15 periods / 660 visits / 200 shoppers;
+- current `cinepolis` / `cinepolis-2026-08`;
+- router/shell mounted;
+- Project selector mounted;
+- Period selector mounted;
+- legal loaded/provider-backed/pending=false;
+- canonical form;
+- three reloads stable;
+- new-tab stable;
+- no credentials/tokens exposed.
 
-### Focal source fix
+### Safety
 
-`app/adapters/tya-phase-a-authority-compat-v1.js`, commit `852ce453e7a65c5a49bdbfc378cdd1866ac0c697`.
+Hosting deploys this run `1`; automatic second deploys `0`; Cloud Run/Auth/password/Firestore/HR/Rules/Storage/Make/Gemini/payment writes `0`; Historical Shopper access `0`; user creates/updates `0`; merge=false; production=false.
 
-Uses an exact transient fallback only from already-verified C6 membership and matching authenticated context tenant/namespace/role/projectIds. No raw scopeProjectId, no direct rail/router/UI patch, no core/modules change.
+### Result
 
-### QA
+The lifecycle `NO_PERIODS_VISIBLE` regression is closed. I3.2 and I3.3 are PASS/frozen. No product module/core changes were required beyond the focal authority-compat adapter already source-PASSed.
 
-`tools/qa/cxorbia-c6-staff-lane-source-preflight.mjs`, commit `a3e130387ceb4148aac85053dd4a2af471202a95`.
+### Evidence/docs
 
-Source-preflight `32063359036` / `95489516680` PASS. Provider/deploy/Auth/Firestore/HR/Rules/Storage/Make/Gemini/payment writes/Historical Shopper access = 0.
-
-### Documentation
-
-Current source lock `SOURCE-LOCK-I3-2B-NO-PERIODS-LIFECYCLE-ROOT-CAUSE-SOURCE-PASS-20260817.md`; unified plan, Phase A lock, index, checkpoint, tracker, Claude, PENDIENTES and Academia synchronized.
+- `SOURCE-LOCK-I3-2C-EXACT-DEV-RUNTIME-PASS-20260817.md`;
+- `app/docs/evidence/I3-2C-DEV-BUILD-LOCK-LATEST.json`;
+- index/checkpoint/tracker/Claude/PENDIENTES/unified plan/Academia/PR synchronized.
 
 ### Progress
 
-I1 15/15; I2 20/20; I3 0/25 formal; I4 0/25; I5 0/15 = **35%/65%**. I3.1 PASS; I3.2B exact root cause + source fix PASS; post-fix runtime pending.
+Formal I1 15/15; I2 20/20; I3 0/25 until I3.11; I4 0/25; I5 0/15 = **35%/65%**. Internally I3.1→I3.3 are now closed. I3 integral →60%.
 
-### Next exact gate
+### Next
 
-`I3.2C_EXACT_DEV_RUNTIME_CONFIRM_NO_PERIODS_LIFECYCLE_FIX`.
+`I3.4_POSTULATION_VS_HR_ASSIGNMENT_AUTHORITY_RUNTIME_READONLY`, then I3.5→I3.7 directly without general diagnosis.
 
-New exact authorization is required because I3.2B consumed its one allowed deploy. PASS must certify period selector + 15/660/AGO + legal no-pending + 3 reloads + new-tab, then close I3.2/I3.3 and continue I3.4→I3.7 directly.
+## Frozen/no reprocess
 
-## Frozen
-
-Historical Shopper `31906391682`, Admin `32049054855`, I1/I2, request08, HR 15/660, Finance V2/historical, canonical V2/exact identity, legal previous materialization/deploy. No reprocessing.
+Historical Shopper `31906391682`; TARGET_B Admin `32049054855`; request08; HR 15/660; Finance V2/historical; canonical V2/exact identity; legal previous materialization/deploy. No reruns/rebuilds/fuzzy matching/autoaccept.
 
 ## Classification
 
-Reusable CXOrbia: verified membership lifecycle bridge. Exclusive client: TyA/Cinépolis. Claude/prototype: no module/core changes. Academia: lifecycle/readiness. No impact Claude: tooling/gates except preserving the fix.
+Reusable CXOrbia: same-build runtime certification + lifecycle-safe scope. Exclusive client: TyA/Cinépolis. Claude/prototype: no UI/module/core rebuild. Academia: effective readiness. No impact Claude: tooling/gates except preserving the fix.
