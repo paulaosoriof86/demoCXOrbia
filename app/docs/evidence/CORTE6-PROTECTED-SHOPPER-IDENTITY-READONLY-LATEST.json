@@ -1,15 +1,15 @@
 {
   "schemaVersion": "cxorbia.corte6-protected-shopper-identity-readonly.v1",
-  "generatedAt": "2026-08-17T22:21:51.134Z",
-  "decision": "PASS_C6_PROTECTED_IDENTITY_READONLY_RUNTIME_READY",
+  "generatedAt": "2026-08-17T23:45:09.046Z",
+  "decision": "HOLD_C6_PROTECTED_IDENTITY_READONLY",
   "target": {
     "firebaseProjectId": "cxorbia-backend-dev",
     "tenantId": "tya",
     "projectId": "cinepolis"
   },
   "protectedFirestore": {
-    "tenantShopperDocs": 340,
-    "shopperProfilesWithVisibleRealName": 340,
+    "tenantShopperDocs": 341,
+    "shopperProfilesWithVisibleRealName": 341,
     "shopperProfilesWithPlaceholderName": 0,
     "shopperProfilesWithoutVisibleName": 0,
     "canonicalVisits": 616,
@@ -32,7 +32,9 @@
     "deployedRulesVerified": true,
     "localRulesMatchDeployedEvidence": true
   },
-  "blockers": [],
+  "blockers": [
+    "tenant_shopper_count_drift:341"
+  ],
   "releaseRule": "Source-safe public preview may remain masked; protected authenticated Admin/Operativo runtime must use Firestore identity and must not render Shopper protegido for canonical referenced shoppers.",
   "safety": {
     "providerReads": true,
