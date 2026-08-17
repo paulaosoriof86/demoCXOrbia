@@ -21,6 +21,7 @@ const persist=value=>{
   fs.mkdirSync(path.dirname(outputFile),{recursive:true});
   fs.writeFileSync(outputFile,JSON.stringify(value,null,2)+'\n','utf8');
 };
+let lastState=null;
 
 async function waitReady(page,label){
   try{
@@ -45,6 +46,7 @@ async function waitReady(page,label){
     },null,{timeout:90000});
   }catch{
     const state=await snapshot(page,label+'_timeout');
+    lastState=state;
     throw new Error(label+'_AUTH_RUNTIME_TIMEOUT_'+clean(JSON.stringify(state)));
   }
 }
@@ -58,6 +60,13 @@ async function snapshot(page,label){
     const ds=window.CX?.dataSource||{};
     const view=document.getElementById('view')?.innerText||'';
     const rail=document.getElementById('rail')?.innerText||'';
+    let legal=null;
+    try{legal=window.CX?.legalRuntimeHttp?.status?.()||null;}catch(_){legal=null;}
+    const modalTitles=[...document.querySelectorAll('.cx-modal')].map(m=>String(m.querySelector('.card-t,h2,h3')?.textContent||m.textContent||'').trim().slice(0,80)).filter(Boolean).slice(0,5);
+    const railProjectSelect=Boolean(document.getElementById('projSel'));
+    const railPeriodSelect=Boolean(document.getElementById('periodSel'));
+    const railMounted=Boolean(document.querySelector('#rail .rail-brand'));
+    const viewMounted=Boolean(document.getElementById('view')?.children?.length);
     return {
       label,
       role:ctx?.role||null,
@@ -93,6 +102,17 @@ async function snapshot(page,label){
       noProjectsVisible:view.includes('Sin proyectos disponibles')||rail.includes('Sin proyectos disponibles'),
       noPeriodsVisible:rail.includes('Sin periodos disponibles'),
       blockedVisible:view.includes('Fuente de datos no disponible'),
+      railMounted,
+      viewMounted,
+      railProjectSelect,
+      railPeriodSelect,
+      legalRuntimePresent:Boolean(window.CX?.legalRuntimeHttp),
+      legalLoaded:legal?.loaded===true,
+      legalPending:legal?legal.pending===true:null,
+      legalProviderAuthority:legal?.providerAuthority===true,
+      legalError:legal?.error||null,
+      legalModalVisible:modalTitles.some(t=>/términos|confidencialidad|legal/i.test(t)),
+      modalTitles,
       canonicalLane:window.CX_DEV_ENTRY_CANONICAL?.lane||null,
       canonicalProtected:window.CX_DEV_ENTRY_CANONICAL?.protectedRuntime===true,
       technicalAuth:window.CX_DEV_ENTRY_CANONICAL?.technicalAuth===true,
@@ -113,7 +133,19 @@ function validate(state,label,first=null){
   assert(state.visits===state.authorityVisits&&state.visits>0,label+'_VISITS_NOT_DYNAMIC_AUTHORITY');
   assert(state.currentProjectId&&state.currentPeriodId,label+'_PROJECT_PERIOD_MISSING');
   assert(state.duplicateVisitKeys===0&&state.duplicateShopperIds===0,label+'_DUPLICATE_KEYS');
-  assert(!state.emptyShell&&!state.backendEmpty&&!state.noProjectsVisible&&!state.noPeriodsVisible&&!state.blockedVisible,label+'_VISIBLE_SHELL_OR_SOURCE_BLOCK');
+  assert(!state.emptyShell,label+'_EMPTY_SHELL_ACTIVE');
+  assert(!state.backendEmpty,label+'_BACKEND_EMPTY_ACTIVE');
+  assert(!state.noProjectsVisible,label+'_NO_PROJECTS_VISIBLE');
+  assert(!state.noPeriodsVisible,label+'_NO_PERIODS_VISIBLE');
+  assert(!state.blockedVisible,label+'_DATA_SOURCE_BLOCK_VISIBLE');
+  assert(state.railMounted&&state.viewMounted,label+'_ROUTER_SHELL_NOT_MOUNTED');
+  assert(state.railProjectSelect,label+'_PROJECT_SELECTOR_NOT_MOUNTED');
+  assert(state.railPeriodSelect,label+'_PERIOD_SELECTOR_NOT_MOUNTED');
+  if(state.legalRuntimePresent){
+    assert(state.legalError==null,label+'_LEGAL_RUNTIME_ERROR');
+    assert(state.legalPending!==true||state.legalModalVisible,label+'_LEGAL_PENDING_WITHOUT_HUMAN_GATE');
+    assert(state.legalPending!==true,label+'_LEGAL_GATE_BLOCKING_ROUTER');
+  }
   assert(state.canonicalLane==='authenticated-human-canonical'&&state.canonicalProtected===true&&state.technicalAuth===false,label+'_HUMAN_CANONICAL_LANE_INVALID');
   assert(!state.legacyCredentialStepVisible&&!state.technicalFormVisible,label+'_LEGACY_OR_TECHNICAL_AUTH_LEAKED');
   assert(['super','admin','ops','coordinador'].includes(String(state.role||'')),label+'_ROLE_INVALID');
@@ -161,14 +193,10 @@ async function runStaff(){
 
     await page.fill('#lgUser',credentials.staff.login);
     await page.fill('#lgPass',credentials.staff.password);
-    // Submit through the canonical HTML form keyboard path instead of a pointer click.
-    // Preview DEV intentionally renders #cxBackendPreviewStatus at z-index 99999;
-    // that diagnostic pill may overlap #lgSubmit and intercept pointer events even
-    // though the product form is visible/enabled. Enter exercises the same bound
-    // submit event in backend-browser-auth.js without mutating or hiding product UI.
     await page.press('#lgPass','Enter');
     await waitReady(page,'staff_first');
     const first=await snapshot(page,'staff_first');
+    lastState=first;
     validate(first,'staff_first');
 
     const reloads=[];
@@ -176,6 +204,7 @@ async function runStaff(){
       await page.reload({waitUntil:'domcontentloaded',timeout:60000});
       await waitReady(page,'staff_reload_'+i);
       const state=await snapshot(page,'staff_reload_'+i);
+      lastState=state;
       validate(state,'staff_reload_'+i,first);
       reloads.push(state);
     }
@@ -184,6 +213,7 @@ async function runStaff(){
     await second.goto(root+'/',{waitUntil:'domcontentloaded',timeout:60000});
     await waitReady(second,'staff_new_tab');
     const newTab=await snapshot(second,'staff_new_tab');
+    lastState=newTab;
     validate(newTab,'staff_new_tab',first);
     await second.close();
 
@@ -200,6 +230,12 @@ async function runStaff(){
       membershipVerified:first.membershipVerified,
       frontendHandoffStatus:first.frontendHandoffStatus,
       staleProviderEmptyCleared:!first.staleBackendEmpty&&!first.staleCorte4Empty,
+      routerShellMounted:first.railMounted&&first.viewMounted,
+      projectSelectorMounted:first.railProjectSelect,
+      periodSelectorMounted:first.railPeriodSelect,
+      legalRuntimePresent:first.legalRuntimePresent,
+      legalProviderAuthority:first.legalProviderAuthority,
+      legalPending:first.legalPending,
       loginProtectedBy:before.firebaseWrapper?'official_wrapper':before.earlyGuardInstalled?'early_guard':'unknown',
       canonicalForm:true,
       canonicalSelectors:['#loginForm','#lgUser','#lgPass','#lgSubmit'],
@@ -221,7 +257,7 @@ async function runStaff(){
 try{
   const staff=await runStaff();
   const evidence={
-    schemaVersion:'cxorbia.c6.unified-human-auth-staff-admin-readonly.v3',
+    schemaVersion:'cxorbia.c6.unified-human-auth-staff-admin-readonly.v4',
     generatedAt:new Date().toISOString(),
     decision:'PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY',
     action:exactAction,
@@ -246,12 +282,13 @@ try{
   console.log(JSON.stringify(evidence));
 }catch(error){
   const failure={
-    schemaVersion:'cxorbia.c6.unified-human-auth-staff-admin-readonly.failure.v3',
+    schemaVersion:'cxorbia.c6.unified-human-auth-staff-admin-readonly.failure.v4',
     generatedAt:new Date().toISOString(),
     decision:'FAIL_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY',
     action:exactAction,
     root,
     error:clean(error?.stack||error?.message||error),
+    lastState,
     credentialsExposed:false,
     tokensExposed:false,
     hostingDeploys:0,
