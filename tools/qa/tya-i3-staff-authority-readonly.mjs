@@ -24,6 +24,13 @@ const readJson=p=>JSON.parse(fs.readFileSync(p,'utf8').replace(/^\uFEFF/,''));
 const run=(cmd,args,opts={})=>spawnSync(cmd,args,{cwd:ROOT,encoding:'utf8',env:{...process.env,...(opts.env||{})},maxBuffer:30*1024*1024});
 const git=args=>{const r=run('git',args);if(r.status!==0)throw new Error('GIT_'+args.join('_')+'_'+String(r.stderr||r.stdout||'').slice(0,240));return String(r.stdout||'').trim();};
 const unique=a=>[...new Set(a)];
+const gitHasObject=spec=>run('git',['cat-file','-e',spec]).status===0;
+function ensureFrozenSource(sha){
+  if(gitHasObject(`${sha}^{commit}`))return;
+  const fetched=run('git',['fetch','--no-tags','--depth=1','origin',sha]);
+  if(fetched.status!==0)throw new Error('FROZEN_SOURCE_FETCH_FAILED_'+String(fetched.stderr||fetched.stdout||'').replace(/[^A-Za-z0-9_.:/=-]+/g,'_').slice(0,240));
+  if(!gitHasObject(`${sha}^{commit}`))throw new Error('FROZEN_SOURCE_NOT_RESOLVABLE_AFTER_FETCH');
+}
 
 fs.mkdirSync(outDir,{recursive:true});
 fs.mkdirSync(reportDir,{recursive:true});
@@ -125,6 +132,7 @@ try{
           if(!i35ok){i35.decision='FAIL_I3_5_EXACT_AUGUST_CROSSWALK';fail('I3_5_EXACT_AUGUST_CROSSWALK');}else pass('I3_5_EXACT_AUGUST_CROSSWALK');
 
           const frozen=readJson(frozenShopper);
+          ensureFrozenSource(frozenShopperSource);
           const portalNow=git(['rev-parse',`HEAD:${'app/adapters/tya-canonical-shopper-portal-v2.js'}`]);
           const portalFrozen=git(['rev-parse',`${frozenShopperSource}:${'app/adapters/tya-canonical-shopper-portal-v2.js'}`]);
           const membershipNow=git(['rev-parse',`HEAD:${'app/adapters/cxorbia-shopper-membership-wiring-v1.js'}`]);
