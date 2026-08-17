@@ -1,71 +1,64 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-16 12:18 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_FROZEN__REQUEST08_CONSUMED__LEGAL_V0_4_MATERIALIZATION_PASS__RUNTIME_AND_HOSTING_DEV_DEPLOY_PASS__HUMAN_ACCEPTANCE_PENDING__COUNSEL_DEFERRED_NONBLOCKING__SAME_CANDIDATE__GO_LIVE_35`
+**Última actualización:** 2026-08-17 16:15 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_5C_1_PERIOD_INDEPENDENT_IDENTITY_ROLL_FORWARD_SOURCE_PASS__I3_5C_2_PENDING__SAME_CANDIDATE__GO_LIVE_35`
 
-No nueva candidata/rama/PR/workflow. I1/I2 cerradas. I3 continúa por **aceptación humana durable + Admin/new Shopper**. El deploy DEV ya no es pendiente. Counsel GT/HN queda post-go-live y no bloquea la ruta interina.
+No nueva candidata/rama/PR/workflow. I1/I2 cerradas. I3 continúa con una única frontera real de identidad: materializar una sola autoridad durable para el target actual; el mecanismo para que no se repita por período ya quedó implementado en source.
 
-Tracker: `app/docs/GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`.  
-Source lock actual: `app/docs/SOURCE-LOCK-ITERATION3-LEGAL-V0.4-DEV-RUNTIME-DEPLOY-PASS-HUMAN-ACCEPTANCE-PENDING-20260816.md`.  
-Evidencia materialización: `app/docs/evidence/ITERATION3-LEGAL-V04-MATERIALIZATION-DEV-LATEST.json`.  
-Evidencia deploy: `app/docs/evidence/ITERATION3-LEGAL-V04-RUNTIME-DEPLOY-DEV-LATEST.json`.
+Tracker: `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md`.  
+Source lock: `app/docs/SOURCE-LOCK-I3-5C-1-PERIOD-INDEPENDENT-IDENTITY-ROLL-FORWARD-SOURCE-PASS-20260817.md`.  
+Evidencia: `app/docs/evidence/ITERATION3-I3-5C-IDENTITY-ROLL-FORWARD-SOURCE-LATEST.json`.
 
 **35% completado / 65% pendiente. I3 0/25 hasta PASS integral.**
 
 ## No reprocesar
 
 - I1/I2.
-- Historical Shopper run `31906391682`; reset único consumido; `passwordResets=0`; cero credential access/reconcile/recovery.
-- Request08 `31909354336` / `95071998299`; consumido/no rerun.
-- Bootstrap V0.4 `i3-legal-v04-dev-20260816-01`; consumido/no rerun/no automatic retry.
-- Deploy V0.4 `i3-legal-v04-runtime-dev-20260816-01`; consumido/no rerun/no automatic retry.
-- Los cuatro documentos Firestore V0.4; ya materializados/readback.
-- Cloud Run revision `cxorbia-live-hr-dev-00010-n78` y Hosting DEV ya desplegados bajo el gate consumido.
+- Historical Shopper run `31906391682`; reset único consumido; no credential access/reconcile/recovery.
+- TARGET_B Admin `32049054855`.
+- Request08.
+- HR 15/660; no reimport.
+- Finance V2/historical; no rebuild.
+- I3.5B run `32070767910` / job `95513264398`; consumido/no rerun.
+- Legal durable V0.4; no autoaccept.
 
-## Ya resuelto
+## Ya resuelto en source
 
-- Provider legal durable human-only/versioned/provider-ACK.
-- Perfil legal provider-authoritative/no-code/rebrand-safe.
-- V0.4 interina con counsel diferido, sin falsa aprobación.
-- Materialización REAL `cxorbia-backend-dev` PASS: `4` Firestore create-only.
-- Runtime legal provider-backed integrado y desplegado en `cxorbia-live-hr-dev`.
-- Hosting protegido desplegado en `https://cxorbia-backend-dev.web.app`.
-- `/api/tenants/**` routed al servicio DEV.
-- Packaging Docker corregido antes del deploy para incluir runtime legal/provider.
-- Smoke Cloud Run y Hosting fail-closed sin aceptación PASS.
-- Provider readback post-deploy: acceptance count `0 → 0`.
-- LegalAcceptance/Auth/passwordResets/historical/HR/Rules/Storage/Make/Gemini/pagos `0` durante deploy.
-- Browser bridge solo en `index-backend-dev.html`; production intacta.
-- No `/app/modules` ni `/app/core` changes por este bloque.
-- Aceptación automática sigue prohibida.
-
-## Decisiones humanas cerradas — no volver a preguntar
-
-TyA empresa mercantil individual Guatemala; Honduras gestionada desde Guatemala; contacto/NIT provider-editable; domicilio residencial restringido; raw evidence piso 60/default 90; rebranding dinámico; banco completo protegido; documentos mínimos; evidencias por proyecto; Provider Registry dinámico; Make/Gemini no activos inicialmente; arbitraje preferido B2B/no universal individual; counsel GT/HN diferido post-go-live.
+- Identidad exacta no depende del período.
+- Contrato reusable multi-tenant/multi-project.
+- Link path: `tenants/{tenantId}/shopperIdentityLinks/{identityLinkId}`.
+- `periodKey` prohibido como scope de identidad.
+- Project-specific scope y tenant-wide scope diferenciados.
+- Ausencia/conflicto = fail-closed/review.
+- Nombre/email/teléfono/WhatsApp/username/shopperCode no son autoridad única.
+- Alta desde plataforma exige identity link `platform_created` + provider ACK.
+- Protected DEV queda preparado para leer vínculos autorizados y alimentar el composer exacto.
+- Gate source PASS para agosto, septiembre y 2027; tenant isolation y project isolation PASS.
 
 ## Pendiente ruta crítica I3
 
-1. `HUMAN_PAULA_LEGAL_ACCEPTANCE_UI_CLICK` en `https://cxorbia-backend-dev.web.app`;
-2. Paula inicia sesión con su cuenta canónica;
-3. provider entrega V0.4 y digest exacto;
-4. Paula marca manualmente las dos casillas y pulsa `Aceptar y continuar`;
-5. registrar máximo `1` receipt legalAcceptance exact identity/version/digest/server timestamp/provider ACK;
-6. provider readback + reload/new-tab confirma aceptación durable;
-7. nueva continuación I3 para Admin/new Shopper, nunca request08;
-8. Admin crea/edita un único Shopper nuevo;
-9. Auth + claims + membership + profile/shopper + crosswalk exactos;
-10. provider readback + login/reload/new-tab/segundo contexto.
+1. `I3.5C-2_ONE_TIME_AUTHORITATIVE_ADJUDICATION_AND_PERIOD_INDEPENDENT_LINK_MATERIALIZATION`;
+2. usar solo el target actual;
+3. autoridad = tenant adjudication explícita o nueva fuente provider exacta independiente;
+4. máximo un upsert idempotente;
+5. provider ACK/readback obligatorio;
+6. probar agosto y fixture septiembre con el mismo link, sin segundo vínculo;
+7. cerrar I3.5;
+8. I3.8 Admin create/update un Shopper nuevo: Auth + claims + membership + profile + period-independent identity link + ACK;
+9. I3.9 login/reload/new-tab/segundo contexto del Shopper nuevo;
+10. I3.10 KPI/state semantics;
+11. I3.11 integral same-build close → 60% formal.
 
-## Counsel post-go-live
+## Multi-proyecto / multi-tenant
 
-Resolver `GT-01..GT-08`, `HN-01..HN-06`, `X-01..X-06`. Cambio material → nueva versión + evaluación de reaceptación. No bloquea ahora.
+Cinépolis es un proyecto configurable normal del tenant actual. No debe existir lógica reusable basada en nombre de tenant, nombre de proyecto, país, mes o período. El identity link solo usa scope técnico tenant/project/sourceSystem.
 
 ## Claude / prototipo
 
-Futuro UI no-code: Legal y cumplimiento, Evidencias y privacidad por proyecto, Provider Registry, white-label/rebranding y auditoría. No parchear módulos desde backend ni duplicar el runtime desplegado.
+No parchear UI desde backend. Futuro review UI, si existe, debe deduplicar por identidad/source scope y no por período. Debe mostrar conflicto de forma fail-closed y no inferir por PII.
 
 ## Acción siguiente
 
-`HUMAN_PAULA_LEGAL_ACCEPTANCE_UI_CLICK`.
+`I3.5C-2_ONE_TIME_AUTHORITATIVE_ADJUDICATION_AND_PERIOD_INDEPENDENT_LINK_MATERIALIZATION` bajo gate provider separado.
 
-No aceptación automática. No rerun bootstrap/deploy/request08. Sin merge/producción.
+Sin autorización vigente para ese write. Sin merge/producción.
