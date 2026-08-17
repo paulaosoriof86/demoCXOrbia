@@ -239,3 +239,84 @@ jobs:
       - name: Enforce technical execution result
         if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
         run: test "${{ steps.adjudication.outputs.exit_code }}" = "0"
+
+  i3-9-created-shopper-readonly-e2e:
+    name: I3.9 created Shopper real E2E read-only
+    if: >-
+      github.event.pull_request.number == 7 &&
+      github.event.pull_request.head.ref == 'docs-tya-v6-v71-audit' &&
+      github.event.pull_request.base.ref == 'release/cxorbia-tya-rc-20260630'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      I39_PRIVATE_DIR: .tmp/i3-9-created-shopper-private
+      I39_RESULT: .tmp/i3-9-created-shopper/result.json
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate I3.9 source and inspect exact request
+        id: i39_request
+        run: |
+          set -euo pipefail
+          node --check tools/qa/cxorbia-i3-9-created-shopper-custom-token-e2e.mjs
+          node --check tools/qa/cxorbia-i3-9-created-shopper-request-control.mjs
+          node tools/qa/cxorbia-i3-9-created-shopper-request-control.mjs --mode inspect
+
+      - name: Install Playwright and Firebase Admin together
+        if: steps.i39_request.outputs.should_execute == 'true'
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false playwright@1.55.0 firebase-admin@13.4.0
+          npx playwright install --with-deps chromium
+
+      - name: Prepare Firebase DEV credential privately
+        if: steps.i39_request.outputs.should_execute == 'true'
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$I39_PRIVATE_DIR" .tmp/i3-9-created-shopper
+          node <<'NODE'
+          const fs=require('fs');
+          const raw=process.env.EXISTING_DEV_JSON||'';
+          let parsed=null;try{parsed=JSON.parse(raw);}catch{}
+          if(!(parsed&&parsed.type==='service_account'&&parsed.project_id==='cxorbia-backend-dev'&&parsed.client_email&&parsed.private_key))throw new Error('credential_invalid');
+          fs.writeFileSync(process.env.I39_PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
+          NODE
+
+      - name: Execute exact new Shopper provider/browser E2E read-only
+        if: steps.i39_request.outputs.should_execute == 'true'
+        id: i39_execute
+        continue-on-error: true
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/i3-9-created-shopper-private/credentials.json
+        run: |
+          node tools/qa/cxorbia-i3-9-created-shopper-custom-token-e2e.mjs \
+            --request "$RUNNER_TEMP/i3-9-created-shopper-request.json" \
+            --out "$I39_RESULT"
+
+      - name: Upload sanitized I3.9 evidence
+        if: always() && steps.i39_request.outputs.should_execute == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: i3-9-created-shopper-readonly-${{ github.run_id }}
+          path: .tmp/i3-9-created-shopper/result.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Cleanup private provider material
+        if: always()
+        run: rm -rf "$I39_PRIVATE_DIR" "$RUNNER_TEMP/i3-9-created-shopper-request.json"
+
+      - name: Enforce read-only I3.9 execution result
+        if: steps.i39_request.outputs.should_execute == 'true'
+        run: test '${{ steps.i39_execute.outcome }}' = 'success'
