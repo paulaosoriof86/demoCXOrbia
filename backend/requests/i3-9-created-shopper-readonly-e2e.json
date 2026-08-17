@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "cxorbia.i3.9.created-shopper-readonly-e2e-request.v1",
+  "requestId": "i3-9-created-shopper-readonly-e2e-20260817-01",
+  "enabled": true,
+  "consumed": false,
+  "gateId": "I3.9_NEW_SHOPPER_REAL_E2E_READONLY_EXISTING_CREATED_IDENTITY",
+  "productTargetHeadSha": "99129a87ff97cc3c9439fb06c5035dda706793b7",
+  "targetProject": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "shopperId": "TYA_GT_393371F88D10F7A8",
+  "visibleLogin": "i38-shopper-dev-20260817-01",
+  "identityLinkId": "irl_fd0e52a9792ef088aa275fa90e27c77d",
+  "expectedProviderUidFingerprint": "a6e3ff21498bd79cbc4078ec47b7b5760a6534e43803614e997bb2294d77ee98",
+  "expectedProviderEmailFingerprint": "bd2392acfbc4436b9578565da37c643291a017163ab9410fc7fa91231f384dac",
+  "maxProviderAdminWrites": 0,
+  "passwordChanges": 0,
+  "passwordResets": 0,
+  "historicalShopperAccess": 0,
+  "continuationAuthorized": true,
+  "authorizationRef": "current-conversation-I3.8-then-I3.9-through-I3.11-no-additional-gate",
+  "allowedOperations": [
+    "read exact new Auth user",
+    "read exact new membership/profile/crosswalk",
+    "mint ephemeral custom token for exact new user",
+    "perform real Firebase browser authentication of exact new user",
+    "validate claims/membership/session/workspace/reload/new-tab/second logical context",
+    "validate shopper-scope non-mutating KPI/state invariants"
+  ],
+  "prohibited": [
+    "Historical Shopper access/login/recovery/reset",
+    "password change/reset",
+    "new user create/update",
+    "claim write",
+    "Firestore write",
+    "HR/Finance/Rules/Storage/Make/Gemini/payment write",
+    "deploy/merge/production"
+  ]
+}
