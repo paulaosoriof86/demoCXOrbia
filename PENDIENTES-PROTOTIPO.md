@@ -1,64 +1,62 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última actualización:** 2026-08-17 16:15 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_5C_1_PERIOD_INDEPENDENT_IDENTITY_ROLL_FORWARD_SOURCE_PASS__I3_5C_2_PENDING__SAME_CANDIDATE__GO_LIVE_35`
+**Última actualización:** 2026-08-17 16:31 -06:00  
+**Estado:** `I1_PASS__I2_PASS__I3_1_TO_7_PASS__I3_8_NEXT__SAME_CANDIDATE__GO_LIVE_35`
 
-No nueva candidata/rama/PR/workflow. I1/I2 cerradas. I3 continúa con una única frontera real de identidad: materializar una sola autoridad durable para el target actual; el mecanismo para que no se repita por período ya quedó implementado en source.
+No nueva candidata/rama/PR/workflow. I1/I2 cerradas. I3.1→I3.7 cerradas/PASS. El mecanismo de identidad period-independent ya fue materializado y probado en provider.
 
 Tracker: `app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md`.  
-Source lock: `app/docs/SOURCE-LOCK-I3-5C-1-PERIOD-INDEPENDENT-IDENTITY-ROLL-FORWARD-SOURCE-PASS-20260817.md`.  
-Evidencia: `app/docs/evidence/ITERATION3-I3-5C-IDENTITY-ROLL-FORWARD-SOURCE-LATEST.json`.
+Source lock: `app/docs/SOURCE-LOCK-I3-5C2-PERIOD-INDEPENDENT-LINK-PASS-I3-5-I3-6-CLOSED-20260817.md`.  
+Evidencia: `app/docs/evidence/ITERATION3-I3-5C2-PERIOD-INDEPENDENT-LINK-MATERIALIZATION-LATEST.json`.
 
 **35% completado / 65% pendiente. I3 0/25 hasta PASS integral.**
 
 ## No reprocesar
 
 - I1/I2.
-- Historical Shopper run `31906391682`; reset único consumido; no credential access/reconcile/recovery.
+- Historical Shopper `31906391682`; no credential access/reconcile/recovery/reset.
 - TARGET_B Admin `32049054855`.
 - Request08.
 - HR 15/660; no reimport.
 - Finance V2/historical; no rebuild.
-- I3.5B run `32070767910` / job `95513264398`; consumido/no rerun.
-- Legal durable V0.4; no autoaccept.
+- I3.5B e I3.5C-2; requests consumidos/no rerun.
+- Legal durable V0.4.
 
-## Ya resuelto en source
+## Ya resuelto
 
-- Identidad exacta no depende del período.
-- Contrato reusable multi-tenant/multi-project.
-- Link path: `tenants/{tenantId}/shopperIdentityLinks/{identityLinkId}`.
-- `periodKey` prohibido como scope de identidad.
-- Project-specific scope y tenant-wide scope diferenciados.
-- Ausencia/conflicto = fail-closed/review.
-- Nombre/email/teléfono/WhatsApp/username/shopperCode no son autoridad única.
-- Alta desde plataforma exige identity link `platform_created` + provider ACK.
-- Protected DEV queda preparado para leer vínculos autorizados y alimentar el composer exacto.
-- Gate source PASS para agosto, septiembre y 2027; tenant isolation y project isolation PASS.
+- Identidad exacta durable no depende del período.
+- Provider-backed `shopperIdentityLinks` activo.
+- Agosto y septiembre resuelven al mismo canonical mediante el mismo link.
+- Segundo link no creado.
+- Tenant/project/source scope explícito.
+- Cero hardcode reusable de tenant/proyecto/mes.
+- I3.5 PASS/CLOSED.
+- I3.6 CLOSED/FROZEN PASS.
 
 ## Pendiente ruta crítica I3
 
-1. `I3.5C-2_ONE_TIME_AUTHORITATIVE_ADJUDICATION_AND_PERIOD_INDEPENDENT_LINK_MATERIALIZATION`;
-2. usar solo el target actual;
-3. autoridad = tenant adjudication explícita o nueva fuente provider exacta independiente;
-4. máximo un upsert idempotente;
-5. provider ACK/readback obligatorio;
-6. probar agosto y fixture septiembre con el mismo link, sin segundo vínculo;
-7. cerrar I3.5;
-8. I3.8 Admin create/update un Shopper nuevo: Auth + claims + membership + profile + period-independent identity link + ACK;
+1. I3.8 Admin crea/actualiza **un único Shopper nuevo** provider-backed;
+2. exact validation;
+3. Auth principal;
+4. claims;
+5. membership;
+6. profile/shopper;
+7. period-independent identity link `authorityType=platform_created`;
+8. provider ACK/readback;
 9. I3.9 login/reload/new-tab/segundo contexto del Shopper nuevo;
 10. I3.10 KPI/state semantics;
 11. I3.11 integral same-build close → 60% formal.
 
 ## Multi-proyecto / multi-tenant
 
-Cinépolis es un proyecto configurable normal del tenant actual. No debe existir lógica reusable basada en nombre de tenant, nombre de proyecto, país, mes o período. El identity link solo usa scope técnico tenant/project/sourceSystem.
+Cinépolis continúa como proyecto configurable normal. Ninguna regla reusable debe depender del nombre TyA/Cinépolis, país, mes o período. Los scopes vienen de provider/config.
 
 ## Claude / prototipo
 
-No parchear UI desde backend. Futuro review UI, si existe, debe deduplicar por identidad/source scope y no por período. Debe mostrar conflicto de forma fail-closed y no inferir por PII.
+No parchear UI desde backend. Si existe review de identidad, debe deduplicarse por autoridad/source scope y no por mes.
 
 ## Acción siguiente
 
-`I3.5C-2_ONE_TIME_AUTHORITATIVE_ADJUDICATION_AND_PERIOD_INDEPENDENT_LINK_MATERIALIZATION` bajo gate provider separado.
+`I3.8_ADMIN_CREATE_UPDATE_ONE_NEW_SHOPPER_PROVIDER_BACKED_PERIOD_INDEPENDENT_IDENTITY` bajo gate provider separado.
 
-Sin autorización vigente para ese write. Sin merge/producción.
+Sin merge/producción.
