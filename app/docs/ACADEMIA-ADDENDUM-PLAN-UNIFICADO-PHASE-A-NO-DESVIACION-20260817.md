@@ -1,33 +1,35 @@
 # ACADEMIA — ADDENDUM PLAN UNIFICADO PHASE A · NO DESVIACIÓN
 
 **Fecha:** 2026-08-17  
-**Última sincronización:** 2026-08-17 14:58 -06:00  
-**Estado:** `ALIGNED__I3_4_PASS__I3_5_HOLD__I3_6_FROZEN_PASS__I3_7_PASS`
+**Última sincronización:** 2026-08-17 15:12 -06:00  
+**Estado:** `ALIGNED__I3_5_PROVIDER_CROSSWALK_REQUIRED__I3_6_HARNESS_SOURCE_FIXED`
 
 ## Regla
 
 Cortes 0B→8, S1→S6 e I1→I5 son una sola ruta. Cada cambio funcional PASS revisa manual, curso/lección, checklist, errores, glosario, ruta por rol y notificaciones.
 
-## Aprendizaje I3.4-I3.7
+## Aprendizaje vigente
 
-I3.4 runtime confirmó que una asignación HR no es una postulación de plataforma. Debe enseñarse/documentarse como autoridad operacional distinta.
+I3.4 confirma que una asignación HR no es una postulación de plataforma.
 
-I3.5 deja un patrón reusable de identidad: un identificador source-safe puede ser técnicamente opaco y aun así derivar de un dato humano. Si `shp-*` se genera como hash del texto Shopper de HR, no se convierte por ello en ancla canónica independiente. La identidad canónica requiere un ancla técnica exacta independiente; no se permite nombre/email/teléfono/WhatsApp/username ni hashes derivados de esos campos para fusionar perfiles.
+I3.5A confirma que un identificador source-safe puede parecer técnico y aun derivar de un dato humano. `shp-*`/shopperCode derivados de texto HR no son anclas canónicas independientes. Una identidad canónica requiere autoridad técnica exacta independiente y, cuando no existe una relación materializada, debe pasar por validación/provider-backed crosswalk con revisión fail-closed; nunca nombre/email/teléfono/WhatsApp/username/hash derivado como atajo.
 
-I3.6 preserva el principio de no reproceso: evidencia histórica PASS + source blobs sin drift se reutilizan; un problema de checkout del harness no autoriza repetir login/reset.
+Los contratos de candidatos dejan `shopperIdentityLinkCandidates` como `not_written`; por ello un candidato source-safe no equivale a identidad materializada.
 
-I3.7 confirma receipt legal provider-backed, aceptación humana, exact actor/current version+digest y persistencia reload/new-tab. Consentimiento legal nunca se automatiza.
+I3.6 preserva no reproceso: evidencia historical Shopper PASS se reutiliza. El defecto de checkout shallow del harness fue corregido source-only para traer la referencia congelada; no se repite login/reset.
+
+I3.7 durable legal provider receipt permanece PASS; consentimiento nunca se automatiza.
 
 ## Progreso
 
-Formal 35%/65%. I3.1-I3.4 e I3.7 PASS/frozen; I3.5 exact blocker; I3.6 harness-only closure.
+Formal 35%/65% por scoring integral de I3. Operativamente I3.1/.2/.3/.4/.7 PASS y I3.6 product/evidence PASS; I3.5 provider crosswalk es la frontera actual.
 
 ## Fuente
 
-`SOURCE-LOCK-I3-4-I3-7-READONLY-RESULT-I3-4-I3-7-PASS-I3-5-HOLD-20260817.md`.
+`SOURCE-LOCK-I3-5A-NO-INDEPENDENT-CROSSWALK-I3-6-HARNESS-SOURCE-FIX-20260817.md`.
 
 ## Siguiente
 
-`I3.5A_EXACT_TECHNICAL_CROSSWALK_SOURCE_HUNT__PLUS_I3.6_FROZEN_REFERENCE_HARNESS_FIX__SOURCE_ONLY`.
+`I3.5B_PROVIDER_BACKED_EXACT_CROSSWALK_VALIDATE_AND_MATERIALIZE_ONE_TARGET` bajo gate explícito: primero exact authority validation, luego máximo un link si está probado, con ACK/readback.
 
-Clasificación: Reusable CXOrbia = sí; Exclusivo cliente = target agosto TyA; Claude/prototipo = no UI/fuzzy patches; Academia = actualizado; Sin impacto Claude = no, preservar separación de autoridad e identidad exacta.
+Clasificación: Reusable CXOrbia = sí; Exclusivo cliente = target agosto TyA; Claude/prototipo = no UI/fuzzy patch; Academia = actualizado; Sin impacto Claude = harness/provider gate.
