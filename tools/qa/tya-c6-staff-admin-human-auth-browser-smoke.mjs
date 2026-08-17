@@ -7,6 +7,9 @@ const privatePath=process.env.CXORBIA_E2E_PRIVATE_CREDENTIALS||'.tmp/c6-unified-
 const outputFile=String(process.env.CXORBIA_HUMAN_GATE_OUTPUT||'').trim();
 const exactAction='C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF';
 const action=String(process.env.CXORBIA_C6_ACTION||'').trim();
+const extendedI3=String(process.env.CXORBIA_I3_EXTENDED_READONLY||'').trim()==='1';
+const targetLiveShopperId=String(process.env.CXORBIA_I3_TARGET_LIVE_SHOPPER_ID||'shp-57d2e3769946').trim();
+const targetCanonicalShopperId=String(process.env.CXORBIA_I3_TARGET_CANONICAL_SHOPPER_ID||'TYA_GT_0C0BA8856E').trim();
 if(!root)throw new Error('DEV_ROOT_URL_REQUIRED');
 if(action!==exactAction)throw new Error('STAFF_ACTION_NOT_EXACT');
 if(!fs.existsSync(privatePath))throw new Error('PRIVATE_E2E_CREDENTIALS_REQUIRED');
@@ -52,21 +55,48 @@ async function waitReady(page,label){
 }
 
 async function snapshot(page,label){
-  return page.evaluate(label=>{
+  return page.evaluate(({label,extendedI3,targetLiveShopperId,targetCanonicalShopperId})=>{
     const ctx=window.CX?.backendAuth?.context?.()||null;
     const authority=window.CX_PROTECTED_AUTH_HR_AUTHORITY||null;
     const handoff=window.CX_C6_LIVE_USER_ADMIN_FRONTEND_HANDOFF||null;
     const d=window.CX?.data||{};
     const ds=window.CX?.dataSource||{};
+    const postAuthority=window.CX_TYA_POSTULATION_AUTHORITY||null;
+    const identityMap=(d.__identityMap&&typeof d.__identityMap==='object'&&!Array.isArray(d.__identityMap))?d.__identityMap:{};
+    const identityReview=Array.isArray(d.__identityReviewQueue)?d.__identityReviewQueue:[];
     const view=document.getElementById('view')?.innerText||'';
     const rail=document.getElementById('rail')?.innerText||'';
-    let legal=null;
+    let legal=null,legalCurrent=null,legalBridge=null;
     try{legal=window.CX?.legalRuntimeHttp?.status?.()||null;}catch(_){legal=null;}
+    try{legalCurrent=window.CX?.legalRuntimeHttp?.current?.()||null;}catch(_){legalCurrent=null;}
+    try{legalBridge=window.CX?.legalAcceptanceProviderBridge?.snapshot?.()||null;}catch(_){legalBridge=null;}
+    const providerSnapshot=legalBridge?.snapshot||{};
+    const receipt=providerSnapshot?.acceptance||{};
+    const evaluated=legalBridge?.evaluated||{};
     const modalTitles=[...document.querySelectorAll('.cx-modal')].map(m=>String(m.querySelector('.card-t,h2,h3')?.textContent||m.textContent||'').trim().slice(0,80)).filter(Boolean).slice(0,5);
     const railProjectSelect=Boolean(document.getElementById('projSel'));
     const railPeriodSelect=Boolean(document.getElementById('periodSel'));
     const railMounted=Boolean(document.querySelector('#rail .rail-brand'));
     const viewMounted=Boolean(document.getElementById('view')?.children?.length);
+    const platformPosts=Array.isArray(d._posts)?d._posts:[];
+    const hrAssignments=Array.isArray(d.__hrAssignmentProjection)?d.__hrAssignmentProjection:[];
+    const syntheticHrPostsInPlatform=platformPosts.filter(p=>/^hr-post-\d+$/i.test(String(p?.id||'').trim())&&p?.sourceSafe===true&&String(p?.aprobadaPor||'').trim()==='HR TyA').length;
+    const exactReviewReasons=[...new Set(identityReview.map(x=>String(x?.reason||'').trim()).filter(Boolean))].sort();
+    const targetCanonicalActual=targetLiveShopperId?String(identityMap[targetLiveShopperId]||'').trim():'';
+    const targetCanonicalVisits=targetCanonicalShopperId&&Array.isArray(d._visitas)?d._visitas.filter(v=>String(v?.shopperId||'').trim()===targetCanonicalShopperId&&String(v?.periodKey||'').trim()==='2026-08').length:0;
+    const targetLiveResidualVisits=targetLiveShopperId&&Array.isArray(d._visitas)?d._visitas.filter(v=>String(v?.shopperId||'').trim()===targetLiveShopperId&&String(v?.periodKey||'').trim()==='2026-08').length:0;
+    const receiptMatchesCurrent=Boolean(
+      receipt&&legalCurrent&&
+      String(receipt.legalContentId||'')===String(legalCurrent.legalContentId||'')&&
+      String(receipt.legalVersion||'')===String(legalCurrent.legalVersion||'')&&
+      String(receipt.contentDigest||'').toLowerCase()===String(legalCurrent.contentDigest||'').toLowerCase()
+    );
+    const receiptMatchesActor=Boolean(
+      receipt&&ctx&&
+      String(receipt.tenantId||'')===String(ctx.tenantId||'')&&
+      String(receipt.role||'')===String(ctx.role||'')&&
+      String(receipt.authNamespace||'')===String(ctx.authNamespace||'')
+    );
     return {
       label,
       role:ctx?.role||null,
@@ -86,6 +116,15 @@ async function snapshot(page,label){
       authorityShoppers:Number(authority?.hrShoppers||0),
       firstPeriod:authority?.firstPeriod||null,
       latestPeriod:authority?.latestPeriod||null,
+      identityMapSize:Number(authority?.identityMapSize||Object.keys(identityMap).length||0),
+      identityReviewCount:Number(authority?.identityReviewCount||identityReview.length||0),
+      identityReviewReasons:extendedI3?exactReviewReasons:[],
+      targetLiveShopperId:extendedI3?targetLiveShopperId:null,
+      targetCanonicalShopperId:extendedI3?targetCanonicalShopperId:null,
+      targetCanonicalActual:extendedI3?(targetCanonicalActual||null):null,
+      targetCanonicalVisitsAugust:extendedI3?targetCanonicalVisits:null,
+      targetLiveResidualVisitsAugust:extendedI3?targetLiveResidualVisits:null,
+      exactIdentityContractPresent:Boolean(window.CX_EXACT_IDENTITY_CONTRACT),
       duplicateVisitKeys:Number(authority?.duplicateVisitKeys||0),
       duplicateShopperIds:Number(authority?.duplicateShopperIds||0),
       frontendHandoffStatus:handoff?.status||null,
@@ -106,12 +145,35 @@ async function snapshot(page,label){
       viewMounted,
       railProjectSelect,
       railPeriodSelect,
+      postulationAuthorityReady:postAuthority?.ready===true,
+      platformPosts:platformPosts.length,
+      hrAssignmentProjection:hrAssignments.length,
+      postAuthorityPlatformPosts:Number(postAuthority?.platformPosts??-1),
+      postAuthorityHrAssignments:Number(postAuthority?.hrAssignments??-1),
+      hrAssignmentsArePostulations:postAuthority?.hrAssignmentsArePostulations===true,
+      syntheticHrPostsInPlatform,
       legalRuntimePresent:Boolean(window.CX?.legalRuntimeHttp),
       legalLoaded:legal?.loaded===true,
       legalPending:legal?legal.pending===true:null,
       legalProviderAuthority:legal?.providerAuthority===true,
       legalError:legal?.error||null,
       legalModalVisible:modalTitles.some(t=>/términos|confidencialidad|legal/i.test(t)),
+      legalContentId:extendedI3?(legalCurrent?.legalContentId||null):null,
+      legalVersion:extendedI3?(legalCurrent?.legalVersion||null):null,
+      legalContentDigest:extendedI3?(legalCurrent?.contentDigest||null):null,
+      legalBridgeAccepted:extendedI3?(evaluated?.accepted===true):null,
+      legalBridgePending:extendedI3?(evaluated?.pending===true):null,
+      legalBridgeReasons:extendedI3?(Array.isArray(evaluated?.reasons)?evaluated.reasons.slice():[]):[],
+      legalSnapshotAuthority:extendedI3?(providerSnapshot?.authority||null):null,
+      legalSnapshotReady:extendedI3?(providerSnapshot?.ready===true):null,
+      legalSnapshotSubjectExact:extendedI3?(providerSnapshot?.subjectExact===true):null,
+      legalSnapshotAmbiguous:extendedI3?(providerSnapshot?.ambiguous===true):null,
+      legalReceiptStatus:extendedI3?(receipt?.status||null):null,
+      legalReceiptMethod:extendedI3?(receipt?.acceptanceMethod||null):null,
+      legalReceiptSubjectExact:extendedI3?(receipt?.subjectExact===true):null,
+      legalReceiptAcceptedAtPresent:extendedI3?Boolean(String(receipt?.acceptedAt||'').trim()):null,
+      legalReceiptMatchesCurrent:extendedI3?receiptMatchesCurrent:null,
+      legalReceiptMatchesActor:extendedI3?receiptMatchesActor:null,
       modalTitles,
       canonicalLane:window.CX_DEV_ENTRY_CANONICAL?.lane||null,
       canonicalProtected:window.CX_DEV_ENTRY_CANONICAL?.protectedRuntime===true,
@@ -119,7 +181,7 @@ async function snapshot(page,label){
       legacyCredentialStepVisible:Boolean(document.getElementById('cxIntegratedAuthStep')),
       technicalFormVisible:Boolean(document.getElementById('cxDevEntryAuth'))
     };
-  },label);
+  },{label,extendedI3,targetLiveShopperId,targetCanonicalShopperId});
 }
 
 function validate(state,label,first=null){
@@ -217,6 +279,7 @@ async function runStaff(){
     validate(newTab,'staff_new_tab',first);
     await second.close();
 
+    const allStates=[first,...reloads,newTab];
     const result={
       role:first.role,
       namespace:first.namespace,
@@ -242,6 +305,49 @@ async function runStaff(){
       submitInteraction:'canonical_form_enter_from_password',
       reloadsStable:reloads.length===3,
       newTabStable:newTab.appOn===true,
+      extendedI3:extendedI3?{
+        postulationAuthority:{
+          ready:first.postulationAuthorityReady,
+          platformPosts:first.platformPosts,
+          hrAssignments:first.hrAssignmentProjection,
+          authorityPlatformPosts:first.postAuthorityPlatformPosts,
+          authorityHrAssignments:first.postAuthorityHrAssignments,
+          hrAssignmentsArePostulations:first.hrAssignmentsArePostulations,
+          syntheticHrPostsInPlatform:first.syntheticHrPostsInPlatform,
+          stableAcrossReloadsAndNewTab:allStates.every(s=>s.postulationAuthorityReady===true&&s.syntheticHrPostsInPlatform===0&&s.hrAssignmentsArePostulations===false&&s.platformPosts===first.platformPosts&&s.hrAssignmentProjection===first.hrAssignmentProjection&&s.postAuthorityPlatformPosts===first.postAuthorityPlatformPosts&&s.postAuthorityHrAssignments===first.postAuthorityHrAssignments)
+        },
+        identity:{
+          contractPresent:first.exactIdentityContractPresent,
+          mapSize:first.identityMapSize,
+          reviewCount:first.identityReviewCount,
+          reviewReasons:first.identityReviewReasons,
+          targetLiveShopperId:first.targetLiveShopperId,
+          targetCanonicalShopperId:first.targetCanonicalShopperId,
+          targetCanonicalActual:first.targetCanonicalActual,
+          targetCanonicalVisitsAugust:first.targetCanonicalVisitsAugust,
+          targetLiveResidualVisitsAugust:first.targetLiveResidualVisitsAugust,
+          targetStableAcrossReloadsAndNewTab:allStates.every(s=>s.targetCanonicalActual===first.targetCanonicalActual&&s.targetCanonicalVisitsAugust===first.targetCanonicalVisitsAugust&&s.targetLiveResidualVisitsAugust===first.targetLiveResidualVisitsAugust)
+        },
+        legal:{
+          contentId:first.legalContentId,
+          version:first.legalVersion,
+          digest:first.legalContentDigest,
+          bridgeAccepted:first.legalBridgeAccepted,
+          bridgePending:first.legalBridgePending,
+          bridgeReasons:first.legalBridgeReasons,
+          snapshotAuthority:first.legalSnapshotAuthority,
+          snapshotReady:first.legalSnapshotReady,
+          snapshotSubjectExact:first.legalSnapshotSubjectExact,
+          snapshotAmbiguous:first.legalSnapshotAmbiguous,
+          receiptStatus:first.legalReceiptStatus,
+          receiptMethod:first.legalReceiptMethod,
+          receiptSubjectExact:first.legalReceiptSubjectExact,
+          receiptAcceptedAtPresent:first.legalReceiptAcceptedAtPresent,
+          receiptMatchesCurrent:first.legalReceiptMatchesCurrent,
+          receiptMatchesActor:first.legalReceiptMatchesActor,
+          stableAcrossReloadsAndNewTab:allStates.every(s=>s.legalLoaded===true&&s.legalProviderAuthority===true&&s.legalPending===false&&s.legalBridgeAccepted===true&&s.legalBridgePending===false&&s.legalReceiptMatchesCurrent===true&&s.legalReceiptMatchesActor===true&&s.legalReceiptAcceptedAtPresent===true&&s.legalVersion===first.legalVersion&&s.legalContentDigest===first.legalContentDigest)
+        }
+      }:null,
       credentialsExposed:false,
       tokensExposed:false
     };
@@ -257,7 +363,7 @@ async function runStaff(){
 try{
   const staff=await runStaff();
   const evidence={
-    schemaVersion:'cxorbia.c6.unified-human-auth-staff-admin-readonly.v4',
+    schemaVersion:'cxorbia.c6.unified-human-auth-staff-admin-readonly.v5',
     generatedAt:new Date().toISOString(),
     decision:'PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY',
     action:exactAction,
@@ -268,11 +374,21 @@ try{
     shopper:null,
     client:null,
     genericShopperClientLogicPreserved:true,
+    historicalShopperAccess:0,
+    userCreates:0,
+    userUpdates:0,
     hostingDeploys:0,
     providerWrites:0,
     authWrites:0,
+    passwordChanges:0,
+    passwordResets:0,
     firestoreWrites:0,
     hrWrites:0,
+    rulesWrites:0,
+    storageWrites:0,
+    makeCalls:0,
+    geminiCalls:0,
+    paymentWrites:0,
     credentialsExposed:false,
     tokensExposed:false,
     merge:false,
@@ -282,20 +398,30 @@ try{
   console.log(JSON.stringify(evidence));
 }catch(error){
   const failure={
-    schemaVersion:'cxorbia.c6.unified-human-auth-staff-admin-readonly.failure.v4',
+    schemaVersion:'cxorbia.c6.unified-human-auth-staff-admin-readonly.failure.v5',
     generatedAt:new Date().toISOString(),
     decision:'FAIL_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY',
     action:exactAction,
     root,
     error:clean(error?.stack||error?.message||error),
     lastState,
+    historicalShopperAccess:0,
+    userCreates:0,
+    userUpdates:0,
     credentialsExposed:false,
     tokensExposed:false,
     hostingDeploys:0,
     providerWrites:0,
     authWrites:0,
+    passwordChanges:0,
+    passwordResets:0,
     firestoreWrites:0,
     hrWrites:0,
+    rulesWrites:0,
+    storageWrites:0,
+    makeCalls:0,
+    geminiCalls:0,
+    paymentWrites:0,
     merge:false,
     production:false
   };
