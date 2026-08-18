@@ -1,67 +1,46 @@
 # CAMBIOS-BACKEND.md
 
-**Última sincronización:** 2026-08-18 13:13 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-RUNTIME-CONTRACT-DRIFT-03`  
-**Estado:** `I3_11C_ROOT_CAUSE_PROVEN_RUNTIME_CONTRACT_DRIFT__SOURCE_CORRECTION_NEXT__GO_LIVE_35`
+**Última sincronización:** 2026-08-18 13:20 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-RUNTIME-SOURCE-CORRECTION-04`  
+**Estado:** `R3A_RUNTIME_IDENTITY_CONTRACT_SOURCE_CORRECTED__R3B_READONLY_CLOSE_AUTH_REQUIRED__GO_LIVE_35`
 
-## Iteración 2026-08-18 — R2B temporal/runtime forensic
+## Iteración R3-A — source correction reusable
 
-### Objetivo
+Causa previa probada: `PROVEN_RUNTIME_CONTRACT_DRIFT__LEGACY_PROVIDER_IDENTITY_LINK_APPLICABILITY_FILTER`.
 
-Explicar la divergencia entre el Staff runtime (`1` provider link, `0` target links) y el focal provider PASS (`2` trusted links, target intacto), sin ninguna nueva lectura/escritura provider.
+### Archivos
+- Modificado: `app/adapters/cxorbia-provider-identity-link-runtime-v1.js`.
+- Nuevo: `tools/qa/cxorbia-provider-identity-runtime-contract-parity-gate.mjs`.
+- Evidencia: `app/docs/evidence/I3-11C-PROVIDER-RUNTIME-SOURCE-CORRECTION-LATEST.json`.
+- Sin cambios en `/app/modules`, `/app/core` ni interfaz `CX.data`.
 
-### Causa raíz probada
+### Corrección
+El runtime provider ya no exige únicamente `status=active` + `providerAck=true`. Se alinea con el contrato reusable `cxorbia-identity-roll-forward-v1`:
+- estados authoritative `active|confirmed|approved|materialized`;
+- authorities confiables `provider_exact|tenant_adjudication|platform_created|migrated_exact`;
+- authorityRef requerido;
+- period-independent obligatorio y period-scoped rechazado;
+- `sourceSafe=false` rechazado;
+- tenant/project isolation preservada;
+- tokens/aliases técnicos exactos solamente;
+- fuzzy/name/email/phone matching sigue deshabilitado.
 
-`PROVEN_RUNTIME_CONTRACT_DRIFT__LEGACY_PROVIDER_IDENTITY_LINK_APPLICABILITY_FILTER`.
+Si `CX_IDENTITY_ROLL_FORWARD_CONTRACT` está disponible, el runtime delega a su `normalizeLink`; si no, usa fallback equivalente para evitar que backend-dev dependa de un cambio de `index.html`.
 
-Archivos fuente revisados:
-- `app/adapters/cxorbia-provider-identity-link-runtime-v1.js`;
-- `app/adapters/cxorbia-identity-roll-forward-v1.js`;
-- `app/index-backend-dev.html`;
-- evidencias Staff, focal provider e I3.5C-2.
+El parity gate cubre target `materialized`, estados/authorities, aislamiento tenant/project, period scope, sourceSafe, tokens técnicos y rechazo de name/email-only. El script queda preparado; su ejecución explícita se incorpora al próximo gate runtime read-only. No se afirma ejecución independiente del script en este bloque connector-only.
 
-Prueba reproducible:
-- target provider authoritative: status `materialized`, authorityType `tenant_adjudication`, authorityRef presente, periodIndependent;
-- contrato canónico reusable acepta `materialized` y `tenant_adjudication`;
-- runtime legacy exige `status === active` y `providerAck === true`;
-- el target se rechaza determinísticamente por `status !== active` antes de precompose/enrichment;
-- `index-backend-dev.html` carga el runtime legacy, no el roll-forward canónico.
-
-Por tanto un provider write temporal no es necesario para explicar el HOLD. No se debe reparar/recrear el link.
-
-Evidencia creada:
-`app/docs/evidence/I3-11C-TEMPORAL-RUNTIME-CONTRACT-DRIFT-FORENSIC-LATEST.json`.
-
-### Siguiente frontera
-
-`I3_11C_UNIFY_PROVIDER_IDENTITY_RUNTIME_WITH_CANONICAL_ROLL_FORWARD_SOURCE_CORRECTION_NO_PROVIDER_IO`.
-
-Corrección mínima: adapter reusable únicamente + QA contract parity. Sin módulos/core/UI workaround ni provider I/O.
-
-## Efectos de esta iteración
-
-- GitHub source/evidence/docs reads: sí.
-- provider reads/writes: `0/0`.
-- `/app/modules`: `0`.
-- `/app/core`: `0`.
-- Auth/Firestore data/Rules/Hosting/Cloud Run/HR/Storage/Make/Gemini/payments: `0`.
-- Historical Shopper: `0`.
-- merge: false.
-- production: false.
+## Safety
+Provider reads/writes `0/0`; Auth/Firestore-data/Rules/Hosting/CloudRun/HR/Storage/Make/Gemini/pagos/Historical Shopper `0`; merge/production false.
 
 ## Clasificación
-
-- **Reusable CXOrbia:** defecto de contrato de identidad runtime y futura paridad de trust semantics.
-- **Exclusivo tenant TyA:** IDs exactos usados como caso reproducible.
-- **Exclusivo proyecto Cinépolis:** mapping objetivo de validación, no lógica del fix.
-- **Claude/prototipo:** sin parche UI; no hardcodear el canonical target.
-- **Academia:** sin cambio funcional visible todavía.
-- **Sin impacto Claude inmediato:** corrección adapter/source siguiente.
+- **Reusable CXOrbia:** corrección de trust contract + parity gate.
+- **Exclusivo TyA/Cinépolis:** solo fixtures de QA.
+- **Claude/prototipo:** sin parche UI.
+- **Academia:** sin cambio funcional confirmado aún.
+- **Sin impacto Claude inmediato:** source/runtime adapter.
 
 ## Avance
+**Formal 35% / 65% pendiente.** R3-A queda aplicado. I3 solo pasa a 60% con R3-B runtime read-only integral PASS.
 
-**Formal 35% completado / 65% pendiente.** R2B queda 100% cerrado operacionalmente con causa raíz probada. I3 sigue `0/25` hasta source correction + Staff runtime read-only PASS integral.
-
-## Camino preservado
-
-R3-A source correction → R3-B Staff read-only close → I3 PASS 60% → I4 visible → I5 producción → continuidad post-go-live.
+## Siguiente bloque exacto
+`NEW_AUTH_REQUIRED_I3_11C_STAFF_RUNTIME_CANONICAL_IDENTITY_CLOSE_READONLY_NO_WRITES`.

@@ -1,68 +1,34 @@
 # SOURCE LOCK CXORBIA TyA — ESTABLE Y VIGENTE
 
-**Última sincronización:** 2026-08-18 13:13 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-RUNTIME-CONTRACT-DRIFT-03`  
-**Estado:** `LOCKED__I3_11C_ROOT_CAUSE_PROVEN_RUNTIME_CONTRACT_DRIFT__SOURCE_CORRECTION_NEXT__NO_PRODUCTION`
-
-## Carril
+**Última sincronización:** 2026-08-18 13:20 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-RUNTIME-SOURCE-CORRECTION-04`  
+**Estado:** `LOCKED__RUNTIME_IDENTITY_CONTRACT_SOURCE_CORRECTED__STAFF_READONLY_CLOSE_AUTH_REQUIRED__NO_PRODUCTION`
 
 Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`; DEV `cxorbia-backend-dev`.
 
-Canonical state: `app/docs/CXORBIA-EXECUTION-STATE.json`.
+**Formal 35% / 65% pendiente.** I3 integral PASS → 60%.
 
-## Formal
+## Frozen
+I1/I2; I3.1→I3.10; Historical Shopper `31906391682`; TARGET_B Admin; request08; I3.5B/I3.5C-2/I3.8; Rules `32163552089`; focal provider `32171812808`; R2B root-cause forensic; HR 15/660; Finance V2/historical; legal V0.4.
 
-**35% completado / 65% pendiente.** I3 sigue `0/25` hasta PASS integral; al cerrar I3 pasa a 60%.
+## Causa raíz y corrección
+Causa probada: `PROVEN_RUNTIME_CONTRACT_DRIFT__LEGACY_PROVIDER_IDENTITY_LINK_APPLICABILITY_FILTER`.
 
-## Frozen / no rerun
+Corrección R3-A:
+- `app/adapters/cxorbia-provider-identity-link-runtime-v1.js` conserva API/runtime bridge pero adopta estados `active|confirmed|approved|materialized`, authorities confiables y authorityRef, sourceSafe, period-independent y tenant/project isolation en paridad con `cxorbia-identity-roll-forward-v1`;
+- cuando el contrato canónico está disponible, delega a `normalizeLink`; si no, usa fallback equivalente;
+- sigue prohibiendo fuzzy/name/email/phone matching;
+- `tools/qa/cxorbia-provider-identity-runtime-contract-parity-gate.mjs` protege futura paridad.
 
-I1/I2; I3.1→I3.10; Historical Shopper `31906391682`; TARGET_B Admin; request08; I3.5B/I3.5C-2/I3.8; Rules I3.11C run `32163552089`; focal provider read run `32171812808`; R2B temporal/runtime forensic; HR 15/660; Finance V2/historical; legal V0.4.
+Cero `/app/modules`, `/app/core`, provider I/O, data writes, deploy, merge o producción.
 
-No Admin/Shopper workaround, reset/recovery Historical Shopper, Rules redeploy, HR reimport, Finance rebuild ni provider identity-link repair.
+## Frontera actual
+`NEW_AUTH_REQUIRED_I3_11C_STAFF_RUNTIME_CANONICAL_IDENTITY_CLOSE_READONLY_NO_WRITES`
 
-## Causa raíz vigente — PROBADA
+No ejecutar sin autorización exacta nueva. La prueba debe ser read-only, usar Staff/Admin canónico existente, cero password change/reset/creación, y demostrar target canonical + 2/0 agosto + duplicados 0. Ejecutar parity gate source antes del browser runtime.
 
-`PROVEN_RUNTIME_CONTRACT_DRIFT__LEGACY_PROVIDER_IDENTITY_LINK_APPLICABILITY_FILTER`
-
-Evidencia:
-- provider focal probó target intacto: `materialized`, `tenant_adjudication`, period-independent, field diff `[]`, normalizado trusted;
-- contrato reusable `cxorbia-identity-roll-forward-v1` acepta `materialized` y `tenant_adjudication` con authorityRef;
-- runtime live `cxorbia-provider-identity-link-runtime-v1` solo acepta `status === active` + `providerAck === true`;
-- por tanto el target `materialized` se excluye determinísticamente del set runtime;
-- `index-backend-dev.html` carga ese runtime legacy y no el contrato roll-forward.
-
-Esto explica el Staff runtime `1` link / `0` target links sin necesitar deletion, mutation, re-scope, deactivation ni provider write intermedio.
-
-Evidencia activa: `app/docs/evidence/I3-11C-TEMPORAL-RUNTIME-CONTRACT-DRIFT-FORENSIC-LATEST.json`.
-
-## Siguiente frontera
-
-`I3_11C_UNIFY_PROVIDER_IDENTITY_RUNTIME_WITH_CANONICAL_ROLL_FORWARD_SOURCE_CORRECTION_NO_PROVIDER_IO`
-
-Permitido:
-- modificar solo `app/adapters/cxorbia-provider-identity-link-runtime-v1.js` para alinear trust/applicability con el contrato canónico y preservar su API;
-- agregar QA source/parity gate reusable;
-- actualizar evidencia/documentación.
-
-Prohibido en este bloque:
-- `/app/modules` y `/app/core`;
-- provider/Auth/Firestore data/Rules/HR/Storage/Make/Gemini/pagos I/O;
-- deploy Hosting/Cloud Run/Rules;
-- Historical Shopper;
-- merge/producción.
-
-## Después de la corrección source
-
-No se asume PASS runtime por estática. Se define un gate read-only exacto para Staff. PASS I3 mínimo: `shp-57d2e3769946 → TYA_GT_0C0BA8856E`, agosto canonical `2`, residual live `0`, duplicados `0`, invariantes congeladas preservadas.
-
-## Circuit breaker / source truth
-
-PASS consumido no se repite salvo regresión nueva reproducible. Mismatch docs/evidence → `SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION`. Gate ejecutado no sincronizado → `EXECUTED_UNSYNCED_DO_NOT_ADVANCE`. Dos repeticiones no reductivas → `FORENSIC_STOP`.
+## Circuit breaker
+No provider repair. No reabrir Auth/Rules/I3.9/I3.10. Mismatch docs/evidence detiene ejecución; PASS consumido no se repite sin regresión reproducible.
 
 ## Producto
-
-TyA = primer tenant; Cinépolis = primer proyecto configurable. El defecto es **Reusable CXOrbia**, no lógica Cinépolis. La corrección debe mantener multi-tenant, multi-proyecto, exact technical identity y cero fuzzy/name/email/phone matching. Backend no parcha UI; Claude recibe cualquier impacto frontend solo si se demuestra.
-
-## Producción
-
-I4 visible después de I3; I5 build lock/preprod/rollback/E2E/gate producción/cutover/smoke/baseline. Este source lock y Atomic Gate Close continúan post-go-live.
+El fix es reusable CXOrbia, no TyA/Cinépolis hardcode. Multi-tenant/no-code, exact identity, `CX.data`, Claude/prototipo y Academia se preservan.
