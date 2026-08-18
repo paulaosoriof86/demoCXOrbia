@@ -28,12 +28,12 @@ let lastState=null;
 
 async function waitReady(page,label){
   try{
-    await page.waitForFunction(()=>{
+    await page.waitForFunction(({extendedI3,targetLiveShopperId,targetCanonicalShopperId})=>{
       const ctx=window.CX?.backendAuth?.context?.()||null;
       const authority=window.CX_PROTECTED_AUTH_HR_AUTHORITY||null;
       const handoff=window.CX_C6_LIVE_USER_ADMIN_FRONTEND_HANDOFF||null;
       const d=window.CX?.data||{};
-      return Boolean(
+      const baseReady=Boolean(
         ctx?.authenticated===true&&ctx?.authNamespace==='staff'&&
         window.CX?.session?.user?.membershipVerified===true&&
         authority?.applied===true&&authority?.periods>0&&authority?.hrVisits>0&&
@@ -44,9 +44,54 @@ async function waitReady(page,label){
         window.CX_BACKEND_LAST_STATE?.empty!==true&&
         window.CX_CORTE4_READONLY?.empty!==true&&
         document.getElementById('app')?.classList.contains('on')===true&&
-        document.getElementById('login')?.classList.contains('hidden')===true
+        document.getElementById('login')?.classList.contains('hidden')===true&&
+        document.querySelector('#rail .rail-brand')&&
+        document.getElementById('view')?.children?.length&&
+        document.getElementById('projSel')&&
+        document.getElementById('periodSel')
       );
-    },null,{timeout:90000});
+      if(!baseReady)return false;
+
+      if(window.CX?.legalRuntimeHttp){
+        let legal=null,legalCurrent=null,legalBridge=null;
+        try{legal=window.CX.legalRuntimeHttp.status?.()||null;}catch(_){legal=null;}
+        try{legalCurrent=window.CX.legalRuntimeHttp.current?.()||null;}catch(_){legalCurrent=null;}
+        try{legalBridge=window.CX?.legalAcceptanceProviderBridge?.snapshot?.()||null;}catch(_){legalBridge=null;}
+        const providerSnapshot=legalBridge?.snapshot||{};
+        const receipt=providerSnapshot?.acceptance||{};
+        const evaluated=legalBridge?.evaluated||{};
+        const receiptMatchesCurrent=Boolean(
+          receipt&&legalCurrent&&
+          String(receipt.legalContentId||'')===String(legalCurrent.legalContentId||'')&&
+          String(receipt.legalVersion||'')===String(legalCurrent.legalVersion||'')&&
+          String(receipt.contentDigest||'').toLowerCase()===String(legalCurrent.contentDigest||'').toLowerCase()
+        );
+        const receiptMatchesActor=Boolean(
+          receipt&&ctx&&
+          String(receipt.tenantId||'')===String(ctx.tenantId||'')&&
+          String(receipt.role||'')===String(ctx.role||'')&&
+          String(receipt.authNamespace||'')===String(ctx.authNamespace||'')
+        );
+        const legalReady=Boolean(
+          legal?.loaded===true&&legal?.pending!==true&&legal?.providerAuthority===true&&legal?.error==null&&
+          providerSnapshot?.authority==='provider'&&providerSnapshot?.ready===true&&providerSnapshot?.subjectExact===true&&providerSnapshot?.ambiguous!==true&&
+          evaluated?.accepted===true&&evaluated?.pending!==true&&
+          receipt?.status==='accepted'&&receipt?.acceptanceMethod==='human_ui'&&receipt?.subjectExact===true&&Boolean(String(receipt?.acceptedAt||'').trim())&&
+          receiptMatchesCurrent&&receiptMatchesActor
+        );
+        if(!legalReady)return false;
+      }
+
+      if(extendedI3){
+        const identityMap=(d.__identityMap&&typeof d.__identityMap==='object'&&!Array.isArray(d.__identityMap))?d.__identityMap:{};
+        const actual=String(identityMap[targetLiveShopperId]||'').trim();
+        const canonicalVisits=Array.isArray(d._visitas)?d._visitas.filter(v=>String(v?.shopperId||'').trim()===targetCanonicalShopperId&&String(v?.periodKey||'').trim()==='2026-08').length:0;
+        const residualVisits=Array.isArray(d._visitas)?d._visitas.filter(v=>String(v?.shopperId||'').trim()===targetLiveShopperId&&String(v?.periodKey||'').trim()==='2026-08').length:0;
+        if(actual!==targetCanonicalShopperId||canonicalVisits<2||residualVisits!==0)return false;
+      }
+
+      return true;
+    },{extendedI3,targetLiveShopperId,targetCanonicalShopperId},{timeout:90000});
   }catch{
     const state=await snapshot(page,label+'_timeout');
     lastState=state;
