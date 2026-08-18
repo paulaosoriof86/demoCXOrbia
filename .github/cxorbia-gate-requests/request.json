@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "i3-11c-single-firestore-rules-dev-and-staff-readonly-close-20260818-01",
+  "requestId": "i3-11c-staff-readonly-close-after-rules-20260818-02",
   "enabled": true,
   "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "902b7b2406391ccc2bbe4190082f78096ad1bf93",
+  "targetHeadSha": "73c8996b9525f480d62520b723578ff94ecb5df2",
   "profile": "I3_STAFF_RUNTIME_AUTHORITY_READONLY",
   "allowedProfiles": [
     "I3_STAFF_RUNTIME_AUTHORITY_READONLY"
@@ -15,7 +15,7 @@
   "repositoryWrites": false,
   "dataWrites": false,
   "providerReads": true,
-  "providerWrites": true,
+  "providerWrites": false,
   "deploy": false,
   "merge": false,
   "production": false,
@@ -48,15 +48,21 @@
   },
   "i3_11c": {
     "authorized": true,
+    "phase": "STAFF_ONLY_AFTER_RULES_VERIFIED",
     "authorizationId": "PAULA_CURRENT_CONVERSATION_I3_11C_20260818_1051",
     "authorizationSource": "current_conversation_2026-08-18_explicit_I3.11C",
     "firebaseProjectId": "cxorbia-backend-dev",
     "rulesSourcePath": "firestore.rules",
     "expectedRulesBlobSha": "bf62d8b0e32c571aaae457dd9128b0c82b0ea073",
-    "maxRulesDeploys": 1,
+    "maxRulesDeploys": 0,
     "staffReadonlyExecutions": 1,
     "executeOnlyOnEvent": "push",
     "noAutomaticRetry": true,
+    "rulesDeployConsumed": true,
+    "priorRulesRunId": 32163552089,
+    "priorRulesJobId": 95798274907,
+    "priorRulesArtifactId": 9334608598,
+    "priorRulesSourceSha256": "fc9fd7330e82e2bfda727b03cf25dfc2aa6a92798d9086cdb014a7c49cb0083f",
     "hostingDeploys": 0,
     "cloudRunDeploys": 0,
     "authClaimWrites": 0,
@@ -80,7 +86,7 @@
   "containsPii": false,
   "containsSecrets": false,
   "authorizedBy": "Paula",
-  "authorizationText": "Autorizo I3.11C: maximo 1 deploy de Firestore Rules DEV del firestore.rules exacto vigente en docs-tya-v6-v71-audit hacia cxorbia-backend-dev, con readback exacto; despues 1 unica validacion Staff read-only. Cero Hosting/Cloud Run/Auth claims/users/passwords/Firestore data/HR/Storage/Make/Gemini/pagos/Historical Shopper/merge/produccion; sin retry automatico; I3.9/I3.10 congelados PASS.",
+  "authorizationText": "Continuation inside the already authorized I3.11C boundary. The single Firestore Rules DEV deploy is already consumed and verified; execute only the still-unexecuted single Staff read-only validation. Zero Rules deploys remaining and zero other prohibited writes/deploys/access.",
   "sourceLockDocument": "app/docs/CAMBIOS-BACKEND-ADDENDUM-I3-11C-20260818.md",
   "stopRetryOnFailure": true,
   "noAutomaticRetry": true,
@@ -95,5 +101,16 @@
     "reuseFrozenI3_9": true,
     "reuseFrozenI3_10": true
   },
-  "purpose": "Execute the explicitly authorized I3.11C boundary once: exact Firestore Rules DEV deploy/readback followed by one Staff-only read-only I3 close. Pull-request duplicate event is fail-closed skipped; only push may execute provider Rules and Staff runtime."
+  "priorRulesExecution": {
+    "workflowRunId": 32163552089,
+    "jobId": 95798274907,
+    "artifactId": 9334608598,
+    "artifactDigest": "sha256:3138c02030be13ec72b0f71553a34f655d2f691fd52f533ff183d180fe0064e7",
+    "decision": "PASS_DIRECT_FIRESTORE_RULES_DEPLOY_VERIFIED",
+    "logicalDeploys": 1,
+    "providerWrites": 2,
+    "staffReadonlyExecuted": false,
+    "harnessBlocker": "PLAYWRIGHT_PACKAGE_PRUNED_AFTER_FIREBASE_ADMIN_TRANSIENT_INSTALL"
+  },
+  "purpose": "Complete the original I3.11C authorization without repeating its consumed Rules deploy: one Staff-only browser read-only close on push event, with the duplicate pull_request event fail-closed skipped."
 }
