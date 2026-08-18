@@ -1,8 +1,8 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
   "requestId": "i3-11-identity-link-runtime-bridge-postdeploy-staff-readonly-20260817-02",
-  "enabled": true,
-  "consumed": false,
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -50,6 +50,14 @@
   "sourceLockDocument": "app/docs/SOURCE-LOCK-I3-8-PASS-I3-9-MEMBERSHIP-LOADER-ROOT-CAUSE-SOURCE-FIX-PENDING-DEV-GATE-20260817.md",
   "stopRetryOnFailure": true,
   "noAutomaticRetry": true,
+  "executionOutcome": {
+    "attempted": true,
+    "workflowRunId": 32089409656,
+    "artifactId": 9307869097,
+    "result": "HOLD_READONLY_POST_GATES",
+    "blocker": "I3_5_EXACT_AUGUST_CROSSWALK",
+    "consumedReason": "Single authorized Staff-only provider read executed and returned a deterministic logical blocker. The request is closed to prevent any automatic or stale retry."
+  },
   "expected": {
     "targetLiveShopperId": "shp-57d2e3769946",
     "targetCanonicalShopperId": "TYA_GT_0C0BA8856E",
@@ -61,5 +69,5 @@
     "reuseFrozenI3_9": true,
     "reuseFrozenI3_10": true
   },
-  "purpose": "One Staff-only read-only post-deploy verification under the authorized I3.11 identity-link runtime bridge close gate. No deploys or provider writes are performed by this request."
+  "purpose": "Closed single-use Staff-only read-only post-deploy verification. It is intentionally disabled after the authorized attempt; no automatic retry is permitted."
 }
