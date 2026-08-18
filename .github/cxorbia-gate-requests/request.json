@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "i3-11b-stable-readiness-staff-readonly-close-20260817-04",
-  "enabled": false,
-  "consumed": true,
+  "requestId": "i3-11b-focal-provider-identity-path-readonly-20260818-05",
+  "enabled": true,
+  "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "338050729934f6019642d0f57fcca539333ae9eb",
+  "targetHeadSha": "927dabc14ef95407ee1a8c6682368a856ad792d9",
   "profile": "I3_STAFF_RUNTIME_AUTHORITY_READONLY",
   "allowedProfiles": ["I3_STAFF_RUNTIME_AUTHORITY_READONLY"],
   "allowedExecutions": 1,
@@ -46,7 +46,7 @@
   "containsPii": false,
   "containsSecrets": false,
   "authorizedBy": "Paula",
-  "authorizationSource": "current_conversation_2026-08-17_definitive_solution_after_proven_readiness_race",
+  "authorizationSource": "current_conversation_2026-08-18_continue_next_action_focal_identity_path",
   "sourceLockDocument": "app/docs/CAMBIOS-BACKEND-ADDENDUM-I3-11B-20260817.md",
   "stopRetryOnFailure": true,
   "noAutomaticRetry": true,
@@ -55,55 +55,25 @@
     "targetCanonicalShopperId": "TYA_GT_0C0BA8856E",
     "targetCanonicalVisitsAugust": 2,
     "targetLiveResidualVisitsAugust": 0,
+    "discriminateOnly": [
+      "A_PROVIDER_SOURCE_NOT_ACTIVE_IN_DEV",
+      "B_PROVIDER_RUNTIME_HAS_NO_APPLICABLE_TARGET_LINK",
+      "C_PROVIDER_LINK_LOADED_BUT_PRECOMPOSE_UNMATCHED_OR_AMBIGUOUS",
+      "PASS_EXACT_IDENTITY_APPLIED"
+    ],
     "preserveI3_4": true,
     "preserveI3_6": true,
     "preserveI3_7": true,
     "reuseFrozenI3_9": true,
     "reuseFrozenI3_10": true
   },
-  "executionOutcome": {
-    "attempted": true,
+  "priorStableHold": {
     "workflowRunId": 32096763305,
     "jobId": 95590022692,
     "artifactId": 9310288275,
-    "result": "HOLD_READONLY_POST_GATES",
     "stableRuntimeReached": true,
     "trueBlocker": "I3_5_EXACT_IDENTITY_PATH_NOT_APPLIED",
-    "identityMapSize": 0,
-    "targetCanonicalActual": null,
-    "targetCanonicalVisitsAugust": 0,
-    "targetLiveResidualVisitsAugust": 0,
-    "normalRuntimeStable": {
-      "role": "admin",
-      "namespace": "staff",
-      "periods": 15,
-      "visits": 660,
-      "shoppers": 214,
-      "routerMounted": true,
-      "legalSettled": true,
-      "postulationAuthorityReady": true,
-      "duplicateVisitKeys": 0,
-      "duplicateShopperIds": 0
-    },
-    "safety": {
-      "historicalShopperAccess": 0,
-      "authWrites": 0,
-      "userCreates": 0,
-      "userUpdates": 0,
-      "passwordChanges": 0,
-      "passwordResets": 0,
-      "firestoreWrites": 0,
-      "hrWrites": 0,
-      "rulesWrites": 0,
-      "storageWrites": 0,
-      "makeCalls": 0,
-      "geminiCalls": 0,
-      "paymentWrites": 0,
-      "deploys": 0,
-      "merge": false,
-      "production": false
-    },
-    "consumedReason": "The single authorized stable Staff-only adjudication completed. Normal runtime converged; exact identity did not. Request closed before any focal follow-up to prevent stale retry."
+    "identityMapSize": 0
   },
-  "purpose": "Consumed stable Staff-only close. No automatic retry. Follow-up is restricted to a focal read-only provider identity-path diagnostic."
+  "purpose": "Single focal Staff-only read-only diagnostic to identify which exact provider identity path segment is failing. Uses sanitized runtime/source markers only. No Hosting, no Rules, no provider writes, no Historical Shopper, no password/auth changes, no broad re-diagnosis, no automatic retry."
 }
