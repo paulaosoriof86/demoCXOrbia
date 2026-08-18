@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "i3-11b-postdeploy-staff-readonly-adjudication-20260817-03",
+  "requestId": "i3-11b-stable-readiness-staff-readonly-close-20260817-04",
   "enabled": true,
   "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "906577a5c5f98296e26a0f57c16eae4d6e291285",
+  "targetHeadSha": "338050729934f6019642d0f57fcca539333ae9eb",
   "profile": "I3_STAFF_RUNTIME_AUTHORITY_READONLY",
   "allowedProfiles": ["I3_STAFF_RUNTIME_AUTHORITY_READONLY"],
   "allowedExecutions": 1,
@@ -46,8 +46,8 @@
   "containsPii": false,
   "containsSecrets": false,
   "authorizedBy": "Paula",
-  "authorizationSource": "current_conversation_2026-08-17_definitive_solution_after_I3.11B_hold",
-  "sourceLockDocument": "app/docs/SOURCE-LOCK-I3-8-PASS-I3-9-MEMBERSHIP-LOADER-ROOT-CAUSE-SOURCE-FIX-PENDING-DEV-GATE-20260817.md",
+  "authorizationSource": "current_conversation_2026-08-17_definitive_solution_after_proven_readiness_race",
+  "sourceLockDocument": "app/docs/CAMBIOS-BACKEND-ADDENDUM-I3-11B-20260817.md",
   "stopRetryOnFailure": true,
   "noAutomaticRetry": true,
   "expected": {
@@ -61,5 +61,5 @@
     "reuseFrozenI3_9": true,
     "reuseFrozenI3_10": true
   },
-  "purpose": "One final Staff-only read-only adjudication of the already-authorized I3.11B deployed/runtime state. No deploy, no provider writes, no Historical Shopper, no automatic retry."
+  "purpose": "Single Staff-only read-only close after QA readiness source correction. Wait for stable router, legal and extended exact identity state before adjudication. No Hosting, no Rules, no provider writes, no Historical Shopper, no automatic retry."
 }
