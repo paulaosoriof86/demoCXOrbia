@@ -118,7 +118,7 @@ Request Staff final consumido/disabled con `status=pass_consumed` en `0ea4bb6d58
 - **Reusable CXOrbia:** provider exact-link → canonical identityMap; post-compose fail-closed; aislamiento `push`/`pull_request` del runner one-shot.
 - **Exclusivo TyA/Cinépolis:** IDs focales, agosto `2/0`, evidencia HR `15/660`.
 - **Claude/prototipo:** sin parche UI ni cambio de módulos.
-- **Academia:** sin cambio funcional visible; solo registrar cierre técnico I3.
+- **Academia:** sin cambio funcional visible; no se localizó un tracker Academia específico en el repo para este slice. El impacto queda documentado en este archivo, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, source lock y checkpoint: solo cierre técnico I3; sin cambios de manuales, cursos, rutas por rol ni notificaciones.
 - **Sin impacto Claude inmediato:** ejecución read-only, gates y documentación.
 
 ## Avance Phase A
