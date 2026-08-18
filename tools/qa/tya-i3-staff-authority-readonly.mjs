@@ -7,11 +7,14 @@ const ROOT=process.cwd();
 const requestPath=process.argv[2]||'.github/cxorbia-gate-requests/request.json';
 const profile='I3_STAFF_RUNTIME_AUTHORITY_READONLY';
 const expectedAction='C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF';
+const authorizationId='PAULA_CURRENT_CONVERSATION_I3_11C_STAFF_RUNTIME_CANONICAL_IDENTITY_CLOSE_READONLY_20260818_1355';
+const parityGatePath='tools/qa/cxorbia-provider-identity-runtime-contract-parity-gate.mjs';
 const runtimeRoot=process.env.CXORBIA_DEV_ROOT_URL||'https://cxorbia-backend-dev.web.app';
 const privatePath=process.env.CXORBIA_E2E_PRIVATE_CREDENTIALS||'.tmp/i3-staff-authority-private/private-e2e.json';
 const outDir='.tmp/i3-staff-authority-readonly';
 const runtimeFile=path.join(outDir,'staff-runtime.json');
 const rulesFile=path.join(outDir,'firestore-rules-deploy.json');
+const parityFile=path.join(outDir,'identity-contract-parity.json');
 const reportDir='.tmp/cxorbia-readonly-post-gates-runner';
 const reportFile=path.join(reportDir,'report.json');
 const reportMd=path.join(reportDir,'report.md');
@@ -36,7 +39,7 @@ function ensureFrozenSource(sha){
 
 fs.mkdirSync(outDir,{recursive:true});
 fs.mkdirSync(reportDir,{recursive:true});
-let request=null,runtime=null,rules=null;
+let request=null,runtime=null,rules=null,parity=null;
 const checks=[],blockers=[];
 const pass=(code,detail='')=>checks.push(detail?`${code}:${detail}`:code);
 const fail=(code,detail='')=>blockers.push(detail?`${code}:${detail}`:code);
@@ -47,9 +50,9 @@ function finalize(status){
     schemaVersion:'cxorbia.i3.staff-authority-readonly.v1',runner:'CXORBIA_READONLY_POST_GATES_RUNNER',generatedAt:new Date().toISOString(),
     status,repository:process.env.GITHUB_REPOSITORY||null,branch:process.env.GITHUB_REF_NAME||null,eventName:process.env.GITHUB_EVENT_NAME||null,requestPath,
     requestId:request?.requestId||null,requestCommitSha:git(['rev-parse','HEAD']),targetHeadSha:request?.targetHeadSha||null,profile,
-    i3_11c:i311c?{authorized:true,phase:request?.i3_11c?.phase||'RULES_THEN_STAFF',rules,staffReadonlyExecuted:runtime?.staffReadonlyExecuted===true}:null,
+    i3_11c:i311c?{authorized:true,authorizationId:request?.i3_11c?.authorizationId||null,phase:request?.i3_11c?.phase||'RULES_THEN_STAFF',rules,parity,staffReadonlyExecuted:runtime?.staffReadonlyExecuted===true}:null,
     checks,blockers,commands:i311c
-      ? ['At most one authorized Firestore Rules DEV deploy across I3.11C with exact readback','One Staff-only canonical Admin browser read on push event only; no Shopper credential selection']
+      ? ['Static provider-identity canonical contract parity preflight with zero provider I/O','Reuse previously verified Firestore Rules without redeploy','One Staff-only canonical Admin browser read on push event only; no Shopper credential selection']
       : ['Staff-only canonical Admin browser read; no Shopper credential selection'],
     summary:{
       i3_4:runtime?.i3?.i3_4||null,
@@ -80,8 +83,9 @@ function validateI311cRequest(parent){
   const c=request?.i3_11c||{};
   const staffOnly=c.phase==='STAFF_ONLY_AFTER_RULES_VERIFIED';
   if(c.authorized!==true)fail('I3_11C_AUTHORIZATION_MISSING');else pass('I3_11C_AUTHORIZATION_PRESENT');
-  if(c.authorizationId!=='PAULA_CURRENT_CONVERSATION_I3_11C_20260818_1051')fail('I3_11C_AUTHORIZATION_ID');else pass('I3_11C_AUTHORIZATION_ID');
+  if(c.authorizationId!==authorizationId)fail('I3_11C_AUTHORIZATION_ID');else pass('I3_11C_AUTHORIZATION_ID');
   if(c.firebaseProjectId!=='cxorbia-backend-dev'||c.rulesSourcePath!=='firestore.rules')fail('I3_11C_RULES_TARGET');else pass('I3_11C_RULES_TARGET');
+  if(c.identityContractParityGate!==parityGatePath||c.sourceCorrectionHeadSha!==parent)fail('I3_11C_SOURCE_CORRECTION_LOCK');else pass('I3_11C_SOURCE_CORRECTION_LOCK',parent);
   if(Number(c.maxRulesDeploys)!==(staffOnly?0:1)||Number(c.staffReadonlyExecutions)!==1||c.noAutomaticRetry!==true||c.executeOnlyOnEvent!=='push')fail('I3_11C_ONE_SHOT_SCOPE');else pass('I3_11C_ONE_SHOT_SCOPE');
   const zeroKeys=['hostingDeploys','cloudRunDeploys','authClaimWrites','authUserCreates','authUserUpdates','authUserDeletes','passwordChanges','passwordResets','firestoreDataWrites','hrWrites','storageWrites','makeWrites','geminiCalls','paymentWrites','historicalShopperAccess'];
   for(const k of zeroKeys)if(Number(c[k]||0)!==0)fail('I3_11C_FORBIDDEN_'+k);
@@ -99,6 +103,17 @@ function validateI311cRequest(parent){
       if(e.decision!=='PASS_DIRECT_FIRESTORE_RULES_DEPLOY_VERIFIED'||e.verified!==true||e.sourceSha256!==c.priorRulesSourceSha256||e.after?.sourceSha256!==c.priorRulesSourceSha256||Number(e.i3_11c?.workflowRunId)!==c.priorRulesRunId||e.i3_11c?.rulesDeployConsumed!==true)fail('I3_11C_PRIOR_RULES_REPO_EVIDENCE_MISMATCH');else pass('I3_11C_PRIOR_RULES_REPO_EVIDENCE_VERIFIED');
     }
   }
+}
+
+function executeIdentityContractParity(){
+  const syntax=run('node',['--check',parityGatePath]);
+  if(syntax.status!==0)throw new Error('I3_11C_IDENTITY_PARITY_SYNTAX_'+String(syntax.stderr||syntax.stdout||'').slice(0,240));
+  const exec=run('node',[parityGatePath]);
+  if(exec.status!==0)throw new Error('I3_11C_IDENTITY_PARITY_FAILED_'+String(exec.stderr||exec.stdout||'').slice(0,400));
+  try{parity=JSON.parse(String(exec.stdout||'').trim());}catch{throw new Error('I3_11C_IDENTITY_PARITY_OUTPUT_INVALID');}
+  if(parity.decision!=='PASS_PROVIDER_IDENTITY_RUNTIME_CANONICAL_CONTRACT_PARITY'||parity.targetMaterializedApplicable!==true||parity.exactTechnicalOnly!==true||parity.fuzzyMatching!==false||Number(parity.providerReads||0)!==0||Number(parity.providerWrites||0)!==0)throw new Error('I3_11C_IDENTITY_PARITY_NOT_PASS');
+  fs.writeFileSync(parityFile,JSON.stringify(parity,null,2)+'\n','utf8');
+  pass('I3_11C_IDENTITY_CONTRACT_PARITY',parity.decision);
 }
 
 function executeI311cRules(){
@@ -157,6 +172,7 @@ try{
     runtime={schemaVersion:'cxorbia.i3.staff-authority-readonly.result.v1',generatedAt:new Date().toISOString(),staffReadonlyExecuted:false,i3:{},safety:{historicalShopperAccess:0,shopperCredentialSelection:0,userCreates:0,userUpdates:0,passwordChanges:0,passwordResets:0,authWrites:0,firestoreWrites:0,hrWrites:0,rulesWrites:0,firestoreRulesDeploys:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,hostingDeploys:0,cloudRunDeploys:0,merge:false,production:false,credentialsExposed:false,tokensExposed:false}};
     process.exitCode=finalize('PASS_READONLY_POST_GATES');
   }else{
+    executeIdentityContractParity();
     if(staffOnly)loadPriorRulesEvidence();
     else if(i311c)executeI311cRules();
     if(!fs.existsSync(privatePath)){fail('PRIVATE_STAFF_CREDENTIAL_MISSING');process.exitCode=finalize('HOLD_READONLY_POST_GATES');}
