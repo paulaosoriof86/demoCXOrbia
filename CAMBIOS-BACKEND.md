@@ -67,7 +67,7 @@ Causa raíz reproducible: `push` y `pull_request` compartían una misma clave de
 
 Commit `84bd3bc571692074ce9e13fa50264ef17c6b55f2` modifica `.github/workflows/cxorbia-readonly-post-gates-runner.yml` para incluir `github.event_name` en la clave de `concurrency`.
 
-Cambio funcional: separar `push` y `pull_request`; conserva serialización dentro de cada evento. Dos diferencias de espaciado en headers del comentario PR quedaron sin efecto semántico. Producto, adapter, provider, credenciales y reglas no cambiaron.
+Cambio funcional: separar `push` y `pull_request`; conserva serialización dentro de cada evento. Producto, adapter, provider, credenciales y reglas no cambiaron.
 
 ### Ejecución Staff efectiva — PASS
 
@@ -82,43 +82,25 @@ Request-only `2ce80f1d4045093858088ec39325b7d3655ab298`.
 - `staffReadonlyExecuted=true`;
 - runtime `PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY`.
 
-Subgates:
-- I3.4 `PASS_I3_4_POSTULATION_VS_HR_ASSIGNMENT_AUTHORITY_RUNTIME_READONLY`;
-- I3.5 `PASS_I3_5_EXACT_AUGUST_CROSSWALK_RUNTIME_READONLY`;
-- I3.6 `PASS_I3_6_HISTORICAL_SHOPPER_PROFILE_HISTORY_REUSE_NO_REPROCESS`;
-- I3.7 `PASS_I3_7_DURABLE_LEGAL_RECEIPT_RUNTIME_READONLY`.
-
 Acceptance final:
 - `CX.data.__identityMap['shp-57d2e3769946'] === 'TYA_GT_0C0BA8856E'`;
 - identityMap size `209`;
 - agosto canonical `2`;
 - residual live `0`;
-- reload estable `true`;
-- nueva pestaña estable `true`;
-- duplicateVisitKeys `0` y duplicateShopperIds `0` preservados desde el run congelado `32192976458`; el único cambio intermedio post-compose no muta shoppers/visits y ambos Staff runs observaron `660` visitas;
-- fuzzy matching `false`.
+- reload/nueva pestaña estables;
+- duplicateVisitKeys `0` y duplicateShopperIds `0` preservados desde `32192976458`; el post-compose no muta shoppers/visits y ambos runs observaron `660` visitas;
+- I3.4/I3.5/I3.6/I3.7 PASS.
 
-Safety del run final: Historical Shopper access `0`; Shopper credential selection `0`; user creates/updates `0`; password changes/resets `0`; Auth/Firestore/HR/Rules/Storage writes `0`; Rules deploy `0`; Make/Gemini/payment `0`; Hosting/Cloud Run deploys `0`; merge/production false; credenciales/tokens expuestos false.
+Safety: Historical Shopper `0`; Shopper credential selection `0`; user/password changes `0`; Auth/Firestore/HR/Rules/Storage writes `0`; Rules/Hosting/Cloud Run deploys `0`; Make/Gemini/payment `0`; merge/production false; credenciales/tokens expuestos false.
 
-Request Staff final consumido/disabled con `status=pass_consumed` en `0ea4bb6d58ba547db2337bd367f10c32f2540e8b`. No retry.
-
-## Archivos tocados en este bloque
-
-- `.github/cxorbia-gate-requests/request.json` — autorización, reanclaje de transporte, ejecución y consumo PASS.
-- `.github/workflows/cxorbia-readonly-post-gates-runner.yml` — aislamiento de concurrencia por evento.
-- `app/docs/SOURCE-LOCK-CXORBIA-TYA.md` — I3 integral frozen.
-- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md` — avance 60/40.
-- `CAMBIOS-BACKEND.md` — este cierre.
-- `RESUMEN-PARA-CLAUDE.md` — conectado/pendiente sin parche UI.
-- `PENDIENTES-PROTOTIPO.md` — limpia pendiente I3 y traslada frontera a I4.
-- PR #7 — se sincroniza al cierre de este bloque.
+Request final consumido/disabled con `status=pass_consumed` en `0ea4bb6d58ba547db2337bd367f10c32f2540e8b`. No retry.
 
 ## Clasificación
 
 - **Reusable CXOrbia:** provider exact-link → canonical identityMap; post-compose fail-closed; aislamiento `push`/`pull_request` del runner one-shot.
-- **Exclusivo TyA/Cinépolis:** IDs focales, agosto `2/0`, evidencia HR `15/660`.
+- **Exclusivo TyA/Cinépolis:** IDs focales, agosto `2/0`, HR `15/660`.
 - **Claude/prototipo:** sin parche UI ni cambio de módulos.
-- **Academia:** sin cambio funcional visible; no se localizó un tracker Academia específico en el repo para este slice. El impacto queda documentado en este archivo, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, source lock y checkpoint: solo cierre técnico I3; sin cambios de manuales, cursos, rutas por rol ni notificaciones.
+- **Academia:** sin cambio funcional visible; no se localizó tracker Academia específico en repo para este slice; impacto registrado aquí y en continuidad viva: sin cambios de manuales, cursos, rutas por rol ni notificaciones.
 - **Sin impacto Claude inmediato:** ejecución read-only, gates y documentación.
 
 ## Avance Phase A
@@ -129,4 +111,4 @@ I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `25/25 PASS`; I4 `0/25`; I5 `0/15` = **60% 
 
 `RECOVER_CANONICAL_I4_SCOPE_FROM_ACTIVE_PLAN_LOCK__NO_EXECUTION_YET`.
 
-I4 no se inicia hasta recuperar su definición exacta desde la fuente canónica vigente. No se reinterpreta desde I3 y no se crea plan paralelo.
+I4 no se inicia hasta recuperar su definición exacta desde la fuente canónica vigente. No reabrir I3.
