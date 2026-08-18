@@ -1,72 +1,67 @@
 # CAMBIOS-BACKEND.md
 
-**Última sincronización:** 2026-08-18 12:37 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-FOCAL-ADJUDICATION-02`  
-**Estado:** `I3_11C_FOCAL_PROVIDER_PASS__TARGET_LINK_INTACT__TEMPORAL_RUNTIME_FORENSIC_NEXT__GO_LIVE_35`
+**Última sincronización:** 2026-08-18 13:13 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-RUNTIME-CONTRACT-DRIFT-03`  
+**Estado:** `I3_11C_ROOT_CAUSE_PROVEN_RUNTIME_CONTRACT_DRIFT__SOURCE_CORRECTION_NEXT__GO_LIVE_35`
 
-## Iteración 2026-08-18 — focal provider identity-link adjudication
+## Iteración 2026-08-18 — R2B temporal/runtime forensic
 
-### Preparación reusable
+### Objetivo
 
-Se añadió `tools/qa/cxorbia-i3-focal-provider-identity-link-adjudication-readonly.mjs` y se reutilizó el workflow existente `.github/workflows/cxorbia-readonly-post-gates-runner.yml`; no se creó workflow/rama/PR/candidata nuevos.
+Explicar la divergencia entre el Staff runtime (`1` provider link, `0` target links) y el focal provider PASS (`2` trusted links, target intacto), sin ninguna nueva lectura/escritura provider.
 
-El primer harness run `32171482856` falló antes de provider access porque el checkout shallow no contenía el commit viejo usado como ancestry target. Provider reads/writes `0/0`, autorización no consumida. Se corrigió el request para fijarlo al exact prior live HEAD sin cambiar el scope provider.
+### Causa raíz probada
 
-### Ejecución provider focal PASS
+`PROVEN_RUNTIME_CONTRACT_DRIFT__LEGACY_PROVIDER_IDENTITY_LINK_APPLICABILITY_FILTER`.
 
-Run `32171812808`, job `95824491418`, artifact `9337537655`, digest `sha256:4f19be2f3d8ecaa05287cdba914b51608db78c7bbb79f7341182b0d176dac394`.
+Archivos fuente revisados:
+- `app/adapters/cxorbia-provider-identity-link-runtime-v1.js`;
+- `app/adapters/cxorbia-identity-roll-forward-v1.js`;
+- `app/index-backend-dev.html`;
+- evidencias Staff, focal provider e I3.5C-2.
 
-Resultado:
-- `PASS_I3_FOCAL_PROVIDER_IDENTITY_LINK_ADJUDICATION_READONLY`;
-- adjudication `intact_and_applicable_provider_state`;
-- exact link `irl_3ed1b9a65d36c5873c1306bae1621e9d` existe;
-- exact mapping `shp-57d2e3769946 → TYA_GT_0C0BA8856E`;
-- tenant/project/source `tya/cinepolis/hr`;
-- status `materialized`, authority `tenant_adjudication`, period-independent;
-- normalized applicable/trusted `true`;
-- field diff `[]`;
-- tenant collection: `2` docs, `2` trusted normalized, `0` rejected;
-- exact doc read `1` + collection observation `1`;
-- provider writes `0`.
+Prueba reproducible:
+- target provider authoritative: status `materialized`, authorityType `tenant_adjudication`, authorityRef presente, periodIndependent;
+- contrato canónico reusable acepta `materialized` y `tenant_adjudication`;
+- runtime legacy exige `status === active` y `providerAck === true`;
+- el target se rechaza determinísticamente por `status !== active` antes de precompose/enrichment;
+- `index-backend-dev.html` carga el runtime legacy, no el roll-forward canónico.
 
-### Causa descartada / causa pendiente
+Por tanto un provider write temporal no es necesario para explicar el HOLD. No se debe reparar/recrear el link.
 
-Ya no corresponde reparar provider identity-link state: deletion, deactivation, re-scope, mutation y structural non-applicability quedan descartados como causas persistentes actuales.
+Evidencia creada:
+`app/docs/evidence/I3-11C-TEMPORAL-RUNTIME-CONTRACT-DRIFT-FORENSIC-LATEST.json`.
 
-La discrepancia a resolver es temporal/runtime: el Staff runtime previo observó `1` link y `0` target links, mientras el provider actual contiene `2` trusted links y el target exacto está intacto/aplicable.
+### Siguiente frontera
 
-Siguiente frontera:
-`I3_11C_TEMPORAL_WRITE_HISTORY_AND_RUNTIME_STALENESS_FORENSIC_NO_PROVIDER_READS`.
+`I3_11C_UNIFY_PROVIDER_IDENTITY_RUNTIME_WITH_CANONICAL_ROLL_FORWARD_SOURCE_CORRECTION_NO_PROVIDER_IO`.
+
+Corrección mínima: adapter reusable únicamente + QA contract parity. Sin módulos/core/UI workaround ni provider I/O.
 
 ## Efectos de esta iteración
 
-- GitHub source/tooling/docs: sí.
-- `/app/modules`: 0.
-- `/app/core`: 0.
-- `CX.data` interface: 0.
-- Auth reads/writes: 0/0.
-- provider reads: 2.
-- provider writes: 0.
-- Firestore data writes: 0.
-- Rules/Hosting/Cloud Run deploy: 0.
-- HR/Storage/Make/Gemini/payment writes: 0.
-- Historical Shopper access: 0.
+- GitHub source/evidence/docs reads: sí.
+- provider reads/writes: `0/0`.
+- `/app/modules`: `0`.
+- `/app/core`: `0`.
+- Auth/Firestore data/Rules/Hosting/Cloud Run/HR/Storage/Make/Gemini/payments: `0`.
+- Historical Shopper: `0`.
 - merge: false.
 - production: false.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** focal identity-link adjudicator, source-truth preflight y separación provider-state/runtime-state.
-- **Exclusivo tenant TyA:** IDs exactos y evidencia I3.11C.
-- **Exclusivo proyecto Cinépolis:** el mapping de la visita/Shopper usado como caso de validación; no hardcode global.
-- **Claude/prototipo:** sin parche inmediato; cualquier causa runtime generalizable se documentará por archivo/módulo al probarse.
-- **Academia:** sin cambio funcional todavía; conservar distinción provider state ≠ runtime observation.
-- **Sin impacto Claude inmediato:** forensic temporal/source del siguiente bloque.
+- **Reusable CXOrbia:** defecto de contrato de identidad runtime y futura paridad de trust semantics.
+- **Exclusivo tenant TyA:** IDs exactos usados como caso reproducible.
+- **Exclusivo proyecto Cinépolis:** mapping objetivo de validación, no lógica del fix.
+- **Claude/prototipo:** sin parche UI; no hardcodear el canonical target.
+- **Academia:** sin cambio funcional visible todavía.
+- **Sin impacto Claude inmediato:** corrección adapter/source siguiente.
 
 ## Avance
 
-**Formal: 35% completado / 65% pendiente.** R2 focal adjudication está 100% cerrado, pero I3 sigue 0/25 hasta PASS integral. El bloque reduce causa y evita un write provider innecesario.
+**Formal 35% completado / 65% pendiente.** R2B queda 100% cerrado operacionalmente con causa raíz probada. I3 sigue `0/25` hasta source correction + Staff runtime read-only PASS integral.
 
 ## Camino preservado
 
-R2B temporal/runtime forensic → mínimo cierre I3 → I4 visible → I5 producción → continuidad post-go-live con el mismo Atomic Gate Close.
+R3-A source correction → R3-B Staff read-only close → I3 PASS 60% → I4 visible → I5 producción → continuidad post-go-live.

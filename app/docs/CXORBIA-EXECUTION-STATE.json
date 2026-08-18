@@ -1,168 +1,87 @@
 {
   "schemaVersion": "cxorbia.execution-state.v1",
-  "syncEpoch": "CXORBIA-20260818-I3-11C-FOCAL-ADJUDICATION-02",
-  "generatedAt": "2026-08-18T12:37:00-06:00",
+  "syncEpoch": "CXORBIA-20260818-I3-11C-RUNTIME-CONTRACT-DRIFT-03",
+  "generatedAt": "2026-08-18T13:13:00-06:00",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "pullRequestState": "draft_open_no_merge",
   "base": "release/cxorbia-tya-rc-20260630",
-  "evidenceHeadBeforeSync": "611c7b82707e5a8bb1ab5cef7c66c7a51e0adb9a",
+  "evidenceHeadBeforeSync": "0b73890450c2ff3f3879f63a0678e1968167f116",
   "phaseA": {
     "formalProgressPercent": 35,
     "formalRemainingPercent": 65,
-    "score": {
-      "I1": "15/15 PASS",
-      "I2": "20/20 PASS",
-      "I3": "0/25 until integral PASS",
-      "I4": "0/25 pending",
-      "I5": "0/15 pending"
-    },
-    "currentState": "I3_11C_PROVIDER_TARGET_LINK_INTACT_APPLICABLE__PRIOR_STAFF_RUNTIME_OBSERVATION_DIVERGENCE_UNRESOLVED",
-    "currentBlock": "I3.11C temporal/runtime divergence forensic",
-    "exactFrontier": "I3_11C_TEMPORAL_WRITE_HISTORY_AND_RUNTIME_STALENESS_FORENSIC_NO_PROVIDER_READS",
-    "progressRule": "I3 integral PASS moves formal progress directly from 35 to 60; no invented fractional formal percentage. Operational sub-block completion is reported separately."
+    "score": {"I1":"15/15 PASS","I2":"20/20 PASS","I3":"0/25 until integral PASS","I4":"0/25 pending","I5":"0/15 pending"},
+    "currentState": "I3_11C_ROOT_CAUSE_PROVEN_RUNTIME_CONTRACT_DRIFT__SOURCE_CORRECTION_NEXT",
+    "currentBlock": "I3.11C provider identity runtime contract alignment",
+    "exactFrontier": "I3_11C_UNIFY_PROVIDER_IDENTITY_RUNTIME_WITH_CANONICAL_ROLL_FORWARD_SOURCE_CORRECTION_NO_PROVIDER_IO",
+    "progressRule": "I3 integral PASS moves formal progress directly from 35 to 60. Operational sub-block completion is reported separately."
   },
   "latestFocalProviderAdjudication": {
     "decision": "PASS_I3_FOCAL_PROVIDER_IDENTITY_LINK_ADJUDICATION_READONLY",
-    "adjudication": "intact_and_applicable_provider_state",
     "workflowRunId": 32171812808,
-    "jobId": 95824491418,
-    "artifactId": 9337537655,
-    "artifactDigest": "sha256:4f19be2f3d8ecaa05287cdba914b51608db78c7bbb79f7341182b0d176dac394",
-    "priorIdentityLinkId": "irl_3ed1b9a65d36c5873c1306bae1621e9d",
-    "targetLiveShopperId": "shp-57d2e3769946",
-    "expectedCanonicalShopperId": "TYA_GT_0C0BA8856E",
-    "exactDocumentExists": true,
-    "exactDocumentNormalizedApplicable": true,
-    "fieldDiff": [],
+    "targetLinkIntact": true,
+    "targetLinkStatus": "materialized",
+    "targetLinkAuthorityType": "tenant_adjudication",
     "identityLinkDocumentsObserved": 2,
     "trustedNormalizedLinks": 2,
     "rejectedLinks": 0,
     "providerReads": 2,
-    "providerWrites": 0
+    "providerWrites": 0,
+    "consumed": true
   },
   "provenCurrentBlocker": {
-    "code": "I3_11C_CURRENT_PROVIDER_STATE_VS_PRIOR_STAFF_RUNTIME_LINK_SET_DIVERGENCE",
+    "code": "PROVEN_RUNTIME_CONTRACT_DRIFT__LEGACY_PROVIDER_IDENTITY_LINK_APPLICABILITY_FILTER",
+    "location": "app/adapters/cxorbia-provider-identity-link-runtime-v1.js::applicable",
     "proven": [
-      "The exact target identity-link currently exists and is structurally unchanged from the expected I3.5C-2 materialized state.",
-      "The exact target link normalizes as applicable/trusted under the current reusable identity roll-forward contract.",
-      "The current tenant collection observation contains 2 trusted normalized links and 0 rejected links.",
-      "The prior Staff runtime observation saw 1 provider identity link and 0 target links."
+      "The target link is intact and status=materialized with tenant_adjudication authority.",
+      "The canonical cxorbia-identity-roll-forward-v1 contract accepts materialized + tenant_adjudication links.",
+      "The live provider identity runtime requires status exactly active and providerAck exactly true.",
+      "Therefore the live runtime deterministically excludes the target because materialized is not active.",
+      "index-backend-dev.html loads the legacy provider identity runtime but not the canonical identity roll-forward adapter, so Staff DEV uses the legacy predicate."
     ],
-    "disprovenAsPersistentCurrentProviderCause": [
-      "target link deletion",
-      "target link deactivation",
-      "target link project re-scope",
-      "target link source/canonical mutation",
-      "target link structural non-applicability"
+    "disprovenAsRequiredCause": [
+      "provider target-link repair",
+      "target link deletion/deactivation/re-scope/mutation",
+      "target structural non-applicability under the canonical contract",
+      "an intervening provider write as a necessary explanation"
     ],
-    "unknown": [
-      "whether provider state changed after the prior Staff runtime observation",
-      "whether the prior Staff runtime consumed a stale or incomplete provider snapshot",
-      "whether event ordering/filtering prevented the target link from entering the prior runtime set"
+    "unknownNonBlocking": [
+      "The exact fields of the second trusted provider link were not needed for root-cause proof.",
+      "Temporal provider state change cannot be categorically excluded from GitHub-only evidence, but is not necessary to explain the target failure."
     ]
   },
   "consumedAndFrozen": {
-    "I1": "PASS_NO_RERUN",
-    "I2": "PASS_NO_RERUN",
-    "I3_1_to_I3_8": "PASS_NO_RERUN",
-    "I3_9": "PASS_FROZEN_NO_RERUN",
-    "I3_10": "PASS_FROZEN_NO_RERUN",
-    "historicalShopperRun31906391682": "FROZEN_NO_CREDENTIAL_ACCESS_LOGIN_RECOVERY_RESET",
-    "targetBAdmin": "EXISTS_PASS_NO_RECREATE",
-    "request08": "CONSUMED_NO_RERUN",
-    "I3_5B": "CONSUMED_NO_RERUN",
-    "I3_5C_2": "CONSUMED_NO_RERUN",
-    "I3_8": "CONSUMED_NO_RERUN",
-    "firestoreRulesI3_11C": {
-      "status": "PASS_DIRECT_FIRESTORE_RULES_DEPLOY_VERIFIED",
-      "workflowRunId": 32163552089,
-      "consumed": true,
-      "noRedeployWithoutNewProvenRegression": true
-    },
-    "focalProviderIdentityLinkReadI3_11C": {
-      "status": "PASS_CONSUMED_NO_RERUN",
-      "workflowRunId": 32171812808,
-      "providerReads": 2,
-      "providerWrites": 0
-    },
-    "hr": "15_PERIODS_660_VISITS_NO_REIMPORT",
-    "finance": "V2_HISTORICAL_NO_REBUILD",
-    "legalV0_4": "DURABLE_PASS_NO_AUTOACCEPT"
+    "I1":"PASS_NO_RERUN","I2":"PASS_NO_RERUN","I3_1_to_I3_8":"PASS_NO_RERUN","I3_9":"PASS_FROZEN_NO_RERUN","I3_10":"PASS_FROZEN_NO_RERUN",
+    "historicalShopperRun31906391682":"FROZEN_NO_CREDENTIAL_ACCESS_LOGIN_RECOVERY_RESET","targetBAdmin":"EXISTS_PASS_NO_RECREATE","request08":"CONSUMED_NO_RERUN","I3_5B":"CONSUMED_NO_RERUN","I3_5C_2":"CONSUMED_NO_RERUN","I3_8":"CONSUMED_NO_RERUN",
+    "firestoreRulesI3_11C":{"status":"PASS_DIRECT_FIRESTORE_RULES_DEPLOY_VERIFIED","workflowRunId":32163552089,"consumed":true},
+    "focalProviderIdentityLinkReadI3_11C":{"status":"PASS_CONSUMED_NO_RERUN","workflowRunId":32171812808,"providerReads":2,"providerWrites":0},
+    "temporalRuntimeForensicI3_11C":{"status":"PASS_ROOT_CAUSE_PROVEN_NO_PROVIDER_IO","decision":"PROVEN_RUNTIME_CONTRACT_DRIFT__LEGACY_PROVIDER_IDENTITY_LINK_APPLICABILITY_FILTER"},
+    "hr":"15_PERIODS_660_VISITS_NO_REIMPORT","finance":"V2_HISTORICAL_NO_REBUILD","legalV0_4":"DURABLE_PASS_NO_AUTOACCEPT"
   },
   "authoritativeEvidence": [
+    "app/docs/evidence/I3-11C-TEMPORAL-RUNTIME-CONTRACT-DRIFT-FORENSIC-LATEST.json",
     "app/docs/evidence/I3-11C-FOCAL-PROVIDER-IDENTITY-LINK-ADJUDICATION-LATEST.json",
     "app/docs/evidence/I3-11C-STAFF-READONLY-CLOSE-LATEST.json",
-    "app/docs/evidence/ITERATION3-I3-5C2-PERIOD-INDEPENDENT-LINK-MATERIALIZATION-LATEST.json",
-    "app/docs/evidence/ITERATION3-I3-8-NEW-SHOPPER-PROVIDER-BACKED-LATEST.json"
+    "app/docs/evidence/ITERATION3-I3-5C2-PERIOD-INDEPENDENT-LINK-MATERIALIZATION-LATEST.json"
   ],
   "nextAuthorizedShape": {
-    "purpose": "Temporal GitHub/evidence forensic only: determine whether any provider identity-link write occurred between the prior Staff runtime observation and the focal provider read, and inspect runtime source/event ordering for stale/incomplete link-set behavior.",
-    "providerReads": 0,
-    "providerWrites": 0,
-    "authWrites": 0,
-    "passwordChanges": 0,
-    "passwordResets": 0,
-    "userCreates": 0,
-    "userUpdates": 0,
-    "firestoreDataWrites": 0,
-    "rulesDeploys": 0,
-    "hostingDeploys": 0,
-    "cloudRunDeploys": 0,
-    "hrWrites": 0,
-    "storageWrites": 0,
-    "makeCalls": 0,
-    "geminiCalls": 0,
-    "paymentWrites": 0,
-    "historicalShopperAccess": 0,
-    "merge": false,
-    "production": false,
-    "automaticRetry": false
+    "purpose": "Source-only correction: align cxorbia-provider-identity-link-runtime-v1 applicability/trust semantics with the canonical identity roll-forward contract while preserving its runtime API and exact-identity/no-fuzzy guarantees.",
+    "repositorySourceWrites": "allowed_current_backend_block",
+    "allowedSourcePaths": ["app/adapters/cxorbia-provider-identity-link-runtime-v1.js","tools/qa/cxorbia-provider-identity-runtime-contract-parity-gate.mjs","canonical documentation/evidence"],
+    "frontendModulesWrites": 0,"coreWrites":0,"providerReads":0,"providerWrites":0,"authWrites":0,"firestoreDataWrites":0,"rulesDeploys":0,"hostingDeploys":0,"cloudRunDeploys":0,"hrWrites":0,"storageWrites":0,"makeCalls":0,"geminiCalls":0,"paymentWrites":0,"historicalShopperAccess":0,"merge":false,"production":false
   },
-  "recoveryPlan": [
-    "Complete temporal provider-write history and runtime staleness forensic without provider reads or writes.",
-    "If no intervening provider write explains the difference, isolate runtime refresh/event-order/filtering cause in source and evidence.",
-    "Only after the cause is proven, define the minimum next read-only runtime verification or exact source correction; do not repair the provider link because it is currently intact/applicable.",
-    "Require final Staff closure to resolve shp-57d2e3769946 to TYA_GT_0C0BA8856E with 2 August visits canonical and 0 residual before I3 PASS.",
-    "Move immediately into I4 visible operational slices after I3 integral PASS.",
-    "Complete I5 build lock, preproduction, rollback, same-build E2E, explicit production authorization, cutover and smoke.",
-    "Continue post-production evolution under the same atomic source-truth and anti-loop protocol."
-  ],
+  "afterSourceCorrection": {
+    "nextGateRequiresExactAuthorization": "I3_11C_STAFF_RUNTIME_CANONICAL_IDENTITY_CLOSE_READONLY",
+    "requiredPass": {"targetResolution":"shp-57d2e3769946 -> TYA_GT_0C0BA8856E","augustCanonicalVisits":2,"augustResidualLiveVisits":0,"duplicateVisitKeys":0,"duplicateShopperIds":0},
+    "onPassFormalProgressPercent": 60,
+    "onPassFormalRemainingPercent": 40
+  },
   "sourceTruthProtocol": {
-    "canonicalLayer": [
-      "app/docs/CXORBIA-EXECUTION-STATE.json",
-      "app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md",
-      "app/docs/SOURCE-LOCK-CXORBIA-TYA.md",
-      "app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md",
-      "app/docs/ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md",
-      "CAMBIOS-BACKEND.md",
-      "RESUMEN-PARA-CLAUDE.md",
-      "PENDIENTES-PROTOTIPO.md",
-      "PR #7 body"
-    ],
-    "historyLayer": "Dated source locks, addenda, evidence and prior checkpoints remain audit history only unless the canonical index explicitly activates them.",
-    "atomicGateClose": "A provider/runtime gate is not continuable as closed until evidence, execution state, index, source lock, checkpoint, CAMBIOS, RESUMEN, PENDIENTES and PR summary are synchronized to one syncEpoch.",
-    "executedButUnsyncedState": "EXECUTED_UNSYNCED_DO_NOT_ADVANCE",
-    "mismatchState": "SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION",
-    "repeatCircuitBreaker": "The same blocker may not be retried a third time without narrowed new evidence. Two non-narrowing repetitions trigger FORENSIC_STOP.",
-    "machineVerifier": "tools/verify-cxorbia-source-truth-sync.mjs"
+    "executedButUnsyncedState":"EXECUTED_UNSYNCED_DO_NOT_ADVANCE","mismatchState":"SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION","repeatCircuitBreaker":"Two non-narrowing repetitions trigger FORENSIC_STOP.","machineVerifier":"tools/verify-cxorbia-source-truth-sync.mjs"
   },
   "productArchitecture": {
-    "platformGoal": "Commercializable multi-tenant no-code field operations and mystery shopping platform",
-    "firstTenant": "tya",
-    "firstProject": "cinepolis",
-    "hardcodingRule": "TyA and Cinepolis are validation instances, never global product logic.",
-    "newProjectOnboardingTarget": "configure source -> map -> dry-run -> validate -> activate",
-    "roadmapSourceTargets": ["Google Sheets","Excel","CSV","API","platform-native","manual import","external link/provider"],
-    "identityRule": "Use tenantId, projectId, visitId/hrRowId, shopperId and exact crosswalks; never deduplicate by visual/name/email similarity alone.",
-    "frontendBoundary": "Backend defines reusable contracts/adapters. No-code Project Builder and UI changes are documented for Claude/prototype; backend does not silently patch modules.",
-    "academiaBoundary": "Manuals, courses, role routes and notifications evolve with tenant/project configuration and are versioned with the operational product."
+    "platformGoal":"Commercializable multi-tenant no-code field operations and mystery shopping platform","firstTenant":"tya","firstProject":"cinepolis","hardcodingRule":"TyA and Cinepolis are validation instances, never global product logic.","newProjectOnboardingTarget":"configure source -> map -> dry-run -> validate -> activate","roadmapSourceTargets":["Google Sheets","Excel","CSV","API","platform-native","manual import","external link/provider"],"frontendBoundary":"No backend patch to app/modules or app/core; reusable adapter correction only.","academiaBoundary":"No functional user-flow change in this source correction; update Academia only if later runtime behavior changes user-visible operation."
   },
-  "environments": {
-    "dev": "ACTIVE_I3_11C_TEMPORAL_RUNTIME_DIVERGENCE_FORENSIC",
-    "preproduction": "NOT_STARTED_I5",
-    "production": "UNCHANGED_NOT_AUTHORIZED",
-    "postProductionProtocol": "Same canonical state, atomic close and machine verifier continue after go-live."
-  }
+  "environments": {"dev":"I3_11C_SOURCE_CORRECTION_PENDING","preproduction":"NOT_STARTED_I5","production":"UNCHANGED_NOT_AUTHORIZED"}
 }

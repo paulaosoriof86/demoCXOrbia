@@ -1,50 +1,36 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última sincronización:** 2026-08-18 12:37 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-FOCAL-ADJUDICATION-02`  
-**Estado:** `I3_11C_PROVIDER_LINK_INTACT__TEMPORAL_RUNTIME_FORENSIC_NEXT__NO_FRONTEND_WORKAROUND__GO_LIVE_35`
+**Última sincronización:** 2026-08-18 13:13 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-RUNTIME-CONTRACT-DRIFT-03`  
+**Estado:** `I3_11C_ROOT_CAUSE_PROVEN__ADAPTER_SOURCE_CORRECTION_NEXT__NO_UI_WORKAROUND__GO_LIVE_35`
 
-## Pendiente vivo único antes de continuar I3
+## Pendiente vivo único I3
 
-`I3_11C_TEMPORAL_WRITE_HISTORY_AND_RUNTIME_STALENESS_FORENSIC_NO_PROVIDER_READS`.
+`I3_11C_UNIFY_PROVIDER_IDENTITY_RUNTIME_WITH_CANONICAL_ROLL_FORWARD_SOURCE_CORRECTION_NO_PROVIDER_IO`.
 
-La lectura focal provider ya cerró PASS:
-- exact target link existe;
-- mapping `shp-57d2e3769946 → TYA_GT_0C0BA8856E` intacto;
-- normalized applicable/trusted;
-- field diff `[]`;
-- provider actual: 2 trusted normalized links, 0 rejected;
-- provider writes 0.
+Causa probada:
+`PROVEN_RUNTIME_CONTRACT_DRIFT__LEGACY_PROVIDER_IDENTITY_LINK_APPLICABILITY_FILTER`.
 
-No es un pendiente UI y **no requiere reparar el provider link**. Debe explicarse por qué el Staff runtime previo observó 1 link y 0 target links.
+No es provider state ni UI:
+- target provider intacto `materialized` + `tenant_adjudication`;
+- contrato canónico lo acepta;
+- runtime legacy solo acepta `active` + `providerAck=true`;
+- target se filtra determinísticamente;
+- backend-dev carga ese runtime legacy.
 
-## R2B — forensic siguiente
+## Corrección requerida
 
-Solo GitHub/source/evidence, provider reads `0`:
-- cronología Staff HOLD → focal PASS;
-- buscar cualquier ejecución con capacidad/write sobre `shopperIdentityLinks` en el intervalo;
-- inspeccionar identidad/provider runtime load order;
-- refresh/bus events/cache/signature/filtering;
-- determinar si hubo provider state posterior o runtime stale/incomplete;
-- cerrar `proven/disproven/unknown` y el mínimo siguiente gate.
+- `app/adapters/cxorbia-provider-identity-link-runtime-v1.js`: alinear trust/applicability con contrato roll-forward reusable, preservando API y exact matching;
+- agregar QA contract parity para evitar nueva divergencia;
+- no `/app/modules`, no `/app/core`, no provider I/O/deploy.
+
+Después, gate Staff read-only exacto para confirmar `shp-57d2e3769946 → TYA_GT_0C0BA8856E`, agosto `2` canonical / `0` residual y duplicados `0`. Solo ese PASS cierra I3 y mueve formal a 60%.
 
 ## Frozen / no reprocesar
 
-I1/I2/I3.1→I3.10 según PASS; Historical Shopper; TARGET_B Admin; request08; I3.5B/I3.5C-2/I3.8; Rules I3.11C; focal provider read `32171812808`; HR 15/660; Finance V2/historical; legal V0.4.
+I1/I2/I3.1→I3.10; Historical Shopper; TARGET_B Admin; request08; I3.5B/I3.5C-2/I3.8; Rules I3.11C; focal provider read; R2B forensic; HR 15/660; Finance V2/historical; legal V0.4.
 
 No Admin/Shopper workaround, password/reset histórico, HR reimport, Finance rebuild, Rules redeploy ni provider identity-link repair.
-
-## Criterio de cierre I3
-
-Después de probar causa y aplicar solo el mínimo cambio/validación autorizado:
-- `shp-57d2e3769946 → TYA_GT_0C0BA8856E` en runtime Staff;
-- agosto canonical `2`;
-- residual live `0`;
-- duplicados `0`;
-- invariantes preservadas;
-- I3.9/I3.10 reutilizados sin rerun.
-
-I3 integral PASS → formal **60%**.
 
 ## I4 — pendientes visibles
 
@@ -65,13 +51,11 @@ Project Builder/config: source, mapping, cuestionario/provider/link, documentos/
 
 ## Backlog reusable Claude/prototipo
 
-TyA = primer tenant. Cinépolis = primer proyecto. Cualquier hallazgo generalizable pasa a contrato reusable y handoff por archivo/módulo; nunca hardcode global.
-
-Fuentes objetivo: Sheets, Excel, CSV, API, plataforma nativa, import manual, proveedor/link externo. Alta objetivo: `crear → configurar source → mapear → dry-run → validar → activar → monitorear`.
+TyA = primer tenant. Cinépolis = primer proyecto. Cualquier hallazgo generalizable pasa a contrato reusable; no hardcode global. Fuentes objetivo: Sheets, Excel, CSV, API, plataforma nativa, import manual, proveedor/link externo. Alta objetivo: `crear → configurar source → mapear → dry-run → validar → activar → monitorear`.
 
 ## Academia
 
-Cursos/manuales/rutas/notificaciones/certificación se actualizan en paralelo a cada slice funcional.
+Cursos/manuales/rutas/notificaciones/certificación se actualizan en paralelo a cada slice funcional. R2B no cambia todavía una acción visible del usuario.
 
 ## I5
 
@@ -79,4 +63,4 @@ Freeze sin P0 → SHA/manifest/build-lock/verifier → preproducción → rollba
 
 ## Avance
 
-**Formal 35% / 65% pendiente.** R2 focal provider adjudication 100% cerrado; R2B es el siguiente bloque operacional. No se suman puntos formales hasta I3 integral PASS.
+**Formal 35% / 65% pendiente.** R2B root-cause forensic cerrado; R3-A source correction es el siguiente bloque. No se suman puntos formales hasta I3 integral PASS.

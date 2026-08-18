@@ -1,8 +1,8 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Última sincronización:** 2026-08-18 12:37 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-FOCAL-ADJUDICATION-02`  
-**Estado:** `SOURCE_TRUTH_SYNCHRONIZED__I3_11C_PROVIDER_LINK_INTACT__RUNTIME_OBSERVATION_DIVERGENCE_FORENSIC__GO_LIVE_35__NO_PRODUCTION`
+**Última sincronización:** 2026-08-18 13:13 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-RUNTIME-CONTRACT-DRIFT-03`  
+**Estado:** `SOURCE_TRUTH_SYNCHRONIZED__I3_11C_ROOT_CAUSE_PROVEN_RUNTIME_CONTRACT_DRIFT__SOURCE_CORRECTION_NEXT__GO_LIVE_35__NO_PRODUCTION`
 
 ## Orden de lectura obligatorio
 
@@ -14,7 +14,7 @@
 6. evidencia activa indicada por `CXORBIA-EXECUTION-STATE.json`
 7. PR #7 vivo
 
-Permanecen vigentes como marco maestro las reglas maestras, Academia, patrones reutilizables, antidesvío y ejecución directa/empalmes declarados activos por este proyecto. Los source locks/addenda fechados son historia salvo activación expresa desde este índice.
+Marcos maestros vigentes: reglas maestras, Academia profunda, patrones reutilizables, antidesvío y empalme directo/file-aware. Los locks/addenda fechados son historia salvo activación expresa desde este índice.
 
 ## Carril único
 
@@ -24,41 +24,42 @@ Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/ope
 
 I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `0/25` hasta PASS integral; I4 `0/25`; I5 `0/15` = **35% completado / 65% pendiente**. I3 integral PASS → **60%**.
 
-## Resultado nuevo — focal provider identity-link read
+## R2 focal provider — PASS / CONSUMED
 
-Run `32171812808`, job `95824491418`, artifact `9337537655`, digest `sha256:4f19be2f3d8ecaa05287cdba914b51608db78c7bbb79f7341182b0d176dac394`.
+Run `32171812808`: target link intacto/aplicable en provider; `2` trusted normalized links, `0` rejected; provider writes `0`. No reparar provider.
 
-`PASS_I3_FOCAL_PROVIDER_IDENTITY_LINK_ADJUDICATION_READONLY`:
-- `irl_3ed1b9a65d36c5873c1306bae1621e9d` existe;
-- conserva `tya / cinepolis / hr / shp-57d2e3769946 → TYA_GT_0C0BA8856E`;
-- status `materialized`, authority `tenant_adjudication`, period-independent;
-- normaliza como applicable/trusted;
-- field diff `[]`;
-- colección actual: `2` documentos, `2` trusted normalized links, `0` rejected;
-- provider reads `2`; provider writes `0`.
+## R2B temporal/runtime forensic — PASS CAUSA RAÍZ PROBADA
 
-Por tanto se descartan como causa persistente actual: deleted, deactivated, re-scoped, mutated y structurally non-applicable. **No se autoriza ni se justifica reparar ese link.**
+Evidencia activa: `app/docs/evidence/I3-11C-TEMPORAL-RUNTIME-CONTRACT-DRIFT-FORENSIC-LATEST.json`.
 
-La contradicción viva es temporal/runtime: el Staff runtime anterior vio `1` link y `0` target links; el provider focal actual ve `2` trusted links y el target intacto.
+La contradicción Staff/provider ya tiene causa suficiente y reproducible en source:
+- target `irl_3ed1b9a65d36c5873c1306bae1621e9d` está `materialized`, authority `tenant_adjudication`, period-independent y el contrato canónico lo acepta;
+- `app/adapters/cxorbia-provider-identity-link-runtime-v1.js` exige `status === active` y `providerAck === true`;
+- por ser `materialized`, el target es rechazado determinísticamente por el runtime legacy antes de precompose/enrichment;
+- `app/index-backend-dev.html` carga ese runtime legacy y no carga `cxorbia-identity-roll-forward-v1.js`.
 
-El primer intento de harness run `32171482856` quedó HOLD antes de provider access por shallow Git history; provider reads/writes `0/0`. No consumió el gate. El push corregido consumió la única lectura provider autorizada.
+Causa raíz: `PROVEN_RUNTIME_CONTRACT_DRIFT__LEGACY_PROVIDER_IDENTITY_LINK_APPLICABILITY_FILTER`.
+
+Un write temporal de provider ya no es necesario para explicar el fallo. Provider read/write de este forensic: `0/0`.
 
 ## Frozen / no reprocesar
 
-I1/I2; I3.1→I3.8; I3.9/I3.10; Historical Shopper `31906391682`; TARGET_B Admin; request08; I3.5B/I3.5C-2/I3.8; Rules I3.11C run `32163552089`; focal provider read run `32171812808`; HR 15/660; Finance V2/historical; legal V0.4.
+I1/I2; I3.1→I3.10; Historical Shopper `31906391682`; TARGET_B Admin; request08; I3.5B/I3.5C-2/I3.8; Rules I3.11C `32163552089`; focal provider read `32171812808`; R2B forensic; HR 15/660; Finance V2/historical; legal V0.4.
 
 ## Siguiente frontera exacta
 
-`I3_11C_TEMPORAL_WRITE_HISTORY_AND_RUNTIME_STALENESS_FORENSIC_NO_PROVIDER_READS`
+`I3_11C_UNIFY_PROVIDER_IDENTITY_RUNTIME_WITH_CANONICAL_ROLL_FORWARD_SOURCE_CORRECTION_NO_PROVIDER_IO`
 
-Objetivo: usar únicamente GitHub/source/evidence para establecer si hubo algún write del identity-link entre el Staff run previo y la lectura focal, y revisar refresh/event-order/filtering del runtime. Provider reads `0`, provider writes `0`, Auth/Firestore-data/Rules/HR/Storage/Make/Gemini/payments/deploy/merge/production `0`.
+Alcance: corregir únicamente el adapter reusable de identidad runtime y agregar un gate de paridad de contrato; preservar API, exact matching, multi-tenant y cero fuzzy matching. No `/app/modules`, no `/app/core`, no provider I/O, no Auth/Firestore data/Rules/HR/Storage/Make/Gemini/pagos/deploy/merge/producción.
 
-## Anti-loop / source truth
+Después de esa corrección, el siguiente runtime read-only sí requerirá gate exacto para demostrar `shp-57d2e3769946 → TYA_GT_0C0BA8856E`, agosto canonical `2`, residual `0`, duplicados `0`. Si PASS integral, I3 → **60%**.
 
-Si HEAD/evidence contradicen la capa canónica: `SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION`. Gate ejecutado pero no sincronizado: `EXECUTED_UNSYNCED_DO_NOT_ADVANCE`. Dos repeticiones sin reducción causal: `FORENSIC_STOP`. Verificador: `tools/verify-cxorbia-source-truth-sync.mjs`.
+## Anti-loop
+
+Mismatch evidence/docs → `SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION`. Ejecución sin sincronización → `EXECUTED_UNSYNCED_DO_NOT_ADVANCE`. Dos repeticiones sin reducción causal → `FORENSIC_STOP`. Verificador: `tools/verify-cxorbia-source-truth-sync.mjs`.
 
 ## Camino restante
 
-Tras cerrar I3: I4 en capacidades visibles (documentos/certificación/disponibles/postulación/asignación; agenda/ejecución/cuestionario/revisión; HR bidireccional; finanzas/liquidaciones/pagos; multi-proyecto/no-code; roles/notificaciones/integraciones/Academia). I5: freeze/build-lock/preprod/rollback/same-build E2E/autorización producción/cutover/smoke/baseline.
+I4 visible: documentos/certificación/disponibles/postulación/asignación; agenda/ejecución/cuestionario/revisión; HR bidireccional; finanzas/liquidaciones/pagos; multi-proyecto/no-code; roles/notificaciones/integraciones/Academia. I5: freeze/build-lock/preprod/rollback/same-build E2E/gate producción/cutover/smoke/baseline.
 
-TyA sigue siendo el primer tenant y Cinépolis el primer proyecto normal configurable, nunca lógica global. Fuentes objetivo: Sheets/Excel/CSV/API/plataforma/import/link externo. Alta objetivo: `configurar → mapear → dry-run → validar → activar`.
+TyA = primer tenant; Cinépolis = primer proyecto normal configurable, nunca lógica global. Fuentes objetivo: Sheets/Excel/CSV/API/plataforma/import/link externo. Alta objetivo: `configurar → mapear → dry-run → validar → activar`.

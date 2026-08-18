@@ -1,69 +1,72 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última sincronización:** 2026-08-18 12:37 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-FOCAL-ADJUDICATION-02`  
-**Estado:** `NO_FRONTEND_PATCH__TARGET_PROVIDER_LINK_INTACT__RUNTIME_TEMPORAL_FORENSIC_NEXT__GO_LIVE_35`
+**Última sincronización:** 2026-08-18 13:13 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-RUNTIME-CONTRACT-DRIFT-03`  
+**Estado:** `NO_FRONTEND_PATCH__ROOT_CAUSE_RUNTIME_CONTRACT_DRIFT__ADAPTER_SOURCE_CORRECTION_NEXT__GO_LIVE_35`
 
 ## Estado Phase A
 
 I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `0/25 formal` hasta cierre integral; I4 `0/25`; I5 `0/15` = **35% / 65%**.
 
-I3.9/I3.10 frozen PASS. Rules I3.11C PASS/consumed. Focal provider identity-link read PASS/consumed.
+I3.9/I3.10 frozen PASS. Rules I3.11C PASS/consumed. Focal provider read PASS/consumed. R2B forensic PASS con causa raíz.
 
-## Hallazgo nuevo relevante para frontend
+## Hallazgo reusable probado
 
-No existe evidencia actual de que el target identity link esté roto en Firebase. Run `32171812808` probó:
-- link exacto existente;
-- `shp-57d2e3769946 → TYA_GT_0C0BA8856E`;
-- `tya/cinepolis/hr`;
-- `materialized`, `tenant_adjudication`, period-independent;
-- normalized applicable/trusted;
-- field diff vacío;
-- provider collection actual: 2 trusted links, 0 rejected.
+No es una falla UI ni un link provider roto.
 
-Por tanto **no crear UI workaround, no hardcodear canonical ID y no compensar desde módulos**. El problema pendiente es explicar por qué el Staff runtime previo vio solo 1 link y 0 target links.
+`app/adapters/cxorbia-provider-identity-link-runtime-v1.js` usa un predicate legacy que solo acepta `status === active` + `providerAck === true`.
+
+El contrato reusable `app/adapters/cxorbia-identity-roll-forward-v1.js` acepta estados authoritative `active | confirmed | approved | materialized` y authorities confiables, incluida `tenant_adjudication` con authorityRef.
+
+El target real está `materialized` + `tenant_adjudication`, por lo que el runtime legacy lo elimina del set aunque el provider y el contrato canónico lo consideran válido. `app/index-backend-dev.html` carga el runtime legacy.
+
+Causa: `PROVEN_RUNTIME_CONTRACT_DRIFT__LEGACY_PROVIDER_IDENTITY_LINK_APPLICABILITY_FILTER`.
+
+## Qué NO hacer en frontend
+
+- no workaround UI;
+- no hardcodear `TYA_GT_0C0BA8856E`;
+- no recrear Admin/Shopper;
+- no compensar desde módulos;
+- no cambiar copy para esconder el HOLD.
 
 ## Siguiente bloque backend
 
-`I3_11C_TEMPORAL_WRITE_HISTORY_AND_RUNTIME_STALENESS_FORENSIC_NO_PROVIDER_READS`.
+`I3_11C_UNIFY_PROVIDER_IDENTITY_RUNTIME_WITH_CANONICAL_ROLL_FORWARD_SOURCE_CORRECTION_NO_PROVIDER_IO`.
 
-Se revisarán chronology/source/event-order/refresh/filtering sin provider read/write. Solo si se prueba un defecto reusable en runtime se emitirá handoff Claude por archivo/módulo y criterios de aceptación.
+Se toca únicamente adapter reusable + QA parity. `/app/modules` y `/app/core` permanecen intactos.
 
 ## Preservar
 
 - interfaz exacta `CX.data`;
-- `/app/modules` y `/app/core` sin parches backend ad hoc;
-- identidad exacta/crosswalk, no fuzzy matching;
+- identidad exacta/crosswalk; cero fuzzy/name/email/phone matching;
+- multi-tenant `tenantId/projectId`;
 - Staff/Admin existente;
 - Historical Shopper frozen;
-- I3.9/I3.10 frozen;
-- multi-tenant `tenantId/projectId`;
-- Cinépolis proyecto configurable, nunca global.
+- Cinépolis proyecto configurable, no global.
 
 ## Producto no-code/comercializable
 
-Configuración por tenant/proyecto debe evolucionar para país/moneda/timezone/locale; source/mapping; documentos/reglas/certificación; disponibilidad/postulación/asignación; agenda/reprogram/cancel; cuestionarios; ejecución/evidencias/revisión; pagos/liquidación; roles/scopes/notificaciones; integraciones/gates; privacidad y Academia.
+El fix es reusable CXOrbia. Configuración por tenant/proyecto debe seguir cubriendo país/moneda/timezone/locale; source/mapping; documentos/reglas/certificación; disponibilidad/postulación/asignación; agenda/reprogram/cancel; cuestionarios; ejecución/evidencias/revisión; pagos/liquidación; roles/scopes/notificaciones; integraciones/gates; privacidad y Academia.
 
-Fuentes objetivo: Google Sheets, Excel, CSV, API, CXOrbia nativo, import manual y plataforma/proveedor/link externo.
+Fuentes objetivo: Google Sheets, Excel, CSV, API, CXOrbia nativo, import manual y plataforma/proveedor/link externo. Project Builder: `crear → configurar source → mapear → dry-run → validar → activar → monitorear`.
 
-Project Builder objetivo: `crear proyecto → configurar source → mapear → dry-run → validar → activar → monitorear`.
-
-## I4 que llegará a Claude después de I3
+## I4 después de I3
 
 1. documentos/certificación/disponibles/postulación/asignación;
 2. agenda/reprogram/cancelación/ejecución/evidencias/cuestionario/submit/review;
 3. Finanzas/liquidaciones/pagos + multi-proyecto/configuración;
-4. roles/scopes/notificaciones/integraciones y HR bidireccional;
-5. estados vacíos/conflictos/revisión humana coherentes con autoridad backend.
+4. roles/scopes/notificaciones/integraciones + HR bidireccional;
+5. estados vacíos/conflictos/revisión humana.
 
 ## Academia
 
-Cualquier cambio funcional posterior que altere acciones, roles, certificación, agenda, evidencias, pagos o configuración debe actualizar cursos/manuales/rutas/notificaciones en el mismo bloque.
+Sin cambio funcional visible en R2B. Si el runtime correction cambia comportamiento visible confirmado, actualizar manuales/cursos/rutas/notificaciones junto al cierre funcional.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** provider-state/runtime-state separation y focal identity adjudication.
-- **Exclusivo TyA/Cinépolis:** IDs exactos de QA únicamente.
-- **Claude/prototipo:** sin cambio UI inmediato; handoff solo si R2B prueba causa reusable.
-- **Academia:** sin cambio funcional inmediato.
-- **Sin impacto Claude inmediato:** forensic temporal/runtime siguiente.
+- **Reusable CXOrbia:** identity runtime/canonical contract parity.
+- **Exclusivo TyA/Cinépolis:** IDs exactos QA.
+- **Claude/prototipo:** no cambio UI inmediato.
+- **Academia:** sin cambio funcional todavía.
+- **Sin impacto Claude inmediato:** adapter source correction.
