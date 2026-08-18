@@ -11,6 +11,7 @@
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "productTargetHeadSha": "474e7ca97cab367f4a26757a7ab448d5255482f8",
+  "executionTargetHeadSha": "edf0e640f831061412399c30d3896126748e0aa6",
   "targetProject": "cxorbia-backend-dev",
   "tenantId": "tya",
   "projectId": "cinepolis",
