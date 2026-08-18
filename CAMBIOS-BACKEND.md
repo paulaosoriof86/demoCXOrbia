@@ -1,93 +1,90 @@
 # CAMBIOS-BACKEND.md
 
-**Última sincronización:** 2026-08-18 14:20 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-R3B-HOLD-DEV-HOSTING-PARITY-05`  
-**Estado:** `R3B_STAFF_RUNTIME_HOLD_CONSUMED__DEV_HOSTING_MATERIALIZATION_AUTH_NEXT__GO_LIVE_35`
+**Última sincronización:** 2026-08-18 16:18 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-STAFF-PUSH-NAVIGATION-HOLD-07`  
+**Estado:** `STAFF_ONE_SHOT_CONSUMED__NAVIGATION_TIMEOUT_BEFORE_APP_STATE__SOURCE_ONLY_HARNESS_FIX_NEXT__GO_LIVE_35`
 
-## Iteración R3-B — Staff/Admin canonical identity close
+## I3.11C — estado vigente
 
-### Preparación
+### R3-C Hosting DEV — PASS y congelado
 
-Se reutilizó el workflow existente `CXORBIA_READONLY_POST_GATES_RUNNER`; no se creó rama, PR, candidata ni workflow nuevo.
+Run `32185940998`, job `95869431778`, artifact `9342450216`, digest `sha256:03ccb5a71af356eade7eb498fc766af1fb4f266bb12397d2bff1f865714a09bb`.
 
-Se ajustó el runner reutilizable `tools/qa/tya-i3-staff-authority-readonly.mjs` para:
-- vincular la autorización exacta de R3-B;
-- ejecutar primero `tools/qa/cxorbia-provider-identity-runtime-contract-parity-gate.mjs`;
-- reutilizar las Rules I3.11C ya verificadas sin redeploy;
-- seleccionar únicamente Staff/Admin canónico existente;
-- mantener Historical Shopper fuera de alcance;
-- impedir password changes/resets, user creates/updates y automatic retry.
+Resultado: `PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY`.
 
-El primer transporte produjo run `32179904771` sobre evento `pull_request`; fue un preflight de no ejecución (`staffReadonlyExecuted=false`, parity no ejecutada, provider/runtime no consumido). Se reemitió el mismo gate por fast-forward directo de la rama viva, sin rama/PR nuevos.
+Se materializó exactamente una vez el source corregido en Firebase Hosting DEV. El adapter remoto quedó byte-idéntico y con contrato `materialized + tenant_adjudication`, `fuzzyMatching:false`. Provider/Auth/Firestore-data/Rules/HR/Storage/Make/Gemini/payment writes `0`; Historical Shopper `0`; Cloud Run `0`; Staff runtime `0`; merge/production false.
 
-### Ejecución real
+### Staff/Admin post-Hosting — ejecución única consumida
 
-Run `32181137350`, job `95854174365`, artifact `9340865585`, digest `sha256:4485e03cb17d4dcb82915049fe8d2895ba099baff62d08b5fc2ac89cf1dd1ab3`.
+Autorización exacta de Paula materializada en commit `cabca0da333e498faaa05df5112b6dbe5083234f`.
 
-Resultado global: `HOLD_READONLY_POST_GATES`.
+Push real: run `32188716203`, job `95878165921`, artifact `9343461375`, digest `sha256:e43814d730824a010930f8ebaa53fa5aabc417860297b7d9651bee16769340c1`.
 
-PASS antes del navegador:
-- exact request/single-use/source lock;
+El run sí ejecutó una sola lectura Staff/Admin. El duplicado `pull_request` posterior no ejecutó Staff y no altera esta adjudicación.
+
+Preflight PASS:
+- request/single-use/target/source exactos;
 - `PASS_PROVIDER_IDENTITY_RUNTIME_CANONICAL_CONTRACT_PARITY`;
-- Rules previas verificadas reutilizadas;
-- Rules deploys actuales `0`;
-- private credential Staff-only;
-- I3.6 Historical Shopper frozen reuse PASS.
+- target materialized aplicable;
+- identidad técnica exacta, sin fuzzy;
+- Rules verificadas previas reutilizadas, deploy actual `0`;
+- credencial exclusivamente Staff/Admin existente;
+- Historical Shopper fuera de alcance.
 
-Runtime:
-- Staff/Admin DEV ejecutado una sola vez;
-- base `FAIL_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY`;
-- stable failure `AUTH_RUNTIME_TIMEOUT`;
-- app/membership/data/authority/router montados;
-- provider runtime link count `1`;
-- target link count `0`;
-- `shp-57d2e3769946` no resolvió a `TYA_GT_0C0BA8856E`;
-- agosto canonical `0`, residual live `2`;
-- duplicateVisitKeys `0`, duplicateShopperIds `0`.
+### Único bloqueo reproducible
 
-El lastState demuestra que postulación y legal permanecen correctos: postulation authority ready, platform posts `8`, HR assignments `15`, HR assignments no son postulaciones; legal loaded/provider authority true y receipt `accepted/human_ui`. Los FAIL I3.4/I3.7 del resumen son downstream del timeout base y no se registran como nuevas regresiones funcionales.
+`STAFF_RUNTIME_NAVIGATION_DOMCONTENTLOADED_TIMEOUT_BEFORE_APP_STATE`.
 
-### Causa reducida
+El navegador se detuvo en la primera instrucción de navegación:
 
-`I3_11C_CORRECTED_SOURCE_NOT_EFFECTIVE_IN_REMOTE_DEV__HOSTING_MATERIALIZATION_REQUIRED`.
+`page.goto('https://cxorbia-backend-dev.web.app/', { waitUntil: 'domcontentloaded', timeout: 60000 })`
 
-El source corregido pasa el parity gate, pero R3-A y R3-B realizaron Hosting deploys `0`. La prueba se ejecutó contra `https://cxorbia-backend-dev.web.app`, cuyo comportamiento sigue siendo compatible con el filtro pre-corrección. El provider focal ya probó el target link intacto/aplicable; no corresponde repararlo.
+El artifact registra `lastState=null`. Por tanto no se alcanzó login ni montaje de la aplicación y no existe observación válida de `shp-57d2e3769946 -> TYA_GT_0C0BA8856E` ni de las dos visitas de agosto en este run.
 
-Se conserva como unknown únicamente el byte/hash exacto del adapter actualmente servido, porque el browser probe verificó HTTP 200 y marcadores generales pero no exportó fingerprint semántico de la corrección.
+Los resúmenes FAIL de I3.4, I3.5 e I3.7 son downstream del fallo base de navegación y quedan **no adjudicados**; no constituyen regresiones nuevas. I3.6 Historical Shopper reuse permaneció PASS.
 
-## Efectos de esta iteración
+No se deben interpretar como datos reales los defaults `targetCanonicalActual=null`, canonical `0` o residual `0`, porque la aplicación nunca llegó a estado observable.
 
-- GitHub source/tooling/docs: sí.
-- `/app/modules`: `0`.
-- `/app/core`: `0`.
-- interfaz `CX.data`: `0`.
-- Staff runtime reads: sí, read-only.
-- provider writes: `0`.
-- Auth writes: `0`.
-- password changes/resets: `0/0`.
-- Firestore data writes: `0`.
-- Rules deploys: `0`.
-- Hosting/Cloud Run deploys: `0/0`.
-- HR/Storage/Make/Gemini/payment writes: `0`.
+### Seguridad del run
+
 - Historical Shopper access: `0`.
+- Shopper credential selection: `0`.
+- user creates/updates: `0/0`.
+- password changes/resets: `0/0`.
+- Auth/Firestore/HR/Rules/Storage writes: `0`.
+- Make/Gemini/payment calls-writes: `0`.
+- Hosting/Cloud Run deploys: `0/0`.
+- credentials/tokens exposed: false.
 - merge: false.
 - production: false.
 
-## Clasificación
+El request quedó deshabilitado y consumido en commit `59ccc567aa2aba6bad536b04569fdb4f127d1a29`; no existe permiso para retry automático.
 
-- **Reusable CXOrbia:** contract parity gate, distinction source-corrected vs remote-materialized, deploy-parity requirement.
-- **Exclusivo TyA:** IDs exactos de QA y evidencia R3-B.
-- **Exclusivo Cinépolis:** target de validación, no lógica del fix.
-- **Claude/prototipo:** sin parche UI; no hardcodear canonical target ni compensar desde módulos.
-- **Academia:** sin cambio visible todavía.
-- **Sin impacto Claude inmediato:** siguiente bloque Hosting DEV backend.
+## Causa raíz metodológica/técnica acotada
 
-## Avance
-
-**Formal: 35% completado / 65% pendiente.** R3-B consumido en HOLD; no se suman puntos de I3.
+El smoke Staff usa `waitUntil:'domcontentloaded'` como condición de entrada. `app/index-backend-dev.html` carga recursos externos síncronos antes de `app.js` —incluidos Firebase compat, SheetJS CDN y Mammoth CDN—, por lo que `DOMContentLoaded` depende de que esos recursos terminen. El run no capturó qué recurso quedó pendiente; por eso no corresponde reparar provider, Admin, identidad, visitas ni Hosting.
 
 ## Siguiente bloque exacto
 
-`NEW_AUTH_REQUIRED_I3_11C_DEV_HOSTING_MATERIALIZE_CORRECTED_IDENTITY_RUNTIME_NO_PROVIDER_DATA_WRITES`.
+`SOURCE_ONLY_STAFF_NAVIGATION_HARNESS_HARDENING_NO_PROVIDER`.
 
-Máximo un Hosting deploy DEV + verificación de paridad remota; cero provider data/Auth/Firestore-data/Rules/HR/Storage/Make/Gemini/payment writes, cero Historical Shopper, cero Cloud Run/merge/production. El Staff final se autorizará por separado después de Hosting PASS.
+Alcance:
+- corregir únicamente el harness QA reutilizable para separar navegación HTTP de readiness visible de la aplicación;
+- conservar fail-closed y capturar diagnóstico de navegación si vuelve a fallar;
+- source/static checks únicamente;
+- Staff/provider reads `0`;
+- writes/deploy/merge/production `0`.
+
+Después de source PASS se requerirá una nueva autorización exacta para **una** lectura Staff/Admin que observe finalmente canonical + agosto, sin repetir R3-A/R3-B/R3-C ni Historical Shopper.
+
+## Clasificación
+
+- **Reusable CXOrbia:** hardening del harness de navegación y separación entre transport readiness y runtime readiness.
+- **Exclusivo TyA:** IDs de shopper/visitas usados como target del gate.
+- **Claude/prototipo:** no parche UI; no compensar desde módulos.
+- **Academia:** sin cambio funcional en este bloque.
+- **Sin impacto Claude inmediato:** corrección del harness QA.
+
+## Avance
+
+**35% completado / 65% pendiente.** I3 no suma hasta PASS integral.
