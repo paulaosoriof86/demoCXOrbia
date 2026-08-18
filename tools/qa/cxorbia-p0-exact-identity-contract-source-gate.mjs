@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import vm from 'node:vm';
+import { spawnSync } from 'node:child_process';
 
 const read=path=>fs.readFileSync(path,'utf8');
 const expected=[
@@ -28,6 +29,18 @@ check('auth_claim_uses_canonical_profile_id',activation.includes('desiredClaims:
 const composer=read('app/adapters/tya-cumulative-read-model-v2.js');
 check('runtime_composer_consumes_shared_contract',composer.includes('CX_EXACT_IDENTITY_CONTRACT')&&composer.includes('buildCanonicalProfileIndex'));
 check('runtime_composer_surfaces_contract_diagnostics',composer.includes('identityContractVersion')&&composer.includes('canonicalProfileIndexConflicts'));
+
+const providerParity=spawnSync(process.execPath,['tools/qa/cxorbia-provider-identity-runtime-contract-parity-gate.mjs'],{encoding:'utf8'});
+let providerParityResult=null;
+try{providerParityResult=JSON.parse(String(providerParity.stdout||'').trim());}catch{}
+check(
+  'provider_runtime_exact_identity_map_export_parity',
+  providerParity.status===0&&providerParityResult?.decision==='PASS_PROVIDER_IDENTITY_RUNTIME_CANONICAL_CONTRACT_PARITY'&&
+    providerParityResult?.exactIdentityMapExport===true&&providerParityResult?.conflictOverwrite===false&&
+    providerParityResult?.canonicalPresenceRequired===true&&providerParityResult?.exactTechnicalOnly===true&&
+    providerParityResult?.fuzzyMatching===false,
+  providerParity.status===0?'':String(providerParity.stderr||providerParity.stdout||'provider_parity_failed').slice(0,300)
+);
 
 const portal=read('app/adapters/tya-canonical-shopper-portal-v2.js');
 check('shopper_portal_consumes_shared_contract',portal.includes('CX_EXACT_IDENTITY_CONTRACT')&&portal.includes('collectExactValues'));
@@ -68,10 +81,11 @@ if(contract?.buildCanonicalProfileIndex){
 
 const failed=checks.filter(x=>!x.pass);
 const result={
-  schemaVersion:'cxorbia.p0.exact-identity-contract-source-gate.v1',
+  schemaVersion:'cxorbia.p0.exact-identity-contract-source-gate.v2',
   generatedAt:new Date().toISOString(),
   decision:failed.length?'FAIL_P0_EXACT_IDENTITY_CONTRACT_SOURCE':'PASS_P0_EXACT_IDENTITY_CONTRACT_SOURCE',
   checks,hardFails:failed.map(x=>x.id),
+  providerParityDecision:providerParityResult?.decision||null,
   safety:{providerReads:0,providerWrites:0,authWrites:0,firestoreWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,deploys:0,merge:false,production:false}
 };
 console.log(JSON.stringify(result,null,2));
