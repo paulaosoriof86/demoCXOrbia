@@ -1,17 +1,48 @@
 # CAMBIOS-BACKEND.md
 
-**Última sincronización:** 2026-08-18 17:26 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I3-INTEGRAL-PASS-15`  
-**Estado:** `I3_INTEGRAL_PASS_FROZEN__GO_LIVE_60__I4_NOT_STARTED`
+**Última sincronización:** 2026-08-18 17:41 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I4-SCOPE-SOURCE-GAP-16`  
+**Estado:** `I3_FROZEN__GO_LIVE_60__I4_SCOPE_SOURCE_GAP__NO_EXECUTION`
 
-I3 integral PASS. Staff/Admin final run `32196648462`, job `95901931320`, artifact `9346121436`, digest `sha256:b3ccc4d9e45a6d42b6ab8a0dcb4cf8e9cfbe6b6ea8409c72524347c7df02189d`. `CX.data.__identityMap['shp-57d2e3769946'] === 'TYA_GT_0C0BA8856E'`; agosto canonical `2`; residual `0`; duplicados `0/0`; reload/nueva pestaña estables. Historical Shopper y todos los writes/deploys prohibidos `0`; merge/production false.
+## Preservado
 
-Transporte inicial `6fd1f256...` no ejecutó Staff; PR run `32195823892` dejó `staffReadonlyExecuted=false`. Causa: colisión de concurrencia push/PR. Fix reusable `84bd3bc571692074ce9e13fa50264ef17c6b55f2` separa grupos por `github.event_name`; sin cambio de producto/provider.
+I1 `15/15 PASS`, I2 `20/20 PASS`, I3 `25/25 PASS`. I3 final permanece frozen: Staff run `32196648462`, job `95901931320`, artifact `9346121436`; identityMap canonical, agosto `2/0`, duplicados `0/0`, estabilidad reload/nueva pestaña y safety cero. No se reejecutó I3.
 
-Request final consumido/disabled en `0ea4bb6d58ba547db2337bd367f10c32f2540e8b`. No repetir I3.
+## Bloque ejecutado
 
-Avance: I1 `15/15`, I2 `20/20`, I3 `25/25`, I4 `0/25`, I5 `0/15` = **60% / 40%**.
+`RECOVER_CANONICAL_I4_SCOPE_FROM_ACTIVE_PLAN_LOCK__NO_EXECUTION_YET`
 
-Clasificación: Reusable CXOrbia — identityMap exacto + tooling; exclusivo TyA/Cinépolis — IDs/conteos; Claude/prototipo — sin parche UI; Academia — sin cambio funcional visible, sin cambios de manuales/cursos/rutas/notificaciones; Sin impacto Claude inmediato — gates/documentación.
+Tipo: documental/read-only. Cero cambios de producto, provider, Auth, Firestore, Rules, HR, Storage, Make, Gemini, pagos, Hosting/Cloud Run, usuarios/contraseñas, merge o producción.
 
-Siguiente bloque exacto: `RECOVER_CANONICAL_I4_SCOPE_FROM_ACTIVE_PLAN_LOCK__NO_EXECUTION_YET`. No ejecutar I4 hasta recuperar su definición exacta del plan canónico vigente.
+### Hallazgo
+
+El estado vivo usa I1–I5 con ponderación `15/20/25/25/15`, pero las fuentes canónicas heredadas disponibles siguen organizadas por `CORTE 0B` y `CORTES 1–8`. El plan contiene `CORTE 4`, sin declarar equivalencia con el I4 actual ni sus subgates.
+
+Búsqueda dirigida en índice vigente entregado, Phase A plan lock, source lock, checkpoint, `app/docs`, commits y PR #7: no se encontró definición semántica autoritativa del I4 actual.
+
+Bloqueo: `ACTIVE_SOURCE_GAP__I1_I5_PERCENT_WEIGHTS_PRESENT_BUT_I4_SEMANTIC_SCOPE_NOT_MATERIALIZED`.
+
+Adjudicación: no mapear `CORTE 4` a I4 por coincidencia numérica; no inventar subgates/gates. I4 permanece `0/25`; avance **60% / 40%**.
+
+## Archivos tocados
+
+- `app/docs/SOURCE-LOCK-CXORBIA-TYA.md` — source gap I4 fijado.
+- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md` — checkpoint 60/40, I4 no iniciado.
+- `PENDIENTES-PROTOTIPO.md` — brecha documental como pendiente vivo.
+- `CAMBIOS-BACKEND.md` — este registro.
+- `RESUMEN-PARA-CLAUDE.md` — sin parche frontend; pendiente de fuente I4.
+- PR #7 — estado de bloqueo documental I4.
+
+## Clasificación
+
+- **Reusable CXOrbia:** antidesvío contra mapeo de nomenclaturas históricas por número.
+- **Exclusivo TyA:** brecha de fuente del plan de salida.
+- **Claude/prototipo:** sin parche UI.
+- **Academia:** sin cambio funcional; manuales/cursos/rutas/notificaciones intactos.
+- **Sin impacto Claude inmediato:** recuperación documental.
+
+## Siguiente bloque exacto
+
+`MATERIALIZE_CANONICAL_I4_SCOPE_FROM_APPROVED_SOURCE__NO_EXECUTION`
+
+Se necesita la fuente aprobada que definió I1–I5 `15/20/25/25/15` junto con el alcance/subgates de I4, o una instrucción vigente explícita que los materialice. No ejecutar I4 antes.
