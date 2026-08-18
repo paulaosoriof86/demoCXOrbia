@@ -1,79 +1,74 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última sincronización:** 2026-08-18 16:53 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-IDENTITYMAP-HOSTING-PASS-STAFF-AUTH-NEXT-12`  
-**Estado:** `NO_FRONTEND_PATCH__IDENTITYMAP_HOSTING_DEV_PASS__FINAL_STAFF_AUTH_NEXT__GO_LIVE_35`
+**Última sincronización:** 2026-08-18 17:26 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I3-INTEGRAL-PASS-15`  
+**Estado:** `NO_FRONTEND_PATCH__I3_INTEGRAL_PASS_FROZEN__GO_LIVE_60__I4_NOT_STARTED`
 
 ## Estado Phase A
 
-I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `0/25 formal` hasta cierre integral; I4 `0/25`; I5 `0/15` = **35% / 65%**. I3 integral PASS → **60% / 40%**.
+I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `25/25 PASS`; I4 `0/25`; I5 `0/15` = **60% completado / 40% pendiente**.
 
 ## Preservado / no reprocesar
 
-- I1/I2 e I3.1→I3.10.
+- I1/I2 e I3 completo.
 - Historical Shopper e I3.9/I3.10 frozen.
 - TARGET_B Admin existente; no crear otro usuario.
-- Rules I3.11C ya verificadas; no redeploy.
-- HR authority ya observada: `15` períodos / `660` visitas.
-- Provider exact target link ya observado: `shp-57d2e3769946 -> TYA_GT_0C0BA8856E`, `materialized`, `tenant_adjudication`.
-- Staff post-hardening run `32192976458`: agosto canonical `2`, residual `0`, duplicates `0/0`; único faltante era export a `CX.data.__identityMap`.
+- Rules I3.11C verificadas; no redeploy.
+- HR authority `15` períodos / `660` visitas.
+- Provider exact link `shp-57d2e3769946 -> TYA_GT_0C0BA8856E`, `materialized`, `tenant_adjudication`.
+- Hosting identityMap PASS run `32194641563`; no repetir deploy.
+- Staff/Admin final PASS run `32196648462`; no repetir I3.
 
-## IdentityMap source fix
+## Qué quedó conectado y probado
 
-Adapter reusable `app/adapters/cxorbia-provider-identity-link-runtime-v1.js`, commit `e8742207db9e81b23f53429d7f487894ae9a9a0d`.
+La corrección reusable en `app/adapters/cxorbia-provider-identity-link-runtime-v1.js` ya está servida en DEV y exporta el link exacto/autoritativo al `CX.data.__identityMap` solo cuando el canonical existe. No usa fuzzy/nombre/email/teléfono, no crea identidades y no sobreescribe conflictos.
 
-El fix propaga únicamente links exactos/autoritativos al `identityMap`, exige canonical ya existente, no sobreescribe conflictos, no crea identidades y mantiene fuzzy/nombre/email/teléfono desactivados.
+La observación Staff final confirmó:
+- `CX.data.__identityMap['shp-57d2e3769946'] === 'TYA_GT_0C0BA8856E'`;
+- identityMap size `209`;
+- agosto canonical `2`;
+- residual live `0`;
+- reload y nueva pestaña estables;
+- I3.4 postulación/HR PASS;
+- I3.5 crosswalk exacto PASS;
+- I3.6 Historical Shopper reuse PASS con acceso `0`;
+- I3.7 legal durable receipt PASS;
+- duplicateVisitKeys `0` y duplicateShopperIds `0` preservados desde el Staff run congelado anterior; el post-compose no muta shoppers/visits.
 
-P0/parity source PASS en commits `0d73d6c3...` y `a4c85480...`.
+Evidencia final: run `32196648462`, job `95901931320`, artifact `9346121436`, digest `sha256:b3ccc4d9e45a6d42b6ab8a0dcb4cf8e9cfbe6b6ea8409c72524347c7df02189d`.
 
-## Hosting DEV — PASS / congelado
+Safety: Historical Shopper `0`; Shopper credential selection `0`; user/password changes `0`; Auth/Firestore/HR/Rules/Storage writes `0`; Rules/Hosting/Cloud Run deploys `0`; Make/Gemini/payment `0`; merge/production false.
 
-Ejecución efectiva única:
-- request commit `d2ff658e7fb1bdac4ae3d4a2df1e6f2a9c8c835a`;
-- run `32194641563`;
-- job `95896037812`;
-- artifact `9345432655`;
-- digest `sha256:2ee934cd0dbfbe8120250533aa7cd3b3954dc8ebeaffb5dec4b6917eaefb1af5`;
-- source materializado `3a6d33810719f4b98ea0dd10a4ec7408d043f336`;
-- Hosting deploy `1/1`;
-- `PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY`;
-- SHA local/remoto `04a43c3646b37b546788c414c8dfeac8bea7b4eae9a431e0186d6a0a52ff4493`;
-- `remoteExactByteParity=true`;
-- `exactIdentityMapExport=true`;
-- `conflictOverwrite=false`;
-- `canonicalPresenceRequired=true`;
-- `fuzzyMatching=false`.
+## Transporte del runner
 
-El primer transporte `7ccd1f7c...` se detuvo en preflight por documentación `app/docs/` antes del claim/Firebase/deploy; tuvo Hosting deploys `0` y no consumió la operación provider. El source se reancló al HEAD pre-request `3a6d338...`, cuyo adapter era el mismo blob exacto `c1c0627f...`; no se relajó el guard.
+Se corrigió un defecto metodológico del runner one-shot: `push` y `pull_request` compartían la misma clave de concurrencia y podían colisionar. Commit `84bd3bc571692074ce9e13fa50264ef17c6b55f2` separa la clave por `github.event_name`.
 
-Request Hosting consumido/disabled en `c225981c57ba8583456174e39366db8a20f5b35a`. No repetir.
-
-## Safety
-
-En el Hosting PASS: Staff runtime `0`; Historical Shopper `0`; provider identity/Firestore-data/Auth/Rules/HR/Storage/Make/Gemini/payment writes `0`; Cloud Run `0`; password/user changes `0`; merge/production false.
+Esto es tooling reusable; no es parche frontend ni cambio de producto.
 
 ## Claude / prototipo
 
-**No hay ajuste frontend que aplicar.** `/app/modules` y `/app/core` no se tocaron. No introducir workaround UI para este hallazgo.
+**No hay ajuste frontend que aplicar por I3.**
 
-La corrección está en adapter protegido/backend runtime y mantiene la interfaz pública de `CX.data`; solo corrige la composición de `__identityMap`.
+- `/app/modules`: sin cambios de producto en este cierre.
+- `/app/core`: sin cambios de producto en este cierre.
+- No crear workaround UI para identityMap.
+- No reabrir autenticación/Admin/Shopper/Rules/Hosting desde frontend.
+- `CX.data` conserva su interfaz; el cambio está en el adapter protegido de composición.
+
+Si I4 revela una diferencia frontend reproducible, se documentará por archivo/módulo en ese bloque; no anticiparla ahora.
 
 ## Academia
 
-Sin cambio visible de rutas, manuales, cursos o certificaciones en este bloque. No requiere contenido nuevo hasta que la observación Staff final confirme cierre runtime.
+I3 no introduce cambio visible de rutas, cursos, manuales, certificaciones o notificaciones. Registrar únicamente el cierre técnico y preservar material existente. No crear contenido nuevo hasta conocer el alcance exacto de I4.
 
-## Siguiente frontera exacta
+## Pendiente real
 
-`NEW_AUTH_REQUIRED_I3_11C_STAFF_RUNTIME_CANONICAL_IDENTITY_CLOSE_READONLY_AFTER_HOSTING`.
+I4 `0/25` e I5 `0/15`.
 
-Requiere autorización nueva y separada para **una única** observación Staff/Admin existente en DEV, read-only, sin deploys ni writes. Debe comprobar:
-- `CX.data.__identityMap['shp-57d2e3769946'] === 'TYA_GT_0C0BA8856E'`;
-- agosto canonical `2`;
-- residual `0`;
-- duplicateVisitKeys `0`;
-- duplicateShopperIds `0`;
-- Historical Shopper `0`;
-- todos los writes/deploys prohibidos `0`;
-- merge/production false.
+El source lock previo solo fija “pasar a I4” después de I3; no redefine aquí su primer subgate. Antes de cambiar producto/backend/provider, recuperar la definición exacta de I4 desde el plan canónico activo.
 
-No reabrir R3-A/B/C anteriores, provider repair, usuarios, HR ni Historical Shopper.
+## Siguiente frontera
+
+`RECOVER_CANONICAL_I4_SCOPE_FROM_ACTIVE_PLAN_LOCK__NO_EXECUTION_YET`.
+
+No reabrir I3 ni iniciar provider/deploy/write/producción durante esa recuperación documental.
