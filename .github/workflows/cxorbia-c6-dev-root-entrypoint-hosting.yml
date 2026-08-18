@@ -1,11 +1,8 @@
 name: CXOrbia I3.11C R3-C DEV Hosting Materialization
 
 on:
-  push:
-    branches:
-      - docs-tya-v6-v71-audit
-    paths:
-      - 'backend/config/i3-11-identity-link-runtime-bridge-rules-hosting-dev.json'
+  pull_request:
+    types: [synchronize]
 
 permissions:
   contents: read
@@ -32,22 +29,26 @@ env:
 jobs:
   r3c-hosting-materialize:
     name: R3-C one DEV Hosting deploy + remote parity only
+    if: >-
+      github.event.pull_request.number == 7 &&
+      github.event.pull_request.head.ref == 'docs-tya-v6-v71-audit' &&
+      github.event.pull_request.base.ref == 'release/cxorbia-tya-rc-20260630'
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
     steps:
-      - name: Checkout exact request commit
+      - name: Checkout exact PR head
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
-          fetch-depth: 2
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
-      - name: Validate exact R3-C authorization and source lineage
+      - name: Validate exact R3-C authorization and request-only trigger
         id: gate
         run: |
           set -euo pipefail
@@ -58,21 +59,23 @@ jobs:
           const {execFileSync}=require('child_process');
           const r=JSON.parse(fs.readFileSync(process.env.REQUEST,'utf8'));
           const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
           if(r.schemaVersion!=='cxorbia.i3.11c.r3c.hosting-materialization.request.v1')throw new Error('request_schema_invalid');
           if(r.gateId!=='I3_11C_DEV_HOSTING_MATERIALIZE_CORRECTED_IDENTITY_RUNTIME_NO_PROVIDER_DATA_WRITES')throw new Error('gate_id_invalid');
           if(r.repository!=='paulaosoriof86/demoCXOrbia'||r.branch!=='docs-tya-v6-v71-audit'||Number(r.pullRequest)!==7)throw new Error('repository_lane_invalid');
           if(r.firebaseProjectId!=='cxorbia-backend-dev'||r.hostingSite!=='cxorbia-backend-dev'||r.hostingTarget!=='cxorbia-dev'||r.devRootUrl!=='https://cxorbia-backend-dev.web.app')throw new Error('provider_target_invalid');
           if(r.enabled!==true||r.consumed!==false||r.status!=='authorized_execute_once'||r.authorizedBy!=='Paula')throw new Error('authorization_state_invalid');
-          if(r.sourceHeadSha!==parent||!r.sourceHeadSha||head===parent)throw new Error('source_head_invalid');
-          if(changed.length!==1||changed[0]!==process.env.REQUEST)throw new Error('request_commit_scope_invalid:'+changed.join(','));
+          if(changed.length!==1||changed[0]!==process.env.REQUEST)throw new Error('request_only_trigger_invalid:'+changed.join(','));
+          if(!/^[a-f0-9]{40}$/.test(String(r.sourceHeadSha||'')))throw new Error('source_head_invalid');
+          execFileSync('git',['merge-base','--is-ancestor',r.sourceHeadSha,head]);
+          const appDelta=execFileSync('git',['diff','--name-only',r.sourceHeadSha,head,'--','app/'],{encoding:'utf8'}).trim();
+          if(appDelta)throw new Error('product_source_drift_after_authorized_source:'+appDelta.replace(/\s+/g,','));
           if(Number(r.allowedExecutions)!==1||Number(r.maxHostingDeploys)!==1)throw new Error('single_deploy_contract_invalid');
           for(const key of ['providerIdentityWrites','firestoreDataWrites','authWrites','rulesDeploys','hrWrites','storageWrites','makeCalls','geminiCalls','paymentWrites','historicalShopperAccess','cloudRunDeploys','staffRuntimeExecutions'])if(Number(r[key]||0)!==0)throw new Error('unsafe_scope_'+key);
           if(r.merge!==false||r.production!==false||r.noAutomaticRetry!==true||r.automaticStaffRuntimeRetry!==false)throw new Error('unsafe_scope');
           const prior=Array.isArray(r.priorTransportCommits)?r.priorTransportCommits.filter(x=>/^[a-f0-9]{40}$/.test(String(x))):[];
-          fs.writeFileSync(process.env.OUT_DIR+'/authorization.json',JSON.stringify({requestId:r.requestId,gateId:r.gateId,sourceHeadSha:parent,requestCommitSha:head,priorTransportCommits:prior,authorizedBy:r.authorizedBy,maxHostingDeploys:1,noAutomaticRetry:true,automaticStaffRuntimeRetry:false},null,2)+'\n','utf8');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`source_head=${parent}\nrequest_id=${r.requestId}\nprior_commits=${prior.join(',')}\n`);
+          fs.writeFileSync(process.env.OUT_DIR+'/authorization.json',JSON.stringify({requestId:r.requestId,gateId:r.gateId,sourceHeadSha:r.sourceHeadSha,triggerHeadSha:head,priorTransportCommits:prior,authorizedBy:r.authorizedBy,maxHostingDeploys:1,noAutomaticRetry:true,automaticStaffRuntimeRetry:false},null,2)+'\n','utf8');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`source_head=${r.sourceHeadSha}\nrequest_id=${r.requestId}\nprior_commits=${prior.join(',')}\n`);
           NODE
 
       - name: Claim one logical execution across transports
@@ -85,20 +88,12 @@ jobs:
           for c in "${prior[@]}"; do
             [ -z "$c" ] && continue
             n=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${c}/statuses" --paginate --jq "[.[] | select(.context==\"${CLAIM_CONTEXT}\")] | length")
-            if [ "$n" != "0" ]; then
-              echo 'claimed=false' >> "$GITHUB_OUTPUT"
-              echo "Prior transport ${c} already claimed R3-C; refusing duplicate deploy."
-              exit 0
-            fi
+            if [ "$n" != "0" ]; then echo 'claimed=false' >> "$GITHUB_OUTPUT"; echo "Prior transport ${c} already claimed R3-C; refusing duplicate deploy."; exit 0; fi
           done
           current=$(git rev-parse HEAD)
           n=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${current}/statuses" --paginate --jq "[.[] | select(.context==\"${CLAIM_CONTEXT}\")] | length")
           if [ "$n" != "0" ]; then echo 'claimed=false' >> "$GITHUB_OUTPUT"; exit 0; fi
-          gh api --method POST -H 'Accept: application/vnd.github+json' \
-            "/repos/${GITHUB_REPOSITORY}/statuses/${current}" \
-            -f state='pending' -f context="$CLAIM_CONTEXT" \
-            -f description='CLAIMED_ONE_LOGICAL_R3C_HOSTING_EXECUTION' \
-            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${current}" -f state='pending' -f context="$CLAIM_CONTEXT" -f description='CLAIMED_ONE_LOGICAL_R3C_HOSTING_EXECUTION' -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
           echo 'claimed=true' >> "$GITHUB_OUTPUT"
 
       - name: Authenticate exact Firebase DEV
