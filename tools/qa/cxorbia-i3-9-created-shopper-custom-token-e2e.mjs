@@ -26,6 +26,8 @@ try{
   if(Number(process.env.GITHUB_RUN_ATTEMPT||1)!==1){fail('HOLD_I3_9_10_11_RERUN_FORBIDDEN','RUN_ATTEMPT_NOT_ONE');process.exit(2);}
   if(!process.env.GOOGLE_APPLICATION_CREDENTIALS||!fs.existsSync(process.env.GOOGLE_APPLICATION_CREDENTIALS)){fail('HOLD_I3_9_10_11_PRIVATE_CREDENTIAL_MISSING','GOOGLE_APPLICATION_CREDENTIALS_MISSING');process.exit(2);}
 
+  const executor=path.join(repo,'tools/qa/cxorbia-i3-9-10-11-visible-login-close.mjs');
+  execFileSync(process.execPath,['--check',executor],{cwd:repo,stdio:'inherit'});
   const head=execFileSync('git',['rev-parse','HEAD'],{cwd:repo,encoding:'utf8'}).trim();
   execFileSync('git',['merge-base','--is-ancestor',req.productTargetHeadSha,head],{cwd:repo});
   const appDelta=execFileSync('git',['diff','--name-only',req.productTargetHeadSha,head,'--','app/'],{cwd:repo,encoding:'utf8'}).trim();
@@ -41,13 +43,13 @@ try{
   const firebaserc=read(path.join(deployTree,'.firebaserc'));
   if(firebaserc.projects?.default!=='cxorbia-backend-dev'||firebaserc.targets?.['cxorbia-backend-dev']?.hosting?.['cxorbia-dev']?.[0]!=='cxorbia-backend-dev')throw new Error('FIREBASE_HOSTING_TARGET_MAPPING_INVALID');
 
-  const install=run('npm',['install','--no-save','--ignore-scripts','--package-lock=false','firebase-tools@latest'],{stdio:'inherit'});
-  if(install.status!==0){fail('HOLD_I3_9_FIREBASE_TOOLS_INSTALL_FAILED','FIREBASE_TOOLS_INSTALL_FAILED');process.exit(2);}
+  // Keep all transient dependencies in one install so npm cannot prune Playwright/firebase-admin.
+  const install=run('npm',['install','--no-save','--ignore-scripts','--package-lock=false','firebase-tools@latest','firebase-admin@13.4.0','playwright@1.55.0'],{stdio:'inherit'});
+  if(install.status!==0){fail('HOLD_I3_9_FIREBASE_TOOLS_INSTALL_FAILED','TRANSIENT_EXECUTION_DEPENDENCY_INSTALL_FAILED');process.exit(2);}
   const firebaseBin=path.join(repo,'node_modules','.bin',process.platform==='win32'?'firebase.cmd':'firebase');
   const deploy=run(firebaseBin,['deploy','--config','firebase.json','--only','hosting:cxorbia-dev','--project','cxorbia-backend-dev','--non-interactive'],{cwd:deployTree,stdio:'inherit'});
   if(deploy.status!==0){fail('HOLD_I3_9_HOSTING_DEPLOY_FAILED_NO_AUTOMATIC_RETRY','HOSTING_DEV_DEPLOY_FAILED',{hostingDeployAttempts:1,hostingDeploys:0});process.exit(2);}
 
-  const executor=path.join(repo,'tools/qa/cxorbia-i3-9-10-11-visible-login-close.mjs');
   const execution=run(process.execPath,[executor,'--request',requestPath,'--source-root',deployTree,'--out',outPath],{env:{CXORBIA_HOSTING_DEPLOY_COUNT:'1'},stdio:'inherit'});
   process.exit(execution.status===0?0:2);
 }catch(error){
