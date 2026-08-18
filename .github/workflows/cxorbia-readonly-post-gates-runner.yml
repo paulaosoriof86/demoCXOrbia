@@ -206,6 +206,31 @@ jobs:
           NODE
           chmod 600 "$PRIVATE_E2E"
 
+      - name: Install focal I3 provider identity-link read-only tooling
+        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.profile == 'I3_FOCAL_PROVIDER_IDENTITY_LINK_ADJUDICATION_READONLY'
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0
+
+      - name: Prepare focal I3 provider credential privately
+        if: >-
+          steps.request.outputs.enabled == 'true' &&
+          steps.request.outputs.profile == 'I3_FOCAL_PROVIDER_IDENTITY_LINK_ADJUDICATION_READONLY' &&
+          github.event_name == 'push'
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          PRIVATE_DIR=.tmp/i3-focal-provider-private
+          mkdir -p "$PRIVATE_DIR" .tmp/i3-focal-provider-identity-link-adjudication
+          node <<'NODE'
+          const fs=require('fs');
+          const raw=process.env.EXISTING_DEV_JSON||'';
+          let parsed=null;try{parsed=JSON.parse(raw);}catch{}
+          if(!(parsed&&parsed.type==='service_account'&&parsed.project_id==='cxorbia-backend-dev'&&parsed.client_email&&parsed.private_key))throw new Error('credential_invalid');
+          fs.writeFileSync('.tmp/i3-focal-provider-private/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/$PRIVATE_DIR/credentials.json" >> "$GITHUB_ENV"
+          echo "CXORBIA_EXPECTED_PROJECT=cxorbia-backend-dev" >> "$GITHUB_ENV"
+
       - name: Validate focal provider snapshot source preflight
         if: >-
           steps.request.outputs.enabled == 'true' &&
@@ -289,7 +314,11 @@ jobs:
         run: |
           set +e
           code=0
-          if [ "${{ steps.request.outputs.profile }}" = "C6_STAFF_REPAIR_BOOTSTRAP_PROVIDER_SNAPSHOT_READONLY" ]; then
+          if [ "${{ steps.request.outputs.profile }}" = "I3_FOCAL_PROVIDER_IDENTITY_LINK_ADJUDICATION_READONLY" ]; then
+            node tools/qa/cxorbia-i3-focal-provider-identity-link-adjudication-readonly.mjs \
+              .github/cxorbia-gate-requests/request.json
+            code=$?
+          elif [ "${{ steps.request.outputs.profile }}" = "C6_STAFF_REPAIR_BOOTSTRAP_PROVIDER_SNAPSHOT_READONLY" ]; then
             mkdir -p .tmp/cxorbia-readonly-post-gates-runner
             if [ "${{ github.event_name }}" != "pull_request" ]; then
               node tools/qa/cxorbia-c6-staff-provider-snapshot-runner-report.mjs await-pr
@@ -380,6 +409,7 @@ jobs:
           path: |
             .tmp/cxorbia-readonly-post-gates-runner
             .tmp/cxorbia-repository-status
+            .tmp/i3-focal-provider-identity-link-adjudication
             .tmp/c6-staff-repair-bootstrap-provider-snapshot
             .tmp/phase-a-complete-composition-source-static
             .tmp/phase-a-runtime-multirole
@@ -497,7 +527,7 @@ jobs:
 
       - name: Cleanup private runtime material
         if: always()
-        run: rm -rf .tmp/phase-a-runtime-private .tmp/c6-staff-provider-private .tmp/i3-staff-authority-private
+        run: rm -rf .tmp/phase-a-runtime-private .tmp/c6-staff-provider-private .tmp/i3-staff-authority-private .tmp/i3-focal-provider-private
 
       - name: Enforce gate result
         if: always() && steps.request.outputs.enabled == 'true'
