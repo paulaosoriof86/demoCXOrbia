@@ -1,16 +1,14 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "i3-11c-staff-canonical-identity-close-readonly-20260818-03",
+  "requestId": "i3-11c-staff-canonical-identity-close-readonly-20260818-04",
   "enabled": true,
   "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "db1ae2cafdf98ec95cacfbfa7fac224da9a5ad06",
+  "targetHeadSha": "5464f58c2687711ba195efe6f70e39b585c718cb",
   "profile": "I3_STAFF_RUNTIME_AUTHORITY_READONLY",
-  "allowedProfiles": [
-    "I3_STAFF_RUNTIME_AUTHORITY_READONLY"
-  ],
+  "allowedProfiles": ["I3_STAFF_RUNTIME_AUTHORITY_READONLY"],
   "allowedExecutions": 1,
   "repositoryWrites": false,
   "dataWrites": false,
@@ -55,7 +53,7 @@
     "rulesSourcePath": "firestore.rules",
     "expectedRulesBlobSha": "bf62d8b0e32c571aaae457dd9128b0c82b0ea073",
     "identityContractParityGate": "tools/qa/cxorbia-provider-identity-runtime-contract-parity-gate.mjs",
-    "sourceCorrectionHeadSha": "db1ae2cafdf98ec95cacfbfa7fac224da9a5ad06",
+    "sourceCorrectionHeadSha": "5464f58c2687711ba195efe6f70e39b585c718cb",
     "maxRulesDeploys": 0,
     "staffReadonlyExecutions": 1,
     "executeOnlyOnEvent": "push",
@@ -88,11 +86,23 @@
   "containsPii": false,
   "containsSecrets": false,
   "authorizedBy": "Paula",
-  "authorizationText": "Continue with the next block: one Staff/Admin DEV read-only closure on the corrected identity runtime. Execute the static contract parity gate first, reuse the already verified Firestore Rules without redeploy, use the existing canonical Staff/Admin credential without password changes or user creation, and perform no provider writes, Auth writes, Firestore data writes, HR/Storage/Make/Gemini/payment writes, deploy, merge or production. Historical Shopper remains frozen and inaccessible.",
+  "authorizationText": "Continuation of the same one-time R3-B authorization. The prior request transport produced only a pull_request non-execution preflight (run 32179904771: staffReadonlyExecuted=false, parity=null, provider/runtime execution not consumed). This request rebinds the same authorized operation to the current exact parent and is emitted through direct live-branch ref update to obtain the required push execution. No retry of provider/runtime execution occurred before this request.",
   "sourceTruthSyncEpoch": "CXORBIA-20260818-I3-11C-RUNTIME-SOURCE-CORRECTION-04",
   "sourceLockDocument": "app/docs/SOURCE-LOCK-CXORBIA-TYA.md",
   "stopRetryOnFailure": true,
   "noAutomaticRetry": true,
+  "transportRecovery": {
+    "classification": "HARNESS_EVENT_TRANSPORT_NO_EXECUTION",
+    "priorRequestId": "i3-11c-staff-canonical-identity-close-readonly-20260818-03",
+    "priorWorkflowRunId": 32179904771,
+    "priorArtifactId": 9340456660,
+    "priorEvent": "pull_request",
+    "priorStaffReadonlyExecuted": false,
+    "priorParityExecuted": false,
+    "priorProviderRuntimeExecutionConsumed": false,
+    "recoveryMechanism": "direct_branch_ref_request_commit",
+    "automaticRetry": false
+  },
   "expected": {
     "targetLiveShopperId": "shp-57d2e3769946",
     "targetCanonicalShopperId": "TYA_GT_0C0BA8856E",
@@ -116,5 +126,5 @@
     "providerWrites": 2,
     "staffReadonlyExecuted": false
   },
-  "purpose": "R3-B: prove the corrected reusable provider identity runtime resolves the exact target canonical identity and August visits in the Staff/Admin DEV read-only runtime, then close I3 only on integral PASS."
+  "purpose": "R3-B exact Staff/Admin DEV read-only proof on corrected reusable identity runtime. Static parity first, prior Rules reused with zero redeploy, exact canonical target/visits validated, no writes/deploy/merge/production."
 }
