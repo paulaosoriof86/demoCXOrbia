@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.corte6-protected-shopper-identity-readonly.v1",
-  "generatedAt": "2026-08-17T23:45:09.046Z",
+  "generatedAt": "2026-08-18T00:40:18.228Z",
   "decision": "HOLD_C6_PROTECTED_IDENTITY_READONLY",
   "target": {
     "firebaseProjectId": "cxorbia-backend-dev",
@@ -30,10 +30,11 @@
     "adapterUsesRealNameFields": true,
     "publicSourceSafeStillMasked": true,
     "deployedRulesVerified": true,
-    "localRulesMatchDeployedEvidence": true
+    "localRulesMatchDeployedEvidence": false
   },
   "blockers": [
-    "tenant_shopper_count_drift:341"
+    "tenant_shopper_count_drift:341",
+    "static:localRulesMatchDeployedEvidence"
   ],
   "releaseRule": "Source-safe public preview may remain masked; protected authenticated Admin/Operativo runtime must use Firestore identity and must not render Shopper protegido for canonical referenced shoppers.",
   "safety": {
