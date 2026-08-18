@@ -1,8 +1,8 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
   "requestId": "i3-11b-stable-readiness-staff-readonly-close-20260817-04",
-  "enabled": true,
-  "consumed": false,
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -61,5 +61,49 @@
     "reuseFrozenI3_9": true,
     "reuseFrozenI3_10": true
   },
-  "purpose": "Single Staff-only read-only close after QA readiness source correction. Wait for stable router, legal and extended exact identity state before adjudication. No Hosting, no Rules, no provider writes, no Historical Shopper, no automatic retry."
+  "executionOutcome": {
+    "attempted": true,
+    "workflowRunId": 32096763305,
+    "jobId": 95590022692,
+    "artifactId": 9310288275,
+    "result": "HOLD_READONLY_POST_GATES",
+    "stableRuntimeReached": true,
+    "trueBlocker": "I3_5_EXACT_IDENTITY_PATH_NOT_APPLIED",
+    "identityMapSize": 0,
+    "targetCanonicalActual": null,
+    "targetCanonicalVisitsAugust": 0,
+    "targetLiveResidualVisitsAugust": 0,
+    "normalRuntimeStable": {
+      "role": "admin",
+      "namespace": "staff",
+      "periods": 15,
+      "visits": 660,
+      "shoppers": 214,
+      "routerMounted": true,
+      "legalSettled": true,
+      "postulationAuthorityReady": true,
+      "duplicateVisitKeys": 0,
+      "duplicateShopperIds": 0
+    },
+    "safety": {
+      "historicalShopperAccess": 0,
+      "authWrites": 0,
+      "userCreates": 0,
+      "userUpdates": 0,
+      "passwordChanges": 0,
+      "passwordResets": 0,
+      "firestoreWrites": 0,
+      "hrWrites": 0,
+      "rulesWrites": 0,
+      "storageWrites": 0,
+      "makeCalls": 0,
+      "geminiCalls": 0,
+      "paymentWrites": 0,
+      "deploys": 0,
+      "merge": false,
+      "production": false
+    },
+    "consumedReason": "The single authorized stable Staff-only adjudication completed. Normal runtime converged; exact identity did not. Request closed before any focal follow-up to prevent stale retry."
+  },
+  "purpose": "Consumed stable Staff-only close. No automatic retry. Follow-up is restricted to a focal read-only provider identity-path diagnostic."
 }
