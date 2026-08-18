@@ -1,12 +1,16 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Última sincronización:** 2026-08-18 14:20 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-R3B-HOLD-DEV-HOSTING-PARITY-05`  
-**Estado:** `R3B_HOLD_CONSUMED__SOURCE_PARITY_PASS__REMOTE_DEV_IDENTITY_STILL_PRECORRECTION_BEHAVIOR__HOSTING_AUTH_NEXT__GO_LIVE_35`
+**Última sincronización:** 2026-08-18 16:26 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-NAV-HARNESS-PASS-STAFF-AUTHORIZED-09`  
+**Estado:** `I3_11C_STAFF_POST_HARDENING_AUTHORIZED__EXECUTION_NEXT__GO_LIVE_35`
 
 ## Carril vivo
 
-Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`; DEV `cxorbia-backend-dev`.
+- Repo: `paulaosoriof86/demoCXOrbia`.
+- Rama: `docs-tya-v6-v71-audit`.
+- PR #7: draft/open/no merge.
+- Base: `release/cxorbia-tya-rc-20260630`.
+- DEV: `cxorbia-backend-dev`.
 
 ## Avance
 
@@ -15,60 +19,64 @@ Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/ope
 - I3 `0/25 formal` hasta PASS integral.
 - I4 `0/25`.
 - I5 `0/15`.
-- **Formal 35% / 65% pendiente.**
-- I3 integral PASS → **60%**.
+- **35% completado / 65% pendiente.**
+- I3 integral PASS → **60% / 40%**.
 
-## Iteración R3-B ejecutada
+## Estado I3.11C
 
-Run `32181137350`, job `95854174365`, artifact `9340865585`, digest `sha256:4485e03cb17d4dcb82915049fe8d2895ba099baff62d08b5fc2ac89cf1dd1ab3`.
+### Rules — frozen PASS
+Run `32163552089`; no redeploy.
 
-Preflight:
-- request exacto/single-use: PASS;
-- parity source: `PASS_PROVIDER_IDENTITY_RUNTIME_CANONICAL_CONTRACT_PARITY`;
-- Rules I3.11C previas: reutilizadas y verificadas;
-- Rules deploys actuales: `0`;
-- credential scope: Staff/Admin solamente;
-- Historical Shopper: no acceso.
+### Provider focal — frozen
+Run `32171812808`; no repair ni repetición.
 
-Runtime Staff/Admin DEV:
-- ejecutado una sola vez;
-- `FAIL_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY`;
-- stable failure `AUTH_RUNTIME_TIMEOUT`;
-- autenticación/membership/tenant/proyecto/datos/rail/view montados;
-- 15 períodos / 660 visitas;
-- authorityApplied `true`;
-- duplicate visits/shoppers `0/0`;
-- provider identity runtime: `1` link global / `0` target;
-- target canonical actual `null`;
-- agosto canonical `0` / residual `2`.
+### R3-C Hosting DEV — PASS / frozen
+Run `32185940998`, job `95869431778`, artifact `9342450216`, digest `sha256:03ccb5a71af356eade7eb498fc766af1fb4f266bb12397d2bff1f865714a09bb`.
 
-El lastState conserva postulación y legal correctos: authority ready, 8 platform posts, 15 HR assignments, HR assignments no tratados como postulaciones, legal provider authority presente y receipt `accepted` por `human_ui`. Por ello los FAIL I3.4/I3.7 emitidos por el resumen después del timeout base no se clasifican como regresiones nuevas.
+Resultado: `PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY`. El adapter corregido quedó materializado en DEV con paridad remota exacta; esta etapa no se repite.
 
-## Diagnóstico reducido
+### Staff post-Hosting anterior — HOLD / consumido
+Run `32188716203`, job `95878165921`, artifact `9343461375`, digest `sha256:e43814d730824a010930f8ebaa53fa5aabc417860297b7d9651bee16769340c1`.
 
-`I3_11C_CORRECTED_SOURCE_NOT_EFFECTIVE_IN_REMOTE_DEV__HOSTING_MATERIALIZATION_REQUIRED`.
+La ejecución Staff sí ocurrió una vez, pero el navegador agotó 60 s en la primera navegación esperando `DOMContentLoaded`; `lastState=null`, por lo que no alcanzó login ni observó canonical/agosto. Los FAIL derivados I3.4/I3.5/I3.7 no son regresiones adjudicadas. I3.6 Historical Shopper reuse quedó PASS y frozen. Cero writes/deploys/cambios de usuario o contraseña.
 
-El source corregido sí pasa su parity gate, pero R3-A y R3-B tuvieron `hostingDeploys=0`. R3-B validó el sitio remoto y este sigue mostrando el conjunto de identidad propio del comportamiento pre-corrección. No corresponde volver a cambiar el provider link ni el contrato.
+### Hardening source-only — PASS
+Commit `9feb5f69a35169eac2931843309ad847d374b1b3` cambia únicamente `tools/qa/tya-c6-staff-admin-human-auth-browser-smoke.mjs`: `waitUntil:'commit'` en entrada/reloads/nueva pestaña; selector Admin y `waitReady()` conservan todos los requisitos funcionales.
 
-## Siguiente bloque exacto
+Source checks observados: `Phase A Source Safe Runtime Guard` SUCCESS; `Run P0 exact identity source gates` SUCCESS. El request anterior quedó disabled/consumed y no hubo Staff/provider/deploy accidental.
 
-`NEW_AUTH_REQUIRED_I3_11C_DEV_HOSTING_MATERIALIZE_CORRECTED_IDENTITY_RUNTIME_NO_PROVIDER_DATA_WRITES`.
+## Autorización vigente
 
-Nuevo gate requerido porque el R3-B autorizado era explícitamente `deploy=false`.
+Paula autorizó una única ejecución I3.11C Staff/Admin read-only post-hardening usando solo la identidad Staff/Admin existente.
 
-Debe hacer exclusivamente:
-1. un máximo de 1 deploy Hosting DEV del source corregido;
-2. verificar el asset remoto contra el contrato canónico corregido mediante fingerprint/hash o prueba semántica inequívoca;
-3. cero provider identity writes, Firestore data writes, Auth/Rules/HR/Storage/Make/Gemini/payment writes, Cloud Run, merge o producción;
-4. cero Historical Shopper;
-5. no repetir Staff automáticamente.
+Aceptación exacta:
+- `shp-57d2e3769946 -> TYA_GT_0C0BA8856E`;
+- agosto canonical `2`;
+- residual `0`;
+- duplicateVisitKeys `0`;
+- duplicateShopperIds `0`.
 
-Después de ese PASS se pedirá un nuevo gate Staff read-only para cerrar I3.
+Límites exactos:
+- Historical Shopper `0`;
+- provider/Auth/Firestore/Rules/HR/Storage/Make/Gemini/pagos writes/calls `0`;
+- Hosting/Cloud Run deploys `0`;
+- password changes/resets y user creates/updates `0`;
+- merge/production false.
 
 ## Frozen / no reprocesar
 
-Historical Shopper, TARGET_B Admin, I3.9/I3.10, Rules I3.11C, focal provider read, R3-B actual, HR 15/660, Finance V2/historical y legal V0.4.
+I1/I2/I3.1→I3.10; Historical Shopper; TARGET_B Admin; request08; I3.5B/I3.5C-2/I3.8; Rules I3.11C; focal provider read; R3-B; R3-C; Staff HOLD `32188716203`; HR 15/660; Finance V2/historical; legal V0.4.
 
-## Camino restante
+## Siguiente bloque exacto
 
-Hosting parity DEV → Staff final read-only → I3 integral/60% → I4 visible (shopper lifecycle, visita, HR bidireccional, finanzas, multi-proyecto/no-code, roles/notificaciones/integraciones/Academia) → I5 producción.
+`EXECUTE_ONE_I3_11C_STAFF_CANONICAL_OBSERVATION_POST_HARDENING`.
+
+Usar el runner existente, request único, evento push, sin reauditoría ni nueva metodología. Si PASS, cierre I3 integral y avance formal a 60%. Si HOLD, documentar solo la nueva causa reproducible y detener auto-retry.
+
+## Después de I3
+
+I4 visible: shopper lifecycle; agenda/visita/evidencias/cuestionario/review; sync HR bidireccional; finanzas/liquidaciones/pagos; multi-proyecto/no-code; roles/notificaciones/integraciones; Academia/manuales/rutas. Luego I5 producción bajo gate explícito.
+
+## Estado seguro
+
+Sin merge ni producción. Sin writes o deploys fuera de los gates ya consumidos. Sin base legacy conectada y sin datos sensibles crudos en repo.
