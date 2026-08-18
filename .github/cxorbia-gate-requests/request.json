@@ -1,8 +1,8 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
   "requestId": "i3-11c-staff-canonical-identity-close-readonly-after-hosting-20260818-05",
-  "enabled": true,
-  "consumed": false,
+  "enabled": false,
+  "consumed": true,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -90,7 +90,7 @@
   "authorizedBy": "Paula",
   "reauthorizationId": "PAULA_CURRENT_CONVERSATION_I3_11C_STAFF_RUNTIME_CANONICAL_IDENTITY_CLOSE_READONLY_AFTER_HOSTING_20260818_1533",
   "authorizationText": "Autorizo una única ejecución I3.11C Staff/Admin read-only sobre el Hosting DEV ya materializado, usando únicamente la identidad Staff/Admin existente; cero Shopper histórico, cero writes de provider/Auth/Firestore/Rules/HR/Storage/Make/Gemini/pagos, cero deploys, cero cambios de contraseña/usuarios, cero merge y cero producción, para verificar exclusivamente resolución canonical y las dos visitas residuales de agosto",
-  "sourceTruthSyncEpoch": "CXORBIA-20260818-I3-11C-R3C-PASS-STAFF-READONLY-AUTH-06",
+  "sourceTruthSyncEpoch": "CXORBIA-20260818-I3-11C-STAFF-PUSH-NAVIGATION-HOLD-07",
   "sourceLockDocument": "app/docs/SOURCE-LOCK-CXORBIA-TYA.md",
   "stopRetryOnFailure": true,
   "noAutomaticRetry": true,
@@ -142,5 +142,52 @@
     "merge": false,
     "production": false
   },
-  "purpose": "Post-R3-C one-shot Staff/Admin DEV read-only closure: verify the already materialized corrected identity runtime resolves shp-57d2e3769946 exactly to TYA_GT_0C0BA8856E and moves both August visits to the canonical identity with zero residuals and zero duplicates, without any provider/data/Auth/Rules/HR/Storage/Make/Gemini/payment write or deploy."
+  "result": {
+    "workflowRunId": 32188716203,
+    "jobId": 95878165921,
+    "artifactId": 9343461375,
+    "artifactDigest": "sha256:e43814d730824a010930f8ebaa53fa5aabc417860297b7d9651bee16769340c1",
+    "event": "push",
+    "decision": "HOLD_READONLY_POST_GATES",
+    "runtimeDecision": "FAIL_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY",
+    "classification": "STAFF_RUNTIME_NAVIGATION_DOMCONTENTLOADED_TIMEOUT_BEFORE_APP_STATE",
+    "staffReadonlyExecuted": true,
+    "executionConsumed": true,
+    "lastState": null,
+    "identityContractParity": "PASS_PROVIDER_IDENTITY_RUNTIME_CANONICAL_CONTRACT_PARITY",
+    "canonicalObservation": "NOT_OBSERVED_BECAUSE_INITIAL_NAVIGATION_DID_NOT_REACH_APP_STATE",
+    "targetCanonicalActual": null,
+    "targetCanonicalVisitsAugust": null,
+    "targetLiveResidualVisitsAugust": null,
+    "duplicateVisitKeys": null,
+    "duplicateShopperIds": null,
+    "historicalShopperAccess": 0,
+    "shopperCredentialSelection": 0,
+    "userCreates": 0,
+    "userUpdates": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "merge": false,
+    "production": false,
+    "derivedFailuresNotAdjudicated": [
+      "I3_4_POSTULATION_AUTHORITY",
+      "I3_5_EXACT_AUGUST_CROSSWALK",
+      "I3_7_DURABLE_LEGAL_RECEIPT"
+    ],
+    "preservedPass": [
+      "I3_6_HISTORICAL_SHOPPER_PROFILE_HISTORY_REUSE_NO_REPROCESS"
+    ]
+  },
+  "purpose": "Post-R3-C one-shot Staff/Admin DEV read-only closure: verify the already materialized corrected identity runtime resolves shp-57d2e3769946 exactly to TYA_GT_0C0BA8856E and moves both August visits to the canonical identity with zero residuals and zero duplicates, without any provider/data/Auth/Rules/HR/Storage/Make/Gemini/payment write or deploy.",
+  "nextGate": "SOURCE_ONLY_STAFF_NAVIGATION_HARNESS_HARDENING_NO_PROVIDER__THEN_NEW_EXACT_STAFF_AUTH_REQUIRED"
 }
