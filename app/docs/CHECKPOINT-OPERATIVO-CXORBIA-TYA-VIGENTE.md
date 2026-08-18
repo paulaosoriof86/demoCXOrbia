@@ -1,104 +1,66 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Última sincronización:** 2026-08-18 11:51 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-ROOT-CAUSE-RECOVERY-01`  
-**Estado:** `I3_11C_HOLD_PROVIDER_LINK_NOT_APPLICABLE__RULES_PASS_CONSUMED__STAFF_STABLE__GO_LIVE_35__NO_PRODUCTION`
+**Última sincronización:** 2026-08-18 12:37 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-FOCAL-ADJUDICATION-02`  
+**Estado:** `I3_11C_FOCAL_PROVIDER_PASS__TARGET_LINK_INTACT__TEMPORAL_RUNTIME_DIVERGENCE_FORENSIC_NEXT__GO_LIVE_35__NO_PRODUCTION`
 
 ## Carril vivo
 
 Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`; DEV `cxorbia-backend-dev`.
 
-Canonical state: `app/docs/CXORBIA-EXECUTION-STATE.json`.  
-Source lock: `app/docs/SOURCE-LOCK-CXORBIA-TYA.md`.  
-Plan: `app/docs/ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
-
-Último HEAD técnico/evidencia previo a este sync: `528d5f0ba51e9712fee79ca0025b3dbcdf74e163`.
-
 ## Avance
 
 - I1 `15/15 PASS`.
 - I2 `20/20 PASS`.
-- I3 `0/25 formal` hasta cierre integral; I3.1→I3.8 PASS; I3.9/I3.10 congelados PASS.
+- I3 `0/25 formal` hasta PASS integral; I3.1→I3.10 preservados según PASS/frozen.
 - I4 `0/25`.
 - I5 `0/15`.
-- **GO-LIVE formal: 35% completado / 65% pendiente.**
+- **Formal 35% / 65% pendiente.**
 - I3 integral PASS → **60%**.
 
-## Qué sí quedó cerrado
+## Iteración cerrada — focal provider identity-link adjudication
 
-Rules I3.11C ya no está pendiente. Run `32163552089`: `PASS_DIRECT_FIRESTORE_RULES_DEPLOY_VERIFIED`, ruleset verificado y gate consumido.
+Run `32171812808`, job `95824491418`, artifact `9337537655`, digest `sha256:4f19be2f3d8ecaa05287cdba914b51608db78c7bbb79f7341182b0d176dac394`.
 
-El Staff runtime posterior alcanza estado estable suficiente para discriminar el bloqueo actual:
-- role `admin`;
-- namespace `staff`;
-- tenant `tya`;
-- membership verificada;
-- 15 períodos;
-- 660 visitas;
-- authority aplicada;
-- router/view/project selector/period selector montados;
-- legal provider authority activa y receipt aceptado;
-- duplicados de visit keys `0`;
-- duplicados shopper IDs `0`.
+Resultado:
+- `PASS_I3_FOCAL_PROVIDER_IDENTITY_LINK_ADJUDICATION_READONLY`;
+- adjudicación `intact_and_applicable_provider_state`;
+- target link existe y conserva exactamente el mapping esperado;
+- normalized applicable/trusted `true`;
+- field diff `[]`;
+- colección `2` documentos / `2` trusted normalized / `0` rejected;
+- provider reads `2` / provider writes `0`;
+- Auth/password/Firestore-data/Rules/Hosting/CloudRun/HR/Storage/Make/Gemini/pagos/Historical Shopper `0`;
+- merge/production `false`.
 
-Por tanto, no se crea otro Admin y no se vuelve a desplegar Rules por la causa ya cerrada.
+El primer harness run `32171482856` falló antes de provider read por shallow checkout. Reads/writes provider `0/0`; no consumió la autorización. Se corrigió el binding al exact prior live HEAD y la única ejecución provider autorizada pasó.
 
-## Bloqueo vivo exacto
+## Qué cambia el diagnóstico
 
-Evidencia: `app/docs/evidence/I3-11C-STAFF-READONLY-CLOSE-LATEST.json`.
+Ya no es correcto afirmar que el target link esté ausente del provider actual. Quedan descartados como causa persistente actual: deletion, deactivation, re-scope, mutation y structural non-applicability.
 
-Código: `I3_11C_EXPECTED_PROVIDER_LINK_NOT_IN_APPLICABLE_RUNTIME_SET`.
+La discrepancia viva es temporal/runtime:
+- Staff run previo: provider link count `1`, target links `0`;
+- focal provider actual: trusted links `2`, target exacto intacto/aplicable.
 
-- live shopper: `shp-57d2e3769946`;
-- canonical esperado: `TYA_GT_0C0BA8856E`;
-- prior authoritative link: `irl_3ed1b9a65d36c5873c1306bae1621e9d`;
-- provider identity links aplicables globales: `1`;
-- target links: `0`;
-- canonical actual target: `null`;
-- agosto canonical: `0`;
-- agosto residual live: `2`.
-
-La evidencia previa prueba que el target link existió, fue provider-ACK/readback y period-independent. La evidencia actual no permite decidir todavía si fue eliminado, desactivado, re-scopeado, mutado o si continúa intacto pero quedó fuera del criterio de aplicabilidad.
-
-## Frozen / no reproceso
-
-Historical Shopper run `31906391682`; TARGET_B Admin; request08; I3.5B; I3.5C-2; I3.8; I3.9/I3.10; Rules I3.11C; HR 15/660; Finance V2/historical; legal V0.4 durable.
-
-Prohibido tratar el HOLD creando otro Admin/Shopper, reseteando/releyendo credenciales históricas, reimportando HR, reconstruyendo Finance, repitiendo I3.9/I3.10 o volviendo a desplegar Rules.
+Todavía no está probado si hubo un write intermedio de provider state o si el runtime anterior leyó/cacheó/filtró un set stale/incompleto.
 
 ## Siguiente bloque exacto
 
-`NEW_AUTH_REQUIRED_FOCAL_PROVIDER_IDENTITY_LINK_READONLY_ADJUDICATION_NO_WRITES`
+`I3_11C_TEMPORAL_WRITE_HISTORY_AND_RUNTIME_STALENESS_FORENSIC_NO_PROVIDER_READS`
 
-Objetivo único: comparar focalmente el prior target link con el único link provider aplicable actual y emitir una clasificación reproducible.
+Sin nueva lectura provider. Debe:
+1. reconstruir cronología de runs/evidencias entre Staff HOLD y focal PASS;
+2. descartar o probar writes a `shopperIdentityLinks` en ese intervalo;
+3. revisar source/event-order/refresh/filtering del protected runtime;
+4. fijar una sola causa reducida y el mínimo siguiente gate.
 
-Límites: read provider focal bajo nueva autorización; todo write/deploy/merge/production `0`; Historical Shopper access `0`; no retry automático.
+## Frozen / no reprocesar
 
-## Si la adjudicación demuestra drift corregible
+Historical Shopper, TARGET_B Admin, I3.9/I3.10, Rules I3.11C, focal provider read, HR 15/660, Finance V2/historical y legal V0.4. No provider repair del target mientras está probado intacto/aplicable.
 
-No se abre diagnóstico general. Se solicita un gate único y exacto para corregir solo el estado canónico demostrado, seguido de readback inmediato y cierre integral I3.
+## Camino restante
 
-PASS mínimo:
-- `shp-57d2e3769946 → TYA_GT_0C0BA8856E`;
-- agosto canonical `2`;
-- agosto residual live `0`;
-- invariantes I3 preservadas;
-- I3.9/I3.10 reutilizados, no rerun.
+Después de I3: I4 por slices visibles — lifecycle shopper, agenda/ejecución/cuestionario/revisión, HR bidireccional, Finanzas/liquidaciones/pagos, multi-proyecto/no-code, roles/notificaciones/integraciones y Academia. Luego I5 freeze/build-lock/preprod/rollback/same-build E2E/gate producción/cutover/smoke/baseline.
 
-## Lo que sigue después de I3
-
-I4 debe producir avance visible, no infraestructura abstracta:
-1. documentos/instrucciones/certificación + disponibles/postulación/asignación;
-2. agenda/reprogramación/cancelación + ejecución/cuestionario/submit/review;
-3. finanzas/liquidaciones/pagos + multi-proyecto/configuración;
-4. roles/scopes/evidencias/Storage/HR bidireccional/integraciones, con Academia/manuales/rutas/notificaciones sincronizados.
-
-I5: freeze sin P0 → build lock → preproducción → rollback → E2E same-build → autorización producción → cutover/smoke → baseline productivo.
-
-## Durabilidad / anti-loop
-
-Este checkpoint solo puede cambiar junto con el mismo `SYNC_EPOCH` en execution state, índice, source lock, plan/current docs y PR. Un gate ejecutado sin ese cierre atómico queda `EXECUTED_UNSYNCED_DO_NOT_ADVANCE`. Una contradicción entre evidencia y fuentes canónicas detiene toda ejecución técnica con `SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION`.
-
-## Producto a largo plazo
-
-TyA es primer tenant; Cinépolis primer proyecto normal configurable. La evolución queda obligada a contratos multi-tenant/no-code y adapters de fuentes, no a hardcodes. Alta objetivo de proyecto: `configurar source → mapear → dry-run → validar → activar`, con fuentes como Sheets/Excel/CSV/API/plataforma/import/link externo.
+TyA/Cinépolis permanecen instancias de validación configurable, no lógica global.
