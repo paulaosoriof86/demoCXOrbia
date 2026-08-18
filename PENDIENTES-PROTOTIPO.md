@@ -1,67 +1,41 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última sincronización:** 2026-08-18 17:26 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I3-INTEGRAL-PASS-15`  
-**Estado:** `NO_UI_WORKAROUND__I3_INTEGRAL_PASS_FROZEN__GO_LIVE_60__I4_SCOPE_RECOVERY_NEXT`
+**Última sincronización:** 2026-08-18 17:41 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I4-SCOPE-SOURCE-GAP-16`  
+**Estado:** `NO_UI_WORKAROUND__I3_FROZEN__GO_LIVE_60__I4_ACTIVE_SOURCE_GAP`
 
-## I3 — cerrado / no pendiente
+## Cerrado / no pendiente
 
-I3 quedó **25/25 PASS integral** y congelado.
-
-Evidencia final Staff/Admin:
-- run `32196648462`;
-- job `95901931320`;
-- artifact `9346121436`;
-- digest `sha256:b3ccc4d9e45a6d42b6ab8a0dcb4cf8e9cfbe6b6ea8409c72524347c7df02189d`;
-- event `push`, attempt `1`;
-- `PASS_READONLY_POST_GATES`;
-- `staffReadonlyExecuted=true`.
-
-Acceptance cerrada:
-- identityMap `shp-57d2e3769946 -> TYA_GT_0C0BA8856E`;
-- agosto canonical `2`;
-- residual `0`;
-- duplicateVisitKeys `0`;
-- duplicateShopperIds `0`;
-- reload/nueva pestaña estables;
-- Historical Shopper access `0`;
-- todos los writes/deploys prohibidos `0`;
-- merge/production false.
-
-Request I3 consumido/disabled en `0ea4bb6d58ba547db2337bd367f10c32f2540e8b`. No repetir.
-
-## Hallazgo metodológico cerrado
-
-El primer transporte final Staff (`6fd1f256...`) no ejecutó Staff porque `push` y `pull_request` compartían la misma clave de concurrencia. El duplicado PR run `32195823892` dejó `staffReadonlyExecuted=false` y seguridad completa en cero.
-
-Fix reusable `84bd3bc571692074ce9e13fa50264ef17c6b55f2`: la clave de `concurrency` incluye `github.event_name`. No cambia producto/UI/provider.
+I1 `15/15 PASS`, I2 `20/20 PASS`, I3 `25/25 PASS` integral y frozen. No existe pendiente vivo de identityMap, autenticación Staff, Historical Shopper, Rules o Hosting dentro de I3. Final Staff run `32196648462`; request consumido en `0ea4bb6d58ba547db2337bd367f10c32f2540e8b`.
 
 ## Pendiente vivo
 
-- I4 `0/25`.
-- I5 `0/15`.
+- I4 `0/25` — no iniciado.
+- I5 `0/15` — no iniciado.
 - **40% restante**.
 
-No existe pendiente vivo de identityMap, autenticación Staff, Historical Shopper, Rules o Hosting dentro de I3.
+### Bloqueo I4 actual
+
+`ACTIVE_SOURCE_GAP__I1_I5_PERCENT_WEIGHTS_PRESENT_BUT_I4_SEMANTIC_SCOPE_NOT_MATERIALIZED`
+
+La recuperación documental encontró el esquema formal I1–I5 `15/20/25/25/15`, pero no una fuente activa que materialice el significado/subgates del I4 actual. El plan canónico heredado disponible usa `CORTE 0B` + `CORTES 1–8` y contiene un `CORTE 4`; no existe evidencia autoritativa de que `CORTE 4 == I4`.
+
+Esto **no se clasifica como bug frontend/producto**. No corresponde parche UI ni cambio backend/provider.
 
 ## Siguiente acción exacta
 
-`RECOVER_CANONICAL_I4_SCOPE_FROM_ACTIVE_PLAN_LOCK__NO_EXECUTION_YET`.
+`MATERIALIZE_CANONICAL_I4_SCOPE_FROM_APPROVED_SOURCE__NO_EXECUTION`
 
-Motivo: el source lock anterior indicaba únicamente “pasar a I4” si I3 cerraba PASS, pero no fija en ese documento el subgate I4 exacto. Debe recuperarse de la fuente canónica vigente antes de tocar código, provider o datos.
+Recuperar la fuente aprobada que definió el esquema I1–I5 y el alcance/subgates de I4, o materializar una instrucción vigente explícita. Luego fijar el primer gate. I4 no se ejecuta antes.
 
 ## No hacer
 
+- No mapear nomenclatura histórica por número.
 - No reabrir I3.
-- No crear otro Admin ni Shopper.
-- No password reset/recovery.
-- No provider identity repair.
-- No Rules redeploy.
-- No otro Hosting identityMap deploy.
-- No parche UI.
-- No nueva candidata/rama/PR/metodología.
-- No merge ni producción.
+- No crear Admin/Shopper ni resetear contraseñas.
+- No provider repair, Rules/Hosting deploy, writes, merge o producción.
+- No parche UI, nueva candidata, rama, PR ni metodología.
 
 ## Claude / Academia
 
-No hay bug frontend derivado de I3 pendiente para Claude. Academia no requiere cambio funcional por este cierre; solo registrar que I3 ya está congelado. Cualquier tarea nueva depende del alcance real de I4.
+Sin pendiente frontend derivado de este bloque. Academia sin cambio funcional: manuales, cursos, rutas por rol y notificaciones sin cambios hasta que exista alcance canónico I4.
