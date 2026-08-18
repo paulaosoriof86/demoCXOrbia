@@ -1,88 +1,53 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última sincronización:** 2026-08-18 14:20 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-R3B-HOLD-DEV-HOSTING-PARITY-05`  
-**Estado:** `R3B_HOLD__NO_UI_WORKAROUND__DEV_HOSTING_MATERIALIZATION_AUTH_NEXT__GO_LIVE_35`
+**Última sincronización:** 2026-08-18 16:18 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-STAFF-PUSH-NAVIGATION-HOLD-07`  
+**Estado:** `NO_UI_WORKAROUND__HOSTING_PASS__STAFF_NAVIGATION_HARNESS_SOURCE_FIX_NEXT__GO_LIVE_35`
 
 ## Pendiente vivo único antes de continuar I3
 
-`NEW_AUTH_REQUIRED_I3_11C_DEV_HOSTING_MATERIALIZE_CORRECTED_IDENTITY_RUNTIME_NO_PROVIDER_DATA_WRITES`.
+`SOURCE_ONLY_STAFF_NAVIGATION_HARNESS_HARDENING_NO_PROVIDER`.
 
-R3-B ya fue ejecutado una sola vez y quedó consumido en HOLD. No se repite automáticamente.
+R3-C Hosting ya pasó y está congelado. La única ejecución Staff/Admin post-Hosting autorizada también ocurrió y quedó consumida: run `32188716203`, job `95878165921`, artifact `9343461375`.
 
-## Evidencia R3-B
+## Bloqueo demostrado
 
-Run `32181137350`, artifact `9340865585`:
-- parity source corregido: PASS;
-- Rules previas: reutilizadas, redeploy `0`;
-- Staff/Admin DEV ejecutado read-only;
-- target canonical actual `null`;
-- agosto canonical `0`;
-- residual live `2`;
-- provider links `1`, target links `0`;
-- duplicados `0/0`;
-- postulación y legal permanecen coherentes en runtime lastState;
-- provider/Auth/Firestore-data/Rules/HR/Storage/Make/Gemini/payment writes `0`;
-- Hosting/CloudRun deploy `0`;
-- Historical Shopper `0`;
-- merge/production false.
+`STAFF_RUNTIME_NAVIGATION_DOMCONTENTLOADED_TIMEOUT_BEFORE_APP_STATE`.
 
-## Causa reducida
+El browser agotó 60 s en `page.goto(... waitUntil:'domcontentloaded')` antes del login. `lastState=null`.
 
-`I3_11C_CORRECTED_SOURCE_NOT_EFFECTIVE_IN_REMOTE_DEV__HOSTING_MATERIALIZATION_REQUIRED`.
+Por tanto en ese run **no fueron observados**:
+- `shp-57d2e3769946 -> TYA_GT_0C0BA8856E`;
+- canonical agosto `2`;
+- residual agosto `0`;
+- duplicados `0/0`.
 
-El adapter corregido en GitHub ya pasa el contrato canónico. El bloqueo ahora no justifica otro cambio de lógica ni provider repair: la corrección R3-A no fue materializada por un deploy Hosting dentro de R3-A/R3-B y el runtime remoto sigue exhibiendo la conducta previa.
+Los valores default del resumen no se usan como verdad del provider/runtime. I3.4/I3.5/I3.7 quedan no adjudicados por el fallo base de navegación; I3.6 Historical Shopper reuse sigue PASS.
 
-## R3-C — próximo gate
+## Qué NO corresponde hacer
 
-Solo con nueva autorización expresa:
-- máximo `1` Firebase Hosting DEV deploy;
-- source exacto de la rama viva;
-- verificar remote fingerprint/hash o semántica inequívoca del contrato corregido;
-- provider identity writes `0`;
-- Firestore data/Auth/Rules/HR/Storage/Make/Gemini/pagos/Historical Shopper/CloudRun `0`;
-- merge/production `false`;
-- no ejecutar Staff automáticamente después del deploy.
+- no repetir run `32188716203`;
+- no tocar provider identity link;
+- no crear/reparar Admin o Shopper;
+- no resetear contraseñas;
+- no redeploy Hosting/Rules;
+- no reimportar HR;
+- no parche UI;
+- no abrir rama, PR, candidata o metodología nueva.
 
-Después del Hosting PASS se abrirá otro gate Staff read-only separado. El cierre I3 exige:
-- `shp-57d2e3769946 → TYA_GT_0C0BA8856E`;
-- agosto canonical `2`;
-- residual live `0`;
-- duplicateVisitKeys `0`;
-- duplicateShopperIds `0`.
+## Próximo bloque
 
-I3 integral PASS → formal **60%**.
+Corregir solo `tools/qa/tya-c6-staff-admin-human-auth-browser-smoke.mjs` para separar navegación HTTP de readiness visible/runtime y conservar diagnóstico fail-closed. Source/static checks únicamente; cero Staff/provider reads, writes, deploy, merge o producción.
+
+Después de source PASS se pedirá una única nueva autorización Staff/Admin read-only para cerrar la observación canonical + agosto. No se repiten R3-A/R3-B/R3-C ni Historical Shopper.
 
 ## Frozen / no reprocesar
 
-I1/I2/I3.1→I3.10; Historical Shopper; TARGET_B Admin; request08; I3.5B/I3.5C-2/I3.8; Rules I3.11C; focal provider read; R3-B actual; HR 15/660; Finance V2/historical; legal V0.4.
+I1/I2/I3.1→I3.10; Historical Shopper; TARGET_B Admin; request08; I3.5B/I3.5C-2/I3.8; Rules I3.11C; focal provider read; R3-B; R3-C Hosting; Staff run `32188716203`; HR 15/660; Finance V2/historical; legal V0.4.
 
-No Admin/Shopper workaround, password/reset histórico, HR reimport, Finance rebuild, Rules redeploy ni provider identity-link repair.
+## I4 — pendiente después de I3
 
-## I4 — pendientes visibles
-
-### A. Shopper lifecycle
-Documentos/instrucciones, certificaciones históricas/nuevas, disponibles, postulación, asignación, perfil/roles/scopes, notificaciones e histórico.
-
-### B. Agenda/visita
-Agendar, reprogramar, cancelar, reglas/ventanas, ejecución, evidencias, cuestionario, submit y review/auditoría.
-
-### C. HR/sync
-Plataforma→HR y HR→Plataforma con IDs exactos, `assignmentSource`, `assignmentSyncStatus`, `lastSyncedAt`, no duplicación y conflictos a revisión.
-
-### D. Finanzas
-Liquidaciones, pagos, junio real, histórico, honorarios/reembolsos configurables y trazabilidad.
-
-### E. Multi-proyecto/no-code
-Project Builder/config: source, mapping, cuestionario/provider/link, documentos/reglas/certificación, agenda, pagos, roles/notificaciones, país/moneda/timezone/locale, integraciones, privacidad/evidencias.
-
-## Claude/prototipo
-
-No parche UI para este bloqueo. TyA = primer tenant; Cinépolis = primer proyecto normal configurable. Cualquier hallazgo generalizable se resuelve en contrato reusable y luego se entrega por archivo/módulo.
-
-## Academia
-
-Sin cambio visible en R3-B. Cursos/manuales/rutas/notificaciones/certificación se actualizan con cada slice funcional de I4.
+Shopper lifecycle; agenda/visita/evidencias/cuestionario/review; sync HR bidireccional; Finanzas/liquidaciones/pagos; multi-proyecto/no-code; roles/notificaciones/integraciones; Academia/manuales/rutas.
 
 ## I5
 
@@ -90,4 +55,4 @@ Freeze sin P0 → SHA/manifest/build-lock/verifier → preproducción → rollba
 
 ## Avance
 
-**Formal 35% / 65% pendiente.** R3-B HOLD consumido; el siguiente avance técnico es Hosting DEV parity, no otra reauditoría ni otra candidata.
+**Formal 35% / 65% pendiente.** I3 integral PASS llevará a **60% / 40%**.
