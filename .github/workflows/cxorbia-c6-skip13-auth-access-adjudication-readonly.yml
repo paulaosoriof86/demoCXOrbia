@@ -1,4 +1,4 @@
-name: CXOrbia C6 SKIP13 Auth Access Adjudication Readonly
+name: CXOrbia I3.11C R3-C Hosting DEV
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ permissions:
   statuses: write
 
 concurrency:
-  group: cxorbia-c6-skip13-auth-access-adjudication-readonly
+  group: cxorbia-i3-11c-r3c-hosting-materialization
   cancel-in-progress: false
 
 defaults:
@@ -17,240 +17,23 @@ defaults:
     shell: bash
 
 env:
-  REQUEST_FILE: backend/config/c6-skip13-auth-access-adjudication-request.json
-  OUT_DIR: .tmp/c6-skip13-auth-access-adjudication
-  PRIVATE_DIR: .tmp/c6-skip13-auth-access-adjudication-private
+  REQUEST_FILE: backend/config/i3-11-identity-link-runtime-bridge-rules-hosting-dev.json
+  OUT_DIR: .tmp/i3-11c-r3c-hosting-materialization
+  PRIVATE_DIR: .tmp/i3-11c-r3c-private
   HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+  CLAIM_CONTEXT: cxorbia/i3-11c-r3c-hosting/claim
+  DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
 
 jobs:
-  adjudicate:
-    name: Adjudicate SKIP13 Auth memberships and claims read-only
-    if: >-
-      github.event.pull_request.number == 7 &&
-      github.event.pull_request.head.ref == 'docs-tya-v6-v71-audit' &&
-      github.event.pull_request.base.ref == 'release/cxorbia-tya-rc-20260630'
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-
-    steps:
-      - name: Checkout exact PR head
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-          ref: ${{ github.event.pull_request.head.sha }}
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      - name: Exclude ephemeral evidence
-        run: printf '%s\n' '.tmp/' 'gha-creds-*.json' >> .git/info/exclude
-
-      - name: Determine whether this is the exact request-only event
-        id: request
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const fs=require('fs');
-          const {execFileSync}=require('child_process');
-          const x=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
-          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
-          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
-          const requestOnly=changed.length===1&&changed[0]===process.env.REQUEST_FILE;
-          const executable=x.enabled===true&&x.consumed===false&&x.status==='authorized_execute_once'&&x.targetHeadSha===parent&&head===process.env.HEAD_SHA&&requestOnly;
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${x.enabled===true?'true':'false'}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`target=${x.targetHeadSha||''}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`request_id=${x.requestId||''}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`executable=${executable?'true':'false'}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`changed_count=${changed.length}\n`);
-          console.log(JSON.stringify({head,parent,requestOnly,executable,changedCount:changed.length}));
-          NODE
-
-      - name: Record non-request event safely
-        if: steps.request.outputs.executable != 'true'
-        run: echo "Not the exact authorized request-only commit; zero provider reads executed."
-
-      - name: Claim one logical execution durably
-        if: steps.request.outputs.executable == 'true'
-        id: claim
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          existing=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/statuses" --paginate --jq '[.[] | select(.context=="cxorbia/c6-skip13-auth-access-adjudication/claim")] | length')
-          if [ "$existing" != '0' ]; then
-            echo 'claimed=false' >> "$GITHUB_OUTPUT"
-            echo 'duplicate=true' >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          gh api --method POST \
-            -H 'Accept: application/vnd.github+json' \
-            "/repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" \
-            -f state='pending' \
-            -f context='cxorbia/c6-skip13-auth-access-adjudication/claim' \
-            -f description='CLAIMED_ONE_LOGICAL_EXECUTION' \
-            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
-          echo 'claimed=true' >> "$GITHUB_OUTPUT"
-          echo 'duplicate=false' >> "$GITHUB_OUTPUT"
-
-      - name: Record duplicate prevention safely
-        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed != 'true'
-        run: echo "Execution already claimed for this request commit; duplicate provider reads prevented."
-
-      - name: Validate exact one-shot request commit
-        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const fs=require('fs');
-          const {execFileSync}=require('child_process');
-          const x=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
-          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
-          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
-          if(x.schemaVersion!=='cxorbia.c6.skip13-auth-access-adjudication.request.v1')throw new Error('request_schema_invalid');
-          if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7)throw new Error('repository_lane_invalid');
-          if(x.enabled!==true||x.consumed!==false||x.status!=='authorized_execute_once'||x.authorizedBy!=='Paula')throw new Error('authorization_state_invalid');
-          if(Number(x.allowedExecutions)!==1||x.targetHeadSha!==parent||head!==process.env.HEAD_SHA)throw new Error('one_shot_target_invalid');
-          if(changed.length!==1||changed[0]!==process.env.REQUEST_FILE)throw new Error('request_commit_scope_invalid:'+changed.join(','));
-          if(x.scope?.auth!==true||x.scope?.memberships!==true||x.scope?.claims!==true||x.scope?.hr!==false||x.scope?.providerWrites!==false)throw new Error('readonly_scope_invalid');
-          if(!Array.isArray(x.profileFingerprints)||x.profileFingerprints.length!==13||new Set(x.profileFingerprints).size!==13)throw new Error('skip13_set_invalid');
-          if(!Array.isArray(x.blockingCandidateFingerprints)||x.blockingCandidateFingerprints.length!==2)throw new Error('blocking_candidate_set_invalid');
-          for(const key of ['authWrites','passwordChanges','passwordResets','membershipWrites','firestoreWrites','rulesWrites','storageWrites','hrWrites','deploy','merge','production','make','gemini','payments']){
-            if(x.safeState?.[key]!==false)throw new Error('unsafe_scope_'+key);
-          }
-          NODE
-
-      - name: Install transient Firebase Admin dependency
-        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
-        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0
-
-      - name: Prepare existing clean project credential privately
-        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
-        env:
-          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-        run: |
-          set -euo pipefail
-          mkdir -p "$PRIVATE_DIR" "$OUT_DIR"
-          node <<'NODE'
-          const fs=require('fs');
-          const raw=process.env.EXISTING_DEV_JSON||'';
-          let parsed=null;try{parsed=JSON.parse(raw);}catch{}
-          if(!(parsed&&parsed.type==='service_account'&&parsed.project_id==='cxorbia-backend-dev'&&parsed.client_email&&parsed.private_key))throw new Error('credential_invalid');
-          fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
-          NODE
-
-      - name: Execute one logical SKIP13 adjudication
-        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
-        id: adjudication
-        continue-on-error: true
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/c6-skip13-auth-access-adjudication-private/credentials.json
-          CXORBIA_TARGET_HEAD: ${{ steps.request.outputs.target }}
-        run: |
-          set +e
-          node --check tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly.mjs
-          check_code=$?
-          if [ "$check_code" != '0' ]; then
-            echo "exit_code=$check_code" >> "$GITHUB_OUTPUT"
-            echo "decision=HOLD_C6_SKIP13_ADJUDICATION_TOOL_SYNTAX" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          node tools/qa/cxorbia-c6-skip13-auth-access-adjudication-readonly.mjs "$REQUEST_FILE"
-          code=$?
-          decision=$(head -n 1 "$OUT_DIR/decision.txt" 2>/dev/null || echo HOLD_C6_SKIP13_ADJUDICATION_NO_DECISION)
-          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
-          echo "decision=$decision" >> "$GITHUB_OUTPUT"
-          exit 0
-
-      - name: Capture repository delta evidence
-        if: always() && steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
-        run: |
-          mkdir -p "$OUT_DIR/repository-status"
-          git status --porcelain=v1 > "$OUT_DIR/repository-status/status.txt"
-          git diff --name-status > "$OUT_DIR/repository-status/tracked.txt"
-          git ls-files --others --exclude-standard > "$OUT_DIR/repository-status/untracked.txt"
-
-      - name: Upload source-safe evidence
-        if: always() && steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: cxorbia-c6-skip13-auth-access-adjudication-${{ github.run_id }}
-          path: |
-            .tmp/c6-skip13-auth-access-adjudication
-            .tmp/cxorbia-readonly-post-gates-runner
-          if-no-files-found: error
-          retention-days: 14
-
-      - name: Publish observable commit status
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-          EXIT_CODE: ${{ steps.adjudication.outputs.exit_code }}
-          DECISION: ${{ steps.adjudication.outputs.decision }}
-        run: |
-          set -euo pipefail
-          STATE=success
-          DESC='SKIPPED_NON_REQUEST_EVENT'
-          if [ '${{ steps.request.outputs.executable }}' = 'true' ] && [ '${{ steps.claim.outputs.claimed }}' != 'true' ]; then
-            DESC='SKIPPED_DUPLICATE_EXECUTION_PREVENTED'
-          elif [ '${{ steps.request.outputs.executable }}' = 'true' ]; then
-            if [ "${EXIT_CODE:-999}" = '0' ]; then
-              DESC="${DECISION:-PASS_C6_SKIP13_ADJUDICATION_COMPLETED}"
-            else
-              STATE=failure
-              DESC='HOLD_C6_SKIP13_ADJUDICATION_TECHNICAL_ERROR'
-            fi
-          fi
-          DESC=$(printf '%s' "$DESC" | cut -c1-140)
-          gh api --method POST \
-            -H 'Accept: application/vnd.github+json' \
-            "/repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" \
-            -f state="$STATE" \
-            -f context='cxorbia/c6-skip13-auth-access-adjudication/overall' \
-            -f description="$DESC" \
-            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
-
-      - name: Finalize claim status
-        if: always() && steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          state=success
-          desc='COMPLETED_ONE_LOGICAL_EXECUTION'
-          if [ '${{ steps.adjudication.outputs.exit_code }}' != '0' ]; then
-            state=failure
-            desc='COMPLETED_WITH_TECHNICAL_HOLD'
-          fi
-          gh api --method POST \
-            -H 'Accept: application/vnd.github+json' \
-            "/repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" \
-            -f state="$state" \
-            -f context='cxorbia/c6-skip13-auth-access-adjudication/claim' \
-            -f description="$desc" \
-            -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
-
-      - name: Cleanup private material
-        if: always()
-        run: rm -rf "$PRIVATE_DIR"
-
-      - name: Enforce technical execution result
-        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
-        run: test "${{ steps.adjudication.outputs.exit_code }}" = "0"
-
-  i3-9-created-shopper-readonly-e2e:
-    name: I3.9 created Shopper real E2E read-only
+  r3c-hosting:
+    name: Materialize corrected identity runtime in DEV Hosting once
     if: >-
       github.event.pull_request.number == 7 &&
       github.event.pull_request.head.ref == 'docs-tya-v6-v71-audit' &&
       github.event.pull_request.base.ref == 'release/cxorbia-tya-rc-20260630'
     runs-on: ubuntu-latest
     timeout-minutes: 25
-    env:
-      I39_PRIVATE_DIR: .tmp/i3-9-created-shopper-private
-      I39_RESULT: .tmp/i3-9-created-shopper/result.json
+
     steps:
       - name: Checkout exact PR head
         uses: actions/checkout@v4
@@ -263,60 +46,196 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Validate I3.9 source and inspect exact request
-        id: i39_request
+      - name: Exclude ephemeral evidence
+        run: printf '%s\n' '.tmp/' 'node_modules/' 'package-lock.json' 'gha-creds-*.json' >> .git/info/exclude
+
+      - name: Determine exact R3-C request-only event
+        id: request
         run: |
           set -euo pipefail
-          node --check tools/qa/cxorbia-i3-9-created-shopper-custom-token-e2e.mjs
-          node --check tools/qa/cxorbia-i3-9-created-shopper-request-control.mjs
-          node tools/qa/cxorbia-i3-9-created-shopper-request-control.mjs --mode inspect
+          mkdir -p "$OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs');const {execFileSync}=require('child_process');
+          const x=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const requestOnly=changed.length===1&&changed[0]===process.env.REQUEST_FILE;
+          const executable=x.enabled===true&&x.consumed===false&&x.status==='authorized_execute_once'&&x.transportNonce==='registered-skip13-pr-request-only-03'&&head===process.env.HEAD_SHA&&requestOnly;
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`executable=${executable?'true':'false'}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`source_head=${x.sourceHeadSha||''}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`prior_commits=${Array.isArray(x.priorTransportCommits)?x.priorTransportCommits.join(','):''}\n`);
+          console.log(JSON.stringify({head,requestOnly,executable,changedCount:changed.length}));
+          NODE
 
-      - name: Install Playwright and Firebase Admin together
-        if: steps.i39_request.outputs.should_execute == 'true'
+      - name: Record non-execution event safely
+        if: steps.request.outputs.executable != 'true'
+        run: echo 'Not the exact R3-C request-only event; zero Hosting deploys and zero provider data operations.'
+
+      - name: Validate exact R3-C authorization and safety
+        if: steps.request.outputs.executable == 'true'
         run: |
           set -euo pipefail
-          npm install --no-save --ignore-scripts --package-lock=false playwright@1.55.0 firebase-admin@13.4.0
-          npx playwright install --with-deps chromium
+          test "$GITHUB_RUN_ATTEMPT" = '1'
+          node <<'NODE'
+          const fs=require('fs');const {execFileSync}=require('child_process');
+          const x=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          if(x.schemaVersion!=='cxorbia.i3.11c.r3c.hosting-materialization.request.v1')throw new Error('request_schema_invalid');
+          if(x.gateId!=='I3_11C_DEV_HOSTING_MATERIALIZE_CORRECTED_IDENTITY_RUNTIME_NO_PROVIDER_DATA_WRITES')throw new Error('gate_id_invalid');
+          if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7)throw new Error('repository_lane_invalid');
+          if(x.firebaseProjectId!=='cxorbia-backend-dev'||x.hostingSite!=='cxorbia-backend-dev'||x.hostingTarget!=='cxorbia-dev'||x.devRootUrl!=='https://cxorbia-backend-dev.web.app')throw new Error('provider_target_invalid');
+          if(x.enabled!==true||x.consumed!==false||x.status!=='authorized_execute_once'||x.authorizedBy!=='Paula'||x.noAutomaticRetry!==true)throw new Error('authorization_state_invalid');
+          if(Number(x.allowedExecutions)!==1||Number(x.maxHostingDeploys)!==1)throw new Error('single_execution_contract_invalid');
+          if(!/^[a-f0-9]{40}$/.test(String(x.sourceHeadSha||'')))throw new Error('source_head_invalid');
+          execFileSync('git',['merge-base','--is-ancestor',x.sourceHeadSha,head]);
+          const appDelta=execFileSync('git',['diff','--name-only',x.sourceHeadSha,head,'--','app/'],{encoding:'utf8'}).trim();
+          if(appDelta)throw new Error('app_drift_after_authorized_source:'+appDelta.replace(/\s+/g,','));
+          for(const k of ['providerIdentityWrites','firestoreDataWrites','authWrites','rulesDeploys','hrWrites','storageWrites','makeCalls','geminiCalls','paymentWrites','historicalShopperAccess','cloudRunDeploys','staffRuntimeExecutions'])if(Number(x[k]||0)!==0)throw new Error('unsafe_scope_'+k);
+          if(x.merge!==false||x.production!==false||x.automaticStaffRuntimeRetry!==false)throw new Error('unsafe_scope_boolean');
+          NODE
 
-      - name: Prepare Firebase DEV credential privately
-        if: steps.i39_request.outputs.should_execute == 'true'
+      - name: Claim one logical execution across all prior transports
+        if: steps.request.outputs.executable == 'true'
+        id: claim
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          IFS=',' read -ra prior <<< '${{ steps.request.outputs.prior_commits }}'
+          for c in "${prior[@]}"; do
+            [ -z "$c" ] && continue
+            n=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${c}/statuses" --paginate --jq "[.[] | select(.context==\"${CLAIM_CONTEXT}\")] | length")
+            if [ "$n" != '0' ]; then
+              echo 'claimed=false' >> "$GITHUB_OUTPUT"
+              echo "Prior R3-C claim exists at $c; duplicate Hosting deploy blocked."
+              exit 0
+            fi
+          done
+          n=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/statuses" --paginate --jq "[.[] | select(.context==\"${CLAIM_CONTEXT}\")] | length")
+          if [ "$n" != '0' ]; then echo 'claimed=false' >> "$GITHUB_OUTPUT"; exit 0; fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" -f state='pending' -f context="$CLAIM_CONTEXT" -f description='CLAIMED_ONE_LOGICAL_R3C_HOSTING_EXECUTION' -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+          echo 'claimed=true' >> "$GITHUB_OUTPUT"
+
+      - name: Prepare existing DEV service account privately
+        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
         env:
           EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
         run: |
           set -euo pipefail
-          mkdir -p "$I39_PRIVATE_DIR" .tmp/i3-9-created-shopper
+          mkdir -p "$PRIVATE_DIR" "$OUT_DIR"
           node <<'NODE'
-          const fs=require('fs');
-          const raw=process.env.EXISTING_DEV_JSON||'';
-          let parsed=null;try{parsed=JSON.parse(raw);}catch{}
-          if(!(parsed&&parsed.type==='service_account'&&parsed.project_id==='cxorbia-backend-dev'&&parsed.client_email&&parsed.private_key))throw new Error('credential_invalid');
-          fs.writeFileSync(process.env.I39_PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
+          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw)}catch{}
+          if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.client_email&&p.private_key))throw new Error('credential_invalid');
+          fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
           NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/${PRIVATE_DIR}/credentials.json" >> "$GITHUB_ENV"
+          echo "SOURCE_DIR=${RUNNER_TEMP}/cxorbia-i3-11c-r3c-source" >> "$GITHUB_ENV"
 
-      - name: Execute exact new Shopper provider/browser E2E read-only
-        if: steps.i39_request.outputs.should_execute == 'true'
-        id: i39_execute
-        continue-on-error: true
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/i3-9-created-shopper-private/credentials.json
+      - name: Install transient Firebase CLI
+        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest >/dev/null 2>&1
+
+      - name: Prepare exact authorized source and prove corrected contract
+        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
         run: |
-          node tools/qa/cxorbia-i3-9-created-shopper-custom-token-e2e.mjs \
-            --request "$RUNNER_TEMP/i3-9-created-shopper-request.json" \
-            --out "$I39_RESULT"
+          set -euo pipefail
+          rm -rf "$SOURCE_DIR"
+          git worktree add --detach "$SOURCE_DIR" '${{ steps.request.outputs.source_head }}'
+          test "$(git -C "$SOURCE_DIR" rev-parse HEAD)" = '${{ steps.request.outputs.source_head }}'
+          cd "$SOURCE_DIR"
+          node --check app/adapters/cxorbia-provider-identity-link-runtime-v1.js
+          node tools/qa/cxorbia-provider-identity-runtime-contract-parity-gate.mjs > "$GITHUB_WORKSPACE/$OUT_DIR/source-parity.json"
+          node -e "const p=require(process.env.GITHUB_WORKSPACE+'/'+process.env.OUT_DIR+'/source-parity.json');if(p.decision!=='PASS_PROVIDER_IDENTITY_RUNTIME_CANONICAL_CONTRACT_PARITY'||p.targetMaterializedApplicable!==true||p.exactTechnicalOnly!==true||p.fuzzyMatching!==false||Number(p.providerWrites)!==0)process.exit(1)"
+          sha256sum app/adapters/cxorbia-provider-identity-link-runtime-v1.js | awk '{print $1}' > "$GITHUB_WORKSPACE/$OUT_DIR/local-adapter-sha256.txt"
 
-      - name: Upload sanitized I3.9 evidence
-        if: always() && steps.i39_request.outputs.should_execute == 'true'
+      - name: Deploy exact authorized source to Firebase Hosting DEV once
+        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
+        id: deploy
+        continue-on-error: true
+        run: |
+          set +e
+          cd "$SOURCE_DIR"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only hosting:cxorbia-dev --project cxorbia-backend-dev --non-interactive
+          code=$?
+          if [ "$code" = '0' ]; then echo 1 > "$GITHUB_WORKSPACE/$OUT_DIR/hosting-deploy-count.txt"; else echo 0 > "$GITHUB_WORKSPACE/$OUT_DIR/hosting-deploy-count.txt"; fi
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Verify served adapter exact byte and SHA256 parity
+        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true' && steps.deploy.outputs.exit_code == '0'
+        id: parity
+        continue-on-error: true
+        run: |
+          set +e
+          local_asset="$SOURCE_DIR/app/adapters/cxorbia-provider-identity-link-runtime-v1.js"
+          remote_asset="$OUT_DIR/remote-provider-identity-link-runtime-v1.js"
+          ok=0
+          for attempt in $(seq 1 40); do
+            rm -f "$remote_asset"
+            if curl -fsSL --retry 2 --retry-delay 1 -H 'Cache-Control: no-cache' "$DEV_ROOT_URL/adapters/cxorbia-provider-identity-link-runtime-v1.js?cxorbia_r3c=${GITHUB_RUN_ID}-${attempt}" -o "$remote_asset" && cmp "$local_asset" "$remote_asset"; then ok=1; break; fi
+            sleep 3
+          done
+          code=1
+          if [ "$ok" = '1' ]; then
+            sha256sum "$remote_asset" | awk '{print $1}' > "$OUT_DIR/remote-adapter-sha256.txt"
+            if [ "$(cat "$OUT_DIR/local-adapter-sha256.txt")" = "$(cat "$OUT_DIR/remote-adapter-sha256.txt")" ] && grep -q 'materialized' "$remote_asset" && grep -q 'tenant_adjudication' "$remote_asset" && grep -q 'fuzzyMatching:false' "$remote_asset"; then code=0; fi
+          fi
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Build sanitized R3-C evidence
+        if: always() && steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
+        id: result
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');const read=p=>fs.existsSync(p)?fs.readFileSync(p,'utf8').trim():null;
+          const parity=fs.existsSync(process.env.OUT_DIR+'/source-parity.json')?JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/source-parity.json','utf8')):null;
+          const deploys=Number(read(process.env.OUT_DIR+'/hosting-deploy-count.txt')||0),localSha=read(process.env.OUT_DIR+'/local-adapter-sha256.txt'),remoteSha=read(process.env.OUT_DIR+'/remote-adapter-sha256.txt');
+          const pass=deploys===1&&parity?.decision==='PASS_PROVIDER_IDENTITY_RUNTIME_CANONICAL_CONTRACT_PARITY'&&localSha&&remoteSha&&localSha===remoteSha;
+          const out={schemaVersion:'cxorbia.i3.11c.r3c.hosting-materialization.evidence.v1',generatedAt:new Date().toISOString(),decision:pass?'PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY':'HOLD_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION',workflowRunId:Number(process.env.GITHUB_RUN_ID),requestCommitSha:process.env.HEAD_SHA,sourceHeadSha:process.env.SOURCE_HEAD||null,hostingDeploys:deploys,sourceParity:parity?.decision||null,localAdapterSha256:localSha,remoteAdapterSha256:remoteSha,remoteExactByteParity:!!(localSha&&remoteSha&&localSha===remoteSha),safety:{providerIdentityWrites:0,firestoreDataWrites:0,authWrites:0,rulesDeploys:0,hrWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,historicalShopperAccess:0,cloudRunDeploys:0,staffRuntimeExecutions:0,passwordChanges:0,passwordResets:0,userCreates:0,userUpdates:0,merge:false,production:false},nextGate:pass?'NEW_AUTH_REQUIRED_I3_11C_STAFF_RUNTIME_CANONICAL_IDENTITY_CLOSE_READONLY_AFTER_HOSTING':'STOP_NO_AUTOMATIC_RETRY'};
+          fs.writeFileSync(process.env.OUT_DIR+'/result.json',JSON.stringify(out,null,2)+'\n','utf8');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`decision=${out.decision}\n`);
+          NODE
+        env:
+          SOURCE_HEAD: ${{ steps.request.outputs.source_head }}
+
+      - name: Upload sanitized R3-C evidence
+        if: always() && steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: i3-9-created-shopper-readonly-${{ github.run_id }}
-          path: .tmp/i3-9-created-shopper/result.json
+          name: i3-11c-r3c-hosting-materialization-${{ github.run_id }}
+          path: .tmp/i3-11c-r3c-hosting-materialization
           if-no-files-found: error
           retention-days: 14
 
-      - name: Cleanup private provider material
+      - name: Publish R3-C overall and finalize one-shot claim
         if: always()
-        run: rm -rf "$I39_PRIVATE_DIR" "$RUNNER_TEMP/i3-9-created-shopper-request.json"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DECISION: ${{ steps.result.outputs.decision }}
+        run: |
+          set -euo pipefail
+          if [ '${{ steps.request.outputs.executable }}' != 'true' ]; then
+            gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" -f state='success' -f context='cxorbia/i3-11c-r3c-hosting/overall' -f description='SKIPPED_NON_REQUEST_EVENT' -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+            exit 0
+          fi
+          if [ '${{ steps.claim.outputs.claimed }}' != 'true' ]; then
+            gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" -f state='success' -f context='cxorbia/i3-11c-r3c-hosting/overall' -f description='SKIPPED_DUPLICATE_EXECUTION_PREVENTED' -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+            exit 0
+          fi
+          state=failure
+          [ "${DECISION:-}" = 'PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY' ] && state=success
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" -f state="$state" -f context='cxorbia/i3-11c-r3c-hosting/overall' -f description="$(printf '%s' "${DECISION:-HOLD_NO_DECISION}" | cut -c1-140)" -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" -f state="$state" -f context="$CLAIM_CONTEXT" -f description="$(printf '%s' "${DECISION:-HOLD_NO_DECISION}" | cut -c1-140)" -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
 
-      - name: Enforce read-only I3.9 execution result
-        if: steps.i39_request.outputs.should_execute == 'true'
-        run: test '${{ steps.i39_execute.outcome }}' = 'success'
+      - name: Cleanup private material
+        if: always()
+        run: |
+          git worktree remove --force "${SOURCE_DIR:-$RUNNER_TEMP/cxorbia-i3-11c-r3c-source}" 2>/dev/null || true
+          rm -rf "$PRIVATE_DIR" node_modules package-lock.json .firebase
+          rm -f firebase-debug.log
+
+      - name: Enforce exact R3-C result
+        if: steps.request.outputs.executable == 'true' && steps.claim.outputs.claimed == 'true'
+        run: test '${{ steps.result.outputs.decision }}' = 'PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY'
