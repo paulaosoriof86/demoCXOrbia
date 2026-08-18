@@ -154,6 +154,14 @@ service cloud.firestore {
         allow delete: if tenantAllowed(tenantId) && isAdmin();
       }
 
+      // Exact provider-backed identity crosswalks are readable only by authenticated
+      // tenant operators. Browser writes stay denied; provider materialization continues
+      // exclusively through gated server/Admin SDK executors.
+      match /shopperIdentityLinks/{identityLinkId} {
+        allow read: if tenantAllowed(tenantId) && isOperator();
+        allow create, update, delete: if false;
+      }
+
       match /notifications/{notificationId} {
         allow read: if tenantAllowed(tenantId) && (
           isOperator() ||
