@@ -93,7 +93,7 @@ jobs:
           const composer='adapters/tya-cumulative-read-model-v2.js';
           const bridge='adapters/tya-protected-auth-hr-authority-bridge-v2.js';
           const a=html.indexOf(provider),b=html.indexOf(composer),c=html.indexOf(bridge);
-          if(a<0||b<0||c<0||!(a<b&&b<c))throw new Error('identity_precompose_load_order_invalid');
+          if(a<0||b<0||c<0||!(b<a&&a<c))throw new Error('identity_precompose_load_order_invalid');
           NODE
 
       - name: Load existing DEV service account privately
