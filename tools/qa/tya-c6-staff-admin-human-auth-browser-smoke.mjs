@@ -100,7 +100,7 @@ async function waitReady(page,label){
 }
 
 async function snapshot(page,label){
-  return page.evaluate(({label,extendedI3,targetLiveShopperId,targetCanonicalShopperId})=>{
+  return page.evaluate(async({label,extendedI3,targetLiveShopperId,targetCanonicalShopperId})=>{
     const ctx=window.CX?.backendAuth?.context?.()||null;
     const authority=window.CX_PROTECTED_AUTH_HR_AUTHORITY||null;
     const handoff=window.CX_C6_LIVE_USER_ADMIN_FRONTEND_HANDOFF||null;
@@ -142,6 +142,48 @@ async function snapshot(page,label){
       String(receipt.role||'')===String(ctx.role||'')&&
       String(receipt.authNamespace||'')===String(ctx.authNamespace||'')
     );
+
+    const providerIdentityRuntime=window.CX_PROVIDER_IDENTITY_LINK_RUNTIME||null;
+    const providerPrecompose=window.CX_PROVIDER_IDENTITY_LINK_PRECOMPOSE||null;
+    const providerIdentityLinks=Array.isArray(window.CX_PROVIDER_IDENTITY_LINKS)?window.CX_PROVIDER_IDENTITY_LINKS:[];
+    const targetProviderLinks=providerIdentityLinks.filter(link=>String(link?.canonicalShopperId||'').trim()===targetCanonicalShopperId||String(link?.sourceIdentityKey||'').trim()===targetLiveShopperId||(Array.isArray(link?.sourceAliases)&&link.sourceAliases.map(v=>String(v||'').trim()).includes(targetLiveShopperId)));
+    const targetProviderLinkSafe=targetProviderLinks.slice(0,3).map(link=>({
+      identityLinkId:String(link?.identityLinkId||link?.id||'').trim()||null,
+      canonicalShopperId:String(link?.canonicalShopperId||'').trim()||null,
+      status:String(link?.status||'').trim()||null,
+      providerAck:link?.providerAck===true,
+      periodIndependent:link?.periodIndependent===true,
+      projectScope:String(link?.projectScope||'').trim()||null,
+      authorityType:String(link?.authorityType||'').trim()||null,
+      sourceSystem:String(link?.sourceSystem||'').trim()||null,
+      sourceIdentityKeyMatchesTarget:String(link?.sourceIdentityKey||'').trim()===targetLiveShopperId,
+      sourceAliasesContainsTarget:Array.isArray(link?.sourceAliases)&&link.sourceAliases.map(v=>String(v||'').trim()).includes(targetLiveShopperId),
+      sourceAliasCount:Array.isArray(link?.sourceAliases)?link.sourceAliases.length:0
+    }));
+    const precomposeApplied=Array.isArray(providerPrecompose?.applied)?providerPrecompose.applied:[];
+    const precomposeConflicts=Array.isArray(providerPrecompose?.conflicts)?providerPrecompose.conflicts:[];
+    const targetPrecomposeConflicts=precomposeConflicts.filter(row=>String(row?.canonicalShopperId||'').trim()===targetCanonicalShopperId||String(row?.identityLinkId||'').trim()===String(targetProviderLinkSafe[0]?.identityLinkId||'')).map(row=>({
+      identityLinkId:String(row?.identityLinkId||'').trim()||null,
+      canonicalShopperId:String(row?.canonicalShopperId||'').trim()||null,
+      matchingProfiles:Number(row?.matchingProfiles??-1),
+      reason:String(row?.reason||'').trim()||null,
+      sourceAliasCount:Array.isArray(row?.sourceAliases)?row.sourceAliases.length:0,
+      sourceAliasesContainTarget:Array.isArray(row?.sourceAliases)&&row.sourceAliases.map(v=>String(v||'').trim()).includes(targetLiveShopperId)
+    }));
+    let providerAsset={fetched:false,httpStatus:null,precomposeMarker:false,bridgeFunctionMarker:false,bridgeInstallMarker:false,fetchError:null};
+    try{
+      const response=await fetch('/adapters/cxorbia-provider-identity-link-runtime-v1.js',{cache:'no-store'});
+      const text=await response.text();
+      providerAsset={
+        fetched:response.ok,
+        httpStatus:response.status,
+        precomposeMarker:text.includes('I3.11B adds a fail-closed precompose bridge'),
+        bridgeFunctionMarker:text.includes('function bridgeComposeInput'),
+        bridgeInstallMarker:text.includes('__providerIdentityLinkPrecomposeV1'),
+        fetchError:null
+      };
+    }catch(error){providerAsset.fetchError=String(error?.name||'fetch_error').slice(0,80);}
+
     return {
       label,
       role:ctx?.role||null,
@@ -170,6 +212,18 @@ async function snapshot(page,label){
       targetCanonicalVisitsAugust:extendedI3?targetCanonicalVisits:null,
       targetLiveResidualVisitsAugust:extendedI3?targetLiveResidualVisits:null,
       exactIdentityContractPresent:Boolean(window.CX_EXACT_IDENTITY_CONTRACT),
+      providerIdentityRuntimePresent:extendedI3?Boolean(providerIdentityRuntime):null,
+      providerIdentityRuntimeStatus:extendedI3?(providerIdentityRuntime?.status||null):null,
+      providerIdentityRuntimeLinkCount:extendedI3?Number(providerIdentityRuntime?.links??providerIdentityLinks.length):null,
+      providerIdentityProviderDocuments:extendedI3?(providerIdentityRuntime?.providerDocuments==null?null:Number(providerIdentityRuntime.providerDocuments)):null,
+      providerIdentityComposerBridgeInstalled:extendedI3?(providerIdentityRuntime?.composerBridgeInstalled===true||window.CX_TYA_CUMULATIVE_READ_MODEL?.__providerIdentityLinkPrecomposeV1===true):null,
+      providerIdentityGlobalLinkCount:extendedI3?providerIdentityLinks.length:null,
+      providerIdentityTargetLinks:extendedI3?targetProviderLinkSafe:[],
+      providerPrecomposePresent:extendedI3?Boolean(providerPrecompose):null,
+      providerPrecomposeAppliedCount:extendedI3?precomposeApplied.length:null,
+      providerPrecomposeConflictCount:extendedI3?precomposeConflicts.length:null,
+      providerPrecomposeTargetConflicts:extendedI3?targetPrecomposeConflicts:[],
+      providerAsset:extendedI3?providerAsset:null,
       duplicateVisitKeys:Number(authority?.duplicateVisitKeys||0),
       duplicateShopperIds:Number(authority?.duplicateShopperIds||0),
       frontendHandoffStatus:handoff?.status||null,
