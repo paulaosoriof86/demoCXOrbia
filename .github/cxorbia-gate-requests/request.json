@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "i3-11-identity-link-runtime-bridge-postdeploy-staff-readonly-20260817-02",
-  "enabled": false,
-  "consumed": true,
+  "requestId": "i3-11b-postdeploy-staff-readonly-adjudication-20260817-03",
+  "enabled": true,
+  "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "16e3e20c70abda73843f2741c3866290b709265c",
+  "targetHeadSha": "906577a5c5f98296e26a0f57c16eae4d6e291285",
   "profile": "I3_STAFF_RUNTIME_AUTHORITY_READONLY",
   "allowedProfiles": ["I3_STAFF_RUNTIME_AUTHORITY_READONLY"],
   "allowedExecutions": 1,
@@ -46,18 +46,10 @@
   "containsPii": false,
   "containsSecrets": false,
   "authorizedBy": "Paula",
-  "authorizationSource": "current_conversation_2026-08-17_I3.11_IDENTITY_LINK_RUNTIME_BRIDGE_RULES_AND_HOSTING_DEV_CLOSE",
+  "authorizationSource": "current_conversation_2026-08-17_definitive_solution_after_I3.11B_hold",
   "sourceLockDocument": "app/docs/SOURCE-LOCK-I3-8-PASS-I3-9-MEMBERSHIP-LOADER-ROOT-CAUSE-SOURCE-FIX-PENDING-DEV-GATE-20260817.md",
   "stopRetryOnFailure": true,
   "noAutomaticRetry": true,
-  "executionOutcome": {
-    "attempted": true,
-    "workflowRunId": 32089409656,
-    "artifactId": 9307869097,
-    "result": "HOLD_READONLY_POST_GATES",
-    "blocker": "I3_5_EXACT_AUGUST_CROSSWALK",
-    "consumedReason": "Single authorized Staff-only provider read executed and returned a deterministic logical blocker. The request is closed to prevent any automatic or stale retry."
-  },
   "expected": {
     "targetLiveShopperId": "shp-57d2e3769946",
     "targetCanonicalShopperId": "TYA_GT_0C0BA8856E",
@@ -69,5 +61,5 @@
     "reuseFrozenI3_9": true,
     "reuseFrozenI3_10": true
   },
-  "purpose": "Closed single-use Staff-only read-only post-deploy verification. It is intentionally disabled after the authorized attempt; no automatic retry is permitted."
+  "purpose": "One final Staff-only read-only adjudication of the already-authorized I3.11B deployed/runtime state. No deploy, no provider writes, no Historical Shopper, no automatic retry."
 }
