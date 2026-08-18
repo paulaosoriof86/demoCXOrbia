@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import admin from 'firebase-admin';
 
 const expectedProject = process.env.CXORBIA_EXPECTED_PROJECT || 'cxorbia-backend-dev';
@@ -43,6 +44,10 @@ async function request(method, url, body){
   return {ok:r.ok, status:r.status, payload};
 }
 
+const sha256=value=>crypto.createHash('sha256').update(String(value||''),'utf8').digest('hex');
+const rulesContent = fs.readFileSync(rulesPath, 'utf8');
+const currentSourceSha256 = sha256(rulesContent);
+
 const iam = await request(
   'POST',
   `https://cloudresourcemanager.googleapis.com/v1/projects/${encodeURIComponent(expectedProject)}:testIamPermissions`,
@@ -60,8 +65,21 @@ const rulesets = await request(
   `https://firebaserules.googleapis.com/v1/projects/${encodeURIComponent(expectedProject)}/rulesets?pageSize=1`
 );
 
+let deployedRulesetName=null;
+let deployedSourceSha256=null;
+let deployedRulesetRead={ok:false,status:0};
+if(release.ok && release.payload?.rulesetName){
+  deployedRulesetName=String(release.payload.rulesetName);
+  const deployed=await request('GET',`https://firebaserules.googleapis.com/v1/${deployedRulesetName}`);
+  deployedRulesetRead={ok:deployed.ok,status:deployed.status};
+  if(deployed.ok){
+    const file=(deployed.payload?.source?.files||[]).find(f=>f?.name==='firestore.rules')||(deployed.payload?.source?.files||[])[0]||{};
+    deployedSourceSha256=sha256(file.content||'');
+  }
+}
+const sourceMatchesDeployed=Boolean(deployedSourceSha256)&&deployedSourceSha256===currentSourceSha256;
+
 // Firebase Rules projects.test validates Source syntax/semantics without creating a Ruleset or Release.
-const rulesContent = fs.readFileSync(rulesPath, 'utf8');
 const sourceTest = await request(
   'POST',
   `https://firebaserules.googleapis.com/v1/projects/${encodeURIComponent(expectedProject)}:test`,
@@ -87,13 +105,27 @@ const cliValidationRequired = [...directApiRequired, 'firebaserules.rulesets.tes
 const missingDirectApi = directApiRequired.filter(p => !granted.has(p));
 const missingCliValidation = cliValidationRequired.filter(p => !granted.has(p));
 const report = {
-  schemaVersion:'cxorbia.corte6-rules-iam-diagnostic.v3',
+  schemaVersion:'cxorbia.corte6-rules-iam-diagnostic.v4',
   generatedAt:new Date().toISOString(),
   projectId:expectedProject,
   readOnly:true,
   providerWrites:0,
   iamTest:{ok:iam.ok,status:iam.status,permissions:permissionMap},
-  firebaserulesRead:{releaseOk:release.ok,releaseStatus:release.status,rulesetsOk:rulesets.ok,rulesetsStatus:rulesets.status},
+  firebaserulesRead:{
+    releaseOk:release.ok,
+    releaseStatus:release.status,
+    rulesetsOk:rulesets.ok,
+    rulesetsStatus:rulesets.status,
+    deployedRulesetReadOk:deployedRulesetRead.ok,
+    deployedRulesetReadStatus:deployedRulesetRead.status
+  },
+  rulesParity:{
+    currentSourceSha256,
+    deployedRulesetName,
+    deployedSourceSha256,
+    sourceMatchesDeployed,
+    staleDeployedRules:deployedSourceSha256!==null && sourceMatchesDeployed===false
+  },
   sourceValidation:{ok:sourceTest.ok,status:sourceTest.status,errorCount:errors.length,warningCount:warnings.length,firstError},
   directApiRequired,
   cliValidationRequired,
@@ -106,4 +138,24 @@ const report = {
 
 fs.mkdirSync(new URL('../../app/docs/evidence/', import.meta.url), {recursive:true});
 fs.writeFileSync(out, JSON.stringify(report,null,2)+'\n','utf8');
-console.log(JSON.stringify({projectId:expectedProject,iamStatus:iam.status,releaseStatus:release.status,rulesetsStatus:rulesets.status,sourceTestStatus:sourceTest.status,rulesetsTestPermission:permissionMap['firebaserules.rulesets.test']===true,sourceErrors:errors.length,firstErrorLine:firstError?.line||0,missingDirectApi,missingCliValidation,directApiDeployReady:report.directApiDeployReady,cliValidationReady:report.cliValidationReady,providerWrites:0}));
+console.log(JSON.stringify({
+  projectId:expectedProject,
+  iamStatus:iam.status,
+  releaseStatus:release.status,
+  rulesetsStatus:rulesets.status,
+  deployedRulesetReadStatus:deployedRulesetRead.status,
+  sourceTestStatus:sourceTest.status,
+  rulesetsTestPermission:permissionMap['firebaserules.rulesets.test']===true,
+  sourceErrors:errors.length,
+  firstErrorLine:firstError?.line||0,
+  currentSourceSha256,
+  deployedRulesetName,
+  deployedSourceSha256,
+  sourceMatchesDeployed,
+  staleDeployedRules:report.rulesParity.staleDeployedRules,
+  missingDirectApi,
+  missingCliValidation,
+  directApiDeployReady:report.directApiDeployReady,
+  cliValidationReady:report.cliValidationReady,
+  providerWrites:0
+}));
