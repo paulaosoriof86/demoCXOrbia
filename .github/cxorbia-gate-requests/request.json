@@ -12,7 +12,7 @@
   "allowedExecutions": 1,
   "executedProviderRead": 1,
   "executeOnlyOnEvent": "push",
-  "sourceTruthSyncEpoch": "CXORBIA-20260818-I3-11C-FOCAL-ADJUDICATION-02",
+  "sourceTruthSyncEpoch": "CXORBIA-20260818-I3-11C-RUNTIME-CONTRACT-DRIFT-03",
   "sourceTruthCanonicalSyncCommit": "08a0344dd1c3ada3af61f44ec2d55c700ea2d767",
   "executionHeadSha": "611c7b82707e5a8bb1ab5cef7c66c7a51e0adb9a",
   "providerProjectId": "cxorbia-backend-dev",
@@ -101,6 +101,6 @@
   },
   "stopRetryOnFailure": true,
   "noAutomaticRetry": true,
-  "nextGate": "I3_11C_TEMPORAL_WRITE_HISTORY_AND_RUNTIME_STALENESS_FORENSIC_NO_PROVIDER_READS",
-  "purpose": "Consumed PASS. Current provider state proves the target link intact and applicable. Do not repair provider identity-link state. Reconcile temporal write history and runtime snapshot/loading divergence before any new provider read or write."
+  "nextGate": "I3_11C_UNIFY_PROVIDER_IDENTITY_RUNTIME_WITH_CANONICAL_ROLL_FORWARD_SOURCE_CORRECTION_NO_PROVIDER_IO",
+  "purpose": "Consumed PASS. Current provider state proves the target link intact and applicable. Root cause is now proven in source as runtime contract drift; do not repair provider state."
 }
