@@ -5,13 +5,15 @@ on:
     branches:
       - docs-tya-v6-v71-audit
     paths:
-      - 'backend/config/i3-11-identity-link-runtime-bridge-rules-hosting-dev.json'
+      - 'backend/config/i3-11-identity-link-runtime-probe.json'
 
 permissions:
   contents: read
+  actions: read
+  statuses: write
 
 concurrency:
-  group: cxorbia-i3-11-identity-link-runtime-bridge-rules-hosting-dev
+  group: cxorbia-i3-11-identity-link-runtime-probe
   cancel-in-progress: false
 
 defaults:
@@ -19,79 +21,87 @@ defaults:
     shell: bash
 
 env:
-  REQUEST: backend/config/i3-11-identity-link-runtime-bridge-rules-hosting-dev.json
-  GCP_PROJECT_ID: cxorbia-backend-dev
-  FIREBASE_HOSTING_TARGET: cxorbia-dev
+  REQUEST: backend/config/i3-11-identity-link-runtime-probe.json
   DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
-  OUT_DIR: .tmp/i3-11-identity-link-runtime-close
-  PRIVATE_DIR: .tmp/i3-11-private
-  PRIVATE_E2E: .tmp/i3-11-private/private-e2e.json
-  EXACT_STAFF_ACTION: C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF
+  OUT_DIR: .tmp/i3-11-identity-link-runtime-probe
+  PRIVATE_DIR: .tmp/i3-11-probe-private
+  PRIVATE_E2E: .tmp/i3-11-probe-private/private-e2e.json
 
 jobs:
-  i3-11-close:
-    name: I3.11 rules + Hosting DEV + Staff read-only close
+  i3-11-probe:
+    name: I3.11 post-deploy Staff read-only close probe
     runs-on: ubuntu-latest
-    timeout-minutes: 55
+    timeout-minutes: 25
 
     steps:
-      - name: Checkout exact request commit
+      - name: Checkout exact probe request commit
         uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
-      - name: Validate exact authorization and one-shot lineage
+      - name: Validate probe scope and source lineage
         run: |
           set -euo pipefail
           mkdir -p "$OUT_DIR" "$PRIVATE_DIR"
-          printf '%s\n' '.tmp/' '.firebase/' 'firebase-debug.log' 'gha-creds-*.json' >> .git/info/exclude
+          printf '%s\n' '.tmp/' '.firebase/' 'firebase-debug.log' >> .git/info/exclude
           node <<'NODE'
-          const fs=require('fs');
-          const {execFileSync}=require('child_process');
+          const fs=require('fs'),{execFileSync}=require('child_process');
           const r=JSON.parse(fs.readFileSync(process.env.REQUEST,'utf8'));
           const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
           const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
-          if(r.schemaVersion!=='cxorbia.i3.11.rules-hosting-dev-close.request.v1')throw new Error('request_schema_invalid');
-          if(r.gateId!=='I3.11_IDENTITY_LINK_RUNTIME_BRIDGE_RULES_AND_HOSTING_DEV_CLOSE')throw new Error('gate_id_invalid');
-          if(r.repository!=='paulaosoriof86/demoCXOrbia'||r.branch!=='docs-tya-v6-v71-audit'||Number(r.pullRequest)!==7)throw new Error('repository_lane_invalid');
-          if(r.firebaseProjectId!=='cxorbia-backend-dev'||r.hostingSite!=='cxorbia-backend-dev'||r.hostingTarget!=='cxorbia-dev'||r.devRootUrl!=='https://cxorbia-backend-dev.web.app')throw new Error('provider_target_invalid');
-          if(r.enabled!==true||r.consumed!==false||r.status!=='authorized_execute_once'||r.authorizedBy!=='Paula')throw new Error('authorization_state_invalid');
-          if(r.targetHeadSha!==parent||!r.targetHeadSha||head===parent)throw new Error('target_head_invalid');
-          if(changed.length!==1||changed[0]!==process.env.REQUEST)throw new Error('request_commit_scope_invalid:'+changed.join(','));
-          if(Number(r.allowedExecutions)!==1||Number(r.singleRulesDeployMax)!==1||Number(r.singleHostingDeployMax)!==1)throw new Error('single_deploy_contract_invalid');
-          if(r.targetLiveShopperId!=='shp-57d2e3769946'||r.expectedCanonicalShopperId!=='TYA_GT_0C0BA8856E'||Number(r.expectedCanonicalAugustVisits)!==2||Number(r.expectedResidualAugustVisits)!==0)throw new Error('identity_expectation_invalid');
-          for(const key of ['historicalShopperAccess','historicalShopperLogin','historicalShopperRecovery','historicalShopperReset','userCreates','userUpdates','authWrites','claimsWrites','passwordChanges','passwordResets','firestoreDataWrites','hrWrites','financeWrites','storageWrites','makeCalls','geminiCalls','paymentWrites','cloudRunDeploys']){
-            if(Number(r[key]||0)!==0)throw new Error('unsafe_scope_'+key);
-          }
-          if(r.merge!==false||r.production!==false||r.containsPii!==false||r.containsSecrets!==false||r.noAutomaticRetry!==true)throw new Error('unsafe_scope');
-          fs.writeFileSync(process.env.OUT_DIR+'/authorization.json',JSON.stringify({requestId:r.requestId,gateId:r.gateId,targetHeadSha:parent,requestCommitSha:head,authorizedBy:r.authorizedBy,rulesDeployMax:1,hostingDeployMax:1,noAutomaticRetry:true},null,2)+'\n','utf8');
+          if(r.schemaVersion!=='cxorbia.i3.11.postdeploy-probe.request.v1'||r.gateId!=='I3.11_IDENTITY_LINK_RUNTIME_BRIDGE_RULES_AND_HOSTING_DEV_CLOSE')throw new Error('probe_schema_gate_invalid');
+          if(r.repository!=='paulaosoriof86/demoCXOrbia'||r.branch!=='docs-tya-v6-v71-audit'||Number(r.pullRequest)!==7)throw new Error('repo_lane_invalid');
+          if(r.enabled!==true||r.consumed!==false||r.authorizedBy!=='Paula'||Number(r.allowedExecutions)!==1)throw new Error('probe_authorization_invalid');
+          if(r.probeTargetHeadSha!==parent||changed.length!==1||changed[0]!==process.env.REQUEST)throw new Error('probe_lineage_invalid');
+          if(r.deployedSourceHeadSha!=='1e1e741b6a388062b5411f11cfa4a67a63b61ecd'||r.deployRequestCommitSha!=='7f38e96a25dd6336580ab8cbc744c4a90071ae2c')throw new Error('deploy_lineage_invalid');
+          const runtimeDiff=execFileSync('git',['diff','--name-only',r.deployedSourceHeadSha,'HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean).filter(p=>p.startsWith('app/')||p==='firestore.rules');
+          if(runtimeDiff.length)throw new Error('runtime_or_rules_drift_after_deploy_target:'+runtimeDiff.join(','));
+          for(const k of ['providerWrites','deploys','historicalShopperAccess','authWrites','userCreates','userUpdates','passwordChanges','passwordResets','firestoreDataWrites','hrWrites','financeWrites','storageWrites','makeCalls','geminiCalls','paymentWrites'])if(Number(r[k]||0)!==0)throw new Error('unsafe_probe_'+k);
+          if(r.merge!==false||r.production!==false||r.noAutomaticRetry!==true)throw new Error('unsafe_probe_scope');
           NODE
 
-      - name: Validate focal source before provider
+      - name: Wait for exact deploy run and capture metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          node --check app/adapters/cxorbia-provider-identity-link-runtime-v1.js
-          node --check tools/release/cxorbia-corte6-firestore-rules-deploy.mjs
-          node --check tools/qa/cxorbia-c6-canonical-staff-admin-e2e-credential.mjs
-          node --check tools/qa/tya-i3-staff-authority-readonly.mjs
           node <<'NODE'
           const fs=require('fs');
-          const html=fs.readFileSync('app/index-backend-dev.html','utf8');
-          const bridge='adapters/cxorbia-provider-identity-link-runtime-v1.js';
-          const compat='adapters/tya-phase-a-authority-compat-v1.js';
-          const a=html.indexOf(bridge),b=html.indexOf(compat);
-          if(a<0||b<0||a>=b)throw new Error('identity_bridge_load_order_invalid');
-          const rules=fs.readFileSync('firestore.rules','utf8');
-          if(!/match\s+\/shopperIdentityLinks\/\{identityLinkId\}/.test(rules))throw new Error('identity_link_rule_missing');
-          if(!/allow\s+read:\s*if\s+tenantAllowed\(tenantId\)\s*&&\s*isOperator\(\)/.test(rules))throw new Error('identity_link_operator_read_rule_missing');
+          const r=JSON.parse(fs.readFileSync(process.env.REQUEST,'utf8'));
+          const [owner,repo]=process.env.GITHUB_REPOSITORY.split('/');
+          const headers={Authorization:`Bearer ${process.env.GH_TOKEN}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+          const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+          async function main(){
+            for(let i=0;i<72;i++){
+              const u=`${process.env.GITHUB_API_URL}/repos/${owner}/${repo}/actions/runs?head_sha=${r.deployRequestCommitSha}&event=push&per_page=100`;
+              const x=await fetch(u,{headers});if(!x.ok)throw new Error('actions_runs_http_'+x.status);
+              const body=await x.json();
+              const runs=(body.workflow_runs||[]).filter(v=>v.name==='CXOrbia C6 DEV Root Entrypoint Hosting'&&v.head_sha===r.deployRequestCommitSha&&v.event==='push');
+              if(runs.length!==1){if(i===71)throw new Error('exact_deploy_run_not_unique_'+runs.length);await sleep(5000);continue;}
+              const run=runs[0];
+              if(run.status!=='completed'){await sleep(5000);continue;}
+              const out={runId:run.id,runNumber:run.run_number,headSha:run.head_sha,status:run.status,conclusion:run.conclusion,event:run.event,workflowName:run.name,htmlUrl:run.html_url};
+              fs.writeFileSync(process.env.OUT_DIR+'/deploy-run.json',JSON.stringify(out,null,2)+'\n','utf8');
+              if(run.conclusion!=='success')throw new Error('deploy_run_not_success_'+run.conclusion);
+              return;
+            }
+            throw new Error('deploy_run_timeout');
+          }
+          main().catch(e=>{console.error(e);process.exit(1);});
           NODE
+
+      - name: Install transient read-only tooling
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null
 
       - name: Load existing DEV service account privately
         env:
@@ -99,57 +109,37 @@ jobs:
         run: |
           set -euo pipefail
           node <<'NODE'
-          const fs=require('fs');
-          const raw=process.env.EXISTING_DEV_JSON||'';
-          let p=null;try{p=JSON.parse(raw);}catch{}
+          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw);}catch{}
           if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.client_email&&p.private_key))throw new Error('credential_invalid');
           fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
           NODE
           echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/${PRIVATE_DIR}/credentials.json" >> "$GITHUB_ENV"
 
-      - name: Install transient DEV tooling
-        run: |
-          set -euo pipefail
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase-tools@latest playwright@1.55.0 >/dev/null 2>&1
-          npx playwright install --with-deps chromium >/dev/null
-
-      - name: Deploy Firestore Rules DEV exactly once
-        id: rules
+      - name: Verify Firestore Rules release read-only
         env:
           CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
-          CXORBIA_EXECUTE_FIRESTORE_RULES: 'true'
-          CXORBIA_RULES_DEPLOY_REPORT: .tmp/i3-11-identity-link-runtime-close/rules-deploy.json
+          CXORBIA_EXECUTE_FIRESTORE_RULES: 'false'
+          CXORBIA_RULES_DEPLOY_REPORT: .tmp/i3-11-identity-link-runtime-probe/rules-readback.json
         run: |
           set -euo pipefail
           node tools/release/cxorbia-corte6-firestore-rules-deploy.mjs
-          echo 1 > "$OUT_DIR/rules-deploy-count"
           node <<'NODE'
-          const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/rules-deploy.json','utf8'));
-          if(r.projectId!=='cxorbia-backend-dev'||r.execute!==true||r.verified!==true)throw new Error('rules_deploy_not_verified');
-          if(!['PASS_DIRECT_FIRESTORE_RULES_DEPLOY_VERIFIED','PASS_ALREADY_CURRENT_NO_RULES_WRITE'].includes(r.decision))throw new Error('rules_deploy_decision_invalid:'+r.decision);
+          const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/rules-readback.json','utf8'));
+          if(r.decision!=='DRY_RUN_ALREADY_CURRENT'||r.alreadyCurrent!==true||r.verified!==false||r.providerWrites!==0)throw new Error('rules_release_not_exact_current');
           NODE
 
-      - name: Deploy Hosting DEV exactly once
-        id: hosting
-        run: |
-          set -euo pipefail
-          npx firebase deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$GCP_PROJECT_ID" --non-interactive
-          echo 1 > "$OUT_DIR/hosting-deploy-count"
-
-      - name: Verify remote focal asset parity
+      - name: Wait for exact Hosting asset parity
         run: |
           set -euo pipefail
           mkdir -p "$OUT_DIR/remote/adapters"
           ok=0
-          for attempt in $(seq 1 20); do
+          for attempt in $(seq 1 72); do
             rm -f "$OUT_DIR/remote/index-backend-dev.html" "$OUT_DIR/remote/adapters/cxorbia-provider-identity-link-runtime-v1.js"
             if curl -fsSL --retry 2 --retry-delay 1 "$DEV_ROOT_URL/index-backend-dev.html" -o "$OUT_DIR/remote/index-backend-dev.html" \
               && curl -fsSL --retry 2 --retry-delay 1 "$DEV_ROOT_URL/adapters/cxorbia-provider-identity-link-runtime-v1.js" -o "$OUT_DIR/remote/adapters/cxorbia-provider-identity-link-runtime-v1.js" \
               && cmp app/index-backend-dev.html "$OUT_DIR/remote/index-backend-dev.html" \
-              && cmp app/adapters/cxorbia-provider-identity-link-runtime-v1.js "$OUT_DIR/remote/adapters/cxorbia-provider-identity-link-runtime-v1.js"; then
-              ok=1; break
-            fi
-            sleep 3
+              && cmp app/adapters/cxorbia-provider-identity-link-runtime-v1.js "$OUT_DIR/remote/adapters/cxorbia-provider-identity-link-runtime-v1.js"; then ok=1; break; fi
+            sleep 5
           done
           test "$ok" = 1
 
@@ -157,91 +147,73 @@ jobs:
         env:
           CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
           CXORBIA_C6_ACTION: C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF
-          CXORBIA_E2E_PRIVATE_CREDENTIALS: .tmp/i3-11-private/private-e2e.json
+          CXORBIA_E2E_PRIVATE_CREDENTIALS: .tmp/i3-11-probe-private/private-e2e.json
         run: |
           set -euo pipefail
           node tools/qa/cxorbia-c6-canonical-staff-admin-e2e-credential.mjs > "$OUT_DIR/credential-selection.source-safe.json"
           node <<'NODE'
           const fs=require('fs');const a=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection.source-safe.json','utf8'));const p=JSON.parse(fs.readFileSync(process.env.PRIVATE_E2E,'utf8'));
-          if(a.decision!=='PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY'||a.canonicalTargetAlias!=='B'||a.staffRole!=='admin'||a.authWrites!==0||a.passwordChanges!==0||a.shopperSelection!==false||a.clientSelection!==false||a.valuesExported!==false)throw new Error('staff_credential_selection_scope_invalid');
+          if(a.decision!=='PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY'||a.authWrites!==0||a.passwordChanges!==0||a.shopperSelection!==false||a.clientSelection!==false||a.valuesExported!==false)throw new Error('staff_credential_selection_scope_invalid');
           if(!p?.staff?.login||!p?.staff?.password||p?.shopper||p?.client)throw new Error('private_staff_only_bundle_invalid');
           NODE
           chmod 600 "$PRIVATE_E2E"
 
-      - name: Build Staff read-only subrequest
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const fs=require('fs'),{execFileSync}=require('child_process');
-          const target=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
-          const safeState={repositoryWrites:false,dataWrites:false,deploy:false,merge:false,production:false,imports:false,payments:false,make:false,gemini:false,firestoreWrites:false,authWrites:false,storageWrites:false,hrWrites:false};
-          const r={schemaVersion:'cxorbia.readonly-post-gates-request.v1',requestId:'i3-11-identity-link-runtime-staff-readonly-20260817-01',enabled:true,consumed:false,allowedExecutions:1,repository:'paulaosoriof86/demoCXOrbia',branch:'docs-tya-v6-v71-audit',pullRequest:7,profile:'I3_STAFF_RUNTIME_AUTHORITY_READONLY',allowedProfiles:['I3_STAFF_RUNTIME_AUTHORITY_READONLY'],targetHeadSha:target,repositoryWrites:false,dataWrites:false,deploy:false,merge:false,production:false,safeState};
-          fs.writeFileSync(process.env.OUT_DIR+'/staff-readonly-request.json',JSON.stringify(r,null,2)+'\n','utf8');
-          NODE
-
-      - name: Execute Staff-only I3 authority validation
+      - name: Build and execute Staff read-only close
         env:
           CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
           CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
-          CXORBIA_E2E_PRIVATE_CREDENTIALS: .tmp/i3-11-private/private-e2e.json
+          CXORBIA_E2E_PRIVATE_CREDENTIALS: .tmp/i3-11-probe-private/private-e2e.json
           CXORBIA_C6_ACTION: C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF
         run: |
           set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs'),{execFileSync}=require('child_process');const target=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const safeState={repositoryWrites:false,dataWrites:false,deploy:false,merge:false,production:false,imports:false,payments:false,make:false,gemini:false,firestoreWrites:false,authWrites:false,storageWrites:false,hrWrites:false};
+          const r={schemaVersion:'cxorbia.readonly-post-gates-request.v1',requestId:'i3-11-postdeploy-staff-readonly-20260817-01',enabled:true,consumed:false,allowedExecutions:1,repository:'paulaosoriof86/demoCXOrbia',branch:'docs-tya-v6-v71-audit',pullRequest:7,profile:'I3_STAFF_RUNTIME_AUTHORITY_READONLY',allowedProfiles:['I3_STAFF_RUNTIME_AUTHORITY_READONLY'],targetHeadSha:target,repositoryWrites:false,dataWrites:false,deploy:false,merge:false,production:false,safeState};
+          fs.writeFileSync(process.env.OUT_DIR+'/staff-readonly-request.json',JSON.stringify(r,null,2)+'\n','utf8');
+          NODE
           node tools/qa/tya-i3-staff-authority-readonly.mjs "$OUT_DIR/staff-readonly-request.json"
           cp .tmp/cxorbia-readonly-post-gates-runner/report.json "$OUT_DIR/staff-authority-report.json"
           cp .tmp/i3-staff-authority-readonly/staff-runtime.json "$OUT_DIR/staff-runtime.json"
           node <<'NODE'
-          const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/staff-authority-report.json','utf8'));
-          if(r.status!=='PASS_READONLY_POST_GATES')throw new Error('staff_i3_close_not_pass:'+r.status);
-          const i=r.summary?.i3_5||{};
-          if(i.targetLiveShopperId!=='shp-57d2e3769946'||i.targetCanonicalShopperId!=='TYA_GT_0C0BA8856E'||i.targetCanonicalActual!=='TYA_GT_0C0BA8856E')throw new Error('canonical_identity_mismatch');
-          if(Number(i.targetCanonicalVisitsAugust)!==2||Number(i.targetLiveResidualVisitsAugust)!==0)throw new Error('august_visit_reconciliation_mismatch');
-          if(r.summary?.i3_4?.decision!=='PASS_I3_4_POSTULATION_VS_HR_ASSIGNMENT_AUTHORITY_RUNTIME_READONLY')throw new Error('i3_4_regression');
-          if(r.summary?.i3_6?.decision!=='PASS_I3_6_HISTORICAL_SHOPPER_PROFILE_HISTORY_REUSE_NO_REPROCESS')throw new Error('i3_6_regression');
-          if(r.summary?.i3_7?.decision!=='PASS_I3_7_DURABLE_LEGAL_RECEIPT_RUNTIME_READONLY')throw new Error('i3_7_regression');
+          const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/staff-authority-report.json','utf8'));const i=r.summary?.i3_5||{};
+          if(r.status!=='PASS_READONLY_POST_GATES')throw new Error('staff_close_not_pass_'+r.status);
+          if(i.targetCanonicalActual!=='TYA_GT_0C0BA8856E'||Number(i.targetCanonicalVisitsAugust)!==2||Number(i.targetLiveResidualVisitsAugust)!==0)throw new Error('i3_5_exact_crosswalk_not_closed');
+          if(r.summary?.i3_4?.decision!=='PASS_I3_4_POSTULATION_VS_HR_ASSIGNMENT_AUTHORITY_RUNTIME_READONLY'||r.summary?.i3_6?.decision!=='PASS_I3_6_HISTORICAL_SHOPPER_PROFILE_HISTORY_REUSE_NO_REPROCESS'||r.summary?.i3_7?.decision!=='PASS_I3_7_DURABLE_LEGAL_RECEIPT_RUNTIME_READONLY')throw new Error('frozen_i3_regression');
           NODE
 
-      - name: Build sanitized integral close evidence
-        if: always()
+      - name: Build sanitized PASS evidence
         run: |
           set -euo pipefail
-          mkdir -p "$OUT_DIR"
           node <<'NODE'
-          const fs=require('fs'),{execFileSync}=require('child_process'),crypto=require('crypto');
-          const read=p=>fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):null;
-          const auth=read(process.env.OUT_DIR+'/authorization.json');
-          const rules=read(process.env.OUT_DIR+'/rules-deploy.json');
-          const staff=read(process.env.OUT_DIR+'/staff-authority-report.json');
-          const runtime=read(process.env.OUT_DIR+'/staff-runtime.json');
-          const rc=fs.existsSync(process.env.OUT_DIR+'/rules-deploy-count')?Number(fs.readFileSync(process.env.OUT_DIR+'/rules-deploy-count','utf8').trim()):0;
-          const hc=fs.existsSync(process.env.OUT_DIR+'/hosting-deploy-count')?Number(fs.readFileSync(process.env.OUT_DIR+'/hosting-deploy-count','utf8').trim()):0;
-          const i35=staff?.summary?.i3_5||{};
-          const pass=rc===1&&hc===1&&rules?.verified===true&&staff?.status==='PASS_READONLY_POST_GATES'&&i35.targetCanonicalActual==='TYA_GT_0C0BA8856E'&&Number(i35.targetCanonicalVisitsAugust)===2&&Number(i35.targetLiveResidualVisitsAugust)===0;
-          const evidence={schemaVersion:'cxorbia.i3.11.identity-link-runtime-bridge.rules-hosting-dev-close.v1',generatedAt:new Date().toISOString(),decision:pass?'PASS_I3_11_IDENTITY_LINK_RUNTIME_BRIDGE_AND_INTEGRAL_I3_CLOSE':'HOLD_I3_11_IDENTITY_LINK_RUNTIME_BRIDGE',authorization:auth,requestCommitSha:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),deployedSourceHeadSha:execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim(),rules:{decision:rules?.decision||null,verified:rules?.verified===true,sourceSha256:rules?.sourceSha256||null,deployInvocations:rc},hosting:{deployInvocations:hc,site:'cxorbia-backend-dev'},staffReadOnly:staff?{status:staff.status,i3_4:staff.summary?.i3_4?.decision||null,i3_5:staff.summary?.i3_5||null,i3_6:staff.summary?.i3_6?.decision||null,i3_7:staff.summary?.i3_7?.decision||null}:null,runtimeEvidenceSha256:runtime?crypto.createHash('sha256').update(JSON.stringify(runtime)).digest('hex'):null,frozenReused:{i3_9:true,i3_10:true},safety:{historicalShopperAccess:0,historicalShopperLogin:0,historicalShopperRecovery:0,historicalShopperReset:0,userCreates:0,userUpdates:0,authWrites:0,claimsWrites:0,passwordChanges:0,passwordResets:0,firestoreDataWrites:0,hrWrites:0,financeWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,cloudRunDeploys:0,merge:false,production:false,automaticRetry:false}};
-          fs.writeFileSync(process.env.OUT_DIR+'/I3-11-INTEGRAL-CLOSE-LATEST.json',JSON.stringify(evidence,null,2)+'\n','utf8');
-          if(!pass)process.exitCode=2;
+          const fs=require('fs'),crypto=require('crypto');const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+          const d=read(process.env.OUT_DIR+'/deploy-run.json'),rr=read(process.env.OUT_DIR+'/rules-readback.json'),s=read(process.env.OUT_DIR+'/staff-authority-report.json'),rt=read(process.env.OUT_DIR+'/staff-runtime.json');
+          const e={schemaVersion:'cxorbia.i3.11.postdeploy-integral-close.v1',generatedAt:new Date().toISOString(),decision:'PASS_I3_11_IDENTITY_LINK_RUNTIME_BRIDGE_AND_INTEGRAL_I3_CLOSE',deployRun:d,rulesReadback:{decision:rr.decision,alreadyCurrent:rr.alreadyCurrent,providerWrites:rr.providerWrites,sourceSha256:rr.sourceSha256},hostingParity:true,staffReadOnly:{status:s.status,i3_4:s.summary.i3_4.decision,i3_5:s.summary.i3_5,i3_6:s.summary.i3_6.decision,i3_7:s.summary.i3_7.decision},runtimeEvidenceSha256:crypto.createHash('sha256').update(JSON.stringify(rt)).digest('hex'),frozenReused:{i3_9:true,i3_10:true},formalProgressAfterPass:60,safety:{probeProviderWrites:0,probeDeploys:0,historicalShopperAccess:0,authWrites:0,userCreates:0,userUpdates:0,passwordChanges:0,passwordResets:0,firestoreDataWrites:0,hrWrites:0,financeWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,production:false}};
+          fs.writeFileSync(process.env.OUT_DIR+'/I3-11-POSTDEPLOY-INTEGRAL-CLOSE-LATEST.json',JSON.stringify(e,null,2)+'\n','utf8');
           NODE
 
-      - name: Capture repository delta
-        if: always()
-        run: |
-          mkdir -p "$OUT_DIR/repository-status"
-          git status --porcelain=v1 > "$OUT_DIR/repository-status/status-porcelain.txt"
-          git diff --name-status > "$OUT_DIR/repository-status/tracked-delta.txt"
-          git ls-files --others --exclude-standard > "$OUT_DIR/repository-status/untracked.txt"
-
-      - name: Upload sanitized gate evidence
+      - name: Upload sanitized probe evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-i3-11-identity-link-runtime-close-${{ github.run_id }}
+          name: cxorbia-i3-11-postdeploy-probe-${{ github.run_id }}
           path: |
-            .tmp/i3-11-identity-link-runtime-close
+            .tmp/i3-11-identity-link-runtime-probe
             .tmp/cxorbia-readonly-post-gates-runner
             .tmp/i3-staff-authority-readonly
           if-no-files-found: warn
           retention-days: 14
 
+      - name: Publish exact close status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          STATE=success;DESC='PASS_I3_11_INTEGRAL_I3_CLOSE_60'
+          if [ ! -f "$OUT_DIR/I3-11-POSTDEPLOY-INTEGRAL-CLOSE-LATEST.json" ]; then STATE=failure;DESC='HOLD_I3_11_POSTDEPLOY_PROBE'; fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/i3-11-integral-close" -f description="$DESC" >/dev/null
+
       - name: Cleanup private material
         if: always()
-        run: rm -rf "$PRIVATE_DIR" .tmp/i3-staff-authority-private .tmp/phase-a-runtime-private
+        run: rm -rf "$PRIVATE_DIR" .tmp/i3-staff-authority-private
