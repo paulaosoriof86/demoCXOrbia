@@ -2,11 +2,8 @@ name: CXOrbia I3.9-I3.11 Exact DEV Shopper Close
 
 # Reuses the retired Corte 4 Hosting workflow file; no new workflow is created.
 on:
-  push:
-    branches:
-      - docs-tya-v6-v71-audit
-    paths:
-      - backend/requests/i3-9-10-11-visible-login-close.json
+  pull_request:
+    types: [synchronize]
 
 permissions:
   contents: read
@@ -31,22 +28,26 @@ env:
 jobs:
   close-i3:
     name: I3.9 visible Shopper + I3.10 dynamic + I3.11 same-build
+    if: >-
+      github.event.pull_request.number == 7 &&
+      github.event.pull_request.head.ref == 'docs-tya-v6-v71-audit' &&
+      github.event.pull_request.base.ref == 'release/cxorbia-tya-rc-20260630'
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
     steps:
-      - name: Checkout exact request commit
+      - name: Checkout exact PR head
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
-      - name: Validate exact authorized one-shot request
+      - name: Inspect exact one-shot request and trigger commit
         id: request
         run: |
           set -euo pipefail
@@ -55,35 +56,40 @@ jobs:
           const fs=require('fs');
           const {execFileSync}=require('child_process');
           const p=process.env.REQUEST_FILE;
+          if(!fs.existsSync(p)){fs.appendFileSync(process.env.GITHUB_OUTPUT,'execute=false\n');process.exit(0);}
           const x=JSON.parse(fs.readFileSync(p,'utf8'));
+          if(x.enabled!==true||x.consumed===true){fs.appendFileSync(process.env.GITHUB_OUTPUT,'execute=false\n');process.exit(0);}
           const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
           const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const workflow='.github/workflows/cxorbia-corte4-hosting-dev-visual.yml';
           const exactGate='I3.9_I3.10_I3.11_EXACT_DEV_DEPLOY_AND_SYNTHETIC_SHOPPER_VISIBLE_LOGIN_CLOSE';
           if(x.schemaVersion!=='cxorbia.i3.9-10-11.visible-login-close.request.v1')throw new Error('REQUEST_SCHEMA_INVALID');
-          if(x.gateId!==exactGate||x.enabled!==true||x.consumed!==false||x.status!=='authorized_execute_once'||x.authorizedBy!=='Paula')throw new Error('AUTHORIZATION_STATE_INVALID');
+          if(x.gateId!==exactGate||x.status!=='authorized_execute_once'||x.authorizedBy!=='Paula')throw new Error('AUTHORIZATION_STATE_INVALID');
           if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7)throw new Error('LANE_INVALID');
           if(x.targetProject!=='cxorbia-backend-dev'||x.tenantId!=='tya'||x.projectId!=='cinepolis'||x.shopperId!=='TYA_GT_393371F88D10F7A8')throw new Error('TARGET_INVALID');
           if(Number(x.allowedExecutions)!==1||Number(x.maxHostingDeploys)!==1||Number(x.maxPasswordChanges)!==1||Number(x.maxCloudRunDeploys)!==0||Number(x.maxCreateUsers)!==0||Number(x.maxClaimWrites)!==0||Number(x.maxFirestoreWrites)!==0||x.noAutomaticRetry!==true)throw new Error('SCOPE_INVALID');
-          if(changed.length!==1||changed[0]!==p)throw new Error('REQUEST_COMMIT_NOT_EXACT:'+changed.join(','));
+          if(changed.length!==1||changed[0]!==workflow)throw new Error('TRIGGER_COMMIT_NOT_EXACT:'+changed.join(','));
           if(!/^[a-f0-9]{40}$/.test(String(x.productTargetHeadSha||'')))throw new Error('PRODUCT_HEAD_INVALID');
           execFileSync('git',['merge-base','--is-ancestor',x.productTargetHeadSha,head]);
           const appDelta=execFileSync('git',['diff','--name-only',x.productTargetHeadSha,head,'--','app/'],{encoding:'utf8'}).trim();
           if(appDelta)throw new Error('PRODUCT_SOURCE_DRIFT_AFTER_AUTHORIZED_HEAD:'+appDelta.replace(/\s+/g,','));
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`execute=true\nproduct_head=${x.productTargetHeadSha}\nrequest_id=${x.requestId}\n`);
-          fs.writeFileSync(process.env.OUT_DIR+'/authorization.json',JSON.stringify({requestId:x.requestId,gateId:x.gateId,requestCommitSha:head,productTargetHeadSha:x.productTargetHeadSha,authorizedBy:'Paula',maxHostingDeploys:1,maxPasswordChanges:1,maxCloudRunDeploys:0,maxCreateUsers:0,maxClaimWrites:0,maxFirestoreWrites:0,noAutomaticRetry:true},null,2)+'\n');
+          fs.writeFileSync(process.env.OUT_DIR+'/authorization.json',JSON.stringify({requestId:x.requestId,gateId:x.gateId,triggerCommitSha:head,productTargetHeadSha:x.productTargetHeadSha,authorizedBy:'Paula',maxHostingDeploys:1,maxPasswordChanges:1,maxCloudRunDeploys:0,maxCreateUsers:0,maxClaimWrites:0,maxFirestoreWrites:0,noAutomaticRetry:true},null,2)+'\n');
           NODE
 
+      - name: Record non-executable synchronization safely
+        if: steps.request.outputs.execute != 'true'
+        run: echo 'No active exact I3.9-I3.11 one-shot request on this synchronization; zero deploy/provider writes.'
+
       - name: Claim single logical execution
+        if: steps.request.outputs.execute == 'true'
         id: claim
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           existing=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/statuses" --paginate --jq '[.[] | select(.context=="cxorbia/i3-9-10-11-visible-close/claim")] | length')
-          if [ "$existing" != "0" ]; then
-            echo 'claimed=false' >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
+          if [ "$existing" != "0" ]; then echo 'claimed=false' >> "$GITHUB_OUTPUT"; exit 0; fi
           gh api --method POST -H 'Accept: application/vnd.github+json' \
             "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
             -f state='pending' -f context='cxorbia/i3-9-10-11-visible-close/claim' \
@@ -91,18 +97,14 @@ jobs:
             -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
           echo 'claimed=true' >> "$GITHUB_OUTPUT"
 
-      - name: Stop duplicate execution safely
-        if: steps.claim.outputs.claimed != 'true'
-        run: echo 'Duplicate execution prevented; no deploy or provider write.'
-
       - name: Authenticate exact Firebase DEV
-        if: steps.claim.outputs.claimed == 'true'
+        if: steps.request.outputs.execute == 'true' && steps.claim.outputs.claimed == 'true'
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
 
       - name: Install transient execution dependencies
-        if: steps.claim.outputs.claimed == 'true'
+        if: steps.request.outputs.execute == 'true' && steps.claim.outputs.claimed == 'true'
         run: |
           set -euo pipefail
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase-tools@latest playwright@1.55.0
@@ -110,7 +112,7 @@ jobs:
           node --check tools/qa/cxorbia-i3-9-10-11-visible-login-close.mjs
 
       - name: Prepare exact authorized product source
-        if: steps.claim.outputs.claimed == 'true'
+        if: steps.request.outputs.execute == 'true' && steps.claim.outputs.claimed == 'true'
         run: |
           set -euo pipefail
           rm -rf "$DEPLOY_TREE"
@@ -120,7 +122,7 @@ jobs:
           test -f "$DEPLOY_TREE/app/adapters/cxorbia-shopper-membership-wiring-v1.js"
 
       - name: Deploy exact authorized source to Hosting DEV once
-        if: steps.claim.outputs.claimed == 'true'
+        if: steps.request.outputs.execute == 'true' && steps.claim.outputs.claimed == 'true'
         id: deploy
         continue-on-error: true
         run: |
@@ -140,7 +142,7 @@ jobs:
           exit 0
 
       - name: Execute canonical visible login and integral I3 close
-        if: steps.claim.outputs.claimed == 'true' && steps.deploy.outputs.exit_code == '0'
+        if: steps.request.outputs.execute == 'true' && steps.claim.outputs.claimed == 'true' && steps.deploy.outputs.exit_code == '0'
         id: execute
         continue-on-error: true
         env:
@@ -156,7 +158,7 @@ jobs:
           exit 0
 
       - name: Record deploy failure without password write
-        if: steps.claim.outputs.claimed == 'true' && steps.deploy.outputs.exit_code != '0'
+        if: steps.request.outputs.execute == 'true' && steps.claim.outputs.claimed == 'true' && steps.deploy.outputs.exit_code != '0'
         run: |
           node <<'NODE'
           const fs=require('fs');fs.mkdirSync(process.env.OUT_DIR,{recursive:true});
@@ -164,7 +166,7 @@ jobs:
           NODE
 
       - name: Upload sanitized execution evidence
-        if: always() && steps.claim.outputs.claimed == 'true'
+        if: always() && steps.request.outputs.execute == 'true' && steps.claim.outputs.claimed == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: i3-9-10-11-visible-shopper-close-${{ github.run_id }}
@@ -173,7 +175,7 @@ jobs:
           retention-days: 14
 
       - name: Finalize one-shot claim
-        if: always() && steps.claim.outputs.claimed == 'true'
+        if: always() && steps.request.outputs.execute == 'true' && steps.claim.outputs.claimed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -195,7 +197,7 @@ jobs:
           rm -f firebase-debug.log
 
       - name: Enforce integral result
-        if: steps.claim.outputs.claimed == 'true'
+        if: steps.request.outputs.execute == 'true' && steps.claim.outputs.claimed == 'true'
         run: |
           test '${{ steps.deploy.outputs.exit_code }}' = '0'
           test '${{ steps.execute.outputs.exit_code }}' = '0'
