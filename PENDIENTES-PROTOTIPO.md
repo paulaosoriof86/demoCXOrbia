@@ -1,150 +1,82 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última sincronización:** 2026-08-18 11:51 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-ROOT-CAUSE-RECOVERY-01`  
-**Estado:** `I3_11C_PROVIDER_LINK_APPLICABILITY_HOLD__NO_FRONTEND_WORKAROUND__I4_VISIBLE_SLICES_PRESERVED__GO_LIVE_35`
+**Última sincronización:** 2026-08-18 12:37 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-FOCAL-ADJUDICATION-02`  
+**Estado:** `I3_11C_PROVIDER_LINK_INTACT__TEMPORAL_RUNTIME_FORENSIC_NEXT__NO_FRONTEND_WORKAROUND__GO_LIVE_35`
 
 ## Pendiente vivo único antes de continuar I3
 
-`NEW_AUTH_REQUIRED_FOCAL_PROVIDER_IDENTITY_LINK_READONLY_ADJUDICATION_NO_WRITES`.
+`I3_11C_TEMPORAL_WRITE_HISTORY_AND_RUNTIME_STALENESS_FORENSIC_NO_PROVIDER_READS`.
 
-No es una corrección de UI. Se debe adjudicar por lectura provider focal qué ocurrió con el link previamente materializado:
-- target live `shp-57d2e3769946`;
-- canonical esperado `TYA_GT_0C0BA8856E`;
-- prior link `irl_3ed1b9a65d36c5873c1306bae1621e9d`;
-- global applicable links `1`;
-- target applicable links `0`;
-- agosto canonical `0`;
-- agosto residual live `2`.
+La lectura focal provider ya cerró PASS:
+- exact target link existe;
+- mapping `shp-57d2e3769946 → TYA_GT_0C0BA8856E` intacto;
+- normalized applicable/trusted;
+- field diff `[]`;
+- provider actual: 2 trusted normalized links, 0 rejected;
+- provider writes 0.
 
-Clasificación requerida: `deleted | deactivated | re_scoped | mutated | intact_but_nonapplicable`.
+No es un pendiente UI y **no requiere reparar el provider link**. Debe explicarse por qué el Staff runtime previo observó 1 link y 0 target links.
 
-Rules I3.11C ya están PASS/verified/consumed. Staff/Admin existe y runtime está estable. No volver a esos diagnósticos ni crear workarounds visuales.
+## R2B — forensic siguiente
 
-## No reprocesar
+Solo GitHub/source/evidence, provider reads `0`:
+- cronología Staff HOLD → focal PASS;
+- buscar cualquier ejecución con capacidad/write sobre `shopperIdentityLinks` en el intervalo;
+- inspeccionar identidad/provider runtime load order;
+- refresh/bus events/cache/signature/filtering;
+- determinar si hubo provider state posterior o runtime stale/incomplete;
+- cerrar `proven/disproven/unknown` y el mínimo siguiente gate.
 
-- I1/I2/I3.1→I3.8;
-- I3.9/I3.10 congelados PASS;
-- Historical Shopper run `31906391682`;
-- TARGET_B Admin;
-- request08;
-- I3.5B/I3.5C-2/I3.8;
-- Rules I3.11C run `32163552089`;
-- HR 15/660;
-- Finance V2/historical;
-- legal V0.4 durable.
+## Frozen / no reprocesar
 
-No crear otro Admin/Shopper como workaround. No credential reset/recovery histórico. No HR reimport. No Finance rebuild. No Rules redeploy por la causa ya cerrada.
+I1/I2/I3.1→I3.10 según PASS; Historical Shopper; TARGET_B Admin; request08; I3.5B/I3.5C-2/I3.8; Rules I3.11C; focal provider read `32171812808`; HR 15/660; Finance V2/historical; legal V0.4.
+
+No Admin/Shopper workaround, password/reset histórico, HR reimport, Finance rebuild, Rules redeploy ni provider identity-link repair.
 
 ## Criterio de cierre I3
 
-Si la adjudicación demuestra drift corregible, se debe documentar primero el write exacto requerido y pedir un solo gate. Después:
-- corrección canónica mínima;
-- readback inmediato;
-- same-state closure;
-- `shp-57d2e3769946 → TYA_GT_0C0BA8856E`;
-- `2` visitas agosto canonical;
-- `0` residuales live;
+Después de probar causa y aplicar solo el mínimo cambio/validación autorizado:
+- `shp-57d2e3769946 → TYA_GT_0C0BA8856E` en runtime Staff;
+- agosto canonical `2`;
+- residual live `0`;
 - duplicados `0`;
+- invariantes preservadas;
 - I3.9/I3.10 reutilizados sin rerun.
 
-Solo así formal 35% → 60%.
+I3 integral PASS → formal **60%**.
 
-## Pendientes I4 — visibles y Phase A
+## I4 — pendientes visibles
 
-### Slice A — Shopper onboarding/operación
-- documentos/instrucciones;
-- certificaciones históricas presentadas y nuevas;
-- disponibles;
-- postulación;
-- asignación;
-- perfil/roles/scopes;
-- notificaciones;
-- histórico completo sin regresión.
+### A. Shopper lifecycle
+Documentos/instrucciones, certificaciones históricas/nuevas, disponibles, postulación, asignación, perfil/roles/scopes, notificaciones e histórico.
 
-### Slice B — agenda y visita
-- agendar;
-- reprogramar;
-- cancelar;
-- ventanas/reglas por configuración;
-- ejecución;
-- evidencias;
-- cuestionario;
-- submit;
-- review/auditoría;
-- estados dinámicos.
+### B. Agenda/visita
+Agendar, reprogramar, cancelar, ventanas/reglas, ejecución, evidencias, cuestionario, submit, review/auditoría, estados dinámicos.
 
-### Slice C — HR/sync
-- Plataforma→HR y HR→Plataforma;
-- `tenantId/projectId/visitId/hrRowId/shopperId` exactos;
-- `assignmentSource/assignmentSyncStatus/lastSyncedAt`;
-- no duplicación;
-- conflicto a revisión;
-- Make solo bajo gate del bloque real.
+### C. HR/sync
+Plataforma→HR y HR→Plataforma con IDs exactos, `assignmentSource`, `assignmentSyncStatus`, `lastSyncedAt`, no duplicación y conflictos a revisión.
 
-### Slice D — Finanzas
-- liquidaciones;
-- estado de pagos;
-- histórico preservado;
-- junio operativo;
-- honorarios/reembolsos configurables;
-- trazabilidad por tenant/proyecto/visita/shopper.
+### D. Finanzas
+Liquidaciones, pagos, junio real, histórico, honorarios/reembolsos configurables y trazabilidad.
 
-### Slice E — multi-proyecto / no-code
-- creación/configuración de nuevos proyectos desde plataforma;
-- fuente de roadmap configurable;
-- mapping;
-- cuestionario/provider/link policy;
-- documentos/reglas/certificación;
-- agenda/pagos/integraciones;
-- roles/notificaciones;
-- country/currency/timezone/locale;
-- evidencia/privacidad.
+### E. Multi-proyecto/no-code
+Project Builder/config: source, mapping, cuestionario/provider/link, documentos/reglas/certificación, agenda, pagos, roles/notificaciones, país/moneda/timezone/locale, integraciones, privacidad/evidencias.
 
-## Backlog reusable para prototipo/Claude
+## Backlog reusable Claude/prototipo
 
-El objetivo no-code/comercializable queda explícito:
+TyA = primer tenant. Cinépolis = primer proyecto. Cualquier hallazgo generalizable pasa a contrato reusable y handoff por archivo/módulo; nunca hardcode global.
 
-**TyA no es el producto; es el primer tenant. Cinépolis no es el producto; es el primer proyecto configurable.**
+Fuentes objetivo: Sheets, Excel, CSV, API, plataforma nativa, import manual, proveedor/link externo. Alta objetivo: `crear → configurar source → mapear → dry-run → validar → activar → monitorear`.
 
-Fuentes roadmap objetivo:
-- Google Sheets;
-- Excel;
-- CSV;
-- API;
-- plataforma nativa;
-- import manual;
-- proveedor/plataforma externa;
-- link externo cuando aplique.
+## Academia
 
-Flujo objetivo de alta:
-`crear proyecto → configurar source → mapear → dry-run → validar → activar → monitorear`.
+Cursos/manuales/rutas/notificaciones/certificación se actualizan en paralelo a cada slice funcional.
 
-Todo hallazgo local debe clasificarse y, si es generalizable, pasar a contrato reusable. Claude recibe requerimiento por archivo/módulo + contrato backend + criterios de aceptación; backend no parchea módulos silenciosamente.
+## I5
 
-## Academia / manuales / notificaciones
+Freeze sin P0 → SHA/manifest/build-lock/verifier → preproducción → rollback → same-build E2E → gate producción → cutover/smoke → baseline → continuidad post-go-live.
 
-Pendiente transversal en cada slice, no al final:
-- cursos/manuales;
-- rutas por rol;
-- instrucciones de proyecto;
-- certificaciones;
-- notificaciones;
-- privacidad/legal cuando aplique.
+## Avance
 
-## Source truth / anti-loop
-
-Pendiente permanente de cada cierre: sincronizar `CXORBIA-EXECUTION-STATE.json`, índice, source lock, checkpoint, plan/current docs y PR con un mismo `SYNC_EPOCH` y verificarlo. Si falta, el gate queda `EXECUTED_UNSYNCED_DO_NOT_ADVANCE`.
-
-## I5 pendiente
-
-Freeze sin P0 → SHA/manifest/build-lock/verifier → preproducción → rollback → same-build E2E → gate producción → cutover/smoke → baseline productivo → continuidad post-go-live con el mismo protocolo.
-
-## Clasificación
-
-- **Reusable CXOrbia:** Project Builder/config sources, sync exacto, no-code contracts, anti-loop documental.
-- **Exclusivo TyA:** reconciliación/evidencia operativa actual.
-- **Exclusivo Cinépolis:** primera configuración y datos de Phase A, sin hardcode global.
-- **Claude/prototipo:** slices I4 y Project Builder futuro.
-- **Academia:** sincronización transversal de material operativo.
-- **Sin impacto Claude inmediato:** focal provider identity-link read.
+**Formal 35% / 65% pendiente.** R2 focal provider adjudication 100% cerrado; R2B es el siguiente bloque operacional. No se suman puntos formales hasta I3 integral PASS.
