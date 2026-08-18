@@ -19,9 +19,12 @@
   "sourceHeadSha": "e04f86e0b599cf7e96ebe9b827ea50ee7d494bd1",
   "priorTransportCommits": [
     "abc44804eda81491cff06d0391a3dbaa9bb693e8",
-    "689609cdc25b9cd469a9fa7743c4c8d74a419d8a"
+    "689609cdc25b9cd469a9fa7743c4c8d74a419d8a",
+    "e04f86e0b599cf7e96ebe9b827ea50ee7d494bd1",
+    "0c893362fa87ea62d158bf34101f1a1f7ee03c3a",
+    "f9a6f6abb6a76db7e7e822a42a5ed85c7c02cc06"
   ],
-  "transportNonce": "git-ref-fast-forward-01",
+  "transportNonce": "pr-synchronize-request-only-02",
   "allowedExecutions": 1,
   "maxHostingDeploys": 1,
   "providerIdentityWrites": 0,
