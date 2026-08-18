@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.11c.r3c.hosting-materialization.request.v1",
-  "requestId": "i3-11c-r3c-dev-hosting-materialize-identitymap-postcompose-20260818-02",
+  "requestId": "i3-11c-r3c-dev-hosting-materialize-identitymap-postcompose-20260818-03",
   "gateId": "I3_11C_DEV_HOSTING_MATERIALIZE_CORRECTED_IDENTITY_RUNTIME_NO_PROVIDER_DATA_WRITES",
   "enabled": true,
   "consumed": false,
@@ -16,8 +16,13 @@
   "hostingSite": "cxorbia-backend-dev",
   "hostingTarget": "cxorbia-dev",
   "devRootUrl": "https://cxorbia-backend-dev.web.app",
-  "sourceHeadSha": "a4c85480b10678eca83aae5781d255a27a994446",
+  "sourceHeadSha": "3a6d33810719f4b98ea0dd10a4ec7408d043f336",
+  "sourceRuntimeAdapterBlobSha": "c1c0627f34243e43b52219198ea023b0af387041",
   "priorTransportCommits": [],
+  "preclaimFailedTransports": [
+    "7ccd1f7c1659ebade36d5019ea9b5833061c7372"
+  ],
+  "preclaimFailureReason": "app_docs_only_drift_false_positive_before_claim_before_firebase_before_deploy",
   "transportNonce": "registered-skip13-pr-request-only-03",
   "allowedExecutions": 1,
   "maxHostingDeploys": 1,
