@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "cxorbia.i3.11c.focal-provider-identity-link-adjudication-evidence.v1",
+  "syncEpoch": "CXORBIA-20260818-I3-11C-FOCAL-ADJUDICATION-02",
+  "generatedAt": "2026-08-18T12:35:21-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "providerProjectId": "cxorbia-backend-dev",
+  "requestId": "i3-11c-focal-provider-identity-link-readonly-20260818-01",
+  "authorizationId": "PAULA_CURRENT_CONVERSATION_FOCAL_PROVIDER_IDENTITY_LINK_READONLY_20260818_1215",
+  "execution": {
+    "workflow": "CXORBIA_READONLY_POST_GATES_RUNNER",
+    "runId": 32171812808,
+    "jobId": 95824491418,
+    "headSha": "611c7b82707e5a8bb1ab5cef7c66c7a51e0adb9a",
+    "artifactId": 9337537655,
+    "artifactDigest": "sha256:4f19be2f3d8ecaa05287cdba914b51608db78c7bbb79f7341182b0d176dac394",
+    "decision": "PASS_I3_FOCAL_PROVIDER_IDENTITY_LINK_ADJUDICATION_READONLY",
+    "profile": "I3_FOCAL_PROVIDER_IDENTITY_LINK_ADJUDICATION_READONLY"
+  },
+  "priorHarnessHold": {
+    "runId": 32171482856,
+    "jobId": 95823501534,
+    "artifactId": 9337427066,
+    "cause": "SHALLOW_CHECKOUT_SOURCE_TRUTH_ANCESTRY_OBJECT_NOT_AVAILABLE",
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authorizationConsumed": false,
+    "classifiedAs": "HARNESS_PREFLIGHT_FAILURE_NOT_PRODUCT_OR_PROVIDER_FAILURE"
+  },
+  "target": {
+    "priorIdentityLinkId": "irl_3ed1b9a65d36c5873c1306bae1621e9d",
+    "targetLiveShopperId": "shp-57d2e3769946",
+    "expectedCanonicalShopperId": "TYA_GT_0C0BA8856E"
+  },
+  "exactPriorDocument": {
+    "exists": true,
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "projectScope": "cinepolis",
+    "sourceSystem": "hr",
+    "sourceIdentityKey": "shp-57d2e3769946",
+    "sourceIdentityAliases": ["shp-57d2e3769946"],
+    "canonicalShopperId": "TYA_GT_0C0BA8856E",
+    "status": "materialized",
+    "authorityType": "tenant_adjudication",
+    "authorityRefPresent": true,
+    "periodIndependent": true,
+    "hasPeriodScope": false,
+    "sourceSafe": true,
+    "normalizedApplicable": true,
+    "normalizedReason": "applicable",
+    "fieldDiffAgainstMaterializedExpectedState": []
+  },
+  "tenantIdentityLinkObservation": {
+    "collection": "tenants/tya/shopperIdentityLinks",
+    "documentsObserved": 2,
+    "trustedNormalizedLinks": 2,
+    "rejectedLinks": 0,
+    "priorStaffRuntimeObservedLinkCount": 1,
+    "priorStaffRuntimeObservedTargetLinkCount": 0
+  },
+  "adjudication": "intact_and_applicable_provider_state",
+  "proven": [
+    "The exact I3.5C-2 target identity-link document currently exists in Firebase DEV.",
+    "Its structural fields match the expected period-independent TyA/Cinepolis HR source-to-canonical mapping.",
+    "The current reusable identity-roll-forward contract normalizes the target document as applicable/trusted.",
+    "The tenant identity-link collection currently contains two normalized trusted links and zero rejected links.",
+    "The successful focal read performed one exact-document read and one tenant identity-link collection observation with zero provider writes."
+  ],
+  "disprovenAsPersistentCurrentProviderCause": [
+    "target identity-link deleted",
+    "target identity-link deactivated",
+    "target identity-link re-scoped away from Cinepolis",
+    "target identity-link source/canonical mutation",
+    "target identity-link structurally non-applicable under the current contract"
+  ],
+  "unknown": [
+    "Whether provider state changed between the prior Staff runtime run and this focal observation.",
+    "Whether the prior Staff runtime used a stale/earlier provider snapshot, filtered a valid target link, or failed to refresh after provider state became available.",
+    "Why the prior Staff runtime observed one link while the current provider observation contains two trusted links."
+  ],
+  "safety": {
+    "providerReads": 2,
+    "authReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "userCreates": 0,
+    "userUpdates": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "firestoreDataWrites": 0,
+    "rulesDeploys": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "hrWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "historicalShopperAccess": 0,
+    "merge": false,
+    "production": false,
+    "automaticRetry": false
+  },
+  "decision": "PASS_FOCAL_PROVIDER_STATE_INTACT__NO_PROVIDER_REPAIR_AUTHORIZED_OR_JUSTIFIED",
+  "nextFrontier": "I3_11C_TEMPORAL_WRITE_HISTORY_AND_RUNTIME_STALENESS_FORENSIC_NO_PROVIDER_READS"
+}
