@@ -1,104 +1,64 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Última sincronización:** 2026-08-18 11:51 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-ROOT-CAUSE-RECOVERY-01`  
-**Estado:** `SOURCE_TRUTH_SYNCHRONIZED__I3_11C_IDENTITY_LINK_APPLICABILITY_HOLD__GO_LIVE_35__NO_PRODUCTION`
+**Última sincronización:** 2026-08-18 12:37 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-FOCAL-ADJUDICATION-02`  
+**Estado:** `SOURCE_TRUTH_SYNCHRONIZED__I3_11C_PROVIDER_LINK_INTACT__RUNTIME_OBSERVATION_DIVERGENCE_FORENSIC__GO_LIVE_35__NO_PRODUCTION`
 
-## Regla de lectura obligatoria
+## Orden de lectura obligatorio
 
-Este índice es el único punto de entrada para continuidad. Antes de planear, auditar, modificar, pedir información, ejecutar un gate o cerrar un bloque, se debe leer en este orden:
+1. `app/docs/CXORBIA-EXECUTION-STATE.json`
+2. `app/docs/SOURCE-LOCK-CXORBIA-TYA.md`
+3. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`
+4. `app/docs/ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`
+5. `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`
+6. evidencia activa indicada por `CXORBIA-EXECUTION-STATE.json`
+7. PR #7 vivo
 
-1. `app/docs/CXORBIA-EXECUTION-STATE.json` — estado machine-readable actual;
-2. `app/docs/SOURCE-LOCK-CXORBIA-TYA.md` — lock técnico estable;
-3. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md` — checkpoint humano vigente;
-4. `app/docs/ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md` — plan Phase A vigente, corregido y congelado;
-5. `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`;
-6. evidencia exacta indicada por `CXORBIA-EXECUTION-STATE.json`;
-7. PR #7 vivo.
-
-Además permanecen vigentes como marco maestro, sin sustituir el estado operativo machine-readable:
-- `00-REGLAS-MAESTRAS-CONTEXTO-CONTINUIDAD-CXORBIA-TYA-ACTUALIZADO-20260704.md` o su versión actualizada activa;
-- `ADDENDUM-MAESTRO-ACADEMIA-PROFUNDA-INTERACTIVA-CXORBIA-TYA-20260704.md`;
-- `ADDENDUM-MAESTRO-PATRONES-REUTILIZABLES-CXORBIA-20260707.md`;
-- `ADDENDUM-MAESTRO-ANTIDESVIO-PRODUCCION-REAL-LEGACY-CLAUDE-CXORBIA-TYA-20260709.md`;
-- addendum vigente de ejecución directa/empalmes file-aware.
-
-## Prevalencia y antidesincronización
-
-- Los documentos fechados de source lock, checkpoints, addenda y evidencias anteriores son **historia de auditoría**, no instrucciones ejecutables, salvo que este índice los marque expresamente como activos.
-- Ante contradicción entre una fuente histórica y `CXORBIA-EXECUTION-STATE.json`, prevalece el estado canónico sincronizado con evidencia viva y source lock estable.
-- Si el HEAD/evidencia demuestra un estado más nuevo que cualquiera de las fuentes canónicas, se declara `SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION`. Se sincroniza documentación antes de cualquier provider/runtime action.
-- Un gate ejecutado pero no sincronizado queda en `EXECUTED_UNSYNCED_DO_NOT_ADVANCE`; no autoriza el siguiente gate.
-- El verificador obligatorio es `tools/verify-cxorbia-source-truth-sync.mjs`.
+Permanecen vigentes como marco maestro las reglas maestras, Academia, patrones reutilizables, antidesvío y ejecución directa/empalmes declarados activos por este proyecto. Los source locks/addenda fechados son historia salvo activación expresa desde este índice.
 
 ## Carril único
 
-Repo `paulaosoriof86/demoCXOrbia`; rama única `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`; DEV `cxorbia-backend-dev`.
+Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`; DEV `cxorbia-backend-dev`.
 
-No nueva candidata/rama/PR/workflow/metodología. Para candidata frontend GO y sin P0 demostrado: solo `APPLY_DELTA_DIRECTLY` sobre la rama viva, únicamente cuando `EXECUTION_LANE_READY` esté demostrado en la misma sesión.
+## Estado formal
 
-## Estado técnico real al sincronizar
+I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `0/25` hasta PASS integral; I4 `0/25`; I5 `0/15` = **35% completado / 65% pendiente**. I3 integral PASS → **60%**.
 
-Último HEAD de evidencia previo a este sync: `528d5f0ba51e9712fee79ca0025b3dbcdf74e163`.
+## Resultado nuevo — focal provider identity-link read
 
-Formal: I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `0/25` hasta cierre integral; I4 `0/25`; I5 `0/15` = **35% / 65%**.
+Run `32171812808`, job `95824491418`, artifact `9337537655`, digest `sha256:4f19be2f3d8ecaa05287cdba914b51608db78c7bbb79f7341182b0d176dac394`.
 
-Operativamente:
-- I3.1→I3.8 PASS;
-- I3.9/I3.10 congelados PASS/no rerun;
-- Firestore Rules I3.11C **PASS, verificado y consumido**, run `32163552089`;
-- Staff/Admin runtime estable con membership, 15 períodos, 660 visitas y superficies operativas montadas;
-- bloqueo vivo: `I3_11C_EXPECTED_PROVIDER_LINK_NOT_IN_APPLICABLE_RUNTIME_SET`.
+`PASS_I3_FOCAL_PROVIDER_IDENTITY_LINK_ADJUDICATION_READONLY`:
+- `irl_3ed1b9a65d36c5873c1306bae1621e9d` existe;
+- conserva `tya / cinepolis / hr / shp-57d2e3769946 → TYA_GT_0C0BA8856E`;
+- status `materialized`, authority `tenant_adjudication`, period-independent;
+- normaliza como applicable/trusted;
+- field diff `[]`;
+- colección actual: `2` documentos, `2` trusted normalized links, `0` rejected;
+- provider reads `2`; provider writes `0`.
 
-Target exacto:
-- live `shp-57d2e3769946`;
-- canonical esperado `TYA_GT_0C0BA8856E`;
-- prior link `irl_3ed1b9a65d36c5873c1306bae1621e9d`;
-- provider links aplicables globales `1`;
-- provider links aplicables al target `0`;
-- agosto canonical `0`;
-- agosto residual live `2`.
+Por tanto se descartan como causa persistente actual: deleted, deactivated, re-scoped, mutated y structurally non-applicable. **No se autoriza ni se justifica reparar ese link.**
 
-La evidencia actual no permite afirmar todavía si el link target fue eliminado, desactivado, re-scopeado o mutado.
+La contradicción viva es temporal/runtime: el Staff runtime anterior vio `1` link y `0` target links; el provider focal actual ve `2` trusted links y el target intacto.
+
+El primer intento de harness run `32171482856` quedó HOLD antes de provider access por shallow Git history; provider reads/writes `0/0`. No consumió el gate. El push corregido consumió la única lectura provider autorizada.
 
 ## Frozen / no reprocesar
 
-I1/I2; I3.1→I3.10 PASS/frozen según corresponda; Historical Shopper run `31906391682`; TARGET_B Admin existente; request08; I3.5B; I3.5C-2; I3.8; Rules I3.11C consumidas; HR 15/660 sin reimport; Finance V2/historical sin rebuild; legal V0.4 durable sin autoaceptación.
-
-No crear otro Admin ni otro Shopper como workaround. No resetear/reacceder al Historical Shopper. No volver a desplegar Rules por la causa ya cerrada.
-
-## Evidencia activa
-
-Principal:
-`app/docs/evidence/I3-11C-STAFF-READONLY-CLOSE-LATEST.json`.
-
-Antecedentes exactos:
-- `app/docs/evidence/ITERATION3-I3-5C2-PERIOD-INDEPENDENT-LINK-MATERIALIZATION-LATEST.json`;
-- `app/docs/evidence/ITERATION3-I3-8-NEW-SHOPPER-PROVIDER-BACKED-LATEST.json`.
+I1/I2; I3.1→I3.8; I3.9/I3.10; Historical Shopper `31906391682`; TARGET_B Admin; request08; I3.5B/I3.5C-2/I3.8; Rules I3.11C run `32163552089`; focal provider read run `32171812808`; HR 15/660; Finance V2/historical; legal V0.4.
 
 ## Siguiente frontera exacta
 
-`NEW_AUTH_REQUIRED_FOCAL_PROVIDER_IDENTITY_LINK_READONLY_ADJUDICATION_NO_WRITES`
+`I3_11C_TEMPORAL_WRITE_HISTORY_AND_RUNTIME_STALENESS_FORENSIC_NO_PROVIDER_READS`
 
-Único objetivo: leer focalmente el prior target link y el único link actualmente aplicable para clasificar `deleted | deactivated | re_scoped | mutated | intact_but_nonapplicable`.
+Objetivo: usar únicamente GitHub/source/evidence para establecer si hubo algún write del identity-link entre el Staff run previo y la lectura focal, y revisar refresh/event-order/filtering del runtime. Provider reads `0`, provider writes `0`, Auth/Firestore-data/Rules/HR/Storage/Make/Gemini/payments/deploy/merge/production `0`.
 
-Sin nueva autorización exacta: cero provider read adicional. En ese bloque: Auth/user/password/Firestore-data/Rules/Hosting/CloudRun/HR/Storage/Make/Gemini/pagos/merge/producción = `0`; Historical Shopper access = `0`; retry automático = `false`.
+## Anti-loop / source truth
 
-## Camino completo a producción y después
+Si HEAD/evidence contradicen la capa canónica: `SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION`. Gate ejecutado pero no sincronizado: `EXECUTED_UNSYNCED_DO_NOT_ADVANCE`. Dos repeticiones sin reducción causal: `FORENSIC_STOP`. Verificador: `tools/verify-cxorbia-source-truth-sync.mjs`.
 
-1. Adjudicación focal read-only del identity link.
-2. Si se demuestra drift corregible: un único gate de corrección exacta, readback inmediato y cierre integral I3 con `2` visitas agosto canonical y `0` residuales.
-3. I3 PASS → formal **60%**.
-4. I4 en cortes operativos visibles: documentos/certificación/disponibles/postulación/asignación; agenda/reprogramación/cancelación/ejecución/cuestionario/revisión; finanzas/liquidaciones/pagos/multi-proyecto/configuración; Academia/manuales/roles/notificaciones en paralelo.
-5. I5: freeze sin P0 → SHA/manifest/build-lock/verificador → preproducción → rollback → same-build E2E → autorización expresa → producción/cutover/smoke → baseline productivo activo.
-6. Post-producción: se mantiene este mismo protocolo de source truth, atomic gate close y verificación; go-live no cierra la evolución del producto.
+## Camino restante
 
-## Producto no-code y comercializable — lock transversal
+Tras cerrar I3: I4 en capacidades visibles (documentos/certificación/disponibles/postulación/asignación; agenda/ejecución/cuestionario/revisión; HR bidireccional; finanzas/liquidaciones/pagos; multi-proyecto/no-code; roles/notificaciones/integraciones/Academia). I5: freeze/build-lock/preprod/rollback/same-build E2E/autorización producción/cutover/smoke/baseline.
 
-TyA es el primer tenant y Cinépolis el primer proyecto/configuración de validación. Ninguno puede convertirse en lógica global.
-
-Todo nuevo tenant/proyecto debe evolucionar hacia configuración declarativa para país/moneda/timezone/locale; fuente de HR/roadmap y mapping; cuestionarios; documentos/reglas/certificación; postulaciones/asignación; agenda/reprogramación/cancelación; ejecución/evidencias/revisión; liquidación/pagos; roles/scopes/notificaciones; integraciones/gates; Academia/manuales/rutas.
-
-Fuentes objetivo de roadmap: Google Sheets, Excel, CSV, API, plataforma nativa, import manual y proveedor/link externo. Flujo objetivo de alta de proyecto: `configurar fuente → mapear → dry-run → validar → activar`, sin parchear código por proyecto.
-
-Los hallazgos reusable/tenant/project, los cambios requeridos por Claude/prototipo y el impacto en Academia deben registrarse en cada bloque.
+TyA sigue siendo el primer tenant y Cinépolis el primer proyecto normal configurable, nunca lógica global. Fuentes objetivo: Sheets/Excel/CSV/API/plataforma/import/link externo. Alta objetivo: `configurar → mapear → dry-run → validar → activar`.
