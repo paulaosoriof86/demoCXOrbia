@@ -1,14 +1,13 @@
 {
   "schemaVersion": "cxorbia.execution-state.v1",
-  "syncEpoch": "CXORBIA-20260818-ROOT-CAUSE-RECOVERY-01",
-  "generatedAt": "2026-08-18T11:51:00-06:00",
+  "syncEpoch": "CXORBIA-20260818-I3-11C-FOCAL-ADJUDICATION-02",
+  "generatedAt": "2026-08-18T12:37:00-06:00",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "pullRequestState": "draft_open_no_merge",
   "base": "release/cxorbia-tya-rc-20260630",
-  "evidenceHeadBeforeSync": "528d5f0ba51e9712fee79ca0025b3dbcdf74e163",
-  "canonicalCommitSemantics": "The commit containing this file is the canonical documentation synchronization commit. evidenceHeadBeforeSync is intentionally the last technical evidence HEAD before this atomic sync and is not a self-reference.",
+  "evidenceHeadBeforeSync": "611c7b82707e5a8bb1ab5cef7c66c7a51e0adb9a",
   "phaseA": {
     "formalProgressPercent": 35,
     "formalRemainingPercent": 65,
@@ -19,33 +18,49 @@
       "I4": "0/25 pending",
       "I5": "0/15 pending"
     },
-    "currentState": "I3_11C_HOLD_PROVIDER_IDENTITY_LINK_APPLICABILITY_DRIFT__RULES_PASS_CONSUMED__STAFF_RUNTIME_STABLE",
-    "currentBlock": "I3.11C canonical identity reconciliation close",
-    "exactFrontier": "NEW_AUTH_REQUIRED_FOCAL_PROVIDER_IDENTITY_LINK_READONLY_ADJUDICATION_NO_WRITES",
-    "progressRule": "I3 integral PASS moves formal progress directly from 35 to 60; no invented fractional formal percentage. Operational progress is reported separately."
+    "currentState": "I3_11C_PROVIDER_TARGET_LINK_INTACT_APPLICABLE__PRIOR_STAFF_RUNTIME_OBSERVATION_DIVERGENCE_UNRESOLVED",
+    "currentBlock": "I3.11C temporal/runtime divergence forensic",
+    "exactFrontier": "I3_11C_TEMPORAL_WRITE_HISTORY_AND_RUNTIME_STALENESS_FORENSIC_NO_PROVIDER_READS",
+    "progressRule": "I3 integral PASS moves formal progress directly from 35 to 60; no invented fractional formal percentage. Operational sub-block completion is reported separately."
   },
-  "provenCurrentBlocker": {
-    "code": "I3_11C_EXPECTED_PROVIDER_LINK_NOT_IN_APPLICABLE_RUNTIME_SET",
+  "latestFocalProviderAdjudication": {
+    "decision": "PASS_I3_FOCAL_PROVIDER_IDENTITY_LINK_ADJUDICATION_READONLY",
+    "adjudication": "intact_and_applicable_provider_state",
+    "workflowRunId": 32171812808,
+    "jobId": 95824491418,
+    "artifactId": 9337537655,
+    "artifactDigest": "sha256:4f19be2f3d8ecaa05287cdba914b51608db78c7bbb79f7341182b0d176dac394",
+    "priorIdentityLinkId": "irl_3ed1b9a65d36c5873c1306bae1621e9d",
     "targetLiveShopperId": "shp-57d2e3769946",
     "expectedCanonicalShopperId": "TYA_GT_0C0BA8856E",
-    "priorIdentityLinkId": "irl_3ed1b9a65d36c5873c1306bae1621e9d",
-    "providerIdentityGlobalLinkCount": 1,
-    "providerIdentityTargetLinkCount": 0,
-    "targetCanonicalActual": null,
-    "targetCanonicalVisitsAugust": 0,
-    "targetLiveResidualVisitsAugust": 2,
-    "adjudicationNeeded": [
-      "deleted",
-      "deactivated",
-      "re_scoped",
-      "mutated"
+    "exactDocumentExists": true,
+    "exactDocumentNormalizedApplicable": true,
+    "fieldDiff": [],
+    "identityLinkDocumentsObserved": 2,
+    "trustedNormalizedLinks": 2,
+    "rejectedLinks": 0,
+    "providerReads": 2,
+    "providerWrites": 0
+  },
+  "provenCurrentBlocker": {
+    "code": "I3_11C_CURRENT_PROVIDER_STATE_VS_PRIOR_STAFF_RUNTIME_LINK_SET_DIVERGENCE",
+    "proven": [
+      "The exact target identity-link currently exists and is structurally unchanged from the expected I3.5C-2 materialized state.",
+      "The exact target link normalizes as applicable/trusted under the current reusable identity roll-forward contract.",
+      "The current tenant collection observation contains 2 trusted normalized links and 0 rejected links.",
+      "The prior Staff runtime observation saw 1 provider identity link and 0 target links."
     ],
-    "disprovenAsCurrentCause": [
-      "Firestore Rules DEV mismatch",
-      "Staff/Admin absence",
-      "Staff membership absence",
-      "provider bridge installation failure",
-      "broad readiness failure"
+    "disprovenAsPersistentCurrentProviderCause": [
+      "target link deletion",
+      "target link deactivation",
+      "target link project re-scope",
+      "target link source/canonical mutation",
+      "target link structural non-applicability"
+    ],
+    "unknown": [
+      "whether provider state changed after the prior Staff runtime observation",
+      "whether the prior Staff runtime consumed a stale or incomplete provider snapshot",
+      "whether event ordering/filtering prevented the target link from entering the prior runtime set"
     ]
   },
   "consumedAndFrozen": {
@@ -66,18 +81,26 @@
       "consumed": true,
       "noRedeployWithoutNewProvenRegression": true
     },
+    "focalProviderIdentityLinkReadI3_11C": {
+      "status": "PASS_CONSUMED_NO_RERUN",
+      "workflowRunId": 32171812808,
+      "providerReads": 2,
+      "providerWrites": 0
+    },
     "hr": "15_PERIODS_660_VISITS_NO_REIMPORT",
     "finance": "V2_HISTORICAL_NO_REBUILD",
     "legalV0_4": "DURABLE_PASS_NO_AUTOACCEPT"
   },
   "authoritativeEvidence": [
+    "app/docs/evidence/I3-11C-FOCAL-PROVIDER-IDENTITY-LINK-ADJUDICATION-LATEST.json",
     "app/docs/evidence/I3-11C-STAFF-READONLY-CLOSE-LATEST.json",
     "app/docs/evidence/ITERATION3-I3-5C2-PERIOD-INDEPENDENT-LINK-MATERIALIZATION-LATEST.json",
     "app/docs/evidence/ITERATION3-I3-8-NEW-SHOPPER-PROVIDER-BACKED-LATEST.json"
   ],
   "nextAuthorizedShape": {
-    "purpose": "Focal provider identity-link read-only adjudication only",
-    "providerReads": "requires new exact authorization",
+    "purpose": "Temporal GitHub/evidence forensic only: determine whether any provider identity-link write occurred between the prior Staff runtime observation and the focal provider read, and inspect runtime source/event ordering for stale/incomplete link-set behavior.",
+    "providerReads": 0,
+    "providerWrites": 0,
     "authWrites": 0,
     "passwordChanges": 0,
     "passwordResets": 0,
@@ -98,10 +121,10 @@
     "automaticRetry": false
   },
   "recoveryPlan": [
-    "Synchronize and machine-check canonical source truth before any technical/provider action.",
-    "Execute one focal read-only identity-link adjudication and classify the target link as deleted, deactivated, re-scoped, mutated, or intact-but-nonapplicable.",
-    "If a correctable provider-state drift is proven, request one exact write gate, apply only the canonical correction, read back immediately, and close I3 on the same state.",
-    "Require shp-57d2e3769946 to resolve to TYA_GT_0C0BA8856E with 2 August visits canonical and 0 residual before I3 PASS.",
+    "Complete temporal provider-write history and runtime staleness forensic without provider reads or writes.",
+    "If no intervening provider write explains the difference, isolate runtime refresh/event-order/filtering cause in source and evidence.",
+    "Only after the cause is proven, define the minimum next read-only runtime verification or exact source correction; do not repair the provider link because it is currently intact/applicable.",
+    "Require final Staff closure to resolve shp-57d2e3769946 to TYA_GT_0C0BA8856E with 2 August visits canonical and 0 residual before I3 PASS.",
     "Move immediately into I4 visible operational slices after I3 integral PASS.",
     "Complete I5 build lock, preproduction, rollback, same-build E2E, explicit production authorization, cutover and smoke.",
     "Continue post-production evolution under the same atomic source-truth and anti-loop protocol."
@@ -130,36 +153,14 @@
     "firstTenant": "tya",
     "firstProject": "cinepolis",
     "hardcodingRule": "TyA and Cinepolis are validation instances, never global product logic.",
-    "configurationDimensions": [
-      "country_currency_timezone_locale",
-      "roadmap_source_adapter_and_mapping",
-      "questionnaire_origin_provider_and_link_policy",
-      "documents_rules_certification",
-      "availability_postulation_assignment",
-      "scheduling_reprogramming_cancellation",
-      "execution_evidence_questionnaire_submit_review",
-      "liquidation_payment_rules",
-      "roles_scopes_notifications",
-      "integrations_and_human_gates",
-      "Academia_manuals_courses_routes",
-      "privacy_and_evidence_requirements"
-    ],
-    "roadmapSourceTargets": [
-      "Google Sheets",
-      "Excel",
-      "CSV",
-      "API",
-      "platform-native",
-      "manual import",
-      "external link/provider"
-    ],
     "newProjectOnboardingTarget": "configure source -> map -> dry-run -> validate -> activate",
+    "roadmapSourceTargets": ["Google Sheets","Excel","CSV","API","platform-native","manual import","external link/provider"],
     "identityRule": "Use tenantId, projectId, visitId/hrRowId, shopperId and exact crosswalks; never deduplicate by visual/name/email similarity alone.",
-    "frontendBoundary": "Backend defines reusable contracts/adapters. No-code Project Builder and UI changes are documented for Claude/prototype by file/module and acceptance criteria; backend does not silently patch modules.",
+    "frontendBoundary": "Backend defines reusable contracts/adapters. No-code Project Builder and UI changes are documented for Claude/prototype; backend does not silently patch modules.",
     "academiaBoundary": "Manuals, courses, role routes and notifications evolve with tenant/project configuration and are versioned with the operational product."
   },
   "environments": {
-    "dev": "ACTIVE_HOLD_I3_11C",
+    "dev": "ACTIVE_I3_11C_TEMPORAL_RUNTIME_DIVERGENCE_FORENSIC",
     "preproduction": "NOT_STARTED_I5",
     "production": "UNCHANGED_NOT_AUTHORIZED",
     "postProductionProtocol": "Same canonical state, atomic close and machine verifier continue after go-live."
