@@ -1,51 +1,50 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última sincronización:** 2026-08-18 16:18 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-STAFF-PUSH-NAVIGATION-HOLD-07`  
-**Estado:** `NO_UI_WORKAROUND__HOSTING_PASS__STAFF_NAVIGATION_HARNESS_SOURCE_FIX_NEXT__GO_LIVE_35`
+**Última sincronización:** 2026-08-18 16:23 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-NAV-HARNESS-SOURCE-PASS-08`  
+**Estado:** `NO_UI_WORKAROUND__NAV_HARNESS_SOURCE_PASS__NEW_STAFF_AUTH_NEXT__GO_LIVE_35`
 
 ## Pendiente vivo único antes de continuar I3
 
-`SOURCE_ONLY_STAFF_NAVIGATION_HARNESS_HARDENING_NO_PROVIDER`.
+`NEW_EXACT_AUTH_I3_11C_STAFF_CANONICAL_OBSERVATION_AFTER_NAV_HARNESS_SOURCE_PASS`.
 
-R3-C Hosting ya pasó y está congelado. La única ejecución Staff/Admin post-Hosting autorizada también ocurrió y quedó consumida: run `32188716203`, job `95878165921`, artifact `9343461375`.
+R3-C Hosting está PASS/frozen. El Staff run `32188716203` ocurrió una vez y quedó consumido; no se repite.
 
-## Bloqueo demostrado
+## Qué falló realmente en ese run
 
 `STAFF_RUNTIME_NAVIGATION_DOMCONTENTLOADED_TIMEOUT_BEFORE_APP_STATE`.
 
-El browser agotó 60 s en `page.goto(... waitUntil:'domcontentloaded')` antes del login. `lastState=null`.
+No alcanzó login ni app state (`lastState=null`), por lo que canonical/agosto no fueron observados. I3.4/I3.5/I3.7 quedan no adjudicados por ese timeout base; I3.6 Historical Shopper reuse sigue PASS.
 
-Por tanto en ese run **no fueron observados**:
+## Corrección source-only completada
+
+Commit `9feb5f69a35169eac2931843309ad847d374b1b3` modifica solo el smoke Staff QA:
+- `waitUntil:'domcontentloaded'` → `waitUntil:'commit'` en entrada, reloads y nueva pestaña;
+- selector visible Admin conserva el gate de UI y pasa a 60 s;
+- `waitReady()` conserva todos los requisitos funcionales posteriores.
+
+Source checks ya observados: `Phase A Source Safe Runtime Guard` SUCCESS y `Run P0 exact identity source gates` SUCCESS. El request está disabled/consumed, por lo que workflows de sincronización no ejecutan Staff/provider; R3-C no redeployó.
+
+## Nueva autorización necesaria
+
+Una sola lectura Staff/Admin existente sobre DEV para verificar exclusivamente:
 - `shp-57d2e3769946 -> TYA_GT_0C0BA8856E`;
-- canonical agosto `2`;
-- residual agosto `0`;
-- duplicados `0/0`.
+- agosto canonical `2`;
+- residual live `0`;
+- duplicateVisitKeys `0`;
+- duplicateShopperIds `0`.
 
-Los valores default del resumen no se usan como verdad del provider/runtime. I3.4/I3.5/I3.7 quedan no adjudicados por el fallo base de navegación; I3.6 Historical Shopper reuse sigue PASS.
+Cero Historical Shopper; provider/Auth/Firestore/Rules/HR/Storage/Make/Gemini/pagos writes `0`; deploys `0`; cambios de contraseña/usuarios `0`; merge/production false.
 
-## Qué NO corresponde hacer
+## No hacer
 
-- no repetir run `32188716203`;
-- no tocar provider identity link;
-- no crear/reparar Admin o Shopper;
-- no resetear contraseñas;
-- no redeploy Hosting/Rules;
-- no reimportar HR;
-- no parche UI;
-- no abrir rama, PR, candidata o metodología nueva.
-
-## Próximo bloque
-
-Corregir solo `tools/qa/tya-c6-staff-admin-human-auth-browser-smoke.mjs` para separar navegación HTTP de readiness visible/runtime y conservar diagnóstico fail-closed. Source/static checks únicamente; cero Staff/provider reads, writes, deploy, merge o producción.
-
-Después de source PASS se pedirá una única nueva autorización Staff/Admin read-only para cerrar la observación canonical + agosto. No se repiten R3-A/R3-B/R3-C ni Historical Shopper.
+No provider repair, no Admin/Shopper nuevo, no reset, no Hosting/Rules redeploy, no HR reimport, no parche UI, no rama/PR/candidata/metodología nueva y no repetir R3-A/R3-B/R3-C.
 
 ## Frozen / no reprocesar
 
-I1/I2/I3.1→I3.10; Historical Shopper; TARGET_B Admin; request08; I3.5B/I3.5C-2/I3.8; Rules I3.11C; focal provider read; R3-B; R3-C Hosting; Staff run `32188716203`; HR 15/660; Finance V2/historical; legal V0.4.
+I1/I2/I3.1→I3.10; Historical Shopper; TARGET_B Admin; request08; I3.5B/I3.5C-2/I3.8; Rules I3.11C; focal provider read; R3-B; R3-C; Staff run `32188716203`; HR 15/660; Finance V2/historical; legal V0.4.
 
-## I4 — pendiente después de I3
+## I4 — después de I3
 
 Shopper lifecycle; agenda/visita/evidencias/cuestionario/review; sync HR bidireccional; Finanzas/liquidaciones/pagos; multi-proyecto/no-code; roles/notificaciones/integraciones; Academia/manuales/rutas.
 
@@ -55,4 +54,4 @@ Freeze sin P0 → SHA/manifest/build-lock/verifier → preproducción → rollba
 
 ## Avance
 
-**Formal 35% / 65% pendiente.** I3 integral PASS llevará a **60% / 40%**.
+**35% / 65% pendiente.** I3 integral PASS → **60% / 40%**.
