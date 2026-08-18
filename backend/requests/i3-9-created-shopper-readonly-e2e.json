@@ -1,8 +1,9 @@
 {
   "schemaVersion": "cxorbia.i3.9.created-shopper-readonly-e2e-request.v1",
   "requestId": "i3-9-created-shopper-readonly-e2e-20260817-01",
-  "enabled": true,
-  "consumed": false,
+  "enabled": false,
+  "consumed": true,
+  "status": "SUPERSEDED_BY_CANONICAL_VISIBLE_LOGIN_COMBINED_GATE",
   "gateId": "I3.9_NEW_SHOPPER_REAL_E2E_READONLY_EXISTING_CREATED_IDENTITY",
   "productTargetHeadSha": "99129a87ff97cc3c9439fb06c5035dda706793b7",
   "targetProject": "cxorbia-backend-dev",
@@ -17,23 +18,19 @@
   "passwordChanges": 0,
   "passwordResets": 0,
   "historicalShopperAccess": 0,
-  "continuationAuthorized": true,
-  "authorizationRef": "current-conversation-I3.8-then-I3.9-through-I3.11-no-additional-gate",
-  "allowedOperations": [
-    "read exact new Auth user",
-    "read exact new membership/profile/crosswalk",
-    "mint ephemeral custom token for exact new user",
-    "perform real Firebase browser authentication of exact new user",
-    "validate claims/membership/session/workspace/reload/new-tab/second logical context",
-    "validate shopper-scope non-mutating KPI/state invariants"
-  ],
+  "continuationAuthorized": false,
+  "authorizationRef": "superseded-by-current-conversation-I3.9-I3.10-I3.11-visible-login-combined-gate",
+  "noAutomaticRetry": true,
+  "supersededByGateId": "I3.9_I3.10_I3.11_EXACT_DEV_DEPLOY_AND_SYNTHETIC_SHOPPER_VISIBLE_LOGIN_CLOSE",
+  "allowedOperations": [],
   "prohibited": [
+    "rerun this custom-token diagnostic request",
     "Historical Shopper access/login/recovery/reset",
-    "password change/reset",
+    "password change/reset under this superseded request",
     "new user create/update",
     "claim write",
     "Firestore write",
     "HR/Finance/Rules/Storage/Make/Gemini/payment write",
-    "deploy/merge/production"
+    "deploy/merge/production under this superseded request"
   ]
 }
