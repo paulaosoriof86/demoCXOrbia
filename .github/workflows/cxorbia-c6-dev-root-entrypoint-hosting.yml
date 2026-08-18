@@ -5,15 +5,13 @@ on:
     branches:
       - docs-tya-v6-v71-audit
     paths:
-      - backend/config/corte6-dev-root-entrypoint-hosting-execute.json
+      - 'backend/config/i3-11-identity-link-runtime-bridge-rules-hosting-dev.json'
 
 permissions:
   contents: read
-  statuses: write
-  id-token: write
 
 concurrency:
-  group: cxorbia-c6-dev-root-entrypoint-hosting
+  group: cxorbia-i3-11-identity-link-runtime-bridge-rules-hosting-dev
   cancel-in-progress: false
 
 defaults:
@@ -21,173 +19,85 @@ defaults:
     shell: bash
 
 env:
+  REQUEST: backend/config/i3-11-identity-link-runtime-bridge-rules-hosting-dev.json
   GCP_PROJECT_ID: cxorbia-backend-dev
   FIREBASE_HOSTING_TARGET: cxorbia-dev
-  HOSTING_SITE: cxorbia-backend-dev
   DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
-  EXECUTE_FILE: backend/config/corte6-dev-root-entrypoint-hosting-execute.json
-  OUT_DIR: .tmp/c6-dev-root-entrypoint-hosting
-  PRIVATE_DIR: .tmp/c6-dev-root-entrypoint-private
-  PRIVATE_E2E: .tmp/c6-dev-root-entrypoint-private/private-e2e.json
+  OUT_DIR: .tmp/i3-11-identity-link-runtime-close
+  PRIVATE_DIR: .tmp/i3-11-private
+  PRIVATE_E2E: .tmp/i3-11-private/private-e2e.json
+  EXACT_STAFF_ACTION: C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF
 
 jobs:
-  root-entrypoint:
-    name: Deploy and validate canonical DEV root once
+  i3-11-close:
+    name: I3.11 rules + Hosting DEV + Staff read-only close
     runs-on: ubuntu-latest
     timeout-minutes: 55
 
     steps:
-      - name: Checkout exact live branch
+      - name: Checkout exact request commit
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.sha }}
           fetch-depth: 2
-          ref: docs-tya-v6-v71-audit
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
-      - name: Exclude ephemeral material
-        run: |
-          printf '%s\n' '.tmp/' '.firebase/' 'firebase-debug.log' 'gha-creds-*.json' >> .git/info/exclude
-
-      - name: Read execute state
-        id: request
-        run: |
-          node <<'NODE'
-          const fs=require('fs');
-          const x=JSON.parse(fs.readFileSync(process.env.EXECUTE_FILE,'utf8'));
-          const action=String(x.action||'').trim();
-          const mode=String(x.mode||'').trim();
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`enabled=${x.enabled===true?'true':'false'}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`request_id=${x.requestId||''}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`action=${action}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`mode=${mode}\n`);
-          NODE
-
-      - name: Record disabled request safely
-        if: steps.request.outputs.enabled != 'true'
-        run: echo "Controlled C6 request disabled; no provider or gates executed."
-
-      - name: Validate source-only preflight request
-        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'SOURCE_PREFLIGHT_ONLY'
-        run: |
-          set -euo pipefail
-          mkdir -p "$OUT_DIR"
-          node <<'NODE'
-          const fs=require('fs');
-          const {execFileSync}=require('child_process');
-          const x=JSON.parse(fs.readFileSync(process.env.EXECUTE_FILE,'utf8'));
-          const exactAction='C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF';
-          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
-          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
-          if(x.schemaVersion!=='cxorbia.c6.staff-lane-source-preflight.request.v1')throw new Error('source_preflight_schema_invalid');
-          if(x.mode!=='SOURCE_PREFLIGHT_ONLY')throw new Error('source_preflight_mode_invalid');
-          if(x.action!==exactAction)throw new Error('staff_action_not_exact');
-          if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7)throw new Error('repository_lane_invalid');
-          if(x.enabled!==true||x.authorizedBy!=='Paula')throw new Error('authorization_state_invalid');
-          if(x.targetHeadSha!==parent||!x.targetHeadSha||head===parent)throw new Error('target_head_invalid');
-          if(changed.length!==1||changed[0]!==process.env.EXECUTE_FILE)throw new Error('execute_commit_scope_invalid:'+changed.join(','));
-          for(const key of ['providerCalls','hostingDeploys','cloudRunDeploys','firestoreWrites','authWrites','hrReads','hrWrites','rulesWrites','storageWrites','makeCalls','geminiCalls','paymentWrites']){
-            if(Number(x[key]||0)!==0)throw new Error('unsafe_scope_'+key);
-          }
-          if(x.merge!==false||x.production!==false||x.containsPii!==false||x.containsSecrets!==false)throw new Error('unsafe_scope');
-          fs.writeFileSync(process.env.OUT_DIR+'/authorization.json',JSON.stringify({
-            requestId:x.requestId,
-            requestCommitSha:head,
-            targetHeadSha:parent,
-            action:x.action,
-            mode:x.mode,
-            authorizedBy:x.authorizedBy,
-            providerCalls:0,
-            hostingDeploys:0
-          },null,2)+'\n','utf8');
-          NODE
-
-      - name: Validate exact authorization and one-shot scope
-        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'HOSTING_RUNTIME_ONCE'
+      - name: Validate exact authorization and one-shot lineage
         run: |
           set -euo pipefail
           mkdir -p "$OUT_DIR" "$PRIVATE_DIR"
+          printf '%s\n' '.tmp/' '.firebase/' 'firebase-debug.log' 'gha-creds-*.json' >> .git/info/exclude
           node <<'NODE'
           const fs=require('fs');
           const {execFileSync}=require('child_process');
-          const x=JSON.parse(fs.readFileSync(process.env.EXECUTE_FILE,'utf8'));
-          const exactAction='C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF';
+          const r=JSON.parse(fs.readFileSync(process.env.REQUEST,'utf8'));
           const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
           const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
-          if(x.schemaVersion!=='cxorbia.c6.dev-root-entrypoint-hosting.v1')throw new Error('request_schema_invalid');
-          if(x.mode!=='HOSTING_RUNTIME_ONCE')throw new Error('hosting_mode_invalid');
-          if(x.action!==exactAction)throw new Error('staff_action_not_exact');
-          if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7)throw new Error('repository_lane_invalid');
-          if(x.firebaseProjectId!=='cxorbia-backend-dev'||x.hostingSite!=='cxorbia-backend-dev'||x.hostingTarget!=='cxorbia-dev'||x.devRootUrl!=='https://cxorbia-backend-dev.web.app')throw new Error('hosting_target_invalid');
-          if(x.rootPath!=='/'||x.canonicalPath!=='/index-backend-dev.html'||Number(x.rootRedirectType)!==302)throw new Error('entrypoint_contract_invalid');
-          if(x.enabled!==true||x.consumed!==false||x.status!=='authorized_execute_once'||x.authorizedBy!=='Paula')throw new Error('authorization_state_invalid');
-          if(x.targetHeadSha!==parent||!x.targetHeadSha||head===parent)throw new Error('target_head_invalid');
-          if(changed.length!==1||changed[0]!==process.env.EXECUTE_FILE)throw new Error('execute_commit_scope_invalid:'+changed.join(','));
-          if(Number(x.allowedExecutions)!==1||Number(x.singleHostingDeployMax)!==1||Number(x.hostingDeployExecutions)!==0)throw new Error('single_deploy_contract_invalid');
-          if(x.sourceStaticDecision!=='PASS_READONLY_POST_GATES'||x.compositionDecision!=='PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS'||x.labDecision!=='PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT'||x.rootSourceDecision!=='PASS_C6_DEV_ROOT_ENTRYPOINT_SOURCE_PARITY')throw new Error('source_static_evidence_invalid');
-          if(!Number.isInteger(Number(x.sourceStaticRunId))||Number(x.sourceStaticRunId)<=0||!Number.isInteger(Number(x.sourceStaticArtifactId))||Number(x.sourceStaticArtifactId)<=0)throw new Error('source_static_trace_invalid');
-          for(const key of ['cloudRunDeploys','firestoreWrites','authWrites','passwordChanges','passwordResets','rulesWrites','storageWrites','hrWrites','makeCalls','geminiCalls','paymentWrites']){
-            if(Number(x[key]||0)!==0)throw new Error('unsafe_scope_'+key);
+          if(r.schemaVersion!=='cxorbia.i3.11.rules-hosting-dev-close.request.v1')throw new Error('request_schema_invalid');
+          if(r.gateId!=='I3.11_IDENTITY_LINK_RUNTIME_BRIDGE_RULES_AND_HOSTING_DEV_CLOSE')throw new Error('gate_id_invalid');
+          if(r.repository!=='paulaosoriof86/demoCXOrbia'||r.branch!=='docs-tya-v6-v71-audit'||Number(r.pullRequest)!==7)throw new Error('repository_lane_invalid');
+          if(r.firebaseProjectId!=='cxorbia-backend-dev'||r.hostingSite!=='cxorbia-backend-dev'||r.hostingTarget!=='cxorbia-dev'||r.devRootUrl!=='https://cxorbia-backend-dev.web.app')throw new Error('provider_target_invalid');
+          if(r.enabled!==true||r.consumed!==false||r.status!=='authorized_execute_once'||r.authorizedBy!=='Paula')throw new Error('authorization_state_invalid');
+          if(r.targetHeadSha!==parent||!r.targetHeadSha||head===parent)throw new Error('target_head_invalid');
+          if(changed.length!==1||changed[0]!==process.env.REQUEST)throw new Error('request_commit_scope_invalid:'+changed.join(','));
+          if(Number(r.allowedExecutions)!==1||Number(r.singleRulesDeployMax)!==1||Number(r.singleHostingDeployMax)!==1)throw new Error('single_deploy_contract_invalid');
+          if(r.targetLiveShopperId!=='shp-57d2e3769946'||r.expectedCanonicalShopperId!=='TYA_GT_0C0BA8856E'||Number(r.expectedCanonicalAugustVisits)!==2||Number(r.expectedResidualAugustVisits)!==0)throw new Error('identity_expectation_invalid');
+          for(const key of ['historicalShopperAccess','historicalShopperLogin','historicalShopperRecovery','historicalShopperReset','userCreates','userUpdates','authWrites','claimsWrites','passwordChanges','passwordResets','firestoreDataWrites','hrWrites','financeWrites','storageWrites','makeCalls','geminiCalls','paymentWrites','cloudRunDeploys']){
+            if(Number(r[key]||0)!==0)throw new Error('unsafe_scope_'+key);
           }
-          if(x.merge!==false||x.production!==false||x.containsPii!==false||x.containsSecrets!==false)throw new Error('unsafe_scope');
-          fs.writeFileSync(process.env.OUT_DIR+'/authorization.json',JSON.stringify({
-            requestId:x.requestId,
-            requestCommitSha:head,
-            targetHeadSha:parent,
-            action:x.action,
-            mode:x.mode,
-            sourceStaticRunId:x.sourceStaticRunId,
-            sourceStaticArtifactId:x.sourceStaticArtifactId,
-            authorizedBy:x.authorizedBy,
-            singleHostingDeployMax:1
-          },null,2)+'\n','utf8');
+          if(r.merge!==false||r.production!==false||r.containsPii!==false||r.containsSecrets!==false||r.noAutomaticRetry!==true)throw new Error('unsafe_scope');
+          fs.writeFileSync(process.env.OUT_DIR+'/authorization.json',JSON.stringify({requestId:r.requestId,gateId:r.gateId,targetHeadSha:parent,requestCommitSha:head,authorizedBy:r.authorizedBy,rulesDeployMax:1,hostingDeployMax:1,noAutomaticRetry:true},null,2)+'\n','utf8');
           NODE
 
-      - name: Run Staff lane source preflight before provider
-        if: steps.request.outputs.enabled == 'true'
-        env:
-          CXORBIA_C6_ACTION: ${{ steps.request.outputs.action }}
+      - name: Validate focal source before provider
         run: |
           set -euo pipefail
-          test "$CXORBIA_C6_ACTION" = "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF"
-          node --check tools/qa/cxorbia-c6-existing-staff-admin-e2e-credential.mjs
-          node --check tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs
-          node --check tools/qa/tya-c6-staff-admin-human-auth-browser-smoke.mjs
-          node --check tools/qa/tya-c6-dev-root-runtime-wrapper.mjs
-          node --check tools/qa/cxorbia-c6-staff-lane-source-preflight.mjs
-          CXORBIA_C6_STAFF_PREFLIGHT_OUTPUT="$OUT_DIR/staff-lane-source-preflight.json" \
-            node tools/qa/cxorbia-c6-staff-lane-source-preflight.mjs
+          node --check app/adapters/cxorbia-provider-identity-link-runtime-v1.js
+          node --check tools/release/cxorbia-corte6-firestore-rules-deploy.mjs
+          node --check tools/qa/cxorbia-c6-canonical-staff-admin-e2e-credential.mjs
+          node --check tools/qa/tya-i3-staff-authority-readonly.mjs
+          node <<'NODE'
+          const fs=require('fs');
+          const html=fs.readFileSync('app/index-backend-dev.html','utf8');
+          const bridge='adapters/cxorbia-provider-identity-link-runtime-v1.js';
+          const compat='adapters/tya-phase-a-authority-compat-v1.js';
+          const a=html.indexOf(bridge),b=html.indexOf(compat);
+          if(a<0||b<0||a>=b)throw new Error('identity_bridge_load_order_invalid');
+          const rules=fs.readFileSync('firestore.rules','utf8');
+          if(!/match\s+\/shopperIdentityLinks\/\{identityLinkId\}/.test(rules))throw new Error('identity_link_rule_missing');
+          if(!/allow\s+read:\s*if\s+tenantAllowed\(tenantId\)\s*&&\s*isOperator\(\)/.test(rules))throw new Error('identity_link_operator_read_rule_missing');
+          NODE
 
-      - name: Authenticate existing Google Cloud DEV
-        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'HOSTING_RUNTIME_ONCE'
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-
-      - name: Install transient protected tooling
-        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'HOSTING_RUNTIME_ONCE'
-        run: |
-          set -euo pipefail
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase-tools@latest playwright@1.55.0
-          npx playwright install --with-deps chromium
-
-      - name: Select existing DEV Staff credential privately
-        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'HOSTING_RUNTIME_ONCE'
+      - name: Load existing DEV service account privately
         env:
           EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-          CXORBIA_C6_ACTION: ${{ steps.request.outputs.action }}
         run: |
           set -euo pipefail
-          if [[ "$CXORBIA_C6_ACTION" != "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF" ]]; then
-            echo "STAFF_ACTION_NOT_EXACT" >&2
-            exit 1
-          fi
-          mkdir -p "$PRIVATE_DIR" "$OUT_DIR"
           node <<'NODE'
           const fs=require('fs');
           const raw=process.env.EXISTING_DEV_JSON||'';
@@ -195,139 +105,143 @@ jobs:
           if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.client_email&&p.private_key))throw new Error('credential_invalid');
           fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
           NODE
-          export GOOGLE_APPLICATION_CREDENTIALS="${GITHUB_WORKSPACE}/${PRIVATE_DIR}/credentials.json"
-          export CXORBIA_EXPECTED_PROJECT="$GCP_PROJECT_ID"
-          export CXORBIA_DEV_ROOT_URL="$DEV_ROOT_URL"
-          export CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E"
-          export PRIVATE_DIR="$PRIVATE_DIR"
-          export OUT_DIR="$OUT_DIR"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/${PRIVATE_DIR}/credentials.json" >> "$GITHUB_ENV"
 
-          node tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs \
-            > "$OUT_DIR/credential-selection-staff.source-safe.json"
+      - name: Install transient DEV tooling
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase-tools@latest playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null
 
-          node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection-staff.source-safe.json','utf8'));const p=JSON.parse(fs.readFileSync(process.env.PRIVATE_E2E,'utf8'));const exact='C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF';if(a.decision!=='PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY'||a.action!==exact||a.authWrites!==0||a.passwordChanges!==0||a.valuesExported!==false||a.shopperSelection!==false||a.clientSelection!==false)throw new Error('staff_admin_credential_selection_not_safe_pass');if(!p?.staff?.login||!p?.staff?.password)throw new Error('private_e2e_staff_bundle_incomplete');if(p?.shopper||p?.client)throw new Error('private_e2e_staff_bundle_scope_exceeded');"
+      - name: Deploy Firestore Rules DEV exactly once
+        id: rules
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_EXECUTE_FIRESTORE_RULES: 'true'
+          CXORBIA_RULES_DEPLOY_REPORT: .tmp/i3-11-identity-link-runtime-close/rules-deploy.json
+        run: |
+          set -euo pipefail
+          node tools/release/cxorbia-corte6-firestore-rules-deploy.mjs
+          echo 1 > "$OUT_DIR/rules-deploy-count"
+          node <<'NODE'
+          const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/rules-deploy.json','utf8'));
+          if(r.projectId!=='cxorbia-backend-dev'||r.execute!==true||r.verified!==true)throw new Error('rules_deploy_not_verified');
+          if(!['PASS_DIRECT_FIRESTORE_RULES_DEPLOY_VERIFIED','PASS_ALREADY_CURRENT_NO_RULES_WRITE'].includes(r.decision))throw new Error('rules_deploy_decision_invalid:'+r.decision);
+          NODE
+
+      - name: Deploy Hosting DEV exactly once
+        id: hosting
+        run: |
+          set -euo pipefail
+          npx firebase deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$GCP_PROJECT_ID" --non-interactive
+          echo 1 > "$OUT_DIR/hosting-deploy-count"
+
+      - name: Verify remote focal asset parity
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT_DIR/remote/adapters"
+          ok=0
+          for attempt in $(seq 1 20); do
+            rm -f "$OUT_DIR/remote/index-backend-dev.html" "$OUT_DIR/remote/adapters/cxorbia-provider-identity-link-runtime-v1.js"
+            if curl -fsSL --retry 2 --retry-delay 1 "$DEV_ROOT_URL/index-backend-dev.html" -o "$OUT_DIR/remote/index-backend-dev.html" \
+              && curl -fsSL --retry 2 --retry-delay 1 "$DEV_ROOT_URL/adapters/cxorbia-provider-identity-link-runtime-v1.js" -o "$OUT_DIR/remote/adapters/cxorbia-provider-identity-link-runtime-v1.js" \
+              && cmp app/index-backend-dev.html "$OUT_DIR/remote/index-backend-dev.html" \
+              && cmp app/adapters/cxorbia-provider-identity-link-runtime-v1.js "$OUT_DIR/remote/adapters/cxorbia-provider-identity-link-runtime-v1.js"; then
+              ok=1; break
+            fi
+            sleep 3
+          done
+          test "$ok" = 1
+
+      - name: Prepare canonical Staff-only credential privately
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_C6_ACTION: C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF
+          CXORBIA_E2E_PRIVATE_CREDENTIALS: .tmp/i3-11-private/private-e2e.json
+        run: |
+          set -euo pipefail
+          node tools/qa/cxorbia-c6-canonical-staff-admin-e2e-credential.mjs > "$OUT_DIR/credential-selection.source-safe.json"
+          node <<'NODE'
+          const fs=require('fs');const a=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/credential-selection.source-safe.json','utf8'));const p=JSON.parse(fs.readFileSync(process.env.PRIVATE_E2E,'utf8'));
+          if(a.decision!=='PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY'||a.canonicalTargetAlias!=='B'||a.staffRole!=='admin'||a.authWrites!==0||a.passwordChanges!==0||a.shopperSelection!==false||a.clientSelection!==false||a.valuesExported!==false)throw new Error('staff_credential_selection_scope_invalid');
+          if(!p?.staff?.login||!p?.staff?.password||p?.shopper||p?.client)throw new Error('private_staff_only_bundle_invalid');
+          NODE
           chmod 600 "$PRIVATE_E2E"
 
-      - name: Execute one Hosting deploy and Staff-only runtime gates
-        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'HOSTING_RUNTIME_ONCE'
-        id: execute
-        continue-on-error: true
-        env:
-          CXORBIA_C6_ACTION: ${{ steps.request.outputs.action }}
+      - name: Build Staff read-only subrequest
         run: |
-          set +e
-          mkdir -p "$OUT_DIR"
-          (
-            set -euo pipefail
-            test "$CXORBIA_C6_ACTION" = "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF"
-            node --check tools/qa/tya-c6-dev-root-entrypoint-source-gate.mjs
-            node --check tools/qa/tya-c6-dev-root-entrypoint-remote-parity-gate.mjs
-            node --check tools/qa/tya-c6-dev-root-runtime-wrapper.mjs
-            node --check tools/qa/tya-c6-staff-admin-human-auth-browser-smoke.mjs
-            node --check tools/qa/tya-dev-scenario-lab-source-contract-gate.mjs
-
-            CXORBIA_ROOT_ENTRY_SOURCE_OUTPUT="$OUT_DIR/root-entrypoint-source.json" \
-              node tools/qa/tya-c6-dev-root-entrypoint-source-gate.mjs
-            node -e "const r=require('./'+process.env.OUT_DIR+'/root-entrypoint-source.json');if(r.decision!=='PASS_C6_DEV_ROOT_ENTRYPOINT_SOURCE_PARITY')throw new Error('root_source_gate_not_pass');"
-
-            npx firebase deploy \
-              --config firebase.json \
-              --only "hosting:$FIREBASE_HOSTING_TARGET" \
-              --project "$GCP_PROJECT_ID" \
-              --non-interactive
-            echo 1 > "$OUT_DIR/deploy-count"
-
-            CXORBIA_DEV_ROOT_URL="$DEV_ROOT_URL" \
-            CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E" \
-            CXORBIA_DEV_ROOT_RUNTIME_DIR="$OUT_DIR/runtime" \
-            CXORBIA_DEV_ROOT_RUNTIME_OUTPUT="$OUT_DIR/runtime/report.json" \
-            CXORBIA_C6_ACTION="$CXORBIA_C6_ACTION" \
-              node tools/qa/tya-c6-dev-root-runtime-wrapper.mjs "$DEV_ROOT_URL"
-
-            node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/runtime/report.json','utf8'));const exact='C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF';if(process.env.CXORBIA_C6_ACTION!==exact)throw new Error('runtime_action_not_exact');if(r.decision!==exact||r.scope!=='staff_admin_only')throw new Error('root_staff_admin_runtime_not_pass');if(r.parity?.decision!=='PASS_C6_DEV_ROOT_ENTRYPOINT_REMOTE_PARITY'||r.parity?.exact!==true)throw new Error('root_remote_parity_not_pass');if(r.staff?.authenticated!==true||r.staff?.canonicalForm!==true||r.staff?.reloadsStable!==true||r.staff?.newTabStable!==true)throw new Error('root_staff_not_pass');if(r.shopper!==null||r.client!==null||r.genericShopperClientLogicPreserved!==true)throw new Error('root_staff_admin_scope_not_exact');"
-
-            rm -rf .firebase
-            rm -f firebase-debug.log
-            test "$(cat "$OUT_DIR/deploy-count")" = "1"
-            test -z "$(git status --porcelain)"
-          )
-          code=$?
-          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
-          exit 0
-
-      - name: Build sanitized source preflight summary
-        if: always() && steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'SOURCE_PREFLIGHT_ONLY'
-        run: |
-          mkdir -p "$OUT_DIR"
+          set -euo pipefail
           node <<'NODE'
-          const fs=require('fs');
-          const read=p=>fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):null;
-          const authorization=read(process.env.OUT_DIR+'/authorization.json');
-          const preflight=read(process.env.OUT_DIR+'/staff-lane-source-preflight.json');
-          const pass=preflight?.decision==='PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT';
-          fs.writeFileSync(process.env.OUT_DIR+'/summary.json',JSON.stringify({
-            schemaVersion:'cxorbia.c6.staff-lane-source-preflight-run.v1',
-            generatedAt:new Date().toISOString(),
-            decision:pass?'PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT_RUN':'FAIL_C6_STAFF_LANE_SOURCE_PREFLIGHT_RUN',
-            authorization,
-            preflight,
-            safety:{providerCalls:0,hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,hrReads:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,production:false}
-          },null,2)+'\n','utf8');
-          if(!pass)process.exitCode=1;
+          const fs=require('fs'),{execFileSync}=require('child_process');
+          const target=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const safeState={repositoryWrites:false,dataWrites:false,deploy:false,merge:false,production:false,imports:false,payments:false,make:false,gemini:false,firestoreWrites:false,authWrites:false,storageWrites:false,hrWrites:false};
+          const r={schemaVersion:'cxorbia.readonly-post-gates-request.v1',requestId:'i3-11-identity-link-runtime-staff-readonly-20260817-01',enabled:true,consumed:false,allowedExecutions:1,repository:'paulaosoriof86/demoCXOrbia',branch:'docs-tya-v6-v71-audit',pullRequest:7,profile:'I3_STAFF_RUNTIME_AUTHORITY_READONLY',allowedProfiles:['I3_STAFF_RUNTIME_AUTHORITY_READONLY'],targetHeadSha:target,repositoryWrites:false,dataWrites:false,deploy:false,merge:false,production:false,safeState};
+          fs.writeFileSync(process.env.OUT_DIR+'/staff-readonly-request.json',JSON.stringify(r,null,2)+'\n','utf8');
           NODE
 
-      - name: Build sanitized execution summary
-        if: always() && steps.request.outputs.enabled == 'true' && steps.request.outputs.mode == 'HOSTING_RUNTIME_ONCE'
+      - name: Execute Staff-only I3 authority validation
         env:
-          EXECUTE_EXIT_CODE: ${{ steps.execute.outputs.exit_code }}
-          CXORBIA_C6_ACTION: ${{ steps.request.outputs.action }}
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+          CXORBIA_E2E_PRIVATE_CREDENTIALS: .tmp/i3-11-private/private-e2e.json
+          CXORBIA_C6_ACTION: C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF
         run: |
-          mkdir -p "$OUT_DIR"
+          set -euo pipefail
+          node tools/qa/tya-i3-staff-authority-readonly.mjs "$OUT_DIR/staff-readonly-request.json"
+          cp .tmp/cxorbia-readonly-post-gates-runner/report.json "$OUT_DIR/staff-authority-report.json"
+          cp .tmp/i3-staff-authority-readonly/staff-runtime.json "$OUT_DIR/staff-runtime.json"
           node <<'NODE'
-          const fs=require('fs');
-          const read=p=>fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):null;
-          const authorization=read(process.env.OUT_DIR+'/authorization.json');
-          const preflight=read(process.env.OUT_DIR+'/staff-lane-source-preflight.json');
-          const source=read(process.env.OUT_DIR+'/root-entrypoint-source.json');
-          const runtime=read(process.env.OUT_DIR+'/runtime/report.json');
-          const deployCount=fs.existsSync(process.env.OUT_DIR+'/deploy-count')?Number(fs.readFileSync(process.env.OUT_DIR+'/deploy-count','utf8').trim()||0):0;
-          const exitCode=Number(process.env.EXECUTE_EXIT_CODE||999);
-          const exact='C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF';
-          const runtimePass=process.env.CXORBIA_C6_ACTION===exact&&runtime?.decision===exact&&runtime?.scope==='staff_admin_only';
-          const pass=exitCode===0&&deployCount===1&&preflight?.decision==='PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT'&&source?.decision==='PASS_C6_DEV_ROOT_ENTRYPOINT_SOURCE_PARITY'&&runtimePass;
-          const summary={
-            schemaVersion:'cxorbia.c6.dev-root-entrypoint-hosting-run.v2',
-            generatedAt:new Date().toISOString(),
-            decision:pass?'PASS_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME':'FAIL_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME',
-            action:process.env.CXORBIA_C6_ACTION||null,
-            authorization,
-            preflight,
-            deploy:{attempted:deployCount===1,succeeded:pass,hostingDeploysThisRun:deployCount,automaticSecondDeploys:0},
-            source,
-            runtime,
-            safety:{
-              cloudRunDeploys:0,firestoreWrites:0,authWrites:0,passwordChanges:0,passwordResets:0,
-              rulesWrites:0,storageWrites:0,hrWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,
-              credentialsExposed:false,tokensExposed:false,merge:false,production:false
-            }
-          };
-          fs.writeFileSync(process.env.OUT_DIR+'/summary.json',JSON.stringify(summary,null,2)+'\n','utf8');
+          const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/staff-authority-report.json','utf8'));
+          if(r.status!=='PASS_READONLY_POST_GATES')throw new Error('staff_i3_close_not_pass:'+r.status);
+          const i=r.summary?.i3_5||{};
+          if(i.targetLiveShopperId!=='shp-57d2e3769946'||i.targetCanonicalShopperId!=='TYA_GT_0C0BA8856E'||i.targetCanonicalActual!=='TYA_GT_0C0BA8856E')throw new Error('canonical_identity_mismatch');
+          if(Number(i.targetCanonicalVisitsAugust)!==2||Number(i.targetLiveResidualVisitsAugust)!==0)throw new Error('august_visit_reconciliation_mismatch');
+          if(r.summary?.i3_4?.decision!=='PASS_I3_4_POSTULATION_VS_HR_ASSIGNMENT_AUTHORITY_RUNTIME_READONLY')throw new Error('i3_4_regression');
+          if(r.summary?.i3_6?.decision!=='PASS_I3_6_HISTORICAL_SHOPPER_PROFILE_HISTORY_REUSE_NO_REPROCESS')throw new Error('i3_6_regression');
+          if(r.summary?.i3_7?.decision!=='PASS_I3_7_DURABLE_LEGAL_RECEIPT_RUNTIME_READONLY')throw new Error('i3_7_regression');
           NODE
 
-      - name: Capture repository delta evidence
-        if: always() && steps.request.outputs.enabled == 'true'
+      - name: Build sanitized integral close evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs'),{execFileSync}=require('child_process'),crypto=require('crypto');
+          const read=p=>fs.existsSync(p)?JSON.parse(fs.readFileSync(p,'utf8')):null;
+          const auth=read(process.env.OUT_DIR+'/authorization.json');
+          const rules=read(process.env.OUT_DIR+'/rules-deploy.json');
+          const staff=read(process.env.OUT_DIR+'/staff-authority-report.json');
+          const runtime=read(process.env.OUT_DIR+'/staff-runtime.json');
+          const rc=fs.existsSync(process.env.OUT_DIR+'/rules-deploy-count')?Number(fs.readFileSync(process.env.OUT_DIR+'/rules-deploy-count','utf8').trim()):0;
+          const hc=fs.existsSync(process.env.OUT_DIR+'/hosting-deploy-count')?Number(fs.readFileSync(process.env.OUT_DIR+'/hosting-deploy-count','utf8').trim()):0;
+          const i35=staff?.summary?.i3_5||{};
+          const pass=rc===1&&hc===1&&rules?.verified===true&&staff?.status==='PASS_READONLY_POST_GATES'&&i35.targetCanonicalActual==='TYA_GT_0C0BA8856E'&&Number(i35.targetCanonicalVisitsAugust)===2&&Number(i35.targetLiveResidualVisitsAugust)===0;
+          const evidence={schemaVersion:'cxorbia.i3.11.identity-link-runtime-bridge.rules-hosting-dev-close.v1',generatedAt:new Date().toISOString(),decision:pass?'PASS_I3_11_IDENTITY_LINK_RUNTIME_BRIDGE_AND_INTEGRAL_I3_CLOSE':'HOLD_I3_11_IDENTITY_LINK_RUNTIME_BRIDGE',authorization:auth,requestCommitSha:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),deployedSourceHeadSha:execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim(),rules:{decision:rules?.decision||null,verified:rules?.verified===true,sourceSha256:rules?.sourceSha256||null,deployInvocations:rc},hosting:{deployInvocations:hc,site:'cxorbia-backend-dev'},staffReadOnly:staff?{status:staff.status,i3_4:staff.summary?.i3_4?.decision||null,i3_5:staff.summary?.i3_5||null,i3_6:staff.summary?.i3_6?.decision||null,i3_7:staff.summary?.i3_7?.decision||null}:null,runtimeEvidenceSha256:runtime?crypto.createHash('sha256').update(JSON.stringify(runtime)).digest('hex'):null,frozenReused:{i3_9:true,i3_10:true},safety:{historicalShopperAccess:0,historicalShopperLogin:0,historicalShopperRecovery:0,historicalShopperReset:0,userCreates:0,userUpdates:0,authWrites:0,claimsWrites:0,passwordChanges:0,passwordResets:0,firestoreDataWrites:0,hrWrites:0,financeWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,cloudRunDeploys:0,merge:false,production:false,automaticRetry:false}};
+          fs.writeFileSync(process.env.OUT_DIR+'/I3-11-INTEGRAL-CLOSE-LATEST.json',JSON.stringify(evidence,null,2)+'\n','utf8');
+          if(!pass)process.exitCode=2;
+          NODE
+
+      - name: Capture repository delta
+        if: always()
         run: |
           mkdir -p "$OUT_DIR/repository-status"
           git status --porcelain=v1 > "$OUT_DIR/repository-status/status-porcelain.txt"
           git diff --name-status > "$OUT_DIR/repository-status/tracked-delta.txt"
           git ls-files --others --exclude-standard > "$OUT_DIR/repository-status/untracked.txt"
 
-      - name: Upload sanitized evidence
-        if: always() && steps.request.outputs.enabled == 'true'
+      - name: Upload sanitized gate evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-c6-dev-root-entrypoint-${{ github.run_id }}
+          name: cxorbia-i3-11-identity-link-runtime-close-${{ github.run_id }}
           path: |
-            .tmp/c6-dev-root-entrypoint-hosting
-          if-no-files-found: error
+            .tmp/i3-11-identity-link-runtime-close
+            .tmp/cxorbia-readonly-post-gates-runner
+            .tmp/i3-staff-authority-readonly
+          if-no-files-found: warn
           retention-days: 14
+
+      - name: Cleanup private material
+        if: always()
+        run: rm -rf "$PRIVATE_DIR" .tmp/i3-staff-authority-private .tmp/phase-a-runtime-private
