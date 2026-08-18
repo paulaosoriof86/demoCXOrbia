@@ -322,8 +322,8 @@ async function runStaff(){
   const context=await browser.newContext({viewport:{width:1440,height:1000},ignoreHTTPSErrors:true,serviceWorkers:'block'});
   try{
     const page=await context.newPage();
-    await page.goto(root+'/',{waitUntil:'domcontentloaded',timeout:60000});
-    await page.waitForSelector('.role-btn[data-role="admin"]',{state:'visible',timeout:30000});
+    await page.goto(root+'/',{waitUntil:'commit',timeout:60000});
+    await page.waitForSelector('.role-btn[data-role="admin"]',{state:'visible',timeout:60000});
     const entryUrl=new URL(page.url());
     assert(entryUrl.searchParams.get('cxProtectedRuntime')==='YES_PAULA_20260730_PROTECTED_DEV','PROTECTED_RUNTIME_FLAG_MISSING');
     assert(entryUrl.searchParams.get('cxHumanFullVisual')==='YES_PAULA_20260731_FULL_PROFILE_DEV','FULL_VISUAL_FLAG_MISSING');
@@ -362,7 +362,7 @@ async function runStaff(){
 
     const reloads=[];
     for(let i=1;i<=3;i++){
-      await page.reload({waitUntil:'domcontentloaded',timeout:60000});
+      await page.reload({waitUntil:'commit',timeout:60000});
       await waitReady(page,'staff_reload_'+i);
       const state=await snapshot(page,'staff_reload_'+i);
       lastState=state;
@@ -371,7 +371,7 @@ async function runStaff(){
     }
 
     const second=await context.newPage();
-    await second.goto(root+'/',{waitUntil:'domcontentloaded',timeout:60000});
+    await second.goto(root+'/',{waitUntil:'commit',timeout:60000});
     await waitReady(second,'staff_new_tab');
     const newTab=await snapshot(second,'staff_new_tab');
     lastState=newTab;
