@@ -23,7 +23,8 @@ const canonicalDocs = [
 const supersededDocs = [
   'app/docs/CAMBIOS-BACKEND-ADDENDUM-I3-11C-20260818.md',
   'app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-I3-11C-20260818.md',
-  'app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-I3-11C-20260818.md'
+  'app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-I3-11C-20260818.md',
+  'app/docs/SOURCE-LOCK-I3-8-PASS-I3-9-MEMBERSHIP-LOADER-ROOT-CAUSE-SOURCE-FIX-PENDING-DEV-GATE-20260817.md'
 ];
 
 const errors = [];
@@ -46,15 +47,14 @@ for (const rel of canonicalDocs) {
   const text = contents.get(rel) || '';
   if (!text.includes(SYNC_EPOCH)) errors.push(`SYNC_EPOCH_MISMATCH:${rel}`);
   if (!text.includes(EXPECTED_FRONTIER) && rel !== 'app/docs/CXORBIA-EXECUTION-STATE.json') {
-    // Canonical docs must either carry the frontier explicitly or point to the machine state.
     if (!text.includes('CXORBIA-EXECUTION-STATE.json')) errors.push(`FRONTIER_OR_STATE_POINTER_MISSING:${rel}`);
   }
 }
 
 for (const rel of supersededDocs) {
   const text = contents.get(rel) || '';
-  if (!text.includes('SUPERSEDED_DO_NOT_EXECUTE')) errors.push(`OLD_ADDENDUM_NOT_SUPERSEDED:${rel}`);
-  if (!text.includes(SYNC_EPOCH)) errors.push(`OLD_ADDENDUM_SYNC_EPOCH_MISSING:${rel}`);
+  if (!text.includes('SUPERSEDED_DO_NOT_EXECUTE')) errors.push(`OLD_DOCUMENT_NOT_SUPERSEDED:${rel}`);
+  if (!text.includes(SYNC_EPOCH)) errors.push(`OLD_DOCUMENT_SYNC_EPOCH_MISSING:${rel}`);
 }
 
 let state = null;
