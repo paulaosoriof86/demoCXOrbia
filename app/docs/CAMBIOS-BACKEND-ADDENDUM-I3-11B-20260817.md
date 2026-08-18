@@ -31,6 +31,12 @@ El bridge:
 
 Se adapta el workflow existente `cxorbia-c6-dev-root-entrypoint-hosting.yml` al gate I3.11B: Hosting DEV una vez y validación integral Staff read-only posterior. No contiene comando de deploy de Firestore Rules y bloquea rerun (`GITHUB_RUN_ATTEMPT=1`).
 
+## Intento pre-provider no consumido
+
+El primer request I3.11B (`2035bb04f2c1e7d23973f018b46dca402a70f6a6`) quedó en HOLD antes de Hosting: el validador exigía erróneamente `provider < composer`, mientras `index-backend-dev.html` carga correctamente `composer < provider < protected authority bridge`. El paso de validación ocurre antes del comando de Hosting, por lo que este HOLD no consume el único deploy autorizado.
+
+Se corrigió únicamente el validador del workflow en `ff20779942db0d2e36f66b4684bcfdfa4552208b` para reflejar el orden real. No se habilitó retry del run fallido; el workflow conserva `GITHUB_RUN_ATTEMPT=1`.
+
 ## Archivos de este source-fix
 
 - `app/adapters/cxorbia-provider-identity-link-runtime-v1.js`
