@@ -1,114 +1,69 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última sincronización:** 2026-08-18 11:51 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-ROOT-CAUSE-RECOVERY-01`  
-**Estado vigente:** `NO_FRONTEND_PATCH_FOR_I3_11C__SOURCE_TRUTH_SYNCHRONIZED__NO_CODE_PRODUCT_CONTRACTS_PRESERVED`
+**Última sincronización:** 2026-08-18 12:37 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-FOCAL-ADJUDICATION-02`  
+**Estado:** `NO_FRONTEND_PATCH__TARGET_PROVIDER_LINK_INTACT__RUNTIME_TEMPORAL_FORENSIC_NEXT__GO_LIVE_35`
 
-## Estado real Phase A
+## Estado Phase A
 
 I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `0/25 formal` hasta cierre integral; I4 `0/25`; I5 `0/15` = **35% / 65%**.
 
-I3.1→I3.8 PASS. I3.9/I3.10 congelados PASS/no rerun. Rules I3.11C ya PASS/verified/consumed; no están pendientes.
+I3.9/I3.10 frozen PASS. Rules I3.11C PASS/consumed. Focal provider identity-link read PASS/consumed.
 
-Blocker vivo backend/provider:
-`I3_11C_EXPECTED_PROVIDER_LINK_NOT_IN_APPLICABLE_RUNTIME_SET`.
+## Hallazgo nuevo relevante para frontend
 
-Target de cierre QA:
-`shp-57d2e3769946 → TYA_GT_0C0BA8856E`; actualmente target link applicable `0`, agosto canonical `0`, residual live `2`.
+No existe evidencia actual de que el target identity link esté roto en Firebase. Run `32171812808` probó:
+- link exacto existente;
+- `shp-57d2e3769946 → TYA_GT_0C0BA8856E`;
+- `tya/cinepolis/hr`;
+- `materialized`, `tenant_adjudication`, period-independent;
+- normalized applicable/trusted;
+- field diff vacío;
+- provider collection actual: 2 trusted links, 0 rejected.
 
-Siguiente bloque: focal provider identity-link **read-only** bajo nueva autorización; no es tarea UI.
+Por tanto **no crear UI workaround, no hardcodear canonical ID y no compensar desde módulos**. El problema pendiente es explicar por qué el Staff runtime previo vio solo 1 link y 0 target links.
 
-## Qué debe preservar Claude
+## Siguiente bloque backend
 
-- prototipo aprobado y contratos actuales;
+`I3_11C_TEMPORAL_WRITE_HISTORY_AND_RUNTIME_STALENESS_FORENSIC_NO_PROVIDER_READS`.
+
+Se revisarán chronology/source/event-order/refresh/filtering sin provider read/write. Solo si se prueba un defecto reusable en runtime se emitirá handoff Claude por archivo/módulo y criterios de aceptación.
+
+## Preservar
+
 - interfaz exacta `CX.data`;
-- `/app/modules` y `/app/core` sin compensaciones backend ad hoc;
-- identidad exacta/crosswalk; cero fuzzy matching por nombre/email/teléfono;
-- Staff/Admin existente; no crear UI workaround para un Admin “ausente”;
-- I3.9/I3.10 frozen PASS;
-- Historical Shopper sin reproceso;
-- provider authority y legal durable;
-- multi-tenant por `tenantId` + `projectId`;
-- Cinépolis como proyecto normal configurable, no global.
+- `/app/modules` y `/app/core` sin parches backend ad hoc;
+- identidad exacta/crosswalk, no fuzzy matching;
+- Staff/Admin existente;
+- Historical Shopper frozen;
+- I3.9/I3.10 frozen;
+- multi-tenant `tenantId/projectId`;
+- Cinépolis proyecto configurable, nunca global.
 
-## Corrección de continuidad que Claude debe respetar
+## Producto no-code/comercializable
 
-Fuente operativa machine-readable:
-`app/docs/CXORBIA-EXECUTION-STATE.json`.
+Configuración por tenant/proyecto debe evolucionar para país/moneda/timezone/locale; source/mapping; documentos/reglas/certificación; disponibilidad/postulación/asignación; agenda/reprogram/cancel; cuestionarios; ejecución/evidencias/revisión; pagos/liquidación; roles/scopes/notificaciones; integraciones/gates; privacidad y Academia.
 
-Índice:
-`app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`.
+Fuentes objetivo: Google Sheets, Excel, CSV, API, CXOrbia nativo, import manual y plataforma/proveedor/link externo.
 
-Source lock estable:
-`app/docs/SOURCE-LOCK-CXORBIA-TYA.md`.
+Project Builder objetivo: `crear proyecto → configurar source → mapear → dry-run → validar → activar → monitorear`.
 
-Los addenda/source locks fechados son historia salvo activación explícita desde el índice. Si evidencia/HEAD contradice la capa canónica, no se debe “elegir” un documento viejo: se activa `SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION` y primero se sincroniza.
+## I4 que llegará a Claude después de I3
 
-## Mejoras locales que deben promoverse al producto reusable
-
-Cada descubrimiento TyA/Cinépolis que represente capacidad general debe entrar al prototipo como patrón reusable, no como parche de cliente. Para cada handoff se debe especificar archivo/módulo, contrato backend, comportamiento, criterios de aceptación y alcance reusable/tenant/project.
-
-### Contratos no-code a preservar/evolucionar
-
-Configuración por tenant/proyecto para:
-- país, moneda, timezone, locale;
-- fuente de HR/roadmap y mapping;
-- períodos/frecuencia;
-- documentos e instrucciones;
-- reglas/certificación;
-- disponibilidad/postulación/asignación;
-- agenda/reprogramación/cancelación;
-- cuestionario: CXOrbia, TyAOnline, plataforma externa, link general o link por visita;
-- ejecución/evidencias/revisión;
-- liquidación/pagos;
-- roles/scopes/notificaciones;
-- integraciones/gates;
-- privacidad/retención;
-- Academia/manuales/cursos/rutas.
-
-### Fuentes de roadmap/proyecto objetivo
-
-El producto debe poder incorporar adapters configurables para:
-- Google Sheets;
-- Excel;
-- CSV;
-- API;
-- CXOrbia nativo;
-- import manual;
-- plataforma/proveedor externo;
-- link externo cuando aplique.
-
-El dominio no debe cambiar según la fuente.
-
-### Flujo objetivo de Project Builder
-
-`crear proyecto → seleccionar/configurar source → mapear campos → dry-run → validar conflictos/IDs → activar → monitorear sync`.
-
-El backend define contratos/adapters; Claude/prototipo implementa las superficies visuales/no-code correspondientes cuando su bloque llegue. No crear lógica específica “Cinépolis” para resolver capacidades generales.
-
-## I4 — backlog visual/operacional que sí llegará a Claude
-
-Después de I3 integral PASS, el trabajo visible se organiza por capacidades:
-1. documentos/instrucciones/certificación + disponibles/postulación/asignación;
-2. agenda/reprogram/cancelación + ejecución/evidencias/cuestionario/submit/review;
+1. documentos/certificación/disponibles/postulación/asignación;
+2. agenda/reprogram/cancelación/ejecución/evidencias/cuestionario/submit/review;
 3. Finanzas/liquidaciones/pagos + multi-proyecto/configuración;
-4. roles/scopes/notificaciones/integraciones y soporte a HR bidireccional;
-5. estados vacíos/errores/conflictos/revisión humana coherentes con contratos backend.
+4. roles/scopes/notificaciones/integraciones y HR bidireccional;
+5. estados vacíos/conflictos/revisión humana coherentes con autoridad backend.
 
-No asumir que un módulo “existe” equivale a que está Phase-A complete; cada slice debe tener criterios E2E y autoridad backend correcta.
+## Academia
 
-## Academia / manuales / notificaciones
+Cualquier cambio funcional posterior que altere acciones, roles, certificación, agenda, evidencias, pagos o configuración debe actualizar cursos/manuales/rutas/notificaciones en el mismo bloque.
 
-Cualquier cambio funcional que altere acciones del usuario, rol, certificación, agenda, ejecución, cuestionario, evidencias, pagos o configuración debe producir también actualización del material correspondiente. Esto debe registrarse junto al cambio, no como trabajo olvidado al final.
+## Clasificación
 
-## Clasificación de este bloque
-
-- **Reusable CXOrbia:** state machine documental, no-code config/product contracts.
-- **Exclusivo TyA/Cinépolis:** IDs de QA y reconciliación actual solamente.
-- **Claude/prototipo:** handoff futuro de Project Builder/configuración y módulos I4; sin parche actual.
-- **Academia:** integración obligatoria por cambio operacional.
-- **Sin impacto Claude inmediato:** adjudicación focal provider identity-link.
-
-## Prohibiciones actuales
-
-No parchear UI para esconder el HOLD, no hardcodear el shopper target, no duplicar provider logic, no recrear Admin/Shopper, no volver a I3.9/I3.10, no hacer lógica por mes/proyecto/tenant en módulos.
+- **Reusable CXOrbia:** provider-state/runtime-state separation y focal identity adjudication.
+- **Exclusivo TyA/Cinépolis:** IDs exactos de QA únicamente.
+- **Claude/prototipo:** sin cambio UI inmediato; handoff solo si R2B prueba causa reusable.
+- **Academia:** sin cambio funcional inmediato.
+- **Sin impacto Claude inmediato:** forensic temporal/runtime siguiente.
