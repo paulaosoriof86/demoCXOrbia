@@ -1,21 +1,19 @@
 # RESUMEN PARA CLAUDE — Addendum I3.11C
 
-Fecha: 2026-08-18
-Estado: `SIN_CAMBIO_FRONTEND__FIRESTORE_RULES_DEV_GATE_PENDING`
+**Estado histórico:** `SUPERSEDED_DO_NOT_EXECUTE`  
+**SupersededAt:** 2026-08-18 11:51 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-ROOT-CAUSE-RECOVERY-01`
 
-No hay corrección UI ni tarea de prototipo para Claude en este bloque.
+Este addendum quedó obsoleto después del deploy/verificación PASS de Firestore Rules I3.11C. No debe usarse para afirmar que Rules siguen pendientes ni para ordenar un redeploy.
 
-La causa del HOLD I3.11 quedó fuera de `/app/modules`: el runtime provider exacto está cargado y el bridge precompose está instalado, pero la lectura browser de `tenants/tya/shopperIdentityLinks` queda bloqueada porque el `firestore.rules` vigente no coincide con la versión DEV documentada como desplegada.
+Estado vigente para Claude:
+- no existe corrección UI para el HOLD actual;
+- Rules I3.11C PASS/consumidas;
+- Staff/Admin runtime estable;
+- blocker: `I3_11C_EXPECTED_PROVIDER_LINK_NOT_IN_APPLICABLE_RUNTIME_SET`;
+- siguiente bloque backend: adjudicación provider identity-link focal read-only bajo nueva autorización;
+- no hardcodear shopper target ni compensar desde frontend;
+- preservar multi-tenant/no-code, identidad exacta, CX.data y módulos actuales.
 
-Claude debe preservar:
-- módulos y UX actuales;
-- IDs/contratos exactos de identidad;
-- ausencia de fuzzy matching por nombre, correo o teléfono;
-- I3.9/I3.10 congelados PASS;
-- Historical Shopper sin reproceso.
-
-Claude NO debe crear parche visual, hardcodear el shopper objetivo ni intentar compensar desde frontend una denegación de Firestore Rules.
-
-Siguiente bloque backend, sujeto a autorización de Paula: un único deploy DEV de `firestore.rules` exacto y posterior validación Staff read-only. Sin Hosting, Auth writes, Firestore data writes, HR, Storage, Make, Gemini, pagos, merge o producción.
-
-Clasificación: `Sin impacto Claude`.
+Fuentes operativas vigentes:
+`app/docs/CXORBIA-EXECUTION-STATE.json`, `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`, `app/docs/SOURCE-LOCK-CXORBIA-TYA.md`, `RESUMEN-PARA-CLAUDE.md`.

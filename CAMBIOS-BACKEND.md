@@ -1,138 +1,102 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-16 12:18 -06:00  
-**Estado:** `I1_PASS__I2_PASS__I3_HISTORICAL_FROZEN__REQUEST08_CONSUMED__LEGAL_V0_4_MATERIALIZATION_PASS__RUNTIME_AND_HOSTING_DEV_DEPLOY_PASS__HUMAN_ACCEPTANCE_PENDING__GO_LIVE_35__NO_PRODUCTION`
+**Última sincronización:** 2026-08-18 11:51 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-ROOT-CAUSE-RECOVERY-01`  
+**Estado:** `SOURCE_TRUTH_ROOT_CAUSE_FIX_DOCUMENTED__I3_11C_IDENTITY_LINK_HOLD__GO_LIVE_35__NO_PROVIDER_ACTION_THIS_BLOCK`
 
-## Preservado
+## Función de este archivo
 
-I1 PASS `15/15`; I2 PASS `20/20`. Historical I3 run `31906391682` PASS congelado; reset histórico único consumido; toda continuación `passwordResets=0`; sin credential access/reconcile/recovery histórico.
+Este es el resumen vivo de cambios backend/operativos. El historial detallado permanece en Git, evidencias y addenda fechados. Para continuidad actual siempre prevalece `app/docs/CXORBIA-EXECUTION-STATE.json` + índice + source lock estable.
 
-Request08 run `31909354336` / job `95071998299` consumido/no rerun. Counsel GT/HN sigue `deferred_post_golive`, no aprobado.
+## Bloque 2026-08-18 — auditoría forense y corrección duradera de source truth
 
-Patrón no-code:
-`tenantLegalProfile mutable → snapshot publicado inmutable → render UTF-8/LF → SHA-256 → receipt humano por identidad/version/digest`.
+### Hallazgo metodológico raíz
 
-## Bloque previo — materialización REAL V0.4 en Firebase DEV
+La continuidad estaba documentada, pero no estaba técnicamente cerrada como invariante atómica. Un provider/runtime gate podía dejar evidencia y HEAD nuevos sin obligar a sincronizar índice, source lock, checkpoint, CAMBIOS/RESUMEN/PENDIENTES y PR. Por eso sesiones posteriores podían leer correctamente las fuentes declaradas y aun así recibir un estado anterior.
 
-Gate: `PAULA_PROVIDER_WRITE_AND_HUMAN_ACCEPTANCE_RUNTIME_GATE_FOR_I3`.
+Esta clase de fallo se corrige en repo con:
+- `app/docs/CXORBIA-EXECUTION-STATE.json` machine-readable;
+- `app/docs/SOURCE-LOCK-CXORBIA-TYA.md` estable;
+- índice/checkpoint/plan sincronizados;
+- modelo canonical-vs-history;
+- `Atomic Gate Close`;
+- estados fail-closed `SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION` y `EXECUTED_UNSYNCED_DO_NOT_ADVANCE`;
+- circuit breaker de dos repeticiones sin reducción causal;
+- `tools/verify-cxorbia-source-truth-sync.mjs`.
 
-Run `31961266066`; job materialización `95199496314`; validación `95199496265`; `PASS_COMMITTED_READBACK`.
+### Estado técnico corregido en documentación
 
-Resultado exacto:
-- Firestore `4` create-only;
-- legalProfile `1`;
-- Provider Registry `1`;
-- legalContent/version `2`;
-- legalContentId `tya-platform-master-terms`;
-- legalVersion `tya-legal-bundle-v0.4-interim-golive-20260816`;
-- digest `58d16a736495065a7244f8018d95a1faa87eae9a00e36d7ffc65a41edd58f58d`;
-- legalAcceptance/Auth/passwordResets/historical/HR/Rules/Storage/Make/Gemini/pagos `0`;
-- automaticAcceptance=false;
-- request `i3-legal-v04-dev-20260816-01` consumido/no retry;
-- merge=false; producción=false.
+Último HEAD técnico/evidencia previo al sync: `528d5f0ba51e9712fee79ca0025b3dbcdf74e163`.
 
-Evidencia: `app/docs/evidence/ITERATION3-LEGAL-V04-MATERIALIZATION-DEV-LATEST.json`.
+Se deja explícito que:
+- Firestore Rules I3.11C **ya fueron desplegadas, verificadas y consumidas** en run `32163552089`;
+- Staff/Admin runtime llega estable; no crear otro Admin;
+- I3.9/I3.10 quedan frozen PASS/no rerun;
+- el blocker vivo es `I3_11C_EXPECTED_PROVIDER_LINK_NOT_IN_APPLICABLE_RUNTIME_SET`;
+- target live `shp-57d2e3769946`;
+- canonical esperado `TYA_GT_0C0BA8856E`;
+- prior link `irl_3ed1b9a65d36c5873c1306bae1621e9d`;
+- provider global applicable links `1`, target links `0`;
+- agosto `0` canonical / `2` residual live.
 
-Incidente previo ya cerrado: commit `491042ba6eef90701799fa0f8eed2a1b7c66a1c8`, run `31961173013`, YAML inválido antes de request/provider, cero jobs y cero writes. Se corrigió antes de ejecutar la materialización real.
+Evidencia activa: `app/docs/evidence/I3-11C-STAFF-READONLY-CLOSE-LATEST.json`.
 
-## Bloque 2026-08-16 — deploy REAL runtime legal + Hosting DEV
+### Próxima acción exacta
 
-### Autorización exacta
+`NEW_AUTH_REQUIRED_FOCAL_PROVIDER_IDENTITY_LINK_READONLY_ADJUDICATION_NO_WRITES`.
 
-Gate recibido:
-`PAULA_DEV_DEPLOY_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_RUNTIME`.
+Solo lectura focal bajo nueva autorización para distinguir `deleted | deactivated | re_scoped | mutated | intact_but_nonapplicable`. Cero writes/deploys/Historical Shopper/merge/production.
 
-Alcance: actualizar/desplegar únicamente `cxorbia-live-hr-dev` y Hosting DEV de `cxorbia-backend-dev`; habilitar máximo `1` futuro receipt `legalAcceptance` solo después del clic humano de Paula; Auth/passwordResets/historical/HR/Rules/Storage/Make/Gemini/pagos `0`; no bootstrap V0.4, request08, identidad histórica, autoaceptación, merge ni producción.
+## Plan completo preservado
 
-### Causa raíz detectada antes de desplegar
+- I3 integral PASS → 35% a 60%.
+- I4 → capacidades operativas visibles: lifecycle Shopper, documentos/certificación, disponibilidad/postulación/asignación, agenda, ejecución, cuestionario/revisión, HR bidireccional, liquidaciones/pagos, multi-proyecto/config, roles/evidencias/integraciones y Academia sincronizada.
+- I5 → freeze/build lock/preprod/rollback/same-build E2E/gate producción/cutover/smoke/baseline.
+- Post-producción → mismo source-truth/atomic-close/verifier; no se abandona documentación al salir a producción.
 
-`backend/runtime/hr-live-service/server.mjs` ya importaba el runtime legal, pero el `Dockerfile` existente no copiaba `backend/runtime/hr-live-service/legal-runtime.mjs` ni `backend/runtime/cxorbia-legal-acceptance-provider-v1.mjs`. Desplegar así habría producido una imagen sin el handler legal requerido.
+## Arquitectura reusable/no-code documentada
 
-Corrección aplicada antes del build:
-- `backend/runtime/hr-live-service/Dockerfile` — commit `54741f3d7cef9c601db2c77e2b5d1d778cc25c27`.
+TyA queda como primer tenant y Cinépolis como primer proyecto/configuración de prueba operacional, nunca como lógica global.
 
-No se tocó `/app/modules`, `/app/core` ni production entrypoint.
+Se formaliza el destino de configuración reusable para:
+- país/moneda/timezone/locale;
+- HR/roadmap source + mapping;
+- cuestionario/provider/link;
+- documentos/reglas/certificación;
+- postulación/asignación;
+- agenda/reprogram/cancel;
+- ejecución/evidencias/revisión;
+- pagos/liquidación;
+- roles/notificaciones/integraciones;
+- Academia/manuales/rutas.
 
-### Carril reutilizado
+Fuentes objetivo: Sheets, Excel, CSV, API, CXOrbia nativo, import manual y proveedor/link externo. Alta objetivo de proyecto: `configurar → mapear → dry-run → validar → activar`.
 
-No se creó workflow nuevo. Se reutilizó `.github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml` y se recondujo al gate I3, commit `9adc72ad573bc8a813b8b8ed4b63fdb9bb9f7e6a`.
+## Efectos de este bloque
 
-Archivos de control:
-- `backend/config/i3-legal-v04-runtime-deploy-dev-request.json` — request `i3-legal-v04-runtime-dev-20260816-01`, preparado commit `275cf08fe1711698921ea89e76b0abb9888a7913`, luego consumido;
-- `backend/config/i3-legal-v04-runtime-deploy-dev-execute.json` — execute marker commit `bfe762da8afa0c46dc4e7bd09ec8183dac01b089`;
-- `app/docs/evidence/ITERATION3-LEGAL-V04-RUNTIME-DEPLOY-DEV-LATEST.json` — evidencia sanitizada;
-- `app/docs/SOURCE-LOCK-ITERATION3-LEGAL-V0.4-DEV-RUNTIME-DEPLOY-PASS-HUMAN-ACCEPTANCE-PENDING-20260816.md` — lock técnico vigente.
-
-### Ejecución real PASS
-
-Workflow: `CXOrbia I3 Legal V0.4 DEV Runtime Deploy`.
-
-Run `31963932862`; job `95206055703`; `SUCCESS`.
-
-Todos los pasos pasaron: gate one-shot, provider preflight read-only, build, update Cloud Run, smoke fail-closed sin aceptación, Hosting deploy, smoke del rewrite legal, provider post-readback y consumo del request.
-
-Resultado:
-- Cloud Run service `cxorbia-live-hr-dev` actualizado una vez;
-- revision `cxorbia-live-hr-dev-00010-n78`;
-- Hosting DEV desplegado una vez;
-- DEV root `https://cxorbia-backend-dev.web.app`;
-- V0.4/version/digest preservados;
-- legalAcceptance writes durante deploy `0`;
-- acceptance count `0 → 0`;
-- futuro budget humano `1`;
-- Auth writes `0`;
-- passwordResets `0`;
-- historicalCredentialAccess/reconciliation `0/0`;
-- HR/Rules/Storage/Make/Gemini/pagos `0`;
-- automaticAcceptance=false;
-- merge=false;
-- producción=false.
-
-El request de deploy quedó `enabled=false`, `consumed=true`, `noAutomaticRetry=true`. **No rerun.**
-
-### Runtime humano activo en DEV
-
-Cloud Run quedó con:
-- `CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_ENABLED=true`;
-- `CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_GATE=PAULA_DEV_DEPLOY_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_RUNTIME`.
-
-El browser bridge del entrypoint DEV usa provider authority, Firebase ID token exacto, versión/digest Firestore, contenido completo, dos casillas no premarcadas y clic explícito. Sin acción humana no existe write. `localStorage/sessionStorage` no son autoridad legal.
-
-## Claude/prototipo
-
-No se parcheó ningún módulo UI desde backend. Sigue pendiente para el frontend/no-code definitivo:
-- `configuracion.js`: Legal y cumplimiento provider-authoritative;
-- `administrabilidad.js`: auditoría legal sin datos restringidos;
-- proyectos: Evidencias y privacidad;
-- integraciones: Provider Registry;
-- marca: displayName/estado registral/licenciante;
-- gate legal definitivo: versión completa + confirmaciones humanas.
-
-El runtime DEV ya está operativo; Claude no debe duplicar esa lógica ni mover autoridad a localStorage.
-
-## Academia
-
-El contenido futuro debe distinguir claramente: materialización, deploy del runtime y aceptación humana son tres hechos diferentes. El deploy PASS no equivale a consentimiento. La aceptación sigue pendiente hasta que Paula actúe en UI y exista provider ACK/readback del receipt.
-
-## Seguridad / efectos acumulados
-
-Materialización previa: Firestore `4` exactos. Deploy actual: Cloud Run `1`, Hosting `1`, Firestore writes `0`. LegalAcceptance total sigue `0` antes del clic humano. Auth/passwordResets/historical/HR/Rules/Storage/Make/Gemini/pagos `0`. No secretos ni domicilio restringido en repo. Production intacta. Merge=false.
-
-## Pendiente real
-
-Siguiente acción exacta:
-`HUMAN_PAULA_LEGAL_ACCEPTANCE_UI_CLICK`.
-
-Después: provider ACK/readback del único receipt autorizado → reload/new-tab → continuación I3 Admin/new Shopper sin request08 → Auth/claims/membership/profile/shopper/crosswalk exactos → login/reload/new-tab/segundo contexto.
+- GitHub documentación/tooling: sí.
+- `/app/modules`: 0.
+- `/app/core`: 0.
+- `CX.data` interface: 0.
+- Auth writes: 0.
+- user/password/claims writes: 0.
+- Firestore data writes: 0.
+- Rules deploy: 0.
+- Hosting/Cloud Run deploy: 0.
+- HR/Storage/Make/Gemini/payment writes: 0.
+- Historical Shopper access: 0.
+- merge: false.
+- production: false.
 
 ## Clasificación
 
-- **Reusable CXOrbia / sucesor de marca:** packaging seguro del runtime, gate humano exacto, deploy one-shot, provider readback, aceptación versionada/idempotente.
-- **Exclusivo TyA:** V0.4, tenant `tya`, versión/digest y counsel diferido.
-- **Claude/prototipo:** superficies no-code futuras documentadas; módulos sin parche.
-- **Academia:** materialización ≠ deploy ≠ aceptación; aceptación humana/versionada.
-- **Sin impacto Claude inmediato:** Cloud Run/Hosting executor, request consumption, evidence y source lock.
+- **Reusable CXOrbia:** source-truth state, atomic close, verifier, loop breaker, multitenant/no-code config contracts.
+- **Exclusivo tenant TyA:** IDs/evidencia exacta usados para cerrar I3.
+- **Exclusivo proyecto Cinépolis:** únicamente datos/visit reconciliation del primer proyecto; no hardcode nuevo.
+- **Claude/prototipo:** se documentan capacidades no-code y handoff obligatorio por archivo/módulo; ningún parche frontend desde backend.
+- **Academia:** cada capacidad futura debe sincronizar manuales/cursos/rutas/notificaciones cuando cambie operación.
+- **Sin impacto Claude inmediato:** reconciliación documental/source-truth y próxima adjudicación provider focal.
 
-## Porcentaje
+## Avance
 
-**35% completado / 65% pendiente. I3 0/25 hasta PASS integral.**
+Formal: **35% completado / 65% pendiente**. Este bloque corrige continuidad y no suma porcentaje funcional artificial.
