@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.i3.11b.hosting-dev-close.request.v1",
-  "requestId": "i3-11b-identity-link-precompose-exact-bridge-hosting-dev-close-20260817-01",
+  "requestId": "i3-11b-identity-link-precompose-exact-bridge-hosting-dev-close-20260817-02",
   "gateId": "I3.11B_IDENTITY_LINK_PRECOMPOSE_EXACT_BRIDGE_HOSTING_DEV_CLOSE",
   "enabled": true,
   "consumed": false,
@@ -16,7 +16,7 @@
   "hostingSite": "cxorbia-backend-dev",
   "hostingTarget": "cxorbia-dev",
   "devRootUrl": "https://cxorbia-backend-dev.web.app",
-  "sourceHeadSha": "0f0d23c6fd56e5ef597374587e20b92cc63d322e",
+  "sourceHeadSha": "30e83dc272a7561d1d166fecb2cd6db5d1b0a8da",
   "allowedExecutions": 1,
   "singleRulesDeployMax": 0,
   "singleHostingDeployMax": 1,
