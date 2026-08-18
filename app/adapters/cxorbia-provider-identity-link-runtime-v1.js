@@ -3,6 +3,8 @@
    Operators only: exact provider links are loaded before Firestore tenant payload composition.
    I3.11C contract-parity correction: runtime applicability now follows the reusable
    cxorbia-identity-roll-forward-v1 trust semantics for authoritative period-independent links.
+   I3.11C post-hardening correction: authoritative exact links are also exported into the
+   canonical identityMap after composition when the canonical identity is present in output.
    No fuzzy/name/email/phone matching. No browser writes. No tenant/project/month hardcode.
 */
 (function(root){
@@ -95,8 +97,8 @@
     if(!ctx?.authenticated||!OPERATOR_ROLES.has(str(ctx.role)))return [];
     return links.filter(link=>applicable(link,ctx));
   }
-  function bridgeComposeInput(input){
-    const exactLinks=activeLinksForCurrentContext();
+  function bridgeComposeInput(input,exactLinksOverride){
+    const exactLinks=Array.isArray(exactLinksOverride)?exactLinksOverride:activeLinksForCurrentContext();
     const payload=input&&input.protectedPayload;
     if(!exactLinks.length||!payload||!Array.isArray(payload.shoppers))return input;
 
@@ -157,12 +159,66 @@
     if(!applied.length)return input;
     return Object.assign({},input,{protectedPayload:Object.assign({},payload,{shoppers})});
   }
+  function bridgeComposeOutput(result,exactLinksOverride){
+    if(!result||typeof result!=='object')return result;
+    const exactLinks=Array.isArray(exactLinksOverride)?exactLinksOverride:activeLinksForCurrentContext();
+    if(!exactLinks.length)return result;
+
+    const identityMap=Object.assign({},result.identityMap&&typeof result.identityMap==='object'&&!Array.isArray(result.identityMap)?result.identityMap:{});
+    const canonicalIds=new Set();
+    for(const profile of Array.isArray(result.shoppers)?result.shoppers:[]){
+      const id=str(profile?.canonicalShopperId||profile?.shopperId||profile?.id);if(id)canonicalIds.add(id);
+    }
+    for(const visit of Array.isArray(result.visits)?result.visits:[]){
+      const id=str(visit?.shopperId);if(id)canonicalIds.add(id);
+    }
+
+    const applied=[],conflicts=[];
+    for(const link of exactLinks){
+      const canonical=canonicalFor(link);
+      const aliases=exactAliasesForLink(link).filter(alias=>alias&&alias!==canonical);
+      if(!canonical||!aliases.length)continue;
+      if(!canonicalIds.has(canonical)){
+        conflicts.push({
+          identityLinkId:str(link.identityLinkId||link.id),canonicalShopperId:canonical,sourceAliases:aliases,
+          reason:'provider_exact_canonical_not_present_in_composed_output'
+        });
+        continue;
+      }
+      for(const alias of aliases){
+        const prior=str(identityMap[alias]);
+        if(prior&&prior!==canonical){
+          conflicts.push({
+            identityLinkId:str(link.identityLinkId||link.id),canonicalShopperId:canonical,sourceAlias:alias,
+            existingCanonicalShopperId:prior,reason:'provider_exact_identity_map_conflict'
+          });
+          continue;
+        }
+        if(!prior){
+          identityMap[alias]=canonical;
+          applied.push({identityLinkId:str(link.identityLinkId||link.id),sourceAlias:alias,canonicalShopperId:canonical});
+        }
+      }
+    }
+
+    root.CX_PROVIDER_IDENTITY_LINK_POSTCOMPOSE={
+      version:VERSION,contract:CANONICAL_CONTRACT,readOnly:true,exactTechnicalOnly:true,
+      applied,conflicts,providerWrites:0,firestoreWrites:0,fuzzyMatching:false,at:new Date().toISOString()
+    };
+
+    if(!applied.length)return result;
+    return Object.assign({},result,{identityMap});
+  }
   function installComposerBridge(){
     const api=root.CX_TYA_CUMULATIVE_READ_MODEL;
     if(!api||typeof api.compose!=='function')return false;
     if(api.__providerIdentityLinkPrecomposeV1===true){composerBridgeInstalled=true;return true;}
     const compose=api.compose.bind(api);
-    api.compose=function(input){return compose(bridgeComposeInput(input));};
+    api.compose=function(input){
+      const exactLinks=activeLinksForCurrentContext();
+      const prepared=bridgeComposeInput(input,exactLinks);
+      return bridgeComposeOutput(compose(prepared),exactLinks);
+    };
     api.__providerIdentityLinkPrecomposeV1=true;
     composerBridgeInstalled=true;
     publish('composer_bridge_installed',{links:links.length});
@@ -239,7 +295,7 @@
   const contract=Object.freeze({
     version:VERSION,canonicalContract:CANONICAL_CONTRACT,
     activeStates:[...ACTIVE_STATES],trustedAuthorities:[...TRUSTED_AUTHORITIES],
-    applicable,canonicalApplicable,authorityType,authorityRef,projectScope,sourceTokensFor,sourceAliasesFor,
+    applicable,canonicalApplicable,authorityType,authorityRef,projectScope,sourceTokensFor,sourceAliasesFor,exactAliasesForLink,bridgeComposeOutput,
     exactTechnicalOnly:true,fuzzyMatching:false,multiTenant:true,multiProject:true,periodIndependent:true
   });
   root.CX_PROVIDER_IDENTITY_LINK_CONTRACT=contract;
