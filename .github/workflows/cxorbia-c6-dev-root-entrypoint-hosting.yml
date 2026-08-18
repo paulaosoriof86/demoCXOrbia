@@ -1,11 +1,8 @@
 name: CXOrbia I3.11C R3-C DEV Hosting Materialization
 
 on:
-  push:
-    branches:
-      - docs-tya-v6-v71-audit
-    paths:
-      - 'backend/config/i3-11-identity-link-runtime-bridge-rules-hosting-dev.json'
+  pull_request:
+    types: [synchronize]
 
 permissions:
   contents: read
@@ -32,22 +29,26 @@ env:
 jobs:
   r3c-hosting-materialize:
     name: R3-C one DEV Hosting deploy + remote parity only
+    if: >-
+      github.event.pull_request.number == 7 &&
+      github.event.pull_request.head.ref == 'docs-tya-v6-v71-audit' &&
+      github.event.pull_request.base.ref == 'release/cxorbia-tya-rc-20260630'
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
     steps:
-      - name: Checkout exact request commit
+      - name: Checkout exact PR head
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.sha }}
-          fetch-depth: 2
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
-      - name: Validate exact R3-C authorization and source lineage
+      - name: Validate exact R3-C authorization and transport fallback
         id: gate
         run: |
           set -euo pipefail
@@ -60,36 +61,48 @@ jobs:
           const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
           const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const workflow='.github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml';
           if(r.schemaVersion!=='cxorbia.i3.11c.r3c.hosting-materialization.request.v1')throw new Error('request_schema_invalid');
           if(r.gateId!=='I3_11C_DEV_HOSTING_MATERIALIZE_CORRECTED_IDENTITY_RUNTIME_NO_PROVIDER_DATA_WRITES')throw new Error('gate_id_invalid');
           if(r.repository!=='paulaosoriof86/demoCXOrbia'||r.branch!=='docs-tya-v6-v71-audit'||Number(r.pullRequest)!==7)throw new Error('repository_lane_invalid');
           if(r.firebaseProjectId!=='cxorbia-backend-dev'||r.hostingSite!=='cxorbia-backend-dev'||r.hostingTarget!=='cxorbia-dev'||r.devRootUrl!=='https://cxorbia-backend-dev.web.app')throw new Error('provider_target_invalid');
           if(r.enabled!==true||r.consumed!==false||r.status!=='authorized_execute_once'||r.authorizedBy!=='Paula')throw new Error('authorization_state_invalid');
-          if(r.sourceHeadSha!==parent||!r.sourceHeadSha||head===parent)throw new Error('source_head_invalid');
-          if(changed.length!==1||changed[0]!==process.env.REQUEST)throw new Error('request_commit_scope_invalid:'+changed.join(','));
+          if(changed.length!==1||changed[0]!==workflow)throw new Error('fallback_trigger_scope_invalid:'+changed.join(','));
+          if(!/^[a-f0-9]{40}$/.test(String(r.sourceHeadSha||'')))throw new Error('source_head_invalid');
+          execFileSync('git',['merge-base','--is-ancestor',r.sourceHeadSha,head]);
+          const appDelta=execFileSync('git',['diff','--name-only',r.sourceHeadSha,head,'--','app/'],{encoding:'utf8'}).trim();
+          if(appDelta)throw new Error('product_source_drift_after_authorized_source:'+appDelta.replace(/\s+/g,','));
           if(Number(r.allowedExecutions)!==1||Number(r.maxHostingDeploys)!==1)throw new Error('single_deploy_contract_invalid');
           for(const key of ['providerIdentityWrites','firestoreDataWrites','authWrites','rulesDeploys','hrWrites','storageWrites','makeCalls','geminiCalls','paymentWrites','historicalShopperAccess','cloudRunDeploys','staffRuntimeExecutions']){
             if(Number(r[key]||0)!==0)throw new Error('unsafe_scope_'+key);
           }
           if(r.merge!==false||r.production!==false||r.noAutomaticRetry!==true||r.automaticStaffRuntimeRetry!==false)throw new Error('unsafe_scope');
-          fs.writeFileSync(process.env.OUT_DIR+'/authorization.json',JSON.stringify({requestId:r.requestId,gateId:r.gateId,sourceHeadSha:parent,requestCommitSha:head,authorizedBy:r.authorizedBy,maxHostingDeploys:1,noAutomaticRetry:true,automaticStaffRuntimeRetry:false},null,2)+'\n','utf8');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`source_head=${parent}\nrequest_id=${r.requestId}\n`);
+          fs.writeFileSync(process.env.OUT_DIR+'/authorization.json',JSON.stringify({requestId:r.requestId,gateId:r.gateId,sourceHeadSha:r.sourceHeadSha,triggerHeadSha:head,priorTransportCommitSha:parent,authorizedBy:r.authorizedBy,maxHostingDeploys:1,noAutomaticRetry:true,automaticStaffRuntimeRetry:false},null,2)+'\n','utf8');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`source_head=${r.sourceHeadSha}\nprior_transport_commit=${parent}\nrequest_id=${r.requestId}\n`);
           NODE
 
-      - name: Claim one logical execution
+      - name: Claim exactly one execution across both transports
         id: claim
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          existing=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/statuses" --paginate --jq "[.[] | select(.context==\"${CLAIM_CONTEXT}\")] | length")
-          if [ "$existing" != "0" ]; then
+          prior='${{ steps.gate.outputs.prior_transport_commit }}'
+          prior_claims=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${prior}/statuses" --paginate --jq "[.[] | select(.context==\"${CLAIM_CONTEXT}\")] | length")
+          if [ "$prior_claims" != "0" ]; then
             echo 'claimed=false' >> "$GITHUB_OUTPUT"
-            echo 'R3-C already claimed; refusing repeat.'
+            echo 'Prior push transport already claimed R3-C; fallback will not execute.'
+            exit 0
+          fi
+          head=$(git rev-parse HEAD)
+          current_claims=$(gh api "/repos/${GITHUB_REPOSITORY}/commits/${head}/statuses" --paginate --jq "[.[] | select(.context==\"${CLAIM_CONTEXT}\")] | length")
+          if [ "$current_claims" != "0" ]; then
+            echo 'claimed=false' >> "$GITHUB_OUTPUT"
+            echo 'Current R3-C transport already claimed; refusing repeat.'
             exit 0
           fi
           gh api --method POST -H 'Accept: application/vnd.github+json' \
-            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${head}" \
             -f state='pending' -f context="$CLAIM_CONTEXT" \
             -f description='CLAIMED_ONE_LOGICAL_R3C_HOSTING_EXECUTION' \
             -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
@@ -126,7 +139,6 @@ jobs:
 
       - name: Deploy exact authorized source to Hosting DEV once
         if: steps.claim.outputs.claimed == 'true'
-        id: deploy
         run: |
           set -euo pipefail
           test "${GITHUB_RUN_ATTEMPT}" = "1"
@@ -140,7 +152,6 @@ jobs:
 
       - name: Verify served adapter exact parity
         if: steps.claim.outputs.claimed == 'true'
-        id: parity
         run: |
           set -euo pipefail
           local_asset="$DEPLOY_TREE/app/adapters/cxorbia-provider-identity-link-runtime-v1.js"
@@ -149,7 +160,7 @@ jobs:
           for attempt in $(seq 1 40); do
             rm -f "$remote_asset"
             if curl -fsSL --retry 2 --retry-delay 1 -H 'Cache-Control: no-cache' \
-              "$DEV_ROOT_URL/adapters/cxorbia-provider-identity-link-runtime-v1.js?cxorbia_r3c=${GITHUB_SHA}-${attempt}" \
+              "$DEV_ROOT_URL/adapters/cxorbia-provider-identity-link-runtime-v1.js?cxorbia_r3c=${GITHUB_RUN_ID}-${attempt}" \
               -o "$remote_asset" && cmp "$local_asset" "$remote_asset"; then
               ok=1
               break
@@ -162,7 +173,6 @@ jobs:
           grep -q 'materialized' "$remote_asset"
           grep -q 'tenant_adjudication' "$remote_asset"
           grep -q 'fuzzyMatching:false' "$remote_asset"
-          echo 'remote_parity=true' >> "$GITHUB_OUTPUT"
 
       - name: Build sanitized R3-C evidence
         if: always() && steps.claim.outputs.claimed == 'true'
@@ -177,7 +187,7 @@ jobs:
           const localSha=read(process.env.OUT_DIR+'/local-adapter-sha256.txt');
           const remoteSha=read(process.env.OUT_DIR+'/remote-adapter-sha256.txt');
           const pass=deploys===1&&parity?.decision==='PASS_PROVIDER_IDENTITY_RUNTIME_CANONICAL_CONTRACT_PARITY'&&localSha&&remoteSha&&localSha===remoteSha;
-          const out={schemaVersion:'cxorbia.i3.11c.r3c.hosting-materialization.evidence.v1',generatedAt:new Date().toISOString(),decision:pass?'PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY':'HOLD_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION',authorization:auth,hostingDeploys:deploys,sourceParity:parity?.decision||null,localAdapterSha256:localSha,remoteAdapterSha256:remoteSha,remoteExactByteParity:!!(localSha&&remoteSha&&localSha===remoteSha),safety:{providerIdentityWrites:0,firestoreDataWrites:0,authWrites:0,rulesDeploys:0,hrWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,historicalShopperAccess:0,cloudRunDeploys:0,staffRuntimeExecutions:0,merge:false,production:false},nextGate:pass?'NEW_AUTH_REQUIRED_I3_11C_STAFF_RUNTIME_CANONICAL_IDENTITY_CLOSE_READONLY_AFTER_HOSTING':'STOP_NO_AUTOMATIC_RETRY'};
+          const out={schemaVersion:'cxorbia.i3.11c.r3c.hosting-materialization.evidence.v1',generatedAt:new Date().toISOString(),decision:pass?'PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY':'HOLD_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION',authorization:auth,workflowRunId:Number(process.env.GITHUB_RUN_ID),hostingDeploys:deploys,sourceParity:parity?.decision||null,localAdapterSha256:localSha,remoteAdapterSha256:remoteSha,remoteExactByteParity:!!(localSha&&remoteSha&&localSha===remoteSha),safety:{providerIdentityWrites:0,firestoreDataWrites:0,authWrites:0,rulesDeploys:0,hrWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,historicalShopperAccess:0,cloudRunDeploys:0,staffRuntimeExecutions:0,merge:false,production:false},nextGate:pass?'NEW_AUTH_REQUIRED_I3_11C_STAFF_RUNTIME_CANONICAL_IDENTITY_CLOSE_READONLY_AFTER_HOSTING':'STOP_NO_AUTOMATIC_RETRY'};
           fs.writeFileSync(process.env.OUT_DIR+'/result.json',JSON.stringify(out,null,2)+'\n','utf8');
           NODE
 
@@ -196,11 +206,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          head=$(git rev-parse HEAD)
           decision=$(node -e "const fs=require('fs');try{const x=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/result.json','utf8'));process.stdout.write(String(x.decision||'HOLD_NO_DECISION'));}catch{process.stdout.write('HOLD_NO_RESULT');}")
           state=success
           if [ "$decision" != 'PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY' ]; then state=failure; fi
           gh api --method POST -H 'Accept: application/vnd.github+json' \
-            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${head}" \
             -f state="$state" -f context="$CLAIM_CONTEXT" \
             -f description="$(printf '%s' "$decision" | cut -c1-140)" \
             -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
