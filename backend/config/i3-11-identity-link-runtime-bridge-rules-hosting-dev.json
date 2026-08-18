@@ -16,7 +16,12 @@
   "hostingSite": "cxorbia-backend-dev",
   "hostingTarget": "cxorbia-dev",
   "devRootUrl": "https://cxorbia-backend-dev.web.app",
-  "sourceHeadSha": "aa67c47ead8917d481f014658bb75e59987d339d",
+  "sourceHeadSha": "e04f86e0b599cf7e96ebe9b827ea50ee7d494bd1",
+  "priorTransportCommits": [
+    "abc44804eda81491cff06d0391a3dbaa9bb693e8",
+    "689609cdc25b9cd469a9fa7743c4c8d74a419d8a"
+  ],
+  "transportNonce": "git-ref-fast-forward-01",
   "allowedExecutions": 1,
   "maxHostingDeploys": 1,
   "providerIdentityWrites": 0,
