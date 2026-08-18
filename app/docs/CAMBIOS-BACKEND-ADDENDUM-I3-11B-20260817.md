@@ -1,7 +1,7 @@
 # CAMBIOS-BACKEND — Addendum I3.11B
 
 Fecha: 2026-08-17
-Estado al preparar fuente: `I3_11B_SOURCE_FIXED_PENDING_SINGLE_HOSTING_DEV_GATE`
+Estado vigente: `I3_11B_QA_READINESS_RACE_PROVEN_SOURCE_FIX_PENDING_NO_MORE_DEPLOY`
 Repo: `paulaosoriof86/demoCXOrbia`
 Rama: `docs-tya-v6-v71-audit`
 PR: `#7` abierto, sin merge
@@ -37,6 +37,45 @@ El primer request I3.11B (`2035bb04f2c1e7d23973f018b46dca402a70f6a6`) quedó en 
 
 Se corrigió únicamente el validador del workflow en `ff20779942db0d2e36f66b4684bcfdfa4552208b` para reflejar el orden real. No se habilitó retry del run fallido; el workflow conserva `GITHUB_RUN_ATTEMPT=1`.
 
+## Nueva causa raíz del bucle demostrada — readiness del harness
+
+La adjudicación Staff-only posterior (`run 32096259040`, `job 95588223408`, artifact `9310057053`) demuestra un segundo problema independiente del producto: el harness de browser declara `waitReady()` antes de que se cumplan las condiciones que `validate()` exige inmediatamente después.
+
+La evidencia capturada al fallar muestra simultáneamente:
+- Auth Staff `admin` y namespace `staff` correctos;
+- membership verificada;
+- handoff frontend `entered` y verificado;
+- autoridad HR aplicada;
+- 15 periodos, 660 visitas y 214 shoppers;
+- proyecto `cinepolis` y periodo `cinepolis-2026-08` activos;
+- `dataStatus=ready`, `dataMode=connected`;
+- app encendida y login oculto;
+- 0 duplicados de visitas y shoppers;
+- autoridad de postulaciones lista;
+- 0 visitas residuales de agosto bajo `shp-57d2e3769946` en esa captura;
+- pero router/view/selectores todavía no montados y runtime legal todavía cargando.
+
+El error exacto fue `staff_first_ROUTER_SHELL_NOT_MOUNTED`. El archivo `tools/qa/tya-c6-staff-admin-human-auth-browser-smoke.mjs` espera en `waitReady()` Auth/membership/HR/data/app/login, pero no espera router shell, view, selectores, legal settlement ni —en modo I3 extendido— la estabilización del `identityMap`. Luego `validate()` exige esos estados de inmediato. Esto produce un falso negativo de carrera y puede convertir una ejecución todavía en transición en un HOLD formal.
+
+Esta capa explica por qué varias iteraciones parecían volver a encontrar otra causa tras un fix real: se mezclaron un bug de producto con un bug de observación/readiness del gate.
+
+## Circuit breaker definitivo
+
+Desde este hallazgo queda bloqueado repetir el patrón `nuevo deploy → snapshot temprano → nuevo diagnóstico`.
+
+Siguiente y única corrección permitida antes de otra adjudicación:
+1. corregir `waitReady()` para que su frontera sea igual o más estricta que `validate()`;
+2. esperar router shell, view, selectores y estado legal estable;
+3. en `extendedI3`, esperar también el cruce exacto `shp-57d2e3769946 → TYA_GT_0C0BA8856E`, 2 visitas agosto canonical y 0 residuales, o agotar el timeout y capturar entonces un fallo estable real;
+4. ejecutar después una sola prueba Staff read-only sin Hosting, sin Rules y sin provider writes;
+5. si el estado estable no converge, detenerse sobre esa única evidencia y no volver a desplegar ni a rehacer diagnóstico amplio.
+
+Hasta recuperar evidencia exacta del run I3.11B que determine el contador efectivo de Hosting, se asume conservadoramente que no hay autorización disponible para otro Hosting. No se hará otro deploy por inferencia.
+
+## Adjudicación Staff-only — seguridad
+
+La ejecución `32096259040` no tocó Historical Shopper y mantuvo en cero Auth/user/password/Firestore/HR/Rules/Storage/Make/Gemini/pagos/deploys/merge/producción. El fallo 403 al intentar comentar el PR ocurrió después de generar/subir evidencia y es telemetría del workflow; no es causa del fallo de producto.
+
 ## Archivos de este source-fix
 
 - `app/adapters/cxorbia-provider-identity-link-runtime-v1.js`
@@ -47,11 +86,11 @@ Se corrigió únicamente el validador del workflow en `ff20779942db0d2e36f66b468
 
 ## Evidencia previa preservada
 
-I3.4 PASS, I3.6 PASS e I3.7 PASS en Staff read-only. I3.9 e I3.10 permanecen congelados PASS. El único fallo a cerrar es I3.5: `shp-57d2e3769946` todavía tenía 2 visitas agosto y `TYA_GT_0C0BA8856E` 0.
+I3.4 PASS, I3.6 PASS e I3.7 PASS en Staff read-only antes de la ejecución afectada por la carrera. I3.9 e I3.10 permanecen congelados PASS. La ejecución afectada por readiness no se usa para declarar regresión de I3.4/I3.7 porque no alcanzó el estado estable que el propio validador exige. I3.6 continuó PASS incluso en esa ejecución.
 
 ## Criterio de cierre
 
-PASS integral exige simultáneamente:
+PASS integral exige simultáneamente, ya sobre estado estable:
 - `identityMap['shp-57d2e3769946']='TYA_GT_0C0BA8856E'`;
 - 2 visitas agosto canonical;
 - 0 visitas agosto residuales;
@@ -63,8 +102,8 @@ Hasta esa evidencia el avance formal permanece 35%. Con PASS integral sube direc
 
 ## Clasificación
 
-- Reusable CXOrbia: bridge provider exact-only precompose y fail-closed.
+- Reusable CXOrbia: bridge provider exact-only precompose, fail-closed y regla de readiness observable alineada con validación.
 - Exclusivo cliente: par de identidad TyA usado como prueba de cierre.
 - Claude/prototipo: sin cambio UI; no parchear módulos.
 - Academia: sin cambio de contenido; se preservan rutas/roles existentes.
-- Sin impacto Claude: deploy gate, seguridad y readback técnico.
+- Sin impacto Claude: deploy gate, seguridad, readback técnico y corrección del harness QA.
