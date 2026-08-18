@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "i3-11c-staff-admin-final-post-hosting-pass-20260818-07",
+  "requestId": "i3-11c-staff-admin-final-post-hosting-pass-20260818-08-transport-corrected",
   "enabled": true,
   "consumed": false,
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "e0f872fd16efbb4e0cd4da6749bed2cbe1b3702e",
+  "targetHeadSha": "84bd3bc571692074ce9e13fa50264ef17c6b55f2",
   "profile": "I3_STAFF_RUNTIME_AUTHORITY_READONLY",
   "allowedProfiles": ["I3_STAFF_RUNTIME_AUTHORITY_READONLY"],
   "allowedExecutions": 1,
@@ -53,7 +53,7 @@
     "rulesSourcePath": "firestore.rules",
     "expectedRulesBlobSha": "bf62d8b0e32c571aaae457dd9128b0c82b0ea073",
     "identityContractParityGate": "tools/qa/cxorbia-provider-identity-runtime-contract-parity-gate.mjs",
-    "sourceCorrectionHeadSha": "e0f872fd16efbb4e0cd4da6749bed2cbe1b3702e",
+    "sourceCorrectionHeadSha": "84bd3bc571692074ce9e13fa50264ef17c6b55f2",
     "maxRulesDeploys": 0,
     "staffReadonlyExecutions": 1,
     "executeOnlyOnEvent": "push",
@@ -87,10 +87,23 @@
   "authorizedBy": "Paula",
   "reauthorizationId": "PAULA_CURRENT_CONVERSATION_I3_11C_STAFF_FINAL_POST_HOSTING_PASS_20260818_1705",
   "authorizationText": "Autorizo una única ejecución I3.11C Staff/Admin read-only final post-Hosting PASS sobre DEV, usando únicamente la identidad Staff/Admin existente, para verificar shp-57d2e3769946 → TYA_GT_0C0BA8856E en CX.data.__identityMap, agosto canonical 2, residual 0, duplicados 0/0 y estabilidad reload/nueva pestaña; cero Shopper histórico, cero writes de provider/Auth/Firestore/Rules/HR/Storage/Make/Gemini/pagos, cero deploys, cero cambios de contraseña/usuarios, cero merge y cero producción.",
-  "sourceTruthSyncEpoch": "CXORBIA-20260818-I3-11C-FINAL-STAFF-POST-HOSTING-AUTH-13",
+  "sourceTruthSyncEpoch": "CXORBIA-20260818-I3-11C-FINAL-STAFF-POST-HOSTING-AUTH-14-TRANSPORT-CORRECTED",
   "sourceLockDocument": "app/docs/SOURCE-LOCK-CXORBIA-TYA.md",
   "stopRetryOnFailure": true,
   "noAutomaticRetry": true,
+  "transportCorrection": {
+    "rootCause": "PUSH_PR_CONCURRENCY_GROUP_COLLISION_PENDING_CANCEL_BEFORE_STAFF",
+    "priorRequestCommitSha": "6fd1f256897a0c91257e1b54efe0da947ae54e8c",
+    "priorPullRequestRunId": 32195823892,
+    "priorPullRequestArtifactId": 9345842610,
+    "priorPullRequestArtifactDigest": "sha256:53bf05066396cb82b676cf561f4d88ae093b96096d07f55544f36e70ae07e61b",
+    "priorStaffReadonlyExecuted": false,
+    "priorHistoricalShopperAccess": 0,
+    "priorWrites": 0,
+    "priorDeploys": 0,
+    "workflowFixCommitSha": "84bd3bc571692074ce9e13fa50264ef17c6b55f2",
+    "workflowFix": "concurrency group now includes github.event_name so push and pull_request cannot occupy the same concurrency group"
+  },
   "hostingEvidence": {
     "decision": "PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY",
     "workflowRunId": 32194641563,
@@ -112,5 +125,5 @@
     "duplicateShopperIds": 0,
     "stableAcrossReloadAndNewTab": true
   },
-  "purpose": "Final one-shot Staff/Admin existing-identity DEV read-only observation after identityMap Hosting PASS. Close I3 only if exact canonical export, August counts, duplicates, reload/new-tab stability and zero-write safety all pass."
+  "purpose": "Final one-shot Staff/Admin existing-identity DEV read-only observation after identityMap Hosting PASS. Transport collision was corrected without consuming Staff execution. Close I3 only if exact canonical export, August counts, duplicates, reload/new-tab stability and zero-write safety all pass."
 }
