@@ -1,70 +1,67 @@
 # SOURCE LOCK CXORBIA TyA — ESTABLE Y VIGENTE
 
-**Última sincronización:** 2026-08-18 14:20 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-R3B-HOLD-DEV-HOSTING-PARITY-05`  
-**Estado:** `LOCKED__R3B_HOLD_CONSUMED__CORRECTED_IDENTITY_SOURCE_PENDING_DEV_HOSTING_MATERIALIZATION_AUTH__NO_PRODUCTION`
+**Última sincronización:** 2026-08-18 16:26 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-NAV-HARNESS-PASS-STAFF-AUTHORIZED-09`  
+**Estado:** `LOCKED__R3C_HOSTING_PASS__STAFF_NAVIGATION_HOLD_CONSUMED__NAV_HARNESS_SOURCE_PASS__CURRENT_STAFF_AUTHORIZED__NO_PRODUCTION`
 
 ## Carril
 
-Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`; DEV `cxorbia-backend-dev`.
+Repo `paulaosoriof86/demoCXOrbia`; rama viva `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`; DEV `cxorbia-backend-dev`.
 
-Canonical state: `app/docs/CXORBIA-EXECUTION-STATE.json`.
+## Avance formal
 
-## Formal
+I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `0/25` hasta PASS integral; I4 `0/25`; I5 `0/15`. **35% completado / 65% pendiente.** I3 integral PASS → **60% / 40%**.
 
-**35% completado / 65% pendiente.** I3 sigue `0/25` hasta PASS integral; al cerrar I3 pasa a 60%.
+## Frozen / no reprocesar
 
-## Frozen / no rerun
+I1/I2; I3.1→I3.10; Historical Shopper; TARGET_B Admin; request08; I3.5B/I3.5C-2/I3.8; Rules I3.11C run `32163552089`; focal provider read `32171812808`; R3-B `32181137350`; R3-C Hosting `32185940998`; Staff HOLD `32188716203`; HR 15/660; Finance V2/historical; legal V0.4.
 
-I1/I2; I3.1→I3.10; Historical Shopper run `31906391682`; TARGET_B Admin; request08; I3.5B/I3.5C-2/I3.8; Rules I3.11C run `32163552089`; focal provider read run `32171812808`; R3-B Staff run `32181137350`; HR 15/660; Finance V2/historical; legal V0.4.
+No crear Admin/Shopper alterno, no reset/recovery Historical Shopper, no Rules redeploy, no provider identity-link repair y no rerun de gates consumidos.
 
-No crear Admin/Shopper workaround. No reset/recovery Historical Shopper. No Rules redeploy. No provider identity-link repair. No rerun automático de R3-B.
+## R3-C Hosting DEV — PASS / consumido
 
-## R3-B — HOLD consumido
+Run `32185940998`, job `95869431778`, artifact `9342450216`, digest `sha256:03ccb5a71af356eade7eb498fc766af1fb4f266bb12397d2bff1f865714a09bb`.
 
-Run `32181137350`, artifact `9340865585`:
-- static source parity: `PASS_PROVIDER_IDENTITY_RUNTIME_CANONICAL_CONTRACT_PARITY`;
-- Rules: verified prior state reused, `0` redeploy;
-- Staff/Admin browser executed exactly once;
-- base decision `FAIL_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY` / `AUTH_RUNTIME_TIMEOUT`;
-- provider runtime link count `1`, target link count `0`;
-- target canonical actual `null`;
-- agosto canonical `0`, residual live `2`;
-- visit/shopper duplicates `0/0`;
-- postulation authority and durable legal state remain healthy in runtime lastState;
-- all writes/deploys/production in R3-B `0`.
+`PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY`: adapter corregido materializado en DEV con paridad remota exacta; `materialized + tenant_adjudication`; `fuzzyMatching:false`; 1 Hosting DEV deploy; resto de writes/deploys `0`; Historical Shopper `0`; merge/production false.
 
-## Bloqueador actual
+## Staff post-Hosting anterior — HOLD / consumido
 
-`I3_11C_CORRECTED_SOURCE_NOT_EFFECTIVE_IN_REMOTE_DEV__HOSTING_MATERIALIZATION_REQUIRED`.
+Run `32188716203`, job `95878165921`, artifact `9343461375`, digest `sha256:e43814d730824a010930f8ebaa53fa5aabc417860297b7d9651bee16769340c1`.
 
-R3-A corrigió el adapter en GitHub y R3-B demostró paridad canónica de ese source, pero ninguno de esos bloques desplegó Hosting. La prueba R3-B se hizo contra `cxorbia-backend-dev.web.app` y el comportamiento remoto continúa siendo el del filtro anterior. No se capturó el hash remoto exacto, de modo que el cierre correcto es materializar primero el source corregido en DEV y verificar paridad del asset servido.
+El run ejecutó Staff una vez pero falló antes del login en `page.goto(... waitUntil:'domcontentloaded')`; `lastState=null`. Canonical/agosto no fueron observados. Los FAIL derivados I3.4/I3.5/I3.7 no se adjudican como regresiones; I3.6 Historical Shopper reuse permanece PASS. Cero writes/deploys/cambios de usuario o contraseña.
 
-## Siguiente frontera
+## Hardening de navegación — SOURCE PASS
 
-`NEW_AUTH_REQUIRED_I3_11C_DEV_HOSTING_MATERIALIZE_CORRECTED_IDENTITY_RUNTIME_NO_PROVIDER_DATA_WRITES`
+Commit `9feb5f69a35169eac2931843309ad847d374b1b3`, único archivo `tools/qa/tya-c6-staff-admin-human-auth-browser-smoke.mjs`:
+- navegación inicial/reloads/nueva pestaña dejan de depender de `DOMContentLoaded` y esperan `commit`;
+- selector visible Admin sigue siendo obligatorio y tiene 60 s;
+- `waitReady()` y todas las verificaciones funcionales, identidad, HR, legal, reloads y nueva pestaña permanecen intactas.
 
-Solo con nueva autorización expresa:
-1. máximo un deploy Firebase Hosting DEV;
-2. rama viva/fuente corregida exacta;
-3. remote fingerprint/hash o prueba semántica inequívoca del adapter corregido;
-4. cero provider identity writes, Firestore data writes, Auth writes, Rules, HR, Storage, Make, Gemini, pagos, Historical Shopper, Cloud Run, merge y producción;
-5. no ejecutar automáticamente Staff después del deploy.
+Validaciones source observadas: `Phase A Source Safe Runtime Guard` SUCCESS y `Run P0 exact identity source gates` SUCCESS. El request anterior quedó `enabled=false / consumed=true`, por lo que no hubo ejecución accidental de Staff/provider ni redeploy R3-C.
 
-Hosting PASS abrirá un nuevo gate Staff read-only separado.
+## Autorización vigente — una sola ejecución
+
+Paula autorizó en la conversación actual una única ejecución `I3.11C Staff/Admin read-only post-hardening` sobre Hosting DEV usando solo la identidad Staff/Admin existente para verificar:
+- `shp-57d2e3769946 -> TYA_GT_0C0BA8856E`;
+- agosto canonical `2`;
+- residual `0`;
+- duplicateVisitKeys `0`;
+- duplicateShopperIds `0`.
+
+Límites: Historical Shopper `0`; provider/Auth/Firestore/Rules/HR/Storage/Make/Gemini/pagos writes/calls `0`; deploys `0`; password/user changes `0`; merge/production false.
+
+## Siguiente acción exacta
+
+`EXECUTE_ONE_I3_11C_STAFF_CANONICAL_OBSERVATION_POST_HARDENING` mediante el runner ya existente y un request de ejecución único sobre la misma rama/PR. Si PASS, cerrar I3 integral. Si HOLD, registrar únicamente la nueva causa reproducible; no reabrir R3-A/B/C ni Historical Shopper.
 
 ## Circuit breaker
 
-- PASS consumido no se repite salvo regresión nueva reproducible.
-- R3-B HOLD consumido no se repite antes de materializar Hosting DEV.
-- Dos repeticiones sin nueva reducción causal → `FORENSIC_STOP`.
-- Si documentación y evidence/HEAD divergen → `SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION`.
-- Gate ejecutado no sincronizado → `EXECUTED_UNSYNCED_DO_NOT_ADVANCE`.
+Un blocker → una causa demostrada → un gate exacto → evidencia exacta. Los workflows históricos rojos no reabren gates congelados. No nueva rama, PR, candidata, metodología ni workaround UI.
 
-## Producto / frontend / Academia
+## Producto / Claude / Academia
 
-TyA = primer tenant; Cinépolis = primer proyecto configurable. El fix es reusable backend. No hardcode global, no parche `/app/modules` o `/app/core`, no workaround UI. Academia no cambia por este bloque técnico; los cambios funcionales visibles de I4 actualizarán manuales/cursos/rutas/notificaciones en paralelo.
+TyA primer tenant; Cinépolis primer proyecto configurable, nunca lógica global. Sin cambio UI en este bloque. El patrón de harness/identity exacta es reusable CXOrbia. Academia no cambia funcionalmente hasta slices visibles de I4.
 
 ## Producción
 
-Producción permanece sin autorización y sin cambios. Después de I3: I4 visible; luego I5 freeze/build-lock/preprod/rollback/same-build E2E/gate explícito de producción/cutover/smoke/baseline.
+Sin autorización de merge ni producción. Después de I3: I4 visible; luego I5 freeze/build-lock/preprod/rollback/same-build E2E/gate explícito de producción/cutover/smoke/baseline.
