@@ -1,1 +1,70 @@
-{"schemaVersion":"cxorbia.i4a.visible-shopper-lifecycle-smoke-retry2.evidence.v1","decision":"HOLD_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY2_PRE_BROWSER_FAILURE","workflowRunId":32281707735,"nextGate":"STOP_NO_AUTOMATIC_RETRY"}
+{
+  "schemaVersion": "cxorbia.i4a.visible-shopper-lifecycle-smoke-retry2.evidence.v1",
+  "generatedAt": "2026-08-19T17:31:46.066Z",
+  "gateId": "NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY2__STABLE_SURFACE_SELECTORS__NO_SW",
+  "requestId": "cxorbia-i4a-visible-shopper-lifecycle-smoke-retry2-20260819-01",
+  "workflowRunId": 32282049566,
+  "workflowCommitSha": "37531d8714488f3e384319e03a740b6e65e0a643",
+  "sourceHeadSha": "28851db0fa2cbce1769ece812164239dbe428b23",
+  "uidFingerprint": "c4dbf93bdffb2721b22afe10d8ee48bbd9e1bea057401964d1cee9cfe84611b5",
+  "shopperIdFingerprint": "cf56f4c34cc84482c8aee1b2d031334751b683f606f68737b75496d9ceb90686",
+  "providerReads": 1,
+  "firestoreProviderReads": 4,
+  "authPasswordUpdates": 1,
+  "loginAttempts": 1,
+  "serviceWorkersBlocked": true,
+  "checkpoints": {
+    "page_ready": {
+      "pass": true,
+      "at": "2026-08-19T17:31:47.150Z"
+    },
+    "firebase_user": {
+      "pass": true,
+      "at": "2026-08-19T17:31:47.761Z"
+    },
+    "shopper_auth_context": {
+      "pass": true,
+      "at": "2026-08-19T17:31:47.761Z"
+    },
+    "membership_verified": {
+      "pass": true,
+      "at": "2026-08-19T17:31:47.976Z"
+    },
+    "app_entered": {
+      "pass": true,
+      "at": "2026-08-19T17:31:48.783Z"
+    }
+  },
+  "surfaces": {},
+  "pageErrors": [
+    "CX_PROTECTED_AUTH_HR_AUTHORITY is not defined"
+  ],
+  "consoleErrors": [],
+  "backendWriteAttemptsObserved": 0,
+  "safety": {
+    "historicalShopperAccess": false,
+    "otherIdentitiesModified": 0,
+    "authCreates": 0,
+    "authClaimsWrites": 0,
+    "authDeletes": 0,
+    "firestoreWrites": 0,
+    "postulationSubmits": 0,
+    "certificationSubmits": 0,
+    "reservationWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "merge": false,
+    "production": false,
+    "credentialsExported": false
+  },
+  "decision": "HOLD_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY2_PHASE_FAILURE",
+  "failurePhase": "auth",
+  "error": "page.waitForFunction: ReferenceError: CX_PROTECTED_AUTH_HR_AUTHORITY is not defined     at eval (eval at predicate (eval at evaluate (:291:30)), <anonymous>:1:51)     at predicate (eval at evaluate (:291:30), <anonymous>:7:23)     at next (eval at evaluate (:291:30), <anonymous>:",
+  "nextGate": "STOP_NO_AUTOMATIC_RETRY"
+}
