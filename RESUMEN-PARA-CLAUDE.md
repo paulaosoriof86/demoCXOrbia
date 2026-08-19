@@ -1,27 +1,27 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4D-REUSE-CLOSED-I4E-ACTIVE-35`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4E-REUSE-PASS-I4F-ACTIVE-36`
 
-I1/I2/I3/I4-A/I4-B PASS/frozen. I4-C source/readiness suficiente para Phase A inicial; runtime Make/HR diferido. Progreso formal canónico **60% completado / 40% pendiente** hasta cerrar I4 completo.
+I1/I2/I3/I4-A/I4-B PASS/frozen. I4-C source/readiness suficiente para Phase A inicial; runtime Make/HR diferido. I4-D e I4-E cerrados por reutilización y alineación de brechas reales. Progreso formal canónico **60% completado / 40% pendiente** hasta cerrar I4 completo.
 
 ## I4-D Finanzas — reutilizar, no reconstruir
-La inspección del HEAD vivo confirmó que Finance ya tiene wiring `CX.data` y read models existentes en el carril backend DEV:
+El HEAD vivo ya contiene:
 - `core/backend-cxdata-finance-read.js`
 - `adapters/tya-financial-canonical-source-safe-adapter.js`
 - `adapters/tya-canonical-finance-read-model-v2.js`
 - carga existente en `index-backend-dev.html`.
 
-Por tanto no existe una tarea frontend pendiente de “volver a conectar Finanzas”. No reescribir `modules/finanzas.js`, `/app/core` ni Finance V2/historical desde backend.
+No existe una tarea frontend pendiente de volver a conectar Finanzas. Lo nuevo de I4-D fue fijar la verdad de pagos Phase A: Mayo 44/44 pagadas; Junio 2/44 pagadas, 42 pendientes, Q451 confirmados. Mantener `liquidada != pagada`, no inventar `paidAt` y no inferir pago desde visita ejecutada.
 
-Lo nuevo de I4-D fue únicamente fijar la verdad de pagos Phase A: Mayo 44/44 pagadas; Junio 2/44 pagadas, 42 pendientes, Q451 confirmados. Mantener `liquidada != pagada`, no inventar `paidAt` y no inferir pago desde visita ejecutada.
+## I4-E Multi-proyecto/no-code — reutilizar, no reconstruir
+El prototipo ya tiene wizard/configuración de proyectos, certificación por proyecto, documentos por proyecto y reservas/agendamiento por proyecto. Backend ya tenía la máquina de estados multi-proyecto. Se alineó solamente el contrato backend `phase-a-tenant-project-config-from-platform-v1.json` para explicitar todos los dominios requeridos: país/moneda, HR/mapeo, cuestionario, documentos, reglas, certificación, agendamiento, reprogramación, cancelación, pagos e integraciones.
 
-## Claude/prototipo
-Preservar el comportamiento financiero actual. Si una futura candidata presenta una discrepancia visible, documentarla por archivo/módulo; no convertirla en reconstrucción de Finanzas ni tocarla desde backend sin P0 demostrado.
+No tocar desde backend `modules/proyecto-wizard.js`, `modules/proyectos.js`, `modules/cert.js`, `modules/documentos.js` ni `modules/reservas.js` salvo P0 demostrado y autorización expresa.
 
-Cinépolis continúa siendo proyecto configurable, no lógica global. Make/Gemini runtime continúa diferido.
+Cinépolis continúa siendo un proyecto configurable por `tenantId + projectId`, nunca lógica global. Make/Gemini runtime continúa diferido.
 
 ## Academia
-Mantener separación explícita liquidación/pago y evidencia por claves estables. Make/Gemini no se enseñan como runtime activo todavía.
+Frontera activa: `I4F_ACADEMIA_PHASE_A_ALIGNMENT_REUSE_AUDIT`. Revisar y reutilizar la Academia existente; corregir solo contenido/estado que haya quedado desalineado con Phase A actual. No reconstruir la Academia por defecto.
 
 ## Siguiente backend
-`I4E_MULTI_PROJECT_NO_CODE_REUSE_AUDIT`: revisar primero los contratos/configuración multi-proyecto ya existentes y crear solo lo realmente faltante.
+Cerrar I4-F por reutilización/alineación y, si no aparece P0, cerrar I4 completo antes de entrar a I5.
