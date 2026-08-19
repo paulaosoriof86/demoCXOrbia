@@ -1,0 +1,98 @@
+name: CXOrbia I4B Retry1 Readonly Materialization Probe
+
+on:
+  push:
+    branches: [docs-tya-v6-v71-audit]
+    paths: [.github/workflows/cxorbia-i4b-retry1-readonly-materialization-probe.yml]
+
+permissions:
+  contents: write
+
+env:
+  REQUEST_FILE: backend/config/i4b-single-dev-visit-lifecycle-e2e-write-gate-request.json
+  OUT_FILE: app/docs/evidence/I4B-RETRY1-READONLY-MATERIALIZATION-PROBE.json
+  PRIVATE_DIR: .tmp/i4b-retry1-readonly-probe-private
+
+jobs:
+  readonly-probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install transient read dependency
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+
+      - name: Prepare DEV read credential privately
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$PRIVATE_DIR"
+          node <<'NODE'
+          const fs=require('fs'),raw=process.env.EXISTING_DEV_JSON||'';let x;
+          try{x=JSON.parse(raw)}catch{}
+          if(!(x&&x.type==='service_account'&&x.project_id==='cxorbia-backend-dev'&&x.client_email&&x.private_key))throw new Error('DEV_SERVICE_ACCOUNT_INVALID');
+          fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/${PRIVATE_DIR}/credentials.json" >> "$GITHUB_ENV"
+
+      - name: Read exact retry1 synthetic traces only
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import crypto from 'node:crypto';
+          import admin from 'firebase-admin';
+          const r=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          const sa=JSON.parse(fs.readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS,'utf8'));
+          const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
+          const key=sha(r.requestId).slice(0,24),visitId='visit-i4b-r1-'+key,applicationId='app-i4b-r1-'+key;
+          const receiptId=idempotencyKey=>sha(`${r.tenantId}\0${r.projectId}\0${idempotencyKey}`).slice(0,40);
+          const auditId=(idempotencyKey,commandType)=>sha(`${idempotencyKey}\0${commandType}\0audit`).slice(0,40);
+          const defs=[
+            ['application-create','application.create',applicationId],
+            ['application-approve','application.status.update',applicationId],
+            ['visit-schedule','visit.state.update',visitId],
+            ['reschedule-request','visit.reschedule',visitId],
+            ['reschedule-approved','visit.reschedule',visitId],
+            ['cancel-request','visit.cancel',visitId],
+            ['visit-realized','visit.state.update',visitId],
+            ['questionnaire-submit','visit.questionnaire.submit',visitId],
+            ['review-approved','visit.review.update',visitId],
+            ['version-conflict','visit.review.update',visitId]
+          ];
+          admin.initializeApp({credential:admin.credential.cert(sa),projectId:r.firebaseProjectId});
+          const db=admin.firestore(),tenant=db.collection('tenants').doc(r.tenantId),project=tenant.collection('projects').doc(r.projectId);
+          const [visitSnap,appSnap]=await Promise.all([project.collection('visits').doc(visitId).get(),project.collection('postulations').doc(applicationId).get()]);
+          const traces=[];
+          for(const [tag,commandType,entityId] of defs){
+            const idem=`i4b-r1:${r.requestId}:${tag}`;
+            const [receipt,audit]=await Promise.all([tenant.collection('commandReceipts').doc(receiptId(idem)).get(),tenant.collection('entityAuditTrail').doc(auditId(idem,commandType)).get()]);
+            const rd=receipt.exists?(receipt.data()||{}):{},ad=audit.exists?(audit.data()||{}):{};
+            traces.push({tag,commandType,entityExpectedFingerprint:sha('fp\0'+entityId).slice(0,16),receiptExists:receipt.exists,receiptProviderAck:receipt.exists?rd.providerAck===true:null,receiptCommandType:receipt.exists?String(rd.commandType||''):null,receiptEntityMatches:receipt.exists?String(rd.entityId||'')===entityId:null,auditExists:audit.exists,auditCommandType:audit.exists?String(ad.commandType||''):null,auditEntityMatches:audit.exists?String(ad.entityId||'')===entityId:null});
+          }
+          const normal=traces.slice(0,9),conflict=traces[9];
+          const full=normal.every(x=>x.receiptExists&&x.receiptProviderAck&&x.receiptCommandType===x.commandType&&x.receiptEntityMatches&&x.auditExists&&x.auditCommandType===x.commandType&&x.auditEntityMatches)&&!conflict.receiptExists&&!conflict.auditExists;
+          const none=normal.every(x=>!x.receiptExists&&!x.auditExists)&&!conflict.receiptExists&&!conflict.auditExists;
+          const decision=full?'FULL_PROVIDER_LIFECYCLE_MATERIALIZATION_OBSERVED_READONLY':none?'NO_PROVIDER_MATERIALIZATION_OBSERVED_READONLY':'PARTIAL_PROVIDER_MATERIALIZATION_OBSERVED_READONLY';
+          const out={schemaVersion:'cxorbia.i4b.retry1.readonly-materialization-probe.v1',generatedAt:new Date().toISOString(),workflowRunId:Number(process.env.GITHUB_RUN_ID),workflowHeadSha:process.env.GITHUB_SHA,requestId:r.requestId,gateId:r.gateId,decision,synthetic:{visitExists:visitSnap.exists,applicationExists:appSnap.exists,visitFingerprint:sha('visit\0'+visitId).slice(0,20),applicationFingerprint:sha('app\0'+applicationId).slice(0,20)},traces,safety:{providerCalls:0,firestoreWrites:0,authReads:0,authWrites:0,historicalShopperAccess:false,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,deploys:0,merge:false,production:false}};
+          fs.mkdirSync('app/docs/evidence',{recursive:true});fs.writeFileSync(process.env.OUT_FILE,JSON.stringify(out,null,2)+'\n');
+          console.log(JSON.stringify({decision,visitExists:visitSnap.exists,applicationExists:appSnap.exists,receipts:normal.filter(x=>x.receiptExists).length,audits:normal.filter(x=>x.auditExists).length,conflictReceipt:conflict.receiptExists,conflictAudit:conflict.auditExists}));
+          NODE
+
+      - name: Persist read-only probe result to live branch
+        run: |
+          set -euo pipefail
+          git config user.name cxorbia-gate-bot
+          git config user.email cxorbia-gate-bot@users.noreply.github.com
+          git add "$OUT_FILE"
+          git commit -m "evidence(i4b): persist retry1 read-only materialization probe"
+          git push origin HEAD:docs-tya-v6-v71-audit
