@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "cxorbia.i4a.dedicated-nonhistorical-dev-test-shopper.pass.v1",
+  "syncEpoch": "CXORBIA-20260819-I4A-DEDICATED-TEST-SHOPPER-PASS-21",
+  "generatedAt": "2026-08-19T10:04:50-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "firebaseProjectId": "cxorbia-backend-dev",
+  "createGate": "NEW_AUTH_REQUIRED_I4A_CREATE_DEDICATED_NONHISTORICAL_DEV_TEST_SHOPPER__PROTECTED_CONTRACT_NO_LOGIN",
+  "createRequestId": "cxorbia-i4a-dedicated-test-shopper-20260819-01",
+  "decision": "PASS_I4A_DEDICATED_NONHISTORICAL_DEV_TEST_SHOPPER_CREATED_AND_VERIFIED_NO_LOGIN",
+  "verification": {
+    "decision": "PASS_I4A_DEDICATED_NONHISTORICAL_DEV_TEST_SHOPPER_VERIFIED_READONLY_NO_LOGIN",
+    "workflowRunId": 32273818536,
+    "jobId": 96136329240,
+    "artifactId": 9373197946,
+    "artifactDigest": "sha256:b30fe02cd8474854b6d6599f92c78ed10712bd7ba1a18125efdbb9df10d6ab81",
+    "providerReads": 1,
+    "firestoreReads": 4,
+    "claimsExact": true,
+    "profileExact": true,
+    "membershipExact": true,
+    "crosswalkExact": true,
+    "providerAck": true,
+    "explicitProvenanceExact": true,
+    "uidFingerprint": "c4dbf93bdffb2721b22afe10d8ee48bbd9e1bea057401964d1cee9cfe84611b5",
+    "shopperIdFingerprint": "cf56f4c34cc84482c8aee1b2d031334751b683f606f68737b75496d9ceb90686"
+  },
+  "writeExecution": {
+    "finalMaterializedIdentityCount": 1,
+    "authorizedBounds": {
+      "authCreatesMax": 1,
+      "authClaimsWritesMax": 1,
+      "authDeletesMaxRollbackOnly": 1,
+      "firestoreWritesMax": 4
+    },
+    "exactLowLevelCreateRunCountersRecovered": false,
+    "adjudication": "Final exact provider-backed state plus providerAck proves the dedicated identity is materialized. The connector did not expose the original push-run artifact directly, so no unobserved low-level counter is invented."
+  },
+  "safety": {
+    "loginAttempts": 0,
+    "historicalShopperAccess": false,
+    "rawUidExported": false,
+    "emailExported": false,
+    "credentialValuesExported": false,
+    "otherIdentitiesModified": 0,
+    "fuzzyMatching": false,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "merge": false,
+    "production": false
+  },
+  "sourceTruthPreProvider": {
+    "decision": "PASS_SOURCE_TRUTH_SYNC",
+    "syncEpoch": "CXORBIA-20260818-I4A-PROVIDER-HOLD-SYNC-20",
+    "errors": []
+  },
+  "nextGate": "NEW_AUTH_REQUIRED_I4A_SINGLE_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE",
+  "nextGateAuthorized": false
+}

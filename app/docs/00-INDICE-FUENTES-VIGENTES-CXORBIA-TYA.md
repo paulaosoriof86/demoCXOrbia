@@ -1,8 +1,8 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Última sincronización:** 2026-08-18 21:11 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I4A-PROVIDER-HOLD-SYNC-20`  
-**Estado:** `SOURCE_TRUTH_SYNCHRONIZED__I3_FROZEN_PASS__GO_LIVE_60__I4A_PROVIDER_HOLD_CONSUMED__DEDICATED_TEST_IDENTITY_AUTH_NEXT__NO_PRODUCTION`
+**Última sincronización:** 2026-08-19 10:04 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260819-I4A-DEDICATED-TEST-SHOPPER-PASS-21`  
+**Estado:** `SOURCE_TRUTH_SYNCHRONIZED__I3_FROZEN_PASS__GO_LIVE_60__I4A_DEDICATED_TEST_SHOPPER_PASS__VISIBLE_SMOKE_AUTH_NEXT__NO_PRODUCTION`
 
 ## Orden obligatorio
 
@@ -13,32 +13,13 @@
 5. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`
 6. `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`
 7. evidencia activa indicada por Execution State
-8. PR #7 vivo y HEAD remoto
+8. PR #7 vivo + HEAD remoto + delta desde el último HEAD canónico
 
-Permanecen vigentes documento maestro, addendum canónico de empalme/carril, Academia, patrones reutilizables y antidesvío. Históricos no sustituyen esta capa canónica.
+Permanecen vigentes reglas maestras, addendum canónico de empalme/carril, Academia, patrones reutilizables y antidesvío. Históricos no sustituyen esta capa.
 
-## CONTINUITY_FAST_PATH — obligatorio para evitar agotamiento de sesión
+## CONTINUITY_FAST_PATH
 
-En cada conversación nueva o reanudación se prohíbe reconstruir la historia completa del PR/repositorio cuando la capa canónica esté consistente.
-
-Leer únicamente:
-
-1. Execution State;
-2. source lock;
-3. checkpoint;
-4. Plan Unificado/Plan Lock solo en la sección del bloque activo;
-5. CAMBIOS/RESUMEN/PENDIENTES vigentes;
-6. evidencia del gate activo;
-7. metadata de PR #7 + HEAD;
-8. delta **solo desde el último HEAD canónico conocido al HEAD vivo**, si existe movimiento.
-
-**No cargar por defecto:** diff completo de PR #7, miles de commits, historial completo de Actions, documentos históricos, artifacts antiguos ni repo completo. Solo abrirlos cuando exista una contradicción reproducible que lo exija.
-
-Máximo un objetivo técnico real por iteración. El cierre documental del mismo objetivo se hace en una sola reconciliación atómica; no se encadenan commits `finalize/close/seal` sobre el mismo estado.
-
-Los workflows legacy/no relacionados que se disparen por `synchronize` se tratan como ruido CI y no como evidencia del gate activo. Solo se inspecciona el workflow/run nombrado por Execution State o por el gate actual.
-
-Si la conversación se aproxima a su límite operativo, se cierra primero el resultado/evidencia y la reconciliación canónica; nunca se abre un nuevo diagnóstico ni un nuevo gate antes de dejar continuidad durable.
+No reconstruir PR #7 completo, miles de commits/Actions ni documentos históricos cuando la capa canónica esté consistente. Un objetivo técnico real por iteración; un artifact/decisión; una reconciliación atómica; sin cadenas `finalize/close/seal`. Los workflows legacy no relacionados son ruido CI.
 
 ## Carril único
 
@@ -50,24 +31,23 @@ I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `25/25 PASS` frozen; I4 `0/25` en curso/no 
 
 ## I4-A — verdad viva
 
-Source/readiness ya está cerrado y no se reaudita sin evidencia contradictoria. La búsqueda en evidencia congelada quedó agotada sin identidad test/no histórica reproducible.
+La búsqueda de una identidad existente segura quedó agotada y no se repite. Se autorizó y materializó una única Shopper DEV dedicada sintética/no histórica mediante el contrato protegido. Verificación provider-backed read-only:
 
-Luego se ejecutó la clasificación provider/Auth read-only autorizada: run `32208829234`, job `95937257924`, artifact `9350022534`. Resultado: `HOLD_I4A_TEST_SHOPPER_IDENTITY_NOT_PROVEN__PROVIDER_READONLY_NO_LOGIN`; `1` provider read, `232` principals Auth, `211` Shopper, `0` candidatos con provenance explícita segura, `selected=null`. Login, credenciales, Firestore/profile/history/HR reads y todos los writes/deploy/merge/production permanecieron en cero.
+- run `32273818536`, job `96136329240`, artifact `9373197946`;
+- decision `PASS_I4A_DEDICATED_NONHISTORICAL_DEV_TEST_SHOPPER_VERIFIED_READONLY_NO_LOGIN`;
+- claims, profile, membership, crosswalk, provider ACK y provenance explícita: `true`;
+- identidad final dedicada: exactamente `1`;
+- login `0`; Historical Shopper `false`; HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/producción `0/false`;
+- no UID/email/credenciales crudos exportados.
 
-El workflow terminó globalmente en failure solo porque falló la publicación del comentario PR: `PIPELINE_MECHANISM_FAILURE__PR_COMMENT_PERMISSION`. La clasificación provider-backed sí terminó y su operación queda consumida. **No se repite.**
+Evidencia durable: `app/docs/evidence/I4A-DEDICATED-NONHISTORICAL-DEV-TEST-SHOPPER-PASS-LATEST.json`.
 
 ## Siguiente frontera exacta
 
-`NEW_AUTH_REQUIRED_I4A_CREATE_DEDICATED_NONHISTORICAL_DEV_TEST_SHOPPER__PROTECTED_CONTRACT_NO_LOGIN`
+`NEW_AUTH_REQUIRED_I4A_SINGLE_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE`
 
-Objetivo: una sola Shopper DEV dedicada, sintética/no histórica, con tenant/proyecto/rol/membership/provenance explícitos mediante el contrato protegido existente. Este gate no incluye login. Requiere autorización expresa antes de provider/Auth/Firestore writes.
+No está autoautorizado. Usará exclusivamente la identidad sintética dedicada para una sola prueba visible DEV de documentos/instrucciones, disponibles, postulación/estado, notificaciones y presentación de certificación nueva.
 
-Después de PASS de creación, la frontera será una autorización separada para `NEW_AUTH_REQUIRED_I4A_SINGLE_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE`.
+## Circuit breaker
 
-## Circuit breaker documental
-
-- Gate ejecutado => resultado operativo y artifact son verdad aunque falle comentario/status.
-- Fallo de publicación => `PIPELINE_MECHANISM_FAILURE`; nunca reejecuta provider consumido.
-- Antes de cualquier siguiente gate, los documentos canónicos, request consumido, evidencia y verifier deben compartir este `SYNC_EPOCH` y el verifier debe dar PASS.
-- Mismatch => `SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION`.
-- `tools/verify-cxorbia-source-truth-sync.mjs` es obligatorio antes de avanzar.
+Gate consumido no se reejecuta. Antes del siguiente gate, todas las fuentes canónicas y el verifier deben compartir este `SYNC_EPOCH`. Mismatch => `SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION`.

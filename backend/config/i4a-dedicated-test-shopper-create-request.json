@@ -9,9 +9,9 @@
   "tenantId": "tya",
   "projectId": "cinepolis",
   "sourceHeadSha": "504fd2d529987d704ea0961c004d1820ac34c215",
-  "enabled": true,
-  "consumed": false,
-  "status": "authorized_execute_once",
+  "enabled": false,
+  "consumed": true,
+  "status": "pass_consumed_provider_verified_no_login",
   "authorizedBy": "Paula",
   "authorizedAt": "2026-08-19T09:51:00-06:00",
   "authorizationText": "Autorizo NEW_AUTH_REQUIRED_I4A_CREATE_DEDICATED_NONHISTORICAL_DEV_TEST_SHOPPER__PROTECTED_CONTRACT_NO_LOGIN en DEV bajo los límites documentados.",
@@ -38,5 +38,24 @@
   "production": false,
   "automaticRetryAllowed": false,
   "sourceTruthVerifierRequired": true,
+  "consumedAt": "2026-08-19T10:04:50-06:00",
+  "verificationResult": {
+    "decision": "PASS_I4A_DEDICATED_NONHISTORICAL_DEV_TEST_SHOPPER_VERIFIED_READONLY_NO_LOGIN",
+    "workflowRunId": 32273818536,
+    "jobId": 96136329240,
+    "artifactId": 9373197946,
+    "artifactDigest": "sha256:b30fe02cd8474854b6d6599f92c78ed10712bd7ba1a18125efdbb9df10d6ab81",
+    "claimsExact": true,
+    "profileExact": true,
+    "membershipExact": true,
+    "crosswalkExact": true,
+    "providerAck": true,
+    "explicitProvenanceExact": true
+  },
+  "writeCounterPolicy": {
+    "exactLowLevelCreateRunCountersRecovered": false,
+    "doNotInventUnobservedCounters": true,
+    "finalMaterializedIdentityCount": 1
+  },
   "nextGate": "NEW_AUTH_REQUIRED_I4A_SINGLE_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE"
 }
