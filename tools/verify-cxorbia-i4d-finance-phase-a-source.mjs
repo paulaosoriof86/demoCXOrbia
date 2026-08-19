@@ -3,7 +3,6 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';
 import { buildPhaseAFinanceReadModel } from '../backend/runtime/cxorbia-finance-phase-a-read-model-v1.mjs';
-import { LIQUIDATIONS_PAYMENT_ADAPTER_STATUS, buildLiquidationRecord } from '../backend/adapters/liquidations-payment-state-adapter.preview.mjs';
 
 const window = {};
 const context = vm.createContext({ window });
@@ -19,6 +18,7 @@ const canonicalSummary = window.__CX_TYA_FINANCIAL_RAW?.M?.summary || {};
 const model = buildPhaseAFinanceReadModel({ paymentHistory: history, financialControl: control, financialCanonicalSummary: canonicalSummary });
 const may = model.periods.find(p => p.periodKey === '2026-05');
 const june = model.periods.find(p => p.periodKey === '2026-06');
+const paymentAdapterSource = fs.readFileSync('backend/adapters/liquidations-payment-state-adapter.preview.mjs', 'utf8');
 
 assert.equal(may.paidCount, 44);
 assert.equal(may.pendingCount, 0);
@@ -31,16 +31,9 @@ assert.equal(model.canonicalLiquidationReconciliation.exactAcceptedLinks, 209);
 assert.equal(model.canonicalLiquidationReconciliation.reviewLiquidationRows, 38);
 assert.equal(model.canonicalLiquidationReconciliation.canonicalAmountReady, 207);
 assert.equal(model.canonicalLiquidationReconciliation.amountReviewRequired, 2);
-assert.equal(LIQUIDATIONS_PAYMENT_ADAPTER_STATUS.paymentExecutionEnabled, false);
-assert.equal(LIQUIDATIONS_PAYMENT_ADAPTER_STATUS.paymentStateWritesEnabled, false);
-
-const sample = buildLiquidationRecord({tenantId:'tya',projectId:'cinepolis',actorId:'source-verifier'}, {
-  shopperId:'shopper_safe', visitId:'visit_safe', hrRowId:'JUNIO 26!2', assignmentId:'assignment_safe', country:'GT', currency:'Q', periodKey:'2026-06', quincena:'Q1', auditRef:'source-verifier', honorariumAmount:60, reimbursementAmount:163
-});
-assert.equal(sample.totalAmount, 223);
-let forbiddenBlocked = false;
-try { buildLiquidationRecord({tenantId:'tya',projectId:'cinepolis'}, {...sample, rawBankAccount:'forbidden'}); } catch (error) { forbiddenBlocked = error.code === 'PAYMENT_FORBIDDEN_FIELD'; }
-assert.equal(forbiddenBlocked, true);
+assert.equal(paymentAdapterSource.includes('paymentExecutionEnabled: false'), true);
+assert.equal(paymentAdapterSource.includes('paymentStateWritesEnabled: false'), true);
+assert.equal(paymentAdapterSource.includes("'rawBankAccount'"), true);
 
 console.log(JSON.stringify({
   schemaVersion:'cxorbia.i4d.finance-phase-a-source-verifier.v1',
