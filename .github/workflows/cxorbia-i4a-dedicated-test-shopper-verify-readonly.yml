@@ -1,0 +1,128 @@
+name: CXOrbia I4A Dedicated Test Shopper Verify Readonly
+
+on:
+  pull_request:
+    types: [synchronize]
+    paths:
+      - backend/config/i4a-dedicated-test-shopper-verify-request.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cxorbia-i4a-dedicated-test-shopper-verify-readonly
+  cancel-in-progress: false
+
+env:
+  VERIFY_REQUEST: backend/config/i4a-dedicated-test-shopper-verify-request.json
+  CREATE_REQUEST: backend/config/i4a-dedicated-test-shopper-create-request.json
+  OUT_DIR: .tmp/i4a-dedicated-test-shopper-verify
+
+jobs:
+  verify:
+    if: >-
+      github.event.pull_request.number == 7 &&
+      github.event.pull_request.head.ref == 'docs-tya-v6-v71-audit' &&
+      github.event.pull_request.base.ref == 'release/cxorbia-tya-rc-20260630'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Validate isolated read-only verification request
+        id: gate
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs'),cp=require('child_process');
+          const p=process.env.VERIFY_REQUEST,r=JSON.parse(fs.readFileSync(p,'utf8'));
+          const head=cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const parent=cp.execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=cp.execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const exact={schemaVersion:'cxorbia.i4a.dedicated-test-shopper-verify.request.v1',repository:'paulaosoriof86/demoCXOrbia',branch:'docs-tya-v6-v71-audit',pullRequest:7,firebaseProjectId:'cxorbia-backend-dev',tenantId:'tya',projectId:'cinepolis',enabled:true,consumed:false,status:'verify_once_readonly',authorizedBy:'Paula',providerReadsAuthorized:true,authWrites:0,firestoreWrites:0,hrWrites:0,loginAttempts:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,deploys:0,merge:false,production:false,allowedExecutions:1,automaticRetryAllowed:false};
+          for(const [k,v] of Object.entries(exact))if(r[k]!==v)throw new Error(`verify_request_mismatch:${k}`);
+          if(head!==process.env.GITHUB_SHA||r.sourceHeadSha!==parent||changed.length!==1||changed[0]!==p)throw new Error('verify_request_commit_scope_invalid');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'execute=true\n');
+          NODE
+
+      - name: Verify canonical source truth before provider read
+        if: steps.gate.outputs.execute == 'true'
+        env:
+          CXORBIA_ALLOW_DETACHED_HEAD: '1'
+        run: |
+          set -euo pipefail
+          node tools/verify-cxorbia-source-truth-sync.mjs > "$OUT_DIR/source-truth.json"
+          cat "$OUT_DIR/source-truth.json"
+          node -e "const x=require('./$OUT_DIR/source-truth.json');if(x.decision!=='PASS_SOURCE_TRUTH_SYNC')process.exit(1)"
+
+      - name: Setup Node
+        if: steps.gate.outputs.execute == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install transient Firebase Admin
+        if: steps.gate.outputs.execute == 'true'
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+
+      - name: Prepare existing DEV service account privately
+        if: steps.gate.outputs.execute == 'true'
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/i4a-private
+          node <<'NODE'
+          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let x=null;try{x=JSON.parse(raw)}catch{}
+          if(!(x&&x.type==='service_account'&&x.project_id==='cxorbia-backend-dev'&&x.client_email&&x.private_key))throw new Error('credential_invalid');
+          fs.writeFileSync('.tmp/i4a-private/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.tmp/i4a-private/credentials.json" >> "$GITHUB_ENV"
+
+      - name: Verify dedicated Shopper exact state read-only
+        if: steps.gate.outputs.execute == 'true'
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs'),crypto=require('crypto'),admin=require('firebase-admin');
+          const vr=JSON.parse(fs.readFileSync(process.env.VERIFY_REQUEST,'utf8')),cr=JSON.parse(fs.readFileSync(process.env.CREATE_REQUEST,'utf8'));
+          if(cr.gateId!=='NEW_AUTH_REQUIRED_I4A_CREATE_DEDICATED_NONHISTORICAL_DEV_TEST_SHOPPER__PROTECTED_CONTRACT_NO_LOGIN'||cr.requestId!==vr.originalCreateRequestId)throw new Error('create_request_lineage_invalid');
+          const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex'),key=sha(cr.requestId).slice(0,24),uid='tya-i4a-'+key,shopperId='shp-i4a-'+key;
+          const uidFp=u=>crypto.createHash('sha256').update('cxorbia-provider-uid-v1\0'+u).digest('hex');
+          const out={schemaVersion:'cxorbia.i4a.dedicated-test-shopper-verify.evidence.v1',generatedAt:new Date().toISOString(),originalCreateRequestId:cr.requestId,workflowRunId:Number(process.env.GITHUB_RUN_ID),uidFingerprint:uidFp(uid),shopperIdFingerprint:sha('shopper-id\0'+shopperId),providerReads:0,firestoreReads:0,authWrites:0,firestoreWrites:0,loginAttempts:0,historicalShopperAccess:false,rawUidExported:false,emailExported:false,credentialValuesExported:false,hrWrites:0,deploys:0,merge:false,production:false};
+          (async()=>{
+            const sa=JSON.parse(fs.readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS,'utf8'));admin.initializeApp({credential:admin.credential.cert(sa),projectId:vr.firebaseProjectId});const auth=admin.auth(),db=admin.firestore();
+            let u=null;try{u=await auth.getUser(uid);out.providerReads++;}catch(e){out.providerReads++;if(String(e.code||'')==='auth/user-not-found'){out.decision='HOLD_I4A_DEDICATED_TEST_SHOPPER_NOT_MATERIALIZED';fs.writeFileSync(process.env.OUT_DIR+'/result.json',JSON.stringify(out,null,2)+'\n');console.error(JSON.stringify(out,null,2));process.exit(2);}throw e;}
+            const refs=[db.collection('tenants').doc(vr.tenantId).collection('shoppers').doc(shopperId),db.collection('tenants').doc(vr.tenantId).collection('users').doc(uid),db.collection('tenants').doc(vr.tenantId).collection('shopperIdentityCrosswalk').doc(shopperId),db.collection('tenants').doc(vr.tenantId).collection('commandReceipts').doc(sha(cr.requestId).slice(0,40))];
+            const [ps,ms,xs,rs]=await Promise.all(refs.map(r=>r.get()));out.firestoreReads+=4;const c=u.customClaims||{},p=ps.data()||{},m=ms.data()||{},x=xs.data()||{},r=rs.data()||{};
+            out.claimsExact=c.tenantId===vr.tenantId&&c.role==='shopper'&&c.authNamespace==='shopper'&&c.shopperId===shopperId&&Array.isArray(c.projectIds)&&c.projectIds.length===1&&c.projectIds[0]===vr.projectId&&c.testIdentity===true&&c.synthetic===true&&c.nonHistorical===true&&c.identityClass==='synthetic'&&c.testProvenance==='dev-test'&&c.dedicatedGateId===cr.gateId;
+            out.profileExact=ps.exists&&p.shopperId===shopperId&&p.tenantId===vr.tenantId&&p.testFixture===true&&p.synthetic===true&&p.nonHistorical===true&&p.provenance==='dev-test'&&p.dedicatedGateId===cr.gateId;
+            out.membershipExact=ms.exists&&m.active===true&&m.tenantId===vr.tenantId&&m.role==='shopper'&&m.authNamespace==='shopper'&&m.shopperId===shopperId&&m.projectIds?.length===1&&m.projectIds[0]===vr.projectId&&m.providerUidFingerprint===uidFp(uid)&&m.dedicatedGateId===cr.gateId;
+            out.crosswalkExact=xs.exists&&x.shopperId===shopperId&&x.tenantId===vr.tenantId&&x.providerUidFingerprint===uidFp(uid)&&x.fuzzyMatching===false&&x.dedicatedGateId===cr.gateId;
+            out.providerAck=rs.exists&&r.providerAck===true&&r.entityId===shopperId&&r.dedicatedGateId===cr.gateId;
+            out.explicitProvenanceExact=out.claimsExact&&out.profileExact&&p.nonHistorical===true;
+            out.decision=(out.claimsExact&&out.profileExact&&out.membershipExact&&out.crosswalkExact&&out.providerAck)?'PASS_I4A_DEDICATED_NONHISTORICAL_DEV_TEST_SHOPPER_VERIFIED_READONLY_NO_LOGIN':'HOLD_I4A_DEDICATED_TEST_SHOPPER_STATE_NOT_EXACT';
+            out.nextGate=out.decision.startsWith('PASS_')?'NEW_AUTH_REQUIRED_I4A_SINGLE_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE':'STOP_NO_AUTOMATIC_RETRY';
+            fs.writeFileSync(process.env.OUT_DIR+'/result.json',JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify(out,null,2));if(!out.decision.startsWith('PASS_'))process.exit(3);
+          })().catch(e=>{console.error(String(e?.message||e).slice(0,160));process.exit(1)});
+          NODE
+
+      - name: Upload sanitized verification evidence
+        if: always() && steps.gate.outputs.execute == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: i4a-dedicated-test-shopper-verify-${{ github.run_id }}
+          path: |
+            .tmp/i4a-dedicated-test-shopper-verify/result.json
+            .tmp/i4a-dedicated-test-shopper-verify/source-truth.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Cleanup private credential
+        if: always()
+        run: rm -rf .tmp/i4a-private
