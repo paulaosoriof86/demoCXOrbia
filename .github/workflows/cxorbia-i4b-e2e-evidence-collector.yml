@@ -1,0 +1,96 @@
+name: CXOrbia I4B E2E Evidence Collector
+
+on:
+  push:
+    branches: [docs-tya-v6-v71-audit]
+    paths: [.github/workflows/cxorbia-i4b-e2e-evidence-collector.yml]
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: cxorbia-i4b-e2e-evidence-collector
+  cancel-in-progress: false
+
+env:
+  TARGET_SHA: 220cc26b547c41d19a0017bd9a40fda2f2a8addd
+  TARGET_WORKFLOW: CXOrbia I4B Single DEV Visit Lifecycle E2E Write Gate
+  TARGET_ARTIFACT: cxorbia-i4b-single-dev-visit-lifecycle-e2e-evidence
+  OUT_PATH: app/docs/evidence/I4B-VISIT-LIFECYCLE-E2E-RUNTIME-OBSERVED.json
+
+jobs:
+  collect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: docs-tya-v6-v71-audit
+
+      - name: Wait for exact one-shot provider run and collect artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/i4b-collector
+          RUN_ID=""; STATUS=""; CONCLUSION=""
+          for i in $(seq 1 72); do
+            curl -fsSL -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${TARGET_SHA}&per_page=100" > .tmp/i4b-collector/runs.json
+            node <<'NODE' > .tmp/i4b-collector/match.txt
+          const fs=require('fs');const x=JSON.parse(fs.readFileSync('.tmp/i4b-collector/runs.json','utf8'));
+          const m=(x.workflow_runs||[]).find(r=>r.head_sha===process.env.TARGET_SHA&&r.name===process.env.TARGET_WORKFLOW&&r.event==='push');
+          if(m)process.stdout.write([m.id,m.status,m.conclusion||''].join('|'));
+          NODE
+            MATCH="$(cat .tmp/i4b-collector/match.txt)"
+            if [ -n "$MATCH" ]; then
+              IFS='|' read -r RUN_ID STATUS CONCLUSION <<< "$MATCH"
+              echo "exact run $RUN_ID status=$STATUS conclusion=$CONCLUSION"
+              if [ "$STATUS" = "completed" ]; then break; fi
+            fi
+            sleep 10
+          done
+          if [ -z "$RUN_ID" ] || [ "$STATUS" != "completed" ]; then
+            echo "EXACT_PROVIDER_RUN_NOT_COMPLETED_IN_COLLECTOR_WINDOW" >&2
+            exit 1
+          fi
+          curl -fsSL -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/artifacts" > .tmp/i4b-collector/artifacts.json
+          ARTIFACT_ID="$(node <<'NODE'
+          const fs=require('fs');const x=JSON.parse(fs.readFileSync('.tmp/i4b-collector/artifacts.json','utf8'));
+          const a=(x.artifacts||[]).find(a=>a.name===process.env.TARGET_ARTIFACT&&!a.expired);if(a)process.stdout.write(String(a.id));
+          NODE
+          )"
+          mkdir -p "$(dirname "$OUT_PATH")"
+          if [ -n "$ARTIFACT_ID" ]; then
+            curl -fsSL -L -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip" -o .tmp/i4b-collector/evidence.zip
+            unzip -q .tmp/i4b-collector/evidence.zip -d .tmp/i4b-collector/unzip
+          fi
+          node <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const run=fs.readFileSync('.tmp/i4b-collector/match.txt','utf8').trim().split('|');
+          const runId=Number(run[0]||0),status=run[1]||'',conclusion=run[2]||'';
+          const artifactMeta=JSON.parse(fs.readFileSync('.tmp/i4b-collector/artifacts.json','utf8'));
+          const artifact=(artifactMeta.artifacts||[]).find(a=>a.name===process.env.TARGET_ARTIFACT&&!a.expired)||null;
+          const candidates=['.tmp/i4b-collector/unzip/evidence.json','.tmp/i4b-collector/unzip/.tmp/i4b-single-dev-visit-lifecycle-e2e/evidence.json'];
+          const p=candidates.find(fs.existsSync);
+          let e;
+          if(p){e=JSON.parse(fs.readFileSync(p,'utf8'));}
+          else {e={schemaVersion:'cxorbia.i4b.visit-lifecycle-e2e.observed.v1',decision:'HOLD_I4B_E2E_ARTIFACT_EVIDENCE_MISSING',errors:['Provider workflow completed but evidence.json was not present in the collected artifact.']};}
+          e.collector={collectedAt:new Date().toISOString(),providerWorkflowRunId:runId,providerWorkflowStatus:status,providerWorkflowConclusion:conclusion,providerWorkflowHeadSha:process.env.TARGET_SHA,artifactId:artifact?artifact.id:null,artifactDigest:artifact?artifact.digest||null:null,artifactName:artifact?artifact.name:null};
+          fs.writeFileSync(process.env.OUT_PATH,JSON.stringify(e,null,2)+'\n');
+          console.log(JSON.stringify({decision:e.decision,runId,conclusion,artifactId:artifact?artifact.id:null}));
+          NODE
+
+      - name: Publish observed result and retire collector
+        run: |
+          set -euo pipefail
+          git config user.name "cxorbia-gate-bot"
+          git config user.email "cxorbia-gate-bot@users.noreply.github.com"
+          git rm .github/workflows/cxorbia-i4b-e2e-evidence-collector.yml
+          git add "$OUT_PATH"
+          git commit -m "evidence(i4b): collect single synthetic lifecycle E2E result"
+          git push origin HEAD:docs-tya-v6-v71-audit
