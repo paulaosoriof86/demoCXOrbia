@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "cxorbia.i4b.visit-lifecycle-provider-command-contract.v1",
+  "status": "SOURCE_READY_NOT_ACTIVATED",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "firebaseProjectId": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "providerRuntime": "backend/runtime/cxorbia-visit-lifecycle-command-provider-v1.mjs",
+  "transportSource": "app/adapters/cxorbia-command-http-transport-v1.js",
+  "transportLoadedInProtectedDev": false,
+  "commandWritesEnabledInProtectedDev": false,
+  "commands": [
+    "application.create",
+    "application.status.update",
+    "visit.assign",
+    "visit.state.update",
+    "visit.reschedule",
+    "visit.cancel",
+    "visit.questionnaire.submit",
+    "visit.review.update"
+  ],
+  "canonicalCollections": {
+    "visits": "tenants/{tenantId}/projects/{projectId}/visits/{visitId}",
+    "postulations": "tenants/{tenantId}/projects/{projectId}/postulations/{applicationId}",
+    "commandReceipts": "tenants/{tenantId}/commandReceipts/{receiptId}",
+    "auditTrail": "tenants/{tenantId}/entityAuditTrail/{auditId}"
+  },
+  "serverEnforcement": {
+    "firebaseIdTokenRequired": true,
+    "membershipRequired": true,
+    "tenantProjectRoleScopeRequired": true,
+    "shopperSelfScopeRequired": true,
+    "idempotencyRequired": true,
+    "expectedVersionRequired": true,
+    "providerAckRequiredForUiSuccess": true,
+    "hrWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0
+  },
+  "futureE2EGate": {
+    "gateId": "NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE__SYNTHETIC_VISIT_ONLY",
+    "authorized": false,
+    "singleConsolidatedGate": true,
+    "syntheticVisitOnly": true,
+    "realHrVisitMutationAllowed": false,
+    "historicalShopperAccess": false,
+    "production": false,
+    "merge": false,
+    "purpose": "Probar en DEV, en una sola ejecución y sin tocar filas reales de HR, postulación→aprobación/asignación→agenda→reprogramación/cancelación→realizada→cuestionario→review con ACK provider real."
+  },
+  "frontendHandoffRequired": [
+    "app/modules/visita-detalle.js",
+    "app/modules/postulaciones.js",
+    "app/modules/cuestionario-shopper.js",
+    "app/modules/revision-admin.js"
+  ]
+}
