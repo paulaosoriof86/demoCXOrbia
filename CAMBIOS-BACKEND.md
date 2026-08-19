@@ -1,30 +1,29 @@
 # CAMBIOS-BACKEND.md
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4B-RETRY2-LANE-READY-SOURCE-ONLY-30`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4B-RETRY2-PASS-I4C-FRONTIER-31`
 
 **Avance formal:** **60% completado / 40% pendiente**.
 
 ## Preservado
-I1/I2/I3 PASS, I4-A PASS, HR `15 periodos / 660 visitas`, Historical Shopper frozen, TARGET_B Admin no recrear, Finance V2/historical y legal v0.4. Sin frontend P0 nuevo.
+I1/I2/I3/I4-A PASS/frozen, HR `15 periodos / 660 visitas`, Historical Shopper frozen, TARGET_B Admin no recrear, Finance V2/historical y legal v0.4. Sin frontend P0 nuevo.
 
-## Auditoría previa solicitada
-Se verificó el conjunto canónico y se encontró sincronizado en epoch/frontera antes de construir Retry2. Además se identificó un riesgo latente que todavía habría causado otro bloqueo: `verify-cxorbia-source-truth-sync.mjs` seguía hard-codeando 60/40 aunque epoch/frontera ya fueran dinámicos. Eso habría fallado automáticamente al cerrar I4 y cambiar a 85/15.
+## I4-B Retry2 ejecutado y cerrado
+Autorización exacta registrada en el request y ejecutada una sola vez sobre `cxorbia-backend-dev`. Run `32305790197`, resultado `PASS_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E__SYNTHETIC_VISIT_ONLY`.
 
-## Corrección sostenible aplicada en fuente
-- Source-truth v11: epoch, frontera y progreso se derivan del Execution State; solo exige porcentajes válidos que sumen 100 y los compara dinámicamente en los 10 Markdown canónicos.
-- Provider verifier v1.2: comprueba read-before-write en `application.create`, `application.status.update` y `visit.*`, no solo en la rama que falló Retry1.
-- Workflow I4-B existente: se convierte en carril estable request-driven; gate deshabilitado ejecuta solo preflight; gate autorizado es el único que puede alcanzar provider; `cancel-in-progress=false`.
-- Executor/finalizer genéricos: idempotency y fixture dependen de `requestId`, no de Retry1; un fallo antes de entrar al intento de mutación no consume autorización; una ejecución que sí entra se consume una sola vez y archiva evidencia por request.
-- Retry2 request: construido `enabled=false`, `consumed=false`, `authorizationRequired=true`; cero provider writes en esta preparación.
+Validado provider-backed: `application.create`, replay idempotente, aprobación de postulación, agendamiento, solicitud/aprobación de reprogramación, solicitud de cancelación, realización, cuestionario, revisión y expectedVersion conflict bloqueado antes de mutación.
 
-## Frontera
-`NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY2__PROVIDER_TX_READ_ORDER_FIXED__SYNTHETIC_VISIT_ONLY`.
+Contadores: `providerCommandCalls=11`, `providerCommittedCalls=10`, `providerWritesReported=28`, `receiptDocsObserved=9`, `auditDocsObserved=9`, `syntheticFixtureCreates=1`, `syntheticFixtureDeletes=2`, `errors=[]`.
 
-PASS Retry2 → I4-C HR bidireccional.
+Safety: visitas/postulaciones reales invariantes; Historical Shopper=false; Auth/HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/prod sin cambios. Gate Retry2 quedó `enabled=false / consumed=true / executionsConsumed=1 / status=pass_consumed_provider_verified` y no se repite.
+
+## Siguiente frontera
+`I4C_HR_BIDIRECTIONAL_SYNC_READINESS_SOURCE_IMPLEMENTATION`.
+
+I4-C arranca source-only. Debe reutilizar el HR source-safe ya existente y el provider lifecycle ya validado, agregando/validando contratos de sincronización para Plataforma→HR y HR→Plataforma mediante `tenantId`, `projectId`, `visitId/hrRowId`, `shopperId`, `assignmentSource`, `assignmentSyncStatus`, `lastSyncedAt`. No deduplicar por nombre; conflictos a revisión humana. Cero HR writes hasta gate explícito.
 
 ## Clasificación
-- Reusable CXOrbia: source-truth dinámico, workflow request-driven, finalización single-use y verificación transaccional multi-rama.
-- Exclusivo TyA: tenant `tya`, Cinépolis, HR 15/660, fixture sintético I4-B.
-- Claude/prototipo: sin cambio frontend; handoff vigente se conserva.
-- Academia: sin cambio funcional; no enseñar lifecycle write como PASS hasta Retry2.
-- Sin impacto Claude: workflow/backend/verifiers/docs del gate.
+- Reusable CXOrbia: lifecycle provider-backed validado, idempotencia/optimistic concurrency y patrón de sync por claves estables/origen/estado.
+- Exclusivo TyA: tenant `tya`, proyecto Cinépolis, HR 15/660 y fixture sintético I4-B.
+- Claude/prototipo: handoff frontend previo se conserva; no parchear módulos desde backend.
+- Academia: I4-B ya puede documentarse como lifecycle backend validado; el flujo HR bidireccional no debe enseñarse como operativo hasta cerrar I4-C.
+- Sin impacto Claude: gate/evidencia/runtime interno de Retry2 y transición documental a I4-C.

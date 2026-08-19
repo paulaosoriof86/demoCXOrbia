@@ -1,6 +1,6 @@
 # SOURCE LOCK CXORBIA TyA
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4B-RETRY2-LANE-READY-SOURCE-ONLY-30`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4B-RETRY2-PASS-I4C-FRONTIER-31`
 
 Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`; DEV `cxorbia-backend-dev`.
 
@@ -8,20 +8,17 @@ Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/ope
 I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `25/25 PASS FROZEN`; I4 `0/25 IN_PROGRESS_NOT_SCORED`; I5 `0/15 NOT_STARTED` = **60% completado / 40% pendiente**. El plan vigente no asigna subpesos I4-A..F.
 
 ## Frozen / preservado
-I1/I2/I3; I4-A visible lifecycle; Historical Shopper; TARGET_B Admin — no recrear; HR `15 periodos / 660 visitas`; Finance V2/historical; legal v0.4. No reprocesar.
+I1/I2/I3/I4-A/I4-B; Historical Shopper; TARGET_B Admin — no recrear; HR `15 periodos / 660 visitas`; Finance V2/historical; legal v0.4. No reprocesar.
 
-## I4-B — causa técnica cerrada en fuente
-Retry1 run `32297736022` llegó al provider: `application.create` PASS, replay idempotente PASS y `application.status.update` HOLD por read-after-write Firestore. Retry1 quedó consumido; datos reales invariantes. Fix source-only `1bde86e5e5b6c2084fe5c711b7a8c06d089f12f4`.
+## I4-B cerrado
+Retry2 run `32305790197` pasó el lifecycle provider-backed completo en fixture sintético. Decisión `PASS_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E__SYNTHETIC_VISIT_ONLY`; 11 llamadas, 10 commits, 28 writes reportados, 9 receipts y 9 audit docs. Replay idempotente y conflicto de versión quedaron probados.
 
-## Causa metodológica cerrada mecánicamente
-Los 10 documentos canónicos quedan sincronizados. `tools/verify-cxorbia-source-truth-sync.mjs` deriva epoch, frontera y progreso del Execution State, valida que progreso+pendiente=100 y exige esos valores dinámicos en todos los Markdown canónicos. Se elimina el hard-code 60/40 que habría vuelto a bloquear al pasar a 85/15.
+Safety: fixture/aplicación sintéticos eliminados; visitas/postulaciones reales invariantes; Historical Shopper/Auth/HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/prod sin cambios.
 
-El provider verifier cubre las ramas transaccionales `application.create`, `application.status.update` y `visit.*` para detectar read-after-write antes de ejecutar.
-
-## Carril estable
-El workflow I4-B existente queda request-driven. Gate deshabilitado = source-only/no provider. Gate habilitado solo ejecuta si coincide con la frontera, está sin consumir y tiene autorización Paula. `cancel-in-progress=false`; fallos antes de entrar al intento de mutación no consumen la autorización. Executor/finalizer genéricos evitan recrear un workflow por retry.
+## Source truth sostenible
+Los 10 documentos canónicos usan epoch, frontera y progreso derivados de `CXORBIA-EXECUTION-STATE.json`; no existen hard-codes de 60/40. El carril I4-B queda frozen y no se reutiliza.
 
 ## Frontera exacta
-`NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY2__PROVIDER_TX_READ_ORDER_FIXED__SYNTHETIC_VISIT_ONLY`.
+`I4C_HR_BIDIRECTIONAL_SYNC_READINESS_SOURCE_IMPLEMENTATION`.
 
-Retry2 queda preparado source-only, `enabled=false`, `consumed=false`, `authorizedBy=null`. Mismo scope sintético, Historical Shopper=false, HR real=false, producción=false. PASS → I4-C HR bidireccional.
+I4-C es source-only hasta nuevo gate: Plataforma→HR registra origen plataforma y sync pendiente; HR→Plataforma detecta asignación y evita duplicar lo ya originado en plataforma. Claves obligatorias: `tenantId`, `projectId`, `visitId/hrRowId`, `shopperId`, `assignmentSource`, `assignmentSyncStatus`, `lastSyncedAt`. Conflictos pasan a revisión; nunca deduplicar solo por nombre.

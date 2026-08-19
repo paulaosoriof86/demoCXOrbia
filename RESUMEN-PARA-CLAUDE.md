@@ -1,28 +1,31 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4B-RETRY2-LANE-READY-SOURCE-ONLY-30`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4B-RETRY2-PASS-I4C-FRONTIER-31`
 
 ## Validado/preservado
-I1/I2/I3 e I4-A PASS/frozen. HR `15 periodos / 660 visitas`, Historical Shopper, TARGET_B Admin, Finance V2/historical y legal v0.4 no se reprocesan.
+I1/I2/I3/I4-A/I4-B PASS/frozen. HR `15 periodos / 660 visitas`, Historical Shopper, TARGET_B Admin, Finance V2/historical y legal v0.4 no se reprocesan. Progreso formal: **60% completado / 40% pendiente**.
 
-## I4-B
-Retry1 alcanzó provider real; `application.create` y replay idempotente pasaron. El orden Firestore de `application.status.update` fue la causa exacta y quedó corregido en fuente. Datos reales quedaron invariantes.
+## I4-B — backend real validado
+Retry2 run `32305790197` pasó el lifecycle provider-backed sintético completo. ACK, idempotencia, trazas receipt/audit, transiciones y conflicto de versión quedaron probados. Datos reales no cambiaron y el gate quedó consumido/cerrado.
 
-## Continuidad corregida
-Los 10 documentos canónicos quedan sincronizados. El verifier de source-truth deriva también el progreso del Execution State, eliminando el hard-code 60/40 que habría bloqueado una transición futura. El verifier del provider cubre las tres ramas transaccionales.
-
-El workflow I4-B queda estable/request-driven y usa executor/finalizer genéricos. No debe crearse otro workflow para Retry2 ni futuras adjudicaciones de este mismo lifecycle.
-
-## Frontend / Claude — handoff vivo sin cambio
+## Frontend / Claude — handoff vivo
 No parchear desde backend:
 - `app/modules/visita-detalle.js`: postulación → `application.create`, éxito solo con ACK.
 - `app/modules/postulaciones.js`: decisiones/cancelación vía command/ACK.
 - `app/modules/cuestionario-shopper.js`: submit/score solo después de ACK.
 - `app/modules/revision-admin.js`: `visit.review.update` + ACK como verdad.
 
-No hay P0 frontend nuevo demostrado y no se crea candidata nueva.
+El backend lifecycle ya está validado; esto no autoriza a inventar proveedor HR, Make ni estado de sincronización exitoso en UI.
+
+## I4-C activo
+`I4C_HR_BIDIRECTIONAL_SYNC_READINESS_SOURCE_IMPLEMENTATION`.
+
+Reglas que Claude debe preservar cuando llegue el handoff funcional:
+- proyecto configurable; Cinépolis no hard-codeado globalmente;
+- Plataforma→HR registra origen plataforma y estado de sync pendiente hasta confirmación;
+- HR→Plataforma no duplica asignaciones ya originadas en plataforma;
+- matching por `tenantId + projectId + visitId/hrRowId + shopperId`, nunca solo por nombre;
+- conflictos visibles/revisables, sin sobrescritura silenciosa.
 
 ## Academia
-Sin cambio funcional. No enseñar lifecycle write como PASS hasta Retry2. Progreso formal: **60% completado / 40% pendiente**.
-
-Siguiente: `NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY2__PROVIDER_TX_READ_ORDER_FIXED__SYNTHETIC_VISIT_ONLY`. El request está preparado, pero provider permanece bloqueado hasta autorización explícita. PASS → I4-C HR bidireccional.
+I4-B puede pasar de “pendiente” a “backend lifecycle validado”. I4-C sigue pendiente; no enseñar todavía que HR se sincroniza bidireccionalmente en producción.

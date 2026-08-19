@@ -1,17 +1,22 @@
 # PENDIENTES-PROTOTIPO.md
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4B-RETRY2-LANE-READY-SOURCE-ONLY-30`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4B-RETRY2-PASS-I4C-FRONTIER-31`
 
-I1/I2/I3 PASS/frozen. I4-A PASS/frozen. Progreso formal canónico: **60% completado / 40% pendiente**.
+I1/I2/I3/I4-A/I4-B PASS/frozen. Progreso formal canónico: **60% completado / 40% pendiente**.
 
 ## Pendiente activo único inmediato
-`NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY2__PROVIDER_TX_READ_ORDER_FIXED__SYNTHETIC_VISIT_ONLY`.
+`I4C_HR_BIDIRECTIONAL_SYNC_READINESS_SOURCE_IMPLEMENTATION`.
 
-## Ya resuelto antes de pedir autorización
-La documentación canónica queda 10/10 sincronizada. Source-truth ya no hard-codea epoch, frontera ni 60/40. El provider verifier cubre las tres ramas transaccionales. El workflow I4-B ya no se reconstruye por retry: es request-driven, no cancela runs activos y preserva autorización si el fallo ocurre antes de entrar al intento de mutación.
+## I4-B cerrado
+Retry2 run `32305790197` pasó. Gate consumido una sola vez; lifecycle provider-backed completo, idempotencia y conflicto de versión probados; fixture eliminado y datos reales invariantes. No reabrir I4-B ni pedir otro retry.
 
-Retry2 request ya existe preparado pero deshabilitado: `enabled=false / consumed=false / authorizationRequired=true`. No hubo provider writes, Historical Shopper, HR, Rules, Storage, Make, Gemini, pagos, deploy, merge o producción en esta preparación.
+## I4-C por construir/verificar
+- Plataforma→HR: marcar origen plataforma, sync pendiente y retirar visita de disponibles; preparar salida idempotente para Make/HR sin ejecutarla todavía.
+- HR→Plataforma: detectar asignación por `hrRowId/visitId`, shopper exacto y alcance tenant/proyecto; retirar de disponibles sin duplicar si ya venía de plataforma.
+- Identidad mínima: `tenantId`, `projectId`, `visitId/hrRowId`, `shopperId`, `assignmentSource`, `assignmentSyncStatus`, `lastSyncedAt`.
+- Conflictos: revisión humana y trazabilidad; prohibido deduplicar por nombre o sobreescribir silenciosamente.
+- HR/Make writes: bloqueados hasta gate posterior explícito.
 
-PASS Retry2 → I4-C HR bidireccional → I4-D Finanzas → I4-E multi-proyecto/no-code → I4-F Academia → I5.
+Después: I4-D Finanzas → I4-E multi-proyecto/no-code → I4-F Academia → I5.
 
-No reabrir Auth, Shopper histórico, TARGET_B Admin, I1/I2/I3/I4-A ni crear nueva candidata/rama/PR/workflow.
+No reabrir Auth, Shopper histórico, TARGET_B Admin, I1/I2/I3/I4-A/I4-B ni crear nueva candidata/rama/PR.
