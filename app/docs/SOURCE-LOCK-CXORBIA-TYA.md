@@ -1,8 +1,8 @@
 # SOURCE LOCK CXORBIA TyA — ESTABLE Y VIGENTE
 
-**Última sincronización:** 2026-08-18 17:41 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I4-SCOPE-SOURCE-GAP-16`  
-**Estado:** `LOCKED__I3_INTEGRAL_PASS_FROZEN__GO_LIVE_60__I4_SCOPE_SOURCE_GAP__NO_I4_EXECUTION__NO_PRODUCTION`
+**Última sincronización:** 2026-08-18 19:31 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I4-SCOPE-MATERIALIZED-17`  
+**Estado:** `LOCKED__I3_INTEGRAL_PASS_FROZEN__GO_LIVE_60__I4_SCOPE_MATERIALIZED__I4A_NEXT__NO_PRODUCTION`
 
 ## Carril vigente
 
@@ -19,60 +19,49 @@ No crear nueva rama/PR/candidata/metodología. No usar workaround UI. No merge n
 - I1 `15/15 PASS`.
 - I2 `20/20 PASS`.
 - I3 `25/25 PASS` — integral y congelado.
-- I4 `0/25` — **no iniciado**.
+- I4 `0/25` — no iniciado.
 - I5 `0/15` — no iniciado.
 
 **60% completado / 40% pendiente.**
 
 ## Frozen / no reprocesar
 
-I1/I2; I3.1→I3.11C; Historical Shopper; TARGET_B Admin; request08; I3.5B/I3.5C-2/I3.8; Rules I3.11C run `32163552089`; focal provider read `32171812808`; R3-B `32181137350`; Staff post-hardening `32192976458`; Hosting identityMap PASS `32194641563`; Staff final PASS `32196648462`; HR `15/660`; Finance V2/historical; legal V0.4.
+I1/I2/I3 completo; Historical Shopper; TARGET_B Admin; Rules I3.11C; focal provider; Hosting identityMap; Staff final; HR `15/660`; Finance V2/historical; legal V0.4. No repetir I3.
 
-No crear Admin/Shopper alterno, no reset/recovery Historical Shopper, no Rules redeploy, no provider identity-link repair, no otro Hosting identityMap deploy y no rerun de gates I3 consumidos.
+## I4 — autoridad canónica recuperada
 
-## I3 integral — evidencia congelada
+Fuente aprobada y activa: `app/docs/ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`, sección `9. I4 — operación visible`.
 
-- Hosting identityMap: run `32194641563`, job `95896037812`, artifact `9345432655`, digest `sha256:2ee934cd0dbfbe8120250533aa7cd3b3954dc8ebeaffb5dec4b6917eaefb1af5`; `1/1` Hosting DEV deploy consumido; remote byte/SHA parity exacta; exactIdentityMapExport `true`; fuzzy `false`.
-- Staff final: run `32196648462`, run number `2368`, event `push`, job `95901931320`, artifact `9346121436`, digest `sha256:b3ccc4d9e45a6d42b6ab8a0dcb4cf8e9cfbe6b6ea8409c72524347c7df02189d`; `PASS_READONLY_POST_GATES`; `staffReadonlyExecuted=true`.
-- `CX.data.__identityMap['shp-57d2e3769946'] === 'TYA_GT_0C0BA8856E'`; identityMap size `209`; agosto canonical `2`; residual live `0`; reload/nueva pestaña estables.
-- duplicateVisitKeys `0` y duplicateShopperIds `0` preservados desde Staff run `32192976458`; el post-compose interveniente no muta `shoppers` ni `visits` y ambos runs observaron `660` visitas.
-- Historical Shopper access `0`; user/password changes `0`; Auth/Firestore/HR/Rules/Storage writes `0`; Rules/Hosting/Cloud Run deploys `0`; Make/Gemini/payment `0`; merge/production false.
-- Request I3 final `enabled=false / consumed=true / status=pass_consumed` en `0ea4bb6d58ba547db2337bd367f10c32f2540e8b`.
+La brecha `ACTIVE_SOURCE_GAP__I1_I5_PERCENT_WEIGHTS_PRESENT_BUT_I4_SEMANTIC_SCOPE_NOT_MATERIALIZED` queda **RESOLVED**. El error fue de localización de fuente, no de producto. `CORTE 4` legado no se usa como equivalencia.
 
-## I4 — recuperación canónica de alcance
+### I4-A — Shopper lifecycle
+Documentos/instrucciones; certificaciones históricas/nuevas; disponibles; postulación; asignación; perfiles/roles/scopes; notificaciones; histórico.
 
-Bloque ejecutado: `RECOVER_CANONICAL_I4_SCOPE_FROM_ACTIVE_PLAN_LOCK__NO_EXECUTION_YET`.
+### I4-B — visita
+Agenda; reprogramación; cancelación; ventanas/reglas; ejecución; evidencias; cuestionario; submit; review/auditoría; estados dinámicos.
 
-### Hallazgo reproducible
+### I4-C — HR bidireccional
+Plataforma→HR y HR→Plataforma con `tenantId`, `projectId`, `visitId/hrRowId`, `shopperId`, `assignmentSource`, `assignmentSyncStatus`, `lastSyncedAt`; no duplicación; conflictos a revisión; Make solo bajo gate.
 
-Las fuentes activas recuperadas sostienen simultáneamente dos estructuras distintas:
+### I4-D — Finanzas
+Histórico preservado; liquidaciones; pagos; junio real; honorarios/reembolsos configurables; trazabilidad tenant/proyecto/visita/shopper.
 
-1. El estado vivo posterior a I3 utiliza la ponderación formal `I1=15`, `I2=20`, `I3=25`, `I4=25`, `I5=15` y deja I4 en `0/25`.
-2. El índice/plan canónico heredado disponible está estructurado por `CORTE 0B` y `CORTES 1–8`; contiene un `CORTE 4`, pero **no declara que `CORTE 4` sea equivalente al I4 actual de 25 puntos**.
+### I4-E — multi-proyecto/no-code
+País/moneda/timezone/locale; source + mapping; cuestionario/provider/link; documentos/reglas/certificación; agenda; pagos; roles/notificaciones; integraciones; privacidad/evidencias.
 
-La búsqueda dirigida en índice, source lock, checkpoint, plan Phase A, documentación viva de `app/docs`, commits y conversación del PR #7 no materializó una definición semántica ni subgates autoritativos para el I4 actual.
-
-### Adjudicación
-
-`ACTIVE_SOURCE_GAP__I1_I5_PERCENT_WEIGHTS_PRESENT_BUT_I4_SEMANTIC_SCOPE_NOT_MATERIALIZED`
-
-Reglas de cierre:
-- `CORTE 4` legado **NO se promueve** a I4 por nombre/número.
-- La etiqueta histórica `corte4` del PR **NO prueba** equivalencia semántica.
-- No se inventan subgates, proveedor, deploy, write ni criterios de PASS de I4.
-- I4 permanece `0/25`; avance permanece **60% / 40%**.
-- I3 sigue congelado y no se reabre.
+### I4-F — Academia
+Cursos/manuales/rutas/notificaciones/instrucciones/certificaciones se actualizan junto con cada comportamiento operacional visible.
 
 ## Siguiente frontera exacta
 
-`MATERIALIZE_CANONICAL_I4_SCOPE_FROM_APPROVED_SOURCE__NO_EXECUTION`
+`I4-A — SHOPPER LIFECYCLE`
 
-Se requiere localizar/aportar la fuente aprobada que definió el esquema I1–I5 de `15/20/25/25/15` junto con el significado/subgates de I4, o una instrucción vigente explícita que los materialice. Hasta entonces no hay ejecución I4 segura.
+No se ejecutó I4 en este bloque. El siguiente bloque debe limitarse a I4-A y preservar todo I3 frozen. Provider writes, deploy, merge y producción permanecen no autorizados.
 
-## Producto / Claude / Academia
+## Clasificación
 
-- **Reusable CXOrbia:** regla antidesvío de no mapear nomenclaturas históricas por coincidencia numérica.
-- **Exclusivo TyA:** brecha documental del plan de salida; sin cambio de datos.
-- **Claude/prototipo:** sin parche UI; `/app/modules` y `/app/core` intactos en este bloque.
-- **Academia:** sin cambio funcional visible; sin cambios de manuales, cursos, rutas por rol ni notificaciones.
-- **Sin impacto Claude inmediato:** recuperación documental/read-only y source lock.
+- **Reusable CXOrbia:** I4 visible definido por lifecycle/visita/HR/finanzas/no-code/Academia.
+- **Exclusivo TyA:** validación inicial del tenant/proyectos y datos reales, sin convertirlos en lógica global.
+- **Claude/prototipo:** sin parche UI en este bloque.
+- **Academia:** I4-F explícito; cualquier comportamiento operacional visible futuro deberá sincronizar su impacto.
+- **Sin impacto Claude inmediato:** materialización documental del alcance.
