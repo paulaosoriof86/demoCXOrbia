@@ -1,0 +1,255 @@
+name: CXOrbia I4A Dedicated Test Shopper Create
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - backend/config/i4a-dedicated-test-shopper-create-request.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cxorbia-i4a-dedicated-test-shopper-create
+  cancel-in-progress: false
+
+env:
+  REQUEST_FILE: backend/config/i4a-dedicated-test-shopper-create-request.json
+  OUT_DIR: .tmp/i4a-dedicated-test-shopper-create
+
+jobs:
+  create:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Checkout exact request commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: ${{ github.sha }}
+
+      - name: Validate isolated authorization request
+        id: gate
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs'),cp=require('child_process');
+          const p=process.env.REQUEST_FILE,r=JSON.parse(fs.readFileSync(p,'utf8'));
+          const head=cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const parent=cp.execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=cp.execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const exact={
+            schemaVersion:'cxorbia.i4a.dedicated-test-shopper-create.request.v1',
+            gateId:'NEW_AUTH_REQUIRED_I4A_CREATE_DEDICATED_NONHISTORICAL_DEV_TEST_SHOPPER__PROTECTED_CONTRACT_NO_LOGIN',
+            repository:'paulaosoriof86/demoCXOrbia',
+            branch:'docs-tya-v6-v71-audit',
+            pullRequest:7,
+            firebaseProjectId:'cxorbia-backend-dev',
+            tenantId:'tya',
+            projectId:'cinepolis',
+            enabled:true,
+            consumed:false,
+            status:'authorized_execute_once',
+            authorizedBy:'Paula',
+            allowedExecutions:1,
+            authCreatesMax:1,
+            authClaimsWritesMax:1,
+            authDeletesMax:1,
+            firestoreWritesMax:4,
+            loginAttempts:0,
+            passwordChanges:0,
+            passwordResets:0,
+            otherIdentitiesModifiedMax:0,
+            historicalShopperAccess:false,
+            fuzzyMatchingAllowed:false,
+            hrWrites:0,
+            rulesWrites:0,
+            storageWrites:0,
+            makeCalls:0,
+            geminiCalls:0,
+            paymentWrites:0,
+            hostingDeploys:0,
+            cloudRunDeploys:0,
+            merge:false,
+            production:false,
+            automaticRetryAllowed:false,
+            sourceTruthVerifierRequired:true
+          };
+          for(const [k,v] of Object.entries(exact)) if(r[k]!==v) throw new Error(`request_mismatch:${k}`);
+          if(head!==process.env.GITHUB_SHA) throw new Error('request_head_mismatch');
+          if(r.sourceHeadSha!==parent) throw new Error('source_head_parent_mismatch');
+          if(changed.length!==1||changed[0]!==p) throw new Error('request_commit_not_isolated');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'execute=true\n');
+          console.log(JSON.stringify({decision:'PASS_I4A_DEDICATED_TEST_SHOPPER_REQUEST_VALID',head,parent,requestOnly:true}));
+          NODE
+
+      - name: Verify canonical source truth before provider access
+        if: steps.gate.outputs.execute == 'true'
+        env:
+          CXORBIA_ALLOW_DETACHED_HEAD: '1'
+        run: |
+          set -euo pipefail
+          node tools/verify-cxorbia-source-truth-sync.mjs > "$OUT_DIR/source-truth.json"
+          cat "$OUT_DIR/source-truth.json"
+          node -e "const x=require('./$OUT_DIR/source-truth.json');if(x.decision!=='PASS_SOURCE_TRUTH_SYNC')process.exit(1)"
+
+      - name: Validate protected contract source
+        if: steps.gate.outputs.execute == 'true'
+        run: node --check app/adapters/cxorbia-shopper-admin-command-contract-v1.js
+
+      - name: Setup Node
+        if: steps.gate.outputs.execute == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install transient Firebase Admin
+        if: steps.gate.outputs.execute == 'true'
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+
+      - name: Prepare existing DEV service account privately
+        if: steps.gate.outputs.execute == 'true'
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/i4a-private
+          node <<'NODE'
+          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let x=null;try{x=JSON.parse(raw)}catch{}
+          if(!(x&&x.type==='service_account'&&x.project_id==='cxorbia-backend-dev'&&x.client_email&&x.private_key)) throw new Error('credential_invalid');
+          fs.writeFileSync('.tmp/i4a-private/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.tmp/i4a-private/credentials.json" >> "$GITHUB_ENV"
+
+      - name: Create exactly one dedicated synthetic nonhistorical DEV Shopper
+        id: create
+        if: steps.gate.outputs.execute == 'true'
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs'),crypto=require('crypto'),vm=require('vm'),admin=require('firebase-admin');
+          const req=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          const outFile=process.env.OUT_DIR+'/result.json';
+          const stable=v=>Array.isArray(v)?v.map(stable):(v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,stable(v[k])])):v);
+          const sha=v=>crypto.createHash('sha256').update(typeof v==='string'?v:JSON.stringify(stable(v)),'utf8').digest('hex');
+          const uidFp=uid=>sha('cxorbia-provider-uid-v1\0'+uid);
+          const idFp=(kind,v)=>sha(kind+'\0'+v);
+          const canonicalClaims=(shopperId)=>({authNamespace:'shopper',projectIds:[req.projectId],role:'shopper',shopperId,tenantId:req.tenantId});
+          const claimsDigest=c=>sha(canonicalClaims(c.shopperId));
+          const gateKey=sha(req.requestId).slice(0,24);
+          const uid='tya-i4a-'+gateKey;
+          const shopperId='shp-i4a-'+gateKey;
+          const login='cxorbia.i4a.'+gateKey.slice(0,10);
+          const email=sha(`${req.tenantId}\0shopper\0${login}`).slice(0,48)+'@auth.cxorbia.invalid';
+          const scrub=e=>String(e?.message||e||'').replaceAll(uid,'[uid]').replaceAll(shopperId,'[shopperId]').replaceAll(login,'[login]').replaceAll(email,'[email]').slice(0,160);
+          let counters={providerReads:0,authCreates:0,authClaimsWrites:0,authDeletes:0,firestoreReads:0,firestoreWrites:0,loginAttempts:0};
+          let created=false;
+          const safeBase=()=>({
+            schemaVersion:'cxorbia.i4a.dedicated-test-shopper-create.evidence.v1',
+            generatedAt:new Date().toISOString(),
+            gateId:req.gateId,
+            requestId:req.requestId,
+            repository:req.repository,
+            branch:req.branch,
+            pullRequest:req.pullRequest,
+            sourceHeadSha:req.sourceHeadSha,
+            requestCommitSha:process.env.GITHUB_SHA,
+            workflowRunId:Number(process.env.GITHUB_RUN_ID),
+            uidFingerprint:uidFp(uid),
+            shopperIdFingerprint:idFp('shopper-id',shopperId),
+            explicitProvenance:{testIdentity:true,synthetic:true,nonHistorical:true,identityClass:'synthetic',testProvenance:'dev-test'},
+            counters,
+            safety:{rawUidExported:false,emailExported:false,loginExported:false,passwordCreated:false,passwordExported:false,credentialValuesExported:false,historicalShopperAccess:false,otherIdentitiesModified:0,fuzzyMatching:false,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,hostingDeploys:0,cloudRunDeploys:0,merge:false,production:false}
+          });
+          (async()=>{
+            const contractSource=fs.readFileSync('app/adapters/cxorbia-shopper-admin-command-contract-v1.js','utf8');
+            globalThis.CX={};vm.runInThisContext(contractSource,{filename:'cxorbia-shopper-admin-command-contract-v1.js'});
+            const contract=globalThis.CX?.shopperAdminCommandContract;
+            if(!contract||contract.successRequiresProviderAck!==true||contract.browserCredentialStorageAllowed!==false||contract.localStoragePersistenceAllowed!==false) throw new Error('protected_contract_unavailable');
+            const built=contract.create({
+              tenantId:req.tenantId,projectId:req.projectId,projectIds:[req.projectId],
+              idempotencyKey:req.requestId,expectedVersion:'absent',actorRole:'admin',actorId:'gate:'+req.requestId,
+              sourceType:'platform',sourceRef:req.requestId,
+              profile:{firstName:'CXOrbia',lastName:'I4A Test',nombre:'CXOrbia I4A Test',estado:'Pendiente',sourceType:'platform'}
+            });
+            if(!built.ok||built.command?.commandType!=='shopper.create'||built.command?.authorization?.permission!=='shopper.create'||built.command?.payload?.persistence?.providerAckRequired!==true) throw new Error('protected_contract_create_invalid');
+            const sa=JSON.parse(fs.readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS,'utf8'));
+            admin.initializeApp({credential:admin.credential.cert(sa),projectId:req.firebaseProjectId});
+            const auth=admin.auth(),db=admin.firestore();
+            const profileRef=db.collection('tenants').doc(req.tenantId).collection('shoppers').doc(shopperId);
+            const memberRef=db.collection('tenants').doc(req.tenantId).collection('users').doc(uid);
+            const crossRef=db.collection('tenants').doc(req.tenantId).collection('shopperIdentityCrosswalk').doc(shopperId);
+            const receiptRef=db.collection('tenants').doc(req.tenantId).collection('commandReceipts').doc(sha(req.requestId).slice(0,40));
+
+            let existingUser=null;
+            try{existingUser=await auth.getUser(uid);counters.providerReads++;}catch(e){counters.providerReads++;if(String(e.code||'')!=='auth/user-not-found')throw e;}
+            const [profileSnap,memberSnap,crossSnap,receiptSnap]=await Promise.all([profileRef.get(),memberRef.get(),crossRef.get(),receiptRef.get()]);counters.firestoreReads+=4;
+            const anyDoc=profileSnap.exists||memberSnap.exists||crossSnap.exists||receiptSnap.exists;
+            if(existingUser||anyDoc){
+              if(!existingUser||!profileSnap.exists||!memberSnap.exists||!crossSnap.exists||!receiptSnap.exists) throw new Error('dedicated_identity_partial_collision');
+              const c=existingUser.customClaims||{},p=profileSnap.data()||{},m=memberSnap.data()||{},x=crossSnap.data()||{},rc=receiptSnap.data()||{};
+              const exact=c.tenantId===req.tenantId&&c.role==='shopper'&&c.authNamespace==='shopper'&&c.shopperId===shopperId&&Array.isArray(c.projectIds)&&c.projectIds.length===1&&c.projectIds[0]===req.projectId&&c.testIdentity===true&&c.synthetic===true&&c.nonHistorical===true&&c.identityClass==='synthetic'&&c.testProvenance==='dev-test'&&c.dedicatedGateId===req.gateId&&
+                p.shopperId===shopperId&&p.testFixture===true&&p.nonHistorical===true&&p.dedicatedGateId===req.gateId&&
+                m.active===true&&m.shopperId===shopperId&&m.role==='shopper'&&m.authNamespace==='shopper'&&m.dedicatedGateId===req.gateId&&
+                x.shopperId===shopperId&&x.dedicatedGateId===req.gateId&&rc.providerAck===true;
+              if(!exact) throw new Error('dedicated_identity_collision_not_exact');
+              const out={...safeBase(),decision:'PASS_I4A_DEDICATED_NONHISTORICAL_DEV_TEST_SHOPPER_CREATED__PROTECTED_CONTRACT_NO_LOGIN',providerAck:true,idempotentExistingExact:true,claimsExact:true,membershipExact:true,profileExact:true,crosswalkExact:true,nextGate:'NEW_AUTH_REQUIRED_I4A_SINGLE_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE'};
+              fs.writeFileSync(outFile,JSON.stringify(out,null,2)+'\n','utf8');console.log(JSON.stringify(out,null,2));return;
+            }
+
+            const claims={...canonicalClaims(shopperId),testIdentity:true,synthetic:true,nonHistorical:true,identityClass:'synthetic',testProvenance:'dev-test',dedicatedGateId:req.gateId,testPurpose:'i4a-visible-lifecycle'};
+            try{
+              await auth.createUser({uid,email,emailVerified:false,disabled:false});created=true;counters.authCreates++;
+              await auth.setCustomUserClaims(uid,claims);counters.authClaimsWrites++;
+              const membership={active:true,tenantId:req.tenantId,role:'shopper',authNamespace:'shopper',shopperId,projectIds:[req.projectId],providerUidFingerprint:uidFp(uid),claimsDigest:claimsDigest(claims),membershipVersion:'cxorbia-shopper-membership-v1',testFixture:true,nonHistorical:true,provenance:'dev-test',dedicatedGateId:req.gateId,updatedAt:admin.firestore.FieldValue.serverTimestamp()};
+              const profile={id:shopperId,shopperId,tenantId:req.tenantId,projectIds:[req.projectId],firstName:'CXOrbia',lastName:'I4A Test',nombre:'CXOrbia I4A Test',estado:'Pendiente',sourceType:'platform',sourceRef:req.requestId,createdVia:'protected-test-gate',user:login,perfilCompleto:false,version:1,testFixture:true,synthetic:true,nonHistorical:true,provenance:'dev-test',dedicatedGateId:req.gateId,createdAt:admin.firestore.FieldValue.serverTimestamp(),updatedAt:admin.firestore.FieldValue.serverTimestamp()};
+              const crosswalk={tenantId:req.tenantId,shopperId,projectIds:[req.projectId],authNamespace:'shopper',providerUidFingerprint:uidFp(uid),internalEmailFingerprint:idFp('internal-email',email).slice(0,20),legacyShopperId:null,identityMode:'exact_technical_keys_only',fuzzyMatching:false,testFixture:true,nonHistorical:true,provenance:'dev-test',dedicatedGateId:req.gateId,updatedAt:admin.firestore.FieldValue.serverTimestamp()};
+              const receipt={status:'committed',commandDigest:sha(built.command),entityId:shopperId,commandType:'shopper.create',providerAck:true,requestId:req.requestId,dedicatedGateId:req.gateId,updatedAt:admin.firestore.FieldValue.serverTimestamp()};
+              const batch=db.batch();batch.set(profileRef,profile);batch.set(memberRef,membership);batch.set(crossRef,crosswalk);batch.set(receiptRef,receipt);await batch.commit();counters.firestoreWrites+=4;
+            }catch(e){
+              if(created){try{await auth.deleteUser(uid);counters.authDeletes++;}catch(cleanupError){e.cleanupError=String(cleanupError?.message||cleanupError);}}
+              const out={...safeBase(),decision:'FAIL_I4A_DEDICATED_TEST_SHOPPER_CREATE_PROVIDER_WRITE',providerAck:false,errorClass:scrub(e),nextGate:'STOP_NO_AUTOMATIC_RETRY'};
+              fs.writeFileSync(outFile,JSON.stringify(out,null,2)+'\n','utf8');console.error(JSON.stringify(out,null,2));throw e;
+            }
+
+            const verifyUser=await auth.getUser(uid);counters.providerReads++;
+            const [vp,vmem,vx,vr]=await Promise.all([profileRef.get(),memberRef.get(),crossRef.get(),receiptRef.get()]);counters.firestoreReads+=4;
+            const c=verifyUser.customClaims||{},p=vp.data()||{},m=vmem.data()||{},x=vx.data()||{},rc=vr.data()||{};
+            const claimsExact=c.tenantId===req.tenantId&&c.role==='shopper'&&c.authNamespace==='shopper'&&c.shopperId===shopperId&&Array.isArray(c.projectIds)&&c.projectIds.length===1&&c.projectIds[0]===req.projectId&&c.testIdentity===true&&c.synthetic===true&&c.nonHistorical===true&&c.identityClass==='synthetic'&&c.testProvenance==='dev-test'&&c.dedicatedGateId===req.gateId;
+            const membershipExact=vmem.exists&&m.active===true&&m.tenantId===req.tenantId&&m.role==='shopper'&&m.authNamespace==='shopper'&&m.shopperId===shopperId&&m.projectIds?.length===1&&m.projectIds[0]===req.projectId&&m.providerUidFingerprint===uidFp(uid)&&m.claimsDigest===claimsDigest(c)&&m.dedicatedGateId===req.gateId;
+            const profileExact=vp.exists&&p.shopperId===shopperId&&p.tenantId===req.tenantId&&p.testFixture===true&&p.synthetic===true&&p.nonHistorical===true&&p.provenance==='dev-test'&&p.dedicatedGateId===req.gateId;
+            const crosswalkExact=vx.exists&&x.shopperId===shopperId&&x.tenantId===req.tenantId&&x.providerUidFingerprint===uidFp(uid)&&x.fuzzyMatching===false&&x.dedicatedGateId===req.gateId;
+            const providerAck=vr.exists&&rc.providerAck===true&&rc.entityId===shopperId&&rc.dedicatedGateId===req.gateId;
+            if(!(claimsExact&&membershipExact&&profileExact&&crosswalkExact&&providerAck)) throw new Error('post_write_readback_not_exact');
+            const out={...safeBase(),decision:'PASS_I4A_DEDICATED_NONHISTORICAL_DEV_TEST_SHOPPER_CREATED__PROTECTED_CONTRACT_NO_LOGIN',providerAck:true,idempotentExistingExact:false,claimsExact,membershipExact,profileExact,crosswalkExact,nextGate:'NEW_AUTH_REQUIRED_I4A_SINGLE_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE'};
+            fs.writeFileSync(outFile,JSON.stringify(out,null,2)+'\n','utf8');console.log(JSON.stringify(out,null,2));
+          })().catch(e=>{if(!fs.existsSync(outFile)){const out={...safeBase(),decision:'FAIL_I4A_DEDICATED_TEST_SHOPPER_CREATE_PREWRITE_OR_READBACK',providerAck:false,errorClass:scrub(e),nextGate:'STOP_NO_AUTOMATIC_RETRY'};fs.writeFileSync(outFile,JSON.stringify(out,null,2)+'\n','utf8');console.error(JSON.stringify(out,null,2));}process.exit(1);});
+          NODE
+
+      - name: Enforce success budgets
+        if: steps.gate.outputs.execute == 'true'
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const x=require('./'+process.env.OUT_DIR+'/result.json'),r=require('./'+process.env.REQUEST_FILE),c=x.counters||{};
+          if(x.decision!=='PASS_I4A_DEDICATED_NONHISTORICAL_DEV_TEST_SHOPPER_CREATED__PROTECTED_CONTRACT_NO_LOGIN'||x.providerAck!==true) throw new Error('i4a_create_not_pass');
+          if(c.authCreates>r.authCreatesMax||c.authClaimsWrites>r.authClaimsWritesMax||c.authDeletes>r.authDeletesMax||c.firestoreWrites>r.firestoreWritesMax) throw new Error('write_budget_exceeded');
+          if(c.loginAttempts!==0||x.safety?.historicalShopperAccess!==false||x.safety?.otherIdentitiesModified!==0||x.safety?.passwordCreated!==false||x.safety?.credentialValuesExported!==false) throw new Error('safety_invariant_failed');
+          NODE
+
+      - name: Upload sanitized evidence
+        if: always() && steps.gate.outputs.execute == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: i4a-dedicated-test-shopper-create-${{ github.run_id }}
+          path: |
+            .tmp/i4a-dedicated-test-shopper-create/result.json
+            .tmp/i4a-dedicated-test-shopper-create/source-truth.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Cleanup private credential
+        if: always()
+        run: rm -rf .tmp/i4a-private
