@@ -1,52 +1,33 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Última sincronización:** 2026-08-18 19:31 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I4-SCOPE-MATERIALIZED-17`  
-**Estado:** `I3_INTEGRAL_PASS_FROZEN__GO_LIVE_60__I4_SCOPE_MATERIALIZED__I4A_NEXT`
+**Última sincronización:** 2026-08-18 19:44 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I4A-SOURCE-READINESS-HOLD-18`  
+**Estado:** `I3_FROZEN_PASS__GO_LIVE_60__I4A_READINESS_HOLD__TEST_SHOPPER_RESOLUTION_NEXT`
 
 ## Carril vivo
 
-- Repo: `paulaosoriof86/demoCXOrbia`.
-- Rama: `docs-tya-v6-v71-audit`.
-- PR #7: draft/open/no merge.
-- Base: `release/cxorbia-tya-rc-20260630`.
-- DEV: `cxorbia-backend-dev`.
+Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`; DEV `cxorbia-backend-dev`.
 
 ## Avance formal
 
-- I1 `15/15 PASS`.
-- I2 `20/20 PASS`.
-- I3 `25/25 PASS` — frozen.
-- I4 `0/25` — no iniciado.
-- I5 `0/15` — no iniciado.
-- **60% completado / 40% pendiente.**
+I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `25/25 PASS` frozen; I4 `0/25` in progress/not scored; I5 `0/15` = **60% completado / 40% pendiente**.
 
-## I3 — congelado / no reabrir
+## I4-A readiness — HOLD acotado
 
-Final Staff/Admin run `32196648462`, job `95901931320`, artifact `9346121436`; identityMap `shp-57d2e3769946 -> TYA_GT_0C0BA8856E`; agosto `2/0`; duplicados `0/0`; reload/nueva pestaña estables; Historical Shopper y writes/deploys prohibidos `0`; merge/production false.
+Decisión: `HOLD_I4A_SOURCE_READINESS__VISIBLE_SHOPPER_LIFECYCLE_COVERAGE_NOT_YET_PROVEN`.
 
-## I4 scope materialization — PASS documental
+Probado por source/frozen evidence: identidad y perfil Shopper exactos; certificación visible; histórico de visitas/estados; membership/role/project scopes; postulación vs asignación HR separadas y consistentes.
 
-Fuente aprobada recuperada: `app/docs/ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`, sección `9. I4 — operación visible`.
+No probado todavía como recorrido Shopper visible E2E: documentos/instrucciones; disponibles; acción de postulación; notificaciones; presentación de certificación nueva. No se clasifica como bug ni ausencia de producto.
 
-La brecha de fuente queda cerrada. El plan define explícitamente:
-- I4-A Shopper lifecycle.
-- I4-B visita.
-- I4-C HR bidireccional.
-- I4-D Finanzas.
-- I4-E multi-proyecto/no-code.
-- I4-F Academia.
-
-No se usa `CORTE 4` legado como equivalencia. No se ejecutó runtime, provider, deploy ni writes en esta materialización.
+Safety del bloque: runtime/login/credential selection `0`; Historical Shopper `0`; provider/Auth/Firestore/Rules/HR/Storage/Make/Gemini/payment writes `0`; deploys `0`; merge/production false.
 
 ## Siguiente bloque exacto
 
-`I4-A — SHOPPER LIFECYCLE`
+`I4A_RESOLVE_EXISTING_NONHISTORICAL_TEST_SHOPPER_IDENTITY_FROM_FROZEN_EVIDENCE__READONLY_NO_LOGIN`
 
-Alcance literal del plan: documentos/instrucciones; certificaciones históricas/nuevas; disponibles; postulación; asignación; perfiles/roles/scopes; notificaciones; histórico.
-
-Provider writes, deploy, merge y producción siguen no autorizados. I3 permanece frozen.
+Resolver una sola identidad de prueba/no histórica preexistente desde evidencia congelada. No login ni credenciales todavía. Si es elegible, el gate posterior será una única observación visible I4-A bajo nueva autorización expresa.
 
 ## Claude / Academia
 
-Sin parche frontend en este bloque. I4-F queda ahora reconocido como obligación explícita: cursos/manuales/rutas/notificaciones/instrucciones/certificaciones deben seguir los comportamientos visibles que efectivamente se validen o cambien en I4.
+Sin parche frontend. Las superficies visibles aún no probadas quedan para contraste; cualquier ajuste real se documentará por archivo/módulo. Academia sin cambios hasta observar comportamiento visible.
