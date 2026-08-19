@@ -1,27 +1,36 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última sincronización:** 2026-08-19 10:04 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260819-I4A-DEDICATED-TEST-SHOPPER-PASS-21`  
-**Estado backend:** `I4A_DEDICATED_TEST_SHOPPER_PASS__VISIBLE_SMOKE_AUTH_NEXT`
+**Última sincronización:** 2026-08-19 10:59 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260819-I4A-VISIBLE-SMOKE-MECHANISM-HOLD-22`  
+**Estado backend:** `I4A_VISIBLE_SMOKE_HOLD_CONSUMED__NO_PRODUCT_UI_DEFECT_PROVEN__RETRY_AUTH_NEXT`
 
 ## Conectado/probado
 
-I1/I2/I3 permanecen PASS/frozen. En I4-A ya existe una identidad DEV dedicada sintética/no histórica, provider-verificada con claims, profile, membership, crosswalk, provider ACK y provenance explícita exactos. No se utilizó Shopper histórico ni se ejecutó login.
+I1/I2/I3 permanecen PASS/frozen. La Shopper DEV dedicada sintética/no histórica sigue provider-verificada con claims/profile/membership/crosswalk/provider ACK/provenance exactos.
 
-Evidencia: run `32273818536`, artifact `9373197946`.
+El primer visible smoke I4-A fue consumido: run `32278013553`, artifact `9374808032`. Prelogin PASS; 1 Auth password update; 1 login. El run hizo timeout antes de llegar a cualquier superficie visible. No hubo Firestore writes ni submits ni HR/Make/Gemini/pagos/deploy/merge/producción.
 
 ## Frontend / Claude
 
-Este bloque no modifica `/app/modules` ni `/app/core` y no requiere parche visual. La siguiente evidencia visible debe observar el prototipo real, no simularlo.
+**No hay P0 frontend demostrado. No parchar módulos.** El fallo se clasifica primero como mecanismo de harness; el producto no alcanzó una superficie reproduciblemente defectuosa.
 
-Pendientes visibles I4-A: documentos/instrucciones, visitas disponibles, control/estado de postulación, notificaciones y presentación de certificación nueva.
+P1/observabilidad para una futura revisión de frontend, no bloqueante y no autorizado como parche en este bloque:
+- `app/app.js`: registra Service Worker y recarga una vez al recibir `controllerchange`;
+- `app/sw.js`: `skipWaiting()` + `clients.claim()` puede tomar control de un contexto nuevo;
+- el E2E I3 PASS bloquea Service Workers y el smoke I4-A no lo hizo.
+
+Antes de atribuir regresión al producto, repetir una sola vez bajo gate nuevo con harness estabilizado y checkpoints Auth/membership. Solo si entonces aparece un defecto visible, documentarlo por archivo/módulo.
+
+## Pendientes visibles I4-A
+
+Documentos/instrucciones, visitas disponibles, control/estado de postulación, notificaciones y presentación de certificación nueva siguen sin evidencia del run actual.
 
 ## Siguiente gate
 
-`NEW_AUTH_REQUIRED_I4A_SINGLE_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE`
+`NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY__SERVICE_WORKER_STABILIZED_HARNESS`
 
-No autorizado todavía. Solo cuando sea PASS se documentarán ajustes frontend reales por archivo/módulo si aparece un defecto reproducible.
+No autorizado todavía.
 
 ## Academia
 
-Sin cambio funcional todavía; actualizar manuales/cursos/rutas/notificaciones únicamente con comportamiento visible validado.
+No cambiar manuales/cursos/rutas/notificaciones por este HOLD. Esperar evidencia visible estable.

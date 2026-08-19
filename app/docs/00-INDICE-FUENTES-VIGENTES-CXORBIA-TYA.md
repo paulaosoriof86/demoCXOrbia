@@ -1,8 +1,8 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Última sincronización:** 2026-08-19 10:04 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260819-I4A-DEDICATED-TEST-SHOPPER-PASS-21`  
-**Estado:** `SOURCE_TRUTH_SYNCHRONIZED__I3_FROZEN_PASS__GO_LIVE_60__I4A_DEDICATED_TEST_SHOPPER_PASS__VISIBLE_SMOKE_AUTH_NEXT__NO_PRODUCTION`
+**Última sincronización:** 2026-08-19 10:59 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260819-I4A-VISIBLE-SMOKE-MECHANISM-HOLD-22`  
+**Estado:** `SOURCE_TRUTH_SYNCHRONIZED__I3_FROZEN_PASS__GO_LIVE_60__I4A_VISIBLE_SMOKE_CONSUMED_HOLD__NO_PRODUCT_DEFECT_PROVEN__RETRY_AUTH_REQUIRED__NO_PRODUCTION`
 
 ## Orden obligatorio
 
@@ -19,7 +19,7 @@ Permanecen vigentes reglas maestras, addendum canónico de empalme/carril, Acade
 
 ## CONTINUITY_FAST_PATH
 
-No reconstruir PR #7 completo, miles de commits/Actions ni documentos históricos cuando la capa canónica esté consistente. Un objetivo técnico real por iteración; un artifact/decisión; una reconciliación atómica; sin cadenas `finalize/close/seal`. Los workflows legacy no relacionados son ruido CI.
+No reconstruir PR #7 completo, miles de commits/Actions ni documentos históricos cuando la capa canónica esté consistente. Un objetivo técnico real por iteración; un artifact/decisión; una reconciliación atómica; sin cadenas `finalize/close/seal`. Un gate consumido no se reejecuta automáticamente, incluso si el fallo fue de mecanismo.
 
 ## Carril único
 
@@ -31,23 +31,20 @@ I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `25/25 PASS` frozen; I4 `0/25` en curso/no 
 
 ## I4-A — verdad viva
 
-La búsqueda de una identidad existente segura quedó agotada y no se repite. Se autorizó y materializó una única Shopper DEV dedicada sintética/no histórica mediante el contrato protegido. Verificación provider-backed read-only:
+La identidad DEV dedicada sintética/no histórica permanece provider-verificada y congelada como habilitador. El gate visible `NEW_AUTH_REQUIRED_I4A_SINGLE_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE` fue autorizado y consumido exactamente una vez.
 
-- run `32273818536`, job `96136329240`, artifact `9373197946`;
-- decision `PASS_I4A_DEDICATED_NONHISTORICAL_DEV_TEST_SHOPPER_VERIFIED_READONLY_NO_LOGIN`;
-- claims, profile, membership, crosswalk, provider ACK y provenance explícita: `true`;
-- identidad final dedicada: exactamente `1`;
-- login `0`; Historical Shopper `false`; HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/producción `0/false`;
-- no UID/email/credenciales crudos exportados.
+Resultado del visible smoke: run `32278013553`, job `96149872897`, artifact `9374808032`, digest `sha256:b91f3bd3b1ce05303e426a45e98bd13372e6933499fc2548a98db8daa9a47437`. La prevalidación de identidad pasó exacta; hubo 1 Auth password update efímero y 1 intento de login. El navegador quedó en timeout antes de producir evidencia de superficies; `surfaces={}`, `pageErrors=[]`, Firestore writes/postulación/certificación/reserva/HR/Make/Gemini/pagos/deploy/merge/producción = 0/false.
 
-Evidencia durable: `app/docs/evidence/I4A-DEDICATED-NONHISTORICAL-DEV-TEST-SHOPPER-PASS-LATEST.json`.
+Adjudicación: `PIPELINE_MECHANISM_FAILURE_PRIMARY__NO_PRODUCT_DEFECT_PROVEN`. El diferencial de fuente más fuerte es que el E2E I3 congelado bloqueaba Service Workers, mientras este smoke no lo hizo; además `app.js` recarga en `controllerchange` y `sw.js` toma control con `skipWaiting/clients.claim`. Esto identifica un mecanismo de harness prioritario, pero no se afirma como evento capturado porque el run no instrumentó `controllerchange`.
+
+Evidencia durable: `app/docs/evidence/I4A-VISIBLE-DEV-SHOPPER-LIFECYCLE-SMOKE-HOLD-LATEST.json`.
 
 ## Siguiente frontera exacta
 
-`NEW_AUTH_REQUIRED_I4A_SINGLE_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE`
+`NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY__SERVICE_WORKER_STABILIZED_HARNESS`
 
-No está autoautorizado. Usará exclusivamente la identidad sintética dedicada para una sola prueba visible DEV de documentos/instrucciones, disponibles, postulación/estado, notificaciones y presentación de certificación nueva.
+No está autorizada. Solo puede ejecutar una nueva prueba visible DEV con la misma identidad dedicada, estabilizando el harness contra el primer control del Service Worker y registrando checkpoints de Auth/membership antes de observar las cinco superficies.
 
 ## Circuit breaker
 
-Gate consumido no se reejecuta. Antes del siguiente gate, todas las fuentes canónicas y el verifier deben compartir este `SYNC_EPOCH`. Mismatch => `SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION`.
+El gate anterior está consumido y su one-shot workflow debe quedar retirado. No retry automático, no Historical Shopper, no reapertura de I3, no nueva identidad. Mismatch documental => `SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION`.
