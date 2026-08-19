@@ -1,14 +1,16 @@
 {
   "contractId": "phase-a-tenant-project-config-from-platform-v1",
   "project": "CXOrbia TyA",
-  "date": "2026-07-09",
+  "date": "2026-08-19",
   "purpose": "Define how tenant and project data must be stored as if configured manually from the platform, not hardcoded in preview files.",
-  "status": "contract_ready_frontend_ui_pending",
+  "status": "source_aligned_existing_platform_ui_reused",
+  "configMode": "no_code_from_platform",
+  "defaultProjectConfigPath": "tenants/{tenantId}/projects/{projectId}/config/main",
   "sourceOfTruth": {
     "tenant": "platform_tenant_config",
     "projects": "platform_project_config",
     "hrSources": "platform_project_hr_source_config",
-    "periods": "derived_from_live_hr_tabs",
+    "periods": "derived_from_live_hr_tabs_or_project_configuration",
     "runtimeData": "backend_or_source_safe_payload_by_gate"
   },
   "tenantConfigRequiredFields": [
@@ -34,11 +36,15 @@
     "hrSource.type",
     "hrSource.visibility",
     "hrSource.urlRef",
-    "hrSource.spreadsheetIdMasked",
-    "hrSource.tabPattern",
+    "hrSource.mapping",
     "periods.source",
     "questionnaire.mode",
+    "documents.mode",
+    "rules.mode",
     "certification.mode",
+    "scheduling.mode",
+    "rescheduling.mode",
+    "cancellation.mode",
     "payments.mode",
     "integrations.make.status",
     "integrations.gemini.status",
@@ -46,6 +52,17 @@
     "createdAt",
     "updatedAt"
   ],
+  "allowedConfiguration": {
+    "hrSourceTypes": ["platform_native", "integrated", "google_sheets_live_multitab", "external_sheet"],
+    "questionnaireModes": ["cxorbia_native", "tyaonline", "external_platform", "general_link", "per_visit_link", "hr_per_visit_link"],
+    "documentModes": ["project_scoped", "external_reference", "mixed"],
+    "ruleModes": ["project_configured", "source_mapped", "mixed"],
+    "certificationModes": ["project_configured", "preserve_historical_then_apply_current_rules", "external_reference"],
+    "schedulingModes": ["platform", "hr", "external", "hybrid"],
+    "reschedulingModes": ["project_rules", "human_review", "external"],
+    "cancellationModes": ["project_rules", "human_review", "external"],
+    "paymentModes": ["control_only_until_payment_gate", "external_confirmation", "provider_after_explicit_gate"]
+  },
   "phaseAInitialTenant": {
     "tenantId": "tya",
     "displayName": "TyA",
@@ -68,6 +85,7 @@
       "urlRef": "project.hrSource.url protected value",
       "spreadsheetIdMasked": "1h307t...vU4",
       "tabPattern": "<MES> <YY> and <MES> <YY> HN",
+      "mapping": "project_configured_column_mapping",
       "serviceAccountAccess": "required_for_backend_reader",
       "publicXlsxFallback": "allowed_only_for_source_safe_preview_when_sheet_is_shared_by_link"
     },
@@ -79,16 +97,54 @@
     },
     "questionnaire": {
       "mode": "configurable_by_project_or_visit",
-      "allowedOrigins": ["CXOrbia", "TyAOnline", "external", "general_link", "hr_per_visit_link"]
+      "allowedOrigins": ["CXOrbia", "TyAOnline", "external", "general_link", "hr_per_visit_link"],
+      "privateReferencesProtected": true
+    },
+    "documents": {
+      "mode": "project_scoped",
+      "referencesProtected": true,
+      "rawSensitiveDocumentsInRepo": false
+    },
+    "rules": {
+      "mode": "project_configured",
+      "covers": ["country", "currency", "periods", "visit", "evidence", "questionnaire", "certification", "scheduling", "rescheduling", "cancellation", "payments"]
+    },
+    "certification": {
+      "mode": "preserve_historical_then_apply_current_rules",
+      "alreadyPresentedMustBePreserved": true
+    },
+    "scheduling": {
+      "mode": "hybrid",
+      "scope": "tenantId_projectId_visitId",
+      "rulesByProject": true
+    },
+    "rescheduling": {
+      "mode": "project_rules",
+      "requiresAudit": true,
+      "silentOverwrite": false
+    },
+    "cancellation": {
+      "mode": "project_rules",
+      "requiresAudit": true,
+      "silentOverwrite": false
     },
     "payments": {
       "mode": "control_only_until_payment_gate",
-      "juneIsPaymentsNotVisitsToRepeat": true
+      "juneIsPaymentsNotVisitsToRepeat": true,
+      "paymentExecutionAllowed": false
     },
     "integrations": {
-      "make": { "status": "gate_off" },
+      "make": { "status": "gate_off_deferred_nonblocking_phase_a_initial" },
       "gemini": { "status": "gate_off_human_review_required" }
     }
+  },
+  "existingPlatformSurfacesReused": {
+    "projectWizard": "app/modules/proyecto-wizard.js",
+    "projectAdmin": "app/modules/proyectos.js",
+    "projectCertification": "app/modules/cert.js",
+    "projectDocuments": "app/modules/documentos.js",
+    "projectSchedulingReservations": "app/modules/reservas.js",
+    "frontendRewriteRequired": false
   },
   "uiRequirementsForClaude": {
     "projectSettingsMustShowHrSource": true,
@@ -99,7 +155,16 @@
     "tenantBrandMustPropagateToLoginAndTopbar": true,
     "loginMustNotDuplicateTenantTitle": true,
     "flagsMustComeFromTenantCountries": true,
-    "shopperFullDataRequiresAuthRoles": true
+    "shopperFullDataRequiresAuthRoles": true,
+    "doNotRebuildExistingProjectConfigurationUiFromBackend": true
+  },
+  "hardRules": {
+    "multiProjectFromStart": true,
+    "cinepolisIsNormalConfigurableProject": true,
+    "tenantIdAndProjectIdRequired": true,
+    "noHardcodedClientLogic": true,
+    "privateSourceReferencesProtected": true,
+    "frontendPrototypeIsSourceOfTruth": true
   },
   "safeState": {
     "production": false,
