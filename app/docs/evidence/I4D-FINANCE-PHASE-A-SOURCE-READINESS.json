@@ -1,11 +1,11 @@
 {
   "schemaVersion": "cxorbia.i4d.finance-phase-a-source-readiness.v1",
-  "syncEpoch": "CXORBIA-20260819-I4D-FINANCE-PHASEA-ACTIVE-33",
-  "generatedAt": "2026-08-19T16:46:00-06:00",
+  "syncEpoch": "CXORBIA-20260819-I4D-FINANCE-VERIFIED-34",
+  "generatedAt": "2026-08-19T17:30:00-06:00",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "decision": "FINANCE_SOURCE_READY_FOR_DETERMINISTIC_VERIFICATION_AND_RUNTIME_WIRING",
+  "decision": "PASS_I4D_FINANCE_PHASE_A_SOURCE_READINESS",
   "priorityCorrection": {
     "makeRuntimeBindingBlocksGoLive": false,
     "makeReviewDeferred": true,
@@ -17,7 +17,17 @@
     "sourceSafe": true,
     "executionAllowed": false,
     "may2026": {"visits": 44, "paid": 44, "pending": 0, "paymentConfirmed": true},
-    "june2026": {"visits": 44, "paid": 2, "pending": 42, "confirmedPaidItems": 2, "confirmedPaidTotalGTQ": 451}
+    "june2026": {
+      "visits": 44,
+      "paid": 2,
+      "pending": 42,
+      "confirmedPaidItems": 2,
+      "confirmedPaidTotalGTQ": 451,
+      "stableKeys": [
+        "hr_2026-06_gt_2_7e5eaea1bb::JUNIO 26!2",
+        "hr_2026-06_gt_6_4ab15bcd43::JUNIO 26!6"
+      ]
+    }
   },
   "financialReconciliation": {
     "source": "app/data/tya-financial-canonical-source-safe.js",
@@ -26,14 +36,20 @@
     "reviewLiquidationRows": 38,
     "canonicalAmountReady": 207,
     "amountReviewRequired": 2,
-    "paymentInferenceFromExecutionForbidden": true
+    "paymentInferenceFromExecutionForbidden": true,
+    "liquidatedIsPaid": false,
+    "dedupeByVisualName": false
   },
   "sourceImplementation": {
     "existingAdapter": "backend/adapters/liquidations-payment-state-adapter.preview.mjs",
     "existingContract": "backend/contracts/liquidations-payments-phase-a-v1.json",
     "readModel": "backend/runtime/cxorbia-finance-phase-a-read-model-v1.mjs",
     "verifier": "tools/verify-cxorbia-i4d-finance-phase-a-source.mjs",
-    "verifierExecutedInThisEvidence": false
+    "verifierAssertions": 24,
+    "verifierResult": "PASS_I4D_FINANCE_PHASE_A_SOURCE_READINESS",
+    "executionMode": "local_deterministic_replay_from_live_branch_source_projection",
+    "repositoryNativeVerifierExecution": false,
+    "verifierHardeningCommit": "5abbd3d0e57fa49d1256cf867763b289855f18e9"
   },
   "safety": {
     "paymentExecution": false,
@@ -51,5 +67,5 @@
     "production": false,
     "rawBankData": false
   },
-  "nextFrontier": "I4D_FINANCE_PHASE_A_JUNE_PAYMENT_STATE_SOURCE_READINESS"
+  "nextFrontier": "I4D_FINANCE_PHASE_A_CX_DATA_READ_WIRING"
 }
