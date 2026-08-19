@@ -9,14 +9,14 @@
   "tenantId": "tya",
   "projectId": "cinepolis",
   "sourceHeadSha": "0d188cabf709dc8cc6d215ab9d27d2175331bf69",
-  "enabled": true,
-  "consumed": false,
-  "status": "authorized_execute_once_retry1_harness_scope_fixed",
+  "enabled": false,
+  "consumed": true,
+  "status": "hold_consumed_retry1_no_automatic_retry",
   "authorizedBy": "Paula",
   "authorizedAt": "2026-08-19T12:34:00-06:00",
   "authorizationText": "autorizo pero agiliza",
   "allowedExecutions": 1,
-  "executionsConsumed": 0,
+  "executionsConsumed": 1,
   "singleConsolidatedGate": true,
   "syntheticVisitOnly": true,
   "historicalShopperAccess": false,
@@ -53,5 +53,25 @@
     "providerWritesReported": 0
   },
   "successFrontier": "I4C_HR_BIDIRECTIONAL_SYNC_READINESS_SOURCE_IMPLEMENTATION",
-  "failurePolicy": "consume_once_no_automatic_retry"
+  "failurePolicy": "consume_once_no_automatic_retry",
+  "consumedAt": "2026-08-19T20:18:08.657Z",
+  "executionResult": {
+    "decision": "HOLD_I4B_RETRY1__Firestore_transactions_require_all_reads_to_be_executed_before_all_writes_",
+    "workflowRunId": 32297736022,
+    "workflowCommitSha": "30fa6fbf67d6a1d9214de0d61261f36200422e83",
+    "providerCommandCalls": 3,
+    "providerCommittedCalls": 2,
+    "providerWritesReported": 3,
+    "syntheticFixtureCreates": 1,
+    "syntheticFixtureDeletes": 2,
+    "receiptDocsObserved": 0,
+    "auditDocsObserved": 0,
+    "realVisitsUnchanged": true,
+    "realPostulationsUnchanged": true,
+    "historicalShopperAccess": false,
+    "errors": [
+      "Firestore transactions require all reads to be executed before all writes."
+    ]
+  },
+  "nextGate": "HOLD_REQUIRES_ADJUDICATION_NO_AUTOMATIC_RETRY"
 }

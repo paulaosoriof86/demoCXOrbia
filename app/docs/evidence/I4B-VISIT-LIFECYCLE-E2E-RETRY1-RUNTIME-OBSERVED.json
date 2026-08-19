@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "cxorbia.i4b.visit-lifecycle-e2e.retry1.evidence.v1",
+  "generatedAt": "2026-08-19T20:18:01.344Z",
+  "gateId": "NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY1__HARNESS_SCOPE_FIXED__SYNTHETIC_VISIT_ONLY",
+  "requestId": "cxorbia-i4b-single-dev-visit-lifecycle-e2e-retry1-20260819-01",
+  "workflowRunId": 32297736022,
+  "workflowCommitSha": "30fa6fbf67d6a1d9214de0d61261f36200422e83",
+  "sourceHeadSha": "0d188cabf709dc8cc6d215ab9d27d2175331bf69",
+  "decision": "HOLD_I4B_RETRY1__Firestore_transactions_require_all_reads_to_be_executed_before_all_writes_",
+  "fixture": {
+    "visitIdFingerprint": "bae77805946ce20eafdd",
+    "applicationIdFingerprint": "cb7a79d718c99dad6de5",
+    "synthetic": true,
+    "nonHr": true
+  },
+  "actors": {
+    "shopperIdFingerprint": "7e984ea028e324013c03",
+    "shopperUidFingerprint": "64f2447d2ad1b1925468",
+    "operatorUidFingerprint": "039e5077de107476fcef"
+  },
+  "checks": {
+    "preexistingProviderTraces": false,
+    "syntheticVisitRemoved": true,
+    "syntheticApplicationRemoved": true,
+    "realVisitsUnchanged": true,
+    "realPostulationsUnchanged": true
+  },
+  "steps": [
+    {
+      "label": "application.create",
+      "pass": true,
+      "providerAck": true,
+      "idempotentReplay": false,
+      "providerWrites": 3
+    },
+    {
+      "label": "application.create idempotent replay",
+      "pass": true,
+      "providerAck": true,
+      "idempotentReplay": true,
+      "providerWrites": 0
+    }
+  ],
+  "safety": {
+    "syntheticVisitOnly": true,
+    "realHrVisitMutation": false,
+    "historicalShopperAccess": false,
+    "authCreates": 0,
+    "authClaimsWrites": 0,
+    "authPasswordUpdates": 0,
+    "authPasswordResets": 0,
+    "authDeletes": 0,
+    "otherIdentitiesModified": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "merge": false,
+    "production": false
+  },
+  "counters": {
+    "providerCommandCalls": 3,
+    "providerCommittedCalls": 2,
+    "idempotentReplayChecks": 1,
+    "versionConflictChecks": 0,
+    "syntheticFixtureCreates": 1,
+    "syntheticFixtureDeletes": 2,
+    "providerWritesReported": 3,
+    "auditDocsObserved": 0,
+    "receiptDocsObserved": 0
+  },
+  "errors": [
+    "Firestore transactions require all reads to be executed before all writes."
+  ]
+}
