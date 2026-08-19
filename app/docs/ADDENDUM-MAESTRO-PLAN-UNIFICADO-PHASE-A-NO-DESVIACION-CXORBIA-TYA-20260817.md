@@ -1,112 +1,77 @@
 # ADDENDUM MAESTRO — PLAN UNIFICADO PHASE A · NO DESVIACIÓN · CXORBIA TyA
 
 **Plan original:** 2026-08-17  
-**Última sincronización:** 2026-08-18 14:20 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I3-11C-R3B-HOLD-DEV-HOSTING-PARITY-05`  
-**Estado:** `ACTIVO__PREVALENTE__R3B_HOLD__DEV_HOSTING_MATERIALIZATION_NEXT__I4_I5_PRESERVED`
+**Última sincronización:** 2026-08-18 21:11 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I4A-PROVIDER-HOLD-SYNC-20`  
+**Estado:** `ACTIVO__PREVALENTE__I3_PASS_FROZEN__GO_LIVE_60__I4A_PROVIDER_HOLD_CONSUMED__DEDICATED_TEST_IDENTITY_AUTH_NEXT`
 
 ## 0. Regla
 
-Este plan continúa el mismo camino I1→I5. No reinicia metodología. Canonical state + Atomic Gate Close + circuit breaker siguen prevaleciendo.
+Continúa el mismo camino I1→I5. No reinicia metodología. Canonical State + Atomic Gate Close + circuit breaker prevalecen. Un resultado provider válido no depende de que GitHub logre publicar comentario/status.
 
 ## 1. Estado formal
 
 Repo `paulaosoriof86/demoCXOrbia`; rama única `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`; DEV `cxorbia-backend-dev`.
 
-I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `0/25` hasta PASS integral; I4 `0/25`; I5 `0/15` = **35% completado / 65% pendiente**. I3 PASS → **60%**.
+I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `25/25 PASS FROZEN`; I4 `0/25 IN_PROGRESS_NOT_SCORED`; I5 `0/15 NOT_STARTED` = **60% completado / 40% pendiente**.
 
 ## 2. Frozen
 
-I1/I2; I3.1→I3.10; Historical Shopper run `31906391682`; TARGET_B Admin; request08; I3.5B/I3.5C-2/I3.8; Rules I3.11C run `32163552089`; focal provider read run `32171812808`; R3-B Staff run `32181137350`; HR 15/660; Finance V2/historical; legal V0.4.
+I1/I2/I3 integral; Historical Shopper; TARGET_B Admin; Rules/Hosting/Staff final I3; HR `15/660`; Finance V2/historical; legal V0.4. No rerun/rebuild/reimport/reset salvo regresión nueva reproducible que invalide expresamente el PASS.
 
-No rerun, recreación, reset, reimport, rebuild ni redeploy de estos bloques salvo regresión nueva reproducible que invalide expresamente su PASS. R3-B HOLD tampoco se repite automáticamente.
+## 3. I4-A — Shopper lifecycle
 
-## 3. R1 — Source truth duradero — PASS
+Alcance: documentos/instrucciones; certificaciones históricas/nuevas; disponibles; postulación; asignación; perfiles/roles/scopes; notificaciones; histórico.
 
-Vigentes: execution state, índice, source lock, checkpoint, este plan, CAMBIOS/RESUMEN/PENDIENTES, PR #7 y verifier. Mismatch → `SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION`. Gate ejecutado sin sincronización → `EXECUTED_UNSYNCED_DO_NOT_ADVANCE`. Dos repeticiones sin reducción causal → `FORENSIC_STOP`.
+Ya probado en source/cierre previo: portal canónico Shopper read-only, membership/roles/scopes exactos fail-closed, contrato protegido de administración Shopper y autoridad de postulación/asignación proveniente de I3.
 
-## 4. R2 — Focal provider identity-link adjudication — PASS / CONSUMED
+La búsqueda de una identidad test/no histórica desde evidencia congelada quedó agotada. Luego la lectura provider/Auth autorizada run `32208829234` inspeccionó metadata/custom claims: `232` principals, `211` Shopper y `0` candidatos con provenance explícita segura. Decisión `HOLD_I4A_TEST_SHOPPER_IDENTITY_NOT_PROVEN__PROVIDER_READONLY_NO_LOGIN`.
 
-Run `32171812808`: target `irl_3ed1b9a65d36c5873c1306bae1621e9d` intacto/aplicable, mapping exacto `shp-57d2e3769946 → TYA_GT_0C0BA8856E`, `materialized`, authority `tenant_adjudication`, period-independent, provider writes `0`. No provider repair.
+El fallo de publicación de comentario PR ocurrió después de la clasificación y no la invalida. La lectura provider queda consumida y no se repite.
 
-## 5. R2B — root cause — PASS
+### I4-A — siguiente secuencia
 
-`PROVEN_RUNTIME_CONTRACT_DRIFT__LEGACY_PROVIDER_IDENTITY_LINK_APPLICABILITY_FILTER`.
+1. `NEW_AUTH_REQUIRED_I4A_CREATE_DEDICATED_NONHISTORICAL_DEV_TEST_SHOPPER__PROTECTED_CONTRACT_NO_LOGIN`: crear una sola identidad DEV sintética/no histórica con tenant/proyecto/role/membership/provenance explícitos. Sin login, HR, shoppers históricos, deploy, merge o producción.
+2. Tras PASS de creación: `NEW_AUTH_REQUIRED_I4A_SINGLE_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE`: una sola observación visible DEV usando exclusivamente esa identidad; validar documentos/instrucciones, disponibles, estado/control de postulación, notificaciones y superficie de certificación nueva. Las acciones mutantes adicionales solo se abren si son indispensables para cerrar evidencia y con gate explícito.
+3. Cerrar I4-A sin reauditar lo ya probado.
 
-El runtime legacy aceptaba solo `active + providerAck`, mientras el contrato canónico acepta estados/authorities authoritative, incluido `materialized + tenant_adjudication`.
+## 4. I4-B — visita
 
-## 6. R3-A — source correction — PASS source / no deploy
+Agenda; reprogramación; cancelación; ventanas/reglas; ejecución; evidencias; cuestionario; submit; review/auditoría; estados dinámicos. Primero se reutiliza evidencia/implementación existente; solo se corrige defecto reproducible.
 
-Se corrigió `app/adapters/cxorbia-provider-identity-link-runtime-v1.js` y se añadió `tools/qa/cxorbia-provider-identity-runtime-contract-parity-gate.mjs`. No `/app/modules`, no `/app/core`, no cambio de interfaz `CX.data`, provider I/O `0`, Hosting deploy `0`.
+## 5. I4-C — HR bidireccional
 
-## 7. R3-B — Staff runtime closure — HOLD / CONSUMED
+Plataforma→HR y HR→Plataforma con `tenantId`, `projectId`, `visitId/hrRowId`, `shopperId`, `assignmentSource`, `assignmentSyncStatus`, `lastSyncedAt`; no duplicación; conflictos a revisión. Make solo bajo gate.
 
-Run `32181137350`, artifact `9340865585`.
+## 6. I4-D — Finanzas
 
-### Lo que pasó
-- parity gate del source corregido: PASS;
-- Rules previas: reutilizadas, deploy `0`;
-- Staff/Admin DEV: una ejecución real read-only;
-- runtime base: `AUTH_RUNTIME_TIMEOUT`;
-- identidad target: canonical actual `null`, agosto canonical `0`, residual `2`;
-- provider links `1`, target links `0`;
-- duplicados `0/0`;
-- postulation/legal conservados en lastState;
-- todos los writes/deploys/producción `0`.
+Histórico preservado; liquidaciones; pagos; junio real; honorarios/reembolsos configurables; trazabilidad tenant/proyecto/visita/shopper. No reconstruir Finance V2 ya frozen.
 
-### Causa reducida
+## 7. I4-E — multi-proyecto/no-code
 
-`I3_11C_CORRECTED_SOURCE_NOT_EFFECTIVE_IN_REMOTE_DEV__HOSTING_MATERIALIZATION_REQUIRED`.
+País/moneda/timezone/locale; source + mapping; cuestionario/provider/link; documentos/reglas/certificación; agenda; pagos; roles/notificaciones; integraciones; privacidad/evidencias. Cinépolis es proyecto normal, nunca lógica global.
 
-El source GitHub está corregido, pero R3-A y R3-B no desplegaron Hosting. La validación remota todavía muestra la conducta pre-corrección. El hash exacto del asset servido no fue capturado, por lo que no se vuelve a modificar lógica: primero se materializa el source ya corregido en DEV y se prueba paridad remota.
+## 8. I4-F — Academia
 
-## 8. R3-C — siguiente gate exacto
+Cursos/manuales/rutas/notificaciones/instrucciones/certificaciones se actualizan junto con cada comportamiento operacional visible. No declarar cambio académico por un gate interno sin efecto visible.
 
-`NEW_AUTH_REQUIRED_I3_11C_DEV_HOSTING_MATERIALIZE_CORRECTED_IDENTITY_RUNTIME_NO_PROVIDER_DATA_WRITES`
-
-Solo bajo nueva autorización expresa:
-1. máximo `1` deploy Firebase Hosting DEV en `cxorbia-backend-dev`;
-2. source exacto desde la rama viva, conservando todos los overlays/backend actuales;
-3. verificar remote fingerprint/hash o semántica inequívoca de `cxorbia-provider-identity-link-runtime-v1.js` contra el contrato corregido;
-4. provider identity writes `0`;
-5. Firestore data/Auth/Rules/HR/Storage/Make/Gemini/payments/CloudRun/Historical Shopper `0`;
-6. merge/production `false`;
-7. no Staff runtime automático en el mismo gate.
-
-Si R3-C PASS, el siguiente gate será un nuevo Staff/Admin read-only exacto. Solo ese PASS integral cierra I3 y lleva formal a 60%.
-
-## 9. I4 — operación visible
-
-### I4-A — Shopper lifecycle
-Documentos/instrucciones; certificaciones históricas/nuevas; disponibles; postulación; asignación; perfiles/roles/scopes; notificaciones; histórico.
-
-### I4-B — visita
-Agenda; reprogramación; cancelación; ventanas/reglas; ejecución; evidencias; cuestionario; submit; review/auditoría; estados dinámicos.
-
-### I4-C — HR bidireccional
-Plataforma→HR y HR→Plataforma con `tenantId`, `projectId`, `visitId/hrRowId`, `shopperId`, `assignmentSource`, `assignmentSyncStatus`, `lastSyncedAt`; no duplicación; conflictos a revisión; Make solo bajo gate.
-
-### I4-D — Finanzas
-Histórico preservado; liquidaciones; pagos; junio real; honorarios/reembolsos configurables; trazabilidad tenant/proyecto/visita/shopper.
-
-### I4-E — multi-proyecto/no-code
-País/moneda/timezone/locale; source + mapping; cuestionario/provider/link; documentos/reglas/certificación; agenda; pagos; roles/notificaciones; integraciones; privacidad/evidencias.
-
-### I4-F — Academia
-Cursos/manuales/rutas/notificaciones/instrucciones/certificaciones se actualizan junto con cada comportamiento operacional visible.
-
-## 10. I5 — producción
+## 9. I5 — producción
 
 Freeze sin P0 → SHA/manifest/build-lock/verifier → preproducción → rollback → same-build E2E → revisión P0/P1/P2 → autorización expresa de Paula → cutover → smoke → baseline productivo.
 
-## 11. Producto comercializable/no-code
+## 10. Control de avance
 
-TyA es primer tenant y Cinépolis primer proyecto normal configurable, nunca lógica global. Fuentes objetivo: Google Sheets, Excel, CSV, API, CXOrbia nativo, import manual y plataforma/proveedor/link externo. Alta objetivo: `crear → configurar source → mapear → dry-run → validar → activar → monitorear`.
+El 60% es el porcentaje formal y no se infla. Para evitar la falsa sensación de inmovilidad, cada cierre reportará además el subbloque I4 exacto cerrado/pendiente, sin convertir preparación documental en puntos Phase A.
 
-## 12. Frontend / Claude
+## 11. Circuit breaker definitivo
 
-Backend no parchea silenciosamente `/app/modules` ni `/app/core`. No se crea workaround UI para el HOLD actual. Solo cambios visibles reales validados generan handoff por archivo/módulo y criterios de aceptación.
+- `SYNC_EPOCH` único para documentos canónicos y evidencia vigente.
+- Gate ejecutado se sincroniza antes del siguiente gate.
+- Artifact/resultado operativo manda sobre un fallo posterior de comentario/status.
+- Provider consumido no se reintenta por `PIPELINE_MECHANISM_FAILURE`.
+- Verifier PASS obligatorio antes de avanzar.
+- Dos repeticiones sin reducción causal => `FORENSIC_STOP`.
 
-## 13. Definition of Done
+## 12. Definition of Done por bloque
 
-Cada bloque cierra objetivo/HOLD reproducible, efectos provider, safety, `proven/disproven/unknown`, clasificación reusable/tenant/project, impacto Claude/Academia, documentos canónicos/PR al mismo `SYNC_EPOCH`, verifier y un único siguiente bloque exacto.
+Objetivo/resultado reproducible, efectos provider, safety, proven/disproven/unknown, clasificación reusable/tenant/project, impacto Claude/Academia, documentación canónica sincronizada, verifier PASS y un único siguiente bloque exacto.

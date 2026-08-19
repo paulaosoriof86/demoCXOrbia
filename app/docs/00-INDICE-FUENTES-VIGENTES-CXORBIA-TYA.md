@@ -1,20 +1,21 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Última sincronización:** 2026-08-18 19:58 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I4A-TEST-SHOPPER-PROVENANCE-HOLD-19`  
-**Estado:** `SOURCE_TRUTH_SYNCHRONIZED__I3_FROZEN_PASS__GO_LIVE_60__I4A_TEST_SHOPPER_PROVENANCE_HOLD__AUTH_NEXT__NO_PRODUCTION`
+**Última sincronización:** 2026-08-18 21:11 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I4A-PROVIDER-HOLD-SYNC-20`  
+**Estado:** `SOURCE_TRUTH_SYNCHRONIZED__I3_FROZEN_PASS__GO_LIVE_60__I4A_PROVIDER_HOLD_CONSUMED__DEDICATED_TEST_IDENTITY_AUTH_NEXT__NO_PRODUCTION`
 
-## Orden de lectura obligatorio
+## Orden obligatorio
 
 1. `app/docs/CXORBIA-EXECUTION-STATE.json`
 2. `app/docs/SOURCE-LOCK-CXORBIA-TYA.md`
 3. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`
 4. `app/docs/ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`
-5. `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`
-6. evidencia activa indicada por `CXORBIA-EXECUTION-STATE.json`
-7. PR #7 vivo
+5. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`
+6. `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`
+7. evidencia activa indicada por Execution State
+8. PR #7 vivo y HEAD remoto
 
-Permanecen vigentes las reglas maestras, Academia, patrones reutilizables, antidesvío y ejecución directa/empalmes. Los documentos históricos no sustituyen esta capa canónica.
+Permanecen vigentes documento maestro, addendum canónico de empalme/carril, Academia, patrones reutilizables y antidesvío. Históricos no sustituyen esta capa canónica.
 
 ## Carril único
 
@@ -24,30 +25,26 @@ Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/ope
 
 I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `25/25 PASS` frozen; I4 `0/25` en curso/no puntuado; I5 `0/15` = **60% completado / 40% pendiente**.
 
-## I4 canónico
+## I4-A — verdad viva
 
-Fuente aprobada: `app/docs/ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`, sección `9. I4 — operación visible`.
+Source/readiness ya está cerrado y no se reaudita sin evidencia contradictoria. La búsqueda en evidencia congelada quedó agotada sin identidad test/no histórica reproducible.
 
-I4-A Shopper lifecycle: documentos/instrucciones; certificaciones históricas/nuevas; disponibles; postulación; asignación; perfiles/roles/scopes; notificaciones; histórico. I4-B→F permanecen reservados para visita, HR bidireccional, Finanzas, multi-proyecto/no-code y Academia.
+Luego se ejecutó la clasificación provider/Auth read-only autorizada: run `32208829234`, job `95937257924`, artifact `9350022534`. Resultado: `HOLD_I4A_TEST_SHOPPER_IDENTITY_NOT_PROVEN__PROVIDER_READONLY_NO_LOGIN`; `1` provider read, `232` principals Auth, `211` Shopper, `0` candidatos con provenance explícita segura, `selected=null`. Login, credenciales, Firestore/profile/history/HR reads y todos los writes/deploy/merge/production permanecieron en cero.
 
-## I4-A — estado vivo
-
-Decisión: `HOLD_I4A_TEST_SHOPPER_PROVENANCE__NONHISTORICAL_STATUS_NOT_REPRODUCIBLY_ESTABLISHED`.
-
-La revisión source-only/read-only confirmó que la evidencia congelada conserva población y procedencia mediante fingerprints/agregados y deliberadamente no exporta login/email/UID crudos. Por ello no existe todavía en repo una prueba reproducible que permita seleccionar un principal DEV existente y afirmar que es Shopper de prueba/no histórico. No se infiere desde memoria ni por nombre.
-
-Esto no demuestra bug ni ausencia de funcionalidad. Ya están probados profile/history/certification-status read-only, membership/scopes exactos y autoridad de postulación/asignación. Siguen pendientes de evidencia visible documentos/instrucciones, disponibles, control de postulación, notificaciones y superficie de certificación nueva.
-
-## Frozen / no reprocesar
-
-I1/I2/I3 completo; Historical Shopper; TARGET_B Admin; Rules I3.11C; provider focal; Hosting identityMap; Staff final; HR `15/660`; Finance V2/historical; legal V0.4. No repetir I3.
+El workflow terminó globalmente en failure solo porque falló la publicación del comentario PR: `PIPELINE_MECHANISM_FAILURE__PR_COMMENT_PERMISSION`. La clasificación provider-backed sí terminó y su operación queda consumida. **No se repite.**
 
 ## Siguiente frontera exacta
 
-`NEW_AUTH_REQUIRED_I4A_EXISTING_SHOPPER_IDENTITY_CLASSIFICATION_DEV_READONLY_NO_LOGIN`
+`NEW_AUTH_REQUIRED_I4A_CREATE_DEDICATED_NONHISTORICAL_DEV_TEST_SHOPPER__PROTECTED_CONTRACT_NO_LOGIN`
 
-Solo podrá clasificar un principal Shopper existente como test/no histórico usando metadata provider/Auth read-only. Prohibido login, exposición/selección de credenciales, acceso a perfil/histórico, writes, deploy, merge o producción. Requiere autorización nueva y explícita.
+Objetivo: una sola Shopper DEV dedicada, sintética/no histórica, con tenant/proyecto/rol/membership/provenance explícitos mediante el contrato protegido existente. Este gate no incluye login. Requiere autorización expresa antes de provider/Auth/Firestore writes.
 
-## Anti-loop
+Después de PASS de creación, la frontera será una autorización separada para `NEW_AUTH_REQUIRED_I4A_SINGLE_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE`.
 
-Mismatch documental → `SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION`. Gate ejecutado sin sincronizar → `EXECUTED_UNSYNCED_DO_NOT_ADVANCE`. Dos repeticiones sin reducción causal → `FORENSIC_STOP`. Verificador: `tools/verify-cxorbia-source-truth-sync.mjs`.
+## Circuit breaker documental
+
+- Gate ejecutado => resultado operativo y artifact son verdad aunque falle comentario/status.
+- Fallo de publicación => `PIPELINE_MECHANISM_FAILURE`; nunca reejecuta provider consumido.
+- Antes de cualquier siguiente gate, los documentos canónicos, request consumido, evidencia y verifier deben compartir este `SYNC_EPOCH` y el verifier debe dar PASS.
+- Mismatch => `SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION`.
+- `tools/verify-cxorbia-source-truth-sync.mjs` es obligatorio antes de avanzar.

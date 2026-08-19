@@ -1,60 +1,43 @@
 # CAMBIOS-BACKEND.md
 
-**Última sincronización:** 2026-08-18 19:58 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I4A-TEST-SHOPPER-PROVENANCE-HOLD-19`  
-**Estado:** `I3_FROZEN__GO_LIVE_60__I4A_TEST_SHOPPER_PROVENANCE_HOLD__READONLY_AUTH_NEXT__NO_PRODUCTION`
+**Última sincronización:** 2026-08-18 21:11 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I4A-PROVIDER-HOLD-SYNC-20`  
+**Estado:** `I3_FROZEN__GO_LIVE_60__I4A_PROVIDER_HOLD_CONSUMED__SOURCE_TRUTH_RECONCILED__NO_PRODUCTION`
 
-## Bloque ejecutado
+## Bloque correctivo de continuidad
 
-`I4A_RESOLVE_EXISTING_NONHISTORICAL_TEST_SHOPPER_IDENTITY_FROM_FROZEN_EVIDENCE__READONLY_NO_LOGIN`
+Se reconciliaron las fuentes canónicas con la evidencia real posterior al checkpoint de 19:58. El gate `NEW_AUTH_REQUIRED_I4A_EXISTING_SHOPPER_IDENTITY_CLASSIFICATION_DEV_READONLY_NO_LOGIN` sí fue ejecutado.
 
-Tipo: source/read-only. No runtime Shopper, login, credenciales, provider read ni producto write.
+Run `32208829234`; job `95937257924`; artifact `9350022534`; decisión `HOLD_I4A_TEST_SHOPPER_IDENTITY_NOT_PROVEN__PROVIDER_READONLY_NO_LOGIN`; `providerReadCalls=1`; `232` principals Auth; `211` Shopper; `0` candidatos seguros; `selected=null`.
 
-## Resultado
+La clasificación y artifact upload fueron SUCCESS. El workflow quedó failure únicamente por `GraphQL: Resource not accessible by integration (addComment)`. Se registra como `PIPELINE_MECHANISM_FAILURE__PR_COMMENT_PERMISSION`. La operación provider quedó consumida y no puede reejecutarse para reparar publicación.
 
-`HOLD_I4A_TEST_SHOPPER_PROVENANCE__NONHISTORICAL_STATUS_NOT_REPRODUCIBLY_ESTABLISHED`.
+## Corrección durable
 
-### Causa única
+- Evidencia sanitizada persistida en `app/docs/evidence/I4A-EXISTING-SHOPPER-AUTH-METADATA-READONLY-HOLD-LATEST.json`.
+- Request I4-A marcado consumido/deshabilitado.
+- Workflow I4-A retirado de acceso provider: queda solo como verificador de estado consumido cuando cambia el request.
+- `tools/verify-cxorbia-source-truth-sync.mjs` actualizado al estado I4-A actual y a verificación de los documentos canónicos, evidencia, request consumido y ausencia de archivos temporales.
+- Execution State, índice, source lock, checkpoint, Plan Unificado, Plan Lock, CAMBIOS, RESUMEN y PENDIENTES sincronizados al mismo `SYNC_EPOCH`.
 
-La evidencia congelada/source-safe disponible prueba poblaciones y procedencia mediante fingerprints/agregados, pero no exporta un principal DEV individual cuyo `shopperId`/login/UID y condición sintética/test/no histórica puedan reproducirse. Los IDs de planes source-safe son plantillas no conectadas. Por tanto no se seleccionó ningún Shopper por memoria, nombre, coincidencia visual o inferencia.
+## Incidencia metodológica durante este bloque
 
-### Evidencia exacta revisada
-
-- `backend/config/corte6-shopper-equivalent-universe-source-only-request.json`: source-only, providerReads=false, providerWrites=false, integración de procedencia por universo equivalente.
-- `backend/config/corte6-shopper-group-provenance-source-only-request.json`: fingerprints y diagnostic holds; sin PII/secrets.
-- `backend/config/corte6-shopper-deterministic-suffix-readonly-request.json`: ejecución histórica source-safe/provider read-only con raw names/logins/emails/passwords/UIDs no exportados.
-- `app/docs/evidence/CORTE6-SHOPPER-EQUIVALENT-UNIVERSE-MEMBER-PROVENANCE-SOURCE-STATIC-PASS-LATEST.json`: population/activity/linking/completeness equivalentes y delta-only provenance, sin individualización de principal.
-
-No se reabrió I3 ni se consultó Firebase/provider en este bloque.
-
-## Seguridad
-
-- Shopper runtime/login/credential selection: `0/0/0`.
-- Historical Shopper access: `0`.
-- Provider reads/writes: `0/0`.
-- Auth/Firestore/Rules/HR/Storage/Make/Gemini/payment writes: `0`.
-- User create/password change/reset: `0`.
-- Hosting/Cloud Run deploys: `0`.
-- Merge/production: `false/false`.
-
-## Archivos tocados
-
-Solo continuidad documental: `app/docs/CXORBIA-EXECUTION-STATE.json`, índice, source lock, checkpoint, `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md` y PR #7. Ningún archivo de producto/adapters/modules/core fue modificado.
-
-## Clasificación
-
-- **Reusable CXOrbia:** provenance explícita y fail-closed para identidades de prueba.
-- **Exclusivo TyA:** selección futura del principal DEV apto para I4-A.
-- **Claude/prototipo:** sin parche frontend.
-- **Academia:** sin cambio; aún no se valida un nuevo comportamiento visible.
-- **Sin impacto Claude:** diagnóstico source/read-only.
+El conector Contents API produjo commits preparatorios no atómicos antes de activar el carril Git Tree correcto. Se clasifica `PIPELINE_MECHANISM_FAILURE__NONATOMIC_CONTENTS_API_PREP`. Los archivos temporales `TEMP-NOOP*.txt` y `app/docs/CXORBIA-EXECUTION-STATE.next.json` quedan eliminados en la reconciliación final. No tocaron producto/runtime, proveedor, datos, frontend, HR, deploy, merge ni producción. En adelante la sincronización multiarchivo usa un único tree/commit y se verifica antes de avanzar.
 
 ## Avance Phase A
 
-I1 `15/15`; I2 `20/20`; I3 `25/25`; I4 `0/25` en curso/no puntuado; I5 `0/15` = **60% completado / 40% pendiente**.
+I1 `15/15`; I2 `20/20`; I3 `25/25`; I4 `0/25` en curso/no puntuado; I5 `0/15` = **60% / 40%**.
 
 ## Siguiente bloque exacto
 
-`NEW_AUTH_REQUIRED_I4A_EXISTING_SHOPPER_IDENTITY_CLASSIFICATION_DEV_READONLY_NO_LOGIN`
+`NEW_AUTH_REQUIRED_I4A_CREATE_DEDICATED_NONHISTORICAL_DEV_TEST_SHOPPER__PROTECTED_CONTRACT_NO_LOGIN`.
 
-Objetivo: una sola clasificación provider/Auth read-only de un principal Shopper ya existente como test/no histórico. Cero login/credenciales/perfil-histórico/writes/deploy/merge/producción. No autorizado todavía.
+Luego, solo tras PASS: `NEW_AUTH_REQUIRED_I4A_SINGLE_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE`.
+
+## Clasificación
+
+- **Reusable CXOrbia:** source-truth atómico, desacople resultado provider/publicación, request consumido fail-closed.
+- **Exclusivo TyA:** identidad DEV dedicada para el futuro smoke.
+- **Claude/prototipo:** sin parche frontend.
+- **Academia:** sin cambio visible todavía.
+- **Sin impacto Claude:** reconciliación documental/gate safety.

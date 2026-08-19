@@ -1,157 +1,49 @@
-name: CXOrbia I4A Existing Shopper Auth Metadata Readonly
+name: CXOrbia I4A Existing Shopper Auth Metadata Readonly — Consumed Gate Guard
 
 on:
   pull_request:
     types: [synchronize]
+    paths:
+      - backend/config/i4a-existing-shopper-auth-metadata-readonly-request.json
 
 permissions:
   contents: read
-  issues: write
-  statuses: write
-
-concurrency:
-  group: cxorbia-i4a-existing-shopper-auth-metadata-readonly
-  cancel-in-progress: false
-
-env:
-  REQUEST_FILE: backend/config/i4a-existing-shopper-auth-metadata-readonly-request.json
-  OUT_DIR: .tmp/i4a-existing-shopper-auth-metadata-readonly
-  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
 
 jobs:
-  classify:
+  verify-consumed:
     if: >-
       github.event.pull_request.number == 7 &&
       github.event.pull_request.head.ref == 'docs-tya-v6-v71-audit' &&
       github.event.pull_request.base.ref == 'release/cxorbia-tya-rc-20260630'
     runs-on: ubuntu-24.04
-    timeout-minutes: 8
+    timeout-minutes: 3
     steps:
       - name: Checkout exact PR head
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 1
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Validate one-shot authorization and request-only commit
-        id: gate
-        run: |
-          set -euo pipefail
-          mkdir -p "$OUT_DIR"
-          node <<'NODE'
-          const fs=require('fs'),cp=require('child_process');
-          const p=process.env.REQUEST_FILE,r=JSON.parse(fs.readFileSync(p,'utf8'));
-          const head=cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          const parent=cp.execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
-          const changed=cp.execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
-          const exact={schemaVersion:'cxorbia.i4a.existing-shopper-auth-metadata-readonly.request.v1',gateId:'NEW_AUTH_REQUIRED_I4A_EXISTING_SHOPPER_IDENTITY_CLASSIFICATION_DEV_READONLY_NO_LOGIN',repository:'paulaosoriof86/demoCXOrbia',branch:'docs-tya-v6-v71-audit',pullRequest:7,firebaseProjectId:'cxorbia-backend-dev',tenantId:'tya',projectId:'cinepolis',enabled:true,consumed:false,status:'authorized_execute_once',authorizedBy:'Paula',providerReadsAuthorized:true,providerWrites:0,authWrites:0,firestoreReads:0,firestoreWrites:0,profileReads:0,historyReads:0,hrReads:0,hrWrites:0,loginAttempts:0,credentialSelection:0,credentialValuesExported:false,passwordChanges:0,passwordResets:0,userCreates:0,userUpdates:0,rulesDeploys:0,hostingDeploys:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,production:false,noAutomaticRetry:true,allowedExecutions:1};
-          for(const [k,v] of Object.entries(exact)) if(r[k]!==v) throw new Error(`request_mismatch:${k}`);
-          if(head!==process.env.HEAD_SHA) throw new Error('pr_head_mismatch');
-          if(!/^[a-f0-9]{40}$/.test(String(r.sourceHeadSha||''))||r.sourceHeadSha!==parent) throw new Error('source_head_or_parent_mismatch');
-          if(changed.length!==1||changed[0]!==p) throw new Error('request_commit_not_isolated');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,'execute=true\n');
-          console.log(JSON.stringify({decision:'PASS_I4A_AUTH_METADATA_REQUEST_VALID',head,parent,requestOnly:true}));
-          NODE
-
-      - name: Setup Node
-        if: steps.gate.outputs.execute == 'true'
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      - name: Prepare existing DEV service account privately
-        if: steps.gate.outputs.execute == 'true'
-        env:
-          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-        run: |
-          set -euo pipefail
-          mkdir -p .tmp/i4a-private
-          node <<'NODE'
-          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let x=null;try{x=JSON.parse(raw)}catch{}
-          if(!(x&&x.type==='service_account'&&x.project_id==='cxorbia-backend-dev'&&x.client_email&&x.private_key)) throw new Error('credential_invalid');
-          fs.writeFileSync('.tmp/i4a-private/credentials.json',raw,{mode:0o600});
-          NODE
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.tmp/i4a-private/credentials.json" >> "$GITHUB_ENV"
-
-      - name: Install transient Firebase Admin
-        if: steps.gate.outputs.execute == 'true'
-        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
-
-      - name: Classify existing Shopper principals from Auth metadata only
-        id: classify
-        if: steps.gate.outputs.execute == 'true'
+      - name: Assert provider gate is consumed and cannot rerun
         run: |
           set -euo pipefail
           node <<'NODE'
-          const fs=require('fs'),crypto=require('crypto'),admin=require('firebase-admin');
-          (async()=>{
-            const req=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
-            admin.initializeApp({credential:admin.credential.applicationDefault(),projectId:req.firebaseProjectId});
-            const auth=admin.auth(),h=s=>crypto.createHash('sha256').update(String(s)).digest('hex');
-            const norm=s=>String(s??'').trim().toLowerCase().replace(/[\s_]+/g,'-'),arr=v=>Array.isArray(v)?v:(v==null?[]:[v]);
-            const enumAllowed=new Set(['test','synthetic','nonhistorical','non-historical','fixture','test-only','synthetic-test','dev-test']);
-            const boolKeys=['isTest','testIdentity','synthetic','isSynthetic','nonHistorical','isNonHistorical','fixture','isFixture','testOnly','syntheticIdentity'];
-            const enumKeys=['identityClass','identityType','accountClass','accountType','provenance','provenanceClass','sourceType','testProvenance'];
-            let pageToken,providerReadCalls=0,totalAuthPrincipals=0;const shopper=[];
-            do{
-              const page=await auth.listUsers(1000,pageToken);providerReadCalls++;
-              for(const u of page.users){
-                totalAuthPrincipals++;const c=u.customClaims||{};
-                const roles=[...arr(c.role),...arr(c.roles),...arr(c.scopeRole),...arr(c.scopeRoles)].map(norm),roleShopper=roles.includes('shopper');
-                if(!roleShopper) continue;
-                const tenants=[...arr(c.tenantId),...arr(c.tenant),...arr(c.tenantIds)].flat().map(norm),tenantExact=tenants.includes(norm(req.tenantId));
-                const projects=[...arr(c.projectId),...arr(c.projectIds)].flat().map(norm);
-                if(c.projects&&typeof c.projects==='object'&&!Array.isArray(c.projects)) projects.push(...Object.keys(c.projects).map(norm));
-                if(c.scopes&&typeof c.scopes==='object'&&!Array.isArray(c.scopes)) projects.push(...Object.keys(c.scopes).map(norm));
-                const projectExact=projects.includes(norm(req.projectId)),markers=[];
-                for(const k of boolKeys) if(c[k]===true) markers.push({key:k,kind:'boolean_true'});
-                for(const k of enumKeys){const n=norm(c[k]);if(enumAllowed.has(n)) markers.push({key:k,kind:'explicit_enum',value:n});}
-                shopper.push({uidFingerprint:h(u.uid),disabled:u.disabled===true,emailVerified:u.emailVerified===true,createdAt:u.metadata?.creationTime||null,lastSignInAt:u.metadata?.lastSignInTime||null,roleShopper,tenantExact,projectExact,explicitProvenance:markers.length>0,markers});
-              }
-              pageToken=page.pageToken;
-            }while(pageToken);
-            const safe=shopper.filter(x=>x.roleShopper&&x.tenantExact&&x.projectExact&&x.explicitProvenance&&!x.disabled).sort((a,b)=>a.uidFingerprint.localeCompare(b.uidFingerprint)),selected=safe[0]||null;
-            const decision=selected?'PASS_I4A_EXISTING_NONHISTORICAL_TEST_SHOPPER_IDENTITY_RESOLVED__PROVIDER_READONLY_NO_LOGIN':'HOLD_I4A_TEST_SHOPPER_IDENTITY_NOT_PROVEN__PROVIDER_READONLY_NO_LOGIN';
-            const out={schemaVersion:'cxorbia.i4a.existing-shopper-auth-metadata-readonly.evidence.v1',generatedAt:new Date().toISOString(),decision,providerReadCalls,totalAuthPrincipals,shopperPrincipalCount:shopper.length,explicitSafeCandidateCount:safe.length,selected:selected?{uidFingerprint:selected.uidFingerprint,disabled:selected.disabled,emailVerified:selected.emailVerified,createdAt:selected.createdAt,lastSignInAt:selected.lastSignInAt,roleShopper:true,tenantExact:true,projectExact:true,explicitProvenance:true,markers:selected.markers}:null,safety:{authMetadataOnly:true,rawUidExported:false,emailExported:false,displayNameExported:false,credentialValuesExported:false,passwordHashAccessed:false,loginAttempts:0,profileReads:0,historyReads:0,firestoreReads:0,providerWrites:0,authWrites:0,firestoreWrites:0,hrWrites:0,rulesDeploys:0,hostingDeploys:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,production:false},nextGate:selected?'NEW_AUTH_REQUIRED_I4A_SINGLE_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE':'STOP_HOLD_NO_AUTOMATIC_RETRY'};
-            fs.writeFileSync(process.env.OUT_DIR+'/result.json',JSON.stringify(out,null,2)+'\n','utf8');
-            fs.appendFileSync(process.env.GITHUB_OUTPUT,`decision=${decision}\ncandidates=${safe.length}\nfingerprint=${selected?.uidFingerprint||'none'}\n`);
-            console.log(JSON.stringify(out,null,2));
-          })().catch(e=>{console.error(e);process.exit(1)});
+          const fs=require('fs');
+          const p='backend/config/i4a-existing-shopper-auth-metadata-readonly-request.json';
+          const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          const expected={
+            gateId:'NEW_AUTH_REQUIRED_I4A_EXISTING_SHOPPER_IDENTITY_CLASSIFICATION_DEV_READONLY_NO_LOGIN',
+            enabled:false,
+            consumed:true,
+            status:'consumed_hold_no_retry',
+            providerReadsAuthorized:false,
+            noAutomaticRetry:true,
+            consumedByRun:32208829234,
+            consumedByJob:95937257924,
+            artifactId:9350022534
+          };
+          for(const [k,v] of Object.entries(expected)) if(r[k]!==v) throw new Error(`consumed_gate_mismatch:${k}`);
+          if(r.result?.decision!=='HOLD_I4A_TEST_SHOPPER_IDENTITY_NOT_PROVEN__PROVIDER_READONLY_NO_LOGIN') throw new Error('decision_mismatch');
+          if(r.result?.providerReadCalls!==1||r.result?.explicitSafeCandidateCount!==0) throw new Error('result_counts_mismatch');
+          console.log(JSON.stringify({decision:'PASS_I4A_PROVIDER_GATE_CONSUMED_NO_RERUN',run:r.consumedByRun,nextGate:r.nextGate}));
           NODE
-
-      - name: Publish sanitized evidence to PR and commit status
-        if: always() && steps.gate.outputs.execute == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          test -f "$OUT_DIR/result.json"
-          node <<'NODE' > "$OUT_DIR/comment.md"
-          const fs=require('fs'),x=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/result.json','utf8')),s=x.selected;
-          console.log('## I4-A · existing Shopper Auth metadata read-only classification\n');
-          console.log(`- Decision: \`${x.decision}\``);
-          console.log(`- Auth principals inspected: \`${x.totalAuthPrincipals}\``);
-          console.log(`- Shopper principals: \`${x.shopperPrincipalCount}\``);
-          console.log(`- Explicit safe test/nonhistorical candidates: \`${x.explicitSafeCandidateCount}\``);
-          console.log(`- Selected UID fingerprint: \`${s?.uidFingerprint||'none'}\``);
-          console.log(`- Explicit provenance markers: \`${s?.markers?.map(m=>m.key+':'+(m.value||m.kind)).join(', ')||'none'}\``);
-          console.log('- Scope: Firebase Auth metadata/custom claims only; no raw UID/email/display name exported.');
-          console.log('- Safety: login 0; credential selection/exposure 0; Firestore/profile/history/HR reads 0; provider/Auth/data writes 0; deploys 0; merge false; production false.');
-          console.log(`- Next gate: \`${x.nextGate}\`.`);
-          NODE
-          gh issue comment 7 --repo "$GITHUB_REPOSITORY" --body-file "$OUT_DIR/comment.md" >/dev/null
-          DECISION=$(node -p "require('./$OUT_DIR/result.json').decision")
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${HEAD_SHA}" -f state='success' -f context='cxorbia/i4a-auth-metadata-readonly/overall' -f description="${DECISION:0:140}" -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
-
-      - name: Upload sanitized evidence
-        if: always() && steps.gate.outputs.execute == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: i4a-existing-shopper-auth-metadata-readonly-${{ github.run_id }}
-          path: .tmp/i4a-existing-shopper-auth-metadata-readonly/result.json
-          if-no-files-found: error
-          retention-days: 14
-
-      - name: Cleanup private credential
-        if: always()
-        run: rm -rf .tmp/i4a-private

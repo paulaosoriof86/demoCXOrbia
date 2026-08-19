@@ -1,5 +1,6 @@
 {
   "schemaVersion": "cxorbia.i4a.existing-shopper-auth-metadata-readonly.request.v1",
+  "syncEpoch": "CXORBIA-20260818-I4A-PROVIDER-HOLD-SYNC-20",
   "gateId": "NEW_AUTH_REQUIRED_I4A_EXISTING_SHOPPER_IDENTITY_CLASSIFICATION_DEV_READONLY_NO_LOGIN",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
@@ -8,13 +9,12 @@
   "tenantId": "tya",
   "projectId": "cinepolis",
   "sourceHeadSha": "7613eb31a7dea5843ce9ad7cd901203ea07dfb79",
-  "enabled": true,
-  "consumed": false,
-  "status": "authorized_execute_once",
+  "enabled": false,
+  "consumed": true,
+  "status": "consumed_hold_no_retry",
   "authorizedBy": "Paula",
   "authorizedAt": "2026-08-18T20:09:00-06:00",
-  "authorizationText": "continúa y agiliza, por ninguna causa podemos volver a bucle",
-  "providerReadsAuthorized": true,
+  "providerReadsAuthorized": false,
   "providerWrites": 0,
   "authWrites": 0,
   "firestoreReads": 0,
@@ -40,10 +40,17 @@
   "production": false,
   "noAutomaticRetry": true,
   "allowedExecutions": 1,
-  "outputPolicy": "source_safe_fingerprint_only_no_raw_identity",
-  "mechanism": "pull_request_exact_head_request_only_node24_iife",
-  "priorMechanismFailureRun": 32208686940,
-  "priorMechanismFailureClass": "NODE24_AMBIGUOUS_MODULE_SYNTAX_PRE_PROVIDER_READ",
-  "providerReadsConsumedByPriorFailure": 0,
-  "supersedesUnobservableRequestCommit": "7e2be1da8fd7b69aeccc265f27ccf5650fe17258"
+  "consumedByRun": 32208829234,
+  "consumedByJob": 95937257924,
+  "artifactId": 9350022534,
+  "result": {
+    "decision": "HOLD_I4A_TEST_SHOPPER_IDENTITY_NOT_PROVEN__PROVIDER_READONLY_NO_LOGIN",
+    "providerReadCalls": 1,
+    "totalAuthPrincipals": 232,
+    "shopperPrincipalCount": 211,
+    "explicitSafeCandidateCount": 0,
+    "selected": null,
+    "publicationFailureClass": "PIPELINE_MECHANISM_FAILURE__PR_COMMENT_PERMISSION"
+  },
+  "nextGate": "NEW_AUTH_REQUIRED_I4A_CREATE_DEDICATED_NONHISTORICAL_DEV_TEST_SHOPPER__PROTECTED_CONTRACT_NO_LOGIN"
 }

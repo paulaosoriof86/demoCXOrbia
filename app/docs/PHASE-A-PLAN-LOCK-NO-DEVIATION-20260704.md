@@ -1,30 +1,37 @@
 # CXOrbia TyA — PLAN PHASE A SIN DESVIACIÓN
 
 **Fecha original:** 2026-07-04  
-**Última sincronización:** 2026-08-17 14:57 -06:00  
-**Estado:** `ACTIVO__UNIFICADO__NO_REPROCESO__I3_1_2_3_4_7_PASS__I3_5_HOLD__I3_6_FROZEN_PASS_HARNESS_FIX`
+**Última sincronización:** 2026-08-18 21:11 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I4A-PROVIDER-HOLD-SYNC-20`  
+**Estado:** `ACTIVO__UNIFICADO__I3_PASS_FROZEN__GO_LIVE_60__I4A_PROVIDER_HOLD_CONSUMED__NO_REPROCESO`
 
 ## Lock
 
-Secuencia/porcentaje/subgates: `ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
-Estado técnico: source lock más reciente declarado en `00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`.
+Secuencia, porcentaje y subgates: `app/docs/ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
+Estado técnico: `app/docs/CXORBIA-EXECUTION-STATE.json`, source lock e índice del mismo `SYNC_EPOCH`.
 
 ## Avance
 
-I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `0/25 EN CURSO`; I4 `0/25`; I5 `0/15`. **35% / 65%.**
+I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `25/25 PASS FROZEN`; I4 `0/25 IN_PROGRESS_NOT_SCORED`; I5 `0/15`. **60% / 40%.**
 
 ## Frozen/no reprocess
 
-I3.1/I3.2/I3.3/I3.4/I3.7 PASS; Historical Shopper `31906391682`; TARGET_B Admin `32049054855`; request08; HR 15/660; Finance V2/historical; exact identity; V0.4 durable legal receipt.
+I1/I2/I3 integral; Historical Shopper; TARGET_B Admin; HR `15/660`; Finance V2/historical; legal V0.4. No reabrir I3 por un problema de I4.
 
-## Current blocker
+## I4-A cerrado hasta la frontera actual
 
-I3.5 has a real exact-crosswalk gap for August: exact contract present but target source-safe ID has no canonical mapping. The source-safe `shp-*` ID is derived from HR Shopper text, so it is not an independent identity authority. No fuzzy/name/email/phone/username/code/hash-derived matching.
+Source readiness ya revisado. La selección de identidad existente desde evidencia congelada quedó agotada. La clasificación provider/Auth read-only run `32208829234` terminó con `HOLD_I4A_TEST_SHOPPER_IDENTITY_NOT_PROVEN__PROVIDER_READONLY_NO_LOGIN`, `providerReadCalls=1`, `211` principals Shopper y `0` candidatos seguros. Esa lectura está consumida y no se repite.
 
-I3.6 remains product/frozen PASS; only the QA runner needs to fetch/resolve the frozen historical commit before source-blob comparison. No historical Shopper login/reset/access.
+El fallo de publicación PR fue de mecanismo y no reabre provider.
 
 ## Siguiente acción
 
-`I3.5A_EXACT_TECHNICAL_CROSSWALK_SOURCE_HUNT__PLUS_I3.6_FROZEN_REFERENCE_HARNESS_FIX__SOURCE_ONLY`.
+`NEW_AUTH_REQUIRED_I4A_CREATE_DEDICATED_NONHISTORICAL_DEV_TEST_SHOPPER__PROTECTED_CONTRACT_NO_LOGIN`.
 
-No deploy/write. If no exact independent crosswalk exists, stop before materialization and require an explicit provider write gate.
+Después de PASS: `NEW_AUTH_REQUIRED_I4A_SINGLE_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE`.
+
+No deploy/merge/producción. No HR writes. No Historical Shopper. No Make/Gemini/pagos. Cualquier write Auth/Firestore requiere la autorización del siguiente gate.
+
+## Anti-loop
+
+Verifier source-truth PASS antes de cualquier ejecución. Mismatch => STOP. Publicación fallida != operación fallida. Provider consumido nunca se repite para intentar reparar comentario/status.

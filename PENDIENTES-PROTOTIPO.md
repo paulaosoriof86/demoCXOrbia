@@ -1,49 +1,44 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última sincronización:** 2026-08-18 19:58 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I4A-TEST-SHOPPER-PROVENANCE-HOLD-19`  
-**Estado:** `NO_UI_WORKAROUND__I3_FROZEN__GO_LIVE_60__I4A_TEST_SHOPPER_PROVENANCE_HOLD__AUTH_NEXT`
+**Última sincronización:** 2026-08-18 21:11 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I4A-PROVIDER-HOLD-SYNC-20`  
+**Estado:** `NO_UI_WORKAROUND__I3_FROZEN__GO_LIVE_60__I4A_PROVIDER_HOLD_CONSUMED__DEDICATED_TEST_IDENTITY_AUTH_NEXT`
 
 ## Cerrado / no pendiente
 
-I1 `15/15 PASS`, I2 `20/20 PASS`, I3 `25/25 PASS` integral/frozen. No existe pendiente vivo de identityMap, autenticación Staff, Historical Shopper, Rules o Hosting dentro de I3.
+I1 `15/15 PASS`, I2 `20/20 PASS`, I3 `25/25 PASS` integral/frozen. No reabrir Historical Shopper, TARGET_B Admin, identityMap, Rules/Hosting/Staff I3, HR `15/660` ni Finance V2 por este bloque.
 
-Dentro de I4-A ya existe cobertura source/read-only para identidad/perfil/histórico/certification-status, membership/roles/scopes y autoridad postulación/asignación. Esto no se reaudita salvo evidencia nueva contradictoria.
+I4-A source/readiness ya existe para perfil/histórico/certification-status, membership/roles/scopes y autoridad postulación/asignación. No reauditar sin evidencia contradictoria.
 
 ## Pendiente vivo
 
 - I4 `0/25` — en curso/no puntuado.
 - I5 `0/15` — no iniciado.
-- **40% restante**.
+- **40% formal restante**.
 
-### I4-A — HOLD actual
+### I4-A — identidad de prueba
 
-`HOLD_I4A_TEST_SHOPPER_PROVENANCE__NONHISTORICAL_STATUS_NOT_REPRODUCIBLY_ESTABLISHED`
+La búsqueda en evidencia congelada y la clasificación provider/Auth read-only quedaron cerradas. Run `32208829234`: `211` Shopper, `0` candidatos con provenance explícita segura. Resultado `HOLD_I4A_TEST_SHOPPER_IDENTITY_NOT_PROVEN__PROVIDER_READONLY_NO_LOGIN`. No repetir.
 
-La evidencia congelada/source-safe no individualiza de manera reproducible un principal DEV ya existente que pueda calificarse como Shopper test/no histórico. No usar IDs recordados, plantillas source-safe ni el Shopper histórico congelado para suplir esa falta de evidencia.
+Siguiente pendiente: crear una sola identidad DEV dedicada/sintética/no histórica mediante contrato protegido, con provenance explícita y scopes exactos; requiere autorización de writes. El login visible es un gate posterior separado.
 
-Esto es un pendiente de provenance/selección segura de identidad, no un bug visible demostrado.
+### I4-A — evidencia visible aún pendiente
 
-### I4-A — comportamiento aún pendiente de evidencia visible
-
-Documentos/instrucciones; visitas disponibles; control/estado de postulación; notificaciones; presentación/estado de certificación nueva. La futura prueba inicial debe ser no mutante; no presentar postulación ni certificación durante la observación read-only.
+Documentos/instrucciones; visitas disponibles; control/estado de postulación; notificaciones; presentación/estado de certificación nueva. No asumir defecto antes de observarlo.
 
 ## No hacer
 
 - No reabrir I3.
-- No usar/login/resetear el Historical Shopper.
-- No crear otro Shopper/Admin para resolver este HOLD.
-- No inferir principal test desde nombres, IDs recordados o templates source-safe.
-- No provider/Auth read, login o credenciales sin gate nuevo.
-- No parche UI, nueva candidata, rama, PR ni metodología.
-- No writes/deploy/merge/producción sin autorización.
-
-## Claude / Academia
-
-Sin pendiente frontend demostrado por este bloque. Academia permanece sin cambio hasta validar un comportamiento operacional visible.
+- No usar/login/resetear Historical Shopper.
+- No escoger identidad existente por nombre/correo/memoria.
+- No repetir provider/Auth classification consumida.
+- No parche UI para resolver provenance.
+- No nueva rama/PR/candidata/metodología.
+- No HR/Make/Gemini/pagos/deploy/merge/producción sin gate correspondiente.
+- No avanzar si `tools/verify-cxorbia-source-truth-sync.mjs` falla.
 
 ## Siguiente acción exacta
 
-`NEW_AUTH_REQUIRED_I4A_EXISTING_SHOPPER_IDENTITY_CLASSIFICATION_DEV_READONLY_NO_LOGIN`
+`NEW_AUTH_REQUIRED_I4A_CREATE_DEDICATED_NONHISTORICAL_DEV_TEST_SHOPPER__PROTECTED_CONTRACT_NO_LOGIN`.
 
-Una sola clasificación de metadata provider/Auth de principal Shopper existente; sin login, credenciales, perfil/histórico, writes, deploy, merge ni producción. Requiere autorización explícita.
+Después de PASS: `NEW_AUTH_REQUIRED_I4A_SINGLE_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE`.
