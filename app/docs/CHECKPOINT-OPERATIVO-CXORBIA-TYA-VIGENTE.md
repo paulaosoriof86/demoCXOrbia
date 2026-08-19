@@ -1,14 +1,12 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4B-READINESS-PROVIDER-SOURCE-READY-26`  
-**Formal:** **60% completado / 40% pendiente**; I4 no tiene subpesos.
+**SYNC_EPOCH:** `CXORBIA-20260819-I4B-E2E-MECHANISM-HOLD-27`  
+**Formal:** **60% completado / 40% pendiente**; I4 sin subpeso formal.
 
-Último bloque cerrado: `I4B_VISIT_LIFECYCLE_READINESS__NO_PROVIDER_WRITES` = `PASS_SOURCE_ONLY`.
+I4-A sigue PASS/frozen. I4-B readiness/provider source sigue PASS. El primer E2E write gate sintético corrió una vez (run `32286832002`) y quedó `PIPELINE_MECHANISM_FAILURE_PRIMARY`: el harness intentó usar una variable `provider` fuera de alcance léxico. No hubo commit del provider ni write operacional real.
 
-Se preparó el provider command runtime reusable del ciclo de visita con token/membership/scope, idempotencia, expectedVersion, ACK, receipt y audit. Incluye postulación, decisión/asignación, agenda/estado, reprogramación, cancelación, cuestionario y revisión. Transport no cargado, protected DEV writes cerrados, provider writes 0.
+Safety observada: 1 fixture visita sintética creada y retirada; aplicación sintética no llegó a crearse; `providerCommittedCalls=0`; `providerWritesReported=0`; visitas reales y postulaciones reales invariantes; Historical Shopper/Auth/HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/prod sin cambios.
 
-Handoff Claude exacto: `visita-detalle.js`, `postulaciones.js`, `cuestionario-shopper.js`, `revision-admin.js` para sustituir mutaciones/falsos éxitos por consumo de ACK, sin rediseño.
+Corrección preparada sin ejecución: `tools/cxorbia-i4b-e2e-harness-v1.mjs` obliga a pasar el provider explícitamente.
 
-Preservado/frozen: I1/I2/I3/I4-A, Historical Shopper, Admin TARGET_B, HR 15/660, Finance V2, legal.
-
-Siguiente: `NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE__SYNTHETIC_VISIT_ONLY`.
+Siguiente: `NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY1__HARNESS_SCOPE_FIXED__SYNTHETIC_VISIT_ONLY`.

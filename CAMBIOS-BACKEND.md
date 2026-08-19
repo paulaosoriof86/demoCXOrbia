@@ -1,28 +1,24 @@
 # CAMBIOS-BACKEND.md
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4B-READINESS-PROVIDER-SOURCE-READY-26`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4B-E2E-MECHANISM-HOLD-27`
 
-## I4-B readiness cerrado
-Creado `backend/runtime/cxorbia-visit-lifecycle-command-provider-v1.mjs`: provider reusable source-only para postulación, decisión/asignación, estados de visita, reprogramación, cancelación, cuestionario y revisión. Enforce Auth token + membership + tenant/project/role/shopper scope, idempotencia, expectedVersion, command receipt, audit y ACK.
+## Preservado
+I1/I2/I3 PASS, I4-A PASS, HR 15/660, Historical Shopper frozen, TARGET_B Admin no recrear, Finance V2/historical y legal v0.4. I4-B readiness/provider source permanece PASS/source-ready.
 
-Creado `backend/contracts/i4b-visit-lifecycle-provider-command-v1.json`: contrato y gate E2E único futuro.
+## I4-B — primer E2E write gate
+Autorización consumida en run `32286832002`, artifact `9377953415` (`sha256:4454bd22f9dd8f0539420fd7f581ab14767f7a530a17bcb5c62241d183dd092a`). Resultado: `HOLD_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE__provider_is_not_defined`.
 
-Creado `tools/verify-cxorbia-i4b-visit-provider-source.mjs`: verificador source de command set, writes cerrados y gaps UI conocidos.
+Causa: `PIPELINE_MECHANISM_FAILURE_PRIMARY`. La función de harness incrementó el contador y luego evaluó `provider.execute`, pero `provider` había sido declarado dentro de otro bloque léxico; por eso el provider real nunca recibió el comando. No se atribuye a producto/provider.
 
-Evidencia: `app/docs/evidence/I4B-VISIT-LIFECYCLE-READINESS-LATEST.json`.
+Safety: `providerCommittedCalls=0`, `providerWritesReported=0`, receipts/audit 0; una visita sintética se creó y fue eliminada; la aplicación sintética nunca se materializó; digests confirmaron visitas reales y postulaciones reales sin cambios. Auth/Historical Shopper/HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/prod 0/false.
 
-No se cargó transport HTTP, no se habilitaron command writes y no se ejecutaron provider/Auth/Firestore/HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/prod writes.
-
-## Handoff Claude
-- `app/modules/visita-detalle.js`: conectar envío real de postulación a `application.create` + ACK.
-- `app/modules/postulaciones.js`: retirar mutaciones locales de decisión/cancelación y consumir comandos + ACK.
-- `app/modules/cuestionario-shopper.js`: no mutar score/submit antes de ACK; usar `submitQuestionnaire`.
-- `app/modules/revision-admin.js`: sustituir persistencia local por command/ACK de revisión.
+## Corrección source-only
+Creado `tools/cxorbia-i4b-e2e-harness-v1.mjs`: elimina dependencia de variable global/oculta y exige `provider` como parámetro explícito antes de `execute`. Workflow one-shot consumido retirado; no hubo rerun automático.
 
 ## Avance
-Formal 60/40; técnicamente I4-A PASS/frozen e I4-B readiness PASS source-only.
+Formal sigue 60/40 por ausencia de subpesos I4. Operativamente: I4-A PASS; I4-B source readiness PASS; E2E operacional aún pendiente de retry.
 
 ## Siguiente
-`NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE__SYNTHETIC_VISIT_ONLY`.
+`NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY1__HARNESS_SCOPE_FIXED__SYNTHETIC_VISIT_ONLY`, misma visita sintética/alcance y sin tocar las 660 visitas reales.
 
-Clasificación: Reusable CXOrbia = provider/contract/verifier; Exclusivo TyA = tenant/project y HR 15/660 preservada; Claude/prototipo = 4 handoffs; Academia = sin cambio funcional hasta E2E; Sin impacto Claude = evidence/source truth.
+Clasificación: Reusable CXOrbia = provider + harness explícito; Exclusivo TyA = tenant/project y protección HR 15/660; Claude/prototipo = handoff previo sin cambio; Academia = sin cambio por fallo de mecanismo; Sin impacto Claude = gate/evidence/harness.

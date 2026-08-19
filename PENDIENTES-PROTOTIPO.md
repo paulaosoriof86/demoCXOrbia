@@ -1,13 +1,11 @@
 # PENDIENTES-PROTOTIPO.md
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4B-READINESS-PROVIDER-SOURCE-READY-26`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4B-E2E-MECHANISM-HOLD-27`
 
-I4-A cerrado PASS; no reabrir. I4-B readiness source-only cerrado PASS.
+I4-A PASS/frozen. I4-B readiness/provider source PASS/frozen.
 
-Pendiente activo único: `NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE__SYNTHETIC_VISIT_ONLY`.
+Pendiente activo único: `NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY1__HARNESS_SCOPE_FIXED__SYNTHETIC_VISIT_ONLY`.
 
-El gate debe validar en una sola ejecución DEV: postulación → aprobación/asignación → agenda → solicitud/decisión de reprogramación → realizada → cuestionario → revisión, con provider ACK, idempotencia/version conflict, refresh y audit. Solo visita sintética creada para el gate; no tocar 660 visitas HR reales, Historical Shopper, HR writes, Storage, Make, Gemini, pagos, deploy, merge o producción.
+El primer intento no se repite: run `32286832002` quedó consumido como HOLD de mecanismo por `provider is not defined`, con 0 provider commits/writes y datos reales invariantes. El harness corregido ya está preparado source-only; el retry debe conservar exactamente el mismo alcance sintético y requiere autorización explícita.
 
-Handoff Claude posterior/alineado: `visita-detalle.js`, `postulaciones.js`, `cuestionario-shopper.js`, `revision-admin.js`.
-
-Después: I4-C → I4-D → I4-E → I4-F → I5.
+Tras PASS: I4-C HR bidireccional → I4-D Finanzas → I4-E multi-proyecto/no-code → I4-F Academia → I5.
