@@ -1,45 +1,44 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última sincronización:** 2026-08-18 17:41 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I4-SCOPE-SOURCE-GAP-16`  
-**Estado:** `NO_FRONTEND_PATCH__I3_FROZEN__GO_LIVE_60__I4_SCOPE_SOURCE_GAP`
+**Última sincronización:** 2026-08-18 19:31 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I4-SCOPE-MATERIALIZED-17`  
+**Estado:** `NO_FRONTEND_PATCH__I3_FROZEN__GO_LIVE_60__I4_SCOPE_MATERIALIZED__I4A_NEXT`
 
 ## Estado Phase A
 
 I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `25/25 PASS`; I4 `0/25`; I5 `0/15` = **60% completado / 40% pendiente**.
 
-## Preservado / no reprocesar
+## I4 canónico recuperado
 
-I3 completo permanece frozen. No reabrir Historical Shopper, TARGET_B Admin, Rules, provider focal, Hosting identityMap ni Staff final. Evidencia Staff final: run `32196648462`, job `95901931320`, artifact `9346121436`; identityMap `shp-57d2e3769946 -> TYA_GT_0C0BA8856E`; agosto `2/0`; duplicados `0/0`; reload/nueva pestaña estables; safety cero.
+Fuente: `app/docs/ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`, sección `9. I4 — operación visible`.
 
-## Resultado del bloque I4 scope recovery
+- I4-A Shopper lifecycle.
+- I4-B visita.
+- I4-C HR bidireccional.
+- I4-D Finanzas.
+- I4-E multi-proyecto/no-code.
+- I4-F Academia.
 
-No se hizo ningún cambio de frontend/backend de producto. El bloque fue documental/read-only.
-
-El estado vivo usa el esquema I1–I5 `15/20/25/25/15`, pero las fuentes canónicas heredadas disponibles usan `CORTE 0B` + `CORTES 1–8`. Aunque existe un `CORTE 4`, no hay fuente activa recuperada que declare `CORTE 4 == I4` ni que materialice los subgates del I4 actual.
-
-Bloqueo exacto: `ACTIVE_SOURCE_GAP__I1_I5_PERCENT_WEIGHTS_PRESENT_BUT_I4_SEMANTIC_SCOPE_NOT_MATERIALIZED`.
+La brecha documental previa queda cerrada. `CORTE 4` histórico no se usa como equivalencia.
 
 ## Claude / prototipo
 
-**No hay ajuste frontend que aplicar.**
+**No hay parche frontend por este bloque.** `/app/modules` y `/app/core` permanecen intactos.
 
-- `/app/modules`: sin cambios.
-- `/app/core`: sin cambios.
-- No crear workaround UI.
-- No reinterpretar `CORTE 4` como I4.
-- No anticipar módulos o UX de I4 hasta recuperar su fuente aprobada.
+El siguiente bloque es I4-A y su alcance literal es: documentos/instrucciones; certificaciones históricas/nuevas; disponibles; postulación; asignación; perfiles/roles/scopes; notificaciones; histórico.
+
+No anticipar cambios UI. Solo un comportamiento visible reproducible que lo requiera generará handoff por archivo/módulo.
+
+## Preservado
+
+I3 completo frozen: Staff final run `32196648462`; identityMap focal resuelto; agosto `2/0`; duplicados `0/0`; Historical Shopper y safety en cero. No reabrir Admin/Shopper/Rules/provider/Hosting de I3.
 
 ## Academia
 
-Sin cambio funcional visible. No cambian manuales, cursos, rutas por rol, certificaciones ni notificaciones en este bloque.
-
-## Pendiente real
-
-I4 `0/25` e I5 `0/15`. La única frontera inmediata es de fuente/plan, no de UI ni provider.
+I4-F confirma que cursos/manuales/rutas/notificaciones/instrucciones/certificaciones deben actualizarse junto con cada comportamiento operacional visible que realmente cambie o se valide. En este bloque documental no cambió ninguno.
 
 ## Siguiente frontera
 
-`MATERIALIZE_CANONICAL_I4_SCOPE_FROM_APPROVED_SOURCE__NO_EXECUTION`
+`I4-A — SHOPPER LIFECYCLE`
 
-Recuperar la fuente aprobada que definió I1–I5 y el significado/subgates de I4, o una instrucción vigente explícita equivalente. Solo después fijar el primer gate; no ejecutar I4 antes.
+Provider writes, deploy, merge y producción siguen no autorizados.
