@@ -1,78 +1,17 @@
 {
   "schemaVersion": "cxorbia.execution-state.v1",
-  "syncEpoch": "CXORBIA-20260819-I4B-RETRY1-PROVIDER-TX-ORDER-HOLD-29",
-  "generatedAt": "2026-08-19T14:24:00-06:00",
+  "syncEpoch": "CXORBIA-20260819-I4B-RETRY2-LANE-READY-SOURCE-ONLY-30",
+  "generatedAt": "2026-08-19T15:31:00-06:00",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "pullRequestState": "draft_open_no_merge",
   "base": "release/cxorbia-tya-rc-20260630",
-  "phaseA": {
-    "formalProgressPercent": 60,
-    "formalRemainingPercent": 40,
-    "score": {
-      "I1": "15/15 PASS",
-      "I2": "20/20 PASS",
-      "I3": "25/25 PASS FROZEN",
-      "I4": "0/25 IN_PROGRESS_NOT_SCORED",
-      "I5": "0/15 NOT_STARTED"
-    },
-    "currentState": "I3_FROZEN__I4A_PASS_FROZEN__I4B_PROVIDER_REACHED__TX_ORDER_ROOT_CAUSE_FIXED_SOURCE_ONLY__RETEST_AUTH_REQUIRED",
-    "currentBlock": "I4-B visit lifecycle provider E2E",
-    "exactFrontier": "NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY2__PROVIDER_TX_READ_ORDER_FIXED__SYNTHETIC_VISIT_ONLY"
-  },
-  "i4a": {
-    "status": "PASS_CLOSED_NO_RERUN",
-    "workflowRunId": 32282507320,
-    "hrAuthority": {"periods": 15, "visits": 660, "pass": true}
-  },
-  "i4b": {
-    "readiness": "PASS_SOURCE_READY_NO_RERUN",
-    "retry1": {
-      "status": "HOLD_PROVIDER_SOURCE_DEFECT_FIXED_SOURCE_ONLY_RETEST_REQUIRED",
-      "workflowRunId": 32297736022,
-      "decision": "HOLD_I4B_RETRY1__Firestore_transactions_require_all_reads_to_be_executed_before_all_writes_",
-      "providerCommandCalls": 3,
-      "providerCommittedCalls": 2,
-      "providerWritesReported": 3,
-      "idempotentReplayChecks": 1,
-      "syntheticFixtureCreates": 1,
-      "syntheticFixtureDeletes": 2,
-      "realVisitsUnchanged": true,
-      "realPostulationsUnchanged": true,
-      "historicalShopperAccess": false,
-      "rootCause": "application.status.update performed a visit read after an application write inside the same Firestore transaction",
-      "sourceFixCommit": "1bde86e5e5b6c2084fe5c711b7a8c06d089f12f4",
-      "sourceVerifierCommit": "e1f62c8425d0fffc62b2ba92ccdd6141b60f3be6",
-      "providerBackedRetestAfterFix": false
-    }
-  },
-  "consumedAndFrozen": {
-    "I1": "PASS_NO_RERUN",
-    "I2": "PASS_NO_RERUN",
-    "I3": "PASS_INTEGRAL_NO_RERUN",
-    "I4A": "PASS_VISIBLE_LIFECYCLE_NO_RERUN",
-    "historicalShopper": "FROZEN_NO_CREDENTIAL_ACCESS_LOGIN_RECOVERY_RESET",
-    "targetBAdmin": "EXISTS_PASS_NO_RECREATE",
-    "hr": "15_PERIODS_660_VISITS_NO_REIMPORT",
-    "finance": "V2_HISTORICAL_NO_REBUILD",
-    "legalV0_4": "DURABLE_PASS_NO_AUTOACCEPT",
-    "i4bFirstE2EGate": "CONSUMED_HOLD_MECHANISM_NO_RERUN",
-    "i4bRetry1Gate": "CONSUMED_HOLD_PROVIDER_TX_ORDER_NO_AUTOMATIC_RETRY"
-  },
-  "latestGate": {
-    "name": "NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY1__HARNESS_SCOPE_FIXED__SYNTHETIC_VISIT_ONLY",
-    "authorized": true,
-    "consumed": true,
-    "executionsConsumed": 1,
-    "automaticRetryAllowed": false,
-    "production": false
-  },
-  "activeEvidence": "app/docs/evidence/I4B-RETRY1-PROVIDER-TX-ORDER-SOURCE-FIX.json",
-  "nextGate": {
-    "name": "NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY2__PROVIDER_TX_READ_ORDER_FIXED__SYNTHETIC_VISIT_ONLY",
-    "authorized": false,
-    "authorizationRequired": true,
-    "purpose": "Provider-backed retest of the same synthetic-only I4-B lifecycle after correcting Firestore transaction read-before-write ordering."
-  }
+  "phaseA": {"formalProgressPercent":60,"formalRemainingPercent":40,"score":{"I1":"15/15 PASS","I2":"20/20 PASS","I3":"25/25 PASS FROZEN","I4":"0/25 IN_PROGRESS_NOT_SCORED","I5":"0/15 NOT_STARTED"},"currentState":"I3_FROZEN__I4A_PASS_FROZEN__I4B_PROVIDER_REACHED__TX_ORDER_FIXED__RETRY2_STABLE_LANE_PREPARED__AUTH_REQUIRED","currentBlock":"I4-B visit lifecycle provider E2E Retry2","exactFrontier":"NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY2__PROVIDER_TX_READ_ORDER_FIXED__SYNTHETIC_VISIT_ONLY"},
+  "sourceTruth":{"canonicalDocs":10,"syncEpochDerivedFromExecutionState":true,"frontierDerivedFromExecutionState":true,"progressDerivedFromExecutionState":true,"hardCodedEpoch":false,"hardCodedFrontier":false,"hardCodedProgress":false,"verifier":"tools/verify-cxorbia-source-truth-sync.mjs","verifierVersion":"cxorbia.source-truth-sync-verifier.v11.dynamic-progress"},
+  "i4a":{"status":"PASS_CLOSED_NO_RERUN","workflowRunId":32282507320,"hrAuthority":{"periods":15,"visits":660,"pass":true}},
+  "i4b":{"readiness":"PASS_SOURCE_READY_NO_RERUN","retry1":{"status":"HOLD_PROVIDER_SOURCE_DEFECT_FIXED_SOURCE_ONLY_RETEST_REQUIRED","workflowRunId":32297736022,"decision":"HOLD_I4B_RETRY1__Firestore_transactions_require_all_reads_to_be_executed_before_all_writes_","providerCommandCalls":3,"providerCommittedCalls":2,"providerWritesReported":3,"idempotentReplayChecks":1,"syntheticFixtureCreates":1,"syntheticFixtureDeletes":2,"realVisitsUnchanged":true,"realPostulationsUnchanged":true,"historicalShopperAccess":false,"rootCause":"application.status.update performed a visit read after an application write inside the same Firestore transaction","sourceFixCommit":"1bde86e5e5b6c2084fe5c711b7a8c06d089f12f4","sourceVerifierCommit":"e1f62c8425d0fffc62b2ba92ccdd6141b60f3be6","providerBackedRetestAfterFix":false},"retry2Lane":{"status":"SOURCE_ONLY_PREPARED_AWAITING_AUTHORIZATION","requestId":"cxorbia-i4b-single-dev-visit-lifecycle-e2e-retry2-20260819-01","stableRequestDrivenWorkflow":true,"genericRuntimeExecutor":"tools/cxorbia-i4b-lifecycle-runtime-executor.mjs","genericFinalizer":"tools/cxorbia-i4b-lifecycle-finalize.mjs","preMutationFailurePreservesAuthorization":true,"concurrencyCancellationDisabled":true,"providerExecutionAuthorized":false}},
+  "consumedAndFrozen":{"I1":"PASS_NO_RERUN","I2":"PASS_NO_RERUN","I3":"PASS_INTEGRAL_NO_RERUN","I4A":"PASS_VISIBLE_LIFECYCLE_NO_RERUN","historicalShopper":"FROZEN_NO_CREDENTIAL_ACCESS_LOGIN_RECOVERY_RESET","targetBAdmin":"EXISTS_PASS_NO_RECREATE","hr":"15_PERIODS_660_VISITS_NO_REIMPORT","finance":"V2_HISTORICAL_NO_REBUILD","legalV0_4":"DURABLE_PASS_NO_AUTOACCEPT","i4bFirstE2EGate":"CONSUMED_HOLD_MECHANISM_NO_RERUN","i4bRetry1Gate":"CONSUMED_HOLD_PROVIDER_TX_ORDER_NO_AUTOMATIC_RETRY"},
+  "activeEvidence":"app/docs/evidence/I4B-RETRY2-LANE-READINESS-SOURCE-ONLY.json",
+  "nextGate":{"name":"NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY2__PROVIDER_TX_READ_ORDER_FIXED__SYNTHETIC_VISIT_ONLY","authorized":false,"authorizationRequired":true,"purpose":"Provider-backed retest of the same synthetic-only I4-B lifecycle after correcting Firestore transaction read-before-write ordering."}
 }

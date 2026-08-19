@@ -1,28 +1,28 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4B-RETRY1-PROVIDER-TX-ORDER-HOLD-29`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4B-RETRY2-LANE-READY-SOURCE-ONLY-30`
 
 ## Validado/preservado
-I1/I2/I3 e I4-A permanecen PASS/frozen. HR `15 periodos / 660 visitas`, Historical Shopper, TARGET_B Admin, Finance V2/historical y legal v0.4 no se reprocesan.
+I1/I2/I3 e I4-A PASS/frozen. HR `15 periodos / 660 visitas`, Historical Shopper, TARGET_B Admin, Finance V2/historical y legal v0.4 no se reprocesan.
 
 ## I4-B
-Retry1 run `32297736022` sí llegó al provider real. `application.create` y replay idempotente pasaron. `application.status.update` falló por orden inválido de lectura/escritura dentro de una transacción Firestore. El fix source-only está en `1bde86e5e5b6c2084fe5c711b7a8c06d089f12f4`; verifier reforzado en `e1f62c8425d0fffc62b2ba92ccdd6141b60f3be6`.
+Retry1 alcanzó provider real; `application.create` y replay idempotente pasaron. El orden Firestore de `application.status.update` fue la causa exacta y quedó corregido en fuente. Datos reales quedaron invariantes.
 
-Retry1 quedó consumido; fixture y aplicación sintéticos fueron retirados y visitas/postulaciones reales quedaron invariantes.
+## Continuidad corregida
+Los 10 documentos canónicos quedan sincronizados. El verifier de source-truth deriva también el progreso del Execution State, eliminando el hard-code 60/40 que habría bloqueado una transición futura. El verifier del provider cubre las tres ramas transaccionales.
+
+El workflow I4-B queda estable/request-driven y usa executor/finalizer genéricos. No debe crearse otro workflow para Retry2 ni futuras adjudicaciones de este mismo lifecycle.
 
 ## Frontend / Claude — handoff vivo sin cambio
 No parchear desde backend:
 - `app/modules/visita-detalle.js`: postulación → `application.create`, éxito solo con ACK.
-- `app/modules/postulaciones.js`: decisiones/cancelación vía command/ACK, sin mutación local como verdad.
+- `app/modules/postulaciones.js`: decisiones/cancelación vía command/ACK.
 - `app/modules/cuestionario-shopper.js`: submit/score solo después de ACK.
 - `app/modules/revision-admin.js`: `visit.review.update` + ACK como verdad.
 
 No hay P0 frontend nuevo demostrado y no se crea candidata nueva.
 
-## Corrección de continuidad
-Se corrigió la desincronización entre documentos epoch 28/29 y el source-truth verifier deja de usar epoch/frontera hard-codeados; ahora los deriva del Execution State y verifica el conjunto canónico completo.
-
 ## Academia
-Sin cambio funcional. No enseñar el ciclo write como PASS hasta que pase Retry2. Progreso formal: **60% completado / 40% pendiente**.
+Sin cambio funcional. No enseñar lifecycle write como PASS hasta Retry2. Progreso formal: **60% completado / 40% pendiente**.
 
-Siguiente: `NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY2__PROVIDER_TX_READ_ORDER_FIXED__SYNTHETIC_VISIT_ONLY`. PASS → I4-C HR bidireccional.
+Siguiente: `NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY2__PROVIDER_TX_READ_ORDER_FIXED__SYNTHETIC_VISIT_ONLY`. El request está preparado, pero provider permanece bloqueado hasta autorización explícita. PASS → I4-C HR bidireccional.

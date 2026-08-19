@@ -1,24 +1,24 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4B-RETRY1-PROVIDER-TX-ORDER-HOLD-29`  
+**SYNC_EPOCH:** `CXORBIA-20260819-I4B-RETRY2-LANE-READY-SOURCE-ONLY-30`  
 **Formal:** **60% completado / 40% pendiente**; I4 no tiene subpeso formal.
 
 I1/I2/I3 e I4-A permanecen PASS/frozen. HR `15 periodos / 660 visitas`, Historical Shopper, TARGET_B Admin, Finance V2/historical y legal v0.4 permanecen preservados sin reproceso.
 
 ## I4-B — estado real
-Retry1 run `32297736022` sí alcanzó el provider real. `application.create` PASS y replay idempotente PASS. El tercer comando `application.status.update` quedó HOLD por `Firestore transactions require all reads to be executed before all writes.`
+Retry1 run `32297736022` alcanzó provider real. `application.create` y replay idempotente PASS; `application.status.update` HOLD por orden Firestore. Retry1 consumido y sin retry automático. Fix source-only `1bde86e5e5b6c2084fe5c711b7a8c06d089f12f4`; datos reales invariantes.
 
-El gate Retry1 quedó `enabled=false / consumed=true / executionsConsumed=1 / automaticRetryAllowed=false`. Safety confirmado: fixture y aplicación sintéticos eliminados; visitas/postulaciones reales invariantes; Historical Shopper=false; Auth/HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/prod sin cambios.
+## Auditoría de continuidad previa a Retry2
+El conjunto canónico de 10 documentos queda en un único epoch/frontera. Se corrigió el último hard-code latente: el source-truth verifier ya no fija 60/40, sino que lee el porcentaje vigente del Execution State y comprueba que progreso+pendiente=100. Esto evita una regresión automática al cerrar I4 y cambiar a 85/15.
 
-## Causa raíz y fix
-La transacción escribía la postulación antes de terminar la lectura de la visita asociada. Fix source-only aplicado en commit `1bde86e5e5b6c2084fe5c711b7a8c06d089f12f4`, dejando todas las lecturas/validaciones antes de cualquier write. Verificador source-only reforzado en `e1f62c8425d0fffc62b2ba92ccdd6141b60f3be6`.
+El provider source verifier se amplía para comprobar read-before-write en las tres ramas transaccionales antes de cualquier provider-backed run.
 
-## Hallazgo metodológico corregido
-Se detectó desincronización real: este checkpoint y otros documentos seguían en epoch 28 mientras Index/Execution State/Source Lock ya estaban en epoch 29. El source-truth verifier se corrige para derivar epoch y frontera del Execution State y exigir coincidencia en todos los documentos canónicos, eliminando el hard-code que permitía repetir este patrón.
+## Carril Retry2
+El workflow existente queda estable y request-driven; no se vuelve a editar para cada retry. Un request deshabilitado solo corre preflight source-only. Provider solo se alcanza si el gate coincide con la frontera, está habilitado, no consumido y autorizado por Paula. No se cancela un run activo y un fallo previo al intento de mutación no consume autorización.
 
-Evidencia activa: `app/docs/evidence/I4B-RETRY1-PROVIDER-TX-ORDER-SOURCE-FIX.json`.
+Evidencia: `app/docs/evidence/I4B-RETRY2-LANE-READINESS-SOURCE-ONLY.json`.
 
 ## Siguiente exacto
 `NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY2__PROVIDER_TX_READ_ORDER_FIXED__SYNTHETIC_VISIT_ONLY`.
 
-Nueva autorización solo porque Retry1 fue consumido. El scope no se amplía: sintético únicamente, sin Historical Shopper, sin mutar las 660 visitas reales y sin producción. PASS → I4-C HR bidireccional.
+Request preparado sin ejecutar provider: `enabled=false / consumed=false / authorizationRequired=true`. PASS → I4-C HR bidireccional.

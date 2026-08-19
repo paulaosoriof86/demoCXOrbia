@@ -1,55 +1,83 @@
-name: CXOrbia I4B Retry1 Authorized Execution On Observable PR Lane
-# Authorized synthetic-only Retry1. Observable PR lane; source-truth verifier v9.1; same gate/scope, no expansion.
+name: CXOrbia I4B Synthetic Lifecycle Single-Use Gate
+# Stable request-driven lane. Source-only when gate is disabled/unconsumed; provider execution only after exact Paula authorization.
 
 on:
-  pull_request:
-    branches: [release/cxorbia-tya-rc-20260630]
-    types: [synchronize]
-    paths: [.github/workflows/cxorbia-i4b-retry1-readonly-materialization-probe.yml]
+  push:
+    branches: [docs-tya-v6-v71-audit]
+    paths:
+      - backend/config/i4b-single-dev-visit-lifecycle-e2e-write-gate-request.json
+      - .github/workflows/cxorbia-i4b-retry1-readonly-materialization-probe.yml
+      - tools/cxorbia-i4b-lifecycle-runtime-executor.mjs
+      - tools/cxorbia-i4b-lifecycle-finalize.mjs
+      - tools/verify-cxorbia-source-truth-sync.mjs
+      - tools/verify-cxorbia-i4b-visit-provider-source.mjs
 
 permissions:
   contents: write
 
 concurrency:
-  group: cxorbia-i4b-single-dev-visit-lifecycle-e2e-retry1
-  cancel-in-progress: true
+  group: cxorbia-i4b-single-dev-visit-lifecycle-e2e
+  cancel-in-progress: false
 
 env:
   REQUEST_FILE: backend/config/i4b-single-dev-visit-lifecycle-e2e-write-gate-request.json
   SHOPPER_REQUEST: backend/config/i4a-dedicated-test-shopper-create-request.json
-  OUT_DIR: .tmp/i4b-single-dev-visit-lifecycle-e2e-retry1
-  PRIVATE_DIR: .tmp/i4b-retry1-private
-  EVIDENCE_FILE: app/docs/evidence/I4B-VISIT-LIFECYCLE-E2E-RETRY1-RUNTIME-OBSERVED.json
+  OUT_DIR: .tmp/i4b-single-dev-visit-lifecycle-e2e
+  PRIVATE_DIR: .tmp/i4b-private
+  EVIDENCE_FILE: app/docs/evidence/I4B-VISIT-LIFECYCLE-E2E-LATEST.json
 
 jobs:
-  retry1:
+  lifecycle:
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.sha }}
 
-      - name: Validate synchronized source truth and exact authorization
+      - name: Classify gate without executing provider
+        id: gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT_DIR" "$PRIVATE_DIR"
+          node - <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          const s=JSON.parse(fs.readFileSync('app/docs/CXORBIA-EXECUTION-STATE.json','utf8'));
+          const exact=String(s.phaseA?.exactFrontier||s.nextGate?.name||'');
+          if(r.enabled===true && r.gateId!==exact)throw new Error('ENABLED_GATE_NOT_EQUAL_CANONICAL_FRONTIER');
+          if(r.enabled===true && r.consumed!==false)throw new Error('ENABLED_GATE_ALREADY_CONSUMED');
+          const execute=r.enabled===true&&r.consumed===false&&r.authorizedBy==='Paula'&&Number(r.allowedExecutions)===1&&Number(r.executionsConsumed||0)===0;
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`execute=${execute?'true':'false'}\n`);
+          console.log(JSON.stringify({execute,gateId:r.gateId,status:r.status,authorizedBy:r.authorizedBy||null,consumed:r.consumed,canonicalFrontier:exact}));
+          NODE
+
+      - name: Verify synchronized source truth and provider source
         env:
           CXORBIA_ALLOW_DETACHED_HEAD: '1'
         run: |
           set -euo pipefail
-          mkdir -p "$OUT_DIR" "$PRIVATE_DIR"
           node tools/verify-cxorbia-source-truth-sync.mjs > "$OUT_DIR/source-truth.json"
           node -e "const x=require('./$OUT_DIR/source-truth.json');if(x.decision!=='PASS_SOURCE_TRUTH_SYNC')process.exit(1);console.log(x.decision)"
           node tools/verify-cxorbia-i4b-visit-provider-source.mjs > "$OUT_DIR/provider-source.json"
           node -e "const x=require('./$OUT_DIR/provider-source.json');if(x.decision!=='PASS_I4B_VISIT_PROVIDER_SOURCE')process.exit(1);console.log(x.decision)"
-          node --check tools/cxorbia-i4b-retry1-runtime-executor.mjs
-          node --check tools/cxorbia-i4b-retry1-finalize.mjs
-          touch "$OUT_DIR/PREPROVIDER_VALIDATED"
+          node --check tools/cxorbia-i4b-lifecycle-runtime-executor.mjs
+          node --check tools/cxorbia-i4b-lifecycle-finalize.mjs
+          node - <<'NODE'
+          const fs=require('fs'),cp=require('child_process'),r=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          if(r.sourceHeadSha){cp.execFileSync('git',['merge-base','--is-ancestor',r.sourceHeadSha,'HEAD'],{stdio:'inherit'});}
+          NODE
+          if [ "${{ steps.gate.outputs.execute }}" = "true" ]; then touch "$OUT_DIR/PREPROVIDER_VALIDATED"; fi
 
       - uses: actions/setup-node@v4
+        if: steps.gate.outputs.execute == 'true'
         with:
           node-version: '24'
 
       - name: Prepare DEV runtime
+        if: steps.gate.outputs.execute == 'true'
         env:
           EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
         run: |
@@ -59,24 +87,33 @@ jobs:
           echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/${PRIVATE_DIR}/credentials.json" >> "$GITHUB_ENV"
 
       - name: Execute authorized synthetic lifecycle
-        run: node tools/cxorbia-i4b-retry1-runtime-executor.mjs
+        if: steps.gate.outputs.execute == 'true'
+        run: node tools/cxorbia-i4b-lifecycle-runtime-executor.mjs
 
-      - name: Upload evidence
+      - name: Upload gate evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-i4b-retry1-provider-evidence
-          path: .tmp/i4b-single-dev-visit-lifecycle-e2e-retry1/
+          name: cxorbia-i4b-lifecycle-gate-evidence
+          path: .tmp/i4b-single-dev-visit-lifecycle-e2e/
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Finalize only after pre-provider validation
-        if: always()
+      - name: Finalize only after an execution attempt entered
+        if: always() && steps.gate.outputs.execute == 'true'
+        run: node tools/cxorbia-i4b-lifecycle-finalize.mjs
+
+      - name: Persist consumed gate and evidence
+        if: always() && steps.gate.outputs.execute == 'true'
+        shell: bash
         run: |
           set -euo pipefail
-          node tools/cxorbia-i4b-retry1-finalize.mjs
           git config user.name cxorbia-gate-bot
           git config user.email cxorbia-gate-bot@users.noreply.github.com
-          git add "$REQUEST_FILE" "$EVIDENCE_FILE"
-          git commit -m "evidence(i4b): consume retry1 and persist lifecycle E2E result"
+          git add "$REQUEST_FILE" app/docs/evidence/I4B-VISIT-LIFECYCLE-E2E-*.json
+          if git diff --cached --quiet; then
+            echo "No provider attempt was entered; gate remains unconsumed."
+            exit 0
+          fi
+          git commit -m "evidence(i4b): persist single-use lifecycle gate result"
           git push origin HEAD:docs-tya-v6-v71-audit
