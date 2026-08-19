@@ -1,40 +1,41 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última sincronización:** 2026-08-18 19:31 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I4-SCOPE-MATERIALIZED-17`  
-**Estado:** `NO_UI_WORKAROUND__I3_FROZEN__GO_LIVE_60__I4_SCOPE_MATERIALIZED__I4A_NEXT`
+**Última sincronización:** 2026-08-18 19:44 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I4A-SOURCE-READINESS-HOLD-18`  
+**Estado:** `NO_UI_WORKAROUND__I3_FROZEN__GO_LIVE_60__I4A_READINESS_HOLD__TEST_SHOPPER_RESOLUTION_NEXT`
 
 ## Cerrado / no pendiente
 
-I1 `15/15 PASS`, I2 `20/20 PASS`, I3 `25/25 PASS` integral/frozen. No existe pendiente vivo de identityMap, autenticación Staff, Historical Shopper, Rules o Hosting dentro de I3.
-
-La brecha `ACTIVE_SOURCE_GAP__I1_I5_PERCENT_WEIGHTS_PRESENT_BUT_I4_SEMANTIC_SCOPE_NOT_MATERIALIZED` queda **cerrada**: el addendum maestro Phase A de 2026-08-17 define explícitamente I4-A→I4-F.
+I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `25/25 PASS` frozen. I4 scope A→F ya materializado.
 
 ## Pendiente vivo
 
-- I4 `0/25` — siguiente bloque I4-A.
+- I4 `0/25` — I4-A en readiness HOLD.
 - I5 `0/15` — no iniciado.
 - **40% restante**.
 
-### I4-A — Shopper lifecycle
+### I4-A
 
-Alcance canónico: documentos/instrucciones; certificaciones históricas/nuevas; disponibles; postulación; asignación; perfiles/roles/scopes; notificaciones; histórico.
+Decisión: `HOLD_I4A_SOURCE_READINESS__VISIBLE_SHOPPER_LIFECYCLE_COVERAGE_NOT_YET_PROVEN`.
 
-I4-B→F quedan preservados para sus bloques posteriores: visita; HR bidireccional; Finanzas; multi-proyecto/no-code; Academia.
+Probado: exact Shopper profile/identity; certification status visible; canonical history/stages; membership/role/project scopes; postulation vs HR assignment authority.
+
+Por probar visiblemente: documentos/instrucciones; disponibles; acción de postulación; notificaciones; presentación de certificación nueva. No se clasifica todavía como bug frontend.
 
 ## No hacer
 
-- No reabrir I3.
-- No mapear `CORTE 4` legado a I4.
-- No crear Admin/Shopper ni resetear contraseñas.
-- No provider repair, Rules/Hosting redeploy ni writes fuera de gate.
-- No parche UI, nueva candidata, rama, PR ni metodología.
-- No merge ni producción.
-
-## Claude / Academia
-
-Sin pendiente frontend derivado de esta materialización. I4-F obliga a sincronizar Academia únicamente cuando un comportamiento operacional visible realmente cambie o se valide.
+- No reabrir I3 ni Historical Shopper.
+- No login/selección de credencial hasta resolver identidad segura.
+- No crear/resetear usuarios.
+- No provider/data writes, Rules/Hosting deploy, merge o producción.
+- No parche UI desde backend.
 
 ## Siguiente acción exacta
 
-`I4-A — SHOPPER LIFECYCLE`
+`I4A_RESOLVE_EXISTING_NONHISTORICAL_TEST_SHOPPER_IDENTITY_FROM_FROZEN_EVIDENCE__READONLY_NO_LOGIN`
+
+Solo evidencia congelada; una identidad ya existente; sin login ni credenciales. Si queda probada, después se pedirá autorización separada para una única observación visible I4-A DEV.
+
+## Claude / Academia
+
+Sin cambio frontend ni Academia todavía. Cualquier ajuste depende de evidencia visible reproducible.
