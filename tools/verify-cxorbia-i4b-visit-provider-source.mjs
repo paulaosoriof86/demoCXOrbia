@@ -1,0 +1,24 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+import {COMMAND_TYPES,validateExecutionGate,validateCommand} from '../backend/runtime/cxorbia-visit-lifecycle-command-provider-v1.mjs';
+const ROOT=process.cwd(),errors=[],warnings=[],read=p=>fs.readFileSync(path.join(ROOT,p),'utf8');
+const expected=['application.create','application.status.update','visit.assign','visit.state.update','visit.reschedule','visit.cancel','visit.questionnaire.submit','visit.review.update'];
+if(JSON.stringify(COMMAND_TYPES)!==JSON.stringify(expected))errors.push('COMMAND_SET_MISMATCH');
+const goodGate={schemaVersion:'cxorbia.i4b.visit-lifecycle-write-gate.v1',repository:'paulaosoriof86/demoCXOrbia',branch:'docs-tya-v6-v71-audit',pullRequest:7,firebaseProjectId:'cxorbia-backend-dev',tenantId:'tya',projectId:'cinepolis',enabled:true,consumed:false,authorizedBy:'Paula',allowedExecutions:1,syntheticVisitOnly:true,historicalShopperAccess:false,realHrVisitMutationAllowed:false,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,hostingDeploys:0,cloudRunDeploys:0,merge:false,production:false};
+if(!validateExecutionGate(goodGate).ok)errors.push('GOOD_GATE_REJECTED');
+if(validateExecutionGate({...goodGate,enabled:false}).ok)errors.push('DISABLED_GATE_ACCEPTED');
+const sample={version:'cxorbia-command-adapter-v1',commandType:'visit.state.update',entityType:'visit',entityId:'test',tenantId:'tya',projectId:'cinepolis',idempotencyKey:'x',expectedVersion:1,authorization:{providerEnforcementRequired:true}};
+if(!validateCommand(sample).ok)errors.push('VALID_COMMAND_REJECTED');
+const idx=read('app/index-backend-dev.html'),protectedMode=read('app/core/backend-protected-dev-mode.js'),cmd=read('app/adapters/cxorbia-cxdata-command-boundary-v1.js'),mis=read('app/modules/misvisitas.js'),detail=read('app/modules/visita-detalle.js'),posts=read('app/modules/postulaciones.js'),q=read('app/modules/cuestionario-shopper.js'),review=read('app/modules/revision-admin.js'),shopperProvider=read('backend/runtime/cxorbia-shopper-command-provider-v1.mjs');
+if(idx.includes('cxorbia-command-http-transport-v1.js'))errors.push('HTTP_TRANSPORT_ALREADY_LOADED');
+if(!protectedMode.includes("writeMode:'disabled'")||!protectedMode.includes('enableOperationalWrites:false'))errors.push('PROTECTED_WRITES_NOT_CLOSED');
+for(const needle of ['visit.state.update','visit.assign','application.status.update','visit.reschedule','visit.cancel','visit.questionnaire.submit'])if(!cmd.includes(needle))errors.push('BOUNDARY_MISSING:'+needle);
+for(const needle of ['ackAware:true','requestVisitReschedule','requestVisitCancel'])if(!mis.includes(needle))errors.push('MISVISITAS_ACK_GAP:'+needle);
+if(!detail.includes('pendiente de envío operativo'))errors.push('POSTULATION_GAP_NOT_FOUND');
+if(!posts.includes("x.estado=(tone==='green'?'aprobada'")||!posts.includes("v.estado='disponible'"))errors.push('POSTULACIONES_DIRECT_MUTATION_NOT_FOUND');
+if(!q.includes('visita.score=res.total')||!q.includes('visita.submit=true'))errors.push('QUESTIONNAIRE_DIRECT_MUTATION_NOT_FOUND');
+if(!review.includes("_k:'cx_revision'")||!review.includes('localStorage.setItem'))errors.push('REVIEW_LOCAL_PERSISTENCE_NOT_FOUND');
+if(!shopperProvider.includes("['shopper.create','shopper.update']"))warnings.push('SHOPPER_PROVIDER_ALLOWED_SET_STRING_CHANGED_REVIEW_MANUALLY');
+const out={schemaVersion:'cxorbia.i4b.visit-provider-source-verifier.v1',decision:errors.length?'FAIL_I4B_VISIT_PROVIDER_SOURCE':'PASS_I4B_VISIT_PROVIDER_SOURCE',commands:COMMAND_TYPES,errors,warnings,providerWritesExecuted:0,hrWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0};
+console.log(JSON.stringify(out,null,2));process.exit(errors.length?1:0);
