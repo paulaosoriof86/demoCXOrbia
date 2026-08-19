@@ -1,10 +1,10 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4A-RETRY2-HARNESS-GLOBAL-GUARD-HOLD-24`  
-**Avance formal:** **60% / 40%**.
+**SYNC_EPOCH:** `CXORBIA-20260819-I4A-VISIBLE-LIFECYCLE-PASS-25`  
+**Formal:** **60% completado / 40% pendiente**; I4-A operationally PASS/closed, sin subpeso formal definido.
 
-Retry2 run `32282049566`: provider identity exacta; 1 password update efímero; 1 login; page/Firebase/Shopper context/membership/app PASS. HOLD del harness antes de HR por `ReferenceError` al consultar `CX_PROTECTED_AUTH_HR_AUTHORITY` sin `window.` cuando aún no existía. No producto defect probado; cero Firestore/operational/HR writes.
+Último bloque: I4-A visible lifecycle PASS, run `32282507320`. Shopper sintética autenticada/membership; HR 15/660; Documentos viewer; 8 disponibles + detalle/postulación; notificaciones Firestore; certificación pendiente de fuente sin fake approval. Cero Firestore/postulation/cert/reservation/HR writes.
 
-Preservado: I1/I2/I3, Historical Shopper, Admin TARGET_B, HR 15/660, Finance V2, legal.
+Preservado/frozen: I1/I2/I3, Historical Shopper, Admin TARGET_B, HR, Finance V2, legal, I4-A.
 
-Siguiente autorizado: `NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY3__SAFE_GLOBAL_GUARDS__STABLE_SURFACES`.
+Siguiente: `I4B_VISIT_LIFECYCLE_READINESS__NO_PROVIDER_WRITES`.

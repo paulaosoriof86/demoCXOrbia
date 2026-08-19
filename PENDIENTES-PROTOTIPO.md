@@ -1,9 +1,11 @@
 # PENDIENTES-PROTOTIPO.md
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4A-RETRY2-HARNESS-GLOBAL-GUARD-HOLD-24`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4A-VISIBLE-LIFECYCLE-PASS-25`
 
-Pendiente activo único: `NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY3__SAFE_GLOBAL_GUARDS__STABLE_SURFACES`.
+I4-A cerrado PASS; no reabrir.
 
-Usar misma Shopper sintética; SW bloqueado; globals opcionales vía `window.*`; `button[data-doc]` y `button[data-detail]`; no enviar postulación/cert/reserva. Validar Documentos, Visitas/Postulación, Notificaciones y Certificación. Auth/membership/app y HR 15/660 ya tienen evidencia y no se reauditan salvo checkpoints necesarios del mismo smoke.
+Pendiente activo único: `I4B_VISIT_LIFECYCLE_READINESS__NO_PROVIDER_WRITES`.
 
-No reabrir I3, Historical Shopper, Admin TARGET_B, HR import, Finance V2 ni identidad dedicada. Después: I4-B → I4-C → I4-D → I4-E → I4-F → I5.
+Revisar/reutilizar ciclo existente: postulación→aprobación/asignación→agenda/reprogramación/cancelación→ejecución/evidencias→cuestionario→submit→review/auditoría→estado final. Identificar exactamente qué puede probarse sin writes y consolidar en **un solo** futuro gate cualquier Firestore/operational write necesario, evitando otra cadena de autorizaciones pequeñas.
+
+Después: I4-C → I4-D → I4-E → I4-F → I5.

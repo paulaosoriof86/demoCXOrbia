@@ -1,11 +1,9 @@
 # CXOrbia TyA — PLAN PHASE A SIN DESVIACIÓN
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4A-RETRY2-HARNESS-GLOBAL-GUARD-HOLD-24`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4A-VISIBLE-LIFECYCLE-PASS-25`
 
-Secuencia I1→I2→I3→I4→I5. I1 15/15; I2 20/20; I3 25/25 FROZEN; I4 0/25; I5 0/15 = **60% / 40%**.
+Secuencia I1→I2→I3→I4→I5. Formal 60/40 porque el Plan no asigna subpesos a I4-A..F. I4-A está operacionalmente PASS/frozen y no se reabre.
 
-Frozen: Historical Shopper, TARGET_B Admin, HR 15/660, Finance V2/historical, legal V0.4, identidad test dedicada.
+Frozen: Historical Shopper, TARGET_B Admin, HR 15/660, Finance V2/historical, legal V0.4, identidad test e I4-A.
 
-I4-A continúa sin reauditar lo probado. Retry2 fue HOLD de harness, no producto. Próximo gate autorizado: `NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY3__SAFE_GLOBAL_GUARDS__STABLE_SURFACES`.
-
-Después I4-B visita; I4-C HR; I4-D Finanzas; I4-E multi-proyecto/no-code; I4-F Academia; I5 producción.
+Siguiente: `I4B_VISIT_LIFECYCLE_READINESS__NO_PROVIDER_WRITES`. Después I4-C HR, I4-D Finanzas, I4-E multi-proyecto, I4-F Academia, I5 producción.

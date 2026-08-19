@@ -1,18 +1,18 @@
 # CAMBIOS-BACKEND.md
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4A-RETRY2-HARNESS-GLOBAL-GUARD-HOLD-24`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4A-VISIBLE-LIFECYCLE-PASS-25`
 
-## Retry2
-El primer transporte run `32281707735` fue detenido por verifier antes de provider con único error `FRONTIER:RESUMEN-PARA-CLAUDE.md`; se corrigió y no consumió provider execution.
+## I4-A cerrado PASS
+Run `32282507320` / workflow `bbb9ccc8...`: PASS de page/Firebase/Shopper context/membership/app/HR authority, Documentos, disponibles/postulación, notificaciones y certificación. 4 documentos abribles con viewer, 8 visitas disponibles con detalle y Postularme habilitado, panel de notificaciones visible con fuente Firestore, certificación en pendiente de fuente sin fake approval. HR 15/660.
 
-El transporte corregido run `32282049566` consumió 1 provider read, 4 Firestore verification reads, 1 password update efímero y 1 login sobre la misma Shopper sintética. Page/Firebase user/Shopper context/membership/app PASS. HOLD por `ReferenceError: CX_PROTECTED_AUTH_HR_AUTHORITY is not defined` dentro del predicate del harness antes de que la propiedad de window existiera. Clasificación `PIPELINE_MECHANISM_FAILURE__HARNESS_UNDECLARED_WINDOW_GLOBAL__NO_PRODUCT_DEFECT_PROVEN`.
+Safety: 1 provider verification read, 4 Firestore verification reads, 1 password update efímero, 1 login; Historical Shopper 0; otras identidades 0; Auth create/claims/delete 0; Firestore/postulación/certificación/reserva/HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/prod 0/false.
 
-Safety: Historical Shopper 0; otras identidades 0; Auth create/claims/delete 0; Firestore/postulación/certificación/reserva/HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/prod 0/false. Workflow one-shot se retira en cierre.
+Retry3 request queda consumido y workflow one-shot retirado. Evidencia durable `app/docs/evidence/I4A-VISIBLE-LIFECYCLE-PASS-LATEST.json`.
 
 ## Avance
-Formal **60/40**; no se inventan puntos I4 mientras las cinco superficies no cierren.
+Formal sigue 60/40 únicamente porque el Plan activo no asigna subpesos a I4-A..F. El avance técnico sí cambia: I4-A queda cerrado y el trabajo pasa a I4-B.
 
 ## Siguiente
-`NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY3__SAFE_GLOBAL_GUARDS__STABLE_SURFACES`, autorizado por el turno actual bajo el mismo perímetro seguro.
+`I4B_VISIT_LIFECYCLE_READINESS__NO_PROVIDER_WRITES`: consolidar source/runtime existente y diseñar un solo E2E write gate para todo el ciclo de visita si hace falta.
 
-Clasificación: Reusable CXOrbia = harness fail-closed/globals seguros; Exclusivo TyA = scope TyA/Cinépolis; Claude = sin parche/P0; Academia = pendiente visible; Sin impacto Claude = mecanismo de prueba.
+Clasificación: Reusable CXOrbia = visible lifecycle harness; Exclusivo TyA = HR 15/660/Cinépolis; Claude = sin P0; Academia = actualizar rutas Shopper con I4-A validado; Sin impacto Claude = gates/evidence.
