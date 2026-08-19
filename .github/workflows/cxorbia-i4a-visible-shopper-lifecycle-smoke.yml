@@ -1,0 +1,197 @@
+name: CXOrbia I4A Visible Shopper Lifecycle Smoke
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - backend/config/i4a-visible-shopper-lifecycle-smoke-request.json
+      - .github/workflows/cxorbia-i4a-visible-shopper-lifecycle-smoke.yml
+
+permissions:
+  contents: read
+  statuses: write
+
+concurrency:
+  group: cxorbia-i4a-visible-shopper-lifecycle-smoke
+  cancel-in-progress: false
+
+env:
+  REQUEST_FILE: backend/config/i4a-visible-shopper-lifecycle-smoke-request.json
+  CREATE_REQUEST: backend/config/i4a-dedicated-test-shopper-create-request.json
+  OUT_DIR: .tmp/i4a-visible-shopper-lifecycle-smoke
+  PRIVATE_DIR: .tmp/i4a-visible-shopper-private
+  DEV_URL: https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxProjectId=cinepolis&cxI4aSmoke=1
+
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact workflow commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 3
+          ref: ${{ github.sha }}
+
+      - name: Validate one-shot authorization and two-commit preparation lineage
+        id: gate
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT_DIR" "$PRIVATE_DIR"
+          printf '%s\n' '.tmp/' 'gha-creds-*.json' >> .git/info/exclude
+          node <<'NODE'
+          const fs=require('fs'),cp=require('child_process');
+          const p=process.env.REQUEST_FILE,r=JSON.parse(fs.readFileSync(p,'utf8'));
+          const head=cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const parent=cp.execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const base=cp.execFileSync('git',['rev-parse','HEAD^^'],{encoding:'utf8'}).trim();
+          const now=cp.execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const prior=cp.execFileSync('git',['diff','--name-only','HEAD^^','HEAD^'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const exact={schemaVersion:'cxorbia.i4a.visible-shopper-lifecycle-smoke.request.v1',gateId:'NEW_AUTH_REQUIRED_I4A_SINGLE_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE',repository:'paulaosoriof86/demoCXOrbia',branch:'docs-tya-v6-v71-audit',pullRequest:7,base:'release/cxorbia-tya-rc-20260630',firebaseProjectId:'cxorbia-backend-dev',tenantId:'tya',projectId:'cinepolis',dedicatedCreateRequestId:'cxorbia-i4a-dedicated-test-shopper-20260819-01',dedicatedCreateGateId:'NEW_AUTH_REQUIRED_I4A_CREATE_DEDICATED_NONHISTORICAL_DEV_TEST_SHOPPER__PROTECTED_CONTRACT_NO_LOGIN',enabled:true,consumed:false,status:'authorized_execute_once',authorizedBy:'Paula',allowedExecutions:1,loginAttemptsMax:1,authPasswordUpdatesMax:1,authCreates:0,authClaimsWrites:0,authDeletes:0,firestoreWrites:0,postulationSubmits:0,certificationSubmits:0,reservationWrites:0,historicalShopperAccess:false,otherIdentitiesModifiedMax:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,hostingDeploys:0,cloudRunDeploys:0,merge:false,production:false,automaticRetryAllowed:false,sourceTruthVerifierRequired:true};
+          for(const [k,v] of Object.entries(exact))if(r[k]!==v)throw new Error('request_mismatch:'+k);
+          if(head!==process.env.GITHUB_SHA)throw new Error('event_head_mismatch');
+          if(r.sourceHeadSha!==base)throw new Error('source_truth_base_mismatch');
+          if(now.length!==1||now[0]!=='.github/workflows/cxorbia-i4a-visible-shopper-lifecycle-smoke.yml')throw new Error('workflow_commit_scope_invalid:'+now.join(','));
+          if(prior.length!==1||prior[0]!==p)throw new Error('request_commit_scope_invalid:'+prior.join(','));
+          console.log(JSON.stringify({decision:'PASS_I4A_VISIBLE_SMOKE_AUTHORIZATION',sourceHead:r.sourceHeadSha,requestCommit:parent,workflowCommit:head}));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'execute=true\n');
+          NODE
+
+      - name: Verify canonical source truth before provider access
+        if: steps.gate.outputs.execute == 'true'
+        env:
+          CXORBIA_ALLOW_DETACHED_HEAD: '1'
+        run: |
+          set -euo pipefail
+          node tools/verify-cxorbia-source-truth-sync.mjs > "$OUT_DIR/source-truth.json"
+          cat "$OUT_DIR/source-truth.json"
+          node -e "const x=require('./$OUT_DIR/source-truth.json');if(x.decision!=='PASS_SOURCE_TRUTH_SYNC')process.exit(1)"
+
+      - name: Setup Node
+        if: steps.gate.outputs.execute == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install transient Firebase Admin and Playwright
+        if: steps.gate.outputs.execute == 'true'
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null
+
+      - name: Prepare DEV service account privately
+        if: steps.gate.outputs.execute == 'true'
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let x=null;try{x=JSON.parse(raw)}catch{}
+          if(!(x&&x.type==='service_account'&&x.project_id==='cxorbia-backend-dev'&&x.client_email&&x.private_key))throw new Error('credential_invalid');
+          fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/${PRIVATE_DIR}/credentials.json" >> "$GITHUB_ENV"
+
+      - name: Verify exact dedicated identity and set one ephemeral visible-login password
+        id: authprep
+        if: steps.gate.outputs.execute == 'true'
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs'),crypto=require('crypto'),admin=require('firebase-admin');
+          const r=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8')),cr=JSON.parse(fs.readFileSync(process.env.CREATE_REQUEST,'utf8'));
+          if(cr.enabled!==false||cr.consumed!==true||cr.status!=='pass_consumed_provider_verified_no_login'||cr.requestId!==r.dedicatedCreateRequestId||cr.gateId!==r.dedicatedCreateGateId)throw new Error('dedicated_create_lineage_invalid');
+          const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
+          const key=sha(cr.requestId).slice(0,24),uid='tya-i4a-'+key,shopperId='shp-i4a-'+key,login='cxorbia.i4a.'+key.slice(0,10),email=sha(`${r.tenantId}\0shopper\0${login}`).slice(0,48)+'@auth.cxorbia.invalid';
+          const uidFp=u=>sha('cxorbia-provider-uid-v1\0'+u),idFp=s=>sha('shopper-id\0'+s);
+          const sa=JSON.parse(fs.readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS,'utf8'));admin.initializeApp({credential:admin.credential.cert(sa),projectId:r.firebaseProjectId});const auth=admin.auth(),db=admin.firestore();
+          (async()=>{
+            const u=await auth.getUser(uid);const c=u.customClaims||{};
+            const refs=[db.collection('tenants').doc(r.tenantId).collection('shoppers').doc(shopperId),db.collection('tenants').doc(r.tenantId).collection('users').doc(uid),db.collection('tenants').doc(r.tenantId).collection('shopperIdentityCrosswalk').doc(shopperId),db.collection('tenants').doc(r.tenantId).collection('commandReceipts').doc(sha(cr.requestId).slice(0,40))];
+            const [ps,ms,xs,rs]=await Promise.all(refs.map(x=>x.get()));const p=ps.data()||{},m=ms.data()||{},x=xs.data()||{},rec=rs.data()||{};
+            const exactClaims=c.tenantId===r.tenantId&&c.role==='shopper'&&c.authNamespace==='shopper'&&c.shopperId===shopperId&&Array.isArray(c.projectIds)&&c.projectIds.length===1&&c.projectIds[0]===r.projectId&&c.testIdentity===true&&c.synthetic===true&&c.nonHistorical===true&&c.identityClass==='synthetic'&&c.testProvenance==='dev-test'&&c.dedicatedGateId===r.dedicatedCreateGateId;
+            const exactProfile=ps.exists&&p.shopperId===shopperId&&p.tenantId===r.tenantId&&p.synthetic===true&&p.nonHistorical===true&&p.testFixture===true&&p.provenance==='dev-test'&&p.dedicatedGateId===r.dedicatedCreateGateId;
+            const exactMembership=ms.exists&&m.active===true&&m.tenantId===r.tenantId&&m.role==='shopper'&&m.authNamespace==='shopper'&&m.shopperId===shopperId&&m.providerUidFingerprint===uidFp(uid)&&m.dedicatedGateId===r.dedicatedCreateGateId;
+            const exactCrosswalk=xs.exists&&x.shopperId===shopperId&&x.tenantId===r.tenantId&&x.providerUidFingerprint===uidFp(uid)&&x.fuzzyMatching===false&&x.dedicatedGateId===r.dedicatedCreateGateId;
+            const providerAck=rs.exists&&rec.providerAck===true&&rec.entityId===shopperId&&rec.dedicatedGateId===r.dedicatedCreateGateId;
+            if(!(exactClaims&&exactProfile&&exactMembership&&exactCrosswalk&&providerAck))throw new Error('dedicated_identity_prelogin_state_not_exact');
+            const password=crypto.randomBytes(30).toString('base64url')+'!Aa7';
+            await auth.updateUser(uid,{password});
+            fs.writeFileSync(process.env.PRIVATE_DIR+'/login.json',JSON.stringify({login,password,shopperId})+'\n',{mode:0o600});
+            fs.writeFileSync(process.env.OUT_DIR+'/provider-prelogin.json',JSON.stringify({decision:'PASS_I4A_DEDICATED_IDENTITY_PRELOGIN_EXACT',uidFingerprint:uidFp(uid),shopperIdFingerprint:idFp(shopperId),providerReads:1,firestoreReads:4,authPasswordUpdates:1,claimsExact:true,profileExact:true,membershipExact:true,crosswalkExact:true,providerAck:true,explicitProvenanceExact:true,historicalShopperAccess:false,otherIdentitiesModified:0},null,2)+'\n');
+          })().catch(e=>{console.error(String(e?.message||e).slice(0,160));process.exit(1)});
+          NODE
+
+      - name: Execute one visible DEV Shopper lifecycle smoke
+        id: browser
+        if: steps.gate.outputs.execute == 'true'
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs'),crypto=require('crypto');const {chromium}=require('playwright');
+          const r=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8')),cred=JSON.parse(fs.readFileSync(process.env.PRIVATE_DIR+'/login.json','utf8')),pre=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/provider-prelogin.json','utf8'));
+          const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
+          const out={schemaVersion:'cxorbia.i4a.visible-shopper-lifecycle-smoke.evidence.v1',generatedAt:new Date().toISOString(),gateId:r.gateId,requestId:r.requestId,repository:r.repository,branch:r.branch,pullRequest:r.pullRequest,workflowRunId:Number(process.env.GITHUB_RUN_ID),workflowCommitSha:process.env.GITHUB_SHA,sourceHeadSha:r.sourceHeadSha,uidFingerprint:pre.uidFingerprint,shopperIdFingerprint:pre.shopperIdFingerprint,providerReads:pre.providerReads,firestoreProviderReads:pre.firestoreReads,authPasswordUpdates:pre.authPasswordUpdates,loginAttempts:0,backendWriteAttemptsObserved:0,pageErrors:[],surfaces:{},safety:{historicalShopperAccess:false,otherIdentitiesModified:0,authCreates:0,authClaimsWrites:0,authDeletes:0,firestoreWrites:0,postulationSubmits:0,certificationSubmits:0,reservationWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,hostingDeploys:0,cloudRunDeploys:0,merge:false,production:false,credentialsExported:false}};
+          (async()=>{
+            const browser=await chromium.launch({headless:true});const ctx=await browser.newContext({viewport:{width:1440,height:1100}});const page=await ctx.newPage();
+            page.on('pageerror',e=>out.pageErrors.push(String(e.message||e).slice(0,180)));
+            await page.goto(process.env.DEV_URL+'&t='+Date.now(),{waitUntil:'domcontentloaded',timeout:45000});
+            await page.waitForFunction(()=>window.CX&&CX.backendAuth&&document.querySelector('#loginForm'),null,{timeout:30000});
+            await page.evaluate(()=>{
+              window.__I4A_BACKEND_WRITE_ATTEMPTS=[];
+              try{
+                const db=firebase.firestore(),dp=Object.getPrototypeOf(db.doc('__i4a_probe__/x')),cp=Object.getPrototypeOf(db.collection('__i4a_probe__'));
+                for(const k of ['set','update','delete'])if(typeof dp[k]==='function'){const orig=dp[k];dp[k]=function(){window.__I4A_BACKEND_WRITE_ATTEMPTS.push('doc.'+k);throw new Error('I4A_SMOKE_WRITE_BLOCKED:'+k);};dp[k].__i4aOrig=orig;}
+                if(typeof cp.add==='function'){const orig=cp.add;cp.add=function(){window.__I4A_BACKEND_WRITE_ATTEMPTS.push('collection.add');throw new Error('I4A_SMOKE_WRITE_BLOCKED:add');};cp.add.__i4aOrig=orig;}
+              }catch(e){window.__I4A_WRITE_GUARD_INSTALL_ERROR=String(e.message||e).slice(0,120);}
+            });
+            await page.evaluate(()=>CX.backendAuth.showForRole('shopper'));
+            await page.locator('#lgUser').fill(cred.login);await page.locator('#lgPass').fill(cred.password);out.loginAttempts=1;await page.locator('#lgSubmit').click();
+            await page.waitForFunction(()=>{const c=window.CX?.backendAuth?.context?.();return c?.authenticated===true&&c.role==='shopper'&&c.shopperId&&window.CX_SHOPPER_MEMBERSHIP?.status==='verified';},null,{timeout:30000});
+            const authState=await page.evaluate(()=>{const c=CX.backendAuth.context();return{role:c.role,tenantId:c.tenantId,projectIds:c.projectIds,shopperIdPresent:!!c.shopperId,membership:window.CX_SHOPPER_MEMBERSHIP?.status||'',loginHidden:document.querySelector('#loginScreen')?.classList.contains('hidden')||getComputedStyle(document.querySelector('#loginScreen')).display==='none'};});
+            out.surfaces.auth={exact:authState.role==='shopper'&&authState.tenantId==='tya'&&Array.isArray(authState.projectIds)&&authState.projectIds.includes('cinepolis')&&authState.shopperIdPresent&&authState.membership==='verified',loginHidden:authState.loginHidden};
+            const nav=async(id,needle)=>{await page.evaluate(x=>CX.router.nav(x),id);await page.waitForFunction(n=>document.body.innerText.includes(n),needle,{timeout:12000});};
+            await nav('documentos','Recursos del proyecto');const docs=await page.locator('[data-doc]').count();let viewer=false;if(docs){await page.locator('[data-doc]').first().click();viewer=await page.locator('#docBack').isVisible().catch(()=>false);if(viewer)await page.locator('#docBack').click();}out.surfaces.documents={visible:true,resourceControls:docs,viewerVisible:viewer};
+            await nav('visitas','Visitas Disponibles');const available=await page.locator('[data-detail]').count();let detailVisible=false,postulationControl=false,detailState='';if(available){await page.locator('[data-detail]').first().click();await page.waitForTimeout(250);const modal=page.locator('.cx-ov').last();detailVisible=await modal.isVisible().catch(()=>false);if(detailVisible){detailState=(await modal.innerText()).slice(0,600);postulationControl=/postul|solicitar|aplicar|reservar/i.test(detailState);await page.keyboard.press('Escape');}}out.surfaces.availableVisits={visible:true,count:available,detailVisible,postulationControlVisible:postulationControl,detailStateClass:postulationControl?'action_control_visible':'action_control_not_found'};
+            await nav('misvisitas','Mis Visitas');const misText=(await page.locator('body').innerText());out.surfaces.myVisits={visible:true,identityFailClosed:misText.includes('Identidad de evaluador no verificable')};
+            const bell=page.locator('#tbBell');let notifVisible=false,notifHonest=false,notifItems=0;if(await bell.count()){await bell.click();const panel=page.locator('#tbBellPanel');await panel.waitFor({state:'visible',timeout:5000});const txt=await panel.innerText();notifVisible=txt.includes('Novedades');notifHonest=notifVisible&&(txt.includes('Sin novedades por ahora.')||await panel.locator('[data-nid]').count()>=0);notifItems=await panel.locator('[data-nid]').count();await page.evaluate(()=>CX.topbar.close());}out.surfaces.notifications={visible:notifVisible,honestEmptyOrItems:notifHonest,itemCount:notifItems};
+            await nav('cert','Certificación');const certText=(await page.locator('body').innerText()).slice(0,1400);const exam=await page.locator('#examGo').count();out.surfaces.certification={visible:/Certificación/.test(certText),presentationState:exam?'exam_presented':(/pendiente de fuente|banco no publicado|banco en revisión/i.test(certText)?'honest_pending':'other_visible'),submitClicked:false};
+            out.backendWriteAttemptsObserved=await page.evaluate(()=>window.__I4A_BACKEND_WRITE_ATTEMPTS?.length||0);out.writeGuardInstallError=await page.evaluate(()=>window.__I4A_WRITE_GUARD_INSTALL_ERROR||null);
+            const s=out.surfaces;const pass=s.auth.exact&&s.auth.loginHidden&&s.documents.visible&&s.documents.resourceControls>0&&s.documents.viewerVisible&&s.availableVisits.visible&&s.availableVisits.count>0&&s.availableVisits.detailVisible&&s.availableVisits.postulationControlVisible&&s.myVisits.visible&&!s.myVisits.identityFailClosed&&s.notifications.visible&&s.notifications.honestEmptyOrItems&&s.certification.visible&&s.certification.presentationState!=='other_visible'&&out.backendWriteAttemptsObserved===0&&out.pageErrors.length===0;
+            out.decision=pass?'PASS_I4A_SINGLE_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE':'HOLD_I4A_VISIBLE_SHOPPER_LIFECYCLE_SMOKE_DEFECT';out.nextGate=pass?'I4A_SCORE_AND_ADVANCE_PER_PHASE_A_PLAN':'STOP_NO_AUTOMATIC_RETRY__DOCUMENT_VISIBLE_DEFECT';
+            fs.writeFileSync(process.env.OUT_DIR+'/result.json',JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify({decision:out.decision,workflowRunId:out.workflowRunId,surfaces:out.surfaces,backendWriteAttemptsObserved:out.backendWriteAttemptsObserved,pageErrorCount:out.pageErrors.length},null,2));
+            await browser.close();if(!pass)process.exit(3);
+          })().catch(e=>{out.decision='HOLD_I4A_VISIBLE_SHOPPER_LIFECYCLE_SMOKE_MECHANISM_OR_RUNTIME_FAILURE';out.error=String(e?.message||e).replaceAll(cred.login,'[login]').replaceAll(cred.password,'[password]').replaceAll(cred.shopperId,'[shopperId]').slice(0,220);fs.writeFileSync(process.env.OUT_DIR+'/result.json',JSON.stringify(out,null,2)+'\n');console.error(out.error);process.exit(2)});
+          NODE
+
+      - name: Publish non-blocking observable status
+        if: always() && steps.gate.outputs.execute == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          state=error
+          desc='I4-A visible Shopper smoke did not produce PASS'
+          if [ -f "$OUT_DIR/result.json" ]; then
+            decision=$(node -p "require('./$OUT_DIR/result.json').decision||''")
+            if [[ "$decision" == PASS_* ]]; then state=success; desc='I4-A visible Shopper lifecycle smoke PASS'; else state=failure; desc="${decision:0:130}"; fi
+          fi
+          curl -fsS -X POST -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -d "$(node -e "console.log(JSON.stringify({state:process.argv[1],context:'cxorbia/i4a-visible-shopper-lifecycle-smoke',description:process.argv[2],target_url:'https://github.com/'+process.env.GITHUB_REPOSITORY+'/actions/runs/'+process.env.GITHUB_RUN_ID}))" "$state" "$desc")" >/dev/null || true
+
+      - name: Upload sanitized smoke evidence
+        if: always() && steps.gate.outputs.execute == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: i4a-visible-shopper-lifecycle-smoke-${{ github.run_id }}
+          path: |
+            .tmp/i4a-visible-shopper-lifecycle-smoke/result.json
+            .tmp/i4a-visible-shopper-lifecycle-smoke/provider-prelogin.json
+            .tmp/i4a-visible-shopper-lifecycle-smoke/source-truth.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Cleanup private credentials
+        if: always()
+        run: rm -rf "$PRIVATE_DIR"
