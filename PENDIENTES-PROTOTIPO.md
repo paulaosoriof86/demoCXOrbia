@@ -1,41 +1,49 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Última sincronización:** 2026-08-18 19:44 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I4A-SOURCE-READINESS-HOLD-18`  
-**Estado:** `NO_UI_WORKAROUND__I3_FROZEN__GO_LIVE_60__I4A_READINESS_HOLD__TEST_SHOPPER_RESOLUTION_NEXT`
+**Última sincronización:** 2026-08-18 19:58 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I4A-TEST-SHOPPER-PROVENANCE-HOLD-19`  
+**Estado:** `NO_UI_WORKAROUND__I3_FROZEN__GO_LIVE_60__I4A_TEST_SHOPPER_PROVENANCE_HOLD__AUTH_NEXT`
 
 ## Cerrado / no pendiente
 
-I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `25/25 PASS` frozen. I4 scope A→F ya materializado.
+I1 `15/15 PASS`, I2 `20/20 PASS`, I3 `25/25 PASS` integral/frozen. No existe pendiente vivo de identityMap, autenticación Staff, Historical Shopper, Rules o Hosting dentro de I3.
+
+Dentro de I4-A ya existe cobertura source/read-only para identidad/perfil/histórico/certification-status, membership/roles/scopes y autoridad postulación/asignación. Esto no se reaudita salvo evidencia nueva contradictoria.
 
 ## Pendiente vivo
 
-- I4 `0/25` — I4-A en readiness HOLD.
+- I4 `0/25` — en curso/no puntuado.
 - I5 `0/15` — no iniciado.
 - **40% restante**.
 
-### I4-A
+### I4-A — HOLD actual
 
-Decisión: `HOLD_I4A_SOURCE_READINESS__VISIBLE_SHOPPER_LIFECYCLE_COVERAGE_NOT_YET_PROVEN`.
+`HOLD_I4A_TEST_SHOPPER_PROVENANCE__NONHISTORICAL_STATUS_NOT_REPRODUCIBLY_ESTABLISHED`
 
-Probado: exact Shopper profile/identity; certification status visible; canonical history/stages; membership/role/project scopes; postulation vs HR assignment authority.
+La evidencia congelada/source-safe no individualiza de manera reproducible un principal DEV ya existente que pueda calificarse como Shopper test/no histórico. No usar IDs recordados, plantillas source-safe ni el Shopper histórico congelado para suplir esa falta de evidencia.
 
-Por probar visiblemente: documentos/instrucciones; disponibles; acción de postulación; notificaciones; presentación de certificación nueva. No se clasifica todavía como bug frontend.
+Esto es un pendiente de provenance/selección segura de identidad, no un bug visible demostrado.
+
+### I4-A — comportamiento aún pendiente de evidencia visible
+
+Documentos/instrucciones; visitas disponibles; control/estado de postulación; notificaciones; presentación/estado de certificación nueva. La futura prueba inicial debe ser no mutante; no presentar postulación ni certificación durante la observación read-only.
 
 ## No hacer
 
-- No reabrir I3 ni Historical Shopper.
-- No login/selección de credencial hasta resolver identidad segura.
-- No crear/resetear usuarios.
-- No provider/data writes, Rules/Hosting deploy, merge o producción.
-- No parche UI desde backend.
-
-## Siguiente acción exacta
-
-`I4A_RESOLVE_EXISTING_NONHISTORICAL_TEST_SHOPPER_IDENTITY_FROM_FROZEN_EVIDENCE__READONLY_NO_LOGIN`
-
-Solo evidencia congelada; una identidad ya existente; sin login ni credenciales. Si queda probada, después se pedirá autorización separada para una única observación visible I4-A DEV.
+- No reabrir I3.
+- No usar/login/resetear el Historical Shopper.
+- No crear otro Shopper/Admin para resolver este HOLD.
+- No inferir principal test desde nombres, IDs recordados o templates source-safe.
+- No provider/Auth read, login o credenciales sin gate nuevo.
+- No parche UI, nueva candidata, rama, PR ni metodología.
+- No writes/deploy/merge/producción sin autorización.
 
 ## Claude / Academia
 
-Sin cambio frontend ni Academia todavía. Cualquier ajuste depende de evidencia visible reproducible.
+Sin pendiente frontend demostrado por este bloque. Academia permanece sin cambio hasta validar un comportamiento operacional visible.
+
+## Siguiente acción exacta
+
+`NEW_AUTH_REQUIRED_I4A_EXISTING_SHOPPER_IDENTITY_CLASSIFICATION_DEV_READONLY_NO_LOGIN`
+
+Una sola clasificación de metadata provider/Auth de principal Shopper existente; sin login, credenciales, perfil/histórico, writes, deploy, merge ni producción. Requiere autorización explícita.
