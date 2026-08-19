@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.execution-state.v1",
-  "syncEpoch": "CXORBIA-20260818-I4A-SOURCE-READINESS-HOLD-18",
-  "generatedAt": "2026-08-18T19:44:00-06:00",
+  "syncEpoch": "CXORBIA-20260818-I4A-TEST-SHOPPER-PROVENANCE-HOLD-19",
+  "generatedAt": "2026-08-18T19:58:00-06:00",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -17,39 +17,38 @@
       "I4": "0/25 IN_PROGRESS_NOT_SCORED",
       "I5": "0/15 NOT_STARTED"
     },
-    "currentState": "I3_FROZEN__I4A_SOURCE_READINESS_HOLD__VISIBLE_LIFECYCLE_NOT_YET_PROVEN",
-    "currentBlock": "I4-A Shopper lifecycle source/readiness adjudication",
-    "exactFrontier": "I4A_RESOLVE_EXISTING_NONHISTORICAL_TEST_SHOPPER_IDENTITY_FROM_FROZEN_EVIDENCE__READONLY_NO_LOGIN"
+    "currentState": "I3_FROZEN__I4A_TEST_SHOPPER_PROVENANCE_HOLD__AUTH_REQUIRED_FOR_READONLY_CLASSIFICATION",
+    "currentBlock": "I4-A safe nonhistorical test Shopper resolution from frozen evidence",
+    "exactFrontier": "NEW_AUTH_REQUIRED_I4A_EXISTING_SHOPPER_IDENTITY_CLASSIFICATION_DEV_READONLY_NO_LOGIN"
   },
-  "i4A": {
-    "canonicalScope": ["documentos/instrucciones","certificaciones históricas/nuevas","disponibles","postulación","asignación","perfiles/roles/scopes","notificaciones","histórico"],
-    "decision": "HOLD_I4A_SOURCE_READINESS__VISIBLE_SHOPPER_LIFECYCLE_COVERAGE_NOT_YET_PROVEN",
-    "rootCause": "Current canonical Shopper source proves exact identity/profile, certification status, visit history and membership/scopes, while frozen I3 proves postulation-vs-HR-assignment authority; the inspected canonical evidence does not yet prove end-to-end visible Shopper behavior for documents/instructions, available visits, postulation action, notifications, or presentation of a new certification.",
+  "i4Authority": {
+    "source": "app/docs/ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md",
+    "section": "9. I4 — operación visible",
+    "I4A": "documentos/instrucciones; certificaciones históricas/nuevas; disponibles; postulación; asignación; perfiles/roles/scopes; notificaciones; histórico"
+  },
+  "i4aReadiness": {
+    "decision": "HOLD_I4A_TEST_SHOPPER_PROVENANCE__NONHISTORICAL_STATUS_NOT_REPRODUCIBLY_ESTABLISHED",
+    "rootCause": "Frozen/source-safe repository evidence preserves Shopper population and provenance through aggregates/fingerprints but intentionally does not export a reproducible existing DEV shopperId/login/UID proven synthetic or nonhistorical.",
     "notAProductFailure": true,
-    "sourceEvidence": {
-      "canonicalPortal": "app/adapters/tya-canonical-shopper-portal-v2.js",
-      "portalProves": ["exact Shopper identity","Mi Perfil/contact","certification status visible","canonical visit history/stages","read-only/no profile/Auth/HR writes"],
-      "membership": "app/adapters/cxorbia-shopper-membership-wiring-v1.js",
-      "membershipProves": ["shopper auth namespace","tenantId/shopperId/projectIds exact membership","role/shopper scope verification","providerWrites=0","firestoreWrites=0"],
-      "adminCommandContract": "app/adapters/cxorbia-shopper-admin-command-contract-v1.js",
-      "adminContractProves": ["durable create/update contract only","provider ACK required","protected fields policy","no browser passwords/tokens","no localStorage persistence"],
-      "frozenI3Reuse": ["postulation-vs-HR-assignment authority PASS","platformPosts=8","HR assignments=15","HR assignments are not postulations","Historical Shopper/history preserved"]
-    },
-    "visibleRuntimeNotExecuted": true,
-    "credentialSelection": 0,
-    "historicalShopperAccess": 0,
-    "providerWrites": 0,
-    "authWrites": 0,
-    "firestoreWrites": 0,
-    "rulesWrites": 0,
-    "hrWrites": 0,
-    "storageWrites": 0,
-    "makeCalls": 0,
-    "geminiCalls": 0,
-    "paymentWrites": 0,
-    "deploys": 0,
-    "merge": false,
-    "production": false
+    "alreadyProven": [
+      "canonical Shopper profile/history/certification status read-only surface",
+      "exact Shopper membership/role/project scopes fail-closed",
+      "protected Shopper admin command contract",
+      "postulation-vs-HR-assignment authority from frozen I3 evidence"
+    ],
+    "stillNeedsVisibleEvidence": [
+      "documents/instructions",
+      "available visits",
+      "postulation control/state",
+      "notifications",
+      "new-certification presentation surface"
+    ],
+    "sourceEvidence": [
+      "backend/config/corte6-shopper-equivalent-universe-source-only-request.json",
+      "backend/config/corte6-shopper-group-provenance-source-only-request.json",
+      "backend/config/corte6-shopper-deterministic-suffix-readonly-request.json",
+      "app/docs/evidence/CORTE6-SHOPPER-EQUIVALENT-UNIVERSE-MEMBER-PROVENANCE-SOURCE-STATIC-PASS-LATEST.json"
+    ]
   },
   "consumedAndFrozen": {
     "I1": "PASS_NO_RERUN",
@@ -65,11 +64,34 @@
     "finance": "V2_HISTORICAL_NO_REBUILD",
     "legalV0_4": "DURABLE_PASS_NO_AUTOACCEPT"
   },
-  "nextBlock": {
-    "name": "I4A_RESOLVE_EXISTING_NONHISTORICAL_TEST_SHOPPER_IDENTITY_FROM_FROZEN_EVIDENCE__READONLY_NO_LOGIN",
-    "purpose": "Resolve one already-existing non-historical test Shopper identity from frozen evidence only, without login, credential selection, user mutation or provider/data writes. Only after that identity is proven may a separate visible runtime authorization be requested.",
-    "loginAuthorized": false,
-    "credentialSelectionAuthorized": false,
+  "safetyThisBlock": {
+    "shopperRuntimeExecutions": 0,
+    "loginAttempts": 0,
+    "credentialSelections": 0,
+    "historicalShopperAccess": 0,
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "hrWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "userCreates": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "merge": false,
+    "production": false
+  },
+  "nextGate": {
+    "name": "NEW_AUTH_REQUIRED_I4A_EXISTING_SHOPPER_IDENTITY_CLASSIFICATION_DEV_READONLY_NO_LOGIN",
+    "purpose": "Classify one already-existing DEV Shopper principal as safe test/nonhistorical using provider/Auth metadata only, without login, credential exposure, profile/history access or writes.",
+    "authorized": false,
+    "providerReadsAuthorized": false,
     "providerWritesAuthorized": false,
     "deployAuthorized": false,
     "mergeAuthorized": false,
