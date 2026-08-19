@@ -1,17 +1,24 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4B-RETRY1-PREPROVIDER-DOCSYNC-FIX-28`  
+**SYNC_EPOCH:** `CXORBIA-20260819-I4B-RETRY1-PROVIDER-TX-ORDER-HOLD-29`  
 **Formal:** **60% completado / 40% pendiente**; I4 no tiene subpeso formal.
 
-I4-A sigue PASS/frozen. I4-B readiness/provider source sigue PASS. El primer E2E sintético run `32286832002` quedó HOLD por `provider is not defined` en el harness, con cero provider commits/writes y datos reales invariantes.
+I1/I2/I3 e I4-A permanecen PASS/frozen. HR `15 periodos / 660 visitas`, Historical Shopper, TARGET_B Admin, Finance V2/historical y legal v0.4 permanecen preservados sin reproceso.
 
-## Retry1 autorizado — estado real
-Gate `NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY1__HARNESS_SCOPE_FIXED__SYNTHETIC_VISIT_ONLY`: autorizado por Paula, `enabled=true`, `consumed=false`, `executionsConsumed=0`; no requiere nueva autorización mientras no cambie el alcance.
+## I4-B — estado real
+Retry1 run `32297736022` sí alcanzó el provider real. `application.create` PASS y replay idempotente PASS. El tercer comando `application.status.update` quedó HOLD por `Firestore transactions require all reads to be executed before all writes.`
 
-Run observable `32296607712` alcanzó checkout y validación del contrato, pero se detuvo **antes de preparar runtime/provider** por `FAIL_SOURCE_TRUTH_SYNC`. Error documental único probado por el artifact: `FRONTIER:app/docs/ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
+El gate Retry1 quedó `enabled=false / consumed=true / executionsConsumed=1 / automaticRetryAllowed=false`. Safety confirmado: fixture y aplicación sintéticos eliminados; visitas/postulaciones reales invariantes; Historical Shopper=false; Auth/HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/prod sin cambios.
 
-Además, el paso final de persistencia tenía un defecto shell (`syntax error: unexpected end of file`), por lo que no pudo registrar un HOLD automático ni consumir el gate. No hubo synthetic fixture, provider calls, provider commits, provider writes, Auth writes, HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/prod.
+## Causa raíz y fix
+La transacción escribía la postulación antes de terminar la lectura de la visita asociada. Fix source-only aplicado en commit `1bde86e5e5b6c2084fe5c711b7a8c06d089f12f4`, dejando todas las lecturas/validaciones antes de cualquier write. Verificador source-only reforzado en `e1f62c8425d0fffc62b2ba92ccdd6141b60f3be6`.
 
-Evidencia: `app/docs/evidence/I4B-RETRY1-PREPROVIDER-DOCSYNC-FAILURE.json`, run `32296607712`, artifact `9381423175`, digest `sha256:e88ccd8cc244f7fd5a571ffbc2c9082bd56267f85a591a2cdbd959d85e0dfcb2`.
+## Hallazgo metodológico corregido
+Se detectó desincronización real: este checkpoint y otros documentos seguían en epoch 28 mientras Index/Execution State/Source Lock ya estaban en epoch 29. El source-truth verifier se corrige para derivar epoch y frontera del Execution State y exigir coincidencia en todos los documentos canónicos, eliminando el hard-code que permitía repetir este patrón.
 
-Siguiente exacto: completar sincronización documental, corregir el finalizer y ejecutar el mismo Retry1 ya autorizado. PASS → I4-C HR bidireccional.
+Evidencia activa: `app/docs/evidence/I4B-RETRY1-PROVIDER-TX-ORDER-SOURCE-FIX.json`.
+
+## Siguiente exacto
+`NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY2__PROVIDER_TX_READ_ORDER_FIXED__SYNTHETIC_VISIT_ONLY`.
+
+Nueva autorización solo porque Retry1 fue consumido. El scope no se amplía: sintético únicamente, sin Historical Shopper, sin mutar las 660 visitas reales y sin producción. PASS → I4-C HR bidireccional.

@@ -1,33 +1,33 @@
 # CAMBIOS-BACKEND.md
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4B-RETRY1-PREPROVIDER-DOCSYNC-FIX-28`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4B-RETRY1-PROVIDER-TX-ORDER-HOLD-29`
 
 ## Preservado
-I1/I2/I3 PASS, I4-A PASS, HR `15 periodos / 660 visitas`, Historical Shopper frozen, TARGET_B Admin no recrear, Finance V2/historical y legal v0.4. I4-B readiness/provider source permanece PASS/source-ready.
+I1/I2/I3 PASS, I4-A PASS, HR `15 periodos / 660 visitas`, Historical Shopper frozen, TARGET_B Admin no recrear, Finance V2/historical y legal v0.4. Sin cambios de frontend ni P0 nuevo demostrado.
 
-## I4-B — primer E2E consumido
-Run `32286832002`, artifact `9377953415`: `HOLD_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE__provider_is_not_defined`. Causa `PIPELINE_MECHANISM_FAILURE_PRIMARY`; provider commits/writes 0, fixture sintético retirado y visitas/postulaciones reales invariantes. No se atribuye a defecto del producto/provider.
+## I4-B Retry1 — provider real alcanzado
+Run `32297736022`: `application.create` PASS; replay idempotente PASS; tercer comando `application.status.update` HOLD por `Firestore transactions require all reads to be executed before all writes.` Retry1 quedó consumido y sin retry automático.
 
-## Retry1 — autorización vigente
-Gate `NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY1__HARNESS_SCOPE_FIXED__SYNTHETIC_VISIT_ONLY` autorizado por Paula; `enabled=true`, `consumed=false`, `executionsConsumed=0`. Scope: sintético únicamente; Historical Shopper=false; mutación visita HR real=false; Auth/HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/prod = 0/false.
+Safety: `providerCommandCalls=3`, `providerCommittedCalls=2`, `providerWritesReported=3`; fixture y aplicación sintéticos eliminados; visitas/postulaciones reales invariantes; Historical Shopper/Auth/HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/prod sin cambios.
 
-## Hallazgo nuevo reproducible — desincronización documental
-Se movió Retry1 a un carril PR observable y el run `32296607712` sí arrancó. Se detuvo antes de preparar runtime/provider porque `verify-cxorbia-source-truth-sync.mjs` devolvió `FAIL_SOURCE_TRUTH_SYNC` con un único error: `FRONTIER:app/docs/ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
+## Causa raíz técnica
+En `backend/runtime/cxorbia-visit-lifecycle-command-provider-v1.mjs`, `application.status.update` hacía una escritura sobre la postulación y luego una lectura de la visita dentro de la misma transacción Firestore. Fix source-only `1bde86e5e5b6c2084fe5c711b7a8c06d089f12f4`: toda lectura/validación ocurre antes de cualquier write. Verificador reforzado en `e1f62c8425d0fffc62b2ba92ccdd6141b60f3be6`.
 
-Artifact `9381423175`, digest `sha256:e88ccd8cc244f7fd5a571ffbc2c9082bd56267f85a591a2cdbd959d85e0dfcb2`. Provider execution no inició: provider calls/commits/writes 0; no synthetic fixture creado; datos/proveedores protegidos no fueron tocados.
+## Causa raíz metodológica adicional — documentación parcialmente sincronizada
+Se comprobó que Index/Execution State/Source Lock estaban en epoch 29, pero Checkpoint, Addendum, Plan Lock, Tracker, CAMBIOS, RESUMEN y PENDIENTES seguían en epoch 28. Esto podía volver a provocar gates bloqueados por source truth y explica la repetición del patrón documental.
 
-El finalizer mostró además un defecto secundario de shell (`syntax error: unexpected end of file`) y no persistió el HOLD ni consumió el gate. La autorización permanece vigente; no corresponde pedir otra.
+Corrección durable: sincronización completa del conjunto canónico y modificación de `tools/verify-cxorbia-source-truth-sync.mjs` para que `SYNC_EPOCH` y frontera se deriven dinámicamente de `app/docs/CXORBIA-EXECUTION-STATE.json`, en lugar de quedar hard-codeados. El verificador exige coincidencia de epoch/frontera y 60/40 en todos los documentos canónicos antes de permitir avanzar a un gate.
 
-Evidencia durable creada: `app/docs/evidence/I4B-RETRY1-PREPROVIDER-DOCSYNC-FAILURE.json`.
+Evidencia activa: `app/docs/evidence/I4B-RETRY1-PROVIDER-TX-ORDER-SOURCE-FIX.json`.
 
-## Corrección en curso
-Se abre `SYNC_EPOCH 28` para sincronizar Execution State, Source Lock, índice, checkpoint, addendum, Plan Lock, tracker, CAMBIOS, RESUMEN y PENDIENTES. El tracker 35/65 queda reemplazado por el formal canónico **60%/40%**: I3 ya está integralmente PASS/FROZEN.
+## Siguiente frontera
+`NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY2__PROVIDER_TX_READ_ORDER_FIXED__SYNTHETIC_VISIT_ONLY`.
 
-Tras terminar el resync se corrige el finalizer y se ejecuta el mismo Retry1 autorizado en el carril observable. Si PASS → I4-C HR bidireccional.
+Retry2 requiere nueva autorización únicamente porque Retry1 sí fue consumido. Mismo scope sintético, sin Historical Shopper, sin visitas HR reales, sin producción. PASS → I4-C HR bidireccional.
 
 ## Clasificación
-- Reusable CXOrbia: disciplina de gate, source-truth y finalizer observable.
-- Exclusivo TyA: `tenantId=tya`, proyecto Cinépolis y protección HR 15/660.
-- Claude/prototipo: handoff previo sin cambio; no P0 frontend nuevo.
-- Academia: sin cambio funcional por este fallo pre-provider.
-- Sin impacto Claude: workflows, gate, evidencia y sincronización documental.
+- Reusable CXOrbia: verificación dinámica de source truth, orden transaccional Firestore y gate single-use.
+- Exclusivo TyA: tenant `tya`, proyecto Cinépolis, HR 15/660 y fixture sintético de I4-B.
+- Claude/prototipo: sin cambio frontend; handoff previo se conserva.
+- Academia: sin cambio funcional; no enseñar ciclo write como PASS hasta Retry2.
+- Sin impacto Claude: corrección del provider, verifier y sincronización documental.
