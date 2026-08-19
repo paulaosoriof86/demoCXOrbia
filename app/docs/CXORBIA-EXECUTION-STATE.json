@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.execution-state.v1",
-  "syncEpoch": "CXORBIA-20260819-I4C-HR-SYNC-SOURCE-READY-32",
-  "generatedAt": "2026-08-19T16:13:00-06:00",
+  "syncEpoch": "CXORBIA-20260819-I4D-FINANCE-PHASEA-ACTIVE-33",
+  "generatedAt": "2026-08-19T16:47:00-06:00",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -10,16 +10,10 @@
   "phaseA": {
     "formalProgressPercent": 60,
     "formalRemainingPercent": 40,
-    "score": {
-      "I1": "15/15 PASS",
-      "I2": "20/20 PASS",
-      "I3": "25/25 PASS FROZEN",
-      "I4": "0/25 IN_PROGRESS_NOT_SCORED",
-      "I5": "0/15 NOT_STARTED"
-    },
-    "currentState": "I4A_PASS_FROZEN__I4B_PASS_FROZEN__I4C_HR_BIDIRECTIONAL_SYNC_SOURCE_READY__LIVE_MAKE_BINDING_REQUIRED",
-    "currentBlock": "I4-C HR bidirectional synchronization provider binding",
-    "exactFrontier": "I4C_MAKE_HR_PROVIDER_BINDING_EXTERNAL_CONFIGURATION_REQUIRED"
+    "score": {"I1":"15/15 PASS","I2":"20/20 PASS","I3":"25/25 PASS FROZEN","I4":"0/25 IN_PROGRESS_NOT_SCORED","I5":"0/15 NOT_STARTED"},
+    "currentState": "I4A_PASS_FROZEN__I4B_PASS_FROZEN__I4C_SOURCE_READY_PHASEA_CLOSED_MAKE_RUNTIME_DEFERRED__I4D_FINANCE_ACTIVE",
+    "currentBlock": "I4-D Finance Phase A liquidations and payment-state readiness",
+    "exactFrontier": "I4D_FINANCE_PHASE_A_JUNE_PAYMENT_STATE_SOURCE_READINESS"
   },
   "sourceTruth": {
     "canonicalDocs": 10,
@@ -33,43 +27,40 @@
     "verifierVersion": "cxorbia.source-truth-sync-verifier.v11.dynamic-progress"
   },
   "i4a": {"status":"PASS_CLOSED_NO_RERUN","workflowRunId":32282507320,"hrAuthority":{"periods":15,"visits":660,"pass":true}},
-  "i4b": {"status":"PASS_CLOSED_NO_RERUN","retry2":{"status":"PASS_CLOSED_NO_RERUN","workflowRunId":32305790197,"decision":"PASS_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E__SYNTHETIC_VISIT_ONLY","realVisitsUnchanged":true,"realPostulationsUnchanged":true}},
+  "i4b": {"status":"PASS_CLOSED_NO_RERUN","workflowRunId":32305790197,"decision":"PASS_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E__SYNTHETIC_VISIT_ONLY"},
   "i4c": {
-    "status": "SOURCE_READINESS_PASS_PROVIDER_BINDING_REQUIRED",
+    "status": "PASS_PHASE_A_SOURCE_READY_RUNTIME_MAKE_DEFERRED_NON_BLOCKING",
     "sourceDecision": "PASS_I4C_HR_BIDIRECTIONAL_SYNC_SOURCE_READINESS",
-    "contract": "backend/contracts/hr-bidirectional-assignment-sync-v1.json",
-    "adapter": "backend/adapters/hr-bidirectional-sync-adapter.preview.mjs",
-    "verifier": "tools/verify-cxorbia-i4c-hr-bidirectional-source.mjs",
-    "reusesMakeOutbox": true,
-    "reusesVisitLifecycleProvider": true,
-    "dedupeByName": false,
-    "conflictsRequireHumanReview": true,
-    "liveMakeBindingFound": false,
+    "makeRuntimeBinding": "DEFERRED_POST_GO_LIVE_ESSENTIALS",
     "providerWritesExecuted": false,
     "hrWritesExecuted": false,
     "makeCallsExecuted": false
   },
-  "consumedAndFrozen": {
-    "I1": "PASS_NO_RERUN",
-    "I2": "PASS_NO_RERUN",
-    "I3": "PASS_INTEGRAL_NO_RERUN",
-    "I4A": "PASS_VISIBLE_LIFECYCLE_NO_RERUN",
-    "I4B": "PASS_PROVIDER_E2E_NO_RERUN",
-    "historicalShopper": "FROZEN_NO_CREDENTIAL_ACCESS_LOGIN_RECOVERY_RESET",
-    "targetBAdmin": "EXISTS_PASS_NO_RECREATE",
-    "hr": "15_PERIODS_660_VISITS_NO_REIMPORT",
-    "finance": "V2_HISTORICAL_NO_REBUILD",
-    "legalV0_4": "DURABLE_PASS_NO_AUTOACCEPT"
+  "i4d": {
+    "status": "SOURCE_READINESS_ACTIVE",
+    "historicalPaymentSource": "app/data/tya-payment-history-source-safe.js",
+    "financialCanonicalSource": "app/data/tya-financial-canonical-source-safe.js",
+    "paymentAdapter": "backend/adapters/liquidations-payment-state-adapter.preview.mjs",
+    "readModel": "backend/runtime/cxorbia-finance-phase-a-read-model-v1.mjs",
+    "verifier": "tools/verify-cxorbia-i4d-finance-phase-a-source.mjs",
+    "may2026": {"visits":44,"paid":44,"pending":0},
+    "june2026": {"visits":44,"paid":2,"pending":42,"confirmedPaidTotalGTQ":451},
+    "paymentExecutionAllowed": false,
+    "paymentStateWritesAllowed": false
   },
-  "activeEvidence": "app/docs/evidence/I4C-HR-BIDIRECTIONAL-SYNC-SOURCE-READINESS.json",
+  "consumedAndFrozen": {
+    "I1":"PASS_NO_RERUN","I2":"PASS_NO_RERUN","I3":"PASS_INTEGRAL_NO_RERUN","I4A":"PASS_VISIBLE_LIFECYCLE_NO_RERUN","I4B":"PASS_PROVIDER_E2E_NO_RERUN",
+    "historicalShopper":"FROZEN_NO_CREDENTIAL_ACCESS_LOGIN_RECOVERY_RESET","targetBAdmin":"EXISTS_PASS_NO_RECREATE","hr":"15_PERIODS_660_VISITS_NO_REIMPORT","financeHistorical":"SOURCE_SAFE_PRESERVE_NO_REBUILD","legalV0_4":"DURABLE_PASS_NO_AUTOACCEPT"
+  },
+  "activeEvidence": "app/docs/evidence/I4D-FINANCE-PHASE-A-SOURCE-READINESS.json",
   "nextGate": {
-    "name": "I4C_MAKE_HR_PROVIDER_BINDING_EXTERNAL_CONFIGURATION_REQUIRED",
-    "authorized": false,
+    "name": "I4D_FINANCE_PHASE_A_JUNE_PAYMENT_STATE_SOURCE_READINESS",
+    "authorized": true,
     "authorizationRequired": false,
-    "externalConfigurationRequired": true,
-    "providerWritesAllowed": false,
-    "hrWritesAllowed": false,
+    "sourceOnly": true,
+    "paymentExecutionAllowed": false,
+    "paymentStateWritesAllowed": false,
     "makeCallsAllowed": false,
-    "purpose": "Resolve the live Make/HR provider binding securely; no webhook URL, scenario identifier or authenticated Make connector is currently present in repo/project sources."
+    "purpose": "Validate and wire the existing source-safe Finance truth needed for Phase A, especially May paid history and June paid/pending state, before any write/deploy gate."
   }
 }
