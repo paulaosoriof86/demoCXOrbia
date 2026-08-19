@@ -1,33 +1,17 @@
 {
-  "schemaVersion": "cxorbia.i4d.finance-phase-a-source-readiness.v1",
-  "syncEpoch": "CXORBIA-20260819-I4D-FINANCE-VERIFIED-34",
-  "generatedAt": "2026-08-19T17:30:00-06:00",
+  "schemaVersion": "cxorbia.i4d.finance-phase-a-source-readiness.v2",
+  "syncEpoch": "CXORBIA-20260819-I4D-REUSE-CLOSED-I4E-ACTIVE-35",
+  "generatedAt": "2026-08-19T17:37:00-06:00",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "decision": "PASS_I4D_FINANCE_PHASE_A_SOURCE_READINESS",
-  "priorityCorrection": {
-    "makeRuntimeBindingBlocksGoLive": false,
-    "makeReviewDeferred": true,
-    "financeIsPhaseAEssential": true,
-    "source": "ADDENDUM-MAESTRO-PRIORIDAD-GO-LIVE-FINANZAS-ANTES-MAKE-20260819.md"
-  },
+  "decision": "PASS_I4D_FINANCE_EXISTING_CXDATA_REUSE_CONFIRMED",
   "historicalPaymentTruth": {
     "source": "app/data/tya-payment-history-source-safe.js",
     "sourceSafe": true,
     "executionAllowed": false,
-    "may2026": {"visits": 44, "paid": 44, "pending": 0, "paymentConfirmed": true},
-    "june2026": {
-      "visits": 44,
-      "paid": 2,
-      "pending": 42,
-      "confirmedPaidItems": 2,
-      "confirmedPaidTotalGTQ": 451,
-      "stableKeys": [
-        "hr_2026-06_gt_2_7e5eaea1bb::JUNIO 26!2",
-        "hr_2026-06_gt_6_4ab15bcd43::JUNIO 26!6"
-      ]
-    }
+    "may2026": {"visits": 44, "paid": 44, "pending": 0},
+    "june2026": {"visits": 44, "paid": 2, "pending": 42, "confirmedPaidTotalGTQ": 451}
   },
   "financialReconciliation": {
     "source": "app/data/tya-financial-canonical-source-safe.js",
@@ -36,20 +20,24 @@
     "reviewLiquidationRows": 38,
     "canonicalAmountReady": 207,
     "amountReviewRequired": 2,
-    "paymentInferenceFromExecutionForbidden": true,
     "liquidatedIsPaid": false,
-    "dedupeByVisualName": false
+    "paymentInferenceFromExecutionForbidden": true
   },
-  "sourceImplementation": {
-    "existingAdapter": "backend/adapters/liquidations-payment-state-adapter.preview.mjs",
-    "existingContract": "backend/contracts/liquidations-payments-phase-a-v1.json",
-    "readModel": "backend/runtime/cxorbia-finance-phase-a-read-model-v1.mjs",
-    "verifier": "tools/verify-cxorbia-i4d-finance-phase-a-source.mjs",
-    "verifierAssertions": 24,
-    "verifierResult": "PASS_I4D_FINANCE_PHASE_A_SOURCE_READINESS",
-    "executionMode": "local_deterministic_replay_from_live_branch_source_projection",
+  "existingImplementationReused": {
+    "cxDataFinanceBridge": "app/core/backend-cxdata-finance-read.js",
+    "canonicalFinanceAdapter": "app/adapters/tya-financial-canonical-source-safe-adapter.js",
+    "canonicalFinanceReadModelV2": "app/adapters/tya-canonical-finance-read-model-v2.js",
+    "backendDevEntry": "app/index-backend-dev.html",
+    "cxDataInterfacePreserved": true,
+    "frontendModulesRewritten": false,
+    "newFinanceImplementationRequired": false
+  },
+  "verifier": {
+    "path": "tools/verify-cxorbia-i4d-finance-phase-a-source.mjs",
+    "assertionsPrepared": 24,
+    "verifierExecutedInThisEvidence": false,
     "repositoryNativeVerifierExecution": false,
-    "verifierHardeningCommit": "5abbd3d0e57fa49d1256cf867763b289855f18e9"
+    "note": "No execution is claimed. I4-D closure is based on live source inspection plus reuse of the already-existing CX.data finance wiring."
   },
   "safety": {
     "paymentExecution": false,
@@ -67,5 +55,5 @@
     "production": false,
     "rawBankData": false
   },
-  "nextFrontier": "I4D_FINANCE_PHASE_A_CX_DATA_READ_WIRING"
+  "nextFrontier": "I4E_MULTI_PROJECT_NO_CODE_REUSE_AUDIT"
 }
