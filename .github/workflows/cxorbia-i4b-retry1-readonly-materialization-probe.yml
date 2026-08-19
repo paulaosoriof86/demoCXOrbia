@@ -1,5 +1,5 @@
 name: CXOrbia I4B Retry1 Authorized Execution On Observable PR Lane
-# Authorized synthetic-only Retry1. Observable PR lane; same gate/scope, no expansion.
+# Authorized synthetic-only Retry1. Observable PR lane; source-truth verifier v9.1; same gate/scope, no expansion.
 
 on:
   pull_request:
