@@ -1,23 +1,23 @@
 # PENDIENTES-PROTOTIPO.md
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4D-FINANCE-VERIFIED-34`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4D-REUSE-CLOSED-I4E-ACTIVE-35`
 
-I1/I2/I3/I4-A/I4-B PASS/frozen. I4-C source/readiness cerrado para Phase A; Make runtime diferido. Progreso formal canónico **60% completado / 40% pendiente**.
+I1/I2/I3/I4-A/I4-B PASS/frozen. I4-C source/readiness cerrado para Phase A; Make runtime diferido. Progreso formal canónico **60% completado / 40% pendiente** hasta cerrar I4 completo.
 
-## Cerrado en esta iteración
-`I4D_FINANCE_PHASE_A_JUNE_PAYMENT_STATE_SOURCE_READINESS` = `PASS_I4D_FINANCE_PHASE_A_SOURCE_READINESS`.
+## Cerrado — I4-D Finanzas
+`PASS_I4D_FINANCE_EXISTING_CXDATA_REUSE_CONFIRMED`.
 
-Hechos fijados: Mayo 44/44 pagadas; Junio 2 pagadas / 42 pendientes sobre 44; Q451 confirmados en junio; claves estables `visitId::hrRowId`; reconciliación 247/209/38 y 207/2; `liquidada != pagada`; sin payment writes ni ejecución bancaria.
+No queda pendiente reconstruir ni volver a cablear Finanzas. El HEAD vivo ya contiene bridge `CX.data`, adapter financiero canónico, Finance read model v2 y su carga en `index-backend-dev.html`.
+
+Verdad de pago preservada: Mayo 44/44 pagadas; Junio 2 pagadas / 42 pendientes sobre 44; Q451 confirmados. `liquidada != pagada`.
 
 ## Pendiente activo único inmediato
-`I4D_FINANCE_PHASE_A_CX_DATA_READ_WIRING`.
+`I4E_MULTI_PROJECT_NO_CODE_REUSE_AUDIT`.
 
-- Conectar el read model financiero al punto autorizado de `CX.data` conservando exactamente su interfaz.
-- No tocar ni reescribir módulos UI desde backend.
-- Reutilizar Finance V2/historical; no reconstruir.
-- Mantener separación liquidación/pago y revisión humana de conflictos.
-- Mantener scope por `tenantId + projectId`; Cinépolis no debe convertirse en lógica global.
+- Auditar primero lo ya existente de multi-proyecto/configuración por `tenantId + projectId`.
+- Reutilizar contratos, wizard/configuración y adapters existentes; no reconstruir.
+- Verificar que Cinépolis sea configuración de proyecto, no lógica global.
+- Verificar país/moneda, HR/origen/mapeo, cuestionario/origen/link, reglas, certificación, agendamiento/reprogramación/cancelación, pagos e integraciones como configuración por proyecto o detectar exactamente lo que falte.
+- No tocar módulos UI desde backend.
 
-Después: I4-E multi-proyecto/no-code → I4-F Academia → I5.
-
-Make/Gemini runtime continúa diferido y no bloquea esta frontera.
+Después: I4-F Academia → I5. Make/Gemini runtime continúa diferido.
