@@ -1,25 +1,14 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4C-HR-SYNC-SOURCE-READY-32`  
+**SYNC_EPOCH:** `CXORBIA-20260819-I4D-FINANCE-PHASEA-ACTIVE-33`  
 **Formal:** **60% completado / 40% pendiente**; I4 no tiene subpeso formal.
 
-I1/I2/I3/I4-A/I4-B permanecen PASS/frozen. HR `15 periodos / 660 visitas`, Historical Shopper, TARGET_B Admin, Finance V2/historical y legal v0.4 permanecen preservados.
+I1/I2/I3/I4-A/I4-B permanecen PASS/frozen. I4-C queda cerrado para Phase A como source-ready; Make runtime y HR writes se difieren y no bloquean el go-live inicial.
 
-## I4-C — avance real
-Se cerró la parte source/readiness de sincronización bidireccional sin writes. El lifecycle provider ya producía `assignmentSource=platform` y `assignmentSyncStatus=pending`; HR source-safe ya expone llaves `id/visitId + hrRowId + tenantId + projectId + shopperId`; el Make outbox existente ya soporta `hrSync` y gates.
+La fuente maestra confirma que todas las visitas hasta junio están ejecutadas y que el pendiente de junio es financiero. La fuente source-safe financiera confirma Mayo 2026 `44 pagadas / 0 pendientes` y Junio 2026 `2 pagadas / 42 pendientes` sobre 44 visitas. Los dos pagos de junio confirmados suman Q451 y conservan visitId/hrRowId/auditRef opacos.
 
-Se agregó un reconciliador source-only que:
-- Plataforma→HR prepara outbox idempotente y mantiene estado pendiente hasta ACK/reflexión.
-- HR→Plataforma prepara `visit.assign`, retira de disponibles y exige shopper exacto existente.
-- Una reflexión exacta no duplica.
-- Identidad/shopper incompatible va a revisión humana; nombres no deduplican.
+Finance V2/historical no se reconstruye. Se reutilizan contratos y `liquidations-payment-state-adapter.preview.mjs`; se añadieron un read model y verifier source-only. La reconciliación existente conserva 247 filas, 209 links exactos, 38 revisiones, 207 montos listos y 2 revisiones de monto.
 
-Verifier determinista: `PASS_I4C_HR_BIDIRECTIONAL_SYNC_SOURCE`, 8/8 casos PASS; providerCalls/HR writes/Make calls/platform writes = 0.
+Siguiente exacto: `I4D_FINANCE_PHASE_A_JUNE_PAYMENT_STATE_SOURCE_READINESS`.
 
-## Bloqueo externo comprobado
-No existe en las fuentes accesibles un provider Make live, webhook/scenario ID ni binding autenticado de HR write. Repo contiene `make-outbox-adapter.preview.mjs` únicamente; búsquedas en repo, Gmail, Drive y contexto no recuperaron configuración live.
-
-## Siguiente exacto
-`I4C_MAKE_HR_PROVIDER_BINDING_EXTERNAL_CONFIGURATION_REQUIRED`.
-
-No se activa Make ni HR. Evidencia: `app/docs/evidence/I4C-HR-BIDIRECTIONAL-SYNC-SOURCE-READINESS.json`.
+No ejecutar pagos ni escribir estados hasta gate explícito. Después de I4-D: I4-E multi-proyecto/no-code → I4-F Academia → I5. Make/Gemini runtime se revisa posteriormente.

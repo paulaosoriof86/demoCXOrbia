@@ -1,27 +1,24 @@
 # PHASE A — Tracker TyA
 
-**Actualización:** 2026-08-19 16:13 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260819-I4C-HR-SYNC-SOURCE-READY-32`  
-**Estado:** `I1_PASS__I2_PASS__I3_PASS_FROZEN__I4A_PASS_FROZEN__I4B_PASS_FROZEN__I4C_SOURCE_READY_LIVE_MAKE_BINDING_REQUIRED__I5_PENDING__GO_LIVE_60`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4D-FINANCE-PHASEA-ACTIVE-33`  
+**Estado:** `I1_PASS__I2_PASS__I3_PASS_FROZEN__I4A_PASS_FROZEN__I4B_PASS_FROZEN__I4C_PHASEA_SOURCE_READY__I4D_FINANCE_ACTIVE__I5_PENDING`.
 
 ## Progreso formal canónico
-- I1: `15/15 PASS`.
-- I2: `20/20 PASS`.
-- I3: `25/25 PASS FROZEN`.
-- I4: `0/25 IN_PROGRESS_NOT_SCORED`.
-- I5: `0/15 NOT_STARTED`.
+- I1: `15/15 PASS`
+- I2: `20/20 PASS`
+- I3: `25/25 PASS FROZEN`
+- I4: `0/25 IN_PROGRESS_NOT_SCORED`
+- I5: `0/15 NOT_STARTED`
 
 **GO-LIVE: 60% completado / 40% pendiente.**
 
-## I4 operativo
-- I4-A: PASS/frozen.
-- I4-B: PASS/frozen provider-backed.
-- I4-C source/readiness: PASS.
-- I4-C lógica probada: Plataforma→HR, reflexión idempotente, HR→Plataforma, shopper inexistente, conflicto shopper, conflicto identidad, reflection faltante y no-dedupe por nombre.
-- Source verifier: 8/8 PASS; writes/calls reales 0.
-- Binding Make/HR live: no encontrado, pendiente externo exacto.
+## I4-C
+Source/readiness PASS. Make runtime diferido y no bloqueante para salida inicial.
 
-## Siguiente exacto
-`I4C_MAKE_HR_PROVIDER_BINDING_EXTERNAL_CONFIGURATION_REQUIRED`.
+## I4-D activo
+Frontera: `I4D_FINANCE_PHASE_A_JUNE_PAYMENT_STATE_SOURCE_READINESS`.
 
-Después de cerrar I4-C: I4-D Finanzas → I4-E multi-proyecto/no-code → I4-F Academia; cierre integral I4 acredita 25 puntos. I5 vale 15 puntos.
+Base financiera ya disponible: Mayo 44 pagadas; Junio 2 pagadas/42 pendientes; 247 filas financieras, 209 links exactos, 38 revisiones, 207 montos listos y 2 montos en revisión. Read model/verifier source-only añadidos; 0 pagos/writes activados.
+
+## Orden restante
+I4-D Finanzas → I4-E multi-proyecto/no-code → I4-F Academia → cierre integral I4 → I5. Make/Gemini runtime posterior al núcleo indispensable.

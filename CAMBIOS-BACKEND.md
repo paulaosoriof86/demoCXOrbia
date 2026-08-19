@@ -1,35 +1,27 @@
 # CAMBIOS-BACKEND.md
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4C-HR-SYNC-SOURCE-READY-32`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4D-FINANCE-PHASEA-ACTIVE-33`
 
 **Avance formal:** **60% completado / 40% pendiente**.
 
-## Preservado
-I1/I2/I3/I4-A/I4-B PASS/frozen, HR `15 periodos / 660 visitas`, Historical Shopper frozen, TARGET_B Admin no recrear, Finance V2/historical y legal v0.4. Sin frontend P0 nuevo.
+## Corrección de prioridad
+Se corrigió el desvío que convertía Make/HR live en bloqueo previo al go-live. La regla maestra y la corrección vigente establecen que Make se revisa en su bloque posterior; I4-C source/readiness se conserva y queda cerrado para Phase A inicial.
 
-## I4-C — archivos nuevos
-- `backend/contracts/hr-bidirectional-assignment-sync-v1.json`: contrato reusable multi-tenant/multi-proyecto.
-- `backend/adapters/hr-bidirectional-sync-adapter.preview.mjs`: reconciliador puro, sin provider calls.
-- `tools/verify-cxorbia-i4c-hr-bidirectional-source.mjs`: 8 casos deterministas.
-- `app/docs/evidence/I4C-HR-BIDIRECTIONAL-SYNC-SOURCE-READINESS.json`: evidencia source-only.
+## I4-D Finanzas
+Frontera: `I4D_FINANCE_PHASE_A_JUNE_PAYMENT_STATE_SOURCE_READINESS`.
 
-## Trabajo previo reutilizado
-- lifecycle provider I4-B ya registra origen/estado pendiente al asignar desde plataforma;
-- HR source-safe ya expone llaves estables `id/hrRowId/tenantId/projectId/shopperId`;
-- Make outbox preview ya soporta canal `hrSync`, dedupe y gates apagados.
+Se reutiliza, no reconstruye, la base financiera existente: `tya-payment-history-source-safe.js`, reconciliación canónica, contratos de liquidaciones/pagos y `liquidations-payment-state-adapter.preview.mjs`.
 
-## Resultado
-Plataforma→HR prepara outbox idempotente; HR→Plataforma prepara `visit.assign`; HR reflection exacta no duplica; shopper/identidad incompatible bloquea y deriva a revisión; nombres nunca deduplican. Verifier: `PASS_I4C_HR_BIDIRECTIONAL_SYNC_SOURCE`, 8/8 PASS, 0 writes/calls reales.
+Verdad source-safe verificada por inspección de fuente: Mayo 2026 44/44 pagadas; Junio 2026 44 visitas, 2 pagos confirmados y 42 pendientes; pagos junio confirmados Q451. Reconciliación: 247 filas, 209 enlaces exactos, 38 revisiones, 207 montos listos y 2 revisiones de monto.
 
-## Bloqueo externo comprobado
-No se encontró provider Make live, webhook/scenario ID ni binding autenticado en repo/Gmail/Drive/contexto. No se inventa ni se sustituye por otro proveedor.
+Archivos creados: `ADDENDUM-MAESTRO-PRIORIDAD-GO-LIVE-FINANZAS-ANTES-MAKE-20260819.md`, `backend/runtime/cxorbia-finance-phase-a-read-model-v1.mjs`, `tools/verify-cxorbia-i4d-finance-phase-a-source.mjs`, `app/docs/evidence/I4D-FINANCE-PHASE-A-SOURCE-READINESS.json`.
 
-## Frontera
-`I4C_MAKE_HR_PROVIDER_BINDING_EXTERNAL_CONFIGURATION_REQUIRED`.
+## Seguridad
+0 payment execution, 0 payment-state writes, 0 Make/HR/Auth/Rules/Storage/Gemini calls/writes, 0 deploy/merge/producción. Datos bancarios crudos excluidos.
 
 ## Clasificación
-- Reusable CXOrbia: reconciliación por identidad estable, outbox idempotente, source/status de sync y conflict review.
-- Exclusivo TyA: HR Cinépolis y autoridad 15/660.
-- Claude/prototipo: copy/estado futuro debe diferenciar pendiente, sincronizado y conflicto; no UI patch backend.
-- Academia: documentar flujo bidireccional solo como source-ready hasta provider-backed PASS.
-- Sin impacto Claude: verifier, contrato y evidencia interna.
+- Reusable CXOrbia: read model de estado financiero, separación liquidación/pago, evidencia source-safe.
+- Exclusivo TyA: corte Mayo/Junio Cinépolis y cifras 44/44, 2/42.
+- Claude/prototipo: debe mostrar pago real sin inferirlo de `liquidada`; no parche backend.
+- Academia: Finanzas entra como prioridad Phase A; Make runtime queda posterior.
+- Sin impacto Claude: verifier/evidencia/backend interno.

@@ -1,24 +1,21 @@
 # PENDIENTES-PROTOTIPO.md
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4C-HR-SYNC-SOURCE-READY-32`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4D-FINANCE-PHASEA-ACTIVE-33`
 
-I1/I2/I3/I4-A/I4-B PASS/frozen. Progreso formal canónico: **60% completado / 40% pendiente**.
-
-## I4-C source/readiness — resuelto
-- contrato bidireccional creado;
-- planner Plataforma→HR y HR→Plataforma creado;
-- outbox `hrSync` reutilizado;
-- matching estable, no por nombre;
-- conflict review fail-closed;
-- reflection exacta idempotente;
-- HR shopper desconocido bloqueado;
-- verifier 8/8 PASS, 0 provider/HR/Make/platform writes.
+I1/I2/I3/I4-A/I4-B PASS/frozen. I4-C source/readiness cerrado para Phase A; Make runtime diferido. Progreso formal **60% completado / 40% pendiente**.
 
 ## Pendiente activo único inmediato
-`I4C_MAKE_HR_PROVIDER_BINDING_EXTERNAL_CONFIGURATION_REQUIRED`.
+`I4D_FINANCE_PHASE_A_JUNE_PAYMENT_STATE_SOURCE_READINESS`.
 
-No hay binding live Make/HR verificable en repo, Gmail, Drive ni contexto. No se debe simularlo, inventar webhook/scenario ni activar HR writes por otro canal. Una vez resuelto el binding seguro y gateado se realiza la validación provider-backed de I4-C.
+## Finanzas
+- Preservar Finance V2/historical; no reconstruir.
+- Mayo 2026: 44/44 pagos confirmados.
+- Junio 2026: 2 pagos confirmados y 42 pendientes sobre 44 visitas.
+- Validar/wirear el read model source-safe para que liquidaciones históricas y estado de pago sean operables en Phase A.
+- Mantener `liquidada != pagada`; no inferir pago desde visita ejecutada/submitido.
+- Resolver revisiones financieras por claves estables y revisión humana, sin PII/banco crudo.
+- No ejecutar pagos; solo control/estado auditado en el alcance inicial.
 
-Después: I4-D Finanzas → I4-E multi-proyecto/no-code → I4-F Academia → I5.
+Después: I4-E multi-proyecto/no-code → I4-F Academia → I5.
 
-No reabrir Auth, Shopper histórico, TARGET_B Admin, I1/I2/I3/I4-A/I4-B ni crear nueva candidata/rama/PR.
+Make/Gemini runtime se revisan posteriormente; no pedir escenarios Make durante esta frontera.

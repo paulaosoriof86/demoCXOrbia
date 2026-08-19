@@ -1,28 +1,20 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4C-HR-SYNC-SOURCE-READY-32`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4D-FINANCE-PHASEA-ACTIVE-33`
 
-## Validado/preservado
-I1/I2/I3/I4-A/I4-B PASS/frozen. HR `15 periodos / 660 visitas`, Historical Shopper, TARGET_B Admin, Finance V2/historical y legal v0.4 no se reprocesan. Progreso formal: **60% completado / 40% pendiente**.
+I1/I2/I3/I4-A/I4-B PASS/frozen. I4-C source/readiness queda suficiente para Phase A inicial; runtime Make/HR se difiere. Progreso formal **60% completado / 40% pendiente**.
 
-## I4-C backend source-ready
-Contrato/adapter/verifier bidireccional ya existen. El patrón reusable es:
-- identidad: `tenantId + projectId + visitId + hrRowId + shopperId`;
-- estado: `assignmentSource + assignmentSyncStatus + lastSyncedAt`;
-- Plataforma→HR queda pendiente hasta reflection/ACK;
-- HR→Plataforma asigna por shopper exacto y retira de disponibles;
-- reflection exacta no duplica;
-- conflictos visibles/revisables, nunca overwrite silencioso ni dedupe por nombre.
+## I4-D Finanzas activo
+Frontera `I4D_FINANCE_PHASE_A_JUNE_PAYMENT_STATE_SOURCE_READINESS`.
 
-Verifier source-only 8/8 PASS; Make/HR/provider writes = 0.
+Fuente real source-safe disponible: Mayo 2026 44/44 pagadas; Junio 2026 2/44 pagadas y 42 pendientes. La plataforma nunca debe traducir `liquidada` como `pagada`; pago confirmado requiere fuente/auditoría. No mostrar `paidAt` inventado ni datos bancarios.
+
+Se preserva Finance V2/historical y se añade read model/verifier backend sin tocar módulos frontend.
 
 ## Frontend / Claude
-No parchear desde backend. Cuando llegue el handoff funcional, los estados visuales deben ser honestos: `pendiente de sincronización`, `sincronizado`, `conflicto/revisión`; nunca mostrar HR sincronizada antes de ACK/provider-backed. Cinépolis sigue proyecto configurable, no lógica global.
+Cuando corresponda el handoff, `modules/finanzas.js` y superficies relacionadas deben distinguir claramente liquidación vs pago y mostrar estado real de junio. No prometer Make activo: I4-C runtime está diferido. Cinépolis sigue proyecto configurable.
 
 ## Academia
-Preparar contenido por rol sobre origen de asignación, estado de sync, conflictos y revisión humana, pero no enseñar Make/HR live como operativo hasta cerrar I4-C provider-backed.
+Actualizar posteriormente contenidos de Finanzas con estados reales y controles de evidencia. Make/Gemini runtime no se enseña como activo todavía.
 
-## Siguiente
-`I4C_MAKE_HR_PROVIDER_BINDING_EXTERNAL_CONFIGURATION_REQUIRED`.
-
-No se encontró configuración live Make/HR en fuentes accesibles; no inventarla ni pedir webhook/secreto en texto plano.
+Siguiente backend: `I4D_FINANCE_PHASE_A_JUNE_PAYMENT_STATE_SOURCE_READINESS`.

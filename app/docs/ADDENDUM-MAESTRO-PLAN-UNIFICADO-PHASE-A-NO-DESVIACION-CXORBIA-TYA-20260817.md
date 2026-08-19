@@ -1,25 +1,15 @@
-# ADDENDUM MAESTRO — PLAN UNIFICADO PHASE A · NO DESVIACIÓN · CXORBIA TyA
+# ADDENDUM MAESTRO — PLAN UNIFICADO PHASE A NO DESVIACIÓN CXORBIA TyA
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4C-HR-SYNC-SOURCE-READY-32`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4D-FINANCE-PHASEA-ACTIVE-33`
 
-## Estado formal
-I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `25/25 PASS FROZEN`; I4 `0/25 IN_PROGRESS_NOT_SCORED`; I5 `0/15 NOT_STARTED` = **60% completado / 40% pendiente**. No hay subpesos I4-A..F.
+Progreso formal **60% completado / 40% pendiente**. I1/I2/I3/I4-A/I4-B frozen.
 
-## Frozen
-I1/I2/I3/I4-A/I4-B; Historical Shopper; TARGET_B Admin; HR `15 periodos / 660 visitas`; Finance V2/historical; legal v0.4. No reprocesar.
+Corrección vigente de prioridad: I4-C conserva source readiness PASS y queda cerrado para el alcance inicial de Phase A; la conexión runtime Make/HR se difiere y no bloquea producción inicial. Esta decisión está fijada en `ADDENDUM-MAESTRO-PRIORIDAD-GO-LIVE-FINANZAS-ANTES-MAKE-20260819.md`.
 
-## I4-C — fuente/contrato implementados
-La sincronización de asignaciones se expresa con llaves estables `tenantId`, `projectId`, `visitId`, `hrRowId`, `shopperId`, más `assignmentSource`, `assignmentSyncStatus`, `lastSyncedAt`.
+La frontera viva es `I4D_FINANCE_PHASE_A_JUNE_PAYMENT_STATE_SOURCE_READINESS`.
 
-Plataforma→HR: la asignación originada en plataforma prepara `hrSync` para Make, queda `pending_hr` y solo pasa a `synced` cuando HR refleja exactamente la misma identidad/shopper. HR→Plataforma: una asignación HR exacta prepara `visit.assign` con origen `hr`, shopper validado y retiro de disponibles. Una asignación ya reflejada no se duplica.
+I4-D debe reutilizar Finance V2/historical, la fuente `tya-payment-history-source-safe.js`, la reconciliación canónica, contratos de liquidaciones/pagos y adapter existente. Verdad inicial: Mayo 2026 44/44 pagadas; Junio 2026 2/44 pagadas y 42 pendientes. `liquidada` nunca implica `pagada`; pago confirmado requiere fuente/auditoría y no se inventa `paidAt`.
 
-Conflictos por scope, identidad estable, shopper distinto, reflection faltante o shopper HR inexistente pasan a revisión humana. Prohibido dedupe por nombre o overwrite silencioso.
+Orden: I4-D Finanzas → I4-E multi-proyecto/no-code → I4-F Academia → I5 preproducción/go-live. Make/Gemini runtime se revisan después del núcleo indispensable.
 
-El verifier source-only pasó 8 casos sin provider calls ni writes.
-
-## Frontera exacta
-`I4C_MAKE_HR_PROVIDER_BINDING_EXTERNAL_CONFIGURATION_REQUIRED`.
-
-La única brecha de I4-C ya no es lógica de sincronización sino binding externo live de Make/HR; no se encontró configuración autenticada en fuentes accesibles. Make/HR/provider writes y producción siguen bloqueados.
-
-Frontend/Claude conserva el handoff; Academia debe enseñar estados pendiente/sincronizado/conflicto solo cuando I4-C complete provider-backed.
+No payment execution, Make, HR writes, deploy, merge ni producción por este bloque source-only.
