@@ -7,7 +7,7 @@
   "firebaseProjectId": "cxorbia-backend-dev",
   "tenantId": "tya",
   "projectId": "cinepolis",
-  "sourceHeadSha": "7b8db54d7049ac78dc61328079bd66918d43858a",
+  "sourceHeadSha": "7613eb31a7dea5843ce9ad7cd901203ea07dfb79",
   "enabled": true,
   "consumed": false,
   "status": "authorized_execute_once",
@@ -41,6 +41,9 @@
   "noAutomaticRetry": true,
   "allowedExecutions": 1,
   "outputPolicy": "source_safe_fingerprint_only_no_raw_identity",
-  "mechanism": "pull_request_exact_head_request_only",
+  "mechanism": "pull_request_exact_head_request_only_node24_iife",
+  "priorMechanismFailureRun": 32208686940,
+  "priorMechanismFailureClass": "NODE24_AMBIGUOUS_MODULE_SYNTAX_PRE_PROVIDER_READ",
+  "providerReadsConsumedByPriorFailure": 0,
   "supersedesUnobservableRequestCommit": "7e2be1da8fd7b69aeccc265f27ccf5650fe17258"
 }
