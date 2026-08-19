@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "cxorbia.i4d.finance-phase-a-source-readiness.v1",
+  "syncEpoch": "CXORBIA-20260819-I4D-FINANCE-PHASEA-ACTIVE-33",
+  "generatedAt": "2026-08-19T16:46:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "decision": "FINANCE_SOURCE_READY_FOR_DETERMINISTIC_VERIFICATION_AND_RUNTIME_WIRING",
+  "priorityCorrection": {
+    "makeRuntimeBindingBlocksGoLive": false,
+    "makeReviewDeferred": true,
+    "financeIsPhaseAEssential": true,
+    "source": "ADDENDUM-MAESTRO-PRIORIDAD-GO-LIVE-FINANZAS-ANTES-MAKE-20260819.md"
+  },
+  "historicalPaymentTruth": {
+    "source": "app/data/tya-payment-history-source-safe.js",
+    "sourceSafe": true,
+    "executionAllowed": false,
+    "may2026": {"visits": 44, "paid": 44, "pending": 0, "paymentConfirmed": true},
+    "june2026": {"visits": 44, "paid": 2, "pending": 42, "confirmedPaidItems": 2, "confirmedPaidTotalGTQ": 451}
+  },
+  "financialReconciliation": {
+    "source": "app/data/tya-financial-canonical-source-safe.js",
+    "financialLiquidationRows": 247,
+    "exactAcceptedLinks": 209,
+    "reviewLiquidationRows": 38,
+    "canonicalAmountReady": 207,
+    "amountReviewRequired": 2,
+    "paymentInferenceFromExecutionForbidden": true
+  },
+  "sourceImplementation": {
+    "existingAdapter": "backend/adapters/liquidations-payment-state-adapter.preview.mjs",
+    "existingContract": "backend/contracts/liquidations-payments-phase-a-v1.json",
+    "readModel": "backend/runtime/cxorbia-finance-phase-a-read-model-v1.mjs",
+    "verifier": "tools/verify-cxorbia-i4d-finance-phase-a-source.mjs",
+    "verifierExecutedInThisEvidence": false
+  },
+  "safety": {
+    "paymentExecution": false,
+    "paymentStateWrites": false,
+    "providerCalls": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "makeCalls": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "geminiCalls": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false,
+    "rawBankData": false
+  },
+  "nextFrontier": "I4D_FINANCE_PHASE_A_JUNE_PAYMENT_STATE_SOURCE_READINESS"
+}
