@@ -1,24 +1,33 @@
 # CAMBIOS-BACKEND.md
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4B-E2E-MECHANISM-HOLD-27`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4B-RETRY1-PREPROVIDER-DOCSYNC-FIX-28`
 
 ## Preservado
-I1/I2/I3 PASS, I4-A PASS, HR 15/660, Historical Shopper frozen, TARGET_B Admin no recrear, Finance V2/historical y legal v0.4. I4-B readiness/provider source permanece PASS/source-ready.
+I1/I2/I3 PASS, I4-A PASS, HR `15 periodos / 660 visitas`, Historical Shopper frozen, TARGET_B Admin no recrear, Finance V2/historical y legal v0.4. I4-B readiness/provider source permanece PASS/source-ready.
 
-## I4-B — primer E2E write gate
-Autorización consumida en run `32286832002`, artifact `9377953415` (`sha256:4454bd22f9dd8f0539420fd7f581ab14767f7a530a17bcb5c62241d183dd092a`). Resultado: `HOLD_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE__provider_is_not_defined`.
+## I4-B — primer E2E consumido
+Run `32286832002`, artifact `9377953415`: `HOLD_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE__provider_is_not_defined`. Causa `PIPELINE_MECHANISM_FAILURE_PRIMARY`; provider commits/writes 0, fixture sintético retirado y visitas/postulaciones reales invariantes. No se atribuye a defecto del producto/provider.
 
-Causa: `PIPELINE_MECHANISM_FAILURE_PRIMARY`. La función de harness incrementó el contador y luego evaluó `provider.execute`, pero `provider` había sido declarado dentro de otro bloque léxico; por eso el provider real nunca recibió el comando. No se atribuye a producto/provider.
+## Retry1 — autorización vigente
+Gate `NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY1__HARNESS_SCOPE_FIXED__SYNTHETIC_VISIT_ONLY` autorizado por Paula; `enabled=true`, `consumed=false`, `executionsConsumed=0`. Scope: sintético únicamente; Historical Shopper=false; mutación visita HR real=false; Auth/HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/prod = 0/false.
 
-Safety: `providerCommittedCalls=0`, `providerWritesReported=0`, receipts/audit 0; una visita sintética se creó y fue eliminada; la aplicación sintética nunca se materializó; digests confirmaron visitas reales y postulaciones reales sin cambios. Auth/Historical Shopper/HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/prod 0/false.
+## Hallazgo nuevo reproducible — desincronización documental
+Se movió Retry1 a un carril PR observable y el run `32296607712` sí arrancó. Se detuvo antes de preparar runtime/provider porque `verify-cxorbia-source-truth-sync.mjs` devolvió `FAIL_SOURCE_TRUTH_SYNC` con un único error: `FRONTIER:app/docs/ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
 
-## Corrección source-only
-Creado `tools/cxorbia-i4b-e2e-harness-v1.mjs`: elimina dependencia de variable global/oculta y exige `provider` como parámetro explícito antes de `execute`. Workflow one-shot consumido retirado; no hubo rerun automático.
+Artifact `9381423175`, digest `sha256:e88ccd8cc244f7fd5a571ffbc2c9082bd56267f85a591a2cdbd959d85e0dfcb2`. Provider execution no inició: provider calls/commits/writes 0; no synthetic fixture creado; datos/proveedores protegidos no fueron tocados.
 
-## Avance
-Formal sigue 60/40 por ausencia de subpesos I4. Operativamente: I4-A PASS; I4-B source readiness PASS; E2E operacional aún pendiente de retry.
+El finalizer mostró además un defecto secundario de shell (`syntax error: unexpected end of file`) y no persistió el HOLD ni consumió el gate. La autorización permanece vigente; no corresponde pedir otra.
 
-## Siguiente
-`NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY1__HARNESS_SCOPE_FIXED__SYNTHETIC_VISIT_ONLY`, misma visita sintética/alcance y sin tocar las 660 visitas reales.
+Evidencia durable creada: `app/docs/evidence/I4B-RETRY1-PREPROVIDER-DOCSYNC-FAILURE.json`.
 
-Clasificación: Reusable CXOrbia = provider + harness explícito; Exclusivo TyA = tenant/project y protección HR 15/660; Claude/prototipo = handoff previo sin cambio; Academia = sin cambio por fallo de mecanismo; Sin impacto Claude = gate/evidence/harness.
+## Corrección en curso
+Se abre `SYNC_EPOCH 28` para sincronizar Execution State, Source Lock, índice, checkpoint, addendum, Plan Lock, tracker, CAMBIOS, RESUMEN y PENDIENTES. El tracker 35/65 queda reemplazado por el formal canónico **60%/40%**: I3 ya está integralmente PASS/FROZEN.
+
+Tras terminar el resync se corrige el finalizer y se ejecuta el mismo Retry1 autorizado en el carril observable. Si PASS → I4-C HR bidireccional.
+
+## Clasificación
+- Reusable CXOrbia: disciplina de gate, source-truth y finalizer observable.
+- Exclusivo TyA: `tenantId=tya`, proyecto Cinépolis y protección HR 15/660.
+- Claude/prototipo: handoff previo sin cambio; no P0 frontend nuevo.
+- Academia: sin cambio funcional por este fallo pre-provider.
+- Sin impacto Claude: workflows, gate, evidencia y sincronización documental.
