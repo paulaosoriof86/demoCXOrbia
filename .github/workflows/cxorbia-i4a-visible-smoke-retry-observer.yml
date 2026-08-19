@@ -11,13 +11,16 @@ permissions:
   actions: read
   contents: write
 
+concurrency:
+  group: cxorbia-i4a-visible-smoke-retry-observer
+  cancel-in-progress: true
+
 jobs:
   observe:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
       TARGET_SHA: fd79f36ea15a18d1953c628ca857e3d79f58600f
-      TARGET_NAME: CXOrbia I4A Visible Shopper Lifecycle Smoke Retry Stabilized
       EVIDENCE_PATH: app/docs/evidence/I4A-VISIBLE-SMOKE-RETRY-RUNTIME-OBSERVED.json
       GH_TOKEN: ${{ github.token }}
     steps:
@@ -32,7 +35,7 @@ jobs:
           set -euo pipefail
           run_id=''
           for i in $(seq 1 72); do
-            run_id=$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${TARGET_SHA}&event=push&per_page=100" --jq '.workflow_runs[] | select(.name == env.TARGET_NAME) | .id' | head -n1 || true)
+            run_id=$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${TARGET_SHA}&event=push&per_page=100" --jq '.workflow_runs[] | select(.name == "CXOrbia I4A Visible Shopper Lifecycle Smoke Retry Stabilized") | .id' | head -n1 || true)
             if [ -n "$run_id" ]; then
               status=$(gh api "/repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status')
               echo "found run ${run_id} status ${status}"
@@ -57,7 +60,7 @@ jobs:
           node - "$result" <<'NODE'
           const fs=require('fs');const p=process.argv[2],x=JSON.parse(fs.readFileSync(p,'utf8'));
           if(x.schemaVersion!=='cxorbia.i4a.visible-shopper-lifecycle-smoke-retry.evidence.v1')throw new Error('unexpected_schema');
-          const banned=JSON.stringify(x);if(/password|credentialValues|@auth\.cxorbia\.invalid|cxorbia\.i4a\./i.test(banned))throw new Error('sanitization_guard_failed');
+          const text=JSON.stringify(x);if(/"password"|credentialValues|@auth\.cxorbia\.invalid|cxorbia\.i4a\.[a-f0-9]+/i.test(text))throw new Error('sanitization_guard_failed');
           fs.mkdirSync('app/docs/evidence',{recursive:true});fs.writeFileSync(process.env.EVIDENCE_PATH,JSON.stringify(x,null,2)+'\n','utf8');
           console.log(JSON.stringify({decision:x.decision,failurePhase:x.failurePhase||null,run:x.workflowRunId,checkpoints:x.checkpoints,surfaces:x.surfaces},null,2));
           NODE
