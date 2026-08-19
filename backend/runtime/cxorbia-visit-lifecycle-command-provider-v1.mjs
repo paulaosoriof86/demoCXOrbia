@@ -140,11 +140,14 @@ async function executeInTransaction(db,command,actor){
       if(!OPERATOR_ROLES.includes(actor.role))throw new Error('I4B_APPLICATION_STATUS_OPERATOR_ONLY');
       const aRef=r.postulations.doc(entityId),aSnap=await tx.get(aRef);if(!aSnap.exists)throw new Error('I4B_APPLICATION_MISSING');const a=aSnap.data()||{};assertVersion(command,a);
       const status=str(payload.status).toLowerCase();if(!APPLICATION_STATES.includes(status))throw new Error('I4B_APPLICATION_STATUS_INVALID');
+      let approvedVisitRef=null,approvedVisit=null;
+      if(status==='aprobada'){
+        const visitId=str(a.visitId||a.visitaId||payload.visitId);approvedVisitRef=r.visits.doc(visitId);const vSnap=await tx.get(approvedVisitRef);if(!vSnap.exists)throw new Error('I4B_VISIT_MISSING');approvedVisit=vSnap.data()||{};
+        const assigned=str(approvedVisit.shopperId);if(assigned&&assigned!==str(a.shopperId))throw new Error('I4B_VISIT_ALREADY_ASSIGNED_OTHER_SHOPPER');
+      }
       tx.set(aRef,{status,estado:status,decisionReason:payload.reason||null,managedBy:actor.uid,updatedAt:now(),version:Number(a.version||0)+1},{merge:true});providerWrites++;
       if(status==='aprobada'){
-        const visitId=str(a.visitId||a.visitaId||payload.visitId);const vRef=r.visits.doc(visitId),vSnap=await tx.get(vRef);if(!vSnap.exists)throw new Error('I4B_VISIT_MISSING');const v=vSnap.data()||{};
-        const assigned=str(v.shopperId);if(assigned&&assigned!==str(a.shopperId))throw new Error('I4B_VISIT_ALREADY_ASSIGNED_OTHER_SHOPPER');
-        tx.set(vRef,{shopperId:str(a.shopperId),estado:'asignada',status:'asignada',assignmentSource:'platform',assignmentSyncStatus:'pending',lastSyncedAt:null,updatedAt:now(),version:Number(v.version||0)+1},{merge:true});providerWrites++;
+        tx.set(approvedVisitRef,{shopperId:str(a.shopperId),estado:'asignada',status:'asignada',assignmentSource:'platform',assignmentSyncStatus:'pending',lastSyncedAt:null,updatedAt:now(),version:Number(approvedVisit.version||0)+1},{merge:true});providerWrites++;
       }
       auditTarget=entityId;
     } else {
