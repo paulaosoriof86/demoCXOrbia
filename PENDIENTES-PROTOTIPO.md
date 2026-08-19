@@ -1,17 +1,9 @@
 # PENDIENTES-PROTOTIPO.md
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4A-VISIBLE-SMOKE-RETRY1-DOCUMENT-SELECTOR-HOLD-23`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4A-RETRY2-HARNESS-GLOBAL-GUARD-HOLD-24`
 
-## Pendiente activo único
-`NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY2__STABLE_SURFACE_SELECTORS__NO_SW`
+Pendiente activo único: `NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY3__SAFE_GLOBAL_GUARDS__STABLE_SURFACES`.
 
-Debe terminar con la misma Shopper sintética/no histórica:
-- Documentos/instrucciones usando control visible explícito;
-- Visitas Disponibles y detalle/control de postulación sin enviar;
-- estado propio de postulación visible/derivado sin write;
-- panel de notificaciones con fuente Firestore aunque el conteo sea 0;
-- presentación honesta de certificación nueva (examen publicado o pendiente de fuente, sin fabricar score).
-
-Ya probado y no repetir diagnóstico: Auth visible, membership, app entered, HR authority 15/660 con Service Worker bloqueado.
+Usar misma Shopper sintética; SW bloqueado; globals opcionales vía `window.*`; `button[data-doc]` y `button[data-detail]`; no enviar postulación/cert/reserva. Validar Documentos, Visitas/Postulación, Notificaciones y Certificación. Auth/membership/app y HR 15/660 ya tienen evidencia y no se reauditan salvo checkpoints necesarios del mismo smoke.
 
 No reabrir I3, Historical Shopper, Admin TARGET_B, HR import, Finance V2 ni identidad dedicada. Después: I4-B → I4-C → I4-D → I4-E → I4-F → I5.

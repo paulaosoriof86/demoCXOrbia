@@ -1,27 +1,16 @@
 # ADDENDUM MAESTRO — PLAN UNIFICADO PHASE A · NO DESVIACIÓN · CXORBIA TyA
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4A-VISIBLE-SMOKE-RETRY1-DOCUMENT-SELECTOR-HOLD-23`  
-**Estado:** `ACTIVO__I3_FROZEN__I4A_VISIBLE_LIFECYCLE_CORRECTIVE_CONTINUATION`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4A-RETRY2-HARNESS-GLOBAL-GUARD-HOLD-24`
 
-## 1. Estado formal
-I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `25/25 PASS FROZEN`; I4 `0/25 IN_PROGRESS_NOT_SCORED`; I5 `0/15` = **60% / 40%**.
+## Estado
+I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `25/25 PASS FROZEN`; I4 `0/25`; I5 `0/15` = **60% / 40%**. No reinicio ni reproceso.
 
-## 2. Frozen/no reprocess
-I1/I2/I3; Historical Shopper; TARGET_B Admin; HR 15/660; Finance V2/historical; legal V0.4; identidad test dedicada ya materializada.
+## I4-A
+Identidad test dedicada provider-verificada. Retry1 probó Auth/membership/app/HR 15/660 y Documentos renderizado; selector genérico detuvo viewer. Retry2 corrigió source-truth antes de provider y luego pasó Auth/membership/app; se detuvo solo por un ReferenceError del harness sobre global aún no creado. Ambos son mecanismo, no P0 producto.
 
-## 3. I4-A — evidencia acumulada
-La identidad dedicada está provider-verificada. Visible smoke inicial quedó HOLD de harness. Retry1 estabilizó Service Worker y probó de forma visible Auth Shopper, membership, entrada a app y restauración HR 15/660. El HOLD posterior fue un selector de Playwright sobre `div[data-doc]` luego de que Documentos ya renderizara `Recursos del proyecto`; no prueba defecto de producto.
+Siguiente: `NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY3__SAFE_GLOBAL_GUARDS__STABLE_SURFACES`, autorizado en el turno actual. Usar `window.CX_PROTECTED_AUTH_HR_AUTHORITY`, `window.CX_BACKEND_BULLETINS_STATUS` y demás globals opcionales protegidos; controles `button[data-doc]`/`button[data-detail]`; no submit ni writes.
 
-## 4. Siguiente gate exacto
-`NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY2__STABLE_SURFACE_SELECTORS__NO_SW`.
-
-Usar controles explícitos (`button[data-doc]`, `button[data-detail]`) y verificaciones visibles estables. No enviar postulación/certificación/reserva. Máximo 1 password update efímero + 1 login en la misma Shopper sintética; cero otros provider/Firestore/HR/Make/Gemini/pagos writes; sin deploy/merge/prod. La autorización del turno actual cubre este correctivo acotado.
-
-## 5. Después de I4-A
+## Después
 I4-B visita → I4-C HR bidireccional → I4-D Finanzas → I4-E multi-proyecto/no-code → I4-F Academia → I5 freeze/build-lock/preproducción/E2E/cutover/smoke.
 
-## 6. Frontend/Claude
-Backend no parchea módulos/core. Solo defecto visible reproducible genera handoff por archivo. Un fallo del harness no se transfiere a Claude.
-
-## 7. Definition of Done
-Objetivo real + evidencia + seguridad + proven/disproven/unknown + documentos atómicos + verifier + siguiente bloque único.
+Frontend/Claude solo recibe defecto visible reproducible; Academia se actualiza con comportamiento visible confirmado.

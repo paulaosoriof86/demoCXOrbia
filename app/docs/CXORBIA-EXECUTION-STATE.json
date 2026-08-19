@@ -1,61 +1,10 @@
 {
-  "schemaVersion": "cxorbia.execution-state.v1",
-  "syncEpoch": "CXORBIA-20260819-I4A-VISIBLE-SMOKE-RETRY1-DOCUMENT-SELECTOR-HOLD-23",
-  "generatedAt": "2026-08-19T11:23:00-06:00",
-  "repository": "paulaosoriof86/demoCXOrbia",
-  "branch": "docs-tya-v6-v71-audit",
-  "pullRequest": 7,
-  "pullRequestState": "draft_open_no_merge",
-  "base": "release/cxorbia-tya-rc-20260630",
-  "phaseA": {
-    "formalProgressPercent": 60,
-    "formalRemainingPercent": 40,
-    "score": {"I1":"15/15 PASS","I2":"20/20 PASS","I3":"25/25 PASS FROZEN","I4":"0/25 IN_PROGRESS_NOT_SCORED","I5":"0/15 NOT_STARTED"},
-    "currentState": "I3_FROZEN__I4A_AUTH_MEMBERSHIP_APP_HR_PASS__RETRY1_HOLD_DOCUMENT_SELECTOR_MECHANISM__RETRY2_AUTHORIZED_CURRENT_TURN",
-    "currentBlock": "I4-A visible Shopper lifecycle smoke corrective continuation",
-    "exactFrontier": "NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY2__STABLE_SURFACE_SELECTORS__NO_SW"
-  },
-  "i4a": {
-    "sourceReadiness": "CLOSED_NO_REAUDIT",
-    "dedicatedTestShopper": "PASS_CREATED_PROVIDER_VERIFIED_FROZEN",
-    "visibleSmokeInitial": "HOLD_CONSUMED_HARNESS_SW_GAP",
-    "visibleSmokeRetry1": {
-      "status": "HOLD_CONSUMED_NO_AUTOMATIC_RERUN",
-      "workflowRunId": 32280348780,
-      "classification": "PIPELINE_MECHANISM_FAILURE__DOCUMENT_SELECTOR_TARGET__NO_PRODUCT_DEFECT_PROVEN",
-      "serviceWorkersBlocked": true,
-      "pageReady": true,
-      "firebaseUser": true,
-      "shopperAuthContext": true,
-      "membershipVerified": true,
-      "appEntered": true,
-      "hrAuthorityReady": true,
-      "hrPeriods": 15,
-      "hrVisits": 660,
-      "documentRouteRendered": true,
-      "viewerInteractionProven": false,
-      "productDefectProven": false
-    },
-    "stillNeedsVisibleEvidence": ["documents/instructions viewer interaction","available visits","postulation control/state","notifications","new-certification presentation surface"]
-  },
-  "consumedAndFrozen": {
-    "I1":"PASS_NO_RERUN","I2":"PASS_NO_RERUN","I3":"PASS_INTEGRAL_NO_RERUN","historicalShopper":"FROZEN_NO_CREDENTIAL_ACCESS_LOGIN_RECOVERY_RESET","targetBAdmin":"EXISTS_PASS_NO_RECREATE","i4aExistingShopperProviderRead":"CONSUMED_HOLD_NO_RERUN","i4aDedicatedTestShopperCreate":"PASS_CONSUMED_NO_RERUN","i4aVisibleSmokeInitial":"HOLD_CONSUMED_NO_RERUN","i4aVisibleSmokeRetry1":"HOLD_CONSUMED_NO_RERUN","hr":"15_PERIODS_660_VISITS_NO_REIMPORT","finance":"V2_HISTORICAL_NO_REBUILD","legalV0_4":"DURABLE_PASS_NO_AUTOACCEPT"
-  },
-  "safetyLatestGate": {"providerVerificationReads":1,"firestoreVerificationReads":4,"authPasswordUpdates":1,"loginAttempts":1,"historicalShopperAccess":false,"otherIdentitiesModified":0,"authCreates":0,"authClaimsWrites":0,"authDeletes":0,"firestoreWrites":0,"postulationSubmits":0,"certificationSubmits":0,"reservationWrites":0,"hrWrites":0,"rulesWrites":0,"storageWrites":0,"makeCalls":0,"geminiCalls":0,"paymentWrites":0,"hostingDeploys":0,"cloudRunDeploys":0,"merge":false,"production":false,"credentialsExported":false},
-  "activeEvidence": "app/docs/evidence/I4A-VISIBLE-DEV-SHOPPER-LIFECYCLE-SMOKE-RETRY1-HOLD-LATEST.json",
-  "sourceTruthProtocol": {"atomicCanonicalSyncRequiredAfterEveryExecutedGate":true,"continuityFastPathRequired":true,"canonicalDocsAndVerifierMustShareSyncEpoch":true,"harnessFailureMustNotBePromotedToProductDefect":true,"stopOnMismatch":"SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION"},
-  "nextGate": {
-    "name": "NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY2__STABLE_SURFACE_SELECTORS__NO_SW",
-    "purpose": "Use the same dedicated synthetic Shopper; keep Service Workers blocked; use stable explicit visible controls instead of generic data attribute containers; complete the five visible I4-A surfaces without operational submissions or writes.",
-    "authorized": true,
-    "authorizationBasis": "Current user turn explicitly says procede, está autorizado and requests all necessary correctives to advance without another authorization loop.",
-    "loginAuthorizedMax": 1,
-    "authPasswordUpdateAuthorizedMax": 1,
-    "authCreatesAuthorized": 0,
-    "firestoreWritesAuthorized": 0,
-    "hrWritesAuthorized": false,
-    "deployAuthorized": false,
-    "mergeAuthorized": false,
-    "productionAuthorized": false
-  }
+  "schemaVersion":"cxorbia.execution-state.v1","syncEpoch":"CXORBIA-20260819-I4A-RETRY2-HARNESS-GLOBAL-GUARD-HOLD-24","generatedAt":"2026-08-19T11:34:00-06:00","repository":"paulaosoriof86/demoCXOrbia","branch":"docs-tya-v6-v71-audit","pullRequest":7,"pullRequestState":"draft_open_no_merge","base":"release/cxorbia-tya-rc-20260630",
+  "phaseA":{"formalProgressPercent":60,"formalRemainingPercent":40,"score":{"I1":"15/15 PASS","I2":"20/20 PASS","I3":"25/25 PASS FROZEN","I4":"0/25 IN_PROGRESS_NOT_SCORED","I5":"0/15 NOT_STARTED"},"currentState":"I3_FROZEN__I4A_RETRY2_HARNESS_GLOBAL_GUARD_HOLD__NO_PRODUCT_DEFECT__RETRY3_AUTHORIZED","currentBlock":"I4-A visible Shopper lifecycle smoke corrective continuation","exactFrontier":"NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY3__SAFE_GLOBAL_GUARDS__STABLE_SURFACES"},
+  "i4a":{"sourceReadiness":"CLOSED_NO_REAUDIT","dedicatedTestShopper":"PASS_CREATED_PROVIDER_VERIFIED_FROZEN","provenSoFar":{"serviceWorkerStabilizedAuth":true,"firebaseUser":true,"shopperAuthContext":true,"membershipVerified":true,"appEntered":true,"retry1HrAuthority15x660":true,"documentsRouteRendered":true},"retry2":{"status":"HOLD_CONSUMED_NO_RERUN","workflowRunId":32282049566,"classification":"PIPELINE_MECHANISM_FAILURE__HARNESS_UNDECLARED_WINDOW_GLOBAL__NO_PRODUCT_DEFECT_PROVEN","productDefectProven":false,"providerReads":1,"firestoreReads":4,"authPasswordUpdates":1,"loginAttempts":1},"stillNeedsVisibleEvidence":["documents/instructions viewer","available visits/postulation state","notifications","new-certification presentation"]},
+  "consumedAndFrozen":{"I1":"PASS_NO_RERUN","I2":"PASS_NO_RERUN","I3":"PASS_INTEGRAL_NO_RERUN","historicalShopper":"FROZEN_NO_CREDENTIAL_ACCESS_LOGIN_RECOVERY_RESET","targetBAdmin":"EXISTS_PASS_NO_RECREATE","i4aDedicatedTestShopperCreate":"PASS_CONSUMED_NO_RERUN","i4aVisibleSmokeInitial":"HOLD_CONSUMED_NO_RERUN","i4aVisibleSmokeRetry1":"HOLD_CONSUMED_NO_RERUN","i4aVisibleSmokeRetry2":"HOLD_CONSUMED_NO_RERUN","hr":"15_PERIODS_660_VISITS_NO_REIMPORT","finance":"V2_HISTORICAL_NO_REBUILD","legalV0_4":"DURABLE_PASS_NO_AUTOACCEPT"},
+  "safetyLatestGate":{"providerVerificationReads":1,"firestoreVerificationReads":4,"authPasswordUpdates":1,"loginAttempts":1,"historicalShopperAccess":false,"otherIdentitiesModified":0,"authCreates":0,"authClaimsWrites":0,"authDeletes":0,"firestoreWrites":0,"postulationSubmits":0,"certificationSubmits":0,"reservationWrites":0,"hrWrites":0,"rulesWrites":0,"storageWrites":0,"makeCalls":0,"geminiCalls":0,"paymentWrites":0,"hostingDeploys":0,"cloudRunDeploys":0,"merge":false,"production":false,"credentialsExported":false},
+  "activeEvidence":"app/docs/evidence/I4A-VISIBLE-DEV-SHOPPER-LIFECYCLE-SMOKE-RETRY2-HOLD-LATEST.json",
+  "sourceTruthProtocol":{"atomicCanonicalSyncRequiredAfterEveryExecutedGate":true,"continuityFastPathRequired":true,"canonicalDocsAndVerifierMustShareSyncEpoch":true,"harnessFailureMustNotBePromotedToProductDefect":true,"stopOnMismatch":"SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION"},
+  "nextGate":{"name":"NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY3__SAFE_GLOBAL_GUARDS__STABLE_SURFACES","authorized":true,"authorizationBasis":"Current user turn explicitly authorizes proceeding and necessary bounded correctives to advance without another authorization loop.","loginAuthorizedMax":1,"authPasswordUpdateAuthorizedMax":1,"authCreatesAuthorized":0,"firestoreWritesAuthorized":0,"hrWritesAuthorized":false,"deployAuthorized":false,"mergeAuthorized":false,"productionAuthorized":false}
 }

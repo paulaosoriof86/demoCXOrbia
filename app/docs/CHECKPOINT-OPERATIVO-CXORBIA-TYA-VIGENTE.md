@@ -1,15 +1,10 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4A-VISIBLE-SMOKE-RETRY1-DOCUMENT-SELECTOR-HOLD-23`  
-**Avance formal:** **60% completado / 40% pendiente**. I1 `15/15`, I2 `20/20`, I3 `25/25 FROZEN`, I4 `0/25`, I5 `0/15`.
+**SYNC_EPOCH:** `CXORBIA-20260819-I4A-RETRY2-HARNESS-GLOBAL-GUARD-HOLD-24`  
+**Avance formal:** **60% / 40%**.
 
-## Último resultado real
-I4-A retry1 run `32280348780`: el correctivo Service Worker funcionó hasta llevar la Shopper sintética por Firebase Auth → contexto Shopper → membership verified → app visible → HR authority `15 periodos / 660 visitas`. Sin page errors, console errors ni backend write attempts.
+Retry2 run `32282049566`: provider identity exacta; 1 password update efímero; 1 login; page/Firebase/Shopper context/membership/app PASS. HOLD del harness antes de HR por `ReferenceError` al consultar `CX_PROTECTED_AUTH_HR_AUTHORITY` sin `window.` cuando aún no existía. No producto defect probado; cero Firestore/operational/HR writes.
 
-La ejecución se detuvo en Documentos por un selector de prueba demasiado genérico (`[data-doc]` eligió el `div` antes del botón). La ruta ya estaba visible; por tanto no hay defecto de Documentos demostrado.
+Preservado: I1/I2/I3, Historical Shopper, Admin TARGET_B, HR 15/660, Finance V2, legal.
 
-## Preservado
-Historical Shopper, I3, Admin TARGET_B, HR 15/660, Finance V2/historical y legal no se reabren.
-
-## Siguiente bloque exacto
-`NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY2__STABLE_SURFACE_SELECTORS__NO_SW` — autorizado por el turno actual; mismo scope seguro, un intento.
+Siguiente autorizado: `NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY3__SAFE_GLOBAL_GUARDS__STABLE_SURFACES`.
