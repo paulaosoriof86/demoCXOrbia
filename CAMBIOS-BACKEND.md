@@ -1,56 +1,42 @@
 # CAMBIOS-BACKEND.md
 
-**Última sincronización:** 2026-08-18 19:31 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I4-SCOPE-MATERIALIZED-17`  
-**Estado:** `I3_FROZEN__GO_LIVE_60__I4_SCOPE_MATERIALIZED__I4A_NEXT__NO_EXECUTION`
+**Última sincronización:** 2026-08-18 19:44 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I4A-SOURCE-READINESS-HOLD-18`  
+**Estado:** `I3_FROZEN__GO_LIVE_60__I4A_READINESS_HOLD__NO_RUNTIME_EXECUTION`
 
 ## Bloque ejecutado
 
-`MATERIALIZE_CANONICAL_I4_SCOPE_FROM_APPROVED_SOURCE__NO_EXECUTION`
+`I4-A — SHOPPER LIFECYCLE / SOURCE READINESS`
 
-Tipo: documental/read-only. Cero cambios de producto/provider/datos; cero Auth/Firestore/Rules/HR/Storage/Make/Gemini/pagos; cero Hosting/Cloud Run; cero cambios de usuario/contraseña; cero merge/producción.
+Read-only/source-only. Se inspeccionaron exclusivamente los contratos canónicos Shopper ya identificados; no se amplió búsqueda.
 
-## Hallazgo y resolución
+### Resultado
 
-La fuente aprobada sí estaba en el orden obligatorio del índice: `app/docs/ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
+`HOLD_I4A_SOURCE_READINESS__VISIBLE_SHOPPER_LIFECYCLE_COVERAGE_NOT_YET_PROVEN`
 
-Su sección `9. I4 — operación visible` define explícitamente:
-- I4-A Shopper lifecycle: documentos/instrucciones; certificaciones históricas/nuevas; disponibles; postulación; asignación; perfiles/roles/scopes; notificaciones; histórico.
-- I4-B visita: agenda; reprogramación; cancelación; ventanas/reglas; ejecución; evidencias; cuestionario; submit; review/auditoría; estados dinámicos.
-- I4-C HR bidireccional: Plataforma→HR y HR→Plataforma con IDs/sync exactos, no duplicación y conflictos a revisión; Make solo bajo gate.
-- I4-D Finanzas: histórico preservado; liquidaciones; pagos; junio real; honorarios/reembolsos configurables; trazabilidad tenant/proyecto/visita/shopper.
-- I4-E multi-proyecto/no-code: país/moneda/timezone/locale; source+mapping; cuestionario/provider/link; documentos/reglas/certificación; agenda; pagos; roles/notificaciones; integraciones; privacidad/evidencias.
-- I4-F Academia: cursos/manuales/rutas/notificaciones/instrucciones/certificaciones junto con cada comportamiento operacional visible.
+- `tya-canonical-shopper-portal-v2.js`: perfil/contacto, certificación visible, histórico/estados, exact identity, read-only.
+- `cxorbia-shopper-membership-wiring-v1.js`: membership exacto tenant/shopper/projectIds, role/scopes, fail-closed, browser writes `0`.
+- `cxorbia-shopper-admin-command-contract-v1.js`: create/update/reset contract protegido; provider ACK, cifrado/protección, sin password/token/localStorage browser.
+- Evidencia I3 congelada reutilizada: postulación vs HR assignment PASS; 8 platform posts; 15 HR assignments; no HR-as-postulation; histórico preservado.
 
-`ACTIVE_SOURCE_GAP__I1_I5_PERCENT_WEIGHTS_PRESENT_BUT_I4_SEMANTIC_SCOPE_NOT_MATERIALIZED` queda **RESOLVED**. No se promociona `CORTE 4` legado a I4.
+No se probó aún E2E visible para documentos/instrucciones, disponibles, acción de postulación, notificaciones y presentación de certificación nueva. No implica que estén ausentes.
 
-## Preservado
-
-I1 `15/15 PASS`, I2 `20/20 PASS`, I3 `25/25 PASS` integral/frozen. Staff final run `32196648462`; identityMap canonical; agosto `2/0`; duplicados `0/0`; safety cero. No se reejecutó I3.
-
-## Archivos tocados
-
-- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md` — sincronizado a 60/40 e I4 materializado.
-- `app/docs/CXORBIA-EXECUTION-STATE.json` — estado vivo actualizado.
-- `app/docs/SOURCE-LOCK-CXORBIA-TYA.md` — source gap resuelto, I4-A→F fijado.
-- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md` — I4-A siguiente.
-- `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md` — continuidad sincronizada.
-- PR #7 — sincronización del bloque.
+Safety: runtime/login/credential selection `0`; Historical Shopper `0`; todos los provider/data/Auth/Rules/HR/Storage/Make/Gemini/payment writes `0`; deploys `0`; merge/production false.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** alcance operacional visible I4-A→F.
-- **Exclusivo TyA:** primer tenant/proyectos y evidencia real, sin hardcode global.
-- **Claude/prototipo:** sin parche UI en este bloque.
-- **Academia:** I4-F confirmado como parte canónica del alcance.
-- **Sin impacto Claude inmediato:** materialización documental/read-only.
+- **Reusable CXOrbia:** exact identity, membership/scopes y command contract.
+- **Exclusivo TyA:** contraste de lifecycle contra operación/evidencia real.
+- **Claude/prototipo:** cero parche UI; superficies no probadas deben contrastarse antes de cualquier handoff.
+- **Academia:** sin cambio; instrucciones/certificación/notificaciones quedan pendientes de validación visible.
+- **Sin impacto Claude inmediato:** source-readiness/read-only.
 
-## Avance Phase A
+## Avance
 
-I1 `15/15`; I2 `20/20`; I3 `25/25`; I4 `0/25`; I5 `0/15` = **60% completado / 40% pendiente**.
+I1 `15/15`; I2 `20/20`; I3 `25/25`; I4 `0/25`; I5 `0/15` = **60% / 40%**.
 
 ## Siguiente bloque exacto
 
-`I4-A — SHOPPER LIFECYCLE`
+`I4A_RESOLVE_EXISTING_NONHISTORICAL_TEST_SHOPPER_IDENTITY_FROM_FROZEN_EVIDENCE__READONLY_NO_LOGIN`
 
-No se ejecutó I4 todavía. Primer alcance: documentos/instrucciones; certificaciones históricas/nuevas; disponibles; postulación; asignación; perfiles/roles/scopes; notificaciones; histórico. Provider writes/deploy/merge/producción no autorizados.
+Sin login, credenciales, creación/reset de usuarios, provider writes, deploy, merge ni producción.
