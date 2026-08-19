@@ -1,26 +1,27 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4B-RETRY1-PREPROVIDER-DOCSYNC-FIX-28`  
-**Estado:** `SOURCE_TRUTH_RESYNC_IN_PROGRESS__I4B_RETRY1_AUTHORIZED_UNCONSUMED__PREPROVIDER_DOCSYNC_FAILURE_CORRECTED__60_40`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4B-RETRY1-PROVIDER-TX-ORDER-HOLD-29`  
+**Estado:** `SOURCE_TRUTH_SYNCHRONIZING__I4B_PROVIDER_REACHED__TX_ORDER_ROOT_CAUSE_FIXED_SOURCE_ONLY__RETRY2_AUTH_REQUIRED__60_40`
 
 Orden obligatorio: Execution State → Source Lock → Checkpoint → Plan Unificado/Addendum → Plan Lock → CAMBIOS/RESUMEN/PENDIENTES → tracker → evidencia activa → PR #7/HEAD/delta. Reglas maestras, Academia, patrones, antidesvío y ejecución directa siguen vigentes.
 
 ## CONTINUITY_FAST_PATH
-No reconstruir historial/Actions. I1/I2/I3/I4-A siguen frozen. I4-B readiness/provider source sigue PASS. No reabrir Auth/HR/Shopper ni recrear TARGET_B Admin.
+No reconstruir historial/Actions. I1/I2/I3/I4-A siguen frozen. No reabrir Auth/HR/Shopper ni recrear TARGET_B Admin. I4-B ya alcanzó provider real; el pendiente es validar la corrección puntual del orden transaccional.
 
 ## Avance formal canónico
 I1 `15/15`; I2 `20/20`; I3 `25/25 FROZEN`; I4 `0/25 IN_PROGRESS_NOT_SCORED`; I5 `0/15 NOT_STARTED` = **60% completado / 40% pendiente**. Sin subpesos formales I4-A..F.
 
-El tracker histórico que mostraba 35/65 queda reemplazado por este mismo denominador canónico: I3 ya está integralmente PASS/FROZEN y aporta sus 25 puntos.
+## I4-B Retry1
+Run `32297736022`: source truth PASS, provider source PASS, runtime DEV PASS y provider ejecutado. `application.create` PASS; replay idempotente PASS. Fallo real del tercer comando: `Firestore transactions require all reads to be executed before all writes.`
 
-## I4-B
-Primer E2E run `32286832002`: HOLD de mecanismo `provider is not defined`; provider commits/writes 0 y datos reales invariantes. Corrección de harness source-only preservada.
+Safety: `providerCommandCalls=3`, `providerCommittedCalls=2`, `providerWritesReported=3`; fixture y aplicación sintéticos eliminados; visitas/postulaciones reales invariantes; Historical Shopper/Auth/HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/prod sin cambios.
 
-Retry1 está autorizado y no consumido bajo `NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY1__HARNESS_SCOPE_FIXED__SYNTHETIC_VISIT_ONLY`.
+Retry1 fue consumido y no admite retry automático.
 
-Run `32296607712` confirmó el carril observable pero se detuvo antes de provider por desincronización documental: `FAIL_SOURCE_TRUTH_SYNC` con único error `FRONTIER:app/docs/ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`. El finalizer además presentó error shell y no consumió el gate. Provider runtime/calls/commits/writes = 0; gate sigue autorizado/unconsumido.
+## Causa raíz corregida source-only
+`application.status.update` leía la visita después de escribir la postulación dentro de la transacción. Fix commit `1bde86e5e5b6c2084fe5c711b7a8c06d089f12f4`: todas las lecturas/validaciones de aprobación ocurren antes de `tx.set`. Verificador source-only reforzado en commit `e1f62c8425d0fffc62b2ba92ccdd6141b60f3be6`.
 
-Evidencia activa: `app/docs/evidence/I4B-RETRY1-PREPROVIDER-DOCSYNC-FAILURE.json`.
+Evidencia activa: `app/docs/evidence/I4B-RETRY1-PROVIDER-TX-ORDER-SOURCE-FIX.json`.
 
 ## Siguiente frontera exacta
-Completar este resync documental, corregir el finalizer y ejecutar el mismo Retry1 ya autorizado. Si PASS → I4-C HR bidireccional → I4-D Finanzas → I4-E multi-proyecto/no-code → I4-F Academia → I5 producción.
+`NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY2__PROVIDER_TX_READ_ORDER_FIXED__SYNTHETIC_VISIT_ONLY` — nueva autorización necesaria porque Retry1 sí quedó consumido; mismo scope sintético y cero producción.
