@@ -39,25 +39,12 @@ jobs:
           set -euo pipefail
           mkdir -p "$OUT_DIR"
           node <<'NODE'
-          const fs=require('fs');
-          const cp=require('child_process');
-          const p=process.env.REQUEST_FILE;
-          const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          const fs=require('fs'),cp=require('child_process');
+          const p=process.env.REQUEST_FILE,r=JSON.parse(fs.readFileSync(p,'utf8'));
           const head=cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
           const parent=cp.execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const changed=cp.execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
-          const exact={
-            schemaVersion:'cxorbia.i4a.existing-shopper-auth-metadata-readonly.request.v1',
-            gateId:'NEW_AUTH_REQUIRED_I4A_EXISTING_SHOPPER_IDENTITY_CLASSIFICATION_DEV_READONLY_NO_LOGIN',
-            repository:'paulaosoriof86/demoCXOrbia',branch:'docs-tya-v6-v71-audit',pullRequest:7,
-            firebaseProjectId:'cxorbia-backend-dev',tenantId:'tya',projectId:'cinepolis',
-            enabled:true,consumed:false,status:'authorized_execute_once',authorizedBy:'Paula',
-            providerReadsAuthorized:true,providerWrites:0,authWrites:0,firestoreReads:0,firestoreWrites:0,
-            profileReads:0,historyReads:0,hrReads:0,hrWrites:0,loginAttempts:0,credentialSelection:0,
-            credentialValuesExported:false,passwordChanges:0,passwordResets:0,userCreates:0,userUpdates:0,
-            rulesDeploys:0,hostingDeploys:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,
-            merge:false,production:false,noAutomaticRetry:true,allowedExecutions:1
-          };
+          const exact={schemaVersion:'cxorbia.i4a.existing-shopper-auth-metadata-readonly.request.v1',gateId:'NEW_AUTH_REQUIRED_I4A_EXISTING_SHOPPER_IDENTITY_CLASSIFICATION_DEV_READONLY_NO_LOGIN',repository:'paulaosoriof86/demoCXOrbia',branch:'docs-tya-v6-v71-audit',pullRequest:7,firebaseProjectId:'cxorbia-backend-dev',tenantId:'tya',projectId:'cinepolis',enabled:true,consumed:false,status:'authorized_execute_once',authorizedBy:'Paula',providerReadsAuthorized:true,providerWrites:0,authWrites:0,firestoreReads:0,firestoreWrites:0,profileReads:0,historyReads:0,hrReads:0,hrWrites:0,loginAttempts:0,credentialSelection:0,credentialValuesExported:false,passwordChanges:0,passwordResets:0,userCreates:0,userUpdates:0,rulesDeploys:0,hostingDeploys:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,production:false,noAutomaticRetry:true,allowedExecutions:1};
           for(const [k,v] of Object.entries(exact)) if(r[k]!==v) throw new Error(`request_mismatch:${k}`);
           if(head!==process.env.HEAD_SHA) throw new Error('pr_head_mismatch');
           if(!/^[a-f0-9]{40}$/.test(String(r.sourceHeadSha||''))||r.sourceHeadSha!==parent) throw new Error('source_head_or_parent_mismatch');
@@ -80,8 +67,7 @@ jobs:
           set -euo pipefail
           mkdir -p .tmp/i4a-private
           node <<'NODE'
-          const fs=require('fs');
-          const raw=process.env.EXISTING_DEV_JSON||'';let x=null;try{x=JSON.parse(raw)}catch{}
+          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let x=null;try{x=JSON.parse(raw)}catch{}
           if(!(x&&x.type==='service_account'&&x.project_id==='cxorbia-backend-dev'&&x.client_email&&x.private_key)) throw new Error('credential_invalid');
           fs.writeFileSync('.tmp/i4a-private/credentials.json',raw,{mode:0o600});
           NODE
@@ -97,49 +83,40 @@ jobs:
         run: |
           set -euo pipefail
           node <<'NODE'
-          const fs=require('fs');
-          const crypto=require('crypto');
-          const admin=require('firebase-admin');
-          const req=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
-          admin.initializeApp({credential:admin.credential.applicationDefault(),projectId:req.firebaseProjectId});
-          const auth=admin.auth();
-          const h=s=>crypto.createHash('sha256').update(String(s)).digest('hex');
-          const norm=s=>String(s??'').trim().toLowerCase().replace(/[\s_]+/g,'-');
-          const arr=v=>Array.isArray(v)?v:(v==null?[]:[v]);
-          const enumAllowed=new Set(['test','synthetic','nonhistorical','non-historical','fixture','test-only','synthetic-test','dev-test']);
-          const boolMarkerKeys=['isTest','testIdentity','synthetic','isSynthetic','nonHistorical','isNonHistorical','fixture','isFixture','testOnly','syntheticIdentity'];
-          const enumMarkerKeys=['identityClass','identityType','accountClass','accountType','provenance','provenanceClass','sourceType','testProvenance'];
-          let pageToken=undefined,providerReadCalls=0,totalAuthPrincipals=0;
-          const shopper=[];
-          do {
-            const page=await auth.listUsers(1000,pageToken); providerReadCalls++;
-            for(const u of page.users){
-              totalAuthPrincipals++;
-              const c=u.customClaims||{};
-              const roles=[...arr(c.role),...arr(c.roles),...arr(c.scopeRole),...arr(c.scopeRoles)].map(norm);
-              const roleShopper=roles.includes('shopper');
-              if(!roleShopper) continue;
-              const tenants=[...arr(c.tenantId),...arr(c.tenant),...arr(c.tenantIds)].flat().map(norm);
-              const tenantExact=tenants.includes(norm(req.tenantId));
-              const projects=[...arr(c.projectId),...arr(c.projectIds)].flat().map(norm);
-              if(c.projects&&typeof c.projects==='object'&&!Array.isArray(c.projects)) projects.push(...Object.keys(c.projects).map(norm));
-              if(c.scopes&&typeof c.scopes==='object'&&!Array.isArray(c.scopes)) projects.push(...Object.keys(c.scopes).map(norm));
-              const projectExact=projects.includes(norm(req.projectId));
-              const markers=[];
-              for(const k of boolMarkerKeys) if(c[k]===true) markers.push({key:k,kind:'boolean_true'});
-              for(const k of enumMarkerKeys){ const n=norm(c[k]); if(enumAllowed.has(n)) markers.push({key:k,kind:'explicit_enum',value:n}); }
-              const explicitProvenance=markers.length>0;
-              shopper.push({uidFingerprint:h(u.uid),disabled:u.disabled===true,emailVerified:u.emailVerified===true,createdAt:u.metadata?.creationTime||null,lastSignInAt:u.metadata?.lastSignInTime||null,roleShopper,tenantExact,projectExact,explicitProvenance,markers});
-            }
-            pageToken=page.pageToken;
-          } while(pageToken);
-          const safe=shopper.filter(x=>x.roleShopper&&x.tenantExact&&x.projectExact&&x.explicitProvenance&&x.disabled!==true).sort((a,b)=>a.uidFingerprint.localeCompare(b.uidFingerprint));
-          const selected=safe[0]||null;
-          const decision=selected?'PASS_I4A_EXISTING_NONHISTORICAL_TEST_SHOPPER_IDENTITY_RESOLVED__PROVIDER_READONLY_NO_LOGIN':'HOLD_I4A_TEST_SHOPPER_IDENTITY_NOT_PROVEN__PROVIDER_READONLY_NO_LOGIN';
-          const out={schemaVersion:'cxorbia.i4a.existing-shopper-auth-metadata-readonly.evidence.v1',generatedAt:new Date().toISOString(),decision,providerReadCalls,totalAuthPrincipals,shopperPrincipalCount:shopper.length,explicitSafeCandidateCount:safe.length,selected:selected?{uidFingerprint:selected.uidFingerprint,disabled:selected.disabled,emailVerified:selected.emailVerified,createdAt:selected.createdAt,lastSignInAt:selected.lastSignInAt,roleShopper:true,tenantExact:true,projectExact:true,explicitProvenance:true,markers:selected.markers}:null,safety:{authMetadataOnly:true,rawUidExported:false,emailExported:false,displayNameExported:false,credentialValuesExported:false,passwordHashAccessed:false,loginAttempts:0,profileReads:0,historyReads:0,firestoreReads:0,providerWrites:0,authWrites:0,firestoreWrites:0,hrWrites:0,rulesDeploys:0,hostingDeploys:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,production:false},nextGate:selected?'NEW_AUTH_REQUIRED_I4A_SINGLE_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE':'STOP_HOLD_NO_AUTOMATIC_RETRY'};
-          fs.writeFileSync(process.env.OUT_DIR+'/result.json',JSON.stringify(out,null,2)+'\n','utf8');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`decision=${decision}\ncandidates=${safe.length}\nfingerprint=${selected?.uidFingerprint||'none'}\n`);
-          console.log(JSON.stringify(out,null,2));
+          const fs=require('fs'),crypto=require('crypto'),admin=require('firebase-admin');
+          (async()=>{
+            const req=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+            admin.initializeApp({credential:admin.credential.applicationDefault(),projectId:req.firebaseProjectId});
+            const auth=admin.auth(),h=s=>crypto.createHash('sha256').update(String(s)).digest('hex');
+            const norm=s=>String(s??'').trim().toLowerCase().replace(/[\s_]+/g,'-'),arr=v=>Array.isArray(v)?v:(v==null?[]:[v]);
+            const enumAllowed=new Set(['test','synthetic','nonhistorical','non-historical','fixture','test-only','synthetic-test','dev-test']);
+            const boolKeys=['isTest','testIdentity','synthetic','isSynthetic','nonHistorical','isNonHistorical','fixture','isFixture','testOnly','syntheticIdentity'];
+            const enumKeys=['identityClass','identityType','accountClass','accountType','provenance','provenanceClass','sourceType','testProvenance'];
+            let pageToken,providerReadCalls=0,totalAuthPrincipals=0;const shopper=[];
+            do{
+              const page=await auth.listUsers(1000,pageToken);providerReadCalls++;
+              for(const u of page.users){
+                totalAuthPrincipals++;const c=u.customClaims||{};
+                const roles=[...arr(c.role),...arr(c.roles),...arr(c.scopeRole),...arr(c.scopeRoles)].map(norm),roleShopper=roles.includes('shopper');
+                if(!roleShopper) continue;
+                const tenants=[...arr(c.tenantId),...arr(c.tenant),...arr(c.tenantIds)].flat().map(norm),tenantExact=tenants.includes(norm(req.tenantId));
+                const projects=[...arr(c.projectId),...arr(c.projectIds)].flat().map(norm);
+                if(c.projects&&typeof c.projects==='object'&&!Array.isArray(c.projects)) projects.push(...Object.keys(c.projects).map(norm));
+                if(c.scopes&&typeof c.scopes==='object'&&!Array.isArray(c.scopes)) projects.push(...Object.keys(c.scopes).map(norm));
+                const projectExact=projects.includes(norm(req.projectId)),markers=[];
+                for(const k of boolKeys) if(c[k]===true) markers.push({key:k,kind:'boolean_true'});
+                for(const k of enumKeys){const n=norm(c[k]);if(enumAllowed.has(n)) markers.push({key:k,kind:'explicit_enum',value:n});}
+                shopper.push({uidFingerprint:h(u.uid),disabled:u.disabled===true,emailVerified:u.emailVerified===true,createdAt:u.metadata?.creationTime||null,lastSignInAt:u.metadata?.lastSignInTime||null,roleShopper,tenantExact,projectExact,explicitProvenance:markers.length>0,markers});
+              }
+              pageToken=page.pageToken;
+            }while(pageToken);
+            const safe=shopper.filter(x=>x.roleShopper&&x.tenantExact&&x.projectExact&&x.explicitProvenance&&!x.disabled).sort((a,b)=>a.uidFingerprint.localeCompare(b.uidFingerprint)),selected=safe[0]||null;
+            const decision=selected?'PASS_I4A_EXISTING_NONHISTORICAL_TEST_SHOPPER_IDENTITY_RESOLVED__PROVIDER_READONLY_NO_LOGIN':'HOLD_I4A_TEST_SHOPPER_IDENTITY_NOT_PROVEN__PROVIDER_READONLY_NO_LOGIN';
+            const out={schemaVersion:'cxorbia.i4a.existing-shopper-auth-metadata-readonly.evidence.v1',generatedAt:new Date().toISOString(),decision,providerReadCalls,totalAuthPrincipals,shopperPrincipalCount:shopper.length,explicitSafeCandidateCount:safe.length,selected:selected?{uidFingerprint:selected.uidFingerprint,disabled:selected.disabled,emailVerified:selected.emailVerified,createdAt:selected.createdAt,lastSignInAt:selected.lastSignInAt,roleShopper:true,tenantExact:true,projectExact:true,explicitProvenance:true,markers:selected.markers}:null,safety:{authMetadataOnly:true,rawUidExported:false,emailExported:false,displayNameExported:false,credentialValuesExported:false,passwordHashAccessed:false,loginAttempts:0,profileReads:0,historyReads:0,firestoreReads:0,providerWrites:0,authWrites:0,firestoreWrites:0,hrWrites:0,rulesDeploys:0,hostingDeploys:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,merge:false,production:false},nextGate:selected?'NEW_AUTH_REQUIRED_I4A_SINGLE_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE':'STOP_HOLD_NO_AUTOMATIC_RETRY'};
+            fs.writeFileSync(process.env.OUT_DIR+'/result.json',JSON.stringify(out,null,2)+'\n','utf8');
+            fs.appendFileSync(process.env.GITHUB_OUTPUT,`decision=${decision}\ncandidates=${safe.length}\nfingerprint=${selected?.uidFingerprint||'none'}\n`);
+            console.log(JSON.stringify(out,null,2));
+          })().catch(e=>{console.error(e);process.exit(1)});
           NODE
 
       - name: Publish sanitized evidence to PR and commit status
@@ -150,9 +127,8 @@ jobs:
           set -euo pipefail
           test -f "$OUT_DIR/result.json"
           node <<'NODE' > "$OUT_DIR/comment.md"
-          const fs=require('fs');const x=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/result.json','utf8'));const s=x.selected;
-          console.log('## I4-A · existing Shopper Auth metadata read-only classification');
-          console.log('');
+          const fs=require('fs'),x=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/result.json','utf8')),s=x.selected;
+          console.log('## I4-A · existing Shopper Auth metadata read-only classification\n');
           console.log(`- Decision: \`${x.decision}\``);
           console.log(`- Auth principals inspected: \`${x.totalAuthPrincipals}\``);
           console.log(`- Shopper principals: \`${x.shopperPrincipalCount}\``);
