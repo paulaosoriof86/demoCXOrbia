@@ -1,145 +1,68 @@
 {
   "schemaVersion": "cxorbia.execution-state.v1",
-  "syncEpoch": "CXORBIA-20260818-I3-11C-R3B-HOLD-DEV-HOSTING-PARITY-05",
-  "generatedAt": "2026-08-18T14:20:00-06:00",
+  "syncEpoch": "CXORBIA-20260818-I4-SCOPE-MATERIALIZED-17",
+  "generatedAt": "2026-08-18T19:31:00-06:00",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "pullRequestState": "draft_open_no_merge",
   "base": "release/cxorbia-tya-rc-20260630",
-  "evidenceHeadBeforeSync": "9b57d885a864a86026cf24e590d48e3e9da35322",
   "phaseA": {
-    "formalProgressPercent": 35,
-    "formalRemainingPercent": 65,
+    "formalProgressPercent": 60,
+    "formalRemainingPercent": 40,
     "score": {
       "I1": "15/15 PASS",
       "I2": "20/20 PASS",
-      "I3": "0/25 until integral PASS",
-      "I4": "0/25 pending",
-      "I5": "0/15 pending"
+      "I3": "25/25 PASS FROZEN",
+      "I4": "0/25 NOT_STARTED",
+      "I5": "0/15 NOT_STARTED"
     },
-    "currentState": "I3_11C_R3B_HOLD__CORRECTED_SOURCE_NOT_EFFECTIVE_IN_REMOTE_DEV__HOSTING_MATERIALIZATION_AUTH_REQUIRED",
-    "currentBlock": "I3.11C DEV Hosting materialization of corrected identity runtime",
-    "exactFrontier": "NEW_AUTH_REQUIRED_I3_11C_DEV_HOSTING_MATERIALIZE_CORRECTED_IDENTITY_RUNTIME_NO_PROVIDER_DATA_WRITES",
-    "progressRule": "I3 integral PASS moves formal progress directly from 35 to 60; no fractional formal points."
+    "currentState": "I3_INTEGRAL_PASS_FROZEN__I4_SCOPE_MATERIALIZED__I4A_NEXT",
+    "currentBlock": "I4 scope materialization from approved active source",
+    "exactFrontier": "I4-A — SHOPPER LIFECYCLE"
   },
-  "rootCauseHistory": {
-    "originalCode": "PROVEN_RUNTIME_CONTRACT_DRIFT__LEGACY_PROVIDER_IDENTITY_LINK_APPLICABILITY_FILTER",
-    "sourceCorrectionStatus": "CORRECTED_IN_GITHUB_SOURCE",
-    "r3bRemoteStatus": "NOT_EFFECTIVE_IN_REMOTE_DEV",
-    "currentBlockerCode": "I3_11C_CORRECTED_SOURCE_NOT_EFFECTIVE_IN_REMOTE_DEV__HOSTING_MATERIALIZATION_REQUIRED"
-  },
-  "latestR3B": {
-    "workflowRunId": 32181137350,
-    "jobId": 95854174365,
-    "artifactId": 9340865585,
-    "artifactDigest": "sha256:4485e03cb17d4dcb82915049fe8d2895ba099baff62d08b5fc2ac89cf1dd1ab3",
-    "requestCommitSha": "9b57d885a864a86026cf24e590d48e3e9da35322",
-    "decision": "HOLD_READONLY_POST_GATES",
-    "runtimeDecision": "FAIL_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY",
-    "stableFailure": "AUTH_RUNTIME_TIMEOUT",
-    "staffReadonlyExecuted": true,
-    "authorizationConsumed": true,
-    "identityContractParity": "PASS_PROVIDER_IDENTITY_RUNTIME_CANONICAL_CONTRACT_PARITY",
-    "rules": "PRIOR_I3_11C_RULES_DEPLOY_VERIFIED_REUSED",
-    "rulesDeploysThisRun": 0,
-    "hostingDeploys": 0,
-    "providerWrites": 0,
-    "authWrites": 0,
-    "firestoreDataWrites": 0,
-    "historicalShopperAccess": 0,
-    "providerIdentityRuntimeLinkCount": 1,
-    "providerIdentityTargetLinkCount": 0,
-    "targetCanonicalActual": null,
-    "targetCanonicalVisitsAugust": 0,
-    "targetLiveResidualVisitsAugust": 2,
-    "duplicateVisitKeys": 0,
-    "duplicateShopperIds": 0,
-    "postulationAuthorityReadyInLastState": true,
-    "legalProviderAuthorityInLastState": true,
-    "legalReceiptStatusInLastState": "accepted"
-  },
-  "deploymentParityConclusion": {
-    "r3aCorrectedSourceParityPass": true,
-    "r3aHostingDeploys": 0,
-    "r3bHostingDeploys": 0,
-    "remoteCorrectedAssetFingerprintCaptured": false,
-    "remoteBehaviorStillMatchesPreCorrectionFiltering": true,
-    "providerStateRepairRequired": false,
-    "nextAction": "Materialize corrected source into DEV Hosting and verify remote parity before any new Staff runtime read."
+  "i4Authority": {
+    "source": "app/docs/ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md",
+    "section": "9. I4 — operación visible",
+    "sourceGapResolved": true,
+    "legacyCorte4MappingAllowed": false,
+    "subblocks": {
+      "I4-A": "Shopper lifecycle: documentos/instrucciones; certificaciones históricas/nuevas; disponibles; postulación; asignación; perfiles/roles/scopes; notificaciones; histórico.",
+      "I4-B": "Visita: agenda; reprogramación; cancelación; ventanas/reglas; ejecución; evidencias; cuestionario; submit; review/auditoría; estados dinámicos.",
+      "I4-C": "HR bidireccional: Plataforma→HR y HR→Plataforma con tenantId, projectId, visitId/hrRowId, shopperId, assignmentSource, assignmentSyncStatus, lastSyncedAt; no duplicación; conflictos a revisión; Make solo bajo gate.",
+      "I4-D": "Finanzas: histórico preservado; liquidaciones; pagos; junio real; honorarios/reembolsos configurables; trazabilidad tenant/proyecto/visita/shopper.",
+      "I4-E": "Multi-proyecto/no-code: país/moneda/timezone/locale; source+mapping; cuestionario/provider/link; documentos/reglas/certificación; agenda; pagos; roles/notificaciones; integraciones; privacidad/evidencias.",
+      "I4-F": "Academia: cursos/manuales/rutas/notificaciones/instrucciones/certificaciones actualizados junto con cada comportamiento operacional visible."
+    }
   },
   "consumedAndFrozen": {
     "I1": "PASS_NO_RERUN",
     "I2": "PASS_NO_RERUN",
-    "I3_1_to_I3_8": "PASS_NO_RERUN",
-    "I3_9": "PASS_FROZEN_NO_RERUN",
-    "I3_10": "PASS_FROZEN_NO_RERUN",
-    "historicalShopperRun31906391682": "FROZEN_NO_CREDENTIAL_ACCESS_LOGIN_RECOVERY_RESET",
+    "I3": "PASS_INTEGRAL_NO_RERUN",
+    "historicalShopper": "FROZEN_NO_CREDENTIAL_ACCESS_LOGIN_RECOVERY_RESET",
     "targetBAdmin": "EXISTS_PASS_NO_RECREATE",
-    "request08": "CONSUMED_NO_RERUN",
-    "I3_5B": "CONSUMED_NO_RERUN",
-    "I3_5C_2": "CONSUMED_NO_RERUN",
-    "I3_8": "CONSUMED_NO_RERUN",
-    "firestoreRulesI3_11C": {
-      "status": "PASS_DIRECT_FIRESTORE_RULES_DEPLOY_VERIFIED",
-      "workflowRunId": 32163552089,
-      "consumed": true,
-      "noRedeployWithoutNewProvenRegression": true
-    },
-    "focalProviderIdentityLinkReadI3_11C": {
-      "status": "PASS_CONSUMED_NO_RERUN",
-      "workflowRunId": 32171812808,
-      "providerWrites": 0
-    },
-    "r3bStaffRuntimeClose": {
-      "status": "HOLD_CONSUMED_NO_AUTOMATIC_RERUN",
-      "workflowRunId": 32181137350,
-      "staffReadonlyExecuted": true
-    },
+    "firestoreRulesI3_11C": "PASS_NO_REDEPLOY",
+    "providerFocalI3_11C": "PASS_NO_REPAIR",
+    "hostingIdentityMapI3_11C": "PASS_NO_REDEPLOY",
+    "staffFinalI3_11C": "PASS_NO_RERUN",
     "hr": "15_PERIODS_660_VISITS_NO_REIMPORT",
     "finance": "V2_HISTORICAL_NO_REBUILD",
     "legalV0_4": "DURABLE_PASS_NO_AUTOACCEPT"
   },
-  "authoritativeEvidence": [
-    "app/docs/evidence/I3-11C-R3B-STAFF-RUNTIME-HOLD-DEV-HOSTING-PARITY-LATEST.json",
-    "app/docs/evidence/I3-11C-PROVIDER-RUNTIME-SOURCE-CORRECTION-LATEST.json",
-    "app/docs/evidence/I3-11C-TEMPORAL-RUNTIME-CONTRACT-DRIFT-FORENSIC-LATEST.json",
-    "app/docs/evidence/I3-11C-FOCAL-PROVIDER-IDENTITY-LINK-ADJUDICATION-LATEST.json",
-    "app/docs/evidence/I3-11C-STAFF-READONLY-CLOSE-LATEST.json"
-  ],
-  "nextAuthorizedShape": {
-    "purpose": "One DEV Hosting materialization of the already-corrected identity runtime from the live canonical branch/build, followed by remote asset/source parity verification only. Do not run another Staff credential/runtime closure in the same authorization.",
-    "requiresNewExactAuthorization": true,
-    "maxHostingDeploys": 1,
-    "firebaseProjectId": "cxorbia-backend-dev",
-    "production": false,
-    "providerIdentityWrites": 0,
-    "firestoreDataWrites": 0,
-    "rulesDeploys": 0,
-    "authWrites": 0,
-    "passwordChanges": 0,
-    "passwordResets": 0,
-    "userCreates": 0,
-    "userUpdates": 0,
-    "hrWrites": 0,
-    "storageWrites": 0,
-    "makeCalls": 0,
-    "geminiCalls": 0,
-    "paymentWrites": 0,
+  "latestI3Evidence": {
+    "staffWorkflowRunId": 32196648462,
+    "staffJobId": 95901931320,
+    "staffArtifactId": 9346121436,
+    "identityMapTarget": "shp-57d2e3769946 -> TYA_GT_0C0BA8856E",
+    "augustCanonicalVisits": 2,
+    "augustResidualLiveVisits": 0,
+    "duplicateVisitKeys": 0,
+    "duplicateShopperIds": 0,
     "historicalShopperAccess": 0,
+    "writes": 0,
+    "deploys": 0,
     "merge": false,
-    "automaticStaffRuntimeRetry": false,
-    "requiredRemoteProof": "served provider identity runtime must fingerprint/hash or semantically prove canonical materialized+tenant_adjudication contract parity"
-  },
-  "afterHostingPass": {
-    "nextGate": "NEW_AUTH_REQUIRED_I3_11C_STAFF_RUNTIME_CANONICAL_IDENTITY_CLOSE_READONLY_AFTER_HOSTING",
-    "requiredI3Pass": {
-      "targetResolution": "shp-57d2e3769946 -> TYA_GT_0C0BA8856E",
-      "augustCanonicalVisits": 2,
-      "augustResidualLiveVisits": 0,
-      "duplicateVisitKeys": 0,
-      "duplicateShopperIds": 0
-    }
+    "production": false
   },
   "sourceTruthProtocol": {
     "mismatchState": "SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION",
@@ -147,16 +70,11 @@
     "repeatCircuitBreaker": "Two non-narrowing repetitions trigger FORENSIC_STOP",
     "machineVerifier": "tools/verify-cxorbia-source-truth-sync.mjs"
   },
-  "productArchitecture": {
-    "platformGoal": "Commercializable multi-tenant no-code field operations and mystery shopping platform",
-    "firstTenant": "tya",
-    "firstProject": "cinepolis",
-    "hardcodingRule": "TyA and Cinepolis are validation instances, never global product logic.",
-    "frontendBoundary": "Backend does not patch app/modules or app/core for this identity issue."
-  },
-  "environments": {
-    "dev": "CORRECTED_SOURCE_PENDING_HOSTING_MATERIALIZATION_AUTH",
-    "preproduction": "NOT_STARTED_I5",
-    "production": "UNCHANGED_NOT_AUTHORIZED"
+  "nextBlock": {
+    "name": "I4-A — SHOPPER LIFECYCLE",
+    "providerWritesAuthorized": false,
+    "deployAuthorized": false,
+    "mergeAuthorized": false,
+    "productionAuthorized": false
   }
 }
