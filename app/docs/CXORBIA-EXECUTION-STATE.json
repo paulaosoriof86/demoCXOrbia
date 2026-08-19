@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.execution-state.v1",
-  "syncEpoch": "CXORBIA-20260818-I4-SCOPE-MATERIALIZED-17",
-  "generatedAt": "2026-08-18T19:31:00-06:00",
+  "syncEpoch": "CXORBIA-20260818-I4A-SOURCE-READINESS-HOLD-18",
+  "generatedAt": "2026-08-18T19:44:00-06:00",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -14,26 +14,42 @@
       "I1": "15/15 PASS",
       "I2": "20/20 PASS",
       "I3": "25/25 PASS FROZEN",
-      "I4": "0/25 NOT_STARTED",
+      "I4": "0/25 IN_PROGRESS_NOT_SCORED",
       "I5": "0/15 NOT_STARTED"
     },
-    "currentState": "I3_INTEGRAL_PASS_FROZEN__I4_SCOPE_MATERIALIZED__I4A_NEXT",
-    "currentBlock": "I4 scope materialization from approved active source",
-    "exactFrontier": "I4-A — SHOPPER LIFECYCLE"
+    "currentState": "I3_FROZEN__I4A_SOURCE_READINESS_HOLD__VISIBLE_LIFECYCLE_NOT_YET_PROVEN",
+    "currentBlock": "I4-A Shopper lifecycle source/readiness adjudication",
+    "exactFrontier": "I4A_RESOLVE_EXISTING_NONHISTORICAL_TEST_SHOPPER_IDENTITY_FROM_FROZEN_EVIDENCE__READONLY_NO_LOGIN"
   },
-  "i4Authority": {
-    "source": "app/docs/ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md",
-    "section": "9. I4 — operación visible",
-    "sourceGapResolved": true,
-    "legacyCorte4MappingAllowed": false,
-    "subblocks": {
-      "I4-A": "Shopper lifecycle: documentos/instrucciones; certificaciones históricas/nuevas; disponibles; postulación; asignación; perfiles/roles/scopes; notificaciones; histórico.",
-      "I4-B": "Visita: agenda; reprogramación; cancelación; ventanas/reglas; ejecución; evidencias; cuestionario; submit; review/auditoría; estados dinámicos.",
-      "I4-C": "HR bidireccional: Plataforma→HR y HR→Plataforma con tenantId, projectId, visitId/hrRowId, shopperId, assignmentSource, assignmentSyncStatus, lastSyncedAt; no duplicación; conflictos a revisión; Make solo bajo gate.",
-      "I4-D": "Finanzas: histórico preservado; liquidaciones; pagos; junio real; honorarios/reembolsos configurables; trazabilidad tenant/proyecto/visita/shopper.",
-      "I4-E": "Multi-proyecto/no-code: país/moneda/timezone/locale; source+mapping; cuestionario/provider/link; documentos/reglas/certificación; agenda; pagos; roles/notificaciones; integraciones; privacidad/evidencias.",
-      "I4-F": "Academia: cursos/manuales/rutas/notificaciones/instrucciones/certificaciones actualizados junto con cada comportamiento operacional visible."
-    }
+  "i4A": {
+    "canonicalScope": ["documentos/instrucciones","certificaciones históricas/nuevas","disponibles","postulación","asignación","perfiles/roles/scopes","notificaciones","histórico"],
+    "decision": "HOLD_I4A_SOURCE_READINESS__VISIBLE_SHOPPER_LIFECYCLE_COVERAGE_NOT_YET_PROVEN",
+    "rootCause": "Current canonical Shopper source proves exact identity/profile, certification status, visit history and membership/scopes, while frozen I3 proves postulation-vs-HR-assignment authority; the inspected canonical evidence does not yet prove end-to-end visible Shopper behavior for documents/instructions, available visits, postulation action, notifications, or presentation of a new certification.",
+    "notAProductFailure": true,
+    "sourceEvidence": {
+      "canonicalPortal": "app/adapters/tya-canonical-shopper-portal-v2.js",
+      "portalProves": ["exact Shopper identity","Mi Perfil/contact","certification status visible","canonical visit history/stages","read-only/no profile/Auth/HR writes"],
+      "membership": "app/adapters/cxorbia-shopper-membership-wiring-v1.js",
+      "membershipProves": ["shopper auth namespace","tenantId/shopperId/projectIds exact membership","role/shopper scope verification","providerWrites=0","firestoreWrites=0"],
+      "adminCommandContract": "app/adapters/cxorbia-shopper-admin-command-contract-v1.js",
+      "adminContractProves": ["durable create/update contract only","provider ACK required","protected fields policy","no browser passwords/tokens","no localStorage persistence"],
+      "frozenI3Reuse": ["postulation-vs-HR-assignment authority PASS","platformPosts=8","HR assignments=15","HR assignments are not postulations","Historical Shopper/history preserved"]
+    },
+    "visibleRuntimeNotExecuted": true,
+    "credentialSelection": 0,
+    "historicalShopperAccess": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "hrWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false
   },
   "consumedAndFrozen": {
     "I1": "PASS_NO_RERUN",
@@ -49,29 +65,11 @@
     "finance": "V2_HISTORICAL_NO_REBUILD",
     "legalV0_4": "DURABLE_PASS_NO_AUTOACCEPT"
   },
-  "latestI3Evidence": {
-    "staffWorkflowRunId": 32196648462,
-    "staffJobId": 95901931320,
-    "staffArtifactId": 9346121436,
-    "identityMapTarget": "shp-57d2e3769946 -> TYA_GT_0C0BA8856E",
-    "augustCanonicalVisits": 2,
-    "augustResidualLiveVisits": 0,
-    "duplicateVisitKeys": 0,
-    "duplicateShopperIds": 0,
-    "historicalShopperAccess": 0,
-    "writes": 0,
-    "deploys": 0,
-    "merge": false,
-    "production": false
-  },
-  "sourceTruthProtocol": {
-    "mismatchState": "SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION",
-    "executedButUnsyncedState": "EXECUTED_UNSYNCED_DO_NOT_ADVANCE",
-    "repeatCircuitBreaker": "Two non-narrowing repetitions trigger FORENSIC_STOP",
-    "machineVerifier": "tools/verify-cxorbia-source-truth-sync.mjs"
-  },
   "nextBlock": {
-    "name": "I4-A — SHOPPER LIFECYCLE",
+    "name": "I4A_RESOLVE_EXISTING_NONHISTORICAL_TEST_SHOPPER_IDENTITY_FROM_FROZEN_EVIDENCE__READONLY_NO_LOGIN",
+    "purpose": "Resolve one already-existing non-historical test Shopper identity from frozen evidence only, without login, credential selection, user mutation or provider/data writes. Only after that identity is proven may a separate visible runtime authorization be requested.",
+    "loginAuthorized": false,
+    "credentialSelectionAuthorized": false,
     "providerWritesAuthorized": false,
     "deployAuthorized": false,
     "mergeAuthorized": false,
