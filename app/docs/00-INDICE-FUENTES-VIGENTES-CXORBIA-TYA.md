@@ -17,6 +17,29 @@
 
 Permanecen vigentes documento maestro, addendum canónico de empalme/carril, Academia, patrones reutilizables y antidesvío. Históricos no sustituyen esta capa canónica.
 
+## CONTINUITY_FAST_PATH — obligatorio para evitar agotamiento de sesión
+
+En cada conversación nueva o reanudación se prohíbe reconstruir la historia completa del PR/repositorio cuando la capa canónica esté consistente.
+
+Leer únicamente:
+
+1. Execution State;
+2. source lock;
+3. checkpoint;
+4. Plan Unificado/Plan Lock solo en la sección del bloque activo;
+5. CAMBIOS/RESUMEN/PENDIENTES vigentes;
+6. evidencia del gate activo;
+7. metadata de PR #7 + HEAD;
+8. delta **solo desde el último HEAD canónico conocido al HEAD vivo**, si existe movimiento.
+
+**No cargar por defecto:** diff completo de PR #7, miles de commits, historial completo de Actions, documentos históricos, artifacts antiguos ni repo completo. Solo abrirlos cuando exista una contradicción reproducible que lo exija.
+
+Máximo un objetivo técnico real por iteración. El cierre documental del mismo objetivo se hace en una sola reconciliación atómica; no se encadenan commits `finalize/close/seal` sobre el mismo estado.
+
+Los workflows legacy/no relacionados que se disparen por `synchronize` se tratan como ruido CI y no como evidencia del gate activo. Solo se inspecciona el workflow/run nombrado por Execution State o por el gate actual.
+
+Si la conversación se aproxima a su límite operativo, se cierra primero el resultado/evidencia y la reconciliación canónica; nunca se abre un nuevo diagnóstico ni un nuevo gate antes de dejar continuidad durable.
+
 ## Carril único
 
 Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`; DEV `cxorbia-backend-dev`.
