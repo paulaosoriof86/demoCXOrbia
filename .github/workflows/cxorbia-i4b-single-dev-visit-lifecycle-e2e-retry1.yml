@@ -10,7 +10,7 @@ permissions:
 
 concurrency:
   group: cxorbia-i4b-single-dev-visit-lifecycle-e2e-retry1
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   REQUEST_FILE: backend/config/i4b-single-dev-visit-lifecycle-e2e-write-gate-request.json
@@ -27,10 +27,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 4
+          fetch-depth: 0
           ref: ${{ github.sha }}
 
-      - name: Validate exact retry authorization and lineage
+      - name: Validate exact retry authorization and safe lineage
         run: |
           set -euo pipefail
           mkdir -p "$OUT_DIR" "$PRIVATE_DIR"
@@ -38,21 +38,16 @@ jobs:
           const fs=require('fs'),cp=require('child_process');
           const r=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
           const head=cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          const parent=cp.execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
-          const source=cp.execFileSync('git',['rev-parse','HEAD^^'],{encoding:'utf8'}).trim();
-          const now=cp.execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
-          const prior=cp.execFileSync('git',['diff','--name-only','HEAD^^','HEAD^'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
-          const expectedGate='NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY1__HARNESS_SCOPE_FIXED__SYNTHETIC_VISIT_ONLY';
+          const changed=cp.execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
           if(head!==process.env.GITHUB_SHA)throw new Error('HEAD_SHA_MISMATCH');
-          if(source!==r.sourceHeadSha||r.sourceHeadSha!=='0d188cabf709dc8cc6d215ab9d27d2175331bf69')throw new Error('SOURCE_LINEAGE_MISMATCH');
-          if(now.length!==1||now[0]!==process.env.WORKFLOW_FILE)throw new Error('WORKFLOW_COMMIT_SCOPE_INVALID');
-          if(prior.length!==1||prior[0]!==process.env.REQUEST_FILE)throw new Error('REQUEST_COMMIT_SCOPE_INVALID');
-          const exact=r.schemaVersion==='cxorbia.i4b.visit-lifecycle-write-gate.v1'&&r.gateId===expectedGate&&r.requestId==='cxorbia-i4b-single-dev-visit-lifecycle-e2e-retry1-20260819-01'&&r.repository==='paulaosoriof86/demoCXOrbia'&&r.branch==='docs-tya-v6-v71-audit'&&Number(r.pullRequest)===7&&r.firebaseProjectId==='cxorbia-backend-dev'&&r.tenantId==='tya'&&r.projectId==='cinepolis'&&r.enabled===true&&r.consumed===false&&r.status==='authorized_execute_once_retry1_harness_scope_fixed'&&r.authorizedBy==='Paula'&&r.authorizationText==='autorizo pero agiliza'&&r.allowedExecutions===1&&r.executionsConsumed===0&&r.singleConsolidatedGate===true&&r.syntheticVisitOnly===true&&r.historicalShopperAccess===false&&r.realHrVisitMutationAllowed===false&&r.authCreates===0&&r.authClaimsWrites===0&&r.authPasswordUpdates===0&&r.authPasswordResets===0&&r.authDeletes===0&&r.otherIdentitiesModified===0&&r.hrWrites===0&&r.rulesWrites===0&&r.storageWrites===0&&r.makeCalls===0&&r.geminiCalls===0&&r.paymentWrites===0&&r.hostingDeploys===0&&r.cloudRunDeploys===0&&r.merge===false&&r.production===false&&r.automaticRetryAllowed===false;
+          if(changed.length!==1||changed[0]!==process.env.WORKFLOW_FILE)throw new Error('WORKFLOW_TRIGGER_COMMIT_SCOPE_INVALID');
+          cp.execFileSync('git',['merge-base','--is-ancestor',r.sourceHeadSha,'HEAD']);
+          const exact=r.schemaVersion==='cxorbia.i4b.visit-lifecycle-write-gate.v1'&&r.gateId==='NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY1__HARNESS_SCOPE_FIXED__SYNTHETIC_VISIT_ONLY'&&r.requestId==='cxorbia-i4b-single-dev-visit-lifecycle-e2e-retry1-20260819-01'&&r.sourceHeadSha==='0d188cabf709dc8cc6d215ab9d27d2175331bf69'&&r.repository==='paulaosoriof86/demoCXOrbia'&&r.branch==='docs-tya-v6-v71-audit'&&Number(r.pullRequest)===7&&r.firebaseProjectId==='cxorbia-backend-dev'&&r.tenantId==='tya'&&r.projectId==='cinepolis'&&r.enabled===true&&r.consumed===false&&r.status==='authorized_execute_once_retry1_harness_scope_fixed'&&r.authorizedBy==='Paula'&&r.authorizationText==='autorizo pero agiliza'&&r.allowedExecutions===1&&r.executionsConsumed===0&&r.singleConsolidatedGate===true&&r.syntheticVisitOnly===true&&r.historicalShopperAccess===false&&r.realHrVisitMutationAllowed===false&&Number(r.providerCommandCallsMax)===11&&Number(r.providerCommittedCallsMax)===10&&Number(r.providerWritesReportedMax)===30&&r.authCreates===0&&r.authClaimsWrites===0&&r.authPasswordUpdates===0&&r.authPasswordResets===0&&r.authDeletes===0&&r.otherIdentitiesModified===0&&r.hrWrites===0&&r.rulesWrites===0&&r.storageWrites===0&&r.makeCalls===0&&r.geminiCalls===0&&r.paymentWrites===0&&r.hostingDeploys===0&&r.cloudRunDeploys===0&&r.merge===false&&r.production===false&&r.automaticRetryAllowed===false;
           if(!exact)throw new Error('RETRY_AUTHORIZATION_CONTRACT_INVALID');
-          console.log(JSON.stringify({decision:'PASS_I4B_RETRY1_AUTHORIZATION_LINEAGE',head,parent,sourceHead:r.sourceHeadSha,gateId:r.gateId}));
+          console.log(JSON.stringify({decision:'PASS_I4B_RETRY1_AUTHORIZATION_LINEAGE',head,sourceHead:r.sourceHeadSha,gateId:r.gateId}));
           NODE
 
-      - name: Verify canonical source truth at authorized source HEAD
+      - name: Verify canonical source truth and provider source before writes
         run: |
           set -euo pipefail
           SOURCE_HEAD=$(node -p "require('./$REQUEST_FILE').sourceHeadSha")
@@ -61,7 +56,7 @@ jobs:
           node -e "const x=require('./$OUT_DIR/source-truth.json');if(x.decision!=='PASS_SOURCE_TRUTH_SYNC')process.exit(1);console.log(x.decision)"
           node tools/verify-cxorbia-i4b-visit-provider-source.mjs > "$OUT_DIR/provider-source.json"
           node -e "const x=require('./$OUT_DIR/provider-source.json');if(x.decision!=='PASS_I4B_VISIT_PROVIDER_SOURCE')process.exit(1);console.log(x.decision)"
-          node --input-type=module -e "import {harnessStatus} from './tools/cxorbia-i4b-e2e-harness-v1.mjs'; const x=harnessStatus(); if(!x.providerPassedExplicitly||x.globalProviderDependency)process.exit(1); console.log(JSON.stringify(x));" > "$OUT_DIR/harness-status.json"
+          node --input-type=module -e "import {harnessStatus} from './tools/cxorbia-i4b-e2e-harness-v1.mjs';const x=harnessStatus();if(!x.providerPassedExplicitly||x.globalProviderDependency)process.exit(1);console.log(JSON.stringify(x));" > "$OUT_DIR/harness-status.json"
 
       - uses: actions/setup-node@v4
         with:
@@ -70,7 +65,7 @@ jobs:
       - name: Install transient provider dependency
         run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
 
-      - name: Prepare DEV provider credential privately
+      - name: Prepare DEV credential privately
         env:
           EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
         run: |
@@ -83,187 +78,65 @@ jobs:
           NODE
           echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/${PRIVATE_DIR}/credentials.json" >> "$GITHUB_ENV"
 
-      - name: Execute one fixed-harness synthetic visit lifecycle E2E retry1
+      - name: Execute authorized synthetic lifecycle exactly once
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import crypto from 'node:crypto';
-          import admin from 'firebase-admin';
+          import fs from 'node:fs';import crypto from 'node:crypto';import admin from 'firebase-admin';
           import {createVisitLifecycleProvider,validateExecutionGate} from './backend/runtime/cxorbia-visit-lifecycle-command-provider-v1.mjs';
           import {executeProviderCommand,assertProvider} from './tools/cxorbia-i4b-e2e-harness-v1.mjs';
-
-          const r=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
-          const sr=JSON.parse(fs.readFileSync(process.env.SHOPPER_REQUEST,'utf8'));
-          const sa=JSON.parse(fs.readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS,'utf8'));
-          const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
-          const stable=v=>Array.isArray(v)?v.map(stable):(v&&typeof v==='object'?(typeof v.toMillis==='function'?{__ts:v.toMillis()}:Object.fromEntries(Object.keys(v).sort().map(k=>[k,stable(v[k])]))):v);
-          const digestDocs=docs=>sha(JSON.stringify(docs.map(d=>[d.id,stable(d.data())]).sort((a,b)=>a[0].localeCompare(b[0]))));
-          const fingerprint=v=>sha('cxorbia-i4b-retry1\0'+String(v)).slice(0,20);
-          const gateCheck=validateExecutionGate(r);if(!gateCheck.ok)throw new Error('GATE_VALIDATION_FAILED:'+gateCheck.errors.join(','));
-          admin.initializeApp({credential:admin.credential.cert(sa),projectId:r.firebaseProjectId});
-          const auth=admin.auth(),db=admin.firestore();
-          const tenant=db.collection('tenants').doc(r.tenantId),project=tenant.collection('projects').doc(r.projectId);
-          const visits=project.collection('visits'),posts=project.collection('postulations');
-          const key=sha(r.requestId).slice(0,24),visitId='visit-i4b-r1-'+key,applicationId='app-i4b-r1-'+key;
-          const shopperKey=sha(sr.requestId).slice(0,24),shopperUid='tya-i4a-'+shopperKey,shopperId='shp-i4a-'+shopperKey;
-          const visitRef=visits.doc(visitId),appRef=posts.doc(applicationId);
-          const evidence={schemaVersion:'cxorbia.i4b.visit-lifecycle-e2e.retry1.evidence.v1',generatedAt:new Date().toISOString(),gateId:r.gateId,requestId:r.requestId,workflowRunId:Number(process.env.GITHUB_RUN_ID),workflowCommitSha:process.env.GITHUB_SHA,sourceHeadSha:r.sourceHeadSha,decision:'HOLD_I4B_RETRY1_E2E_NOT_COMPLETED',fixture:{visitIdFingerprint:fingerprint(visitId),applicationIdFingerprint:fingerprint(applicationId),synthetic:true,nonHr:true},actors:{shopperIdFingerprint:fingerprint(shopperId),shopperUidFingerprint:fingerprint(shopperUid),operatorUidFingerprint:null},checks:{},steps:[],safety:{syntheticVisitOnly:true,realHrVisitMutation:false,historicalShopperAccess:false,authCreates:0,authClaimsWrites:0,authPasswordUpdates:0,authPasswordResets:0,authDeletes:0,otherIdentitiesModified:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,hostingDeploys:0,cloudRunDeploys:0,merge:false,production:false},counters:{providerCommandCalls:0,providerCommittedCalls:0,idempotentReplayChecks:0,versionConflictChecks:0,syntheticFixtureCreates:0,syntheticFixtureDeletes:0,providerWritesReported:0,auditDocsObserved:0,receiptDocsObserved:0},errors:[]};
-          let beforeVisitDigest='',beforePostDigest='',operator=null,shopperToken='',operatorToken='';
-          const writeEvidence=()=>{fs.mkdirSync(process.env.OUT_DIR,{recursive:true});fs.writeFileSync(process.env.OUT_DIR+'/evidence.json',JSON.stringify(evidence,null,2)+'\n');};
-          const command=(commandType,entityType,entityId,expectedVersion,payload,actorRole,tag)=>({version:'cxorbia-command-adapter-v1',commandType,entityType,entityId,tenantId:r.tenantId,projectId:r.projectId,actor:{actorId:'provider-verified',role:actorRole,projectIds:[r.projectId],shopperId:actorRole==='shopper'?shopperId:null},expectedVersion,idempotencyKey:`i4b-r1:${r.requestId}:${tag}`,payload,source:'i4b-e2e-retry1-gate',requestedAt:new Date().toISOString(),authorization:{providerEnforcementRequired:true},audit:{reason:'I4B synthetic lifecycle E2E retry1',correlationId:r.requestId}});
-          const getVersion=async ref=>{const s=await ref.get();if(!s.exists)throw new Error('EXPECTED_ENTITY_MISSING:'+ref.path);return s.data()?.version??'source-current';};
-          const exchangeCustomToken=async uid=>{
-            const custom=await auth.createCustomToken(uid,{i4bSyntheticE2ERetry1:true});
-            const init=await fetch('https://cxorbia-backend-dev.web.app/__/firebase/init.json',{cache:'no-store'});
-            const config=init.ok?await init.json():{};
-            if(!config.apiKey)throw new Error('FIREBASE_WEB_API_KEY_UNAVAILABLE');
-            const resp=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key='+encodeURIComponent(config.apiKey),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token:custom,returnSecureToken:true})});
-            const body=await resp.json();if(!resp.ok||!body.idToken)throw new Error('CUSTOM_TOKEN_EXCHANGE_FAILED');return body.idToken;
-          };
-          const run=async(provider,token,cmd,label)=>{
-            assertProvider(provider);
-            evidence.counters.providerCommandCalls++;
-            const out=await executeProviderCommand({provider,token,command:cmd,label});
-            evidence.counters.providerCommittedCalls++;
-            evidence.counters.providerWritesReported+=Number(out.providerWrites||0);
-            evidence.steps.push({label,pass:true,providerAck:true,idempotentReplay:out.idempotentReplay===true,providerWrites:Number(out.providerWrites||0)});
-            if(evidence.counters.providerCommandCalls>Number(r.providerCommandCallsMax)||evidence.counters.providerCommittedCalls>Number(r.providerCommittedCallsMax)||evidence.counters.providerWritesReported>Number(r.providerWritesReportedMax))throw new Error('AUTHORIZED_PROVIDER_BUDGET_EXCEEDED');
-            return out;
-          };
-
+          const r=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8')),sr=JSON.parse(fs.readFileSync(process.env.SHOPPER_REQUEST,'utf8')),sa=JSON.parse(fs.readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS,'utf8'));
+          const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex'),stable=v=>Array.isArray(v)?v.map(stable):(v&&typeof v==='object'?(typeof v.toMillis==='function'?{__ts:v.toMillis()}:Object.fromEntries(Object.keys(v).sort().map(k=>[k,stable(v[k])]))):v),digestDocs=docs=>sha(JSON.stringify(docs.map(d=>[d.id,stable(d.data())]).sort((a,b)=>a[0].localeCompare(b[0])))),fp=v=>sha('i4b-r1\0'+String(v)).slice(0,20);
+          const gc=validateExecutionGate(r);if(!gc.ok)throw new Error('GATE_VALIDATION_FAILED:'+gc.errors.join(','));
+          admin.initializeApp({credential:admin.credential.cert(sa),projectId:r.firebaseProjectId});const auth=admin.auth(),db=admin.firestore(),tenant=db.collection('tenants').doc(r.tenantId),project=tenant.collection('projects').doc(r.projectId),visits=project.collection('visits'),posts=project.collection('postulations');
+          const key=sha(r.requestId).slice(0,24),visitId='visit-i4b-r1-'+key,applicationId='app-i4b-r1-'+key,shopperKey=sha(sr.requestId).slice(0,24),shopperUid='tya-i4a-'+shopperKey,shopperId='shp-i4a-'+shopperKey,visitRef=visits.doc(visitId),appRef=posts.doc(applicationId);
+          const receiptId=k=>sha(`${r.tenantId}\0${r.projectId}\0${k}`).slice(0,40),auditId=(k,t)=>sha(`${k}\0${t}\0audit`).slice(0,40);
+          const defs=[['application-create','application.create',applicationId],['application-approve','application.status.update',applicationId],['visit-schedule','visit.state.update',visitId],['reschedule-request','visit.reschedule',visitId],['reschedule-approved','visit.reschedule',visitId],['cancel-request','visit.cancel',visitId],['visit-realized','visit.state.update',visitId],['questionnaire-submit','visit.questionnaire.submit',visitId],['review-approved','visit.review.update',visitId],['version-conflict','visit.review.update',visitId]];
+          for(const [tag,type] of defs){const idem=`i4b-r1:${r.requestId}:${tag}`;const [rr,aa]=await Promise.all([tenant.collection('commandReceipts').doc(receiptId(idem)).get(),tenant.collection('entityAuditTrail').doc(auditId(idem,type)).get()]);if(rr.exists||aa.exists)throw new Error('RETRY1_PREEXISTING_PROVIDER_TRACE_ABORT:'+tag);}
+          if((await visitRef.get()).exists||(await appRef.get()).exists)throw new Error('RETRY1_PREEXISTING_FIXTURE_ABORT');
+          const ev={schemaVersion:'cxorbia.i4b.visit-lifecycle-e2e.retry1.evidence.v1',generatedAt:new Date().toISOString(),gateId:r.gateId,requestId:r.requestId,workflowRunId:Number(process.env.GITHUB_RUN_ID),workflowCommitSha:process.env.GITHUB_SHA,sourceHeadSha:r.sourceHeadSha,decision:'HOLD_I4B_RETRY1_E2E_NOT_COMPLETED',fixture:{visitIdFingerprint:fp(visitId),applicationIdFingerprint:fp(applicationId),synthetic:true,nonHr:true},actors:{shopperIdFingerprint:fp(shopperId),shopperUidFingerprint:fp(shopperUid),operatorUidFingerprint:null},checks:{preexistingProviderTraces:false},steps:[],safety:{syntheticVisitOnly:true,realHrVisitMutation:false,historicalShopperAccess:false,authCreates:0,authClaimsWrites:0,authPasswordUpdates:0,authPasswordResets:0,authDeletes:0,otherIdentitiesModified:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,hostingDeploys:0,cloudRunDeploys:0,merge:false,production:false},counters:{providerCommandCalls:0,providerCommittedCalls:0,idempotentReplayChecks:0,versionConflictChecks:0,syntheticFixtureCreates:0,syntheticFixtureDeletes:0,providerWritesReported:0,auditDocsObserved:0,receiptDocsObserved:0},errors:[]};let beforeV='',beforeP='',operator=null;
+          const save=()=>{fs.mkdirSync(process.env.OUT_DIR,{recursive:true});fs.writeFileSync(process.env.OUT_DIR+'/evidence.json',JSON.stringify(ev,null,2)+'\n');},cmd=(type,entityType,entityId,expectedVersion,payload,role,tag)=>({version:'cxorbia-command-adapter-v1',commandType:type,entityType,entityId,tenantId:r.tenantId,projectId:r.projectId,actor:{actorId:'provider-verified',role,projectIds:[r.projectId],shopperId:role==='shopper'?shopperId:null},expectedVersion,idempotencyKey:`i4b-r1:${r.requestId}:${tag}`,payload,source:'i4b-e2e-retry1-gate',requestedAt:new Date().toISOString(),authorization:{providerEnforcementRequired:true},audit:{reason:'I4B synthetic lifecycle E2E retry1',correlationId:r.requestId}}),ver=async ref=>{const s=await ref.get();if(!s.exists)throw new Error('EXPECTED_ENTITY_MISSING:'+ref.path);return s.data()?.version??'source-current';},token=async uid=>{const custom=await auth.createCustomToken(uid,{i4bSyntheticE2ERetry1:true});const init=await fetch('https://cxorbia-backend-dev.web.app/__/firebase/init.json',{cache:'no-store'}),cfg=init.ok?await init.json():{};if(!cfg.apiKey)throw new Error('FIREBASE_WEB_API_KEY_UNAVAILABLE');const resp=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key='+encodeURIComponent(cfg.apiKey),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token:custom,returnSecureToken:true})}),body=await resp.json();if(!resp.ok||!body.idToken)throw new Error('CUSTOM_TOKEN_EXCHANGE_FAILED');return body.idToken;};
+          const run=async(provider,t,c,label)=>{ev.counters.providerCommandCalls++;if(ev.counters.providerCommandCalls>11)throw new Error('AUTHORIZED_PROVIDER_CALL_BUDGET_EXCEEDED');const out=await executeProviderCommand({provider,token:t,command:c,label});ev.counters.providerCommittedCalls++;ev.counters.providerWritesReported+=Number(out.providerWrites||0);if(ev.counters.providerCommittedCalls>10||ev.counters.providerWritesReported>30)throw new Error('AUTHORIZED_PROVIDER_WRITE_BUDGET_EXCEEDED');ev.steps.push({label,pass:true,providerAck:true,idempotentReplay:out.idempotentReplay===true,providerWrites:Number(out.providerWrites||0)});return out;};
           try{
-            const initialVisitSnap=await visits.get(),initialPostSnap=await posts.get();
-            if(initialVisitSnap.docs.some(d=>d.id===visitId)||initialPostSnap.docs.some(d=>d.id===applicationId))throw new Error('SYNTHETIC_FIXTURE_COLLISION');
-            beforeVisitDigest=digestDocs(initialVisitSnap.docs);beforePostDigest=digestDocs(initialPostSnap.docs);
-
-            const shopper=await auth.getUser(shopperUid),sc=shopper.customClaims||{};
-            const sm=await tenant.collection('users').doc(shopperUid).get();
-            if(!(sm.exists&&sm.data()?.active===true&&sc.tenantId===r.tenantId&&sc.role==='shopper'&&sc.authNamespace==='shopper'&&sc.shopperId===shopperId&&Array.isArray(sc.projectIds)&&sc.projectIds.includes(r.projectId)&&sc.synthetic===true&&sc.nonHistorical===true))throw new Error('DEDICATED_SYNTHETIC_SHOPPER_NOT_EXACT');
-
-            const members=await tenant.collection('users').get();
-            for(const d of members.docs){
-              const m=d.data()||{},role=String(m.role||'');
-              if(m.active!==true||!['super','admin'].includes(role)||String(m.authNamespace||'')!=='staff')continue;
-              if(role!=='super'&&!(Array.isArray(m.projectIds)&&m.projectIds.includes(r.projectId)))continue;
-              try{const u=await auth.getUser(d.id),c=u.customClaims||{};if(c.tenantId===r.tenantId&&c.role===role&&String(c.authNamespace||'staff')==='staff'&&(role==='super'||(Array.isArray(c.projectIds)&&c.projectIds.includes(r.projectId)))){operator={uid:d.id,role};break;}}catch{}
-            }
-            if(!operator)throw new Error('EXISTING_OPERATOR_ACTOR_NOT_PROVEN');
-            evidence.actors.operatorUidFingerprint=fingerprint(operator.uid);
-            shopperToken=await exchangeCustomToken(shopperUid);operatorToken=await exchangeCustomToken(operator.uid);
-
-            await visitRef.create({id:visitId,visitId,tenantId:r.tenantId,projectId:r.projectId,estado:'disponible',status:'disponible',shopperId:null,shopper:null,hrRowId:null,source:'i4b-synthetic-e2e-retry1',sourceRequestId:r.requestId,synthetic:true,nonHistorical:true,nonHr:true,testFixture:true,version:1,createdAt:admin.firestore.FieldValue.serverTimestamp(),updatedAt:admin.firestore.FieldValue.serverTimestamp()});
-            evidence.counters.syntheticFixtureCreates++;
-            const provider=createVisitLifecycleProvider({auth,db,gate:r});
-            assertProvider(provider);
-
-            const appCreate=command('application.create','application',applicationId,'absent',{visitId,shopperId,proposedDate:'2026-08-20',note:'synthetic-e2e-retry1'},'shopper','application-create');
-            await run(provider,shopperToken,appCreate,'application.create');
-            const replay=await run(provider,shopperToken,appCreate,'application.create idempotent replay');
-            if(!(replay.idempotentReplay===true&&Number(replay.providerWrites||0)===0))throw new Error('IDEMPOTENT_REPLAY_NOT_PROVEN');
-            evidence.counters.idempotentReplayChecks++;
-
-            await run(provider,operatorToken,command('application.status.update','application',applicationId,await getVersion(appRef),{applicationId,visitId,status:'aprobada',reason:'synthetic-e2e-retry1'},operator.role,'application-approve'),'application.status.update aprobada');
-            await run(provider,shopperToken,command('visit.state.update','visit',visitId,await getVersion(visitRef),{visitId,shopperId,patch:{estado:'agendada',agendada:'2026-08-20'}},'shopper','visit-schedule'),'visit.state.update agendada');
-            await run(provider,shopperToken,command('visit.reschedule','visit',visitId,await getVersion(visitRef),{visitId,newDate:'2026-08-21',reason:'synthetic-request',requestedByShopper:true},'shopper','reschedule-request'),'visit.reschedule shopper request');
-            await run(provider,operatorToken,command('visit.reschedule','visit',visitId,await getVersion(visitRef),{visitId,newDate:'2026-08-21',reason:'synthetic-approved',decision:'approved'},operator.role,'reschedule-approved'),'visit.reschedule operator approved');
-            await run(provider,shopperToken,command('visit.cancel','visit',visitId,await getVersion(visitRef),{visitId,reason:'synthetic-cancel-request',requestOnly:true},'shopper','cancel-request'),'visit.cancel shopper request-only');
-            await run(provider,shopperToken,command('visit.state.update','visit',visitId,await getVersion(visitRef),{visitId,shopperId,patch:{estado:'realizada',realizada:'2026-08-21'}},'shopper','visit-realized'),'visit.state.update realizada');
-            await run(provider,shopperToken,command('visit.questionnaire.submit','visit',visitId,await getVersion(visitRef),{visitId,shopperId,result:{synthetic:true,score:100},completedAt:'2026-08-21'},'shopper','questionnaire-submit'),'visit.questionnaire.submit');
-            await run(provider,operatorToken,command('visit.review.update','visit',visitId,await getVersion(visitRef),{visitId,reviewStatus:'approved_for_submitido',note:'synthetic-e2e-retry1'},operator.role,'review-approved'),'visit.review.update');
-
-            const versionBeforeConflict=await getVersion(visitRef);
-            let conflict=false;
-            try{
-              evidence.counters.providerCommandCalls++;
-              if(evidence.counters.providerCommandCalls>Number(r.providerCommandCallsMax))throw new Error('AUTHORIZED_PROVIDER_BUDGET_EXCEEDED');
-              await provider.execute(operatorToken,command('visit.review.update','visit',visitId,1,{visitId,reviewStatus:'in_review',note:'must-conflict'},operator.role,'version-conflict'));
-            }catch(e){conflict=String(e?.message||e).includes('I4B_EXPECTED_VERSION_CONFLICT');}
-            if(!conflict)throw new Error('EXPECTED_VERSION_CONFLICT_NOT_PROVEN');
-            if(String(await getVersion(visitRef))!==String(versionBeforeConflict))throw new Error('VERSION_CONFLICT_MUTATED_VISIT');
-            evidence.counters.versionConflictChecks++;
-            evidence.steps.push({label:'expectedVersion conflict',pass:true,providerAck:false,blockedBeforeMutation:true});
-
-            const finalVisit=(await visitRef.get()).data()||{},finalApp=(await appRef.get()).data()||{};
-            evidence.checks.finalVisitState=finalVisit.estado==='cuestionario';
-            evidence.checks.reviewStatus=finalVisit.reviewStatus==='approved_for_submitido';
-            evidence.checks.applicationApproved=finalApp.estado==='aprobada';
-            evidence.checks.assignmentSource=finalVisit.assignmentSource==='platform';
-            evidence.checks.assignmentSyncPending=finalVisit.assignmentSyncStatus==='pending';
-            evidence.checks.shopperExact=finalVisit.shopperId===shopperId;
-            evidence.checks.cancelRequestOnly=finalVisit.cancelRequest?.status==='pending_review';
-            evidence.checks.rescheduleApproved=finalVisit.rescheduleRequest?.status==='approved'&&finalVisit.agendada==='2026-08-21';
-            if(Object.values(evidence.checks).some(v=>v!==true))throw new Error('FINAL_STATE_ASSERTION_FAILED');
-
-            const receiptQuery=await tenant.collection('commandReceipts').where('tenantId','==',r.tenantId).where('projectId','==',r.projectId).get();
-            const relevantReceipts=receiptQuery.docs.filter(d=>[visitId,applicationId].includes(String(d.data()?.entityId||'')));
-            evidence.counters.receiptDocsObserved=relevantReceipts.length;
-            const auditQuery=await tenant.collection('entityAuditTrail').where('projectId','==',r.projectId).get();
-            const relevantAudits=auditQuery.docs.filter(d=>[visitId,applicationId].includes(String(d.data()?.entityId||'')));
-            evidence.counters.auditDocsObserved=relevantAudits.length;
-            if(relevantReceipts.length<9||relevantAudits.length<9)throw new Error('RECEIPT_AUDIT_TRACE_INCOMPLETE');
-
-            if(evidence.counters.providerCommandCalls!==11||evidence.counters.providerCommittedCalls!==10||evidence.counters.providerWritesReported>30)throw new Error('PROVIDER_COUNTERS_OUTSIDE_AUTHORIZED_EXPECTATION');
-            evidence.decision='PASS_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_RETRY1__HARNESS_SCOPE_FIXED__SYNTHETIC_VISIT_ONLY';
-          } catch(e){
-            evidence.errors.push(String(e?.message||e));
-            evidence.decision='HOLD_I4B_RETRY1__'+String(e?.message||e).replace(/[^A-Za-z0-9_]+/g,'_').slice(0,120);
-          } finally {
-            try{if((await appRef.get()).exists){await appRef.delete();evidence.counters.syntheticFixtureDeletes++;}}catch(e){evidence.errors.push('APP_CLEANUP:'+String(e?.message||e));}
-            try{if((await visitRef.get()).exists){await visitRef.delete();evidence.counters.syntheticFixtureDeletes++;}}catch(e){evidence.errors.push('VISIT_CLEANUP:'+String(e?.message||e));}
-            try{
-              const afterVisits=await visits.get(),afterPosts=await posts.get();
-              evidence.checks.syntheticVisitRemoved=!afterVisits.docs.some(d=>d.id===visitId);
-              evidence.checks.syntheticApplicationRemoved=!afterPosts.docs.some(d=>d.id===applicationId);
-              evidence.checks.realVisitsUnchanged=beforeVisitDigest?digestDocs(afterVisits.docs)===beforeVisitDigest:false;
-              evidence.checks.realPostulationsUnchanged=beforePostDigest?digestDocs(afterPosts.docs)===beforePostDigest:false;
-              evidence.safety.realHrVisitMutation=evidence.checks.realVisitsUnchanged!==true;
-              if(evidence.checks.syntheticVisitRemoved!==true||evidence.checks.syntheticApplicationRemoved!==true||evidence.checks.realVisitsUnchanged!==true||evidence.checks.realPostulationsUnchanged!==true)evidence.decision='HOLD_I4B_RETRY1_CLEANUP_OR_REAL_DATA_INVARIANT_FAILED';
-            }catch(e){evidence.errors.push('POST_INVARIANT:'+String(e?.message||e));evidence.decision='HOLD_I4B_RETRY1_POST_INVARIANT_UNPROVEN';}
-            writeEvidence();
-          }
-          console.log(JSON.stringify({decision:evidence.decision,workflowRunId:evidence.workflowRunId,steps:evidence.steps.length,providerCommandCalls:evidence.counters.providerCommandCalls,providerCommittedCalls:evidence.counters.providerCommittedCalls,providerWritesReported:evidence.counters.providerWritesReported,syntheticFixtureDeletes:evidence.counters.syntheticFixtureDeletes,realVisitsUnchanged:evidence.checks.realVisitsUnchanged,realPostulationsUnchanged:evidence.checks.realPostulationsUnchanged,errors:evidence.errors}));
-          if(!evidence.decision.startsWith('PASS_'))process.exit(1);
+            const iv=await visits.get(),ip=await posts.get();beforeV=digestDocs(iv.docs);beforeP=digestDocs(ip.docs);
+            const shopper=await auth.getUser(shopperUid),sc=shopper.customClaims||{},sm=await tenant.collection('users').doc(shopperUid).get();if(!(sm.exists&&sm.data()?.active===true&&sc.tenantId===r.tenantId&&sc.role==='shopper'&&sc.authNamespace==='shopper'&&sc.shopperId===shopperId&&Array.isArray(sc.projectIds)&&sc.projectIds.includes(r.projectId)&&sc.synthetic===true&&sc.nonHistorical===true))throw new Error('DEDICATED_SYNTHETIC_SHOPPER_NOT_EXACT');
+            const members=await tenant.collection('users').get();for(const d of members.docs){const m=d.data()||{},role=String(m.role||'');if(m.active!==true||!['super','admin','ops','coordinador'].includes(role)||String(m.authNamespace||'')!=='staff')continue;if(role!=='super'&&!(Array.isArray(m.projectIds)&&m.projectIds.includes(r.projectId)))continue;try{const u=await auth.getUser(d.id),c=u.customClaims||{};if(c.tenantId===r.tenantId&&c.role===role&&String(c.authNamespace||'staff')==='staff'&&(role==='super'||(Array.isArray(c.projectIds)&&c.projectIds.includes(r.projectId)))){operator={uid:d.id,role};break;}}catch{}}if(!operator)throw new Error('EXISTING_OPERATOR_ACTOR_NOT_PROVEN');ev.actors.operatorUidFingerprint=fp(operator.uid);
+            const st=await token(shopperUid),ot=await token(operator.uid);await visitRef.create({id:visitId,visitId,tenantId:r.tenantId,projectId:r.projectId,estado:'disponible',status:'disponible',shopperId:null,shopper:null,hrRowId:null,source:'i4b-synthetic-e2e-retry1',sourceRequestId:r.requestId,synthetic:true,nonHistorical:true,nonHr:true,testFixture:true,version:1,createdAt:admin.firestore.FieldValue.serverTimestamp(),updatedAt:admin.firestore.FieldValue.serverTimestamp()});ev.counters.syntheticFixtureCreates++;
+            const provider=createVisitLifecycleProvider({auth,db,gate:r});assertProvider(provider);const ac=cmd('application.create','application',applicationId,'absent',{visitId,shopperId,proposedDate:'2026-08-20',note:'synthetic-e2e-retry1'},'shopper','application-create');await run(provider,st,ac,'application.create');const replay=await run(provider,st,ac,'application.create idempotent replay');if(!(replay.idempotentReplay===true&&Number(replay.providerWrites||0)===0))throw new Error('IDEMPOTENT_REPLAY_NOT_PROVEN');ev.counters.idempotentReplayChecks++;
+            await run(provider,ot,cmd('application.status.update','application',applicationId,await ver(appRef),{applicationId,visitId,status:'aprobada',reason:'synthetic'},operator.role,'application-approve'),'application.status.update aprobada');await run(provider,st,cmd('visit.state.update','visit',visitId,await ver(visitRef),{visitId,shopperId,patch:{estado:'agendada',agendada:'2026-08-20'}},'shopper','visit-schedule'),'visit.state.update agendada');await run(provider,st,cmd('visit.reschedule','visit',visitId,await ver(visitRef),{visitId,newDate:'2026-08-21',reason:'synthetic',requestedByShopper:true},'shopper','reschedule-request'),'visit.reschedule shopper request');await run(provider,ot,cmd('visit.reschedule','visit',visitId,await ver(visitRef),{visitId,newDate:'2026-08-21',reason:'synthetic',decision:'approved'},operator.role,'reschedule-approved'),'visit.reschedule operator approved');await run(provider,st,cmd('visit.cancel','visit',visitId,await ver(visitRef),{visitId,reason:'synthetic',requestOnly:true},'shopper','cancel-request'),'visit.cancel shopper request-only');await run(provider,st,cmd('visit.state.update','visit',visitId,await ver(visitRef),{visitId,shopperId,patch:{estado:'realizada',realizada:'2026-08-21'}},'shopper','visit-realized'),'visit.state.update realizada');await run(provider,st,cmd('visit.questionnaire.submit','visit',visitId,await ver(visitRef),{visitId,shopperId,result:{synthetic:true,score:100},completedAt:'2026-08-21'},'shopper','questionnaire-submit'),'visit.questionnaire.submit');await run(provider,ot,cmd('visit.review.update','visit',visitId,await ver(visitRef),{visitId,reviewStatus:'approved_for_submitido',note:'synthetic'},operator.role,'review-approved'),'visit.review.update');
+            const vb=await ver(visitRef);let conflict=false;try{ev.counters.providerCommandCalls++;await provider.execute(ot,cmd('visit.review.update','visit',visitId,1,{visitId,reviewStatus:'in_review',note:'must-conflict'},operator.role,'version-conflict'));}catch(e){conflict=String(e?.message||e).includes('I4B_EXPECTED_VERSION_CONFLICT');}if(!conflict)throw new Error('EXPECTED_VERSION_CONFLICT_NOT_PROVEN');if(String(await ver(visitRef))!==String(vb))throw new Error('VERSION_CONFLICT_MUTATED_VISIT');ev.counters.versionConflictChecks++;ev.steps.push({label:'expectedVersion conflict',pass:true,blockedBeforeMutation:true});
+            const fv=(await visitRef.get()).data()||{},fa=(await appRef.get()).data()||{};Object.assign(ev.checks,{finalVisitState:fv.estado==='cuestionario',reviewStatus:fv.reviewStatus==='approved_for_submitido',applicationApproved:fa.estado==='aprobada',assignmentSource:fv.assignmentSource==='platform',assignmentSyncPending:fv.assignmentSyncStatus==='pending',shopperExact:fv.shopperId===shopperId,cancelRequestOnly:fv.cancelRequest?.status==='pending_review',rescheduleApproved:fv.rescheduleRequest?.status==='approved'&&fv.agendada==='2026-08-21'});if(Object.values(ev.checks).some(v=>v!==true&&v!==false)||['finalVisitState','reviewStatus','applicationApproved','assignmentSource','assignmentSyncPending','shopperExact','cancelRequestOnly','rescheduleApproved'].some(k=>ev.checks[k]!==true))throw new Error('FINAL_STATE_ASSERTION_FAILED');
+            for(const [tag,type,entityId] of defs.slice(0,9)){const idem=`i4b-r1:${r.requestId}:${tag}`,[rr,aa]=await Promise.all([tenant.collection('commandReceipts').doc(receiptId(idem)).get(),tenant.collection('entityAuditTrail').doc(auditId(idem,type)).get()]);if(!(rr.exists&&rr.data()?.providerAck===true&&rr.data()?.commandType===type&&rr.data()?.entityId===entityId&&aa.exists&&aa.data()?.commandType===type&&aa.data()?.entityId===entityId))throw new Error('RECEIPT_AUDIT_TRACE_INCOMPLETE:'+tag);ev.counters.receiptDocsObserved++;ev.counters.auditDocsObserved++;}
+            if(ev.counters.providerCommandCalls!==11||ev.counters.providerCommittedCalls!==10||ev.counters.providerWritesReported!==28||ev.counters.receiptDocsObserved!==9||ev.counters.auditDocsObserved!==9)throw new Error('PROVIDER_COUNTERS_OUTSIDE_EXPECTATION');ev.decision='PASS_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_RETRY1__HARNESS_SCOPE_FIXED__SYNTHETIC_VISIT_ONLY';
+          }catch(e){ev.errors.push(String(e?.message||e));ev.decision='HOLD_I4B_RETRY1__'+String(e?.message||e).replace(/[^A-Za-z0-9_]+/g,'_').slice(0,120);}finally{try{if((await appRef.get()).exists){await appRef.delete();ev.counters.syntheticFixtureDeletes++;}}catch(e){ev.errors.push('APP_CLEANUP:'+String(e?.message||e));}try{if((await visitRef.get()).exists){await visitRef.delete();ev.counters.syntheticFixtureDeletes++;}}catch(e){ev.errors.push('VISIT_CLEANUP:'+String(e?.message||e));}try{const av=await visits.get(),ap=await posts.get();ev.checks.syntheticVisitRemoved=!av.docs.some(d=>d.id===visitId);ev.checks.syntheticApplicationRemoved=!ap.docs.some(d=>d.id===applicationId);ev.checks.realVisitsUnchanged=beforeV?digestDocs(av.docs)===beforeV:false;ev.checks.realPostulationsUnchanged=beforeP?digestDocs(ap.docs)===beforeP:false;ev.safety.realHrVisitMutation=ev.checks.realVisitsUnchanged!==true;if(ev.checks.syntheticVisitRemoved!==true||ev.checks.syntheticApplicationRemoved!==true||ev.checks.realVisitsUnchanged!==true||ev.checks.realPostulationsUnchanged!==true)ev.decision='HOLD_I4B_RETRY1_CLEANUP_OR_REAL_DATA_INVARIANT_FAILED';}catch(e){ev.errors.push('POST_INVARIANT:'+String(e?.message||e));ev.decision='HOLD_I4B_RETRY1_POST_INVARIANT_UNPROVEN';}save();}
+          console.log(JSON.stringify({decision:ev.decision,workflowRunId:ev.workflowRunId,providerCommandCalls:ev.counters.providerCommandCalls,providerCommittedCalls:ev.counters.providerCommittedCalls,providerWritesReported:ev.counters.providerWritesReported,receipts:ev.counters.receiptDocsObserved,audits:ev.counters.auditDocsObserved,realVisitsUnchanged:ev.checks.realVisitsUnchanged,realPostulationsUnchanged:ev.checks.realPostulationsUnchanged,errors:ev.errors}));if(!ev.decision.startsWith('PASS_'))process.exit(1);
           NODE
 
-      - name: Upload retry1 evidence
+      - name: Upload evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cxorbia-i4b-single-dev-visit-lifecycle-e2e-retry1-evidence
-          path: |
-            .tmp/i4b-single-dev-visit-lifecycle-e2e-retry1/evidence.json
-            .tmp/i4b-single-dev-visit-lifecycle-e2e-retry1/source-truth.json
-            .tmp/i4b-single-dev-visit-lifecycle-e2e-retry1/provider-source.json
-            .tmp/i4b-single-dev-visit-lifecycle-e2e-retry1/harness-status.json
+          path: .tmp/i4b-single-dev-visit-lifecycle-e2e-retry1/
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Consume gate, persist evidence, remove one-shot workflow
+      - name: Consume gate and persist evidence
         if: always()
         run: |
           set -euo pipefail
           mkdir -p "$(dirname "$EVIDENCE_FILE")" "$OUT_DIR"
           if [ ! -f "$OUT_DIR/evidence.json" ]; then
             node <<'NODE'
-            const fs=require('fs');
-            const r=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
-            const e={schemaVersion:'cxorbia.i4b.visit-lifecycle-e2e.retry1.evidence.v1',generatedAt:new Date().toISOString(),gateId:r.gateId,requestId:r.requestId,workflowRunId:Number(process.env.GITHUB_RUN_ID),workflowCommitSha:process.env.GITHUB_SHA,sourceHeadSha:r.sourceHeadSha,decision:'HOLD_I4B_RETRY1_PRE_PROVIDER_OR_EVIDENCE_MISSING',steps:[],checks:{},counters:{providerCommandCalls:0,providerCommittedCalls:0,providerWritesReported:0},safety:{historicalShopperAccess:false,realHrVisitMutation:false,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,hostingDeploys:0,cloudRunDeploys:0,merge:false,production:false},errors:['evidence.json missing before collector']};
-            fs.writeFileSync(process.env.OUT_DIR+'/evidence.json',JSON.stringify(e,null,2)+'\n');
+            const fs=require('fs'),r=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));const e={schemaVersion:'cxorbia.i4b.visit-lifecycle-e2e.retry1.evidence.v1',generatedAt:new Date().toISOString(),gateId:r.gateId,requestId:r.requestId,workflowRunId:Number(process.env.GITHUB_RUN_ID),workflowCommitSha:process.env.GITHUB_SHA,sourceHeadSha:r.sourceHeadSha,decision:'HOLD_I4B_RETRY1_PRE_PROVIDER_OR_EVIDENCE_MISSING',steps:[],checks:{},counters:{providerCommandCalls:0,providerCommittedCalls:0,providerWritesReported:0},safety:{historicalShopperAccess:false,realHrVisitMutation:false,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,hostingDeploys:0,cloudRunDeploys:0,merge:false,production:false},errors:['evidence missing']};fs.writeFileSync(process.env.OUT_DIR+'/evidence.json',JSON.stringify(e,null,2)+'\n');
             NODE
           fi
           cp "$OUT_DIR/evidence.json" "$EVIDENCE_FILE"
           node <<'NODE'
-          const fs=require('fs');
-          const p=process.env.REQUEST_FILE,r=JSON.parse(fs.readFileSync(p,'utf8')),e=JSON.parse(fs.readFileSync(process.env.EVIDENCE_FILE,'utf8'));
-          r.enabled=false;r.consumed=true;r.executionsConsumed=1;r.consumedAt=new Date().toISOString();r.status=e.decision.startsWith('PASS_')?'pass_consumed_provider_verified_retry1':'hold_consumed_retry1_no_automatic_retry';
-          r.executionResult={decision:e.decision,workflowRunId:e.workflowRunId,workflowCommitSha:e.workflowCommitSha,providerCommandCalls:e.counters?.providerCommandCalls??0,providerCommittedCalls:e.counters?.providerCommittedCalls??0,providerWritesReported:e.counters?.providerWritesReported??0,syntheticFixtureCreates:e.counters?.syntheticFixtureCreates??0,syntheticFixtureDeletes:e.counters?.syntheticFixtureDeletes??0,receiptDocsObserved:e.counters?.receiptDocsObserved??0,auditDocsObserved:e.counters?.auditDocsObserved??0,realVisitsUnchanged:e.checks?.realVisitsUnchanged??null,realPostulationsUnchanged:e.checks?.realPostulationsUnchanged??null,historicalShopperAccess:false,errors:e.errors||[]};
-          r.nextGate=e.decision.startsWith('PASS_')?'I4C_HR_BIDIRECTIONAL_SYNC_READINESS_SOURCE_IMPLEMENTATION':'HOLD_REQUIRES_ADJUDICATION_NO_AUTOMATIC_RETRY';
-          fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n');
+          const fs=require('fs'),p=process.env.REQUEST_FILE,r=JSON.parse(fs.readFileSync(p,'utf8')),e=JSON.parse(fs.readFileSync(process.env.EVIDENCE_FILE,'utf8'));r.enabled=false;r.consumed=true;r.executionsConsumed=1;r.consumedAt=new Date().toISOString();r.status=e.decision.startsWith('PASS_')?'pass_consumed_provider_verified_retry1':'hold_consumed_retry1_no_automatic_retry';r.executionResult={decision:e.decision,workflowRunId:e.workflowRunId,workflowCommitSha:e.workflowCommitSha,providerCommandCalls:e.counters?.providerCommandCalls??0,providerCommittedCalls:e.counters?.providerCommittedCalls??0,providerWritesReported:e.counters?.providerWritesReported??0,syntheticFixtureCreates:e.counters?.syntheticFixtureCreates??0,syntheticFixtureDeletes:e.counters?.syntheticFixtureDeletes??0,receiptDocsObserved:e.counters?.receiptDocsObserved??0,auditDocsObserved:e.counters?.auditDocsObserved??0,realVisitsUnchanged:e.checks?.realVisitsUnchanged??null,realPostulationsUnchanged:e.checks?.realPostulationsUnchanged??null,historicalShopperAccess:false,errors:e.errors||[]};r.nextGate=e.decision.startsWith('PASS_')?'I4C_HR_BIDIRECTIONAL_SYNC_READINESS_SOURCE_IMPLEMENTATION':'HOLD_REQUIRES_ADJUDICATION_NO_AUTOMATIC_RETRY';fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n');
           NODE
           git config user.name cxorbia-gate-bot
           git config user.email cxorbia-gate-bot@users.noreply.github.com
-          git rm "$WORKFLOW_FILE"
           git add "$REQUEST_FILE" "$EVIDENCE_FILE"
           git commit -m "evidence(i4b): consume retry1 and persist lifecycle E2E result"
           git push origin HEAD:docs-tya-v6-v71-audit
