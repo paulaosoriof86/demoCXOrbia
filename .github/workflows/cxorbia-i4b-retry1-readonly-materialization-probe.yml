@@ -1,5 +1,5 @@
 name: CXOrbia I4B Retry1 Authorized Execution On Observable PR Lane
-# Authorized synthetic-only Retry1. Pull-request lane is used because it is directly observable in this execution session.
+# Authorized synthetic-only Retry1. Observable PR lane; same gate/scope, no expansion.
 
 on:
   pull_request:
@@ -31,25 +31,19 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Validate exact authorized gate and source
+      - name: Validate synchronized source truth and exact authorization
+        env:
+          CXORBIA_ALLOW_DETACHED_HEAD: '1'
         run: |
           set -euo pipefail
           mkdir -p "$OUT_DIR" "$PRIVATE_DIR"
-          node - <<'NODE'
-          const fs=require('fs'),cp=require('child_process'),r=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
-          const expected='NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY1__HARNESS_SCOPE_FIXED__SYNTHETIC_VISIT_ONLY';
-          if(r.gateId!==expected||r.requestId!=='cxorbia-i4b-single-dev-visit-lifecycle-e2e-retry1-20260819-01'||r.sourceHeadSha!=='0d188cabf709dc8cc6d215ab9d27d2175331bf69'||r.enabled!==true||r.consumed!==false||r.authorizedBy!=='Paula'||r.authorizationText!=='autorizo pero agiliza'||r.allowedExecutions!==1||r.executionsConsumed!==0||r.syntheticVisitOnly!==true||r.historicalShopperAccess!==false||r.realHrVisitMutationAllowed!==false||r.automaticRetryAllowed!==false)throw new Error('AUTHORIZED_GATE_STATE_INVALID');
-          for(const k of ['authCreates','authClaimsWrites','authPasswordUpdates','authPasswordResets','authDeletes','otherIdentitiesModified','hrWrites','rulesWrites','storageWrites','makeCalls','geminiCalls','paymentWrites','hostingDeploys','cloudRunDeploys'])if(Number(r[k]||0)!==0)throw new Error('FORBIDDEN_BUDGET:'+k);
-          if(r.merge!==false||r.production!==false)throw new Error('PRODUCTION_POLICY_INVALID');
-          cp.execFileSync('git',['merge-base','--is-ancestor',r.sourceHeadSha,'HEAD']);
-          NODE
-          SOURCE_HEAD=$(node -p "require('./$REQUEST_FILE').sourceHeadSha")
-          git worktree add --detach .tmp/source-truth "$SOURCE_HEAD" >/dev/null
-          (cd .tmp/source-truth && CXORBIA_ALLOW_DETACHED_HEAD=1 node tools/verify-cxorbia-source-truth-sync.mjs) > "$OUT_DIR/source-truth.json"
-          node -e "const x=require('./$OUT_DIR/source-truth.json');if(x.decision!=='PASS_SOURCE_TRUTH_SYNC')process.exit(1)"
+          node tools/verify-cxorbia-source-truth-sync.mjs > "$OUT_DIR/source-truth.json"
+          node -e "const x=require('./$OUT_DIR/source-truth.json');if(x.decision!=='PASS_SOURCE_TRUTH_SYNC')process.exit(1);console.log(x.decision)"
           node tools/verify-cxorbia-i4b-visit-provider-source.mjs > "$OUT_DIR/provider-source.json"
-          node -e "const x=require('./$OUT_DIR/provider-source.json');if(x.decision!=='PASS_I4B_VISIT_PROVIDER_SOURCE')process.exit(1)"
+          node -e "const x=require('./$OUT_DIR/provider-source.json');if(x.decision!=='PASS_I4B_VISIT_PROVIDER_SOURCE')process.exit(1);console.log(x.decision)"
           node --check tools/cxorbia-i4b-retry1-runtime-executor.mjs
+          node --check tools/cxorbia-i4b-retry1-finalize.mjs
+          touch "$OUT_DIR/PREPROVIDER_VALIDATED"
 
       - uses: actions/setup-node@v4
         with:
@@ -61,11 +55,7 @@ jobs:
         run: |
           set -euo pipefail
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
-          node - <<'NODE'
-          const fs=require('fs'),raw=process.env.EXISTING_DEV_JSON||'';let x;try{x=JSON.parse(raw)}catch{}
-          if(!(x&&x.type==='service_account'&&x.project_id==='cxorbia-backend-dev'&&x.client_email&&x.private_key))throw new Error('DEV_SERVICE_ACCOUNT_INVALID');
-          fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
-          NODE
+          node -e "const fs=require('fs'),raw=process.env.EXISTING_DEV_JSON||'';let x;try{x=JSON.parse(raw)}catch{};if(!(x&&x.type==='service_account'&&x.project_id==='cxorbia-backend-dev'&&x.client_email&&x.private_key))throw new Error('DEV_SERVICE_ACCOUNT_INVALID');fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});"
           echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/${PRIVATE_DIR}/credentials.json" >> "$GITHUB_ENV"
 
       - name: Execute authorized synthetic lifecycle
@@ -80,21 +70,11 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Consume gate and persist result
+      - name: Finalize only after pre-provider validation
         if: always()
         run: |
           set -euo pipefail
-          mkdir -p "$(dirname "$EVIDENCE_FILE")" "$OUT_DIR"
-          if [ ! -f "$OUT_DIR/evidence.json" ]; then
-            node - <<'NODE'
-            const fs=require('fs'),r=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));const e={schemaVersion:'cxorbia.i4b.visit-lifecycle-e2e.retry1.evidence.v1',generatedAt:new Date().toISOString(),gateId:r.gateId,requestId:r.requestId,workflowRunId:Number(process.env.GITHUB_RUN_ID),workflowCommitSha:process.env.GITHUB_SHA,sourceHeadSha:r.sourceHeadSha,decision:'HOLD_I4B_RETRY1_PRE_PROVIDER_OR_EVIDENCE_MISSING',steps:[],checks:{},counters:{providerCommandCalls:0,providerCommittedCalls:0,providerWritesReported:0},safety:{historicalShopperAccess:false,realHrVisitMutation:false,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,hostingDeploys:0,cloudRunDeploys:0,merge:false,production:false},errors:['runtime evidence missing']};fs.writeFileSync(process.env.OUT_DIR+'/evidence.json',JSON.stringify(e,null,2)+'\n');
-            NODE
-          fi
-          cp "$OUT_DIR/evidence.json" "$EVIDENCE_FILE"
-          node - <<'NODE'
-          const fs=require('fs'),p=process.env.REQUEST_FILE,r=JSON.parse(fs.readFileSync(p,'utf8')),e=JSON.parse(fs.readFileSync(process.env.EVIDENCE_FILE,'utf8'));
-          r.enabled=false;r.consumed=true;r.executionsConsumed=1;r.consumedAt=new Date().toISOString();r.status=e.decision.startsWith('PASS_')?'pass_consumed_provider_verified_retry1':'hold_consumed_retry1_no_automatic_retry';r.executionResult={decision:e.decision,workflowRunId:e.workflowRunId,workflowCommitSha:e.workflowCommitSha,providerCommandCalls:e.counters?.providerCommandCalls??0,providerCommittedCalls:e.counters?.providerCommittedCalls??0,providerWritesReported:e.counters?.providerWritesReported??0,syntheticFixtureCreates:e.counters?.syntheticFixtureCreates??0,syntheticFixtureDeletes:e.counters?.syntheticFixtureDeletes??0,receiptDocsObserved:e.counters?.receiptDocsObserved??0,auditDocsObserved:e.counters?.auditDocsObserved??0,realVisitsUnchanged:e.checks?.realVisitsUnchanged??null,realPostulationsUnchanged:e.checks?.realPostulationsUnchanged??null,historicalShopperAccess:false,errors:e.errors||[]};r.nextGate=e.decision.startsWith('PASS_')?'I4C_HR_BIDIRECTIONAL_SYNC_READINESS_SOURCE_IMPLEMENTATION':'HOLD_REQUIRES_ADJUDICATION_NO_AUTOMATIC_RETRY';fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n');
-          NODE
+          node tools/cxorbia-i4b-retry1-finalize.mjs
           git config user.name cxorbia-gate-bot
           git config user.email cxorbia-gate-bot@users.noreply.github.com
           git add "$REQUEST_FILE" "$EVIDENCE_FILE"
