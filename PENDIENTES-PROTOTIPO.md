@@ -1,21 +1,23 @@
 # PENDIENTES-PROTOTIPO.md
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4B-RETRY2-PASS-I4C-FRONTIER-31`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4C-HR-SYNC-SOURCE-READY-32`
 
 I1/I2/I3/I4-A/I4-B PASS/frozen. Progreso formal canónico: **60% completado / 40% pendiente**.
 
+## I4-C source/readiness — resuelto
+- contrato bidireccional creado;
+- planner Plataforma→HR y HR→Plataforma creado;
+- outbox `hrSync` reutilizado;
+- matching estable, no por nombre;
+- conflict review fail-closed;
+- reflection exacta idempotente;
+- HR shopper desconocido bloqueado;
+- verifier 8/8 PASS, 0 provider/HR/Make/platform writes.
+
 ## Pendiente activo único inmediato
-`I4C_HR_BIDIRECTIONAL_SYNC_READINESS_SOURCE_IMPLEMENTATION`.
+`I4C_MAKE_HR_PROVIDER_BINDING_EXTERNAL_CONFIGURATION_REQUIRED`.
 
-## I4-B cerrado
-Retry2 run `32305790197` pasó. Gate consumido una sola vez; lifecycle provider-backed completo, idempotencia y conflicto de versión probados; fixture eliminado y datos reales invariantes. No reabrir I4-B ni pedir otro retry.
-
-## I4-C por construir/verificar
-- Plataforma→HR: marcar origen plataforma, sync pendiente y retirar visita de disponibles; preparar salida idempotente para Make/HR sin ejecutarla todavía.
-- HR→Plataforma: detectar asignación por `hrRowId/visitId`, shopper exacto y alcance tenant/proyecto; retirar de disponibles sin duplicar si ya venía de plataforma.
-- Identidad mínima: `tenantId`, `projectId`, `visitId/hrRowId`, `shopperId`, `assignmentSource`, `assignmentSyncStatus`, `lastSyncedAt`.
-- Conflictos: revisión humana y trazabilidad; prohibido deduplicar por nombre o sobreescribir silenciosamente.
-- HR/Make writes: bloqueados hasta gate posterior explícito.
+No hay binding live Make/HR verificable en repo, Gmail, Drive ni contexto. No se debe simularlo, inventar webhook/scenario ni activar HR writes por otro canal. Una vez resuelto el binding seguro y gateado se realiza la validación provider-backed de I4-C.
 
 Después: I4-D Finanzas → I4-E multi-proyecto/no-code → I4-F Academia → I5.
 

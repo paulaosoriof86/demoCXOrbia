@@ -1,8 +1,8 @@
 # PHASE A — Tracker TyA
 
-**Actualización:** 2026-08-19 15:50 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260819-I4B-RETRY2-PASS-I4C-FRONTIER-31`  
-**Estado:** `I1_PASS__I2_PASS__I3_PASS_FROZEN__I4A_PASS_FROZEN__I4B_PASS_FROZEN__I4C_SOURCE_READINESS_ACTIVE__I5_PENDING__GO_LIVE_60`
+**Actualización:** 2026-08-19 16:13 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260819-I4C-HR-SYNC-SOURCE-READY-32`  
+**Estado:** `I1_PASS__I2_PASS__I3_PASS_FROZEN__I4A_PASS_FROZEN__I4B_PASS_FROZEN__I4C_SOURCE_READY_LIVE_MAKE_BINDING_REQUIRED__I5_PENDING__GO_LIVE_60`
 
 ## Progreso formal canónico
 - I1: `15/15 PASS`.
@@ -13,20 +13,15 @@
 
 **GO-LIVE: 60% completado / 40% pendiente.**
 
-El plan no asigna subpesos I4-A..F; por eso I4-B PASS no mueve todavía el porcentaje formal.
-
-## Avance operativo I4
-- I4-A: `PASS/FROZEN`.
-- I4-B: `PASS/FROZEN` por Retry2 run `32305790197`.
-- Retry2: 11 provider calls, 10 commits, 28 writes reportados, 9 receipts, 9 audit docs, idempotencia PASS y expectedVersion conflict PASS/bloqueado antes de mutación.
-- Safety: datos reales invariantes; Historical Shopper/Auth/HR/Rules/Storage/Make/Gemini/pagos/deploy/merge/prod sin cambios.
-- Documentación canónica: transición a epoch 31 y frontera I4-C.
-
-## Pendiente hacia producción — 40 puntos formales
-1. I4-C HR bidireccional → I4-D Finanzas → I4-E multi-proyecto/no-code → I4-F Academia. Al cerrar I4 completo se acreditan 25 puntos.
-2. I5: preproducción/go-live. Valor formal: 15 puntos.
+## I4 operativo
+- I4-A: PASS/frozen.
+- I4-B: PASS/frozen provider-backed.
+- I4-C source/readiness: PASS.
+- I4-C lógica probada: Plataforma→HR, reflexión idempotente, HR→Plataforma, shopper inexistente, conflicto shopper, conflicto identidad, reflection faltante y no-dedupe por nombre.
+- Source verifier: 8/8 PASS; writes/calls reales 0.
+- Binding Make/HR live: no encontrado, pendiente externo exacto.
 
 ## Siguiente exacto
-`I4C_HR_BIDIRECTIONAL_SYNC_READINESS_SOURCE_IMPLEMENTATION`.
+`I4C_MAKE_HR_PROVIDER_BINDING_EXTERNAL_CONFIGURATION_REQUIRED`.
 
-I4-C empieza source-only y sin HR writes. No reabrir I4-B.
+Después de cerrar I4-C: I4-D Finanzas → I4-E multi-proyecto/no-code → I4-F Academia; cierre integral I4 acredita 25 puntos. I5 vale 15 puntos.

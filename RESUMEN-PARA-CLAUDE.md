@@ -1,31 +1,28 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4B-RETRY2-PASS-I4C-FRONTIER-31`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4C-HR-SYNC-SOURCE-READY-32`
 
 ## Validado/preservado
 I1/I2/I3/I4-A/I4-B PASS/frozen. HR `15 periodos / 660 visitas`, Historical Shopper, TARGET_B Admin, Finance V2/historical y legal v0.4 no se reprocesan. Progreso formal: **60% completado / 40% pendiente**.
 
-## I4-B — backend real validado
-Retry2 run `32305790197` pasó el lifecycle provider-backed sintético completo. ACK, idempotencia, trazas receipt/audit, transiciones y conflicto de versión quedaron probados. Datos reales no cambiaron y el gate quedó consumido/cerrado.
+## I4-C backend source-ready
+Contrato/adapter/verifier bidireccional ya existen. El patrón reusable es:
+- identidad: `tenantId + projectId + visitId + hrRowId + shopperId`;
+- estado: `assignmentSource + assignmentSyncStatus + lastSyncedAt`;
+- Plataforma→HR queda pendiente hasta reflection/ACK;
+- HR→Plataforma asigna por shopper exacto y retira de disponibles;
+- reflection exacta no duplica;
+- conflictos visibles/revisables, nunca overwrite silencioso ni dedupe por nombre.
 
-## Frontend / Claude — handoff vivo
-No parchear desde backend:
-- `app/modules/visita-detalle.js`: postulación → `application.create`, éxito solo con ACK.
-- `app/modules/postulaciones.js`: decisiones/cancelación vía command/ACK.
-- `app/modules/cuestionario-shopper.js`: submit/score solo después de ACK.
-- `app/modules/revision-admin.js`: `visit.review.update` + ACK como verdad.
+Verifier source-only 8/8 PASS; Make/HR/provider writes = 0.
 
-El backend lifecycle ya está validado; esto no autoriza a inventar proveedor HR, Make ni estado de sincronización exitoso en UI.
-
-## I4-C activo
-`I4C_HR_BIDIRECTIONAL_SYNC_READINESS_SOURCE_IMPLEMENTATION`.
-
-Reglas que Claude debe preservar cuando llegue el handoff funcional:
-- proyecto configurable; Cinépolis no hard-codeado globalmente;
-- Plataforma→HR registra origen plataforma y estado de sync pendiente hasta confirmación;
-- HR→Plataforma no duplica asignaciones ya originadas en plataforma;
-- matching por `tenantId + projectId + visitId/hrRowId + shopperId`, nunca solo por nombre;
-- conflictos visibles/revisables, sin sobrescritura silenciosa.
+## Frontend / Claude
+No parchear desde backend. Cuando llegue el handoff funcional, los estados visuales deben ser honestos: `pendiente de sincronización`, `sincronizado`, `conflicto/revisión`; nunca mostrar HR sincronizada antes de ACK/provider-backed. Cinépolis sigue proyecto configurable, no lógica global.
 
 ## Academia
-I4-B puede pasar de “pendiente” a “backend lifecycle validado”. I4-C sigue pendiente; no enseñar todavía que HR se sincroniza bidireccionalmente en producción.
+Preparar contenido por rol sobre origen de asignación, estado de sync, conflictos y revisión humana, pero no enseñar Make/HR live como operativo hasta cerrar I4-C provider-backed.
+
+## Siguiente
+`I4C_MAKE_HR_PROVIDER_BINDING_EXTERNAL_CONFIGURATION_REQUIRED`.
+
+No se encontró configuración live Make/HR en fuentes accesibles; no inventarla ni pedir webhook/secreto en texto plano.
