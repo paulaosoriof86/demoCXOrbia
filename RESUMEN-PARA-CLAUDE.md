@@ -1,44 +1,33 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última sincronización:** 2026-08-18 19:31 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I4-SCOPE-MATERIALIZED-17`  
-**Estado:** `NO_FRONTEND_PATCH__I3_FROZEN__GO_LIVE_60__I4_SCOPE_MATERIALIZED__I4A_NEXT`
+**Última sincronización:** 2026-08-18 19:44 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I4A-SOURCE-READINESS-HOLD-18`  
+**Estado:** `NO_FRONTEND_PATCH__I3_FROZEN__GO_LIVE_60__I4A_READINESS_HOLD`
 
 ## Estado Phase A
 
 I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `25/25 PASS`; I4 `0/25`; I5 `0/15` = **60% completado / 40% pendiente**.
 
-## I4 canónico recuperado
+## I4-A — Shopper lifecycle
 
-Fuente: `app/docs/ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`, sección `9. I4 — operación visible`.
+Readiness source-only ejecutado. Los contratos canónicos prueban identidad/perfil exactos, certificación visible, histórico y membership/role/project scopes. La evidencia I3 congelada prueba separación postulación/asignación HR.
 
-- I4-A Shopper lifecycle.
-- I4-B visita.
-- I4-C HR bidireccional.
-- I4-D Finanzas.
-- I4-E multi-proyecto/no-code.
-- I4-F Academia.
-
-La brecha documental previa queda cerrada. `CORTE 4` histórico no se usa como equivalencia.
+No se adjudica todavía experiencia visible completa para documentos/instrucciones, disponibles, acción de postulación, notificaciones ni presentación de certificación nueva. Esto no prueba ausencia ni bug del producto.
 
 ## Claude / prototipo
 
-**No hay parche frontend por este bloque.** `/app/modules` y `/app/core` permanecen intactos.
-
-El siguiente bloque es I4-A y su alcance literal es: documentos/instrucciones; certificaciones históricas/nuevas; disponibles; postulación; asignación; perfiles/roles/scopes; notificaciones; histórico.
-
-No anticipar cambios UI. Solo un comportamiento visible reproducible que lo requiera generará handoff por archivo/módulo.
+**No aplicar parche frontend desde backend.** `/app/modules` y `/app/core` no fueron tocados. Primero debe existir observación visible reproducible con Shopper de prueba/no histórico; solo un defecto demostrado generará handoff por archivo/módulo.
 
 ## Preservado
 
-I3 completo frozen: Staff final run `32196648462`; identityMap focal resuelto; agosto `2/0`; duplicados `0/0`; Historical Shopper y safety en cero. No reabrir Admin/Shopper/Rules/provider/Hosting de I3.
+I3 completo frozen; Historical Shopper protegido; cero login/credential selection en este bloque; cero writes/deploy/merge/producción.
 
 ## Academia
 
-I4-F confirma que cursos/manuales/rutas/notificaciones/instrucciones/certificaciones deben actualizarse junto con cada comportamiento operacional visible que realmente cambie o se valide. En este bloque documental no cambió ninguno.
+Sin cambio funcional en este bloque. Instrucciones, certificación y notificaciones deberán contrastarse en la futura observación visible antes de modificar manuales/cursos/rutas.
 
 ## Siguiente frontera
 
-`I4-A — SHOPPER LIFECYCLE`
+`I4A_RESOLVE_EXISTING_NONHISTORICAL_TEST_SHOPPER_IDENTITY_FROM_FROZEN_EVIDENCE__READONLY_NO_LOGIN`
 
-Provider writes, deploy, merge y producción siguen no autorizados.
+Resolver una identidad de prueba/no histórica preexistente. Sin login/credenciales ni mutaciones.
