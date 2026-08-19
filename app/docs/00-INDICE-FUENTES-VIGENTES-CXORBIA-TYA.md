@@ -1,50 +1,38 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**Última sincronización:** 2026-08-19 10:59 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260819-I4A-VISIBLE-SMOKE-MECHANISM-HOLD-22`  
-**Estado:** `SOURCE_TRUTH_SYNCHRONIZED__I3_FROZEN_PASS__GO_LIVE_60__I4A_VISIBLE_SMOKE_CONSUMED_HOLD__NO_PRODUCT_DEFECT_PROVEN__RETRY_AUTH_REQUIRED__NO_PRODUCTION`
+**Última sincronización:** 2026-08-19 11:23 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260819-I4A-VISIBLE-SMOKE-RETRY1-DOCUMENT-SELECTOR-HOLD-23`  
+**Estado:** `SOURCE_TRUTH_SYNCHRONIZED__I3_FROZEN__60_40__I4A_AUTH_MEMBERSHIP_APP_HR_PASS__DOCUMENT_SELECTOR_HOLD__RETRY2_AUTHORIZED`
 
 ## Orden obligatorio
-
 1. `app/docs/CXORBIA-EXECUTION-STATE.json`
 2. `app/docs/SOURCE-LOCK-CXORBIA-TYA.md`
 3. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`
-4. `app/docs/ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`
-5. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`
+4. Plan Unificado activo
+5. Plan Lock
 6. `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`
-7. evidencia activa indicada por Execution State
-8. PR #7 vivo + HEAD remoto + delta desde el último HEAD canónico
+7. evidencia activa
+8. PR #7 + HEAD + delta desde último HEAD canónico.
 
-Permanecen vigentes reglas maestras, addendum canónico de empalme/carril, Academia, patrones reutilizables y antidesvío. Históricos no sustituyen esta capa.
+Permanecen activas reglas maestras, Academia, patrones reutilizables, antidesvío y addendum canónico de ejecución directa/empalme.
 
 ## CONTINUITY_FAST_PATH
-
-No reconstruir PR #7 completo, miles de commits/Actions ni documentos históricos cuando la capa canónica esté consistente. Un objetivo técnico real por iteración; un artifact/decisión; una reconciliación atómica; sin cadenas `finalize/close/seal`. Un gate consumido no se reejecuta automáticamente, incluso si el fallo fue de mecanismo.
-
-## Carril único
-
-Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`; DEV `cxorbia-backend-dev`.
+No reconstruir miles de commits, Actions o históricos. Un objetivo real por iteración; evidencia; una reconciliación atómica. Un HOLD de harness no se convierte en P0 de producto sin evidencia reproducible.
 
 ## Estado formal
-
-I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `25/25 PASS` frozen; I4 `0/25` en curso/no puntuado; I5 `0/15` = **60% completado / 40% pendiente**.
+I1 `15/15`; I2 `20/20`; I3 `25/25 FROZEN`; I4 `0/25`; I5 `0/15` = **60% / 40%**.
 
 ## I4-A — verdad viva
+Retry estabilizado run `32280348780`: Service Worker bloqueado; `page_ready`, Firebase user, Shopper auth context, membership, entrada de app y autoridad HR PASS; HR `15/660`; cero page/console errors y cero backend write attempts. Esto elimina el timeout previo de Auth bajo el harness estabilizado.
 
-La identidad DEV dedicada sintética/no histórica permanece provider-verificada y congelada como habilitador. El gate visible `NEW_AUTH_REQUIRED_I4A_SINGLE_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE` fue autorizado y consumido exactamente una vez.
+El HOLD ocurrió después, en Documentos: la ruta `Recursos del proyecto` ya estaba renderizada y Playwright resolvió `div[data-doc=d1]`, pero el selector genérico eligió el contenedor antes del botón visible y agotó el click por estabilidad. Clasificación: `PIPELINE_MECHANISM_FAILURE__DOCUMENT_SELECTOR_TARGET__NO_PRODUCT_DEFECT_PROVEN`.
 
-Resultado del visible smoke: run `32278013553`, job `96149872897`, artifact `9374808032`, digest `sha256:b91f3bd3b1ce05303e426a45e98bd13372e6933499fc2548a98db8daa9a47437`. La prevalidación de identidad pasó exacta; hubo 1 Auth password update efímero y 1 intento de login. El navegador quedó en timeout antes de producir evidencia de superficies; `surfaces={}`, `pageErrors=[]`, Firestore writes/postulación/certificación/reserva/HR/Make/Gemini/pagos/deploy/merge/producción = 0/false.
-
-Adjudicación: `PIPELINE_MECHANISM_FAILURE_PRIMARY__NO_PRODUCT_DEFECT_PROVEN`. El diferencial de fuente más fuerte es que el E2E I3 congelado bloqueaba Service Workers, mientras este smoke no lo hizo; además `app.js` recarga en `controllerchange` y `sw.js` toma control con `skipWaiting/clients.claim`. Esto identifica un mecanismo de harness prioritario, pero no se afirma como evento capturado porque el run no instrumentó `controllerchange`.
-
-Evidencia durable: `app/docs/evidence/I4A-VISIBLE-DEV-SHOPPER-LIFECYCLE-SMOKE-HOLD-LATEST.json`.
+Evidencia: `app/docs/evidence/I4A-VISIBLE-DEV-SHOPPER-LIFECYCLE-SMOKE-RETRY1-HOLD-LATEST.json`.
 
 ## Siguiente frontera exacta
+`NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY2__STABLE_SURFACE_SELECTORS__NO_SW`
 
-`NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY__SERVICE_WORKER_STABILIZED_HARNESS`
-
-No está autorizada. Solo puede ejecutar una nueva prueba visible DEV con la misma identidad dedicada, estabilizando el harness contra el primer control del Service Worker y registrando checkpoints de Auth/membership antes de observar las cinco superficies.
+Autorizada por la instrucción expresa del turno actual de proceder y aplicar correctivos, bajo el mismo perímetro: misma Shopper sintética, máximo 1 login + 1 password update efímero, cero Auth creates/claims/deletes, cero Firestore/HR/Make/Gemini/pagos writes, cero deploy/merge/producción.
 
 ## Circuit breaker
-
-El gate anterior está consumido y su one-shot workflow debe quedar retirado. No retry automático, no Historical Shopper, no reapertura de I3, no nueva identidad. Mismatch documental => `SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION`.
+Retry1 consumido no se repite. Retry2 es un gate nuevo y acotado. Mismatch documental => `SOURCE_TRUTH_MISMATCH__STOP_TECHNICAL_EXECUTION`.
