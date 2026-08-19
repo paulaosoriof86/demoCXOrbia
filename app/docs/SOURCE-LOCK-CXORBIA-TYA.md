@@ -1,67 +1,49 @@
 # SOURCE LOCK CXORBIA TyA — ESTABLE Y VIGENTE
 
-**Última sincronización:** 2026-08-18 19:31 -06:00  
-**SYNC_EPOCH:** `CXORBIA-20260818-I4-SCOPE-MATERIALIZED-17`  
-**Estado:** `LOCKED__I3_INTEGRAL_PASS_FROZEN__GO_LIVE_60__I4_SCOPE_MATERIALIZED__I4A_NEXT__NO_PRODUCTION`
+**Última sincronización:** 2026-08-18 19:44 -06:00  
+**SYNC_EPOCH:** `CXORBIA-20260818-I4A-SOURCE-READINESS-HOLD-18`  
+**Estado:** `LOCKED__I3_PASS_FROZEN__GO_LIVE_60__I4A_READINESS_HOLD__TEST_SHOPPER_RESOLUTION_NEXT__NO_PRODUCTION`
 
 ## Carril vigente
 
-- Repo: `paulaosoriof86/demoCXOrbia`.
-- Rama viva: `docs-tya-v6-v71-audit`.
-- PR: #7 draft/open/no merge.
-- Base: `release/cxorbia-tya-rc-20260630`.
-- DEV: `cxorbia-backend-dev`.
-
-No crear nueva rama/PR/candidata/metodología. No usar workaround UI. No merge ni producción sin gate explícito.
+Repo `paulaosoriof86/demoCXOrbia`; rama `docs-tya-v6-v71-audit`; PR #7 draft/open/no merge; base `release/cxorbia-tya-rc-20260630`; DEV `cxorbia-backend-dev`.
 
 ## Avance formal
 
-- I1 `15/15 PASS`.
-- I2 `20/20 PASS`.
-- I3 `25/25 PASS` — integral y congelado.
-- I4 `0/25` — no iniciado.
-- I5 `0/15` — no iniciado.
-
-**60% completado / 40% pendiente.**
+I1 `15/15 PASS`; I2 `20/20 PASS`; I3 `25/25 PASS` frozen; I4 `0/25` in progress/not scored; I5 `0/15` = **60% / 40%**.
 
 ## Frozen / no reprocesar
 
-I1/I2/I3 completo; Historical Shopper; TARGET_B Admin; Rules I3.11C; focal provider; Hosting identityMap; Staff final; HR `15/660`; Finance V2/historical; legal V0.4. No repetir I3.
+I1/I2/I3 completo; Historical Shopper; TARGET_B Admin; Rules/provider/Hosting/Staff I3.11C; HR `15/660`; Finance V2/historical; legal V0.4. No reabrir I3.
 
-## I4 — autoridad canónica recuperada
+## I4-A — Shopper lifecycle
 
-Fuente aprobada y activa: `app/docs/ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`, sección `9. I4 — operación visible`.
+Fuente de alcance: addendum maestro Phase A 2026-08-17, sección `9. I4 — operación visible`.
 
-La brecha `ACTIVE_SOURCE_GAP__I1_I5_PERCENT_WEIGHTS_PRESENT_BUT_I4_SEMANTIC_SCOPE_NOT_MATERIALIZED` queda **RESOLVED**. El error fue de localización de fuente, no de producto. `CORTE 4` legado no se usa como equivalencia.
+### Readiness adjudication
 
-### I4-A — Shopper lifecycle
-Documentos/instrucciones; certificaciones históricas/nuevas; disponibles; postulación; asignación; perfiles/roles/scopes; notificaciones; histórico.
+`HOLD_I4A_SOURCE_READINESS__VISIBLE_SHOPPER_LIFECYCLE_COVERAGE_NOT_YET_PROVEN`
 
-### I4-B — visita
-Agenda; reprogramación; cancelación; ventanas/reglas; ejecución; evidencias; cuestionario; submit; review/auditoría; estados dinámicos.
+**Probado/reutilizable:**
+- `app/adapters/tya-canonical-shopper-portal-v2.js`: identidad Shopper exacta; Mi Perfil/contacto; certificación visible; histórico canónico/estados; read-only.
+- `app/adapters/cxorbia-shopper-membership-wiring-v1.js`: membership exacto tenant/shopper/projectIds, role `shopper`, scopes y fail-closed; browser provider/Firestore writes `0`.
+- `app/adapters/cxorbia-shopper-admin-command-contract-v1.js`: contrato reusable create/update/reset protegido, provider ACK obligatorio, campos sensibles protegidos, sin password/token en browser ni localStorage.
+- I3 congelado: postulación vs asignación HR PASS; `8` platform posts; `15` HR assignments; HR assignments no son postulations; histórico preservado.
 
-### I4-C — HR bidireccional
-Plataforma→HR y HR→Plataforma con `tenantId`, `projectId`, `visitId/hrRowId`, `shopperId`, `assignmentSource`, `assignmentSyncStatus`, `lastSyncedAt`; no duplicación; conflictos a revisión; Make solo bajo gate.
+**Aún no probado como experiencia visible Shopper E2E:** documentos/instrucciones; disponibles; acción de postulación; notificaciones; presentación de certificación nueva. No se adjudica que falten del producto: solo no están probadas por la evidencia canónica inspeccionada.
 
-### I4-D — Finanzas
-Histórico preservado; liquidaciones; pagos; junio real; honorarios/reembolsos configurables; trazabilidad tenant/proyecto/visita/shopper.
-
-### I4-E — multi-proyecto/no-code
-País/moneda/timezone/locale; source + mapping; cuestionario/provider/link; documentos/reglas/certificación; agenda; pagos; roles/notificaciones; integraciones; privacidad/evidencias.
-
-### I4-F — Academia
-Cursos/manuales/rutas/notificaciones/instrucciones/certificaciones se actualizan junto con cada comportamiento operacional visible.
+No hubo runtime Shopper, login, selección de credencial, provider/data writes, deploy, merge ni producción en este bloque.
 
 ## Siguiente frontera exacta
 
-`I4-A — SHOPPER LIFECYCLE`
+`I4A_RESOLVE_EXISTING_NONHISTORICAL_TEST_SHOPPER_IDENTITY_FROM_FROZEN_EVIDENCE__READONLY_NO_LOGIN`
 
-No se ejecutó I4 en este bloque. El siguiente bloque debe limitarse a I4-A y preservar todo I3 frozen. Provider writes, deploy, merge y producción permanecen no autorizados.
+Resolver exactamente una identidad Shopper de prueba/no histórica ya existente usando solo evidencia congelada. Prohibido Historical Shopper. Sin login/credential selection ni mutaciones. Después, si resulta elegible, se requerirá autorización separada para una única observación visible I4-A DEV.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** I4 visible definido por lifecycle/visita/HR/finanzas/no-code/Academia.
-- **Exclusivo TyA:** validación inicial del tenant/proyectos y datos reales, sin convertirlos en lógica global.
-- **Claude/prototipo:** sin parche UI en este bloque.
-- **Academia:** I4-F explícito; cualquier comportamiento operacional visible futuro deberá sincronizar su impacto.
-- **Sin impacto Claude inmediato:** materialización documental del alcance.
+- **Reusable CXOrbia:** contratos exact identity/membership/admin command y patrón fail-closed.
+- **Exclusivo TyA:** contraste inicial con lifecycle real y evidencia HR/postulación.
+- **Claude/prototipo:** no parchear UI; cualquier superficie visible no probada se documenta, no se corrige desde backend.
+- **Academia:** certification/instructions/notifications quedan dentro del futuro contraste visible; sin cambio actual.
+- **Sin impacto Claude inmediato:** readiness source-only/read-only.
