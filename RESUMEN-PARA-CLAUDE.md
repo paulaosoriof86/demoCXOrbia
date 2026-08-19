@@ -1,14 +1,19 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4A-VISIBLE-LIFECYCLE-PASS-25`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4B-READINESS-PROVIDER-SOURCE-READY-26`
 
-## Validado
-I4-A Shopper visible lifecycle **PASS** en DEV. Auth/membership/app/HR 15/660; Documentos con 4 recursos y viewer; 8 disponibles con detalle/Postularme habilitado; notificaciones visibles con bridge Firestore; certificación muestra correctamente pendiente de fuente y no inventa aprobación.
+## Validado/preservado
+I4-A visible Shopper PASS/frozen. I4-B backend readiness queda source-ready sin activar writes. El command boundary y `misvisitas.js` ya tienen patrón ACK-aware para agenda, realizada, reprogramación y cancelación.
 
-## Frontend / Claude
-No hay P0 frontend demostrado en I4-A y no se requiere parche. Preservar `/app/modules` y `/app/core`. Si I4-B encuentra defecto reproducible se documentará por archivo/módulo.
+## Ajustes frontend exactos — no tocar desde backend
+1. `app/modules/visita-detalle.js`: al confirmar postulación, usar command `application.create`; cerrar/modal/success solo tras provider ACK.
+2. `app/modules/postulaciones.js`: aprobación/rechazo/standby/cancelación no deben mutar `x`/`v` directamente; usar `application.status.update`, `visit.assign`/`visit.cancel` y refrescar después del ACK.
+3. `app/modules/cuestionario-shopper.js`: no escribir `visita.score`, `visita.submit` ni estado local antes del ACK; usar `data.submitQuestionnaire(...,{ackAware:true})` y refrescar.
+4. `app/modules/revision-admin.js`: retirar localStorage/CX.data.revisiones como verdad canónica; usar command `visit.review.update` y mostrar éxito solo después del ACK.
+
+No hay rediseño pedido ni P0 frontend nuevo demostrado. Preservar layout, textos y lógica visual aprobada.
 
 ## Academia
-Ya puede incorporar la ruta Shopper validada para documentos/instrucciones, disponibles/postulación, notificaciones y estado de certificación pendiente. No enseñar score/aprobación ficticia cuando no hay banco publicado.
+No cambiar todavía la enseñanza del ciclo operativo como “confirmado” hasta que pase el E2E write. Mantener I4-A visible ya validado.
 
-Siguiente técnico exacto: `I4B_VISIT_LIFECYCLE_READINESS__NO_PROVIDER_WRITES`.
+Siguiente técnico: `NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE__SYNTHETIC_VISIT_ONLY`.

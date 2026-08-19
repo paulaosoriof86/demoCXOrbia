@@ -1,11 +1,13 @@
 # PENDIENTES-PROTOTIPO.md
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I4A-VISIBLE-LIFECYCLE-PASS-25`
+**SYNC_EPOCH:** `CXORBIA-20260819-I4B-READINESS-PROVIDER-SOURCE-READY-26`
 
-I4-A cerrado PASS; no reabrir.
+I4-A cerrado PASS; no reabrir. I4-B readiness source-only cerrado PASS.
 
-Pendiente activo único: `I4B_VISIT_LIFECYCLE_READINESS__NO_PROVIDER_WRITES`.
+Pendiente activo único: `NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE__SYNTHETIC_VISIT_ONLY`.
 
-Revisar/reutilizar ciclo existente: postulación→aprobación/asignación→agenda/reprogramación/cancelación→ejecución/evidencias→cuestionario→submit→review/auditoría→estado final. Identificar exactamente qué puede probarse sin writes y consolidar en **un solo** futuro gate cualquier Firestore/operational write necesario, evitando otra cadena de autorizaciones pequeñas.
+El gate debe validar en una sola ejecución DEV: postulación → aprobación/asignación → agenda → solicitud/decisión de reprogramación → realizada → cuestionario → revisión, con provider ACK, idempotencia/version conflict, refresh y audit. Solo visita sintética creada para el gate; no tocar 660 visitas HR reales, Historical Shopper, HR writes, Storage, Make, Gemini, pagos, deploy, merge o producción.
+
+Handoff Claude posterior/alineado: `visita-detalle.js`, `postulaciones.js`, `cuestionario-shopper.js`, `revision-admin.js`.
 
 Después: I4-C → I4-D → I4-E → I4-F → I5.
