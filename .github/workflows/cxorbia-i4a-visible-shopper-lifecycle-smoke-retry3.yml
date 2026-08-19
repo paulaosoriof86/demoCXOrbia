@@ -1,0 +1,124 @@
+name: CXOrbia I4A Visible Shopper Lifecycle Smoke Retry3 Safe Globals
+
+on:
+  push:
+    branches: [docs-tya-v6-v71-audit]
+    paths: [.github/workflows/cxorbia-i4a-visible-shopper-lifecycle-smoke-retry3.yml]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cxorbia-i4a-visible-shopper-lifecycle-smoke-retry3
+  cancel-in-progress: false
+
+env:
+  REQUEST_FILE: backend/config/i4a-visible-shopper-lifecycle-smoke-retry3-request.json
+  CREATE_REQUEST: backend/config/i4a-dedicated-test-shopper-create-request.json
+  OUT_DIR: .tmp/i4a-visible-shopper-lifecycle-smoke-retry3
+  PRIVATE_DIR: .tmp/i4a-visible-shopper-private-retry3
+  EVIDENCE_PATH: app/docs/evidence/I4A-VISIBLE-SMOKE-RETRY3-RUNTIME-OBSERVED.json
+  DEV_URL: https://cxorbia-backend-dev.web.app/index-backend-dev.html?cxProjectId=cinepolis&cxI4aSmokeRetry3=1
+
+jobs:
+  smoke-retry3:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 3
+          ref: ${{ github.sha }}
+
+      - name: Validate exact authorization lineage
+        id: gate
+        run: |
+          set -euo pipefail; mkdir -p "$OUT_DIR" "$PRIVATE_DIR"; printf '%s\n' '.tmp/' 'node_modules/' >> .git/info/exclude
+          node <<'NODE'
+          const fs=require('fs'),cp=require('child_process'),p=process.env.REQUEST_FILE,r=JSON.parse(fs.readFileSync(p));
+          const head=cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),base=cp.execFileSync('git',['rev-parse','HEAD^^'],{encoding:'utf8'}).trim(),now=cp.execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean),prior=cp.execFileSync('git',['diff','--name-only','HEAD^^','HEAD^'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const expected={schemaVersion:'cxorbia.i4a.visible-shopper-lifecycle-smoke-retry3.request.v1',gateId:'NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY3__SAFE_GLOBAL_GUARDS__STABLE_SURFACES',requestId:'cxorbia-i4a-visible-shopper-lifecycle-smoke-retry3-20260819-01',sourceHeadSha:'2b661fd06fd125169fc8531edd0b1f0e7ffcd609',retry2RunId:32282049566,enabled:true,consumed:false,status:'authorized_execute_once',authorizedBy:'Paula',allowedProviderExecutions:1,loginAttemptsMax:1,authPasswordUpdatesMax:1,serviceWorkersBlocked:true,safeWindowGlobalGuardsRequired:true,stableSurfaceSelectorsRequired:true,authCreates:0,authClaimsWrites:0,authDeletes:0,firestoreWrites:0,postulationSubmits:0,certificationSubmits:0,reservationWrites:0,historicalShopperAccess:false,otherIdentitiesModifiedMax:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,hostingDeploys:0,cloudRunDeploys:0,merge:false,production:false,automaticRetryAllowed:false,sourceTruthVerifierRequired:true,resultPublicationIndependent:true};
+          for(const [k,v] of Object.entries(expected))if(r[k]!==v)throw new Error('request_mismatch:'+k);if(head!==process.env.GITHUB_SHA||base!==r.sourceHeadSha)throw new Error('lineage_mismatch');if(now.length!==1||now[0]!=='.github/workflows/cxorbia-i4a-visible-shopper-lifecycle-smoke-retry3.yml')throw new Error('workflow_scope');if(prior.length!==1||prior[0]!==p)throw new Error('request_scope');fs.appendFileSync(process.env.GITHUB_OUTPUT,'execute=true\n');console.log('PASS_RETRY3_AUTHORIZATION');
+          NODE
+
+      - name: Verify canonical source truth before provider access
+        if: steps.gate.outputs.execute == 'true'
+        env:
+          CXORBIA_ALLOW_DETACHED_HEAD: '1'
+        run: |
+          node tools/verify-cxorbia-source-truth-sync.mjs > "$OUT_DIR/source-truth.json" || true
+          cat "$OUT_DIR/source-truth.json"
+          node -e "const x=require('./$OUT_DIR/source-truth.json');if(x.decision!=='PASS_SOURCE_TRUTH_SYNC')process.exit(1)"
+
+      - uses: actions/setup-node@v4
+        if: steps.gate.outputs.execute == 'true'
+        with: {node-version: '24'}
+
+      - name: Install transient dependencies
+        if: steps.gate.outputs.execute == 'true'
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null
+
+      - name: Prepare DEV credential privately
+        if: steps.gate.outputs.execute == 'true'
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          node <<'NODE'
+          const fs=require('fs'),raw=process.env.EXISTING_DEV_JSON||'';let x;try{x=JSON.parse(raw)}catch{}if(!(x&&x.type==='service_account'&&x.project_id==='cxorbia-backend-dev'&&x.client_email&&x.private_key))throw new Error('credential_invalid');fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/${PRIVATE_DIR}/credentials.json" >> "$GITHUB_ENV"
+
+      - name: Verify dedicated identity and set ephemeral password
+        if: steps.gate.outputs.execute == 'true'
+        run: |
+          node <<'NODE'
+          const fs=require('fs'),crypto=require('crypto'),admin=require('firebase-admin'),r=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE)),cr=JSON.parse(fs.readFileSync(process.env.CREATE_REQUEST)),sha=v=>crypto.createHash('sha256').update(String(v)).digest('hex'),key=sha(cr.requestId).slice(0,24),uid='tya-i4a-'+key,shopperId='shp-i4a-'+key,login='cxorbia.i4a.'+key.slice(0,10),uidFp=u=>sha('cxorbia-provider-uid-v1\0'+u),sidFp=s=>sha('shopper-id\0'+s);
+          const sa=JSON.parse(fs.readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS));admin.initializeApp({credential:admin.credential.cert(sa),projectId:r.firebaseProjectId});const auth=admin.auth(),db=admin.firestore();(async()=>{const u=await auth.getUser(uid),c=u.customClaims||{},refs=[db.collection('tenants').doc('tya').collection('shoppers').doc(shopperId),db.collection('tenants').doc('tya').collection('users').doc(uid),db.collection('tenants').doc('tya').collection('shopperIdentityCrosswalk').doc(shopperId),db.collection('tenants').doc('tya').collection('commandReceipts').doc(sha(cr.requestId).slice(0,40))],sn=await Promise.all(refs.map(x=>x.get())),p=sn[0].data()||{},m=sn[1].data()||{},x=sn[2].data()||{},rec=sn[3].data()||{};const ok=c.tenantId==='tya'&&c.role==='shopper'&&c.authNamespace==='shopper'&&c.shopperId===shopperId&&c.projectIds?.includes('cinepolis')&&c.synthetic===true&&c.nonHistorical===true&&p.synthetic===true&&p.nonHistorical===true&&m.active===true&&m.shopperId===shopperId&&m.providerUidFingerprint===uidFp(uid)&&x.providerUidFingerprint===uidFp(uid)&&x.fuzzyMatching===false&&rec.providerAck===true;if(!ok)throw new Error('identity_not_exact');const password=crypto.randomBytes(30).toString('base64url')+'!Aa7';await auth.updateUser(uid,{password});fs.writeFileSync(process.env.PRIVATE_DIR+'/login.json',JSON.stringify({login,password,shopperId}),{mode:0o600});fs.writeFileSync(process.env.OUT_DIR+'/provider-prelogin.json',JSON.stringify({decision:'PASS_PRELOGIN_RETRY3',uidFingerprint:uidFp(uid),shopperIdFingerprint:sidFp(shopperId),providerReads:1,firestoreReads:4,authPasswordUpdates:1,historicalShopperAccess:false,otherIdentitiesModified:0},null,2));})().catch(e=>{console.error(String(e.message||e));process.exit(1)});
+          NODE
+
+      - name: Execute visible lifecycle with safe globals
+        if: steps.gate.outputs.execute == 'true'
+        run: |
+          node <<'NODE'
+          const fs=require('fs'),{chromium}=require('playwright'),r=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE)),cred=JSON.parse(fs.readFileSync(process.env.PRIVATE_DIR+'/login.json')),pre=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/provider-prelogin.json'));
+          const out={schemaVersion:'cxorbia.i4a.visible-shopper-lifecycle-smoke-retry3.evidence.v1',generatedAt:new Date().toISOString(),gateId:r.gateId,requestId:r.requestId,workflowRunId:Number(process.env.GITHUB_RUN_ID),workflowCommitSha:process.env.GITHUB_SHA,sourceHeadSha:r.sourceHeadSha,uidFingerprint:pre.uidFingerprint,shopperIdFingerprint:pre.shopperIdFingerprint,providerReads:1,firestoreProviderReads:4,authPasswordUpdates:1,loginAttempts:0,serviceWorkersBlocked:true,checkpoints:{},surfaces:{},pageErrors:[],consoleErrors:[],backendWriteAttemptsObserved:0,safety:{historicalShopperAccess:false,otherIdentitiesModified:0,authCreates:0,authClaimsWrites:0,authDeletes:0,firestoreWrites:0,postulationSubmits:0,certificationSubmits:0,reservationWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,paymentWrites:0,hostingDeploys:0,cloudRunDeploys:0,merge:false,production:false,credentialsExported:false}},mark=(k,v=true)=>out.checkpoints[k]={pass:!!v,at:new Date().toISOString()},clean=e=>String(e?.message||e||'').replace(/[^\x20-\x7E]/g,' ').slice(0,300);let phase='boot';
+          (async()=>{const browser=await chromium.launch({headless:true}),ctx=await browser.newContext({viewport:{width:1440,height:1100},serviceWorkers:'block'}),page=await ctx.newPage();page.on('pageerror',e=>out.pageErrors.push(clean(e)));page.on('console',m=>{if(m.type()==='error')out.consoleErrors.push(clean(m.text()))});try{
+            phase='page_ready';await page.goto(process.env.DEV_URL+'&t='+Date.now(),{waitUntil:'domcontentloaded',timeout:45000});await page.waitForFunction(()=>window.CX&&window.CX.backendAuth&&document.querySelector('#loginForm'),null,{timeout:30000});mark('page_ready');await page.evaluate(()=>{window.__I4A_BACKEND_WRITE_ATTEMPTS=[];try{const db=window.firebase.firestore(),dp=Object.getPrototypeOf(db.doc('__i4a__/x')),cc=Object.getPrototypeOf(db.collection('__i4a__'));for(const k of ['set','update','delete'])if(typeof dp[k]==='function')dp[k]=function(){window.__I4A_BACKEND_WRITE_ATTEMPTS.push('doc.'+k);throw new Error('WRITE_BLOCKED')};if(typeof cc.add==='function')cc.add=function(){window.__I4A_BACKEND_WRITE_ATTEMPTS.push('collection.add');throw new Error('WRITE_BLOCKED')}}catch(_){}});await page.evaluate(()=>window.CX.backendAuth.showForRole('shopper'));await page.locator('#lgUser').fill(cred.login);await page.locator('#lgPass').fill(cred.password);out.loginAttempts=1;await page.locator('#lgSubmit').click();
+            phase='auth';await page.waitForFunction(()=>window.firebase?.auth?.().currentUser&&window.CX?.backendAuth?.context?.()?.role==='shopper',null,{timeout:30000});mark('firebase_user');mark('shopper_auth_context');await page.waitForFunction(()=>window.CX_SHOPPER_MEMBERSHIP?.status==='verified',null,{timeout:30000});mark('membership_verified');await page.waitForFunction(()=>document.getElementById('app')?.classList.contains('on')===true&&document.getElementById('login')?.classList.contains('hidden')===true,null,{timeout:45000});mark('app_entered');
+            phase='hr_authority';await page.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&window.CX?.data?.previewMeta?.hrAuthority===true,null,{timeout:70000});mark('hr_authority_ready');out.surfaces.auth=await page.evaluate(()=>({role:window.CX?.backendAuth?.context?.()?.role,membership:window.CX_SHOPPER_MEMBERSHIP?.status||null,hrPeriods:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.periods||0,hrVisits:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.hrVisits||0}));
+            const nav=async(id,needle)=>{await page.evaluate(x=>window.CX.router.nav(x),id);await page.waitForFunction(([v,n])=>window.CX?.session?.view===v&&(document.getElementById('view')?.innerText||'').includes(n),[id,needle],{timeout:18000});await page.waitForTimeout(400)};
+            phase='documents';await nav('documentos','Recursos del proyecto');const docs=page.locator('button[data-doc]:visible'),dc=await docs.count();let viewer=false;if(dc){await docs.first().evaluate(el=>el.click());await page.locator('#docBack:visible').waitFor({state:'visible',timeout:12000});viewer=true;await page.locator('#docBack:visible').evaluate(el=>el.click())}out.surfaces.documents={routeVisible:true,visibleOpenButtons:dc,viewerVisible:viewer};mark('documents',dc>0&&viewer);
+            phase='available_visits_postulation';await nav('visitas','Visitas Disponibles');const det=page.locator('button[data-detail]:visible'),av=await det.count(),viewText=await page.locator('#view').innerText(),empty=viewText.includes('Sin visitas disponibles');let detail=false,post=false,disabled=null;if(av){await det.first().evaluate(el=>el.click());await page.locator('#goPost:visible').waitFor({state:'visible',timeout:12000});detail=post=true;disabled=await page.locator('#goPost:visible').isDisabled();const close=page.locator('[data-x2]:visible');if(await close.count())await close.first().evaluate(el=>el.click())}const own=await page.evaluate(()=>{const sid=window.CX?.backendAuth?.context?.()?.shopperId,rows=(window.CX?.data?._posts||[]).filter(x=>x.shopperId===sid);return{count:rows.length,states:[...new Set(rows.map(x=>x.estado||x.status).filter(Boolean))]}});out.surfaces.availableVisitsPostulation={routeVisible:true,availableDetailControls:av,honestEmpty:empty,detailVisible:detail,postulationControlVisible:post,postulationControlDisabled:disabled,ownPostulationState:own};mark('available_visits_postulation',av?detail&&post:empty);
+            phase='notifications';try{await page.evaluate(async()=>{if(window.CX?.backendBulletins?.load)await window.CX.backendBulletins.load()})}catch(_){}await page.locator('#tbBell').evaluate(el=>el.click());await page.locator('#tbBellPanel.show').waitFor({state:'visible',timeout:12000});const n=await page.evaluate(()=>({panelVisible:document.getElementById('tbBellPanel')?.classList.contains('show')===true,visibleRows:document.querySelectorAll('#tbBellPanel [data-nid]').length,honestEmpty:(document.getElementById('tbBellPanel')?.innerText||'').includes('Sin novedades por ahora.'),backendSource:window.CX_BACKEND_BULLETINS_STATUS?.source||null,backendCount:window.CX_BACKEND_BULLETINS_STATUS?.count??null}));out.surfaces.notifications=n;mark('notifications',n.panelVisible&&n.backendSource==='firestore');
+            phase='certification';await nav('cert','Certificación');const cert=await page.evaluate(()=>{const t=document.getElementById('view')?.innerText||'';return{visible:t.includes('Certificación'),examVisible:!!document.querySelector('#examGo'),pendingSource:/pendiente de fuente|Todavía no hay un banco de certificación publicado/i.test(t),bankReview:/banco en revisión|no publicado/i.test(t),fakeApprovalVisible:/Aprobado \(demo\)/i.test(t)}});out.surfaces.certification=cert;mark('certification',cert.visible&&(cert.examVisible||cert.pendingSource||cert.bankReview)&&!cert.fakeApprovalVisible);
+            out.backendWriteAttemptsObserved=await page.evaluate(()=>window.__I4A_BACKEND_WRITE_ATTEMPTS?.length||0);const req=['page_ready','firebase_user','shopper_auth_context','membership_verified','app_entered','hr_authority_ready','documents','available_visits_postulation','notifications','certification'],pass=req.every(k=>out.checkpoints[k]?.pass===true)&&out.backendWriteAttemptsObserved===0&&out.loginAttempts===1&&out.pageErrors.length===0;out.decision=pass?'PASS_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY3_SAFE_GLOBALS':'HOLD_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY3_SURFACE_ASSERTION';out.failurePhase=pass?null:phase;out.nextGate=pass?'I4A_VISIBLE_LIFECYCLE_READY_TO_CLOSE':'STOP_NO_AUTOMATIC_RETRY';
+          }catch(e){out.backendWriteAttemptsObserved=await page.evaluate(()=>window.__I4A_BACKEND_WRITE_ATTEMPTS?.length||0).catch(()=>0);out.decision='HOLD_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY3_PHASE_FAILURE';out.failurePhase=phase;out.error=clean(e);out.nextGate='STOP_NO_AUTOMATIC_RETRY'}finally{await browser.close()}fs.writeFileSync(process.env.OUT_DIR+'/result.json',JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify(out,null,2));})().catch(e=>{out.decision='HOLD_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY3_HARNESS_CRASH';out.error=clean(e);fs.writeFileSync(process.env.OUT_DIR+'/result.json',JSON.stringify(out,null,2)+'\n');process.exit(1)});
+          NODE
+
+      - name: Ensure result
+        if: always()
+        run: mkdir -p "$OUT_DIR"; if [ ! -f "$OUT_DIR/result.json" ]; then printf '%s\n' '{"schemaVersion":"cxorbia.i4a.visible-shopper-lifecycle-smoke-retry3.evidence.v1","decision":"HOLD_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY3_PRE_BROWSER_FAILURE","workflowRunId":'"${GITHUB_RUN_ID}"'}' > "$OUT_DIR/result.json"; fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: i4a-visible-shopper-lifecycle-smoke-retry3-${{ github.run_id }}
+          path: |
+            ${{ env.OUT_DIR }}/result.json
+            ${{ env.OUT_DIR }}/provider-prelogin.json
+            ${{ env.OUT_DIR }}/source-truth.json
+          retention-days: 14
+
+      - name: Publish result independently
+        if: always()
+        continue-on-error: true
+        run: |
+          cp "$OUT_DIR/result.json" /tmp/result.json; git fetch origin docs-tya-v6-v71-audit; git checkout -B publish origin/docs-tya-v6-v71-audit; mkdir -p app/docs/evidence; cp /tmp/result.json "$EVIDENCE_PATH"; git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'; git add "$EVIDENCE_PATH"; if git diff --cached --quiet; then exit 0; fi; git commit -m 'evidence(i4a): publish retry3 result'; git push origin HEAD:docs-tya-v6-v71-audit
+
+      - name: Cleanup
+        if: always()
+        run: rm -rf "$PRIVATE_DIR" .tmp/i4a-private || true
+
+      - name: Enforce result
+        if: always()
+        run: node -e "const fs=require('fs'),x=JSON.parse(fs.readFileSync('$OUT_DIR/result.json'));console.log(x.decision);if(x.decision!=='PASS_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY3_SAFE_GLOBALS')process.exit(1)"
