@@ -1,4 +1,5 @@
 name: CXOrbia I4B Retry1 Authorized Execution On Proven Lane
+# Retry1 execution trigger: authorized gate already active; no scope expansion.
 
 on:
   push:
