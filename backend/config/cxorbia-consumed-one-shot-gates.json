@@ -44,6 +44,24 @@
       "production": false,
       "rerunSameRequestId": false,
       "source": ".github/cxorbia-gate-requests/request.json"
+    },
+    {
+      "requestId": "i5-r3-client-route-readonly-20260820-01",
+      "status": "CONSUMED_HOLD_HARNESS_STALE_SINGLE_VISIBLE_LOGIN_SELECTOR",
+      "runId": 32400071365,
+      "jobId": 96525863636,
+      "artifactId": 9418164026,
+      "decision": "HOLD_HARNESS_STALE_SINGLE_VISIBLE_LOGIN_SELECTOR",
+      "productP0Proven": false,
+      "functionalSourceLock": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+      "repositoryWrites": false,
+      "dataWrites": false,
+      "providerWrites": false,
+      "deploy": false,
+      "merge": false,
+      "production": false,
+      "rerunSameRequestId": false,
+      "source": ".github/cxorbia-gate-requests/request.json"
     }
   ]
 }
