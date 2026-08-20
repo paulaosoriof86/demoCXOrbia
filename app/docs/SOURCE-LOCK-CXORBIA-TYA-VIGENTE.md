@@ -1,75 +1,69 @@
 # SOURCE LOCK CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-20  
-**SYNC_EPOCH:** `CXORBIA-20260820-I5-EXISTING-CLEAN-PROJECT-PROMOTION-RESTORED-42`
+**SYNC_EPOCH:** `CXORBIA-20260820-I5-DEFINITIVE-ROOT-CAUSE-PLAN-43`  
+**PLAN_ID:** `CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE`
 
-## Destino canónico
+## 1. Destino canónico
 
-- Repo: `paulaosoriof86/demoCXOrbia`
-- Rama viva: `docs-tya-v6-v71-audit`
-- PR: `#7` existente, draft/open/no merge
+- Repo: `paulaosoriof86/demoCXOrbia`.
+- Rama viva: `docs-tya-v6-v71-audit`.
+- PR #7: existente, draft/open/no merge.
 - Ref documental/operativa: HEAD vivo de la rama; no `main`, no nueva rama, no nuevo PR.
 
-## Source lock funcional
+## 2. Source lock funcional
 
-Producto funcional validado:
+Producto funcional validado y congelado:
 
 `f9802fdd498934a8e7729fa5c7d18341bec1cd71`
 
-I1–I4 permanecen `PASS/FROZEN`. Los commits I5 posteriores son QA/request/documentación y no sustituyen esta build.
+I1–I4 permanecen `PASS/FROZEN`. Los commits I5 posteriores son control-plane, QA, gates o documentación y no sustituyen esta build funcional.
 
-## Contrato de promoción productiva vigente
+## 3. Contrato de promoción productiva
 
-Autoridad: `backend/config/cxorbia-production-promotion-contract.json` + `app/docs/SOURCE-LOCK-C6-PRODUCTION-PROMOTION-PASS-20260806.md`.
+Autoridad: `backend/config/cxorbia-production-promotion-contract.json`.
 
-Topología autorizada:
+Topología:
 
 - `strategy=PROMOTE_EXISTING_CLEAN_PROJECT`;
-- proyecto: `cxorbia-backend-dev`;
-- Hosting target: `cxorbia-dev`;
-- Hosting site: `cxorbia-backend-dev`;
-- URL aceptada para producción futura: `https://cxorbia-backend-dev.web.app`;
-- Cloud Run: `cxorbia-live-hr-dev`, `us-central1`;
+- project `cxorbia-backend-dev`;
+- Hosting target `cxorbia-dev`;
+- Hosting site `cxorbia-backend-dev`;
+- URL aceptada como producción futura `https://cxorbia-backend-dev.web.app`;
+- Cloud Run `cxorbia-live-hr-dev`, `us-central1`;
 - `acceptCurrentIdentifiersAndUrlAsProduction=true`;
 - `requiresSeparateProdFiles=false`;
 - legacy como backend nuevo: prohibido.
 
-El gate source-only histórico cerró `PASS_PRODUCTION_PROMOTION_CONTRACT_EXISTING_CLEAN_PROJECT`.
+Run `32328316954`, artifact `9392151808` preserva `PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY` y `remoteExactByteParity=true` para el source funcional congelado.
 
-## Identidad de ambientes
+## 4. Ambientes
 
-`app/core/backend-config.js` fija:
+- `cxorbia-backend-dev`: canonical backend / migration target / production promotion target.
+- `cxorbia-tya-dev-260729-c4`: sandbox técnico, no destino Phase A.
+- `tya-plataforma`: legacy intacto hasta cutover explícito.
+- `cxorbia-preprod-20260819`: no canónico, nunca creado, no ejecutar.
 
-- `canonicalBackendProjectId=cxorbia-backend-dev`;
-- `migrationTargetProjectId=cxorbia-backend-dev`;
-- `validationSandboxProjectId=cxorbia-tya-dev-260729-c4`;
-- `newCleanProjectRequired=false`.
+No Project Creator, nueva service account/key/Organization/Folder por la ruta PREPROD retirada.
 
-Por tanto `cxorbia-tya-dev-260729-c4` no es destino Phase A y `tya-plataforma` es legacy preservado hasta cutover.
+## 5. Estado de continuidad
 
-## Evidencia Hosting exacta preservada
+Fuente machine-readable:
 
-Run `32328316954`, artifact `9392151808`:
+`backend/config/cxorbia-phase-a-continuity-lock.json`
 
-- `PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY`;
-- source exacto `f9802fdd498934a8e7729fa5c7d18341bec1cd71`;
-- remoto `https://cxorbia-backend-dev.web.app`;
-- `remoteExactByteParity=true`;
-- 1 Hosting deploy;
-- 0 provider/data/Auth/HR/Storage/Make/Gemini/payment writes.
+Score actual `87/100`. Iteración activa:
 
-## PREPROD adicional — NO CANÓNICO / NO EJECUTAR
+`I5-R2_CONTROL_PLANE_AND_DOCUMENT_DRIFT_CLOSURE`.
 
-`cxorbia-preprod-20260819` nunca fue creado. El request que lo introdujo queda consumido como evidencia histórica del desvío, pero no gobierna la continuación.
+La build funcional no cambia durante R2–R4 salvo `P0_PROVEN` nuevo y reproducible.
 
-No crear ese proyecto, no solicitar Project Creator, no continuar `USER_AUTHENTICATED_PREPROD_PROJECT_CREATION_HANDOFF`.
+## 6. Secuencia restante
 
-## Frente vigente
+`R2 → R3 → R4 → G1 → G2`.
 
-`I5_EXISTING_PROJECT_PRECUTOVER_EVIDENCE_RECONCILIATION`
+No cutover antes de `ROOT_CAUSE_CLOSED_PASS`; no producción sin autorización explícita; no rebuild antes de promoción.
 
-Reconciliar contra evidencia existente los seis gates del contrato de promoción. No reejecutar gates frozen salvo brecha terminal demostrada.
+## 7. Seguridad
 
-## Seguridad
-
-0 recursos PREPROD adicionales creados; 0 deploy adicional en este bloque; 0 provider/data/HR/Auth/Firestore/Storage/Make/Gemini/payment writes; 0 merge; 0 producción. Legacy permanece intacto.
+0 deploy adicional por el bloque de continuidad; 0 provider/data/HR/Auth/Firestore/Storage/Make/Gemini/payment writes; 0 merge; 0 producción. Legacy permanece intacto.
