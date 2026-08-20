@@ -1,10 +1,10 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-19  
-**SYNC_EPOCH:** `CXORBIA-20260819-I5-PREPROD-IAM-AUTH-GRANTED-ROUTE-BLOCKED-40`  
-**Estado:** `I4_FROZEN_PASS__I5_PREPROD_IAM_AUTH_GRANTED_PROVIDER_ROUTE_BLOCKED`  
+**Fecha:** 2026-08-20  
+**SYNC_EPOCH:** `CXORBIA-20260820-I5-PROVIDER-USER-AUTH-ROUTE-REQUIRED-41`  
+**Estado:** `I4_FROZEN_PASS__I5_PREPROD_SERVICE_ACCOUNT_PARENT_UNAVAILABLE_USER_AUTH_ROUTE_REQUIRED`  
 **Frontera:** `I5_PREPRODUCTION_AND_GO_LIVE`  
-**Subestado:** `I5_2_PREPROD_PROJECT_CREATOR_AUTH_GRANTED_EXECUTION_ROUTE_BLOCKED`  
+**Subestado:** `I5_2_PREPROD_SERVICE_ACCOUNT_PARENT_UNAVAILABLE_USER_AUTH_ROUTE_REQUIRED`  
 **Score formal:** `85% / 15%`  
 **Repo:** `paulaosoriof86/demoCXOrbia`  
 **Rama viva:** `docs-tya-v6-v71-audit`  
@@ -18,7 +18,7 @@ I1–I4 están cerrados/frozen. El producto funcional sigue siendo `f9802fdd4989
 
 La autorización PREPROD sigue vigente para un Firebase PREPROD nuevo y limpio, un único Hosting PREPROD del source congelado y UAT read-only, sin merge/producción ni writes de negocio.
 
-La autorización administrativa mínima para resolver Project Creator también ya fue concedida. No existe evidencia terminal de ejecución posterior, por lo que **no debe volver a solicitarse ni marcarse como consumida**.
+La autorización administrativa mínima para Project Creator también sigue vigente y no fue consumida por un IAM write.
 
 ## 3. Evidencia PREPROD previa
 
@@ -28,43 +28,57 @@ Run `32332125828`, job `96314651567`, artifact `9393386559`:
 - 0 UAT;
 - 0 writes de negocio.
 
-Run `32332360361`, artifact `9393462199`: no se demostró capacidad Project Creator para la identidad DEV.
+Run `32332788919`, job `96316503352`, artifact `9393599029`:
+- dedicated creator secret ausente;
+- alternate creator secret ausente;
+- `firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com` presente/autenticada;
+- `projectsVisible=2`;
+- `orgsVisible=0`;
+- `parentProbes=[]`;
+- `resourcemanager.projects.create` no demostrado;
+- provider writes 0, project creates 0, deploys 0.
 
-Run `32332788919`, job `96316503352`, artifact `9393599029`: `HOLD_I5_NO_EXISTING_CREATOR_ROUTE_AUTHENTICATES`; las rutas dedicadas no estaban configuradas en ese run y la identidad DEV no demostró `resourcemanager.projects.create`.
+## 4. Causa raíz real — CERRADA
 
-## 4. Bloqueo real actualizado
+Google Cloud establece que una service account solo puede crear proyectos **dentro de Organization** y debe especificar parent. El rol `roles/resourcemanager.projectCreator` se concede sobre Folder/Organization.
 
-`NARROW_PROVIDER_ADMIN_PROJECT_CREATOR_AUTH_GRANTED__PROVIDER_EXECUTION_ROUTE_UNAVAILABLE`
+Como la identidad disponible no detecta Organization/Folder parent, un grant Project Creator a la service account DEV o a otra service account sin parent no resuelve `cxorbia-preprod-20260819` standalone.
 
-La autorización ya no es el bloqueo. El carril conectado actual permite operar GitHub pero no expone una ruta provider-admin Google Cloud/Firebase verificable para materializar el cambio autorizado. El preflight existente es read-only y no resuelve ese control-plane.
+Referencias oficiales:
+- https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects
+- https://docs.cloud.google.com/iam/docs/roles-permissions/resourcemanager
 
-Clasificación: `PROVIDER_CONTROL_PLANE_EXECUTION_ROUTE_BLOCKED`, no `AUTHORIZATION_BLOCKED`.
+## 5. Bloqueo real actualizado
 
-## 5. Qué se preserva
+`PROVIDER_USER_AUTH_PROJECT_CREATION_ROUTE_REQUIRED`
 
-- I4 completo PASS;
-- Shopper y Finanzas sin reproceso;
-- source funcional `f9802f...`;
-- multi-tenant/multi-proyecto;
-- Academia sin reconstrucción;
-- 0 PREPROD deploys y 0 producción.
+Clasificación: `PROVIDER_CONTROL_PLANE_USER_AUTH_ROUTE_BLOCKED`.
 
-## 6. Siguiente movimiento exacto
+No falta autorización. No falta otro diagnóstico IAM. Falta una ruta Google Cloud/Firebase autenticada como usuario capaz de crear un proyecto standalone. El entorno conectado actual no expone esa sesión ni un conector provider-admin Google Cloud/Firebase.
 
-`PROVIDER_ADMIN_EXECUTION_ROUTE_READBACK`
+## 6. Circuit breaker anti-bucle
 
-Cuando exista una ruta provider-admin verificable, se utilizará la autorización ya vigente para demostrar la capacidad mínima necesaria y continuar inmediatamente con el PREPROD original: proyecto limpio `cxorbia-preprod-20260819` → un único Hosting de `f9802f...` → UAT read-only.
+- no repetir creator preflight con la service account DEV;
+- no intentar `projects:create` con esa service account;
+- no crear service account/key/Organization/Folder;
+- no crear workflow/rama/PR nuevos;
+- no reabrir I1–I4;
+- no volver a solicitar las autorizaciones ya vigentes.
 
-No se vuelve a pedir autorización IAM/PREPROD mientras source y alcance sean idénticos. Si la solución exigiera una identidad nueva, credencial nueva, cambio de parent o privilegios adicionales, se detiene antes porque ese alcance no está incluido.
+## 7. Siguiente movimiento exacto
 
-## 7. Estado seguro
+`USER_AUTHENTICATED_PREPROD_PROJECT_CREATION_HANDOFF`
+
+Crear `cxorbia-preprod-20260819` mediante una identidad Google Cloud/Firebase de usuario autenticada. Una vez materializado, abrir un gate separado para la identidad mínima de deployment PREPROD antes del único Hosting; ningún nuevo IAM grant se presume.
+
+## 8. Estado seguro
 
 0 PREPROD projects created; 0 PREPROD Hosting deploys; 0 PREPROD UAT; 0 provider IAM writes posteriores a la autorización; 0 Auth/Firestore/Storage/HR/Make/Gemini/payment writes; 0 merge; 0 production.
 
-## 8. Clasificación
+## 9. Clasificación
 
-- **Reusable CXOrbia:** separación autorización/capacidad de ejecución y fail-closed sin retry.
-- **Exclusivo TyA:** target PREPROD y evidencia operacional.
+- **Reusable CXOrbia:** service account project-creation requires Organization parent; separar user-auth provisioning de runtime identities.
+- **Exclusivo TyA:** target `cxorbia-preprod-20260819`.
 - **Claude/prototipo:** sin cambio frontend.
-- **Academia:** sin cambio funcional; PREPROD aún no existe.
-- **Sin impacto Claude:** provider provisioning gate y documentación.
+- **Academia:** sin cambio funcional; solo continuidad.
+- **Sin impacto Claude:** provider provisioning gate.
