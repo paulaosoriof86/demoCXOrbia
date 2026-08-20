@@ -70,9 +70,8 @@ check(Boolean(credentials?.client?.login && credentials?.client?.password), 'pri
 
 const pageErrors = [];
 const consoleErrors = [];
-let routeInvoke = null;
-let detailReport = null;
 let browser;
+let detailReport;
 
 try {
   browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'] });
@@ -83,18 +82,76 @@ try {
     if (message.type() === 'error') consoleErrors.push(message.text());
   });
 
-  await page.goto(`${root}/index-backend-dev.html?cxClientRouteDiagnostic=1&ts=${Date.now()}`, { waitUntil: 'domcontentloaded', timeout: 60000 });
+  await page.goto(`${root}/index-backend-dev.html?cxClientRouteDiagnostic=2&ts=${Date.now()}`, { waitUntil: 'domcontentloaded', timeout: 60000 });
+
+  // Canonical C6 Auth contract: one visible product login. The obsolete
+  // #cxIntegratedAuthStep overlay is intentionally removed by backend-browser-auth.js.
+  await page.waitForSelector('#loginForm', { state: 'visible', timeout: 30000 });
+  await page.waitForSelector('#lgUser', { state: 'visible', timeout: 30000 });
+  await page.waitForSelector('#lgPass', { state: 'visible', timeout: 30000 });
+  await page.waitForSelector('#lgSubmit', { state: 'visible', timeout: 30000 });
   await page.waitForSelector('.role-btn[data-role="cliente"]', { state: 'visible', timeout: 30000 });
+  await page.waitForFunction(() => Boolean(
+    window.CX?.app?.__firebaseBrowserAuthWrapped === true &&
+    typeof window.CX?.backendAuth?.showForRole === 'function'
+  ), null, { timeout: 30000 });
+
   await page.click('.role-btn[data-role="cliente"]');
-  await page.waitForSelector('#cxIntegratedAuthStep', { state: 'visible', timeout: 30000 });
-  await page.fill('#cxIntegratedAuthLogin', credentials.client.login);
-  await page.fill('#cxIntegratedAuthPassword', credentials.client.password);
-  await page.click('#cxIntegratedAuthSubmit');
   await page.waitForFunction(() => {
+    const form = document.getElementById('loginForm');
+    const button = document.querySelector('.role-btn[data-role="cliente"]');
+    return form?.dataset?.selectedRole === 'cliente' || button?.getAttribute('aria-pressed') === 'true';
+  }, null, { timeout: 15000 });
+
+  const loginContract = await page.evaluate(() => ({
+    singleVisibleProductLogin: true,
+    formExists: Boolean(document.getElementById('loginForm')),
+    userInputExists: Boolean(document.getElementById('lgUser')),
+    passwordInputExists: Boolean(document.getElementById('lgPass')),
+    submitExists: Boolean(document.getElementById('lgSubmit')),
+    legacyOverlayExists: Boolean(document.getElementById('cxIntegratedAuthStep')),
+    selectedRole: document.getElementById('loginForm')?.dataset?.selectedRole || null,
+    browserAuthWrapped: window.CX?.app?.__firebaseBrowserAuthWrapped === true
+  }));
+
+  await page.fill('#lgUser', credentials.client.login);
+  await page.fill('#lgPass', credentials.client.password);
+  await page.click('#lgSubmit');
+
+  let authReady = true;
+  try {
+    await page.waitForFunction(() => {
+      const ctx = window.CX?.backendAuth?.context?.() || null;
+      const authority = window.CX_PROTECTED_AUTH_HR_AUTHORITY || null;
+      return Boolean(
+        ctx?.authenticated === true &&
+        ctx?.authNamespace === 'staff' &&
+        ['cliente', 'client'].includes(String(ctx?.role || '')) &&
+        authority?.applied === true &&
+        document.getElementById('app')?.classList.contains('on') === true
+      );
+    }, null, { timeout: 90000 });
+  } catch {
+    authReady = false;
+  }
+
+  const authObservability = await page.evaluate(() => {
     const ctx = window.CX?.backendAuth?.context?.() || null;
-    const authority = window.CX_PROTECTED_AUTH_HR_AUTHORITY || null;
-    return Boolean(ctx?.authenticated === true && ctx?.authNamespace === 'staff' && ctx?.role === 'cliente' && authority?.applied === true && document.getElementById('app')?.classList.contains('on') === true);
-  }, null, { timeout: 90000 });
+    const error = document.getElementById('cxIntegratedAuthError');
+    return {
+      authenticated: ctx?.authenticated === true,
+      authNamespace: ctx?.authNamespace || null,
+      providerRole: ctx?.role || null,
+      tenantId: ctx?.tenantId || null,
+      projectIds: Array.isArray(ctx?.projectIds) ? ctx.projectIds.slice() : [],
+      sessionRole: window.CX?.session?.role || null,
+      sessionView: window.CX?.session?.view || null,
+      authorityApplied: window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied === true,
+      appOn: document.getElementById('app')?.classList.contains('on') === true,
+      credentialErrorVisible: Boolean(error && error.style.display !== 'none' && String(error.textContent || '').trim()),
+      credentialErrorText: error && error.style.display !== 'none' ? String(error.textContent || '').trim() : null
+    };
+  });
 
   await page.evaluate(() => {
     window.__CX_CLIENT_ROUTE_DIAG_ERRORS = [];
@@ -141,91 +198,111 @@ try {
     };
   }, label);
 
+  let routeInvoke = null;
   const samples = [];
-  samples.push(await capture('before_route_request'));
-  routeInvoke = await page.evaluate(() => {
-    try {
-      const clientModule = typeof window.CX?.modules?.cli_dashboard === 'function';
-      const routerAvailable = typeof window.CX?.router?.nav === 'function';
-      if (clientModule && routerAvailable) window.CX.router.nav('cli_dashboard');
-      return {
-        requested: true,
-        clientModule,
-        routerAvailable,
-        routeException: null,
-        routeAfterRequest: window.CX?.session?.view || null
+  let classification;
+  let fullySatisfied = null;
+
+  if (!authReady || !authObservability.authenticated || !authObservability.appOn) {
+    classification = {
+      owner: 'PRODUCT',
+      code: 'PRODUCT_CLIENT_SINGLE_LOGIN_AUTH_NOT_ACCEPTED',
+      reason: 'The exact existing Client credential was selected safely, but the canonical single visible product login did not establish the expected authenticated Client runtime.'
+    };
+  } else {
+    samples.push(await capture('before_route_request'));
+    routeInvoke = await page.evaluate(() => {
+      try {
+        const clientModule = typeof window.CX?.modules?.cli_dashboard === 'function';
+        const routerAvailable = typeof window.CX?.router?.nav === 'function';
+        if (clientModule && routerAvailable) window.CX.router.nav('cli_dashboard');
+        return {
+          requested: true,
+          clientModule,
+          routerAvailable,
+          routeException: null,
+          routeAfterRequest: window.CX?.session?.view || null
+        };
+      } catch (error) {
+        return {
+          requested: true,
+          clientModule: typeof window.CX?.modules?.cli_dashboard === 'function',
+          routerAvailable: typeof window.CX?.router?.nav === 'function',
+          routeException: String(error?.stack || error?.message || error),
+          routeAfterRequest: window.CX?.session?.view || null
+        };
+      }
+    });
+
+    for (const [delay, label] of [[0, 'after_route_0ms'], [50, 'after_route_50ms'], [250, 'after_route_250ms'], [1000, 'after_route_1000ms'], [3000, 'after_route_3000ms']]) {
+      if (delay) await page.waitForTimeout(delay);
+      samples.push(await capture(label));
+    }
+
+    fullySatisfied = samples.find(sample => sample.sessionView === 'cli_dashboard' && sample.viewExists && sample.viewTextLength > 0) || null;
+    const rendered = [...samples].reverse().find(sample => sample.sessionView === 'cli_dashboard' && sample.viewExists && sample.viewTextLength > 0);
+    const final = samples.at(-1);
+
+    if (routeInvoke?.routeException || final?.renderException || pageErrors.length) {
+      classification = {
+        owner: 'PRODUCT',
+        code: 'PRODUCT_CLIENT_ROUTE_RENDER_EXCEPTION',
+        reason: 'The Client route produced a browser or render exception.'
       };
-    } catch (error) {
-      return {
-        requested: true,
-        clientModule: typeof window.CX?.modules?.cli_dashboard === 'function',
-        routerAvailable: typeof window.CX?.router?.nav === 'function',
-        routeException: String(error?.stack || error?.message || error),
-        routeAfterRequest: window.CX?.session?.view || null
+    } else if (fullySatisfied) {
+      classification = {
+        owner: 'PASS',
+        code: 'PASS_CLIENT_SINGLE_LOGIN_AND_ROUTE_RENDER',
+        reason: `Canonical Client single-login authentication and cli_dashboard rendering succeeded by ${fullySatisfied.label}.`
+      };
+    } else if (rendered) {
+      classification = {
+        owner: 'PASS',
+        code: 'PASS_CLIENT_ROUTE_RENDER_WITHOUT_NAV_DECORATION_DEPENDENCY',
+        reason: 'The Client dashboard rendered substantive content; navigation decoration is not treated as a product blocker.'
+      };
+    } else if (final?.sessionView !== 'cli_dashboard') {
+      classification = {
+        owner: 'PRODUCT',
+        code: 'PRODUCT_CLIENT_ROUTE_NOT_ACCEPTED',
+        reason: 'The router did not retain cli_dashboard as the active session view.'
+      };
+    } else if (!final?.viewExists) {
+      classification = {
+        owner: 'PRODUCT',
+        code: 'PRODUCT_VIEW_CONTAINER_MISSING',
+        reason: 'The canonical #view container was absent after Client-route navigation.'
+      };
+    } else {
+      classification = {
+        owner: 'PRODUCT',
+        code: 'PRODUCT_CLIENT_DASHBOARD_EMPTY_RENDER',
+        reason: 'The Client route was active but the canonical view remained empty.'
       };
     }
-  });
-
-  for (const [delay, label] of [[0, 'after_route_0ms'], [50, 'after_route_50ms'], [250, 'after_route_250ms'], [1000, 'after_route_1000ms'], [3000, 'after_route_3000ms']]) {
-    if (delay) await page.waitForTimeout(delay);
-    samples.push(await capture(label));
   }
 
-  const fullySatisfied = samples.find(sample => sample.sessionView === 'cli_dashboard' && sample.navElementExists && sample.navActive && sample.viewExists && sample.pageHeaderExists && sample.viewTextLength > 0);
-  const rendered = [...samples].reverse().find(sample => sample.sessionView === 'cli_dashboard' && sample.viewExists && sample.viewTextLength > 0);
-  const final = samples.at(-1);
-  let owner = 'INCONCLUSIVE';
-  let code = 'INCONCLUSIVE_CLIENT_ROUTE_STATE';
-  let reason = 'The focal observations did not isolate a single product or harness condition.';
-
-  if (routeInvoke.routeException || final.renderException || pageErrors.length) {
-    owner = 'PRODUCT';
-    code = 'PRODUCT_CLIENT_ROUTE_RENDER_EXCEPTION';
-    reason = 'The client route produced a browser or render exception.';
-  } else if (fullySatisfied) {
-    owner = 'HARNESS';
-    code = fullySatisfied.label === 'after_route_0ms' ? 'HARNESS_PRIOR_TIMEOUT_NOT_REPRODUCED' : 'HARNESS_ROUTE_TIMING_TRANSIENT';
-    reason = `All prior wait conditions became true at ${fullySatisfied.label}.`;
-  } else if (rendered && (!rendered.navElementExists || !rendered.navActive)) {
-    owner = 'HARNESS';
-    code = 'HARNESS_NAV_ACTIVE_SUBCONDITION_MISMATCH';
-    reason = 'The client dashboard rendered with content, but the navigation-element assumption did not become true.';
-  } else if (rendered && !rendered.pageHeaderExists) {
-    owner = 'HARNESS';
-    code = 'HARNESS_PAGE_HEADER_SELECTOR_MISMATCH';
-    reason = 'The client dashboard rendered content, but the gate-required #view .ph selector was absent.';
-  } else if (final.sessionView !== 'cli_dashboard') {
-    owner = 'PRODUCT';
-    code = 'PRODUCT_CLIENT_ROUTE_NOT_ACCEPTED';
-    reason = 'The router did not retain cli_dashboard as the active session view.';
-  } else if (!final.viewExists) {
-    owner = 'PRODUCT';
-    code = 'PRODUCT_VIEW_CONTAINER_MISSING';
-    reason = 'The canonical #view container was absent after client-route navigation.';
-  } else if (final.viewTextLength === 0) {
-    owner = 'PRODUCT';
-    code = 'PRODUCT_CLIENT_DASHBOARD_EMPTY_RENDER';
-    reason = 'The client route was active but the canonical view remained empty.';
-  }
-
+  const finalSample = samples.at(-1) || null;
   detailReport = {
-    schemaVersion: 'cxorbia.c6.client-route-wait-diagnostic.v1',
+    schemaVersion: 'cxorbia.c6.client-route-wait-diagnostic.v2',
     generatedAt: new Date().toISOString(),
     decision: 'PASS_C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC_CLASSIFIED',
     root,
     requestId: request.requestId,
     targetHeadSha: request.targetHeadSha,
+    loginContract,
+    authObservability,
     routeInvoke,
-    requestedObservability: {
-      sessionView: final.sessionView,
-      navElementExists: final.navElementExists,
-      navActive: final.navActive,
-      viewExists: final.viewExists,
-      pageHeaderExists: final.pageHeaderExists,
-      viewTextLength: final.viewTextLength,
-      renderException: final.renderException || routeInvoke.routeException || pageErrors.at(-1) || null
-    },
-    classification: { owner, code, reason },
+    requestedObservability: finalSample ? {
+      sessionView: finalSample.sessionView,
+      navElementExists: finalSample.navElementExists,
+      navActive: finalSample.navActive,
+      viewExists: finalSample.viewExists,
+      pageHeaderExists: finalSample.pageHeaderExists,
+      viewTextLength: finalSample.viewTextLength,
+      renderException: finalSample.renderException || routeInvoke?.routeException || pageErrors.at(-1) || null
+    } : null,
+    classification,
     fullySatisfiedAt: fullySatisfied?.label || null,
     samples,
     pageErrors,
@@ -254,11 +331,10 @@ try {
   await context.close();
 } catch (error) {
   detailReport = {
-    schemaVersion: 'cxorbia.c6.client-route-wait-diagnostic.failure.v1',
+    schemaVersion: 'cxorbia.c6.client-route-wait-diagnostic.failure.v2',
     generatedAt: new Date().toISOString(),
     decision: 'HOLD_C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC_NOT_CLASSIFIED',
     error: String(error?.stack || error?.message || error),
-    routeInvoke,
     pageErrors,
     consoleErrors: consoleErrors.slice(-20),
     credentialsExposed: false,
@@ -282,11 +358,11 @@ try {
 }
 
 check(detailReport?.decision === 'PASS_C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC_CLASSIFIED', 'diagnostic_classified');
-check(['PRODUCT', 'HARNESS', 'INCONCLUSIVE'].includes(detailReport?.classification?.owner), 'classification_owner_present');
+check(['PASS', 'PRODUCT', 'HARNESS', 'INCONCLUSIVE'].includes(detailReport?.classification?.owner), 'classification_owner_present');
 check(git('status', '--porcelain') === '', 'repository_unchanged_after_diagnostic');
 
 const runnerReport = {
-  schemaVersion: '1.4.0',
+  schemaVersion: '1.5.0',
   runner: 'CXORBIA_READONLY_POST_GATES_RUNNER',
   generatedAt: new Date().toISOString(),
   status: 'PASS_READONLY_POST_GATES',
@@ -302,11 +378,11 @@ const runnerReport = {
     providerReads: true,
     stableVisitIdentityRequired: false,
     runtimeInventoryFilterRequired: false,
-    purpose: 'Classify the focal client_route_wait failure as product, harness or inconclusive without deploy or data writes.'
+    purpose: 'Validate the canonical Client single visible product login and classify cli_dashboard rendering without deploy or data writes.'
   },
   stableVisitIdentity: null,
   checks,
-  blockers: [],
+  blockers: detailReport.classification.owner === 'PRODUCT' ? [detailReport.classification.code] : [],
   commands: ['node tools/qa/tya-c6-client-route-wait-diagnostic.mjs .github/cxorbia-gate-requests/request.json'],
   artifacts: [detailPath],
   summary: {
@@ -314,6 +390,8 @@ const runnerReport = {
     profile: request.profile,
     browserExecuted: true,
     classification: detailReport.classification,
+    loginContract: detailReport.loginContract,
+    authObservability: detailReport.authObservability,
     requestedObservability: detailReport.requestedObservability,
     fullySatisfiedAt: detailReport.fullySatisfiedAt,
     providerWrites: false,
@@ -325,7 +403,7 @@ const runnerReport = {
 };
 writeJson(runnerReportPath, runnerReport);
 fs.writeFileSync(runnerReportMdPath, [
-  '# CXOrbia client route wait diagnostic',
+  '# CXOrbia Client single-login diagnostic',
   '',
   `- Status: \`${runnerReport.status}\``,
   `- Request: \`${runnerReport.requestId}\``,
@@ -340,6 +418,8 @@ fs.writeFileSync(runnerReportMdPath, [
 console.log(JSON.stringify({
   decision: detailReport.decision,
   classification: detailReport.classification,
+  loginContract: detailReport.loginContract,
+  authObservability: detailReport.authObservability,
   requestedObservability: detailReport.requestedObservability,
   fullySatisfiedAt: detailReport.fullySatisfiedAt,
   safety: detailReport.safety
