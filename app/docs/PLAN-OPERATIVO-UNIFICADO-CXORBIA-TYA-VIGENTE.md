@@ -1,13 +1,13 @@
 # PLAN OPERATIVO UNIFICADO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-20  
-**SYNC_EPOCH:** `CXORBIA-20260820-I5-PROVIDER-USER-AUTH-ROUTE-REQUIRED-41`  
+**SYNC_EPOCH:** `CXORBIA-20260820-I5-EXISTING-CLEAN-PROJECT-PROMOTION-RESTORED-42`  
 **Frontera:** `I5_PREPRODUCTION_AND_GO_LIVE`  
 **Score formal:** `85/100`
 
 ## Objetivo
 
-Completar el 15% final hacia go-live sobre la misma build `f9802fdd498934a8e7729fa5c7d18341bec1cd71`, sin reabrir I1–I4, sin nueva candidata/rama/PR y sin mezclar infraestructura con cambios de producto.
+Completar el 15% final hacia go-live sobre la misma build `f9802fdd498934a8e7729fa5c7d18341bec1cd71`, sin reabrir I1–I4, sin nueva candidata/rama/PR y sin crear infraestructura redundante.
 
 ## I1–I4 — CERRADOS / FROZEN
 
@@ -15,76 +15,90 @@ I1 `15/15`, I2 `20/20`, I3 `25/25`, I4 `25/25`. Auth/Shopper/Finanzas/multi-proy
 
 ## I5 — PREPRODUCTION_AND_GO_LIVE
 
-### I5.1 — PREPRODUCTION_READINESS — PASS suficiente para abrir ejecución
+### I5.1 — TOPOLOGÍA PRODUCTIVA — RESTAURADA
 
-Ya quedaron preparados source lock, secret scan, regresión/continuidad, UAT source-safe y seguridad fail-closed.
+Autoridad vigente:
 
-### I5.2 — PREPROD NEW CLEAN FIREBASE + HOSTING + UAT
+- `backend/config/cxorbia-production-promotion-contract.json`;
+- `app/docs/SOURCE-LOCK-C6-PRODUCTION-PROMOTION-PASS-20260806.md`.
 
-La autorización PREPROD vigente cubre:
-- proyecto Firebase PREPROD nuevo y limpio;
-- no reutilizar DEV/base previa;
-- 1 Hosting PREPROD exacto de `f9802f...`;
-- UAT read-only;
-- 0 merge/producción y 0 data/HR/Auth/Storage/Make/Gemini/payment writes.
+Decisión ya autorizada:
 
-#### Ejecución previa — HOLD sin materialización
-Run `32332125828`, artifact `9393386559`:
-- 0 proyectos creados;
-- 0 Hosting deploys;
-- UAT 0;
-- 0 writes.
+`PROMOTE_EXISTING_CLEAN_PROJECT`
 
-#### Creator-route provider read-only
-Run `32332788919`, artifact `9393599029`:
-- dedicated/alternate creator credentials ausentes;
-- service account DEV presente/autenticada;
-- 2 proyectos visibles;
-- 0 organizaciones;
-- 0 parent probes;
-- create capability no demostrada.
+Destino:
 
-### Root cause I5 — PROBADA
+- Firebase project `cxorbia-backend-dev`;
+- Hosting target `cxorbia-dev`;
+- Hosting site `cxorbia-backend-dev`;
+- URL actual aceptada como producción futura `https://cxorbia-backend-dev.web.app`;
+- Cloud Run `cxorbia-live-hr-dev`, región `us-central1`.
 
-Google Cloud documenta que las service accounts solo pueden crear proyectos dentro de Organization y deben especificar parent. `roles/resourcemanager.projectCreator` se concede en Folder/Organization. Por tanto el enfoque de otorgar Project Creator a la service account DEV no puede crear un proyecto standalone cuando no existe/demuestra parent Organization/Folder.
+El sufijo técnico `dev` se conserva por decisión explícita; no obliga a crear otro proyecto.
 
-Referencias oficiales:
-- https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects
-- https://docs.cloud.google.com/iam/docs/roles-permissions/resourcemanager
+### I5.2 — BUILD EXACTA EN HOSTING EXISTENTE — EVIDENCIA PRESERVADA
 
-### Autorización IAM mínima — YA RECIBIDA / NO CONSUMIDA
+Run `32328316954`, artifact `9392151808`:
 
-Permanece vigente, pero no se ejecuta contra la service account DEV porque no resolvería el parent requerido. No crear identidad/key/Organization/Folder ni ampliar privilegios por inferencia.
+- build `f9802fdd498934a8e7729fa5c7d18341bec1cd71`;
+- `PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY`;
+- `remoteExactByteParity=true`;
+- Hosting deploys = 1;
+- provider/data writes = 0.
 
-### Gate activo actualizado
+Este PASS se reutiliza; no se ordena otro deploy para demostrar lo ya demostrado.
 
-`PROVIDER_USER_AUTH_PROJECT_CREATION_ROUTE_REQUIRED`
+### I5.3 — PREPROD NUEVO — RUTA DESCARTADA
 
-No falta otro diagnóstico. El entorno conectado actual no expone una sesión Google Cloud/Firebase de usuario capaz de crear un proyecto standalone ni un conector provider-admin equivalente.
+`cxorbia-preprod-20260819` nunca fue creado. El request I5 que lo introdujo fue posterior al contrato productivo y generó un desvío de topología.
 
-### Transición exacta
+Queda prohibido continuar por:
 
-1. `USER_AUTHENTICATED_PREPROD_PROJECT_CREATION_HANDOFF`: materializar `cxorbia-preprod-20260819` con identidad Google Cloud/Firebase de usuario autenticada;
-2. verificar que el proyecto sea nuevo y limpio;
-3. abrir gate separado para resolver identidad mínima de deploy PREPROD sin presumir IAM adicional;
-4. ejecutar un único Hosting de `f9802f...` cuando exista autorización/capability suficiente;
-5. comprobar paridad remota;
-6. ejecutar UAT read-only/source-safe;
-7. si PASS, evaluar provider-backed materialization solo con autorizaciones específicas;
-8. luego production GO/NO-GO.
+- creación de `cxorbia-preprod-20260819`;
+- Project Creator para ese target;
+- `USER_AUTHENTICATED_PREPROD_PROJECT_CREATION_HANDOFF`;
+- nueva service account/key/Organization/Folder por esta causa.
 
-### I5.3 — PRODUCTION GO/NO-GO
+### I5.4 — PRE-CUTOVER EVIDENCE RECONCILIATION — ACTIVO
 
-Permanece cerrado. Requiere PREPROD/UAT suficiente y autorización explícita de producción.
+Contrato de promoción: seis requisitos previos al cutover:
 
-## Circuit breaker / prohibiciones
+1. `LIVE_HR_CURRENT_PERIOD_AND_HISTORY_REVISION_PASS`;
+2. `SHOPPER_AUTH_REPAIR_PASS`;
+3. `ACCUMULATIVE_MULTIROLE_SMOKE_PASS`;
+4. `HUMAN_VALIDATION_PASS`;
+5. `ROLLBACK_READY`;
+6. `EXPLICIT_CUTOVER_AUTHORIZATION`.
 
-- No reintentar `projects:create` con la service account DEV.
-- No repetir creator-route preflight sin cambio de identidad/provider.
-- No crear nueva candidata/rama/PR/workflow transportador.
-- No crear service account/key/Organization/Folder.
-- No reabrir Shopper/Auth/Finanzas.
-- No usar proyecto Firebase preexistente como sustituto del PREPROD limpio.
+Regla de ejecución:
+
+- mapear cada requisito a evidencia terminal vigente;
+- reutilizar I1–I4 frozen donde sean equivalentes y suficientes;
+- no volver a ejecutar Shopper/Auth/Finanzas/HR/runtime por nomenclatura histórica distinta;
+- solo una ausencia de evidencia terminal real puede abrir un gate focalizado;
+- producción/cutover permanece cerrado hasta autorización explícita.
+
+Gate actual:
+
+`I5_EXISTING_PROJECT_PRECUTOVER_EVIDENCE_RECONCILIATION`
+
+### I5.5 — PRODUCTION GO/NO-GO
+
+Permanece cerrado. Cuando la reconciliación confirme los gates técnicos/humanos previos, el único paso mutable final se somete al gate explícito de cutover. `tya-plataforma` se mantiene intacta hasta entonces y no se usa como backend nuevo.
+
+## Ambientes preservados
+
+- `cxorbia-backend-dev`: canonical backend / promotion target.
+- `cxorbia-tya-dev-260729-c4`: sandbox Corte 4 únicamente.
+- `tya-plataforma`: legacy activo hasta cutover explícito.
+
+## Circuit breaker
+
+- No nueva candidata/rama/PR/workflow.
+- No nuevo proyecto Firebase para I5.
+- No Project Creator.
+- No reabrir I1–I4.
+- No deploy adicional por defecto.
 - No provider business writes, Make/Gemini/pagos, merge o producción sin gate/autorización.
 
 ## Verdad financiera congelada
