@@ -7,19 +7,16 @@
 **PREPROD_PROJECT_CREATOR_ROUTE: `SUPERSEDED`**
 
 ## Estado
-**98% / 2% pendiente.** G1 PASS `PRODUCTION_CUTOVER_EXECUTED`. Producción canónica activa en `https://cxorbia-backend-dev.web.app` con same artifact y no redeploy.
+**98% / 2% pendiente.** G1 PASS y congelado. Única iteración activa: G2.
 
-## Pendiente activo único
-`I5-G2_PRODUCTION_SMOKE_HYPERCARE_AND_FREEZE`: validar producción real y cerrar RC12. No existe otro bloque intermedio.
+## Pendientes G2
+1. **G2-A:** smoke remoto multirrol read-only sobre la URL productiva real.
+2. **G2-B:** `LIVE_IN_PLATFORM_SYNTHETIC_ACCEPTANCE` dentro de la misma plataforma, visible para Paula, cubriendo Admin, Shopper, Cliente, HR, histórico, visitas, Finanzas, sincronización, scopes, navegación, reload/new-tab y observabilidad. Datos `CXORBIA_E2E_SYNTH_*`, cleanup y readback obligatorios.
+
+G2-B está `PENDING_NARROW_WRITE_AUTHORIZATION`; no ejecutar business/data writes antes de esa autorización. No HR externo, Auth create/reset, pagos reales, Make/Gemini, deploy, rebuild ni merge por asociación.
 
 ## No reabrir
-I1–I4, R1–R4 y G1 están congelados. No repetir cutover, no rebuild, no nueva candidata/rama/PR/workflow/PREPROD y no rerun de requests consumidos sin `P0_PROVEN` nuevo.
+I1–I4, R1–R4 y G1. No crear G3, otra candidata, rama, PR, workflow o PREPROD. Solo P0 reproducible puede reabrir producto.
 
-## Frontend
-Sin P0 frontend activo. `modules/cliente-extra.js` / exports continúa como hallazgo histórico separado no bloqueante salvo evidencia nueva.
-
-## Academia
-Sin pendiente de reconstrucción por G1. Registrar producción canónica/URL; G2 determinará si existe alguna incidencia real que afecte manuales, cursos, roles o notificaciones.
-
-## Seguridad
-G1: 0 provider redeploy, 0 business/data/HR/Auth/Firestore/Rules/Storage/Make/Gemini/payment writes, 0 merge, 0 rebuild. Legacy intacto.
+## Frontend/Academia
+Sin P0 frontend activo. Las observaciones de la prueba viva se registrarán por módulo y solo generarán ajuste de Academia si prueban diferencia funcional real.
