@@ -1,16 +1,16 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "i4-protected-runtime-same-build-multirole-readonly-20260819-01",
+  "requestId": "i4-protected-runtime-staff-authority-frozen-shopper-reuse-20260819-01",
   "enabled": true,
   "consumed": false,
   "status": "authorized_pending",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "cdb6b8bdcc61d7f754dddbc568d89a55adea822e",
+  "targetHeadSha": "b93ddd2af6da79daaef50c9806a0679caf630107",
   "deployedProductSourceHeadSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
-  "profile": "PHASE_A_COMPLETE_RUNTIME_MULTIROLE",
-  "allowedProfiles": ["PHASE_A_COMPLETE_RUNTIME_MULTIROLE"],
+  "profile": "I3_STAFF_RUNTIME_AUTHORITY_READONLY",
+  "allowedProfiles": ["I3_STAFF_RUNTIME_AUTHORITY_READONLY"],
   "allowedExecutions": 1,
   "repositoryWrites": false,
   "dataWrites": false,
@@ -43,5 +43,5 @@
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-19_2124_i4_hosting_dev_remote_smoke",
   "authorizationText": "AUTORIZO HOSTING DEV + SMOKE REMOTO READ-ONLY DEL HEAD f9802fdd498934a8e7729fa5c7d18341bec1cd71, SIN MERGE, SIN PRODUCCIÓN Y SIN WRITES DE DATOS/HR/AUTH/STORAGE/MAKE/GEMINI/PAGOS.",
-  "purpose": "Execute one remote provider-backed read-only multirole smoke against the already materialized Firebase Hosting DEV build whose app source is exactly f9802fdd498934a8e7729fa5c7d18341bec1cd71. Verify dynamic live HR authority, exact remote asset parity, Staff/Admin and Shopper Auth stability across reload/new-tab, Client route readiness, Shopper exact identity/history/certification visibility, Finance delegated truth and fail-closed reservations. No second deploy and no provider/data writes."
+  "purpose": "Current same-build Staff/Admin protected-runtime authority proof with reload/new-tab stability and exact live HR/crosswalk/legal runtime verification. Reuse the already frozen PASS historical Shopper checkpoint without selecting or resetting Shopper credentials. No deploy, no provider/data writes, no merge, no production."
 }
