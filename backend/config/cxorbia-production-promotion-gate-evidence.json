@@ -1,10 +1,11 @@
 {
-  "schemaVersion": "1.2.0",
-  "syncEpoch": "CXORBIA-20260820-I5-R2-CONTINUITY-DRIFT-PASS-44",
+  "schemaVersion": "1.3.0",
+  "syncEpoch": "CXORBIA-20260820-I5-R3-CRITICAL-PRODUCT-ACCEPTANCE-PASS-45",
   "updatedAt": "2026-08-20",
   "branch": "docs-tya-v6-v71-audit",
   "promotionContract": "backend/config/cxorbia-production-promotion-contract.json",
   "functionalSourceLock": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+  "r3AcceptanceEvidence": "backend/config/cxorbia-r3-critical-product-acceptance.json",
   "productionTarget": {
     "strategy": "PROMOTE_EXISTING_CLEAN_PROJECT",
     "projectId": "cxorbia-backend-dev",
@@ -15,37 +16,35 @@
     "promotesExistingCleanProject": true,
     "createsAdditionalPreprodProject": false
   },
-  "formalProgressPercent": 90,
+  "formalProgressPercent": 93,
   "productionDeploymentExecuted": false,
-  "verdict": "READY_FOR_ROOT_CAUSE_PRODUCT_ACCEPTANCE",
+  "verdict": "READY_FOR_INDEPENDENT_ROOT_CAUSE_CLOSURE_AUDIT",
   "gates": {
     "LIVE_HR_CURRENT_PERIOD_AND_HISTORY_REVISION_PASS": {
       "status": "PASS",
-      "canonicalEvidenceState": "PASS_READONLY_POST_GATES",
+      "canonicalEvidenceState": "CRITICAL_PRODUCT_ACCEPTANCE_PASS:ROADMAP_LIVE_NO_CLONES+VISITS_CURRENT_AND_HISTORY_VISIBLE",
       "requestId": "i5-existing-project-precutover-staff-live-authority-readonly-20260820-01",
       "runId": 32342457328,
       "artifactId": 9396828201,
-      "evidenceRef": ".github/cxorbia-gate-requests/request.json"
+      "evidenceRef": "backend/config/cxorbia-r3-critical-product-acceptance.json"
     },
     "SHOPPER_AUTH_REPAIR_PASS": {
       "status": "PASS",
       "canonicalEvidenceState": "PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY",
       "reusePolicy": "NO_RERUN_WITHOUT_P0_PROVEN",
-      "evidenceRef": "CAMBIOS-BACKEND.md"
+      "evidenceRef": "backend/config/cxorbia-r3-critical-product-acceptance.json"
     },
     "ACCUMULATIVE_MULTIROLE_SMOKE_PASS": {
       "status": "PASS",
-      "canonicalEvidenceState": "I4_PASS/FROZEN",
-      "evidenceBasis": "INHERITED_LOCKED_I4_CHECKPOINT",
-      "strongerAcceptanceOwnerIteration": "I5-R3",
-      "evidenceRef": "app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md"
+      "canonicalEvidenceState": "CRITICAL_PRODUCT_ACCEPTANCE_PASS:MULTIROLE_SCOPE_PASS+RELOAD_SESSION_PASS",
+      "evidenceBasis": "R3_CURRENT_STAFF_CURRENT_CLIENT_FROZEN_SHOPPER_COMPOSITION",
+      "evidenceRef": "backend/config/cxorbia-r3-critical-product-acceptance.json"
     },
     "HUMAN_VALIDATION_PASS": {
       "status": "PASS",
-      "canonicalEvidenceState": "I4_PASS/FROZEN",
-      "evidenceBasis": "INHERITED_LOCKED_I4_CHECKPOINT",
-      "strongerAcceptanceOwnerIteration": "I5-R3",
-      "evidenceRef": "app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md"
+      "canonicalEvidenceState": "I4_PASS/FROZEN_PLUS_R3_CRITICAL_PRODUCT_ACCEPTANCE_PASS",
+      "evidenceBasis": "INHERITED_HUMAN_VALIDATION_WITH_CURRENT_R3_RUNTIME_ACCEPTANCE",
+      "evidenceRef": "backend/config/cxorbia-r3-critical-product-acceptance.json"
     },
     "ROLLBACK_READY": {
       "status": "PASS",
