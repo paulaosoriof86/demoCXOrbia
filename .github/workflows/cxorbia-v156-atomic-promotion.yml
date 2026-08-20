@@ -1,0 +1,22 @@
+name: CXOrbia V156 Direct Empalme (DISABLED LEGACY)
+
+# I5 safety override.
+# The base branch still contains a historical PR-triggered V156 transport workflow with
+# contents:write that attempts to fetch a Drive package and commit it. That mechanism is
+# prohibited by the current direct-apply/source-lock policy and is not part of I5.
+# This head-branch override intentionally has no pull_request/push trigger and no write permission.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  disabled-legacy-v156-transport:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail closed — legacy transport is not an executable lane
+        run: |
+          echo 'LEGACY_V156_TRANSPORT_DISABLED_BY_I5_SAFETY_LOCK'
+          echo 'Use only the canonical live branch/source lock and current authorized gates.'
