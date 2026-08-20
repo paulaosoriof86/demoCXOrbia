@@ -1,6 +1,9 @@
-/* CXOrbia TyA Phase A — stable live HR watcher v3 (DEV).
+/* CXOrbia TyA Phase A — stable live HR watcher v4 (DEV).
    Stable content revision only; zero functional work on same revision.
-   Human visual and protected technical lanes are separated explicitly. */
+   Human visual and protected technical lanes are separated explicitly.
+   Protected human lane waits for the canonical Auth+Firestore+HR authority
+   before it may refresh HR in place, preventing source-safe from winning boot.
+*/
 (function(){
   'use strict';
   window.CX=window.CX||{};
@@ -20,13 +23,18 @@
     if(!authenticatedHumanRuntime)return true;
     try{const ctx=CX.backendAuth?.context?.();return !!(ctx&&ctx.authenticated===true&&ctx.tenantId==='tya');}catch(_){return false;}
   }
+  function canonicalProtectedAuthorityReady(){
+    if(!authenticatedHumanRuntime)return true;
+    return window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true
+      && CX.data?.sourceMode==='tya_hr_live_all_periods_plus_firestore_exact_overlay_dev';
+  }
   function refreshBadge(){try{const el=document.getElementById('tbDataBadge');if(el&&CX.dataSource){const b=CX.dataSource.badge();el.innerHTML='<span class="d" style="background:'+b.c+'"></span> '+b.t;}}catch(_){}}
   function markUpdating(){if(CX.dataSource){CX.dataSource.updating=true;CX.dataSource.runtimeReadActive=true;}refreshBadge();}
   function canonicalBaselineReady(){return !!(CX.data&&Array.isArray(CX.data.projects)&&CX.data.projects.length===14&&Array.isArray(CX.data._visitas)&&CX.data._visitas.length===616&&Array.isArray(CX.data.shoppers)&&CX.data.shoppers.length===208);}
   function markLive(meta){
     window.CX_TYA_HR_VIVA_SOURCE_SAFE=true;window.CX_TYA_HR_SNAPSHOT_SOURCE_SAFE=false;
     if(CX.data){const stable=fullVisual&&window.CX_TYA_FULL_VISUAL_READY===true;CX.data.sourceMode=stable?'tya_hr_live_plus_firestore_full_profile_stable_dev':fullVisual?'tya_hr_live_preparing_full_profile_stable_dev':'tya_hr_live_runtime_source_safe_dev';CX.data.previewMeta=Object.assign({},CX.data.previewMeta||{},{generatedAt:meta.generatedAt||null,sourceReadAt:meta.sourceReadAt||null,runtimeReadActive:true,runtimeSyncActive:false,sourceRevision:meta.revision||null,revisionStable:meta.revisionStable===true,fullProfileVisual:stable||CX.data.previewMeta?.fullProfileVisual===true,note:stable?'HR viva estable; perfil protegido compuesto desde revisión canónica.':'Lectura HR viva runtime sin recargar la página.'});}
-    if(CX.dataSource){CX.dataSource.mode=technicalAuthE2E?'connected':'source_safe_preview';CX.dataSource.status='ready';CX.dataSource.sourceRef=fullVisual?'hr-live+firestore-full-profile-stable+canonical-finance':'hr-live-runtime:tya:cinepolis';CX.dataSource.updatedAt=meta.sourceReadAt||meta.generatedAt||new Date().toISOString();CX.dataSource.runtimeSyncActive=false;CX.dataSource.runtimeReadActive=true;CX.dataSource.updating=false;CX.dataSource.blockers=[];}
+    if(CX.dataSource){CX.dataSource.mode=(authenticatedHumanRuntime||technicalAuthE2E)?'connected':'source_safe_preview';CX.dataSource.status='ready';CX.dataSource.sourceRef=authenticatedHumanRuntime?'hr-live-all-periods+firestore-authenticated-exact-overlay':fullVisual?'hr-live+firestore-full-profile-stable+canonical-finance':'hr-live-runtime:tya:cinepolis';CX.dataSource.updatedAt=meta.sourceReadAt||meta.generatedAt||new Date().toISOString();CX.dataSource.runtimeSyncActive=false;CX.dataSource.runtimeReadActive=true;CX.dataSource.updating=false;CX.dataSource.blockers=[];}
     refreshBadge();
   }
   function markFailure(error){
@@ -52,6 +60,11 @@
   function recompose(reason){if(!fullVisual)return {ok:true,skipped:true};const fn=window.CX_TYA_REAPPLY_FULL_VISUAL_OVERLAY;if(typeof fn!=='function')return {ok:false,skipped:true,reason:'overlay_not_ready'};return fn(reason);}
   async function check(reason){
     if(authenticatedHumanRuntime&&!canonicalHumanAuthReady())return {ok:false,skipped:true,reason:'authenticated_human_context_required'};
+    if(authenticatedHumanRuntime&&!canonicalProtectedAuthorityReady()){
+      if(CX.dataSource){CX.dataSource.updating=false;CX.dataSource.warnings=['Esperando autoridad canónica Auth + Firestore + HR antes de habilitar refresh HR.'];refreshBadge();}
+      window.CX_TYA_LIVE_SOURCE_AUTHORITY_LOCK={ready:false,blockedDirectApply:true,reason:'canonical_protected_authority_required',providerWrites:0,production:false,at:new Date().toISOString()};
+      return {ok:false,skipped:true,reason:'canonical_protected_authority_required'};
+    }
     if(checking)return {ok:true,skipped:true,reason:'check_in_progress'};checking=true;markUpdating();
     try{
       const meta=await getJson('meta',{fresh:'1'});if(meta.sourceSafe!==true||meta.runtimeRead!==true||!meta.revision)throw new Error('Respuesta live inválida');
@@ -63,6 +76,7 @@
       if(currentContentSignature&&nextSignature===currentContentSignature){currentRevision=meta.revision;markLive(meta);failures=0;return {ok:true,changed:false,metadataRevisionChanged:true,revision:meta.revision,contentStable:true};}
       const applied=applySilent(snapshot,runtime,reason||'live_refresh');currentRevision=meta.revision;currentContentSignature=nextSignature;restoreModel(applied.state);
       const overlay=recompose('after_live_hr_change');markLive(meta);failures=0;
+      if(authenticatedHumanRuntime){window.CX_TYA_LIVE_SOURCE_AUTHORITY_LOCK={ready:true,blockedDirectApply:false,initialCanonicalAuthorityProven:true,overlayRecomposed:overlay?.ok===true,sourceRef:CX.dataSource?.sourceRef||null,providerWrites:0,production:false,at:new Date().toISOString()};}
       const preload=reason==='full_visual_preload'||(!window.CX_TYA_FULL_VISUAL_READY&&fullVisual);
       if(preload){restoreScroll(applied.state);return {ok:true,changed:true,preload:true,revision:meta.revision,applied:applied.result,overlay};}
       const render=emitOnce(reason||'live_refresh',{sourceRevision:meta.revision,stableOverlay:overlay?.ok===true},applied.state);
@@ -71,7 +85,8 @@
   }
   window.CX_TYA_REQUEST_STABLE_RERENDER=(reason,detail)=>emitOnce(reason||'manual_stable_rerender',detail||{},capture());
   window.CX_TYA_FLUSH_PENDING_STABLE_RERENDER=flush;window.CX_TYA_CAPTURE_UI_STATE=capture;window.CX_TYA_CHECK_LIVE_SOURCE=check;
-  if(window.CX_TYA_HR_LIVE_META?.runtimeRead===true&&canonicalHumanAuthReady())markLive(window.CX_TYA_HR_LIVE_META);else if(CX.dataSource){CX.dataSource.warnings=[authenticatedHumanRuntime?'Esperando autenticación antes de leer HR viva…':'Validando lectura HR viva…'];refreshBadge();}
+  if(window.CX_TYA_HR_LIVE_META?.runtimeRead===true&&canonicalHumanAuthReady()&&canonicalProtectedAuthorityReady())markLive(window.CX_TYA_HR_LIVE_META);else if(CX.dataSource){CX.dataSource.warnings=[authenticatedHumanRuntime?'Esperando autenticación y autoridad canónica antes de leer HR viva…':'Validando lectura HR viva…'];refreshBadge();}
   if(CX.bus?.on)CX.bus.on('backend-auth-ready',()=>check('backend_auth_ready'));
+  window.addEventListener('cx:protected-auth-hr-authority-ready',()=>check('canonical_authority_ready'));
   window.addEventListener('focus',()=>check('window_focus'));document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')check('visibility_resume');});document.addEventListener('focusout',()=>setTimeout(flush,0));window.addEventListener('load',()=>setTimeout(()=>check('initial_load'),300),{once:true});setInterval(()=>check('poll'),pollMs);
 })();
