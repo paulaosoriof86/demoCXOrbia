@@ -1,10 +1,10 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-19  
-**SYNC_EPOCH:** `CXORBIA-20260819-I4-PROTECTED-RUNTIME-CLOSED-38`  
-**Estado:** `I4_CLOSED_PASS__I5_OPEN`  
+**SYNC_EPOCH:** `CXORBIA-20260819-I5-PREPROD-CREATOR-BLOCKED-39`  
+**Estado:** `I4_FROZEN_PASS__I5_PREPROD_BLOCKED_BEFORE_CREATE`  
 **Frontera:** `I5_PREPRODUCTION_AND_GO_LIVE`  
-**Subestado:** `I5_1_PREPRODUCTION_READINESS_AND_UAT_PLAN_READONLY`  
+**Subestado:** `I5_2_PREPROD_PROJECT_CREATOR_AUTH_BLOCKED`  
 **Score formal:** `85% / 15%`  
 **Repo:** `paulaosoriof86/demoCXOrbia`  
 **Rama viva:** `docs-tya-v6-v71-audit`  
@@ -12,82 +12,81 @@
 
 ## 1. Corte de continuidad
 
-I1, I2, I3 e I4 están cerrados y congelados. No volver a `CORTE_0B`, I3, nueva candidata, nueva rama/PR, auditoría general ni reconstrucción de Auth, Shopper, Finanzas, multi-proyecto, documentos, reservas o Academia.
+I1–I4 están cerrados/frozen. El producto funcional sigue siendo `f9802fdd498934a8e7729fa5c7d18341bec1cd71`. No volver a Auth, Shopper, Finanzas, nueva candidata, nueva rama/PR o auditoría general.
 
-## 2. Producto que cerró I4
+## 2. Autorización PREPROD recibida
 
-Source exacto desplegado en DEV: `f9802fdd498934a8e7729fa5c7d18341bec1cd71`.
+Paula autorizó:
+- Firebase PREPROD nuevo y limpio;
+- no reutilizar DEV ni base preexistente;
+- un único Hosting PREPROD del source congelado;
+- UAT read-only;
+- 0 merge/producción y 0 data/HR/Auth/Storage/Make/Gemini/payment writes.
 
-Hosting DEV autorizado one-shot:
-- run `32328316954`;
-- artifact `9392151808`;
-- `PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY`;
-- 1 deploy DEV;
-- paridad remota exacta;
-- 0 writes de datos/proveedores.
+## 3. Ejecución real PREPROD
 
-Los cambios posteriores al source desplegado hasta el cierre técnico previo a docs (`8831723a4cf3e656b3dddd1ed5c72b45f0dc2ec8`) fueron únicamente requests/gates. La comparación contiene 0 cambios en `app/`.
+Run `32332125828`, job `96314651567`, artifact `9393386559`:
+- target `cxorbia-preprod-20260819` no estaba accesible/existente;
+- un comando `firebase projects:create` fue intentado;
+- Firebase CLI falló antes de crear el proyecto;
+- `projectCreatesSucceeded=0`;
+- `hostingDeploys=0`;
+- UAT no ejecutado;
+- no se reutilizó DEV y no hubo writes de datos/proveedores.
 
-## 3. Runtime real protegido
+El request quedó consumido como HOLD para impedir retry automático.
 
-Staff/Admin read-only sobre la misma build desplegada:
-- run `32329139725`;
-- artifact `9392431939`;
-- `PASS_READONLY_POST_GATES`;
-- `PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY`;
-- Auth/claims/membership, autoridad HR/plataforma, crosswalk exacto, legal receipt, reload y nueva pestaña estables;
-- fuente viva: 15 periodos, 660 visitas, 200 shoppers; crosswalk protegido 209.
+## 4. Causa raíz y búsqueda de ruta existente
 
-Shopper no se reprocesó. Se preserva y reutiliza el PASS real congelado `PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY`; durante este cierre hubo 0 accesos Shopper, 0 resets y 0 writes, y los blobs protegidos permanecieron sin cambio.
+### Diagnostic 1
+Run `32332360361`, artifact `9393462199`:
+`PASS_I5_PREPROD_PROJECT_CREATE_ROOT_CAUSE_READONLY`.
 
-## 4. Finanzas — equivalencia cerrada
+No se pudo demostrar `resourcemanager.projects.create`; parent/org creator scope no era visible para la identidad DEV.
 
-No se ejecuta un gate financiero redundante. `app/data/tya-payment-history-source-safe.js` conserva el mismo blob `088c68680177c470a4539622e1694128dd211d85` en el source desplegado y en la rama, y `app/index-backend-dev.html` carga esa cadena financiera.
+### Diagnostic 2 — credential routes
+Run `32332788919`, job `96316503352`, artifact `9393599029`:
+`HOLD_I5_NO_EXISTING_CREATOR_ROUTE_AUTHENTICATES`.
 
-Verdad preservada:
-- mayo 2026: 44/44 pagadas;
-- junio 2026: 2/44 pagadas;
-- junio pendientes: 42/44;
-- junio confirmado: Q451;
-- `liquidada != pagada`;
-- 0 lotes ejecutables creados.
+- dedicated project creator secret: ausente;
+- alternate project creator secret: ausente;
+- DEV service account: presente y válido, autenticó, ve 2 proyectos y 0 organizaciones;
+- `createPermissionProven=false`;
+- provider writes/project creates/deploys = 0.
 
-`R16D` permanece como PASS de revisión source-safe, pero sus overlays históricos no sustituyen esta autoridad de pago más reciente.
+**Causa operativa suficiente:** el carril conectado no dispone de una identidad ya configurada con capacidad probada para crear un proyecto GCP/Firebase nuevo. Reintentar con la misma identidad sería un bucle.
 
-## 5. Gate state corregido
+## 5. Bloqueo real
 
-Se detectó una deriva documental real: los requests one-shot ya ejecutados seguían persistidos como `enabled=true / consumed=false`. Se corrigió sin tocar producto ni proveedor:
-- Staff request → `consumed=true`, `enabled=false`, evidencia run `32329139725`;
-- Hosting request → `consumed=true`, `enabled=false`, evidencia run `32328316954`, `actualHostingDeploys=1`.
+`NARROW_PROVIDER_ADMIN_PROJECT_CREATOR_AUTH_REQUIRED`
 
-Esto evita reruns accidentales y no cambia `app/`.
+Hace falta una acción administrativa mínima y separada para disponer de Project Creator capability. Esa acción puede ser configurar una identidad dedicada ya autorizada o otorgar el mínimo permiso de creación en el parent correcto. No se debe tocar Auth/Firestore/Storage/HR/datos del producto.
 
-## 6. Academia
+## 6. Qué se preserva
 
-No se reconstruye. La alineación de I4 queda registrada en `ACADEMIA-ADDENDUM-I4-PROTECTED-RUNTIME-CLOSE-20260819.md`: identidad exacta, autoridad runtime única, HR/plataforma, estados financieros honestos y command/provider ACK.
+- I4 completo PASS;
+- Shopper histórico sin reproceso;
+- Finanzas sin reproceso;
+- fuente funcional `f9802f...`;
+- verdad financiera mayo/junio;
+- multi-tenant/multi-proyecto;
+- Academia sin reconstrucción;
+- 0 PREPROD deploys y 0 producción.
 
-## 7. Siguiente bloque exacto
+## 7. Siguiente movimiento exacto
 
-`I5_1_PREPRODUCTION_READINESS_AND_UAT_PLAN_READONLY`
+Obtener autorización explícita para `NARROW_PROVIDER_ADMIN_PROJECT_CREATOR_AUTH_REQUIRED`. No hay plugin/conector Google Cloud/Firebase instalable disponible en el entorno actual; por tanto la capacidad administrativa provider tendrá que ser conectada/proporcionada de forma segura antes de poder ejecutar ese write desde este carril.
 
-Preparar sin deploy:
-1. regresión transversal de la misma build;
-2. scopes y seguridad;
-3. datos limpios y ausencia de secretos;
-4. rollback/checkpoint;
-5. matriz UAT y criterios de aceptación;
-6. clasificación de workflows stale/legacy vs bloqueos reales.
-
-Solo al llegar al paso real de deploy PREPROD o PRODUCCIÓN se solicita autorización específica.
+Una vez el capability sea demostrable, reemitir el request de creación PREPROD bajo la autorización ya dada y ejecutar exactamente un Hosting PREPROD + UAT read-only.
 
 ## 8. Estado seguro
 
-I4 cerró con 1 Hosting DEV autorizado y consumido. Después: 0 segundo deploy, 0 merge, 0 producción, 0 Auth/Firestore/HR/Storage/provider writes, 0 Make/Gemini y 0 ejecución bancaria.
+0 PREPROD projects created; 0 PREPROD Hosting deploys; 0 PREPROD UAT; 0 Auth/Firestore/Storage/HR/Make/Gemini/payment writes; 0 merge; 0 production.
 
 ## 9. Clasificación
 
-- **Reusable CXOrbia:** single authority runtime, exact identity, one-shot gate consumption y same-build equivalence.
-- **Exclusivo TyA:** cifras financieras y HR Cinépolis usadas como evidencia.
-- **Claude/prototipo:** sin tarea frontend nueva; solo atender P0/P1 reproducible si PREPROD/UAT lo demuestra.
-- **Academia:** alineación documental cerrada; no reconstrucción.
-- **Sin impacto Claude:** gates, source lock, evidencia y documentación de cierre.
+- **Reusable CXOrbia:** provider-capability preflight y fail-closed no-retry.
+- **Exclusivo TyA:** target PREPROD y evidencia operacional del tenant.
+- **Claude/prototipo:** sin cambio frontend.
+- **Academia:** sin cambio funcional; registrar que PREPROD aún no existe.
+- **Sin impacto Claude:** IAM/provider provisioning gate y documentación.
