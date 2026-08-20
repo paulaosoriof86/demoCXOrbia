@@ -1,4 +1,4 @@
-name: CXOrbia I3 Legal V0.4 DEV Runtime Deploy
+name: CXOrbia Existing Runtime Deploy — I3 Frozen + G2B P0
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
       - docs-tya-v6-v71-audit
     paths:
       - 'backend/config/i3-legal-v04-runtime-deploy-dev-execute.json'
+      - 'backend/config/cxorbia-g2b-p0-writepath-deploy-execute.json'
 
 permissions:
   contents: write
@@ -13,7 +14,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: cxorbia-i3-legal-v04-runtime-dev
+  group: cxorbia-existing-runtime-deploy-single
   cancel-in-progress: false
 
 defaults:
@@ -28,60 +29,89 @@ env:
   FIREBASE_HOSTING_TARGET: cxorbia-dev
   HOSTING_SITE: cxorbia-backend-dev
   DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
-  REQUEST_FILE: backend/config/i3-legal-v04-runtime-deploy-dev-request.json
-  EXECUTE_FILE: backend/config/i3-legal-v04-runtime-deploy-dev-execute.json
-  OUT_DIR: .tmp/i3-legal-v04-runtime-dev
-  EXPECTED_GATE: PAULA_DEV_DEPLOY_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_RUNTIME
-  LEGAL_CONTENT_ID: tya-platform-master-terms
-  LEGAL_VERSION: tya-legal-bundle-v0.4-interim-golive-20260816
-  LEGAL_DIGEST: 58d16a736495065a7244f8018d95a1faa87eae9a00e36d7ffc65a41edd58f58d
+  G2B_REQUEST_FILE: backend/config/cxorbia-g2b-p0-writepath-deploy-request.json
+  G2B_EXECUTE_FILE: backend/config/cxorbia-g2b-p0-writepath-deploy-execute.json
+  G2B_OUT_DIR: .tmp/g2b-p0-writepath-deploy
+  G2B_EXPECTED_GATE: PAULA_I5_G2B_P0_CANONICAL_WRITE_PATH_CORRECTION_DEPLOY
+  G2B_RUNTIME_GATE: PAULA_I5_G2B_SYNTHETIC_CANONICAL_WRITE_PATH
+  G2B_SYNTH_REQUEST: i5-g2b-live-synthetic-acceptance-20260820-01
+  G2B_PREFIX: CXORBIA_E2E_SYNTH_
 
 jobs:
-  deploy-i3-legal-runtime:
+  frozen-i3-legal-runtime:
+    if: contains(github.event.head_commit.added, 'backend/config/i3-legal-v04-runtime-deploy-dev-execute.json') || contains(github.event.head_commit.modified, 'backend/config/i3-legal-v04-runtime-deploy-dev-execute.json')
     runs-on: ubuntu-latest
-    timeout-minutes: 55
+    steps:
+      - run: |
+          echo 'I3 legal runtime deploy lane is terminal/frozen. No rerun is authorized by G2-B.'
+          exit 1
+
+  deploy-g2b-p0-writepath:
+    if: contains(github.event.head_commit.added, 'backend/config/cxorbia-g2b-p0-writepath-deploy-execute.json') || contains(github.event.head_commit.modified, 'backend/config/cxorbia-g2b-p0-writepath-deploy-execute.json')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - name: Checkout exact live branch
         uses: actions/checkout@v4
         with:
           ref: docs-tya-v6-v71-audit
-          fetch-depth: 2
+          fetch-depth: 0
 
-      - name: Validate exact one-shot authorization
+      - name: Validate exact P0 authorization and one-file execute commit
         run: |
           set -euo pipefail
-          mkdir -p "$OUT_DIR"
+          mkdir -p "$G2B_OUT_DIR"
           node <<'NODE'
-          const fs=require('fs');
-          const {execFileSync}=require('child_process');
-          const r=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
-          const x=JSON.parse(fs.readFileSync(process.env.EXECUTE_FILE,'utf8'));
-          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
-          if(r.schemaVersion!=='cxorbia.i3.legal-v04-runtime-deploy-dev.request.v1')throw new Error('request_schema_invalid');
-          if(x.schemaVersion!=='cxorbia.i3.legal-v04-runtime-deploy-dev.execute.v1')throw new Error('execute_schema_invalid');
+          const fs=require('fs'),cp=require('child_process');
+          const r=JSON.parse(fs.readFileSync(process.env.G2B_REQUEST_FILE,'utf8'));
+          const x=JSON.parse(fs.readFileSync(process.env.G2B_EXECUTE_FILE,'utf8'));
+          const head=cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const parent=cp.execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const changed=cp.execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          if(changed.length!==1||changed[0]!==process.env.G2B_EXECUTE_FILE)throw new Error('execute_commit_scope_invalid:'+changed.join(','));
+          if(r.schemaVersion!=='cxorbia.g2b.p0-writepath-deploy.request.v1'||x.schemaVersion!=='cxorbia.g2b.p0-writepath-deploy.execute.v1')throw new Error('schema_invalid');
           for(const o of [r,x]){
-            if(o.repository!=='paulaosoriof86/demoCXOrbia'||o.branch!=='docs-tya-v6-v71-audit'||Number(o.pullRequest)!==7)throw new Error('repository_lane_invalid');
-            if(o.firebaseProjectId!=='cxorbia-backend-dev'||o.cloudRunService!=='cxorbia-live-hr-dev'||o.cloudRunRegion!=='us-central1'||o.hostingSite!=='cxorbia-backend-dev'||o.hostingTarget!=='cxorbia-dev'||o.tenantId!=='tya')throw new Error('target_invalid');
-            if(o.authorizationGate!==process.env.EXPECTED_GATE||o.authorizedBy!=='Paula')throw new Error('authorization_invalid');
-            if(o.automaticAcceptance!==false||o.humanAcceptanceRequired!==true||o.merge!==false||o.production!==false)throw new Error('safety_contract_invalid');
-            for(const k of ['deployFirestoreWrites','authWrites','passwordResets','historicalCredentialAccess','historicalReconciliationWrites','hrWrites','rulesWrites','storageWrites','makeWrites','geminiCalls','paymentWrites'])if(Number(o[k]||0)!==0)throw new Error('forbidden_budget:'+k);
+            if(o.repository!=='paulaosoriof86/demoCXOrbia'||o.branch!=='docs-tya-v6-v71-audit'||Number(o.pullRequest)!==7)throw new Error('lane_invalid');
+            if(o.firebaseProjectId!=='cxorbia-backend-dev'||o.cloudRunService!=='cxorbia-live-hr-dev'||o.cloudRunRegion!=='us-central1'||o.hostingSite!=='cxorbia-backend-dev'||o.hostingTarget!=='cxorbia-dev'||o.productionUrl!=='https://cxorbia-backend-dev.web.app'||o.tenantId!=='tya'||o.projectId!=='cinepolis')throw new Error('target_invalid');
+            if(o.authorizationGate!==process.env.G2B_EXPECTED_GATE||o.authorizedBy!=='Paula')throw new Error('authorization_invalid');
+            if(o.syntheticRequestId!==process.env.G2B_SYNTH_REQUEST||o.syntheticTagPrefix!==process.env.G2B_PREFIX)throw new Error('synthetic_scope_invalid');
+            for(const k of ['providerDataWritesDuringDeploy','authWritesDuringDeploy','externalHrWrites','realDataWrites','realCredentialWrites','realPaymentWrites','rulesWrites','storageWritesDuringDeploy','makeCalls','geminiCalls'])if(Number(o[k]||0)!==0)throw new Error('forbidden_budget:'+k);
+            if(o.merge!==false||o.automaticRetryAllowed!==false)throw new Error('safety_invalid');
           }
-          if(r.requestId!==x.requestId||r.authorizationId!==x.authorizationId)throw new Error('request_execute_mismatch');
-          if(r.status!=='authorized_execute_once'||r.enabled!==true||r.consumed!==false||x.enabled!==true||x.consumed!==false)throw new Error('one_shot_state_invalid');
+          if(r.requestId!==x.requestId||r.p0Id!==x.p0Id||r.p0Proven!==true||x.p0Proven!==true)throw new Error('p0_identity_invalid');
+          if(r.status!=='authorized_source_fix_pending_execute_file'||r.enabled!==true||r.consumed!==false||x.enabled!==true||x.consumed!==false)throw new Error('one_shot_state_invalid');
           if(Number(r.singleCloudRunDeployMax)!==1||Number(r.singleHostingDeployMax)!==1||Number(r.cloudRunDeployExecutions)!==0||Number(r.hostingDeployExecutions)!==0)throw new Error('deploy_budget_invalid');
-          if(Number(r.futureHumanLegalAcceptanceWriteBudget)!==1||Number(r.legalAcceptanceWritesDuringDeploy)!==0)throw new Error('acceptance_budget_invalid');
-          if(r.materializationRequestId!=='i3-legal-v04-dev-20260816-01'||r.materializationConsumed!==true||r.materializationRerunAllowed!==false||r.request08RerunAllowed!==false)throw new Error('frozen_predecessor_invalid');
-          if(r.legalContentId!==process.env.LEGAL_CONTENT_ID||r.legalVersion!==process.env.LEGAL_VERSION||r.contentDigest!==process.env.LEGAL_DIGEST)throw new Error('legal_version_pin_invalid');
-          if(changed.length!==1||changed[0]!==process.env.EXECUTE_FILE)throw new Error('execute_commit_scope_invalid:'+changed.join(','));
-          console.log(JSON.stringify({decision:'PASS_I3_LEGAL_RUNTIME_DEPLOY_AUTHORIZATION',requestId:r.requestId,deployFirestoreWrites:0,futureHumanLegalAcceptanceWriteBudget:1,automaticAcceptance:false}));
+          if(x.sourceFixHeadSha!==parent)throw new Error('source_fix_head_not_parent');
+          cp.execFileSync('git',['merge-base','--is-ancestor',r.sourceBaseHeadSha,parent]);
+          const delta=cp.execFileSync('git',['diff','--name-only',`${r.sourceBaseHeadSha}..${parent}`],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const allowed=new Set(r.allowedCorrectionScope||[]);const unexpected=delta.filter(f=>!allowed.has(f));
+          if(unexpected.length)throw new Error('unexpected_p0_delta:'+unexpected.join(','));
+          fs.writeFileSync(process.env.G2B_OUT_DIR+'/authorization.json',JSON.stringify({decision:'PASS_G2B_P0_DEPLOY_AUTHORIZATION',head,parent,delta,p0Id:r.p0Id},null,2)+'\n');
           NODE
+
+      - name: Validate correction source fail closed
+        run: |
+          set -euo pipefail
+          node --check backend/runtime/cxorbia-g2b-synthetic-visit-provider-v1.mjs
+          node --check backend/runtime/hr-live-service/g2b-synthetic-runtime.mjs
+          node --check backend/runtime/hr-live-service/server.mjs
+          node --check app/adapters/cxorbia-canonical-write-firewall-v1.js
+          grep -q 'CXORBIA_E2E_SYNTH_' backend/runtime/cxorbia-g2b-synthetic-visit-provider-v1.mjs
+          grep -q 'realDataWrites:0' backend/runtime/cxorbia-g2b-synthetic-visit-provider-v1.mjs
+          grep -q 'externalHrWrites:0' backend/runtime/cxorbia-g2b-synthetic-visit-provider-v1.mjs
+          grep -q 'g2b-synthetic/commands' backend/runtime/hr-live-service/server.mjs
+          grep -q 'YES_PAULA_20260820_G2B_SYNTHETIC' app/adapters/cxorbia-canonical-write-firewall-v1.js
+          grep -q 'cxorbia-command-http-transport-v1.js' app/adapters/cxorbia-canonical-write-firewall-v1.js
+          grep -q 'COPY backend/runtime/hr-live-service/g2b-synthetic-runtime.mjs' backend/runtime/hr-live-service/Dockerfile
+          grep -q 'COPY backend/runtime/cxorbia-g2b-synthetic-visit-provider-v1.mjs' backend/runtime/hr-live-service/Dockerfile
+          grep -q '"source": "/api/tenants/\*\*"' firebase.json
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
-      - name: Authenticate existing Google Cloud DEV
+      - name: Authenticate existing Google Cloud project
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
@@ -91,156 +121,90 @@ jobs:
         with:
           project_id: cxorbia-backend-dev
 
-      - name: Install transient provider and Hosting tooling
-        run: |
-          set -euo pipefail
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase-tools@latest >/dev/null 2>&1
+      - name: Install transient Firebase tooling
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase-tools@latest >/dev/null 2>&1
 
-      - name: Source and provider read-only preflight
+      - name: Provider pre-readback proves zero G2-B synthetic residue
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
         run: |
           set -euo pipefail
-          node --check backend/runtime/hr-live-service/server.mjs
-          node --check backend/runtime/hr-live-service/legal-runtime.mjs
-          node --check backend/runtime/cxorbia-legal-acceptance-provider-v1.mjs
-          node --check app/adapters/cxorbia-legal-runtime-http-v1.js
-          grep -q "COPY backend/runtime/hr-live-service/legal-runtime.mjs" backend/runtime/hr-live-service/Dockerfile
-          grep -q "COPY backend/runtime/cxorbia-legal-acceptance-provider-v1.mjs" backend/runtime/hr-live-service/Dockerfile
-          grep -q "PAULA_DEV_DEPLOY_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_RUNTIME" backend/runtime/hr-live-service/legal-runtime.mjs
-          grep -q "CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_ENABLED" backend/runtime/hr-live-service/legal-runtime.mjs
-          grep -q "humanConfirmed!==true" backend/runtime/hr-live-service/legal-runtime.mjs
-          grep -q "cxorbia-legal-runtime-http-v1.js" app/index-backend-dev.html
-          grep -q '"source": "/api/tenants/\*\*"' firebase.json
-          grep -q '"destination": "/index-backend-dev.html"' firebase.json
-          gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json > "$OUT_DIR/cloud-run-before.json"
           node <<'NODE'
-          const fs=require('fs'),admin=require('firebase-admin');
-          const sa=JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON||'{}');
-          if(sa.project_id!=='cxorbia-backend-dev')throw new Error('wrong_service_account_project');
-          admin.initializeApp({credential:admin.credential.cert(sa),projectId:'cxorbia-backend-dev'});
-          const db=admin.firestore();
-          (async()=>{
-            const contentRef=db.doc(`tenants/tya/legalContents/${process.env.LEGAL_CONTENT_ID}`);
-            const versionRef=contentRef.collection('versions').doc(process.env.LEGAL_VERSION);
-            const [contentSnap,versionSnap,acceptances]=await Promise.all([contentRef.get(),versionRef.get(),db.collection('tenants').doc('tya').collection('legalAcceptances').get()]);
-            if(!contentSnap.exists||!versionSnap.exists)throw new Error('materialized_legal_authority_missing');
-            const c=contentSnap.data()||{},v=versionSnap.data()||{};
-            if(c.currentVersion!==process.env.LEGAL_VERSION||String(c.currentDigest||'').toLowerCase()!==process.env.LEGAL_DIGEST||String(v.contentDigest||'').toLowerCase()!==process.env.LEGAL_DIGEST)throw new Error('materialized_legal_authority_drift');
-            const report={decision:'PASS_I3_LEGAL_V04_PROVIDER_READONLY_PREFLIGHT',acceptanceCountBefore:acceptances.size,legalVersion:process.env.LEGAL_VERSION,contentDigest:process.env.LEGAL_DIGEST,providerWrites:0,authWrites:0,passwordResets:0,production:false};
-            fs.writeFileSync(process.env.OUT_DIR+'/provider-before.json',JSON.stringify(report,null,2)+'\n','utf8');
-            console.log(JSON.stringify(report));
-          })().catch(e=>{console.error(e);process.exit(1)});
+          const fs=require('fs'),admin=require('firebase-admin');const sa=JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON||'{}');if(sa.project_id!=='cxorbia-backend-dev')throw new Error('wrong_service_account_project');admin.initializeApp({credential:admin.credential.cert(sa),projectId:'cxorbia-backend-dev'});const db=admin.firestore(),auth=admin.auth(),rid=process.env.G2B_SYNTH_REQUEST;
+          async function count(c){return (await c.where('syntheticRequestId','==',rid).get()).size;}
+          (async()=>{const tenant=db.collection('tenants').doc('tya'),project=tenant.collection('projects').doc('cinepolis');const counts={visits:await count(project.collection('visits')),postulations:await count(project.collection('postulations')),receipts:await count(tenant.collection('commandReceipts')),audit:await count(tenant.collection('entityAuditTrail')),shoppers:await count(tenant.collection('shoppers'))};let syntheticAuth=0,token;do{const page=await auth.listUsers(1000,token);syntheticAuth+=page.users.filter(u=>u.customClaims?.syntheticRequestId===rid).length;token=page.pageToken;}while(token);if(Object.values(counts).some(Number)||syntheticAuth!==0)throw new Error('predeploy_synthetic_residue:'+JSON.stringify({...counts,syntheticAuth}));const report={decision:'PASS_G2B_P0_PREDEPLOY_ZERO_PROVIDER_WRITES',counts,syntheticAuth,providerDataWritesDuringDeploy:0,externalHrWrites:0,realDataWrites:0};fs.writeFileSync(process.env.G2B_OUT_DIR+'/provider-before.json',JSON.stringify(report,null,2)+'\n');})();
           NODE
 
-      - name: Build exact DEV Cloud Run image once
+      - name: Build exact corrected Cloud Run image once
         run: |
           set -euo pipefail
-          IMAGE_URI="gcr.io/${GCP_PROJECT_ID}/${CLOUD_RUN_SERVICE}:i3-legal-v04-${GITHUB_SHA}"
-          echo "$IMAGE_URI" > "$OUT_DIR/image-uri.txt"
+          IMAGE_URI="gcr.io/${GCP_PROJECT_ID}/${CLOUD_RUN_SERVICE}:g2b-p0-writepath-${GITHUB_SHA}"
+          echo "$IMAGE_URI" > "$G2B_OUT_DIR/image-uri.txt"
           gcloud builds submit . --project "$GCP_PROJECT_ID" --config backend/runtime/hr-live-service/cloudbuild.yaml --substitutions "_IMAGE=$IMAGE_URI" --quiet
 
-      - name: Update existing Cloud Run DEV once and enable human-only receipt gate
+      - name: Update existing Cloud Run once with synthetic-only gate
         run: |
           set -euo pipefail
-          IMAGE_URI="$(cat "$OUT_DIR/image-uri.txt")"
-          gcloud run services update "$CLOUD_RUN_SERVICE" \
-            --project "$GCP_PROJECT_ID" \
-            --region "$GCP_REGION" \
-            --image "$IMAGE_URI" \
-            --service-account "$CLOUD_RUN_RUNTIME_SA" \
-            --update-env-vars "CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_ENABLED=true,CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_GATE=${EXPECTED_GATE}" \
-            --quiet
-          gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json > "$OUT_DIR/cloud-run-after.json"
+          IMAGE_URI="$(cat "$G2B_OUT_DIR/image-uri.txt")"
+          gcloud run services update "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --image "$IMAGE_URI" --service-account "$CLOUD_RUN_RUNTIME_SA" --update-env-vars "CXORBIA_G2B_SYNTHETIC_WRITE_ENABLED=true,CXORBIA_G2B_SYNTHETIC_WRITE_GATE=${G2B_RUNTIME_GATE},CXORBIA_G2B_SYNTHETIC_REQUEST_ID=${G2B_SYNTH_REQUEST}" --quiet
+          gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json > "$G2B_OUT_DIR/cloud-run-after.json"
 
-      - name: Smoke legal runtime directly without accepting
+      - name: Remote Cloud Run fail-closed smoke without data writes
         run: |
           set -euo pipefail
           base="$(gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format='value(status.url)')"
-          curl -fsS --retry 10 --retry-delay 3 "$base/health" > "$OUT_DIR/health.json"
-          code="$(curl -sS -o "$OUT_DIR/legal-unauthorized.json" -w '%{http_code}' "$base/api/tenants/tya/legal/current")"
+          curl -fsS --retry 10 --retry-delay 3 "$base/health" > "$G2B_OUT_DIR/health.json"
+          code="$(curl -sS -o "$G2B_OUT_DIR/g2b-unauthorized.json" -w '%{http_code}' -X POST -H 'content-type: application/json' --data '{}' "$base/api/tenants/tya/projects/cinepolis/g2b-synthetic/commands")"
           test "$code" = '401'
           node <<'NODE'
-          const fs=require('fs');
-          const h=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/health.json','utf8'));
-          const u=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/legal-unauthorized.json','utf8'));
-          if(h.ok!==true||h.legalRuntimeSourceReady!==true)throw new Error('legal_health_not_ready');
-          if(u.error!=='LEGAL_RUNTIME_AUTHORIZATION_REQUIRED')throw new Error('legal_unauthorized_not_fail_closed');
-          console.log(JSON.stringify({decision:'PASS_I3_LEGAL_RUNTIME_CLOUD_RUN_REMOTE',legalRuntimeSourceReady:true,unauthorizedFailClosed:true,legalAcceptanceWrites:0,automaticAcceptance:false}));
+          const fs=require('fs'),h=JSON.parse(fs.readFileSync(process.env.G2B_OUT_DIR+'/health.json','utf8')),u=JSON.parse(fs.readFileSync(process.env.G2B_OUT_DIR+'/g2b-unauthorized.json','utf8'));if(h.ok!==true||h.g2bSyntheticCommandSourceReady!==true||h.g2bSyntheticWriteEnabled!==true||h.g2bSyntheticOnly!==true)throw new Error('g2b_health_not_ready');if(u.error!=='G2B_SYNTHETIC_AUTHORIZATION_REQUIRED')throw new Error('g2b_unauthorized_not_fail_closed');
           NODE
 
-      - name: Deploy existing Hosting DEV once
-        run: |
-          set -euo pipefail
-          npx firebase deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$GCP_PROJECT_ID" --non-interactive
+      - name: Deploy existing Hosting target once
+        run: npx firebase deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$GCP_PROJECT_ID" --non-interactive
 
-      - name: Smoke protected Hosting DEV without accepting
+      - name: Remote Hosting source and API smoke
         run: |
           set -euo pipefail
-          curl -fsSL --retry 10 --retry-delay 3 "$DEV_ROOT_URL/" > "$OUT_DIR/dev-root.html"
-          grep -q "cxorbia-legal-runtime-http-v1.js" "$OUT_DIR/dev-root.html"
-          code="$(curl -sS -o "$OUT_DIR/legal-hosting-unauthorized.json" -w '%{http_code}' "$DEV_ROOT_URL/api/tenants/tya/legal/current")"
+          curl -fsSL --retry 10 --retry-delay 3 "$DEV_ROOT_URL/adapters/cxorbia-canonical-write-firewall-v1.js" > "$G2B_OUT_DIR/firewall.remote.js"
+          grep -q 'YES_PAULA_20260820_G2B_SYNTHETIC' "$G2B_OUT_DIR/firewall.remote.js"
+          grep -q 'cxorbia-command-http-transport-v1.js' "$G2B_OUT_DIR/firewall.remote.js"
+          code="$(curl -sS -o "$G2B_OUT_DIR/g2b-hosting-unauthorized.json" -w '%{http_code}' -X POST -H 'content-type: application/json' --data '{}' "$DEV_ROOT_URL/api/tenants/tya/projects/cinepolis/g2b-synthetic/commands")"
           test "$code" = '401'
-          node <<'NODE'
-          const fs=require('fs');const u=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/legal-hosting-unauthorized.json','utf8'));
-          if(u.error!=='LEGAL_RUNTIME_AUTHORIZATION_REQUIRED')throw new Error('hosting_legal_rewrite_not_fail_closed');
-          console.log(JSON.stringify({decision:'PASS_I3_LEGAL_RUNTIME_HOSTING_DEV_REMOTE',protectedEntrypoint:true,legalRewrite:true,unauthorizedFailClosed:true,legalAcceptanceWrites:0,automaticAcceptance:false}));
-          NODE
 
-      - name: Provider post-readback proves deploy wrote no acceptance
+      - name: Provider post-readback proves deploy wrote no business/Auth data
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
         run: |
           set -euo pipefail
           node <<'NODE'
-          const fs=require('fs'),admin=require('firebase-admin');
-          const sa=JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON||'{}');
-          if(sa.project_id!=='cxorbia-backend-dev')throw new Error('wrong_service_account_project');
-          if(!admin.apps.length)admin.initializeApp({credential:admin.credential.cert(sa),projectId:'cxorbia-backend-dev'});
-          const db=admin.firestore();
-          (async()=>{
-            const before=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/provider-before.json','utf8'));
-            const contentRef=db.doc(`tenants/tya/legalContents/${process.env.LEGAL_CONTENT_ID}`);
-            const versionRef=contentRef.collection('versions').doc(process.env.LEGAL_VERSION);
-            const [contentSnap,versionSnap,acceptances]=await Promise.all([contentRef.get(),versionRef.get(),db.collection('tenants').doc('tya').collection('legalAcceptances').get()]);
-            const c=contentSnap.data()||{},v=versionSnap.data()||{};
-            if(c.currentVersion!==process.env.LEGAL_VERSION||String(c.currentDigest||'').toLowerCase()!==process.env.LEGAL_DIGEST||String(v.contentDigest||'').toLowerCase()!==process.env.LEGAL_DIGEST)throw new Error('legal_authority_changed_during_deploy');
-            if(acceptances.size!==before.acceptanceCountBefore)throw new Error(`acceptance_write_during_deploy:${before.acceptanceCountBefore}:${acceptances.size}`);
-            const report={decision:'PASS_I3_LEGAL_RUNTIME_DEPLOY_PROVIDER_READBACK',acceptanceCountBefore:before.acceptanceCountBefore,acceptanceCountAfter:acceptances.size,legalAcceptanceWritesDuringDeploy:0,authWrites:0,passwordResets:0,historicalCredentialAccess:0,historicalReconciliationWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeWrites:0,geminiCalls:0,paymentWrites:0,automaticAcceptance:false,production:false};
-            fs.writeFileSync(process.env.OUT_DIR+'/provider-after.json',JSON.stringify(report,null,2)+'\n','utf8');
-            console.log(JSON.stringify(report));
-          })().catch(e=>{console.error(e);process.exit(1)});
+          const fs=require('fs'),admin=require('firebase-admin');const sa=JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON||'{}');if(sa.project_id!=='cxorbia-backend-dev')throw new Error('wrong_service_account_project');if(!admin.apps.length)admin.initializeApp({credential:admin.credential.cert(sa),projectId:'cxorbia-backend-dev'});const db=admin.firestore(),auth=admin.auth(),rid=process.env.G2B_SYNTH_REQUEST;async function count(c){return (await c.where('syntheticRequestId','==',rid).get()).size;}(async()=>{const tenant=db.collection('tenants').doc('tya'),project=tenant.collection('projects').doc('cinepolis');const counts={visits:await count(project.collection('visits')),postulations:await count(project.collection('postulations')),receipts:await count(tenant.collection('commandReceipts')),audit:await count(tenant.collection('entityAuditTrail')),shoppers:await count(tenant.collection('shoppers'))};let syntheticAuth=0,token;do{const page=await auth.listUsers(1000,token);syntheticAuth+=page.users.filter(u=>u.customClaims?.syntheticRequestId===rid).length;token=page.pageToken;}while(token);if(Object.values(counts).some(Number)||syntheticAuth!==0)throw new Error('deploy_created_provider_data:'+JSON.stringify({...counts,syntheticAuth}));const before=JSON.parse(fs.readFileSync(process.env.G2B_OUT_DIR+'/provider-before.json','utf8'));const report={decision:'PASS_G2B_P0_DEPLOY_ZERO_PROVIDER_DATA_WRITES',before:before.counts,after:counts,syntheticAuthBefore:before.syntheticAuth,syntheticAuthAfter:syntheticAuth,providerDataWritesDuringDeploy:0,authWritesDuringDeploy:0,externalHrWrites:0,realDataWrites:0,realCredentialWrites:0,realPaymentWrites:0,makeCalls:0,geminiCalls:0};fs.writeFileSync(process.env.G2B_OUT_DIR+'/provider-after.json',JSON.stringify(report,null,2)+'\n');})();
           NODE
 
-      - name: Consume one-shot deploy request and persist sanitized evidence
+      - name: Upload sanitized deployment evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-g2b-p0-writepath-deploy-${{ github.run_id }}
+          path: .tmp/g2b-p0-writepath-deploy/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Consume one-shot request and persist sanitized evidence
+        if: success()
         run: |
           set -euo pipefail
           revision="$(gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format='value(status.latestReadyRevisionName)')"
-          service_url="$(gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format='value(status.url)')"
-          export REVISION="$revision" SERVICE_URL="$service_url"
+          cp "$G2B_OUT_DIR/provider-after.json" /tmp/g2b-provider-after.json
+          git fetch origin docs-tya-v6-v71-audit
+          git checkout -B docs-tya-v6-v71-audit origin/docs-tya-v6-v71-audit
+          export REVISION="$revision"
           node <<'NODE'
-          const fs=require('fs');
-          const p=process.env.REQUEST_FILE;
-          const r=JSON.parse(fs.readFileSync(p,'utf8'));
-          const after=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/provider-after.json','utf8'));
-          r.status='consumed_pass_human_acceptance_pending';
-          r.enabled=false;r.consumed=true;r.noAutomaticRetry=true;
-          r.cloudRunDeployExecutions=1;r.hostingDeployExecutions=1;
-          r.cloudRunRevision=process.env.REVISION||null;r.cloudRunUrl=process.env.SERVICE_URL||null;
-          r.devRootUrl=process.env.DEV_ROOT_URL;
-          r.consumedAt=new Date().toISOString();
-          r.decision='PASS_I3_LEGAL_V04_DEV_RUNTIME_AND_HOSTING_DEPLOY_HUMAN_ACCEPTANCE_PENDING';
-          r.legalAcceptanceWritesDuringDeploy=0;
-          r.acceptanceCountBefore=after.acceptanceCountBefore;
-          r.acceptanceCountAfter=after.acceptanceCountAfter;
-          r.nextGate='HUMAN_PAULA_LEGAL_ACCEPTANCE_UI_CLICK';
-          fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n','utf8');
-          const evidence={schemaVersion:'cxorbia.i3.legal-v04-runtime-deploy-dev.evidence.v1',requestId:r.requestId,decision:r.decision,targetProject:r.firebaseProjectId,cloudRunService:r.cloudRunService,cloudRunRevision:r.cloudRunRevision,hostingSite:r.hostingSite,devRootUrl:r.devRootUrl,legalContentId:r.legalContentId,legalVersion:r.legalVersion,contentDigest:r.contentDigest,cloudRunDeployExecutions:1,hostingDeployExecutions:1,legalAcceptanceWritesDuringDeploy:0,futureHumanLegalAcceptanceWriteBudget:1,automaticAcceptance:false,humanAcceptanceRequired:true,authWrites:0,passwordResets:0,historicalCredentialAccess:0,historicalReconciliationWrites:0,hrWrites:0,rulesWrites:0,storageWrites:0,makeWrites:0,geminiCalls:0,paymentWrites:0,merge:false,production:false,nextGate:r.nextGate};
-          fs.mkdirSync('app/docs/evidence',{recursive:true});
-          fs.writeFileSync('app/docs/evidence/ITERATION3-LEGAL-V04-RUNTIME-DEPLOY-DEV-LATEST.json',JSON.stringify(evidence,null,2)+'\n','utf8');
+          const fs=require('fs'),p=process.env.G2B_REQUEST_FILE,r=JSON.parse(fs.readFileSync(p,'utf8')),after=JSON.parse(fs.readFileSync('/tmp/g2b-provider-after.json','utf8'));if(r.requestId!=='i5-g2b-p0-writepath-deploy-20260820-01'||r.consumed===true)throw new Error('request_drift_or_consumed');r.status='consumed_pass_p0_writepath_deployed';r.enabled=false;r.consumed=true;r.noAutomaticRetry=true;r.cloudRunDeployExecutions=1;r.hostingDeployExecutions=1;r.cloudRunRevision=process.env.REVISION||null;r.consumedAt=new Date().toISOString();r.decision='PASS_G2B_P0_CANONICAL_WRITE_PATH_CORRECTION_DEPLOYED';r.providerDataWritesDuringDeploy=0;r.authWritesDuringDeploy=0;r.next='G2B_STAGE_AND_TEST_SYNTHETIC_ONLY';fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n');const e={schemaVersion:'cxorbia.g2b.p0-writepath-deploy.evidence.v1',requestId:r.requestId,decision:r.decision,p0Id:r.p0Id,p0Proven:true,targetProject:r.firebaseProjectId,productionUrl:r.productionUrl,cloudRunService:r.cloudRunService,cloudRunRevision:r.cloudRunRevision,cloudRunDeployExecutions:1,hostingDeployExecutions:1,syntheticCommandRoute:'/api/tenants/tya/projects/cinepolis/g2b-synthetic/commands',syntheticTagPrefix:r.syntheticTagPrefix,providerDataWritesDuringDeploy:0,authWritesDuringDeploy:0,externalHrWrites:0,realDataWrites:0,realCredentialWrites:0,realPaymentWrites:0,makeCalls:0,geminiCalls:0,merge:false,providerReadback:after,next:r.next};fs.mkdirSync('app/docs/evidence',{recursive:true});fs.writeFileSync('app/docs/evidence/I5-G2B-P0-CANONICAL-WRITE-PATH-DEPLOY-LATEST.json',JSON.stringify(e,null,2)+'\n');
           NODE
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add "$REQUEST_FILE" app/docs/evidence/ITERATION3-LEGAL-V04-RUNTIME-DEPLOY-DEV-LATEST.json
-          git commit -m 'gate(i3): record V0.4 DEV runtime deploy PASS'
+          git add "$G2B_REQUEST_FILE" app/docs/evidence/I5-G2B-P0-CANONICAL-WRITE-PATH-DEPLOY-LATEST.json
+          git commit -m 'evidence(g2b): record P0 write-path deploy PASS'
+          git pull --rebase origin docs-tya-v6-v71-audit
           git push origin HEAD:docs-tya-v6-v71-audit
