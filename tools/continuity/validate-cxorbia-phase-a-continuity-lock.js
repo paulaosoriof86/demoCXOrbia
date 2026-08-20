@@ -103,10 +103,23 @@ if (currentLedgerEntry) {
   if (liveRequest.enabled !== false || liveRequest.consumed !== true) fail('live consumed request has been re-enabled');
   if (liveRequest.allowedExecutions !== liveRequest.executionsConsumed) fail('live consumed request execution count drifted');
   if (!String(liveRequest.status || '').startsWith('consumed')) fail('live request status is not terminal consumed');
-  if (!String(liveRequest.decision || '').startsWith('PASS')) fail('live consumed request lost PASS decision');
+
+  const decision = String(liveRequest.decision || '');
+  const terminalPass = decision.startsWith('PASS');
+  const terminalSafeHarnessHold = decision.startsWith('HOLD_') && liveRequest.productP0Proven === false;
+  if (!terminalPass && !terminalSafeHarnessHold) {
+    fail('live consumed request is neither PASS nor an explicit non-product terminal HOLD');
+  }
+  if (terminalSafeHarnessHold && !String(liveRequest.holdClassification || '').startsWith('HARNESS_')) {
+    fail('non-product HOLD must be classified as HARNESS_*');
+  }
+  if (currentLedgerEntry.decision !== liveRequest.decision) fail('consumed ledger decision mismatch');
+  if (terminalSafeHarnessHold && currentLedgerEntry.productP0Proven !== false) fail('ledger must preserve productP0Proven=false for harness HOLD');
+
   if (liveRequest.deployedProductSourceHeadSha !== lock.functionalSourceLock) fail('live consumed request source lock mismatch');
   for (const flag of ['repositoryWrites', 'dataWrites', 'providerWrites', 'deploy', 'merge', 'production']) {
     if (liveRequest[flag] !== false) fail(`live consumed request unexpectedly has ${flag}=true`);
+    if (currentLedgerEntry[flag] !== false) fail(`ledger consumed request unexpectedly has ${flag}=true`);
   }
 }
 
@@ -144,6 +157,7 @@ console.log(`currentIteration=${lock.currentIteration}`);
 console.log(`formalProgress=${lock.formalProgress.completed}/100`);
 console.log('conversationIndependent=true');
 console.log('consumedOneShotGateLedger=PASS');
+console.log('consumedTerminalHarnessHoldPolicy=PASS');
 console.log('evidenceAliasRegistry=PASS');
 console.log('preprodProjectCreatorRoute=SUPERSEDED');
 console.log(`nextAction=${current.name}`);
