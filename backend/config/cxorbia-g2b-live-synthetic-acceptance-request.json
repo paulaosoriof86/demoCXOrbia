@@ -52,6 +52,24 @@
     "rebuilds": 0,
     "merges": 0
   },
+  "p0Correction": {
+    "p0Id": "G2B_CANONICAL_WRITE_PATH_DISABLED_OR_UNROUTED",
+    "productP0Proven": true,
+    "status": "AUTHORIZED_CORRECTION_PENDING_DEPLOY",
+    "authorizationSource": "current_conversation_2026-08-20_15-41_-06",
+    "authorizationText": "AUTORIZO corregir el P0 G2-B de la ruta productiva de escrituras canónicas y desplegar únicamente esa corrección en cxorbia-backend-dev, sin merge, sin HR externa, sin datos/credenciales reales, sin pagos, Make ni Gemini.",
+    "deployRequest": "backend/config/cxorbia-g2b-p0-writepath-deploy-request.json",
+    "singleCloudRunDeployMax": 1,
+    "singleHostingDeployMax": 1,
+    "providerDataWritesDuringDeploy": 0,
+    "realDataWrites": 0,
+    "realCredentialWrites": 0,
+    "externalHrWrites": 0,
+    "realPaymentWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "merge": false
+  },
   "requiredCoverage": [
     "roadmap_and_navigation",
     "admin_login_roles_routes",
