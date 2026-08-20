@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
-  "syncEpoch": "CXORBIA-20260820-I5-R2-CONTINUITY-DRIFT-PASS-44",
+  "syncEpoch": "CXORBIA-20260820-I5-R3-CRITICAL-PRODUCT-ACCEPTANCE-PASS-45",
   "updatedAt": "2026-08-20",
   "policy": {
     "aliasesDoNotCreateNewWork": true,
@@ -14,28 +14,49 @@
       "canonicalMeaning": "SHOPPER_HISTORICAL_AUTH_PASS",
       "state": "FROZEN_REUSE",
       "rerunPolicy": "NO_RERUN_WITHOUT_P0_PROVEN",
-      "evidenceRef": "CAMBIOS-BACKEND.md"
+      "evidenceRef": "app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json"
     },
     {
       "evidenceName": "PASS_READONLY_POST_GATES",
       "canonicalMeaning": "STAFF_ADMIN_RUNTIME_READONLY_PASS",
       "state": "FROZEN_REUSE",
       "rerunPolicy": "NO_RERUN_WITHOUT_P0_PROVEN",
-      "evidenceRef": ".github/cxorbia-gate-requests/request.json"
+      "evidenceRef": "backend/config/cxorbia-r3-critical-product-acceptance.json"
     },
     {
       "evidenceName": "PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY",
       "canonicalMeaning": "STAFF_ADMIN_AUTHORITY_SCOPE_RELOAD_PASS",
       "state": "FROZEN_REUSE",
       "rerunPolicy": "NO_RERUN_WITHOUT_P0_PROVEN",
-      "evidenceRef": ".github/cxorbia-gate-requests/request.json"
+      "evidenceRef": "backend/config/cxorbia-r3-critical-product-acceptance.json"
     },
     {
       "evidenceName": "PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY",
       "canonicalMeaning": "SAME_BUILD_HOSTING_REMOTE_PARITY_PASS",
       "state": "FROZEN_REUSE",
       "rerunPolicy": "NO_RERUN_WITHOUT_P0_PROVEN",
-      "evidenceRef": "CAMBIOS-BACKEND.md"
+      "evidenceRef": "backend/config/cxorbia-r3-critical-product-acceptance.json"
+    },
+    {
+      "evidenceName": "PASS_C6_READONLY_AUTH_RUNTIME_ALL_ROLES",
+      "canonicalMeaning": "MULTIROLE_RBAC_RELOAD_PASS",
+      "state": "FROZEN_REUSE",
+      "rerunPolicy": "NO_RERUN_WITHOUT_P0_PROVEN",
+      "evidenceRef": "app/docs/evidence/CORTE6-CLIENT-AUTH-MATERIALIZATION-LATEST.json"
+    },
+    {
+      "evidenceName": "PASS_CLIENT_SINGLE_LOGIN_AND_ROUTE_RENDER",
+      "canonicalMeaning": "CLIENT_CANONICAL_SINGLE_LOGIN_ROUTE_PASS",
+      "state": "FROZEN_REUSE",
+      "rerunPolicy": "NO_RERUN_WITHOUT_P0_PROVEN",
+      "evidenceRef": ".github/cxorbia-gate-requests/request.json"
+    },
+    {
+      "evidenceName": "CRITICAL_PRODUCT_ACCEPTANCE_PASS",
+      "canonicalMeaning": "I5_R3_ALL_EIGHT_CRITICAL_ACCEPTANCE_CRITERIA_PASS",
+      "state": "FROZEN_REUSE",
+      "rerunPolicy": "NO_RERUN_WITHOUT_P0_PROVEN",
+      "evidenceRef": "backend/config/cxorbia-r3-critical-product-acceptance.json"
     }
   ]
 }
