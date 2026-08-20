@@ -1,43 +1,61 @@
 # PENDIENTES-PROTOTIPO.md
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I5-PREPROD-CREATOR-BLOCKED-39`
+**SYNC_EPOCH:** `CXORBIA-20260820-I5-R2-CONTINUITY-DRIFT-PASS-44`  
+**PLAN_ID:** `CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE`  
+**currentIteration:** `I5-R3`  
+**ACTIVE_BLOCKER: `NONE`**  
+**PREPROD_PROJECT_CREATOR_ROUTE: `SUPERSEDED`**
 
 ## Estado
 
-**Score formal: 85% / 15% pendiente.** I1–I4 están `PASS/FROZEN`. I5 está bloqueado exclusivamente en la creación del proyecto PREPROD nuevo y limpio; producción no está autorizada.
+**Score formal: 90% / 10% pendiente.** I1–I4 `PASS/FROZEN`; I5-R1 e I5-R2 PASS. Producción no está autorizada. El pendiente activo único del plan es `I5-R3_CRITICAL_PRODUCT_ACCEPTANCE_RECONCILIATION`.
 
 ## No reabrir
 
-Auth, Shopper, Finance V2/historical, multi-proyecto/no-code, documentos, reservas, certificaciones y Academia no se reconstruyen por defecto. No nueva candidata, rama, PR o metodología.
+No nueva candidata, rama, PR, workflow o metodología. No reconstruir Auth, Shopper, Finance, multi-proyecto/no-code, documentos, reservas, certificaciones o Academia. Solo un `P0_PROVEN` nuevo y reproducible puede abrir una corrección focalizada.
 
-## I5 PREPROD — evidencia ya obtenida
+## I5-R3 — pendientes obligatorios
 
-- Autorización de Paula para proyecto Firebase PREPROD nuevo/limpio + 1 Hosting PREPROD de `f9802fdd498934a8e7729fa5c7d18341bec1cd71` + UAT read-only.
-- Run `32332125828`, artifact `9393386559`: 1 intento de creación, 0 proyectos creados, 0 Hosting PREPROD deploys, 0 UAT, 0 writes.
-- Run `32332360361`, artifact `9393462199`: root cause read-only; identidad DEV sin parent Project Creator demostrable.
-- Run `32332788919`, artifact `9393599029`: `HOLD_I5_NO_EXISTING_CREATOR_ROUTE_AUTHENTICATES`; secrets creator dedicados ausentes y service account DEV sin `resourcemanager.projects.create` demostrado.
+Sobre exactamente `f9802fdd498934a8e7729fa5c7d18341bec1cd71`, demostrar/reconciliar evidencia terminal de:
 
-## Pendiente activo único
+1. `ROADMAP_LIVE_NO_CLONES` — HR/hoja de ruta viva; sin clon, demo o stale fallback silencioso.
+2. `SHOPPERS_VISIBLE_EXPECTED_SCOPE` — shoppers históricos/reales visibles según tenant/proyecto/rol.
+3. `VISITS_CURRENT_AND_HISTORY_VISIBLE` — visitas actuales e históricas coherentes.
+4. `FINANCE_CANONICAL_SEMANTICS` — mayo 44/44 pagadas; junio 2/44 pagadas + 42 pendientes + Q451; `liquidada != pagada`.
+5. `MULTIROLE_SCOPE_PASS` — Admin/Staff/Shopper/Cliente según scope autorizado.
+6. `RELOAD_SESSION_PASS` — reload/nueva sesión no cambia autoridad, identidad ni alcance.
+7. `NO_DEMO_OR_STALE_FALLBACK`.
+8. `SAME_ARTIFACT_PASS` — sin rebuild.
 
-`NARROW_PROVIDER_ADMIN_PROJECT_CREATOR_AUTH_REQUIRED`
+Salida obligatoria: `CRITICAL_PRODUCT_ACCEPTANCE_PASS` o un P0 concreto con evidencia reproducible y corrección focalizada. No auditoría general nueva.
 
-Se necesita una autorización específica para una acción administrativa mínima de IAM/provisioning que permita una de estas rutas:
-1. conectar una identidad separada que ya tenga Project Creator al parent correcto; o
-2. otorgar el rol/permiso mínimo de creación de proyectos a una identidad de provisión separada.
+## Controles anti-bucle ya cerrados
 
-No incluye service-account/key creation, organización/carpeta distinta, datos de negocio, Auth/Firestore/Storage/HR, Make, Gemini, pagos, merge ni producción salvo autorización explícita adicional.
+- Continuity lock machine-readable.
+- Ledger de requests one-shot consumidos.
+- Alias registry para evidencia histórica.
+- Validador de continuidad que incluye CAMBIOS/RESUMEN/PENDIENTES.
+- Ruta PREPROD/Project Creator marcada `SUPERSEDED`.
+- Cutover separado de business/data writes.
 
-Una vez la capability quede demostrada, reemitir el request PREPROD bajo la autorización original; no repetir diagnósticos de I1–I4.
+## Pendientes posteriores bounded
 
-## Pendientes frontend separados
+- I5-R4: auditoría final post-remediación → `ROOT_CAUSE_CLOSED_PASS` → 95%.
+- I5-G1: autorización explícita + cutover mismo artefacto → 98%.
+- I5-G2: smoke/hypercare/rollback/freeze → 100%.
 
-- No existe P0 frontend nuevo derivado del HOLD PREPROD.
-- `modules/cliente-extra.js` / exports PDF-XLSX-PPTX permanece como hallazgo separado a clasificar en UAT; no modificar por asociación.
+## Frontend separado
+
+`modules/cliente-extra.js` / exports PDF-XLSX-PPTX sigue como hallazgo histórico separado; no es P0 activo. Cualquier hallazgo nuevo de R3 se documenta por archivo/módulo para Claude; backend no parchea UI.
 
 ## Academia
 
-Sin reconstrucción. Solo actualizar/publicar si PREPROD/UAT demuestra una diferencia real.
+Sin pendiente de reconstrucción. Solo actualizar si R3 demuestra cambio real que afecte manuales, cursos, rutas por rol o notificaciones.
 
 ## Seguridad
 
-PREPROD project creates exitosos: 0. Hosting PREPROD deploys: 0. UAT: 0. Auth/Firestore/Storage/HR/Make/Gemini/payment writes: 0. Merge: false. Producción: false.
+0 deploy productivo, 0 merge, 0 provider/data/HR/Auth/Firestore/Storage/Make/Gemini/payment writes. Legacy intacto. Producción no autorizada.
+
+## Historial superseded
+
+`NARROW_PROVIDER_ADMIN_PROJECT_CREATOR_AUTH_REQUIRED` y `cxorbia-preprod-20260819` son evidencia histórica del epoch `CXORBIA-20260819-I5-PREPROD-CREATOR-BLOCKED-39`; **no son pendientes activos y no deben reemitirse**.
