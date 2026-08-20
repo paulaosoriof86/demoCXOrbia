@@ -115,8 +115,7 @@ jobs:
       - name: Prepare existing DEV credentials privately for runtime profile
         if: >-
           steps.request.outputs.enabled == 'true' &&
-          (steps.request.outputs.profile == 'PHASE_A_COMPLETE_RUNTIME_MULTIROLE' ||
-           steps.request.outputs.profile == 'C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC')
+          steps.request.outputs.profile == 'PHASE_A_COMPLETE_RUNTIME_MULTIROLE'
         env:
           EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
         run: |
@@ -162,6 +161,48 @@ jobs:
           if(a.decision!=='PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION'||a.authWrites!==0||a.passwordChanges!==0||a.valuesExported!==false)throw new Error('staff_shopper_credential_selection_not_safe_pass');
           if(b.decision!=='PASS_C6_EXISTING_CLIENT_CREDENTIAL_SELECTION'||b.authWrites!==0||b.passwordChanges!==0||b.valuesExported!==false)throw new Error('client_credential_selection_not_safe_pass');
           if(!p?.staff?.login||!p?.staff?.password||!p?.shopper?.login||!p?.shopper?.password||!p?.client?.login||!p?.client?.password)throw new Error('private_e2e_bundle_incomplete');
+          NODE
+          chmod 600 "$PRIVATE_E2E"
+
+      - name: Prepare existing DEV Client credential privately for client diagnostic
+        if: steps.request.outputs.enabled == 'true' && steps.request.outputs.profile == 'C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC'
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          PRIVATE_DIR=.tmp/phase-a-runtime-private
+          PRIVATE_E2E=$PRIVATE_DIR/private-e2e.json
+          OUT_DIR=.tmp/c6-client-route-wait-diagnostic
+          mkdir -p "$PRIVATE_DIR" "$OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs');
+          const raw=process.env.EXISTING_DEV_JSON||'';
+          let parsed=null;try{parsed=JSON.parse(raw);}catch{}
+          if(!(parsed&&parsed.type==='service_account'&&parsed.project_id==='cxorbia-backend-dev'&&parsed.client_email&&parsed.private_key))throw new Error('credential_invalid');
+          fs.writeFileSync('.tmp/phase-a-runtime-private/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/$PRIVATE_DIR/credentials.json" >> "$GITHUB_ENV"
+          echo "CXORBIA_EXPECTED_PROJECT=cxorbia-backend-dev" >> "$GITHUB_ENV"
+          echo "CXORBIA_DEV_ROOT_URL=https://cxorbia-backend-dev.web.app" >> "$GITHUB_ENV"
+          echo "CXORBIA_E2E_PRIVATE_CREDENTIALS=$PRIVATE_E2E" >> "$GITHUB_ENV"
+          echo "PRIVATE_DIR=$PRIVATE_DIR" >> "$GITHUB_ENV"
+          echo "OUT_DIR=$OUT_DIR" >> "$GITHUB_ENV"
+
+          GOOGLE_APPLICATION_CREDENTIALS="${GITHUB_WORKSPACE}/$PRIVATE_DIR/credentials.json" \
+          CXORBIA_EXPECTED_PROJECT=cxorbia-backend-dev \
+          CXORBIA_DEV_ROOT_URL=https://cxorbia-backend-dev.web.app \
+          CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E" \
+          PRIVATE_DIR="$PRIVATE_DIR" OUT_DIR="$OUT_DIR" \
+          node tools/qa/cxorbia-c6-existing-client-e2e-credential.mjs \
+            > "$OUT_DIR/credential-selection-client.source-safe.json"
+
+          node <<'NODE'
+          const fs=require('fs');
+          const a=JSON.parse(fs.readFileSync('.tmp/c6-client-route-wait-diagnostic/credential-selection-client.source-safe.json','utf8'));
+          const p=JSON.parse(fs.readFileSync('.tmp/phase-a-runtime-private/private-e2e.json','utf8'));
+          if(a.decision!=='PASS_C6_EXISTING_CLIENT_CREDENTIAL_SELECTION')throw new Error('client_credential_selection_not_safe_pass');
+          if(a.authWrites!==0||a.passwordChanges!==0||a.passwordResets!==0||a.membershipWrites!==0||a.valuesExported!==false||a.credentialsExposed!==false)throw new Error('client_credential_selection_scope_invalid');
+          if(!p?.client?.login||!p?.client?.password||p?.staff||p?.shopper)throw new Error('private_client_only_bundle_invalid');
           NODE
           chmod 600 "$PRIVATE_E2E"
 
