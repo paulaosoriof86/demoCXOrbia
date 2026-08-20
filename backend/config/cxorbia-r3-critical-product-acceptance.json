@@ -1,0 +1,185 @@
+{
+  "schemaVersion": "1.0.0",
+  "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
+  "syncEpoch": "CXORBIA-20260820-I5-R3-CRITICAL-PRODUCT-ACCEPTANCE-PASS-45",
+  "iteration": "I5-R3",
+  "decision": "CRITICAL_PRODUCT_ACCEPTANCE_PASS",
+  "productP0Proven": false,
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "evidenceReconciliationHeadSha": "9df736a33f8873e631b029c0c931769c58573f67",
+  "functionalSourceLock": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+  "productionProjectId": "cxorbia-backend-dev",
+  "productionAuthorized": false,
+  "lineage": {
+    "sameBuildHosting": {
+      "decision": "PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY",
+      "runId": 32328316954,
+      "artifactId": 9392151808,
+      "reusePolicy": "FROZEN_REUSE_UNLESS_NEW_P0_PROVEN"
+    },
+    "staffLiveAuthorityCurrent": {
+      "decision": "PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY",
+      "runId": 32342457328,
+      "jobId": 96344128319,
+      "artifactId": 9396828201,
+      "artifactDigest": "sha256:01bcff79d4227d9a7de375c5827c3e2b12055ff2d42b0c0cea18e4a3b30ed456",
+      "periods": 15,
+      "visits": 660,
+      "shoppers": 200,
+      "firstPeriod": "2025-06",
+      "latestPeriod": "2026-08",
+      "reloadsStable": true,
+      "newTabStable": true,
+      "lane": "authenticated-human-canonical",
+      "staleProviderEmptyCleared": true,
+      "syntheticHrPostsInPlatform": 0,
+      "providerWrites": 0
+    },
+    "shopperHistoricalExact": {
+      "decision": "PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY",
+      "evidenceRef": "app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json",
+      "exactIdentity": true,
+      "profile": true,
+      "membership": true,
+      "crosswalk": true,
+      "history": true,
+      "historyE2E": true,
+      "reusePolicy": "NO_RERUN_WITHOUT_P0_PROVEN"
+    },
+    "clientCurrent": {
+      "decision": "PASS_CLIENT_SINGLE_LOGIN_AND_ROUTE_RENDER",
+      "requestId": "i5-r3-client-single-login-readonly-20260820-02",
+      "runId": 32400495121,
+      "jobId": 96527305525,
+      "artifactId": 9418300899,
+      "artifactDigest": "sha256:0cd51fb2cdcdaa6960712504641cd13ac23ad092c0b88b999cd41ba157e03e21",
+      "singleVisibleProductLogin": true,
+      "legacyOverlayExists": false,
+      "authenticated": true,
+      "providerRole": "cliente",
+      "tenantId": "tya",
+      "projectIds": ["cinepolis"],
+      "authorityApplied": true,
+      "sessionView": "cli_dashboard",
+      "renderException": null
+    },
+    "multiroleFrozen": {
+      "decision": "PASS_C6_READONLY_AUTH_RUNTIME_ALL_ROLES",
+      "evidenceRef": "app/docs/evidence/CORTE6-CLIENT-AUTH-MATERIALIZATION-LATEST.json",
+      "completedGates": [
+        "HUMAN_STAFF_AUTH",
+        "HUMAN_SHOPPER_AUTH",
+        "THREE_RELOADS",
+        "NEW_TAB",
+        "HUMAN_CLIENT_AUTH",
+        "CLIENT_THREE_RELOADS",
+        "CLIENT_NEW_TAB"
+      ]
+    },
+    "liveHrDynamic": {
+      "decision": "PASS_C6_LIVE_HR_DYNAMIC_CANONICAL_STATE",
+      "evidenceRef": "app/docs/evidence/CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json",
+      "runtimeRead": true,
+      "sourceSafe": true,
+      "frozenOperationalCounts": false,
+      "allDetectedPeriodsRequired": true,
+      "visitKeysUnique": true
+    },
+    "finance": {
+      "paymentEvidenceRef": "app/data/tya-payment-history-source-safe.js",
+      "readModelRef": "app/adapters/tya-canonical-finance-read-model-v2.js",
+      "mayVisits": 44,
+      "mayPaid": 44,
+      "mayPending": 0,
+      "juneVisits": 44,
+      "junePaid": 2,
+      "junePending": 42,
+      "junePaidGt": 451,
+      "liquidationAndPaymentSeparated": true,
+      "liquidatedPendingPaymentState": "conciliada_pendiente_pago",
+      "paidState": "pagada",
+      "paymentExecutionAllowed": false
+    },
+    "sourceCompare": {
+      "base": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+      "head": "9df736a33f8873e631b029c0c931769c58573f67",
+      "aheadBy": 116,
+      "runtimeProductFilesChanged": 0,
+      "runtimeProductScopesPreserved": [
+        "app/index-backend-dev.html",
+        "app/core/**",
+        "app/modules/**",
+        "app/adapters/**",
+        "app/data/**"
+      ],
+      "postLockChangesClassifiedAs": [
+        "control-plane",
+        "documentation",
+        "QA harness",
+        "workflow/gates"
+      ]
+    }
+  },
+  "criteria": [
+    {
+      "id": "ROADMAP_LIVE_NO_CLONES",
+      "status": "PASS",
+      "basis": "Current Staff/Admin protected runtime loaded the canonical live authority with 15 periods from 2025-06 through 2026-08, 660 visits, 200 shoppers, stale provider-empty state cleared, zero synthetic HR posts, and the dynamic live-HR contract remains non-frozen and fail-closed."
+    },
+    {
+      "id": "SHOPPERS_VISIBLE_EXPECTED_SCOPE",
+      "status": "PASS",
+      "basis": "Current Staff/Admin scope loaded 200 shoppers; exact identity map is active without fuzzy matching; historical Shopper profile/membership/crosswalk/history E2E remains frozen PASS and reusable without reprocessing."
+    },
+    {
+      "id": "VISITS_CURRENT_AND_HISTORY_VISIBLE",
+      "status": "PASS",
+      "basis": "Current Staff/Admin runtime entered the authenticated product with project and period selectors mounted and loaded 660 visits across 15 periods, including current 2026-08 and history back to 2025-06."
+    },
+    {
+      "id": "FINANCE_CANONICAL_SEMANTICS",
+      "status": "PASS",
+      "basis": "Canonical payment evidence preserves May 44/44 paid and June 2/44 paid with 42 pending and Q451 confirmed in GT; the frozen finance read model separates liquidation-confirmed/payment-pending from paid and disallows silent payment execution."
+    },
+    {
+      "id": "MULTIROLE_SCOPE_PASS",
+      "status": "PASS",
+      "basis": "Frozen all-role runtime evidence covers Staff, Shopper and Client; current Staff/Admin and current Client read-only proofs refresh the critical identities/scopes without writes; Client is restricted to tenant tya/project cinepolis."
+    },
+    {
+      "id": "RELOAD_SESSION_PASS",
+      "status": "PASS",
+      "basis": "Current Staff/Admin runtime is stable across reloads/new tab; frozen all-role evidence covers three reloads/new-tab for Shopper and Client; current Client single-login route render confirms canonical browser-auth integration."
+    },
+    {
+      "id": "NO_DEMO_OR_STALE_FALLBACK",
+      "status": "PASS",
+      "basis": "Canonical runtime is authenticated-human-canonical, clears stale provider-empty state, current Client uses the official single product login with no legacy overlay, live HR is a non-frozen runtime authority, and no silent demo/stale fallback is permitted by the frozen runtime contract."
+    },
+    {
+      "id": "SAME_ARTIFACT_PASS",
+      "status": "PASS",
+      "basis": "Frozen functional source f9802f has same-build Hosting remote parity. Comparison through evidence head 9df736a shows zero runtime product-file changes after the functional lock; later changes are control-plane/docs/QA/workflows only, so no rebuild is introduced."
+    }
+  ],
+  "rootCausesClosedByThisIteration": ["RC07", "RC08", "RC09", "RC10"],
+  "nextIteration": "I5-R4",
+  "nextRequiredExit": "ROOT_CAUSE_CLOSED_PASS",
+  "safety": {
+    "providerWrites": false,
+    "dataWrites": false,
+    "authWritesThisReconciliation": 0,
+    "firestoreWritesThisReconciliation": 0,
+    "hrWritesThisReconciliation": 0,
+    "storageWritesThisReconciliation": 0,
+    "makeCallsThisReconciliation": 0,
+    "geminiCallsThisReconciliation": 0,
+    "paymentWritesThisReconciliation": 0,
+    "hostingDeploysThisReconciliation": 0,
+    "cloudRunDeploysThisReconciliation": 0,
+    "merge": false,
+    "production": false
+  }
+}
