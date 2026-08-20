@@ -1,7 +1,7 @@
 # PLAN OPERATIVO UNIFICADO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-19  
-**SYNC_EPOCH:** `CXORBIA-20260819-I5-PREPROD-IAM-AUTH-GRANTED-ROUTE-BLOCKED-40`  
+**Fecha:** 2026-08-20  
+**SYNC_EPOCH:** `CXORBIA-20260820-I5-PROVIDER-USER-AUTH-ROUTE-REQUIRED-41`  
 **Frontera:** `I5_PREPRODUCTION_AND_GO_LIVE`  
 **Score formal:** `85/100`
 
@@ -30,51 +30,61 @@ La autorización PREPROD vigente cubre:
 
 #### Ejecución previa — HOLD sin materialización
 Run `32332125828`, artifact `9393386559`:
-- 1 comando de creación intentado;
 - 0 proyectos creados;
 - 0 Hosting deploys;
 - UAT 0;
 - 0 writes.
 
-#### Root cause previa
-Run `32332360361`, artifact `9393462199`: identidad DEV sin parent creator capability demostrable.
-
-Run `32332788919`, artifact `9393599029`: `HOLD_I5_NO_EXISTING_CREATOR_ROUTE_AUTHENTICATES`.
-- rutas creator dedicadas ausentes en ese run;
-- identidad DEV autenticada, 2 proyectos visibles, 0 organizaciones;
+#### Creator-route provider read-only
+Run `32332788919`, artifact `9393599029`:
+- dedicated/alternate creator credentials ausentes;
+- service account DEV presente/autenticada;
+- 2 proyectos visibles;
+- 0 organizaciones;
+- 0 parent probes;
 - create capability no demostrada.
 
-### Autorización IAM mínima — YA RECIBIDA
+### Root cause I5 — PROBADA
 
-La autorización administrativa mínima para habilitar Project Creator ya está vigente. No existe evidencia terminal de una ejecución posterior; no debe volver a solicitarse ni considerarse consumida.
+Google Cloud documenta que las service accounts solo pueden crear proyectos dentro de Organization y deben especificar parent. `roles/resourcemanager.projectCreator` se concede en Folder/Organization. Por tanto el enfoque de otorgar Project Creator a la service account DEV no puede crear un proyecto standalone cuando no existe/demuestra parent Organization/Folder.
+
+Referencias oficiales:
+- https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects
+- https://docs.cloud.google.com/iam/docs/roles-permissions/resourcemanager
+
+### Autorización IAM mínima — YA RECIBIDA / NO CONSUMIDA
+
+Permanece vigente, pero no se ejecuta contra la service account DEV porque no resolvería el parent requerido. No crear identidad/key/Organization/Folder ni ampliar privilegios por inferencia.
 
 ### Gate activo actualizado
 
-`NARROW_PROVIDER_ADMIN_PROJECT_CREATOR_AUTH_GRANTED__PROVIDER_EXECUTION_ROUTE_UNAVAILABLE`
+`PROVIDER_USER_AUTH_PROJECT_CREATION_ROUTE_REQUIRED`
 
-La restricción actual es de control-plane: el carril conectado no expone una ruta provider-admin Google Cloud/Firebase verificable para ejecutar el cambio autorizado. No retry de creación con la identidad DEV y no nueva metodología de producto.
+No falta otro diagnóstico. El entorno conectado actual no expone una sesión Google Cloud/Firebase de usuario capaz de crear un proyecto standalone ni un conector provider-admin equivalente.
 
-Cuando la ruta provider-admin quede disponible y verificada:
-1. demostrar la capacidad mínima necesaria bajo la autorización IAM vigente;
-2. reemitir request PREPROD bajo la autorización ya dada;
-3. crear `cxorbia-preprod-20260819` nuevo y limpio;
-4. desplegar exactamente `f9802f...` a Hosting una sola vez;
+### Transición exacta
+
+1. `USER_AUTHENTICATED_PREPROD_PROJECT_CREATION_HANDOFF`: materializar `cxorbia-preprod-20260819` con identidad Google Cloud/Firebase de usuario autenticada;
+2. verificar que el proyecto sea nuevo y limpio;
+3. abrir gate separado para resolver identidad mínima de deploy PREPROD sin presumir IAM adicional;
+4. ejecutar un único Hosting de `f9802f...` cuando exista autorización/capability suficiente;
 5. comprobar paridad remota;
 6. ejecutar UAT read-only/source-safe;
-7. si PASS, evaluar el siguiente gate de materialización provider-backed únicamente con autorización específica para los writes que requiera;
+7. si PASS, evaluar provider-backed materialization solo con autorizaciones específicas;
 8. luego production GO/NO-GO.
 
 ### I5.3 — PRODUCTION GO/NO-GO
 
 Permanece cerrado. Requiere PREPROD/UAT suficiente y autorización explícita de producción.
 
-## Prohibiciones
+## Circuit breaker / prohibiciones
 
-- No reintentar con la misma identidad DEV como Project Creator.
+- No reintentar `projects:create` con la service account DEV.
+- No repetir creator-route preflight sin cambio de identidad/provider.
 - No crear nueva candidata/rama/PR/workflow transportador.
+- No crear service account/key/Organization/Folder.
 - No reabrir Shopper/Auth/Finanzas.
 - No usar proyecto Firebase preexistente como sustituto del PREPROD limpio.
-- No crear identidad/credencial nueva, cambiar parent o ampliar privilegios fuera de la autorización vigente.
 - No provider business writes, Make/Gemini/pagos, merge o producción sin gate/autorización.
 
 ## Verdad financiera congelada
