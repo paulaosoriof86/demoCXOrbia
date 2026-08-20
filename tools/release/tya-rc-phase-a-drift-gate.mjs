@@ -10,6 +10,8 @@
 
   Historical --validated arguments are accepted for workflow compatibility but
   never replace the canonical functionalSourceLock.
+  Consumed non-product harness HOLDs remain terminal only when the continuity
+  validator proves they are disabled, fully consumed and write/deploy safe.
 */
 
 import { execFileSync } from 'node:child_process';
@@ -163,6 +165,7 @@ const report = {
   historicalValidatedInput,
   historicalValidatedInputIgnoredAsAuthority: true,
   continuityValidator: 'CONTINUITY_LOCK_PASS',
+  consumedTerminalHarnessHoldPolicyEnforced: true,
   changedFilesSinceFunctionalLock: changedFiles.length,
   runtimeChangedFiles,
   runtimeChangedCount: runtimeChangedFiles.length,
