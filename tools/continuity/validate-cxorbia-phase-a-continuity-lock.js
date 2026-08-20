@@ -56,6 +56,7 @@ if (gateEvidence.productionTarget?.projectId !== lock.productionProjectId) fail(
 const synchronizedDocs = [
   'app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md',
   'app/docs/EXECUTION-STATE-CXORBIA-TYA-VIGENTE.md',
+  'app/docs/SOURCE-LOCK-CXORBIA-TYA-VIGENTE.md',
   'app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md',
   'app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md',
   'app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md',
