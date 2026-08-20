@@ -1,16 +1,16 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "i5-g2-production-staff-readonly-20260820-02",
+  "requestId": "i5-g2-production-client-readonly-20260820-03",
   "enabled": true,
   "consumed": false,
   "status": "ready_readonly_execution",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "43afce0956419cd816583ae08e0471ec1bec089e",
+  "targetHeadSha": "192c7c4ac9f4222af3bf0dcc3cdd0c34d74ba373",
   "deployedProductSourceHeadSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
-  "profile": "I3_STAFF_RUNTIME_AUTHORITY_READONLY",
-  "allowedProfiles": ["I3_STAFF_RUNTIME_AUTHORITY_READONLY"],
+  "profile": "C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC",
+  "allowedProfiles": ["C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC"],
   "allowedExecutions": 1,
   "executionsConsumed": 0,
   "repositoryWrites": false,
@@ -44,5 +44,5 @@
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-20",
   "authorizationText": "continúa con el último bloque",
-  "purpose": "I5-G2-A fresh Staff/Admin remote production read-only smoke on the canonical production URL after the all-role request held on stale historical Shopper credentials. No Shopper credential selection, business/data/provider writes, deploy, rebuild, merge or production mutation."
+  "purpose": "I5-G2-A fresh Client remote production read-only smoke on the canonical production URL after fresh Staff/Admin PASS. No Shopper credential selection, business/data/provider writes, deploy, rebuild, merge or production mutation."
 }
