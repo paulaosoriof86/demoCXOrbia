@@ -3,6 +3,7 @@
 **Fecha:** 2026-08-19  
 **SYNC_EPOCH:** `CXORBIA-20260819-I4-PROTECTED-RUNTIME-CLOSED-38`  
 **Estado:** `I4_CLOSED_PASS__I5_OPEN`  
+**Frontera:** `I5_PREPRODUCTION_AND_GO_LIVE`  
 **Subestado:** `I5_1_PREPRODUCTION_READINESS_AND_UAT_PLAN_READONLY`  
 **Score formal:** `85% / 15%`  
 **Repo:** `paulaosoriof86/demoCXOrbia`  
