@@ -1,65 +1,27 @@
 {
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
-  "syncEpoch": "CXORBIA-20260820-I5-R4-ROOT-CAUSE-CLOSED-PASS-46",
+  "syncEpoch": "CXORBIA-20260820-I5-G1-PRODUCTION-CUTOVER-EXECUTED-47",
   "updatedAt": "2026-08-20",
   "branch": "docs-tya-v6-v71-audit",
   "promotionContract": "backend/config/cxorbia-production-promotion-contract.json",
   "functionalSourceLock": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
   "r3AcceptanceEvidence": "backend/config/cxorbia-r3-critical-product-acceptance.json",
   "r4RootCauseClosureEvidence": "backend/config/cxorbia-r4-root-cause-closure.json",
-  "productionTarget": {
-    "strategy": "PROMOTE_EXISTING_CLEAN_PROJECT",
-    "projectId": "cxorbia-backend-dev",
-    "hostingTarget": "cxorbia-dev",
-    "hostingSite": "cxorbia-backend-dev",
-    "cloudRunService": "cxorbia-live-hr-dev",
-    "cloudRunRegion": "us-central1",
-    "promotesExistingCleanProject": true,
-    "createsAdditionalPreprodProject": false
-  },
-  "formalProgressPercent": 95,
+  "g1CutoverEvidence": "backend/config/cxorbia-g1-production-cutover.json",
+  "productionTarget": {"strategy":"PROMOTE_EXISTING_CLEAN_PROJECT","projectId":"cxorbia-backend-dev","hostingTarget":"cxorbia-dev","hostingSite":"cxorbia-backend-dev","cloudRunService":"cxorbia-live-hr-dev","cloudRunRegion":"us-central1","productionUrl":"https://cxorbia-backend-dev.web.app","promotesExistingCleanProject":true,"createsAdditionalPreprodProject":false,"acceptCurrentIdentifiersAndUrlAsProduction":true},
+  "cutoverExecutionMode": "LOGICAL_PROMOTION_EXISTING_DEPLOYMENT_NO_REDEPLOY",
+  "formalProgressPercent": 98,
   "productionDeploymentExecuted": false,
-  "verdict": "READY_FOR_EXPLICIT_AUTHORIZATION_AFTER_ROOT_CAUSE_CLOSURE",
+  "productionCutoverExecuted": true,
+  "verdict": "PRODUCTION_CUTOVER_EXECUTED",
   "gates": {
-    "LIVE_HR_CURRENT_PERIOD_AND_HISTORY_REVISION_PASS": {
-      "status": "PASS",
-      "canonicalEvidenceState": "CRITICAL_PRODUCT_ACCEPTANCE_PASS:ROADMAP_LIVE_NO_CLONES+VISITS_CURRENT_AND_HISTORY_VISIBLE",
-      "requestId": "i5-existing-project-precutover-staff-live-authority-readonly-20260820-01",
-      "runId": 32342457328,
-      "artifactId": 9396828201,
-      "evidenceRef": "backend/config/cxorbia-r3-critical-product-acceptance.json"
-    },
-    "SHOPPER_AUTH_REPAIR_PASS": {
-      "status": "PASS",
-      "canonicalEvidenceState": "PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY",
-      "reusePolicy": "NO_RERUN_WITHOUT_P0_PROVEN",
-      "evidenceRef": "backend/config/cxorbia-r3-critical-product-acceptance.json"
-    },
-    "ACCUMULATIVE_MULTIROLE_SMOKE_PASS": {
-      "status": "PASS",
-      "canonicalEvidenceState": "CRITICAL_PRODUCT_ACCEPTANCE_PASS:MULTIROLE_SCOPE_PASS+RELOAD_SESSION_PASS",
-      "evidenceBasis": "R3_CURRENT_STAFF_CURRENT_CLIENT_FROZEN_SHOPPER_COMPOSITION",
-      "evidenceRef": "backend/config/cxorbia-r3-critical-product-acceptance.json"
-    },
-    "HUMAN_VALIDATION_PASS": {
-      "status": "PASS",
-      "canonicalEvidenceState": "I4_PASS/FROZEN_PLUS_R3_CRITICAL_PRODUCT_ACCEPTANCE_PASS",
-      "evidenceBasis": "INHERITED_HUMAN_VALIDATION_WITH_CURRENT_R3_RUNTIME_ACCEPTANCE",
-      "evidenceRef": "backend/config/cxorbia-r3-critical-product-acceptance.json"
-    },
-    "ROLLBACK_READY": {
-      "status": "PASS",
-      "canonicalEvidenceState": "R4_ROOT_CAUSE_CLOSED_PASS_SAME_ARTIFACT_NO_REBUILD_ROLLBACK_REVALIDATED",
-      "evidenceBasis": "R4 continuity/runtime-drift gate plus preserved I4 rollback checkpoint; no product runtime drift and no production deploy occurred before cutover",
-      "finalRecheckOwnerIteration": "I5-R4",
-      "evidenceRef": "backend/config/cxorbia-r4-root-cause-closure.json"
-    },
-    "EXPLICIT_CUTOVER_AUTHORIZATION": {
-      "status": "PENDING",
-      "canonicalEvidenceState": "USER_AUTHORIZATION_REQUIRED_AFTER_ROOT_CAUSE_CLOSED_PASS",
-      "evidenceRef": null
-    }
+    "LIVE_HR_CURRENT_PERIOD_AND_HISTORY_REVISION_PASS":{"status":"PASS","evidenceRef":"backend/config/cxorbia-r3-critical-product-acceptance.json"},
+    "SHOPPER_AUTH_REPAIR_PASS":{"status":"PASS","reusePolicy":"NO_RERUN_WITHOUT_P0_PROVEN","evidenceRef":"backend/config/cxorbia-r3-critical-product-acceptance.json"},
+    "ACCUMULATIVE_MULTIROLE_SMOKE_PASS":{"status":"PASS","evidenceRef":"backend/config/cxorbia-r3-critical-product-acceptance.json"},
+    "HUMAN_VALIDATION_PASS":{"status":"PASS","evidenceRef":"backend/config/cxorbia-r3-critical-product-acceptance.json"},
+    "ROLLBACK_READY":{"status":"PASS","finalRecheckOwnerIteration":"I5-R4","evidenceRef":"backend/config/cxorbia-r4-root-cause-closure.json"},
+    "EXPLICIT_CUTOVER_AUTHORIZATION":{"status":"PASS","authorizedBy":"Paula","authorizedAt":"2026-08-20T12:55:00-06:00","authorizationText":"AUTORIZO I5-G1: ejecutar el cutover de producción del mismo artefacto, sin rebuild y sin autorizar business/data writes.","evidenceRef":"backend/config/cxorbia-g1-production-cutover.json"}
   },
   "safety": {
     "failClosed": true,
@@ -69,8 +31,9 @@
     "humanApprovalRequired": true,
     "productionWritesAuthorized": false,
     "deploymentAuthorized": false,
+    "providerRedeployRequired": false,
     "mergeAuthorized": false,
-    "productionCutoverAuthorized": false,
+    "productionCutoverAuthorized": true,
     "makeGeminiPaymentsAuthorized": false
   }
 }

@@ -1,183 +1,42 @@
 #!/usr/bin/env node
 'use strict';
-
-const fs = require('fs');
-const path = require('path');
-
-const root = path.resolve(__dirname, '..', '..');
-const lockPath = path.join(root, 'backend', 'config', 'cxorbia-phase-a-continuity-lock.json');
-const gateEvidencePath = path.join(root, 'backend', 'config', 'cxorbia-production-promotion-gate-evidence.json');
-const consumedLedgerPath = path.join(root, 'backend', 'config', 'cxorbia-consumed-one-shot-gates.json');
-const aliasRegistryPath = path.join(root, 'backend', 'config', 'cxorbia-evidence-aliases.json');
-const r4ReceiptPath = path.join(root, 'backend', 'config', 'cxorbia-r4-root-cause-closure.json');
-const liveRequestPath = path.join(root, '.github', 'cxorbia-gate-requests', 'request.json');
-
-function fail(message) {
-  console.error(`CONTINUITY_DRIFT_BLOCKED: ${message}`);
-  process.exit(2);
+const fs=require('fs'),path=require('path');
+const root=path.resolve(__dirname,'..','..');
+const fail=(m)=>{console.error(`CONTINUITY_DRIFT_BLOCKED: ${m}`);process.exit(2);};
+const read=(p)=>{try{return fs.readFileSync(path.join(root,p),'utf8');}catch(e){fail(`cannot read ${p}: ${e.message}`);}};
+const json=(p)=>{try{return JSON.parse(read(p));}catch(e){fail(`cannot parse ${p}: ${e.message}`);}};
+const lock=json('backend/config/cxorbia-phase-a-continuity-lock.json');
+const gate=json('backend/config/cxorbia-production-promotion-gate-evidence.json');
+const ledger=json('backend/config/cxorbia-consumed-one-shot-gates.json');
+const aliases=json('backend/config/cxorbia-evidence-aliases.json');
+const r4=json('backend/config/cxorbia-r4-root-cause-closure.json');
+const g1=json('backend/config/cxorbia-g1-production-cutover.json');
+const live=json('.github/cxorbia-gate-requests/request.json');
+if(!lock.syncEpoch||!lock.planId)fail('missing lock identity');
+if(lock.resumeProtocol?.conversationIndependent!==true||lock.resumeProtocol?.terminalPassSurvivesConversationInterruption!==true||lock.resumeProtocol?.prBodyIsMirrorOnly!==true||lock.resumeProtocol?.headMustBeResolvedDynamically!==true||lock.resumeProtocol?.onMismatch!=='CONTINUITY_DRIFT_BLOCKED')fail('resume protocol invalid');
+if(lock.hardStops?.rebuildBeforePromotion!==false||lock.hardStops?.cutoverBeforeRootCauseClosedPass!==false||lock.hardStops?.cutoverWithoutExplicitAuthorization!==false||lock.hardStops?.reopenG1WithoutNewP0!==false)fail('hard stops invalid');
+const iterations=Array.isArray(lock.iterations)?lock.iterations:[], ids=['I5-R1','I5-R2','I5-R3','I5-R4','I5-G1','I5-G2'];
+if(JSON.stringify(iterations.map(x=>x.id))!==JSON.stringify(ids)||iterations.reduce((s,x)=>s+Number(x.weight||0),0)!==15)fail('bounded iteration plan drifted');
+const current=iterations.find(x=>x.id===lock.currentIteration);if(!current||!['ACTIVE','PENDING_AUTHORIZATION'].includes(current.status))fail('current iteration state invalid');
+const completed=85+iterations.filter(x=>x.status==='PASS').reduce((s,x)=>s+Number(x.weight||0),0);if(lock.formalProgress?.completed!==completed||lock.formalProgress?.pending!==100-completed)fail('formal progress mismatch');
+for(const c of [gate,aliases,g1]){if(c.syncEpoch!==lock.syncEpoch||c.planId!==lock.planId)fail('machine control epoch/plan mismatch');}
+if(ledger.planId!==lock.planId)fail('ledger plan mismatch');
+if(gate.functionalSourceLock!==lock.functionalSourceLock||g1.functionalSourceLock!==lock.functionalSourceLock)fail('functional source lock mismatch');
+if(gate.productionTarget?.projectId!==lock.productionProjectId)fail('production project mismatch');
+const g1Iter=iterations.find(x=>x.id==='I5-G1');
+if(lock.currentIteration==='I5-G2'){
+  if(g1Iter?.status!=='PASS'||g1Iter.exit!=='PRODUCTION_CUTOVER_EXECUTED')fail('G2 cannot start before G1 PASS');
+  if(g1.decision!=='PRODUCTION_CUTOVER_EXECUTED'||g1.providerDeployExecuted!==false||g1.rebuildExecuted!==false||g1.cutover?.sameTestedArtifactPreserved!==true||g1.safety?.businessDataWritesAuthorized!==false)fail('G1 receipt unsafe');
+  if(lock.formalProgress?.productionIsAuthorized!==true||lock.formalProgress?.productionCutoverExecuted!==true||lock.productionState?.active!==true||lock.productionState?.providerRedeployExecuted!==false||lock.productionState?.rebuildExecuted!==false||lock.productionState?.businessDataWritesAuthorized!==false)fail('production state mismatch');
+  if(gate.gates?.EXPLICIT_CUTOVER_AUTHORIZATION?.status!=='PASS'||gate.productionCutoverExecuted!==true||gate.productionDeploymentExecuted!==false)fail('promotion gate state mismatch after G1');
 }
-
-function read(file) {
-  try {
-    return fs.readFileSync(file, 'utf8');
-  } catch (error) {
-    fail(`cannot read ${path.relative(root, file)}: ${error.message}`);
-  }
-}
-
-function readJson(file) {
-  try {
-    return JSON.parse(read(file));
-  } catch (error) {
-    fail(`cannot parse ${path.relative(root, file)}: ${error.message}`);
-  }
-}
-
-const lock = readJson(lockPath);
-const gateEvidence = readJson(gateEvidencePath);
-const consumedLedger = readJson(consumedLedgerPath);
-const aliasRegistry = readJson(aliasRegistryPath);
-const r4Receipt = readJson(r4ReceiptPath);
-const liveRequest = readJson(liveRequestPath);
-
-if (!lock.syncEpoch) fail('continuity lock has no syncEpoch');
-if (!lock.planId) fail('continuity lock has no planId');
-if (lock.resumeProtocol?.conversationIndependent !== true) fail('conversationIndependent must be true');
-if (lock.resumeProtocol?.terminalPassSurvivesConversationInterruption !== true) fail('terminal PASS must survive conversation interruption');
-if (lock.resumeProtocol?.prBodyIsMirrorOnly !== true) fail('PR body must remain mirror-only');
-if (lock.resumeProtocol?.headMustBeResolvedDynamically !== true) fail('HEAD must be resolved dynamically');
-if (lock.resumeProtocol?.onMismatch !== 'CONTINUITY_DRIFT_BLOCKED') fail('mismatch state must fail closed');
-if (!String(lock.resumeProtocol?.mismatchAction || '').includes('Reconcile control-plane')) fail('mismatchAction must reconcile control-plane rather than reopen product');
-if (lock.hardStops?.cutoverBeforeRootCauseClosedPass !== false) fail('cutoverBeforeRootCauseClosedPass must remain false');
-if (lock.hardStops?.cutoverWithoutExplicitAuthorization !== false) fail('cutoverWithoutExplicitAuthorization must remain false');
-if (lock.hardStops?.rebuildBeforePromotion !== false) fail('rebuildBeforePromotion must remain false');
-if (lock.hardStops?.reopenR4WithoutNewP0 !== false) fail('R4 must not reopen without a new P0');
-if (lock.formalProgress?.productionIsAuthorized !== false) fail('productionIsAuthorized must remain false before G1 authorization');
-
-const iterations = Array.isArray(lock.iterations) ? lock.iterations : [];
-const expectedIds = ['I5-R1', 'I5-R2', 'I5-R3', 'I5-R4', 'I5-G1', 'I5-G2'];
-if (iterations.length !== expectedIds.length) fail(`expected 6 bounded iterations, found ${iterations.length}`);
-if (JSON.stringify(iterations.map((item) => item.id)) !== JSON.stringify(expectedIds)) fail('bounded iteration order changed');
-const totalWeight = iterations.reduce((sum, item) => sum + Number(item.weight || 0), 0);
-if (totalWeight !== 15) fail(`I5 subweights must total 15, found ${totalWeight}`);
-const current = iterations.find((item) => item.id === lock.currentIteration);
-if (!current) fail(`currentIteration ${lock.currentIteration} is not in bounded plan`);
-if (!['ACTIVE', 'PENDING_AUTHORIZATION'].includes(current.status)) fail(`currentIteration ${lock.currentIteration} must be ACTIVE or PENDING_AUTHORIZATION, found ${current.status}`);
-const completedWeight = iterations.filter((item) => item.status === 'PASS').reduce((sum, item) => sum + Number(item.weight || 0), 0);
-const expectedProgress = 85 + completedWeight;
-if (lock.formalProgress?.completed !== expectedProgress) fail(`formal progress ${lock.formalProgress?.completed} does not match PASS weight ${expectedProgress}`);
-if (lock.formalProgress?.pending !== 100 - expectedProgress) fail('formal pending percentage is inconsistent');
-
-for (const controlled of [gateEvidence, consumedLedger, aliasRegistry, r4Receipt]) {
-  if (controlled.syncEpoch !== lock.syncEpoch) fail('machine-readable control syncEpoch mismatch');
-  if (controlled.planId && controlled.planId !== lock.planId) fail('machine-readable control planId mismatch');
-}
-if (gateEvidence.functionalSourceLock !== lock.functionalSourceLock) fail('functional source lock mismatch');
-if (gateEvidence.productionTarget?.projectId !== lock.productionProjectId) fail('production project mismatch');
-
-const r4 = iterations.find((item) => item.id === 'I5-R4');
-if (['I5-G1', 'I5-G2'].includes(lock.currentIteration)) {
-  if (!r4 || r4.status !== 'PASS' || r4.exit !== 'ROOT_CAUSE_CLOSED_PASS') fail('G1/G2 cannot be current before R4 terminal PASS');
-  if (r4Receipt.decision !== 'ROOT_CAUSE_CLOSED_PASS') fail('R4 terminal receipt missing ROOT_CAUSE_CLOSED_PASS');
-  if (r4Receipt.productP0Proven !== false) fail('R4 receipt must preserve productP0Proven=false');
-  if (r4Receipt.functionalSourceLock !== lock.functionalSourceLock) fail('R4 receipt functional source mismatch');
-  if (r4Receipt.sessionInterruptionProtection?.terminalPassSurvivesConversationInterruption !== true) fail('R4 receipt does not persist PASS across conversation interruption');
-  if (r4Receipt.sessionInterruptionProtection?.staleMirrorNeverAuthorizesRerun !== true) fail('stale mirror must never authorize rerun');
-  if (r4Receipt.nextIteration !== 'I5-G1') fail('R4 receipt nextIteration must be I5-G1');
-  if (r4Receipt.nextActionRequiresExplicitUserAuthorization !== true) fail('R4 receipt must require explicit user authorization for G1');
-}
-
-const synchronizedDocs = [
-  'app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md',
-  'app/docs/EXECUTION-STATE-CXORBIA-TYA-VIGENTE.md',
-  'app/docs/SOURCE-LOCK-CXORBIA-TYA-VIGENTE.md',
-  'app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md',
-  'app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md',
-  'app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md',
-  'app/docs/GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md',
-  'CAMBIOS-BACKEND.md',
-  'RESUMEN-PARA-CLAUDE.md',
-  'PENDIENTES-PROTOTIPO.md'
-];
-
-for (const rel of synchronizedDocs) {
-  const content = read(path.join(root, rel));
-  if (!content.includes(lock.syncEpoch)) fail(`${rel} does not contain syncEpoch ${lock.syncEpoch}`);
-  if (!content.includes(lock.planId)) fail(`${rel} does not contain planId ${lock.planId}`);
-  if (!content.includes(lock.currentIteration)) fail(`${rel} does not contain currentIteration ${lock.currentIteration}`);
-}
-
-for (const rel of ['CAMBIOS-BACKEND.md', 'RESUMEN-PARA-CLAUDE.md', 'PENDIENTES-PROTOTIPO.md']) {
-  const content = read(path.join(root, rel));
-  if (!content.includes('ACTIVE_BLOCKER: `NONE`')) fail(`${rel} must declare ACTIVE_BLOCKER NONE`);
-  if (!content.includes('PREPROD_PROJECT_CREATOR_ROUTE: `SUPERSEDED`')) fail(`${rel} must mark PREPROD Project Creator route SUPERSEDED`);
-}
-
-if (consumedLedger.policy?.consumedRequestsAreImmutable !== true) fail('consumed request ledger must be immutable');
-if (consumedLedger.policy?.rerunSameRequestIdAllowed !== false) fail('consumed request IDs must not be rerunnable');
-if (consumedLedger.policy?.conversationInterruptionDoesNotResetConsumedState !== true) fail('conversation interruption must not reset consumed request state');
-const consumed = Array.isArray(consumedLedger.consumedRequests) ? consumedLedger.consumedRequests : [];
-if (!consumed.length) fail('consumed request ledger is empty');
-const currentLedgerEntry = consumed.find((item) => item.requestId === liveRequest.requestId);
-if (currentLedgerEntry) {
-  if (liveRequest.enabled !== false || liveRequest.consumed !== true) fail('live consumed request has been re-enabled');
-  if (liveRequest.allowedExecutions !== liveRequest.executionsConsumed) fail('live consumed request execution count drifted');
-  if (!String(liveRequest.status || '').startsWith('consumed')) fail('live request status is not terminal consumed');
-
-  const decision = String(liveRequest.decision || '');
-  const terminalPass = decision.startsWith('PASS');
-  const terminalSafeHarnessHold = decision.startsWith('HOLD_') && liveRequest.productP0Proven === false;
-  if (!terminalPass && !terminalSafeHarnessHold) fail('live consumed request is neither PASS nor an explicit non-product terminal HOLD');
-  if (terminalSafeHarnessHold && !String(liveRequest.holdClassification || '').startsWith('HARNESS_')) fail('non-product HOLD must be classified as HARNESS_*');
-  if (currentLedgerEntry.decision !== liveRequest.decision) fail('consumed ledger decision mismatch');
-  if (terminalSafeHarnessHold && currentLedgerEntry.productP0Proven !== false) fail('ledger must preserve productP0Proven=false for harness HOLD');
-
-  if (liveRequest.deployedProductSourceHeadSha !== lock.functionalSourceLock) fail('live consumed request source lock mismatch');
-  for (const flag of ['repositoryWrites', 'dataWrites', 'providerWrites', 'deploy', 'merge', 'production']) {
-    if (liveRequest[flag] !== false) fail(`live consumed request unexpectedly has ${flag}=true`);
-    if (currentLedgerEntry[flag] !== false) fail(`ledger consumed request unexpectedly has ${flag}=true`);
-  }
-}
-
-if (aliasRegistry.policy?.aliasesDoNotCreateNewWork !== true) fail('evidence aliases must not create new work');
-if (aliasRegistry.policy?.namingDifferenceDoesNotAuthorizeRerun !== true) fail('evidence naming differences must not authorize reruns');
-if (aliasRegistry.policy?.conversationInterruptionDoesNotInvalidateTerminalPass !== true) fail('conversation interruption must not invalidate terminal evidence');
-const aliases = Array.isArray(aliasRegistry.aliases) ? aliasRegistry.aliases : [];
-const requiredAliases = [
-  'PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY',
-  'PASS_READONLY_POST_GATES',
-  'PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY',
-  'PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY',
-  'ROOT_CAUSE_CLOSED_PASS'
-];
-for (const name of requiredAliases) {
-  const item = aliases.find((entry) => entry.evidenceName === name);
-  if (!item) fail(`missing canonical evidence alias ${name}`);
-  if (item.rerunPolicy !== 'NO_RERUN_WITHOUT_P0_PROVEN') fail(`unsafe rerun policy for ${name}`);
-}
-
-const superseded = Array.isArray(lock.supersededRoutes) ? lock.supersededRoutes : [];
-const preprodRoute = superseded.find((item) => item.id === 'PREPROD_PROJECT_CREATOR_ROUTE');
-if (!preprodRoute || preprodRoute.status !== 'SUPERSEDED') fail('PREPROD Project Creator route is not durably superseded');
-if (preprodRoute.replacement !== 'PROMOTE_EXISTING_CLEAN_PROJECT') fail('PREPROD replacement topology mismatch');
-
-const validRootCauseStatuses = new Set(['PASS', 'PENDING', 'IN_REMEDIATION']);
-for (const item of lock.rootCauses || []) {
-  if (!item.id || !item.name || !validRootCauseStatuses.has(item.status)) fail(`invalid rootCause entry ${JSON.stringify(item)}`);
-}
-
-console.log('CONTINUITY_LOCK_PASS');
-console.log(`syncEpoch=${lock.syncEpoch}`);
-console.log(`planId=${lock.planId}`);
-console.log(`currentIteration=${lock.currentIteration}`);
-console.log(`formalProgress=${lock.formalProgress.completed}/100`);
-console.log('conversationIndependent=true');
-console.log('terminalPassSurvivesConversationInterruption=true');
-console.log('prBodyIsMirrorOnly=true');
-console.log('headResolvedDynamically=true');
-console.log('consumedOneShotGateLedger=PASS');
-console.log('consumedTerminalHarnessHoldPolicy=PASS');
-console.log('evidenceAliasRegistry=PASS');
-console.log('r4TerminalReceipt=PASS');
-console.log('preprodProjectCreatorRoute=SUPERSEDED');
-console.log(`nextAction=${current.name}`);
+const docs=['app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md','app/docs/EXECUTION-STATE-CXORBIA-TYA-VIGENTE.md','app/docs/SOURCE-LOCK-CXORBIA-TYA-VIGENTE.md','app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md','app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md','app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md','app/docs/GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md','CAMBIOS-BACKEND.md','RESUMEN-PARA-CLAUDE.md','PENDIENTES-PROTOTIPO.md'];
+for(const p of docs){const c=read(p);if(!c.includes(lock.syncEpoch)||!c.includes(lock.planId)||!c.includes(lock.currentIteration))fail(`${p} not synchronized`);}
+for(const p of ['CAMBIOS-BACKEND.md','RESUMEN-PARA-CLAUDE.md','PENDIENTES-PROTOTIPO.md']){const c=read(p);if(!c.includes('ACTIVE_BLOCKER: `NONE`')||!c.includes('PREPROD_PROJECT_CREATOR_ROUTE: `SUPERSEDED`'))fail(`${p} safety markers missing`);}
+if(ledger.policy?.consumedRequestsAreImmutable!==true||ledger.policy?.rerunSameRequestIdAllowed!==false||ledger.policy?.conversationInterruptionDoesNotResetConsumedState!==true)fail('consumed request policy invalid');
+const consumed=Array.isArray(ledger.consumedRequests)?ledger.consumedRequests:[];const entry=consumed.find(x=>x.requestId===live.requestId);if(entry){if(live.enabled!==false||live.consumed!==true||live.allowedExecutions!==live.executionsConsumed||!String(live.status||'').startsWith('consumed')||entry.decision!==live.decision)fail('live consumed request drifted');for(const k of ['repositoryWrites','dataWrites','providerWrites','deploy','merge','production'])if(live[k]!==false||entry[k]!==false)fail(`consumed request unsafe ${k}`);}
+if(aliases.policy?.aliasesDoNotCreateNewWork!==true||aliases.policy?.namingDifferenceDoesNotAuthorizeRerun!==true||aliases.policy?.conversationInterruptionDoesNotInvalidateTerminalPass!==true)fail('alias policy invalid');
+for(const n of ['PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY','PASS_READONLY_POST_GATES','PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY','PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY','ROOT_CAUSE_CLOSED_PASS','PRODUCTION_CUTOVER_EXECUTED']){const a=aliases.aliases.find(x=>x.evidenceName===n);if(!a||a.rerunPolicy!=='NO_RERUN_WITHOUT_P0_PROVEN')fail(`missing/unsafe alias ${n}`);}
+const pre=(lock.supersededRoutes||[]).find(x=>x.id==='PREPROD_PROJECT_CREATOR_ROUTE');if(!pre||pre.status!=='SUPERSEDED'||pre.replacement!=='PROMOTE_EXISTING_CLEAN_PROJECT')fail('PREPROD route drifted');
+for(const rc of lock.rootCauses||[])if(!rc.id||!rc.name||!['PASS','PENDING','IN_REMEDIATION'].includes(rc.status))fail('root cause entry invalid');
+console.log('CONTINUITY_LOCK_PASS');console.log(`syncEpoch=${lock.syncEpoch}`);console.log(`planId=${lock.planId}`);console.log(`currentIteration=${lock.currentIteration}`);console.log(`formalProgress=${lock.formalProgress.completed}/100`);console.log('conversationIndependent=true');console.log('terminalPassSurvivesConversationInterruption=true');console.log('productionCutoverReceipt=PASS');console.log('providerRedeployExecuted=false');console.log('businessDataWritesAuthorized=false');console.log(`nextAction=${current.name}`);

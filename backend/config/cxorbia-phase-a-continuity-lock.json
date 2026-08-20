@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "1.3.0",
+  "schemaVersion": "1.4.0",
   "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
-  "syncEpoch": "CXORBIA-20260820-I5-R4-ROOT-CAUSE-CLOSED-PASS-46",
+  "syncEpoch": "CXORBIA-20260820-I5-G1-PRODUCTION-CUTOVER-EXECUTED-47",
   "updatedAt": "2026-08-20",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
@@ -10,86 +10,33 @@
   "productionStrategy": "PROMOTE_EXISTING_CLEAN_PROJECT",
   "productionProjectId": "cxorbia-backend-dev",
   "formalProgress": {
-    "completed": 95,
-    "pending": 5,
-    "basis": "I1-I4=85 plus I5-R1=2 plus I5-R2=3 plus I5-R3=3 plus I5-R4=2",
-    "productionIsAuthorized": false
+    "completed": 98,
+    "pending": 2,
+    "basis": "I1-I4=85 plus I5-R1=2 plus I5-R2=3 plus I5-R3=3 plus I5-R4=2 plus I5-G1=3",
+    "productionIsAuthorized": true,
+    "productionCutoverExecuted": true
   },
-  "currentIteration": "I5-G1",
+  "productionState": {
+    "active": true,
+    "executionMode": "LOGICAL_PROMOTION_EXISTING_DEPLOYMENT_NO_REDEPLOY",
+    "productionUrl": "https://cxorbia-backend-dev.web.app",
+    "providerRedeployExecuted": false,
+    "sameTestedArtifact": true,
+    "rebuildExecuted": false,
+    "businessDataWritesAuthorized": false,
+    "legacyProjectModified": false
+  },
+  "currentIteration": "I5-G2",
   "rootCauseClosureIterations": 4,
   "goLiveIteration": 5,
   "fullPostProductionClosureIteration": 6,
   "iterations": [
-    {
-      "id": "I5-R1",
-      "weight": 2,
-      "name": "CANONICAL_CONTINUITY_AND_VALIDATOR_LOCK",
-      "status": "PASS",
-      "exit": "CANONICAL_CONTINUITY_AND_VALIDATOR_LOCK_PASS"
-    },
-    {
-      "id": "I5-R2",
-      "weight": 3,
-      "name": "CONTROL_PLANE_AND_DOCUMENT_DRIFT_CLOSURE",
-      "status": "PASS",
-      "exit": "CONTINUITY_DRIFT_AUDIT_PASS",
-      "terminalEvidence": [
-        "backend/config/cxorbia-consumed-one-shot-gates.json",
-        "backend/config/cxorbia-evidence-aliases.json",
-        "tools/continuity/validate-cxorbia-phase-a-continuity-lock.js",
-        "tools/production/validate-production-promotion-gates.js",
-        "CAMBIOS-BACKEND.md",
-        "RESUMEN-PARA-CLAUDE.md",
-        "PENDIENTES-PROTOTIPO.md"
-      ]
-    },
-    {
-      "id": "I5-R3",
-      "weight": 3,
-      "name": "CRITICAL_PRODUCT_ACCEPTANCE_RECONCILIATION",
-      "status": "PASS",
-      "purpose": "Prove on the exact tested artifact that live HR has no clone/fallback, shoppers and visits are visible under correct scopes, Finance preserves canonical payment semantics, and multirole/reload behavior remains correct.",
-      "exit": "CRITICAL_PRODUCT_ACCEPTANCE_PASS",
-      "terminalEvidence": [
-        "backend/config/cxorbia-r3-critical-product-acceptance.json",
-        "app/docs/evidence/CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json",
-        "app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json",
-        "app/docs/evidence/CORTE6-CLIENT-AUTH-MATERIALIZATION-LATEST.json",
-        "app/data/tya-payment-history-source-safe.js",
-        ".github/cxorbia-gate-requests/request.json"
-      ]
-    },
-    {
-      "id": "I5-R4",
-      "weight": 2,
-      "name": "INDEPENDENT_ROOT_CAUSE_CLOSURE_AUDIT",
-      "status": "PASS",
-      "purpose": "Independently audit RC01-RC10 after remediation, close RC11 same-artifact/no-rebuild/rollback enforcement, validate continuity and promotion controls, and prove zero new P0 before production authorization can be requested.",
-      "exit": "ROOT_CAUSE_CLOSED_PASS",
-      "terminalEvidence": [
-        "backend/config/cxorbia-r4-root-cause-closure.json",
-        "backend/config/cxorbia-r3-critical-product-acceptance.json",
-        "backend/config/cxorbia-production-promotion-gate-evidence.json",
-        "backend/config/cxorbia-production-promotion-contract.json",
-        "tools/continuity/validate-cxorbia-phase-a-continuity-lock.js",
-        "tools/production/validate-production-promotion-gates.js",
-        "GitHub Actions run 32403468692 / job 96536915288"
-      ]
-    },
-    {
-      "id": "I5-G1",
-      "weight": 3,
-      "name": "EXPLICIT_CUTOVER_AND_PRODUCTION_PROMOTION",
-      "status": "PENDING_AUTHORIZATION",
-      "exit": "PRODUCTION_CUTOVER_EXECUTED"
-    },
-    {
-      "id": "I5-G2",
-      "weight": 2,
-      "name": "PRODUCTION_SMOKE_HYPERCARE_AND_FREEZE",
-      "status": "PENDING",
-      "exit": "PRODUCTION_FROZEN_PASS_100"
-    }
+    {"id":"I5-R1","weight":2,"name":"CANONICAL_CONTINUITY_AND_VALIDATOR_LOCK","status":"PASS","exit":"CANONICAL_CONTINUITY_AND_VALIDATOR_LOCK_PASS"},
+    {"id":"I5-R2","weight":3,"name":"CONTROL_PLANE_AND_DOCUMENT_DRIFT_CLOSURE","status":"PASS","exit":"CONTINUITY_DRIFT_AUDIT_PASS"},
+    {"id":"I5-R3","weight":3,"name":"CRITICAL_PRODUCT_ACCEPTANCE_RECONCILIATION","status":"PASS","exit":"CRITICAL_PRODUCT_ACCEPTANCE_PASS"},
+    {"id":"I5-R4","weight":2,"name":"INDEPENDENT_ROOT_CAUSE_CLOSURE_AUDIT","status":"PASS","exit":"ROOT_CAUSE_CLOSED_PASS"},
+    {"id":"I5-G1","weight":3,"name":"EXPLICIT_CUTOVER_AND_PRODUCTION_PROMOTION","status":"PASS","exit":"PRODUCTION_CUTOVER_EXECUTED","terminalEvidence":["backend/config/cxorbia-g1-production-cutover.json","backend/config/cxorbia-production-promotion-gate-evidence.json"]},
+    {"id":"I5-G2","weight":2,"name":"PRODUCTION_SMOKE_HYPERCARE_AND_FREEZE","status":"ACTIVE","exit":"PRODUCTION_FROZEN_PASS_100"}
   ],
   "rootCauses": [
     {"id":"RC01","name":"CANONICAL_STATE_DRIFT","status":"PASS","ownerIteration":"I5-R2"},
@@ -103,58 +50,33 @@
     {"id":"RC09","name":"FINANCE_PAYMENT_SEMANTICS_REGRESSION_RISK","status":"PASS","ownerIteration":"I5-R3"},
     {"id":"RC10","name":"MULTIROLE_HARNESS_OR_CREDENTIAL_STALENESS","status":"PASS","ownerIteration":"I5-R3"},
     {"id":"RC11","name":"SAME_ARTIFACT_NO_REBUILD_AND_ROLLBACK_ENFORCEMENT","status":"PASS","ownerIteration":"I5-R4"},
-    {"id":"RC12","name":"POST_PRODUCTION_OBSERVABILITY_AND_SYNC_REGRESSION_RISK","status":"PENDING","ownerIteration":"I5-G2"}
+    {"id":"RC12","name":"POST_PRODUCTION_OBSERVABILITY_AND_SYNC_REGRESSION_RISK","status":"IN_REMEDIATION","ownerIteration":"I5-G2"}
   ],
-  "supersededRoutes": [
-    {
-      "id": "PREPROD_PROJECT_CREATOR_ROUTE",
-      "status": "SUPERSEDED",
-      "historicalTarget": "cxorbia-preprod-20260819",
-      "historicalBlocker": "NARROW_PROVIDER_ADMIN_PROJECT_CREATOR_AUTH_REQUIRED",
-      "replacement": "PROMOTE_EXISTING_CLEAN_PROJECT",
-      "productionProjectId": "cxorbia-backend-dev",
-      "reactivationPolicy": "PROHIBITED_UNLESS_CANONICAL_CONTRACT_CHANGES_WITH_EXPLICIT_AUTHORIZATION"
-    }
-  ],
+  "supersededRoutes": [{"id":"PREPROD_PROJECT_CREATOR_ROUTE","status":"SUPERSEDED","historicalTarget":"cxorbia-preprod-20260819","historicalBlocker":"NARROW_PROVIDER_ADMIN_PROJECT_CREATOR_AUTH_REQUIRED","replacement":"PROMOTE_EXISTING_CLEAN_PROJECT","productionProjectId":"cxorbia-backend-dev","reactivationPolicy":"PROHIBITED_UNLESS_CANONICAL_CONTRACT_CHANGES_WITH_EXPLICIT_AUTHORIZATION"}],
   "controlPlane": {
-    "consumedOneShotLedger": "backend/config/cxorbia-consumed-one-shot-gates.json",
-    "evidenceAliasRegistry": "backend/config/cxorbia-evidence-aliases.json",
-    "criticalProductAcceptance": "backend/config/cxorbia-r3-critical-product-acceptance.json",
-    "rootCauseClosureReceipt": "backend/config/cxorbia-r4-root-cause-closure.json",
-    "continuityValidator": "tools/continuity/validate-cxorbia-phase-a-continuity-lock.js",
-    "promotionValidator": "tools/production/validate-production-promotion-gates.js"
+    "consumedOneShotLedger":"backend/config/cxorbia-consumed-one-shot-gates.json",
+    "evidenceAliasRegistry":"backend/config/cxorbia-evidence-aliases.json",
+    "criticalProductAcceptance":"backend/config/cxorbia-r3-critical-product-acceptance.json",
+    "rootCauseClosureReceipt":"backend/config/cxorbia-r4-root-cause-closure.json",
+    "productionCutoverReceipt":"backend/config/cxorbia-g1-production-cutover.json",
+    "continuityValidator":"tools/continuity/validate-cxorbia-phase-a-continuity-lock.js",
+    "promotionValidator":"tools/production/validate-production-promotion-gates.js"
   },
   "resumeProtocol": {
     "conversationIndependent": true,
     "terminalPassSurvivesConversationInterruption": true,
     "prBodyIsMirrorOnly": true,
     "headMustBeResolvedDynamically": true,
-    "readOrder": [
-      "app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md",
-      "backend/config/cxorbia-phase-a-continuity-lock.json",
-      "backend/config/cxorbia-r4-root-cause-closure.json",
-      "backend/config/cxorbia-consumed-one-shot-gates.json",
-      "backend/config/cxorbia-evidence-aliases.json",
-      "backend/config/cxorbia-r3-critical-product-acceptance.json",
-      "app/docs/EXECUTION-STATE-CXORBIA-TYA-VIGENTE.md",
-      "app/docs/SOURCE-LOCK-CXORBIA-TYA-VIGENTE.md",
-      "app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md",
-      "app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md",
-      "backend/config/cxorbia-production-promotion-contract.json",
-      "backend/config/cxorbia-production-promotion-gate-evidence.json",
-      "CAMBIOS-BACKEND.md",
-      "RESUMEN-PARA-CLAUDE.md",
-      "PENDIENTES-PROTOTIPO.md",
-      "PR #7 and live branch HEAD"
-    ],
-    "onMismatch": "CONTINUITY_DRIFT_BLOCKED",
-    "mismatchAction": "Reconcile control-plane documentation/PR mirror only; do not reopen frozen product blocks, rerun closed iterations, revive consumed requests or start a new methodology.",
-    "nextActionSource": "currentIteration"
+    "readOrder": ["app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md","backend/config/cxorbia-phase-a-continuity-lock.json","backend/config/cxorbia-g1-production-cutover.json","backend/config/cxorbia-r4-root-cause-closure.json","backend/config/cxorbia-consumed-one-shot-gates.json","backend/config/cxorbia-evidence-aliases.json","backend/config/cxorbia-r3-critical-product-acceptance.json","app/docs/EXECUTION-STATE-CXORBIA-TYA-VIGENTE.md","app/docs/SOURCE-LOCK-CXORBIA-TYA-VIGENTE.md","app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md","app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md","backend/config/cxorbia-production-promotion-contract.json","backend/config/cxorbia-production-promotion-gate-evidence.json","CAMBIOS-BACKEND.md","RESUMEN-PARA-CLAUDE.md","PENDIENTES-PROTOTIPO.md","PR #7 and live branch HEAD"],
+    "onMismatch":"CONTINUITY_DRIFT_BLOCKED",
+    "mismatchAction":"Reconcile control-plane documentation/PR mirror only; do not reopen frozen product blocks, rerun closed iterations, revive consumed requests or start a new methodology.",
+    "nextActionSource":"currentIteration"
   },
   "hardStops": {
     "reopenI1I4WithoutNewP0": false,
     "reopenR3WithoutNewP0": false,
     "reopenR4WithoutNewP0": false,
+    "reopenG1WithoutNewP0": false,
     "createNewPreprodProject": false,
     "createNewBranchOrPr": false,
     "rebuildBeforePromotion": false,
