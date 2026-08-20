@@ -1,106 +1,178 @@
 # PLAN OPERATIVO UNIFICADO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-20  
-**SYNC_EPOCH:** `CXORBIA-20260820-I5-EXISTING-CLEAN-PROJECT-PROMOTION-RESTORED-42`  
+**SYNC_EPOCH:** `CXORBIA-20260820-I5-DEFINITIVE-ROOT-CAUSE-PLAN-43`  
+**PLAN_ID:** `CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE`  
 **Frontera:** `I5_PREPRODUCTION_AND_GO_LIVE`  
-**Score formal:** `85/100`
+**Iteración activa:** `I5-R2_CONTROL_PLANE_AND_DOCUMENT_DRIFT_CLOSURE`  
+**Score formal:** `87/100`  
+**Producción autorizada:** `NO`
 
-## Objetivo
+## 1. Regla de continuidad
 
-Completar el 15% final hacia go-live sobre la misma build `f9802fdd498934a8e7729fa5c7d18341bec1cd71`, sin reabrir I1–I4, sin nueva candidata/rama/PR y sin crear infraestructura redundante.
+Este es el plan formal único de trabajo hacia producción. No se reconstruye desde una conversación y no se sustituye por un roadmap nuevo ante bloqueos intermedios.
 
-## I1–I4 — CERRADOS / FROZEN
+Su estado machine-readable vive en `backend/config/cxorbia-phase-a-continuity-lock.json`. Toda conversación nueva debe leer el índice vigente, ese control, Execution State, Checkpoint, este plan, contrato de promoción, evidencia de gates y PR #7. Si existe contradicción se declara `CONTINUITY_DRIFT_BLOCKED` y se reconcilia el control-plane antes de hacer trabajo funcional.
 
-I1 `15/15`, I2 `20/20`, I3 `25/25`, I4 `25/25`. Auth/Shopper/Finanzas/multi-proyecto/Academia no se reprocesan por defecto.
+I1–I4 permanecen `PASS/FROZEN` sobre el source funcional `f9802fdd498934a8e7729fa5c7d18341bec1cd71`. Solo un `P0_PROVEN` nuevo y reproducible permite reabrirlos.
 
-## I5 — PREPRODUCTION_AND_GO_LIVE
+## 2. Topología productiva canónica
 
-### I5.1 — TOPOLOGÍA PRODUCTIVA — RESTAURADA
+La estrategia vigente sigue siendo `PROMOTE_EXISTING_CLEAN_PROJECT` sobre `cxorbia-backend-dev`.
 
-Autoridad vigente:
+- Hosting target: `cxorbia-dev`.
+- Hosting site: `cxorbia-backend-dev`.
+- URL aceptada como producción futura: `https://cxorbia-backend-dev.web.app`.
+- Cloud Run: `cxorbia-live-hr-dev`, `us-central1`.
+- `cxorbia-tya-dev-260729-c4`: sandbox, no destino Phase A.
+- `tya-plataforma`: legacy preservado hasta cutover explícito.
+- `cxorbia-preprod-20260819`: ruta descartada; no crear.
 
-- `backend/config/cxorbia-production-promotion-contract.json`;
-- `app/docs/SOURCE-LOCK-C6-PRODUCTION-PROMOTION-PASS-20260806.md`.
+## 3. Causas raíz que deben quedar cerradas antes del cutover
 
-Decisión ya autorizada:
+1. `RC01 CANONICAL_STATE_DRIFT`: documentos y control-plane con estados distintos.
+2. `RC02 PLAN_LOSS_ACROSS_CONVERSATIONS`: plan dependiente de contexto conversacional.
+3. `RC03 PROMOTION_CONTRACT_VS_ADHOC_TOPOLOGY_DRIFT`: ruta PREPROD contradictoria con contrato autorizado.
+4. `RC04 PROMOTION_VALIDATOR_SCHEMA_MISMATCH`: validador no alineado al schema real del contrato.
+5. `RC05 ONE_SHOT_GATE_STATE_DRIFT_OR_STALE_REQUESTS`: requests/gates consumidos que pueden reaparecer como activos.
+6. `RC06 EVIDENCE_NAMING_MISMATCH_CAUSING_REDUNDANT_RERUNS`: equivalencias de evidencia no reconciliadas.
+7. `RC07 LIVE_HR_CLONE_STALE_OR_DEMO_FALLBACK_RISK`.
+8. `RC08 SHOPPER_VISIT_SCOPE_VISIBILITY_RISK`.
+9. `RC09 FINANCE_PAYMENT_SEMANTICS_REGRESSION_RISK`.
+10. `RC10 MULTIROLE_HARNESS_OR_CREDENTIAL_STALENESS`.
+11. `RC11 SAME_ARTIFACT_NO_REBUILD_AND_ROLLBACK_ENFORCEMENT`.
+12. `RC12 POST_PRODUCTION_OBSERVABILITY_AND_SYNC_REGRESSION_RISK`.
 
-`PROMOTE_EXISTING_CLEAN_PROJECT`
+Ninguna causa crítica puede quedar abierta antes de `I5-G1`.
 
-Destino:
+## 4. Plan cerrado de seis iteraciones
 
-- Firebase project `cxorbia-backend-dev`;
-- Hosting target `cxorbia-dev`;
-- Hosting site `cxorbia-backend-dev`;
-- URL actual aceptada como producción futura `https://cxorbia-backend-dev.web.app`;
-- Cloud Run `cxorbia-live-hr-dev`, región `us-central1`.
+Los 15 puntos restantes de I5 quedan subdivididos y solo avanzan con evidencia terminal.
 
-El sufijo técnico `dev` se conserva por decisión explícita; no obliga a crear otro proyecto.
+| Iteración | Peso | Objetivo | Estado | Salida obligatoria |
+|---|---:|---|---|---|
+| `I5-R1` | 2 | Persistencia del plan, control machine-readable y validadores fail-closed | **PASS** | `CANONICAL_CONTINUITY_AND_VALIDATOR_LOCK_PASS` |
+| `I5-R2` | 3 | Cerrar deriva documental/control-plane, requests stale y equivalencias de evidencia | **ACTIVA** | `CONTINUITY_DRIFT_AUDIT_PASS` |
+| `I5-R3` | 3 | Reconciliar aceptación crítica del producto exacto | PENDIENTE | `CRITICAL_PRODUCT_ACCEPTANCE_PASS` |
+| `I5-R4` | 2 | Auditoría independiente posterior a remediación | PENDIENTE | `ROOT_CAUSE_CLOSED_PASS` |
+| `I5-G1` | 3 | Autorización explícita + cutover/promoción del mismo artefacto | PENDIENTE AUTORIZACIÓN | `PRODUCTION_CUTOVER_EXECUTED` |
+| `I5-G2` | 2 | Smoke productivo, hypercare, rollback si falla y freeze | PENDIENTE | `PRODUCTION_FROZEN_PASS_100` |
 
-### I5.2 — BUILD EXACTA EN HOSTING EXISTENTE — EVIDENCIA PRESERVADA
+**Total I5 = 15 puntos.** Con `I5-R1` cerrado, el score formal pasa de `85/100` a `87/100`.
 
-Run `32328316954`, artifact `9392151808`:
+## 5. I5-R1 — cerrado en este epoch
 
-- build `f9802fdd498934a8e7729fa5c7d18341bec1cd71`;
-- `PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY`;
-- `remoteExactByteParity=true`;
-- Hosting deploys = 1;
-- provider/data writes = 0.
+Se resolvió:
 
-Este PASS se reutiliza; no se ordena otro deploy para demostrar lo ya demostrado.
+- plan persistente fuera del chat;
+- control `backend/config/cxorbia-phase-a-continuity-lock.json`;
+- corrección de la evidencia productiva para reflejar promoción del proyecto limpio existente, no PREPROD inexistente;
+- corrección del validador `tools/production/validate-production-promotion-gates.js` para usar el schema real `requiredPreCutoverGates` y los flags reales del contrato;
+- validador de continuidad `tools/continuity/validate-cxorbia-phase-a-continuity-lock.js`.
 
-### I5.3 — PREPROD NUEVO — RUTA DESCARTADA
+## 6. I5-R2 — siguiente bloque exacto
 
-`cxorbia-preprod-20260819` nunca fue creado. El request I5 que lo introdujo fue posterior al contrato productivo y generó un desvío de topología.
+Objetivo: eliminar estados competidores sin tocar producto frozen.
 
-Queda prohibido continuar por:
+Debe revisar y reconciliar como una sola unidad:
 
-- creación de `cxorbia-preprod-20260819`;
-- Project Creator para ese target;
-- `USER_AUTHENTICATED_PREPROD_PROJECT_CREATION_HANDOFF`;
-- nueva service account/key/Organization/Folder por esta causa.
+- índice vigente;
+- Execution State;
+- Checkpoint;
+- este plan;
+- Phase A Plan Lock;
+- tracker de progreso;
+- PR #7;
+- contrato/evidencia de promoción;
+- requests one-shot consumidos;
+- CAMBIOS/RESUMEN/PENDIENTES y addenda actuales.
 
-### I5.4 — PRE-CUTOVER EVIDENCE RECONCILIATION — ACTIVO
+Criterios de salida:
 
-Contrato de promoción: seis requisitos previos al cutover:
+- un solo `SYNC_EPOCH` para documentos operativos vivos;
+- ningún blocker PREPROD/Project Creator sigue marcado como activo;
+- ningún request consumido puede volver a ejecutarse por deriva de estado;
+- nomenclaturas históricas se mapean a evidencia terminal sin rerun automático;
+- el validador de continuidad produce `CONTINUITY_LOCK_PASS`;
+- cero cambios funcionales y cero deploy.
 
-1. `LIVE_HR_CURRENT_PERIOD_AND_HISTORY_REVISION_PASS`;
-2. `SHOPPER_AUTH_REPAIR_PASS`;
-3. `ACCUMULATIVE_MULTIROLE_SMOKE_PASS`;
-4. `HUMAN_VALIDATION_PASS`;
-5. `ROLLBACK_READY`;
-6. `EXPLICIT_CUTOVER_AUTHORIZATION`.
+## 7. I5-R3 — aceptación crítica del producto
 
-Regla de ejecución:
+Sobre exactamente el source `f9802f...` ya materializado, se debe demostrar o reutilizar evidencia suficiente para:
 
-- mapear cada requisito a evidencia terminal vigente;
-- reutilizar I1–I4 frozen donde sean equivalentes y suficientes;
-- no volver a ejecutar Shopper/Auth/Finanzas/HR/runtime por nomenclatura histórica distinta;
-- solo una ausencia de evidencia terminal real puede abrir un gate focalizado;
-- producción/cutover permanece cerrado hasta autorización explícita.
+- `ROADMAP_LIVE_NO_CLONES`: HR/hoja de ruta viva, sin clonación ni fallback silencioso.
+- `SHOPPERS_VISIBLE_EXPECTED_SCOPE`: shoppers históricos/reales visibles según rol/proyecto.
+- `VISITS_CURRENT_AND_HISTORY_VISIBLE`: visitas actuales e históricas visibles y coherentes.
+- `FINANCE_CANONICAL_SEMANTICS`: mayo 44/44 pagadas; junio 2/44 pagadas + 42 pendientes + Q451; `liquidada != pagada`.
+- `MULTIROLE_SCOPE_PASS`: Admin/Staff/Shopper/Cliente según scope real.
+- `RELOAD_SESSION_PASS`: reload/nueva sesión no cambia fuente, identidad ni alcance.
+- `NO_DEMO_OR_STALE_FALLBACK`.
+- `SAME_ARTIFACT_PASS`.
 
-Gate actual:
+Solo una brecha terminal real abre una corrección focalizada. No se reabre I1–I4 por defecto.
 
-`I5_EXISTING_PROJECT_PRECUTOVER_EVIDENCE_RECONCILIATION`
+## 8. I5-R4 — auditoría definitiva de causas raíz
 
-### I5.5 — PRODUCTION GO/NO-GO
+Debe auditar después de las remediaciones, no antes. El único PASS aceptable es `ROOT_CAUSE_CLOSED_PASS` y exige:
 
-Permanece cerrado. Cuando la reconciliación confirme los gates técnicos/humanos previos, el único paso mutable final se somete al gate explícito de cutover. `tya-plataforma` se mantiene intacta hasta entonces y no se usa como backend nuevo.
+- RC01–RC11 cerradas o no aplicables con evidencia;
+- cero P0 abierto;
+- misma build y rollback listos;
+- control-plane coherente;
+- aceptación crítica del producto PASS;
+- autorización de cutover todavía pendiente.
 
-## Ambientes preservados
+Si falla, se corrige únicamente la causa concreta y se repite esta auditoría; no se crea un nuevo plan.
 
-- `cxorbia-backend-dev`: canonical backend / promotion target.
-- `cxorbia-tya-dev-260729-c4`: sandbox Corte 4 únicamente.
-- `tya-plataforma`: legacy activo hasta cutover explícito.
+## 9. I5-G1 — producción
 
-## Circuit breaker
+Solo después de `ROOT_CAUSE_CLOSED_PASS` se solicita/consume autorización explícita para cutover.
 
-- No nueva candidata/rama/PR/workflow.
-- No nuevo proyecto Firebase para I5.
-- No Project Creator.
-- No reabrir I1–I4.
-- No deploy adicional por defecto.
-- No provider business writes, Make/Gemini/pagos, merge o producción sin gate/autorización.
+Reglas:
 
-## Verdad financiera congelada
+- mismo artefacto probado; `no rebuild`;
+- rollback preparado antes de cambiar tráfico/estado productivo;
+- no Make/Gemini/pagos/writes fuera de los gates ya autorizados;
+- legacy intacto hasta que el cutover confirme PASS.
 
-Mayo 44/44 pagadas. Junio 2/44 pagadas + 42 pendientes + Q451. `liquidada != pagada`.
+Al ejecutarse, el score llega a `98/100`: producción desplegada pero todavía pendiente smoke terminal.
+
+## 10. I5-G2 — post-producción inmediata
+
+Smoke/hypercare obligatorio sobre producción real:
+
+- login/roles;
+- HR viva;
+- shoppers;
+- visitas;
+- Finanzas;
+- reload/nueva sesión;
+- cross-tenant/scope;
+- ausencia de fallback demo/stale;
+- sincronización HR/plataforma sin duplicados ni overwrites silenciosos;
+- errores y métricas de runtime.
+
+Si cualquier P0 aparece: rollback inmediato y corrección focalizada. Solo `PRODUCTION_FROZEN_PASS_100` cierra Phase A al 100%.
+
+## 11. Conteo comprometido de iteraciones
+
+- **4 iteraciones** (`R1–R4`) para cerrar y auditar definitivamente las causas raíz antes de producción.
+- **5.ª iteración** (`G1`) para ejecutar el cutover y estar efectivamente en producción, siempre que no aparezca un nuevo `P0_PROVEN` externo al plan.
+- **6.ª iteración** (`G2`) para smoke/hypercare y cierre estable al `100/100`.
+
+No se agregan iteraciones por explicación, reauditoría general o pérdida de conversación. Solo un P0 reproducible o dependencia externa real puede añadir un bloque focalizado y debe quedar registrado en este mismo plan, no en uno nuevo.
+
+## 12. Seguridad y circuit breaker
+
+Prohibido:
+
+- nueva candidata/rama/PR/workflow;
+- nuevo proyecto PREPROD;
+- Project Creator por la ruta descartada;
+- reabrir I1–I4 sin P0 nuevo;
+- rebuild antes de promoción;
+- cutover antes de `ROOT_CAUSE_CLOSED_PASS`;
+- cutover sin autorización explícita;
+- fallback silencioso a demo/stale;
+- sobrescribir conflictos HR/plataforma;
+- afirmar PASS sin evidencia terminal.
