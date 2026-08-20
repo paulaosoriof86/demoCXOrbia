@@ -1,7 +1,7 @@
 # GO-LIVE PROGRESS TRACKER — ROOT CAUSE · CXORBIA TyA
 
 **Fecha:** 2026-08-19  
-**SYNC_EPOCH:** `CXORBIA-20260819-I4-PROTECTED-RUNTIME-CLOSED-38`
+**SYNC_EPOCH:** `CXORBIA-20260819-I5-PREPROD-CREATOR-BLOCKED-39`
 
 | Iteración | Peso | Estado formal | Estado operativo |
 |---|---:|---|---|
@@ -9,40 +9,28 @@
 | I2 | 20 | PASS 20/20 | FROZEN; no reprocesar |
 | I3 | 25 | PASS 25/25 | FROZEN; Auth/Shopper/persistencia/histórico preservados |
 | I4 | 25 | PASS 25/25 | FROZEN; protected runtime + same-build evidence closed |
-| I5 | 15 | 0/15 | EN CURSO: `I5_1_PREPRODUCTION_READINESS_AND_UAT_PLAN_READONLY` |
+| I5 | 15 | 0/15 | `I5_2_PREPROD_PROJECT_CREATOR_AUTH_BLOCKED` |
 
-**Avance formal del plan: 85% / 15% pendiente.** I5 go-live → **100%**. El 85% no significa que producción esté autorizada.
+**Avance formal: 85% / 15% pendiente.** No se incrementa por preparación ni por un proyecto PREPROD fallido/no creado.
 
-## Por qué I4 ahora sí cierra
+## Evidencia I5
 
-La condición indivisible de I4 ya tiene evidencia terminal suficiente sin repetir Shopper ni Finanzas:
+1. Autorización PREPROD recibida para proyecto Firebase nuevo/limpio + 1 Hosting exacto de `f9802f...` + UAT read-only, sin writes de negocio ni producción.
+2. Run `32332125828`, artifact `9393386559`: `HOLD_I5_2_PREPROD`; target no preexistía/accesible, 1 create command intentado, 0 project creates exitosos, 0 deploys, 0 UAT.
+3. Run `32332360361`, artifact `9393462199`: root cause read-only; Project Creator capability no demostrada para identidad DEV.
+4. Run `32332788919`, artifact `9393599029`: `HOLD_I5_NO_EXISTING_CREATOR_ROUTE_AUTHENTICATES`; dedicated/alternate creator secrets ausentes; DEV SA autentica pero no demuestra create capability.
+5. No retry automático: el próximo paso es provider-admin capability, no otro `projects:create`.
 
-1. Source exacto `f9802fdd498934a8e7729fa5c7d18341bec1cd71` materializado una sola vez en Hosting DEV.
-2. Run `32328316954` / artifact `9392151808`: `PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY`.
-3. Run `32329139725` / artifact `9392431939`: `PASS_READONLY_POST_GATES` y `PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY`.
-4. Shopper histórico real: PASS congelado reutilizado, no reprocesado, sin reset/write y con blobs protegidos sin cambio.
-5. Finanzas: blob de pago `088c68680177c470a4539622e1694128dd211d85` idéntico en source desplegado y rama; mayo 44/44, junio 2/44 + 42 pendientes + Q451; `liquidada != pagada`.
-6. Comparación `f9802f... → 8831723a...`: 0 cambios en `app/`; solo estado de gates/requests. No existe drift funcional que justifique rerun de Finance/Shopper.
-7. Staff runtime usa inventario vivo actual: 15 periodos, 660 visitas, 200 shoppers y crosswalk exacto protegido 209; no depende de 616/216/44 hard-codeados.
-8. Los requests one-shot quedaron consumidos/deshabilitados para evitar reruns.
+## Bloqueo exacto
 
-## I5 activo
+`NARROW_PROVIDER_ADMIN_PROJECT_CREATOR_AUTH_REQUIRED`
 
-`I5_1_PREPRODUCTION_READINESS_AND_UAT_PLAN_READONLY`
+El bloqueo es de **capacidad administrativa de provisión**, no del producto CXOrbia. No hay P0 funcional nuevo y no se reabre I4.
 
-Debe cerrar en read-only:
-- regresión transversal misma build;
-- scopes/RBAC y aislamiento tenant/proyecto;
-- seguridad, secretos y datos sensibles;
-- rollback/checkpoint;
-- criterios UAT por rol;
-- clasificación de workflows vigentes vs legacy/stale;
-- gate exacto de PREPROD preparado, pero no ejecutado.
+## Qué falta para mover el porcentaje
 
-## Siguiente autorización
-
-No se requiere autorización para I5.1 read-only. Se solicitará únicamente cuando corresponda un deploy PREPROD o PRODUCCIÓN real.
+I5 solo gana avance formal cuando exista un PREPROD nuevo/limpio materializado y UAT suficiente sobre la build congelada. Hasta entonces permanece 85%.
 
 ## Seguridad
 
-I4 consumió 1 deploy autorizado a Hosting DEV. Desde ese cierre: 0 segundo deploy, 0 merge, 0 producción, 0 provider/data/HR/Auth/Storage writes, 0 Make/Gemini y 0 ejecución bancaria.
+0 PREPROD project creates exitosos; 0 PREPROD Hosting deploys; 0 PREPROD UAT; 0 Auth/Firestore/Storage/HR/Make/Gemini/payment writes; 0 merge; 0 production.
