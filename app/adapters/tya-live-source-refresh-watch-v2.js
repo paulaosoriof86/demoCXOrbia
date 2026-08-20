@@ -25,8 +25,13 @@
   }
   function canonicalProtectedAuthorityReady(){
     if(!authenticatedHumanRuntime)return true;
+    const mode=String(CX.data?.sourceMode||'');
+    const sourceRef=String(CX.dataSource?.sourceRef||'');
     return window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true
-      && CX.data?.sourceMode==='tya_hr_live_all_periods_plus_firestore_exact_overlay_dev';
+      && (mode==='tya_hr_live_all_periods_plus_firestore_exact_overlay_dev'
+        || mode==='tya_hr_live_plus_firestore_full_profile_stable_dev'
+        || mode==='tya_hr_live_preparing_full_profile_stable_dev'
+        || sourceRef==='hr-live-all-periods+firestore-authenticated-exact-overlay');
   }
   function refreshBadge(){try{const el=document.getElementById('tbDataBadge');if(el&&CX.dataSource){const b=CX.dataSource.badge();el.innerHTML='<span class="d" style="background:'+b.c+'"></span> '+b.t;}}catch(_){}}
   function markUpdating(){if(CX.dataSource){CX.dataSource.updating=true;CX.dataSource.runtimeReadActive=true;}refreshBadge();}
@@ -43,7 +48,9 @@
       CX.dataSource.updating=false;
       CX.dataSource.runtimeReadActive=failures<3;
       CX.dataSource.warnings=['Lectura HR viva no disponible: '+String(error?.message||error)+' · Se conserva el último dato válido.'];
-      if(canonicalBaselineReady()){
+      if(authenticatedHumanRuntime&&canonicalProtectedAuthorityReady()){
+        CX.dataSource.mode='connected';CX.dataSource.status='ready';CX.dataSource.sourceRef='hr-live-all-periods+firestore-authenticated-exact-overlay';CX.dataSource.blockers=[];
+      }else if(canonicalBaselineReady()){
         CX.dataSource.mode='source_safe_preview';CX.dataSource.status='ready';CX.dataSource.blockers=[];
       }else if(failures>=3)CX.dataSource.status='degraded';
     }
