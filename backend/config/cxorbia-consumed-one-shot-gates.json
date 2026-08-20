@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
   "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
-  "syncEpoch": "CXORBIA-20260820-I5-R2-CONTINUITY-DRIFT-PASS-44",
+  "syncEpoch": "CXORBIA-20260820-I5-R3-CRITICAL-PRODUCT-ACCEPTANCE-PASS-45",
   "updatedAt": "2026-08-20",
   "policy": {
     "consumedRequestsAreImmutable": true,
