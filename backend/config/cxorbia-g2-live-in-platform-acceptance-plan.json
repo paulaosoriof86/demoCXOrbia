@@ -1,17 +1,38 @@
 {
-  "schemaVersion": "cxorbia.g2.live-in-platform-acceptance.v1.1",
+  "schemaVersion": "cxorbia.g2.live-in-platform-acceptance.v1.2",
   "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
   "syncEpoch": "CXORBIA-20260820-I5-G2A-PRODUCTION-READONLY-PASS-48",
   "iteration": "I5-G2",
-  "status": "ACTIVE_G2B_AUTHORIZATION_PENDING",
+  "status": "ACTIVE_G2B_AUTHORIZED_STAGE_PENDING_EXECUTION",
   "productionUrl": "https://cxorbia-backend-dev.web.app",
   "functionalSourceLock": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
   "subgates": {
     "I5-G2-A": {"name":"PRODUCTION_REMOTE_MULTIROLE_READONLY_SMOKE","status":"PASS","decision":"PRODUCTION_REMOTE_READONLY_SMOKE_PASS_WITH_FROZEN_SHOPPER_REUSE","terminalEvidence":"backend/config/cxorbia-g2a-production-readonly-smoke.json","freshStaffRunId":32411160766,"freshClientRunId":32411411249,"shopperFrozenReuse":true,"productP0Proven":false,"providerReads":true,"writes":false,"sameProductionUrlOnly":true},
-    "I5-G2-B": {"name":"LIVE_IN_PLATFORM_SYNTHETIC_ACCEPTANCE","status":"PENDING_NARROW_WRITE_AUTHORIZATION","mandatoryBeforeFinalOperationalSignoff":true,"sameProductionUrlOnly":true,"alternatePlatformAllowed":false,"localCloneAllowed":false,"emulatorAllowed":false,"humanVisibleToPaula":true,"observationsCapturedDuringExecution":true,"syntheticOnly":true,"tagPrefix":"CXORBIA_E2E_SYNTH_","cleanupRequired":true,"postCleanupReadbackRequired":true}
+    "I5-G2-B": {"name":"LIVE_IN_PLATFORM_SYNTHETIC_ACCEPTANCE","status":"AUTHORIZED_SYNTHETIC_STAGE_PENDING_EXECUTION","mandatoryBeforeFinalOperationalSignoff":true,"sameProductionUrlOnly":true,"alternatePlatformAllowed":false,"localCloneAllowed":false,"emulatorAllowed":false,"humanVisibleToPaula":true,"observationsCapturedDuringExecution":false,"syntheticOnly":true,"tagPrefix":"CXORBIA_E2E_SYNTH_","cleanupRequired":true,"postCleanupReadbackRequired":true,"authorizationRequest":"backend/config/cxorbia-g2b-live-synthetic-acceptance-request.json","authorizationRequestId":"i5-g2b-live-synthetic-acceptance-20260820-01","executionPhase":"STAGE_AND_TEST"}
   },
   "testScope": ["roadmap_and_navigation","administrative_access_and_permissions","shopper_access_profile_membership_crosswalk_history_and_certifications","shopper_available_visits_and_own_visits","client_scoped_access","live_hr_current_period_and_history","visits_postulation_reservation_assignment_scheduling_reprogramming_cancellation","questionnaire_and_evidence_boundaries","finance_liquidations_payment_states_and_history_without_real_payment_execution","reload_new_tab_and_session_persistence","tenant_project_cross_tenant_isolation","hr_platform_sync_dedup_and_conflict_review","notifications_and_observability","synthetic_cleanup_and_post_clean_readback"],
-  "currentAuthorizationBoundary": {"businessDataWrites":false,"externalHrWrites":false,"authCreates":false,"authResets":false,"realPayments":false,"makeCalls":false,"geminiCalls":false,"deploy":false,"rebuild":false,"merge":false},
-  "nextExactAction": "Obtain one narrow explicit authorization for synthetic-only G2-B writes inside the same production platform, then execute visible in-platform testing, mandatory cleanup and post-clean readback.",
-  "finalizationRule": "Do not issue PRODUCTION_FROZEN_PASS_100 until G2-B has run in the same production platform with authorized synthetic-only writes, Paula-visible observation, mandatory cleanup and post-clean readback, unless Paula explicitly changes this acceptance criterion."
+  "currentAuthorizationBoundary": {
+    "syntheticBusinessDataWrites": true,
+    "businessDataWriteScope": "CXORBIA_E2E_SYNTH_* only",
+    "externalHrWrites": false,
+    "syntheticAuthCreateDelete": true,
+    "realAuthCreateResetModify": false,
+    "syntheticStorageEvidenceUploadDelete": true,
+    "realStorageEvidenceWrites": false,
+    "authResets": false,
+    "realPayments": false,
+    "makeCalls": false,
+    "geminiCalls": false,
+    "deploy": false,
+    "rebuild": false,
+    "merge": false
+  },
+  "authorization": {
+    "authorizedBy": "Paula",
+    "authorizationSource": "current_conversation_2026-08-20",
+    "authorizationText": "AUTORIZO I5-G2-B: ejecutar dentro de https://cxorbia-backend-dev.web.app las pruebas funcionales en vivo con datos exclusivamente sintéticos identificados CXORBIA_E2E_SYNTH_*, permitiendo crear, modificar y eliminar únicamente esos datos de prueba; crear y eliminar únicamente usuarios Auth sintéticos de prueba si son indispensables para validar los accesos por rol, sin resetear ni modificar usuarios reales; cargar y eliminar únicamente evidencias sintéticas de prueba si son necesarias; y realizar el cleanup y readback final. No autorizo writes a la HR externa, modificación de datos o credenciales reales, pagos reales, Make, Gemini, deploy, rebuild ni merge.",
+    "recordedAt": "2026-08-20T15:13:00-06:00"
+  },
+  "nextExactAction": "Execute the one-shot STAGE_AND_TEST request on the same production platform using only CXORBIA_E2E_SYNTH_* data; leave the synthetic scenario visible for Paula observation; do not cleanup until observation is completed.",
+  "finalizationRule": "Do not issue PRODUCTION_FROZEN_PASS_100 until G2-B has run in the same production platform, Paula has had the visible observation opportunity, mandatory cleanup has removed all synthetic artifacts, and post-clean readback proves zero residual synthetic state."
 }

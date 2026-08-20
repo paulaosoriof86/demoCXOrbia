@@ -12,7 +12,9 @@
 ## Único pendiente G2-B
 `LIVE_IN_PLATFORM_SYNTHETIC_ACCEPTANCE` dentro de la misma plataforma productiva, visible para Paula, cubriendo Admin, Shopper, Cliente, HR, histórico, visitas, Finanzas, sincronización, scopes, navegación, reload/new-tab y observabilidad. Datos `CXORBIA_E2E_SYNTH_*`, cleanup y readback obligatorios.
 
-Estado: `PENDING_NARROW_WRITE_AUTHORIZATION`. No ejecutar business/data writes sintéticos antes de esa autorización. No HR externo, Auth create/reset, pagos reales, Make/Gemini, deploy, rebuild ni merge por asociación.
+Estado: `AUTHORIZED_SYNTHETIC_STAGE_PENDING_EXECUTION`. La autorización permite exclusivamente create/update/delete de datos sintéticos; Auth sintético create/delete si resulta indispensable; Storage sintético upload/delete si es necesario. No autoriza HR externa, modificaciones/reset de usuarios reales, pagos reales, Make/Gemini, deploy, rebuild ni merge.
+
+Pendientes exactos: 1) ejecutar stage/test one-shot; 2) dejar escenario visible y capturar observaciones reales de Paula; 3) ejecutar cleanup; 4) post-clean readback con cero residuales `CXORBIA_E2E_SYNTH_*`; 5) congelar G2/RC12 y 100% solo si no existe P0 reproducible.
 
 ## No reabrir
 I1–I4, R1–R4, G1 y G2-A. No crear G3, otra candidata, rama, PR, workflow o PREPROD. Solo P0 reproducible puede reabrir producto.
