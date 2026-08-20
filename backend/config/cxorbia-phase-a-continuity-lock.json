@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
-  "syncEpoch": "CXORBIA-20260820-I5-R2-CONTINUITY-DRIFT-PASS-44",
+  "syncEpoch": "CXORBIA-20260820-I5-R3-CRITICAL-PRODUCT-ACCEPTANCE-PASS-45",
   "updatedAt": "2026-08-20",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
@@ -10,12 +10,12 @@
   "productionStrategy": "PROMOTE_EXISTING_CLEAN_PROJECT",
   "productionProjectId": "cxorbia-backend-dev",
   "formalProgress": {
-    "completed": 90,
-    "pending": 10,
-    "basis": "I1-I4=85 plus I5-R1=2 plus I5-R2=3",
+    "completed": 93,
+    "pending": 7,
+    "basis": "I1-I4=85 plus I5-R1=2 plus I5-R2=3 plus I5-R3=3",
     "productionIsAuthorized": false
   },
-  "currentIteration": "I5-R3",
+  "currentIteration": "I5-R4",
   "rootCauseClosureIterations": 4,
   "goLiveIteration": 5,
   "fullPostProductionClosureIteration": 6,
@@ -47,15 +47,24 @@
       "id": "I5-R3",
       "weight": 3,
       "name": "CRITICAL_PRODUCT_ACCEPTANCE_RECONCILIATION",
-      "status": "ACTIVE",
+      "status": "PASS",
       "purpose": "Prove on the exact tested artifact that live HR has no clone/fallback, shoppers and visits are visible under correct scopes, Finance preserves canonical payment semantics, and multirole/reload behavior remains correct.",
-      "exit": "CRITICAL_PRODUCT_ACCEPTANCE_PASS"
+      "exit": "CRITICAL_PRODUCT_ACCEPTANCE_PASS",
+      "terminalEvidence": [
+        "backend/config/cxorbia-r3-critical-product-acceptance.json",
+        "app/docs/evidence/CORTE6-LIVE-HR-DOMAIN-READONLY-AUDIT-LATEST.json",
+        "app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json",
+        "app/docs/evidence/CORTE6-CLIENT-AUTH-MATERIALIZATION-LATEST.json",
+        "app/data/tya-payment-history-source-safe.js",
+        ".github/cxorbia-gate-requests/request.json"
+      ]
     },
     {
       "id": "I5-R4",
       "weight": 2,
       "name": "INDEPENDENT_ROOT_CAUSE_CLOSURE_AUDIT",
-      "status": "PENDING",
+      "status": "ACTIVE",
+      "purpose": "Independently audit RC01-RC10 after remediation, close RC11 same-artifact/no-rebuild/rollback enforcement, validate continuity and promotion controls, and prove zero new P0 before production authorization can be requested.",
       "exit": "ROOT_CAUSE_CLOSED_PASS"
     },
     {
@@ -80,11 +89,11 @@
     {"id":"RC04","name":"PROMOTION_VALIDATOR_SCHEMA_MISMATCH","status":"PASS","ownerIteration":"I5-R1/I5-R2"},
     {"id":"RC05","name":"ONE_SHOT_GATE_STATE_DRIFT_OR_STALE_REQUESTS","status":"PASS","ownerIteration":"I5-R2"},
     {"id":"RC06","name":"EVIDENCE_NAMING_MISMATCH_CAUSING_REDUNDANT_RERUNS","status":"PASS","ownerIteration":"I5-R2"},
-    {"id":"RC07","name":"LIVE_HR_CLONE_STALE_OR_DEMO_FALLBACK_RISK","status":"IN_REMEDIATION","ownerIteration":"I5-R3"},
-    {"id":"RC08","name":"SHOPPER_VISIT_SCOPE_VISIBILITY_RISK","status":"IN_REMEDIATION","ownerIteration":"I5-R3"},
-    {"id":"RC09","name":"FINANCE_PAYMENT_SEMANTICS_REGRESSION_RISK","status":"IN_REMEDIATION","ownerIteration":"I5-R3"},
-    {"id":"RC10","name":"MULTIROLE_HARNESS_OR_CREDENTIAL_STALENESS","status":"IN_REMEDIATION","ownerIteration":"I5-R3"},
-    {"id":"RC11","name":"SAME_ARTIFACT_NO_REBUILD_AND_ROLLBACK_ENFORCEMENT","status":"PENDING","ownerIteration":"I5-R4"},
+    {"id":"RC07","name":"LIVE_HR_CLONE_STALE_OR_DEMO_FALLBACK_RISK","status":"PASS","ownerIteration":"I5-R3"},
+    {"id":"RC08","name":"SHOPPER_VISIT_SCOPE_VISIBILITY_RISK","status":"PASS","ownerIteration":"I5-R3"},
+    {"id":"RC09","name":"FINANCE_PAYMENT_SEMANTICS_REGRESSION_RISK","status":"PASS","ownerIteration":"I5-R3"},
+    {"id":"RC10","name":"MULTIROLE_HARNESS_OR_CREDENTIAL_STALENESS","status":"PASS","ownerIteration":"I5-R3"},
+    {"id":"RC11","name":"SAME_ARTIFACT_NO_REBUILD_AND_ROLLBACK_ENFORCEMENT","status":"IN_REMEDIATION","ownerIteration":"I5-R4"},
     {"id":"RC12","name":"POST_PRODUCTION_OBSERVABILITY_AND_SYNC_REGRESSION_RISK","status":"PENDING","ownerIteration":"I5-G2"}
   ],
   "supersededRoutes": [
@@ -101,6 +110,7 @@
   "controlPlane": {
     "consumedOneShotLedger": "backend/config/cxorbia-consumed-one-shot-gates.json",
     "evidenceAliasRegistry": "backend/config/cxorbia-evidence-aliases.json",
+    "criticalProductAcceptance": "backend/config/cxorbia-r3-critical-product-acceptance.json",
     "continuityValidator": "tools/continuity/validate-cxorbia-phase-a-continuity-lock.js",
     "promotionValidator": "tools/production/validate-production-promotion-gates.js"
   },
@@ -111,6 +121,7 @@
       "backend/config/cxorbia-phase-a-continuity-lock.json",
       "backend/config/cxorbia-consumed-one-shot-gates.json",
       "backend/config/cxorbia-evidence-aliases.json",
+      "backend/config/cxorbia-r3-critical-product-acceptance.json",
       "app/docs/EXECUTION-STATE-CXORBIA-TYA-VIGENTE.md",
       "app/docs/SOURCE-LOCK-CXORBIA-TYA-VIGENTE.md",
       "app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md",
@@ -128,6 +139,7 @@
   },
   "hardStops": {
     "reopenI1I4WithoutNewP0": false,
+    "reopenR3WithoutNewP0": false,
     "createNewPreprodProject": false,
     "createNewBranchOrPr": false,
     "rebuildBeforePromotion": false,
