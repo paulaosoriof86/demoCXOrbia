@@ -18,6 +18,11 @@ Creado receipt `backend/config/cxorbia-g2a-production-readonly-smoke.json` con d
 - Shopper: `PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY` reutilizado como FROZEN_REUSE, sin reprocess ni password reset.
 - R3 preserva HR viva/corriente/histórico, shoppers/visitas y Finanzas; runtime funcional no cambió después del source lock.
 
+### Corrección control-plane posterior
+El primer RC drift gate posterior al cierre documental de G2-A falló con `canonical_continuity_validator_failed` / `machine control epoch/plan mismatch`. El resultado no demostró runtime drift ni P0: el validador seguía exigiendo que receipts terminales congelados de G1/R4 adoptaran el nuevo epoch G2-A. Se corrigió solo el control-plane para que los receipts terminales conserven su epoch de cierre dentro del mismo `PLAN_ID`, mientras el receipt G2-A sí debe coincidir con el epoch vivo. También se agregaron validaciones explícitas de G2-A PASS, límite de autorización G2-B, hard stop de no-rerun y sincronización de Phase A Lock/Go-Live Tracker. El RC drift gate posterior pasó (`run 32412134100`). Runtime funcional sin cambios.
+
+Archivos tocados por esta corrección: `tools/continuity/validate-cxorbia-phase-a-continuity-lock.js`, `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`, `app/docs/GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md` y este registro.
+
 ### Anti-bucle
 El request Client actual queda consumido/disabled/noAutomaticRetry. G2-A queda terminal y `rerunG2AWithoutNewP0=false`.
 
@@ -28,11 +33,11 @@ Business/data writes=0; Auth/Firestore/HR/Rules/Storage/Make/Gemini/payment writ
 G2-B `LIVE_IN_PLATFORM_SYNTHETIC_ACCEPTANCE`, dentro de la misma plataforma visible para Paula, queda `PENDING_NARROW_WRITE_AUTHORIZATION`.
 
 ### Clasificación
-- **Reusable CXOrbia:** composición de fresh role proofs + frozen exact identity evidence sin reset innecesario; clasificación explícita de harness stale.
+- **Reusable CXOrbia:** composición de fresh role proofs + frozen exact identity evidence sin reset innecesario; clasificación explícita de harness stale; validador consciente de evidencia terminal por epoch.
 - **Exclusivo TyA:** URL, tenant/project, HR/visitas/finanzas y perfiles TyA.
 - **Claude/prototipo:** sin cambios UI/runtime; cualquier observación futura se documenta por módulo.
 - **Academia:** sin cambio funcional en G2-A; revisar solo si G2-B demuestra diferencia real.
-- **Sin impacto Claude:** receipts, continuity lock, requests y docs.
+- **Sin impacto Claude:** receipts, continuity lock, requests, validator y docs.
 
 ## 2026-08-20 — I5-G2 · LIVE-IN-PLATFORM ACCEPTANCE LOCK
 
