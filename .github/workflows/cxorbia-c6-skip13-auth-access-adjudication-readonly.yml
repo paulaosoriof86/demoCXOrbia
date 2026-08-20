@@ -1,4 +1,4 @@
-name: CXOrbia I5 PREPROD Project Create Root Cause Readonly
+name: CXOrbia I5 PREPROD Project Creator Route Preflight Readonly
 
 on:
   pull_request:
@@ -9,121 +9,102 @@ permissions:
   statuses: write
 
 concurrency:
-  group: cxorbia-i5-preprod-project-create-root-cause-readonly
+  group: cxorbia-i5-preprod-project-creator-route-preflight
   cancel-in-progress: false
 
 env:
-  REQUEST_FILE: backend/config/i5-preprod-project-create-root-cause-readonly-request-v1.json
-  OUT_DIR: .tmp/i5-preprod-project-create-root-cause-readonly
-  PRIVATE_DIR: .tmp/i5-preprod-root-cause-private
+  REQUEST_FILE: backend/config/i5-preprod-project-creator-route-preflight-request-v1.json
+  OUT_DIR: .tmp/i5-preprod-project-creator-route-preflight
+  PRIVATE_DIR: .tmp/i5-preprod-project-creator-route-private
   HEAD_SHA: ${{ github.event.pull_request.head.sha }}
 
 jobs:
-  diagnose:
-    name: Diagnose PREPROD project-create capability without writes
+  preflight:
+    name: Probe existing creator identities without writes
     if: >-
       github.event.pull_request.number == 7 &&
       github.event.pull_request.head.ref == 'docs-tya-v6-v71-audit' &&
       github.event.pull_request.base.ref == 'release/cxorbia-tya-rc-20260630'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 12
     steps:
-      - name: Checkout exact PR head
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 2
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Detect exact diagnostic request-only event
+      - name: Detect exact request-only event
         id: request
-        shell: bash
         run: |
           set -euo pipefail
           mkdir -p "$OUT_DIR"
           node <<'NODE'
           const fs=require('fs'),{execFileSync}=require('child_process');
-          const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
           const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
-          const exists=fs.existsSync(process.env.REQUEST_FILE); const x=exists?JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8')):{};
-          const executable=exists&&changed.length===1&&changed[0]===process.env.REQUEST_FILE&&x.enabled===true&&x.consumed===false&&x.status==='authorized_readonly_once'&&x.transportNonce==='i5-preprod-root-cause-readonly-01'&&head===process.env.HEAD_SHA;
+          const x=fs.existsSync(process.env.REQUEST_FILE)?JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8')):{};
+          const executable=changed.length===1&&changed[0]===process.env.REQUEST_FILE&&x.enabled===true&&x.consumed===false&&x.status==='authorized_readonly_once'&&x.transportNonce==='i5-project-creator-route-preflight-01';
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`executable=${executable?'true':'false'}\n`);
-          console.log(JSON.stringify({head,changed,executable}));
+          console.log(JSON.stringify({changed,executable}));
           NODE
 
-      - name: Safe skip non-diagnostic event
+      - name: Safe skip non-request event
         if: steps.request.outputs.executable != 'true'
-        run: echo 'SKIP_NON_DIAGNOSTIC_EVENT__PROVIDER_WRITES_0__DEPLOYS_0'
+        run: echo 'SKIP_NON_REQUEST__PROVIDER_WRITES_0__PROJECT_CREATES_0__DEPLOYS_0'
 
-      - name: Validate diagnostic scope
-        if: steps.request.outputs.executable == 'true'
-        run: |
-          node <<'NODE'
-          const fs=require('fs'),x=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
-          if(x.schemaVersion!=='cxorbia.i5.preprod.project-create-root-cause-readonly.request.v1'||x.gateId!=='I5_PREPROD_PROJECT_CREATE_ROOT_CAUSE_READONLY'||x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7)throw new Error('diagnostic_request_invalid');
-          if(x.targetProjectId!=='cxorbia-preprod-20260819'||x.authorizedBy!=='Paula'||x.readOnly!==true||x.providerWrites!==0||x.deploy!==false||x.merge!==false||x.production!==false)throw new Error('diagnostic_scope_invalid');
-          NODE
-
-      - name: Prepare existing provisioning identity privately
+      - name: Validate read-only scope and inspect credential routes
         if: steps.request.outputs.executable == 'true'
         env:
+          DEDICATED_CREATOR_JSON: ${{ secrets.CXORBIA_GCP_PROJECT_CREATOR_JSON }}
+          ALT_CREATOR_JSON: ${{ secrets.GOOGLE_CLOUD_PROJECT_CREATOR_JSON }}
           EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-        shell: bash
         run: |
           set -euo pipefail
           mkdir -p "$PRIVATE_DIR" "$OUT_DIR"
           node <<'NODE'
-          const fs=require('fs'),crypto=require('crypto'),raw=process.env.EXISTING_DEV_JSON||'';let p;try{p=JSON.parse(raw)}catch{};if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.client_email&&p.private_key))throw new Error('credential_invalid');fs.writeFileSync(process.env.PRIVATE_DIR+'/credentials.json',raw,{mode:0o600});fs.writeFileSync(process.env.OUT_DIR+'/identity-safe.json',JSON.stringify({credentialProjectId:p.project_id,principalSha256:crypto.createHash('sha256').update(p.client_email).digest('hex'),principalType:p.type},null,2)+'\n');
+          const fs=require('fs'),crypto=require('crypto');
+          const x=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          if(x.schemaVersion!=='cxorbia.i5.preprod.project-creator-route-preflight.request.v1'||x.gateId!=='I5_PREPROD_PROJECT_CREATOR_ROUTE_PREFLIGHT_READONLY'||x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7||x.readOnly!==true||Number(x.providerWrites)!==0||Number(x.projectCreates)!==0||x.deploy!==false||x.production!==false)throw new Error('request_scope_invalid');
+          const c=[['dedicated_project_creator',process.env.DEDICATED_CREATOR_JSON||''],['alternate_project_creator',process.env.ALT_CREATOR_JSON||''],['existing_dev_service_account',process.env.EXISTING_DEV_JSON||'']];
+          const routes=[];
+          for(const [route,raw] of c){let p=null;try{p=raw?JSON.parse(raw):null}catch{};const valid=Boolean(p&&p.type==='service_account'&&p.project_id&&p.client_email&&p.private_key&&p.token_uri);routes.push({route,present:Boolean(raw),shapeValid:valid,credentialProjectId:valid?p.project_id:null,principalSha256:valid?crypto.createHash('sha256').update(p.client_email).digest('hex'):null});if(valid)fs.writeFileSync(`${process.env.PRIVATE_DIR}/${route}.json`,raw,{mode:0o600});}
+          fs.writeFileSync(`${process.env.OUT_DIR}/routes.json`,JSON.stringify({routes,secretValuesOutput:false},null,2)+'\n');
           NODE
 
-      - name: Run read-only Cloud Resource Manager diagnostics
+      - name: Probe creator capability on visible parent resources
         if: steps.request.outputs.executable == 'true'
-        shell: bash
         run: |
           set -euo pipefail
-          gcloud auth activate-service-account --key-file="$PRIVATE_DIR/credentials.json" --quiet >/dev/null
-          gcloud config set project cxorbia-backend-dev --quiet >/dev/null
-          set +e
-          gcloud projects describe cxorbia-preprod-20260819 --format=json > "$OUT_DIR/target-describe.json" 2> "$OUT_DIR/target-describe.err"; echo $? > "$OUT_DIR/target-describe.code"
-          gcloud projects describe cxorbia-backend-dev --format=json > "$OUT_DIR/dev-describe.json" 2> "$OUT_DIR/dev-describe.err"; echo $? > "$OUT_DIR/dev-describe.code"
-          gcloud projects get-iam-policy cxorbia-backend-dev --format=json > "$OUT_DIR/dev-iam.json" 2> "$OUT_DIR/dev-iam.err"; echo $? > "$OUT_DIR/dev-iam.code"
-          gcloud organizations list --format=json > "$OUT_DIR/orgs.json" 2> "$OUT_DIR/orgs.err"; echo $? > "$OUT_DIR/orgs.code"
-          set -e
-          ACCESS_TOKEN=$(gcloud auth print-access-token)
-          export ACCESS_TOKEN
           node <<'NODE'
-          const fs=require('fs'),crypto=require('crypto');const out=process.env.OUT_DIR,priv=process.env.PRIVATE_DIR;
-          const ident=JSON.parse(fs.readFileSync(priv+'/credentials.json','utf8'));const email=ident.client_email;
-          const code=n=>Number((fs.existsSync(`${out}/${n}.code`)?fs.readFileSync(`${out}/${n}.code`,'utf8'):'99').trim());
-          const json=n=>{try{return JSON.parse(fs.readFileSync(`${out}/${n}.json`,'utf8'))}catch{return null}};
-          const err=n=>(fs.existsSync(`${out}/${n}.err`)?fs.readFileSync(`${out}/${n}.err`,'utf8'):'').replace(new RegExp(email.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'),'[principal]').slice(0,1000);
-          const targetCode=code('target-describe'),targetErr=err('target-describe');let targetState=targetCode===0?'EXISTS_ACCESSIBLE':(/not found|not_found|was not found/i.test(targetErr)?'NOT_FOUND':(/permission|forbidden|denied/i.test(targetErr)?'ACCESS_DENIED_OR_HIDDEN':'DESCRIBE_FAILED_OTHER'));
-          const dev=json('dev-describe')||{};const parent=dev.parent||null;
-          const iam=json('dev-iam')||{};const roles=[];for(const b of iam.bindings||[])if((b.members||[]).includes('serviceAccount:'+email))roles.push(b.role);
-          const orgs=json('orgs')||[];
-          fs.writeFileSync(`${out}/diagnostic-input.json`,JSON.stringify({targetState,devParent:parent,orgVisibleCount:Array.isArray(orgs)?orgs.length:0,projectLevelRoles:roles.sort(),errors:{target:targetErr,dev:err('dev-describe'),iam:err('dev-iam'),orgs:err('orgs')}},null,2)+'\n');
+          const fs=require('fs'),{execFileSync}=require('child_process');
+          const out=process.env.OUT_DIR,priv=process.env.PRIVATE_DIR,src=JSON.parse(fs.readFileSync(`${out}/routes.json`,'utf8'));const results=[];
+          const run=(cmd,args,opt={})=>{try{return{ok:true,out:execFileSync(cmd,args,{encoding:'utf8',...opt})}}catch(e){return{ok:false,out:String(e.stderr||e.stdout||e.message||'').slice(0,700)}}};
+          for(const r of src.routes){if(!r.shapeValid){results.push({...r,authenticated:false,projectsVisible:null,orgsVisible:null,createPermissionProven:false,parentProbes:[]});continue;}
+            const key=`${priv}/${r.route}.json`;const a=run('gcloud',['auth','activate-service-account','--key-file',key,'--quiet']);if(!a.ok){results.push({...r,authenticated:false,authError:'activation_failed',createPermissionProven:false,parentProbes:[]});continue;}
+            const token=run('gcloud',['auth','print-access-token']);const ps=run('gcloud',['projects','list','--format=json']);const os=run('gcloud',['organizations','list','--format=json']);
+            let projects=[];try{projects=ps.ok?JSON.parse(ps.out):[]}catch{};let orgs=[];try{orgs=os.ok?JSON.parse(os.out):[]}catch{};const parents=[];
+            for(const o of orgs.slice(0,10)){const id=String(o.ID||o.name||o.organizationId||'').replace(/^organizations\//,'');if(id)parents.push({type:'organization',id});}
+            for(const p of projects.slice(0,15)){const id=p.projectId||p.project_id;if(!id)continue;const d=run('gcloud',['projects','describe',id,'--format=json']);if(d.ok){try{const j=JSON.parse(d.out);if(j.parent?.type&&j.parent?.id)parents.push({type:String(j.parent.type).toLowerCase(),id:String(j.parent.id)});}catch{}}}
+            const unique=[...new Map(parents.map(p=>[`${p.type}:${p.id}`,p])).values()];const probes=[];let proven=false;
+            if(token.ok){for(const p of unique){if(!['organization','folder'].includes(p.type))continue;const resource=p.type==='organization'?`organizations/${p.id}`:`folders/${p.id}`;const q=run('curl',['-fsS','-X','POST','-H',`Authorization: Bearer ${token.out.trim()}`,'-H','Content-Type: application/json',`https://cloudresourcemanager.googleapis.com/v3/${resource}:testIamPermissions`,'-d',JSON.stringify({permissions:['resourcemanager.projects.create']})]);let yes=false;if(q.ok){try{yes=(JSON.parse(q.out).permissions||[]).includes('resourcemanager.projects.create')}catch{}}probes.push({resourceType:p.type,resourceIdSha256:require('crypto').createHash('sha256').update(p.id).digest('hex'),testSucceeded:q.ok,resourcemanagerProjectsCreate:yes});if(yes)proven=true;}}
+            results.push({...r,authenticated:true,projectsVisible:Array.isArray(projects)?projects.length:null,orgsVisible:Array.isArray(orgs)?orgs.length:null,createPermissionProven:proven,parentProbes:probes});
+          }
+          const preferred=results.find(x=>x.createPermissionProven)||results.find(x=>x.route==='dedicated_project_creator'&&x.authenticated)||results.find(x=>x.route==='alternate_project_creator'&&x.authenticated)||null;
+          const decision=preferred?.createPermissionProven?'PASS_I5_EXISTING_PROJECT_CREATOR_CAPABILITY_PROVEN':preferred?'PASS_I5_EXISTING_CREATOR_ROUTE_AUTHENTICATES_CAPABILITY_NOT_PROVEN':'HOLD_I5_NO_EXISTING_CREATOR_ROUTE_AUTHENTICATES';
+          const report={decision,preferredRoute:preferred?.route||null,capabilityProven:Boolean(preferred?.createPermissionProven),routes:results,providerReads:true,providerWrites:0,projectCreates:0,deploys:0,merge:false,production:false,nextGate:preferred?.createPermissionProven?'RETRY_PREPROD_CREATE_WITH_PROVEN_EXISTING_CREATOR_ROUTE':'NO_PROJECT_CREATE_RETRY_WITHOUT_NARROW_PROVIDER_ADMIN_AUTH_OR_PROVEN_CREATOR_ROUTE'};
+          fs.writeFileSync(`${out}/result.json`,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));
           NODE
-          node <<'NODE'
-          const fs=require('fs'),{execFileSync}=require('child_process');const out=process.env.OUT_DIR,d=JSON.parse(fs.readFileSync(out+'/diagnostic-input.json','utf8'));let parentPermission=null,parentProbe='NO_PARENT_RESOURCE_VISIBLE';const p=d.devParent;
-          if(p&&p.type&&p.id){const type=String(p.type).toLowerCase();const resource=type==='organization'?`organizations/${p.id}`:type==='folder'?`folders/${p.id}`:null;if(resource){parentProbe=type.toUpperCase();const url=`https://cloudresourcemanager.googleapis.com/v3/${resource}:testIamPermissions`;const body=JSON.stringify({permissions:['resourcemanager.projects.create']});try{const raw=execFileSync('curl',['-fsS','-X','POST','-H',`Authorization: Bearer ${process.env.ACCESS_TOKEN}`,'-H','Content-Type: application/json',url,'-d',body],{encoding:'utf8'});const j=JSON.parse(raw);parentPermission=Array.isArray(j.permissions)&&j.permissions.includes('resourcemanager.projects.create');}catch(e){parentProbe+='__TEST_FAILED';}}}
-          const roles=d.projectLevelRoles||[];let classification='PROJECT_CREATE_CAPABILITY_NOT_PROVEN';if(parentPermission===false)classification='ROOT_CAUSE_MISSING_RESOURCEMANAGER_PROJECT_CREATE_ON_PARENT';else if(parentPermission===true)classification='PROJECT_CREATE_PERMISSION_PRESENT__INVESTIGATE_QUOTA_OR_GLOBAL_ID';else if(!p)classification='ROOT_CAUSE_LIKELY_NO_PARENT_PROJECT_CREATOR_SCOPE_OR_ACCOUNT_QUOTA';
-          const result={decision:'PASS_I5_PREPROD_PROJECT_CREATE_ROOT_CAUSE_READONLY',classification,targetProjectState:d.targetState,devParentType:p?.type||null,parentPermissionProbe:parentProbe,resourcemanagerProjectsCreate:parentPermission,projectLevelRoles:roles,orgVisibleCount:d.orgVisibleCount,providerWrites:0,projectCreates:0,deploys:0,merge:false,production:false,nextGate:classification==='ROOT_CAUSE_MISSING_RESOURCEMANAGER_PROJECT_CREATE_ON_PARENT'?'EXPLICIT_IAM_WRITE_AUTH_REQUIRED_OR_REUSE_EXISTING_AUTHORIZED_PROJECT_CREATOR_IDENTITY':'REVIEW_PROVIDER_PROJECT_CREATE_CAPABILITY_BEFORE_ANY_RETRY'};fs.writeFileSync(out+'/result.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));
-          NODE
-        env:
-          PRIVATE_DIR: .tmp/i5-preprod-root-cause-private
-          OUT_DIR: .tmp/i5-preprod-project-create-root-cause-readonly
 
-      - name: Upload sanitized diagnostic evidence
+      - name: Upload sanitized evidence
         if: always() && steps.request.outputs.executable == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: i5-preprod-project-create-root-cause-readonly-${{ github.run_id }}
+          name: i5-preprod-project-creator-route-preflight-${{ github.run_id }}
           path: |
-            .tmp/i5-preprod-project-create-root-cause-readonly/identity-safe.json
-            .tmp/i5-preprod-project-create-root-cause-readonly/diagnostic-input.json
-            .tmp/i5-preprod-project-create-root-cause-readonly/result.json
+            .tmp/i5-preprod-project-creator-route-preflight/routes.json
+            .tmp/i5-preprod-project-creator-route-preflight/result.json
           if-no-files-found: error
           retention-days: 14
 
-      - name: Destroy private credentials
+      - name: Cleanup private credential files
         if: always()
         run: rm -rf "$PRIVATE_DIR"
