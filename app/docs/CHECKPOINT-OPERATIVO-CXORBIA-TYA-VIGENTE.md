@@ -1,10 +1,10 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-19  
-**SYNC_EPOCH:** `CXORBIA-20260819-I5-PREPROD-CREATOR-BLOCKED-39`  
-**Estado:** `I4_FROZEN_PASS__I5_PREPROD_BLOCKED_BEFORE_CREATE`  
+**SYNC_EPOCH:** `CXORBIA-20260819-I5-PREPROD-IAM-AUTH-GRANTED-ROUTE-BLOCKED-40`  
+**Estado:** `I4_FROZEN_PASS__I5_PREPROD_IAM_AUTH_GRANTED_PROVIDER_ROUTE_BLOCKED`  
 **Frontera:** `I5_PREPRODUCTION_AND_GO_LIVE`  
-**Subestado:** `I5_2_PREPROD_PROJECT_CREATOR_AUTH_BLOCKED`  
+**Subestado:** `I5_2_PREPROD_PROJECT_CREATOR_AUTH_GRANTED_EXECUTION_ROUTE_BLOCKED`  
 **Score formal:** `85% / 15%`  
 **Repo:** `paulaosoriof86/demoCXOrbia`  
 **Rama viva:** `docs-tya-v6-v71-audit`  
@@ -14,79 +14,57 @@
 
 I1–I4 están cerrados/frozen. El producto funcional sigue siendo `f9802fdd498934a8e7729fa5c7d18341bec1cd71`. No volver a Auth, Shopper, Finanzas, nueva candidata, nueva rama/PR o auditoría general.
 
-## 2. Autorización PREPROD recibida
+## 2. Autorizaciones vigentes
 
-Paula autorizó:
-- Firebase PREPROD nuevo y limpio;
-- no reutilizar DEV ni base preexistente;
-- un único Hosting PREPROD del source congelado;
-- UAT read-only;
-- 0 merge/producción y 0 data/HR/Auth/Storage/Make/Gemini/payment writes.
+La autorización PREPROD sigue vigente para un Firebase PREPROD nuevo y limpio, un único Hosting PREPROD del source congelado y UAT read-only, sin merge/producción ni writes de negocio.
 
-## 3. Ejecución real PREPROD
+La autorización administrativa mínima para resolver Project Creator también ya fue concedida. No existe evidencia terminal de ejecución posterior, por lo que **no debe volver a solicitarse ni marcarse como consumida**.
+
+## 3. Evidencia PREPROD previa
 
 Run `32332125828`, job `96314651567`, artifact `9393386559`:
-- target `cxorbia-preprod-20260819` no estaba accesible/existente;
-- un comando `firebase projects:create` fue intentado;
-- Firebase CLI falló antes de crear el proyecto;
-- `projectCreatesSucceeded=0`;
-- `hostingDeploys=0`;
-- UAT no ejecutado;
-- no se reutilizó DEV y no hubo writes de datos/proveedores.
+- 0 proyectos PREPROD creados;
+- 0 Hosting PREPROD deploys;
+- 0 UAT;
+- 0 writes de negocio.
 
-El request quedó consumido como HOLD para impedir retry automático.
+Run `32332360361`, artifact `9393462199`: no se demostró capacidad Project Creator para la identidad DEV.
 
-## 4. Causa raíz y búsqueda de ruta existente
+Run `32332788919`, job `96316503352`, artifact `9393599029`: `HOLD_I5_NO_EXISTING_CREATOR_ROUTE_AUTHENTICATES`; las rutas dedicadas no estaban configuradas en ese run y la identidad DEV no demostró `resourcemanager.projects.create`.
 
-### Diagnostic 1
-Run `32332360361`, artifact `9393462199`:
-`PASS_I5_PREPROD_PROJECT_CREATE_ROOT_CAUSE_READONLY`.
+## 4. Bloqueo real actualizado
 
-No se pudo demostrar `resourcemanager.projects.create`; parent/org creator scope no era visible para la identidad DEV.
+`NARROW_PROVIDER_ADMIN_PROJECT_CREATOR_AUTH_GRANTED__PROVIDER_EXECUTION_ROUTE_UNAVAILABLE`
 
-### Diagnostic 2 — credential routes
-Run `32332788919`, job `96316503352`, artifact `9393599029`:
-`HOLD_I5_NO_EXISTING_CREATOR_ROUTE_AUTHENTICATES`.
+La autorización ya no es el bloqueo. El carril conectado actual permite operar GitHub pero no expone una ruta provider-admin Google Cloud/Firebase verificable para materializar el cambio autorizado. El preflight existente es read-only y no resuelve ese control-plane.
 
-- dedicated project creator secret: ausente;
-- alternate project creator secret: ausente;
-- DEV service account: presente y válido, autenticó, ve 2 proyectos y 0 organizaciones;
-- `createPermissionProven=false`;
-- provider writes/project creates/deploys = 0.
+Clasificación: `PROVIDER_CONTROL_PLANE_EXECUTION_ROUTE_BLOCKED`, no `AUTHORIZATION_BLOCKED`.
 
-**Causa operativa suficiente:** el carril conectado no dispone de una identidad ya configurada con capacidad probada para crear un proyecto GCP/Firebase nuevo. Reintentar con la misma identidad sería un bucle.
-
-## 5. Bloqueo real
-
-`NARROW_PROVIDER_ADMIN_PROJECT_CREATOR_AUTH_REQUIRED`
-
-Hace falta una acción administrativa mínima y separada para disponer de Project Creator capability. Esa acción puede ser configurar una identidad dedicada ya autorizada o otorgar el mínimo permiso de creación en el parent correcto. No se debe tocar Auth/Firestore/Storage/HR/datos del producto.
-
-## 6. Qué se preserva
+## 5. Qué se preserva
 
 - I4 completo PASS;
-- Shopper histórico sin reproceso;
-- Finanzas sin reproceso;
-- fuente funcional `f9802f...`;
-- verdad financiera mayo/junio;
+- Shopper y Finanzas sin reproceso;
+- source funcional `f9802f...`;
 - multi-tenant/multi-proyecto;
 - Academia sin reconstrucción;
 - 0 PREPROD deploys y 0 producción.
 
-## 7. Siguiente movimiento exacto
+## 6. Siguiente movimiento exacto
 
-Obtener autorización explícita para `NARROW_PROVIDER_ADMIN_PROJECT_CREATOR_AUTH_REQUIRED`. No hay plugin/conector Google Cloud/Firebase instalable disponible en el entorno actual; por tanto la capacidad administrativa provider tendrá que ser conectada/proporcionada de forma segura antes de poder ejecutar ese write desde este carril.
+`PROVIDER_ADMIN_EXECUTION_ROUTE_READBACK`
 
-Una vez el capability sea demostrable, reemitir el request de creación PREPROD bajo la autorización ya dada y ejecutar exactamente un Hosting PREPROD + UAT read-only.
+Cuando exista una ruta provider-admin verificable, se utilizará la autorización ya vigente para demostrar la capacidad mínima necesaria y continuar inmediatamente con el PREPROD original: proyecto limpio `cxorbia-preprod-20260819` → un único Hosting de `f9802f...` → UAT read-only.
 
-## 8. Estado seguro
+No se vuelve a pedir autorización IAM/PREPROD mientras source y alcance sean idénticos. Si la solución exigiera una identidad nueva, credencial nueva, cambio de parent o privilegios adicionales, se detiene antes porque ese alcance no está incluido.
 
-0 PREPROD projects created; 0 PREPROD Hosting deploys; 0 PREPROD UAT; 0 Auth/Firestore/Storage/HR/Make/Gemini/payment writes; 0 merge; 0 production.
+## 7. Estado seguro
 
-## 9. Clasificación
+0 PREPROD projects created; 0 PREPROD Hosting deploys; 0 PREPROD UAT; 0 provider IAM writes posteriores a la autorización; 0 Auth/Firestore/Storage/HR/Make/Gemini/payment writes; 0 merge; 0 production.
 
-- **Reusable CXOrbia:** provider-capability preflight y fail-closed no-retry.
-- **Exclusivo TyA:** target PREPROD y evidencia operacional del tenant.
+## 8. Clasificación
+
+- **Reusable CXOrbia:** separación autorización/capacidad de ejecución y fail-closed sin retry.
+- **Exclusivo TyA:** target PREPROD y evidencia operacional.
 - **Claude/prototipo:** sin cambio frontend.
-- **Academia:** sin cambio funcional; registrar que PREPROD aún no existe.
-- **Sin impacto Claude:** IAM/provider provisioning gate y documentación.
+- **Academia:** sin cambio funcional; PREPROD aún no existe.
+- **Sin impacto Claude:** provider provisioning gate y documentación.
