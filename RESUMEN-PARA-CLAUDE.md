@@ -1,82 +1,92 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**SYNC_EPOCH:** `CXORBIA-20260820-I5-R3-CRITICAL-PRODUCT-ACCEPTANCE-PASS-45`  
+**SYNC_EPOCH:** `CXORBIA-20260820-I5-R4-ROOT-CAUSE-CLOSED-PASS-46`  
 **PLAN_ID:** `CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE`  
-**currentIteration:** `I5-R4`  
+**currentIteration:** `I5-G1`  
 **ACTIVE_BLOCKER: `NONE`**  
 **PREPROD_PROJECT_CREATOR_ROUTE: `SUPERSEDED`**
 
 ## Estado único vigente
 
-`I5_R3_PASS__I5_R4_ACTIVE__93_7`. I1–I4 permanecen `PASS/FROZEN`; I5-R1, I5-R2 e I5-R3 están cerrados. El siguiente bloque único es `I5-R4_INDEPENDENT_ROOT_CAUSE_CLOSURE_AUDIT`.
+`I5_R4_PASS__I5_G1_PENDING_AUTHORIZATION__95_5`. I1–I4 permanecen `PASS/FROZEN`; I5-R1, R2, R3 y R4 están cerrados. La única frontera siguiente es `I5-G1_EXPLICIT_CUTOVER_AND_PRODUCTION_PROMOTION`, que requiere autorización explícita de Paula.
 
-No generar nueva candidata, rama, PR o metodología. No reconstruir Auth, Shopper, Finanzas, multi-proyecto, documentos, reservas, certificaciones o Academia por defecto.
+No generar nueva candidata, rama, PR, workflow o metodología. No reconstruir Auth, Shopper, Finanzas, multi-proyecto, documentos, reservas, certificaciones o Academia por defecto. No reabrir R1–R4 sin `P0_PROVEN` nuevo y reproducible.
 
 ## Producto funcional congelado
 
 Source funcional exacto: `f9802fdd498934a8e7729fa5c7d18341bec1cd71`.
 
 - Hosting same-build: run `32328316954`, artifact `9392151808`, remote parity PASS.
-- Staff/Admin actual: run `32342457328`, artifact `9396828201`, 15 periodos, 660 visitas, 200 shoppers, latest `2026-08`, reload/new-tab estable, `PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY`.
-- Shopper histórico: `PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY`; exact identity/profile/membership/crosswalk/historyE2E; no reejecutar/resetear sin P0 nuevo.
-- Cliente actual: run `32400495121`, artifact `9418300899`, `PASS_CLIENT_SINGLE_LOGIN_AND_ROUTE_RENDER`; login único canónico, tenant `tya`, proyecto `cinepolis`, HR authority aplicada, `cli_dashboard` sin excepción.
-- Multirol: `PASS_C6_READONLY_AUTH_RUNTIME_ALL_ROLES` reutilizado y reforzado con Staff/Cliente actuales.
+- Staff/Admin: run `32342457328`, artifact `9396828201`, 15 periodos, 660 visitas, 200 shoppers, latest `2026-08`, reload/new-tab estable.
+- Shopper: `PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY`, exact identity/profile/membership/crosswalk/historyE2E.
+- Cliente: run `32400495121`, artifact `9418300899`, `PASS_CLIENT_SINGLE_LOGIN_AND_ROUTE_RENDER`.
+- Multirol: `PASS_C6_READONLY_AUTH_RUNTIME_ALL_ROLES`.
 - Finanzas: mayo 44/44 pagadas; junio 2/44 pagadas + 42 pendientes + Q451; `conciliada_pendiente_pago != pagada`.
-- Same artifact: comparación del source lock al head de reconciliación sin cambios runtime de producto; solo docs/control/QA/workflows.
 
-Matriz terminal: `backend/config/cxorbia-r3-critical-product-acceptance.json`.
+## I5-R4 cerrado
 
-## I5-R3 cerrado
+Salida terminal: `ROOT_CAUSE_CLOSED_PASS`.
 
-Los ocho criterios críticos están PASS:
+Recibo machine-readable: `backend/config/cxorbia-r4-root-cause-closure.json`.
 
-- `ROADMAP_LIVE_NO_CLONES`;
-- `SHOPPERS_VISIBLE_EXPECTED_SCOPE`;
-- `VISITS_CURRENT_AND_HISTORY_VISIBLE`;
-- `FINANCE_CANONICAL_SEMANTICS`;
-- `MULTIROLE_SCOPE_PASS`;
-- `RELOAD_SESSION_PASS`;
-- `NO_DEMO_OR_STALE_FALLBACK`;
-- `SAME_ARTIFACT_PASS`.
+R4 confirmó:
 
-RC07–RC10 pasan a PASS. No se demostró P0 de producto.
+- RC01–RC10 siguen PASS;
+- RC11 `SAME_ARTIFACT_NO_REBUILD_AND_ROLLBACK_ENFORCEMENT` = PASS;
+- compare source `f9802f...` → HEAD pre-cierre `d300a...`: 131 commits, 0 runtime product files changed en los scopes protegidos;
+- GitHub Actions run `32403468692`, job `96536915288`: `GO_CANONICAL_CONTINUITY_LOCKED_RUNTIME_UNCHANGED`, `CONTINUITY_LOCK_PASS`, `runtimeChangedCount=0`;
+- rollback ready/revalidado;
+- 5/5 gates técnicos de promoción PASS;
+- cero P0 nuevo;
+- autorización de cutover PENDING;
+- business/data/provider writes no autorizados.
 
-Los HOLD previos de R3 fueron deuda del harness, no del frontend/producto:
+## Corrección anti-bucle / anti-pausa
 
-- stale Shopper credential en multirole, `productP0Proven=false`;
-- selector obsoleto `#cxIntegratedAuthStep` en Client diagnostic, `productP0Proven=false`.
+El problema detectado en la conversación anterior —ejecución real terminada pero PR body temporalmente atrasado y respuesta no visible— queda tratado como falla de control-plane, no de producto.
 
-El segundo se corrigió **solo en QA** (`tools/qa/tya-c6-client-route-wait-diagnostic.mjs`) para usar `#loginForm/#lgUser/#lgPass/#lgSubmit`, y Client pasó. No se modificó `/app/modules`, `/app/core`, `/app/adapters` ni `/app/data` por ese hallazgo.
+Controles nuevos/reforzados:
 
-## Frontend / Claude — R4
+- PR #7 es `MIRROR_ONLY / NON-AUTHORITATIVE`.
+- La autoridad de continuidad es siempre `backend/config/cxorbia-phase-a-continuity-lock.json`.
+- El HEAD debe resolverse dinámicamente; un SHA escrito en PR/conversación no gobierna el siguiente paso.
+- `backend/config/cxorbia-r4-root-cause-closure.json` persiste el PASS antes del handoff conversacional.
+- consumed requests permanecen inmutables aunque la conversación se corte.
+- aliases no crean reruns y `ROOT_CAUSE_CLOSED_PASS` queda FROZEN_REUSE.
+- si un mirror queda stale: `CONTINUITY_DRIFT_BLOCKED` y solo se reconcilia control-plane; no se repite el bloque.
 
-R4 **no autoriza rediseño ni cambios preventivos**. Es auditoría de cierre de causas raíz y same-artifact/rollback. Claude solo recibe un nuevo ajuste frontend si R4 demuestra un `P0_PROVEN` reproducible por archivo/módulo.
+## Frontend / Claude
 
-No existe P0 frontend activo al cierre R3.
+No existe P0 frontend activo al cierre R4. R4 no tocó `/app/modules`, `/app/core` ni el runtime funcional congelado. No solicitar nueva candidata ni rediseño preventivo.
 
 Hallazgo histórico no bloqueante preservado: `modules/cliente-extra.js` / exports PDF-XLSX-PPTX; solo reabrir si evidencia posterior demuestra impacto Phase A.
 
 ## Academia
 
-R3 no cambió rutas funcionales, estados, manuales ni contenido de cursos; por tanto no requiere reconstrucción de Academia. Sí quedan reafirmadas como verdad futura:
+R4 no cambia flujos funcionales ni contenido de cursos; no requiere reconstrucción de Academia. Se mantienen como verdades para manuales/rutas futuras:
 
 - HR viva como autoridad operacional;
 - roles/scopes reales Staff, Shopper y Cliente;
 - historia completa de visitas/shoppers;
-- semántica financiera honesta: liquidación no equivale a pago.
+- semántica financiera honesta: liquidación no equivale a pago;
+- post-producción G2 deberá alimentar incidencias/observabilidad si aparece un cambio real.
 
 ## Siguiente bloque exacto
 
-`I5-R4_INDEPENDENT_ROOT_CAUSE_CLOSURE_AUDIT` debe auditar RC01–RC10, cerrar RC11 `SAME_ARTIFACT_NO_REBUILD_AND_ROLLBACK_ENFORCEMENT`, validar rollback/control-plane/validators y confirmar cero P0 nuevo.
+`I5-G1_EXPLICIT_CUTOVER_AND_PRODUCTION_PROMOTION` — `PENDING_AUTHORIZATION`.
 
-Salida requerida: `ROOT_CAUSE_CLOSED_PASS` → 95/100. Solo después puede pedirse autorización explícita de cutover G1.
+Solo después de autorización explícita de Paula puede promoverse/cutover el mismo artefacto `f9802f...` usando `PROMOTE_EXISTING_CLEAN_PROJECT`, con rollback listo y sin rebuild.
+
+La autorización de cutover/deploy no autoriza business/data/HR/Auth/Firestore/Storage/Make/Gemini/payment writes ni merge.
+
+Salida G1: `PRODUCTION_CUTOVER_EXECUTED` → 98/100. Luego G2 smoke/hypercare/freeze → 100/100.
 
 ## Seguridad
 
-0 deploy productivo, 0 merge, 0 provider/data/HR/Auth/Firestore/Storage/Make/Gemini/payment writes en R3. Producción no autorizada. `tya-plataforma` permanece intacto. Cutover y business/data writes son gates separados.
+R4: 0 deploy productivo, 0 merge, 0 cutover, 0 provider/data/HR/Auth/Firestore/Storage/Make/Gemini/payment writes. Producción no autorizada. `tya-plataforma` permanece intacto.
 
 ## Historial superseded
 
-El blocker `NARROW_PROVIDER_ADMIN_PROJECT_CREATOR_AUTH_REQUIRED` y el target `cxorbia-preprod-20260819` pertenecen al epoch histórico `CXORBIA-20260819-I5-PREPROD-CREATOR-BLOCKED-39`. Se conservan como evidencia, **no como pendiente ni siguiente acción**.
+`NARROW_PROVIDER_ADMIN_PROJECT_CREATOR_AUTH_REQUIRED` y `cxorbia-preprod-20260819` son históricos y no deben reemitirse.
 
-Epoch anterior inmediato: `CXORBIA-20260820-I5-R2-CONTINUITY-DRIFT-PASS-44`, `currentIteration=I5-R3`.
+Epoch anterior: `CXORBIA-20260820-I5-R3-CRITICAL-PRODUCT-ACCEPTANCE-PASS-45`, `currentIteration=I5-R4`.
