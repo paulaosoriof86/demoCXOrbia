@@ -1,12 +1,13 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-20  
-**SYNC_EPOCH:** `CXORBIA-20260820-I5-DEFINITIVE-ROOT-CAUSE-PLAN-43`  
+**SYNC_EPOCH:** `CXORBIA-20260820-I5-R2-CONTINUITY-DRIFT-PASS-44`  
 **PLAN_ID:** `CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE`  
-**Estado:** `I5_R1_PASS__I5_R2_ACTIVE`  
+**Estado:** `I5_R2_PASS__I5_R3_ACTIVE`  
 **Frontera:** `I5_PREPRODUCTION_AND_GO_LIVE`  
-**Subestado:** `I5-R2_CONTROL_PLANE_AND_DOCUMENT_DRIFT_CLOSURE`  
-**Score formal:** `87% / 13%`  
+**Subestado:** `I5-R3_CRITICAL_PRODUCT_ACCEPTANCE_RECONCILIATION`  
+**currentIteration:** `I5-R3`  
+**Score formal:** `90% / 10%`  
 **Producción autorizada:** `NO`
 
 ## 1. Destino y source lock
@@ -27,59 +28,59 @@
 - URL `https://cxorbia-backend-dev.web.app`;
 - Cloud Run `cxorbia-live-hr-dev`, `us-central1`.
 
-`cxorbia-preprod-20260819` no existe y no forma parte del plan. No Project Creator por esa ruta.
+`cxorbia-preprod-20260819` no forma parte del plan y su ruta Project Creator está `SUPERSEDED`.
 
-## 3. I5-R1 cerrado
+## 3. I5-R2 cerrado
 
-Cierre terminal de esta iteración:
+Salida terminal: `CONTINUITY_DRIFT_AUDIT_PASS`.
 
-- plan formal persistido fuera de la conversación;
-- continuity lock machine-readable creado;
-- evidencia de promoción corregida a la topología canónica existente;
-- validador de promoción corregido al schema real del contrato (`requiredPreCutoverGates`);
-- validador fail-closed de continuidad creado;
-- Plan Operativo Unificado y Phase A Plan Lock reconciliados al plan bounded de seis iteraciones.
+Se reconciliaron:
 
-Peso I5-R1: `2/2`. Progreso: `85 → 87`.
+- documentos raíz que todavía mostraban PREPROD/Project Creator como blocker activo;
+- estado one-shot mediante `backend/config/cxorbia-consumed-one-shot-gates.json`;
+- equivalencias de evidencia mediante `backend/config/cxorbia-evidence-aliases.json`;
+- validador de continuidad para incluir documentos raíz, ledger, aliases y ruta superseded;
+- validador productivo para mantener business/data writes separados de la autorización de cutover;
+- evidencia de promoción para retirar clases M no definidas y conservar referencias directas.
 
-## 4. Causas raíz
+Causas cerradas: RC01, RC05, RC06; RC04 reafirmada PASS después del ajuste semántico del validador. Peso R2 `3/3`. Progreso `87 → 90`.
 
-Registro autoritativo: `backend/config/cxorbia-phase-a-continuity-lock.json`.
+## 4. One-shot request protegido
 
-Cerradas en R1:
+Request `i5-existing-project-precutover-staff-live-authority-readonly-20260820-01`:
 
-- RC02 pérdida de plan entre conversaciones;
-- RC03 deriva contrato de promoción vs topología ad hoc;
-- RC04 mismatch de schema del validador productivo.
+- `enabled=false`;
+- `consumed=true`;
+- 1/1 ejecución consumida;
+- run `32342457328`, job `96344128319`, artifact `9396828201`;
+- `PASS_READONLY_POST_GATES`;
+- 0 repository/data/provider writes, 0 deploy, 0 merge, 0 producción.
 
-En remediación inmediata:
-
-- RC01 deriva de estado canónico.
-
-Pendientes R2–R4/G2: requests stale/one-shot, equivalencias de evidencia, HR clone/fallback, visibilidad shoppers/visitas, semántica Finance, harness/credenciales, same-artifact/rollback y observabilidad postproductiva.
+El ledger impide que este mismo ID sea reactivado por contexto stale.
 
 ## 5. Siguiente bloque exacto
 
-`I5-R2_CONTROL_PLANE_AND_DOCUMENT_DRIFT_CLOSURE`
+`I5-R3_CRITICAL_PRODUCT_ACCEPTANCE_RECONCILIATION`.
 
-Debe reconciliar índice, Execution State, Checkpoint, Plan, Phase A Lock, tracker, PR #7, promoción/evidencia, requests one-shot, CAMBIOS/RESUMEN/PENDIENTES y addenda vigentes.
+Abarca exclusivamente:
 
-Salida obligatoria:
+- `ROADMAP_LIVE_NO_CLONES`;
+- `SHOPPERS_VISIBLE_EXPECTED_SCOPE`;
+- `VISITS_CURRENT_AND_HISTORY_VISIBLE`;
+- `FINANCE_CANONICAL_SEMANTICS`;
+- `MULTIROLE_SCOPE_PASS`;
+- `RELOAD_SESSION_PASS`;
+- `NO_DEMO_OR_STALE_FALLBACK`;
+- `SAME_ARTIFACT_PASS`.
 
-`CONTINUITY_DRIFT_AUDIT_PASS`
+Salida: `CRITICAL_PRODUCT_ACCEPTANCE_PASS` → 93%. Un fallo real abre corrección focalizada, no otro plan.
 
-Criterio técnico mínimo adicional:
+## 6. Secuencia bounded restante
 
-`node tools/continuity/validate-cxorbia-phase-a-continuity-lock.js` → `CONTINUITY_LOCK_PASS`.
-
-## 6. Secuencia bounded hasta producción
-
-1. R1 continuidad/validadores — PASS — 87%.
-2. R2 control-plane/document drift — activa — 90% al PASS.
-3. R3 aceptación crítica producto — 93% al PASS.
-4. R4 auditoría definitiva causas raíz — 95% al PASS.
-5. G1 autorización + cutover — 98% al ejecutar producción.
-6. G2 smoke/hypercare — 100% al freeze productivo.
+1. R3 aceptación crítica — activa — 93% al PASS.
+2. R4 auditoría definitiva — 95% al PASS.
+3. G1 autorización + cutover — 98% al ejecutar producción.
+4. G2 smoke/hypercare — 100% al freeze.
 
 ## 7. Seguridad
 
@@ -87,4 +88,4 @@ No deploy adicional, no provider/data/HR/Auth/Firestore/Storage/Make/Gemini/paym
 
 ## 8. Regla anti-pérdida
 
-Una conversación nueva no redefine el siguiente paso. Debe leer `backend/config/cxorbia-phase-a-continuity-lock.json` y continuar desde `currentIteration`. Si la documentación discrepa: `CONTINUITY_DRIFT_BLOCKED`, reconciliar únicamente control-plane y no reabrir I1–I4.
+Una conversación nueva continúa desde `backend/config/cxorbia-phase-a-continuity-lock.json.currentIteration`. Si la documentación discrepa: `CONTINUITY_DRIFT_BLOCKED`; reconciliar control-plane y no reabrir I1–I4.
