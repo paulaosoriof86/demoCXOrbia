@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "1.2.0",
+  "schemaVersion": "1.3.0",
   "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
-  "syncEpoch": "CXORBIA-20260820-I5-R3-CRITICAL-PRODUCT-ACCEPTANCE-PASS-45",
+  "syncEpoch": "CXORBIA-20260820-I5-R4-ROOT-CAUSE-CLOSED-PASS-46",
   "updatedAt": "2026-08-20",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
@@ -10,12 +10,12 @@
   "productionStrategy": "PROMOTE_EXISTING_CLEAN_PROJECT",
   "productionProjectId": "cxorbia-backend-dev",
   "formalProgress": {
-    "completed": 93,
-    "pending": 7,
-    "basis": "I1-I4=85 plus I5-R1=2 plus I5-R2=3 plus I5-R3=3",
+    "completed": 95,
+    "pending": 5,
+    "basis": "I1-I4=85 plus I5-R1=2 plus I5-R2=3 plus I5-R3=3 plus I5-R4=2",
     "productionIsAuthorized": false
   },
-  "currentIteration": "I5-R4",
+  "currentIteration": "I5-G1",
   "rootCauseClosureIterations": 4,
   "goLiveIteration": 5,
   "fullPostProductionClosureIteration": 6,
@@ -63,9 +63,18 @@
       "id": "I5-R4",
       "weight": 2,
       "name": "INDEPENDENT_ROOT_CAUSE_CLOSURE_AUDIT",
-      "status": "ACTIVE",
+      "status": "PASS",
       "purpose": "Independently audit RC01-RC10 after remediation, close RC11 same-artifact/no-rebuild/rollback enforcement, validate continuity and promotion controls, and prove zero new P0 before production authorization can be requested.",
-      "exit": "ROOT_CAUSE_CLOSED_PASS"
+      "exit": "ROOT_CAUSE_CLOSED_PASS",
+      "terminalEvidence": [
+        "backend/config/cxorbia-r4-root-cause-closure.json",
+        "backend/config/cxorbia-r3-critical-product-acceptance.json",
+        "backend/config/cxorbia-production-promotion-gate-evidence.json",
+        "backend/config/cxorbia-production-promotion-contract.json",
+        "tools/continuity/validate-cxorbia-phase-a-continuity-lock.js",
+        "tools/production/validate-production-promotion-gates.js",
+        "GitHub Actions run 32403468692 / job 96536915288"
+      ]
     },
     {
       "id": "I5-G1",
@@ -93,7 +102,7 @@
     {"id":"RC08","name":"SHOPPER_VISIT_SCOPE_VISIBILITY_RISK","status":"PASS","ownerIteration":"I5-R3"},
     {"id":"RC09","name":"FINANCE_PAYMENT_SEMANTICS_REGRESSION_RISK","status":"PASS","ownerIteration":"I5-R3"},
     {"id":"RC10","name":"MULTIROLE_HARNESS_OR_CREDENTIAL_STALENESS","status":"PASS","ownerIteration":"I5-R3"},
-    {"id":"RC11","name":"SAME_ARTIFACT_NO_REBUILD_AND_ROLLBACK_ENFORCEMENT","status":"IN_REMEDIATION","ownerIteration":"I5-R4"},
+    {"id":"RC11","name":"SAME_ARTIFACT_NO_REBUILD_AND_ROLLBACK_ENFORCEMENT","status":"PASS","ownerIteration":"I5-R4"},
     {"id":"RC12","name":"POST_PRODUCTION_OBSERVABILITY_AND_SYNC_REGRESSION_RISK","status":"PENDING","ownerIteration":"I5-G2"}
   ],
   "supersededRoutes": [
@@ -111,14 +120,19 @@
     "consumedOneShotLedger": "backend/config/cxorbia-consumed-one-shot-gates.json",
     "evidenceAliasRegistry": "backend/config/cxorbia-evidence-aliases.json",
     "criticalProductAcceptance": "backend/config/cxorbia-r3-critical-product-acceptance.json",
+    "rootCauseClosureReceipt": "backend/config/cxorbia-r4-root-cause-closure.json",
     "continuityValidator": "tools/continuity/validate-cxorbia-phase-a-continuity-lock.js",
     "promotionValidator": "tools/production/validate-production-promotion-gates.js"
   },
   "resumeProtocol": {
     "conversationIndependent": true,
+    "terminalPassSurvivesConversationInterruption": true,
+    "prBodyIsMirrorOnly": true,
+    "headMustBeResolvedDynamically": true,
     "readOrder": [
       "app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md",
       "backend/config/cxorbia-phase-a-continuity-lock.json",
+      "backend/config/cxorbia-r4-root-cause-closure.json",
       "backend/config/cxorbia-consumed-one-shot-gates.json",
       "backend/config/cxorbia-evidence-aliases.json",
       "backend/config/cxorbia-r3-critical-product-acceptance.json",
@@ -134,12 +148,13 @@
       "PR #7 and live branch HEAD"
     ],
     "onMismatch": "CONTINUITY_DRIFT_BLOCKED",
-    "mismatchAction": "Reconcile control-plane documentation only; do not reopen frozen product blocks or start a new methodology.",
+    "mismatchAction": "Reconcile control-plane documentation/PR mirror only; do not reopen frozen product blocks, rerun closed iterations, revive consumed requests or start a new methodology.",
     "nextActionSource": "currentIteration"
   },
   "hardStops": {
     "reopenI1I4WithoutNewP0": false,
     "reopenR3WithoutNewP0": false,
+    "reopenR4WithoutNewP0": false,
     "createNewPreprodProject": false,
     "createNewBranchOrPr": false,
     "rebuildBeforePromotion": false,
