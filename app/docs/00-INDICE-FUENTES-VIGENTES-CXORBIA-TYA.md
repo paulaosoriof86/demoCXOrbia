@@ -1,7 +1,7 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
-**SYNC_EPOCH:** `CXORBIA-20260819-I5-PREPROD-IAM-AUTH-GRANTED-ROUTE-BLOCKED-40`  
-**Estado:** `I4_FROZEN_PASS__I5_2_IAM_AUTH_GRANTED_PROVIDER_EXECUTION_ROUTE_BLOCKED__85_15`
+**SYNC_EPOCH:** `CXORBIA-20260820-I5-PROVIDER-USER-AUTH-ROUTE-REQUIRED-41`  
+**Estado:** `I4_FROZEN_PASS__I5_2_SERVICE_ACCOUNT_PARENT_UNAVAILABLE_USER_AUTH_ROUTE_REQUIRED__85_15`
 
 ## Orden obligatorio vigente
 
@@ -34,26 +34,40 @@ La autorización PREPROD sigue vigente para crear/configurar un Firebase PREPROD
 - 0 UAT;
 - 0 writes.
 
-### Root cause read-only previa
-- run `32332360361`, artifact `9393462199`: no se demostró `resourcemanager.projects.create` para la identidad DEV.
-- run `32332788919`, job `96316503352`, artifact `9393599029`: `HOLD_I5_NO_EXISTING_CREATOR_ROUTE_AUTHENTICATES`; rutas creator dedicadas ausentes en ese run; identidad DEV autenticada sin create capability demostrada.
+### Creator-route provider read-only
+- run `32332788919`, job `96316503352`, artifact `9393599029`;
+- dedicated creator secret: ausente;
+- alternate creator secret: ausente;
+- service account DEV: `firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com`, presente/autenticada;
+- 2 proyectos visibles, 0 organizaciones, 0 parent probes;
+- `resourcemanager.projects.create` no demostrado.
 
-## Autorización IAM mínima — VIGENTE
+## Causa raíz I5 — PROBADA
 
-La autorización específica para resolver Project Creator ya fue recibida después de los runs anteriores. No existe evidencia terminal de ejecución posterior; por tanto **no se vuelve a solicitar ni se marca como consumida**.
+Google Cloud documenta que una service account solo puede crear proyectos dentro de Organization y debe especificar parent. `roles/resourcemanager.projectCreator` se concede en Folder/Organization. Con 0 Organization/Folder parent detectados, otorgar Project Creator a la service account DEV no resuelve un proyecto standalone PREPROD.
+
+Referencias oficiales:
+- https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects
+- https://docs.cloud.google.com/iam/docs/roles-permissions/resourcemanager
+
+## Autorizaciones vigentes
+
+La autorización IAM mínima y la autorización PREPROD permanecen vigentes y no requieren repetición. El IAM grant no se marca consumido porque no hubo write terminal.
 
 ## Frontera viva
 
-`I5_2_PREPROD_PROJECT_CREATOR_AUTH_GRANTED_EXECUTION_ROUTE_BLOCKED`
+`I5_2_PREPROD_SERVICE_ACCOUNT_PARENT_UNAVAILABLE_USER_AUTH_ROUTE_REQUIRED`
 
 ### Siguiente gate exacto
 
-`NARROW_PROVIDER_ADMIN_PROJECT_CREATOR_AUTH_GRANTED__PROVIDER_EXECUTION_ROUTE_UNAVAILABLE`
+`USER_AUTHENTICATED_PREPROD_PROJECT_CREATION_HANDOFF`
 
-El bloqueo actual es técnico: el carril conectado no expone una ruta provider-admin Google Cloud/Firebase verificable para ejecutar el cambio ya autorizado. El preflight existente es read-only y no materializa ese cambio. No reintentar `projects:create` con la identidad DEV ni crear identidad/credencial nueva por inferencia.
+El bloqueo actual es técnico de control-plane: falta una sesión Google Cloud/Firebase autenticada como usuario capaz de crear el proyecto standalone `cxorbia-preprod-20260819`. El entorno conectado actual no expone esa sesión ni un conector provider-admin equivalente.
 
-Cuando exista control provider-admin verificable, se utiliza la autorización IAM vigente y se continúa con la autorización PREPROD original: demostrar capacidad mínima → crear `cxorbia-preprod-20260819` nuevo y limpio → único Hosting de `f9802f...` → UAT read-only.
+No repetir creator preflight con la service account DEV, no crear identidad/key/Organization/Folder, no crear workflow/rama/PR nuevos y no reabrir I1–I4.
+
+Después de materializar el proyecto, resolver por gate separado la identidad mínima de deploy PREPROD antes del único Hosting; ningún nuevo IAM grant se presume.
 
 ## Seguridad
 
-Estado seguro vigente: 0 proyectos PREPROD creados, 0 Hosting PREPROD deploys, 0 PREPROD UAT, 0 IAM writes posteriores a la nueva autorización, 0 Auth/Firestore/Storage/HR/Make/Gemini/payment writes, 0 merge y 0 producción. I4 sigue intacto.
+Estado seguro vigente: 0 proyectos PREPROD creados, 0 Hosting PREPROD deploys, 0 PREPROD UAT, 0 IAM writes posteriores a la autorización, 0 Auth/Firestore/Storage/HR/Make/Gemini/payment writes, 0 merge y 0 producción. I4 sigue intacto.
