@@ -2,55 +2,61 @@
 
 **SYNC_EPOCH:** `CXORBIA-20260819-PHASEA-PROTECTED-RUNTIME-CONVERGENCE-37`
 
-**Avance formal del plan:** **60% / 40%**. I4 vale 25 puntos indivisibles y I5 vale 15. Cierre real de I4 → **85%**; cierre de I5/go-live → **100%**.
+**Avance formal:** **60% / 40%**. I4 cerrado → **85%**; I5/go-live → **100%**.
 
-## 2026-08-19 — PROTECTED_RUNTIME_SINGLE_AUTHORITY — SOURCE FIX
+## 2026-08-19 — I4 SINGLE AUTHORITY + LIVE CHECKPOINT VERIFIER REALIGNMENT
 
-### Defecto runtime localizado
-`app/index-backend-dev.html` carga la autoridad protegida y también el watcher HR vivo. En el carril humano autenticado, `tya-live-source-refresh-watch-v2.js` podía recibir `backend-auth-ready` y aplicar el snapshot HR source-safe directamente a `CX.data` antes de que `tya-protected-auth-hr-authority-bridge-v2.js` terminara de capturar/componer el estado Firestore protegido. Eso creaba una carrera de dos escritores sobre la misma autoridad en memoria y explica por qué una build con módulos existentes podía mostrar identidad Shopper/perfil/finanzas incompletos de forma intermitente.
+### 1. Causa raíz metodológica cerrada
+La continuidad tenía una contradicción real: índice de agosto en I4, pero checkpoint canónico de julio y ausencia de `EXECUTION-STATE`, `SOURCE-LOCK` y plan operativo unificado. Se reconciliaron esas autoridades y el tracker para impedir que nuevas conversaciones vuelvan a `CORTE_0B` o I3.
 
-### Corrección aplicada en source
-`app/adapters/tya-live-source-refresh-watch-v2.js` queda en v4 con un lock de arranque:
-- en `authenticated-human-canonical` no puede aplicar HR in-place hasta que `CX_PROTECTED_AUTH_HR_AUTHORITY.applied === true` y `CX.data.sourceMode` confirme composición canónica;
-- el watcher conserva polling HR solo después de que la autoridad Auth + Firestore + HR fue establecida;
-- el estado `CX.dataSource` permanece `connected` en el carril humano protegido y no vuelve a rotularse como `source_safe_preview`;
-- se emite `CX_TYA_LIVE_SOURCE_AUTHORITY_LOCK` para poder gatear la secuencia;
-- no se toca ningún módulo UI ni la interfaz pública de `CX.data`.
+### 2. Causa raíz runtime localizada y corregida
+`app/index-backend-dev.html` carga HR viva y composición protegida. El watcher HR podía aplicar source-safe directamente a `CX.data` después de Auth y antes de que `tya-protected-auth-hr-authority-bridge-v2.js` terminara la composición Auth + Firestore + HR. Se corrigió `app/adapters/tya-live-source-refresh-watch-v2.js` para:
+- bloquear direct apply en `authenticated-human-canonical` hasta `CX_PROTECTED_AUTH_HR_AUTHORITY.applied === true`;
+- conservar refresh HR después de establecer la autoridad;
+- mantener `CX.dataSource.mode='connected'` y sourceRef canónico en el carril protegido;
+- exponer `CX_TYA_LIVE_SOURCE_AUTHORITY_LOCK` para gates;
+- no tocar módulos UI ni cambiar la interfaz pública `CX.data`.
 
-### Estado del bloque
-`SOURCE_PATCHED_PENDING_RUNTIME_GATE`. No se declara todavía `PASS_I4` ni se incrementa el 60%: falta ejecutar el gate runtime/E2E sobre la misma build protegida.
+### 3. Gate stale localizado
+El workflow `CXOrbia Phase A Live Execution Checkpoint` llegó con éxito por todas las validaciones previas y falló solo en `Verify Phase A current operational checkpoint` por `CURRENT_CHECKPOINT_MARKER_MISSING:PR #7`. El verificador seguía exigiendo el plan 35%/65% e I3, aunque la autoridad vigente ya es I4 60%/40%. Esto se clasifica `VALIDATOR_STALE / DOCUMENTATION_STATE_DRIFT`, no regresión del producto.
 
-### Seguridad
-0 provider writes, 0 deploy, 0 merge, 0 producción, 0 Make/Gemini, 0 pagos.
+Se realinea `tools/qa/verify-phase-a-live-execution-checkpoint.mjs` para validar fail-closed:
+- repo, rama, PR #7, epoch y frontera I4 actuales;
+- I1/I2/I3 frozen y tracker 60/40;
+- existencia de las cuatro autoridades canónicas;
+- `app/index-backend-dev.html` y orden watcher→bridge;
+- lock de single-authority del watcher;
+- sourceMode/sourceRef y evento canónico del bridge;
+- preservación del harness histórico sin reabrirlo;
+- cero writes/deploy/merge/producción.
 
-### Clasificación
-- **Reusable CXOrbia:** single-authority boot lock y prevención de carreras entre fuente operacional y overlay protegido.
-- **Exclusivo TyA:** endpoint HR Cinépolis y composición de su fuente viva.
-- **Claude/prototipo:** sin cambio frontend; no generar candidata.
-- **Academia:** sin impacto hasta cerrar I4.
-- **Sin impacto Claude:** adapter/gate backend.
-
----
-
-## 2026-08-19 — CANONICAL_CONTINUITY_RECONCILIATION
-
-### Causa raíz metodológica cerrada
-El índice vivo ya estaba en I4/epoch 37, pero `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md` seguía congelado en julio (`CORTE_0B_R20...`) y faltaban tres documentos de autoridad: `EXECUTION-STATE`, `SOURCE-LOCK` y plan operativo unificado. Dado que cada nueva conversación debe releer esas fuentes, la contradicción podía hacerla retroceder a un corte antiguo, reabrir diagnóstico y consumir la sesión sin mover la frontera.
-
-### Archivos de continuidad reconciliados
+### 4. Documentación sincronizada
 - `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`
 - `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`
 - `app/docs/EXECUTION-STATE-CXORBIA-TYA-VIGENTE.md`
 - `app/docs/SOURCE-LOCK-CXORBIA-TYA-VIGENTE.md`
 - `app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md`
-- `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`
+- `app/docs/GO-LIVE-PROGRESS-TRACKER-ROOT-CAUSE-20260814.md`
+- `CAMBIOS-BACKEND.md`
+- `RESUMEN-PARA-CLAUDE.md`
+- `PENDIENTES-PROTOTIPO.md`
 
-### Frontera vigente
-`I4_PROTECTED_RUNTIME_CONVERGENCE_AND_REAL_PHASE_A_E2E`.
+### 5. Evidencia post-push ya observada
+- `Phase A Source Safe Runtime Guard`: PASS, blockers vacíos, writes/providers/production falsos.
+- Workflow Hosting DEV automático: pasos de autorización/deploy saltados; no desplegó sin gate.
+- Live Execution Checkpoint: único fallo previo localizado en verificador stale; validaciones I1/I2/I3 y source contracts anteriores pasaron.
 
-### Evidencia preservada
-- I4-C source readiness preservado; Make runtime diferido.
-- I4-D `PASS_I4D_FINANCE_EXISTING_CXDATA_REUSE_CONFIRMED`.
-- I4-E `PASS_I4E_MULTI_PROJECT_NO_CODE_REUSE_AND_CONTRACT_ALIGNMENT`.
-- Finanzas canónicas: Mayo 44/44 pagadas; Junio 2/44, 42 pendientes y Q451; `liquidada != pagada`.
-- Última lectura HR documentada: 15 periodos, 659 visitas y 217 shoppers; expectativas 616/216/44 se consideran drift de gate hasta demostrar regresión.
+### 6. Estado
+`PROTECTED_RUNTIME_SINGLE_AUTHORITY_SOURCE_PATCHED_PENDING_RUNTIME_GATE`.
+
+No se incrementa 60% hasta completar gate runtime/E2E real de la misma build.
+
+### 7. Seguridad
+0 provider writes, 0 merge, 0 producción, 0 Make/Gemini, 0 pagos. No se declara deploy de este bloque.
+
+### 8. Clasificación
+- **Reusable CXOrbia:** single-authority boot lock + verificador canónico no dependiente de checkpoints obsoletos.
+- **Exclusivo TyA:** HR Cinépolis y cifras financieras de validación.
+- **Claude/prototipo:** sin cambio frontend; no nueva candidata.
+- **Academia:** sin reapertura hasta cierre I4.
+- **Sin impacto Claude:** QA/docs/backend adapter.
