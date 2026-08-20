@@ -1,0 +1,118 @@
+{
+  "schemaVersion": "1.0.0",
+  "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
+  "syncEpoch": "CXORBIA-20260820-I5-DEFINITIVE-ROOT-CAUSE-PLAN-43",
+  "updatedAt": "2026-08-20",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "functionalSourceLock": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+  "productionStrategy": "PROMOTE_EXISTING_CLEAN_PROJECT",
+  "productionProjectId": "cxorbia-backend-dev",
+  "formalProgress": {
+    "completed": 87,
+    "pending": 13,
+    "basis": "I1-I4=85 plus I5-R1=2",
+    "productionIsAuthorized": false
+  },
+  "currentIteration": "I5-R2",
+  "rootCauseClosureIterations": 4,
+  "goLiveIteration": 5,
+  "fullPostProductionClosureIteration": 6,
+  "iterations": [
+    {
+      "id": "I5-R1",
+      "weight": 2,
+      "name": "CANONICAL_CONTINUITY_AND_VALIDATOR_LOCK",
+      "status": "PASS",
+      "purpose": "Persist the definitive plan outside chat, align the promotion evidence to the canonical contract, and make validation fail closed.",
+      "terminalEvidence": [
+        "backend/config/cxorbia-phase-a-continuity-lock.json",
+        "backend/config/cxorbia-production-promotion-gate-evidence.json",
+        "tools/production/validate-production-promotion-gates.js",
+        "app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md",
+        "app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md"
+      ]
+    },
+    {
+      "id": "I5-R2",
+      "weight": 3,
+      "name": "CONTROL_PLANE_AND_DOCUMENT_DRIFT_CLOSURE",
+      "status": "PENDING",
+      "purpose": "Eliminate competing states, stale blockers, one-shot gate drift, and any mismatch among index, execution state, checkpoint, plan, tracker, PR, contracts and current addenda.",
+      "exit": "CONTINUITY_DRIFT_AUDIT_PASS"
+    },
+    {
+      "id": "I5-R3",
+      "weight": 3,
+      "name": "CRITICAL_PRODUCT_ACCEPTANCE_RECONCILIATION",
+      "status": "PENDING",
+      "purpose": "Prove on the exact tested artifact that live HR has no clone/fallback, shoppers and visits are visible under correct scopes, Finance preserves canonical payment semantics, and multirole/reload behavior remains correct.",
+      "exit": "CRITICAL_PRODUCT_ACCEPTANCE_PASS"
+    },
+    {
+      "id": "I5-R4",
+      "weight": 2,
+      "name": "INDEPENDENT_ROOT_CAUSE_CLOSURE_AUDIT",
+      "status": "PENDING",
+      "purpose": "Audit all root causes after remediation and refuse cutover while any critical cause remains open.",
+      "exit": "ROOT_CAUSE_CLOSED_PASS"
+    },
+    {
+      "id": "I5-G1",
+      "weight": 3,
+      "name": "EXPLICIT_CUTOVER_AND_PRODUCTION_PROMOTION",
+      "status": "PENDING_AUTHORIZATION",
+      "purpose": "After ROOT_CAUSE_CLOSED_PASS, receive explicit cutover authorization and promote the same tested artifact without rebuild.",
+      "exit": "PRODUCTION_CUTOVER_EXECUTED"
+    },
+    {
+      "id": "I5-G2",
+      "weight": 2,
+      "name": "PRODUCTION_SMOKE_HYPERCARE_AND_FREEZE",
+      "status": "PENDING",
+      "purpose": "Run immediate production smoke, verify live sources and roles, invoke rollback on failure, and freeze at 100 only on PASS.",
+      "exit": "PRODUCTION_FROZEN_PASS_100"
+    }
+  ],
+  "rootCauses": [
+    {"id":"RC01","name":"CANONICAL_STATE_DRIFT","status":"IN_REMEDIATION","ownerIteration":"I5-R2"},
+    {"id":"RC02","name":"PLAN_LOSS_ACROSS_CONVERSATIONS","status":"PASS","ownerIteration":"I5-R1"},
+    {"id":"RC03","name":"PROMOTION_CONTRACT_VS_ADHOC_TOPOLOGY_DRIFT","status":"PASS","ownerIteration":"I5-R1"},
+    {"id":"RC04","name":"PROMOTION_VALIDATOR_SCHEMA_MISMATCH","status":"PASS","ownerIteration":"I5-R1"},
+    {"id":"RC05","name":"ONE_SHOT_GATE_STATE_DRIFT_OR_STALE_REQUESTS","status":"PENDING","ownerIteration":"I5-R2"},
+    {"id":"RC06","name":"EVIDENCE_NAMING_MISMATCH_CAUSING_REDUNDANT_RERUNS","status":"PENDING","ownerIteration":"I5-R2"},
+    {"id":"RC07","name":"LIVE_HR_CLONE_STALE_OR_DEMO_FALLBACK_RISK","status":"PENDING","ownerIteration":"I5-R3"},
+    {"id":"RC08","name":"SHOPPER_VISIT_SCOPE_VISIBILITY_RISK","status":"PENDING","ownerIteration":"I5-R3"},
+    {"id":"RC09","name":"FINANCE_PAYMENT_SEMANTICS_REGRESSION_RISK","status":"PENDING","ownerIteration":"I5-R3"},
+    {"id":"RC10","name":"MULTIROLE_HARNESS_OR_CREDENTIAL_STALENESS","status":"PENDING","ownerIteration":"I5-R3"},
+    {"id":"RC11","name":"SAME_ARTIFACT_NO_REBUILD_AND_ROLLBACK_ENFORCEMENT","status":"PENDING","ownerIteration":"I5-R4"},
+    {"id":"RC12","name":"POST_PRODUCTION_OBSERVABILITY_AND_SYNC_REGRESSION_RISK","status":"PENDING","ownerIteration":"I5-G2"}
+  ],
+  "resumeProtocol": {
+    "conversationIndependent": true,
+    "readOrder": [
+      "app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md",
+      "backend/config/cxorbia-phase-a-continuity-lock.json",
+      "app/docs/EXECUTION-STATE-CXORBIA-TYA-VIGENTE.md",
+      "app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md",
+      "app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md",
+      "backend/config/cxorbia-production-promotion-contract.json",
+      "backend/config/cxorbia-production-promotion-gate-evidence.json",
+      "PR #7 and live branch HEAD"
+    ],
+    "onMismatch": "CONTINUITY_DRIFT_BLOCKED",
+    "mismatchAction": "Reconcile control-plane documentation only; do not reopen frozen product blocks or start a new methodology.",
+    "nextActionSource": "currentIteration"
+  },
+  "hardStops": {
+    "reopenI1I4WithoutNewP0": false,
+    "createNewPreprodProject": false,
+    "createNewBranchOrPr": false,
+    "rebuildBeforePromotion": false,
+    "cutoverBeforeRootCauseClosedPass": false,
+    "cutoverWithoutExplicitAuthorization": false,
+    "silentFallbackToDemoOrStaleData": false,
+    "silentHrPlatformConflictOverwrite": false
+  }
+}
