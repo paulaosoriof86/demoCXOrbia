@@ -62,6 +62,25 @@
       "production": false,
       "rerunSameRequestId": false,
       "source": ".github/cxorbia-gate-requests/request.json"
+    },
+    {
+      "requestId": "i5-r3-client-single-login-readonly-20260820-02",
+      "status": "CONSUMED_PASS_READONLY",
+      "runId": 32400495121,
+      "jobId": 96527305525,
+      "artifactId": 9418300899,
+      "artifactDigest": "sha256:0cd51fb2cdcdaa6960712504641cd13ac23ad092c0b88b999cd41ba157e03e21",
+      "decision": "PASS_CLIENT_SINGLE_LOGIN_AND_ROUTE_RENDER",
+      "productP0Proven": false,
+      "functionalSourceLock": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+      "repositoryWrites": false,
+      "dataWrites": false,
+      "providerWrites": false,
+      "deploy": false,
+      "merge": false,
+      "production": false,
+      "rerunSameRequestId": false,
+      "source": ".github/cxorbia-gate-requests/request.json"
     }
   ]
 }
