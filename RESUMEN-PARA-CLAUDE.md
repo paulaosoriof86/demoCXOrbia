@@ -7,18 +7,26 @@
 **PREPROD_PROJECT_CREATOR_ROUTE: `SUPERSEDED`**
 
 ## Estado único
-`I5_G2A_PASS__I5_G2B_AUTHORIZED_STAGE_PENDING__98_2`. Producción `https://cxorbia-backend-dev.web.app`, source `f9802fdd498934a8e7729fa5c7d18341bec1cd71`.
+`I5_G2A_PASS__G2B_P0_WRITEPATH_PROVEN__CORRECTION_AUTHORIZED_PENDING_DEPLOY__98_2`.
 
-G2-A PASS: Staff/Admin fresh y Client fresh en producción; Shopper histórico exacto FROZEN_REUSE. El hold del primer multirrol fue credential staleness del harness, no P0. Sin reset, writes, deploy, rebuild o merge.
+Producción canónica: `https://cxorbia-backend-dev.web.app`. G2-A permanece PASS/FROZEN. Durante el preflight G2-B se demostró un P0 nuevo y reproducible: el runtime productivo tenía la persistencia canónica cerrada (`enableCommandWrites` sin habilitar), no activaba el transporte HTTP y Cloud Run no exponía la ruta lifecycle necesaria. No se creó ningún dato sintético para demostrarlo.
 
-## Único pendiente
-G2-B `LIVE_IN_PLATFORM_SYNTHETIC_ACCEPTANCE` ya está autorizado para `STAGE_AND_TEST` dentro de la misma plataforma, visible para Paula, usando exclusivamente datos `CXORBIA_E2E_SYNTH_*`.
+## Corrección P0 autorizada
+Paula autorizó expresamente corregir únicamente la ruta productiva de escrituras canónicas y desplegar esa corrección en `cxorbia-backend-dev`, sin merge, HR externa, datos/credenciales reales, pagos, Make ni Gemini.
 
-Permisos estrechos vigentes: datos sintéticos create/update/delete; Auth sintético create/delete si es indispensable; Storage sintético upload/delete si es necesario. Siguen prohibidos HR externa, usuarios/credenciales reales, pagos reales, Make, Gemini, deploy, rebuild y merge.
+Corrección fuente en curso, sin rediseño UI ni cambios en `/app/modules`:
+- wrapper backend `cxorbia-g2b-synthetic-visit-provider-v1.mjs`: reutiliza el provider lifecycle existente y agrega firewall servidor por prefijo/tag `CXORBIA_E2E_SYNTH_*`;
+- runtime `g2b-synthetic-runtime.mjs`: endpoint autenticado Firebase/RBAC, tenant `tya`, project `cinepolis`, sintético-only;
+- `hr-live-service/server.mjs`: enruta únicamente ese endpoint nuevo, preservando HR viva read-only y legal runtime;
+- Dockerfile: empaqueta los providers/runtimes anteriores;
+- `cxorbia-canonical-write-firewall-v1.js`: activa el transporte canónico solo con el flag G2-B exacto en el host productivo; la producción normal permanece write-disabled;
+- workflow existente de deploy: extensión narrow para un solo Cloud Run + un solo Hosting, con readback que exige cero business/Auth writes durante el deploy. El carril I3 histórico queda congelado.
 
-El escenario debe quedar visible después del stage. `paulaObservationsCaptured=false`; cleanup y post-clean readback se ejecutan después de la observación y son obligatorios antes del 100%.
+## G2-B después del deploy
+La autorización sintética original continúa vigente. Después del PASS del deploy se ejecutará `STAGE_AND_TEST` en la misma plataforma, se dejará el escenario visible para Paula y solo después de sus observaciones se hará cleanup + post-clean readback. No marcar 100% antes.
 
-No tocar `/app/modules`, `/app/core`, adapters/data ni UI por esta autorización. Si G2-B demuestra incidencia real, documentar archivo/módulo exacto para Claude; no parchear frontend desde backend sin P0 probado.
+## Claude/prototipo
+No hay rediseño ni tarea visual para Claude por esta corrección. Si las pruebas visibles posteriores demuestran un defecto de UI real, documentarlo por módulo; no inferirlo desde este P0 de persistencia.
 
 ## Academia
-Sin cambio funcional demostrado todavía. Mantener contenidos actuales; registrar únicamente diferencias reales que aparezcan durante la observación visible y actualizar manuales/cursos después de confirmarlas.
+La corrección no cambia contenidos académicos por sí sola. Ajustar manuales/cursos únicamente si G2-B visible demuestra una diferencia funcional real.
