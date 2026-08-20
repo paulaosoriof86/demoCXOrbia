@@ -6,8 +6,10 @@ import {fileURLToPath} from 'node:url';
 const here=path.dirname(fileURLToPath(import.meta.url));
 const repo=path.resolve(here,'../..');
 const rel=p=>path.relative(repo,p).replace(/\\/g,'/');
-const EPOCH='CXORBIA-20260819-PHASEA-PROTECTED-RUNTIME-CONVERGENCE-37';
-const FRONTIER='I4_PROTECTED_RUNTIME_CONVERGENCE_AND_REAL_PHASE_A_E2E';
+const EPOCH='CXORBIA-20260819-I4-PROTECTED-RUNTIME-CLOSED-38';
+const FRONTIER='I5_PREPRODUCTION_AND_GO_LIVE';
+const SUBSTATE='I5_1_PREPRODUCTION_READINESS_AND_UAT_PLAN_READONLY';
+const FUNCTIONAL_SOURCE='f9802fdd498934a8e7729fa5c7d18341bec1cd71';
 const P={
   checkpoint:path.join(repo,'app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md'),
   index:path.join(repo,'app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md'),
@@ -18,9 +20,9 @@ const P={
   entry:path.join(repo,'app/index-backend-dev.html'),
   watcher:path.join(repo,'app/adapters/tya-live-source-refresh-watch-v2.js'),
   authorityBridge:path.join(repo,'app/adapters/tya-protected-auth-hr-authority-bridge-v2.js'),
-  iteration1:path.join(repo,'tools/qa/verify-root-cause-correction-iteration1.mjs'),
-  iteration2:path.join(repo,'tools/qa/verify-root-cause-correction-iteration2.mjs'),
-  historicalHarness:path.join(repo,'tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs')
+  historicalHarness:path.join(repo,'tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs'),
+  staffRequest:path.join(repo,'.github/cxorbia-gate-requests/request.json'),
+  hostingRequest:path.join(repo,'backend/config/i3-11-identity-link-runtime-bridge-rules-hosting-dev.json')
 };
 const read=p=>fs.readFileSync(p,'utf8').replace(/^\uFEFF/,'');
 const ensure=(v,c)=>{if(!v)throw new Error(c);};
@@ -28,31 +30,33 @@ for(const p of Object.values(P))ensure(fs.existsSync(p),`CURRENT_AUTHORITY_MISSI
 
 const cp=read(P.checkpoint),idx=read(P.index),exec=read(P.execution),sourceLock=read(P.sourceLock),
   unifiedPlan=read(P.unifiedPlan),tracker=read(P.tracker),entry=read(P.entry),watcher=read(P.watcher),
-  bridge=read(P.authorityBridge),harness=read(P.historicalHarness);
+  bridge=read(P.authorityBridge),harness=read(P.historicalHarness),
+  staffRequest=JSON.parse(read(P.staffRequest)),hostingRequest=JSON.parse(read(P.hostingRequest));
 
-// Canonical destination and epoch: equivalent formatting is accepted, stale state is not.
-for(const text of [cp,idx,exec,sourceLock,unifiedPlan,tracker]) ensure(text.includes(EPOCH),`CURRENT_SYNC_EPOCH_MISSING:${rel(Object.values(P)[0])}`);
+// Canonical destination and epoch. Stale 60/40 I4-open state must now fail closed.
+for(const [name,text] of Object.entries({checkpoint:cp,index:idx,execution:exec,sourceLock,unifiedPlan,tracker}))
+  ensure(text.includes(EPOCH),`CURRENT_SYNC_EPOCH_MISSING:${name}`);
 ensure(cp.includes('paulaosoriof86/demoCXOrbia'),'CURRENT_CHECKPOINT_REPO_MISSING');
 ensure(cp.includes('docs-tya-v6-v71-audit'),'CURRENT_CHECKPOINT_BRANCH_MISSING');
 ensure(/PR:\*\*?\s*`?#7`?|PR\s*#7/i.test(cp),'CURRENT_CHECKPOINT_PR7_MISSING');
-ensure(cp.includes(FRONTIER)&&idx.includes(FRONTIER)&&exec.includes(FRONTIER)&&unifiedPlan.includes(FRONTIER),'CURRENT_FRONTIER_DRIFT');
-ensure(/60%\s*\/\s*40%/.test(cp)&&/60%\s*(?:formal)?\s*\/\s*40%/.test(idx),'CURRENT_PROGRESS_60_40_MISSING');
-ensure(/PLAN_SCORE:\*\*\s*`60\/100`/.test(exec),'EXECUTION_SCORE_60_MISSING');
-ensure(/I1\s*`?15\/15/.test(idx)&&/I2\s*`?20\/20/.test(idx)&&/I3\s*`?25\/25/.test(idx),'FROZEN_PRIOR_ITERATIONS_MISSING');
-ensure(/I4[^\n]*(?:0\/25|IN_PROGRESS|EN CURSO|pendiente)/i.test(tracker),'TRACKER_I4_CURRENT_STATE_MISSING');
-ensure(/60%[^\n]*40%/.test(tracker),'TRACKER_PROGRESS_60_40_MISSING');
-ensure(!/GO-LIVE formal:\s*35%\s*\/\s*65%/i.test(tracker),'TRACKER_STALE_35_65_PRESENT');
-ensure(sourceLock.includes('docs-tya-v6-v71-audit')&&sourceLock.includes('#7'),'SOURCE_LOCK_DESTINATION_DRIFT');
+for(const [name,text] of Object.entries({checkpoint:cp,index:idx,execution:exec,unifiedPlan}))
+  ensure(text.includes(FRONTIER),`CURRENT_FRONTIER_DRIFT:${name}`);
+ensure(exec.includes(SUBSTATE)&&cp.includes(SUBSTATE)&&idx.includes(SUBSTATE),'CURRENT_I5_SUBSTATE_DRIFT');
+ensure(/85%\s*\/\s*15%/.test(cp)&&/85%[^\n]*15%/.test(idx),'CURRENT_PROGRESS_85_15_MISSING');
+ensure(/PLAN_SCORE:\*\*\s*`85\/100`/.test(exec),'EXECUTION_SCORE_85_MISSING');
+ensure(/I1\s*`?15\/15/.test(idx)&&/I2\s*`?20\/20/.test(idx)&&/I3\s*`?25\/25/.test(idx)&&/I4\s*`?25\/25/.test(idx),'FROZEN_I1_I4_MISSING');
+ensure(/I4[^\n]*(?:PASS|25\/25|FROZEN)/i.test(tracker),'TRACKER_I4_FROZEN_STATE_MISSING');
+ensure(/85%[^\n]*15%/.test(tracker),'TRACKER_PROGRESS_85_15_MISSING');
+ensure(!/60%\s*\/\s*40%/.test(cp),'CHECKPOINT_STALE_60_40_PRESENT');
+ensure(sourceLock.includes('docs-tya-v6-v71-audit')&&sourceLock.includes('#7')&&sourceLock.includes(FUNCTIONAL_SOURCE),'SOURCE_LOCK_DESTINATION_OR_FUNCTIONAL_SOURCE_DRIFT');
 
-// Current canonical source graph.
+// Same protected functional graph remains mandatory through I5 readiness.
 const watcherPath='adapters/tya-live-source-refresh-watch-v2.js';
 const bridgePath='adapters/tya-protected-auth-hr-authority-bridge-v2.js';
 const wi=entry.indexOf(watcherPath),bi=entry.indexOf(bridgePath);
 ensure(wi>=0&&bi>=0,'PROTECTED_ENTRY_CANONICAL_ADAPTER_MISSING');
 ensure(wi<bi,'PROTECTED_ENTRY_LOAD_ORDER_UNEXPECTED');
 ensure(entry.includes('cxProtectedRuntime')&&entry.includes('authenticated-human-canonical'),'PROTECTED_ENTRY_CANONICAL_LANE_MISSING');
-
-// Single-authority boot lock introduced at I4: HR watcher cannot win boot before protected composition.
 for(const marker of [
   'canonicalProtectedAuthorityReady',
   'CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true',
@@ -68,19 +72,28 @@ ensure(bridge.includes("CX.dataSource.sourceRef='hr-live-all-periods+firestore-a
 ensure(bridge.includes("new CustomEvent('cx:protected-auth-hr-authority-ready'"),'PROTECTED_BRIDGE_READY_EVENT_MISSING');
 ensure(bridge.includes('providerWrites:0')&&bridge.includes('production:false'),'PROTECTED_BRIDGE_SAFETY_DRIFT');
 
-// Preserve previously frozen root-cause protections; this verifier does not reopen them.
+// Previously frozen protections remain source-verifiable but are not rerun.
 ensure(!/^\s*import\s+.+\s+from\s+['"]playwright['"]\s*;?\s*$/m.test(harness),'HISTORICAL_HARNESS_STATIC_PLAYWRIGHT_IMPORT');
 ensure(harness.includes("await import('playwright')"),'HISTORICAL_HARNESS_DYNAMIC_PLAYWRIGHT_IMPORT_MISSING');
 ensure(harness.includes("pending('shopper')")&&harness.includes('acceptanceAutomated:false'),'HISTORICAL_HARNESS_LEGAL_GATE_DRIFT');
 
+// One-shot I4 requests must remain consumed/disabled. Their success is evidence, not an invitation to rerun.
+for(const [name,r] of Object.entries({staffRequest,hostingRequest})){
+  ensure(r.enabled===false&&r.consumed===true,`I4_ONESHOT_NOT_CONSUMED:${name}`);
+  ensure(r.merge===false&&r.production===false,`I4_ONESHOT_UNSAFE_STATE:${name}`);
+}
+ensure(Number(hostingRequest.actualHostingDeploys)===1,'I4_HOSTING_DEPLOY_COUNT_DRIFT');
+ensure(Number(staffRequest.evidence?.providerWrites||0)===0&&Number(staffRequest.evidence?.firestoreWrites||0)===0,'I4_STAFF_REQUEST_WRITE_EVIDENCE_DRIFT');
+
 const result={
   ok:true,
-  decision:'PASS_PHASE_A_CURRENT_OPERATIONAL_CHECKPOINT_I4_SINGLE_AUTHORITY_SOURCE',
+  decision:'PASS_PHASE_A_CURRENT_OPERATIONAL_CHECKPOINT_I4_CLOSED_I5_READINESS',
   epoch:EPOCH,
   authority:'app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md',
-  progress:{formalCompletedPct:60,formalRemainingPct:40,iteration:'I4-open',nextAfterI4Pct:85,basis:'protected-runtime-convergence-plan'},
-  continuity:{canonicalDocsPresent:true,stale35_65Rejected:true,priorPassesFrozen:true},
-  protectedRuntime:{entry:'app/index-backend-dev.html',singleAuthorityBootLock:true,directHrApplyBeforeProtectedAuthority:false,canonicalSourceRefPreserved:true,runtimeGateStillRequired:true},
+  progress:{formalCompletedPct:85,formalRemainingPct:15,iteration:'I5-open',basis:'i4-protected-runtime-closed'},
+  continuity:{canonicalDocsPresent:true,stale60_40Rejected:true,i1ThroughI4Frozen:true,functionalSource:FUNCTIONAL_SOURCE},
+  protectedRuntime:{entry:'app/index-backend-dev.html',singleAuthorityBootLock:true,directHrApplyBeforeProtectedAuthority:false,canonicalSourceRefPreserved:true},
+  oneShotGates:{staffConsumed:true,hostingConsumed:true,hostingDeploys:1,automaticRerunAllowed:false},
   locks:{sameBranch:true,noGeneralRediagnosis:true,noAuthRebuild:true,noShopperRebuild:true,noFinanceRebuild:true,noNewBranchOrPr:true},
   safety:{authWrites:false,firestoreWrites:false,hrWrites:false,rulesWrites:false,storageWrites:false,deploy:false,merge:false,production:false}
 };
