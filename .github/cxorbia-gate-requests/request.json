@@ -1,13 +1,13 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "i4-protected-runtime-source-static-preflight-20260819-01",
+  "requestId": "i4-protected-runtime-source-static-preflight-20260819-02-head-corrected",
   "enabled": true,
   "consumed": false,
   "status": "authorized_pending",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "cc1c2768cd995be4298e5cecd9a888ada27f3cc4",
+  "targetHeadSha": "9d409726b6d29ace87b02ced9ce1d7555425060b",
   "profile": "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC",
   "allowedProfiles": ["PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC"],
   "allowedExecutions": 1,
@@ -40,5 +40,9 @@
   "containsSecrets": false,
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-19_request_to_continue_and_perform_real_audit_if_needed",
-  "purpose": "Source-only preflight for I4 protected runtime convergence after canonical authority preservation fixes. No provider calls, no data writes, no deploy, no merge, no production. This is the circuit-breaker gate before any remote runtime or deployment decision."
+  "transportCorrection": {
+    "priorRequestCommitSha": "9d409726b6d29ace87b02ced9ce1d7555425060b",
+    "reason": "live branch advanced to be17fb32353d53c2a1a5a431bc91dc90dbbb51ac immediately before the first request commit, so its targetHeadSha no longer matched HEAD^; product source did not regress and the request is corrected once without re-auditing"
+  },
+  "purpose": "Source-only preflight for I4 protected runtime convergence after canonical authority preservation fixes. No provider calls, no data writes, no deploy, no merge, no production. This corrected request is the circuit-breaker gate before any remote runtime or deployment decision."
 }
