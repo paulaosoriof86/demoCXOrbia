@@ -12,6 +12,11 @@
   never replace the canonical functionalSourceLock.
   Consumed non-product harness HOLDs remain terminal only when the continuity
   validator proves they are disabled, fully consumed and write/deploy safe.
+
+  Runtime protection intentionally covers core/modules/styles AND the live
+  backend-dev entrypoint/adapters/data. This prevents a control-plane-only
+  iteration from silently changing the tested product while still reporting
+  same-artifact/no-rebuild.
 */
 
 import { execFileSync } from 'node:child_process';
@@ -130,13 +135,16 @@ try {
 
 const runtimeExact = new Set([
   'app/index.html',
+  'app/index-backend-dev.html',
   'app/app.js',
   'app/manifest.webmanifest'
 ]);
 const runtimePrefixes = [
   'app/core/',
   'app/modules/',
-  'app/styles/'
+  'app/styles/',
+  'app/adapters/',
+  'app/data/'
 ];
 const isRuntime = (file) => runtimeExact.has(file) || runtimePrefixes.some((prefix) => file.startsWith(prefix));
 const runtimeChangedFiles = changedFiles.filter(isRuntime);
@@ -166,6 +174,7 @@ const report = {
   historicalValidatedInputIgnoredAsAuthority: true,
   continuityValidator: 'CONTINUITY_LOCK_PASS',
   consumedTerminalHarnessHoldPolicyEnforced: true,
+  runtimeProtectionIncludesBackendDevAdaptersData: true,
   changedFilesSinceFunctionalLock: changedFiles.length,
   runtimeChangedFiles,
   runtimeChangedCount: runtimeChangedFiles.length,
