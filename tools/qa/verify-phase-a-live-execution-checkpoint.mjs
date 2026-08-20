@@ -8,7 +8,7 @@ const repo=path.resolve(here,'../..');
 const rel=p=>path.relative(repo,p).replace(/\\/g,'/');
 const EPOCH='CXORBIA-20260819-I4-PROTECTED-RUNTIME-CLOSED-38';
 const FRONTIER='I5_PREPRODUCTION_AND_GO_LIVE';
-const SUBSTATE='I5_1_PREPRODUCTION_READINESS_AND_UAT_PLAN_READONLY';
+const I5_SUBSTATES=['I5_1_PREPRODUCTION_READINESS_AND_UAT_PLAN_READONLY','I5_1_READINESS_PASS_PENDING_PREPROD_AUTH'];
 const FUNCTIONAL_SOURCE='f9802fdd498934a8e7729fa5c7d18341bec1cd71';
 const P={
   checkpoint:path.join(repo,'app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md'),
@@ -41,7 +41,8 @@ ensure(cp.includes('docs-tya-v6-v71-audit'),'CURRENT_CHECKPOINT_BRANCH_MISSING')
 ensure(/PR:\*\*?\s*`?#7`?|PR\s*#7/i.test(cp),'CURRENT_CHECKPOINT_PR7_MISSING');
 for(const [name,text] of Object.entries({checkpoint:cp,index:idx,execution:exec,unifiedPlan}))
   ensure(text.includes(FRONTIER),`CURRENT_FRONTIER_DRIFT:${name}`);
-ensure(exec.includes(SUBSTATE)&&cp.includes(SUBSTATE)&&idx.includes(SUBSTATE),'CURRENT_I5_SUBSTATE_DRIFT');
+const activeSubstate=I5_SUBSTATES.find(s=>exec.includes(s)&&cp.includes(s)&&idx.includes(s));
+ensure(activeSubstate,'CURRENT_I5_SUBSTATE_DRIFT');
 ensure(/85%\s*\/\s*15%/.test(cp)&&/85%[^\n]*15%/.test(idx),'CURRENT_PROGRESS_85_15_MISSING');
 ensure(/PLAN_SCORE:\*\*\s*`85\/100`/.test(exec),'EXECUTION_SCORE_85_MISSING');
 ensure(/I1\s*`?15\/15/.test(idx)&&/I2\s*`?20\/20/.test(idx)&&/I3\s*`?25\/25/.test(idx)&&/I4\s*`?25\/25/.test(idx),'FROZEN_I1_I4_MISSING');
@@ -85,6 +86,32 @@ for(const [name,r] of Object.entries({staffRequest,hostingRequest})){
 ensure(Number(hostingRequest.actualHostingDeploys)===1,'I4_HOSTING_DEPLOY_COUNT_DRIFT');
 ensure(Number(staffRequest.evidence?.providerWrites||0)===0&&Number(staffRequest.evidence?.firestoreWrites||0)===0,'I4_STAFF_REQUEST_WRITE_EVIDENCE_DRIFT');
 
+// I5 preproduction static secret gate. It scans runtime/config/contracts only and rejects concrete credential signatures.
+const scanRoots=['app','backend/config','backend/contracts'].map(p=>path.join(repo,p));
+const allowedExt=/\.(?:js|mjs|cjs|json|html|css|txt)$/i;
+const skipDirs=new Set(['docs','node_modules','.tmp','tmp']);
+const secretPatterns=[
+  ['private_key_pem',/-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/],
+  ['google_api_key',/AIza[0-9A-Za-z_-]{35}/],
+  ['github_pat',/gh[pousr]_[A-Za-z0-9]{30,}/],
+  ['openai_style_key',/sk-[A-Za-z0-9_-]{20,}/],
+  ['slack_token',/xox[baprs]-[A-Za-z0-9-]{20,}/]
+];
+const secretFindings=[];
+const walk=dir=>{
+  if(!fs.existsSync(dir))return;
+  for(const ent of fs.readdirSync(dir,{withFileTypes:true})){
+    if(ent.isDirectory()&&skipDirs.has(ent.name))continue;
+    const full=path.join(dir,ent.name);
+    if(ent.isDirectory()){walk(full);continue;}
+    if(!allowedExt.test(ent.name))continue;
+    const text=read(full);
+    for(const [code,re] of secretPatterns)if(re.test(text))secretFindings.push({file:rel(full),code});
+  }
+};
+for(const root of scanRoots)walk(root);
+ensure(secretFindings.length===0,`I5_STATIC_SECRET_SCAN_FAIL:${JSON.stringify(secretFindings)}`);
+
 const result={
   ok:true,
   decision:'PASS_PHASE_A_CURRENT_OPERATIONAL_CHECKPOINT_I4_CLOSED_I5_READINESS',
@@ -94,6 +121,7 @@ const result={
   continuity:{canonicalDocsPresent:true,stale60_40Rejected:true,i1ThroughI4Frozen:true,functionalSource:FUNCTIONAL_SOURCE},
   protectedRuntime:{entry:'app/index-backend-dev.html',singleAuthorityBootLock:true,directHrApplyBeforeProtectedAuthority:false,canonicalSourceRefPreserved:true},
   oneShotGates:{staffConsumed:true,hostingConsumed:true,hostingDeploys:1,automaticRerunAllowed:false},
+  preproductionSafety:{activeSubstate,staticSecretScan:'PASS',scanRoots:['app','backend/config','backend/contracts'],secretFindings:0},
   locks:{sameBranch:true,noGeneralRediagnosis:true,noAuthRebuild:true,noShopperRebuild:true,noFinanceRebuild:true,noNewBranchOrPr:true},
   safety:{authWrites:false,firestoreWrites:false,hrWrites:false,rulesWrites:false,storageWrites:false,deploy:false,merge:false,production:false}
 };
