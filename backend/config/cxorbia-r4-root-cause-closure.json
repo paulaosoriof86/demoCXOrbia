@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
   "syncEpoch": "CXORBIA-20260820-I5-R4-ROOT-CAUSE-CLOSED-PASS-46",
   "iteration": "I5-R4",
@@ -30,11 +30,14 @@
     "runtimeProductFilesChanged": 0,
     "runtimeScopesProtected": [
       "app/index.html",
+      "app/index-backend-dev.html",
       "app/app.js",
       "app/manifest.webmanifest",
       "app/core/**",
       "app/modules/**",
-      "app/styles/**"
+      "app/styles/**",
+      "app/adapters/**",
+      "app/data/**"
     ],
     "changedScopesObserved": [
       "control-plane",
