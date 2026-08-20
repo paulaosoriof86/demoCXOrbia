@@ -25,6 +25,25 @@
       "merge": false,
       "production": false,
       "source": ".github/cxorbia-gate-requests/request.json"
+    },
+    {
+      "requestId": "i5-r3-critical-product-acceptance-multirole-readonly-20260820-01",
+      "status": "CONSUMED_HOLD_HARNESS_STALE_SHOPPER_CREDENTIAL",
+      "runId": 32399392667,
+      "jobId": 96523690395,
+      "artifactId": 9417910221,
+      "decision": "HOLD_HARNESS_STALE_SHOPPER_CREDENTIAL",
+      "holdCode": "HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194",
+      "productP0Proven": false,
+      "functionalSourceLock": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+      "repositoryWrites": false,
+      "dataWrites": false,
+      "providerWrites": false,
+      "deploy": false,
+      "merge": false,
+      "production": false,
+      "rerunSameRequestId": false,
+      "source": ".github/cxorbia-gate-requests/request.json"
     }
   ]
 }
