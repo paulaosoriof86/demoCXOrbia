@@ -1,9 +1,9 @@
 # EXECUTION STATE CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-20  
-**SYNC_EPOCH:** `CXORBIA-20260820-I5-PROVIDER-USER-AUTH-ROUTE-REQUIRED-41`  
+**SYNC_EPOCH:** `CXORBIA-20260820-I5-EXISTING-CLEAN-PROJECT-PROMOTION-RESTORED-42`  
 **OWNER_FRONTIER:** `I5_PREPRODUCTION_AND_GO_LIVE`  
-**SUBSTATE:** `I5_2_PREPROD_SERVICE_ACCOUNT_PARENT_UNAVAILABLE_USER_AUTH_ROUTE_REQUIRED`  
+**SUBSTATE:** `I5_EXISTING_PROJECT_PRECUTOVER_EVIDENCE_RECONCILIATION`  
 **PLAN_SCORE:** `85/100`  
 **TARGET_AFTER_I5_GO_LIVE:** `100/100`
 
@@ -11,62 +11,65 @@
 
 Repo `paulaosoriof86/demoCXOrbia`, rama `docs-tya-v6-v71-audit`, PR #7 existente/draft/open/no merge. I1–I4 permanecen `PASS/FROZEN` sobre el source funcional `f9802fdd498934a8e7729fa5c7d18341bec1cd71`.
 
-## I5 PREPROD — autorización y resultado real previo
+## Corrección de topología I5 — FUENTE AUTORITATIVA RECUPERADA
 
-La autorización PREPROD vigente permite crear/configurar un Firebase PREPROD nuevo y limpio y hacer un único Hosting PREPROD del source congelado + UAT read-only, sin merge/producción ni writes de datos/HR/Auth/Storage/Make/Gemini/pagos.
+El contrato vigente `backend/config/cxorbia-production-promotion-contract.json`, autorizado el 2026-08-06, establece:
 
-El request PREPROD anterior fue consumido con HOLD:
-- run `32332125828`;
-- job `96314651567`;
-- artifact `9393386559`;
-- target `cxorbia-preprod-20260819` no estaba entre proyectos accesibles;
-- `projectCreatesSucceeded=0`;
-- `hostingDeploys=0`;
-- UAT no ejecutado;
-- DEV no reutilizado y 0 writes de negocio.
+- `strategy=PROMOTE_EXISTING_CLEAN_PROJECT`;
+- `productionProjectId=cxorbia-backend-dev`;
+- `productionHostingTarget=cxorbia-dev`;
+- `productionHostingSite=cxorbia-backend-dev`;
+- `productionCloudRunService=cxorbia-live-hr-dev`;
+- `acceptCurrentIdentifiersAndUrlAsProduction=true`;
+- `requiresSeparateProdFiles=false`;
+- `legacyProjectReuseForBackend=false`.
 
-Creator-route provider read-only:
-- run `32332788919`, job `96316503352`, artifact `9393599029`;
-- `HOLD_I5_NO_EXISTING_CREATOR_ROUTE_AUTHENTICATES`;
-- `CXORBIA_GCP_PROJECT_CREATOR_JSON`: ausente;
-- `GOOGLE_CLOUD_PROJECT_CREATOR_JSON`: ausente;
-- identidad disponible: `firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com`;
-- autenticada, `projectsVisible=2`, `orgsVisible=0`, `parentProbes=[]`, `resourcemanager.projects.create=false/not proven`.
+`app/docs/SOURCE-LOCK-C6-PRODUCTION-PROMOTION-PASS-20260806.md` registró además `PASS_PRODUCTION_PROMOTION_CONTRACT_EXISTING_CLEAN_PROJECT` y aceptó expresamente conservar los identificadores técnicos con sufijo `dev` y la URL vigente como producción futura.
 
-## Causa raíz I5 — PROBADA
+## Ambientes canónicos
 
-La documentación oficial de Google Cloud establece que una **service account solo puede crear proyectos dentro de un recurso Organization** y debe especificar el parent; no puede crear proyectos standalone fuera de Organization. También establece que `roles/resourcemanager.projectCreator` se concede sobre Folder/Organization, no sobre un proyecto DEV existente.
+- **Proyecto limpio canónico / destino de promoción:** `cxorbia-backend-dev`.
+- **Hosting ya existente:** `https://cxorbia-backend-dev.web.app`.
+- **Sandbox Corte 4:** `cxorbia-tya-dev-260729-c4`; validación técnica únicamente, no destino Phase A.
+- **Legacy a retirar tras cutover autorizado:** `tya-plataforma`; no se reutiliza como backend nuevo y permanece intacto hasta el gate final.
 
-La evidencia provider-backed actual muestra 0 organizaciones visibles y 0 parents Organization/Folder detectados para la identidad disponible. Por ello, otorgar Project Creator a esa misma service account o a otra service account sin un parent Organization/Folder **no resuelve** la creación de `cxorbia-preprod-20260819`.
+`app/core/backend-config.js` confirma `canonicalBackendProjectId=cxorbia-backend-dev`, `migrationTargetProjectId=cxorbia-backend-dev`, `validationSandboxProjectId=cxorbia-tya-dev-260729-c4` y `newCleanProjectRequired=false`.
 
-Referencias oficiales:
-- https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects
-- https://docs.cloud.google.com/iam/docs/roles-permissions/resourcemanager
+## Hosting de la build congelada — YA MATERIALIZADO EN EL DESTINO EXISTENTE
 
-## Autorización IAM mínima — RECIBIDA / NO CONSUMIDA
+`backend/config/i3-11-identity-link-runtime-bridge-rules-hosting-dev.json` registra:
 
-La autorización específica para el grant mínimo de Project Creator permanece vigente pero no fue consumida. Ya no se considera la transición efectiva inmediata porque el parent necesario para una service account no existe/demuestra en el carril actual.
+- source `f9802fdd498934a8e7729fa5c7d18341bec1cd71`;
+- proyecto/site `cxorbia-backend-dev`;
+- target `cxorbia-dev`;
+- URL `https://cxorbia-backend-dev.web.app`;
+- run `32328316954`, artifact `9392151808`;
+- `PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY`;
+- `remoteExactByteParity=true`;
+- exactamente 1 Hosting deploy;
+- 0 writes de datos/HR/Auth/Storage/Make/Gemini/pagos.
 
-No crear service account, key, Organization/Folder ni ampliar privilegios por inferencia.
+## Ruta PREPROD errónea — RETIRADA
 
-## Bloqueo técnico actual
+El request posterior `backend/config/i5-preprod-provision-hosting-uat-request-v1.json` introdujo `cxorbia-preprod-20260819`, pero ese target contradice el contrato de promoción ya autorizado y la topología canónica actual. El proyecto nunca fue creado (`projectCreatesSucceeded=0`).
 
-`PROVIDER_USER_AUTH_PROJECT_CREATION_ROUTE_REQUIRED`
+Por instrucción actual de Paula y por reconciliación con la fuente autoritativa, **no crear `cxorbia-preprod-20260819`, no pedir Project Creator y no continuar el carril `USER_AUTHENTICATED_PREPROD_PROJECT_CREATION_HANDOFF`**. El request consumido queda como evidencia histórica de una ruta descartada, no como frontera ejecutable.
 
-Clasificación: `PROVIDER_CONTROL_PLANE_USER_AUTH_ROUTE_BLOCKED`.
+## Gate activo corregido
 
-El carril conectado dispone de GitHub y de una service account DEV, pero no dispone de una sesión Google Cloud/Firebase de usuario transferible para crear un proyecto standalone. Tampoco existe actualmente un plugin/conector Google Cloud/Firebase provider-admin disponible en el entorno conectado.
+`I5_EXISTING_PROJECT_PRECUTOVER_EVIDENCE_RECONCILIATION`
 
-Este es un bloqueo de ejecución provider, no de autorización ni de producto.
+Objetivo: reconciliar, sin reejecutar I1–I4, los seis requisitos del contrato de promoción contra la evidencia cerrada actual:
 
-## Siguiente gate exacto
+1. `LIVE_HR_CURRENT_PERIOD_AND_HISTORY_REVISION_PASS`;
+2. `SHOPPER_AUTH_REPAIR_PASS`;
+3. `ACCUMULATIVE_MULTIROLE_SMOKE_PASS`;
+4. `HUMAN_VALIDATION_PASS`;
+5. `ROLLBACK_READY`;
+6. `EXPLICIT_CUTOVER_AUTHORIZATION`.
 
-`USER_AUTHENTICATED_PREPROD_PROJECT_CREATION_HANDOFF`
-
-La única transición segura sin introducir una Organization/Folder nueva es materializar `cxorbia-preprod-20260819` mediante una identidad de usuario Google Cloud/Firebase autenticada con capacidad de creación de proyecto standalone. Después de que el proyecto exista, se deberá resolver por gate separado la identidad mínima de despliegue PREPROD antes del único Hosting; no se infieren nuevos IAM grants.
-
-No repetir I1–I4, no repetir preflights de Project Creator con la service account DEV y no solicitar nuevamente las autorizaciones ya recibidas mientras source y alcance permanezcan idénticos.
+Solo los requisitos sin evidencia terminal vigente permanecen pendientes. No se reabre ningún gate frozen por defecto.
 
 ## Seguridad
 
-Estado actual: PREPROD project creates exitosos `0`; PREPROD Hosting deploys `0`; UAT `0`; IAM writes bajo la autorización nueva `0`; Auth/Firestore/Storage/HR/Make/Gemini/payment writes `0`; merge `false`; production `false`. I4 permanece sin cambios.
+Este bloque es de reconciliación/documentación. No autoriza deploy adicional, provider writes, HR/Firestore/Auth/Rules/Storage writes, Make/Gemini/pagos, merge ni producción. `tya-plataforma` permanece intacta hasta autorización explícita de cutover.
