@@ -1,9 +1,10 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
   "requestId": "i4-protected-runtime-staff-authority-frozen-shopper-reuse-20260819-01",
-  "enabled": true,
-  "consumed": false,
-  "status": "authorized_pending",
+  "enabled": false,
+  "consumed": true,
+  "status": "pass_consumed",
+  "consumedAt": "2026-08-20T03:42:36.807Z",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -43,5 +44,26 @@
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-19_2124_i4_hosting_dev_remote_smoke",
   "authorizationText": "AUTORIZO HOSTING DEV + SMOKE REMOTO READ-ONLY DEL HEAD f9802fdd498934a8e7729fa5c7d18341bec1cd71, SIN MERGE, SIN PRODUCCIÓN Y SIN WRITES DE DATOS/HR/AUTH/STORAGE/MAKE/GEMINI/PAGOS.",
-  "purpose": "Current same-build Staff/Admin protected-runtime authority proof with reload/new-tab stability and exact live HR/crosswalk/legal runtime verification. Reuse the already frozen PASS historical Shopper checkpoint without selecting or resetting Shopper credentials. No deploy, no provider/data writes, no merge, no production."
+  "purpose": "Current same-build Staff/Admin protected-runtime authority proof with reload/new-tab stability and exact live HR/crosswalk/legal runtime verification. Reuse the already frozen PASS historical Shopper checkpoint without selecting or resetting Shopper credentials. No deploy, no provider/data writes, no merge, no production.",
+  "evidence": {
+    "decision": "PASS_READONLY_POST_GATES",
+    "staffRuntimeDecision": "PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY",
+    "workflowRunId": 32329139725,
+    "artifactId": 9392431939,
+    "artifactDigest": "sha256:4780dfa88fca903815346faf6d91aee3694c72676f107b942d5c7734b03892a4",
+    "historicalShopperFrozenDecision": "PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY",
+    "historicalShopperAccessThisRun": 0,
+    "passwordResetsThisRun": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "hostingDeploys": 0,
+    "merge": false,
+    "production": false
+  }
 }
