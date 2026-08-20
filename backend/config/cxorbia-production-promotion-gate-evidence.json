@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.0.0",
+  "updatedAt": "2026-08-20",
+  "branch": "docs-tya-v6-v71-audit",
+  "headObservedBeforeReconciliation": "00227014ed7762337e0d5f65ddbcaca7c70455ab",
+  "promotionContract": "backend/config/cxorbia-production-promotion-contract.json",
+  "productionTarget": {
+    "projectId": "cxorbia-backend-dev",
+    "hostingSite": "cxorbia-backend-dev",
+    "reusesValidatedPreprodProject": true
+  },
+  "technicalReadinessPercent": 85,
+  "productionDeploymentExecuted": false,
+  "verdict": "READY_FOR_EXPLICIT_AUTHORIZATION",
+  "gates": {
+    "LIVE_HR_CURRENT_PERIOD_AND_HISTORY_REVISION_PASS": {
+      "status": "PASS",
+      "evidenceClass": "M5",
+      "evidenceRef": "app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md"
+    },
+    "SHOPPER_AUTH_REPAIR_PASS": {
+      "status": "PASS",
+      "evidenceClass": "M6",
+      "evidenceRef": "app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md"
+    },
+    "ACCUMULATIVE_MULTIROLE_SMOKE_PASS": {
+      "status": "PASS",
+      "evidenceClass": "M3",
+      "evidenceRef": "app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md"
+    },
+    "HUMAN_VALIDATION_PASS": {
+      "status": "PASS",
+      "evidenceClass": "M4",
+      "evidenceRef": "app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md"
+    },
+    "ROLLBACK_READY": {
+      "status": "PASS",
+      "evidenceClass": "M8",
+      "evidenceRef": "app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md"
+    },
+    "EXPLICIT_CUTOVER_AUTHORIZATION": {
+      "status": "PENDING",
+      "evidenceClass": "USER_AUTHORIZATION",
+      "evidenceRef": null
+    }
+  },
+  "safety": {
+    "failClosed": true,
+    "sameTestedArtifactRequired": true,
+    "noRebuild": true,
+    "rollbackRequired": true,
+    "humanApprovalRequired": true,
+    "productionWritesAuthorized": false,
+    "makeGeminiPaymentsAuthorized": false
+  }
+}
