@@ -1,53 +1,92 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-19  
-**SYNC_EPOCH:** `CXORBIA-20260819-PHASEA-PROTECTED-RUNTIME-CONVERGENCE-37`  
-**Estado:** `I4_PROTECTED_RUNTIME_CONVERGENCE_AND_REAL_PHASE_A_E2E`  
-**Subestado:** `PROTECTED_RUNTIME_SINGLE_AUTHORITY_SOURCE_PATCHED_PENDING_RUNTIME_GATE`  
-**Score formal:** `60% / 40%`  
+**SYNC_EPOCH:** `CXORBIA-20260819-I4-PROTECTED-RUNTIME-CLOSED-38`  
+**Estado:** `I4_CLOSED_PASS__I5_OPEN`  
+**Subestado:** `I5_1_PREPRODUCTION_READINESS_AND_UAT_PLAN_READONLY`  
+**Score formal:** `85% / 15%`  
 **Repo:** `paulaosoriof86/demoCXOrbia`  
 **Rama viva:** `docs-tya-v6-v71-audit`  
-**PR:** `#7` existente, sin nueva rama/PR
+**PR:** `#7` existente, draft/open/no merge
 
-## 1. Continuidad canónica cerrada
+## 1. Corte de continuidad
 
-El checkpoint obsoleto de julio fue reemplazado. `EXECUTION-STATE`, `SOURCE-LOCK`, plan unificado, índice, CAMBIOS, RESUMEN, PENDIENTES y tracker usan el mismo epoch. No se vuelve a `CORTE_0B`, Hosting DEV de julio, I3 ni a auditorías generales.
+I1, I2, I3 e I4 están cerrados y congelados. No volver a `CORTE_0B`, I3, nueva candidata, nueva rama/PR, auditoría general ni reconstrucción de Auth, Shopper, Finanzas, multi-proyecto, documentos, reservas o Academia.
 
-## 2. PASS protegidos — no reprocesar
+## 2. Producto que cerró I4
 
-Permanecen congelados I1, I2, I3, I4-A, I4-B, I4-C, I4-D Finanzas e I4-E multi-proyecto/no-code. No se reconstruyen Auth, Shopper, Finanzas, multi-proyecto, documentos, reservas o Academia.
+Source exacto desplegado en DEV: `f9802fdd498934a8e7729fa5c7d18341bec1cd71`.
 
-## 3. Hallazgo runtime y corrección source
+Hosting DEV autorizado one-shot:
+- run `32328316954`;
+- artifact `9392151808`;
+- `PASS_I3_11C_R3C_DEV_HOSTING_MATERIALIZATION_REMOTE_PARITY`;
+- 1 deploy DEV;
+- paridad remota exacta;
+- 0 writes de datos/proveedores.
 
-En `app/index-backend-dev.html`, el watcher HR vivo podía reaccionar a `backend-auth-ready` y aplicar el snapshot HR source-safe directamente sobre `CX.data` antes de que `tya-protected-auth-hr-authority-bridge-v2.js` terminara la composición Auth + Firestore protegido + HR viva. Eso permitía una carrera entre dos autoridades de memoria y podía degradar de forma intermitente identidad Shopper, perfil protegido y overlays financieros sin que faltaran los módulos.
+Los cambios posteriores al source desplegado hasta el cierre técnico previo a docs (`8831723a4cf3e656b3dddd1ed5c72b45f0dc2ec8`) fueron únicamente requests/gates. La comparación contiene 0 cambios en `app/`.
 
-La corrección focalizada ya está en source: `tya-live-source-refresh-watch-v2.js` bloquea el apply directo en el carril humano autenticado hasta que `CX_PROTECTED_AUTH_HR_AUTHORITY.applied === true`; después mantiene refresh HR sin degradar `CX.dataSource` a `source_safe_preview`.
+## 3. Runtime real protegido
 
-## 4. Qué falta para cerrar I4
+Staff/Admin read-only sobre la misma build desplegada:
+- run `32329139725`;
+- artifact `9392431939`;
+- `PASS_READONLY_POST_GATES`;
+- `PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY`;
+- Auth/claims/membership, autoridad HR/plataforma, crosswalk exacto, legal receipt, reload y nueva pestaña estables;
+- fuente viva: 15 periodos, 660 visitas, 200 shoppers; crosswalk protegido 209.
 
-El parche source no suma puntos por sí mismo. Falta el gate runtime/E2E en la misma build protegida:
+Shopper no se reprocesó. Se preserva y reutiliza el PASS real congelado `PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY`; durante este cierre hubo 0 accesos Shopper, 0 resets y 0 writes, y los blobs protegidos permanecieron sin cambio.
 
-- Shopper real autenticado con identidad exacta, perfil autorizado, histórico, certificaciones presentadas, visitas y beneficios/pagos correctos.
-- Admin real con Auth/claims/membership correctos; mutaciones Phase A solo mediante command/provider ACK.
-- Finanzas: Mayo 44/44 pagadas; Junio 2/44 pagadas, 42 pendientes y Q451; `liquidada != pagada`.
-- Cero fallback silencioso a demo/source-safe viejo.
-- Gates derivados de la fuente vigente, no de 616/216/44 históricos.
-- E2E visible de la misma build protegida.
+## 4. Finanzas — equivalencia cerrada
 
-## 5. Siguiente acción exacta
+No se ejecuta un gate financiero redundante. `app/data/tya-payment-history-source-safe.js` conserva el mismo blob `088c68680177c470a4539622e1694128dd211d85` en el source desplegado y en la rama, y `app/index-backend-dev.html` carga esa cadena financiera.
 
-`PROTECTED_RUNTIME_SINGLE_AUTHORITY_GATE_AND_REAL_PHASE_A_E2E`
+Verdad preservada:
+- mayo 2026: 44/44 pagadas;
+- junio 2026: 2/44 pagadas;
+- junio pendientes: 42/44;
+- junio confirmado: Q451;
+- `liquidada != pagada`;
+- 0 lotes ejecutables creados.
 
-Primero cerrar los post-gates source del HEAD vivo; después ejecutar el E2E provider-backed de `app/index-backend-dev.html`. Si el runtime requiere materializar el HEAD en Hosting DEV, se solicita autorización específica para ese deploy; no se sustituye por reauditoría.
+`R16D` permanece como PASS de revisión source-safe, pero sus overlays históricos no sustituyen esta autoridad de pago más reciente.
 
-## 6. Seguridad
+## 5. Gate state corregido
 
-Hasta este checkpoint: 0 provider writes, 0 deploy por este bloque, 0 merge, 0 producción, 0 Make/Gemini y 0 ejecución bancaria. Un workflow de Hosting disparado automáticamente debe permanecer fail-closed si no existe autorización exacta.
+Se detectó una deriva documental real: los requests one-shot ya ejecutados seguían persistidos como `enabled=true / consumed=false`. Se corrigió sin tocar producto ni proveedor:
+- Staff request → `consumed=true`, `enabled=false`, evidencia run `32329139725`;
+- Hosting request → `consumed=true`, `enabled=false`, evidencia run `32328316954`, `actualHostingDeploys=1`.
 
-## 7. Clasificación
+Esto evita reruns accidentales y no cambia `app/`.
 
-- **Reusable CXOrbia:** autoridad runtime única, orden de bootstrap protegido y fail-closed.
-- **Exclusivo TyA:** HR Cinépolis y cifras financieras usadas para validación.
-- **Claude/prototipo:** sin tarea frontend nueva; solo hallazgo visual reproducible posterior al E2E.
-- **Academia:** sin reapertura; alinear al cierre I4.
-- **Sin impacto Claude:** gate/verificador y reconciliación documental.
+## 6. Academia
+
+No se reconstruye. La alineación de I4 queda registrada en `ACADEMIA-ADDENDUM-I4-PROTECTED-RUNTIME-CLOSE-20260819.md`: identidad exacta, autoridad runtime única, HR/plataforma, estados financieros honestos y command/provider ACK.
+
+## 7. Siguiente bloque exacto
+
+`I5_1_PREPRODUCTION_READINESS_AND_UAT_PLAN_READONLY`
+
+Preparar sin deploy:
+1. regresión transversal de la misma build;
+2. scopes y seguridad;
+3. datos limpios y ausencia de secretos;
+4. rollback/checkpoint;
+5. matriz UAT y criterios de aceptación;
+6. clasificación de workflows stale/legacy vs bloqueos reales.
+
+Solo al llegar al paso real de deploy PREPROD o PRODUCCIÓN se solicita autorización específica.
+
+## 8. Estado seguro
+
+I4 cerró con 1 Hosting DEV autorizado y consumido. Después: 0 segundo deploy, 0 merge, 0 producción, 0 Auth/Firestore/HR/Storage/provider writes, 0 Make/Gemini y 0 ejecución bancaria.
+
+## 9. Clasificación
+
+- **Reusable CXOrbia:** single authority runtime, exact identity, one-shot gate consumption y same-build equivalence.
+- **Exclusivo TyA:** cifras financieras y HR Cinépolis usadas como evidencia.
+- **Claude/prototipo:** sin tarea frontend nueva; solo atender P0/P1 reproducible si PREPROD/UAT lo demuestra.
+- **Academia:** alineación documental cerrada; no reconstrucción.
+- **Sin impacto Claude:** gates, source lock, evidencia y documentación de cierre.
