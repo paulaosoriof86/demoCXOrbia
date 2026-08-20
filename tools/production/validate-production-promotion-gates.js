@@ -53,10 +53,10 @@ if (evidence.productionTarget?.promotesExistingCleanProject !== true) {
 if (evidence.productionTarget?.createsAdditionalPreprodProject !== false) {
   fail('additional PREPROD project creation must remain false');
 }
-if (contract.writesAuthorizedByThisContract !== false) fail('contract unexpectedly authorizes writes');
-if (contract.deployAuthorizedByThisContract !== false) fail('contract unexpectedly authorizes deploy');
-if (contract.mergeAuthorizedByThisContract !== false) fail('contract unexpectedly authorizes merge');
-if (contract.productionCutoverAuthorizedByThisContract !== false) fail('contract unexpectedly authorizes cutover');
+if (contract.writesAuthorizedByThisContract !== false) fail('promotion contract must not authorize business/data writes');
+if (contract.deployAuthorizedByThisContract !== false) fail('base promotion contract must not itself authorize deploy');
+if (contract.mergeAuthorizedByThisContract !== false) fail('promotion contract must not authorize merge');
+if (contract.productionCutoverAuthorizedByThisContract !== false) fail('base promotion contract must not itself authorize cutover');
 
 const safety = evidence.safety || {};
 if (safety.failClosed !== true) fail('evidence is not fail-closed');
@@ -64,6 +64,10 @@ if (safety.sameTestedArtifactRequired !== true) fail('sameTestedArtifactRequired
 if (safety.noRebuild !== true) fail('noRebuild must be true');
 if (safety.rollbackRequired !== true) fail('rollbackRequired must be true');
 if (safety.humanApprovalRequired !== true) fail('humanApprovalRequired must be true');
+if (safety.mergeAuthorized !== false) fail('mergeAuthorized must remain false in the promotion evidence');
+if (safety.productionWritesAuthorized !== false) {
+  fail('cutover authorization must never imply business/data writes; productionWritesAuthorized must remain false');
+}
 
 const evidenceGates = evidence.gates || {};
 const evidenceNames = Object.keys(evidenceGates).sort();
@@ -92,20 +96,18 @@ if (evidence.productionDeploymentExecuted !== false) {
 
 const authStatus = evidenceGates[authorizationGate].status;
 if (authStatus === 'PENDING') {
-  if (safety.productionWritesAuthorized !== false) fail('productionWritesAuthorized must be false while authorization is pending');
   if (safety.deploymentAuthorized !== false) fail('deploymentAuthorized must be false while authorization is pending');
-  if (safety.mergeAuthorized !== false) fail('mergeAuthorized must be false while authorization is pending');
   if (safety.productionCutoverAuthorized !== false) fail('productionCutoverAuthorized must be false while authorization is pending');
   console.log('READY_FOR_EXPLICIT_AUTHORIZATION_AFTER_ROOT_CAUSE_CLOSURE');
   console.log('technicalGates=5/5 PASS');
   console.log('cutoverAuthorization=PENDING');
   console.log('productionDeploymentAllowed=false');
+  console.log('productionDataWritesAllowed=false');
   process.exit(0);
 }
 
 if (authStatus !== 'PASS') fail(`${authorizationGate} has invalid status ${authStatus}`);
 if (!evidenceGates[authorizationGate].evidenceRef) fail('explicit authorization PASS requires evidenceRef');
-if (safety.productionWritesAuthorized !== true) fail('authorization PASS requires productionWritesAuthorized=true');
 if (safety.deploymentAuthorized !== true) fail('authorization PASS requires deploymentAuthorized=true');
 if (safety.productionCutoverAuthorized !== true) fail('authorization PASS requires productionCutoverAuthorized=true');
 
@@ -113,3 +115,4 @@ console.log('AUTHORIZED_READY_DEPLOY');
 console.log('technicalGates=5/5 PASS');
 console.log('cutoverAuthorization=PASS');
 console.log('productionDeploymentAllowed=true');
+console.log('productionDataWritesAllowed=false');
