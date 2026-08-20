@@ -6,6 +6,25 @@
 **ACTIVE_BLOCKER: `NONE`**  
 **PREPROD_PROJECT_CREATOR_ROUTE: `SUPERSEDED`**
 
+## 2026-08-20 — I5-G2-B · PREFLIGHT PRODUCTIVO ARMADO EN CARRIL EXISTENTE
+
+### Archivos
+- Nuevo `tools/qa/cxorbia-g2b-live-synthetic-preflight.mjs`: prueba remota fail-closed sobre el URL productivo canónico antes del primer write sintético.
+- Extendido `.github/workflows/cxorbia-i4b-retry1-authorized-runtime-lane.yml`: el job histórico I4B queda explícitamente congelado (`if:false`) y el mismo workflow incorpora el job G2-B. No se creó workflow nuevo.
+
+### Qué prueba antes de escribir
+Verifica remotamente origen/proyecto canónicos, runtime protegido, `CX.commandAdapter`, `enableCommandWrites`, `enableDataWrites`, `enableOperationalWrites`, modo read-only/writeMode, endpoint y transporte HTTP registrado/activo. Si cualquiera de esas piezas no está lista, el gate se detiene antes de crear datos `CXORBIA_E2E_SYNTH_*`, persiste evidencia y consume el request sin retry automático.
+
+### Seguridad
+Este preflight no usa credenciales humanas ni service account y tiene presupuesto de provider/Auth/Firestore/Storage/HR/payment/Make/Gemini writes igual a cero. Solo si el preflight pasa se habilita el siguiente request de stage sintético; este workflow no hace deploy, rebuild ni merge.
+
+### Clasificación
+- **Reusable CXOrbia:** patrón pre-write productivo fail-closed y anti-rerun.
+- **Exclusivo TyA:** target `cxorbia-backend-dev`, tenant `tya`, project `cinepolis`.
+- **Claude/prototipo:** sin cambio UI/runtime.
+- **Academia:** sin impacto funcional hasta obtener resultado remoto.
+- **Sin impacto Claude:** herramienta QA, workflow y evidencia.
+
 ## 2026-08-20 — I5-G2-B · AUTORIZACIÓN SINTÉTICA REGISTRADA
 
 ### Resultado
