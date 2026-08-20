@@ -1,27 +1,21 @@
 # EXECUTION STATE CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-20  
-**SYNC_EPOCH:** `CXORBIA-20260820-I5-G1-PRODUCTION-CUTOVER-EXECUTED-47`  
+**SYNC_EPOCH:** `CXORBIA-20260820-I5-G2A-PRODUCTION-READONLY-PASS-48`  
 **PLAN_ID:** `CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE`  
 **currentIteration:** `I5-G2`  
 **PLAN_SCORE:** `98/100`  
 **PRODUCTION_STATE:** `ACTIVE_LOGICAL_PROMOTION_EXISTING_DEPLOYMENT_NO_REDEPLOY`
 
 ## Estado ejecutable
-G1 está cerrado con `PRODUCTION_CUTOVER_EXECUTED`. Producción canónica activa: `https://cxorbia-backend-dev.web.app`, project `cxorbia-backend-dev`, Hosting target `cxorbia-dev`, site `cxorbia-backend-dev`, Cloud Run `cxorbia-live-hr-dev` / `us-central1`.
+Producción canónica: `https://cxorbia-backend-dev.web.app`; source funcional `f9802fdd498934a8e7729fa5c7d18341bec1cd71`; G1 PASS sin redeploy/rebuild/merge/business-data writes.
 
-El source funcional sigue `f9802fdd498934a8e7729fa5c7d18341bec1cd71`. El contrato acepta expresamente los identificadores/URL existentes como producción y `requiresSeparateProdFiles=false`; por ello el cutover no necesitó redeploy ni rebuild. Provider deploys=0; business/data writes=0; merge=false. Legacy `tya-plataforma` no fue modificado.
+**G2-A está PASS.** Staff/Admin se revalidó frescamente en run `32411160766`; Cliente se revalidó frescamente en run `32411411249` con `PASS_CLIENT_SINGLE_LOGIN_AND_ROUTE_RENDER`. Shopper histórico exacto conserva el PASS congelado `PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY`; el intento combinado halló credencial histórica stale del harness, no P0 de producto, y no se repite ni se resetea contraseña sin autorización.
 
-## Evidencia
-- G1 receipt: `backend/config/cxorbia-g1-production-cutover.json`.
-- R4: `ROOT_CAUSE_CLOSED_PASS`.
-- R3: `CRITICAL_PRODUCT_ACCEPTANCE_PASS`.
-- Hosting same-build run `32328316954`, artifact `9392151808`.
-- R4 drift run `32405211252`, artifact `9419997429`.
-- R4 runtime guard run `32405211361`, artifact `9420007525`.
+Terminal G2-A: `backend/config/cxorbia-g2a-production-readonly-smoke.json`. `productP0Proven=false`.
 
 ## Operación siguiente
-`I5-G2_PRODUCTION_SMOKE_HYPERCARE_AND_FREEZE` está ACTIVE. No requiere reabrir G1 ni volver a desplegar. Cualquier P0 nuevo debe producir evidencia reproducible y circuit breaker; en ausencia de P0, salida `PRODUCTION_FROZEN_PASS_100`.
+Único subgate restante: `I5-G2-B_LIVE_IN_PLATFORM_SYNTHETIC_ACCEPTANCE`, dentro de la misma URL productiva, visible para Paula, con datos `CXORBIA_E2E_SYNTH_*`, cleanup y readback. Está pendiente autorización estrecha de writes sintéticos. No HR externo, Auth create/reset, pagos reales, Make/Gemini, deploy, rebuild o merge.
 
 ## Continuidad
-El lock machine-readable y el receipt G1 sobreviven a cortes de conversación. PR #7 es mirror only. No disminuir porcentaje ni repetir cutover por una respuesta incompleta.
+El score sigue 98/100 hasta cerrar G2-B. No repetir G2-A por pausa, timeout o cambio de conversación.

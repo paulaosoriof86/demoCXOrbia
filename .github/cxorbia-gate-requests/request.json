@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
   "requestId": "i5-g2-production-client-readonly-20260820-03",
-  "enabled": true,
-  "consumed": false,
-  "status": "ready_readonly_execution",
+  "enabled": false,
+  "consumed": true,
+  "status": "consumed_pass_readonly",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -12,7 +12,7 @@
   "profile": "C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC",
   "allowedProfiles": ["C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC"],
   "allowedExecutions": 1,
-  "executionsConsumed": 0,
+  "executionsConsumed": 1,
   "repositoryWrites": false,
   "dataWrites": false,
   "providerReads": true,
@@ -44,5 +44,11 @@
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-20",
   "authorizationText": "continúa con el último bloque",
-  "purpose": "I5-G2-A fresh Client remote production read-only smoke on the canonical production URL after fresh Staff/Admin PASS. No Shopper credential selection, business/data/provider writes, deploy, rebuild, merge or production mutation."
+  "purpose": "I5-G2-A fresh Client remote production read-only smoke on the canonical production URL after fresh Staff/Admin PASS.",
+  "consumedAt": "2026-08-20T19:58:00Z",
+  "decision": "PASS_CLIENT_SINGLE_LOGIN_AND_ROUTE_RENDER",
+  "runId": 32411411249,
+  "jobId": 96562450087,
+  "artifactId": 9422287336,
+  "noAutomaticRetry": true
 }
