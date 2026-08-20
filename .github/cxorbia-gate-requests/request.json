@@ -1,25 +1,27 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "i4-protected-runtime-source-static-preflight-20260819-02-head-corrected",
+  "requestId": "i4-protected-runtime-same-build-multirole-readonly-20260819-01",
   "enabled": true,
   "consumed": false,
   "status": "authorized_pending",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "9d409726b6d29ace87b02ced9ce1d7555425060b",
-  "profile": "PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC",
-  "allowedProfiles": ["PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC"],
+  "targetHeadSha": "cdb6b8bdcc61d7f754dddbc568d89a55adea822e",
+  "deployedProductSourceHeadSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+  "profile": "PHASE_A_COMPLETE_RUNTIME_MULTIROLE",
+  "allowedProfiles": ["PHASE_A_COMPLETE_RUNTIME_MULTIROLE"],
   "allowedExecutions": 1,
   "repositoryWrites": false,
   "dataWrites": false,
-  "providerReads": false,
+  "providerReads": true,
   "providerWrites": false,
   "deploy": false,
   "merge": false,
   "production": false,
   "tenantId": "tya",
   "projectId": "cinepolis",
+  "devRootUrl": "https://cxorbia-backend-dev.web.app",
   "sourceLockDocument": "app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json",
   "safeState": {
     "repositoryWrites": false,
@@ -39,10 +41,7 @@
   "containsPii": false,
   "containsSecrets": false,
   "authorizedBy": "Paula",
-  "authorizationSource": "current_conversation_2026-08-19_request_to_continue_and_perform_real_audit_if_needed",
-  "transportCorrection": {
-    "priorRequestCommitSha": "9d409726b6d29ace87b02ced9ce1d7555425060b",
-    "reason": "live branch advanced to be17fb32353d53c2a1a5a431bc91dc90dbbb51ac immediately before the first request commit, so its targetHeadSha no longer matched HEAD^; product source did not regress and the request is corrected once without re-auditing"
-  },
-  "purpose": "Source-only preflight for I4 protected runtime convergence after canonical authority preservation fixes. No provider calls, no data writes, no deploy, no merge, no production. This corrected request is the circuit-breaker gate before any remote runtime or deployment decision."
+  "authorizationSource": "current_conversation_2026-08-19_2124_i4_hosting_dev_remote_smoke",
+  "authorizationText": "AUTORIZO HOSTING DEV + SMOKE REMOTO READ-ONLY DEL HEAD f9802fdd498934a8e7729fa5c7d18341bec1cd71, SIN MERGE, SIN PRODUCCIÓN Y SIN WRITES DE DATOS/HR/AUTH/STORAGE/MAKE/GEMINI/PAGOS.",
+  "purpose": "Execute one remote provider-backed read-only multirole smoke against the already materialized Firebase Hosting DEV build whose app source is exactly f9802fdd498934a8e7729fa5c7d18341bec1cd71. Verify dynamic live HR authority, exact remote asset parity, Staff/Admin and Shopper Auth stability across reload/new-tab, Client route readiness, Shopper exact identity/history/certification visibility, Finance delegated truth and fail-closed reservations. No second deploy and no provider/data writes."
 }
