@@ -1,20 +1,39 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
   "requestId": "i5-r3-critical-product-acceptance-multirole-readonly-20260820-01",
-  "enabled": true,
-  "consumed": false,
-  "status": "authorized_pending_execution",
+  "enabled": false,
+  "consumed": true,
+  "status": "consumed_hold_harness_stale_shopper_credential",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "targetHeadSha": "2e3ed7305806a2b4fa73c014b59a5a6f314d2a8f",
+  "requestCommitSha": "bb5e17e4133f6b92f1760b66bddc1b4c2723a562",
   "deployedProductSourceHeadSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
   "profile": "PHASE_A_COMPLETE_RUNTIME_MULTIROLE",
-  "allowedProfiles": [
-    "PHASE_A_COMPLETE_RUNTIME_MULTIROLE"
-  ],
+  "allowedProfiles": ["PHASE_A_COMPLETE_RUNTIME_MULTIROLE"],
   "allowedExecutions": 1,
-  "executionsConsumed": 0,
+  "executionsConsumed": 1,
+  "runId": 32399392667,
+  "jobId": 96523690395,
+  "artifactId": 9417910221,
+  "artifactDigest": "sha256:df2c858235bad7f5020dcc277974eb618553311d92fd41caf6ee8e5ff5e68933",
+  "decision": "HOLD_HARNESS_STALE_SHOPPER_CREDENTIAL",
+  "holdCode": "HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194",
+  "holdClassification": "HARNESS_STALE_AFTER_HISTORICAL_SHOPPER_RECOVERY",
+  "productP0Proven": false,
+  "observedReadOnlyBeforeHold": {
+    "shopperBundleRecords": 109,
+    "shopperAuthUsers": 104,
+    "exactClaimHistoryCandidates": 1,
+    "exactProfiles": 1,
+    "legacyHashMatches": 0,
+    "passwordSignIns": 0,
+    "exactVisitMatches": 616,
+    "liveToProtectedShopperRelations": 208,
+    "protectedShoppersWithHistory": 194,
+    "visitRelationConflictDetected": false
+  },
   "repositoryWrites": false,
   "dataWrites": false,
   "providerReads": true,
@@ -26,16 +45,7 @@
   "projectId": "cinepolis",
   "devRootUrl": "https://cxorbia-backend-dev.web.app",
   "sourceLockDocument": "app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json",
-  "requiredAcceptance": [
-    "ROADMAP_LIVE_NO_CLONES",
-    "SHOPPERS_VISIBLE_EXPECTED_SCOPE",
-    "VISITS_CURRENT_AND_HISTORY_VISIBLE",
-    "FINANCE_CANONICAL_SEMANTICS",
-    "MULTIROLE_SCOPE_PASS",
-    "RELOAD_SESSION_PASS",
-    "NO_DEMO_OR_STALE_FALLBACK",
-    "SAME_ARTIFACT_PASS"
-  ],
+  "requiredAcceptance": ["ROADMAP_LIVE_NO_CLONES","SHOPPERS_VISIBLE_EXPECTED_SCOPE","VISITS_CURRENT_AND_HISTORY_VISIBLE","FINANCE_CANONICAL_SEMANTICS","MULTIROLE_SCOPE_PASS","RELOAD_SESSION_PASS","NO_DEMO_OR_STALE_FALLBACK","SAME_ARTIFACT_PASS"],
   "safeState": {
     "repositoryWrites": false,
     "dataWrites": false,
@@ -59,5 +69,5 @@
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-20",
   "authorizationText": "continúa con el siguiente movimiento",
-  "purpose": "One-shot read-only R3 critical product acceptance over the exact deployed source. Validate live HR authority without frozen invariants or clone/demo fallback, Staff/Admin + Shopper + Client scopes, current and historical visits, reload/new-tab stability, delegated finance truth, and remote asset parity. No credential changes, provider/data writes, deploy, merge or production."
+  "purpose": "Consumed one-shot R3 multirole attempt. Execution stopped before browser acceptance because the generic Shopper credential selector still expects the pre-recovery legacy password hash. This exactly reproduces the known harness debt after the historical Shopper credential recovery and does not prove a product regression. No credential reset or write was attempted. Continue R3 by reusing the frozen historical Shopper login PASS plus current provider-backed history reuse, while validating Client and live product surfaces independently."
 }
