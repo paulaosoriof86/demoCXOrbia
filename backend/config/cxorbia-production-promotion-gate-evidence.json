@@ -1,17 +1,23 @@
 {
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
+  "syncEpoch": "CXORBIA-20260820-I5-DEFINITIVE-ROOT-CAUSE-PLAN-43",
   "updatedAt": "2026-08-20",
   "branch": "docs-tya-v6-v71-audit",
-  "headObservedBeforeReconciliation": "00227014ed7762337e0d5f65ddbcaca7c70455ab",
   "promotionContract": "backend/config/cxorbia-production-promotion-contract.json",
+  "functionalSourceLock": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
   "productionTarget": {
+    "strategy": "PROMOTE_EXISTING_CLEAN_PROJECT",
     "projectId": "cxorbia-backend-dev",
+    "hostingTarget": "cxorbia-dev",
     "hostingSite": "cxorbia-backend-dev",
-    "reusesValidatedPreprodProject": true
+    "cloudRunService": "cxorbia-live-hr-dev",
+    "cloudRunRegion": "us-central1",
+    "promotesExistingCleanProject": true,
+    "createsAdditionalPreprodProject": false
   },
-  "technicalReadinessPercent": 85,
+  "technicalReadinessPercentBeforeRootCausePlan": 85,
   "productionDeploymentExecuted": false,
-  "verdict": "READY_FOR_EXPLICIT_AUTHORIZATION",
+  "verdict": "READY_FOR_EXPLICIT_AUTHORIZATION_AFTER_ROOT_CAUSE_CLOSURE",
   "gates": {
     "LIVE_HR_CURRENT_PERIOD_AND_HISTORY_REVISION_PASS": {
       "status": "PASS",
@@ -51,6 +57,9 @@
     "rollbackRequired": true,
     "humanApprovalRequired": true,
     "productionWritesAuthorized": false,
+    "deploymentAuthorized": false,
+    "mergeAuthorized": false,
+    "productionCutoverAuthorized": false,
     "makeGeminiPaymentsAuthorized": false
   }
 }
