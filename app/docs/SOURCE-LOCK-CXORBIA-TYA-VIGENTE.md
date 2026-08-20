@@ -1,7 +1,7 @@
 # SOURCE LOCK CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-19  
-**SYNC_EPOCH:** `CXORBIA-20260819-I5-PREPROD-IAM-AUTH-GRANTED-ROUTE-BLOCKED-40`
+**Fecha:** 2026-08-20  
+**SYNC_EPOCH:** `CXORBIA-20260820-I5-PROVIDER-USER-AUTH-ROUTE-REQUIRED-41`
 
 ## Destino canónico
 
@@ -27,31 +27,34 @@ Ningún intento I5 cambió ese source ni desplegó otro producto. Los commits I5
 
 ## I5 PREPROD — sin materialización aún
 
-Target reservado por el gate: `cxorbia-preprod-20260819`.
+Target reservado: `cxorbia-preprod-20260819`.
 
-- run de creación `32332125828`: 0 proyectos creados, 0 Hosting deploys, 0 UAT;
-- root cause run `32332360361`: no pudo demostrar parent Project Creator capability para la identidad DEV;
-- creator-route run `32332788919`: dedicated/alternate creator secrets ausentes en ese run; la identidad DEV autenticó pero sin capacidad de `resourcemanager.projects.create` demostrada.
+- run `32332125828`: 0 proyectos creados, 0 Hosting deploys, 0 UAT;
+- run `32332788919`: rutas creator dedicadas ausentes; `firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com` autenticada; 2 proyectos visibles, 0 organizaciones, 0 parent probes y create capability no demostrada.
 
-Por tanto **no existe source lock PREPROD materializado todavía**. No presentar una URL planificada como entorno existente.
+## Root cause provider — PROBADA
 
-## IAM mínimo — autorización vigente
+Google Cloud documenta que una service account solo puede crear proyectos dentro de Organization y debe especificar parent. `roles/resourcemanager.projectCreator` se concede en Folder/Organization. La identidad disponible no detectó Organization/Folder parent, por lo que un grant Project Creator sobre esa service account no puede materializar un proyecto standalone PREPROD.
 
-La autorización administrativa mínima para resolver Project Creator ya fue recibida y permanece vigente. Autoriza reutilizar una identidad separada existente y otorgar solo la capacidad mínima necesaria para crear `cxorbia-preprod-20260819`, sin crear service account/key ni conceder privilegios adicionales.
+Referencias oficiales:
+- https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects
+- https://docs.cloud.google.com/iam/docs/roles-permissions/resourcemanager
 
-No existe evidencia terminal posterior de un IAM write ejecutado bajo esa autorización. No debe solicitarse nuevamente ni declararse consumida.
+## IAM mínimo — autorización vigente no consumida
+
+La autorización administrativa mínima permanece vigente, pero no se ejecuta contra la service account DEV porque el parent requerido no está disponible. No crear nueva identidad/key/Organization/Folder ni ampliar privilegios por inferencia.
 
 ## Regla de continuación
 
-Frente vigente: `I5_2_PREPROD_PROJECT_CREATOR_AUTH_GRANTED_EXECUTION_ROUTE_BLOCKED`.
+Frente vigente: `I5_2_PREPROD_SERVICE_ACCOUNT_PARENT_UNAVAILABLE_USER_AUTH_ROUTE_REQUIRED`.
 
 Gate técnico:
 
-`NARROW_PROVIDER_ADMIN_PROJECT_CREATOR_AUTH_GRANTED__PROVIDER_EXECUTION_ROUTE_UNAVAILABLE`
+`PROVIDER_USER_AUTH_PROJECT_CREATION_ROUTE_REQUIRED`
 
-El carril conectado actual no expone un control-plane Google Cloud/Firebase IAM provider-admin. El preflight existente es read-only y no puede efectuar el grant. No se reintenta creación con la identidad DEV, no se crea una key y no se inventa una nueva identidad.
+El carril conectado actual no expone una sesión Google Cloud/Firebase de usuario transferible ni un conector provider-admin capaz de crear un proyecto standalone. No repetir Project Creator preflights con la service account DEV.
 
-Cuando una ruta provider-admin quede conectada y verificable, la misma autorización vigente permite ejecutar el grant mínimo, probar `resourcemanager.projects.create` y continuar inmediatamente con el PREPROD original: proyecto limpio `cxorbia-preprod-20260819` → un único Hosting de `f9802f...` → UAT read-only.
+La siguiente transición segura es `USER_AUTHENTICATED_PREPROD_PROJECT_CREATION_HANDOFF`: crear `cxorbia-preprod-20260819` con identidad de usuario Google Cloud/Firebase. Después se resuelve por gate separado la identidad mínima de deploy PREPROD; no se infiere ningún IAM grant adicional.
 
 ## Seguridad
 
