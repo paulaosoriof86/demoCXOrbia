@@ -25,9 +25,9 @@
     "app/index-backend-dev.html: command HTTP transport not statically loaded",
     "backend/runtime/hr-live-service/server.mjs@020055e: no canonical lifecycle command route"
   ],
-  "status": "authorized_source_fix_pending_execute_file",
-  "enabled": true,
-  "consumed": false,
+  "status": "recovery_attempt_consumed_no_provider_side_effect",
+  "enabled": false,
+  "consumed": true,
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-20_15-41_-06",
   "authorizationText": "AUTORIZO corregir el P0 G2-B de la ruta productiva de escrituras canónicas y desplegar únicamente esa corrección en cxorbia-backend-dev, sin merge, sin HR externa, sin datos/credenciales reales, sin pagos, Make ni Gemini.",
@@ -64,5 +64,12 @@
     "RESUMEN-PARA-CLAUDE.md",
     "PENDIENTES-PROTOTIPO.md"
   ],
-  "next": "CREATE_ONE_FILE_EXECUTE_COMMIT_THEN_SINGLE_CLOUD_RUN_AND_HOSTING_DEPLOY_WITH_ZERO_PROVIDER_DATA_WRITES"
+  "originalExecuteSha": "c746bdf068edf1322b7c9a5e497ea5aff13e6b58",
+  "recoveryAttemptConsumed": true,
+  "recoveryExecuteSha": "feeff85d834af7f711a4b62e291a29a14901a8d5",
+  "recoveryDecision": "RECOVERY_NO_PROVIDER_SIDE_EFFECT",
+  "recoveryEvidence": "app/docs/evidence/I5-G2B-P0-WRITEPATH-RECOVERY-LATEST.json",
+  "providerReadbackAt": "2026-08-21T05:00:31.550Z",
+  "decision": "HOLD_G2B_P0_CORRECTION_NOT_DEPLOYED_AFTER_RECOVERY_LIVENESS_FAILURE",
+  "next": "REQUIRE_NEW_EXPLICIT_RECOVERY_DECISION_AFTER_CONTROL_PLANE_TRIGGER_LIVENESS_FIX"
 }
