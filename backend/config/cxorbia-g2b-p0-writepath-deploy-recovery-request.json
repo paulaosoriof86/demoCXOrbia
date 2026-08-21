@@ -56,11 +56,26 @@
   "automaticRetryAllowed": false,
   "stageAllowedOnlyAfterVerifiedRecoveryPass": true,
   "preparedAt": "2026-08-21T07:52:00-06:00",
-  "decision": "AUTHORIZED_SINGLE_RECOVERY_AFTER_CONTROL_PLANE_LIVENESS_FIX",
-  "skippedExecuteSha": "5cb4a2c4c99afe1ddd4bc749c688f7f3c5a3a6da",
-  "skippedExecuteDisposition": "CONTROL_PLANE_JOB_IF_REFERENCED_PUSH_COMMIT_FILE_ARRAYS_NOT_AVAILABLE_TO_GITHUB_ACTIONS",
+  "decision": "AUTHORIZED_SINGLE_RECOVERY_AFTER_CONTROL_PLANE_FORENSIC_HARDENING",
+  "skippedExecuteSha": "829821169d2ae86c5704f8c7f0f3501bdc872d5c",
+  "skippedWorkflowRunId": 32491225966,
+  "skippedExecuteDisposition": "WORKFLOW_CREATED_BUT_ZERO_JOBS_RAN_BECAUSE_JOB_LEVEL_EVENT_PREDICATE_DID_NOT_MATERIALIZE_EXECUTION",
   "skippedExecuteProviderMutation": false,
-  "controlPlaneLivenessFixCommit": "6291f4a4c6627ebd67f221659b09d69774e99ab7",
-  "controlPlaneLivenessFix": "Recovery job now keys the one-shot on the available head_commit.message while the top-level paths filter plus in-job exact one-file git diff remain fail-closed.",
-  "next": "CREATE_ONE_FILE_EXECUTE_COMMIT_THEN_SINGLE_CLOUD_RUN_AND_HOSTING_DEPLOY_WITH_ZERO_PROVIDER_DATA_WRITES"
+  "priorControlPlaneLivenessFixCommit": "6291f4a4c6627ebd67f221659b09d69774e99ab7",
+  "controlPlaneForensicHardeningCommit": "91159ac27f2f7dc684502b4516dd9cd9ec75e4e8",
+  "controlPlaneForensicHardening": {
+    "jobLevelWebhookPredicatesRemoved": true,
+    "singleRecoveryJobAlwaysStartsForMatchedTopLevelPath": true,
+    "checkoutPinnedToGithubSha": true,
+    "triggerShaMustEqualCheckedOutHead": true,
+    "exactOneFileGitDiffGuardRetained": true,
+    "ghTokenExplicitlyWired": true,
+    "providerBaselineFreshAndUnchanged": true,
+    "sourceFixCloudBuildContractVerified": true,
+    "sourceFixHostingRewriteAndTargetVerified": true,
+    "sourceFixUnauthenticatedRouteContract401Verified": true,
+    "providerMutationBeforePreflightPassPossible": false
+  },
+  "forensicAuditAt": "2026-08-21T08:30:11-06:00",
+  "next": "MODIFY_EXECUTE_AS_ONE_FILE_TRIGGER_THEN_OBSERVE_SINGLE_PROVIDER_RECOVERY"
 }
