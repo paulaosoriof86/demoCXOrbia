@@ -1,10 +1,11 @@
 {
   "schemaVersion": "1.0.0",
   "request": "revalidate_existing_provider_capabilities_read_only",
-  "reason": "Precondition check after Paula confirmed the one-time provider setup was completed; required before the already-authorized DEV Cloud Run and Hosting redeploy block.",
+  "reason": "I5-G2B urgent recovery disposition check after the authorized retry trigger feeff85d834af7f711a4b62e291a29a14901a8d5 remained without terminal recovery evidence or cxorbia/g2b-recovery-* status. Reconcile current Cloud Run, Hosting and unauthenticated G2-B route state read-only; do not deploy, rebuild, retry, mutate business data or start synthetic acceptance.",
   "targetProject": "cxorbia-backend-dev",
   "hrSpreadsheetIdMasked": "1h307t...8vU4",
-  "revalidationRequestedAt": "2026-07-31T02:22:30Z",
+  "revalidationRequestedAt": "2026-08-21T05:00:02Z",
+  "recoveryExecuteShaUnderDisposition": "feeff85d834af7f711a4b62e291a29a14901a8d5",
   "authorizationState": "retained_not_consumed",
   "expected": {
     "googleSheetsApiEnabled": true,
