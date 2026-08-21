@@ -5,6 +5,7 @@
   "originalExecuteSha": "c746bdf068edf1322b7c9a5e497ea5aff13e6b58",
   "provenReconciliationEvidence": "app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json",
   "provenDecision": "A_NO_G2B_PROVIDER_DEPLOY_OBSERVED",
+  "recoveryTerminalEvidence": "app/docs/evidence/I5-G2B-P0-WRITEPATH-RECOVERY-LATEST.json",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -28,10 +29,11 @@
   "authorizationText": "AUTORIZO PAULA_I5_G2B_P0_WRITEPATH_RECOVERY_REARM: rearmar y ejecutar una única recuperación G2-B en cxorbia-backend-dev, usando exclusivamente el source-fix 1d2cfecba0a89b637398d747a628e549d9823c68, con máximo 1 Cloud Build, 1 actualización de cxorbia-live-hr-dev y 1 deploy de Hosting cxorbia-dev; exigir pre-readback sin drift y post-readback; Firestore/Auth/Storage/HR externa/datos o credenciales reales/pagos/Rules/Make/Gemini = 0; sin merge y sin retry automático.",
   "authorizedAt": "2026-08-20T19:24:00-06:00",
   "paulaExplicitInCurrentConversation": true,
-  "status": "authorized_recovery_pending_execute",
-  "enabled": true,
-  "consumed": false,
-  "executionCount": 0,
+  "status": "recovery_no_provider_side_effect_control_plane_liveness_closed",
+  "enabled": false,
+  "consumed": true,
+  "executionCount": 1,
+  "providerMutationExecutions": 0,
   "maxExecutionCount": 1,
   "cloudBuildExecutionsMax": 1,
   "cloudRunDeployExecutionsMax": 1,
@@ -49,5 +51,15 @@
   "merge": false,
   "automaticRetryAllowed": false,
   "stageAllowedOnlyAfterVerifiedRecoveryPass": true,
-  "preparedAt": "2026-08-20T19:05:00-06:00"
+  "preparedAt": "2026-08-20T19:05:00-06:00",
+  "recoveryExecuteSha": "feeff85d834af7f711a4b62e291a29a14901a8d5",
+  "consumedAt": "2026-08-21T05:02:10Z",
+  "decision": "RECOVERY_NO_PROVIDER_SIDE_EFFECT",
+  "providerAfter": {
+    "readbackAt": "2026-08-21T05:00:31.550Z",
+    "cloudRunRevision": "cxorbia-live-hr-dev-00010-n78",
+    "hostingReleaseName": "sites/cxorbia-backend-dev/releases/1787196507030000",
+    "correctedG2BRouteLive": false
+  },
+  "next": "REQUIRE_NEW_EXPLICIT_RECOVERY_DECISION_AFTER_CONTROL_PLANE_TRIGGER_LIVENESS_FIX"
 }
