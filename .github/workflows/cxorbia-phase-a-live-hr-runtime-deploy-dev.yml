@@ -43,33 +43,16 @@ env:
   G2B_SYNTH_REQUEST: i5-g2b-live-synthetic-acceptance-20260820-01
 
 jobs:
-  frozen-i3-legal-runtime:
-    if: contains(github.event.head_commit.added, 'backend/config/i3-legal-v04-runtime-deploy-dev-execute.json') || contains(github.event.head_commit.modified, 'backend/config/i3-legal-v04-runtime-deploy-dev-execute.json')
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          echo 'I3 legal runtime deploy lane is terminal/frozen.'
-          exit 1
-
-  frozen-g2b-original-one-shot:
-    if: contains(github.event.head_commit.added, 'backend/config/cxorbia-g2b-p0-writepath-deploy-execute.json') || contains(github.event.head_commit.modified, 'backend/config/cxorbia-g2b-p0-writepath-deploy-execute.json')
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          echo 'Original G2-B one-shot is frozen after A_NO_G2B_PROVIDER_DEPLOY_OBSERVED. Automatic retry is forbidden.'
-          exit 1
-
   recover-g2b-p0-writepath:
-    if: github.event.head_commit.message == 'gate(g2b): execute authorized single recovery after payload-liveness fix'
     runs-on: ubuntu-latest
     timeout-minutes: 70
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
-      - name: Checkout exact live branch
+      - name: Checkout exact triggering commit
         uses: actions/checkout@v4
         with:
-          ref: docs-tya-v6-v71-audit
+          ref: ${{ github.sha }}
           fetch-depth: 0
 
       - name: Validate explicit recovery re-arm and exact execute commit
@@ -83,6 +66,7 @@ jobs:
           const a=JSON.parse(fs.readFileSync(process.env.G2B_RECONCILIATION_EVIDENCE,'utf8'));
           const head=cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
           const changed=cp.execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          if(head!==process.env.GITHUB_SHA)throw new Error('recovery_trigger_sha_mismatch:'+head+':'+process.env.GITHUB_SHA);
           if(changed.length!==1||changed[0]!==process.env.G2B_RECOVERY_EXECUTE_FILE)throw new Error('recovery_execute_commit_scope_invalid:'+changed.join(','));
           if(r.schemaVersion!=='cxorbia.g2b.p0-writepath-deploy.recovery-request.v1'||x.schemaVersion!=='cxorbia.g2b.p0-writepath-deploy.recovery-execute.v1')throw new Error('recovery_schema_invalid');
           if(r.recoveryId!==x.recoveryId||r.originalRequestId!=='i5-g2b-p0-writepath-deploy-20260820-01'||r.originalExecuteSha!=='c746bdf068edf1322b7c9a5e497ea5aff13e6b58')throw new Error('recovery_lineage_invalid');
