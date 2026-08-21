@@ -39,9 +39,15 @@ I1–I4, R1–R4 y G1 permanecen PASS/FROZEN. G2-A permanece PASS/FROZEN. G2-B s
 
 Recovery `i5-g2b-p0-writepath-recovery-20260821-02` = `RECOVERY_NO_PROVIDER_SIDE_EFFECT`; request consumido; providerMutationExecutions=0. Provider lane posterior = `FORENSIC_PROVIDER_LANE_READY`, sin autorización de ejecución.
 
-## F0 RC15 activo
+## F0 RC15 activo — inventario ampliado
 
-La auditoría sistémica está en `F0_RC15_CONTROL_PLANE_WRITE_SURFACE_INVENTORY`. La evidencia inicial ya identificó una superficie histórica write-capable latente: `cxorbia-corte4-bootstrap-readonly-execute.yml` conserva `workflow_dispatch` y un request histórico `enabled=true` con `providerConfigWrites=true`. No fue disparada por este bloque; debe inertizarse en F1 junto con cualquier otra superficie equivalente después de completar el inventario.
+La auditoría sistémica continúa en `F0_RC15_CONTROL_PLANE_WRITE_SURFACE_INVENTORY`. La evidencia vigente contiene 18 hallazgos clasificados y cuatro HOLD latentes confirmados:
+- `RC15-CP-005`: bootstrap Corte4, `workflow_dispatch` + `enabled=true` + `providerConfigWrites=true`.
+- `RC15-CP-011`: protected smoke Corte4, `workflow_dispatch`/push + `enabled=true`, con configuración Auth y usuario temporal reversible.
+- `RC15-CP-014`: snapshot histórico G2-B synthetic aún `enabled=true`, `consumed=false`; puede alterar state/evidence aunque el lock vigente ya lo considera no autoritativo.
+- `RC15-CP-017`: creación histórica Firebase DEV Corte4, `workflow_dispatch`/push + `enabled=true`, `projectCreate=true`, `firebaseAdd=true`.
+
+También se demostraron múltiples rutas históricas correctamente consumidas/fail-closed. La cobertura sigue `EXPANDED_NOT_EXHAUSTIVE`; F0 no está cerrado.
 
 ## Próximo paso exacto
 

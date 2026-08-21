@@ -10,10 +10,15 @@
 
 No corresponde reintentar G2-B ni ejecutar synthetic stage.
 
-Primero debe cerrar F0 RC15: auditoría exhaustiva de todas las superficies que pueden cambiar producto, estado canónico o proveedor.
+Primero debe cerrar F0 RC15: auditoría exhaustiva de todas las superficies que pueden cambiar producto, estado canónico o proveedor. La matriz vigente ya contiene 18 hallazgos, pero todavía no declara cobertura exhaustiva.
 
-Hallazgo confirmado ya incorporado a F0:
-- `RC15-CP-005`: workflow histórico Corte4 con `workflow_dispatch` + request `enabled=true` / `providerConfigWrites=true`; requiere F1 inertización una vez cerrado el inventario.
+HOLD confirmados para tratamiento después del cierre de F0:
+- `RC15-CP-005`: bootstrap Corte4 con `workflow_dispatch` + request `enabled=true` / `providerConfigWrites=true`.
+- `RC15-CP-011`: protected smoke Corte4 con request `enabled=true`; permite configuración Auth y usuario temporal reversible.
+- `RC15-CP-014`: snapshot de autorización G2-B synthetic aún `enabled=true`, `consumed=false`; el preflight puede alterar estado canónico/evidence aunque el lock actual ya lo considera no autoritativo.
+- `RC15-CP-017`: creación histórica de Firebase DEV Corte4 con request `enabled=true`, `projectCreate=true`, `firebaseAdd=true` y `workflow_dispatch`.
+
+No inertizar todavía de forma aislada: F0 debe terminar primero para que F1 cierre todas las superficies históricas de manera sistémica y F2 las vincule a una única autoridad canónica.
 
 ## Secuencia congelada
 
