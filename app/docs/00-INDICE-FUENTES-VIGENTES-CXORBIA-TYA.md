@@ -1,34 +1,44 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
 **Fecha:** 2026-08-20  
-**SYNC_EPOCH:** `CXORBIA-20260820-I5-G2A-PRODUCTION-READONLY-PASS-48`  
+**SYNC_EPOCH:** `CXORBIA-20260820-I5-G2B-P0-PROVIDER-A-PROVEN-RECOVERY-PREPARED-49`  
 **PLAN_ID:** `CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE`  
-**Estado:** `I5_G2A_PASS__I5_G2B_AUTHORIZED_STAGE_PENDING__98_2`  
+**Estado:** `I5_G2A_PASS__G2B_PROVIDER_A_PROVEN__RECOVERY_REARM_AUTH_REQUIRED__98_2`  
 **currentIteration:** `I5-G2`
 
 ## Orden obligatorio
 1. `backend/config/cxorbia-phase-a-continuity-lock.json`.
-2. `backend/config/cxorbia-g2a-production-readonly-smoke.json`.
-3. `backend/config/cxorbia-g2-live-in-platform-acceptance-plan.json`.
-4. `backend/config/cxorbia-g2b-live-synthetic-acceptance-request.json`.
-5. `backend/config/cxorbia-g1-production-cutover.json`.
-6. `backend/config/cxorbia-r4-root-cause-closure.json`.
-7. `backend/config/cxorbia-consumed-one-shot-gates.json` y `backend/config/cxorbia-evidence-aliases.json`.
-8. `backend/config/cxorbia-r3-critical-product-acceptance.json`.
-9. Execution State, Source Lock, Checkpoint, Plan Operativo, Phase A Lock, promotion contract/evidence, Go-Live Tracker, `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md` y addenda de Academia.
-10. PR #7 y HEAD vivo.
+2. `app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json`.
+3. `backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-request.json`.
+4. `backend/config/cxorbia-g2a-production-readonly-smoke.json`.
+5. `backend/config/cxorbia-g2-live-in-platform-acceptance-plan.json` y `backend/config/cxorbia-g2b-live-synthetic-acceptance-request.json`.
+6. `backend/config/cxorbia-g1-production-cutover.json` y `backend/config/cxorbia-r4-root-cause-closure.json`.
+7. `backend/config/cxorbia-consumed-one-shot-gates.json`, `backend/config/cxorbia-evidence-aliases.json` y `backend/config/cxorbia-r3-critical-product-acceptance.json`.
+8. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`.
+9. `app/docs/CAMBIOS-BACKEND-ADDENDUM-G2B-PROVIDER-RECONCILIATION-RECOVERY-20260820.md`, `app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-G2B-PROVIDER-RECONCILIATION-20260820.md` y `app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-G2B-PROVIDER-RECONCILIATION-20260820.md`.
+10. Execution State, Source Lock, Plan Operativo, Phase A Lock, promotion contract/evidence, Go-Live Tracker, documentos base `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`, addenda de Academia, PR #7 y HEAD vivo.
 
-PR #7 es mirror no autoritativo. HEAD se resuelve dinámicamente. Si contradice el lock: `CONTINUITY_DRIFT_BLOCKED` y solo se reconcilia control-plane.
+PR #7 es mirror no autoritativo. HEAD se resuelve dinámicamente. Ante contradicción prevalecen el continuity lock, la evidencia provider-backed más reciente y este índice; no se reabren bloques PASS/FROZEN.
 
 ## Estado vivo
-I1–I4, R1–R4 y G1 PASS/FROZEN. G2-A PASS con Staff/Admin fresco y Cliente fresco sobre `https://cxorbia-backend-dev.web.app`; Shopper exacto/histórico permanece FROZEN_REUSE. `productP0Proven=false`.
+I1–I4, R1–R4 y G1 PASS/FROZEN. G2-A PASS. Phase A permanece **98/100**.
 
-Score formal permanece **98/100** porque los dos puntos de G2 solo se cierran al completar G2-B con observación visible, cleanup y post-clean readback.
+El P0 G2-B `G2B_CANONICAL_WRITE_PATH_DISABLED_OR_UNROUTED` fue corregido en source, pero el intento one-shot `c746bdf068edf1322b7c9a5e497ea5aff13e6b58` no materializó ningún deploy de la corrección.
 
-## Único frente restante — G2-B
-`LIVE_IN_PLATFORM_SYNTHETIC_ACCEPTANCE` está **AUTORIZADO** para fase `STAGE_AND_TEST` dentro de la misma plataforma productiva. Solo pueden crearse/modificarse/eliminarse registros de prueba identificados `CXORBIA_E2E_SYNTH_*`; se permite crear/eliminar usuarios Auth sintéticos únicamente si son indispensables y evidencias Storage sintéticas únicamente si son necesarias. Paula aún no ha realizado la observación visible del escenario, por lo que cleanup todavía no debe ejecutarse.
+La reconciliación read-only directa de proveedores cerró la incertidumbre con:
 
-Continúan prohibidos: writes a HR externa, modificación de usuarios/credenciales reales, pagos reales, Make, Gemini, deploy, rebuild, merge y writes legacy.
+`A_NO_G2B_PROVIDER_DEPLOY_OBSERVED`
+
+Pruebas: Cloud Run sigue `cxorbia-live-hr-dev-00010-n78`; Hosting no tiene release posterior al execute; la ruta G2-B todavía responde con el runtime anterior.
+
+## Único frente restante — recuperación G2-B
+Existe un recovery request preparado pero **deshabilitado**. No existe recovery execute. El siguiente gate es:
+
+`PAULA_I5_G2B_P0_WRITEPATH_RECOVERY_REARM`
+
+Hasta autorización expresa continúan en 0: Cloud Build de recuperación, Cloud Run deploy, Hosting deploy, Firestore/Auth/Storage, HR externa, datos/credenciales reales, pagos, Rules, Make, Gemini y merge.
+
+Solo `RECOVERY_PASS_FULL` habilita el `STAGE_AND_TEST` sintético ya autorizado. La aceptación seguirá siendo en la misma plataforma, con `CXORBIA_E2E_SYNTH_*`, escenario visible para Paula antes de cleanup y post-clean readback obligatorio.
 
 ## Anti-bucle
-No crear G3, otra candidata, rama, PR, workflow, PREPROD o metodología. No repetir G1/G2-A ni requests consumidos sin P0 nuevo. El request G2-B es one-shot y no admite retry automático.
+No crear G3, otra candidata, rama, PR, workflow, PREPROD ni metodología. No repetir c746 ni el one-shot original. No retry automático. Cualquier recuperación parcial/no-side-effect debe detenerse y volver a decisión explícita después de reconciliar proveedor.
