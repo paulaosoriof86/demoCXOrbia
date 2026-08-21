@@ -7,6 +7,43 @@
 **currentMasterPhase:** `F0_SYSTEMIC_AUDIT`  
 **PHASE_A:** `98/100`
 
+## 2026-08-21 — RC15 F0 · EXPANSIÓN FORENSE DE SUPERFICIES WRITE-CAPABLE
+
+### Qué se hizo
+- Se revalidó la identidad del plan maestro congelado contra Git blob `48494ebe5fc439aa6d00e6edcf2e78133357e7f3`, lock F0 y `providerMutationAuthorizedNow=false`.
+- Se amplió `app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-LATEST.json` de 5 a 18 hallazgos clasificados.
+- Se auditaron rutas activables por `workflow_dispatch`, `push` y `pull_request synchronize`, requests históricos, execute markers, permisos y consumo one-shot.
+- Se confirmó que varias rutas históricas sí están correctamente cerradas por `enabled=false` + `consumed=true`, incluyendo I3 visible-login, C6 client materialization, R3-C Hosting, Corte6 Auth/RBAC, Corte6 session-continuity Hosting y credential import.
+
+### Nuevos hallazgos de causa raíz
+- `RC15-CP-011` — **HOLD**: `cxorbia-corte4-protected-smoke-temp-operator.yml` conserva `workflow_dispatch`/push y su request histórico sigue `enabled=true`; permite toggle de Email/Password y crear/claim/delete un usuario Auth temporal.
+- `RC15-CP-014` — **HOLD**: el request histórico G2-B synthetic permanece `enabled=true`, `consumed=false`. Su preflight actual no hace provider writes, pero sí puede consumir el snapshot y alterar evidencia/estado canónico del branch sin consultar primero el continuity lock vigente.
+- `RC15-CP-017` — **HOLD**: `cxorbia-r24-new-empty-firebase-dev.yml` conserva `workflow_dispatch`/push y `corte4-new-empty.json` sigue `enabled=true` con `projectCreate=true` y `firebaseAdd=true`; es una superficie histórica capaz de intentar creación de proyecto/Firebase.
+- Se mantiene `RC15-CP-005` — **HOLD** previamente confirmado: bootstrap Corte4 con `workflow_dispatch` + `enabled=true` + `providerConfigWrites=true`.
+
+Esto demuestra que la causa del bucle no era únicamente el antiguo `job-level if` de G2-B. Persistieron múltiples superficies históricas con autoridad vieja aún materializada. RC15 está identificando ese problema como sistema para cerrarlo de una sola vez en F1/F2, antes de volver a tocar proveedor.
+
+### Nota de continuidad
+Se produjo previamente el commit `ce93b44b41adb4383d416b4db498e17105f1a418` como checkpoint readback del evidence F0 sin cambio de contenido. No produjo provider/data/deploy writes ni cambia el estado formal. El avance material de esta ronda comienza con la ampliación de la matriz RC15 posterior a ese checkpoint.
+
+### Seguridad
+- Provider writes: 0.
+- Cloud Build / Cloud Run / Hosting deploy: 0.
+- Firestore / Auth / Storage / HR / Rules / pagos / Make / Gemini: 0.
+- Recovery G2-B: 0.
+- Synthetic stage: 0.
+- Merge: false.
+
+### Clasificación
+- **Reusable CXOrbia:** inventario sistémico de superficies históricas, separación entre evento histórico y autoridad actual, futura inertización F1 y binding F2.
+- **Exclusivo TyA:** requests/targets históricos Corte4, Corte6 y G2-B del tenant TyA.
+- **Claude/prototipo:** sin cambio de UI, `/app/modules` ni `/app/core`.
+- **Academia:** sin cambio funcional; requisito transversal preservado.
+- **Sin impacto Claude:** auditoría de workflows, requests, control-plane y evidence.
+
+### Siguiente
+Continuar F0 hasta clasificar **todas** las superficies capaces de mutar proveedor, datos, producto o estado canónico. No se ejecuta F1 todavía y no se toca G2-B hasta que la matriz sea exhaustiva.
+
 ## 2026-08-21 — RC15 · CONGELAMIENTO DEL PLAN MAESTRO + INICIO AUDITORÍA SISTÉMICA
 
 ### Qué se hizo
