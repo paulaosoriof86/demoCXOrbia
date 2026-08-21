@@ -10,15 +10,16 @@
 
 No corresponde reintentar G2-B ni ejecutar synthetic stage.
 
-Primero debe cerrar F0 RC15: auditoría exhaustiva de todas las superficies que pueden cambiar producto, estado canónico o proveedor. La matriz vigente ya contiene 18 hallazgos, pero todavía no declara cobertura exhaustiva.
+Primero debe cerrar F0 RC15: auditoría exhaustiva de todas las superficies que pueden cambiar producto, estado canónico o proveedor. La matriz vigente ya contiene **27 hallazgos**, pero todavía no declara cobertura exhaustiva.
 
-HOLD confirmados para tratamiento después del cierre de F0:
-- `RC15-CP-005`: bootstrap Corte4 con `workflow_dispatch` + request `enabled=true` / `providerConfigWrites=true`.
-- `RC15-CP-011`: protected smoke Corte4 con request `enabled=true`; permite configuración Auth y usuario temporal reversible.
-- `RC15-CP-014`: snapshot de autorización G2-B synthetic aún `enabled=true`, `consumed=false`; el preflight puede alterar estado canónico/evidence aunque el lock actual ya lo considera no autoritativo.
-- `RC15-CP-017`: creación histórica de Firebase DEV Corte4 con request `enabled=true`, `projectCreate=true`, `firebaseAdd=true` y `workflow_dispatch`.
+HOLD confirmados para tratamiento conjunto después del cierre de F0:
+1. `RC15-CP-005`: bootstrap Corte4 con `workflow_dispatch` + `enabled=true` / `providerConfigWrites=true`.
+2. `RC15-CP-011`: protected smoke Corte4 con request `enabled=true`; permite configuración Auth y usuario temporal reversible.
+3. `RC15-CP-014`: snapshot de autorización G2-B synthetic aún `enabled=true`, `consumed=false`; preflight capaz de alterar state/evidence aunque el lock actual ya lo considera no autoritativo.
+4. `RC15-CP-017`: creación Firebase DEV Corte4 con `workflow_dispatch`/push + `enabled=true`, `projectCreate=true`, `firebaseAdd=true`.
+5. `RC15-CP-025`: postdeploy C6 read-only recheck manual/repetible, capaz de reescribir estado/evidence canónico aun con autorización original consumida.
 
-No inertizar todavía de forma aislada: F0 debe terminar primero para que F1 cierre todas las superficies históricas de manera sistémica y F2 las vincule a una única autoridad canónica.
+No inertizar aisladamente durante F0. F1 debe cerrar todas las superficies históricas residuales de una sola vez y F2 debe vincular los ejecutores restantes a una única autoridad canónica fail-closed.
 
 ## Secuencia congelada
 

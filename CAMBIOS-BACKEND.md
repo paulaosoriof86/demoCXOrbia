@@ -7,6 +7,49 @@
 **currentMasterPhase:** `F0_SYSTEMIC_AUDIT`  
 **PHASE_A:** `98/100`
 
+## 2026-08-21 — RC15 F0 · TRAMO 3: PROVIDER, DATA, HOSTING Y STATE WRITERS REPETIBLES
+
+### Qué se hizo
+- Se resolvió nuevamente el HEAD vivo antes de continuar: `c41f459728b613d3de3c71eb48fe08fd22030ab7`; PR #7 seguía draft/open/unmerged.
+- Se mantuvo el master plan FROZEN y la prohibición de provider/data/deploy/recovery/synthetic writes durante F0.
+- Se amplió la matriz RC15 de 18 a **27 hallazgos clasificados**.
+- Se revisaron específicamente rutas históricas de Hosting, I4B synthetic writes, Firestore materialization, post-V96 source empalme, postdeploy read-only y verificadores Corte4.
+
+### Hallazgo nuevo que profundiza la causa raíz
+`RC15-CP-025` queda **HOLD**: `.github/workflows/cxorbia-c6-p0-postdeploy-readonly-recheck.yml` es manualmente despachable y, aunque no escribe proveedor/datos, acepta artefactos ya consumidos y puede volver a modificar request/execute/evidence en la rama viva. Esto demuestra una segunda clase del problema: además de autoridad histórica capaz de escribir proveedor, existen writers históricos repetibles capaces de cambiar el **estado canónico** sin consultar primero el continuity lock vigente.
+
+Los HOLD vigentes confirmados ascienden a **5**:
+1. `RC15-CP-005` — Corte4 bootstrap, `enabled=true` + `providerConfigWrites=true`.
+2. `RC15-CP-011` — Corte4 protected smoke, `enabled=true`, configuración Auth + usuario temporal.
+3. `RC15-CP-014` — G2-B synthetic preflight con snapshot histórico `enabled=true/consumed=false` capaz de alterar state/evidence.
+4. `RC15-CP-017` — R24 Corte4 new-empty con `projectCreate=true` + `firebaseAdd=true`.
+5. `RC15-CP-025` — C6 postdeploy read-only recheck repetible capaz de reescribir estado/evidence canónico.
+
+### Superficies peligrosas ya demostradas fail-closed
+- R15G Hosting postdeploy: one-shot consumido; no nuevo deploy.
+- Corte6 cumulative Hosting: request + execute `enabled=false/consumed=true`, deploy ya consumido.
+- I4B synthetic lifecycle: request Retry2 consumido PASS; workflows Retry1 ya no satisfacen contrato y fallan antes del proveedor.
+- I3 exact Shopper write: request consumido/STOP_RETRY.
+- Corte6 profile Firestore V2: request consumido PASS y autorización de writes revocada.
+- Firestore materialization multi-job: requests Legal V0.4, I3.5B e I3.5C-2 todos consumidos; manual dispatch es validation-only.
+- Gate read-only actual: consumido y no replay.
+
+### Causa raíz — estado actual
+Ya no se trata de perseguir síntomas separados. RC15 está demostrando un patrón único: **artefactos y triggers históricos sobrevivieron más allá de su uso terminal con semánticas de autoridad heterogéneas**. Algunos fallan cerrados correctamente; otros todavía quedan materialmente invocables. F1 eliminará/inertizará el residuo completo en un solo bloque y F2 obligará a los ejecutores restantes a consultar una autoridad canónica única antes de cualquier acceso sensible.
+
+### Seguridad
+Provider writes=0; Cloud Build=0; Cloud Run deploy=0; Hosting deploy=0; Firestore/Auth/Storage/HR/Rules/pagos/Make/Gemini writes=0; recovery=0; synthetic stage=0; merge=false.
+
+### Clasificación
+- **Reusable CXOrbia:** modelo de autoridad terminal, inventario de triggers, inertización histórica F1 y binding único F2.
+- **Exclusivo TyA:** targets/requests Corte4, Corte6, I3/I4B y G2-B del tenant TyA.
+- **Claude/prototipo:** sin cambio UI, `/app/modules` ni `/app/core`.
+- **Academia:** sin cambio funcional; requisito transversal preservado.
+- **Sin impacto Claude:** workflows/control-plane/evidence/docs.
+
+### Siguiente
+Continuar F0 sobre las superficies restantes hasta que `allWorkflowsClassified`, `allRequestsClassified`, `allWorkflowDispatchClassified` y `allProviderWriteEntrypointsClassified` puedan pasar a true con evidencia. No ejecutar F1 parcialmente y no tocar G2-B todavía.
+
 ## 2026-08-21 — RC15 F0 · EXPANSIÓN FORENSE DE SUPERFICIES WRITE-CAPABLE
 
 ### Qué se hizo
@@ -58,8 +101,7 @@ Continuar F0 hasta clasificar **todas** las superficies capaces de mutar proveed
 `RC15-CP-005`: `.github/workflows/cxorbia-corte4-bootstrap-readonly-execute.yml` conserva `workflow_dispatch` y `.github/cxorbia-firebase-requests/corte4-bootstrap-execute.json` conserva `enabled=true` + `providerConfigWrites=true`. Es una superficie histórica write-capable latente. No fue disparada por este bloque. Debe quedar inertizada en F1, después de completar el inventario exhaustivo de F0.
 
 ### Seguridad
-Este bloque es exclusivamente repo/control-plane/documentación:
-Cloud Build=0, Cloud Run deploy=0, Hosting deploy=0, Firestore/Auth/Storage/HR/payment/Rules/Make/Gemini writes=0, recovery=0, synthetic stage=0, merge=false.
+Este bloque es exclusivamente repo/control-plane/documentación: Cloud Build=0, Cloud Run deploy=0, Hosting deploy=0, Firestore/Auth/Storage/HR/payment/Rules/Make/Gemini writes=0, recovery=0, synthetic stage=0, merge=false.
 
 ### Clasificación
 - **Reusable CXOrbia:** master-plan hash lock, change-control y auditoría exhaustiva de superficies.

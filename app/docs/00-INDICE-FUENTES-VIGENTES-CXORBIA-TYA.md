@@ -41,13 +41,14 @@ Recovery `i5-g2b-p0-writepath-recovery-20260821-02` = `RECOVERY_NO_PROVIDER_SIDE
 
 ## F0 RC15 activo — inventario ampliado
 
-La auditoría sistémica continúa en `F0_RC15_CONTROL_PLANE_WRITE_SURFACE_INVENTORY`. La evidencia vigente contiene 18 hallazgos clasificados y cuatro HOLD latentes confirmados:
+La auditoría sistémica continúa en `F0_RC15_CONTROL_PLANE_WRITE_SURFACE_INVENTORY`. La evidencia vigente contiene **27 hallazgos clasificados** y **5 HOLD** latentes confirmados:
 - `RC15-CP-005`: bootstrap Corte4, `workflow_dispatch` + `enabled=true` + `providerConfigWrites=true`.
-- `RC15-CP-011`: protected smoke Corte4, `workflow_dispatch`/push + `enabled=true`, con configuración Auth y usuario temporal reversible.
+- `RC15-CP-011`: protected smoke Corte4, `workflow_dispatch`/push + `enabled=true`, configuración Auth y usuario temporal reversible.
 - `RC15-CP-014`: snapshot histórico G2-B synthetic aún `enabled=true`, `consumed=false`; puede alterar state/evidence aunque el lock vigente ya lo considera no autoritativo.
 - `RC15-CP-017`: creación histórica Firebase DEV Corte4, `workflow_dispatch`/push + `enabled=true`, `projectCreate=true`, `firebaseAdd=true`.
+- `RC15-CP-025`: C6 postdeploy read-only recheck manual/repetible capaz de reescribir request/execute/evidence canónico aun con el one-shot original consumido.
 
-También se demostraron múltiples rutas históricas correctamente consumidas/fail-closed. La cobertura sigue `EXPANDED_NOT_EXHAUSTIVE`; F0 no está cerrado.
+Se demostraron además numerosas rutas peligrosas históricas correctamente consumidas/fail-closed. La cobertura sigue `EXPANDED_NOT_EXHAUSTIVE`; F0 no está cerrado.
 
 ## Próximo paso exacto
 

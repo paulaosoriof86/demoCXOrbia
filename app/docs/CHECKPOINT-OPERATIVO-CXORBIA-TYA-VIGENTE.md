@@ -27,13 +27,14 @@ Recovery `i5-g2b-p0-writepath-recovery-20260821-02`: `RECOVERY_NO_PROVIDER_SIDE_
 
 ## RC15 F0 — avance de causa raíz
 
-La matriz vigente se amplió a 18 hallazgos. Cuatro superficies permanecen HOLD y deberán tratarse sistémicamente después del inventario exhaustivo:
+La matriz vigente contiene **27 hallazgos clasificados**. F0 continúa porque la cobertura todavía no es exhaustiva. Se mantienen **5 HOLD** residuales para tratamiento conjunto F1/F2:
 1. `RC15-CP-005` — bootstrap Corte4: `workflow_dispatch` + request histórico `enabled=true` con `providerConfigWrites=true`.
 2. `RC15-CP-011` — protected smoke Corte4: `workflow_dispatch`/push + request `enabled=true`, con configuración Auth y usuario temporal reversible.
-3. `RC15-CP-014` — G2-B synthetic preflight: snapshot histórico `enabled=true`, `consumed=false`; no ejecuta provider writes en este preflight, pero puede alterar estado/evidence sin obedecer primero el continuity lock actual.
+3. `RC15-CP-014` — G2-B synthetic preflight: snapshot histórico `enabled=true`, `consumed=false`; no ejecuta provider writes en ese preflight, pero puede alterar state/evidence sin obedecer primero el continuity lock actual.
 4. `RC15-CP-017` — creación Firebase DEV Corte4: `workflow_dispatch`/push + request `enabled=true`, `projectCreate=true`, `firebaseAdd=true`.
+5. `RC15-CP-025` — C6 postdeploy read-only recheck: manual/repetible y capaz de reescribir request/execute/evidence canónico con el one-shot original ya consumido.
 
-Se verificaron además varias rutas históricas correctamente consumidas/fail-closed. La cobertura sigue `EXPANDED_NOT_EXHAUSTIVE`; no corresponde pasar a F1 todavía.
+La auditoría también confirmó como fail-closed rutas históricas de Hosting, Auth, Firestore, I3, I4B y gates read-only; por tanto no se reabren ni se reprocesan.
 
 ## Siguiente exacto
 

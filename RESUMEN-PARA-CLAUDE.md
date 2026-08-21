@@ -14,13 +14,14 @@ I1–I4, R1–R4, G1 y G2-A siguen PASS/FROZEN. G2-B no se ejecuta mientras F0 R
 
 ## RC15 F0 — avance vigente
 
-La matriz de control-plane se amplió a 18 hallazgos clasificados. Siguen cuatro superficies en HOLD para tratamiento posterior F1/F2:
-- Corte4 bootstrap histórico: `workflow_dispatch` + request `enabled=true` con `providerConfigWrites=true`.
-- Corte4 protected smoke temporal: `workflow_dispatch`/push + request `enabled=true` que permite configuración Auth y usuario temporal reversible.
-- G2-B synthetic preflight: authorization snapshot histórico aún `enabled=true`, `consumed=false`; no hace provider writes en el preflight actual, pero puede alterar estado/evidence sin consultar primero el continuity lock vigente.
-- R24 Corte4 new-empty Firebase: `workflow_dispatch`/push + request `enabled=true` con `projectCreate=true` y `firebaseAdd=true`.
+La matriz de control-plane ya contiene **27 hallazgos clasificados**. F0 sigue `EXPANDED_NOT_EXHAUSTIVE` y mantiene **5 HOLD** para tratamiento sistémico F1/F2:
+- `RC15-CP-005`: Corte4 bootstrap histórico, `workflow_dispatch` + `enabled=true` + `providerConfigWrites=true`.
+- `RC15-CP-011`: Corte4 protected smoke, `workflow_dispatch`/push + `enabled=true`, configuración Auth y usuario temporal reversible.
+- `RC15-CP-014`: G2-B synthetic preflight con snapshot histórico `enabled=true`, `consumed=false`; puede alterar state/evidence sin consultar primero el lock vigente.
+- `RC15-CP-017`: R24 Corte4 new-empty, `workflow_dispatch`/push + `enabled=true`, `projectCreate=true`, `firebaseAdd=true`.
+- `RC15-CP-025`: C6 postdeploy read-only recheck manual/repetible; no hace provider writes, pero puede reescribir request/execute/evidence canónico aun cuando el one-shot original ya está consumido.
 
-Varias rutas históricas adicionales ya están demostradas `enabled=false` + `consumed=true` y fallan cerradas. F0 aún no se declara exhaustivo.
+En paralelo, se demostraron fail-closed múltiples rutas históricas de Hosting, Auth, Firestore, I3/I4B y gates read-only. Esto reduce el alcance de F1 a los residuos vivos demostrados y evita rehacer carriles ya correctamente terminalizados.
 
 ## Claude/prototipo
 

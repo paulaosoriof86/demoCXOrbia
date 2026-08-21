@@ -1,12 +1,12 @@
 {
   "schemaVersion": "cxorbia.rc15.systemic-audit.control-plane.v1",
-  "generatedAt": "2026-08-21T15:15:00-06:00",
+  "generatedAt": "2026-08-21T15:28:00-06:00",
   "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
   "phase": "F0_SYSTEMIC_AUDIT",
   "step": "F0_RC15_CONTROL_PLANE_WRITE_SURFACE_INVENTORY",
   "status": "IN_PROGRESS",
   "phaseA": {"completed":98,"pending":2},
-  "headBeforeTranche": "ce93b44b41adb4383d416b4db498e17105f1a418",
+  "headBeforeTranche": "c41f459728b613d3de3c71eb48fe08fd22030ab7",
   "masterPlanFreezeValidation": {
     "decision": "PASS_REPLICATED_FROM_CANONICAL_GIT_IDENTITY",
     "planGitBlobShaExpected": "48494ebe5fc439aa6d00e6edcf2e78133357e7f3",
@@ -16,160 +16,51 @@
     "providerMutationAuthorizedNow": false
   },
   "findings": [
-    {
-      "id": "RC15-CP-001",
-      "classification": "PASS_FOR_PLAN_FREEZE_COMMIT",
-      "surface": ".github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml",
-      "evidence": "push paths are limited to three runtime execute markers; plan/continuity docs are not trigger paths",
-      "providerMutationRiskFromPlanFreeze": false
-    },
-    {
-      "id": "RC15-CP-002",
-      "classification": "PASS_FOR_PLAN_FREEZE_COMMIT",
-      "surface": ".github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml",
-      "evidence": "push path limited to .github/cxorbia-firebase-requests/cxorbia-i3-shopper-persistence-exact-write-v1.json; exact changed-file gate before provider access",
-      "providerMutationRiskFromPlanFreeze": false
-    },
-    {
-      "id": "RC15-CP-003",
-      "classification": "PASS_FOR_PLAN_FREEZE_COMMIT",
-      "surface": ".github/workflows/cxorbia-corte6-profile-full-firestore-write-v2.yml",
-      "evidence": "push path limited to backend/config/corte6-profile-full-firestore-write-execute-v2.json; plan/lock paths excluded",
-      "providerMutationRiskFromPlanFreeze": false
-    },
-    {
-      "id": "RC15-CP-004",
-      "classification": "PASS_FOR_PLAN_FREEZE_COMMIT",
-      "surface": ".github/workflows/cxorbia-phase-a-firestore-materialization-executor.yml",
-      "evidence": "push paths are explicit executor/contracts/runtime/request files; plan/continuity paths excluded",
-      "providerMutationRiskFromPlanFreeze": false
-    },
-    {
-      "id": "RC15-CP-005",
-      "classification": "HOLD_LATENT_HISTORICAL_WRITE_SURFACE",
-      "surface": ".github/workflows/cxorbia-corte4-bootstrap-readonly-execute.yml + .github/cxorbia-firebase-requests/corte4-bootstrap-execute.json",
-      "evidence": "workflow exposes workflow_dispatch; request remains enabled=true with providerConfigWrites=true and exact historical authorization text; executor can proceed to provider config writes after preflight",
-      "automaticTriggerFromPlanFreeze": false,
-      "manualDispatchLatentWriteRisk": true,
-      "requiredTreatment": "F1_INERTIZATION_BEFORE_PROVIDER_MUTATION"
-    },
-    {
-      "id": "RC15-CP-006",
-      "classification": "ACTIVE_REPOSITORY_MUTATION_RUNNER_FAIL_CLOSED_NO_REQUEST",
-      "surface": ".github/workflows/cxorbia-atomic-apply-runner.yml",
-      "evidence": "push-triggered controlled repository writer; current .github/cxorbia-apply-requests/request.json is absent, so the apply step does not execute",
-      "providerMutationRisk": false,
-      "canonicalStateMutationRisk": "CONTROLLED_ONLY_IF_NEW_REQUEST_MATERIALIZED",
-      "requiredTreatment": "F2_CANONICAL_AUTHORITY_GOVERNANCE"
-    },
-    {
-      "id": "RC15-CP-007",
-      "classification": "HISTORICAL_CONSUMED_WRITE_PATH_FAIL_CLOSED",
-      "surface": ".github/workflows/cxorbia-auth-preactivation-route-action.yml + backend/requests/i3-9-10-11-visible-login-close.json",
-      "evidence": "workflow exposes workflow_dispatch but provider-write job is push-only; request is enabled=false, consumed=true, PASS_INTEGRAL and noAutomaticRetry=true",
-      "providerMutationRiskNow": false
-    },
-    {
-      "id": "RC15-CP-008",
-      "classification": "HISTORICAL_CONSUMED_WRITE_PATH_FAIL_CLOSED",
-      "surface": ".github/workflows/cxorbia-c6-client-auth-materialization.yml + backend/config/corte6-client-auth-materialization-request.json",
-      "evidence": "request is enabled=false, consumed=true, status=consumed_runtime_hold; historical membership-only write authorization is terminal",
-      "providerMutationRiskNow": false
-    },
-    {
-      "id": "RC15-CP-009",
-      "classification": "HISTORICAL_CONSUMED_PR_SYNCHRONIZE_WRITE_PATH_FAIL_CLOSED",
-      "surface": ".github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml + backend/config/i3-11-identity-link-runtime-bridge-rules-hosting-dev.json",
-      "evidence": "workflow is pull_request synchronize and can deploy Hosting only with an active exact request; request is enabled=false, consumed=true, pass_consumed with actualHostingDeploys=1",
-      "providerMutationRiskNow": false
-    },
-    {
-      "id": "RC15-CP-010",
-      "classification": "HISTORICAL_CONSUMED_PR_SYNCHRONIZE_WRITE_PATH_FAIL_CLOSED",
-      "surface": ".github/workflows/cxorbia-corte4-hosting-dev-visual.yml + backend/requests/i3-9-10-11-visible-login-close.json",
-      "evidence": "retired Corte4 workflow file is reused as a PR synchronize Hosting/password one-shot lane but the shared request is enabled=false, consumed=true",
-      "providerMutationRiskNow": false
-    },
-    {
-      "id": "RC15-CP-011",
-      "classification": "HOLD_LATENT_HISTORICAL_PROVIDER_AUTH_WRITE_SURFACE",
-      "surface": ".github/workflows/cxorbia-corte4-protected-smoke-temp-operator.yml + .github/cxorbia-firebase-requests/corte4-protected-smoke-temp-operator.json",
-      "evidence": "workflow exposes workflow_dispatch and push; request remains enabled=true and authorizes Email/Password provider configuration toggle plus create temporary Auth user, set claims and delete temporary user",
-      "automaticTriggerRisk": true,
-      "manualDispatchLatentWriteRisk": true,
-      "requiredTreatment": "F1_INERTIZATION_BEFORE_PROVIDER_MUTATION"
-    },
-    {
-      "id": "RC15-CP-012",
-      "classification": "HISTORICAL_CONSUMED_WRITE_PATH_FAIL_CLOSED",
-      "surface": ".github/workflows/cxorbia-corte6-auth-rbac-activation.yml + .github/cxorbia-firebase-requests/corte6-auth-rbac-activation.json",
-      "evidence": "workflow can deploy Firestore Rules and normalize up to five Auth claims only when request is active; request is enabled=false, consumed=true and deployFirestoreRules=false",
-      "providerMutationRiskNow": false
-    },
-    {
-      "id": "RC15-CP-013",
-      "classification": "HISTORICAL_CONSUMED_WRITE_PATH_FAIL_CLOSED",
-      "surface": ".github/workflows/cxorbia-corte6-credential-continuity-hosting.yml + backend/config/corte6-credential-continuity-hosting-request.json",
-      "evidence": "historical single Hosting redeploy lane; request is enabled=false, consumed=true, consumed_pass and hostingDeployExecutions=1",
-      "providerMutationRiskNow": false
-    },
-    {
-      "id": "RC15-CP-014",
-      "classification": "HOLD_LATENT_HISTORICAL_CANONICAL_STATE_MUTATION_SURFACE",
-      "surface": ".github/workflows/cxorbia-i4b-retry1-authorized-runtime-lane.yml + backend/config/cxorbia-g2b-live-synthetic-acceptance-request.json",
-      "evidence": "historical I4B job itself is frozen with if=false, but G2-B preflight remains push-triggered and its authorization snapshot still says enabled=true, consumed=false; the workflow does not consult the current continuity lock before preflight and can consume/update the historical request and evidence in the branch",
-      "providerMutationRiskInThisPreflight": false,
-      "canonicalStateDriftRisk": true,
-      "requiredTreatment": "F1_F2_INERTIZE_HISTORICAL_AUTHORITY_AND_BIND_TO_CANONICAL_LOCK"
-    },
-    {
-      "id": "RC15-CP-015",
-      "classification": "HISTORICAL_EVENT_ARTIFACT_STALE_FLAGS_FAIL_CLOSED_BY_CONSUMED_REQUEST",
-      "surface": ".github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml + backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-execute.json + backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-request.json",
-      "evidence": "recovery workflow can mutate Cloud Build/Run/Hosting only on exact execute-marker push; execute artifact retains enabled=true/consumed=false as immutable history, but terminal request is enabled=false, consumed=true with providerMutationExecutions=0, so current authorization gate fails closed",
-      "providerMutationRiskNow": false,
-      "requiredTreatment": "F2_BIND_EXECUTOR_TO_CANONICAL_TERMINAL_AUTHORITY_WITHOUT_REPLAY"
-    },
-    {
-      "id": "RC15-CP-016",
-      "classification": "INERT_HISTORICAL_WORKFLOW",
-      "surface": ".github/workflows/cxorbia-r17n-final-materialize-dev.yml",
-      "evidence": "workflow_dispatch remains exposed but workflow body only records consumed authorization and explicitly performs no provider write",
-      "providerMutationRiskNow": false
-    },
-    {
-      "id": "RC15-CP-017",
-      "classification": "HOLD_LATENT_HISTORICAL_PROVIDER_PROJECT_CREATION_SURFACE",
-      "surface": ".github/workflows/cxorbia-r24-new-empty-firebase-dev.yml + .github/cxorbia-firebase-requests/corte4-new-empty.json",
-      "evidence": "workflow exposes workflow_dispatch and push; request remains enabled=true with projectCreate=true and firebaseAdd=true for historical Corte4 DEV target; a structurally valid creator credential is sufficient to attempt provider project creation",
-      "automaticTriggerRisk": true,
-      "manualDispatchLatentWriteRisk": true,
-      "requiredTreatment": "F1_INERTIZATION_BEFORE_PROVIDER_MUTATION"
-    },
-    {
-      "id": "RC15-CP-018",
-      "classification": "HISTORICAL_CONSUMED_WRITE_PATH_FAIL_CLOSED",
-      "surface": ".github/workflows/cxorbia-corte6-credential-import.yml + backend/config/corte6-credential-import-request.json",
-      "evidence": "historical Auth import lane can write up to 91 identities only when request is active; request is enabled=false, consumed=true with PASS_EXACT_AUTH_IMPORT_READBACK",
-      "providerMutationRiskNow": false
-    }
+    {"id":"RC15-CP-001","classification":"PASS_FOR_PLAN_FREEZE_COMMIT","surface":".github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml","evidence":"push paths limited to runtime execute markers; plan/continuity docs are not trigger paths","providerMutationRiskFromPlanFreeze":false},
+    {"id":"RC15-CP-002","classification":"PASS_FOR_PLAN_FREEZE_COMMIT","surface":".github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml","evidence":"push path limited to the I3 exact-write request and exact changed-file gate runs before provider access","providerMutationRiskFromPlanFreeze":false},
+    {"id":"RC15-CP-003","classification":"PASS_FOR_PLAN_FREEZE_COMMIT","surface":".github/workflows/cxorbia-corte6-profile-full-firestore-write-v2.yml","evidence":"push path limited to exact execute marker; plan/lock paths excluded","providerMutationRiskFromPlanFreeze":false},
+    {"id":"RC15-CP-004","classification":"PASS_FOR_PLAN_FREEZE_COMMIT","surface":".github/workflows/cxorbia-phase-a-firestore-materialization-executor.yml","evidence":"plan freeze paths excluded from workflow triggers","providerMutationRiskFromPlanFreeze":false},
+    {"id":"RC15-CP-005","classification":"HOLD_LATENT_HISTORICAL_WRITE_SURFACE","surface":".github/workflows/cxorbia-corte4-bootstrap-readonly-execute.yml + .github/cxorbia-firebase-requests/corte4-bootstrap-execute.json","evidence":"workflow exposes workflow_dispatch; request remains enabled=true with providerConfigWrites=true and historical authorization text","automaticTriggerFromPlanFreeze":false,"manualDispatchLatentWriteRisk":true,"requiredTreatment":"F1_INERTIZATION_BEFORE_PROVIDER_MUTATION"},
+    {"id":"RC15-CP-006","classification":"ACTIVE_REPOSITORY_MUTATION_RUNNER_FAIL_CLOSED_NO_REQUEST","surface":".github/workflows/cxorbia-atomic-apply-runner.yml","evidence":"controlled repository writer; current .github/cxorbia-apply-requests/request.json is absent so apply does not execute","providerMutationRisk":false,"canonicalStateMutationRisk":"CONTROLLED_ONLY_IF_NEW_REQUEST_MATERIALIZED","requiredTreatment":"F2_CANONICAL_AUTHORITY_GOVERNANCE"},
+    {"id":"RC15-CP-007","classification":"HISTORICAL_CONSUMED_WRITE_PATH_FAIL_CLOSED","surface":".github/workflows/cxorbia-auth-preactivation-route-action.yml + backend/requests/i3-9-10-11-visible-login-close.json","evidence":"provider-write job is push-only; request enabled=false, consumed=true, PASS_INTEGRAL, noAutomaticRetry=true","providerMutationRiskNow":false},
+    {"id":"RC15-CP-008","classification":"HISTORICAL_CONSUMED_WRITE_PATH_FAIL_CLOSED","surface":".github/workflows/cxorbia-c6-client-auth-materialization.yml + backend/config/corte6-client-auth-materialization-request.json","evidence":"request enabled=false, consumed=true, consumed_runtime_hold","providerMutationRiskNow":false},
+    {"id":"RC15-CP-009","classification":"HISTORICAL_CONSUMED_PR_SYNCHRONIZE_WRITE_PATH_FAIL_CLOSED","surface":".github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml + backend/config/i3-11-identity-link-runtime-bridge-rules-hosting-dev.json","evidence":"PR synchronize Hosting lane requires active exact request; request enabled=false, consumed=true, pass_consumed, actualHostingDeploys=1","providerMutationRiskNow":false},
+    {"id":"RC15-CP-010","classification":"HISTORICAL_CONSUMED_PR_SYNCHRONIZE_WRITE_PATH_FAIL_CLOSED","surface":".github/workflows/cxorbia-corte4-hosting-dev-visual.yml + backend/requests/i3-9-10-11-visible-login-close.json","evidence":"historical/reused PR synchronize lane is governed by consumed I3 request","providerMutationRiskNow":false},
+    {"id":"RC15-CP-011","classification":"HOLD_LATENT_HISTORICAL_PROVIDER_AUTH_WRITE_SURFACE","surface":".github/workflows/cxorbia-corte4-protected-smoke-temp-operator.yml + .github/cxorbia-firebase-requests/corte4-protected-smoke-temp-operator.json","evidence":"workflow exposes workflow_dispatch and push; request remains enabled=true and permits Email/Password provider toggle plus temporary Auth create/claims/delete","automaticTriggerRisk":true,"manualDispatchLatentWriteRisk":true,"requiredTreatment":"F1_INERTIZATION_BEFORE_PROVIDER_MUTATION"},
+    {"id":"RC15-CP-012","classification":"HISTORICAL_CONSUMED_WRITE_PATH_FAIL_CLOSED","surface":".github/workflows/cxorbia-corte6-auth-rbac-activation.yml + .github/cxorbia-firebase-requests/corte6-auth-rbac-activation.json","evidence":"request enabled=false, consumed=true and deployFirestoreRules=false","providerMutationRiskNow":false},
+    {"id":"RC15-CP-013","classification":"HISTORICAL_CONSUMED_WRITE_PATH_FAIL_CLOSED","surface":".github/workflows/cxorbia-corte6-credential-continuity-hosting.yml + backend/config/corte6-credential-continuity-hosting-request.json","evidence":"historical single Hosting redeploy request enabled=false, consumed=true, hostingDeployExecutions=1","providerMutationRiskNow":false},
+    {"id":"RC15-CP-014","classification":"HOLD_LATENT_HISTORICAL_CANONICAL_STATE_MUTATION_SURFACE","surface":".github/workflows/cxorbia-i4b-retry1-authorized-runtime-lane.yml + backend/config/cxorbia-g2b-live-synthetic-acceptance-request.json","evidence":"I4B job frozen, but G2-B preflight remains push-triggered and historical authorization snapshot remains enabled=true, consumed=false; preflight can consume/update snapshot and evidence without consulting current continuity lock first","providerMutationRiskInThisPreflight":false,"canonicalStateDriftRisk":true,"requiredTreatment":"F1_F2_INERTIZE_HISTORICAL_AUTHORITY_AND_BIND_TO_CANONICAL_LOCK"},
+    {"id":"RC15-CP-015","classification":"HISTORICAL_EVENT_ARTIFACT_STALE_FLAGS_FAIL_CLOSED_BY_CONSUMED_REQUEST","surface":".github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml + backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-execute.json + backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-request.json","evidence":"execute artifact retains historical enabled=true/consumed=false but terminal recovery request is enabled=false, consumed=true; current recovery gate therefore fails closed before provider mutation","providerMutationRiskNow":false,"requiredTreatment":"F2_BIND_EXECUTOR_TO_CANONICAL_TERMINAL_AUTHORITY_WITHOUT_REPLAY"},
+    {"id":"RC15-CP-016","classification":"INERT_HISTORICAL_WORKFLOW","surface":".github/workflows/cxorbia-r17n-final-materialize-dev.yml","evidence":"workflow_dispatch remains exposed but body records consumed authorization and performs no provider write","providerMutationRiskNow":false},
+    {"id":"RC15-CP-017","classification":"HOLD_LATENT_HISTORICAL_PROVIDER_PROJECT_CREATION_SURFACE","surface":".github/workflows/cxorbia-r24-new-empty-firebase-dev.yml + .github/cxorbia-firebase-requests/corte4-new-empty.json","evidence":"workflow exposes workflow_dispatch and push; request remains enabled=true with projectCreate=true and firebaseAdd=true","automaticTriggerRisk":true,"manualDispatchLatentWriteRisk":true,"requiredTreatment":"F1_INERTIZATION_BEFORE_PROVIDER_MUTATION"},
+    {"id":"RC15-CP-018","classification":"HISTORICAL_CONSUMED_WRITE_PATH_FAIL_CLOSED","surface":".github/workflows/cxorbia-corte6-credential-import.yml + backend/config/corte6-credential-import-request.json","evidence":"historical Auth import lane requires active request; request enabled=false, consumed=true, PASS_EXACT_AUTH_IMPORT_READBACK","providerMutationRiskNow":false},
+    {"id":"RC15-CP-019","classification":"HISTORICAL_CONSUMED_POSTDEPLOY_READONLY_GATE","surface":".github/workflows/cxorbia-phase-a-r15g-dev-root-deploy.yml + backend/config/phase-a-hosting-dev-execution-request-v1.json","evidence":"request enabled=false, consumed=true, hostingDeployExecutions=1 and status deployed_waiting_human_auth_visual_direct_entrypoint; current workflow path is post-deploy/read-only and diagnose branch is not active in current status","providerMutationRiskNow":false},
+    {"id":"RC15-CP-020","classification":"HISTORICAL_CONSUMED_HOSTING_WRITE_PATH_FAIL_CLOSED","surface":".github/workflows/cxorbia-corte6-cumulative-human-visual-hosting.yml + backend/config/corte6-cumulative-human-visual-hosting-request.json + backend/config/corte6-cumulative-human-visual-hosting-execute.json","evidence":"workflow can deploy existing Hosting once only if request/execute are enabled=true and consumed=false; both are now enabled=false, consumed=true with hostingDeployExecutions=1","providerMutationRiskNow":false},
+    {"id":"RC15-CP-021","classification":"HISTORICAL_CONSUMED_SYNTHETIC_DATA_WRITE_PATH_FAIL_CLOSED","surface":".github/workflows/cxorbia-i4b-single-dev-visit-lifecycle-e2e-write-gate.yml + backend/config/i4b-single-dev-visit-lifecycle-e2e-write-gate-request.json","evidence":"workflow hardcodes Retry1 authorization contract while current request is Retry2 and is enabled=false, consumed=true, pass_consumed_provider_verified; it fails before credential/provider access","providerMutationRiskNow":false},
+    {"id":"RC15-CP-022","classification":"HISTORICAL_CONSUMED_SYNTHETIC_DATA_WRITE_PATH_FAIL_CLOSED","surface":".github/workflows/cxorbia-i4b-single-dev-visit-lifecycle-e2e-retry1.yml + backend/config/i4b-single-dev-visit-lifecycle-e2e-write-gate-request.json","evidence":"Retry1 workflow requires exact Retry1 enabled/unconsumed request; current Retry2 request is consumed PASS, so replay fails before provider credential","providerMutationRiskNow":false},
+    {"id":"RC15-CP-023","classification":"HISTORICAL_SOURCE_ONLY_AUTHORITY_NEEDS_F2_GOVERNANCE","surface":".github/workflows/cxorbia-post-v96-runtime-empalme.yml + backend/config/phase-a-post-v96-empalme-request.source-safe.json","evidence":"source-only empalme explicitly forbids deploy/providers/database writes, but historical authorization has no enabled/consumed terminal semantics; trigger is request-path push","providerMutationRiskNow":false,"requiredTreatment":"F2_CANONICAL_AUTHORITY_GOVERNANCE"},
+    {"id":"RC15-CP-024","classification":"MULTI_JOB_PROVIDER_WRITE_EXECUTOR_CURRENT_REQUESTS_CONSUMED_FAIL_CLOSED","surface":".github/workflows/cxorbia-phase-a-firestore-materialization-executor.yml + backend/requests/i3-legal-v04-materialization-dev.json + backend/requests/i3-5b-provider-exact-crosswalk-one-target.json + backend/requests/i3-5c2-period-independent-link-materialization.json","evidence":"manual dispatch executes validation only; provider-write jobs are push-only and inspect exact one-shot requests. Audited requests are all enabled=false, consumed=true (legal V0.4 PASS, I3.5B safe HOLD zero writes, I3.5C-2 PASS)","providerMutationRiskNow":false},
+    {"id":"RC15-CP-025","classification":"HOLD_LATENT_HISTORICAL_CANONICAL_STATE_MUTATION_SURFACE","surface":".github/workflows/cxorbia-c6-p0-postdeploy-readonly-recheck.yml + backend/config/corte6-cumulative-human-visual-hosting-request.json + backend/config/corte6-cumulative-human-visual-hosting-execute.json","evidence":"manual workflow_dispatch intentionally accepts already-consumed request/execute, performs provider reads only, then can rewrite request/execute status/timestamps and persist evidence to live branch on every successful recheck; it is repeatable and not bound to current continuity lock","providerMutationRiskNow":false,"canonicalStateDriftRisk":true,"manualDispatchLatentWriteRisk":true,"requiredTreatment":"F1_F2_INERTIZE_REPEATABLE_HISTORICAL_STATE_WRITER_AND_BIND_TO_CANONICAL_LOCK"},
+    {"id":"RC15-CP-026","classification":"ACTIVE_HISTORICAL_READONLY_PROVIDER_SURFACE","surface":".github/workflows/cxorbia-corte4-verify-new-empty-firebase-dev.yml + .github/cxorbia-firebase-requests/corte4-verify-new-empty.json","evidence":"workflow exposes workflow_dispatch and request remains enabled=true, but contract is VERIFY_ONLY/providerWrites=false; actions are bounded provider reads plus status/PR-comment publication, with no canonical file or provider mutation","providerMutationRiskNow":false,"requiredTreatment":"F1_REVIEW_FOR_HISTORICAL_INERTIZATION_POLICY"},
+    {"id":"RC15-CP-027","classification":"HISTORICAL_CONSUMED_READONLY_GATE_FAIL_CLOSED","surface":".github/cxorbia-gate-requests/request.json","evidence":"current read-only post-gates request is enabled=false, consumed=true, executionsConsumed=1, repositoryWrites=false, dataWrites=false, providerWrites=false and noAutomaticRetry=true","providerMutationRiskNow":false}
   ],
   "coverage": {
     "controlPlaneWriteSurface": "EXPANDED_NOT_EXHAUSTIVE",
-    "classifiedFindings": 18,
-    "confirmedLatentHoldSurfaces": 4,
+    "classifiedFindings": 27,
+    "confirmedLatentHoldSurfaces": 5,
+    "providerWriteOrDeploySurfacesFailClosedConfirmed": 12,
     "allWorkflowsClassified": false,
     "allRequestsClassified": false,
     "allWorkflowDispatchClassified": false,
     "allProviderWriteEntrypointsClassified": false,
-    "inventoryCursor": "TRANCHE_2_HIGH_RISK_PROVIDER_AND_CANONICAL_STATE_SURFACES"
+    "inventoryCursor": "TRANCHE_3_PROVIDER_DATA_HOSTING_AND_REPEATABLE_STATE_WRITERS"
   },
   "rootCauseProgress": {
     "newRootCauseEvidence": true,
-    "finding": "The repeated loop risk is systemic rather than a single G2-B job predicate: multiple historical execution surfaces remain callable because old workflow_dispatch/push triggers and enabled authorization snapshots survived terminal use. Some are provider-write capable and one can mutate canonical state despite the current lock declaring its authorization snapshot non-authoritative.",
-    "fixModel": "Finish exhaustive F0 inventory, inertize every historical write-capable authorization/trigger safely in F1, then bind remaining executors to one canonical authority in F2 before any G2-B recovery."
+    "finding": "The loop risk is systemic and now has two proven classes: stale historical provider-write authority and repeatable historical canonical-state writers that can bypass the current lock. At the same time, multiple dangerous historical lanes are proven consumed/fail-closed, narrowing F1 to the residual live surfaces rather than reworking the whole system.",
+    "fixModel": "Finish exhaustive F0 inventory; inertize every residual historical write/state-mutation surface together in F1; bind every remaining executor to the frozen master plan + continuity lock + consumed ledger in F2; only then revalidate and execute G2-B under a new explicit one-shot authorization."
   },
   "safety": {"providerWrites":0,"dataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"deploys":0,"merge":false,"recoveryExecuted":false,"syntheticStageExecuted":false},
   "decision": "CONTINUE_F0_NO_PROVIDER_MUTATION",
-  "next": "CONTINUE_HIGH_RISK_WORKFLOW_REQUEST_INVENTORY_UNTIL_ALL_WRITE_CAPABLE_AND_STATE_MUTATION_SURFACES_CLASSIFIED"
+  "next": "CONTINUE_REMAINING_WRITE_CAPABLE_WORKFLOW_REQUEST_INVENTORY_UNTIL_ALL_SURFACES_CLASSIFIED"
 }
