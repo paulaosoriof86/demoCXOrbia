@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "cxorbia.g2b.provider-readonly-reconciliation.v1",
+  "generatedAt": "2026-08-21T01:00:02.412Z",
+  "decision": "A_NO_G2B_PROVIDER_DEPLOY_OBSERVED",
+  "execution": {
+    "sha": "c746bdf068edf1322b7c9a5e497ea5aff13e6b58",
+    "requestedAt": "2026-08-20T22:11:33Z",
+    "automaticRetryAllowed": false
+  },
+  "baseline": {
+    "cloudRunRevision": "cxorbia-live-hr-dev-00010-n78"
+  },
+  "cloudRun": {
+    "httpStatus": 200,
+    "readable": true,
+    "latestReadyRevision": "cxorbia-live-hr-dev-00010-n78",
+    "latestCreatedRevision": "cxorbia-live-hr-dev-00010-n78",
+    "updateTime": "2026-08-16T18:14:48.841798Z",
+    "uriPresent": true,
+    "changedFromBaseline": false,
+    "changedAfterExecute": false
+  },
+  "directCloudRunProbe": {
+    "httpStatus": 405,
+    "error": "method_not_allowed",
+    "expectedUnauthenticatedStatus": 401,
+    "sourceLive": false,
+    "sourcePresentButGateClosed": false
+  },
+  "hosting": {
+    "httpStatus": 200,
+    "readable": true,
+    "latestReleaseName": "sites/cxorbia-backend-dev/releases/1787196507030000",
+    "latestVersionName": "sites/cxorbia-backend-dev/versions/1093671c6f2053ec",
+    "latestReleaseTime": "2026-08-20T03:28:27.030Z",
+    "releaseAfterExecute": false,
+    "releasesInspected": 5
+  },
+  "hostingRouteProbe": {
+    "httpStatus": 405,
+    "error": "method_not_allowed",
+    "expectedUnauthenticatedStatus": 401,
+    "sourceLive": false,
+    "sourcePresentButGateClosed": false
+  },
+  "interpretation": {
+    "A": "No new Cloud Run G2-B source and no Hosting release after execute; provider deploy not observed.",
+    "B": "At least one provider-side signal changed but the full authorized Cloud Run + Hosting + route state is not proven.",
+    "C": "Cloud Run changed after execute, G2-B route is live directly and through Hosting, and Hosting has a release after execute."
+  },
+  "safety": {
+    "providerReads": true,
+    "providerWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "externalHrWrites": 0,
+    "paymentWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "deploys": 0,
+    "merge": false,
+    "realCredentialsUsedInProductFlow": false,
+    "secretsExported": false
+  }
+}

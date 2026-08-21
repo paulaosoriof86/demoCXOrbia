@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.live-hr-provider-capability-preflight.v2",
-  "generatedAt": "2026-07-31T02:26:46.862Z",
+  "generatedAt": "2026-08-21T00:59:59.474Z",
   "decision": "PASS_SHEETS_API_AND_CANONICAL_HR_READER",
   "target": {
     "projectId": "cxorbia-backend-dev",
@@ -17,9 +17,9 @@
     "httpStatus": 200,
     "accessible": true,
     "title": "HR Guatemala - Sincronizacion Google Sheets",
-    "totalTabs": 30,
-    "monthlyTabs": 28,
-    "latestMonthlyTab": "JULIO 26 HN",
+    "totalTabs": 32,
+    "monthlyTabs": 30,
+    "latestMonthlyTab": "AGOSTO 26 HN",
     "errorStatus": null,
     "errorReason": null
   },
