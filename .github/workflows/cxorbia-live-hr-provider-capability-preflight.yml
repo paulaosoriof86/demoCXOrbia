@@ -7,7 +7,10 @@ on:
     paths:
       - '.github/workflows/cxorbia-live-hr-provider-capability-preflight.yml'
       - '.github/cxorbia-firebase-requests/live-hr-provider-capability-preflight.json'
+      - '.github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml'
       - 'tools/qa/cxorbia-g2b-provider-forensic-readiness.mjs'
+      - 'tools/qa/cxorbia-g2b-recovery-source-contract.mjs'
+      - 'tools/production/cxorbia-hosting-rest-deploy.mjs'
 
 permissions:
   contents: write
@@ -16,7 +19,7 @@ permissions:
 jobs:
   preflight:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,12 +28,34 @@ jobs:
         with:
           node-version: '24'
 
+      - name: Validate hardened recovery source contract with zero provider writes
+        run: |
+          set -euo pipefail
+          node --check tools/qa/cxorbia-g2b-provider-forensic-readiness.mjs
+          node --check tools/qa/cxorbia-g2b-recovery-source-contract.mjs
+          node --check tools/production/cxorbia-hosting-rest-deploy.mjs
+          rm -rf .tmp/g2b-forensic-source
+          git worktree add --detach .tmp/g2b-forensic-source 1d2cfecba0a89b637398d747a628e549d9823c68
+          CXORBIA_G2B_SOURCE_CONTRACT_OUT=.tmp/g2b-source-contract.json node tools/qa/cxorbia-g2b-recovery-source-contract.mjs .tmp/g2b-forensic-source
+          node tools/production/cxorbia-hosting-rest-deploy.mjs --source-dir .tmp/g2b-forensic-source --dry-run --out .tmp/g2b-hosting-rest-dry-run.json
+          node <<'NODE'
+          const fs=require('fs');
+          const s=require('./.tmp/g2b-source-contract.json');
+          const h=require('./.tmp/g2b-hosting-rest-dry-run.json');
+          if(s.decision!=='PASS_G2B_RECOVERY_SOURCE_CONTRACT')throw new Error('source_contract_not_pass');
+          if(h.decision!=='PASS_HOSTING_REST_DRY_RUN_SOURCE_READY'||h.providerWrites!==0||h.hostingDeployExecutions!==0)throw new Error('hosting_rest_dry_run_not_safe_pass');
+          const w=fs.readFileSync('.github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml','utf8');
+          if(w.includes("grep -q 'g2b-synthetic/commands' \"$G2B_SOURCE_DIR/backend/runtime/hr-live-service/server.mjs\""))throw new Error('stale_false_server_literal_gate_present');
+          if(/firebase[^\n]*deploy\s+--config/.test(w))throw new Error('firebase_cli_hosting_deploy_still_present');
+          for(const token of ['cxorbia-g2b-recovery-source-contract.mjs','cxorbia-hosting-rest-deploy.mjs','RECOVERY_BLOCKED_PRE_PROVIDER_NO_MUTATION','providerOperationAttempted','FORENSIC_PROVIDER_LANE_READY'])if(!w.includes(token))throw new Error('recovery_hardening_contract_missing:'+token);
+          NODE
+          git worktree remove --force .tmp/g2b-forensic-source
+
       - name: Run reusable forensic provider audit read-only
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
         run: |
           set -euo pipefail
-          node --check tools/qa/cxorbia-g2b-provider-forensic-readiness.mjs
           node tools/qa/cxorbia-g2b-provider-forensic-readiness.mjs
           node <<'NODE'
           const fs=require('fs');
