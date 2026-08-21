@@ -1,39 +1,35 @@
 # CAMBIOS-BACKEND.md
 
-**SYNC_EPOCH:** `CXORBIA-20260821-I5-G2B-FORENSIC-PROVIDER-LANE-READY-50`  
-**PLAN_ID:** `CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE`  
-**currentIteration:** `I5-G2`  
-**PHASE_A:** `98/100`  
-**ACTIVE_BLOCKER:** `G2B_RECOVERY_NO_PROVIDER_SIDE_EFFECT_NEW_EXPLICIT_DECISION_REQUIRED`
+**Fecha:** 2026-08-21  
+**SYNC_EPOCH de producto:** `CXORBIA-20260821-I5-G2B-FORENSIC-PROVIDER-LANE-READY-50`  
+**MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`  
+**MASTER_PLAN_STATUS:** `FROZEN`  
+**currentMasterPhase:** `F0_SYSTEMIC_AUDIT`  
+**PHASE_A:** `98/100`
 
-## 2026-08-21 — I5-G2-B · SINCRONIZACIÓN CANÓNICA ATÓMICA / ANTI-BUCLE
+## 2026-08-21 — RC15 · CONGELAMIENTO DEL PLAN MAESTRO + INICIO AUDITORÍA SISTÉMICA
 
-### Hallazgo de causa raíz
-Se confirmó drift no atómico: continuity lock, consumed-gate ledger y documentación viva describían epochs anteriores mientras recovery evidence/request ya estaban terminales. Además, el execute one-shot conservaba flags históricos que podían ser malinterpretados como estado vivo.
+### Qué se hizo
+- Se consolidó un único plan F0–F10 hacia producción y postproducción en `app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md`.
+- El plan queda congelado con SHA-256 `2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475` y Git blob `48494ebe5fc439aa6d00e6edcf2e78133357e7f3`.
+- `cxorbia-phase-a-continuity-lock.json` incorpora `masterPlan`, fase/cursor y política `PLAN_CHANGE_REQUEST_ONLY_EXPLICIT_PAULA_ATOMIC`.
+- Se agregó `tools/continuity/validate-cxorbia-master-plan-freeze.js`.
+- Se creó `app/docs/evidence/RC15-MASTER-PLAN-FREEZE-LATEST.json`.
+- Se inició F0 con `app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-LATEST.json`.
 
-### Corrección
-Este bloque sincroniza en un solo commit:
-- `backend/config/cxorbia-phase-a-continuity-lock.json`;
-- `backend/config/cxorbia-consumed-one-shot-gates.json`;
-- `tools/continuity/validate-cxorbia-phase-a-continuity-lock.js`;
-- índice, checkpoint, execution/source locks, plan operativo;
-- `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`;
-- receipt `app/docs/evidence/I5-G2B-ATOMIC-CONTINUITY-SYNC-LATEST.json`.
-
-No se toca `cxorbia-g2b-p0-writepath-deploy-recovery-execute.json` porque es un evento histórico cuya ruta dispara el workflow de recovery. Se declara `stateAuthority=false`, terminalizado por receipt y sin replay. Tampoco se muta el authorization request sintético; queda bloqueado por el continuity lock hasta recovery PASS.
-
-### Estado técnico
-Recovery `i5-g2b-p0-writepath-recovery-20260821-02`: `RECOVERY_NO_PROVIDER_SIDE_EFFECT`; providerMutationExecutions=0. Provider forensic lane posterior: `FORENSIC_PROVIDER_LANE_READY`, con provider writes=0.
+### Hallazgo inicial F0
+`RC15-CP-005`: `.github/workflows/cxorbia-corte4-bootstrap-readonly-execute.yml` conserva `workflow_dispatch` y `.github/cxorbia-firebase-requests/corte4-bootstrap-execute.json` conserva `enabled=true` + `providerConfigWrites=true`. Es una superficie histórica write-capable latente. No fue disparada por este bloque. Debe quedar inertizada en F1, después de completar el inventario exhaustivo de F0.
 
 ### Seguridad
-En este bloque: Cloud Build/Cloud Run/Hosting/Firestore/Auth/Storage/HR/real data/real credentials/payments/Rules/Make/Gemini writes=0; merge=false. No deploy ni stage sintético.
+Este bloque es exclusivamente repo/control-plane/documentación:
+Cloud Build=0, Cloud Run deploy=0, Hosting deploy=0, Firestore/Auth/Storage/HR/payment/Rules/Make/Gemini writes=0, recovery=0, synthetic stage=0, merge=false.
 
 ### Clasificación
-- **Reusable CXOrbia:** epoch atómico, autoridad terminal, ledger y validador anti-drift.
-- **Exclusivo TyA:** reconciliación del recovery G2-B y baseline provider actual.
-- **Claude/prototipo:** sin cambio UI o `/app/modules`.
-- **Academia:** sin impacto funcional.
-- **Sin impacto Claude:** control-plane, docs, evidence y validator.
+- **Reusable CXOrbia:** master-plan hash lock, change-control y auditoría exhaustiva de superficies.
+- **Exclusivo TyA:** baseline G2-B y hallazgo histórico Corte4 dentro del repo TyA.
+- **Claude/prototipo:** sin cambio de UI, `/app/modules` o `/app/core`.
+- **Academia:** sin cambio funcional; sigue siendo requisito transversal del plan.
+- **Sin impacto Claude:** control-plane, docs, validator y evidence.
 
 ### Siguiente
-`REQUIRE_NEW_EXPLICIT_RECOVERY_DECISION_AFTER_ATOMIC_CONTINUITY_SYNC`. Si la sincronización/readback no queda íntegra, se detiene provider work y continúa auditoría forense; no se compensa con otro retry.
+`F0_RC15_SYSTEMIC_AUDIT_CONTINUE`: ampliar el inventario a todos los workflows write-capable, `workflow_dispatch`, requests/execute markers, permisos, replay, concurrency y fan-out. Ninguna provider mutation antes del cierre de F0.

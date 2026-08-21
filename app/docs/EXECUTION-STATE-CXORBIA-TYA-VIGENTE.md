@@ -1,21 +1,22 @@
 # EXECUTION STATE CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-21  
-**SYNC_EPOCH:** `CXORBIA-20260821-I5-G2B-FORENSIC-PROVIDER-LANE-READY-50`  
-**PLAN_ID:** `CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE`  
-**currentIteration:** `I5-G2`  
+**SYNC_EPOCH de producto:** `CXORBIA-20260821-I5-G2B-FORENSIC-PROVIDER-LANE-READY-50`  
+**MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`  
+**MASTER_PLAN_STATUS:** `FROZEN`  
 **PHASE_A:** `98/100`  
-**ACTIVE_BLOCKER:** `G2B_RECOVERY_NO_PROVIDER_SIDE_EFFECT_NEW_EXPLICIT_DECISION_REQUIRED`  
-**PRODUCTION_STATE:** `ACTIVE_EXISTING_DEPLOYMENT_G2B_RECOVERY_NOT_MATERIALIZED`
+**currentIteration:** `I5-G2`  
+**currentMasterPhase:** `F0_SYSTEMIC_AUDIT`  
+**currentMasterStep:** `F0_RC15_CONTROL_PLANE_WRITE_SURFACE_INVENTORY`
 
-## Estado ejecutable
-Producción canónica: `https://cxorbia-backend-dev.web.app`. Source funcional congelado: `f9802fdd498934a8e7729fa5c7d18341bec1cd71`.
+Producción canónica permanece `https://cxorbia-backend-dev.web.app`; source funcional congelado `f9802fdd498934a8e7729fa5c7d18341bec1cd71`.
 
-G2-A está PASS/FROZEN. G2-B recovery más reciente está terminal `RECOVERY_NO_PROVIDER_SIDE_EFFECT`; request disabled/consumed; providerMutationExecutions=0; no replay/automatic retry. Provider forensic lane está `FORENSIC_PROVIDER_LANE_READY`.
-
-El execute de recovery existente es un artefacto histórico inmutable, `stateAuthority=false`. La autorización sintética previa existe como snapshot, pero `stageExecutionAuthority=false` hasta recovery PASS.
+G2-A PASS/FROZEN. G2-B recovery terminal `RECOVERY_NO_PROVIDER_SIDE_EFFECT`; providerMutationExecutions=0; no replay/retry. Synthetic stage bloqueado.
 
 ## Única transición ejecutable actual
-`REQUIRE_NEW_EXPLICIT_RECOVERY_DECISION_AFTER_ATOMIC_CONTINUITY_SYNC`.
 
-Hasta esa decisión: Cloud Build/Cloud Run/Hosting writes=0; Firestore/Auth/Storage/HR externa/datos o credenciales reales/pagos/Rules/Make/Gemini=0; merge=false. Phase A permanece 98/100.
+`F0_RC15_SYSTEMIC_AUDIT_CONTINUE`.
+
+F0 permite únicamente auditoría, lecturas y sincronización documental/control-plane sin provider/data writes. Ninguna autorización histórica equivale a autorización actual.
+
+El master plan debe validar por SHA-256 `2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475` y Git blob `48494ebe5fc439aa6d00e6edcf2e78133357e7f3` antes de cualquier mutación futura.

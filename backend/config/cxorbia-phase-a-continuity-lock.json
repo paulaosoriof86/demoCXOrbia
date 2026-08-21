@@ -1,12 +1,33 @@
 {
-  "schemaVersion": "1.7.0",
+  "schemaVersion": "1.8.0",
   "syncEpoch": "CXORBIA-20260821-I5-G2B-FORENSIC-PROVIDER-LANE-READY-50",
   "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "currentIteration": "I5-G2",
-  "formalProgress": {"completed": 98, "pending": 2, "total": 100},
+  "formalProgress": {
+    "completed": 98,
+    "pending": 2,
+    "total": 100
+  },
+  "masterPlan": {
+    "id": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+    "version": "1.0.0",
+    "status": "FROZEN",
+    "path": "app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md",
+    "gitBlobSha": "48494ebe5fc439aa6d00e6edcf2e78133357e7f3",
+    "sha256": "2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475",
+    "frozenAt": "2026-08-21T12:40:00-06:00",
+    "freezeAuthority": "PAULA_CURRENT_CONVERSATION",
+    "currentPhase": "F0_SYSTEMIC_AUDIT",
+    "currentStep": "F0_RC15_CONTROL_PLANE_WRITE_SURFACE_INVENTORY",
+    "next": "F0_RC15_SYSTEMIC_AUDIT_CONTINUE",
+    "amendmentPolicy": "PLAN_CHANGE_REQUEST_ONLY_EXPLICIT_PAULA_ATOMIC",
+    "previousPlansExecutionAuthority": "SUPERSEDED_RETAINED_AS_EVIDENCE",
+    "providerMutationAuthorizedNow": false,
+    "validator": "tools/continuity/validate-cxorbia-master-plan-freeze.js"
+  },
   "resumeProtocol": {
     "conversationIndependent": true,
     "terminalPassSurvivesConversationInterruption": true,
@@ -14,15 +35,17 @@
     "headMustBeResolvedDynamically": true,
     "canonicalStateMustAdvanceAtomically": true,
     "eventArtifactsDoNotOverrideTerminalReceipts": true,
+    "masterPlanMustValidateBeforeAction": true,
+    "masterPlanChangeRequiresPlanChangeRequest": true,
     "onMismatch": "CONTINUITY_DRIFT_BLOCKED"
   },
   "iterations": [
-    {"id": "I5-R1", "weight": 2, "status": "PASS"},
-    {"id": "I5-R2", "weight": 3, "status": "PASS"},
-    {"id": "I5-R3", "weight": 3, "status": "PASS"},
-    {"id": "I5-R4", "weight": 2, "status": "PASS"},
-    {"id": "I5-G1", "weight": 3, "status": "PASS"},
-    {"id": "I5-G2", "weight": 2, "status": "ACTIVE"}
+    {"id":"I5-R1","weight":2,"status":"PASS"},
+    {"id":"I5-R2","weight":3,"status":"PASS"},
+    {"id":"I5-R3","weight":3,"status":"PASS"},
+    {"id":"I5-R4","weight":2,"status":"PASS"},
+    {"id":"I5-G1","weight":3,"status":"PASS"},
+    {"id":"I5-G2","weight":2,"status":"ACTIVE"}
   ],
   "productionState": {
     "active": true,
@@ -92,7 +115,7 @@
       },
       "providerBudgetsForAnyFutureRecoveryRequireNewExplicitAuthorization": true,
       "providerBusinessDataWrites": 0,
-      "next": "REQUIRE_NEW_EXPLICIT_RECOVERY_DECISION_AFTER_ATOMIC_CONTINUITY_SYNC"
+      "next": "BLOCKED_BY_RC15_F0_AND_REQUIRES_NEW_EXPLICIT_RECOVERY_DECISION"
     },
     "liveInPlatformSyntheticAcceptance": {
       "status": "BLOCKED_UNTIL_VERIFIED_G2B_P0_RECOVERY_PASS",
@@ -122,17 +145,26 @@
       "status": "MITIGATED_BY_ATOMIC_EPOCH_AND_VALIDATOR",
       "finding": "Canonical machine state, terminal evidence, event artifacts and documentation had advanced on different epochs, allowing later iterations to read stale state.",
       "control": "One atomic epoch across lock, consumed-gate ledger, validator and canonical documentation; immutable execute/authorization artifacts are historical events, not current state authority after terminal receipt."
+    },
+    "systemicAuditAndMethodology": {
+      "id": "RC15_SYSTEMIC_AUDIT_METHOD_CONTROL_PLANE_AND_POSTPROD",
+      "status": "ACTIVE_F0_SYSTEMIC_AUDIT",
+      "finding": "Prior audits closed narrower layers while historical execution surfaces, methodology and postproduction controls were not proven exhaustively as one system.",
+      "control": "Frozen master plan F0-F10; exhaustive surface matrix before provider mutation; historical write-capable artifacts inertized in F1; release and postproduction controls are explicit mandatory phases."
     }
   },
   "canonicalStateAuthority": {
     "order": [
       "backend/config/cxorbia-phase-a-continuity-lock.json",
+      "app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md",
+      "app/docs/evidence/RC15-MASTER-PLAN-FREEZE-LATEST.json",
       "app/docs/evidence/I5-G2B-P0-WRITEPATH-RECOVERY-LATEST.json",
       "backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-request.json",
       "backend/config/cxorbia-consumed-one-shot-gates.json",
       "app/docs/evidence/I5-G2B-PROVIDER-FORENSIC-READINESS-LATEST.json",
       "app/docs/evidence/I5-G2B-ATOMIC-CONTINUITY-SYNC-LATEST.json"
     ],
+    "masterPlanIsExecutionAuthority": true,
     "executeAndAuthorizationArtifactsAreHistoricalEventsAfterTerminalReceipt": true,
     "prBodyIsMirrorOnly": true
   },
@@ -145,12 +177,17 @@
     "replayConsumedRecovery": false,
     "allowG2BStageBeforeRecoveryPass": false,
     "allowFinal100BeforeLiveInPlatformSyntheticAcceptance": false,
-    "automaticRecoveryRetry": false
+    "automaticRecoveryRetry": false,
+    "providerMutationDuringRC15F0": false,
+    "changeMasterPlanWithoutPlanChangeRequest": false
   },
   "nextNow": {
-    "action": "REQUIRE_NEW_EXPLICIT_RECOVERY_DECISION_AFTER_ATOMIC_CONTINUITY_SYNC",
+    "action": "F0_RC15_SYSTEMIC_AUDIT_CONTINUE",
+    "masterPlanFrozen": true,
+    "currentMasterPhase": "F0_SYSTEMIC_AUDIT",
+    "currentMasterStep": "F0_RC15_CONTROL_PLANE_WRITE_SURFACE_INVENTORY",
     "providerMutationAuthorizedNow": false,
     "syntheticStageAuthorizedNow": false,
-    "manualActionFromPaulaRequiredForSynchronization": false
+    "manualActionFromPaulaRequiredForPlanFreeze": false
   }
 }

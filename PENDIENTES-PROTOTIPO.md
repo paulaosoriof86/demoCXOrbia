@@ -1,28 +1,26 @@
 # PENDIENTES-PROTOTIPO.md
 
-**SYNC_EPOCH:** `CXORBIA-20260821-I5-G2B-FORENSIC-PROVIDER-LANE-READY-50`  
-**PLAN_ID:** `CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE`  
-**currentIteration:** `I5-G2`  
-**PHASE_A:** `98/100`  
-**ACTIVE_BLOCKER:** `G2B_RECOVERY_NO_PROVIDER_SIDE_EFFECT_NEW_EXPLICIT_DECISION_REQUIRED`
+**Fecha:** 2026-08-21  
+**MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`  
+**MASTER_PLAN_STATUS:** `FROZEN`  
+**currentMasterPhase:** `F0_SYSTEMIC_AUDIT`  
+**PHASE_A:** `98/100`
 
-## Estado
-**98% / 2% pendiente.** G1 y G2-A permanecen PASS/FROZEN. G2-B continúa abierto.
+## Pendiente real actual
 
-## Pendiente real único
-La recuperación `i5-g2b-p0-writepath-recovery-20260821-02` terminó `RECOVERY_NO_PROVIDER_SIDE_EFFECT` y está consumida, con providerMutationExecutions=0. El provider lane quedó posteriormente `FORENSIC_PROVIDER_LANE_READY`.
+No corresponde reintentar G2-B ni ejecutar synthetic stage.
 
-No corresponde ejecutar/repetir ningún recovery actual. El siguiente gate es `REQUIRE_NEW_EXPLICIT_RECOVERY_DECISION_AFTER_ATOMIC_CONTINUITY_SYNC`.
+Primero debe cerrar F0 RC15: auditoría exhaustiva de todas las superficies que pueden cambiar producto, estado canónico o proveedor.
 
-Solo después de un futuro `RECOVERY_PASS_FULL`:
-1. ejecutar el stage/test exclusivamente `CXORBIA_E2E_SYNTH_*` en la misma plataforma productiva;
-2. dejar escenario visible para Paula y capturar observaciones;
-3. cleanup completo;
-4. post-clean readback con cero residuales;
-5. congelar G2/RC y llegar a 100/100 si no queda P0.
+Hallazgo confirmado ya incorporado a F0:
+- `RC15-CP-005`: workflow histórico Corte4 con `workflow_dispatch` + request `enabled=true` / `providerConfigWrites=true`; requiere F1 inertización una vez cerrado el inventario.
 
-## No reabrir / no hacer
-No G3, nueva candidata, branch, PR, workflow, PREPROD, replay de execute consumido, stage antes de recovery PASS, HR externa, datos/credenciales reales, pagos, Make/Gemini o merge.
+## Secuencia congelada
+
+F0 auditoría sistémica → F1 inertización histórica → F2 autoridad/control-plane → F3 revalidación G2-B → F4 recovery one-shot autorizado → F5 aceptación sintética → F6 release 100 congelado → F7 readiness integral → F8 cutover → F9 postproducción → F10 operación permanente.
+
+No crear otro plan, G3, candidata, branch, PR, workflow, PREPROD ni metodología paralela. Un cambio del plan requiere `PLAN_CHANGE_REQUEST`.
 
 ## Frontend/Academia
-Sin P0 visual nuevo demostrado y sin impacto Academia en este bloque.
+
+Sin P0 visual nuevo demostrado. Sin cambio funcional de Academia en este bloque.

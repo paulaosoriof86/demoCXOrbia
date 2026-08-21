@@ -1,24 +1,23 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**SYNC_EPOCH:** `CXORBIA-20260821-I5-G2B-FORENSIC-PROVIDER-LANE-READY-50`  
-**PLAN_ID:** `CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE`  
-**currentIteration:** `I5-G2`  
-**PHASE_A:** `98/100`  
-**ACTIVE_BLOCKER:** `G2B_RECOVERY_NO_PROVIDER_SIDE_EFFECT_NEW_EXPLICIT_DECISION_REQUIRED`
+**Fecha:** 2026-08-21  
+**MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`  
+**MASTER_PLAN_STATUS:** `FROZEN`  
+**currentMasterPhase:** `F0_SYSTEMIC_AUDIT`  
+**PHASE_A:** `98/100`
 
 ## Estado único
-`I5_G2A_PASS_FROZEN__G2B_RECOVERY_NO_PROVIDER_SIDE_EFFECT__FORENSIC_PROVIDER_LANE_READY__NEW_EXPLICIT_DECISION_REQUIRED__98_2`.
 
-Producción canónica: `https://cxorbia-backend-dev.web.app`. No hubo cambio funcional de frontend ni rediseño.
+El único plan operativo vigente está congelado en `app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md`. Version `1.0.0`; SHA-256 `2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475`.
 
-## G2-B
-El P0 de ruta canónica sigue siendo el frente abierto. La recuperación más reciente no produjo side effects del proveedor y quedó consumida. El carril provider fue auditado después y está `FORENSIC_PROVIDER_LANE_READY`, pero readiness no equivale a deploy ni autoriza otro recovery.
-
-## Ajuste de continuidad
-Desde este epoch, execute y authorization request son artefactos históricos/eventos, no fuentes vivas de estado después de un receipt terminal. El lock + evidence + request consumido + ledger determinan el estado actual. Esto evita que otra iteración lea un flag histórico y reabra un one-shot.
+I1–I4, R1–R4, G1 y G2-A siguen PASS/FROZEN. G2-B no se ejecuta mientras F0 RC15 esté activo.
 
 ## Claude/prototipo
-Sin tarea frontend. No modificar `/app/modules` ni `/app/core` por este bloque. Si el futuro stage visible demuestra un defecto real, documentarlo por archivo/módulo antes de tocar UI.
+
+No hay tarea frontend en este bloque. No modificar `/app/modules` ni `/app/core`. El hallazgo actual es control-plane histórico (`workflow_dispatch` + request write-capable Corte4), no un defecto de UI.
+
+Si F0/F5 demuestra un defecto funcional real de frontend, documentarlo por archivo/módulo y aplicar la regla de prototipo/empalme vigente; no rediseñar desde backend.
 
 ## Academia
-Sin cambio. Manuales/cursos/rutas por rol solo se actualizan si una prueba visible posterior demuestra una diferencia funcional.
+
+Sin cambio funcional en este bloque. El master plan mantiene Academia/manuales/cursos/rutas por rol/notificaciones como requisito transversal antes de cierre integral y postproducción.

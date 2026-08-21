@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "cxorbia.rc15.systemic-audit.control-plane.v1",
+  "generatedAt": "2026-08-21T12:40:00-06:00",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "phase": "F0_SYSTEMIC_AUDIT",
+  "step": "F0_RC15_CONTROL_PLANE_WRITE_SURFACE_INVENTORY",
+  "status": "IN_PROGRESS",
+  "phaseA": {"completed":98,"pending":2},
+  "headBefore": "abd24a19188ff8d63d3feea6a7cc1fd3ee0100e8",
+  "findings": [
+    {
+      "id": "RC15-CP-001",
+      "classification": "PASS_FOR_PLAN_FREEZE_COMMIT",
+      "surface": ".github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml",
+      "evidence": "push paths are limited to three runtime execute markers; plan/continuity docs are not trigger paths",
+      "providerMutationRiskFromPlanFreeze": false
+    },
+    {
+      "id": "RC15-CP-002",
+      "classification": "PASS_FOR_PLAN_FREEZE_COMMIT",
+      "surface": ".github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml",
+      "evidence": "push path limited to .github/cxorbia-firebase-requests/cxorbia-i3-shopper-persistence-exact-write-v1.json; exact changed-file gate before provider access",
+      "providerMutationRiskFromPlanFreeze": false
+    },
+    {
+      "id": "RC15-CP-003",
+      "classification": "PASS_FOR_PLAN_FREEZE_COMMIT",
+      "surface": ".github/workflows/cxorbia-corte6-profile-full-firestore-write-v2.yml",
+      "evidence": "push path limited to backend/config/corte6-profile-full-firestore-write-execute-v2.json; plan/lock paths excluded",
+      "providerMutationRiskFromPlanFreeze": false
+    },
+    {
+      "id": "RC15-CP-004",
+      "classification": "PASS_FOR_PLAN_FREEZE_COMMIT",
+      "surface": ".github/workflows/cxorbia-phase-a-firestore-materialization-executor.yml",
+      "evidence": "push paths are explicit executor/contracts/runtime/request files; plan/continuity paths excluded",
+      "providerMutationRiskFromPlanFreeze": false
+    },
+    {
+      "id": "RC15-CP-005",
+      "classification": "HOLD_LATENT_HISTORICAL_WRITE_SURFACE",
+      "surface": ".github/workflows/cxorbia-corte4-bootstrap-readonly-execute.yml + .github/cxorbia-firebase-requests/corte4-bootstrap-execute.json",
+      "evidence": "workflow exposes workflow_dispatch; request remains enabled=true with providerConfigWrites=true and exact historical authorization text; executor can proceed to provider config writes after preflight",
+      "automaticTriggerFromPlanFreeze": false,
+      "manualDispatchLatentWriteRisk": true,
+      "requiredTreatment": "F1_INERTIZATION_BEFORE_PROVIDER_MUTATION"
+    }
+  ],
+  "coverage": {
+    "controlPlaneWriteSurface": "STARTED_NOT_EXHAUSTIVE",
+    "allWorkflowsClassified": false,
+    "allRequestsClassified": false,
+    "allWorkflowDispatchClassified": false,
+    "allProviderWriteEntrypointsClassified": false
+  },
+  "safety": {"providerWrites":0,"dataWrites":0,"deploys":0,"merge":false,"recoveryExecuted":false,"syntheticStageExecuted":false},
+  "decision": "CONTINUE_F0_NO_PROVIDER_MUTATION",
+  "next": "EXPAND_INVENTORY_TO_ALL_WRITE_CAPABLE_WORKFLOWS_REQUESTS_AND_MANUAL_DISPATCH_SURFACES"
+}
