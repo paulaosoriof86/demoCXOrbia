@@ -18,7 +18,6 @@ permissions:
 concurrency:
   group: cxorbia-existing-runtime-deploy-single
   cancel-in-progress: false
-  queue: max
 
 defaults:
   run:
