@@ -41,20 +41,24 @@ Recovery `i5-g2b-p0-writepath-recovery-20260821-02` = `RECOVERY_NO_PROVIDER_SIDE
 
 ## F0 RC15 activo — inventario ampliado
 
-La auditoría sistémica continúa en `F0_RC15_CONTROL_PLANE_WRITE_SURFACE_INVENTORY`. La evidencia vigente contiene **44 hallazgos clasificados** y **9 HOLD** residuales confirmados:
-- `RC15-CP-005`: bootstrap Corte4, `workflow_dispatch` + `enabled=true` + `providerConfigWrites=true`.
-- `RC15-CP-011`: protected smoke Corte4, `workflow_dispatch`/push + `enabled=true`, configuración Auth y usuario temporal reversible.
-- `RC15-CP-014`: snapshot histórico G2-B synthetic `enabled=true`, `consumed=false`; puede alterar state/evidence aunque el lock vigente ya lo considera no autoritativo.
-- `RC15-CP-017`: creación histórica Firebase DEV Corte4, `workflow_dispatch`/push + `enabled=true`, `projectCreate=true`, `firebaseAdd=true`.
-- `RC15-CP-025`: C6 postdeploy read-only recheck manual/repetible capaz de reescribir request/execute/evidence canónico aun con el one-shot original consumido.
-- `RC15-CP-028`: deterministic-suffix source-only rootfix conserva request histórico `enabled=true/consumed=false`; puede mutar fuente/producto y hacer commit/push si se revive la autoridad vieja.
-- `RC15-CP-029`: C6 postdeploy read-only revalidation conserva request `enabled=true/consumed=false`; provider es read-only pero puede consumir request y hacer push de state/evidence.
-- `RC15-CP-030`: canonical-plan-refresh-offline conserva request `enabled=true` sin terminalización; puede regenerar y empujar evidence/planes canónicos repetidamente.
-- `RC15-CP-031`: live-HR current reconcile conserva request histórico activo con `sourceCommit` antiguo; hoy falla por source binding, pero mantiene autoridad para provider-read + commit de registry/evidence si se reactiva.
+La auditoría sistémica continúa en `F0_RC15_CONTROL_PLANE_WRITE_SURFACE_INVENTORY`. La evidencia vigente contiene **68 hallazgos clasificados** y **18 HOLD** residuales confirmados.
 
-La causa sistémica ya queda diferenciada en tres planos de autoridad histórica no terminalizada uniformemente: **provider**, **estado/evidence canónico** y **fuente/producto**. En paralelo, se han confirmado múltiples workflows read-only y carriles retirados/frozen realmente inertes, reduciendo el alcance de F1 al residuo vivo demostrado.
+HOLD anteriores preservados: `CP-005`, `CP-011`, `CP-014`, `CP-017`, `CP-025`, `CP-028`, `CP-029`, `CP-030`, `CP-031`.
 
-La cobertura sigue `EXPANDED_NOT_EXHAUSTIVE`; F0 no está cerrado y no debe declararse exhaustivo hasta clasificar todos los workflows, requests, `workflow_dispatch` y provider/source/state write entrypoints restantes.
+Nuevos HOLD del tramo actual:
+- `CP-045`: C6 hold-profile conserva request activo con budget declarado de provider reads=0 que el workflow no hace cumplir antes de una lectura + commit de evidence.
+- `CP-055`: remaining-shopper identity mantiene conexión directa histórica al RTDB `tya-plataforma` y writer de evidence; incompatible con legacy export/import-only.
+- `CP-056`: visit identity crosswalk conserva request activo sin terminalización; provider-read + writer de evidence.
+- `CP-058`: live-HR provider capability preflight hace provider-read + commit de evidence sin enforcement real del request/continuity lock.
+- `CP-059`: legacy shoppers/certifications refresh conecta directamente el RTDB legacy y publica evidence.
+- `CP-063`: profile-extra mantiene request `enabled=true/consumed=false`; bundle cifrado puede activar provider-read + state writer.
+- `CP-066`: canonical backend anomaly probe mantiene request activo; provider-read + writer de evidence.
+- `CP-067`: canonical backend Phase A gap mantiene request activo; writer repetible de evidence.
+- `CP-068`: canonical backend readonly inventory mantiene request activo; provider-read + writer de evidence.
+
+La causa sistémica ahora incluye explícitamente **provider authority**, **source/product authority**, **canonical-state authority**, **request-enforcement bypass** y **legacy live connectivity residual**. El contrato vigente se reafirma: legacy solo mediante export/import controlado; nunca conexión o copia de la base vieja.
+
+La cobertura sigue `EXPANDED_NOT_EXHAUSTIVE`; F0 no está cerrado y no debe declararse exhaustivo hasta clasificar todos los workflows, requests, `workflow_dispatch` y provider/source/state/legacy entrypoints restantes.
 
 ## Próximo paso exacto
 

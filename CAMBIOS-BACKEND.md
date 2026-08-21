@@ -7,6 +7,53 @@
 **currentMasterPhase:** `F0_SYSTEMIC_AUDIT`  
 **PHASE_A:** `98/100`
 
+## 2026-08-21 — RC15 F0 · TRAMO 5: LEGACY LINKS, PROVIDER READERS Y CANONICAL STATE WRITERS
+
+### Qué se hizo
+- Se resolvió el HEAD vivo y se verificó que el master plan continúa congelado: Git blob `48494ebe5fc439aa6d00e6edcf2e78133357e7f3`, SHA-256 `2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475`, fase `F0_SYSTEMIC_AUDIT`, `providerMutationAuthorizedNow=false`.
+- Se continuó el inventario sobre carriles de credenciales, materialization read-only, identidad shopper, legacy refresh, profile handoffs, canonical backend probes e inventarios.
+- La matriz RC15 avanzó de **44 a 68 hallazgos clasificados**.
+- Los HOLD confirmados avanzaron de **9 a 18**. No representa regresión de producto: son superficies históricas latentes que F0 está haciendo visibles antes de tocar proveedor.
+
+### Nuevos HOLD de causa raíz
+- `RC15-CP-045` — **HOLD**: C6 hold-profile conserva request `enabled=true/consumed=false` que declara `providerReadsAuthorizedMax=0`, pero el workflow no hace cumplir ese budget y puede leer provider, consumir request y hacer commit de evidence. Es un desajuste interno de autorización + writer de estado.
+- `RC15-CP-055` — **HOLD**: remaining-shopper identity conserva request histórico activo y el script asociado hace `fetch` directo al RTDB `tya-plataforma`, además de leer HR/canonical y publicar evidence. Esto contradice el contrato vigente: legacy solo mediante export/import controlado, nunca conexión directa a la base vieja.
+- `RC15-CP-056` — **HOLD**: visit identity crosswalk mantiene request `enabled=true` sin semántica terminal; provider-read + writer de evidence al tocar el request.
+- `RC15-CP-058` — **HOLD**: live-HR provider capability preflight se dispara por cambios en varios workflow/tool paths, hace provider forensic reads y luego commit/push de evidence, pero **no valida ni consume el request histórico** y tampoco consulta primero el continuity lock. Es un bypass de autoridad demostrado.
+- `RC15-CP-059` — **HOLD**: legacy shoppers/certifications refresh conserva request `enabled=true`, conecta directamente `https://tya-plataforma-default-rtdb.firebaseio.com` y hace commit de evidence. Debe quedar inertizado y el acceso legacy directo debe prohibirse estructuralmente.
+- `RC15-CP-063` — **HOLD**: profile-extra conserva `enabled=true/consumed=false`; la llegada del bundle cifrado puede activar provider-read + consumo de request + commit/push.
+- `RC15-CP-066` — **HOLD**: canonical backend anomaly probe mantiene request `enabled=true`; lee provider y publica evidence canónico.
+- `RC15-CP-067` — **HOLD**: canonical backend Phase A gap mantiene request `enabled=true`; es writer repetible de evidence aunque no llame provider.
+- `RC15-CP-068` — **HOLD**: canonical backend readonly inventory mantiene request `enabled=true`; lee provider/Auth readiness y publica evidence canónico.
+
+### Carriles adicionales demostrados seguros/fail-closed
+- Credential handoff key y encrypted dry-run: requests consumidos/disabled; no replay actual.
+- R16C source alignment, R16/R16E provider compare y R16D financial plan: `contents:read`, read-only/offline/artifacts-only.
+- `cxorbia-c6-live-domain-readonly-audit.yml`: nombre histórico engañoso — sí contenía un Hosting deploy real; el request actual está `enabled=false/consumed=true/STOP_RETRY`, por lo que hoy falla cerrado.
+- Credential continuity, auth mapping, full-profile V2 e identity bridge V3: requests consumidos y fail-closed.
+- M10 final smoke: artifact `enabled=true` pero source-bound a parent antiguo y exact-one-file; hoy falla cerrado antes de provider read.
+- I4A consumed guard y offline credential tool gate: read-only/inertes.
+- Corte4 Firebase project identity probe: provider-read only, `contents:read`, artifacts/status/comment only; queda para política F1, no es HOLD write-capable.
+
+### Causa raíz — precisión de mecanismo
+El defecto sistémico ya no es solo “quedaron workflows viejos”. F0 demuestra cuatro fallas de gobierno que explican el bucle: (1) terminalización heterogénea de autoridad histórica provider/source/state; (2) carriles llamados read-only que sí mutan estado canónico del repo; (3) al menos un workflow de provider-read que no hace cumplir su propio request/continuity authority; y (4) rutas históricas que todavía conectan directamente la base legacy pese al contrato export/import-only. F1 debe tombstonear todas estas autoridades juntas; F2 debe imponer master plan + continuity lock + consumed ledger antes de provider access, legacy access o repository-state mutation.
+
+### Incidente de herramienta documentado
+Durante este tramo se creó accidentalmente un archivo inerte `dummy` mediante el conector y se eliminó inmediatamente en el siguiente commit. La comparación `d38953e1...01607dc2` devuelve `files=[]`: el árbol final volvió exactamente al estado anterior. No hubo provider/data/deploy side effects. Se registra porque ninguna mutación fallida o accidental debe ocultarse.
+
+### Seguridad
+Provider writes=0; Cloud Build=0; Cloud Run deploy=0; Hosting deploy=0; Firestore/Auth/Storage/HR/Rules/pagos/Make/Gemini writes=0; recovery=0; synthetic stage=0; merge=false. Las únicas mutaciones del bloque son documentación/control-plane y el incidente inerte ya revertido sin delta neto.
+
+### Clasificación
+- **Reusable CXOrbia:** enforcement de autoridad previa a reads/writes, tombstone histórico, prohibición estructural de legacy live connectivity.
+- **Exclusivo TyA:** requests/workflows históricos sobre `tya-plataforma`, HR y Firebase DEV TyA.
+- **Claude/prototipo:** sin cambio UI, `/app/modules` ni `/app/core`.
+- **Academia:** sin cambio funcional; requisito transversal preservado.
+- **Sin impacto Claude:** auditoría/control-plane/evidence/docs.
+
+### Siguiente
+Continuar F0 sobre las superficies restantes hasta poder probar `allWorkflowsClassified`, `allRequestsClassified`, `allWorkflowDispatchClassified` y `allProviderWriteEntrypointsClassified=true`. No iniciar F1 parcialmente y no tocar G2-B todavía.
+
 ## 2026-08-21 — RC15 F0 · TRAMO 4: SOURCE WRITERS, PREFLIGHTS READ-ONLY Y CARRILES CONGELADOS
 
 ### Qué se hizo

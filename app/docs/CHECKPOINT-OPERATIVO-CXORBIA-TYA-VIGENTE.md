@@ -27,23 +27,33 @@ Recovery `i5-g2b-p0-writepath-recovery-20260821-02`: `RECOVERY_NO_PROVIDER_SIDE_
 
 ## RC15 F0 — avance de causa raíz
 
-La matriz vigente contiene **44 hallazgos clasificados** y F0 continúa porque la cobertura todavía no es exhaustiva. Hay **9 HOLD** residuales para tratamiento conjunto F1/F2:
-1. `RC15-CP-005` — bootstrap Corte4: `workflow_dispatch` + request histórico `enabled=true` con `providerConfigWrites=true`.
-2. `RC15-CP-011` — protected smoke Corte4: `workflow_dispatch`/push + request `enabled=true`, con configuración Auth y usuario temporal reversible.
-3. `RC15-CP-014` — G2-B synthetic preflight: snapshot histórico `enabled=true`, `consumed=false`; puede alterar state/evidence sin obedecer primero el continuity lock actual.
-4. `RC15-CP-017` — creación Firebase DEV Corte4: `workflow_dispatch`/push + request `enabled=true`, `projectCreate=true`, `firebaseAdd=true`.
-5. `RC15-CP-025` — C6 postdeploy read-only recheck: manual/repetible y capaz de reescribir request/execute/evidence canónico.
-6. `RC15-CP-028` — deterministic-suffix source-only rootfix: request histórico `enabled=true/consumed=false`; capaz de mutar fuente/producto + commit/push si se revive autoridad vieja.
-7. `RC15-CP-029` — C6 postdeploy read-only revalidation: request `enabled=true/consumed=false`; provider-read only, pero writer de state/evidence al branch.
-8. `RC15-CP-030` — canonical-plan-refresh-offline: request `enabled=true` sin terminalización; writer repetible de evidence/planes canónicos.
-9. `RC15-CP-031` — live-HR current reconcile: request histórico activo con sourceCommit antiguo; hoy falla por source binding, pero conserva provider-read + writer de registry/evidence si se reactiva.
+La matriz vigente contiene **68 hallazgos clasificados** y F0 continúa porque la cobertura todavía no es exhaustiva. Hay **18 HOLD** residuales para tratamiento conjunto F1/F2.
 
-La auditoría también confirmó como seguras/inertes nuevas rutas de validation-only, source-safe importer validation, materialization-plan no-execute, live-HR predeploy read-only y cinco workflows C6 retirados/frozen.
+HOLD previos preservados: `CP-005`, `CP-011`, `CP-014`, `CP-017`, `CP-025`, `CP-028`, `CP-029`, `CP-030`, `CP-031`.
 
-La causa sistémica se precisa ahora en tres planos de autoridad histórica no terminalizada uniformemente: **provider**, **estado/evidence canónico** y **fuente/producto**.
+Nuevos HOLD de este tramo:
+- `CP-045` — C6 hold-profile: request histórico activo con `providerReadsAuthorizedMax=0`, mientras el workflow puede leer provider y luego escribir evidence/estado; falta enforcement del budget y lock.
+- `CP-055` — remaining-shopper identity: workflow/script conecta directamente el RTDB legacy `tya-plataforma` y luego publica evidence; viola la regla vigente export/import-only.
+- `CP-056` — visit identity crosswalk: request `enabled=true` sin terminalización; provider-read + writer de evidence.
+- `CP-058` — live-HR provider capability preflight: lee provider y hace commit de evidence por varios trigger paths sin validar realmente el request ni consultar primero el continuity lock.
+- `CP-059` — legacy shoppers/certifications refresh: conexión directa al RTDB legacy + writer de evidence; request histórico sigue activo.
+- `CP-063` — profile-extra: request `enabled=true/consumed=false`; llegada de bundle cifrado activa provider-read + state writer.
+- `CP-066` — canonical backend anomaly probe: request activo; provider-read + state writer.
+- `CP-067` — canonical backend Phase A gap: writer repetible de evidence con request activo.
+- `CP-068` — canonical backend readonly inventory: provider-read + writer de evidence con request activo.
+
+También se demostraron fail-closed o read-only sin mutación sensible nuevos carriles: credential handoff key/dryrun consumidos, materialization R16/R16C/R16D/R16E read-only, Hosting C6 live-domain consumido STOP_RETRY, credential continuity consumido, M10 source-bound antiguo, I4A consumed guard, offline credential gate, Corte4 identity probe read-only, auth mapping consumido, full-profile V2 e identity bridge V3 consumidos.
+
+### Causa raíz sistémica refinada
+
+El bucle no proviene de un único workflow. Está demostrado que coexistieron: (1) autoridad histórica no terminalizada de provider/source/state; (2) workflows llamados “read-only” que escriben estado canónico del repo; (3) al menos un workflow de provider-read que no hace cumplir su artefacto de request; y (4) rutas históricas con conexión directa a la base legacy, contrarias a la arquitectura vigente. F1 debe tombstonear todo el residuo y F2 debe imponer master plan + continuity lock + consumed ledger antes de cualquier provider/legacy access o repository-state mutation.
+
+## Incidente metodológico del tramo
+
+Durante el uso del conector se creó por error un archivo inerte `dummy` y se eliminó inmediatamente en el commit siguiente. La comparación `d38953e1...01607dc2` devuelve `files=[]`: el árbol final volvió exactamente al estado anterior. No hubo provider/data/deploy side effects. Queda documentado para no ocultar una mutación fallida/accidental.
 
 ## Siguiente exacto
 
-`F0_RC15_SYSTEMIC_AUDIT_CONTINUE`: continuar inventario hasta que todos los workflows/requests/execute markers capaces de mutar proveedor, datos, producto, fuente o estado canónico estén clasificados y todo `workflow_dispatch` haya sido revisado.
+`F0_RC15_SYSTEMIC_AUDIT_CONTINUE`: continuar inventario hasta que todos los workflows/requests/execute markers capaces de mutar proveedor, datos, producto, fuente, legacy access o estado canónico estén clasificados y todo `workflow_dispatch` haya sido revisado.
 
 Hasta cerrar F0: provider/data/deploy/recovery/synthetic-stage writes=0; merge=false.

@@ -14,24 +14,26 @@ I1–I4, R1–R4, G1 y G2-A siguen PASS/FROZEN. G2-B no se ejecuta mientras F0 R
 
 ## RC15 F0 — avance vigente
 
-La matriz de control-plane contiene ahora **44 hallazgos clasificados**. F0 sigue `EXPANDED_NOT_EXHAUSTIVE` y mantiene **9 HOLD** para tratamiento sistémico F1/F2:
-- `RC15-CP-005`: Corte4 bootstrap histórico, `workflow_dispatch` + `enabled=true` + `providerConfigWrites=true`.
-- `RC15-CP-011`: Corte4 protected smoke, `workflow_dispatch`/push + `enabled=true`, configuración Auth y usuario temporal reversible.
-- `RC15-CP-014`: G2-B synthetic preflight con snapshot histórico `enabled=true`, `consumed=false`; puede alterar state/evidence sin consultar primero el lock vigente.
-- `RC15-CP-017`: R24 Corte4 new-empty, `workflow_dispatch`/push + `enabled=true`, `projectCreate=true`, `firebaseAdd=true`.
-- `RC15-CP-025`: C6 postdeploy read-only recheck manual/repetible capaz de reescribir request/execute/evidence canónico.
-- `RC15-CP-028`: C6 deterministic-suffix source-only rootfix conserva request histórico `enabled=true/consumed=false`; puede mutar fuente/producto y hacer commit/push si se revive la autoridad vieja.
-- `RC15-CP-029`: C6 postdeploy read-only revalidation conserva request `enabled=true/consumed=false`; provider es read-only pero puede consumir request y hacer push de state/evidence.
-- `RC15-CP-030`: canonical-plan-refresh-offline conserva request `enabled=true` sin terminalización; puede regenerar y empujar evidence/planes repetidamente.
-- `RC15-CP-031`: live-HR current reconcile conserva request `enabled=true/consumed=false`; hoy está source-bound a un parent antiguo, pero mantiene autoridad histórica para provider-read + commit de registry/evidence si se reactiva.
+La matriz de control-plane contiene ahora **68 hallazgos clasificados**. F0 sigue `EXPANDED_NOT_EXHAUSTIVE` y mantiene **18 HOLD** para tratamiento sistémico F1/F2.
 
-La causa sistémica ya queda diferenciada en tres planos: autoridad histórica de **provider**, de **estado/evidence canónico** y de **fuente/producto**. En paralelo se confirmaron workflows read-only y carriles frozen realmente inertes, reduciendo F1 al residuo vivo demostrado.
+Se preservan los 9 HOLD anteriores (`CP-005`, `011`, `014`, `017`, `025`, `028`, `029`, `030`, `031`) y se agregan 9:
+- `RC15-CP-045`: C6 hold-profile conserva request activo y el workflow puede leer provider y escribir evidence aunque el propio request declara `providerReadsAuthorizedMax=0`; falta gate canónico previo.
+- `RC15-CP-055`: remaining-shopper reconciliation conserva autoridad histórica y su script conecta directamente `tya-plataforma` RTDB; además escribe evidence canónico. Esto contradice el contrato vigente: legacy solo por export/import, nunca conexión directa a la base vieja.
+- `RC15-CP-056`: visit identity crosswalk conserva request `enabled=true` sin terminalización; provider-read + writer de evidence.
+- `RC15-CP-058`: live-HR provider capability preflight puede dispararse por cambios de workflow/tool, leer provider y hacer commit de evidence **sin validar el request histórico ni el continuity lock**.
+- `RC15-CP-059`: legacy shoppers/certifications refresh conecta directamente el RTDB legacy y publica evidence; request histórico sigue `enabled=true`.
+- `RC15-CP-063`: profile-extra read-only mantiene `enabled=true/consumed=false`; un bundle cifrado puede activar provider-read + consumo de request + commit de evidence.
+- `RC15-CP-066`: canonical backend anomaly probe mantiene request `enabled=true`; provider-read + writer de evidence.
+- `RC15-CP-067`: canonical backend Phase A gap mantiene request `enabled=true`; writer repetible de estado/evidence aun sin provider.
+- `RC15-CP-068`: canonical backend readonly inventory mantiene request `enabled=true`; provider-read + writer de evidence.
+
+La causa sistémica queda más precisa: coexistieron autorizaciones históricas con terminalización heterogénea, workflows “read-only” que sí mutan estado del repo, al menos un flujo de provider-read que no hace cumplir su propio request, y rutas antiguas que todavía conectan en vivo la base legacy. F1 debe inertizar el residuo completo; F2 debe obligar a todo ejecutor a consultar master plan + continuity lock + consumed ledger **antes** de provider access, legacy access o mutación de estado.
 
 ## Claude/prototipo
 
 No hay tarea frontend en este bloque. No modificar `/app/modules` ni `/app/core`. Los hallazgos son de control-plane/autoridad histórica, no defectos UI demostrados.
 
-Si F0/F5 demuestra un defecto funcional real de frontend, documentarlo por archivo/módulo y aplicar la regla de prototipo/empalme vigente; no rediseñar desde backend.
+La regla para legacy queda reforzada para cualquier ajuste futuro: no usar conexión directa a `tya-plataforma`; únicamente artefactos controlados de export/import de datos reales, limpios y útiles.
 
 ## Academia
 
