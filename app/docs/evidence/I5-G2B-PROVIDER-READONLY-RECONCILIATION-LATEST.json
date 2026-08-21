@@ -1,10 +1,10 @@
 {
-  "schemaVersion": "cxorbia.g2b.provider-readonly-reconciliation.v1",
-  "generatedAt": "2026-08-21T05:00:31.550Z",
+  "schemaVersion": "cxorbia.g2b.provider-readonly-reconciliation.v2",
+  "generatedAt": "2026-08-21T14:45:50.978Z",
   "decision": "A_NO_G2B_PROVIDER_DEPLOY_OBSERVED",
   "execution": {
-    "sha": "c746bdf068edf1322b7c9a5e497ea5aff13e6b58",
-    "requestedAt": "2026-08-20T22:11:33Z",
+    "sha": "0f2000b62844fe56f0167285ebaffe4208af03be",
+    "requestedAt": "2026-08-21T14:31:20Z",
     "automaticRetryAllowed": false
   },
   "baseline": {
@@ -16,7 +16,6 @@
     "latestReadyRevision": "cxorbia-live-hr-dev-00010-n78",
     "latestCreatedRevision": "cxorbia-live-hr-dev-00010-n78",
     "updateTime": "2026-08-16T18:14:48.841798Z",
-    "uriPresent": true,
     "changedFromBaseline": false,
     "changedAfterExecute": false
   },
@@ -43,14 +42,12 @@
     "sourceLive": false,
     "sourcePresentButGateClosed": false
   },
-  "interpretation": {
-    "A": "No new Cloud Run G2-B source and no Hosting release after execute; provider deploy not observed.",
-    "B": "At least one provider-side signal changed but the full authorized Cloud Run + Hosting + route state is not proven.",
-    "C": "Cloud Run changed after execute, G2-B route is live directly and through Hosting, and Hosting has a release after execute."
-  },
   "safety": {
     "providerReads": true,
     "providerWrites": 0,
+    "cloudBuildExecutions": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
     "firestoreWrites": 0,
     "authWrites": 0,
     "storageWrites": 0,
@@ -59,9 +56,7 @@
     "paymentWrites": 0,
     "makeCalls": 0,
     "geminiCalls": 0,
-    "deploys": 0,
     "merge": false,
-    "realCredentialsUsedInProductFlow": false,
     "secretsExported": false
   }
 }

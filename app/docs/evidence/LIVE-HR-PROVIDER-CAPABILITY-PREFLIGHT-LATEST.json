@@ -1,17 +1,15 @@
 {
-  "schemaVersion": "cxorbia.live-hr-provider-capability-preflight.v2",
-  "generatedAt": "2026-08-21T05:00:28.393Z",
+  "schemaVersion": "cxorbia.live-hr-provider-capability-preflight.v3",
+  "generatedAt": "2026-08-21T14:45:50.978Z",
   "decision": "PASS_SHEETS_API_AND_CANONICAL_HR_READER",
   "target": {
     "projectId": "cxorbia-backend-dev",
-    "projectNumber": "87461567267",
-    "serviceAccountEmail": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com"
+    "projectNumber": "87461567267"
   },
   "googleSheetsApi": {
     "httpStatus": 200,
     "state": "ENABLED",
-    "enabled": true,
-    "errorReason": null
+    "enabled": true
   },
   "spreadsheetAccess": {
     "httpStatus": 200,
@@ -19,44 +17,54 @@
     "title": "HR Guatemala - Sincronizacion Google Sheets",
     "totalTabs": 32,
     "monthlyTabs": 30,
-    "latestMonthlyTab": "AGOSTO 26 HN",
-    "errorStatus": null,
-    "errorReason": null
+    "latestMonthlyTab": "AGOSTO 26 HN"
   },
   "driveMetadataAccess": {
     "httpStatus": 403,
-    "accessible": false,
-    "errorStatus": "PERMISSION_DENIED",
-    "errorReason": "accessNotConfigured",
-    "note": "Drive API is not required for HR runtime reads; sharing is validated separately through Drive permission metadata."
+    "accessible": false
   },
   "iam": {
-    "testHttpStatus": 200,
-    "granted": [
+    "testHttpStatus": 400,
+    "granted": [],
+    "missing": [
+      "apikeys.keys.get",
+      "apikeys.keys.list",
+      "apikeys.keys.lookup",
+      "artifactregistry.repositories.get",
+      "artifactregistry.repositories.list",
+      "artifactregistry.repositories.uploadArtifacts",
       "cloudbuild.builds.create",
+      "firebasehosting.releases.create",
+      "firebasehosting.sites.get",
+      "firebasehosting.sites.update",
+      "firebasehosting.versions.create",
+      "firebasehosting.versions.update",
       "iam.serviceAccounts.actAs",
+      "resourcemanager.projects.getIamPolicy",
       "run.services.get",
       "run.services.update",
+      "serviceusage.services.enable",
       "serviceusage.services.get"
     ],
-    "missing": [
-      "artifactregistry.repositories.uploadArtifacts",
-      "serviceusage.services.enable"
-    ],
-    "canEnableSheetsApi": false,
-    "canUpdateCloudRun": true,
-    "canActAs": true,
-    "canStartCloudBuild": true
+    "canUpdateCloudRun": false,
+    "canActAs": false,
+    "canStartCloudBuild": false
   },
+  "forensicEvidence": "app/docs/evidence/I5-G2B-PROVIDER-FORENSIC-READINESS-LATEST.json",
   "safety": {
     "providerReads": true,
     "providerWrites": 0,
-    "hrWrites": 0,
-    "firestoreWrites": 0,
-    "authWrites": 0,
+    "cloudBuildExecutions": 0,
     "hostingDeploys": 0,
     "cloudRunDeploys": 0,
-    "production": false,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "externalHrWrites": 0,
+    "paymentWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
     "merge": false,
     "secretsExported": false
   }

@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "cxorbia.provider-forensic-readiness.v3",
+  "generatedAt": "2026-08-21T14:45:50.978Z",
+  "decision": "FORENSIC_READONLY_COMPLETE",
+  "target": {
+    "projectId": "cxorbia-backend-dev",
+    "projectNumber": "87461567267"
+  },
+  "caller": {
+    "serviceAccountEmailHash": "ab70b5da53a2d545",
+    "iamTestHttpStatus": 400,
+    "granted": [],
+    "missing": [
+      "apikeys.keys.get",
+      "apikeys.keys.list",
+      "apikeys.keys.lookup",
+      "artifactregistry.repositories.get",
+      "artifactregistry.repositories.list",
+      "artifactregistry.repositories.uploadArtifacts",
+      "cloudbuild.builds.create",
+      "firebasehosting.releases.create",
+      "firebasehosting.sites.get",
+      "firebasehosting.sites.update",
+      "firebasehosting.versions.create",
+      "firebasehosting.versions.update",
+      "iam.serviceAccounts.actAs",
+      "resourcemanager.projects.getIamPolicy",
+      "run.services.get",
+      "run.services.update",
+      "serviceusage.services.enable",
+      "serviceusage.services.get"
+    ]
+  },
+  "cloudRun": {
+    "readable": true,
+    "updateReady": false,
+    "latestReadyRevision": "cxorbia-live-hr-dev-00010-n78",
+    "latestCreatedRevision": "cxorbia-live-hr-dev-00010-n78",
+    "updateTime": "2026-08-16T18:14:48.841798Z"
+  },
+  "cloudBuild": {
+    "callerCanCreate": false,
+    "defaultServiceAccountLookupHttpStatus": 200,
+    "executionIdentityKnown": true,
+    "executionServiceAccountHash": "524383be505e116a",
+    "executionServiceAccountRoles": [],
+    "artifactRepositoriesReadHttpStatus": {
+      "us": 200,
+      "usCentral1": 200
+    },
+    "artifactRepositories": [
+      {
+        "name": "projects/cxorbia-backend-dev/locations/us/repositories/gcr.io",
+        "format": "DOCKER",
+        "mode": "STANDARD_REPOSITORY",
+        "location": "us"
+      }
+    ],
+    "artifactPushLikely": false,
+    "artifactPushAssessment": "NOT_PROVEN_FROM_CURRENT_IAM_READBACK",
+    "gcrBackedRepoObserved": true
+  },
+  "hosting": {
+    "siteReadHttpStatus": 404,
+    "releasesReadHttpStatus": 200,
+    "latestReleaseName": "sites/cxorbia-backend-dev/releases/1787196507030000",
+    "latestVersionName": "sites/cxorbia-backend-dev/versions/1093671c6f2053ec",
+    "latestReleaseTime": "2026-08-20T03:28:27.030Z",
+    "firebaseCliApiKeyReady": false,
+    "hostingRestPermissionReady": false,
+    "firebaseCliDeployReady": false,
+    "restDeployReadiness": "NOT_READY_OR_NOT_PROVEN",
+    "apiKeyPermissionsRequired": [
+      "apikeys.keys.get",
+      "apikeys.keys.list",
+      "apikeys.keys.lookup"
+    ],
+    "hostingWritePermissionsRequired": [
+      "firebasehosting.sites.update",
+      "firebasehosting.versions.create",
+      "firebasehosting.versions.update",
+      "firebasehosting.releases.create"
+    ]
+  },
+  "hr": {
+    "sheetsApiEnabled": true,
+    "spreadsheetAccessible": true,
+    "driveMetadataAccessible": false,
+    "totalTabs": 32,
+    "monthlyTabs": 30,
+    "latestMonthlyTab": "AGOSTO 26 HN"
+  },
+  "g2b": {
+    "providerDecision": "A_NO_G2B_PROVIDER_DEPLOY_OBSERVED",
+    "directRouteHttpStatus": 405,
+    "directRouteError": "method_not_allowed",
+    "hostingRouteHttpStatus": 405,
+    "hostingRouteError": "method_not_allowed",
+    "providerStillBaseline": true
+  },
+  "gates": {
+    "firebaseCliDeployReady": false,
+    "hostingRestDeployReadiness": false,
+    "cloudBuildCallerReady": false,
+    "cloudBuildExecutionIdentityKnown": true,
+    "cloudBuildArtifactPushLikelyReady": false,
+    "cloudRunUpdateReady": false,
+    "g2bProviderStillBaseline": true
+  },
+  "safety": {
+    "providerReads": true,
+    "providerWrites": 0,
+    "cloudBuildExecutions": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "externalHrWrites": 0,
+    "paymentWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "merge": false,
+    "secretsExported": false
+  }
+}
