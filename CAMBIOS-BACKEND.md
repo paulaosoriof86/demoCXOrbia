@@ -7,6 +7,49 @@
 **currentMasterPhase:** `F0_SYSTEMIC_AUDIT`  
 **PHASE_A:** `98/100`
 
+## 2026-08-21 — RC15 F0 · TRAMO 4: SOURCE WRITERS, PREFLIGHTS READ-ONLY Y CARRILES CONGELADOS
+
+### Qué se hizo
+- Se resolvió nuevamente el HEAD vivo antes de mutar: `05c5f3618ee2ef12cf46619f2858924f4d046244`; PR #7 seguía draft/open/unmerged.
+- Se replicó la validación del master plan congelado: Git blob `48494ebe5fc439aa6d00e6edcf2e78133357e7f3`, SHA-256 `2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475`, fase `F0_SYSTEMIC_AUDIT`, `providerMutationAuthorizedNow=false`.
+- Se enumeró el árbol real `.github/workflows` desde el tree vivo y se continuó la clasificación sobre workflows aún no cubiertos.
+- La matriz RC15 avanzó de **27 a 44 hallazgos clasificados**.
+- Se clasificaron source writers históricos, revalidaciones postdeploy, reconciliación HR, materialization-plan/read-only workflows, source-safe import validators, preflights Corte4 y varios workflows retirados/frozen.
+
+### Nuevos HOLD de causa raíz
+- `RC15-CP-028` — **HOLD**: `cxorbia-c6-shopper-deterministic-suffix-crosswalk-rootfix-source-only.yml` conserva un request histórico `enabled=true/consumed=false/authorized_execute_once`. Aunque hoy falla por `targetHeadSha` antiguo y no toca provider, el workflow tiene `contents:write` y puede parchear fuente + commit/push si la autoridad vieja se revive mediante request. Es una superficie de **mutación de producto/fuente**.
+- `RC15-CP-029` — **HOLD**: `cxorbia-corte6-postdeploy-readonly-revalidation.yml` conserva request `enabled=true/consumed=false`. Provider es read-only, pero el workflow puede consumir el request, escribir PASS/FAIL evidence y hacer push al branch; además cambios al workflow/request/tool son trigger paths. Es otra superficie de **drift de estado canónico**.
+- `RC15-CP-030` — **HOLD**: `cxorbia-canonical-plan-refresh-offline.yml` tiene request histórico `enabled=true` sin semántica terminal de consumo. No llama provider, pero puede regenerar y hacer push repetidamente de evidence/planes canónicos al tocar el request.
+- `RC15-CP-031` — **HOLD**: `cxorbia-live-hr-current-reconcile.yml` conserva request `enabled=true/consumed=false`; hoy el `sourceCommit` antiguo lo hace fallar cerrado, pero conserva autoridad histórica para provider-read + commit de registry/evidence si se reactiva. No consulta primero el continuity lock RC15.
+
+Los HOLD confirmados pasan de **5 a 9**. El patrón sistémico ya cubre tres planos de mutación histórica: **provider**, **estado/evidence canónico** y **fuente/producto**.
+
+### Superficies clasificadas como seguras/inertes en este tramo
+- `cxorbia-phase-a-live-checkpoint.yml`: validator, `contents:read`, sin provider/repo write.
+- `cxorbia-phase-a-r18a-canonical-assets-integration.yml`: build/source/browser validation local, `contents:read`, sin push/provider write.
+- `cxorbia-phase-a-live-hr-runtime-predeploy.yml`: provider-read predeploy, `contents:read`, sin deploy ni push.
+- `cxorbia-phase-a-firestore-materialization-plan.yml`: genera plan solo en artifacts, sin materialización Firestore.
+- `cxorbia-phase-a-source-safe-importers.yml`: valida importadores/fixtures, no importa al provider.
+- Corte4 provider-credential preflight y bootstrap preflight: requests históricos siguen activos, pero los contratos auditados son provider-calls=0 o provider-read-only; solo statuses/comments. Se revisarán en F1 por política de inertización histórica.
+- Cinco workflows C6 retirados/frozen quedaron comprobados como `echo`/sin implementación ejecutable sensible.
+- C6 Human Login Shopper Identity Audit quedó fail-closed por request `enabled=false/consumed=true/allowedExecutions=0`.
+
+### Causa raíz — precisión nueva
+La evidencia ya no apunta únicamente a “workflows viejos”. El defecto metodológico estructural es que **la terminación histórica no fue homogénea entre provider-authority, repository/source-authority y canonical-state-authority**. Algunas rutas fueron correctamente consumidas o congeladas; otras conservaron `enabled=true`, autorización vieja o capacidad de commit/push. F1 debe tombstonear todo el residuo en un único bloque y F2 debe impedir que cualquier ejecutor actúe sin master plan + continuity lock + consumed ledger vigentes.
+
+### Seguridad
+Provider writes=0; Cloud Build=0; Cloud Run deploy=0; Hosting deploy=0; Firestore/Auth/Storage/HR/Rules/pagos/Make/Gemini writes=0; recovery=0; synthetic stage=0; merge=false.
+
+### Clasificación
+- **Reusable CXOrbia:** taxonomía provider/state/source authority, inertización histórica y binding canónico único.
+- **Exclusivo TyA:** requests y workflows Corte4/Corte6/HR históricos del tenant TyA.
+- **Claude/prototipo:** sin cambio UI, `/app/modules` ni `/app/core`.
+- **Academia:** sin cambio funcional; requisito transversal preservado.
+- **Sin impacto Claude:** auditoría/control-plane/evidence/docs.
+
+### Siguiente
+Continuar F0 con los workflows/requests restantes, especialmente todo `workflow_dispatch`, provider/source writers y writers de estado canónico aún no clasificados. F1 no inicia hasta demostrar exhaustividad.
+
 ## 2026-08-21 — RC15 F0 · TRAMO 3: PROVIDER, DATA, HOSTING Y STATE WRITERS REPETIBLES
 
 ### Qué se hizo
