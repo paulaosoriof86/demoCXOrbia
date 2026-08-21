@@ -28,13 +28,13 @@ env:
   GCP_REGION: us-central1
   CLOUD_RUN_SERVICE: cxorbia-live-hr-dev
   CLOUD_RUN_RUNTIME_SA: firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com
-  FIREBASE_HOSTING_TARGET: cxorbia-dev
   HOSTING_SITE: cxorbia-backend-dev
   DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
   G2B_ORIGINAL_REQUEST_FILE: backend/config/cxorbia-g2b-p0-writepath-deploy-request.json
   G2B_RECOVERY_REQUEST_FILE: backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-request.json
   G2B_RECOVERY_EXECUTE_FILE: backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-execute.json
   G2B_RECONCILIATION_EVIDENCE: app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json
+  G2B_PROVIDER_READINESS: app/docs/evidence/I5-G2B-PROVIDER-FORENSIC-READINESS-LATEST.json
   G2B_RECOVERY_EVIDENCE: app/docs/evidence/I5-G2B-P0-WRITEPATH-RECOVERY-LATEST.json
   G2B_OUT_DIR: .tmp/g2b-p0-writepath-recovery
   G2B_SOURCE_DIR: .tmp/g2b-p0-writepath-recovery-source
@@ -56,6 +56,7 @@ jobs:
           fetch-depth: 0
 
       - name: Validate explicit recovery re-arm and exact execute commit
+        id: authorization
         run: |
           set -euo pipefail
           mkdir -p "$G2B_OUT_DIR"
@@ -64,13 +65,18 @@ jobs:
           const r=JSON.parse(fs.readFileSync(process.env.G2B_RECOVERY_REQUEST_FILE,'utf8'));
           const x=JSON.parse(fs.readFileSync(process.env.G2B_RECOVERY_EXECUTE_FILE,'utf8'));
           const a=JSON.parse(fs.readFileSync(process.env.G2B_RECONCILIATION_EVIDENCE,'utf8'));
+          const f=JSON.parse(fs.readFileSync(process.env.G2B_PROVIDER_READINESS,'utf8'));
           const head=cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
           const changed=cp.execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
           if(head!==process.env.GITHUB_SHA)throw new Error('recovery_trigger_sha_mismatch:'+head+':'+process.env.GITHUB_SHA);
           if(changed.length!==1||changed[0]!==process.env.G2B_RECOVERY_EXECUTE_FILE)throw new Error('recovery_execute_commit_scope_invalid:'+changed.join(','));
           if(r.schemaVersion!=='cxorbia.g2b.p0-writepath-deploy.recovery-request.v1'||x.schemaVersion!=='cxorbia.g2b.p0-writepath-deploy.recovery-execute.v1')throw new Error('recovery_schema_invalid');
           if(r.recoveryId!==x.recoveryId||r.originalRequestId!=='i5-g2b-p0-writepath-deploy-20260820-01'||r.originalExecuteSha!=='c746bdf068edf1322b7c9a5e497ea5aff13e6b58')throw new Error('recovery_lineage_invalid');
-          if(a.decision!=='A_NO_G2B_PROVIDER_DEPLOY_OBSERVED'||a.execution?.sha!==r.originalExecuteSha)throw new Error('proven_A_reconciliation_missing');
+          if(a.decision!=='A_NO_G2B_PROVIDER_DEPLOY_OBSERVED')throw new Error('proven_A_reconciliation_missing');
+          if(a.cloudRun?.latestReadyRevision!==r.providerBaseline?.cloudRunRevision||a.cloudRun?.changedFromBaseline!==false)throw new Error('reconciliation_cloudrun_baseline_mismatch');
+          if(a.hosting?.latestReleaseName!==r.providerBaseline?.hostingReleaseName||a.hosting?.latestVersionName!==r.providerBaseline?.hostingVersionName||a.hosting?.latestReleaseTime!==r.providerBaseline?.hostingReleaseTime||a.hosting?.releaseAfterExecute!==false)throw new Error('reconciliation_hosting_baseline_mismatch');
+          if(f.schemaVersion!=='cxorbia.provider-forensic-readiness.v3.2'||f.decision!=='FORENSIC_PROVIDER_LANE_READY'||f.gates?.recoveryProviderLaneReady!==true)throw new Error('provider_forensic_lane_not_ready');
+          for(const k of ['providerWrites','cloudBuildExecutions','hostingDeploys','cloudRunDeploys','firestoreWrites','authWrites','storageWrites','externalHrWrites','paymentWrites','makeCalls','geminiCalls'])if(Number(f.safety?.[k]||0)!==0)throw new Error('provider_forensic_safety_invalid:'+k);
           for(const o of [r,x]){
             if(o.repository!=='paulaosoriof86/demoCXOrbia'||o.branch!=='docs-tya-v6-v71-audit'||Number(o.pullRequest)!==7)throw new Error('lane_invalid');
             if(o.firebaseProjectId!=='cxorbia-backend-dev'||o.cloudRunService!=='cxorbia-live-hr-dev'||o.cloudRunRegion!=='us-central1'||o.hostingSite!=='cxorbia-backend-dev'||o.hostingTarget!=='cxorbia-dev')throw new Error('target_invalid');
@@ -82,7 +88,7 @@ jobs:
           for(const k of ['firestoreWrites','authWrites','storageWrites','externalHrWrites','realDataWrites','realCredentialWrites','realPaymentWrites','rulesWrites','makeCalls','geminiCalls'])if(Number(r[k]||0)!==0)throw new Error('forbidden_budget:'+k);
           if(r.sourceFixHeadSha!=='1d2cfecba0a89b637398d747a628e549d9823c68'||x.sourceFixHeadSha!==r.sourceFixHeadSha)throw new Error('source_fix_lock_invalid');
           cp.execFileSync('git',['cat-file','-e',r.sourceFixHeadSha+'^{commit}']);
-          fs.writeFileSync(process.env.G2B_OUT_DIR+'/authorization.json',JSON.stringify({decision:'PASS_G2B_RECOVERY_REARM_AUTHORIZATION',head,recoveryId:r.recoveryId,sourceFixHeadSha:r.sourceFixHeadSha},null,2)+'\n');
+          fs.writeFileSync(process.env.G2B_OUT_DIR+'/authorization.json',JSON.stringify({decision:'PASS_G2B_RECOVERY_REARM_AUTHORIZATION',head,recoveryId:r.recoveryId,sourceFixHeadSha:r.sourceFixHeadSha,providerForensicDecision:f.decision,providerBaseline:r.providerBaseline},null,2)+'\n');
           NODE
 
       - uses: actions/setup-node@v4
@@ -98,8 +104,8 @@ jobs:
         with:
           project_id: cxorbia-backend-dev
 
-      - name: Install transient readback and Hosting tooling
-        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase-tools@latest >/dev/null 2>&1
+      - name: Install transient provider readback tooling
+        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
 
       - name: Provider pre-readback must match proven A baseline
         id: preflight
@@ -109,20 +115,37 @@ jobs:
           token="$(gcloud auth print-access-token)"
           curl -fsS -H "Authorization: Bearer $token" "https://firebasehosting.googleapis.com/v1beta1/sites/${HOSTING_SITE}/releases?pageSize=1" > "$G2B_OUT_DIR/hosting-before.json"
           node <<'NODE'
-          const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.G2B_RECOVERY_REQUEST_FILE,'utf8'));const cr=JSON.parse(fs.readFileSync(process.env.G2B_OUT_DIR+'/cloudrun-before.json','utf8'));const h=JSON.parse(fs.readFileSync(process.env.G2B_OUT_DIR+'/hosting-before.json','utf8'));const base=r.providerBaseline||{};const rev=String(cr.status?.latestReadyRevisionName||cr.latestReadyRevision||'').split('/').at(-1);const rel=h.releases?.[0]||{};if(rev!==base.cloudRunRevision)throw new Error('RECOVERY_HOLD_PROVIDER_DRIFT_CLOUD_RUN:'+rev);if(rel.name!==base.hostingReleaseName||rel.version?.name!==base.hostingVersionName||rel.releaseTime!==base.hostingReleaseTime)throw new Error('RECOVERY_HOLD_PROVIDER_DRIFT_HOSTING');fs.writeFileSync(process.env.G2B_OUT_DIR+'/preflight.json',JSON.stringify({decision:'PASS_G2B_RECOVERY_PROVIDER_BASELINE_UNCHANGED',cloudRunRevision:rev,hostingReleaseName:rel.name,hostingVersionName:rel.version?.name,hostingReleaseTime:rel.releaseTime,providerWrites:0},null,2)+'\n');
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync(process.env.G2B_RECOVERY_REQUEST_FILE,'utf8'));
+          const cr=JSON.parse(fs.readFileSync(process.env.G2B_OUT_DIR+'/cloudrun-before.json','utf8'));
+          const h=JSON.parse(fs.readFileSync(process.env.G2B_OUT_DIR+'/hosting-before.json','utf8'));
+          const base=r.providerBaseline||{};
+          const rev=String(cr.status?.latestReadyRevisionName||cr.latestReadyRevision||'').split('/').at(-1);
+          const rel=h.releases?.[0]||{};
+          if(rev!==base.cloudRunRevision)throw new Error('RECOVERY_HOLD_PROVIDER_DRIFT_CLOUD_RUN:'+rev);
+          if(rel.name!==base.hostingReleaseName||rel.version?.name!==base.hostingVersionName||rel.releaseTime!==base.hostingReleaseTime)throw new Error('RECOVERY_HOLD_PROVIDER_DRIFT_HOSTING');
+          fs.writeFileSync(process.env.G2B_OUT_DIR+'/preflight.json',JSON.stringify({decision:'PASS_G2B_RECOVERY_PROVIDER_BASELINE_UNCHANGED',cloudRunRevision:rev,hostingReleaseName:rel.name,hostingVersionName:rel.version?.name,hostingReleaseTime:rel.releaseTime,providerWrites:0},null,2)+'\n');
           NODE
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state=success -f context='cxorbia/g2b-recovery-preflight' -f description='PASS_G2B_RECOVERY_PROVIDER_BASELINE_UNCHANGED' >/dev/null
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state=success -f context='cxorbia/g2b-recovery-preflight' -f description='PASS_G2B_RECOVERY_PROVIDER_BASELINE_UNCHANGED' >/dev/null || true
 
       - name: Prove zero G2-B synthetic residue before recovery
+        id: residue_before
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
         run: |
           set -euo pipefail
           node <<'NODE'
-          const fs=require('fs'),admin=require('firebase-admin');const sa=JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON||'{}');if(sa.project_id!=='cxorbia-backend-dev')throw new Error('wrong_service_account_project');admin.initializeApp({credential:admin.credential.cert(sa),projectId:'cxorbia-backend-dev'});const db=admin.firestore(),auth=admin.auth(),rid=process.env.G2B_SYNTH_REQUEST;async function count(c){return (await c.where('syntheticRequestId','==',rid).get()).size;}(async()=>{const t=db.collection('tenants').doc('tya'),p=t.collection('projects').doc('cinepolis');const counts={visits:await count(p.collection('visits')),postulations:await count(p.collection('postulations')),receipts:await count(t.collection('commandReceipts')),audit:await count(t.collection('entityAuditTrail')),shoppers:await count(t.collection('shoppers'))};let syntheticAuth=0,token;do{const page=await auth.listUsers(1000,token);syntheticAuth+=page.users.filter(u=>u.customClaims?.syntheticRequestId===rid).length;token=page.pageToken;}while(token);if(Object.values(counts).some(Number)||syntheticAuth!==0)throw new Error('recovery_pre_synthetic_residue:'+JSON.stringify({...counts,syntheticAuth}));fs.writeFileSync(process.env.G2B_OUT_DIR+'/provider-data-before.json',JSON.stringify({decision:'PASS_G2B_RECOVERY_ZERO_SYNTHETIC_RESIDUE_BEFORE',counts,syntheticAuth},null,2)+'\n');})();
+          const fs=require('fs'),admin=require('firebase-admin');
+          const sa=JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON||'{}');
+          if(sa.project_id!=='cxorbia-backend-dev')throw new Error('wrong_service_account_project');
+          admin.initializeApp({credential:admin.credential.cert(sa),projectId:'cxorbia-backend-dev'});
+          const db=admin.firestore(),auth=admin.auth(),rid=process.env.G2B_SYNTH_REQUEST;
+          async function count(c){return (await c.where('syntheticRequestId','==',rid).get()).size;}
+          (async()=>{const t=db.collection('tenants').doc('tya'),p=t.collection('projects').doc('cinepolis');const counts={visits:await count(p.collection('visits')),postulations:await count(p.collection('postulations')),receipts:await count(t.collection('commandReceipts')),audit:await count(t.collection('entityAuditTrail')),shoppers:await count(t.collection('shoppers'))};let syntheticAuth=0,token;do{const page=await auth.listUsers(1000,token);syntheticAuth+=page.users.filter(u=>u.customClaims?.syntheticRequestId===rid).length;token=page.pageToken;}while(token);if(Object.values(counts).some(Number)||syntheticAuth!==0)throw new Error('recovery_pre_synthetic_residue:'+JSON.stringify({...counts,syntheticAuth}));fs.writeFileSync(process.env.G2B_OUT_DIR+'/provider-data-before.json',JSON.stringify({decision:'PASS_G2B_RECOVERY_ZERO_SYNTHETIC_RESIDUE_BEFORE',counts,syntheticAuth},null,2)+'\n');})();
           NODE
 
-      - name: Prepare exact detached source-fix worktree
+      - name: Prepare and validate exact detached source-fix worktree
+        id: source_contract
         run: |
           set -euo pipefail
           rm -rf "$G2B_SOURCE_DIR"
@@ -130,8 +153,13 @@ jobs:
           test "$(git -C "$G2B_SOURCE_DIR" rev-parse HEAD)" = '1d2cfecba0a89b637398d747a628e549d9823c68'
           node --check "$G2B_SOURCE_DIR/backend/runtime/hr-live-service/g2b-synthetic-runtime.mjs"
           node --check "$G2B_SOURCE_DIR/backend/runtime/hr-live-service/server.mjs"
-          grep -q 'g2b-synthetic/commands' "$G2B_SOURCE_DIR/backend/runtime/hr-live-service/server.mjs"
-          grep -q 'YES_PAULA_20260820_G2B_SYNTHETIC' "$G2B_SOURCE_DIR/app/adapters/cxorbia-canonical-write-firewall-v1.js"
+          CXORBIA_G2B_SOURCE_CONTRACT_OUT="$G2B_OUT_DIR/source-contract.json" node "$GITHUB_WORKSPACE/tools/qa/cxorbia-g2b-recovery-source-contract.mjs" "$G2B_SOURCE_DIR"
+          node "$GITHUB_WORKSPACE/tools/production/cxorbia-hosting-rest-deploy.mjs" --source-dir "$G2B_SOURCE_DIR" --dry-run --out "$G2B_OUT_DIR/hosting-rest-dry-run.json"
+          node - <<'NODE'
+          const s=require('./.tmp/g2b-p0-writepath-recovery/source-contract.json');
+          const h=require('./.tmp/g2b-p0-writepath-recovery/hosting-rest-dry-run.json');
+          if(s.decision!=='PASS_G2B_RECOVERY_SOURCE_CONTRACT'||h.decision!=='PASS_HOSTING_REST_DRY_RUN_SOURCE_READY')throw new Error('recovery_source_contract_not_ready');
+          NODE
 
       - name: Build exact corrected Cloud Run image once
         id: build
@@ -158,7 +186,7 @@ jobs:
           gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json > "$G2B_OUT_DIR/cloudrun-after.json"
           revision="$(node -e "const x=require('./$G2B_OUT_DIR/cloudrun-after.json');process.stdout.write(String(x.status?.latestReadyRevisionName||x.latestReadyRevision||'').split('/').at(-1)||'unknown')")"
           state=error; [ '${{ steps.cloudrun.outcome }}' = 'success' ] && state=success
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$state" -f context='cxorbia/g2b-recovery-cloudrun' -f description="Cloud Run readback: ${revision:0:80}" >/dev/null
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$state" -f context='cxorbia/g2b-recovery-cloudrun' -f description="Cloud Run readback: ${revision:0:80}" >/dev/null || true
 
       - name: Direct Cloud Run fail-closed smoke
         id: direct_smoke
@@ -173,13 +201,16 @@ jobs:
           test "$code" = '401'
           node -e "const x=require('./$G2B_OUT_DIR/direct-route.json');if(x.error!=='G2B_SYNTHETIC_AUTHORIZATION_REQUIRED')process.exit(2)"
 
-      - name: Deploy existing Hosting target once only after Cloud Run proof
+      - name: Deploy existing Hosting site once through REST only after Cloud Run proof
         id: hosting
         if: steps.cloudrun.outcome == 'success' && steps.direct_smoke.outcome == 'success'
         continue-on-error: true
         run: |
           set -euo pipefail
-          (cd "$G2B_SOURCE_DIR" && "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$GCP_PROJECT_ID" --non-interactive)
+          export CXORBIA_HOSTING_ACCESS_TOKEN="$(gcloud auth print-access-token)"
+          export CXORBIA_HOSTING_REST_EXECUTE='YES_PAULA_I5_G2B_RECOVERY_HOSTING_REST'
+          node "$GITHUB_WORKSPACE/tools/production/cxorbia-hosting-rest-deploy.mjs" --source-dir "$G2B_SOURCE_DIR" --out "$G2B_OUT_DIR/hosting-rest-deploy.json"
+          unset CXORBIA_HOSTING_ACCESS_TOKEN
 
       - name: Read back Hosting immediately after mutation attempt
         if: always() && steps.preflight.outcome == 'success'
@@ -189,7 +220,7 @@ jobs:
           curl -fsS -H "Authorization: Bearer $token" "https://firebasehosting.googleapis.com/v1beta1/sites/${HOSTING_SITE}/releases?pageSize=1" > "$G2B_OUT_DIR/hosting-after.json"
           rel="$(node -e "const x=require('./$G2B_OUT_DIR/hosting-after.json');process.stdout.write(x.releases?.[0]?.name||'unknown')")"
           state=error; [ '${{ steps.hosting.outcome }}' = 'success' ] && state=success
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$state" -f context='cxorbia/g2b-recovery-hosting' -f description="Hosting readback: ${rel:0:90}" >/dev/null
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$state" -f context='cxorbia/g2b-recovery-hosting' -f description="Hosting readback: ${rel:0:90}" >/dev/null || true
 
       - name: Hosting route fail-closed smoke
         id: hosting_smoke
@@ -214,7 +245,8 @@ jobs:
           const fs=require('fs'),admin=require('firebase-admin');const sa=JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON||'{}');if(sa.project_id!=='cxorbia-backend-dev')throw new Error('wrong_service_account_project');if(!admin.apps.length)admin.initializeApp({credential:admin.credential.cert(sa),projectId:'cxorbia-backend-dev'});const db=admin.firestore(),auth=admin.auth(),rid=process.env.G2B_SYNTH_REQUEST;async function count(c){return (await c.where('syntheticRequestId','==',rid).get()).size;}(async()=>{const t=db.collection('tenants').doc('tya'),p=t.collection('projects').doc('cinepolis');const counts={visits:await count(p.collection('visits')),postulations:await count(p.collection('postulations')),receipts:await count(t.collection('commandReceipts')),audit:await count(t.collection('entityAuditTrail')),shoppers:await count(t.collection('shoppers'))};let syntheticAuth=0,token;do{const page=await auth.listUsers(1000,token);syntheticAuth+=page.users.filter(u=>u.customClaims?.syntheticRequestId===rid).length;token=page.pageToken;}while(token);if(Object.values(counts).some(Number)||syntheticAuth!==0)throw new Error('recovery_created_provider_data:'+JSON.stringify({...counts,syntheticAuth}));fs.writeFileSync(process.env.G2B_OUT_DIR+'/provider-data-after.json',JSON.stringify({decision:'PASS_G2B_RECOVERY_ZERO_BUSINESS_AUTH_WRITES',counts,syntheticAuth},null,2)+'\n');})();
           NODE
 
-      - name: Persist terminal recovery classification without retriggering execute
+      - name: Compute terminal recovery classification
+        id: terminal
         if: always() && steps.preflight.outcome == 'success'
         env:
           BUILD_OUTCOME: ${{ steps.build.outcome }}
@@ -223,28 +255,84 @@ jobs:
           HOSTING_OUTCOME: ${{ steps.hosting.outcome }}
           HOSTING_SMOKE_OUTCOME: ${{ steps.hosting_smoke.outcome }}
           PROVIDER_DATA_OUTCOME: ${{ steps.provider_data_after.outcome }}
+          SOURCE_CONTRACT_OUTCOME: ${{ steps.source_contract.outcome }}
         run: |
           set -euo pipefail
           node <<'NODE'
-          const fs=require('fs');const req=JSON.parse(fs.readFileSync(process.env.G2B_RECOVERY_REQUEST_FILE,'utf8'));const preCr=JSON.parse(fs.readFileSync(process.env.G2B_OUT_DIR+'/cloudrun-before.json','utf8'));const postCr=fs.existsSync(process.env.G2B_OUT_DIR+'/cloudrun-after.json')?JSON.parse(fs.readFileSync(process.env.G2B_OUT_DIR+'/cloudrun-after.json','utf8')):preCr;const preH=JSON.parse(fs.readFileSync(process.env.G2B_OUT_DIR+'/hosting-before.json','utf8'));const postH=fs.existsSync(process.env.G2B_OUT_DIR+'/hosting-after.json')?JSON.parse(fs.readFileSync(process.env.G2B_OUT_DIR+'/hosting-after.json','utf8')):preH;const baseRev=String(preCr.status?.latestReadyRevisionName||preCr.latestReadyRevision||'').split('/').at(-1)||null,postRev=String(postCr.status?.latestReadyRevisionName||postCr.latestReadyRevision||'').split('/').at(-1)||null;const baseRel=preH.releases?.[0]?.name||null,postRel=postH.releases?.[0]?.name||null;const directCode=Number(fs.existsSync(process.env.G2B_OUT_DIR+'/direct-route.code')?fs.readFileSync(process.env.G2B_OUT_DIR+'/direct-route.code','utf8').trim():0),hostingCode=Number(fs.existsSync(process.env.G2B_OUT_DIR+'/hosting-route.code')?fs.readFileSync(process.env.G2B_OUT_DIR+'/hosting-route.code','utf8').trim():0);const crChanged=Boolean(postRev&&baseRev&&postRev!==baseRev),hostingChanged=Boolean(postRel&&baseRel&&postRel!==baseRel);let decision='RECOVERY_NO_PROVIDER_SIDE_EFFECT';if(crChanged&&hostingChanged&&directCode===401&&hostingCode===401&&process.env.PROVIDER_DATA_OUTCOME==='success')decision='RECOVERY_PASS_FULL';else if(crChanged&&!hostingChanged)decision='RECOVERY_PARTIAL_CLOUD_RUN_ONLY';else if(crChanged||hostingChanged)decision='RECOVERY_PARTIAL_OR_NONTERMINAL';const evidence={schemaVersion:'cxorbia.g2b.p0-writepath-deploy.recovery-evidence.v1',generatedAt:new Date().toISOString(),decision,recoveryId:req.recoveryId,originalRequestId:req.originalRequestId,sourceFixHeadSha:req.sourceFixHeadSha,providerBaseline:{cloudRunRevision:baseRev,hostingReleaseName:baseRel},providerAfter:{cloudRunRevision:postRev,hostingReleaseName:postRel},outcomes:{build:process.env.BUILD_OUTCOME,cloudRun:process.env.CLOUDRUN_OUTCOME,directSmoke:process.env.DIRECT_SMOKE_OUTCOME,hosting:process.env.HOSTING_OUTCOME,hostingSmoke:process.env.HOSTING_SMOKE_OUTCOME,providerData:process.env.PROVIDER_DATA_OUTCOME},routeCodes:{direct:directCode,hosting:hostingCode},cloudRunChanged:crChanged,hostingChanged,automaticRetryAllowed:false,firestoreWrites:0,authWrites:0,storageWrites:0,externalHrWrites:0,realDataWrites:0,realCredentialWrites:0,realPaymentWrites:0,rulesWrites:0,makeCalls:0,geminiCalls:0,merge:false,next:decision==='RECOVERY_PASS_FULL'?'G2B_STAGE_AND_TEST_SYNTHETIC_ONLY':'RECOVERY_RECONCILE_AND_REQUIRE_NEW_EXPLICIT_DECISION'};fs.writeFileSync('/tmp/g2b-recovery-evidence.json',JSON.stringify(evidence,null,2)+'\n');fs.writeFileSync('/tmp/g2b-recovery-decision.txt',decision+'\n');
+          const fs=require('fs');
+          const req=JSON.parse(fs.readFileSync(process.env.G2B_RECOVERY_REQUEST_FILE,'utf8'));
+          const preCr=JSON.parse(fs.readFileSync(process.env.G2B_OUT_DIR+'/cloudrun-before.json','utf8'));
+          const postCr=fs.existsSync(process.env.G2B_OUT_DIR+'/cloudrun-after.json')?JSON.parse(fs.readFileSync(process.env.G2B_OUT_DIR+'/cloudrun-after.json','utf8')):preCr;
+          const preH=JSON.parse(fs.readFileSync(process.env.G2B_OUT_DIR+'/hosting-before.json','utf8'));
+          const postH=fs.existsSync(process.env.G2B_OUT_DIR+'/hosting-after.json')?JSON.parse(fs.readFileSync(process.env.G2B_OUT_DIR+'/hosting-after.json','utf8')):preH;
+          const hostingRest=fs.existsSync(process.env.G2B_OUT_DIR+'/hosting-rest-deploy.json')?JSON.parse(fs.readFileSync(process.env.G2B_OUT_DIR+'/hosting-rest-deploy.json','utf8')):null;
+          const baseRev=String(preCr.status?.latestReadyRevisionName||preCr.latestReadyRevision||'').split('/').at(-1)||null;
+          const postRev=String(postCr.status?.latestReadyRevisionName||postCr.latestReadyRevision||'').split('/').at(-1)||null;
+          const baseRel=preH.releases?.[0]?.name||null,postRel=postH.releases?.[0]?.name||null;
+          const directCode=Number(fs.existsSync(process.env.G2B_OUT_DIR+'/direct-route.code')?fs.readFileSync(process.env.G2B_OUT_DIR+'/direct-route.code','utf8').trim():0);
+          const hostingCode=Number(fs.existsSync(process.env.G2B_OUT_DIR+'/hosting-route.code')?fs.readFileSync(process.env.G2B_OUT_DIR+'/hosting-route.code','utf8').trim():0);
+          const crChanged=Boolean(postRev&&baseRev&&postRev!==baseRev),hostingChanged=Boolean(postRel&&baseRel&&postRel!==baseRel);
+          const attempted=v=>Boolean(v&&v!=='skipped');
+          const buildAttempted=attempted(process.env.BUILD_OUTCOME),cloudRunAttempted=attempted(process.env.CLOUDRUN_OUTCOME),hostingAttempted=attempted(process.env.HOSTING_OUTCOME);
+          const hostingVersionCreated=hostingRest?.provider?.versionCreated===true;
+          const hostingReleaseCreated=hostingRest?.provider?.releaseCreated===true;
+          let decision='RECOVERY_NO_PROVIDER_SIDE_EFFECT';
+          if(crChanged&&hostingChanged&&directCode===401&&hostingCode===401&&process.env.PROVIDER_DATA_OUTCOME==='success'&&hostingRest?.decision==='PASS_HOSTING_REST_DEPLOY')decision='RECOVERY_PASS_FULL';
+          else if(crChanged&&!hostingChanged)decision='RECOVERY_PARTIAL_CLOUD_RUN_ONLY';
+          else if(crChanged||hostingChanged||buildAttempted||cloudRunAttempted||hostingAttempted||hostingVersionCreated||hostingReleaseCreated)decision='RECOVERY_PARTIAL_OR_NONTERMINAL';
+          const providerMutationObserved=Boolean(crChanged||hostingChanged||hostingVersionCreated||hostingReleaseCreated||process.env.BUILD_OUTCOME==='success');
+          const evidence={schemaVersion:'cxorbia.g2b.p0-writepath-deploy.recovery-evidence.v2',generatedAt:new Date().toISOString(),decision,recoveryId:req.recoveryId,originalRequestId:req.originalRequestId,sourceFixHeadSha:req.sourceFixHeadSha,providerBaseline:{cloudRunRevision:baseRev,hostingReleaseName:baseRel},providerAfter:{cloudRunRevision:postRev,hostingReleaseName:postRel},outcomes:{sourceContract:process.env.SOURCE_CONTRACT_OUTCOME,build:process.env.BUILD_OUTCOME,cloudRun:process.env.CLOUDRUN_OUTCOME,directSmoke:process.env.DIRECT_SMOKE_OUTCOME,hosting:process.env.HOSTING_OUTCOME,hostingSmoke:process.env.HOSTING_SMOKE_OUTCOME,providerData:process.env.PROVIDER_DATA_OUTCOME},providerAttempts:{cloudBuild:buildAttempted,cloudRun:cloudRunAttempted,hosting:hostingAttempted},hostingRest:hostingRest?{decision:hostingRest.decision,stage:hostingRest.stage||null,versionCreated:hostingVersionCreated,versionName:hostingRest.provider?.versionName||null,releaseCreated:hostingReleaseCreated,releaseName:hostingRest.provider?.releaseName||null,populateCalls:Number(hostingRest.provider?.populateCalls||0),uploads:Number(hostingRest.provider?.uploads||0)}:null,routeCodes:{direct:directCode,hosting:hostingCode},cloudRunChanged:crChanged,hostingChanged,providerOperationAttempted:buildAttempted||cloudRunAttempted||hostingAttempted,providerMutationObserved,automaticRetryAllowed:false,firestoreWrites:0,authWrites:0,storageWrites:0,externalHrWrites:0,realDataWrites:0,realCredentialWrites:0,realPaymentWrites:0,rulesWrites:0,makeCalls:0,geminiCalls:0,merge:false,next:decision==='RECOVERY_PASS_FULL'?'G2B_STAGE_AND_TEST_SYNTHETIC_ONLY':'RECOVERY_RECONCILE_AND_REQUIRE_NEW_EXPLICIT_DECISION'};
+          fs.writeFileSync('/tmp/g2b-recovery-evidence.json',JSON.stringify(evidence,null,2)+'\n');fs.writeFileSync('/tmp/g2b-recovery-decision.txt',decision+'\n');
           NODE
+
+      - name: Publish terminal provider status before repository persistence
+        if: always() && steps.preflight.outcome == 'success' && steps.terminal.outcome == 'success'
+        run: |
+          set -euo pipefail
+          decision="$(tr -d '\r\n' < /tmp/g2b-recovery-decision.txt)"
+          state=error; [ "$decision" = 'RECOVERY_PASS_FULL' ] && state=success
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$state" -f context='cxorbia/g2b-recovery-terminal' -f description="$decision" >/dev/null || true
+          gh issue comment 7 --repo "$GITHUB_REPOSITORY" --body "## G2-B P0 recovery terminal evidence\n\nDecision: \`$decision\`. Automatic retry: \`false\`. Provider business/Auth/HR/payment writes: \`0\`." >/dev/null || true
+
+      - name: Persist terminal recovery classification without retriggering execute
+        if: always() && steps.preflight.outcome == 'success' && steps.terminal.outcome == 'success'
+        run: |
+          set -euo pipefail
+          cp /tmp/g2b-recovery-evidence.json /tmp/g2b-recovery-evidence.persist.json
+          decision="$(tr -d '\r\n' < /tmp/g2b-recovery-decision.txt)"
           git fetch origin docs-tya-v6-v71-audit
           git reset --hard origin/docs-tya-v6-v71-audit
           mkdir -p app/docs/evidence
-          cp /tmp/g2b-recovery-evidence.json "$G2B_RECOVERY_EVIDENCE"
-          decision="$(tr -d '\r\n' < /tmp/g2b-recovery-decision.txt)"
+          cp /tmp/g2b-recovery-evidence.persist.json "$G2B_RECOVERY_EVIDENCE"
           node - "$decision" <<'NODE'
-          const fs=require('fs');const decision=process.argv[2],now=new Date().toISOString(),rp=process.env.G2B_RECOVERY_REQUEST_FILE,op=process.env.G2B_ORIGINAL_REQUEST_FILE;const r=JSON.parse(fs.readFileSync(rp,'utf8')),e=JSON.parse(fs.readFileSync(process.env.G2B_RECOVERY_EVIDENCE,'utf8'));r.status=decision.toLowerCase();r.enabled=false;r.consumed=true;r.executionCount=1;r.consumedAt=now;r.decision=decision;r.automaticRetryAllowed=false;r.providerAfter=e.providerAfter;r.next=e.next;fs.writeFileSync(rp,JSON.stringify(r,null,2)+'\n');const o=JSON.parse(fs.readFileSync(op,'utf8'));o.recoveryAttemptConsumed=true;o.recoveryDecision=decision;o.recoveryEvidence=process.env.G2B_RECOVERY_EVIDENCE;o.automaticRetryAllowed=false;if(decision==='RECOVERY_PASS_FULL'){o.status='consumed_pass_p0_writepath_deployed_via_recovery';o.enabled=false;o.consumed=true;o.cloudRunDeployExecutions=1;o.hostingDeployExecutions=1;o.cloudRunRevision=e.providerAfter.cloudRunRevision;o.consumedAt=now;o.decision='PASS_G2B_P0_CANONICAL_WRITE_PATH_CORRECTION_DEPLOYED_VIA_RECOVERY';o.next='G2B_STAGE_AND_TEST_SYNTHETIC_ONLY';}else{o.enabled=false;o.next='RECOVERY_RECONCILE_AND_REQUIRE_NEW_EXPLICIT_DECISION';}fs.writeFileSync(op,JSON.stringify(o,null,2)+'\n');
+          const fs=require('fs');
+          const decision=process.argv[2],now=new Date().toISOString(),rp=process.env.G2B_RECOVERY_REQUEST_FILE,op=process.env.G2B_ORIGINAL_REQUEST_FILE;
+          const r=JSON.parse(fs.readFileSync(rp,'utf8')),e=JSON.parse(fs.readFileSync(process.env.G2B_RECOVERY_EVIDENCE,'utf8'));
+          r.status=decision.toLowerCase();r.enabled=false;r.consumed=true;r.executionCount=1;r.consumedAt=now;r.decision=decision;r.automaticRetryAllowed=false;r.providerAfter=e.providerAfter;r.providerOperationExecutions=e.providerOperationAttempted?1:0;r.providerMutationExecutions=e.providerMutationObserved?1:0;r.next=e.next;
+          fs.writeFileSync(rp,JSON.stringify(r,null,2)+'\n');
+          const o=JSON.parse(fs.readFileSync(op,'utf8'));o.recoveryAttemptConsumed=true;o.recoveryDecision=decision;o.recoveryEvidence=process.env.G2B_RECOVERY_EVIDENCE;o.automaticRetryAllowed=false;
+          if(decision==='RECOVERY_PASS_FULL'){o.status='consumed_pass_p0_writepath_deployed_via_recovery';o.enabled=false;o.consumed=true;o.cloudRunDeployExecutions=1;o.hostingDeployExecutions=1;o.cloudRunRevision=e.providerAfter.cloudRunRevision;o.consumedAt=now;o.decision='PASS_G2B_P0_CANONICAL_WRITE_PATH_CORRECTION_DEPLOYED_VIA_RECOVERY';o.next='G2B_STAGE_AND_TEST_SYNTHETIC_ONLY';}
+          else{o.enabled=false;o.next='RECOVERY_RECONCILE_AND_REQUIRE_NEW_EXPLICIT_DECISION';}
+          fs.writeFileSync(op,JSON.stringify(o,null,2)+'\n');
           NODE
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add "$G2B_RECOVERY_EVIDENCE" "$G2B_RECOVERY_REQUEST_FILE" "$G2B_ORIGINAL_REQUEST_FILE"
-          git commit -m "evidence(g2b): persist recovery ${decision}"
-          git pull --rebase origin docs-tya-v6-v71-audit
-          git push origin HEAD:docs-tya-v6-v71-audit
-          state=error; [ "$decision" = 'RECOVERY_PASS_FULL' ] && state=success
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$state" -f context='cxorbia/g2b-recovery-terminal' -f description="$decision" >/dev/null
-          gh issue comment 7 --repo "$GITHUB_REPOSITORY" --body "## G2-B P0 recovery terminal evidence\n\nDecision: \`$decision\`. Automatic retry: \`false\`. Provider business/Auth/HR/payment writes: \`0\`." >/dev/null
+          if ! git diff --cached --quiet; then git commit -m "evidence(g2b): persist recovery ${decision}"; git pull --rebase origin docs-tya-v6-v71-audit; git push origin HEAD:docs-tya-v6-v71-audit; fi
+
+      - name: Publish blocked-before-provider terminal status
+        if: always() && steps.preflight.outcome != 'success'
+        run: |
+          set -euo pipefail
+          mkdir -p "$G2B_OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs');
+          fs.writeFileSync(process.env.G2B_OUT_DIR+'/blocked-before-provider.json',JSON.stringify({schemaVersion:'cxorbia.g2b.recovery-blocked-pre-provider.v1',generatedAt:new Date().toISOString(),decision:'RECOVERY_BLOCKED_PRE_PROVIDER_NO_MUTATION',authorizationOutcome:'${{ steps.authorization.outcome }}',preflightOutcome:'${{ steps.preflight.outcome }}',providerWrites:0,cloudBuildExecutions:0,cloudRunDeploys:0,hostingDeploys:0,firestoreWrites:0,authWrites:0,externalHrWrites:0,automaticRetryAllowed:false},null,2)+'\n');
+          NODE
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state=error -f context='cxorbia/g2b-recovery-terminal' -f description='RECOVERY_BLOCKED_PRE_PROVIDER_NO_MUTATION' >/dev/null || true
+          gh issue comment 7 --repo "$GITHUB_REPOSITORY" --body '## G2-B P0 recovery terminal evidence
+
+Decision: `RECOVERY_BLOCKED_PRE_PROVIDER_NO_MUTATION`. Provider mutations: `0`. Request state was not consumed by this pre-provider block.' >/dev/null || true
 
       - name: Upload sanitized recovery evidence
         if: always()
