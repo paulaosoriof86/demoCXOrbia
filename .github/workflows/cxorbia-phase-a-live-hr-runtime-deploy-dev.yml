@@ -60,7 +60,7 @@ jobs:
           exit 1
 
   recover-g2b-p0-writepath:
-    if: contains(github.event.head_commit.added, 'backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-execute.json')
+    if: github.event.head_commit.message == 'gate(g2b): execute authorized single recovery after payload-liveness fix'
     runs-on: ubuntu-latest
     timeout-minutes: 70
     env:
