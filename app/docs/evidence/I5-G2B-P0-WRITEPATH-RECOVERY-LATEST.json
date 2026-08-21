@@ -1,59 +1,43 @@
 {
   "schemaVersion": "cxorbia.g2b.p0-writepath-deploy.recovery-evidence.v1",
-  "generatedAt": "2026-08-21T05:02:10Z",
+  "generatedAt": "2026-08-21T14:32:12.032Z",
   "decision": "RECOVERY_NO_PROVIDER_SIDE_EFFECT",
-  "recoveryId": "i5-g2b-p0-writepath-recovery-20260820-01",
+  "recoveryId": "i5-g2b-p0-writepath-recovery-20260821-02",
   "originalRequestId": "i5-g2b-p0-writepath-deploy-20260820-01",
-  "recoveryExecuteSha": "feeff85d834af7f711a4b62e291a29a14901a8d5",
   "sourceFixHeadSha": "1d2cfecba0a89b637398d747a628e549d9823c68",
-  "controlPlane": {
-    "executeAddedAsSingleFileCommit": true,
-    "recoveryPreflightCommitStatusPublished": false,
-    "recoveryTerminalCommitStatusPublished": false,
-    "terminalWorkflowEvidenceWasAbsentBeforeDispositionCheck": true,
-    "readOnlyDispositionRequestCommit": "c849912dc18c93d9a496f168303e72b0e82843e6",
-    "readOnlyProviderEvidenceCommit": "a3f1f1de97f61ec6634913596955533393f428dc",
-    "liveHeadAdvancedPastExecute": true,
-    "exactExecuteHeadGuardNowFailClosedForAnyNotYetStartedRecovery": true
-  },
-  "providerSnapshot": {
-    "evidence": "app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json",
-    "generatedAt": "2026-08-21T05:00:31.550Z",
-    "lineageNote": "The reusable provider reconciliation workflow still carries the historical c746 execution identifier, but its provider observations were freshly generated after feeff85d and are used here only as current-state readback, not as feeff lineage metadata.",
+  "providerBaseline": {
     "cloudRunRevision": "cxorbia-live-hr-dev-00010-n78",
-    "cloudRunLatestCreatedRevision": "cxorbia-live-hr-dev-00010-n78",
-    "cloudRunUpdateTime": "2026-08-16T18:14:48.841798Z",
-    "cloudRunChangedFromBaseline": false,
-    "directRouteHttpStatus": 405,
-    "directRouteError": "method_not_allowed",
-    "hostingReleaseName": "sites/cxorbia-backend-dev/releases/1787196507030000",
-    "hostingVersionName": "sites/cxorbia-backend-dev/versions/1093671c6f2053ec",
-    "hostingReleaseTime": "2026-08-20T03:28:27.030Z",
-    "hostingRouteHttpStatus": 405,
-    "hostingRouteError": "method_not_allowed",
-    "correctedG2BRouteLive": false
+    "hostingReleaseName": "sites/cxorbia-backend-dev/releases/1787196507030000"
   },
-  "reasoning": {
-    "providerMutationRequiresSuccessfulRecoveryPreflightFirst": true,
-    "noRecoveryPreflightStatusObserved": true,
-    "freshProviderReadbackAfterRecoveryExecuteShowsNoCloudRunOrHostingMutation": true,
-    "thereforeProviderSideEffectFromRecoveryRetryIsNotObserved": true,
-    "lateQueuedExecutionIsFailClosedByAdvancedLiveHeadExactCommitGuard": true
+  "providerAfter": {
+    "cloudRunRevision": "cxorbia-live-hr-dev-00010-n78",
+    "hostingReleaseName": "sites/cxorbia-backend-dev/releases/1787196507030000"
   },
-  "safety": {
-    "providerWrites": 0,
-    "firestoreWrites": 0,
-    "authWrites": 0,
-    "storageWrites": 0,
-    "externalHrWrites": 0,
-    "realDataWrites": 0,
-    "realCredentialWrites": 0,
-    "realPaymentWrites": 0,
-    "rulesWrites": 0,
-    "makeCalls": 0,
-    "geminiCalls": 0,
-    "merge": false
+  "outcomes": {
+    "build": "skipped",
+    "cloudRun": "skipped",
+    "directSmoke": "skipped",
+    "hosting": "skipped",
+    "hostingSmoke": "skipped",
+    "providerData": "success"
   },
+  "routeCodes": {
+    "direct": 0,
+    "hosting": 0
+  },
+  "cloudRunChanged": false,
+  "hostingChanged": false,
   "automaticRetryAllowed": false,
-  "next": "REQUIRE_NEW_EXPLICIT_RECOVERY_DECISION_AFTER_CONTROL_PLANE_TRIGGER_LIVENESS_FIX"
+  "firestoreWrites": 0,
+  "authWrites": 0,
+  "storageWrites": 0,
+  "externalHrWrites": 0,
+  "realDataWrites": 0,
+  "realCredentialWrites": 0,
+  "realPaymentWrites": 0,
+  "rulesWrites": 0,
+  "makeCalls": 0,
+  "geminiCalls": 0,
+  "merge": false,
+  "next": "RECOVERY_RECONCILE_AND_REQUIRE_NEW_EXPLICIT_DECISION"
 }
