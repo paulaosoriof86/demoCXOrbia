@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.live-hr-provider-capability-preflight.v2",
-  "generatedAt": "2026-08-21T00:59:59.474Z",
+  "generatedAt": "2026-08-21T05:00:28.393Z",
   "decision": "PASS_SHEETS_API_AND_CANONICAL_HR_READER",
   "target": {
     "projectId": "cxorbia-backend-dev",
