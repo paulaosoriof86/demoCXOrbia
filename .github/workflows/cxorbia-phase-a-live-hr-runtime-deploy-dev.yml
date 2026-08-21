@@ -63,6 +63,8 @@ jobs:
     if: contains(github.event.head_commit.added, 'backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-execute.json')
     runs-on: ubuntu-latest
     timeout-minutes: 70
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Checkout exact live branch
         uses: actions/checkout@v4
