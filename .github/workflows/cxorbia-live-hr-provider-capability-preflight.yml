@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Probe existing project capabilities read-only
+      - name: Probe existing project capabilities and reconcile G2-B provider state read-only
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
         run: |
@@ -46,6 +46,15 @@ jobs:
           const signer=crypto.createSign('RSA-SHA256');signer.update(unsigned);signer.end();
           const assertion=`${unsigned}.${signer.sign(sa.private_key).toString('base64url')}`;
           async function json(url,options={}){const r=await fetch(url,options);let body=null;try{body=await r.json()}catch{}return {status:r.status,ok:r.ok,body};}
+          async function safePost(url){
+            try{
+              const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}',redirect:'manual'});
+              let body=null;try{body=await r.json()}catch{}
+              return {status:r.status,ok:r.ok,error:typeof body?.error==='string'?body.error:null,syntheticOnly:body?.syntheticOnly===true};
+            }catch(error){return {status:0,ok:false,error:'NETWORK_READ_FAILED'};}
+          }
+          const basename=v=>String(v||'').split('/').filter(Boolean).at(-1)||null;
+          const validTime=v=>{const n=Date.parse(String(v||''));return Number.isFinite(n)?n:null;};
           (async()=>{
             const tokenResp=await json('https://oauth2.googleapis.com/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'urn:ietf:params:oauth:grant-type:jwt-bearer',assertion})});
             if(!tokenResp.ok||!tokenResp.body?.access_token)throw new Error(`oauth_failed:${tokenResp.status}:${JSON.stringify(tokenResp.body).slice(0,300)}`);
@@ -78,30 +87,92 @@ jobs:
             };
             fs.writeFileSync('app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json',JSON.stringify(report,null,2)+'\n');
             console.log(JSON.stringify({...report,target:{...report.target,serviceAccountEmail:'<sanitized-in-console>'}}));
+
+            const executeSha='c746bdf068edf1322b7c9a5e497ea5aff13e6b58';
+            const executeAt='2026-08-20T22:11:33Z';
+            const baselineRevision='cxorbia-live-hr-dev-00010-n78';
+            const commandPath='/api/tenants/tya/projects/cinepolis/g2b-synthetic/commands';
+            const cloudRun=await json('https://run.googleapis.com/v2/projects/cxorbia-backend-dev/locations/us-central1/services/cxorbia-live-hr-dev',{headers:h});
+            const latestReadyRevision=basename(cloudRun.body?.latestReadyRevision);
+            const latestCreatedRevision=basename(cloudRun.body?.latestCreatedRevision);
+            const serviceUri=String(cloudRun.body?.uri||'').replace(/\/$/,'');
+            const cloudRunUpdateTime=cloudRun.body?.updateTime||null;
+            const directProbe=serviceUri?await safePost(serviceUri+commandPath):{status:0,ok:false,error:'CLOUD_RUN_URI_UNAVAILABLE'};
+            const hostingProbe=await safePost('https://cxorbia-backend-dev.web.app'+commandPath);
+            const hosting=await json('https://firebasehosting.googleapis.com/v1beta1/sites/cxorbia-backend-dev/releases?pageSize=5',{headers:h});
+            const releases=Array.isArray(hosting.body?.releases)?hosting.body.releases:[];
+            const latestRelease=releases[0]||null;
+            const latestReleaseTime=latestRelease?.releaseTime||null;
+            const latestReleaseName=latestRelease?.name||null;
+            const latestVersionName=latestRelease?.version?.name||null;
+            const executeMs=validTime(executeAt);
+            const releaseMs=validTime(latestReleaseTime);
+            const updateMs=validTime(cloudRunUpdateTime);
+            const cloudRunChanged=Boolean(cloudRun.ok&&latestReadyRevision&&latestReadyRevision!==baselineRevision);
+            const cloudRunChangedAfterExecute=Boolean(cloudRunChanged&&updateMs!==null&&executeMs!==null&&updateMs>=executeMs);
+            const directSourceLive=directProbe.status===401&&directProbe.error==='G2B_SYNTHETIC_AUTHORIZATION_REQUIRED';
+            const directSourcePresentGateClosed=directProbe.status===423&&directProbe.error==='G2B_SYNTHETIC_WRITE_GATE_DISABLED';
+            const hostingSourceLive=hostingProbe.status===401&&hostingProbe.error==='G2B_SYNTHETIC_AUTHORIZATION_REQUIRED';
+            const hostingSourcePresentGateClosed=hostingProbe.status===423&&hostingProbe.error==='G2B_SYNTHETIC_WRITE_GATE_DISABLED';
+            const hostingReleaseAfterExecute=Boolean(hosting.ok&&releaseMs!==null&&executeMs!==null&&releaseMs>=executeMs);
+            const readsSufficient=cloudRun.ok&&hosting.ok&&directProbe.status>0&&hostingProbe.status>0;
+            let classification='HOLD_PROVIDER_RECONCILIATION_INSUFFICIENT_READBACK';
+            if(readsSufficient){
+              if(!cloudRunChanged&&!directSourceLive&&!directSourcePresentGateClosed&&!hostingReleaseAfterExecute){
+                classification='A_NO_G2B_PROVIDER_DEPLOY_OBSERVED';
+              }else if(cloudRunChanged&&cloudRunChangedAfterExecute&&directSourceLive&&hostingSourceLive&&hostingReleaseAfterExecute){
+                classification='C_G2B_CLOUD_RUN_AND_HOSTING_DEPLOY_MATERIALIZED';
+              }else{
+                classification='B_G2B_PROVIDER_DEPLOY_PARTIAL_OR_NONTERMINAL';
+              }
+            }
+            const g2b={
+              schemaVersion:'cxorbia.g2b.provider-readonly-reconciliation.v1',
+              generatedAt:new Date().toISOString(),
+              decision:classification,
+              execution:{sha:executeSha,requestedAt:executeAt,automaticRetryAllowed:false},
+              baseline:{cloudRunRevision:baselineRevision},
+              cloudRun:{httpStatus:cloudRun.status,readable:cloudRun.ok,latestReadyRevision,latestCreatedRevision,updateTime:cloudRunUpdateTime,uriPresent:Boolean(serviceUri),changedFromBaseline:cloudRunChanged,changedAfterExecute:cloudRunChangedAfterExecute},
+              directCloudRunProbe:{httpStatus:directProbe.status,error:directProbe.error||null,expectedUnauthenticatedStatus:401,sourceLive:directSourceLive,sourcePresentButGateClosed:directSourcePresentGateClosed},
+              hosting:{httpStatus:hosting.status,readable:hosting.ok,latestReleaseName,latestVersionName,latestReleaseTime,releaseAfterExecute:hostingReleaseAfterExecute,releasesInspected:releases.length},
+              hostingRouteProbe:{httpStatus:hostingProbe.status,error:hostingProbe.error||null,expectedUnauthenticatedStatus:401,sourceLive:hostingSourceLive,sourcePresentButGateClosed:hostingSourcePresentGateClosed},
+              interpretation:{
+                A:'No new Cloud Run G2-B source and no Hosting release after execute; provider deploy not observed.',
+                B:'At least one provider-side signal changed but the full authorized Cloud Run + Hosting + route state is not proven.',
+                C:'Cloud Run changed after execute, G2-B route is live directly and through Hosting, and Hosting has a release after execute.'
+              },
+              safety:{providerReads:true,providerWrites:0,firestoreWrites:0,authWrites:0,storageWrites:0,hrWrites:0,externalHrWrites:0,paymentWrites:0,makeCalls:0,geminiCalls:0,deploys:0,merge:false,realCredentialsUsedInProductFlow:false,secretsExported:false}
+            };
+            fs.writeFileSync('app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json',JSON.stringify(g2b,null,2)+'\n');
+            console.log(JSON.stringify(g2b));
           })().catch(e=>{console.error(e.stack||e);process.exit(1)});
           NODE
 
-      - name: Commit sanitized capability evidence
+      - name: Commit sanitized capability and G2-B reconciliation evidence
         run: |
           set -euo pipefail
           cp app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json /tmp/cap.json
+          cp app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json /tmp/g2b-provider.json
           git fetch origin docs-tya-v6-v71-audit
           git reset --hard origin/docs-tya-v6-v71-audit
           mkdir -p app/docs/evidence
           cp /tmp/cap.json app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json
+          cp /tmp/g2b-provider.json app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json
-          if ! git diff --cached --quiet; then git commit -m 'evidence: live HR provider capability preflight'; git push origin HEAD:docs-tya-v6-v71-audit; fi
+          git add app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json
+          if ! git diff --cached --quiet; then git commit -m 'evidence: reconcile G2B provider state read-only'; git push origin HEAD:docs-tya-v6-v71-audit; fi
 
       - name: Publish status
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          STATE=error;DESC='HOLD_LIVE_HR_PROVIDER_PREFLIGHT'
-          if [ -f app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json ]; then
-            DECISION=$(node -e "const x=require('./app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json');process.stdout.write(x.decision||'')")
-            if [ "$DECISION" = 'PASS_SHEETS_API_AND_CANONICAL_HR_READER' ]; then STATE=success;DESC='PASS_SHEETS_API_AND_CANONICAL_HR_READER'; fi
+          STATE=success;DESC='PASS_SHEETS_API_AND_CANONICAL_HR_READER'
+          if [ ! -f app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json ]; then STATE=error;DESC='HOLD_LIVE_HR_PROVIDER_PREFLIGHT'; fi
+          if [ ! -f app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json ]; then STATE=error;DESC='HOLD_G2B_PROVIDER_RECONCILIATION_MISSING'; fi
+          if [ -f app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json ]; then
+            G2B_DECISION=$(node -e "const x=require('./app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json');process.stdout.write(x.decision||'')")
+            DESC="${G2B_DECISION:0:120}"
           fi
           gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/live-hr-provider-capability-preflight' -f description="$DESC" >/dev/null
