@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "cxorbia.provider-forensic-readiness.v3.1",
-  "generatedAt": "2026-08-21T14:50:08.555Z",
-  "decision": "FORENSIC_READONLY_COMPLETE",
+  "schemaVersion": "cxorbia.provider-forensic-readiness.v3.2",
+  "generatedAt": "2026-08-21T15:20:00.277Z",
+  "decision": "FORENSIC_PROVIDER_LANE_READY",
   "target": {
     "projectId": "cxorbia-backend-dev",
     "projectNumber": "87461567267"
@@ -54,11 +54,32 @@
         "errorStatus": null
       },
       {
+        "permission": "cloudbuild.builds.get",
+        "httpStatus": 200,
+        "validProbe": true,
+        "granted": true,
+        "errorStatus": null
+      },
+      {
+        "permission": "cloudbuild.builds.list",
+        "httpStatus": 200,
+        "validProbe": true,
+        "granted": true,
+        "errorStatus": null
+      },
+      {
         "permission": "resourcemanager.projects.getIamPolicy",
         "httpStatus": 200,
         "validProbe": true,
         "granted": false,
         "errorStatus": null
+      },
+      {
+        "permission": "policytroubleshooter.iam.troubleshoot",
+        "httpStatus": 400,
+        "validProbe": false,
+        "granted": false,
+        "errorStatus": "INVALID_ARGUMENT"
       },
       {
         "permission": "artifactregistry.repositories.get",
@@ -110,38 +131,22 @@
         "errorStatus": null
       },
       {
-        "permission": "firebasehosting.sites.update",
+        "permission": "firebasehosting.sites.list",
         "httpStatus": 200,
         "validProbe": true,
         "granted": true,
         "errorStatus": null
       },
       {
-        "permission": "firebasehosting.versions.create",
-        "httpStatus": 400,
-        "validProbe": false,
-        "granted": false,
-        "errorStatus": "INVALID_ARGUMENT"
-      },
-      {
-        "permission": "firebasehosting.versions.update",
-        "httpStatus": 400,
-        "validProbe": false,
-        "granted": false,
-        "errorStatus": "INVALID_ARGUMENT"
-      },
-      {
-        "permission": "firebasehosting.releases.create",
-        "httpStatus": 400,
-        "validProbe": false,
-        "granted": false,
-        "errorStatus": "INVALID_ARGUMENT"
+        "permission": "firebasehosting.sites.update",
+        "httpStatus": 200,
+        "validProbe": true,
+        "granted": true,
+        "errorStatus": null
       }
     ],
     "invalidPermissionProbes": [
-      "firebasehosting.versions.create",
-      "firebasehosting.versions.update",
-      "firebasehosting.releases.create"
+      "policytroubleshooter.iam.troubleshoot"
     ]
   },
   "cloudRun": {
@@ -153,6 +158,8 @@
   },
   "cloudBuild": {
     "callerCanCreate": true,
+    "buildsListHttpStatus": 200,
+    "buildsInspected": 11,
     "defaultServiceAccountLookupHttpStatus": 200,
     "executionIdentityKnown": true,
     "executionIdentityKind": "COMPUTE_DEFAULT",
@@ -170,21 +177,54 @@
         "location": "us"
       }
     ],
-    "artifactPushLikely": false,
-    "artifactPushAssessment": "NOT_PROVEN_FROM_CURRENT_IAM_READBACK",
-    "gcrBackedRepoObserved": true
+    "gcrBackedRepoObserved": true,
+    "historicalArtifactPushProof": true,
+    "historicalArtifactPushExactIdentityProof": true,
+    "latestSuccessfulTargetBuild": {
+      "id": "ee41db4a-77e3-444b-a4a6-98f6ccd51990",
+      "status": "SUCCESS",
+      "createTime": "2026-08-16T18:14:05.389063688Z",
+      "finishTime": "2026-08-16T18:14:44.994683Z",
+      "serviceAccountHash": "524383be505e116a",
+      "imageNames": [
+        "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-legal-v04-bfe762da8afa0c46dc4e7bd09ec8183dac01b089",
+        "gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-legal-v04-bfe762da8afa0c46dc4e7bd09ec8183dac01b089"
+      ],
+      "imageDigests": [
+        "sha256:49116efac03d62768157a57353689b177427036650471a4088a3ac5b301e7b6a"
+      ]
+    },
+    "policyTroubleshooter": {
+      "httpStatus": 403,
+      "overallAccessState": null,
+      "permission": "artifactregistry.repositories.uploadArtifacts",
+      "resource": "//artifactregistry.googleapis.com/projects/cxorbia-backend-dev/locations/us/repositories/gcr.io",
+      "principalHash": "524383be505e116a",
+      "available": false,
+      "errorStatus": "PERMISSION_DENIED"
+    },
+    "artifactPushReady": true,
+    "artifactPushAssessment": "PROVEN_BY_SUCCESSFUL_BUILD_SAME_EXECUTION_IDENTITY"
   },
   "hosting": {
     "releasesReadHttpStatus": 200,
+    "releasesInspected": 10,
     "latestReleaseName": "sites/cxorbia-backend-dev/releases/1787196507030000",
     "latestVersionName": "sites/cxorbia-backend-dev/versions/1093671c6f2053ec",
     "latestReleaseTime": "2026-08-20T03:28:27.030Z",
+    "latestVersionReadHttpStatus": 200,
+    "latestReleaseUserHash": "ab70b5da53a2d545",
+    "latestVersionCreateUserHash": "ab70b5da53a2d545",
+    "latestVersionFinalizeUserHash": "ab70b5da53a2d545",
+    "historicalSameCallerWriteProof": true,
+    "sitesGetReady": true,
+    "sitesUpdateReady": true,
+    "restReadReady": true,
+    "restDeployReady": true,
+    "restReadinessBasis": "CURRENT_SITES_UPDATE_PLUS_READBACK_PLUS_SAME_CALLER_HISTORY",
     "apiKeysListHttpStatus": 403,
     "firebaseCliApiKeyReady": false,
-    "hostingRestPermissionReady": false,
-    "hostingRestReadinessBasis": "NOT_PROVEN",
-    "firebaseCliDeployReady": false,
-    "restDeployReadiness": "NOT_READY_OR_NOT_PROVEN"
+    "firebaseCliDeployReady": false
   },
   "hr": {
     "sheetsApiEnabled": true,
@@ -204,12 +244,13 @@
   },
   "gates": {
     "firebaseCliDeployReady": false,
-    "hostingRestDeployReadiness": false,
+    "hostingRestDeployReady": true,
     "cloudBuildCallerReady": true,
     "cloudBuildExecutionIdentityKnown": true,
-    "cloudBuildArtifactPushLikelyReady": false,
+    "cloudBuildArtifactPushReady": true,
     "cloudRunUpdateReady": true,
-    "g2bProviderStillBaseline": true
+    "g2bProviderStillBaseline": true,
+    "recoveryProviderLaneReady": true
   },
   "safety": {
     "providerReads": true,

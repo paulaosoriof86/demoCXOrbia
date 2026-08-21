@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "cxorbia.live-hr-provider-capability-preflight.v3.1",
-  "generatedAt": "2026-08-21T14:50:08.555Z",
+  "schemaVersion": "cxorbia.live-hr-provider-capability-preflight.v3.2",
+  "generatedAt": "2026-08-21T15:20:00.277Z",
   "decision": "PASS_SHEETS_API_AND_CANONICAL_HR_READER",
   "target": {
     "projectId": "cxorbia-backend-dev",
@@ -68,11 +68,32 @@
         "errorStatus": null
       },
       {
+        "permission": "cloudbuild.builds.get",
+        "httpStatus": 200,
+        "validProbe": true,
+        "granted": true,
+        "errorStatus": null
+      },
+      {
+        "permission": "cloudbuild.builds.list",
+        "httpStatus": 200,
+        "validProbe": true,
+        "granted": true,
+        "errorStatus": null
+      },
+      {
         "permission": "resourcemanager.projects.getIamPolicy",
         "httpStatus": 200,
         "validProbe": true,
         "granted": false,
         "errorStatus": null
+      },
+      {
+        "permission": "policytroubleshooter.iam.troubleshoot",
+        "httpStatus": 400,
+        "validProbe": false,
+        "granted": false,
+        "errorStatus": "INVALID_ARGUMENT"
       },
       {
         "permission": "artifactregistry.repositories.get",
@@ -124,38 +145,22 @@
         "errorStatus": null
       },
       {
-        "permission": "firebasehosting.sites.update",
+        "permission": "firebasehosting.sites.list",
         "httpStatus": 200,
         "validProbe": true,
         "granted": true,
         "errorStatus": null
       },
       {
-        "permission": "firebasehosting.versions.create",
-        "httpStatus": 400,
-        "validProbe": false,
-        "granted": false,
-        "errorStatus": "INVALID_ARGUMENT"
-      },
-      {
-        "permission": "firebasehosting.versions.update",
-        "httpStatus": 400,
-        "validProbe": false,
-        "granted": false,
-        "errorStatus": "INVALID_ARGUMENT"
-      },
-      {
-        "permission": "firebasehosting.releases.create",
-        "httpStatus": 400,
-        "validProbe": false,
-        "granted": false,
-        "errorStatus": "INVALID_ARGUMENT"
+        "permission": "firebasehosting.sites.update",
+        "httpStatus": 200,
+        "validProbe": true,
+        "granted": true,
+        "errorStatus": null
       }
     ],
     "invalidPermissionProbes": [
-      "firebasehosting.versions.create",
-      "firebasehosting.versions.update",
-      "firebasehosting.releases.create"
+      "policytroubleshooter.iam.troubleshoot"
     ],
     "canUpdateCloudRun": true,
     "canStartCloudBuild": true

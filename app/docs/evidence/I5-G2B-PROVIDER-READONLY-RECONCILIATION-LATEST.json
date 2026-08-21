@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.g2b.provider-readonly-reconciliation.v2",
-  "generatedAt": "2026-08-21T14:50:08.555Z",
+  "generatedAt": "2026-08-21T15:20:00.277Z",
   "decision": "A_NO_G2B_PROVIDER_DEPLOY_OBSERVED",
   "execution": {
     "sha": "0f2000b62844fe56f0167285ebaffe4208af03be",
@@ -33,7 +33,7 @@
     "latestVersionName": "sites/cxorbia-backend-dev/versions/1093671c6f2053ec",
     "latestReleaseTime": "2026-08-20T03:28:27.030Z",
     "releaseAfterExecute": false,
-    "releasesInspected": 5
+    "releasesInspected": 10
   },
   "hostingRouteProbe": {
     "httpStatus": 405,
