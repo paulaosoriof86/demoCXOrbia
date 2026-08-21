@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "cxorbia.provider-forensic-readiness.v3",
-  "generatedAt": "2026-08-21T14:45:50.978Z",
+  "schemaVersion": "cxorbia.provider-forensic-readiness.v3.1",
+  "generatedAt": "2026-08-21T14:50:08.555Z",
   "decision": "FORENSIC_READONLY_COMPLETE",
   "target": {
     "projectId": "cxorbia-backend-dev",
@@ -8,40 +8,154 @@
   },
   "caller": {
     "serviceAccountEmailHash": "ab70b5da53a2d545",
-    "iamTestHttpStatus": 400,
-    "granted": [],
-    "missing": [
-      "apikeys.keys.get",
-      "apikeys.keys.list",
-      "apikeys.keys.lookup",
-      "artifactregistry.repositories.get",
-      "artifactregistry.repositories.list",
-      "artifactregistry.repositories.uploadArtifacts",
-      "cloudbuild.builds.create",
-      "firebasehosting.releases.create",
-      "firebasehosting.sites.get",
-      "firebasehosting.sites.update",
+    "iamPolicyHttpStatus": 403,
+    "roles": [],
+    "permissionProbes": [
+      {
+        "permission": "serviceusage.services.get",
+        "httpStatus": 200,
+        "validProbe": true,
+        "granted": true,
+        "errorStatus": null
+      },
+      {
+        "permission": "serviceusage.services.enable",
+        "httpStatus": 200,
+        "validProbe": true,
+        "granted": false,
+        "errorStatus": null
+      },
+      {
+        "permission": "run.services.get",
+        "httpStatus": 200,
+        "validProbe": true,
+        "granted": true,
+        "errorStatus": null
+      },
+      {
+        "permission": "run.services.update",
+        "httpStatus": 200,
+        "validProbe": true,
+        "granted": true,
+        "errorStatus": null
+      },
+      {
+        "permission": "iam.serviceAccounts.actAs",
+        "httpStatus": 200,
+        "validProbe": true,
+        "granted": true,
+        "errorStatus": null
+      },
+      {
+        "permission": "cloudbuild.builds.create",
+        "httpStatus": 200,
+        "validProbe": true,
+        "granted": true,
+        "errorStatus": null
+      },
+      {
+        "permission": "resourcemanager.projects.getIamPolicy",
+        "httpStatus": 200,
+        "validProbe": true,
+        "granted": false,
+        "errorStatus": null
+      },
+      {
+        "permission": "artifactregistry.repositories.get",
+        "httpStatus": 200,
+        "validProbe": true,
+        "granted": true,
+        "errorStatus": null
+      },
+      {
+        "permission": "artifactregistry.repositories.list",
+        "httpStatus": 200,
+        "validProbe": true,
+        "granted": true,
+        "errorStatus": null
+      },
+      {
+        "permission": "artifactregistry.repositories.uploadArtifacts",
+        "httpStatus": 200,
+        "validProbe": true,
+        "granted": false,
+        "errorStatus": null
+      },
+      {
+        "permission": "apikeys.keys.get",
+        "httpStatus": 200,
+        "validProbe": true,
+        "granted": false,
+        "errorStatus": null
+      },
+      {
+        "permission": "apikeys.keys.list",
+        "httpStatus": 200,
+        "validProbe": true,
+        "granted": false,
+        "errorStatus": null
+      },
+      {
+        "permission": "apikeys.keys.lookup",
+        "httpStatus": 200,
+        "validProbe": true,
+        "granted": false,
+        "errorStatus": null
+      },
+      {
+        "permission": "firebasehosting.sites.get",
+        "httpStatus": 200,
+        "validProbe": true,
+        "granted": true,
+        "errorStatus": null
+      },
+      {
+        "permission": "firebasehosting.sites.update",
+        "httpStatus": 200,
+        "validProbe": true,
+        "granted": true,
+        "errorStatus": null
+      },
+      {
+        "permission": "firebasehosting.versions.create",
+        "httpStatus": 400,
+        "validProbe": false,
+        "granted": false,
+        "errorStatus": "INVALID_ARGUMENT"
+      },
+      {
+        "permission": "firebasehosting.versions.update",
+        "httpStatus": 400,
+        "validProbe": false,
+        "granted": false,
+        "errorStatus": "INVALID_ARGUMENT"
+      },
+      {
+        "permission": "firebasehosting.releases.create",
+        "httpStatus": 400,
+        "validProbe": false,
+        "granted": false,
+        "errorStatus": "INVALID_ARGUMENT"
+      }
+    ],
+    "invalidPermissionProbes": [
       "firebasehosting.versions.create",
       "firebasehosting.versions.update",
-      "iam.serviceAccounts.actAs",
-      "resourcemanager.projects.getIamPolicy",
-      "run.services.get",
-      "run.services.update",
-      "serviceusage.services.enable",
-      "serviceusage.services.get"
+      "firebasehosting.releases.create"
     ]
   },
   "cloudRun": {
     "readable": true,
-    "updateReady": false,
+    "updateReady": true,
     "latestReadyRevision": "cxorbia-live-hr-dev-00010-n78",
     "latestCreatedRevision": "cxorbia-live-hr-dev-00010-n78",
     "updateTime": "2026-08-16T18:14:48.841798Z"
   },
   "cloudBuild": {
-    "callerCanCreate": false,
+    "callerCanCreate": true,
     "defaultServiceAccountLookupHttpStatus": 200,
     "executionIdentityKnown": true,
+    "executionIdentityKind": "COMPUTE_DEFAULT",
     "executionServiceAccountHash": "524383be505e116a",
     "executionServiceAccountRoles": [],
     "artifactRepositoriesReadHttpStatus": {
@@ -61,26 +175,16 @@
     "gcrBackedRepoObserved": true
   },
   "hosting": {
-    "siteReadHttpStatus": 404,
     "releasesReadHttpStatus": 200,
     "latestReleaseName": "sites/cxorbia-backend-dev/releases/1787196507030000",
     "latestVersionName": "sites/cxorbia-backend-dev/versions/1093671c6f2053ec",
     "latestReleaseTime": "2026-08-20T03:28:27.030Z",
+    "apiKeysListHttpStatus": 403,
     "firebaseCliApiKeyReady": false,
     "hostingRestPermissionReady": false,
+    "hostingRestReadinessBasis": "NOT_PROVEN",
     "firebaseCliDeployReady": false,
-    "restDeployReadiness": "NOT_READY_OR_NOT_PROVEN",
-    "apiKeyPermissionsRequired": [
-      "apikeys.keys.get",
-      "apikeys.keys.list",
-      "apikeys.keys.lookup"
-    ],
-    "hostingWritePermissionsRequired": [
-      "firebasehosting.sites.update",
-      "firebasehosting.versions.create",
-      "firebasehosting.versions.update",
-      "firebasehosting.releases.create"
-    ]
+    "restDeployReadiness": "NOT_READY_OR_NOT_PROVEN"
   },
   "hr": {
     "sheetsApiEnabled": true,
@@ -101,10 +205,10 @@
   "gates": {
     "firebaseCliDeployReady": false,
     "hostingRestDeployReadiness": false,
-    "cloudBuildCallerReady": false,
+    "cloudBuildCallerReady": true,
     "cloudBuildExecutionIdentityKnown": true,
     "cloudBuildArtifactPushLikelyReady": false,
-    "cloudRunUpdateReady": false,
+    "cloudRunUpdateReady": true,
     "g2bProviderStillBaseline": true
   },
   "safety": {
