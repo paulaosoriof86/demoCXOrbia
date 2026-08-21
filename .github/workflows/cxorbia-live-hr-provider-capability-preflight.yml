@@ -7,6 +7,7 @@ on:
     paths:
       - '.github/workflows/cxorbia-live-hr-provider-capability-preflight.yml'
       - '.github/cxorbia-firebase-requests/live-hr-provider-capability-preflight.json'
+      - 'tools/qa/cxorbia-g2b-provider-forensic-readiness.mjs'
 
 permissions:
   contents: write
@@ -35,7 +36,8 @@ jobs:
           const fs=require('fs');
           const f='app/docs/evidence/I5-G2B-PROVIDER-FORENSIC-READINESS-LATEST.json';
           const x=JSON.parse(fs.readFileSync(f,'utf8'));
-          if(x.schemaVersion!=='cxorbia.provider-forensic-readiness.v3.1'||x.decision!=='FORENSIC_READONLY_COMPLETE')throw new Error('forensic_v31_evidence_not_current');
+          if(x.schemaVersion!=='cxorbia.provider-forensic-readiness.v3.2')throw new Error('forensic_v32_evidence_not_current');
+          if(!['FORENSIC_PROVIDER_LANE_READY','FORENSIC_READONLY_COMPLETE_WITH_HOLDS'].includes(x.decision))throw new Error('forensic_v32_decision_invalid');
           if(x.safety?.providerWrites!==0||x.safety?.cloudBuildExecutions!==0||x.safety?.hostingDeploys!==0||x.safety?.cloudRunDeploys!==0||x.safety?.firestoreWrites!==0||x.safety?.authWrites!==0||x.safety?.storageWrites!==0||x.safety?.externalHrWrites!==0||x.safety?.paymentWrites!==0||x.safety?.makeCalls!==0||x.safety?.geminiCalls!==0||x.safety?.merge!==false)throw new Error('forensic_audit_safety_violation');
           NODE
 
@@ -54,7 +56,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json app/docs/evidence/I5-G2B-PROVIDER-FORENSIC-READINESS-LATEST.json
-          if ! git diff --cached --quiet; then git commit -m 'evidence: persist G2B provider forensic readiness v3.1'; git push origin HEAD:docs-tya-v6-v71-audit; fi
+          if ! git diff --cached --quiet; then git commit -m 'evidence: persist G2B provider forensic readiness v3.2'; git push origin HEAD:docs-tya-v6-v71-audit; fi
 
       - name: Publish forensic status
         if: always()
@@ -62,7 +64,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          STATE=error;DESC='HOLD_G2B_PROVIDER_FORENSIC_V31_MISSING'
-          if node -e "const x=require('./app/docs/evidence/I5-G2B-PROVIDER-FORENSIC-READINESS-LATEST.json');if(x.schemaVersion!=='cxorbia.provider-forensic-readiness.v3.1'||x.decision!=='FORENSIC_READONLY_COMPLETE')process.exit(1)"; then STATE=success;DESC='FORENSIC_G2B_PROVIDER_V31_READONLY_COMPLETE'; fi
+          STATE=error;DESC='HOLD_G2B_PROVIDER_FORENSIC_V32_MISSING'
+          if node - <<'NODE'
+          const x=require('./app/docs/evidence/I5-G2B-PROVIDER-FORENSIC-READINESS-LATEST.json');
+          if(x.schemaVersion!=='cxorbia.provider-forensic-readiness.v3.2')process.exit(1);
+          if(x.decision!=='FORENSIC_PROVIDER_LANE_READY')process.exit(2);
+          NODE
+          then STATE=success;DESC='FORENSIC_G2B_PROVIDER_LANE_READY'; else DESC='HOLD_G2B_PROVIDER_LANE_NOT_READY'; fi
           gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/g2b-provider-forensic-readiness' -f description="$DESC" >/dev/null
           test "$STATE" = success
