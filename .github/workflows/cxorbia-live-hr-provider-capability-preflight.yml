@@ -15,7 +15,7 @@ permissions:
 jobs:
   preflight:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
         with:
@@ -24,10 +24,11 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Probe existing project capabilities and reconcile G2-B provider state read-only
+      - name: Forensic provider capability audit and G2-B reconciliation read-only
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
         run: |
+          set -euo pipefail
           mkdir -p app/docs/evidence
           node <<'NODE'
           const fs=require('fs'),crypto=require('crypto');
@@ -35,6 +36,7 @@ jobs:
           if(!raw)throw new Error('service_account_secret_missing');
           const sa=JSON.parse(raw);
           if(sa.type!=='service_account'||sa.project_id!=='cxorbia-backend-dev')throw new Error('wrong_service_account');
+          const project='cxorbia-backend-dev';
           const b64=v=>Buffer.from(v).toString('base64url');
           const now=Math.floor(Date.now()/1000);
           const scopes=[
@@ -45,27 +47,61 @@ jobs:
           const unsigned=`${b64(JSON.stringify({alg:'RS256',typ:'JWT'}))}.${b64(JSON.stringify({iss:sa.client_email,scope:scopes,aud:'https://oauth2.googleapis.com/token',iat:now,exp:now+1800}))}`;
           const signer=crypto.createSign('RSA-SHA256');signer.update(unsigned);signer.end();
           const assertion=`${unsigned}.${signer.sign(sa.private_key).toString('base64url')}`;
-          async function json(url,options={}){const r=await fetch(url,options);let body=null;try{body=await r.json()}catch{}return {status:r.status,ok:r.ok,body};}
-          async function safePost(url){
-            try{
-              const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}',redirect:'manual'});
-              let body=null;try{body=await r.json()}catch{}
-              return {status:r.status,ok:r.ok,error:typeof body?.error==='string'?body.error:null,syntheticOnly:body?.syntheticOnly===true};
-            }catch(error){return {status:0,ok:false,error:'NETWORK_READ_FAILED'};}
-          }
+          async function json(url,options={}){try{const r=await fetch(url,options);let body=null;try{body=await r.json()}catch{}return {status:r.status,ok:r.ok,body};}catch(error){return {status:0,ok:false,body:{error:{message:String(error?.message||error)}}};}}
+          async function safePost(url){try{const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}',redirect:'manual'});let body=null;try{body=await r.json()}catch{}return {status:r.status,ok:r.ok,error:typeof body?.error==='string'?body.error:null,syntheticOnly:body?.syntheticOnly===true};}catch{return {status:0,ok:false,error:'NETWORK_READ_FAILED'};}}
           const basename=v=>String(v||'').split('/').filter(Boolean).at(-1)||null;
           const validTime=v=>{const n=Date.parse(String(v||''));return Number.isFinite(n)?n:null;};
+          const sanitizeRepo=x=>({name:x?.name||null,format:x?.format||null,mode:x?.mode||null,location:String(x?.name||'').split('/locations/')[1]?.split('/')[0]||null});
+          const knownArtifactWriteRoles=new Set(['roles/artifactregistry.writer','roles/artifactregistry.repoAdmin','roles/artifactregistry.admin','roles/storage.admin','roles/storage.objectAdmin','roles/cloudbuild.builds.builder']);
           (async()=>{
             const tokenResp=await json('https://oauth2.googleapis.com/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'urn:ietf:params:oauth:grant-type:jwt-bearer',assertion})});
             if(!tokenResp.ok||!tokenResp.body?.access_token)throw new Error(`oauth_failed:${tokenResp.status}:${JSON.stringify(tokenResp.body).slice(0,300)}`);
             const token=tokenResp.body.access_token;
             const h={Authorization:`Bearer ${token}`,'Content-Type':'application/json'};
-            const crm=await json('https://cloudresourcemanager.googleapis.com/v1/projects/cxorbia-backend-dev',{headers:h});
+            const crm=await json(`https://cloudresourcemanager.googleapis.com/v1/projects/${project}`,{headers:h});
             const projectNumber=String(crm.body?.projectNumber||'');
-            const permissionList=['serviceusage.services.enable','serviceusage.services.get','run.services.get','run.services.update','iam.serviceAccounts.actAs','cloudbuild.builds.create','artifactregistry.repositories.uploadArtifacts'];
-            const perm=await json('https://cloudresourcemanager.googleapis.com/v1/projects/cxorbia-backend-dev:testIamPermissions',{method:'POST',headers:h,body:JSON.stringify({permissions:permissionList})});
+            const permissionList=[
+              'serviceusage.services.get','serviceusage.services.enable',
+              'run.services.get','run.services.update','iam.serviceAccounts.actAs',
+              'cloudbuild.builds.create',
+              'resourcemanager.projects.getIamPolicy',
+              'artifactregistry.repositories.get','artifactregistry.repositories.list','artifactregistry.repositories.uploadArtifacts',
+              'apikeys.keys.get','apikeys.keys.list','apikeys.keys.lookup',
+              'firebasehosting.sites.get','firebasehosting.sites.update',
+              'firebasehosting.versions.create','firebasehosting.versions.update','firebasehosting.releases.create'
+            ];
+            const perm=await json(`https://cloudresourcemanager.googleapis.com/v1/projects/${project}:testIamPermissions`,{method:'POST',headers:h,body:JSON.stringify({permissions:permissionList})});
             const granted=new Set(perm.body?.permissions||[]);
-            const serviceName=`projects/${projectNumber||'cxorbia-backend-dev'}/services/sheets.googleapis.com`;
+
+            const cbDefault=await json(`https://cloudbuild.googleapis.com/v1/projects/${project}/locations/global/defaultServiceAccount`,{headers:h});
+            const buildSa=String(cbDefault.body?.serviceAccountEmail||cbDefault.body?.serviceAccount||'').replace(/^projects\/[^/]+\/serviceAccounts\//,'')||null;
+            let iamPolicy={status:0,ok:false,body:null};
+            if(granted.has('resourcemanager.projects.getIamPolicy')) iamPolicy=await json(`https://cloudresourcemanager.googleapis.com/v1/projects/${project}:getIamPolicy`,{method:'POST',headers:h,body:'{}'});
+            const buildSaRoles=[];
+            if(buildSa&&iamPolicy.ok){
+              const needles=[`serviceAccount:${buildSa}`,`serviceAccount:${buildSa.toLowerCase()}`];
+              for(const b of iamPolicy.body?.bindings||[]){
+                const members=(b.members||[]).map(String);
+                if(members.some(m=>needles.includes(m)||needles.includes(m.toLowerCase())))buildSaRoles.push(String(b.role||''));
+              }
+            }
+            buildSaRoles.sort();
+
+            const arUs=await json(`https://artifactregistry.googleapis.com/v1/projects/${project}/locations/us/repositories?pageSize=100`,{headers:h});
+            const arCentral=await json(`https://artifactregistry.googleapis.com/v1/projects/${project}/locations/us-central1/repositories?pageSize=100`,{headers:h});
+            const repos=[...(arUs.body?.repositories||[]),...(arCentral.body?.repositories||[])].map(sanitizeRepo);
+            const gcrBackedRepoObserved=repos.some(r=>/gcr|container/i.test(String(r.name||'')));
+            const artifactPushLikely=Boolean(buildSa&&buildSaRoles.some(r=>knownArtifactWriteRoles.has(r)));
+
+            const hostingSite=await json(`https://firebasehosting.googleapis.com/v1beta1/sites/cxorbia-backend-dev`,{headers:h});
+            const hostingReleases=await json(`https://firebasehosting.googleapis.com/v1beta1/sites/cxorbia-backend-dev/releases?pageSize=5`,{headers:h});
+            const apiKeyPerms=['apikeys.keys.get','apikeys.keys.list','apikeys.keys.lookup'];
+            const hostingWritePerms=['firebasehosting.sites.update','firebasehosting.versions.create','firebasehosting.versions.update','firebasehosting.releases.create'];
+            const firebaseCliApiKeyReady=apiKeyPerms.every(p=>granted.has(p));
+            const hostingRestPermissionReady=hostingWritePerms.every(p=>granted.has(p));
+            const firebaseCliDeployReady=Boolean(firebaseCliApiKeyReady&&hostingRestPermissionReady&&hostingSite.ok);
+
+            const serviceName=`projects/${projectNumber||project}/services/sheets.googleapis.com`;
             const sheetsService=await json(`https://serviceusage.googleapis.com/v1/${serviceName}`,{headers:h});
             const sheetId='1h307t37LxM1nZNh_9Odt6wHUQhROG6cYbsbMKr48vU4';
             const sheetsDoc=await json(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}?includeGridData=false&fields=spreadsheetId,properties(title),sheets(properties(sheetId,title,index))`,{headers:h});
@@ -74,105 +110,86 @@ jobs:
             const monthlyTitles=titles.filter(t=>!/^(DASHBOARD|DASHBOARD HN)$/i.test(t));
             const apiEnabled=sheetsService.body?.state==='ENABLED';
             const sheetAccessible=sheetsDoc.ok&&sheetsDoc.body?.spreadsheetId===sheetId;
-            const report={
-              schemaVersion:'cxorbia.live-hr-provider-capability-preflight.v2',
-              generatedAt:new Date().toISOString(),
-              decision:apiEnabled&&sheetAccessible?'PASS_SHEETS_API_AND_CANONICAL_HR_READER':'HOLD_PROVIDER_CAPABILITY_OR_HR_READER',
-              target:{projectId:'cxorbia-backend-dev',projectNumber:projectNumber||null,serviceAccountEmail:sa.client_email},
-              googleSheetsApi:{httpStatus:sheetsService.status,state:sheetsService.body?.state||null,enabled:apiEnabled,errorReason:sheetsService.body?.error?.status||sheetsService.body?.error?.details?.[0]?.reason||null},
-              spreadsheetAccess:{httpStatus:sheetsDoc.status,accessible:sheetAccessible,title:sheetsDoc.body?.properties?.title||null,totalTabs:titles.length,monthlyTabs:monthlyTitles.length,latestMonthlyTab:monthlyTitles.at(-1)||null,errorStatus:sheetsDoc.body?.error?.status||null,errorReason:sheetsDoc.body?.error?.details?.[0]?.reason||null},
-              driveMetadataAccess:{httpStatus:drive.status,accessible:drive.ok&&drive.body?.id===sheetId,errorStatus:drive.body?.error?.status||null,errorReason:drive.body?.error?.errors?.[0]?.reason||drive.body?.error?.details?.[0]?.reason||null,note:'Drive API is not required for HR runtime reads; sharing is validated separately through Drive permission metadata.'},
-              iam:{testHttpStatus:perm.status,granted:[...granted].sort(),missing:permissionList.filter(p=>!granted.has(p)).sort(),canEnableSheetsApi:granted.has('serviceusage.services.enable'),canUpdateCloudRun:granted.has('run.services.update'),canActAs:granted.has('iam.serviceAccounts.actAs'),canStartCloudBuild:granted.has('cloudbuild.builds.create')},
-              safety:{providerReads:true,providerWrites:0,hrWrites:0,firestoreWrites:0,authWrites:0,hostingDeploys:0,cloudRunDeploys:0,production:false,merge:false,secretsExported:false}
-            };
-            fs.writeFileSync('app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json',JSON.stringify(report,null,2)+'\n');
-            console.log(JSON.stringify({...report,target:{...report.target,serviceAccountEmail:'<sanitized-in-console>'}}));
 
-            const executeSha='c746bdf068edf1322b7c9a5e497ea5aff13e6b58';
-            const executeAt='2026-08-20T22:11:33Z';
+            const executeSha='0f2000b62844fe56f0167285ebaffe4208af03be';
+            const executeAt='2026-08-21T14:31:20Z';
             const baselineRevision='cxorbia-live-hr-dev-00010-n78';
             const commandPath='/api/tenants/tya/projects/cinepolis/g2b-synthetic/commands';
-            const cloudRun=await json('https://run.googleapis.com/v2/projects/cxorbia-backend-dev/locations/us-central1/services/cxorbia-live-hr-dev',{headers:h});
+            const cloudRun=await json(`https://run.googleapis.com/v2/projects/${project}/locations/us-central1/services/cxorbia-live-hr-dev`,{headers:h});
             const latestReadyRevision=basename(cloudRun.body?.latestReadyRevision);
             const latestCreatedRevision=basename(cloudRun.body?.latestCreatedRevision);
             const serviceUri=String(cloudRun.body?.uri||'').replace(/\/$/,'');
             const cloudRunUpdateTime=cloudRun.body?.updateTime||null;
             const directProbe=serviceUri?await safePost(serviceUri+commandPath):{status:0,ok:false,error:'CLOUD_RUN_URI_UNAVAILABLE'};
             const hostingProbe=await safePost('https://cxorbia-backend-dev.web.app'+commandPath);
-            const hosting=await json('https://firebasehosting.googleapis.com/v1beta1/sites/cxorbia-backend-dev/releases?pageSize=5',{headers:h});
-            const releases=Array.isArray(hosting.body?.releases)?hosting.body.releases:[];
+            const releases=Array.isArray(hostingReleases.body?.releases)?hostingReleases.body.releases:[];
             const latestRelease=releases[0]||null;
             const latestReleaseTime=latestRelease?.releaseTime||null;
             const latestReleaseName=latestRelease?.name||null;
             const latestVersionName=latestRelease?.version?.name||null;
-            const executeMs=validTime(executeAt);
-            const releaseMs=validTime(latestReleaseTime);
-            const updateMs=validTime(cloudRunUpdateTime);
+            const executeMs=validTime(executeAt),releaseMs=validTime(latestReleaseTime),updateMs=validTime(cloudRunUpdateTime);
             const cloudRunChanged=Boolean(cloudRun.ok&&latestReadyRevision&&latestReadyRevision!==baselineRevision);
             const cloudRunChangedAfterExecute=Boolean(cloudRunChanged&&updateMs!==null&&executeMs!==null&&updateMs>=executeMs);
             const directSourceLive=directProbe.status===401&&directProbe.error==='G2B_SYNTHETIC_AUTHORIZATION_REQUIRED';
             const directSourcePresentGateClosed=directProbe.status===423&&directProbe.error==='G2B_SYNTHETIC_WRITE_GATE_DISABLED';
             const hostingSourceLive=hostingProbe.status===401&&hostingProbe.error==='G2B_SYNTHETIC_AUTHORIZATION_REQUIRED';
             const hostingSourcePresentGateClosed=hostingProbe.status===423&&hostingProbe.error==='G2B_SYNTHETIC_WRITE_GATE_DISABLED';
-            const hostingReleaseAfterExecute=Boolean(hosting.ok&&releaseMs!==null&&executeMs!==null&&releaseMs>=executeMs);
-            const readsSufficient=cloudRun.ok&&hosting.ok&&directProbe.status>0&&hostingProbe.status>0;
+            const hostingReleaseAfterExecute=Boolean(hostingReleases.ok&&releaseMs!==null&&executeMs!==null&&releaseMs>=executeMs);
+            const readsSufficient=cloudRun.ok&&hostingReleases.ok&&directProbe.status>0&&hostingProbe.status>0;
             let classification='HOLD_PROVIDER_RECONCILIATION_INSUFFICIENT_READBACK';
             if(readsSufficient){
-              if(!cloudRunChanged&&!directSourceLive&&!directSourcePresentGateClosed&&!hostingReleaseAfterExecute){
-                classification='A_NO_G2B_PROVIDER_DEPLOY_OBSERVED';
-              }else if(cloudRunChanged&&cloudRunChangedAfterExecute&&directSourceLive&&hostingSourceLive&&hostingReleaseAfterExecute){
-                classification='C_G2B_CLOUD_RUN_AND_HOSTING_DEPLOY_MATERIALIZED';
-              }else{
-                classification='B_G2B_PROVIDER_DEPLOY_PARTIAL_OR_NONTERMINAL';
-              }
+              if(!cloudRunChanged&&!directSourceLive&&!directSourcePresentGateClosed&&!hostingReleaseAfterExecute)classification='A_NO_G2B_PROVIDER_DEPLOY_OBSERVED';
+              else if(cloudRunChanged&&cloudRunChangedAfterExecute&&directSourceLive&&hostingSourceLive&&hostingReleaseAfterExecute)classification='C_G2B_CLOUD_RUN_AND_HOSTING_DEPLOY_MATERIALIZED';
+              else classification='B_G2B_PROVIDER_DEPLOY_PARTIAL_OR_NONTERMINAL';
             }
-            const g2b={
-              schemaVersion:'cxorbia.g2b.provider-readonly-reconciliation.v1',
+
+            const readiness={
+              schemaVersion:'cxorbia.provider-forensic-readiness.v3',
               generatedAt:new Date().toISOString(),
-              decision:classification,
-              execution:{sha:executeSha,requestedAt:executeAt,automaticRetryAllowed:false},
-              baseline:{cloudRunRevision:baselineRevision},
-              cloudRun:{httpStatus:cloudRun.status,readable:cloudRun.ok,latestReadyRevision,latestCreatedRevision,updateTime:cloudRunUpdateTime,uriPresent:Boolean(serviceUri),changedFromBaseline:cloudRunChanged,changedAfterExecute:cloudRunChangedAfterExecute},
-              directCloudRunProbe:{httpStatus:directProbe.status,error:directProbe.error||null,expectedUnauthenticatedStatus:401,sourceLive:directSourceLive,sourcePresentButGateClosed:directSourcePresentGateClosed},
-              hosting:{httpStatus:hosting.status,readable:hosting.ok,latestReleaseName,latestVersionName,latestReleaseTime,releaseAfterExecute:hostingReleaseAfterExecute,releasesInspected:releases.length},
-              hostingRouteProbe:{httpStatus:hostingProbe.status,error:hostingProbe.error||null,expectedUnauthenticatedStatus:401,sourceLive:hostingSourceLive,sourcePresentButGateClosed:hostingSourcePresentGateClosed},
-              interpretation:{
-                A:'No new Cloud Run G2-B source and no Hosting release after execute; provider deploy not observed.',
-                B:'At least one provider-side signal changed but the full authorized Cloud Run + Hosting + route state is not proven.',
-                C:'Cloud Run changed after execute, G2-B route is live directly and through Hosting, and Hosting has a release after execute.'
-              },
-              safety:{providerReads:true,providerWrites:0,firestoreWrites:0,authWrites:0,storageWrites:0,hrWrites:0,externalHrWrites:0,paymentWrites:0,makeCalls:0,geminiCalls:0,deploys:0,merge:false,realCredentialsUsedInProductFlow:false,secretsExported:false}
+              decision:'FORENSIC_READONLY_COMPLETE',
+              target:{projectId:project,projectNumber:projectNumber||null},
+              caller:{serviceAccountEmailHash:crypto.createHash('sha256').update(sa.client_email).digest('hex').slice(0,16),iamTestHttpStatus:perm.status,granted:[...granted].sort(),missing:permissionList.filter(p=>!granted.has(p)).sort()},
+              cloudRun:{readable:cloudRun.ok,updateReady:granted.has('run.services.update')&&granted.has('iam.serviceAccounts.actAs'),latestReadyRevision,latestCreatedRevision,updateTime:cloudRunUpdateTime},
+              cloudBuild:{callerCanCreate:granted.has('cloudbuild.builds.create'),defaultServiceAccountLookupHttpStatus:cbDefault.status,executionIdentityKnown:Boolean(buildSa),executionServiceAccountHash:buildSa?crypto.createHash('sha256').update(buildSa).digest('hex').slice(0,16):null,executionServiceAccountRoles:buildSaRoles,artifactRepositoriesReadHttpStatus:{us:arUs.status,usCentral1:arCentral.status},artifactRepositories:repos,artifactPushLikely,artifactPushAssessment:artifactPushLikely?'LIKELY_READY_FROM_BUILD_IDENTITY_ROLES':'NOT_PROVEN_FROM_CURRENT_IAM_READBACK',gcrBackedRepoObserved},
+              hosting:{siteReadHttpStatus:hostingSite.status,releasesReadHttpStatus:hostingReleases.status,latestReleaseName,latestVersionName,latestReleaseTime,firebaseCliApiKeyReady,hostingRestPermissionReady,firebaseCliDeployReady,restDeployReadiness:hostingRestPermissionReady&&hostingSite.ok?'PERMISSIONS_READY_READONLY_PROOF':'NOT_READY_OR_NOT_PROVEN',apiKeyPermissionsRequired:apiKeyPerms,hostingWritePermissionsRequired:hostingWritePerms},
+              hr:{sheetsApiEnabled:apiEnabled,spreadsheetAccessible:sheetAccessible,driveMetadataAccessible:drive.ok,totalTabs:titles.length,monthlyTabs:monthlyTitles.length,latestMonthlyTab:monthlyTitles.at(-1)||null},
+              g2b:{providerDecision:classification,directRouteHttpStatus:directProbe.status,directRouteError:directProbe.error||null,hostingRouteHttpStatus:hostingProbe.status,hostingRouteError:hostingProbe.error||null,providerStillBaseline:classification==='A_NO_G2B_PROVIDER_DEPLOY_OBSERVED'},
+              gates:{firebaseCliDeployReady,hostingRestDeployReadiness:hostingRestPermissionReady&&hostingSite.ok,cloudBuildCallerReady:granted.has('cloudbuild.builds.create'),cloudBuildExecutionIdentityKnown:Boolean(buildSa),cloudBuildArtifactPushLikelyReady:artifactPushLikely,cloudRunUpdateReady:granted.has('run.services.update')&&granted.has('iam.serviceAccounts.actAs'),g2bProviderStillBaseline:classification==='A_NO_G2B_PROVIDER_DEPLOY_OBSERVED'},
+              safety:{providerReads:true,providerWrites:0,cloudBuildExecutions:0,hostingDeploys:0,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,storageWrites:0,hrWrites:0,externalHrWrites:0,paymentWrites:0,makeCalls:0,geminiCalls:0,merge:false,secretsExported:false}
             };
+            fs.writeFileSync('app/docs/evidence/I5-G2B-PROVIDER-FORENSIC-READINESS-LATEST.json',JSON.stringify(readiness,null,2)+'\n');
+
+            const cap={schemaVersion:'cxorbia.live-hr-provider-capability-preflight.v3',generatedAt:readiness.generatedAt,decision:apiEnabled&&sheetAccessible?'PASS_SHEETS_API_AND_CANONICAL_HR_READER':'HOLD_PROVIDER_CAPABILITY_OR_HR_READER',target:{projectId:project,projectNumber:projectNumber||null},googleSheetsApi:{httpStatus:sheetsService.status,state:sheetsService.body?.state||null,enabled:apiEnabled},spreadsheetAccess:{httpStatus:sheetsDoc.status,accessible:sheetAccessible,title:sheetsDoc.body?.properties?.title||null,totalTabs:titles.length,monthlyTabs:monthlyTitles.length,latestMonthlyTab:monthlyTitles.at(-1)||null},driveMetadataAccess:{httpStatus:drive.status,accessible:drive.ok&&drive.body?.id===sheetId},iam:{testHttpStatus:perm.status,granted:[...granted].sort(),missing:permissionList.filter(p=>!granted.has(p)).sort(),canUpdateCloudRun:granted.has('run.services.update'),canActAs:granted.has('iam.serviceAccounts.actAs'),canStartCloudBuild:granted.has('cloudbuild.builds.create')},forensicEvidence:'app/docs/evidence/I5-G2B-PROVIDER-FORENSIC-READINESS-LATEST.json',safety:readiness.safety};
+            fs.writeFileSync('app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json',JSON.stringify(cap,null,2)+'\n');
+
+            const g2b={schemaVersion:'cxorbia.g2b.provider-readonly-reconciliation.v2',generatedAt:readiness.generatedAt,decision:classification,execution:{sha:executeSha,requestedAt:executeAt,automaticRetryAllowed:false},baseline:{cloudRunRevision:baselineRevision},cloudRun:{httpStatus:cloudRun.status,readable:cloudRun.ok,latestReadyRevision,latestCreatedRevision,updateTime:cloudRunUpdateTime,changedFromBaseline:cloudRunChanged,changedAfterExecute:cloudRunChangedAfterExecute},directCloudRunProbe:{httpStatus:directProbe.status,error:directProbe.error||null,expectedUnauthenticatedStatus:401,sourceLive:directSourceLive,sourcePresentButGateClosed:directSourcePresentGateClosed},hosting:{httpStatus:hostingReleases.status,readable:hostingReleases.ok,latestReleaseName,latestVersionName,latestReleaseTime,releaseAfterExecute:hostingReleaseAfterExecute,releasesInspected:releases.length},hostingRouteProbe:{httpStatus:hostingProbe.status,error:hostingProbe.error||null,expectedUnauthenticatedStatus:401,sourceLive:hostingSourceLive,sourcePresentButGateClosed:hostingSourcePresentGateClosed},safety:readiness.safety};
             fs.writeFileSync('app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json',JSON.stringify(g2b,null,2)+'\n');
-            console.log(JSON.stringify(g2b));
+            console.log(JSON.stringify({decision:readiness.decision,gates:readiness.gates,safety:readiness.safety}));
           })().catch(e=>{console.error(e.stack||e);process.exit(1)});
           NODE
 
-      - name: Commit sanitized capability and G2-B reconciliation evidence
+      - name: Commit sanitized forensic evidence
         run: |
           set -euo pipefail
           cp app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json /tmp/cap.json
           cp app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json /tmp/g2b-provider.json
+          cp app/docs/evidence/I5-G2B-PROVIDER-FORENSIC-READINESS-LATEST.json /tmp/g2b-forensic.json
           git fetch origin docs-tya-v6-v71-audit
           git reset --hard origin/docs-tya-v6-v71-audit
           mkdir -p app/docs/evidence
           cp /tmp/cap.json app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json
           cp /tmp/g2b-provider.json app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json
+          cp /tmp/g2b-forensic.json app/docs/evidence/I5-G2B-PROVIDER-FORENSIC-READINESS-LATEST.json
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json
-          if ! git diff --cached --quiet; then git commit -m 'evidence: reconcile G2B provider state read-only'; git push origin HEAD:docs-tya-v6-v71-audit; fi
+          git add app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json app/docs/evidence/I5-G2B-PROVIDER-FORENSIC-READINESS-LATEST.json
+          if ! git diff --cached --quiet; then git commit -m 'evidence: persist G2B provider forensic readiness'; git push origin HEAD:docs-tya-v6-v71-audit; fi
 
-      - name: Publish status
+      - name: Publish forensic status
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          STATE=success;DESC='PASS_SHEETS_API_AND_CANONICAL_HR_READER'
-          if [ ! -f app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json ]; then STATE=error;DESC='HOLD_LIVE_HR_PROVIDER_PREFLIGHT'; fi
-          if [ ! -f app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json ]; then STATE=error;DESC='HOLD_G2B_PROVIDER_RECONCILIATION_MISSING'; fi
-          if [ -f app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json ]; then
-            G2B_DECISION=$(node -e "const x=require('./app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json');process.stdout.write(x.decision||'')")
-            DESC="${G2B_DECISION:0:120}"
-          fi
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/live-hr-provider-capability-preflight' -f description="$DESC" >/dev/null
+          STATE=success;DESC='FORENSIC_G2B_PROVIDER_READONLY_COMPLETE'
+          if [ ! -f app/docs/evidence/I5-G2B-PROVIDER-FORENSIC-READINESS-LATEST.json ]; then STATE=error;DESC='HOLD_G2B_PROVIDER_FORENSIC_EVIDENCE_MISSING'; fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/g2b-provider-forensic-readiness' -f description="$DESC" >/dev/null
