@@ -1,23 +1,27 @@
 # PLAN OPERATIVO UNIFICADO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-20  
-**SYNC_EPOCH:** `CXORBIA-20260820-I5-G2A-PRODUCTION-READONLY-PASS-48`  
+**Fecha:** 2026-08-21  
+**SYNC_EPOCH:** `CXORBIA-20260821-I5-G2B-FORENSIC-PROVIDER-LANE-READY-50`  
 **PLAN_ID:** `CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE`  
 **currentIteration:** `I5-G2`  
-**Score:** `98/100`
+**PHASE_A:** `98/100`  
+**ACTIVE_BLOCKER:** `G2B_RECOVERY_NO_PROVIDER_SIDE_EFFECT_NEW_EXPLICIT_DECISION_REQUIRED`
 
 ## Plan formal
-I1–I4 PASS/FROZEN = 85. R1=PASS 2, R2=PASS 3, R3=PASS 3, R4=PASS 2, G1=PASS 3, G2=ACTIVE 2.
+I1–I4 PASS/FROZEN = 85. R1=PASS 2, R2=PASS 3, R3=PASS 3, R4=PASS 2, G1=PASS 3, G2=ACTIVE 2. Total: 98/100.
 
-## G2-A — PASS
-`PRODUCTION_REMOTE_READONLY_SMOKE_PASS_WITH_FROZEN_SHOPPER_REUSE`. Staff/Admin fresh run `32411160766`; Client fresh run `32411411249` y `PASS_CLIENT_SINGLE_LOGIN_AND_ROUTE_RENDER`; Shopper exact identity/profile/membership/crosswalk/history/historyE2E permanece FROZEN_REUSE. El combined multirole hold fue deuda de credencial histórica del harness y no P0 del producto. No reset de password, no writes, no deploy, no rebuild, no merge.
+## G2-A
+PASS/FROZEN. No repetir sin P0 nuevo.
 
-## G2-B — ÚNICO FRENTE RESTANTE
-`LIVE_IN_PLATFORM_SYNTHETIC_ACCEPTANCE`. La prueba funcional integral se realizará **dentro de la misma plataforma productiva** `https://cxorbia-backend-dev.web.app`; no en clon, emulador, otra plataforma ni ambiente paralelo. Paula podrá ingresar y observar el recorrido mientras se ejecutan datos exclusivamente ficticios/sintéticos y registrar observaciones.
+## G2-B
+P0 `G2B_CANONICAL_WRITE_PATH_DISABLED_OR_UNROUTED`. Última recuperación terminal: `RECOVERY_NO_PROVIDER_SIDE_EFFECT`; provider no cambió. El carril provider quedó después `FORENSIC_PROVIDER_LANE_READY`, pero ningún nuevo recovery está autorizado.
 
-Cobertura obligatoria: hoja de ruta/navegación; acceso administrativo; acceso shopper; perfil, membership, crosswalk, histórico y certificaciones; visitas disponibles y propias; cliente; HR viva actual e histórica; ciclo de visita (postulación, reserva, asignación, agenda, reprogramación, cancelación); cuestionario/evidencias; financiero (liquidación y estados de pago, sin pagos reales); reload/new-tab; aislamiento tenant/project/cross-tenant; deduplicación/conflictos HR↔plataforma; notificaciones/observabilidad.
+La aceptación final sigue siendo en la misma plataforma productiva con `CXORBIA_E2E_SYNTH_*`, visible para Paula, cleanup y post-clean readback. Ese stage está bloqueado hasta `RECOVERY_PASS_FULL`.
 
-Todo registro sintético debe usar prefijo `CXORBIA_E2E_SYNTH_`, cleanup obligatorio y readback posterior. **G2-B está PENDING_NARROW_WRITE_AUTHORIZATION**: todavía no autoriza business/data writes, HR externo, Auth create/reset, pagos reales, Make/Gemini, deploy, rebuild ni merge.
+## Anti-bucle
+Antes de cualquier nueva mutación debe cumplirse el epoch atómico completo: machine lock, terminal evidence, recovery request, consumed ledger y documentos canónicos en el mismo `SYNC_EPOCH`. Artefactos execute/authorization son históricos después del receipt terminal y no reactivan trabajo.
 
-## Regla de cierre
-No emitir `PRODUCTION_FROZEN_PASS_100` hasta ejecutar G2-B y completar observación visible, cleanup y readback. No crear G3 ni nueva metodología.
+## Próximo bloque exacto
+`REQUIRE_NEW_EXPLICIT_RECOVERY_DECISION_AFTER_ATOMIC_CONTINUITY_SYNC`.
+
+No G3, nueva candidata, branch, PR, workflow, PREPROD, replay, HR externa, datos/credenciales reales, pagos, Make/Gemini o merge.

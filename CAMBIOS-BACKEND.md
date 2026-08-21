@@ -1,78 +1,39 @@
 # CAMBIOS-BACKEND.md
 
-**SYNC_EPOCH:** `CXORBIA-20260820-I5-G2A-PRODUCTION-READONLY-PASS-48`  
+**SYNC_EPOCH:** `CXORBIA-20260821-I5-G2B-FORENSIC-PROVIDER-LANE-READY-50`  
 **PLAN_ID:** `CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE`  
 **currentIteration:** `I5-G2`  
-**ACTIVE_BLOCKER: `NONE`**  
-**PREPROD_PROJECT_CREATOR_ROUTE: `SUPERSEDED`**
+**PHASE_A:** `98/100`  
+**ACTIVE_BLOCKER:** `G2B_RECOVERY_NO_PROVIDER_SIDE_EFFECT_NEW_EXPLICIT_DECISION_REQUIRED`
 
-## 2026-08-20 — I5-G2-B · PREFLIGHT PRODUCTIVO ARMADO EN CARRIL EXISTENTE
+## 2026-08-21 — I5-G2-B · SINCRONIZACIÓN CANÓNICA ATÓMICA / ANTI-BUCLE
 
-### Archivos
-- Nuevo `tools/qa/cxorbia-g2b-live-synthetic-preflight.mjs`: prueba remota fail-closed sobre el URL productivo canónico antes del primer write sintético.
-- Extendido `.github/workflows/cxorbia-i4b-retry1-authorized-runtime-lane.yml`: el job histórico I4B queda explícitamente congelado (`if:false`) y el mismo workflow incorpora el job G2-B. No se creó workflow nuevo.
+### Hallazgo de causa raíz
+Se confirmó drift no atómico: continuity lock, consumed-gate ledger y documentación viva describían epochs anteriores mientras recovery evidence/request ya estaban terminales. Además, el execute one-shot conservaba flags históricos que podían ser malinterpretados como estado vivo.
 
-### Qué prueba antes de escribir
-Verifica remotamente origen/proyecto canónicos, runtime protegido, `CX.commandAdapter`, `enableCommandWrites`, `enableDataWrites`, `enableOperationalWrites`, modo read-only/writeMode, endpoint y transporte HTTP registrado/activo. Si cualquiera de esas piezas no está lista, el gate se detiene antes de crear datos `CXORBIA_E2E_SYNTH_*`, persiste evidencia y consume el request sin retry automático.
+### Corrección
+Este bloque sincroniza en un solo commit:
+- `backend/config/cxorbia-phase-a-continuity-lock.json`;
+- `backend/config/cxorbia-consumed-one-shot-gates.json`;
+- `tools/continuity/validate-cxorbia-phase-a-continuity-lock.js`;
+- índice, checkpoint, execution/source locks, plan operativo;
+- `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md`;
+- receipt `app/docs/evidence/I5-G2B-ATOMIC-CONTINUITY-SYNC-LATEST.json`.
 
-### Seguridad
-Este preflight no usa credenciales humanas ni service account y tiene presupuesto de provider/Auth/Firestore/Storage/HR/payment/Make/Gemini writes igual a cero. Solo si el preflight pasa se habilita el siguiente request de stage sintético; este workflow no hace deploy, rebuild ni merge.
+No se toca `cxorbia-g2b-p0-writepath-deploy-recovery-execute.json` porque es un evento histórico cuya ruta dispara el workflow de recovery. Se declara `stateAuthority=false`, terminalizado por receipt y sin replay. Tampoco se muta el authorization request sintético; queda bloqueado por el continuity lock hasta recovery PASS.
 
-### Clasificación
-- **Reusable CXOrbia:** patrón pre-write productivo fail-closed y anti-rerun.
-- **Exclusivo TyA:** target `cxorbia-backend-dev`, tenant `tya`, project `cinepolis`.
-- **Claude/prototipo:** sin cambio UI/runtime.
-- **Academia:** sin impacto funcional hasta obtener resultado remoto.
-- **Sin impacto Claude:** herramienta QA, workflow y evidencia.
-
-## 2026-08-20 — I5-G2-B · AUTORIZACIÓN SINTÉTICA REGISTRADA
-
-### Resultado
-Se registró la autorización explícita de Paula para ejecutar G2-B dentro de `https://cxorbia-backend-dev.web.app` con datos exclusivamente sintéticos `CXORBIA_E2E_SYNTH_*`. El control-plane cambia de `PENDING_NARROW_WRITE_AUTHORIZATION` a `AUTHORIZED_SYNTHETIC_STAGE_PENDING_EXECUTION`.
-
-### Alcance autorizado
-- crear/modificar/eliminar únicamente datos sintéticos `CXORBIA_E2E_SYNTH_*`;
-- crear/eliminar únicamente usuarios Auth sintéticos si son indispensables;
-- cargar/eliminar únicamente evidencias Storage sintéticas si son necesarias;
-- ejecutar después cleanup y post-clean readback.
-
-### Continúa prohibido
-Writes a HR externa, modificación/reset de usuarios o credenciales reales, pagos reales, Make, Gemini, reglas, deploy, rebuild, merge y legacy writes.
-
-### Estado operativo
-No se ejecutó todavía ningún write provider en este bloque. El request `backend/config/cxorbia-g2b-live-synthetic-acceptance-request.json` queda habilitado one-shot en fase `STAGE_AND_TEST`, sin retry automático. `paulaObservationsCaptured=false`; el escenario debe permanecer visible después del stage hasta que Paula lo observe.
-
-### Clasificación
-- **Reusable CXOrbia:** autorización granular sintética separada de permisos reales; request one-shot; cleanup/readback obligatorio.
-- **Exclusivo TyA:** tenant `tya`, project `cinepolis`, URL productiva actual.
-- **Claude/prototipo:** sin cambios UI/runtime.
-- **Academia:** sin cambio funcional todavía; solo registrar hallazgos si el stage visible demuestra diferencias reales.
-- **Sin impacto Claude:** lock, plan, request, validator y documentación de control.
-
-## 2026-08-20 — I5-G2-A · PRODUCTION REMOTE READ-ONLY PASS
-
-### Resultado
-Creado receipt `backend/config/cxorbia-g2a-production-readonly-smoke.json` con decisión `PRODUCTION_REMOTE_READONLY_SMOKE_PASS_WITH_FROZEN_SHOPPER_REUSE`; `productP0Proven=false`. Avance formal permanece 98/100 porque G2-B sigue siendo requisito de cierre.
-
-### Ejecución real
-- intento multirrol inicial run `32409360813`: `HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194`; clasificado `HARNESS_CREDENTIAL_STALE_HOLD_NOT_PRODUCT_P0`. La identidad/perfil/histórico exactos estaban presentes, pero el password one-shot histórico no es reconstruible read-only. No se autorizó ni ejecutó reset.
-- Staff/Admin fresh production read-only: run `32411160766`, job `96561650457`, artifact `9422207911`, workflow PASS, gate exit 0, credencial Staff canónica seleccionada sin Shopper/Client y writes=0.
-- Client fresh production read-only: run `32411411249`, job `96562450087`, artifact `9422287336`, `PASS_CLIENT_SINGLE_LOGIN_AND_ROUTE_RENDER`, login único, tenant `tya`, project `cinepolis`, `cli_dashboard` render, no legacy overlay, writes=0.
-- Shopper: `PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY` reutilizado como FROZEN_REUSE, sin reprocess ni password reset.
-- R3 preserva HR viva/corriente/histórico, shoppers/visitas y Finanzas; runtime funcional no cambió después del source lock.
-
-### Corrección control-plane posterior
-El primer RC drift gate posterior al cierre documental de G2-A falló con `canonical_continuity_validator_failed` / `machine control epoch/plan mismatch`. El resultado no demostró runtime drift ni P0: el validador seguía exigiendo que receipts terminales congelados de G1/R4 adoptaran el nuevo epoch G2-A. Se corrigió solo el control-plane para que los receipts terminales conserven su epoch de cierre dentro del mismo `PLAN_ID`, mientras el receipt G2-A sí debe coincidir con el epoch vivo. También se agregaron validaciones explícitas de G2-A PASS, límite de autorización G2-B, hard stop de no-rerun y sincronización de Phase A Lock/Go-Live Tracker. El RC drift gate posterior pasó (`run 32412134100`). Runtime funcional sin cambios.
-
-### Anti-bucle
-El request Client actual queda consumido/disabled/noAutomaticRetry. G2-A queda terminal y `rerunG2AWithoutNewP0=false`.
+### Estado técnico
+Recovery `i5-g2b-p0-writepath-recovery-20260821-02`: `RECOVERY_NO_PROVIDER_SIDE_EFFECT`; providerMutationExecutions=0. Provider forensic lane posterior: `FORENSIC_PROVIDER_LANE_READY`, con provider writes=0.
 
 ### Seguridad
-Business/data writes=0; Auth/Firestore/HR/Rules/Storage/Make/Gemini/payment writes=0; password reset=0; Hosting/Cloud Run deploy=0; rebuild=0; merge=false.
+En este bloque: Cloud Build/Cloud Run/Hosting/Firestore/Auth/Storage/HR/real data/real credentials/payments/Rules/Make/Gemini writes=0; merge=false. No deploy ni stage sintético.
 
-### Siguiente exacto
-G2-B `LIVE_IN_PLATFORM_SYNTHETIC_ACCEPTANCE`, dentro de la misma plataforma visible para Paula.
+### Clasificación
+- **Reusable CXOrbia:** epoch atómico, autoridad terminal, ledger y validador anti-drift.
+- **Exclusivo TyA:** reconciliación del recovery G2-B y baseline provider actual.
+- **Claude/prototipo:** sin cambio UI o `/app/modules`.
+- **Academia:** sin impacto funcional.
+- **Sin impacto Claude:** control-plane, docs, evidence y validator.
 
-## 2026-08-20 — I5-G2 · LIVE-IN-PLATFORM ACCEPTANCE LOCK
-
-G1 permanece `PRODUCTION_CUTOVER_EXECUTED`; producción `https://cxorbia-backend-dev.web.app`; source `f9802fdd498934a8e7729fa5c7d18341bec1cd71`. G2-B es requisito de cierre: pruebas integrales con datos ficticios dentro de la misma plataforma productiva, visibles para Paula, prefijo `CXORBIA_E2E_SYNTH_*`, cleanup y post-clean readback.
+### Siguiente
+`REQUIRE_NEW_EXPLICIT_RECOVERY_DECISION_AFTER_ATOMIC_CONTINUITY_SYNC`. Si la sincronización/readback no queda íntegra, se detiene provider work y continúa auditoría forense; no se compensa con otro retry.

@@ -1,29 +1,28 @@
 # PENDIENTES-PROTOTIPO.md
 
-**SYNC_EPOCH:** `CXORBIA-20260820-I5-G2A-PRODUCTION-READONLY-PASS-48`  
+**SYNC_EPOCH:** `CXORBIA-20260821-I5-G2B-FORENSIC-PROVIDER-LANE-READY-50`  
 **PLAN_ID:** `CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE`  
 **currentIteration:** `I5-G2`  
-**ACTIVE_BLOCKER: `NONE`**  
-**PREPROD_PROJECT_CREATOR_ROUTE: `SUPERSEDED`**
+**PHASE_A:** `98/100`  
+**ACTIVE_BLOCKER:** `G2B_RECOVERY_NO_PROVIDER_SIDE_EFFECT_NEW_EXPLICIT_DECISION_REQUIRED`
 
 ## Estado
-**98% / 2% pendiente.** G1 PASS/FROZEN. G2-A PASS/FROZEN. G2-B tiene un **P0 reproducible de ruta de persistencia canónica**, ya autorizado para corrección y deploy estrecho.
+**98% / 2% pendiente.** G1 y G2-A permanecen PASS/FROZEN. G2-B continúa abierto.
 
-## P0 G2-B en remediación
-Causa demostrada antes de cualquier fixture: `enableCommandWrites` no estaba habilitado para G2-B, el transporte HTTP no estaba activo y Cloud Run no tenía endpoint lifecycle canónico. Corrección permitida únicamente para datos `CXORBIA_E2E_SYNTH_*`; producción normal debe seguir cerrada a writes.
+## Pendiente real único
+La recuperación `i5-g2b-p0-writepath-recovery-20260821-02` terminó `RECOVERY_NO_PROVIDER_SIDE_EFFECT` y está consumida, con providerMutationExecutions=0. El provider lane quedó posteriormente `FORENSIC_PROVIDER_LANE_READY`.
 
-Autorización de Paula vigente para esta remediación: un solo deploy de la corrección en `cxorbia-backend-dev`, sin merge, HR externa, datos/credenciales reales, pagos, Make ni Gemini. Request: `backend/config/cxorbia-g2b-p0-writepath-deploy-request.json`.
+No corresponde ejecutar/repetir ningún recovery actual. El siguiente gate es `REQUIRE_NEW_EXPLICIT_RECOVERY_DECISION_AFTER_ATOMIC_CONTINUITY_SYNC`.
 
-## Pendiente exacto
-1. ejecutar el execute one-shot del P0 y comprobar Cloud Run + Hosting + API fail-closed con **0 business/Auth writes durante deploy**;
-2. si PASS, ejecutar G2-B `STAGE_AND_TEST` con datos exclusivamente sintéticos;
-3. dejar escenario visible en `https://cxorbia-backend-dev.web.app` y capturar observaciones reales de Paula;
-4. cleanup sintético completo;
-5. post-clean readback con cero residuales `CXORBIA_E2E_SYNTH_*`;
-6. congelar G2/RC12 y 100% solo si no queda P0 reproducible.
+Solo después de un futuro `RECOVERY_PASS_FULL`:
+1. ejecutar el stage/test exclusivamente `CXORBIA_E2E_SYNTH_*` en la misma plataforma productiva;
+2. dejar escenario visible para Paula y capturar observaciones;
+3. cleanup completo;
+4. post-clean readback con cero residuales;
+5. congelar G2/RC y llegar a 100/100 si no queda P0.
 
-## No reabrir
-I1–I4, R1–R4, G1 y G2-A. No crear G3, otra candidata, rama, PR, workflow o PREPROD. El workflow existente de deploy puede recibir solo la extensión narrow ya autorizada. No tocar datos reales.
+## No reabrir / no hacer
+No G3, nueva candidata, branch, PR, workflow, PREPROD, replay de execute consumido, stage antes de recovery PASS, HR externa, datos/credenciales reales, pagos, Make/Gemini o merge.
 
 ## Frontend/Academia
-No hay P0 visual demostrado. La corrección usa backend/adapters y no rediseña `/app/modules`. Academia solo cambia si las pruebas visibles posteriores demuestran una diferencia funcional real.
+Sin P0 visual nuevo demostrado y sin impacto Academia en este bloque.

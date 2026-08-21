@@ -1,14 +1,16 @@
 {
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
-  "syncEpoch": "CXORBIA-20260820-I5-R4-ROOT-CAUSE-CLOSED-PASS-46",
-  "updatedAt": "2026-08-20",
+  "syncEpoch": "CXORBIA-20260821-I5-G2B-FORENSIC-PROVIDER-LANE-READY-50",
+  "updatedAt": "2026-08-21",
   "policy": {
     "consumedRequestsAreImmutable": true,
     "rerunSameRequestIdAllowed": false,
     "newRequestRequiresDistinctIdAndApplicableAuthorization": true,
     "staleConversationCannotReactivateConsumedRequest": true,
-    "conversationInterruptionDoesNotResetConsumedState": true
+    "conversationInterruptionDoesNotResetConsumedState": true,
+    "terminalReceiptOverridesHistoricalEventArtifactFlags": true,
+    "eventArtifactDoesNotAuthorizeReplay": true
   },
   "consumedRequests": [
     {
@@ -82,6 +84,32 @@
       "production": false,
       "rerunSameRequestId": false,
       "source": ".github/cxorbia-gate-requests/request.json"
+    },
+    {
+      "requestId": "i5-g2b-p0-writepath-recovery-20260820-01",
+      "status": "CONSUMED_RECOVERY_NO_PROVIDER_SIDE_EFFECT",
+      "executeSha": "feeff85d834af7f711a4b62e291a29a14901a8d5",
+      "decision": "RECOVERY_NO_PROVIDER_SIDE_EFFECT",
+      "providerMutationExecutions": 0,
+      "providerWrites": false,
+      "automaticRetryAllowed": false,
+      "rerunSameRequestId": false,
+      "merge": false,
+      "source": "backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-request.json"
+    },
+    {
+      "requestId": "i5-g2b-p0-writepath-recovery-20260821-02",
+      "status": "CONSUMED_RECOVERY_NO_PROVIDER_SIDE_EFFECT",
+      "executeSha": "829821169d2ae86c5704f8c7f0f3501bdc872d5c",
+      "workflowRunId": 32491225966,
+      "decision": "RECOVERY_NO_PROVIDER_SIDE_EFFECT",
+      "providerMutationExecutions": 0,
+      "providerWrites": false,
+      "automaticRetryAllowed": false,
+      "rerunSameRequestId": false,
+      "merge": false,
+      "terminalEvidence": "app/docs/evidence/I5-G2B-P0-WRITEPATH-RECOVERY-LATEST.json",
+      "source": "backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-request.json"
     }
   ]
 }

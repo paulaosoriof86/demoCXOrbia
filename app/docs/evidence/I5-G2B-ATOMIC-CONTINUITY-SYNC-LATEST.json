@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "cxorbia.g2b.atomic-continuity-sync.v1",
+  "generatedAt": "2026-08-21T16:06:00Z",
+  "syncEpoch": "CXORBIA-20260821-I5-G2B-FORENSIC-PROVIDER-LANE-READY-50",
+  "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
+  "currentIteration": "I5-G2",
+  "phaseA": {"completed": 98, "pending": 2, "total": 100},
+  "parentHead": "84c072bfc1033b8c10789ae0c5e758948cd44ca4",
+  "intent": "SYNCHRONIZE_CANONICAL_STATE_WITHOUT_PROVIDER_MUTATION",
+  "terminalRecovery": {
+    "recoveryId": "i5-g2b-p0-writepath-recovery-20260821-02",
+    "decision": "RECOVERY_NO_PROVIDER_SIDE_EFFECT",
+    "evidence": "app/docs/evidence/I5-G2B-P0-WRITEPATH-RECOVERY-LATEST.json",
+    "request": "backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-request.json",
+    "requestConsumed": true,
+    "requestEnabled": false,
+    "providerMutationExecutions": 0
+  },
+  "eventArtifactSemantics": {
+    "executeArtifact": "backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-execute.json",
+    "immutableEvent": true,
+    "currentStateAuthority": false,
+    "replayAuthorized": false,
+    "reason": "Changing the execute artifact would retrigger the recovery workflow path; terminal evidence and consumed request are the state authority."
+  },
+  "syntheticAuthorizationSemantics": {
+    "authorizationArtifact": "backend/config/cxorbia-g2b-live-synthetic-acceptance-request.json",
+    "immutableAuthorizationSnapshot": true,
+    "currentExecutionAuthority": false,
+    "stageBlockedUntilVerifiedRecoveryPass": true
+  },
+  "providerForensicLane": {
+    "decision": "FORENSIC_PROVIDER_LANE_READY",
+    "evidence": "app/docs/evidence/I5-G2B-PROVIDER-FORENSIC-READINESS-LATEST.json",
+    "provenAtHead": "84c072bfc1033b8c10789ae0c5e758948cd44ca4",
+    "providerWrites": 0
+  },
+  "canonicalDocuments": [
+    "backend/config/cxorbia-phase-a-continuity-lock.json",
+    "backend/config/cxorbia-consumed-one-shot-gates.json",
+    "tools/continuity/validate-cxorbia-phase-a-continuity-lock.js",
+    "app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md",
+    "app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md",
+    "app/docs/EXECUTION-STATE-CXORBIA-TYA-VIGENTE.md",
+    "app/docs/SOURCE-LOCK-CXORBIA-TYA-VIGENTE.md",
+    "app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md",
+    "CAMBIOS-BACKEND.md",
+    "RESUMEN-PARA-CLAUDE.md",
+    "PENDIENTES-PROTOTIPO.md"
+  ],
+  "safety": {
+    "providerWrites": 0,
+    "cloudBuildExecutions": 0,
+    "cloudRunDeploys": 0,
+    "hostingDeploys": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "storageWrites": 0,
+    "externalHrWrites": 0,
+    "realDataWrites": 0,
+    "realCredentialWrites": 0,
+    "realPaymentWrites": 0,
+    "rulesWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "merge": false
+  },
+  "classification": {
+    "reusableCXOrbia": "Atomic epoch + terminal-receipt authority + immutable event-artifact semantics + consumed one-shot ledger.",
+    "exclusiveTyA": "cxorbia-backend-dev / tya / cinepolis provider baseline and G2-B recovery.",
+    "claudePrototype": "No UI or /app/modules change.",
+    "academia": "No functional Academia change.",
+    "noClaudeImpact": "Control-plane, documentation, continuity validator and machine evidence only."
+  },
+  "result": "ATOMIC_CANONICAL_SYNC_STAGED_AS_SINGLE_COMMIT",
+  "next": "REQUIRE_NEW_EXPLICIT_RECOVERY_DECISION_AFTER_ATOMIC_CONTINUITY_SYNC"
+}
