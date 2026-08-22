@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "cxorbia.rc15.systemic-audit.control-plane.tranche13.v1",
+  "generatedAt": "2026-08-22T15:19:00-06:00",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "masterPlanStatus": "FROZEN",
+  "masterPlanGitBlobSha": "48494ebe5fc439aa6d00e6edcf2e78133357e7f3",
+  "masterPlanSha256": "2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475",
+  "phase": "F0_SYSTEMIC_AUDIT",
+  "inputHead": "22a20d0eccf80e7a9376f361ede8002083a070b1",
+  "phaseA": {"completed":98,"pending":2,"total":100},
+  "progressBefore": {"classifiedFindings":134,"holdDiscoveriesCumulative":31,"containedHolds":2,"currentResidualHolds":29,"exhaustivenessFlagsTrue":2},
+  "progressAfter": {"classifiedFindings":138,"holdDiscoveriesCumulative":31,"containedHolds":2,"currentResidualHolds":29,"exhaustivenessFlagsTrue":2},
+  "findings": [
+    {
+      "id":"RC15-CP-135",
+      "surface":"tools/qa/cxorbia-c6-auth-activation-dev.mjs + backend/config/c6-auth-activation-dev-request-v1.json",
+      "classification":"PASS_HISTORICAL_AUTH_PROVIDER_WRITE_EXECUTOR_FAIL_CLOSED_BY_CONSUMED_REQUEST_F2_CALLER_CONTROL_REQUIRED",
+      "status":"PASS_WITH_F2_CONTROL_REQUIREMENT",
+      "evidence":[
+        "executor can create/update Firebase Auth principals, set claims and disable the historical duplicate only after validating request enabled=true, consumed=false, authorized one-shot lane and matching target",
+        "current request is enabled=false, consumed=true, allowedExecutions=0 and consumed_stop_retry_prewrite_password_rollback_unavailable",
+        "historical run never entered write boundary and recorded providerWriteCalls=0"
+      ],
+      "treatment":"No replay. F2 must keep direct executable invocation subordinate to current canonical authority before credential access."
+    },
+    {
+      "id":"RC15-CP-136",
+      "surface":"tools/qa/cxorbia-c6-auth-activation-dev-v2.mjs + backend/config/c6-auth-principal-uniqueness-rootfix-activation-dev-request-v1.json",
+      "classification":"PASS_HISTORICAL_ROOTFIX_AUTH_PROVIDER_WRITE_EXECUTOR_FAIL_CLOSED_BY_CONSUMED_REQUEST_F2_CALLER_CONTROL_REQUIRED",
+      "status":"PASS_WITH_F2_CONTROL_REQUIREMENT",
+      "evidence":[
+        "executor has real Auth create/update/claims/disable calls behind request validation and provider credential",
+        "current rootfix activation request is enabled=false, consumed=true, allowedExecutions=0",
+        "phase1 stopped on source digest mismatch before credential preparation; phase2 started=false, providerAttempts=0 and writeBoundaryEntered=false"
+      ],
+      "treatment":"Historical executor is not current authority. Preserve STOP_RETRY; F2 governs any future credential/caller authority."
+    },
+    {
+      "id":"RC15-CP-137",
+      "surface":"tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write.mjs + tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.mjs + paired .github requests",
+      "classification":"PASS_HISTORICAL_STAFF_EXACT_PROVIDER_WRITERS_FAIL_CLOSED_BY_CONSUMED_REQUESTS",
+      "status":"PASS_WITH_F2_CONTROL_REQUIREMENT",
+      "evidence":[
+        "both executors contain real Firestore/Auth exact-write primitives and require their historical request authorization before entering write execution",
+        "V1 request is enabled=false, consumed=true, STOP_RETRY, executed auth/firestore writes 0/0 and nextGate STOP_RETRY_NO_SECOND_ATTEMPT",
+        "V2 request is enabled=false, consumed=true with terminal PASS readback after its authorized historical execution"
+      ],
+      "treatment":"No replay. Existing request classifications CP109/V1 and CP002/V2 workflow remain authoritative; this finding closes the executable provider-entrypoint layer for this family without adding a new HOLD."
+    },
+    {
+      "id":"RC15-CP-138",
+      "surface":"backend/config/cxorbia-consumed-one-shot-gates.json",
+      "classification":"PASS_CURRENT_RC15_KNOWN_ONE_SHOT_LEDGER_FAIL_CLOSED_BUT_HISTORICAL_GLOBAL_EXHAUSTIVENESS_FALSE",
+      "status":"PASS_WITH_F2_NORMALIZATION_REQUIREMENT",
+      "evidence":[
+        "ledger policy forbids replay of consumed request ids, stale-conversation reactivation and interruption reset",
+        "current G2-B recoveries and CP119 containment are recorded as terminal consumed entries with automaticRetryAllowed=false",
+        "coverage.historicalGlobalExhaustive=false explicitly preserves RC15-CP-117 normalization as open"
+      ],
+      "treatment":"Use as current RC15 ledger authority for known one-shots; do not claim allRequestsClassified until CP117 aliases/markers and remaining dispersed authorization artifacts are exhaustively reconciled."
+    }
+  ],
+  "existingHoldReconciliation": {
+    "id":"RC15-CP-011",
+    "surface":"tools/release/cxorbia-corte4-protected-smoke-temp-operator.mjs + .github/cxorbia-firebase-requests/corte4-protected-smoke-temp-operator.json",
+    "decision":"CONFIRMED_EXISTING_HOLD_NOT_NEW_COUNT",
+    "evidence":[
+      "the historical request remains enabled=true and authorizes transient provider Auth configuration plus temporary Auth user create/claims/delete",
+      "the executable loads a service-account credential and contains real Identity Toolkit/Auth config/user mutation calls",
+      "it is not bound to the frozen RC15 master plan, continuity lock or current consumed ledger before becoming historical provider-write authority"
+    ],
+    "requiredTreatment":"Already queued under CP011 for F1 inertization/tombstone; do not execute."
+  },
+  "inventoryProgress": {
+    "backendConfig":"current consumed ledger classified; CP117 historical global alias/ledger normalization still open; remaining markers/aliases/dispersed authorizations not exhausted",
+    "toolsQa":"C6 Auth activation V1/V2 provider-write executors reconciled to terminal consumed requests; directory still open",
+    "toolsRelease":"staff exact-write V1/V2 executors reconciled; CP011 temp-operator executable revalidated as existing HOLD; directory still open"
+  },
+  "exhaustiveness": {"allWorkflowsClassified":true,"allWorkflowDispatchClassified":true,"allRequestsClassified":false,"allProviderWriteEntrypointsClassified":false},
+  "safety": {"providerWrites":0,"dataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"cloudBuilds":0,"cloudRunUpdates":0,"hostingDeploys":0,"rulesWrites":0,"makeCalls":0,"geminiCalls":0,"paymentWrites":0,"g2bExecutions":0,"merge":false,"frontendFunctionalChanges":0},
+  "decision":"F0_PROGRESS_FOUR_ADDITIONAL_AUTHORITY_SURFACES_CLASSIFIED_EXISTING_CP011_RECONFIRMED_NO_NEW_HOLD_NO_MUTATION",
+  "next":"F0_RC15_SYSTEMIC_AUDIT_CONTINUE_CP117_ALIASES_EXECUTE_MARKERS_REMAINING_BACKEND_CONFIG_AND_PROVIDER_ENTRYPOINTS_IN_TOOLS_QA_TOOLS_RELEASE"
+}

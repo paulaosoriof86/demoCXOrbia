@@ -8,77 +8,37 @@
 
 ## Avance F0
 
-**134** hallazgos clasificados; **31** HOLD/P0 acumulados; CP093 y CP119 contenidos; **29 residuales**. Exhaustividad global **2/4**.
+**138** hallazgos clasificados; **31** HOLD/P0 acumulados; CP093 y CP119 contenidos; **29 residuales**. Exhaustividad **2/4**.
 
-Cerrado:
-- workflows HEAD/base 105/105;
-- `.github/cxorbia-firebase-requests` 33/33;
-- `backend/requests` 6/6;
-- mutation routers HTTP del Cloud Run actual 3/3;
-- `backend/runtime/hr-live-service` 8/8 por rol de ejecución;
-- `tools/production` 2/2;
-- `tools/dev` 1/1;
-- `tools/backend` 4/4;
-- scripts ejecutables top-level de `tools/empalme` 2/2;
-- `tools/integration` 5/5 archivos estáticos.
+Cerrado: workflows 105/105; `.github/cxorbia-firebase-requests` 33/33; `backend/requests` 6/6; mutation routers 3/3; `hr-live-service` 8/8 por rol; `tools/production` 2/2; `tools/dev` 1/1; `tools/backend` 4/4; top-level `tools/empalme` 2/2; `tools/integration` 5/5 estáticos.
 
 Pendiente global:
-- `allRequestsClassified=false`: terminar `backend/config`, execute markers, ledgers, aliases y autorizaciones dispersas;
-- `allProviderWriteEntrypointsClassified=false`: terminar universos provider-capable de `tools/qa`, `tools/release` y cualquier entrypoint restante.
+- `allRequestsClassified=false`: resolver CP117 y agotar `backend/config`, execute markers, ledgers, aliases y autorizaciones dispersas;
+- `allProviderWriteEntrypointsClassified=false`: agotar `tools/qa`, `tools/release` y cualquier entrypoint restante.
 
-## Pendientes F1 acumulados
+## F1 — HOLDs recientes ya acumulados
 
-### CP124
-`tools/empalme/tya-apply-post-v96-source-lock.sh`: source writer histórico con commit/push directo. **No ejecutar.** F1 inertizar/tombstonear.
+- CP124: `tya-apply-post-v96-source-lock.sh`, source writer + commit/push histórico. No ejecutar.
+- CP125: request V105/V106 históricamente autorizado para reemplazo runtime. No ejecutar.
+- CP127: materializador R18B puede sobrescribir snapshot tracked. No ejecutar.
+- CP130: creadores Firebase R15/R15B conservan project-create/addFirebase histórico. No ejecutar.
+- CP131: runner R15G conserva source rebuild + Hosting deploy histórico. No ejecutar.
+- CP011: temp operator Corte4 revalidado en Tramo 13; request histórico sigue `enabled=true` y el executor conserva Auth config/user/claims/delete. HOLD ya contabilizado, no nuevo. No ejecutar.
 
-### CP125
-Request V105/V106 permanece históricamente `authorized=true`; materializador puede reemplazar runtime histórico. **No ejecutar.** F1 terminalizar + inertizar.
+## Tramo 13 / F2
 
-### CP127
-`tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs` puede sobrescribir por defecto el snapshot tracked `app/data/tya-hr-source-safe-periods.js` sin master plan/continuity lock/current authorization. **No ejecutar.** F1 inertizar/tombstonear.
+CP135, CP136 y CP137 demuestran que los ejecutores Auth/staff históricos están actualmente fail-closed por requests consumidos/deshabilitados, pero F2 debe impedir que credencial/caller directo se convierta en autoridad paralela.
 
-### CP130
-`tools/release/tya-create-new-empty-firebase-dev-r15.mjs` y `r15b.mjs` pueden crear proyecto + addFirebase con static confirm y caller credential, sin autoridad RC15 actual. **No ejecutar.** F1 inertizar/tombstonear.
+CP138 confirma que el ledger actual impide replay de gates conocidos; sin embargo `historicalGlobalExhaustive=false` mantiene CP117 abierto. Por eso no se declara todavía `allRequestsClassified=true`.
 
-### CP131
-`tools/release/tya-r15g-dev-root-deploy.sh` conserva un camino manual-dispatch histórico que no valida el request y puede reconstruir source + desplegar Hosting. **No ejecutar.** F1 inertizar/tombstonear.
+## Producto / Claude / Academia
 
-## Requisitos F2 identificados
-
-F2 debe asegurar autoridad canónica única sobre:
-- credencial + execute flag del Rules API primitive;
-- credencial/preflight del Hosting REST primitive;
-- invocación directa de client Auth/Firestore apply/rollback;
-- provenance/authority del atomic source apply runner.
-
-Los primitives no equivalen por sí solos a autorización vigente.
-
-## Requests ya comprobados en este tramo
-
-Familias C6 Auth activation/Auth plan, principal uniqueness, direct runner deploy, IAM identity/reviewer, client membership-only, profile-full Firestore y Hosting DEV muestran estados terminales, consumidos o fail-closed en los requests inspeccionados.
-
-Esto es progreso real, pero no agota aún `backend/config`.
-
-## Producto actual
-
-User-admin sigue clasificado como write productivo intencional y guardado por Firebase ID token + tenant exacto + `super`. Legal permanece CP119-contained. G2-B synthetic permanece deshabilitado/bloqueado.
-
-## Claude/prototipo
-
-Sin tarea frontend nueva. No cambiar UI ni solicitar candidata por estos hallazgos de control-plane.
-
-## Academia
-
-Sin cambio funcional en este tramo.
+Sin tarea frontend nueva; no cambiar UI ni solicitar candidata. Sin impacto funcional en Academia, manuales, rutas por rol o notificaciones.
 
 ## G2-B
 
-Sigue terminal `RECOVERY_NO_PROVIDER_SIDE_EFFECT`; no retry/replay. F3 debe revalidar provider contra `00011-f2f`.
+Sigue terminal `RECOVERY_NO_PROVIDER_SIDE_EFFECT`; no retry/replay. F3 revalidará contra `00011-f2f` después de F0/F1/F2.
 
-## Regla
+## Regla y siguiente exacto
 
-F0 continúa read-only. No iniciar F1 hasta 4/4 exhaustividad. No tocar G2-B.
-
-## Siguiente exacto
-
-`F0_RC15_SYSTEMIC_AUDIT_CONTINUE` sobre `backend/config` restante + execute markers/aliases/ledgers y provider/tool entrypoints restantes de `tools/qa`/`tools/release`.
+F0 continúa read-only. Siguiente: `F0_RC15_SYSTEMIC_AUDIT_CONTINUE_CP117_ALIASES_EXECUTE_MARKERS_REMAINING_BACKEND_CONFIG_AND_PROVIDER_ENTRYPOINTS_IN_TOOLS_QA_TOOLS_RELEASE`. F1 no inicia hasta 4/4. G2-B no se toca.
