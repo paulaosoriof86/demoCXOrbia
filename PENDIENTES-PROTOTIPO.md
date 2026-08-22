@@ -6,56 +6,37 @@
 **currentMasterPhase:** `F0_SYSTEMIC_AUDIT`  
 **PHASE_A:** `98/100`
 
-## Pendiente real actual
+## Avance F0
 
-No corresponde reintentar G2-B ni ejecutar synthetic stage.
+119 hallazgos clasificados; 26 HOLD/P0 acumulados; CP093 contenido; 25 residuales. Exhaustividad 2/4.
 
-F0 RC15 continúa hasta clasificar exhaustivamente todas las superficies capaces de cambiar proveedor, datos, producto, fuente o estado canónico y toda autoridad de lectura sensible provider/HR/legacy.
+Cerrado:
+- workflows HEAD/base 105/105;
+- `.github/cxorbia-firebase-requests` 33/33;
+- `backend/requests` 6/6.
 
-La matriz alcanza **110 hallazgos clasificados**; se han descubierto acumulativamente **25 HOLD/P0**, de los cuales CP093 quedó contenido y permanecen **24 HOLD residuales**.
+Pendiente global:
+- `allRequestsClassified=false`: terminar `backend/config`, execute markers, ledgers, aliases y autorizaciones dispersas;
+- `allProviderWriteEntrypointsClassified=false`: runtime/provider tools/endpoints restantes.
 
-## Avance medible ya cerrado
+## P0 CP119 — pendiente de contención autorizada
 
-La exhaustividad pasó de 0/4 a **2/4 flags true**:
-- `allWorkflowsClassified=true`: unión HEAD/base 105/105;
-- `allWorkflowDispatchClassified=true`;
-- `.github/cxorbia-firebase-requests` queda 33/33 mapeado.
+La revisión Cloud Run vigente `cxorbia-live-hr-dev-00010-n78` conserva el gate I3 de aceptación legal humana provider-backed desplegado históricamente. El request está consumido, pero el runtime puede aceptar `POST /api/tenants/tya/legal/commands` con identidad real + confirmación humana si el env gate sigue activo; la misma revisión vigente es la que fue desplegada con ese gate habilitado.
 
-Siguen pendientes solo los dos dominios globales:
-- `allRequestsClassified=false`;
-- `allProviderWriteEntrypointsClassified=false`.
+El execute marker I3 permanece `enabled=true/consumed=false`, aunque el workflow actual ya bloquea un replay I3 antes de provider access. El riesgo es el endpoint ya desplegado, no un redeploy automático.
 
-## P0 de rama base contenido
+No hay autorización vigente para Cloud Run mutation. Requiere autorización explícita separada para deshabilitar el env gate y hacer readback, sin otras mutaciones.
 
-`RC15-CP-093` permanece cerrado como contención autorizada: `.github/workflows/cxorbia-v156-atomic-promotion.yml` está inerte en la rama base `fc7ead694ccdb01bee79856d47a761d34c8d88b9`, sin trigger PR/push, secrets, download/apply/commit/push/deploy y con job `if:false`.
+## Otros pendientes F2 ya demostrados
 
-## HOLD residual nuevo
+- consumed one-shot ledger no cubre exhaustivamente autorizaciones C6/Corte6/I3 históricas;
+- evidence aliases está en epoch 47 mientras continuity lock está en epoch 50;
+- request/execute/runtime/ledger deben quedar bajo una única autoridad canónica.
 
-`RC15-CP-108` — `.github/cxorbia-firebase-requests/corte4-p0-vis02b-final-revalidate.json` conserva `enabled=true` y `hostingDeployExecutions=1` sin terminalización consumida, mientras su executor nominal está inerte y declara la autorización consumida. No hay deploy ejecutable por ese workflow en su estado actual, pero existe deriva de autoridad request↔executor.
+## Regla
 
-Tratamiento: incluir CP108 en la inertización conjunta de F1 y exigir en F2 coherencia plan + continuity lock + consumed ledger + request + executor antes de cualquier write-capable path.
+Mientras CP119 no esté contenido: no usar la aceptación legal humana del runtime como prueba ni producir el write; F0 puede continuar solo read-only. No iniciar F1 ni G2-B.
 
-Los HOLD residuales anteriores permanecen sin tratamiento parcial.
+## Siguiente exacto
 
-## Regla de tratamiento
-
-Salvo la excepción P0 CP093 ya autorizada para hacer seguro el carril de auditoría, no inertizar aisladamente durante F0. F1 debe cerrar en conjunto las autoridades históricas residuales y F2 debe exigir master plan + continuity lock + consumed ledger/current read authority antes de credential access, provider/external-HR/legacy access o repo mutation.
-
-## Próximo bloque exacto
-
-`F0_RC15_SYSTEMIC_AUDIT_CONTINUE` sobre:
-1. `backend/config`;
-2. `backend/requests`;
-3. execute markers y one-shots;
-4. ledgers y aliases;
-5. provider-write entrypoints restantes.
-
-Objetivo inmediato: llevar los flags de exhaustividad de **2/4 a 4/4** y recién entonces iniciar F1.
-
-## Secuencia congelada
-
-F0 auditoría sistémica → F1 inertización histórica → F2 autoridad/control-plane → F3 revalidación G2-B → F4 recovery one-shot autorizado → F5 aceptación sintética → F6 release 100 congelado → F7 readiness integral → F8 cutover → F9 postproducción → F10 operación permanente.
-
-## Frontend/Academia
-
-Sin P0 visual nuevo y sin cambio funcional del frontend. Sin cambio funcional de Academia; se mantiene su revisión transversal posterior.
+`F0_RC15_SYSTEMIC_AUDIT_CONTINUE` sobre el resto de `backend/config` y provider-write entrypoints, mientras se espera autorización separada para la contención mínima de CP119.

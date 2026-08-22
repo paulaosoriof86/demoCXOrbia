@@ -1,79 +1,61 @@
 {
-  "schemaVersion": "cxorbia.rc15.systemic-audit.control-plane.latest.v8",
-  "generatedAt": "2026-08-21T19:24:00-06:00",
+  "schemaVersion": "cxorbia.rc15.systemic-audit.control-plane.latest.v9",
+  "generatedAt": "2026-08-21T19:24:30-06:00",
   "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
-  "masterPlanVersion": "1.0.0",
   "masterPlanStatus": "FROZEN",
   "phase": "F0_SYSTEMIC_AUDIT",
-  "step": "F0_RC15_CONTROL_PLANE_WRITE_SURFACE_INVENTORY",
-  "status": "IN_PROGRESS",
+  "status": "IN_PROGRESS_P0_PROVEN",
   "phaseA": {"completed":98,"pending":2,"total":100},
   "masterPlanFreezeValidation": {
-    "decision": "PASS_REPLICATED_FROM_CANONICAL_GIT_IDENTITY",
-    "planGitBlobShaExpected": "48494ebe5fc439aa6d00e6edcf2e78133357e7f3",
-    "planGitBlobShaObserved": "48494ebe5fc439aa6d00e6edcf2e78133357e7f3",
-    "planSha256Locked": "2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475",
-    "currentPhase": "F0_SYSTEMIC_AUDIT",
-    "providerMutationAuthorizedNow": false,
-    "masterPlanIdentityPreserved": true
+    "decision":"PASS_REPLICATED_FROM_CANONICAL_GIT_IDENTITY",
+    "planGitBlobSha":"48494ebe5fc439aa6d00e6edcf2e78133357e7f3",
+    "planSha256":"2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475",
+    "providerMutationAuthorizedNow":false
   },
   "detailedSnapshot": {
-    "path": "app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE8-DETAIL.json",
-    "blobSha": "cdcd067962def000e288cd54c745959056db6150",
-    "findingsThrough": 110
+    "path":"app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE9-DETAIL.json",
+    "blobSha":"43b0403d52b4ee49f6a49cddc2a0fe5ae261198e",
+    "findingsThrough":119
   },
-  "emergencyPlanChangeRequest": {
-    "requestId": "RC15-PCR-EMERGENCY-V156-BASE-WORKFLOW-INERTIZATION-20260821-01",
-    "decision": "PASS_EMERGENCY_CONTAINMENT",
-    "p0Id": "RC15-CP-093",
-    "baseAfter": "fc7ead694ccdb01bee79856d47a761d34c8d88b9",
-    "providerWrites": 0,
-    "deploys": 0,
-    "dataWrites": 0,
-    "merge": false
+  "progress": {
+    "classifiedFindings":119,
+    "holdDiscoveriesCumulative":26,
+    "containedHolds":1,
+    "currentResidualHolds":25,
+    "workflowUnion":"105/105 classified",
+    "githubFirebaseRequests":"33/33 classified",
+    "backendRequests":"6/6 classified",
+    "backendConfigPriorityArtifactsClassifiedThisTranche":18,
+    "exhaustivenessFlagsTrue":2,
+    "exhaustivenessFlagsTotal":4
   },
-  "workflowExhaustiveness": {
-    "currentHeadWorkflowFiles": 103,
-    "prBaseWorkflowFiles": 2,
-    "workflowUnionFiles": 105,
-    "allWorkflowFilesClassified": true,
-    "allWorkflowDispatchTriggersClassified": true,
-    "decision": "PASS_WORKFLOW_UNION_CLASSIFIED"
+  "exhaustiveness": {
+    "allWorkflowsClassified":true,
+    "allWorkflowDispatchClassified":true,
+    "allRequestsClassified":false,
+    "allProviderWriteEntrypointsClassified":false
   },
-  "requestInventoryProgress": {
-    "githubFirebaseRequestDirectory": ".github/cxorbia-firebase-requests",
-    "githubFirebaseRequestFiles": 33,
-    "githubFirebaseRequestDirectoryClassified": true,
-    "globalRequestInventoryExhaustive": false
+  "p0": {
+    "id":"RC15-CP-119",
+    "classification":"P0_PROVEN_CURRENT_DEPLOYED_LEGAL_ACCEPTANCE_WRITE_GATE_SURVIVES_CONSUMED_REQUEST",
+    "currentCloudRunRevision":"cxorbia-live-hr-dev-00010-n78",
+    "historicalDeployRequestStatus":"consumed_pass_human_acceptance_pending",
+    "historicalFutureHumanLegalAcceptanceWriteBudget":1,
+    "staleExecuteMarker":{"enabled":true,"consumed":false},
+    "currentRuntimeWritePath":"POST /api/tenants/tya/legal/commands",
+    "hostingRewrite":"/api/tenants/** -> cxorbia-live-hr-dev",
+    "humanConfirmationRequired":true,
+    "automaticAcceptance":false,
+    "currentContinuityLockBound":false,
+    "providerContainmentAuthorizedNow":false,
+    "requiredContainment":"DISABLE_I3_LEGAL_ACCEPTANCE_RUNTIME_ENV_GATE_ON_EXISTING_CLOUD_RUN_WITH_SEPARATE_EXPLICIT_CURRENT_AUTHORIZATION_AND_READBACK",
+    "f0ReadOnlyContinuationAllowed":true
   },
-  "coverage": {
-    "controlPlaneWriteSurface": "EXPANDED_NOT_EXHAUSTIVE",
-    "classifiedFindings": 110,
-    "holdDiscoveriesCumulative": 25,
-    "containedHolds": 1,
-    "containedHoldIds": ["RC15-CP-093"],
-    "currentResidualHolds": 24,
-    "newResidualHold": "RC15-CP-108",
-    "allWorkflowsClassified": true,
-    "allRequestsClassified": false,
-    "allWorkflowDispatchClassified": true,
-    "allProviderWriteEntrypointsClassified": false,
-    "exhaustivenessFlagsTrue": 2,
-    "exhaustivenessFlagsTotal": 4,
-    "inventoryCursor": "TRANCHE_8_WORKFLOW_UNION_AND_GITHUB_FIREBASE_REQUEST_DIRECTORY_CLOSURE"
-  },
-  "newFindings": {
-    "RC15-CP-107": "PR-base DEV service-account identity read only; no provider/repository mutation.",
-    "RC15-CP-108": "HOLD: VIS02B request still enabled with one Hosting write budget while nominal executor is inert/consumed.",
-    "RC15-CP-109": "Historical C6 V1 provider-write request consumed/STOP_RETRY/fail-closed.",
-    "RC15-CP-110": "Historical I3 shopper-write request consumed/STOP_RETRY/fail-closed."
-  },
-  "rootCauseProgress": {
-    "newRootCauseEvidence": true,
-    "finding": "Canonical authorization closure cannot be inferred from executor inertness: an enabled historical write-authorizing request can coexist with an inert executor. Request, ledger, lock and executor must agree before execution authority is considered closed.",
-    "fixModel": "Finish global request/provider-entrypoint exhaustiveness. Then F1 tombstones residual historical authorities atomically and F2 enforces one canonical authority before credentials/provider/HR/legacy/repository mutation."
+  "controlPlaneFindings": {
+    "consumedLedgerCoverage":"NOT_GLOBALLY_EXHAUSTIVE",
+    "evidenceAliasesEpoch":"47_STALE_VS_LOCK_50_NON_EXECUTING"
   },
   "safety": {"providerWrites":0,"dataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"deploys":0,"payments":0,"makeCalls":0,"geminiCalls":0,"merge":false,"recoveryExecuted":false,"syntheticStageExecuted":false,"frontendFunctionalChanges":0},
-  "decision": "CONTINUE_F0_REQUEST_AND_PROVIDER_ENTRYPOINT_INVENTORY",
-  "next": "CONTINUE_BACKEND_CONFIG_BACKEND_REQUESTS_EXECUTE_MARKERS_LEDGERS_ALIASES_AND_PROVIDER_WRITE_ENTRYPOINTS_UNTIL_EXHAUSTIVE"
+  "decision":"P0_PROVEN_CONTINUE_F0_READONLY_AND_REQUIRE_SEPARATE_EXPLICIT_AUTHORIZATION_FOR_PROVIDER_CONTAINMENT",
+  "next":"CONTINUE_BACKEND_CONFIG_REQUEST_EXECUTE_AND_PROVIDER_ENTRYPOINT_INVENTORY_READONLY_WHILE_P0_119_CONTAINMENT_REMAINS_UNAUTHORIZED"
 }
