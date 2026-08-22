@@ -1,6 +1,6 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-21  
+**Fecha:** 2026-08-22  
 **MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`  
 **MASTER_PLAN_STATUS:** `FROZEN`  
 **currentMasterPhase:** `F0_SYSTEMIC_AUDIT`  
@@ -11,38 +11,50 @@
 
 ## Plan congelado
 
-Plan blob `48494ebe5fc439aa6d00e6edcf2e78133357e7f3`; SHA-256 `2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475`. El plan no fue modificado.
+Plan blob `48494ebe5fc439aa6d00e6edcf2e78133357e7f3`; SHA-256 `2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475`. El plan no fue modificado. `providerMutationAuthorizedNow=false`.
 
 ## F0 — avance real
 
-- 119 hallazgos clasificados.
-- 26 HOLD/P0 descubiertos acumulativamente.
-- CP093 y CP119 contenidos; **24 residuales**.
-- exhaustividad **2/4**.
+- **125** hallazgos clasificados.
+- **28** HOLD/P0 descubiertos acumulativamente.
+- CP093 y CP119 contenidos; **26 residuales**.
+- exhaustividad global **2/4**.
 - workflows HEAD/base 105/105 cerrados.
 - `.github/cxorbia-firebase-requests` 33/33 cerrados.
 - `backend/requests` 6/6 cerrados.
+- mutation routers HTTP desplegados 3/3 cerrados.
+- `backend/runtime/hr-live-service` 8/8 por rol.
+- `tools/production` 2/2; `tools/dev` 1/1; `tools/backend` 4/4.
+- scripts ejecutables top-level `tools/empalme` 2/2 clasificados.
 
-## CP119 — contención PASS
+## Nuevos hallazgos Tramo 11
 
-La contención autorizada se ejecutó una sola vez en run `32545006587`, job `96961807381`, sobre commit `95249297866afacfb98a47a5bca8c2d8b4a9ae35`.
+CP120 PASS: user-admin es write productivo intencional con ID token Firebase, tenant exacto y rol `super`.
 
-Cloud Run `cxorbia-live-hr-dev` avanzó por **configuración únicamente** de `00010-n78` a `00011-f2f`; la nueva revisión sirve 100% del tráfico. No hubo Cloud Build ni cambio de imagen. Se verificó misma service account, mismos demás env y eliminación exclusiva de `CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_ENABLED` y `CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_GATE`.
+CP121 PASS: el mutation surface HTTP del servicio vivo está limitado a user-admin, legal y G2-B synthetic; otros non-GET son 405. Legal sigue CP119-contained y G2-B está deshabilitado/bloqueado.
 
-Prueba remota final: POST directo y a través de Hosting a `/api/tenants/tya/legal/commands` devuelve HTTP 423 `LEGAL_RUNTIME_HUMAN_ACCEPTANCE_WRITE_GATE_DISABLED` antes de autenticación. No se intentó ni ejecutó aceptación legal real.
+CP122 PASS/control F2: Hosting REST deploy primitive requiere token del caller; no es por sí solo autoridad.
 
-Cloud Build=0; Hosting deploy=0; Firestore/Auth/Storage/HR/Rules/Make/Gemini/pagos/G2-B=0; merge=false; frontend funcional=0.
+CP123 PASS: tooling `tools/dev`/`tools/backend` auditado es local/read-only.
 
-El request CP119 queda consumido y el workflow temporal queda retirado. No retry.
+CP124 HOLD: `tya-apply-post-v96-source-lock.sh` puede reescribir frontend runtime histórico, commit y push directo a la rama viva sin current plan/lock/auth.
+
+CP125 HOLD: request V105/V106 permanece `authorized=true` sin consumed/expiry y su script puede materializar 70 rutas runtime históricas.
+
+No se ejecutó ninguno de los source writers. Su tratamiento se reserva para F1 conjunto.
+
+## CP119 / provider
+
+CP119 permanece terminal `CONTAINED_PASS`. Revisión Cloud Run vigente `cxorbia-live-hr-dev-00011-f2f`, 100% tráfico, misma imagen/service account, gate legal removido. No hubo nueva provider mutation en este tramo.
 
 ## G2-B preservado
 
-G2-B mantiene su receipt histórico `RECOVERY_NO_PROVIDER_SIDE_EFFECT`; su baseline/after histórico `00010-n78` no se reescribe. Como CP119 cambió de forma autorizada la revisión actual a `00011-f2f`, el anterior readiness provider de G2-B queda stale y deberá revalidarse en F3 antes de cualquier futura recuperación. Esto no constituye ni autoriza retry/replay.
+`RECOVERY_NO_PROVIDER_SIDE_EFFECT` sigue intacto. Baseline histórico `00010-n78`; current provider `00011-f2f` por CP119. F3 deberá revalidar. No retry/replay.
 
 ## Estado seguro actual
 
-`providerMutationAuthorizedNow=false`. F0 vuelve a lectura/auditoría/documentación. Synthetic stage bloqueado. F1 aún no inicia.
+Provider/data/Auth/Firestore/Storage/HR/Rules/Make/Gemini/pagos/deploy/G2-B/merge = 0 en este tramo. F0 sigue read-only. F1 aún no inicia.
 
 ## Siguiente exacto
 
-Continuar F0 sobre el resto de `backend/config`, execute markers, ledgers/aliases y provider-write entrypoints hasta cerrar los dos flags restantes de exhaustividad. No tocar G2-B.
+Continuar `backend/config`, execute markers, aliases/ledgers y provider/tool write entrypoints restantes para cerrar `allRequestsClassified` y `allProviderWriteEntrypointsClassified`.

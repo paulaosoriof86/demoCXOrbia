@@ -1,6 +1,6 @@
 # SOURCE LOCK CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-21  
+**Fecha:** 2026-08-22  
 **MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`  
 **MASTER_PLAN_STATUS:** `FROZEN`  
 **PHASE_A:** `98/100`
@@ -11,30 +11,37 @@ Source funcional congelado: `f9802fdd498934a8e7729fa5c7d18341bec1cd71`. Source-f
 
 Producción canónica: project `cxorbia-backend-dev`; Hosting `cxorbia-backend-dev`; Cloud Run `cxorbia-live-hr-dev` us-central1.
 
-**Revisión Cloud Run actual:** `cxorbia-live-hr-dev-00011-f2f`.
-
-La revisión actual fue creada exclusivamente por la contención de configuración RC15-CP-119. La imagen del contenedor y la service account permanecieron idénticas a `00010-n78`; no hubo Cloud Build ni Hosting deploy ni cambio de source funcional.
+**Revisión Cloud Run actual:** `cxorbia-live-hr-dev-00011-f2f`, creada exclusivamente por CP119 config containment; misma imagen/service account que `00010-n78`, sin Cloud Build ni Hosting deploy ni cambio de source funcional.
 
 ## Plan lock
 
-Plan blob `48494ebe5fc439aa6d00e6edcf2e78133357e7f3`; SHA-256 `2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475`; fase F0. El plan no cambió.
+Plan blob `48494ebe5fc439aa6d00e6edcf2e78133357e7f3`; SHA-256 `2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475`; fase F0. El plan no cambió. `providerMutationAuthorizedNow=false`.
 
-## CP119 contenido
+## Runtime provider-write actual
 
-La revisión `00010-n78` conservaba el env gate I3 de aceptación legal humana. Mediante autorización explícita se removieron únicamente `CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_ENABLED` y `CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_GATE`. La revisión `00011-f2f` sirve 100% del tráfico y devuelve HTTP 423 `LEGAL_RUNTIME_HUMAN_ACCEPTANCE_WRITE_GATE_DISABLED` tanto directo como vía Hosting para el POST legal, antes de autenticación.
+El HTTP mutation surface de `hr-live-service` queda clasificado 3/3:
+- user-admin: product write activo, Firebase ID token + tenant exacto + `super`;
+- legal: CP119-contained, provider responde 423 antes de auth;
+- G2-B synthetic: deshabilitado en provider y bloqueado por el plan.
 
-Run `32545006587`, job `96961807381`, artifact `9468227008`, digest `sha256:92adc7eee31b3155cb0ac0ee6caff9899b721826e34b5a08632200665355afbc`.
+El server rechaza otros non-GET con 405.
+
+## Source authority histórica nueva
+
+CP124 demuestra que `tools/empalme/tya-apply-post-v96-source-lock.sh` puede reescribir source histórico, crear commit y pushear la rama viva sin current master plan/continuity lock/current authorization.
+
+CP125 demuestra que `phase-a-v105-v106-empalme-request.source-safe.json` conserva `authorized=true` sin terminalización y el materializador asociado puede reemplazar 70 rutas runtime históricas.
+
+Estos artefactos **no cambian el source lock vigente** y no se ejecutan. Se reservan para tombstone/inertización F1.
 
 ## G2-B histórico vs proveedor actual
 
-El receipt G2-B conserva correctamente su baseline/after histórico `cxorbia-live-hr-dev-00010-n78` y decisión `RECOVERY_NO_PROVIDER_SIDE_EFFECT`. No debe reescribirse retroactivamente.
-
-El proveedor actual, sin embargo, es `00011-f2f` por CP119. Por ello el anterior `FORENSIC_PROVIDER_LANE_READY` ya no puede usarse como readiness vigente: F3 debe revalidar identidad/baseline/config contra `00011-f2f` antes de cualquier recovery. No retry/replay autorizado.
+Receipt G2-B conserva baseline/after histórico `00010-n78` y decisión `RECOVERY_NO_PROVIDER_SIDE_EFFECT`; no se reescribe. Provider actual es `00011-f2f` por CP119, por lo que el readiness anterior es stale y F3 debe revalidar antes de cualquier futura recuperación.
 
 ## F0
 
-119 hallazgos; 26 HOLD/P0 acumulados; CP093 y CP119 contenidos; 24 residuales. Exhaustividad 2/4.
+125 hallazgos; 28 HOLD/P0 acumulados; CP093 y CP119 contenidos; 26 residuales. Exhaustividad 2/4.
 
 ## Próximo
 
-Continuar F0 read-only sobre `backend/config` restante, execute markers, ledgers/aliases y provider-write entrypoints. No tocar G2-B.
+Continuar F0 read-only sobre `backend/config`, execute markers/aliases/ledgers y provider/tool write entrypoints restantes. No tocar G2-B.

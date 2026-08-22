@@ -1,95 +1,72 @@
 {
-  "schemaVersion": "cxorbia.rc15.systemic-audit.control-plane.latest.v10",
-  "generatedAt": "2026-08-21T20:03:00-06:00",
+  "schemaVersion": "cxorbia.rc15.systemic-audit.control-plane.latest.v11",
+  "generatedAt": "2026-08-22T11:27:00-06:00",
   "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
-  "masterPlanVersion": "1.0.0",
   "masterPlanStatus": "FROZEN",
   "phase": "F0_SYSTEMIC_AUDIT",
-  "step": "F0_RC15_CONTROL_PLANE_WRITE_SURFACE_INVENTORY",
   "status": "IN_PROGRESS",
   "phaseA": {"completed":98,"pending":2,"total":100},
   "masterPlanFreezeValidation": {
-    "decision": "PASS_REPLICATED_FROM_CANONICAL_GIT_IDENTITY",
-    "planGitBlobSha": "48494ebe5fc439aa6d00e6edcf2e78133357e7f3",
-    "planSha256": "2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475",
-    "masterPlanIdentityPreserved": true,
-    "providerMutationAuthorizedNow": false
+    "decision":"PASS_REPLICATED_FROM_CANONICAL_GIT_IDENTITY",
+    "planGitBlobSha":"48494ebe5fc439aa6d00e6edcf2e78133357e7f3",
+    "planSha256":"2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475",
+    "providerMutationAuthorizedNow":false
+  },
+  "detailedSnapshot": {
+    "path":"app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE11-DETAIL.json",
+    "blobSha":"6f75bd0e4b79784606a69bcb5d5a330ca41df773",
+    "findingsThrough":125
   },
   "progress": {
-    "classifiedFindings": 119,
-    "holdDiscoveriesCumulative": 26,
-    "containedHolds": 2,
-    "containedHoldIds": ["RC15-CP-093","RC15-CP-119"],
-    "currentResidualHolds": 24,
-    "workflowUnion": "105/105 classified",
-    "githubFirebaseRequests": "33/33 classified",
-    "backendRequests": "6/6 classified",
-    "exhaustivenessFlagsTrue": 2,
-    "exhaustivenessFlagsTotal": 4
+    "classifiedFindings":125,
+    "holdDiscoveriesCumulative":28,
+    "containedHolds":2,
+    "currentResidualHolds":26,
+    "workflowUnion":"105/105 classified",
+    "githubFirebaseRequests":"33/33 classified",
+    "backendRequests":"6/6 classified",
+    "deployedHrLiveHttpMutationRouters":"3/3 classified",
+    "hrLiveServiceTree":"8/8 classified for execution role",
+    "toolsProduction":"2/2 classified",
+    "toolsDev":"1/1 classified",
+    "toolsBackend":"4/4 classified",
+    "empalmeTopLevelExecutableScripts":"2/2 classified",
+    "exhaustivenessFlagsTrue":2,
+    "exhaustivenessFlagsTotal":4
   },
   "exhaustiveness": {
-    "allWorkflowsClassified": true,
-    "allWorkflowDispatchClassified": true,
-    "allRequestsClassified": false,
-    "allProviderWriteEntrypointsClassified": false
+    "allWorkflowsClassified":true,
+    "allWorkflowDispatchClassified":true,
+    "allRequestsClassified":false,
+    "allProviderWriteEntrypointsClassified":false
   },
-  "cp119": {
-    "id": "RC15-CP-119",
-    "previousClassification": "P0_PROVEN_CURRENT_DEPLOYED_LEGAL_ACCEPTANCE_WRITE_GATE_SURVIVES_CONSUMED_REQUEST",
-    "status": "CONTAINED_PASS",
-    "decision": "PASS_RC15_CP119_LEGAL_WRITE_GATE_CONTAINED",
-    "authorizationSource": "current_conversation_2026-08-21T19:55:00-06:00",
-    "executionCommitSha": "95249297866afacfb98a47a5bca8c2d8b4a9ae35",
-    "workflowRunId": 32545006587,
-    "workflowJobId": 96961807381,
-    "artifactId": 9468227008,
-    "artifactDigest": "sha256:92adc7eee31b3155cb0ac0ee6caff9899b721826e34b5a08632200665355afbc",
-    "beforeRevision": "cxorbia-live-hr-dev-00010-n78",
-    "afterRevision": "cxorbia-live-hr-dev-00011-f2f",
-    "cloudRunConfigUpdates": 1,
-    "imageUnchanged": true,
-    "serviceAccountUnchanged": true,
-    "otherEnvUnchanged": true,
-    "removedEnvVars": ["CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_ENABLED","CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_GATE"],
-    "directRuntimeHttpStatus": 423,
-    "hostingRewriteHttpStatus": 423,
-    "runtimeError": "LEGAL_RUNTIME_HUMAN_ACCEPTANCE_WRITE_GATE_DISABLED",
-    "temporaryWorkflowRetired": true,
-    "requestConsumed": true,
-    "automaticRetryAllowed": false,
-    "evidence": "app/docs/evidence/RC15-CP119-LEGAL-WRITE-GATE-CONTAINMENT-LATEST.json"
+  "containedP0": {
+    "cp093":"CONTAINED_PASS",
+    "cp119":"PASS_RC15_CP119_LEGAL_WRITE_GATE_CONTAINED",
+    "currentCloudRunRevision":"cxorbia-live-hr-dev-00011-f2f"
   },
-  "g2bContinuity": {
-    "historicalRecoveryDecision": "RECOVERY_NO_PROVIDER_SIDE_EFFECT",
-    "historicalProviderBaseline": "cxorbia-live-hr-dev-00010-n78",
-    "historicalReceiptChanged": false,
-    "currentProviderRevision": "cxorbia-live-hr-dev-00011-f2f",
-    "previousForensicProviderLaneReadiness": "HISTORICAL_READY_STALE_AFTER_RC15_CP119_CONTAINMENT",
-    "requiresF3Revalidation": true,
-    "replayAuthorized": false
+  "newResidualHolds": [
+    {
+      "id":"RC15-CP-124",
+      "classification":"HOLD_HISTORICAL_UNGATED_SOURCE_MUTATION_AND_PUSH_TOOL",
+      "path":"tools/empalme/tya-apply-post-v96-source-lock.sh",
+      "requiredTreatment":"F1_INERTIZE_HISTORICAL_SOURCE_WRITER"
+    },
+    {
+      "id":"RC15-CP-125",
+      "classification":"HOLD_HISTORICAL_SOURCE_MATERIALIZER_WITH_STALE_AUTHORIZED_REQUEST",
+      "paths":["tools/empalme/tya-apply-v105-internal-v106-runtime.sh","backend/config/phase-a-v105-v106-empalme-request.source-safe.json"],
+      "requiredTreatment":"F1_TERMINALIZE_REQUEST_AND_INERT_HISTORICAL_MATERIALIZER_AUTHORITY"
+    }
+  ],
+  "closedSubdomainDecision": {
+    "deployedHrLiveHttpMutationSurface":"CLOSED_3_OF_3_CLASSIFIED",
+    "activeIntendedProductWrite":"user-admin JWT tenant+super guarded",
+    "legalWrite":"CP119 disabled at current provider",
+    "g2bSyntheticWrite":"disabled at current provider and existing G2-B hold",
+    "otherNonGet":"405_METHOD_NOT_ALLOWED"
   },
-  "controlPlaneFindings": {
-    "consumedLedgerCoverage": "NOT_GLOBALLY_EXHAUSTIVE",
-    "evidenceAliasesEpoch": "47_STALE_VS_LOCK_50_NON_EXECUTING"
-  },
-  "safety": {
-    "providerControlPlaneConfigUpdatesThisContainment": 1,
-    "cloudBuilds": 0,
-    "hostingDeploys": 0,
-    "dataWrites": 0,
-    "authWrites": 0,
-    "firestoreWrites": 0,
-    "storageWrites": 0,
-    "hrWrites": 0,
-    "rulesWrites": 0,
-    "payments": 0,
-    "makeCalls": 0,
-    "geminiCalls": 0,
-    "merge": false,
-    "g2bExecutions": 0,
-    "syntheticStageExecuted": false,
-    "frontendFunctionalChanges": 0
-  },
-  "decision": "PASS_CP119_CONTAINMENT_CONTINUE_F0_READONLY_REQUEST_AND_PROVIDER_ENTRYPOINT_INVENTORY",
-  "next": "CONTINUE_BACKEND_CONFIG_EXECUTE_MARKERS_LEDGERS_ALIASES_AND_PROVIDER_WRITE_ENTRYPOINTS_UNTIL_EXHAUSTIVE"
+  "safety": {"providerWrites":0,"dataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"cloudBuilds":0,"cloudRunUpdates":0,"hostingDeploys":0,"rulesWrites":0,"payments":0,"makeCalls":0,"geminiCalls":0,"merge":false,"recoveryExecuted":false,"syntheticStageExecuted":false,"frontendFunctionalChanges":0},
+  "decision":"CONTINUE_F0_READONLY_TWO_HISTORICAL_SOURCE_AUTHORITY_HOLDS_QUEUED_FOR_F1",
+  "next":"F0_RC15_SYSTEMIC_AUDIT_CONTINUE_REMAINING_BACKEND_CONFIG_AND_PROVIDER_WRITE_ENTRYPOINTS"
 }

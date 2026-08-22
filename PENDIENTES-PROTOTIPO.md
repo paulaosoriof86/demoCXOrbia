@@ -1,6 +1,6 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Fecha:** 2026-08-21  
+**Fecha:** 2026-08-22  
 **MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`  
 **MASTER_PLAN_STATUS:** `FROZEN`  
 **currentMasterPhase:** `F0_SYSTEMIC_AUDIT`  
@@ -8,38 +8,43 @@
 
 ## Avance F0
 
-119 hallazgos clasificados; 26 HOLD/P0 acumulados; CP093 y CP119 contenidos; **24 residuales**. Exhaustividad **2/4**.
+**125** hallazgos clasificados; **28** HOLD/P0 acumulados; CP093 y CP119 contenidos; **26 residuales**. Exhaustividad global **2/4**.
 
 Cerrado:
 - workflows HEAD/base 105/105;
 - `.github/cxorbia-firebase-requests` 33/33;
-- `backend/requests` 6/6.
+- `backend/requests` 6/6;
+- mutation routers HTTP del Cloud Run actual 3/3;
+- `backend/runtime/hr-live-service` 8/8 por rol de ejecución;
+- `tools/production` 2/2;
+- `tools/dev` 1/1;
+- `tools/backend` 4/4;
+- scripts ejecutables top-level de `tools/empalme` 2/2 clasificados.
 
 Pendiente global:
 - `allRequestsClassified=false`: terminar `backend/config`, execute markers, ledgers, aliases y autorizaciones dispersas;
-- `allProviderWriteEntrypointsClassified=false`: runtime/provider tools/endpoints restantes.
+- `allProviderWriteEntrypointsClassified=false`: tooling/provider entrypoints restantes fuera de los subdominios ya cerrados.
 
-## CP119 — cerrado como contención
+## Nuevos pendientes F1
 
-Ya no está pendiente la escritura legal histórica desplegada. La autorización actual se consumió una sola vez y removió únicamente los dos env vars de escritura legal en `cxorbia-live-hr-dev`. Revisión actual `00011-f2f`; misma imagen/service account; POST legal directo y vía Hosting devuelve 423 `LEGAL_RUNTIME_HUMAN_ACCEPTANCE_WRITE_GATE_DISABLED` antes de auth.
+### CP124
+`tools/empalme/tya-apply-post-v96-source-lock.sh` es un source writer histórico ungated: puede reescribir `app/core`, `app/modules` y otros runtime files, crear commit y ejecutar push directo a la rama viva. No usa master plan/continuity lock/current authorization. **No ejecutar.** F1: inertizar/tombstonear preservando evidencia.
 
-No hubo aceptación legal real ni Cloud Build/Hosting/data writes. El workflow temporal queda retirado y el request queda consumido/no-retry.
+### CP125
+`backend/config/phase-a-v105-v106-empalme-request.source-safe.json` conserva `authorized=true` sin consumed/expiry; `tools/empalme/tya-apply-v105-internal-v106-runtime.sh` puede usarlo para materializar 70 rutas runtime + delta histórico. **No ejecutar.** F1: terminalizar request e inertizar autoridad del materializador.
 
-## Pendientes F2 ya demostrados
+## Producto actual
 
-- consumed one-shot ledger todavía no cubre exhaustivamente todas las autorizaciones históricas C6/Corte6/I3; CP119 sí queda agregado de inmediato;
-- evidence aliases está en epoch 47 mientras continuity lock está en epoch 50;
-- request/execute/runtime/ledger deben quedar bajo una única autoridad canónica;
-- stale execute marker I3 y otros artefactos históricos deben quedar tombstone/inert en F1/F2, sin reactivar provider work.
+El user-admin actual queda clasificado como write productivo intencional con Firebase ID token, tenant exacto y `super`; no es un P0 de control-plane. Legal está CP119-contained y G2-B synthetic permanece deshabilitado/bloqueado. El servidor rechaza otros non-GET con 405.
 
 ## G2-B
 
-El receipt histórico de recovery permanece `RECOVERY_NO_PROVIDER_SIDE_EFFECT` con baseline `00010-n78`. Como CP119 cambió la revisión provider actual a `00011-f2f`, el readiness anterior queda stale y debe revalidarse en F3. No retry/replay ahora.
+Sigue terminal `RECOVERY_NO_PROVIDER_SIDE_EFFECT`; no retry/replay. Readiness provider anterior stale tras CP119; F3 debe revalidar contra `00011-f2f`.
 
 ## Regla
 
-F0 continúa solo read-only. No iniciar F1 hasta 4/4 exhaustividad. No tocar G2-B.
+F0 continúa read-only. No iniciar F1 hasta 4/4 exhaustividad. No tocar G2-B.
 
 ## Siguiente exacto
 
-`F0_RC15_SYSTEMIC_AUDIT_CONTINUE` sobre `backend/config` restante, execute markers, ledgers/aliases y provider-write entrypoints.
+`F0_RC15_SYSTEMIC_AUDIT_CONTINUE` sobre `backend/config` restante, execute markers/aliases/ledgers y provider/tool entrypoints restantes.
