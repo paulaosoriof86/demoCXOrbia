@@ -17,16 +17,26 @@ G2-A PASS/FROZEN. G2-B recovery terminal `RECOVERY_NO_PROVIDER_SIDE_EFFECT`; pro
 
 PLAN_CHANGE_REQUEST `RC15-PCR-EMERGENCY-V156-BASE-WORKFLOW-INERTIZATION-20260821-01` = `PASS_EMERGENCY_CONTAINMENT`.
 
-Rama base `release/cxorbia-tya-rc-20260630` actual: `fc7ead694ccdb01bee79856d47a761d34c8d88b9`. El workflow V156 histórico que podía reingresar por PR synchronize quedó inerte. Esta contención no autoriza provider, deploy, datos, producción, merge ni cambio funcional del prototipo.
+Rama base `release/cxorbia-tya-rc-20260630`: `fc7ead694ccdb01bee79856d47a761d34c8d88b9`. Workflow V156 histórico inerte; no provider/deploy/data/production/merge autorizado.
 
-## F0 actual
+## F0 actual — Tramo 8
 
-Matriz: 106 hallazgos clasificados; 24 HOLD/P0 descubiertos acumulativamente; CP093 contenido; 23 HOLD residuales. Cobertura todavía no exhaustiva.
+Matriz: **110 hallazgos clasificados**; **25 HOLD/P0** descubiertos acumulativamente; CP093 contenido; **24 HOLD residuales**.
+
+Exhaustividad: **2/4**.
+- `allWorkflowsClassified=true`;
+- `allWorkflowDispatchClassified=true`;
+- `allRequestsClassified=false`;
+- `allProviderWriteEntrypointsClassified=false`.
+
+Prueba de avance: unión de workflows HEAD/base 105/105 clasificada y `.github/cxorbia-firebase-requests` 33/33 mapeado.
+
+CP108 queda HOLD por contradicción entre request VIS02B aún `enabled=true` con presupuesto de 1 Hosting DEV y executor nominal inerte/consumido. No equivale a autorización actual ni permite saltar F1/F2.
 
 ## Única transición ejecutable actual
 
 `F0_RC15_SYSTEMIC_AUDIT_CONTINUE`.
 
-F0 permite auditoría, lecturas y sincronización documental/control-plane. Ninguna autorización histórica equivale a autorización actual. No iniciar F1 hasta probar exhaustividad; no tocar G2-B.
+Siguiente alcance: `backend/config`, `backend/requests`, execute markers, ledgers, aliases y provider-write entrypoints hasta cerrar los 2 flags restantes. F0 permite auditoría, lecturas y sincronización documental/control-plane. Ninguna autorización histórica equivale a autorización actual. No iniciar F1 hasta 4/4; no tocar G2-B.
 
 El master plan debe seguir validando por SHA-256 `2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475` y Git blob `48494ebe5fc439aa6d00e6edcf2e78133357e7f3` antes de cualquier mutación futura.

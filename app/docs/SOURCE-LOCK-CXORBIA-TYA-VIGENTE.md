@@ -22,21 +22,26 @@ El PLAN_CHANGE_REQUEST de emergencia RC15 preservó esta identidad; no cambió s
 
 ## Control-plane base — P0 V156 contenido
 
-La rama base `release/cxorbia-tya-rc-20260630` avanzó exclusivamente para inertizar el workflow histórico V156:
-- base anterior: `4a85e7e4d0eb31691d7b77e3551ed7cafabb5984`;
-- base actual: `fc7ead694ccdb01bee79856d47a761d34c8d88b9`;
-- archivo único: `.github/workflows/cxorbia-v156-atomic-promotion.yml`;
-- blob inerte: `fe7691a6e53d51ff6a73a5df340541ba84d99594`;
-- provider/data/deploy effects: 0.
+La rama base `release/cxorbia-tya-rc-20260630` permanece en `fc7ead694ccdb01bee79856d47a761d34c8d88b9` después de la inertización autorizada del workflow histórico V156. El único otro workflow de esa rama, `cxorbia-resolve-dev-service-account.yml`, quedó clasificado como CP107 read-only sin provider/repo mutation.
 
-Esta modificación es control-plane de seguridad, no source/release funcional.
+## F0 — progreso de exhaustividad
 
-## F0
+110 hallazgos clasificados; 25 HOLD/P0 descubiertos acumulativamente; CP093 contenido; 24 HOLD residuales.
 
-106 hallazgos clasificados; 24 HOLD/P0 descubiertos acumulativamente; `CP-093` contenido; 23 HOLD residuales; cobertura aún no exhaustiva.
+Dos flags de exhaustividad están demostrados:
+- `allWorkflowsClassified=true`;
+- `allWorkflowDispatchClassified=true`.
 
-No se permite source/release/provider change mientras `currentMasterPhase=F0_SYSTEMIC_AUDIT`, salvo un nuevo P0 demostrado y autorización específica conforme al plan.
+La unión de workflows HEAD/base queda 105/105 clasificada. `.github/cxorbia-firebase-requests` queda 33/33 mapeado.
+
+Permanecen abiertos:
+- `allRequestsClassified=false`;
+- `allProviderWriteEntrypointsClassified=false`.
+
+Nuevo HOLD CP108: request VIS02B sigue expresando `enabled=true` + 1 Hosting DEV mientras su executor nominal está inerte/consumido. Es deriva de autoridad, no autorización vigente.
+
+No se permite source/release/provider change mientras `currentMasterPhase=F0_SYSTEMIC_AUDIT`, salvo nuevo P0 demostrado y autorización específica conforme al plan.
 
 ## Próximo
 
-`F0_RC15_SYSTEMIC_AUDIT_CONTINUE`.
+`F0_RC15_SYSTEMIC_AUDIT_CONTINUE`: `backend/config`, `backend/requests`, execute markers, ledgers, aliases y provider-write entrypoints. F1 solo después de 4/4 flags true. G2-B no se toca.

@@ -12,21 +12,23 @@ El plan vigente sigue siendo `app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGE
 
 I1–I4, R1–R4, G1 y G2-A permanecen PASS/FROZEN. G2-B no se ejecuta mientras F0 RC15 continúe.
 
-## RC15 F0 — avance y P0 contenido
+## RC15 F0 — avance material
 
-La matriz canónica alcanza **106 hallazgos clasificados**. Se han descubierto acumulativamente **24 HOLD/P0**; `RC15-CP-093` quedó contenido de inmediato mediante autorización expresa, por lo que quedan **23 HOLD residuales**.
+La matriz canónica alcanza **110 hallazgos clasificados**. Se han descubierto acumulativamente **25 HOLD/P0**; `RC15-CP-093` está contenido y quedan **24 HOLD residuales**.
 
-El nuevo P0 demostró que un workflow histórico V156 seguía activo en la **rama base del PR #7**, aunque ya no existiera en el HEAD vivo. Un synchronize del PR disparó el run `32534531824`, cuyo workflow podía usar credencial DEV, descargar V156, aplicar 35 archivos y pushear la rama viva. El run se detuvo por un SHA histórico inválido antes de aplicar; ese fallo no se considera control válido.
+El avance de exhaustividad es medible: **2 de 4 flags ya están cerrados**.
+- todos los workflows de la unión HEAD vivo + rama base están clasificados: 105/105;
+- todos los `workflow_dispatch` de esa unión están clasificados;
+- `.github/cxorbia-firebase-requests` está mapeado 33/33;
+- todavía faltan cerrar globalmente requests dispersos y provider-write entrypoints.
 
-Con autorización vigente se inertizó exclusivamente `.github/workflows/cxorbia-v156-atomic-promotion.yml` en `release/cxorbia-tya-rc-20260630`. Base nueva: `fc7ead694ccdb01bee79856d47a761d34c8d88b9`. El workflow ya no tiene push/pull_request trigger, secrets, descarga, apply, commit, push ni deploy; queda `contents:read` y job `if:false`.
+Nuevo HOLD `RC15-CP-108`: el request histórico VIS02B aún expresa `enabled=true` y un presupuesto de 1 Hosting DEV, mientras el executor nominal está inerte y declara consumo. No hay deploy ejecutable por ese workflow actual, pero sí una contradicción de autoridad que F1/F2 deben eliminar.
 
-El HOLD nuevo todavía abierto es `RC15-CP-094`: `tya-hr-country-tab-consistency-current.yml` conserva un request activo, lee HR/provider y puede escribir evidence/registry en la rama sin authority gate RC15 actual.
-
-La causa sistémica ya incluye autoridad histórica en provider/source/state, read-only jobs que escriben estado, request/lock bypass, legacy live connectivity, trigger/request/executor mismatch, external-HR authority gaps y ahora **PR-base execution authority**.
+Nuevos no-HOLD: CP107 (read-only de identidad de service account en rama base), CP109 (C6 V1 consumed/STOP_RETRY) y CP110 (I3 shopper write consumed/STOP_RETRY).
 
 ## Claude/prototipo
 
-No hay tarea frontend nueva en este bloque. No modificar `/app/modules`, `/app/core` ni UI por esta contención. Ningún cambio funcional del prototipo fue realizado.
+No hay tarea frontend nueva en este bloque. No modificar `/app/modules`, `/app/core` ni UI por este tramo. Ningún cambio funcional del prototipo fue realizado.
 
 Si una fase posterior demuestra un P0 frontend, se documentará por archivo/módulo y se aplicará el lock de empalme vigente, no un rediseño backend.
 
@@ -36,4 +38,4 @@ Sin cambio funcional. Se preserva el requisito de revisar Academia, manuales, cu
 
 ## Siguiente
 
-`F0_RC15_SYSTEMIC_AUDIT_CONTINUE` hasta probar exhaustividad real. F1/F2 siguen después; G2-B permanece bloqueado.
+`F0_RC15_SYSTEMIC_AUDIT_CONTINUE`: inventariar `backend/config`, `backend/requests`, execute markers, ledgers, aliases y provider-write entrypoints hasta llevar la exhaustividad de 2/4 a 4/4. F1/F2 siguen después; G2-B permanece bloqueado.

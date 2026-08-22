@@ -25,35 +25,41 @@ I1–I4 PASS/FROZEN; R1–R4 PASS; G1 PASS/FROZEN; G2-A PASS/FROZEN. G2-B pendie
 
 Recovery `i5-g2b-p0-writepath-recovery-20260821-02`: `RECOVERY_NO_PROVIDER_SIDE_EFFECT`; providerMutationExecutions=0; request consumido; sin retry/replay.
 
-## RC15 P0 de rama base — CONTENIDO Y REENTRADA REMOVIDA
+## RC15 P0 de rama base — CONTENIDO
 
-Run probatorio `32534531824`, `CXOrbia V156 Direct Empalme`, demostró que un workflow histórico de la rama base podía reingresar por PR synchronize, descargar/aplicar V156 y pushear la rama viva.
+Run probatorio `32534531824`, `CXOrbia V156 Direct Empalme`, demostró reentrada histórica desde la rama base por PR synchronize.
 
-Autorización: `RC15-PCR-EMERGENCY-V156-BASE-WORKFLOW-INERTIZATION-20260821-01`.
+Contención en `release/cxorbia-tya-rc-20260630`: `4a85e7e4d0eb31691d7b77e3551ed7cafabb5984` → `fc7ead694ccdb01bee79856d47a761d34c8d88b9`; único archivo `.github/workflows/cxorbia-v156-atomic-promotion.yml`; blob final `fe7691a6e53d51ff6a73a5df340541ba84d99594`; sin trigger PR/push, secrets, download, apply, commit, push ni deploy; `contents:read`, job `if:false`.
 
-Contención en `release/cxorbia-tya-rc-20260630`: `4a85e7e4d0eb31691d7b77e3551ed7cafabb5984` → `fc7ead694ccdb01bee79856d47a761d34c8d88b9`; único archivo `.github/workflows/cxorbia-v156-atomic-promotion.yml`; blob final `fe7691a6e53d51ff6a73a5df340541ba84d99594`; sin PR/push trigger, secrets, download, apply, commit, push ni deploy; `contents:read`, job `if:false`.
+Prueba posterior: `PASS_V156_PR_SYNCHRONIZE_REENTRY_REMOVED`.
 
-Prueba posterior: synchronize de rama viva produjo el fan-out histórico/read-only esperado, pero ningún run `CXOrbia V156 Direct Empalme`. Decisión: `PASS_V156_PR_SYNCHRONIZE_REENTRY_REMOVED`.
+## RC15 F0 — avance material del Tramo 8
 
-## RC15 F0 — estado vigente
+Matriz: **110 hallazgos clasificados**; **25 HOLD/P0 descubiertos acumulativamente**; `RC15-CP-093` contenido; **24 HOLD residuales**.
 
-Matriz: **106 hallazgos clasificados**; **24 HOLD/P0 descubiertos acumulativamente**; `RC15-CP-093` contenido; **23 HOLD residuales**. Cobertura `EXPANDED_NOT_EXHAUSTIVE`.
+La exhaustividad avanzó de **0/4 a 2/4 flags cerrados**:
+- `allWorkflowsClassified=true`;
+- `allWorkflowDispatchClassified=true`;
+- `allRequestsClassified=false`;
+- `allProviderWriteEntrypointsClassified=false`.
 
-Nuevo HOLD residual: `RC15-CP-094`, live HR country-tab consistency; request activo + credential/live reads + writer de evidence/registry sin authority gate vigente.
+Pruebas de cierre parcial:
+- unión de workflows HEAD vivo + rama base: **105/105 clasificados**;
+- `.github/cxorbia-firebase-requests`: **33/33 requests mapeados**.
 
-Los cuatro flags de exhaustividad siguen false; F1 aún no inicia.
+### Nuevo HOLD CP108
+
+`corte4-p0-vis02b-final-revalidate.json` sigue `enabled=true` y conserva presupuesto histórico de 1 Hosting DEV sin `consumed/executionsConsumed`, mientras el workflow nominal está inerte y declara la autorización consumida. No puede desplegar a través de ese executor actual, pero la autoridad request↔executor está contradictoria y debe tombstonearse en F1 y quedar gobernada por lock/ledger en F2.
+
+### Nuevos no-HOLD
+
+- CP107: workflow base `cxorbia-resolve-dev-service-account.yml`, secret-identity read-only sin provider/repo write.
+- CP109: C6 write V1 consumed/STOP_RETRY/fail-closed.
+- CP110: I3 shopper write consumed/STOP_RETRY/fail-closed.
 
 ## Incidentes de herramienta preservados
 
-- commit objeto `d2a3edf...` preparado pero nunca referenciado;
-- incidente `main`: archivo vacío creado/revertido; delta neto de contenido 0;
-- incidente de ref-sync en rama viva: **4 ciclos** de archivos vacíos creados/revertidos por enrutamiento erróneo de `update_ref`; HEAD corregido previo al sync `11cef766ba80760cd730090a143ed4e1ea9f2266`, árbol `8f12db2cd89b7478b68a8d352e11003f441d1113`, idéntico al preincidente.
-
-Provider/data/deploy/merge effects de estos incidentes = 0. Desde este punto queda prohibido usar actions contents en este bloque; el movimiento canónico final debe usar exclusivamente `GitHub.update_ref`, `force=false`.
-
-Evidence:
-- `app/docs/evidence/RC15-TOOLING-INCIDENT-MAIN-NET-ZERO-20260821.json`;
-- `app/docs/evidence/RC15-TOOLING-INCIDENT-LIVE-BRANCH-NET-ZERO-20260821.json`.
+Los incidentes previamente documentados permanecen net-content-zero y provider/data/deploy/merge-zero. Continúa prohibido usar actions contents como probe o para movimiento de refs.
 
 ## Seguridad
 
@@ -61,4 +67,4 @@ Provider/data/Auth/Firestore/Storage/HR writes=0; Cloud Build/Cloud Run/Hosting 
 
 ## Siguiente exacto
 
-`F0_RC15_SYSTEMIC_AUDIT_CONTINUE`. No tocar G2-B, recovery ni synthetic stage.
+`F0_RC15_SYSTEMIC_AUDIT_CONTINUE`: cerrar `backend/config`, `backend/requests`, execute markers, ledgers, aliases y provider-write entrypoints hasta llevar los **2 flags restantes** a true. F1 aún no inicia. No tocar G2-B.

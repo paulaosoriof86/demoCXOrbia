@@ -10,33 +10,47 @@
 
 No corresponde reintentar G2-B ni ejecutar synthetic stage.
 
-F0 RC15 continúa hasta clasificar exhaustivamente todas las superficies capaces de cambiar proveedor, datos, producto, fuente o estado canónico, y toda autoridad de lectura sensible provider/HR/legacy. La matriz alcanza **106 hallazgos clasificados**; se han descubierto acumulativamente **24 HOLD/P0**, de los cuales uno quedó contenido y permanecen **23 HOLD residuales**.
+F0 RC15 continúa hasta clasificar exhaustivamente todas las superficies capaces de cambiar proveedor, datos, producto, fuente o estado canónico y toda autoridad de lectura sensible provider/HR/legacy.
+
+La matriz alcanza **110 hallazgos clasificados**; se han descubierto acumulativamente **25 HOLD/P0**, de los cuales CP093 quedó contenido y permanecen **24 HOLD residuales**.
+
+## Avance medible ya cerrado
+
+La exhaustividad pasó de 0/4 a **2/4 flags true**:
+- `allWorkflowsClassified=true`: unión HEAD/base 105/105;
+- `allWorkflowDispatchClassified=true`;
+- `.github/cxorbia-firebase-requests` queda 33/33 mapeado.
+
+Siguen pendientes solo los dos dominios globales:
+- `allRequestsClassified=false`;
+- `allProviderWriteEntrypointsClassified=false`.
 
 ## P0 de rama base contenido
 
-`RC15-CP-093` quedó cerrado como contención de emergencia autorizada: el workflow histórico `.github/workflows/cxorbia-v156-atomic-promotion.yml` en la rama base del PR podía reingresar por `pull_request/synchronize` y pushear una materialización V156 sobre la rama viva. La base avanzó a `fc7ead694ccdb01bee79856d47a761d34c8d88b9` y ese workflow quedó estructuralmente inerte: sin trigger PR/push, sin secrets, sin download/apply/commit/push/deploy y con job `if:false`.
-
-Este cierre no cambia el plan maestro ni autoriza F1 o G2-B.
+`RC15-CP-093` permanece cerrado como contención autorizada: `.github/workflows/cxorbia-v156-atomic-promotion.yml` está inerte en la rama base `fc7ead694ccdb01bee79856d47a761d34c8d88b9`, sin trigger PR/push, secrets, download/apply/commit/push/deploy y con job `if:false`.
 
 ## HOLD residual nuevo
 
-`RC15-CP-094` — `tya-hr-country-tab-consistency-current.yml` + `live-hr-country-tab-consistency.json`: request `enabled=true`, `contents:write`, live HR/provider reads y commit de evidence/registry sin current continuity-lock/consumed gate. Debe formar parte de la inertización conjunta de F1 y del enforcement de autoridad de F2.
+`RC15-CP-108` — `.github/cxorbia-firebase-requests/corte4-p0-vis02b-final-revalidate.json` conserva `enabled=true` y `hostingDeployExecutions=1` sin terminalización consumida, mientras su executor nominal está inerte y declara la autorización consumida. No hay deploy ejecutable por ese workflow en su estado actual, pero existe deriva de autoridad request↔executor.
 
-Los 22 HOLD residuales previos permanecen sin tratamiento parcial. Con `CP-094`, el total residual actual es 23.
+Tratamiento: incluir CP108 en la inertización conjunta de F1 y exigir en F2 coherencia plan + continuity lock + consumed ledger + request + executor antes de cualquier write-capable path.
+
+Los HOLD residuales anteriores permanecen sin tratamiento parcial.
 
 ## Regla de tratamiento
 
-Salvo la excepción P0 `CP-093` expresamente autorizada para hacer seguro el propio carril de auditoría, no inertizar aisladamente durante F0. F1 debe cerrar en conjunto las autoridades históricas residuales y F2 debe exigir master plan + continuity lock + consumed ledger/current read authority antes de credential access, provider/external-HR/legacy access o repo mutation.
+Salvo la excepción P0 CP093 ya autorizada para hacer seguro el carril de auditoría, no inertizar aisladamente durante F0. F1 debe cerrar en conjunto las autoridades históricas residuales y F2 debe exigir master plan + continuity lock + consumed ledger/current read authority antes de credential access, provider/external-HR/legacy access o repo mutation.
 
-## Cobertura todavía abierta
+## Próximo bloque exacto
 
-Los flags siguen en false:
-- `allWorkflowsClassified`;
-- `allRequestsClassified`;
-- `allWorkflowDispatchClassified`;
-- `allProviderWriteEntrypointsClassified`.
+`F0_RC15_SYSTEMIC_AUDIT_CONTINUE` sobre:
+1. `backend/config`;
+2. `backend/requests`;
+3. execute markers y one-shots;
+4. ledgers y aliases;
+5. provider-write entrypoints restantes.
 
-Por tanto F0 aún no cierra.
+Objetivo inmediato: llevar los flags de exhaustividad de **2/4 a 4/4** y recién entonces iniciar F1.
 
 ## Secuencia congelada
 
@@ -45,7 +59,3 @@ F0 auditoría sistémica → F1 inertización histórica → F2 autoridad/contro
 ## Frontend/Academia
 
 Sin P0 visual nuevo y sin cambio funcional del frontend. Sin cambio funcional de Academia; se mantiene su revisión transversal posterior.
-
-## Siguiente exacto
-
-`F0_RC15_SYSTEMIC_AUDIT_CONTINUE`.

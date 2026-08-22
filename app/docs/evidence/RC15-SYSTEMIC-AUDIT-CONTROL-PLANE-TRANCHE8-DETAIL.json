@@ -1,0 +1,142 @@
+{
+  "schemaVersion": "cxorbia.rc15.systemic-audit.control-plane.v3",
+  "generatedAt": "2026-08-21T19:24:00-06:00",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "masterPlanVersion": "1.0.0",
+  "masterPlanStatus": "FROZEN",
+  "phase": "F0_SYSTEMIC_AUDIT",
+  "step": "F0_RC15_CONTROL_PLANE_WRITE_SURFACE_INVENTORY",
+  "status": "IN_PROGRESS",
+  "phaseA": {"completed":98,"pending":2,"total":100},
+  "headBeforeTranche": "c3ae23d9c215301e25e28f465dd346ca85fd15c3",
+  "priorDetailedEvidence": {
+    "path": "app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE7-DETAIL.json",
+    "blobSha": "a661622394a46161f86a4908ed2cb1fde5a8ac22",
+    "findingsThrough": 106,
+    "holdDiscoveriesCumulative": 24,
+    "currentResidualHolds": 23,
+    "preservedImmutableInGit": true
+  },
+  "masterPlanFreezeValidation": {
+    "decision": "PASS_REPLICATED_FROM_CANONICAL_GIT_IDENTITY",
+    "planGitBlobShaExpected": "48494ebe5fc439aa6d00e6edcf2e78133357e7f3",
+    "planGitBlobShaObserved": "48494ebe5fc439aa6d00e6edcf2e78133357e7f3",
+    "planSha256Locked": "2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475",
+    "currentPhase": "F0_SYSTEMIC_AUDIT",
+    "providerMutationAuthorizedNow": false,
+    "masterPlanIdentityPreserved": true
+  },
+  "workflowInventoryClosure": {
+    "currentHead": "c3ae23d9c215301e25e28f465dd346ca85fd15c3",
+    "currentHeadWorkflowFiles": 103,
+    "currentHeadWorkflowsMappedToFindingsThrough106": true,
+    "prBaseBranch": "release/cxorbia-tya-rc-20260630",
+    "prBaseHead": "fc7ead694ccdb01bee79856d47a761d34c8d88b9",
+    "prBaseWorkflowFiles": 2,
+    "prBaseWorkflows": [
+      {"path":".github/workflows/cxorbia-v156-atomic-promotion.yml","classification":"RC15-CP-093_CONTAINED_INERT"},
+      {"path":".github/workflows/cxorbia-resolve-dev-service-account.yml","classification":"RC15-CP-107"}
+    ],
+    "workflowUnionFiles": 105,
+    "allWorkflowFilesClassified": true,
+    "allWorkflowDispatchTriggersClassified": true,
+    "decision": "PASS_WORKFLOW_UNION_CLASSIFIED"
+  },
+  "githubFirebaseRequestInventory": {
+    "path": ".github/cxorbia-firebase-requests",
+    "requestFiles": 33,
+    "allFilesMapped": true,
+    "newRequestOnlyClassifications": ["RC15-CP-108","RC15-CP-109","RC15-CP-110"],
+    "note": "This closes the .github/cxorbia-firebase-requests directory only. Global allRequestsClassified remains false until backend/config, backend/requests, execute markers, ledgers, aliases and remaining authorization artifacts are exhaustively reconciled."
+  },
+  "findingsDelta": [
+    {
+      "id": "RC15-CP-107",
+      "classification": "HISTORICAL_PR_BASE_SECRET_IDENTITY_READ_ONLY_NO_PROVIDER_OR_REPO_MUTATION",
+      "surface": "release/cxorbia-tya-rc-20260630:.github/workflows/cxorbia-resolve-dev-service-account.yml",
+      "evidence": "The only remaining non-V156 workflow in the live PR base is path-scoped to its own workflow file, uses contents:read, loads the DEV service-account JSON only to verify project_id and print the non-secret client_email identity, and performs no provider call, repository mutation, deploy or data write.",
+      "providerMutationRiskNow": false,
+      "canonicalStateMutationRisk": false,
+      "requiredTreatment": "F2_GOVERN_SECRET_ACCESS_AND_BASE_BRANCH_CONTROL_PLANE_READS"
+    },
+    {
+      "id": "RC15-CP-108",
+      "classification": "HOLD_STALE_ENABLED_HOSTING_WRITE_AUTHORIZATION_ARTIFACT_WITH_INERT_EXECUTOR_MISMATCH",
+      "surface": ".github/cxorbia-firebase-requests/corte4-p0-vis02b-final-revalidate.json + .github/workflows/cxorbia-corte4-p0-vis02b-final-revalidate.yml",
+      "evidence": "The request artifact still says enabled=true and authorizes one Hosting DEV deployment with no consumed/executionsConsumed terminal ledger, while the nominal workflow is structurally inert: contents:read, workflow_dispatch only, sole job if:false and text stating the authorization is already consumed. No provider write can occur through that nominal workflow now, but canonical authorization state contradicts executor state and remains historically write-authorizing.",
+      "providerMutationRiskNowThroughNominalExecutor": false,
+      "historicalAuthorizationDrift": true,
+      "residualHold": true,
+      "requiredTreatment": "F1_TOMBSTONE_STALE_VIS02B_WRITE_AUTHORIZATION_AND_F2_REQUIRE_CANONICAL_LEDGER_LOCK_EXECUTOR_CONSISTENCY"
+    },
+    {
+      "id": "RC15-CP-109",
+      "classification": "HISTORICAL_CONSUMED_PROVIDER_WRITE_REQUEST_FAIL_CLOSED_ORPHANED_V1",
+      "surface": ".github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write.json",
+      "evidence": "Historical V1 request is enabled=false, consumed=true, STOP_RETRY, with one-shot historical Auth/Firestore budgets but executedWrites auth=0/firestore=0 and nextGate STOP_RETRY_NO_SECOND_ATTEMPT. It does not constitute current authorization.",
+      "providerMutationRiskNow": false,
+      "residualHold": false
+    },
+    {
+      "id": "RC15-CP-110",
+      "classification": "HISTORICAL_CONSUMED_I3_SHOPPER_WRITE_REQUEST_FAIL_CLOSED",
+      "surface": ".github/cxorbia-firebase-requests/cxorbia-i3-shopper-persistence-exact-write-v1.json",
+      "evidence": "Historical I3 shopper continuation request is enabled=false, consumed=true, STOP_RETRY, automaticRetryAllowed=false, with its one-shot Auth/Firestore budget already terminalized. It does not authorize another shopper mutation.",
+      "providerMutationRiskNow": false,
+      "residualHold": false
+    }
+  ],
+  "requestMappingsConfirmedThisTranche": [
+    {"path":".github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json","mappedTo":"RC15-CP-002","state":"enabled_false_consumed_true_pass"},
+    {"path":".github/cxorbia-firebase-requests/r17n-final-materialize-dev.json","mappedTo":"RC15-CP-016","state":"enabled_false_consumed_true_pass"},
+    {"path":".github/cxorbia-firebase-requests/corte4-entrypoint-script-integrity.json","mappedTo":"RC15-CP-103","state":"repository_read_only_providerWrites_0"},
+    {"path":".github/cxorbia-firebase-requests/corte4-hosting-dev-visual.json","mappedTo":"RC15-CP-010","state":"enabled_false_consumed_hosting_budget_0"},
+    {"path":".github/cxorbia-firebase-requests/corte4-p0-vis01-diagnostic.json","mappedTo":"RC15-CP-088","state":"enabled_false_closed_pass"},
+    {"path":".github/cxorbia-firebase-requests/corte4-p0-vis01-revalidate.json","mappedTo":"RC15-CP-089","state":"enabled_false_consumed_hosting_budget_0"},
+    {"path":".github/cxorbia-firebase-requests/corte4-p0-vis02-remote-diagnostic.json","mappedTo":"RC15-CP-104","state":"enabled_true_remote_read_only_providerWrites_0"},
+    {"path":".github/cxorbia-firebase-requests/corte4-p0-vis02-script-probe.json","mappedTo":"RC15-CP-105","state":"remote_public_read_only_providerWrites_0"},
+    {"path":".github/cxorbia-firebase-requests/corte4-p0-vis02b-final-remote-diagnostic.json","mappedTo":"RC15-CP-106","state":"enabled_true_remote_read_only_providerWrites_0"}
+  ],
+  "coverage": {
+    "controlPlaneWriteSurface": "EXPANDED_NOT_EXHAUSTIVE",
+    "classifiedFindings": 110,
+    "holdDiscoveriesCumulative": 25,
+    "containedHolds": 1,
+    "containedHoldIds": ["RC15-CP-093"],
+    "currentResidualHolds": 24,
+    "currentResidualHoldIds": [
+      "RC15-CP-005","RC15-CP-011","RC15-CP-014","RC15-CP-017","RC15-CP-025","RC15-CP-028","RC15-CP-029","RC15-CP-030","RC15-CP-031","RC15-CP-045","RC15-CP-055","RC15-CP-056","RC15-CP-058","RC15-CP-059","RC15-CP-063","RC15-CP-066","RC15-CP-067","RC15-CP-068","RC15-CP-074","RC15-CP-078","RC15-CP-090","RC15-CP-091","RC15-CP-094","RC15-CP-108"
+    ],
+    "additionalSurfacesClassifiedThisTranche": 4,
+    "allWorkflowsClassified": true,
+    "allRequestsClassified": false,
+    "allWorkflowDispatchClassified": true,
+    "allProviderWriteEntrypointsClassified": false,
+    "exhaustivenessFlagsTrue": 2,
+    "exhaustivenessFlagsTotal": 4,
+    "inventoryCursor": "TRANCHE_8_WORKFLOW_UNION_AND_GITHUB_FIREBASE_REQUEST_DIRECTORY_CLOSURE"
+  },
+  "rootCauseProgress": {
+    "newRootCauseEvidence": true,
+    "finding": "RC15 now also proves authorization-artifact/executor disagreement: an inert executor can coexist with an enabled historical request that still carries a real Hosting write budget. Therefore executor inertness alone cannot establish canonical authorization closure.",
+    "fixModel": "Complete request and provider-entrypoint exhaustiveness in F0. F1 atomically tombstones the residual historical authorities including CP108. F2 enforces one canonical authority across plan, continuity lock, consumed ledger, request and executor before credential access or any provider/source/state mutation."
+  },
+  "safety": {
+    "providerWrites": 0,
+    "dataWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "deploys": 0,
+    "payments": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "merge": false,
+    "recoveryExecuted": false,
+    "syntheticStageExecuted": false,
+    "frontendFunctionalChanges": 0
+  },
+  "decision": "CONTINUE_F0_REQUEST_AND_PROVIDER_ENTRYPOINT_INVENTORY",
+  "next": "CONTINUE_BACKEND_CONFIG_BACKEND_REQUESTS_EXECUTE_MARKERS_LEDGERS_ALIASES_AND_PROVIDER_WRITE_ENTRYPOINTS_UNTIL_EXHAUSTIVE"
+}

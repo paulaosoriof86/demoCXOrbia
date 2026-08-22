@@ -19,7 +19,7 @@
 5. `app/docs/evidence/RC15-PLAN-CHANGE-REQUEST-EMERGENCY-V156-INERTIZATION-20260821.json`.
 6. `app/docs/evidence/RC15-TOOLING-INCIDENT-MAIN-NET-ZERO-20260821.json`.
 7. `app/docs/evidence/RC15-TOOLING-INCIDENT-LIVE-BRANCH-NET-ZERO-20260821.json`.
-8. `app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-LATEST.json` y `RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE7-DETAIL.json`.
+8. `app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-LATEST.json` y detalle de tramo más reciente.
 9. `app/docs/evidence/I5-G2B-P0-WRITEPATH-RECOVERY-LATEST.json`.
 10. `backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-request.json`.
 11. `backend/config/cxorbia-consumed-one-shot-gates.json`.
@@ -42,12 +42,26 @@ I1–I4, R1–R4, G1 y G2-A permanecen PASS/FROZEN. Phase A = `98/100`. G2-B con
 
 ## RC15 F0 — estado canónico
 
-- Hallazgos clasificados: **106**.
-- HOLD/P0 descubiertos acumulativamente: **24**.
+- Hallazgos clasificados: **110**.
+- HOLD/P0 descubiertos acumulativamente: **25**.
 - Contenido mediante excepción expresa: `RC15-CP-093`.
-- HOLD residuales: **23**.
+- HOLD residuales: **24**.
 - Cobertura: `EXPANDED_NOT_EXHAUSTIVE`.
-- Los cuatro flags de exhaustividad siguen false.
+- Flags de exhaustividad: **2/4 true**.
+  - `allWorkflowsClassified=true`.
+  - `allWorkflowDispatchClassified=true`.
+  - `allRequestsClassified=false`.
+  - `allProviderWriteEntrypointsClassified=false`.
+
+### Tramo 8 — cierre medible de dos dominios
+
+La unión de workflows quedó exhaustivamente reconciliada:
+- HEAD vivo: 103 workflows, todos mapeados a `RC15-CP-001..106`;
+- rama base viva `fc7ead694ccdb01bee79856d47a761d34c8d88b9`: 2 workflows;
+- unión: 105 workflows, todos clasificados;
+- ningún `workflow_dispatch` de esa unión queda sin clasificación.
+
+El directorio `.github/cxorbia-firebase-requests` contiene 33 requests y queda completamente mapeado. Esto no cierra todavía `allRequestsClassified`, porque faltan `backend/config`, `backend/requests`, execute markers, ledgers, aliases y otras autorizaciones.
 
 ### CP093 — P0 de rama base contenido
 
@@ -55,24 +69,37 @@ El workflow histórico V156 de la rama base podía reingresar por PR synchronize
 
 Contención: `release/cxorbia-tya-rc-20260630` avanzó `4a85e7e4d0eb31691d7b77e3551ed7cafabb5984` → `fc7ead694ccdb01bee79856d47a761d34c8d88b9`; único archivo `.github/workflows/cxorbia-v156-atomic-promotion.yml`; blob final `fe7691a6e53d51ff6a73a5df340541ba84d99594`; sin PR/push trigger, secrets, download, apply, commit, push ni deploy; job `if:false`.
 
-Prueba post-contención: synchronize posterior produjo workflows de validación, pero **no produjo `CXOrbia V156 Direct Empalme`**. `PASS_V156_PR_SYNCHRONIZE_REENTRY_REMOVED`.
+Prueba post-contención: synchronize posterior produjo workflows de validación, pero no produjo `CXOrbia V156 Direct Empalme`. `PASS_V156_PR_SYNCHRONIZE_REENTRY_REMOVED`.
 
-### CP094 — HOLD residual nuevo
+### CP094 — HOLD residual
 
 `tya-hr-country-tab-consistency-current.yml` + `live-hr-country-tab-consistency.json`: request activo, credential/live HR/provider reads y writer de evidence/registry sin current continuity-lock/consumed gate.
+
+### CP107 — rama base read-only
+
+`cxorbia-resolve-dev-service-account.yml`: acceso al secret DEV únicamente para validar `project_id` y resolver `client_email`; `contents:read`; sin provider call, repo mutation, deploy ni data write. F2 debe gobernar también este acceso sensible de control-plane.
+
+### CP108 — HOLD residual nuevo
+
+`corte4-p0-vis02b-final-revalidate.json` conserva `enabled=true` y un presupuesto histórico de **1 Hosting DEV**, sin terminalización `consumed/executionsConsumed`, mientras su workflow nominal está inerte (`contents:read`, job `if:false`) y declara la autorización consumida. Esto prueba un desacuerdo request↔executor: no hay deploy ejecutable por ese workflow hoy, pero la autoridad histórica no está canónicamente cerrada.
+
+### CP109 / CP110 — históricos consumidos
+
+- C6 staff write V1: disabled/consumed/STOP_RETRY, writes ejecutados 0/0.
+- I3 shopper persistence: disabled/consumed/STOP_RETRY, sin automatic retry.
 
 ## Incidentes de herramienta preservados
 
 - `main`: archivo vacío accidental creado/revertido; comparación contra el HEAD anterior devuelve `files=[]`.
-- rama viva: **cuatro ciclos** accidentales de archivos vacíos durante intentos mal enrutados de ref-sync; todos revertidos. HEAD corregido previo al sync: `11cef766ba80760cd730090a143ed4e1ea9f2266`; árbol `8f12db2cd89b7478b68a8d352e11003f441d1113`, idéntico al preincidente.
+- rama viva: cuatro ciclos accidentales de archivos vacíos durante intentos mal enrutados de ref-sync; todos revertidos y árbol final idéntico al preincidente.
 - provider/data/deploy/merge effects = 0.
 
 Los detalles completos están en las dos evidencias de tooling del orden canónico. No usar acciones contents para probes ni movimiento de refs.
 
 ## Causa sistémica acumulada
 
-RC15 prueba autoridad histórica en provider/source/state, writers read-only que escriben estado, bypass request/lock, legacy live connectivity, trigger/request/executor mismatch, external-HR authority gaps y **PR-base execution authority**.
+RC15 prueba autoridad histórica en provider/source/state, writers read-only que escriben estado, bypass request/lock, legacy live connectivity, trigger/request/executor mismatch, external-HR authority gaps, PR-base execution authority y ahora **desacuerdo entre artefacto de autorización y executor**.
 
 ## Próximo exacto
 
-`F0_RC15_SYSTEMIC_AUDIT_CONTINUE`. F1 solo cuando se demuestre exhaustividad. G2-B no se toca.
+`F0_RC15_SYSTEMIC_AUDIT_CONTINUE`: cerrar exhaustivamente `backend/config`, `backend/requests`, execute markers, ledgers, aliases y provider-write entrypoints. F1 solo cuando los cuatro flags sean true. G2-B no se toca.
