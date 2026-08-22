@@ -8,7 +8,7 @@
 
 ## Avance F0
 
-**125** hallazgos clasificados; **28** HOLD/P0 acumulados; CP093 y CP119 contenidos; **26 residuales**. Exhaustividad global **2/4**.
+**134** hallazgos clasificados; **31** HOLD/P0 acumulados; CP093 y CP119 contenidos; **29 residuales**. Exhaustividad global **2/4**.
 
 Cerrado:
 - workflows HEAD/base 105/105;
@@ -19,27 +19,61 @@ Cerrado:
 - `tools/production` 2/2;
 - `tools/dev` 1/1;
 - `tools/backend` 4/4;
-- scripts ejecutables top-level de `tools/empalme` 2/2 clasificados.
+- scripts ejecutables top-level de `tools/empalme` 2/2;
+- `tools/integration` 5/5 archivos estáticos.
 
 Pendiente global:
 - `allRequestsClassified=false`: terminar `backend/config`, execute markers, ledgers, aliases y autorizaciones dispersas;
-- `allProviderWriteEntrypointsClassified=false`: tooling/provider entrypoints restantes fuera de los subdominios ya cerrados.
+- `allProviderWriteEntrypointsClassified=false`: terminar universos provider-capable de `tools/qa`, `tools/release` y cualquier entrypoint restante.
 
-## Nuevos pendientes F1
+## Pendientes F1 acumulados
 
 ### CP124
-`tools/empalme/tya-apply-post-v96-source-lock.sh` es un source writer histórico ungated: puede reescribir `app/core`, `app/modules` y otros runtime files, crear commit y ejecutar push directo a la rama viva. No usa master plan/continuity lock/current authorization. **No ejecutar.** F1: inertizar/tombstonear preservando evidencia.
+`tools/empalme/tya-apply-post-v96-source-lock.sh`: source writer histórico con commit/push directo. **No ejecutar.** F1 inertizar/tombstonear.
 
 ### CP125
-`backend/config/phase-a-v105-v106-empalme-request.source-safe.json` conserva `authorized=true` sin consumed/expiry; `tools/empalme/tya-apply-v105-internal-v106-runtime.sh` puede usarlo para materializar 70 rutas runtime + delta histórico. **No ejecutar.** F1: terminalizar request e inertizar autoridad del materializador.
+Request V105/V106 permanece históricamente `authorized=true`; materializador puede reemplazar runtime histórico. **No ejecutar.** F1 terminalizar + inertizar.
+
+### CP127
+`tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs` puede sobrescribir por defecto el snapshot tracked `app/data/tya-hr-source-safe-periods.js` sin master plan/continuity lock/current authorization. **No ejecutar.** F1 inertizar/tombstonear.
+
+### CP130
+`tools/release/tya-create-new-empty-firebase-dev-r15.mjs` y `r15b.mjs` pueden crear proyecto + addFirebase con static confirm y caller credential, sin autoridad RC15 actual. **No ejecutar.** F1 inertizar/tombstonear.
+
+### CP131
+`tools/release/tya-r15g-dev-root-deploy.sh` conserva un camino manual-dispatch histórico que no valida el request y puede reconstruir source + desplegar Hosting. **No ejecutar.** F1 inertizar/tombstonear.
+
+## Requisitos F2 identificados
+
+F2 debe asegurar autoridad canónica única sobre:
+- credencial + execute flag del Rules API primitive;
+- credencial/preflight del Hosting REST primitive;
+- invocación directa de client Auth/Firestore apply/rollback;
+- provenance/authority del atomic source apply runner.
+
+Los primitives no equivalen por sí solos a autorización vigente.
+
+## Requests ya comprobados en este tramo
+
+Familias C6 Auth activation/Auth plan, principal uniqueness, direct runner deploy, IAM identity/reviewer, client membership-only, profile-full Firestore y Hosting DEV muestran estados terminales, consumidos o fail-closed en los requests inspeccionados.
+
+Esto es progreso real, pero no agota aún `backend/config`.
 
 ## Producto actual
 
-El user-admin actual queda clasificado como write productivo intencional con Firebase ID token, tenant exacto y `super`; no es un P0 de control-plane. Legal está CP119-contained y G2-B synthetic permanece deshabilitado/bloqueado. El servidor rechaza otros non-GET con 405.
+User-admin sigue clasificado como write productivo intencional y guardado por Firebase ID token + tenant exacto + `super`. Legal permanece CP119-contained. G2-B synthetic permanece deshabilitado/bloqueado.
+
+## Claude/prototipo
+
+Sin tarea frontend nueva. No cambiar UI ni solicitar candidata por estos hallazgos de control-plane.
+
+## Academia
+
+Sin cambio funcional en este tramo.
 
 ## G2-B
 
-Sigue terminal `RECOVERY_NO_PROVIDER_SIDE_EFFECT`; no retry/replay. Readiness provider anterior stale tras CP119; F3 debe revalidar contra `00011-f2f`.
+Sigue terminal `RECOVERY_NO_PROVIDER_SIDE_EFFECT`; no retry/replay. F3 debe revalidar provider contra `00011-f2f`.
 
 ## Regla
 
@@ -47,4 +81,4 @@ F0 continúa read-only. No iniciar F1 hasta 4/4 exhaustividad. No tocar G2-B.
 
 ## Siguiente exacto
 
-`F0_RC15_SYSTEMIC_AUDIT_CONTINUE` sobre `backend/config` restante, execute markers/aliases/ledgers y provider/tool entrypoints restantes.
+`F0_RC15_SYSTEMIC_AUDIT_CONTINUE` sobre `backend/config` restante + execute markers/aliases/ledgers y provider/tool entrypoints restantes de `tools/qa`/`tools/release`.

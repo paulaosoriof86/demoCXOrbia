@@ -36,10 +36,10 @@ Phase A = `98/100`. G2-B continúa terminal `RECOVERY_NO_PROVIDER_SIDE_EFFECT`; 
 
 ## RC15 F0 — avance canónico
 
-- Hallazgos clasificados: **125**.
-- HOLD/P0 descubiertos acumulativamente: **28**.
+- Hallazgos clasificados: **134**.
+- HOLD/P0 descubiertos acumulativamente: **31**.
 - Contenidos: `RC15-CP-093` y `RC15-CP-119`.
-- HOLD/P0 residuales: **26**.
+- HOLD/P0 residuales: **29**.
 - Flags de exhaustividad: **2/4 true**.
   - `allWorkflowsClassified=true`.
   - `allWorkflowDispatchClassified=true`.
@@ -55,27 +55,40 @@ Inventarios/subdominios cerrados:
 - `tools/production` 2/2;
 - `tools/dev` 1/1;
 - `tools/backend` 4/4;
-- scripts ejecutables top-level `tools/empalme` 2/2 clasificados.
+- scripts ejecutables top-level `tools/empalme` 2/2;
+- `tools/integration` 5/5 archivos estáticos.
 
-## Tramo 11 — conclusiones nuevas
+## Tramo 12 — conclusiones nuevas
 
-`RC15-CP-120`: user-admin es write productivo intencional, protegido por Firebase ID token, tenant exacto y rol `super`.
+`RC15-CP-126` PASS: `tools/integration` es configuración/políticas estáticas, sin ejecutables.
 
-`RC15-CP-121`: el HTTP mutation surface desplegado queda cerrado. Solo existen user-admin, legal y G2-B synthetic; legal está CP119-contained, G2-B está deshabilitado/bloqueado y otros non-GET reciben 405.
+`RC15-CP-127` HOLD: `tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs` puede sobrescribir el snapshot canónico tracked `app/data/tya-hr-source-safe-periods.js` sin current plan/lock/auth.
 
-`RC15-CP-122`: `tools/production` contiene un Hosting REST primitive real que necesita token del caller y un validator read-only. F2 debe gobernar quién puede entregar credencial al primitive.
+`RC15-CP-128` PASS/control F2: Rules API primitive puede escribir solo con credencial + execute flag; F2 debe gobernar quién puede entregarlos.
 
-`RC15-CP-123`: `tools/dev` y `tools/backend` son locales/read-only en el alcance auditado.
+`RC15-CP-129` PASS/control F2: Hosting REST primitive histórico está asociado a request canónico ya `enabled=false/consumed=true`; F2 debe impedir caller authority paralela.
 
-`RC15-CP-124` HOLD: `tools/empalme/tya-apply-post-v96-source-lock.sh` puede reescribir runtime histórico, commit y push directo a la rama viva sin autoridad canónica actual.
+`RC15-CP-130` HOLD: creadores históricos Firebase R15/R15B pueden crear proyecto + addFirebase con static confirm + credencial, sin current plan/lock/current authorization artifact.
 
-`RC15-CP-125` HOLD: el request V105/V106 sigue `authorized=true` sin terminalización y su materializador puede reemplazar 70 rutas runtime con autoridad histórica.
+`RC15-CP-131` HOLD: `tya-r15g-dev-root-deploy.sh` conserva un camino `workflow_dispatch` con confirmación histórica que no valida el request y puede reconstruir source + desplegar Hosting.
 
-Ambos HOLD nuevos se reservan para inertización conjunta de F1; no se ejecutan durante F0.
+`RC15-CP-132` PASS/control F2: client Auth/Firestore primitive tiene `apply/rollback` write-capable; su orchestrator canónico está request-bound y el request actual está consumido.
+
+`RC15-CP-133` PASS: profile-full Firestore writer falla cerrado porque su request actual está consumido/desautorizado.
+
+`RC15-CP-134` PASS/control F2: atomic apply runner está request/hash/parent-bound, sin provider/data writes; F2 debe reconciliar provenance/authority con el plan vigente.
+
+Los tres HOLD nuevos quedan reservados para inertización conjunta de F1; no se ejecutan durante F0.
+
+## backend/config y tooling todavía abiertos
+
+Se avanzó en familias Auth/IAM/deploy históricas: los requests inspeccionados están terminales, consumidos o fail-closed. No alcanza todavía para `allRequestsClassified=true`.
+
+`tools/reconciliation` fue inventariado en 22 archivos; `tools/release` y `tools/qa` tuvieron una tranche de high-risk entrypoints clasificada, pero sus universos completos siguen abiertos. No se declara exhaustividad prematuramente.
 
 ## CP119 / proveedor actual
 
-CP119 permanece `CONTAINED_PASS`. Cloud Run actual `cxorbia-live-hr-dev-00011-f2f`; misma imagen/service account que antes, sin gate legal I3. POST legal directo y vía Hosting devuelve 423 antes de auth.
+CP119 permanece `CONTAINED_PASS`. Cloud Run actual `cxorbia-live-hr-dev-00011-f2f`; misma imagen/service account que antes, sin gate legal I3. G2-B no fue ejecutado.
 
 ## G2-B
 
@@ -83,4 +96,4 @@ Receipt histórico intacto con baseline `00010-n78`; readiness anterior stale tr
 
 ## Próximo exacto
 
-`F0_RC15_SYSTEMIC_AUDIT_CONTINUE`: terminar `backend/config`, execute markers/aliases/ledgers dispersos y provider/tool write entrypoints restantes hasta pasar de **2/4 a 4/4**. F1 aún no inicia. G2-B no se toca.
+`F0_RC15_SYSTEMIC_AUDIT_CONTINUE`: terminar `backend/config` + execute markers/aliases/ledgers dispersos y cerrar provider/tool write entrypoints restantes de `tools/qa` y `tools/release` hasta pasar de **2/4 a 4/4**. F1 aún no inicia. G2-B no se toca.

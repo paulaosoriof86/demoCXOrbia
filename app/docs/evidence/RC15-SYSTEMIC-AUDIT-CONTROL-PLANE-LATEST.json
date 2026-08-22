@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "cxorbia.rc15.systemic-audit.control-plane.latest.v11",
-  "generatedAt": "2026-08-22T11:27:00-06:00",
+  "schemaVersion": "cxorbia.rc15.systemic-audit.control-plane.latest.v12",
+  "generatedAt": "2026-08-22T14:05:00-06:00",
   "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
   "masterPlanStatus": "FROZEN",
   "phase": "F0_SYSTEMIC_AUDIT",
@@ -13,15 +13,15 @@
     "providerMutationAuthorizedNow":false
   },
   "detailedSnapshot": {
-    "path":"app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE11-DETAIL.json",
-    "blobSha":"6f75bd0e4b79784606a69bcb5d5a330ca41df773",
-    "findingsThrough":125
+    "path":"app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE12-DETAIL.json",
+    "blobSha":"ba36c82e2d921d4b93c57b3e3a2f478ba814e8b4",
+    "findingsThrough":134
   },
   "progress": {
-    "classifiedFindings":125,
-    "holdDiscoveriesCumulative":28,
+    "classifiedFindings":134,
+    "holdDiscoveriesCumulative":31,
     "containedHolds":2,
-    "currentResidualHolds":26,
+    "currentResidualHolds":29,
     "workflowUnion":"105/105 classified",
     "githubFirebaseRequests":"33/33 classified",
     "backendRequests":"6/6 classified",
@@ -31,6 +31,11 @@
     "toolsDev":"1/1 classified",
     "toolsBackend":"4/4 classified",
     "empalmeTopLevelExecutableScripts":"2/2 classified",
+    "toolsIntegration":"5/5 static files classified",
+    "backendConfigMutativeRequestFamilies":"partial_terminal_fail_closed_inventory_advanced",
+    "toolsReconciliation":"22 files enumerated; detailed classification in progress; one historical source writer HOLD isolated",
+    "toolsRelease":"high-risk provider/source entrypoints tranche classified; global directory still open",
+    "toolsQa":"client Auth/Firestore write primitive + consumed canonical orchestrator classified; global directory still open",
     "exhaustivenessFlagsTrue":2,
     "exhaustivenessFlagsTotal":4
   },
@@ -47,26 +52,31 @@
   },
   "newResidualHolds": [
     {
-      "id":"RC15-CP-124",
-      "classification":"HOLD_HISTORICAL_UNGATED_SOURCE_MUTATION_AND_PUSH_TOOL",
-      "path":"tools/empalme/tya-apply-post-v96-source-lock.sh",
-      "requiredTreatment":"F1_INERTIZE_HISTORICAL_SOURCE_WRITER"
+      "id":"RC15-CP-127",
+      "classification":"HOLD_HISTORICAL_UNGATED_CANONICAL_APP_DATA_SOURCE_MATERIALIZER",
+      "path":"tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs",
+      "requiredTreatment":"F1_INERTIZE_HISTORICAL_CANONICAL_DATA_SOURCE_WRITER"
     },
     {
-      "id":"RC15-CP-125",
-      "classification":"HOLD_HISTORICAL_SOURCE_MATERIALIZER_WITH_STALE_AUTHORIZED_REQUEST",
-      "paths":["tools/empalme/tya-apply-v105-internal-v106-runtime.sh","backend/config/phase-a-v105-v106-empalme-request.source-safe.json"],
-      "requiredTreatment":"F1_TERMINALIZE_REQUEST_AND_INERT_HISTORICAL_MATERIALIZER_AUTHORITY"
+      "id":"RC15-CP-130",
+      "classification":"HOLD_HISTORICAL_PROVIDER_PROJECT_CREATION_ENTRYPOINT_STATIC_CONFIRM_ONLY",
+      "paths":["tools/release/tya-create-new-empty-firebase-dev-r15.mjs","tools/release/tya-create-new-empty-firebase-dev-r15b.mjs"],
+      "requiredTreatment":"F1_INERTIZE_HISTORICAL_PROVIDER_PROJECT_CREATION_AUTHORITY"
+    },
+    {
+      "id":"RC15-CP-131",
+      "classification":"HOLD_HISTORICAL_SOURCE_REBUILD_AND_HOSTING_DEPLOY_RUNNER_WITH_MANUAL_DISPATCH_BYPASS",
+      "path":"tools/release/tya-r15g-dev-root-deploy.sh",
+      "requiredTreatment":"F1_INERTIZE_HISTORICAL_SOURCE_REBUILD_AND_HOSTING_DEPLOY_AUTHORITY"
     }
   ],
-  "closedSubdomainDecision": {
-    "deployedHrLiveHttpMutationSurface":"CLOSED_3_OF_3_CLASSIFIED",
-    "activeIntendedProductWrite":"user-admin JWT tenant+super guarded",
-    "legalWrite":"CP119 disabled at current provider",
-    "g2bSyntheticWrite":"disabled at current provider and existing G2-B hold",
-    "otherNonGet":"405_METHOD_NOT_ALLOWED"
-  },
+  "f2ControlRequirementsAdded": [
+    "Rules API primitive credential+execute authority",
+    "Hosting REST primitive caller credential/preflight authority",
+    "client Auth/Firestore primitive direct-call authority",
+    "atomic source apply provenance/authority reconciliation"
+  ],
   "safety": {"providerWrites":0,"dataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"cloudBuilds":0,"cloudRunUpdates":0,"hostingDeploys":0,"rulesWrites":0,"payments":0,"makeCalls":0,"geminiCalls":0,"merge":false,"recoveryExecuted":false,"syntheticStageExecuted":false,"frontendFunctionalChanges":0},
-  "decision":"CONTINUE_F0_READONLY_TWO_HISTORICAL_SOURCE_AUTHORITY_HOLDS_QUEUED_FOR_F1",
-  "next":"F0_RC15_SYSTEMIC_AUDIT_CONTINUE_REMAINING_BACKEND_CONFIG_AND_PROVIDER_WRITE_ENTRYPOINTS"
+  "decision":"CONTINUE_F0_READONLY_THREE_ADDITIONAL_HISTORICAL_AUTHORITY_HOLDS_QUEUED_FOR_F1",
+  "next":"F0_RC15_SYSTEMIC_AUDIT_CONTINUE_REMAINING_BACKEND_CONFIG_TOOLS_QA_TOOLS_RELEASE_AND_EXECUTE_LEDGER_ALIAS_SURFACES"
 }

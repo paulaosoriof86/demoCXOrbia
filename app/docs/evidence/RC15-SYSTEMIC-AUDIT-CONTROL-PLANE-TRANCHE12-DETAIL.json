@@ -1,0 +1,163 @@
+{
+  "schemaVersion": "cxorbia.rc15.systemic-audit.control-plane.tranche12.v1",
+  "generatedAt": "2026-08-22T14:05:00-06:00",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "masterPlanStatus": "FROZEN",
+  "masterPlanGitBlobSha": "48494ebe5fc439aa6d00e6edcf2e78133357e7f3",
+  "masterPlanSha256": "2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475",
+  "phase": "F0_SYSTEMIC_AUDIT",
+  "inputHead": "0b0e109c5dc2e48cea29d4fb3addd8417f0516e3",
+  "phaseA": {"completed": 98, "pending": 2, "total": 100},
+  "progressBefore": {"classifiedFindings": 125, "holdDiscoveriesCumulative": 28, "containedHolds": 2, "currentResidualHolds": 26, "exhaustivenessFlagsTrue": 2},
+  "progressAfter": {"classifiedFindings": 134, "holdDiscoveriesCumulative": 31, "containedHolds": 2, "currentResidualHolds": 29, "exhaustivenessFlagsTrue": 2},
+  "inventoryProgress": {
+    "toolsIntegration": "5 tracked files enumerated; static template/policy/config only",
+    "toolsReconciliation": "22 tracked files enumerated; historical canonical-data source materializer isolated; detailed family classification still open",
+    "toolsRelease": "high-risk source/provider entrypoints tranche classified; directory not yet globally exhausted",
+    "toolsQa": "client Auth/Firestore write primitive + canonical consumed orchestrator classified; remaining QA provider-capable tools still open",
+    "backendConfig": "sampled Auth/IAM/deploy request families terminal or consumed; directory not yet globally exhausted"
+  },
+  "findings": [
+    {
+      "id": "RC15-CP-126",
+      "surface": "tools/integration",
+      "classification": "PASS_STATIC_POLICY_AND_TEMPLATE_CONFIG_NO_EXECUTABLE_MUTATION",
+      "status": "PASS",
+      "evidence": [
+        "tree contains EMPALME-PLAN.template.json plus static product/project/tenant policy JSON files",
+        "no executable script or provider/source mutation primitive exists in this directory"
+      ],
+      "treatment": "No F1 action required. Preserve as configuration/policy input only."
+    },
+    {
+      "id": "RC15-CP-127",
+      "surface": "tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs",
+      "classification": "HOLD_HISTORICAL_UNGATED_CANONICAL_APP_DATA_SOURCE_MATERIALIZER",
+      "status": "HOLD",
+      "evidence": [
+        "default --out resolves to the same tracked app/data/tya-hr-source-safe-periods.js payload path",
+        "script calls fs.writeFileSync through writeWindowAssignment and can overwrite the canonical tracked source snapshot",
+        "script does not validate the current master plan, continuity lock, consumed ledger or current explicit authorization before source mutation",
+        "its safeState.writes=false describes business/provider writes and does not prevent filesystem/source mutation"
+      ],
+      "risk": "Historical execution can alter canonical app data in the live working tree and later be committed as a regression outside current authority.",
+      "treatment": "F1 inertize/tombstone historical source-mutation authority while preserving evidence; do not execute."
+    },
+    {
+      "id": "RC15-CP-128",
+      "surface": "tools/release/cxorbia-corte6-firestore-rules-deploy.mjs",
+      "classification": "PASS_PROVIDER_WRITE_PRIMITIVE_REQUIRES_CREDENTIAL_AND_EXECUTE_FLAG_F2_CALLER_CONTROL_REQUIRED",
+      "status": "PASS_WITH_F2_CONTROL_REQUIREMENT",
+      "evidence": [
+        "real Rules API mutations are reachable only when CXORBIA_EXECUTE_FIRESTORE_RULES=true and a matching service-account credential is supplied",
+        "without execute flag the script performs provider reads/dry-run only",
+        "source primitive contains no current-plan authorization artifact of its own"
+      ],
+      "treatment": "F2 must ensure credentials and execute flag can only be supplied by the single canonical authority. Primitive alone is not current execution authority."
+    },
+    {
+      "id": "RC15-CP-129",
+      "surface": "tools/release/cxorbia-existing-hosting-dev-direct-deploy.mjs + tools/release/cxorbia-existing-hosting-dev-corte6-prepare.mjs + backend/config/phase-a-hosting-dev-execution-request-v1.json",
+      "classification": "PASS_HISTORICAL_HOSTING_PRIMITIVE_WITH_CONSUMED_REQUEST_F2_CALLER_CONTROL_REQUIRED",
+      "status": "PASS_WITH_F2_CONTROL_REQUIREMENT",
+      "evidence": [
+        "direct Hosting REST deploy requires CXORBIA_EXECUTE_HOSTING=true, matching credential and prepared preflight",
+        "the canonical prepare path validates the historical one-shot request",
+        "current request is enabled=false, consumed=true, hostingDeployExecutions=1 and deployAllowedNow=false",
+        "no current Hosting redeploy authority exists"
+      ],
+      "treatment": "Preserve historical evidence; F2 must prevent caller-supplied credential/preflight from becoming alternate execution authority."
+    },
+    {
+      "id": "RC15-CP-130",
+      "surface": "tools/release/tya-create-new-empty-firebase-dev-r15.mjs + tools/release/tya-create-new-empty-firebase-dev-r15b.mjs",
+      "classification": "HOLD_HISTORICAL_PROVIDER_PROJECT_CREATION_ENTRYPOINT_STATIC_CONFIRM_ONLY",
+      "status": "HOLD",
+      "evidence": [
+        "both scripts can create a Google Cloud project and add Firebase",
+        "write boundary is gated by static CXORBIA_CONFIRM=CREATE_NEW_EMPTY_FIREBASE_DEV plus caller credential/target id",
+        "neither script validates the current frozen master plan, continuity lock, consumed ledger or current-conversation authorization artifact"
+      ],
+      "risk": "A historical static confirmation string plus credential is sufficient to reach provider project-creation writes outside the RC15 authority model.",
+      "treatment": "F1 inertize/tombstone historical provider-creation authority while preserving scripts/evidence; no execution in F0."
+    },
+    {
+      "id": "RC15-CP-131",
+      "surface": "tools/release/tya-r15g-dev-root-deploy.sh",
+      "classification": "HOLD_HISTORICAL_SOURCE_REBUILD_AND_HOSTING_DEPLOY_RUNNER_WITH_MANUAL_DISPATCH_BYPASS",
+      "status": "HOLD",
+      "evidence": [
+        "workflow_dispatch path accepts CXORBIA_MANUAL_CONFIRM=DEPLOY_DEV_ROOT_R15G without validating the historical request file",
+        "runner rebuilds tracked app/data source-safe payload through historical HR/reconciliation scripts before deploy",
+        "runner can invoke firebase hosting deploy with supplied service-account JSON",
+        "push-event path validates a 2026-07-18 request, but manual-dispatch path is a separate historical authority surface"
+      ],
+      "risk": "Historical invocation can mutate source-derived runtime and deploy Hosting outside the frozen RC15 master plan/current explicit authorization model.",
+      "treatment": "F1 inertize/tombstone historical deploy runner authority; preserve evidence."
+    },
+    {
+      "id": "RC15-CP-132",
+      "surface": "tools/qa/cxorbia-c6-client-auth-materialization.mjs + tools/qa/cxorbia-c6-client-access-runtime-orchestrator.mjs + backend/config/corte6-client-auth-materialization-request.json",
+      "classification": "PASS_AUTH_FIRESTORE_WRITE_PRIMITIVE_WITH_CANONICAL_CONSUMED_ORCHESTRATOR_REQUEST_F2_DIRECT_CALL_CONTROL_REQUIRED",
+      "status": "PASS_WITH_F2_CONTROL_REQUIREMENT",
+      "evidence": [
+        "materialization primitive --mode=apply can set Auth custom claims and Firestore membership; --mode=rollback can also write",
+        "canonical orchestrator validates exact request state, source HEAD and write bounds before invoking apply",
+        "current canonical request is enabled=false, consumed=true with decision HOLD_PHASE_A_RUNTIME_AFTER_ACCESS_PASS",
+        "direct primitive still requires a matching service-account credential"
+      ],
+      "treatment": "No request replay. F2 must ensure direct primitive invocation cannot bypass the single canonical caller authority."
+    },
+    {
+      "id": "RC15-CP-133",
+      "surface": "tools/release/cxorbia-corte6-profile-full-firestore-write-v2.mjs + backend/config/corte6-profile-full-firestore-write-request-v2.json",
+      "classification": "PASS_HISTORICAL_FIRESTORE_WRITER_FAIL_CLOSED_BY_CONSUMED_REQUEST",
+      "status": "PASS",
+      "evidence": [
+        "writer requires request enabled=true, authorized=true, consumed=false and status=authorized_pending_execution before Firestore batch commit",
+        "current request is status=consumed_pass, enabled=false, authorized=false, consumed=true",
+        "historical execution is recorded as 120 Firestore document writes with successful readback"
+      ],
+      "treatment": "Historical evidence only; current source fails closed before provider write."
+    },
+    {
+      "id": "RC15-CP-134",
+      "surface": "tools/release/cxorbia-atomic-apply-runner.mjs + backend/contracts/cxorbia-controlled-runners-v1.json",
+      "classification": "PASS_CONTROLLED_SOURCE_APPLY_RUNNER_REQUEST_BOUND_NO_PROVIDER_DATA_WRITES",
+      "status": "PASS_WITH_F2_PROVENANCE_REQUIREMENT",
+      "evidence": [
+        "runner requires exact repo/branch contract, one request-only commit, expected parent SHA, one-shot request, GitHub token and per-file hashes",
+        "contract forbids provider/data writes, deploy, merge, production, new branch/PR and force push",
+        "protected backend/tools/.github paths and selected canonical app paths are excluded from generic atomic apply",
+        "runner deletes request in the functional commit and verifies exact staged delta"
+      ],
+      "treatment": "Preserve as controlled source primitive. F2 must reconcile its source/provenance authority with the current frozen master plan and actual PR/base enforcement."
+    }
+  ],
+  "requestSamples": {
+    "terminalFailClosed": [
+      "backend/config/c6-auth-activation-dev-request-v1.json",
+      "backend/config/c6-auth-plan-v4-activation-dev-request-v1.json",
+      "backend/config/c6-auth-plan-v4-activation-dev-request-v2.json",
+      "backend/config/c6-auth-plan-v4-activation-dev-request-v3.json",
+      "backend/config/c6-auth-principal-uniqueness-activation-dev-phase2-request-v1.json",
+      "backend/config/c6-auth-principal-uniqueness-rootfix-activation-dev-request-v1.json",
+      "backend/config/c6-direct-trusted-runner-dev-deploy-request.json",
+      "backend/config/c6-direct-trusted-runner-dev-deploy-request-v2.json",
+      "backend/config/c6-direct-trusted-runner-dev-deploy-request-v3.json",
+      "backend/config/c6-iam-admin-runtime-identity-create-request-v1.json",
+      "backend/config/c6-iam-visibility-temporary-security-reviewer-request-v1.json",
+      "backend/config/c6-iam-reviewer-revoke-readback-request-v1.json"
+    ],
+    "conclusion": "Sampled Auth/IAM/deploy request families are terminal, consumed or fail-closed; this is measurable progress but not enough to set allRequestsClassified=true."
+  },
+  "exhaustiveness": {
+    "allWorkflowsClassified": true,
+    "allWorkflowDispatchClassified": true,
+    "allRequestsClassified": false,
+    "allProviderWriteEntrypointsClassified": false
+  },
+  "safety": {"providerWrites":0,"dataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"cloudBuilds":0,"cloudRunUpdates":0,"hostingDeploys":0,"rulesWrites":0,"makeCalls":0,"geminiCalls":0,"paymentWrites":0,"g2bExecutions":0,"merge":false,"frontendFunctionalChanges":0},
+  "decision": "F0_PROGRESS_NINE_ADDITIONAL_SURFACES_CLASSIFIED_THREE_HISTORICAL_HOLDS_ADDED_NO_MUTATION",
+  "next": "F0_RC15_SYSTEMIC_AUDIT_CONTINUE_REMAINING_BACKEND_CONFIG_TOOLS_QA_TOOLS_RELEASE_AND_EXECUTE_LEDGER_ALIAS_SURFACES"
+}
