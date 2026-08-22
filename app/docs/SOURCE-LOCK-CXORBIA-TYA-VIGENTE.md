@@ -18,7 +18,24 @@ Producción: project `cxorbia-backend-dev`; Hosting `cxorbia-dev` / site `cxorbi
 
 Único plan operativo: `app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md`; SHA-256 `2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475`; Git blob `48494ebe5fc439aa6d00e6edcf2e78133357e7f3`.
 
-No se permite source/release/provider change mientras `currentMasterPhase=F0_SYSTEMIC_AUDIT`. Cualquier cambio de plan requiere `PLAN_CHANGE_REQUEST`.
+El PLAN_CHANGE_REQUEST de emergencia RC15 preservó esta identidad; no cambió source funcional ni release.
+
+## Control-plane base — P0 V156 contenido
+
+La rama base `release/cxorbia-tya-rc-20260630` avanzó exclusivamente para inertizar el workflow histórico V156:
+- base anterior: `4a85e7e4d0eb31691d7b77e3551ed7cafabb5984`;
+- base actual: `fc7ead694ccdb01bee79856d47a761d34c8d88b9`;
+- archivo único: `.github/workflows/cxorbia-v156-atomic-promotion.yml`;
+- blob inerte: `fe7691a6e53d51ff6a73a5df340541ba84d99594`;
+- provider/data/deploy effects: 0.
+
+Esta modificación es control-plane de seguridad, no source/release funcional.
+
+## F0
+
+106 hallazgos clasificados; 24 HOLD/P0 descubiertos acumulativamente; `CP-093` contenido; 23 HOLD residuales; cobertura aún no exhaustiva.
+
+No se permite source/release/provider change mientras `currentMasterPhase=F0_SYSTEMIC_AUDIT`, salvo un nuevo P0 demostrado y autorización específica conforme al plan.
 
 ## Próximo
 

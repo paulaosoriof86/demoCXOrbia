@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "cxorbia.rc15.tooling-incident.v1",
+  "incidentId": "RC15-TOOLING-MAIN-EMPTY-FILE-NET-ZERO-20260821-01",
+  "occurredAt": "2026-08-21T18:16:14-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "description": "While preparing the canonical F0 documentation commit, an incorrect connector action created an empty file named __do_not_use__ on the default branch main. The file was immediately deleted in the next corrective commit.",
+  "accidentalCommit": "96b118d0c334ef5a0261767ba97dcdb30bd8eadc",
+  "accidentalPath": "__do_not_use__",
+  "accidentalBlob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+  "preIncidentMain": "928bde911a2ce5dd56886b9e7b562801647fd0f4",
+  "correctiveCommit": "94d76f4b0cb1dee679f3f1494b601d7ddc1db3c4",
+  "verification": {
+    "comparisonBase": "928bde911a2ce5dd56886b9e7b562801647fd0f4",
+    "comparisonHead": "main",
+    "aheadByCommits": 2,
+    "netFiles": [],
+    "netTreeDelta": 0,
+    "mainHistorySideEffect": true,
+    "mainContentSideEffectAfterCorrection": false,
+    "liveBranchSideEffect": false,
+    "providerOrDataSideEffect": false,
+    "deploySideEffect": false,
+    "mergeSideEffect": false
+  },
+  "rootCause": "TOOL_SELECTION_ERROR_UPDATE_FILE_CALLED_INSTEAD_OF_UPDATE_REF",
+  "control": "Do not use contents create/update/delete actions for ref movement or probes. Canonical multi-file state sync must use create_blob/create_tree/create_commit/update_ref, with live-head readback immediately before update_ref.",
+  "status": "CORRECTED_NET_TREE_ZERO_HISTORY_RETAINED",
+  "next": "DOCUMENT_WITH_RC15_CANONICAL_SYNC_AND_CONTINUE_F0"
+}

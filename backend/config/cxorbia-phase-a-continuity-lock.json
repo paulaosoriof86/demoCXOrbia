@@ -149,15 +149,39 @@
     "systemicAuditAndMethodology": {
       "id": "RC15_SYSTEMIC_AUDIT_METHOD_CONTROL_PLANE_AND_POSTPROD",
       "status": "ACTIVE_F0_SYSTEMIC_AUDIT",
-      "finding": "Prior audits closed narrower layers while historical execution surfaces, methodology and postproduction controls were not proven exhaustively as one system.",
-      "control": "Frozen master plan F0-F10; exhaustive surface matrix before provider mutation; historical write-capable artifacts inertized in F1; release and postproduction controls are explicit mandatory phases."
+      "finding": "Prior audits closed narrower layers while historical execution surfaces, methodology and postproduction controls were not proven exhaustively as one system. RC15 additionally proved that execution authority can survive in a PR base branch and re-enter on pull_request synchronization even after disappearing from the live head.",
+      "control": "Frozen master plan F0-F10; exhaustive surface matrix before provider mutation; emergency containment only for a proven control-plane P0 with explicit current-conversation authorization; remaining historical write-capable artifacts inertized in F1; canonical enforcement in F2; release and postproduction controls are mandatory phases."
     }
+  },
+  "rc15EmergencyContainment": {
+    "requestId": "RC15-PCR-EMERGENCY-V156-BASE-WORKFLOW-INERTIZATION-20260821-01",
+    "authorizationSource": "current_conversation_2026-08-21T18:06:00-06:00",
+    "authorizedBy": "Paula",
+    "p0Id": "RC15-CP-093",
+    "p0Classification": "P0_PROVEN_PR_BASE_HISTORICAL_SOURCE_MUTATION_WRITER_CONTAINED_INERT",
+    "p0TriggeringWorkflowRunId": 32534531824,
+    "controlPlaneBranch": "release/cxorbia-tya-rc-20260630",
+    "baseBefore": "4a85e7e4d0eb31691d7b77e3551ed7cafabb5984",
+    "baseAfter": "fc7ead694ccdb01bee79856d47a761d34c8d88b9",
+    "workflowPath": ".github/workflows/cxorbia-v156-atomic-promotion.yml",
+    "workflowBlobAfter": "fe7691a6e53d51ff6a73a5df340541ba84d99594",
+    "masterPlanFileChanged": false,
+    "masterPlanIdentityPreserved": true,
+    "providerWrites": 0,
+    "deploys": 0,
+    "dataWrites": 0,
+    "merge": false,
+    "evidence": "app/docs/evidence/RC15-PLAN-CHANGE-REQUEST-EMERGENCY-V156-INERTIZATION-20260821.json",
+    "auditEvidence": "app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-LATEST.json",
+    "next": "F0_RC15_SYSTEMIC_AUDIT_CONTINUE"
   },
   "canonicalStateAuthority": {
     "order": [
       "backend/config/cxorbia-phase-a-continuity-lock.json",
       "app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md",
       "app/docs/evidence/RC15-MASTER-PLAN-FREEZE-LATEST.json",
+      "app/docs/evidence/RC15-PLAN-CHANGE-REQUEST-EMERGENCY-V156-INERTIZATION-20260821.json",
+      "app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-LATEST.json",
       "app/docs/evidence/I5-G2B-P0-WRITEPATH-RECOVERY-LATEST.json",
       "backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-request.json",
       "backend/config/cxorbia-consumed-one-shot-gates.json",
