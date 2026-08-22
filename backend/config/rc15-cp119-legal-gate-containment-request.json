@@ -16,24 +16,44 @@
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
   "expectedParentHeadSha": "4c2a8d2887af4c431c64c3a3cb884230f0852e02",
+  "executionCommitSha": "95249297866afacfb98a47a5bca8c2d8b4a9ae35",
   "firebaseProjectId": "cxorbia-backend-dev",
   "cloudRunService": "cxorbia-live-hr-dev",
   "cloudRunRegion": "us-central1",
   "expectedBeforeRevision": "cxorbia-live-hr-dev-00010-n78",
+  "afterRevision": "cxorbia-live-hr-dev-00011-f2f",
   "expectedHistoricalWriteEnable": "true",
   "expectedHistoricalWriteGate": "PAULA_DEV_DEPLOY_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_RUNTIME",
   "removeEnvVars": [
     "CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_ENABLED",
     "CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_GATE"
   ],
-  "enabled": true,
-  "consumed": false,
-  "status": "authorized_pending_execute",
+  "enabled": false,
+  "consumed": true,
+  "status": "consumed_pass_contained",
+  "decision": "PASS_RC15_CP119_LEGAL_WRITE_GATE_CONTAINED",
   "automaticRetryAllowed": false,
   "maxExecutionCount": 1,
-  "executionCount": 0,
+  "executionCount": 1,
   "maxCloudRunConfigUpdates": 1,
-  "cloudRunConfigUpdatesExecuted": 0,
+  "cloudRunConfigUpdatesExecuted": 1,
+  "workflowRunId": 32545006587,
+  "workflowJobId": 96961807381,
+  "artifactId": 9468227008,
+  "artifactDigest": "sha256:92adc7eee31b3155cb0ac0ee6caff9899b721826e34b5a08632200665355afbc",
+  "consumedAt": "2026-08-21T20:00:40-06:00",
+  "imageUnchanged": true,
+  "serviceAccountUnchanged": true,
+  "otherEnvUnchanged": true,
+  "servingTrafficPercentAfter": 100,
+  "directRuntimeProof": {
+    "httpStatus": 423,
+    "error": "LEGAL_RUNTIME_HUMAN_ACCEPTANCE_WRITE_GATE_DISABLED"
+  },
+  "hostingRewriteProof": {
+    "httpStatus": 423,
+    "error": "LEGAL_RUNTIME_HUMAN_ACCEPTANCE_WRITE_GATE_DISABLED"
+  },
   "cloudBuilds": 0,
   "hostingDeploys": 0,
   "firestoreWrites": 0,
@@ -48,14 +68,7 @@
   "businessDataWrites": 0,
   "merge": false,
   "frontendFunctionalChanges": 0,
-  "successCriteria": [
-    "one Cloud Run configuration update only",
-    "same container image before and after",
-    "same runtime service account before and after",
-    "only the two historical legal acceptance write env vars removed",
-    "direct Cloud Run POST /api/tenants/tya/legal/commands returns HTTP 423 LEGAL_RUNTIME_HUMAN_ACCEPTANCE_WRITE_GATE_DISABLED before authentication",
-    "Hosting rewrite path returns the same HTTP 423 disabled proof",
-    "no Cloud Build, Hosting deployment or business/provider data write"
-  ],
-  "stopPolicy": "FAIL_CLOSED_NO_RETRY"
+  "workflowRetiredAfterExecution": true,
+  "terminalEvidence": "app/docs/evidence/RC15-CP119-LEGAL-WRITE-GATE-CONTAINMENT-LATEST.json",
+  "stopPolicy": "TERMINAL_CONSUMED_NO_RETRY"
 }

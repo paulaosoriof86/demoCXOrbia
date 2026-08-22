@@ -14,16 +14,22 @@ G2-B recovery permanece terminal `RECOVERY_NO_PROVIDER_SIDE_EFFECT`; no retry/re
 
 ## Progreso RC15
 
-119 hallazgos clasificados; 26 HOLD/P0 descubiertos; CP093 contenido; 25 residuales. Exhaustividad 2/4. Workflows 105/105, `.github/cxorbia-firebase-requests` 33/33 y `backend/requests` 6/6 están cerrados.
+119 hallazgos clasificados; 26 HOLD/P0 descubiertos; CP093 y CP119 contenidos; 24 residuales. Exhaustividad 2/4. Workflows 105/105, `.github/cxorbia-firebase-requests` 33/33 y `backend/requests` 6/6 están cerrados.
 
-## P0 operativo actual — CP119
+## CP119 — terminal CONTAINED_PASS
 
-La revisión Cloud Run vigente `cxorbia-live-hr-dev-00010-n78` fue desplegada por el gate I3 con el env de escritura de aceptación legal habilitado. El request terminó consumido y el deploy replay está ahora fail-closed, pero el runtime desplegado conserva un endpoint provider-backed que puede escribir una aceptación legal tras autenticación y confirmación humana.
+Autorización actual consumida. Run `32545006587` / job `96961807381` pasó todos los pasos. La única mutación provider fue una actualización de configuración del Cloud Run existente que removió los dos env vars históricos de aceptación legal.
 
-Estado de contención: `NOT_AUTHORIZED`. No ejecutar Cloud Run update/redeploy ni otra provider mutation sin autorización explícita actual.
+Revisión actual: `cxorbia-live-hr-dev-00011-f2f`, misma imagen y service account. POST legal directo y vía Hosting devuelve HTTP 423 `LEGAL_RUNTIME_HUMAN_ACCEPTANCE_WRITE_GATE_DISABLED`. No hubo autenticación ni escritura de aceptación real.
 
-La contención futura debe ser single-purpose: desactivar `CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_ENABLED`/gate en el servicio existente, verificar readback y mantener cero Firestore/Auth/Storage/HR/Rules/Make/Gemini/pagos/merge/producción adicional.
+Cloud Build=0; Hosting deploy=0; Firestore/Auth/Storage/HR/Rules/Make/Gemini/pagos/G2-B=0; merge=false.
+
+El one-shot CP119 está consumido y no puede repetirse. El workflow temporal de ejecución se retira en la misma terminalización canónica.
+
+## G2-B
+
+El receipt histórico permanece intacto con baseline `00010-n78`. El readiness provider previo queda histórico/stale por la revisión actual `00011-f2f`; F3 deberá revalidarlo. Ningún recovery está autorizado ahora.
 
 ## Siguiente
 
-Continuar F0 read-only para cerrar `allRequestsClassified` y `allProviderWriteEntrypointsClassified`. CP119 permanece bloqueo P0 paralelo hasta autorización separada.
+Continuar F0 read-only para cerrar `allRequestsClassified` y `allProviderWriteEntrypointsClassified` y avanzar de 2/4 a 4/4 flags.

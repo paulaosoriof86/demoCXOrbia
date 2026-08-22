@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.2.0",
+  "schemaVersion": "1.3.0",
   "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
   "syncEpoch": "CXORBIA-20260821-I5-G2B-FORENSIC-PROVIDER-LANE-READY-50",
   "updatedAt": "2026-08-21",
@@ -11,6 +11,10 @@
     "conversationInterruptionDoesNotResetConsumedState": true,
     "terminalReceiptOverridesHistoricalEventArtifactFlags": true,
     "eventArtifactDoesNotAuthorizeReplay": true
+  },
+  "coverage": {
+    "historicalGlobalExhaustive": false,
+    "note": "RC15-CP-117 remains open for F2 normalization; new one-shots are recorded here immediately."
   },
   "consumedRequests": [
     {
@@ -110,6 +114,28 @@
       "merge": false,
       "terminalEvidence": "app/docs/evidence/I5-G2B-P0-WRITEPATH-RECOVERY-LATEST.json",
       "source": "backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-request.json"
+    },
+    {
+      "requestId": "rc15-cp119-legal-write-gate-containment-20260821-01",
+      "status": "CONSUMED_PASS_CONTAINED",
+      "executionCommitSha": "95249297866afacfb98a47a5bca8c2d8b4a9ae35",
+      "workflowRunId": 32545006587,
+      "workflowJobId": 96961807381,
+      "artifactId": 9468227008,
+      "artifactDigest": "sha256:92adc7eee31b3155cb0ac0ee6caff9899b721826e34b5a08632200665355afbc",
+      "decision": "PASS_RC15_CP119_LEGAL_WRITE_GATE_CONTAINED",
+      "providerControlPlaneConfigUpdates": 1,
+      "cloudRunBefore": "cxorbia-live-hr-dev-00010-n78",
+      "cloudRunAfter": "cxorbia-live-hr-dev-00011-f2f",
+      "cloudBuilds": 0,
+      "hostingDeploys": 0,
+      "dataWrites": false,
+      "g2bExecutions": 0,
+      "automaticRetryAllowed": false,
+      "rerunSameRequestId": false,
+      "merge": false,
+      "terminalEvidence": "app/docs/evidence/RC15-CP119-LEGAL-WRITE-GATE-CONTAINMENT-LATEST.json",
+      "source": "backend/config/rc15-cp119-legal-gate-containment-request.json"
     }
   ]
 }
