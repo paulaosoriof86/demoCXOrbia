@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "cxorbia.rc15.systemic-audit.control-plane.tranche14.v1",
+  "generatedAt": "2026-08-23T09:45:00-06:00",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "masterPlanStatus": "FROZEN",
+  "phase": "F0_SYSTEMIC_AUDIT",
+  "phaseA": {"completed":98,"pending":2,"total":100},
+  "headBefore": "c6b41dbe44fba5755d0535b41c85f6bcc2c63ae3",
+  "providerMutationAuthorizedNow": false,
+  "scope": [
+    "backend/config execute markers",
+    "current shared I3/G2B runtime deploy workflow trigger-to-authorization reconciliation",
+    "historical M8/M9/M10 execute artifacts",
+    "CP117/CP118 control-plane reconciliation"
+  ],
+  "findings": [
+    {
+      "id": "RC15-CP-139",
+      "classification": "PASS_CURRENT_SHARED_RUNTIME_DEPLOY_WORKFLOW_FAILS_CLOSED_FOR_HISTORICAL_I3_AND_ORIGINAL_G2B_MARKERS",
+      "severity": "PASS_CONTROL",
+      "summary": "The current shared runtime deploy workflow watches I3 legal, original G2-B and G2-B recovery execute paths, but its authorization step requires an exact one-file diff equal to the recovery execute file and validates the recovery request/execute lineage and one-shot state before provider authentication. Therefore a push that changes the historical I3 or original G2-B marker cannot cross the authorization boundary. A recovery-marker push also cannot proceed with the current recovery request because it is disabled and consumed.",
+      "evidence": [
+        ".github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml",
+        "backend/config/i3-legal-v04-runtime-deploy-dev-execute.json",
+        "backend/config/cxorbia-g2b-p0-writepath-deploy-execute.json",
+        "backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-execute.json",
+        "backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-request.json"
+      ],
+      "f1F2Treatment": "Preserve historical evidence but normalize/tombstone stale event-marker enabled/consumed fields so they cannot be mistaken for current authority. Canonical state remains continuity lock + terminal receipt + consumed ledger."
+    },
+    {
+      "id": "RC15-CP-140",
+      "classification": "PASS_SAMPLED_CORTE6_EXECUTE_MARKERS_TERMINAL_DISABLED_AND_CONSUMED",
+      "severity": "PASS_CONTROL",
+      "summary": "Five write/deploy-capable Corte6 execute artifacts inspected in this tranche are terminal, enabled=false and consumed=true. Historical writes/deploys recorded by some markers remain evidence only and do not constitute current authorization.",
+      "evidence": [
+        "backend/config/corte6-cumulative-human-visual-hosting-execute.json",
+        "backend/config/corte6-dev-root-entrypoint-hosting-execute.json",
+        "backend/config/corte6-human-full-visual-execute.json",
+        "backend/config/corte6-profile-full-firestore-write-execute-v2.json",
+        "backend/config/corte6-protected-session-continuity-hosting-execute.json"
+      ]
+    },
+    {
+      "id": "RC15-CP-141",
+      "classification": "PASS_HISTORICAL_READONLY_M8_M10_MARKERS_HAVE_ZERO_PROVIDER_MUTATION_BUDGET",
+      "severity": "PASS_CONTROL",
+      "summary": "M8 and M10 remain enabled historical execute artifacts, but their declared modes and budgets are read-only and explicitly set provider/data/deploy mutation budgets to zero. They do not expand the write-capable surface, although F2 should make current-vs-historical authority unambiguous.",
+      "evidence": [
+        "backend/config/m8-human-validation-readonly-execute.json",
+        "backend/config/m10-final-readonly-smoke-execute.json"
+      ]
+    },
+    {
+      "id": "RC15-CP-142",
+      "classification": "HOLD_HISTORICAL_M9_PRODUCTION_PROMOTION_AND_CONDITIONAL_ROLLBACK_AUTHORIZATION_NOT_TERMINALIZED",
+      "severity": "HOLD",
+      "summary": "backend/config/m9-provider-precutover-readonly-execute.json is misleadingly named readonly but declares mode ONE_RETRY_PROMOTION_REAL_ROOT_SMOKE_CONDITIONAL_ROLLBACK, maxProductionPromotions=1 and maxConditionalRollbacks=1 while enabled=true and consumed=false under an August 13 authorization. This is historical authority that must not survive into the canonical control-plane. No execution is authorized now and no provider mutation was performed in this tranche.",
+      "evidence": [
+        "backend/config/m9-provider-precutover-readonly-execute.json",
+        "backend/config/cxorbia-phase-a-continuity-lock.json",
+        "backend/config/cxorbia-consumed-one-shot-gates.json"
+      ],
+      "f1Treatment": "Terminalize/inertize the historical M9 promotion/rollback authority while preserving immutable evidence; ensure no workflow/tool can treat this artifact as current authorization.",
+      "relationship": "Concrete unresolved member of CP117 historicalGlobalExhaustive=false; counted as a specific newly classified HOLD, not as a new methodology."
+    }
+  ],
+  "reconciliations": {
+    "CP117": "REMAINS_OPEN; M9 proves the historical one-shot ledger is not globally exhaustive.",
+    "CP118": "REMAINS_EXISTING_CONTROL_DRIFT; cxorbia-evidence-aliases.json is non-executable but still carries syncEpoch 47 while continuity lock is epoch 50. No duplicate finding added.",
+    "G2B": "UNCHANGED_TERMINAL_RECOVERY_NO_PROVIDER_SIDE_EFFECT; no retry/replay; F3 still required after F0/F1/F2."
+  },
+  "progressAfter": {
+    "classifiedFindings": 142,
+    "holdDiscoveriesCumulative": 32,
+    "containedHolds": 2,
+    "currentResidualHolds": 30,
+    "exhaustivenessFlagsTrue": 2,
+    "exhaustivenessFlagsTotal": 4,
+    "allWorkflowsClassified": true,
+    "allWorkflowDispatchClassified": true,
+    "allRequestsClassified": false,
+    "allProviderWriteEntrypointsClassified": false
+  },
+  "safety": {
+    "providerWrites":0,
+    "dataWrites":0,
+    "authWrites":0,
+    "firestoreWrites":0,
+    "storageWrites":0,
+    "hrWrites":0,
+    "cloudBuilds":0,
+    "cloudRunUpdates":0,
+    "hostingDeploys":0,
+    "rulesWrites":0,
+    "payments":0,
+    "makeCalls":0,
+    "geminiCalls":0,
+    "merge":false,
+    "recoveryExecuted":false,
+    "syntheticStageExecuted":false,
+    "frontendFunctionalChanges":0
+  },
+  "classificationByProject": {
+    "Reusable CXOrbia": "Event artifacts must never remain ambiguous current authority after terminal receipts; write authorization must be current, canonical, request-bound and fail-closed.",
+    "Exclusivo cliente": "Historical TyA/Corte6/M8-M10 execution artifacts and cxorbia-backend-dev targets.",
+    "Claude/prototipo": "No frontend change and no new candidate requested.",
+    "Academia": "No functional impact; no course/manual update required.",
+    "Sin impacto Claude": "RC15 F0 control-plane evidence and documentation only."
+  },
+  "decision": "CONTINUE_F0_READONLY_EXECUTE_MARKER_SURFACE_REDUCED_ONE_NEW_HISTORICAL_PROMOTION_HOLD_CLASSIFIED",
+  "next": "F0_RC15_SYSTEMIC_AUDIT_CONTINUE_REMAINING_BACKEND_CONFIG_REQUEST_AUTHORITY_AND_PROVIDER_ENTRYPOINTS_TOOLS_QA_TOOLS_RELEASE"
+}
