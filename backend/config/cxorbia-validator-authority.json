@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "cxorbia.rc15.validator-authority.v2",
+  "schemaVersion": "cxorbia.rc15.validator-authority.v3",
   "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
   "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
   "status": "ACTIVE_M3_VALIDATOR_SET",
@@ -11,24 +11,37 @@
     "conversationInterruptionDoesNotChangeValidatorAuthority": true,
     "newValidatorSetRequiresExplicitCanonicalEvidence": true,
     "historicalWorkflowFilesNeverAuthorizeCurrentExecution": true,
-    "atomicGitCommitRequiredForCanonicalStateMaterialization": true
+    "atomicGitCommitRequiredForCanonicalStateMaterialization": true,
+    "controlPlaneCommitsMustNotTriggerProviderPreflight": true,
+    "functionalSourceLockIsProductionStateFieldNotBranchHead": true
   },
   "activeValidators": [
     "tools/continuity/validate-cxorbia-master-plan-freeze-m3.js",
     "tools/continuity/validate-cxorbia-canonical-authority.js",
     "tools/continuity/validate-cxorbia-state-sync-m3.js",
-    "tools/continuity/validate-cxorbia-phase-a-continuity-lock-m3.js"
+    "tools/continuity/validate-cxorbia-phase-a-continuity-lock-m3.js",
+    "tools/qa/verify-phase-a-live-execution-checkpoint.mjs"
   ],
+  "activeSourceOnlyGate": {
+    "workflow": ".github/workflows/cxorbia-phase-a-live-checkpoint.yml",
+    "trigger": "push_on_m3_canonical_paths_or_manual_dispatch",
+    "providerAccess": false,
+    "providerMutationAuthority": false,
+    "dataMutationAuthority": false,
+    "repositoryMutationAuthority": false
+  },
   "supersededHistoricalValidators": [
     {"path":"tools/continuity/validate-cxorbia-master-plan-freeze.js","reason":"Hard-coded dynamic F0/current-next assumptions inside immutable-plan validation."},
     {"path":"tools/continuity/validate-cxorbia-state-sync.js","reason":"Hard-coded M1 epoch, M2 next and 2/4 exhaustiveness after M2 CLOSED_PASS."},
-    {"path":"tools/continuity/validate-cxorbia-phase-a-continuity-lock.js","reason":"Hard-coded pre-M1 lock/ledger schemas and stale G2-B/control-state assumptions."}
+    {"path":"tools/continuity/validate-cxorbia-phase-a-continuity-lock.js","reason":"Hard-coded pre-M1 lock/ledger schemas and stale G2-B/control-state assumptions."},
+    {"path":"tools/qa/verify-phase-a-live-execution-checkpoint.mjs@pre-M3","reason":"Read functionalSourceLock from obsolete root field and delegated to superseded continuity validator, producing false FUNCTIONAL_SOURCE_DRIFT on M3 control-plane commits."}
   ],
   "historicalWorkflowAuthority": [
     {"path":".github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml","previousBlobSha":"8e663fcbb05ed37e2e398e915f655bdeaf63b2b9","status":"HISTORICAL_INERT_M3","mutationAuthority":false},
     {"path":".github/workflows/cxorbia-auth-preactivation-route-action.yml","previousBlobSha":"5420a4b6531e6b3fae7c66f4af4950f2f978c142","status":"HISTORICAL_INERT_M3","mutationAuthority":false},
     {"path":".github/workflows/cxorbia-corte4-hosting-dev-visual.yml","previousBlobSha":"2147ce42bd3a43dabe170d628b1a87e25617a832","status":"HISTORICAL_INERT_M3","mutationAuthority":false},
-    {"path":".github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml","previousBlobSha":"30dd4215f09bd774dfc18838e8a80820ea615345","status":"HISTORICAL_INERT_M3","mutationAuthority":false}
+    {"path":".github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml","previousBlobSha":"30dd4215f09bd774dfc18838e8a80820ea615345","status":"HISTORICAL_INERT_M3","mutationAuthority":false},
+    {"path":".github/workflows/cxorbia-live-hr-provider-capability-preflight.yml","status":"HISTORICAL_INERT_M3_M4_REVALIDATION_ONLY","trigger":"workflow_dispatch_only","providerAccess":false,"mutationAuthority":false,"reason":"Its push trigger re-ran stale G2-B source-contract assumptions during M3 and failed G2B_SOURCE_FIREWALL_GATE_MISSING against the frozen historical source-fix head."}
   ],
-  "next": "M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28"
+  "next": "M3_MECHANISM_SOURCE_ONLY_GATE_THEN_FINITE_QUEUE"
 }

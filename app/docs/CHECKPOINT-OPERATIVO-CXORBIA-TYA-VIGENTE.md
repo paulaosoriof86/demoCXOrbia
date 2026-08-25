@@ -8,30 +8,35 @@
 **currentMasterPhase:** `M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY` — `ACTIVE`  
 **M1:** `CLOSED_PASS`  
 **M2:** `CLOSED_PASS`  
-**M3:** `MECHANISM_REPAIR_APPLIED_CERTIFICATION_PENDING_READBACK`  
-**NEXT:** `M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28`  
+**M3:** `MECHANISM_REPAIR_V2_AWAITING_SOURCE_ONLY_GATE`  
+**NEXT:** `M3_MECHANISM_SOURCE_ONLY_GATE`  
 **PHASE_A:** `98/100`
 
-## Hallazgo de certificación
+## Evidencia nueva de causa raíz del mecanismo
 
-El mecanismo anterior no podía certificarse: `cxorbia-phase-a-continuity-lock.json` seguía en F0/M2 mientras el índice/checkpoint ya estaban en M3. Además, 19 commits secuenciales de materialización M3 produjeron 78 fallas push de workflows históricos. En el HEAD pre-reparación, los cuatro workflows implicados tuvieron cero jobs; el runtime run tuvo cero artefactos. No se observó provider execution desde esas fallas.
+La primera reparación redujo el ruido histórico, pero no podía certificarse todavía. En el HEAD `0df5cae7e4a1fe9dd968170eab27269b12a8204a` ocurrieron dos fallas reproducibles y source/control-plane:
 
-## Reparación aplicada en este hito
+- Run `32908444518`: 17 pasos source-safe pasaron; el único fallo fue `verify-phase-a-live-execution-checkpoint.mjs` con `FUNCTIONAL_SOURCE_DRIFT`. El script leía `functionalSourceLock` en una ubicación obsoleta y delegaba al validador de continuidad superseded.
+- Run `32908444528`: el preflight G2-B se autoejecutó durante M3 y falló `G2B_SOURCE_FIREWALL_GATE_MISSING` contra el source-fix histórico `1d2cfecb...`. Esa comprobación corresponde a M4/F3, no a M3.
 
-- Continuity lock alineado a M3 y a los validadores M3 vigentes.
-- Autoridad de validadores explícita y separada de validadores históricos.
-- Cuatro workflows históricos con capacidad de deploy/Auth/Hosting reemplazados por stubs inertes sin push y sin capacidad de mutación.
-- Estado canónico materializado mediante un único commit Git atómico.
-- Readback remoto + inspección de Actions son condición obligatoria para `CERTIFIED_PASS`.
+No se observaron provider/data/deploy writes en ninguna de las dos fallas.
+
+## Reparación V2
+
+- `cxorbia-phase-a-live-checkpoint.yml` pasa a ser el gate canónico source-only de M3; no instala Firebase Admin ni accede a proveedor.
+- `verify-phase-a-live-execution-checkpoint.mjs` pasa a leer `productionState.functionalSourceLock` y a delegar exclusivamente a validadores M3.
+- `cxorbia-live-hr-provider-capability-preflight.yml` queda `workflow_dispatch`/hold durante M3; no se autoejecuta por commits de control-plane y no tiene provider authority.
+- `cxorbia-validator-authority.json` registra explícitamente estas reglas.
+- La materialización V2 debe ser un único commit Git atómico y el gate source-only debe pasar sobre ese HEAD exacto.
 
 ## Avance M3 preservado
 
-CP011 y CP142 permanecen `INERTIZED_WITHOUT_EXECUTION`. Tratamiento vivo: 30 → 28 residuales. El consumed ledger no marca como consumidas autoridades nunca ejecutadas.
+CP011 y CP142 permanecen `INERTIZED_WITHOUT_EXECUTION`; 30 → 28 residuales. No se reabre M1/M2 ni F0.
 
 ## Provider/G2-B
 
-Cloud Run preservado `cxorbia-live-hr-dev-00011-f2f`. G2-B continúa `RECOVERY_NO_PROVIDER_SIDE_EFFECT`, retry/replay=false y providerMutationAuthorizedNow=false.
+Cloud Run preservado `cxorbia-live-hr-dev-00011-f2f`. G2-B continúa `RECOVERY_NO_PROVIDER_SIDE_EFFECT`, retry/replay=false, providerMutationAuthorizedNow=false.
 
 ## Siguiente exacto
 
-Completar readback del commit atómico y certificar. Si PASS, continuar la cola finita de 28 residuales. No nueva auditoría, no Tramo 15, no provider/data/deploy/merge/frontend writes.
+Aplicar la reparación V2 atómica y certificarla con el único gate M3 source-only. Si PASS, registrar `MECHANISM_CERTIFIED_PASS` y continuar inmediatamente los 28 residuales finitos. No nueva auditoría, no Tramo 15, no provider/data/deploy/merge/frontend writes.

@@ -6,20 +6,23 @@
 **MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`  
 **MASTER_PLAN_STATUS:** `FROZEN`  
 **currentMasterPhase:** `M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY` — `ACTIVE`  
-**NEXT:** `M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28`  
+**NEXT:** `M3_MECHANISM_SOURCE_ONLY_GATE`  
 **PHASE_A:** `98/100`
 
 ## Cerrado y preservado
 
-F0/M2 permanece 4/4: 142 hallazgos, 32 HOLD/P0 acumulados, 2 contenidos, 30 residuales al entrar a M3, cero superficie write-capable sin clasificar.
+F0/M2 permanece 4/4: 142 hallazgos, 32 HOLD/P0 acumulados, 2 contenidos, 30 residuales al entrar a M3, cero superficie write-capable sin clasificar. CP011 y CP142 permanecen inertizados sin ejecución; quedan 28 residuales.
 
-## M3 — avance material
+## Defectos de mecanismo tratados en V2
 
-CP011 y CP142 están inertizados sin ejecución; quedan 28 residuales. Se detectó y está siendo reparada una desincronización del mecanismo: continuity lock rezagado frente a mirrors y cuatro workflows históricos que reaccionaban de forma defectuosa a commits source-only. La reparación debe quedar certificada mediante commit Git atómico + remote readback + inspección de Actions.
+1. `verify-phase-a-live-execution-checkpoint.mjs` pre-M3 leía `functionalSourceLock` en la ruta equivocada y producía `FUNCTIONAL_SOURCE_DRIFT` falso ante commits de control-plane.
+2. `cxorbia-live-hr-provider-capability-preflight.yml` se autoejecutaba durante M3 y validaba supuestos G2-B/M4 contra un source-fix histórico, fallando `G2B_SOURCE_FIREWALL_GATE_MISSING`.
 
-## Pendiente M3 finito
+Ambos se corrigen sin provider/data/deploy/frontend writes. El checkpoint automático queda source-only M3; el preflight proveedor queda manual/inert hasta M4/F3.
 
-Después de `CERTIFIED_PASS`, continuar exclusivamente los 28 residuales del inventario M2. CP117 sigue abierto hasta cobertura histórica exhaustiva; CP118 sigue abierto hasta completar normalización authority/aliases/validators/workflows históricos. No abrir Tramo 15.
+## Pendiente inmediato
+
+Cerrar `M3_MECHANISM_SOURCE_ONLY_GATE` sobre el HEAD exacto de reparación V2. Solo después marcar `MECHANISM_CERTIFIED_PASS` y continuar exclusivamente los 28 residuales del inventario M2. CP117/CP118 no se cierran hasta cobertura/normalización finita real. No Tramo 15.
 
 ## Producto / Claude / Academia
 

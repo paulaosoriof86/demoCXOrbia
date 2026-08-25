@@ -6,23 +6,25 @@
 **MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`  
 **MASTER_PLAN_STATUS:** `FROZEN`  
 **currentMasterPhase:** `M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY` — `ACTIVE`  
-**M3:** `MECHANISM_REPAIR_APPLIED_CERTIFICATION_PENDING_READBACK`  
-**NEXT:** `M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28`  
+**M3:** `MECHANISM_REPAIR_V2_AWAITING_SOURCE_ONLY_GATE`  
+**NEXT:** `M3_MECHANISM_SOURCE_ONLY_GATE`  
 **PHASE_A:** `98/100`
 
 ## Autoridad actual
 
-La autoridad dinámica es el continuity lock alineado a M3, junto con la evidencia M3, el gate de certificación, el validator authority, tombstones, consumed ledger y aliases. PR body, requests/event artifacts, conversaciones, validadores superseded y workflows históricos no son autoridad.
+La autoridad dinámica es el continuity lock M3, junto con evidencia M3, certificación, validator authority, tombstones, consumed ledger y aliases. PR body, requests/event artifacts, conversaciones y validadores/workflows históricos no son autoridad.
 
-Toda transición canónica M3 debe materializarse mediante un único commit Git atómico y readback remoto. Una falla de readback bloquea la transición sin reabrir M1/M2.
+## Corrección del mecanismo
+
+Se separan definitivamente tres conceptos que antes se mezclaban: `functionalSourceLock` del producto, HEAD de control-plane y fase de proveedor. Un commit de documentación/control-plane no es drift funcional. El checkpoint automático de M3 solo valida fuente/canon/continuidad y no toca proveedor. El preflight G2-B queda fuera de M3 y solo podrá reactivarse en M4/F3 según la autoridad canónica de ese momento.
 
 ## Ejecución permitida ahora
 
-Solo source/control-plane M3 sobre la cola finita ya clasificada. Provider/data/Auth/Firestore/Storage/HR/Rules/Make/Gemini/pagos/deploy/merge/frontend funcional permanecen bloqueados.
+Solo source/control-plane M3 sobre la cola finita ya clasificada y el gate source-only de certificación. Provider/data/Auth/Firestore/Storage/HR/Rules/Make/Gemini/pagos/deploy/merge/frontend funcional permanecen bloqueados.
 
 ## Estado
 
-M1/M2 CLOSED_PASS. F0 4/4 permanece congelado. CP011 y CP142 inertizados sin ejecución. Quedan 28 residuales. Antes de continuar consumiendo la cola debe pasar la certificación del mecanismo reparado.
+M1/M2 CLOSED_PASS; F0 4/4 congelado; CP011 y CP142 inertizados; 28 residuales. No se avanza a la cola hasta que el gate source-only del HEAD V2 pase.
 
 ## G2-B
 

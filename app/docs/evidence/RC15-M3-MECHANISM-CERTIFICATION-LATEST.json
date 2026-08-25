@@ -1,58 +1,74 @@
 {
-  "schemaVersion": "cxorbia.rc15.m3.mechanism-certification.v1",
-  "generatedAt": "2026-08-25T16:55:00-06:00",
+  "schemaVersion": "cxorbia.rc15.m3.mechanism-certification.v2",
+  "generatedAt": "2026-08-25T17:04:00-06:00",
   "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
   "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
-  "sourceHeadBefore": "0e5ced7b44229cda72250b5ab80a4500506a2d6d",
-  "sourceTreeBefore": "bcb41594a18f4e55346c7479e34cb22f250686bd",
-  "block": "M3_MECHANISM_CERTIFICATION",
-  "status": "REPAIR_APPLIED_AWAITING_REMOTE_READBACK",
+  "sourceHeadBefore": "0df5cae7e4a1fe9dd968170eab27269b12a8204a",
+  "sourceTreeBefore": "22ccdbc494a904aaacfcc3de970700099a9df615",
+  "block": "M3_MECHANISM_CERTIFICATION_V2",
+  "status": "REPAIR_V2_APPLIED_AWAITING_SOURCE_ONLY_GATE",
   "certified": false,
   "phaseA": {"completed": 98, "pending": 2, "total": 100},
   "defectsProven": [
     {
       "id": "M3_CANONICAL_LOCK_DRIFT",
-      "evidence": "The canonical index already declared M3 active while backend/config/cxorbia-phase-a-continuity-lock.json still declared masterPlan.currentPhase=F0_SYSTEMIC_AUDIT and referenced superseded M1/M2 validators.",
-      "severity": "CONTROL_PLANE_BLOCKER"
+      "evidence": "Canonical mirrors had advanced ahead of the continuity lock before the first mechanism repair.",
+      "severity": "CONTROL_PLANE_BLOCKER",
+      "repairStatus": "REPAIRED_V1"
     },
     {
       "id": "M3_HISTORICAL_WORKFLOW_PUSH_NOISE",
-      "evidence": "Nineteen sequential M3 source-only commits produced 78 failed push workflow runs in the inspected window; zero successful push runs were returned. At the current pre-repair head, four historical workflows failed immediately with zero jobs; the runtime run also produced zero artifacts.",
-      "severity": "CONTROL_PLANE_BLOCKER"
+      "evidence": "Sequential source-only materializations triggered large numbers of historical workflows.",
+      "severity": "CONTROL_PLANE_BLOCKER",
+      "repairStatus": "REPAIRED_V1_FOUR_WORKFLOWS_INERT"
+    },
+    {
+      "id": "M3_LEGACY_CHECKPOINT_FALSE_FUNCTIONAL_DRIFT",
+      "evidence": "Post-repair run 32908444518 passed 17 source-safe steps and failed only at tools/qa/verify-phase-a-live-execution-checkpoint.mjs with FUNCTIONAL_SOURCE_DRIFT. The validator read functionalSourceLock from the obsolete root field instead of productionState.functionalSourceLock and delegated to a superseded continuity validator.",
+      "severity": "CONTROL_PLANE_BLOCKER",
+      "repairStatus": "REPAIRED_V2_PHASE_AWARE_VALIDATOR"
+    },
+    {
+      "id": "M3_PROVIDER_PREFLIGHT_WRONG_PHASE_AUTOTRIGGER",
+      "evidence": "Post-repair run 32908444528 auto-triggered during M3 and failed G2B_SOURCE_FIREWALL_GATE_MISSING while validating frozen G2-B source-fix head 1d2cfecb. This is an M4/F3 concern and must not run automatically during M3.",
+      "severity": "CONTROL_PLANE_BLOCKER",
+      "repairStatus": "REPAIRED_V2_MANUAL_HOLD_UNTIL_M4"
     }
   ],
-  "preRepairRunEvidence": {
-    "windowUtc": "2026-08-25T22:29:00Z/2026-08-25T22:45:00Z",
-    "failedPushRuns": 78,
-    "successfulPushRuns": 0,
-    "currentHeadFailedRuns": 4,
-    "currentHeadFailedRunIds": [32907032623,32907031721,32907030161,32907030972],
-    "currentHeadJobsObserved": 0,
-    "runtimeRunArtifactsObserved": 0,
-    "providerExecutionFromThoseRunsObserved": false
+  "postRepairV1ObservedRuns": {
+    "head": "0df5cae7e4a1fe9dd968170eab27269b12a8204a",
+    "phaseALiveCheckpointRunId": 32908444518,
+    "phaseALiveCheckpointFailure": "FUNCTIONAL_SOURCE_DRIFT",
+    "phaseALiveCheckpointSuccessfulStepsBeforeFailure": 17,
+    "providerPreflightRunId": 32908444528,
+    "providerPreflightFailure": "G2B_SOURCE_FIREWALL_GATE_MISSING",
+    "providerWritesObserved": 0,
+    "dataWritesObserved": 0,
+    "deploysObserved": 0,
+    "mergeObserved": false
   },
-  "repair": {
+  "repairV2": {
     "atomicGitMaterializationRequired": true,
-    "continuityLockAlignedToM3": true,
-    "explicitValidatorAuthorityRequired": true,
-    "historicalWorkflowPushAuthorityInertized": [
-      ".github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml",
-      ".github/workflows/cxorbia-auth-preactivation-route-action.yml",
-      ".github/workflows/cxorbia-corte4-hosting-dev-visual.yml",
-      ".github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml"
-    ],
-    "historicalWorkflowsRetainedInGitHistory": true,
-    "currentHistoricalWorkflowPermissions": "contents:read only",
-    "currentHistoricalWorkflowTrigger": "workflow_dispatch only",
-    "currentHistoricalWorkflowMutationAuthority": false
+    "phaseALiveCheckpointWorkflowReducedToM3CanonicalSourceOnlyGate": true,
+    "phaseALiveCheckpointProviderAccess": false,
+    "legacyCheckpointValidatorMadeM3PhaseAware": true,
+    "providerPreflightPushTriggerRemoved": true,
+    "providerPreflightHeldUntilM4F3": true,
+    "providerPreflightProviderAccessDuringM3": false,
+    "validatorAuthorityUpdated": true,
+    "noM1M2Reopen": true,
+    "noNewAuditTranche": true
   },
   "certificationGates": {
     "atomicCommitApplied": false,
     "remoteHeadReadbackMatches": false,
-    "continuityLockReadbackPass": false,
-    "validatorAuthorityReadbackPass": false,
-    "historicalWorkflowInertReadbackPass": false,
-    "postRepairPushRunInspectionPass": false,
+    "m3SourceOnlyWorkflowPass": false,
+    "masterPlanFreezeGatePass": false,
+    "canonicalAuthorityGatePass": false,
+    "stateSyncM3GatePass": false,
+    "continuityM3GatePass": false,
+    "phaseACurrentCheckpointPass": false,
+    "providerPreflightAutoRunAbsent": false,
     "providerSideEffectsObserved": false
   },
   "safety": {
@@ -73,5 +89,6 @@
     "merge": false,
     "frontendFunctionalChanges": 0
   },
-  "next": "APPLY_ATOMIC_REPAIR_THEN_REMOTE_READBACK_AND_ACTIONS_INSPECTION"
+  "decision": "APPLY_REPAIR_V2_ATOMICALLY_THEN_REQUIRE_ONE_SOURCE_ONLY_M3_GATE",
+  "next": "M3_MECHANISM_SOURCE_ONLY_GATE"
 }

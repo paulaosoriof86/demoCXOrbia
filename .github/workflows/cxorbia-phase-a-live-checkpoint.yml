@@ -1,4 +1,4 @@
-name: CXOrbia Phase A Live Execution Checkpoint
+name: CXOrbia Phase A Live Execution Checkpoint — M3 Canonical Gate
 
 on:
   workflow_dispatch:
@@ -6,214 +6,67 @@ on:
     branches:
       - docs-tya-v6-v71-audit
     paths:
+      - 'backend/config/cxorbia-phase-a-continuity-lock.json'
+      - 'backend/config/cxorbia-validator-authority.json'
+      - 'backend/config/cxorbia-historical-authority-tombstones.json'
+      - 'backend/config/cxorbia-consumed-one-shot-gates.json'
+      - 'backend/config/cxorbia-evidence-aliases.json'
+      - 'app/docs/evidence/RC15-M3-F1-F2-CANONICAL-AUTHORITY-LATEST.json'
+      - 'app/docs/evidence/RC15-M3-MECHANISM-CERTIFICATION-LATEST.json'
+      - 'app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md'
       - 'app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md'
-      - 'app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md'
-      - 'app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md'
-      - 'app/docs/SOURCE-LOCK-C6-STAFF-PRIVATE-EXECUTION-HANDOFF-PASS-20260811.md'
-      - 'app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json'
-      - 'app/docs/SOURCE-LOCK-ITERATION3-HISTORICAL-SHOPPER-LOGIN-PASS-20260814.md'
-      - 'app/docs/CANDIDATA-LEGAL-TYA-V0.3-CONSOLIDADA-REVISION-JURIDICA-20260815.md'
-      - 'app/docs/CANDIDATA-LEGAL-TYA-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md'
-      - 'app/docs/DECISION-LOCK-TYA-LEGAL-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md'
-      - 'app/docs/SOURCE-LOCK-ITERATION3-LEGAL-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-SOURCE-ONLY-PASS-20260816.md'
-      - 'app/docs/PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md'
-      - 'backend/contracts/c6-staff-repair-bootstrap-exact-write-v2.json'
-      - '.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json'
-      - 'tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.mjs'
-      - 'backend/contracts/c6-staff-private-execution-handoff-v1.json'
-      - 'backend/runtime/private-handoff/c6-staff-private-execution-handoff.mjs'
-      - 'backend/contracts/c6-staff-d-technical-login-rebase-v1.json'
-      - 'backend/contracts/cxorbia-legal-acceptance-durable-v1.json'
-      - 'backend/contracts/cxorbia-legal-publication-snapshot-v1.json'
-      - 'backend/contracts/cxorbia-legal-v04-interim-materialization-v1.json'
-      - 'backend/runtime/cxorbia-legal-publication-provider-v1.mjs'
-      - 'app/index-backend-dev.html'
-      - 'app/core/shoppers-store.js'
-      - 'app/modules/misvisitas.js'
-      - 'app/adapters/tya-c6-shopper-auth-click-guard-v1.js'
-      - 'app/adapters/tya-canonical-finance-read-model-v2.js'
-      - 'app/adapters/cxorbia-command-adapter-v1.js'
-      - 'app/adapters/cxorbia-shopper-admin-command-contract-v1.js'
-      - 'app/adapters/cxorbia-hr-write-adapter-contract-v1.js'
-      - 'app/adapters/cxorbia-cxdata-command-boundary-v1.js'
-      - 'app/adapters/cxorbia-canonical-write-firewall-v1.js'
-      - 'app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js'
-      - 'tools/qa/verify-root-cause-correction-iteration1.mjs'
-      - 'tools/qa/verify-root-cause-correction-iteration2.mjs'
+      - 'app/docs/EXECUTION-STATE-CXORBIA-TYA-VIGENTE.md'
+      - 'app/docs/SOURCE-LOCK-CXORBIA-TYA-VIGENTE.md'
+      - 'tools/continuity/validate-cxorbia-master-plan-freeze-m3.js'
+      - 'tools/continuity/validate-cxorbia-canonical-authority.js'
+      - 'tools/continuity/validate-cxorbia-state-sync-m3.js'
+      - 'tools/continuity/validate-cxorbia-phase-a-continuity-lock-m3.js'
       - 'tools/qa/verify-phase-a-live-execution-checkpoint.mjs'
-      - 'tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs'
-      - 'tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs'
-      - 'tools/qa/cxorbia-i3-source-patcher.mjs'
-      - 'tools/qa/verify-i3-legal-acceptance-durable-source-only.mjs'
-      - 'tools/qa/verify-i3-legal-publication-snapshot-source-only.mjs'
-      - 'tools/qa/verify-i3-legal-v04-materialization-source-only.mjs'
-      - '.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml'
-      - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
-  pull_request:
-    branches:
-      - release/cxorbia-tya-rc-20260630
-    paths:
-      - 'app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md'
-      - 'app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-TYA-20260704.md'
-      - 'app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md'
-      - 'app/docs/SOURCE-LOCK-C6-STAFF-PRIVATE-EXECUTION-HANDOFF-PASS-20260811.md'
-      - 'app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json'
-      - 'app/docs/SOURCE-LOCK-ITERATION3-HISTORICAL-SHOPPER-LOGIN-PASS-20260814.md'
-      - 'app/docs/CANDIDATA-LEGAL-TYA-V0.3-CONSOLIDADA-REVISION-JURIDICA-20260815.md'
-      - 'app/docs/CANDIDATA-LEGAL-TYA-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md'
-      - 'app/docs/DECISION-LOCK-TYA-LEGAL-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md'
-      - 'app/docs/SOURCE-LOCK-ITERATION3-LEGAL-V0.4-INTERIM-GOLIVE-COUNSEL-DEFERRED-SOURCE-ONLY-PASS-20260816.md'
-      - 'app/docs/PAQUETE-REVISION-JURIDICA-TYA-GT-HN-V0.3-20260815.md'
-      - 'backend/contracts/c6-staff-repair-bootstrap-exact-write-v2.json'
-      - '.github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json'
-      - 'tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.mjs'
-      - 'backend/contracts/c6-staff-private-execution-handoff-v1.json'
-      - 'backend/runtime/private-handoff/c6-staff-private-execution-handoff.mjs'
-      - 'backend/contracts/c6-staff-d-technical-login-rebase-v1.json'
-      - 'backend/contracts/cxorbia-legal-acceptance-durable-v1.json'
-      - 'backend/contracts/cxorbia-legal-publication-snapshot-v1.json'
-      - 'backend/contracts/cxorbia-legal-v04-interim-materialization-v1.json'
-      - 'backend/runtime/cxorbia-legal-publication-provider-v1.mjs'
-      - 'app/index-backend-dev.html'
-      - 'app/core/shoppers-store.js'
-      - 'app/modules/misvisitas.js'
-      - 'app/adapters/tya-c6-shopper-auth-click-guard-v1.js'
-      - 'app/adapters/tya-canonical-finance-read-model-v2.js'
-      - 'app/adapters/cxorbia-command-adapter-v1.js'
-      - 'app/adapters/cxorbia-shopper-admin-command-contract-v1.js'
-      - 'app/adapters/cxorbia-hr-write-adapter-contract-v1.js'
-      - 'app/adapters/cxorbia-cxdata-command-boundary-v1.js'
-      - 'app/adapters/cxorbia-canonical-write-firewall-v1.js'
-      - 'app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js'
-      - 'tools/qa/verify-root-cause-correction-iteration1.mjs'
-      - 'tools/qa/verify-root-cause-correction-iteration2.mjs'
-      - 'tools/qa/verify-phase-a-live-execution-checkpoint.mjs'
-      - 'tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs'
-      - 'tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs'
-      - 'tools/qa/cxorbia-i3-source-patcher.mjs'
-      - 'tools/qa/verify-i3-legal-acceptance-durable-source-only.mjs'
-      - 'tools/qa/verify-i3-legal-publication-snapshot-source-only.mjs'
-      - 'tools/qa/verify-i3-legal-v04-materialization-source-only.mjs'
-      - '.github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml'
       - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
 
 permissions:
   contents: read
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
-  verify-live-checkpoint:
+  m3-canonical-gate:
+    name: M3 canonical continuity gate
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout exact trigger commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Install transient source-check dependency
-        run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
-      - name: Validate Exact Write V2 source syntax
-        run: node --check tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.mjs
-      - name: Validate Exact Write V2 source preflight only
-        env:
-          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
-          CXORBIA_C6_STAFF_WRITE_REQUEST: .github/cxorbia-firebase-requests/c6-staff-repair-bootstrap-exact-write-v2.json
-          CXORBIA_C6_STAFF_WRITE_OUT: .tmp/c6-staff-v2-source-preflight/report.json
-        run: node tools/release/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.mjs --source-self-test
-      - name: Validate Iteration 1 corrected source syntax
-        run: |
-          node --check app/adapters/tya-c6-shopper-auth-click-guard-v1.js
-          node --check app/adapters/tya-canonical-finance-read-model-v2.js
-          node --check app/adapters/cxorbia-command-adapter-v1.js
-          node --check app/adapters/cxorbia-shopper-admin-command-contract-v1.js
-          node --check app/adapters/cxorbia-hr-write-adapter-contract-v1.js
-          node --check tools/qa/verify-root-cause-correction-iteration1.mjs
-      - name: Verify Iteration 1 root-cause source contract
-        run: node tools/qa/verify-root-cause-correction-iteration1.mjs
-      - name: Validate Iteration 2 canonical persistence syntax
-        run: |
-          node --check app/adapters/cxorbia-cxdata-command-boundary-v1.js
-          node --check app/adapters/cxorbia-canonical-write-firewall-v1.js
-          node --check app/core/shoppers-store.js
-          node --check app/modules/misvisitas.js
-          node --check tools/qa/verify-root-cause-correction-iteration2.mjs
-      - name: Verify Iteration 2 canonical persistence and transversal source contract
-        run: node tools/qa/verify-root-cause-correction-iteration2.mjs
-      - name: Verify frozen I3 historical checkpoint source-safe
+
+      - name: Validate M3 source syntax
         run: |
           set -euo pipefail
-          node <<'NODE'
-          const fs=require('fs');const p='app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json';if(!fs.existsSync(p))throw new Error('I3_HISTORICAL_CHECKPOINT_MISSING');const c=JSON.parse(fs.readFileSync(p,'utf8'));
-          if(c.decision!=='PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY'||Number(c.workflowRunId)!==31906391682||c.identity?.exact!==true||c.identity?.uidPreserved!==true||c.identity?.historyE2E!==true||c.legalGate?.acceptanceAutomated!==false||Number(c.writes?.authPasswordUpdates)!==1)throw new Error('I3_HISTORICAL_CHECKPOINT_DRIFT');
-          NODE
-      - name: Validate I3 historical legal-gate-aware harness source syntax
-        run: node --check tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs
-      - name: Verify I3 historical harness source-only contract without Playwright or provider access
-        run: |
-          set -euo pipefail
-          node tools/qa/cxorbia-p0-shopper-real-auth-e2e.mjs > .tmp-i3-harness-source.json
-          cat .tmp-i3-harness-source.json
-          grep -q 'PASS_P0_REAL_SHOPPER_AUTH_E2E_SOURCE' .tmp-i3-harness-source.json
-          grep -q '"legalGateAware": true' .tmp-i3-harness-source.json
-          grep -q '"legalConsentNotAutomated": true' .tmp-i3-harness-source.json
-          grep -q '"playwrightDeferredToRealExecution": true' .tmp-i3-harness-source.json
-      - name: Verify I3 Admin overlay-aware remaining-subgate source contract
-        run: |
-          set -euo pipefail
-          node --check tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs
-          node --check tools/qa/cxorbia-i3-source-patcher.mjs
-          node tools/qa/cxorbia-i3-source-patcher.mjs --verify > .tmp-i3-patcher-source.json
-          cat .tmp-i3-patcher-source.json
-          grep -q 'PASS_I3_SOURCE_PATCH_VERIFIED' .tmp-i3-patcher-source.json
-          grep -q 'adminFrontendHandoffAwaited:true' tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs
-          grep -q 'handleBlockingOverlayBeforeAdminCreate' tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs
-          grep -q 'I3_ADMIN_LEGAL_GATE_PENDING_BEFORE_CREATE' tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs
-          grep -q 'adminInformationalBannerAcknowledged' tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs
-          grep -q 'forceClickUsed:false' tools/qa/cxorbia-i3-shopper-persistence-e2e.mjs
-          grep -q "cxorbia-i3-shopper-persistence-20260815-07" tools/qa/cxorbia-i3-source-patcher.mjs
-          grep -q "cxorbia-i3-shopper-persistence-20260815-07" .github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml
-          grep -q "I3_ADMIN_NEW_SHOPPER_OVERLAY_POINTER_INTERCEPTION_BEFORE_CREATE" .github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml
-          grep -q "r.passwordResets!==0" .github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml
-          grep -q "Historical Shopper exact reset/login/history was frozen by request06 and MUST NOT repeat" .github/workflows/cxorbia-c6-staff-repair-bootstrap-exact-write-v2.yml
-      - name: Verify I3 durable account-scoped legal acceptance source contract
-        run: |
-          set -euo pipefail
-          node --check app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js
-          node --check tools/qa/verify-i3-legal-acceptance-durable-source-only.mjs
-          node tools/qa/verify-i3-legal-acceptance-durable-source-only.mjs > .tmp-i3-legal-source.json
-          cat .tmp-i3-legal-source.json
-          grep -q 'PASS_I3_LEGAL_ACCEPTANCE_DURABLE_ACCOUNT_SCOPED_CONTRACT_SOURCE_ONLY' .tmp-i3-legal-source.json
-          grep -q '"automaticAcceptance": false' .tmp-i3-legal-source.json
-          grep -q '"firestoreWrites": 0' .tmp-i3-legal-source.json
-          grep -q '"legalAcceptanceWrites": 0' .tmp-i3-legal-source.json
-          grep -q '"productEntrypointChanged": false' .tmp-i3-legal-source.json
-      - name: Verify I3 immutable no-code legal publication snapshot source contract
-        run: |
-          set -euo pipefail
-          node --check tools/qa/verify-i3-legal-publication-snapshot-source-only.mjs
-          node tools/qa/verify-i3-legal-publication-snapshot-source-only.mjs > .tmp-i3-legal-publication-source.json
-          cat .tmp-i3-legal-publication-source.json
-          grep -q 'PASS_I3_LEGAL_PUBLICATION_SNAPSHOT_NOCODE_IMMUTABLE_SOURCE_ONLY' .tmp-i3-legal-publication-source.json
-          grep -q '"placeholdersPublishable": false' .tmp-i3-legal-publication-source.json
-          grep -q '"digestAfterRender": true' .tmp-i3-legal-publication-source.json
-          grep -q '"restrictedDomicileAutoPublished": false' .tmp-i3-legal-publication-source.json
-          grep -q '"providerWrites": 0' .tmp-i3-legal-publication-source.json
-          grep -q '"firestoreWrites": 0' .tmp-i3-legal-publication-source.json
-          grep -q '"legalContentWrites": 0' .tmp-i3-legal-publication-source.json
-          grep -q '"legalAcceptanceWrites": 0' .tmp-i3-legal-publication-source.json
-      - name: Verify I3 V0.4 interim materialization provider source contract
-        run: |
-          set -euo pipefail
-          node --check backend/runtime/cxorbia-legal-publication-provider-v1.mjs
-          node --check tools/qa/verify-i3-legal-v04-materialization-source-only.mjs
-          node tools/qa/verify-i3-legal-v04-materialization-source-only.mjs > .tmp-i3-legal-v04-materialization-source.json
-          cat .tmp-i3-legal-v04-materialization-source.json
-          grep -q 'PASS_I3_LEGAL_V04_INTERIM_MATERIALIZATION_PROVIDER_SOURCE_ONLY' .tmp-i3-legal-v04-materialization-source.json
-          grep -q '"exactBootstrapFirestoreWrites": 4' .tmp-i3-legal-v04-materialization-source.json
-          grep -q '"legalAcceptanceWrites": 0' .tmp-i3-legal-v04-materialization-source.json
-          grep -q '"authWrites": 0' .tmp-i3-legal-v04-materialization-source.json
-          grep -q '"passwordResets": 0' .tmp-i3-legal-v04-materialization-source.json
-          grep -q '"automaticAcceptance": false' .tmp-i3-legal-v04-materialization-source.json
-          grep -q '"humanAcceptanceRequired": true' .tmp-i3-legal-v04-materialization-source.json
-          grep -q '"providerWritesExecutedAgainstFirebase": 0' .tmp-i3-legal-v04-materialization-source.json
-      - name: Verify Phase A current operational checkpoint
+          node --check tools/continuity/validate-cxorbia-master-plan-freeze-m3.js
+          node --check tools/continuity/validate-cxorbia-canonical-authority.js
+          node --check tools/continuity/validate-cxorbia-state-sync-m3.js
+          node --check tools/continuity/validate-cxorbia-phase-a-continuity-lock-m3.js
+          node --check tools/qa/verify-phase-a-live-execution-checkpoint.mjs
+
+      - name: Validate frozen master plan identity
+        run: node tools/continuity/validate-cxorbia-master-plan-freeze-m3.js
+
+      - name: Validate canonical execution authority
+        run: node tools/continuity/validate-cxorbia-canonical-authority.js
+
+      - name: Validate M3 state synchronization
+        run: node tools/continuity/validate-cxorbia-state-sync-m3.js
+
+      - name: Validate M3 continuity lock
+        run: node tools/continuity/validate-cxorbia-phase-a-continuity-lock-m3.js
+
+      - name: Validate current Phase A checkpoint without provider access
         run: node tools/qa/verify-phase-a-live-execution-checkpoint.mjs

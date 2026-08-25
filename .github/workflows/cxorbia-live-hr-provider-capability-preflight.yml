@@ -1,100 +1,19 @@
-name: CXOrbia Live HR Provider Capability Preflight
+name: CXOrbia Live HR Provider Capability Preflight — Historical M3 Hold
 
 on:
-  push:
-    branches:
-      - docs-tya-v6-v71-audit
-    paths:
-      - '.github/workflows/cxorbia-live-hr-provider-capability-preflight.yml'
-      - '.github/cxorbia-firebase-requests/live-hr-provider-capability-preflight.json'
-      - '.github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml'
-      - 'tools/qa/cxorbia-g2b-provider-forensic-readiness.mjs'
-      - 'tools/qa/cxorbia-g2b-recovery-source-contract.mjs'
-      - 'tools/production/cxorbia-hosting-rest-deploy.mjs'
+  workflow_dispatch:
 
 permissions:
-  contents: write
-  statuses: write
+  contents: read
 
 jobs:
-  preflight:
+  historical-hold:
+    name: Provider preflight held until M4/F3
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 2
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      - name: Validate hardened recovery source contract with zero provider writes
+      - name: Confirm no current provider authority
         run: |
-          set -euo pipefail
-          node --check tools/qa/cxorbia-g2b-provider-forensic-readiness.mjs
-          node --check tools/qa/cxorbia-g2b-recovery-source-contract.mjs
-          node --check tools/production/cxorbia-hosting-rest-deploy.mjs
-          rm -rf .tmp/g2b-forensic-source
-          git worktree add --detach .tmp/g2b-forensic-source 1d2cfecba0a89b637398d747a628e549d9823c68
-          CXORBIA_G2B_SOURCE_CONTRACT_OUT=.tmp/g2b-source-contract.json node tools/qa/cxorbia-g2b-recovery-source-contract.mjs .tmp/g2b-forensic-source
-          node tools/production/cxorbia-hosting-rest-deploy.mjs --source-dir .tmp/g2b-forensic-source --dry-run --out .tmp/g2b-hosting-rest-dry-run.json
-          node <<'NODE'
-          const fs=require('fs');
-          const s=require('./.tmp/g2b-source-contract.json');
-          const h=require('./.tmp/g2b-hosting-rest-dry-run.json');
-          if(s.decision!=='PASS_G2B_RECOVERY_SOURCE_CONTRACT')throw new Error('source_contract_not_pass');
-          if(h.decision!=='PASS_HOSTING_REST_DRY_RUN_SOURCE_READY'||h.providerWrites!==0||h.hostingDeployExecutions!==0)throw new Error('hosting_rest_dry_run_not_safe_pass');
-          const w=fs.readFileSync('.github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml','utf8');
-          if(w.includes("grep -q 'g2b-synthetic/commands' \"$G2B_SOURCE_DIR/backend/runtime/hr-live-service/server.mjs\""))throw new Error('stale_false_server_literal_gate_present');
-          if(/firebase[^\n]*deploy\s+--config/.test(w))throw new Error('firebase_cli_hosting_deploy_still_present');
-          for(const token of ['cxorbia-g2b-recovery-source-contract.mjs','cxorbia-hosting-rest-deploy.mjs','RECOVERY_BLOCKED_PRE_PROVIDER_NO_MUTATION','providerOperationAttempted','FORENSIC_PROVIDER_LANE_READY'])if(!w.includes(token))throw new Error('recovery_hardening_contract_missing:'+token);
-          NODE
-          git worktree remove --force .tmp/g2b-forensic-source
-
-      - name: Run reusable forensic provider audit read-only
-        env:
-          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-        run: |
-          set -euo pipefail
-          node tools/qa/cxorbia-g2b-provider-forensic-readiness.mjs
-          node <<'NODE'
-          const fs=require('fs');
-          const f='app/docs/evidence/I5-G2B-PROVIDER-FORENSIC-READINESS-LATEST.json';
-          const x=JSON.parse(fs.readFileSync(f,'utf8'));
-          if(x.schemaVersion!=='cxorbia.provider-forensic-readiness.v3.2')throw new Error('forensic_v32_evidence_not_current');
-          if(!['FORENSIC_PROVIDER_LANE_READY','FORENSIC_READONLY_COMPLETE_WITH_HOLDS'].includes(x.decision))throw new Error('forensic_v32_decision_invalid');
-          if(x.safety?.providerWrites!==0||x.safety?.cloudBuildExecutions!==0||x.safety?.hostingDeploys!==0||x.safety?.cloudRunDeploys!==0||x.safety?.firestoreWrites!==0||x.safety?.authWrites!==0||x.safety?.storageWrites!==0||x.safety?.externalHrWrites!==0||x.safety?.paymentWrites!==0||x.safety?.makeCalls!==0||x.safety?.geminiCalls!==0||x.safety?.merge!==false)throw new Error('forensic_audit_safety_violation');
-          NODE
-
-      - name: Commit sanitized forensic evidence
-        run: |
-          set -euo pipefail
-          cp app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json /tmp/cap.json
-          cp app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json /tmp/g2b-provider.json
-          cp app/docs/evidence/I5-G2B-PROVIDER-FORENSIC-READINESS-LATEST.json /tmp/g2b-forensic.json
-          git fetch origin docs-tya-v6-v71-audit
-          git reset --hard origin/docs-tya-v6-v71-audit
-          mkdir -p app/docs/evidence
-          cp /tmp/cap.json app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json
-          cp /tmp/g2b-provider.json app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json
-          cp /tmp/g2b-forensic.json app/docs/evidence/I5-G2B-PROVIDER-FORENSIC-READINESS-LATEST.json
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/docs/evidence/LIVE-HR-PROVIDER-CAPABILITY-PREFLIGHT-LATEST.json app/docs/evidence/I5-G2B-PROVIDER-READONLY-RECONCILIATION-LATEST.json app/docs/evidence/I5-G2B-PROVIDER-FORENSIC-READINESS-LATEST.json
-          if ! git diff --cached --quiet; then git commit -m 'evidence: persist G2B provider forensic readiness v3.2'; git push origin HEAD:docs-tya-v6-v71-audit; fi
-
-      - name: Publish forensic status
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          STATE=error;DESC='HOLD_G2B_PROVIDER_FORENSIC_V32_MISSING'
-          if node - <<'NODE'
-          const x=require('./app/docs/evidence/I5-G2B-PROVIDER-FORENSIC-READINESS-LATEST.json');
-          if(x.schemaVersion!=='cxorbia.provider-forensic-readiness.v3.2')process.exit(1);
-          if(x.decision!=='FORENSIC_PROVIDER_LANE_READY')process.exit(2);
-          NODE
-          then STATE=success;DESC='FORENSIC_G2B_PROVIDER_LANE_READY'; else DESC='HOLD_G2B_PROVIDER_LANE_NOT_READY'; fi
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/g2b-provider-forensic-readiness' -f description="$DESC" >/dev/null
-          test "$STATE" = success
+          echo 'HISTORICAL_INERT_M3'
+          echo 'No provider read/write/deploy is authorized by this workflow during M3.'
+          echo 'M4/F3 read-only revalidation requires the then-current canonical gate and evidence.'
