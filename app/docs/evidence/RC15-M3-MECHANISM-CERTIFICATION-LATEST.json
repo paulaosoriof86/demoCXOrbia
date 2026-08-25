@@ -1,63 +1,37 @@
 {
-  "schemaVersion": "cxorbia.rc15.m3.mechanism-certification.v2",
-  "generatedAt": "2026-08-25T17:04:00-06:00",
+  "schemaVersion": "cxorbia.rc15.m3.mechanism-certification.v2.1",
+  "generatedAt": "2026-08-25T17:10:00-06:00",
   "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
   "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
-  "sourceHeadBefore": "0df5cae7e4a1fe9dd968170eab27269b12a8204a",
-  "sourceTreeBefore": "22ccdbc494a904aaacfcc3de970700099a9df615",
+  "sourceHeadBefore": "a8a0df330ba426111adcd12a924bc2ad6156e939",
   "block": "M3_MECHANISM_CERTIFICATION_V2",
   "status": "REPAIR_V2_APPLIED_AWAITING_SOURCE_ONLY_GATE",
   "certified": false,
   "phaseA": {"completed": 98, "pending": 2, "total": 100},
   "defectsProven": [
-    {
-      "id": "M3_CANONICAL_LOCK_DRIFT",
-      "evidence": "Canonical mirrors had advanced ahead of the continuity lock before the first mechanism repair.",
-      "severity": "CONTROL_PLANE_BLOCKER",
-      "repairStatus": "REPAIRED_V1"
-    },
-    {
-      "id": "M3_HISTORICAL_WORKFLOW_PUSH_NOISE",
-      "evidence": "Sequential source-only materializations triggered large numbers of historical workflows.",
-      "severity": "CONTROL_PLANE_BLOCKER",
-      "repairStatus": "REPAIRED_V1_FOUR_WORKFLOWS_INERT"
-    },
-    {
-      "id": "M3_LEGACY_CHECKPOINT_FALSE_FUNCTIONAL_DRIFT",
-      "evidence": "Post-repair run 32908444518 passed 17 source-safe steps and failed only at tools/qa/verify-phase-a-live-execution-checkpoint.mjs with FUNCTIONAL_SOURCE_DRIFT. The validator read functionalSourceLock from the obsolete root field instead of productionState.functionalSourceLock and delegated to a superseded continuity validator.",
-      "severity": "CONTROL_PLANE_BLOCKER",
-      "repairStatus": "REPAIRED_V2_PHASE_AWARE_VALIDATOR"
-    },
-    {
-      "id": "M3_PROVIDER_PREFLIGHT_WRONG_PHASE_AUTOTRIGGER",
-      "evidence": "Post-repair run 32908444528 auto-triggered during M3 and failed G2B_SOURCE_FIREWALL_GATE_MISSING while validating frozen G2-B source-fix head 1d2cfecb. This is an M4/F3 concern and must not run automatically during M3.",
-      "severity": "CONTROL_PLANE_BLOCKER",
-      "repairStatus": "REPAIRED_V2_MANUAL_HOLD_UNTIL_M4"
-    }
+    {"id":"M3_CANONICAL_LOCK_DRIFT","severity":"CONTROL_PLANE_BLOCKER","repairStatus":"REPAIRED_V1"},
+    {"id":"M3_HISTORICAL_WORKFLOW_PUSH_NOISE","severity":"CONTROL_PLANE_BLOCKER","repairStatus":"REPAIRED_V1_FOUR_WORKFLOWS_INERT"},
+    {"id":"M3_LEGACY_CHECKPOINT_FALSE_FUNCTIONAL_DRIFT","evidence":"Run 32908444518 failed only at legacy checkpoint with FUNCTIONAL_SOURCE_DRIFT after 17 source-safe PASS steps.","severity":"CONTROL_PLANE_BLOCKER","repairStatus":"REPAIRED_V2_PHASE_AWARE_VALIDATOR"},
+    {"id":"M3_PROVIDER_PREFLIGHT_WRONG_PHASE_AUTOTRIGGER","evidence":"Run 32908444528 auto-triggered in M3 and failed G2B_SOURCE_FIREWALL_GATE_MISSING against frozen historical source-fix head.","severity":"CONTROL_PLANE_BLOCKER","repairStatus":"REPAIRED_V2_MANUAL_HOLD_UNTIL_M4"},
+    {"id":"M3_CERT_GATE_SELF_MISMATCH","evidence":"Run 32909450529 reached the new M3-only gate and passed syntax + frozen-plan validation, then canonical authority blocked on cert_pre_readback_state because the validator still hard-coded the V1 certification status literal. This is a validator-contract mismatch, not product/provider failure.","severity":"CONTROL_PLANE_BLOCKER","repairStatus":"REPAIRED_V2_1_PHASE_AWARE_CERT_STATE"}
   ],
-  "postRepairV1ObservedRuns": {
-    "head": "0df5cae7e4a1fe9dd968170eab27269b12a8204a",
-    "phaseALiveCheckpointRunId": 32908444518,
-    "phaseALiveCheckpointFailure": "FUNCTIONAL_SOURCE_DRIFT",
-    "phaseALiveCheckpointSuccessfulStepsBeforeFailure": 17,
-    "providerPreflightRunId": 32908444528,
-    "providerPreflightFailure": "G2B_SOURCE_FIREWALL_GATE_MISSING",
+  "observedRuns": {
+    "preV2CheckpointRunId": 32908444518,
+    "preV2ProviderPreflightRunId": 32908444528,
+    "v2SourceOnlyGateRunId": 32909450529,
+    "v2GatePassedBeforeFailure": ["source_syntax","master_plan_freeze"],
+    "v2GateFailure": "CANONICAL_AUTHORITY_BLOCKED: cert_pre_readback_state",
     "providerWritesObserved": 0,
     "dataWritesObserved": 0,
     "deploysObserved": 0,
     "mergeObserved": false
   },
-  "repairV2": {
-    "atomicGitMaterializationRequired": true,
-    "phaseALiveCheckpointWorkflowReducedToM3CanonicalSourceOnlyGate": true,
-    "phaseALiveCheckpointProviderAccess": false,
-    "legacyCheckpointValidatorMadeM3PhaseAware": true,
-    "providerPreflightPushTriggerRemoved": true,
-    "providerPreflightHeldUntilM4F3": true,
-    "providerPreflightProviderAccessDuringM3": false,
-    "validatorAuthorityUpdated": true,
-    "noM1M2Reopen": true,
-    "noNewAuditTranche": true
+  "repairV2_1": {
+    "canonicalAuthorityValidatorAcceptsOnlyTwoExplicitCertificationStates": ["REPAIR_V2_APPLIED_AWAITING_SOURCE_ONLY_GATE:false","MECHANISM_CERTIFIED_PASS:true"],
+    "noBroadBypass": true,
+    "sourceOnlyGateRemainsOnlyAutomaticM3Workflow": true,
+    "providerPreflightRemainsManualInertUntilM4": true,
+    "atomicGitMaterializationRequired": true
   },
   "certificationGates": {
     "atomicCommitApplied": false,
@@ -71,24 +45,7 @@
     "providerPreflightAutoRunAbsent": false,
     "providerSideEffectsObserved": false
   },
-  "safety": {
-    "providerWrites": 0,
-    "dataWrites": 0,
-    "authWrites": 0,
-    "firestoreWrites": 0,
-    "storageWrites": 0,
-    "hrWrites": 0,
-    "rulesWrites": 0,
-    "cloudBuilds": 0,
-    "cloudRunUpdates": 0,
-    "hostingDeploys": 0,
-    "makeCalls": 0,
-    "geminiCalls": 0,
-    "payments": 0,
-    "g2bExecutions": 0,
-    "merge": false,
-    "frontendFunctionalChanges": 0
-  },
-  "decision": "APPLY_REPAIR_V2_ATOMICALLY_THEN_REQUIRE_ONE_SOURCE_ONLY_M3_GATE",
+  "safety": {"providerWrites":0,"dataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"rulesWrites":0,"cloudBuilds":0,"cloudRunUpdates":0,"hostingDeploys":0,"makeCalls":0,"geminiCalls":0,"payments":0,"g2bExecutions":0,"merge":false,"frontendFunctionalChanges":0},
+  "decision": "APPLY_VALIDATOR_CONTRACT_FIX_ATOMICALLY_THEN_REQUIRE_ONE_SOURCE_ONLY_M3_GATE",
   "next": "M3_MECHANISM_SOURCE_ONLY_GATE"
 }
