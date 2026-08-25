@@ -2,26 +2,29 @@
 
 **Fecha:** 2026-08-25  
 **STATE_SYNC_EPOCH:** `RC15-M2-F0-CLOSED-20260825-01`  
+**M3_MECHANISM_EPOCH:** `RC15-M3-MECHANISM-20260825-01`  
 **MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`  
 **MASTER_PLAN_STATUS:** `FROZEN`  
-**currentMasterPhase:** `F0_SYSTEMIC_AUDIT` — `CLOSED_PASS`  
-**NEXT:** `M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY`  
+**currentMasterPhase:** `M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY` — `ACTIVE`  
+**NEXT:** `M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28`  
 **PHASE_A:** `98/100`
 
-## F0 cerrado
+## Cerrado y preservado
 
-M2 demuestra 4/4 de exhaustividad sobre el inventario finito M1: 142 hallazgos clasificados; 32 HOLD/P0 acumulados; CP093/CP119 contenidos; 30 residuales; cero superficie write-capable sin clasificación.
+F0/M2 permanece 4/4 sobre inventario finito: 142 hallazgos, 32 HOLD/P0 acumulados, 2 contenidos, 30 residuales al entrar a M3, cero superficie write-capable sin clasificar.
 
-## M3 — F1/F2 pendiente inmediato
+## M3 — avance material
 
-F1 debe inertizar/tombstonear las autoridades históricas write-capable ya clasificadas, preservando evidencia. Prioridad concreta: CP011, CP094, CP108/CP091, CP124, CP125, CP127, CP130, CP131 y CP142, además de miembros directos de CP117 como Corte4 bootstrap, Corte6 claims-normalize e I3 source patcher.
+Se creó el set autoritativo de validadores M3 para impedir que validadores históricos hard-codeados a estados anteriores vuelvan a dirigir continuidad. También se creó tombstone registry y se normalizaron ledger/aliases. CP011 y CP142 ya quedaron inertizados sin ejecutar provider/data/deploy; el tratamiento pendiente baja a **28**.
 
-F2 debe normalizar consumed ledger, aliases, current-vs-historical event artifacts y validadores obsoletos. Se confirmó que `validate-cxorbia-master-plan-freeze.js` todavía fija operativamente F0 y que `validate-cxorbia-phase-a-continuity-lock.js` conserva supuestos/schema previos a M1; esto se trata como CP118/F2, no como reapertura de F0.
+## Pendiente M3 finito
+
+Seguir únicamente los residuales del inventario M2, con prioridad documentada en el tombstone registry. CP117 sigue abierto hasta cobertura histórica exhaustiva; CP118 sigue abierto hasta completar normalización del conjunto de authority/aliases/validators. No abrir Tramo 15.
 
 ## Producto / Claude / Academia
 
-Sin tarea frontend nueva. No parchear UI. Sin impacto funcional en Academia en este cierre.
+Sin tarea frontend nueva. No parchear UI. Sin impacto funcional en Academia por este hito.
 
 ## G2-B
 
-Terminal `RECOVERY_NO_PROVIDER_SIDE_EFFECT`; no retry/replay. F3/M4 solo después de M3.
+Terminal `RECOVERY_NO_PROVIDER_SIDE_EFFECT`; no retry/replay. M4/F3 solo después de M3 CLOSED_PASS.
