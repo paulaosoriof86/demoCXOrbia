@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.rc15.m3.canonical-authority.v1",
-  "generatedAt": "2026-08-25T15:45:00-06:00",
+  "generatedAt": "2026-08-25T16:37:00-06:00",
   "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
   "masterPlanStatus": "FROZEN",
   "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
@@ -13,18 +13,26 @@
   "entryGate": {"m1": "CLOSED_PASS", "m2": "CLOSED_PASS", "f0": "CLOSED_PASS_4_OF_4", "unclassifiedWriteCapableSurfaces": 0, "newP0Proven": false},
   "mechanismCorrection": {
     "problem": "Dynamic execution state had been hard-coded into validators created before M2 closed, causing repeated false drift and re-reading loops.",
+    "validatorAuthority": "backend/config/cxorbia-validator-authority.json",
     "controls": [
-      "Master-plan freeze validator now validates only immutable plan identity/hash/structure.",
-      "State-sync validator derives M3 state from canonical M2 closure plus current M3 evidence instead of expecting M1/M2 literals.",
-      "Phase-A continuity validator accepts the live schema/control state and validates G2-B terminal safety without stale epoch assumptions.",
-      "Canonical-authority validator separates current authority from historical requests, event artifacts, aliases and tombstones.",
+      "The M3 master-plan validator validates only immutable plan identity/hash/structure.",
+      "The M3 state-sync validator derives state from canonical M2 closure plus current M3 evidence instead of expecting M1/M2 literals.",
+      "The M3 Phase-A continuity validator validates the live schema/control state and G2-B terminal safety without stale epoch assumptions.",
+      "The canonical-authority validator separates current authority from historical requests, event artifacts, aliases and tombstones.",
       "Historical never-executed authority is inertized without falsely marking it consumed.",
       "Remaining M3 work is a finite queue sourced only from the M2 locked inventory; no new audit tranche is permitted."
     ],
-    "validator": "tools/continuity/validate-cxorbia-canonical-authority.js"
+    "activeValidators": [
+      "tools/continuity/validate-cxorbia-master-plan-freeze-m3.js",
+      "tools/continuity/validate-cxorbia-canonical-authority.js",
+      "tools/continuity/validate-cxorbia-state-sync-m3.js",
+      "tools/continuity/validate-cxorbia-phase-a-continuity-lock-m3.js"
+    ],
+    "supersededHistoricalValidatorsRemainAsEvidence": true
   },
   "f1": {"residualHoldsAtStart": 30, "inertizedThisMilestone": ["RC15-CP-011", "RC15-CP-142"], "currentResidualHolds": 28, "tombstoneRegistry": "backend/config/cxorbia-historical-authority-tombstones.json", "historicalGlobalExhaustive": false},
-  "f2": {"aliasesNormalized": true, "consumedLedgerPreserved": true, "consumedStateFabricated": false, "staleValidatorsReplaced": true, "singleAuthorityRule": "Frozen master-plan identity + continuity safety invariants + current M3 evidence/tombstone registry. PR and historical execute/request artifacts are non-authoritative.", "status": "MECHANISM_GATE_READY_M3_STILL_ACTIVE"},
+  "f2": {"aliasesNormalized": true, "consumedLedgerPreserved": true, "consumedStateFabricated": false, "staleValidatorsReplaced": false, "staleValidatorsSupersededByExplicitAuthoritySet": true, "singleAuthorityRule": "Frozen master-plan identity + continuity safety invariants + explicit M3 validator authority + current M3 evidence/tombstone registry. PR and historical execute/request/validator artifacts are non-authoritative.", "status": "MECHANISM_GATE_READY_M3_STILL_ACTIVE"},
+  "materialization": {"singleCommitAchieved": false, "reason": "GitHub contents connector applied the source-only pieces as sequential commits.", "providerSideEffects": 0, "dataSideEffects": 0, "safetyImpact": "NONE_OBSERVED", "closureRequiresRemoteReadback": true},
   "g2b": {"decision": "RECOVERY_NO_PROVIDER_SIDE_EFFECT", "retryAuthorized": false, "replayAuthorized": false, "providerMutationAuthorizedNow": false, "syntheticStageBlocked": true, "nextOnlyAfterM3Closed": "M4_F3_G2B_RECOVERY_LANE_READONLY_REVALIDATION"},
   "safety": {"providerWrites": 0, "dataWrites": 0, "authWrites": 0, "firestoreWrites": 0, "storageWrites": 0, "hrWrites": 0, "cloudBuilds": 0, "cloudRunUpdates": 0, "hostingDeploys": 0, "rulesWrites": 0, "payments": 0, "makeCalls": 0, "geminiCalls": 0, "g2bExecutions": 0, "merge": false, "frontendFunctionalChanges": 0},
   "decision": "M3_MECHANISM_CORRECTED_CONTINUE_FINITE_F1_QUEUE",
