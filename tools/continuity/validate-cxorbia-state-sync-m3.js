@@ -17,7 +17,7 @@ if(lock.m2ExecutionControl?.next!=='M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY')f
 if(lock.m3ExecutionControl?.mechanismEpoch!==E||Number(lock.m3ExecutionControl?.currentResidualHolds)!==28)fail('lock_m3_control');
 if(m2.status!=='CLOSED_PASS'||m2.stateEpoch!=='RC15-M2-F0-CLOSED-20260825-01')fail('m2_evidence');
 if(Number(m2.progressAfter?.exhaustivenessFlagsTrue)!==4||Number(m2.progressAfter?.exhaustivenessFlagsTotal)!==4||Number(m2.unclassifiedWriteCapableSurfaces)!==0)fail('m2_exhaustiveness');
-if(m3.m3MechanismEpoch!==E||m3.status!=='ACTIVE_MECHANISM_REPAIR_APPLIED_CERTIFICATION_PENDING_READBACK')fail('m3_evidence');
+if(m3.m3MechanismEpoch!==E||!['ACTIVE_MECHANISM_REPAIR_APPLIED_CERTIFICATION_PENDING_READBACK','ACTIVE_MECHANISM_CERTIFIED_PASS_2_OF_30_TOMBSTONED'].includes(m3.status))fail('m3_evidence');
 if(authority.m3MechanismEpoch!==E||authority.status!=='ACTIVE_M3_VALIDATOR_SET')fail('validator_authority');
 const canonicalDocs=['app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md','app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md','app/docs/EXECUTION-STATE-CXORBIA-TYA-VIGENTE.md','app/docs/SOURCE-LOCK-CXORBIA-TYA-VIGENTE.md','RESUMEN-PARA-CLAUDE.md','PENDIENTES-PROTOTIPO.md'];
 for(const p of canonicalDocs){const t=readText(p);for(const marker of ['CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1',E,'M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY','98/100'])if(!t.includes(marker))fail(`mirror_drift:${p}:${marker}`);}
@@ -25,6 +25,6 @@ for(const script of ['tools/continuity/validate-cxorbia-master-plan-freeze-m3.js
 console.log('STATE_SYNC_M3_GATE_PASS');
 console.log('m2ControlEpoch=RC15-M2-F0-CLOSED-20260825-01');
 console.log(`m3MechanismEpoch=${E}`);
-console.log('m3Status=MECHANISM_REPAIR_APPLIED_CERTIFICATION_PENDING_READBACK');
+console.log(`m3Status=${m3.status}`);
 console.log('currentResidualHolds=28');
 console.log('next=M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28');

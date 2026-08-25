@@ -8,15 +8,15 @@
 **currentMasterPhase:** `M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY` — `ACTIVE`  
 **M1:** `CLOSED_PASS`  
 **M2:** `CLOSED_PASS`  
-**M3:** `MECHANISM_REPAIR_V2_AWAITING_SOURCE_ONLY_GATE`  
-**NEXT:** `M3_MECHANISM_SOURCE_ONLY_GATE` → `M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28`  
+**M3:** `MECHANISM_CERTIFIED_PASS`  
+**NEXT:** `M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28`  
 **PHASE_A:** `98/100`
 
 ## Estado canónico
 
-F0 permanece cerrado sobre el inventario M1: 142 hallazgos clasificados, 32 HOLD/P0 acumulados, 2 contenidos y 30 residuales al entrar a M3; exhaustividad 4/4 y cero superficie write-capable sin clasificación. CP011 y CP142 siguen inertizados sin ejecución: quedan 28 residuales.
+F0 permanece cerrado: 142 hallazgos clasificados, 32 HOLD/P0 acumulados, 2 contenidos y 30 residuales al entrar a M3; exhaustividad 4/4 y cero superficie write-capable sin clasificación. CP011 y CP142 están inertizados sin ejecución; quedan 28 residuales.
 
-La certificación del mecanismo encontró dos defectos adicionales después de la primera reparación: el workflow de checkpoint todavía ejecutaba un validador pre-M3 que produjo un falso `FUNCTIONAL_SOURCE_DRIFT`, y el preflight G2-B se autoejecutaba en M3 aunque corresponde a M4/F3, fallando `G2B_SOURCE_FIREWALL_GATE_MISSING` contra un source-fix histórico. Ambos son defectos de control-plane, no del producto.
+El mecanismo M3 quedó certificado sobre el source-only gate run `32909591852`: sintaxis, master-plan freeze, autoridad canónica, state sync M3, continuity lock M3 y checkpoint Phase A pasaron. En ese HEAD hubo un único workflow push automático; el provider preflight no se autoejecutó. Provider/data/Auth/Firestore/Storage/HR/Rules/Make/Gemini/pagos/deploy/merge/frontend writes = 0.
 
 ## Orden canónico vivo
 
@@ -25,18 +25,16 @@ La certificación del mecanismo encontró dos defectos adicionales después de l
 3. `app/docs/evidence/RC15-M2-FINITE-F0-CLOSURE-LATEST.json` — universo finito F0/M2.
 4. `app/docs/evidence/RC15-M3-F1-F2-CANONICAL-AUTHORITY-LATEST.json` — estado operativo M3.
 5. `app/docs/evidence/RC15-M3-MECHANISM-CERTIFICATION-LATEST.json` — certificación del mecanismo.
-6. `backend/config/cxorbia-validator-authority.json` — único set de validadores autoritativo en M3.
+6. `backend/config/cxorbia-validator-authority.json` — set de validadores autoritativo M3.
 7. `backend/config/cxorbia-historical-authority-tombstones.json` — cola finita e inertizaciones.
 8. `backend/config/cxorbia-consumed-one-shot-gates.json` — solo ejecuciones realmente consumidas.
 9. `backend/config/cxorbia-evidence-aliases.json` — aliases sin autoridad.
 10. checkpoint/execution/source lock y mirrors obligatorios.
 
-## Regla anti-desincronización
+## Regla anti-desincronización certificada
 
-Toda materialización canónica M3 se hace en un único commit Git atómico + readback. `cxorbia-phase-a-live-checkpoint.yml` queda reducido a un gate source-only de M3 sin provider. `cxorbia-live-hr-provider-capability-preflight.yml` queda manual/inert durante M3 y no puede autoejecutarse por commits de control-plane.
-
-Requests, event artifacts, aliases, PR body, conversaciones, validadores históricos y workflows históricos nunca autorizan ejecución actual. El source funcional congelado sigue siendo `f9802fdd498934a8e7729fa5c7d18341bec1cd71`; los commits de docs/control-plane no constituyen drift funcional.
+Toda materialización canónica M3 usa un único commit Git atómico + readback remoto + gate source-only. `productionState.functionalSourceLock` es el lock funcional y no se confunde con el HEAD de control-plane. Provider preflight queda manual/inert hasta M4/F3. Conversaciones, PR body, requests/event artifacts, aliases, validadores y workflows históricos nunca reactivan autoridad.
 
 ## Siguiente exacto
 
-Materializar reparación V2 atómicamente, resolver HEAD por readback y exigir un único gate source-only M3. Solo con PASS se declara `MECHANISM_CERTIFIED_PASS` y se continúa la cola finita de 28 residuales. No reabrir M1/M2, no Tramo 15, no provider/data/deploy/merge/frontend writes.
+Consumir exclusivamente la cola finita de 28 residuales del inventario M2. No reabrir M1/M2, no Tramo 15, no nueva metodología. M4/F3 solo después de M3 `CLOSED_PASS`; G2-B sigue `RECOVERY_NO_PROVIDER_SIDE_EFFECT` y sin retry/replay.

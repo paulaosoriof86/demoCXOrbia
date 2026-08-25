@@ -1,51 +1,67 @@
 {
-  "schemaVersion": "cxorbia.rc15.m3.mechanism-certification.v2.1",
-  "generatedAt": "2026-08-25T17:10:00-06:00",
+  "schemaVersion": "cxorbia.rc15.m3.mechanism-certification.v3",
+  "generatedAt": "2026-08-25T17:13:00-06:00",
   "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
   "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
-  "sourceHeadBefore": "a8a0df330ba426111adcd12a924bc2ad6156e939",
-  "block": "M3_MECHANISM_CERTIFICATION_V2",
-  "status": "REPAIR_V2_APPLIED_AWAITING_SOURCE_ONLY_GATE",
-  "certified": false,
+  "certifiedSourceHead": "6d31740c43f9ae98dd9f66a8b42da0affaf0bb80",
+  "certifyingRunId": 32909591852,
+  "block": "M3_MECHANISM_CERTIFICATION",
+  "status": "MECHANISM_CERTIFIED_PASS",
+  "certified": true,
   "phaseA": {"completed": 98, "pending": 2, "total": 100},
-  "defectsProven": [
-    {"id":"M3_CANONICAL_LOCK_DRIFT","severity":"CONTROL_PLANE_BLOCKER","repairStatus":"REPAIRED_V1"},
-    {"id":"M3_HISTORICAL_WORKFLOW_PUSH_NOISE","severity":"CONTROL_PLANE_BLOCKER","repairStatus":"REPAIRED_V1_FOUR_WORKFLOWS_INERT"},
-    {"id":"M3_LEGACY_CHECKPOINT_FALSE_FUNCTIONAL_DRIFT","evidence":"Run 32908444518 failed only at legacy checkpoint with FUNCTIONAL_SOURCE_DRIFT after 17 source-safe PASS steps.","severity":"CONTROL_PLANE_BLOCKER","repairStatus":"REPAIRED_V2_PHASE_AWARE_VALIDATOR"},
-    {"id":"M3_PROVIDER_PREFLIGHT_WRONG_PHASE_AUTOTRIGGER","evidence":"Run 32908444528 auto-triggered in M3 and failed G2B_SOURCE_FIREWALL_GATE_MISSING against frozen historical source-fix head.","severity":"CONTROL_PLANE_BLOCKER","repairStatus":"REPAIRED_V2_MANUAL_HOLD_UNTIL_M4"},
-    {"id":"M3_CERT_GATE_SELF_MISMATCH","evidence":"Run 32909450529 reached the new M3-only gate and passed syntax + frozen-plan validation, then canonical authority blocked on cert_pre_readback_state because the validator still hard-coded the V1 certification status literal. This is a validator-contract mismatch, not product/provider failure.","severity":"CONTROL_PLANE_BLOCKER","repairStatus":"REPAIRED_V2_1_PHASE_AWARE_CERT_STATE"}
+  "defectsClosed": [
+    "M3_CANONICAL_LOCK_DRIFT",
+    "M3_HISTORICAL_WORKFLOW_PUSH_NOISE",
+    "M3_LEGACY_CHECKPOINT_FALSE_FUNCTIONAL_DRIFT",
+    "M3_PROVIDER_PREFLIGHT_WRONG_PHASE_AUTOTRIGGER",
+    "M3_CERT_GATE_SELF_MISMATCH"
   ],
-  "observedRuns": {
-    "preV2CheckpointRunId": 32908444518,
-    "preV2ProviderPreflightRunId": 32908444528,
-    "v2SourceOnlyGateRunId": 32909450529,
-    "v2GatePassedBeforeFailure": ["source_syntax","master_plan_freeze"],
-    "v2GateFailure": "CANONICAL_AUTHORITY_BLOCKED: cert_pre_readback_state",
+  "certifyingEvidence": {
+    "sourceOnlyGateWorkflow": ".github/workflows/cxorbia-phase-a-live-checkpoint.yml",
+    "runId": 32909591852,
+    "runConclusion": "success",
+    "steps": {
+      "sourceSyntax": "PASS",
+      "masterPlanFreeze": "PASS",
+      "canonicalAuthority": "PASS",
+      "stateSyncM3": "PASS",
+      "continuityM3": "PASS",
+      "phaseACurrentCheckpoint": "PASS"
+    },
+    "automaticPushWorkflowsObservedAtCertifiedHead": 1,
+    "providerPreflightAutoRunObserved": false,
     "providerWritesObserved": 0,
     "dataWritesObserved": 0,
+    "authWritesObserved": 0,
     "deploysObserved": 0,
     "mergeObserved": false
   },
-  "repairV2_1": {
-    "canonicalAuthorityValidatorAcceptsOnlyTwoExplicitCertificationStates": ["REPAIR_V2_APPLIED_AWAITING_SOURCE_ONLY_GATE:false","MECHANISM_CERTIFIED_PASS:true"],
-    "noBroadBypass": true,
-    "sourceOnlyGateRemainsOnlyAutomaticM3Workflow": true,
-    "providerPreflightRemainsManualInertUntilM4": true,
-    "atomicGitMaterializationRequired": true
+  "certifiedControls": {
+    "oneAtomicGitCommitPerM3Materialization": true,
+    "remoteHeadReadbackRequired": true,
+    "onlyM3ValidatorsAreAuthority": true,
+    "functionalSourceLockSeparatedFromControlPlaneHead": true,
+    "m3CheckpointIsSourceOnly": true,
+    "m3CheckpointProviderAccess": false,
+    "providerPreflightIsManualInertUntilM4": true,
+    "historicalWorkflowPushNoiseContained": true,
+    "conversationInterruptionDoesNotResetState": true,
+    "m1M2RemainClosed": true,
+    "noUnboundedAudit": true
   },
   "certificationGates": {
-    "atomicCommitApplied": false,
-    "remoteHeadReadbackMatches": false,
-    "m3SourceOnlyWorkflowPass": false,
-    "masterPlanFreezeGatePass": false,
-    "canonicalAuthorityGatePass": false,
-    "stateSyncM3GatePass": false,
-    "continuityM3GatePass": false,
-    "phaseACurrentCheckpointPass": false,
-    "providerPreflightAutoRunAbsent": false,
+    "atomicCommitApplied": true,
+    "remoteHeadReadbackMatches": true,
+    "m3SourceOnlyWorkflowPass": true,
+    "masterPlanFreezeGatePass": true,
+    "canonicalAuthorityGatePass": true,
+    "stateSyncM3GatePass": true,
+    "continuityM3GatePass": true,
+    "phaseACurrentCheckpointPass": true,
+    "providerPreflightAutoRunAbsent": true,
     "providerSideEffectsObserved": false
   },
   "safety": {"providerWrites":0,"dataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"rulesWrites":0,"cloudBuilds":0,"cloudRunUpdates":0,"hostingDeploys":0,"makeCalls":0,"geminiCalls":0,"payments":0,"g2bExecutions":0,"merge":false,"frontendFunctionalChanges":0},
-  "decision": "APPLY_VALIDATOR_CONTRACT_FIX_ATOMICALLY_THEN_REQUIRE_ONE_SOURCE_ONLY_M3_GATE",
-  "next": "M3_MECHANISM_SOURCE_ONLY_GATE"
+  "decision": "MECHANISM_CERTIFIED_PASS_CONTINUE_FINITE_M3_QUEUE",
+  "next": "M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28"
 }

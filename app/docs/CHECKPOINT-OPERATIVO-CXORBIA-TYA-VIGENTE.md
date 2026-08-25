@@ -1,42 +1,29 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-25  
-**STATE_SYNC_EPOCH:** `RC15-M2-F0-CLOSED-20260825-01`  
-**M3_MECHANISM_EPOCH:** `RC15-M3-MECHANISM-20260825-02`  
-**MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`  
-**MASTER_PLAN_STATUS:** `FROZEN`  
-**currentMasterPhase:** `M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY` — `ACTIVE`  
-**M1:** `CLOSED_PASS`  
-**M2:** `CLOSED_PASS`  
-**M3:** `MECHANISM_REPAIR_V2_AWAITING_SOURCE_ONLY_GATE`  
-**NEXT:** `M3_MECHANISM_SOURCE_ONLY_GATE`  
+**Fecha:** 2026-08-25
+**STATE_SYNC_EPOCH:** `RC15-M2-F0-CLOSED-20260825-01`
+**M3_MECHANISM_EPOCH:** `RC15-M3-MECHANISM-20260825-02`
+**MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`
+**MASTER_PLAN_STATUS:** `FROZEN`
+**currentMasterPhase:** `M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY` — `ACTIVE`
+**M1:** `CLOSED_PASS`
+**M2:** `CLOSED_PASS`
+**M3:** `MECHANISM_CERTIFIED_PASS`
+**NEXT:** `M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28`
 **PHASE_A:** `98/100`
 
-## Evidencia nueva de causa raíz del mecanismo
+## Certificación del mecanismo
 
-La primera reparación redujo el ruido histórico, pero no podía certificarse todavía. En el HEAD `0df5cae7e4a1fe9dd968170eab27269b12a8204a` ocurrieron dos fallas reproducibles y source/control-plane:
+La causa del bucle de M3 fue control-plane, no producto: mirrors/lock podían desincronizarse; workflows históricos reaccionaban a commits source-only; el checkpoint legacy confundía HEAD de control-plane con source funcional; y el provider preflight G2-B corría en fase M3. Esos defectos fueron reproducidos y corregidos.
 
-- Run `32908444518`: 17 pasos source-safe pasaron; el único fallo fue `verify-phase-a-live-execution-checkpoint.mjs` con `FUNCTIONAL_SOURCE_DRIFT`. El script leía `functionalSourceLock` en una ubicación obsoleta y delegaba al validador de continuidad superseded.
-- Run `32908444528`: el preflight G2-B se autoejecutó durante M3 y falló `G2B_SOURCE_FIREWALL_GATE_MISSING` contra el source-fix histórico `1d2cfecb...`. Esa comprobación corresponde a M4/F3, no a M3.
-
-No se observaron provider/data/deploy writes en ninguna de las dos fallas.
-
-## Reparación V2
-
-- `cxorbia-phase-a-live-checkpoint.yml` pasa a ser el gate canónico source-only de M3; no instala Firebase Admin ni accede a proveedor.
-- `verify-phase-a-live-execution-checkpoint.mjs` pasa a leer `productionState.functionalSourceLock` y a delegar exclusivamente a validadores M3.
-- `cxorbia-live-hr-provider-capability-preflight.yml` queda `workflow_dispatch`/hold durante M3; no se autoejecuta por commits de control-plane y no tiene provider authority.
-- `cxorbia-validator-authority.json` registra explícitamente estas reglas.
-- La materialización V2 debe ser un único commit Git atómico y el gate source-only debe pasar sobre ese HEAD exacto.
+El gate aislado definitivo, run `32909591852` sobre HEAD `6d31740c43f9ae98dd9f66a8b42da0affaf0bb80`, concluyó `success`. Pasaron source syntax, master-plan freeze, canonical authority, M3 state sync, M3 continuity lock y current Phase A checkpoint. Solo un workflow push se ejecutó y no hubo provider preflight automático.
 
 ## Avance M3 preservado
 
-CP011 y CP142 permanecen `INERTIZED_WITHOUT_EXECUTION`; 30 → 28 residuales. No se reabre M1/M2 ni F0.
+CP011 y CP142 permanecen `INERTIZED_WITHOUT_EXECUTION`; 30 → 28 residuales. M1/M2/F0 no se reabren.
 
-## Provider/G2-B
+## Seguridad y siguiente
 
-Cloud Run preservado `cxorbia-live-hr-dev-00011-f2f`. G2-B continúa `RECOVERY_NO_PROVIDER_SIDE_EFFECT`, retry/replay=false, providerMutationAuthorizedNow=false.
+Cloud Run preservado `cxorbia-live-hr-dev-00011-f2f`. G2-B continúa `RECOVERY_NO_PROVIDER_SIDE_EFFECT`, retry/replay=false y providerMutationAuthorizedNow=false. La certificación tuvo cero escrituras a proveedor/datos y cero deploy/merge/frontend funcional.
 
-## Siguiente exacto
-
-Aplicar la reparación V2 atómica y certificarla con el único gate M3 source-only. Si PASS, registrar `MECHANISM_CERTIFIED_PASS` y continuar inmediatamente los 28 residuales finitos. No nueva auditoría, no Tramo 15, no provider/data/deploy/merge/frontend writes.
+Continuar directamente con `M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28` usando el mecanismo certificado: lote finito, un commit atómico, readback y gate source-only. M4/F3 solo después de M3 `CLOSED_PASS`.
