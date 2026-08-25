@@ -1,63 +1,90 @@
 {
-  "schemaVersion": "cxorbia.rc15.systemic-audit.control-plane.latest.v14",
-  "generatedAt": "2026-08-23T09:45:00-06:00",
+  "schemaVersion": "cxorbia.rc15.systemic-audit.control-plane.latest.v15-finite-closure",
+  "generatedAt": "2026-08-25T12:30:00-06:00",
   "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
   "masterPlanStatus": "FROZEN",
   "phase": "F0_SYSTEMIC_AUDIT",
-  "status": "IN_PROGRESS",
-  "phaseA": {"completed":98,"pending":2,"total":100},
+  "status": "CLOSED_PASS",
+  "phaseA": {
+    "completed": 98,
+    "pending": 2,
+    "total": 100
+  },
   "masterPlanFreezeValidation": {
-    "decision":"PASS_REPLICATED_FROM_CANONICAL_GIT_IDENTITY",
-    "planGitBlobSha":"48494ebe5fc439aa6d00e6edcf2e78133357e7f3",
-    "planSha256":"2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475",
-    "providerMutationAuthorizedNow":false
+    "decision": "PASS_REPLICATED_FROM_CANONICAL_GIT_IDENTITY",
+    "planGitBlobSha": "48494ebe5fc439aa6d00e6edcf2e78133357e7f3",
+    "planSha256": "2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475",
+    "providerMutationAuthorizedNow": false
   },
   "detailedSnapshot": {
-    "path":"app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE14-DETAIL.json",
-    "findingsThrough":142
+    "path": "app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE14-DETAIL.json",
+    "findingsThrough": 142
+  },
+  "finiteClosure": {
+    "path": "app/docs/evidence/RC15-M2-FINITE-F0-CLOSURE-LATEST.json",
+    "lock": "app/docs/evidence/RC15-F0-INVENTORY-LOCK-LATEST.json",
+    "sourceHead": "6bc249a06fdeb3a5df1cdf4532e35a932e883dca",
+    "sourceTree": "b664ccfb2a84c365347b73e620a153c309381783",
+    "decision": "F0_CLOSED_PASS_FINITE_INVENTORY_EXHAUSTED_4_OF_4"
   },
   "progress": {
-    "classifiedFindings":142,
-    "holdDiscoveriesCumulative":32,
-    "containedHolds":2,
-    "currentResidualHolds":30,
-    "workflowUnion":"105/105 classified",
-    "githubFirebaseRequests":"33/33 classified",
-    "backendRequests":"6/6 classified",
-    "deployedHrLiveHttpMutationRouters":"3/3 classified",
-    "hrLiveServiceTree":"8/8 classified for execution role",
-    "toolsProduction":"2/2 classified",
-    "toolsDev":"1/1 classified",
-    "toolsBackend":"4/4 classified",
-    "empalmeTopLevelExecutableScripts":"2/2 classified",
-    "toolsIntegration":"5/5 static files classified",
-    "backendConfigExecuteMarkers":"advanced: I3/original-G2B/recovery shared workflow reconciled fail-closed; five Corte6 terminal markers checked; M8/M10 read-only; M9 historical promotion HOLD isolated",
-    "backendConfigMutativeRequestFamilies":"advanced; CP117 remains open because historicalGlobalExhaustive=false and M9 is a concrete unterminalized historical authorization",
-    "toolsReconciliation":"22 files enumerated; detailed classification in progress; one historical source writer HOLD isolated",
-    "toolsRelease":"staff exact-write V1/V2 reconciled; CP011 temp operator existing HOLD; global directory still open",
-    "toolsQa":"C6 Auth activation V1/V2 reconciled to terminal requests; global directory still open",
-    "exhaustivenessFlagsTrue":2,
-    "exhaustivenessFlagsTotal":4
+    "classifiedFindings": 142,
+    "holdDiscoveriesCumulative": 32,
+    "containedHolds": 2,
+    "currentResidualHolds": 30,
+    "workflowUnion": "105/105 classified",
+    "githubFirebaseRequests": "33/33 classified",
+    "backendRequests": "6/6 classified",
+    "deployedHrLiveHttpMutationRouters": "3/3 classified",
+    "hrLiveServiceTree": "8/8 classified for execution role",
+    "toolsProduction": "2/2 classified",
+    "toolsDev": "1/1 classified",
+    "toolsBackend": "4/4 classified",
+    "empalmeTopLevelExecutableScripts": "2/2 classified",
+    "toolsIntegration": "5/5 static files classified",
+    "backendConfig": "finite locked family classified complete",
+    "toolsReconciliation": "22/22 finite locked family classified complete",
+    "toolsQa": "finite locked family classified complete",
+    "toolsRelease": "finite locked family classified complete",
+    "exhaustivenessFlagsTrue": 4,
+    "exhaustivenessFlagsTotal": 4
   },
   "exhaustiveness": {
-    "allWorkflowsClassified":true,
-    "allWorkflowDispatchClassified":true,
-    "allRequestsClassified":false,
-    "allProviderWriteEntrypointsClassified":false
+    "allWorkflowsClassified": true,
+    "allWorkflowDispatchClassified": true,
+    "allRequestsClassified": true,
+    "allProviderWriteEntrypointsClassified": true
   },
   "containedP0": {
-    "cp093":"CONTAINED_PASS",
-    "cp119":"PASS_RC15_CP119_LEGAL_WRITE_GATE_CONTAINED",
-    "currentCloudRunRevision":"cxorbia-live-hr-dev-00011-f2f"
+    "cp093": "CONTAINED_PASS",
+    "cp119": "PASS_RC15_CP119_LEGAL_WRITE_GATE_CONTAINED",
+    "currentCloudRunRevision": "cxorbia-live-hr-dev-00011-f2f"
   },
-  "tranche14": {
-    "newFindings":["RC15-CP-139","RC15-CP-140","RC15-CP-141","RC15-CP-142"],
-    "newResidualHolds":["RC15-CP-142"],
-    "existingFindingsRevalidated":["RC15-CP-117","RC15-CP-118"],
-    "newHoldCount":1,
-    "keyDecision":"The current shared I3/G2B deploy workflow is fail-closed for stale I3/original G2B markers and for the consumed G2B recovery request, but historical M9 still carries enabled/unconsumed production promotion and conditional rollback authority and must be inertized in F1."
+  "remainingTreatment": {
+    "residualHolds": 30,
+    "f1": "Inertize historical write-capable authorities without deleting evidence.",
+    "f2": "Normalize one canonical authority, ledgers, aliases and stale validators before any provider access.",
+    "g2b": "Unchanged terminal RECOVERY_NO_PROVIDER_SIDE_EFFECT; no retry/replay; F3 only after M3 closes."
   },
-  "safety": {"providerWrites":0,"dataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"cloudBuilds":0,"cloudRunUpdates":0,"hostingDeploys":0,"rulesWrites":0,"payments":0,"makeCalls":0,"geminiCalls":0,"merge":false,"recoveryExecuted":false,"syntheticStageExecuted":false,"frontendFunctionalChanges":0},
-  "decision":"CONTINUE_F0_READONLY_EXECUTE_MARKER_SURFACE_REDUCED_ONE_NEW_HISTORICAL_PROMOTION_HOLD_CLASSIFIED",
-  "next":"F0_RC15_SYSTEMIC_AUDIT_CONTINUE_REMAINING_BACKEND_CONFIG_REQUEST_AUTHORITY_AND_PROVIDER_ENTRYPOINTS_TOOLS_QA_TOOLS_RELEASE"
+  "safety": {
+    "providerWrites": 0,
+    "dataWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "cloudBuilds": 0,
+    "cloudRunUpdates": 0,
+    "hostingDeploys": 0,
+    "rulesWrites": 0,
+    "payments": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "merge": false,
+    "recoveryExecuted": false,
+    "syntheticStageExecuted": false,
+    "frontendFunctionalChanges": 0
+  },
+  "decision": "F0_CLOSED_PASS_FINITE_INVENTORY_EXHAUSTED_4_OF_4",
+  "next": "M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY"
 }
