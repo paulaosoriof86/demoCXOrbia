@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "1.9.0",
+  "schemaVersion": "2.0.0",
   "syncEpoch": "CXORBIA-20260821-I5-G2B-FORENSIC-PROVIDER-LANE-READY-50",
-  "rc15ControlPlaneEpoch": "RC15-CP119-CONTAINED-20260821-01",
+  "rc15ControlPlaneEpoch": "RC15-M1-STATE-SYNC-20260825-01",
   "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
@@ -18,12 +18,26 @@
     "frozenAt": "2026-08-21T12:40:00-06:00",
     "freezeAuthority": "PAULA_CURRENT_CONVERSATION",
     "currentPhase": "F0_SYSTEMIC_AUDIT",
-    "currentStep": "F0_RC15_CONTROL_PLANE_WRITE_SURFACE_INVENTORY",
-    "next": "F0_RC15_SYSTEMIC_AUDIT_CONTINUE",
+    "currentStep": "M2_FINITE_F0_CLOSURE",
+    "next": "M2_FINITE_F0_CLOSURE",
     "amendmentPolicy": "PLAN_CHANGE_REQUEST_ONLY_EXPLICIT_PAULA_ATOMIC",
     "previousPlansExecutionAuthority": "SUPERSEDED_RETAINED_AS_EVIDENCE",
     "providerMutationAuthorizedNow": false,
     "validator": "tools/continuity/validate-cxorbia-master-plan-freeze.js"
+  },
+  "m1ExecutionControl": {
+    "status": "CLOSED_PASS",
+    "executionMap": "app/docs/EXECUTION-MAP-M1-M9-CXORBIA-TYA-RC15.md",
+    "canonicalState": "app/docs/evidence/RC15-M1-CANONICAL-STATE-LATEST.json",
+    "stateSyncGate": "tools/continuity/validate-cxorbia-state-sync.js",
+    "f0InventoryLock": "app/docs/evidence/RC15-F0-INVENTORY-LOCK-LATEST.json",
+    "f0InventoryGate": "tools/continuity/validate-cxorbia-f0-inventory-lock.js",
+    "sourceHead": "6bc249a06fdeb3a5df1cdf4532e35a932e883dca",
+    "sourceTree": "b664ccfb2a84c365347b73e620a153c309381783",
+    "headAfterResolution": "REMOTE_READBACK_OF_M1_ATOMIC_COMMIT",
+    "postCommitGateEvidence": "REMOTE_READBACK_PLUS_DETERMINISTIC_VALIDATION",
+    "selfReferentialHeadAfterForbidden": true,
+    "next": "M2_FINITE_F0_CLOSURE"
   },
   "resumeProtocol": {
     "conversationIndependent": true,
@@ -34,6 +48,9 @@
     "eventArtifactsDoNotOverrideTerminalReceipts": true,
     "masterPlanMustValidateBeforeAction": true,
     "masterPlanChangeRequiresPlanChangeRequest": true,
+    "stateSyncGateRequiredBeforeF0Resume": true,
+    "f0InventoryLockRequiredBeforeF0Resume": true,
+    "m1MustNotBeReopenedWithoutNewP0OrStateDrift": true,
     "onMismatch": "CONTINUITY_DRIFT_BLOCKED"
   },
   "iterations": [
@@ -63,13 +80,7 @@
     "syntheticAcceptanceScope": "CXORBIA_E2E_SYNTH_*"
   },
   "g2Acceptance": {
-    "technicalReadOnlyProductionSmoke": {
-      "status": "PASS",
-      "frozen": true,
-      "receipt": "backend/config/cxorbia-g2a-production-readonly-smoke.json",
-      "productP0Proven": false,
-      "rerunWithoutNewP0": false
-    },
+    "technicalReadOnlyProductionSmoke": {"status":"PASS","frozen":true,"receipt":"backend/config/cxorbia-g2a-production-readonly-smoke.json","productP0Proven":false,"rerunWithoutNewP0":false},
     "p0WritePathRecovery": {
       "p0Id": "G2B_CANONICAL_WRITE_PATH_DISABLED_OR_UNROUTED",
       "p0Proven": true,
@@ -86,143 +97,33 @@
       "providerMutationExecutions": 0,
       "automaticRetryAllowed": false,
       "replayAuthorized": false,
-      "recoveryExecuteArtifact": {
-        "path": "backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-execute.json",
-        "recoveryId": "i5-g2b-p0-writepath-recovery-20260821-02",
-        "eventArtifactImmutable": true,
-        "stateAuthority": false,
-        "terminalizedByReceipt": true,
-        "replayAuthorized": false
-      },
-      "providerBaseline": {
-        "cloudRunRevision": "cxorbia-live-hr-dev-00010-n78",
-        "hostingReleaseName": "sites/cxorbia-backend-dev/releases/1787196507030000"
-      },
-      "providerAfter": {
-        "cloudRunRevision": "cxorbia-live-hr-dev-00010-n78",
-        "hostingReleaseName": "sites/cxorbia-backend-dev/releases/1787196507030000"
-      },
-      "currentProviderAfterRc15Containment": {
-        "cloudRunRevision": "cxorbia-live-hr-dev-00011-f2f",
-        "changeReason": "RC15-CP-119_CONFIG_ONLY_LEGAL_WRITE_GATE_CONTAINMENT",
-        "imageChanged": false,
-        "hostingChanged": false,
-        "g2bExecuted": false
-      },
-      "forensicProviderLane": {
-        "status": "HISTORICAL_READY_STALE_AFTER_RC15_CP119_CONTAINMENT",
-        "previousDecision": "FORENSIC_PROVIDER_LANE_READY",
-        "evidence": "app/docs/evidence/I5-G2B-PROVIDER-FORENSIC-READINESS-LATEST.json",
-        "provenAtHead": "84c072bfc1033b8c10789ae0c5e758948cd44ca4",
-        "providerWritesAtOriginalProof": 0,
-        "requiresF3Revalidation": true
-      },
+      "recoveryExecuteArtifact": {"path":"backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-execute.json","recoveryId":"i5-g2b-p0-writepath-recovery-20260821-02","eventArtifactImmutable":true,"stateAuthority":false,"terminalizedByReceipt":true,"replayAuthorized":false},
+      "providerBaseline": {"cloudRunRevision":"cxorbia-live-hr-dev-00010-n78","hostingReleaseName":"sites/cxorbia-backend-dev/releases/1787196507030000"},
+      "providerAfter": {"cloudRunRevision":"cxorbia-live-hr-dev-00010-n78","hostingReleaseName":"sites/cxorbia-backend-dev/releases/1787196507030000"},
+      "currentProviderAfterRc15Containment": {"cloudRunRevision":"cxorbia-live-hr-dev-00011-f2f","changeReason":"RC15-CP-119_CONFIG_ONLY_LEGAL_WRITE_GATE_CONTAINMENT","imageChanged":false,"hostingChanged":false,"g2bExecuted":false},
+      "forensicProviderLane": {"status":"HISTORICAL_READY_STALE_AFTER_RC15_CP119_CONTAINMENT","previousDecision":"FORENSIC_PROVIDER_LANE_READY","evidence":"app/docs/evidence/I5-G2B-PROVIDER-FORENSIC-READINESS-LATEST.json","provenAtHead":"84c072bfc1033b8c10789ae0c5e758948cd44ca4","providerWritesAtOriginalProof":0,"requiresF3Revalidation":true},
       "providerBudgetsForAnyFutureRecoveryRequireNewExplicitAuthorization": true,
       "providerBusinessDataWrites": 0,
       "next": "BLOCKED_BY_RC15_F0_AND_F3_REVALIDATION_AND_REQUIRES_NEW_EXPLICIT_RECOVERY_DECISION"
     },
-    "liveInPlatformSyntheticAcceptance": {
-      "status": "BLOCKED_UNTIL_VERIFIED_G2B_P0_RECOVERY_PASS",
-      "executionPhase": "WAIT_FOR_VERIFIED_G2B_P0_RECOVERY_PASS",
-      "authorizationArtifact": "backend/config/cxorbia-g2b-live-synthetic-acceptance-request.json",
-      "authorizationArtifactIsStateAuthority": false,
-      "sameProductionUrlRequired": true,
-      "productionUrl": "https://cxorbia-backend-dev.web.app",
-      "alternatePlatformAllowed": false,
-      "localCloneOrEmulatorAllowed": false,
-      "syntheticDataOnly": true,
-      "syntheticTagPrefix": "CXORBIA_E2E_SYNTH_",
-      "cleanupAndPostCleanReadbackRequired": true,
-      "paulaObservationsCaptured": false,
-      "businessDataWritesAuthorizedNow": false,
-      "externalHrWritesAuthorizedNow": false,
-      "paymentExecutionAuthorizedNow": false,
-      "makeGeminiAuthorizedNow": false,
-      "deployAuthorizedNow": false,
-      "rebuildAuthorizedNow": false,
-      "mergeAuthorizedNow": false
-    }
+    "liveInPlatformSyntheticAcceptance": {"status":"BLOCKED_UNTIL_VERIFIED_G2B_P0_RECOVERY_PASS","executionPhase":"WAIT_FOR_VERIFIED_G2B_P0_RECOVERY_PASS","authorizationArtifact":"backend/config/cxorbia-g2b-live-synthetic-acceptance-request.json","authorizationArtifactIsStateAuthority":false,"sameProductionUrlRequired":true,"productionUrl":"https://cxorbia-backend-dev.web.app","alternatePlatformAllowed":false,"localCloneOrEmulatorAllowed":false,"syntheticDataOnly":true,"syntheticTagPrefix":"CXORBIA_E2E_SYNTH_","cleanupAndPostCleanReadbackRequired":true,"paulaObservationsCaptured":false,"businessDataWritesAuthorizedNow":false,"externalHrWritesAuthorizedNow":false,"paymentExecutionAuthorizedNow":false,"makeGeminiAuthorizedNow":false,"deployAuthorizedNow":false,"rebuildAuthorizedNow":false,"mergeAuthorizedNow":false}
   },
   "rootCauseClosures": {
-    "nonAtomicCanonicalStateDrift": {
-      "id": "RC14_NONATOMIC_CANONICAL_STATE_AND_EVENT_ARTIFACT_AUTHORITY_DRIFT",
-      "status": "MITIGATED_BY_ATOMIC_EPOCH_AND_VALIDATOR",
-      "finding": "Canonical machine state, terminal evidence, event artifacts and documentation had advanced on different epochs, allowing later iterations to read stale state.",
-      "control": "One atomic epoch across lock, consumed-gate ledger, validator and canonical documentation; immutable execute/authorization artifacts are historical events, not current state authority after terminal receipt."
-    },
-    "systemicAuditAndMethodology": {
-      "id": "RC15_SYSTEMIC_AUDIT_METHOD_CONTROL_PLANE_AND_POSTPROD",
-      "status": "ACTIVE_F0_SYSTEMIC_AUDIT",
-      "finding": "Historical execution authority can survive in PR base, request artifacts or already deployed provider configuration even after a request is consumed.",
-      "control": "Frozen F0-F10 plan, exhaustive write-surface matrix, explicit P0 containment gates, F1 historical inertization and F2 canonical authority enforcement before G2-B."
-    }
+    "nonAtomicCanonicalStateDrift": {"id":"RC14_NONATOMIC_CANONICAL_STATE_AND_EVENT_ARTIFACT_AUTHORITY_DRIFT","status":"CONTROL_STRENGTHENED_BY_M1_STATE_SYNC_GATE","finding":"Canonical machine state, terminal evidence, event artifacts and documentation had advanced on different epochs, allowing later iterations to read stale state.","control":"M1 introduces one canonical operational state plus STATE_SYNC_GATE and forbids reusing stale Tramo 11/13 mirrors when Tramo 14 evidence is authoritative."},
+    "systemicAuditAndMethodology": {"id":"RC15_SYSTEMIC_AUDIT_METHOD_CONTROL_PLANE_AND_POSTPROD","status":"ACTIVE_F0_SYSTEMIC_AUDIT_M2_FINITE_INVENTORY_LOCKED","finding":"Historical execution authority can survive in PR base, request artifacts or already deployed provider configuration even after a request is consumed.","control":"Frozen master plan plus M1 finite F0 inventory lock; M2 must finish only the locked inventory before F1/F2."}
   },
   "rc15EmergencyContainment": {
-    "cp093": {
-      "requestId": "RC15-PCR-EMERGENCY-V156-BASE-WORKFLOW-INERTIZATION-20260821-01",
-      "status": "CONTAINED_PASS",
-      "baseAfter": "fc7ead694ccdb01bee79856d47a761d34c8d88b9",
-      "providerWrites": 0,
-      "merge": false
-    },
-    "cp119": {
-      "requestId": "rc15-cp119-legal-write-gate-containment-20260821-01",
-      "authorizationSource": "current_conversation_2026-08-21T19:55:00-06:00",
-      "authorizedBy": "Paula",
-      "status": "CONTAINED_PASS",
-      "decision": "PASS_RC15_CP119_LEGAL_WRITE_GATE_CONTAINED",
-      "executionCommitSha": "95249297866afacfb98a47a5bca8c2d8b4a9ae35",
-      "workflowRunId": 32545006587,
-      "workflowJobId": 96961807381,
-      "artifactId": 9468227008,
-      "artifactDigest": "sha256:92adc7eee31b3155cb0ac0ee6caff9899b721826e34b5a08632200665355afbc",
-      "cloudRunBefore": "cxorbia-live-hr-dev-00010-n78",
-      "cloudRunAfter": "cxorbia-live-hr-dev-00011-f2f",
-      "cloudRunConfigUpdates": 1,
-      "cloudBuilds": 0,
-      "hostingDeploys": 0,
-      "dataWrites": 0,
-      "g2bExecutions": 0,
-      "merge": false,
-      "evidence": "app/docs/evidence/RC15-CP119-LEGAL-WRITE-GATE-CONTAINMENT-LATEST.json"
-    }
+    "cp093": {"requestId":"RC15-PCR-EMERGENCY-V156-BASE-WORKFLOW-INERTIZATION-20260821-01","status":"CONTAINED_PASS","baseAfter":"fc7ead694ccdb01bee79856d47a761d34c8d88b9","providerWrites":0,"merge":false},
+    "cp119": {"requestId":"rc15-cp119-legal-write-gate-containment-20260821-01","authorizationSource":"current_conversation_2026-08-21T19:55:00-06:00","authorizedBy":"Paula","status":"CONTAINED_PASS","decision":"PASS_RC15_CP119_LEGAL_WRITE_GATE_CONTAINED","executionCommitSha":"95249297866afacfb98a47a5bca8c2d8b4a9ae35","workflowRunId":32545006587,"workflowJobId":96961807381,"artifactId":9468227008,"artifactDigest":"sha256:92adc7eee31b3155cb0ac0ee6caff9899b721826e34b5a08632200665355afbc","cloudRunBefore":"cxorbia-live-hr-dev-00010-n78","cloudRunAfter":"cxorbia-live-hr-dev-00011-f2f","cloudRunConfigUpdates":1,"cloudBuilds":0,"hostingDeploys":0,"dataWrites":0,"g2bExecutions":0,"merge":false,"evidence":"app/docs/evidence/RC15-CP119-LEGAL-WRITE-GATE-CONTAINMENT-LATEST.json"}
   },
   "canonicalStateAuthority": {
-    "order": [
-      "backend/config/cxorbia-phase-a-continuity-lock.json",
-      "app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md",
-      "app/docs/evidence/RC15-MASTER-PLAN-FREEZE-LATEST.json",
-      "app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-LATEST.json",
-      "backend/config/rc15-cp119-legal-gate-containment-request.json",
-      "app/docs/evidence/RC15-CP119-LEGAL-WRITE-GATE-CONTAINMENT-LATEST.json",
-      "app/docs/evidence/I5-G2B-P0-WRITEPATH-RECOVERY-LATEST.json",
-      "backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-request.json",
-      "backend/config/cxorbia-consumed-one-shot-gates.json"
-    ],
+    "order": ["backend/config/cxorbia-phase-a-continuity-lock.json","app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md","app/docs/evidence/RC15-M1-CANONICAL-STATE-LATEST.json","app/docs/evidence/RC15-F0-INVENTORY-LOCK-LATEST.json","app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-LATEST.json","app/docs/evidence/RC15-MASTER-PLAN-FREEZE-LATEST.json","backend/config/rc15-cp119-legal-gate-containment-request.json","app/docs/evidence/RC15-CP119-LEGAL-WRITE-GATE-CONTAINMENT-LATEST.json","app/docs/evidence/I5-G2B-P0-WRITEPATH-RECOVERY-LATEST.json","backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-request.json","backend/config/cxorbia-consumed-one-shot-gates.json"],
     "masterPlanIsExecutionAuthority": true,
+    "m1CanonicalOperationalStateIsCurrentMirror": true,
+    "f0InventoryLockDefinesFiniteM2Universe": true,
     "executeAndAuthorizationArtifactsAreHistoricalEventsAfterTerminalReceipt": true,
     "prBodyIsMirrorOnly": true
   },
-  "hardStops": {
-    "reopenG1WithoutNewP0": false,
-    "rerunG2AWithoutNewP0": false,
-    "createNewBranchOrPr": false,
-    "retryOriginalG2BExecute": false,
-    "replayConsumedRecovery": false,
-    "replayCp119Containment": false,
-    "allowG2BStageBeforeRecoveryPass": false,
-    "allowFinal100BeforeLiveInPlatformSyntheticAcceptance": false,
-    "automaticRecoveryRetry": false,
-    "providerMutationDuringRC15F0": false,
-    "changeMasterPlanWithoutPlanChangeRequest": false
-  },
-  "nextNow": {
-    "action": "F0_RC15_SYSTEMIC_AUDIT_CONTINUE",
-    "masterPlanFrozen": true,
-    "currentMasterPhase": "F0_SYSTEMIC_AUDIT",
-    "currentMasterStep": "F0_RC15_CONTROL_PLANE_WRITE_SURFACE_INVENTORY",
-    "providerMutationAuthorizedNow": false,
-    "syntheticStageAuthorizedNow": false,
-    "manualActionFromPaulaRequiredForPlanFreeze": false
-  }
+  "hardStops": {"reopenG1WithoutNewP0":false,"rerunG2AWithoutNewP0":false,"createNewBranchOrPr":false,"retryOriginalG2BExecute":false,"replayConsumedRecovery":false,"replayCp119Containment":false,"allowG2BStageBeforeRecoveryPass":false,"allowFinal100BeforeLiveInPlatformSyntheticAcceptance":false,"automaticRecoveryRetry":false,"providerMutationDuringRC15F0":false,"changeMasterPlanWithoutPlanChangeRequest":false,"resumeUnboundedF0AfterM1":false},
+  "nextNow": {"action":"M2_FINITE_F0_CLOSURE","masterPlanFrozen":true,"currentMasterPhase":"F0_SYSTEMIC_AUDIT","currentMasterStep":"M2_FINITE_F0_CLOSURE","providerMutationAuthorizedNow":false,"syntheticStageAuthorizedNow":false,"manualActionFromPaulaRequiredForM1":false}
 }

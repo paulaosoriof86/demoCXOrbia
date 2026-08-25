@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "cxorbia.rc15.f0-inventory-lock.v1",
+  "generatedAt": "2026-08-25T11:36:00-06:00",
+  "lockId": "RC15-F0-INVENTORY-LOCK-M1-20260825-01",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "phase": "F0_SYSTEMIC_AUDIT",
+  "status": "LOCKED_FOR_M2",
+  "sourceSnapshot": {"head":"6bc249a06fdeb3a5df1cdf4532e35a932e883dca","tree":"b664ccfb2a84c365347b73e620a153c309381783"},
+  "rule": "M2 audits only the finite source snapshot below. No Tramo 15/unbounded discovery loop. New write-capable paths or content drift inside locked roots fail closed and require explicit governance before F0 can continue.",
+  "roots": [".github/workflows",".github/cxorbia-firebase-requests","backend/requests","backend/config","backend/functions/hr-live-service","tools/production","tools/dev","tools/backend","tools/empalme","tools/integration","tools/reconciliation","tools/qa","tools/release"],
+  "governanceExclusions": ["backend/config/cxorbia-phase-a-continuity-lock.json"],
+  "progressAtLock": {"classifiedFindings":142,"holdDiscoveriesCumulative":32,"containedHolds":2,"currentResidualHolds":30,"exhaustivenessTrue":2,"exhaustivenessTotal":4},
+  "alreadyClassified": {"workflows":"105/105","workflowDispatch":"classified","githubFirebaseRequests":"33/33","backendRequests":"6/6","deployedHrLiveHttpMutationRouters":"3/3","hrLiveServiceTree":"8/8 by execution role","toolsProduction":"2/2","toolsDev":"1/1","toolsBackend":"4/4","empalmeTopLevelExecutableScripts":"2/2","toolsIntegration":"5/5 static files"},
+  "remainingFiniteFamilies": ["backend/config remaining request authority / aliases / execute markers under CP117/CP118","tools/reconciliation remaining provider/source write entrypoints","tools/qa remaining provider write entrypoints","tools/release remaining provider/source write entrypoints"],
+  "knownHoldCarriedIntoM2": ["RC15-CP-142"],
+  "closureTarget": {"allWorkflowsClassified":true,"allWorkflowDispatchClassified":true,"allRequestsClassified":true,"allProviderWriteEntrypointsClassified":true,"exhaustiveness":"4/4","unclassifiedWriteCapableSurfaces":0},
+  "validator": "tools/continuity/validate-cxorbia-f0-inventory-lock.js"
+}

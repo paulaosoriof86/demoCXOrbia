@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "cxorbia.rc15.m1.canonical-state.v1",
+  "generatedAt": "2026-08-25T11:36:00-06:00",
+  "stateEpoch": "RC15-M1-STATE-SYNC-20260825-01",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "masterPlanVersion": "1.0.0",
+  "masterPlanStatus": "FROZEN",
+  "masterPlanSha256": "2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475",
+  "masterPlanGitBlobSha": "48494ebe5fc439aa6d00e6edcf2e78133357e7f3",
+  "phaseA": {"completed":98,"pending":2,"total":100},
+  "currentMasterPhase": "F0_SYSTEMIC_AUDIT",
+  "m1": {"status":"CLOSED_PASS","next":"M2_FINITE_F0_CLOSURE"},
+  "sourceSnapshot": {"headBefore":"6bc249a06fdeb3a5df1cdf4532e35a932e883dca","treeBefore":"b664ccfb2a84c365347b73e620a153c309381783"},
+  "authoritativeAudit": {"latestPath":"app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-LATEST.json","latestBlobSha":"c4038f36adbd3ef20df9881c3dd53d9af6f98657","detailPath":"app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE14-DETAIL.json","detailBlobSha":"a1d156c3a6823fae6275dd3cac3125979040370c","tranche":14,"classifiedFindings":142,"holdDiscoveriesCumulative":32,"containedHolds":2,"currentResidualHolds":30,"exhaustiveness":{"true":2,"total":4,"allWorkflowsClassified":true,"allWorkflowDispatchClassified":true,"allRequestsClassified":false,"allProviderWriteEntrypointsClassified":false},"newTranche14Hold":"RC15-CP-142","cp117":"OPEN","cp118":"OPEN_EXISTING_CONTROL_DRIFT"},
+  "providerState": {"providerMutationAuthorizedNow":false,"cloudRunRevision":"cxorbia-live-hr-dev-00011-f2f","g2b":"RECOVERY_NO_PROVIDER_SIDE_EFFECT","g2bRetryReplayAuthorized":false,"syntheticStageAuthorizedNow":false},
+  "gates": {"stateSyncGate":"tools/continuity/validate-cxorbia-state-sync.js","f0InventoryLock":"app/docs/evidence/RC15-F0-INVENTORY-LOCK-LATEST.json","f0InventoryGate":"tools/continuity/validate-cxorbia-f0-inventory-lock.js"},
+  "atomicity": {"singleMaterializationCommitRequired":true,"headAfterMustBeResolvedByRemoteReadback":true,"headAfterMustNotBeSelfEmbeddedInSameCommit":true,"postCommitGatePassMustBeVerifiedAgainstRemoteReadback":true},
+  "safety": {"providerWrites":0,"dataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"cloudBuilds":0,"cloudRunUpdates":0,"hostingDeploys":0,"rulesWrites":0,"payments":0,"makeCalls":0,"geminiCalls":0,"merge":false,"frontendFunctionalChanges":0}
+}
