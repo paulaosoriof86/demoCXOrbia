@@ -1,8 +1,12 @@
 {
   "schemaVersion": "cxorbia.corte4-protected-smoke-temp-operator.v1",
   "requestId": "corte4-protected-smoke-temp-operator-20260729-01",
-  "enabled": true,
-  "authorizationSource": "current_conversation",
+  "enabled": false,
+  "consumed": false,
+  "status": "HISTORICAL_INERT_M3",
+  "terminalDisposition": "INERTIZED_WITHOUT_EXECUTION",
+  "currentExecutionAuthority": false,
+  "authorizationSource": "historical_current_conversation_2026-07-29",
   "authorizationText": "Autorizo operador DEV temporal para smoke protegido de Corte 4",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
@@ -12,45 +16,26 @@
   "tenantId": "tya",
   "temporaryRole": "admin",
   "temporaryEmail": "admin.tya.dev@cxorbia-dev.example.com",
-  "mode": "EXECUTE_PROTECTED_CXDATA_SMOKE_WITH_REVERSIBLE_TEMP_AUTH",
-  "allowedProviderConfigWrites": {
-    "emailPasswordEnable": true,
-    "emailPasswordDisable": true
-  },
-  "allowedAuthUserWrites": {
-    "createTemporaryUser": 1,
-    "setTemporaryClaims": 1,
-    "deleteTemporaryUser": 1,
-    "permanentUsers": 0
-  },
-  "allowedDataWrites": {
-    "firestoreDocuments": 0,
-    "storage": 0,
-    "hr": 0,
-    "imports": 0,
-    "payments": 0
-  },
+  "mode": "HISTORICAL_INERT_NO_EXECUTION",
+  "allowedProviderConfigWrites": {"emailPasswordEnable": false, "emailPasswordDisable": false},
+  "allowedAuthUserWrites": {"createTemporaryUser": 0, "setTemporaryClaims": 0, "deleteTemporaryUser": 0, "permanentUsers": 0},
+  "allowedDataWrites": {"firestoreDocuments": 0, "storage": 0, "hr": 0, "imports": 0, "payments": 0},
   "hostingDeploy": false,
   "functions": false,
   "make": false,
   "gemini": false,
   "merge": false,
   "production": false,
-  "requiredSmoke": {
-    "browser": true,
-    "source": "firestore",
-    "empty": true,
-    "fallbackUsed": false,
-    "readOnly": true,
-    "writeMode": "disabled",
-    "preserveCxDataInterface": true,
-    "firestoreDocumentWrites": 0
+  "requiredSmoke": {"browser": false, "source": "historical_only", "empty": false, "fallbackUsed": false, "readOnly": true, "writeMode": "disabled", "preserveCxDataInterface": true, "firestoreDocumentWrites": 0},
+  "requiredCleanup": {"temporaryUserDeleted": false, "authUsersAfter": null, "emailPasswordDisabledAfter": false},
+  "historicalAuthorization": {
+    "originalAuthorizationSource": "current_conversation",
+    "originalMode": "EXECUTE_PROTECTED_CXDATA_SMOKE_WITH_REVERSIBLE_TEMP_AUTH",
+    "originalProviderConfigWrites": {"emailPasswordEnable": true, "emailPasswordDisable": true},
+    "originalAuthUserWrites": {"createTemporaryUser": 1, "setTemporaryClaims": 1, "deleteTemporaryUser": 1, "permanentUsers": 0},
+    "executionPerformedDuringM3": false
   },
-  "requiredCleanup": {
-    "temporaryUserDeleted": true,
-    "authUsersAfter": 0,
-    "emailPasswordDisabledAfter": true
-  },
+  "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-01",
   "containsPii": false,
   "containsSecrets": false
 }
