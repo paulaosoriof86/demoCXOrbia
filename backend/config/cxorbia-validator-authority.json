@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "cxorbia.rc15.validator-authority.v1",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-01",
+  "status": "ACTIVE_M3_VALIDATOR_SET",
+  "policy": {
+    "onlyListedActiveValidatorsAreStateAuthority": true,
+    "supersededValidatorsAreHistoricalEvidenceOnly": true,
+    "dynamicStateMustNotBeHardCodedIntoFrozenPlanValidator": true,
+    "stateSyncMustDeriveFromCurrentCanonicalEvidence": true,
+    "conversationInterruptionDoesNotChangeValidatorAuthority": true,
+    "newValidatorSetRequiresExplicitCanonicalEvidence": true
+  },
+  "activeValidators": [
+    "tools/continuity/validate-cxorbia-master-plan-freeze-m3.js",
+    "tools/continuity/validate-cxorbia-canonical-authority.js",
+    "tools/continuity/validate-cxorbia-state-sync-m3.js",
+    "tools/continuity/validate-cxorbia-phase-a-continuity-lock-m3.js"
+  ],
+  "supersededHistoricalValidators": [
+    {"path":"tools/continuity/validate-cxorbia-master-plan-freeze.js","reason":"Hard-coded dynamic F0/current-next assumptions inside immutable-plan validation."},
+    {"path":"tools/continuity/validate-cxorbia-state-sync.js","reason":"Hard-coded M1 epoch, M2 next and 2/4 exhaustiveness after M2 CLOSED_PASS."},
+    {"path":"tools/continuity/validate-cxorbia-phase-a-continuity-lock.js","reason":"Hard-coded pre-M1 lock/ledger schemas and stale G2-B/control-state assumptions."}
+  ],
+  "next": "M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28"
+}
