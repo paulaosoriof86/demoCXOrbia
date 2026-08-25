@@ -1,7 +1,8 @@
 {
-  "schemaVersion": "2.1.0",
+  "schemaVersion": "2.2.0",
   "syncEpoch": "CXORBIA-20260821-I5-G2B-FORENSIC-PROVIDER-LANE-READY-50",
   "rc15ControlPlaneEpoch": "RC15-M2-F0-CLOSED-20260825-01",
+  "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
   "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
@@ -21,13 +22,13 @@
     "sha256": "2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475",
     "frozenAt": "2026-08-21T12:40:00-06:00",
     "freezeAuthority": "PAULA_CURRENT_CONVERSATION",
-    "currentPhase": "F0_SYSTEMIC_AUDIT",
-    "currentStep": "M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY",
-    "next": "M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY",
+    "currentPhase": "M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY",
+    "currentStep": "M3_MECHANISM_CERTIFICATION_AND_FINITE_F1_QUEUE",
+    "next": "M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28",
     "amendmentPolicy": "PLAN_CHANGE_REQUEST_ONLY_EXPLICIT_PAULA_ATOMIC",
     "previousPlansExecutionAuthority": "SUPERSEDED_RETAINED_AS_EVIDENCE",
     "providerMutationAuthorizedNow": false,
-    "validator": "tools/continuity/validate-cxorbia-master-plan-freeze.js"
+    "validator": "tools/continuity/validate-cxorbia-master-plan-freeze-m3.js"
   },
   "m1ExecutionControl": {
     "status": "CLOSED_PASS",
@@ -58,6 +59,24 @@
     "providerMutationExecutions": 0,
     "next": "M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY"
   },
+  "m3ExecutionControl": {
+    "status": "ACTIVE_MECHANISM_REPAIR_APPLIED_CERTIFICATION_PENDING_READBACK",
+    "mechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
+    "evidence": "app/docs/evidence/RC15-M3-F1-F2-CANONICAL-AUTHORITY-LATEST.json",
+    "certificationEvidence": "app/docs/evidence/RC15-M3-MECHANISM-CERTIFICATION-LATEST.json",
+    "validatorAuthority": "backend/config/cxorbia-validator-authority.json",
+    "tombstoneRegistry": "backend/config/cxorbia-historical-authority-tombstones.json",
+    "consumedLedger": "backend/config/cxorbia-consumed-one-shot-gates.json",
+    "aliases": "backend/config/cxorbia-evidence-aliases.json",
+    "residualHoldsAtStart": 30,
+    "tombstonedHolds": 2,
+    "currentResidualHolds": 28,
+    "historicalGlobalExhaustive": false,
+    "canonicalStateAuthorityAligned": true,
+    "historicalWorkflowPushAuthorityInertized": true,
+    "providerMutationAuthorizedNow": false,
+    "next": "M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28"
+  },
   "resumeProtocol": {
     "conversationIndependent": true,
     "terminalPassSurvivesConversationInterruption": true,
@@ -72,6 +91,10 @@
     "m1MustNotBeReopenedWithoutNewP0OrStateDrift": true,
     "m2MustNotBeReopenedWithoutLockedInventoryDrift": true,
     "m3MustStartFromM2FiniteClosure": true,
+    "m3ValidatorAuthorityRequired": true,
+    "historicalValidatorsNeverOverrideM3": true,
+    "historicalWorkflowPushMustBeInert": true,
+    "oneAtomicGitCommitPerM3Materialization": true,
     "onMismatch": "CONTINUITY_DRIFT_BLOCKED"
   },
   "iterations": [
@@ -165,15 +188,21 @@
   "rootCauseClosures": {
     "nonAtomicCanonicalStateDrift": {
       "id": "RC14_NONATOMIC_CANONICAL_STATE_AND_EVENT_ARTIFACT_AUTHORITY_DRIFT",
-      "status": "CONTROL_STRENGTHENED_BY_M1_STATE_SYNC_GATE",
-      "finding": "Canonical machine state, terminal evidence, event artifacts and documentation had advanced on different epochs, allowing later iterations to read stale state.",
-      "control": "M1 introduced one canonical operational state plus STATE_SYNC_GATE and forbids stale mirrors."
+      "status": "M3_ATOMIC_CONTROL_REPAIRED_PENDING_POST_COMMIT_CERTIFICATION",
+      "finding": "Canonical machine state, terminal evidence, event artifacts, validators and mirrors had advanced on different epochs, allowing later iterations to read stale state.",
+      "control": "M3 binds dynamic execution state to the continuity lock, explicit validator authority, tombstones, ledger and aliases; subsequent M3 materializations use one atomic Git commit plus remote readback."
     },
     "systemicAuditAndMethodology": {
       "id": "RC15_SYSTEMIC_AUDIT_METHOD_CONTROL_PLANE_AND_POSTPROD",
-      "status": "F0_CLOSED_PASS_M2_FINITE_INVENTORY_4_OF_4",
-      "finding": "Historical execution authority can survive in PR base, request artifacts, direct tools or deployed provider configuration after historical requests are consumed.",
-      "control": "M2 exhaustively classified the finite M1-locked inventory. M3 now inertizes residual historical authority and normalizes a single canonical execution authority."
+      "status": "M3_ACTIVE_FINITE_28_REMAINING",
+      "finding": "Historical execution authority can survive in PR base, request artifacts, direct tools, workflows or deployed provider configuration after historical requests are consumed.",
+      "control": "M2 exhaustively classified the finite M1-locked inventory. M3 inertizes residual historical authority and normalizes a single canonical execution authority."
+    },
+    "workflowPushFailureNoise": {
+      "id": "RC15_M3_INVALID_HISTORICAL_WORKFLOW_PUSH_FAILURE_NOISE",
+      "status": "REPAIR_APPLIED_PENDING_POST_COMMIT_READBACK",
+      "finding": "Nineteen sequential M3 source-only commits produced 78 instantaneous failed push workflow runs; the four current-head failures had zero jobs and no artifacts, proving no workflow job/provider execution but demonstrating an unsafe control-plane noise loop.",
+      "control": "The four implicated historical workflows are replaced atomically by inert workflow_dispatch-only stubs with contents:read and no provider/data/deploy/Auth capability."
     }
   },
   "rc15EmergencyContainment": {
@@ -185,20 +214,26 @@
       "backend/config/cxorbia-phase-a-continuity-lock.json",
       "app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md",
       "app/docs/evidence/RC15-M2-FINITE-F0-CLOSURE-LATEST.json",
-      "app/docs/evidence/RC15-M1-CANONICAL-STATE-LATEST.json",
+      "app/docs/evidence/RC15-M3-F1-F2-CANONICAL-AUTHORITY-LATEST.json",
+      "app/docs/evidence/RC15-M3-MECHANISM-CERTIFICATION-LATEST.json",
+      "backend/config/cxorbia-validator-authority.json",
+      "backend/config/cxorbia-historical-authority-tombstones.json",
+      "backend/config/cxorbia-consumed-one-shot-gates.json",
+      "backend/config/cxorbia-evidence-aliases.json",
       "app/docs/evidence/RC15-F0-INVENTORY-LOCK-LATEST.json",
       "app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-LATEST.json",
-      "app/docs/evidence/RC15-MASTER-PLAN-FREEZE-LATEST.json",
-      "backend/config/rc15-cp119-legal-gate-containment-request.json",
       "app/docs/evidence/RC15-CP119-LEGAL-WRITE-GATE-CONTAINMENT-LATEST.json",
-      "app/docs/evidence/I5-G2B-P0-WRITEPATH-RECOVERY-LATEST.json",
-      "backend/config/cxorbia-g2b-p0-writepath-deploy-recovery-request.json",
-      "backend/config/cxorbia-consumed-one-shot-gates.json"
+      "app/docs/evidence/I5-G2B-P0-WRITEPATH-RECOVERY-LATEST.json"
     ],
     "masterPlanIsExecutionAuthority": true,
     "m1CanonicalOperationalStateIsCurrentMirror": false,
-    "m2FiniteClosureIsCurrentMirror": true,
-    "f0InventoryLockDefinesFiniteM2Universe": true,
+    "m2FiniteClosureDefinesClosedAuditUniverse": true,
+    "m3CanonicalAuthorityIsCurrentDynamicMirror": true,
+    "m3CertificationIsMechanismGate": true,
+    "validatorAuthorityIsExplicit": true,
+    "historicalTombstonesNeverAuthorizeExecution": true,
+    "consumedLedgerOnlyRecordsExecutedOneShots": true,
+    "aliasesNeverAuthorizeExecution": true,
     "executeAndAuthorizationArtifactsAreHistoricalEventsAfterTerminalReceipt": true,
     "prBodyIsMirrorOnly": true
   },
@@ -215,15 +250,17 @@
     "providerMutationDuringRC15F0": false,
     "changeMasterPlanWithoutPlanChangeRequest": false,
     "resumeUnboundedF0AfterM1": false,
-    "reopenM2FiniteAuditWithoutLockedInventoryDrift": false
+    "reopenM2FiniteAuditWithoutLockedInventoryDrift": false,
+    "allowHistoricalWorkflowProviderExecutionDuringM3": false,
+    "allowSequentialContentsCommitsForM3CanonicalState": false
   },
   "nextNow": {
-    "action": "M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY",
+    "action": "M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28",
     "masterPlanFrozen": true,
-    "currentMasterPhase": "F0_SYSTEMIC_AUDIT",
-    "currentMasterStep": "M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY",
+    "currentMasterPhase": "M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY",
+    "currentMasterStep": "M3_MECHANISM_CERTIFICATION_AND_FINITE_F1_QUEUE",
     "providerMutationAuthorizedNow": false,
     "syntheticStageAuthorizedNow": false,
-    "manualActionFromPaulaRequiredForM2": false
+    "manualActionFromPaulaRequired": false
   }
 }

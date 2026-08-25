@@ -2,38 +2,36 @@
 
 **Fecha:** 2026-08-25  
 **STATE_SYNC_EPOCH:** `RC15-M2-F0-CLOSED-20260825-01`  
-**M3_MECHANISM_EPOCH:** `RC15-M3-MECHANISM-20260825-01`  
+**M3_MECHANISM_EPOCH:** `RC15-M3-MECHANISM-20260825-02`  
 **MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`  
 **MASTER_PLAN_STATUS:** `FROZEN`  
 **currentMasterPhase:** `M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY` — `ACTIVE`  
 **M1:** `CLOSED_PASS`  
 **M2:** `CLOSED_PASS`  
-**M3:** `ACTIVE_MECHANISM_CORRECTED_2_OF_30_TOMBSTONED`  
+**M3:** `MECHANISM_REPAIR_APPLIED_CERTIFICATION_PENDING_READBACK`  
 **NEXT:** `M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28`  
 **PHASE_A:** `98/100`
 
-## Avance M3 comprobable
+## Hallazgo de certificación
 
-Se creó un set de validadores M3 explícitamente autoritativo para que los validadores antiguos hard-codeados a M1/M2 no vuelvan a dirigir la continuidad. La autoridad está registrada en `backend/config/cxorbia-validator-authority.json` y el gate canónico es `tools/continuity/validate-cxorbia-canonical-authority.js`.
+El mecanismo anterior no podía certificarse: `cxorbia-phase-a-continuity-lock.json` seguía en F0/M2 mientras el índice/checkpoint ya estaban en M3. Además, 19 commits secuenciales de materialización M3 produjeron 78 fallas push de workflows históricos. En el HEAD pre-reparación, los cuatro workflows implicados tuvieron cero jobs; el runtime run tuvo cero artefactos. No se observó provider execution desde esas fallas.
 
-F1 inertizó dos autoridades históricas concretas sin ejecutar sus capacidades:
-- `RC15-CP-011` Corte4 protected smoke: `enabled=false`, budgets Auth/provider/data=0, `INERTIZED_WITHOUT_EXECUTION`.
-- `RC15-CP-142` M9 promotion/rollback: `enabled=false`, promociones=0, rollbacks=0, `INERTIZED_WITHOUT_EXECUTION`.
+## Reparación aplicada en este hito
 
-Resultado de tratamiento M3: **30 → 28 HOLD residuales**. El ledger de consumidos no se adulteró: una autoridad nunca ejecutada no se marca como consumida.
+- Continuity lock alineado a M3 y a los validadores M3 vigentes.
+- Autoridad de validadores explícita y separada de validadores históricos.
+- Cuatro workflows históricos con capacidad de deploy/Auth/Hosting reemplazados por stubs inertes sin push y sin capacidad de mutación.
+- Estado canónico materializado mediante un único commit Git atómico.
+- Readback remoto + inspección de Actions son condición obligatoria para `CERTIFIED_PASS`.
 
-## Mecanismo permanente
+## Avance M3 preservado
 
-`backend/config/cxorbia-historical-authority-tombstones.json` separa autoridad histórica de ejecuciones realmente consumidas y fija una cola finita tomada únicamente del inventario M2. Los aliases quedaron explícitamente sin autoridad de ejecución. Los validadores M3 derivan el estado del cierre M2 y de la evidencia M3 actual, no de literales de una iteración anterior.
-
-## Incidente de materialización
-
-El conector de contenidos materializó las piezas iniciales M3 en commits consecutivos, no en el único commit atómico previsto. No hubo provider/data/deploy side effects. Por ello el hito no se considera cerrado hasta completar readback integral del conjunto sincronizado; el incidente está documentado en `app/docs/CAMBIOS-BACKEND-M3-MECANISMO-20260825.md`.
+CP011 y CP142 permanecen `INERTIZED_WITHOUT_EXECUTION`. Tratamiento vivo: 30 → 28 residuales. El consumed ledger no marca como consumidas autoridades nunca ejecutadas.
 
 ## Provider/G2-B
 
-Cloud Run actual preservado `cxorbia-live-hr-dev-00011-f2f`. G2-B continúa `RECOVERY_NO_PROVIDER_SIDE_EFFECT`, sin retry/replay. Provider mutation authorized now=false.
+Cloud Run preservado `cxorbia-live-hr-dev-00011-f2f`. G2-B continúa `RECOVERY_NO_PROVIDER_SIDE_EFFECT`, retry/replay=false y providerMutationAuthorizedNow=false.
 
-## Siguiente
+## Siguiente exacto
 
-Completar readback del hito y continuar la cola finita F1 de 28 residuales. No nueva auditoría, no Tramo 15, no provider/data/deploy/merge/frontend writes.
+Completar readback del commit atómico y certificar. Si PASS, continuar la cola finita de 28 residuales. No nueva auditoría, no Tramo 15, no provider/data/deploy/merge/frontend writes.

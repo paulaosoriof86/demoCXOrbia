@@ -1,9 +1,9 @@
 {
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
   "syncEpoch": "CXORBIA-20260821-I5-G2B-FORENSIC-PROVIDER-LANE-READY-50",
   "rc15ControlPlaneEpoch": "RC15-M2-F0-CLOSED-20260825-01",
-  "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-01",
+  "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
   "updatedAt": "2026-08-25",
   "policy": {
     "consumedRequestsAreImmutable": true,
@@ -14,7 +14,8 @@
     "terminalReceiptOverridesHistoricalEventArtifactFlags": true,
     "eventArtifactDoesNotAuthorizeReplay": true,
     "neverExecutedHistoricalAuthorityMustNotBeMarkedConsumed": true,
-    "historicalTombstonesNeverAuthorizeExecution": true
+    "historicalTombstonesNeverAuthorizeExecution": true,
+    "canonicalStateMaterializationMustBeAtomic": true
   },
   "coverage": {
     "historicalGlobalExhaustive": false,

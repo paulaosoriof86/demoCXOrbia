@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "cxorbia.rc15.m3.mechanism-certification.v1",
+  "generatedAt": "2026-08-25T16:55:00-06:00",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
+  "sourceHeadBefore": "0e5ced7b44229cda72250b5ab80a4500506a2d6d",
+  "sourceTreeBefore": "bcb41594a18f4e55346c7479e34cb22f250686bd",
+  "block": "M3_MECHANISM_CERTIFICATION",
+  "status": "REPAIR_APPLIED_AWAITING_REMOTE_READBACK",
+  "certified": false,
+  "phaseA": {"completed": 98, "pending": 2, "total": 100},
+  "defectsProven": [
+    {
+      "id": "M3_CANONICAL_LOCK_DRIFT",
+      "evidence": "The canonical index already declared M3 active while backend/config/cxorbia-phase-a-continuity-lock.json still declared masterPlan.currentPhase=F0_SYSTEMIC_AUDIT and referenced superseded M1/M2 validators.",
+      "severity": "CONTROL_PLANE_BLOCKER"
+    },
+    {
+      "id": "M3_HISTORICAL_WORKFLOW_PUSH_NOISE",
+      "evidence": "Nineteen sequential M3 source-only commits produced 78 failed push workflow runs in the inspected window; zero successful push runs were returned. At the current pre-repair head, four historical workflows failed immediately with zero jobs; the runtime run also produced zero artifacts.",
+      "severity": "CONTROL_PLANE_BLOCKER"
+    }
+  ],
+  "preRepairRunEvidence": {
+    "windowUtc": "2026-08-25T22:29:00Z/2026-08-25T22:45:00Z",
+    "failedPushRuns": 78,
+    "successfulPushRuns": 0,
+    "currentHeadFailedRuns": 4,
+    "currentHeadFailedRunIds": [32907032623,32907031721,32907030161,32907030972],
+    "currentHeadJobsObserved": 0,
+    "runtimeRunArtifactsObserved": 0,
+    "providerExecutionFromThoseRunsObserved": false
+  },
+  "repair": {
+    "atomicGitMaterializationRequired": true,
+    "continuityLockAlignedToM3": true,
+    "explicitValidatorAuthorityRequired": true,
+    "historicalWorkflowPushAuthorityInertized": [
+      ".github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml",
+      ".github/workflows/cxorbia-auth-preactivation-route-action.yml",
+      ".github/workflows/cxorbia-corte4-hosting-dev-visual.yml",
+      ".github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml"
+    ],
+    "historicalWorkflowsRetainedInGitHistory": true,
+    "currentHistoricalWorkflowPermissions": "contents:read only",
+    "currentHistoricalWorkflowTrigger": "workflow_dispatch only",
+    "currentHistoricalWorkflowMutationAuthority": false
+  },
+  "certificationGates": {
+    "atomicCommitApplied": false,
+    "remoteHeadReadbackMatches": false,
+    "continuityLockReadbackPass": false,
+    "validatorAuthorityReadbackPass": false,
+    "historicalWorkflowInertReadbackPass": false,
+    "postRepairPushRunInspectionPass": false,
+    "providerSideEffectsObserved": false
+  },
+  "safety": {
+    "providerWrites": 0,
+    "dataWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "cloudBuilds": 0,
+    "cloudRunUpdates": 0,
+    "hostingDeploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "payments": 0,
+    "g2bExecutions": 0,
+    "merge": false,
+    "frontendFunctionalChanges": 0
+  },
+  "next": "APPLY_ATOMIC_REPAIR_THEN_REMOTE_READBACK_AND_ACTIONS_INSPECTION"
+}

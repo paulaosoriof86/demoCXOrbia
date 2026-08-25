@@ -1,9 +1,9 @@
 {
-  "schemaVersion": "1.4.0",
+  "schemaVersion": "1.5.0",
   "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
   "syncEpoch": "CXORBIA-20260821-I5-G2B-FORENSIC-PROVIDER-LANE-READY-50",
   "rc15ControlPlaneEpoch": "RC15-M2-F0-CLOSED-20260825-01",
-  "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-01",
+  "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
   "updatedAt": "2026-08-25",
   "policy": {
     "aliasesDoNotCreateNewWork": true,
@@ -11,7 +11,8 @@
     "frozenPassEvidenceIsReusedUnlessNewP0Proven": true,
     "namingDifferenceDoesNotAuthorizeRerun": true,
     "conversationInterruptionDoesNotInvalidateTerminalPass": true,
-    "historicalEventFlagsDoNotOverrideCanonicalState": true
+    "historicalEventFlagsDoNotOverrideCanonicalState": true,
+    "canonicalStateMaterializationMustBeAtomic": true
   },
   "aliases": [
     {"evidenceName":"PASS_I3_HISTORICAL_SHOPPER_LOGIN_AFTER_EXACT_RECOVERY","canonicalMeaning":"SHOPPER_HISTORICAL_AUTH_PASS","state":"FROZEN_REUSE","rerunPolicy":"NO_RERUN_WITHOUT_P0_PROVEN","evidenceRef":"app/docs/evidence/ITERATION3-HISTORICAL-SHOPPER-LOGIN-CHECKPOINT-LATEST.json"},
