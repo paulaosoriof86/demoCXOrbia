@@ -1,0 +1,32 @@
+#!/usr/bin/env node
+'use strict';
+const fs=require('fs'),path=require('path'),cp=require('child_process');
+const root=path.resolve(__dirname,'..','..');
+const fail=m=>{console.error(`CONTINUITY_DRIFT_BLOCKED: ${m}`);process.exit(2);};
+const json=p=>{try{return JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));}catch(e){fail(`json:${p}:${e.message}`);}};
+const lock=json('backend/config/cxorbia-phase-a-continuity-lock.json');
+const ledger=json('backend/config/cxorbia-consumed-one-shot-gates.json');
+const aliases=json('backend/config/cxorbia-evidence-aliases.json');
+const m3=json('app/docs/evidence/RC15-M3-F1-F2-CANONICAL-AUTHORITY-LATEST.json');
+const tomb=json('backend/config/cxorbia-historical-authority-tombstones.json');
+if(Number(String(lock.schemaVersion||'0').split('.')[0])<2)fail('lock_schema_pre_m1');
+if(lock.planId!=='CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE'||lock.masterPlan?.id!=='CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1'||lock.masterPlan?.status!=='FROZEN')fail('plan_identity');
+if(lock.repository!=='paulaosoriof86/demoCXOrbia'||lock.branch!=='docs-tya-v6-v71-audit'||Number(lock.pullRequest)!==7)fail('repository_lane');
+if(Number(lock.formalProgress?.completed)!==98||Number(lock.formalProgress?.pending)!==2||Number(lock.formalProgress?.total)!==100)fail('formal_progress');
+if(lock.m1ExecutionControl?.status!=='CLOSED_PASS'||lock.m2ExecutionControl?.status!=='CLOSED_PASS')fail('m1_m2_state');
+if(lock.resumeProtocol?.canonicalStateMustAdvanceAtomically!==true||lock.resumeProtocol?.eventArtifactsDoNotOverrideTerminalReceipts!==true||lock.resumeProtocol?.onMismatch!=='CONTINUITY_DRIFT_BLOCKED')fail('resume_protocol');
+if(lock.masterPlan?.providerMutationAuthorizedNow!==false||lock.productionState?.businessDataWritesAuthorized!==false)fail('current_write_authority');
+const p0=lock.g2Acceptance?.p0WritePathRecovery;
+if(p0?.p0Id!=='G2B_CANONICAL_WRITE_PATH_DISABLED_OR_UNROUTED'||p0.p0Proven!==true||p0.latestRecoveryDecision!=='RECOVERY_NO_PROVIDER_SIDE_EFFECT'||p0.replayAuthorized!==false||p0.automaticRetryAllowed!==false||Number(p0.providerMutationExecutions)!==0)fail('g2b_recovery');
+const stage=lock.g2Acceptance?.liveInPlatformSyntheticAcceptance;
+if(stage?.status!=='BLOCKED_UNTIL_VERIFIED_G2B_P0_RECOVERY_PASS'||stage.businessDataWritesAuthorizedNow!==false||stage.externalHrWritesAuthorizedNow!==false||stage.paymentExecutionAuthorizedNow!==false||stage.makeGeminiAuthorizedNow!==false||stage.deployAuthorizedNow!==false||stage.rebuildAuthorizedNow!==false||stage.mergeAuthorizedNow!==false)fail('synthetic_stage');
+if(ledger.policy?.consumedRequestsAreImmutable!==true||ledger.policy?.rerunSameRequestIdAllowed!==false||ledger.policy?.terminalReceiptOverridesHistoricalEventArtifactFlags!==true||ledger.policy?.neverExecutedHistoricalAuthorityMustNotBeMarkedConsumed!==true)fail('ledger_policy');
+for(const id of ['i5-g2b-p0-writepath-recovery-20260820-01','i5-g2b-p0-writepath-recovery-20260821-02']){const row=ledger.consumedRequests?.find(x=>x.requestId===id);if(!row||row.decision!=='RECOVERY_NO_PROVIDER_SIDE_EFFECT'||Number(row.providerMutationExecutions)!==0||row.automaticRetryAllowed!==false||row.rerunSameRequestId!==false||row.merge!==false)fail(`consumed_recovery:${id}`);}
+if(aliases.policy?.aliasesDoNotCreateNewWork!==true||aliases.policy?.aliasesNeverAuthorizeExecution!==true||aliases.policy?.namingDifferenceDoesNotAuthorizeRerun!==true||aliases.policy?.conversationInterruptionDoesNotInvalidateTerminalPass!==true)fail('alias_policy');
+if(m3.m3MechanismEpoch!=='RC15-M3-MECHANISM-20260825-01'||tomb.m3MechanismEpoch!=='RC15-M3-MECHANISM-20260825-01'||Number(m3.f1?.currentResidualHolds)!==28||Number(tomb.progress?.currentResidualHolds)!==28)fail('m3_mechanism_state');
+const gate=cp.spawnSync(process.execPath,[path.join(root,'tools/continuity/validate-cxorbia-canonical-authority.js')],{cwd:root,encoding:'utf8'});if(gate.status!==0)fail(`canonical_authority:${(gate.stderr||gate.stdout||'').trim()}`);
+console.log('CONTINUITY_M3_ATOMIC_SYNC_PASS');
+console.log('formalProgress=98/100');
+console.log('M1=CLOSED_PASS');console.log('M2=CLOSED_PASS');console.log('M3=ACTIVE_2_OF_30_TOMBSTONED');
+console.log('providerMutations=0');console.log('G2B=RECOVERY_NO_PROVIDER_SIDE_EFFECT_NO_RETRY_REPLAY');
+console.log('nextAction=M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28');
