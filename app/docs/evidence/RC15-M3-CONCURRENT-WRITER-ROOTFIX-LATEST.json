@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "cxorbia.rc15.m3.concurrent-writer-rootfix.v1",
+  "generatedAt": "2026-08-25T20:30:00-06:00",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
+  "phase": "M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY",
+  "sourceHeadBefore": "e522cd90b9c020187bb5a86d02688fb532804411",
+  "status": "ROOTFIX_MATERIALIZED_REQUIRES_REMOTE_READBACK_AND_SOURCE_ONLY_GATE",
+  "rootCauseEvidence": {
+    "restoreCommit": "c74779105700714efc5d7ad75756a676dd6a8c7a",
+    "restoreMessage": "M3 restore protected source after failed quarantine attempt",
+    "automaticWorkflow": ".github/workflows/cxorbia-phase-a-live-hr-read-probe.yml",
+    "workflowRunId": 32917331228,
+    "event": "push",
+    "workflowHadContentsWrite": true,
+    "workflowHadDirectGitPushToLiveBranch": true,
+    "botCommit": "f164110bfe09fc817a451e9e3bb6f4503578c164",
+    "botCommitMessage": "evidence: freeze current HR source-safe through July",
+    "botCommitParent": "c74779105700714efc5d7ad75756a676dd6a8c7a",
+    "conclusion": "A broad source restore reactivated historical workflow authority and produced an asynchronous branch mutation outside the intended M3 atomic materialization."
+  },
+  "repair": {
+    "strategy": "WORKFLOW_ONLY_QUARANTINE_NO_FUNCTIONAL_TOOL_OR_RUNTIME_RESTORE",
+    "historicalWorkflowCount": 22,
+    "inertBlobSha": "db925bb2823aa52ddfe36343567e6be5aace8f65",
+    "inertContract": {
+      "trigger": "workflow_dispatch_only",
+      "contentsPermission": "read",
+      "jobCondition": "false",
+      "providerAccess": false,
+      "repositoryPush": false
+    },
+    "canonicalCheckpointPreserved": ".github/workflows/cxorbia-phase-a-live-checkpoint.yml",
+    "canonicalValidator": "tools/continuity/validate-cxorbia-canonical-authority.js",
+    "validatorFailsClosedOnHistoricalWorkflowRestore": true,
+    "functionalRuntimeTouched": false,
+    "functionalToolsTouched": false,
+    "appCoreTouched": false,
+    "appModulesTouched": false
+  },
+  "progress": {
+    "currentResidualHoldsBefore": 27,
+    "currentResidualHoldsAfter": 27,
+    "backlogProgressClaimed": false,
+    "reason": "Reproducible mechanism blocker rootfix; no tombstone is fabricated."
+  },
+  "postCommitGate": {
+    "required": true,
+    "expectedAutomaticWorkflow": ".github/workflows/cxorbia-phase-a-live-checkpoint.yml",
+    "expectedHistoricalAutomaticRuns": 0,
+    "expectedBotBranchCommits": 0,
+    "expectedProviderSideEffects": 0
+  },
+  "safety": {
+    "providerWrites": 0,
+    "dataWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "cloudBuilds": 0,
+    "cloudRunUpdates": 0,
+    "hostingDeploys": 0,
+    "payments": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "g2bExecutions": 0,
+    "merge": false,
+    "frontendFunctionalChanges": 0
+  }
+}

@@ -1,96 +1,14 @@
-name: CXOrbia TyA Visit Identity Crosswalk Readonly
+name: CXOrbia Historical Authority Inert M3
 
 on:
-  push:
-    branches:
-      - docs-tya-v6-v71-audit
-    paths:
-      - '.github/cxorbia-firebase-requests/visit-identity-crosswalk-readonly.json'
+  workflow_dispatch:
 
 permissions:
-  contents: write
-  statuses: write
+  contents: read
 
 jobs:
-  crosswalk:
+  historical-inert:
+    if: ${{ false }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - name: Validate authorization request
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const r=require('./.github/cxorbia-firebase-requests/visit-identity-crosswalk-readonly.json');
-          if(r.enabled!==true) process.exit(1);
-          if(r.mode!=='READ_ONLY_VISIT_IDENTITY_CROSSWALK') process.exit(1);
-          if(r.projectId!=='cxorbia-backend-dev'||r.tenantId!=='tya') process.exit(1);
-          if(r.hrSourceSafe!==true||r.legacyVisitsRead!==false) process.exit(1);
-          if(r.allowedIdentityEvidence!=='hrRowId|sourceSheet+sourceRow|visitId') process.exit(1);
-          if(r.nameMatching!==false) process.exit(1);
-          if(r.providerWrites!==0||r.authChanges!==false||r.deploy!==false||r.production!==false||r.merge!==false) process.exit(1);
-          NODE
-      - name: Load canonical DEV credential
-        env:
-          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-        run: |
-          set -euo pipefail
-          mkdir -p .tmp/visit-crosswalk-private
-          node <<'NODE'
-          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw);}catch{}
-          if(!(p&&p.type==='service_account'&&p.project_id&&p.client_email&&p.private_key)) process.exit(1);
-          if(p.project_id!=='cxorbia-backend-dev') process.exit(1);
-          fs.writeFileSync('.tmp/visit-crosswalk-private/credentials.json',raw,{mode:0o600});
-          NODE
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.tmp/visit-crosswalk-private/credentials.json" >> "$GITHUB_ENV"
-      - name: Install transient Firebase Admin
-        run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
-      - name: Validate crosswalk script
-        run: node --check tools/reconciliation/tya-visit-identity-crosswalk-readonly.mjs
-      - name: Run authorized read-only crosswalk against current HR through July
-        env:
-          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
-          CXORBIA_HR_SOURCE_SAFE: app/data/tya-hr-source-safe-current-through-july.js
-        run: node tools/reconciliation/tya-visit-identity-crosswalk-readonly.mjs
-      - name: Validate safety evidence
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const r=require('./app/docs/evidence/VISIT-IDENTITY-CROSSWALK-READONLY-LATEST.json');const s=r.safety||{};
-          if(r.authorizationScope!=='READ_ONLY_HR_SOURCE_SAFE_PLUS_CANONICAL_EXISTING_VISITS_IDENTITY_ONLY') process.exit(1);
-          if(r.target?.projectId!=='cxorbia-backend-dev'||r.target?.tenantId!=='tya'||r.target?.readOnly!==true) process.exit(1);
-          if(r.sources?.hr?.file!=='app/data/tya-hr-source-safe-current-through-july.js') process.exit(1);
-          if(r.policy?.nameMatching!==false||r.policy?.emailMatching!==false||r.policy?.phoneMatching!==false) process.exit(1);
-          if(s.firestoreWrites!==0||s.authWrites!==0||s.storageWrites!==0||s.hrWrites!==0||s.deploys!==0||s.production!==false||s.merge!==false||s.legacyVisitsRead!==false) process.exit(1);
-          NODE
-      - name: Commit sanitized evidence on latest branch head
-        run: |
-          set -euo pipefail
-          cp app/docs/evidence/VISIT-IDENTITY-CROSSWALK-READONLY-LATEST.json /tmp/visit-crosswalk.json
-          cp app/docs/evidence/VISIT-IDENTITY-CROSSWALK-READONLY-LATEST.md /tmp/visit-crosswalk.md
-          git fetch origin docs-tya-v6-v71-audit
-          git reset --hard origin/docs-tya-v6-v71-audit
-          mkdir -p app/docs/evidence
-          cp /tmp/visit-crosswalk.json app/docs/evidence/VISIT-IDENTITY-CROSSWALK-READONLY-LATEST.json
-          cp /tmp/visit-crosswalk.md app/docs/evidence/VISIT-IDENTITY-CROSSWALK-READONLY-LATEST.md
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/docs/evidence/VISIT-IDENTITY-CROSSWALK-READONLY-LATEST.*
-          if ! git diff --cached --quiet; then git commit -m 'evidence: refresh visit identity crosswalk from current HR'; git push origin HEAD:docs-tya-v6-v71-audit; fi
-      - name: Publish status
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          STATE=error; DESC='HOLD_VISIT_IDENTITY_CROSSWALK_READONLY'
-          if [ -f app/docs/evidence/VISIT-IDENTITY-CROSSWALK-READONLY-LATEST.json ]; then STATE=success; DESC='PASS_VISIT_IDENTITY_CROSSWALK_CURRENT_HR'; fi
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/visit-identity-crosswalk-readonly' -f description="$DESC" >/dev/null
-      - name: Cleanup credential
-        if: always()
-        run: rm -rf .tmp/visit-crosswalk-private
+      - run: echo 'HISTORICAL_INERT_M3: this RC15 historical authority is evidence only and has no current execution authority.'

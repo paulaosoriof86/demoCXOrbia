@@ -1,93 +1,14 @@
-name: CXOrbia TyA Remaining Shopper Identity Reconciliation Readonly
+name: CXOrbia Historical Authority Inert M3
 
 on:
-  push:
-    branches:
-      - docs-tya-v6-v71-audit
-    paths:
-      - '.github/cxorbia-firebase-requests/remaining-shopper-identity-reconciliation-readonly.json'
+  workflow_dispatch:
 
 permissions:
-  contents: write
-  statuses: write
+  contents: read
 
 jobs:
-  reconcile:
+  historical-inert:
+    if: ${{ false }}
     runs-on: ubuntu-latest
-    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - name: Validate authorization request
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const r=require('./.github/cxorbia-firebase-requests/remaining-shopper-identity-reconciliation-readonly.json');
-          if(r.enabled!==true) process.exit(1);
-          if(r.mode!=='READ_ONLY_REAL_IDENTITY_RECONCILIATION_CURRENT_UNRESOLVED') process.exit(1);
-          if(r.legacyProjectId!=='tya-plataforma'||r.canonicalProjectId!=='cxorbia-backend-dev'||r.tenantId!=='tya') process.exit(1);
-          if(r.scope!=='current_unresolved_shopper_refs+real_identity+certification_linkage') process.exit(1);
-          if(r.rawPiiInGitHub!==false||r.nameOnlyAutoMerge!==false) process.exit(1);
-          if(r.providerWrites!==0||r.authChanges!==false||r.deploy!==false||r.merge!==false||r.production!==false) process.exit(1);
-          NODE
-      - name: Load canonical DEV credential
-        env:
-          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-        run: |
-          set -euo pipefail
-          mkdir -p .tmp/current-identity-private
-          node <<'NODE'
-          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw);}catch{}
-          if(!(p&&p.type==='service_account'&&p.project_id&&p.client_email&&p.private_key)) process.exit(1);
-          if(p.project_id!=='cxorbia-backend-dev') process.exit(1);
-          fs.writeFileSync('.tmp/current-identity-private/credentials.json',raw,{mode:0o600});
-          NODE
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.tmp/current-identity-private/credentials.json" >> "$GITHUB_ENV"
-      - name: Install transient Firebase Admin
-        run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
-      - name: Validate reconciliation script
-        run: node --check tools/reconciliation/tya-current-unresolved-shopper-identity-reconciliation-readonly.mjs
-      - name: Run authorized current real-identity reconciliation in memory only
-        run: node tools/reconciliation/tya-current-unresolved-shopper-identity-reconciliation-readonly.mjs
-      - name: Validate sanitized evidence and zero-write contract
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const r=require('./app/docs/evidence/CURRENT-UNRESOLVED-SHOPPER-IDENTITY-READONLY-LATEST.json');const x=require('./app/docs/evidence/VISIT-IDENTITY-CROSSWALK-READONLY-LATEST.json');const s=r.safety||{};
-          if(r.authorizationScope!=='READ_ONLY_REAL_IDENTITY_RECONCILIATION_CURRENT_UNRESOLVED') process.exit(1);
-          if(r.sources?.legacy?.projectId!=='tya-plataforma'||r.sources?.canonical?.projectId!=='cxorbia-backend-dev') process.exit(1);
-          if(r.counts?.total!==x.counts?.unresolvedRefs) process.exit(1);
-          if(r.policy?.realIdentityRequired!==true||r.policy?.rawPiiInGitHub!==false||r.policy?.nameOnlyAutoMerge!==false) process.exit(1);
-          if(s.legacyWrites!==0||s.firestoreWrites!==0||s.authWrites!==0||s.storageWrites!==0||s.hrWrites!==0||s.deploys!==0||s.merge!==false||s.production!==false) process.exit(1);
-          if(s.rawNamesExported!==false||s.rawEmailsExported!==false||s.rawPhonesExported!==false) process.exit(1);
-          NODE
-      - name: Commit sanitized evidence on latest active branch
-        run: |
-          set -euo pipefail
-          cp app/docs/evidence/CURRENT-UNRESOLVED-SHOPPER-IDENTITY-READONLY-LATEST.json /tmp/current-identity.json
-          cp app/docs/evidence/CURRENT-UNRESOLVED-SHOPPER-IDENTITY-READONLY-LATEST.md /tmp/current-identity.md
-          git fetch origin docs-tya-v6-v71-audit
-          git reset --hard origin/docs-tya-v6-v71-audit
-          mkdir -p app/docs/evidence
-          cp /tmp/current-identity.json app/docs/evidence/CURRENT-UNRESOLVED-SHOPPER-IDENTITY-READONLY-LATEST.json
-          cp /tmp/current-identity.md app/docs/evidence/CURRENT-UNRESOLVED-SHOPPER-IDENTITY-READONLY-LATEST.md
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/docs/evidence/CURRENT-UNRESOLVED-SHOPPER-IDENTITY-READONLY-LATEST.*
-          if ! git diff --cached --quiet; then git commit -m 'evidence: reconcile current unresolved shopper identities readonly'; git push origin HEAD:docs-tya-v6-v71-audit; fi
-      - name: Publish status
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          STATE=error; DESC='HOLD_CURRENT_UNRESOLVED_IDENTITY_READONLY'
-          if [ -f app/docs/evidence/CURRENT-UNRESOLVED-SHOPPER-IDENTITY-READONLY-LATEST.json ]; then STATE=success; DESC='PASS_CURRENT_UNRESOLVED_IDENTITY_READONLY'; fi
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/remaining-shopper-identity-readonly' -f description="$DESC" >/dev/null
-      - name: Cleanup private credential
-        if: always()
-        run: rm -rf .tmp/current-identity-private
+      - run: echo 'HISTORICAL_INERT_M3: this RC15 historical authority is evidence only and has no current execution authority.'

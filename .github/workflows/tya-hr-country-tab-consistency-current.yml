@@ -1,81 +1,14 @@
-name: TyA HR Country Tab Consistency Current
+name: CXOrbia Historical Authority Inert M3
 
 on:
-  push:
-    branches: [docs-tya-v6-v71-audit]
-    paths:
-      - '.github/cxorbia-firebase-requests/live-hr-country-tab-consistency.json'
+  workflow_dispatch:
 
 permissions:
-  contents: write
-  statuses: write
+  contents: read
 
 jobs:
-  gate:
+  historical-inert:
+    if: ${{ false }}
     runs-on: ubuntu-latest
-    timeout-minutes: 12
     steps:
-      - uses: actions/checkout@v4
-        with: {fetch-depth: 0}
-      - uses: actions/setup-node@v4
-        with: {node-version: '24'}
-
-      - name: Validate request
-        run: |
-          node <<'NODE'
-          const r=require('./.github/cxorbia-firebase-requests/live-hr-country-tab-consistency.json');
-          if(r.enabled!==true||r.mode!=='READ_ONLY_COUNTRY_TAB_CONSISTENCY'||r.providerWrites!==0||r.production!==false||r.merge!==false)throw new Error('request_invalid');
-          NODE
-
-      - name: Build one live provider revision and validate country/tab consistency
-        env:
-          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-          CXORBIA_HR_SOURCE_SAFE_OUT: .tmp/hr-country/tya-hr-source-safe.js
-          CXORBIA_CURRENT_SOURCE_SAFE: .tmp/hr-country/tya-hr-source-safe.js
-          CXORBIA_GATE_OUT: .tmp/hr-country/gates
-          CXORBIA_HR_TAB_REGISTRY: backend/config/tya-live-hr-tab-registry.source-safe.json
-          CXORBIA_HR_TAB_REGISTRY_EVIDENCE: .tmp/hr-country/tab-registry-evidence.json
-          CXORBIA_COUNTRY_GATE_JSON: app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json
-          CXORBIA_COUNTRY_GATE_MD: app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.md
-          CXORBIA_HR_EARLIEST_PERIOD: '2025-06'
-          CXORBIA_HR_LIVE_MAX_ROW: '140'
-          CXORBIA_HR_LIVE_MAX_COL: 'AI'
-        run: |
-          set -euo pipefail
-          mkdir -p .tmp/hr-country/gates app/docs/evidence
-          node tools/hr-source/tya-live-provider-registry-identity-dev.mjs
-          node tools/hr-source/tya-build-live-hr-source-safe-r20.mjs >/tmp/hr-country-build.json
-          node tools/hr-source/tya-enforce-live-tab-registry.mjs
-          node tools/qa/tya-hr-country-tab-consistency-current.mjs
-
-      - name: Commit sanitized evidence on latest head
-        run: |
-          set -euo pipefail
-          cp app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json /tmp/country.json
-          cp app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.md /tmp/country.md
-          cp backend/config/tya-live-hr-tab-registry.source-safe.json /tmp/registry.json
-          git fetch origin docs-tya-v6-v71-audit
-          git reset --hard origin/docs-tya-v6-v71-audit
-          mkdir -p app/docs/evidence backend/config
-          cp /tmp/country.json app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json
-          cp /tmp/country.md app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.md
-          cp /tmp/registry.json backend/config/tya-live-hr-tab-registry.source-safe.json
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.md backend/config/tya-live-hr-tab-registry.source-safe.json
-          if ! git diff --cached --quiet;then git commit -m 'evidence: validate live HR current-period country consistency';git push origin HEAD:docs-tya-v6-v71-audit;fi
-
-      - name: Publish status
-        if: always()
-        env: {GH_TOKEN: '${{ github.token }}'}
-        run: |
-          STATE=error;DESC='HOLD_HR_COUNTRY_TAB_CONSISTENCY'
-          if [ -f app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json ];then
-            D=$(node -p "require('./app/docs/evidence/LIVE-HR-COUNTRY-TAB-CONSISTENCY-LATEST.json').decision")
-            if [ "$D" = 'PASS_COUNTRY_TAB_CONSISTENCY' ];then STATE=success;DESC='PASS_HR_CURRENT_PERIOD_COUNTRY_TAB_CONSISTENCY';fi
-          fi
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/live-hr-country-tab-consistency' -f description="$DESC" >/dev/null
-
-      - name: Cleanup
-        if: always()
-        run: rm -rf .tmp/hr-country /tmp/hr-country-build.json
+      - run: echo 'HISTORICAL_INERT_M3: this RC15 historical authority is evidence only and has no current execution authority.'

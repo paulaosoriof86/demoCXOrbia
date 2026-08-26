@@ -32,6 +32,54 @@ if(m2.status!=='CLOSED_PASS'||m2.exhaustiveness?.allRequestsClassified!==true||m
 if(m3.m3MechanismEpoch!==E||!String(m3.status||'').startsWith('ACTIVE_MECHANISM_'))fail('m3_state');
 if(cert.m3MechanismEpoch!==E||cert.status!=='MECHANISM_CERTIFIED_PASS'||cert.certified!==true)fail('cert_state');
 if(authority.m3MechanismEpoch!==E||authority.status!=='ACTIVE_M3_VALIDATOR_SET'||authority.policy?.onlyListedActiveValidatorsAreStateAuthority!==true)fail('validator_authority');
+
+const historicalWorkflowQuarantine=[
+  '.github/workflows/cxorbia-corte4-bootstrap-readonly-execute.yml',
+  '.github/workflows/cxorbia-i4b-retry1-authorized-runtime-lane.yml',
+  '.github/workflows/cxorbia-r24-new-empty-firebase-dev.yml',
+  '.github/workflows/cxorbia-c6-p0-postdeploy-readonly-recheck.yml',
+  '.github/workflows/cxorbia-c6-shopper-deterministic-suffix-crosswalk-rootfix-source-only.yml',
+  '.github/workflows/cxorbia-corte6-postdeploy-readonly-revalidation.yml',
+  '.github/workflows/cxorbia-canonical-plan-refresh-offline.yml',
+  '.github/workflows/cxorbia-live-hr-current-reconcile.yml',
+  '.github/workflows/cxorbia-c6-hold-profile-live-hr-readonly.yml',
+  '.github/workflows/cxorbia-remaining-shopper-identity-reconciliation-readonly.yml',
+  '.github/workflows/cxorbia-visit-identity-crosswalk-readonly.yml',
+  '.github/workflows/cxorbia-live-hr-provider-capability-preflight.yml',
+  '.github/workflows/cxorbia-legacy-shoppers-certifications-refresh-readonly.yml',
+  '.github/workflows/cxorbia-corte6-profile-extra-readonly.yml',
+  '.github/workflows/cxorbia-canonical-backend-anomaly-probe.yml',
+  '.github/workflows/cxorbia-canonical-backend-phasea-gap.yml',
+  '.github/workflows/cxorbia-canonical-backend-readonly-inventory.yml',
+  '.github/workflows/cxorbia-firebase-dev-clean-state-read-only-run.yml',
+  '.github/workflows/cxorbia-phase-a-live-hr-read-probe.yml',
+  '.github/workflows/cxorbia-corte4-p0-vis02-diagnostic.yml',
+  '.github/workflows/cxorbia-corte4-p0-vis02-revalidate.yml',
+  '.github/workflows/tya-hr-country-tab-consistency-current.yml'
+];
+const inertWorkflowExact=[
+  'name: CXOrbia Historical Authority Inert M3',
+  '',
+  'on:',
+  '  workflow_dispatch:',
+  '',
+  'permissions:',
+  '  contents: read',
+  '',
+  'jobs:',
+  '  historical-inert:',
+  '    if: ${{ false }}',
+  '    runs-on: ubuntu-latest',
+  '    steps:',
+  "      - run: echo 'HISTORICAL_INERT_M3: this RC15 historical authority is evidence only and has no current execution authority.'",
+  ''
+].join('\n');
+for(const p of historicalWorkflowQuarantine){
+  const text=read(p).replace(/\r\n/g,'\n');
+  if(text!==inertWorkflowExact)fail(`historical_workflow_quarantine_drift:${p}`);
+}
+if(lock.m3ExecutionControl?.historicalWorkflowPushAuthorityInertized!==true||lock.resumeProtocol?.historicalWorkflowPushMustBeInert!==true)fail('historical_workflow_lock_policy');
+
 const start=Number(tomb.progress?.residualHoldsAtM3Start);
 const completed=tomb.completedTombstones||[];
 const completedIds=completed.map(x=>x.findingId);
@@ -68,6 +116,7 @@ if(stage?.status!=='BLOCKED_UNTIL_VERIFIED_G2B_P0_RECOVERY_PASS'||stage.deployAu
 console.log('CANONICAL_AUTHORITY_GATE_PASS');
 console.log(`m3MechanismEpoch=${E}`);
 console.log(`m3Status=${m3.status}`);
+console.log(`historicalWorkflowQuarantine=${historicalWorkflowQuarantine.length}/22_exact_inert`);
 console.log(`queueIntegrity=${pending.length}/${current}_exact`);
 console.log(`f1Progress=${completed.length}/${start}_tombstoned;${current}_remaining`);
 console.log('providerWrites=0');
