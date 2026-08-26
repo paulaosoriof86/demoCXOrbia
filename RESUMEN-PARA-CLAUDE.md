@@ -4,20 +4,20 @@
 **MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`
 **M3_MECHANISM_EPOCH:** `RC15-M3-MECHANISM-20260825-02`
 **M3_0:** `CLOSED_PASS_DIRECT_GITHUB_READBACK`
-**M3_FINITE_QUEUE_BATCH_1:** `MATERIALIZED_READBACK_PENDING`
-**NEXT:** `M3_FINITE_QUEUE_BATCH_1_READBACK_PENDING`
+**M3_FINITE_QUEUE_BATCH_1:** `CLOSED_PASS_DIRECT_REMOTE_READBACK`
+**NEXT:** `M3_FINITE_QUEUE_BATCH_2`
 **PHASE_A:** `98/100`
 **PRODUCTION_REAL_READINESS:** `69/100`
 
 ## Estado
 
-M1/M2/F0 continúan `CLOSED_PASS`. M3 pasa materialmente de 3/30 tombstones y 27 residuales a 12/30 tombstones y 18 residuales mediante la familia Batch 1: `CP030`, `CP031`, `CP055`, `CP056`, `CP058`, `CP059`, `CP066`, `CP067`, `CP068`.
+M1/M2/F0 continúan `CLOSED_PASS`. M3 avanza a 12/30 tombstones y 18 residuales. Batch 1 cerró `CP030`, `CP031`, `CP055`, `CP056`, `CP058`, `CP059`, `CP066`, `CP067` y `CP068` como `INERTIZED_WITHOUT_EXECUTION`.
 
-Los nueve requests quedan `enabled=false`, `consumed=false`, `currentExecutionAuthority=false` y `replayAuthorized=false`; no se fabricó consumo. Falta el readback remoto del commit atómico antes de declarar Batch 1 terminal y continuar con Batch 2.
+El commit de materialización `551aadd14785c3dfd5a1100595f373461c8efb70` fue confirmado por readback remoto directo. GitHub Actions permanece telemetría no autoritativa. PR #7 sigue cerrado/no mergeado y los 22 workflows históricos continúan exact-valid-inert.
 
-## Mecanismo vigente
+## Incidente control-plane
 
-GitHub Actions permanece como telemetría no autoritativa. La continuidad usa direct GitHub remote readback. PR #7 permanece cerrado/no mergeado y los 22 workflows históricos de cuarentena siguen exact-valid-inert.
+Dos commits accidentales sobre `__not_used__` fueron retirados de la rama viva antes del cierre. No existe ese path en el árbol Batch 1 y no hubo efecto provider, datos o frontend funcional.
 
 ## Claude/prototipo
 
@@ -25,4 +25,4 @@ Sin cambio funcional frontend. No modificar UI, `/app/modules` ni `/app/core`; n
 
 ## Academia
 
-Sin impacto funcional en manuales, cursos, rutas por rol ni notificaciones. El bloque es exclusivamente de control-plane/autoridad histórica.
+Sin impacto funcional en manuales, cursos, rutas por rol ni notificaciones.

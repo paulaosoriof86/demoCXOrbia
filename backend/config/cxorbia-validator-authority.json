@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "cxorbia.rc15.validator-authority.v9",
+  "schemaVersion": "cxorbia.rc15.validator-authority.v10",
   "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
   "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
   "status": "ACTIVE_M3_VALIDATOR_SET",
@@ -31,50 +31,10 @@
     "tools/continuity/validate-cxorbia-m3-direct-readback.js",
     "tools/qa/verify-phase-a-live-execution-checkpoint.mjs"
   ],
-  "activeSourceOnlyGate": {
-    "mode":"DIRECT_GITHUB_READBACK",
-    "validator":"tools/continuity/validate-cxorbia-m3-direct-readback.js",
-    "attestation":"backend/config/cxorbia-m3-direct-readback-gate.json",
-    "workflowTelemetry":".github/workflows/cxorbia-phase-a-live-checkpoint.yml",
-    "providerAccess":false,
-    "providerMutationAuthority":false,
-    "dataMutationAuthority":false,
-    "repositoryMutationAuthority":false,
-    "actionsExecutionAuthority":false
-  },
-  "m3QuiescenceBarrier": {
-    "lock":"backend/config/cxorbia-m3-quiescence-lock.json",
-    "evidence":"app/docs/evidence/RC15-M3-0-QUIESCENCE-BARRIER-LATEST.json",
-    "status":"CLOSED_PASS",
-    "queueResidualHoldsAtClosure":27,
-    "pr7RequiredState":"closed",
-    "cleanProbeClosed":true,
-    "directReadbackGate":"backend/config/cxorbia-m3-direct-readback-gate.json"
-  },
-  "finiteQueue": {
-    "batchId":"M3_FINITE_QUEUE_BATCH_1",
-    "status":"MATERIALIZED_READBACK_PENDING",
-    "tombstoned":12,
-    "remaining":18,
-    "evidence":"app/docs/evidence/RC15-M3-BATCH1-TOMBSTONE-LATEST.json"
-  },
-  "concurrentWriterRootfix": {
-    "status":"CLOSED_PASS_VALID_INERT_YAML",
-    "evidence":"app/docs/evidence/RC15-M3-CONCURRENT-WRITER-ROOTFIX-LATEST.json",
-    "provenWriterWorkflow":".github/workflows/cxorbia-phase-a-live-hr-read-probe.yml",
-    "provenWriterRunId":32917331228,
-    "provenBotCommit":"f164110bfe09fc817a451e9e3bb6f4503578c164",
-    "quarantinedHistoricalWorkflowCount":22,
-    "inertBlobSha":"5e33e90c4498f8f6bbbd8a0dda4d79a1ae393c96",
-    "validatorFailsClosedOnRestore":true
-  },
-  "actionsTransport": {
-    "status":"DEGRADED_NONAUTHORITATIVE",
-    "latestObservedRunId":32985873737,
-    "latestObservedJobId":98231662272,
-    "latestObservedJobSteps":0,
-    "runnerId":null,
-    "effectOnM3Authority":"NONE"
-  },
-  "next": "M3_FINITE_QUEUE_BATCH_1_READBACK_PENDING"
+  "activeSourceOnlyGate": {"mode":"DIRECT_GITHUB_READBACK","validator":"tools/continuity/validate-cxorbia-m3-direct-readback.js","attestation":"backend/config/cxorbia-m3-direct-readback-gate.json","workflowTelemetry":".github/workflows/cxorbia-phase-a-live-checkpoint.yml","providerAccess":false,"providerMutationAuthority":false,"dataMutationAuthority":false,"repositoryMutationAuthority":false,"actionsExecutionAuthority":false},
+  "m3QuiescenceBarrier": {"lock":"backend/config/cxorbia-m3-quiescence-lock.json","evidence":"app/docs/evidence/RC15-M3-0-QUIESCENCE-BARRIER-LATEST.json","status":"CLOSED_PASS","queueResidualHoldsAtClosure":27,"pr7RequiredState":"closed","cleanProbeClosed":true,"directReadbackGate":"backend/config/cxorbia-m3-direct-readback-gate.json"},
+  "finiteQueue": {"latestClosedBatch":"M3_FINITE_QUEUE_BATCH_1","status":"CLOSED_PASS_DIRECT_REMOTE_READBACK","materializationCommitSha":"551aadd14785c3dfd5a1100595f373461c8efb70","remoteHeadReadback":"551aadd14785c3dfd5a1100595f373461c8efb70","tombstoned":12,"remaining":18,"evidence":"app/docs/evidence/RC15-M3-BATCH1-TOMBSTONE-LATEST.json"},
+  "concurrentWriterRootfix": {"status":"CLOSED_PASS_VALID_INERT_YAML","evidence":"app/docs/evidence/RC15-M3-CONCURRENT-WRITER-ROOTFIX-LATEST.json","provenWriterWorkflow":".github/workflows/cxorbia-phase-a-live-hr-read-probe.yml","provenWriterRunId":32917331228,"provenBotCommit":"f164110bfe09fc817a451e9e3bb6f4503578c164","quarantinedHistoricalWorkflowCount":22,"inertBlobSha":"5e33e90c4498f8f6bbbd8a0dda4d79a1ae393c96","validatorFailsClosedOnRestore":true},
+  "actionsTransport": {"status":"DEGRADED_NONAUTHORITATIVE","latestObservedRunId":32985873737,"latestObservedJobId":98231662272,"latestObservedJobSteps":0,"runnerId":null,"effectOnM3Authority":"NONE"},
+  "next": "M3_FINITE_QUEUE_BATCH_2"
 }

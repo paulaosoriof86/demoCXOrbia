@@ -7,8 +7,8 @@
 **MASTER_PLAN_STATUS:** `FROZEN`
 **currentMasterPhase:** `M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY`
 **M3_0:** `CLOSED_PASS_DIRECT_GITHUB_READBACK`
-**M3:** `12_OF_30_TOMBSTONED · M3_FINITE_QUEUE_BATCH_1_READBACK_PENDING`
-**NEXT:** `M3_FINITE_QUEUE_BATCH_1_READBACK_PENDING`
+**M3:** `12_OF_30_TOMBSTONED · M3_FINITE_QUEUE_BATCH_1_CLOSED_PASS`
+**NEXT:** `M3_FINITE_QUEUE_BATCH_2`
 **PHASE_A:** `98/100`
 **PRODUCTION_REAL_READINESS:** `69/100`
 
@@ -18,6 +18,4 @@ Continuity lock + master plan congelado + quiescence terminal + direct-readback 
 
 ## Ejecución permitida
 
-Batch 1 ya está preparado como materialización atómica de nueve requests históricos hacia estado inerte sin ejecución. Falta únicamente readback remoto directo del commit de materialización. Hasta entonces no inicia Batch 2.
-
-Provider/data/deploy/merge/frontend funcional continúan bloqueados; PR #7 permanece cerrado.
+Batch 1 quedó cerrado por readback remoto directo del commit `551aadd14785c3dfd5a1100595f373461c8efb70`. La siguiente operación permitida es `M3_FINITE_QUEUE_BATCH_2` sobre los 18 residuales del universo M2 bloqueado. Provider/data/deploy/merge/frontend funcional continúan bloqueados; PR #7 permanece cerrado.

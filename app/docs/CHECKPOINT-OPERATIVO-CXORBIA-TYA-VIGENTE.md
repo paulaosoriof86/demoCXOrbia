@@ -9,16 +9,18 @@
 **M1:** `CLOSED_PASS`
 **M2:** `CLOSED_PASS`
 **M3_0:** `CLOSED_PASS_DIRECT_GITHUB_READBACK`
-**M3:** `12_OF_30_TOMBSTONED · BATCH_1_READBACK_PENDING`
-**NEXT:** `M3_FINITE_QUEUE_BATCH_1_READBACK_PENDING`
+**M3:** `12_OF_30_TOMBSTONED · M3_FINITE_QUEUE_BATCH_1_CLOSED_PASS`
+**NEXT:** `M3_FINITE_QUEUE_BATCH_2`
 **PHASE_A:** `98/100`
 **PRODUCTION_REAL_READINESS:** `69/100`
 
-## M3_FINITE_QUEUE_BATCH_1
+## Batch 1 cerrado
 
-Se materializa la primera familia batched sobre nueve residuales del universo M2: `CP030`, `CP031`, `CP055`, `CP056`, `CP058`, `CP059`, `CP066`, `CP067`, `CP068`. La cola baja de 27 a 18 residuales; el consumed ledger no los marca consumidos porque la disposición es `INERTIZED_WITHOUT_EXECUTION`.
+`M3_FINITE_QUEUE_BATCH_1` neutralizó sin ejecución `CP030`, `CP031`, `CP055`, `CP056`, `CP058`, `CP059`, `CP066`, `CP067` y `CP068`. El commit de materialización `551aadd14785c3dfd5a1100595f373461c8efb70` fue confirmado como HEAD remoto directo y su delta quedó limitado a requests/control-plane/evidence/docs. La cola queda en 18 residuales.
 
-El bloque no se considera terminal hasta completar readback remoto del commit atómico. GitHub Actions no decide este gate.
+## Incidente de herramienta
+
+Los commits accidentales `b46ab0d91500dcfe419d5dee96f4957d5a661c9e` y `26b52f3c4a58bd0416717348ccb8b7bf1f37e25d`, creados sobre el path inerte `__not_used__`, fueron retirados de la rama viva antes del cierre. El árbol Batch 1 no contiene ese path y el efecto neto fuera del alcance autorizado es cero.
 
 ## Seguridad
 

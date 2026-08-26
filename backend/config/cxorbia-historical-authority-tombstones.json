@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "cxorbia.rc15.historical-authority-tombstones.v4",
+  "schemaVersion": "cxorbia.rc15.historical-authority-tombstones.v5",
   "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
   "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
   "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
@@ -28,229 +28,41 @@
     "historicalGlobalExhaustive": false
   },
   "completedTombstones": [
-    {
-      "findingId": "RC15-CP-011",
-      "authorityPath": ".github/cxorbia-firebase-requests/corte4-protected-smoke-temp-operator.json",
-      "requestId": "corte4-protected-smoke-temp-operator-20260729-01",
-      "disposition": "INERTIZED_WITHOUT_EXECUTION",
-      "currentExecutionAuthority": false,
-      "providerMutationExecutions": 0,
-      "dataWrites": 0,
-      "evidencePreserved": true
-    },
-    {
-      "findingId": "RC15-CP-142",
-      "authorityPath": "backend/config/m9-provider-precutover-readonly-execute.json",
-      "requestId": "m9-retry-after-hosting-entry-parity-pass-20260813-01",
-      "disposition": "INERTIZED_WITHOUT_EXECUTION",
-      "currentExecutionAuthority": false,
-      "providerMutationExecutions": 0,
-      "productionPromotions": 0,
-      "conditionalRollbacks": 0,
-      "evidencePreserved": true
-    },
-    {
-      "findingId": "RC15-CP-108",
-      "authorityPath": ".github/cxorbia-firebase-requests/corte4-p0-vis02b-final-revalidate.json",
-      "requestId": "c4-p0-vis02b-final-20260729-01",
-      "executorPath": ".github/workflows/cxorbia-corte4-p0-vis02b-final-revalidate.yml",
-      "disposition": "INERTIZED_WITHOUT_EXECUTION",
-      "currentExecutionAuthority": false,
-      "providerMutationExecutions": 0,
-      "hostingDeployExecutions": 0,
-      "dataWrites": 0,
-      "evidencePreserved": true,
-      "evidence": "app/docs/evidence/RC15-M3-CP108-TOMBSTONE-LATEST.json"
-    },
-    {
-      "findingId": "RC15-CP-030",
-      "authorityPath": ".github/cxorbia-firebase-requests/canonical-plan-refresh-offline.json",
-      "disposition": "INERTIZED_WITHOUT_EXECUTION",
-      "currentExecutionAuthority": false,
-      "consumed": false,
-      "replayAuthorized": false,
-      "providerMutationExecutions": 0,
-      "dataWrites": 0,
-      "evidencePreserved": true,
-      "batch": "M3_FINITE_QUEUE_BATCH_1"
-    },
-    {
-      "findingId": "RC15-CP-031",
-      "authorityPath": ".github/cxorbia-firebase-requests/live-hr-current-reconcile.json",
-      "disposition": "INERTIZED_WITHOUT_EXECUTION",
-      "currentExecutionAuthority": false,
-      "consumed": false,
-      "replayAuthorized": false,
-      "providerMutationExecutions": 0,
-      "dataWrites": 0,
-      "evidencePreserved": true,
-      "batch": "M3_FINITE_QUEUE_BATCH_1"
-    },
-    {
-      "findingId": "RC15-CP-055",
-      "authorityPath": ".github/cxorbia-firebase-requests/remaining-shopper-identity-reconciliation-readonly.json",
-      "disposition": "INERTIZED_WITHOUT_EXECUTION",
-      "currentExecutionAuthority": false,
-      "consumed": false,
-      "replayAuthorized": false,
-      "providerMutationExecutions": 0,
-      "dataWrites": 0,
-      "evidencePreserved": true,
-      "batch": "M3_FINITE_QUEUE_BATCH_1",
-      "legacyDirectConnectivityReauthorization": false
-    },
-    {
-      "findingId": "RC15-CP-056",
-      "authorityPath": ".github/cxorbia-firebase-requests/visit-identity-crosswalk-readonly.json",
-      "disposition": "INERTIZED_WITHOUT_EXECUTION",
-      "currentExecutionAuthority": false,
-      "consumed": false,
-      "replayAuthorized": false,
-      "providerMutationExecutions": 0,
-      "dataWrites": 0,
-      "evidencePreserved": true,
-      "batch": "M3_FINITE_QUEUE_BATCH_1"
-    },
-    {
-      "findingId": "RC15-CP-058",
-      "authorityPath": ".github/cxorbia-firebase-requests/live-hr-provider-capability-preflight.json",
-      "disposition": "INERTIZED_WITHOUT_EXECUTION",
-      "currentExecutionAuthority": false,
-      "consumed": false,
-      "replayAuthorized": false,
-      "providerMutationExecutions": 0,
-      "dataWrites": 0,
-      "evidencePreserved": true,
-      "batch": "M3_FINITE_QUEUE_BATCH_1"
-    },
-    {
-      "findingId": "RC15-CP-059",
-      "authorityPath": ".github/cxorbia-firebase-requests/legacy-shoppers-certifications-refresh-readonly.json",
-      "disposition": "INERTIZED_WITHOUT_EXECUTION",
-      "currentExecutionAuthority": false,
-      "consumed": false,
-      "replayAuthorized": false,
-      "providerMutationExecutions": 0,
-      "dataWrites": 0,
-      "evidencePreserved": true,
-      "batch": "M3_FINITE_QUEUE_BATCH_1",
-      "legacyDirectConnectivityReauthorization": false
-    },
-    {
-      "findingId": "RC15-CP-066",
-      "authorityPath": ".github/cxorbia-firebase-requests/canonical-backend-anomaly-probe.json",
-      "disposition": "INERTIZED_WITHOUT_EXECUTION",
-      "currentExecutionAuthority": false,
-      "consumed": false,
-      "replayAuthorized": false,
-      "providerMutationExecutions": 0,
-      "dataWrites": 0,
-      "evidencePreserved": true,
-      "batch": "M3_FINITE_QUEUE_BATCH_1"
-    },
-    {
-      "findingId": "RC15-CP-067",
-      "authorityPath": ".github/cxorbia-firebase-requests/canonical-backend-phasea-gap.json",
-      "disposition": "INERTIZED_WITHOUT_EXECUTION",
-      "currentExecutionAuthority": false,
-      "consumed": false,
-      "replayAuthorized": false,
-      "providerMutationExecutions": 0,
-      "dataWrites": 0,
-      "evidencePreserved": true,
-      "batch": "M3_FINITE_QUEUE_BATCH_1"
-    },
-    {
-      "findingId": "RC15-CP-068",
-      "authorityPath": ".github/cxorbia-firebase-requests/canonical-backend-readonly-inventory.json",
-      "disposition": "INERTIZED_WITHOUT_EXECUTION",
-      "currentExecutionAuthority": false,
-      "consumed": false,
-      "replayAuthorized": false,
-      "providerMutationExecutions": 0,
-      "dataWrites": 0,
-      "evidencePreserved": true,
-      "batch": "M3_FINITE_QUEUE_BATCH_1"
-    }
+    {"findingId":"RC15-CP-011","authorityPath":".github/cxorbia-firebase-requests/corte4-protected-smoke-temp-operator.json","requestId":"corte4-protected-smoke-temp-operator-20260729-01","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"providerMutationExecutions":0,"dataWrites":0,"evidencePreserved":true},
+    {"findingId":"RC15-CP-142","authorityPath":"backend/config/m9-provider-precutover-readonly-execute.json","requestId":"m9-retry-after-hosting-entry-parity-pass-20260813-01","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"providerMutationExecutions":0,"productionPromotions":0,"conditionalRollbacks":0,"evidencePreserved":true},
+    {"findingId":"RC15-CP-108","authorityPath":".github/cxorbia-firebase-requests/corte4-p0-vis02b-final-revalidate.json","requestId":"c4-p0-vis02b-final-20260729-01","executorPath":".github/workflows/cxorbia-corte4-p0-vis02b-final-revalidate.yml","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"providerMutationExecutions":0,"hostingDeployExecutions":0,"dataWrites":0,"evidencePreserved":true,"evidence":"app/docs/evidence/RC15-M3-CP108-TOMBSTONE-LATEST.json"},
+    {"findingId":"RC15-CP-030","authorityPath":".github/cxorbia-firebase-requests/canonical-plan-refresh-offline.json","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"dataWrites":0,"evidencePreserved":true,"batch":"M3_FINITE_QUEUE_BATCH_1"},
+    {"findingId":"RC15-CP-031","authorityPath":".github/cxorbia-firebase-requests/live-hr-current-reconcile.json","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"dataWrites":0,"evidencePreserved":true,"batch":"M3_FINITE_QUEUE_BATCH_1"},
+    {"findingId":"RC15-CP-055","authorityPath":".github/cxorbia-firebase-requests/remaining-shopper-identity-reconciliation-readonly.json","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"dataWrites":0,"evidencePreserved":true,"batch":"M3_FINITE_QUEUE_BATCH_1","legacyDirectConnectivityReauthorization":false},
+    {"findingId":"RC15-CP-056","authorityPath":".github/cxorbia-firebase-requests/visit-identity-crosswalk-readonly.json","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"dataWrites":0,"evidencePreserved":true,"batch":"M3_FINITE_QUEUE_BATCH_1"},
+    {"findingId":"RC15-CP-058","authorityPath":".github/cxorbia-firebase-requests/live-hr-provider-capability-preflight.json","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"dataWrites":0,"evidencePreserved":true,"batch":"M3_FINITE_QUEUE_BATCH_1"},
+    {"findingId":"RC15-CP-059","authorityPath":".github/cxorbia-firebase-requests/legacy-shoppers-certifications-refresh-readonly.json","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"dataWrites":0,"evidencePreserved":true,"batch":"M3_FINITE_QUEUE_BATCH_1","legacyDirectConnectivityReauthorization":false},
+    {"findingId":"RC15-CP-066","authorityPath":".github/cxorbia-firebase-requests/canonical-backend-anomaly-probe.json","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"dataWrites":0,"evidencePreserved":true,"batch":"M3_FINITE_QUEUE_BATCH_1"},
+    {"findingId":"RC15-CP-067","authorityPath":".github/cxorbia-firebase-requests/canonical-backend-phasea-gap.json","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"dataWrites":0,"evidencePreserved":true,"batch":"M3_FINITE_QUEUE_BATCH_1"},
+    {"findingId":"RC15-CP-068","authorityPath":".github/cxorbia-firebase-requests/canonical-backend-readonly-inventory.json","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"dataWrites":0,"evidencePreserved":true,"batch":"M3_FINITE_QUEUE_BATCH_1"}
   ],
   "latestBatch": {
     "batchId": "M3_FINITE_QUEUE_BATCH_1",
-    "status": "MATERIALIZED_PENDING_REMOTE_READBACK",
-    "materializedFindingIds": [
-      "RC15-CP-030",
-      "RC15-CP-031",
-      "RC15-CP-055",
-      "RC15-CP-056",
-      "RC15-CP-058",
-      "RC15-CP-059",
-      "RC15-CP-066",
-      "RC15-CP-067",
-      "RC15-CP-068"
-    ],
+    "status": "CLOSED_PASS_DIRECT_REMOTE_READBACK",
+    "materializationCommitSha": "551aadd14785c3dfd5a1100595f373461c8efb70",
+    "remoteHeadReadback": "551aadd14785c3dfd5a1100595f373461c8efb70",
+    "materializedFindingIds": ["RC15-CP-030","RC15-CP-031","RC15-CP-055","RC15-CP-056","RC15-CP-058","RC15-CP-059","RC15-CP-066","RC15-CP-067","RC15-CP-068"],
     "count": 9,
-    "before": {"tombstoned": 3, "remaining": 27},
-    "after": {"tombstoned": 12, "remaining": 18},
+    "before": {"tombstoned":3,"remaining":27},
+    "after": {"tombstoned":12,"remaining":18},
     "evidence": "app/docs/evidence/RC15-M3-BATCH1-TOMBSTONE-LATEST.json"
   },
   "queueIntegrity": {
     "status": "RECONCILED_TO_M2_LOCKED_UNIVERSE",
     "derivation": "M2 residual 30; subtract completed CP011, CP142, CP108 plus Batch 1 CP030, CP031, CP055, CP056, CP058, CP059, CP066, CP067, CP068 = 18 pending",
-    "authoritativeEvidence": [
-      "app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE8-DETAIL.json",
-      "app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE11-DETAIL.json",
-      "app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE12-DETAIL.json",
-      "app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE14-DETAIL.json",
-      "app/docs/evidence/RC15-M2-FINITE-F0-CLOSURE-LATEST.json"
-    ],
-    "correction": {
-      "addedMissing": ["RC15-CP-074", "RC15-CP-078", "RC15-CP-090"],
-      "removedNonResidual": ["RC15-CP-117", "RC15-CP-118"],
-      "priorDeclaredResidual": 28,
-      "priorEnumeratedResidual": 27,
-      "correctEnumeratedResidual": 28
-    }
+    "authoritativeEvidence": ["app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE8-DETAIL.json","app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE11-DETAIL.json","app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE12-DETAIL.json","app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE14-DETAIL.json","app/docs/evidence/RC15-M2-FINITE-F0-CLOSURE-LATEST.json"],
+    "correction": {"addedMissing":["RC15-CP-074","RC15-CP-078","RC15-CP-090"],"removedNonResidual":["RC15-CP-117","RC15-CP-118"],"priorDeclaredResidual":28,"priorEnumeratedResidual":27,"correctEnumeratedResidual":28}
   },
   "remainingQueuePolicy": {
     "currentResidualHolds": 18,
     "authoritativeUniverse": "M2 locked F0 evidence derived deterministically by active validator",
-    "priorityFindingIds": [
-      "RC15-CP-005",
-      "RC15-CP-014",
-      "RC15-CP-017",
-      "RC15-CP-025",
-      "RC15-CP-028",
-      "RC15-CP-029",
-      "RC15-CP-045",
-      "RC15-CP-063",
-      "RC15-CP-074",
-      "RC15-CP-078",
-      "RC15-CP-090",
-      "RC15-CP-091",
-      "RC15-CP-094",
-      "RC15-CP-124",
-      "RC15-CP-125",
-      "RC15-CP-127",
-      "RC15-CP-130",
-      "RC15-CP-131"
-    ],
+    "priorityFindingIds": ["RC15-CP-005","RC15-CP-014","RC15-CP-017","RC15-CP-025","RC15-CP-028","RC15-CP-029","RC15-CP-045","RC15-CP-063","RC15-CP-074","RC15-CP-078","RC15-CP-090","RC15-CP-091","RC15-CP-094","RC15-CP-124","RC15-CP-125","RC15-CP-127","RC15-CP-130","RC15-CP-131"],
     "rule": "Resolve only the deterministic M2-locked residual set. No new audit tranche, methodology, branch or PR."
   },
-  "safety": {
-    "providerWrites": 0,
-    "dataWrites": 0,
-    "authWrites": 0,
-    "firestoreWrites": 0,
-    "storageWrites": 0,
-    "hrWrites": 0,
-    "cloudBuilds": 0,
-    "cloudRunUpdates": 0,
-    "hostingDeploys": 0,
-    "rulesWrites": 0,
-    "payments": 0,
-    "makeCalls": 0,
-    "geminiCalls": 0,
-    "g2bExecutions": 0,
-    "merge": false,
-    "frontendFunctionalChanges": 0
-  }
+  "safety": {"providerWrites":0,"dataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"cloudBuilds":0,"cloudRunUpdates":0,"hostingDeploys":0,"rulesWrites":0,"payments":0,"makeCalls":0,"geminiCalls":0,"g2bExecutions":0,"merge":false,"frontendFunctionalChanges":0}
 }

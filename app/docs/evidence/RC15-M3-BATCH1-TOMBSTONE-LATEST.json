@@ -1,11 +1,15 @@
 {
-  "schemaVersion": "cxorbia.rc15.m3.batch-tombstone.v1",
-  "generatedAt": "2026-08-26T10:07:00-06:00",
+  "schemaVersion": "cxorbia.rc15.m3.batch-tombstone.v2",
+  "generatedAt": "2026-08-26T10:27:00-06:00",
   "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
   "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
   "batchId": "M3_FINITE_QUEUE_BATCH_1",
-  "status": "MATERIALIZED_PENDING_REMOTE_READBACK",
+  "status": "CLOSED_PASS_DIRECT_REMOTE_READBACK",
   "parentHead": "c27b64a1c61f61029f36e964b81de3936448095f",
+  "materializationCommitSha": "551aadd14785c3dfd5a1100595f373461c8efb70",
+  "materializationTreeSha": "9f4af463b3d0fddc6a12adc5b9eb4a6f6e9bf475",
+  "remoteHeadReadback": "551aadd14785c3dfd5a1100595f373461c8efb70",
+  "headMatchesMaterializationCommit": true,
   "selectionPolicy": "Single finite family from M2-locked residual universe: stale enabled or retained read-only/offline request authorities whose historical executors are already in the 22-workflow exact-valid-inert quarantine.",
   "findingIds": [
     "RC15-CP-030",
@@ -41,21 +45,39 @@
   },
   "queue": {
     "before": {"tombstoned": 3, "remaining": 27},
-    "afterMaterialization": {"tombstoned": 12, "remaining": 18},
+    "after": {"tombstoned": 12, "remaining": 18},
     "reduction": 9,
     "m2LockedUniverseChanged": false
   },
-  "readbackContract": {
-    "required": true,
+  "readback": {
     "authorityMode": "DIRECT_GITHUB_REMOTE_READBACK_ACTIONS_NONAUTHORITATIVE",
     "branch": "docs-tya-v6-v71-audit",
     "expectedParentHead": "c27b64a1c61f61029f36e964b81de3936448095f",
-    "materializationCommitSha": null,
-    "remoteHeadReadback": null,
-    "headMatchesMaterializationCommit": null,
-    "changedPathsVerified": null,
-    "pr7StateRequired": "closed",
-    "providerSideEffectsRequired": 0
+    "materializationCommitSha": "551aadd14785c3dfd5a1100595f373461c8efb70",
+    "remoteHeadReadback": "551aadd14785c3dfd5a1100595f373461c8efb70",
+    "headMatchesMaterializationCommit": true,
+    "deltaVerified": true,
+    "changedFileCount": 23,
+    "workflowFilesTouched": 0,
+    "appCoreFilesTouched": 0,
+    "appModuleFilesTouched": 0,
+    "providerOrRuntimeFilesTouched": 0,
+    "accidentalNoopPathPresentInMaterializationTree": false,
+    "pr7State": "closed",
+    "pr7Merged": false
+  },
+  "toolIncident": {
+    "status": "CORRECTED_BEFORE_BATCH1_READBACK_CLOSURE",
+    "description": "Two accidental connector commits on path __not_used__ were created while attempting to move the live ref. They were removed from the live branch by restoring the branch directly to the intended Batch 1 materialization commit before closure.",
+    "accidentalCommits": [
+      "b46ab0d91500dcfe419d5dee96f4957d5a661c9e",
+      "26b52f3c4a58bd0416717348ccb8b7bf1f37e25d"
+    ],
+    "liveBranchAfterCorrection": "551aadd14785c3dfd5a1100595f373461c8efb70",
+    "netAccidentalPathDelta": 0,
+    "providerEffects": 0,
+    "dataEffects": 0,
+    "frontendFunctionalEffects": 0
   },
   "safety": {
     "providerWrites": 0,
@@ -73,5 +95,6 @@
     "merge": false,
     "frontendFunctionalChanges": 0
   },
-  "next": "REMOTE_READBACK_BATCH1_AND_CLOSE_OR_FAIL_CLOSED"
+  "decision": "PASS_M3_FINITE_QUEUE_BATCH_1",
+  "next": "M3_FINITE_QUEUE_BATCH_2"
 }
