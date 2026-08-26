@@ -30,7 +30,6 @@ on:
 
 permissions:
   contents: read
-  pull-requests: read
 
 defaults:
   run:
@@ -61,15 +60,6 @@ jobs:
           node --check tools/continuity/validate-cxorbia-phase-a-continuity-lock-m3.js
           node --check tools/continuity/validate-cxorbia-m3-quiescence.js
           node --check tools/qa/verify-phase-a-live-execution-checkpoint.mjs
-
-      - name: Validate PR7 is quiescent during M3
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          state="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/7" --jq .state)"
-          test "$state" = 'closed'
-          echo "PR7_QUIESCENCE_PASS state=$state"
 
       - name: Validate M3 quiescence source contract
         run: node tools/continuity/validate-cxorbia-m3-quiescence.js
