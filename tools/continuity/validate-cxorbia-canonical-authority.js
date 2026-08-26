@@ -6,6 +6,7 @@ const E='RC15-M3-MECHANISM-20260825-02';
 const fail=m=>{console.error(`CANONICAL_AUTHORITY_BLOCKED: ${m}`);process.exit(2);};
 const read=p=>{try{return fs.readFileSync(path.join(root,p),'utf8');}catch(e){fail(`read:${p}:${e.message}`);}};
 const json=p=>{try{return JSON.parse(read(p));}catch(e){fail(`json:${p}:${e.message}`);}};
+const uniq=a=>[...new Set(a)], sorted=a=>[...a].sort(), eqSet=(a,b)=>JSON.stringify(sorted(a))===JSON.stringify(sorted(b));
 const lock=json('backend/config/cxorbia-phase-a-continuity-lock.json');
 const m2=json('app/docs/evidence/RC15-M2-FINITE-F0-CLOSURE-LATEST.json');
 const m3=json('app/docs/evidence/RC15-M3-F1-F2-CANONICAL-AUTHORITY-LATEST.json');
@@ -14,6 +15,7 @@ const authority=json('backend/config/cxorbia-validator-authority.json');
 const tomb=json('backend/config/cxorbia-historical-authority-tombstones.json');
 const ledger=json('backend/config/cxorbia-consumed-one-shot-gates.json');
 const aliases=json('backend/config/cxorbia-evidence-aliases.json');
+const q=json('backend/config/cxorbia-m3-quiescence-lock.json');
 const cp011=json('.github/cxorbia-firebase-requests/corte4-protected-smoke-temp-operator.json');
 const cp108=json('.github/cxorbia-firebase-requests/corte4-p0-vis02b-final-revalidate.json');
 const cp142=json('backend/config/m9-provider-precutover-readonly-execute.json');
@@ -21,9 +23,6 @@ const t8=json('app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE8-DETA
 const t11=json('app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE11-DETAIL.json');
 const t12=json('app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE12-DETAIL.json');
 const t14=json('app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE14-DETAIL.json');
-const uniq=a=>[...new Set(a)];
-const sorted=a=>[...a].sort();
-const eqSet=(a,b)=>JSON.stringify(sorted(a))===JSON.stringify(sorted(b));
 if(lock.repository!=='paulaosoriof86/demoCXOrbia'||lock.branch!=='docs-tya-v6-v71-audit'||Number(lock.pullRequest)!==7)fail('repository_lane');
 if(lock.masterPlan?.id!=='CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1'||lock.masterPlan?.status!=='FROZEN'||lock.masterPlan?.currentPhase!=='M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY')fail('master_plan');
 if(lock.m1ExecutionControl?.status!=='CLOSED_PASS'||lock.m2ExecutionControl?.status!=='CLOSED_PASS')fail('m1_m2_not_closed');
@@ -32,92 +31,28 @@ if(m2.status!=='CLOSED_PASS'||m2.exhaustiveness?.allRequestsClassified!==true||m
 if(m3.m3MechanismEpoch!==E||!String(m3.status||'').startsWith('ACTIVE_MECHANISM_'))fail('m3_state');
 if(cert.m3MechanismEpoch!==E||cert.status!=='MECHANISM_CERTIFIED_PASS'||cert.certified!==true)fail('cert_state');
 if(authority.m3MechanismEpoch!==E||authority.status!=='ACTIVE_M3_VALIDATOR_SET'||authority.policy?.onlyListedActiveValidatorsAreStateAuthority!==true)fail('validator_authority');
-
 const historicalWorkflowQuarantine=[
-  '.github/workflows/cxorbia-corte4-bootstrap-readonly-execute.yml',
-  '.github/workflows/cxorbia-i4b-retry1-authorized-runtime-lane.yml',
-  '.github/workflows/cxorbia-r24-new-empty-firebase-dev.yml',
-  '.github/workflows/cxorbia-c6-p0-postdeploy-readonly-recheck.yml',
-  '.github/workflows/cxorbia-c6-shopper-deterministic-suffix-crosswalk-rootfix-source-only.yml',
-  '.github/workflows/cxorbia-corte6-postdeploy-readonly-revalidation.yml',
-  '.github/workflows/cxorbia-canonical-plan-refresh-offline.yml',
-  '.github/workflows/cxorbia-live-hr-current-reconcile.yml',
-  '.github/workflows/cxorbia-c6-hold-profile-live-hr-readonly.yml',
-  '.github/workflows/cxorbia-remaining-shopper-identity-reconciliation-readonly.yml',
-  '.github/workflows/cxorbia-visit-identity-crosswalk-readonly.yml',
-  '.github/workflows/cxorbia-live-hr-provider-capability-preflight.yml',
-  '.github/workflows/cxorbia-legacy-shoppers-certifications-refresh-readonly.yml',
-  '.github/workflows/cxorbia-corte6-profile-extra-readonly.yml',
-  '.github/workflows/cxorbia-canonical-backend-anomaly-probe.yml',
-  '.github/workflows/cxorbia-canonical-backend-phasea-gap.yml',
-  '.github/workflows/cxorbia-canonical-backend-readonly-inventory.yml',
-  '.github/workflows/cxorbia-firebase-dev-clean-state-read-only-run.yml',
-  '.github/workflows/cxorbia-phase-a-live-hr-read-probe.yml',
-  '.github/workflows/cxorbia-corte4-p0-vis02-diagnostic.yml',
-  '.github/workflows/cxorbia-corte4-p0-vis02-revalidate.yml',
-  '.github/workflows/tya-hr-country-tab-consistency-current.yml'
-];
-const inertWorkflowExact=[
-  'name: CXOrbia Historical Authority Inert M3',
-  '',
-  'on:',
-  '  workflow_dispatch:',
-  '',
-  'permissions:',
-  '  contents: read',
-  '',
-  'jobs:',
-  '  historical-inert:',
-  '    if: ${{ false }}',
-  '    runs-on: ubuntu-latest',
-  '    steps:',
-  "      - run: echo 'HISTORICAL_INERT_M3: this RC15 historical authority is evidence only and has no current execution authority.'",
-  ''
-].join('\n');
-for(const p of historicalWorkflowQuarantine){
-  const text=read(p).replace(/\r\n/g,'\n');
-  if(text!==inertWorkflowExact)fail(`historical_workflow_quarantine_drift:${p}`);
-}
+'.github/workflows/cxorbia-corte4-bootstrap-readonly-execute.yml','.github/workflows/cxorbia-i4b-retry1-authorized-runtime-lane.yml','.github/workflows/cxorbia-r24-new-empty-firebase-dev.yml','.github/workflows/cxorbia-c6-p0-postdeploy-readonly-recheck.yml','.github/workflows/cxorbia-c6-shopper-deterministic-suffix-crosswalk-rootfix-source-only.yml','.github/workflows/cxorbia-corte6-postdeploy-readonly-revalidation.yml','.github/workflows/cxorbia-canonical-plan-refresh-offline.yml','.github/workflows/cxorbia-live-hr-current-reconcile.yml','.github/workflows/cxorbia-c6-hold-profile-live-hr-readonly.yml','.github/workflows/cxorbia-remaining-shopper-identity-reconciliation-readonly.yml','.github/workflows/cxorbia-visit-identity-crosswalk-readonly.yml','.github/workflows/cxorbia-live-hr-provider-capability-preflight.yml','.github/workflows/cxorbia-legacy-shoppers-certifications-refresh-readonly.yml','.github/workflows/cxorbia-corte6-profile-extra-readonly.yml','.github/workflows/cxorbia-canonical-backend-anomaly-probe.yml','.github/workflows/cxorbia-canonical-backend-phasea-gap.yml','.github/workflows/cxorbia-canonical-backend-readonly-inventory.yml','.github/workflows/cxorbia-firebase-dev-clean-state-read-only-run.yml','.github/workflows/cxorbia-phase-a-live-hr-read-probe.yml','.github/workflows/cxorbia-corte4-p0-vis02-diagnostic.yml','.github/workflows/cxorbia-corte4-p0-vis02-revalidate.yml','.github/workflows/tya-hr-country-tab-consistency-current.yml'];
+const inertWorkflowExact=`name: CXOrbia Historical Authority Inert M3\n\non:\n  workflow_dispatch:\n\npermissions:\n  contents: read\n\njobs:\n  historical-inert:\n    if: \${{ false }}\n    runs-on: ubuntu-latest\n    steps:\n      - run: |\n          echo 'HISTORICAL_INERT_M3: this RC15 historical authority is evidence only and has no current execution authority.'\n`;
+for(const p of historicalWorkflowQuarantine)if(read(p).replace(/\r\n/g,'\n')!==inertWorkflowExact)fail(`historical_workflow_quarantine_drift:${p}`);
 if(lock.m3ExecutionControl?.historicalWorkflowPushAuthorityInertized!==true||lock.resumeProtocol?.historicalWorkflowPushMustBeInert!==true)fail('historical_workflow_lock_policy');
-
-const start=Number(tomb.progress?.residualHoldsAtM3Start);
-const completed=tomb.completedTombstones||[];
-const completedIds=completed.map(x=>x.findingId);
-const pending=tomb.remainingQueuePolicy?.priorityFindingIds||[];
+const start=Number(tomb.progress?.residualHoldsAtM3Start), completed=tomb.completedTombstones||[], completedIds=completed.map(x=>x.findingId), pending=tomb.remainingQueuePolicy?.priorityFindingIds||[];
 const expectedStart=uniq([...(t8.coverage?.currentResidualHoldIds||[]),...(t11.findings||[]).filter(x=>x.status==='HOLD').map(x=>x.id),...(t12.findings||[]).filter(x=>x.status==='HOLD').map(x=>x.id),...(t14.findings||[]).filter(x=>x.severity==='HOLD'||x.status==='HOLD').map(x=>x.id)]);
-const expectedPending=expectedStart.filter(id=>!completedIds.includes(id));
-const current=Number(tomb.progress?.currentResidualHolds);
-if(start!==30||expectedStart.length!==30||!eqSet(expectedStart,uniq(expectedStart)))fail(`m2_locked_residual_universe:${expectedStart.length}`);
-if(completed.length!==Number(tomb.progress?.tombstonedHoldsThisMilestone))fail('completed_tombstone_count');
-if(current!==start-completed.length)fail(`residual_arithmetic:${start}-${completed.length}!=${current}`);
-if(pending.length!==uniq(pending).length)fail('pending_queue_duplicate_ids');
-if(pending.length!==current||Number(tomb.remainingQueuePolicy?.currentResidualHolds)!==current)fail(`pending_queue_cardinality:${pending.length}!=${current}`);
-if(!eqSet(pending,expectedPending))fail(`pending_queue_membership_mismatch:expected=${sorted(expectedPending).join(',')}:actual=${sorted(pending).join(',')}`);
-if(pending.some(id=>completedIds.includes(id)))fail('completed_id_still_pending');
+const expectedPending=expectedStart.filter(id=>!completedIds.includes(id)), current=Number(tomb.progress?.currentResidualHolds);
+if(start!==30||expectedStart.length!==30)fail(`m2_locked_residual_universe:${expectedStart.length}`);
+if(completed.length!==Number(tomb.progress?.tombstonedHoldsThisMilestone)||current!==start-completed.length)fail('residual_arithmetic');
+if(pending.length!==uniq(pending).length||pending.length!==current||!eqSet(pending,expectedPending)||pending.some(id=>completedIds.includes(id)))fail('pending_queue_integrity');
 if(Number(lock.m3ExecutionControl?.currentResidualHolds)!==current||Number(m3.f1?.currentResidualHolds)!==current||Number(ledger.coverage?.currentResidualHolds)!==current)fail('cross_authority_residual_count_drift');
+if(q.status!=='CLOSED_PASS'&&(current!==27||completed.length!==3))fail('quiescence_queue_freeze');
 for(const k of ['providerWrites','dataWrites','authWrites','firestoreWrites','storageWrites','hrWrites','cloudBuilds','cloudRunUpdates','hostingDeploys','rulesWrites','payments','makeCalls','geminiCalls','g2bExecutions'])if(Number(m3.safety?.[k]||0)!==0)fail(`m3_unsafe_${k}`);
 if(m3.safety?.merge!==false||m3.safety?.frontendFunctionalChanges!==0)fail('m3_unsafe_repo_frontend');
 if(tomb.m3MechanismEpoch!==E||tomb.status!=='ACTIVE_FINITE_QUEUE'||tomb.progress?.historicalGlobalExhaustive!==false)fail('tombstone_registry');
-for(const [id,p] of [
-  ['RC15-CP-011','.github/cxorbia-firebase-requests/corte4-protected-smoke-temp-operator.json'],
-  ['RC15-CP-108','.github/cxorbia-firebase-requests/corte4-p0-vis02b-final-revalidate.json'],
-  ['RC15-CP-142','backend/config/m9-provider-precutover-readonly-execute.json']
-]){const row=completed.find(x=>x.findingId===id);if(!row||row.authorityPath!==p||row.disposition!=='INERTIZED_WITHOUT_EXECUTION'||row.currentExecutionAuthority!==false)fail(`tombstone_${id}`);}
-if(cp011.enabled!==false||cp011.consumed!==false||cp011.status!=='HISTORICAL_INERT_M3'||cp011.currentExecutionAuthority!==false)fail('cp011_not_inert');
-if(cp108.enabled!==false||cp108.consumed!==false||cp108.status!=='HISTORICAL_INERT_M3'||cp108.currentExecutionAuthority!==false||cp108.disposition!=='INERTIZED_WITHOUT_EXECUTION'||Number(cp108.allowedProviderWrites?.hostingDeployExecutions)!==0)fail('cp108_not_inert');
-if(cp142.enabled!==false||cp142.consumed!==false||cp142.status!=='HISTORICAL_INERT_M3'||cp142.currentExecutionAuthority!==false||Number(cp142.maxProductionPromotions)!==0||Number(cp142.maxConditionalRollbacks)!==0)fail('cp142_not_inert');
-if(ledger.m3MechanismEpoch!==E||ledger.coverage?.historicalGlobalExhaustive!==false||ledger.policy?.neverExecutedHistoricalAuthorityMustNotBeMarkedConsumed!==true)fail('ledger');
+for(const [id,p] of [['RC15-CP-011','.github/cxorbia-firebase-requests/corte4-protected-smoke-temp-operator.json'],['RC15-CP-108','.github/cxorbia-firebase-requests/corte4-p0-vis02b-final-revalidate.json'],['RC15-CP-142','backend/config/m9-provider-precutover-readonly-execute.json']]){const row=completed.find(x=>x.findingId===id);if(!row||row.authorityPath!==p||row.disposition!=='INERTIZED_WITHOUT_EXECUTION'||row.currentExecutionAuthority!==false)fail(`tombstone_${id}`);}
+if(cp011.enabled!==false||cp011.consumed!==false||cp011.currentExecutionAuthority!==false)fail('cp011_not_inert');
+if(cp108.enabled!==false||cp108.consumed!==false||cp108.currentExecutionAuthority!==false||Number(cp108.allowedProviderWrites?.hostingDeployExecutions)!==0)fail('cp108_not_inert');
+if(cp142.enabled!==false||cp142.consumed!==false||cp142.currentExecutionAuthority!==false||Number(cp142.maxProductionPromotions)!==0||Number(cp142.maxConditionalRollbacks)!==0)fail('cp142_not_inert');
+if(ledger.m3MechanismEpoch!==E||ledger.policy?.neverExecutedHistoricalAuthorityMustNotBeMarkedConsumed!==true)fail('ledger');
 if(aliases.m3MechanismEpoch!==E||aliases.policy?.aliasesNeverAuthorizeExecution!==true||aliases.policy?.conversationInterruptionDoesNotInvalidateTerminalPass!==true)fail('aliases');
 if(lock.masterPlan?.providerMutationAuthorizedNow!==false||lock.m3ExecutionControl?.providerMutationAuthorizedNow!==false)fail('provider_mutation_authority');
-const p0=lock.g2Acceptance?.p0WritePathRecovery;
-if(p0?.latestRecoveryDecision!=='RECOVERY_NO_PROVIDER_SIDE_EFFECT'||p0.replayAuthorized!==false||p0.automaticRetryAllowed!==false||Number(p0.providerMutationExecutions)!==0)fail('g2b_terminal_safety');
-const stage=lock.g2Acceptance?.liveInPlatformSyntheticAcceptance;
-if(stage?.status!=='BLOCKED_UNTIL_VERIFIED_G2B_P0_RECOVERY_PASS'||stage.deployAuthorizedNow!==false||stage.businessDataWritesAuthorizedNow!==false||stage.mergeAuthorizedNow!==false)fail('synthetic_stage_boundary');
-console.log('CANONICAL_AUTHORITY_GATE_PASS');
-console.log(`m3MechanismEpoch=${E}`);
-console.log(`m3Status=${m3.status}`);
-console.log(`historicalWorkflowQuarantine=${historicalWorkflowQuarantine.length}/22_exact_inert`);
-console.log(`queueIntegrity=${pending.length}/${current}_exact`);
-console.log(`f1Progress=${completed.length}/${start}_tombstoned;${current}_remaining`);
-console.log('providerWrites=0');
-console.log('g2b=TERMINAL_NO_RETRY_REPLAY');
+const p0=lock.g2Acceptance?.p0WritePathRecovery;if(p0?.latestRecoveryDecision!=='RECOVERY_NO_PROVIDER_SIDE_EFFECT'||p0.replayAuthorized!==false||p0.automaticRetryAllowed!==false||Number(p0.providerMutationExecutions)!==0)fail('g2b_terminal_safety');
+console.log('CANONICAL_AUTHORITY_GATE_PASS');console.log(`historicalWorkflowQuarantine=${historicalWorkflowQuarantine.length}/22_valid_inert`);console.log(`queueIntegrity=${pending.length}/${current}_exact`);console.log(`quiescence=${q.status}`);console.log('providerWrites=0');

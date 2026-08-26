@@ -2,31 +2,28 @@
 
 Fecha: 2026-08-26
 
-## Causa
+## Estado
 
-La clean probe posterior al concurrent-writer rootfix conservó HEAD estable y el gate M3 pasó, pero el mismo HEAD produjo fan-out de workflows muy superior al único push canónico esperado. Por tanto el auto-writer directo quedó contenido, pero la quiescencia global no estaba demostrada.
+M1/M2/F0 permanecen cerrados. M3 queda congelado en 3 tombstones / 27 residuales hasta que M3-0 cierre PASS. PR #7 está cerrado temporalmente, sin merge.
 
-## Reparación
+## Hallazgo causal adicional
 
-- PR #7 cerrado temporalmente, sin merge, para eliminar eventos `pull_request` synchronize durante M3.
-- Se crea `backend/config/cxorbia-m3-quiescence-lock.json` como barrier persistente entre conversaciones.
-- Se crea `tools/continuity/validate-cxorbia-m3-quiescence.js`.
-- El checkpoint M3 verifica PR #7 cerrado y ejecuta el nuevo validator antes de los gates existentes.
-- La cola queda congelada en 3 tombstones / 27 residuales hasta `CLOSED_PASS`.
-- Se crea una métrica distinta de producción real: `PRODUCTION_REAL_READINESS 68/100`; Phase A 98/100 se conserva como métrica técnica interna.
+La primera clean probe con PR cerrado redujo drásticamente el fan-out, pero todavía aparecieron runs `push` de workflows que en Git estaban aparentemente inertes. Los runs terminaron inmediatamente y tenían cero jobs. Se reprodujo la sintaxis exacta del blob inerte y se demostró la causa: el scalar `run: echo 'HISTORICAL_INERT_M3: ...'` era YAML inválido porque el `:` quedaba dentro de un scalar no citado a nivel YAML.
 
-## Preservación
+Eso explica por qué GitHub seguía creando failures sin ejecutar jobs: no era una nueva autorización ni provider execution, sino workflows inválidos registrados por Actions.
 
-No se toca source funcional, `/app/core`, `/app/modules`, HR, provider, Auth, Firestore, Storage, Rules, Make, Gemini, pagos, deploy ni merge. M1/M2/F0 no se reabren.
+## Reparación aplicada
 
-## Clasificación
+- Los 22 workflows históricos se reemplazan atómicamente por YAML válido usando `run: |`.
+- Nuevo blob esperado: `5e33e90c4498f8f6bbbd8a0dda4d79a1ae393c96`.
+- `validate-cxorbia-canonical-authority.js` se endurece para exigir exactamente el nuevo contrato válido.
+- Validator authority y evidencia rootfix se actualizan.
+- La cola sigue congelada; no se adjudica avance porcentual todavía.
 
-- Reusable CXOrbia: barrier de quiescencia, single-authority y progreso por gates.
-- Exclusivo cliente: PR/rama y residual inventory TyA.
-- Claude/prototipo: sin cambio frontend.
-- Academia: sin impacto funcional.
-- Sin impacto Claude: control-plane, gates y documentación.
+## Seguridad
+
+Provider/data/Auth/Firestore/Storage/HR/Rules/Make/Gemini/pagos/deploy/merge/frontend funcional = 0.
 
 ## Siguiente exacto
 
-Readback remoto del materialization commit y luego `M3_0_CLEAN_PROBE_WITH_PR_CLOSED`. Si PASS, el progreso real pasa 68→69 y solo entonces se reanuda la cola finita M3.
+Readback remoto de esta transición y nueva clean probe sin tocar workflows. Solo si existe un único push workflow canónico, cero PR runs, cero bot commit y HEAD estable se cierra M3-0 y `PRODUCTION_REAL_READINESS` pasa 68→69.

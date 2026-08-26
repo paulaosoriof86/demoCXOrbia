@@ -6,62 +6,12 @@
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-26",
   "block": "M3_0_CONTROL_PLANE_QUIESCENCE_SINGLE_AUTHORITY_BARRIER",
-  "status": "ACTIVE_CLEAN_PROBE_PENDING_READBACK",
-  "reason": "The prior clean probe kept HEAD stable but produced workflow fan-out. The transition commit installed the durable barrier with PR7 closed; the current step is the no-workflow clean probe.",
-  "transition": {
-    "commit": "7a2a0358f28c329a12a32bb353576093d79d3c75",
-    "remoteReadbackPassed": true,
-    "workflowFilesChanged": true,
-    "transitionPushRunsObserved": 14,
-    "interpretation": "Transition fan-out is not the clean-probe verdict because the commit modified the checkpoint workflow and barrier wiring."
-  },
-  "queueFreeze": {
-    "residualHolds": 27,
-    "completedTombstones": 3,
-    "tombstoneRegistryMutationAllowedBeforePass": false,
-    "resumeQueueOnlyAfterStatus": "CLOSED_PASS"
-  },
-  "pullRequestQuiescence": {
-    "pullRequest": 7,
-    "requiredStateDuringM3BarrierAndFiniteQueue": "closed",
-    "observedStateAtBarrierStart": "closed",
-    "merged": false,
-    "purpose": "Eliminate pull_request synchronize fan-out while preserving the same PR identity for later controlled reopening."
-  },
-  "cleanProbeContract": {
-    "probeMustNotTouchWorkflowFiles": true,
-    "expectedAutomaticPushWorkflow": ".github/workflows/cxorbia-phase-a-live-checkpoint.yml",
-    "expectedAutomaticPushWorkflowCount": 1,
-    "expectedPullRequestRuns": 0,
-    "expectedHistoricalAutomaticRuns": 0,
-    "expectedBotChildCommits": 0,
-    "expectedProviderWrites": 0,
-    "expectedDataWrites": 0,
-    "expectedDeploys": 0,
-    "headMustRemainStableAfterRuns": true
-  },
-  "singleAuthority": {
-    "canonicalStateAuthority": "backend/config/cxorbia-phase-a-continuity-lock.json + current M3 evidence + explicit validator authority + this quiescence lock",
-    "prBodyIsMirrorOnly": true,
-    "historicalRequestsNeverAuthorizeExecution": true,
-    "conversationInterruptionNeverSkipsBarrier": true,
-    "nextConversationMustResumeThisBlockUntilClosedPass": true
-  },
-  "safety": {
-    "providerMutationAuthorizedNow": false,
-    "businessDataWritesAuthorizedNow": false,
-    "authWrites": 0,
-    "firestoreWrites": 0,
-    "storageWrites": 0,
-    "hrWrites": 0,
-    "rulesWrites": 0,
-    "hostingDeploys": 0,
-    "cloudRunDeploys": 0,
-    "makeCalls": 0,
-    "geminiCalls": 0,
-    "payments": 0,
-    "merge": false,
-    "frontendFunctionalChanges": 0
-  },
-  "next": "READBACK_M3_0_CLEAN_PROBE_AND_CLOSE_ONLY_IF_EXACT_CONTRACT"
+  "status": "ACTIVE_TRANSITION_PENDING_CLEAN_PROBE",
+  "newRootCause": "The 22 quarantined workflow files used an unquoted run scalar containing a colon. GitHub treated them as invalid workflows, creating zero-job failed workflow runs on pushes even though they had no push trigger. The inert contract is now valid YAML using a block scalar.",
+  "queueFreeze": {"residualHolds":27,"completedTombstones":3,"tombstoneRegistryMutationAllowedBeforePass":false,"resumeQueueOnlyAfterStatus":"CLOSED_PASS"},
+  "pullRequestQuiescence": {"pullRequest":7,"requiredStateDuringM3BarrierAndFiniteQueue":"closed","observedStateAtBarrierStart":"closed","merged":false},
+  "cleanProbeContract": {"probeMustNotTouchWorkflowFiles":true,"expectedAutomaticPushWorkflow":".github/workflows/cxorbia-phase-a-live-checkpoint.yml","expectedAutomaticPushWorkflowCount":1,"expectedPullRequestRuns":0,"expectedHistoricalAutomaticRuns":0,"expectedBotChildCommits":0,"expectedProviderWrites":0,"expectedDataWrites":0,"expectedDeploys":0,"headMustRemainStableAfterRuns":true},
+  "singleAuthority": {"prBodyIsMirrorOnly":true,"historicalRequestsNeverAuthorizeExecution":true,"conversationInterruptionNeverSkipsBarrier":true,"nextConversationMustResumeThisBlockUntilClosedPass":true},
+  "safety": {"providerMutationAuthorizedNow":false,"businessDataWritesAuthorizedNow":false,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"rulesWrites":0,"hostingDeploys":0,"cloudRunDeploys":0,"makeCalls":0,"geminiCalls":0,"payments":0,"merge":false,"frontendFunctionalChanges":0},
+  "next": "READBACK_VALID_INERT_YAML_TRANSITION_THEN_CLEAN_PROBE"
 }
