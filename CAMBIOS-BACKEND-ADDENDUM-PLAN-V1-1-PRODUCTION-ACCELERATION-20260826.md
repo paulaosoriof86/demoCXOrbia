@@ -32,3 +32,7 @@ Provider/data/Auth/Firestore/Storage/HR/Rules/Make/Gemini/pagos/deploy/merge/fro
 ## Siguiente exacto
 
 `M3_TERMINAL_13_CLOSURE`.
+
+## Readback del congelamiento
+
+El freeze V1.1 se materializó atómicamente en `3e495eaa696411d3bf163e1112f5724f727ac58c`, tree `2191eaf32bf1453ee0bc781a2ca7d04815b27f83`; el readback remoto devolvió exactamente ese HEAD. Plan blob `0ea2cd9802e687938086886d8d03648f105a7d64`; continuidad V3.0 alineada. Provider/data/deploy = 0.

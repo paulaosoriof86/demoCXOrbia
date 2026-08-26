@@ -17,7 +17,7 @@
 **PHASE_A:** `98/100`
 **PRODUCTION_REAL_READINESS:** `69/100`
 
-Batch 1 y Batch 2 permanecen cerrados. Batch 2 cerró por readback remoto exacto `3e06470c887fc76cd21c0e2c720fa537017a82bd`. Los 13 residuales se cierran ahora como una única frontera terminal; Batch 4 está prohibido.
+`M3_FINITE_QUEUE_BATCH_1` y `M3_FINITE_QUEUE_BATCH_2` permanecen cerrados. Batch 2 cerró por readback remoto exacto `3e06470c887fc76cd21c0e2c720fa537017a82bd`. Los 13 residuales se cierran ahora como una única frontera terminal; Batch 4 está prohibido.
 
 Después de M3, F3 no será otro retry: debe reparar/certificar `PROVIDER_PROMOTION_MECHANISM_V1` y cerrar `G2B_RECOVERY_LANE_PASS` antes de cualquier recuperación provider.
 

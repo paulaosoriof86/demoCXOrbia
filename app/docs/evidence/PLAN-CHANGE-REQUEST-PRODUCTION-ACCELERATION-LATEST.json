@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.master-plan-change-request.v1",
   "planChangeRequest": "PCR-20260826-PRODUCTION-ACCELERATION-01",
-  "status": "AUTHORIZED_FOR_ATOMIC_MATERIALIZATION",
+  "status": "MATERIALIZED_PASS_DIRECT_REMOTE_READBACK",
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-26_user_requested_freeze_and_continue",
   "reason": "Deep causal audit showed that the remaining production delay cannot be treated as a generic product retry problem. F0/M2 is finite and closed, M3 has 13 deterministic residuals, and G2-B source-fix exists while the last recovery produced zero provider-side execution. The pending plan is accelerated to one terminal M3 closure plus an explicit provider-promotion mechanism repair/certification before the next one-shot recovery.",
@@ -13,6 +13,6 @@
   "timeBox": {"activeTechnicalHoursToCutover":"17-28","targetCalendarGoLive":"36-48h_if_no_new_P0_and_provider_IAM_transport_available","circuitBreakerHours":72,"maxConsecutiveDiagnosticIterationsWithoutStateChange":1},
   "riskClassification": "CONTROL_PLANE_AND_RELEASE_MECHANISM_HIGH_IMPORTANCE_ZERO_PROVIDER_MUTATION_FOR_PLAN_CHANGE",
   "safety": {"providerWrites":0,"businessDataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"rulesWrites":0,"hostingDeploys":0,"cloudRunDeploys":0,"makeCalls":0,"geminiCalls":0,"payments":0,"merge":false,"frontendFunctionalChanges":0},
-  "materialization": {"branch":"docs-tya-v6-v71-audit","expectedParentHead":"cf7c2bccf0aec2678a15afccc85f93dfe154de14","atomicCommitRequired":true,"directRemoteReadbackRequired":true,"materializationCommitResolution":"DIRECT_REMOTE_READBACK_AFTER_ATOMIC_COMMIT"},
+  "materialization": {"branch":"docs-tya-v6-v71-audit","expectedParentHead":"cf7c2bccf0aec2678a15afccc85f93dfe154de14","atomicCommitRequired":true,"directRemoteReadbackRequired":true,"materializationCommitResolution":"DIRECT_REMOTE_READBACK_AFTER_ATOMIC_COMMIT","materializationCommitSha":"3e495eaa696411d3bf163e1112f5724f727ac58c","materializationTreeSha":"2191eaf32bf1453ee0bc781a2ca7d04815b27f83","readbackObservedHead":"3e495eaa696411d3bf163e1112f5724f727ac58c","headMatchedMaterializationCommit":true,"planBlobReadback":"0ea2cd9802e687938086886d8d03648f105a7d64","continuityLockBlobReadback":"14b329309f548f7c881d3294f3fd225e6bd54f66","providerSideEffects":0},
   "classificationByProject": {"Reusable CXOrbia":"Provider promotion contract, immutable release tuple, separated authorization/lease, circuit breaker and causal stop taxonomy.","Exclusivo cliente":"TyA provider targets, G2-B recovery and historical RC15 residuals.","Claude/prototipo":"No frontend change; prototype remains authoritative.","Academia":"No functional course/manual change in this plan-freeze block; future F7 verifies documentation impacts.","Sin impacto Claude":"Plan/control-plane/evidence materialization."}
 }
