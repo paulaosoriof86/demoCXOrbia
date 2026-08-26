@@ -2,17 +2,22 @@
 
 **Fecha:** 2026-08-26
 **MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`
+**MASTER_PLAN_VERSION:** `1.1.0`
+**MASTER_PLAN_STATUS:** `FROZEN`
+**PLAN_CHANGE_REQUEST:** `PCR-20260826-PRODUCTION-ACCELERATION-01`
 **M3_MECHANISM_EPOCH:** `RC15-M3-MECHANISM-20260825-02`
 **M3_0:** `CLOSED_PASS_DIRECT_GITHUB_READBACK`
-**M3:** `17_OF_30_TOMBSTONED`
-**NEXT:** `M3_FINITE_QUEUE_BATCH_3`
+**M3:** `17_OF_30_TOMBSTONED__13_TERMINAL_PENDING`
+**NEXT:** `M3_TERMINAL_13_CLOSURE`
 **PHASE_A:** `98/100`
 **PRODUCTION_REAL_READINESS:** `69/100`
 
-M1/M2/F0, M3-0, Batch 1 y Batch 2 están cerrados. Batch 2 neutralizó CP124, CP125, CP127, CP130 y CP131 y cerró por readback remoto exacto del commit `3e06470c887fc76cd21c0e2c720fa537017a82bd`. Quedan 13 residuales.
+M1/M2/F0, M3-0, `M3_FINITE_QUEUE_BATCH_1` y Batch 2 están cerrados y no se reabren. V1.1 prohíbe Batch 4: los 13 residuales exactos se cierran en una única frontera terminal.
 
-No hubo cambio funcional frontend. No modificar UI, `/app/modules` ni `/app/core`; no solicitar candidata nueva. Source funcional: `f9802fdd498934a8e7729fa5c7d18341bec1cd71`.
+Después, F3 debe reparar/certificar el mecanismo provider antes del recovery G2-B. No asumir que un workflow skipped, job sin runner o cero steps es fallo de producto.
 
-Los scripts históricos tratados quedaron fail-closed; el request V105/V106 quedó sin autoridad actual y sin fabricar consumo. GitHub Actions sigue como telemetría; PR #7 cerrado/no mergeado.
+No hay cambio funcional frontend. No modificar UI, `/app/modules` ni `/app/core`; no solicitar candidata nueva. Source funcional preservado: `f9802fdd498934a8e7729fa5c7d18341bec1cd71`.
 
-Academia: sin impacto funcional en manuales, cursos, rutas por rol o notificaciones.
+GitHub Actions es telemetría no autoritativa; PR #7 cerrado/no mergeado.
+
+Academia: sin impacto funcional en este freeze; F7 volverá a verificar manuales, cursos, rutas por rol y notificaciones sobre el release exacto.
