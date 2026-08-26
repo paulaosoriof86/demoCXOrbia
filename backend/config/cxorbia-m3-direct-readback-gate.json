@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "cxorbia.rc15.m3.direct-readback-gate.v1",
+  "gateId": "RC15-M3-0-DIRECT-READBACK-20260826-01",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
+  "scope": "M3_0_CONTROL_PLANE_QUIESCENCE_SINGLE_AUTHORITY_BARRIER",
+  "authorityMode": "DIRECT_GITHUB_REMOTE_READBACK_ACTIONS_NONAUTHORITATIVE",
+  "status": "PASS",
+  "decision": "PASS_M3_0_DIRECT_READBACK_ACTIONS_TRANSPORT_DEGRADED",
+  "observedAt": "2026-08-26T09:45:00-06:00",
+  "probe": {
+    "parentHead": "0c1f3df736b24dea623a89cf27814aeed4b8922a",
+    "probeHead": "dc5fa6b12fb3eac4331661f14f60e58b62b23d34",
+    "probeTree": "589ee434eec2f4d27a7391c5ee71e1228f98610a",
+    "remoteHeadReadback": "dc5fa6b12fb3eac4331661f14f60e58b62b23d34",
+    "headStable": true,
+    "changedPaths": [
+      "app/docs/evidence/RC15-M3-0-QUIESCENCE-BARRIER-LATEST.json",
+      "backend/config/cxorbia-m3-quiescence-lock.json"
+    ],
+    "workflowFilesTouched": 0,
+    "queueFilesTouched": 0,
+    "providerOrRuntimeFilesTouched": 0,
+    "frontendFunctionalFilesTouched": 0
+  },
+  "pullRequest7": {"state":"closed","merged":false,"draft":true,"fanoutAuthority":false},
+  "historicalWorkflowQuarantine": {
+    "count": 22,
+    "exactValidInertBlobSha": "5e33e90c4498f8f6bbbd8a0dda4d79a1ae393c96",
+    "allKnownQuarantinedFilesMatch": true,
+    "broadRestoreAllowed": false
+  },
+  "actionsTelemetry": {
+    "authoritative": false,
+    "currentHeadRunCount": 1,
+    "onlyObservedWorkflow": ".github/workflows/cxorbia-phase-a-live-checkpoint.yml",
+    "runId": 32985873737,
+    "runConclusion": "failure",
+    "jobId": 98231662272,
+    "jobStatusObserved": "queued",
+    "jobStepCount": 0,
+    "runnerId": null,
+    "classification": "GITHUB_ACTIONS_RUNNER_TRANSPORT_FAILURE_BEFORE_STEPS_NOT_SOURCE_GATE_FAILURE",
+    "historicalUnexpectedAutomaticRuns": 0,
+    "pullRequestRuns": 0,
+    "botChildCommits": 0
+  },
+  "finiteQueue": {"atM3Entry":30,"tombstoned":3,"remaining":27,"unchangedDuringBarrier":true},
+  "functionalSourceLock": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+  "safety": {
+    "providerWrites": 0,
+    "businessDataWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "frontendFunctionalChanges": 0
+  },
+  "productionRealReadinessAfterPass": 69,
+  "next": "M3_FINITE_QUEUE_BATCH_1"
+}

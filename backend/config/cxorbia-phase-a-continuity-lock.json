@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "2.4.0",
+  "schemaVersion": "2.5.0",
   "syncEpoch": "CXORBIA-20260821-I5-G2B-FORENSIC-PROVIDER-LANE-READY-50",
   "rc15ControlPlaneEpoch": "RC15-M2-F0-CLOSED-20260825-01",
   "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
@@ -11,12 +11,12 @@
   "currentIteration": "I5-G2",
   "formalProgress": {"completed":98,"pending":2,"total":100},
   "productionRealReadiness": {
-    "completed": 68,
-    "pending": 32,
+    "completed": 69,
+    "pending": 31,
     "total": 100,
     "metric": "PRODUCTION_REAL_READINESS",
     "authority": "app/docs/PRODUCTION-REAL-PROGRESS-LOCK-CXORBIA-TYA.md",
-    "nextIncreaseOnlyAfter": "M3_0_QUIESCENCE_CLOSED_PASS"
+    "nextIncreaseOnlyAfter": "M3_FINITE_QUEUE_CLOSED_PASS"
   },
   "masterPlan": {
     "id": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
@@ -28,8 +28,8 @@
     "frozenAt": "2026-08-21T12:40:00-06:00",
     "freezeAuthority": "PAULA_CURRENT_CONVERSATION",
     "currentPhase": "M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY",
-    "currentStep": "M3_0_CONTROL_PLANE_QUIESCENCE_SINGLE_AUTHORITY_BARRIER",
-    "next": "M3_0_FINAL_CLEAN_PROBE_AND_CLOSE_OR_FAIL_CLOSED",
+    "currentStep": "M3_F1_FINITE_TOMBSTONE_QUEUE_BATCHED",
+    "next": "M3_FINITE_QUEUE_BATCH_1",
     "amendmentPolicy": "PLAN_CHANGE_REQUEST_ONLY_EXPLICIT_PAULA_ATOMIC",
     "previousPlansExecutionAuthority": "SUPERSEDED_RETAINED_AS_EVIDENCE",
     "providerMutationAuthorizedNow": false,
@@ -65,7 +65,7 @@
     "next":"M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY"
   },
   "m3ExecutionControl": {
-    "status":"PAUSED_M3_0_QUIESCENCE_BARRIER",
+    "status":"ACTIVE_M3_0_QUIESCENCE_CLOSED_PASS",
     "mechanismEpoch":"RC15-M3-MECHANISM-20260825-02",
     "mechanismCertified":true,
     "certifiedAtHead":"6d31740c43f9ae98dd9f66a8b42da0affaf0bb80",
@@ -73,24 +73,27 @@
     "evidence":"app/docs/evidence/RC15-M3-F1-F2-CANONICAL-AUTHORITY-LATEST.json",
     "certificationEvidence":"app/docs/evidence/RC15-M3-MECHANISM-CERTIFICATION-LATEST.json",
     "validatorAuthority":"backend/config/cxorbia-validator-authority.json",
-    "sourceOnlyGate":".github/workflows/cxorbia-phase-a-live-checkpoint.yml",
+    "sourceOnlyGate":"tools/continuity/validate-cxorbia-m3-direct-readback.js",
+    "sourceOnlyGateAttestation":"backend/config/cxorbia-m3-direct-readback-gate.json",
+    "actionsWorkflowTelemetry":".github/workflows/cxorbia-phase-a-live-checkpoint.yml",
     "tombstoneRegistry":"backend/config/cxorbia-historical-authority-tombstones.json",
     "consumedLedger":"backend/config/cxorbia-consumed-one-shot-gates.json",
     "aliases":"backend/config/cxorbia-evidence-aliases.json",
     "quiescenceLock":"backend/config/cxorbia-m3-quiescence-lock.json",
     "quiescenceEvidence":"app/docs/evidence/RC15-M3-0-QUIESCENCE-BARRIER-LATEST.json",
-    "quiescenceStatus":"ACTIVE_PENDING_FINAL_CLEAN_PROBE",
+    "quiescenceStatus":"CLOSED_PASS",
     "residualHoldsAtStart":30,
     "tombstonedHolds":3,
     "currentResidualHolds":27,
-    "finiteQueueFrozen":true,
+    "finiteQueueFrozen":false,
     "historicalGlobalExhaustive":false,
     "canonicalStateAuthorityAligned":true,
     "historicalWorkflowPushAuthorityInertized":true,
     "providerPreflightAutoRunDuringM3":false,
     "functionalSourceLockSeparatedFromControlPlaneHead":true,
+    "githubActionsExecutionAuthority":false,
     "providerMutationAuthorizedNow":false,
-    "next":"M3_0_FINAL_CLEAN_PROBE_AND_CLOSE_OR_FAIL_CLOSED"
+    "next":"M3_FINITE_QUEUE_BATCH_1"
   },
   "resumeProtocol": {
     "conversationIndependent":true,
@@ -111,12 +114,14 @@
     "historicalWorkflowPushMustBeInert":true,
     "oneAtomicGitCommitPerM3Materialization":true,
     "m3SourceOnlyGateRequiredAfterCanonicalMaterialization":true,
+    "directGitHubReadbackRequiredAfterM3Materialization":true,
+    "githubActionsRunsAreTelemetryNotExecutionAuthorityDuringM3":true,
     "providerPreflightForbiddenDuringM3":true,
     "functionalSourceLockIsNotControlPlaneHead":true,
     "m3QuiescenceBarrierRequiredBeforeFiniteQueueResume":true,
-    "m3FiniteQueueFrozenUntilQuiescenceClosedPass":true,
-    "pr7MustRemainClosedDuringM3Quiescence":true,
-    "conversationChangeCannotSkipM3Quiescence":true,
+    "m3QuiescenceBarrierClosedPass":true,
+    "pr7MustRemainClosedDuringM3FiniteQueue":true,
+    "conversationChangeCannotReopenOrSkipM3Quiescence":true,
     "onMismatch":"CONTINUITY_DRIFT_BLOCKED"
   },
   "iterations": [
@@ -196,9 +201,9 @@
   },
   "rootCauseClosures": {
     "nonAtomicCanonicalStateDrift":{"id":"RC14_NONATOMIC_CANONICAL_STATE_AND_EVENT_ARTIFACT_AUTHORITY_DRIFT","status":"M3_ATOMIC_CONTROL_CERTIFIED_PASS","finding":"Canonical machine state, terminal evidence, event artifacts, validators and mirrors had advanced on different epochs, allowing later iterations to read stale state.","control":"M3 binds dynamic execution state to continuity lock, validator authority, tombstones, ledger and aliases."},
-    "systemicAuditAndMethodology":{"id":"RC15_SYSTEMIC_AUDIT_METHOD_CONTROL_PLANE_AND_POSTPROD","status":"M3_PAUSED_FOR_QUIESCENCE_27_REMAINING","finding":"Historical execution authority can survive in PR base, requests, direct tools, workflows or provider configuration.","control":"M2 finite inventory remains closed; M3 finite queue cannot resume until M3-0 quiescence is CLOSED_PASS."},
-    "workflowPushFailureNoise":{"id":"RC15_M3_INVALID_HISTORICAL_WORKFLOW_PUSH_FAILURE_NOISE","status":"ROOTFIX_VALID_INERT_YAML_PENDING_FINAL_CLEAN_PROBE","finding":"Historical workflows were inertized using YAML that GitHub still registered as invalid zero-job failure runs.","control":"All 22 inert workflows use valid block-scalar YAML and the canonical validator requires the exact valid inert contract."},
-    "m3Quiescence":{"id":"RC15_M3_0_CONTROL_PLANE_QUIESCENCE_SINGLE_AUTHORITY_BARRIER","status":"ACTIVE_PENDING_FINAL_CLEAN_PROBE","finding":"A green canonical gate alone did not prove that the whole control plane was silent; PR fan-out and invalid historical workflow definitions generated asynchronous noise.","control":"PR7 closed/unmerged, 22 historical workflows exact-valid-inert, finite queue frozen, continuity lock now makes the barrier conversation-independent."}
+    "systemicAuditAndMethodology":{"id":"RC15_SYSTEMIC_AUDIT_METHOD_CONTROL_PLANE_AND_POSTPROD","status":"M3_ACTIVE_BATCHED_27_REMAINING","finding":"Historical execution authority can survive in PR base, requests, direct tools, workflows or provider configuration.","control":"M2 finite inventory remains closed; M3 resumes only through atomic batch materialization plus direct GitHub remote readback."},
+    "workflowPushFailureNoise":{"id":"RC15_M3_INVALID_HISTORICAL_WORKFLOW_PUSH_FAILURE_NOISE","status":"CLOSED_PASS_VALID_INERT_YAML","finding":"Historical workflows were inertized using YAML that GitHub still registered as invalid zero-job failure runs.","control":"All 22 inert workflows use valid block-scalar YAML and the canonical validator requires the exact valid inert contract."},
+    "m3Quiescence":{"id":"RC15_M3_0_CONTROL_PLANE_QUIESCENCE_SINGLE_AUTHORITY_BARRIER","status":"CLOSED_PASS_DIRECT_GITHUB_READBACK_ACTIONS_TRANSPORT_DEGRADED","finding":"The final probe produced exactly one expected checkpoint run, but GitHub marked it failed while its only job stayed queued with zero steps and no runner. Actions transport cannot be execution authority.","control":"PR7 closed/unmerged; 22 historical writer workflows exact-valid-inert; HEAD stable; zero unexpected runs/child commits/provider effects; direct GitHub remote readback is now the M3 source-only authority and Actions is telemetry only."}
   },
   "rc15EmergencyContainment": {
     "cp093":{"requestId":"RC15-PCR-EMERGENCY-V156-BASE-WORKFLOW-INERTIZATION-20260821-01","status":"CONTAINED_PASS","baseAfter":"fc7ead694ccdb01bee79856d47a761d34c8d88b9","providerWrites":0,"merge":false},
@@ -209,6 +214,7 @@
       "backend/config/cxorbia-phase-a-continuity-lock.json",
       "app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md",
       "backend/config/cxorbia-m3-quiescence-lock.json",
+      "backend/config/cxorbia-m3-direct-readback-gate.json",
       "app/docs/evidence/RC15-M3-0-QUIESCENCE-BARRIER-LATEST.json",
       "app/docs/evidence/RC15-M2-FINITE-F0-CLOSURE-LATEST.json",
       "app/docs/evidence/RC15-M3-F1-F2-CANONICAL-AUTHORITY-LATEST.json",
@@ -229,7 +235,9 @@
     "m3CanonicalAuthorityIsCurrentDynamicMirror":true,
     "m3CertificationIsMechanismGate":true,
     "m3MechanismCertified":true,
-    "m3QuiescenceBarrierIsCurrentExecutionStop":true,
+    "m3QuiescenceBarrierClosedPass":true,
+    "m3DirectReadbackGateIsCurrentSourceOnlyAuthority":true,
+    "githubActionsRunsAreTelemetryOnly":true,
     "validatorAuthorityIsExplicit":true,
     "historicalTombstonesNeverAuthorizeExecution":true,
     "consumedLedgerOnlyRecordsExecutedOneShots":true,
@@ -255,15 +263,17 @@
     "allowSequentialContentsCommitsForM3CanonicalState":false,
     "allowProviderPreflightAutoRunDuringM3":false,
     "allowM3FiniteQueueBeforeQuiescenceClosedPass":false,
-    "allowConversationChangeToSkipM3Quiescence":false
+    "allowConversationChangeToReopenM3Quiescence":false,
+    "allowGithubActionsRunToAuthorizeM3Execution":false
   },
   "nextNow": {
-    "action":"M3_0_FINAL_CLEAN_PROBE_AND_CLOSE_OR_FAIL_CLOSED",
+    "action":"M3_FINITE_QUEUE_BATCH_1",
     "masterPlanFrozen":true,
     "currentMasterPhase":"M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY",
-    "currentMasterStep":"M3_0_CONTROL_PLANE_QUIESCENCE_SINGLE_AUTHORITY_BARRIER",
+    "currentMasterStep":"M3_F1_FINITE_TOMBSTONE_QUEUE_BATCHED",
     "m3MechanismCertified":true,
-    "m3FiniteQueueFrozen":true,
+    "m3QuiescenceClosedPass":true,
+    "m3FiniteQueueFrozen":false,
     "currentResidualHolds":27,
     "providerMutationAuthorizedNow":false,
     "syntheticStageAuthorizedNow":false,
