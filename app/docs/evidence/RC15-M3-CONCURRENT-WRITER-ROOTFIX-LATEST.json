@@ -1,55 +1,67 @@
 {
-  "schemaVersion": "cxorbia.rc15.m3.concurrent-writer-rootfix.v1",
-  "generatedAt": "2026-08-25T20:30:00-06:00",
+  "schemaVersion": "cxorbia.rc15.m3.concurrent-writer-rootfix.v2",
+  "generatedAt": "2026-08-25T20:45:00-06:00",
   "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
   "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
   "phase": "M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY",
-  "sourceHeadBefore": "e522cd90b9c020187bb5a86d02688fb532804411",
-  "status": "ROOTFIX_MATERIALIZED_REQUIRES_REMOTE_READBACK_AND_SOURCE_ONLY_GATE",
+  "sourceHeadBeforeRootfix": "e522cd90b9c020187bb5a86d02688fb532804411",
+  "rootfixCommit": "5b521bffdc083026430f3f43b205d35a17fdec8a",
+  "status": "ROOTFIX_READBACK_PASS_CLEAN_PROBE_PENDING",
   "rootCauseEvidence": {
     "restoreCommit": "c74779105700714efc5d7ad75756a676dd6a8c7a",
-    "restoreMessage": "M3 restore protected source after failed quarantine attempt",
     "automaticWorkflow": ".github/workflows/cxorbia-phase-a-live-hr-read-probe.yml",
     "workflowRunId": 32917331228,
     "event": "push",
     "workflowHadContentsWrite": true,
     "workflowHadDirectGitPushToLiveBranch": true,
     "botCommit": "f164110bfe09fc817a451e9e3bb6f4503578c164",
-    "botCommitMessage": "evidence: freeze current HR source-safe through July",
     "botCommitParent": "c74779105700714efc5d7ad75756a676dd6a8c7a",
-    "conclusion": "A broad source restore reactivated historical workflow authority and produced an asynchronous branch mutation outside the intended M3 atomic materialization."
+    "conclusion": "Broad source restore reactivated historical workflow authority and created an asynchronous live-branch mutation."
+  },
+  "rootfixReadback": {
+    "headStableAfterRuns": true,
+    "observedHead": "5b521bffdc083026430f3f43b205d35a17fdec8a",
+    "canonicalGateRunId": 32923311037,
+    "canonicalGateConclusion": "success",
+    "canonicalGateWorkflow": ".github/workflows/cxorbia-phase-a-live-checkpoint.yml",
+    "automaticRunsOnTransitionCommit": 24,
+    "successfulRuns": 1,
+    "failedRuns": 23,
+    "failedRunInterpretation": "The rootfix commit itself changed historical workflow definitions. GitHub created transition push runs from their pre-quarantine triggers. Their presence on this transition commit is not proof of post-rootfix reactivation.",
+    "additionalObservedGate": {
+      "path": ".github/workflows/cxorbia-firebase-dev-clean-state-read-only-gate.yml",
+      "runId": 32923310985,
+      "contentsPermission": "read",
+      "providerCalls": 0,
+      "triggerReason": "Rootfix changed .github/workflows/cxorbia-firebase-dev-clean-state-read-only-run.yml, which is a declared path trigger of this static gate."
+    },
+    "botChildCommitObserved": false
   },
   "repair": {
     "strategy": "WORKFLOW_ONLY_QUARANTINE_NO_FUNCTIONAL_TOOL_OR_RUNTIME_RESTORE",
     "historicalWorkflowCount": 22,
     "inertBlobSha": "db925bb2823aa52ddfe36343567e6be5aace8f65",
-    "inertContract": {
-      "trigger": "workflow_dispatch_only",
-      "contentsPermission": "read",
-      "jobCondition": "false",
-      "providerAccess": false,
-      "repositoryPush": false
-    },
     "canonicalCheckpointPreserved": ".github/workflows/cxorbia-phase-a-live-checkpoint.yml",
-    "canonicalValidator": "tools/continuity/validate-cxorbia-canonical-authority.js",
     "validatorFailsClosedOnHistoricalWorkflowRestore": true,
     "functionalRuntimeTouched": false,
     "functionalToolsTouched": false,
     "appCoreTouched": false,
     "appModulesTouched": false
   },
+  "cleanProbe": {
+    "purpose": "Prove post-rootfix automatic-trigger behavior without modifying any historical workflow.",
+    "workflowFilesTouched": 0,
+    "expectedAutomaticWorkflow": ".github/workflows/cxorbia-phase-a-live-checkpoint.yml",
+    "expectedHistoricalAutomaticRuns": 0,
+    "expectedBotBranchCommits": 0,
+    "expectedProviderSideEffects": 0,
+    "requiredBeforeBacklogResume": true
+  },
   "progress": {
     "currentResidualHoldsBefore": 27,
     "currentResidualHoldsAfter": 27,
     "backlogProgressClaimed": false,
-    "reason": "Reproducible mechanism blocker rootfix; no tombstone is fabricated."
-  },
-  "postCommitGate": {
-    "required": true,
-    "expectedAutomaticWorkflow": ".github/workflows/cxorbia-phase-a-live-checkpoint.yml",
-    "expectedHistoricalAutomaticRuns": 0,
-    "expectedBotBranchCommits": 0,
-    "expectedProviderSideEffects": 0
+    "reason": "Reproducible mechanism blocker validation; no tombstone fabricated."
   },
   "safety": {
     "providerWrites": 0,

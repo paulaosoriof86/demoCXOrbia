@@ -39,13 +39,25 @@ Workflows fijados a `workflow_dispatch` + `contents: read` + `if:false`:
 - `.github/workflows/cxorbia-corte4-p0-vis02-revalidate.yml`
 - `.github/workflows/tya-hr-country-tab-consistency-current.yml`
 
-`tools/continuity/validate-cxorbia-canonical-authority.js` ahora exige que esos 22 archivos coincidan exactamente con el contrato inerte. Una futura restauración amplia no puede volver a recibir PASS del gate M3.
+`tools/continuity/validate-cxorbia-canonical-authority.js` exige que esos 22 archivos coincidan exactamente con el contrato inerte. Una futura restauración amplia no puede volver a recibir PASS del gate M3.
 
-También se actualizan `backend/config/cxorbia-validator-authority.json`, `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md` y se crea `app/docs/evidence/RC15-M3-CONCURRENT-WRITER-ROOTFIX-LATEST.json`.
+También se actualizaron `backend/config/cxorbia-validator-authority.json`, `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`, `RESUMEN-PARA-CLAUDE.md`, `PENDIENTES-PROTOTIPO.md` y se creó `app/docs/evidence/RC15-M3-CONCURRENT-WRITER-ROOTFIX-LATEST.json`.
+
+## Readback del rootfix `5b521bff...`
+
+- La rama permaneció en `5b521bffdc083026430f3f43b205d35a17fdec8a`; no apareció commit hijo de bot.
+- El checkpoint canónico M3 pasó en el run `32923311037`.
+- El commit de transición produjo 24 runs: 1 PASS canónico y 23 FAIL.
+- Esos FAIL no se convierten automáticamente en nueva autoridad: el mismo commit había modificado las definiciones históricas desde sus versiones con `push` hacia versiones inertes. GitHub pudo crear los runs del evento que realizó esa transición.
+- El único workflow adicional inspeccionado fuera de los 22, `.github/workflows/cxorbia-firebase-dev-clean-state-read-only-gate.yml`, tiene `contents: read`, cero provider calls y se disparó porque su lista de paths observa `.github/workflows/cxorbia-firebase-dev-clean-state-read-only-run.yml`, modificado por la cuarentena.
+
+## Clean probe
+
+Se inicia una prueba post-rootfix que no modifica ningún workflow. Solo toca estado/documentación canónica M3. Criterio de cierre: HEAD estable, cero commit bot, cero provider/data side effects y ausencia de auto-runs históricos. El único auto-run esperado es `.github/workflows/cxorbia-phase-a-live-checkpoint.yml`.
 
 ## Seguridad y preservación
 
-No se modifica `/app/core`, `/app/modules`, HR fuente, runtime, adapters de producto ni tools funcionales distintos del validador de continuidad. Provider/Auth/Firestore/Storage/HR/Rules/Make/Gemini/pagos/deploy/merge = 0. El único workflow automático que debe quedar operativo para una materialización M3 es `.github/workflows/cxorbia-phase-a-live-checkpoint.yml`, source-only y `contents: read`.
+No se modifica `/app/core`, `/app/modules`, HR fuente, runtime, adapters de producto ni tools funcionales distintos del validador de continuidad. Provider/Auth/Firestore/Storage/HR/Rules/Make/Gemini/pagos/deploy/merge = 0.
 
 ## Clasificación
 
@@ -57,4 +69,4 @@ No se modifica `/app/core`, `/app/modules`, HR fuente, runtime, adapters de prod
 
 ## Siguiente exacto
 
-Readback remoto del commit atómico, comprobar que solo se dispara el checkpoint M3, verificar PASS y ausencia de commit bot. Solo después continuar la cola finita de 27 residuales.
+Materializar clean probe, leer HEAD/runs y, si pasa, cerrar `CONCURRENT_WRITER_ROOTFIX_CLOSED_PASS` y continuar la cola finita 27→26 sin reabrir auditoría.
