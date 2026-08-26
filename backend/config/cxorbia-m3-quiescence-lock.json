@@ -6,8 +6,15 @@
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-26",
   "block": "M3_0_CONTROL_PLANE_QUIESCENCE_SINGLE_AUTHORITY_BARRIER",
-  "status": "ACTIVE_TRANSITION_PENDING_CLEAN_PROBE",
-  "reason": "The previous clean probe kept HEAD stable but produced workflow fan-out far above the one expected canonical push workflow. M3 finite tombstones are paused until the control plane is demonstrably quiescent.",
+  "status": "ACTIVE_CLEAN_PROBE_PENDING_READBACK",
+  "reason": "The prior clean probe kept HEAD stable but produced workflow fan-out. The transition commit installed the durable barrier with PR7 closed; the current step is the no-workflow clean probe.",
+  "transition": {
+    "commit": "7a2a0358f28c329a12a32bb353576093d79d3c75",
+    "remoteReadbackPassed": true,
+    "workflowFilesChanged": true,
+    "transitionPushRunsObserved": 14,
+    "interpretation": "Transition fan-out is not the clean-probe verdict because the commit modified the checkpoint workflow and barrier wiring."
+  },
   "queueFreeze": {
     "residualHolds": 27,
     "completedTombstones": 3,
@@ -56,5 +63,5 @@
     "merge": false,
     "frontendFunctionalChanges": 0
   },
-  "next": "M3_0_CLEAN_PROBE_WITH_PR_CLOSED"
+  "next": "READBACK_M3_0_CLEAN_PROBE_AND_CLOSE_ONLY_IF_EXACT_CONTRACT"
 }

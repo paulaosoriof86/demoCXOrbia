@@ -1,11 +1,13 @@
 {
   "schemaVersion": "cxorbia.rc15.m3.quiescence-barrier.v1",
-  "generatedAt": "2026-08-26T09:15:00-06:00",
+  "generatedAt": "2026-08-26T09:18:00-06:00",
   "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
   "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
   "block": "M3_0_CONTROL_PLANE_QUIESCENCE_SINGLE_AUTHORITY_BARRIER",
-  "status": "TRANSITION_MATERIALIZATION_PENDING_READBACK",
+  "status": "CLEAN_PROBE_COMMIT_PENDING_REMOTE_READBACK",
   "entryHead": "5e3ab996ae9a16c932897aead513dd67aec98496",
+  "transitionCommit": "7a2a0358f28c329a12a32bb353576093d79d3c75",
+  "transitionReadback": {"headMatched":true,"pushRunsObserved":14,"workflowFilesChanged":true,"acceptedAsTransitionOnly":true},
   "entryResidualHolds": 27,
   "entryCompletedTombstones": 3,
   "pr7": {"state":"closed","merged":false,"closedForM3Quiescence":true},
@@ -17,16 +19,16 @@
     "expectedCanonicalPushWorkflows": 1,
     "decision": "QUIESCENCE_NOT_PROVEN_PAUSE_FINITE_QUEUE"
   },
-  "repair": {
-    "closePrSynchronizeFanout": true,
-    "freezeFiniteQueueDuringBarrier": true,
-    "addExplicitQuiescenceValidator": true,
-    "checkpointRequiresClosedPr": true,
-    "checkpointRequiresQuiescenceValidator": true,
-    "noPlanRestart": true,
-    "m1Reopened": false,
-    "m2Reopened": false
+  "cleanProbe": {
+    "workflowFilesTouched": 0,
+    "queueFilesTouched": 0,
+    "providerOrRuntimeFilesTouched": 0,
+    "expectedPushRuns": 1,
+    "expectedWorkflow": ".github/workflows/cxorbia-phase-a-live-checkpoint.yml",
+    "expectedPullRequestRuns": 0,
+    "expectedBotChildCommit": false,
+    "expectedProviderSideEffects": 0
   },
   "safety": {"providerWrites":0,"dataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"rulesWrites":0,"hostingDeploys":0,"cloudRunDeploys":0,"makeCalls":0,"geminiCalls":0,"payments":0,"merge":false,"frontendFunctionalChanges":0},
-  "next": "REMOTE_READBACK_TRANSITION_THEN_M3_0_CLEAN_PROBE"
+  "next": "REMOTE_READBACK_CLEAN_PROBE_AND_CLOSE_BARRIER_OR_FAIL_CLOSED"
 }
