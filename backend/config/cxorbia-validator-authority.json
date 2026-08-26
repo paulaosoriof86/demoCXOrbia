@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "cxorbia.rc15.validator-authority.v5",
+  "schemaVersion": "cxorbia.rc15.validator-authority.v6",
   "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
   "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
   "status": "ACTIVE_M3_VALIDATOR_SET",
@@ -19,13 +19,16 @@
     "functionalSourceLockIsProductionStateFieldNotBranchHead": true,
     "sourceOnlyGateRequiredAfterM3CanonicalMaterialization": true,
     "m3HistoricalWorkflowQuarantineMustMatchExactInertContract": true,
-    "broadWorkflowRestoreForbiddenDuringM3": true
+    "broadWorkflowRestoreForbiddenDuringM3": true,
+    "m3FiniteQueueFrozenUntilQuiescenceClosedPass": true,
+    "pr7MustRemainClosedDuringM3QuiescenceAndFiniteQueue": true
   },
   "activeValidators": [
     "tools/continuity/validate-cxorbia-master-plan-freeze-m3.js",
     "tools/continuity/validate-cxorbia-canonical-authority.js",
     "tools/continuity/validate-cxorbia-state-sync-m3.js",
     "tools/continuity/validate-cxorbia-phase-a-continuity-lock-m3.js",
+    "tools/continuity/validate-cxorbia-m3-quiescence.js",
     "tools/qa/verify-phase-a-live-execution-checkpoint.mjs"
   ],
   "activeSourceOnlyGate": {
@@ -38,8 +41,16 @@
     "dataMutationAuthority": false,
     "repositoryMutationAuthority": false
   },
+  "m3QuiescenceBarrier": {
+    "lock": "backend/config/cxorbia-m3-quiescence-lock.json",
+    "evidence": "app/docs/evidence/RC15-M3-0-QUIESCENCE-BARRIER-LATEST.json",
+    "status": "ACTIVE_TRANSITION_PENDING_CLEAN_PROBE",
+    "queueFrozenResidualHolds": 27,
+    "pr7RequiredState": "closed",
+    "cleanProbeRequiredBeforeQueueResume": true
+  },
   "concurrentWriterRootfix": {
-    "status": "MATERIALIZED_REQUIRES_REMOTE_READBACK_AND_SOURCE_ONLY_GATE",
+    "status": "ROOTFIX_READBACK_PASS_QUIESCENCE_BARRIER_ACTIVE",
     "sourceHeadBefore": "e522cd90b9c020187bb5a86d02688fb532804411",
     "evidence": "app/docs/evidence/RC15-M3-CONCURRENT-WRITER-ROOTFIX-LATEST.json",
     "provenWriterWorkflow": ".github/workflows/cxorbia-phase-a-live-hr-read-probe.yml",
@@ -50,64 +61,18 @@
     "validatorFailsClosedOnRestore": true
   },
   "supersededHistoricalValidators": [
-    {
-      "path": "tools/continuity/validate-cxorbia-master-plan-freeze.js",
-      "reason": "Hard-coded dynamic F0/current-next assumptions inside immutable-plan validation."
-    },
-    {
-      "path": "tools/continuity/validate-cxorbia-state-sync.js",
-      "reason": "Hard-coded M1 epoch, M2 next and 2/4 exhaustiveness after M2 CLOSED_PASS."
-    },
-    {
-      "path": "tools/continuity/validate-cxorbia-phase-a-continuity-lock.js",
-      "reason": "Hard-coded pre-M1 lock/ledger schemas and stale G2-B/control-state assumptions."
-    },
-    {
-      "path": "tools/qa/verify-phase-a-live-execution-checkpoint.mjs@pre-M3",
-      "reason": "Read functionalSourceLock from obsolete root field and delegated to superseded continuity validator, producing false FUNCTIONAL_SOURCE_DRIFT on M3 control-plane commits."
-    }
+    {"path":"tools/continuity/validate-cxorbia-master-plan-freeze.js","reason":"Hard-coded dynamic F0/current-next assumptions inside immutable-plan validation."},
+    {"path":"tools/continuity/validate-cxorbia-state-sync.js","reason":"Hard-coded M1 epoch, M2 next and 2/4 exhaustiveness after M2 CLOSED_PASS."},
+    {"path":"tools/continuity/validate-cxorbia-phase-a-continuity-lock.js","reason":"Hard-coded pre-M1 lock/ledger schemas and stale G2-B/control-state assumptions."},
+    {"path":"tools/qa/verify-phase-a-live-execution-checkpoint.mjs@pre-M3","reason":"Obsolete pre-M3 source-lock and continuity assumptions."}
   ],
   "historicalWorkflowAuthority": [
-    {
-      "path": ".github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml",
-      "previousBlobSha": "8e663fcbb05ed37e2e398e915f655bdeaf63b2b9",
-      "status": "HISTORICAL_INERT_M3",
-      "mutationAuthority": false
-    },
-    {
-      "path": ".github/workflows/cxorbia-auth-preactivation-route-action.yml",
-      "previousBlobSha": "5420a4b6531e6b3fae7c66f4af4950f2f978c142",
-      "status": "HISTORICAL_INERT_M3",
-      "mutationAuthority": false
-    },
-    {
-      "path": ".github/workflows/cxorbia-corte4-hosting-dev-visual.yml",
-      "previousBlobSha": "2147ce42bd3a43dabe170d628b1a87e25617a832",
-      "status": "HISTORICAL_INERT_M3",
-      "mutationAuthority": false
-    },
-    {
-      "path": ".github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml",
-      "previousBlobSha": "30dd4215f09bd774dfc18838e8a80820ea615345",
-      "status": "HISTORICAL_INERT_M3",
-      "mutationAuthority": false
-    },
-    {
-      "path": ".github/workflows/cxorbia-live-hr-provider-capability-preflight.yml",
-      "status": "HISTORICAL_INERT_M3_M4_REVALIDATION_ONLY",
-      "trigger": "workflow_dispatch_only",
-      "providerAccess": false,
-      "mutationAuthority": false,
-      "reason": "Provider preflight remains outside M3."
-    },
-    {
-      "path": ".github/workflows/cxorbia-phase-a-live-hr-read-probe.yml",
-      "status": "HISTORICAL_INERT_M3",
-      "trigger": "workflow_dispatch_only",
-      "providerAccess": false,
-      "repositoryMutationAuthority": false,
-      "reason": "Proven concurrent branch writer run 32917331228; quarantined until post-M3 authority explicitly re-establishes a safe read-only lane."
-    }
+    {"path":".github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml","status":"HISTORICAL_INERT_M3","mutationAuthority":false},
+    {"path":".github/workflows/cxorbia-auth-preactivation-route-action.yml","status":"HISTORICAL_INERT_M3","mutationAuthority":false},
+    {"path":".github/workflows/cxorbia-corte4-hosting-dev-visual.yml","status":"HISTORICAL_INERT_M3","mutationAuthority":false},
+    {"path":".github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml","status":"HISTORICAL_INERT_M3","mutationAuthority":false},
+    {"path":".github/workflows/cxorbia-live-hr-provider-capability-preflight.yml","status":"HISTORICAL_INERT_M3_M4_REVALIDATION_ONLY","trigger":"workflow_dispatch_only","providerAccess":false,"mutationAuthority":false},
+    {"path":".github/workflows/cxorbia-phase-a-live-hr-read-probe.yml","status":"HISTORICAL_INERT_M3","trigger":"workflow_dispatch_only","providerAccess":false,"repositoryMutationAuthority":false}
   ],
-  "next": "M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_27"
+  "next": "M3_0_CLEAN_PROBE_WITH_PR_CLOSED"
 }

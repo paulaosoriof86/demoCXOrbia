@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "cxorbia.rc15.m3.quiescence-lock.v1",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
+  "createdAt": "2026-08-26T09:15:00-06:00",
+  "authorizedBy": "Paula",
+  "authorizationSource": "current_conversation_2026-08-26",
+  "block": "M3_0_CONTROL_PLANE_QUIESCENCE_SINGLE_AUTHORITY_BARRIER",
+  "status": "ACTIVE_TRANSITION_PENDING_CLEAN_PROBE",
+  "reason": "The previous clean probe kept HEAD stable but produced workflow fan-out far above the one expected canonical push workflow. M3 finite tombstones are paused until the control plane is demonstrably quiescent.",
+  "queueFreeze": {
+    "residualHolds": 27,
+    "completedTombstones": 3,
+    "tombstoneRegistryMutationAllowedBeforePass": false,
+    "resumeQueueOnlyAfterStatus": "CLOSED_PASS"
+  },
+  "pullRequestQuiescence": {
+    "pullRequest": 7,
+    "requiredStateDuringM3BarrierAndFiniteQueue": "closed",
+    "observedStateAtBarrierStart": "closed",
+    "merged": false,
+    "purpose": "Eliminate pull_request synchronize fan-out while preserving the same PR identity for later controlled reopening."
+  },
+  "cleanProbeContract": {
+    "probeMustNotTouchWorkflowFiles": true,
+    "expectedAutomaticPushWorkflow": ".github/workflows/cxorbia-phase-a-live-checkpoint.yml",
+    "expectedAutomaticPushWorkflowCount": 1,
+    "expectedPullRequestRuns": 0,
+    "expectedHistoricalAutomaticRuns": 0,
+    "expectedBotChildCommits": 0,
+    "expectedProviderWrites": 0,
+    "expectedDataWrites": 0,
+    "expectedDeploys": 0,
+    "headMustRemainStableAfterRuns": true
+  },
+  "singleAuthority": {
+    "canonicalStateAuthority": "backend/config/cxorbia-phase-a-continuity-lock.json + current M3 evidence + explicit validator authority + this quiescence lock",
+    "prBodyIsMirrorOnly": true,
+    "historicalRequestsNeverAuthorizeExecution": true,
+    "conversationInterruptionNeverSkipsBarrier": true,
+    "nextConversationMustResumeThisBlockUntilClosedPass": true
+  },
+  "safety": {
+    "providerMutationAuthorizedNow": false,
+    "businessDataWritesAuthorizedNow": false,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "payments": 0,
+    "merge": false,
+    "frontendFunctionalChanges": 0
+  },
+  "next": "M3_0_CLEAN_PROBE_WITH_PR_CLOSED"
+}

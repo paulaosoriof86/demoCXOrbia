@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "cxorbia.rc15.m3.quiescence-barrier.v1",
+  "generatedAt": "2026-08-26T09:15:00-06:00",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
+  "block": "M3_0_CONTROL_PLANE_QUIESCENCE_SINGLE_AUTHORITY_BARRIER",
+  "status": "TRANSITION_MATERIALIZATION_PENDING_READBACK",
+  "entryHead": "5e3ab996ae9a16c932897aead513dd67aec98496",
+  "entryResidualHolds": 27,
+  "entryCompletedTombstones": 3,
+  "pr7": {"state":"closed","merged":false,"closedForM3Quiescence":true},
+  "rootCause": {
+    "directConcurrentWriterContained": true,
+    "previousCleanProbeHeadStable": true,
+    "previousCleanProbeCanonicalGatePassed": true,
+    "previousCleanProbeTotalWorkflowRunsObserved": 43,
+    "expectedCanonicalPushWorkflows": 1,
+    "decision": "QUIESCENCE_NOT_PROVEN_PAUSE_FINITE_QUEUE"
+  },
+  "repair": {
+    "closePrSynchronizeFanout": true,
+    "freezeFiniteQueueDuringBarrier": true,
+    "addExplicitQuiescenceValidator": true,
+    "checkpointRequiresClosedPr": true,
+    "checkpointRequiresQuiescenceValidator": true,
+    "noPlanRestart": true,
+    "m1Reopened": false,
+    "m2Reopened": false
+  },
+  "safety": {"providerWrites":0,"dataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"rulesWrites":0,"hostingDeploys":0,"cloudRunDeploys":0,"makeCalls":0,"geminiCalls":0,"payments":0,"merge":false,"frontendFunctionalChanges":0},
+  "next": "REMOTE_READBACK_TRANSITION_THEN_M3_0_CLEAN_PROBE"
+}

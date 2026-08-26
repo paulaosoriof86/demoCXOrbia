@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+'use strict';
+const fs=require('fs'),path=require('path');
+const root=path.resolve(__dirname,'..','..');
+const fail=m=>{console.error(`M3_QUIESCENCE_BLOCKED: ${m}`);process.exit(2);};
+const json=p=>{try{return JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));}catch(e){fail(`json:${p}:${e.message}`);}};
+const q=json('backend/config/cxorbia-m3-quiescence-lock.json');
+const lock=json('backend/config/cxorbia-phase-a-continuity-lock.json');
+const tomb=json('backend/config/cxorbia-historical-authority-tombstones.json');
+const evidence=json('app/docs/evidence/RC15-M3-0-QUIESCENCE-BARRIER-LATEST.json');
+if(q.masterPlanId!=='CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1')fail('master_plan');
+if(q.m3MechanismEpoch!=='RC15-M3-MECHANISM-20260825-02')fail('m3_epoch');
+if(!['ACTIVE_TRANSITION_PENDING_CLEAN_PROBE','ACTIVE_CLEAN_PROBE_PENDING_READBACK','CLOSED_PASS'].includes(q.status))fail(`status:${q.status}`);
+if(Number(q.queueFreeze?.residualHolds)!==27||Number(q.queueFreeze?.completedTombstones)!==3)fail('queue_freeze_contract');
+if(q.pullRequestQuiescence?.pullRequest!==7||q.pullRequestQuiescence?.requiredStateDuringM3BarrierAndFiniteQueue!=='closed')fail('pr_quiescence_contract');
+if(lock.masterPlan?.currentPhase!=='M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY'||lock.m1ExecutionControl?.status!=='CLOSED_PASS'||lock.m2ExecutionControl?.status!=='CLOSED_PASS')fail('phase_or_prior_closure');
+const current=Number(tomb.progress?.currentResidualHolds), completed=(tomb.completedTombstones||[]).length;
+if(q.status!=='CLOSED_PASS'&&(current!==27||completed!==3))fail(`finite_queue_moved_before_quiescence_pass:${completed}/${current}`);
+if(Number(lock.m3ExecutionControl?.currentResidualHolds)!==current)fail('continuity_lock_residual_drift');
+if(q.cleanProbeContract?.probeMustNotTouchWorkflowFiles!==true||q.cleanProbeContract?.expectedAutomaticPushWorkflowCount!==1||q.cleanProbeContract?.expectedPullRequestRuns!==0||q.cleanProbeContract?.expectedHistoricalAutomaticRuns!==0||q.cleanProbeContract?.expectedBotChildCommits!==0)fail('clean_probe_contract');
+if(q.safety?.providerMutationAuthorizedNow!==false||q.safety?.merge!==false||Number(q.safety?.frontendFunctionalChanges)!==0)fail('unsafe_barrier');
+if(!String(evidence.status||'').includes('PENDING')&&q.status!=='CLOSED_PASS')fail('evidence_state');
+console.log('M3_QUIESCENCE_SOURCE_GATE_PASS');
+console.log(`barrierStatus=${q.status}`);
+console.log(`queueFrozen=${completed}/30_tombstoned;${current}_remaining`);
+console.log('pr7RequiredState=closed');
+console.log('providerWrites=0');
