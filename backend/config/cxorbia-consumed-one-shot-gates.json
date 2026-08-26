@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.6.0",
+  "schemaVersion": "1.7.0",
   "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
   "syncEpoch": "CXORBIA-20260821-I5-G2B-FORENSIC-PROVIDER-LANE-READY-50",
   "rc15ControlPlaneEpoch": "RC15-M2-F0-CLOSED-20260825-01",
@@ -20,10 +20,10 @@
   "coverage": {
     "historicalGlobalExhaustive": false,
     "tombstoneRegistry": "backend/config/cxorbia-historical-authority-tombstones.json",
-    "currentResidualHolds": 18,
-    "latestBatch": "M3_FINITE_QUEUE_BATCH_1",
-    "latestBatchInertizedWithoutExecution": 9,
-    "note": "Actual consumed executions remain immutable here. Batch 1 inertized CP030, CP031, CP055, CP056, CP058, CP059, CP066, CP067 and CP068 without execution; they are intentionally not added to consumedRequests."
+    "currentResidualHolds": 13,
+    "latestBatch": "M3_FINITE_QUEUE_BATCH_2",
+    "latestBatchInertizedWithoutExecution": 5,
+    "note": "Actual consumed executions remain immutable. Batch 2 inertizes CP124, CP125, CP127, CP130 and CP131 without execution; they are intentionally not added to consumedRequests."
   },
   "consumedRequests": [
     {"requestId":"i5-existing-project-precutover-staff-live-authority-readonly-20260820-01","status":"CONSUMED_PASS_READONLY","runId":32342457328,"jobId":96344128319,"artifactId":9396828201,"decision":"PASS_READONLY_POST_GATES","functionalSourceLock":"f9802fdd498934a8e7729fa5c7d18341bec1cd71","repositoryWrites":false,"dataWrites":false,"providerWrites":false,"deploy":false,"merge":false,"production":false,"source":".github/cxorbia-gate-requests/request.json"},

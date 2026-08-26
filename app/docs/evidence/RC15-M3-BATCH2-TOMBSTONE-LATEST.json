@@ -1,0 +1,23 @@
+{
+  "schemaVersion":"cxorbia.rc15.m3.batch-tombstone.v1",
+  "generatedAt":"2026-08-26T11:27:00-06:00",
+  "masterPlanId":"CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "m3MechanismEpoch":"RC15-M3-MECHANISM-20260825-02",
+  "batchId":"M3_FINITE_QUEUE_BATCH_2",
+  "status":"MATERIALIZED_PENDING_DIRECT_REMOTE_READBACK",
+  "parentHead":"92b54f08410b81bfb8cb2c066112b567f1ed653c",
+  "materializationCommitSha":null,
+  "materializationTreeSha":null,
+  "remoteHeadReadback":null,
+  "headMatchesMaterializationCommit":false,
+  "selectionPolicy":"Historical source/provider mutation family proven HOLD in F0 Tranche 11/12: direct empalme source writers, canonical source materializer, Firebase project creation primitives and historical source-rebuild Hosting deploy runner.",
+  "findingIds":["RC15-CP-124","RC15-CP-125","RC15-CP-127","RC15-CP-130","RC15-CP-131"],
+  "authorityPaths":["tools/empalme/tya-apply-post-v96-source-lock.sh","tools/empalme/tya-apply-v105-internal-v106-runtime.sh","backend/config/phase-a-v105-v106-empalme-request.source-safe.json","tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs","tools/release/tya-create-new-empty-firebase-dev-r15.mjs","tools/release/tya-create-new-empty-firebase-dev-r15b.mjs","tools/release/tya-r15g-dev-root-deploy.sh"],
+  "sourceEvidence":["app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE11-DETAIL.json","app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE12-DETAIL.json","app/docs/evidence/RC15-M2-FINITE-F0-CLOSURE-LATEST.json"],
+  "treatment":{"scriptsFailClosedAtEntry":true,"historicalImplementationPreservedInGitHistory":true,"historicalRequestAuthorized":false,"consumed":false,"currentExecutionAuthority":false,"replayAuthorized":false,"disposition":"INERTIZED_WITHOUT_EXECUTION","providerWrites":0,"dataWrites":0,"sourceWritesExecuted":0,"deploysExecuted":0,"projectCreationsExecuted":0},
+  "queue":{"before":{"tombstoned":12,"remaining":18},"after":{"tombstoned":17,"remaining":13},"reduction":5,"m2LockedUniverseChanged":false},
+  "readback":{"authorityMode":"DIRECT_GITHUB_REMOTE_READBACK_ACTIONS_NONAUTHORITATIVE","branch":"docs-tya-v6-v71-audit","expectedParentHead":"92b54f08410b81bfb8cb2c066112b567f1ed653c","materializationCommitSha":null,"remoteHeadReadback":null,"headMatchesMaterializationCommit":false,"deltaVerified":false,"workflowFilesTouched":0,"appCoreFilesTouched":0,"appModuleFilesTouched":0,"providerRuntimeFilesTouched":0,"pr7RequiredState":"closed","pr7Merged":false},
+  "safety":{"providerWrites":0,"businessDataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"rulesWrites":0,"hostingDeploys":0,"cloudRunDeploys":0,"makeCalls":0,"geminiCalls":0,"paymentWrites":0,"merge":false,"frontendFunctionalChanges":0},
+  "decision":"PENDING_M3_FINITE_QUEUE_BATCH_2_REMOTE_READBACK",
+  "next":"M3_FINITE_QUEUE_BATCH_2_READBACK_PENDING"
+}

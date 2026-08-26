@@ -4,25 +4,15 @@
 **MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`
 **M3_MECHANISM_EPOCH:** `RC15-M3-MECHANISM-20260825-02`
 **M3_0:** `CLOSED_PASS_DIRECT_GITHUB_READBACK`
-**M3_FINITE_QUEUE_BATCH_1:** `CLOSED_PASS_DIRECT_REMOTE_READBACK`
-**NEXT:** `M3_FINITE_QUEUE_BATCH_2`
+**M3:** `17_OF_30_TOMBSTONED_PENDING_BATCH2_READBACK`
+**NEXT:** `M3_FINITE_QUEUE_BATCH_2_READBACK_PENDING`
 **PHASE_A:** `98/100`
 **PRODUCTION_REAL_READINESS:** `69/100`
 
-## Estado
+M1/M2/F0 continúan cerrados. `M3_FINITE_QUEUE_BATCH_1` está cerrado y no se repite. Batch 2 neutraliza CP124, CP125, CP127, CP130 y CP131; quedan 13 residuales si el readback remoto coincide.
 
-M1/M2/F0 continúan `CLOSED_PASS`. M3 avanza a 12/30 tombstones y 18 residuales. Batch 1 cerró `CP030`, `CP031`, `CP055`, `CP056`, `CP058`, `CP059`, `CP066`, `CP067` y `CP068` como `INERTIZED_WITHOUT_EXECUTION`.
+No hubo cambio funcional frontend. No modificar UI, `/app/modules` ni `/app/core`; no solicitar candidata nueva. El source funcional permanece `f9802fdd498934a8e7729fa5c7d18341bec1cd71`.
 
-El commit de materialización `551aadd14785c3dfd5a1100595f373461c8efb70` fue confirmado por readback remoto directo. GitHub Actions permanece telemetría no autoritativa. PR #7 sigue cerrado/no mergeado y los 22 workflows históricos continúan exact-valid-inert.
+Los scripts históricos de empalme/materialización/proyecto Firebase/deploy tratados quedan fail-closed y preservados en Git history. El request histórico V105/V106 queda sin autoridad actual y sin fabricarse consumo.
 
-## Incidente control-plane
-
-Dos commits accidentales sobre `__not_used__` fueron retirados de la rama viva antes del cierre. No existe ese path en el árbol Batch 1 y no hubo efecto provider, datos o frontend funcional.
-
-## Claude/prototipo
-
-Sin cambio funcional frontend. No modificar UI, `/app/modules` ni `/app/core`; no solicitar candidata nueva.
-
-## Academia
-
-Sin impacto funcional en manuales, cursos, rutas por rol ni notificaciones.
+GitHub Actions sigue como telemetría no autoritativa; PR #7 permanece cerrado/no mergeado. Sin impacto funcional en Academia, manuales, cursos, rutas por rol ni notificaciones.
