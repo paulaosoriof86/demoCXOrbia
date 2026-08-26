@@ -1,5 +1,5 @@
 /* CXOrbia TyA current live HR through July source-safe; no PII/raw workbook. */window.CX_TYA_HR_SOURCE_SAFE = {
-  "generatedAt": "2026-07-30T02:57:43.364Z",
+  "generatedAt": "2026-08-26T01:00:54.051Z",
   "buildLabel": "tya-live-hr-source-safe-current-through-july",
   "tenantId": "tya",
   "tenantName": "TyA",
@@ -7,8 +7,8 @@
   "projectName": "Cinépolis",
   "source": {
     "type": "google_sheets_live_multitab",
-    "accessMode": "public_gviz_csv_cache_busted",
-    "fallbackReason": "Sheets API failed: HTTP 403 {\"error\":{\"code\":403,\"message\":\"Google Sheets API has not been used in project 87461567267 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/sheets.googleapis.com/overview?project=87461567267 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.\",\"status\":\"PERMISSION_DENIED\",\"details\":[{\"@type\":\"type.googleapis.com/google.rpc.ErrorInfo\",\"reason\":\"SERVICE_DISAB",
+    "accessMode": "sheets_api_service_account",
+    "fallbackReason": null,
     "title": "HR Guatemala - Sincronizacion Google Sheets",
     "spreadsheetIdMasked": "1h307t...8vU4",
     "serviceAccountProject": "cxorbia-backend-dev",
@@ -62,7 +62,7 @@
     "stableVisitIdentityApplied": true,
     "snapshotOnly": true,
     "runtimeSyncActive": false,
-    "lastSnapshotAt": "2026-07-30T02:57:41.042Z",
+    "lastSnapshotAt": "2026-08-26T01:00:51.134Z",
     "finalCanonicalPass": "after_r18a_r18b",
     "assignmentAndAvailabilitySeparated": true,
     "normalizedFranjaAndMeasurementWindow": true,
@@ -390,8 +390,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -506,8 +506,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -622,8 +622,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -738,8 +738,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -854,8 +854,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -970,8 +970,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -1086,8 +1086,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -1202,8 +1202,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -1318,8 +1318,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -1434,8 +1434,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -1550,8 +1550,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -1666,8 +1666,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -1782,8 +1782,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -1898,8 +1898,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -2014,8 +2014,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -2130,8 +2130,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -2246,8 +2246,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -2362,8 +2362,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -2478,8 +2478,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -2594,8 +2594,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -2710,8 +2710,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -2826,8 +2826,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -2942,8 +2942,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -3058,8 +3058,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -3174,8 +3174,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -3290,8 +3290,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -3406,8 +3406,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -3522,8 +3522,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -3638,8 +3638,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -3754,8 +3754,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -3870,8 +3870,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -3986,8 +3986,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -4102,8 +4102,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -4218,8 +4218,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -4334,8 +4334,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -4450,8 +4450,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -4566,8 +4566,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -4682,8 +4682,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -4798,8 +4798,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -4914,8 +4914,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -5030,8 +5030,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -5146,8 +5146,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -5262,8 +5262,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -5378,8 +5378,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -5494,8 +5494,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -5610,8 +5610,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -5726,8 +5726,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -5842,8 +5842,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -5958,8 +5958,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -6074,8 +6074,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -6190,8 +6190,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -6306,8 +6306,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -6422,8 +6422,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -6538,8 +6538,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -6654,8 +6654,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -6770,8 +6770,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -6886,8 +6886,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -7002,8 +7002,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -7118,8 +7118,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -7234,8 +7234,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -7350,8 +7350,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -7466,8 +7466,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -7582,8 +7582,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -7698,8 +7698,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -7814,8 +7814,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -7930,8 +7930,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -8046,8 +8046,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -8162,8 +8162,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -8278,8 +8278,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -8394,8 +8394,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -8510,8 +8510,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -8626,8 +8626,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -8742,8 +8742,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -8858,8 +8858,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -8974,8 +8974,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -9090,8 +9090,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -9206,8 +9206,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -9322,8 +9322,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -9438,8 +9438,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -9554,8 +9554,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -9670,8 +9670,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -9786,8 +9786,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -9902,8 +9902,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -9940,7 +9940,7 @@
       "agendada": "2025-07-20",
       "realizada": "2025-07-20",
       "cuestFecha": "2025-07-24",
-      "submittedAt": null,
+      "submittedAt": "2025-07-25",
       "controlDia": "",
       "shopperId": "shopper_hn_db58c2a3ad",
       "shopper": "Shopper protegido",
@@ -9952,20 +9952,20 @@
       "comboAmt": 312,
       "sourceSafe": true,
       "piiProtected": true,
-      "estado": "cuestionario",
-      "canonicalState": "pending_submission",
-      "operationalState": "pending_submission",
+      "estado": "submitida",
+      "canonicalState": "submitted_complete",
+      "operationalState": "submitted_complete",
       "availabilityState": "not_applicable_assigned",
       "availabilityDependency": null,
       "assignmentState": "assigned",
       "schedulingState": "scheduled",
       "executionState": "realized",
       "questionnaireState": "completed",
-      "submissionState": "pending_tya_submit",
-      "liquidationState": "not_eligible",
-      "paymentState": "not_eligible",
-      "liquidationCandidate": false,
-      "paymentControlOnly": false,
+      "submissionState": "confirmed_hr",
+      "liquidationState": "candidate_pending_financial_match",
+      "paymentState": "not_confirmed",
+      "liquidationCandidate": true,
+      "paymentControlOnly": true,
       "paymentConfirmed": false,
       "outOfRange": false,
       "reviewRequired": false,
@@ -9977,19 +9977,19 @@
         "scheduled": true,
         "realized": true,
         "questionnaire": true,
-        "submitted": false,
+        "submitted": true,
         "outOfRange": false,
         "cancelled": false,
-        "liquidationCandidate": false,
+        "liquidationCandidate": true,
         "liquidationConfirmed": false,
         "paymentConfirmed": false
       },
       "visitIdentityVersion": "tya-stable-visit-id-r20-row-identity-v1",
-      "submit": false,
+      "submit": true,
       "legacyEstado": "cuestionario",
       "assignmentSource": "hr",
       "assignmentSyncStatus": "assigned_from_hr_pending_platform_sync",
-      "liquidationEvidence": null,
+      "liquidationEvidence": "submission_only_pending_financial_crosscheck",
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
@@ -10013,13 +10013,13 @@
           "reason": null
         },
         "submittedAt": {
-          "status": "empty",
-          "sourceKind": "empty",
+          "status": "normalized",
+          "sourceKind": "iso",
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -10134,8 +10134,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -10250,8 +10250,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -10366,8 +10366,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -10482,8 +10482,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -10598,8 +10598,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -10714,8 +10714,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -10830,8 +10830,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -10946,8 +10946,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -11062,8 +11062,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -11178,8 +11178,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -11294,8 +11294,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -11410,8 +11410,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -11526,8 +11526,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -11642,8 +11642,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -11758,8 +11758,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -11874,8 +11874,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -11990,8 +11990,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -12106,8 +12106,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -12222,8 +12222,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -12338,8 +12338,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -12454,8 +12454,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -12570,8 +12570,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -12686,8 +12686,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -12802,8 +12802,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -12918,8 +12918,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -13034,8 +13034,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -13150,8 +13150,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -13266,8 +13266,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -13382,8 +13382,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -13498,8 +13498,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -13614,8 +13614,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -13730,8 +13730,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -13846,8 +13846,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -13962,8 +13962,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -14078,8 +14078,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -14194,8 +14194,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -14310,8 +14310,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -14426,8 +14426,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -14542,8 +14542,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -14658,8 +14658,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -14774,8 +14774,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -14890,8 +14890,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -15006,8 +15006,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -15122,8 +15122,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -15238,8 +15238,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -15354,8 +15354,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -15470,8 +15470,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -15586,8 +15586,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -15702,8 +15702,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -15818,8 +15818,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -15934,8 +15934,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -16050,8 +16050,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -16166,8 +16166,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -16282,8 +16282,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -16398,8 +16398,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -16514,8 +16514,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -16630,8 +16630,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -16746,8 +16746,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -16862,8 +16862,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -16978,8 +16978,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -17094,8 +17094,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -17210,8 +17210,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -17326,8 +17326,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -17442,8 +17442,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -17558,8 +17558,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -17674,8 +17674,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -17790,8 +17790,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -17906,8 +17906,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -18022,8 +18022,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -18138,8 +18138,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -18254,8 +18254,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -18370,8 +18370,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -18486,8 +18486,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -18602,8 +18602,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -18718,8 +18718,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -18834,8 +18834,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -18950,8 +18950,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -19066,8 +19066,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -19182,8 +19182,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -19298,8 +19298,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -19414,8 +19414,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -19530,8 +19530,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -19646,8 +19646,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -19762,8 +19762,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -19878,8 +19878,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -19994,8 +19994,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -20110,8 +20110,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -20226,8 +20226,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -20342,8 +20342,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -20458,8 +20458,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -20574,8 +20574,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -20690,8 +20690,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -20806,8 +20806,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -20922,8 +20922,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -21038,8 +21038,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -21154,8 +21154,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -21270,8 +21270,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -21386,8 +21386,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -21502,8 +21502,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -21618,8 +21618,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -21734,8 +21734,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -21850,8 +21850,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -21966,8 +21966,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -22082,8 +22082,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -22198,8 +22198,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -22314,8 +22314,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -22430,8 +22430,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -22546,8 +22546,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -22662,8 +22662,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -22778,8 +22778,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -22894,8 +22894,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -23010,8 +23010,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -23126,8 +23126,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -23242,8 +23242,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -23358,8 +23358,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -23474,8 +23474,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -23590,8 +23590,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -23706,8 +23706,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -23822,8 +23822,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -23938,8 +23938,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -24054,8 +24054,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -24170,8 +24170,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -24286,8 +24286,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -24402,8 +24402,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -24518,8 +24518,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -24634,8 +24634,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -24750,8 +24750,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -24866,8 +24866,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -24982,8 +24982,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -25098,8 +25098,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -25214,8 +25214,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -25330,8 +25330,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -25446,8 +25446,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -25562,8 +25562,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -25678,8 +25678,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -25794,8 +25794,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -25910,8 +25910,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -26026,8 +26026,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -26142,8 +26142,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -26258,8 +26258,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -26374,8 +26374,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -26490,8 +26490,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -26606,8 +26606,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -26722,8 +26722,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -26838,8 +26838,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -26954,8 +26954,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -27070,8 +27070,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -27186,8 +27186,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -27302,8 +27302,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -27418,8 +27418,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -27534,8 +27534,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -27650,8 +27650,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -27766,8 +27766,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -27882,8 +27882,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -27998,8 +27998,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -28114,8 +28114,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -28230,8 +28230,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -28346,8 +28346,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -28462,8 +28462,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -28578,8 +28578,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -28694,8 +28694,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -28810,8 +28810,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -28926,8 +28926,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -29042,8 +29042,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -29158,8 +29158,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -29274,8 +29274,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -29390,8 +29390,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -29506,8 +29506,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -29622,8 +29622,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -29738,8 +29738,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -29854,8 +29854,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -29970,8 +29970,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -30086,8 +30086,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -30202,8 +30202,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -30318,8 +30318,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -30434,8 +30434,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -30550,8 +30550,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -30666,8 +30666,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -30782,8 +30782,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -30898,8 +30898,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -31014,8 +31014,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -31130,8 +31130,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -31246,8 +31246,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -31362,8 +31362,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -31478,8 +31478,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -31594,8 +31594,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -31710,8 +31710,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -31826,8 +31826,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -31942,8 +31942,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -32058,8 +32058,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -32174,8 +32174,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -32290,8 +32290,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -32406,8 +32406,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -32522,8 +32522,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -32638,8 +32638,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -32754,8 +32754,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -32870,8 +32870,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -32986,8 +32986,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -33102,8 +33102,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -33218,8 +33218,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -33334,8 +33334,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -33450,8 +33450,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -33566,8 +33566,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -33682,8 +33682,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -33798,8 +33798,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -33914,8 +33914,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -34030,8 +34030,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -34146,8 +34146,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -34262,8 +34262,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -34378,8 +34378,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -34494,8 +34494,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -34610,8 +34610,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -34726,8 +34726,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -34842,8 +34842,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -34958,8 +34958,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -35074,8 +35074,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -35190,8 +35190,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -35306,8 +35306,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -35422,8 +35422,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -35538,8 +35538,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -35654,8 +35654,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -35770,8 +35770,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -35886,8 +35886,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -36002,8 +36002,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -36118,8 +36118,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -36234,8 +36234,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -36350,8 +36350,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -36466,8 +36466,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -36582,8 +36582,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -36698,8 +36698,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -36814,8 +36814,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -36930,8 +36930,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -37046,8 +37046,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -37162,8 +37162,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -37278,8 +37278,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -37394,8 +37394,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -37510,8 +37510,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -37626,8 +37626,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -37742,8 +37742,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -37858,8 +37858,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -37974,8 +37974,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -38090,8 +38090,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -38206,8 +38206,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -38322,8 +38322,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -38438,8 +38438,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -38554,8 +38554,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -38670,8 +38670,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -38786,8 +38786,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -38902,8 +38902,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -39018,8 +39018,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -39134,8 +39134,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -39250,8 +39250,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -39366,8 +39366,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -39482,8 +39482,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -39598,8 +39598,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -39714,8 +39714,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -39830,8 +39830,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -39946,8 +39946,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -40062,8 +40062,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -40178,8 +40178,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -40294,8 +40294,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -40410,8 +40410,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -40526,8 +40526,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -40642,8 +40642,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -40758,8 +40758,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -40874,8 +40874,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -40990,8 +40990,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -41106,8 +41106,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -41222,8 +41222,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -41338,8 +41338,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -41454,8 +41454,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -41570,8 +41570,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -41686,8 +41686,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -41802,8 +41802,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -41918,8 +41918,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -42034,8 +42034,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -42150,8 +42150,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -42266,8 +42266,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -42382,8 +42382,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -42498,8 +42498,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -42614,8 +42614,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -42730,8 +42730,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -42846,8 +42846,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -42962,8 +42962,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -43078,8 +43078,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -43194,8 +43194,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -43310,8 +43310,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -43426,8 +43426,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -43542,8 +43542,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -43658,8 +43658,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -43774,8 +43774,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -43890,8 +43890,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -44006,8 +44006,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -44122,8 +44122,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -44238,8 +44238,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -44354,8 +44354,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -44470,8 +44470,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -44586,8 +44586,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -44702,8 +44702,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -44818,8 +44818,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -44934,8 +44934,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -45050,8 +45050,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -45166,8 +45166,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -45282,8 +45282,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -45398,8 +45398,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -45514,8 +45514,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -45630,8 +45630,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -45746,8 +45746,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -45862,8 +45862,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -45978,8 +45978,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -46094,8 +46094,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -46210,8 +46210,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -46326,8 +46326,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -46442,8 +46442,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -46558,8 +46558,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -46674,8 +46674,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -46790,8 +46790,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -46906,8 +46906,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -47022,8 +47022,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -47138,8 +47138,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -47254,8 +47254,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -47370,8 +47370,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -47486,8 +47486,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -47602,8 +47602,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -47718,8 +47718,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -47834,8 +47834,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -47950,8 +47950,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -48066,8 +48066,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -48182,8 +48182,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -48298,8 +48298,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -48414,8 +48414,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -48530,8 +48530,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -48646,8 +48646,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -48762,8 +48762,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -48878,8 +48878,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -48994,8 +48994,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -49110,8 +49110,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -49226,8 +49226,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -49342,8 +49342,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -49458,8 +49458,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -49574,8 +49574,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -49690,8 +49690,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -49806,8 +49806,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -49922,8 +49922,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -50038,8 +50038,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -50154,8 +50154,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -50270,8 +50270,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -50386,8 +50386,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -50502,8 +50502,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -50618,8 +50618,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -50734,8 +50734,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -50850,8 +50850,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -50966,8 +50966,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -51082,8 +51082,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -51198,8 +51198,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -51314,8 +51314,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -51430,8 +51430,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -51546,8 +51546,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -51662,8 +51662,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -51778,8 +51778,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -51894,8 +51894,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -52010,8 +52010,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -52126,8 +52126,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -52242,8 +52242,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -52358,8 +52358,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -52474,8 +52474,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -52590,8 +52590,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -52706,8 +52706,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -52822,8 +52822,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -52938,8 +52938,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -53054,8 +53054,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -53170,8 +53170,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -53286,8 +53286,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -53402,8 +53402,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -53518,8 +53518,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -53634,8 +53634,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -53750,8 +53750,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -53866,8 +53866,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -53982,8 +53982,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -54098,8 +54098,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -54214,8 +54214,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -54330,8 +54330,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -54446,8 +54446,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -54562,8 +54562,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -54678,8 +54678,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -54794,8 +54794,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -54910,8 +54910,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -55026,8 +55026,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -55142,8 +55142,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -55258,8 +55258,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -55374,8 +55374,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -55490,8 +55490,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -55606,8 +55606,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -55722,8 +55722,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -55838,8 +55838,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -55954,8 +55954,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -56070,8 +56070,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -56186,8 +56186,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -56302,8 +56302,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -56418,8 +56418,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -56534,8 +56534,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -56650,8 +56650,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -56766,8 +56766,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -56882,8 +56882,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -56998,8 +56998,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -57114,8 +57114,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -57230,8 +57230,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -57346,8 +57346,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -57462,8 +57462,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -57578,8 +57578,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -57694,8 +57694,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -57810,8 +57810,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -57926,8 +57926,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -57992,8 +57992,11 @@
       "paymentControlOnly": true,
       "paymentConfirmed": false,
       "outOfRange": false,
-      "reviewRequired": false,
-      "reviewReasons": [],
+      "reviewRequired": true,
+      "reviewReasons": [
+        "date:agendada:unrecognized_date_format",
+        "scheduled_invalid_date"
+      ],
       "canonicalFacets": {
         "available": false,
         "eligibilityBlocked": false,
@@ -58022,9 +58025,9 @@
           "reason": null
         },
         "agendada": {
-          "status": "empty",
-          "sourceKind": "empty",
-          "reason": null
+          "status": "review_required",
+          "sourceKind": "unsupported_date",
+          "reason": "unrecognized_date_format"
         },
         "realizada": {
           "status": "normalized",
@@ -58042,8 +58045,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -58158,8 +58161,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -58274,8 +58277,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -58390,8 +58393,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -58506,8 +58509,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -58622,8 +58625,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -58738,8 +58741,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -58854,8 +58857,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -58970,8 +58973,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -59086,8 +59089,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -59202,8 +59205,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -59318,8 +59321,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -59434,8 +59437,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -59550,8 +59553,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -59666,8 +59669,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -59782,8 +59785,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -59898,8 +59901,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -60014,8 +60017,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -60130,8 +60133,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -60246,8 +60249,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -60362,8 +60365,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -60478,8 +60481,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -60594,8 +60597,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -60710,8 +60713,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -60826,8 +60829,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -60942,8 +60945,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -61058,8 +61061,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -61174,8 +61177,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -61290,8 +61293,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -61406,8 +61409,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -61522,8 +61525,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -61638,8 +61641,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -61754,8 +61757,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -61870,8 +61873,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -61986,8 +61989,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -62102,8 +62105,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -62218,8 +62221,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -62334,8 +62337,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -62450,8 +62453,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -62566,8 +62569,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -62682,8 +62685,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -62798,8 +62801,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -62914,8 +62917,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -63030,8 +63033,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -63146,8 +63149,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -63262,8 +63265,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -63378,8 +63381,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -63494,8 +63497,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -63610,8 +63613,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -63726,8 +63729,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -63842,8 +63845,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -63958,8 +63961,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -64074,8 +64077,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -64190,8 +64193,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -64306,8 +64309,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -64422,8 +64425,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -64538,8 +64541,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -64654,8 +64657,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -64770,8 +64773,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -64886,8 +64889,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -65002,8 +65005,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -65118,8 +65121,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -65234,8 +65237,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -65350,8 +65353,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -65466,8 +65469,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -65582,8 +65585,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -65698,8 +65701,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -65814,8 +65817,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -65930,8 +65933,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -66046,8 +66049,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -66162,8 +66165,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -66278,8 +66281,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -66394,8 +66397,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -66510,8 +66513,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -66626,8 +66629,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -66660,12 +66663,12 @@
       "escenario": "WEB",
       "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
       "metodoPago": "Tarjeta de Débito",
-      "disponibleDesde": "2026-07-05",
+      "disponibleDesde": null,
       "agendada": "2026-07-12",
       "realizada": "2026-07-12",
       "cuestFecha": "2026-07-13",
       "submittedAt": "2026-07-14",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_319cd82eaf",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_319CD82EAF",
@@ -66691,7 +66694,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -66702,7 +66705,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -66717,8 +66720,8 @@
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
+          "status": "empty",
+          "sourceKind": "empty",
           "reason": null
         },
         "agendada": {
@@ -66742,8 +66745,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -66752,7 +66755,7 @@
       "measurementWindowLabel": "QUINCENA 1",
       "measurementWindowStart": "2026-07-01",
       "measurementWindowEnd": "2026-07-15",
-      "availableFromRaw": "2026-07-05"
+      "availableFromRaw": null
     },
     {
       "id": "hr_2026-07_gt_3_2a9201b0b4",
@@ -66776,12 +66779,12 @@
       "escenario": "TAQ",
       "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
       "metodoPago": "Efectivo",
-      "disponibleDesde": "2026-07-04",
+      "disponibleDesde": null,
       "agendada": "2026-07-05",
       "realizada": "2026-07-05",
       "cuestFecha": "2026-07-12",
       "submittedAt": "2026-07-13",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_d8018a15d0",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_D8018A15D0",
@@ -66807,7 +66810,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -66818,7 +66821,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -66833,8 +66836,8 @@
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
+          "status": "empty",
+          "sourceKind": "empty",
           "reason": null
         },
         "agendada": {
@@ -66858,8 +66861,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -66868,7 +66871,7 @@
       "measurementWindowLabel": "QUINCENA 1",
       "measurementWindowStart": "2026-07-01",
       "measurementWindowEnd": "2026-07-15",
-      "availableFromRaw": "2026-07-04"
+      "availableFromRaw": null
     },
     {
       "id": "hr_2026-07_gt_4_81b010e088",
@@ -66892,12 +66895,12 @@
       "escenario": "APP",
       "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)",
       "metodoPago": "Tarjeta de Débito",
-      "disponibleDesde": "2026-07-04",
+      "disponibleDesde": null,
       "agendada": "2026-07-12",
       "realizada": "2026-07-12",
       "cuestFecha": "2026-07-14",
       "submittedAt": "2026-07-19",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_1440137b73",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_1440137B73",
@@ -66923,7 +66926,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -66934,7 +66937,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -66949,8 +66952,8 @@
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
+          "status": "empty",
+          "sourceKind": "empty",
           "reason": null
         },
         "agendada": {
@@ -66974,8 +66977,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -66984,7 +66987,7 @@
       "measurementWindowLabel": "QUINCENA 1",
       "measurementWindowStart": "2026-07-01",
       "measurementWindowEnd": "2026-07-15",
-      "availableFromRaw": "2026-07-04"
+      "availableFromRaw": null
     },
     {
       "id": "hr_2026-07_gt_5_02563b942f",
@@ -67008,12 +67011,12 @@
       "escenario": "WEB",
       "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
       "metodoPago": "Tarjeta de Débito",
-      "disponibleDesde": "2026-07-05",
+      "disponibleDesde": null,
       "agendada": "2026-07-12",
       "realizada": "2026-07-12",
       "cuestFecha": "2026-07-13",
       "submittedAt": "2026-07-13",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_d7b59dfd6a",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_D7B59DFD6A",
@@ -67039,7 +67042,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -67050,7 +67053,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -67065,8 +67068,8 @@
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
+          "status": "empty",
+          "sourceKind": "empty",
           "reason": null
         },
         "agendada": {
@@ -67090,8 +67093,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -67100,7 +67103,7 @@
       "measurementWindowLabel": "QUINCENA 1",
       "measurementWindowStart": "2026-07-01",
       "measurementWindowEnd": "2026-07-15",
-      "availableFromRaw": "2026-07-05"
+      "availableFromRaw": null
     },
     {
       "id": "hr_2026-07_gt_6_f8ccb1c4bd",
@@ -67124,12 +67127,12 @@
       "escenario": "TAQ",
       "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)",
       "metodoPago": "Tarjeta de Débito",
-      "disponibleDesde": "2026-07-11",
+      "disponibleDesde": null,
       "agendada": "2026-07-12",
       "realizada": "2026-07-12",
       "cuestFecha": "2026-07-15",
       "submittedAt": "2026-07-19",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_7155410e54",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_7155410E54",
@@ -67155,7 +67158,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -67166,7 +67169,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -67181,8 +67184,8 @@
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
+          "status": "empty",
+          "sourceKind": "empty",
           "reason": null
         },
         "agendada": {
@@ -67206,8 +67209,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -67216,7 +67219,7 @@
       "measurementWindowLabel": "QUINCENA 1",
       "measurementWindowStart": "2026-07-01",
       "measurementWindowEnd": "2026-07-15",
-      "availableFromRaw": "2026-07-11"
+      "availableFromRaw": null
     },
     {
       "id": "hr_2026-07_gt_7_e1ebc372c0",
@@ -67240,12 +67243,12 @@
       "escenario": "APP",
       "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
       "metodoPago": "Tarjeta de Débito",
-      "disponibleDesde": "2026-07-05",
+      "disponibleDesde": null,
       "agendada": "2026-07-19",
       "realizada": "2026-07-19",
       "cuestFecha": "2026-07-20",
       "submittedAt": null,
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_7f23f9a093",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_7F23F9A093",
@@ -67271,7 +67274,7 @@
       "liquidationCandidate": false,
       "paymentControlOnly": false,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -67282,7 +67285,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": false,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": false,
         "liquidationConfirmed": false,
@@ -67297,8 +67300,8 @@
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
+          "status": "empty",
+          "sourceKind": "empty",
           "reason": null
         },
         "agendada": {
@@ -67322,8 +67325,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -67332,7 +67335,7 @@
       "measurementWindowLabel": "QUINCENA 1",
       "measurementWindowStart": "2026-07-01",
       "measurementWindowEnd": "2026-07-15",
-      "availableFromRaw": "2026-07-05"
+      "availableFromRaw": null
     },
     {
       "id": "hr_2026-07_gt_8_416bb2d4e3",
@@ -67356,19 +67359,19 @@
       "escenario": "WEB",
       "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)",
       "metodoPago": "Tarjeta de Débito",
-      "disponibleDesde": "2026-07-07",
+      "disponibleDesde": null,
       "agendada": "2026-07-14",
       "realizada": "2026-07-14",
       "cuestFecha": "2026-07-16",
       "submittedAt": "2026-07-20",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_17c3a1dfeb",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_17C3A1DFEB",
       "hasShopper": true,
       "currency": "Q",
       "honorario": null,
-      "boleto": null,
+      "boleto": 40,
       "comboAmt": 137,
       "sourceSafe": true,
       "piiProtected": true,
@@ -67387,7 +67390,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -67398,7 +67401,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -67413,8 +67416,8 @@
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
+          "status": "empty",
+          "sourceKind": "empty",
           "reason": null
         },
         "agendada": {
@@ -67438,8 +67441,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -67448,7 +67451,7 @@
       "measurementWindowLabel": "QUINCENA 1",
       "measurementWindowStart": "2026-07-01",
       "measurementWindowEnd": "2026-07-15",
-      "availableFromRaw": "2026-07-07"
+      "availableFromRaw": null
     },
     {
       "id": "hr_2026-07_gt_9_b7dde46434",
@@ -67472,12 +67475,12 @@
       "escenario": "TAQ",
       "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
       "metodoPago": "Efectivo",
-      "disponibleDesde": "2026-07-11",
+      "disponibleDesde": null,
       "agendada": "2026-07-12",
       "realizada": "2026-07-12",
       "cuestFecha": "2026-07-14",
       "submittedAt": "2026-07-16",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_ce6a976e54",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_CE6A976E54",
@@ -67503,7 +67506,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -67514,7 +67517,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -67529,8 +67532,8 @@
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
+          "status": "empty",
+          "sourceKind": "empty",
           "reason": null
         },
         "agendada": {
@@ -67554,8 +67557,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -67564,7 +67567,7 @@
       "measurementWindowLabel": "QUINCENA 1",
       "measurementWindowStart": "2026-07-01",
       "measurementWindowEnd": "2026-07-15",
-      "availableFromRaw": "2026-07-11"
+      "availableFromRaw": null
     },
     {
       "id": "hr_2026-07_gt_10_bdb5cc489e",
@@ -67588,12 +67591,12 @@
       "escenario": "APP",
       "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)",
       "metodoPago": "Tarjeta de Débito",
-      "disponibleDesde": "2026-07-04",
+      "disponibleDesde": null,
       "agendada": "2026-07-04",
       "realizada": "2026-07-12",
       "cuestFecha": "2026-07-13",
       "submittedAt": "2026-07-14",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_e58ffad6cf",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_E58FFAD6CF",
@@ -67619,7 +67622,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -67630,7 +67633,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -67645,8 +67648,8 @@
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
+          "status": "empty",
+          "sourceKind": "empty",
           "reason": null
         },
         "agendada": {
@@ -67670,8 +67673,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -67680,7 +67683,7 @@
       "measurementWindowLabel": "QUINCENA 1",
       "measurementWindowStart": "2026-07-01",
       "measurementWindowEnd": "2026-07-15",
-      "availableFromRaw": "2026-07-04"
+      "availableFromRaw": null
     },
     {
       "id": "hr_2026-07_gt_11_7adf0656ec",
@@ -67704,12 +67707,12 @@
       "escenario": "WEB",
       "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
       "metodoPago": "Tarjeta de Débito",
-      "disponibleDesde": "2026-07-04",
+      "disponibleDesde": null,
       "agendada": "2026-07-11",
       "realizada": "2026-07-11",
       "cuestFecha": "2026-07-12",
       "submittedAt": "2026-07-13",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_0c0ba8856e",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_0C0BA8856E",
@@ -67735,7 +67738,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -67746,7 +67749,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -67761,8 +67764,8 @@
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
+          "status": "empty",
+          "sourceKind": "empty",
           "reason": null
         },
         "agendada": {
@@ -67786,8 +67789,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -67796,7 +67799,7 @@
       "measurementWindowLabel": "QUINCENA 1",
       "measurementWindowStart": "2026-07-01",
       "measurementWindowEnd": "2026-07-15",
-      "availableFromRaw": "2026-07-04"
+      "availableFromRaw": null
     },
     {
       "id": "hr_2026-07_gt_12_5096720f48",
@@ -67820,12 +67823,12 @@
       "escenario": "TAQ",
       "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)",
       "metodoPago": "Tarjeta de Débito",
-      "disponibleDesde": "2026-07-06",
+      "disponibleDesde": null,
       "agendada": "2026-07-10",
       "realizada": "2026-07-10",
       "cuestFecha": "2026-07-12",
       "submittedAt": "2026-07-13",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_a5fec782ee",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_A5FEC782EE",
@@ -67851,7 +67854,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -67862,7 +67865,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -67877,8 +67880,8 @@
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
+          "status": "empty",
+          "sourceKind": "empty",
           "reason": null
         },
         "agendada": {
@@ -67902,8 +67905,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -67912,7 +67915,7 @@
       "measurementWindowLabel": "QUINCENA 1",
       "measurementWindowStart": "2026-07-01",
       "measurementWindowEnd": "2026-07-15",
-      "availableFromRaw": "2026-07-06"
+      "availableFromRaw": null
     },
     {
       "id": "hr_2026-07_gt_13_378ca39627",
@@ -67936,12 +67939,12 @@
       "escenario": "APP",
       "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
       "metodoPago": "Tarjeta de Débito",
-      "disponibleDesde": "2026-07-11",
+      "disponibleDesde": null,
       "agendada": "2026-07-11",
       "realizada": "2026-07-11",
       "cuestFecha": "2026-07-15",
       "submittedAt": "2026-07-20",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_c342b8c62e",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_C342B8C62E",
@@ -67967,7 +67970,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -67978,7 +67981,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -67993,8 +67996,8 @@
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
+          "status": "empty",
+          "sourceKind": "empty",
           "reason": null
         },
         "agendada": {
@@ -68018,8 +68021,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -68028,7 +68031,7 @@
       "measurementWindowLabel": "QUINCENA 1",
       "measurementWindowStart": "2026-07-01",
       "measurementWindowEnd": "2026-07-15",
-      "availableFromRaw": "2026-07-11"
+      "availableFromRaw": null
     },
     {
       "id": "hr_2026-07_gt_14_951a7c2cb6",
@@ -68052,12 +68055,12 @@
       "escenario": "WEB",
       "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)",
       "metodoPago": "Tarjeta de Débito",
-      "disponibleDesde": "2026-07-01",
+      "disponibleDesde": null,
       "agendada": "2026-07-09",
       "realizada": "2026-07-09",
       "cuestFecha": "2026-07-10",
       "submittedAt": "2026-07-11",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_0b2f66d821",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_0B2F66D821",
@@ -68083,7 +68086,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -68094,7 +68097,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -68109,8 +68112,8 @@
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
+          "status": "empty",
+          "sourceKind": "empty",
           "reason": null
         },
         "agendada": {
@@ -68134,8 +68137,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -68144,7 +68147,7 @@
       "measurementWindowLabel": "QUINCENA 1",
       "measurementWindowStart": "2026-07-01",
       "measurementWindowEnd": "2026-07-15",
-      "availableFromRaw": "2026-07-01"
+      "availableFromRaw": null
     },
     {
       "id": "hr_2026-07_gt_15_993c89be49",
@@ -68168,12 +68171,12 @@
       "escenario": "TAQ",
       "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
       "metodoPago": "Tarjeta de Crédito",
-      "disponibleDesde": "2026-07-11",
+      "disponibleDesde": null,
       "agendada": "2026-07-11",
       "realizada": "2026-07-11",
       "cuestFecha": "2026-07-12",
       "submittedAt": "2026-07-13",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_2889189d76",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_2889189D76",
@@ -68199,7 +68202,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -68210,7 +68213,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -68225,8 +68228,8 @@
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
+          "status": "empty",
+          "sourceKind": "empty",
           "reason": null
         },
         "agendada": {
@@ -68250,8 +68253,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -68260,7 +68263,7 @@
       "measurementWindowLabel": "QUINCENA 1",
       "measurementWindowStart": "2026-07-01",
       "measurementWindowEnd": "2026-07-15",
-      "availableFromRaw": "2026-07-11"
+      "availableFromRaw": null
     },
     {
       "id": "hr_2026-07_gt_16_5a403dd259",
@@ -68284,12 +68287,12 @@
       "escenario": "APP",
       "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)",
       "metodoPago": "Tarjeta de Débito",
-      "disponibleDesde": "2026-07-06",
+      "disponibleDesde": null,
       "agendada": "2026-07-15",
       "realizada": "2026-07-15",
       "cuestFecha": "2026-07-16",
       "submittedAt": "2026-07-20",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_dcc73986b1",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_DCC73986B1",
@@ -68315,7 +68318,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -68326,7 +68329,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -68341,8 +68344,8 @@
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
+          "status": "empty",
+          "sourceKind": "empty",
           "reason": null
         },
         "agendada": {
@@ -68366,8 +68369,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -68376,7 +68379,7 @@
       "measurementWindowLabel": "QUINCENA 1",
       "measurementWindowStart": "2026-07-01",
       "measurementWindowEnd": "2026-07-15",
-      "availableFromRaw": "2026-07-06"
+      "availableFromRaw": null
     },
     {
       "id": "hr_2026-07_gt_17_85a0de3a3f",
@@ -68400,12 +68403,12 @@
       "escenario": "WEB",
       "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
       "metodoPago": "Tarjeta de Débito",
-      "disponibleDesde": "2026-07-11",
+      "disponibleDesde": null,
       "agendada": "2026-07-11",
       "realizada": "2026-07-11",
       "cuestFecha": "2026-07-11",
       "submittedAt": "2026-07-12",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_09c5128572",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_09C5128572",
@@ -68431,7 +68434,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -68442,7 +68445,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -68457,8 +68460,8 @@
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
+          "status": "empty",
+          "sourceKind": "empty",
           "reason": null
         },
         "agendada": {
@@ -68482,8 +68485,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -68492,7 +68495,7 @@
       "measurementWindowLabel": "QUINCENA 1",
       "measurementWindowStart": "2026-07-01",
       "measurementWindowEnd": "2026-07-15",
-      "availableFromRaw": "2026-07-11"
+      "availableFromRaw": null
     },
     {
       "id": "hr_2026-07_gt_18_82f9beb237",
@@ -68516,12 +68519,12 @@
       "escenario": "TAQ",
       "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)",
       "metodoPago": "",
-      "disponibleDesde": "2026-07-01",
+      "disponibleDesde": null,
       "agendada": "2026-07-13",
       "realizada": "2026-07-13",
       "cuestFecha": "2026-07-16",
-      "submittedAt": null,
-      "controlDia": "OK",
+      "submittedAt": "2026-07-17",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_eaa6f8aa33",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_EAA6F8AA33",
@@ -68532,22 +68535,22 @@
       "comboAmt": 121,
       "sourceSafe": true,
       "piiProtected": true,
-      "estado": "cuestionario",
-      "canonicalState": "pending_submission",
-      "operationalState": "pending_submission",
+      "estado": "submitida",
+      "canonicalState": "submitted_complete",
+      "operationalState": "submitted_complete",
       "availabilityState": "not_applicable_assigned",
       "availabilityDependency": null,
       "assignmentState": "assigned",
       "schedulingState": "scheduled",
       "executionState": "realized",
       "questionnaireState": "completed",
-      "submissionState": "pending_tya_submit",
-      "liquidationState": "not_eligible",
-      "paymentState": "not_eligible",
-      "liquidationCandidate": false,
-      "paymentControlOnly": false,
+      "submissionState": "confirmed_hr",
+      "liquidationState": "candidate_pending_financial_match",
+      "paymentState": "not_confirmed",
+      "liquidationCandidate": true,
+      "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -68557,24 +68560,24 @@
         "scheduled": true,
         "realized": true,
         "questionnaire": true,
-        "submitted": false,
-        "outOfRange": false,
+        "submitted": true,
+        "outOfRange": true,
         "cancelled": false,
-        "liquidationCandidate": false,
+        "liquidationCandidate": true,
         "liquidationConfirmed": false,
         "paymentConfirmed": false
       },
       "visitIdentityVersion": "tya-stable-visit-id-r20-row-identity-v1",
-      "submit": false,
+      "submit": true,
       "legacyEstado": "cuestionario",
       "assignmentSource": "hr",
       "assignmentSyncStatus": "assigned_from_hr_pending_platform_sync",
-      "liquidationEvidence": null,
+      "liquidationEvidence": "submission_only_pending_financial_crosscheck",
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
+          "status": "empty",
+          "sourceKind": "empty",
           "reason": null
         },
         "agendada": {
@@ -68593,13 +68596,13 @@
           "reason": null
         },
         "submittedAt": {
-          "status": "empty",
-          "sourceKind": "empty",
+          "status": "normalized",
+          "sourceKind": "iso",
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -68608,7 +68611,7 @@
       "measurementWindowLabel": "QUINCENA 1",
       "measurementWindowStart": "2026-07-01",
       "measurementWindowEnd": "2026-07-15",
-      "availableFromRaw": "2026-07-01"
+      "availableFromRaw": null
     },
     {
       "id": "hr_2026-07_gt_19_0be0e980f2",
@@ -68632,7 +68635,7 @@
       "escenario": "TAQ",
       "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
       "metodoPago": "Tarjeta de Débito",
-      "disponibleDesde": "2026-07-19",
+      "disponibleDesde": "2027-07-17",
       "agendada": "2026-07-18",
       "realizada": "2026-07-18",
       "cuestFecha": "2026-07-21",
@@ -68714,8 +68717,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -68724,7 +68727,7 @@
       "measurementWindowLabel": "QUINCENA 2",
       "measurementWindowStart": "2026-07-16",
       "measurementWindowEnd": "2026-07-31",
-      "availableFromRaw": "2026-07-19"
+      "availableFromRaw": "2027-07-17"
     },
     {
       "id": "hr_2026-07_gt_20_7997720bf5",
@@ -68748,12 +68751,12 @@
       "escenario": "APP",
       "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)",
       "metodoPago": "",
-      "disponibleDesde": "2026-07-18",
+      "disponibleDesde": "2027-07-17",
       "agendada": "2026-07-18",
       "realizada": "2026-07-18",
       "cuestFecha": "2026-07-19",
       "submittedAt": "2026-07-27",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_2889189d76",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_2889189D76",
@@ -68779,7 +68782,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -68790,7 +68793,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -68830,8 +68833,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -68840,7 +68843,7 @@
       "measurementWindowLabel": "QUINCENA 2",
       "measurementWindowStart": "2026-07-16",
       "measurementWindowEnd": "2026-07-31",
-      "availableFromRaw": "2026-07-18"
+      "availableFromRaw": "2027-07-17"
     },
     {
       "id": "hr_2026-07_gt_21_df71aa8d7b",
@@ -68864,7 +68867,7 @@
       "escenario": "WEB",
       "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
       "metodoPago": "",
-      "disponibleDesde": "2026-07-25",
+      "disponibleDesde": "2027-07-17",
       "agendada": "2026-07-18",
       "realizada": "2026-07-18",
       "cuestFecha": "2026-07-18",
@@ -68946,8 +68949,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -68956,7 +68959,7 @@
       "measurementWindowLabel": "QUINCENA 2",
       "measurementWindowStart": "2026-07-16",
       "measurementWindowEnd": "2026-07-31",
-      "availableFromRaw": "2026-07-25"
+      "availableFromRaw": "2027-07-17"
     },
     {
       "id": "hr_2026-07_gt_22_c2594fa11b",
@@ -68980,12 +68983,12 @@
       "escenario": "TAQ",
       "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)",
       "metodoPago": "Tarjeta de Débito",
-      "disponibleDesde": "2026-07-18",
+      "disponibleDesde": "2027-07-17",
       "agendada": "2026-07-18",
       "realizada": "2026-07-18",
       "cuestFecha": "2026-07-19",
       "submittedAt": "2026-07-27",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_3d5b842bad",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_3D5B842BAD",
@@ -69011,7 +69014,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -69022,7 +69025,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -69062,8 +69065,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -69072,7 +69075,7 @@
       "measurementWindowLabel": "QUINCENA 2",
       "measurementWindowStart": "2026-07-16",
       "measurementWindowEnd": "2026-07-31",
-      "availableFromRaw": "2026-07-18"
+      "availableFromRaw": "2027-07-17"
     },
     {
       "id": "hr_2026-07_gt_23_e82db4ac52",
@@ -69096,12 +69099,12 @@
       "escenario": "APP",
       "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
       "metodoPago": "",
-      "disponibleDesde": "2026-07-25",
+      "disponibleDesde": "2027-07-17",
       "agendada": "2026-07-26",
       "realizada": "2026-07-26",
       "cuestFecha": "2026-07-27",
       "submittedAt": "2026-07-27",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_0c198c1055",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_0C198C1055",
@@ -69127,7 +69130,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -69138,7 +69141,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -69178,8 +69181,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -69188,7 +69191,7 @@
       "measurementWindowLabel": "QUINCENA 2",
       "measurementWindowStart": "2026-07-16",
       "measurementWindowEnd": "2026-07-31",
-      "availableFromRaw": "2026-07-25"
+      "availableFromRaw": "2027-07-17"
     },
     {
       "id": "hr_2026-07_gt_24_d8ab8479d1",
@@ -69212,7 +69215,7 @@
       "escenario": "WEB",
       "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)",
       "metodoPago": "",
-      "disponibleDesde": "2026-07-27",
+      "disponibleDesde": "2027-07-16",
       "agendada": "2026-07-23",
       "realizada": "2026-07-22",
       "cuestFecha": "2026-07-24",
@@ -69294,8 +69297,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -69304,7 +69307,7 @@
       "measurementWindowLabel": "QUINCENA 2",
       "measurementWindowStart": "2026-07-16",
       "measurementWindowEnd": "2026-07-31",
-      "availableFromRaw": "2026-07-27"
+      "availableFromRaw": "2027-07-16"
     },
     {
       "id": "hr_2026-07_gt_25_ca4a5fb409",
@@ -69328,12 +69331,12 @@
       "escenario": "TAQ",
       "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
       "metodoPago": "",
-      "disponibleDesde": "2026-07-25",
+      "disponibleDesde": "2027-07-17",
       "agendada": "2026-07-26",
       "realizada": "2026-07-26",
       "cuestFecha": "2026-07-27",
-      "submittedAt": null,
-      "controlDia": "OK",
+      "submittedAt": "2026-07-30",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_338ec57592",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_338EC57592",
@@ -69341,238 +69344,6 @@
       "currency": "Q",
       "honorario": null,
       "boleto": 68,
-      "comboAmt": 115,
-      "sourceSafe": true,
-      "piiProtected": true,
-      "estado": "cuestionario",
-      "canonicalState": "pending_submission",
-      "operationalState": "pending_submission",
-      "availabilityState": "not_applicable_assigned",
-      "availabilityDependency": null,
-      "assignmentState": "assigned",
-      "schedulingState": "scheduled",
-      "executionState": "realized",
-      "questionnaireState": "completed",
-      "submissionState": "pending_tya_submit",
-      "liquidationState": "not_eligible",
-      "paymentState": "not_eligible",
-      "liquidationCandidate": false,
-      "paymentControlOnly": false,
-      "paymentConfirmed": false,
-      "outOfRange": false,
-      "reviewRequired": false,
-      "reviewReasons": [],
-      "canonicalFacets": {
-        "available": false,
-        "eligibilityBlocked": false,
-        "assigned": true,
-        "scheduled": true,
-        "realized": true,
-        "questionnaire": true,
-        "submitted": false,
-        "outOfRange": false,
-        "cancelled": false,
-        "liquidationCandidate": false,
-        "liquidationConfirmed": false,
-        "paymentConfirmed": false
-      },
-      "visitIdentityVersion": "tya-stable-visit-id-r20-row-identity-v1",
-      "submit": false,
-      "legacyEstado": "cuestionario",
-      "assignmentSource": "hr",
-      "assignmentSyncStatus": "assigned_from_hr_pending_platform_sync",
-      "liquidationEvidence": null,
-      "paymentEvidence": null,
-      "dateNormalization": {
-        "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
-          "reason": null
-        },
-        "agendada": {
-          "status": "normalized",
-          "sourceKind": "iso",
-          "reason": null
-        },
-        "realizada": {
-          "status": "normalized",
-          "sourceKind": "iso",
-          "reason": null
-        },
-        "cuestFecha": {
-          "status": "normalized",
-          "sourceKind": "iso",
-          "reason": null
-        },
-        "submittedAt": {
-          "status": "empty",
-          "sourceKind": "empty",
-          "reason": null
-        }
-      },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
-      "runtimeSyncActive": false,
-      "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
-      "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
-      "franjaRaw": "RH WKND",
-      "measurementWindowId": "q2",
-      "measurementWindowLabel": "QUINCENA 2",
-      "measurementWindowStart": "2026-07-16",
-      "measurementWindowEnd": "2026-07-31",
-      "availableFromRaw": "2026-07-25"
-    },
-    {
-      "id": "hr_2026-07_gt_26_4dacf2b57a",
-      "hrRowId": "JULIO 26!26",
-      "sourceTab": "JULIO 26",
-      "sourceRow": 26,
-      "tenantId": "tya",
-      "projectId": "cinepolis",
-      "program": "cinepolis",
-      "periodKey": "2026-07",
-      "periodLabel": "JUL 2026",
-      "pais": "GT",
-      "country": "GT",
-      "cinemaId": "2022010",
-      "sucursal": "MC. El Frutal",
-      "ciudad": "Villa Nueva",
-      "quincena": "QUINCENA 2",
-      "franja": "Semana",
-      "franjaCode": "WK",
-      "formato": "MI CINE",
-      "escenario": "APP",
-      "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)",
-      "metodoPago": "",
-      "disponibleDesde": "2026-07-21",
-      "agendada": "2026-07-30",
-      "realizada": null,
-      "cuestFecha": null,
-      "submittedAt": null,
-      "controlDia": "OK",
-      "shopperId": "shopper_gt_e121686a7e",
-      "shopper": "Shopper protegido",
-      "shopperCode": "TYA_GT_E121686A7E",
-      "hasShopper": true,
-      "currency": "Q",
-      "honorario": null,
-      "boleto": null,
-      "comboAmt": null,
-      "sourceSafe": true,
-      "piiProtected": true,
-      "estado": "agendada",
-      "canonicalState": "pending_realization",
-      "operationalState": "pending_realization",
-      "availabilityState": "not_applicable_assigned",
-      "availabilityDependency": null,
-      "assignmentState": "assigned",
-      "schedulingState": "scheduled",
-      "executionState": "pending_realization",
-      "questionnaireState": "not_available",
-      "submissionState": "not_submitted",
-      "liquidationState": "not_eligible",
-      "paymentState": "not_eligible",
-      "liquidationCandidate": false,
-      "paymentControlOnly": false,
-      "paymentConfirmed": false,
-      "outOfRange": false,
-      "reviewRequired": false,
-      "reviewReasons": [],
-      "canonicalFacets": {
-        "available": false,
-        "eligibilityBlocked": false,
-        "assigned": true,
-        "scheduled": true,
-        "realized": false,
-        "questionnaire": false,
-        "submitted": false,
-        "outOfRange": false,
-        "cancelled": false,
-        "liquidationCandidate": false,
-        "liquidationConfirmed": false,
-        "paymentConfirmed": false
-      },
-      "visitIdentityVersion": "tya-stable-visit-id-r20-row-identity-v1",
-      "submit": false,
-      "legacyEstado": "agendada",
-      "assignmentSource": "hr",
-      "assignmentSyncStatus": "assigned_from_hr_pending_platform_sync",
-      "liquidationEvidence": null,
-      "paymentEvidence": null,
-      "dateNormalization": {
-        "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
-          "reason": null
-        },
-        "agendada": {
-          "status": "normalized",
-          "sourceKind": "iso",
-          "reason": null
-        },
-        "realizada": {
-          "status": "empty",
-          "sourceKind": "empty",
-          "reason": null
-        },
-        "cuestFecha": {
-          "status": "empty",
-          "sourceKind": "empty",
-          "reason": null
-        },
-        "submittedAt": {
-          "status": "empty",
-          "sourceKind": "empty",
-          "reason": null
-        }
-      },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
-      "runtimeSyncActive": false,
-      "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
-      "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
-      "franjaRaw": "RH WK",
-      "measurementWindowId": "q2",
-      "measurementWindowLabel": "QUINCENA 2",
-      "measurementWindowStart": "2026-07-16",
-      "measurementWindowEnd": "2026-07-31",
-      "availableFromRaw": "2026-07-21"
-    },
-    {
-      "id": "hr_2026-07_gt_27_725f55afbd",
-      "hrRowId": "JULIO 26!27",
-      "sourceTab": "JULIO 26",
-      "sourceRow": 27,
-      "tenantId": "tya",
-      "projectId": "cinepolis",
-      "program": "cinepolis",
-      "periodKey": "2026-07",
-      "periodLabel": "JUL 2026",
-      "pais": "GT",
-      "country": "GT",
-      "cinemaId": "2022011",
-      "sucursal": "C. Naranjo Mall",
-      "ciudad": "Mixco",
-      "quincena": "QUINCENA 2",
-      "franja": "Fin de semana",
-      "franjaCode": "WKND",
-      "formato": "TRADICIONAL",
-      "escenario": "WEB",
-      "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
-      "metodoPago": "",
-      "disponibleDesde": "2026-07-19",
-      "agendada": "2026-07-25",
-      "realizada": "2026-07-25",
-      "cuestFecha": "2026-07-27",
-      "submittedAt": "2026-07-27",
-      "controlDia": "OK",
-      "shopperId": "shopper_gt_2ace80aa68",
-      "shopper": "Shopper protegido",
-      "shopperCode": "TYA_GT_2ACE80AA68",
-      "hasShopper": true,
-      "currency": "Q",
-      "honorario": null,
-      "boleto": 50,
       "comboAmt": 115,
       "sourceSafe": true,
       "piiProtected": true,
@@ -69591,7 +69362,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -69602,7 +69373,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -69642,8 +69413,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -69652,7 +69423,239 @@
       "measurementWindowLabel": "QUINCENA 2",
       "measurementWindowStart": "2026-07-16",
       "measurementWindowEnd": "2026-07-31",
-      "availableFromRaw": "2026-07-19"
+      "availableFromRaw": "2027-07-17"
+    },
+    {
+      "id": "hr_2026-07_gt_26_4dacf2b57a",
+      "hrRowId": "JULIO 26!26",
+      "sourceTab": "JULIO 26",
+      "sourceRow": 26,
+      "tenantId": "tya",
+      "projectId": "cinepolis",
+      "program": "cinepolis",
+      "periodKey": "2026-07",
+      "periodLabel": "JUL 2026",
+      "pais": "GT",
+      "country": "GT",
+      "cinemaId": "2022010",
+      "sucursal": "MC. El Frutal",
+      "ciudad": "Villa Nueva",
+      "quincena": "QUINCENA 2",
+      "franja": "Semana",
+      "franjaCode": "WK",
+      "formato": "MI CINE",
+      "escenario": "APP",
+      "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)",
+      "metodoPago": "",
+      "disponibleDesde": "2027-07-16",
+      "agendada": "2026-07-31",
+      "realizada": "2026-07-31",
+      "cuestFecha": "2026-08-02",
+      "submittedAt": "2026-08-02",
+      "controlDia": "Fuera de rango",
+      "shopperId": "shopper_gt_e121686a7e",
+      "shopper": "Shopper protegido",
+      "shopperCode": "TYA_GT_E121686A7E",
+      "hasShopper": true,
+      "currency": "Q",
+      "honorario": null,
+      "boleto": 56,
+      "comboAmt": 153,
+      "sourceSafe": true,
+      "piiProtected": true,
+      "estado": "submitida",
+      "canonicalState": "submitted_complete",
+      "operationalState": "submitted_complete",
+      "availabilityState": "not_applicable_assigned",
+      "availabilityDependency": null,
+      "assignmentState": "assigned",
+      "schedulingState": "scheduled",
+      "executionState": "realized",
+      "questionnaireState": "completed",
+      "submissionState": "confirmed_hr",
+      "liquidationState": "candidate_pending_financial_match",
+      "paymentState": "not_confirmed",
+      "liquidationCandidate": true,
+      "paymentControlOnly": true,
+      "paymentConfirmed": false,
+      "outOfRange": true,
+      "reviewRequired": false,
+      "reviewReasons": [],
+      "canonicalFacets": {
+        "available": false,
+        "eligibilityBlocked": false,
+        "assigned": true,
+        "scheduled": true,
+        "realized": true,
+        "questionnaire": true,
+        "submitted": true,
+        "outOfRange": true,
+        "cancelled": false,
+        "liquidationCandidate": true,
+        "liquidationConfirmed": false,
+        "paymentConfirmed": false
+      },
+      "visitIdentityVersion": "tya-stable-visit-id-r20-row-identity-v1",
+      "submit": true,
+      "legacyEstado": "cuestionario",
+      "assignmentSource": "hr",
+      "assignmentSyncStatus": "assigned_from_hr_pending_platform_sync",
+      "liquidationEvidence": "submission_only_pending_financial_crosscheck",
+      "paymentEvidence": null,
+      "dateNormalization": {
+        "disponibleDesde": {
+          "status": "normalized",
+          "sourceKind": "iso",
+          "reason": null
+        },
+        "agendada": {
+          "status": "normalized",
+          "sourceKind": "iso",
+          "reason": null
+        },
+        "realizada": {
+          "status": "normalized",
+          "sourceKind": "iso",
+          "reason": null
+        },
+        "cuestFecha": {
+          "status": "normalized",
+          "sourceKind": "iso",
+          "reason": null
+        },
+        "submittedAt": {
+          "status": "normalized",
+          "sourceKind": "iso",
+          "reason": null
+        }
+      },
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
+      "runtimeSyncActive": false,
+      "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
+      "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
+      "franjaRaw": "RH WK",
+      "measurementWindowId": "q2",
+      "measurementWindowLabel": "QUINCENA 2",
+      "measurementWindowStart": "2026-07-16",
+      "measurementWindowEnd": "2026-07-31",
+      "availableFromRaw": "2027-07-16"
+    },
+    {
+      "id": "hr_2026-07_gt_27_725f55afbd",
+      "hrRowId": "JULIO 26!27",
+      "sourceTab": "JULIO 26",
+      "sourceRow": 27,
+      "tenantId": "tya",
+      "projectId": "cinepolis",
+      "program": "cinepolis",
+      "periodKey": "2026-07",
+      "periodLabel": "JUL 2026",
+      "pais": "GT",
+      "country": "GT",
+      "cinemaId": "2022011",
+      "sucursal": "C. Naranjo Mall",
+      "ciudad": "Mixco",
+      "quincena": "QUINCENA 2",
+      "franja": "Fin de semana",
+      "franjaCode": "WKND",
+      "formato": "TRADICIONAL",
+      "escenario": "WEB",
+      "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
+      "metodoPago": "",
+      "disponibleDesde": "2027-07-17",
+      "agendada": "2026-07-25",
+      "realizada": "2026-07-25",
+      "cuestFecha": "2026-07-27",
+      "submittedAt": "2026-07-27",
+      "controlDia": "Fuera de rango",
+      "shopperId": "shopper_gt_2ace80aa68",
+      "shopper": "Shopper protegido",
+      "shopperCode": "TYA_GT_2ACE80AA68",
+      "hasShopper": true,
+      "currency": "Q",
+      "honorario": null,
+      "boleto": 50,
+      "comboAmt": 115,
+      "sourceSafe": true,
+      "piiProtected": true,
+      "estado": "submitida",
+      "canonicalState": "submitted_complete",
+      "operationalState": "submitted_complete",
+      "availabilityState": "not_applicable_assigned",
+      "availabilityDependency": null,
+      "assignmentState": "assigned",
+      "schedulingState": "scheduled",
+      "executionState": "realized",
+      "questionnaireState": "completed",
+      "submissionState": "confirmed_hr",
+      "liquidationState": "candidate_pending_financial_match",
+      "paymentState": "not_confirmed",
+      "liquidationCandidate": true,
+      "paymentControlOnly": true,
+      "paymentConfirmed": false,
+      "outOfRange": true,
+      "reviewRequired": false,
+      "reviewReasons": [],
+      "canonicalFacets": {
+        "available": false,
+        "eligibilityBlocked": false,
+        "assigned": true,
+        "scheduled": true,
+        "realized": true,
+        "questionnaire": true,
+        "submitted": true,
+        "outOfRange": true,
+        "cancelled": false,
+        "liquidationCandidate": true,
+        "liquidationConfirmed": false,
+        "paymentConfirmed": false
+      },
+      "visitIdentityVersion": "tya-stable-visit-id-r20-row-identity-v1",
+      "submit": true,
+      "legacyEstado": "cuestionario",
+      "assignmentSource": "hr",
+      "assignmentSyncStatus": "assigned_from_hr_pending_platform_sync",
+      "liquidationEvidence": "submission_only_pending_financial_crosscheck",
+      "paymentEvidence": null,
+      "dateNormalization": {
+        "disponibleDesde": {
+          "status": "normalized",
+          "sourceKind": "iso",
+          "reason": null
+        },
+        "agendada": {
+          "status": "normalized",
+          "sourceKind": "iso",
+          "reason": null
+        },
+        "realizada": {
+          "status": "normalized",
+          "sourceKind": "iso",
+          "reason": null
+        },
+        "cuestFecha": {
+          "status": "normalized",
+          "sourceKind": "iso",
+          "reason": null
+        },
+        "submittedAt": {
+          "status": "normalized",
+          "sourceKind": "iso",
+          "reason": null
+        }
+      },
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
+      "runtimeSyncActive": false,
+      "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
+      "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
+      "franjaRaw": "RH WKND",
+      "measurementWindowId": "q2",
+      "measurementWindowLabel": "QUINCENA 2",
+      "measurementWindowStart": "2026-07-16",
+      "measurementWindowEnd": "2026-07-31",
+      "availableFromRaw": "2027-07-17"
     },
     {
       "id": "hr_2026-07_gt_28_a16c103171",
@@ -69675,39 +69678,39 @@
       "formato": "TRADICIONAL",
       "escenario": "TAQ",
       "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)",
-      "metodoPago": "",
-      "disponibleDesde": "2026-07-20",
+      "metodoPago": "Tarjeta de Débito",
+      "disponibleDesde": "2027-07-16",
       "agendada": "2026-07-31",
-      "realizada": null,
-      "cuestFecha": null,
-      "submittedAt": null,
-      "controlDia": "OK",
+      "realizada": "2026-07-31",
+      "cuestFecha": "2026-08-03",
+      "submittedAt": "2026-08-03",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_2889189d76",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_2889189D76",
       "hasShopper": true,
       "currency": "Q",
       "honorario": null,
-      "boleto": null,
-      "comboAmt": null,
+      "boleto": 47,
+      "comboAmt": 121,
       "sourceSafe": true,
       "piiProtected": true,
-      "estado": "agendada",
-      "canonicalState": "pending_realization",
-      "operationalState": "pending_realization",
+      "estado": "submitida",
+      "canonicalState": "submitted_complete",
+      "operationalState": "submitted_complete",
       "availabilityState": "not_applicable_assigned",
       "availabilityDependency": null,
       "assignmentState": "assigned",
       "schedulingState": "scheduled",
-      "executionState": "pending_realization",
-      "questionnaireState": "not_available",
-      "submissionState": "not_submitted",
-      "liquidationState": "not_eligible",
-      "paymentState": "not_eligible",
-      "liquidationCandidate": false,
-      "paymentControlOnly": false,
+      "executionState": "realized",
+      "questionnaireState": "completed",
+      "submissionState": "confirmed_hr",
+      "liquidationState": "candidate_pending_financial_match",
+      "paymentState": "not_confirmed",
+      "liquidationCandidate": true,
+      "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -69715,21 +69718,21 @@
         "eligibilityBlocked": false,
         "assigned": true,
         "scheduled": true,
-        "realized": false,
-        "questionnaire": false,
-        "submitted": false,
-        "outOfRange": false,
+        "realized": true,
+        "questionnaire": true,
+        "submitted": true,
+        "outOfRange": true,
         "cancelled": false,
-        "liquidationCandidate": false,
+        "liquidationCandidate": true,
         "liquidationConfirmed": false,
         "paymentConfirmed": false
       },
       "visitIdentityVersion": "tya-stable-visit-id-r20-row-identity-v1",
-      "submit": false,
-      "legacyEstado": "agendada",
+      "submit": true,
+      "legacyEstado": "cuestionario",
       "assignmentSource": "hr",
       "assignmentSyncStatus": "assigned_from_hr_pending_platform_sync",
-      "liquidationEvidence": null,
+      "liquidationEvidence": "submission_only_pending_financial_crosscheck",
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
@@ -69743,23 +69746,23 @@
           "reason": null
         },
         "realizada": {
-          "status": "empty",
-          "sourceKind": "empty",
+          "status": "normalized",
+          "sourceKind": "iso",
           "reason": null
         },
         "cuestFecha": {
-          "status": "empty",
-          "sourceKind": "empty",
+          "status": "normalized",
+          "sourceKind": "iso",
           "reason": null
         },
         "submittedAt": {
-          "status": "empty",
-          "sourceKind": "empty",
+          "status": "normalized",
+          "sourceKind": "iso",
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -69768,7 +69771,7 @@
       "measurementWindowLabel": "QUINCENA 2",
       "measurementWindowStart": "2026-07-16",
       "measurementWindowEnd": "2026-07-31",
-      "availableFromRaw": "2026-07-20"
+      "availableFromRaw": "2027-07-16"
     },
     {
       "id": "hr_2026-07_gt_29_97d2289331",
@@ -69792,11 +69795,11 @@
       "escenario": "APP",
       "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
       "metodoPago": "",
-      "disponibleDesde": "2026-07-18",
+      "disponibleDesde": "2027-07-17",
       "agendada": "2026-07-29",
-      "realizada": null,
-      "cuestFecha": null,
-      "submittedAt": null,
+      "realizada": "2026-07-28",
+      "cuestFecha": "2026-08-02",
+      "submittedAt": "2026-08-02",
       "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_319cd82eaf",
       "shopper": "Shopper protegido",
@@ -69804,24 +69807,24 @@
       "hasShopper": true,
       "currency": "Q",
       "honorario": null,
-      "boleto": null,
-      "comboAmt": null,
+      "boleto": 52,
+      "comboAmt": 131,
       "sourceSafe": true,
       "piiProtected": true,
-      "estado": "fuera_rango",
-      "canonicalState": "pending_realization",
-      "operationalState": "pending_realization",
+      "estado": "submitida",
+      "canonicalState": "submitted_complete",
+      "operationalState": "submitted_complete",
       "availabilityState": "not_applicable_assigned",
       "availabilityDependency": null,
       "assignmentState": "assigned",
       "schedulingState": "scheduled",
-      "executionState": "pending_realization",
-      "questionnaireState": "not_available",
-      "submissionState": "not_submitted",
-      "liquidationState": "not_eligible",
-      "paymentState": "not_eligible",
-      "liquidationCandidate": false,
-      "paymentControlOnly": false,
+      "executionState": "realized",
+      "questionnaireState": "completed",
+      "submissionState": "confirmed_hr",
+      "liquidationState": "candidate_pending_financial_match",
+      "paymentState": "not_confirmed",
+      "liquidationCandidate": true,
+      "paymentControlOnly": true,
       "paymentConfirmed": false,
       "outOfRange": true,
       "reviewRequired": false,
@@ -69831,21 +69834,21 @@
         "eligibilityBlocked": false,
         "assigned": true,
         "scheduled": true,
-        "realized": false,
-        "questionnaire": false,
-        "submitted": false,
+        "realized": true,
+        "questionnaire": true,
+        "submitted": true,
         "outOfRange": true,
         "cancelled": false,
-        "liquidationCandidate": false,
+        "liquidationCandidate": true,
         "liquidationConfirmed": false,
         "paymentConfirmed": false
       },
       "visitIdentityVersion": "tya-stable-visit-id-r20-row-identity-v1",
-      "submit": false,
-      "legacyEstado": "fuera_rango",
+      "submit": true,
+      "legacyEstado": "cuestionario",
       "assignmentSource": "hr",
       "assignmentSyncStatus": "assigned_from_hr_pending_platform_sync",
-      "liquidationEvidence": null,
+      "liquidationEvidence": "submission_only_pending_financial_crosscheck",
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
@@ -69859,23 +69862,23 @@
           "reason": null
         },
         "realizada": {
-          "status": "empty",
-          "sourceKind": "empty",
+          "status": "normalized",
+          "sourceKind": "iso",
           "reason": null
         },
         "cuestFecha": {
-          "status": "empty",
-          "sourceKind": "empty",
+          "status": "normalized",
+          "sourceKind": "iso",
           "reason": null
         },
         "submittedAt": {
-          "status": "empty",
-          "sourceKind": "empty",
+          "status": "normalized",
+          "sourceKind": "iso",
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -69884,7 +69887,7 @@
       "measurementWindowLabel": "QUINCENA 2",
       "measurementWindowStart": "2026-07-16",
       "measurementWindowEnd": "2026-07-31",
-      "availableFromRaw": "2026-07-18"
+      "availableFromRaw": "2027-07-17"
     },
     {
       "id": "hr_2026-07_gt_30_7e2e16387a",
@@ -69908,7 +69911,7 @@
       "escenario": "WEB",
       "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)",
       "metodoPago": "",
-      "disponibleDesde": "2026-07-27",
+      "disponibleDesde": "2027-07-16",
       "agendada": "2026-07-22",
       "realizada": "2026-07-22",
       "cuestFecha": "2026-07-23",
@@ -69990,8 +69993,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -70000,7 +70003,7 @@
       "measurementWindowLabel": "QUINCENA 2",
       "measurementWindowStart": "2026-07-16",
       "measurementWindowEnd": "2026-07-31",
-      "availableFromRaw": "2026-07-27"
+      "availableFromRaw": "2027-07-16"
     },
     {
       "id": "hr_2026-07_gt_31_ae3d14e7fd",
@@ -70024,12 +70027,12 @@
       "escenario": "TAQ",
       "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
       "metodoPago": "Tarjeta de Débito",
-      "disponibleDesde": "2026-07-18",
+      "disponibleDesde": "2027-07-17",
       "agendada": "2026-07-26",
       "realizada": "2026-07-26",
       "cuestFecha": "2026-07-27",
       "submittedAt": "2026-07-27",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_5eb6ba4913",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_5EB6BA4913",
@@ -70055,7 +70058,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -70066,7 +70069,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -70106,8 +70109,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -70116,7 +70119,7 @@
       "measurementWindowLabel": "QUINCENA 2",
       "measurementWindowStart": "2026-07-16",
       "measurementWindowEnd": "2026-07-31",
-      "availableFromRaw": "2026-07-18"
+      "availableFromRaw": "2027-07-17"
     },
     {
       "id": "hr_2026-07_gt_32_095ccec063",
@@ -70140,12 +70143,12 @@
       "escenario": "APP",
       "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)",
       "metodoPago": "",
-      "disponibleDesde": "2026-07-20",
+      "disponibleDesde": "2027-07-16",
       "agendada": "2026-07-21",
       "realizada": "2026-07-21",
       "cuestFecha": "2026-07-22",
       "submittedAt": "2026-07-27",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_d7b59dfd6a",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_D7B59DFD6A",
@@ -70171,7 +70174,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -70182,7 +70185,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -70222,8 +70225,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -70232,7 +70235,7 @@
       "measurementWindowLabel": "QUINCENA 2",
       "measurementWindowStart": "2026-07-16",
       "measurementWindowEnd": "2026-07-31",
-      "availableFromRaw": "2026-07-20"
+      "availableFromRaw": "2027-07-16"
     },
     {
       "id": "hr_2026-07_gt_33_d0122a69a8",
@@ -70256,11 +70259,11 @@
       "escenario": "WEB",
       "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
       "metodoPago": "",
-      "disponibleDesde": "2026-07-25",
+      "disponibleDesde": "2027-07-17",
       "agendada": "2026-07-30",
-      "realizada": null,
-      "cuestFecha": null,
-      "submittedAt": null,
+      "realizada": "2026-07-30",
+      "cuestFecha": "2026-07-31",
+      "submittedAt": "2026-08-02",
       "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_bd74ace936",
       "shopper": "Shopper protegido",
@@ -70268,24 +70271,24 @@
       "hasShopper": true,
       "currency": "Q",
       "honorario": null,
-      "boleto": null,
-      "comboAmt": null,
+      "boleto": 40,
+      "comboAmt": 115,
       "sourceSafe": true,
       "piiProtected": true,
-      "estado": "fuera_rango",
-      "canonicalState": "pending_realization",
-      "operationalState": "pending_realization",
+      "estado": "submitida",
+      "canonicalState": "submitted_complete",
+      "operationalState": "submitted_complete",
       "availabilityState": "not_applicable_assigned",
       "availabilityDependency": null,
       "assignmentState": "assigned",
       "schedulingState": "scheduled",
-      "executionState": "pending_realization",
-      "questionnaireState": "not_available",
-      "submissionState": "not_submitted",
-      "liquidationState": "not_eligible",
-      "paymentState": "not_eligible",
-      "liquidationCandidate": false,
-      "paymentControlOnly": false,
+      "executionState": "realized",
+      "questionnaireState": "completed",
+      "submissionState": "confirmed_hr",
+      "liquidationState": "candidate_pending_financial_match",
+      "paymentState": "not_confirmed",
+      "liquidationCandidate": true,
+      "paymentControlOnly": true,
       "paymentConfirmed": false,
       "outOfRange": true,
       "reviewRequired": false,
@@ -70295,21 +70298,21 @@
         "eligibilityBlocked": false,
         "assigned": true,
         "scheduled": true,
-        "realized": false,
-        "questionnaire": false,
-        "submitted": false,
+        "realized": true,
+        "questionnaire": true,
+        "submitted": true,
         "outOfRange": true,
         "cancelled": false,
-        "liquidationCandidate": false,
+        "liquidationCandidate": true,
         "liquidationConfirmed": false,
         "paymentConfirmed": false
       },
       "visitIdentityVersion": "tya-stable-visit-id-r20-row-identity-v1",
-      "submit": false,
-      "legacyEstado": "fuera_rango",
+      "submit": true,
+      "legacyEstado": "cuestionario",
       "assignmentSource": "hr",
       "assignmentSyncStatus": "assigned_from_hr_pending_platform_sync",
-      "liquidationEvidence": null,
+      "liquidationEvidence": "submission_only_pending_financial_crosscheck",
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
@@ -70323,23 +70326,23 @@
           "reason": null
         },
         "realizada": {
-          "status": "empty",
-          "sourceKind": "empty",
+          "status": "normalized",
+          "sourceKind": "iso",
           "reason": null
         },
         "cuestFecha": {
-          "status": "empty",
-          "sourceKind": "empty",
+          "status": "normalized",
+          "sourceKind": "iso",
           "reason": null
         },
         "submittedAt": {
-          "status": "empty",
-          "sourceKind": "empty",
+          "status": "normalized",
+          "sourceKind": "iso",
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -70348,7 +70351,7 @@
       "measurementWindowLabel": "QUINCENA 2",
       "measurementWindowStart": "2026-07-16",
       "measurementWindowEnd": "2026-07-31",
-      "availableFromRaw": "2026-07-25"
+      "availableFromRaw": "2027-07-17"
     },
     {
       "id": "hr_2026-07_gt_34_4a70206d6e",
@@ -70372,38 +70375,38 @@
       "escenario": "TAQ",
       "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)",
       "metodoPago": "",
-      "disponibleDesde": "2026-07-17",
+      "disponibleDesde": "2027-07-16",
       "agendada": "2026-07-27",
       "realizada": "2026-07-28",
-      "cuestFecha": null,
-      "submittedAt": null,
-      "controlDia": "OK",
+      "cuestFecha": "2026-07-31",
+      "submittedAt": "2026-07-31",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_dc08e0f710",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_GT_DC08E0F710",
       "hasShopper": true,
       "currency": "Q",
       "honorario": null,
-      "boleto": 95,
-      "comboAmt": 308,
+      "boleto": 35,
+      "comboAmt": 115,
       "sourceSafe": true,
       "piiProtected": true,
-      "estado": "realizada",
-      "canonicalState": "pending_questionnaire",
-      "operationalState": "pending_questionnaire",
+      "estado": "submitida",
+      "canonicalState": "submitted_complete",
+      "operationalState": "submitted_complete",
       "availabilityState": "not_applicable_assigned",
       "availabilityDependency": null,
       "assignmentState": "assigned",
       "schedulingState": "scheduled",
       "executionState": "realized",
-      "questionnaireState": "pending",
-      "submissionState": "not_submitted",
-      "liquidationState": "not_eligible",
-      "paymentState": "not_eligible",
-      "liquidationCandidate": false,
-      "paymentControlOnly": false,
+      "questionnaireState": "completed",
+      "submissionState": "confirmed_hr",
+      "liquidationState": "candidate_pending_financial_match",
+      "paymentState": "not_confirmed",
+      "liquidationCandidate": true,
+      "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -70412,20 +70415,20 @@
         "assigned": true,
         "scheduled": true,
         "realized": true,
-        "questionnaire": false,
-        "submitted": false,
-        "outOfRange": false,
+        "questionnaire": true,
+        "submitted": true,
+        "outOfRange": true,
         "cancelled": false,
-        "liquidationCandidate": false,
+        "liquidationCandidate": true,
         "liquidationConfirmed": false,
         "paymentConfirmed": false
       },
       "visitIdentityVersion": "tya-stable-visit-id-r20-row-identity-v1",
-      "submit": false,
-      "legacyEstado": "realizada",
+      "submit": true,
+      "legacyEstado": "cuestionario",
       "assignmentSource": "hr",
       "assignmentSyncStatus": "assigned_from_hr_pending_platform_sync",
-      "liquidationEvidence": null,
+      "liquidationEvidence": "submission_only_pending_financial_crosscheck",
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
@@ -70444,18 +70447,18 @@
           "reason": null
         },
         "cuestFecha": {
-          "status": "empty",
-          "sourceKind": "empty",
+          "status": "normalized",
+          "sourceKind": "iso",
           "reason": null
         },
         "submittedAt": {
-          "status": "empty",
-          "sourceKind": "empty",
+          "status": "normalized",
+          "sourceKind": "iso",
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -70464,7 +70467,7 @@
       "measurementWindowLabel": "QUINCENA 2",
       "measurementWindowStart": "2026-07-16",
       "measurementWindowEnd": "2026-07-31",
-      "availableFromRaw": "2026-07-17"
+      "availableFromRaw": "2027-07-16"
     },
     {
       "id": "hr_2026-07_gt_35_ea35b32cef",
@@ -70488,11 +70491,11 @@
       "escenario": "APP",
       "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
       "metodoPago": "",
-      "disponibleDesde": "2026-07-19",
+      "disponibleDesde": "2027-07-17",
       "agendada": "2026-07-29",
-      "realizada": null,
-      "cuestFecha": null,
-      "submittedAt": null,
+      "realizada": "2026-07-29",
+      "cuestFecha": "2026-07-29",
+      "submittedAt": "2026-07-31",
       "controlDia": "Fuera de rango",
       "shopperId": "shopper_gt_eaa6f8aa33",
       "shopper": "Shopper protegido",
@@ -70500,24 +70503,24 @@
       "hasShopper": true,
       "currency": "Q",
       "honorario": null,
-      "boleto": null,
-      "comboAmt": null,
+      "boleto": 56,
+      "comboAmt": 131,
       "sourceSafe": true,
       "piiProtected": true,
-      "estado": "fuera_rango",
-      "canonicalState": "pending_realization",
-      "operationalState": "pending_realization",
+      "estado": "submitida",
+      "canonicalState": "submitted_complete",
+      "operationalState": "submitted_complete",
       "availabilityState": "not_applicable_assigned",
       "availabilityDependency": null,
       "assignmentState": "assigned",
       "schedulingState": "scheduled",
-      "executionState": "pending_realization",
-      "questionnaireState": "not_available",
-      "submissionState": "not_submitted",
-      "liquidationState": "not_eligible",
-      "paymentState": "not_eligible",
-      "liquidationCandidate": false,
-      "paymentControlOnly": false,
+      "executionState": "realized",
+      "questionnaireState": "completed",
+      "submissionState": "confirmed_hr",
+      "liquidationState": "candidate_pending_financial_match",
+      "paymentState": "not_confirmed",
+      "liquidationCandidate": true,
+      "paymentControlOnly": true,
       "paymentConfirmed": false,
       "outOfRange": true,
       "reviewRequired": false,
@@ -70527,21 +70530,21 @@
         "eligibilityBlocked": false,
         "assigned": true,
         "scheduled": true,
-        "realized": false,
-        "questionnaire": false,
-        "submitted": false,
+        "realized": true,
+        "questionnaire": true,
+        "submitted": true,
         "outOfRange": true,
         "cancelled": false,
-        "liquidationCandidate": false,
+        "liquidationCandidate": true,
         "liquidationConfirmed": false,
         "paymentConfirmed": false
       },
       "visitIdentityVersion": "tya-stable-visit-id-r20-row-identity-v1",
-      "submit": false,
-      "legacyEstado": "fuera_rango",
+      "submit": true,
+      "legacyEstado": "cuestionario",
       "assignmentSource": "hr",
       "assignmentSyncStatus": "assigned_from_hr_pending_platform_sync",
-      "liquidationEvidence": null,
+      "liquidationEvidence": "submission_only_pending_financial_crosscheck",
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
@@ -70555,23 +70558,23 @@
           "reason": null
         },
         "realizada": {
-          "status": "empty",
-          "sourceKind": "empty",
+          "status": "normalized",
+          "sourceKind": "iso",
           "reason": null
         },
         "cuestFecha": {
-          "status": "empty",
-          "sourceKind": "empty",
+          "status": "normalized",
+          "sourceKind": "iso",
           "reason": null
         },
         "submittedAt": {
-          "status": "empty",
-          "sourceKind": "empty",
+          "status": "normalized",
+          "sourceKind": "iso",
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -70580,7 +70583,7 @@
       "measurementWindowLabel": "QUINCENA 2",
       "measurementWindowStart": "2026-07-16",
       "measurementWindowEnd": "2026-07-31",
-      "availableFromRaw": "2026-07-19"
+      "availableFromRaw": "2027-07-17"
     },
     {
       "id": "hr_2026-07_hn_2_68e35cf4c9",
@@ -70604,12 +70607,12 @@
       "escenario": "WEB",
       "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
       "metodoPago": "Tarjeta de Crédito",
-      "disponibleDesde": "2026-07-11",
+      "disponibleDesde": null,
       "agendada": "2026-07-11",
       "realizada": "2026-07-11",
       "cuestFecha": "2026-07-14",
       "submittedAt": "2026-07-16",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_hn_b5aabb7d48",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_HN_B5AABB7D48",
@@ -70635,7 +70638,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -70646,7 +70649,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -70661,8 +70664,8 @@
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
+          "status": "empty",
+          "sourceKind": "empty",
           "reason": null
         },
         "agendada": {
@@ -70686,8 +70689,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -70696,7 +70699,7 @@
       "measurementWindowLabel": "QUINCENA 1",
       "measurementWindowStart": "2026-07-01",
       "measurementWindowEnd": "2026-07-15",
-      "availableFromRaw": "2026-07-11"
+      "availableFromRaw": null
     },
     {
       "id": "hr_2026-07_hn_3_097362980c",
@@ -70720,12 +70723,12 @@
       "escenario": "TAQ",
       "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
       "metodoPago": "Efectivo",
-      "disponibleDesde": "2026-07-04",
+      "disponibleDesde": null,
       "agendada": "2026-07-12",
       "realizada": "2026-07-12",
       "cuestFecha": "2026-07-13",
       "submittedAt": "2026-07-14",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_hn_ba49cafa91",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_HN_BA49CAFA91",
@@ -70751,7 +70754,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -70762,7 +70765,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -70777,8 +70780,8 @@
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
+          "status": "empty",
+          "sourceKind": "empty",
           "reason": null
         },
         "agendada": {
@@ -70802,8 +70805,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -70812,7 +70815,7 @@
       "measurementWindowLabel": "QUINCENA 1",
       "measurementWindowStart": "2026-07-01",
       "measurementWindowEnd": "2026-07-15",
-      "availableFromRaw": "2026-07-04"
+      "availableFromRaw": null
     },
     {
       "id": "hr_2026-07_hn_4_d8d82e50b0",
@@ -70836,12 +70839,12 @@
       "escenario": "APP",
       "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)",
       "metodoPago": "Tarjeta de Débito",
-      "disponibleDesde": "2026-07-11",
+      "disponibleDesde": null,
       "agendada": "2026-07-12",
       "realizada": "2026-07-12",
       "cuestFecha": "2026-07-13",
       "submittedAt": "2026-07-14",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_hn_23b1d3bb61",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_HN_23B1D3BB61",
@@ -70867,7 +70870,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -70878,7 +70881,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -70893,8 +70896,8 @@
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
+          "status": "empty",
+          "sourceKind": "empty",
           "reason": null
         },
         "agendada": {
@@ -70918,8 +70921,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -70928,7 +70931,7 @@
       "measurementWindowLabel": "QUINCENA 1",
       "measurementWindowStart": "2026-07-01",
       "measurementWindowEnd": "2026-07-15",
-      "availableFromRaw": "2026-07-11"
+      "availableFromRaw": null
     },
     {
       "id": "hr_2026-07_hn_5_21b9e8e3e0",
@@ -70952,12 +70955,12 @@
       "escenario": "WEB",
       "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
       "metodoPago": "Tarjeta de Débito",
-      "disponibleDesde": "2026-07-06",
+      "disponibleDesde": null,
       "agendada": "2026-07-15",
       "realizada": "2026-07-15",
       "cuestFecha": "2026-07-17",
       "submittedAt": "2026-07-14",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_hn_d9d4214283",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_HN_D9D4214283",
@@ -70983,7 +70986,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -70994,7 +70997,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -71009,8 +71012,8 @@
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
+          "status": "empty",
+          "sourceKind": "empty",
           "reason": null
         },
         "agendada": {
@@ -71034,8 +71037,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -71044,7 +71047,7 @@
       "measurementWindowLabel": "QUINCENA 1",
       "measurementWindowStart": "2026-07-01",
       "measurementWindowEnd": "2026-07-15",
-      "availableFromRaw": "2026-07-06"
+      "availableFromRaw": null
     },
     {
       "id": "hr_2026-07_hn_6_d1ee6ef33f",
@@ -71068,12 +71071,12 @@
       "escenario": "TAQ",
       "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)",
       "metodoPago": "Efectivo",
-      "disponibleDesde": "2026-07-04",
+      "disponibleDesde": null,
       "agendada": "2026-07-12",
       "realizada": "2026-07-11",
       "cuestFecha": "2026-07-13",
       "submittedAt": "2026-07-14",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_hn_3b3c2f5cc1",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_HN_3B3C2F5CC1",
@@ -71099,7 +71102,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -71110,7 +71113,123 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
+        "cancelled": false,
+        "liquidationCandidate": true,
+        "liquidationConfirmed": false,
+        "paymentConfirmed": false
+      },
+      "visitIdentityVersion": "tya-stable-visit-id-r20-row-identity-v1",
+      "submit": true,
+      "legacyEstado": "cuestionario",
+      "assignmentSource": "hr",
+      "assignmentSyncStatus": "assigned_from_hr_pending_platform_sync",
+      "liquidationEvidence": "submission_only_pending_financial_crosscheck",
+      "paymentEvidence": null,
+      "dateNormalization": {
+        "disponibleDesde": {
+          "status": "empty",
+          "sourceKind": "empty",
+          "reason": null
+        },
+        "agendada": {
+          "status": "normalized",
+          "sourceKind": "iso",
+          "reason": null
+        },
+        "realizada": {
+          "status": "normalized",
+          "sourceKind": "iso",
+          "reason": null
+        },
+        "cuestFecha": {
+          "status": "normalized",
+          "sourceKind": "iso",
+          "reason": null
+        },
+        "submittedAt": {
+          "status": "normalized",
+          "sourceKind": "iso",
+          "reason": null
+        }
+      },
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
+      "runtimeSyncActive": false,
+      "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
+      "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
+      "franjaRaw": "RH WKND",
+      "measurementWindowId": "q1",
+      "measurementWindowLabel": "QUINCENA 1",
+      "measurementWindowStart": "2026-07-01",
+      "measurementWindowEnd": "2026-07-15",
+      "availableFromRaw": null
+    },
+    {
+      "id": "hr_2026-07_hn_7_f16cf3c415",
+      "hrRowId": "JULIO 26 HN!7",
+      "sourceTab": "JULIO 26 HN",
+      "sourceRow": 7,
+      "tenantId": "tya",
+      "projectId": "cinepolis",
+      "program": "cinepolis",
+      "periodKey": "2026-07",
+      "periodLabel": "JUL 2026",
+      "pais": "HN",
+      "country": "HN",
+      "cinemaId": "2052001",
+      "sucursal": "C. Las Cascadas Honduras",
+      "ciudad": "Tegucigalpa",
+      "quincena": "QUINCENA 2",
+      "franja": "Fin de semana",
+      "franjaCode": "WKND",
+      "formato": "TRADICIONAL",
+      "escenario": "TAQ",
+      "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
+      "metodoPago": "Tarjeta de Débito",
+      "disponibleDesde": "2027-07-17",
+      "agendada": "2026-07-25",
+      "realizada": "2026-07-25",
+      "cuestFecha": "2026-07-25",
+      "submittedAt": "2026-07-27",
+      "controlDia": "Fuera de rango",
+      "shopperId": "shopper_hn_7a5a21048b",
+      "shopper": "Shopper protegido",
+      "shopperCode": "TYA_HN_7A5A21048B",
+      "hasShopper": true,
+      "currency": "L",
+      "honorario": null,
+      "boleto": 95,
+      "comboAmt": 308,
+      "sourceSafe": true,
+      "piiProtected": true,
+      "estado": "submitida",
+      "canonicalState": "submitted_complete",
+      "operationalState": "submitted_complete",
+      "availabilityState": "not_applicable_assigned",
+      "availabilityDependency": null,
+      "assignmentState": "assigned",
+      "schedulingState": "scheduled",
+      "executionState": "realized",
+      "questionnaireState": "completed",
+      "submissionState": "confirmed_hr",
+      "liquidationState": "candidate_pending_financial_match",
+      "paymentState": "not_confirmed",
+      "liquidationCandidate": true,
+      "paymentControlOnly": true,
+      "paymentConfirmed": false,
+      "outOfRange": true,
+      "reviewRequired": false,
+      "reviewReasons": [],
+      "canonicalFacets": {
+        "available": false,
+        "eligibilityBlocked": false,
+        "assigned": true,
+        "scheduled": true,
+        "realized": true,
+        "questionnaire": true,
+        "submitted": true,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -71150,124 +71269,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
-      "runtimeSyncActive": false,
-      "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
-      "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
-      "franjaRaw": "RH WKND",
-      "measurementWindowId": "q1",
-      "measurementWindowLabel": "QUINCENA 1",
-      "measurementWindowStart": "2026-07-01",
-      "measurementWindowEnd": "2026-07-15",
-      "availableFromRaw": "2026-07-04"
-    },
-    {
-      "id": "hr_2026-07_hn_7_f16cf3c415",
-      "hrRowId": "JULIO 26 HN!7",
-      "sourceTab": "JULIO 26 HN",
-      "sourceRow": 7,
-      "tenantId": "tya",
-      "projectId": "cinepolis",
-      "program": "cinepolis",
-      "periodKey": "2026-07",
-      "periodLabel": "JUL 2026",
-      "pais": "HN",
-      "country": "HN",
-      "cinemaId": "2052001",
-      "sucursal": "C. Las Cascadas Honduras",
-      "ciudad": "Tegucigalpa",
-      "quincena": "QUINCENA 2",
-      "franja": "Fin de semana",
-      "franjaCode": "WKND",
-      "formato": "TRADICIONAL",
-      "escenario": "TAQ",
-      "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
-      "metodoPago": "Tarjeta de Débito",
-      "disponibleDesde": "2026-07-25",
-      "agendada": "2026-07-25",
-      "realizada": "2026-07-25",
-      "cuestFecha": "2026-07-25",
-      "submittedAt": null,
-      "controlDia": "OK",
-      "shopperId": "shopper_hn_7a5a21048b",
-      "shopper": "Shopper protegido",
-      "shopperCode": "TYA_HN_7A5A21048B",
-      "hasShopper": true,
-      "currency": "L",
-      "honorario": null,
-      "boleto": 95,
-      "comboAmt": 308,
-      "sourceSafe": true,
-      "piiProtected": true,
-      "estado": "cuestionario",
-      "canonicalState": "pending_submission",
-      "operationalState": "pending_submission",
-      "availabilityState": "not_applicable_assigned",
-      "availabilityDependency": null,
-      "assignmentState": "assigned",
-      "schedulingState": "scheduled",
-      "executionState": "realized",
-      "questionnaireState": "completed",
-      "submissionState": "pending_tya_submit",
-      "liquidationState": "not_eligible",
-      "paymentState": "not_eligible",
-      "liquidationCandidate": false,
-      "paymentControlOnly": false,
-      "paymentConfirmed": false,
-      "outOfRange": false,
-      "reviewRequired": false,
-      "reviewReasons": [],
-      "canonicalFacets": {
-        "available": false,
-        "eligibilityBlocked": false,
-        "assigned": true,
-        "scheduled": true,
-        "realized": true,
-        "questionnaire": true,
-        "submitted": false,
-        "outOfRange": false,
-        "cancelled": false,
-        "liquidationCandidate": false,
-        "liquidationConfirmed": false,
-        "paymentConfirmed": false
-      },
-      "visitIdentityVersion": "tya-stable-visit-id-r20-row-identity-v1",
-      "submit": false,
-      "legacyEstado": "cuestionario",
-      "assignmentSource": "hr",
-      "assignmentSyncStatus": "assigned_from_hr_pending_platform_sync",
-      "liquidationEvidence": null,
-      "paymentEvidence": null,
-      "dateNormalization": {
-        "disponibleDesde": {
-          "status": "normalized",
-          "sourceKind": "iso",
-          "reason": null
-        },
-        "agendada": {
-          "status": "normalized",
-          "sourceKind": "iso",
-          "reason": null
-        },
-        "realizada": {
-          "status": "normalized",
-          "sourceKind": "iso",
-          "reason": null
-        },
-        "cuestFecha": {
-          "status": "normalized",
-          "sourceKind": "iso",
-          "reason": null
-        },
-        "submittedAt": {
-          "status": "empty",
-          "sourceKind": "empty",
-          "reason": null
-        }
-      },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -71276,7 +71279,7 @@
       "measurementWindowLabel": "QUINCENA 2",
       "measurementWindowStart": "2026-07-16",
       "measurementWindowEnd": "2026-07-31",
-      "availableFromRaw": "2026-07-25"
+      "availableFromRaw": "2027-07-17"
     },
     {
       "id": "hr_2026-07_hn_8_99971ffde1",
@@ -71300,12 +71303,12 @@
       "escenario": "APP",
       "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)",
       "metodoPago": "Tarjeta de Crédito",
-      "disponibleDesde": "2026-07-19",
+      "disponibleDesde": "2027-07-17",
       "agendada": "2026-07-19",
       "realizada": "2026-07-19",
       "cuestFecha": "2026-07-21",
       "submittedAt": "2026-07-27",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_hn_54b47e1e8a",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_HN_54B47E1E8A",
@@ -71331,7 +71334,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -71342,7 +71345,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -71382,8 +71385,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -71392,7 +71395,7 @@
       "measurementWindowLabel": "QUINCENA 2",
       "measurementWindowStart": "2026-07-16",
       "measurementWindowEnd": "2026-07-31",
-      "availableFromRaw": "2026-07-19"
+      "availableFromRaw": "2027-07-17"
     },
     {
       "id": "hr_2026-07_hn_9_298ff5369a",
@@ -71415,39 +71418,39 @@
       "formato": "TRADICIONAL",
       "escenario": "WEB",
       "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
-      "metodoPago": "",
-      "disponibleDesde": "2026-07-20",
+      "metodoPago": "Tarjeta de Crédito",
+      "disponibleDesde": "2027-07-16",
       "agendada": "2026-07-30",
-      "realizada": null,
-      "cuestFecha": null,
-      "submittedAt": null,
-      "controlDia": "OK",
+      "realizada": "2026-07-31",
+      "cuestFecha": "2026-07-31",
+      "submittedAt": "2026-07-31",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_hn_b1b94c1f96",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_HN_B1B94C1F96",
       "hasShopper": true,
       "currency": "L",
       "honorario": null,
-      "boleto": null,
-      "comboAmt": null,
+      "boleto": 127,
+      "comboAmt": 316,
       "sourceSafe": true,
       "piiProtected": true,
-      "estado": "agendada",
-      "canonicalState": "pending_realization",
-      "operationalState": "pending_realization",
+      "estado": "submitida",
+      "canonicalState": "submitted_complete",
+      "operationalState": "submitted_complete",
       "availabilityState": "not_applicable_assigned",
       "availabilityDependency": null,
       "assignmentState": "assigned",
       "schedulingState": "scheduled",
-      "executionState": "pending_realization",
-      "questionnaireState": "not_available",
-      "submissionState": "not_submitted",
-      "liquidationState": "not_eligible",
-      "paymentState": "not_eligible",
-      "liquidationCandidate": false,
-      "paymentControlOnly": false,
+      "executionState": "realized",
+      "questionnaireState": "completed",
+      "submissionState": "confirmed_hr",
+      "liquidationState": "candidate_pending_financial_match",
+      "paymentState": "not_confirmed",
+      "liquidationCandidate": true,
+      "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -71455,21 +71458,21 @@
         "eligibilityBlocked": false,
         "assigned": true,
         "scheduled": true,
-        "realized": false,
-        "questionnaire": false,
-        "submitted": false,
-        "outOfRange": false,
+        "realized": true,
+        "questionnaire": true,
+        "submitted": true,
+        "outOfRange": true,
         "cancelled": false,
-        "liquidationCandidate": false,
+        "liquidationCandidate": true,
         "liquidationConfirmed": false,
         "paymentConfirmed": false
       },
       "visitIdentityVersion": "tya-stable-visit-id-r20-row-identity-v1",
-      "submit": false,
-      "legacyEstado": "agendada",
+      "submit": true,
+      "legacyEstado": "cuestionario",
       "assignmentSource": "hr",
       "assignmentSyncStatus": "assigned_from_hr_pending_platform_sync",
-      "liquidationEvidence": null,
+      "liquidationEvidence": "submission_only_pending_financial_crosscheck",
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
@@ -71483,23 +71486,23 @@
           "reason": null
         },
         "realizada": {
-          "status": "empty",
-          "sourceKind": "empty",
+          "status": "normalized",
+          "sourceKind": "iso",
           "reason": null
         },
         "cuestFecha": {
-          "status": "empty",
-          "sourceKind": "empty",
+          "status": "normalized",
+          "sourceKind": "iso",
           "reason": null
         },
         "submittedAt": {
-          "status": "empty",
-          "sourceKind": "empty",
+          "status": "normalized",
+          "sourceKind": "iso",
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -71508,7 +71511,7 @@
       "measurementWindowLabel": "QUINCENA 2",
       "measurementWindowStart": "2026-07-16",
       "measurementWindowEnd": "2026-07-31",
-      "availableFromRaw": "2026-07-20"
+      "availableFromRaw": "2027-07-16"
     },
     {
       "id": "hr_2026-07_hn_10_ea7c7547ea",
@@ -71532,12 +71535,12 @@
       "escenario": "TAQ",
       "tipoCombo": "Refresco + Palomitas + Hot Dog (Combo Hotdog)",
       "metodoPago": "Efectivo",
-      "disponibleDesde": "2026-07-19",
+      "disponibleDesde": "2027-07-17",
       "agendada": "2026-07-25",
       "realizada": "2026-07-25",
-      "cuestFecha": "2026-07-27",
-      "submittedAt": null,
-      "controlDia": "OK",
+      "cuestFecha": "2026-07-31",
+      "submittedAt": "2026-07-31",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_hn_08ca073ce4",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_HN_08CA073CE4",
@@ -71548,22 +71551,22 @@
       "comboAmt": 284,
       "sourceSafe": true,
       "piiProtected": true,
-      "estado": "cuestionario",
-      "canonicalState": "pending_submission",
-      "operationalState": "pending_submission",
+      "estado": "submitida",
+      "canonicalState": "submitted_complete",
+      "operationalState": "submitted_complete",
       "availabilityState": "not_applicable_assigned",
       "availabilityDependency": null,
       "assignmentState": "assigned",
       "schedulingState": "scheduled",
       "executionState": "realized",
       "questionnaireState": "completed",
-      "submissionState": "pending_tya_submit",
-      "liquidationState": "not_eligible",
-      "paymentState": "not_eligible",
-      "liquidationCandidate": false,
-      "paymentControlOnly": false,
+      "submissionState": "confirmed_hr",
+      "liquidationState": "candidate_pending_financial_match",
+      "paymentState": "not_confirmed",
+      "liquidationCandidate": true,
+      "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -71573,19 +71576,19 @@
         "scheduled": true,
         "realized": true,
         "questionnaire": true,
-        "submitted": false,
-        "outOfRange": false,
+        "submitted": true,
+        "outOfRange": true,
         "cancelled": false,
-        "liquidationCandidate": false,
+        "liquidationCandidate": true,
         "liquidationConfirmed": false,
         "paymentConfirmed": false
       },
       "visitIdentityVersion": "tya-stable-visit-id-r20-row-identity-v1",
-      "submit": false,
+      "submit": true,
       "legacyEstado": "cuestionario",
       "assignmentSource": "hr",
       "assignmentSyncStatus": "assigned_from_hr_pending_platform_sync",
-      "liquidationEvidence": null,
+      "liquidationEvidence": "submission_only_pending_financial_crosscheck",
       "paymentEvidence": null,
       "dateNormalization": {
         "disponibleDesde": {
@@ -71609,13 +71612,13 @@
           "reason": null
         },
         "submittedAt": {
-          "status": "empty",
-          "sourceKind": "empty",
+          "status": "normalized",
+          "sourceKind": "iso",
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -71624,7 +71627,7 @@
       "measurementWindowLabel": "QUINCENA 2",
       "measurementWindowStart": "2026-07-16",
       "measurementWindowEnd": "2026-07-31",
-      "availableFromRaw": "2026-07-19"
+      "availableFromRaw": "2027-07-17"
     },
     {
       "id": "hr_2026-07_hn_11_67f4176fee",
@@ -71648,12 +71651,12 @@
       "escenario": "APP",
       "tipoCombo": "Refresco + Palomitas + Nachos (Combo Nachos)",
       "metodoPago": "Efectivo",
-      "disponibleDesde": "2026-07-20",
+      "disponibleDesde": "2027-07-16",
       "agendada": "2026-07-20",
       "realizada": "2026-07-20",
       "cuestFecha": "2026-07-22",
       "submittedAt": "2026-07-27",
-      "controlDia": "OK",
+      "controlDia": "Fuera de rango",
       "shopperId": "shopper_hn_6a2b1aaac7",
       "shopper": "Shopper protegido",
       "shopperCode": "TYA_HN_6A2B1AAAC7",
@@ -71679,7 +71682,7 @@
       "liquidationCandidate": true,
       "paymentControlOnly": true,
       "paymentConfirmed": false,
-      "outOfRange": false,
+      "outOfRange": true,
       "reviewRequired": false,
       "reviewReasons": [],
       "canonicalFacets": {
@@ -71690,7 +71693,7 @@
         "realized": true,
         "questionnaire": true,
         "submitted": true,
-        "outOfRange": false,
+        "outOfRange": true,
         "cancelled": false,
         "liquidationCandidate": true,
         "liquidationConfirmed": false,
@@ -71730,8 +71733,8 @@
           "reason": null
         }
       },
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-      "sourceReadMode": "public_gviz_csv_cache_busted",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+      "sourceReadMode": "sheets_api_service_account",
       "runtimeSyncActive": false,
       "stateModelVersion": "phase-a-canonical-visit-state-r21-v1",
       "domainMappingVersion": "phase-a-source-safe-domain-mapping-r21",
@@ -71740,7 +71743,7 @@
       "measurementWindowLabel": "QUINCENA 2",
       "measurementWindowStart": "2026-07-16",
       "measurementWindowEnd": "2026-07-31",
-      "availableFromRaw": "2026-07-20"
+      "availableFromRaw": "2027-07-16"
     }
   ],
   "shoppers": [
@@ -71777,7 +71780,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Carchá",
       "perfilCompleto": false,
@@ -71816,7 +71819,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Quetzaltenango",
       "perfilCompleto": false,
@@ -71855,7 +71858,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Carchá",
       "perfilCompleto": false,
@@ -71894,7 +71897,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Cristobal",
       "perfilCompleto": false,
@@ -71933,7 +71936,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Quetzaltenango",
       "perfilCompleto": false,
@@ -71972,7 +71975,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Quetzaltenango",
       "perfilCompleto": false,
@@ -72011,7 +72014,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -72050,7 +72053,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Villa Nueva",
       "perfilCompleto": false,
@@ -72089,7 +72092,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Quetzaltenango",
       "perfilCompleto": false,
@@ -72128,7 +72131,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -72167,7 +72170,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Quetzaltenango",
       "perfilCompleto": false,
@@ -72206,7 +72209,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -72245,7 +72248,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -72284,7 +72287,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Mazatenango",
       "perfilCompleto": false,
@@ -72323,7 +72326,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Quetzaltenango",
       "perfilCompleto": false,
@@ -72362,7 +72365,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Villa Nueva",
       "perfilCompleto": false,
@@ -72401,7 +72404,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -72440,7 +72443,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -72479,7 +72482,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -72518,7 +72521,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Mixco",
       "perfilCompleto": false,
@@ -72557,7 +72560,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Quetzaltenango",
       "perfilCompleto": false,
@@ -72596,7 +72599,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Zacapa",
       "perfilCompleto": false,
@@ -72635,7 +72638,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Villa Nueva",
       "perfilCompleto": false,
@@ -72664,9 +72667,9 @@
       "preference": null,
       "honorario": null,
       "visitas": 6,
-      "realizadas": 5,
-      "submitidas": 5,
-      "liquidationCandidates": 5,
+      "realizadas": 6,
+      "submitidas": 6,
+      "liquidationCandidates": 6,
       "liquidadas": 0,
       "paymentControlStatus": "pending_financial_source",
       "certificationStatus": "pending_carryover_overlay",
@@ -72674,7 +72677,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -72713,7 +72716,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -72752,7 +72755,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Mazatenango",
       "perfilCompleto": false,
@@ -72791,7 +72794,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Jutiapa",
       "perfilCompleto": false,
@@ -72830,7 +72833,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Zacapa",
       "perfilCompleto": false,
@@ -72869,7 +72872,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Jutiapa",
       "perfilCompleto": false,
@@ -72908,7 +72911,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Zacapa",
       "perfilCompleto": false,
@@ -72937,9 +72940,9 @@
       "preference": null,
       "honorario": null,
       "visitas": 2,
-      "realizadas": 1,
-      "submitidas": 1,
-      "liquidationCandidates": 1,
+      "realizadas": 2,
+      "submitidas": 2,
+      "liquidationCandidates": 2,
       "liquidadas": 0,
       "paymentControlStatus": "pending_financial_source",
       "certificationStatus": "pending_carryover_overlay",
@@ -72947,7 +72950,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -72977,8 +72980,8 @@
       "honorario": null,
       "visitas": 2,
       "realizadas": 2,
-      "submitidas": 1,
-      "liquidationCandidates": 1,
+      "submitidas": 2,
+      "liquidationCandidates": 2,
       "liquidadas": 0,
       "paymentControlStatus": "pending_financial_source",
       "certificationStatus": "pending_carryover_overlay",
@@ -72986,7 +72989,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Mazatenango",
       "perfilCompleto": false,
@@ -73025,7 +73028,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Quetzaltenango",
       "perfilCompleto": false,
@@ -73064,7 +73067,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Zacapa",
       "perfilCompleto": false,
@@ -73103,7 +73106,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Villa Nueva",
       "perfilCompleto": false,
@@ -73142,7 +73145,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Mazatenango",
       "perfilCompleto": false,
@@ -73181,7 +73184,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Carchá",
       "perfilCompleto": false,
@@ -73220,7 +73223,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -73259,7 +73262,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Villa Nueva",
       "perfilCompleto": false,
@@ -73298,7 +73301,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Carchá",
       "perfilCompleto": false,
@@ -73337,7 +73340,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Jutiapa",
       "perfilCompleto": false,
@@ -73376,7 +73379,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Carchá",
       "perfilCompleto": false,
@@ -73415,7 +73418,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -73454,7 +73457,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Zacapa",
       "perfilCompleto": false,
@@ -73490,10 +73493,10 @@
       "paymentControlStatus": "pending_financial_source",
       "certificationStatus": "pending_carryover_overlay",
       "sourceRef": "hr-source-safe-protected-reference",
-      "reviewStatus": "pending_operational_profile",
+      "reviewStatus": "review_required",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -73532,7 +73535,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Villa Nueva",
       "perfilCompleto": false,
@@ -73571,7 +73574,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Zacapa",
       "perfilCompleto": false,
@@ -73610,7 +73613,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -73649,7 +73652,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Quetzaltenango",
       "perfilCompleto": false,
@@ -73688,7 +73691,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Cristobal",
       "perfilCompleto": false,
@@ -73727,7 +73730,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -73766,7 +73769,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Mixco",
       "perfilCompleto": false,
@@ -73805,7 +73808,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Carchá",
       "perfilCompleto": false,
@@ -73844,7 +73847,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Cristobal",
       "perfilCompleto": false,
@@ -73883,7 +73886,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -73922,7 +73925,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Zacapa",
       "perfilCompleto": false,
@@ -73961,7 +73964,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Villa Nueva",
       "perfilCompleto": false,
@@ -74000,7 +74003,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -74039,7 +74042,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Mazatenango",
       "perfilCompleto": false,
@@ -74078,7 +74081,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Quetzaltenango",
       "perfilCompleto": false,
@@ -74117,7 +74120,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Mazatenango",
       "perfilCompleto": false,
@@ -74156,7 +74159,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Quetzaltenango",
       "perfilCompleto": false,
@@ -74195,7 +74198,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -74234,7 +74237,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Carchá",
       "perfilCompleto": false,
@@ -74273,7 +74276,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Carchá",
       "perfilCompleto": false,
@@ -74312,7 +74315,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Jutiapa",
       "perfilCompleto": false,
@@ -74351,7 +74354,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Mazatenango",
       "perfilCompleto": false,
@@ -74390,7 +74393,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Cristobal",
       "perfilCompleto": false,
@@ -74429,7 +74432,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -74468,7 +74471,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -74507,7 +74510,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Zacapa",
       "perfilCompleto": false,
@@ -74546,7 +74549,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -74585,7 +74588,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Quetzaltenango",
       "perfilCompleto": false,
@@ -74624,7 +74627,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Mazatenango",
       "perfilCompleto": false,
@@ -74663,7 +74666,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -74702,7 +74705,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Jutiapa",
       "perfilCompleto": false,
@@ -74741,7 +74744,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Zacapa",
       "perfilCompleto": false,
@@ -74780,7 +74783,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Jutiapa",
       "perfilCompleto": false,
@@ -74819,7 +74822,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Cristobal",
       "perfilCompleto": false,
@@ -74858,7 +74861,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Carchá",
       "perfilCompleto": false,
@@ -74897,7 +74900,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Cristobal",
       "perfilCompleto": false,
@@ -74936,7 +74939,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -74975,7 +74978,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Quetzaltenango",
       "perfilCompleto": false,
@@ -75014,7 +75017,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -75053,7 +75056,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Carchá",
       "perfilCompleto": false,
@@ -75092,7 +75095,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Mazatenango",
       "perfilCompleto": false,
@@ -75131,7 +75134,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Carchá",
       "perfilCompleto": false,
@@ -75170,7 +75173,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Mazatenango",
       "perfilCompleto": false,
@@ -75209,7 +75212,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Carchá",
       "perfilCompleto": false,
@@ -75248,7 +75251,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Carchá",
       "perfilCompleto": false,
@@ -75287,7 +75290,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -75326,7 +75329,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -75365,7 +75368,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -75404,7 +75407,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Jutiapa",
       "perfilCompleto": false,
@@ -75443,7 +75446,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Quetzaltenango",
       "perfilCompleto": false,
@@ -75482,7 +75485,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -75521,7 +75524,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Cristobal",
       "perfilCompleto": false,
@@ -75560,7 +75563,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Carchá",
       "perfilCompleto": false,
@@ -75599,7 +75602,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Jutiapa",
       "perfilCompleto": false,
@@ -75638,7 +75641,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -75677,7 +75680,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -75716,7 +75719,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Cristobal",
       "perfilCompleto": false,
@@ -75755,7 +75758,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Mazatenango",
       "perfilCompleto": false,
@@ -75794,7 +75797,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Quetzaltenango",
       "perfilCompleto": false,
@@ -75833,7 +75836,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Villa Nueva",
       "perfilCompleto": false,
@@ -75872,7 +75875,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Quetzaltenango",
       "perfilCompleto": false,
@@ -75901,9 +75904,9 @@
       "preference": null,
       "honorario": null,
       "visitas": 9,
-      "realizadas": 8,
-      "submitidas": 6,
-      "liquidationCandidates": 6,
+      "realizadas": 9,
+      "submitidas": 7,
+      "liquidationCandidates": 7,
       "liquidadas": 0,
       "paymentControlStatus": "pending_financial_source",
       "certificationStatus": "pending_carryover_overlay",
@@ -75911,7 +75914,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Jutiapa",
       "perfilCompleto": false,
@@ -75950,7 +75953,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Mazatenango",
       "perfilCompleto": false,
@@ -75989,7 +75992,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Zacapa",
       "perfilCompleto": false,
@@ -76028,7 +76031,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Quetzaltenango",
       "perfilCompleto": false,
@@ -76067,7 +76070,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Quetzaltenango",
       "perfilCompleto": false,
@@ -76106,7 +76109,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -76145,7 +76148,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -76184,7 +76187,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Zacapa",
       "perfilCompleto": false,
@@ -76223,7 +76226,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Jutiapa",
       "perfilCompleto": false,
@@ -76262,7 +76265,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Mazatenango",
       "perfilCompleto": false,
@@ -76301,7 +76304,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Mazatenango",
       "perfilCompleto": false,
@@ -76340,7 +76343,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Quetzaltenango",
       "perfilCompleto": false,
@@ -76379,7 +76382,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -76418,7 +76421,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -76457,7 +76460,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Jutiapa",
       "perfilCompleto": false,
@@ -76496,7 +76499,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Mixco",
       "perfilCompleto": false,
@@ -76535,7 +76538,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -76565,16 +76568,16 @@
       "honorario": null,
       "visitas": 2,
       "realizadas": 2,
-      "submitidas": 0,
-      "liquidationCandidates": 0,
+      "submitidas": 1,
+      "liquidationCandidates": 1,
       "liquidadas": 0,
-      "paymentControlStatus": "not_eligible",
+      "paymentControlStatus": "pending_financial_source",
       "certificationStatus": "pending_carryover_overlay",
       "sourceRef": "hr-source-safe-protected-reference",
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Carchá",
       "perfilCompleto": false,
@@ -76613,7 +76616,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Carchá",
       "perfilCompleto": false,
@@ -76652,7 +76655,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Villa Nueva",
       "perfilCompleto": false,
@@ -76691,7 +76694,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Jutiapa",
       "perfilCompleto": false,
@@ -76730,7 +76733,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Jutiapa",
       "perfilCompleto": false,
@@ -76759,9 +76762,9 @@
       "preference": null,
       "honorario": null,
       "visitas": 4,
-      "realizadas": 3,
-      "submitidas": 3,
-      "liquidationCandidates": 3,
+      "realizadas": 4,
+      "submitidas": 4,
+      "liquidationCandidates": 4,
       "liquidadas": 0,
       "paymentControlStatus": "pending_financial_source",
       "certificationStatus": "pending_carryover_overlay",
@@ -76769,7 +76772,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -76808,7 +76811,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Mazatenango",
       "perfilCompleto": false,
@@ -76847,7 +76850,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -76886,7 +76889,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Villa Nueva",
       "perfilCompleto": false,
@@ -76925,7 +76928,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Mixco",
       "perfilCompleto": false,
@@ -76964,7 +76967,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Quetzaltenango",
       "perfilCompleto": false,
@@ -76993,9 +76996,9 @@
       "preference": null,
       "honorario": null,
       "visitas": 5,
-      "realizadas": 4,
-      "submitidas": 2,
-      "liquidationCandidates": 2,
+      "realizadas": 5,
+      "submitidas": 4,
+      "liquidationCandidates": 4,
       "liquidadas": 0,
       "paymentControlStatus": "pending_financial_source",
       "certificationStatus": "pending_carryover_overlay",
@@ -77003,7 +77006,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Carchá",
       "perfilCompleto": false,
@@ -77042,7 +77045,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Quetzaltenango",
       "perfilCompleto": false,
@@ -77081,7 +77084,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -77120,7 +77123,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Mixco",
       "perfilCompleto": false,
@@ -77159,7 +77162,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Zacapa",
       "perfilCompleto": false,
@@ -77198,7 +77201,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -77237,7 +77240,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Mazatenango",
       "perfilCompleto": false,
@@ -77276,7 +77279,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -77315,7 +77318,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Cd. Guatemala",
       "perfilCompleto": false,
@@ -77354,7 +77357,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Cristobal",
       "perfilCompleto": false,
@@ -77393,7 +77396,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Jutiapa",
       "perfilCompleto": false,
@@ -77432,7 +77435,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Jutiapa",
       "perfilCompleto": false,
@@ -77471,7 +77474,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Zacapa",
       "perfilCompleto": false,
@@ -77510,7 +77513,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Carchá",
       "perfilCompleto": false,
@@ -77549,7 +77552,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Villa Nueva",
       "perfilCompleto": false,
@@ -77588,7 +77591,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Quetzaltenango",
       "perfilCompleto": false,
@@ -77627,7 +77630,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Comayaguela",
       "perfilCompleto": false,
@@ -77666,7 +77669,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Pedro Sula",
       "perfilCompleto": false,
@@ -77696,8 +77699,8 @@
       "honorario": null,
       "visitas": 2,
       "realizadas": 2,
-      "submitidas": 1,
-      "liquidationCandidates": 1,
+      "submitidas": 2,
+      "liquidationCandidates": 2,
       "liquidadas": 0,
       "paymentControlStatus": "pending_financial_source",
       "certificationStatus": "pending_carryover_overlay",
@@ -77705,7 +77708,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -77744,7 +77747,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Comayaguela",
       "perfilCompleto": false,
@@ -77783,7 +77786,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -77822,7 +77825,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -77861,7 +77864,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Juticalpa",
       "perfilCompleto": false,
@@ -77900,7 +77903,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Pedro Sula",
       "perfilCompleto": false,
@@ -77939,7 +77942,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -77978,7 +77981,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -78017,7 +78020,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Juticalpa",
       "perfilCompleto": false,
@@ -78056,7 +78059,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -78095,7 +78098,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -78134,7 +78137,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Juticalpa",
       "perfilCompleto": false,
@@ -78173,7 +78176,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Juticalpa",
       "perfilCompleto": false,
@@ -78212,7 +78215,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -78251,7 +78254,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Comayaguela",
       "perfilCompleto": false,
@@ -78290,7 +78293,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -78329,7 +78332,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Pedro Sula",
       "perfilCompleto": false,
@@ -78368,7 +78371,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Pedro Sula",
       "perfilCompleto": false,
@@ -78407,7 +78410,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Pedro Sula",
       "perfilCompleto": false,
@@ -78446,7 +78449,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Comayaguela",
       "perfilCompleto": false,
@@ -78485,7 +78488,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Juticalpa",
       "perfilCompleto": false,
@@ -78524,7 +78527,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -78554,16 +78557,16 @@
       "honorario": null,
       "visitas": 1,
       "realizadas": 1,
-      "submitidas": 0,
-      "liquidationCandidates": 0,
+      "submitidas": 1,
+      "liquidationCandidates": 1,
       "liquidadas": 0,
-      "paymentControlStatus": "not_eligible",
+      "paymentControlStatus": "pending_financial_source",
       "certificationStatus": "pending_carryover_overlay",
       "sourceRef": "hr-source-safe-protected-reference",
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -78602,7 +78605,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -78641,7 +78644,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Juticalpa",
       "perfilCompleto": false,
@@ -78680,7 +78683,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -78719,7 +78722,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Pedro Sula",
       "perfilCompleto": false,
@@ -78758,7 +78761,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -78797,7 +78800,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Juticalpa",
       "perfilCompleto": false,
@@ -78836,7 +78839,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Pedro Sula",
       "perfilCompleto": false,
@@ -78875,7 +78878,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Pedro Sula",
       "perfilCompleto": false,
@@ -78914,7 +78917,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -78953,7 +78956,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Pedro Sula",
       "perfilCompleto": false,
@@ -78992,7 +78995,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Pedro Sula",
       "perfilCompleto": false,
@@ -79031,7 +79034,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Juticalpa",
       "perfilCompleto": false,
@@ -79070,7 +79073,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Pedro Sula",
       "perfilCompleto": false,
@@ -79109,7 +79112,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Pedro Sula",
       "perfilCompleto": false,
@@ -79138,9 +79141,9 @@
       "preference": null,
       "honorario": null,
       "visitas": 5,
-      "realizadas": 4,
-      "submitidas": 4,
-      "liquidationCandidates": 4,
+      "realizadas": 5,
+      "submitidas": 5,
+      "liquidationCandidates": 5,
       "liquidadas": 0,
       "paymentControlStatus": "pending_financial_source",
       "certificationStatus": "pending_carryover_overlay",
@@ -79148,7 +79151,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Pedro Sula",
       "perfilCompleto": false,
@@ -79187,7 +79190,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Pedro Sula",
       "perfilCompleto": false,
@@ -79226,7 +79229,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Comayaguela",
       "perfilCompleto": false,
@@ -79265,7 +79268,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -79304,7 +79307,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -79343,7 +79346,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -79382,7 +79385,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -79421,7 +79424,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Pedro Sula",
       "perfilCompleto": false,
@@ -79460,7 +79463,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -79499,7 +79502,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Comayaguela",
       "perfilCompleto": false,
@@ -79529,8 +79532,8 @@
       "honorario": null,
       "visitas": 2,
       "realizadas": 2,
-      "submitidas": 1,
-      "liquidationCandidates": 1,
+      "submitidas": 2,
+      "liquidationCandidates": 2,
       "liquidadas": 0,
       "paymentControlStatus": "pending_financial_source",
       "certificationStatus": "pending_carryover_overlay",
@@ -79538,7 +79541,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -79577,7 +79580,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -79616,7 +79619,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -79655,7 +79658,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -79694,7 +79697,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Tegucigalpa",
       "perfilCompleto": false,
@@ -79733,7 +79736,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Comayaguela",
       "perfilCompleto": false,
@@ -79772,7 +79775,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Juticalpa",
       "perfilCompleto": false,
@@ -79811,7 +79814,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "San Pedro Sula",
       "perfilCompleto": false,
@@ -79850,7 +79853,7 @@
       "reviewStatus": "pending_operational_profile",
       "sourceSafe": true,
       "piiProtected": true,
-      "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
+      "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
       "runtimeSyncActive": false,
       "ciudad": "Juticalpa",
       "perfilCompleto": false,
@@ -79863,11 +79866,10 @@
     "visits": 616,
     "shoppers": 208,
     "byStatus": {
-      "submitida": 545,
-      "cuestionario": 61,
-      "agendada": 4,
-      "realizada": 3,
-      "fuera_rango": 3
+      "submitida": 557,
+      "cuestionario": 56,
+      "agendada": 1,
+      "realizada": 2
     },
     "byCountry": {
       "GT": 476,
@@ -79876,9 +79878,9 @@
     "assigned": 616,
     "unassigned": 0,
     "scheduled": 615,
-    "realized": 609,
-    "questionnaireCompleted": 606,
-    "submitted": 545
+    "realized": 615,
+    "questionnaireCompleted": 613,
+    "submitted": 557
   },
   "periodOperationalSummary": [
     {
@@ -79917,9 +79919,9 @@
       "realized": 44,
       "pendingQuestionnaire": 0,
       "questionnaireCompleted": 44,
-      "pendingSubmission": 5,
-      "submitted": 39,
-      "liquidationCandidates": 39,
+      "pendingSubmission": 4,
+      "submitted": 40,
+      "liquidationCandidates": 40,
       "liquidationConfirmed": 0,
       "paymentConfirmed": 0,
       "outOfRange": 0,
@@ -80163,7 +80165,7 @@
       "liquidationConfirmed": 0,
       "paymentConfirmed": 0,
       "outOfRange": 38,
-      "reviewRequired": 0,
+      "reviewRequired": 1,
       "byCountry": {
         "GT": 34,
         "HN": 10
@@ -80202,15 +80204,15 @@
       "unassigned": 0,
       "scheduled": 44,
       "pendingSchedule": 0,
-      "realized": 38,
-      "pendingQuestionnaire": 1,
-      "questionnaireCompleted": 37,
-      "pendingSubmission": 5,
-      "submitted": 32,
-      "liquidationCandidates": 32,
+      "realized": 44,
+      "pendingQuestionnaire": 0,
+      "questionnaireCompleted": 44,
+      "pendingSubmission": 1,
+      "submitted": 43,
+      "liquidationCandidates": 43,
       "liquidationConfirmed": 0,
       "paymentConfirmed": 0,
-      "outOfRange": 7,
+      "outOfRange": 44,
       "reviewRequired": 0,
       "byCountry": {
         "GT": 34,
@@ -80687,7 +80689,7 @@
         "fechaSubmitido": {
           "index": 27,
           "header": "Fecha  submitido",
-          "nonEmptyVisitRows": 9
+          "nonEmptyVisitRows": 10
         }
       }
     },
@@ -82771,7 +82773,7 @@
         "disponibleDesde": {
           "index": 14,
           "header": "Disponible a partir de",
-          "nonEmptyVisitRows": 5
+          "nonEmptyVisitRows": 10
         },
         "fechaProgramada": {
           "index": 15,
@@ -82894,7 +82896,7 @@
         "fechaProgramada": {
           "index": 15,
           "header": "Fecha  programada",
-          "nonEmptyVisitRows": 33
+          "nonEmptyVisitRows": 34
         },
         "controlDia": {
           "index": 16,
@@ -83007,7 +83009,7 @@
         "disponibleDesde": {
           "index": 14,
           "header": "Disponible a partir de",
-          "nonEmptyVisitRows": 5
+          "nonEmptyVisitRows": 10
         },
         "fechaProgramada": {
           "index": 15,
@@ -83346,7 +83348,7 @@
         "metodoPago": {
           "index": 9,
           "header": "Método de Pago",
-          "nonEmptyVisitRows": 19
+          "nonEmptyVisitRows": 20
         },
         "quincena": {
           "index": 10,
@@ -83376,22 +83378,22 @@
         "fechaRealizada": {
           "index": 17,
           "header": "Fecha realizada",
-          "nonEmptyVisitRows": 29
+          "nonEmptyVisitRows": 34
         },
         "fechaCuestionario": {
           "index": 19,
           "header": "Ccuestionario \n completado",
-          "nonEmptyVisitRows": 28
+          "nonEmptyVisitRows": 34
         },
         "precioBoleto": {
           "index": 21,
           "header": "Precio de boleto",
-          "nonEmptyVisitRows": 28
+          "nonEmptyVisitRows": 34
         },
         "precioCombo": {
           "index": 22,
           "header": "Precio de combo",
-          "nonEmptyVisitRows": 29
+          "nonEmptyVisitRows": 34
         },
         "honorarios": {
           "index": 24,
@@ -83401,7 +83403,7 @@
         "fechaSubmitido": {
           "index": 28,
           "header": "Fecha submitido",
-          "nonEmptyVisitRows": 25
+          "nonEmptyVisitRows": 33
         }
       }
     },
@@ -83464,7 +83466,7 @@
         "metodoPago": {
           "index": 9,
           "header": "Método de Pago",
-          "nonEmptyVisitRows": 9
+          "nonEmptyVisitRows": 10
         },
         "quincena": {
           "index": 10,
@@ -83494,22 +83496,22 @@
         "fechaRealizada": {
           "index": 17,
           "header": "Fecha realizada",
-          "nonEmptyVisitRows": 9
+          "nonEmptyVisitRows": 10
         },
         "fechaCuestionario": {
           "index": 19,
           "header": "Fecha Cuestionario \n completado",
-          "nonEmptyVisitRows": 9
+          "nonEmptyVisitRows": 10
         },
         "precioBoleto": {
           "index": 21,
           "header": "Precio de boleto",
-          "nonEmptyVisitRows": 9
+          "nonEmptyVisitRows": 10
         },
         "precioCombo": {
           "index": 22,
           "header": "Precio de combo",
-          "nonEmptyVisitRows": 9
+          "nonEmptyVisitRows": 10
         },
         "honorarios": {
           "index": 24,
@@ -83519,7 +83521,7 @@
         "fechaSubmitido": {
           "index": 28,
           "header": "Fecha submitido",
-          "nonEmptyVisitRows": 7
+          "nonEmptyVisitRows": 10
         }
       }
     }
@@ -83575,12 +83577,12 @@
     "payments": false
   },
   "schemaVersion": "1.1.0-r18a",
-  "sourceSnapshotAt": "2026-07-30T02:57:41.042Z",
-  "sourceReadMode": "public_gviz_csv_cache_busted",
+  "sourceSnapshotAt": "2026-08-26T01:00:51.134Z",
+  "sourceReadMode": "sheets_api_service_account",
   "runtimeSyncActive": false,
   "canonicalization": {
     "integrationId": "R18A_INTEGRATE_EXISTING_CANONICAL_ASSETS",
-    "generatedAt": "2026-07-30T02:57:43.052Z",
+    "generatedAt": "2026-08-26T01:00:53.815Z",
     "reusedAssets": [
       "source_safe_import_date_semantics",
       "phase-a-operational-state-machine-v1",
@@ -83595,7 +83597,28 @@
     "importsExecuted": false,
     "production": false
   },
-  "reviewQueue": [],
+  "reviewQueue": [
+    {
+      "queueItemId": "review_date_03e843b34eb0e3e1",
+      "queueType": "date_normalization",
+      "severity": "warning",
+      "status": "review_required",
+      "entityType": "visit",
+      "entityId": "hr_2026-05_gt_15_700190437b",
+      "stableKeys": {
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "visitId": "hr_2026-05_gt_15_700190437b",
+        "hrRowId": "MAYO 26!15"
+      },
+      "reasonCode": "unrecognized_date_format",
+      "field": "agendada",
+      "rawValuePreview": "P x visita previa",
+      "sourceRef": "MAYO 26:15",
+      "gateStatus": "hold_until_review",
+      "sourceSafe": true
+    }
+  ],
   "semanticValidation": {
     "numericDateResidues": 0,
     "submittedConflated": 0,
