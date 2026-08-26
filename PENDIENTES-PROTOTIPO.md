@@ -6,7 +6,7 @@
 **MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`
 **MASTER_PLAN_STATUS:** `FROZEN`
 **currentMasterPhase:** `M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY` — `ACTIVE`
-**M3:** `MECHANISM_CERTIFIED_PASS`
+**M3:** `MECHANISM_CERTIFIED_PASS + QUEUE_INTEGRITY_REPAIRED`
 **NEXT:** `M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28`
 **PHASE_A:** `98/100`
 
@@ -14,13 +14,13 @@
 
 F0/M2 permanece 4/4: 142 hallazgos, 32 HOLD/P0 acumulados, 2 contenidos, 30 residuales al entrar a M3 y cero superficie write-capable sin clasificar. CP011 y CP142 están inertizados sin ejecución; quedan 28 residuales.
 
-## Mecanismo M3
+## Reparación de mecanismo M3
 
-`MECHANISM_CERTIFIED_PASS`. El run `32909591852` pasó todas las verificaciones M3 sobre un único workflow source-only. Quedaron corregidos el falso drift funcional, la desincronización de authority/mirrors, los workflows históricos auto-trigger y el preflight proveedor en fase incorrecta.
+Se cerró el defecto de sincronización interna de la cola: 28 era el contador correcto, pero solo había 27 IDs y dos no eran miembros residuales. La cola ahora contiene exactamente los 28 hallazgos derivados del universo M2/F0. El gate canónico debe fallar cerrado si reaparecen desajustes de cardinalidad, duplicados, aritmética o membresía.
 
 ## Pendiente M3 finito
 
-Continuar exclusivamente los 28 residuales del inventario M2. CP117 sigue abierto hasta cobertura histórica exhaustiva y CP118 hasta normalización completa. Cada lote: un commit atómico + readback + gate source-only. No abrir Tramo 15 ni nueva metodología.
+Siguiente tombstone: `RC15-CP-108`, después del readback + gate source-only de la reparación. No abrir Tramo 15 ni nueva metodología. La regla de avance queda congelada: después de esta reparación de mecanismo, una iteración M3 solo cuenta como progreso de backlog si disminuye `currentResidualHolds` o demuestra un bloqueo reproducible.
 
 ## Producto / Claude / Academia
 

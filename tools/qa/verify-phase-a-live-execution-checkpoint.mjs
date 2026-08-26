@@ -3,14 +3,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-
 const here=path.dirname(fileURLToPath(import.meta.url));
 const repo=path.resolve(here,'../..');
 const read=p=>fs.readFileSync(path.join(repo,p),'utf8').replace(/^\uFEFF/,'');
 const json=p=>JSON.parse(read(p));
 const ensure=(v,c)=>{if(!v)throw new Error(c);};
 const lock=json('backend/config/cxorbia-phase-a-continuity-lock.json');
-
+const tomb=json('backend/config/cxorbia-historical-authority-tombstones.json');
+const current=Number(tomb.progress?.currentResidualHolds);
+const next=`M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_${current}`;
 ensure(lock.repository==='paulaosoriof86/demoCXOrbia','CURRENT_REPOSITORY_DRIFT');
 ensure(lock.branch==='docs-tya-v6-v71-audit'&&Number(lock.pullRequest)===7,'CURRENT_LANE_DRIFT');
 ensure(lock.masterPlan?.id==='CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1'&&lock.masterPlan?.status==='FROZEN','MASTER_PLAN_DRIFT');
@@ -22,30 +23,11 @@ ensure(lock.productionState?.providerRedeployExecuted===false&&lock.productionSt
 ensure(lock.m1ExecutionControl?.status==='CLOSED_PASS'&&lock.m2ExecutionControl?.status==='CLOSED_PASS','M1_M2_STATE_DRIFT');
 ensure(String(lock.m3ExecutionControl?.status||'').startsWith('ACTIVE_MECHANISM'),'M3_NOT_ACTIVE');
 ensure(lock.m3ExecutionControl?.providerMutationAuthorizedNow===false,'M3_PROVIDER_AUTHORITY_DRIFT');
-ensure(Number(lock.m3ExecutionControl?.currentResidualHolds)===28,'M3_RESIDUAL_COUNT_DRIFT');
-ensure(lock.masterPlan?.next==='M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28','M3_NEXT_DRIFT');
-
-const run=(script,token)=>{
-  const out=execFileSync(process.execPath,[script],{cwd:repo,encoding:'utf8'});
-  ensure(out.includes(token),`GATE_NOT_PASS:${script}:${token}`);
-  return out;
-};
+ensure(Number(lock.m3ExecutionControl?.currentResidualHolds)===current,'M3_RESIDUAL_COUNT_DRIFT');
+ensure(lock.masterPlan?.next===next&&lock.m3ExecutionControl?.next===next,'M3_NEXT_DRIFT');
+const run=(script,token)=>{const out=execFileSync(process.execPath,[script],{cwd:repo,encoding:'utf8'});ensure(out.includes(token),`GATE_NOT_PASS:${script}:${token}`);return out;};
 run('tools/continuity/validate-cxorbia-master-plan-freeze-m3.js','MASTER_PLAN_FREEZE_M3_PASS');
 run('tools/continuity/validate-cxorbia-canonical-authority.js','CANONICAL_AUTHORITY_GATE_PASS');
 run('tools/continuity/validate-cxorbia-state-sync-m3.js','STATE_SYNC_M3_GATE_PASS');
 run('tools/continuity/validate-cxorbia-phase-a-continuity-lock-m3.js','CONTINUITY_M3_ATOMIC_SYNC_PASS');
-
-console.log(JSON.stringify({
-  ok:true,
-  decision:'PASS_PHASE_A_M3_CURRENT_OPERATIONAL_CHECKPOINT',
-  m3MechanismEpoch:lock.m3MechanismEpoch,
-  planId:lock.planId,
-  currentIteration:lock.currentIteration,
-  progress:{completed:98,pending:2,total:100},
-  functionalSourceLock:lock.productionState.functionalSourceLock,
-  m1:'CLOSED_PASS',
-  m2:'CLOSED_PASS',
-  m3:{status:lock.m3ExecutionControl.status,currentResidualHolds:28,next:lock.masterPlan.next},
-  production:{active:true,url:lock.productionState.productionUrl,providerRedeploy:false,rebuild:false,businessDataWritesAuthorized:false},
-  safety:{providerWrites:false,businessDataWrites:false,externalHrWrites:false,authWrites:false,paymentWrites:false,deploy:false,rebuild:false,merge:false}
-},null,2));
+console.log(JSON.stringify({ok:true,decision:'PASS_PHASE_A_M3_CURRENT_OPERATIONAL_CHECKPOINT',m3MechanismEpoch:lock.m3MechanismEpoch,planId:lock.planId,currentIteration:lock.currentIteration,progress:{completed:98,pending:2,total:100},functionalSourceLock:lock.productionState.functionalSourceLock,m1:'CLOSED_PASS',m2:'CLOSED_PASS',m3:{status:lock.m3ExecutionControl.status,currentResidualHolds:current,next:lock.masterPlan.next},production:{active:true,url:lock.productionState.productionUrl,providerRedeploy:false,rebuild:false,businessDataWritesAuthorized:false},safety:{providerWrites:false,businessDataWrites:false,externalHrWrites:false,authWrites:false,paymentWrites:false,deploy:false,rebuild:false,merge:false}},null,2));
