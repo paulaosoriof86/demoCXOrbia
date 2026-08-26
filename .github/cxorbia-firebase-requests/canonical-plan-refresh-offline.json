@@ -1,11 +1,23 @@
 {
   "schemaVersion": "cxorbia.canonical-plan-refresh-offline.request.v1",
-  "enabled": true,
+  "enabled": false,
+  "consumed": false,
+  "currentExecutionAuthority": false,
+  "replayAuthorized": false,
   "mode": "OFFLINE_CANONICAL_PLAN_REFRESH",
   "providerCalls": 0,
   "writes": 0,
   "production": false,
   "merge": false,
   "triggerNonce": 8,
-  "purpose": "R17N final current-HR-through-July no-execute after fixing project-scoped HR import path"
+  "purpose": "R17N final current-HR-through-July no-execute after fixing project-scoped HR import path",
+  "m3Tombstone": {
+    "findingId": "RC15-CP-030",
+    "batch": "M3_FINITE_QUEUE_BATCH_1",
+    "disposition": "INERTIZED_WITHOUT_EXECUTION",
+    "tombstonedOn": "2026-08-26",
+    "providerWrites": 0,
+    "dataWrites": 0,
+    "evidencePreserved": true
+  }
 }

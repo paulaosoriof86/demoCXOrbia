@@ -11,8 +11,10 @@
   "previousV3RequestCommit": "d62dbae9b10b0650c2940f4b2bf7d456cb34fc83",
   "previousV3ProviderReadConsumption": "PROVEN_ZERO_BEFORE_RUNNER_STEPS",
   "additionalLogicalProviderExecutionAuthorized": 1,
-  "enabled": true,
+  "enabled": false,
   "consumed": false,
+  "currentExecutionAuthority": false,
+  "replayAuthorized": false,
   "mode": "LIVE_HR_AUTHORITY_AND_CURRENT_PERIOD_READ_ONLY",
   "providerReads": 1,
   "providerWrites": 0,
@@ -39,5 +41,14 @@
   ],
   "observationMode": "RUN_JOB_STEPS_JOURNAL_DIRECT",
   "cancelBeforeStepsClassification": "PROVIDER_READS_0_STOP_NO_SECOND_TRIGGER",
-  "triggerNonce": 11
+  "triggerNonce": 11,
+  "m3Tombstone": {
+    "findingId": "RC15-CP-031",
+    "batch": "M3_FINITE_QUEUE_BATCH_1",
+    "disposition": "INERTIZED_WITHOUT_EXECUTION",
+    "tombstonedOn": "2026-08-26",
+    "providerWrites": 0,
+    "dataWrites": 0,
+    "evidencePreserved": true
+  }
 }

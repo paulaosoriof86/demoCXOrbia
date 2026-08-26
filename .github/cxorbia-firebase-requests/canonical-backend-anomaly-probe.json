@@ -1,10 +1,22 @@
 {
   "schemaVersion": "cxorbia.canonical-backend-anomaly-probe.request.v1",
-  "enabled": true,
+  "enabled": false,
+  "consumed": false,
+  "currentExecutionAuthority": false,
+  "replayAuthorized": false,
   "mode": "READ_ONLY_TWO_OVERAGE_PROBE",
   "targetProjectId": "cxorbia-backend-dev",
   "providerWrites": 0,
   "production": false,
   "merge": false,
-  "triggerNonce": 2
+  "triggerNonce": 2,
+  "m3Tombstone": {
+    "findingId": "RC15-CP-066",
+    "batch": "M3_FINITE_QUEUE_BATCH_1",
+    "disposition": "INERTIZED_WITHOUT_EXECUTION",
+    "tombstonedOn": "2026-08-26",
+    "providerWrites": 0,
+    "dataWrites": 0,
+    "evidencePreserved": true
+  }
 }

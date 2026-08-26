@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "cxorbia.rc15.m3.batch-tombstone.v1",
+  "generatedAt": "2026-08-26T10:07:00-06:00",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
+  "batchId": "M3_FINITE_QUEUE_BATCH_1",
+  "status": "MATERIALIZED_PENDING_REMOTE_READBACK",
+  "parentHead": "c27b64a1c61f61029f36e964b81de3936448095f",
+  "selectionPolicy": "Single finite family from M2-locked residual universe: stale enabled or retained read-only/offline request authorities whose historical executors are already in the 22-workflow exact-valid-inert quarantine.",
+  "findingIds": [
+    "RC15-CP-030",
+    "RC15-CP-031",
+    "RC15-CP-055",
+    "RC15-CP-056",
+    "RC15-CP-058",
+    "RC15-CP-059",
+    "RC15-CP-066",
+    "RC15-CP-067",
+    "RC15-CP-068"
+  ],
+  "authorityPaths": [
+    ".github/cxorbia-firebase-requests/canonical-plan-refresh-offline.json",
+    ".github/cxorbia-firebase-requests/live-hr-current-reconcile.json",
+    ".github/cxorbia-firebase-requests/remaining-shopper-identity-reconciliation-readonly.json",
+    ".github/cxorbia-firebase-requests/visit-identity-crosswalk-readonly.json",
+    ".github/cxorbia-firebase-requests/live-hr-provider-capability-preflight.json",
+    ".github/cxorbia-firebase-requests/legacy-shoppers-certifications-refresh-readonly.json",
+    ".github/cxorbia-firebase-requests/canonical-backend-anomaly-probe.json",
+    ".github/cxorbia-firebase-requests/canonical-backend-phasea-gap.json",
+    ".github/cxorbia-firebase-requests/canonical-backend-readonly-inventory.json"
+  ],
+  "treatment": {
+    "enabled": false,
+    "consumed": false,
+    "currentExecutionAuthority": false,
+    "replayAuthorized": false,
+    "disposition": "INERTIZED_WITHOUT_EXECUTION",
+    "evidencePreserved": true,
+    "historicalAuthorizationTextPreserved": true,
+    "legacyDirectConnectivityReauthorization": false
+  },
+  "queue": {
+    "before": {"tombstoned": 3, "remaining": 27},
+    "afterMaterialization": {"tombstoned": 12, "remaining": 18},
+    "reduction": 9,
+    "m2LockedUniverseChanged": false
+  },
+  "readbackContract": {
+    "required": true,
+    "authorityMode": "DIRECT_GITHUB_REMOTE_READBACK_ACTIONS_NONAUTHORITATIVE",
+    "branch": "docs-tya-v6-v71-audit",
+    "expectedParentHead": "c27b64a1c61f61029f36e964b81de3936448095f",
+    "materializationCommitSha": null,
+    "remoteHeadReadback": null,
+    "headMatchesMaterializationCommit": null,
+    "changedPathsVerified": null,
+    "pr7StateRequired": "closed",
+    "providerSideEffectsRequired": 0
+  },
+  "safety": {
+    "providerWrites": 0,
+    "businessDataWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "frontendFunctionalChanges": 0
+  },
+  "next": "REMOTE_READBACK_BATCH1_AND_CLOSE_OR_FAIL_CLOSED"
+}

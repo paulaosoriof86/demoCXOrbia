@@ -1,6 +1,9 @@
 {
   "schemaVersion": "cxorbia.legacy-shoppers-certifications-refresh.request.v1",
-  "enabled": true,
+  "enabled": false,
+  "consumed": false,
+  "currentExecutionAuthority": false,
+  "replayAuthorized": false,
   "mode": "READ_ONLY_LEGACY_TYA_SHOPPERS_CERTIFICATIONS_REFRESH",
   "authorization": "Autorizo refresh read-only del legacy TyA tya-plataforma exclusivamente para shoppers y certificaciones, sin writes, Auth changes, deploy ni producción.",
   "legacyProjectId": "tya-plataforma",
@@ -14,5 +17,15 @@
   "merge": false,
   "requestedAt": "2026-07-30T01:18:00Z",
   "attempt": 6,
-  "reason": "authorized stable-ID/code crosswalk for 210 HR protected shopper references, name matching forbidden"
+  "reason": "authorized stable-ID/code crosswalk for 210 HR protected shopper references, name matching forbidden",
+  "m3Tombstone": {
+    "findingId": "RC15-CP-059",
+    "batch": "M3_FINITE_QUEUE_BATCH_1",
+    "disposition": "INERTIZED_WITHOUT_EXECUTION",
+    "tombstonedOn": "2026-08-26",
+    "providerWrites": 0,
+    "dataWrites": 0,
+    "evidencePreserved": true,
+    "legacyDirectConnectivityReauthorization": false
+  }
 }

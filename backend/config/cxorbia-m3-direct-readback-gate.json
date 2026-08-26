@@ -1,9 +1,9 @@
 {
-  "schemaVersion": "cxorbia.rc15.m3.direct-readback-gate.v1",
+  "schemaVersion": "cxorbia.rc15.m3.direct-readback-gate.v2",
   "gateId": "RC15-M3-0-DIRECT-READBACK-20260826-01",
   "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
   "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
-  "scope": "M3_0_CONTROL_PLANE_QUIESCENCE_SINGLE_AUTHORITY_BARRIER",
+  "scope": "M3_CONTROL_PLANE_DIRECT_READBACK_AUTHORITY",
   "authorityMode": "DIRECT_GITHUB_REMOTE_READBACK_ACTIONS_NONAUTHORITATIVE",
   "status": "PASS",
   "decision": "PASS_M3_0_DIRECT_READBACK_ACTIONS_TRANSPORT_DEGRADED",
@@ -45,7 +45,19 @@
     "pullRequestRuns": 0,
     "botChildCommits": 0
   },
-  "finiteQueue": {"atM3Entry":30,"tombstoned":3,"remaining":27,"unchangedDuringBarrier":true},
+  "latestMaterialization": {
+    "batchId": "M3_FINITE_QUEUE_BATCH_1",
+    "status": "PENDING_REMOTE_READBACK",
+    "parentHead": "c27b64a1c61f61029f36e964b81de3936448095f",
+    "materializationCommitSha": null,
+    "remoteHeadReadback": null,
+    "headStable": null,
+    "changedPathsVerified": null,
+    "evidence": "app/docs/evidence/RC15-M3-BATCH1-TOMBSTONE-LATEST.json",
+    "findingCount": 9,
+    "expectedRemaining": 18
+  },
+  "finiteQueue": {"atM3Entry":30,"tombstoned":12,"remaining":18,"batch1Materialized":true,"batch1ReadbackClosed":false},
   "functionalSourceLock": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
   "safety": {
     "providerWrites": 0,
@@ -64,5 +76,5 @@
     "frontendFunctionalChanges": 0
   },
   "productionRealReadinessAfterPass": 69,
-  "next": "M3_FINITE_QUEUE_BATCH_1"
+  "next": "M3_FINITE_QUEUE_BATCH_1_READBACK_PENDING"
 }

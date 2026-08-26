@@ -7,6 +7,10 @@
   "revalidationRequestedAt": "2026-08-21T05:00:02Z",
   "recoveryExecuteShaUnderDisposition": "feeff85d834af7f711a4b62e291a29a14901a8d5",
   "authorizationState": "retained_not_consumed",
+  "enabled": false,
+  "consumed": false,
+  "currentExecutionAuthority": false,
+  "replayAuthorized": false,
   "expected": {
     "googleSheetsApiEnabled": true,
     "serviceAccountKeepsReaderAccess": true,
@@ -22,5 +26,14 @@
     "cloudRunDeploys": 0,
     "production": false,
     "merge": false
+  },
+  "m3Tombstone": {
+    "findingId": "RC15-CP-058",
+    "batch": "M3_FINITE_QUEUE_BATCH_1",
+    "disposition": "INERTIZED_WITHOUT_EXECUTION",
+    "tombstonedOn": "2026-08-26",
+    "providerWrites": 0,
+    "dataWrites": 0,
+    "evidencePreserved": true
   }
 }

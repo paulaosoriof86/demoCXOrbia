@@ -1,10 +1,10 @@
 {
-  "schemaVersion": "cxorbia.rc15.historical-authority-tombstones.v3",
+  "schemaVersion": "cxorbia.rc15.historical-authority-tombstones.v4",
   "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
   "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
   "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
   "previousMechanismEpoch": "RC15-M3-MECHANISM-20260825-01",
-  "sourceHeadBefore": "632d64214eb7614fe4e154314960fc5bc9b1c756",
+  "sourceHeadBefore": "c27b64a1c61f61029f36e964b81de3936448095f",
   "phase": "M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY",
   "status": "ACTIVE_FINITE_QUEUE",
   "policy": {
@@ -23,8 +23,8 @@
   },
   "progress": {
     "residualHoldsAtM3Start": 30,
-    "tombstonedHoldsThisMilestone": 3,
-    "currentResidualHolds": 27,
+    "tombstonedHoldsThisMilestone": 12,
+    "currentResidualHolds": 18,
     "historicalGlobalExhaustive": false
   },
   "completedTombstones": [
@@ -61,11 +61,140 @@
       "dataWrites": 0,
       "evidencePreserved": true,
       "evidence": "app/docs/evidence/RC15-M3-CP108-TOMBSTONE-LATEST.json"
+    },
+    {
+      "findingId": "RC15-CP-030",
+      "authorityPath": ".github/cxorbia-firebase-requests/canonical-plan-refresh-offline.json",
+      "disposition": "INERTIZED_WITHOUT_EXECUTION",
+      "currentExecutionAuthority": false,
+      "consumed": false,
+      "replayAuthorized": false,
+      "providerMutationExecutions": 0,
+      "dataWrites": 0,
+      "evidencePreserved": true,
+      "batch": "M3_FINITE_QUEUE_BATCH_1"
+    },
+    {
+      "findingId": "RC15-CP-031",
+      "authorityPath": ".github/cxorbia-firebase-requests/live-hr-current-reconcile.json",
+      "disposition": "INERTIZED_WITHOUT_EXECUTION",
+      "currentExecutionAuthority": false,
+      "consumed": false,
+      "replayAuthorized": false,
+      "providerMutationExecutions": 0,
+      "dataWrites": 0,
+      "evidencePreserved": true,
+      "batch": "M3_FINITE_QUEUE_BATCH_1"
+    },
+    {
+      "findingId": "RC15-CP-055",
+      "authorityPath": ".github/cxorbia-firebase-requests/remaining-shopper-identity-reconciliation-readonly.json",
+      "disposition": "INERTIZED_WITHOUT_EXECUTION",
+      "currentExecutionAuthority": false,
+      "consumed": false,
+      "replayAuthorized": false,
+      "providerMutationExecutions": 0,
+      "dataWrites": 0,
+      "evidencePreserved": true,
+      "batch": "M3_FINITE_QUEUE_BATCH_1",
+      "legacyDirectConnectivityReauthorization": false
+    },
+    {
+      "findingId": "RC15-CP-056",
+      "authorityPath": ".github/cxorbia-firebase-requests/visit-identity-crosswalk-readonly.json",
+      "disposition": "INERTIZED_WITHOUT_EXECUTION",
+      "currentExecutionAuthority": false,
+      "consumed": false,
+      "replayAuthorized": false,
+      "providerMutationExecutions": 0,
+      "dataWrites": 0,
+      "evidencePreserved": true,
+      "batch": "M3_FINITE_QUEUE_BATCH_1"
+    },
+    {
+      "findingId": "RC15-CP-058",
+      "authorityPath": ".github/cxorbia-firebase-requests/live-hr-provider-capability-preflight.json",
+      "disposition": "INERTIZED_WITHOUT_EXECUTION",
+      "currentExecutionAuthority": false,
+      "consumed": false,
+      "replayAuthorized": false,
+      "providerMutationExecutions": 0,
+      "dataWrites": 0,
+      "evidencePreserved": true,
+      "batch": "M3_FINITE_QUEUE_BATCH_1"
+    },
+    {
+      "findingId": "RC15-CP-059",
+      "authorityPath": ".github/cxorbia-firebase-requests/legacy-shoppers-certifications-refresh-readonly.json",
+      "disposition": "INERTIZED_WITHOUT_EXECUTION",
+      "currentExecutionAuthority": false,
+      "consumed": false,
+      "replayAuthorized": false,
+      "providerMutationExecutions": 0,
+      "dataWrites": 0,
+      "evidencePreserved": true,
+      "batch": "M3_FINITE_QUEUE_BATCH_1",
+      "legacyDirectConnectivityReauthorization": false
+    },
+    {
+      "findingId": "RC15-CP-066",
+      "authorityPath": ".github/cxorbia-firebase-requests/canonical-backend-anomaly-probe.json",
+      "disposition": "INERTIZED_WITHOUT_EXECUTION",
+      "currentExecutionAuthority": false,
+      "consumed": false,
+      "replayAuthorized": false,
+      "providerMutationExecutions": 0,
+      "dataWrites": 0,
+      "evidencePreserved": true,
+      "batch": "M3_FINITE_QUEUE_BATCH_1"
+    },
+    {
+      "findingId": "RC15-CP-067",
+      "authorityPath": ".github/cxorbia-firebase-requests/canonical-backend-phasea-gap.json",
+      "disposition": "INERTIZED_WITHOUT_EXECUTION",
+      "currentExecutionAuthority": false,
+      "consumed": false,
+      "replayAuthorized": false,
+      "providerMutationExecutions": 0,
+      "dataWrites": 0,
+      "evidencePreserved": true,
+      "batch": "M3_FINITE_QUEUE_BATCH_1"
+    },
+    {
+      "findingId": "RC15-CP-068",
+      "authorityPath": ".github/cxorbia-firebase-requests/canonical-backend-readonly-inventory.json",
+      "disposition": "INERTIZED_WITHOUT_EXECUTION",
+      "currentExecutionAuthority": false,
+      "consumed": false,
+      "replayAuthorized": false,
+      "providerMutationExecutions": 0,
+      "dataWrites": 0,
+      "evidencePreserved": true,
+      "batch": "M3_FINITE_QUEUE_BATCH_1"
     }
   ],
+  "latestBatch": {
+    "batchId": "M3_FINITE_QUEUE_BATCH_1",
+    "status": "MATERIALIZED_PENDING_REMOTE_READBACK",
+    "materializedFindingIds": [
+      "RC15-CP-030",
+      "RC15-CP-031",
+      "RC15-CP-055",
+      "RC15-CP-056",
+      "RC15-CP-058",
+      "RC15-CP-059",
+      "RC15-CP-066",
+      "RC15-CP-067",
+      "RC15-CP-068"
+    ],
+    "count": 9,
+    "before": {"tombstoned": 3, "remaining": 27},
+    "after": {"tombstoned": 12, "remaining": 18},
+    "evidence": "app/docs/evidence/RC15-M3-BATCH1-TOMBSTONE-LATEST.json"
+  },
   "queueIntegrity": {
     "status": "RECONCILED_TO_M2_LOCKED_UNIVERSE",
-    "derivation": "TRANCHE8 residual 24 + TRANCHE11 HOLD CP124/CP125 + TRANCHE12 HOLD CP127/CP130/CP131 + TRANCHE14 HOLD CP142 = M2 residual 30; subtract completed CP011, CP142 and CP108 = 27 pending",
+    "derivation": "M2 residual 30; subtract completed CP011, CP142, CP108 plus Batch 1 CP030, CP031, CP055, CP056, CP058, CP059, CP066, CP067, CP068 = 18 pending",
     "authoritativeEvidence": [
       "app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE8-DETAIL.json",
       "app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE11-DETAIL.json",
@@ -82,7 +211,7 @@
     }
   },
   "remainingQueuePolicy": {
-    "currentResidualHolds": 27,
+    "currentResidualHolds": 18,
     "authoritativeUniverse": "M2 locked F0 evidence derived deterministically by active validator",
     "priorityFindingIds": [
       "RC15-CP-005",
@@ -91,17 +220,8 @@
       "RC15-CP-025",
       "RC15-CP-028",
       "RC15-CP-029",
-      "RC15-CP-030",
-      "RC15-CP-031",
       "RC15-CP-045",
-      "RC15-CP-055",
-      "RC15-CP-056",
-      "RC15-CP-058",
-      "RC15-CP-059",
       "RC15-CP-063",
-      "RC15-CP-066",
-      "RC15-CP-067",
-      "RC15-CP-068",
       "RC15-CP-074",
       "RC15-CP-078",
       "RC15-CP-090",
