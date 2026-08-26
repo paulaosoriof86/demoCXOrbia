@@ -1,14 +1,135 @@
-name: CXOrbia Historical Authority Inert M3
+name: CXOrbia I4B Retry1 Authorized Runtime Lane
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [docs-tya-v6-v71-audit]
+    paths:
+      - .github/workflows/cxorbia-i4b-retry1-authorized-runtime-lane.yml
+      - backend/config/cxorbia-g2b-live-synthetic-acceptance-request.json
+      - tools/qa/cxorbia-g2b-live-synthetic-preflight.mjs
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: cxorbia-existing-authorized-runtime-lane-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  historical-inert:
+  retry1:
+    # Historical I4B request is terminal/consumed. This job is deliberately frozen so
+    # extending the existing lane for G2-B can never reactivate or rerun I4B.
     if: ${{ false }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - run: echo 'HISTORICAL_INERT_M3: this RC15 historical authority is evidence only and has no current execution authority.'
+      - run: echo "Historical I4B retry1 is frozen and cannot rerun."
+
+  g2b-live-synthetic-preflight:
+    name: I5-G2-B canonical production pre-write gate
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      G2B_REQUEST_FILE: backend/config/cxorbia-g2b-live-synthetic-acceptance-request.json
+      G2B_OUT_DIR: .tmp/g2b-live-synthetic-preflight
+      G2B_EVIDENCE_FILE: app/docs/evidence/I5-G2B-LIVE-SYNTHETIC-PREFLIGHT-LATEST.json
+      BRANCH: docs-tya-v6-v71-audit
+    steps:
+      - name: Checkout exact triggering commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Inspect one-shot G2-B authorization
+        id: inspect
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs'),cp=require('child_process');
+          const p=process.env.G2B_REQUEST_FILE;
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'should_execute=false\n');
+          if(!fs.existsSync(p))process.exit(0);
+          const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          const head=cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          let ancestor=false;try{cp.execFileSync('git',['merge-base','--is-ancestor',r.sourceHeadSha,head]);ancestor=true;}catch{}
+          const exact=r.schemaVersion==='cxorbia.g2b.live-synthetic-acceptance-request.v1'&&r.gateId==='I5_G2_B_LIVE_IN_PLATFORM_SYNTHETIC_ACCEPTANCE'&&r.requestId==='i5-g2b-live-synthetic-acceptance-20260820-01'&&r.repository==='paulaosoriof86/demoCXOrbia'&&r.branch==='docs-tya-v6-v71-audit'&&Number(r.pullRequest)===7&&r.enabled===true&&r.consumed===false&&r.status==='authorized_stage_pending_execution'&&r.authorizedBy==='Paula'&&r.mode==='STAGE_AND_TEST'&&r.productionProjectId==='cxorbia-backend-dev'&&r.productionUrl==='https://cxorbia-backend-dev.web.app'&&r.tenantId==='tya'&&r.projectId==='cinepolis'&&r.syntheticTagPrefix==='CXORBIA_E2E_SYNTH_'&&r.syntheticDataOnly===true&&r.sameProductionUrlOnly===true&&r.alternatePlatformAllowed===false&&r.localCloneOrEmulatorAllowed===false&&r.allowedExecutions===1&&r.executionsConsumed===0&&r.automaticRetryAllowed===false&&ancestor;
+          if(!exact)process.exit(0);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'should_execute=true\n');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`request_id=${r.requestId}\n`);
+          NODE
+
+      - name: Syntax-check G2-B preflight
+        if: steps.inspect.outputs.should_execute == 'true'
+        run: node --check tools/qa/cxorbia-g2b-live-synthetic-preflight.mjs
+
+      - name: Install transient browser tooling
+        if: steps.inspect.outputs.should_execute == 'true'
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null
+
+      - name: Execute canonical production pre-write proof
+        id: preflight
+        if: steps.inspect.outputs.should_execute == 'true'
+        continue-on-error: true
+        run: node tools/qa/cxorbia-g2b-live-synthetic-preflight.mjs
+
+      - name: Upload sanitized G2-B preflight evidence
+        if: always() && steps.inspect.outputs.should_execute == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: i5-g2b-live-synthetic-preflight-${{ github.run_id }}
+          path: .tmp/g2b-live-synthetic-preflight/evidence.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Consume one-shot preflight and persist sanitized evidence
+        if: always() && steps.inspect.outputs.should_execute == 'true'
+        shell: bash
+        env:
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          REQUEST_ID: ${{ steps.inspect.outputs.request_id }}
+        run: |
+          set -euo pipefail
+          RESULT="$G2B_OUT_DIR/evidence.json"
+          if [ ! -f "$RESULT" ]; then
+            mkdir -p "$G2B_OUT_DIR"
+            node <<'NODE'
+            const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.G2B_REQUEST_FILE,'utf8'));
+            const e={schemaVersion:'cxorbia.g2b.live-synthetic-preflight.evidence.v1',generatedAt:new Date().toISOString(),requestId:r.requestId,gateId:r.gateId,workflowRunId:Number(process.env.RUN_ID||0),workflowRunAttempt:Number(process.env.RUN_ATTEMPT||0),workflowCommitSha:process.env.GITHUB_SHA||null,functionalSourceLock:r.functionalSourceLock,productionUrl:r.productionUrl,productionProjectId:r.productionProjectId,decision:'HOLD_G2B_PREFLIGHT_WORKFLOW_FAILED_BEFORE_EVIDENCE',productP0Proven:false,requestValidation:{pass:false},remote:{reached:false},acceptance:{phaseAOperationalMutationPathReady:false,stageWritesExecuted:false,syntheticScenarioCreated:false,paulaVisibleScenarioReady:false,cleanupRequiredNow:false},safety:{repositoryWrites:false,providerWrites:0,firestoreWrites:0,authWrites:0,storageWrites:0,externalHrWrites:0,realUserWrites:0,passwordChanges:0,passwordResets:0,paymentWrites:0,makeCalls:0,geminiCalls:0,hostingDeploys:0,cloudRunDeploys:0,rebuild:false,merge:false},blockers:['WORKFLOW_FAILED_BEFORE_EVIDENCE'],notes:[]};
+            fs.writeFileSync(process.env.G2B_OUT_DIR+'/evidence.json',JSON.stringify(e,null,2)+'\n');
+            NODE
+          fi
+          git fetch origin "$BRANCH"
+          git checkout -B "$BRANCH" "origin/$BRANCH"
+          mkdir -p "$(dirname "$G2B_EVIDENCE_FILE")"
+          cp "$RESULT" "$G2B_EVIDENCE_FILE"
+          node <<'NODE'
+          const fs=require('fs'),p=process.env.G2B_REQUEST_FILE,evidencePath=process.env.G2B_EVIDENCE_FILE;
+          const r=JSON.parse(fs.readFileSync(p,'utf8')),e=JSON.parse(fs.readFileSync(evidencePath,'utf8'));
+          if(r.requestId!==process.env.REQUEST_ID||r.consumed===true)throw new Error('G2B_REQUEST_DRIFT_OR_ALREADY_CONSUMED');
+          r.enabled=false;r.consumed=true;r.executionsConsumed=1;r.consumedAt=new Date().toISOString();r.workflowRunId=Number(process.env.RUN_ID||0);r.workflowRunAttempt=Number(process.env.RUN_ATTEMPT||0);r.executionDecision=e.decision;r.productP0Proven=e.productP0Proven===true;r.providerWrites=Number(e.safety?.providerWrites||0);r.firestoreWrites=Number(e.safety?.firestoreWrites||0);r.authWrites=Number(e.safety?.authWrites||0);r.storageWrites=Number(e.safety?.storageWrites||0);r.externalHrWrites=Number(e.safety?.externalHrWrites||0);r.status=e.decision==='PASS_G2B_PREWRITE_RUNTIME_READY_FOR_SYNTHETIC_STAGE'?'consumed_pass_prewrite_ready_new_stage_request_required':'consumed_hold_prewrite_no_automatic_retry';r.noAutomaticRetry=true;
+          fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n','utf8');
+          NODE
+          git config user.name cxorbia-gate-bot
+          git config user.email cxorbia-gate-bot@users.noreply.github.com
+          git add "$G2B_REQUEST_FILE" "$G2B_EVIDENCE_FILE"
+          git commit -m "evidence(g2b): consume production pre-write gate"
+          git pull --rebase origin "$BRANCH"
+          git push origin "HEAD:$BRANCH"
+
+      - name: Enforce G2-B pre-write result
+        if: always() && steps.inspect.outputs.should_execute == 'true'
+        run: |
+          node <<'NODE'
+          const fs=require('fs');const e=JSON.parse(fs.readFileSync(process.env.G2B_OUT_DIR+'/evidence.json','utf8'));
+          if(e.decision!=='PASS_G2B_PREWRITE_RUNTIME_READY_FOR_SYNTHETIC_STAGE')process.exit(2);
+          NODE

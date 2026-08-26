@@ -1,14 +1,197 @@
-name: CXOrbia Historical Authority Inert M3
+name: CXOrbia Corte 4 Bootstrap DEV Read-only Execute
 
 on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/workflows/cxorbia-corte4-bootstrap-readonly-execute.yml'
+      - '.github/cxorbia-firebase-requests/corte4-bootstrap-execute.json'
+      - 'tools/release/cxorbia-corte4-bootstrap-readonly-execute.mjs'
+      - 'tools/release/cxorbia-corte4-bootstrap-preflight.mjs'
+      - 'backend/rules/firestore.corte4-readonly.rules'
   workflow_dispatch:
 
 permissions:
   contents: read
+  issues: write
+  statuses: write
+
+concurrency:
+  group: cxorbia-corte4-bootstrap-readonly-execute
+  cancel-in-progress: false
+
+env:
+  CXORBIA_NEW_PROJECT_ID: cxorbia-tya-dev-260729-c4
+  CXORBIA_NEW_PROJECT_NAME: CXOrbia TyA DEV Clean Corte 4
+  CXORBIA_FIRESTORE_LOCATION: us-central1
+  CXORBIA_WEB_APP_NAME: CXOrbia TyA DEV Corte 4
+  CXORBIA_RULES_PATH: backend/rules/firestore.corte4-readonly.rules
+  CXORBIA_REQUEST_PATH: .github/cxorbia-firebase-requests/corte4-bootstrap-execute.json
+  CXORBIA_REQUEST_TIMEOUT_MS: '12000'
+  CXORBIA_OPERATION_DEADLINE_MS: '180000'
 
 jobs:
-  historical-inert:
-    if: ${{ false }}
+  execute-bootstrap:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+
     steps:
-      - run: echo 'HISTORICAL_INERT_M3: this RC15 historical authority is evidence only and has no current execution authority.'
+      - name: Checkout live branch
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate exact current-conversation authorization
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync(process.env.CXORBIA_REQUEST_PATH,'utf8'));
+          const exact={
+            schemaVersion:'cxorbia.corte4-bootstrap-execute.v1',
+            enabled:true,
+            authorizationSource:'current_conversation',
+            authorizationText:'Autorizo bootstrap DEV read-only de Corte 4',
+            repository:'paulaosoriof86/demoCXOrbia',
+            branch:'docs-tya-v6-v71-audit',
+            pullRequest:7,
+            targetProjectId:process.env.CXORBIA_NEW_PROJECT_ID,
+            targetDisplayName:process.env.CXORBIA_NEW_PROJECT_NAME,
+            firestoreLocation:process.env.CXORBIA_FIRESTORE_LOCATION,
+            webAppDisplayName:process.env.CXORBIA_WEB_APP_NAME,
+            mode:'EXECUTE_AUTHORIZED_BOOTSTRAP_CONFIG_ONLY',
+            providerReads:true,
+            providerConfigWrites:true,
+            firestoreDocumentWrites:false,
+            authUserWrites:false,
+            storage:false,
+            hostingDeploy:false,
+            functions:false,
+            imports:false,
+            hrWrites:false,
+            make:false,
+            gemini:false,
+            payments:false,
+            merge:false,
+            production:false
+          };
+          for(const [k,v] of Object.entries(exact)) if(r[k]!==v) throw new Error(`Request mismatch: ${k}`);
+          console.log('Exact authorized Corte 4 bootstrap execution request validated.');
+          NODE
+
+      - name: Load existing service account credential without exposing it
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/corte4-bootstrap-private .tmp/corte4-bootstrap-preflight .tmp/corte4-bootstrap-execute
+          node <<'NODE'
+          const fs=require('fs');
+          const raw=process.env.EXISTING_DEV_JSON||'';
+          let parsed=null; try{parsed=JSON.parse(raw);}catch{}
+          const valid=Boolean(parsed&&parsed.type==='service_account'&&parsed.client_email&&parsed.private_key&&parsed.token_uri);
+          fs.writeFileSync('.tmp/corte4-bootstrap-preflight/credential-route.source-safe.json',JSON.stringify({route:'existing_dev_service_account',credentialAvailable:Boolean(raw),credentialShapeValid:valid,secretValuesOutput:false},null,2)+'\n');
+          if(!valid) process.exit(2);
+          fs.writeFileSync('.tmp/corte4-bootstrap-private/credentials.json',raw,{mode:0o600});
+          NODE
+
+      - name: Re-run read-only preflight immediately before writes
+        env:
+          CXORBIA_CONFIRM: PREFLIGHT_BOOTSTRAP_DEV_READ_ONLY_C4
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/corte4-bootstrap-private/credentials.json
+        run: |
+          set -euo pipefail
+          node tools/release/cxorbia-corte4-bootstrap-preflight.mjs --out .tmp/corte4-bootstrap-preflight
+          node <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync('.tmp/corte4-bootstrap-preflight/corte4-bootstrap-preflight.source-safe.json','utf8'));
+          if(r.decision!=='BOOTSTRAP_PREFLIGHT_READY_FOR_AUTHORIZED_WRITES_C4'){
+            console.error(`Preflight not ready: ${r.decision}`);
+            process.exit(3);
+          }
+          console.log('Immediate preflight PASS; authorized config writes may proceed.');
+          NODE
+
+      - name: Execute authorized DEV read-only bootstrap
+        env:
+          CXORBIA_CONFIRM: EXECUTE_BOOTSTRAP_DEV_READ_ONLY_C4
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/corte4-bootstrap-private/credentials.json
+        run: |
+          set -euo pipefail
+          node tools/release/cxorbia-corte4-bootstrap-readonly-execute.mjs --out .tmp/corte4-bootstrap-execute
+
+      - name: Publish sanitized result
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          report='.tmp/corte4-bootstrap-execute/corte4-bootstrap-execute.source-safe.json'
+          if [ ! -f "$report" ]; then
+            node -e "const fs=require('fs');fs.mkdirSync('.tmp/corte4-bootstrap-execute',{recursive:true});fs.writeFileSync('$report',JSON.stringify({decision:'BLOCKED_BEFORE_EXECUTOR',providerWrites:{total:0},safeState:{production:false}},null,2)+'\n');"
+          fi
+          node - "$report" <<'NODE' > .tmp/corte4-bootstrap-execute/status.env
+          const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const pass=r.decision==='BOOTSTRAP_DEV_READONLY_COMPLETED_C4';
+          const decision=String(r.decision||'UNKNOWN').replace(/[^A-Z0-9_.-]/gi,'_').slice(0,62);
+          const writes=Number(r.providerWrites?.total||0);
+          const web=Boolean(r.webApp?.created||r.webApp?.reused);
+          const db=Boolean(r.firestore?.created||r.firestore?.reused);
+          const auth=Boolean(r.auth?.configVerified);
+          const rules=Boolean(r.rules?.releaseVerified);
+          console.log(`STATE=${pass?'success':'error'}`);
+          console.log(`DECISION=${decision}`);
+          console.log(`WRITES=${writes}`);
+          console.log(`WEB=${web}`);
+          console.log(`DB=${db}`);
+          console.log(`AUTH=${auth}`);
+          console.log(`RULES=${rules}`);
+          NODE
+          source .tmp/corte4-bootstrap-execute/status.env
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="$STATE" -f context='cxorbia/corte4-bootstrap-execute' \
+            -f description="Corte 4 bootstrap: ${DECISION}" >/dev/null
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="$STATE" -f context="cxorbia/c4exec-${DECISION}" \
+            -f description='Sanitized Corte 4 bootstrap decision' >/dev/null
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="$STATE" -f context="cxorbia/c4bootstrap-w${WRITES}-web${WEB}-db${DB}-auth${AUTH}-rules${RULES}" \
+            -f description='Sanitized bootstrap execution evidence' >/dev/null
+          body=$(cat <<EOF
+          ## Corte 4 · bootstrap DEV read-only · ejecución
+
+          - Decision: \`$DECISION\`
+          - Provider config writes: \`$WRITES\`
+          - Web App ready: \`$WEB\`
+          - Firestore ready: \`$DB\`
+          - Auth config verified: \`$AUTH\`
+          - Rules read-only verified: \`$RULES\`
+          - Firestore document writes: \`0\`
+          - Auth user writes: \`0\`
+          - Storage/Hosting/Functions/imports/HR/Make/Gemini/payments/merge/production: \`0\`
+          EOF
+          )
+          gh issue comment 7 --repo "$GITHUB_REPOSITORY" --body "$body" >/dev/null
+          printf '%s\n' "$body" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Cleanup credential
+        if: always()
+        run: rm -rf .tmp/corte4-bootstrap-private
+
+      - name: Upload sanitized evidence and public web config
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-corte4-bootstrap-readonly-execute
+          path: |
+            .tmp/corte4-bootstrap-preflight
+            .tmp/corte4-bootstrap-execute
+          if-no-files-found: error
+          retention-days: 14

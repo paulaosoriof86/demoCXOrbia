@@ -1,4 +1,4 @@
-name: CXOrbia Historical Authority Inert M3
+name: CXOrbia Live HR Provider Capability Preflight — Historical M3 Hold
 
 on:
   workflow_dispatch:
@@ -7,8 +7,13 @@ permissions:
   contents: read
 
 jobs:
-  historical-inert:
-    if: ${{ false }}
+  historical-hold:
+    name: Provider preflight held until M4/F3
     runs-on: ubuntu-latest
+    timeout-minutes: 2
     steps:
-      - run: echo 'HISTORICAL_INERT_M3: this RC15 historical authority is evidence only and has no current execution authority.'
+      - name: Confirm no current provider authority
+        run: |
+          echo 'HISTORICAL_INERT_M3'
+          echo 'No provider read/write/deploy is authorized by this workflow during M3.'
+          echo 'M4/F3 read-only revalidation requires the then-current canonical gate and evidence.'
