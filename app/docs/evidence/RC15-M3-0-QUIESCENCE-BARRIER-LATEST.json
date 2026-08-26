@@ -1,18 +1,31 @@
 {
   "schemaVersion": "cxorbia.rc15.m3.quiescence-barrier.v2",
-  "generatedAt": "2026-08-26T09:22:00-06:00",
+  "generatedAt": "2026-08-26T09:28:00-06:00",
   "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
   "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
   "block": "M3_0_CONTROL_PLANE_QUIESCENCE_SINGLE_AUTHORITY_BARRIER",
-  "status": "VALID_INERT_YAML_TRANSITION_PENDING_REMOTE_READBACK",
+  "status": "FINAL_CLEAN_PROBE_REQUESTED",
   "entryHead":"5e3ab996ae9a16c932897aead513dd67aec98496",
+  "validInertFixHead":"30cfb9356b70cce522ab6dae66d2384095805129",
+  "validInertFixReadback":true,
   "priorProbeHead":"3d37a4fa98fbe24046874d5818ce94e047aea390",
-  "priorProbePushRuns":2,
   "priorProbeUnexpectedRuns":["cxorbia-c6-shopper-deterministic-suffix-crosswalk-rootfix-source-only.yml","cxorbia-corte4-p0-vis02-revalidate.yml"],
-  "rootCause":"The inert workflow YAML itself was invalid due to an unquoted colon in the run scalar; GitHub emitted zero-job failure runs on pushes.",
-  "repair":"Replace all 22 inert workflows with exact valid YAML block-scalar form and update canonical validator to require that exact blob/contract.",
+  "priorProbeUnexpectedRunsHadZeroJobs":true,
+  "rootCause":"The old inert workflow YAML was invalid due to an unquoted colon in the run scalar. All 22 inert workflows now use exact valid YAML block-scalar form and the canonical validator requires that exact contract.",
+  "finalProbeContract": {
+    "workflowFilesTouched":0,
+    "queueFilesTouched":0,
+    "providerOrRuntimeFilesTouched":0,
+    "pr7RequiredState":"closed",
+    "expectedPushRuns":1,
+    "expectedWorkflow":".github/workflows/cxorbia-phase-a-live-checkpoint.yml",
+    "expectedPullRequestRuns":0,
+    "expectedBotChildCommit":false,
+    "expectedProviderSideEffects":0,
+    "headMustRemainStable":true
+  },
   "queueFrozen":{"completed":3,"remaining":27},
   "pr7":{"state":"closed","merged":false},
   "safety":{"providerWrites":0,"dataWrites":0,"deploys":0,"merge":false,"frontendFunctionalChanges":0},
-  "next":"REMOTE_READBACK_VALID_INERT_FIX_THEN_NEW_CLEAN_PROBE"
+  "next":"REMOTE_READBACK_FINAL_CLEAN_PROBE_AND_CLOSE_OR_FAIL_CLOSED"
 }
