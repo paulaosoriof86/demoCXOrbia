@@ -24,7 +24,7 @@
     "freezeAuthority": "PAULA_CURRENT_CONVERSATION",
     "currentPhase": "M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY",
     "currentStep": "M3_F1_FINITE_TOMBSTONE_QUEUE",
-    "next": "M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28",
+    "next": "M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_27",
     "amendmentPolicy": "PLAN_CHANGE_REQUEST_ONLY_EXPLICIT_PAULA_ATOMIC",
     "previousPlansExecutionAuthority": "SUPERSEDED_RETAINED_AS_EVIDENCE",
     "providerMutationAuthorizedNow": false,
@@ -73,15 +73,15 @@
     "consumedLedger": "backend/config/cxorbia-consumed-one-shot-gates.json",
     "aliases": "backend/config/cxorbia-evidence-aliases.json",
     "residualHoldsAtStart": 30,
-    "tombstonedHolds": 2,
-    "currentResidualHolds": 28,
+    "tombstonedHolds": 3,
+    "currentResidualHolds": 27,
     "historicalGlobalExhaustive": false,
     "canonicalStateAuthorityAligned": true,
     "historicalWorkflowPushAuthorityInertized": true,
     "providerPreflightAutoRunDuringM3": false,
     "functionalSourceLockSeparatedFromControlPlaneHead": true,
     "providerMutationAuthorizedNow": false,
-    "next": "M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28"
+    "next": "M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_27"
   },
   "resumeProtocol": {
     "conversationIndependent": true,
@@ -203,7 +203,7 @@
     },
     "systemicAuditAndMethodology": {
       "id": "RC15_SYSTEMIC_AUDIT_METHOD_CONTROL_PLANE_AND_POSTPROD",
-      "status": "M3_ACTIVE_FINITE_28_REMAINING_MECHANISM_CERTIFIED",
+      "status": "M3_ACTIVE_FINITE_27_REMAINING_MECHANISM_CERTIFIED",
       "finding": "Historical execution authority can survive in PR base, request artifacts, direct tools, workflows or deployed provider configuration after historical requests are consumed.",
       "control": "M2 exhaustively classified the finite M1-locked inventory. M3 inertizes residual historical authority under the certified mechanism and normalizes a single canonical execution authority."
     },
@@ -266,7 +266,7 @@
     "allowProviderPreflightAutoRunDuringM3": false
   },
   "nextNow": {
-    "action": "M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28",
+    "action": "M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_27",
     "masterPlanFrozen": true,
     "currentMasterPhase": "M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY",
     "currentMasterStep": "M3_F1_FINITE_TOMBSTONE_QUEUE",

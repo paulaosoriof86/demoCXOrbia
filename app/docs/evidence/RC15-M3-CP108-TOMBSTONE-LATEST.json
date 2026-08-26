@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "cxorbia.rc15.m3.cp108-tombstone.v1",
+  "generatedAt": "2026-08-25T20:10:00-06:00",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "phase": "M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY",
+  "findingId": "RC15-CP-108",
+  "sourceHeadBefore": "632d64214eb7614fe4e154314960fc5bc9b1c756",
+  "authorityPath": ".github/cxorbia-firebase-requests/corte4-p0-vis02b-final-revalidate.json",
+  "executorPath": ".github/workflows/cxorbia-corte4-p0-vis02b-final-revalidate.yml",
+  "historicalAuthorizationId": "c4-p0-vis02b-final-20260729-01",
+  "evidence": {
+    "historicalRequestBefore": "enabled=true with one Hosting DEV write budget",
+    "executorBeforeAndAfter": "workflow_dispatch only; permissions contents:read; job if:false",
+    "treatment": "request authority disabled and provider write budget set to zero; historical text and identity preserved; consumed remains false because this tombstone does not fabricate an execution",
+    "disposition": "INERTIZED_WITHOUT_EXECUTION"
+  },
+  "progress": {
+    "residualBefore": 28,
+    "tombstonedTotalAfter": 3,
+    "residualAfter": 27
+  },
+  "safety": {
+    "providerWrites": 0,
+    "hostingDeploys": 0,
+    "dataWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "payments": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "merge": false,
+    "frontendFunctionalChanges": 0
+  },
+  "decision": "PASS_CP108_HISTORICAL_AUTHORITY_INERTIZED_WITHOUT_EXECUTION",
+  "next": "M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_27"
+}

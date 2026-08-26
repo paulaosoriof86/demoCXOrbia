@@ -4,7 +4,7 @@
   "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
   "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
   "previousMechanismEpoch": "RC15-M3-MECHANISM-20260825-01",
-  "sourceHeadBefore": "f164110bfe09fc817a451e9e3bb6f4503578c164",
+  "sourceHeadBefore": "632d64214eb7614fe4e154314960fc5bc9b1c756",
   "phase": "M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY",
   "status": "ACTIVE_FINITE_QUEUE",
   "policy": {
@@ -23,8 +23,8 @@
   },
   "progress": {
     "residualHoldsAtM3Start": 30,
-    "tombstonedHoldsThisMilestone": 2,
-    "currentResidualHolds": 28,
+    "tombstonedHoldsThisMilestone": 3,
+    "currentResidualHolds": 27,
     "historicalGlobalExhaustive": false
   },
   "completedTombstones": [
@@ -48,11 +48,24 @@
       "productionPromotions": 0,
       "conditionalRollbacks": 0,
       "evidencePreserved": true
+    },
+    {
+      "findingId": "RC15-CP-108",
+      "authorityPath": ".github/cxorbia-firebase-requests/corte4-p0-vis02b-final-revalidate.json",
+      "requestId": "c4-p0-vis02b-final-20260729-01",
+      "executorPath": ".github/workflows/cxorbia-corte4-p0-vis02b-final-revalidate.yml",
+      "disposition": "INERTIZED_WITHOUT_EXECUTION",
+      "currentExecutionAuthority": false,
+      "providerMutationExecutions": 0,
+      "hostingDeployExecutions": 0,
+      "dataWrites": 0,
+      "evidencePreserved": true,
+      "evidence": "app/docs/evidence/RC15-M3-CP108-TOMBSTONE-LATEST.json"
     }
   ],
   "queueIntegrity": {
     "status": "RECONCILED_TO_M2_LOCKED_UNIVERSE",
-    "derivation": "TRANCHE8 residual 24 + TRANCHE11 HOLD CP124/CP125 + TRANCHE12 HOLD CP127/CP130/CP131 + TRANCHE14 HOLD CP142 = M2 residual 30; subtract completed CP011 and CP142 = 28 pending",
+    "derivation": "TRANCHE8 residual 24 + TRANCHE11 HOLD CP124/CP125 + TRANCHE12 HOLD CP127/CP130/CP131 + TRANCHE14 HOLD CP142 = M2 residual 30; subtract completed CP011, CP142 and CP108 = 27 pending",
     "authoritativeEvidence": [
       "app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE8-DETAIL.json",
       "app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE11-DETAIL.json",
@@ -61,22 +74,15 @@
       "app/docs/evidence/RC15-M2-FINITE-F0-CLOSURE-LATEST.json"
     ],
     "correction": {
-      "addedMissing": [
-        "RC15-CP-074",
-        "RC15-CP-078",
-        "RC15-CP-090"
-      ],
-      "removedNonResidual": [
-        "RC15-CP-117",
-        "RC15-CP-118"
-      ],
+      "addedMissing": ["RC15-CP-074", "RC15-CP-078", "RC15-CP-090"],
+      "removedNonResidual": ["RC15-CP-117", "RC15-CP-118"],
       "priorDeclaredResidual": 28,
       "priorEnumeratedResidual": 27,
       "correctEnumeratedResidual": 28
     }
   },
   "remainingQueuePolicy": {
-    "currentResidualHolds": 28,
+    "currentResidualHolds": 27,
     "authoritativeUniverse": "M2 locked F0 evidence derived deterministically by active validator",
     "priorityFindingIds": [
       "RC15-CP-005",
@@ -101,7 +107,6 @@
       "RC15-CP-090",
       "RC15-CP-091",
       "RC15-CP-094",
-      "RC15-CP-108",
       "RC15-CP-124",
       "RC15-CP-125",
       "RC15-CP-127",

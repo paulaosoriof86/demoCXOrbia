@@ -6,21 +6,21 @@
 **MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`
 **MASTER_PLAN_STATUS:** `FROZEN`
 **currentMasterPhase:** `M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY` — `ACTIVE`
-**M3:** `MECHANISM_CERTIFIED_PASS + QUEUE_INTEGRITY_REPAIRED`
-**NEXT:** `M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28`
+**M3:** `MECHANISM_CERTIFIED_PASS + QUEUE_INTEGRITY_REPAIRED + CP108_TOMBSTONED`
+**NEXT:** `M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_27`
 **PHASE_A:** `98/100`
 
 ## Estado
 
-M1/M2/F0 continúan CLOSED_PASS. M3 mantiene CP011 y CP142 inertizados sin ejecución: quedan 28 residuales. La cola explícita fue corregida contra la evidencia M2/F0: CP074, CP078 y CP090 faltaban; CP117 y CP118 no pertenecían a la cola residual. No se redujo el backlog en este bloque y no se infla el avance.
+M1/M2/F0 continúan CLOSED_PASS. M3 tiene CP011, CP142 y CP108 inertizados sin ejecución: quedan 27 residuales. CP108 era un request histórico todavía `enabled=true` con budget de un Hosting DEV, aunque su workflow nominal ya estaba estructuralmente inerte. Se revocó únicamente esa autoridad histórica: `enabled=false`, `consumed=false`, `currentExecutionAuthority=false`, Hosting budget=0.
 
 ## Mecanismo
 
-El validador canónico ahora exige longitud exacta de cola, IDs únicos, aritmética 30 - tombstones = residual, exclusión de completados y membresía exacta contra los tramos bloqueados. State-sync, continuity-lock y checkpoint dejaron de depender del literal 28 y derivan el residual actual, evitando nuevas iteraciones de recableado por cada tombstone.
+El validador canónico deriva el universo residual desde la evidencia M2/F0, comprueba longitud, unicidad, aritmética, membresía y ahora también la inertización material de CP108. No se marca como consumido ningún request que nunca fue ejecutado.
 
 ## Claude/prototipo
 
-Sin cambio funcional frontend. No modificar UI, `/app/modules` ni `/app/core`; no solicitar candidata nueva. Esta reparación es exclusivamente backend/control-plane.
+Sin cambio funcional frontend. No modificar UI, `/app/modules` ni `/app/core`; no solicitar candidata nueva.
 
 ## Academia
 
@@ -28,8 +28,4 @@ Sin impacto funcional en manuales, cursos, rutas por rol ni notificaciones.
 
 ## Siguiente
 
-Después del readback + gate source-only de esta reparación, el siguiente tombstone seguro es `RC15-CP-108`. Su workflow nominal ya está inerte; se debe terminalizar únicamente la autoridad histórica sin provider/deploy/data write y reducir 28 → 27.
-
-## G2-B
-
-Sigue `RECOVERY_NO_PROVIDER_SIDE_EFFECT`, retry/replay=false, provider `cxorbia-live-hr-dev-00011-f2f`. M4/F3 solo después de M3 `CLOSED_PASS`.
+Readback + gate source-only del tombstone y continuar la cola finita de 27. G2-B sigue `RECOVERY_NO_PROVIDER_SIDE_EFFECT`, retry/replay=false; M4/F3 solo después de M3 `CLOSED_PASS`.

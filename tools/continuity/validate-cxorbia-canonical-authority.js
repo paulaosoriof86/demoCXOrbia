@@ -15,6 +15,7 @@ const tomb=json('backend/config/cxorbia-historical-authority-tombstones.json');
 const ledger=json('backend/config/cxorbia-consumed-one-shot-gates.json');
 const aliases=json('backend/config/cxorbia-evidence-aliases.json');
 const cp011=json('.github/cxorbia-firebase-requests/corte4-protected-smoke-temp-operator.json');
+const cp108=json('.github/cxorbia-firebase-requests/corte4-p0-vis02b-final-revalidate.json');
 const cp142=json('backend/config/m9-provider-precutover-readonly-execute.json');
 const t8=json('app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE8-DETAIL.json');
 const t11=json('app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE11-DETAIL.json');
@@ -49,8 +50,13 @@ if(Number(lock.m3ExecutionControl?.currentResidualHolds)!==current||Number(m3.f1
 for(const k of ['providerWrites','dataWrites','authWrites','firestoreWrites','storageWrites','hrWrites','cloudBuilds','cloudRunUpdates','hostingDeploys','rulesWrites','payments','makeCalls','geminiCalls','g2bExecutions'])if(Number(m3.safety?.[k]||0)!==0)fail(`m3_unsafe_${k}`);
 if(m3.safety?.merge!==false||m3.safety?.frontendFunctionalChanges!==0)fail('m3_unsafe_repo_frontend');
 if(tomb.m3MechanismEpoch!==E||tomb.status!=='ACTIVE_FINITE_QUEUE'||tomb.progress?.historicalGlobalExhaustive!==false)fail('tombstone_registry');
-for(const [id,p] of [['RC15-CP-011','.github/cxorbia-firebase-requests/corte4-protected-smoke-temp-operator.json'],['RC15-CP-142','backend/config/m9-provider-precutover-readonly-execute.json']]){const row=completed.find(x=>x.findingId===id);if(!row||row.authorityPath!==p||row.disposition!=='INERTIZED_WITHOUT_EXECUTION'||row.currentExecutionAuthority!==false)fail(`tombstone_${id}`);}
+for(const [id,p] of [
+  ['RC15-CP-011','.github/cxorbia-firebase-requests/corte4-protected-smoke-temp-operator.json'],
+  ['RC15-CP-108','.github/cxorbia-firebase-requests/corte4-p0-vis02b-final-revalidate.json'],
+  ['RC15-CP-142','backend/config/m9-provider-precutover-readonly-execute.json']
+]){const row=completed.find(x=>x.findingId===id);if(!row||row.authorityPath!==p||row.disposition!=='INERTIZED_WITHOUT_EXECUTION'||row.currentExecutionAuthority!==false)fail(`tombstone_${id}`);}
 if(cp011.enabled!==false||cp011.consumed!==false||cp011.status!=='HISTORICAL_INERT_M3'||cp011.currentExecutionAuthority!==false)fail('cp011_not_inert');
+if(cp108.enabled!==false||cp108.consumed!==false||cp108.status!=='HISTORICAL_INERT_M3'||cp108.currentExecutionAuthority!==false||cp108.disposition!=='INERTIZED_WITHOUT_EXECUTION'||Number(cp108.allowedProviderWrites?.hostingDeployExecutions)!==0)fail('cp108_not_inert');
 if(cp142.enabled!==false||cp142.consumed!==false||cp142.status!=='HISTORICAL_INERT_M3'||cp142.currentExecutionAuthority!==false||Number(cp142.maxProductionPromotions)!==0||Number(cp142.maxConditionalRollbacks)!==0)fail('cp142_not_inert');
 if(ledger.m3MechanismEpoch!==E||ledger.coverage?.historicalGlobalExhaustive!==false||ledger.policy?.neverExecutedHistoricalAuthorityMustNotBeMarkedConsumed!==true)fail('ledger');
 if(aliases.m3MechanismEpoch!==E||aliases.policy?.aliasesNeverAuthorizeExecution!==true||aliases.policy?.conversationInterruptionDoesNotInvalidateTerminalPass!==true)fail('aliases');

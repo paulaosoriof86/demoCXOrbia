@@ -20,8 +20,8 @@
   "coverage": {
     "historicalGlobalExhaustive": false,
     "tombstoneRegistry": "backend/config/cxorbia-historical-authority-tombstones.json",
-    "currentResidualHolds": 28,
-    "note": "M3 is active. Actual consumed executions remain immutable here; never-executed historical authorities are tracked separately as INERTIZED_WITHOUT_EXECUTION."
+    "currentResidualHolds": 27,
+    "note": "M3 is active. Actual consumed executions remain immutable here; never-executed historical authorities are tracked separately as INERTIZED_WITHOUT_EXECUTION. CP108 is tombstoned and is intentionally not added to consumedRequests."
   },
   "consumedRequests": [
     {"requestId":"i5-existing-project-precutover-staff-live-authority-readonly-20260820-01","status":"CONSUMED_PASS_READONLY","runId":32342457328,"jobId":96344128319,"artifactId":9396828201,"decision":"PASS_READONLY_POST_GATES","functionalSourceLock":"f9802fdd498934a8e7729fa5c7d18341bec1cd71","repositoryWrites":false,"dataWrites":false,"providerWrites":false,"deploy":false,"merge":false,"production":false,"source":".github/cxorbia-gate-requests/request.json"},

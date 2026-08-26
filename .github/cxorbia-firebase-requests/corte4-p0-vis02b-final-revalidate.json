@@ -1,6 +1,11 @@
 {
   "schemaVersion": "cxorbia.corte4-p0-vis02b-final-revalidate.v1",
-  "enabled": true,
+  "enabled": false,
+  "consumed": false,
+  "status": "HISTORICAL_INERT_M3",
+  "currentExecutionAuthority": false,
+  "disposition": "INERTIZED_WITHOUT_EXECUTION",
+  "inertizedBy": "RC15-M3-F1-CP108",
   "authorizationSource": "current_conversation",
   "authorizationText": "Autorizo un único Hosting DEV final para revalidación de P0-C4-VIS-02B, sin data writes ni producción",
   "authorizationId": "c4-p0-vis02b-final-20260729-01",
@@ -18,7 +23,7 @@
   "merge": false,
   "triggerNonce": 1,
   "allowedProviderWrites": {
-    "hostingDeployExecutions": 1,
+    "hostingDeployExecutions": 0,
     "firestoreDocuments": 0,
     "authUsers": 0,
     "authConfig": 0,

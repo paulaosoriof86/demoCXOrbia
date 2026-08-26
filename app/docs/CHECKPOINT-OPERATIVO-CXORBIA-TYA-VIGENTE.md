@@ -8,22 +8,18 @@
 **currentMasterPhase:** `M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY` — `ACTIVE`
 **M1:** `CLOSED_PASS`
 **M2:** `CLOSED_PASS`
-**M3:** `MECHANISM_CERTIFIED_PASS`
-**NEXT:** `M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28`
+**M3:** `MECHANISM_CERTIFIED_PASS + CP108_TOMBSTONED`
+**NEXT:** `M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_27`
 **PHASE_A:** `98/100`
-
-## Certificación del mecanismo
-
-La causa del bucle de M3 fue control-plane, no producto: mirrors/lock podían desincronizarse; workflows históricos reaccionaban a commits source-only; el checkpoint legacy confundía HEAD de control-plane con source funcional; y el provider preflight G2-B corría en fase M3. Esos defectos fueron reproducidos y corregidos.
-
-El gate aislado definitivo, run `32909591852` sobre HEAD `6d31740c43f9ae98dd9f66a8b42da0affaf0bb80`, concluyó `success`. Pasaron source syntax, master-plan freeze, canonical authority, M3 state sync, M3 continuity lock y current Phase A checkpoint. Solo un workflow push se ejecutó y no hubo provider preflight automático.
 
 ## Avance M3 preservado
 
-CP011 y CP142 permanecen `INERTIZED_WITHOUT_EXECUTION`; 30 → 28 residuales. M1/M2/F0 no se reabren.
+CP011, CP142 y CP108 permanecen `INERTIZED_WITHOUT_EXECUTION`; la cola baja 30 → 27 residuales. CP108 no se marca consumido porque no hubo ejecución: se revocó su autoridad histórica y su budget Hosting quedó en cero mientras el workflow nominal continúa inerte.
+
+## Mecanismo
+
+La cola se valida dinámicamente contra el universo M2/F0: longitud, unicidad, aritmética y membresía exacta. Cada transición M3 requiere un único commit Git atómico, readback remoto y gate source-only.
 
 ## Seguridad y siguiente
 
-Cloud Run preservado `cxorbia-live-hr-dev-00011-f2f`. G2-B continúa `RECOVERY_NO_PROVIDER_SIDE_EFFECT`, retry/replay=false y providerMutationAuthorizedNow=false. La certificación tuvo cero escrituras a proveedor/datos y cero deploy/merge/frontend funcional.
-
-Continuar directamente con `M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28` usando el mecanismo certificado: lote finito, un commit atómico, readback y gate source-only. M4/F3 solo después de M3 `CLOSED_PASS`.
+Cloud Run preservado `cxorbia-live-hr-dev-00011-f2f`. G2-B continúa `RECOVERY_NO_PROVIDER_SIDE_EFFECT`, retry/replay=false y providerMutationAuthorizedNow=false. Cero provider/data/deploy/merge/frontend funcional. Continuar `M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_27`; M4/F3 solo después de M3 `CLOSED_PASS`.

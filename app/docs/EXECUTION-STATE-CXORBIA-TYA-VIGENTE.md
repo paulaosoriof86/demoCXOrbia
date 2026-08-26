@@ -6,21 +6,17 @@
 **MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`
 **MASTER_PLAN_STATUS:** `FROZEN`
 **currentMasterPhase:** `M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY` — `ACTIVE`
-**M3:** `MECHANISM_CERTIFIED_PASS`
-**NEXT:** `M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28`
+**M3:** `MECHANISM_CERTIFIED_PASS + 3_OF_30_TOMBSTONED`
+**NEXT:** `M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_27`
 **PHASE_A:** `98/100`
 
 ## Autoridad actual
 
-La autoridad dinámica es el continuity lock M3 certificado, junto con evidencia M3, certificación, validator authority, tombstones, consumed ledger y aliases. PR body, requests/event artifacts, conversaciones y validadores/workflows históricos no son autoridad.
-
-## Control certificado
-
-`productionState.functionalSourceLock` es el lock funcional; el HEAD de control-plane puede avanzar sin constituir drift funcional. Toda transición M3 usa un único commit Git atómico, readback y gate source-only. El provider preflight queda fuera de M3 y manual/inert hasta M4/F3.
+Continuity lock + master plan congelado + evidencia M3 + validator authority + tombstones + consumed ledger + aliases. Requests/event artifacts históricos no son autoridad por sí mismos.
 
 ## Estado y ejecución permitida
 
-M1/M2 CLOSED_PASS; F0 4/4 congelado; CP011 y CP142 inertizados; quedan 28 residuales. Solo se permiten cambios source/control-plane M3 sobre esa cola finita. Provider/data/deploy/merge/frontend funcional permanecen bloqueados.
+M1/M2 CLOSED_PASS; F0 4/4 congelado; CP011, CP142 y CP108 inertizados sin ejecución; quedan 27 residuales. Solo se permiten cambios source/control-plane M3 sobre esa cola finita. Provider/data/deploy/merge/frontend funcional permanecen bloqueados.
 
 ## G2-B
 

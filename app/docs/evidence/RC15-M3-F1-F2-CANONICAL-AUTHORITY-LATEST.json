@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.rc15.m3.canonical-authority.v3",
-  "generatedAt": "2026-08-25T17:13:00-06:00",
+  "generatedAt": "2026-08-25T20:10:00-06:00",
   "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
   "masterPlanStatus": "FROZEN",
   "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
@@ -9,21 +9,21 @@
   "certifiedAtHead": "6d31740c43f9ae98dd9f66a8b42da0affaf0bb80",
   "certifyingRunId": 32909591852,
   "block": "M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY",
-  "status": "ACTIVE_MECHANISM_CERTIFIED_PASS_2_OF_30_TOMBSTONED",
+  "status": "ACTIVE_MECHANISM_CERTIFIED_PASS_3_OF_30_TOMBSTONED",
   "phaseA": {"completed":98,"pending":2,"total":100},
   "entryGate": {"m1":"CLOSED_PASS","m2":"CLOSED_PASS","f0":"CLOSED_PASS_4_OF_4","unclassifiedWriteCapableSurfaces":0,"newP0Proven":false},
   "mechanismCorrection": {
-    "status": "CERTIFIED_PASS",
+    "status": "CERTIFIED_PASS_QUEUE_INTEGRITY_ENFORCED",
     "validatorAuthority": "backend/config/cxorbia-validator-authority.json",
     "certificationEvidence": "app/docs/evidence/RC15-M3-MECHANISM-CERTIFICATION-LATEST.json",
+    "queueRepairEvidence": "app/docs/evidence/RC15-M3-QUEUE-INTEGRITY-REPAIR-LATEST.json",
     "sourceOnlyGate": ".github/workflows/cxorbia-phase-a-live-checkpoint.yml",
     "controls": [
-      "Continuity lock, M3 evidence, certification evidence, validator authority and mirrors advance atomically.",
-      "Functional source lock is productionState.functionalSourceLock and is distinct from control-plane HEAD.",
-      "Only explicitly listed M3 validators are current state authority.",
+      "Continuity lock, M3 evidence, validator authority, tombstones, ledger and mirrors advance atomically.",
+      "Functional source lock is distinct from control-plane HEAD.",
       "Historical never-executed authority is inertized without falsely marking it consumed.",
-      "Historical provider/deploy workflows are inert during M3; provider preflight cannot auto-run in M3.",
-      "Every M3 canonical materialization uses one atomic Git commit plus remote readback and source-only gate.",
+      "Queue cardinality, uniqueness, arithmetic and membership are derived from the locked M2/F0 universe.",
+      "Every M3 materialization uses one atomic Git commit plus remote readback and source-only gate.",
       "Remaining M3 work is the finite M2-locked queue; no new audit tranche is permitted."
     ],
     "activeValidators": [
@@ -34,11 +34,18 @@
       "tools/qa/verify-phase-a-live-execution-checkpoint.mjs"
     ]
   },
-  "f1": {"residualHoldsAtStart":30,"inertizedThisMilestone":["RC15-CP-011","RC15-CP-142"],"currentResidualHolds":28,"tombstoneRegistry":"backend/config/cxorbia-historical-authority-tombstones.json","historicalGlobalExhaustive":false},
+  "f1": {
+    "residualHoldsAtStart": 30,
+    "inertizedThisMilestone": ["RC15-CP-011","RC15-CP-142","RC15-CP-108"],
+    "currentResidualHolds": 27,
+    "tombstoneRegistry": "backend/config/cxorbia-historical-authority-tombstones.json",
+    "latestTombstoneEvidence": "app/docs/evidence/RC15-M3-CP108-TOMBSTONE-LATEST.json",
+    "historicalGlobalExhaustive": false
+  },
   "f2": {"aliasesNormalized":true,"consumedLedgerPreserved":true,"consumedStateFabricated":false,"staleValidatorsSupersededByExplicitAuthoritySet":true,"historicalWorkflowPushAuthorityInertized":true,"atomicStateMaterializationRequired":true,"singleAuthorityRule":"Frozen master-plan identity + aligned continuity lock + explicit M3 validator authority + current M3 evidence/certification/tombstones/ledger/aliases. PR, historical execute/request/workflow/validator artifacts are non-authoritative.","status":"MECHANISM_CERTIFIED_PASS"},
-  "materialization": {"singleCommitRequired":true,"remoteReadbackRequired":true,"sourceOnlyGateRequired":true,"certificationRunId":32909591852,"providerSideEffects":0,"dataSideEffects":0,"mechanismCertified":true},
+  "materialization": {"singleCommitRequired":true,"remoteReadbackRequired":true,"sourceOnlyGateRequired":true,"providerSideEffects":0,"dataSideEffects":0,"mechanismCertified":true},
   "g2b": {"decision":"RECOVERY_NO_PROVIDER_SIDE_EFFECT","retryAuthorized":false,"replayAuthorized":false,"providerMutationAuthorizedNow":false,"syntheticStageBlocked":true,"nextOnlyAfterM3Closed":"M4_F3_G2B_RECOVERY_LANE_READONLY_REVALIDATION"},
   "safety": {"providerWrites":0,"dataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"cloudBuilds":0,"cloudRunUpdates":0,"hostingDeploys":0,"rulesWrites":0,"payments":0,"makeCalls":0,"geminiCalls":0,"g2bExecutions":0,"merge":false,"frontendFunctionalChanges":0},
-  "decision": "M3_MECHANISM_CERTIFIED_PASS_CONTINUE_FINITE_F1_QUEUE",
-  "next": "M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28"
+  "decision": "M3_CP108_INERTIZED_WITHOUT_EXECUTION_CONTINUE_FINITE_QUEUE",
+  "next": "M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_27"
 }
