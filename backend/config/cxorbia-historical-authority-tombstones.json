@@ -1,13 +1,31 @@
 {
-  "schemaVersion":"cxorbia.rc15.historical-authority-tombstones.v7",
-  "masterPlanId":"CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
-  "planId":"CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
-  "m3MechanismEpoch":"RC15-M3-MECHANISM-20260825-02",
-  "phase":"M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY",
-  "status":"ACTIVE_FINITE_QUEUE",
-  "policy":{"historicalArtifactsNeverAuthorizeCurrentExecution":true,"conversationInterruptionNeverReactivatesAuthority":true,"namingDifferenceNeverReactivatesAuthority":true,"terminalReceiptOverridesHistoricalEventArtifactFlags":true,"neverExecutedHistoricalAuthorityDisposition":"INERTIZED_WITHOUT_EXECUTION","neverFabricateConsumedState":true,"futureExecutionRequiresDistinctRequestId":true,"futureExecutionRequiresCurrentExplicitAuthorization":true,"futureExecutionRequiresCanonicalGrantBeforeProviderAccess":true,"noUnboundedRediscovery":true,"remainingQueueComesOnlyFromM2LockedInventory":true,"canonicalStateMaterializationMustBeAtomic":true},
-  "progress":{"residualHoldsAtM3Start":30,"tombstonedHoldsThisMilestone":17,"currentResidualHolds":13,"historicalGlobalExhaustive":false},
-  "completedTombstones":[
+  "schemaVersion": "cxorbia.rc15.historical-authority-tombstones.v8-terminal13",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
+  "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
+  "phase": "M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY",
+  "status": "M3_TERMINAL_13_MATERIALIZED_READBACK_PENDING",
+  "policy": {
+    "historicalArtifactsNeverAuthorizeCurrentExecution": true,
+    "conversationInterruptionNeverReactivatesAuthority": true,
+    "namingDifferenceNeverReactivatesAuthority": true,
+    "terminalReceiptOverridesHistoricalEventArtifactFlags": true,
+    "neverExecutedHistoricalAuthorityDisposition": "INERTIZED_WITHOUT_EXECUTION",
+    "neverFabricateConsumedState": true,
+    "futureExecutionRequiresDistinctRequestId": true,
+    "futureExecutionRequiresCurrentExplicitAuthorization": true,
+    "futureExecutionRequiresCanonicalGrantBeforeProviderAccess": true,
+    "noUnboundedRediscovery": true,
+    "remainingQueueComesOnlyFromM2LockedInventory": true,
+    "canonicalStateMaterializationMustBeAtomic": true
+  },
+  "progress": {
+    "residualHoldsAtM3Start": 30,
+    "tombstonedHoldsThisMilestone": 30,
+    "currentResidualHolds": 0,
+    "historicalGlobalExhaustive": true
+  },
+  "completedTombstones": [
     {"findingId":"RC15-CP-011","authorityPath":".github/cxorbia-firebase-requests/corte4-protected-smoke-temp-operator.json","requestId":"corte4-protected-smoke-temp-operator-20260729-01","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"providerMutationExecutions":0,"dataWrites":0,"evidencePreserved":true},
     {"findingId":"RC15-CP-142","authorityPath":"backend/config/m9-provider-precutover-readonly-execute.json","requestId":"m9-retry-after-hosting-entry-parity-pass-20260813-01","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"providerMutationExecutions":0,"productionPromotions":0,"conditionalRollbacks":0,"evidencePreserved":true},
     {"findingId":"RC15-CP-108","authorityPath":".github/cxorbia-firebase-requests/corte4-p0-vis02b-final-revalidate.json","requestId":"c4-p0-vis02b-final-20260729-01","executorPath":".github/workflows/cxorbia-corte4-p0-vis02b-final-revalidate.yml","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"providerMutationExecutions":0,"hostingDeployExecutions":0,"dataWrites":0,"evidencePreserved":true,"evidence":"app/docs/evidence/RC15-M3-CP108-TOMBSTONE-LATEST.json"},
@@ -24,10 +42,40 @@
     {"findingId":"RC15-CP-125","authorityPaths":["tools/empalme/tya-apply-v105-internal-v106-runtime.sh","backend/config/phase-a-v105-v106-empalme-request.source-safe.json"],"disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"dataWrites":0,"sourceWritesExecuted":0,"evidencePreserved":true,"batch":"M3_FINITE_QUEUE_BATCH_2"},
     {"findingId":"RC15-CP-127","authorityPath":"tools/reconciliation/tya-apply-existing-r11d-r14c-certification-r18b.mjs","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"dataWrites":0,"sourceWritesExecuted":0,"evidencePreserved":true,"batch":"M3_FINITE_QUEUE_BATCH_2"},
     {"findingId":"RC15-CP-130","authorityPaths":["tools/release/tya-create-new-empty-firebase-dev-r15.mjs","tools/release/tya-create-new-empty-firebase-dev-r15b.mjs"],"disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"projectCreationExecutions":0,"firebaseAddExecutions":0,"evidencePreserved":true,"batch":"M3_FINITE_QUEUE_BATCH_2"},
-    {"findingId":"RC15-CP-131","authorityPath":"tools/release/tya-r15g-dev-root-deploy.sh","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"hostingDeployExecutions":0,"sourceWritesExecuted":0,"evidencePreserved":true,"batch":"M3_FINITE_QUEUE_BATCH_2"}
+    {"findingId":"RC15-CP-131","authorityPath":"tools/release/tya-r15g-dev-root-deploy.sh","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"hostingDeployExecutions":0,"sourceWritesExecuted":0,"evidencePreserved":true,"batch":"M3_FINITE_QUEUE_BATCH_2"},
+    {"findingId":"RC15-CP-005","authorityPath":".github/cxorbia-firebase-requests/corte4-bootstrap-execute.json","executorPath":".github/workflows/cxorbia-corte4-bootstrap-readonly-execute.yml","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"dataWrites":0,"workflowAlreadyQuiesced":true,"evidencePreserved":true,"batch":"M3_TERMINAL_13"},
+    {"findingId":"RC15-CP-014","authorityClass":"G2B_SYNTHETIC_HISTORICAL_PREFLIGHT_AUTHORITY","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"dataWrites":0,"evidencePreserved":true,"batch":"M3_TERMINAL_13"},
+    {"findingId":"RC15-CP-017","executorPath":".github/workflows/cxorbia-r24-new-empty-firebase-dev.yml","authorityClass":"HISTORICAL_FIREBASE_PROJECT_CREATE_ADD_FIREBASE","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"projectCreationExecutions":0,"firebaseAddExecutions":0,"workflowAlreadyQuiesced":true,"evidencePreserved":true,"batch":"M3_TERMINAL_13"},
+    {"findingId":"RC15-CP-025","executorPath":".github/workflows/cxorbia-c6-p0-postdeploy-readonly-recheck.yml","authorityClass":"REPEATABLE_POSTDEPLOY_STATE_EVIDENCE_WRITER","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"dataWrites":0,"workflowAlreadyQuiesced":true,"evidencePreserved":true,"batch":"M3_TERMINAL_13"},
+    {"findingId":"RC15-CP-028","executorPath":".github/workflows/cxorbia-c6-shopper-deterministic-suffix-crosswalk-rootfix-source-only.yml","authorityClass":"HISTORICAL_SOURCE_PRODUCT_WRITER","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"sourceWritesExecuted":0,"workflowAlreadyQuiesced":true,"evidencePreserved":true,"batch":"M3_TERMINAL_13"},
+    {"findingId":"RC15-CP-029","executorPath":".github/workflows/cxorbia-corte6-postdeploy-readonly-revalidation.yml","authorityClass":"PROVIDER_READ_STATE_EVIDENCE_WRITER","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"dataWrites":0,"workflowAlreadyQuiesced":true,"evidencePreserved":true,"batch":"M3_TERMINAL_13"},
+    {"findingId":"RC15-CP-045","executorPath":".github/workflows/cxorbia-c6-hold-profile-live-hr-readonly.yml","authorityClass":"PROVIDER_READ_BUDGET_ENFORCEMENT_MISMATCH","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"dataWrites":0,"workflowAlreadyQuiesced":true,"evidencePreserved":true,"batch":"M3_TERMINAL_13"},
+    {"findingId":"RC15-CP-063","executorPath":".github/workflows/cxorbia-corte6-profile-extra-readonly.yml","authorityClass":"BUNDLE_TRIGGERABLE_PROVIDER_READ_STATE_WRITER","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"dataWrites":0,"workflowAlreadyQuiesced":true,"evidencePreserved":true,"batch":"M3_TERMINAL_13"},
+    {"findingId":"RC15-CP-074","authorityClass":"CLEAN_STATE_PROVIDER_READER_AUTHORIZATION_BYPASS","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"dataWrites":0,"evidencePreserved":true,"batch":"M3_TERMINAL_13"},
+    {"findingId":"RC15-CP-078","executorPath":".github/workflows/cxorbia-phase-a-live-hr-read-probe.yml","authorityClass":"LIVE_HR_READ_AND_REPOSITORY_STATE_WRITER_WITHOUT_CURRENT_LOCK","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"hrWrites":0,"dataWrites":0,"workflowAlreadyQuiesced":true,"evidencePreserved":true,"batch":"M3_TERMINAL_13"},
+    {"findingId":"RC15-CP-090","authorityPath":".github/cxorbia-firebase-requests/corte4-p0-vis02-diagnostic.json","executorPath":".github/workflows/cxorbia-corte4-p0-vis02-diagnostic.yml","authorityClass":"CROSS_REQUEST_AUTHORITY_MISMATCH","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"hostingDeployExecutions":0,"workflowAlreadyQuiesced":true,"evidencePreserved":true,"batch":"M3_TERMINAL_13"},
+    {"findingId":"RC15-CP-091","authorityPath":".github/cxorbia-firebase-requests/corte4-p0-vis02-revalidate.json","executorPath":".github/workflows/cxorbia-corte4-p0-vis02-revalidate.yml","authorityClass":"HISTORICAL_REPEATABLE_HOSTING_DEPLOY_AUTHORITY","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"hostingDeployExecutions":0,"workflowAlreadyQuiesced":true,"evidencePreserved":true,"batch":"M3_TERMINAL_13"},
+    {"findingId":"RC15-CP-094","authorityPath":".github/cxorbia-firebase-requests/live-hr-country-tab-consistency.json","executorPath":".github/workflows/tya-hr-country-tab-consistency-current.yml","authorityClass":"LIVE_HR_PROVIDER_READ_REGISTRY_EVIDENCE_WRITER_WITHOUT_CURRENT_LOCK","disposition":"INERTIZED_WITHOUT_EXECUTION","currentExecutionAuthority":false,"consumed":false,"replayAuthorized":false,"providerMutationExecutions":0,"hrWrites":0,"dataWrites":0,"workflowAlreadyQuiesced":true,"evidencePreserved":true,"batch":"M3_TERMINAL_13"}
   ],
-  "latestBatch":{"batchId":"M3_FINITE_QUEUE_BATCH_2","status":"CLOSED_PASS_DIRECT_REMOTE_READBACK","materializationCommitSha":"3e06470c887fc76cd21c0e2c720fa537017a82bd","remoteHeadReadback":"3e06470c887fc76cd21c0e2c720fa537017a82bd","materializedFindingIds":["RC15-CP-124","RC15-CP-125","RC15-CP-127","RC15-CP-130","RC15-CP-131"],"count":5,"before":{"tombstoned":12,"remaining":18},"after":{"tombstoned":17,"remaining":13},"evidence":"app/docs/evidence/RC15-M3-BATCH2-TOMBSTONE-LATEST.json"},
-  "queueIntegrity":{"status":"RECONCILED_TO_M2_LOCKED_UNIVERSE","derivation":"M2 residual 30; subtract 17 completed tombstones = 13 pending","authoritativeEvidence":["app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE11-DETAIL.json","app/docs/evidence/RC15-SYSTEMIC-AUDIT-CONTROL-PLANE-TRANCHE12-DETAIL.json","app/docs/evidence/RC15-M2-FINITE-F0-CLOSURE-LATEST.json"]},
-  "remainingQueuePolicy":{"currentResidualHolds":13,"authoritativeUniverse":"M2 locked F0 evidence derived deterministically by active validator","priorityFindingIds":["RC15-CP-005","RC15-CP-014","RC15-CP-017","RC15-CP-025","RC15-CP-028","RC15-CP-029","RC15-CP-045","RC15-CP-063","RC15-CP-074","RC15-CP-078","RC15-CP-090","RC15-CP-091","RC15-CP-094"],"rule":"Resolve only the deterministic M2-locked residual set. No new audit tranche, methodology, branch or PR."},
-  "safety":{"providerWrites":0,"dataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"cloudBuilds":0,"cloudRunUpdates":0,"hostingDeploys":0,"rulesWrites":0,"payments":0,"makeCalls":0,"geminiCalls":0,"g2bExecutions":0,"merge":false,"frontendFunctionalChanges":0}
+  "latestBatch": {
+    "batchId": "M3_TERMINAL_13",
+    "status": "MATERIALIZED_PENDING_DIRECT_REMOTE_READBACK",
+    "materializedFindingIds": ["RC15-CP-005","RC15-CP-014","RC15-CP-017","RC15-CP-025","RC15-CP-028","RC15-CP-029","RC15-CP-045","RC15-CP-063","RC15-CP-074","RC15-CP-078","RC15-CP-090","RC15-CP-091","RC15-CP-094"],
+    "count": 13,
+    "before": {"tombstoned":17,"remaining":13},
+    "after": {"tombstoned":30,"remaining":0},
+    "evidence": "app/docs/evidence/RC15-M3-TERMINAL-13-TOMBSTONE-LATEST.json"
+  },
+  "queueIntegrity": {
+    "status": "M2_LOCKED_UNIVERSE_EXHAUSTED_PENDING_REMOTE_READBACK",
+    "derivation": "M2 residual 30; subtract 30 terminal tombstones = 0 pending",
+    "authoritativeEvidence": ["app/docs/evidence/RC15-M2-FINITE-F0-CLOSURE-LATEST.json","app/docs/evidence/RC15-M3-F1-F2-CANONICAL-AUTHORITY-LATEST.json","app/docs/evidence/RC15-M3-TERMINAL-13-TOMBSTONE-LATEST.json"]
+  },
+  "remainingQueuePolicy": {
+    "currentResidualHolds": 0,
+    "authoritativeUniverse": "M2 locked F0 evidence",
+    "priorityFindingIds": [],
+    "rule": "No Batch 4. M3 closes only after exact direct remote readback of this materialization."
+  },
+  "safety": {"providerWrites":0,"dataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"cloudBuilds":0,"cloudRunUpdates":0,"hostingDeploys":0,"rulesWrites":0,"payments":0,"makeCalls":0,"geminiCalls":0,"g2bExecutions":0,"merge":false,"frontendFunctionalChanges":0}
 }
