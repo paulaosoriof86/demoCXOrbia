@@ -2,19 +2,20 @@
 
 **Fecha de baseline:** 2026-08-26
 **Métrica canónica:** `PRODUCTION_REAL_READINESS`
-**Estado actual:** `69/100`
+**Estado actual:** `74/100`
 **MASTER_PLAN_VERSION:** `1.1.0`
 **PLAN_CHANGE_REQUEST:** `PCR-20260826-PRODUCTION-ACCELERATION-01`
 
-Esta métrica sigue siendo el indicador ejecutivo. `PHASE_A=98/100` se conserva como métrica técnica interna y no equivale a estar a dos puntos del go-live real.
+Esta métrica sigue siendo el indicador ejecutivo. `PHASE_A=98/100` se conserva como métrica técnica interna.
 
-## Gate 68 → 69 — CERRADO
+## Gate 69 → 74 — CERRADO
 
-`M3_0_CONTROL_PLANE_QUIESCENCE_SINGLE_AUTHORITY_BARRIER = CLOSED_PASS`. PR #7 cerrado/no mergeado, 22 workflows históricos exact-valid-inert, cero provider/data/deploy. GitHub Actions es telemetría no autoritativa.
+`M3_TERMINAL_13_CLOSURE = CLOSED_PASS_DIRECT_REMOTE_READBACK`. Los 30 HOLD históricos del universo M2 quedaron terminales, cola residual `0`, `historicalGlobalExhaustive=true`, sin Batch 4. Materialización terminal 13: `6ae1b835abd7e13deb05fd59b9226538949d1a64`; readback remoto exacto PASS; delta de 9 archivos de control-plane/docs, workflows/provider-runtime/frontend funcional tocados = 0. PR #7 cerrado/no mergeado.
+
+Provider/data/Auth/Firestore/Storage/HR/Rules/Make/Gemini/pagos/deploy/merge = 0 en M3.
 
 ## Escalera congelada V1.1
 
-- `69 → 74`: `M3_TERMINAL_13_CLOSURE` / F1-F2 totalmente cerrado, cola residual=0 y autoridad histórica terminal.
 - `74 → 76`: F3 `PROVIDER_PROMOTION_MECHANISM_V1` + `G2B_RECOVERY_LANE_PASS`.
 - `76 → 81`: F4 recovery G2-B one-shot `RECOVERY_PASS_FULL`.
 - `81 → 86`: F5 aceptación sintética integral real `PASS`, cleanup y readback.
@@ -27,4 +28,4 @@ Esta métrica sigue siendo el indicador ejecutivo. `PHASE_A=98/100` se conserva 
 
 El porcentaje solo aumenta cuando el gate indicado queda cerrado con evidencia reproducible. Diagnóstico, documentación, reintentos, pasos preparatorios o reparaciones parciales no inflan el porcentaje.
 
-No existe Batch 4. Si surge un bloqueo nuevo, debe clasificarse como `PRODUCT_P0`, `MECHANISM_P0` o `EXTERNAL_TRANSPORT_OUTAGE`; no se abre otra metodología por defecto.
+El siguiente bloque F3 es read-only y debe certificar el mecanismo de promoción provider antes de cualquier recovery G2-B. No existe autorización provider vigente.

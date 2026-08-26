@@ -5,21 +5,17 @@
 **MASTER_PLAN_VERSION:** `1.1.0`
 **MASTER_PLAN_STATUS:** `FROZEN`
 **PLAN_CHANGE_REQUEST:** `PCR-20260826-PRODUCTION-ACCELERATION-01`
-**M3_MECHANISM_EPOCH:** `RC15-M3-MECHANISM-20260825-02`
-**M3_0:** `CLOSED_PASS_DIRECT_GITHUB_READBACK`
-**M3:** `30_OF_30_MATERIALIZED__READBACK_PENDING`
-**NEXT:** `M3_TERMINAL_13_DIRECT_REMOTE_READBACK`
+**M3:** `CLOSED_PASS_30_OF_30_ZERO_RESIDUAL_DIRECT_REMOTE_READBACK`
+**NEXT:** `M4_F3_PROVIDER_PROMOTION_MECHANISM_AND_G2B_RECOVERY_LANE_READONLY_CERTIFICATION`
 **PHASE_A:** `98/100`
-**PRODUCTION_REAL_READINESS:** `69/100`
+**PRODUCTION_REAL_READINESS:** `74/100`
 
-M1/M2/F0, M3-0, `M3_FINITE_QUEUE_BATCH_1` y Batch 2 permanecen cerrados. Los 13 residuales exactos del universo M2 fueron materializados como tombstones terminales sin ejecución y la cola materializada queda 0. No existe Batch 4.
+M1/M2/F0, M3-0, Batch 1, Batch 2 y M3 terminal permanecen cerrados. Los 30 HOLD históricos del universo M2 están terminales; residual `0`; no existe Batch 4.
 
-La autoridad de los artefactos históricos queda anulada por el receipt/tombstone canónico; no se falsifica `consumed=true` para artefactos nunca ejecutados. Los workflows asociados ya estaban estructuralmente quiesced/inertes, por lo que no se reescribió frontend ni runtime funcional.
+La materialización de los últimos 13 quedó en `6ae1b835abd7e13deb05fd59b9226538949d1a64`, tree `f24202de1b1c9c4207f7274412c5ea65d31d92bf`, con readback remoto exacto y compare de un commit/9 archivos. No se tocaron workflows, provider/runtime ni frontend funcional. PR #7 sigue cerrado/no mergeado.
 
-M3 todavía no se declara `CLOSED_PASS` hasta completar readback remoto directo del commit atómico. Solo entonces `PRODUCTION_REAL_READINESS` podrá subir de 69 a 74 y el siguiente bloque será F3 `PROVIDER_PROMOTION_MECHANISM_V1` + `G2B_RECOVERY_LANE_PASS`.
+Siguiente: F3 debe construir/certificar `PROVIDER_PROMOTION_MECHANISM_V1` y `G2B_RECOVERY_LANE_PASS` en modo read-only. No hay autorización vigente de provider mutation ni recovery G2-B.
 
-No hay cambio funcional frontend. No modificar UI, `/app/modules` ni `/app/core`; no solicitar candidata nueva. Source funcional preservado: `f9802fdd498934a8e7729fa5c7d18341bec1cd71`.
+No modificar UI, `/app/modules` ni `/app/core`; source funcional preservado `f9802fdd498934a8e7729fa5c7d18341bec1cd71`.
 
-GitHub Actions es telemetría no autoritativa; provider/data/deploy/merge = 0.
-
-Academia: sin impacto funcional en este bloque; F7 volverá a verificar manuales, cursos, rutas por rol y notificaciones sobre el release exacto.
+Academia: sin impacto funcional en M3; F7 verificará manuales/cursos/rutas/notificaciones sobre el release exacto.

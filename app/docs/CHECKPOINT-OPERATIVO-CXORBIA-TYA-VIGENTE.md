@@ -7,22 +7,17 @@
 **MASTER_PLAN_VERSION:** `1.1.0`
 **MASTER_PLAN_STATUS:** `FROZEN`
 **PLAN_CHANGE_REQUEST:** `PCR-20260826-PRODUCTION-ACCELERATION-01`
-**currentMasterPhase:** `M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY`
-**currentMasterStep:** `M3_TERMINAL_13_DIRECT_REMOTE_READBACK`
+**currentMasterPhase:** `M3_CLOSED_PASS`
+**currentMasterStep:** `M4_F3_PROVIDER_PROMOTION_MECHANISM_AND_G2B_RECOVERY_LANE_READONLY_CERTIFICATION`
 **M1:** `CLOSED_PASS`
 **M2/F0:** `CLOSED_PASS_4_OF_4`
-**M3_0:** `CLOSED_PASS_DIRECT_GITHUB_READBACK`
-**M3:** `30_OF_30_MATERIALIZED__READBACK_PENDING`
-**NEXT:** `M3_TERMINAL_13_DIRECT_REMOTE_READBACK`
+**M3:** `CLOSED_PASS_30_OF_30_ZERO_RESIDUAL_DIRECT_REMOTE_READBACK`
+**NEXT:** `M4_F3_PROVIDER_PROMOTION_MECHANISM_AND_G2B_RECOVERY_LANE_READONLY_CERTIFICATION`
 **PHASE_A:** `98/100`
-**PRODUCTION_REAL_READINESS:** `69/100`
+**PRODUCTION_REAL_READINESS:** `74/100`
 
-`M3_FINITE_QUEUE_BATCH_1` y `M3_FINITE_QUEUE_BATCH_2` permanecen cerrados. Los 13 residuales terminales fueron materializados sin ejecución; cola materializada `0`. Batch 4 está prohibido.
+M3 terminó con cola `0`. Materialización Terminal 13: commit `6ae1b835abd7e13deb05fd59b9226538949d1a64`, tree `f24202de1b1c9c4207f7274412c5ea65d31d92bf`, readback exacto PASS; compare: 1 commit, 9 archivos, cero workflows/provider-runtime/frontend funcional. PR #7 cerrado/no mergeado.
 
-El cierre M3 queda pendiente exclusivamente del readback remoto directo del commit atómico. Si coincide exactamente, M3 pasa a `CLOSED_PASS`, `PRODUCTION_REAL_READINESS` sube 69→74 y el siguiente bloque es F3 `PROVIDER_PROMOTION_MECHANISM_V1` + `G2B_RECOVERY_LANE_PASS`.
-
-PR #7 debe permanecer cerrado/no mergeado. GitHub Actions no autoriza avance. Provider/data/Auth/Firestore/Storage/HR/Rules/Make/Gemini/pagos/deploy/merge/frontend funcional = 0 durante M3 terminal.
+El siguiente bloque es F3 estrictamente read-only: `PROVIDER_PROMOTION_MECHANISM_V1` + `G2B_RECOVERY_LANE_PASS`. Provider mutation y recovery G2-B continúan no autorizados.
 
 Source funcional preservado `f9802fdd498934a8e7729fa5c7d18341bec1cd71`; Cloud Run preservado `cxorbia-live-hr-dev-00011-f2f`.
-
-Objetivo operativo: 36–48 h calendario hasta go-live si no aparece P0 nuevo y provider/IAM/transporte están disponibles; circuit breaker 72 h.

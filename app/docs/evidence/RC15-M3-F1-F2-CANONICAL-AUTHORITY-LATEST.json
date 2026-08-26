@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "cxorbia.rc15.m3.canonical-authority.v9-terminal13-pending-readback",
+  "schemaVersion": "cxorbia.rc15.m3.canonical-authority.v10-terminal-closed",
   "generatedAt": "2026-08-26",
   "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
   "masterPlanVersion": "1.1.0",
@@ -9,71 +9,48 @@
   "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
   "m2ControlPlaneEpoch": "RC15-M2-F0-CLOSED-20260825-01",
   "block": "M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY",
-  "currentStep": "M3_TERMINAL_13_DIRECT_REMOTE_READBACK",
-  "status": "M3_TERMINAL_13_MATERIALIZED_READBACK_PENDING",
+  "currentStep": "M3_CLOSED_PASS",
+  "status": "CLOSED_PASS_30_OF_30_ZERO_RESIDUAL_DIRECT_REMOTE_READBACK",
   "phaseA": {"completed":98,"pending":2,"total":100},
-  "productionRealReadiness": {"completed":69,"pending":31,"total":100,"nextIncreaseOnlyAfter":"M3_CLOSED_PASS_DIRECT_REMOTE_READBACK"},
+  "productionRealReadiness": {"completed":74,"pending":26,"total":100},
   "entryGate": {"m1":"CLOSED_PASS","m2":"CLOSED_PASS","f0":"CLOSED_PASS_4_OF_4","m3Mechanism":"CERTIFIED_PASS","m3Quiescence":"CLOSED_PASS","unclassifiedWriteCapableSurfaces":0,"newP0Proven":false},
-  "mechanismCorrection": {
-    "status": "CERTIFIED_PASS_QUEUE_INTEGRITY_ENFORCED_DIRECT_READBACK_AUTHORITY",
-    "validatorAuthority": "backend/config/cxorbia-validator-authority.json",
-    "certificationEvidence": "app/docs/evidence/RC15-M3-MECHANISM-CERTIFICATION-LATEST.json",
-    "sourceOnlyGate": "tools/continuity/validate-cxorbia-m3-direct-readback.js",
-    "sourceOnlyGateAttestation": "backend/config/cxorbia-m3-direct-readback-gate.json",
-    "controls": [
-      "Continuity lock, M3 evidence, tombstones and mirrors advance atomically.",
-      "Historical never-executed authority is inertized without falsely marking it consumed.",
-      "Queue membership is derived from the locked M2/F0 universe.",
-      "GitHub Actions is telemetry only during M3 and cannot authorize execution.",
-      "Terminal tombstone receipts override stale request/execute event flags.",
-      "Plan V1.1 forbids Batch 4."
-    ]
-  },
   "f1": {
     "residualHoldsAtStart": 30,
-    "inertizedBeforeTerminal13": ["RC15-CP-011","RC15-CP-142","RC15-CP-108","RC15-CP-030","RC15-CP-031","RC15-CP-055","RC15-CP-056","RC15-CP-058","RC15-CP-059","RC15-CP-066","RC15-CP-067","RC15-CP-068","RC15-CP-124","RC15-CP-125","RC15-CP-127","RC15-CP-130","RC15-CP-131"],
-    "terminal13": ["RC15-CP-005","RC15-CP-014","RC15-CP-017","RC15-CP-025","RC15-CP-028","RC15-CP-029","RC15-CP-045","RC15-CP-063","RC15-CP-074","RC15-CP-078","RC15-CP-090","RC15-CP-091","RC15-CP-094"],
-    "tombstonedHoldsMaterialized": 30,
-    "currentResidualHoldsMaterialized": 0,
+    "terminalFindingIds": ["RC15-CP-011","RC15-CP-142","RC15-CP-108","RC15-CP-030","RC15-CP-031","RC15-CP-055","RC15-CP-056","RC15-CP-058","RC15-CP-059","RC15-CP-066","RC15-CP-067","RC15-CP-068","RC15-CP-124","RC15-CP-125","RC15-CP-127","RC15-CP-130","RC15-CP-131","RC15-CP-005","RC15-CP-014","RC15-CP-017","RC15-CP-025","RC15-CP-028","RC15-CP-029","RC15-CP-045","RC15-CP-063","RC15-CP-074","RC15-CP-078","RC15-CP-090","RC15-CP-091","RC15-CP-094"],
+    "tombstonedHolds": 30,
+    "currentResidualHolds": 0,
     "terminalResidualIds": [],
+    "historicalGlobalExhaustive": true,
+    "batch4Forbidden": true,
     "tombstoneRegistry": "backend/config/cxorbia-historical-authority-tombstones.json",
-    "latestTombstoneEvidence": "app/docs/evidence/RC15-M3-TERMINAL-13-TOMBSTONE-LATEST.json",
-    "historicalGlobalExhaustiveMaterialized": true,
-    "batch4Forbidden": true
+    "terminal13Evidence": "app/docs/evidence/RC15-M3-TERMINAL-13-TOMBSTONE-LATEST.json",
+    "terminal13Readback": "app/docs/evidence/RC15-M3-TERMINAL-13-READBACK-LATEST.json"
   },
   "f2": {
     "aliasesNormalized": true,
     "consumedLedgerPreserved": true,
     "consumedStateFabricated": false,
-    "staleValidatorsSupersededByExplicitAuthoritySet": true,
     "historicalWorkflowPushAuthorityInertized": true,
-    "atomicStateMaterializationRequired": true,
-    "directRemoteReadbackRequired": true,
     "githubActionsExecutionAuthority": false,
-    "singleAuthorityRule": "Frozen master-plan V1.1 identity + continuity lock + explicit M3 validator authority + current M3 evidence/tombstones/ledger/aliases + direct GitHub readback. Historical request/workflow/event artifacts are evidence only.",
-    "status": "MECHANISM_CERTIFIED_PASS"
+    "directRemoteReadbackRequired": true,
+    "directRemoteReadbackPass": true,
+    "singleAuthorityRule": "Frozen master-plan V1.1 identity + continuity lock + M3 validator authority + terminal tombstones/ledger/aliases + direct GitHub readback. Historical request/workflow/event artifacts are evidence only.",
+    "status": "CLOSED_PASS"
   },
   "materialization": {
-    "status": "PENDING_DIRECT_REMOTE_READBACK",
-    "expectedParentHead": "60f68f176e1d6b6f6db781a96dfd94042f27c403",
-    "materializationCommitSha": "PENDING_CREATE_COMMIT",
-    "remoteHeadReadback": "PENDING",
-    "singleCommitRequired": true,
-    "remoteReadbackRequired": true,
-    "sourceOnlyGateRequired": true,
-    "providerSideEffects": 0,
-    "dataSideEffects": 0
+    "status": "CLOSED_PASS_DIRECT_REMOTE_READBACK",
+    "parentHead": "60f68f176e1d6b6f6db781a96dfd94042f27c403",
+    "materializationCommitSha": "6ae1b835abd7e13deb05fd59b9226538949d1a64",
+    "materializationTreeSha": "f24202de1b1c9c4207f7274412c5ea65d31d92bf",
+    "remoteHeadReadback": "6ae1b835abd7e13deb05fd59b9226538949d1a64",
+    "headMatched": true,
+    "changedFileCount": 9,
+    "workflowFilesTouched": 0,
+    "providerOrRuntimeFilesTouched": 0,
+    "frontendFunctionalFilesTouched": 0
   },
-  "g2b": {
-    "decision": "RECOVERY_NO_PROVIDER_SIDE_EFFECT",
-    "retryAuthorized": false,
-    "replayAuthorized": false,
-    "providerMutationAuthorizedNow": false,
-    "syntheticStageBlocked": true,
-    "providerPromotionMechanismRequired": true,
-    "nextOnlyAfterM3Closed": "M4_F3_PROVIDER_PROMOTION_MECHANISM_AND_G2B_RECOVERY_LANE_READONLY_CERTIFICATION"
-  },
+  "g2b": {"decision":"RECOVERY_NO_PROVIDER_SIDE_EFFECT","retryAuthorized":false,"replayAuthorized":false,"providerMutationAuthorizedNow":false,"syntheticStageBlocked":true,"providerPromotionMechanismRequired":true,"next":"M4_F3_PROVIDER_PROMOTION_MECHANISM_AND_G2B_RECOVERY_LANE_READONLY_CERTIFICATION"},
   "safety": {"providerWrites":0,"dataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"cloudBuilds":0,"cloudRunUpdates":0,"hostingDeploys":0,"rulesWrites":0,"payments":0,"makeCalls":0,"geminiCalls":0,"g2bExecutions":0,"merge":false,"frontendFunctionalChanges":0},
-  "decision": "M3_TERMINAL_13_MATERIALIZED_AWAIT_DIRECT_REMOTE_READBACK",
-  "next": "M3_TERMINAL_13_DIRECT_REMOTE_READBACK"
+  "decision": "M3_CLOSED_PASS_30_OF_30_ZERO_RESIDUAL",
+  "next": "M4_F3_PROVIDER_PROMOTION_MECHANISM_AND_G2B_RECOVERY_LANE_READONLY_CERTIFICATION"
 }

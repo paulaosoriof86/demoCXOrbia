@@ -7,34 +7,32 @@
 **MASTER_PLAN_VERSION:** `1.1.0`
 **MASTER_PLAN_STATUS:** `FROZEN`
 **PLAN_CHANGE_REQUEST:** `PCR-20260826-PRODUCTION-ACCELERATION-01`
-**currentMasterPhase:** `M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY`
-**currentMasterStep:** `M3_TERMINAL_13_DIRECT_REMOTE_READBACK`
+**currentMasterPhase:** `M3_CLOSED_PASS`
+**currentMasterStep:** `M4_F3_PROVIDER_PROMOTION_MECHANISM_AND_G2B_RECOVERY_LANE_READONLY_CERTIFICATION`
 **M1:** `CLOSED_PASS`
 **M2/F0:** `CLOSED_PASS_4_OF_4`
-**M3_0:** `CLOSED_PASS_DIRECT_GITHUB_READBACK`
-**M3:** `30_OF_30_MATERIALIZED__READBACK_PENDING`
-**NEXT:** `M3_TERMINAL_13_DIRECT_REMOTE_READBACK`
+**M3:** `CLOSED_PASS_30_OF_30_ZERO_RESIDUAL_DIRECT_REMOTE_READBACK`
+**NEXT:** `M4_F3_PROVIDER_PROMOTION_MECHANISM_AND_G2B_RECOVERY_LANE_READONLY_CERTIFICATION`
 **PHASE_A:** `98/100`
-**PRODUCTION_REAL_READINESS:** `69/100`
+**PRODUCTION_REAL_READINESS:** `74/100`
 
-V1.1 mantiene congelado el camino crítico. `M3_FINITE_QUEUE_BATCH_1` y `M3_FINITE_QUEUE_BATCH_2` permanecen cerrados y no se repiten. No existe Batch 4. Los 13 residuales del universo M2 fueron materializados terminalmente sin ejecución y la cola materializada queda `0`; el cierre M3 espera exclusivamente readback remoto directo.
-
-PR #7 debe permanecer `closed` y `unmerged`. Rama viva única: `docs-tya-v6-v71-audit`. GitHub Actions es telemetría no autoritativa.
+M3 está terminal y no se reabre sin drift probado del universo M2. Los 30 HOLD históricos están terminales; cola residual `0`; Batch 4 prohibido.
 
 ## Autoridad canónica viva
 
 1. master plan V1.1 congelado y su hash;
 2. `backend/config/cxorbia-phase-a-continuity-lock.json`;
-3. `app/docs/evidence/PLAN-CHANGE-REQUEST-PRODUCTION-ACCELERATION-LATEST.json`;
-4. quiescence lock terminal + direct-readback gate;
-5. `backend/config/cxorbia-historical-authority-tombstones.json`;
-6. consumed ledger + aliases;
-7. `app/docs/evidence/RC15-M3-TERMINAL-13-TOMBSTONE-LATEST.json` + evidencia M2/M3/Batch1/Batch2 + validator authority;
-8. checkpoint/execution/source lock/Claude/Pendientes como mirrors;
-9. progress lock para porcentaje real.
+3. `backend/config/cxorbia-m3-direct-readback-gate.json`;
+4. `backend/config/cxorbia-historical-authority-tombstones.json`;
+5. consumed ledger + aliases;
+6. `app/docs/evidence/RC15-M3-TERMINAL-13-READBACK-LATEST.json` + evidencia M2/M3;
+7. checkpoint/Claude/Pendientes como mirrors;
+8. progress lock para porcentaje real.
+
+Readback M3 terminal: materialización `6ae1b835abd7e13deb05fd59b9226538949d1a64`, tree `f24202de1b1c9c4207f7274412c5ea65d31d92bf`, remoto exacto PASS. PR #7 cerrado/no mergeado. GitHub Actions no autoriza avance.
 
 ## Camino crítico congelado
 
-`M3_TERMINAL_13_DIRECT_REMOTE_READBACK` → F3 `PROVIDER_PROMOTION_MECHANISM_V1` + `G2B_RECOVERY_LANE_PASS` → F4 G2-B one-shot → F5 aceptación sintética → F6 release inmutable → F7 readiness → F8 cutover → F9 postproducción.
+F3 `PROVIDER_PROMOTION_MECHANISM_V1` + `G2B_RECOVERY_LANE_PASS` → F4 G2-B one-shot → F5 aceptación sintética → F6 release inmutable → F7 readiness → F8 cutover → F9 postproducción.
 
-No nueva auditoría general, metodología, rama, PR, candidata o workflow para sustituir causa raíz. Cualquier cambio de plan requiere otro `PLAN_CHANGE_REQUEST` explícito y atómico.
+F3 es read-only. No existe autorización provider/recovery vigente. No crear nueva auditoría general, metodología, rama, PR, candidata o workflow para sustituir causa raíz.
