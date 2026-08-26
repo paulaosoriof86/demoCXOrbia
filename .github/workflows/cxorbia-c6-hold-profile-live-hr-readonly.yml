@@ -1,123 +1,14 @@
-name: CXOrbia C6 Hold Profiles + Live HR Read-Only
+name: CXOrbia Historical Authority Inert M3
 
 on:
-  push:
-    branches:
-      - docs-tya-v6-v71-audit
-    paths:
-      - 'backend/config/corte6-hold-profile-live-hr-readonly-request.json'
+  workflow_dispatch:
 
 permissions:
-  contents: write
-  statuses: write
-
-concurrency:
-  group: cxorbia-c6-hold-profile-live-hr-readonly
-  cancel-in-progress: false
+  contents: read
 
 jobs:
-  inspect:
+  historical-inert:
+    if: ${{ false }}
     runs-on: ubuntu-latest
-    timeout-minutes: 25
     steps:
-      - name: Checkout active branch
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Inspect request state
-        id: request
-        shell: bash
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const fs=require('fs');
-          const p='backend/config/corte6-hold-profile-live-hr-readonly-request.json';
-          const r=JSON.parse(fs.readFileSync(p,'utf8'));
-          if(r.schemaVersion!=='cxorbia.c6.hold-profile-live-hr-readonly-request.v1')throw new Error('bad_schema');
-          if(r.repository!=='paulaosoriof86/demoCXOrbia'||r.branch!=='docs-tya-v6-v71-audit'||r.firebaseProjectId!=='cxorbia-backend-dev'||r.tenantId!=='tya'||r.projectId!=='cinepolis')throw new Error('target_mismatch');
-          const safe=['providerWrites','authWrites','firestoreWrites','hrWrites','rulesWrites','storageWrites','hostingDeploys','cloudRunDeploys','makeWrites','geminiCalls','paymentsWrites'];
-          for(const k of safe)if(Number(r[k])!==0)throw new Error('unsafe_flag:'+k);
-          const run=r.enabled===true&&r.consumed===false;
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`run=${run?'true':'false'}\nrequest_id=${r.requestId||''}\n`);
-          NODE
-
-      - name: Setup Node
-        if: steps.request.outputs.run == 'true'
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      - name: Install transient provider read tooling
-        if: steps.request.outputs.run == 'true'
-        run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
-
-      - name: Execute targeted read-only inspection
-        if: steps.request.outputs.run == 'true'
-        id: inspect
-        env:
-          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-          CXORBIA_REQUEST_PATH: backend/config/corte6-hold-profile-live-hr-readonly-request.json
-          CXORBIA_PRIVATE_OUT: .tmp/c6-hold-profile-live-hr/private.json
-          CXORBIA_SAFE_OUT: app/docs/evidence/CORTE6-HOLD-PROFILE-LIVE-HR-READONLY-LATEST.json
-          CXORBIA_LIVE_HR_URLS: https://cxorbia-backend-dev.web.app/api/tya/cinepolis/hr-live?fresh=1,https://cxorbia-backend-dev.web.app/v1/tenants/tya/projects/cinepolis/hr-live?fresh=1
-        run: |
-          set -euo pipefail
-          node --check tools/qa/cxorbia-c6-hold-profile-live-hr-readonly.mjs
-          node tools/qa/cxorbia-c6-hold-profile-live-hr-readonly.mjs | tee .tmp/c6-hold-profile-live-hr/summary.json
-
-      - name: Upload private tenant decision artifact
-        if: steps.request.outputs.run == 'true' && steps.inspect.outcome == 'success'
-        uses: actions/upload-artifact@v4
-        with:
-          name: c6-hold-profile-private-${{ github.run_id }}
-          path: |
-            .tmp/c6-hold-profile-live-hr/private.json
-            .tmp/c6-hold-profile-live-hr/summary.json
-          if-no-files-found: error
-          retention-days: 7
-
-      - name: Persist source-safe evidence and consume request
-        if: steps.request.outputs.run == 'true' && steps.inspect.outcome == 'success'
-        env:
-          RUN_ID: ${{ github.run_id }}
-          ARTIFACT_NAME: c6-hold-profile-private-${{ github.run_id }}
-        run: |
-          set -euo pipefail
-          cp app/docs/evidence/CORTE6-HOLD-PROFILE-LIVE-HR-READONLY-LATEST.json /tmp/c6-safe.json
-          cp backend/config/corte6-hold-profile-live-hr-readonly-request.json /tmp/c6-request.json
-          git fetch origin docs-tya-v6-v71-audit
-          git reset --hard origin/docs-tya-v6-v71-audit
-          mkdir -p app/docs/evidence backend/config
-          cp /tmp/c6-safe.json app/docs/evidence/CORTE6-HOLD-PROFILE-LIVE-HR-READONLY-LATEST.json
-          cp /tmp/c6-request.json backend/config/corte6-hold-profile-live-hr-readonly-request.json
-          node <<'NODE'
-          const fs=require('fs');
-          const p='backend/config/corte6-hold-profile-live-hr-readonly-request.json';
-          const e=JSON.parse(fs.readFileSync('app/docs/evidence/CORTE6-HOLD-PROFILE-LIVE-HR-READONLY-LATEST.json','utf8'));
-          const r=JSON.parse(fs.readFileSync(p,'utf8'));
-          r.enabled=false;r.consumed=true;r.status='consumed_readonly';r.consumedAt=new Date().toISOString();
-          r.runId=Number(process.env.RUN_ID);r.artifactName=process.env.ARTIFACT_NAME;r.decision=e.decision;
-          r.providerReads=1;r.secondAttempt=0;r.nextGate='PAULA_DISPOSITION_DECISION_AND_LIVE_HR_AUTHORITY_ROOT_FIX_IF_REQUIRED';
-          fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n','utf8');
-          NODE
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/docs/evidence/CORTE6-HOLD-PROFILE-LIVE-HR-READONLY-LATEST.json backend/config/corte6-hold-profile-live-hr-readonly-request.json
-          git commit -m 'evidence: C6 hold identities and live HR readonly inspection'
-          git push origin HEAD:docs-tya-v6-v71-audit
-
-      - name: Publish status
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          if [ '${{ steps.request.outputs.run }}' != 'true' ]; then
-            STATE=success;DESC='SKIP_CONSUMED_C6_HOLD_PROFILE_READONLY'
-          elif [ '${{ job.status }}' = 'success' ]; then
-            STATE=success;DESC='PASS_C6_HOLD_PROFILE_LIVE_HR_READONLY_EXECUTED_ONCE'
-          else
-            STATE=error;DESC='HOLD_C6_HOLD_PROFILE_LIVE_HR_READONLY_STOP_RETRY'
-          fi
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/c6-hold-profile-live-hr-readonly' -f description="$DESC" >/dev/null
+      - run: echo 'HISTORICAL_INERT_M3: this RC15 historical authority is evidence only and has no current execution authority.'

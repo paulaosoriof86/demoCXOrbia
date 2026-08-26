@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "cxorbia.rc15.m3.f1.queue-integrity-quarantine.v1",
+  "generatedAt": "2026-08-25",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
+  "parentHead": "c8b68e54dd2d7f3bb4bfd30c44652e95ad7ba7b1",
+  "decision": "M3_QUEUE_INTEGRITY_ROOTFIX_AND_FINITE_EXECUTOR_QUARANTINE_MATERIALIZED_PENDING_GATE",
+  "rootCause": {
+    "declaredResidual": 28,
+    "enumeratedResidualBefore": 27,
+    "missingResidualIds": ["RC15-CP-074", "RC15-CP-078", "RC15-CP-090"],
+    "incorrectNonResidualIds": ["RC15-CP-117", "RC15-CP-118"],
+    "explanation": "The M3 queue had been manually composed instead of deterministically derived from the M2-locked historical residual universe. CP117 and CP118 are F2 normalization/control drift findings with residualHold=false, while CP074, CP078 and CP090 were true residual holds carried by Tranche 8."
+  },
+  "deterministicUniverse": {
+    "formula": "TRANCHE8 currentResidualHoldIds 24 + TRANCHE11 HOLD CP124/125 + TRANCHE12 HOLD CP127/130/131 + TRANCHE14 HOLD CP142",
+    "m2ResidualTotal": 30,
+    "alreadyTombstoned": ["RC15-CP-011", "RC15-CP-142"],
+    "pendingBeforeQuarantineGate": 28
+  },
+  "definitiveMechanism": {
+    "queueDerivedByValidatorFromLockedEvidence": true,
+    "setEqualityRequired": true,
+    "duplicateFindingIdsForbidden": true,
+    "completedPlusPendingMustEqualM2ResidualUniverse": true,
+    "completedIdsForbiddenInPendingQueue": true,
+    "historicalRequestFlagsAreEvidenceOnly": true,
+    "executorQuarantineRequiredForHistoricalAuthority": true,
+    "directLegacyConnectivityPhysicallyInertized": true,
+    "providerPreflightDuringM3": false,
+    "newAuditTranche": false,
+    "newBranch": false,
+    "newPullRequest": false
+  },
+  "materialization": {
+    "targetResidualFindings": 28,
+    "executorFilesInertized": 33,
+    "preExistingInertFinding": "RC15-CP-108",
+    "atomicCommitRequired": true,
+    "remoteReadbackRequired": true,
+    "sourceOnlyGateRequired": true,
+    "canonicalClosureOnlyAfterGatePass": true
+  },
+  "safety": {
+    "providerAccess": false,
+    "providerWrites": 0,
+    "dataWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunUpdates": 0,
+    "rulesWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "g2bExecutions": 0,
+    "merge": false,
+    "frontendFunctionalChanges": 0
+  }
+}

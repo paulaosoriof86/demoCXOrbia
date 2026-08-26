@@ -1,67 +1,14 @@
-name: CXOrbia Canonical Backend Phase A Gap
+name: CXOrbia Historical Authority Inert M3
 
 on:
-  push:
-    branches:
-      - docs-tya-v6-v71-audit
-    paths:
-      - '.github/cxorbia-firebase-requests/canonical-backend-phasea-gap.json'
+  workflow_dispatch:
 
 permissions:
-  contents: write
-  statuses: write
+  contents: read
 
 jobs:
-  reconcile:
+  historical-inert:
+    if: ${{ false }}
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      - name: Validate request
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const r=require('./.github/cxorbia-firebase-requests/canonical-backend-phasea-gap.json');
-          if(r.enabled!==true||r.mode!=='READ_ONLY_EVIDENCE_RECONCILIATION'||r.providerWrites!==0||r.production!==false||r.merge!==false) process.exit(1);
-          NODE
-
-      - name: Reconcile Phase A gap from sanitized evidence
-        run: node tools/qa/cxorbia-canonical-backend-phasea-gap-reconcile.mjs
-
-      - name: Commit evidence on latest branch head
-        run: |
-          set -euo pipefail
-          cp app/docs/evidence/CANONICAL-BACKEND-PHASEA-GAP-LATEST.json /tmp/cxorbia-gap.json
-          cp app/docs/evidence/CANONICAL-BACKEND-PHASEA-GAP-LATEST.md /tmp/cxorbia-gap.md
-          git fetch origin docs-tya-v6-v71-audit
-          git reset --hard origin/docs-tya-v6-v71-audit
-          mkdir -p app/docs/evidence
-          cp /tmp/cxorbia-gap.json app/docs/evidence/CANONICAL-BACKEND-PHASEA-GAP-LATEST.json
-          cp /tmp/cxorbia-gap.md app/docs/evidence/CANONICAL-BACKEND-PHASEA-GAP-LATEST.md
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/docs/evidence/CANONICAL-BACKEND-PHASEA-GAP-LATEST.json app/docs/evidence/CANONICAL-BACKEND-PHASEA-GAP-LATEST.md
-          if ! git diff --cached --quiet; then
-            git commit -m 'evidence: reconcile canonical backend Phase A gap'
-            git push origin HEAD:docs-tya-v6-v71-audit
-          fi
-
-      - name: Publish status
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          STATE=error; DESC='HOLD_CANONICAL_BACKEND_PHASEA_GAP'
-          if [ -f app/docs/evidence/CANONICAL-BACKEND-PHASEA-GAP-LATEST.json ]; then
-            D=$(node -p "require('./app/docs/evidence/CANONICAL-BACKEND-PHASEA-GAP-LATEST.json').decision")
-            if [ "$D" = 'PASS_GAP_RECONCILED_INCREMENTAL_PHASEA_REQUIRED' ]; then STATE=success; DESC='PASS_GAP_RECONCILED_INCREMENTAL_PHASEA_REQUIRED'; fi
-          fi
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/canonical-backend-phasea-gap' -f description="$DESC" >/dev/null
+      - run: echo 'HISTORICAL_INERT_M3: this RC15 historical authority is evidence only and has no current execution authority.'

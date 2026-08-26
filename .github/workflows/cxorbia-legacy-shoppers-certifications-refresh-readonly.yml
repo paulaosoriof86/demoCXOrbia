@@ -1,143 +1,14 @@
-name: CXOrbia Legacy TyA Shoppers Certifications Readonly Refresh
+name: CXOrbia Historical Authority Inert M3
 
 on:
-  push:
-    branches:
-      - docs-tya-v6-v71-audit
-    paths:
-      - '.github/cxorbia-firebase-requests/legacy-shoppers-certifications-refresh-readonly.json'
+  workflow_dispatch:
 
 permissions:
-  contents: write
-  statuses: write
+  contents: read
 
 jobs:
-  refresh:
+  historical-inert:
+    if: ${{ false }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      - name: Validate authorization request
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const r=require('./.github/cxorbia-firebase-requests/legacy-shoppers-certifications-refresh-readonly.json');
-          if(r.enabled!==true) process.exit(1);
-          if(r.mode!=='READ_ONLY_LEGACY_TYA_SHOPPERS_CERTIFICATIONS_REFRESH') process.exit(1);
-          if(r.legacyProjectId!=='tya-plataforma') process.exit(1);
-          if(r.canonicalProjectId!=='cxorbia-backend-dev') process.exit(1);
-          if(r.scope!=='shoppers+certifications') process.exit(1);
-          if(r.legacyNode!=='tya_shoppers_extra') process.exit(1);
-          if(r.providerWrites!==0||r.authChanges!==false||r.deploy!==false||r.production!==false||r.merge!==false) process.exit(1);
-          NODE
-
-      - name: Load canonical DEV credential for read-only comparison
-        env:
-          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-        run: |
-          set -euo pipefail
-          mkdir -p .tmp/legacy-refresh-private
-          node <<'NODE'
-          const fs=require('fs');
-          const raw=process.env.EXISTING_DEV_JSON||'';
-          let p=null; try{p=JSON.parse(raw);}catch{}
-          if(!(p&&p.type==='service_account'&&p.project_id&&p.client_email&&p.private_key)) process.exit(1);
-          if(p.project_id!=='cxorbia-backend-dev') { console.error('wrong_service_account_project:'+p.project_id); process.exit(1); }
-          fs.writeFileSync('.tmp/legacy-refresh-private/credentials.json',raw,{mode:0o600});
-          NODE
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.tmp/legacy-refresh-private/credentials.json" >> "$GITHUB_ENV"
-
-      - name: Install transient Firebase Admin
-        run: npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
-
-      - name: Validate scripts
-        run: |
-          node --check tools/reconciliation/tya-legacy-shoppers-certifications-refresh-readonly.mjs
-          node --check tools/reconciliation/tya-legacy-existing-profile-field-diff-readonly.mjs
-          node --check tools/reconciliation/tya-hr-protected-shopper-crosswalk-readonly.mjs
-
-      - name: Run strict read-only legacy refresh and canonical diff
-        env:
-          TYA_LEGACY_DATABASE_URL: https://tya-plataforma-default-rtdb.firebaseio.com
-          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
-          TYA_LEGACY_REFRESH_JSON: app/docs/evidence/LEGACY-SHOPPERS-CERTIFICATIONS-REFRESH-LATEST.json
-          TYA_LEGACY_REFRESH_MD: app/docs/evidence/LEGACY-SHOPPERS-CERTIFICATIONS-REFRESH-LATEST.md
-        run: node tools/reconciliation/tya-legacy-shoppers-certifications-refresh-readonly.mjs
-
-      - name: Run existing-profile read-only field diff
-        env:
-          TYA_LEGACY_DATABASE_URL: https://tya-plataforma-default-rtdb.firebaseio.com
-        run: node tools/reconciliation/tya-legacy-existing-profile-field-diff-readonly.mjs
-
-      - name: Run HR protected shopper stable crosswalk read-only
-        run: node tools/reconciliation/tya-hr-protected-shopper-crosswalk-readonly.mjs
-
-      - name: Validate safety evidence
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const r=require('./app/docs/evidence/LEGACY-SHOPPERS-CERTIFICATIONS-REFRESH-LATEST.json');
-          const d=require('./app/docs/evidence/LEGACY-EXISTING-PROFILE-FIELD-DIFF-READONLY-LATEST.json');
-          const h=require('./app/docs/evidence/HR-PROTECTED-SHOPPER-CROSSWALK-READONLY-LATEST.json');
-          const s=r.safety||{}, ds=d.safety||{}, hs=h.safety||{};
-          if(r.authorizationScope!=='READ_ONLY_LEGACY_TYA_SHOPPERS_CERTIFICATIONS_ONLY') process.exit(1);
-          if(r.source?.projectId!=='tya-plataforma'||r.source?.node!=='tya_shoppers_extra'||r.source?.readOnly!==true) process.exit(1);
-          if(r.canonicalTarget?.projectId!=='cxorbia-backend-dev'||r.canonicalTarget?.readOnly!==true) process.exit(1);
-          if(s.legacyProviderWrites!==0||s.canonicalProviderWrites!==0||s.authWrites!==0||s.storageWrites!==0||s.hostingDeploys!==0||s.production!==false||s.merge!==false) process.exit(1);
-          if(s.rawNamesExported!==false||s.rawEmailsExported!==false||s.rawPhonesExported!==false||s.identityDocumentsExported!==false||s.bankDataExported!==false||s.questionByQuestionAnswersExported!==false) process.exit(1);
-          if(d.authorizationScope!=='READ_ONLY_LEGACY_TYA_SHOPPERS_CERTIFICATIONS_ONLY'||d.canonicalProjectId!=='cxorbia-backend-dev') process.exit(1);
-          if(ds.legacyProviderWrites!==0||ds.canonicalProviderWrites!==0||ds.authWrites!==0||ds.storageWrites!==0||ds.deploys!==0||ds.production!==false||ds.merge!==false||ds.rawPiiExported!==false) process.exit(1);
-          if(d.counts?.matchedProfiles!==22) process.exit(1);
-          if(h.target?.projectId!=='cxorbia-backend-dev'||h.counts?.planned!==210||h.policy?.nameMatching!==false) process.exit(1);
-          if(hs.providerWrites!==0||hs.authWrites!==0||hs.deploys!==0||hs.production!==false||hs.merge!==false||hs.pii!==false) process.exit(1);
-          NODE
-
-      - name: Commit safe evidence on latest branch head
-        run: |
-          set -euo pipefail
-          cp app/docs/evidence/LEGACY-SHOPPERS-CERTIFICATIONS-REFRESH-LATEST.json /tmp/legacy-refresh.json
-          cp app/docs/evidence/LEGACY-SHOPPERS-CERTIFICATIONS-REFRESH-LATEST.md /tmp/legacy-refresh.md
-          cp app/docs/evidence/LEGACY-EXISTING-PROFILE-FIELD-DIFF-READONLY-LATEST.json /tmp/profile-diff.json
-          cp app/docs/evidence/LEGACY-EXISTING-PROFILE-FIELD-DIFF-READONLY-LATEST.md /tmp/profile-diff.md
-          cp app/docs/evidence/HR-PROTECTED-SHOPPER-CROSSWALK-READONLY-LATEST.json /tmp/hr-crosswalk.json
-          cp app/docs/evidence/HR-PROTECTED-SHOPPER-CROSSWALK-READONLY-LATEST.md /tmp/hr-crosswalk.md
-          git fetch origin docs-tya-v6-v71-audit
-          git reset --hard origin/docs-tya-v6-v71-audit
-          mkdir -p app/docs/evidence
-          cp /tmp/legacy-refresh.json app/docs/evidence/LEGACY-SHOPPERS-CERTIFICATIONS-REFRESH-LATEST.json
-          cp /tmp/legacy-refresh.md app/docs/evidence/LEGACY-SHOPPERS-CERTIFICATIONS-REFRESH-LATEST.md
-          cp /tmp/profile-diff.json app/docs/evidence/LEGACY-EXISTING-PROFILE-FIELD-DIFF-READONLY-LATEST.json
-          cp /tmp/profile-diff.md app/docs/evidence/LEGACY-EXISTING-PROFILE-FIELD-DIFF-READONLY-LATEST.md
-          cp /tmp/hr-crosswalk.json app/docs/evidence/HR-PROTECTED-SHOPPER-CROSSWALK-READONLY-LATEST.json
-          cp /tmp/hr-crosswalk.md app/docs/evidence/HR-PROTECTED-SHOPPER-CROSSWALK-READONLY-LATEST.md
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/docs/evidence/LEGACY-SHOPPERS-CERTIFICATIONS-REFRESH-LATEST.* app/docs/evidence/LEGACY-EXISTING-PROFILE-FIELD-DIFF-READONLY-LATEST.* app/docs/evidence/HR-PROTECTED-SHOPPER-CROSSWALK-READONLY-LATEST.*
-          if git diff --cached --quiet; then
-            echo 'No evidence delta'
-          else
-            git commit -m 'evidence: refresh legacy and HR shopper crosswalk readonly'
-            git push origin HEAD:docs-tya-v6-v71-audit
-          fi
-
-      - name: Publish status
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          STATE=success
-          DESC='PASS_LEGACY_REFRESH_HR_CROSSWALK_READONLY'
-          test -f app/docs/evidence/HR-PROTECTED-SHOPPER-CROSSWALK-READONLY-LATEST.json || { STATE=error; DESC='HOLD_LEGACY_READONLY_REFRESH_FAILED'; }
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/legacy-shoppers-certs-readonly-refresh' -f description="$DESC" >/dev/null
-
-      - name: Cleanup credential
-        if: always()
-        run: rm -rf .tmp/legacy-refresh-private
+      - run: echo 'HISTORICAL_INERT_M3: this RC15 historical authority is evidence only and has no current execution authority.'

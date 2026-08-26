@@ -1,117 +1,14 @@
-name: CXOrbia Corte 6 Profile Extra Read-Only
+name: CXOrbia Historical Authority Inert M3
 
 on:
-  push:
-    branches:
-      - docs-tya-v6-v71-audit
-    paths:
-      - 'backend/private-inbox/corte6-profile-extra-bundle.enc.json'
+  workflow_dispatch:
 
 permissions:
-  contents: write
-  statuses: write
-
-concurrency:
-  group: cxorbia-corte6-profile-extra-readonly
-  cancel-in-progress: false
+  contents: read
 
 jobs:
-  reconcile:
+  historical-inert:
+    if: ${{ false }}
     runs-on: ubuntu-latest
-    timeout-minutes: 25
     steps:
-      - name: Checkout active branch
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Validate read-only request
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const r=require('./backend/config/corte6-profile-extra-readonly-request.json');
-          if(r.schemaVersion!=='cxorbia.corte6.profile-extra-readonly-request.v1')throw new Error('bad_schema');
-          if(r.repository!=='paulaosoriof86/demoCXOrbia'||r.branch!=='docs-tya-v6-v71-audit'||Number(r.pullRequest)!==7||r.firebaseProjectId!=='cxorbia-backend-dev'||r.tenantId!=='tya'||r.projectId!=='cinepolis')throw new Error('target_mismatch');
-          if(r.enabled!==true||r.consumed!==false||r.status!=='waiting_encrypted_bundle'||r.expectedEnvelopePath!=='backend/private-inbox/corte6-profile-extra-bundle.enc.json')throw new Error('request_not_ready');
-          for(const k of ['providerWrites','firestoreWrites','authWrites','passwordChanges','rulesDeploys','hostingDeploys','cloudRunDeploys','storageWrites','hrWrites','legacyWrites','makeWrites','geminiCalls','paymentsWrites'])if(r[k]!==0)throw new Error('unsafe_write_flag:'+k);
-          if(r.providerReads!==true||r.production!==false||r.merge!==false||r.piiExported!==false||r.profileValuesExported!==false||r.passwordValuesExported!==false||r.legacyUidValuesExported!==false||r.secretsExported!==false)throw new Error('unsafe_scope');
-          NODE
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      - name: Load canonical DEV credential
-        env:
-          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
-        run: |
-          set -euo pipefail
-          mkdir -p .tmp/c6-profile-extra-private
-          node <<'NODE'
-          const fs=require('fs');
-          const raw=process.env.EXISTING_DEV_JSON||'';
-          let p=null;try{p=JSON.parse(raw);}catch{}
-          if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.client_email&&p.private_key))throw new Error('credential_invalid');
-          fs.writeFileSync('.tmp/c6-profile-extra-private/credentials.json',raw,{mode:0o600});
-          NODE
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.tmp/c6-profile-extra-private/credentials.json" >> "$GITHUB_ENV"
-
-      - name: Run encrypted profile extra read-only reconciliation
-        id: reconcile
-        env:
-          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
-          CXORBIA_TENANT_ID: tya
-          CXORBIA_PROJECT_ID: cinepolis
-          CXORBIA_PROFILE_EXTRA_ENVELOPE: backend/private-inbox/corte6-profile-extra-bundle.enc.json
-          CXORBIA_PROFILE_EXTRA_OUT: app/docs/evidence/CORTE6-PROFILE-EXTRA-HANDOFF-READONLY-LATEST.json
-        run: |
-          set -euo pipefail
-          npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
-          node --check tools/qa/cxorbia-corte6-profile-extra-handoff-dryrun.mjs
-          node tools/qa/cxorbia-corte6-profile-extra-handoff-dryrun.mjs
-
-      - name: Persist sanitized evidence and consume read-only request
-        if: steps.reconcile.outcome == 'success'
-        run: |
-          set -euo pipefail
-          cp app/docs/evidence/CORTE6-PROFILE-EXTRA-HANDOFF-READONLY-LATEST.json /tmp/c6-profile-extra.json
-          git fetch origin docs-tya-v6-v71-audit
-          git reset --hard origin/docs-tya-v6-v71-audit
-          mkdir -p app/docs/evidence
-          cp /tmp/c6-profile-extra.json app/docs/evidence/CORTE6-PROFILE-EXTRA-HANDOFF-READONLY-LATEST.json
-          node <<'NODE'
-          const fs=require('fs');
-          const requestPath='backend/config/corte6-profile-extra-readonly-request.json';
-          const evidencePath='app/docs/evidence/CORTE6-PROFILE-EXTRA-HANDOFF-READONLY-LATEST.json';
-          const r=JSON.parse(fs.readFileSync(requestPath,'utf8'));
-          const e=JSON.parse(fs.readFileSync(evidencePath,'utf8'));
-          r.status='consumed_readonly';
-          r.enabled=false;
-          r.consumed=true;
-          r.consumedAt=new Date().toISOString();
-          r.decision=e.decision;
-          r.operationalPlannedFillMissing=e.totals&&e.totals.operationalPlannedFillMissing||0;
-          r.sensitiveFillMissingHeld=e.totals&&e.totals.sensitiveFillMissingHeldPendingProtectedStoragePolicy||0;
-          r.nextGate='COMBINE_PROFILE_OPERATIONAL_DELTA_WITH_USERNAME88_AND_PREPARE_EXACT_FIRESTORE_AUTHORIZATION';
-          fs.writeFileSync(requestPath,JSON.stringify(r,null,2)+'\n','utf8');
-          NODE
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app/docs/evidence/CORTE6-PROFILE-EXTRA-HANDOFF-READONLY-LATEST.json backend/config/corte6-profile-extra-readonly-request.json
-          git commit -m 'evidence: Corte 6 profile extra encrypted readonly reconciliation'
-          git push origin HEAD:docs-tya-v6-v71-audit
-
-      - name: Publish status
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          STATE=success;DESC='PASS_C6_PROFILE_EXTRA_READONLY'
-          if [ '${{ job.status }}' != 'success' ]; then STATE=error;DESC='FAIL_C6_PROFILE_EXTRA_READONLY'; fi
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/corte6-profile-extra/${DESC}" -f description="$DESC" >/dev/null
-
-      - name: Cleanup credential
-        if: always()
-        run: rm -rf .tmp/c6-profile-extra-private
+      - run: echo 'HISTORICAL_INERT_M3: this RC15 historical authority is evidence only and has no current execution authority.'
