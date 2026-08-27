@@ -1,80 +1,17 @@
-name: CXOrbia Phase A Live Execution Checkpoint — M3 Canonical Gate
+name: CXOrbia Phase A Live Execution Checkpoint — M3 Canonical Gate — HISTORICAL INERT
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - docs-tya-v6-v71-audit
-    paths:
-      - 'backend/config/cxorbia-phase-a-continuity-lock.json'
-      - 'backend/config/cxorbia-validator-authority.json'
-      - 'backend/config/cxorbia-historical-authority-tombstones.json'
-      - 'backend/config/cxorbia-consumed-one-shot-gates.json'
-      - 'backend/config/cxorbia-evidence-aliases.json'
-      - 'backend/config/cxorbia-m3-quiescence-lock.json'
-      - 'app/docs/evidence/RC15-M3-F1-F2-CANONICAL-AUTHORITY-LATEST.json'
-      - 'app/docs/evidence/RC15-M3-MECHANISM-CERTIFICATION-LATEST.json'
-      - 'app/docs/evidence/RC15-M3-0-QUIESCENCE-BARRIER-LATEST.json'
-      - 'app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md'
-      - 'app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md'
-      - 'app/docs/EXECUTION-STATE-CXORBIA-TYA-VIGENTE.md'
-      - 'app/docs/SOURCE-LOCK-CXORBIA-TYA-VIGENTE.md'
-      - 'app/docs/PRODUCTION-REAL-PROGRESS-LOCK-CXORBIA-TYA.md'
-      - 'tools/continuity/validate-cxorbia-master-plan-freeze-m3.js'
-      - 'tools/continuity/validate-cxorbia-canonical-authority.js'
-      - 'tools/continuity/validate-cxorbia-state-sync-m3.js'
-      - 'tools/continuity/validate-cxorbia-phase-a-continuity-lock-m3.js'
-      - 'tools/continuity/validate-cxorbia-m3-quiescence.js'
-      - 'tools/qa/verify-phase-a-live-execution-checkpoint.mjs'
-      - '.github/workflows/cxorbia-phase-a-live-checkpoint.yml'
 
 permissions:
   contents: read
 
-defaults:
-  run:
-    shell: bash
-
 jobs:
-  m3-canonical-gate:
-    name: M3 canonical continuity gate
+  m3-historical-inert:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
     steps:
-      - name: Checkout exact trigger commit
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.sha }}
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      - name: Validate M3 source syntax
+      - name: Historical M3 gate is closed
         run: |
-          set -euo pipefail
-          node --check tools/continuity/validate-cxorbia-master-plan-freeze-m3.js
-          node --check tools/continuity/validate-cxorbia-canonical-authority.js
-          node --check tools/continuity/validate-cxorbia-state-sync-m3.js
-          node --check tools/continuity/validate-cxorbia-phase-a-continuity-lock-m3.js
-          node --check tools/continuity/validate-cxorbia-m3-quiescence.js
-          node --check tools/qa/verify-phase-a-live-execution-checkpoint.mjs
-
-      - name: Validate M3 quiescence source contract
-        run: node tools/continuity/validate-cxorbia-m3-quiescence.js
-
-      - name: Validate frozen master plan identity
-        run: node tools/continuity/validate-cxorbia-master-plan-freeze-m3.js
-
-      - name: Validate canonical execution authority
-        run: node tools/continuity/validate-cxorbia-canonical-authority.js
-
-      - name: Validate M3 state synchronization
-        run: node tools/continuity/validate-cxorbia-state-sync-m3.js
-
-      - name: Validate M3 continuity lock
-        run: node tools/continuity/validate-cxorbia-phase-a-continuity-lock-m3.js
-
-      - name: Validate current Phase A checkpoint without provider access
-        run: node tools/qa/verify-phase-a-live-execution-checkpoint.mjs
+          echo 'M3 is CLOSED/PASS and this historical gate no longer validates post-M3 state.'
+          echo 'Canonical continuation authority is backend/config/cxorbia-phase-a-continuity-lock.json plus the frozen master plan.'
+          echo 'No provider access, mutation, deploy or state transition is performed.'
