@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import crypto from 'node:crypto';
-import admin from 'firebase-admin';
 
 const args=new Set(process.argv.slice(2));
 const execute=args.has('--execute');
@@ -37,7 +36,8 @@ function sourceSelfTest(){
     customTokenEphemeral:source.includes('createCustomToken')&&source.includes('tokensExposed:false'),
     browserRuntimeRequired:source.includes("await import('playwright')")&&source.includes('CX_PROTECTED_AUTH_HR_AUTHORITY'),
     noCredentialWriteApis:forbidden.every(re=>!re.test(source)),
-    explicitExecutionGate:source.includes('YES_PAULA_F8_CHECKPOINT_BACKED_SHOPPER_READONLY')
+    explicitExecutionGate:source.includes('YES_PAULA_F8_CHECKPOINT_BACKED_SHOPPER_READONLY'),
+    sourceGateDependencyFree:!/^import\s+admin\s+from\s+['"]firebase-admin['"]/m.test(source)
   };
   const failed=Object.entries(checks).filter(([,v])=>!v).map(([k])=>k);
   return {schemaVersion:'cxorbia.f8.checkpoint-backed-shopper-runtime.source.v1',decision:failed.length?'HOLD_F8_CHECKPOINT_SHOPPER_SOURCE':'PASS_F8_CHECKPOINT_SHOPPER_SOURCE',checks,failed,safety:safe};
@@ -47,6 +47,7 @@ async function initProvider(){
   const raw=String(process.env.FIREBASE_SERVICE_ACCOUNT_JSON||'');
   let sa=null;try{sa=JSON.parse(raw);}catch{}
   ensure(sa&&sa.type==='service_account'&&sa.project_id===PROJECT&&sa.client_email&&sa.private_key,'F8_SERVICE_ACCOUNT_INVALID');
+  const {default:admin}=await import('firebase-admin');
   if(!admin.apps.length)admin.initializeApp({credential:admin.credential.cert(sa),projectId:PROJECT});
   return {auth:admin.auth(),db:admin.firestore()};
 }
