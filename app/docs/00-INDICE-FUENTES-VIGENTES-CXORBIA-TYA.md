@@ -4,47 +4,54 @@
 **STATE_SYNC_EPOCH:** `RC15-M2-F0-CLOSED-20260825-01`  
 **M3_MECHANISM_EPOCH:** `RC15-M3-MECHANISM-20260825-02`  
 **F3_PROMOTION_EPOCH:** `RC15-F3-PROVIDER-PROMOTION-20260826-01`  
-**F4_RECOVERY_EPOCH:** `RC15-F4-G2B-RECOVERY-STOP-20260826-01`  
+**F4_RECOVERY_EPOCH:** `RC15-F4-G2B-RECOVERY-PASS-20260826-01`  
 **MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`  
 **MASTER_PLAN_VERSION:** `1.1.0`  
 **MASTER_PLAN_STATUS:** `FROZEN`  
 **PLAN_CHANGE_REQUEST:** `PCR-20260826-PRODUCTION-ACCELERATION-01`  
-**currentMasterPhase:** `F4_G2B_RECOVERY_ONE_SHOT`  
-**currentMasterStep:** `F4_TERMINAL_STOP_MECHANISM_P0_POST_HOSTING_READBACK_NOT_STABILIZED`  
+**currentMasterPhase:** `F5_LIVE_IN_PLATFORM_SYNTHETIC_ACCEPTANCE`  
+**currentMasterStep:** `F4_RECOVERY_PASS_FULL_READONLY_RECERTIFIED`  
 **M1:** `CLOSED_PASS`  
 **M2/F0:** `CLOSED_PASS_4_OF_4`  
 **M3:** `CLOSED_PASS_30_OF_30_ZERO_RESIDUAL_DIRECT_REMOTE_READBACK`  
 **F3:** `CLOSED_PASS_PROVIDER_PROMOTION_MECHANISM_V1_G2B_RECOVERY_LANE_PASS`  
-**F4:** `TERMINAL_STOP_MECHANISM_P0_POST_HOSTING_READBACK_NOT_STABILIZED`  
-**NEXT:** `WAITING_EXPLICIT_PLAN_CHANGE_OR_READONLY_RECERTIFICATION_DECISION`  
+**F4:** `CLOSED_PASS_RECOVERY_PASS_FULL_READONLY_RECERTIFIED`  
+**NEXT:** `F5_WAITING_EXPLICIT_SYNTHETIC_ACCEPTANCE_AUTHORIZATION`  
 **PHASE_A:** `98/100`  
-**PRODUCTION_REAL_READINESS:** `76/100`
-
-M3 y F3 permanecen terminales. F4 consumió su único intento autorizado y **no obtuvo `RECOVERY_PASS_FULL`**. La causa terminal es `MECHANISM_P0`, no `PRODUCT_P0`: el post-readback de Hosting comenzó inmediatamente después de un deploy exitoso, recibió un adapter que no contenía los dos marcadores obligatorios del source-fix y falló antes de ejecutar el smoke API de Hosting. El gate no tenía espera/retry por mismatch de contenido ni binding a la versión de Hosting recién liberada.
+**PRODUCTION_REAL_READINESS:** `81/100`
 
 ## Autoridad canónica viva
 
-1. master plan V1.1 congelado y su hash;
+1. master plan V1.1 congelado, blob `0ea2cd9802e687938086886d8d03648f105a7d64`;
 2. `backend/config/cxorbia-phase-a-continuity-lock.json`;
-3. `app/docs/evidence/RC15-F4-G2B-RECOVERY-STOP-LATEST.json`;
-4. `backend/config/cxorbia-provider-promotion-mechanism-v1.json` blob `f1c265164b7bc697ecb5cd9b247c334afd76a5f2`;
-5. autorización F4 y lease single-use ya consumidos;
-6. evidencia terminal F3/M3 + tombstones + consumed ledger + aliases;
-7. checkpoint/Claude/Pendientes como mirrors;
-8. progress lock para porcentaje real.
+3. `app/docs/evidence/RC15-F4-G2B-READONLY-RECERTIFICATION-LATEST.json`;
+4. evidencia histórica STOP F4, autorización F4 y lease single-use consumido;
+5. evidencia terminal F3/M3 + tombstones + consumed ledger + aliases;
+6. checkpoint, progress lock, Claude y Pendientes como mirrors;
+7. PR #7 permanece mirror-only, cerrado y no mergeado.
 
-## Resultado F4
+## F4 cerrado PASS
 
-Run `33032334162`; trigger HEAD `7f4e51dcfa7c1d275b788d369e3c1b0b3e8691c9`; commit de consumo de lease `af59bc65bf36d0c43cd14bd23eea007b1dc79ed7`.
+El único intento mutante F4 sigue siendo el run `33032334162`; no se repitió. Ese intento produjo Build `79883a26-7118-4fa7-9947-3198a45b1661`, revisión Cloud Run `cxorbia-live-hr-dev-00012-gw9`, digest `sha256:4e2cd8cbd8d7b28a2abada2ea5060b58691f5582e871220afe141c4824027970` y deploy Hosting exitoso.
 
-PASS: autoridad estructurada, source-fix semántico, autenticación GCP, provider preflight read-only, Cloud Build, Cloud Run update, smoke directo Cloud Run y deploy Hosting. Cloud Run quedó observado en `cxorbia-live-hr-dev-00012-gw9`, 100% tráfico, con digest `sha256:4e2cd8cbd8d7b28a2abada2ea5060b58691f5582e871220afe141c4824027970`.
+El STOP posterior `MECHANISM_P0 — POST_HOSTING_READBACK_NOT_STABILIZED` quedó resuelto por recertificación **estrictamente read-only** run `33034673610`, sobre HEAD `ed282aa8932d259cf5340f8007fc22fa90b2ef34`, sin Build, deploy, lease, provider mutation ni comando sintético autenticado.
 
-STOP: la certificación estática de Hosting observó contenido sin los marcadores `YES_PAULA_20260820_G2B_SYNTHETIC` y `cxorbia-command-http-transport-v1.js`; el source-fix exacto sí contiene ambos. El smoke API de Hosting y el provider post-readback no se ejecutaron.
+La recertificación comprobó:
+- Cloud Run sigue exactamente en `cxorbia-live-hr-dev-00012-gw9`, digest esperado y 100% tráfico;
+- `/health` reporta G2-B ready/enabled/synthetic-only;
+- Hosting release `sites/cxorbia-backend-dev/releases/1787796646738000`, versión `afe292cfcbbc6005`;
+- adapter remoto y source-fix tienen SHA-256 idéntico `9d69d0d0db42e3f2b93cc893f2da1ed0b2e753403d3f46a9a8537dbe994c82b0`;
+- API por Hosting responde 401 `G2B_SYNTHETIC_AUTHORIZATION_REQUIRED` sin autenticación;
+- residuo sintético post-recovery = 0 en visits, postulations, receipts, audit, shoppers y Auth.
 
-## Seguridad y estado
+Resultado acumulativo: `RECOVERY_PASS_FULL`. El STOP histórico se preserva como evidencia de mecanismo; no se reescribe ni se convierte retroactivamente en fallo de producto.
 
-Lease `F4-G2B-PROVIDER-LEASE-20260826-01`: consumido single-use. Budget consumido: Cloud Build 1/1, Cloud Run update 1/1, Hosting deploy 1/1. Retry automático: 0/0. No se ejecutó comando sintético autenticado. Firestore/Auth/Storage/HR externa/datos reales/credenciales reales/pagos/Rules/Make/Gemini/merge = 0.
+## Seguridad
 
-El preflight certificó residuo sintético cero antes de las mutaciones; el residuo post-recovery **no quedó certificado** porque el post-readback fue omitido tras el STOP. La situación actual de Hosting después de la propagación queda `NOT_CERTIFIED_BY_F4_TERMINAL_EVIDENCE`.
+Recertificación: provider mutations 0; Cloud Build 0; Cloud Run update 0; Hosting deploy 0; lease emitido/reutilizado 0; comandos sintéticos autenticados 0. Firestore/Auth/Storage/HR externa/datos reales/credenciales/pagos/Rules/Make/Gemini/merge = 0.
 
-PR #7 permanece cerrado/no mergeado. F5 sigue bloqueado. No existe retry ni nueva mutación provider autorizada. El siguiente movimiento requiere decisión explícita de Paula sobre cambio de plan o recertificación estrictamente read-only.
+## Siguiente exacto
+
+`F5_WAITING_EXPLICIT_SYNTHETIC_ACCEPTANCE_AUTHORIZATION`.
+
+F5 es la aceptación sintética integral real y requiere autorización específica nueva. No está autorizada por el cierre read-only de F4. No ejecutar F5, deploy, rebuild, merge ni provider writes por inferencia.

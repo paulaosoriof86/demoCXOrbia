@@ -1,11 +1,11 @@
 {
-  "schemaVersion": "3.3.0",
-  "syncEpoch": "CXORBIA-20260826-F4-TERMINAL-STOP-MECHANISM-P0-01",
+  "schemaVersion": "3.4.0",
+  "syncEpoch": "CXORBIA-20260826-F4-RECOVERY-PASS-READONLY-RECERTIFIED-01",
   "rc15ControlPlaneEpoch": "RC15-M2-F0-CLOSED-20260825-01",
   "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
   "m3QuiescenceEpoch": "RC15-M3-0-QUIESCENCE-20260826-01",
   "f3PromotionEpoch": "RC15-F3-PROVIDER-PROMOTION-20260826-01",
-  "f4RecoveryEpoch": "RC15-F4-G2B-RECOVERY-STOP-20260826-01",
+  "f4RecoveryEpoch": "RC15-F4-G2B-RECOVERY-PASS-20260826-01",
   "planId": "CXORBIA-PHASE-A-GO-LIVE-DEFINITIVE-RC-CLOSURE",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
@@ -17,12 +17,12 @@
     "total": 100
   },
   "productionRealReadiness": {
-    "completed": 76,
-    "pending": 24,
+    "completed": 81,
+    "pending": 19,
     "total": 100,
     "metric": "PRODUCTION_REAL_READINESS",
     "authority": "app/docs/PRODUCTION-REAL-PROGRESS-LOCK-CXORBIA-TYA.md",
-    "nextIncreaseOnlyAfter": "F4_G2B_RECOVERY_PASS_FULL"
+    "nextIncreaseOnlyAfter": "F5_LIVE_SYNTHETIC_ACCEPTANCE_PASS"
   },
   "masterPlan": {
     "id": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
@@ -37,9 +37,9 @@
     "previousVersion": "1.0.0",
     "previousGitBlobSha": "48494ebe5fc439aa6d00e6edcf2e78133357e7f3",
     "previousSha256": "2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475",
-    "currentPhase": "F4_G2B_RECOVERY_ONE_SHOT",
-    "currentStep": "F4_TERMINAL_STOP_MECHANISM_P0_POST_HOSTING_READBACK_NOT_STABILIZED",
-    "next": "WAITING_EXPLICIT_PLAN_CHANGE_OR_READONLY_RECERTIFICATION_DECISION",
+    "currentPhase": "F5_LIVE_IN_PLATFORM_SYNTHETIC_ACCEPTANCE",
+    "currentStep": "F4_RECOVERY_PASS_FULL_READONLY_RECERTIFIED",
+    "next": "F5_WAITING_EXPLICIT_SYNTHETIC_ACCEPTANCE_AUTHORIZATION",
     "amendmentPolicy": "PLAN_CHANGE_REQUEST_ONLY_EXPLICIT_PAULA_ATOMIC",
     "previousPlansExecutionAuthority": "SUPERSEDED_RETAINED_AS_EVIDENCE",
     "providerMutationAuthorizedNow": false,
@@ -120,15 +120,22 @@
     "next": "G2-B_WAITING_EXPLICIT_AUTHORIZATION"
   },
   "f4ExecutionControl": {
-    "status": "TERMINAL_STOP_MECHANISM_P0_POST_HOSTING_READBACK_NOT_STABILIZED",
+    "status": "CLOSED_PASS_RECOVERY_PASS_FULL_READONLY_RECERTIFIED",
     "terminal": true,
-    "terminalClassification": "MECHANISM_P0",
-    "terminalCause": "POST_HOSTING_READBACK_NOT_STABILIZED",
-    "terminalEvidence": "app/docs/evidence/RC15-F4-G2B-RECOVERY-STOP-LATEST.json",
+    "terminalDecision": "RECOVERY_PASS_FULL",
+    "terminalEvidence": "app/docs/evidence/RC15-F4-G2B-READONLY-RECERTIFICATION-LATEST.json",
+    "historicalStop": {
+      "decision": "TERMINAL_STOP_MECHANISM_P0_POST_HOSTING_READBACK_NOT_STABILIZED",
+      "classification": "MECHANISM_P0",
+      "cause": "POST_HOSTING_READBACK_NOT_STABILIZED",
+      "evidence": "app/docs/evidence/RC15-F4-G2B-RECOVERY-STOP-LATEST.json",
+      "resolvedBy": "READONLY_POST_PROPAGATION_RECERTIFICATION",
+      "productP0Proven": false
+    },
     "mechanismP0": "RC15-F4-G2B-MECHANISM-P0-LANE-INERT-20260826-01",
     "mechanismP0Proven": true,
     "mechanismP0Classification": "MECHANISM_P0",
-    "mechanismP0Repair": "FOCAL_EXISTING_WORKFLOW_REPAIR",
+    "mechanismP0Repair": "FOCAL_EXISTING_WORKFLOW_REPAIR_PLUS_POST_PROPAGATION_READONLY_RECERTIFICATION",
     "releaseAuthorization": "backend/config/cxorbia-f4-g2b-release-authorization.json",
     "releaseAuthorizationId": "F4-G2B-RECOVERY-20260826-01",
     "authorizationConsumed": true,
@@ -161,10 +168,10 @@
     "hostingDeployExecutions": 1,
     "hostingDeployDecision": "PASS",
     "cloudRunDirectSmokeDecision": "PASS",
-    "hostingStaticReadbackDecision": "FAIL_STALE_CONTENT_OBSERVED",
-    "hostingApiSmokeDecision": "NOT_EXECUTED",
-    "providerPostReadbackDecision": "NOT_EXECUTED",
-    "recoveryPassFull": false,
+    "hostingStaticReadbackDecision": "PASS_EXACT_SOURCE_HASH_AFTER_PROPAGATION",
+    "hostingApiSmokeDecision": "PASS_FAIL_CLOSED_401",
+    "providerPostReadbackDecision": "PASS_ZERO_SYNTHETIC_RESIDUE",
+    "recoveryPassFull": true,
     "productP0Proven": false,
     "providerWrites": 0,
     "deploys": 2,
@@ -182,12 +189,46 @@
     "merge": false,
     "authenticatedSyntheticCommandExecuted": false,
     "syntheticResiduePreflightCertifiedZero": true,
-    "syntheticResiduePostRecoveryCertifiedZero": false,
+    "syntheticResiduePostRecoveryCertifiedZero": true,
     "automaticRetryAllowed": false,
     "retryAuthorized": false,
     "providerMutationLeaseConsumedAt": "2026-08-27T02:09:15.818Z",
     "providerMutationRunId": 33032334162,
-    "next": "WAITING_EXPLICIT_PLAN_CHANGE_OR_READONLY_RECERTIFICATION_DECISION"
+    "readOnlyRecertification": {
+      "authorization": "backend/config/cxorbia-f4-g2b-readonly-recertification-authorization.json",
+      "authorizationId": "F4-G2B-READONLY-RECERTIFICATION-20260826-01",
+      "controlPlaneHead": "ed282aa8932d259cf5340f8007fc22fa90b2ef34",
+      "runId": 33034673610,
+      "artifactId": 9631562023,
+      "artifactDigest": "sha256:53beff90e3766c3aa491b2c300a2ef0e85b83d59bd1ad071ebf280eb3737e342",
+      "decision": "F4_READONLY_RECERTIFICATION_PASS_FULL",
+      "providerMutations": 0,
+      "cloudBuildExecutions": 0,
+      "cloudRunUpdates": 0,
+      "hostingDeploys": 0,
+      "leaseIssued": 0,
+      "leaseReused": false,
+      "authenticatedSyntheticCommands": 0,
+      "cloudRunRevision": "cxorbia-live-hr-dev-00012-gw9",
+      "imageDigest": "sha256:4e2cd8cbd8d7b28a2abada2ea5060b58691f5582e871220afe141c4824027970",
+      "hostingRelease": "sites/cxorbia-backend-dev/releases/1787796646738000",
+      "hostingVersion": "sites/cxorbia-backend-dev/versions/afe292cfcbbc6005",
+      "hostingReleaseTime": "2026-08-27T02:10:46.738Z",
+      "sourceHash": "9d69d0d0db42e3f2b93cc893f2da1ed0b2e753403d3f46a9a8537dbe994c82b0",
+      "remoteHash": "9d69d0d0db42e3f2b93cc893f2da1ed0b2e753403d3f46a9a8537dbe994c82b0",
+      "staticAttempts": 1,
+      "hostingApiUnauthorizedStatus": 401,
+      "hostingApiUnauthorizedError": "G2B_SYNTHETIC_AUTHORIZATION_REQUIRED",
+      "syntheticResidue": {
+        "visits": 0,
+        "postulations": 0,
+        "receipts": 0,
+        "audit": 0,
+        "shoppers": 0,
+        "auth": 0
+      }
+    },
+    "next": "F5_WAITING_EXPLICIT_SYNTHETIC_ACCEPTANCE_AUTHORIZATION"
   },
   "resumeProtocol": {
     "conversationIndependent": true,
@@ -219,8 +260,10 @@
     "f4LeaseConsumesOnlyAtProviderMutationStart": true,
     "f4AutomaticRetryForbidden": true,
     "f4SourceFixMustBePinned": true,
-    "f4TerminalStopSurvivesConversationInterruption": true,
+    "f4HistoricalStopResolvedByReadOnlyRecertification": true,
+    "f4RecoveryPassFullClosed": true,
     "f4ConsumedOneShotCannotReplayWithoutExplicitPlanDecision": true,
+    "f5RequiresSeparateExplicitAuthorization": true,
     "maxConsecutiveDiagnosticIterationsWithoutStateChange": 1,
     "stalledPathMustClassifyAs": [
       "PRODUCT_P0",
@@ -230,36 +273,12 @@
     "onMismatch": "CONTINUITY_DRIFT_BLOCKED"
   },
   "iterations": [
-    {
-      "id": "I5-R1",
-      "weight": 2,
-      "status": "PASS"
-    },
-    {
-      "id": "I5-R2",
-      "weight": 3,
-      "status": "PASS"
-    },
-    {
-      "id": "I5-R3",
-      "weight": 3,
-      "status": "PASS"
-    },
-    {
-      "id": "I5-R4",
-      "weight": 2,
-      "status": "PASS"
-    },
-    {
-      "id": "I5-G1",
-      "weight": 3,
-      "status": "PASS"
-    },
-    {
-      "id": "I5-G2",
-      "weight": 2,
-      "status": "ACTIVE"
-    }
+    {"id": "I5-R1", "weight": 2, "status": "PASS"},
+    {"id": "I5-R2", "weight": 3, "status": "PASS"},
+    {"id": "I5-R3", "weight": 3, "status": "PASS"},
+    {"id": "I5-R4", "weight": 2, "status": "PASS"},
+    {"id": "I5-G1", "weight": 3, "status": "PASS"},
+    {"id": "I5-G2", "weight": 2, "status": "ACTIVE"}
   ],
   "productionState": {
     "active": true,
@@ -276,11 +295,15 @@
     "providerRedeployExecuted": true,
     "rebuildExecuted": true,
     "hostingDeployExecuted": true,
-    "hostingPostDeployCertified": false,
-    "hostingStateAfterPropagation": "NOT_CERTIFIED_BY_F4_TERMINAL_EVIDENCE",
+    "hostingPostDeployCertified": true,
+    "hostingStateAfterPropagation": "CERTIFIED_EXACT_SOURCE_AND_API_ROUTE",
+    "hostingRelease": "sites/cxorbia-backend-dev/releases/1787796646738000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/afe292cfcbbc6005",
+    "hostingReleaseTime": "2026-08-27T02:10:46.738Z",
     "businessDataWritesAuthorized": false,
     "syntheticAcceptanceAuthorizationArtifactExists": true,
-    "syntheticAcceptanceExecutionBlockedUntilRecoveryPass": true,
+    "syntheticAcceptanceExecutionBlockedUntilRecoveryPass": false,
+    "syntheticAcceptanceExecutionBlockedUntilExplicitF5Authorization": true,
     "syntheticAcceptanceScope": "CXORBIA_E2E_SYNTH_*"
   },
   "g2Acceptance": {
@@ -294,9 +317,9 @@
     "p0WritePathRecovery": {
       "p0Id": "G2B_CANONICAL_WRITE_PATH_DISABLED_OR_UNROUTED",
       "p0Proven": true,
-      "status": "TERMINAL_STOP_MECHANISM_P0_POST_HOSTING_READBACK_NOT_STABILIZED",
+      "status": "RECOVERY_PASS_FULL_READONLY_RECERTIFIED",
       "sourceFixHeadSha": "1d2cfecba0a89b637398d747a628e549d9823c68",
-      "latestRecoveryDecision": "TERMINAL_STOP_MECHANISM_P0_POST_HOSTING_READBACK_NOT_STABILIZED",
+      "latestRecoveryDecision": "F4_READONLY_RECERTIFICATION_PASS_FULL",
       "recoveryEnabled": false,
       "recoveryConsumed": true,
       "providerMutationExecutions": 1,
@@ -310,12 +333,14 @@
       "releaseAuthorizationId": "F4-G2B-RECOVERY-20260826-01",
       "providerMutationLeaseId": "F4-G2B-PROVIDER-LEASE-20260826-01",
       "futureRetryBudgetAfterExplicitAuthorization": 0,
-      "recoveryPassFull": false,
+      "recoveryPassFull": true,
       "productP0Proven": false,
-      "next": "WAITING_EXPLICIT_PLAN_CHANGE_OR_READONLY_RECERTIFICATION_DECISION"
+      "readOnlyRecertificationRunId": 33034673610,
+      "evidence": "app/docs/evidence/RC15-F4-G2B-READONLY-RECERTIFICATION-LATEST.json",
+      "next": "F5_WAITING_EXPLICIT_SYNTHETIC_ACCEPTANCE_AUTHORIZATION"
     },
     "liveInPlatformSyntheticAcceptance": {
-      "status": "BLOCKED_BY_F4_TERMINAL_STOP_UNTIL_VERIFIED_G2B_RECOVERY_PASS",
+      "status": "WAITING_EXPLICIT_F5_AUTHORIZATION",
       "authorizationArtifactIsStateAuthority": false,
       "sameProductionUrlRequired": true,
       "syntheticDataOnly": true,
@@ -348,7 +373,9 @@
     "f4ReleaseAuthorizationAuthority": "backend/config/cxorbia-f4-g2b-release-authorization.json",
     "f4ProviderMutationLeaseAuthority": "backend/config/cxorbia-f4-g2b-provider-mutation-lease.json",
     "f4ExecuteAuthority": "backend/config/cxorbia-f4-g2b-recovery-execute.json",
-    "f4TerminalEvidenceAuthority": "app/docs/evidence/RC15-F4-G2B-RECOVERY-STOP-LATEST.json"
+    "f4HistoricalStopEvidenceAuthority": "app/docs/evidence/RC15-F4-G2B-RECOVERY-STOP-LATEST.json",
+    "f4ReadOnlyRecertificationAuthorizationAuthority": "backend/config/cxorbia-f4-g2b-readonly-recertification-authorization.json",
+    "f4TerminalPassEvidenceAuthority": "app/docs/evidence/RC15-F4-G2B-READONLY-RECERTIFICATION-LATEST.json"
   },
   "hardStops": {
     "reopenG1WithoutNewP0": false,
@@ -367,19 +394,22 @@
     "allowM3Batch4": false,
     "allowProviderRecoveryBeforeProviderPromotionMechanismPass": false,
     "f4OneShotConsumed": true,
-    "f5BlockedUntilRecoveryPass": true
+    "f4RecoveryPassFull": true,
+    "f5BlockedUntilRecoveryPass": false,
+    "f5BlockedUntilExplicitAuthorization": true
   },
   "nextNow": {
-    "action": "WAITING_EXPLICIT_PLAN_CHANGE_OR_READONLY_RECERTIFICATION_DECISION",
+    "action": "F5_WAITING_EXPLICIT_SYNTHETIC_ACCEPTANCE_AUTHORIZATION",
     "masterPlanFrozen": true,
     "masterPlanVersion": "1.1.0",
     "planChangeRequest": "PCR-20260826-PRODUCTION-ACCELERATION-01",
     "m3ClosedPass": true,
     "f3ClosedPass": true,
     "f4Authorized": false,
-    "f4TerminalStop": true,
-    "f4TerminalClassification": "MECHANISM_P0",
-    "f4TerminalCause": "POST_HOSTING_READBACK_NOT_STABILIZED",
+    "f4TerminalPass": true,
+    "f4RecoveryPassFull": true,
+    "f4ReadOnlyRecertificationPass": true,
+    "historicalF4StopResolved": true,
     "mechanismP0ProvenAndRepaired": true,
     "providerPromotionMechanismPassed": true,
     "g2bRecoveryLanePassed": true,

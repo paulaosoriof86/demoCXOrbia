@@ -7,15 +7,17 @@
 **PLAN_CHANGE_REQUEST:** `PCR-20260826-PRODUCTION-ACCELERATION-01`  
 **M3:** `CLOSED_PASS_30_OF_30_ZERO_RESIDUAL_DIRECT_REMOTE_READBACK`  
 **F3:** `CLOSED_PASS_PROVIDER_PROMOTION_MECHANISM_V1_G2B_RECOVERY_LANE_PASS`  
-**F4:** `TERMINAL_STOP_MECHANISM_P0_POST_HOSTING_READBACK_NOT_STABILIZED`  
-**NEXT:** `WAITING_EXPLICIT_PLAN_CHANGE_OR_READONLY_RECERTIFICATION_DECISION`  
+**F4:** `CLOSED_PASS_RECOVERY_PASS_FULL_READONLY_RECERTIFIED`  
+**NEXT:** `F5_WAITING_EXPLICIT_SYNTHETIC_ACCEPTANCE_AUTHORIZATION`  
 **PHASE_A:** `98/100`  
-**PRODUCTION_REAL_READINESS:** `76/100`
+**PRODUCTION_REAL_READINESS:** `81/100`
 
-F4 ejecutó su único intento provider. Cloud Build, Cloud Run update, smoke directo Cloud Run y deploy Hosting pasaron. La revisión observada es `cxorbia-live-hr-dev-00012-gw9` con el source-fix `1d2cfecba0a89b637398d747a628e549d9823c68`.
+F4 quedó cerrado PASS sin modificar frontend. El único intento mutante produjo Cloud Run `cxorbia-live-hr-dev-00012-gw9` y Hosting; el falso STOP posterior fue un defecto del mecanismo de readback inmediato. Una recertificación posterior estrictamente read-only demostró que Hosting sirve exactamente el adapter del source-fix, la ruta API está conectada y fail-closed, y no existe residuo sintético.
 
-El STOP no es frontend ni `PRODUCT_P0`. El post-readback de Hosting comenzó inmediatamente después del release y capturó un adapter que no contenía los marcadores G2-B que sí existen en el source-fix. El gate no reintentaba mismatch de contenido ni verificaba la versión exacta recién liberada. Clasificación: `MECHANISM_P0 — POST_HOSTING_READBACK_NOT_STABILIZED`.
+No modificar UI, `/app/modules` ni `/app/core` por este bloque. No existe tarea frontend nueva para Claude ni P0 de producto demostrado.
 
-No modificar UI, `/app/modules` ni `/app/core`. No hay tarea de corrección frontend para Claude derivada de este STOP. No se ejecutó comando sintético autenticado; writes de datos reales/HR/Auth/Storage/Rules/Make/Gemini/pagos/merge permanecen en cero.
+**Reusable CXOrbia:** conservar como patrón de backend la certificación post-deploy con polling de estabilización, hash exacto, binding de release/version, route smoke fail-closed y zero-residue readback.
 
-F5 no está autorizado ni puede iniciar. Una futura decisión debe resolver primero la certificación de F4. **Academia:** sin cambio funcional ni actualización de rutas/manuales/cursos por este bloque; conservar el impacto como `Sin impacto Claude` hasta que exista una certificación funcional posterior.
+**Academia:** sin cambio funcional en rutas, manuales o cursos en F4. F5 sí deberá revisar evidencia funcional/operativa si su aceptación sintética demuestra comportamientos que deban reflejarse.
+
+F5 no está autorizado todavía.

@@ -7,30 +7,23 @@
 **PLAN_CHANGE_REQUEST:** `PCR-20260826-PRODUCTION-ACCELERATION-01`  
 **M3:** `CLOSED_PASS_30_OF_30_ZERO_RESIDUAL_DIRECT_REMOTE_READBACK`  
 **F3:** `CLOSED_PASS_PROVIDER_PROMOTION_MECHANISM_V1_G2B_RECOVERY_LANE_PASS`  
-**F4:** `TERMINAL_STOP_MECHANISM_P0_POST_HOSTING_READBACK_NOT_STABILIZED`  
-**NEXT:** `WAITING_EXPLICIT_PLAN_CHANGE_OR_READONLY_RECERTIFICATION_DECISION`  
+**F4:** `CLOSED_PASS_RECOVERY_PASS_FULL_READONLY_RECERTIFIED`  
+**NEXT:** `F5_WAITING_EXPLICIT_SYNTHETIC_ACCEPTANCE_AUTHORIZATION`  
 **PHASE_A:** `98/100`  
-**PRODUCTION_REAL_READINESS:** `76/100`
+**PRODUCTION_REAL_READINESS:** `81/100`
 
 ## Cerrado y preservado
 
-M3 y F3 permanecen cerrados. El único intento F4 ya fue consumido. Cloud Build, Cloud Run, smoke directo y Hosting deploy pasaron una vez; no hay autorización para repetirlos.
+F4 ya tiene `RECOVERY_PASS_FULL`. El STOP de Hosting quedó resuelto por evidencia read-only post-propagación; no existe P0 de producto derivado de ese evento. El lease original sigue consumido y no reutilizable.
+
+La recertificación confirmó Cloud Run exacto, Hosting release/version exactos, adapter remoto idéntico al source-fix, API fail-closed y residuo sintético post-recovery cero.
 
 ## Pendiente inmediato único
 
-Resolver por decisión explícita el STOP `MECHANISM_P0 — POST_HOSTING_READBACK_NOT_STABILIZED`.
+`F5 — aceptación sintética integral real`.
 
-La evidencia demuestra que, inmediatamente después del release Hosting, el gate recibió un adapter remoto sin los marcadores G2-B obligatorios y falló antes del smoke API. El source-fix sí contiene esos marcadores. Falta una certificación read-only estable y vinculada al release para poder demostrar o descartar que Hosting ya sirve el contenido correcto tras propagación.
-
-No ejecutar una recertificación ni modificar provider por inferencia. El plan vigente terminó F4 en STOP; cualquier continuación requiere decisión explícita. Si se autoriza una recertificación read-only, no puede consumir ni reutilizar el lease F4 y no puede desplegar nada.
-
-## Bloqueos
-
-- F4 `RECOVERY_PASS_FULL`: no demostrado.
-- F5 aceptación sintética: bloqueada.
-- Residuo sintético post-recovery: no certificado.
-- Estado Hosting post-propagación: `NOT_CERTIFIED_BY_F4_TERMINAL_EVIDENCE`.
+Debe comenzar únicamente tras autorización explícita nueva. Su alcance será exclusivamente `CXORBIA_E2E_SYNTH_*`, con evidencia visible, writes sintéticos controlados, cleanup total y post-clean readback. No autorizar datos de negocio reales, HR externa, pagos, Make/Gemini, merge o deploy por inferencia.
 
 ## Producto / Claude / Academia
 
-No existe P0 de producto demostrado por este STOP. No tocar `/app/modules`, `/app/core` ni UI. Sin tarea frontend nueva para Claude. Academia: sin impacto funcional en este bloque.
+No tocar `/app/modules`, `/app/core` ni UI por F4. Sin tarea frontend nueva para Claude. Academia: sin impacto funcional F4; revisar nuevamente durante F5/F7 según evidencia real.

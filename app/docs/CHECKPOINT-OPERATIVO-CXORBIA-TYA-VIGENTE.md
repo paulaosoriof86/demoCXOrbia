@@ -7,23 +7,35 @@
 **PLAN_CHANGE_REQUEST:** `PCR-20260826-PRODUCTION-ACCELERATION-01`  
 **M3:** `CLOSED_PASS_30_OF_30_ZERO_RESIDUAL_DIRECT_REMOTE_READBACK`  
 **F3:** `CLOSED_PASS_PROVIDER_PROMOTION_MECHANISM_V1_G2B_RECOVERY_LANE_PASS`  
-**F4:** `TERMINAL_STOP_MECHANISM_P0_POST_HOSTING_READBACK_NOT_STABILIZED`  
-**NEXT:** `WAITING_EXPLICIT_PLAN_CHANGE_OR_READONLY_RECERTIFICATION_DECISION`  
+**F4:** `CLOSED_PASS_RECOVERY_PASS_FULL_READONLY_RECERTIFIED`  
+**NEXT:** `F5_WAITING_EXPLICIT_SYNTHETIC_ACCEPTANCE_AUTHORIZATION`  
 **PHASE_A:** `98/100`  
-**PRODUCTION_REAL_READINESS:** `76/100`
+**PRODUCTION_REAL_READINESS:** `81/100`
 
-F4 ejecutó el único intento autorizado mediante run `33032334162`. El provider preflight read-only pasó y solo entonces se consumió el lease single-use en commit `af59bc65bf36d0c43cd14bd23eea007b1dc79ed7`.
+## Cierre F4
 
-Resultado material:
-- Cloud Build `79883a26-7118-4fa7-9947-3198a45b1661`: PASS.
-- Cloud Run: PASS; revisión observada `cxorbia-live-hr-dev-00012-gw9`, 100% tráfico.
-- Digest: `sha256:4e2cd8cbd8d7b28a2abada2ea5060b58691f5582e871220afe141c4824027970`.
-- Smoke directo Cloud Run: PASS; `/health` reportó G2-B ready/enabled/synthetic-only y POST no autenticado devolvió 401 `G2B_SYNTHETIC_AUTHORIZATION_REQUIRED`.
-- Hosting deploy: PASS.
-- Post-readback estático Hosting: FAIL antes del smoke API; el adapter remoto capturado no contenía los dos marcadores obligatorios que sí existen en el source-fix `1d2cfecba0a89b637398d747a628e549d9823c68`.
+F4 no fue reintentado. El run mutante original `33032334162` permanece como el único consumo del lease y del budget: Cloud Build 1/1, Cloud Run update 1/1 y Hosting deploy 1/1.
 
-Clasificación terminal: `MECHANISM_P0 — POST_HOSTING_READBACK_NOT_STABILIZED`. El gate comenzó el readback inmediatamente tras el release y no tenía retry por mismatch de contenido ni binding a la versión recién liberada. Esto impide certificar F4, pero no demuestra P0 de producto.
+El STOP `MECHANISM_P0 — POST_HOSTING_READBACK_NOT_STABILIZED` se resolvió mediante recertificación posterior estrictamente read-only autorizada por Paula. Run `33034673610`, HEAD `ed282aa8932d259cf5340f8007fc22fa90b2ef34`, artefacto `9631562023`, digest `sha256:53beff90e3766c3aa491b2c300a2ef0e85b83d59bd1ad071ebf280eb3737e342`.
 
-No se ejecutó comando sintético autenticado. Los writes prohibidos permanecen en cero. El preflight certificó residuo sintético cero; no existe certificación post-recovery porque el provider post-readback quedó `NOT_EXECUTED`.
+## Evidencia terminal
 
-No reintentar F4. No emitir otro lease. No iniciar F5. Cualquier nuevo provider mutation requiere decisión/autorización explícita y el cambio de plan correspondiente. Una recertificación futura, si Paula la autoriza, debe ser read-only y no reutilizar el lease consumido.
+- Cloud Run: `cxorbia-live-hr-dev-00012-gw9`, digest `sha256:4e2cd8cbd8d7b28a2abada2ea5060b58691f5582e871220afe141c4824027970`, 100% tráfico.
+- Health: G2-B source ready, write lane enabled exclusivamente sintética, synthetic-only.
+- Hosting: release `1787796646738000`, versión `afe292cfcbbc6005`, fecha `2026-08-27T02:10:46.738Z`.
+- Adapter source/remoto: hash exacto común `9d69d0d0db42e3f2b93cc893f2da1ed0b2e753403d3f46a9a8537dbe994c82b0`.
+- Ruta Hosting G2-B sin autenticación: HTTP 401, `G2B_SYNTHETIC_AUTHORIZATION_REQUIRED`.
+- Residuo sintético: visits=0, postulations=0, receipts=0, audit=0, shoppers=0, Auth=0.
+- Recertificación provider mutations/deploys/writes/comandos autenticados: todos 0.
+
+Decisión: `F4_READONLY_RECERTIFICATION_PASS_FULL` + `RECOVERY_PASS_FULL`.
+
+## Estado seguro
+
+El lease F4 sigue consumido y no reutilizable. No se autorizó F5, otro deploy, Build, Cloud Run update, Hosting deploy, Firestore/Auth/Storage/HR writes, Rules, Make, Gemini, pagos ni merge.
+
+## Siguiente exacto
+
+`F5_WAITING_EXPLICIT_SYNTHETIC_ACCEPTANCE_AUTHORIZATION`.
+
+F5 solo puede comenzar con autorización específica vigente para la aceptación sintética integral `CXORBIA_E2E_SYNTH_*`, sus writes sintéticos controlados, cleanup y post-clean readback.
