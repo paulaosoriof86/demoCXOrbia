@@ -2,9 +2,9 @@
   "schemaVersion": "cxorbia.f4.g2b.provider-mutation-lease.v1",
   "leaseId": "F4-G2B-PROVIDER-LEASE-20260826-01",
   "authorizationId": "F4-G2B-RECOVERY-20260826-01",
-  "state": "ISSUED_NOT_CONSUMED",
+  "state": "CONSUMED_MUTATION_STARTED",
   "issued": true,
-  "consumed": false,
+  "consumed": true,
   "singleUse": true,
   "issuedByAuthority": "Paula_current_conversation_2026-08-26",
   "repository": "paulaosoriof86/demoCXOrbia",
@@ -43,8 +43,8 @@
     "merge": 0
   },
   "automaticRetryAllowed": false,
-  "consumedAt": null,
-  "consumedByRunId": null,
-  "consumptionReason": null,
-  "next": "F4_READ_ONLY_PREFLIGHT"
+  "consumedAt": "2026-08-27T02:09:15.818Z",
+  "consumedByRunId": "33032334162",
+  "consumptionReason": "CLOUD_BUILD_START",
+  "next": "F4_PROVIDER_MUTATION_IN_PROGRESS"
 }
