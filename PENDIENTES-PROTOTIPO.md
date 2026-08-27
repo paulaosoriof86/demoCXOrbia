@@ -6,20 +6,19 @@
 **MASTER_PLAN_STATUS:** `FROZEN`
 **PLAN_CHANGE_REQUEST:** `PCR-20260826-PRODUCTION-ACCELERATION-01`
 **M3:** `CLOSED_PASS_30_OF_30_ZERO_RESIDUAL_DIRECT_REMOTE_READBACK`
-**NEXT:** `M4_F3_PROVIDER_PROMOTION_MECHANISM_AND_G2B_RECOVERY_LANE_READONLY_CERTIFICATION`
+**F3:** `CLOSED_PASS_PROVIDER_PROMOTION_MECHANISM_V1_G2B_RECOVERY_LANE_PASS`
+**NEXT:** `G2-B_WAITING_EXPLICIT_AUTHORIZATION`
 **PHASE_A:** `98/100`
-**PRODUCTION_REAL_READINESS:** `74/100`
+**PRODUCTION_REAL_READINESS:** `76/100`
 
 ## Cerrado
 
-M3 quedó cerrado: 30/30 autoridades históricas terminales, cola residual `0`, `historicalGlobalExhaustive=true`, no Batch 4. Los últimos 13 se materializaron sin ejecución y obtuvieron readback remoto exacto en `6ae1b835abd7e13deb05fd59b9226538949d1a64`.
+M3 conserva residual `0`. F3 congeló/certificó el mecanismo provider y el carril de recovery G2-B en modo read-only, sin mutaciones ni deploy.
 
 ## Pendiente inmediato único
 
-F3 read-only: reparar/certificar el contrato `PROVIDER_PROMOTION_MECHANISM_V1` y demostrar `G2B_RECOVERY_LANE_PASS`. No ejecutar recovery, provider mutation, deploy ni synthetic stage durante esta certificación.
-
-Después de F3, F4 recovery G2-B one-shot requiere autorización explícita vigente.
+`G2-B_WAITING_EXPLICIT_AUTHORIZATION`. F4 recovery G2-B one-shot solo puede empezar con autorización explícita nueva. El lease sigue sin emitir; retry futuro máximo 1 después de esa autorización; sin retry automático.
 
 ## Producto / Claude / Academia
 
-Sin tarea frontend nueva. No parchear UI. Source funcional preservado. Sin impacto funcional de Academia en M3.
+Sin tarea frontend nueva. No parchear UI. Source funcional preservado. Sin impacto funcional de Academia en F3.

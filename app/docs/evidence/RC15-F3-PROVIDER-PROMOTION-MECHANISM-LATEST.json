@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "cxorbia.f3.provider-promotion-mechanism.v1",
+  "id": "RC15-F3-PROVIDER-PROMOTION-MECHANISM-LATEST",
+  "generatedAt": "2026-08-26T17:50:00-06:00",
+  "decision": "G2B_PROVIDER_PROMOTION_MECHANISM_PASS",
+  "recoveryLaneDecision": "G2B_RECOVERY_LANE_PASS",
+  "mode": "READ_ONLY_CERTIFICATION",
+  "headBefore": "739c13a84df82bf3e24917422bfba27a19d17752",
+  "contract": {
+    "id": "PROVIDER_PROMOTION_MECHANISM_V1",
+    "path": "backend/config/cxorbia-provider-promotion-mechanism-v1.json",
+    "gitBlobSha": "f1c265164b7bc697ecb5cd9b247c334afd76a5f2",
+    "state": "FROZEN_PENDING_PROVIDER_WRITE_AUTHORIZATION"
+  },
+  "releaseTuple": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "docs-tya-v6-v71-audit",
+    "controlPlaneHeadBefore": "739c13a84df82bf3e24917422bfba27a19d17752",
+    "functionalSourceSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "sourceFixSha": "1d2cfecba0a89b637398d747a628e549d9823c68",
+    "buildImageDigest": null,
+    "buildImageDigestState": "NOT_APPLICABLE_UNTIL_AUTHORIZED_F4_BUILD",
+    "environment": "DEV",
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "cloudRunRegion": "us-central1",
+    "cloudRunService": "cxorbia-live-hr-dev",
+    "knownGoodRollbackRevision": "cxorbia-live-hr-dev-00011-f2f",
+    "hostingSite": "cxorbia-backend-dev",
+    "releaseAuthorizationId": null,
+    "providerMutationLeaseId": null
+  },
+  "readOnlyChecks": {
+    "masterPlanFrozen": true,
+    "m3ClosedPass30Of30Residual0": true,
+    "providerMutationAuthorized": false,
+    "leaseIssued": false,
+    "preflightReadOnly": true,
+    "failClosed": true,
+    "noOpAlreadyPromoted": true,
+    "ambiguousStateAutoFix": false,
+    "rollbackIdentified": true,
+    "classificationTaxonomy": [
+      "PRODUCT_P0",
+      "MECHANISM_P0",
+      "EXTERNAL_TRANSPORT_OUTAGE"
+    ],
+    "skippedIsNotProductFailure": true,
+    "zeroStepsIsNotProductFailure": true,
+    "noRunnerIsNotProductFailure": true
+  },
+  "futureF4BudgetAfterExplicitAuthorization": {
+    "cloudBuildMax": 1,
+    "cloudRunUpdateMax": 1,
+    "hostingDeployMax": 1,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "storageWrites": 0,
+    "externalHrWrites": 0,
+    "realDataWrites": 0,
+    "realCredentialWrites": 0,
+    "paymentWrites": 0,
+    "rulesWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "automaticRetryMax": 0
+  },
+  "f3SafetyCounters": {
+    "providerWrites": 0,
+    "deploys": 0,
+    "g2bAttempts": 0
+  },
+  "authorization": {
+    "currentProviderMutationAuthorization": false,
+    "currentRecoveryAuthorization": false,
+    "leaseIssued": false,
+    "leaseSingleUse": true,
+    "futureRetryBudgetAfterExplicitAuthorization": 1,
+    "explicitAuthorizationRequiredInCurrentConversation": true
+  },
+  "providerReadExecuted": false,
+  "providerWriteExecuted": false,
+  "deployExecuted": false,
+  "g2bRecoveryAttemptExecuted": false,
+  "next": "G2-B_WAITING_EXPLICIT_AUTHORIZATION"
+}
