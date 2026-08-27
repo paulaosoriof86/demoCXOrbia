@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "cxorbia.f4.g2b.provider-mutation-lease.v1",
+  "leaseId": "F4-G2B-PROVIDER-LEASE-20260826-01",
+  "authorizationId": "F4-G2B-RECOVERY-20260826-01",
+  "state": "ISSUED_NOT_CONSUMED",
+  "issued": true,
+  "consumed": false,
+  "singleUse": true,
+  "issuedByAuthority": "Paula_current_conversation_2026-08-26",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "boundControlPlaneHeadBefore": "fdba595ac83bee69f1d4d50cf02ab174ce8d7eda",
+  "functionalSourceSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+  "sourceFixSha": "1d2cfecba0a89b637398d747a628e549d9823c68",
+  "providerPromotionContractBlobSha": "f1c265164b7bc697ecb5cd9b247c334afd76a5f2",
+  "target": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "cloudRunRegion": "us-central1",
+    "cloudRunService": "cxorbia-live-hr-dev",
+    "hostingSite": "cxorbia-backend-dev",
+    "hostingTarget": "cxorbia-dev"
+  },
+  "consumeOnlyAt": "IMMEDIATELY_BEFORE_FIRST_PROVIDER_MUTATION_CLOUD_BUILD",
+  "noOpConsumesLease": false,
+  "ambiguousStateConsumesLease": false,
+  "providerReadConsumesLease": false,
+  "budget": {
+    "cloudBuildMax": 1,
+    "cloudRunUpdateMax": 1,
+    "hostingDeployMax": 1
+  },
+  "forbiddenWrites": {
+    "firestore": 0,
+    "auth": 0,
+    "storage": 0,
+    "externalHr": 0,
+    "realData": 0,
+    "realCredentials": 0,
+    "payments": 0,
+    "rules": 0,
+    "make": 0,
+    "gemini": 0,
+    "merge": 0
+  },
+  "automaticRetryAllowed": false,
+  "consumedAt": null,
+  "consumedByRunId": null,
+  "consumptionReason": null,
+  "next": "F4_READ_ONLY_PREFLIGHT"
+}

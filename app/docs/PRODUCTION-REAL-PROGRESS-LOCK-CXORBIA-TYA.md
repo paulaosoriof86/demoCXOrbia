@@ -6,29 +6,28 @@
 **MASTER_PLAN_VERSION:** `1.1.0`
 **PLAN_CHANGE_REQUEST:** `PCR-20260826-PRODUCTION-ACCELERATION-01`
 
-Esta métrica sigue siendo el indicador ejecutivo. `PHASE_A=98/100` se conserva como métrica técnica interna.
+`PHASE_A=98/100` se conserva como métrica técnica interna.
 
-## Gate 69 → 74 — CERRADO
+## Gates cerrados
 
-`M3_TERMINAL_13_CLOSURE = CLOSED_PASS_DIRECT_REMOTE_READBACK`. Los 30 HOLD históricos del universo M2 quedaron terminales, cola residual `0`, `historicalGlobalExhaustive=true`, sin Batch 4. Materialización terminal 13: `6ae1b835abd7e13deb05fd59b9226538949d1a64`; readback remoto exacto PASS; workflows/provider-runtime/frontend funcional tocados = 0.
+- `69 → 74`: M3 terminal `CLOSED_PASS`, 30/30 HOLD terminales, residual 0.
+- `74 → 76`: F3 `PROVIDER_PROMOTION_MECHANISM_V1` + `G2B_RECOVERY_LANE_PASS`.
 
-## Gate 74 → 76 — CERRADO
+## F4 — activo, sin incremento todavía
 
-F3 `PROVIDER_PROMOTION_MECHANISM_V1` quedó congelado y certificado en modo `READ_ONLY`: preflight fail-closed, autorización estructurada separada de lease single-use, idempotencia `NO_OP_ALREADY_PROMOTED`, cero autofix ante ambigüedad, rollback a `cxorbia-live-hr-dev-00011-f2f` y taxonomía causal obligatoria. `G2B_PROVIDER_PROMOTION_MECHANISM_PASS=true` y `G2B_RECOVERY_LANE_PASS=true`.
+Paula autorizó F4 en la conversación vigente. Antes de provider access se probó un `MECHANISM_P0`: el workflow vivo G2-B estaba todavía inertizado por M3. Se corrige focalmente el mismo workflow existente y se ejecuta sobre source-fix pin `1d2cfecba0a89b637398d747a628e549d9823c68`.
 
-Contadores F3: provider writes `0`, deploys `0`, intentos G2-B `0`. No se emitió lease, no se consumió retry y no existe autorización vigente de provider/recovery.
+Autorización `F4-G2B-RECOVERY-20260826-01`; lease `F4-G2B-PROVIDER-LEASE-20260826-01`, emitido pero no consumido. El lease solo se consume al iniciar el primer Cloud Build después de preflight provider read-only PASS. No hay retry automático.
+
+El porcentaje sigue en `76/100` hasta demostrar `RECOVERY_PASS_FULL` mediante Cloud Run/Hosting readback y cero writes prohibidos.
 
 ## Escalera congelada V1.1
 
 - `76 → 81`: F4 recovery G2-B one-shot `RECOVERY_PASS_FULL`.
 - `81 → 86`: F5 aceptación sintética integral real `PASS`, cleanup y readback.
-- `86 → 90`: F6 release Phase A inmutable con manifest completo.
-- `90 → 95`: F7 readiness integral preproducción `GO` o `GO_WITH_WARNINGS` sin P0.
-- `95 → 98`: F8 cutover exacto + smoke por rol/flujo + rollback disponible.
-- `98 → 100`: F9 aceptación postproducción después de ventana estable y reconciliación.
+- `86 → 90`: F6 release Phase A inmutable.
+- `90 → 95`: F7 readiness integral `GO`/`GO_WITH_WARNINGS` sin P0.
+- `95 → 98`: F8 cutover exacto.
+- `98 → 100`: F9 aceptación postproducción.
 
-## Regla de movimiento
-
-El porcentaje solo aumenta cuando el gate indicado queda cerrado con evidencia reproducible. Diagnóstico, documentación, reintentos, pasos preparatorios o reparaciones parciales no inflan el porcentaje.
-
-Siguiente estado exacto: `G2-B_WAITING_EXPLICIT_AUTHORIZATION`. F4 no puede iniciar sin autorización explícita nueva; el lease continúa sin emitir.
+Si F4 no termina PASS, el STOP debe ser exactamente `PRODUCT_P0`, `MECHANISM_P0` o `EXTERNAL_TRANSPORT_OUTAGE`; skipped/no runner/cero steps nunca equivalen a fallo de producto.

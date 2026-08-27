@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "cxorbia.f4.g2b.mechanism-p0.v1",
+  "id": "RC15-F4-G2B-MECHANISM-P0-LANE-INERT-20260826-01",
+  "classification": "MECHANISM_P0",
+  "status": "PROVEN_REPAIR_AUTHORIZED",
+  "detectedAtHead": "fdba595ac83bee69f1d4d50cf02ab174ce8d7eda",
+  "problem": "F3 certified G2B_RECOVERY_LANE_PASS but the live provider executor remained M3-inert and could not consume the new structured authorization/lease contract.",
+  "currentExecutor": {
+    "path": ".github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml",
+    "state": "HISTORICAL_INERT_M3",
+    "trigger": "workflow_dispatch_only",
+    "permissions": "contents_read",
+    "providerMutationCapability": false
+  },
+  "provenHistoricalExecutor": {
+    "ref": "1d2cfecba0a89b637398d747a628e549d9823c68",
+    "samePath": ".github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml",
+    "capabilities": [
+      "gcp_auth",
+      "provider_pre_readback",
+      "cloud_build",
+      "cloud_run_update",
+      "cloud_run_smoke",
+      "hosting_deploy",
+      "hosting_smoke",
+      "provider_post_readback"
+    ]
+  },
+  "productP0Proven": false,
+  "providerReadExecutedDuringDiagnosis": false,
+  "providerWriteExecutedDuringDiagnosis": false,
+  "leaseIssuedDuringDiagnosis": false,
+  "leaseConsumedDuringDiagnosis": false,
+  "repair": {
+    "mode": "FOCAL_EXISTING_WORKFLOW_REPAIR",
+    "newWorkflow": false,
+    "newBranch": false,
+    "newPullRequest": false,
+    "sourceFunctionalChanges": false,
+    "frontendFunctionalChanges": false,
+    "releaseSourcePin": "1d2cfecba0a89b637398d747a628e549d9823c68",
+    "authorityModel": "F3_STRUCTURED_RELEASE_AUTHORIZATION_PLUS_SINGLE_USE_PROVIDER_MUTATION_LEASE"
+  },
+  "authorizedBy": "Paula",
+  "authorizationSource": "current_conversation_2026-08-26",
+  "next": "F4_G2B_ONE_SHOT_EXECUTION"
+}
