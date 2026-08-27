@@ -1,55 +1,39 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-27  
-**STATE_SYNC_EPOCH:** `CXORBIA-20260827-F6-PHASE-A-RELEASE-100-FROZEN-01`  
-**MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`  
-**MASTER_PLAN_VERSION:** `1.1.0`  
-**MASTER_PLAN_STATUS:** `FROZEN`  
-**PLAN_CHANGE_REQUEST:** `PCR-20260826-PRODUCTION-ACCELERATION-01`  
+**STATE_SYNC_EPOCH:** `CXORBIA-20260827-F7-INTEGRAL-READINESS-GO-WITH-WARNINGS-01`  
+**MASTER_PLAN_VERSION:** `1.1.0` / `FROZEN`  
 **F5:** `CLOSED_PASS_CONSUMED_ZERO_RESIDUE`  
 **F6:** `CLOSED_PASS_IMMUTABLE`  
-**NEXT:** `F7_INTEGRAL_READINESS`  
+**F7:** `GO_WITH_WARNINGS_NO_P0`  
+**NEXT:** `F8_CUTOVER_EXPLICIT_AUTHORIZATION_REQUIRED`  
 **PHASE_A:** `100/100`  
-**PRODUCTION_REAL_READINESS:** `90/100`
+**PRODUCTION_REAL_READINESS:** `95/100`
 
-## Cierre F6
-
-Phase A quedó congelada como release inmutable:
+## Release congelado preservado
 
 `CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01`
 
-Evidencia terminal:
+Functional source `f9802fdd498934a8e7729fa5c7d18341bec1cd71`; runtime source `2d0b8e83b32b44f6c3eae80b7630f8cd3295fba2`; Cloud Run `cxorbia-live-hr-dev-00013-rns`; image `sha256:eca8b831c24ef81f09e4addda721d0af89a24c5a0d753aa507989988458227ec`; Hosting release `sites/cxorbia-backend-dev/releases/1787796646738000`; Hosting version `sites/cxorbia-backend-dev/versions/afe292cfcbbc6005`.
 
-- manifest `backend/config/cxorbia-phase-a-release-manifest-v1.json`;
-- manifest blob `732dbfd48912b3550c6fb20bc592bd118647263a`;
-- manifest SHA-256 `29399792e75729c4d5db28865dd793a74f2d79b73f78704d03d5c27094ed68ab`;
-- functional source SHA `f9802fdd498934a8e7729fa5c7d18341bec1cd71`;
-- runtime release source SHA `2d0b8e83b32b44f6c3eae80b7630f8cd3295fba2`;
-- runtime release tree `f93012599e4ca5195f89f19995251fa91c0d38d9`;
-- Cloud Run `cxorbia-live-hr-dev-00013-rns`;
-- image digest `sha256:eca8b831c24ef81f09e4addda721d0af89a24c5a0d753aa507989988458227ec`;
-- Hosting release `sites/cxorbia-backend-dev/releases/1787796646738000`;
-- Hosting version `sites/cxorbia-backend-dev/versions/afe292cfcbbc6005`;
-- Hosting adapter SHA-256 `9d69d0d0db42e3f2b93cc893f2da1ed0b2e753403d3f46a9a8537dbe994c82b0`.
+F7 no reconstruyó ni redeployó ese release y no reabrió F5/F6.
 
-F5 quedó previamente PASS integral con cleanup y residuo cero. F6 no ejecutó provider access, rebuild, deploy, provider/data/Auth/HR/pagos/Rules/Storage/Make/Gemini writes, reimport ni merge.
+## Cierre F7
+
+Evidencia: `app/docs/evidence/RC15-F7-INTEGRAL-READINESS-LATEST.json`.
+
+Resultado: `GO_WITH_WARNINGS`, P0=0, P1=4, P2=2.
+
+Se verificó por evidencia canónica/readback: release identity, tenant/project isolation, migración 616/616, Auth/RBAC, HR 14 periodos/28 hojas/616 visitas, shoppers/certificaciones/visitas, finanzas review-safe, multi-proyecto, E2E/regresión, rollback/telemetría y consistencia Claude/Academia.
+
+Warnings a cerrar/recertificar antes o durante prechecks F8: `firebase-admin` del predeploy local; IAM/secrets/cuotas provider-side fresco; prueba acotada carga/cuotas/failure injection; backup/export + restore verificable; alert/runbook rehearsal; profundidad de contenido Academia.
 
 ## Estado seguro
 
-- F5 one-shot consumido; replay=false.
-- F6 release frozen; rebuild/redeploy=false por defecto.
-- `providerMutationAuthorizedNow=false`.
-- PR #7 cerrado/no mergeado y mirror-only.
-- El HEAD de control plane puede avanzar por documentación de F7 sin alterar el tuple del release congelado.
+Durante F7: provider access=0; provider writes=0; Firestore/Auth/HR externa/datos reales/pagos/Rules/Storage/Make/Gemini writes=0; deploys=0; rebuilds=0; reimports=0; merge=false.
 
-## Hallazgo de mecanismo abierto no bloqueante
-
-Run `33085991102`: `MECHANISM_P1_NON_BLOCKING` por ausencia de `firebase-admin` antes de iniciar el servicio local del predeploy read-only. Provider mutation=0; deploy=0; no invalida F5/F6. Debe corregirse en el carril de mecanismo antes de reutilizar ese predeploy.
+PR #7 permanece mirror-only/cerrado/no mergeado. F8 no está autorizado.
 
 ## Siguiente exacto
 
-`F7_INTEGRAL_READINESS`.
-
-Alcance: seguridad/IAM/Rules/secrets; aislamiento tenant; migración; Auth/RBAC; HR viva e histórica; shoppers; postulaciones; certificaciones; visitas; liquidaciones/pagos; multi-proyecto; sync HR↔plataforma; E2E/regresión; carga/cuotas; failure injection; idempotencia; backup/restore; rollback; observabilidad; alertas; runbooks; Claude y Academia.
-
-Criterio: `GO` o `GO_WITH_WARNINGS` sin P0 demostrado. `HOLD/NO_GO` solo con evidencia reproducible.
+`WAIT_FOR_F8_EXPLICIT_AUTHORIZATION`.
