@@ -1,27 +1,36 @@
 # PENDIENTES-PROTOTIPO.md
 
-**Fecha:** 2026-08-26
-**MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`
-**MASTER_PLAN_VERSION:** `1.1.0`
-**MASTER_PLAN_STATUS:** `FROZEN`
-**PLAN_CHANGE_REQUEST:** `PCR-20260826-PRODUCTION-ACCELERATION-01`
-**M3:** `CLOSED_PASS_30_OF_30_ZERO_RESIDUAL_DIRECT_REMOTE_READBACK`
-**F3:** `CLOSED_PASS_PROVIDER_PROMOTION_MECHANISM_V1_G2B_RECOVERY_LANE_PASS`
-**F4:** `AUTHORIZED_MECHANISM_P0_REPAIRED_PENDING_EXECUTION`
-**NEXT:** `F4_G2B_ONE_SHOT_EXECUTION`
-**PHASE_A:** `98/100`
+**Fecha:** 2026-08-26  
+**MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`  
+**MASTER_PLAN_VERSION:** `1.1.0`  
+**MASTER_PLAN_STATUS:** `FROZEN`  
+**PLAN_CHANGE_REQUEST:** `PCR-20260826-PRODUCTION-ACCELERATION-01`  
+**M3:** `CLOSED_PASS_30_OF_30_ZERO_RESIDUAL_DIRECT_REMOTE_READBACK`  
+**F3:** `CLOSED_PASS_PROVIDER_PROMOTION_MECHANISM_V1_G2B_RECOVERY_LANE_PASS`  
+**F4:** `TERMINAL_STOP_MECHANISM_P0_POST_HOSTING_READBACK_NOT_STABILIZED`  
+**NEXT:** `WAITING_EXPLICIT_PLAN_CHANGE_OR_READONLY_RECERTIFICATION_DECISION`  
+**PHASE_A:** `98/100`  
 **PRODUCTION_REAL_READINESS:** `76/100`
 
-## Cerrado
+## Cerrado y preservado
 
-M3 y F3 permanecen cerrados. El defecto de carril detectado al iniciar F4 quedó clasificado `MECHANISM_P0` y la reparación autorizada es exclusivamente el workflow existente, adaptado a `PROVIDER_PROMOTION_MECHANISM_V1`.
+M3 y F3 permanecen cerrados. El único intento F4 ya fue consumido. Cloud Build, Cloud Run, smoke directo y Hosting deploy pasaron una vez; no hay autorización para repetirlos.
 
 ## Pendiente inmediato único
 
-Ejecutar F4 one-shot. Lease `F4-G2B-PROVIDER-LEASE-20260826-01` emitido/no consumido; primero debe pasar preflight provider read-only y verificar la revisión conocida `cxorbia-live-hr-dev-00011-f2f`. Solo después puede consumirse al iniciar Cloud Build. No retry automático.
+Resolver por decisión explícita el STOP `MECHANISM_P0 — POST_HOSTING_READBACK_NOT_STABILIZED`.
 
-Salida: `RECOVERY_PASS_FULL` → 81/100, o STOP terminal `PRODUCT_P0 / MECHANISM_P0 / EXTERNAL_TRANSPORT_OUTAGE`.
+La evidencia demuestra que, inmediatamente después del release Hosting, el gate recibió un adapter remoto sin los marcadores G2-B obligatorios y falló antes del smoke API. El source-fix sí contiene esos marcadores. Falta una certificación read-only estable y vinculada al release para poder demostrar o descartar que Hosting ya sirve el contenido correcto tras propagación.
+
+No ejecutar una recertificación ni modificar provider por inferencia. El plan vigente terminó F4 en STOP; cualquier continuación requiere decisión explícita. Si se autoriza una recertificación read-only, no puede consumir ni reutilizar el lease F4 y no puede desplegar nada.
+
+## Bloqueos
+
+- F4 `RECOVERY_PASS_FULL`: no demostrado.
+- F5 aceptación sintética: bloqueada.
+- Residuo sintético post-recovery: no certificado.
+- Estado Hosting post-propagación: `NOT_CERTIFIED_BY_F4_TERMINAL_EVIDENCE`.
 
 ## Producto / Claude / Academia
 
-Sin cambio frontend ni tarea nueva para Claude. Source-fix pin `1d2cfecba0a89b637398d747a628e549d9823c68`; no modificar `/app/modules` ni `/app/core`. Sin impacto funcional de Academia durante la reparación del carril.
+No existe P0 de producto demostrado por este STOP. No tocar `/app/modules`, `/app/core` ni UI. Sin tarea frontend nueva para Claude. Academia: sin impacto funcional en este bloque.
