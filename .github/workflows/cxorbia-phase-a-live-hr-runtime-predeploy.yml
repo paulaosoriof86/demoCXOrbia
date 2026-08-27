@@ -47,6 +47,11 @@ jobs:
         with:
           node-version: '24'
 
+      - name: Install declared runtime dependency for local predeploy service
+        run: |
+          set -euo pipefail
+          npm install --prefix backend/runtime/hr-live-service --omit=dev --ignore-scripts --package-lock=false
+
       - name: Validate syntax
         run: |
           set -euo pipefail
