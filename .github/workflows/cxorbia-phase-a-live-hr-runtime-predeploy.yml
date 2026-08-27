@@ -15,6 +15,7 @@ on:
       - 'tools/release/tya-source-safe-live-binding-build-r22.mjs'
       - 'tools/qa/tya-live-hr-read-probe-gate.mjs'
       - 'tools/qa/tya-f8-checkpoint-backed-shopper-runtime-readonly.mjs'
+      - 'tools/qa/tya-f8-provider-security-quota-readonly.mjs'
       - 'backend/contracts/phase-a-live-hr-runtime-read-v1.json'
       - '.github/workflows/cxorbia-phase-a-live-hr-runtime-predeploy.yml'
 
@@ -64,6 +65,7 @@ jobs:
           node --check tools/release/tya-source-safe-live-binding-build-r22.mjs
           node --check tools/qa/tya-live-hr-read-probe-gate.mjs
           node --check tools/qa/tya-f8-checkpoint-backed-shopper-runtime-readonly.mjs
+          node --check tools/qa/tya-f8-provider-security-quota-readonly.mjs
 
       - name: Prepare bootstrap with provider metadata auto-discovery
         env:
@@ -161,7 +163,7 @@ jobs:
           set -euo pipefail
           node tools/qa/tya-f8-checkpoint-backed-shopper-runtime-readonly.mjs
 
-      - name: Install F8 read-only browser proof tooling
+      - name: Install F8 read-only browser and provider proof tooling
         run: |
           set -euo pipefail
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0
@@ -180,6 +182,18 @@ jobs:
           set -euo pipefail
           node tools/qa/tya-f8-checkpoint-backed-shopper-runtime-readonly.mjs --execute
 
+      - name: Validate F8 provider IAM secrets and quota readback
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_CLOUD_RUN_REGION: us-central1
+          CXORBIA_CLOUD_RUN_SERVICE: cxorbia-live-hr-dev
+          CXORBIA_F8_PROVIDER_READONLY_AUTHORIZED: YES_PAULA_F8_PROVIDER_SECURITY_QUOTA_READONLY
+          CXORBIA_F8_PROVIDER_SECURITY_OUT: .tmp/f8-provider-security-quota/report.json
+        run: |
+          set -euo pipefail
+          node tools/qa/tya-f8-provider-security-quota-readonly.mjs
+
       - name: Stop local service
         if: always()
         run: |
@@ -196,6 +210,7 @@ jobs:
             .tmp/live-runtime-predeploy/tab-registry-evidence.source-safe.json
             .tmp/live-runtime-predeploy/service.log
             .tmp/f8-checkpoint-shopper-runtime/report.json
+            .tmp/f8-provider-security-quota/report.json
           if-no-files-found: warn
           retention-days: 14
 
@@ -207,4 +222,4 @@ jobs:
         with:
           script: |
             const state=process.env.JOB_STATE==='success'?'success':'failure';
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state,context:'cxorbia/live-hr-runtime-predeploy',description:state==='success'?'Live HR + F8 exact Shopper read-only proof PASS':'Live HR/F8 Shopper predeploy failed'});
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state,context:'cxorbia/live-hr-runtime-predeploy',description:state==='success'?'Live HR + F8 Shopper/provider read-only prechecks PASS':'Live HR/F8 read-only predeploy failed'});
