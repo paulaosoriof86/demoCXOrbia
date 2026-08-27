@@ -1,7 +1,7 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-27  
-**Estado:** `PHASE_A_100__PROD_READINESS_95__F8_IAM_CAPABILITY_HOLD__EXTERNAL_ROUTE_REQUIRED`
+**Estado:** `PHASE_A_100__PROD_READINESS_95__F8_EXTERNAL_OWNER_ROUTE_IDENTIFIED__EFFECTIVE_TEST_PENDING`
 
 ## Cerrado / no reprocesar
 
@@ -13,19 +13,17 @@ No reabrir synthetic lifecycle, F7, R24/Corte 4, no rebuild/redeploy del release
 
 ## F8 — pendiente real único de este bloque
 
-Estado: `HOLD_PROVIDER_IAM_SET_CAPABILITY_UNAVAILABLE`.
+La ruta automatizada DEV existente sigue sin `resourcemanager.projects.setIamPolicy`; el intento temporal autorizado permanece consumido y no tuvo provider writes.
 
-La ruta DEV disponible no tiene `resourcemanager.projects.setIamPolicy`. El intento temporal autorizado ya está consumido y no tuvo provider writes. No se leyó metadata Secret Manager ni payloads de secretos.
-
-La búsqueda de una ruta reutilizable quedó cerrada en los canales disponibles: repo/workflows, plugins/conectores, Drive y Gmail. No apareció evidencia suficiente de un principal provider autenticable por el mecanismo actual con capacidad `setIamPolicy`.
-
-Sí existe un canal humano Google Cloud autenticado en la cuenta conectada, pero todavía no está probado que esa identidad tenga Owner/Project IAM Admin —o permiso equivalente— específicamente sobre `cxorbia-backend-dev`.
+Nueva evidencia visual del proyecto exacto `cxorbia-backend-dev` demuestra que existe una identidad humana con rol `Propietario` / `Owner`. Por documentación oficial, ese rol incluye `resourcemanager.projects.setIamPolicy`; sin embargo, antes de declarar capacidad efectiva debe ejecutarse `projects.testIamPermissions` con esa sesión humana para descartar deny/restricciones efectivas.
 
 ### Próxima comprobación permitida
 
-Identificar una identidad administrativa candidata en Google Cloud y comprobar únicamente la capacidad `resourcemanager.projects.setIamPolicy` en modo read-only/capability-only.
+`F8_VERIFY_EXTERNAL_OWNER_EFFECTIVE_SET_IAM_CAPABILITY`.
 
-Esta comprobación no concede roles. Si PASS, cualquier grant temporal posterior requiere autorización explícita separada.
+Comprobar únicamente `resourcemanager.projects.setIamPolicy` mediante `projects.testIamPermissions` en modo read-only/capability-only.
+
+Esta comprobación no concede roles. Si PASS, cualquier grant temporal posterior requiere autorización explícita nueva y separada; la autorización anterior no revive.
 
 ## Warnings F7 que permanecen después de resolver IAM
 
@@ -51,10 +49,10 @@ No convertir estos warnings en P0 sin evidencia reproducible.
 
 ## Pendientes posteriores
 
-- F8 `95 → 98`: completar cutover exacto solo después de cerrar la frontera IAM y los gates restantes.
+- F8 `95 → 98`: capability test efectivo, metadata readback y demás gates exactos antes del cutover terminal.
 - F9 `98 → 100`: aceptación postproducción.
 - F10: operación permanente.
 
 ## Acción actual
 
-`F8_REQUIRE_IAM_CAPABLE_PROVIDER_ROUTE` — lado externo/humano de Google Cloud; no repetir búsqueda interna ni el intento consumido.
+`F8_VERIFY_EXTERNAL_OWNER_EFFECTIVE_SET_IAM_CAPABILITY` — prueba read-only desde la identidad humana Owner; no grant, deploy ni cutover.
