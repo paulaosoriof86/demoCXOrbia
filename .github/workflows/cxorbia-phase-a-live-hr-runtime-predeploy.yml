@@ -14,6 +14,7 @@ on:
       - 'tools/hr-source/tya-enforce-live-tab-registry.mjs'
       - 'tools/release/tya-source-safe-live-binding-build-r22.mjs'
       - 'tools/qa/tya-live-hr-read-probe-gate.mjs'
+      - 'tools/qa/tya-f8-checkpoint-backed-shopper-runtime-readonly.mjs'
       - 'backend/contracts/phase-a-live-hr-runtime-read-v1.json'
       - '.github/workflows/cxorbia-phase-a-live-hr-runtime-predeploy.yml'
 
@@ -62,6 +63,7 @@ jobs:
           node --check tools/hr-source/tya-enforce-live-tab-registry.mjs
           node --check tools/release/tya-source-safe-live-binding-build-r22.mjs
           node --check tools/qa/tya-live-hr-read-probe-gate.mjs
+          node --check tools/qa/tya-f8-checkpoint-backed-shopper-runtime-readonly.mjs
 
       - name: Prepare bootstrap with provider metadata auto-discovery
         env:
@@ -154,6 +156,30 @@ jobs:
           grep -q 'view=operational-names' app/index-backend-dev.html
           grep -q 'YES_PAULA_20260731_NAMES_DEV' app/index-backend-dev.html
 
+      - name: Validate F8 checkpoint-backed Shopper proof source
+        run: |
+          set -euo pipefail
+          node tools/qa/tya-f8-checkpoint-backed-shopper-runtime-readonly.mjs
+
+      - name: Install F8 read-only browser proof tooling
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Validate F8 exact historical Shopper against current provider and runtime
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_TENANT_ID: tya
+          CXORBIA_PROJECT_ID: cinepolis
+          CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
+          CXORBIA_F8_CHECKPOINT_SHOPPER_AUTHORIZED: YES_PAULA_F8_CHECKPOINT_BACKED_SHOPPER_READONLY
+          CXORBIA_F8_SHOPPER_OUT: .tmp/f8-checkpoint-shopper-runtime/report.json
+        run: |
+          set -euo pipefail
+          node tools/qa/tya-f8-checkpoint-backed-shopper-runtime-readonly.mjs --execute
+
       - name: Stop local service
         if: always()
         run: |
@@ -169,6 +195,7 @@ jobs:
             .tmp/live-runtime-predeploy/tab-registry.source-safe.json
             .tmp/live-runtime-predeploy/tab-registry-evidence.source-safe.json
             .tmp/live-runtime-predeploy/service.log
+            .tmp/f8-checkpoint-shopper-runtime/report.json
           if-no-files-found: warn
           retention-days: 14
 
@@ -180,4 +207,4 @@ jobs:
         with:
           script: |
             const state=process.env.JOB_STATE==='success'?'success':'failure';
-            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state,context:'cxorbia/live-hr-runtime-predeploy',description:state==='success'?'Live HR auto-month + DEV shopper display identity PASS':'Live HR auto-month/display identity predeploy failed'});
+            await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state,context:'cxorbia/live-hr-runtime-predeploy',description:state==='success'?'Live HR + F8 exact Shopper read-only proof PASS':'Live HR/F8 Shopper predeploy failed'});
