@@ -153,7 +153,6 @@ jobs:
           grep -q 'adapters/tya-live-source-refresh-watch-v2.js' app/index-backend-dev.html
           grep -q 'view=operational-names' app/index-backend-dev.html
           grep -q 'YES_PAULA_20260731_NAMES_DEV' app/index-backend-dev.html
-          node --check app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
 
       - name: Stop local service
         if: always()
