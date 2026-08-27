@@ -120,7 +120,9 @@ jobs:
           grep -q 'CXORBIA_E2E_SYNTH_' backend/runtime/cxorbia-g2b-synthetic-visit-provider-v1.mjs
           grep -q 'realDataWrites:0' backend/runtime/cxorbia-g2b-synthetic-visit-provider-v1.mjs
           grep -q 'externalHrWrites:0' backend/runtime/cxorbia-g2b-synthetic-visit-provider-v1.mjs
-          grep -q 'g2b-synthetic/commands' backend/runtime/hr-live-service/server.mjs
+          grep -q 'isG2BSyntheticRuntimePath' backend/runtime/hr-live-service/server.mjs
+          grep -q 'maybeHandleG2BSyntheticRuntimeRequest' backend/runtime/hr-live-service/server.mjs
+          grep -q 'g2b-synthetic/commands' backend/runtime/hr-live-service/g2b-synthetic-runtime.mjs
           grep -q 'YES_PAULA_20260820_G2B_SYNTHETIC' app/adapters/cxorbia-canonical-write-firewall-v1.js
           grep -q 'cxorbia-command-http-transport-v1.js' app/adapters/cxorbia-canonical-write-firewall-v1.js
           grep -q 'COPY backend/runtime/hr-live-service/g2b-synthetic-runtime.mjs' backend/runtime/hr-live-service/Dockerfile

@@ -1,41 +1,61 @@
 # CAMBIOS-BACKEND — RC15 F4 G2-B RECOVERY — 2026-08-26
 
 **Bloque:** `F4_G2B_RECOVERY_ONE_SHOT`  
-**Estado actual:** `MECHANISM_REPAIR_2_PENDING_EXECUTION`  
+**Estado actual:** `MECHANISM_REPAIR_3_PENDING_EXECUTION`  
 **PHASE_A:** `98/100`  
 **PRODUCTION_REAL_READINESS:** `76/100`
 
-## Hallazgo de entrada y reparación 1
+## Reparaciones previas preservadas
 
-Antes de consumir el lease se verificó que `.github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml` seguía `HISTORICAL_INERT_M3`, aunque el mismo path en `1d2cfecba0a89b637398d747a628e549d9823c68` conserva el ejecutor previamente probado Cloud Build → Cloud Run → smoke → Hosting → post-readback. Se clasificó `MECHANISM_P0`, no `PRODUCT_P0`, y se reparó focalmente el mismo workflow en el commit `1f636b79954ab0a5474f7f1ca16a7701c0f64edf`.
+1. `1f636b79954ab0a5474f7f1ca16a7701c0f64edf`: reactivó focalmente el mismo workflow histórico bajo la autoridad F4 estructurada. El run `33027014684` terminó `skipped` antes de crear job por un `job if` frágil. Sin provider access ni lease consumption.
+2. `3b4cd772bb36418cfacd6798fdfb25bba2e05175`: eliminó ese filtro redundante. El run `33027275374` creó job y la validación estructurada de F4 pasó, pero falló antes de autenticar GCP en `Prepare and validate exact source-fix release tree`.
 
-## Resultado del primer evento reparado
+## Causa exacta de reparación 3
 
-GitHub reconoció el workflow F4 y creó run `33027014684`, pero terminó `skipped` antes de crear un job porque el `if` del job dependía de `github.event.head_commit.added/modified` y la condición resultó falsa. Por tanto: checkout=0, provider reads=0, provider writes=0, lease consumed=false, Cloud Build=0, Cloud Run update=0, Hosting deploy=0. Este evento no consume el intento F4 ni es evidencia de fallo de producto.
+El gate de source-fix buscaba el literal `g2b-synthetic/commands` en `backend/runtime/hr-live-service/server.mjs`. El source-fix no define allí el literal: `server.mjs` importa y delega mediante `isG2BSyntheticRuntimePath` y `maybeHandleG2BSyntheticRuntimeRequest`; la expresión de ruta vive correctamente en `backend/runtime/hr-live-service/g2b-synthetic-runtime.mjs`.
 
-## Reparación 2
+La evidencia del repo confirma que:
+- `server.mjs` contiene el import y la delegación G2-B;
+- `g2b-synthetic-runtime.mjs` contiene la ruta `/api|v1/.../g2b-synthetic/commands` y el gate sintético;
+- Dockerfile copia ambos runtime files y el provider G2-B;
+- `firebase.json` reescribe `/api/tenants/**` al servicio `cxorbia-live-hr-dev`;
+- `.firebaserc` conserva `cxorbia-backend-dev` y target `cxorbia-dev`.
 
-- Se elimina únicamente el `if` redundante del job; el trigger `paths` del workflow sigue limitando la ejecución al execute F4 o al propio workflow.
-- Se mantiene la autorización original `F4-G2B-RECOVERY-20260826-01`; no se reautoriza ni se crea otro lease.
-- El lease `F4-G2B-PROVIDER-LEASE-20260826-01` sigue emitido/no consumido.
-- La autorización continúa ligada al HEAD original `fdba595ac83bee69f1d4d50cf02ab174ce8d7eda`. El nuevo runner exige que el parent actual descienda de ese HEAD y que todo delta acumulado intermedio sea exclusivamente control-plane F4.
-- El commit de reparación 2 solo puede tocar el workflow, esta bitácora y la evidencia del `MECHANISM_P0`.
-- Source funcional `f9802fdd498934a8e7729fa5c7d18341bec1cd71` y source-fix/release pin `1d2cfecba0a89b637398d747a628e549d9823c68` permanecen intactos.
+Por tanto el fallo del run `33027275374` se clasifica `MECHANISM_P0_SOURCE_ASSERTION_WRONG_FILE`, no `PRODUCT_P0`.
 
-## Budget y seguridad
+## Incidente de materialización y restauración
 
-Máximo vigente: Cloud Build=1, Cloud Run update=1, Hosting deploy=1. Firestore/Auth/Storage/HR externa/datos reales/credenciales reales/pagos/Rules/Make/Gemini/merge=0. Retry automático=0. Rollback conocido `cxorbia-live-hr-dev-00011-f2f`.
+Durante la preparación de `REPAIR-3` se produjo una escritura accidental del archivo inexistente `__noop__` en el commit `39680648d300c2069085fc1ab6443463f64cf161`. Se detectó inmediatamente antes de continuar. No tocó workflow, source, provider, autorización ni lease.
 
-Hasta la materialización de esta reparación 2: provider reads=0, provider writes=0, deploys=0, lease consumed=false, intento provider consumido=0.
+Se restauró mediante el commit fast-forward `6c770487e89c7fe365b9ae86c840ae1dc1a03a50`, eliminando `__noop__`. El tree resultante quedó exactamente `6bab6850fec7823916c44cf29ecf13e074aacf22`, el mismo tree de `3b4cd772bb36418cfacd6798fdfb25bba2e05175`; por tanto el delta neto accidental es cero. No se usó force push ni rewrite de historia.
+
+## Reparación 3
+
+Se modifica únicamente el workflow existente para validar:
+- en `server.mjs`: `isG2BSyntheticRuntimePath` y `maybeHandleG2BSyntheticRuntimeRequest`;
+- en `g2b-synthetic-runtime.mjs`: el literal `g2b-synthetic/commands`.
+
+No se modifica source funcional, runtime, adapters, Firebase config, autorización, lease ni execute artifact.
+
+## Seguridad / budget intactos antes de repair-3
+
+- provider mutation lease `F4-G2B-PROVIDER-LEASE-20260826-01`: `ISSUED_NOT_CONSUMED`;
+- provider reads sensibles consumidos: 0;
+- provider writes: 0;
+- Cloud Build: 0;
+- Cloud Run update: 0;
+- Hosting deploy: 0;
+- Firestore/Auth/Storage/HR externa/datos reales/credenciales/pagos/Rules/Make/Gemini/merge: 0;
+- retry automático: 0.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** eliminación de job-filter frágil, autorización anclada a ancestor, cumulative control-plane gate y lease mutation-boundary.
-- **Exclusivo TyA:** G2-B y proyecto `cxorbia-backend-dev`.
+- **Reusable CXOrbia:** validar delegación/ruta en el archivo que realmente posee cada responsabilidad; fail-before-provider mantiene el lease intacto; restauración inmediata de drift accidental con verificación de tree idéntico.
+- **Exclusivo cliente TyA:** ejecución G2-B en `cxorbia-backend-dev`.
 - **Claude/prototipo:** sin cambio funcional frontend.
 - **Academia:** sin impacto funcional.
-- **Sin impacto Claude:** workflow/control-plane/evidence/docs.
+- **Sin impacto Claude:** workflow/control-plane/evidence/docs y restauración `__noop__` net-zero.
 
 ## Siguiente exacto
 
-Materializar reparación 2 por fast-forward y observar el nuevo F4 run. El porcentaje solo sube a 81 si provider post-readback termina `RECOVERY_PASS_FULL`.
+Materializar `REPAIR-3` por tree/commit/fast-forward. Observar el run hasta preflight read-only. El lease solo puede consumirse inmediatamente antes del primer Cloud Build si todo lo anterior PASS. F4 solo cierra con `RECOVERY_PASS_FULL`; entonces `PRODUCTION_REAL_READINESS` sube a `81/100`.
