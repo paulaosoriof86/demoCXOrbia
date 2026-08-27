@@ -1,44 +1,58 @@
 {
-  "schemaVersion": "cxorbia.rc15.f5.synthetic-mechanism-preflight.v2",
-  "decision": "F5_SOURCE_MECHANISM_READY_NO_PROVIDER_SIDE_EFFECT",
-  "head": "3c9080d07228472b8e7abb898475b2dfefb414e0",
+  "schemaVersion": "cxorbia.rc15.f5.synthetic-mechanism-preflight.v3",
+  "decision": "F5_RUNTIME_PROMOTION_AUTHORIZED_MECHANISM_REPAIRED_EXECUTION_PENDING",
+  "sourceMechanismHead": "5cbf78f7922216056eb1a3140bdf45279ea1c89b",
+  "expectedExecutionParentHead": "5cbf78f7922216056eb1a3140bdf45279ea1c89b",
   "readiness": 81,
   "canonicalScope": {
     "tenantId": "tya",
     "projectId": "cinepolis",
-    "syntheticIsolation": "CXORBIA_E2E_SYNTH_* exact prefix plus request tagging",
+    "syntheticIsolation": "CXORBIA_E2E_SYNTH_* exact identifiers plus syntheticRequestId",
     "separateFirestoreProject": false
   },
-  "resolvedFindings": [
+  "mechanismFindingsClosedBeforePromotion": [
     {
-      "id": "F5-MECH-001",
-      "resolution": "rejected incorrect split-project interpretation and restored canonical cinepolis scope"
+      "id": "F5-MECH-004",
+      "classification": "MECHANISM_P0",
+      "cause": "runtime Dockerfile did not copy cxorbia-f5-synthetic-acceptance-provider-v1.mjs",
+      "repair": "copy provider into the existing cxorbia-live-hr-dev image"
     },
     {
-      "id": "F5-MECH-002",
-      "resolution": "source mechanism now adds SEED, CLEANUP and POST_CLEANUP_READBACK while preserving exact synthetic tags"
+      "id": "F5-MECH-005",
+      "classification": "MECHANISM_P0",
+      "cause": "canonical lifecycle actor enforcement required memberships while F5 prohibited Firebase Auth writes",
+      "repair": "temporary exact-tag Firestore memberships plus cryptographically bound synthetic actor shim scoped only to the expiring F5 runtime gate; Firebase Auth writes remain zero"
     },
     {
-      "id": "F5-MECH-003",
-      "resolution": "fresh request and authorization ids are runtime-gated, not hard-coded to the historical request"
+      "id": "F5-MECH-006",
+      "classification": "MECHANISM_HARDENING",
+      "cause": "runtime gate could remain logically enabled after the one-shot execution",
+      "repair": "mandatory runtime expiry timestamp with 45-minute TTL and no automatic retry"
+    },
+    {
+      "id": "F5-MECH-007",
+      "classification": "MECHANISM_HARDENING",
+      "cause": "post-transaction tag failure could leave synthetic actor artifacts without request tags",
+      "repair": "cleanup includes exact synthetic actor orphan fallback and post-clean zero-residue assertion"
     }
   ],
-  "source": {
-    "provider": "backend/runtime/cxorbia-f5-synthetic-acceptance-provider-v1.mjs",
-    "runtime": "backend/runtime/hr-live-service/g2b-synthetic-runtime.mjs",
-    "providerSyntax": "PASS",
-    "runtimeSyntax": "PASS"
+  "authorization": {
+    "authorizationId": "CXORBIA-F5-AUTH-20260827-02",
+    "authorizedBy": "Paula",
+    "authorizationSource": "current_conversation_2026-08-27",
+    "cloudBuildMax": 1,
+    "cloudRunUpdateMax": 1,
+    "hostingDeployMax": 0,
+    "automaticRetryMax": 0
   },
-  "safety": {
+  "safetyAtMaterialization": {
     "providerReads": 0,
     "providerWrites": 0,
     "syntheticWrites": 0,
-    "deploys": 0,
     "cloudBuilds": 0,
     "cloudRunUpdates": 0,
     "hostingDeploys": 0,
-    "firestoreWrites": 0,
-    "authWrites": 0,
+    "firebaseAuthWrites": 0,
     "externalHrWrites": 0,
     "realDataWrites": 0,
     "paymentWrites": 0,
@@ -48,5 +62,5 @@
     "geminiCalls": 0,
     "merge": false
   },
-  "next": "SOURCE_COMMIT_AND_READBACK_THEN_EXPLICIT_RUNTIME_PROMOTION_AUTHORIZATION"
+  "next": "ATOMIC_COMMIT_TRIGGERS_F5_ONE_SHOT_PROMOTION_AND_ACCEPTANCE"
 }

@@ -1,18 +1,19 @@
-name: CXOrbia Existing Runtime — F4 Read-Only Recertification
+name: CXOrbia Existing Runtime — F5 Synthetic Acceptance One-Shot
 
 on:
   push:
     branches:
       - docs-tya-v6-v71-audit
     paths:
+      - 'backend/config/cxorbia-f5-synthetic-acceptance-execute.json'
       - '.github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml'
-      - 'backend/config/cxorbia-f4-g2b-readonly-recertification-authorization.json'
 
 permissions:
   contents: read
+  id-token: write
 
 concurrency:
-  group: cxorbia-f4-g2b-readonly-recertification
+  group: cxorbia-f5-synthetic-acceptance-one-shot
   cancel-in-progress: false
 
 defaults:
@@ -23,27 +24,29 @@ env:
   GCP_PROJECT_ID: cxorbia-backend-dev
   GCP_REGION: us-central1
   CLOUD_RUN_SERVICE: cxorbia-live-hr-dev
-  HOSTING_SITE: cxorbia-backend-dev
-  DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
-  RECERT_AUTH_FILE: backend/config/cxorbia-f4-g2b-readonly-recertification-authorization.json
-  F4_LOCK_FILE: backend/config/cxorbia-phase-a-continuity-lock.json
-  F4_STOP_EVIDENCE: app/docs/evidence/RC15-F4-G2B-RECOVERY-STOP-LATEST.json
-  F4_LEASE_FILE: backend/config/cxorbia-f4-g2b-provider-mutation-lease.json
-  OUT_DIR: .tmp/f4-g2b-readonly-recertification
-  RECERT_AUTH_ID: F4-G2B-READONLY-RECERTIFICATION-20260826-01
-  EXPECTED_CONTROL_HEAD_BEFORE: e8a2b75cdacb6a199aa7a4b9808058e00161208d
-  SOURCE_FIX_SHA: 1d2cfecba0a89b637398d747a628e549d9823c68
-  EXPECTED_REVISION: cxorbia-live-hr-dev-00012-gw9
-  EXPECTED_IMAGE_DIGEST: sha256:4e2cd8cbd8d7b28a2abada2ea5060b58691f5582e871220afe141c4824027970
-  G2B_SYNTH_REQUEST: i5-g2b-live-synthetic-acceptance-20260820-01
-  EXPECTED_HOSTING_RELEASE_AFTER: '2026-08-27T02:10:00Z'
+  CLOUD_RUN_RUNTIME_SA: firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com
+  F5_AUTH_FILE: backend/config/cxorbia-f5-synthetic-acceptance-authority.json
+  F5_EXECUTE_FILE: backend/config/cxorbia-f5-synthetic-acceptance-execute.json
+  F5_OUT_DIR: .tmp/f5-synthetic-acceptance
+  F5_AUTH_ID: CXORBIA-F5-AUTH-20260827-02
+  F5_EXECUTION_ID: CXORBIA-F5-EXECUTE-20260827-01
+  F5_REQUEST_ID: CXORBIA-F5-SYNTHETIC-ACCEPTANCE-20260827-01
+  EXPECTED_PARENT_HEAD: 5cbf78f7922216056eb1a3140bdf45279ea1c89b
+  EXPECTED_BEFORE_REVISION: cxorbia-live-hr-dev-00012-gw9
+  F5_RUNTIME_GATE: PAULA_F5_SYNTHETIC_ACCEPTANCE_CANONICAL_WRITE_PATH
+  F5_PREFIX: CXORBIA_E2E_SYNTH_
+  F5_VISIT_ID: CXORBIA_E2E_SYNTH_VISIT_001
+  F5_SHOPPER_ID: CXORBIA_E2E_SYNTH_SHOPPER_001
+  F5_APPLICATION_ID: CXORBIA_E2E_SYNTH_APPLICATION_001
+  F5_SHOPPER_UID: CXORBIA_E2E_SYNTH_UID_SHOPPER_001
+  F5_OPERATOR_UID: CXORBIA_E2E_SYNTH_UID_OPERATOR_001
 
 jobs:
-  f4-readonly-recertification:
+  f5-synthetic-acceptance:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 60
     steps:
-      - name: Checkout exact recertification control-plane commit
+      - name: Checkout exact F5 trigger commit
         uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
@@ -54,40 +57,64 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Validate read-only authorization and consumed F4 boundary
+      - name: Validate structured F5 authority and one-shot boundary
         run: |
           set -euo pipefail
-          mkdir -p "$OUT_DIR"
+          test "${GITHUB_RUN_ATTEMPT}" = '1' || { echo 'MECHANISM_P0:F5_RERUN_FORBIDDEN' >&2; exit 41; }
+          mkdir -p "$F5_OUT_DIR"
           node <<'NODE'
           const fs=require('fs'),cp=require('child_process');
           const j=p=>JSON.parse(fs.readFileSync(p,'utf8'));
           const git=(...args)=>cp.execFileSync('git',args,{encoding:'utf8'}).trim();
-          const a=j(process.env.RECERT_AUTH_FILE),lock=j(process.env.F4_LOCK_FILE),stop=j(process.env.F4_STOP_EVIDENCE),lease=j(process.env.F4_LEASE_FILE);
+          const a=j(process.env.F5_AUTH_FILE),x=j(process.env.F5_EXECUTE_FILE);
           const head=git('rev-parse','HEAD'),parent=git('rev-parse','HEAD^');
-          if(parent!==process.env.EXPECTED_CONTROL_HEAD_BEFORE)throw new Error('MECHANISM_P0:recert_parent_head_mismatch:'+parent);
-          if(a.authorizationId!==process.env.RECERT_AUTH_ID||a.status!=='AUTHORIZED_CURRENT_CONVERSATION_READ_ONLY'||a.authorizedBy!=='Paula')throw new Error('MECHANISM_P0:recert_authorization_invalid');
-          if(a.controlPlaneHeadBefore!==parent||a.repository!=='paulaosoriof86/demoCXOrbia'||a.branch!=='docs-tya-v6-v71-audit')throw new Error('MECHANISM_P0:recert_binding_invalid');
-          if(a.scope?.providerMutationAuthorized!==false||a.scope?.cloudBuildAuthorized!==false||a.scope?.cloudRunUpdateAuthorized!==false||a.scope?.hostingDeployAuthorized!==false||a.scope?.leaseIssueAuthorized!==false||a.scope?.leaseReuseAuthorized!==false||a.scope?.authenticatedSyntheticCommandAuthorized!==false)throw new Error('MECHANISM_P0:recert_scope_not_readonly');
-          for(const k of ['firestoreWritesAuthorized','authWritesAuthorized','storageWritesAuthorized','externalHrWritesAuthorized','realDataWritesAuthorized','realCredentialWritesAuthorized','paymentWritesAuthorized','rulesWritesAuthorized','makeCallsAuthorized','geminiCallsAuthorized','mergeAuthorized'])if(a.scope?.[k]!==false)throw new Error('MECHANISM_P0:forbidden_scope_'+k);
-          if(stop.decision!=='TERMINAL_STOP_MECHANISM_P0_POST_HOSTING_READBACK_NOT_STABILIZED'||stop.recoveryPassFull!==false||stop.productP0Proven!==false)throw new Error('MECHANISM_P0:f4_terminal_stop_binding');
-          if(lock.f4ExecutionControl?.status!=='TERMINAL_STOP_MECHANISM_P0_POST_HOSTING_READBACK_NOT_STABILIZED'||lock.f4ExecutionControl?.recoveryPassFull!==false||lock.f4ExecutionControl?.providerMutationAuthorizedNow!==false)throw new Error('MECHANISM_P0:continuity_terminal_state');
-          if(lock.nextNow?.action!=='WAITING_EXPLICIT_PLAN_CHANGE_OR_READONLY_RECERTIFICATION_DECISION')throw new Error('MECHANISM_P0:continuity_next_state');
-          if(lease.issued!==true||lease.consumed!==true||lease.singleUse!==true||lease.state!=='CONSUMED_MUTATION_STARTED')throw new Error('MECHANISM_P0:consumed_lease_boundary_invalid');
+          if(parent!==process.env.EXPECTED_PARENT_HEAD)throw new Error('MECHANISM_P0:f5_parent_head_mismatch:'+parent);
+          if(x.expectedParentHead!==parent||x.executionId!==process.env.F5_EXECUTION_ID||x.authorizationId!==process.env.F5_AUTH_ID||x.requestId!==process.env.F5_REQUEST_ID)throw new Error('MECHANISM_P0:f5_execute_binding_invalid');
+          if(x.enabled!==true||x.singleUse!==true||x.consumed!==false||x.automaticRetryAllowed!==false)throw new Error('MECHANISM_P0:f5_execute_not_single_use');
+          if(a.authorizationId!==process.env.F5_AUTH_ID||a.id!==process.env.F5_REQUEST_ID||a.authorizedBy!=='Paula'||a.state!=='RUNTIME_PROMOTION_AUTHORIZED_EXECUTION_PENDING')throw new Error('MECHANISM_P0:f5_authority_invalid');
+          if(a.repository!=='paulaosoriof86/demoCXOrbia'||a.branch!=='docs-tya-v6-v71-audit'||x.repository!==a.repository||x.branch!==a.branch)throw new Error('MECHANISM_P0:f5_lane_binding_invalid');
+          if(a.sourceMechanismHead!==parent)throw new Error('MECHANISM_P0:f5_source_head_binding_invalid');
+          if(a.provider?.firebaseProjectId!==process.env.GCP_PROJECT_ID||a.provider?.region!==process.env.GCP_REGION||a.provider?.service!==process.env.CLOUD_RUN_SERVICE||a.provider?.verifiedF4Revision!==process.env.EXPECTED_BEFORE_REVISION)throw new Error('MECHANISM_P0:f5_target_binding_invalid');
+          if(a.runtimePromotion?.authorized!==true||a.runtimePromotion?.cloudBuildMax!==1||a.runtimePromotion?.cloudRunUpdateMax!==1||a.runtimePromotion?.hostingDeployMax!==0||a.runtimePromotion?.automaticRetryMax!==0)throw new Error('MECHANISM_P0:f5_runtime_budget_invalid');
+          if(x.allowed?.cloudBuildMax!==1||x.allowed?.cloudRunUpdateMax!==1||x.allowed?.hostingDeployMax!==0||x.allowed?.syntheticFirestoreWrites!==true||x.allowed?.syntheticMembershipDocuments!==true||x.allowed?.firebaseAuthUserWrites!==false)throw new Error('MECHANISM_P0:f5_execute_budget_invalid');
+          for(const k of ['realDataWrites','externalHrWrites','paymentWrites','rulesWrites','storageWrites','makeCalls','geminiCalls','merge'])if(x.allowed?.[k]!==false)throw new Error('MECHANISM_P0:f5_forbidden_scope_'+k);
           const changed=git('diff','--name-only','HEAD^','HEAD').split(/\r?\n/).filter(Boolean).sort();
-          const expected=['.github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml','backend/config/cxorbia-f4-g2b-readonly-recertification-authorization.json'].sort();
-          if(JSON.stringify(changed)!==JSON.stringify(expected))throw new Error('MECHANISM_P0:recert_control_plane_delta_invalid:'+changed.join(','));
-          fs.writeFileSync(process.env.OUT_DIR+'/authority.json',JSON.stringify({decision:'PASS_F4_READONLY_RECERT_AUTHORITY',head,parent,authorizationId:a.authorizationId,terminalStop:stop.decision,leaseConsumed:true,providerMutationAuthorized:false,changedFiles:changed},null,2)+'\n');
+          const allowed=new Set([
+            '.github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml',
+            'CAMBIOS-BACKEND-RC15-F5-SYNTHETIC-MECHANISM-20260827.md',
+            'app/docs/evidence/RC15-F5-SYNTHETIC-MECHANISM-PREFLIGHT-LATEST.json',
+            'backend/config/cxorbia-f5-synthetic-acceptance-authority.json',
+            'backend/config/cxorbia-f5-synthetic-acceptance-execute.json',
+            'backend/runtime/cxorbia-f5-synthetic-acceptance-provider-v1.mjs',
+            'backend/runtime/hr-live-service/Dockerfile',
+            'backend/runtime/hr-live-service/g2b-synthetic-runtime.mjs'
+          ]);
+          const unexpected=changed.filter(p=>!allowed.has(p));
+          if(unexpected.length)throw new Error('MECHANISM_P0:f5_trigger_delta_unexpected:'+unexpected.join(','));
+          if(!changed.includes('backend/config/cxorbia-f5-synthetic-acceptance-execute.json')||!changed.includes('.github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml'))throw new Error('MECHANISM_P0:f5_trigger_files_missing');
+          if(changed.some(p=>p.startsWith('app/modules/')||p.startsWith('app/core/')))throw new Error('PRODUCT_P0:f5_frontend_functional_delta_forbidden');
+          fs.writeFileSync(process.env.F5_OUT_DIR+'/authority.json',JSON.stringify({decision:'PASS_F5_STRUCTURED_AUTHORITY',head,parent,authorizationId:a.authorizationId,executionId:x.executionId,changedFiles:changed,cloudBuildMax:1,cloudRunUpdateMax:1,hostingDeployMax:0,automaticRetryMax:0},null,2)+'\n');
           NODE
 
-      - name: Pin expected source file without deploying
+      - name: Validate F5 source and image contract before provider access
         run: |
           set -euo pipefail
-          git show "$SOURCE_FIX_SHA:app/adapters/cxorbia-canonical-write-firewall-v1.js" > "$OUT_DIR/firewall.source.js"
-          sha256sum "$OUT_DIR/firewall.source.js" | awk '{print $1}' > "$OUT_DIR/firewall.source.sha256"
-          grep -Fq 'YES_PAULA_20260820_G2B_SYNTHETIC' "$OUT_DIR/firewall.source.js"
-          grep -Fq 'cxorbia-command-http-transport-v1.js' "$OUT_DIR/firewall.source.js"
+          node --check backend/runtime/cxorbia-f5-synthetic-acceptance-provider-v1.mjs
+          node --check backend/runtime/hr-live-service/g2b-synthetic-runtime.mjs
+          node --check backend/runtime/hr-live-service/server.mjs
+          grep -Fq 'COPY backend/runtime/cxorbia-f5-synthetic-acceptance-provider-v1.mjs' backend/runtime/hr-live-service/Dockerfile
+          grep -Fq "const EXPIRY_ENV='CXORBIA_F5_SYNTHETIC_EXPIRES_AT'" backend/runtime/hr-live-service/g2b-synthetic-runtime.mjs
+          grep -Fq 'F5_SYNTHETIC_CONTROL_ACTOR_DENIED' backend/runtime/hr-live-service/g2b-synthetic-runtime.mjs
+          grep -Fq 'CXORBIA_E2E_SYNTH_UID_OPERATOR_001' backend/runtime/cxorbia-f5-synthetic-acceptance-provider-v1.mjs
+          node --input-type=module <<'NODE'
+          import {createF5SyntheticActorToken} from './backend/runtime/cxorbia-f5-synthetic-acceptance-provider-v1.mjs';
+          const gate={requestId:process.env.F5_REQUEST_ID,authorizationId:process.env.F5_AUTH_ID};
+          const a=createF5SyntheticActorToken(gate,'operator'),s=createF5SyntheticActorToken(gate,'shopper');
+          if(!a.startsWith('F5SYNTH.operator.')||!s.startsWith('F5SYNTH.shopper.')||a===s)throw new Error('MECHANISM_P0:f5_actor_token_contract');
+          console.log('F5_SOURCE_VALIDATION_PASS');
+          NODE
 
-      - name: Authenticate existing Google Cloud project read-only execution
+      - name: Authenticate existing Google Cloud project
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
@@ -97,95 +124,178 @@ jobs:
         with:
           project_id: cxorbia-backend-dev
 
-      - name: Install transient read-only Firebase SDK
+      - name: Install transient Firebase Admin SDK
         run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
 
-      - name: Recertify Cloud Run, Hosting and synthetic residue read-only
+      - name: Read-only provider preflight, collision and drift gate
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
         run: |
           set -euo pipefail
-          gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json > "$OUT_DIR/cloud-run.json"
+          gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json > "$F5_OUT_DIR/cloud-run-before.json"
           node <<'NODE'
-          const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/cloud-run.json','utf8'));
-          const rev=r?.status?.latestReadyRevisionName||'';if(rev!==process.env.EXPECTED_REVISION)throw new Error('MECHANISM_P0:cloud_run_revision_drift:'+rev);
-          const image=r?.spec?.template?.spec?.containers?.[0]?.image||'';if(!image.includes(process.env.EXPECTED_IMAGE_DIGEST))throw new Error('MECHANISM_P0:cloud_run_digest_drift:'+image);
-          const traffic=(r?.status?.traffic||[]).find(x=>x?.revisionName===process.env.EXPECTED_REVISION);if(Number(traffic?.percent)!==100)throw new Error('MECHANISM_P0:cloud_run_traffic_not_100');
+          const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.F5_OUT_DIR+'/cloud-run-before.json','utf8'));
+          const rev=r?.status?.latestReadyRevisionName||'';if(rev!==process.env.EXPECTED_BEFORE_REVISION)throw new Error('MECHANISM_P0:f5_before_revision_drift:'+rev);
+          const traffic=(r?.status?.traffic||[]).find(x=>x?.revisionName===rev);if(Number(traffic?.percent)!==100)throw new Error('MECHANISM_P0:f5_before_traffic_not_100');
           NODE
-          base="$(node -e "const r=require('./$OUT_DIR/cloud-run.json');process.stdout.write(r?.status?.url||'')")"
-          test -n "$base"
-          curl -fsS --retry 3 --retry-delay 2 "$base/health" > "$OUT_DIR/health.json"
-          node <<'NODE'
-          const fs=require('fs'),h=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/health.json','utf8'));
-          if(h.ok!==true||h.g2bSyntheticCommandSourceReady!==true||h.g2bSyntheticWriteEnabled!==true||h.g2bSyntheticOnly!==true)throw new Error('PRODUCT_P0:g2b_health_not_ready');
-          NODE
-
-          token="$(gcloud auth print-access-token)"
-          curl -fsS -H "Authorization: Bearer $token" "https://firebasehosting.googleapis.com/v1beta1/sites/${HOSTING_SITE}/releases?pageSize=5" > "$OUT_DIR/hosting-releases.json"
-          node <<'NODE'
-          const fs=require('fs'),x=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/hosting-releases.json','utf8')),r=x?.releases?.[0];
-          if(!r?.name||!r?.version?.name||!r?.releaseTime)throw new Error('MECHANISM_P0:hosting_latest_release_missing');
-          if(Date.parse(r.releaseTime)<Date.parse(process.env.EXPECTED_HOSTING_RELEASE_AFTER))throw new Error('MECHANISM_P0:hosting_latest_release_too_old:'+r.releaseTime);
-          fs.writeFileSync(process.env.OUT_DIR+'/hosting-latest.json',JSON.stringify({name:r.name,version:r.version.name,releaseTime:r.releaseTime,type:r.type||null},null,2)+'\n');
-          NODE
-
-          expected_hash="$(cat "$OUT_DIR/firewall.source.sha256")"
-          matched=0
-          attempts=0
-          for i in $(seq 1 24); do
-            attempts="$i"
-            url="$DEV_ROOT_URL/adapters/cxorbia-canonical-write-firewall-v1.js?cxF4Recert=${GITHUB_RUN_ID}-${i}"
-            if curl -fsSL -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' "$url" > "$OUT_DIR/firewall.remote.js"; then
-              remote_hash="$(sha256sum "$OUT_DIR/firewall.remote.js" | awk '{print $1}')"
-              printf '%s\n' "$remote_hash" > "$OUT_DIR/firewall.remote.sha256"
-              if [ "$remote_hash" = "$expected_hash" ] && grep -Fq 'YES_PAULA_20260820_G2B_SYNTHETIC' "$OUT_DIR/firewall.remote.js" && grep -Fq 'cxorbia-command-http-transport-v1.js' "$OUT_DIR/firewall.remote.js"; then
-                matched=1
-                break
-              fi
-            fi
-            sleep 5
-          done
-          printf '%s\n' "$attempts" > "$OUT_DIR/hosting-static-attempts.txt"
-          test "$matched" = '1' || { echo 'MECHANISM_P0:hosting_static_not_stabilized_after_readonly_polling' >&2; exit 41; }
-
-          code="$(curl -sS -o "$OUT_DIR/g2b-hosting-unauthorized.json" -w '%{http_code}' -X POST -H 'content-type: application/json' --data '{}' "$DEV_ROOT_URL/api/tenants/tya/projects/cinepolis/g2b-synthetic/commands")"
-          printf '%s\n' "$code" > "$OUT_DIR/g2b-hosting-unauthorized.status"
-          test "$code" = '401' || { echo "PRODUCT_P0:hosting_api_fail_closed_status:$code" >&2; exit 42; }
-          node <<'NODE'
-          const fs=require('fs'),u=JSON.parse(fs.readFileSync(process.env.OUT_DIR+'/g2b-hosting-unauthorized.json','utf8'));
-          if(u.error!=='G2B_SYNTHETIC_AUTHORIZATION_REQUIRED')throw new Error('PRODUCT_P0:hosting_api_not_fail_closed');
-          NODE
-
           node <<'NODE'
           const fs=require('fs'),admin=require('firebase-admin');
-          const sa=JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON||'{}');if(sa.project_id!==process.env.GCP_PROJECT_ID)throw new Error('MECHANISM_P0:credential_project_mismatch');
+          const sa=JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON||'{}');if(sa.project_id!==process.env.GCP_PROJECT_ID)throw new Error('MECHANISM_P0:f5_credential_project_mismatch');
           admin.initializeApp({credential:admin.credential.cert(sa),projectId:process.env.GCP_PROJECT_ID});
-          const db=admin.firestore(),auth=admin.auth(),rid=process.env.G2B_SYNTH_REQUEST;
+          const db=admin.firestore(),auth=admin.auth(),rid=process.env.F5_REQUEST_ID;
+          const tenant=db.collection('tenants').doc('tya'),project=tenant.collection('projects').doc('cinepolis');
+          const exact=[project.collection('visits').doc(process.env.F5_VISIT_ID),project.collection('postulations').doc(process.env.F5_APPLICATION_ID),tenant.collection('shoppers').doc(process.env.F5_SHOPPER_ID),tenant.collection('users').doc(process.env.F5_SHOPPER_UID),tenant.collection('users').doc(process.env.F5_OPERATOR_UID)];
           async function count(c){return (await c.where('syntheticRequestId','==',rid).get()).size;}
+          async function authExists(uid){try{await auth.getUser(uid);return true;}catch(e){if(e?.code==='auth/user-not-found')return false;throw e;}}
           (async()=>{
-            const tenant=db.collection('tenants').doc('tya'),project=tenant.collection('projects').doc('cinepolis');
-            const counts={visits:await count(project.collection('visits')),postulations:await count(project.collection('postulations')),receipts:await count(tenant.collection('commandReceipts')),audit:await count(tenant.collection('entityAuditTrail')),shoppers:await count(tenant.collection('shoppers'))};
-            let syntheticAuth=0,pt;do{const page=await auth.listUsers(1000,pt);syntheticAuth+=page.users.filter(u=>u.customClaims?.syntheticRequestId===rid).length;pt=page.pageToken;}while(pt);
-            const result={...counts,auth:syntheticAuth};
-            fs.writeFileSync(process.env.OUT_DIR+'/synthetic-residue.json',JSON.stringify(result,null,2)+'\n');
-            if(Object.values(result).some(Number))throw new Error('PRODUCT_P0:synthetic_residue_nonzero:'+JSON.stringify(result));
+            const snaps=await Promise.all(exact.map(r=>r.get()));if(snaps.some(s=>s.exists))throw new Error('PRODUCT_P0:f5_exact_fixture_collision');
+            const counts={visits:await count(project.collection('visits')),postulations:await count(project.collection('postulations')),receipts:await count(tenant.collection('commandReceipts')),audit:await count(tenant.collection('entityAuditTrail')),shoppers:await count(tenant.collection('shoppers')),users:await count(tenant.collection('users'))};
+            const authSynthetic={shopper:await authExists(process.env.F5_SHOPPER_UID),operator:await authExists(process.env.F5_OPERATOR_UID)};
+            if(Object.values(counts).some(Number)||Object.values(authSynthetic).some(Boolean))throw new Error('PRODUCT_P0:f5_preflight_residue_or_auth_collision:'+JSON.stringify({counts,authSynthetic}));
+            fs.writeFileSync(process.env.F5_OUT_DIR+'/provider-preflight.json',JSON.stringify({decision:'PASS_F5_PROVIDER_PREFLIGHT_ZERO_COLLISION',counts,authSynthetic,providerWrites:0},null,2)+'\n');
           })().catch(e=>{console.error(e);process.exit(1);});
           NODE
 
+      - name: Build exact F5 runtime image once
+        id: build
+        run: |
+          set -euo pipefail
+          IMAGE_URI="gcr.io/${GCP_PROJECT_ID}/${CLOUD_RUN_SERVICE}:f5-${GITHUB_SHA:0:12}-${GITHUB_RUN_ID}"
+          touch "$F5_OUT_DIR/cloud-build-attempted"
+          printf '%s\n' "$IMAGE_URI" > "$F5_OUT_DIR/image-uri.txt"
+          gcloud builds submit . --project "$GCP_PROJECT_ID" --config backend/runtime/hr-live-service/cloudbuild.yaml --substitutions "_IMAGE=$IMAGE_URI" --quiet
+          digest="$(gcloud container images describe "$IMAGE_URI" --project "$GCP_PROJECT_ID" --format='value(image_summary.digest)')"
+          test -n "$digest"
+          printf '%s\n' "$digest" > "$F5_OUT_DIR/image-digest.txt"
+          printf '%s@%s\n' "$IMAGE_URI" "$digest" > "$F5_OUT_DIR/image-pinned.txt"
+
+      - name: Update existing Cloud Run once with expiring F5 synthetic gate
+        id: runtime
+        run: |
+          set -euo pipefail
+          IMAGE_PINNED="$(cat "$F5_OUT_DIR/image-pinned.txt")"
+          EXPIRES_AT="$(node -e "process.stdout.write(new Date(Date.now()+45*60*1000).toISOString())")"
+          printf '%s\n' "$EXPIRES_AT" > "$F5_OUT_DIR/gate-expires-at.txt"
+          touch "$F5_OUT_DIR/cloud-run-update-attempted"
+          gcloud run services update "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --image "$IMAGE_PINNED" --service-account "$CLOUD_RUN_RUNTIME_SA" --update-env-vars "CXORBIA_G2B_SYNTHETIC_WRITE_ENABLED=true,CXORBIA_G2B_SYNTHETIC_WRITE_GATE=${F5_RUNTIME_GATE},CXORBIA_G2B_SYNTHETIC_REQUEST_ID=${F5_REQUEST_ID},CXORBIA_F5_SYNTHETIC_AUTHORIZATION_ID=${F5_AUTH_ID},CXORBIA_F5_SYNTHETIC_EXPIRES_AT=${EXPIRES_AT}" --quiet
+          gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json > "$F5_OUT_DIR/cloud-run-after.json"
           node <<'NODE'
-          const fs=require('fs');
-          const read=p=>fs.readFileSync(process.env.OUT_DIR+'/'+p,'utf8').trim();
-          const latest=JSON.parse(read('hosting-latest.json')),residue=JSON.parse(read('synthetic-residue.json')),health=JSON.parse(read('health.json'));
-          const report={schemaVersion:'cxorbia.f4.g2b.readonly-recertification.report.v1',decision:'F4_READONLY_RECERTIFICATION_PASS_FULL',recoveryPassFull:true,classification:null,runId:Number(process.env.GITHUB_RUN_ID),controlPlaneHead:process.env.GITHUB_SHA,sourceFixSha:process.env.SOURCE_FIX_SHA,cloudRunRevision:process.env.EXPECTED_REVISION,imageDigest:process.env.EXPECTED_IMAGE_DIGEST,cloudRunHealth:{ok:health.ok,g2bSyntheticCommandSourceReady:health.g2bSyntheticCommandSourceReady,g2bSyntheticWriteEnabled:health.g2bSyntheticWriteEnabled,g2bSyntheticOnly:health.g2bSyntheticOnly},hosting:{site:process.env.HOSTING_SITE,latestRelease:latest,sourceHash:read('firewall.source.sha256'),remoteHash:read('firewall.remote.sha256'),staticAttempts:Number(read('hosting-static-attempts.txt')),apiUnauthorizedStatus:Number(read('g2b-hosting-unauthorized.status')),apiUnauthorizedError:'G2B_SYNTHETIC_AUTHORIZATION_REQUIRED'},syntheticResidue:residue,providerMutations:0,cloudBuildExecutions:0,cloudRunUpdates:0,hostingDeploys:0,leaseIssued:0,leaseReused:false,authenticatedSyntheticCommands:0,firestoreWrites:0,authWrites:0,storageWrites:0,externalHrWrites:0,realDataWrites:0,realCredentialWrites:0,paymentWrites:0,rulesWrites:0,makeCalls:0,geminiCalls:0,merge:false,next:'F4_RECOVERY_PASS_FULL_READY_FOR_CANONICAL_MATERIALIZATION'};
-          fs.writeFileSync(process.env.OUT_DIR+'/report.json',JSON.stringify(report,null,2)+'\n');
-          console.log(JSON.stringify(report,null,2));
+          const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.F5_OUT_DIR+'/cloud-run-after.json','utf8')),digest=fs.readFileSync(process.env.F5_OUT_DIR+'/image-digest.txt','utf8').trim();
+          const rev=r?.status?.latestReadyRevisionName||'',image=r?.spec?.template?.spec?.containers?.[0]?.image||'';if(!rev||rev===process.env.EXPECTED_BEFORE_REVISION)throw new Error('MECHANISM_P0:f5_cloud_run_revision_not_advanced');if(!image.includes(digest))throw new Error('MECHANISM_P0:f5_cloud_run_digest_mismatch:'+image);const traffic=(r?.status?.traffic||[]).find(x=>x?.revisionName===rev);if(Number(traffic?.percent)!==100)throw new Error('MECHANISM_P0:f5_cloud_run_traffic_not_100');fs.writeFileSync(process.env.F5_OUT_DIR+'/new-revision.txt',rev+'\n');fs.writeFileSync(process.env.F5_OUT_DIR+'/service-url.txt',String(r?.status?.url||'')+'\n');
+          NODE
+          test -s "$F5_OUT_DIR/service-url.txt"
+          touch "$F5_OUT_DIR/runtime-ready"
+
+      - name: Verify F5 runtime fail-closed boundary and prepare synthetic actor tokens
+        run: |
+          set -euo pipefail
+          base="$(cat "$F5_OUT_DIR/service-url.txt")"
+          curl -fsS --retry 5 --retry-delay 2 "$base/health" > "$F5_OUT_DIR/health.json"
+          code="$(curl -sS -o "$F5_OUT_DIR/unauthorized.json" -w '%{http_code}' -X POST -H 'content-type: application/json' --data '{}' "$base/api/tenants/tya/projects/cinepolis/g2b-synthetic/commands")"
+          test "$code" = '401' || { echo "PRODUCT_P0:f5_unauthorized_boundary_status:$code" >&2; exit 42; }
+          node <<'NODE'
+          const fs=require('fs'),u=JSON.parse(fs.readFileSync(process.env.F5_OUT_DIR+'/unauthorized.json','utf8'));if(u.error!=='F5_SYNTHETIC_AUTHORIZATION_REQUIRED')throw new Error('PRODUCT_P0:f5_unauthorized_boundary_error');
+          NODE
+          node --input-type=module <<'NODE' > "$F5_OUT_DIR/actor-tokens.json"
+          import {createF5SyntheticActorToken} from './backend/runtime/cxorbia-f5-synthetic-acceptance-provider-v1.mjs';
+          const gate={requestId:process.env.F5_REQUEST_ID,authorizationId:process.env.F5_AUTH_ID};
+          console.log(JSON.stringify({operator:createF5SyntheticActorToken(gate,'operator'),shopper:createF5SyntheticActorToken(gate,'shopper')}));
           NODE
 
-      - name: Upload read-only recertification evidence
+      - name: Execute F5 synthetic lifecycle through canonical runtime
+        id: lifecycle
+        run: |
+          set -euo pipefail
+          base="$(cat "$F5_OUT_DIR/service-url.txt")"
+          api="$base/api/tenants/tya/projects/cinepolis/g2b-synthetic/commands"
+          operator="$(node -e "process.stdout.write(require('./$F5_OUT_DIR/actor-tokens.json').operator)")"
+          shopper="$(node -e "process.stdout.write(require('./$F5_OUT_DIR/actor-tokens.json').shopper)")"
+          ids="$(jq -nc --arg visitId "$F5_VISIT_ID" --arg shopperId "$F5_SHOPPER_ID" --arg applicationId "$F5_APPLICATION_ID" '{visitId:$visitId,shopperId:$shopperId,applicationId:$applicationId}')"
+          control(){ local op="$1" out="$2"; curl -fsS -H "Authorization: Bearer $operator" -H 'content-type: application/json' --data "$(jq -nc --arg op "$op" --argjson ids "$ids" '{operation:$op,ids:$ids}')" "$api" > "$F5_OUT_DIR/$out"; jq -e '.ok==true and .syntheticOnly==true' "$F5_OUT_DIR/$out" >/dev/null; }
+          command(){ local token="$1" type="$2" entityType="$3" entityId="$4" expected="$5" key="$6" payload="$7" out="$8"; local body; body="$(jq -nc --arg type "$type" --arg entityType "$entityType" --arg entityId "$entityId" --arg key "$key" --arg expected "$expected" --argjson payload "$payload" '{operation:"COMMAND",command:{version:"cxorbia-command-adapter-v1",commandType:$type,entityType:$entityType,entityId:$entityId,tenantId:"tya",projectId:"cinepolis",idempotencyKey:$key,expectedVersion:($expected|tonumber? // $expected),authorization:{providerEnforcementRequired:true},audit:{reason:"F5 synthetic acceptance"},payload:$payload}}')"; curl -fsS -H "Authorization: Bearer $token" -H 'content-type: application/json' --data "$body" "$api" > "$F5_OUT_DIR/$out"; jq -e '.ok==true and .providerAck==true and .syntheticOnly==true and .realDataWrites==0 and .externalHrWrites==0 and .realAuthWrites==0 and .realPaymentWrites==0' "$F5_OUT_DIR/$out" >/dev/null; }
+
+          control PRE_READBACK 01-pre-readback.json
+          jq -e '([.counts[]] | all(.==0)) and .fixtures.visit==null and .fixtures.application==null and .fixtures.shopper==null and .fixtures.shopperMembership==null and .fixtures.operatorMembership==null' "$F5_OUT_DIR/01-pre-readback.json" >/dev/null
+          control SEED 02-seed.json
+
+          command "$shopper" application.create application "$F5_APPLICATION_ID" absent CXORBIA_E2E_SYNTH_F5_01_APPLICATION_CREATE "$(jq -nc --arg visitId "$F5_VISIT_ID" --arg shopperId "$F5_SHOPPER_ID" '{visitId:$visitId,shopperId:$shopperId,proposedDate:"2026-08-30",note:"F5 synthetic"}')" 03-application-create.json
+          command "$operator" application.status.update application "$F5_APPLICATION_ID" 1 CXORBIA_E2E_SYNTH_F5_02_APPLICATION_APPROVE "$(jq -nc '{status:"aprobada",reason:"F5 synthetic approval"}')" 04-application-approve.json
+          command "$operator" visit.assign visit "$F5_VISIT_ID" 2 CXORBIA_E2E_SYNTH_F5_03_ASSIGN "$(jq -nc --arg shopperId "$F5_SHOPPER_ID" '{shopperId:$shopperId,assignmentSource:"platform"}')" 05-assign.json
+          command "$shopper" visit.state.update visit "$F5_VISIT_ID" 3 CXORBIA_E2E_SYNTH_F5_04_SCHEDULE "$(jq -nc '{patch:{estado:"agendada",agendada:"2026-08-30"}}')" 06-schedule.json
+          command "$shopper" visit.reschedule visit "$F5_VISIT_ID" 4 CXORBIA_E2E_SYNTH_F5_05_RESCHEDULE_REQUEST "$(jq -nc '{newDate:"2026-08-31",reason:"F5 synthetic boundary",requestedByShopper:true}')" 07-reschedule-request.json
+          command "$operator" visit.reschedule visit "$F5_VISIT_ID" 5 CXORBIA_E2E_SYNTH_F5_06_RESCHEDULE_APPROVE "$(jq -nc '{newDate:"2026-08-31",reason:"F5 synthetic approval",decision:"approved"}')" 08-reschedule-approve.json
+          command "$shopper" visit.questionnaire.submit visit "$F5_VISIT_ID" 6 CXORBIA_E2E_SYNTH_F5_07_QUESTIONNAIRE "$(jq -nc '{completedAt:"2026-08-31",result:{synthetic:true,score:100}}')" 09-questionnaire.json
+          command "$operator" visit.review.update visit "$F5_VISIT_ID" 7 CXORBIA_E2E_SYNTH_F5_08_REVIEW "$(jq -nc '{reviewStatus:"approved_for_submitido",note:"F5 synthetic review"}')" 10-review.json
+
+          control FINAL_READBACK 11-final-readback.json
+          jq -e --arg visit "$F5_VISIT_ID" --arg shopper "$F5_SHOPPER_ID" --arg app "$F5_APPLICATION_ID" '
+            .fixtures.visit.visitId==$visit and .fixtures.visit.shopperId==$shopper and .fixtures.visit.status=="cuestionario" and .fixtures.visit.version==8 and .fixtures.visit.reviewStatus=="approved_for_submitido" and .fixtures.visit.rescheduleRequest.status=="approved" and
+            .fixtures.application.applicationId==$app and .fixtures.application.status=="aprobada" and .fixtures.application.version==2 and
+            .fixtures.shopper.shopperId==$shopper and .fixtures.shopperMembership.shopperId==$shopper and .fixtures.operatorMembership.role=="admin" and .fixtures.allTagged==true and
+            .counts.visits==1 and .counts.postulations==1 and .counts.shoppers==1 and .counts.users==2 and .counts.receipts==8 and .counts.audit==8 and .counts.receiptActorOrphans==8 and .counts.auditActorOrphans==8
+          ' "$F5_OUT_DIR/11-final-readback.json" >/dev/null
+          touch "$F5_OUT_DIR/lifecycle-pass"
+
+      - name: Mandatory F5 cleanup
+        id: cleanup
+        if: always()
+        run: |
+          set -euo pipefail
+          if [ ! -f "$F5_OUT_DIR/runtime-ready" ] || [ ! -f "$F5_OUT_DIR/actor-tokens.json" ]; then
+            echo 'cleanup_not_required_runtime_not_reached' > "$F5_OUT_DIR/cleanup-status.txt"
+            exit 0
+          fi
+          base="$(cat "$F5_OUT_DIR/service-url.txt")"
+          api="$base/api/tenants/tya/projects/cinepolis/g2b-synthetic/commands"
+          operator="$(node -e "process.stdout.write(require('./$F5_OUT_DIR/actor-tokens.json').operator)")"
+          ids="$(jq -nc --arg visitId "$F5_VISIT_ID" --arg shopperId "$F5_SHOPPER_ID" --arg applicationId "$F5_APPLICATION_ID" '{visitId:$visitId,shopperId:$shopperId,applicationId:$applicationId}')"
+          curl -fsS -H "Authorization: Bearer $operator" -H 'content-type: application/json' --data "$(jq -nc --argjson ids "$ids" '{operation:"CLEANUP",ids:$ids}')" "$api" > "$F5_OUT_DIR/12-cleanup.json"
+          jq -e '.ok==true and .status=="clean" and .syntheticOnly==true and ([.residual[]] | all(.==0)) and .fixtures.visit==null and .fixtures.application==null and .fixtures.shopper==null and .fixtures.shopperMembership==null and .fixtures.operatorMembership==null' "$F5_OUT_DIR/12-cleanup.json" >/dev/null
+          echo 'cleanup_pass' > "$F5_OUT_DIR/cleanup-status.txt"
+
+      - name: Post-clean provider readback and F5 result
+        if: always()
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+          LIFECYCLE_OUTCOME: ${{ steps.lifecycle.outcome }}
+          CLEANUP_OUTCOME: ${{ steps.cleanup.outcome }}
+        run: |
+          set -euo pipefail
+          if [ -f "$F5_OUT_DIR/runtime-ready" ] && [ -f "$F5_OUT_DIR/actor-tokens.json" ]; then
+            base="$(cat "$F5_OUT_DIR/service-url.txt")"
+            api="$base/api/tenants/tya/projects/cinepolis/g2b-synthetic/commands"
+            operator="$(node -e "process.stdout.write(require('./$F5_OUT_DIR/actor-tokens.json').operator)")"
+            ids="$(jq -nc --arg visitId "$F5_VISIT_ID" --arg shopperId "$F5_SHOPPER_ID" --arg applicationId "$F5_APPLICATION_ID" '{visitId:$visitId,shopperId:$shopperId,applicationId:$applicationId}')"
+            curl -fsS -H "Authorization: Bearer $operator" -H 'content-type: application/json' --data "$(jq -nc --argjson ids "$ids" '{operation:"POST_CLEANUP_READBACK",ids:$ids}')" "$api" > "$F5_OUT_DIR/13-post-clean-readback.json"
+            jq -e '.ok==true and ([.counts[]] | all(.==0)) and .fixtures.visit==null and .fixtures.application==null and .fixtures.shopper==null and .fixtures.shopperMembership==null and .fixtures.operatorMembership==null' "$F5_OUT_DIR/13-post-clean-readback.json" >/dev/null
+          fi
+
+          node <<'NODE'
+          const fs=require('fs'),admin=require('firebase-admin');
+          const sa=JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON||'{}');
+          admin.initializeApp({credential:admin.credential.cert(sa),projectId:process.env.GCP_PROJECT_ID});
+          const db=admin.firestore(),auth=admin.auth(),rid=process.env.F5_REQUEST_ID,tenant=db.collection('tenants').doc('tya'),project=tenant.collection('projects').doc('cinepolis');
+          async function count(c){return (await c.where('syntheticRequestId','==',rid).get()).size;}
+          async function actorCount(c){let n=0;for(const uid of [process.env.F5_SHOPPER_UID,process.env.F5_OPERATOR_UID])n+=(await c.where('actorUid','==',uid).get()).size;return n;}
+          async function authExists(uid){try{await auth.getUser(uid);return true;}catch(e){if(e?.code==='auth/user-not-found')return false;throw e;}}
+          (async()=>{
+            const exactRefs=[project.collection('visits').doc(process.env.F5_VISIT_ID),project.collection('postulations').doc(process.env.F5_APPLICATION_ID),tenant.collection('shoppers').doc(process.env.F5_SHOPPER_ID),tenant.collection('users').doc(process.env.F5_SHOPPER_UID),tenant.collection('users').doc(process.env.F5_OPERATOR_UID)];
+            const exact=await Promise.all(exactRefs.map(r=>r.get()));
+            const residue={visits:await count(project.collection('visits')),postulations:await count(project.collection('postulations')),receipts:await count(tenant.collection('commandReceipts')),audit:await count(tenant.collection('entityAuditTrail')),shoppers:await count(tenant.collection('shoppers')),users:await count(tenant.collection('users')),receiptActorOrphans:await actorCount(tenant.collection('commandReceipts')),auditActorOrphans:await actorCount(tenant.collection('entityAuditTrail')),exactFixtures:exact.filter(s=>s.exists).length,authShopper:await authExists(process.env.F5_SHOPPER_UID),authOperator:await authExists(process.env.F5_OPERATOR_UID)};
+            fs.writeFileSync(process.env.F5_OUT_DIR+'/provider-post-clean.json',JSON.stringify(residue,null,2)+'\n');
+            if(Object.entries(residue).some(([k,v])=>k.startsWith('auth')?v===true:Number(v)!==0))throw new Error('PRODUCT_P0:f5_post_clean_residue:'+JSON.stringify(residue));
+            const lifecycle=process.env.LIFECYCLE_OUTCOME,cleanup=process.env.CLEANUP_OUTCOME,pass=lifecycle==='success'&&cleanup==='success';
+            const report={schemaVersion:'cxorbia.f5.synthetic-acceptance.report.v1',decision:pass?'F5_LIVE_SYNTHETIC_ACCEPTANCE_PASS':'F5_TERMINAL_STOP_EXECUTION_OR_CLEANUP_FAILED',f5Pass:pass,runId:Number(process.env.GITHUB_RUN_ID),runAttempt:Number(process.env.GITHUB_RUN_ATTEMPT),controlPlaneHead:process.env.GITHUB_SHA,parentHead:process.env.EXPECTED_PARENT_HEAD,authorizationId:process.env.F5_AUTH_ID,executionId:process.env.F5_EXECUTION_ID,requestId:process.env.F5_REQUEST_ID,cloudBuildExecutions:fs.existsSync(process.env.F5_OUT_DIR+'/cloud-build-attempted')?1:0,cloudRunUpdateAttempts:fs.existsSync(process.env.F5_OUT_DIR+'/cloud-run-update-attempted')?1:0,cloudRunUpdates:fs.existsSync(process.env.F5_OUT_DIR+'/runtime-ready')?1:0,hostingDeploys:0,newRevision:fs.existsSync(process.env.F5_OUT_DIR+'/new-revision.txt')?fs.readFileSync(process.env.F5_OUT_DIR+'/new-revision.txt','utf8').trim():null,imageDigest:fs.existsSync(process.env.F5_OUT_DIR+'/image-digest.txt')?fs.readFileSync(process.env.F5_OUT_DIR+'/image-digest.txt','utf8').trim():null,gateExpiresAt:fs.existsSync(process.env.F5_OUT_DIR+'/gate-expires-at.txt')?fs.readFileSync(process.env.F5_OUT_DIR+'/gate-expires-at.txt','utf8').trim():null,lifecycleOutcome:lifecycle,cleanupOutcome:cleanup,postCleanResidue:residue,realDataWrites:0,externalHrWrites:0,firebaseAuthWrites:0,paymentWrites:0,rulesWrites:0,storageWrites:0,makeCalls:0,geminiCalls:0,merge:false,readinessBefore:81,readinessAfter:pass?86:81,next:pass?'F6_PHASE_A_IMMUTABLE_RELEASE':'STOP_AND_MATERIALIZE_F5_CAUSE_WITH_ZERO_RESIDUE'};
+            fs.writeFileSync(process.env.F5_OUT_DIR+'/report.json',JSON.stringify(report,null,2)+'\n');
+            console.log(JSON.stringify(report,null,2));
+          })().catch(e=>{console.error(e);process.exit(1);});
+          NODE
+
+      - name: Upload F5 evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-f4-g2b-readonly-recertification-${{ github.run_id }}
-          path: .tmp/f4-g2b-readonly-recertification/
+          name: cxorbia-f5-synthetic-acceptance-${{ github.run_id }}
+          path: .tmp/f5-synthetic-acceptance/
           if-no-files-found: warn
           retention-days: 14
