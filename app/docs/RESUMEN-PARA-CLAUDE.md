@@ -1,39 +1,81 @@
 # RESUMEN-PARA-CLAUDE.md
 
-**Última actualización:** 2026-08-17 15:29 -06:00  
-**Estado:** `NO_REPROCESS__I3_5B_SAFE_HOLD_NO_PROVIDER_AUTHORITY__I3_6_HARNESS_SOURCE_FIXED__NO_UI_REBUILD`
+**Última actualización:** 2026-08-27  
+**Estado:** `PHASE_A_100_FROZEN__F6_CLOSED_PASS__NEXT_F7_INTEGRAL_READINESS__NO_UI_REBUILD`
 
-Plan: `ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md`.
-Source lock: `SOURCE-LOCK-I3-5B-PROVIDER-VALIDATION-SAFE-HOLD-ZERO-WRITES-20260817.md`.
+## Estado canónico
 
-## No tocar
+- PHASE_A = `100/100`.
+- PRODUCTION_REAL_READINESS = `90/100`.
+- F5 = `CLOSED_PASS_CONSUMED_ZERO_RESIDUE`.
+- F6 = `CLOSED_PASS_IMMUTABLE`.
+- NEXT = `F7_INTEGRAL_READINESS`.
+- Release ID = `CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01`.
 
-No nueva candidata/rama/PR/workflow. No reconstruir Dashboard/Shoppers/Postulaciones/Finance/HR/Auth. No tocar `app/modules` ni `app/core` para resolver I3.5. No mostrar HR assignment como postulation, no autoaccept legal, no fuzzy identity.
+Autoridad viva: `backend/config/cxorbia-phase-a-continuity-lock.json` + manifest F6 + evidencia terminal F6. El master plan V1.1 está congelado y no se reescribe sin nuevo PCR.
 
-## Estado I3
+## Release exacto que Claude debe respetar
 
-I3.1/.2/.3/.4/.7 PASS. I3.6 historical Shopper product/evidence frozen PASS; harness shallow-checkout source defect fixed in `84d26871c6f0cff96eaa84a8789d78b462e190ee` without Shopper access/reset.
+- functional source SHA `f9802fdd498934a8e7729fa5c7d18341bec1cd71`;
+- runtime source SHA `2d0b8e83b32b44f6c3eae80b7630f8cd3295fba2`;
+- Cloud Run revision `cxorbia-live-hr-dev-00013-rns`;
+- image digest `sha256:eca8b831c24ef81f09e4addda721d0af89a24c5a0d753aa507989988458227ec`;
+- Hosting release `sites/cxorbia-backend-dev/releases/1787796646738000`;
+- Hosting version `sites/cxorbia-backend-dev/versions/afe292cfcbbc6005`.
 
-I3.5A source hunt closed. I3.5B provider-backed validation was executed once: run `32070767910`, job `95513264398`, result `HOLD_I3_5B_NO_INDEPENDENT_PROVIDER_AUTHORITY` and zero writes.
+## No tocar / no reconstruir
 
-Provider observed 616 visits / 14 periods, 0 `shopperIdentityLinks`, 0 independent exact authority records for the August target and 0 conflicts. HR live remains 660/15. Therefore there is no technical provider bridge for August that Claude/backend may infer automatically.
+Claude no debe:
 
-## Claude rule
+- reconstruir Phase A ni reinterpretar F5/F6 como pendientes;
+- tocar `/app/modules` o `/app/core` desde backend para “resolver” readiness;
+- crear otra candidata/rama/PR/workflow;
+- hardcodear TyA o Cinépolis como arquitectura global;
+- convertir HR assignment en postulation;
+- inventar mappings de identidad por nombre/email/teléfono/WhatsApp/username;
+- mostrar integraciones, pagos, Make o Gemini como activos si no tienen gate real;
+- alterar el release congelado por mejoras visuales o documentación.
 
-Do not solve this in UI. Do not hardcode the target. Do not merge profiles by name/email/phone/WhatsApp/username/shopperCode or human-derived hashes. Do not fabricate a crosswalk because the expected canonical target is known from prior evidence.
+Un ajuste frontend posterior se documenta por archivo/módulo y se aplica conforme al carril `APPLY_DELTA_DIRECTLY` solo cuando exista una candidata auditada GO sin P0.
 
-The relation may only be created from an independent exact technical authority or an explicit tenant adjudication recorded as authority against source-safe technical fingerprints.
+## Qué sí debe verificar F7 en frontend/UX y contenido
 
-## Safety/frozen
+Sin modificar el release durante la auditoría, F7 debe comprobar que lo visible sea coherente con el comportamiento real para cada rol y proyecto:
 
-I3.5B Firestore/Auth/user/password/HR/Finance/Rules/Storage/Make/Gemini/payment/deploy writes = 0; Historical Shopper access/login/recovery/reset = 0. Request consumed/no retry.
+- Auth/RBAC y estados de acceso;
+- HR viva e histórica;
+- shoppers y perfiles;
+- postulaciones;
+- certificaciones presentadas;
+- visitas, agendamiento, reprogramación, cancelación y cuestionarios;
+- liquidaciones/pagos y sus estados reales;
+- multi-proyecto y configuración por tenant/proyecto;
+- sincronización HR↔plataforma;
+- mensajes de error, loading, empty states y estados honestos;
+- evidencias y trazabilidad;
+- observabilidad visible cuando corresponda;
+- responsive/usabilidad sin promesas falsas de backend.
 
-Historical Shopper `31906391682`; Admin `32049054855`; request08; HR 15/660; Finance V2/historical; exact identity; durable legal receipt remain frozen.
+## Academia
 
-## Progress
+F7 debe validar que Academia refleje el release real, no un flujo aspiracional. Debe comprobar:
 
-Formal **35%/65%** because I3 remains a single 25-point integral gate until I3.11. Operatively I3.5A/I3.5B are complete; the blocker is missing authority, not missing diagnosis.
+- rutas por rol;
+- cursos/manuales por módulo;
+- pasos operativos concretos;
+- estados esperados y errores frecuentes;
+- certificaciones y reglas configurables por proyecto;
+- notificaciones y cambios de producto;
+- separación entre funciones disponibles, bloqueadas y futuras.
 
-## Next frontier
+No se requiere rediseñar Academia en F7 salvo defecto demostrado; cualquier mejora queda documentada para una candidata frontend posterior.
 
-`I3.5C_AUTHORITATIVE_TENANT_ADJUDICATION_REQUIRED__STOP_AUTOMATIC_MAPPING`.
+## Hallazgo de mecanismo no bloqueante
+
+El predeploy read-only run `33085991102` falló porque el servicio local intentó arrancar sin `firebase-admin`. Clasificación: `MECHANISM_P1_NON_BLOCKING`. No hubo provider mutation ni deploy. No es defecto de UI ni motivo para reabrir F6.
+
+## Siguiente frontera
+
+`F7_INTEGRAL_READINESS`.
+
+Salida válida: `GO` o `GO_WITH_WARNINGS` sin P0 demostrado; `HOLD/NO_GO` únicamente con evidencia reproducible.
