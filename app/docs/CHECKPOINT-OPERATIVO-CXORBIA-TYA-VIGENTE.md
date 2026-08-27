@@ -1,41 +1,41 @@
 # CHECKPOINT OPERATIVO CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-26  
+**Fecha:** 2026-08-27  
 **MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`  
 **MASTER_PLAN_VERSION:** `1.1.0`  
 **MASTER_PLAN_STATUS:** `FROZEN`  
 **PLAN_CHANGE_REQUEST:** `PCR-20260826-PRODUCTION-ACCELERATION-01`  
-**M3:** `CLOSED_PASS_30_OF_30_ZERO_RESIDUAL_DIRECT_REMOTE_READBACK`  
-**F3:** `CLOSED_PASS_PROVIDER_PROMOTION_MECHANISM_V1_G2B_RECOVERY_LANE_PASS`  
 **F4:** `CLOSED_PASS_RECOVERY_PASS_FULL_READONLY_RECERTIFIED`  
-**NEXT:** `F5_WAITING_EXPLICIT_SYNTHETIC_ACCEPTANCE_AUTHORIZATION`  
+**F5:** `CLOSED_PASS_CONSUMED_ZERO_RESIDUE`  
+**NEXT:** `F6_PHASE_A_IMMUTABLE_RELEASE`  
 **PHASE_A:** `98/100`  
-**PRODUCTION_REAL_READINESS:** `81/100`
+**PRODUCTION_REAL_READINESS:** `86/100`
 
-## Cierre F4
+## Cierre F5
 
-F4 no fue reintentado. El run mutante original `33032334162` permanece como el único consumo del lease y del budget: Cloud Build 1/1, Cloud Run update 1/1 y Hosting deploy 1/1.
+La aceptación sintética integral real quedó cerrada PASS en run `33085990980`, attempt 1, HEAD `2d0b8e83b32b44f6c3eae80b7630f8cd3295fba2`.
 
-El STOP `MECHANISM_P0 — POST_HOSTING_READBACK_NOT_STABILIZED` se resolvió mediante recertificación posterior estrictamente read-only autorizada por Paula. Run `33034673610`, HEAD `ed282aa8932d259cf5340f8007fc22fa90b2ef34`, artefacto `9631562023`, digest `sha256:53beff90e3766c3aa491b2c300a2ef0e85b83d59bd1ad071ebf280eb3737e342`.
+Evidencia terminal:
+- Cloud Build 1/1 PASS;
+- Cloud Run update 1/1 PASS;
+- revisión `cxorbia-live-hr-dev-00013-rns` con 100% tráfico;
+- digest `sha256:eca8b831c24ef81f09e4addda721d0af89a24c5a0d753aa507989988458227ec`;
+- lifecycle `application.create → approve → assign → schedule → reschedule → questionnaire.submit → review` PASS;
+- cleanup PASS;
+- post-clean residue = 0;
+- Firebase Auth writes = 0;
+- datos reales/HR externa/pagos/Rules/Storage/Make/Gemini/Hosting deploy/merge = 0.
 
-## Evidencia terminal
-
-- Cloud Run: `cxorbia-live-hr-dev-00012-gw9`, digest `sha256:4e2cd8cbd8d7b28a2abada2ea5060b58691f5582e871220afe141c4824027970`, 100% tráfico.
-- Health: G2-B source ready, write lane enabled exclusivamente sintética, synthetic-only.
-- Hosting: release `1787796646738000`, versión `afe292cfcbbc6005`, fecha `2026-08-27T02:10:46.738Z`.
-- Adapter source/remoto: hash exacto común `9d69d0d0db42e3f2b93cc893f2da1ed0b2e753403d3f46a9a8537dbe994c82b0`.
-- Ruta Hosting G2-B sin autenticación: HTTP 401, `G2B_SYNTHETIC_AUTHORIZATION_REQUIRED`.
-- Residuo sintético: visits=0, postulations=0, receipts=0, audit=0, shoppers=0, Auth=0.
-- Recertificación provider mutations/deploys/writes/comandos autenticados: todos 0.
-
-Decisión: `F4_READONLY_RECERTIFICATION_PASS_FULL` + `RECOVERY_PASS_FULL`.
+Artefacto: `9652248195`, digest `sha256:d6fcb4ed171c6295431c2615cd4b8c0e740c3c05ff026393fd5f2ae8c7fbcfe4`.
 
 ## Estado seguro
 
-El lease F4 sigue consumido y no reutilizable. No se autorizó F5, otro deploy, Build, Cloud Run update, Hosting deploy, Firestore/Auth/Storage/HR writes, Rules, Make, Gemini, pagos ni merge.
+El execute F5 queda `consumed=true`, `enabled=false`, replay=false y retry automático=false. El workflow histórico F5 queda inertizado. El runtime gate expira server-side en `2026-08-27T15:53:16.136Z`; no hay autorización para extenderlo.
+
+El predeploy paralelo `33085991102` falló por falta de `firebase-admin` antes del arranque local; es `MECHANISM_P1_NON_BLOCKING`, sin provider mutation ni deploy.
 
 ## Siguiente exacto
 
-`F5_WAITING_EXPLICIT_SYNTHETIC_ACCEPTANCE_AUTHORIZATION`.
+`F6_PHASE_A_IMMUTABLE_RELEASE`.
 
-F5 solo puede comenzar con autorización específica vigente para la aceptación sintética integral `CXORBIA_E2E_SYNTH_*`, sus writes sintéticos controlados, cleanup y post-clean readback.
+F6 debe congelar el release exacto sin reabrir F5.

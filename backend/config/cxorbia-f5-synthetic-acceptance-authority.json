@@ -1,87 +1,62 @@
 {
-  "schemaVersion": "cxorbia.f5.synthetic-acceptance-authority.v2",
+  "schemaVersion": "cxorbia.f5.synthetic-acceptance-authority.v3",
   "id": "CXORBIA-F5-SYNTHETIC-ACCEPTANCE-20260827-01",
   "authorizationId": "CXORBIA-F5-AUTH-20260827-02",
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-27",
   "authorizationInstruction": "continúa con el siguiente bloque",
-  "state": "RUNTIME_PROMOTION_AUTHORIZED_EXECUTION_PENDING",
+  "state": "CLOSED_PASS_CONSUMED",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
-  "headAtPreflight": "3c9080d07228472b8e7abb898475b2dfefb414e0",
   "sourceMechanismHead": "5cbf78f7922216056eb1a3140bdf45279ea1c89b",
+  "executionHead": "2d0b8e83b32b44f6c3eae80b7630f8cd3295fba2",
   "provider": {
     "firebaseProjectId": "cxorbia-backend-dev",
     "region": "us-central1",
     "service": "cxorbia-live-hr-dev",
-    "verifiedF4Revision": "cxorbia-live-hr-dev-00012-gw9",
-    "runtimeServiceAccount": "firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com"
+    "beforeRevision": "cxorbia-live-hr-dev-00012-gw9",
+    "afterRevision": "cxorbia-live-hr-dev-00013-rns",
+    "afterImageDigest": "sha256:eca8b831c24ef81f09e4addda721d0af89a24c5a0d753aa507989988458227ec"
   },
   "scope": {
     "tenantId": "tya",
     "projectId": "cinepolis",
     "syntheticTagPrefix": "CXORBIA_E2E_SYNTH_",
-    "syntheticOnly": true,
-    "ids": {
-      "visitId": "CXORBIA_E2E_SYNTH_VISIT_001",
-      "shopperId": "CXORBIA_E2E_SYNTH_SHOPPER_001",
-      "applicationId": "CXORBIA_E2E_SYNTH_APPLICATION_001",
-      "shopperUid": "CXORBIA_E2E_SYNTH_UID_SHOPPER_001",
-      "operatorUid": "CXORBIA_E2E_SYNTH_UID_OPERATOR_001"
-    }
+    "syntheticOnly": true
   },
-  "requiredSequence": [
-    "PRE_READBACK",
-    "SEED",
-    "APPLICATION_CREATE",
-    "APPLICATION_APPROVE",
-    "ASSIGN",
-    "SCHEDULE",
-    "RESCHEDULE_REQUEST_AND_APPROVE",
-    "QUESTIONNAIRE_SUBMIT",
-    "REVIEW_APPROVE",
-    "FINAL_READBACK",
-    "CLEANUP",
-    "POST_CLEANUP_READBACK"
-  ],
-  "safety": {
-    "cleanupRequired": true,
-    "postCleanupReadbackRequired": true,
+  "runtimePromotion": {
+    "authorized": false,
+    "consumed": true,
+    "cloudBuildExecutions": 1,
+    "cloudRunUpdates": 1,
+    "hostingDeploys": 0,
     "automaticRetryAllowed": false,
+    "gateExpiresAt": "2026-08-27T15:53:16.136Z",
+    "serverSideExpiryEnforced": true
+  },
+  "f5Execution": {
+    "executionId": "CXORBIA-F5-EXECUTE-20260827-01",
+    "runId": 33085990980,
+    "runAttempt": 1,
+    "decision": "F5_LIVE_SYNTHETIC_ACCEPTANCE_PASS",
+    "status": "CLOSED_PASS",
+    "syntheticProviderWrites": 67,
+    "cleanupExecuted": true,
+    "postCleanupReadbackExecuted": true,
+    "postCleanResidueZero": true,
+    "firebaseAuthWrites": 0,
     "realDataWrites": 0,
     "externalHrWrites": 0,
-    "realAuthWrites": 0,
-    "realPaymentWrites": 0,
+    "paymentWrites": 0,
     "rulesWrites": 0,
     "storageWrites": 0,
     "makeCalls": 0,
     "geminiCalls": 0,
     "merge": false,
-    "hostingDeploy": 0,
-    "syntheticFirestoreWritesAuthorized": true,
-    "syntheticMembershipDocumentsAuthorized": true,
-    "firebaseAuthUserWritesAuthorized": false
-  },
-  "runtimePromotion": {
-    "authorized": true,
-    "cloudBuildMax": 1,
-    "cloudRunUpdateMax": 1,
-    "hostingDeployMax": 0,
-    "automaticRetryMax": 0,
-    "gateTtlMinutes": 45,
-    "rollbackRevision": "cxorbia-live-hr-dev-00012-gw9"
-  },
-  "f5Execution": {
-    "executionId": "CXORBIA-F5-EXECUTE-20260827-01",
-    "providerWritesExecuted": 0,
-    "syntheticWritesExecuted": 0,
-    "cloudBuildExecutions": 0,
-    "cloudRunUpdates": 0,
-    "cleanupExecuted": false,
-    "postCleanupReadbackExecuted": false,
     "readinessBefore": 81,
-    "readinessAfter": 81,
-    "status": "AUTHORIZED_PENDING_EXECUTION"
+    "readinessAfter": 86
   },
-  "next": "F5_PROMOTE_RUNTIME_AND_EXECUTE_SYNTHETIC_ACCEPTANCE_ONE_SHOT"
+  "evidence": "app/docs/evidence/RC15-F5-LIVE-SYNTHETIC-ACCEPTANCE-LATEST.json",
+  "replayAllowed": false,
+  "next": "F6_PHASE_A_IMMUTABLE_RELEASE"
 }

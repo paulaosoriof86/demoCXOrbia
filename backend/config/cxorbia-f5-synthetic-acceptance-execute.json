@@ -1,36 +1,40 @@
 {
-  "schemaVersion": "cxorbia.f5.synthetic-acceptance-execute.v1",
+  "schemaVersion": "cxorbia.f5.synthetic-acceptance-execute.v2",
   "executionId": "CXORBIA-F5-EXECUTE-20260827-01",
   "authorizationId": "CXORBIA-F5-AUTH-20260827-02",
   "requestId": "CXORBIA-F5-SYNTHETIC-ACCEPTANCE-20260827-01",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "expectedParentHead": "5cbf78f7922216056eb1a3140bdf45279ea1c89b",
-  "enabled": true,
+  "executionHead": "2d0b8e83b32b44f6c3eae80b7630f8cd3295fba2",
+  "enabled": false,
   "singleUse": true,
-  "consumed": false,
+  "consumed": true,
+  "consumedByRunId": 33085990980,
+  "consumedOutcome": "F5_LIVE_SYNTHETIC_ACCEPTANCE_PASS",
   "automaticRetryAllowed": false,
-  "allowed": {
-    "cloudBuildMax": 1,
-    "cloudRunUpdateMax": 1,
-    "hostingDeployMax": 0,
-    "syntheticFirestoreWrites": true,
-    "syntheticMembershipDocuments": true,
-    "firebaseAuthUserWrites": false,
-    "realDataWrites": false,
-    "externalHrWrites": false,
-    "paymentWrites": false,
-    "rulesWrites": false,
-    "storageWrites": false,
-    "makeCalls": false,
-    "geminiCalls": false,
+  "replayAllowed": false,
+  "executed": {
+    "cloudBuildExecutions": 1,
+    "cloudRunUpdates": 1,
+    "hostingDeploys": 0,
+    "syntheticProviderWrites": 67,
+    "firebaseAuthUserWrites": 0,
+    "realDataWrites": 0,
+    "externalHrWrites": 0,
+    "paymentWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
     "merge": false
   },
-  "target": {
-    "firebaseProjectId": "cxorbia-backend-dev",
-    "region": "us-central1",
-    "service": "cxorbia-live-hr-dev",
-    "expectedBeforeRevision": "cxorbia-live-hr-dev-00012-gw9"
+  "result": {
+    "newRevision": "cxorbia-live-hr-dev-00013-rns",
+    "imageDigest": "sha256:eca8b831c24ef81f09e4addda721d0af89a24c5a0d753aa507989988458227ec",
+    "cleanup": "PASS",
+    "postCleanResidueZero": true,
+    "readinessAfter": 86
   },
-  "next": "EXECUTE_ON_PUSH_ONCE"
+  "next": "F6_PHASE_A_IMMUTABLE_RELEASE"
 }
