@@ -16,21 +16,17 @@
 - `86 → 90`: F6 release Phase A inmutable PASS.
 - `90 → 95`: F7 integral readiness `GO_WITH_WARNINGS`, P0=0.
 
-## F8 — avance que no cambia porcentaje
+## F8 — avance sin cambio porcentual
 
-Evidencia vigente: `app/docs/evidence/RC15-F8-PROVIDER-SECURITY-QUOTA-READONLY-LATEST.json`.
+La autorización temporal IAM solicitada fue otorgada, pero el preflight single-use demostró antes de cualquier mutación que la única credencial DEV disponible carece de `resourcemanager.projects.setIamPolicy`.
 
-Prechecks ya demostrados:
-- Shopper runtime exacto read-only PASS;
-- Cloud Run exacto/revision congelada PASS;
-- Cloud Run IAM readback PASS;
-- plaintext secret-bearing env names detectados = 0;
-- Service Usage 4/4 ENABLED;
-- quota readbacks 4/4 PASS sin overrides.
+Run `33118612042`: grantAttempted=false, providerWrites=0, Secret Manager metadata readback no ejecutado, secret payload read/export=0, binding temporal final ausente. La autorización single-use quedó consumida y el código temporal de mutación fue retirado inmediatamente.
 
-HOLD único actual: Secret Manager API está habilitado, pero la credencial DEV de precheck carece de `secretmanager.secrets.list`. No existe ruta alterna de credencial disponible y no se leyó ningún payload secreto. Clasificación: `MECHANISM_P0_STOP_PROVIDER_IAM_READ_CAPABILITY`, no P0 de producto.
+Clasificación: `MECHANISM_P0_STOP_PROVIDER_IAM_SET_CAPABILITY_UNAVAILABLE`; `productP0Proven=false`.
 
-El porcentaje **no aumenta** por preparación, diagnóstico ni readback parcial. F8 solo mueve `95 → 98` cuando el cutover exacto quede terminal y reconciliado.
+Los PASS previos siguen intactos: Shopper runtime exacto; Cloud Run target/revision; Cloud Run IAM; plaintext secret-bearing env names=0; Service Usage 4/4 ENABLED; quotas 4/4 PASS sin overrides.
+
+El porcentaje no aumenta por diagnóstico o preparación. F8 solo mueve `95 → 98` cuando el cutover exacto quede terminal y reconciliado.
 
 ## Escalera restante
 
@@ -40,6 +36,6 @@ El porcentaje **no aumenta** por preparación, diagnóstico ni readback parcial.
 
 ## Siguiente gate
 
-`WAIT_FOR_EXPLICIT_F8_TEMPORARY_SECRET_MANAGER_METADATA_VIEWER_AUTHORIZATION`.
+`F8_REQUIRE_IAM_CAPABLE_PROVIDER_ROUTE`.
 
-La autorización requerida es acotada al IAM temporal necesario para metadata readback + revocación. Provider mutation permanece en cero hasta esa autorización.
+No hay autorización activa de provider mutation ni se solicita acción manual de Paula en este corte.
