@@ -1,9 +1,9 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
   "requestId": "f8-cutover-multirole-readonly-20260827-01",
-  "enabled": true,
-  "consumed": false,
-  "status": "authorized_pending_execution",
+  "enabled": false,
+  "consumed": true,
+  "status": "retired_hold_mechanism_resolved_no_replay",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
@@ -12,7 +12,7 @@
   "profile": "PHASE_A_COMPLETE_RUNTIME_MULTIROLE",
   "allowedProfiles": ["PHASE_A_COMPLETE_RUNTIME_MULTIROLE"],
   "allowedExecutions": 1,
-  "executionsConsumed": 0,
+  "executionsConsumed": 1,
   "repositoryWrites": false,
   "dataWrites": false,
   "providerReads": true,
@@ -45,5 +45,15 @@
   "authorizationSource": "current_conversation_2026-08-27",
   "authorizationText": "continúa con el siguiente bloque",
   "purpose": "F8 fresh multi-role remote read-only cutover smoke against the exact frozen Phase A release before any provider mutation.",
-  "noAutomaticRetry": true
+  "runId": 33107287460,
+  "runResult": "HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194",
+  "multiRoleGateExecuted": false,
+  "rootCauseClassification": "CREDENTIAL_LIFECYCLE_HARNESS_GAP",
+  "resolutionEvidence": "app/docs/evidence/RC15-F8-SHOPPER-HARNESS-RECOVERY-LATEST.json",
+  "resolutionRunId": 33109500671,
+  "resolutionDecision": "PASS_F8_CHECKPOINT_BACKED_SHOPPER_CURRENT_RUNTIME_READONLY",
+  "decision": "HOLD_MECHANISM_SHOPPER_EPHEMERAL_PASSWORD_LIFECYCLE_RESOLVED_BY_CHECKPOINT_BACKED_READONLY_PROOF",
+  "noAutomaticRetry": true,
+  "replayAllowed": false,
+  "retiredAt": "2026-08-27T19:41:00Z"
 }
