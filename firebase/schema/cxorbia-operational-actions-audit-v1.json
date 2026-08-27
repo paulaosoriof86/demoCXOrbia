@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "cxorbia-operational-actions-audit-v1",
+  "status": "draft-no-write",
+  "purpose": "Modelo backend para convertir acciones operativas de UI en comandos persistibles, auditables e idempotentes.",
+  "why": "Atiende el pendiente #185: aprobar, rechazar, asignar, reprogramar, reasignar, cancelar, marcar realizada, marcar cuestionario, submit y pagar lote no deben ser solo toast ni mutación local.",
+  "collections": {
+    "operationActions": {
+      "path": "tenants/{tenantId}/operationActions/{actionId}",
+      "purpose": "Comando operativo solicitado por usuario o automatización.",
+      "fields": {
+        "tenantId": "string",
+        "actionId": "string",
+        "projectId": "string|null",
+        "country": "string|null",
+        "actorUid": "string",
+        "actorRole": "string",
+        "actorScopeCountry": "array|null",
+        "actionType": "approveApplication|rejectApplication|assignVisit|requestScheduleChange|approveReschedule|cancelVisit|markVisitDone|markQuestionnaireDone|submitVisit|createPaymentLot|markPaymentDone|assignResponsible|resolveResponsibleAssignment|supportStatusChange",
+        "entityType": "application|visit|shopper|questionnaire|paymentLot|benefit|supportTicket|crmTask|report|project",
+        "entityId": "string",
+        "idempotencyKey": "string",
+        "status": "queued|validated|applied|skipped|failed|reverted",
+        "payloadSanitized": "object",
+        "resultSanitized": "object|null",
+        "error": "string|null",
+        "createdAt": "timestamp",
+        "appliedAt": "timestamp|null"
+      }
+    },
+    "operationActionLocks": {
+      "path": "tenants/{tenantId}/operationActionLocks/{idempotencyKey}",
+      "purpose": "Evita duplicidad de acciones por doble clic, retry o sync repetida.",
+      "fields": {
+        "tenantId": "string",
+        "idempotencyKey": "string",
+        "actionId": "string",
+        "entityType": "string",
+        "entityId": "string",
+        "createdAt": "timestamp"
+      }
+    },
+    "operationEvents": {
+      "path": "tenants/{tenantId}/operationEvents/{eventId}",
+      "purpose": "Evento resultante de una acción aplicada; alimenta UI, automatizaciones y HR sync.",
+      "fields": {
+        "tenantId": "string",
+        "eventId": "string",
+        "actionId": "string",
+        "eventType": "string",
+        "projectId": "string|null",
+        "country": "string|null",
+        "entityType": "string",
+        "entityId": "string",
+        "payloadSanitized": "object",
+        "createdAt": "timestamp",
+        "createdBy": "uid"
+      }
+    },
+    "entityAuditTrail": {
+      "path": "tenants/{tenantId}/entityAuditTrail/{auditId}",
+      "purpose": "Historial de cambios por entidad para trazabilidad de quién gestionó qué.",
+      "fields": {
+        "tenantId": "string",
+        "auditId": "string",
+        "entityType": "string",
+        "entityId": "string",
+        "actionId": "string",
+        "beforeSanitized": "object|null",
+        "afterSanitized": "object|null",
+        "createdAt": "timestamp",
+        "createdBy": "uid"
+      }
+    }
+  },
+  "idempotencyKeyPattern": "{tenantId}:{actionType}:{entityType}:{entityId}:{normalizedPayloadHash}",
+  "frontendContract": {
+    "method": "CX.data.performOperationAction(actionType, entityType, entityId, payload)",
+    "result": {
+      "ok": "boolean",
+      "actionId": "string|null",
+      "status": "applied|skipped|failed|queued",
+      "message": "string",
+      "errors": "array"
+    },
+    "rule": "Los módulos no deben mutar directo cuando la acción requiere persistencia. Deben llamar un método central."
+  },
+  "writeGates": [
+    "rulesDrafted",
+    "idempotencyValidated",
+    "payloadSanitized",
+    "roleScopeValidated",
+    "devAuthorizationOnly"
+  ]
+}

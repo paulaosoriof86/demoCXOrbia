@@ -1,0 +1,46 @@
+{
+  "contractVersion": "cx-data-legal-consents-contract-v1",
+  "status": "draft-no-frontend-change",
+  "purpose": "Contrato para resolver, mostrar, aceptar, imprimir y auditar documentos legales obligatorios.",
+  "methods": {
+    "resolveLegalRequirements": {
+      "mode": "read",
+      "input": { "tenantId": "string", "userId": "string", "role": "string", "country": "string", "subjectType": "string" },
+      "output": { "requiredDocuments": "array", "missingAcceptances": "array", "blocking": "boolean", "status": "ok|error" }
+    },
+    "getLegalDocument": {
+      "mode": "read",
+      "input": { "tenantId": "string", "documentId": "string" },
+      "output": { "document": "object", "status": "ok|notFound|error" }
+    },
+    "acceptLegalDocument": {
+      "mode": "write",
+      "input": { "tenantId": "string", "documentId": "string", "version": "string", "documentHash": "string", "acceptedFrom": "string", "evidence": "object" },
+      "output": { "ok": "boolean", "acceptanceId": "string|null", "blockingCleared": "boolean", "errors": "array" },
+      "requires": ["documentPublished", "hashMatch", "auditLog", "acceptanceEvidence"]
+    },
+    "rejectLegalDocument": {
+      "mode": "write",
+      "input": { "tenantId": "string", "documentId": "string", "reasonCode": "string|null" },
+      "output": { "ok": "boolean", "blocked": "boolean", "errors": "array" },
+      "requires": ["auditLog"]
+    },
+    "createLegalPrintJob": {
+      "mode": "action",
+      "input": { "tenantId": "string", "documentId": "string", "acceptanceId": "string|null", "format": "html|pdf" },
+      "output": { "ok": "boolean", "printJobId": "string|null", "fileAssetId": "string|null", "errors": "array" },
+      "requires": ["printableVersion", "auditLog"]
+    },
+    "getLegalAcceptances": {
+      "mode": "read",
+      "input": { "tenantId": "string", "userId": "string|null", "documentId": "string|null", "limit": "number" },
+      "output": { "items": "array", "status": "ok|error" }
+    }
+  },
+  "frontendGuidance": {
+    "login": "Despues de Auth y antes del dashboard, resolver documentos legales obligatorios.",
+    "settings": "Configuracion debe administrar plantillas, documentos, versiones y reglas de obligatoriedad.",
+    "clientPortal": "Clientes deben aceptar terminos y tratamiento de datos antes de ver reportes.",
+    "partnerPortal": "Socios y aliados deben aceptar documentos reforzados y descargables/imprimibles."
+  }
+}

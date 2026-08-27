@@ -1,0 +1,57 @@
+{
+  "contractVersion": "cx-data-operational-actions-contract-v1",
+  "status": "draft-no-frontend-change",
+  "purpose": "Contrato para que las acciones operativas del frontend pasen por un punto central persistible y auditable.",
+  "methods": {
+    "performOperationAction": {
+      "mode": "write-command",
+      "input": {
+        "actionType": "string",
+        "entityType": "string",
+        "entityId": "string",
+        "payload": "object",
+        "options": "object|null"
+      },
+      "output": {
+        "ok": "boolean",
+        "actionId": "string|null",
+        "status": "queued|applied|skipped|failed",
+        "message": "string",
+        "errors": "array"
+      },
+      "requires": ["tenantScope", "roleScope", "idempotency", "auditTrail", "payloadSanitization"]
+    },
+    "getOperationActions": {
+      "mode": "read",
+      "input": { "entityType": "string|null", "entityId": "string|null", "limit": "number" },
+      "output": { "items": "array", "status": "ok|error" }
+    },
+    "getEntityAuditTrail": {
+      "mode": "read",
+      "input": { "entityType": "string", "entityId": "string", "limit": "number" },
+      "output": { "items": "array", "status": "ok|error" }
+    }
+  },
+  "actionTypes": [
+    "approveApplication",
+    "rejectApplication",
+    "assignVisit",
+    "requestScheduleChange",
+    "approveReschedule",
+    "cancelVisit",
+    "markVisitDone",
+    "markQuestionnaireDone",
+    "submitVisit",
+    "createPaymentLot",
+    "markPaymentDone",
+    "assignResponsible",
+    "resolveResponsibleAssignment",
+    "supportStatusChange",
+    "exportReport"
+  ],
+  "frontendGuidance": {
+    "rule": "Los módulos no deben modificar datos críticos directamente. Deben llamar performOperationAction.",
+    "modules": ["postulaciones", "visitas", "misvisitas", "finanzas", "soporte", "midia", "reportes"],
+    "fallback": "Si backend no está activo, mostrar preview/local y no prometer persistencia real."
+  }
+}

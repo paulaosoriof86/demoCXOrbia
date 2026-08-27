@@ -1,0 +1,97 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // DRAFT ONLY — no publicar sin autorización explícita.
+    // Acciones operativas persistibles y auditables.
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function tokenTenant() {
+      return request.auth.token.tenantId;
+    }
+
+    function sameTenant(tenantId) {
+      return signedIn() && tokenTenant() == tenantId;
+    }
+
+    function role() {
+      return request.auth.token.role;
+    }
+
+    function isAdmin() {
+      return role() in ['superAdmin', 'owner', 'admin'];
+    }
+
+    function isOps() {
+      return role() in ['superAdmin', 'owner', 'admin', 'ops', 'coordinator', 'coordinador', 'aliado'];
+    }
+
+    function isFinance() {
+      return role() in ['superAdmin', 'owner', 'admin', 'finance'];
+    }
+
+    function canAct(tenantId) {
+      return sameTenant(tenantId) && (isAdmin() || isOps() || isFinance());
+    }
+
+    function noPrivateFields(data) {
+      return !('apiKey' in data) &&
+             !('password' in data) &&
+             !('token' in data) &&
+             !('secret' in data);
+    }
+
+    function actionStatusOk(status) {
+      return status in ['queued', 'validated', 'applied', 'skipped', 'failed', 'reverted'];
+    }
+
+    match /tenants/{tenantId}/operationActions/{actionId} {
+      allow read: if canAct(tenantId);
+      allow create: if canAct(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && request.resource.data.actionId == actionId
+        && actionStatusOk(request.resource.data.status)
+        && noPrivateFields(request.resource.data)
+        && (!('payloadSanitized' in request.resource.data) || noPrivateFields(request.resource.data.payloadSanitized));
+      allow update: if canAct(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && request.resource.data.actionId == actionId
+        && actionStatusOk(request.resource.data.status)
+        && noPrivateFields(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /tenants/{tenantId}/operationActionLocks/{lockId} {
+      allow read: if canAct(tenantId);
+      allow create: if canAct(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && request.resource.data.idempotencyKey == lockId
+        && noPrivateFields(request.resource.data);
+      allow update, delete: if false;
+    }
+
+    match /tenants/{tenantId}/operationEvents/{eventId} {
+      allow read: if canAct(tenantId);
+      allow create: if canAct(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && request.resource.data.eventId == eventId
+        && noPrivateFields(request.resource.data)
+        && (!('payloadSanitized' in request.resource.data) || noPrivateFields(request.resource.data.payloadSanitized));
+      allow update, delete: if false;
+    }
+
+    match /tenants/{tenantId}/entityAuditTrail/{auditId} {
+      allow read: if canAct(tenantId);
+      allow create: if canAct(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && request.resource.data.auditId == auditId
+        && noPrivateFields(request.resource.data)
+        && (!('beforeSanitized' in request.resource.data) || noPrivateFields(request.resource.data.beforeSanitized))
+        && (!('afterSanitized' in request.resource.data) || noPrivateFields(request.resource.data.afterSanitized));
+      allow update, delete: if false;
+    }
+  }
+}
