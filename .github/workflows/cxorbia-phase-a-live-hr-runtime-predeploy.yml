@@ -185,6 +185,8 @@ jobs:
       - name: Validate F8 provider IAM secrets and quota readback
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+          CXORBIA_GCP_PROJECT_CREATOR_JSON: ${{ secrets.CXORBIA_GCP_PROJECT_CREATOR_JSON }}
+          GOOGLE_CLOUD_PROJECT_CREATOR_JSON: ${{ secrets.GOOGLE_CLOUD_PROJECT_CREATOR_JSON }}
           CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
           CXORBIA_CLOUD_RUN_REGION: us-central1
           CXORBIA_CLOUD_RUN_SERVICE: cxorbia-live-hr-dev
