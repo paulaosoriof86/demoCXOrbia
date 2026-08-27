@@ -1,16 +1,21 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-27  
-**Estado:** `PHASE_A_100__F8_IAM_CAPABILITY_HOLD__PROD_READINESS_95__NO_UI_REBUILD`
+**Estado:** `PHASE_A_100__F8_EXTERNAL_OWNER_ROUTE_IDENTIFIED__EFFECTIVE_TEST_PENDING__PROD_READINESS_95__NO_UI_REBUILD`
 
 ## Estado canónico
 
 - PHASE_A `100/100`.
 - PRODUCTION_REAL_READINESS `95/100`.
 - F5/F6 permanecen terminales; F7 permanece `GO_WITH_WARNINGS`, P0=0.
-- F8 está en `HOLD_PROVIDER_IAM_SET_CAPABILITY_UNAVAILABLE`.
+- F8 sigue detenido antes de cualquier mutación provider.
 - Release congelado `CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01`.
-- NEXT `F8_REQUIRE_IAM_CAPABLE_PROVIDER_ROUTE`.
+
+## Nuevo dato F8
+
+La evidencia visual de Google Cloud Console muestra que una identidad humana del proyecto exacto `cxorbia-backend-dev` tiene rol `Propietario` / `Owner`. Esto identifica una ruta administrativa externa candidata que no estaba disponible para el principal DEV automatizado.
+
+Antes de declarar capacidad IAM efectiva, debe pasar un `projects.testIamPermissions` read-only para `resourcemanager.projects.setIamPolicy`. No se ha concedido ningún rol ni existe autorización vigente de grant, deploy o cutover.
 
 ## Release exacto que Claude debe respetar
 
@@ -27,9 +32,9 @@ Mantener estados honestos para Auth, HR, shoppers, postulaciones, certificacione
 ## F8 y lo que NO debe trasladarse a Claude
 
 - `resourcemanager.projects.setIamPolicy` es una capacidad administrativa Google Cloud, no una funcionalidad de interfaz.
-- La falta de IAM-capable provider route no se corrige con copy, botón, pantalla o nueva candidata.
+- La comprobación pendiente es provider-side y read-only.
 - El intento temporal IAM anterior está consumido; no debe recrearse desde frontend.
-- Secret Manager metadata readback sigue bloqueado sin acceso a payloads de secretos.
+- Secret Manager metadata readback sigue bloqueado hasta cerrar el gate IAM; no acceder a payloads de secretos.
 
 ## Academia
 
@@ -37,4 +42,4 @@ Sin cambio funcional por este bloque. Preservar rutas por rol, cursos/manuales s
 
 ## Siguiente frontera
 
-`F8_REQUIRE_IAM_CAPABLE_PROVIDER_ROUTE` en Google Cloud. Claude no ejecuta IAM, grant, deploy ni cutover y no decide autorizaciones.
+`F8_VERIFY_EXTERNAL_OWNER_EFFECTIVE_SET_IAM_CAPABILITY`. Claude no ejecuta IAM, grant, deploy ni cutover y no decide autorizaciones.
