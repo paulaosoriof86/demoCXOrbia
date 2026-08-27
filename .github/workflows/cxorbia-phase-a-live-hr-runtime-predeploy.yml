@@ -7,7 +7,7 @@ on:
       - docs-tya-v6-v71-audit
     paths:
       - 'backend/runtime/hr-live-service/**'
-      - 'app/adapters/tya-live-source-refresh-watch.js'
+      - 'app/adapters/tya-live-source-refresh-watch-v2.js'
       - 'app/adapters/tya-live-source-inplace-apply.js'
       - 'app/index-backend-dev.html'
       - 'tools/hr-source/tya-live-provider-registry-identity-dev.mjs'
@@ -56,7 +56,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check backend/runtime/hr-live-service/server.mjs
-          node --check app/adapters/tya-live-source-refresh-watch.js
+          node --check app/adapters/tya-live-source-refresh-watch-v2.js
           node --check app/adapters/tya-live-source-inplace-apply.js
           node --check tools/hr-source/tya-live-provider-registry-identity-dev.mjs
           node --check tools/hr-source/tya-enforce-live-tab-registry.mjs
@@ -150,7 +150,7 @@ jobs:
         run: |
           set -euo pipefail
           grep -q 'adapters/tya-live-source-inplace-apply.js' app/index-backend-dev.html
-          grep -q 'adapters/tya-live-source-refresh-watch.js' app/index-backend-dev.html
+          grep -q 'adapters/tya-live-source-refresh-watch-v2.js' app/index-backend-dev.html
           grep -q 'view=operational-names' app/index-backend-dev.html
           grep -q 'YES_PAULA_20260731_NAMES_DEV' app/index-backend-dev.html
           node --check app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
