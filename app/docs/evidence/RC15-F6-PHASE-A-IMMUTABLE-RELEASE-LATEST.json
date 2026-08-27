@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "cxorbia.rc15.f6.phase-a-immutable-release.evidence.v1",
+  "decision": "F6_PHASE_A_RELEASE_100_FROZEN",
+  "f6Pass": true,
+  "releaseId": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
+  "manifest": {
+    "path": "backend/config/cxorbia-phase-a-release-manifest-v1.json",
+    "blobSha": "732dbfd48912b3550c6fb20bc592bd118647263a",
+    "sha256": "29399792e75729c4d5db28865dd793a74f2d79b73f78704d03d5c27094ed68ab",
+    "status": "FROZEN_IMMUTABLE"
+  },
+  "materialization": {
+    "manifestCommit": "07cf4047f06b203a82795fcd3318a5f9344dad05",
+    "manifestParent": "ed44f9170faafe4f4e28e4494cdecf224574438d",
+    "manifestTree": "6e729f8ddb7638afac14c8505986bf1bb913cc39"
+  },
+  "releaseSource": {
+    "functionalSourceSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "runtimeReleaseSourceSha": "2d0b8e83b32b44f6c3eae80b7630f8cd3295fba2",
+    "runtimeReleaseTreeSha": "f93012599e4ca5195f89f19995251fa91c0d38d9"
+  },
+  "providerReadback": {
+    "cloudRunRevision": "cxorbia-live-hr-dev-00013-rns",
+    "imageDigest": "sha256:eca8b831c24ef81f09e4addda721d0af89a24c5a0d753aa507989988458227ec",
+    "hostingRelease": "sites/cxorbia-backend-dev/releases/1787796646738000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/afe292cfcbbc6005",
+    "hostingAdapterSha256": "9d69d0d0db42e3f2b93cc893f2da1ed0b2e753403d3f46a9a8537dbe994c82b0"
+  },
+  "receipts": {
+    "f5RunId": 33085990980,
+    "f5ArtifactId": 9652248195,
+    "f5ArtifactDigest": "sha256:d6fcb4ed171c6295431c2615cd4b8c0e740c3c05ff026393fd5f2ae8c7fbcfe4",
+    "f5EvidenceBlobSha": "c247710af9007d07a180ef48ebd74ead405fdc06",
+    "f5Lifecycle": "PASS",
+    "f5Cleanup": "PASS",
+    "f5PostCleanupReadback": "PASS_ZERO_RESIDUE"
+  },
+  "dataFingerprint": {
+    "mode": "REFERENCED_EXISTING_CERTIFIED_READBACKS",
+    "liveProviderRecomputeInF6": false,
+    "syntheticPostCleanResidue": {
+      "visits": 0,
+      "postulations": 0,
+      "receipts": 0,
+      "audit": 0,
+      "shoppers": 0,
+      "users": 0,
+      "receiptActorOrphans": 0,
+      "auditActorOrphans": 0,
+      "exactFixtures": 0,
+      "authShopper": false,
+      "authOperator": false
+    },
+    "businessDataMutationDuringF6": 0,
+    "businessDataReimportDuringF6": 0
+  },
+  "safety": {
+    "providerAccessDuringF6": 0,
+    "cloudBuildExecutionsDuringF6": 0,
+    "cloudRunUpdatesDuringF6": 0,
+    "hostingDeploysDuringF6": 0,
+    "firestoreWritesDuringF6": 0,
+    "firebaseAuthWritesDuringF6": 0,
+    "externalHrWritesDuringF6": 0,
+    "paymentWritesDuringF6": 0,
+    "rulesWritesDuringF6": 0,
+    "storageWritesDuringF6": 0,
+    "makeCallsDuringF6": 0,
+    "geminiCallsDuringF6": 0,
+    "merge": false,
+    "f5Replay": false
+  },
+  "progress": {
+    "phaseA": 100,
+    "productionRealReadiness": 90
+  },
+  "next": "F7_INTEGRAL_READINESS"
+}
