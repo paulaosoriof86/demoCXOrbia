@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "cxorbia.rc15.f5.synthetic-mechanism-preflight.v1",
+  "decision": "MECHANISM_P0_DETECTED_SOURCE_REPAIR_PREPARED_NO_PROVIDER_SIDE_EFFECT",
+  "head": "d37c2aeb8e5dd2a200ec7eabff8f5d8bcb7e5ae7",
+  "readiness": 81,
+  "findings": [
+    {
+      "id": "F5-MECH-001",
+      "severity": "P0_MECHANISM",
+      "cause": "synthetic_project_scope_split_brain",
+      "evidence": "acceptance plan targets CXORBIA_E2E_SYNTH_CINEPOLIS_2026 while current runtime/provider force command projectId cinepolis",
+      "riskIfExecuted": "synthetic acceptance would not execute against the isolated canonical synthetic project"
+    },
+    {
+      "id": "F5-MECH-002",
+      "severity": "P0_MECHANISM",
+      "cause": "cleanup_and_post_cleanup_readback_missing_from_runtime",
+      "evidence": "current runtime only delegates lifecycle command execution and exposes no seed/cleanup/post-clean operation",
+      "riskIfExecuted": "F5 could create synthetic residue without a canonical cleanup path"
+    },
+    {
+      "id": "F5-MECH-003",
+      "severity": "P0_MECHANISM",
+      "cause": "stale_static_request_binding",
+      "evidence": "current runtime source pins historical request i5-g2b-live-synthetic-acceptance-20260820-01",
+      "riskIfExecuted": "fresh F5 authority cannot bind atomically to the runtime gate"
+    }
+  ],
+  "preparedRepair": {
+    "newProvider": "backend/runtime/cxorbia-f5-synthetic-acceptance-provider-v1.mjs",
+    "runtimeAdapter": "backend/runtime/hr-live-service/g2b-synthetic-runtime.mjs",
+    "properties": [
+      "control project cinepolis separated from isolated synthetic project CXORBIA_E2E_SYNTH_CINEPOLIS_2026",
+      "fresh request and authorization IDs supplied only by runtime env gate",
+      "SEED and lifecycle operations synthetic-only",
+      "CLEANUP queries exact request tags and fails closed on tag mismatch",
+      "POST_CLEANUP_READBACK is mandatory and can fail on residual artifacts",
+      "real data, external HR, Auth, payments, Rules, Storage, Make and Gemini remain zero"
+    ]
+  },
+  "execution": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "syntheticWrites": 0,
+    "deploys": 0,
+    "cloudBuilds": 0,
+    "cloudRunUpdates": 0,
+    "hostingDeploys": 0,
+    "cleanup": 0,
+    "postCleanupReadback": 0
+  },
+  "next": "SOURCE_COMMIT_AND_READBACK_THEN_EXPLICIT_RUNTIME_PROMOTION_AUTHORIZATION"
+}
