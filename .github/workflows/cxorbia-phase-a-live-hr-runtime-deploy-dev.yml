@@ -117,18 +117,30 @@ jobs:
           node --check backend/runtime/hr-live-service/g2b-synthetic-runtime.mjs
           node --check backend/runtime/hr-live-service/server.mjs
           node --check app/adapters/cxorbia-canonical-write-firewall-v1.js
-          grep -q 'CXORBIA_E2E_SYNTH_' backend/runtime/cxorbia-g2b-synthetic-visit-provider-v1.mjs
-          grep -q 'realDataWrites:0' backend/runtime/cxorbia-g2b-synthetic-visit-provider-v1.mjs
-          grep -q 'externalHrWrites:0' backend/runtime/cxorbia-g2b-synthetic-visit-provider-v1.mjs
-          grep -q 'isG2BSyntheticRuntimePath' backend/runtime/hr-live-service/server.mjs
-          grep -q 'maybeHandleG2BSyntheticRuntimeRequest' backend/runtime/hr-live-service/server.mjs
-          grep -q 'g2b-synthetic/commands' backend/runtime/hr-live-service/g2b-synthetic-runtime.mjs
-          grep -q 'YES_PAULA_20260820_G2B_SYNTHETIC' app/adapters/cxorbia-canonical-write-firewall-v1.js
-          grep -q 'cxorbia-command-http-transport-v1.js' app/adapters/cxorbia-canonical-write-firewall-v1.js
-          grep -q 'COPY backend/runtime/hr-live-service/g2b-synthetic-runtime.mjs' backend/runtime/hr-live-service/Dockerfile
-          grep -q 'COPY backend/runtime/cxorbia-g2b-synthetic-visit-provider-v1.mjs' backend/runtime/hr-live-service/Dockerfile
-          grep -q '"source": "/api/tenants/\*\*"' firebase.json
-          test -f .firebaserc
+          node <<'NODE'
+          const fs=require('fs');
+          const text=p=>fs.readFileSync(p,'utf8');
+          const requireText=(p,needle,label)=>{if(!text(p).includes(needle))throw new Error('MECHANISM_P0:source_contract_missing:'+label);};
+          requireText('backend/runtime/cxorbia-g2b-synthetic-visit-provider-v1.mjs','CXORBIA_E2E_SYNTH_','provider_prefix');
+          requireText('backend/runtime/cxorbia-g2b-synthetic-visit-provider-v1.mjs','realDataWrites:0','provider_real_data_firewall');
+          requireText('backend/runtime/cxorbia-g2b-synthetic-visit-provider-v1.mjs','externalHrWrites:0','provider_external_hr_firewall');
+          requireText('backend/runtime/hr-live-service/server.mjs','isG2BSyntheticRuntimePath','server_route_delegate');
+          requireText('backend/runtime/hr-live-service/server.mjs','maybeHandleG2BSyntheticRuntimeRequest','server_handler_delegate');
+          requireText('backend/runtime/hr-live-service/g2b-synthetic-runtime.mjs','G2B_SYNTHETIC_AUTHORIZATION_REQUIRED','runtime_auth_fail_closed');
+          requireText('backend/runtime/hr-live-service/g2b-synthetic-runtime.mjs','PAULA_I5_G2B_SYNTHETIC_CANONICAL_WRITE_PATH','runtime_gate');
+          requireText('app/adapters/cxorbia-canonical-write-firewall-v1.js','YES_PAULA_20260820_G2B_SYNTHETIC','frontend_synthetic_session_gate');
+          requireText('app/adapters/cxorbia-canonical-write-firewall-v1.js','cxorbia-command-http-transport-v1.js','frontend_command_transport');
+          requireText('backend/runtime/hr-live-service/Dockerfile','COPY backend/runtime/hr-live-service/g2b-synthetic-runtime.mjs','docker_runtime_copy');
+          requireText('backend/runtime/hr-live-service/Dockerfile','COPY backend/runtime/cxorbia-g2b-synthetic-visit-provider-v1.mjs','docker_provider_copy');
+          const firebase=JSON.parse(text('firebase.json'));
+          const rewrites=firebase?.hosting?.rewrites||[];
+          if(!rewrites.some(r=>r?.source==='/api/tenants/**'&&r?.run?.serviceId==='cxorbia-live-hr-dev'&&r?.run?.region==='us-central1'))throw new Error('MECHANISM_P0:source_contract_missing:firebase_api_tenant_rewrite');
+          const firebaserc=JSON.parse(text('.firebaserc'));
+          if(firebaserc?.projects?.default!=='cxorbia-backend-dev')throw new Error('MECHANISM_P0:source_contract_missing:firebase_default_project');
+          const sites=firebaserc?.targets?.['cxorbia-backend-dev']?.hosting?.['cxorbia-dev']||[];
+          if(!sites.includes('cxorbia-backend-dev'))throw new Error('MECHANISM_P0:source_contract_missing:firebase_hosting_target');
+          console.log('F4_SOURCE_FIX_VALIDATION_PASS');
+          NODE
 
       - name: Authenticate existing Google Cloud project
         uses: google-github-actions/auth@v2
@@ -218,8 +230,8 @@ jobs:
         run: |
           set -euo pipefail
           curl -fsSL --retry 10 --retry-delay 3 "$DEV_ROOT_URL/adapters/cxorbia-canonical-write-firewall-v1.js" > "$F4_OUT_DIR/firewall.remote.js"
-          grep -q 'YES_PAULA_20260820_G2B_SYNTHETIC' "$F4_OUT_DIR/firewall.remote.js"
-          grep -q 'cxorbia-command-http-transport-v1.js' "$F4_OUT_DIR/firewall.remote.js"
+          grep -Fq 'YES_PAULA_20260820_G2B_SYNTHETIC' "$F4_OUT_DIR/firewall.remote.js"
+          grep -Fq 'cxorbia-command-http-transport-v1.js' "$F4_OUT_DIR/firewall.remote.js"
           code="$(curl -sS -o "$F4_OUT_DIR/g2b-hosting-unauthorized.json" -w '%{http_code}' -X POST -H 'content-type: application/json' --data '{}' "$DEV_ROOT_URL/api/tenants/tya/projects/cinepolis/g2b-synthetic/commands")"
           test "$code" = '401'
           node <<'NODE'
