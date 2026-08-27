@@ -23,11 +23,11 @@ async function token(){
   return {accessToken:result.access_token,serviceAccountFingerprint:hash(sa.client_email).slice(0,20)};
 }
 
-async function api(accessToken,url,{method='GET',body=null}={}){
+async function api(accessToken,url,{method='GET',body=null,label='provider-read'}={}){
   const res=await fetch(url,{method,headers:{Authorization:`Bearer ${accessToken}`,'Content-Type':'application/json'},body:body===null?undefined:JSON.stringify(body)});
   const text=await res.text();
   let json=null;try{json=text?JSON.parse(text):{};}catch{json={unparsed:true};}
-  if(!res.ok){const message=json?.error?.message||`HTTP_${res.status}`;throw new Error(`F8_PROVIDER_READ_FAILED_${res.status}:${message}`);}
+  if(!res.ok){const message=json?.error?.message||`HTTP_${res.status}`;throw new Error(`F8_PROVIDER_READ_FAILED_${label}_${res.status}:${message}`);}
   return json;
 }
 
@@ -52,30 +52,30 @@ function summarizeSecrets(x){
 }
 function summarizeQuota(serviceName,x){
   const metrics=Array.isArray(x?.metrics)?x.metrics:[];let limitCount=0,overrideCount=0,adminOverrideCount=0;
-  for(const m of metrics){for(const l of (Array.isArray(m?.consumerQuotaLimits)?m.consumerQuotaLimits:[])){limitCount++;overrideCount+=(Array.isArray(l?.quotaBuckets)?l.quotaBuckets:[]).reduce((n,b)=>n+(Array.isArray(b?.consumerOverride)?b.consumerOverride.length:0),0);adminOverrideCount+=(Array.isArray(l?.quotaBuckets)?l.quotaBuckets:[]).reduce((n,b)=>n+(Array.isArray(b?.adminOverride)?b.adminOverride.length:0),0);}}
+  for(const m of metrics){for(const l of (Array.isArray(m?.consumerQuotaLimits)?m.consumerQuotaLimits:[])){limitCount++;overrideCount+=(Array.isArray(l?.quotaBuckets)?l.quotaBuckets:[]).reduce((n,b)=>n+(b?.consumerOverride?1:0),0);adminOverrideCount+=(Array.isArray(l?.quotaBuckets)?l.quotaBuckets:[]).reduce((n,b)=>n+(b?.adminOverride?1:0),0);}}
   return {service:serviceName,metricCount:metrics.length,limitCount,consumerOverrideCount:overrideCount,adminOverrideCount};
 }
 
 async function main(){
   ensure(AUTH==='YES_PAULA_F8_PROVIDER_SECURITY_QUOTA_READONLY','F8_PROVIDER_READONLY_EXPLICIT_GATE_REQUIRED');
   const {accessToken,serviceAccountFingerprint}=await token();
-  const project=await api(accessToken,`https://cloudresourcemanager.googleapis.com/v1/projects/${encodeURIComponent(PROJECT)}`);
+  const project=await api(accessToken,`https://cloudresourcemanager.googleapis.com/v1/projects/${encodeURIComponent(PROJECT)}`,{label:'project'});
   const projectNumber=String(project?.projectNumber||'');ensure(projectNumber,'F8_PROJECT_NUMBER_MISSING');
   const runName=`projects/${PROJECT}/locations/${REGION}/services/${SERVICE}`;
-  const runService=await api(accessToken,`https://run.googleapis.com/v2/${runName}`);
-  const runIam=await api(accessToken,`https://run.googleapis.com/v2/${runName}:getIamPolicy`,{method:'POST',body:{}});
-  const secretList=await api(accessToken,`https://secretmanager.googleapis.com/v1/projects/${PROJECT}/secrets?pageSize=100`);
+  const runService=await api(accessToken,`https://run.googleapis.com/v2/${runName}`,{label:'cloud-run-service'});
+  const runIam=await api(accessToken,`https://run.googleapis.com/v2/${runName}:getIamPolicy`,{method:'GET',label:'cloud-run-iam'});
+  const secretList=await api(accessToken,`https://secretmanager.googleapis.com/v1/projects/${PROJECT}/secrets?pageSize=100`,{label:'secret-list-metadata'});
   const quotaServices=['run.googleapis.com','secretmanager.googleapis.com','firestore.googleapis.com','identitytoolkit.googleapis.com'];
   const quotas=[];
   for(const svc of quotaServices){
     try{
-      const q=await api(accessToken,`https://serviceusage.googleapis.com/v1/projects/${projectNumber}/services/${encodeURIComponent(svc)}/consumerQuotaMetrics?view=FULL&pageSize=200`);
+      const q=await api(accessToken,`https://serviceusage.googleapis.com/v1beta1/projects/${projectNumber}/services/${encodeURIComponent(svc)}/consumerQuotaMetrics?view=FULL&pageSize=200`,{label:`quota-${svc}`});
       quotas.push({...summarizeQuota(svc,q),readback:'PASS'});
     }catch(error){quotas.push({service:svc,readback:'HOLD',error:String(error?.message||error).slice(0,240)});}
   }
   const enabledChecks=[];
   for(const svc of quotaServices){
-    try{const s=await api(accessToken,`https://serviceusage.googleapis.com/v1/projects/${projectNumber}/services/${encodeURIComponent(svc)}`);enabledChecks.push({service:svc,state:String(s?.state||'UNKNOWN')});}
+    try{const s=await api(accessToken,`https://serviceusage.googleapis.com/v1/projects/${projectNumber}/services/${encodeURIComponent(svc)}`,{label:`service-state-${svc}`});enabledChecks.push({service:svc,state:String(s?.state||'UNKNOWN')});}
     catch(error){enabledChecks.push({service:svc,state:'HOLD',error:String(error?.message||error).slice(0,240)});}
   }
   const run=summarizeRun(runService),iam=summarizeIam(runIam),secrets=summarizeSecrets(secretList);
