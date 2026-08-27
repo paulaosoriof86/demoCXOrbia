@@ -1,7 +1,7 @@
 # CAMBIOS-BACKEND.md
 
 **Última actualización:** 2026-08-27  
-**Estado:** `F6_CLOSED_PASS_IMMUTABLE__MIRRORS_SYNCING__NEXT_F7_INTEGRAL_READINESS`
+**Estado:** `F6_CLOSED_PASS_IMMUTABLE__MIRRORS_SYNCED__NEXT_F7_INTEGRAL_READINESS`
 
 ## 2026-08-27 — F6 Phase A immutable release + synchronization
 
@@ -37,20 +37,24 @@ NEXT = `F7_INTEGRAL_READINESS`.
 
 - `app/docs/evidence/RC15-F5-LIVE-SYNTHETIC-ACCEPTANCE-LATEST.json` — F5 PASS, cleanup PASS, post-clean residue 0.
 - `app/docs/evidence/RC15-F6-PHASE-A-IMMUTABLE-RELEASE-LATEST.json` — F6 PASS.
+- `app/docs/evidence/RC15-F6-MIRROR-SYNCHRONIZATION-LATEST.json` — readback final de sincronización documental.
 - continuity lock schema `3.6.0`, epoch `CXORBIA-20260827-F6-PHASE-A-RELEASE-100-FROZEN-01`.
 
-### Archivos sincronizados en este bloque
+### Archivos sincronizados y readback de blobs
 
-- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
-- `app/docs/SOURCE-LOCK-CXORBIA-TYA-VIGENTE.md`;
-- `app/docs/PRODUCTION-REAL-PROGRESS-LOCK-CXORBIA-TYA.md`;
-- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-- `app/docs/CAMBIOS-BACKEND.md`;
-- `app/docs/RESUMEN-PARA-CLAUDE.md`;
-- `app/docs/PENDIENTES-PROTOTIPO.md`;
-- PR #7 mirror metadata/body, sin reabrir ni mergear.
+- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md` → `e4c9816369a01a6e1859dd5b48223b278afe993f`;
+- `app/docs/SOURCE-LOCK-CXORBIA-TYA-VIGENTE.md` → `a5ba8c0fec12058e5387008ab299c6cad05ab1aa`;
+- `app/docs/PRODUCTION-REAL-PROGRESS-LOCK-CXORBIA-TYA.md` → `c04d689fcfc67c8d77b6c70f393bc55fca7c54b1`;
+- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md` → `ac87df1d4364781f5f33ffe1647041d1c35511a1`;
+- `app/docs/RESUMEN-PARA-CLAUDE.md` → `b34b1f86b9be2d18ad5c147521b8a8ab01342d0d`;
+- `app/docs/PENDIENTES-PROTOTIPO.md` → `b1aed141b1bb95f13743a19dd70b18bcc67d4dfa`;
+- `backend/config/cxorbia-phase-a-continuity-lock.json` permanece `6cf6f78339c53d9f5f21bd8abc05e93448c9ea09`;
+- manifest F6 permanece `732dbfd48912b3550c6fb20bc592bd118647263a`;
+- evidencia terminal F6 permanece `9375c0c7d20574e5c43b4e80de906d49ca0693d5`;
+- `app/docs/CAMBIOS-BACKEND.md` — este archivo;
+- PR #7 mirror actualizado, permanece cerrado/draft/no merge.
 
-El master plan V1.1 no se modifica: está congelado y conserva blob `0ea2cd9802e687938086886d8d03648f105a7d64` / SHA-256 `7b49f7df172f8b322c3ae38bdf55f50936696d2d6f7b5086ae8a68e97827dafa`. Sus encabezados históricos no son el cursor operativo; el cursor vivo es continuity lock + evidencia terminal + mirrors.
+El master plan V1.1 no se modifica: está congelado y conserva blob `0ea2cd9802e687938086886d8d03648f105a7d64` / SHA-256 `7b49f7df172f8b322c3ae38bdf55f50936696d2d6f7b5086ae8a68e97827dafa`. Sus encabezados históricos de fase no son el cursor operativo; el cursor vivo es continuity lock + evidencia terminal + mirrors.
 
 ### Safety
 
@@ -63,6 +67,8 @@ Durante F6 y esta sincronización documental:
 - merge = false;
 - F5 replay = false;
 - F6 rebuild/redeploy = false.
+
+La consulta final de GitHub Actions no mostró nuevos push-runs asociados a los commits de sincronización F6; el run más reciente devuelto por la rama continúa siendo el histórico M3 `33088417581` sobre `89ddee6...`, ya inertizado posteriormente. Por tanto esta sincronización no reactivó los workflows históricos.
 
 ### Hallazgo de mecanismo vigente
 
