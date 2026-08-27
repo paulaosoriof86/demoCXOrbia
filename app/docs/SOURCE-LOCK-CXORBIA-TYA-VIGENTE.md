@@ -1,11 +1,11 @@
 # SOURCE LOCK CXORBIA TyA — VIGENTE
 
 **Fecha:** 2026-08-27  
-**STATE_SYNC_EPOCH:** `CXORBIA-20260827-F7-INTEGRAL-READINESS-GO-WITH-WARNINGS-01`  
+**STATE_SYNC_EPOCH:** `CXORBIA-20260827-F8-PROVIDER-SECURITY-IAM-HOLD-01`  
 **MASTER_PLAN_VERSION:** `1.1.0` / `FROZEN`  
 **currentMasterPhase:** `F8_CUTOVER`  
-**currentMasterStep:** `F7_INTEGRAL_READINESS_GO_WITH_WARNINGS`  
-**NEXT:** `F8_CUTOVER_EXPLICIT_AUTHORIZATION_REQUIRED`  
+**currentMasterStep:** `F8_PROVIDER_SECURITY_QUOTA_IAM_HOLD`  
+**NEXT:** `F8_TEMPORARY_SECRET_MANAGER_METADATA_VIEWER_EXPLICIT_AUTHORIZATION_REQUIRED`  
 **PHASE_A:** `100/100`  
 **PRODUCTION_REAL_READINESS:** `95/100`
 
@@ -15,26 +15,26 @@
 
 Release ID `CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01`; manifest SHA-256 `29399792e75729c4d5db28865dd793a74f2d79b73f78704d03d5c27094ed68ab`; runtime source `2d0b8e83b32b44f6c3eae80b7630f8cd3295fba2`; runtime tree `f93012599e4ca5195f89f19995251fa91c0d38d9`; Cloud Run `cxorbia-live-hr-dev-00013-rns`; image `sha256:eca8b831c24ef81f09e4addda721d0af89a24c5a0d753aa507989988458227ec`; Hosting release `sites/cxorbia-backend-dev/releases/1787796646738000`; Hosting version `sites/cxorbia-backend-dev/versions/afe292cfcbbc6005`.
 
-## Gates cerrados
+Los commits F8 posteriores modifican únicamente harness/control-plane/evidence/docs y **no sustituyen** ningún SHA del release congelado.
 
-M1/M2/M3/F3/F4/F5/F6 permanecen terminales. F7 queda terminal `GO_WITH_WARNINGS_NO_P0` con evidencia `app/docs/evidence/RC15-F7-INTEGRAL-READINESS-LATEST.json`.
+## F8 provider security read-only
 
-No reabrir ni repetir fases cerradas. F7 no cambió el release tuple y ejecutó cero provider/data writes, deploys, rebuilds, reimports o merge.
+Evidencia: `app/docs/evidence/RC15-F8-PROVIDER-SECURITY-QUOTA-READONLY-LATEST.json`.
 
-## Warnings F7 no bloqueantes
+Run `33117362096` dejó PASS en Cloud Run target/revision, IAM readback, Service Usage y quotas. La clasificación de variables fue corregida: no hay nombres de secreto crudo detectados; `CXORBIA_DEV_VISUAL_PROFILE_TOKEN_SHA256` y `CXORBIA_DEV_VISUAL_PROFILE_TOKEN_EXPIRES_AT` son metadata derivada y no motivan mutación del runtime.
 
-1. predeploy run `33085991102`: falta `firebase-admin`, sin provider mutation/deploy;
-2. recheck fresco de IAM/secrets/cuotas provider-side requerido antes de mutación F8;
-3. prueba acotada fresca de carga/cuotas/failure injection requerida antes del cutover;
-4. backup/export + restore verificable obligatorio en F8;
-5. rehearsal de alertas/runbooks y profundidad Academia permanecen seguimiento P2.
+El único HOLD vigente es de capacidad IAM del precheck: falta `secretmanager.secrets.list` para listar metadata de Secret Manager. Secret Manager está habilitado; secret payload access/read/export=0.
+
+## Frontera dura
+
+Provider mutation sigue `false`. No conceder IAM, no deployar, no reconstruir, no reimportar y no tocar el release congelado sin autorización explícita vigente.
+
+La siguiente mutación propuesta, si Paula la autoriza, queda limitada a un grant temporal `roles/secretmanager.viewer` para metadata, readback exacto y revocación. No incluye `secretmanager.versions.access`.
 
 ## PR y control plane
 
-PR #7 permanece cerrado/draft/no merge y `mirror-only`. El HEAD de control plane puede avanzar por evidencia/mirrors sin sustituir los SHA del release congelado.
+PR #7 continúa mirror-only/cerrado/no mergeado. Resolver HEAD vivo antes de cualquier escritura.
 
 ## Siguiente exacto
 
-`WAIT_FOR_F8_EXPLICIT_AUTHORIZATION`.
-
-F8 no está autorizado por esta actualización. Requiere autorización específica y prechecks fail-closed antes de cualquier provider mutation.
+`WAIT_FOR_EXPLICIT_F8_TEMPORARY_SECRET_MANAGER_METADATA_VIEWER_AUTHORIZATION`.
