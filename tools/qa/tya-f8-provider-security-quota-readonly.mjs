@@ -61,10 +61,11 @@ function summarizeIam(policy){
 }
 function summarizeRun(service){
   const containers=Array.isArray(service?.template?.containers)?service.template.containers:[];
-  let envCount=0,secretBackedEnvCount=0,plaintextSensitiveKeyCount=0;
-  const sensitive=/pass|secret|token|key|credential|private/i;
-  for(const c of containers){for(const e of (Array.isArray(c?.env)?c.env:[])){envCount++;if(e?.valueSource?.secretKeyRef)secretBackedEnvCount++;if(sensitive.test(String(e?.name||''))&&Object.prototype.hasOwnProperty.call(e||{},'value'))plaintextSensitiveKeyCount++;}}
-  return {name:String(service?.name||''),latestReadyRevision:String(service?.latestReadyRevision||service?.traffic?.[0]?.revision||''),serviceAccountSet:Boolean(service?.template?.serviceAccount),containerCount:containers.length,envCount,secretBackedEnvCount,plaintextSensitiveKeyCount,ingress:String(service?.ingress||''),observedGeneration:String(service?.observedGeneration||'')};
+  let envCount=0,secretBackedEnvCount=0;
+  const plaintextSensitiveEnvNames=[];
+  const sensitive=/(^|_)(PASS|PASSWORD|SECRET|TOKEN|KEY|APIKEY|API_KEY|CREDENTIAL|CREDENTIALS|PRIVATE|PRIVATE_KEY|SERVICE_ACCOUNT)(_|$)/i;
+  for(const c of containers){for(const e of (Array.isArray(c?.env)?c.env:[])){const name=String(e?.name||'');envCount++;if(e?.valueSource?.secretKeyRef)secretBackedEnvCount++;if(sensitive.test(name)&&Object.prototype.hasOwnProperty.call(e||{},'value'))plaintextSensitiveEnvNames.push(name);}}
+  return {name:String(service?.name||''),latestReadyRevision:String(service?.latestReadyRevision||service?.traffic?.[0]?.revision||''),serviceAccountSet:Boolean(service?.template?.serviceAccount),containerCount:containers.length,envCount,secretBackedEnvCount,plaintextSensitiveKeyCount:plaintextSensitiveEnvNames.length,plaintextSensitiveEnvNames:[...new Set(plaintextSensitiveEnvNames)].sort(),envValuesPersisted:false,ingress:String(service?.ingress||''),observedGeneration:String(service?.observedGeneration||'')};
 }
 function summarizeSecrets(x){
   const secrets=Array.isArray(x?.secrets)?x.secrets:[];
@@ -115,15 +116,15 @@ async function main(){
 
   const decision=hardFindings.length?'HOLD_F8_PROVIDER_SECURITY_QUOTA_READONLY':'PASS_F8_PROVIDER_SECURITY_QUOTA_READONLY';
   const report={
-    schemaVersion:'cxorbia.f8-provider-security-quota-readonly.v2',generatedAt:new Date().toISOString(),decision,
+    schemaVersion:'cxorbia.f8-provider-security-quota-readonly.v2.1',generatedAt:new Date().toISOString(),decision,
     projectId:PROJECT,projectNumberFingerprint:hash(projectNumber).slice(0,20),credentialRoutes:sanitizedCreds(creds),
     readRoutes:{project:projectRead.route||null,cloudRun:runRead.route||null,cloudRunIam:iamRead.route||null,secrets:secretRead.route||null},
     cloudRun:run,cloudRunIam:iam,secrets,serviceUsage,quotaReadbacks,hardFindings,
-    interpretation:decision==='PASS_F8_PROVIDER_SECURITY_QUOTA_READONLY'?'Fresh provider-side IAM, Secret Manager metadata and quota/service-usage readbacks were completed without provider mutation.':'At least one required provider-side readback remains unavailable after exhausting pre-existing credential routes; no IAM mutation was attempted.',
-    safety:safe,next:decision==='PASS_F8_PROVIDER_SECURITY_QUOTA_READONLY'?'F8_BOUNDED_LOAD_QUOTA_FAILURE_INJECTION_READONLY':'F8_PROVIDER_READ_IAM_GAP_CLASSIFICATION'
+    interpretation:decision==='PASS_F8_PROVIDER_SECURITY_QUOTA_READONLY'?'Fresh provider-side IAM, Secret Manager metadata and quota/service-usage readbacks were completed without provider mutation.':'At least one required provider-side security readback or runtime configuration finding remains unresolved; secret values were not read or persisted.',
+    safety:safe,next:decision==='PASS_F8_PROVIDER_SECURITY_QUOTA_READONLY'?'F8_BOUNDED_LOAD_QUOTA_FAILURE_INJECTION_READONLY':'F8_PROVIDER_SECURITY_FINDING_CLASSIFICATION'
   };
   write(report);console.log(JSON.stringify(report,null,2));
   if(decision!=='PASS_F8_PROVIDER_SECURITY_QUOTA_READONLY')process.exitCode=1;
 }
 
-main().catch(error=>{const report={schemaVersion:'cxorbia.f8-provider-security-quota-readonly.v2',generatedAt:new Date().toISOString(),decision:'HOLD_F8_PROVIDER_SECURITY_QUOTA_READONLY',error:String(error?.message||error).slice(0,400),safety:safe};write(report);console.error(JSON.stringify(report,null,2));process.exitCode=1;});
+main().catch(error=>{const report={schemaVersion:'cxorbia.f8-provider-security-quota-readonly.v2.1',generatedAt:new Date().toISOString(),decision:'HOLD_F8_PROVIDER_SECURITY_QUOTA_READONLY',error:String(error?.message||error).slice(0,400),safety:safe};write(report);console.error(JSON.stringify(report,null,2));process.exitCode=1;});
