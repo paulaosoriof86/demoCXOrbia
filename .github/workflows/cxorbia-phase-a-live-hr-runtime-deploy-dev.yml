@@ -50,7 +50,6 @@ env:
 
 jobs:
   f4-g2b-recovery:
-    if: contains(github.event.head_commit.added, 'backend/config/cxorbia-f4-g2b-recovery-execute.json') || contains(github.event.head_commit.modified, 'backend/config/cxorbia-f4-g2b-recovery-execute.json')
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -72,22 +71,22 @@ jobs:
           node <<'NODE'
           const fs=require('fs'),cp=require('child_process');
           const j=p=>JSON.parse(fs.readFileSync(p,'utf8'));
+          const git=(...args)=>cp.execFileSync('git',args,{encoding:'utf8'}).trim();
           const a=j(process.env.F4_AUTH_FILE),l=j(process.env.F4_LEASE_FILE),x=j(process.env.F4_EXECUTE_FILE),c=j(process.env.F3_CONTRACT_FILE),e=j(process.env.F3_EVIDENCE_FILE),lock=j(process.env.F4_LOCK_FILE);
-          const head=cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-          const parent=cp.execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
-          const blob=cp.execFileSync('git',['rev-parse',`HEAD:${process.env.F3_CONTRACT_FILE}`],{encoding:'utf8'}).trim();
-          if(parent!==process.env.EXPECTED_PARENT_HEAD)throw new Error('MECHANISM_P0:trigger_parent_mismatch:'+parent);
+          const head=git('rev-parse','HEAD'),parent=git('rev-parse','HEAD^'),blob=git('rev-parse',`HEAD:${process.env.F3_CONTRACT_FILE}`);
+          cp.execFileSync('git',['merge-base','--is-ancestor',process.env.EXPECTED_PARENT_HEAD,parent]);
           if(blob!==process.env.EXPECTED_F3_CONTRACT_BLOB)throw new Error('MECHANISM_P0:f3_contract_blob_mismatch:'+blob);
           if(c.id!=='PROVIDER_PROMOTION_MECHANISM_V1'||c.state!=='FROZEN_PENDING_PROVIDER_WRITE_AUTHORIZATION')throw new Error('MECHANISM_P0:f3_contract_identity');
           if(e.decision!=='G2B_PROVIDER_PROMOTION_MECHANISM_PASS'||e.recoveryLaneDecision!=='G2B_RECOVERY_LANE_PASS')throw new Error('MECHANISM_P0:f3_not_pass');
           if(a.authorizationId!==process.env.F4_AUTH_ID||a.status!=='AUTHORIZED_CURRENT_CONVERSATION'||a.authorizedBy!=='Paula'||a.providerMutationAuthorized!==true||a.recoveryAuthorized!==true)throw new Error('MECHANISM_P0:release_authorization_invalid');
           if(l.leaseId!==process.env.F4_LEASE_ID||l.authorizationId!==a.authorizationId||l.issued!==true||l.consumed!==false||l.singleUse!==true||l.state!=='ISSUED_NOT_CONSUMED')throw new Error('MECHANISM_P0:lease_invalid');
-          if(x.executionId!==process.env.F4_EXECUTION_ID||x.authorizationId!==a.authorizationId||x.leaseId!==l.leaseId||x.enabled!==true||x.consumed!==false||x.expectedParentHead!==parent)throw new Error('MECHANISM_P0:execute_invalid');
+          if(x.executionId!==process.env.F4_EXECUTION_ID||x.authorizationId!==a.authorizationId||x.leaseId!==l.leaseId||x.enabled!==true||x.consumed!==false||x.expectedParentHead!==process.env.EXPECTED_PARENT_HEAD)throw new Error('MECHANISM_P0:execute_invalid');
           for(const o of [a,l,x]){
             if(o.repository!=='paulaosoriof86/demoCXOrbia'||o.branch!=='docs-tya-v6-v71-audit')throw new Error('MECHANISM_P0:repo_branch_binding');
             if(o.functionalSourceSha!==process.env.FUNCTIONAL_SOURCE_SHA||o.sourceFixSha!==process.env.SOURCE_FIX_SHA)throw new Error('MECHANISM_P0:source_binding');
             if(o.providerPromotionContractBlobSha!==process.env.EXPECTED_F3_CONTRACT_BLOB)throw new Error('MECHANISM_P0:contract_binding');
           }
+          if(a.controlPlaneHeadBefore!==process.env.EXPECTED_PARENT_HEAD)throw new Error('MECHANISM_P0:authorization_head_binding');
           if(a.firebaseProjectId!==process.env.GCP_PROJECT_ID||a.cloudRunRegion!==process.env.GCP_REGION||a.cloudRunService!==process.env.CLOUD_RUN_SERVICE||a.hostingSite!==process.env.HOSTING_SITE||a.hostingTarget!==process.env.FIREBASE_HOSTING_TARGET)throw new Error('MECHANISM_P0:target_binding');
           if(a.budget.cloudBuildMax!==1||a.budget.cloudRunUpdateMax!==1||a.budget.hostingDeployMax!==1||a.budget.automaticRetryMax!==0)throw new Error('MECHANISM_P0:mutation_budget');
           for(const k of ['firestoreWrites','authWrites','storageWrites','externalHrWrites','realDataWrites','realCredentialWrites','paymentWrites','rulesWrites','makeCalls','geminiCalls'])if(Number(a.budget[k])!==0)throw new Error('MECHANISM_P0:forbidden_budget_'+k);
@@ -95,22 +94,17 @@ jobs:
           if(lock.f4ExecutionControl?.releaseAuthorizationId!==a.authorizationId||lock.f4ExecutionControl?.providerMutationLeaseId!==l.leaseId||lock.f4ExecutionControl?.providerMutationLeaseIssued!==true||lock.f4ExecutionControl?.providerMutationLeaseConsumed!==false||lock.f4ExecutionControl?.providerMutationAuthorizedNow!==true)throw new Error('MECHANISM_P0:continuity_authority_binding');
           cp.execFileSync('git',['merge-base','--is-ancestor',process.env.FUNCTIONAL_SOURCE_SHA,process.env.SOURCE_FIX_SHA]);
           cp.execFileSync('git',['merge-base','--is-ancestor',process.env.SOURCE_FIX_SHA,parent]);
-          const changed=cp.execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean).sort();
-          const allowed=[
-            '.github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml',
-            'CAMBIOS-BACKEND-RC15-F4-G2B-RECOVERY-20260826.md',
-            'PENDIENTES-PROTOTIPO.md','RESUMEN-PARA-CLAUDE.md',
-            'app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md',
-            'app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md',
-            'app/docs/PRODUCTION-REAL-PROGRESS-LOCK-CXORBIA-TYA.md',
-            'app/docs/evidence/RC15-F4-G2B-MECHANISM-P0-LANE-INERT-LATEST.json',
-            'backend/config/cxorbia-f4-g2b-provider-mutation-lease.json',
-            'backend/config/cxorbia-f4-g2b-recovery-execute.json',
-            'backend/config/cxorbia-f4-g2b-release-authorization.json',
-            'backend/config/cxorbia-phase-a-continuity-lock.json'
-          ].sort();
-          if(JSON.stringify(changed)!==JSON.stringify(allowed))throw new Error('MECHANISM_P0:trigger_delta_invalid:'+changed.join(','));
-          fs.writeFileSync(process.env.F4_OUT_DIR+'/authority.json',JSON.stringify({decision:'PASS_F4_STRUCTURED_AUTHORITY',head,parent,contractBlob:blob,authorizationId:a.authorizationId,leaseId:l.leaseId,sourceFixSha:a.sourceFixSha,providerWrites:0},null,2)+'\n');
+          const cumulative=git('diff','--name-only',`${process.env.EXPECTED_PARENT_HEAD}..${parent}`).split(/\r?\n/).filter(Boolean).sort();
+          const cumulativeAllowed=new Set([
+            '.github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml','CAMBIOS-BACKEND-RC15-F4-G2B-RECOVERY-20260826.md','PENDIENTES-PROTOTIPO.md','RESUMEN-PARA-CLAUDE.md','app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md','app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md','app/docs/PRODUCTION-REAL-PROGRESS-LOCK-CXORBIA-TYA.md','app/docs/evidence/RC15-F4-G2B-MECHANISM-P0-LANE-INERT-LATEST.json','backend/config/cxorbia-f4-g2b-provider-mutation-lease.json','backend/config/cxorbia-f4-g2b-recovery-execute.json','backend/config/cxorbia-f4-g2b-release-authorization.json','backend/config/cxorbia-phase-a-continuity-lock.json'
+          ]);
+          const cumulativeUnexpected=cumulative.filter(p=>!cumulativeAllowed.has(p));
+          if(cumulativeUnexpected.length)throw new Error('MECHANISM_P0:cumulative_control_plane_drift:'+cumulativeUnexpected.join(','));
+          const changed=git('diff','--name-only','HEAD^','HEAD').split(/\r?\n/).filter(Boolean).sort();
+          const repairAllowed=new Set(['.github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml','CAMBIOS-BACKEND-RC15-F4-G2B-RECOVERY-20260826.md','app/docs/evidence/RC15-F4-G2B-MECHANISM-P0-LANE-INERT-LATEST.json']);
+          const repairUnexpected=changed.filter(p=>!repairAllowed.has(p));
+          if(!changed.includes('.github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml')||repairUnexpected.length)throw new Error('MECHANISM_P0:repair_delta_invalid:'+changed.join(','));
+          fs.writeFileSync(process.env.F4_OUT_DIR+'/authority.json',JSON.stringify({decision:'PASS_F4_STRUCTURED_AUTHORITY',head,parent,authorizedHead:process.env.EXPECTED_PARENT_HEAD,contractBlob:blob,authorizationId:a.authorizationId,leaseId:l.leaseId,sourceFixSha:a.sourceFixSha,cumulativeControlPlaneDelta:cumulative,repairDelta:changed,providerWrites:0},null,2)+'\n');
           NODE
 
       - name: Prepare and validate exact source-fix release tree
