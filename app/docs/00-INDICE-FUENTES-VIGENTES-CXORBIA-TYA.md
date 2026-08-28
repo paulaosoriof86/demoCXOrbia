@@ -1,33 +1,31 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
 **Fecha:** 2026-08-28  
-**STATE_SYNC_EPOCH:** `CXORBIA-20260828-F8-CLOSED-ZERO-RESIDUE-F8_5-IN-PROGRESS-07`  
+**STATE_SYNC_EPOCH:** `CXORBIA-20260828-F8_5-CANONICAL-LINEAGE-PASS-08`  
 **MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`  
 **MASTER_PLAN_VERSION:** `1.1.0` / `FROZEN`  
-**currentMasterPhase:** `F8_5_CANONICAL_MODULE_LINEAGE_CERTIFICATION`  
-**currentMasterStep:** `F8_5_IDENTIFY_LAST_APPROVED_MODULES_AND_COMPARE_CANONICAL_TO_LIVE_HOSTING`  
+**currentMasterPhase:** `F9_POSTPRODUCTION_ACCEPTANCE`  
+**currentMasterStep:** `F9_POSTPRODUCTION_ACCEPTANCE_98_TO_100`  
 **F5:** `CLOSED_PASS_CONSUMED_ZERO_RESIDUE`  
 **F6:** `CLOSED_PASS_IMMUTABLE_WITH_FINGERPRINT_ERRATA_OVERLAY`  
 **F7:** `GO_WITH_WARNINGS_NO_P0`  
 **F8:** `CLOSED_PASS_ZERO_RESIDUE`  
-**NEXT:** `F8_5_CANONICAL_MODULE_LINEAGE_CERTIFICATION`  
+**F8.5:** `CLOSED_PASS_CANONICAL_APPROVED_LINEAGE_MATCHES_FROZEN_SOURCE_AND_LIVE_HOSTING_RELEASE`  
+**NEXT:** `F9_POSTPRODUCTION_ACCEPTANCE_98_TO_100`  
 **PHASE_A:** `100/100`  
 **PRODUCTION_REAL_READINESS:** `98/100`
 
 ## Autoridad canónica viva
 
 1. este índice;
-2. `backend/config/cxorbia-phase-a-continuity-lock.json` como lock de release/gates previo aún autoritativo;
-3. master plan congelado `app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md`;
-4. manifest histórico inmutable `backend/config/cxorbia-phase-a-release-manifest-v1.json`;
-5. errata overlay `backend/config/cxorbia-phase-a-release-manifest-errata-v1.json`;
-6. autorización F8 histórica `app/docs/evidence/RC15-F8-BACKUP-RESTORE-CUTOVER-AUTHORIZATION-LATEST.json`;
-7. autorización IAM excepcional `app/docs/evidence/RC15-F8-TEMP-DATASTORE-OWNER-AUTHORIZATION-LATEST.json`;
-8. ejecución F8 terminal `app/docs/evidence/RC15-F8-BACKUP-RESTORE-CUTOVER-EXECUTION-LATEST.json`;
-9. estado IAM temporal revocado `app/docs/evidence/RC15-F8-TEMP-DATASTORE-OWNER-STATE-LATEST.json`;
-10. mirrors checkpoint/source-lock/progress y addenda CAMBIOS/Claude/Pendientes;
-11. PR #7 mirror-only, cerrado y no mergeado;
-12. única rama viva: `docs-tya-v6-v71-audit`.
+2. master plan congelado `app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md`;
+3. `app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json` como matriz histórica de autoridad de módulos;
+4. manifest histórico inmutable `backend/config/cxorbia-phase-a-release-manifest-v1.json` + errata overlay `backend/config/cxorbia-phase-a-release-manifest-errata-v1.json`;
+5. evidencia F8.5 `app/docs/evidence/RC15-F8-5-CANONICAL-MODULE-LINEAGE-CERTIFICATION-LATEST.json`;
+6. evidencia F8 terminal y estado IAM cero-residuo;
+7. mirrors checkpoint/source-lock/progress y addenda CAMBIOS/Claude/Pendientes;
+8. PR #7 mirror-only, cerrado y no mergeado;
+9. única rama viva: `docs-tya-v6-v71-audit`.
 
 ## Release congelado preservado
 
@@ -37,18 +35,18 @@ No rebuild, redeploy, reimport ni sustitución del release ocurrió.
 
 ## F8 cerrado PASS cero residuo
 
-Run provider `33193514608`, job `98924733768`, trigger exacto `dec6e8b451d6dd42303ff244703c798d22628975`, attempt 1.
+Provider run `33193514608`, job `98924733768`: backup/export + restore aislado + 9/9 colecciones + cleanup + reconciliación exacta PASS, sin redeploy. IAM temporal revocado y verificado con run `33187198967`, attempt 4, job `98940746944`; los cinco permisos administrativos temporales volvieron a quedar ausentes. Residuo IAM=0. Readiness `95 → 98`.
 
-Decisión: `PASS_F8_BACKUP_RESTORE_CUTOVER_RECONCILED_NO_REDEPLOY`; autorización consumida=true; providerWrites=4. Backup/export completado y retenido; base temporal creada; import completado; 9/9 colecciones top-level coinciden; base temporal eliminada; cleanup completo; release exacto reconciliado; deploy/rebuild/reimport=0; production business data/Firestore document/Auth/HR/Rules/pagos/Make/Gemini writes=0; legacy DB access=false.
+## F8.5 cerrado PASS
 
-Revocación IAM verificada con run `33187198967`, attempt 4, job `98940746944`, checkout vivo `be029042e9c937b3c29301be3e4e1b4524702e4f`. Tras retirar `roles/datastore.owner`, reaparecieron exactamente como ausentes los cinco permisos temporales: export/import/create/delete/operations.get. `datastore.databases.getMetadata` permanece como permiso basal previo. Bucket existente sigue verificado; provider writes=0; job F8 mutador=skipped. Residuo IAM=0.
+La matriz de composición certifica `approvedLineagePreserved=true` y conserva autoridades M1/V161C/V174/V182/C6. V182 es autoridad solo para su alcance aprobado; los root fixes C6 posteriores prevalecen donde existen.
 
-Por cierre F8 cero-residuo, `PRODUCTION_REAL_READINESS` avanza `95 → 98`.
+Se confirmaron sucesores autorizados relevantes, incluidos Shoppers `f961253f18c388ae04619bb5175269015c8349c3` y Mis Visitas `9d8f44b0fea7f2513018339e54a0bef4ae152ea0`.
 
-## F8.5 obligatorio antes de visualización
+La comparación `f9802fdd... → ef990a86...` tiene merge-base igual al functional source y no presenta cambios posteriores al freeze en `app/modules/**`, `app/core/**`, `app/app.js`, `app/styles/**` ni `app/index-backend-dev.html`. Hosting conserva el tuple congelado; el manifest certifica exact source y la errata read-only prueba que el sentinel vivo coincide con functional source, runtime source y rama. No existe P0 de linaje ni tarea frontend nueva.
 
-Está en ejecución `F8_5_CANONICAL_MODULE_LINEAGE_CERTIFICATION`. Debe identificar la última versión **aprobada** de cada módulo y comparar canónica versus Hosting vivo en `app/modules/**`, `app/core/**` relevante, entrypoints/index, scripts, adapters y rutas. Cualquier mismatch bloquea visualización humana y se clasifica por archivo/módulo antes de cualquier corrección.
+F8.5 no cambia el porcentaje: `PRODUCTION_REAL_READINESS=98/100`.
 
-La rama accidental `__invalid_should_not_create__` permanece inerte/no autoritativa y no debe usarse.
+## Siguiente acción exacta
 
-**NEXT:** `F8_5_CANONICAL_MODULE_LINEAGE_CERTIFICATION`.
+`F9_POSTPRODUCTION_ACCEPTANCE_98_TO_100`.
