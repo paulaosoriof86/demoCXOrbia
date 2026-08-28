@@ -18,6 +18,7 @@ on:
       - 'tools/qa/tya-f8-provider-security-quota-readonly.mjs'
       - 'tools/qa/tya-f8-bounded-load-failure-readonly.mjs'
       - 'tools/qa/tya-f8-hosting-adapter-drift-rootcause-readonly.mjs'
+      - 'tools/qa/tya-f8-cutover-capability-readonly.mjs'
       - 'backend/contracts/phase-a-live-hr-runtime-read-v1.json'
       - 'backend/config/cxorbia-f8-provider-transport-execute.json'
       - '.github/workflows/cxorbia-phase-a-live-hr-runtime-predeploy.yml'
@@ -71,6 +72,7 @@ jobs:
           node --check tools/qa/tya-f8-provider-security-quota-readonly.mjs
           node --check tools/qa/tya-f8-bounded-load-failure-readonly.mjs
           node --check tools/qa/tya-f8-hosting-adapter-drift-rootcause-readonly.mjs
+          node --check tools/qa/tya-f8-cutover-capability-readonly.mjs
           node --check tools/release/tya-f8-backup-restore-cutover-one-shot.mjs
           node --check tools/release/tya-f8-backup-restore-cutover-cli.mjs
 
@@ -222,6 +224,16 @@ jobs:
           set -euo pipefail
           node tools/qa/tya-f8-hosting-adapter-drift-rootcause-readonly.mjs
 
+      - name: Validate F8 cutover capabilities read-only
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_F8_CUTOVER_CAPABILITY_READONLY_AUTHORIZED: YES_PAULA_F8_CUTOVER_CAPABILITY_READONLY
+          CXORBIA_F8_CUTOVER_CAPABILITY_OUT: .tmp/f8-cutover-capability-readonly/report.json
+        run: |
+          set -euo pipefail
+          node tools/qa/tya-f8-cutover-capability-readonly.mjs
+
       - name: Stop local service
         if: always()
         run: |
@@ -241,6 +253,7 @@ jobs:
             .tmp/f8-provider-security-quota/report.json
             .tmp/f8-bounded-load-failure/report.json
             .tmp/f8-hosting-adapter-drift-rootcause/report.json
+            .tmp/f8-cutover-capability-readonly/report.json
           if-no-files-found: warn
           retention-days: 14
 
