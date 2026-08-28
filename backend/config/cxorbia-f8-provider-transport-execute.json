@@ -1,12 +1,22 @@
 {
   "schemaVersion": "cxorbia.f8.provider-transport.execute.v1",
-  "executionId": "CXORBIA-F8-PROVIDER-TRANSPORT-EXECUTE-20260828-01",
+  "executionId": "CXORBIA-F8-PROVIDER-TRANSPORT-EXECUTE-20260828-02-SUCCESSOR",
   "authorizationId": "PAULA-F8-BACKUP-RESTORE-CUTOVER-20260827-01",
+  "temporaryIamAuthorizationId": "PAULA-F8-TEMP-DATASTORE-OWNER-20260828-01",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
-  "expectedParentHead": "9150f611cf08d5499a142c9befb3da4006943c3f",
+  "expectedParentHead": "b4e33ea79de104e89a3ea91258e51040ab66092e",
   "executor": "tools/release/tya-f8-backup-restore-cutover-cli.mjs",
-  "rootCauseEvidence": "app/docs/evidence/RC15-F8-PROVIDER-TRANSPORT-ROOT-CAUSE-LATEST.json",
+  "rootCauseEvidence": "app/docs/evidence/RC15-F8-IAM-BRIDGE-ROOT-CAUSE-LATEST.json",
+  "capabilityProof": {
+    "workflowRunId": 33187198967,
+    "runAttempt": 3,
+    "jobId": 98923457703,
+    "decision": "PASS_F8_CUTOVER_CAPABILITY_READONLY",
+    "missingPermissions": [],
+    "verifiedExistingBucket": true,
+    "issues": []
+  },
   "enabled": true,
   "singleUse": true,
   "consumed": false,
@@ -25,5 +35,5 @@
   "paymentsAllowed": false,
   "humanVisualizationAllowedAfterF8": false,
   "humanVisualizationUnlockGate": "F8_5_CANONICAL_MODULE_LINEAGE_CERTIFICATION_PASS",
-  "source": "Paula current conversation 2026-08-28 root-cause resolution authorization"
+  "source": "Paula current conversation 2026-08-28 explicit F8 and temporary IAM authorization; successor after capability PASS"
 }
