@@ -17,11 +17,15 @@
 - `90 → 95`: F7 integral readiness `GO_WITH_WARNINGS`, P0=0.
 - F8 read-only: IAM metadata P1 reconciliado no bloqueante y `F7-P1-003` bounded load/failure `CLOSED/PASS` sin cambio porcentual.
 
-## F8 autorizado
+## F8 autorizado y ejecutor reparado
 
-La ejecución single-use F8 para backup/export mínimo, restore controlado verificable y mutaciones estrictamente necesarias del cutover fue autorizada explícitamente en la conversación actual. La autorización se mantiene `AUTHORIZED_NOT_YET_CONSUMED`, ya que ninguna mutación provider inició.
+La ejecución single-use F8 para backup/export mínimo, restore controlado verificable y mutaciones estrictamente necesarias del cutover fue autorizada explícitamente. La autorización se mantiene `AUTHORIZED_NOT_YET_CONSUMED`, ya que ninguna mutación provider inició.
 
-Existe executor fail-closed preparado en `tools/release/tya-f8-backup-restore-cutover-one-shot.mjs`. El bloqueo actual es `EXTERNAL_TRANSPORT_OUTAGE_NO_SAFE_PROVIDER_EXECUTOR_IN_CURRENT_SESSION`: la sesión no dispone de un canal GCP/provider autenticado utilizable y no se permite crear/revivir workflow transportador, IAM o credenciales fuera del alcance aprobado.
+En la continuidad del bloque se detectaron dos defectos source-only del ejecutor: dependencia de `authorizedExecutionParentHead`, inexistente en la evidencia canónica, y marcado de consumo de autorización durante los prechecks. Ambos quedaron reparados en `e95d23a91f26f42e1adf3ac167ccd2f0093dd31a` sin tocar proveedor ni release.
+
+El ejecutor ahora fija los blobs exactos de autorización y manifest, verifica la ancestry del commit real de autorización contra HEAD y consume la autorización únicamente al iniciar `BACKUP_EXPORT`, inmediatamente antes de la primera mutación provider. Evidencia: `app/docs/evidence/RC15-F8-EXECUTOR-SOURCE-REPAIR-LATEST.json`.
+
+El bloqueo actual continúa siendo externo: `EXTERNAL_TRANSPORT_OUTAGE_NO_SAFE_PROVIDER_EXECUTOR_IN_CURRENT_SESSION`. No existe en esta sesión un canal GCP/provider autenticado utilizable y el alcance vigente prohíbe crear/revivir workflow transportador, IAM o credenciales.
 
 No hay P0 de producto ni drift probado del release F6. `PRODUCTION_REAL_READINESS` permanece `95/100`; solo mueve `95 → 98` cuando F8 backup/restore/cutover quede terminal y reconciliado.
 
@@ -35,6 +39,6 @@ No hay P0 de producto ni drift probado del release F6. `PRODUCTION_REAL_READINES
 
 ## Estado seguro
 
-Release F6 intacto. Provider/IAM/data/Auth/Firestore/HR/Storage/Rules/pagos/Make/Gemini writes=`0`; backup/export/restore/cutover attempts=`0`; deploy/rebuild/reimport/merge=`0`.
+Release F6 intacto. Provider/IAM/data/Auth/Firestore/HR/Storage/Rules/pagos/Make/Gemini writes=`0`; backup/export/restore/cutover attempts=`0`; deploy/rebuild/reimport/merge=`0`; autorización F8 consumida=`false`.
 
 **Siguiente gate:** `F8_EXECUTE_AUTHORIZED_BACKUP_RESTORE_CUTOVER_WHEN_SECURE_PROVIDER_EXECUTION_CHANNEL_IS_AVAILABLE`.
