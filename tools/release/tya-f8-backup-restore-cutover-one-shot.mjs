@@ -74,16 +74,16 @@ export async function runF8BackupRestoreCutoverOneShot({accessToken}){
   const runId=String(process.env.GITHUB_RUN_ID||'local');
   const runAttempt=String(process.env.GITHUB_RUN_ATTEMPT||'1');
   const state={
-    schemaVersion:'cxorbia.rc15.f8.backup-restore-cutover.execution.v3',generatedAt:null,authorizationId:AUTH_ID,authorizationConsumed:false,automaticRetryAllowed:false,
+    schemaVersion:'cxorbia.rc15.f8.backup-restore-cutover.execution.v4',generatedAt:null,authorizationId:AUTH_ID,authorizationConsumed:false,automaticRetryAllowed:false,
     runId,runAttempt,projectId:PROJECT,releaseId:EXPECTED_RELEASE,decision:'HOLD_NOT_STARTED',stage:'INIT',productP0Proven:false,
     backup:{started:false,completed:false,retained:false,locatorStoredInProviderOnly:true,uriSha256:null,bucketFingerprint:null},
-    restoreVerification:{temporaryDatabaseCreated:false,importStarted:false,importCompleted:false,topLevelCollectionsMatch:false,temporaryDatabaseDeleted:false,tempDatabaseFingerprint:null},
+    restoreVerification:{temporaryDatabaseCreateRequestAccepted:false,temporaryDatabaseCreated:false,importStarted:false,importCompleted:false,topLevelCollectionsMatch:false,temporaryDatabaseDeleted:false,tempDatabaseFingerprint:null},
     cutover:{redeployRequired:false,deploys:0,rebuilds:0,releaseReimports:0,reconciledExactFrozenRelease:false},
     preflight:{head:null,parentHead:null,authorizationCommit:null,authorizationAncestorOfHead:false,authorizationBlobExact:false,releaseManifestBlobExact:false,releaseManifestExact:false,cloudRunRevisionExact:false,hostingAdapterExact:false,databaseLocation:null,databaseType:null,requiredPermissions:[],grantedPermissions:[],bucketDiscovered:false},
     safety:{providerWrites:0,productionBusinessDataWrites:0,productionFirestoreDocumentWrites:0,authWrites:0,hrWrites:0,rulesWrites:0,paymentWrites:0,makeCalls:0,geminiCalls:0,iamWrites:0,newCredentials:0,newBranches:0,newPullRequests:0,secretPayloadReads:0,credentialsExposed:false,legacyDatabaseAccess:false},
     cleanup:{required:false,completed:true,error:null},error:null,next:null
   };
-  let tempDb=null;let mutationStarted=false;
+  let tempDb=null;let tempDbCleanupEligible=false;let mutationStarted=false;
   try{
     ensure(accessToken&&String(accessToken).length>20,'F8_ACCESS_TOKEN_ROUTE_MISSING');
     ensure(runAttempt==='1','F8_SINGLE_USE_WORKFLOW_RERUN_FORBIDDEN');
@@ -139,7 +139,6 @@ export async function runF8BackupRestoreCutoverOneShot({accessToken}){
     const schemaHash=sha256(sourceCollections.join('\n'));
     const stamp=new Date().toISOString().replace(/[-:.TZ]/g,'').slice(0,14);
     const exportRequestUri=`gs://${bucket}/cxorbia-f8-backup/${stamp}-${runId}`;
-    tempDb=`f8-restore-${stamp.slice(0,12)}`.toLowerCase();state.restoreVerification.tempDatabaseFingerprint=sha256(tempDb).slice(0,20);
 
     state.stage='BACKUP_EXPORT';state.authorizationConsumed=true;mutationStarted=true;state.backup.started=true;state.safety.providerWrites++;
     const exp=await api(accessToken,`https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default):exportDocuments`,{method:'POST',body:{outputUriPrefix:exportRequestUri}});
@@ -148,9 +147,12 @@ export async function runF8BackupRestoreCutoverOneShot({accessToken}){
     const exportUri=String(expDone?.response?.outputUriPrefix||exportRequestUri);
     state.backup.completed=true;state.backup.retained=true;state.backup.uriSha256=sha256(exportUri);
 
+    tempDb=`f8r-${stamp}-${crypto.randomBytes(4).toString('hex')}`.toLowerCase();
+    state.restoreVerification.tempDatabaseFingerprint=sha256(tempDb).slice(0,20);
     state.stage='ISOLATED_RESTORE_DATABASE_CREATE';state.safety.providerWrites++;
     const create=await api(accessToken,`https://firestore.googleapis.com/v1/projects/${PROJECT}/databases?databaseId=${encodeURIComponent(tempDb)}`,{method:'POST',body:{type:'FIRESTORE_NATIVE',locationId:location,deleteProtectionState:'DELETE_PROTECTION_DISABLED'}});
     ensure(create.ok,`F8_TEMP_DATABASE_CREATE_${create.status}_${create.error||''}`);
+    tempDbCleanupEligible=true;state.restoreVerification.temporaryDatabaseCreateRequestAccepted=true;
     await waitOperation(accessToken,String(create.json?.name||''),{timeoutMs:600000,label:'F8_DB_CREATE'});
     state.restoreVerification.temporaryDatabaseCreated=true;
 
@@ -166,7 +168,7 @@ export async function runF8BackupRestoreCutoverOneShot({accessToken}){
     ensure(sha256(restoredCollections.join('\n'))===schemaHash,'F8_RESTORE_COLLECTION_SCHEMA_MISMATCH');
     state.restoreVerification.topLevelCollectionsMatch=true;state.restoreVerification.sourceTopLevelCollectionCount=sourceCollections.length;state.restoreVerification.restoredTopLevelCollectionCount=restoredCollections.length;state.restoreVerification.collectionSchemaSha256=schemaHash;
 
-    state.stage='TEMP_RESTORE_DATABASE_CLEANUP';state.safety.providerWrites++;
+    state.stage='TEMP_RESTORE_DATABASE_CLEANUP';state.safety.providerWrites++;tempDbCleanupEligible=false;
     const del=await api(accessToken,`https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/${encodeURIComponent(tempDb)}`,{method:'DELETE'});
     ensure(del.ok,`F8_TEMP_DATABASE_DELETE_${del.status}_${del.error||''}`);
     await waitOperation(accessToken,String(del.json?.name||''),{timeoutMs:600000,label:'F8_DB_DELETE'});
@@ -181,11 +183,11 @@ export async function runF8BackupRestoreCutoverOneShot({accessToken}){
   }catch(error){
     state.error=safeText(error?.message||error);state.decision=mutationStarted?'HOLD_F8_AFTER_BOUNDED_PROVIDER_MUTATION':'HOLD_F8_PRE_MUTATION_CAPABILITY_OR_DRIFT';state.next='F8_CLASSIFY_SINGLE_CAUSE_NO_AUTOMATIC_RETRY';
   }finally{
-    if(tempDb){
-      state.cleanup.required=true;state.cleanup.completed=false;
+    if(tempDb&&tempDbCleanupEligible){
+      state.cleanup.required=true;state.cleanup.completed=false;tempDbCleanupEligible=false;state.safety.providerWrites++;
       try{
         const del=await api(accessToken,`https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/${encodeURIComponent(tempDb)}`,{method:'DELETE'});
-        if(del.ok){state.safety.providerWrites++;await waitOperation(accessToken,String(del.json?.name||''),{timeoutMs:600000,label:'F8_CLEANUP_DB_DELETE'});state.restoreVerification.temporaryDatabaseDeleted=true;state.cleanup.completed=true;tempDb=null;}
+        if(del.ok){await waitOperation(accessToken,String(del.json?.name||''),{timeoutMs:600000,label:'F8_CLEANUP_DB_DELETE'});state.restoreVerification.temporaryDatabaseDeleted=true;state.cleanup.completed=true;tempDb=null;}
         else state.cleanup.error=safeText(`HTTP_${del.status}_${del.error||''}`);
       }catch(error){state.cleanup.error=safeText(error?.message||error);}
     }
