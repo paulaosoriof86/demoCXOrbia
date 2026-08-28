@@ -17,21 +17,23 @@
 - `90 → 95`: F7 integral readiness `GO_WITH_WARNINGS`, P0=0.
 - F8 read-only: IAM metadata P1 reconciliado no bloqueante y `F7-P1-003` bounded load/failure `CLOSED/PASS` sin cambio porcentual.
 
-## F8 autorizado y ejecutor reparado
+## F8 autorizado y mecanismo de invocación reparado
 
-La ejecución single-use F8 para backup/export mínimo, restore controlado verificable y mutaciones estrictamente necesarias del cutover fue autorizada explícitamente. La autorización se mantiene `AUTHORIZED_NOT_YET_CONSUMED`, ya que ninguna mutación provider inició.
+La autorización single-use F8 permanece `AUTHORIZED_NOT_YET_CONSUMED`; ninguna mutación provider inició.
 
-En la continuidad del bloque se detectaron dos defectos source-only del ejecutor: dependencia de `authorizedExecutionParentHead`, inexistente en la evidencia canónica, y marcado de consumo de autorización durante los prechecks. Ambos quedaron reparados en `e95d23a91f26f42e1adf3ac167ccd2f0093dd31a` sin tocar proveedor ni release.
+El repair `e95d23a91f26f42e1adf3ac167ccd2f0093dd31a` corrigió lineage y consumo prematuro en el ejecutor. En esta continuación se confirmó que el módulo one-shot no tenía punto de entrada ejecutable y que el control de intento de Actions no impedía invocaciones independientes fuera de Actions.
 
-El ejecutor ahora fija los blobs exactos de autorización y manifest, verifica la ancestry del commit real de autorización contra HEAD y consume la autorización únicamente al iniciar `BACKUP_EXPORT`, inmediatamente antes de la primera mutación provider. Evidencia: `app/docs/evidence/RC15-F8-EXECUTOR-SOURCE-REPAIR-LATEST.json`.
+El commit `13170f4156ad4ab5886b65f923ab5b9e198452b8` añadió `tools/release/tya-f8-backup-restore-cutover-cli.mjs`: invocación explícita fail-closed, entrada de autenticación efímera sin persistencia/salida, bloqueo ante evidencia previa consumida o con mutación y lease local atómica para impedir replay/concurrencia del mismo checkout. Blob `5c399f101a5cd7a7f9a047d5f9fb48c0986543f3`; syntax PASS. Evidencia: `app/docs/evidence/RC15-F8-EXECUTOR-ENTRYPOINT-ANTI-REPLAY-REPAIR-LATEST.json`.
 
-El bloqueo actual continúa siendo externo: `EXTERNAL_TRANSPORT_OUTAGE_NO_SAFE_PROVIDER_EXECUTOR_IN_CURRENT_SESSION`. No existe en esta sesión un canal GCP/provider autenticado utilizable y el alcance vigente prohíbe crear/revivir workflow transportador, IAM o credenciales.
+No se añadió una lease global cross-workspace porque requeriría una superficie durable o contrato de transporte adicional no autorizado. La autoridad cross-workspace sigue siendo la autorización canónica single-use, `automaticRetryAllowed=false`, gates dinámicos y reconciliación inmediata posterior.
+
+El bloqueo actual continúa siendo externo: `EXTERNAL_TRANSPORT_OUTAGE_NO_SAFE_PROVIDER_EXECUTOR_IN_CURRENT_SESSION`. No existe en esta sesión un canal GCP/provider autenticado utilizable y el alcance vigente prohíbe crear/revivir workflow, IAM o credenciales.
 
 No hay P0 de producto ni drift probado del release F6. `PRODUCTION_REAL_READINESS` permanece `95/100`; solo mueve `95 → 98` cuando F8 backup/restore/cutover quede terminal y reconciliado.
 
 ## Camino restante
 
-1. Ejecutar la autorización F8 vigente cuando esté disponible un canal provider seguro; no volver a solicitar la misma autorización mientras permanezca no consumida y el alcance no cambie.
+1. Ejecutar la autorización F8 vigente cuando exista un canal provider seguro, usando el entrypoint reparado.
 2. Backup/export + restore temporal verificable.
 3. Reconciliar el release congelado exacto; sin redeploy si el drift check continúa PASS.
 4. Provider readbacks/smoke/rollback y cierre F8: `95 → 98`.
