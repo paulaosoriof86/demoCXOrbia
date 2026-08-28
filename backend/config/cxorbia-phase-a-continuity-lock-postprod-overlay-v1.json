@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "cxorbia.phase-a.continuity-lock.postprod-overlay.v1",
+  "overlayId": "CXORBIA-20260828-F9-POSTPROD-ACCEPTED-OVERLAY-01",
+  "baseLock": "backend/config/cxorbia-phase-a-continuity-lock.json",
+  "baseLockBlobSha": "0b3e861f50a4fabb2b284c4f852d35cad39bb51b",
+  "purpose": "Non-destructive terminal Phase A/postproduction state overlay. Historical detail remains in the base lock; this overlay supersedes only current cursor/progress/closed-control fields that became stale after F8/F8.5/F9.",
+  "effectiveState": {
+    "syncEpoch": "CXORBIA-20260828-F9-POSTPROD-ACCEPTED-10",
+    "phaseA": 100,
+    "productionRealReadiness": 100,
+    "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+    "masterPlanVersion": "1.1.0",
+    "masterPlanStatus": "FROZEN",
+    "currentMasterPhase": "F10_PERMANENT_OPERATING_MODEL",
+    "currentMasterStep": "F10_CONTINUOUS_POSTPRODUCTION_MONITORING",
+    "next": "F10_PERMANENT_OPERATING_MODEL_AND_CONTINUOUS_POSTPRODUCTION_MONITORING"
+  },
+  "closedControls": {
+    "m1": "CLOSED_PASS",
+    "m2_f0": "CLOSED_PASS_4_OF_4",
+    "m3": "CLOSED_PASS_30_OF_30_ZERO_RESIDUAL_DIRECT_REMOTE_READBACK",
+    "f3": "CLOSED_PASS_PROVIDER_PROMOTION_MECHANISM_V1_G2B_RECOVERY_LANE_PASS",
+    "f4": "CLOSED_PASS_RECOVERY_PASS_FULL_READONLY_RECERTIFIED",
+    "f5": "CLOSED_PASS_CONSUMED_ZERO_RESIDUE",
+    "f6": "CLOSED_PASS_IMMUTABLE_WITH_FINGERPRINT_ERRATA_OVERLAY",
+    "f7": "GO_WITH_WARNINGS_NO_P0",
+    "f8": "CLOSED_PASS_ZERO_RESIDUE",
+    "f8_5": "CLOSED_PASS_CANONICAL_APPROVED_LINEAGE_MATCHES_FROZEN_SOURCE_AND_LIVE_HOSTING_RELEASE",
+    "f9": "POSTPROD_ACCEPTED_ACCELERATED_SAME_DAY"
+  },
+  "productionState": {
+    "active": true,
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "productionUrl": "https://cxorbia-backend-dev.web.app",
+    "releaseId": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
+    "functionalSourceSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "runtimeReleaseSourceSha": "2d0b8e83b32b44f6c3eae80b7630f8cd3295fba2",
+    "cloudRunRevision": "cxorbia-live-hr-dev-00013-rns",
+    "imageDigest": "sha256:eca8b831c24ef81f09e4addda721d0af89a24c5a0d753aa507989988458227ec",
+    "hostingRelease": "sites/cxorbia-backend-dev/releases/1787796646738000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/afe292cfcbbc6005",
+    "phaseAReleaseFrozen": true
+  },
+  "terminalEvidence": {
+    "f5": "app/docs/evidence/RC15-F5-LIVE-SYNTHETIC-ACCEPTANCE-LATEST.json",
+    "f7": "app/docs/evidence/RC15-F7-INTEGRAL-READINESS-LATEST.json",
+    "f8": "app/docs/evidence/RC15-F8-BACKUP-RESTORE-CUTOVER-EXECUTION-LATEST.json",
+    "f8_5": "app/docs/evidence/RC15-F8-5-CANONICAL-MODULE-LINEAGE-CERTIFICATION-LATEST.json",
+    "f9": "app/docs/evidence/RC15-F9-POSTPRODUCTION-ACCEPTANCE-LATEST.json"
+  },
+  "f9Acceptance": {
+    "decision": "POSTPROD_ACCEPTED",
+    "mode": "ACCELERATED_SAME_DAY_ACCEPTANCE_WITH_F10_CONTINUOUS_MONITORING_HANDOFF",
+    "explicitCurrentUserDirective": true,
+    "masterPlan24hWindowIsObjectiveNotHardMinimum": true,
+    "productP0Proven": false,
+    "readinessBefore": 98,
+    "readinessAfter": 100
+  },
+  "safety": {
+    "f9ProviderWrites": 0,
+    "f9BusinessDataWrites": 0,
+    "f9AuthWrites": 0,
+    "f9HrWrites": 0,
+    "f9PaymentWrites": 0,
+    "f9Deploys": 0,
+    "f9Rebuilds": 0,
+    "f9Reimports": 0,
+    "f9Merge": false,
+    "newBranch": false,
+    "newPullRequest": false,
+    "newWorkflow": false,
+    "legacyDatabaseAccess": false
+  },
+  "hardLocks": [
+    "Do not re-run F8 or restore V182 wholesale.",
+    "Do not rebuild/redeploy/reimport the frozen release without a new proven incident gate and explicit authorization.",
+    "Do not connect or copy the legacy database.",
+    "Make, Gemini and payment mutations remain gated.",
+    "F10 monitoring does not retroactively reopen terminal Phase A/F5-F9 gates without reproducible product P0 evidence."
+  ]
+}
