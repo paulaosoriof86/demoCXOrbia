@@ -12,9 +12,11 @@ const EXPECTED_REVISION='cxorbia-live-hr-dev-00013-rns';
 const AUTH_ID='PAULA-F8-BACKUP-RESTORE-CUTOVER-20260827-01';
 const AUTH_PATH='app/docs/evidence/RC15-F8-BACKUP-RESTORE-CUTOVER-AUTHORIZATION-LATEST.json';
 const MANIFEST_PATH='backend/config/cxorbia-phase-a-release-manifest-v1.json';
+const ERRATA_PATH='backend/config/cxorbia-phase-a-release-manifest-errata-v1.json';
 const OUT='app/docs/evidence/RC15-F8-BACKUP-RESTORE-CUTOVER-EXECUTION-LATEST.json';
 const EXPECTED_AUTH_BLOB='1f6659a4cdf421a38489c94b174f28ceb5506f54';
 const EXPECTED_MANIFEST_BLOB='732dbfd48912b3550c6fb20bc592bd118647263a';
+const EXPECTED_ERRATA_BLOB='1122ed9f7961a5ba1c34c1b3b329441fd4516bb3';
 const sha256=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
 const safeText=v=>String(v||'').replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi,'<redacted-email>').replace(/ya29\.[A-Za-z0-9._-]+/g,'<redacted-token>').replace(/-----BEGIN[\s\S]*?-----END[^\n]+-----/g,'<redacted-key>').slice(0,800);
 const ensure=(ok,code)=>{if(!ok)throw new Error(code);};
@@ -74,12 +76,12 @@ export async function runF8BackupRestoreCutoverOneShot({accessToken}){
   const runId=String(process.env.GITHUB_RUN_ID||'local');
   const runAttempt=String(process.env.GITHUB_RUN_ATTEMPT||'1');
   const state={
-    schemaVersion:'cxorbia.rc15.f8.backup-restore-cutover.execution.v4',generatedAt:null,authorizationId:AUTH_ID,authorizationConsumed:false,automaticRetryAllowed:false,
+    schemaVersion:'cxorbia.rc15.f8.backup-restore-cutover.execution.v5',generatedAt:null,authorizationId:AUTH_ID,authorizationConsumed:false,automaticRetryAllowed:false,
     runId,runAttempt,projectId:PROJECT,releaseId:EXPECTED_RELEASE,decision:'HOLD_NOT_STARTED',stage:'INIT',productP0Proven:false,
     backup:{started:false,completed:false,retained:false,locatorStoredInProviderOnly:true,uriSha256:null,bucketFingerprint:null},
     restoreVerification:{temporaryDatabaseCreateRequestAccepted:false,temporaryDatabaseCreated:false,importStarted:false,importCompleted:false,topLevelCollectionsMatch:false,temporaryDatabaseDeleted:false,tempDatabaseFingerprint:null},
     cutover:{redeployRequired:false,deploys:0,rebuilds:0,releaseReimports:0,reconciledExactFrozenRelease:false},
-    preflight:{head:null,parentHead:null,authorizationCommit:null,authorizationAncestorOfHead:false,authorizationBlobExact:false,releaseManifestBlobExact:false,releaseManifestExact:false,cloudRunRevisionExact:false,hostingAdapterExact:false,databaseLocation:null,databaseType:null,requiredPermissions:[],grantedPermissions:[],bucketDiscovered:false},
+    preflight:{head:null,parentHead:null,authorizationCommit:null,authorizationAncestorOfHead:false,authorizationBlobExact:false,releaseManifestBlobExact:false,releaseManifestErrataBlobExact:false,releaseManifestExact:false,releaseManifestErrataExact:false,hostingAdapterAuthority:null,cloudRunRevisionExact:false,hostingAdapterExact:false,databaseLocation:null,databaseType:null,requiredPermissions:[],grantedPermissions:[],bucketDiscovered:false},
     safety:{providerWrites:0,productionBusinessDataWrites:0,productionFirestoreDocumentWrites:0,authWrites:0,hrWrites:0,rulesWrites:0,paymentWrites:0,makeCalls:0,geminiCalls:0,iamWrites:0,newCredentials:0,newBranches:0,newPullRequests:0,secretPayloadReads:0,credentialsExposed:false,legacyDatabaseAccess:false},
     cleanup:{required:false,completed:true,error:null},error:null,next:null
   };
@@ -93,6 +95,17 @@ export async function runF8BackupRestoreCutoverOneShot({accessToken}){
     const manifest=readJson(MANIFEST_PATH);
     ensure(manifest.releaseId===EXPECTED_RELEASE&&manifest.status==='FROZEN_IMMUTABLE','F8_FROZEN_RELEASE_MANIFEST_MISMATCH');
     ensure(manifest.source?.rebuildAfterFreezeAllowed===false,'F8_RELEASE_REBUILD_MUST_REMAIN_FORBIDDEN');
+    const errata=readJson(ERRATA_PATH);
+    ensure(errata.releaseId===EXPECTED_RELEASE&&errata.status==='ACTIVE_CORRECTION_OVERLAY_NO_RELEASE_REBUILD','F8_RELEASE_ERRATA_INVALID');
+    ensure(errata.originalManifest?.path===MANIFEST_PATH&&errata.originalManifest?.blobSha===EXPECTED_MANIFEST_BLOB&&errata.originalManifest?.historicalImmutable===true&&errata.originalManifest?.modifiedByErrata===false,'F8_RELEASE_ERRATA_ORIGINAL_MANIFEST_BINDING_INVALID');
+    const correction=errata.corrections?.hostingAdapterSha256;
+    ensure(correction?.path==='app/adapters/tya-live-source-refresh-watch-v2.js','F8_RELEASE_ERRATA_ADAPTER_PATH_INVALID');
+    ensure(String(correction?.before||'')===String(manifest.provider?.hosting?.certifiedAdapterSha256||''),'F8_RELEASE_ERRATA_BEFORE_HASH_MISMATCH');
+    const certifiedAdapterSha=String(correction?.after||'');
+    ensure(/^[a-f0-9]{64}$/.test(certifiedAdapterSha),'F8_RELEASE_ERRATA_AFTER_HASH_INVALID');
+    ensure(errata.proof?.liveEqualsFrozenFunctionalSource===true&&errata.proof?.liveEqualsFrozenRuntimeSource===true&&errata.proof?.liveEqualsCurrentBranch===true,'F8_RELEASE_ERRATA_PROOF_INCOMPLETE');
+    ensure(errata.releaseTuplePreserved?.functionalSourceSha===manifest.source?.functionalSourceSha&&errata.releaseTuplePreserved?.runtimeReleaseSourceSha===manifest.source?.runtimeReleaseSourceSha,'F8_RELEASE_ERRATA_SOURCE_TUPLE_DRIFT');
+    ensure(errata.releaseTuplePreserved?.cloudRunRevision===manifest.provider?.cloudRun?.revision&&errata.releaseTuplePreserved?.imageDigest===manifest.provider?.cloudRun?.imageDigest&&errata.releaseTuplePreserved?.hostingRelease===manifest.provider?.hosting?.release&&errata.releaseTuplePreserved?.hostingVersion===manifest.provider?.hosting?.version,'F8_RELEASE_ERRATA_PROVIDER_TUPLE_DRIFT');
 
     state.stage='PRE_MUTATION_DYNAMIC_RECHECK';
     const head=git(['rev-parse','HEAD']);
@@ -100,22 +113,25 @@ export async function runF8BackupRestoreCutoverOneShot({accessToken}){
     const authCommit=git(['log','-1','--format=%H','--',AUTH_PATH]);
     const authBlob=git(['hash-object',AUTH_PATH]);
     const manifestBlob=git(['hash-object',MANIFEST_PATH]);
+    const errataBlob=git(['hash-object',ERRATA_PATH]);
     state.preflight.head=head;state.preflight.parentHead=parent;state.preflight.authorizationCommit=authCommit;
     state.preflight.authorizationBlobExact=authBlob===EXPECTED_AUTH_BLOB;
     state.preflight.releaseManifestBlobExact=manifestBlob===EXPECTED_MANIFEST_BLOB;
+    state.preflight.releaseManifestErrataBlobExact=errataBlob===EXPECTED_ERRATA_BLOB;
     state.preflight.authorizationAncestorOfHead=Boolean(authCommit)&&gitOk(['merge-base','--is-ancestor',authCommit,head]);
     ensure(!process.env.GITHUB_SHA||head===String(process.env.GITHUB_SHA),'F8_HEAD_EVENT_SHA_DRIFT');
     ensure(state.preflight.authorizationBlobExact,'F8_AUTHORIZATION_BLOB_DRIFT');
     ensure(state.preflight.releaseManifestBlobExact,'F8_RELEASE_MANIFEST_BLOB_DRIFT');
+    ensure(state.preflight.releaseManifestErrataBlobExact,'F8_RELEASE_MANIFEST_ERRATA_BLOB_DRIFT');
     ensure(state.preflight.authorizationAncestorOfHead,'F8_AUTHORIZATION_NOT_IN_CURRENT_HEAD_LINEAGE');
-    state.preflight.releaseManifestExact=true;
+    state.preflight.releaseManifestExact=true;state.preflight.releaseManifestErrataExact=true;state.preflight.hostingAdapterAuthority='F6_IMMUTABLE_MANIFEST_ERRATA_OVERLAY';
 
     const run=await api(accessToken,`https://run.googleapis.com/v2/projects/${PROJECT}/locations/${REGION}/services/${SERVICE}`);
     ensure(run.ok,`F8_CLOUD_RUN_READ_${run.status}`);
     ensure(revisionName(run.json)===EXPECTED_REVISION,`F8_CLOUD_RUN_REVISION_DRIFT_${revisionName(run.json)||'missing'}`);
     state.preflight.cloudRunRevisionExact=true;
     const adapterHash=await publicHash(`${ROOT}/adapters/tya-live-source-refresh-watch-v2.js?f8=${Date.now()}`);
-    ensure(adapterHash===String(manifest.provider?.hosting?.certifiedAdapterSha256||''),'F8_HOSTING_CERTIFIED_ADAPTER_DRIFT');
+    ensure(adapterHash===certifiedAdapterSha,'F8_HOSTING_CERTIFIED_ADAPTER_DRIFT');
     state.preflight.hostingAdapterExact=true;
 
     const db=await api(accessToken,`https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default)`);
@@ -178,16 +194,16 @@ export async function runF8BackupRestoreCutoverOneShot({accessToken}){
     const postRun=await api(accessToken,`https://run.googleapis.com/v2/projects/${PROJECT}/locations/${REGION}/services/${SERVICE}`);
     ensure(postRun.ok&&revisionName(postRun.json)===EXPECTED_REVISION,'F8_POST_CLOUD_RUN_REVISION_DRIFT');
     const postHash=await publicHash(`${ROOT}/adapters/tya-live-source-refresh-watch-v2.js?f8post=${Date.now()}`);
-    ensure(postHash===String(manifest.provider?.hosting?.certifiedAdapterSha256||''),'F8_POST_HOSTING_ADAPTER_DRIFT');
-    state.cutover.reconciledExactFrozenRelease=true;state.decision='PASS_F8_BACKUP_RESTORE_CUTOVER_RECONCILED_NO_REDEPLOY';state.stage='TERMINAL_PASS';state.next='F9_POSTPRODUCTION_ACCEPTANCE_WINDOW';
+    ensure(postHash===certifiedAdapterSha,'F8_POST_HOSTING_ADAPTER_DRIFT');
+    state.cutover.reconciledExactFrozenRelease=true;state.decision='PASS_F8_BACKUP_RESTORE_CUTOVER_RECONCILED_NO_REDEPLOY';state.stage='TERMINAL_PASS';state.next='F8_5_CANONICAL_MODULE_LINEAGE_CERTIFICATION';
   }catch(error){
     state.error=safeText(error?.message||error);state.decision=mutationStarted?'HOLD_F8_AFTER_BOUNDED_PROVIDER_MUTATION':'HOLD_F8_PRE_MUTATION_CAPABILITY_OR_DRIFT';state.next='F8_CLASSIFY_SINGLE_CAUSE_NO_AUTOMATIC_RETRY';
   }finally{
     if(tempDb&&tempDbCleanupEligible){
-      state.cleanup.required=true;state.cleanup.completed=false;tempDbCleanupEligible=false;state.safety.providerWrites++;
+      state.cleanup.required=true;state.cleanup.completed=false;tempDbCleanupEligible=false;
       try{
         const del=await api(accessToken,`https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/${encodeURIComponent(tempDb)}`,{method:'DELETE'});
-        if(del.ok){await waitOperation(accessToken,String(del.json?.name||''),{timeoutMs:600000,label:'F8_CLEANUP_DB_DELETE'});state.restoreVerification.temporaryDatabaseDeleted=true;state.cleanup.completed=true;tempDb=null;}
+        if(del.ok){state.safety.providerWrites++;await waitOperation(accessToken,String(del.json?.name||''),{timeoutMs:600000,label:'F8_CLEANUP_DB_DELETE'});state.restoreVerification.temporaryDatabaseDeleted=true;state.cleanup.completed=true;tempDb=null;}
         else state.cleanup.error=safeText(`HTTP_${del.status}_${del.error||''}`);
       }catch(error){state.cleanup.error=safeText(error?.message||error);}
     }
