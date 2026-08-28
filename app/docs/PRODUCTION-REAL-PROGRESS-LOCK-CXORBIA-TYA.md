@@ -16,23 +16,28 @@
 - `86 → 90`: F6 release Phase A inmutable PASS; fingerprint Hosting corregido mediante errata overlay sin cambio de release.
 - `90 → 95`: F7 integral readiness `GO_WITH_WARNINGS`, P0=0.
 - `95 → 98`: F8 backup/export + restore aislado + cleanup + reconciliación exacta PASS, autorización consumida y binding IAM temporal revocado con residuo cero verificado.
+- `98 → 98`: F8.5 canonical module lineage certification PASS; gate de certificación sin incremento porcentual.
 
 ## F8 CLOSED PASS ZERO RESIDUE
 
-Provider run `33193514608`, job `98924733768`, trigger `dec6e8b451d6dd42303ff244703c798d22628975`, attempt 1.
+Provider run `33193514608`, job `98924733768`: backup/export + restore temporal + 9/9 colecciones + cleanup + reconciliación exacta PASS, sin redeploy. IAM temporal revocado y verificado con run `33187198967`, attempt 4, job `98940746944`; residuo IAM=0.
 
-Decisión `PASS_F8_BACKUP_RESTORE_CUTOVER_RECONCILED_NO_REDEPLOY`; backup/export completado y retenido; temp DB creada; import completado; 9/9 colecciones top-level coinciden; temp DB eliminada; cleanup completo; Cloud Run y Hosting exactos; release reconciliado; deploy/rebuild/reimport=0; production business data/Firestore document/Auth/HR/Rules/pagos/Make/Gemini writes=0; legacy DB access=false. Autorización F8 consumida=true; retry no autorizado.
+## F8.5 CLOSED PASS
 
-IAM cleanup readback: run `33187198967`, attempt 4, job `98940746944`, checkout vivo `be029042e9c937b3c29301be3e4e1b4524702e4f`. Tras revocar `roles/datastore.owner`, volvieron a faltar exactamente los cinco permisos temporales export/import/create/delete/operations.get; `datastore.databases.getMetadata` basal permanece. Bucket sigue verificado; provider writes=0; F8 mutation job skipped. Residuo IAM=0.
+Autoridad histórica `app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json`: `approvedLineagePreserved=true`, con matriz M1/V161C/V174/V182/C6. V182 no se trata como baseline global reinstalable: los fixes C6 posteriores prevalecen donde fueron aplicados.
+
+Los sucesores autorizados de Shoppers (`f961253f18c388ae04619bb5175269015c8349c3`) y Mis Visitas (`9d8f44b0fea7f2513018339e54a0bef4ae152ea0`) quedan incorporados a la autoridad vigente.
+
+La comparación `f9802fdd498934a8e7729fa5c7d18341bec1cd71 → ef990a86b8a98195c12a8cb318fbc12d9a2bac57` conserva el functional source como merge-base y no contiene cambios posteriores al freeze en `app/modules/**`, `app/core/**`, `app/app.js`, `app/styles/**` ni `app/index-backend-dev.html`. Hosting conserva release `1787796646738000` y version `afe292cfcbbc6005`; el manifest certifica exact source y la errata read-only prueba igualdad del sentinel vivo con functional source, runtime source y rama. P0 de linaje=0.
 
 ## Camino restante
 
-1. ejecutar `F8_5_CANONICAL_MODULE_LINEAGE_CERTIFICATION` y certificar últimas versiones aprobadas versus canónica/Hosting vivo antes de visualización humana;
-2. si F8.5 encuentra mismatch, clasificar y resolver estrictamente conforme al source lock antes de cualquier visualización;
-3. F9 aceptación postproducción: `98 → 100`.
+1. `F9_POSTPRODUCTION_ACCEPTANCE_98_TO_100`;
+2. ejecutar aceptación postproducción controlada sobre el release ya certificado;
+3. solo con PASS F9 avanzar `98 → 100`.
 
 ## Estado seguro
 
-Release F6 intacto. F8 no redeployó ni reimportó. Backup retenido provider-side; base de restore temporal eliminada; escrituras productivas de negocio=0; IAM temporal retirado y verificado; no queda autorización F8 reutilizable.
+Release F6 intacto; F8 no se repite; F8.5 no hizo writes ni deploy. No hay tarea frontend correctiva, no se restaura V182 completo y no se crea nueva candidata por rutina.
 
-**Siguiente gate:** `F8_5_CANONICAL_MODULE_LINEAGE_CERTIFICATION`.
+**Siguiente gate:** `F9_POSTPRODUCTION_ACCEPTANCE_98_TO_100`.
