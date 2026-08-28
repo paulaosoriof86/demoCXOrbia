@@ -1,73 +1,68 @@
 # CAMBIOS-BACKEND.md
 
 **Última actualización:** 2026-08-28  
-**Estado:** `F8_IAM_METADATA_P1_RECONCILED_NONBLOCKING__PRECUTOVER_READONLY_NEXT__PHASE_A_100__PROD_READINESS_95`
+**Estado:** `F8_BOUNDED_LOAD_FAILURE_PASS__BACKUP_RESTORE_CUTOVER_AUTH_GATE__PHASE_A_100__PROD_READINESS_95`
 
-## 2026-08-28 — F8 · corrección antidesvío: IAM metadata vuelve a su severidad P1
+## 2026-08-28 — F8 · cierre del gate bounded load/failure y preparación de frontera de mutación
 
 ### Resultado
 
-Se continuó desde `F8_REQUIRE_SECURE_OWNER_EXECUTION_BRIDGE` y se revisó la autoridad terminal, no solo la clasificación local del último intento IAM.
+Se completó lo que había quedado incompleto después del run read-only exitoso `33131739261` y se sincronizó el control-plane con la evidencia real.
 
-Hallazgo determinante:
+`F7-P1-003` queda `CLOSED/PASS`:
 
-- F7 cerró `GO_WITH_WARNINGS`, P0=`0`.
-- La brecha de provider IAM/secrets se registró como `F7-P1-002`, severidad P1.
-- F8 ya confirmó Cloud Run/revisión congelada, IAM de Cloud Run, APIs 4/4, cuotas 4/4, `plaintextSensitiveKeyCount=0` y `secretBackedEnvCount=0`.
-- El único readback faltante es listar metadata de Secret Manager por ausencia de `secretmanager.secrets.list`.
-- No se leyó ni exportó ningún payload de secreto.
-- El master plan F8 congelado no convierte ese listado específico en criterio terminal de cutover.
+- 24/24 requests GET exitosos;
+- concurrencia `4`;
+- HTTP 5xx=`0`;
+- fallos de contrato=`0`;
+- latencia p95=`181.87 ms`;
+- una sola huella de revisión observada;
+- períodos=`15`;
+- visitas=`660`;
+- token operacional inválido/ausente y Origin no confiable fallaron cerrado;
+- provider/data writes=`0`; deploys=`0`.
 
-Conclusión: la clasificación de mecanismo que llevó a construir/buscar un puente Owner elevó indebidamente un P1 a bloqueo. Bajo la regla vigente `P1/P2 se documentan y no bloquean`, `F7-P1-002` queda preservado como warning no bloqueante. El puente Owner/IAM se retira del camino crítico.
+El run anterior `33131536618` falló por una aserción incorrecta del harness sobre Firebase Hosting. Se clasifica `MECHANISM_P1_TEST_ASSUMPTION`; `productP0Proven=false`; no se repitió sin cambio y el harness corregido pasó.
 
-### Investigación histórica focalizada cerrada
+### Release/cutover
 
-Se verificó que los workflows históricos con nombres de credential/identity bridge reutilizan el mismo `FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV` o material de transporte relacionado; no representan una sesión humana Owner ni una ruta OIDC/WIF. Tampoco existe plugin/conector GCP/IAM disponible. Este hallazgo se conserva como explicación de mecanismo, pero ya no justifica crear infraestructura IAM para cerrar un P1.
+El release F6 permanece exacto e inmutable. La evidencia provider/read-only y el bounded gate no muestran drift del release congelado; por idempotencia **no se requiere redeploy ahora**. El cutover posterior debe reconciliar/retener el release exacto salvo que un gate posterior autorizado pruebe drift.
 
-### Evidencia nueva
-
-`app/docs/evidence/RC15-F8-IAM-METADATA-NONBLOCKING-RECONCILIATION-LATEST.json`.
-
-Decisión: `PASS_RECONCILE_IAM_METADATA_HOLD_TO_NONBLOCKING_P1`.
-
-Clasificación: `F7_P1_002_RECONCILED_NONBLOCKING__NO_PRODUCT_P0`.
+`F7-P1-004` — backup/export + restore verificable — permanece pendiente. No se identificó en el control-plane vivo inspeccionado un ejecutor F8 actualmente autorizado para esa mutación; los workflows de deploy revisados son históricos/consumidos/inertes y no deben revivirse. Esto no afirma imposibilidad del proveedor: fija únicamente que la ejecución requiere selección de mecanismo y autorización explícita vigente.
 
 ### Estado seguro
 
-PHASE_A=`100/100`; PRODUCTION_REAL_READINESS=`95/100`; release F6 intacto `CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01`.
+PHASE_A=`100/100`; PRODUCTION_REAL_READINESS=`95/100`; release `CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01` intacto.
 
-Provider/IAM/data/Auth/Firestore/HR/Storage/Rules/pagos/Make/Gemini writes=`0`; deploy/rebuild/reimport/merge=`0`.
+En este cierre: provider/IAM/data/Auth/Firestore/HR/Storage/Rules/pagos/Make/Gemini writes=`0`; deploy/rebuild/reimport/merge=`0`. No se creó rama, PR, workflow, WIF, service account, credencial ni binding IAM.
 
-No se creó workflow, rama, PR, WIF, service account, credencial ni binding IAM. El intento temporal IAM anterior sigue consumido y replay=`false`.
+### Archivos del cierre
 
-### Archivos reconciliados
-
-- `backend/config/cxorbia-phase-a-continuity-lock.json` → schema `4.2.0`;
+- `backend/config/cxorbia-phase-a-continuity-lock.json` → schema `4.3.0`;
 - `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 - `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 - `app/docs/SOURCE-LOCK-CXORBIA-TYA-VIGENTE.md`;
 - `app/docs/PRODUCTION-REAL-PROGRESS-LOCK-CXORBIA-TYA.md`;
-- `app/docs/evidence/RC15-F8-IAM-METADATA-NONBLOCKING-RECONCILIATION-LATEST.json`;
+- `app/docs/evidence/RC15-F8-BOUNDED-LOAD-FAILURE-READONLY-LATEST.json`;
+- `app/docs/evidence/RC15-F8-BACKUP-RESTORE-CUTOVER-READONLY-PLAN-LATEST.json`;
 - `app/docs/RESUMEN-PARA-CLAUDE.md`;
 - `app/docs/PENDIENTES-PROTOTIPO.md`;
 - `app/docs/CAMBIOS-BACKEND.md`.
 
 ### Clasificación obligatoria
 
-- **Reusable CXOrbia:** una limitación de observabilidad/metadata P1 no debe promoverirse a P0 sin evidencia de impacto de producto; el control-plane debe respetar severidad y autoridad terminal.
-- **Exclusivo cliente:** proyecto provider `cxorbia-backend-dev` y su capacidad IAM actual.
-- **Claude/prototipo:** sin cambio UI, sin candidata nueva y sin reauditoría frontend.
-- **Academia:** sin impacto funcional; P2 de profundidad continúa no bloqueante.
-- **Sin impacto Claude:** reconciliación de seguridad/control-plane/evidencia.
+- **Reusable CXOrbia:** gate acotado read-only; falsos negativos del harness no elevan severidad de producto; cutover idempotente no redeploya un release exacto sin drift.
+- **Exclusivo cliente:** proyecto `cxorbia-backend-dev`, release congelado y mecanismo provider de backup/restore posterior.
+- **Claude/prototipo:** sin cambio UI, candidata ni reauditoría frontend.
+- **Academia:** sin impacto funcional; profundidad P2 continúa pendiente no bloqueante.
+- **Sin impacto Claude:** control-plane/evidencia/precutover.
 
 ## Siguiente bloque exacto
 
-`F8_BOUNDED_LOAD_FAILURE_READONLY_CHECK`.
+`F8_BACKUP_RESTORE_AND_CUTOVER_EXPLICIT_AUTHORIZATION_GATE`.
 
-Debe ser acotado, read-only, contra el release congelado y sin generar datos ni mutaciones. Después se llega a la frontera de backup/export + restore/cutover, donde cualquier mutación requerirá autorización explícita específica.
+No ejecutar backup/restore, cutover ni otra provider mutation por inferencia del permiso de continuar. Requieren autorización explícita específica vigente.
 
-## Antecedentes preservados
+## Antecedente inmediato preservado
 
-El intento IAM single-use run `33118612042` sigue siendo evidencia válida de que el principal DEV no tiene `resourcemanager.projects.setIamPolicy`; grantAttempted=false, metadata readback=false y providerWrites=0. La identidad humana Owner observada también se conserva como evidencia administrativa, pero ninguna de las dos exige acción adicional para el camino crítico actual.
-
-La incidencia transitoria previa `app/docs/CONTINUITY-NOOP.txt` quedó reconciliada y el archivo no existe en el árbol vivo.
+La reconciliación anterior mantuvo `F7-P1-002` como warning P1 no bloqueante y retiró el puente Owner/IAM del camino crítico. El intento IAM single-use `33118612042` sigue consumido, sin replay y con providerWrites=0. F5/F6/F7 continúan terminales según sus evidencias canónicas.

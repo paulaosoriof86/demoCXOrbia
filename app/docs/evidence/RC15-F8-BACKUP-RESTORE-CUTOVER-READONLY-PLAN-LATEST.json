@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0.0",
+  "evidenceId": "RC15-F8-BACKUP-RESTORE-CUTOVER-READONLY-PLAN-20260828-01",
+  "generatedAt": "2026-08-28T01:34:00Z",
+  "phase": "F8_CUTOVER",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "auditedHead": "7fa70859c7ac786c66676723e4c675fe40147fd7",
+  "sourceAuthority": {
+    "masterPlan": "app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md",
+    "masterPlanVersion": "1.1.0",
+    "masterPlanStatus": "FROZEN",
+    "releaseManifest": "backend/config/cxorbia-phase-a-release-manifest-v1.json"
+  },
+  "frozenRelease": {
+    "releaseId": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
+    "functionalSourceSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "runtimeReleaseSourceSha": "2d0b8e83b32b44f6c3eae80b7630f8cd3295fba2",
+    "runtimeReleaseTreeSha": "f93012599e4ca5195f89f19995251fa91c0d38d9",
+    "cloudRunRevision": "cxorbia-live-hr-dev-00013-rns",
+    "imageDigest": "sha256:eca8b831c24ef81f09e4addda721d0af89a24c5a0d753aa507989988458227ec",
+    "hostingRelease": "sites/cxorbia-backend-dev/releases/1787796646738000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/afe292cfcbbc6005"
+  },
+  "priorGate": {
+    "evidence": "app/docs/evidence/RC15-F8-BOUNDED-LOAD-FAILURE-READONLY-LATEST.json",
+    "runId": 33131739261,
+    "decision": "PASS_F8_BOUNDED_LOAD_FAILURE_READONLY",
+    "f7P1003Status": "CLOSED_PASS"
+  },
+  "assessment": {
+    "f7P1003Status": "CLOSED_PASS",
+    "f7P1004Status": "PENDING_EXPLICIT_AUTHORIZATION",
+    "redeployRequiredNow": false,
+    "redeployBasis": "The exact F6 frozen Cloud Run/runtime tuple has provider readback PASS and the bounded read-only gate observed one stable revision with no product P0 or release-drift evidence. F6 rebuild remains forbidden; retain/reconcile the exact release unless a later authorized drift gate proves otherwise.",
+    "currentAuthorizedBackupRestoreExecutor": "NONE_IDENTIFIED_IN_INSPECTED_LIVE_CONTROL_PLANE",
+    "executorScopeNote": "This records only that no already-authorized active F8 executor was identified in the inspected live control-plane. It does not claim provider impossibility. Historical or consumed deployment workflows must not be revived as a substitute.",
+    "backupRestoreMayRequireProviderOrStorageMutation": true,
+    "providerMutationAuthorizedNow": false,
+    "cutoverProviderMutationAuthorizedNow": false,
+    "genericContinueIsSufficientForMutation": false,
+    "manualActionRequestedNow": false
+  },
+  "requiredBeforeExecution": [
+    "specific current-conversation authorization for the minimum backup/export + verifiable restore mechanism",
+    "specific current-conversation authorization for any provider mutation needed by cutover",
+    "pre-mutation dynamic HEAD/source-lock and frozen-release drift recheck",
+    "rollback point and post-action provider/read-only reconciliation"
+  ],
+  "prohibitedByCurrentGate": [
+    "rebuild frozen F6 release",
+    "unnecessary redeploy without proven drift",
+    "legacy database connection or copy",
+    "payments, Make or Gemini calls",
+    "unapproved IAM grant or credential creation",
+    "new branch or PR",
+    "reviving consumed historical workflows as transport"
+  ],
+  "safety": {
+    "providerWrites": 0,
+    "businessDataWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "storageWrites": 0,
+    "rulesWrites": 0,
+    "paymentWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "deploys": 0,
+    "rebuilds": 0,
+    "reimports": 0,
+    "merge": false,
+    "secretValuesRead": false,
+    "credentialsExposed": false
+  },
+  "decision": "READY_F8_BACKUP_RESTORE_AND_CUTOVER_EXPLICIT_AUTHORIZATION_GATE",
+  "productP0Proven": false,
+  "phaseA": 100,
+  "productionRealReadiness": 95,
+  "next": "F8_BACKUP_RESTORE_AND_CUTOVER_EXPLICIT_AUTHORIZATION_GATE"
+}

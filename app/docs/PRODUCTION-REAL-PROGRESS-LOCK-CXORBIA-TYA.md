@@ -15,25 +15,23 @@
 - `81 → 86`: F5 live synthetic acceptance + cleanup + residuo cero PASS.
 - `86 → 90`: F6 release Phase A inmutable PASS.
 - `90 → 95`: F7 integral readiness `GO_WITH_WARNINGS`, P0=0.
+- F8 read-only: IAM metadata P1 reconciliado no bloqueante y `F7-P1-003` bounded load/failure `CLOSED/PASS` sin cambio porcentual.
 
-## F8 — reconciliación del camino crítico sin cambio porcentual
+## F8 bounded gate
 
-Se corrigió una elevación indebida de severidad: `F7-P1-002` nació y permanece como warning P1 dentro de un cierre F7 `GO_WITH_WARNINGS` con P0=0. El readback F8 posterior confirmó el runtime congelado exacto, ausencia de secrets sensibles en plaintext, cero secret-backed env, APIs requeridas habilitadas y cuotas PASS. El único remanente es que el principal DEV no puede listar metadata Secret Manager por ausencia de `secretmanager.secrets.list`; no se leyó ni exportó ningún payload.
+Run `33131739261`: 24/24 GET exitosos, concurrencia 4, 0 HTTP 5xx, 0 fallos de contrato, p95 `181.87 ms`, 1 huella de revisión, 15 períodos y 660 visitas. Failure injection acotada falló cerrado para token operacional inválido/ausente y Origin no confiable. El run `33131536618` fue falso negativo del harness, no P0 de producto.
 
-La imposibilidad de construir automáticamente un puente hacia la identidad humana Owner es, por tanto, una limitación de mecanismo para cerrar ese warning, **no un bloqueo del cutover definido por el master plan**. No se creará WIF, service account, binding o credencial para resolver un P1 no bloqueante.
-
-`PRODUCTION_REAL_READINESS` permanece `95/100`: el porcentaje solo mueve `95 → 98` cuando F8 cutover quede terminal y reconciliado.
+No se demuestra drift del release F6 y no se requiere redeploy ahora. `PRODUCTION_REAL_READINESS` permanece `95/100`; solo mueve `95 → 98` cuando F8 cutover quede terminal y reconciliado.
 
 ## Camino restante
 
-1. `F8_BOUNDED_LOAD_FAILURE_READONLY_CHECK` — read-only, sin intervención manual.
-2. Backup/export + restore verificable — requiere autorización explícita si implica mutación/provider storage.
-3. Cutover exacto del release congelado + provider readbacks/smoke/rollback — requiere autorización específica.
-4. F8 terminal: `95 → 98`.
-5. F9 aceptación postproducción: `98 → 100`.
+1. `F7-P1-004`: backup/export + restore verificable, sujeto a autorización explícita de la mutación necesaria.
+2. Reconciliación/cutover exacto del release congelado; retenerlo sin redeploy si el pre-mutation drift check sigue PASS.
+3. Provider readbacks/smoke/rollback y cierre F8: `95 → 98`.
+4. F9 aceptación postproducción: `98 → 100`.
 
 ## Estado seguro
 
-Release F6 intacto. Provider/IAM/data/Auth/Firestore/HR/Storage/Rules/pagos/Make/Gemini writes=`0`; deploy/rebuild/reimport/merge=`0` en esta reconciliación.
+Release F6 intacto. En este cierre read-only: provider/IAM/data/Auth/Firestore/HR/Storage/Rules/pagos/Make/Gemini writes=`0`; deploy/rebuild/reimport/merge=`0`.
 
-Siguiente gate: `F8_BOUNDED_LOAD_FAILURE_READONLY_CHECK`.
+**Siguiente gate:** `F8_BACKUP_RESTORE_AND_CUTOVER_EXPLICIT_AUTHORIZATION_GATE`.
