@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "cxorbia.rc15.f8.iam-bridge-root-cause.evidence.v1",
+  "evidenceId": "RC15-F8-IAM-BRIDGE-ROOT-CAUSE-20260828-01",
+  "generatedAtConversationDate": "2026-08-28",
+  "projectId": "cxorbia-backend-dev",
+  "phase": "F8_CUTOVER",
+  "decision": "HOLD_F8_HUMAN_OWNER_TEMP_CONDITIONAL_DATASTORE_OWNER_REQUIRED",
+  "classification": "MECHANISM_P0_PROVIDER_CAPABILITY_BOUNDARY_NO_EXISTING_AUTOMATED_IAM_BRIDGE",
+  "productP0Proven": false,
+  "originalF8Authorization": {
+    "authorizationId": "PAULA-F8-BACKUP-RESTORE-CUTOVER-20260827-01",
+    "status": "AUTHORIZED_NOT_YET_CONSUMED",
+    "authorizationConsumed": false
+  },
+  "temporaryIamAuthorization": {
+    "authorizationId": "PAULA-F8-TEMP-DATASTORE-OWNER-20260828-01",
+    "authorized": true,
+    "role": "roles/datastore.owner",
+    "principalFingerprintSha256Prefix": "ab70b5da53a2d545a74c",
+    "conditionRequired": true,
+    "maximumDurationMinutes": 120,
+    "explicitRevokeRequired": true,
+    "status": "AUTHORIZED_NOT_YET_CONSUMED"
+  },
+  "readOnlyProof": {
+    "workflowRunId": 33187198967,
+    "runAttempt": 2,
+    "predeployJobId": 98907647148,
+    "f8JobId": 98907648339,
+    "artifactId": 9692747900,
+    "artifactDigest": "sha256:6a0e816e8208ccad7c2c78bf9547881d1aafc4d70dd3819ef5fd1a3f5a97ede2",
+    "checkedOutLiveHead": "cf497c33c229506044e959499a1c89eecfe89da8",
+    "executorV6SyntaxCheck": "PASS",
+    "liveHrReadOnly": "PASS",
+    "checkpointBackedShopperCurrentRuntime": "PASS",
+    "providerSecurityQuota": "PASS_WITH_NONBLOCKING_F7_P1_002_WARNING",
+    "boundedLoad": "PASS_24_OF_24_ZERO_5XX_ZERO_CONTRACT_FAILURES",
+    "hostingAdapterSourceEquality": "PASS_LIVE_EQUALS_CURRENT_AND_FROZEN_FUNCTIONAL_SOURCE",
+    "verifiedExistingBackupBucket": true,
+    "f8MutationJobAuthentication": "SKIPPED_MARKER_INACTIVE",
+    "f8MutationJobExecution": "SKIPPED_MARKER_INACTIVE"
+  },
+  "capabilityBoundary": {
+    "existingDevDirectSetIamPolicy": false,
+    "existingAutomatedIamBridge": false,
+    "impersonableServiceAccountCount": 0,
+    "requiredFirestorePermissions": [
+      "datastore.databases.export",
+      "datastore.databases.import",
+      "datastore.databases.create",
+      "datastore.databases.delete",
+      "datastore.databases.getMetadata",
+      "datastore.operations.get"
+    ],
+    "alreadyGranted": [
+      "datastore.databases.getMetadata"
+    ],
+    "missing": [
+      "datastore.databases.export",
+      "datastore.databases.import",
+      "datastore.databases.create",
+      "datastore.databases.delete",
+      "datastore.operations.get"
+    ],
+    "alternateProjectCreatorCredentialPresent": false,
+    "newCredentialRequiredOrAuthorized": false
+  },
+  "rootCauseChain": [
+    "The original external-transport diagnosis was incomplete: an existing GitHub-to-GCP identity route was available and was reconnected without new credentials.",
+    "The first real F8 execution stopped before mutation because F6 had promoted an unverified inherited Hosting adapter fingerprint into immutable certification metadata; an immutable-manifest errata overlay now corrects only that fingerprint.",
+    "The Firebase-advertised default Storage bucket was not a real bucket; a real same-project US GCS bucket is now discovered and verified by project inventory before F8 can consume authorization.",
+    "All remaining F8 preconditions are satisfied except five Firestore administrative permissions. The DEV principal cannot set project IAM and no existing automated impersonation bridge with setIamPolicy was proven.",
+    "Therefore one human-Owner IAM grant is the exact remaining provider capability boundary; it is not another product defect or transport symptom."
+  ],
+  "safety": {
+    "providerWrites": 0,
+    "iamWrites": 0,
+    "backupStarted": false,
+    "restoreStarted": false,
+    "cutoverStarted": false,
+    "deploys": 0,
+    "rebuilds": 0,
+    "releaseReimports": 0,
+    "businessDataWrites": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "storageWrites": 0,
+    "paymentWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "legacyDatabaseAccess": false,
+    "authorizationConsumed": false
+  },
+  "controlPlaneIncident": {
+    "accidentalInertBranch": "__invalid_should_not_create__",
+    "createdDuringConnectorCapabilityExploration": true,
+    "usedForWork": false,
+    "containsUniqueChanges": false,
+    "pullRequestCreated": false,
+    "authoritative": false,
+    "removalUnavailableThroughCurrentConnector": true,
+    "instruction": "Never use as a work lane; only docs-tya-v6-v71-audit is authoritative."
+  },
+  "postF8MandatoryGate": {
+    "gate": "F8_5_CANONICAL_MODULE_LINEAGE_CERTIFICATION",
+    "humanVisualReviewBlockedUntilPass": true,
+    "scope": "all approved app/modules, relevant app/core, entrypoints, scripts, adapters, routes and live Hosting fingerprints"
+  },
+  "next": "F8_HUMAN_OWNER_APPLY_AUTHORIZED_TEMP_CONDITIONAL_DATASTORE_OWNER_THEN_READONLY_CAPABILITY_RECHECK"
+}
