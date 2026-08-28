@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "cxorbia.rc15.f8.temp-datastore-owner.state.v1",
+  "generatedAtConversationDate": "2026-08-28",
+  "projectId": "cxorbia-backend-dev",
+  "authorizationId": "PAULA-F8-TEMP-DATASTORE-OWNER-20260828-01",
+  "parentF8AuthorizationId": "PAULA-F8-BACKUP-RESTORE-CUTOVER-20260827-01",
+  "role": "roles/datastore.owner",
+  "principalFingerprintSha256Prefix": "ab70b5da53a2d545a74c",
+  "grantObservedEffective": true,
+  "grantCapabilityProof": {
+    "workflowRunId": 33187198967,
+    "runAttempt": 3,
+    "jobId": 98923457703,
+    "decision": "PASS_F8_CUTOVER_CAPABILITY_READONLY",
+    "missingPermissions": [],
+    "verifiedExistingBucket": true,
+    "issues": []
+  },
+  "f8Execution": {
+    "workflowRunId": 33193514608,
+    "jobId": 98924733768,
+    "triggerHead": "dec6e8b451d6dd42303ff244703c798d22628975",
+    "decision": "PASS_F8_BACKUP_RESTORE_CUTOVER_RECONCILED_NO_REDEPLOY",
+    "stage": "TERMINAL_PASS",
+    "authorizationConsumed": true,
+    "providerWrites": 4
+  },
+  "revocation": {
+    "required": true,
+    "observedRevoked": false,
+    "verificationPending": true
+  },
+  "safety": {
+    "productionBusinessDataWrites": 0,
+    "productionFirestoreDocumentWrites": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "paymentWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "deploys": 0,
+    "rebuilds": 0,
+    "releaseReimports": 0,
+    "legacyDatabaseAccess": false
+  },
+  "status": "F8_TERMINAL_PASS_PENDING_TEMP_IAM_REVOCATION_VERIFICATION",
+  "next": "REMOVE_TEMP_DATASTORE_OWNER_AND_VERIFY_PRIVILEGE_RESIDUE_ZERO"
+}
