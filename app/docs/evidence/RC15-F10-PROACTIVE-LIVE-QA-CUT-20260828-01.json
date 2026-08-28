@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "cxorbia.rc15.f10.proactive-live-qa-cut.v1",
+  "generatedAtUtc": "2026-08-28T22:08:00Z",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "phase": "F10_PERMANENT_OPERATING_MODEL",
+  "releaseId": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
+  "productionReadiness": 100,
+  "phaseA": 100,
+  "qaMode": "assistant_first_live_readonly_before_owner_visual_acceptance",
+  "productP0Proven": false,
+  "liveChecks": {
+    "staffAdmin": {
+      "runId": 33213920240,
+      "workflowConclusion": "success",
+      "decision": "PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY",
+      "liveRoot": "https://cxorbia-backend-dev.web.app",
+      "periods": 15,
+      "visits": 660,
+      "shoppers": 200,
+      "firstPeriod": "2025-06",
+      "latestPeriod": "2026-08",
+      "projectId": "cinepolis",
+      "periodId": "cinepolis-2026-08",
+      "reloadStable": true,
+      "newTabStable": true,
+      "postulationsPlatform": 8,
+      "hrAssignments": 15,
+      "hrAssignmentsArePostulations": false,
+      "syntheticHrPostsInPlatform": 0,
+      "identityMapSize": 209,
+      "identityReviewCount": 147,
+      "identityReviewReason": "no_exact_hr_crosswalk",
+      "testedAugustExactCanonicalVisits": 2,
+      "testedAugustResidualLiveVisits": 0,
+      "fuzzyMatching": false,
+      "writes": 0
+    },
+    "client": {
+      "runId": 33214049346,
+      "workflowConclusion": "success",
+      "decision": "PASS_C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC_CLASSIFIED",
+      "authenticated": true,
+      "role": "cliente",
+      "tenantId": "tya",
+      "projectId": "cinepolis",
+      "route": "cli_dashboard",
+      "renderSatisfiedAt": "after_route_0ms",
+      "pageErrors": 0,
+      "consoleErrors": 0,
+      "writes": 0
+    },
+    "financeReconciliation": {
+      "runId": 33213791473,
+      "workflowConclusion": "failure_due_to_runner_mechanism",
+      "underlyingFinancialGateDecision": "PASS_CORTE3_FINANCIAL_RECONCILIATION_R20_REVIEWED_DELTA",
+      "financeScope": "2025-06_through_2026-07",
+      "expectedHrVisits": 616,
+      "financialRows": 247,
+      "exactProtectedLinks": 209,
+      "reviewQueue": 79,
+      "paymentsExecuted": false,
+      "productFinancialMismatchProven": false,
+      "runnerMechanismFinding": "MECHANISM_P1_EPHEMERAL_LIVE_HR_TRACKED_DELTA_FALSE_HOLD"
+    },
+    "historicalShopper": {
+      "freshCredentialLoginInThisCut": false,
+      "reason": "historical dynamic Shopper credential selector is known stale and was not replayed",
+      "currentCheckpointBackedReadOnlyDecision": "PASS_I3_6_HISTORICAL_SHOPPER_PROFILE_HISTORY_REUSE_NO_REPROCESS",
+      "profile": true,
+      "membership": true,
+      "crosswalk": true,
+      "history": true,
+      "historyE2E": true,
+      "passwordResetsThisCut": 0,
+      "writes": 0
+    }
+  },
+  "scopeInterpretation": {
+    "operationalLiveHr": "15 periods / 660 visits / through 2026-08",
+    "closedFinanceReconciliation": "14 periods / 616 visits / 2025-06 through 2026-07",
+    "classification": "EXPECTED_SCOPE_SEPARATION_NOT_DATA_MISMATCH"
+  },
+  "mechanismFindings": [
+    {
+      "severity": "P1",
+      "code": "MECHANISM_P1_STALE_LOCAL_FINANCE_AUTH_HARNESS",
+      "detail": "The canonical finance source-safe binding precheck passed, but the old local UI/export browser harness timed out at its legacy/local Admin login path. This is not evidence of a live finance module defect."
+    },
+    {
+      "severity": "P1",
+      "code": "MECHANISM_P1_STALE_V174_REQUIRED_SCRIPT_REFERENCE",
+      "runId": 33214816870,
+      "detail": "V174 coherence preflight stopped before provider read because tools/qa/tya-live-hr-inplace-r22-gate.mjs is referenced by the old profile but has never existed in repository history. Request retired; replay forbidden."
+    },
+    {
+      "severity": "P1_CONTROLLED_REVIEW",
+      "code": "EXACT_IDENTITY_REVIEW_POPULATION",
+      "detail": "147 historical identity items remain in exact-match review with reason no_exact_hr_crosswalk. The tested current August identity mapped exactly, retained two canonical visits and zero residual live-id visits, with fuzzy matching disabled."
+    }
+  ],
+  "syncReadState": {
+    "freshReadOnlyEvidence": "PASS",
+    "platformPostulations": 8,
+    "hrAssignments": 15,
+    "syntheticHrPostulations": 0,
+    "testedAugustResidualDuplicates": 0,
+    "twoWayWriteRoundtripExecutedInThisCut": false,
+    "reason": "A true platform-to-HR-to-platform mutation roundtrip requires separately bounded reversible write authorization; F10 monitoring remains read-only by default."
+  },
+  "safety": {
+    "frontendProductWrites": 0,
+    "providerWrites": 0,
+    "businessDataWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "storageWrites": 0,
+    "rulesWrites": 0,
+    "paymentWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "deploys": 0,
+    "rebuilds": 0,
+    "reimports": 0,
+    "merge": false
+  },
+  "ownerVisualAcceptance": {
+    "requestedNow": false,
+    "reason": "Assistant-first QA is not yet terminal because two stale monitoring harnesses must be repaired or superseded before transferring final visual/business acceptance to Paula."
+  },
+  "next": "F10_REPAIR_OR_SUPERSEDE_STALE_QA_HARNESSES_THEN_COMPLETE_REMOTE_MODULE_COHERENCE_BEFORE_OWNER_VISUAL_ACCEPTANCE"
+}
