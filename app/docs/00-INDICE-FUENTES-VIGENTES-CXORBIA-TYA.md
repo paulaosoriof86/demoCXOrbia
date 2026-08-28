@@ -1,16 +1,16 @@
 # 00 — ÍNDICE DE FUENTES VIGENTES CXORBIA TyA
 
 **Fecha:** 2026-08-28  
-**STATE_SYNC_EPOCH:** `CXORBIA-20260828-F8-TEMP-IAM-EFFECTIVE-CAPABILITY-PASS-05`  
+**STATE_SYNC_EPOCH:** `CXORBIA-20260828-F8-TERMINAL-PASS-PENDING-IAM-REVOCATION-06`  
 **MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`  
 **MASTER_PLAN_VERSION:** `1.1.0` / `FROZEN`  
 **currentMasterPhase:** `F8_CUTOVER`  
-**currentMasterStep:** `F8_TEMP_IAM_GRANTED_CAPABILITY_PASS_READY_FOR_SUCCESSOR_MARKER`  
+**currentMasterStep:** `F8_TERMINAL_PASS_PENDING_TEMP_IAM_REVOCATION_VERIFICATION`  
 **F5:** `CLOSED_PASS_CONSUMED_ZERO_RESIDUE`  
 **F6:** `CLOSED_PASS_IMMUTABLE_WITH_FINGERPRINT_ERRATA_OVERLAY`  
 **F7:** `GO_WITH_WARNINGS_NO_P0`  
-**F8:** `AUTHORIZED_NOT_YET_CONSUMED__TEMP_DATASTORE_OWNER_EFFECTIVE__CAPABILITY_PASS`  
-**NEXT:** `F8_EMIT_EXACT_SUCCESSOR_MARKER_AND_EXECUTE_SINGLE_USE_BACKUP_RESTORE_CUTOVER`  
+**F8:** `TERMINAL_PROVIDER_PASS__AUTH_CONSUMED__PENDING_TEMP_IAM_REVOCATION_ZERO_RESIDUE`  
+**NEXT:** `F8_REVOKE_TEMP_DATASTORE_OWNER_VERIFY_ZERO_RESIDUE_THEN_F8_5_CANONICAL_MODULE_LINEAGE_CERTIFICATION`  
 **PHASE_A:** `100/100`  
 **PRODUCTION_REAL_READINESS:** `95/100`
 
@@ -20,42 +20,39 @@
 2. `backend/config/cxorbia-phase-a-continuity-lock.json` como lock de release/gates previo aún autoritativo;
 3. master plan congelado `app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md`;
 4. manifest histórico inmutable `backend/config/cxorbia-phase-a-release-manifest-v1.json`;
-5. errata overlay `backend/config/cxorbia-phase-a-release-manifest-errata-v1.json`, que corrige únicamente el fingerprint Hosting F6 sin cambiar el release;
-6. evidencia F7 terminal `app/docs/evidence/RC15-F7-INTEGRAL-READINESS-LATEST.json`;
-7. autorización F8 single-use `app/docs/evidence/RC15-F8-BACKUP-RESTORE-CUTOVER-AUTHORIZATION-LATEST.json`;
-8. autorización IAM excepcional `app/docs/evidence/RC15-F8-TEMP-DATASTORE-OWNER-AUTHORIZATION-LATEST.json`;
-9. evidencia de causa raíz/frontera IAM `app/docs/evidence/RC15-F8-IAM-BRIDGE-ROOT-CAUSE-LATEST.json`;
-10. executor `tools/release/tya-f8-backup-restore-cutover-one-shot.mjs` schema v6;
-11. entrypoint `tools/release/tya-f8-backup-restore-cutover-cli.mjs`;
-12. workflow existente `.github/workflows/cxorbia-phase-a-live-hr-runtime-predeploy.yml`, reutilizado con gate exacto; no se creó workflow nuevo;
-13. checkpoint/source-lock/progress y addenda CAMBIOS/Claude/Pendientes como mirrors;
-14. PR #7 mirror-only, cerrado y no mergeado;
-15. resolver HEAD vivo de `docs-tya-v6-v71-audit` antes de cualquier mutación provider.
+5. errata overlay `backend/config/cxorbia-phase-a-release-manifest-errata-v1.json`;
+6. autorización F8 histórica `app/docs/evidence/RC15-F8-BACKUP-RESTORE-CUTOVER-AUTHORIZATION-LATEST.json`;
+7. autorización IAM excepcional `app/docs/evidence/RC15-F8-TEMP-DATASTORE-OWNER-AUTHORIZATION-LATEST.json`;
+8. ejecución F8 terminal `app/docs/evidence/RC15-F8-BACKUP-RESTORE-CUTOVER-EXECUTION-LATEST.json`;
+9. estado IAM temporal `app/docs/evidence/RC15-F8-TEMP-DATASTORE-OWNER-STATE-LATEST.json`;
+10. evidencia de causa raíz `app/docs/evidence/RC15-F8-IAM-BRIDGE-ROOT-CAUSE-LATEST.json`;
+11. executor `tools/release/tya-f8-backup-restore-cutover-one-shot.mjs` schema v6 y CLI correspondiente;
+12. mirrors checkpoint/source-lock/progress y addenda CAMBIOS/Claude/Pendientes;
+13. PR #7 mirror-only, cerrado y no mergeado;
+14. única rama viva: `docs-tya-v6-v71-audit`.
 
 ## Release congelado preservado
 
-Release `CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01`: functional source `f9802fdd498934a8e7729fa5c7d18341bec1cd71`; runtime source `2d0b8e83b32b44f6c3eae80b7630f8cd3295fba2`; Cloud Run `cxorbia-live-hr-dev-00013-rns`; image `sha256:eca8b831c24ef81f09e4addda721d0af89a24c5a0d753aa507989988458227ec`; Hosting release `sites/cxorbia-backend-dev/releases/1787796646738000`; Hosting version `sites/cxorbia-backend-dev/versions/afe292cfcbbc6005`.
+`CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01`: functional `f9802fdd498934a8e7729fa5c7d18341bec1cd71`; runtime `2d0b8e83b32b44f6c3eae80b7630f8cd3295fba2`; Cloud Run `cxorbia-live-hr-dev-00013-rns`; image `sha256:eca8b831c24ef81f09e4addda721d0af89a24c5a0d753aa507989988458227ec`; Hosting release `sites/cxorbia-backend-dev/releases/1787796646738000`; Hosting version `sites/cxorbia-backend-dev/versions/afe292cfcbbc6005`.
 
-No rebuild, redeploy, reimport ni sustitución del release ocurrió. La huella Hosting histórica incorrecta de F6 quedó corregida únicamente mediante errata overlay; el asset vivo coincide con functional source congelado, runtime source congelado y rama actual.
+No rebuild, redeploy, reimport ni sustitución del release ocurrió.
 
-## F8 — estado vivo
+## F8 terminal provider PASS
 
-La autorización `PAULA-F8-BACKUP-RESTORE-CUTOVER-20260827-01` sigue `AUTHORIZED_NOT_YET_CONSUMED`; el primer intento real se detuvo antes de mutación por metadata F6 incorrecta. Backup/export=0, restore=0, cutover=0, deploy=0 y provider writes=0 hasta este punto.
+Run `33193514608`, job `98924733768`, trigger exacto `dec6e8b451d6dd42303ff244703c798d22628975`, attempt 1.
 
-El transporte GCP dejó de ser bloqueo: existe identidad DEV válida y el workflow existente autentica correctamente. Paula autorizó y aplicó un binding temporal/condicionado de `roles/datastore.owner` sobre la identidad DEV existente. El recheck read-only del run `33187198967`, attempt 3, job `98923457703`, sobre HEAD `e9875eb278316396aaf58fe7b31423228fb0940f` terminó `PASS` completo: `PASS_F8_CUTOVER_CAPABILITY_READONLY`, `missingPermissions=[]`, bucket GCS existente/verificado y `issues=[]`.
+Decisión: `PASS_F8_BACKUP_RESTORE_CUTOVER_RECONCILED_NO_REDEPLOY`; stage `TERMINAL_PASS`; autorización F8 consumida=true; automaticRetryAllowed=false; providerWrites=4.
 
-El mismo run mantuvo el job F8 single-use en `skipped` porque no existe successor marker activo; por tanto la autorización F8 no se consumió durante el recheck.
+Backup/export completado y retenido en bucket GCS same-project `US/STANDARD`; base temporal creada; import completado; 9/9 colecciones top-level coinciden; base temporal eliminada; cleanup completo; Cloud Run y Hosting exactos; release reconciliado; deploy/rebuild/reimport=0; production business data/Firestore document/Auth/HR/Rules/pagos/Make/Gemini writes=0; legacy DB access=false.
 
-### Bucket y executor
+## Residuo IAM pendiente
 
-El bucket default anunciado por Firebase era inexistente. El executor v6 solo acepta ahora bucket GCS listado realmente en el mismo proyecto, con metadata, ubicación compatible y permisos de objetos verificados. `node --check` del executor v6 pasó en CI.
+El binding temporal `roles/datastore.owner` ya cumplió su función y debe retirarse. Revocación observada=false; verificación pendiente=true. Por seguridad, `PRODUCTION_REAL_READINESS` permanece 95 hasta demostrar residuo IAM cero. Tras revocación verificada: cerrar F8 y mover `95 → 98`.
 
-### Gate obligatorio posterior
+## F8.5 obligatorio antes de visualización
 
-Después de F8 terminal y revocación verificada del IAM temporal, ejecutar `F8_5_CANONICAL_MODULE_LINEAGE_CERTIFICATION`. No invitar a visualización humana hasta que se determine la última versión aprobada de cada módulo y se compare contra canónica y Hosting vivo para `app/modules/**`, `app/core/**` relevante, entrypoints, scripts, adapters y rutas. Cualquier mismatch bloquea visualización.
+Después de revocación verificada ejecutar `F8_5_CANONICAL_MODULE_LINEAGE_CERTIFICATION`. Debe identificar la última versión aprobada por módulo y comparar canónica versus Hosting vivo en `app/modules/**`, `app/core/**` relevante, entrypoints/index, scripts, adapters y rutas. Cualquier mismatch bloquea visualización humana.
 
-### Control-plane
+La rama accidental `__invalid_should_not_create__` permanece inerte/no autoritativa y no debe usarse.
 
-La rama accidental `__invalid_should_not_create__` es inerte/no autoritativa, no contiene trabajo único y no tiene PR. Nunca usarla. La única rama viva es `docs-tya-v6-v71-audit`.
-
-**NEXT:** `F8_EMIT_EXACT_SUCCESSOR_MARKER_AND_EXECUTE_SINGLE_USE_BACKUP_RESTORE_CUTOVER`.
+**NEXT:** `F8_REVOKE_TEMP_DATASTORE_OWNER_VERIFY_ZERO_RESIDUE_THEN_F8_5_CANONICAL_MODULE_LINEAGE_CERTIFICATION`.
