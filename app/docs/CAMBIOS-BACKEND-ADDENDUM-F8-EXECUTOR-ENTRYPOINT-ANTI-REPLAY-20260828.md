@@ -19,6 +19,10 @@ Evidencia: `app/docs/evidence/RC15-F8-EXECUTOR-ENTRYPOINT-ANTI-REPLAY-REPAIR-LAT
 
 No se añadió una lease global entre workspaces porque eso exigiría una nueva superficie durable de escritura o un contrato de transporte adicional no autorizado. La autoridad cross-workspace sigue siendo la autorización single-use canónica, `automaticRetryAllowed=false`, los gates dinámicos y la reconciliación posterior a ejecución.
 
+## Incidente de herramienta
+
+El primer intento de crear este addendum fue bloqueado por la capa de seguridad de la herramienta antes de producir una mutación en GitHub. Se reintentó con contenido sanitizado y la creación quedó confirmada. No hubo archivo parcial ni efecto provider asociado.
+
 ## Seguridad
 
 Provider writes=0; backup/export=0; restore=0; cutover=0; deploy/rebuild/reimport/merge=0. La autorización F8 sigue no consumida y el release F6 permanece intacto.
