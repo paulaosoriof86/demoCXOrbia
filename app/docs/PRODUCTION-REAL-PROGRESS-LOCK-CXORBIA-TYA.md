@@ -16,17 +16,15 @@
 - `86 → 90`: F6 release Phase A inmutable PASS.
 - `90 → 95`: F7 integral readiness `GO_WITH_WARNINGS`, P0=0.
 
-## F8 — avance sin cambio porcentual
+## F8 — avance causal sin cambio porcentual
 
-La autorización temporal IAM solicitada fue otorgada, pero el preflight single-use demostró antes de cualquier mutación que la única credencial DEV disponible carece de `resourcemanager.projects.setIamPolicy`.
+El intento temporal IAM automatizado anterior demostró que el principal DEV disponible carece de `resourcemanager.projects.setIamPolicy`; no hubo grant, metadata readback ni provider writes y su autorización quedó consumida.
 
-Run `33118612042`: grantAttempted=false, providerWrites=0, Secret Manager metadata readback no ejecutado, secret payload read/export=0, binding temporal final ausente. La autorización single-use quedó consumida y el código temporal de mutación fue retirado inmediatamente.
+La nueva evidencia del proyecto exacto identifica una identidad humana con `roles/owner`, cerrando la hipótesis de ausencia total de una ruta administrativa. Sin embargo, el carril actual no dispone de un puente seguro automatizado hacia esa sesión: no se encontró GitHub OIDC/WIF existente ni conector GCP/IAM utilizable.
 
-Clasificación: `MECHANISM_P0_STOP_PROVIDER_IAM_SET_CAPABILITY_UNAVAILABLE`; `productP0Proven=false`.
+Por tanto F8 avanza causalmente de `REQUIRE_IAM_CAPABLE_PROVIDER_ROUTE` a `REQUIRE_SECURE_OWNER_EXECUTION_BRIDGE`, pero **no aumenta porcentaje**. No existe autorización de provider mutation y no se solicita acción manual en este corte.
 
-Los PASS previos siguen intactos: Shopper runtime exacto; Cloud Run target/revision; Cloud Run IAM; plaintext secret-bearing env names=0; Service Usage 4/4 ENABLED; quotas 4/4 PASS sin overrides.
-
-El porcentaje no aumenta por diagnóstico o preparación. F8 solo mueve `95 → 98` cuando el cutover exacto quede terminal y reconciliado.
+El porcentaje solo mueve `95 → 98` cuando F8 cutover quede terminal y reconciliado.
 
 ## Escalera restante
 
@@ -36,6 +34,6 @@ El porcentaje no aumenta por diagnóstico o preparación. F8 solo mueve `95 → 
 
 ## Siguiente gate
 
-`F8_REQUIRE_IAM_CAPABLE_PROVIDER_ROUTE`.
+`F8_REQUIRE_SECURE_OWNER_EXECUTION_BRIDGE`.
 
-No hay autorización activa de provider mutation ni se solicita acción manual de Paula en este corte.
+Release F6 intacto; provider/IAM/data/deploy writes=0.

@@ -1,7 +1,7 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-27  
-**Estado:** `PHASE_A_100__PROD_READINESS_95__F8_EXTERNAL_OWNER_ROUTE_IDENTIFIED__EFFECTIVE_TEST_PENDING`
+**Estado:** `PHASE_A_100__PROD_READINESS_95__F8_HUMAN_OWNER_ROUTE_OBSERVED__SECURE_BRIDGE_HOLD`
 
 ## Cerrado / no reprocesar
 
@@ -15,15 +15,20 @@ No reabrir synthetic lifecycle, F7, R24/Corte 4, no rebuild/redeploy del release
 
 La ruta automatizada DEV existente sigue sin `resourcemanager.projects.setIamPolicy`; el intento temporal autorizado permanece consumido y no tuvo provider writes.
 
-Nueva evidencia visual del proyecto exacto `cxorbia-backend-dev` demuestra que existe una identidad humana con rol `Propietario` / `Owner`. Por documentación oficial, ese rol incluye `resourcemanager.projects.setIamPolicy`; sin embargo, antes de declarar capacidad efectiva debe ejecutarse `projects.testIamPermissions` con esa sesión humana para descartar deny/restricciones efectivas.
+La evidencia del proyecto exacto demuestra una identidad humana `roles/owner`. Por tanto ya no está pendiente “encontrar un administrador”; está pendiente un **carril seguro de ejecución** que permita usar capacidad administrativa sin pedir claves, convertir la cuenta humana en secreto ni crear infraestructura IAM sin autorización.
 
-### Próxima comprobación permitida
+La búsqueda focalizada no encontró OIDC/WIF existente en el repo ni conector GCP/IAM disponible en esta sesión.
 
-`F8_VERIFY_EXTERNAL_OWNER_EFFECTIVE_SET_IAM_CAPABILITY`.
+### Próxima frontera
 
-Comprobar únicamente `resourcemanager.projects.setIamPolicy` mediante `projects.testIamPermissions` en modo read-only/capability-only.
+`F8_REQUIRE_SECURE_OWNER_EXECUTION_BRIDGE`.
 
-Esta comprobación no concede roles. Si PASS, cualquier grant temporal posterior requiere autorización explícita nueva y separada; la autorización anterior no revive.
+Antes de cualquier grant:
+1. disponer de un canal autenticado seguro;
+2. probar efectivamente `resourcemanager.projects.setIamPolicy` en modo capability-only;
+3. solo si PASS, pedir autorización explícita nueva para cualquier IAM mutation.
+
+No se solicita acción manual a Paula en este corte y no se revive la autorización anterior.
 
 ## Warnings F7 que permanecen después de resolver IAM
 
@@ -49,10 +54,10 @@ No convertir estos warnings en P0 sin evidencia reproducible.
 
 ## Pendientes posteriores
 
-- F8 `95 → 98`: capability test efectivo, metadata readback y demás gates exactos antes del cutover terminal.
+- F8 `95 → 98`: cerrar puente seguro/capability IAM, metadata readback y demás gates exactos hasta cutover terminal.
 - F9 `98 → 100`: aceptación postproducción.
 - F10: operación permanente.
 
 ## Acción actual
 
-`F8_VERIFY_EXTERNAL_OWNER_EFFECTIVE_SET_IAM_CAPABILITY` — prueba read-only desde la identidad humana Owner; no grant, deploy ni cutover.
+`F8_REQUIRE_SECURE_OWNER_EXECUTION_BRIDGE` — sin grant, deploy, cutover ni intervención manual solicitada en este corte.

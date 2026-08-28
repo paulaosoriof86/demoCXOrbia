@@ -1,19 +1,37 @@
 # CAMBIOS-BACKEND.md
 
 **Última actualización:** 2026-08-27  
-**Estado:** `F8_EXTERNAL_HUMAN_OWNER_ROUTE_IDENTIFIED__EFFECTIVE_SETIAM_TEST_PENDING__PHASE_A_100__PROD_READINESS_95`
+**Estado:** `F8_HUMAN_OWNER_ROUTE_OBSERVED__SECURE_EXECUTION_BRIDGE_HOLD__PHASE_A_100__PROD_READINESS_95`
 
-## 2026-08-27 — F8 · ruta humana Owner identificada; falta capability test efectivo
+## 2026-08-27 — F8 · Owner humano observado; carril seguro de ejecución aún no disponible
 
 ### Resultado
 
-Se recibió evidencia visual directa de Google Cloud Console sobre el proyecto exacto `cxorbia-backend-dev`.
+Se continuó sin trasladar ejecución manual a Paula y sin reabrir R24/Corte 4/F7.
 
-- La identidad humana actualmente utilizada en Google Cloud aparece vinculada al proyecto con rol `Propietario` / `Owner`.
-- La documentación oficial de Google Cloud incluye `resourcemanager.projects.setIamPolicy` dentro de `roles/owner`.
-- Esto resuelve la hipótesis de inexistencia de una ruta administrativa externa candidata.
-- Todavía no se declara `iamSetPolicyCapabilityAvailable=true` en el lock canónico: antes debe ejecutarse `projects.testIamPermissions` con esa identidad para confirmar permiso efectivo y descartar restricciones/deny aplicables.
-- No se concedió ningún rol, no se cambió IAM y no se ejecutó provider mutation.
+La evidencia visual de Google Cloud Console sobre el proyecto exacto `cxorbia-backend-dev` demuestra una identidad humana con rol `Propietario` / `roles/owner`. Esto cierra la hipótesis anterior de que no existía ninguna ruta administrativa externa.
+
+No se persiste en el repositorio el identificador de la persona/cuenta. Tampoco se declara todavía `resourcemanager.projects.setIamPolicy` como permiso efectivo probado: debe verificarse desde una sesión autenticada antes de cualquier grant.
+
+### Diagnóstico focalizado del mecanismo
+
+Se revisó únicamente si ya existía un puente seguro y reutilizable para evitar intervención manual:
+
+- búsqueda repo de `workload_identity_provider`: sin resultado;
+- búsqueda repo de `google-github-actions/auth`: sin resultado;
+- búsqueda repo de `id-token`: sin resultado;
+- universo vivo de workflows: sin ruta OIDC/WIF demostrada;
+- conector GCP/Firebase/IAM disponible en esta sesión: no existe.
+
+Conclusión: la ruta humana Owner **existe**, pero el mecanismo actual no puede usar esa sesión de forma automatizada. Crear WIF, service account, credencial o IAM binding sería una nueva mutación provider y no está autorizado.
+
+### Evidencia nueva
+
+`app/docs/evidence/RC15-F8-HUMAN-OWNER-IAM-ROUTE-LATEST.json`.
+
+Decisión: `PASS_HUMAN_ADMIN_ROUTE_OBSERVED__HOLD_SECURE_EXECUTION_BRIDGE`.
+
+Clasificación: `EXTERNAL_ADMIN_ROUTE_OBSERVED__MECHANISM_BRIDGE_UNAVAILABLE`; `productP0Proven=false`.
 
 ### Estado seguro
 
@@ -21,46 +39,36 @@ PHASE_A=`100/100`; PRODUCTION_REAL_READINESS=`95/100`; release F6 intacto `CXORB
 
 Provider/IAM/data/Auth/Firestore/HR/Storage/Rules/pagos/Make/Gemini writes=`0`; deploy/rebuild/reimport/merge=`0`.
 
-El intento temporal IAM anterior permanece consumido y no se reejecuta.
+El intento temporal IAM anterior permanece consumido y no se reejecuta. No se creó workflow, rama, PR, credencial, cuenta de servicio, WIF ni binding IAM.
 
-### Siguiente acción exacta
+### Archivos sincronizados
 
-`F8_VERIFY_EXTERNAL_OWNER_EFFECTIVE_SET_IAM_CAPABILITY`.
-
-Ejecutar únicamente un `projects.testIamPermissions` para `resourcemanager.projects.setIamPolicy` usando la identidad humana Owner. Este test es read-only/capability-only. No grant, no deploy, no cutover.
+- `backend/config/cxorbia-phase-a-continuity-lock.json`;
+- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
+- `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
+- `app/docs/SOURCE-LOCK-CXORBIA-TYA-VIGENTE.md`;
+- `app/docs/PRODUCTION-REAL-PROGRESS-LOCK-CXORBIA-TYA.md`;
+- `app/docs/evidence/RC15-F8-HUMAN-OWNER-IAM-ROUTE-LATEST.json`;
+- `app/docs/RESUMEN-PARA-CLAUDE.md`;
+- `app/docs/PENDIENTES-PROTOTIPO.md`;
+- `app/docs/CAMBIOS-BACKEND.md`.
 
 ### Clasificación obligatoria
 
-- **Reusable CXOrbia:** una asignación de rol IAM visible identifica una ruta candidata; el permiso efectivo se confirma siempre con `testIamPermissions` antes de mutar.
-- **Exclusivo cliente:** identidad administrativa humana del proyecto `cxorbia-backend-dev`.
+- **Reusable CXOrbia:** separar identidad humana Owner de credencial CI; no convertir una sesión humana en secreto; preferir puente federado/seguro y capability test antes de mutación.
+- **Exclusivo cliente:** frontera administrativa del proyecto `cxorbia-backend-dev`.
 - **Claude/prototipo:** sin cambio UI; no nueva candidata, rediseño ni reauditoría frontend.
 - **Academia:** sin impacto funcional.
-- **Sin impacto Claude:** IAM/provider control-plane y evidencia de autorización.
+- **Sin impacto Claude:** IAM/provider control-plane, release lock y evidencia.
 
-## 2026-08-27 — F8 · búsqueda de ruta IAM-capable y cierre de descubrimiento interno
+## Siguiente bloque exacto
 
-### Resultado
+`F8_REQUIRE_SECURE_OWNER_EXECUTION_BRIDGE`.
 
-Se continuó exactamente desde `F8_REQUIRE_IAM_CAPABLE_PROVIDER_ROUTE` sin reabrir F7, R24, Corte 4, M3 ni el intento temporal IAM ya consumido.
+No acción manual solicitada a Paula en este corte. No provider mutation autorizada. El master plan V1.1 permanece congelado; F8→F9→F10 no cambia.
 
-- PHASE_A = `100/100`.
-- PRODUCTION_REAL_READINESS = `95/100`.
-- Release F6 permanece congelado: `CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01`.
-- F8 permanece `HOLD_PROVIDER_IAM_SET_CAPABILITY_UNAVAILABLE` para la ruta automatizada DEV existente.
-- El intento single-use previo permanece consumido y sin replay.
-- Provider/IAM/data/Auth/Firestore/HR/Storage/Rules/pagos/Make/Gemini writes = `0`.
-- Deploy/rebuild/reimport/merge = `0`.
+## 2026-08-27 — F8 · antecedentes preservados
 
-### Evidencia causal preservada
+El intento single-use previo run `33118612042` confirmó que la credencial DEV automatizada carece de `resourcemanager.projects.setIamPolicy`; grantAttempted=false, metadata readback=false, providerWrites=0. La autorización está consumida y replay=false.
 
-La evidencia canónica `app/docs/evidence/RC15-F8-TEMP-SECRET-METADATA-VIEWER-ATTEMPT-LATEST.json` ya demuestra que la ruta `existing_dev` es válida para autenticación pero carece de `resourcemanager.projects.setIamPolicy`; por diseño fail-closed el grant temporal no se intentó y provider writes quedaron en cero.
-
-Las rutas históricas `CXORBIA_GCP_PROJECT_CREATOR_JSON` y `GOOGLE_CLOUD_PROJECT_CREATOR_JSON` fueron revisadas como candidatas históricas de provider. Su existencia histórica no demuestra capacidad `setIamPolicy`, y no existe evidencia vigente de una ruta automatizada reutilizable con esa capacidad.
-
-### Descubrimiento externo read-only realizado
-
-Se agotaron los canales disponibles en esta sesión sin acceder a payloads de secretos ni ejecutar mutaciones. Posteriormente se identificó mediante evidencia visual una identidad humana `Owner` en el proyecto exacto; su permiso efectivo queda sujeto al capability test read-only del bloque superior.
-
-### Frontera de autorización
-
-No existe autorización vigente para grant IAM, deploy ni cutover. No repetir el intento consumido. Cualquier mutación posterior requiere autorización explícita separada en la conversación vigente.
+La evidencia de ruta Owner no revive esa autorización ni autoriza grant, deploy o cutover.
