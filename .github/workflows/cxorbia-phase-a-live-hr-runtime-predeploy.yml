@@ -18,6 +18,7 @@ on:
       - 'tools/qa/tya-f8-provider-security-quota-readonly.mjs'
       - 'tools/qa/tya-f8-bounded-load-failure-readonly.mjs'
       - 'backend/contracts/phase-a-live-hr-runtime-read-v1.json'
+      - 'backend/config/cxorbia-f8-provider-transport-execute.json'
       - '.github/workflows/cxorbia-phase-a-live-hr-runtime-predeploy.yml'
 
 permissions:
@@ -26,7 +27,7 @@ permissions:
 
 concurrency:
   group: cxorbia-phase-a-live-hr-runtime-predeploy
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 defaults:
   run:
@@ -68,6 +69,8 @@ jobs:
           node --check tools/qa/tya-f8-checkpoint-backed-shopper-runtime-readonly.mjs
           node --check tools/qa/tya-f8-provider-security-quota-readonly.mjs
           node --check tools/qa/tya-f8-bounded-load-failure-readonly.mjs
+          node --check tools/release/tya-f8-backup-restore-cutover-one-shot.mjs
+          node --check tools/release/tya-f8-backup-restore-cutover-cli.mjs
 
       - name: Prepare bootstrap with provider metadata auto-discovery
         env:
@@ -240,3 +243,73 @@ jobs:
           script: |
             const state=process.env.JOB_STATE==='success'?'success':'failure';
             await github.rest.repos.createCommitStatus({owner:context.repo.owner,repo:context.repo.repo,sha:context.sha,state,context:'cxorbia/live-hr-runtime-predeploy',description:state==='success'?'Live HR + F8 read-only prechecks/load PASS':'Live HR/F8 read-only predeploy failed'});
+
+  f8-provider-transport:
+    name: F8 authorized backup restore cutover one-shot
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact trigger commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Resolve exact F8 execution marker
+        id: gate
+        run: |
+          set -euo pipefail
+          marker='backend/config/cxorbia-f8-provider-transport-execute.json'
+          echo 'active=false' >> "$GITHUB_OUTPUT"
+          test "${GITHUB_RUN_ATTEMPT}" = '1' || { echo 'F8_TRANSPORT_RERUN_FORBIDDEN' >&2; exit 41; }
+          test -f "$marker" || exit 0
+          changed="$(git diff --name-only HEAD^ HEAD)"
+          printf '%s\n' "$changed"
+          printf '%s\n' "$changed" | grep -Fxq "$marker" || exit 0
+          test "$(printf '%s\n' "$changed" | sed '/^$/d' | wc -l | tr -d ' ')" = '1' || { echo 'F8_TRANSPORT_TRIGGER_DELTA_NOT_EXACT' >&2; exit 42; }
+          node <<'NODE'
+          const fs=require('fs'),cp=require('child_process');
+          const p='backend/config/cxorbia-f8-provider-transport-execute.json';
+          const x=JSON.parse(fs.readFileSync(p,'utf8'));
+          const parent=cp.execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          if(x.authorizationId!=='PAULA-F8-BACKUP-RESTORE-CUTOVER-20260827-01')throw new Error('F8_TRANSPORT_AUTH_ID_MISMATCH');
+          if(x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit')throw new Error('F8_TRANSPORT_LANE_MISMATCH');
+          if(x.enabled!==true||x.singleUse!==true||x.consumed!==false||x.automaticRetryAllowed!==false)throw new Error('F8_TRANSPORT_SINGLE_USE_CONTRACT_INVALID');
+          if(x.expectedParentHead!==parent)throw new Error('F8_TRANSPORT_PARENT_HEAD_MISMATCH');
+          if(x.executor!=='tools/release/tya-f8-backup-restore-cutover-cli.mjs')throw new Error('F8_TRANSPORT_EXECUTOR_MISMATCH');
+          NODE
+          node --check tools/release/tya-f8-backup-restore-cutover-one-shot.mjs
+          node --check tools/release/tya-f8-backup-restore-cutover-cli.mjs
+          echo 'active=true' >> "$GITHUB_OUTPUT"
+
+      - name: Authenticate existing Google Cloud identity for F8
+        if: steps.gate.outputs.active == 'true'
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+          token_format: access_token
+          create_credentials_file: false
+
+      - name: Execute authorized F8 one-shot
+        if: steps.gate.outputs.active == 'true'
+        env:
+          CXORBIA_GCP_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+        run: |
+          set -euo pipefail
+          node tools/release/tya-f8-backup-restore-cutover-cli.mjs
+
+      - name: Upload sanitized F8 execution evidence
+        if: always() && steps.gate.outputs.active == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-f8-backup-restore-cutover-${{ github.run_id }}
+          path: app/docs/evidence/RC15-F8-BACKUP-RESTORE-CUTOVER-EXECUTION-LATEST.json
+          if-no-files-found: warn
+          retention-days: 14
