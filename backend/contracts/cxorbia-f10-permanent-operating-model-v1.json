@@ -1,0 +1,210 @@
+{
+  "contractId": "cxorbia-f10-permanent-operating-model-v1",
+  "schemaVersion": "1.0.0",
+  "effectiveDate": "2026-08-28",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "phase": "F10_PERMANENT_OPERATING_MODEL",
+  "status": "ACTIVE",
+  "productionReadiness": 100,
+  "phaseA": 100,
+  "release": {
+    "releaseId": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
+    "functionalSourceSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "runtimeReleaseSourceSha": "2d0b8e83b32b44f6c3eae80b7630f8cd3295fba2",
+    "cloudRunRevision": "cxorbia-live-hr-dev-00013-rns",
+    "imageDigest": "sha256:eca8b831c24ef81f09e4addda721d0af89a24c5a0d753aa507989988458227ec",
+    "hostingRelease": "sites/cxorbia-backend-dev/releases/1787796646738000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/afe292cfcbbc6005"
+  },
+  "operatingPrinciples": [
+    "Production remains accepted at 100/100 unless a reproducible product P0 or authorized successor release changes the certified state.",
+    "Monitoring is read-only by default and never mutates provider, business data, Auth, HR, Storage, Rules, payments, Make or Gemini.",
+    "F5-F9 terminal gates are not replayed as routine monitoring.",
+    "Incidents are classified before repair as PRODUCT_P0, MECHANISM_P0, EXTERNAL_TRANSPORT_OUTAGE, P1 or P2.",
+    "A patch is focal and evidence-backed; deploy/rebuild/reimport/provider mutation requires a new explicit incident gate and authorization.",
+    "Legacy database connection/copy remains forbidden.",
+    "The approved frontend/module lineage remains protected; no wholesale V182 restoration and no routine candidate creation."
+  ],
+  "initialReadOnlyBaseline": {
+    "profile": "PHASE_A_COMPLETE_RUNTIME_MULTIROLE",
+    "workflow": ".github/workflows/cxorbia-readonly-post-gates-runner.yml",
+    "script": "tools/release/cxorbia-phase-a-runtime-multirole-runner.mjs",
+    "requestPath": ".github/cxorbia-gate-requests/request.json",
+    "singleExecution": true,
+    "providerReads": true,
+    "providerWrites": false,
+    "dataWrites": false,
+    "authWrites": false,
+    "passwordChanges": false,
+    "deploy": false,
+    "merge": false,
+    "productionMutation": false,
+    "coverage": [
+      "live HR dynamic authority and stable identity",
+      "remote Hosting/source parity",
+      "Staff/Admin authentication, reload and new-tab continuity",
+      "Shopper authentication, reload/new-tab continuity and own history",
+      "Client integrated credential route and visible panorama",
+      "finance delegated-truth contract",
+      "reservations fail-closed contract"
+    ]
+  },
+  "monitoringMatrix": [
+    {
+      "area": "release_drift_and_availability",
+      "priority": "P0_CAPABLE",
+      "targetCadence": "daily and after every authorized patch",
+      "evidence": "exact release tuple, Hosting/source parity, Cloud Run revision/image, HTTP health",
+      "existingTools": [
+        "tools/release/cxorbia-phase-a-runtime-multirole-runner.mjs",
+        "tools/release/tya-rc-phase-a-drift-gate.mjs",
+        "tools/qa/tya-c6-remote-parity-gate.mjs"
+      ]
+    },
+    {
+      "area": "auth_rbac_roles",
+      "priority": "P0_CAPABLE",
+      "targetCadence": "daily read-only smoke and after identity/RBAC change",
+      "evidence": "Staff/Admin, Shopper and Client authentication plus role/scope continuity without password mutation",
+      "existingTools": [
+        "tools/release/cxorbia-phase-a-runtime-multirole-runner.mjs",
+        "tools/release/tya-auth-rbac-contract-validate.mjs"
+      ]
+    },
+    {
+      "area": "hr_live_historical_and_sync",
+      "priority": "P0_CAPABLE",
+      "targetCadence": "daily; sync-conflict review as operational events occur",
+      "evidence": "period/visit counts, stable visit identity, missing/duplicate keys, latest period, assignment source/sync state conflicts",
+      "existingTools": [
+        "tools/release/cxorbia-phase-a-runtime-multirole-runner.mjs",
+        "tools/release/tya-phase-a-period-history-integrity-validate.mjs"
+      ]
+    },
+    {
+      "area": "shoppers_visits_evidence_certification",
+      "priority": "P0_CAPABLE",
+      "targetCadence": "daily read-only runtime smoke; incident-triggered deep check",
+      "evidence": "shopper exact identity, own-history visibility, visit lifecycle visibility, evidence/certification contracts",
+      "existingTools": [
+        "tools/release/cxorbia-phase-a-runtime-multirole-runner.mjs"
+      ]
+    },
+    {
+      "area": "finance_liquidations_payments",
+      "priority": "P1_WITH_P0_ESCALATION_FOR_WRONG_MONEY_STATE",
+      "targetCadence": "daily reconciliation during active liquidation/payment periods; otherwise weekly",
+      "evidence": "exact financial links, controlled-review unresolved identities, no inferred payment state",
+      "existingTools": [
+        "tools/release/cxorbia-readonly-post-gates-runner.mjs",
+        "tools/qa/tya-corte3-financial-reconciliation-r20-gate.mjs"
+      ]
+    },
+    {
+      "area": "runtime_errors_performance_failure_behavior",
+      "priority": "P1_WITH_P0_ESCALATION_FOR_OUTAGE",
+      "targetCadence": "daily bounded read-only probe and incident-triggered",
+      "evidence": "HTTP success/5xx, contract failures, latency distribution and fail-closed checks",
+      "existingTools": [
+        "tools/qa/tya-f8-bounded-load-failure-readonly.mjs"
+      ],
+      "baseline": {
+        "requests": 24,
+        "concurrency": 4,
+        "http5xx": 0,
+        "contractFailures": 0,
+        "p95Ms": 181.87
+      }
+    },
+    {
+      "area": "security_iam_secrets_rules",
+      "priority": "P0_CAPABLE",
+      "targetCadence": "weekly read-only and after any authorized security/provider change",
+      "evidence": "unexpected IAM elevation, sensitive env exposure, Rules drift, credential/secret leakage",
+      "existingTools": [
+        "tools/qa/tya-f8-provider-security-quota-readonly.mjs"
+      ]
+    },
+    {
+      "area": "backup_restore",
+      "priority": "P0_CAPABLE",
+      "targetCadence": "backup policy review weekly; restore drill target monthly or after storage/provider change",
+      "evidence": "latest retained backup metadata, isolated restore verification, cleanup and rollback point",
+      "activation": "NOT_AUTOMATICALLY_ACTIVATED_BY_THIS_CONTRACT",
+      "reason": "F8 one-shot is consumed and must not be replayed. Periodic backup/restore requires a separate F10 provider-mutation gate and explicit authorization before first activation."
+    },
+    {
+      "area": "alerts_observability_runbooks",
+      "priority": "P1",
+      "targetCadence": "continuous telemetry; alert-delivery/runbook rehearsal monthly and after incident",
+      "evidence": "alert delivery, owner acknowledgement, runbook path and incident timestamps",
+      "activation": "MONITOR_AND_REHEARSE_WITHOUT_PRODUCT_MUTATION"
+    },
+    {
+      "area": "claude_academia",
+      "priority": "P2_UNLESS_RUNTIME_IMPACT",
+      "targetCadence": "after approved product/role/module change",
+      "evidence": "frontend handoff by file/module, manual/course/routing/notification impact",
+      "activation": "NO_FRONTEND_CHANGE_FROM_F10_MONITORING_ALONE"
+    }
+  ],
+  "severityPolicy": {
+    "P0": [
+      "application cannot start or accepted valid users cannot access required role flow",
+      "certified live release/module lineage drift that serves an obsolete or unauthorized version",
+      "cross-tenant data exposure or sensitive credential/secret exposure",
+      "critical business data loss/corruption or unrecoverable backup/restore failure",
+      "HR/platform synchronization creates destructive duplication or wrong critical assignment state",
+      "wrong payment/liquidation state that can cause incorrect money movement"
+    ],
+    "P1": [
+      "partial functional degradation without critical data loss",
+      "stale HR/read model beyond operational tolerance",
+      "material performance/error regression without full outage",
+      "alerting or runbook failure while product remains available"
+    ],
+    "P2": [
+      "nonblocking documentation, content, Academia/manual depth or cosmetic improvement"
+    ]
+  },
+  "incidentAndPatchPolicy": {
+    "firstAction": "capture reproducible evidence and classify owner plane",
+    "allowedOwners": ["PRODUCT_P0", "MECHANISM_P0", "EXTERNAL_TRANSPORT_OUTAGE", "P1", "P2"],
+    "productPatch": "focal successor patch only; preserve approved lineage and frozen release history",
+    "providerMutation": "requires explicit current authorization and a bounded mutation/rollback contract",
+    "frontendPatch": "document for Claude by exact file/module unless current frontend lane separately authorizes direct delta",
+    "automaticRetry": false,
+    "silentOverwrite": false,
+    "reopenTerminalF5F9": false
+  },
+  "evidenceRetention": {
+    "canonicalTerminalEvidence": "retain in repository as sanitized source of truth",
+    "workflowArtifacts": "14 days unless a later policy explicitly extends it",
+    "operationalSummaries": "retain sanitized rolling evidence; never store tokens, passwords, raw bank/government IDs or secret payloads",
+    "incidentEvidence": "retain sanitized evidence through incident closure and successor-release certification"
+  },
+  "safeState": {
+    "frontendWrites": 0,
+    "providerWrites": 0,
+    "businessDataWrites": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "storageWrites": 0,
+    "rulesWrites": 0,
+    "paymentWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "deploys": 0,
+    "rebuilds": 0,
+    "reimports": 0,
+    "legacyDatabaseAccess": false
+  },
+  "classification": {
+    "reusableCXOrbia": "permanent read-only monitoring, severity, incident, patch, evidence-retention and periodic recovery policy",
+    "exclusiveClient": "TyA production release identifiers and operational HR/project specifics",
+    "claudePrototype": "no UI change; only incident-driven exact-file handoff if needed",
+    "academia": "continuous nonblocking content follow-up",
+    "noClaudeImpact": true
+  }
+}
