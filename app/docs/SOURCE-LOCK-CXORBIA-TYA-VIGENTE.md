@@ -1,11 +1,11 @@
 # SOURCE LOCK CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-27  
-**STATE_SYNC_EPOCH:** `CXORBIA-20260827-F8-HUMAN-OWNER-ROUTE-OBSERVED-BRIDGE-HOLD-01`  
+**Fecha:** 2026-08-28  
+**STATE_SYNC_EPOCH:** `CXORBIA-20260828-F8-IAM-P1-NONBLOCKING-PRECUTOVER-01`  
 **MASTER_PLAN_VERSION:** `1.1.0` / `FROZEN`  
 **currentMasterPhase:** `F8_CUTOVER`  
-**currentMasterStep:** `F8_HUMAN_OWNER_ROUTE_OBSERVED_AUTOMATION_BRIDGE_HOLD`  
-**NEXT:** `F8_REQUIRE_SECURE_OWNER_EXECUTION_BRIDGE`  
+**currentMasterStep:** `F8_IAM_METADATA_WARNING_RECONCILED_NONBLOCKING`  
+**NEXT:** `F8_BOUNDED_LOAD_FAILURE_READONLY_CHECK`  
 **PHASE_A:** `100/100`  
 **PRODUCTION_REAL_READINESS:** `95/100`
 
@@ -17,22 +17,22 @@ Release `CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01`; manifest SHA-256 `2939
 
 Los commits de control-plane/evidence/docs no sustituyen ningún SHA del release.
 
-## F8 — IAM y ruta Owner
+## F8 — IAM como warning no bloqueante
 
-El intento temporal Secret Manager viewer anterior permanece consumido: run `33118612042`; la credencial DEV automatizada no tiene `resourcemanager.projects.setIamPolicy`; grant no intentado; provider writes=0; metadata/payload read=0.
+El intento temporal Secret Manager viewer anterior permanece consumido y sin replay: la credencial DEV automatizada no tiene `resourcemanager.projects.setIamPolicy`; grant no intentado; provider writes=0; metadata/payload read=0.
 
-La evidencia nueva demuestra una identidad humana `roles/owner` en el proyecto exacto. Esto no altera el source lock ni el release y no se convierte automáticamente en credencial de CI.
+La identidad humana `roles/owner` observada se conserva como evidencia administrativa, pero **no forma parte del camino crítico actual**. No se probará ni automatizará solo para cerrar `F7-P1-002`.
 
-No existe un puente seguro automatizado demostrado desde el carril actual hacia esa sesión humana: búsqueda focalizada de OIDC/WIF en repo=sin ruta; conector GCP/IAM de esta sesión=ausente. No solicitar raw credentials ni crear IAM/WIF/service account/workflow sin autorización.
+F7 es autoridad terminal `GO_WITH_WARNINGS`, P0=0, y clasificó la brecha de inventario IAM/secrets como P1. F8 ya completó los readbacks relevantes del runtime exacto y aisló el remanente a `secretmanager.secrets.list`, sin secreto en plaintext ni secret-backed env en el runtime congelado. Por ello el listado de metadata queda `WARNING_NONBLOCKING`.
+
+Evidencia: `app/docs/evidence/RC15-F8-IAM-METADATA-NONBLOCKING-RECONCILIATION-LATEST.json`.
 
 ## Frontera dura
 
-No hay autorización activa de provider mutation. No repetir el intento consumido, no ampliar roles, no deployar, no reconstruir, no reimportar y no tocar el release congelado.
+No hay autorización activa de provider mutation. No repetir el intento IAM consumido, no ampliar roles, no crear WIF/service account/credencial, no deployar, no reconstruir, no reimportar y no tocar el release congelado.
 
-El siguiente requisito es establecer o disponer de un **puente seguro de ejecución Owner**. La comprobación efectiva de `resourcemanager.projects.setIamPolicy` debe ocurrir dentro de ese carril autenticado antes de cualquier grant.
+El siguiente gate es read-only: `F8_BOUNDED_LOAD_FAILURE_READONLY_CHECK`.
 
-## PR y siguiente
+Backup/export + restore y cutover requieren autorización explícita separada antes de cualquier mutación.
 
 PR #7 continúa mirror-only/cerrado/no mergeado. Resolver HEAD vivo antes de escribir.
-
-`F8_REQUIRE_SECURE_OWNER_EXECUTION_BRIDGE`.

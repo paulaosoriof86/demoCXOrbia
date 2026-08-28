@@ -1,37 +1,36 @@
 # CAMBIOS-BACKEND.md
 
-**Última actualización:** 2026-08-27  
-**Estado:** `F8_HUMAN_OWNER_ROUTE_OBSERVED__SECURE_EXECUTION_BRIDGE_HOLD__PHASE_A_100__PROD_READINESS_95`
+**Última actualización:** 2026-08-28  
+**Estado:** `F8_IAM_METADATA_P1_RECONCILED_NONBLOCKING__PRECUTOVER_READONLY_NEXT__PHASE_A_100__PROD_READINESS_95`
 
-## 2026-08-27 — F8 · Owner humano observado; carril seguro de ejecución aún no disponible
+## 2026-08-28 — F8 · corrección antidesvío: IAM metadata vuelve a su severidad P1
 
 ### Resultado
 
-Se continuó sin trasladar ejecución manual a Paula y sin reabrir R24/Corte 4/F7.
+Se continuó desde `F8_REQUIRE_SECURE_OWNER_EXECUTION_BRIDGE` y se revisó la autoridad terminal, no solo la clasificación local del último intento IAM.
 
-La evidencia visual de Google Cloud Console sobre el proyecto exacto `cxorbia-backend-dev` demuestra una identidad humana con rol `Propietario` / `roles/owner`. Esto cierra la hipótesis anterior de que no existía ninguna ruta administrativa externa.
+Hallazgo determinante:
 
-No se persiste en el repositorio el identificador de la persona/cuenta. Tampoco se declara todavía `resourcemanager.projects.setIamPolicy` como permiso efectivo probado: debe verificarse desde una sesión autenticada antes de cualquier grant.
+- F7 cerró `GO_WITH_WARNINGS`, P0=`0`.
+- La brecha de provider IAM/secrets se registró como `F7-P1-002`, severidad P1.
+- F8 ya confirmó Cloud Run/revisión congelada, IAM de Cloud Run, APIs 4/4, cuotas 4/4, `plaintextSensitiveKeyCount=0` y `secretBackedEnvCount=0`.
+- El único readback faltante es listar metadata de Secret Manager por ausencia de `secretmanager.secrets.list`.
+- No se leyó ni exportó ningún payload de secreto.
+- El master plan F8 congelado no convierte ese listado específico en criterio terminal de cutover.
 
-### Diagnóstico focalizado del mecanismo
+Conclusión: la clasificación de mecanismo que llevó a construir/buscar un puente Owner elevó indebidamente un P1 a bloqueo. Bajo la regla vigente `P1/P2 se documentan y no bloquean`, `F7-P1-002` queda preservado como warning no bloqueante. El puente Owner/IAM se retira del camino crítico.
 
-Se revisó únicamente si ya existía un puente seguro y reutilizable para evitar intervención manual:
+### Investigación histórica focalizada cerrada
 
-- búsqueda repo de `workload_identity_provider`: sin resultado;
-- búsqueda repo de `google-github-actions/auth`: sin resultado;
-- búsqueda repo de `id-token`: sin resultado;
-- universo vivo de workflows: sin ruta OIDC/WIF demostrada;
-- conector GCP/Firebase/IAM disponible en esta sesión: no existe.
-
-Conclusión: la ruta humana Owner **existe**, pero el mecanismo actual no puede usar esa sesión de forma automatizada. Crear WIF, service account, credencial o IAM binding sería una nueva mutación provider y no está autorizado.
+Se verificó que los workflows históricos con nombres de credential/identity bridge reutilizan el mismo `FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV` o material de transporte relacionado; no representan una sesión humana Owner ni una ruta OIDC/WIF. Tampoco existe plugin/conector GCP/IAM disponible. Este hallazgo se conserva como explicación de mecanismo, pero ya no justifica crear infraestructura IAM para cerrar un P1.
 
 ### Evidencia nueva
 
-`app/docs/evidence/RC15-F8-HUMAN-OWNER-IAM-ROUTE-LATEST.json`.
+`app/docs/evidence/RC15-F8-IAM-METADATA-NONBLOCKING-RECONCILIATION-LATEST.json`.
 
-Decisión: `PASS_HUMAN_ADMIN_ROUTE_OBSERVED__HOLD_SECURE_EXECUTION_BRIDGE`.
+Decisión: `PASS_RECONCILE_IAM_METADATA_HOLD_TO_NONBLOCKING_P1`.
 
-Clasificación: `EXTERNAL_ADMIN_ROUTE_OBSERVED__MECHANISM_BRIDGE_UNAVAILABLE`; `productP0Proven=false`.
+Clasificación: `F7_P1_002_RECONCILED_NONBLOCKING__NO_PRODUCT_P0`.
 
 ### Estado seguro
 
@@ -39,40 +38,36 @@ PHASE_A=`100/100`; PRODUCTION_REAL_READINESS=`95/100`; release F6 intacto `CXORB
 
 Provider/IAM/data/Auth/Firestore/HR/Storage/Rules/pagos/Make/Gemini writes=`0`; deploy/rebuild/reimport/merge=`0`.
 
-El intento temporal IAM anterior permanece consumido y no se reejecuta. No se creó workflow, rama, PR, credencial, cuenta de servicio, WIF ni binding IAM.
+No se creó workflow, rama, PR, WIF, service account, credencial ni binding IAM. El intento temporal IAM anterior sigue consumido y replay=`false`.
 
-### Incidencia de tooling y reconciliación
+### Archivos reconciliados
 
-Durante la escritura documental se creó por error un archivo transitorio `app/docs/CONTINUITY-NOOP.txt` mediante una llamada incorrecta al conector. La incidencia fue detectada inmediatamente y el archivo fue eliminado del árbol vivo en el commit de reconciliación. Readback actual del path=`404/Not Found`; no existe residuo funcional ni provider-side effect. Los commits transitorios permanecen únicamente en el historial Git y no alteraron backend, runtime, release ni producción.
-
-### Archivos sincronizados
-
-- `backend/config/cxorbia-phase-a-continuity-lock.json`;
+- `backend/config/cxorbia-phase-a-continuity-lock.json` → schema `4.2.0`;
 - `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
 - `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
 - `app/docs/SOURCE-LOCK-CXORBIA-TYA-VIGENTE.md`;
 - `app/docs/PRODUCTION-REAL-PROGRESS-LOCK-CXORBIA-TYA.md`;
-- `app/docs/evidence/RC15-F8-HUMAN-OWNER-IAM-ROUTE-LATEST.json`;
+- `app/docs/evidence/RC15-F8-IAM-METADATA-NONBLOCKING-RECONCILIATION-LATEST.json`;
 - `app/docs/RESUMEN-PARA-CLAUDE.md`;
 - `app/docs/PENDIENTES-PROTOTIPO.md`;
 - `app/docs/CAMBIOS-BACKEND.md`.
 
 ### Clasificación obligatoria
 
-- **Reusable CXOrbia:** separar identidad humana Owner de credencial CI; no convertir una sesión humana en secreto; preferir puente federado/seguro y capability test antes de mutación.
-- **Exclusivo cliente:** frontera administrativa del proyecto `cxorbia-backend-dev`.
-- **Claude/prototipo:** sin cambio UI; no nueva candidata, rediseño ni reauditoría frontend.
-- **Academia:** sin impacto funcional.
-- **Sin impacto Claude:** IAM/provider control-plane, release lock y evidencia.
+- **Reusable CXOrbia:** una limitación de observabilidad/metadata P1 no debe promoverirse a P0 sin evidencia de impacto de producto; el control-plane debe respetar severidad y autoridad terminal.
+- **Exclusivo cliente:** proyecto provider `cxorbia-backend-dev` y su capacidad IAM actual.
+- **Claude/prototipo:** sin cambio UI, sin candidata nueva y sin reauditoría frontend.
+- **Academia:** sin impacto funcional; P2 de profundidad continúa no bloqueante.
+- **Sin impacto Claude:** reconciliación de seguridad/control-plane/evidencia.
 
 ## Siguiente bloque exacto
 
-`F8_REQUIRE_SECURE_OWNER_EXECUTION_BRIDGE`.
+`F8_BOUNDED_LOAD_FAILURE_READONLY_CHECK`.
 
-No acción manual solicitada a Paula en este corte. No provider mutation autorizada. El master plan V1.1 permanece congelado; F8→F9→F10 no cambia.
+Debe ser acotado, read-only, contra el release congelado y sin generar datos ni mutaciones. Después se llega a la frontera de backup/export + restore/cutover, donde cualquier mutación requerirá autorización explícita específica.
 
-## 2026-08-27 — F8 · antecedentes preservados
+## Antecedentes preservados
 
-El intento single-use previo run `33118612042` confirmó que la credencial DEV automatizada carece de `resourcemanager.projects.setIamPolicy`; grantAttempted=false, metadata readback=false, providerWrites=0. La autorización está consumida y replay=false.
+El intento IAM single-use run `33118612042` sigue siendo evidencia válida de que el principal DEV no tiene `resourcemanager.projects.setIamPolicy`; grantAttempted=false, metadata readback=false y providerWrites=0. La identidad humana Owner observada también se conserva como evidencia administrativa, pero ninguna de las dos exige acción adicional para el camino crítico actual.
 
-La evidencia de ruta Owner no revive esa autorización ni autoriza grant, deploy o cutover.
+La incidencia transitoria previa `app/docs/CONTINUITY-NOOP.txt` quedó reconciliada y el archivo no existe en el árbol vivo.
