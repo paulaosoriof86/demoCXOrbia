@@ -41,6 +41,10 @@ Provider/IAM/data/Auth/Firestore/HR/Storage/Rules/pagos/Make/Gemini writes=`0`; 
 
 El intento temporal IAM anterior permanece consumido y no se reejecuta. No se creó workflow, rama, PR, credencial, cuenta de servicio, WIF ni binding IAM.
 
+### Incidencia de tooling y reconciliación
+
+Durante la escritura documental se creó por error un archivo transitorio `app/docs/CONTINUITY-NOOP.txt` mediante una llamada incorrecta al conector. La incidencia fue detectada inmediatamente y el archivo fue eliminado del árbol vivo en el commit de reconciliación. Readback actual del path=`404/Not Found`; no existe residuo funcional ni provider-side effect. Los commits transitorios permanecen únicamente en el historial Git y no alteraron backend, runtime, release ni producción.
+
 ### Archivos sincronizados
 
 - `backend/config/cxorbia-phase-a-continuity-lock.json`;
