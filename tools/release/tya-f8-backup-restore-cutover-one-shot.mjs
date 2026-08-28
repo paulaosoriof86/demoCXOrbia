@@ -13,12 +13,15 @@ const AUTH_ID='PAULA-F8-BACKUP-RESTORE-CUTOVER-20260827-01';
 const AUTH_PATH='app/docs/evidence/RC15-F8-BACKUP-RESTORE-CUTOVER-AUTHORIZATION-LATEST.json';
 const MANIFEST_PATH='backend/config/cxorbia-phase-a-release-manifest-v1.json';
 const OUT='app/docs/evidence/RC15-F8-BACKUP-RESTORE-CUTOVER-EXECUTION-LATEST.json';
+const EXPECTED_AUTH_BLOB='1f6659a4cdf421a38489c94b174f28ceb5506f54';
+const EXPECTED_MANIFEST_BLOB='732dbfd48912b3550c6fb20bc592bd118647263a';
 const sha256=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
 const safeText=v=>String(v||'').replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi,'<redacted-email>').replace(/ya29\.[A-Za-z0-9._-]+/g,'<redacted-token>').replace(/-----BEGIN[\s\S]*?-----END[^\n]+-----/g,'<redacted-key>').slice(0,800);
 const ensure=(ok,code)=>{if(!ok)throw new Error(code);};
 const readJson=p=>JSON.parse(fs.readFileSync(p,'utf8'));
 const writeJson=(p,x)=>{fs.mkdirSync(p.split('/').slice(0,-1).join('/')||'.',{recursive:true});fs.writeFileSync(p,JSON.stringify(x,null,2)+'\n','utf8');};
 function git(args){const r=spawnSync('git',args,{encoding:'utf8',timeout:10000});if(r.status!==0)throw new Error(`GIT_${args.join('_')}_FAILED`);return String(r.stdout||'').trim();}
+function gitOk(args){const r=spawnSync('git',args,{encoding:'utf8',timeout:10000});return r.status===0;}
 async function api(token,url,{method='GET',body=null,timeoutMs=30000}={}){
   const res=await fetch(url,{method,headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},body:body===null?undefined:JSON.stringify(body),signal:AbortSignal.timeout(timeoutMs)});
   const text=await res.text();let json={};try{json=text?JSON.parse(text):{};}catch{json={unparsed:true};}
@@ -71,12 +74,12 @@ export async function runF8BackupRestoreCutoverOneShot({accessToken}){
   const runId=String(process.env.GITHUB_RUN_ID||'local');
   const runAttempt=String(process.env.GITHUB_RUN_ATTEMPT||'1');
   const state={
-    schemaVersion:'cxorbia.rc15.f8.backup-restore-cutover.execution.v2',generatedAt:null,authorizationId:AUTH_ID,authorizationConsumed:false,automaticRetryAllowed:false,
+    schemaVersion:'cxorbia.rc15.f8.backup-restore-cutover.execution.v3',generatedAt:null,authorizationId:AUTH_ID,authorizationConsumed:false,automaticRetryAllowed:false,
     runId,runAttempt,projectId:PROJECT,releaseId:EXPECTED_RELEASE,decision:'HOLD_NOT_STARTED',stage:'INIT',productP0Proven:false,
     backup:{started:false,completed:false,retained:false,locatorStoredInProviderOnly:true,uriSha256:null,bucketFingerprint:null},
     restoreVerification:{temporaryDatabaseCreated:false,importStarted:false,importCompleted:false,topLevelCollectionsMatch:false,temporaryDatabaseDeleted:false,tempDatabaseFingerprint:null},
     cutover:{redeployRequired:false,deploys:0,rebuilds:0,releaseReimports:0,reconciledExactFrozenRelease:false},
-    preflight:{head:null,parentHead:null,releaseManifestExact:false,cloudRunRevisionExact:false,hostingAdapterExact:false,databaseLocation:null,databaseType:null,requiredPermissions:[],grantedPermissions:[],bucketDiscovered:false},
+    preflight:{head:null,parentHead:null,authorizationCommit:null,authorizationAncestorOfHead:false,authorizationBlobExact:false,releaseManifestBlobExact:false,releaseManifestExact:false,cloudRunRevisionExact:false,hostingAdapterExact:false,databaseLocation:null,databaseType:null,requiredPermissions:[],grantedPermissions:[],bucketDiscovered:false},
     safety:{providerWrites:0,productionBusinessDataWrites:0,productionFirestoreDocumentWrites:0,authWrites:0,hrWrites:0,rulesWrites:0,paymentWrites:0,makeCalls:0,geminiCalls:0,iamWrites:0,newCredentials:0,newBranches:0,newPullRequests:0,secretPayloadReads:0,credentialsExposed:false,legacyDatabaseAccess:false},
     cleanup:{required:false,completed:true,error:null},error:null,next:null
   };
@@ -90,11 +93,21 @@ export async function runF8BackupRestoreCutoverOneShot({accessToken}){
     const manifest=readJson(MANIFEST_PATH);
     ensure(manifest.releaseId===EXPECTED_RELEASE&&manifest.status==='FROZEN_IMMUTABLE','F8_FROZEN_RELEASE_MANIFEST_MISMATCH');
     ensure(manifest.source?.rebuildAfterFreezeAllowed===false,'F8_RELEASE_REBUILD_MUST_REMAIN_FORBIDDEN');
-    state.authorizationConsumed=true;state.stage='PRE_MUTATION_DYNAMIC_RECHECK';
-    const head=git(['rev-parse','HEAD']);const parent=git(['rev-parse','HEAD^']);
-    state.preflight.head=head;state.preflight.parentHead=parent;
+
+    state.stage='PRE_MUTATION_DYNAMIC_RECHECK';
+    const head=git(['rev-parse','HEAD']);
+    const parent=git(['rev-parse','HEAD^']);
+    const authCommit=git(['log','-1','--format=%H','--',AUTH_PATH]);
+    const authBlob=git(['hash-object',AUTH_PATH]);
+    const manifestBlob=git(['hash-object',MANIFEST_PATH]);
+    state.preflight.head=head;state.preflight.parentHead=parent;state.preflight.authorizationCommit=authCommit;
+    state.preflight.authorizationBlobExact=authBlob===EXPECTED_AUTH_BLOB;
+    state.preflight.releaseManifestBlobExact=manifestBlob===EXPECTED_MANIFEST_BLOB;
+    state.preflight.authorizationAncestorOfHead=Boolean(authCommit)&&gitOk(['merge-base','--is-ancestor',authCommit,head]);
     ensure(!process.env.GITHUB_SHA||head===String(process.env.GITHUB_SHA),'F8_HEAD_EVENT_SHA_DRIFT');
-    ensure(auth.authorizedExecutionParentHead&&parent===String(auth.authorizedExecutionParentHead),'F8_EXECUTION_COMMIT_LINEAGE_MISMATCH');
+    ensure(state.preflight.authorizationBlobExact,'F8_AUTHORIZATION_BLOB_DRIFT');
+    ensure(state.preflight.releaseManifestBlobExact,'F8_RELEASE_MANIFEST_BLOB_DRIFT');
+    ensure(state.preflight.authorizationAncestorOfHead,'F8_AUTHORIZATION_NOT_IN_CURRENT_HEAD_LINEAGE');
     state.preflight.releaseManifestExact=true;
 
     const run=await api(accessToken,`https://run.googleapis.com/v2/projects/${PROJECT}/locations/${REGION}/services/${SERVICE}`);
@@ -128,7 +141,7 @@ export async function runF8BackupRestoreCutoverOneShot({accessToken}){
     const exportRequestUri=`gs://${bucket}/cxorbia-f8-backup/${stamp}-${runId}`;
     tempDb=`f8-restore-${stamp.slice(0,12)}`.toLowerCase();state.restoreVerification.tempDatabaseFingerprint=sha256(tempDb).slice(0,20);
 
-    state.stage='BACKUP_EXPORT';mutationStarted=true;state.backup.started=true;state.safety.providerWrites++;
+    state.stage='BACKUP_EXPORT';state.authorizationConsumed=true;mutationStarted=true;state.backup.started=true;state.safety.providerWrites++;
     const exp=await api(accessToken,`https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default):exportDocuments`,{method:'POST',body:{outputUriPrefix:exportRequestUri}});
     ensure(exp.ok,`F8_EXPORT_REQUEST_${exp.status}_${exp.error||''}`);
     const expDone=await waitOperation(accessToken,String(exp.json?.name||''),{timeoutMs:600000,label:'F8_EXPORT'});
