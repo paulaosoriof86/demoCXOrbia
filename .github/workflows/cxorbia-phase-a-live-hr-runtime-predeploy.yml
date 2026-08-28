@@ -17,6 +17,7 @@ on:
       - 'tools/qa/tya-f8-checkpoint-backed-shopper-runtime-readonly.mjs'
       - 'tools/qa/tya-f8-provider-security-quota-readonly.mjs'
       - 'tools/qa/tya-f8-bounded-load-failure-readonly.mjs'
+      - 'tools/qa/tya-f8-hosting-adapter-drift-rootcause-readonly.mjs'
       - 'backend/contracts/phase-a-live-hr-runtime-read-v1.json'
       - 'backend/config/cxorbia-f8-provider-transport-execute.json'
       - '.github/workflows/cxorbia-phase-a-live-hr-runtime-predeploy.yml'
@@ -69,6 +70,7 @@ jobs:
           node --check tools/qa/tya-f8-checkpoint-backed-shopper-runtime-readonly.mjs
           node --check tools/qa/tya-f8-provider-security-quota-readonly.mjs
           node --check tools/qa/tya-f8-bounded-load-failure-readonly.mjs
+          node --check tools/qa/tya-f8-hosting-adapter-drift-rootcause-readonly.mjs
           node --check tools/release/tya-f8-backup-restore-cutover-one-shot.mjs
           node --check tools/release/tya-f8-backup-restore-cutover-cli.mjs
 
@@ -213,6 +215,13 @@ jobs:
           set -euo pipefail
           node tools/qa/tya-f8-bounded-load-failure-readonly.mjs
 
+      - name: Classify F8 Hosting adapter drift read-only
+        env:
+          CXORBIA_F8_HOSTING_DRIFT_OUT: .tmp/f8-hosting-adapter-drift-rootcause/report.json
+        run: |
+          set -euo pipefail
+          node tools/qa/tya-f8-hosting-adapter-drift-rootcause-readonly.mjs
+
       - name: Stop local service
         if: always()
         run: |
@@ -231,6 +240,7 @@ jobs:
             .tmp/f8-checkpoint-shopper-runtime/report.json
             .tmp/f8-provider-security-quota/report.json
             .tmp/f8-bounded-load-failure/report.json
+            .tmp/f8-hosting-adapter-drift-rootcause/report.json
           if-no-files-found: warn
           retention-days: 14
 
