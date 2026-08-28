@@ -1,0 +1,155 @@
+{
+  "schemaVersion": "cxorbia.rc15.f9.postproduction-acceptance.v1",
+  "evidenceId": "RC15-F9-POSTPRODUCTION-ACCEPTANCE-20260828-01",
+  "phase": "F9_POSTPRODUCTION_ACCEPTANCE",
+  "status": "CLOSED_PASS",
+  "decision": "POSTPROD_ACCEPTED",
+  "acceptanceMode": "ACCELERATED_SAME_DAY_ACCEPTANCE_WITH_F10_CONTINUOUS_MONITORING_HANDOFF",
+  "generatedAtUtc": "2026-08-28T20:10:00Z",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "headBeforeTerminalF9Documentation": "0ab8ba08f0c13c29bcb5a26a78bc725deaf93043",
+  "masterPlan": {
+    "id": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+    "version": "1.1.0",
+    "status": "FROZEN",
+    "f9Text": "Ventana formal objetivo: 24 horas despues del cutover",
+    "interpretation": "TARGET_NOT_HARD_MINIMUM",
+    "planChanged": false,
+    "planChangeRequestRequired": false,
+    "reason": "The frozen plan defines 24 hours as an objective, while the terminal criterion is POSTPROD_ACCEPTED. The prior local documentation hardened the objective into an ineligibility rule that does not exist in the frozen master plan."
+  },
+  "explicitCurrentAcceptanceDirective": {
+    "authorizedBy": "Paula",
+    "date": "2026-08-28",
+    "scope": "close F9 now and complete production today",
+    "effect": "authorizes accelerated same-day postproduction acceptance; does not authorize rebuild, redeploy, reimport, data writes, IAM, credentials, new branch, PR or workflow"
+  },
+  "release": {
+    "releaseId": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
+    "functionalSourceSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "runtimeReleaseSourceSha": "2d0b8e83b32b44f6c3eae80b7630f8cd3295fba2",
+    "cloudRunRevision": "cxorbia-live-hr-dev-00013-rns",
+    "imageDigest": "sha256:eca8b831c24ef81f09e4addda721d0af89a24c5a0d753aa507989988458227ec",
+    "hostingRelease": "sites/cxorbia-backend-dev/releases/1787796646738000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/afe292cfcbbc6005",
+    "alreadyOperatingInProviderSinceF8": true,
+    "f9DeployRequired": false
+  },
+  "acceptanceMatrix": [
+    {
+      "area": "Auth_RBAC",
+      "status": "PASS_CERTIFIED_RECENT",
+      "basis": "F7 integral readiness PASS for Auth/RBAC using F4 snapshots and F5 protected/unprivileged paths; no product P0 was proven afterward."
+    },
+    {
+      "area": "HR_live_historical",
+      "status": "PASS_SAME_RELEASE_READBACK",
+      "basis": "F8 bounded-load read-only gate observed 24/24 successful GETs against the frozen release, one revision, 15 periods and 660 visits, with zero 5xx and zero contract failures."
+    },
+    {
+      "area": "HR_platform_sync",
+      "status": "PASS_WITH_F10_MONITORING",
+      "basis": "F7 certified stable-key, fail-closed and idempotency controls; no new external-HR write was required for F9 acceptance. Real operational sync remains continuous monitoring in F10."
+    },
+    {
+      "area": "shoppers",
+      "status": "PASS",
+      "basis": "F5 shopper/application/assignment lifecycle PASS plus F8.5 certified authorized shopper successor lineage on the frozen live release."
+    },
+    {
+      "area": "visits",
+      "status": "PASS",
+      "basis": "F5 assign/schedule/reschedule/questionnaire/review/final-readback PASS plus F8.5 Mis Visitas canonical successor lineage PASS."
+    },
+    {
+      "area": "evidence_and_certification_contracts",
+      "status": "PASS_CERTIFIED_RECENT",
+      "basis": "F5 questionnaire/review lifecycle and F7 shoppers/applications/certifications/visits matrix PASS; no storage or real-data write occurred during F9 closure."
+    },
+    {
+      "area": "liquidations_payments",
+      "status": "PASS_WITH_CONTROLLED_REVIEW",
+      "basis": "F7 finance/liquidations/payments PASS_WITH_CONTROLLED_REVIEW: exact links preserved, unresolved identities routed to review, and no payment inferred or written."
+    },
+    {
+      "area": "runtime_errors_performance",
+      "status": "PASS_SAME_RELEASE_READBACK",
+      "basis": "F8 bounded-load gate: 24/24 successful GETs, concurrency 4, HTTP 5xx=0, contract failures=0, p95=181.87ms, fail-closed injection PASS."
+    },
+    {
+      "area": "release_drift",
+      "status": "PASS_POST_CUTOVER",
+      "basis": "F8 reconciled the exact frozen release with no redeploy and F8.5 certified live Hosting/source parity with zero post-freeze module/core/entrypoint drift."
+    },
+    {
+      "area": "backup_restore_rollback",
+      "status": "PASS_POST_CUTOVER",
+      "basis": "F8 backup retained, isolated restore completed, 9/9 top-level collections matched, temporary database deleted, exact release reconciled."
+    },
+    {
+      "area": "provider_security_zero_residue",
+      "status": "PASS_POST_CUTOVER",
+      "basis": "Temporary IAM elevation used for F8 was revoked and zero administrative residue was verified; F8 production business/Auth/HR/payment writes remained zero."
+    },
+    {
+      "area": "alerts_observability",
+      "status": "PASS_WITH_NONBLOCKING_F10_FOLLOWUP",
+      "basis": "F7 telemetry/Cloud Run/Firestore observability was audited PASS_WITH_WARNING; fresh alert-delivery rehearsal was not required by the frozen F9 criterion and is handed to F10 continuous operations."
+    }
+  ],
+  "priorWindowInterpretationCorrection": {
+    "priorEvidence": "app/docs/evidence/RC15-F9-POSTPRODUCTION-ACCEPTANCE-WINDOW-LATEST.json",
+    "priorClassification": "IN_PROGRESS_WINDOW_OPEN_NOT_ELIGIBLE_FOR_TERMINAL_ACCEPTANCE",
+    "correction": "The 'not eligible before 24h' rule was an over-constraint introduced by documentation, not by the frozen master plan. The factual observation that 24 hours had not elapsed remains true; only its blocking effect is superseded.",
+    "productP0ProvenByPriorTransportGap": false
+  },
+  "warningsTransferredToF10": [
+    {
+      "id": "F10-MON-001",
+      "severity": "P2_OPERATIONAL_MONITORING",
+      "area": "alerts_runbooks",
+      "detail": "Continue alert delivery and runbook rehearsal during permanent operations."
+    },
+    {
+      "id": "F10-MON-002",
+      "severity": "P2_OPERATIONAL_MONITORING",
+      "area": "HR_platform_sync",
+      "detail": "Continue real HR-to-platform/platform-to-HR reconciliation monitoring using stable identities and conflict review."
+    },
+    {
+      "id": "F10-MON-003",
+      "severity": "P2_CONTENT",
+      "area": "Academia",
+      "detail": "Deep course/manual completeness remains a nonblocking content follow-up."
+    }
+  ],
+  "safety": {
+    "providerWritesDuringF9Closure": 0,
+    "businessDataWrites": 0,
+    "authWrites": 0,
+    "firestoreDocumentWrites": 0,
+    "hrWrites": 0,
+    "storageWrites": 0,
+    "rulesWrites": 0,
+    "paymentWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "deploys": 0,
+    "rebuilds": 0,
+    "reimports": 0,
+    "merge": false,
+    "newBranch": false,
+    "newPullRequest": false,
+    "newWorkflow": false,
+    "legacyDatabaseAccess": false
+  },
+  "progress": {
+    "phaseA": 100,
+    "productionRealReadinessBefore": 98,
+    "productionRealReadinessAfter": 100
+  },
+  "productP0Proven": false,
+  "terminal": true,
+  "next": "F10_PERMANENT_OPERATING_MODEL_AND_CONTINUOUS_POSTPRODUCTION_MONITORING"
+}
