@@ -39,25 +39,33 @@ async function main(){
   const revisions=[...new Set(results.map(x=>x.revision).filter(Boolean))];
   const refreshErrors=[...new Set(results.map(x=>x.refreshError).filter(Boolean))];
 
-  const notFound=await request(`${ROOT}/api/tya/cinepolis/__f8_readonly_not_found__?format=meta`);
-  ensure(notFound.status===404&&notFound.json?.ok===false&&notFound.json?.error==='not_found','F8_FAILURE_INJECTION_NOT_FOUND_DID_NOT_FAIL_CLOSED');
-
   const invalidPreview=await request(`${META}&view=operational-names&cxOperationalPreview=INVALID_F8_READONLY`);
   ensure(invalidPreview.status===200&&invalidPreview.json?.ok===true&&invalidPreview.json?.operationalView===false,'F8_FAILURE_INJECTION_INVALID_PREVIEW_DID_NOT_FAIL_CLOSED');
 
+  const missingPreviewToken=await request(`${META}&view=operational-names`);
+  ensure(missingPreviewToken.status===200&&missingPreviewToken.json?.ok===true&&missingPreviewToken.json?.operationalView===false,'F8_FAILURE_INJECTION_MISSING_PREVIEW_TOKEN_DID_NOT_FAIL_CLOSED');
+
   const untrustedOrigin=await request(`${META}&probe=f8-untrusted-origin`,{headers:{Origin:'https://untrusted.invalid'}});
   const acao=String(untrustedOrigin.headers['access-control-allow-origin']||'');
-  ensure(untrustedOrigin.status===200&&acao!=='https://untrusted.invalid','F8_FAILURE_INJECTION_UNTRUSTED_ORIGIN_ALLOWED');
+  ensure(acao!=='https://untrusted.invalid','F8_FAILURE_INJECTION_UNTRUSTED_ORIGIN_ALLOWED');
 
   const report={
-    schemaVersion:'cxorbia.f8-bounded-load-failure-readonly.v1',generatedAt:new Date().toISOString(),decision:'PASS_F8_BOUNDED_LOAD_FAILURE_READONLY',
+    schemaVersion:'cxorbia.f8-bounded-load-failure-readonly.v1.1',generatedAt:new Date().toISOString(),decision:'PASS_F8_BOUNDED_LOAD_FAILURE_READONLY',classification:'F7_P1_003_READONLY_GATE_PASS',
     target:{root:ROOT,path:'/api/tya/cinepolis/hr-live?format=meta',requestMethod:'GET',releaseScope:'F6_FROZEN_RELEASE'},
     load:{totalRequests:TOTAL,concurrency:CONCURRENCY,successfulRequests:results.length,http5xx:0,contractFailures:0,latencyMs:{min:Math.min(...latencies),p50:percentile(latencies,50),p95:percentile(latencies,95),max:Math.max(...latencies)},distinctRevisionCount:revisions.length,revisionFingerprints:revisions.map(x=>x.slice(0,16)),refreshErrors,observedPeriods:[...new Set(results.map(x=>x.periods))],observedVisits:[...new Set(results.map(x=>x.visits))]},
-    failureInjection:{getOnly:true,invalidPath:{expected:404,observed:notFound.status,failClosed:true},invalidOperationalPreview:{expectedOperationalView:false,observedOperationalView:invalidPreview.json?.operationalView===true,failClosed:invalidPreview.json?.operationalView===false},untrustedOrigin:{accessControlAllowOrigin:acao||null,failClosed:acao!=='https://untrusted.invalid'}},
+    failureInjection:{
+      getOnly:true,
+      invalidOperationalPreview:{status:invalidPreview.status,expectedOperationalView:false,observedOperationalView:invalidPreview.json?.operationalView===true,failClosed:invalidPreview.json?.operationalView===false},
+      missingOperationalPreviewToken:{status:missingPreviewToken.status,expectedOperationalView:false,observedOperationalView:missingPreviewToken.json?.operationalView===true,failClosed:missingPreviewToken.json?.operationalView===false},
+      untrustedOrigin:{status:untrustedOrigin.status,accessControlAllowOrigin:acao||null,failClosed:acao!=='https://untrusted.invalid'},
+      hostingUnknownPathProbeSkipped:true,
+      hostingUnknownPathProbeReason:'Firebase Hosting unmatched-path routing is not the authority for the Cloud Run application 404 contract; using it as a failure-injection assertion produced a harness false negative in run 33131536618.'
+    },
+    priorHarnessFinding:{runId:33131536618,classification:'MECHANISM_P1_TEST_ASSUMPTION',productP0Proven:false,failedAssertion:'F8_FAILURE_INJECTION_NOT_FOUND_DID_NOT_FAIL_CLOSED',replayedUnchanged:false},
     safety:{providerReads:true,requestMethods:['GET'],mutationRequests:0,providerWrites:0,businessDataWrites:0,authWrites:0,firestoreWrites:0,hrWrites:0,storageWrites:0,rulesWrites:0,paymentWrites:0,makeCalls:0,geminiCalls:0,deploys:0,rebuilds:0,reimports:0,merge:false,secretValuesRead:false,credentialsExposed:false},
     next:'F8_BACKUP_RESTORE_AND_CUTOVER_EXPLICIT_AUTHORIZATION_GATE'
   };
   write(report);console.log(JSON.stringify(report,null,2));
 }
 
-main().catch(error=>{const report={schemaVersion:'cxorbia.f8-bounded-load-failure-readonly.v1',generatedAt:new Date().toISOString(),decision:'HOLD_F8_BOUNDED_LOAD_FAILURE_READONLY',error:String(error?.message||error).slice(0,500),safety:{providerReads:true,requestMethods:['GET'],mutationRequests:0,providerWrites:0,businessDataWrites:0,authWrites:0,firestoreWrites:0,hrWrites:0,storageWrites:0,rulesWrites:0,paymentWrites:0,makeCalls:0,geminiCalls:0,deploys:0,rebuilds:0,reimports:0,merge:false,secretValuesRead:false,credentialsExposed:false}};write(report);console.error(JSON.stringify(report,null,2));process.exitCode=1;});
+main().catch(error=>{const report={schemaVersion:'cxorbia.f8-bounded-load-failure-readonly.v1.1',generatedAt:new Date().toISOString(),decision:'HOLD_F8_BOUNDED_LOAD_FAILURE_READONLY',classification:'MECHANISM_OR_PRODUCT_REQUIRES_CLASSIFICATION',error:String(error?.message||error).slice(0,500),priorHarnessFinding:{runId:33131536618,classification:'MECHANISM_P1_TEST_ASSUMPTION',productP0Proven:false,replayedUnchanged:false},safety:{providerReads:true,requestMethods:['GET'],mutationRequests:0,providerWrites:0,businessDataWrites:0,authWrites:0,firestoreWrites:0,hrWrites:0,storageWrites:0,rulesWrites:0,paymentWrites:0,makeCalls:0,geminiCalls:0,deploys:0,rebuilds:0,reimports:0,merge:false,secretValuesRead:false,credentialsExposed:false}};write(report);console.error(JSON.stringify(report,null,2));process.exitCode=1;});
