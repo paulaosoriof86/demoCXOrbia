@@ -1,17 +1,17 @@
 {
   "schemaVersion": "cxorbia.readonly-post-gates-request.v1",
-  "requestId": "f10-production-multirole-readonly-baseline-20260828-01",
+  "requestId": "f10-staff-runtime-authority-readonly-20260828-01",
   "enabled": true,
   "consumed": false,
   "status": "authorized_single_execution_pending",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "pullRequest": 7,
-  "targetHeadSha": "4107376eb7780a4677b4c7a98aa1198964ce4001",
+  "targetHeadSha": "8e921ae82c4cc7a00228e92204263a0d4283f2f5",
   "deployedProductSourceHeadSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
-  "profile": "PHASE_A_COMPLETE_RUNTIME_MULTIROLE",
+  "profile": "I3_STAFF_RUNTIME_AUTHORITY_READONLY",
   "allowedProfiles": [
-    "PHASE_A_COMPLETE_RUNTIME_MULTIROLE"
+    "I3_STAFF_RUNTIME_AUTHORITY_READONLY"
   ],
   "allowedExecutions": 1,
   "executionsConsumed": 0,
@@ -46,8 +46,10 @@
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-28",
   "authorizationText": "perfecto, procedamos",
-  "purpose": "F10 initial permanent-operations read-only production baseline across Staff/Admin, Shopper, Client, live HR dynamic authority, remote parity, finance delegated truth and reservations fail-closed behavior. No mutation, deploy or credential change.",
+  "purpose": "F10 fresh Staff/Admin runtime authority observation: postulation-vs-HR authority, exact identity crosswalk, frozen historical Shopper profile/history reuse without Shopper credential selection, and durable legal receipt. Read-only only.",
   "operatingModelContract": "backend/contracts/cxorbia-f10-permanent-operating-model-v1.json",
+  "predecessorStoppedRunId": 33210679853,
+  "predecessorStopEvidence": "app/docs/evidence/RC15-F10-MULTIROLE-LEGACY-SHOPPER-SELECTOR-STOP-LATEST.json",
   "automaticRetryAllowed": false,
   "replayAllowed": false
 }
