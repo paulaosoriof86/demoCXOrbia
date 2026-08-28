@@ -13,32 +13,32 @@
 - `74 → 76`: F3 mecanismo provider + recovery lane PASS.
 - `76 → 81`: F4 recovery PASS.
 - `81 → 86`: F5 live synthetic acceptance + cleanup + residuo cero PASS.
-- `86 → 90`: F6 release Phase A inmutable PASS.
+- `86 → 90`: F6 release Phase A inmutable PASS; fingerprint Hosting corregido posteriormente solo mediante errata overlay, sin cambio de release.
 - `90 → 95`: F7 integral readiness `GO_WITH_WARNINGS`, P0=0.
-- F8 read-only: IAM metadata P1 reconciliado no bloqueante y `F7-P1-003` bounded load/failure `CLOSED/PASS` sin cambio porcentual.
+- F8 read-only: IAM metadata P1 no bloqueante, bounded load/failure PASS y capability preflight completo PASS tras grant temporal autorizado; sin cambio porcentual todavía.
 
-## F8 autorizado y ejecutor endurecido
+## F8 — listo para ejecución single-use
 
-La autorización single-use F8 permanece `AUTHORIZED_NOT_YET_CONSUMED`; ninguna mutación provider inició.
+La autorización F8 permanece `AUTHORIZED_NOT_YET_CONSUMED`. El primer intento real autenticó contra GCP pero se detuvo antes de mutación por un fingerprint F6 incorrecto. Ese defecto de evidencia se corrigió mediante errata overlay; el asset vivo coincide con functional source congelado, runtime congelado y rama actual.
 
-El mecanismo ya tenía reparados lineage/consumo (`e95d23a91f26f42e1adf3ac167ccd2f0093dd31a`) y entrypoint/anti-replay local (`13170f4156ad4ab5886b65f923ab5b9e198452b8`).
+Se corrigió también la selección de Storage: el default Firebase anunciado no existe; el executor v6 solo utiliza bucket GCS realmente listado en el mismo proyecto, con metadata, ubicación compatible y permisos de objeto verificados.
 
-En este bloque se eliminó otra fuente potencial de bloqueo al ejecutar: la temp DB se nominaba antes del export, podía colisionar entre workspaces y una ruta de cleanup podía emitir DELETE innecesario o repetirlo automáticamente. El commit `183d56ed5cd70683c6dff1506c46e1beebed8281` cambió el one-shot a schema v4: temp DB solo tras export completo, sufijo aleatorio no secreto de 4 bytes, cleanup condicionado a CREATE aceptado y DELETE single-attempt fail-closed. Blob remoto `1d4b01bf3df3ec59ba84194a3b0d77f5c5425630`; exact local blob y syntax PASS. Evidencia: `app/docs/evidence/RC15-F8-TEMP-RESTORE-CLEANUP-HARDENING-LATEST.json`.
+Paula autorizó y aplicó excepcionalmente `roles/datastore.owner` temporal/condicionado a la identidad DEV existente. El recheck read-only del run `33187198967`, attempt 3, job `98923457703`, sobre HEAD `e9875eb278316396aaf58fe7b31423228fb0940f`, cerró `PASS_F8_CUTOVER_CAPABILITY_READONLY`: `missingPermissions=[]`, `verifiedExistingBucket=true`, `issues=[]`.
 
-El bloqueo actual continúa siendo externo: `EXTERNAL_TRANSPORT_OUTAGE_NO_SAFE_PROVIDER_EXECUTOR_IN_CURRENT_SESSION`. No existe en esta sesión un canal GCP/provider autenticado utilizable y el alcance vigente prohíbe crear/revivir workflow, IAM o credenciales.
-
-No hay P0 de producto ni drift probado del release F6. `PRODUCTION_REAL_READINESS` permanece `95/100`; solo mueve `95 → 98` cuando F8 backup/restore/cutover quede terminal y reconciliado.
+El job F8 de ese recheck quedó `skipped` por ausencia de successor marker. Provider writes=0, backup/export=0, restore=0, cutover=0, deploy=0 y autorización consumida=false hasta este punto.
 
 ## Camino restante
 
-1. Ejecutar la autorización F8 vigente cuando exista un canal provider seguro, usando el entrypoint y one-shot endurecidos.
-2. Backup/export + restore temporal verificable.
-3. Reconciliar el release congelado exacto; sin redeploy si el drift check continúa PASS.
-4. Provider readbacks/smoke/rollback y cierre F8: `95 → 98`.
-5. F9 aceptación postproducción: `98 → 100`.
+1. Emitir successor marker exacto como único archivo del commit trigger, ligado al HEAD vivo inmediatamente anterior.
+2. Ejecutar una sola vez backup/export + restore en base aislada + verificación de colecciones + cleanup de base temporal.
+3. Reconciliar release exacto; sin redeploy si Cloud Run/Hosting siguen exactos.
+4. Revocar/verificar el binding temporal `roles/datastore.owner`.
+5. Si F8 queda terminal PASS: `95 → 98`.
+6. Ejecutar `F8_5_CANONICAL_MODULE_LINEAGE_CERTIFICATION`: última versión aprobada de cada módulo versus canónica y Hosting vivo. No invitar a visualización humana antes de PASS.
+7. F9 aceptación postproducción: `98 → 100`.
 
 ## Estado seguro
 
-Release F6 intacto. Provider/IAM/data/Auth/Firestore/HR/Storage/Rules/pagos/Make/Gemini writes=`0`; backup/export/restore/cutover attempts=`0`; deploy/rebuild/reimport/merge=`0`; autorización F8 consumida=`false`.
+Release F6 intacto. Antes del successor marker: provider/data/Auth/Firestore/HR/Storage/Rules/pagos/Make/Gemini writes=0; backup/export/restore/cutover=0; deploy/rebuild/reimport/merge=0; autorización F8 consumida=false.
 
-**Siguiente gate:** `F8_EXECUTE_AUTHORIZED_BACKUP_RESTORE_CUTOVER_WHEN_SECURE_PROVIDER_EXECUTION_CHANNEL_IS_AVAILABLE`.
+**Siguiente gate:** `F8_EMIT_EXACT_SUCCESSOR_MARKER_AND_EXECUTE_SINGLE_USE_BACKUP_RESTORE_CUTOVER`.
