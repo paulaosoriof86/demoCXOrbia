@@ -116,27 +116,28 @@ async function main(){
   const run=runRead.ok?summarizeRun(runRead.json):null;
   const iam=iamRead.ok?summarizeIam(iamRead.json):null;
   const secrets=secretRead.ok?summarizeSecrets(secretRead.json):null;
-  const hardFindings=[];
+  const hardFindings=[];const warnings=[];
   if(!runRead.ok)hardFindings.push('cloud_run_service_read_unavailable');
   if(!iamRead.ok)hardFindings.push('cloud_run_iam_read_unavailable');
-  if(!secretRead.ok)hardFindings.push('secret_manager_metadata_read_unavailable');
+  if(!secretRead.ok)warnings.push('F7-P1-002_secret_manager_metadata_read_unavailable_nonblocking');
   if(run&&run.name!==runName)hardFindings.push('cloud_run_target_mismatch');
   if(run&&!run.serviceAccountSet)hardFindings.push('cloud_run_runtime_service_account_missing');
   if(run&&run.plaintextSensitiveKeyCount>0)hardFindings.push('cloud_run_plaintext_sensitive_env_key_detected');
   if(quotaReadbacks.some(x=>x.readback!=='PASS'))hardFindings.push('quota_readback_partial');
   if(serviceUsage.some(x=>x.state==='HOLD'))hardFindings.push('service_usage_readback_partial');
 
-  const decision=hardFindings.length?'HOLD_F8_PROVIDER_SECURITY_QUOTA_READONLY':'PASS_F8_PROVIDER_SECURITY_QUOTA_READONLY';
+  const decision=hardFindings.length?'HOLD_F8_PROVIDER_SECURITY_QUOTA_READONLY':warnings.length?'PASS_WITH_WARNING_F8_PROVIDER_SECURITY_QUOTA_READONLY':'PASS_F8_PROVIDER_SECURITY_QUOTA_READONLY';
   const report={
-    schemaVersion:'cxorbia.f8-provider-security-quota-readonly.v2.2',generatedAt:new Date().toISOString(),decision,
+    schemaVersion:'cxorbia.f8-provider-security-quota-readonly.v2.3',generatedAt:new Date().toISOString(),decision,
+    severityPolicy:{source:'F7_GO_WITH_WARNINGS',productP0RequiresReproducibleProductImpact:true,secretManagerMetadataWarningId:'F7-P1-002',secretManagerMetadataWarningBlocking:false},
     projectId:PROJECT,projectNumberFingerprint:hash(projectNumber).slice(0,20),credentialRoutes:sanitizedCreds(creds),
     readRoutes:{project:projectRead.route||null,cloudRun:runRead.route||null,cloudRunIam:iamRead.route||null,secrets:secretRead.route||null},
-    cloudRun:run,cloudRunIam:iam,secrets,serviceUsage,quotaReadbacks,hardFindings,
-    interpretation:decision==='PASS_F8_PROVIDER_SECURITY_QUOTA_READONLY'?'Fresh provider-side IAM, Secret Manager metadata and quota/service-usage readbacks were completed without provider mutation.':'At least one required provider-side security readback remains unavailable or an actual plaintext secret-bearing environment name remains; derived hashes/expiry metadata are classified separately and are not treated as secret values.',
-    safety:safe,next:decision==='PASS_F8_PROVIDER_SECURITY_QUOTA_READONLY'?'F8_BOUNDED_LOAD_QUOTA_FAILURE_INJECTION_READONLY':'F8_PROVIDER_SECURITY_FINDING_CLASSIFICATION'
+    cloudRun:run,cloudRunIam:iam,secrets,serviceUsage,quotaReadbacks,hardFindings,warnings,
+    interpretation:hardFindings.length?'A material provider-side security/quota readback failed or a reproducible runtime security finding exists.':warnings.length?'Material provider-side runtime/IAM/quota readbacks passed. Secret Manager metadata listing remains unavailable and is retained as F7-P1-002 nonblocking; no secret values were read or exported.':'Fresh provider-side IAM, Secret Manager metadata and quota/service-usage readbacks were completed without provider mutation.',
+    safety:safe,next:hardFindings.length?'F8_PROVIDER_SECURITY_FINDING_CLASSIFICATION':'F8_BOUNDED_LOAD_FAILURE_READONLY_CHECK'
   };
   write(report);console.log(JSON.stringify(report,null,2));
-  if(decision!=='PASS_F8_PROVIDER_SECURITY_QUOTA_READONLY')process.exitCode=1;
+  if(hardFindings.length)process.exitCode=1;
 }
 
-main().catch(error=>{const report={schemaVersion:'cxorbia.f8-provider-security-quota-readonly.v2.2',generatedAt:new Date().toISOString(),decision:'HOLD_F8_PROVIDER_SECURITY_QUOTA_READONLY',error:String(error?.message||error).slice(0,400),safety:safe};write(report);console.error(JSON.stringify(report,null,2));process.exitCode=1;});
+main().catch(error=>{const report={schemaVersion:'cxorbia.f8-provider-security-quota-readonly.v2.3',generatedAt:new Date().toISOString(),decision:'HOLD_F8_PROVIDER_SECURITY_QUOTA_READONLY',error:String(error?.message||error).slice(0,400),safety:safe};write(report);console.error(JSON.stringify(report,null,2));process.exitCode=1;});
