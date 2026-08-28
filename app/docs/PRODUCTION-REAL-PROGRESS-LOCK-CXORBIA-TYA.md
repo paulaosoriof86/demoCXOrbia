@@ -18,26 +18,27 @@
 - `95 → 98`: F8 backup/export + restore aislado + cleanup + reconciliación exacta PASS, autorización consumida y binding IAM temporal revocado con residuo cero verificado.
 - `98 → 98`: F8.5 canonical module lineage certification PASS; gate de certificación sin incremento porcentual.
 
-## F8 CLOSED PASS ZERO RESIDUE
+## F9 POSTPRODUCTION ACCEPTANCE — IN PROGRESS
 
-Provider run `33193514608`, job `98924733768`: backup/export + restore temporal + 9/9 colecciones + cleanup + reconciliación exacta PASS, sin redeploy. IAM temporal revocado y verificado con run `33187198967`, attempt 4, job `98940746944`; residuo IAM=0.
+El master plan congelado exige una ventana objetivo de 24 horas después del cutover. F8 terminó con run `33193514608` a `2026-08-28T17:19:06Z` (`11:19:06 -06:00`). El criterio terminal `POSTPROD_ACCEPTED` no puede emitirse antes de `2026-08-29T17:19:06Z` (`11:19:06 -06:00`).
 
-## F8.5 CLOSED PASS
+Por eso readiness permanece `98/100`; no se adelanta artificialmente a 100.
 
-Autoridad histórica `app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json`: `approvedLineagePreserved=true`, con matriz M1/V161C/V174/V182/C6. V182 no se trata como baseline global reinstalable: los fixes C6 posteriores prevalecen donde fueron aplicados.
+### Evidencia inicial post-cutover
 
-Los sucesores autorizados de Shoppers (`f961253f18c388ae04619bb5175269015c8349c3`) y Mis Visitas (`9d8f44b0fea7f2513018339e54a0bef4ae152ea0`) quedan incorporados a la autoridad vigente.
+- F8: backup/export, restore aislado, 9/9 colecciones, cleanup y release reconciliation PASS, sin redeploy.
+- IAM temporal: revocado y verificado con residuo cero después de F8.
+- F8.5: autoridad de módulos/source/release PASS, P0=0.
+- Baseline de carga/failure previa: 24/24 GET, concurrencia 4, 5xx=0, fallos contrato=0, p95=181.87 ms; se conserva solo para comparación y no sustituye las lecturas frescas F9.
 
-La comparación `f9802fdd498934a8e7729fa5c7d18341bec1cd71 → ef990a86b8a98195c12a8cb318fbc12d9a2bac57` conserva el functional source como merge-base y no contiene cambios posteriores al freeze en `app/modules/**`, `app/core/**`, `app/app.js`, `app/styles/**` ni `app/index-backend-dev.html`. Hosting conserva release `1787796646738000` y version `afe292cfcbbc6005`; el manifest certifica exact source y la errata read-only prueba igualdad del sentinel vivo con functional source, runtime source y rama. P0 de linaje=0.
+### Pendiente para 98 → 100
 
-## Camino restante
+Obtener dentro de la ventana fresh readbacks de Auth, HR, HR↔plataforma, shoppers, visitas, evidencias, liquidaciones/pagos, errores runtime, performance, drift y alertas/observabilidad, y demostrar ausencia de P0/regresión antes de `POSTPROD_ACCEPTED`.
 
-1. `F9_POSTPRODUCTION_ACCEPTANCE_98_TO_100`;
-2. ejecutar aceptación postproducción controlada sobre el release ya certificado;
-3. solo con PASS F9 avanzar `98 → 100`.
+La sesión actual intentó cuatro GET read-only hacia Hosting, pero ninguno alcanzó producción por fallo de resolución DNS del entorno. Clasificación: `SESSION_EXTERNAL_HTTP_TRANSPORT_GAP_NOT_PRODUCT_FAILURE`; no demuestra caída del producto y no autoriza workflow/credencial/IAM/rama/PR nuevo ni histórico revivido.
 
 ## Estado seguro
 
-Release F6 intacto; F8 no se repite; F8.5 no hizo writes ni deploy. No hay tarea frontend correctiva, no se restaura V182 completo y no se crea nueva candidata por rutina.
+Release F6 intacto. F8 no se repite. F8.5 está cerrado. F9 solo observa; provider/data/Auth/Firestore/HR/Storage/Rules/pagos/Make/Gemini writes=0 en este bloque; deploy/rebuild/reimport/merge=0; nueva rama/PR/workflow=0; legacy DB access=false.
 
-**Siguiente gate:** `F9_POSTPRODUCTION_ACCEPTANCE_98_TO_100`.
+**Siguiente gate:** `F9_COLLECT_POSTCUTOVER_READONLY_OBSERVATIONS_AND_TERMINAL_ACCEPTANCE_NOT_BEFORE_2026-08-29T17:19:06Z`.
