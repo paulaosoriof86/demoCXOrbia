@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "cxorbia.phase-a.immutable-release-manifest.errata.v1",
+  "errataId": "CXORBIA-F6-RELEASE-MANIFEST-ERRATA-20260828-01",
+  "status": "ACTIVE_CORRECTION_OVERLAY_NO_RELEASE_REBUILD",
+  "releaseId": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
+  "originalManifest": {
+    "path": "backend/config/cxorbia-phase-a-release-manifest-v1.json",
+    "blobSha": "732dbfd48912b3550c6fb20bc592bd118647263a",
+    "sha256": "29399792e75729c4d5db28865dd793a74f2d79b73f78704d03d5c27094ed68ab",
+    "historicalImmutable": true,
+    "modifiedByErrata": false
+  },
+  "corrections": {
+    "hostingAdapterSha256": {
+      "path": "app/adapters/tya-live-source-refresh-watch-v2.js",
+      "before": "9d69d0d0db42e3f2b93cc893f2da1ed0b2e753403d3f46a9a8537dbe994c82b0",
+      "after": "fdbcede88b49332ba1e2ad3733aac40f998c9e3ae79a0d8dbf1337ffe259b786",
+      "appliesTo": [
+        "provider.hosting.certifiedAdapterSha256",
+        "fingerprints.hostingAdapterSha256"
+      ]
+    }
+  },
+  "proof": {
+    "readonlyRunId": 33181547494,
+    "artifactId": 9689924067,
+    "artifactDigest": "sha256:b03877ca386d582b3e74d6f5f5596419ba5c783d0f921764460fa35f0897bed3",
+    "liveSha256": "fdbcede88b49332ba1e2ad3733aac40f998c9e3ae79a0d8dbf1337ffe259b786",
+    "currentBranchSha256": "fdbcede88b49332ba1e2ad3733aac40f998c9e3ae79a0d8dbf1337ffe259b786",
+    "frozenFunctionalSourceSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "frozenFunctionalAdapterSha256": "fdbcede88b49332ba1e2ad3733aac40f998c9e3ae79a0d8dbf1337ffe259b786",
+    "frozenRuntimeSourceSha": "2d0b8e83b32b44f6c3eae80b7630f8cd3295fba2",
+    "frozenRuntimeAdapterSha256": "fdbcede88b49332ba1e2ad3733aac40f998c9e3ae79a0d8dbf1337ffe259b786",
+    "liveEqualsFrozenFunctionalSource": true,
+    "liveEqualsFrozenRuntimeSource": true,
+    "liveEqualsCurrentBranch": true,
+    "providerWrites": 0,
+    "deploys": 0
+  },
+  "rootCause": {
+    "classification": "MECHANISM_P0_F6_UNVERIFIED_INHERITED_HOSTING_FINGERPRINT_PROMOTED_TO_IMMUTABLE_MANIFEST",
+    "detail": "F6 created the immutable manifest without provider access and promoted an inherited hosting adapter fingerprint as certified exact. The frozen manifest and F6 evidence therefore contain a fingerprint that does not match the frozen functional source, frozen runtime source, or the live Hosting asset. The release content itself is not drifted at this adapter path; the certification metadata is wrong.",
+    "productP0Proven": false,
+    "providerDriftProven": false,
+    "releaseContentRegressionProven": false
+  },
+  "releaseTuplePreserved": {
+    "functionalSourceSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "runtimeReleaseSourceSha": "2d0b8e83b32b44f6c3eae80b7630f8cd3295fba2",
+    "cloudRunRevision": "cxorbia-live-hr-dev-00013-rns",
+    "imageDigest": "sha256:eca8b831c24ef81f09e4addda721d0af89a24c5a0d753aa507989988458227ec",
+    "hostingRelease": "sites/cxorbia-backend-dev/releases/1787796646738000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/afe292cfcbbc6005"
+  },
+  "safety": {
+    "releaseRebuild": false,
+    "releaseReimport": false,
+    "hostingDeploy": false,
+    "cloudRunDeploy": false,
+    "providerWrites": 0,
+    "businessDataWrites": 0,
+    "authWrites": 0,
+    "legacyDatabaseAccess": false,
+    "authorizationConsumed": false
+  },
+  "authority": "Use this overlay together with the immutable original manifest for F8 and all future release fingerprint validation. Never mutate historical manifest values in place.",
+  "source": "Paula current conversation 2026-08-28 root-cause resolution plus read-only run 33181547494"
+}
