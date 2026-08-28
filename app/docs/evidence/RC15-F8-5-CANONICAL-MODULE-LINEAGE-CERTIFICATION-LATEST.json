@@ -1,0 +1,137 @@
+{
+  "schemaVersion": "cxorbia.rc15.f8_5.canonical-module-lineage-certification.v1",
+  "evidenceId": "RC15-F8-5-CANONICAL-MODULE-LINEAGE-CERTIFICATION-20260828-01",
+  "generatedAt": "2026-08-28",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "headBeforeCertification": "ef990a86b8a98195c12a8cb318fbc12d9a2bac57",
+  "phaseA": 100,
+  "productionRealReadiness": 98,
+  "gate": "F8_5_CANONICAL_MODULE_LINEAGE_CERTIFICATION",
+  "verdict": "PASS_CANONICAL_APPROVED_LINEAGE_MATCHES_FROZEN_SOURCE_AND_LIVE_HOSTING_RELEASE",
+  "productP0Proven": false,
+  "authority": {
+    "compositionManifest": "app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json",
+    "candidateId": "CXORBIA-TYA-PHASE-A-COMPLETE-CANONICAL-COMPOSITION-20260804",
+    "approvedLineagePreserved": true,
+    "authorityClosureCommit": "6b34b25dd1d4e9419345f62e4b4fc42bc041e340",
+    "authorityFamilies": [
+      "M1_APPROVED_EXACT",
+      "V161C_EXACT",
+      "V174_APPROVED_EXACT",
+      "V182_EXACT",
+      "C6_DEPLOYED_EXACT",
+      "C6_ROOT_FIX_AFTER_V182"
+    ],
+    "examples": {
+      "visitas": "V174_APPROVED_EXACT",
+      "visitaDetalle": "V174_AND_V161C_EXACT",
+      "revisionAdmin": "V174_EXACT_AFTER_V89_RESTORE",
+      "postulaciones": "V174_APPROVED_EXACT",
+      "documentos": "V174_AND_V161C_EXACT",
+      "beneficios": "V182_AND_C6_EXACT",
+      "finanzasCore": "C6_ROOT_FIX_AFTER_V182",
+      "finanzas": "C6_ROOT_FIX_AFTER_V182",
+      "shoppersAtComposition": "C6_DEPLOYED_EXACT",
+      "misVisitasAtComposition": "C6_DEPLOYED_EXACT"
+    },
+    "rawV182Policy": "V182 is authority only for its approved Corte 3 scope; later C6/root fixes supersede raw V182 bytes where documented. Whole-package V182 restoration is forbidden."
+  },
+  "successorAuthorizedFixes": {
+    "shoppers": {
+      "commit": "f961253f18c388ae04619bb5175269015c8349c3",
+      "message": "feat(core): apply Cloud V6 operations shopper slice",
+      "classification": "AUTHORIZED_SUCCESSOR_SLICE"
+    },
+    "misvisitas": {
+      "commit": "9d8f44b0fea7f2513018339e54a0bef4ae152ea0",
+      "message": "fix(shopper): make Mis Visitas canonical-list and ACK-aware",
+      "classification": "AUTHORIZED_CANONICAL_ROOT_FIX"
+    }
+  },
+  "frozenRelease": {
+    "releaseId": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
+    "functionalSourceSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "runtimeReleaseSourceSha": "2d0b8e83b32b44f6c3eae80b7630f8cd3295fba2",
+    "cloudRunRevision": "cxorbia-live-hr-dev-00013-rns",
+    "imageDigest": "sha256:eca8b831c24ef81f09e4addda721d0af89a24c5a0d753aa507989988458227ec",
+    "hostingRelease": "sites/cxorbia-backend-dev/releases/1787796646738000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/afe292cfcbbc6005"
+  },
+  "canonicalFreezeComparison": {
+    "base": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "head": "ef990a86b8a98195c12a8cb318fbc12d9a2bac57",
+    "gitCompareStatus": "ahead",
+    "aheadBy": 455,
+    "mergeBaseEqualsFunctionalSource": true,
+    "loadedFrontendChangesAfterFreeze": {
+      "app/modules": 0,
+      "app/core": 0,
+      "app/app.js": 0,
+      "app/styles": 0,
+      "app/index-backend-dev.html": 0
+    },
+    "knownAppExceptionsAfterFreeze": [
+      "app/adapters/cxorbia-canonical-write-firewall-v1.js",
+      "app/data/tya-hr-source-safe-current-through-july.js"
+    ],
+    "exceptionClassification": "AUTHORIZED_BACKEND_SECURITY_AND_HR_DATA_CONTINUITY; not a module/core authority replacement"
+  },
+  "hostingParity": {
+    "mode": "FROZEN_RELEASE_TUPLE_PLUS_CERTIFIED_EXACT_SOURCE_PLUS_LIVE_SENTINEL_READBACK",
+    "immutableManifest": "backend/config/cxorbia-phase-a-release-manifest-v1.json",
+    "manifestReadbackHostingCertifiedExactSource": true,
+    "errataOverlay": "backend/config/cxorbia-phase-a-release-manifest-errata-v1.json",
+    "errataReadOnlyRunId": 33181547494,
+    "liveSentinelPath": "app/adapters/tya-live-source-refresh-watch-v2.js",
+    "liveSentinelSha256": "fdbcede88b49332ba1e2ad3733aac40f998c9e3ae79a0d8dbf1337ffe259b786",
+    "liveEqualsFrozenFunctionalSource": true,
+    "liveEqualsFrozenRuntimeSource": true,
+    "liveEqualsCurrentBranch": true,
+    "f8ReleaseReconciliation": "PASS_F8_BACKUP_RESTORE_CUTOVER_RECONCILED_NO_REDEPLOY",
+    "hostingReleaseUnchangedAfterF8": true,
+    "hostingVersionUnchangedAfterF8": true,
+    "deploysDuringF8": 0,
+    "conclusion": "The live Hosting release remains the certified frozen release sourced from the same canonical frontend tree; no post-freeze module/core/entrypoint drift is present."
+  },
+  "loadedSurfaceScope": {
+    "entrypoint": "app/index-backend-dev.html",
+    "includes": [
+      "app/core/** loaded by the entrypoint",
+      "app/modules/** loaded by the entrypoint",
+      "app/styles/theme.css",
+      "app/styles/layout.css",
+      "app/app.js",
+      "loaded adapters and data overlays"
+    ],
+    "orphanOrResidualVersionP0Proven": false
+  },
+  "safety": {
+    "frontendWrites": 0,
+    "moduleWrites": 0,
+    "coreWrites": 0,
+    "providerWrites": 0,
+    "businessDataWrites": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "storageWrites": 0,
+    "rulesWrites": 0,
+    "paymentWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "deploys": 0,
+    "rebuilds": 0,
+    "reimports": 0,
+    "merge": false,
+    "newBranch": false,
+    "newPullRequest": false
+  },
+  "classification": {
+    "reusableCXOrbia": "module-lineage certification by immutable authority manifest + successor fixes + freeze diff + live release sentinel",
+    "exclusiveClient": "TyA release identifiers and approved module lineage",
+    "claudePrototype": "NO_FRONTEND_TASK_CREATED",
+    "academia": "NO_FUNCTIONAL_IMPACT",
+    "noClaudeImpact": true
+  },
+  "next": "F9_POSTPRODUCTION_ACCEPTANCE_98_TO_100"
+}
