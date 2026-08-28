@@ -60,14 +60,31 @@ async function testProjectPermissions(token,permissions){
   ensure(r.ok,`PROJECT_TEST_IAM_HTTP_${r.status}`);
   return new Set((r.json?.permissions||[]).map(String));
 }
-async function discoverExistingBucket(token){
-  const admin=await api(token,`https://firebase.googleapis.com/v1beta1/projects/${PROJECT}/adminSdkConfig`);
-  if(admin.ok&&admin.json?.storageBucket)return String(admin.json.storageBucket);
-  const linked=await api(token,`https://firebasestorage.googleapis.com/v1beta/projects/${PROJECT}/buckets`);
-  if(linked.ok){
-    const buckets=Array.isArray(linked.json?.buckets)?linked.json.buckets:[];
-    const name=String(buckets[0]?.name||'').split('/').pop();
-    if(name)return name;
+function bucketLocationCompatible(databaseLocation,bucketLocation){
+  const db=String(databaseLocation||'').toLowerCase();
+  const bucket=String(bucketLocation||'').toLowerCase();
+  if(db==='nam5'||db==='nam7')return bucket==='us'||bucket.startsWith('us-');
+  if(db==='eur3')return bucket==='eu'||bucket.startsWith('europe-');
+  return bucket===db;
+}
+async function discoverVerifiedExistingBucket(token,databaseLocation){
+  const list=await api(token,`https://storage.googleapis.com/storage/v1/b?project=${encodeURIComponent(PROJECT)}&maxResults=1000&fields=items(name,location,storageClass)`);
+  ensure(list.ok,`F8_GCS_PROJECT_BUCKET_LIST_${list.status}`);
+  const buckets=Array.isArray(list.json?.items)?list.json.items:[];
+  ensure(buckets.length>0,'F8_GCS_PROJECT_BUCKET_LIST_EMPTY');
+  const requiredObjectPermissions=['storage.objects.create','storage.objects.get','storage.objects.list','storage.objects.delete'];
+  for(const item of buckets){
+    const name=String(item?.name||'');if(!name)continue;
+    const meta=await api(token,`https://storage.googleapis.com/storage/v1/b/${encodeURIComponent(name)}?fields=name,location,storageClass`);
+    if(!meta.ok)continue;
+    const location=String(meta.json?.location||'');
+    if(!bucketLocationCompatible(databaseLocation,location))continue;
+    const query=requiredObjectPermissions.map(p=>`permissions=${encodeURIComponent(p)}`).join('&');
+    const perms=await api(token,`https://storage.googleapis.com/storage/v1/b/${encodeURIComponent(name)}/iam/testPermissions?${query}`);
+    if(!perms.ok)continue;
+    const granted=new Set((perms.json?.permissions||[]).map(String));
+    if(requiredObjectPermissions.some(p=>!granted.has(p)))continue;
+    return {name,location,storageClass:String(meta.json?.storageClass||''),sameProject:true,source:'gcs_project_inventory_verified',requiredObjectPermissions,grantedObjectPermissions:requiredObjectPermissions.filter(p=>granted.has(p))};
   }
   return null;
 }
@@ -76,12 +93,12 @@ export async function runF8BackupRestoreCutoverOneShot({accessToken}){
   const runId=String(process.env.GITHUB_RUN_ID||'local');
   const runAttempt=String(process.env.GITHUB_RUN_ATTEMPT||'1');
   const state={
-    schemaVersion:'cxorbia.rc15.f8.backup-restore-cutover.execution.v5',generatedAt:null,authorizationId:AUTH_ID,authorizationConsumed:false,automaticRetryAllowed:false,
+    schemaVersion:'cxorbia.rc15.f8.backup-restore-cutover.execution.v6',generatedAt:null,authorizationId:AUTH_ID,authorizationConsumed:false,automaticRetryAllowed:false,
     runId,runAttempt,projectId:PROJECT,releaseId:EXPECTED_RELEASE,decision:'HOLD_NOT_STARTED',stage:'INIT',productP0Proven:false,
-    backup:{started:false,completed:false,retained:false,locatorStoredInProviderOnly:true,uriSha256:null,bucketFingerprint:null},
+    backup:{started:false,completed:false,retained:false,locatorStoredInProviderOnly:true,uriSha256:null,bucketFingerprint:null,bucketLocation:null,bucketStorageClass:null,bucketSameProject:false,bucketVerifiedSource:null},
     restoreVerification:{temporaryDatabaseCreateRequestAccepted:false,temporaryDatabaseCreated:false,importStarted:false,importCompleted:false,topLevelCollectionsMatch:false,temporaryDatabaseDeleted:false,tempDatabaseFingerprint:null},
     cutover:{redeployRequired:false,deploys:0,rebuilds:0,releaseReimports:0,reconciledExactFrozenRelease:false},
-    preflight:{head:null,parentHead:null,authorizationCommit:null,authorizationAncestorOfHead:false,authorizationBlobExact:false,releaseManifestBlobExact:false,releaseManifestErrataBlobExact:false,releaseManifestExact:false,releaseManifestErrataExact:false,hostingAdapterAuthority:null,cloudRunRevisionExact:false,hostingAdapterExact:false,databaseLocation:null,databaseType:null,requiredPermissions:[],grantedPermissions:[],bucketDiscovered:false},
+    preflight:{head:null,parentHead:null,authorizationCommit:null,authorizationAncestorOfHead:false,authorizationBlobExact:false,releaseManifestBlobExact:false,releaseManifestErrataBlobExact:false,releaseManifestExact:false,releaseManifestErrataExact:false,hostingAdapterAuthority:null,cloudRunRevisionExact:false,hostingAdapterExact:false,databaseLocation:null,databaseType:null,requiredPermissions:[],grantedPermissions:[],bucketDiscovered:false,bucketObjectPermissionsVerified:false},
     safety:{providerWrites:0,productionBusinessDataWrites:0,productionFirestoreDocumentWrites:0,authWrites:0,hrWrites:0,rulesWrites:0,paymentWrites:0,makeCalls:0,geminiCalls:0,iamWrites:0,newCredentials:0,newBranches:0,newPullRequests:0,secretPayloadReads:0,credentialsExposed:false,legacyDatabaseAccess:false},
     cleanup:{required:false,completed:true,error:null},error:null,next:null
   };
@@ -147,14 +164,15 @@ export async function runF8BackupRestoreCutoverOneShot({accessToken}){
     const missing=required.filter(p=>!granted.has(p));
     ensure(missing.length===0,`F8_PROVIDER_CAPABILITY_MISSING_${missing.join(',')}`);
 
-    const bucket=await discoverExistingBucket(accessToken);
-    ensure(bucket,'F8_EXISTING_BACKUP_BUCKET_NOT_DISCOVERABLE_NO_BUCKET_CREATE_AUTHORIZED');
-    state.preflight.bucketDiscovered=true;state.backup.bucketFingerprint=sha256(bucket).slice(0,20);
+    const bucket=await discoverVerifiedExistingBucket(accessToken,location);
+    ensure(bucket?.name,'F8_EXISTING_VERIFIED_BACKUP_BUCKET_NOT_DISCOVERABLE_NO_BUCKET_CREATE_AUTHORIZED');
+    state.preflight.bucketDiscovered=true;state.preflight.bucketObjectPermissionsVerified=true;
+    state.backup.bucketFingerprint=sha256(bucket.name).slice(0,20);state.backup.bucketLocation=bucket.location;state.backup.bucketStorageClass=bucket.storageClass;state.backup.bucketSameProject=bucket.sameProject===true;state.backup.bucketVerifiedSource=bucket.source;
     const sourceCollections=await listCollectionIds(accessToken,'(default)');
     ensure(sourceCollections.length>0,'F8_SOURCE_TOP_LEVEL_COLLECTIONS_EMPTY_UNEXPECTED');
     const schemaHash=sha256(sourceCollections.join('\n'));
     const stamp=new Date().toISOString().replace(/[-:.TZ]/g,'').slice(0,14);
-    const exportRequestUri=`gs://${bucket}/cxorbia-f8-backup/${stamp}-${runId}`;
+    const exportRequestUri=`gs://${bucket.name}/cxorbia-f8-backup/${stamp}-${runId}`;
 
     state.stage='BACKUP_EXPORT';state.authorizationConsumed=true;mutationStarted=true;state.backup.started=true;state.safety.providerWrites++;
     const exp=await api(accessToken,`https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default):exportDocuments`,{method:'POST',body:{outputUriPrefix:exportRequestUri}});
