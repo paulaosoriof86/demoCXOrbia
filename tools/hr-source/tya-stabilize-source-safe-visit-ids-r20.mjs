@@ -6,6 +6,13 @@
   Mutable operational values such as shopping, cinemaId, quincena and franja never
   participate in the identifier. The tool rewrites only a source-safe snapshot file;
   it performs no provider, database, HR, payment, deploy or production writes.
+
+  F10 compatibility note:
+  - canonical callers use --input <file> --out <file> --report-dir <dir>;
+  - a historical controlled-runner refactor calls --in <file> --out <report-dir>.
+    In that legacy shape only, --in aliases --input, the payload is stabilized
+    in-place on the ephemeral checkout copy, and --out is interpreted as report-dir.
+    The visit-identity algorithm and canonical interface remain unchanged.
 */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -14,10 +21,17 @@ import vm from 'node:vm';
 import { buildStableVisitId, stableVisitIdentityVersion } from './tya-stable-visit-id-r20.mjs';
 
 const args=process.argv.slice(2);
-const valueOf=(flag,fallback)=>{const i=args.indexOf(flag);return i>=0&&args[i+1]?args[i+1]:fallback;};
-const input=path.resolve(valueOf('--input','app/data/tya-hr-source-safe-periods.js'));
-const output=path.resolve(valueOf('--out',valueOf('--input','app/data/tya-hr-source-safe-periods.js')));
-const reportDir=path.resolve(valueOf('--report-dir','.tmp/tya-stable-visit-id-r20'));
+function valueOf(flag,fallback){const i=args.indexOf(flag);return i>=0&&args[i+1]?args[i+1]:fallback;}
+const canonicalInputArg=valueOf('--input',null);
+const legacyInputArg=valueOf('--in',null);
+const legacyAliasMode=!canonicalInputArg&&Boolean(legacyInputArg);
+const inputArg=canonicalInputArg||legacyInputArg||'app/data/tya-hr-source-safe-periods.js';
+const rawOutArg=valueOf('--out',inputArg);
+const outputArg=legacyAliasMode?inputArg:rawOutArg;
+const reportDirArg=valueOf('--report-dir',legacyAliasMode?rawOutArg:'.tmp/tya-stable-visit-id-r20');
+const input=path.resolve(inputArg);
+const output=path.resolve(outputArg);
+const reportDir=path.resolve(reportDirArg);
 const globalName=valueOf('--global','CX_TYA_HR_SOURCE_SAFE');
 
 function fail(message){throw new Error(`TYA_STABLE_VISIT_ID_R20_HOLD: ${message}`);}
@@ -97,11 +111,13 @@ payload.counts={...(payload.counts||{}),visits:payload.visits.length};
 writePayload(output,payload);
 fs.mkdirSync(reportDir,{recursive:true});
 const report={
-  schemaVersion:'1.0.0',
+  schemaVersion:'1.1.0',
   decision:'PASS_TYA_STABLE_VISIT_ID_R20_APPLY',
   version,
   input:path.relative(process.cwd(),input).replaceAll('\\','/'),
   output:path.relative(process.cwd(),output).replaceAll('\\','/'),
+  reportDir:path.relative(process.cwd(),reportDir).replaceAll('\\','/'),
+  compatibilityMode:legacyAliasMode?'legacy_in_alias_inplace':'canonical',
   visits:payload.visits.length,
   changedIds:changes.length,
   unchangedIds:payload.visits.length-changes.length,
@@ -116,6 +132,7 @@ fs.writeFileSync(path.join(reportDir,'report.md'),[
   '# TyA stable visit identity R20','',
   `Decision: **${report.decision}**`,
   `Version: \`${version}\``,
+  `Compatibility mode: \`${report.compatibilityMode}\``,
   `Visits: ${report.visits}`,
   `Changed IDs: ${report.changedIds}`,
   `Unique stable IDs: ${report.uniqueStableIds}`,
