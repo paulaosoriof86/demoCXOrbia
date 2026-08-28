@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "1.0.0",
+  "evidenceId": "RC15-F8-EXECUTOR-SOURCE-REPAIR-20260828-01",
+  "generatedAt": "2026-08-28",
+  "phase": "F8_CUTOVER",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "headBeforeRepair": "ca53c55cf9b07669a4de593428598f87d68c6cc8",
+  "repairCommit": "e95d23a91f26f42e1adf3ac167ccd2f0093dd31a",
+  "executorPath": "tools/release/tya-f8-backup-restore-cutover-one-shot.mjs",
+  "authorizationId": "PAULA-F8-BACKUP-RESTORE-CUTOVER-20260827-01",
+  "authorizationStatusAfterRepair": "AUTHORIZED_NOT_YET_CONSUMED",
+  "findings": [
+    {
+      "id": "F8-EXECUTOR-MECH-001",
+      "classification": "PRE_EXECUTION_MECHANISM_DEFECT",
+      "detail": "The executor required auth.authorizedExecutionParentHead, but the canonical authorization evidence has no such field; a valid future provider execution would have stopped before mutation with F8_EXECUTION_COMMIT_LINEAGE_MISMATCH."
+    },
+    {
+      "id": "F8-EXECUTOR-MECH-002",
+      "classification": "PRE_EXECUTION_MECHANISM_DEFECT",
+      "detail": "The executor marked authorizationConsumed=true during pre-mutation dynamic checks, before the first provider mutation, contradicting the single-use provider-mutation lease semantics."
+    }
+  ],
+  "repair": {
+    "authorizationEvidenceBlobPinned": "1f6659a4cdf421a38489c94b174f28ceb5506f54",
+    "releaseManifestBlobPinned": "732dbfd48912b3550c6fb20bc592bd118647263a",
+    "authorizationCommitResolvedFromGitHistory": true,
+    "authorizationCommitMustBeAncestorOfExecutionHead": true,
+    "githubEventHeadGatePreserved": true,
+    "authorizationConsumedOnlyAtFirstProviderMutationStage": true,
+    "syntaxCheck": "PASS"
+  },
+  "execution": {
+    "providerExecutionAttempted": false,
+    "backupExportAttempted": false,
+    "restoreAttempted": false,
+    "cutoverAttempted": false,
+    "providerWrites": 0,
+    "deploys": 0,
+    "rebuilds": 0,
+    "reimports": 0,
+    "authorizationConsumed": false
+  },
+  "classification": "MECHANISM_SOURCE_DEFECT_REPAIRED__EXTERNAL_TRANSPORT_OUTAGE_REMAINS",
+  "productP0Proven": false,
+  "next": "F8_EXECUTE_AUTHORIZED_BACKUP_RESTORE_CUTOVER_WHEN_SECURE_PROVIDER_EXECUTION_CHANNEL_IS_AVAILABLE"
+}
