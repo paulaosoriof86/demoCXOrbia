@@ -13,32 +13,34 @@
 - `74 → 76`: F3 mecanismo provider + recovery lane PASS.
 - `76 → 81`: F4 recovery PASS.
 - `81 → 86`: F5 live synthetic acceptance + cleanup + residuo cero PASS.
-- `86 → 90`: F6 release Phase A inmutable PASS; fingerprint Hosting corregido posteriormente solo mediante errata overlay, sin cambio de release.
+- `86 → 90`: F6 release Phase A inmutable PASS; fingerprint Hosting corregido mediante errata overlay sin cambio de release.
 - `90 → 95`: F7 integral readiness `GO_WITH_WARNINGS`, P0=0.
-- F8 read-only: IAM metadata P1 no bloqueante, bounded load/failure PASS y capability preflight completo PASS tras grant temporal autorizado; sin cambio porcentual todavía.
+- F8 provider execution: terminal PASS; pendiente únicamente revocación/verificación del IAM temporal para cierre cero-residuo.
 
-## F8 — listo para ejecución single-use
+## F8 terminal provider PASS
 
-La autorización F8 permanece `AUTHORIZED_NOT_YET_CONSUMED`. El primer intento real autenticó contra GCP pero se detuvo antes de mutación por un fingerprint F6 incorrecto. Ese defecto de evidencia se corrigió mediante errata overlay; el asset vivo coincide con functional source congelado, runtime congelado y rama actual.
+Run `33193514608`, job `98924733768`, trigger `dec6e8b451d6dd42303ff244703c798d22628975`, attempt 1.
 
-Se corrigió también la selección de Storage: el default Firebase anunciado no existe; el executor v6 solo utiliza bucket GCS realmente listado en el mismo proyecto, con metadata, ubicación compatible y permisos de objeto verificados.
+Decisión `PASS_F8_BACKUP_RESTORE_CUTOVER_RECONCILED_NO_REDEPLOY`; stage `TERMINAL_PASS`; autorización F8 consumida=true; providerWrites=4.
 
-Paula autorizó y aplicó excepcionalmente `roles/datastore.owner` temporal/condicionado a la identidad DEV existente. El recheck read-only del run `33187198967`, attempt 3, job `98923457703`, sobre HEAD `e9875eb278316396aaf58fe7b31423228fb0940f`, cerró `PASS_F8_CUTOVER_CAPABILITY_READONLY`: `missingPermissions=[]`, `verifiedExistingBucket=true`, `issues=[]`.
+Backup/export completado y retenido; temp DB creada; import completado; 9/9 colecciones top-level coinciden; temp DB eliminada; cleanup completo; Cloud Run y Hosting exactos; release exacto reconciliado; deploy/rebuild/reimport=0; production business data/Firestore document/Auth/HR/Rules/pagos/Make/Gemini writes=0; legacy DB access=false.
 
-El job F8 de ese recheck quedó `skipped` por ausencia de successor marker. Provider writes=0, backup/export=0, restore=0, cutover=0, deploy=0 y autorización consumida=false hasta este punto.
+No existe autorización de retry y no debe emitirse otro marker F8.
+
+## Por qué el porcentaje sigue 95
+
+El rol temporal `roles/datastore.owner` aplicado para F8 debe retirarse y verificarse. El cierre F8 requiere residuo IAM cero. Por ello no se contabiliza todavía `95 → 98`, aunque la operación backup/restore/cutover ya pasó terminalmente.
 
 ## Camino restante
 
-1. Emitir successor marker exacto como único archivo del commit trigger, ligado al HEAD vivo inmediatamente anterior.
-2. Ejecutar una sola vez backup/export + restore en base aislada + verificación de colecciones + cleanup de base temporal.
-3. Reconciliar release exacto; sin redeploy si Cloud Run/Hosting siguen exactos.
-4. Revocar/verificar el binding temporal `roles/datastore.owner`.
-5. Si F8 queda terminal PASS: `95 → 98`.
-6. Ejecutar `F8_5_CANONICAL_MODULE_LINEAGE_CERTIFICATION`: última versión aprobada de cada módulo versus canónica y Hosting vivo. No invitar a visualización humana antes de PASS.
-7. F9 aceptación postproducción: `98 → 100`.
+1. retirar el binding temporal `roles/datastore.owner` de la identidad DEV existente;
+2. capability recheck read-only y demostrar desaparición de los cinco permisos temporales adicionales;
+3. cerrar F8 `CLOSED_PASS_ZERO_RESIDUE` y mover `95 → 98`;
+4. ejecutar `F8_5_CANONICAL_MODULE_LINEAGE_CERTIFICATION` y certificar últimas versiones aprobadas versus canónica/Hosting vivo antes de visualización humana;
+5. F9 aceptación postproducción: `98 → 100`.
 
 ## Estado seguro
 
-Release F6 intacto. Antes del successor marker: provider/data/Auth/Firestore/HR/Storage/Rules/pagos/Make/Gemini writes=0; backup/export/restore/cutover=0; deploy/rebuild/reimport/merge=0; autorización F8 consumida=false.
+Release F6 intacto. F8 no redeployó ni reimportó. Backup retenido provider-side; base de restore temporal eliminada; escrituras productivas de negocio=0. Único residuo pendiente: binding IAM temporal autorizado.
 
-**Siguiente gate:** `F8_EMIT_EXACT_SUCCESSOR_MARKER_AND_EXECUTE_SINGLE_USE_BACKUP_RESTORE_CUTOVER`.
+**Siguiente gate:** `F8_REVOKE_TEMP_DATASTORE_OWNER_VERIFY_ZERO_RESIDUE_THEN_F8_5_CANONICAL_MODULE_LINEAGE_CERTIFICATION`.
