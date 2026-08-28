@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "1.0.0",
+  "evidenceId": "RC15-F8-BACKUP-RESTORE-CUTOVER-AUTHORIZATION-AND-TRANSPORT-STOP-20260828-01",
+  "generatedAt": "2026-08-28T02:58:00Z",
+  "phase": "F8_CUTOVER",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "authorization": {
+    "status": "EXPLICIT_CURRENT_CONVERSATION_AUTHORIZATION_RECEIVED",
+    "singleUse": true,
+    "projectId": "cxorbia-backend-dev",
+    "releaseId": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
+    "scope": [
+      "minimum backup/export necessary",
+      "controlled verifiable restore",
+      "only provider mutations strictly necessary for cutover of the frozen release",
+      "pre-mutation dynamic HEAD/source-lock/release/rollback verification",
+      "post-action read-only reconciliation"
+    ],
+    "prohibited": [
+      "rebuild or reimport frozen release",
+      "legacy database connection or copy",
+      "Make",
+      "Gemini",
+      "payments",
+      "new branches",
+      "new pull requests",
+      "new IAM grants",
+      "new credentials",
+      "secret payload access"
+    ],
+    "consumed": false
+  },
+  "dynamicPreMutationChecks": {
+    "liveHead": "148569c1227437168334dcdecf01e81a3801eebe",
+    "sourceLock": "PASS_FROZEN_RELEASE_UNCHANGED",
+    "releaseManifest": "PASS_EXACT_FROZEN_RELEASE",
+    "cloudRunRevisionExpected": "cxorbia-live-hr-dev-00013-rns",
+    "imageDigestExpected": "sha256:eca8b831c24ef81f09e4addda721d0af89a24c5a0d753aa507989988458227ec",
+    "hostingReleaseExpected": "sites/cxorbia-backend-dev/releases/1787796646738000",
+    "hostingVersionExpected": "sites/cxorbia-backend-dev/versions/afe292cfcbbc6005",
+    "redeployRequiredNow": false,
+    "rollbackPoint": "retain exact F6 frozen release tuple; no replacement unless later authorized drift evidence proves necessary"
+  },
+  "executorDiscovery": {
+    "existingBackupRestoreWorkflowFound": false,
+    "existingFirestoreExportImplementationFound": false,
+    "existingFirestoreExportDocumentsImplementationFound": false,
+    "safeProviderMutationConnectorAvailableInCurrentSession": false,
+    "historicalConsumedWorkflowRevivalAllowed": false,
+    "newWorkflowAllowedByCurrentScope": false
+  },
+  "execution": {
+    "backupExportAttempted": false,
+    "restoreAttempted": false,
+    "cutoverAttempted": false,
+    "providerWrites": 0,
+    "businessDataWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "storageWrites": 0,
+    "rulesWrites": 0,
+    "deploys": 0,
+    "rebuilds": 0,
+    "reimports": 0,
+    "merge": false
+  },
+  "classification": "EXTERNAL_TRANSPORT_OUTAGE_NO_SAFE_PROVIDER_EXECUTOR_IN_CURRENT_SESSION",
+  "productP0Proven": false,
+  "mechanismP0Proven": false,
+  "authorizationConsumed": false,
+  "decision": "STOP_BEFORE_PROVIDER_MUTATION",
+  "next": "F8_EXECUTE_AUTHORIZED_BACKUP_RESTORE_CUTOVER_WHEN_SECURE_PROVIDER_EXECUTION_CHANNEL_IS_AVAILABLE"
+}
