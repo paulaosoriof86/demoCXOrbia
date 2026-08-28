@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "cxorbia.rc15.f8.temp-datastore-owner.state.v1",
+  "schemaVersion": "cxorbia.rc15.f8.temp-datastore-owner.state.v2",
   "generatedAtConversationDate": "2026-08-28",
   "projectId": "cxorbia-backend-dev",
   "authorizationId": "PAULA-F8-TEMP-DATASTORE-OWNER-20260828-01",
@@ -27,8 +27,26 @@
   },
   "revocation": {
     "required": true,
-    "observedRevoked": false,
-    "verificationPending": true
+    "observedRevoked": true,
+    "verificationPending": false,
+    "verifiedAtProviderReadback": "2026-08-28T18:13:23Z",
+    "workflowRunId": 33187198967,
+    "runAttempt": 4,
+    "jobId": 98940746944,
+    "checkedOutLiveHead": "be029042e9c937b3c29301be3e4e1b4524702e4f",
+    "readOnlyDecision": "HOLD_F8_CUTOVER_CAPABILITY_READONLY",
+    "verifiedExistingBucket": true,
+    "missingPermissionsAfterRevocation": [
+      "datastore.databases.export",
+      "datastore.databases.import",
+      "datastore.databases.create",
+      "datastore.databases.delete",
+      "datastore.operations.get"
+    ],
+    "baselinePermissionStillPresent": "datastore.databases.getMetadata",
+    "unexpectedAdditionalPrivilege": false,
+    "providerWrites": 0,
+    "f8MutationJobExecution": "SKIPPED"
   },
   "safety": {
     "productionBusinessDataWrites": 0,
@@ -43,6 +61,6 @@
     "releaseReimports": 0,
     "legacyDatabaseAccess": false
   },
-  "status": "F8_TERMINAL_PASS_PENDING_TEMP_IAM_REVOCATION_VERIFICATION",
-  "next": "REMOVE_TEMP_DATASTORE_OWNER_AND_VERIFY_PRIVILEGE_RESIDUE_ZERO"
+  "status": "F8_CLOSED_PASS_ZERO_RESIDUE",
+  "next": "F8_5_CANONICAL_MODULE_LINEAGE_CERTIFICATION"
 }
