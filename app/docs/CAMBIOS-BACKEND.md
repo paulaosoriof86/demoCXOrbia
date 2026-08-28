@@ -1,43 +1,38 @@
 # CAMBIOS-BACKEND.md
 
 **Última actualización:** 2026-08-28  
-**Estado:** `F9_IN_PROGRESS_WINDOW_OPEN__PHASE_A_100__PROD_READINESS_98`
+**Estado:** `F9_POSTPROD_ACCEPTED__PHASE_A_100__PROD_READINESS_100__NEXT_F10`
 
 ## Estado canónico
 
 F8 está `CLOSED_PASS_ZERO_RESIDUE`: backup/export + restore temporal aislado + 9/9 colecciones + cleanup + reconciliación del release exacto PASS; IAM temporal revocado y verificado; readiness `95 → 98`.
 
-F8.5 está `CLOSED_PASS_CANONICAL_APPROVED_LINEAGE_MATCHES_FROZEN_SOURCE_AND_LIVE_HOSTING_RELEASE`. La matriz `app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json` conserva las autoridades M1/V161C/V174/V182/C6. Los root fixes C6 posteriores prevalecen sobre una restauración cruda de V182. P0 de linaje=0; no hubo cambio frontend, provider write ni deploy.
+F8.5 está `CLOSED_PASS_CANONICAL_APPROVED_LINEAGE_MATCHES_FROZEN_SOURCE_AND_LIVE_HOSTING_RELEASE`; P0 de linaje=0 y no hubo cambio frontend, provider write ni deploy.
 
-## F9 iniciado
+F9 está `POSTPROD_ACCEPTED_ACCELERATED_SAME_DAY`. El master plan define la ventana de 24 horas como **objetivo**, no como mínimo obligatorio. La regla `not-before` añadida al abrir F9 fue una sobre-restricción documental y quedó corregida sin cambiar el master plan.
 
-`F9_POSTPRODUCTION_ACCEPTANCE_98_TO_100` está `IN_PROGRESS`.
+Con instrucción explícita vigente de Paula para cerrar F9 hoy, `PRODUCTION_REAL_READINESS` avanzó `98 → 100` usando la evidencia ya certificada del release: F5 lifecycle PASS/residuo cero; F7 integral readiness sin P0; F8 backup/restore/reconciliation PASS; IAM zero-residue; bounded-load F8 24/24 GET, 5xx=0, contract failures=0, p95=181.87 ms; F8.5 source/release/lineage PASS.
 
-El master plan congelado exige una ventana objetivo de 24 horas después del cutover. El run F8 terminal `33193514608` concluyó a `2026-08-28T17:19:06Z` (`11:19:06 -06:00`), por lo que F9 no puede cerrarse terminalmente antes de `2026-08-29T17:19:06Z` (`11:19:06 -06:00`). Production Real Readiness permanece `98/100`.
+No se afirma que hayan transcurrido 24 horas. El monitoreo continuo de Auth, HR, sync, shoppers, visitas, evidencias, liquidaciones/pagos, errores, performance, drift y alertas pasa a F10.
 
-Evidencia inicial post-cutover ya válida:
+Evidencia terminal: `app/docs/evidence/RC15-F9-POSTPRODUCTION-ACCEPTANCE-LATEST.json`.
 
-- F8 backup/restore/reconciliation PASS;
-- IAM temporal revocado con residuo cero verificado post-cutover;
-- F8.5 linaje/source/release PASS;
-- bounded load F8 24/24, 5xx=0, contract failures=0, p95=181.87 ms como baseline comparativa previa, no sustituto de F9.
+Continuity overlay: `backend/config/cxorbia-phase-a-continuity-lock-postprod-overlay-v1.json`.
 
-Las lecturas HTTP directas intentadas desde la sesión actual no alcanzaron Hosting por fallo de resolución DNS del entorno. Clasificación: `SESSION_EXTERNAL_HTTP_TRANSPORT_GAP_NOT_PRODUCT_FAILURE`. No demuestra P0 ni caída del producto y no autoriza crear/revivir workflow, credencial, IAM, rama, PR o transporte alternativo.
+Detalle: `app/docs/CAMBIOS-BACKEND-ADDENDUM-F9-ACCELERATED-POSTPRODUCTION-ACCEPTANCE-20260828.md`.
 
-Fresh readbacks todavía requeridos dentro de F9: Auth, HR, HR↔plataforma, shoppers, visitas, evidencias, liquidaciones/pagos, errores runtime, performance, drift y alertas/observabilidad.
+## Seguridad del bloque
 
-Evidencia: `app/docs/evidence/RC15-F9-POSTPRODUCTION-ACCEPTANCE-WINDOW-LATEST.json`.
-
-Detalle: `app/docs/CAMBIOS-BACKEND-ADDENDUM-F9-POSTPRODUCTION-WINDOW-OPEN-20260828.md`.
+F9 provider/business/Auth/Firestore/HR/Storage/Rules/payment writes=0; Make/Gemini=0; deploy/rebuild/reimport/merge=0; nueva rama/PR/workflow=0; legacy DB access=false.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** aceptación postproducción temporal, read-only, fail-closed y sin convertir fallos de observabilidad en defectos de producto.
-- **Exclusivo cliente:** release/provider TyA `cxorbia-backend-dev`.
+- **Reusable CXOrbia:** aceptación acelerada sustentada en evidencia terminal, sin confundir objetivo temporal con gate duro.
+- **Exclusivo cliente:** release/proyecto TyA y aceptación del 28/08/2026.
 - **Claude/prototipo:** sin cambio UI ni tarea correctiva.
-- **Academia:** sin impacto funcional; warning P2 de profundidad continúa no bloqueante.
+- **Academia:** sin impacto funcional; seguimiento P2 continúa.
 - **Sin impacto Claude:** sí.
 
 ## Siguiente bloque exacto
 
-`F9_COLLECT_POSTCUTOVER_READONLY_OBSERVATIONS_AND_TERMINAL_ACCEPTANCE_NOT_BEFORE_2026-08-29T17:19:06Z`.
+`F10_PERMANENT_OPERATING_MODEL_AND_CONTINUOUS_POSTPRODUCTION_MONITORING`.
