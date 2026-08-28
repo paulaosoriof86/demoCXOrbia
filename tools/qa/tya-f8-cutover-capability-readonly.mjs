@@ -14,6 +14,7 @@ const REQUIRED=[
   'datastore.databases.getMetadata',
   'datastore.operations.get'
 ];
+const SUPPLEMENTAL=['storage.buckets.list','storage.buckets.get','storage.objects.create','storage.objects.get','storage.objects.list','storage.objects.delete'];
 const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
 const write=x=>{fs.mkdirSync(OUT.split('/').slice(0,-1).join('/')||'.',{recursive:true});fs.writeFileSync(OUT,JSON.stringify(x,null,2)+'\n','utf8');};
 const ensure=(ok,code)=>{if(!ok)throw new Error(code);};
@@ -36,45 +37,60 @@ async function main(){
   const granted=perm.ok?new Set((perm.json?.permissions||[]).map(String)):new Set();
   const missing=REQUIRED.filter(p=>!granted.has(p));
 
-  let bucket=null,bucketRoute=null;
   const adminCfg=await api(token,`https://firebase.googleapis.com/v1beta1/projects/${PROJECT}/adminSdkConfig`);
-  if(adminCfg.ok&&adminCfg.json?.storageBucket){bucket=String(adminCfg.json.storageBucket);bucketRoute='firebase_admin_sdk_config';}
-  let linked=null;
-  if(!bucket){
-    linked=await api(token,`https://firebasestorage.googleapis.com/v1beta/projects/${PROJECT}/buckets`);
-    if(linked.ok){const list=Array.isArray(linked.json?.buckets)?linked.json.buckets:[];const b=String(list[0]?.name||'').split('/').pop();if(b){bucket=b;bucketRoute='firebase_storage_buckets';}}
-  }
+  const configuredBucket=adminCfg.ok&&adminCfg.json?.storageBucket?String(adminCfg.json.storageBucket):null;
+  const linked=await api(token,`https://firebasestorage.googleapis.com/v1beta/projects/${PROJECT}/buckets`);
+  const linkedBuckets=linked.ok?(Array.isArray(linked.json?.buckets)?linked.json.buckets:[]):[];
+  const linkedNames=[...new Set(linkedBuckets.map(x=>String(x?.name||'').split('/').pop()).filter(Boolean))];
+  const gcsList=await api(token,`https://storage.googleapis.com/storage/v1/b?project=${encodeURIComponent(PROJECT)}&fields=items(name,location,storageClass,iamConfiguration)`);
+  const gcsBuckets=gcsList.ok?(Array.isArray(gcsList.json?.items)?gcsList.json.items:[]):[];
+  const gcsNames=[...new Set(gcsBuckets.map(x=>String(x?.name||'')).filter(Boolean))];
 
-  let bucketMeta=null,bucketPermissionTest=null;
+  const candidates=[configuredBucket,...linkedNames,...gcsNames].filter(Boolean);
+  const uniqueCandidates=[...new Set(candidates)];
+  let bucket=null,bucketSource=null,bucketMeta=null,bucketPermissionTest=null;
+  for(const name of uniqueCandidates){
+    const meta=await api(token,`https://storage.googleapis.com/storage/v1/b/${encodeURIComponent(name)}?fields=name,location,storageClass,iamConfiguration`);
+    if(meta.ok){bucket=name;bucketMeta=meta;bucketSource=name===configuredBucket?'firebase_admin_sdk_config_verified':linkedNames.includes(name)?'firebase_storage_link_verified':'gcs_project_list_verified';break;}
+  }
+  if(!bucket&&gcsBuckets.length){bucket=String(gcsBuckets[0]?.name||'')||null;bucketSource=bucket?'gcs_project_list_verified':null;bucketMeta=bucket?{ok:true,status:200,json:gcsBuckets[0]}:null;}
   if(bucket){
-    bucketMeta=await api(token,`https://storage.googleapis.com/storage/v1/b/${encodeURIComponent(bucket)}?fields=name,location,storageClass,iamConfiguration`);
     const qs=['storage.objects.create','storage.objects.get','storage.objects.list','storage.objects.delete'].map(p=>`permissions=${encodeURIComponent(p)}`).join('&');
     bucketPermissionTest=await api(token,`https://storage.googleapis.com/storage/v1/b/${encodeURIComponent(bucket)}/iam/testPermissions?${qs}`);
   }
 
+  const supplementalPerm=await api(token,`https://cloudresourcemanager.googleapis.com/v1/projects/${PROJECT}:testIamPermissions`,{method:'POST',body:{permissions:SUPPLEMENTAL}});
+  const supplementalGranted=supplementalPerm.ok?new Set((supplementalPerm.json?.permissions||[]).map(String)):new Set();
   const dbs=dbList.ok?(Array.isArray(dbList.json?.databases)?dbList.json.databases:[]):[];
-  const activeDbCount=dbs.filter(x=>String(x?.deleteTime||'')==='').length;
+  const activeDbCount=dbs.filter(x=>!String(x?.deleteTime||'')).length;
   const issues=[];
   if(!db.ok)issues.push(`default_database_read_${db.status}`);
   if(db.ok&&String(db.json?.type||'')!=='FIRESTORE_NATIVE')issues.push('default_database_not_firestore_native');
   if(!perm.ok)issues.push(`project_permission_test_${perm.status}`);
   if(missing.length)issues.push('required_firestore_permissions_missing');
-  if(!bucket)issues.push('existing_backup_bucket_not_discoverable');
-  if(bucket&&!bucketMeta?.ok)issues.push(`bucket_metadata_read_${bucketMeta?.status||'unknown'}`);
+  if(!bucket)issues.push('no_verified_existing_backup_bucket');
   if(activeDbCount>=100)issues.push('firestore_database_count_at_or_above_limit');
 
   const report={
-    schemaVersion:'cxorbia.f8.cutover-capability-readonly.v1',generatedAt:new Date().toISOString(),projectId:PROJECT,
+    schemaVersion:'cxorbia.f8.cutover-capability-readonly.v1.1',generatedAt:new Date().toISOString(),projectId:PROJECT,
     decision:issues.length?'HOLD_F8_CUTOVER_CAPABILITY_READONLY':'PASS_F8_CUTOVER_CAPABILITY_READONLY',
     credential:{route:'existing_dev',projectMatches:true,serviceAccountFingerprint:sha(sa.client_email).slice(0,20),tokenReady:true,secretPersisted:false,tokenPersisted:false},
     firestore:{defaultDatabaseRead:db.ok,defaultDatabaseType:db.ok?String(db.json?.type||''):null,locationId:db.ok?String(db.json?.locationId||''):null,databaseListRead:dbList.ok,activeDatabaseCount:dbList.ok?activeDbCount:null,databaseLimitHeadroomKnown:dbList.ok,databaseLimitHeadroom:dbList.ok?Math.max(0,100-activeDbCount):null},
-    permissions:{testSucceeded:perm.ok,required:REQUIRED,granted:REQUIRED.filter(p=>granted.has(p)),missing},
-    backupBucket:{discovered:Boolean(bucket),route:bucketRoute,fingerprint:bucket?sha(bucket).slice(0,20):null,metadataRead:Boolean(bucketMeta?.ok),location:bucketMeta?.ok?String(bucketMeta.json?.location||''):null,storageClass:bucketMeta?.ok?String(bucketMeta.json?.storageClass||''):null,callerObjectPermissionTestSucceeded:Boolean(bucketPermissionTest?.ok),callerObjectPermissions:bucketPermissionTest?.ok?(bucketPermissionTest.json?.permissions||[]):[],note:'Caller bucket permission test is read-only and supplemental; Firestore managed export service-agent authorization is validated by the actual authorized export operation.'},
+    permissions:{testSucceeded:perm.ok,required:REQUIRED,granted:REQUIRED.filter(p=>granted.has(p)),missing,supplementalTestSucceeded:supplementalPerm.ok,supplementalGranted:SUPPLEMENTAL.filter(p=>supplementalGranted.has(p))},
+    backupBucket:{
+      configuredDefaultPresent:Boolean(configuredBucket),configuredDefaultFingerprint:configuredBucket?sha(configuredBucket).slice(0,20):null,
+      firebaseLinkedBucketListRead:linked.ok,firebaseLinkedBucketCount:linked.ok?linkedNames.length:null,firebaseLinkedBucketFingerprints:linkedNames.map(x=>sha(x).slice(0,20)),
+      gcsProjectBucketListRead:gcsList.ok,gcsProjectBucketCount:gcsList.ok?gcsNames.length:null,gcsProjectBucketFingerprints:gcsNames.map(x=>sha(x).slice(0,20)),
+      verifiedExistingBucket:Boolean(bucket),verifiedSource:bucketSource,fingerprint:bucket?sha(bucket).slice(0,20):null,metadataRead:Boolean(bucketMeta?.ok),location:bucketMeta?.ok?String(bucketMeta.json?.location||''):null,storageClass:bucketMeta?.ok?String(bucketMeta.json?.storageClass||''):null,
+      callerObjectPermissionTestSucceeded:Boolean(bucketPermissionTest?.ok),callerObjectPermissions:bucketPermissionTest?.ok?(bucketPermissionTest.json?.permissions||[]):[],
+      configuredDefaultWasVerified:Boolean(configuredBucket&&bucket===configuredBucket),configuredDefaultDirectMetadataStatus:configuredBucket?((await api(token,`https://storage.googleapis.com/storage/v1/b/${encodeURIComponent(configuredBucket)}?fields=name`)).status):null,
+      note:'All bucket discovery and permission checks are read-only. A verified existing GCS bucket is required because current F8 authorization does not include bucket creation.'
+    },
     issues,
     safety:{providerReads:true,providerWrites:0,firestoreWrites:0,storageWrites:0,iamWrites:0,newCredentials:0,secretValuesRead:false,secretValuesPersisted:false,tokensPersisted:false,deploys:0,rebuilds:0,reimports:0,legacyDatabaseAccess:false,authorizationConsumed:false},
     next:issues.length?'F8_CLASSIFY_CAPABILITY_ROOT_CAUSE_BEFORE_MUTATION':'F8_METADATA_ERRATUM_THEN_SUCCESSOR_SINGLE_USE_EXECUTION'
   };
-  write(report);console.log(JSON.stringify({decision:report.decision,missingPermissions:missing,bucketDiscovered:Boolean(bucket),activeDatabaseCount:report.firestore.activeDatabaseCount,issues},null,2));
+  write(report);console.log(JSON.stringify({decision:report.decision,missingPermissions:missing,verifiedExistingBucket:Boolean(bucket),firebaseLinkedBucketCount:report.backupBucket.firebaseLinkedBucketCount,gcsProjectBucketCount:report.backupBucket.gcsProjectBucketCount,issues},null,2));
   if(issues.length)process.exitCode=2;
 }
-main().catch(error=>{const report={schemaVersion:'cxorbia.f8.cutover-capability-readonly.v1',generatedAt:new Date().toISOString(),projectId:PROJECT,decision:'HOLD_F8_CUTOVER_CAPABILITY_READONLY',error:String(error?.message||error).slice(0,400),safety:{providerWrites:0,authorizationConsumed:false}};write(report);console.error(JSON.stringify(report,null,2));process.exitCode=2;});
+main().catch(error=>{const report={schemaVersion:'cxorbia.f8.cutover-capability-readonly.v1.1',generatedAt:new Date().toISOString(),projectId:PROJECT,decision:'HOLD_F8_CUTOVER_CAPABILITY_READONLY',error:String(error?.message||error).slice(0,400),safety:{providerWrites:0,authorizationConsumed:false}};write(report);console.error(JSON.stringify(report,null,2));process.exitCode=2;});
