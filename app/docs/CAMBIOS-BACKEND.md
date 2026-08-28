@@ -1,42 +1,30 @@
 # CAMBIOS-BACKEND.md
 
 **Última actualización:** 2026-08-28  
-**Estado:** `F8_AUTHORIZED_UNCONSUMED__EXTERNAL_TRANSPORT_OUTAGE__PHASE_A_100__PROD_READINESS_95`
+**Estado:** `F8_5_CLOSED_PASS__PHASE_A_100__PROD_READINESS_98__NEXT_F9`
 
-## 2026-08-28 — F8 · autorización explícita recibida, ejecutor preparado y STOP antes de provider mutation
+## Estado canónico
 
-Paula autorizó en la conversación actual una única ejecución F8 sobre `cxorbia-backend-dev` para el mínimo backup/export, restore controlado verificable y únicamente las mutaciones de proveedor estrictamente necesarias para reconciliar el release congelado `CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01`, con recheck dinámico previo y reconciliación read-only posterior. Quedaron expresamente fuera de alcance rebuild/reimport, legacy DB, Make, Gemini, pagos, nuevas ramas/PR, IAM/credenciales nuevas y payloads de secretos.
+F8 está `CLOSED_PASS_ZERO_RESIDUE`: backup/export + restore temporal aislado + 9/9 colecciones + cleanup + reconciliación del release exacto PASS; IAM temporal revocado y verificado; readiness `95 → 98`.
 
-La autorización quedó registrada como single-use y **NO CONSUMIDA**, porque ninguna mutación de proveedor llegó a iniciarse.
+F8.5 está `CLOSED_PASS_CANONICAL_APPROVED_LINEAGE_MATCHES_FROZEN_SOURCE_AND_LIVE_HOSTING_RELEASE`. La matriz `app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json` conserva las autoridades M1/V161C/V174/V182/C6. Los root fixes C6 posteriores prevalecen sobre una restauración cruda de V182.
 
-Se preparó `tools/release/tya-f8-backup-restore-cutover-one-shot.mjs` como ejecutor acotado/fail-closed. Exige linaje exacto, release manifest congelado, revision/hash provider exactos, capabilities previas, export a bucket existente, restore en base temporal aislada, verificación de colecciones, limpieza y reconciliación final sin redeploy cuando el release exacto ya opera.
+La comparación del functional source lock `f9802fdd498934a8e7729fa5c7d18341bec1cd71` con el HEAD auditado previo `ef990a86b8a98195c12a8cb318fbc12d9a2bac57` no contiene cambios en módulos, core, `app.js`, styles ni `index-backend-dev.html`. Hosting mantiene release `sites/cxorbia-backend-dev/releases/1787796646738000` y version `sites/cxorbia-backend-dev/versions/afe292cfcbbc6005`; el sentinel read-only coincide con functional source, runtime source y rama.
 
-### STOP causal
+No hubo cambio frontend, provider write ni deploy en F8.5. P0 de linaje=0. Readiness permanece `98/100`.
 
-En la sesión actual no existe un canal autenticado GCP/provider que pueda invocar de forma segura el ejecutor. No existe workflow F8 activo ya autorizado para backup/restore; revivir workflows históricos/consumidos o crear un workflow nuevo como transporte está prohibido por los locks vigentes y fuera de la autorización actual.
+Evidencia: `app/docs/evidence/RC15-F8-5-CANONICAL-MODULE-LINEAGE-CERTIFICATION-LATEST.json`.
 
-Clasificación: `EXTERNAL_TRANSPORT_OUTAGE_NO_SAFE_PROVIDER_EXECUTOR_IN_CURRENT_SESSION`. No es P0 de producto. No se solicitó ni creó IAM, WIF, service account, credencial, rama o PR.
+Detalle del bloque: `app/docs/CAMBIOS-BACKEND-ADDENDUM-F8-5-CANONICAL-MODULE-LINEAGE-CERTIFICATION-20260828.md`.
 
-### Estado seguro
+## Clasificación
 
-PHASE_A=`100/100`; PRODUCTION_REAL_READINESS=`95/100`; release F6 exacto e inmutable; autorización F8=`AUTHORIZED_NOT_YET_CONSUMED`; provider/IAM/data/Auth/Firestore/HR/Storage/Rules/pagos/Make/Gemini writes=`0`; backup/export attempt=`0`; restore attempt=`0`; cutover attempt=`0`; deploy/rebuild/reimport/merge=`0`.
-
-Evidencia: `app/docs/evidence/RC15-F8-BACKUP-RESTORE-CUTOVER-AUTHORIZATION-LATEST.json` y `app/docs/evidence/RC15-F8-BACKUP-RESTORE-CUTOVER-AUTHORIZATION-AND-TRANSPORT-STOP-LATEST.json`.
-
-### Clasificación obligatoria
-
-- **Reusable CXOrbia:** autorización single-use separada del transporte; executor fail-closed; restore aislado; no consumir autorización antes de primera mutación provider.
-- **Exclusivo cliente:** `cxorbia-backend-dev` y release congelado exacto.
-- **Claude/prototipo:** sin cambio UI/candidata.
+- **Reusable CXOrbia:** autoridad → fixes sucesores → freeze diff → release vivo.
+- **Exclusivo cliente:** linaje TyA y release congelado.
+- **Claude/prototipo:** sin cambio UI ni tarea correctiva.
 - **Academia:** sin impacto funcional.
-- **Sin impacto Claude:** preparación/control-plane F8.
+- **Sin impacto Claude:** sí.
 
 ## Siguiente bloque exacto
 
-`F8_EXECUTE_AUTHORIZED_BACKUP_RESTORE_CUTOVER_WHEN_SECURE_PROVIDER_EXECUTION_CHANNEL_IS_AVAILABLE`.
-
-No volver a F7, no redeployar el release por rutina y no repetir investigación de IAM/Owner. La autorización actual se conserva sin consumir hasta que un canal provider seguro pueda iniciar la ejecución exacta.
-
-## Antecedente inmediato
-
-`F7-P1-003` quedó `CLOSED/PASS` con run `33131739261`: 24/24 GET, concurrencia 4, HTTP 5xx=0, fallos de contrato=0, p95=181.87 ms, una revisión, períodos=15 y visitas=660. El run `33131536618` fue falso negativo del harness, no P0. `F7-P1-004` backup/export + restore verificable era el pendiente actual de F8.
+`F9_POSTPRODUCTION_ACCEPTANCE_98_TO_100`.
