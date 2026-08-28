@@ -4,7 +4,11 @@ import path from 'node:path';
 
 const args=process.argv.slice(2);
 const arg=(name,fallback)=>{const i=args.indexOf(name);return i>=0?args[i+1]:fallback;};
-const currentPath=arg('--current','.tmp/phase-a-financial-r14c-live-hr/financial-live-hr-reconciliation-r14c.source-safe.json');
+const rawCurrentPath=arg('--current','.tmp/phase-a-financial-r14c-live-hr/financial-live-hr-reconciliation-r14c.source-safe.json');
+const currentPath=fs.existsSync(rawCurrentPath)&&fs.statSync(rawCurrentPath).isDirectory()
+  ? path.join(rawCurrentPath,'financial-live-hr-reconciliation-r14c.source-safe.json')
+  : rawCurrentPath;
+const currentPathResolution=currentPath===rawCurrentPath?'direct_file':'historical_directory_to_canonical_report';
 const baselinePath=arg('--baseline','backend/config/phase-a-financial-live-hr-reconciliation-r14c.source-safe.json');
 const reviewPath=arg('--review','backend/contracts/tya-corte3-financial-r20-delta-review-v1.json');
 const outDir=arg('--out','.tmp/tya-corte3-financial-reconciliation-r20');
@@ -224,12 +228,14 @@ const decision=blockers.length
   ? 'HOLD_CORTE3_FINANCIAL_RECONCILIATION_R20'
   : 'PASS_CORTE3_FINANCIAL_RECONCILIATION_R20_REVIEWED_DELTA';
 const report={
-  schemaVersion:'2.0.0',
+  schemaVersion:'2.1.0',
   gate:'tya-corte3-financial-reconciliation-r20',
   generatedAt:new Date().toISOString(),
   decision,
   ok:blockers.length===0,
+  rawCurrentPath,
   currentPath,
+  currentPathResolution,
   baselinePath,
   reviewPath,
   summary:current?.summary||null,
