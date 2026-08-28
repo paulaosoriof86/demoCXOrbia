@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "1.0.0",
+  "evidenceId": "RC15-F8-EXECUTOR-ENTRYPOINT-ANTI-REPLAY-REPAIR-20260828-01",
+  "generatedAt": "2026-08-28",
+  "phase": "F8_CUTOVER",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "headBeforeRepair": "89f6eba11439689d8e92803a6cc7a53a25a16aea",
+  "repairCommit": "13170f4156ad4ab5886b65f923ab5b9e198452b8",
+  "executorPath": "tools/release/tya-f8-backup-restore-cutover-one-shot.mjs",
+  "entrypointPath": "tools/release/tya-f8-backup-restore-cutover-cli.mjs",
+  "authorizationId": "PAULA-F8-BACKUP-RESTORE-CUTOVER-20260827-01",
+  "authorizationStatusAfterRepair": "AUTHORIZED_NOT_YET_CONSUMED",
+  "findings": [
+    {
+      "id": "F8-EXECUTOR-MECH-003",
+      "classification": "PRE_EXECUTION_MECHANISM_DEFECT",
+      "detail": "The one-shot module ended after exporting runF8BackupRestoreCutoverOneShot and had no direct executable entrypoint. Invoking the named .mjs directly would load definitions and exit without starting F8."
+    },
+    {
+      "id": "F8-EXECUTOR-MECH-004",
+      "classification": "PRE_EXECUTION_MECHANISM_HARDENING_GAP",
+      "detail": "GITHUB_RUN_ATTEMPT=1 prevents a GitHub Actions rerun attempt but does not by itself prevent two independent invocations outside Actions. No local consumed-evidence or concurrent-execution lease gate existed at the invocation boundary."
+    }
+  ],
+  "repair": {
+    "directExecutableEntrypointAdded": true,
+    "ephemeralAccessTokenEnv": "CXORBIA_GCP_ACCESS_TOKEN",
+    "accessTokenPersisted": false,
+    "accessTokenPrinted": false,
+    "priorConsumedExecutionEvidenceBlocksReplay": true,
+    "priorProviderMutationEvidenceBlocksReplay": true,
+    "atomicLocalSingleUseLease": ".git/cxorbia-f8-backup-restore-cutover.single-use.lock",
+    "leaseContainsSecretMaterial": false,
+    "leaseRemovedOnlyWhenExecutionReturnsUnconsumedWithZeroProviderWrites": true,
+    "leaseRetainedAfterConsumedOrProviderMutationExecution": true,
+    "sanitizedTerminalSummaryOnly": true,
+    "gitBlobSha": "5c399f101a5cd7a7f9a047d5f9fb48c0986543f3",
+    "localExactBlobHashMatch": true,
+    "syntaxCheck": "PASS"
+  },
+  "scopeLimit": {
+    "sameCheckoutReplayAndConcurrencyGuarded": true,
+    "crossWorkspaceGlobalTransactionalLeaseAdded": false,
+    "reason": "A provider-global or cross-workspace lease would require a new durable write surface or credential/transport contract not authorized in the current scope. The canonical single-use authorization, automaticRetryAllowed=false, dynamic source gates and immediate post-execution reconciliation remain authoritative across workspaces.",
+    "authorizationExpanded": false
+  },
+  "execution": {
+    "providerExecutionAttempted": false,
+    "backupExportAttempted": false,
+    "restoreAttempted": false,
+    "cutoverAttempted": false,
+    "providerWrites": 0,
+    "businessDataWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "storageWrites": 0,
+    "rulesWrites": 0,
+    "deploys": 0,
+    "rebuilds": 0,
+    "reimports": 0,
+    "authorizationConsumed": false
+  },
+  "classification": "MECHANISM_EXECUTABLE_ENTRYPOINT_AND_LOCAL_ANTI_REPLAY_REPAIRED__EXTERNAL_TRANSPORT_OUTAGE_REMAINS",
+  "productP0Proven": false,
+  "productionRealReadiness": 95,
+  "next": "F8_EXECUTE_AUTHORIZED_BACKUP_RESTORE_CUTOVER_WHEN_SECURE_PROVIDER_EXECUTION_CHANNEL_IS_AVAILABLE"
+}
