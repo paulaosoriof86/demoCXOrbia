@@ -1,49 +1,46 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-29  
-**Estado:** `PHASE_A_100__PROD_READINESS_100__F10_DYNAMIC_HR_MONITORING__P1_UI_CONTEXT_AND_CLIENT_FOLLOWUP`
+**Estado:** `PHASE_A_100__F10_P1_HR_KPI_FRESHNESS_AND_CANONICAL_BRIDGE_OPEN`
 
 ## Cerrado / no reprocesar
 
-M1, M2/F0, M3, F3, F4, F5, F6 y F8 permanecen terminales. F7 permanece `GO_WITH_WARNINGS_NO_P0`. F8.5 está `CLOSED_PASS_CANONICAL_APPROVED_LINEAGE_MATCHES_FROZEN_SOURCE_AND_LIVE_HOSTING_RELEASE`. F9 está `POSTPROD_ACCEPTED_ACCELERATED_SAME_DAY`.
+M1, M2/F0, M3, F3, F4, F5, F6 y F8 permanecen terminales. F7 permanece `GO_WITH_WARNINGS_NO_P0`; F8.5 y F9 permanecen cerrados. Phase A=`100/100`; estado histórico de Production Real Readiness=`100/100`; release=`CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01`.
 
-Phase A=`100/100`; Production Real Readiness=`100/100`; release congelado=`CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01`.
+F10 abrió un incidente nuevo P1. No reabrir gates terminales por rutina ni restaurar V182 completo.
 
-No reabrir synthetic lifecycle, F7, F8, IAM temporal, F8.5, F9, candidatas anteriores ni linaje de módulos sin P0 reproducible. No restaurar V182 completo. No rebuild/redeploy/reimport del release congelado y no crear candidata por rutina.
+## P1 activo — HR/KPIs no certificados como frescos
 
-## Producción
+La conclusión anterior de que el run browser del 29/08 había confirmado los KPIs actuales de HR queda **supersedida**. El run `33257681796` probó autenticación/navegación Admin+Shopper y consistencia interna del snapshot, pero no una lectura independiente de Google Sheets en el mismo instante. El workflow global terminó HOLD/failure.
 
-No queda pendiente bloqueante para el release ya aceptado. F10 mantiene monitoreo continuo y debe detectar regresión nueva mediante evidencia viva antes de cualquier reapertura.
+Discrepancias temporales observadas por Paula en la HR viva frente al snapshot que mostraba la plataforma: `Sin agendar` plataforma GT2/HN1 vs HR cruda GT4/HN1 (una GT ya realizada debe excluirse del bucket); `Realizadas` plataforma GT25/HN6 vs HR GT24/HN6; `Pendientes realizar` falta una en plataforma; `Cuestionario pendiente` plataforma 0 vs HR GT4; `Liquidadas` plataforma 0 pese a existencia de visitas con realizada+cuestionario+submitido y a que el mismo summary canónico reportó `liquidationCandidates=30`.
 
-La prueba browser del 29/08 confirmó HR dinámica actual en Admin y Shopper: 15 periodos, 660 visitas, 216 shoppers, latest 2026-08, sin septiembre todavía. Agosto vivo: 44 total (GT34/HN10), 44 asignadas, 0 sin asignar, 3 sin agendar, 10 agendadas, 31 realizadas, 13 pendientes realizar, 0 cuestionario pendiente, 1 sin submitir, 0 liquidadas y 5 fuera de rango. Shopper exacto: 6 visitas propias y misma autoridad HR 15/660/216.
+Estas cifras son **evidencia del momento**, no valores de negocio para copiar, persistir o hardcodear.
 
-## Pendientes reales F10 — no bloquean producción salvo P0 reproducible
+## Pendientes exactos F10
 
-1. continuar reconciliación dinámica por sección, no limitar control a total global: Dashboard, HR source, Periodos, Histórico, Visitas, Postulaciones, Reservas, Shoppers, Finanzas/Liquidaciones y superficies Shopper deben leerse contra la autoridad viva correspondiente;
-2. diagnosticar focalmente el follow-up Cliente del arnés actual: `page.waitForFunction` no alcanzó ready en 90 s mientras Admin/Shopper sí completaron; no adjudicar producto hasta aislar selector/contexto/runtime;
-3. **P1 Claude/prototipo:** `Periodos` e `Histórico` muestran encabezado `Cinépolis JUN` aunque el periodo vivo actual es agosto. Los módulos toman el nombre del programa, no el periodo; revisar semántica/nombre de programa para evitar apariencia de dato obsoleto sin hardcodear meses ni cambiar backend;
-4. monitoreo continuo de Auth/RBAC;
-5. HR viva/histórica y sync HR↔plataforma con identidades estables, idempotencia y revisión de conflictos;
-6. shoppers, postulaciones, certificaciones, visitas y evidencias;
-7. liquidaciones/pagos con revisión controlada, sin inferir pagos;
-8. errores runtime, performance y release drift;
-9. alert delivery y runbooks;
-10. profundidad de Academia por rol/módulo como seguimiento P2 de contenido.
+1. Ejecutar reconciliación provider read-only **forzada** (`fresh`) y fila a fila contra Google Sheets, capturando revision/sourceReadAt y los estados por GT/HN.
+2. Corregir el mecanismo de QA para comparar la UI contra una autoridad provider independiente del snapshot de CX.data; prohibir self-parity como certificado de frescura.
+3. Adjudicar el delta actual de `Realizadas`, `Pendientes realizar` y `Cuestionario pendiente` entre cache obsoleto y mapping de columnas/estados.
+4. Corregir la pérdida semántica entre motor canónico R20 y CX.data: preservar submitted/canonicalFacets/liquidationCandidate y separar candidato a liquidación de liquidación/pago financiero confirmado.
+5. Revalidar Dashboard, HR Source, Periodos, Histórico, Visitas, Postulaciones, Reservas/Asignación, Shoppers, Finanzas/Liquidaciones y superficies Shopper contra la **misma revisión fresca**.
+6. Revalidar el login humano Shopper por credencial existente; el run actual usó token checkpoint-backed para la prueba funcional.
+7. Diagnosticar separadamente Cliente, que continúa en timeout/HOLD.
+8. Mantener el P1 visual `Cinépolis JUN` en Periodos/Histórico para corrección frontend focal, sin hardcodear meses.
+9. Después de correcciones aprobadas, actualizar Academia/manuales solo si cambian definiciones visibles de estados/KPIs.
 
 ## Frontend / Claude
 
-No existe autorización para parche backend sobre UI. Único hallazgo nuevo a revisar por Claude: rótulo contextual `Cinépolis JUN` en `app/modules/periodos.js` y `app/modules/historico.js`. La navegación y los datos vivos no quedaron bloqueados por este hallazgo.
+Archivos focales: `app/core/tya-phase-a-source-safe-preview.js`, `app/core/data.js`, `app/modules/dashboard.js`, `app/modules/periodos.js`, `app/modules/historico.js`. No hay autorización para parchearlos desde backend; documentar/aplicar únicamente por el carril frontend vigente. No nueva candidata por rutina.
 
-## Reglas vigentes
+## Producción operativa
 
-- prototipo manda; backend no rediseña `/app/modules` ni `/app/core`;
-- release F6 permanece inmutable;
-- base nueva y limpia; legacy solo export/import útil, nunca conexión/copia de la base vieja;
-- multi-tenant `tenantId` + `projectId`;
-- Make/Gemini/pagos solo con gate real;
-- datos sensibles protegidos y fuera del repo;
-- no crear/revivir mecanismo de transporte por rutina;
-- F10 no reabre gates terminales sin P0 reproducible;
-- toda validación de frescura HR debe usar fuente viva y estado/periodo actual, no snapshots ni totales globales como sustituto.
+No existe P0 destructivo demostrado y no se altera el release congelado. Sin embargo, **no considerar confiables para operación de septiembre los KPIs dependientes de HR hasta cerrar esta reconciliación P1**. La plataforma puede seguir accesible; lo que queda retenido es la aceptación de exactitud operacional dinámica en esos módulos.
 
-**NEXT:** `F10_CLIENT_FOLLOWUP_DIAGNOSIS_AND_CONTINUOUS_DYNAMIC_HR_SECTION_RECONCILIATION`.
+## Seguridad
+
+Provider/data/Auth/Firestore/HR/Storage/Rules/payment writes=0; Make/Gemini=0; deploy/rebuild/reimport/merge=0. Legacy DB sigue prohibida.
+
+Evidencia: `app/docs/evidence/RC15-F10-HR-KPI-FRESHNESS-INCIDENT-20260829-01.json`.
+
+**NEXT:** `F10_FORCE_FRESH_PROVIDER_ROW_LEVEL_RECONCILIATION_THEN_FIX_QA_FRESHNESS_AND_CANONICAL_KPI_BRIDGE_BEFORE_OWNER_VISUAL_ACCEPTANCE`.
