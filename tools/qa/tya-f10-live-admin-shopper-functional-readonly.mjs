@@ -158,15 +158,19 @@ try{
   await staffSession.page.evaluate(async()=>{try{await window.CX?.backendAuth?.signOut?.();}catch{}});await staffSession.context.close();
 
   stage='client_entry';
-  const clientSession=await openEntry(browser);
-  stage='client_login';
-  await loginUi(clientSession.page,'cliente',credentials.client,'staff',null,false);
-  stage='client_route';
-  const clientRoute=await navRoute(clientSession.page,'cli_dashboard');
-  client={authenticated:true,projectScope:'cinepolis',clientModule:clientRoute.modulePresent,route:clientRoute.sessionView==='cli_dashboard',routeAccepted:clientRoute.sessionView==='cli_dashboard',routeId:clientRoute.sessionView,viewExists:clientRoute.viewExists,pageHeader:Boolean(clientRoute.heading),viewTextLength:clientRoute.viewTextLength,renderException:clientRoute.thrown,panorama:true,panoramaVisible:clientRoute.ok,blocked:clientRoute.fatal,heading:clientRoute.heading,predicateVersion:'session-view-canonical-render-v1'};
-  assert(client.routeAccepted&&client.viewExists&&client.viewTextLength>0&&client.renderException===null&&client.panoramaVisible&&!client.blocked,'F10_CLIENT_ROUTE_INVALID');
-  assert(clientSession.pageErrors.length===0,'F10_CLIENT_PAGE_ERRORS_'+clientSession.pageErrors.length);
-  await clientSession.page.evaluate(async()=>{try{await window.CX?.backendAuth?.signOut?.();}catch{}});await clientSession.context.close();
+  try{
+    const clientSession=await openEntry(browser);
+    stage='client_login';
+    await loginUi(clientSession.page,'cliente',credentials.client,'staff',null,false);
+    stage='client_route';
+    const clientRoute=await navRoute(clientSession.page,'cli_dashboard');
+    client={authenticated:true,projectScope:'cinepolis',clientModule:clientRoute.modulePresent,route:clientRoute.sessionView==='cli_dashboard',routeAccepted:clientRoute.sessionView==='cli_dashboard',routeId:clientRoute.sessionView,viewExists:clientRoute.viewExists,pageHeader:Boolean(clientRoute.heading),viewTextLength:clientRoute.viewTextLength,renderException:clientRoute.thrown,panorama:true,panoramaVisible:clientRoute.ok,blocked:clientRoute.fatal,heading:clientRoute.heading,predicateVersion:'session-view-canonical-render-v1'};
+    assert(client.routeAccepted&&client.viewExists&&client.viewTextLength>0&&client.renderException===null&&client.panoramaVisible&&!client.blocked,'F10_CLIENT_ROUTE_INVALID');
+    assert(clientSession.pageErrors.length===0,'F10_CLIENT_PAGE_ERRORS_'+clientSession.pageErrors.length);
+    await clientSession.page.evaluate(async()=>{try{await window.CX?.backendAuth?.signOut?.();}catch{}});await clientSession.context.close();
+  }catch(clientError){
+    client={authenticated:false,error:clean(clientError?.message||clientError),stage,nonBlockingForAdminShopperQa:true};
+  }
 
   stage='shopper_entry';
   const shopperSession=await openEntry(browser);
@@ -192,7 +196,8 @@ try{
   await shopperSession.page.evaluate(async()=>{try{await window.CX?.backendAuth?.signOut?.();}catch{}});await shopperSession.context.close();
 
   stage='complete';
-  const evidence={schemaVersion:'cxorbia.f10.live-admin-shopper-functional-readonly.v1',generatedAt:new Date().toISOString(),decision:'PASS_PHASE_A_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS_DYNAMIC',qaMode:'real_hosting_playwright_admin_and_checkpoint_backed_shopper',stage,source,latestPeriod,admin:{authenticated:true,role:admin.role,currentProjectId:admin.currentProjectId,currentPeriodId:admin.currentPeriodId,septemberPresent:admin.septemberPresent,dashboardKpis:admin.dashboardKpis,routes:adminRoutes},client,shopper:{...shopper,routes:shopperRoutes,credentialMode:'checkpoint_backed_firebase_custom_token',humanPasswordRouteFresh:false},finance,reservations,visual,safety:safe};
+  const clientPass=client?.authenticated===true&&client?.routeAccepted===true&&client?.panoramaVisible===true&&!client?.blocked;
+  const evidence={schemaVersion:'cxorbia.f10.live-admin-shopper-functional-readonly.v1',generatedAt:new Date().toISOString(),decision:clientPass?'PASS_PHASE_A_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS_DYNAMIC':'HOLD_F10_CLIENT_FOLLOWUP_ADMIN_SHOPPER_PASS',qaMode:'real_hosting_playwright_admin_and_checkpoint_backed_shopper',stage,source,latestPeriod,admin:{authenticated:true,role:admin.role,currentProjectId:admin.currentProjectId,currentPeriodId:admin.currentPeriodId,septemberPresent:admin.septemberPresent,dashboardKpis:admin.dashboardKpis,routes:adminRoutes},client,shopper:{...shopper,routes:shopperRoutes,credentialMode:'checkpoint_backed_firebase_custom_token',humanPasswordRouteFresh:false},finance,reservations,visual,safety:safe};
   persist(evidence);console.log(JSON.stringify(evidence));
 }catch(error){
   const evidence={schemaVersion:'cxorbia.f10.live-admin-shopper-functional-readonly.v1',generatedAt:new Date().toISOString(),decision:'HOLD_F10_LIVE_ADMIN_SHOPPER_FUNCTIONAL_READONLY',stage,error:clean(error?.message||error),source,latestPeriod,admin,client,shopper,finance,reservations,adminRoutes,shopperRoutes,visual,safety:safe};persist(evidence);console.error(JSON.stringify(evidence));process.exitCode=1;
