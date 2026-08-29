@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "cxorbia.rc15.f10.hr-kpi-freshness-incident.v1",
+  "date": "2026-08-29",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "phase": "F10_PERMANENT_OPERATING_MODEL",
+  "incidentId": "F10-HR-KPI-FRESHNESS-20260829-01",
+  "status": "OPEN_P1_PRODUCT_READ_MODEL_AND_QA_MECHANISM",
+  "productP0Proven": false,
+  "releaseHistoryReopened": false,
+  "supersedesConclusionOnly": "CHECKPOINT-OPERATIVO-CXORBIA-TYA-F10-LIVE-DYNAMIC-HR-20260829.md claim that run 33257681796 proved current-source freshness",
+  "trigger": "Owner compared Dashboard KPIs against the Google Sheet visible on 2026-08-29 and found current row/state differences.",
+  "priorRun": {
+    "runId": 33257681796,
+    "artifactId": 9716340234,
+    "workflowConclusion": "failure",
+    "runnerStatus": "HOLD_READONLY_POST_GATES",
+    "adminShopperSubscope": "produced browser/runtime evidence",
+    "client": "HOLD_TIMEOUT",
+    "freshnessVerdict": "DEMOTED_TO_INTERNAL_SNAPSHOT_SELF_CONSISTENCY_ONLY"
+  },
+  "observedPlatformSnapshot": {
+    "periodKey": "2026-08",
+    "total": {"all": 44, "GT": 34, "HN": 10},
+    "sinAgendar": {"all": 3, "GT": 2, "HN": 1},
+    "realizadas": {"all": 31, "GT": 25, "HN": 6},
+    "pendRealizar": {"all": 13, "GT": 9, "HN": 4},
+    "cuestPend": {"all": 0},
+    "sinSubmitir": {"all": 1, "GT": 1, "HN": 0},
+    "liquidadas": {"all": 0},
+    "operationalSummary": {
+      "questionnaireCompleted": 31,
+      "submitted": 30,
+      "liquidationCandidates": 30,
+      "paymentConfirmed": 0
+    }
+  },
+  "ownerLiveSheetEvidence": {
+    "capturedAtLocalApprox": "2026-08-29T08:46:00-06:00 through 2026-08-29T09:02:00-06:00",
+    "source": "HR Guatemala - Sincronizacion Google Sheets",
+    "rawSinAgendar": {"GT": 4, "HN": 1},
+    "noteSinAgendar": "At least one GT row without scheduled date already has a realized date and should therefore be excluded from the operational pending-schedule bucket. Even after that exclusion the platform GT=2 requires reconciliation against the current source.",
+    "realizadas": {"GT": 24, "HN": 6},
+    "pendRealizar": "owner reports platform is short by one visit",
+    "cuestPend": {"GT": 4},
+    "liquidadasExpectedSemantic": "visits with realized + questionnaire + submitted evidence should appear as liquidation candidates, not zero merely because financial confirmation is absent"
+  },
+  "rootCauseFindings": [
+    {
+      "plane": "QA_MECHANISM",
+      "code": "SELF_PARITY_NOT_INDEPENDENT_FRESHNESS",
+      "evidence": "tools/qa/tya-f10-live-admin-shopper-functional-readonly.mjs compares Dashboard/CX.data KPI values with periodOperationalSummary from the same loaded app snapshot; it does not independently force-read Google Sheets before comparing.",
+      "impact": "A stale but internally consistent snapshot can pass the Admin/Shopper KPI assertions."
+    },
+    {
+      "plane": "READ_MODEL_RUNTIME",
+      "code": "STALE_WHILE_REVALIDATE_CAN_RETURN_OLD_CACHE",
+      "evidence": "backend/runtime/hr-live-service/server.mjs default buildSnapshot returns the existing cache while starting a background refresh after CACHE_MS; only ?fresh=1 waits for refreshSnapshot().",
+      "impact": "Ordinary reads are not sufficient proof of same-moment HR freshness for continuously changing operational KPIs."
+    },
+    {
+      "plane": "PRODUCT_DATA_BRIDGE",
+      "code": "CANONICAL_SUBMISSION_LIQUIDATION_SEMANTICS_DROPPED",
+      "evidence": "The canonical R20 state model defines liquidationCandidate=submitted and separates liquidationConfirmed. app/core/tya-phase-a-source-safe-preview.js maps submittedAt but sets submit from v.submit and does not preserve canonicalFacets/liquidationCandidate. app/core/data.js treats submitted as v.submit or estado=liquidada and the liquidadas bucket only as estado=liquidada.",
+      "impact": "Dashboard can show Liquidadas=0 even when the same canonical source summary contains submitted/liquidation-candidate visits."
+    }
+  ],
+  "notYetAdjudicated": [
+    "Exact row-level cause of the current questionnaire-pending mismatch: stale source read versus column/state mapping.",
+    "Exact row-level cause of the one-visit realized/pending-realization delta.",
+    "Current HN pending-schedule row state after a forced fresh provider read."
+  ],
+  "moduleReclassification": {
+    "Dashboard": "FAIL_CURRENT_HR_KPI_FRESHNESS_AND_SEMANTIC_RECONCILIATION",
+    "HRSource": "ROUTE_RENDER_PASS_BUT_INDEPENDENT_FRESHNESS_NOT_PROVEN",
+    "Periodos": "ROUTE_RENDER_PASS_WITH_P1_CONTEXT_LABEL_AND_FRESHNESS_RECONCILIATION_PENDING",
+    "Historico": "ROUTE_RENDER_PASS_WITH_P1_CONTEXT_LABEL_AND_FRESHNESS_RECONCILIATION_PENDING",
+    "Visitas": "ROUTE_RENDER_PASS_ROW_LEVEL_CURRENT_HR_RECONCILIATION_PENDING",
+    "Postulaciones": "ROUTE_RENDER_PASS_CURRENT_HR_RECONCILIATION_PENDING",
+    "ReservasAsignacion": "FAIL_CLOSED_WRITE_SAFETY_PASS_CURRENT_HR_RECONCILIATION_PENDING",
+    "Shoppers": "AUTH_HISTORY_RUNTIME_PASS_CURRENT_VISIT_STATE_RECONCILIATION_PENDING",
+    "Finanzas": "CLOSED_PERIOD_FINANCIAL_RECONCILIATION_SEPARATE_PASS_DASHBOARD_LIQUIDATION_KPI_SEMANTIC_DEFECT_OPEN",
+    "Liquidaciones": "ROUTE_RENDER_PASS_CURRENT_CANDIDATE_KPI_SEMANTIC_DEFECT_OPEN",
+    "Client": "HOLD_TIMEOUT_SEPARATE",
+    "AcademiaDocumentos": "RENDER_ONLY_NOT_HR_FRESHNESS_EVIDENCE"
+  },
+  "safety": {
+    "providerWrites": 0,
+    "businessDataWrites": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "paymentWrites": 0,
+    "deploys": 0,
+    "rebuilds": 0,
+    "reimports": 0,
+    "merge": false
+  },
+  "nextExactBlock": "F10_FORCE_FRESH_PROVIDER_ROW_LEVEL_RECONCILIATION_THEN_FIX_QA_FRESHNESS_AND_CANONICAL_KPI_BRIDGE_BEFORE_OWNER_VISUAL_ACCEPTANCE"
+}
