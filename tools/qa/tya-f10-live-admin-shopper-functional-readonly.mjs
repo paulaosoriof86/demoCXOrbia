@@ -9,7 +9,7 @@ const outputFile=String(process.env.CXORBIA_REMOTE_SEMANTIC_OUTPUT||'.tmp/phase-
 if(!root.startsWith('https://'))throw new Error('F10_DEV_ROOT_REQUIRED');
 if(!fs.existsSync(privatePath))throw new Error('F10_PRIVATE_E2E_CREDENTIALS_REQUIRED');
 const credentials=JSON.parse(fs.readFileSync(privatePath,'utf8'));
-if(!credentials?.staff?.login||!credentials?.staff?.password)throw new Error('F10_STAFF_CREDENTIAL_MISSING');
+if(!credentials?.staff?.login||!credentials?.staff?.password||credentials?.staff?.role!=='admin')throw new Error('F10_CANONICAL_ADMIN_CREDENTIAL_MISSING');
 if(credentials?.shopper?.credentialMode!=='firebase_custom_token'||credentials?.shopper?.login!=='__cxorbia_f10_custom_token__'||!credentials?.shopper?.password)throw new Error('F10_SHOPPER_CUSTOM_TOKEN_MISSING');
 if(!credentials?.client?.login||!credentials?.client?.password)throw new Error('F10_CLIENT_CREDENTIAL_MISSING');
 
@@ -26,8 +26,11 @@ async function openEntry(browser){
   const pageErrors=[];const consoleErrors=[];
   page.on('pageerror',e=>pageErrors.push(String(e?.message||e).slice(0,300)));
   page.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text().slice(0,300));});
-  await page.goto(root+'/index-backend-dev.html?cxF10LiveQa=1&ts='+Date.now(),{waitUntil:'domcontentloaded',timeout:60000});
-  await page.waitForSelector('.role-btn[data-role="admin"]',{state:'visible',timeout:30000});
+  await page.goto(root+'/',{waitUntil:'commit',timeout:60000});
+  await page.waitForSelector('.role-btn[data-role="admin"]',{state:'visible',timeout:60000});
+  const entryUrl=new URL(page.url());
+  assert(entryUrl.searchParams.get('cxProtectedRuntime')==='YES_PAULA_20260730_PROTECTED_DEV','F10_PROTECTED_RUNTIME_FLAG_MISSING');
+  assert(entryUrl.searchParams.get('cxHumanFullVisual')==='YES_PAULA_20260731_FULL_PROFILE_DEV','F10_FULL_VISUAL_FLAG_MISSING');
   return {context,page,pageErrors,consoleErrors};
 }
 
@@ -39,13 +42,16 @@ async function waitRuntime(page,expectedNamespace,expectedRole=null){
   },{expectedNamespace,expectedRole},{timeout:90000});
 }
 
-async function loginUi(page,roleButton,credential,expectedNamespace){
+async function loginUi(page,roleButton,credential,expectedNamespace,expectedRole=null){
   await page.click(`.role-btn[data-role="${roleButton}"]`);
-  await page.waitForSelector('#cxIntegratedAuthStep',{state:'visible',timeout:30000});
-  await page.fill('#cxIntegratedAuthLogin',credential.login);
-  await page.fill('#cxIntegratedAuthPassword',credential.password);
-  await page.click('#cxIntegratedAuthSubmit');
-  await waitRuntime(page,expectedNamespace,null);
+  await page.waitForFunction(role=>document.getElementById('loginForm')?.dataset.selectedRole===role,roleButton,{timeout:10000});
+  for(const selector of ['#lgUser','#lgPass','#lgSubmit'])await page.waitForSelector(selector,{state:'visible',timeout:10000});
+  const canonical=await page.evaluate(()=>({legacyOverlay:Boolean(document.getElementById('cxIntegratedAuthStep')),technicalForm:Boolean(document.getElementById('cxDevEntryAuth'))}));
+  assert(!canonical.legacyOverlay&&!canonical.technicalForm,'F10_NON_CANONICAL_LOGIN_SURFACE_VISIBLE');
+  await page.fill('#lgUser',credential.login);
+  await page.fill('#lgPass',credential.password);
+  await page.press('#lgPass','Enter');
+  await waitRuntime(page,expectedNamespace,expectedRole);
 }
 
 async function loginShopperToken(page,token){
@@ -57,25 +63,24 @@ async function loginShopperToken(page,token){
     await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
     await auth.signInWithCustomToken(customToken);
   },token);
-  await page.reload({waitUntil:'domcontentloaded',timeout:60000});
+  await page.reload({waitUntil:'commit',timeout:60000});
   await waitRuntime(page,'shopper','shopper');
 }
 
 async function navRoute(page,routeId){
-  const beforeErrors=[];
   const result=await page.evaluate(async routeId=>{
     const modulePresent=typeof window.CX?.modules?.[routeId]==='function';
     const routerPresent=typeof window.CX?.router?.nav==='function';
     let thrown=null;
     try{if(modulePresent&&routerPresent)window.CX.router.nav(routeId);}catch(e){thrown=String(e?.message||e);}
-    await new Promise(r=>setTimeout(r,450));
+    await new Promise(r=>setTimeout(r,500));
     const view=document.getElementById('view');
     const text=String(view?.innerText||'').trim();
     const heading=view?.querySelector('.ph-t,.ph h1,.ph h2,h1,h2')?.textContent?.trim()||null;
     const fatal=/Fuente de datos no disponible|Error inesperado|No se pudo cargar/i.test(text);
     return {routeId,modulePresent,routerPresent,sessionView:window.CX?.session?.view||null,viewExists:Boolean(view),viewTextLength:text.length,heading,thrown,fatal};
   },routeId);
-  return {...result,ok:result.modulePresent&&result.routerPresent&&result.sessionView===routeId&&result.viewExists&&result.viewTextLength>0&&!result.thrown&&!result.fatal,errors:beforeErrors};
+  return {...result,ok:result.modulePresent&&result.routerPresent&&result.sessionView===routeId&&result.viewExists&&result.viewTextLength>0&&!result.thrown&&!result.fatal};
 }
 
 async function captureKpiScreenshot(page){
@@ -85,7 +90,7 @@ async function captureKpiScreenshot(page){
     const x=Math.max(0,Math.min(...boxes.map(b=>b.x)));const y=Math.max(0,Math.min(...boxes.map(b=>b.y)));
     const right=Math.max(...boxes.map(b=>b.x+b.width));const bottom=Math.max(...boxes.map(b=>b.y+b.height));
     const file=path.join(outDir,'admin-dashboard-kpis.png');
-    await page.screenshot({path:file,clip:{x,y,width:Math.min(1440,right-x),height:Math.min(1000,bottom-y)}});
+    await page.screenshot({path:file,clip:{x,y,width:Math.max(1,Math.min(1440,right-x)),height:Math.max(1,Math.min(1000,bottom-y))}});
     return file;
   }catch{return null;}
 }
@@ -94,7 +99,7 @@ const browser=await chromium.launch({headless:true,args:['--no-sandbox','--disab
 let admin=null,client=null,shopper=null,finance=null,reservations=null,source=null,latestPeriod=null,adminRoutes=[],shopperRoutes=[],visual=null;
 try{
   const staffSession=await openEntry(browser);
-  await loginUi(staffSession.page,'admin',credentials.staff,'staff');
+  await loginUi(staffSession.page,'admin',credentials.staff,'staff','admin');
   admin=await staffSession.page.evaluate(()=>{
     const d=window.CX?.data||{};const a=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{};const ctx=window.CX?.backendAuth?.context?.()||{};
     const summaries=Array.isArray(d.periodOperationalSummary)?d.periodOperationalSummary.slice():[];
@@ -118,7 +123,7 @@ try{
       reservations:{marker:window.CX_TYA_CANONICAL_RESERVATIONS||null,mutation:reservationMutation}
     };
   });
-  assert(['super','admin','ops','coordinador'].includes(String(admin.role||''))&&admin.namespace==='staff'&&admin.tenantId==='tya','F10_ADMIN_SCOPE_INVALID');
+  assert(admin.role==='admin'&&admin.namespace==='staff'&&admin.tenantId==='tya','F10_ADMIN_SCOPE_INVALID');
   assert(admin.periods>0&&admin.visits>0&&admin.shoppers>0&&admin.duplicateVisitKeys===0&&admin.duplicateShopperIds===0,'F10_ADMIN_LIVE_HR_AUTHORITY_INVALID');
   assert(admin.periodKey===admin.latestPeriod,'F10_ADMIN_CURRENT_PERIOD_NOT_LIVE_LATEST');
   assert(admin.summary&&Number(admin.dashboardKpis?.total?.total||0)===Number(admin.summary?.total||0),'F10_ADMIN_KPI_TOTAL_PARITY_INVALID');
@@ -146,7 +151,7 @@ try{
   latestPeriod={periodKey:admin.periodKey,total:Number(s.total||0),assigned:Number(s.assigned||0),unassigned:Number(s.unassigned||0),scheduled:Number(s.scheduled||0),pendingSchedule:Number(s.pendingSchedule||0),realized:Number(s.realized||0),pendingQuestionnaire:Number(s.pendingQuestionnaire||0),questionnaireCompleted:Number(s.questionnaireCompleted||0),pendingSubmission:Number(s.pendingSubmission||0),submitted:Number(s.submitted||0),liquidationCandidates:Number(s.liquidationCandidates||0),paymentConfirmed:Number(s.paymentConfirmed||0),outOfRange:Number(s.outOfRange||0),dashboardKpis:admin.dashboardKpis};
   await staffSession.page.evaluate(async()=>{try{await window.CX?.backendAuth?.signOut?.();}catch{}});await staffSession.context.close();
 
-  const clientSession=await openEntry(browser);await loginUi(clientSession.page,'cliente',credentials.client,'staff');
+  const clientSession=await openEntry(browser);await loginUi(clientSession.page,'cliente',credentials.client,'staff',null);
   const clientRoute=await navRoute(clientSession.page,'cli_dashboard');
   client={authenticated:true,projectScope:'cinepolis',clientModule:clientRoute.modulePresent,route:clientRoute.sessionView==='cli_dashboard',routeAccepted:clientRoute.sessionView==='cli_dashboard',routeId:clientRoute.sessionView,viewExists:clientRoute.viewExists,pageHeader:Boolean(clientRoute.heading),viewTextLength:clientRoute.viewTextLength,renderException:clientRoute.thrown,panorama:true,panoramaVisible:clientRoute.ok,blocked:clientRoute.fatal,heading:clientRoute.heading,predicateVersion:'session-view-canonical-render-v1'};
   assert(client.routeAccepted&&client.viewExists&&client.viewTextLength>0&&client.renderException===null&&client.panoramaVisible&&!client.blocked,'F10_CLIENT_ROUTE_INVALID');
@@ -159,7 +164,7 @@ try{
     const raw=String(ctx.shopperId||'').trim();const canonical=String((d.__identityMap||{})[raw]||raw).trim();let own=[];try{own=typeof d.visitsForShopper==='function'?d.visitsForShopper(canonical,false):[];}catch{}
     const marker=window.CX_TYA_CANONICAL_SHOPPER_PORTAL||{};let legalPending=false;try{legalPending=Boolean(window.CX?.confidencialidad?.pending?.('shopper'));}catch{}
     const legalVisible=[...document.querySelectorAll('.cx-ov,[role="dialog"]')].some(el=>{const t=String(el.innerText||'');const r=el.getBoundingClientRect();const st=getComputedStyle(el);return /(confidencial|\bnda\b|acuerdo)/i.test(t)&&r.width>0&&r.height>0&&st.display!=='none'&&st.visibility!=='hidden';});
-    return {authenticated:ctx.authenticated===true,role:ctx.role||null,namespace:ctx.authNamespace||null,tenantId:ctx.tenantId||null,exactIdentity:raw===canonical||Boolean(canonical),ownVisits:own.length,fullHistory:marker.fullHistory===true,certificationVisible:marker.certificationVisible===true,periods:Number(a.periods||0),visits:Number(a.hrVisits||0),shoppers:Number(a.hrShoppers||0),latestPeriod:a.latestPeriod||null,legalGate:{pending:legalPending,visible:legalVisible,acceptanceAutomated:false},sourceRef:String(window.CX?.dataSource?.sourceRef||'')};
+    return {authenticated:ctx.authenticated===true,role:ctx.role||null,namespace:ctx.authNamespace||null,tenantId:ctx.tenantId||null,exactIdentity:Boolean(raw&&canonical),ownVisits:own.length,fullHistory:marker.fullHistory===true,certificationVisible:marker.certificationVisible===true,periods:Number(a.periods||0),visits:Number(a.hrVisits||0),shoppers:Number(a.hrShoppers||0),latestPeriod:a.latestPeriod||null,legalGate:{pending:legalPending,visible:legalVisible,acceptanceAutomated:false},sourceRef:String(window.CX?.dataSource?.sourceRef||'')};
   });
   assert(shopper.authenticated&&shopper.role==='shopper'&&shopper.namespace==='shopper'&&shopper.tenantId==='tya','F10_SHOPPER_SCOPE_INVALID');
   assert(shopper.exactIdentity&&shopper.ownVisits>0&&shopper.fullHistory&&shopper.certificationVisible,'F10_SHOPPER_IDENTITY_HISTORY_INVALID');
