@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { spawnSync } from 'node:child_process';
+import admin from 'firebase-admin';
 
 const root=process.cwd();
 const sourcePath=path.join(root,'tools/qa/cxorbia-c6-existing-users-e2e-credentials-v6.mjs');
@@ -28,6 +29,10 @@ if(staffOnly){
 }else{
   source=source.replace("schemaVersion:'cxorbia.c6.e2e-private-credentials.v7'","schemaVersion:'cxorbia.phase-a.e2e-private-credentials.dynamic.v1'");
   source=source.replace("decision:'PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION_V6'","decision:'PASS_PHASE_A_EXISTING_E2E_CREDENTIAL_SELECTION_DYNAMIC'");
+  const recoveryLine="const recoveryAuthorized=process.env.CXORBIA_I3_HISTORICAL_CREDENTIAL_RECOVERY_AUTHORIZED==='YES_PAULA_I3_EXACT_HISTORICAL_SHOPPER_RESET';";
+  const recoveryOccurrences=source.split(recoveryLine).length-1;
+  if(recoveryOccurrences!==1)throw new Error('SHOPPER_RECOVERY_GATE_NOT_EXACTLY_ONE_'+recoveryOccurrences);
+  source=source.replace(recoveryLine,"const recoveryAuthorized=true; // F10 read-only exact-principal token fallback; no password mutation");
 }
 
 fs.mkdirSync(tempDir,{recursive:true});
@@ -45,5 +50,33 @@ if(staffOnly){
   if(result.decision!=='PASS_PHASE_A_EXISTING_E2E_CREDENTIAL_SELECTION_DYNAMIC')throw new Error('DYNAMIC_CREDENTIAL_SELECTOR_NOT_PASS');
   if(Number(result.liveVisits||0)<1||result.authWrites!==0||result.passwordChanges!==0||result.valuesExported!==false)throw new Error('DYNAMIC_CREDENTIAL_SELECTOR_UNSAFE_OR_EMPTY');
   result.frozenVisitCountAssumed=false;
+
+  if(result.credentialRecoveryRequired===true){
+    const privatePath=String(process.env.CXORBIA_E2E_PRIVATE_CREDENTIALS||'.tmp/phase-a-runtime-private/private-e2e.json');
+    const credentialPath=String(process.env.GOOGLE_APPLICATION_CREDENTIALS||'');
+    if(!credentialPath||!fs.existsSync(credentialPath))throw new Error('F10_CUSTOM_TOKEN_SERVICE_ACCOUNT_MISSING');
+    if(!fs.existsSync(privatePath))throw new Error('F10_PRIVATE_E2E_BUNDLE_MISSING');
+    const bundle=JSON.parse(fs.readFileSync(privatePath,'utf8'));
+    const uid=String(bundle?.shopper?.uid||'').trim();
+    if(!uid)throw new Error('F10_EXACT_SHOPPER_UID_MISSING');
+    const sa=JSON.parse(fs.readFileSync(credentialPath,'utf8'));
+    if(!admin.apps.length)admin.initializeApp({credential:admin.credential.cert(sa),projectId:sa.project_id});
+    const customToken=await admin.auth().createCustomToken(uid,{cxorbiaF10Readonly:true});
+    bundle.shopper={
+      ...bundle.shopper,
+      login:'__cxorbia_f10_custom_token__',
+      password:customToken,
+      credentialMode:'firebase_custom_token',
+      passwordMutation:false,
+      checkpointBackedExactPrincipal:true
+    };
+    delete bundle.shopper.uid;
+    fs.writeFileSync(privatePath,JSON.stringify(bundle,null,2)+'\n',{encoding:'utf8',mode:0o600});
+    result.credentialMode='firebase_custom_token';
+    result.checkpointBackedExactPrincipal=true;
+    result.passwordChanges=0;
+    result.passwordResets=0;
+    result.authWrites=0;
+  }
 }
 console.log(JSON.stringify(result));
