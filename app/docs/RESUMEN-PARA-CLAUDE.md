@@ -1,50 +1,66 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-29  
-**Estado:** `PHASE_A_100__PROD_READINESS_100_HISTORY__F10_P1_HR_KPI_FRESHNESS_OPEN__NO_UI_REBUILD`
+**STATE_SYNC_EPOCH:** `CXORBIA-20260829-F10-HR-KPI-P1-CONTROL-PLANE-SYNC-11`  
+**Estado:** `PHASE_A_100__F10_CONTROL_PLANE_SYNCHRONIZED__P1_HR_KPI_FRESHNESS_OPEN__NO_UI_REBUILD`
 
 ## Estado canónico
 
-Phase A `100/100`, F8/F8.5/F9 terminales y release `CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01` permanecen preservados. F10 abrió un **P1 reproducible de frescura/read-model/KPI**; no es P0 demostrado y no reabre retroactivamente F9.
+Release `CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01`, functional source `f9802fdd498934a8e7729fa5c7d18341bec1cd71`, F8.5 lineage PASS y F9 `POSTPROD_ACCEPTED` permanecen preservados.
 
-## Corrección obligatoria del handoff anterior
+El incidente F10 `F10-HR-KPI-FRESHNESS-20260829-01` es P1, no P0, y no demuestra que se haya servido una versión frontend antigua. No restaurar V182 ni reconstruir módulos cerrados.
 
-El run `33257681796` no demostró que los KPIs estuvieran sincronizados con Google Sheets en el mismo instante. Admin y Shopper sí autenticaron/navegaron sobre Hosting real, pero el test comparó los KPIs contra `periodOperationalSummary` del **mismo snapshot de CX.data**. Eso prueba consistencia interna, no frescura independiente. El workflow global terminó HOLD/failure por follow-up Cliente.
+## Reparación transversal ya aplicada
 
-Las cifras del run (44 total; sin agendar 3; realizadas 31; pendientes realizar 13; cuestionario pendiente 0; liquidadas 0) quedan como **snapshot observado por la app**, no como autoridad actual de HR.
+Se corrigió el cursor de continuidad para impedir regresiones metodológicas:
 
-Paula aportó capturas actuales de la HR con diferencias: sin agendar GT4/HN1 en crudo (una GT sin agenda ya realizada debe excluirse del bucket); realizadas GT24/HN6; una pendiente de realizar adicional; cuatro cuestionarios pendientes en GT; y visitas con realizada+cuestionario+submitido que deben entrar como candidatas a liquidación, no desaparecer porque el pago/liquidación financiera aún no esté confirmado.
+- overlay postproducción actualizado a F10 y al incidente activo;
+- índice, checkpoint, execution state y source lock canónicos alineados al mismo epoch;
+- M2/M3/F8/readiness 69/95 quedan históricos y no pueden dirigir una sesión nueva;
+- F8.5 sigue definiendo el linaje aprobado de módulos.
+
+Pendiente del mismo bloque técnico: terminar mirrors raíz + validador genérico para que esa regla quede ejecutable y no solo documental.
+
+## Corrección obligatoria de la prueba anterior
+
+El run `33257681796` no demostró sincronización instantánea con Google Sheets. Admin y Shopper sí autenticaron/navegaron en Hosting real, pero el test comparó UI y `periodOperationalSummary` del mismo snapshot de `CX.data`. Eso prueba consistencia interna, no frescura independiente.
+
+La validación nueva debe ser:
+
+`provider fresh=1 → revision/sourceReadAt → cálculo canónico independiente → UI/Hosting contra la misma revisión`.
 
 ## Causa técnica demostrada
 
-- `backend/runtime/hr-live-service/server.mjs`: el modo normal usa cache y stale-while-revalidate; solo `?fresh=1` espera la nueva lectura provider. No usar lectura normal para certificar frescura operacional.
-- `tools/qa/tya-f10-live-admin-shopper-functional-readonly.mjs`: self-parity del mismo snapshot; debe ser sustituida/complementada por provider fresh read independiente y comparación por revision/sourceReadAt.
-- `tools/hr-source/tya-canonical-visit-state-r20.mjs`: autoridad canónica separa `liquidationCandidate=submitted` de `liquidationConfirmed`.
-- `app/core/tya-phase-a-source-safe-preview.js`: conserva `submittedAt`, pero usa `submit: !!v.submit` y no conserva todos los facets canónicos.
-- `app/core/data.js`: `submitted` depende de `v.submit`/`estado=liquidada` y `liquidadas` exige `estado==='liquidada'`; esto no representa el KPI operacional de candidatas submitidas.
+- `backend/runtime/hr-live-service/server.mjs`: lectura normal puede devolver cache mientras refresca; `fresh=1` espera la nueva lectura.
+- `tools/qa/tya-f10-live-admin-shopper-functional-readonly.mjs`: self-parity; debe dejar de certificar frescura por comparación interna.
+- motor R20: `liquidationCandidate=submitted` y se separa de liquidación/pago confirmado.
+- `app/core/tya-phase-a-source-safe-preview.js`: pierde parte de la semántica canónica al materializar CX.data.
+- `app/core/data.js`: reconstruye submitted/liquidadas con semántica más pobre que la autoridad canónica.
 
-## Archivos frontend a revisar — NO hardcodear cifras/meses
+## Archivos frontend focales — no hardcodear cifras/meses
 
-1. `app/core/tya-phase-a-source-safe-preview.js`: preservar la semántica canónica ya calculada (`canonicalFacets`, `submitted`, `liquidationCandidate`, estados de ciclo) al materializar CX.data.
-2. `app/core/data.js`: los bucket functions deben consumir la autoridad canónica y no reconstruir estados con una semántica más pobre; en particular `liquidadas` debe alinearse con el significado funcional aprobado del KPI y mantenerse separado de pago confirmado.
-3. `app/modules/dashboard.js`: mostrar exactamente los buckets canónicos del periodo activo y permitir validación por país/estado; no fijar números actuales.
-4. `app/modules/periodos.js` y `app/modules/historico.js`: corregir el rótulo contextual `Cinépolis JUN` sin hardcodear agosto/septiembre.
+1. `app/core/tya-phase-a-source-safe-preview.js`: preservar `canonicalFacets`, submitted y `liquidationCandidate`.
+2. `app/core/data.js`: consumir la autoridad canónica en vez de reconstruir estados con reglas empobrecidas.
+3. `app/modules/dashboard.js`: mostrar buckets canónicos del periodo activo.
+4. `app/modules/periodos.js` y `app/modules/historico.js`: corregir `Cinépolis JUN` sin hardcodear agosto/septiembre.
 
-No restaurar/re-escribir el frontend completo. No tocar módulos no involucrados. Cualquier delta frontend sigue el carril vigente y debe preservar el prototipo aprobado.
+No tocar otros módulos sin evidencia. No reescribir frontend completo. No crear nueva candidata por rutina.
 
-## Revalidación requerida después de corrección
+## Módulos a revalidar sobre una sola revisión fresca
 
-Dashboard, HR Source, Periodos, Histórico, Visitas, Postulaciones, Reservas/Asignación, Shoppers, Finanzas/Liquidaciones y superficies Shopper deben reconciliarse contra **la misma lectura provider forzada**, con revision/sourceReadAt comunes y detalle por país/estado. Un PASS de navegación no equivale a PASS de datos.
+Dashboard, HR Source, Periodos, Histórico, Visitas, Postulaciones, Reservas/Asignación, Shoppers, Finanzas/Liquidaciones y superficies Shopper.
 
-Shopper: identidad/histórico checkpoint-backed funcionaron, pero el estado actual de sus visitas depende de esta reconciliación; el login humano por contraseña no fue recertificado en el run 33257681796. Cliente continúa como HOLD separado.
+Shopper: identidad/histórico checkpoint-backed permanecen válidos, pero visitas actuales y login humano por contraseña requieren recertificación fresca.
+
+Cliente/Cliente 360: HOLD separado. No tratar su timeout como consecuencia de HR sin evidencia.
 
 ## Academia
 
-Sin cambio funcional causado por este incidente. Si cambian definiciones visibles de estados/KPIs, actualizar manuales/cursos por rol después de aprobar el delta.
+Sin cambio funcional todavía. Si el delta aprobado modifica definiciones visibles de estados/KPIs, actualizar después manuales, cursos, errores frecuentes, rutas por rol y glosario. No convertir evidencia técnica de cache/QA en contenido de usuario final.
 
 ## Seguridad
 
-No writes en HR/Auth/Firestore/Storage/Rules/pagos; no Make/Gemini; no deploy/reimport/merge. Las cifras observadas son evidencia temporal, nunca seeds ni constantes.
+Sin HR/Auth/Firestore/Storage/Rules/payment writes; sin Make/Gemini; sin deploy/rebuild/reimport/merge. Las cifras actuales son evidencia temporal y nunca datos fijos.
 
 ## Siguiente frontera
 
