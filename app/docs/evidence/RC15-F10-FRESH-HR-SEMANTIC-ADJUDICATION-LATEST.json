@@ -1,0 +1,210 @@
+{
+  "schemaVersion": "cxorbia.rc15.f10.fresh-hr-semantic-adjudication.v1",
+  "evidenceId": "RC15-F10-FRESH-HR-SEMANTIC-ADJUDICATION-20260829-01",
+  "generatedAt": "2026-08-29",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "activeIncident": "F10-HR-KPI-FRESHNESS-20260829-01",
+  "run": {
+    "runId": 33281688280,
+    "artifactId": 9723170395,
+    "artifactDigest": "sha256:26fc969ff5abb1fdc4fcdc6c14bcb8d2cc60f337e93cdd7f0798cf40adf82330",
+    "workflowConclusion": "success",
+    "runnerStatus": "PASS_READONLY_POST_GATES",
+    "freshGateDecision": "PASS_F10_FRESH_HR_ROW_LEVEL_RECONCILIATION"
+  },
+  "provider": {
+    "revision": "b7bc89176161a8a1b83e3d33098634ae77a5a8bc3f6f44ee7c749e2d11da598d",
+    "sourceReadAt": "2026-08-29T23:44:58.827Z",
+    "cacheOrigin": "runtime_refresh",
+    "sourceAgeMsAtGate": 603,
+    "periodCount": 15,
+    "visitCount": 660,
+    "latestPeriodKey": "2026-08",
+    "duplicateRowKeys": 0,
+    "canonicalFacetMismatchCountAgainstIndependentR20": 0,
+    "focusPeriodDigestSha256": "0ebec31437a465bf049c23d2073fae01e0927408cab76d35a150a8f93b09a292"
+  },
+  "focusPeriod": "2026-08",
+  "rawSourceEvidenceSummary": {
+    "ALL": {
+      "total": 44,
+      "assigned": 44,
+      "scheduledEvidence": 39,
+      "pendingScheduleEvidence": 4,
+      "realizedEvidence": 30,
+      "pendingRealizationEvidence": 14,
+      "questionnaireEvidence": 26,
+      "pendingQuestionnaireEvidence": 4,
+      "submittedEvidence": 30,
+      "pendingSubmissionEvidence": 1,
+      "liquidationCandidates": 30
+    },
+    "GT": {
+      "total": 34,
+      "assigned": 34,
+      "scheduledEvidence": 30,
+      "pendingScheduleEvidence": 3,
+      "realizedEvidence": 24,
+      "pendingRealizationEvidence": 10,
+      "questionnaireEvidence": 20,
+      "pendingQuestionnaireEvidence": 4,
+      "submittedEvidence": 24,
+      "pendingSubmissionEvidence": 1,
+      "liquidationCandidates": 24
+    },
+    "HN": {
+      "total": 10,
+      "assigned": 10,
+      "scheduledEvidence": 9,
+      "pendingScheduleEvidence": 1,
+      "realizedEvidence": 6,
+      "pendingRealizationEvidence": 4,
+      "questionnaireEvidence": 6,
+      "pendingQuestionnaireEvidence": 0,
+      "submittedEvidence": 6,
+      "pendingSubmissionEvidence": 0,
+      "liquidationCandidates": 6
+    }
+  },
+  "canonicalPromotedLifecycleSummary": {
+    "ALL": {
+      "scheduled": 39,
+      "pendingSchedule": 3,
+      "realized": 31,
+      "pendingRealization": 13,
+      "questionnaireCompleted": 31,
+      "pendingQuestionnaire": 0,
+      "submitted": 30,
+      "pendingSubmission": 1,
+      "liquidationCandidates": 30,
+      "liquidationConfirmed": 0,
+      "paymentConfirmed": 0
+    },
+    "GT": {
+      "scheduled": 30,
+      "pendingSchedule": 2,
+      "realized": 25,
+      "pendingRealization": 9,
+      "questionnaireCompleted": 25,
+      "pendingQuestionnaire": 0,
+      "submitted": 24,
+      "pendingSubmission": 1,
+      "liquidationCandidates": 24,
+      "liquidationConfirmed": 0,
+      "paymentConfirmed": 0
+    },
+    "HN": {
+      "scheduled": 9,
+      "pendingSchedule": 1,
+      "realized": 6,
+      "pendingRealization": 4,
+      "questionnaireCompleted": 6,
+      "pendingQuestionnaire": 0,
+      "submitted": 6,
+      "pendingSubmission": 0,
+      "liquidationCandidates": 6,
+      "liquidationConfirmed": 0,
+      "paymentConfirmed": 0
+    }
+  },
+  "rowLevelAdjudication": [
+    {
+      "hrRowId": "AGOSTO 26!13",
+      "country": "GT",
+      "sourceRow": 13,
+      "raw": {"realizedEvidence": true, "questionnaireEvidence": false, "submittedEvidence": true},
+      "canonical": {"realized": true, "questionnaireCompleted": true, "submitted": true},
+      "reviewReason": "submitted_without_questionnaire_date",
+      "effect": "Raw operational evidence has a questionnaire gap; lifecycle inference promotes questionnaire to complete because submit is present."
+    },
+    {
+      "hrRowId": "AGOSTO 26!16",
+      "country": "GT",
+      "sourceRow": 16,
+      "raw": {"realizedEvidence": true, "questionnaireEvidence": false, "submittedEvidence": true},
+      "canonical": {"realized": true, "questionnaireCompleted": true, "submitted": true},
+      "reviewReason": "submitted_without_questionnaire_date",
+      "effect": "Same semantic promotion."
+    },
+    {
+      "hrRowId": "AGOSTO 26!18",
+      "country": "GT",
+      "sourceRow": 18,
+      "raw": {"realizedEvidence": true, "questionnaireEvidence": false, "submittedEvidence": true},
+      "canonical": {"realized": true, "questionnaireCompleted": true, "submitted": true},
+      "reviewReason": "submitted_without_questionnaire_date",
+      "effect": "Same semantic promotion."
+    },
+    {
+      "hrRowId": "AGOSTO 26!22",
+      "country": "GT",
+      "sourceRow": 22,
+      "raw": {"realizedEvidence": true, "questionnaireEvidence": false, "submittedEvidence": true},
+      "canonical": {"realized": true, "questionnaireCompleted": true, "submitted": true},
+      "reviewReason": "submitted_without_questionnaire_date",
+      "effect": "Same semantic promotion."
+    },
+    {
+      "hrRowId": "AGOSTO 26!24",
+      "country": "GT",
+      "sourceRow": 24,
+      "raw": {"scheduledEvidence": false, "realizedEvidence": false, "questionnaireEvidence": false, "submittedEvidence": true},
+      "canonical": {"scheduled": false, "realized": true, "questionnaireCompleted": true, "submitted": true},
+      "reviewReason": "submitted_without_questionnaire_date",
+      "effect": "This single row explains GT raw realized 24 versus canonical 25 and GT raw pending-schedule 3 versus canonical 2."
+    },
+    {
+      "hrRowId": "AGOSTO 26!35",
+      "country": "GT",
+      "sourceRow": 35,
+      "raw": {"scheduledEvidence": false, "realizedEvidence": true, "questionnaireEvidence": true, "submittedEvidence": true},
+      "canonical": {"scheduled": false, "realized": true, "questionnaireCompleted": true, "submitted": true},
+      "reviewReason": null,
+      "effect": "Correctly excluded from pending schedule because there is explicit realized evidence despite no scheduled date."
+    }
+  ],
+  "rootCauseAdjudication": {
+    "providerFreshnessForObservedDelta": "NOT_ROOT_CAUSE_AT_THIS_REVISION",
+    "reason": "Forced fresh provider output reproduces the owner's raw HR counts exactly for realized GT24/HN6, pending-realization total14, questionnaire-pending GT4 and pending-schedule GT3/HN1 when raw evidence fields are used.",
+    "staleWhileRevalidateRisk": "REMAINS_MECHANISM_RISK_FOR_FUTURE_QA_BUT_DID_NOT_EXPLAIN_THIS_OBSERVED_DELTA",
+    "activeLoadedPath": [
+      "backend/runtime/hr-live-service/server.mjs",
+      "app/adapters/tya-live-source-inplace-apply.js",
+      "app/adapters/tya-cumulative-read-model-v2.js",
+      "app/adapters/tya-canonical-state-semantics-v2.js",
+      "app/adapters/tya-c6-domain-consistency-bridge.js",
+      "app/modules/dashboard.js"
+    ],
+    "supersededEarlierHypothesis": "app/core/tya-phase-a-source-safe-preview.js is not the active loaded live path in app/index-backend-dev.html; do not patch it as the primary F10 root cause.",
+    "liveBridgePreservesRawEvidence": true,
+    "semanticPromotionRoot": "The cumulative/domain canonical facets intentionally infer questionnaire from submitted and realized from questionnaire/submitted. Dashboard operational buckets then consume those promoted lifecycle facets, hiding raw HR evidence gaps.",
+    "liquidationFinding": "liquidationCandidate is not lost in the active provider/canonical path: fresh source has 30 submitted and 30 liquidationCandidates. The visible Dashboard bucket named Liquidadas counts liquidationConfirmed, so 0 is correct for confirmed liquidation but does not expose the 30 candidates. Candidate and confirmed liquidation must remain separate."
+  },
+  "requiredFix": {
+    "readModel": "Keep canonical lifecycle inference for lifecycle/history where needed, but add/use raw operational evidence facets for Dashboard operational evidence KPIs: pending schedule, realized, pending realization, questionnaire pending and pending submission.",
+    "finance": "Preserve liquidationCandidate, liquidationConfirmed and paymentConfirmed as separate states; never relabel candidates as confirmed liquidations in the data layer.",
+    "ui": "Expose liquidation candidates separately or rename/add the appropriate tile through the frontend lane; do not make the existing Liquidadas tile display candidates while retaining a misleading label.",
+    "qa": "Future live certification must force provider fresh=1 and compare UI evidence KPIs to the same raw evidence revision, while separately validating canonical lifecycle facets."
+  },
+  "safety": {
+    "providerWrites": 0,
+    "businessDataWrites": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "paymentWrites": 0,
+    "deploys": 0,
+    "rebuilds": 0,
+    "reimports": 0,
+    "merge": false,
+    "legacyDatabaseAccess": false
+  },
+  "classification": {
+    "reusableCXOrbia": "separate raw source-evidence facets from promoted lifecycle facets and certify both against one provider revision",
+    "exclusiveClient": "August 2026 TyA/Cinepolis row-level evidence and counts",
+    "claudePrototype": "separate visible liquidation-candidate KPI from confirmed liquidation; keep labels semantically honest",
+    "academia": "update only after approved visible KPI semantics are finalized",
+    "noClaudeImpact": false
+  },
+  "next": "F10_APPLY_FOCAL_OPERATIONAL_EVIDENCE_READ_MODEL_PATCH_SOURCE_ONLY_THEN_STATIC_BROWSER_GATE_BEFORE_ANY_DEPLOY"
+}
