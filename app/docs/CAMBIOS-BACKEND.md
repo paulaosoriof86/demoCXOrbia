@@ -1,54 +1,56 @@
 # CAMBIOS-BACKEND.md
 
 **Última actualización:** 2026-08-29  
-**Estado:** `F10_CONTINUOUS_POSTPRODUCTION_MONITORING__LIVE_ADMIN_SHOPPER_DYNAMIC_HR_QA`
+**Estado:** `F10_CONTINUOUS_POSTPRODUCTION_MONITORING__P1_HR_KPI_FRESHNESS_AND_CANONICAL_BRIDGE_OPEN`
 
-## Estado canónico
+## Estado canónico preservado
 
-F8 está `CLOSED_PASS_ZERO_RESIDUE`: backup/export + restore temporal aislado + 9/9 colecciones + cleanup + reconciliación del release exacto PASS; IAM temporal revocado y verificado; readiness `95 → 98`.
+F8 está `CLOSED_PASS_ZERO_RESIDUE`; F8.5 está `CLOSED_PASS_CANONICAL_APPROVED_LINEAGE_MATCHES_FROZEN_SOURCE_AND_LIVE_HOSTING_RELEASE`; F9 está `POSTPROD_ACCEPTED_ACCELERATED_SAME_DAY`. Phase A=`100/100` y Production Real Readiness histórico=`100/100` permanecen como estado terminal del release certificado. F10 está activo y un incidente P1 no reescribe retroactivamente F9.
 
-F8.5 está `CLOSED_PASS_CANONICAL_APPROVED_LINEAGE_MATCHES_FROZEN_SOURCE_AND_LIVE_HOSTING_RELEASE`; P0 de linaje=0 y no hubo cambio frontend, provider write ni deploy.
+Release preservado: `CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01`, functional source `f9802fdd498934a8e7729fa5c7d18341bec1cd71`. No deploy/rebuild/reimport/merge/provider write se ejecutó en este bloque.
 
-F9 está `POSTPROD_ACCEPTED_ACCELERATED_SAME_DAY`. El master plan define la ventana de 24 horas como **objetivo**, no como mínimo obligatorio. La regla `not-before` añadida al abrir F9 fue una sobre-restricción documental y quedó corregida sin cambiar el master plan.
+## F10 — CORRECCIÓN de la conclusión de prueba viva del 29/08/2026
 
-Con instrucción explícita vigente de Paula para cerrar F9 hoy, `PRODUCTION_REAL_READINESS` avanzó `98 → 100` usando la evidencia ya certificada del release: F5 lifecycle PASS/residuo cero; F7 integral readiness sin P0; F8 backup/restore/reconciliation PASS; IAM zero-residue; bounded-load F8 24/24 GET, 5xx=0, contract failures=0, p95=181.87 ms; F8.5 source/release/lineage PASS.
+El run `33257681796`, artefacto `9716340234`, **no puede seguir tratándose como demostración de frescura exacta de la HR**. El workflow global terminó `failure/HOLD`; Admin y Shopper produjeron evidencia de autenticación, navegación y coherencia interna del snapshot cargado, mientras Cliente quedó en timeout.
 
-No se afirma que hayan transcurrido 24 horas. El monitoreo continuo de Auth, HR, sync, shoppers, visitas, evidencias, liquidaciones/pagos, errores, performance, drift y alertas pasa a F10.
+La prueba Admin/Shopper comparó los KPIs del Dashboard con `periodOperationalSummary` procedente del **mismo snapshot cargado en la aplicación**. Por tanto demostró auto-consistencia del read model, pero no una reconciliación independiente y forzada contra Google Sheets en ese mismo instante. La conclusión anterior `HR dinámica actual confirmada` queda degradada a `INTERNAL_SNAPSHOT_SELF_CONSISTENCY_ONLY`.
 
-Evidencia terminal: `app/docs/evidence/RC15-F9-POSTPRODUCTION-ACCEPTANCE-LATEST.json`.
+Las capturas operativas de la HR aportadas por Paula el 29/08 muestran discrepancias actuales respecto de ese snapshot: plataforma `Sin agendar=3 (GT2/HN1)` frente a HR cruda `GT4/HN1`, con al menos una fila GT sin agenda pero ya realizada que debe excluirse semánticamente; plataforma `Realizadas=31 (GT25/HN6)` frente a HR `GT24/HN6`; plataforma `Pendientes realizar=13` y HR reportada con una pendiente adicional; plataforma `Cuestionario pendiente=0` frente a HR `GT4`; plataforma `Liquidadas=0` aunque el mismo summary canónico del snapshot tenía `submitted=30` y `liquidationCandidates=30`.
 
-Continuity overlay: `backend/config/cxorbia-phase-a-continuity-lock-postprod-overlay-v1.json`.
+## Causa raíz demostrada hasta ahora
 
-Detalle: `app/docs/CAMBIOS-BACKEND-ADDENDUM-F9-ACCELERATED-POSTPRODUCTION-ACCEPTANCE-20260828.md`.
+1. **QA mechanism — self parity, no independent freshness.** `tools/qa/tya-f10-live-admin-shopper-functional-readonly.mjs` lee `CX.data`, `CX_PROTECTED_AUTH_HR_AUTHORITY`, `periodOperationalSummary` y los buckets visuales de la misma instancia. No ejecuta una lectura forzada independiente de Google Sheets antes de comparar.
+2. **Runtime HR — stale-while-revalidate.** `backend/runtime/hr-live-service/server.mjs` mantiene cache (default ~55 s). Cuando el cache existe y vence, `buildSnapshot()` inicia refresh en background y devuelve el cache existente; solo `?fresh=1` espera la lectura nueva. Esto es válido como optimización general, pero no como prueba de frescura operacional de KPIs que cambian continuamente.
+3. **Bridge/KPI semántico — candidato de liquidación vs liquidación confirmada.** El motor canónico R20 define `liquidationCandidate=submitted` y separa `liquidationConfirmed`. `app/core/tya-phase-a-source-safe-preview.js` conserva `submittedAt` pero deriva `submit` de `v.submit` y no conserva todos los facets canónicos; `app/core/data.js` deriva `submitted` de `v.submit`/`estado=liquidada` y el bucket `liquidadas` exige `estado==='liquidada'`. Esto explica que el Dashboard pueda mostrar 0 aunque el read model canónico tenga candidatos submitidos.
 
-## F10 — prueba viva dinámica Admin + Shopper del 29/08/2026
+La causa exacta de los cuatro cuestionarios pendientes y del delta de una visita realizada todavía requiere lectura provider **forzada y fila a fila** para distinguir `snapshot stale` de `column/state mapping`. No se inventa esa adjudicación.
 
-Por instrucción expresa de Paula se ejecutó QA read-only contra el Hosting real `https://cxorbia-backend-dev.web.app` con Chromium/Playwright, sin usar el total histórico como sustituto de los KPIs actuales.
+Evidencia: `app/docs/evidence/RC15-F10-HR-KPI-FRESHNESS-INCIDENT-20260829-01.json`.
 
-La lectura viva más reciente (`run 33257681796`, artefacto `9716340234`, generado 2026-08-29T14:31:14.521Z) confirma: 15 periodos, 660 visitas, 216 shoppers, rango 2025-06→2026-08, septiembre 2026 aún ausente y cero llaves duplicadas. El periodo operativo actual es `2026-08` con 44 visitas: GT 34/HN 10; asignadas 44; sin asignar 0; sin agendar 3 (GT 2/HN 1); agendadas 10 (GT 7/HN 3); realizadas 31 (GT 25/HN 6); pendientes de realizar 13 (GT 9/HN 4); cuestionario pendiente 0; sin submitir 1 (GT 1/HN 0); liquidadas 0; fuera de rango 5 (GT 2/HN 3); postulaciones pendientes 0. El test compara los KPIs canónicos contra `periodOperationalSummary` y capturó la tira visual de KPIs del Dashboard.
+## Relectura de módulos aprobados
 
-Admin autenticó como `admin/staff` y navegó PASS en Dashboard, Fuente HR, Proyectos, Periodos, Histórico, Visitas, Postulaciones, Reservas, Shoppers, Finanzas, Liquidaciones, Documentos y Academia; las rutas críticas no presentaron excepción ni mensaje fatal. Shopper autenticó con principal exacto checkpoint-backed y token efímero, sin reset/cambio de contraseña, con 6 visitas propias, histórico completo, certificación visible y la misma autoridad HR viva (15/660/216, latest 2026-08). Navegó PASS en Mi Perfil, Mis Visitas, Visitas Disponibles, Reservas, Beneficios, Mis Reportes, Certificación, Academia y Documentos. El gate legal pendiente permaneció visible y no fue aceptado automáticamente.
+- Dashboard: `FAIL_CURRENT_HR_KPI_FRESHNESS_AND_SEMANTIC_RECONCILIATION`.
+- Fuente HR: renderiza, pero la frescura independiente no quedó demostrada por el run anterior.
+- Periodos/Historico: renderizan; además persiste P1 contextual `Cinépolis JUN`; reconciliación fresca pendiente.
+- Visitas/Postulaciones/Reservas/Shoppers: navegación PASS solamente; sus cifras/filas actuales deben reconciliarse contra lectura provider fresca.
+- Finanzas: conciliación de periodos financieros cerrados permanece separadamente certificada; no usarla para justificar el KPI operacional `Liquidadas` del Dashboard.
+- Liquidaciones: ruta renderiza, pero la semántica de candidato operacional está abierta.
+- Shopper: identidad/histórico con token checkpoint-backed PASS; estado actual de visitas depende de la misma reconciliación fresca. El login humano por contraseña no fue recertificado en este run.
+- Cliente: `HOLD_TIMEOUT` separado.
+- Academia/Documentos: render solamente; no constituyen evidencia de frescura HR.
 
-El resultado global del runner quedó `HOLD_F10_CLIENT_FOLLOWUP_ADMIN_SHOPPER_PASS` exclusivamente porque el follow-up Cliente del mismo arnés no alcanzó estado ready dentro de 90 s. Esto no invalida la evidencia Admin/Shopper ya terminal de este run; el Client queda separado para diagnóstico focal y no se clasifica todavía como defecto de producto.
+## Seguridad
 
-Cambios de mecanismo realizados, sin tocar módulos UI: `tools/qa/tya-f10-live-admin-shopper-functional-readonly.mjs` y el wrapper dinámico F10 fueron ajustados para usar el login canónico, principal Shopper exacto con token efímero, readiness apropiado por rol y para que el follow-up Cliente no impida completar Admin/Shopper. Requests one-shot F10 usados únicamente para esta prueba; sin replay automático.
-
-Hallazgo P1 para Claude/prototipo: `Periodos` e `Histórico` renderizan encabezado `Cinépolis JUN` aunque el periodo operativo vivo es agosto 2026. El código usa el nombre de programa (`data.programs().name`) en el encabezado, no el periodo actual. No implica que los datos HR estén congelados, pero el rótulo puede inducir a interpretar un mes obsoleto y debe revisarse desde frontend sin parche backend.
-
-## Seguridad del bloque
-
-F9 provider/business/Auth/Firestore/HR/Storage/Rules/payment writes=0; Make/Gemini=0; deploy/rebuild/reimport/merge=0; nueva rama/PR/workflow=0; legacy DB access=false.
-
-F10 live QA: dataWrites=false; providerWrites=false; Auth writes=0; password changes/resets=0; Firestore/HR/Storage/Rules/payment writes=0; Make/Gemini=0; deploy/merge/production=0; credenciales/tokens expuestos=false.
+Provider/business/Auth/Firestore/HR/Storage/Rules/payment writes=0; Make/Gemini=0; deploy/rebuild/reimport/merge=0; legacy DB access=false. No se alteró la HR ni se hardcodearon las cifras observadas.
 
 ## Clasificación
 
-- **Reusable CXOrbia:** prueba browser provider-backed contra Hosting real, KPIs de periodo actual derivados de HR viva, paridad Admin↔Shopper y separación de fallas del arnés por rol.
-- **Exclusivo cliente:** cifras actuales TyA/Cinépolis/GT-HN y ausencia esperada de septiembre porque aún no existe en HR.
-- **Claude/prototipo:** revisar rótulo de programa `Cinépolis JUN` en `app/modules/periodos.js` y `app/modules/historico.js`; no tocar desde backend.
-- **Academia:** sin cambio funcional por este bloque; navegación Admin/Shopper de Academia renderizó sin fatal.
-- **Sin impacto Claude:** cambios del arnés y requests F10; excepto el hallazgo visual anterior.
+- **Reusable CXOrbia:** toda prueba de HR dinámica debe usar lectura provider forzada/identificada por revision+sourceReadAt y reconciliar por estado/sección; self-parity no certifica frescura.
+- **Exclusivo cliente:** discrepancias actuales TyA/Cinépolis agosto 2026, que son evidencia temporal y nunca deben convertirse en valores fijos.
+- **Claude/prototipo:** revisar `app/core/tya-phase-a-source-safe-preview.js`, `app/core/data.js`, `app/modules/dashboard.js`, además de `app/modules/periodos.js` y `app/modules/historico.js`; no hardcodear agosto ni cifras.
+- **Academia:** sin cambio funcional por este incidente.
+- **Sin impacto Claude:** reparación del arnés F10 y prueba provider forzada si no altera UI.
 
 ## Siguiente bloque exacto
 
-`F10_CLIENT_FOLLOWUP_DIAGNOSIS_AND_CONTINUOUS_DYNAMIC_HR_SECTION_RECONCILIATION`, preservando release 100/100 y sin reabrir F5-F9.
+`F10_FORCE_FRESH_PROVIDER_ROW_LEVEL_RECONCILIATION_THEN_FIX_QA_FRESHNESS_AND_CANONICAL_KPI_BRIDGE_BEFORE_OWNER_VISUAL_ACCEPTANCE`.
