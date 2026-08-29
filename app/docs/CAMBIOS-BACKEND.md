@@ -41,10 +41,11 @@ Había fuentes llamadas `VIGENTE` y mirrors raíz que todavía dirigían a M2/M3
    - registra la reparación transversal y el trabajo F10 restante.
 7. `app/docs/RESUMEN-PARA-CLAUDE.md`
    - aclara que no corresponde reconstrucción frontend; solo fixes focales demostrados.
+8. mirrors raíz `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md` y `PENDIENTES-PROTOTIPO.md`
+   - sincronizados con sus canónicos de `app/docs` para que ya no compitan con estados antiguos.
 
 ### Pendiente dentro del mismo bloque
 
-- sincronizar `CAMBIOS-BACKEND.md`, `RESUMEN-PARA-CLAUDE.md` y `PENDIENTES-PROTOTIPO.md` de raíz con sus canónicos de `app/docs`;
 - reemplazar la lógica obsoleta de `tools/continuity/validate-cxorbia-state-sync.js` por un validador F10 que lea overlay/incidente y detecte mirrors stale;
 - ejecutar readback source-only de ese validador;
 - después pasar inmediatamente a provider `fresh=1` fila a fila.
