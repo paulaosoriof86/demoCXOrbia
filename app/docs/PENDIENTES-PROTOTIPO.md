@@ -1,46 +1,61 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-29  
-**Estado:** `PHASE_A_100__F10_P1_HR_KPI_FRESHNESS_AND_CANONICAL_BRIDGE_OPEN`
+**STATE_SYNC_EPOCH:** `CXORBIA-20260829-F10-HR-KPI-P1-CONTROL-PLANE-SYNC-11`  
+**Estado:** `PHASE_A_100__F10_CONTROL_PLANE_SYNCHRONIZED__P1_HR_KPI_FRESHNESS_AND_CANONICAL_BRIDGE_OPEN`
 
 ## Cerrado / no reprocesar
 
-M1, M2/F0, M3, F3, F4, F5, F6 y F8 permanecen terminales. F7 permanece `GO_WITH_WARNINGS_NO_P0`; F8.5 y F9 permanecen cerrados. Phase A=`100/100`; estado histórico de Production Real Readiness=`100/100`; release=`CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01`.
+M1, M2/F0, M3, F3, F4, F5, F6 y F8 permanecen terminales. F7=`GO_WITH_WARNINGS_NO_P0`; F8.5 y F9 permanecen cerrados. Release=`CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01`; Phase A=`100/100`; Production Real Readiness=`100/100` como estado histórico terminal del release aceptado.
 
-F10 abrió un incidente nuevo P1. No reabrir gates terminales por rutina ni restaurar V182 completo.
+No restaurar V182 completo, no crear nueva candidata/rama/PR/workflow por rutina y no reabrir gates terminales sin P0 reproducible.
 
-## P1 activo — HR/KPIs no certificados como frescos
+## Reparación transversal de continuidad — aplicada
 
-La conclusión anterior de que el run browser del 29/08 había confirmado los KPIs actuales de HR queda **supersedida**. El run `33257681796` probó autenticación/navegación Admin+Shopper y consistencia interna del snapshot, pero no una lectura independiente de Google Sheets en el mismo instante. El workflow global terminó HOLD/failure.
+Se corrigió la desincronización de control plane que podía devolver futuras sesiones a M2/M3/F8:
 
-Discrepancias temporales observadas por Paula en la HR viva frente al snapshot que mostraba la plataforma: `Sin agendar` plataforma GT2/HN1 vs HR cruda GT4/HN1 (una GT ya realizada debe excluirse del bucket); `Realizadas` plataforma GT25/HN6 vs HR GT24/HN6; `Pendientes realizar` falta una en plataforma; `Cuestionario pendiente` plataforma 0 vs HR GT4; `Liquidadas` plataforma 0 pese a existencia de visitas con realizada+cuestionario+submitido y a que el mismo summary canónico reportó `liquidationCandidates=30`.
+- `backend/config/cxorbia-phase-a-continuity-lock-postprod-overlay-v1.json` quedó como cursor efectivo F10 y registra el incidente activo;
+- `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`, `CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`, `EXECUTION-STATE-CXORBIA-TYA-VIGENTE.md` y `SOURCE-LOCK-CXORBIA-TYA-VIGENTE.md` quedaron alineados al mismo epoch;
+- cualquier mirror/validator que todavía indique M2/M3/F8 o readiness 69/95 como estado actual queda clasificado como stale y no puede dirigir trabajo nuevo;
+- F8.5 sigue siendo la autoridad de linaje/versiones aprobadas. El defecto actual no demuestra una versión vieja servida.
 
-Estas cifras son **evidencia del momento**, no valores de negocio para copiar, persistir o hardcodear.
+Pendiente de cerrar en este bloque: sincronizar mirrors raíz y sustituir el validador genérico obsoleto por validación del overlay/incidente actual.
+
+## P1 activo — HR/KPIs
+
+Incidente: `F10-HR-KPI-FRESHNESS-20260829-01`.
+
+Estado: `OPEN_P1_PRODUCT_READ_MODEL_AND_QA_MECHANISM`; P0 de producto=`false`.
+
+El run `33257681796` probó autenticación/navegación Admin+Shopper y consistencia interna del snapshot, pero no una lectura independiente de Google Sheets en el mismo instante. Self-parity no vuelve a aceptarse como certificado de frescura.
+
+Discrepancias observadas respecto del snapshot de la app siguen siendo evidencia temporal, nunca seeds ni constantes: realizadas, pendientes de realizar, cuestionario pendiente y candidato a liquidación requieren reconciliación fila a fila.
 
 ## Pendientes exactos F10
 
-1. Ejecutar reconciliación provider read-only **forzada** (`fresh`) y fila a fila contra Google Sheets, capturando revision/sourceReadAt y los estados por GT/HN.
-2. Corregir el mecanismo de QA para comparar la UI contra una autoridad provider independiente del snapshot de CX.data; prohibir self-parity como certificado de frescura.
-3. Adjudicar el delta actual de `Realizadas`, `Pendientes realizar` y `Cuestionario pendiente` entre cache obsoleto y mapping de columnas/estados.
-4. Corregir la pérdida semántica entre motor canónico R20 y CX.data: preservar submitted/canonicalFacets/liquidationCandidate y separar candidato a liquidación de liquidación/pago financiero confirmado.
-5. Revalidar Dashboard, HR Source, Periodos, Histórico, Visitas, Postulaciones, Reservas/Asignación, Shoppers, Finanzas/Liquidaciones y superficies Shopper contra la **misma revisión fresca**.
-6. Revalidar el login humano Shopper por credencial existente; el run actual usó token checkpoint-backed para la prueba funcional.
-7. Diagnosticar separadamente Cliente, que continúa en timeout/HOLD.
-8. Mantener el P1 visual `Cinépolis JUN` en Periodos/Histórico para corrección frontend focal, sin hardcodear meses.
-9. Después de correcciones aprobadas, actualizar Academia/manuales solo si cambian definiciones visibles de estados/KPIs.
+1. Finalizar sincronización de mirrors/validator del control plane y ejecutar readback source-only.
+2. Ejecutar provider read-only **forzado** (`fresh=1`) capturando `revision` y `sourceReadAt`.
+3. Reconciliar agosto GT/HN fila a fila y calcular los estados canónicos fuera de `CX.data`.
+4. Comparar Dashboard y cada módulo dependiente contra esa misma revisión, no contra su propio snapshot.
+5. Adjudicar las diferencias entre cache obsoleto y mapping/semántica.
+6. Corregir focalmente el QA para impedir self-parity falsa.
+7. Corregir el bridge canónico para preservar `submitted`, `canonicalFacets` y `liquidationCandidate`, manteniendo separados candidato, liquidación confirmada y pago confirmado.
+8. Revalidar Dashboard, HR Source, Periodos, Histórico, Visitas, Postulaciones, Reservas/Asignación, Shoppers, Finanzas/Liquidaciones y superficies Shopper contra una sola revisión fresca.
+9. Recertificar login humano Shopper por credencial existente.
+10. Resolver Cliente/Cliente 360 como frente separado; no mezclar su HOLD con HR.
+11. Mantener P1 `Cinépolis JUN` para corrección frontend focal sin hardcodear meses.
+12. Actualizar Academia/manuales solo si cambia una definición visible de estado/KPI.
 
 ## Frontend / Claude
 
-Archivos focales: `app/core/tya-phase-a-source-safe-preview.js`, `app/core/data.js`, `app/modules/dashboard.js`, `app/modules/periodos.js`, `app/modules/historico.js`. No hay autorización para parchearlos desde backend; documentar/aplicar únicamente por el carril frontend vigente. No nueva candidata por rutina.
+Archivos focales ya demostrados: `app/core/tya-phase-a-source-safe-preview.js`, `app/core/data.js`, `app/modules/dashboard.js`, `app/modules/periodos.js`, `app/modules/historico.js`. No reescribir el frontend completo ni tocar módulos no involucrados.
 
 ## Producción operativa
 
-No existe P0 destructivo demostrado y no se altera el release congelado. Sin embargo, **no considerar confiables para operación de septiembre los KPIs dependientes de HR hasta cerrar esta reconciliación P1**. La plataforma puede seguir accesible; lo que queda retenido es la aceptación de exactitud operacional dinámica en esos módulos.
+No hay P0 destructivo demostrado y el release congelado se preserva. La plataforma puede seguir accesible, pero la aceptación de exactitud operacional dinámica de los KPIs HR permanece retenida hasta cerrar la reconciliación fresca.
 
 ## Seguridad
 
-Provider/data/Auth/Firestore/HR/Storage/Rules/payment writes=0; Make/Gemini=0; deploy/rebuild/reimport/merge=0. Legacy DB sigue prohibida.
-
-Evidencia: `app/docs/evidence/RC15-F10-HR-KPI-FRESHNESS-INCIDENT-20260829-01.json`.
+Provider/data/Auth/Firestore/HR/Storage/Rules/payment writes=0; Make/Gemini=0; deploy/rebuild/reimport/merge=0; legacy DB prohibida.
 
 **NEXT:** `F10_FORCE_FRESH_PROVIDER_ROW_LEVEL_RECONCILIATION_THEN_FIX_QA_FRESHNESS_AND_CANONICAL_KPI_BRIDGE_BEFORE_OWNER_VISUAL_ACCEPTANCE`.
