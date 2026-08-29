@@ -1,19 +1,20 @@
 {
   "schemaVersion": "cxorbia.phase-a.continuity-lock.postprod-overlay.v1",
-  "overlayId": "CXORBIA-20260828-F9-POSTPROD-ACCEPTED-OVERLAY-01",
+  "overlayId": "CXORBIA-20260829-F10-CONTROL-PLANE-SYNC-OVERLAY-02",
   "baseLock": "backend/config/cxorbia-phase-a-continuity-lock.json",
   "baseLockBlobSha": "0b3e861f50a4fabb2b284c4f852d35cad39bb51b",
-  "purpose": "Non-destructive terminal Phase A/postproduction state overlay. Historical detail remains in the base lock; this overlay supersedes only current cursor/progress/closed-control fields that became stale after F8/F8.5/F9.",
+  "purpose": "Non-destructive terminal Phase A/postproduction state overlay. Historical detail remains in the base lock; this overlay is the current cursor authority for F8/F8.5/F9/F10 and active incidents.",
   "effectiveState": {
-    "syncEpoch": "CXORBIA-20260828-F9-POSTPROD-ACCEPTED-10",
+    "syncEpoch": "CXORBIA-20260829-F10-HR-KPI-P1-CONTROL-PLANE-SYNC-11",
     "phaseA": 100,
     "productionRealReadiness": 100,
+    "productionRealReadinessMeaning": "historical terminal readiness of the accepted frozen release; not a claim that every F10 dynamic KPI is currently certified fresh",
     "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
     "masterPlanVersion": "1.1.0",
     "masterPlanStatus": "FROZEN",
     "currentMasterPhase": "F10_PERMANENT_OPERATING_MODEL",
-    "currentMasterStep": "F10_CONTINUOUS_POSTPRODUCTION_MONITORING",
-    "next": "F10_PERMANENT_OPERATING_MODEL_AND_CONTINUOUS_POSTPRODUCTION_MONITORING"
+    "currentMasterStep": "F10_HR_KPI_FRESHNESS_AND_CONTROL_PLANE_RECONCILIATION",
+    "next": "F10_FORCE_FRESH_PROVIDER_ROW_LEVEL_RECONCILIATION_THEN_FIX_QA_FRESHNESS_AND_CANONICAL_KPI_BRIDGE_BEFORE_OWNER_VISUAL_ACCEPTANCE"
   },
   "closedControls": {
     "m1": "CLOSED_PASS",
@@ -39,14 +40,27 @@
     "imageDigest": "sha256:eca8b831c24ef81f09e4addda721d0af89a24c5a0d753aa507989988458227ec",
     "hostingRelease": "sites/cxorbia-backend-dev/releases/1787796646738000",
     "hostingVersion": "sites/cxorbia-backend-dev/versions/afe292cfcbbc6005",
-    "phaseAReleaseFrozen": true
+    "phaseAReleaseFrozen": true,
+    "approvedModuleLineagePreserved": true
+  },
+  "activeIncident": {
+    "incidentId": "F10-HR-KPI-FRESHNESS-20260829-01",
+    "severity": "P1",
+    "status": "OPEN_P1_PRODUCT_READ_MODEL_AND_QA_MECHANISM",
+    "productP0Proven": false,
+    "releaseHistoryReopened": false,
+    "ownerPlane": ["QA_MECHANISM", "READ_MODEL_RUNTIME", "PRODUCT_DATA_BRIDGE"],
+    "evidence": "app/docs/evidence/RC15-F10-HR-KPI-FRESHNESS-INCIDENT-20260829-01.json",
+    "freshnessCertification": "NOT_YET_PROVEN_INDEPENDENTLY",
+    "ownerVisualAcceptance": "HOLD_UNTIL_FRESH_PROVIDER_ROW_LEVEL_RECONCILIATION"
   },
   "terminalEvidence": {
     "f5": "app/docs/evidence/RC15-F5-LIVE-SYNTHETIC-ACCEPTANCE-LATEST.json",
     "f7": "app/docs/evidence/RC15-F7-INTEGRAL-READINESS-LATEST.json",
     "f8": "app/docs/evidence/RC15-F8-BACKUP-RESTORE-CUTOVER-EXECUTION-LATEST.json",
     "f8_5": "app/docs/evidence/RC15-F8-5-CANONICAL-MODULE-LINEAGE-CERTIFICATION-LATEST.json",
-    "f9": "app/docs/evidence/RC15-F9-POSTPRODUCTION-ACCEPTANCE-LATEST.json"
+    "f9": "app/docs/evidence/RC15-F9-POSTPRODUCTION-ACCEPTANCE-LATEST.json",
+    "f10Incident": "app/docs/evidence/RC15-F10-HR-KPI-FRESHNESS-INCIDENT-20260829-01.json"
   },
   "f9Acceptance": {
     "decision": "POSTPROD_ACCEPTED",
@@ -58,15 +72,19 @@
     "readinessAfter": 100
   },
   "safety": {
-    "f9ProviderWrites": 0,
-    "f9BusinessDataWrites": 0,
-    "f9AuthWrites": 0,
-    "f9HrWrites": 0,
-    "f9PaymentWrites": 0,
-    "f9Deploys": 0,
-    "f9Rebuilds": 0,
-    "f9Reimports": 0,
-    "f9Merge": false,
+    "providerWrites": 0,
+    "businessDataWrites": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "storageWrites": 0,
+    "rulesWrites": 0,
+    "paymentWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "deploys": 0,
+    "rebuilds": 0,
+    "reimports": 0,
+    "merge": false,
     "newBranch": false,
     "newPullRequest": false,
     "newWorkflow": false,
@@ -77,6 +95,8 @@
     "Do not rebuild/redeploy/reimport the frozen release without a new proven incident gate and explicit authorization.",
     "Do not connect or copy the legacy database.",
     "Make, Gemini and payment mutations remain gated.",
-    "F10 monitoring does not retroactively reopen terminal Phase A/F5-F9 gates without reproducible product P0 evidence."
+    "F10 does not retroactively reopen terminal F5-F9 without reproducible product P0 evidence.",
+    "Do not certify live HR freshness from CX.data self-parity; use an independent forced provider read with revision/sourceReadAt.",
+    "Do not request owner visual acceptance until the active F10 HR/KPI incident is reconciled against one fresh provider revision."
   ]
 }
