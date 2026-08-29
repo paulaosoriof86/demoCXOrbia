@@ -11,6 +11,7 @@ const CONTRACT_PATH = 'backend/contracts/cxorbia-controlled-runners-v1.json';
 const REPORT_DIR = path.join(ROOT, '.tmp/cxorbia-readonly-post-gates-runner');
 const REPORT_JSON = path.join(REPORT_DIR, 'report.json');
 const REPORT_MD = path.join(REPORT_DIR, 'report.md');
+const F10_FRESH_DIAGNOSTIC_MODE = 'F10_INDEPENDENT_PROVIDER_LIVE_REBUILD_AND_ROW_IDENTITY_RECONCILIATION';
 const PROFILE_ALIASES = {
   'v174-r20-m1-corte2a': 'V174_R20_M1_CORTE2A',
   'corte3-financial-reconciliation-r20': 'CORTE3_FINANCIAL_RECONCILIATION_R20',
@@ -33,8 +34,9 @@ const EXPECTED_SAFE_STATE = {
   hrWrites: false
 };
 
+let activeRequest = null;
 const report = {
-  schemaVersion: '1.4.0',
+  schemaVersion: '1.5.0',
   runner: 'CXORBIA_READONLY_POST_GATES_RUNNER',
   generatedAt: new Date().toISOString(),
   status: 'HOLD_NOT_RUN',
@@ -251,41 +253,76 @@ async function executeProfile(profile, definition) {
       dataWrites: false
     };
   } else if (profile === 'CORTE3_FINANCIAL_RECONCILIATION_R20') {
-    const scripts = [
-      'tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs',
-      'tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs',
-      'tools/hr-source/tya-stabilize-source-safe-visit-ids-r20.mjs',
-      'tools/qa/tya-stable-visit-id-r20-gate.mjs',
-      'tools/qa/tya-source-safe-stable-visit-payload-r20-gate.mjs',
-      'tools/migration/tya-reconcile-financial-live-hr-r14c.mjs',
-      'tools/qa/tya-corte3-financial-reconciliation-r20-gate.mjs'
-    ];
-    scripts.forEach(ensureNodeFile);
-    run('node', ['tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs', '--allow-https', '--out', '.tmp/tya-corte3-r20-profile']);
-    run('node', ['tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs', '--in', '.tmp/tya-corte3-r20-profile/tya-hr-source-safe-periods.js', '--out', '.tmp/tya-corte3-runtime-inventory-filter-r20', '--copy', 'app/data/tya-hr-source-safe-periods.js']);
-    run('node', ['tools/hr-source/tya-stabilize-source-safe-visit-ids-r20.mjs', '--in', 'app/data/tya-hr-source-safe-periods.js', '--out', '.tmp/tya-corte3-stable-visit-id-r20']);
-    run('node', ['tools/qa/tya-stable-visit-id-r20-gate.mjs', '--payload', 'app/data/tya-hr-source-safe-periods.js', '--out', '.tmp/tya-corte3-stable-visit-id-gate-r20']);
-    run('node', ['tools/qa/tya-source-safe-stable-visit-payload-r20-gate.mjs', '--payload', 'app/data/tya-hr-source-safe-periods.js', '--out', '.tmp/tya-corte3-stable-payload-gate-r20']);
-    run('node', ['tools/migration/tya-reconcile-financial-live-hr-r14c.mjs', '--hr', 'app/data/tya-hr-source-safe-periods.js', '--out', '.tmp/phase-a-financial-r14c-live-hr']);
-    run('node', ['tools/qa/tya-corte3-financial-reconciliation-r20-gate.mjs', '--current', '.tmp/phase-a-financial-r14c-live-hr', '--review', definition.reviewContract, '--out', '.tmp/tya-corte3-financial-reconciliation-r20']);
-    evidenceFiles.push(
-      '.tmp/tya-corte3-r20-profile/summary.json',
-      '.tmp/tya-corte3-runtime-inventory-filter-r20/tya-hr-source-safe-periods.meta.json',
-      '.tmp/tya-corte3-stable-visit-id-r20/summary.json',
-      '.tmp/tya-corte3-stable-visit-id-gate-r20/report.json',
-      '.tmp/tya-corte3-stable-payload-gate-r20/report.json',
-      '.tmp/phase-a-financial-r14c-live-hr/financial-live-hr-reconciliation-r14c.source-safe.json',
-      '.tmp/tya-corte3-financial-reconciliation-r20/report.json'
-    );
-    summary = readOptionalJson('.tmp/tya-corte3-financial-reconciliation-r20/report.json')?.summary || {
-      status: 'PASS_READONLY_POST_GATES',
-      profile,
-      browserExecuted: false,
-      providerReads: true,
-      stableVisitIdentityVersion: report.stableVisitIdentity?.version || null,
-      providerWrites: false,
-      dataWrites: false
-    };
+    if (activeRequest?.diagnosticMode === F10_FRESH_DIAGNOSTIC_MODE) {
+      const gate = 'tools/qa/tya-f10-fresh-hr-row-level-reconciliation.mjs';
+      const evidenceDir = '.tmp/cxorbia-readonly-post-gates-runner/f10-fresh-hr-row-level';
+      ensureNodeFile(gate);
+      run('node', [gate, '--request', REQUEST_PATH, '--out', evidenceDir]);
+      const gateReport = readOptionalJson(`${evidenceDir}/report.json`);
+      check(gateReport?.decision === 'PASS_F10_FRESH_HR_ROW_LEVEL_RECONCILIATION', 'f10_fresh_hr_gate_pass');
+      check(gateReport?.ok === true, 'f10_fresh_hr_gate_ok');
+      check(gateReport?.provider?.cacheOrigin === 'runtime_refresh', 'f10_fresh_provider_runtime_refresh');
+      check(Boolean(gateReport?.provider?.revision && gateReport?.provider?.sourceReadAt), 'f10_fresh_revision_and_source_read_at');
+      check(Number(gateReport?.independentCanonicalComparison?.mismatchCount || 0) === 0, 'f10_provider_facets_match_independent_r20');
+      evidenceFiles.push(`${evidenceDir}/report.json`, `${evidenceDir}/summary.md`);
+      summary = {
+        status: 'PASS_READONLY_POST_GATES',
+        profile,
+        diagnosticMode: F10_FRESH_DIAGNOSTIC_MODE,
+        browserExecuted: false,
+        providerReads: true,
+        providerWrites: false,
+        dataWrites: false,
+        repositoryWrites: false,
+        periodFocus: gateReport?.focus?.periodKey || activeRequest?.periodFocus || null,
+        revision: gateReport?.provider?.revision || null,
+        sourceReadAt: gateReport?.provider?.sourceReadAt || null,
+        cacheOrigin: gateReport?.provider?.cacheOrigin || null,
+        periodCount: gateReport?.inventory?.periodCount ?? null,
+        visitCount: gateReport?.inventory?.visitCount ?? null,
+        latestPeriodKey: gateReport?.inventory?.latestPeriodKey || null,
+        focusDigestSha256: gateReport?.focus?.digestSha256 || null,
+        focusSummary: gateReport?.focus?.summary || null,
+        focusByCountry: gateReport?.focus?.byCountry || null,
+        canonicalFacetMismatchCount: gateReport?.independentCanonicalComparison?.mismatchCount ?? null
+      };
+    } else {
+      const scripts = [
+        'tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs',
+        'tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs',
+        'tools/hr-source/tya-stabilize-source-safe-visit-ids-r20.mjs',
+        'tools/qa/tya-stable-visit-id-r20-gate.mjs',
+        'tools/qa/tya-source-safe-stable-visit-payload-r20-gate.mjs',
+        'tools/migration/tya-reconcile-financial-live-hr-r14c.mjs',
+        'tools/qa/tya-corte3-financial-reconciliation-r20-gate.mjs'
+      ];
+      scripts.forEach(ensureNodeFile);
+      run('node', ['tools/hr-source/tya-build-live-hr-source-safe-r20-inventory.mjs', '--allow-https', '--out', '.tmp/tya-corte3-r20-profile']);
+      run('node', ['tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs', '--in', '.tmp/tya-corte3-r20-profile/tya-hr-source-safe-periods.js', '--out', '.tmp/tya-corte3-runtime-inventory-filter-r20', '--copy', 'app/data/tya-hr-source-safe-periods.js']);
+      run('node', ['tools/hr-source/tya-stabilize-source-safe-visit-ids-r20.mjs', '--in', 'app/data/tya-hr-source-safe-periods.js', '--out', '.tmp/tya-corte3-stable-visit-id-r20']);
+      run('node', ['tools/qa/tya-stable-visit-id-r20-gate.mjs', '--payload', 'app/data/tya-hr-source-safe-periods.js', '--out', '.tmp/tya-corte3-stable-visit-id-gate-r20']);
+      run('node', ['tools/qa/tya-source-safe-stable-visit-payload-r20-gate.mjs', '--payload', 'app/data/tya-hr-source-safe-periods.js', '--out', '.tmp/tya-corte3-stable-payload-gate-r20']);
+      run('node', ['tools/migration/tya-reconcile-financial-live-hr-r14c.mjs', '--hr', 'app/data/tya-hr-source-safe-periods.js', '--out', '.tmp/phase-a-financial-r14c-live-hr']);
+      run('node', ['tools/qa/tya-corte3-financial-reconciliation-r20-gate.mjs', '--current', '.tmp/phase-a-financial-r14c-live-hr', '--review', definition.reviewContract, '--out', '.tmp/tya-corte3-financial-reconciliation-r20']);
+      evidenceFiles.push(
+        '.tmp/tya-corte3-r20-profile/summary.json',
+        '.tmp/tya-corte3-runtime-inventory-filter-r20/tya-hr-source-safe-periods.meta.json',
+        '.tmp/tya-corte3-stable-visit-id-r20/summary.json',
+        '.tmp/tya-corte3-stable-visit-id-gate-r20/report.json',
+        '.tmp/tya-corte3-stable-payload-gate-r20/report.json',
+        '.tmp/phase-a-financial-r14c-live-hr/financial-live-hr-reconciliation-r14c.source-safe.json',
+        '.tmp/tya-corte3-financial-reconciliation-r20/report.json'
+      );
+      summary = readOptionalJson('.tmp/tya-corte3-financial-reconciliation-r20/report.json')?.summary || {
+        status: 'PASS_READONLY_POST_GATES',
+        profile,
+        browserExecuted: false,
+        providerReads: true,
+        stableVisitIdentityVersion: report.stableVisitIdentity?.version || null,
+        providerWrites: false,
+        dataWrites: false
+      };
+    }
   } else if (profile === 'CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23') {
     const gate = 'tools/qa/tya-corte3-canonical-finance-ui-export-r23-gate.mjs';
     ensureNodeFile(gate);
@@ -373,6 +410,7 @@ async function executeProfile(profile, definition) {
 async function main() {
   const contract = readJson(CONTRACT_PATH);
   const request = readJson(REQUEST_PATH);
+  activeRequest = request;
   const repository = process.env.GITHUB_REPOSITORY || '';
   const branch = process.env.GITHUB_REF_NAME || '';
   report.requestCommitSha = run('git', ['rev-parse', 'HEAD']);
@@ -393,7 +431,9 @@ async function main() {
 
   const definition = contract.authorizedRunners?.readonlyPostGates?.profileDefinitions?.[report.profile] || null;
   check(definition && typeof definition === 'object', 'profile_definition_present', report.profile);
-  report.profileDefinition = definition;
+  report.profileDefinition = request.diagnosticMode === F10_FRESH_DIAGNOSTIC_MODE
+    ? {...definition, f10DiagnosticOverride:true, purpose:'Independent current provider fresh=1 row-level canonical reconciliation; no static inventory and no CX.data self-parity.'}
+    : definition;
   report.stableVisitIdentity = contract.authorizedRunners?.readonlyPostGates?.stableVisitIdentity || null;
   if (definition.stableVisitIdentityRequired === true) {
     check(report.stableVisitIdentity?.version === 'tya-stable-visit-id-r20-row-identity-v1', 'stable_visit_identity_version_exact');
@@ -402,8 +442,13 @@ async function main() {
     check(fs.existsSync(path.join(ROOT, report.stableVisitIdentity.contractGate)), 'stable_visit_identity_gate_present');
     check(fs.existsSync(path.join(ROOT, report.stableVisitIdentity.payloadGate)), 'stable_visit_identity_payload_gate_present');
   }
-  if (definition.runtimeInventoryFilterRequired === true) {
+  if (definition.runtimeInventoryFilterRequired === true && request.diagnosticMode !== F10_FRESH_DIAGNOSTIC_MODE) {
     check(fs.existsSync(path.join(ROOT, report.stableVisitIdentity.runtimeInventoryFilter)), 'runtime_inventory_filter_present');
+  }
+  if (request.diagnosticMode === F10_FRESH_DIAGNOSTIC_MODE) {
+    check(report.profile === 'CORTE3_FINANCIAL_RECONCILIATION_R20', 'f10_fresh_reuses_authorized_readonly_profile_only');
+    check(request.providerReads === true && request.providerWrites === false, 'f10_fresh_provider_readonly');
+    check(Boolean(request.periodFocus), 'f10_fresh_period_focus_present');
   }
 
   for (const [key, expected] of Object.entries(EXPECTED_SAFE_STATE)) {
