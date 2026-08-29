@@ -7,6 +7,7 @@ import admin from 'firebase-admin';
 
 const root=process.cwd();
 const sourcePath=path.join(root,'tools/qa/cxorbia-c6-existing-users-e2e-credentials-v6.mjs');
+const canonicalStaffScript=path.join(root,'tools/qa/cxorbia-c6-canonical-staff-admin-e2e-credential.mjs');
 const tempDir=path.join(root,'.tmp/phase-a-runtime-private');
 const tempPath=path.join(tempDir,'cxorbia-existing-users-e2e-dynamic.mjs');
 const exactStaffAction='C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF';
@@ -51,8 +52,27 @@ if(staffOnly){
   if(Number(result.liveVisits||0)<1||result.authWrites!==0||result.passwordChanges!==0||result.valuesExported!==false)throw new Error('DYNAMIC_CREDENTIAL_SELECTOR_UNSAFE_OR_EMPTY');
   result.frozenVisitCountAssumed=false;
 
+  const privatePath=String(process.env.CXORBIA_E2E_PRIVATE_CREDENTIALS||'.tmp/phase-a-runtime-private/private-e2e.json');
+  const canonicalAdminPath=path.join(tempDir,'f10-canonical-admin-private.json');
+  const canonicalAdminRun=spawnSync(process.execPath,[canonicalStaffScript],{
+    cwd:root,
+    env:{...process.env,CXORBIA_C6_ACTION:exactStaffAction,CXORBIA_E2E_PRIVATE_CREDENTIALS:canonicalAdminPath},
+    encoding:'utf8',maxBuffer:30*1024*1024
+  });
+  if(canonicalAdminRun.status!==0){if(canonicalAdminRun.stderr)process.stderr.write(canonicalAdminRun.stderr);throw new Error('F10_CANONICAL_ADMIN_SELECTOR_FAILED');}
+  const canonicalAdminLines=String(canonicalAdminRun.stdout||'').trim().split(/\r?\n/).filter(Boolean);
+  const canonicalAdminResult=JSON.parse(canonicalAdminLines.at(-1)||'{}');
+  if(canonicalAdminResult.decision!=='PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY'||canonicalAdminResult.staffRole!=='admin'||!fs.existsSync(canonicalAdminPath))throw new Error('F10_CANONICAL_ADMIN_NOT_EXACT');
+  const baseBundle=JSON.parse(fs.readFileSync(privatePath,'utf8'));
+  const adminBundle=JSON.parse(fs.readFileSync(canonicalAdminPath,'utf8'));
+  if(!adminBundle?.staff?.login||!adminBundle?.staff?.password||adminBundle?.staff?.role!=='admin')throw new Error('F10_CANONICAL_ADMIN_PRIVATE_INVALID');
+  baseBundle.staff=adminBundle.staff;
+  fs.writeFileSync(privatePath,JSON.stringify(baseBundle,null,2)+'\n',{encoding:'utf8',mode:0o600});
+  try{fs.rmSync(canonicalAdminPath,{force:true});}catch{}
+  result.staffRole='admin';
+  result.staffSelection='canonical_write_principal_B_readonly';
+
   if(result.credentialRecoveryRequired===true){
-    const privatePath=String(process.env.CXORBIA_E2E_PRIVATE_CREDENTIALS||'.tmp/phase-a-runtime-private/private-e2e.json');
     const credentialPath=String(process.env.GOOGLE_APPLICATION_CREDENTIALS||'');
     if(!credentialPath||!fs.existsSync(credentialPath))throw new Error('F10_CUSTOM_TOKEN_SERVICE_ACCOUNT_MISSING');
     if(!fs.existsSync(privatePath))throw new Error('F10_PRIVATE_E2E_BUNDLE_MISSING');
