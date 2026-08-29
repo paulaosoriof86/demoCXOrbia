@@ -2,11 +2,17 @@
 'use strict';
 const fs=require('fs');
 const path=require('path');
+const crypto=require('crypto');
 const root=path.resolve(__dirname,'..','..');
 const fail=m=>{console.error(`STATE_SYNC_GATE_BLOCKED: ${m}`);process.exit(2);};
 const ok=(cond,m)=>{if(!cond)fail(m);};
 const readJson=p=>{try{return JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));}catch(e){fail(`json_read:${p}:${e.message}`);}};
 const readText=p=>{try{return fs.readFileSync(path.join(root,p),'utf8');}catch(e){fail(`text_read:${p}:${e.message}`);}};
+const gitBlobSha=p=>{
+  let b;try{b=fs.readFileSync(path.join(root,p));}catch(e){fail(`blob_read:${p}:${e.message}`);}
+  const h=Buffer.from(`blob ${b.length}\0`,'utf8');
+  return crypto.createHash('sha1').update(Buffer.concat([h,b])).digest('hex');
+};
 
 const EXPECTED_EPOCH='CXORBIA-20260829-F10-HR-KPI-P1-CONTROL-PLANE-SYNC-11';
 const EXPECTED_MASTER='CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1';
@@ -23,6 +29,7 @@ const overlay=readJson('backend/config/cxorbia-phase-a-continuity-lock-postprod-
 const incident=readJson('app/docs/evidence/RC15-F10-HR-KPI-FRESHNESS-INCIDENT-20260829-01.json');
 const lineage=readJson('app/docs/evidence/RC15-F8-5-CANONICAL-MODULE-LINEAGE-CERTIFICATION-LATEST.json');
 const operating=readJson('backend/contracts/cxorbia-f10-permanent-operating-model-v1.json');
+const matrix=readJson('backend/config/cxorbia-f10-approved-module-authority-matrix-v1.json');
 
 ok(base.masterPlan?.id===EXPECTED_MASTER,'base_master_plan_id');
 ok(base.masterPlan?.status==='FROZEN','base_master_plan_not_frozen');
@@ -76,6 +83,29 @@ ok(operating.safeState?.authWrites===0,'operating_auth_writes');
 ok(operating.safeState?.hrWrites===0,'operating_hr_writes');
 ok(operating.safeState?.paymentWrites===0,'operating_payment_writes');
 
+ok(matrix.matrixId==='CXORBIA-F10-APPROVED-MODULE-AUTHORITY-20260829-01','module_matrix_id');
+ok(matrix.frozenFunctionalSourceSha===EXPECTED_FUNCTIONAL,'module_matrix_functional_source');
+ok(matrix.releaseId===EXPECTED_RELEASE,'module_matrix_release');
+ok(matrix.currentSourceComparison?.appModulesChangedAfterFreeze===0,'module_matrix_declared_modules_drift');
+ok(matrix.currentSourceComparison?.appCoreChangedAfterFreeze===0,'module_matrix_declared_core_drift');
+const moduleSets=[
+  ['phaseAApprovedLoadedModules',matrix.phaseAApprovedLoadedModules||[],'expectedGitBlob'],
+  ['loadedFrozenSupportModulesWithoutIndividualPhaseACriticalAuthorityClaim',matrix.loadedFrozenSupportModulesWithoutIndividualPhaseACriticalAuthorityClaim||[],'expectedGitBlob'],
+  ['postPhaseALoadedNotCertifiedAsPhaseAAuthority',matrix.postPhaseALoadedNotCertifiedAsPhaseAAuthority||[],'expectedGitBlob'],
+  ['f10OpenBridgeFiles',matrix.f10OpenBridgeFiles||[],'expectedFrozenAndCurrentGitBlob']
+];
+let moduleBlobChecks=0;
+for(const [setName,items,key] of moduleSets){
+  ok(items.length>0,`module_matrix_empty_set:${setName}`);
+  for(const item of items){
+    const expected=item[key];
+    ok(typeof expected==='string'&&/^[0-9a-f]{40}$/.test(expected),`module_matrix_bad_expected_blob:${item.path}`);
+    const actual=gitBlobSha(item.path);
+    ok(actual===expected,`module_blob_drift:${item.path}:expected=${expected}:actual=${actual}`);
+    moduleBlobChecks++;
+  }
+}
+
 const canonicalDocs=[
   'app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md',
   'app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md',
@@ -107,6 +137,7 @@ console.log(`phase=${EXPECTED_PHASE}`);
 console.log(`step=${EXPECTED_STEP}`);
 console.log(`incident=${EXPECTED_INCIDENT}:${EXPECTED_INCIDENT_STATUS}`);
 console.log(`release=${EXPECTED_RELEASE}`);
-console.log('moduleLineage=F8_5_PASS_NO_POST_FREEZE_FRONTEND_DRIFT');
+console.log(`moduleBlobChecks=${moduleBlobChecks}`);
+console.log('moduleLineage=F8_5_PASS_EXACT_MATRIX_BLOBS');
 console.log('rootMirrors=EXACT');
 console.log(`next=${EXPECTED_NEXT}`);
