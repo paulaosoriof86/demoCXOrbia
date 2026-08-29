@@ -1,0 +1,119 @@
+{
+  "schemaVersion": "cxorbia.f10.live-dynamic-hr-admin-shopper-evidence.v1",
+  "generatedAt": "2026-08-29T14:31:14.521Z",
+  "classification": "F10_READONLY_CONTINUOUS_POSTPRODUCTION_MONITORING",
+  "releaseState": {
+    "phaseA": 100,
+    "productionRealReadiness": 100,
+    "frozenRelease": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
+    "deployedProductSourceHeadSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71"
+  },
+  "execution": {
+    "workflowRunId": 33257681796,
+    "artifactId": 9716340234,
+    "requestId": "f10-live-admin-shopper-current-hr-20260829-05",
+    "requestCommitSha": "ea5d0c88573c50b3847d7b6744bf32c19f184d01",
+    "targetHarnessHeadSha": "a8ec16232830ec6828655da99de71d1f8d8b3b01",
+    "hostingRoot": "https://cxorbia-backend-dev.web.app",
+    "qaMode": "real_hosting_playwright_admin_and_checkpoint_backed_shopper"
+  },
+  "liveHr": {
+    "periods": 15,
+    "visits": 660,
+    "shoppers": 216,
+    "firstPeriod": "2025-06",
+    "latestPeriod": "2026-08",
+    "periodKeys": ["2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07","2026-08"],
+    "september2026Present": false,
+    "revisionDynamic": true,
+    "duplicateVisitKeys": 0,
+    "duplicateShopperIds": 0
+  },
+  "currentPeriod": {
+    "periodKey": "2026-08",
+    "total": {"all":44,"GT":34,"HN":10},
+    "assigned": {"all":44,"GT":34,"HN":10},
+    "unassigned": {"all":0,"GT":0,"HN":0},
+    "pendingScheduleDashboard": {"all":3,"GT":2,"HN":1},
+    "scheduledDashboard": {"all":10,"GT":7,"HN":3},
+    "realized": {"all":31,"GT":25,"HN":6},
+    "pendingRealization": {"all":13,"GT":9,"HN":4},
+    "pendingQuestionnaire": {"all":0,"GT":0,"HN":0},
+    "pendingSubmissionDashboard": {"all":1,"GT":1,"HN":0},
+    "liquidatedDashboard": {"all":0,"GT":0,"HN":0},
+    "outOfRange": {"all":5,"GT":2,"HN":3},
+    "postulationsPending": 0,
+    "operationalSummary": {
+      "scheduled": 39,
+      "questionnaireCompleted": 31,
+      "submitted": 30,
+      "liquidationCandidates": 30,
+      "paymentConfirmed": 0
+    },
+    "note": "Dashboard buckets and operational-summary lifecycle fields are intentionally recorded separately because they are not identical concepts. The browser assertions verified canonical KPI parity for total, assigned, realized, questionnaire pending, submit pending and out-of-range."
+  },
+  "admin": {
+    "authenticated": true,
+    "role": "admin",
+    "namespace": "staff",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "currentPeriodId": "cinepolis-2026-08",
+    "routesPass": ["dashboard","hrsource","proyectos","periodos","historico","visitas","postulaciones","reservas","shoppers","financiero","liquidaciones","documentos","aprendizaje"],
+    "criticalRoutesPass": true,
+    "kpiScreenshotCaptured": true
+  },
+  "shopper": {
+    "authenticated": true,
+    "role": "shopper",
+    "namespace": "shopper",
+    "tenantId": "tya",
+    "credentialMode": "checkpoint_backed_firebase_custom_token",
+    "exactIdentity": true,
+    "ownVisits": 6,
+    "fullHistory": true,
+    "certificationVisible": true,
+    "liveHrParityWithAdmin": true,
+    "latestPeriod": "2026-08",
+    "legalGatePending": true,
+    "legalGateVisible": true,
+    "legalAcceptanceAutomated": false,
+    "routesPass": ["miperfil","misvisitas","visitas","reservas","beneficios","mireportes","cert","aprendizaje","documentos"],
+    "criticalRoutesPass": true
+  },
+  "clientFollowup": {
+    "status": "HOLD_SEPARATE_DIAGNOSIS",
+    "failure": "runtime_ready_wait_timeout_90000ms",
+    "blocksAdminShopperEvidence": false,
+    "productDefectProven": false
+  },
+  "frontendFinding": {
+    "severity": "P1",
+    "paths": ["app/modules/periodos.js","app/modules/historico.js"],
+    "observation": "Headers render 'Cinépolis JUN' while live current period is 2026-08 because they use the program name rather than the active period label.",
+    "hrFrozen": false,
+    "backendPatchAllowed": false,
+    "owner": "Claude/prototype"
+  },
+  "safety": {
+    "repositoryWritesByReadonlyRunner": false,
+    "dataWrites": false,
+    "providerWrites": false,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "storageWrites": 0,
+    "rulesWrites": 0,
+    "paymentWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "deploys": 0,
+    "merge": false,
+    "productionMutation": false,
+    "credentialsExposed": false,
+    "tokensExposed": false
+  },
+  "decision": "ADMIN_SHOPPER_LIVE_DYNAMIC_HR_PASS__CLIENT_FOLLOWUP_HOLD_NONBLOCKING_FOR_THIS_SCOPE"
+}
