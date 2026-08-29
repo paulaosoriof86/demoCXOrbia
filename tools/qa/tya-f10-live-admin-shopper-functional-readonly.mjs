@@ -34,15 +34,17 @@ async function openEntry(browser){
   return {context,page,pageErrors,consoleErrors};
 }
 
-async function waitRuntime(page,expectedNamespace,expectedRole=null){
-  await page.waitForFunction(({expectedNamespace,expectedRole})=>{
+async function waitRuntime(page,expectedNamespace,expectedRole=null,requireHr=true){
+  await page.waitForFunction(({expectedNamespace,expectedRole,requireHr})=>{
     const ctx=window.CX?.backendAuth?.context?.()||null;
     const a=window.CX_PROTECTED_AUTH_HR_AUTHORITY||null;
-    return Boolean(ctx?.authenticated===true&&ctx?.authNamespace===expectedNamespace&&(!expectedRole||ctx?.role===expectedRole)&&a?.applied===true&&a?.periods>0&&a?.hrVisits>0&&document.getElementById('app')?.classList.contains('on')===true&&document.getElementById('login')?.classList.contains('hidden')===true);
-  },{expectedNamespace,expectedRole},{timeout:90000});
+    const authReady=Boolean(ctx?.authenticated===true&&ctx?.authNamespace===expectedNamespace&&(!expectedRole||ctx?.role===expectedRole)&&document.getElementById('app')?.classList.contains('on')===true&&document.getElementById('login')?.classList.contains('hidden')===true);
+    const hrReady=Boolean(a?.applied===true&&a?.periods>0&&a?.hrVisits>0);
+    return authReady&&(!requireHr||hrReady);
+  },{expectedNamespace,expectedRole,requireHr},{timeout:90000});
 }
 
-async function loginUi(page,roleButton,credential,expectedNamespace,expectedRole=null){
+async function loginUi(page,roleButton,credential,expectedNamespace,expectedRole=null,requireHr=true){
   await page.click(`.role-btn[data-role="${roleButton}"]`);
   await page.waitForFunction(role=>document.getElementById('loginForm')?.dataset.selectedRole===role,roleButton,{timeout:10000});
   for(const selector of ['#lgUser','#lgPass','#lgSubmit'])await page.waitForSelector(selector,{state:'visible',timeout:10000});
@@ -51,7 +53,7 @@ async function loginUi(page,roleButton,credential,expectedNamespace,expectedRole
   await page.fill('#lgUser',credential.login);
   await page.fill('#lgPass',credential.password);
   await page.press('#lgPass','Enter');
-  await waitRuntime(page,expectedNamespace,expectedRole);
+  await waitRuntime(page,expectedNamespace,expectedRole,requireHr);
 }
 
 async function loginShopperToken(page,token){
@@ -64,7 +66,7 @@ async function loginShopperToken(page,token){
     await auth.signInWithCustomToken(customToken);
   },token);
   await page.reload({waitUntil:'commit',timeout:60000});
-  await waitRuntime(page,'shopper','shopper');
+  await waitRuntime(page,'shopper','shopper',true);
 }
 
 async function navRoute(page,routeId){
@@ -96,10 +98,13 @@ async function captureKpiScreenshot(page){
 }
 
 const browser=await chromium.launch({headless:true,args:['--no-sandbox','--disable-setuid-sandbox','--disable-dev-shm-usage']});
-let admin=null,client=null,shopper=null,finance=null,reservations=null,source=null,latestPeriod=null,adminRoutes=[],shopperRoutes=[],visual=null;
+let admin=null,client=null,shopper=null,finance=null,reservations=null,source=null,latestPeriod=null,adminRoutes=[],shopperRoutes=[],visual=null,stage='init';
 try{
+  stage='admin_entry';
   const staffSession=await openEntry(browser);
-  await loginUi(staffSession.page,'admin',credentials.staff,'staff','admin');
+  stage='admin_login';
+  await loginUi(staffSession.page,'admin',credentials.staff,'staff','admin',true);
+  stage='admin_snapshot';
   admin=await staffSession.page.evaluate(()=>{
     const d=window.CX?.data||{};const a=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{};const ctx=window.CX?.backendAuth?.context?.()||{};
     const summaries=Array.isArray(d.periodOperationalSummary)?d.periodOperationalSummary.slice():[];
@@ -134,6 +139,7 @@ try{
   assert(Number(admin.kpis?.sinSubmitir?.t||0)===Math.max(0,Number(admin.summary?.questionnaireCompleted||0)-Number(admin.summary?.submitted||0)),'F10_ADMIN_CANONICAL_KPI_SUBMIT_INVALID');
   assert(Number(admin.kpis?.fueraRango?.t||0)===Number(admin.summary?.outOfRange||0),'F10_ADMIN_CANONICAL_KPI_OUT_OF_RANGE_INVALID');
 
+  stage='admin_routes';
   for(const route of ['dashboard','hrsource','proyectos','periodos','historico','visitas','postulaciones','reservas','shoppers','financiero','liquidaciones','documentos','aprendizaje'])adminRoutes.push(await navRoute(staffSession.page,route));
   const criticalAdmin=['dashboard','historico','visitas','postulaciones','reservas','shoppers','financiero','liquidaciones'];
   assert(criticalAdmin.every(id=>adminRoutes.find(x=>x.routeId===id)?.ok===true),'F10_ADMIN_CRITICAL_ROUTE_FAILURE_'+criticalAdmin.filter(id=>adminRoutes.find(x=>x.routeId===id)?.ok!==true).join('_'));
@@ -151,14 +157,22 @@ try{
   latestPeriod={periodKey:admin.periodKey,total:Number(s.total||0),assigned:Number(s.assigned||0),unassigned:Number(s.unassigned||0),scheduled:Number(s.scheduled||0),pendingSchedule:Number(s.pendingSchedule||0),realized:Number(s.realized||0),pendingQuestionnaire:Number(s.pendingQuestionnaire||0),questionnaireCompleted:Number(s.questionnaireCompleted||0),pendingSubmission:Number(s.pendingSubmission||0),submitted:Number(s.submitted||0),liquidationCandidates:Number(s.liquidationCandidates||0),paymentConfirmed:Number(s.paymentConfirmed||0),outOfRange:Number(s.outOfRange||0),dashboardKpis:admin.dashboardKpis};
   await staffSession.page.evaluate(async()=>{try{await window.CX?.backendAuth?.signOut?.();}catch{}});await staffSession.context.close();
 
-  const clientSession=await openEntry(browser);await loginUi(clientSession.page,'cliente',credentials.client,'staff',null);
+  stage='client_entry';
+  const clientSession=await openEntry(browser);
+  stage='client_login';
+  await loginUi(clientSession.page,'cliente',credentials.client,'staff',null,false);
+  stage='client_route';
   const clientRoute=await navRoute(clientSession.page,'cli_dashboard');
   client={authenticated:true,projectScope:'cinepolis',clientModule:clientRoute.modulePresent,route:clientRoute.sessionView==='cli_dashboard',routeAccepted:clientRoute.sessionView==='cli_dashboard',routeId:clientRoute.sessionView,viewExists:clientRoute.viewExists,pageHeader:Boolean(clientRoute.heading),viewTextLength:clientRoute.viewTextLength,renderException:clientRoute.thrown,panorama:true,panoramaVisible:clientRoute.ok,blocked:clientRoute.fatal,heading:clientRoute.heading,predicateVersion:'session-view-canonical-render-v1'};
   assert(client.routeAccepted&&client.viewExists&&client.viewTextLength>0&&client.renderException===null&&client.panoramaVisible&&!client.blocked,'F10_CLIENT_ROUTE_INVALID');
   assert(clientSession.pageErrors.length===0,'F10_CLIENT_PAGE_ERRORS_'+clientSession.pageErrors.length);
   await clientSession.page.evaluate(async()=>{try{await window.CX?.backendAuth?.signOut?.();}catch{}});await clientSession.context.close();
 
-  const shopperSession=await openEntry(browser);await loginShopperToken(shopperSession.page,credentials.shopper.password);
+  stage='shopper_entry';
+  const shopperSession=await openEntry(browser);
+  stage='shopper_login';
+  await loginShopperToken(shopperSession.page,credentials.shopper.password);
+  stage='shopper_snapshot';
   shopper=await shopperSession.page.evaluate(()=>{
     const ctx=window.CX?.backendAuth?.context?.()||{};const a=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{};const d=window.CX?.data||{};
     const raw=String(ctx.shopperId||'').trim();const canonical=String((d.__identityMap||{})[raw]||raw).trim();let own=[];try{own=typeof d.visitsForShopper==='function'?d.visitsForShopper(canonical,false):[];}catch{}
@@ -170,14 +184,16 @@ try{
   assert(shopper.exactIdentity&&shopper.ownVisits>0&&shopper.fullHistory&&shopper.certificationVisible,'F10_SHOPPER_IDENTITY_HISTORY_INVALID');
   assert(shopper.periods===admin.periods&&shopper.visits===admin.visits&&shopper.latestPeriod===admin.latestPeriod,'F10_SHOPPER_LIVE_HR_PARITY_INVALID');
   if(shopper.legalGate.pending)assert(shopper.legalGate.visible===true,'F10_SHOPPER_LEGAL_GATE_NOT_VISIBLE');
+  stage='shopper_routes';
   for(const route of ['miperfil','misvisitas','visitas','reservas','beneficios','mireportes','cert','aprendizaje','documentos'])shopperRoutes.push(await navRoute(shopperSession.page,route));
   const criticalShopper=['miperfil','misvisitas','visitas','reservas','beneficios'];
   assert(criticalShopper.every(id=>shopperRoutes.find(x=>x.routeId===id)?.ok===true),'F10_SHOPPER_CRITICAL_ROUTE_FAILURE_'+criticalShopper.filter(id=>shopperRoutes.find(x=>x.routeId===id)?.ok!==true).join('_'));
   assert(shopperSession.pageErrors.length===0,'F10_SHOPPER_PAGE_ERRORS_'+shopperSession.pageErrors.length);
   await shopperSession.page.evaluate(async()=>{try{await window.CX?.backendAuth?.signOut?.();}catch{}});await shopperSession.context.close();
 
-  const evidence={schemaVersion:'cxorbia.f10.live-admin-shopper-functional-readonly.v1',generatedAt:new Date().toISOString(),decision:'PASS_PHASE_A_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS_DYNAMIC',qaMode:'real_hosting_playwright_admin_and_checkpoint_backed_shopper',source,latestPeriod,admin:{authenticated:true,role:admin.role,currentProjectId:admin.currentProjectId,currentPeriodId:admin.currentPeriodId,septemberPresent:admin.septemberPresent,dashboardKpis:admin.dashboardKpis,routes:adminRoutes},client,shopper:{...shopper,routes:shopperRoutes,credentialMode:'checkpoint_backed_firebase_custom_token',humanPasswordRouteFresh:false},finance,reservations,visual,safety:safe};
+  stage='complete';
+  const evidence={schemaVersion:'cxorbia.f10.live-admin-shopper-functional-readonly.v1',generatedAt:new Date().toISOString(),decision:'PASS_PHASE_A_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS_DYNAMIC',qaMode:'real_hosting_playwright_admin_and_checkpoint_backed_shopper',stage,source,latestPeriod,admin:{authenticated:true,role:admin.role,currentProjectId:admin.currentProjectId,currentPeriodId:admin.currentPeriodId,septemberPresent:admin.septemberPresent,dashboardKpis:admin.dashboardKpis,routes:adminRoutes},client,shopper:{...shopper,routes:shopperRoutes,credentialMode:'checkpoint_backed_firebase_custom_token',humanPasswordRouteFresh:false},finance,reservations,visual,safety:safe};
   persist(evidence);console.log(JSON.stringify(evidence));
 }catch(error){
-  const evidence={schemaVersion:'cxorbia.f10.live-admin-shopper-functional-readonly.v1',generatedAt:new Date().toISOString(),decision:'HOLD_F10_LIVE_ADMIN_SHOPPER_FUNCTIONAL_READONLY',error:clean(error?.message||error),source,latestPeriod,admin,client,shopper,finance,reservations,adminRoutes,shopperRoutes,visual,safety:safe};persist(evidence);console.error(JSON.stringify(evidence));process.exitCode=1;
+  const evidence={schemaVersion:'cxorbia.f10.live-admin-shopper-functional-readonly.v1',generatedAt:new Date().toISOString(),decision:'HOLD_F10_LIVE_ADMIN_SHOPPER_FUNCTIONAL_READONLY',stage,error:clean(error?.message||error),source,latestPeriod,admin,client,shopper,finance,reservations,adminRoutes,shopperRoutes,visual,safety:safe};persist(evidence);console.error(JSON.stringify(evidence));process.exitCode=1;
 }finally{try{await browser.close();}catch{}}
