@@ -1,21 +1,25 @@
 {
-  "schemaVersion": "cxorbia.f10.approved-module-authority-matrix.v1",
-  "matrixId": "CXORBIA-F10-APPROVED-MODULE-AUTHORITY-20260829-01",
+  "schemaVersion": "cxorbia.f10.approved-module-authority-matrix.v1.1",
+  "matrixId": "CXORBIA-F10-APPROVED-MODULE-AUTHORITY-20260829-02",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "docs-tya-v6-v71-audit",
   "frozenFunctionalSourceSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
   "releaseId": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
   "lineageEvidence": "app/docs/evidence/RC15-F8-5-CANONICAL-MODULE-LINEAGE-CERTIFICATION-LATEST.json",
   "compositionAuthority": "app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json",
+  "f10SourceGateEvidence": "app/docs/evidence/RC15-F10-OPERATIONAL-EVIDENCE-SOURCE-GATE-LATEST.json",
   "currentSourceComparison": {
-    "headVerified": "23afa5bd83c672dadd3c07f2f9c01470e34d0656",
+    "functionalHeadVerified": "6392736070dcf34d24f9b27b8bb1d0ecbcf116b0",
     "base": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
     "mergeBaseEqualsFrozenFunctionalSource": true,
     "appModulesChangedAfterFreeze": 0,
     "appCoreChangedAfterFreeze": 0,
     "appJsChangedAfterFreeze": 0,
     "entrypointChangedAfterFreeze": 0,
-    "meaning": "Current loaded frontend bytes remain the exact frozen functional source for app/modules, app/core, app/app.js and app/index-backend-dev.html. Backend/docs/adapters/data continuity changes do not constitute module version replacement."
+    "authorizedF10AdapterSuccessors": 1,
+    "authorizedF10AdapterPath": "app/adapters/tya-canonical-state-semantics-v2.js",
+    "authorizedF10AdapterGitBlob": "941051c96a26017363acfc72f7e88edbe70c68ba",
+    "meaning": "All approved module/core/entrypoint/app.js bytes remain exact. F10 changes only the already-loaded canonical read-model adapter, so KPI semantics are repaired without replacing the approved module family."
   },
   "phaseAApprovedLoadedModules": [
     {"path":"app/modules/dashboard.js","expectedGitBlob":"e879fc3f1dd5a7486762b197346cadd086e1d99d","authority":"M1_APPROVED_EXACT","status":"PRESERVE_EXACT"},
@@ -64,15 +68,28 @@
     {"path":"app/modules/crm.js","expectedGitBlob":"6a6ff1c964eff4f25ecaf33b028335bfc62810ee","classification":"POST_PHASE_A_WORKSTREAM","decision":"DO_NOT_CLAIM_PHASE_A_CERTIFICATION"},
     {"path":"app/modules/marketing.js","expectedGitBlob":"6bfe1b4e3dbed12ead8a88404cdb495dbf1b8e83","classification":"POST_PHASE_A_WORKSTREAM","decision":"DO_NOT_CLAIM_PHASE_A_CERTIFICATION"}
   ],
-  "f10OpenBridgeFiles": [
-    {"path":"app/core/tya-phase-a-source-safe-preview.js","expectedFrozenAndCurrentGitBlob":"2ac7e590940d3c6944f6dfb35f45dee2765b0503","versionDrift":false,"semanticIncident":"CANONICAL_SUBMISSION_LIQUIDATION_SEMANTICS_DROPPED","action":"FOCAL_REPAIR_ONLY_AFTER_FRESH_ROW_LEVEL_RECONCILIATION"},
-    {"path":"app/core/data.js","expectedFrozenAndCurrentGitBlob":"3a679020205617e44126ec586e0022edc70b0512","versionDrift":false,"semanticIncident":"CANONICAL_BUCKET_RECONSTRUCTION_TOO_POOR","action":"FOCAL_REPAIR_ONLY_AFTER_FRESH_ROW_LEVEL_RECONCILIATION"}
+  "f10AuthorizedSuccessorBridgeFiles": [
+    {
+      "path": "app/adapters/tya-canonical-state-semantics-v2.js",
+      "expectedCurrentGitBlob": "941051c96a26017363acfc72f7e88edbe70c68ba",
+      "authority": "F10_AUTHORIZED_OPERATIONAL_EVIDENCE_SUCCESSOR",
+      "sourceCommit": "6392736070dcf34d24f9b27b8bb1d0ecbcf116b0",
+      "sourceGate": "PASS_F10_SOURCE_PATCH_AND_APPROVED_MODULE_LINEAGE_INTACT__PREDEPLOY_HOLD",
+      "semanticRepair": "SEPARATE_DIRECT_HR_OPERATIONAL_EVIDENCE_FROM_PROMOTED_CANONICAL_LIFECYCLE",
+      "deployStatus": "SOURCE_ONLY_NOT_DEPLOYED"
+    }
+  ],
+  "f10ResolvedMisTargetedBridgeHypothesis": [
+    {"path":"app/core/tya-phase-a-source-safe-preview.js","gitBlob":"2ac7e590940d3c6944f6dfb35f45dee2765b0503","versionDrift":false,"decision":"NOT_ACTIVE_PRIMARY_LIVE_PATH_DO_NOT_PATCH_FOR_THIS_INCIDENT"},
+    {"path":"app/core/data.js","gitBlob":"3a679020205617e44126ec586e0022edc70b0512","versionDrift":false,"decision":"PRESERVE_APPROVED_CORE_F10_RUNTIME_FACADE_HANDLES_OPERATIONAL_EVIDENCE"}
   ],
   "rules": [
     "A wrong KPI does not prove an old module version. Check this matrix and live release parity before touching frontend lineage.",
     "Phase A approved modules must match expectedGitBlob unless an explicit authorized successor incident changes the matrix.",
     "Post-Phase-A loaded modules are not promoted to Phase A authority by presence in the entrypoint.",
     "No wholesale frontend restore is authorized.",
-    "F10 HR/KPI semantic repair is focal and does not reset approved module lineage."
+    "F10 HR/KPI semantic repair is focal and does not reset approved module lineage.",
+    "The authorized F10 adapter successor may change read-model semantics while app/modules, app/core, app/app.js and the entrypoint remain exact.",
+    "A source-only F10 successor is not a claim that Hosting serves the new adapter until a deployment gate and explicit authorization complete."
   ]
 }
