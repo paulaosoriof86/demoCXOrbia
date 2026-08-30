@@ -1,0 +1,142 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+import process from 'node:process';
+import { chromium } from 'playwright';
+
+const args=process.argv.slice(2);
+const arg=(name,fallback='')=>{const i=args.indexOf(name);return i>=0?args[i+1]:fallback;};
+const root=String(process.env.CXORBIA_DEV_ROOT_URL||'https://cxorbia-backend-dev.web.app').replace(/\/$/,'');
+const privatePath=String(process.env.CXORBIA_E2E_PRIVATE_CREDENTIALS||'.tmp/phase-a-runtime-private/private-e2e.json');
+const freshPath=arg('--fresh','.tmp/phase-a-runtime-multirole/f10-fresh-hr/report.json');
+const outPath=arg('--out','.tmp/phase-a-runtime-multirole/f10-live-admin-fresh-content.json');
+const readJson=p=>JSON.parse(fs.readFileSync(p,'utf8').replace(/^\uFEFF/,''));
+const fail=m=>{throw new Error(m);};
+const clean=v=>String(v??'').replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+/g,'REDACTED_EMAIL').replace(/[^A-Za-z0-9_.:/=-]+/g,'_').replace(/_+/g,'_').slice(0,1600);
+const write=v=>{fs.mkdirSync(path.dirname(outPath),{recursive:true});fs.writeFileSync(outPath,JSON.stringify(v,null,2)+'\n','utf8');};
+
+if(!fs.existsSync(freshPath))fail('fresh_report_missing');
+if(!fs.existsSync(privatePath))fail('private_credentials_missing');
+const fresh=readJson(freshPath);
+const bundle=readJson(privatePath);
+const cred=bundle?.staff||null;
+if(fresh.decision!=='PASS_F10_FRESH_HR_ROW_LEVEL_RECONCILIATION'||fresh.ok!==true)fail('fresh_hr_not_pass');
+if(fresh.provider?.cacheOrigin!=='runtime_refresh')fail('fresh_hr_not_runtime_refresh');
+if(!fresh.provider?.revision||!fresh.provider?.sourceReadAt)fail('fresh_hr_identity_missing');
+if(!Array.isArray(fresh.focus?.rows)||!fresh.focus?.periodKey||!fresh.focus?.digestSha256)fail('fresh_focus_evidence_missing');
+if(!cred?.login||!cred?.password||cred?.role!=='admin')fail('canonical_admin_private_credential_missing');
+
+const rows=fresh.focus.rows;
+const active=rows.filter(r=>r?.canonical?.cancelled!==true);
+const submitted=r=>r.submittedEvidence===true||r.canonical?.liquidationConfirmed===true||r.canonical?.paymentConfirmed===true;
+const expected={
+  total:active.length,
+  realizadas:active.filter(r=>r.realizedEvidence===true).length,
+  pendRealizar:active.filter(r=>r.realizedEvidence!==true).length,
+  sinAgendar:active.filter(r=>r.canonical?.assigned===true&&r.scheduledEvidence!==true&&r.realizedEvidence!==true).length,
+  cuestPend:active.filter(r=>r.realizedEvidence===true&&r.questionnaireEvidence!==true).length,
+  sinSubmitir:active.filter(r=>r.questionnaireEvidence===true&&!submitted(r)).length,
+  liquidationCandidates:active.filter(submitted).length,
+  liquidadas:active.filter(r=>r.canonical?.liquidationConfirmed===true).length
+};
+
+const browser=await chromium.launch({headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
+const context=await browser.newContext({serviceWorkers:'block',viewport:{width:1440,height:1000}});
+const page=await context.newPage();
+let report=null;
+try{
+  await page.goto(root+'/?f10content='+Date.now(),{waitUntil:'commit',timeout:60000});
+  await page.waitForSelector('.role-btn[data-role="admin"]',{state:'visible',timeout:60000});
+  await page.click('.role-btn[data-role="admin"]');
+  await page.waitForSelector('#lgUser',{state:'visible',timeout:15000});
+  await page.fill('#lgUser',cred.login);
+  await page.fill('#lgPass',cred.password);
+  await page.press('#lgPass','Enter');
+
+  let ready=false;
+  let last=null;
+  const started=Date.now();
+  while(Date.now()-started<120000){
+    last=await page.evaluate(()=>{
+      const c=window.CX?.backendAuth?.context?.()||{};
+      const a=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{};
+      const d=window.CX?.data||{};
+      const meta=window.CX_TYA_HR_LIVE_META||{};
+      return {
+        authenticated:c.authenticated===true,
+        role:c.role||null,
+        authNamespace:c.authNamespace||null,
+        authorityApplied:a.applied===true,
+        authorityVisits:Number(a.hrVisits||0),
+        authorityPeriods:Number(a.periods||0),
+        authorityLatestPeriod:a.latestPeriod||null,
+        sourceRevision:d.previewMeta?.sourceRevision||window.CX_TYA_VISIBLE_DATA_CONTRACT?.sourceRevision||null,
+        sourceReadAt:meta.sourceReadAt||null,
+        cacheOrigin:meta.cacheOrigin||null
+      };
+    });
+    if(last.authenticated&&last.role==='admin'&&last.authorityApplied&&last.authorityVisits>0&&last.authorityPeriods>0&&last.sourceRevision){ready=true;break;}
+    await page.waitForTimeout(1000);
+  }
+  if(!ready)fail('live_gate_prerequisite_timeout:'+clean(JSON.stringify(last||{})));
+
+  const actual=await page.evaluate(focus=>{
+    const d=window.CX.data;
+    const a=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{};
+    const meta=window.CX_TYA_HR_LIVE_META||{};
+    d.currentProjectId='cinepolis';
+    d.currentPeriodId='cinepolis-'+focus;
+    if(typeof window.CX_TYA_F10_OPERATIONAL_EVIDENCE?.install==='function')window.CX_TYA_F10_OPERATIONAL_EVIDENCE.install('postdeploy_fresh_content_equivalence_gate');
+    const k=d.kpis();
+    const s=(d.periodOperationalSummary||[]).find(x=>String(x.periodKey)===focus)||null;
+    return {
+      revision:d.previewMeta?.sourceRevision||window.CX_TYA_VISIBLE_DATA_CONTRACT?.sourceRevision||null,
+      sourceReadAt:meta.sourceReadAt||null,
+      cacheOrigin:meta.cacheOrigin||null,
+      authorityVisits:Number(a.hrVisits||0),
+      authorityPeriods:Number(a.periods||0),
+      authorityLatestPeriod:a.latestPeriod||null,
+      markerVersion:window.CX_TYA_F10_OPERATIONAL_EVIDENCE?.version||null,
+      readyVersion:window.CX_TYA_F10_OPERATIONAL_EVIDENCE_READY?.version||null,
+      periodId:d.currentPeriodId,
+      kpis:{
+        total:k.total?.t,
+        realizadas:k.realizadas?.t,
+        pendRealizar:k.pendRealizar?.t,
+        sinAgendar:k.sinAgendar?.t,
+        cuestPend:k.cuestPend?.t,
+        sinSubmitir:k.sinSubmitir?.t,
+        liquidationCandidates:k.liquidationCandidates?.t,
+        liquidadas:k.liquidadas?.t
+      },
+      summary:s
+    };
+  },fresh.focus.periodKey);
+
+  if(actual.authorityVisits!==Number(fresh.inventory?.visitCount||0))fail('live_authority_visit_count_mismatch:'+actual.authorityVisits+'/'+fresh.inventory?.visitCount);
+  if(actual.authorityPeriods!==Number(fresh.inventory?.periodCount||0))fail('live_authority_period_count_mismatch:'+actual.authorityPeriods+'/'+fresh.inventory?.periodCount);
+  if(actual.authorityLatestPeriod!==fresh.inventory?.latestPeriodKey)fail('live_authority_latest_period_mismatch:'+actual.authorityLatestPeriod+'/'+fresh.inventory?.latestPeriodKey);
+  for(const [k,v] of Object.entries(expected))if(Number(actual.kpis[k])!==Number(v))fail('live_kpi_mismatch_'+k+':'+actual.kpis[k]+'/'+v);
+  if(actual.markerVersion!=='f10-operational-evidence-v1'||actual.readyVersion!=='f10-operational-evidence-v1')fail('f10_runtime_marker_missing');
+
+  const revisionRelation=actual.revision===fresh.provider.revision?'same_refresh_token':'different_refresh_token_kpi_equivalent';
+  report={
+    schemaVersion:'cxorbia.f10.live-admin-fresh-content-equivalence.v1',
+    generatedAt:new Date().toISOString(),
+    decision:'PASS_F10_LIVE_ADMIN_FRESH_CONTENT_EQUIVALENCE',
+    periodKey:fresh.focus.periodKey,
+    providerFresh:{revision:fresh.provider.revision,sourceReadAt:fresh.provider.sourceReadAt,cacheOrigin:fresh.provider.cacheOrigin,focusDigestSha256:fresh.focus.digestSha256,visitCount:fresh.inventory.visitCount,periodCount:fresh.inventory.periodCount,latestPeriodKey:fresh.inventory.latestPeriodKey},
+    liveBrowser:{revision:actual.revision,sourceReadAt:actual.sourceReadAt,cacheOrigin:actual.cacheOrigin,revisionRelation,authorityVisits:actual.authorityVisits,authorityPeriods:actual.authorityPeriods,authorityLatestPeriod:actual.authorityLatestPeriod,periodId:actual.periodId,expectedKpis:expected,actualKpis:actual.kpis,summary:actual.summary,markerVersion:actual.markerVersion,readyVersion:actual.readyVersion},
+    interpretation:{exactRevisionTokenEqualityRequired:false,contentAuthority:'fresh_provider_row_level_plus_live_admin_kpi_equivalence',crossRefreshTokenDifferenceIsBlocker:false},
+    safety:{browserReadOnly:true,providerReads:true,providerWrites:0,dataWrites:0,repositoryWrites:0,authWrites:0,firestoreWrites:0,hrWrites:0,storageWrites:0,paymentWrites:0,makeCalls:0,geminiCalls:0,deploys:0,merge:false,production:false,credentialsExposed:false,tokensExposed:false}
+  };
+  write(report);
+  console.log(JSON.stringify({decision:report.decision,periodKey:report.periodKey,revisionRelation,expectedKpis:expected,actualKpis:actual.kpis,providerRevision:fresh.provider.revision,browserRevision:actual.revision},null,2));
+} catch(error){
+  report={schemaVersion:'cxorbia.f10.live-admin-fresh-content-equivalence.failure.v1',generatedAt:new Date().toISOString(),decision:'HOLD_F10_LIVE_ADMIN_FRESH_CONTENT_EQUIVALENCE',error:clean(error?.message||error),periodKey:fresh.focus?.periodKey||null,safety:{browserReadOnly:true,providerReads:true,providerWrites:0,dataWrites:0,repositoryWrites:0,authWrites:0,firestoreWrites:0,hrWrites:0,storageWrites:0,paymentWrites:0,makeCalls:0,geminiCalls:0,deploys:0,merge:false,production:false,credentialsExposed:false,tokensExposed:false}};
+  write(report);
+  console.error(report.error);
+  process.exitCode=1;
+} finally {
+  await browser.close();
+}
