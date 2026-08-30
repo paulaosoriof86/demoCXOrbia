@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "cxorbia.rc15.f10.predeploy-exact-source-browser-gate.v1",
+  "evidenceId": "RC15-F10-PREDEPLOY-EXACT-SOURCE-BROWSER-GATE-20260829-01",
+  "generatedAt": "2026-08-29",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "incidentId": "F10-HR-KPI-FRESHNESS-20260829-01",
+  "decision": "PASS_F10_PREDEPLOY_EXACT_SOURCE_BROWSER_AND_APPROVED_MODULE_MATRIX",
+  "productP0Proven": false,
+  "sourceRepair": {
+    "functionalCommit": "6392736070dcf34d24f9b27b8bb1d0ecbcf116b0",
+    "path": "app/adapters/tya-canonical-state-semantics-v2.js",
+    "gitBlob": "941051c96a26017363acfc72f7e88edbe70c68ba",
+    "sha256": "e832759e03238559617b71daa4daa52a00b2c6dbd2d2266e6df0ae391f853b2e"
+  },
+  "browserGate": {
+    "decision": "PASS_F10_PREDEPLOY_EXACT_SOURCE_BROWSER_SEMANTICS",
+    "method": "Chromium/Xvfb/CDP isolated browser execution of the exact F10 adapter with the sanitized 44-row August fixture derived from the independently fresh provider evidence; no provider/data writes.",
+    "freshAuthorityRevision": "b7bc89176161a8a1b83e3d33098634ae77a5a8bc3f6f44ee7c749e2d11da598d",
+    "periodKey": "2026-08",
+    "assertions": {
+      "total": 44,
+      "realized": 30,
+      "pendingRealization": 14,
+      "questionnairePending": 4,
+      "pendingSchedule": 4,
+      "liquidationCandidates": 30,
+      "liquidationConfirmed": 0,
+      "paymentConfirmed": 0,
+      "canonicalLifecycleRealized": 31
+    },
+    "countryEvidence": {
+      "GT": {"total":34,"realized":24,"pendingRealization":10,"questionnairePending":4,"pendingSchedule":3,"liquidationCandidates":24},
+      "HN": {"total":10,"realized":6,"pendingRealization":4,"questionnairePending":0,"pendingSchedule":1,"liquidationCandidates":6}
+    }
+  },
+  "moduleMatrixGate": {
+    "matrixId": "CXORBIA-F10-APPROVED-MODULE-AUTHORITY-20260829-02",
+    "matrix": "backend/config/cxorbia-f10-approved-module-authority-matrix-v1.json",
+    "phaseAApprovedModules": 26,
+    "frozenSupportModules": 10,
+    "postPhaseALoadedModules": 5,
+    "mismatches": 0,
+    "postRepairFunctionalDrift": false,
+    "verifiedByCommitComparison": {
+      "base": "6392736070dcf34d24f9b27b8bb1d0ecbcf116b0",
+      "headAtGate": "b06b3c0c05148e2466a96eaeb9dd4fe517719dde",
+      "appModulesChanged": 0,
+      "appCoreChanged": 0,
+      "appJsChanged": 0,
+      "entrypointChanged": 0,
+      "f10AdapterChanged": 0
+    }
+  },
+  "supersededHarnessHold": {
+    "runId": 33285714947,
+    "decision": "HOLD_QA_HARNESS_AUTH_INCOMPATIBLE_NOT_F10_PRODUCT_REGRESSION",
+    "cause": "Historical Corte3 harness assumed pre-protected-auth role-selection behavior. The corrected browser gate used the DEV source-safe semantic lane and did not change product code."
+  },
+  "deployAuthorization": {
+    "authorized": true,
+    "authorizedBy": "Paula",
+    "authorizationSource": "current_conversation_2026-08-29",
+    "authorizationText": "autorizo el deploy focal del sucesor F10 a Hosting DEV, condicionado a que cierre primero el gate predeploy y seguido inmediatamente de validación live contra una nueva revisión HR fresca.",
+    "conditionPredeploySatisfied": true
+  },
+  "deploymentMechanismReadiness": {
+    "decision": "HOLD_NO_CURRENT_COMPATIBLE_HOSTING_DEV_EXECUTION_LANE",
+    "hostingDeployExecuted": false,
+    "reason": "The workflow that produced the frozen Hosting release was an F4 single-use mutation lane and is now permanently inert/consumed. Other Hosting mutation workflows are bound to historical C6 authorizations or old invariants; reusing them would violate their contracts. No current generic F10-compatible Hosting mutation lane was found.",
+    "forbiddenShortcuts": [
+      "do not replay consumed F4/F5 mutation authority",
+      "do not reuse C6 one-shot authorization",
+      "do not create a new branch or PR",
+      "do not deploy Cloud Run/Auth/Firestore/HR/Rules/Storage/payments",
+      "do not create a new workflow without explicit authority"
+    ]
+  },
+  "safety": {
+    "providerWrites": 0,
+    "businessDataWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "storageWrites": 0,
+    "rulesWrites": 0,
+    "paymentWrites": 0,
+    "cloudRunDeploys": 0,
+    "hostingDeploys": 0,
+    "merge": false,
+    "production": false,
+    "newBranch": false,
+    "newPullRequest": false,
+    "newWorkflow": false
+  },
+  "nextExactBlock": "F10_REQUIRE_COMPATIBLE_EXISTING_HOSTING_DEV_EXECUTION_LANE_AUTHORIZATION_THEN_FOCAL_DEPLOY_THEN_NEW_FRESH_HR_SAME_REVISION_LIVE_VALIDATION"
+}
