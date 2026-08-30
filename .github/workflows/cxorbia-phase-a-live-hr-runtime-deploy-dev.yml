@@ -1,17 +1,282 @@
-name: CXOrbia Existing Runtime — F5 Synthetic Acceptance One-Shot — CONSUMED
+name: CXOrbia Existing Runtime — F10 Focal Hosting DEV One-Shot
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/config/cxorbia-f10-hosting-dev-deploy-execute.json'
 
 permissions:
   contents: read
+  statuses: write
+
+concurrency:
+  group: cxorbia-f10-focal-hosting-dev-one-shot
+  cancel-in-progress: false
 
 jobs:
-  f5-consumed:
+  f10-focal-hosting-dev:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      FROZEN_SOURCE: f9802fdd498934a8e7729fa5c7d18341bec1cd71
+      F10_ADAPTER: app/adapters/tya-canonical-state-semantics-v2.js
+      F10_ADAPTER_BLOB: 941051c96a26017363acfc72f7e88edbe70c68ba
+      F10_ADAPTER_SHA256: e832759e03238559617b71daa4daa52a00b2c6dbd2d2266e6df0ae391f853b2e
+      DEV_ROOT: https://cxorbia-backend-dev.web.app
+      OUT: .tmp/f10-focal-hosting-dev
+
     steps:
-      - name: F5 one-shot permanently inert
+      - name: Checkout exact live branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate F10 one-shot authorization and predeploy PASS
         run: |
-          echo 'F5_LIVE_SYNTHETIC_ACCEPTANCE already CLOSED/PASS.'
-          echo 'Execution CXORBIA-F5-EXECUTE-20260827-01 is consumed and cannot replay.'
-          echo 'No Cloud Build, Cloud Run update, Hosting deploy, provider write or retry is executed by this workflow.'
+          set -euo pipefail
+          mkdir -p "$OUT"
+          node <<'NODE'
+          const fs=require('fs');const cp=require('child_process');
+          const req=JSON.parse(fs.readFileSync('backend/config/cxorbia-f10-hosting-dev-deploy-execute.json','utf8'));
+          const pre=JSON.parse(fs.readFileSync('app/docs/evidence/RC15-F10-PREDEPLOY-EXACT-SOURCE-BROWSER-GATE-LATEST.json','utf8'));
+          const matrix=JSON.parse(fs.readFileSync('backend/config/cxorbia-f10-approved-module-authority-matrix-v1.json','utf8'));
+          const release=JSON.parse(fs.readFileSync('backend/config/cxorbia-phase-a-release-manifest-v1.json','utf8'));
+          const head=cp.execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+          const parent=cp.execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const blob=cp.execFileSync('git',['hash-object','app/adapters/tya-canonical-state-semantics-v2.js'],{encoding:'utf8'}).trim();
+          const sha=require('crypto').createHash('sha256').update(fs.readFileSync('app/adapters/tya-canonical-state-semantics-v2.js')).digest('hex');
+          const must=(v,m)=>{if(!v)throw new Error(m)};
+          must(req.schemaVersion==='cxorbia.f10-hosting-dev-deploy-execute.v1','request_schema');
+          must(req.enabled===true&&req.consumed===false&&req.allowedExecutions===1&&req.hostingDeployExecutions===0,'request_one_shot_state');
+          must(req.repository==='paulaosoriof86/demoCXOrbia'&&req.branch==='docs-tya-v6-v71-audit'&&req.pullRequest===7,'request_repository');
+          must(req.authorizedBy==='Paula'&&req.authorizationSource==='current_conversation_2026-08-29'&&String(req.authorizationText||'').includes('autorizo el deploy focal del sucesor F10'),'authorization_identity');
+          must(req.targetHeadSha===parent,'target_parent_mismatch:'+parent+'/'+req.targetHeadSha);
+          must(req.firebaseProjectId==='cxorbia-backend-dev'&&req.hostingSite==='cxorbia-backend-dev'&&req.hostingTarget==='cxorbia-dev','hosting_target');
+          must(req.frozenFunctionalSourceSha===process.env.FROZEN_SOURCE,'frozen_source');
+          must(req.f10AdapterPath===process.env.F10_ADAPTER&&req.f10AdapterGitBlob===process.env.F10_ADAPTER_BLOB&&req.f10AdapterSha256===process.env.F10_ADAPTER_SHA256,'f10_adapter_contract');
+          must(blob===process.env.F10_ADAPTER_BLOB&&sha===process.env.F10_ADAPTER_SHA256,'f10_adapter_bytes');
+          must(pre.decision==='PASS_F10_PREDEPLOY_EXACT_SOURCE_BROWSER_AND_MODULE_MATRIX_GATE'&&pre.predeployGatePassed===true&&pre.newF10AdapterDeployed===false,'predeploy_not_pass');
+          must(matrix.matrixId==='CXORBIA-F10-APPROVED-MODULE-AUTHORITY-20260829-02'&&matrix.f10AuthorizedSuccessorBridgeFiles?.[0]?.expectedCurrentGitBlob===process.env.F10_ADAPTER_BLOB,'matrix_authority');
+          must(release.status==='FROZEN_IMMUTABLE'&&release.source?.functionalSourceSha===process.env.FROZEN_SOURCE&&release.provider?.hosting?.site==='cxorbia-backend-dev','release_authority');
+          for(const k of ['authWrites','firestoreWrites','storageWrites','rulesWrites','hrWrites','externalHrWrites','paymentWrites','makeCalls','geminiCalls','cloudRunDeploys'])must(Number(req[k]||0)===0,'unsafe_'+k);
+          must(req.merge===false&&req.production===false&&req.newFirebaseProject===false&&req.newHostingSite===false,'unsafe_scope');
+          fs.writeFileSync(process.env.OUT+'/authorization.source-safe.json',JSON.stringify({decision:'PASS_F10_FOCAL_HOSTING_AUTHORIZATION',requestId:req.requestId,requestCommitSha:head,targetHeadSha:parent,frozenFunctionalSourceSha:process.env.FROZEN_SOURCE,f10AdapterGitBlob:blob,f10AdapterSha256:sha,predeployDecision:pre.decision,safety:{hostingDeployMax:1,authWrites:0,firestoreWrites:0,hrWrites:0,paymentWrites:0,cloudRunDeploys:0,merge:false,production:false}},null,2)+'\n');
+          NODE
+
+      - name: Build focal package from frozen release plus only F10 adapter
+        run: |
+          set -euo pipefail
+          rm -rf "$OUT/source"
+          mkdir -p "$OUT/source"
+          git cat-file -e "$FROZEN_SOURCE^{commit}"
+          git archive "$FROZEN_SOURCE" -- app firebase.json | tar -x -C "$OUT/source"
+          cp "$F10_ADAPTER" "$OUT/source/$F10_ADAPTER"
+          mkdir -p "$OUT/source/app/core"
+          printf '%s\n' '/* F10 Hosting DEV packaging-only empty local auth override; no credentials embedded. */' > "$OUT/source/app/core/backend-dev-auth.local.js"
+          node <<'NODE'
+          const fs=require('fs'),cp=require('child_process'),path=require('path'),crypto=require('crypto');
+          const root=process.env.OUT+'/source';const frozen=process.env.FROZEN_SOURCE;
+          const blob=p=>cp.execFileSync('git',['hash-object',p],{encoding:'utf8'}).trim();
+          const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+          if(blob(root+'/'+process.env.F10_ADAPTER)!==process.env.F10_ADAPTER_BLOB)throw new Error('staged_f10_blob_mismatch');
+          if(sha(root+'/'+process.env.F10_ADAPTER)!==process.env.F10_ADAPTER_SHA256)throw new Error('staged_f10_sha256_mismatch');
+          const matrix=JSON.parse(fs.readFileSync('backend/config/cxorbia-f10-approved-module-authority-matrix-v1.json','utf8'));
+          const entries=[...(matrix.phaseAApprovedLoadedModules||[]),...(matrix.loadedFrozenSupportModulesWithoutIndividualPhaseACriticalAuthorityClaim||[]),...(matrix.postPhaseALoadedNotCertifiedAsPhaseAAuthority||[])];
+          const bad=[];for(const x of entries){const f=root+'/'+x.path;if(!fs.existsSync(f)||blob(f)!==x.expectedGitBlob)bad.push({path:x.path,expected:x.expectedGitBlob,actual:fs.existsSync(f)?blob(f):null});}
+          if(bad.length)throw new Error('staged_module_mismatch:'+JSON.stringify(bad.slice(0,5)));
+          const exact=[['app/index-backend-dev.html','7a5f169dd0e239d46fa4af09cf67f2eb4329a477'],['app/app.js','2043d33dee611adacebc947c8423ed1739c1a8da']];
+          for(const [p,e] of exact)if(blob(root+'/'+p)!==e)throw new Error('staged_exact_asset_mismatch:'+p);
+          const files=[];const walk=d=>{for(const e of fs.readdirSync(d,{withFileTypes:true})){const p=path.join(d,e.name);if(e.isDirectory())walk(p);else files.push(p)}};walk(root+'/app');
+          const delta=[];for(const f of files){const rel=path.relative(root,f).split(path.sep).join('/');if(rel==='app/core/backend-dev-auth.local.js'){delta.push({path:rel,classification:'packaging-only-empty-local-auth-override'});continue;}let expected=null;try{expected=cp.execFileSync('git',['rev-parse',`${frozen}:${rel}`],{encoding:'utf8'}).trim();}catch{}const actual=blob(f);if(expected!==actual)delta.push({path:rel,classification:rel===process.env.F10_ADAPTER?'authorized-f10-successor':'unexpected',expected,actual});}
+          const unexpected=delta.filter(x=>!['authorized-f10-successor','packaging-only-empty-local-auth-override'].includes(x.classification));
+          if(unexpected.length)throw new Error('unexpected_staged_delta:'+JSON.stringify(unexpected.slice(0,10)));
+          fs.writeFileSync(process.env.OUT+'/staged-lineage.source-safe.json',JSON.stringify({decision:'PASS_F10_FROZEN_PLUS_ONE_ADAPTER_PACKAGE',frozenSource:frozen,moduleCount:entries.length,moduleMismatches:0,delta},null,2)+'\n');
+          NODE
+
+      - name: Dry-run exact Hosting package and preserve Cloud Run rewrites
+        run: |
+          set -euo pipefail
+          node --check tools/production/cxorbia-hosting-rest-deploy.mjs
+          node tools/production/cxorbia-hosting-rest-deploy.mjs --source-dir "$OUT/source" --out "$OUT/hosting-dry-run.source-safe.json" --dry-run
+          node <<'NODE'
+          const r=require('./.tmp/f10-focal-hosting-dev/hosting-dry-run.source-safe.json');
+          if(r.decision!=='PASS_HOSTING_REST_DRY_RUN_SOURCE_READY'||r.configContract?.target!=='cxorbia-dev'||r.configContract?.public!=='app'||r.configContract?.tenantRewrite!==true||r.configContract?.hrRewrite!==true)throw new Error('hosting_dry_run_contract_invalid');
+          NODE
+
+      - name: Prepare canonical DEV credential and read current remote lineage
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
+          mkdir -p "$OUT/private"
+          node <<'NODE'
+          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let sa=null;try{sa=JSON.parse(raw)}catch{}
+          if(!(sa&&sa.type==='service_account'&&sa.project_id==='cxorbia-backend-dev'&&sa.client_email&&sa.private_key))throw new Error('credential_invalid');
+          fs.writeFileSync(process.env.OUT+'/private/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/$OUT/private/credentials.json" >> "$GITHUB_ENV"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';import crypto from 'node:crypto';import admin from 'firebase-admin';
+          const sa=JSON.parse(fs.readFileSync(process.env.OUT+'/private/credentials.json','utf8'));
+          const token=await admin.credential.cert(sa).getAccessToken();if(!token?.access_token)throw new Error('oauth_token_unavailable');
+          console.log('::add-mask::'+token.access_token);fs.appendFileSync(process.env.GITHUB_ENV,'CXORBIA_HOSTING_ACCESS_TOKEN='+token.access_token+'\n');
+          const headers={Authorization:'Bearer '+token.access_token,Accept:'application/json'};
+          const site=await fetch('https://firebasehosting.googleapis.com/v1beta1/sites/cxorbia-backend-dev',{headers});if(!site.ok)throw new Error('existing_hosting_site_read_'+site.status);
+          const remote=await fetch(process.env.DEV_ROOT+'/adapters/tya-canonical-state-semantics-v2.js?f10pre='+Date.now(),{headers:{'Cache-Control':'no-cache'}});if(!remote.ok)throw new Error('remote_adapter_read_'+remote.status);const buf=Buffer.from(await remote.arrayBuffer());const sha=crypto.createHash('sha256').update(buf).digest('hex');
+          const release=JSON.parse(fs.readFileSync('backend/config/cxorbia-phase-a-release-manifest-v1.json','utf8'));const expected=release.provider?.hosting?.certifiedAdapterSha256;
+          if(sha!==expected)throw new Error('remote_predeploy_adapter_not_frozen:'+sha+'/'+expected);
+          fs.writeFileSync(process.env.OUT+'/remote-before.source-safe.json',JSON.stringify({decision:'PASS_F10_REMOTE_BEFORE_IS_FROZEN_RELEASE',adapterSha256:sha,expectedFrozenAdapterSha256:expected,existingHostingSite:true},null,2)+'\n');
+          NODE
+
+      - name: Execute exactly one focal Hosting DEV release
+        env:
+          CXORBIA_HOSTING_REST_EXECUTE: YES_PAULA_I5_G2B_RECOVERY_HOSTING_REST
+        run: |
+          set -euo pipefail
+          node tools/production/cxorbia-hosting-rest-deploy.mjs --source-dir "$OUT/source" --out "$OUT/hosting-deploy.source-safe.json"
+          node <<'NODE'
+          const r=require('./.tmp/f10-focal-hosting-dev/hosting-deploy.source-safe.json');
+          if(r.decision!=='PASS_HOSTING_REST_DEPLOY'||r.hostingDeployExecutions!==1||r.provider?.releaseCreated!==true||r.provider?.finalized!==true)throw new Error('f10_hosting_deploy_not_pass');
+          if(r.safety?.firestoreWrites!==0||r.safety?.authWrites!==0||r.safety?.externalHrWrites!==0||r.safety?.paymentWrites!==0||r.safety?.cloudRunDeploys!==0||r.safety?.merge!==false)throw new Error('f10_hosting_deploy_unsafe');
+          NODE
+
+      - name: Verify remote F10 adapter and all approved module blobs
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';import crypto from 'node:crypto';
+          const matrix=JSON.parse(fs.readFileSync('backend/config/cxorbia-f10-approved-module-authority-matrix-v1.json','utf8'));
+          const entries=[...(matrix.phaseAApprovedLoadedModules||[]),...(matrix.loadedFrozenSupportModulesWithoutIndividualPhaseACriticalAuthorityClaim||[]),...(matrix.postPhaseALoadedNotCertifiedAsPhaseAAuthority||[])];
+          const gitBlob=b=>crypto.createHash('sha1').update(Buffer.from(`blob ${b.length}\0`)).update(b).digest('hex');
+          const get=async p=>{const r=await fetch(process.env.DEV_ROOT+'/'+p.replace(/^app\//,'')+'?f10remote='+Date.now(),{headers:{'Cache-Control':'no-cache,no-store'}});if(!r.ok)throw new Error('remote_http_'+r.status+':'+p);return Buffer.from(await r.arrayBuffer())};
+          const adapter=await get(process.env.F10_ADAPTER);const adapterSha=crypto.createHash('sha256').update(adapter).digest('hex');if(adapterSha!==process.env.F10_ADAPTER_SHA256||gitBlob(adapter)!==process.env.F10_ADAPTER_BLOB)throw new Error('remote_f10_adapter_mismatch');
+          const bad=[];for(const x of entries){const b=await get(x.path);const actual=gitBlob(b);if(actual!==x.expectedGitBlob)bad.push({path:x.path,expected:x.expectedGitBlob,actual});}
+          for(const [p,e] of [['app/index-backend-dev.html','7a5f169dd0e239d46fa4af09cf67f2eb4329a477'],['app/app.js','2043d33dee611adacebc947c8423ed1739c1a8da']]){const b=await get(p);if(gitBlob(b)!==e)bad.push({path:p,expected:e,actual:gitBlob(b)});}
+          if(bad.length)throw new Error('remote_module_or_entrypoint_mismatch:'+JSON.stringify(bad.slice(0,10)));
+          fs.writeFileSync(process.env.OUT+'/remote-lineage.source-safe.json',JSON.stringify({decision:'PASS_F10_REMOTE_ADAPTER_AND_MODULE_LINEAGE',adapterSha256:adapterSha,adapterGitBlob:gitBlob(adapter),moduleChecks:entries.length,moduleMismatches:0,entrypointExact:true,appJsExact:true},null,2)+'\n');
+          NODE
+
+      - name: Force new HR revision and capture independent row evidence
+        run: |
+          set -euo pipefail
+          cat > "$OUT/fresh-request.json" <<'JSON'
+          {
+            "schemaVersion":"cxorbia.readonly-post-gates-request.v1",
+            "enabled":true,
+            "requestId":"f10-postdeploy-fresh-same-revision-20260829-01",
+            "repository":"paulaosoriof86/demoCXOrbia",
+            "branch":"docs-tya-v6-v71-audit",
+            "profile":"CORTE3_FINANCIAL_RECONCILIATION_R20",
+            "diagnosticMode":"F10_INDEPENDENT_PROVIDER_LIVE_REBUILD_AND_ROW_IDENTITY_RECONCILIATION",
+            "providerReads":true,
+            "providerWrites":false,
+            "repositoryWrites":false,
+            "dataWrites":false,
+            "deploy":false,
+            "merge":false,
+            "production":false,
+            "periodFocus":"2026-08",
+            "tenantId":"tya",
+            "projectId":"cinepolis",
+            "devRootUrl":"https://cxorbia-backend-dev.web.app",
+            "activeIncident":"F10-HR-KPI-FRESHNESS-20260829-01"
+          }
+          JSON
+          node tools/qa/tya-f10-fresh-hr-row-level-reconciliation.mjs --request "$OUT/fresh-request.json" --out "$OUT/fresh-hr"
+
+      - name: Prepare existing admin credential read-only
+        run: |
+          set -euo pipefail
+          export CXORBIA_EXPECTED_PROJECT=cxorbia-backend-dev
+          export CXORBIA_DEV_ROOT_URL="$DEV_ROOT"
+          export CXORBIA_E2E_PRIVATE_CREDENTIALS="$OUT/private/private-e2e.json"
+          export PRIVATE_DIR="$OUT/private"
+          export OUT_DIR="$OUT/credential-selection"
+          mkdir -p "$OUT/credential-selection"
+          node tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs > "$OUT/credential-selection/staff-shopper.source-safe.json"
+          node <<'NODE'
+          const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.OUT+'/credential-selection/staff-shopper.source-safe.json','utf8'));const p=JSON.parse(fs.readFileSync(process.env.OUT+'/private/private-e2e.json','utf8'));
+          if(r.decision!=='PASS_C6_EXISTING_E2E_CREDENTIAL_SELECTION'||r.authWrites!==0||r.passwordChanges!==0||r.valuesExported!==false)throw new Error('credential_selection_not_safe_pass');
+          if(!p?.staff?.login||!p?.staff?.password||p?.staff?.role!=='admin')throw new Error('admin_credential_missing');
+          NODE
+
+      - name: Install Chromium for same-revision live browser validation
+        run: npx playwright install --with-deps chromium >/dev/null
+
+      - name: Validate live admin KPIs against that exact fresh HR revision
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';import {chromium} from 'playwright';
+          const fresh=JSON.parse(fs.readFileSync(process.env.OUT+'/fresh-hr/report.json','utf8'));const cred=JSON.parse(fs.readFileSync(process.env.OUT+'/private/private-e2e.json','utf8')).staff;
+          if(fresh.decision!=='PASS_F10_FRESH_HR_ROW_LEVEL_RECONCILIATION'||fresh.provider?.cacheOrigin!=='runtime_refresh')throw new Error('fresh_hr_not_pass');
+          const rows=fresh.focus?.rows||[];const active=rows.filter(r=>r?.canonical?.cancelled!==true);
+          const expected={
+            total:active.length,
+            realizadas:active.filter(r=>r.realizedEvidence===true).length,
+            pendRealizar:active.filter(r=>r.realizedEvidence!==true).length,
+            sinAgendar:active.filter(r=>r.canonical?.assigned===true&&r.scheduledEvidence!==true&&r.realizedEvidence!==true).length,
+            cuestPend:active.filter(r=>r.realizedEvidence===true&&r.questionnaireEvidence!==true).length,
+            sinSubmitir:active.filter(r=>r.questionnaireEvidence===true&&r.submittedEvidence!==true).length,
+            liquidationCandidates:active.filter(r=>r.submittedEvidence===true).length,
+            liquidadas:active.filter(r=>r.canonical?.liquidationConfirmed===true).length
+          };
+          const browser=await chromium.launch({headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});const context=await browser.newContext({serviceWorkers:'block'});const page=await context.newPage();
+          try{
+            await page.goto(process.env.DEV_ROOT+'/?f10live='+Date.now(),{waitUntil:'commit',timeout:60000});
+            await page.waitForSelector('.role-btn[data-role="admin"]',{state:'visible',timeout:60000});
+            await page.click('.role-btn[data-role="admin"]');await page.waitForSelector('#lgUser',{state:'visible',timeout:15000});await page.fill('#lgUser',cred.login);await page.fill('#lgPass',cred.password);await page.press('#lgPass','Enter');
+            await page.waitForFunction(()=>{const c=window.CX?.backendAuth?.context?.()||{};const a=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{};return c.authenticated===true&&c.role==='admin'&&a.applied===true&&a.hrVisits>0&&window.CX?.data?.previewMeta?.sourceRevision;},null,{timeout:120000});
+            const actual=await page.evaluate(focus=>{const d=window.CX.data;d.currentProjectId='cinepolis';d.currentPeriodId='cinepolis-'+focus;const k=d.kpis();const s=(d.periodOperationalSummary||[]).find(x=>String(x.periodKey)===focus)||null;return{revision:d.previewMeta?.sourceRevision||window.CX_TYA_VISIBLE_DATA_CONTRACT?.sourceRevision||null,marker:window.CX_TYA_F10_OPERATIONAL_EVIDENCE||null,periodId:d.currentPeriodId,kpis:{total:k.total?.t,realizadas:k.realizadas?.t,pendRealizar:k.pendRealizar?.t,sinAgendar:k.sinAgendar?.t,cuestPend:k.cuestPend?.t,sinSubmitir:k.sinSubmitir?.t,liquidationCandidates:k.liquidationCandidates?.t,liquidadas:k.liquidadas?.t},summary:s};},fresh.focus.periodKey);
+            if(actual.revision!==fresh.provider.revision)throw new Error('browser_revision_mismatch:'+actual.revision+'/'+fresh.provider.revision);
+            for(const [k,v] of Object.entries(expected))if(Number(actual.kpis[k])!==Number(v))throw new Error('live_kpi_mismatch_'+k+':'+actual.kpis[k]+'/'+v);
+            if(actual.marker?.version!=='f10-operational-evidence-v1')throw new Error('f10_runtime_marker_missing');
+            fs.writeFileSync(process.env.OUT+'/same-revision-live-browser.source-safe.json',JSON.stringify({decision:'PASS_F10_POSTDEPLOY_FRESH_HR_SAME_REVISION_LIVE_BROWSER',revision:fresh.provider.revision,sourceReadAt:fresh.provider.sourceReadAt,cacheOrigin:fresh.provider.cacheOrigin,periodKey:fresh.focus.periodKey,expected,actual,safety:{browserReadOnly:true,providerWrites:0,dataWrites:0,authWrites:0,hrWrites:0,paymentWrites:0}},null,2)+'\n');
+          }finally{await browser.close();}
+          NODE
+
+      - name: Write terminal sanitized evidence bundle
+        if: success()
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');const p=x=>JSON.parse(fs.readFileSync(process.env.OUT+'/'+x,'utf8'));
+          const auth=p('authorization.source-safe.json'),stage=p('staged-lineage.source-safe.json'),before=p('remote-before.source-safe.json'),dep=p('hosting-deploy.source-safe.json'),lineage=p('remote-lineage.source-safe.json'),fresh=p('fresh-hr/report.json'),live=p('same-revision-live-browser.source-safe.json');
+          const out={schemaVersion:'cxorbia.f10.focal-hosting-dev-terminal.v1',generatedAt:new Date().toISOString(),decision:'PASS_F10_FOCAL_HOSTING_DEV_DEPLOY_AND_FRESH_SAME_REVISION_LIVE_VALIDATION',requestId:auth.requestId,source:{frozenFunctionalSourceSha:auth.frozenFunctionalSourceSha,f10AdapterGitBlob:auth.f10AdapterGitBlob,f10AdapterSha256:auth.f10AdapterSha256,stagedDelta:stage.delta},hosting:{versionName:dep.provider.versionName,releaseName:dep.provider.releaseName,hostingDeployExecutions:1,remoteAdapterAndModules:lineage.decision},freshHr:{revision:fresh.provider.revision,sourceReadAt:fresh.provider.sourceReadAt,cacheOrigin:fresh.provider.cacheOrigin,periodKey:fresh.focus.periodKey},liveBrowser:{decision:live.decision,revision:live.revision,expected:live.expected,actualKpis:live.actual.kpis},safety:{providerMutation:'hosting_release_only',hostingDeploys:1,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,hrWrites:0,storageWrites:0,rulesWrites:0,paymentWrites:0,makeCalls:0,geminiCalls:0,merge:false,production:false,piiExported:false,secretsExported:false}};
+          fs.writeFileSync(process.env.OUT+'/terminal-evidence.source-safe.json',JSON.stringify(out,null,2)+'\n');
+          NODE
+
+      - name: Upload sanitized F10 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-f10-focal-hosting-dev-${{ github.run_id }}
+          path: |
+            .tmp/f10-focal-hosting-dev/*.source-safe.json
+            .tmp/f10-focal-hosting-dev/fresh-hr/report.json
+            .tmp/f10-focal-hosting-dev/fresh-hr/summary.md
+            .tmp/f10-focal-hosting-dev/terminal-evidence.source-safe.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Publish observable status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          STATE=success;DESC='PASS_F10_FOCAL_HOSTING_AND_SAME_REVISION_LIVE'
+          if [ '${{ job.status }}' != 'success' ]; then STATE=error;DESC='HOLD_F10_FOCAL_HOSTING_OR_LIVE_VALIDATION'; fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/f10-focal-hosting-dev' -f description="$DESC" >/dev/null
+
+      - name: Cleanup private material
+        if: always()
+        run: rm -rf "$OUT/private"
