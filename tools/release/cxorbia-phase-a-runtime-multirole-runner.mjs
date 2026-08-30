@@ -94,6 +94,63 @@ async function main(){
   check(request.containsPii===false&&request.containsSecrets===false,'request_sanitized');
   check(fs.existsSync(PRIVATE_PATH),'private_credentials_present');
 
+  if(request.diagnosticMode==='F10_LIVE_ADMIN_FRESH_CONTENT_EQUIVALENCE'){
+    check(request.periodFocus==='2026-08','f10_period_focus_exact',String(request.periodFocus||''));
+    const scripts=[
+      'tools/qa/tya-f10-fresh-hr-row-level-reconciliation.mjs',
+      'tools/qa/tya-f10-live-admin-fresh-content-gate.mjs'
+    ];
+    for(const script of scripts){
+      check(fs.existsSync(path.join(ROOT,script)),'f10_script_present',script);
+      run('node',['--check',script]);
+    }
+    fs.mkdirSync(RUNTIME_DIR,{recursive:true});
+    const providerRequestPath=path.join(RUNTIME_DIR,'f10-provider-request.runtime.json');
+    const providerOutDir=path.join(RUNTIME_DIR,'f10-fresh-hr');
+    const providerReportPath=path.join(providerOutDir,'report.json');
+    const livePath=path.join(RUNTIME_DIR,'f10-live-admin-fresh-content.json');
+    fs.writeFileSync(providerRequestPath,JSON.stringify({
+      ...request,
+      profile:'CORTE3_FINANCIAL_RECONCILIATION_R20',
+      allowedProfiles:['CORTE3_FINANCIAL_RECONCILIATION_R20'],
+      diagnosticMode:'F10_INDEPENDENT_PROVIDER_LIVE_REBUILD_AND_ROW_IDENTITY_RECONCILIATION'
+    },null,2)+'\n','utf8');
+    run('node',['tools/qa/tya-f10-fresh-hr-row-level-reconciliation.mjs','--request',path.relative(ROOT,providerRequestPath),'--out',path.relative(ROOT,providerOutDir)],{
+      CXORBIA_DEV_ROOT_URL:request.devRootUrl
+    });
+    const fresh=parseJsonFile(providerReportPath,'f10_fresh_provider');
+    check(fresh.decision==='PASS_F10_FRESH_HR_ROW_LEVEL_RECONCILIATION','f10_fresh_provider_pass',String(fresh.decision||''));
+    check(fresh.provider?.cacheOrigin==='runtime_refresh','f10_fresh_provider_runtime_refresh',String(fresh.provider?.cacheOrigin||''));
+    check(Number(fresh.independentCanonicalComparison?.mismatchCount||0)===0,'f10_fresh_provider_canonical_zero_mismatch');
+    check(Number(fresh.inventory?.duplicateRowKeys||0)===0,'f10_fresh_provider_zero_duplicate_rows');
+    run('node',['tools/qa/tya-f10-live-admin-fresh-content-gate.mjs','--fresh',path.relative(ROOT,providerReportPath),'--out',path.relative(ROOT,livePath)],{
+      CXORBIA_DEV_ROOT_URL:request.devRootUrl,
+      CXORBIA_E2E_PRIVATE_CREDENTIALS:PRIVATE_PATH
+    });
+    const live=parseJsonFile(livePath,'f10_live_admin_fresh_content');
+    check(live.decision==='PASS_F10_LIVE_ADMIN_FRESH_CONTENT_EQUIVALENCE','f10_live_admin_fresh_content_pass',String(live.decision||''));
+    check(live.interpretation?.exactRevisionTokenEqualityRequired===false,'f10_revision_token_not_cross_refresh_identity');
+    report.artifacts=[
+      '.tmp/phase-a-runtime-multirole/f10-fresh-hr/report.json',
+      '.tmp/phase-a-runtime-multirole/f10-fresh-hr/summary.md',
+      '.tmp/phase-a-runtime-multirole/f10-live-admin-fresh-content.json'
+    ];
+    report.summary={
+      status:'PASS_READONLY_POST_GATES',profile:PROFILE,
+      diagnosticMode:'F10_LIVE_ADMIN_FRESH_CONTENT_EQUIVALENCE',
+      decision:live.decision,
+      periodKey:live.periodKey,
+      providerFresh:live.providerFresh,
+      liveBrowser:live.liveBrowser,
+      interpretation:live.interpretation,
+      sourceEvidence:{freshDecision:fresh.decision,focusDigestSha256:fresh.focus?.digestSha256||null,canonicalMismatchCount:Number(fresh.independentCanonicalComparison?.mismatchCount||0),duplicateRowKeys:Number(fresh.inventory?.duplicateRowKeys||0)},
+      credentialsExposed:false,tokensExposed:false,providerReads:true,providerWrites:false,dataWrites:false,authWrites:0,firestoreWrites:0,hrWrites:0,storageWrites:0,hostingDeploys:0,cloudRunDeploys:0,merge:false,production:false
+    };
+    check(run('git',['status','--porcelain'])==='','repository_unchanged_after_f10_content_gate');
+    report.status='PASS_READONLY_POST_GATES';
+    return;
+  }
+
   if(request.diagnosticMode==='client_route_wait'){
     const diagnosticRequestPath=path.join(ROOT,'.tmp/c6-client-route-wait-diagnostic/request.runtime-profile.json');
     fs.mkdirSync(path.dirname(diagnosticRequestPath),{recursive:true});
