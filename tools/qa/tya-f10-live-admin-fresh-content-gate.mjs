@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
@@ -14,6 +15,11 @@ const readJson=p=>JSON.parse(fs.readFileSync(p,'utf8').replace(/^\uFEFF/,''));
 const fail=m=>{throw new Error(m);};
 const clean=v=>String(v??'').replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+/g,'REDACTED_EMAIL').replace(/[^A-Za-z0-9_.:/=-]+/g,'_').replace(/_+/g,'_').slice(0,1600);
 const write=v=>{fs.mkdirSync(path.dirname(outPath),{recursive:true});fs.writeFileSync(outPath,JSON.stringify(v,null,2)+'\n','utf8');};
+const digest=v=>crypto.createHash('sha256').update(JSON.stringify(v)).digest('hex');
+const bool=v=>v===true;
+const normCountry=v=>String(v||'unknown').trim().toUpperCase()||'UNKNOWN';
+const normRowKey=(hrRowId,sourceTab,sourceRow,visitId)=>String(hrRowId||((sourceTab&&sourceRow!=null)?`${sourceTab}!${sourceRow}`:'')||visitId||'').trim();
+const sortRows=rows=>rows.slice().sort((a,b)=>String(a.rowKey).localeCompare(String(b.rowKey))||String(a.country).localeCompare(String(b.country))||Number(a.sourceRow||0)-Number(b.sourceRow||0));
 
 if(!fs.existsSync(freshPath))fail('fresh_report_missing');
 if(!fs.existsSync(privatePath))fail('private_credentials_missing');
@@ -39,6 +45,48 @@ const expected={
   liquidationCandidates:active.filter(submitted).length,
   liquidadas:active.filter(r=>r.canonical?.liquidationConfirmed===true).length
 };
+const providerOperationalRows=sortRows(rows.map(r=>({
+  rowKey:normRowKey(r?.hrRowId,r?.sourceTab,r?.sourceRow,r?.visitId),
+  country:normCountry(r?.country),
+  sourceRow:Number(r?.sourceRow??0),
+  assigned:bool(r?.assigned),
+  scheduledEvidence:bool(r?.scheduledEvidence),
+  realizedEvidence:bool(r?.realizedEvidence),
+  questionnaireEvidence:bool(r?.questionnaireEvidence),
+  submittedEvidence:bool(r?.submittedEvidence),
+  liquidationConfirmed:bool(r?.canonical?.liquidationConfirmed),
+  paymentConfirmed:bool(r?.canonical?.paymentConfirmed),
+  cancelled:bool(r?.canonical?.cancelled),
+  reviewRequired:bool(r?.reviewRequired)
+})));
+if(providerOperationalRows.some(r=>!r.rowKey))fail('provider_operational_row_key_missing');
+if(new Set(providerOperationalRows.map(r=>r.rowKey)).size!==providerOperationalRows.length)fail('provider_operational_row_key_duplicate');
+const providerOperationalDigest=digest(providerOperationalRows);
+
+function summaryFromRows(signatures){
+  const out={total:0,assigned:0,scheduled:0,pendingSchedule:0,realized:0,pendingRealization:0,questionnaireCompleted:0,pendingQuestionnaire:0,submitted:0,pendingSubmission:0,liquidationCandidates:0,liquidationConfirmed:0,paymentConfirmed:0,reviewRequired:0,byCountry:{},statesByCountry:{}};
+  for(const r of signatures){
+    const active=!r.cancelled;
+    out.total++;
+    out.byCountry[r.country]=(out.byCountry[r.country]||0)+1;
+    out.statesByCountry[r.country]??={total:0,assigned:0,scheduled:0,pendingSchedule:0,realized:0,pendingRealization:0,questionnaireCompleted:0,pendingQuestionnaire:0,submitted:0,pendingSubmission:0,liquidationCandidates:0,liquidationConfirmed:0,paymentConfirmed:0};
+    const s=out.statesByCountry[r.country];s.total++;
+    if(r.assigned&&active){out.assigned++;s.assigned++;}
+    if(r.scheduledEvidence&&active){out.scheduled++;s.scheduled++;}
+    if(r.assigned&&!r.scheduledEvidence&&!r.realizedEvidence&&active){out.pendingSchedule++;s.pendingSchedule++;}
+    if(r.realizedEvidence&&active){out.realized++;s.realized++;}
+    if(!r.realizedEvidence&&active){out.pendingRealization++;s.pendingRealization++;}
+    if(r.questionnaireEvidence&&active){out.questionnaireCompleted++;s.questionnaireCompleted++;}
+    if(r.realizedEvidence&&!r.questionnaireEvidence&&active){out.pendingQuestionnaire++;s.pendingQuestionnaire++;}
+    if(r.submittedEvidence&&active){out.submitted++;out.liquidationCandidates++;s.submitted++;s.liquidationCandidates++;}
+    if(r.questionnaireEvidence&&!r.submittedEvidence&&active){out.pendingSubmission++;s.pendingSubmission++;}
+    if(r.liquidationConfirmed&&active){out.liquidationConfirmed++;s.liquidationConfirmed++;}
+    if(r.paymentConfirmed&&active){out.paymentConfirmed++;s.paymentConfirmed++;}
+    if(r.reviewRequired)out.reviewRequired++;
+  }
+  return out;
+}
+const providerOperationalSummary=summaryFromRows(providerOperationalRows);
 
 const browser=await chromium.launch({headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
 const context=await browser.newContext({serviceWorkers:'block',viewport:{width:1440,height:1000}});
@@ -84,11 +132,36 @@ try{
     const d=window.CX.data;
     const a=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{};
     const meta=window.CX_TYA_HR_LIVE_META||{};
+    const str=v=>String(v==null?'':v).trim();
+    const lower=v=>str(v).toLowerCase();
+    const has=v=>v!==undefined&&v!==null&&str(v)!=='';
+    const country=v=>String(v?.country||v?.pais||'unknown').trim().toUpperCase()||'UNKNOWN';
+    const period=v=>str(v?.periodKey)||str(v?.projectId).replace(/^cinepolis-/,'');
+    const key=v=>str(v?.hrRowId)||((str(v?.sourceTab)&&v?.sourceRow!=null)?`${str(v.sourceTab)}!${v.sourceRow}`:'')||str(v?.id||v?.visitId);
     d.currentProjectId='cinepolis';
     d.currentPeriodId='cinepolis-'+focus;
-    if(typeof window.CX_TYA_F10_OPERATIONAL_EVIDENCE?.install==='function')window.CX_TYA_F10_OPERATIONAL_EVIDENCE.install('postdeploy_fresh_content_equivalence_gate');
+    if(typeof window.CX_TYA_F10_OPERATIONAL_EVIDENCE?.install==='function')window.CX_TYA_F10_OPERATIONAL_EVIDENCE.install('postdeploy_fresh_row_content_equivalence_gate');
     const k=d.kpis();
     const s=(d.periodOperationalSummary||[]).find(x=>String(x.periodKey)===focus)||null;
+    const operational=typeof d.operationalEvidenceFacets==='function'?d.operationalEvidenceFacets:typeof d.visitFacets==='function'?d.visitFacets:null;
+    if(typeof operational!=='function')throw new Error('operational_evidence_facets_missing');
+    const rowSignatures=(Array.isArray(d._visitas)?d._visitas:[]).filter(v=>period(v)===focus&&!v?._archived).map(v=>{
+      const f=operational(v)||{};
+      return {
+        rowKey:key(v),
+        country:country(v),
+        sourceRow:Number(v?.sourceRow??0),
+        assigned:f.assigned===true,
+        scheduledEvidence:f.scheduled===true,
+        realizedEvidence:f.realized===true,
+        questionnaireEvidence:f.questionnaire===true,
+        submittedEvidence:f.submitted===true||v?.submit===true||has(v?.submittedAt)||['confirmed_hr','submitted_by_tya'].includes(lower(v?.submissionState))||f.liquidationConfirmed===true||f.paymentConfirmed===true,
+        liquidationConfirmed:f.liquidationConfirmed===true,
+        paymentConfirmed:f.paymentConfirmed===true,
+        cancelled:f.cancelled===true,
+        reviewRequired:v?.reviewRequired===true
+      };
+    }).sort((x,y)=>String(x.rowKey).localeCompare(String(y.rowKey))||String(x.country).localeCompare(String(y.country))||Number(x.sourceRow||0)-Number(y.sourceRow||0));
     return {
       revision:d.previewMeta?.sourceRevision||window.CX_TYA_VISIBLE_DATA_CONTRACT?.sourceRevision||null,
       sourceReadAt:meta.sourceReadAt||null,
@@ -109,7 +182,8 @@ try{
         liquidationCandidates:k.liquidationCandidates?.t,
         liquidadas:k.liquidadas?.t
       },
-      summary:s
+      summary:s,
+      rowSignatures
     };
   },fresh.focus.periodKey);
 
@@ -118,22 +192,34 @@ try{
   if(actual.authorityLatestPeriod!==fresh.inventory?.latestPeriodKey)fail('live_authority_latest_period_mismatch:'+actual.authorityLatestPeriod+'/'+fresh.inventory?.latestPeriodKey);
   for(const [k,v] of Object.entries(expected))if(Number(actual.kpis[k])!==Number(v))fail('live_kpi_mismatch_'+k+':'+actual.kpis[k]+'/'+v);
   if(actual.markerVersion!=='f10-operational-evidence-v1'||actual.readyVersion!=='f10-operational-evidence-v1')fail('f10_runtime_marker_missing');
+  if(!Array.isArray(actual.rowSignatures)||actual.rowSignatures.length!==providerOperationalRows.length)fail('live_operational_row_count_mismatch:'+String(actual.rowSignatures?.length??-1)+'/'+providerOperationalRows.length);
+  if(actual.rowSignatures.some(r=>!r.rowKey))fail('live_operational_row_key_missing');
+  if(new Set(actual.rowSignatures.map(r=>r.rowKey)).size!==actual.rowSignatures.length)fail('live_operational_row_key_duplicate');
+  const liveOperationalDigest=digest(actual.rowSignatures);
+  if(liveOperationalDigest!==providerOperationalDigest)fail('live_operational_row_digest_mismatch:'+liveOperationalDigest+'/'+providerOperationalDigest);
+  const summaryKeys=['total','assigned','scheduled','pendingSchedule','realized','pendingRealization','questionnaireCompleted','pendingQuestionnaire','submitted','pendingSubmission','liquidationCandidates','liquidationConfirmed','paymentConfirmed','reviewRequired'];
+  for(const k of summaryKeys)if(Number(actual.summary?.[k]??-1)!==Number(providerOperationalSummary[k]))fail('live_operational_summary_mismatch_'+k+':'+String(actual.summary?.[k])+'/'+String(providerOperationalSummary[k]));
+  if(JSON.stringify(actual.summary?.byCountry||{})!==JSON.stringify(providerOperationalSummary.byCountry))fail('live_operational_country_totals_mismatch');
+  for(const [c,expectedCountry] of Object.entries(providerOperationalSummary.statesByCountry)){
+    const got=actual.summary?.statesByCountry?.[c]||{};
+    for(const k of Object.keys(expectedCountry))if(Number(got?.[k]??-1)!==Number(expectedCountry[k]))fail('live_operational_country_summary_mismatch_'+c+'_'+k+':'+String(got?.[k])+'/'+String(expectedCountry[k]));
+  }
 
-  const revisionRelation=actual.revision===fresh.provider.revision?'same_refresh_token':'different_refresh_token_kpi_equivalent';
+  const revisionRelation=actual.revision===fresh.provider.revision?'same_refresh_token':'different_refresh_token_row_content_equivalent';
   report={
-    schemaVersion:'cxorbia.f10.live-admin-fresh-content-equivalence.v1',
+    schemaVersion:'cxorbia.f10.live-admin-fresh-content-equivalence.v2',
     generatedAt:new Date().toISOString(),
     decision:'PASS_F10_LIVE_ADMIN_FRESH_CONTENT_EQUIVALENCE',
     periodKey:fresh.focus.periodKey,
-    providerFresh:{revision:fresh.provider.revision,sourceReadAt:fresh.provider.sourceReadAt,cacheOrigin:fresh.provider.cacheOrigin,focusDigestSha256:fresh.focus.digestSha256,visitCount:fresh.inventory.visitCount,periodCount:fresh.inventory.periodCount,latestPeriodKey:fresh.inventory.latestPeriodKey},
-    liveBrowser:{revision:actual.revision,sourceReadAt:actual.sourceReadAt,cacheOrigin:actual.cacheOrigin,revisionRelation,authorityVisits:actual.authorityVisits,authorityPeriods:actual.authorityPeriods,authorityLatestPeriod:actual.authorityLatestPeriod,periodId:actual.periodId,expectedKpis:expected,actualKpis:actual.kpis,summary:actual.summary,markerVersion:actual.markerVersion,readyVersion:actual.readyVersion},
-    interpretation:{exactRevisionTokenEqualityRequired:false,contentAuthority:'fresh_provider_row_level_plus_live_admin_kpi_equivalence',crossRefreshTokenDifferenceIsBlocker:false},
+    providerFresh:{revision:fresh.provider.revision,sourceReadAt:fresh.provider.sourceReadAt,cacheOrigin:fresh.provider.cacheOrigin,focusDigestSha256:fresh.focus.digestSha256,operationalEvidenceDigestSha256:providerOperationalDigest,operationalRowCount:providerOperationalRows.length,visitCount:fresh.inventory.visitCount,periodCount:fresh.inventory.periodCount,latestPeriodKey:fresh.inventory.latestPeriodKey},
+    liveBrowser:{revision:actual.revision,sourceReadAt:actual.sourceReadAt,cacheOrigin:actual.cacheOrigin,revisionRelation,authorityVisits:actual.authorityVisits,authorityPeriods:actual.authorityPeriods,authorityLatestPeriod:actual.authorityLatestPeriod,periodId:actual.periodId,operationalEvidenceDigestSha256:liveOperationalDigest,operationalRowCount:actual.rowSignatures.length,rowDigestMatch:true,summaryCountsMatch:true,expectedKpis:expected,actualKpis:actual.kpis,summary:actual.summary,markerVersion:actual.markerVersion,readyVersion:actual.readyVersion},
+    interpretation:{exactRevisionTokenEqualityRequired:false,rowLevelOperationalDigestRequired:true,contentAuthority:'fresh_provider_row_level_digest_plus_live_admin_row_digest_and_kpi_equivalence',crossRefreshTokenDifferenceIsBlocker:false},
     safety:{browserReadOnly:true,providerReads:true,providerWrites:0,dataWrites:0,repositoryWrites:0,authWrites:0,firestoreWrites:0,hrWrites:0,storageWrites:0,paymentWrites:0,makeCalls:0,geminiCalls:0,deploys:0,merge:false,production:false,credentialsExposed:false,tokensExposed:false}
   };
   write(report);
-  console.log(JSON.stringify({decision:report.decision,periodKey:report.periodKey,revisionRelation,expectedKpis:expected,actualKpis:actual.kpis,providerRevision:fresh.provider.revision,browserRevision:actual.revision},null,2));
+  console.log(JSON.stringify({decision:report.decision,periodKey:report.periodKey,revisionRelation,rowDigestMatch:true,operationalEvidenceDigestSha256:liveOperationalDigest,expectedKpis:expected,actualKpis:actual.kpis,providerRevision:fresh.provider.revision,browserRevision:actual.revision},null,2));
 } catch(error){
-  report={schemaVersion:'cxorbia.f10.live-admin-fresh-content-equivalence.failure.v1',generatedAt:new Date().toISOString(),decision:'HOLD_F10_LIVE_ADMIN_FRESH_CONTENT_EQUIVALENCE',error:clean(error?.message||error),periodKey:fresh.focus?.periodKey||null,safety:{browserReadOnly:true,providerReads:true,providerWrites:0,dataWrites:0,repositoryWrites:0,authWrites:0,firestoreWrites:0,hrWrites:0,storageWrites:0,paymentWrites:0,makeCalls:0,geminiCalls:0,deploys:0,merge:false,production:false,credentialsExposed:false,tokensExposed:false}};
+  report={schemaVersion:'cxorbia.f10.live-admin-fresh-content-equivalence.failure.v2',generatedAt:new Date().toISOString(),decision:'HOLD_F10_LIVE_ADMIN_FRESH_CONTENT_EQUIVALENCE',error:clean(error?.message||error),periodKey:fresh.focus?.periodKey||null,safety:{browserReadOnly:true,providerReads:true,providerWrites:0,dataWrites:0,repositoryWrites:0,authWrites:0,firestoreWrites:0,hrWrites:0,storageWrites:0,paymentWrites:0,makeCalls:0,geminiCalls:0,deploys:0,merge:false,production:false,credentialsExposed:false,tokensExposed:false}};
   write(report);
   console.error(report.error);
   process.exitCode=1;
