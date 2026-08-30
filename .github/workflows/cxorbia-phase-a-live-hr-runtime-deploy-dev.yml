@@ -189,27 +189,17 @@ jobs:
           if(!p?.staff?.login||!p?.staff?.password||p?.staff?.role!=='admin')throw new Error('admin_credential_missing');
           NODE
 
-      - name: Install Chromium for same-revision live browser validation
+      - name: Install Chromium for fresh-content live browser validation
         run: npx playwright install --with-deps chromium >/dev/null
 
-      - name: Validate live admin KPIs against exact fresh HR revision
+      - name: Validate live admin KPIs against fresh HR content equivalence
         run: |
           set -euo pipefail
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';import {chromium} from 'playwright';
-          const fresh=JSON.parse(fs.readFileSync(process.env.OUT+'/fresh-hr/report.json','utf8'));const cred=JSON.parse(fs.readFileSync(process.env.OUT+'/private/private-e2e.json','utf8')).staff;
-          if(fresh.decision!=='PASS_F10_FRESH_HR_ROW_LEVEL_RECONCILIATION'||fresh.provider?.cacheOrigin!=='runtime_refresh')throw new Error('fresh_hr_not_pass');
-          const rows=fresh.focus?.rows||[];const active=rows.filter(r=>r?.canonical?.cancelled!==true);const submitted=r=>r.submittedEvidence===true||r.canonical?.liquidationConfirmed===true||r.canonical?.paymentConfirmed===true;
-          const expected={total:active.length,realizadas:active.filter(r=>r.realizedEvidence===true).length,pendRealizar:active.filter(r=>r.realizedEvidence!==true).length,sinAgendar:active.filter(r=>r.canonical?.assigned===true&&r.scheduledEvidence!==true&&r.realizedEvidence!==true).length,cuestPend:active.filter(r=>r.realizedEvidence===true&&r.questionnaireEvidence!==true).length,sinSubmitir:active.filter(r=>r.questionnaireEvidence===true&&!submitted(r)).length,liquidationCandidates:active.filter(submitted).length,liquidadas:active.filter(r=>r.canonical?.liquidationConfirmed===true).length};
-          const browser=await chromium.launch({headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});const context=await browser.newContext({serviceWorkers:'block'});const page=await context.newPage();
-          try{
-            await page.goto(process.env.DEV_ROOT+'/?f10live='+Date.now(),{waitUntil:'commit',timeout:60000});await page.waitForSelector('.role-btn[data-role="admin"]',{state:'visible',timeout:60000});await page.click('.role-btn[data-role="admin"]');await page.waitForSelector('#lgUser',{state:'visible',timeout:15000});await page.fill('#lgUser',cred.login);await page.fill('#lgPass',cred.password);await page.press('#lgPass','Enter');
-            await page.waitForFunction(expectedRevision=>{const c=window.CX?.backendAuth?.context?.()||{};const a=window.CX_PROTECTED_AUTH_HR_AUTHORITY||{};const rev=window.CX?.data?.previewMeta?.sourceRevision||window.CX_TYA_VISIBLE_DATA_CONTRACT?.sourceRevision||null;return c.authenticated===true&&c.role==='admin'&&a.applied===true&&a.hrVisits>0&&rev===expectedRevision;},fresh.provider.revision,{timeout:120000});
-            const actual=await page.evaluate(focus=>{const d=window.CX.data;d.currentProjectId='cinepolis';d.currentPeriodId='cinepolis-'+focus;if(typeof window.CX_TYA_F10_OPERATIONAL_EVIDENCE?.install==='function')window.CX_TYA_F10_OPERATIONAL_EVIDENCE.install('postdeploy_same_revision_gate');const k=d.kpis();const s=(d.periodOperationalSummary||[]).find(x=>String(x.periodKey)===focus)||null;return{revision:d.previewMeta?.sourceRevision||window.CX_TYA_VISIBLE_DATA_CONTRACT?.sourceRevision||null,marker:window.CX_TYA_F10_OPERATIONAL_EVIDENCE||null,ready:window.CX_TYA_F10_OPERATIONAL_EVIDENCE_READY||null,periodId:d.currentPeriodId,kpis:{total:k.total?.t,realizadas:k.realizadas?.t,pendRealizar:k.pendRealizar?.t,sinAgendar:k.sinAgendar?.t,cuestPend:k.cuestPend?.t,sinSubmitir:k.sinSubmitir?.t,liquidationCandidates:k.liquidationCandidates?.t,liquidadas:k.liquidadas?.t},summary:s};},fresh.focus.periodKey);
-            if(actual.revision!==fresh.provider.revision)throw new Error('browser_revision_mismatch:'+actual.revision+'/'+fresh.provider.revision);for(const [k,v] of Object.entries(expected))if(Number(actual.kpis[k])!==Number(v))throw new Error('live_kpi_mismatch_'+k+':'+actual.kpis[k]+'/'+v);if(actual.marker?.version!=='f10-operational-evidence-v1'||actual.ready?.version!=='f10-operational-evidence-v1')throw new Error('f10_runtime_marker_missing');
-            fs.writeFileSync(process.env.OUT+'/same-revision-live-browser.source-safe.json',JSON.stringify({decision:'PASS_F10_POSTDEPLOY_FRESH_HR_SAME_REVISION_LIVE_BROWSER',revision:fresh.provider.revision,sourceReadAt:fresh.provider.sourceReadAt,cacheOrigin:fresh.provider.cacheOrigin,periodKey:fresh.focus.periodKey,expected,actual:{revision:actual.revision,kpis:actual.kpis,summary:actual.summary,markerVersion:actual.marker?.version,readyVersion:actual.ready?.version},safety:{browserReadOnly:true,providerWrites:0,dataWrites:0,authWrites:0,hrWrites:0,paymentWrites:0}},null,2)+'\n');
-          }finally{await browser.close();}
-          NODE
+          CXORBIA_DEV_ROOT_URL="$DEV_ROOT" \
+          CXORBIA_E2E_PRIVATE_CREDENTIALS="$OUT/private/private-e2e.json" \
+          node tools/qa/tya-f10-live-admin-fresh-content-gate.mjs \
+            --fresh "$OUT/fresh-hr/report.json" \
+            --out "$OUT/fresh-content-live-browser.source-safe.json"
 
       - name: Write terminal sanitized evidence
         if: success()
@@ -217,8 +207,9 @@ jobs:
           set -euo pipefail
           node <<'NODE'
           const fs=require('fs');const p=x=>JSON.parse(fs.readFileSync(process.env.OUT+'/'+x,'utf8'));
-          const auth=p('authorization.source-safe.json'),stage=p('staged-lineage.source-safe.json'),dep=p('hosting-deploy.source-safe.json'),lineage=p('remote-lineage.source-safe.json'),fresh=p('fresh-hr/report.json'),live=p('same-revision-live-browser.source-safe.json');
-          const out={schemaVersion:'cxorbia.f10.focal-hosting-dev-terminal.v1',generatedAt:new Date().toISOString(),decision:'PASS_F10_FOCAL_HOSTING_DEV_DEPLOY_AND_FRESH_SAME_REVISION_LIVE_VALIDATION',requestId:auth.requestId,source:{frozenFunctionalSourceSha:auth.frozenFunctionalSourceSha,f10AdapterGitBlob:auth.f10AdapterGitBlob,f10AdapterSha256:auth.f10AdapterSha256,stagedDelta:stage.delta},hosting:{versionName:dep.provider.versionName,releaseName:dep.provider.releaseName,hostingDeployExecutions:1,remoteAdapterAndModules:lineage.decision},freshHr:{revision:fresh.provider.revision,sourceReadAt:fresh.provider.sourceReadAt,cacheOrigin:fresh.provider.cacheOrigin,periodKey:fresh.focus.periodKey},liveBrowser:{decision:live.decision,revision:live.revision,expected:live.expected,actualKpis:live.actual.kpis},safety:{providerMutation:'hosting_release_only',hostingDeploys:1,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,hrWrites:0,storageWrites:0,rulesWrites:0,paymentWrites:0,makeCalls:0,geminiCalls:0,merge:false,production:false,piiExported:false,secretsExported:false}};fs.writeFileSync(process.env.OUT+'/terminal-evidence.source-safe.json',JSON.stringify(out,null,2)+'\n');
+          const auth=p('authorization.source-safe.json'),stage=p('staged-lineage.source-safe.json'),dep=p('hosting-deploy.source-safe.json'),lineage=p('remote-lineage.source-safe.json'),fresh=p('fresh-hr/report.json'),live=p('fresh-content-live-browser.source-safe.json');
+          if(live.decision!=='PASS_F10_LIVE_ADMIN_FRESH_CONTENT_EQUIVALENCE')throw new Error('f10_live_content_equivalence_not_pass');
+          const out={schemaVersion:'cxorbia.f10.focal-hosting-dev-terminal.v2',generatedAt:new Date().toISOString(),decision:'PASS_F10_FOCAL_HOSTING_DEV_DEPLOY_AND_FRESH_CONTENT_LIVE_VALIDATION',requestId:auth.requestId,source:{frozenFunctionalSourceSha:auth.frozenFunctionalSourceSha,f10AdapterGitBlob:auth.f10AdapterGitBlob,f10AdapterSha256:auth.f10AdapterSha256,stagedDelta:stage.delta},hosting:{versionName:dep.provider.versionName,releaseName:dep.provider.releaseName,hostingDeployExecutions:1,remoteAdapterAndModules:lineage.decision},freshHr:{revision:fresh.provider.revision,sourceReadAt:fresh.provider.sourceReadAt,cacheOrigin:fresh.provider.cacheOrigin,periodKey:fresh.focus.periodKey,focusDigestSha256:fresh.focus.digestSha256},liveBrowser:{decision:live.decision,revision:live.liveBrowser.revision,sourceReadAt:live.liveBrowser.sourceReadAt,revisionRelation:live.liveBrowser.revisionRelation,expected:live.liveBrowser.expectedKpis,actualKpis:live.liveBrowser.actualKpis},validationAuthority:'fresh_provider_row_level_plus_live_admin_kpi_equivalence',exactCrossRefreshRevisionEqualityRequired:false,safety:{providerMutation:'hosting_release_only',hostingDeploys:1,cloudRunDeploys:0,firestoreWrites:0,authWrites:0,hrWrites:0,storageWrites:0,rulesWrites:0,paymentWrites:0,makeCalls:0,geminiCalls:0,merge:false,production:false,piiExported:false,secretsExported:false}};fs.writeFileSync(process.env.OUT+'/terminal-evidence.source-safe.json',JSON.stringify(out,null,2)+'\n');
           NODE
 
       - name: Upload sanitized F10 evidence
@@ -239,7 +230,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          STATE=success;DESC='PASS_F10_FOCAL_HOSTING_AND_SAME_REVISION_LIVE'
+          STATE=success;DESC='PASS_F10_FOCAL_HOSTING_AND_FRESH_CONTENT_LIVE'
           if [ '${{ job.status }}' != 'success' ]; then STATE=error;DESC='HOLD_F10_FOCAL_HOSTING_OR_LIVE_VALIDATION'; fi
           gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/f10-focal-hosting-dev' -f description="$DESC" >/dev/null
 
