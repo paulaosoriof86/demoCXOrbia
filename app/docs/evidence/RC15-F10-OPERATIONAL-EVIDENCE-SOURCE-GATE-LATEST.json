@@ -1,0 +1,145 @@
+{
+  "schemaVersion": "cxorbia.rc15.f10.operational-evidence-source-gate.v1",
+  "evidenceId": "RC15-F10-OPERATIONAL-EVIDENCE-SOURCE-GATE-20260829-01",
+  "generatedAt": "2026-08-29",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "phase": "F10_PERMANENT_OPERATING_MODEL",
+  "incidentId": "F10-HR-KPI-FRESHNESS-20260829-01",
+  "decision": "PASS_F10_SOURCE_PATCH_AND_APPROVED_MODULE_LINEAGE_INTACT__PREDEPLOY_HOLD",
+  "productP0Proven": false,
+  "sourcePatch": {
+    "functionalCommitSha": "6392736070dcf34d24f9b27b8bb1d0ecbcf116b0",
+    "message": "fix(f10): separate operational HR evidence from lifecycle inference",
+    "file": "app/adapters/tya-canonical-state-semantics-v2.js",
+    "gitBlobSha": "941051c96a26017363acfc72f7e88edbe70c68ba",
+    "sha256": "e832759e03238559617b71daa4daa52a00b2c6dbd2d2266e6df0ae391f853b2e",
+    "bytes": 23012,
+    "compareBase": "9777bdc7d5a0d4a7cc7c92ed1bdf16a3b934f5a4",
+    "netFunctionalFilesChanged": ["app/adapters/tya-canonical-state-semantics-v2.js"],
+    "moduleFilesChanged": 0,
+    "coreFilesChanged": 0,
+    "entrypointChanged": false,
+    "appJsChanged": false
+  },
+  "atomicApply": {
+    "runId": 33283725070,
+    "artifactId": 9723747009,
+    "artifactDigest": "sha256:3499a94477d0899e3286c1422ecf9caba6bf6e3b1be3c452c7a719b9de1faf93",
+    "requestCommitSha": "533ee7bdf29930ba18b7ec4b478ee6af37661264",
+    "runnerStatus": "APPLIED_AND_VERIFIED",
+    "workflowConclusion": "success",
+    "blockers": [],
+    "requestRemovedFromFunctionalHead": true,
+    "postCommitWorktreeClean": true,
+    "deploy": false,
+    "merge": false,
+    "production": false,
+    "providerWrites": false,
+    "dataWrites": false
+  },
+  "semanticExecutableGate": {
+    "decision": "PASS_F10_OPERATIONAL_EVIDENCE_SEMANTICS",
+    "exactSourceSha256": "e832759e03238559617b71daa4daa52a00b2c6dbd2d2266e6df0ae391f853b2e",
+    "syntax": "PASS_NODE_CHECK",
+    "fixturePurpose": "Prove that later submitted lifecycle evidence does not back-promote visible operational realized/questionnaire milestones, while preserving lifecycle inference separately.",
+    "fixtureSummary": {
+      "total": 4,
+      "operationalRealized": 2,
+      "canonicalLifecycleRealized": 3,
+      "pendingRealization": 2,
+      "questionnaireCompleted": 1,
+      "pendingQuestionnaire": 1,
+      "submitted": 3,
+      "liquidationCandidates": 3,
+      "liquidationConfirmed": 0,
+      "paymentConfirmed": 0
+    },
+    "assertions": [
+      "submitted_without_realized remains operationalRealized=false while lifecycleRealized=true",
+      "submitted_without_questionnaire remains operationalQuestionnaire=false while lifecycleQuestionnaire=true",
+      "liquidationCandidate follows submitted evidence and remains separate from liquidationConfirmed/paymentConfirmed",
+      "CX.data.kpis uses operational evidence facets after F10 facade installation"
+    ]
+  },
+  "freshProviderAuthority": {
+    "evidence": "app/docs/evidence/RC15-F10-FRESH-HR-SEMANTIC-ADJUDICATION-LATEST.json",
+    "runId": 33281688280,
+    "revision": "b7bc89176161a8a1b83e3d33098634ae77a5a8bc3f6f44ee7c749e2d11da598d",
+    "sourceReadAt": "2026-08-29T23:44:58.827Z",
+    "cacheOrigin": "runtime_refresh",
+    "periodKey": "2026-08",
+    "expectedOperationalEvidence": {
+      "total": 44,
+      "realized": 30,
+      "pendingRealization": 14,
+      "questionnairePending": 4,
+      "pendingSchedule": 4,
+      "submitted": 30,
+      "liquidationCandidates": 30,
+      "liquidationConfirmed": 0,
+      "paymentConfirmed": 0
+    },
+    "countryEvidence": {
+      "GT": {"total": 34, "realized": 24, "pendingRealization": 10, "questionnairePending": 4, "pendingSchedule": 3, "submitted": 24, "liquidationCandidates": 24},
+      "HN": {"total": 10, "realized": 6, "pendingRealization": 4, "questionnairePending": 0, "pendingSchedule": 1, "submitted": 6, "liquidationCandidates": 6}
+    }
+  },
+  "moduleLineageGate": {
+    "matrix": "backend/config/cxorbia-f10-approved-module-authority-matrix-v1.json",
+    "phaseAApprovedLoadedModulesChecked": 26,
+    "frozenSupportModulesChecked": 10,
+    "postPhaseALoadedModulesChecked": 5,
+    "mismatches": 0,
+    "entrypointGitBlob": "7a5f169dd0e239d46fa4af09cf67f2eb4329a477",
+    "appJsGitBlob": "2043d33dee611adacebc947c8423ed1739c1a8da",
+    "criticalExamples": {
+      "dashboard": "e879fc3f1dd5a7486762b197346cadd086e1d99d",
+      "visitas": "d7c65650e4972d438f2641cbcaaff25486fb7f01",
+      "postulaciones": "f38593885c245841710934971dd335ee5eddf1da",
+      "shoppers": "92f834bb2b7fcf5d8674acb717ce6b4e920c5766",
+      "misvisitas": "19feb19b96c7d2f69c3cfed785fdbfcaabd96e2d",
+      "finanzas": "623fab9ba1e06c39f83beda610bb771e23910a07",
+      "cliente": "4e5981081bdd01de368c4f412ed476244426634e",
+      "reservas": "ddc54bad9dfc7b242b06d39daf872c9f9b327c80",
+      "academia": "0b42dd790d946d327eb1110b78878e302d51aa6e"
+    },
+    "verdict": "PASS_EXACT_APPROVED_MODULE_BLOBS_PRESERVED"
+  },
+  "hostingState": {
+    "releaseId": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/afe292cfcbbc6005",
+    "approvedModuleLineageOnFrozenHosting": "PASS_FROM_F8_5_CERTIFICATION",
+    "newF10AdapterDeployed": false,
+    "meaning": "The currently deployed Hosting release continues to serve the already-certified approved module family. The F10 operational-evidence repair exists only on the live source branch until an explicit deployment gate and authorization occur."
+  },
+  "classification": {
+    "reusableCXOrbia": "dual read model: canonical lifecycle inference plus direct source operational evidence",
+    "exclusiveClient": "TyA/Cinepolis August 2026 fresh provider reconciliation revision and row-level gaps",
+    "claudePrototype": "approved module bytes are preserved; future visible candidate-liquidation KPI remains a frontend semantic enhancement, not a reason to replace modules",
+    "academia": "update definitions of operational evidence milestones only after deployed visual acceptance",
+    "noClaudeImpact": "atomic apply mechanics, hashes and state-sync evidence"
+  },
+  "safety": {
+    "providerWrites": 0,
+    "businessDataWrites": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "storageWrites": 0,
+    "rulesWrites": 0,
+    "paymentWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "deploys": 0,
+    "rebuilds": 0,
+    "reimports": 0,
+    "merge": false,
+    "newBranch": false,
+    "newPullRequest": false,
+    "newWorkflow": false
+  },
+  "remainingGate": "PREDEPLOY_EXACT_SOURCE_BROWSER_AND_SAME_REVISION_KPI_GATE",
+  "deployAuthorizedNow": false,
+  "ownerVisualAcceptance": "HOLD_UNTIL_DEPLOYED_AND_BROWSER_REVALIDATED",
+  "nextExactBlock": "F10_PREDEPLOY_EXACT_SOURCE_BROWSER_AND_MODULE_MATRIX_GATE_THEN_REQUIRE_EXPLICIT_DEPLOY_AUTHORIZATION"
+}
