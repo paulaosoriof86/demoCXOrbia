@@ -126,13 +126,15 @@ jobs:
           NODE
           echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/$OUT/private/credentials.json" >> "$GITHUB_ENV"
           node --input-type=module <<'NODE'
-          import fs from 'node:fs';import crypto from 'node:crypto';import admin from 'firebase-admin';
+          import fs from 'node:fs';import crypto from 'node:crypto';import cp from 'node:child_process';import admin from 'firebase-admin';
           const sa=JSON.parse(fs.readFileSync(process.env.OUT+'/private/credentials.json','utf8'));const token=await admin.credential.cert(sa).getAccessToken();if(!token?.access_token)throw new Error('oauth_token_unavailable');
           console.log('::add-mask::'+token.access_token);fs.appendFileSync(process.env.GITHUB_ENV,'CXORBIA_HOSTING_ACCESS_TOKEN='+token.access_token+'\n');
           const sites=await fetch('https://firebasehosting.googleapis.com/v1beta1/projects/cxorbia-backend-dev/sites?pageSize=100',{headers:{Authorization:'Bearer '+token.access_token,Accept:'application/json'}});if(!sites.ok)throw new Error('hosting_sites_read_'+sites.status);const sitePayload=await sites.json();if(!(sitePayload.sites||[]).some(s=>String(s?.name||'').endsWith('/sites/cxorbia-backend-dev')))throw new Error('existing_hosting_site_missing');
           const remote=await fetch(process.env.DEV_ROOT+'/adapters/tya-canonical-state-semantics-v2.js?f10pre='+Date.now(),{headers:{'Cache-Control':'no-cache,no-store'}});if(!remote.ok)throw new Error('remote_adapter_read_'+remote.status);const buf=Buffer.from(await remote.arrayBuffer());const sha=crypto.createHash('sha256').update(buf).digest('hex');
-          const release=JSON.parse(fs.readFileSync('backend/config/cxorbia-phase-a-release-manifest-v1.json','utf8'));const expected=release.provider?.hosting?.certifiedAdapterSha256;if(sha!==expected)throw new Error('remote_predeploy_adapter_not_frozen:'+sha+'/'+expected);
-          fs.writeFileSync(process.env.OUT+'/remote-before.source-safe.json',JSON.stringify({decision:'PASS_F10_REMOTE_BEFORE_IS_FROZEN_RELEASE',adapterSha256:sha,expectedFrozenAdapterSha256:expected,existingHostingSite:true},null,2)+'\n');
+          const release=JSON.parse(fs.readFileSync('backend/config/cxorbia-phase-a-release-manifest-v1.json','utf8'));if(release.source?.functionalSourceSha!==process.env.FROZEN_SOURCE)throw new Error('release_frozen_source_mismatch');
+          const frozenBytes=cp.execFileSync('git',['show',`${process.env.FROZEN_SOURCE}:${process.env.F10_ADAPTER}`]);const expected=crypto.createHash('sha256').update(frozenBytes).digest('hex');const frozenBlob=cp.execFileSync('git',['rev-parse',`${process.env.FROZEN_SOURCE}:${process.env.F10_ADAPTER}`],{encoding:'utf8'}).trim();
+          if(sha!==expected)throw new Error('remote_predeploy_adapter_not_frozen:'+sha+'/'+expected);
+          fs.writeFileSync(process.env.OUT+'/remote-before.source-safe.json',JSON.stringify({decision:'PASS_F10_REMOTE_BEFORE_IS_FROZEN_RELEASE',adapterSha256:sha,expectedFrozenAdapterSha256:expected,expectedAuthority:{source:'frozen_functional_source_git_object',functionalSourceSha:process.env.FROZEN_SOURCE,adapterPath:process.env.F10_ADAPTER,adapterGitBlob:frozenBlob},manifestCertifiedAdapterSha256Advisory:release.provider?.hosting?.certifiedAdapterSha256||null,existingHostingSite:true},null,2)+'\n');
           NODE
 
       - name: Execute exactly one authorized focal Hosting DEV release
