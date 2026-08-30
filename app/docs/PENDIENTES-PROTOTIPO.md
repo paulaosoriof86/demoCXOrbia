@@ -1,18 +1,26 @@
 # PENDIENTES-PROTOTIPO.md
 
 **Última actualización:** 2026-08-30  
-**STATE_SYNC_EPOCH:** `CXORBIA-20260830-F10-OPERATIONAL-AUTHORITY-REPAIR-15`  
-**Estado:** `BACKEND_AUTHORITY_REPAIR_SOURCE_APPLIED__CLAUDE_NOT_YET_RELEASED`  
-**NEXT:** `READONLY_GATES__PROVIDER_ROUTE_GATE__THEN_CLAUDE_CODE`
+**STATE_SYNC_EPOCH:** `CXORBIA-20260830-F10-OPERATIONAL-AUTHORITY-MULTIPROJECT-SOURCE-AUDIT-16`  
+**Estado:** `AUTHORITY_AND_MULTIPROJECT_SOURCE_SUCCESSOR_SOURCE_ONLY__CLAUDE_HOLD`  
+**NEXT:** `F10_READONLY_AUTHORITY_GATES__PROJECT_SOURCE_GATES__PROVIDER_ROUTE_GATE__THEN_CLAUDE_CODE`
 
-Se conserva el PASS técnico F10 previo para HR/KPIs. El pendiente actual es un defecto transversal posterior y distinto: la capa HR generaba `hr-post-*` sintéticos y algunos botones frontend conservan éxito/mutación local antes de persistencia durable.
+El PASS live F10 de HR/KPIs permanece congelado como evidencia del release actual. Los pendientes actuales son posteriores y distintos.
 
-Pendientes exactos, en orden:
-1. Gate read-only del nuevo authority adapter: cero `hr-post-*` en salida canónica, `periodStats` coherente con evidencia F10, compositor idempotente y sin pérdida de postulaciones Firestore reales.
-2. Completar ruta HTTP/provider real detrás de policy explícita, manteniendo writes apagados hasta autorización.
-3. Probar comando sintético controlado con Auth/RBAC/idempotencia/version conflict/ACK; ningún dato HR real.
-4. Validar reconciliación `platform -> pending_hr -> synced` y `hr -> pending_platform -> reflected`, con conflicto a revisión y cero dedupe por nombre.
-5. Después entregar paquete focal a Claude Code para reemplazar únicamente call-sites de UI que hoy mutan memoria o muestran éxito prematuro.
-6. Academia/manuales: incorporar diferencia entre postulación, asignación, sincronización pendiente, sincronización confirmada y conflicto.
+## Pendientes exactos
 
-No pedir nueva candidata, no rediseñar módulos, no deploy/reimport/replay por rutina, no activar Make/Gemini/pagos/HR writes.
+1. `OPERATIONAL_AUTHORITY_READONLY_PASS`: cero `hr-post-*` canónicos, `periodStats` por evidencia, compositor idempotente y preservación de aplicaciones Firestore reales.
+2. `PROJECT_CONFIG_SCHEMA_PASS`: fuente de Hoja de Ruta completa por proyecto y sin secretos/hardcodes operativos.
+3. `PROJECT_SOURCE_RESOLVER_PASS`: `internal|external` por proyecto, cuestionario independiente, sin Cinépolis global.
+4. `PROJECT_CREATE_DURABLE_ACK_PASS`: reemplazar alta local-first solo después de que provider/backend quede probado.
+5. `PROJECT_UPDATE_DURABLE_ACK_PASS`: reemplazar edición directa/localStorage con expectedVersion/ACK/readback.
+6. `PROJECT_ISOLATION_PASS`: proyecto B no altera proyecto A ni sus periodos/visitas/fuente/cuestionario/finanzas/usuarios.
+7. `PROJECT_INTERNAL_SOURCE_PASS`: Hoja de Ruta interna durable sin proveedor externo.
+8. `PROJECT_EXTERNAL_SOURCE_PASS`: provider externo por binding/mapping del proyecto, sin cambio de código global.
+9. `PROJECT_MONTH_FUTURE_PASS`: nuevos meses/periodos se descubren por la fuente elegida.
+10. `PROJECT_AI_NO_FALSE_SUCCESS_PASS`: ninguna heurística/demo se presenta como extracción IA real.
+11. provider route sintético controlado con Auth/RBAC/idempotencia/conflict/ACK, sin tocar HR real.
+12. paquete focal a Claude Code para call-sites frontend, solo después de los gates anteriores.
+13. Academia/manuales: fuente interna/externa, provider/mapping, autoridad, postulación vs asignación, sync pendiente/confirmada/conflicto y uso de IA real.
+
+No nueva candidata, no copy del servicio Cinépolis, no localStorage como verdad productiva, no deploy/reimport/HR write/Make/Gemini/pagos por rutina.
