@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { spawnSync } from 'node:child_process';
 import { chromium } from 'playwright';
 
 const args = process.argv.slice(2);
@@ -13,14 +14,27 @@ const baseUrl = arg('--base-url', 'http://127.0.0.1:4173/index-backend-dev.html?
 const outDir = path.resolve(arg('--out', '.tmp/tya-corte3-canonical-finance-ui-export-r23'));
 fs.mkdirSync(outDir, { recursive: true });
 
+const F10_PREDEPLOY_MODE = 'F10_PREDEPLOY_EXACT_SOURCE_BROWSER_AND_MODULE_MATRIX_GATE';
+const requestPath = path.resolve('.github/cxorbia-gate-requests/request.json');
+let request = null;
+try { request = fs.existsSync(requestPath) ? JSON.parse(fs.readFileSync(requestPath, 'utf8')) : null; } catch {}
+const isF10Predeploy = request?.diagnosticMode === F10_PREDEPLOY_MODE;
+const git = args => {
+  const result = spawnSync('git', args, { cwd: process.cwd(), encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
+  if (result.status !== 0) throw new Error(`git_${args.join('_')}:${String(result.stderr || result.stdout || '').slice(0, 1200)}`);
+  return String(result.stdout || '').trim();
+};
+
 const report = {
-  schemaVersion: '1.3.0',
+  schemaVersion: isF10Predeploy ? '1.4.0' : '1.3.0',
   gateId: 'tya-corte3-canonical-finance-ui-export-r23',
+  diagnosticMode: isF10Predeploy ? F10_PREDEPLOY_MODE : null,
   generatedAt: new Date().toISOString(),
   baseUrl,
   status: 'HOLD',
   readiness: null,
   summary: null,
+  f10Predeploy: null,
   checks: [],
   warnings: [],
   pageErrors: [],
@@ -74,6 +88,7 @@ try {
         dataPresent: !!window.CX?.data,
         liqPresent: !!window.CX?.liq,
         finPresent: !!window.CX?.fin,
+        routerPresent: !!window.CX?.router,
         visibleReady: window.CX_TYA_VISIBLE_DATA_READY === true,
         financeReady: window.CX_TYA_FINANCIAL_CANONICAL_READY === true,
         visibleFlagRaw: window.CX_TYA_VISIBLE_DATA_READY ?? null,
@@ -93,6 +108,11 @@ try {
         financialAdapterTagCount: scripts.filter(src => src.includes('tya-financial-canonical-source-safe-adapter.js')).length,
         sourcePayloadTagCount: scripts.filter(src => src.includes('tya-hr-source-safe-periods.js')).length,
         financialFinalTagCount: scripts.filter(src => src.includes('tya-financial-canonical-source-safe-final.js')).length,
+        f10CanonicalSemanticsTagCount: scripts.filter(src => src.includes('tya-canonical-state-semantics-v2.js')).length,
+        dashboardTagCount: scripts.filter(src => src.includes('modules/dashboard.js')).length,
+        f10RuntimeMarker: window.CX_TYA_F10_OPERATIONAL_EVIDENCE?.version || null,
+        operationalEvidenceFacade: typeof window.CX?.data?.operationalEvidenceFacets === 'function',
+        operationalEvidenceSummaryPresent: Array.isArray(window.CX?.data?.operationalEvidenceSummary),
         scripts
       };
     });
@@ -112,10 +132,76 @@ try {
   check(readiness?.visibleReady === true, 'visible_source_safe_data_ready', JSON.stringify(readiness));
   check(readiness?.financeReady === true, 'canonical_finance_ready', JSON.stringify(readiness));
 
-  const adminBtn = page.locator('[data-role="admin"]');
-  check(await adminBtn.count() === 1, 'admin_login_available');
-  await adminBtn.click();
-  await page.waitForFunction(() => document.getElementById('app')?.classList.contains('on') && CX.session?.role === 'admin', null, { timeout: 30000 });
+  if (isF10Predeploy) {
+    const matrixPath = path.resolve('backend/config/cxorbia-f10-approved-module-authority-matrix-v1.json');
+    check(fs.existsSync(matrixPath), 'f10_module_matrix_present');
+    const matrix = JSON.parse(fs.readFileSync(matrixPath, 'utf8'));
+    check(matrix.matrixId === 'CXORBIA-F10-APPROVED-MODULE-AUTHORITY-20260829-02', 'f10_module_matrix_id_exact', String(matrix.matrixId || ''));
+    check(request?.sourceRepairCommit === '6392736070dcf34d24f9b27b8bb1d0ecbcf116b0', 'f10_source_repair_commit_exact', String(request?.sourceRepairCommit || ''));
+    check(request?.sourceRepairAdapterSha256 === 'e832759e03238559617b71daa4daa52a00b2c6dbd2d2266e6df0ae391f853b2e', 'f10_source_repair_sha256_exact');
+    check(request?.sourceSemanticGateDecision === 'PASS_F10_OPERATIONAL_EVIDENCE_SEMANTICS', 'f10_source_semantic_gate_previously_passed');
+    check(request?.moduleLineageGateDecision === 'PASS_EXACT_APPROVED_MODULE_BLOBS_PRESERVED', 'f10_module_lineage_gate_previously_passed');
+
+    const moduleGroups = [
+      ...(matrix.phaseAApprovedLoadedModules || []),
+      ...(matrix.loadedFrozenSupportModulesWithoutIndividualPhaseACriticalAuthorityClaim || []),
+      ...(matrix.postPhaseALoadedNotCertifiedAsPhaseAAuthority || [])
+    ];
+    const mismatches = [];
+    for (const item of moduleGroups) {
+      const actual = git(['rev-parse', `HEAD:${item.path}`]);
+      if (actual !== item.expectedGitBlob) mismatches.push({ path: item.path, expected: item.expectedGitBlob, actual });
+    }
+    const f10Bridge = (matrix.f10AuthorizedSuccessorBridgeFiles || [])[0];
+    const bridgeBlob = f10Bridge?.path ? git(['rev-parse', `HEAD:${f10Bridge.path}`]) : null;
+    const protectedDrift = git(['diff', '--name-only', matrix.frozenFunctionalSourceSha, 'HEAD', '--', 'app/modules', 'app/core', 'app/app.js', 'app/index-backend-dev.html']);
+    check(moduleGroups.length === 41, 'f10_expected_loaded_module_count_41', String(moduleGroups.length));
+    check(mismatches.length === 0, 'f10_exact_module_blob_mismatches_zero', JSON.stringify(mismatches));
+    check(bridgeBlob === f10Bridge?.expectedCurrentGitBlob, 'f10_authorized_successor_adapter_blob_exact', `${bridgeBlob}/${f10Bridge?.expectedCurrentGitBlob || ''}`);
+    check(protectedDrift === '', 'f10_no_module_core_app_entrypoint_drift_after_freeze', protectedDrift);
+    check(readiness?.f10CanonicalSemanticsTagCount === 1, 'f10_exact_semantics_adapter_loaded_once', String(readiness?.f10CanonicalSemanticsTagCount));
+    check(readiness?.dashboardTagCount === 1, 'f10_dashboard_module_loaded_once', String(readiness?.dashboardTagCount));
+    check(readiness?.f10RuntimeMarker === 'f10-operational-evidence-v1', 'f10_operational_evidence_runtime_marker', String(readiness?.f10RuntimeMarker || ''));
+    check(readiness?.operationalEvidenceFacade === true && readiness?.operationalEvidenceSummaryPresent === true, 'f10_operational_evidence_facade_installed');
+    check(readiness?.routerPresent === true, 'f10_router_present');
+    report.f10Predeploy = {
+      decision: 'PASS_F10_EXACT_SOURCE_BROWSER_AND_MODULE_MATRIX_PREDEPLOY',
+      matrixId: matrix.matrixId,
+      checkedModuleBlobs: moduleGroups.length,
+      moduleBlobMismatches: mismatches.length,
+      protectedDriftPaths: protectedDrift ? protectedDrift.split(/\r?\n/).filter(Boolean) : [],
+      successorAdapterPath: f10Bridge?.path || null,
+      successorAdapterBlob: bridgeBlob,
+      runtimeMarker: readiness?.f10RuntimeMarker || null,
+      exactAdapterLoadedOnce: readiness?.f10CanonicalSemanticsTagCount === 1,
+      dashboardLoadedOnce: readiness?.dashboardTagCount === 1,
+      authHarnessMode: 'QA_DIRECT_SESSION_NO_PROVIDER_AUTH',
+      providerReads: false,
+      providerWrites: false,
+      dataWrites: false,
+      deploy: false
+    };
+  }
+
+  if (isF10Predeploy) {
+    await page.evaluate(() => {
+      if (!window.CX?.session || !window.CX?.router) throw new Error('qa_direct_session_dependencies_missing');
+      CX.session.role = 'admin';
+      CX.session.testRole = null;
+      CX.session.user = { id: 'f10-predeploy-gate', name: 'F10 Predeploy Gate', role: 'super', org: 'TyA' };
+      CX.session.view = null;
+      document.getElementById('login')?.classList.add('hidden');
+      document.getElementById('app')?.classList.add('on');
+      CX.router.mount();
+    });
+    await page.waitForFunction(() => document.getElementById('app')?.classList.contains('on') && CX.session?.role === 'admin' && !!document.getElementById('view'), null, { timeout: 10000 });
+    report.warnings.push('F10 predeploy uses a QA-only direct admin session after source readiness. Authentication is validated by separate protected Auth gates; this browser gate validates exact source/module/read-model composition without provider Auth.');
+  } else {
+    const adminBtn = page.locator('[data-role="admin"]');
+    check(await adminBtn.count() === 1, 'admin_login_available');
+    await adminBtn.click();
+    await page.waitForFunction(() => document.getElementById('app')?.classList.contains('on') && CX.session?.role === 'admin', null, { timeout: 30000 });
+  }
 
   const core = await page.evaluate(async () => {
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -282,9 +368,9 @@ try {
   report.warnings.push('PDF chart rendering and Excel visual formatting remain P1/P2 until real files are visually inspected. This gate verifies the canonical report specification and UI binding only.');
   report.status = 'PASS';
   fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify(report, null, 2) + '\n', 'utf8');
-  fs.writeFileSync(path.join(outDir, 'summary.txt'), 'PASS_TYA_CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23\n', 'utf8');
-  console.log('PASS_TYA_CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23');
-  console.log(JSON.stringify(core));
+  fs.writeFileSync(path.join(outDir, 'summary.txt'), `${isF10Predeploy ? 'PASS_F10_PREDEPLOY_EXACT_SOURCE_BROWSER_AND_MODULE_MATRIX_GATE' : 'PASS_TYA_CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23'}\n`, 'utf8');
+  console.log(isF10Predeploy ? 'PASS_F10_PREDEPLOY_EXACT_SOURCE_BROWSER_AND_MODULE_MATRIX_GATE' : 'PASS_TYA_CORTE3_CANONICAL_FINANCE_UI_EXPORT_R23');
+  console.log(JSON.stringify({ core, f10Predeploy: report.f10Predeploy }));
 } catch (error) {
   report.status = 'HOLD';
   report.error = String(error?.stack || error);
@@ -293,4 +379,15 @@ try {
   process.exitCode = 1;
 } finally {
   if (browser) await browser.close();
+  if (isF10Predeploy && process.env.GITHUB_ACTIONS === 'true') {
+    try {
+      const restore = spawnSync('git', ['checkout', '--', 'app/index-backend-dev.html'], { cwd: process.cwd(), encoding: 'utf8' });
+      if (restore.status !== 0) throw new Error(String(restore.stderr || restore.stdout || 'restore_failed'));
+    } catch (error) {
+      report.status = 'HOLD';
+      report.error = `${report.error || ''}\nF10 cleanup failed: ${String(error?.message || error)}`.trim();
+      fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify(report, null, 2) + '\n', 'utf8');
+      process.exitCode = 1;
+    }
+  }
 }
