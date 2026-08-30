@@ -1,19 +1,33 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-30  
-**STATE_SYNC_EPOCH:** `CXORBIA-20260830-F10-OPERATIONAL-AUTHORITY-REPAIR-15`  
-**Estado:** `HOLD_CLAUDE_UNTIL_BACKEND_AUTHORITY_REPAIR_GATES_PASS`  
-**NEXT:** `BACKEND_GATES_THEN_FOCAL_CLAUDE_CODE_HANDOFF`
+**STATE_SYNC_EPOCH:** `CXORBIA-20260830-F10-OPERATIONAL-AUTHORITY-MULTIPROJECT-SOURCE-AUDIT-16`  
+**Estado:** `HOLD_CLAUDE_UNTIL_AUTHORITY_PROJECT_SOURCE_AND_PROVIDER_GATES_PASS`  
+**NEXT:** `F10_READONLY_AUTHORITY_GATES__PROJECT_SOURCE_GATES__PROVIDER_ROUTE_GATE__THEN_CLAUDE_CODE`
 
-HARD PRESERVE: el PASS F10 previo de lectura HR/KPIs y los módulos aprobados no se descartan. No restaurar V182, no reemplazar `app/modules/*` ni `app/core/*`, no rediseñar.
+HARD PRESERVE: no restaurar V182, no reemplazar `app/modules/**`/`app/core/**`, no rediseñar. El PASS live F10 de lectura HR/KPIs se conserva y no autoriza inferir que los flujos de escritura u onboarding estén terminados.
 
-Defecto nuevo demostrado y ya aislado: una capa de lectura generaba `hr-post-*` desde visitas HR, confundiendo visita/asignación observada con una postulación real; además existen call-sites frontend heredados que muestran éxito tras mutación en memoria sin ACK durable.
+## Arquitectura que Claude deberá preservar
 
-Backend source repair ya aplicado:
-- `app/adapters/tya-phase-a-operational-sync-v1.js` fija la matriz de autoridad HR/plataforma, excluye postulaciones sintéticas, instala `periodStats()` por evidencia HR y expone fachada durable ACK-aware.
-- `backend/runtime/cxorbia-operational-command-provider-v1.mjs` prepara provider reusable y fail-closed.
-- `app/docs/evidence/F10-OPERATIONAL-AUTHORITY-DEFINITIVE-SOLUTION-20260830.md` contiene el lock definitivo.
+- Cada proyecto elige su Hoja de Ruta/fuente operacional: `internal` o `external`.
+- Fuente externa puede ser Google Sheets, Excel importado, API/plataforma externa o adapter específico; nunca un endpoint global hardcodeado.
+- Fuente interna significa que CXOrbia/Firestore es autoridad de periodos/visitas/hitos.
+- Fuente externa es autoridad de periodos/visitas/hitos observados, mientras CXOrbia conserva autoridad de postulaciones, decisiones, usuarios, perfiles, certificaciones, crosswalks y auditoría.
+- El cuestionario es independiente de la fuente de Hoja de Ruta.
+- Visita disponible != postulación; `hr-post-*` queda prohibido como aplicación canónica.
+- éxito UI únicamente después de provider ACK + refresh.
+- reconciliación por llaves técnicas; nunca dedupe por nombre.
 
-NO ejecutar todavía cambios frontend. Cuando backend complete gates y provider route/gate, el handoff a Claude Code será focal y limitado a sustituir los call-sites locales de Postular/Aprobar/Rechazar/Standby/Asignar/Reprogramar/Cancelar por las funciones durables ya preparadas, manteniendo diseño, textos y estructura salvo el copy necesario para estados honestos.
+## Backend source ya preparado
 
-Invariantes obligatorios para Claude posterior: visita disponible != postulación; éxito solo después de provider ACK; `pending_hr`/`pending_platform`/`synced`/`conflict` son estados honestos; nunca dedupe por nombre; Cinépolis no hardcodeado como arquitectura general.
+`tya-phase-a-operational-sync-v1.js`, `cxorbia-operational-command-provider-v1.mjs`, `cxorbia-project-source-contract-v1.json`, `cxorbia-project-operational-source-v1.js` y `cxorbia-project-command-provider-v1.mjs` fijan contratos reusable/fail-closed sin habilitar writes ni deploy.
+
+## Hallazgos frontend que NO deben parchearse todavía
+
+- `app/modules/proyecto-wizard.js`: alta local-first, `JUN 26`, quincenas/cols fijas y falsa extracción IA demo.
+- `app/modules/proyectos.js`: edición local-first, fuente superficial, regla 50/50 contradictoria y sugerencia heurística.
+- call-sites de postulaciones/asignaciones siguen necesitando sustitución por comandos ACK-aware.
+
+Cuando backend cierre gates, Claude Code recibirá un paquete focal y deberá tocar solo los call-sites/documentación visual necesarios. No crear candidata, rama, PR, nueva arquitectura ni copiar el servicio Cinépolis para un proyecto nuevo.
+
+Academia/manuales deberán reflejar configuración de fuente interna/externa, provider/mapping, estados de sync/conflicto y uso de IA solo cuando esté realmente habilitada.
