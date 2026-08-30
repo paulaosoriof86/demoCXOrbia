@@ -199,7 +199,10 @@ try{
   if(liveOperationalDigest!==providerOperationalDigest)fail('live_operational_row_digest_mismatch:'+liveOperationalDigest+'/'+providerOperationalDigest);
   const summaryKeys=['total','assigned','scheduled','pendingSchedule','realized','pendingRealization','questionnaireCompleted','pendingQuestionnaire','submitted','pendingSubmission','liquidationCandidates','liquidationConfirmed','paymentConfirmed','reviewRequired'];
   for(const k of summaryKeys)if(Number(actual.summary?.[k]??-1)!==Number(providerOperationalSummary[k]))fail('live_operational_summary_mismatch_'+k+':'+String(actual.summary?.[k])+'/'+String(providerOperationalSummary[k]));
-  if(JSON.stringify(actual.summary?.byCountry||{})!==JSON.stringify(providerOperationalSummary.byCountry))fail('live_operational_country_totals_mismatch');
+  const actualCountries=actual.summary?.byCountry||{};
+  const expectedCountries=providerOperationalSummary.byCountry;
+  if(Object.keys(actualCountries).length!==Object.keys(expectedCountries).length)fail('live_operational_country_total_key_count_mismatch');
+  for(const [c,n] of Object.entries(expectedCountries))if(Number(actualCountries?.[c]??-1)!==Number(n))fail('live_operational_country_total_mismatch_'+c+':'+String(actualCountries?.[c])+'/'+String(n));
   for(const [c,expectedCountry] of Object.entries(providerOperationalSummary.statesByCountry)){
     const got=actual.summary?.statesByCountry?.[c]||{};
     for(const k of Object.keys(expectedCountry))if(Number(got?.[k]??-1)!==Number(expectedCountry[k]))fail('live_operational_country_summary_mismatch_'+c+'_'+k+':'+String(got?.[k])+'/'+String(expectedCountry[k]));
