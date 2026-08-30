@@ -1,12 +1,19 @@
 # RESUMEN-PARA-CLAUDE.md
 
 **Última actualización:** 2026-08-30  
-**STATE_SYNC_EPOCH:** `CXORBIA-20260830-F10-LIVE-ROW-CONTENT-PASS-MECHANISM-SYNC-14`  
-**Estado:** `PHASE_A_100__F10_LIVE_TECHNICAL_PASS__APPROVED_MODULES_EXACT__NO_UI_REBUILD`  
-**NEXT:** `F10_OWNER_VISUAL_ACCEPTANCE_THEN_CLOSE_INCIDENT_OR_OPEN_FOCAL_VISUAL_DEFECT`
+**STATE_SYNC_EPOCH:** `CXORBIA-20260830-F10-OPERATIONAL-AUTHORITY-REPAIR-15`  
+**Estado:** `HOLD_CLAUDE_UNTIL_BACKEND_AUTHORITY_REPAIR_GATES_PASS`  
+**NEXT:** `BACKEND_GATES_THEN_FOCAL_CLAUDE_CODE_HANDOFF`
 
-Handoff vigente: `app/docs/RESUMEN-PARA-CLAUDE-F10-LIVE-MECHANISM-SYNC-20260830.md`.
+HARD PRESERVE: el PASS F10 previo de lectura HR/KPIs y los módulos aprobados no se descartan. No restaurar V182, no reemplazar `app/modules/*` ni `app/core/*`, no rediseñar.
 
-HARD PRESERVE: 41 blobs de la matriz exactos; no restore V182; no reemplazar módulos/core; adapter F10 `941051c96a26017363acfc72f7e88edbe70c68ba` es el único sucesor funcional servido. Run live row-content `33297814889` PASS y no demuestra necesidad de cambio UI.
+Defecto nuevo demostrado y ya aislado: una capa de lectura generaba `hr-post-*` desde visitas HR, confundiendo visita/asignación observada con una postulación real; además existen call-sites frontend heredados que muestran éxito tras mutación en memoria sin ACK durable.
 
-Cliente/Cliente 360 es un frente separado. Mejora opcional no bloqueante: indicador `Candidatas a liquidación` separado de `Liquidadas`.
+Backend source repair ya aplicado:
+- `app/adapters/tya-phase-a-operational-sync-v1.js` fija la matriz de autoridad HR/plataforma, excluye postulaciones sintéticas, instala `periodStats()` por evidencia HR y expone fachada durable ACK-aware.
+- `backend/runtime/cxorbia-operational-command-provider-v1.mjs` prepara provider reusable y fail-closed.
+- `app/docs/evidence/F10-OPERATIONAL-AUTHORITY-DEFINITIVE-SOLUTION-20260830.md` contiene el lock definitivo.
+
+NO ejecutar todavía cambios frontend. Cuando backend complete gates y provider route/gate, el handoff a Claude Code será focal y limitado a sustituir los call-sites locales de Postular/Aprobar/Rechazar/Standby/Asignar/Reprogramar/Cancelar por las funciones durables ya preparadas, manteniendo diseño, textos y estructura salvo el copy necesario para estados honestos.
+
+Invariantes obligatorios para Claude posterior: visita disponible != postulación; éxito solo después de provider ACK; `pending_hr`/`pending_platform`/`synced`/`conflict` son estados honestos; nunca dedupe por nombre; Cinépolis no hardcodeado como arquitectura general.
