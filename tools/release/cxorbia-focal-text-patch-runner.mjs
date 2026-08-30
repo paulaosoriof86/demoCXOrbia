@@ -45,6 +45,7 @@ try{
     'tools/qa/cxorbia-c6-existing-users-e2e-envelope-compat.mjs',
     'tools/qa/cxorbia-c6-client-auth-materialization.mjs',
     'tools/qa/cxorbia-c6-client-access-runtime-orchestrator.mjs',
+    'tools/qa/tya-corte3-canonical-finance-ui-export-r23-gate.mjs',
     '.github/workflows/cxorbia-c6-live-domain-readonly-audit.yml'
   ];
   if(!allowed.includes(request.targetPath))fail(`target_not_allowlisted:${request.targetPath}`);
