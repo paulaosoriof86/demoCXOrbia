@@ -1,7 +1,7 @@
 {
   "schemaVersion": "cxorbia.f10-hosting-dev-deploy-execute.v1",
   "requestId": "cxorbia-f10-focal-hosting-dev-20260829-01",
-  "attempt": 3,
+  "attempt": 4,
   "enabled": true,
   "consumed": false,
   "allowedExecutions": 1,
@@ -12,7 +12,7 @@
   "authorizedBy": "Paula",
   "authorizationSource": "current_conversation_2026-08-29",
   "authorizationText": "autorizo el deploy focal del sucesor F10 a Hosting DEV, condicionado a que cierre primero el gate predeploy y seguido inmediatamente de validación live contra una nueva revisión HR fresca.",
-  "targetHeadSha": "d90910ef7879efacabdda942a8ed3bbb24ce3ad6",
+  "targetHeadSha": "f5780f1b197033f74cb15ee4fa3e197fcd23491d",
   "predeployEvidence": "app/docs/evidence/RC15-F10-PREDEPLOY-EXACT-SOURCE-BROWSER-GATE-LATEST.json",
   "predeployDecision": "PASS_F10_PREDEPLOY_EXACT_SOURCE_BROWSER_AND_APPROVED_MODULE_MATRIX",
   "frozenFunctionalSourceSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
