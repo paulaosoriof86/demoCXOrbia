@@ -24,9 +24,20 @@ const git = args => {
   if (result.status !== 0) throw new Error(`git_${args.join('_')}:${String(result.stderr || result.stdout || '').slice(0, 1200)}`);
   return String(result.stdout || '').trim();
 };
+const ensureGitCommitAvailable = sha => {
+  const probe = spawnSync('git', ['cat-file', '-e', `${sha}^{commit}`], { cwd: process.cwd(), encoding: 'utf8' });
+  if (probe.status === 0) return 'already_available';
+  const fetched = spawnSync('git', ['fetch', '--no-tags', '--depth=1', 'origin', sha], {
+    cwd: process.cwd(), encoding: 'utf8', maxBuffer: 16 * 1024 * 1024
+  });
+  if (fetched.status !== 0) throw new Error(`f10_frozen_commit_fetch_failed:${String(fetched.stderr || fetched.stdout || '').slice(0, 1200)}`);
+  const verify = spawnSync('git', ['cat-file', '-e', `${sha}^{commit}`], { cwd: process.cwd(), encoding: 'utf8' });
+  if (verify.status !== 0) throw new Error(`f10_frozen_commit_unavailable_after_fetch:${sha}`);
+  return 'fetched_readonly';
+};
 
 const report = {
-  schemaVersion: isF10Predeploy ? '1.4.0' : '1.3.0',
+  schemaVersion: isF10Predeploy ? '1.4.1' : '1.3.0',
   gateId: 'tya-corte3-canonical-finance-ui-export-r23',
   diagnosticMode: isF10Predeploy ? F10_PREDEPLOY_MODE : null,
   generatedAt: new Date().toISOString(),
@@ -154,6 +165,7 @@ try {
     }
     const f10Bridge = (matrix.f10AuthorizedSuccessorBridgeFiles || [])[0];
     const bridgeBlob = f10Bridge?.path ? git(['rev-parse', `HEAD:${f10Bridge.path}`]) : null;
+    const frozenCommitAvailability = ensureGitCommitAvailable(matrix.frozenFunctionalSourceSha);
     const protectedDrift = git(['diff', '--name-only', matrix.frozenFunctionalSourceSha, 'HEAD', '--', 'app/modules', 'app/core', 'app/app.js', 'app/index-backend-dev.html']);
     check(moduleGroups.length === 41, 'f10_expected_loaded_module_count_41', String(moduleGroups.length));
     check(mismatches.length === 0, 'f10_exact_module_blob_mismatches_zero', JSON.stringify(mismatches));
@@ -169,6 +181,7 @@ try {
       matrixId: matrix.matrixId,
       checkedModuleBlobs: moduleGroups.length,
       moduleBlobMismatches: mismatches.length,
+      frozenCommitAvailability,
       protectedDriftPaths: protectedDrift ? protectedDrift.split(/\r?\n/).filter(Boolean) : [],
       successorAdapterPath: f10Bridge?.path || null,
       successorAdapterBlob: bridgeBlob,
