@@ -14,6 +14,7 @@ window.CX = window.CX || {};
     if(document.querySelector('script[src="'+src+'"]')) return;
     const s = document.createElement('script');
     s.src = src;
+    s.async = false;
     s.defer = false;
     document.head.appendChild(s);
   }
