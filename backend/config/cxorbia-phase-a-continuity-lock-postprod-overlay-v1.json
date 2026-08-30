@@ -1,20 +1,19 @@
 {
   "schemaVersion": "cxorbia.phase-a.continuity-lock.postprod-overlay.v1",
-  "overlayId": "CXORBIA-20260829-F10-PREDEPLOY-PASS-OVERLAY-04",
+  "overlayId": "CXORBIA-20260830-F10-LIVE-ROW-CONTENT-PASS-MECHANISM-SYNC-OVERLAY-05",
   "baseLock": "backend/config/cxorbia-phase-a-continuity-lock.json",
-  "baseLockBlobSha": "0b3e861f50a4fabb2b284c4f852d35cad39bb51b",
-  "purpose": "Non-destructive terminal Phase A/postproduction state overlay. Historical detail remains in the base lock; this overlay is the current cursor authority for F8/F8.5/F9/F10 and the active F10 source-repaired incident.",
+  "purpose": "Effective postproduction cursor. Historical gate detail remains in the base lock and prior evidence; this overlay is the current authority for F10 technical state and owner acceptance.",
   "effectiveState": {
-    "syncEpoch": "CXORBIA-20260829-F10-PREDEPLOY-PASS-13",
+    "syncEpoch": "CXORBIA-20260830-F10-LIVE-ROW-CONTENT-PASS-MECHANISM-SYNC-14",
     "phaseA": 100,
     "productionRealReadiness": 100,
-    "productionRealReadinessMeaning": "historical terminal readiness of the accepted frozen release; F10 source and exact browser/module predeploy gates are PASS, but the focal Hosting DEV deploy has not executed",
+    "productionRealReadinessMeaning": "accepted frozen Phase A release remains terminal at 100; the focal F10 Hosting successor is now deployed and technically revalidated, pending owner visual acceptance",
     "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
     "masterPlanVersion": "1.1.0",
     "masterPlanStatus": "FROZEN",
     "currentMasterPhase": "F10_PERMANENT_OPERATING_MODEL",
-    "currentMasterStep": "F10_PREDEPLOY_EXACT_SOURCE_BROWSER_AND_MODULE_MATRIX_PASS",
-    "next": "F10_REQUIRE_COMPATIBLE_EXISTING_HOSTING_DEV_EXECUTION_LANE_AUTHORIZATION_THEN_FOCAL_DEPLOY_THEN_NEW_FRESH_HR_SAME_REVISION_LIVE_VALIDATION"
+    "currentMasterStep": "F10_LIVE_ROW_CONTENT_EQUIVALENCE_PASS_MECHANISM_SYNCHRONIZED",
+    "next": "F10_OWNER_VISUAL_ACCEPTANCE_THEN_CLOSE_INCIDENT_OR_OPEN_FOCAL_VISUAL_DEFECT"
   },
   "closedControls": {
     "m1": "CLOSED_PASS",
@@ -38,91 +37,56 @@
     "runtimeReleaseSourceSha": "2d0b8e83b32b44f6c3eae80b7630f8cd3295fba2",
     "cloudRunRevision": "cxorbia-live-hr-dev-00013-rns",
     "imageDigest": "sha256:eca8b831c24ef81f09e4addda721d0af89a24c5a0d753aa507989988458227ec",
-    "hostingRelease": "sites/cxorbia-backend-dev/releases/1787796646738000",
-    "hostingVersion": "sites/cxorbia-backend-dev/versions/afe292cfcbbc6005",
-    "phaseAReleaseFrozen": true,
+    "frozenHostingRelease": "sites/cxorbia-backend-dev/releases/1787796646738000",
+    "frozenHostingVersion": "sites/cxorbia-backend-dev/versions/afe292cfcbbc6005",
     "approvedModuleLineagePreserved": true,
-    "f10OperationalEvidenceSourcePatchDeployed": false
+    "f10OperationalEvidenceSourcePatchDeployed": true,
+    "f10HostingRelease": "sites/cxorbia-backend-dev/releases/1788058988151000",
+    "f10HostingVersion": "sites/cxorbia-backend-dev/versions/958ed37dde65d592",
+    "f10DeployRunId": 33289344796,
+    "f10DeployArtifactId": 9725498210,
+    "f10RemoteModuleChecks": 41,
+    "f10RemoteModuleMismatches": 0
   },
   "activeIncident": {
     "incidentId": "F10-HR-KPI-FRESHNESS-20260829-01",
     "severity": "P1",
-    "status": "OPEN_P1_PREDEPLOY_PASS_DEPLOY_AUTHORIZED_EXECUTION_LANE_NOT_CURRENT",
+    "status": "TECHNICAL_PASS_PENDING_OWNER_VISUAL_ACCEPTANCE",
     "productP0Proven": false,
     "releaseHistoryReopened": false,
-    "ownerPlane": ["DEPLOYMENT_MECHANISM", "READ_MODEL_RUNTIME"],
-    "incidentEvidence": "app/docs/evidence/RC15-F10-HR-KPI-FRESHNESS-INCIDENT-20260829-01.json",
-    "freshAdjudicationEvidence": "app/docs/evidence/RC15-F10-FRESH-HR-SEMANTIC-ADJUDICATION-LATEST.json",
-    "sourceGateEvidence": "app/docs/evidence/RC15-F10-OPERATIONAL-EVIDENCE-SOURCE-GATE-LATEST.json",
-    "predeployGateEvidence": "app/docs/evidence/RC15-F10-PREDEPLOY-EXACT-SOURCE-BROWSER-GATE-LATEST.json",
-    "freshnessCertification": "PASS_INDEPENDENT_PROVIDER_REVISION_b7bc89176161a8a1b83e3d33098634ae77a5a8bc3f6f44ee7c749e2d11da598d",
+    "rootCause": "BACKWARD_LIFECYCLE_PROMOTION_USED_AS_VISIBLE_OPERATIONAL_EVIDENCE",
     "sourceRepair": {
-      "status": "APPLIED_AND_VERIFIED_SOURCE_ONLY",
-      "commit": "6392736070dcf34d24f9b27b8bb1d0ecbcf116b0",
+      "status": "LIVE_HOSTING_VERIFIED",
+      "functionalCommit": "6392736070dcf34d24f9b27b8bb1d0ecbcf116b0",
       "path": "app/adapters/tya-canonical-state-semantics-v2.js",
       "blob": "941051c96a26017363acfc72f7e88edbe70c68ba",
+      "sha256": "e832759e03238559617b71daa4daa52a00b2c6dbd2d2266e6df0ae391f853b2e",
       "moduleFilesChanged": 0,
       "coreFilesChanged": 0
     },
-    "predeploy": {
-      "status": "PASS_F10_PREDEPLOY_EXACT_SOURCE_BROWSER_AND_APPROVED_MODULE_MATRIX",
-      "browserDecision": "PASS_F10_PREDEPLOY_EXACT_SOURCE_BROWSER_SEMANTICS",
-      "moduleMismatches": 0,
-      "deployAuthorizedByPaula": true,
-      "deployExecuted": false,
-      "executionLaneStatus": "HOLD_NO_CURRENT_COMPATIBLE_HOSTING_DEV_EXECUTION_LANE"
+    "technicalValidation": {
+      "decision": "PASS_F10_LIVE_ADMIN_FRESH_CONTENT_EQUIVALENCE",
+      "runId": 33297814889,
+      "artifactId": 9727971958,
+      "operationalEvidenceDigestSha256": "a5a6d0bc1ed109e1c4088d09553e49c860f6d390d187859175c1fd2d19741bb0",
+      "rowDigestMatch": true,
+      "summaryCountsMatch": true,
+      "providerRevision": "f55d6a113cdb5ef66076e3247f7ba3d6cec66b4e574be85a846cc8465309d3d3",
+      "browserRevision": "e61714ad1cd5bd4e9c3f6d1408b8c637962dab39ce2a34fb3af41fd80647120f",
+      "exactRevisionTokenEqualityRequired": false
     },
-    "ownerVisualAcceptance": "HOLD_UNTIL_FOCAL_HOSTING_DEPLOY_AND_NEW_FRESH_HR_SAME_REVISION_LIVE_BROWSER_REVALIDATION"
+    "ownerVisualAcceptance": "PENDING"
   },
   "terminalEvidence": {
-    "f5": "app/docs/evidence/RC15-F5-LIVE-SYNTHETIC-ACCEPTANCE-LATEST.json",
-    "f7": "app/docs/evidence/RC15-F7-INTEGRAL-READINESS-LATEST.json",
-    "f8": "app/docs/evidence/RC15-F8-BACKUP-RESTORE-CUTOVER-EXECUTION-LATEST.json",
-    "f8_5": "app/docs/evidence/RC15-F8-5-CANONICAL-MODULE-LINEAGE-CERTIFICATION-LATEST.json",
-    "f9": "app/docs/evidence/RC15-F9-POSTPRODUCTION-ACCEPTANCE-LATEST.json",
-    "f10Incident": "app/docs/evidence/RC15-F10-HR-KPI-FRESHNESS-INCIDENT-20260829-01.json",
-    "f10FreshProvider": "app/docs/evidence/RC15-F10-FRESH-HR-SEMANTIC-ADJUDICATION-LATEST.json",
-    "f10SourcePatch": "app/docs/evidence/RC15-F10-OPERATIONAL-EVIDENCE-SOURCE-GATE-LATEST.json",
-    "f10Predeploy": "app/docs/evidence/RC15-F10-PREDEPLOY-EXACT-SOURCE-BROWSER-GATE-LATEST.json"
-  },
-  "f9Acceptance": {
-    "decision": "POSTPROD_ACCEPTED",
-    "mode": "ACCELERATED_SAME_DAY_ACCEPTANCE_WITH_F10_CONTINUOUS_MONITORING_HANDOFF",
-    "explicitCurrentUserDirective": true,
-    "masterPlan24hWindowIsObjectiveNotHardMinimum": true,
-    "productP0Proven": false,
-    "readinessBefore": 98,
-    "readinessAfter": 100
-  },
-  "safety": {
-    "providerWrites": 0,
-    "businessDataWrites": 0,
-    "authWrites": 0,
-    "hrWrites": 0,
-    "storageWrites": 0,
-    "rulesWrites": 0,
-    "paymentWrites": 0,
-    "makeCalls": 0,
-    "geminiCalls": 0,
-    "deploys": 0,
-    "rebuilds": 0,
-    "reimports": 0,
-    "merge": false,
-    "newBranch": false,
-    "newPullRequest": false,
-    "newWorkflow": false,
-    "legacyDatabaseAccess": false
+    "f10LiveMechanismSync": "app/docs/evidence/RC15-F10-LIVE-CONTENT-EQUIVALENCE-MECHANISM-SYNC-LATEST.json"
   },
   "hardLocks": [
-    "Do not re-run F8 or restore V182 wholesale.",
-    "Do not replace approved app/modules or app/core to solve the F10 KPI incident; exact module/core lineage remains preserved.",
-    "F10 predeploy exact-source browser and module matrix are PASS; do not reopen them without new reproducible functional drift.",
-    "Do not replay or repurpose consumed F4/F5/C6 Hosting mutation authority for F10.",
-    "Do not create a new branch or PR.",
-    "Do not connect or copy the legacy database.",
-    "Make, Gemini and payment mutations remain gated.",
-    "F10 does not retroactively reopen terminal F5-F9 without reproducible product P0 evidence.",
-    "Future live HR certification must use an independent forced provider read with revision/sourceReadAt; CX.data self-parity is insufficient.",
-    "Do not request owner visual acceptance until the source-repaired adapter is deployed and revalidated in the live browser against one new fresh provider revision."
+    "Do not re-run terminal F5-F9 by routine.",
+    "Do not restore V182 wholesale or replace approved app/modules/app/core for F10.",
+    "A sourceRevision is a per-refresh trace token, not a cross-refresh content identity.",
+    "F10 live certification requires forced fresh provider evidence plus exact sanitized operational row digest and Admin KPI/summary equivalence.",
+    "Do not replay the consumed F10 request or redeploy the already verified F10 Hosting package without a new reproducible defect and explicit authorization.",
+    "Client/Cliente 360 remains a separate workstream and is not adjudicated by the F10 HR/KPI gate.",
+    "Owner visual acceptance is the only remaining F10 closure gate."
   ]
 }

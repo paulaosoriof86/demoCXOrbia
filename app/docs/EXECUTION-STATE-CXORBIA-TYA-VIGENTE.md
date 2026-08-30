@@ -1,80 +1,32 @@
 # EXECUTION STATE CXORBIA TyA — VIGENTE
 
-**Fecha:** 2026-08-29  
-**STATE_SYNC_EPOCH:** `CXORBIA-20260829-F10-OP-EVIDENCE-SOURCE-PASS-12`  
-**MASTER_PLAN_ID:** `CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1`  
-**MASTER_PLAN_VERSION:** `1.1.0`  
-**MASTER_PLAN_STATUS:** `FROZEN`  
+**Fecha:** 2026-08-30  
+**STATE_SYNC_EPOCH:** `CXORBIA-20260830-F10-LIVE-ROW-CONTENT-PASS-MECHANISM-SYNC-14`  
 **currentMasterPhase:** `F10_PERMANENT_OPERATING_MODEL`  
-**currentMasterStep:** `F10_OPERATIONAL_EVIDENCE_SOURCE_REPAIRED_PREDEPLOY_VALIDATION`  
+**currentMasterStep:** `F10_LIVE_ROW_CONTENT_EQUIVALENCE_PASS_MECHANISM_SYNCHRONIZED`  
 **activeIncident:** `F10-HR-KPI-FRESHNESS-20260829-01`  
-**incidentStatus:** `OPEN_P1_SOURCE_REPAIRED_PENDING_PREDEPLOY_AND_DEPLOY`  
-**NEXT:** `F10_PREDEPLOY_EXACT_SOURCE_BROWSER_AND_MODULE_MATRIX_GATE_THEN_REQUIRE_EXPLICIT_DEPLOY_AUTHORIZATION`  
+**incidentStatus:** `TECHNICAL_PASS_PENDING_OWNER_VISUAL_ACCEPTANCE`  
 **PHASE_A:** `100/100`  
-**PRODUCTION_REAL_READINESS:** `100/100` histórico del release aceptado
+**PRODUCTION_REAL_READINESS:** `100/100`  
+**NEXT:** `F10_OWNER_VISUAL_ACCEPTANCE_THEN_CLOSE_INCIDENT_OR_OPEN_FOCAL_VISUAL_DEFECT`
 
-## Autoridad de ejecución
+## Ejecución cerrada técnicamente
 
-La autoridad de cursor actual es:
+- Source repair: `6392736070dcf34d24f9b27b8bb1d0ecbcf116b0`, adapter blob `941051c96a26017363acfc72f7e88edbe70c68ba`.
+- Hosting focal: run `33289344796`, artefacto `9725498210`, release `sites/cxorbia-backend-dev/releases/1788058988151000`, version `sites/cxorbia-backend-dev/versions/958ed37dde65d592`.
+- Remote lineage: `PASS_F10_REMOTE_ADAPTER_AND_MODULE_LINEAGE`, 41 checks, 0 mismatches.
+- Fresh row-content gate: run `33297814889`, artefacto `9727971958`, PASS.
+- Operational digest provider/browser: `a5a6d0bc1ed109e1c4088d09553e49c860f6d390d187859175c1fd2d19741bb0` = exact match.
+- Repo delta durante prueba: limpio; provider/business/Auth/Firestore/HR/Storage/Rules/payment writes = 0; deploy = 0 en la recertificación.
 
-`backend/config/cxorbia-phase-a-continuity-lock-postprod-overlay-v1.json`
+## Regla anti-bucle
 
-El continuity lock base conserva historia y no puede recuperar un cursor M2/M3/F8 superado. El overlay preserva F5-F9 terminales y mantiene únicamente el incidente P1 F10 hasta deploy/revalidación.
+No volver a exigir igualdad literal de `sourceRevision` entre refresh independientes. No volver a certificar frescura por self-parity de `CX.data`. No reabrir módulos por un KPI sin drift exacto de blob. No repetir el deploy F10 ya verificado salvo nuevo defecto reproducible y autorización.
 
-## Estado ejecutable actual
-
-- Release desplegado: `CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01`.
-- Functional source del release desplegado: `f9802fdd498934a8e7729fa5c7d18341bec1cd71`.
-- F8.5 lineage: `CLOSED_PASS_CANONICAL_APPROVED_LINEAGE_MATCHES_FROZEN_SOURCE_AND_LIVE_HOSTING_RELEASE`.
-- F10 source sucesor: `6392736070dcf34d24f9b27b8bb1d0ecbcf116b0`.
-- F10 adapter blob: `941051c96a26017363acfc72f7e88edbe70c68ba`.
-- F10 atomic apply run `33283725070`: `APPLIED_AND_VERIFIED`.
-- F10 source semantic gate: `PASS_F10_OPERATIONAL_EVIDENCE_SEMANTICS`.
-- Approved module matrix: `PASS_EXACT_APPROVED_MODULE_BLOBS_PRESERVED`, `0` mismatches.
-- P0 de producto demostrado: `false`.
-- Frontend/module wholesale restore: `FORBIDDEN`.
-- Nueva candidata/rama/PR/workflow por rutina: `FORBIDDEN`.
-- Deploy actual del patch F10: `NOT_AUTHORIZED / NOT_EXECUTED`.
-- Owner visual acceptance: `HOLD` hasta deploy autorizado y browser same-revision revalidation.
-
-## Incidente F10 — causa raíz ya adjudicada
-
-La frescura independiente se demostró en run `33281688280`, provider revision `b7bc89176161a8a1b83e3d33098634ae77a5a8bc3f6f44ee7c749e2d11da598d`, `sourceReadAt=2026-08-29T23:44:58.827Z`.
-
-El problema observado no fue una versión antigua de módulos. La causa reproducida fue:
-
-`direct HR milestone evidence → promoted canonical lifecycle → promoted facets consumed as current operational KPI`.
-
-La reparación source cambia esa cadena a:
-
-`direct HR milestone evidence → operational evidence KPI`
-
-manteniendo por separado:
-
-`direct/later evidence → canonical lifecycle inference → history/audit`.
-
-Así, una fila submitida sin fecha de realización/cuestionario conserva el avance canónico para historia, pero no fabrica evidencia operacional visible que no está en HR.
-
-La semántica financiera queda explícita:
-
-`submitted = liquidationCandidate`  
-`liquidationCandidate != liquidationConfirmed`  
-`liquidationConfirmed != paymentConfirmed`.
-
-## Versiones de módulos
-
-La matriz `backend/config/cxorbia-f10-approved-module-authority-matrix-v1.json` es obligatoria. El patch F10 no cambió ningún `app/modules/**`, `app/core/**`, `app/app.js` ni el entrypoint. Si un problema futuro aparece en una vista, no se reabre ni reemplaza el módulo hasta demostrar drift del blob/asset exacto.
-
-Módulos post-Phase-A cargados (`cliente-insights`, `clientes`, `comercial`, `crm`, `marketing`) mantienen su clasificación propia y no se presentan como autoridad Phase A por el solo hecho de estar cargados.
-
-Cliente/Cliente 360 conserva su HOLD separado.
+El validador `tools/continuity/validate-cxorbia-state-sync.js` valida overlay, documentos, request consumido, base matrix + live overlay, adapter, QA gate y política de certificación; se ejecuta desde `tools/qa/cxorbia-controlled-runners-contract-gate.mjs` dentro del workflow read-only existente.
 
 ## Siguiente ejecución permitida
 
-`F10_PREDEPLOY_EXACT_SOURCE_BROWSER_AND_MODULE_MATRIX_GATE_THEN_REQUIRE_EXPLICIT_DEPLOY_AUTHORIZATION`.
+Visualización/aceptación humana de F10. Si PASS visual, cerrar incidente. Si aparece un defecto, capturar evidencia y limitar el cambio a su owner exacto. `Cliente/Cliente 360` continúa aparte.
 
-No corresponde volver a ejecutar la reconciliación que ya produjo la revisión fresca ni reabrir la causa raíz. El objetivo del siguiente gate es comprobar que el source reparado carga con los módulos exactos y que el read model operacional no introduce una regresión antes de un deploy.
-
-## Seguridad
-
-No hay autorización actual para provider/data/Auth/Firestore/HR/Storage/Rules/payment writes, Make/Gemini, deploy, rebuild, reimport o merge. Legacy DB sigue prohibida.
+**NEXT:** `F10_OWNER_VISUAL_ACCEPTANCE_THEN_CLOSE_INCIDENT_OR_OPEN_FOCAL_VISUAL_DEFECT`.

@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "cxorbia.rc15.f10.live-content-equivalence-mechanism-sync.v1",
+  "evidenceId": "RC15-F10-LIVE-CONTENT-EQUIVALENCE-MECHANISM-SYNC-20260830-01",
+  "generatedAt": "2026-08-30",
+  "incidentId": "F10-HR-KPI-FRESHNESS-20260829-01",
+  "decision": "PASS_F10_LIVE_ROW_CONTENT_EQUIVALENCE_AND_MECHANISM_SYNC",
+  "productP0Proven": false,
+  "sourceRepair": {
+    "functionalCommit": "6392736070dcf34d24f9b27b8bb1d0ecbcf116b0",
+    "path": "app/adapters/tya-canonical-state-semantics-v2.js",
+    "gitBlob": "941051c96a26017363acfc72f7e88edbe70c68ba",
+    "sha256": "e832759e03238559617b71daa4daa52a00b2c6dbd2d2266e6df0ae391f853b2e"
+  },
+  "deploy": {
+    "runId": 33289344796,
+    "artifactId": 9725498210,
+    "decision": "PASS_HOSTING_REST_DEPLOY",
+    "hostingRelease": "sites/cxorbia-backend-dev/releases/1788058988151000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/958ed37dde65d592",
+    "remoteLineageDecision": "PASS_F10_REMOTE_ADAPTER_AND_MODULE_LINEAGE",
+    "moduleChecks": 41,
+    "moduleMismatches": 0,
+    "entrypointExact": true,
+    "appJsExact": true
+  },
+  "priorAggregateValidation": {
+    "runId": 33293897971,
+    "artifactId": 9726807522,
+    "decision": "PASS_F10_LIVE_ADMIN_FRESH_CONTENT_EQUIVALENCE"
+  },
+  "strengthenedHarnessAdjudication": {
+    "runId": 33297606745,
+    "artifactId": 9727912293,
+    "disposition": "HOLD_QA_HARNESS_ORDER_SENSITIVE_REDUNDANT_COUNTRY_OBJECT_COMPARISON",
+    "productDefect": false,
+    "reason": "Exact operational row digest and scalar summary checks executed before the failing country-object JSON-string comparison; the only blocker was object key insertion order. Harness changed to key/value comparison."
+  },
+  "liveValidation": {
+    "runId": 33297814889,
+    "artifactId": 9727971958,
+    "decision": "PASS_F10_LIVE_ADMIN_FRESH_CONTENT_EQUIVALENCE",
+    "periodKey": "2026-08",
+    "providerRevision": "f55d6a113cdb5ef66076e3247f7ba3d6cec66b4e574be85a846cc8465309d3d3",
+    "browserRevision": "e61714ad1cd5bd4e9c3f6d1408b8c637962dab39ce2a34fb3af41fd80647120f",
+    "providerSourceReadAt": "2026-08-30T06:51:07.963Z",
+    "browserSourceReadAt": "2026-08-30T06:51:14.944Z",
+    "cacheOrigin": "runtime_refresh",
+    "visitCount": 660,
+    "periodCount": 15,
+    "latestPeriod": "2026-08",
+    "focusRows": 44,
+    "focusDigestSha256": "0ebec31437a465bf049c23d2073fae01e0927408cab76d35a150a8f93b09a292",
+    "operationalEvidenceDigestSha256": "a5a6d0bc1ed109e1c4088d09553e49c860f6d390d187859175c1fd2d19741bb0",
+    "rowDigestMatch": true,
+    "summaryCountsMatch": true,
+    "canonicalMismatchCount": 0,
+    "duplicateRowKeys": 0,
+    "exactRevisionTokenEqualityRequired": false,
+    "kpisExpected": {"total":44,"realizadas":30,"pendRealizar":14,"sinAgendar":4,"cuestPend":4,"sinSubmitir":1,"liquidationCandidates":30,"liquidadas":0},
+    "kpisActual": {"total":44,"realizadas":30,"pendRealizar":14,"sinAgendar":4,"cuestPend":4,"sinSubmitir":1,"liquidationCandidates":30,"liquidadas":0}
+  },
+  "mechanism": {
+    "contentIdentityRule": "fresh provider row digest plus live Admin row digest and KPI/summary equivalence",
+    "revisionRule": "sourceRevision is per-refresh traceability, not cross-refresh content identity",
+    "continuityValidator": "tools/continuity/validate-cxorbia-state-sync.js",
+    "continuityValidatorWiredIntoExistingControlledRunner": true,
+    "newWorkflowCreated": false,
+    "newBranchCreated": false,
+    "newPullRequestCreated": false,
+    "redeployRequired": false
+  },
+  "safety": {
+    "deploysThisSync": 0,
+    "providerWrites": 0,
+    "businessDataWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "storageWrites": 0,
+    "rulesWrites": 0,
+    "paymentWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "merge": false,
+    "productionMutation": false,
+    "credentialsExposed": false,
+    "tokensExposed": false
+  },
+  "next": "F10_OWNER_VISUAL_ACCEPTANCE_THEN_CLOSE_INCIDENT_OR_OPEN_FOCAL_VISUAL_DEFECT"
+}

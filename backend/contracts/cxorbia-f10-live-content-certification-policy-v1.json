@@ -1,0 +1,34 @@
+{
+  "contractId": "cxorbia-f10-live-content-certification-policy-v1",
+  "schemaVersion": "1.0.0",
+  "effectiveDate": "2026-08-30",
+  "scope": "Reusable CXOrbia live-read certification for provider-backed operational data",
+  "crossRefreshRevisionTokenEqualityRequired": false,
+  "revisionTokenMeaning": "traceability identifier for one provider refresh; two independent fresh reads may have different tokens while serving exactly equivalent content",
+  "rowLevelOperationalDigestRequired": true,
+  "requiredProof": [
+    "forced provider fresh read with sourceReadAt/cacheOrigin",
+    "stable row identity and zero duplicate row keys",
+    "independent canonical comparison with zero mismatches",
+    "sanitized operational row-signature SHA-256 computed outside the browser",
+    "same operational row-signature SHA-256 computed from live authenticated Admin CX.data",
+    "period summary counts and country/state buckets equivalent",
+    "visible Admin KPI values equivalent",
+    "runtime F10 operational-evidence marker present"
+  ],
+  "oneShotRequestMustEndDisabledConsumed": true,
+  "automaticRetry": false,
+  "replay": false,
+  "continuityValidation": {
+    "script": "tools/continuity/validate-cxorbia-state-sync.js",
+    "invokedByControlledRunner": true,
+    "controlledRunner": "tools/qa/cxorbia-controlled-runners-contract-gate.mjs"
+  },
+  "forbiddenShortcuts": [
+    "CX.data self-parity as freshness proof",
+    "cross-refresh revision-token equality as content identity",
+    "hardcoded KPI counts or period names",
+    "module restore/rebuild without exact blob drift",
+    "automatic redeploy or provider mutation from a read-only mismatch"
+  ]
+}
