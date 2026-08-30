@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "cxorbia.project-onboarding-readiness.v1",
+  "readinessId": "CXORBIA-PROJECT-ONBOARDING-READINESS-20260830-01",
+  "stateSyncEpoch": "CXORBIA-20260830-F10-OPERATIONAL-AUTHORITY-MULTIPROJECT-SOURCE-AUDIT-16",
+  "status": "HOLD_NEW_PROJECT_PRODUCTION_ONBOARDING",
+  "currentLiveReleaseAffected": false,
+  "newProjectProductionAllowed": false,
+  "sourceSuccessorDeployed": false,
+  "blockingGates": [
+    "PROJECT_CONFIG_SCHEMA_PASS",
+    "PROJECT_SOURCE_RESOLVER_PASS",
+    "PROJECT_CREATE_DURABLE_ACK_PASS",
+    "PROJECT_UPDATE_DURABLE_ACK_PASS",
+    "PROJECT_ISOLATION_PASS",
+    "PROJECT_INTERNAL_SOURCE_PASS",
+    "PROJECT_EXTERNAL_SOURCE_PASS",
+    "PROJECT_AI_NO_FALSE_SUCCESS_PASS",
+    "PROJECT_DOCUMENTATION_SYNC_PASS"
+  ],
+  "demonstratedBlockers": [
+    {
+      "code": "PROJECT_CREATE_LOCAL_FIRST",
+      "owner": "Claude/prototipo",
+      "paths": ["app/modules/proyecto-wizard.js", "app/core/data.js", "app/core/backend-firebase.js"],
+      "detail": "project create currently mutates memory/localStorage and direct persistence before an ACK-aware project command path is used"
+    },
+    {
+      "code": "PROJECT_UPDATE_LOCAL_FIRST",
+      "owner": "Claude/prototipo",
+      "paths": ["app/modules/proyectos.js"],
+      "detail": "project settings mutate the live object and localStorage before provider ACK/readback"
+    },
+    {
+      "code": "PROJECT_SOURCE_CONFIG_LEGACY_SHALLOW",
+      "owner": "Reusable CXOrbia + Claude/prototipo",
+      "paths": ["app/modules/proyecto-wizard.js", "app/modules/proyectos.js"],
+      "detail": "legacy nativa/externa labels do not persist provider binding, mapping, read/write policy or period discovery"
+    },
+    {
+      "code": "PROJECT_ROUTE_HARDCODES_PRESENT",
+      "owner": "Claude/prototipo",
+      "paths": ["app/modules/proyecto-wizard.js", "app/modules/proyectos.js"],
+      "detail": "JUN 26, fixed quincenas/columns and a 50/50 statement conflict with project-specific route source authority"
+    },
+    {
+      "code": "PROJECT_AI_FALSE_SUCCESS_PRESENT",
+      "owner": "Claude/prototipo + Gemini future block",
+      "paths": ["app/modules/proyecto-wizard.js", "app/modules/proyectos.js"],
+      "detail": "demo/heuristic setup actions can present extraction/suggestion behavior before real Gemini gate and review"
+    },
+    {
+      "code": "TYA_CINEPOLIS_PROVIDER_CLIENT_SPECIFIC",
+      "owner": "Exclusive client adapter",
+      "paths": ["app/adapters/tya-protected-auth-hr-authority-bridge-v2.js", "backend/runtime/hr-live-service/server.mjs"],
+      "detail": "valid for TyA/Cinepolis only; must never be copied or promoted as global provider architecture"
+    }
+  ],
+  "sourceContract": "backend/contracts/cxorbia-project-source-contract-v1.json",
+  "sourceResolver": "app/adapters/cxorbia-project-operational-source-v1.js",
+  "projectCommandProvider": "backend/runtime/cxorbia-project-command-provider-v1.mjs",
+  "projectProviderPolicy": "backend/config/cxorbia-project-command-provider-policy-v1.json",
+  "next": "F10_READONLY_AUTHORITY_GATES__PROJECT_SOURCE_GATES__PROVIDER_ROUTE_GATE__THEN_CLAUDE_CODE"
+}
