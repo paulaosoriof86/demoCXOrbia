@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "cxorbia.postprod-source-successor-lock.v1",
+  "lockId": "CXORBIA-20260831-F10-POSTPROD-SOURCE-SUCCESSOR-LOCK-01",
+  "status": "ACTIVE_FAIL_CLOSED_SOURCE_SUCCESSOR",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "declaredFromHead": "4a5b583ce13c8feca11f08a7b1021a0f85f020dd",
+  "purpose": "Separate the immutable live Phase A release from the exact non-deployed F10 source successor. Historical V110/source-equality gates must not classify an explicitly declared exact successor as product drift.",
+  "frozenLiveRelease": {
+    "releaseId": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
+    "functionalSourceSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "runtimeReleaseSourceSha": "2d0b8e83b32b44f6c3eae80b7630f8cd3295fba2",
+    "cloudRunRevision": "cxorbia-live-hr-dev-00013-rns",
+    "f10HostingRelease": "sites/cxorbia-backend-dev/releases/1788058988151000",
+    "f10HostingVersion": "sites/cxorbia-backend-dev/versions/958ed37dde65d592",
+    "productionAccepted": true
+  },
+  "runtimeSuccessorExact": [
+    {
+      "path": "app/adapters/cxorbia-canonical-write-firewall-v1.js",
+      "gitBlobSha": "5a8eef4df502a4d6a659bef77914c2fcab8a7937",
+      "state": "SOURCE_ONLY_NOT_DEPLOYED"
+    },
+    {
+      "path": "app/adapters/cxorbia-project-operational-source-v1.js",
+      "gitBlobSha": "95ba739c314af820c514267374f47c965e96db6f",
+      "state": "SOURCE_ONLY_NOT_DEPLOYED"
+    },
+    {
+      "path": "app/adapters/tya-canonical-state-semantics-v2.js",
+      "gitBlobSha": "941051c96a26017363acfc72f7e88edbe70c68ba",
+      "state": "F10_DEPLOYED_CERTIFIED"
+    },
+    {
+      "path": "app/adapters/tya-phase-a-operational-sync-v1.js",
+      "gitBlobSha": "a7ad016ea4762a159cc90414ec3ca6be4956c105",
+      "state": "SOURCE_ONLY_NOT_DEPLOYED"
+    },
+    {
+      "path": "app/core/backend-v57-extra-config.js",
+      "gitBlobSha": "2fc7eada88c187e5dade6a50aaf5d8adfe211f3f",
+      "state": "SOURCE_ONLY_NOT_DEPLOYED"
+    },
+    {
+      "path": "app/data/tya-hr-source-safe-current-through-july.js",
+      "gitBlobSha": "3bff80c3dd7f6809850c3cfd009a3dcb395c5a21",
+      "state": "SOURCE_ONLY_NOT_DEPLOYED"
+    }
+  ],
+  "criticalSourceContractsExact": [
+    {
+      "path": "backend/contracts/cxorbia-project-source-contract-v1.json",
+      "gitBlobSha": "b92aa2e4464930cc74e10a6142ce762a40527961"
+    },
+    {
+      "path": "backend/runtime/cxorbia-project-command-provider-v1.mjs",
+      "gitBlobSha": "debfdb66eea88c764fd87397279879fb46c76c11"
+    },
+    {
+      "path": "backend/config/cxorbia-project-command-provider-policy-v1.json",
+      "gitBlobSha": "f78eaafb67df01dcc12e703a611418d5092eb657"
+    },
+    {
+      "path": "backend/config/cxorbia-project-onboarding-readiness-v1.json",
+      "gitBlobSha": "2b911b590d632873c8a4cb37c1ae7dc7187db350"
+    },
+    {
+      "path": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+      "gitBlobSha": "8ce15ca86fa1321145e7c63fe1b4664565614da9"
+    },
+    {
+      "path": "backend/config/cxorbia-operational-command-provider-policy-v1.json",
+      "gitBlobSha": "a34afb823b69596469eedccfa046a159f6db5685"
+    },
+    {
+      "path": "backend/config/cxorbia-phase-a-continuity-lock-postprod-overlay-v1.json",
+      "gitBlobSha": "19dbb365894328c0fb7446cf8de73c46a5029700"
+    }
+  ],
+  "policy": {
+    "sourceSuccessorDeployed": false,
+    "unexpectedRuntimePathAllowed": false,
+    "runtimeBlobMismatchAllowed": false,
+    "historicalV110EqualityIsCurrentAuthority": false,
+    "baseContinuityLockIsCurrentPostprodCursor": false,
+    "postprodOverlayIsEffectiveCursor": true,
+    "newProjectProductionOnboardingAllowed": false,
+    "providerWritesAuthorized": false,
+    "businessDataWritesAuthorized": false,
+    "externalHrWritesAuthorized": false,
+    "authWritesAuthorized": false,
+    "storageWritesAuthorized": false,
+    "rulesWritesAuthorized": false,
+    "paymentsAuthorized": false,
+    "makeAuthorized": false,
+    "geminiAuthorized": false,
+    "deployAuthorized": false,
+    "mergeAuthorized": false
+  }
+}
