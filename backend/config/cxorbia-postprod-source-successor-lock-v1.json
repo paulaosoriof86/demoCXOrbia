@@ -71,12 +71,14 @@
     {
       "path": "backend/config/cxorbia-operational-command-provider-policy-v1.json",
       "gitBlobSha": "a34afb823b69596469eedccfa046a159f6db5685"
-    },
-    {
-      "path": "backend/config/cxorbia-phase-a-continuity-lock-postprod-overlay-v1.json",
-      "gitBlobSha": "19dbb365894328c0fb7446cf8de73c46a5029700"
     }
   ],
+  "mutableControlPlane": {
+    "postprodOverlayPath": "backend/config/cxorbia-phase-a-continuity-lock-postprod-overlay-v1.json",
+    "validation": "semantic_release_identity_and_frozen_functional_source_match",
+    "blobPinned": false,
+    "reason": "The effective cursor must be able to advance documentation/state epochs without creating false source-drift failures. Runtime and immutable contracts remain exact-pinned."
+  },
   "policy": {
     "sourceSuccessorDeployed": false,
     "unexpectedRuntimePathAllowed": false,
