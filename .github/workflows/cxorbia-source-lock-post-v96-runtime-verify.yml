@@ -1,4 +1,4 @@
-name: CXOrbia Source Lock V110 Union Verify
+name: CXOrbia Source Lock Verify
 
 on:
   workflow_dispatch:
@@ -8,14 +8,19 @@ on:
     paths:
       - 'app/app.js'
       - 'app/index.html'
+      - 'app/index-backend-dev.html'
       - 'app/manifest.webmanifest'
       - 'app/sw.js'
       - 'app/core/**'
       - 'app/modules/**'
       - 'app/styles/**'
+      - 'app/adapters/**'
+      - 'app/data/**'
       - 'app/demo/**'
       - 'app/docs/MANIFEST-V110-UNION-EMPALME-R1.json'
       - 'app/docs/verify-manifest-v110-union-empalme.mjs'
+      - 'backend/config/cxorbia-postprod-source-successor-lock-v1.json'
+      - 'backend/config/cxorbia-phase-a-continuity-lock-postprod-overlay-v1.json'
       - 'tools/release/tya-source-lock-v110-union-verify.mjs'
       - '.github/workflows/cxorbia-source-lock-post-v96-runtime-verify.yml'
   pull_request:
@@ -24,14 +29,19 @@ on:
     paths:
       - 'app/app.js'
       - 'app/index.html'
+      - 'app/index-backend-dev.html'
       - 'app/manifest.webmanifest'
       - 'app/sw.js'
       - 'app/core/**'
       - 'app/modules/**'
       - 'app/styles/**'
+      - 'app/adapters/**'
+      - 'app/data/**'
       - 'app/demo/**'
       - 'app/docs/MANIFEST-V110-UNION-EMPALME-R1.json'
       - 'app/docs/verify-manifest-v110-union-empalme.mjs'
+      - 'backend/config/cxorbia-postprod-source-successor-lock-v1.json'
+      - 'backend/config/cxorbia-phase-a-continuity-lock-postprod-overlay-v1.json'
       - 'tools/release/tya-source-lock-v110-union-verify.mjs'
       - '.github/workflows/cxorbia-source-lock-post-v96-runtime-verify.yml'
 
@@ -44,7 +54,7 @@ defaults:
 
 jobs:
   source-lock-v110-union-verify:
-    name: Source lock V110 union verify
+    name: Source lock current/historical verify
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -59,13 +69,13 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Verify V110 union source lock
+      - name: Verify source lock
         run: |
           node tools/release/tya-source-lock-v110-union-verify.mjs \
             --manifest app/docs/MANIFEST-V110-UNION-EMPALME-R1.json \
             --out .tmp/source-lock-v110-union
 
-      - name: Upload V110 source lock report
+      - name: Upload source lock report
         if: always()
         uses: actions/upload-artifact@v4
         with:
