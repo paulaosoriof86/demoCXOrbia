@@ -7,11 +7,17 @@ on:
       - docs-tya-v6-v71-audit
     paths:
       - 'app/index.html'
+      - 'app/index-backend-dev.html'
       - 'app/app.js'
       - 'app/core/**'
       - 'app/modules/**'
       - 'app/styles/**'
+      - 'app/adapters/**'
+      - 'app/data/**'
+      - 'app/demo/**'
       - 'app/manifest.webmanifest'
+      - 'backend/config/cxorbia-postprod-source-successor-lock-v1.json'
+      - 'backend/config/cxorbia-phase-a-continuity-lock-postprod-overlay-v1.json'
       - 'tools/release/tya-rc-phase-a-drift-gate.mjs'
       - '.github/workflows/cxorbia-rc-phase-a-drift-gate.yml'
   pull_request:
@@ -19,11 +25,17 @@ on:
       - release/cxorbia-tya-rc-20260630
     paths:
       - 'app/index.html'
+      - 'app/index-backend-dev.html'
       - 'app/app.js'
       - 'app/core/**'
       - 'app/modules/**'
       - 'app/styles/**'
+      - 'app/adapters/**'
+      - 'app/data/**'
+      - 'app/demo/**'
       - 'app/manifest.webmanifest'
+      - 'backend/config/cxorbia-postprod-source-successor-lock-v1.json'
+      - 'backend/config/cxorbia-phase-a-continuity-lock-postprod-overlay-v1.json'
       - 'tools/release/tya-rc-phase-a-drift-gate.mjs'
       - '.github/workflows/cxorbia-rc-phase-a-drift-gate.yml'
 
