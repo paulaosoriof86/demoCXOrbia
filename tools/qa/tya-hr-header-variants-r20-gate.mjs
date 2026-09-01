@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { execFileSync } from 'node:child_process';
 
 const args=process.argv.slice(2);
 const valueOf=(flag,fallback)=>{const i=args.indexOf(flag);return i>=0&&args[i+1]?args[i+1]:fallback;};
@@ -22,6 +23,9 @@ const combined=`${builder}\n${inventoryBuilder}\n${JSON.stringify(contract)}`;
 
 for(const marker of ['R20_TAB_SCOPED_HEADER_VARIANT','tab_scoped_compact','duplicate_column_conflict','contextualMissingAllowedIn','coalesce_equal_or_single_nonempty']){
   if(!combined.includes(marker))fail('marker_missing',{marker});
+}
+for(const marker of ['SHOPPER_NON_IDENTITY_STATUS','PASS_R20_SHOPPER_ASSIGNMENT_CLASSIFICATION','--assignment-self-test']){
+  if(!builder.includes(marker))fail('assignment_classification_guard_missing',{marker});
 }
 for(const [name,source] of [['canonical',builder],['inventory',inventoryBuilder]]){
   if(source.includes('function findHeader(values){'))fail('legacy_header_detector_present',{builder:name});
@@ -62,12 +66,30 @@ if(duplicateEqual.conflict||duplicateEqual.value!=='ma. 14-07')fail('equal_dupli
 if(duplicateSingle.conflict||duplicateSingle.value!=='lu. 20-07')fail('single_duplicate_not_coalesced',duplicateSingle);
 if(!duplicateConflict.conflict)fail('conflicting_duplicate_not_blocked');
 
+let assignment;
+try{
+  assignment=JSON.parse(execFileSync(process.execPath,[builderPath,'--assignment-self-test'],{cwd:repo,encoding:'utf8',stdio:['ignore','pipe','pipe']}));
+}catch(error){
+  fail('assignment_self_test_failed',{stdout:String(error?.stdout||'').slice(0,2000),stderr:String(error?.stderr||error?.message||'').slice(0,2000)});
+}
+if(assignment.decision!=='PASS_R20_SHOPPER_ASSIGNMENT_CLASSIFICATION')fail('assignment_self_test_not_pass',assignment);
+const byLabel=new Map((assignment.cases||[]).map(row=>[row.label,row]));
+for(const label of ['operational-fallida','placeholder-p x asignar','placeholder-pendiente','placeholder-empty','null']){
+  const row=byLabel.get(label);
+  if(!row||row.assigned!==false||row.shopperId!==null)fail('non_identity_case_not_unassigned',{label,row});
+}
+for(const label of ['human-simple','human-spaces','representative-code']){
+  const row=byLabel.get(label);
+  if(!row||row.assigned!==true||!row.shopperId)fail('real_shopper_case_not_assigned',{label,row});
+}
+
 console.log(JSON.stringify({
   decision:'PASS_TYA_R20_HEADER_VARIANTS_GATE',
   builders:{canonical:'guarded',inventory:'guarded'},
   variants:{full:full.id,compact:compact.id},
   compactIdentity:{countrySource:compact.countrySource,cinemaIdSource:compact.cinemaIdSource},
   duplicateSubmission:{equal:'coalesced',single:'coalesced',conflict:'blocked'},
+  assignmentClassification:{decision:assignment.decision,preSanitization:assignment.preSanitization,caseCount:assignment.cases.length,fallida:{assigned:byLabel.get('operational-fallida').assigned,shopperId:byLabel.get('operational-fallida').shopperId}},
   verifiedInventory:{accessMode:'guarded',countVerification:'guarded',cacheBustByGid:'guarded',liveVariantMustBeContractDeclared:true,monthSpecificAssumptions:false},
   safeState:{writes:false,hrWrites:false,production:false,deploy:false}
 },null,2));
