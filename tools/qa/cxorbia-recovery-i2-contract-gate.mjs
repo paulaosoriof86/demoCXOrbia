@@ -5,23 +5,29 @@ import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { createProjectCommandProvider } from '../../backend/runtime/cxorbia-project-command-provider-v1.mjs';
 import { createOperationalCommandProvider, validateCommand } from '../../backend/runtime/cxorbia-operational-command-provider-v1.mjs';
+import { createProviderForCommand, commandProviderKind } from '../../backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs';
 
-const EXPECTED_HEAD='f9802fdd498934a8e7729fa5c7d18341bec1cd71';
+const EXPECTED_HEAD='bb2ca859d6cbac26272fdbbb0f09ca31a950604a';
 const SUCCESSOR='0a4c617c8af0f1c58394e78a28494ca044480d82';
-const allowedPaths=[
-  'app/adapters/cxorbia-project-operational-source-v1.js',
-  'backend/contracts/cxorbia-project-source-contract-v1.json',
-  'backend/runtime/cxorbia-project-command-provider-v1.mjs',
-  'app/adapters/tya-phase-a-operational-sync-v1.js',
-  'backend/runtime/cxorbia-operational-command-provider-v1.mjs',
-  'app/core/backend-v57-extra-config.js',
-  'app/adapters/cxorbia-command-adapter-v1.js',
-  'app/adapters/cxorbia-cxdata-command-boundary-v1.js',
+const FOCAL_ALLOWED_PATHS=[
   'app/modules/proyecto-wizard.js',
   'app/modules/proyectos.js',
-  'app/modules/postulaciones.js',
-  'backend/runtime/hr-live-service/server.mjs',
   'backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs',
+  'tools/qa/cxorbia-recovery-i2-contract-gate.mjs'
+];
+const CANDIDATE_PATHS=[
+  'app/adapters/cxorbia-command-adapter-v1.js',
+  'app/adapters/cxorbia-cxdata-command-boundary-v1.js',
+  'app/adapters/cxorbia-project-operational-source-v1.js',
+  'app/adapters/tya-phase-a-operational-sync-v1.js',
+  'app/core/backend-v57-extra-config.js',
+  'app/modules/proyecto-wizard.js',
+  'app/modules/proyectos.js',
+  'backend/contracts/cxorbia-project-source-contract-v1.json',
+  'backend/runtime/cxorbia-operational-command-provider-v1.mjs',
+  'backend/runtime/cxorbia-project-command-provider-v1.mjs',
+  'backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs',
+  'backend/runtime/hr-live-service/server.mjs',
   'tools/qa/cxorbia-recovery-i2-contract-gate.mjs'
 ];
 const stable=value=>Array.isArray(value)?value.map(stable):(value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(k=>[k,stable(value[k])])):value);
@@ -75,6 +81,15 @@ function command(base){
   };
 }
 
+const projectPolicy={
+  schemaVersion:'cxorbia.project-command-provider-policy.v1',enabled:true,allowedTenantIds:['tya'],
+  externalProviderWrites:false,hrWrites:false,makeCalls:false,geminiCalls:false,paymentWrites:false
+};
+const operationalPolicy={
+  schemaVersion:'cxorbia.operational.provider-policy.v1',enabled:true,allowedTenantIds:['tya'],allowedProjectIds:['project-a','project-runtime'],
+  hrWrites:false,makeCalls:false,geminiCalls:false,storageWrites:false,paymentWrites:false,conflictPolicy:'review_no_silent_overwrite'
+};
+
 async function main(){
   const tests=[];
   const pass=(name,detail={})=>tests.push({name,status:'PASS',...detail});
@@ -82,7 +97,7 @@ async function main(){
   assert.equal(git(['rev-parse','HEAD']),EXPECTED_HEAD);
   assert.equal(git(['status','--porcelain=v1','--untracked-files=no']).split(/\r?\n/).filter(Boolean).length>0,true);
   const paths=changed();
-  assert.ok(paths.every(p=>allowedPaths.includes(p)),`out-of-scope paths: ${paths.filter(p=>!allowedPaths.includes(p)).join(',')}`);
+  assert.ok(paths.every(p=>FOCAL_ALLOWED_PATHS.includes(p)),`out-of-scope paths: ${paths.filter(p=>!FOCAL_ALLOWED_PATHS.includes(p)).join(',')}`);
   assert.equal(blob('HEAD','app/adapters/cxorbia-canonical-write-firewall-v1.js'),'a55bdc1f6ba405c4324d8ba65e5f0ca944d33c30');
   assert.equal(blob('HEAD','app/data/tya-hr-source-safe-current-through-july.js'),'4bdb9abe1c6582d1a5a72fc9b48a148e716d4cdf');
   assert.equal(gitMaybe(['cat-file','-e','HEAD:backend/config/cxorbia-project-onboarding-readiness-v1.json']).ok,false);
@@ -90,15 +105,26 @@ async function main(){
   assert.equal(blob(SUCCESSOR,'backend/contracts/cxorbia-project-source-contract-v1.json'),'b92aa2e4464930cc74e10a6142ce762a40527961');
   assert.equal(worktreeBlob('app/adapters/cxorbia-project-operational-source-v1.js'),'95ba739c314af820c514267374f47c965e96db6f');
   assert.equal(worktreeBlob('backend/contracts/cxorbia-project-source-contract-v1.json'),'b92aa2e4464930cc74e10a6142ce762a40527961');
-  pass('HEAD/lineage and scope', {changedPaths:paths});
+  pass('HEAD/lineage and focal scope', {changedPaths:paths});
 
-  const text=Object.fromEntries(paths.map(p=>[p,read(p)]));
+  const wizard=read('app/modules/proyecto-wizard.js');
+  const projects=read('app/modules/proyectos.js');
   assert.ok(!read('app/core/backend-v57-extra-config.js').includes('cinepolis-abril-26'));
   assert.ok(!read('app/adapters/tya-phase-a-operational-sync-v1.js').includes("||'tya'"));
   assert.ok(!read('app/adapters/tya-phase-a-operational-sync-v1.js').includes("||'cinepolis'"));
   assert.ok(!read('app/adapters/tya-phase-a-operational-sync-v1.js').includes('Date.now().toString'));
+  assert.ok(!wizard.includes("ronda:'JUN 26'"));
+  assert.ok(!wizard.includes("quincenas:['Quincena 1','Quincena 2']"));
+  assert.ok(!wizard.includes("cols:['Sucursal','Ciudad','País','Escenario']"));
+  assert.ok(!wizard.includes('pending-secure-provider-binding'));
+  assert.ok(!wizard.includes('pending-hr-mapping-ref'));
+  assert.ok(!wizard.includes('50/50'));
+  assert.ok(!projects.includes('mitad de las visitas'));
+  assert.ok(!projects.includes('50/50'));
+  assert.ok(!projects.includes('pending-secure-provider-binding'));
+  assert.ok(!projects.includes('pending-hr-mapping-ref'));
   assert.ok(!paths.includes('backend/config/cxorbia-project-onboarding-readiness-v1.json'));
-  pass('Admission, preserve/reject and hardcodes');
+  pass('Admission, preserve/reject and hardcode regression');
 
   assert.deepEqual(validateCommand(command({commandType:'application.create'})).errors,[]);
   assert.ok(validateCommand({...command({commandType:'application.create'}),periodId:''}).errors.includes('scope'));
@@ -112,7 +138,7 @@ async function main(){
   const projectProvider=createProjectCommandProvider({
     auth:authFor({admin:{uid:'admin1',tenantId:'tya',role:'admin',authNamespace:'staff'}}),
     db:projectDb,
-    policy:{schemaVersion:'cxorbia.project-command-provider-policy.v1',enabled:true,allowedTenantIds:['tya'],externalProviderWrites:false,hrWrites:false,makeCalls:false,geminiCalls:false,paymentWrites:false}
+    policy:projectPolicy
   });
   const createPayload={name:'Project A',countries:['GT'],periodId:'period-setup',operationalSource:{mode:'internal',providerType:'internal_firestore',authority:'platform',readPolicy:'internal_live',writePolicy:'platform_only',mappingRef:'internal-native-mapping'}};
   const createCmd=command({commandType:'project.create',entityType:'project',entityId:null,projectId:null,periodId:'period-setup',idempotencyKey:'project-create-1',payload:createPayload});
@@ -136,7 +162,7 @@ async function main(){
       admin:{uid:'admin1',tenantId:'tya',role:'admin',authNamespace:'staff',projectIds:['project-a']}
     }),
     db:opDb,
-    policy:{schemaVersion:'cxorbia.operational.provider-policy.v1',enabled:true,allowedTenantIds:['tya'],allowedProjectIds:['project-a'],hrWrites:false,makeCalls:false,geminiCalls:false,storageWrites:false,paymentWrites:false,conflictPolicy:'review_no_silent_overwrite'}
+    policy:operationalPolicy
   });
   const appCreate=command({commandType:'application.create',payload:{periodId:'period-2026-08',visitId:'visit-a',shopperId:'shopper-a'}});
   const appAck=await opProvider.execute('shopper',appCreate);
@@ -153,13 +179,49 @@ async function main(){
   assert.equal(opDb.get('tenants/tya/projects/project-a/visits/visit-a').shopperId,'shopper-a');
   pass('Postulation and assignment persistence');
 
-  assert.ok(read('backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs').includes('COMMAND_PROVIDER_NOT_CONFIGURED'));
+  const runtimeDb=new Db({
+    'tenants/tya/users/admin-runtime':{active:true,tenantId:'tya',role:'admin',authNamespace:'staff'},
+    'tenants/tya/users/shopper-runtime':{active:true,tenantId:'tya',role:'shopper',authNamespace:'shopper',projectIds:['project-runtime'],shopperId:'shopper-runtime'},
+    'tenants/tya/projects/project-runtime/visits/visit-runtime':{id:'visit-runtime',tenantId:'tya',projectId:'project-runtime',periodId:'period-runtime',hrRowId:'hr-runtime',estado:'disponible',version:1}
+  });
+  const runtimeAuth=authFor({
+    adminRuntime:{uid:'admin-runtime',tenantId:'tya',role:'admin',authNamespace:'staff'},
+    shopperRuntime:{uid:'shopper-runtime',tenantId:'tya',role:'shopper',authNamespace:'shopper',projectIds:['project-runtime'],shopperId:'shopper-runtime'}
+  });
+  const runtimeProjectCmd=command({commandType:'project.create',entityType:'project',entityId:null,projectId:null,periodId:'setup-runtime',idempotencyKey:'runtime-project-create',payload:{name:'Runtime Project',countries:['GT'],periodId:'setup-runtime',operationalSource:{mode:'internal',providerType:'internal_firestore',authority:'platform',readPolicy:'internal_live',writePolicy:'platform_only',mappingRef:'internal-native-mapping'}}});
+  assert.equal(commandProviderKind(runtimeProjectCmd.commandType),'project');
+  const projectRoute=createProviderForCommand(runtimeProjectCmd,{auth:runtimeAuth,db:runtimeDb,projectPolicy,operationalPolicy});
+  assert.equal(projectRoute.kind,'project');
+  assert.ok(projectRoute.provider);
+  assert.equal((await projectRoute.provider.execute('adminRuntime',runtimeProjectCmd)).ok,true);
+
+  const runtimeOpCmd=command({commandType:'application.create',projectId:'project-runtime',periodId:'period-runtime',idempotencyKey:'runtime-app-create',payload:{periodId:'period-runtime',visitId:'visit-runtime',shopperId:'shopper-runtime'}});
+  assert.equal(commandProviderKind(runtimeOpCmd.commandType),'operational');
+  const operationalRoute=createProviderForCommand(runtimeOpCmd,{auth:runtimeAuth,db:runtimeDb,projectPolicy,operationalPolicy});
+  assert.equal(operationalRoute.kind,'operational');
+  assert.ok(operationalRoute.provider);
+  assert.equal((await operationalRoute.provider.execute('shopperRuntime',runtimeOpCmd)).ok,true);
+
+  const wrongProjectPolicy=createProviderForCommand(runtimeProjectCmd,{auth:runtimeAuth,db:runtimeDb,projectPolicy:operationalPolicy,operationalPolicy});
+  assert.equal(wrongProjectPolicy.provider,null);
+  assert.equal(wrongProjectPolicy.error,'PROJECT_COMMAND_PROVIDER_POLICY_INVALID');
+  const wrongOperationalPolicy=createProviderForCommand(runtimeOpCmd,{auth:runtimeAuth,db:runtimeDb,projectPolicy,operationalPolicy:projectPolicy});
+  assert.equal(wrongOperationalPolicy.provider,null);
+  assert.equal(wrongOperationalPolicy.error,'OPERATIONAL_COMMAND_PROVIDER_POLICY_INVALID');
+  const missingProjectPolicy=createProviderForCommand(runtimeProjectCmd,{auth:runtimeAuth,db:runtimeDb,projectPolicy:null,operationalPolicy});
+  assert.equal(missingProjectPolicy.provider,null);
+  assert.equal(missingProjectPolicy.error,'PROJECT_COMMAND_PROVIDER_NOT_CONFIGURED');
+  const missingOperationalPolicy=createProviderForCommand(runtimeOpCmd,{auth:runtimeAuth,db:runtimeDb,projectPolicy,operationalPolicy:null});
+  assert.equal(missingOperationalPolicy.provider,null);
+  assert.equal(missingOperationalPolicy.error,'OPERATIONAL_COMMAND_PROVIDER_NOT_CONFIGURED');
+  pass('Runtime dispatch uses independent fail-closed policies');
+
   pass('Safety counters', {providerRealWrites:0, firestoreRealWrites:0, auth:0, hr:0, storage:0, payments:0, makeGemini:0, deploy:0, production:false});
 
   const jsChanged=paths.filter(p=>/\.(m?js)$/.test(p));
   for(const file of jsChanged)execFileSync(process.execPath,['--check',file],{stdio:'pipe'});
-  const moduleManifest={version:'I2_MODULE_MANIFEST',paths:paths.map(p=>({path:p,sha256:sha(read(p))}))};
-  const candidateManifest={version:'I2_CANDIDATE_MANIFEST',head:EXPECTED_HEAD,successor:SUCCESSOR,treeInput:git(['write-tree']),modules:moduleManifest.paths};
+  const moduleManifest={version:'I2_MODULE_MANIFEST',paths:CANDIDATE_PATHS.map(p=>({path:p,sha256:sha(read(p))}))};
+  const candidateManifest={version:'I2_CANDIDATE_MANIFEST',parent:EXPECTED_HEAD,successor:SUCCESSOR,treeInput:git(['write-tree']),modules:moduleManifest.paths};
   const fp1=sha(candidateManifest),fp2=sha(candidateManifest);
   assert.equal(fp1,fp2);
   pass('Syntax/determinism and composition', {moduleManifestSha256:sha(moduleManifest),candidateManifestSha256:fp1});

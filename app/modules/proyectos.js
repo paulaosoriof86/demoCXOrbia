@@ -38,7 +38,6 @@ CX.module('proyectos', ({data,ui})=>{
     ${ui.aiBox('Al cambiar o crear un proyecto, la plataforma se adapta sola: el dashboard, el mapeo, las reglas de quincena/franja, los honorarios por país y los cuestionarios por escenario se reconfiguran para ese cliente. El periodo (ronda) es un filtro/estado DENTRO del proyecto — nunca un proyecto nuevo.','Proyectos adaptativos')}
   </div>`;
 
-  // attach interactions after render via microtask
   setTimeout(()=>{
     document.querySelectorAll('[data-pid]').forEach(c=>c.addEventListener('click',(e)=>{
       e.stopPropagation();
@@ -47,7 +46,6 @@ CX.module('proyectos', ({data,ui})=>{
     document.querySelectorAll('[data-pgkey]').forEach(c=>c.addEventListener('click',()=>{
       if(!data.setProgram) return; data.setProgram(c.dataset.pgkey); ui.toast('Plataforma adaptada a: '+data.period().name,'ok');
     }));
-    /* ver/editar configuración del proyecto */
     document.querySelectorAll('[data-cfg]').forEach(b=>b.addEventListener('click',(e)=>{ e.stopPropagation(); const pr=data.projects.find(x=>x.id===b.dataset.cfg); if(!pr)return; projConfig(pr); }));
     const projConfig=(pr)=>{ const v=data._visitas.filter(x=>x.projectId===pr.id);
       const INDS=['Retail · Cadena de tiendas','Banca · Red de agencias','Restaurantes · Multimarca','Salud · Clínicas','Telecomunicaciones','Automotriz · Concesionarios','Seguros','Combustibles · Estaciones','Hotelería','Educación','Supermercados','Farmacias','Otra'];
@@ -64,7 +62,7 @@ CX.module('proyectos', ({data,ui})=>{
           <div><label class="lbl">Periodicidad de rondas</label><select class="sel" id="cf_ronda">${RONDAS.map(o=>`<option ${(pr.periodicidad||pr.ronda||'').toLowerCase().includes(o.toLowerCase())?'selected':''}>${o}</option>`).join('')}</select></div>
           <div><label class="lbl">Periodo de cumplimiento / medición</label><select class="sel" id="cf_cumpl">${CUMPL.map(o=>`<option ${o===(pr.periodoCumpl||'Igual a la ronda')?'selected':''}>${o}</option>`).join('')}</select></div>
         </div>
-        <div style="font-size:11px;color:var(--t3);margin-top:4px">Ej.: ronda <b>mensual</b> con cumplimiento <b>quincenal</b> = cada quincena debe cubrirse la mitad de las visitas del mes (meta obligatoria por quincena).</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:4px">Las metas por ventana se toman de la configuración y de la fuente operacional del proyecto. No se presume una distribución uniforme entre periodos.</div>
 
         <label class="lbl" style="margin-top:12px">Países / moneda</label>
         <div class="flex wrap" style="gap:6px">${paisChecks}</div>
@@ -92,7 +90,7 @@ CX.module('proyectos', ({data,ui})=>{
           ${[['evidencias','Evidencias'],['soporte','Soporte'],['cuestionario','Cuestionario'],['reprog','Reprogramación/cancelación'],['pagos','Pagos/liquidaciones'],['coordinacion','Coordinación general']].map(([k,l])=>`<div><label class="lbl">${l}</label><input class="inp cf_contacto" data-ck="${k}" value="${((pr.contactos||{})[k]||'').replace(/"/g,'&quot;')}" placeholder="+502…"></div>`).join('')}
         </div>
 
-        <label class="lbl" style="margin-top:12px">Quincenas / periodos</label>
+        <label class="lbl" style="margin-top:12px">Ventanas / periodos</label>
         <input class="inp" id="cf_quin" value="${(pr.quincenas||[]).join(' · ').replace(/"/g,'&quot;')}">
 
         <div class="grid g3" style="gap:8px;margin:14px 0">${ui.kpi('Visitas',v.length,'b')}${ui.kpi('Sucursales',pr.sucursales||0,'n')}${ui.kpi('Escenarios',(pr.scenarios||[]).length,'p')}</div>
@@ -133,14 +131,21 @@ CX.module('proyectos', ({data,ui})=>{
             next.cuestionario=Object.assign({},pr.cuestionario||{},{modo:ov.querySelector('#cf_cueOrigen').value, etiqueta:ov.querySelector('#cf_cueEtiq').value.trim()});
             next.contactos=Object.assign({},pr.contactos||{}); ov.querySelectorAll('.cf_contacto').forEach(i=>{next.contactos[i.dataset.ck]=i.value.trim();});
             const external=next.hrFuente.origen==='externa';
-            next.operationalSource=Object.assign({},pr.operationalSource||{},{
+            const currentSource=pr.operationalSource||{};
+            const providerType=external?String(currentSource.providerType||'').trim():'internal_firestore';
+            const providerBindingId=external?String(currentSource.providerBindingId||currentSource.integrationSettingId||currentSource.providerRef||'').trim():'';
+            const mappingRef=external?String(currentSource.mappingRef||'').trim():'internal-native-mapping';
+            if(external&&(!providerType||!providerBindingId||!mappingRef)){
+              ui.toast('Configuración no actualizada: la fuente externa requiere provider, vínculo seguro y mapeo válidos.','warn',4600);return;
+            }
+            next.operationalSource=Object.assign({},currentSource,{
               mode:external?'external':'internal',
-              providerType:external?'custom_adapter':'internal_firestore',
+              providerType,
               authority:external?'external_source':'platform',
-              readPolicy:external?'external_live':'internal_live',
+              readPolicy:external?(currentSource.readPolicy||'external_live'):'internal_live',
               writePolicy:external?'external_read_only':'platform_only',
-              providerBindingId:external?(pr.operationalSource?.providerBindingId||'pending-secure-provider-binding'):null,
-              mappingRef:external?(pr.operationalSource?.mappingRef||'pending-hr-mapping-ref'):'internal-native-mapping'
+              providerBindingId:external?providerBindingId:null,
+              mappingRef
             });
           }
           if(data.updateProject&&CX.cxDataCommandBoundary?.canonicalMode?.()){
@@ -154,7 +159,7 @@ CX.module('proyectos', ({data,ui})=>{
             data._saveCustomProjects&&data._saveCustomProjects();
           }
           CX.bus&&CX.bus.emit('visit-flow'); close(); CX.router.nav('proyectos');
-          ui.toast('Configuración de '+next.name+' actualizada con ACK remoto','ok',3600); });
+          ui.toast('Configuración de '+next.name+' actualizada'+(CX.cxDataCommandBoundary?.canonicalMode?.()?' con ACK remoto':' en vista previa'),'ok',3600); });
       }});
     };
     const nb=document.getElementById('newProj');

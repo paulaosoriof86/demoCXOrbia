@@ -98,9 +98,8 @@ CX.projectWizard = function(data, ui){
       <label class="lbl">Periodo de medición</label>
       <select class="sel" id="f_medi" style="margin-bottom:10px">${[['igual','Igual a la frecuencia'],['semanal','Semanal'],['quincenal','Quincenal'],['mensual','Mensual'],['personalizado','Personalizado']].map(([v,l])=>`<option value="${v}" ${st.periodoMedicion===v?'selected':''}>${l}</option>`).join('')}</select>
       <div style="margin-bottom:6px"><label class="lbl">Ventanas de medición (opcional, separadas por coma — ej. Quincena 1, Quincena 2)</label><input class="inp" id="f_vent" value="${st.ventanas}" placeholder="Se deja vacío si no aplica"></div>
-      <div style="font-size:11px;color:var(--t3)">La Hoja de Ruta determina a qué ventana pertenece cada visita; esta lista solo sirve para alertas/metas, nunca asume 50/50 automático.</div>`;
+      <div style="font-size:11px;color:var(--t3)">La Hoja de Ruta determina a qué ventana pertenece cada visita; esta lista solo sirve para alertas/metas y nunca asume una distribución uniforme automática.</div>`;
 
-    // step 5
     const recOK=st.countries.every(c=>st.honRecibe[c]!=null);
     return `
       <div style="margin-bottom:12px"><label class="lbl">Restricción del proyecto</label><input class="inp" id="f_res" value="${st.restriccion}" placeholder="Ej. No visitar la misma sucursal en 2 meses"></div>
@@ -121,7 +120,6 @@ CX.projectWizard = function(data, ui){
   const render=()=>{ wrap.innerHTML = head()+`<div>${stepHTML()}</div>`+ctrlFooter(); bind(); };
 
   const persist=()=>{
-    // sincroniza inputs visibles del paso actual hacia el estado
     const g=(id)=>{const e=wrap.querySelector('#'+id);return e?e.value:undefined;};
     if(st.step===1){ if(g('f_name')!=null)st.name=g('f_name'); if(g('f_ind')!=null)st.industry=g('f_ind');
       st.countries=[...wrap.querySelectorAll('.wCountry:checked')].map(c=>c.dataset.c);
@@ -141,24 +139,30 @@ CX.projectWizard = function(data, ui){
 
   const sourceConfig=()=>{
     const external=st.hrFuente!=='Hoja creada en plataforma';
-    return {
+    const source={
       mode:external?'external':'internal',
       providerType:external?(st.hrFuente==='Google Sheets (online)'?'google_sheets':'excel_import'):'internal_firestore',
       authority:external?'external_source':'platform',
       readPolicy:external?(st.hrFuente==='Excel importado'?'external_snapshot_import':'external_live'):'internal_live',
       writePolicy:external?'external_read_only':'platform_only',
-      providerBindingId:external?'pending-secure-provider-binding':null,
-      mappingRef:external?'pending-hr-mapping-ref':'internal-native-mapping',
       periodDiscovery:external?'provider_auto':'internal_native',
       visitLinkField:'questionnaireLink',
       label:st.hrFuente
     };
+    if(!external)source.mappingRef='internal-native-mapping';
+    return source;
   };
 
   const create=async()=>{
     persist();
     if(!st.name){ui.toast('Ponle nombre al proyecto','warn');st.step=1;render();return;}
     if(!st.countries.length){ui.toast('Selecciona al menos un país','warn');st.step=1;render();return;}
+    const windows=(st.ventanas||'').split(',').map(s=>s.trim()).filter(Boolean);
+    const operationalSource=sourceConfig();
+    if(operationalSource.mode==='external'&&(!operationalSource.providerBindingId||!operationalSource.mappingRef)){
+      ui.toast('Proyecto no creado: la fuente externa requiere vínculo seguro y mapeo configurados antes del alta.','warn',4600);
+      return;
+    }
     const cfg={
       name:st.name, client:st.name, industry:st.industry||'Proyecto', countries:st.countries,
       currency:st.currency, honorario:st.honPaga, honRecibe:st.honRecibe, boleto:st.boleto, comboAmt:st.comboAmt, combo:st.combo||null,
@@ -166,24 +170,24 @@ CX.projectWizard = function(data, ui){
       frecuencia:st.frecuencia, periodoMedicion:st.periodoMedicion,
       periodicidad:st.frecuencia.charAt(0).toUpperCase()+st.frecuencia.slice(1),
       periodoCumpl:st.periodoMedicion==='igual'?'Igual a la ronda':(st.periodoMedicion.charAt(0).toUpperCase()+st.periodoMedicion.slice(1)),
-      ventanas:(st.ventanas||'').split(',').map(s=>s.trim()).filter(Boolean),
+      ventanas:windows,
       scenarios:(st.scenarios||'General').split(',').map(s=>s.trim()).filter(Boolean),
-      canales:['Presencial','Online'], formato:'Evaluación', ronda:'JUN 26',
+      canales:['Presencial','Online'], formato:'Evaluación',
       restriccion:st.restriccion, conocimiento:st.conocimiento,
       cuestionario:{modo:qMode(st.cuestModo),url:st.cuestUrl,visitLinkField:'questionnaireLink',label:qMode(st.cuestModo)==='interna'?'Cuestionario en plataforma':qMode(st.cuestModo)==='externo_visita'?'Link por visita':'Externo · link general'},
       pago:{diasPago:st.diasPago,logica:'Pago ~'+st.diasPago+' días tras submitir',moneda:'local'},
-      hrMap:{fuente:st.hrFuente,cols:['Sucursal','Ciudad','País','Escenario']},
+      hrMap:{fuente:st.hrFuente},
       hrFuente:{origen:st.hrFuente==='Hoja creada en plataforma'?'nativa':'externa', etiqueta:st.hrFuente},
-      operationalSource:sourceConfig(),
+      operationalSource,
       revision:st.revision, submitido:st.submitido, contactos:st.contactos,
-      geoloc:false, accent:'#2196d3', quincenas:['Quincena 1','Quincena 2'], nVisitas:0,
+      geoloc:false, accent:'#2196d3', quincenas:windows, nVisitas:0,
     };
     cfg.__commandMeta={ackAware:true,reason:'project-wizard-create'};
     const p=await data.addProject(cfg);
-    if(p&&p.successUiAllowed===false){ui.toast('Proyecto no creado: falta ACK remoto del proveedor','warn',4200);return;}
-    if(p&&p.providerAck===true&&p.committed===true){
-      if(CX.backend&&typeof CX.backend.refresh==='function')await CX.backend.refresh();
+    if(!(p&&p.ok===true&&p.committed===true&&p.providerAck===true&&p.successUiAllowed===true)){
+      ui.toast('Proyecto no creado: falta ACK remoto válido del proveedor','warn',4200);return;
     }
+    if(CX.backend&&typeof CX.backend.refresh==='function')await CX.backend.refresh();
     if(CX._wizClose)CX._wizClose();
     ui.toast('Proyecto "'+(p.name||st.name)+'" creado y activado · plataforma adaptada','ok',4000);
     CX.router.buildRail(CX.session.role); CX.router.nav('proyectos');
