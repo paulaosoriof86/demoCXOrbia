@@ -349,9 +349,9 @@ CX.data = {
     if(periodChanged) this.currentPeriodId=periods[periods.length-1].id;
     CX.bus&&CX.bus.emit('project');
     CX.bus&&CX.bus.emit('cx:project-changed', {projectId});
-    /* GAP1 (V113\u2192V114): si el cambio de proyecto arrastra un cambio de periodo (el activo no
-       pertenec\u00eda al nuevo proyecto), co-emitir cx:period-changed con el periodo RESULTANTE \u2014
-       antes solo se emit\u00eda cx:project-changed y ning\u00fan listener de period-changed se enteraba. */
+    /* GAP1 (V113→V114): si el cambio de proyecto arrastra un cambio de periodo (el activo no
+       pertenecía al nuevo proyecto), co-emitir cx:period-changed con el periodo RESULTANTE —
+       antes solo se emitía cx:project-changed y ningún listener de period-changed se enteraba. */
     if(periodChanged) CX.bus&&CX.bus.emit('cx:period-changed', {periodId:this.currentPeriodId});
     return true;
   },
@@ -617,7 +617,22 @@ CX.data = {
     const submitted=!!v.submit||v.estado==='liquidada';
     const outOfRange=v.estado==='fuera_rango';
     const cancelled=!!v._archived;
-    return {assigned,scheduled,realized,questionnaire,submitted,outOfRange,cancelled};
+    const legacy={assigned,scheduled,realized,questionnaire,submitted,outOfRange,cancelled};
+    const canonical=v.canonicalFacets;
+    if(!canonical||typeof canonical.available!=='boolean') return legacy;
+    const facet=(name,fallback)=>typeof canonical[name]==='boolean'?canonical[name]:fallback;
+    const canonicalAssigned=facet('assigned',assigned);
+    return {
+      available:canonical.available,
+      eligibilityBlocked:facet('eligibilityBlocked',!canonical.available&&!canonicalAssigned),
+      assigned:canonicalAssigned,
+      scheduled:facet('scheduled',scheduled),
+      realized:facet('realized',realized),
+      questionnaire:facet('questionnaire',questionnaire),
+      submitted:facet('submitted',submitted),
+      outOfRange:facet('outOfRange',outOfRange),
+      cancelled:facet('cancelled',cancelled)
+    };
   },
   visitBucketFns:{
     asignadas:v=>CX.data.visitFacets(v).assigned,
@@ -780,8 +795,8 @@ CX.data = {
     };
   },
 };
-/* GAP1-v2 (V112\u2192V113): bootstrap de currentProjectId \u2014 ahora que es almacenamiento real (no
-   un getter derivado), necesita un valor inicial calculado UNA vez, justo despu\u00e9s de que el
-   objeto CX.data exista (this.programKey/this.period() no est\u00e1n disponibles dentro del propio
+/* GAP1-v2 (V112→V113): bootstrap de currentProjectId — ahora que es almacenamiento real (no
+   un getter derivado), necesita un valor inicial calculado UNA vez, justo después de que el
+   objeto CX.data exista (this.programKey/this.period() no están disponibles dentro del propio
    literal). Se deriva del periodo inicial (currentPeriodId), nunca de un literal fijo. */
 CX.data.currentProjectId = CX.data.programKey(CX.data.period());
