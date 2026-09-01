@@ -1,0 +1,117 @@
+{
+  "contract": "shopper-communication-history-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "emailReadAllowed": false,
+  "emailSendAllowed": false,
+  "whatsappApiAllowed": false,
+  "purpose": "Define extended shopper history with visits, postulations, assignments, notifications, WhatsApp, email and certification/payment traces without sending or reading real communications.",
+  "collections": {
+    "shopperProfiles": "tenants/{tenantId}/shoppers/{shopperId}",
+    "shopperHistory": "tenants/{tenantId}/shoppers/{shopperId}/history/{historyEventId}",
+    "shopperCommunications": "tenants/{tenantId}/shoppers/{shopperId}/communications/{communicationId}",
+    "communicationTraceLinks": "tenants/{tenantId}/communicationTraceLinks/{traceLinkId}",
+    "visitHistory": "tenants/{tenantId}/projects/{projectId}/visits/{visitId}/history/{historyEventId}"
+  },
+  "historyEventTypes": [
+    "historical_visit_imported",
+    "postulation_submitted",
+    "postulation_approved",
+    "postulation_not_selected_soft",
+    "assignment_created",
+    "date_adjustment_requested",
+    "date_confirmation_requested",
+    "visit_scheduled",
+    "reschedule_requested",
+    "visit_cancelled",
+    "visit_performed",
+    "questionnaire_completed",
+    "review_status_changed",
+    "submitido_registered",
+    "liquidation_status_changed",
+    "payment_status_changed",
+    "certification_assigned",
+    "certification_completed",
+    "notification_prepared",
+    "whatsapp_web_manual_logged",
+    "email_manual_logged",
+    "email_future_synced",
+    "support_interaction",
+    "academy_course_assigned"
+  ],
+  "communicationChannels": [
+    "in_app",
+    "whatsapp_web",
+    "make_messaging_future",
+    "email_manual_log",
+    "email_provider_future",
+    "phone_manual_note",
+    "support_note"
+  ],
+  "visibilityToShopper": {
+    "principle": "The shopper may see communications sent to them and relevant status history, but internal admin notes, scoring deliberations, conflict investigations and sensitive audit details must remain internal.",
+    "shopperVisibleEventTypes": [
+      "postulation_submitted",
+      "postulation_approved",
+      "postulation_not_selected_soft",
+      "assignment_created",
+      "date_adjustment_requested",
+      "date_confirmation_requested",
+      "visit_scheduled",
+      "reschedule_requested",
+      "visit_cancelled",
+      "visit_performed",
+      "questionnaire_completed",
+      "certification_assigned",
+      "certification_completed",
+      "notification_prepared",
+      "whatsapp_web_manual_logged",
+      "email_manual_logged",
+      "academy_course_assigned"
+    ],
+    "internalOnlyEventTypes": [
+      "manual_review_required",
+      "conflict_internal_note",
+      "score_penalty_review",
+      "client_sensitive_note",
+      "payment_internal_audit",
+      "privacy_review"
+    ]
+  },
+  "historicalImportRules": [
+    "Historical visit completion must be imported from all relevant HR sheets/tabs, not only one month.",
+    "Cinepolis historical visits must pull completed/submitido/payment-relevant status from HR tabs as available.",
+    "Imported history must not expose raw sensitive fields to shopper.",
+    "Historical communication traces may start empty unless source exists."
+  ],
+  "traceRules": [
+    "Every communication should link to shopperId and optionally projectId, visitId, postulationId, assignmentId or paymentId.",
+    "Email and WhatsApp traces must appear in shopper history when directed to the shopper.",
+    "Internal communications about a shopper may exist but need role-based visibility.",
+    "Do not mark WhatsApp API/email provider sends as real unless future provider confirms.",
+    "Manual logs must preserve who logged, when and source."
+  ],
+  "academyImpact": {
+    "roles": ["admin", "ops", "shopper", "super", "consultant_partner"],
+    "manualsToUpdate": ["Shopper history", "Shopper communications", "Visibility rules", "Historical visit import", "Communication traceability"],
+    "coursesToUpdate": ["Ops shopper follow-up", "Admin shopper audit", "Shopper profile and history", "Privacy of communication history"],
+    "newLessons": [
+      "What appears in shopper history",
+      "Which communications the shopper can see",
+      "How WhatsApp and email traces are linked",
+      "How historical visits are imported from HR",
+      "What remains internal only"
+    ]
+  },
+  "hardStops": [
+    "Do not read or send real emails from this contract.",
+    "Do not send WhatsApp API messages from this contract.",
+    "Do not write Firestore from this contract.",
+    "Do not expose internal-only notes to shoppers.",
+    "Do not import raw sensitive HR fields into shopper-visible history."
+  ]
+}

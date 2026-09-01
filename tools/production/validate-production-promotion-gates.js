@@ -1,0 +1,50 @@
+#!/usr/bin/env node
+'use strict';
+const fs=require('fs'),path=require('path');
+const root=path.resolve(__dirname,'..','..');
+const readJson=(p)=>{try{return JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));}catch(e){console.error(`BLOCKED_INTERNAL: cannot read/parse ${p}: ${e.message}`);process.exit(2);}};
+const fail=(m)=>{console.error(`BLOCKED_INTERNAL: ${m}`);process.exit(2);};
+const contract=readJson('backend/config/cxorbia-production-promotion-contract.json');
+const evidence=readJson('backend/config/cxorbia-production-promotion-gate-evidence.json');
+const lock=readJson('backend/config/cxorbia-phase-a-continuity-lock.json');
+const r4=readJson('backend/config/cxorbia-r4-root-cause-closure.json');
+const g1=fs.existsSync(path.join(root,'backend/config/cxorbia-g1-production-cutover.json'))?readJson('backend/config/cxorbia-g1-production-cutover.json'):null;
+const required=Array.isArray(contract.requiredPreCutoverGates)?contract.requiredPreCutoverGates:[];
+if(!contract.authorized)fail('promotion contract is not authorized');
+if(contract.strategy!=='PROMOTE_EXISTING_CLEAN_PROJECT')fail(`unexpected promotion strategy ${contract.strategy}`);
+if(contract.acceptCurrentIdentifiersAndUrlAsProduction!==true||contract.requiresSeparateProdFiles!==false)fail('logical promotion contract is not enabled');
+if(!required.length)fail('promotion contract has no requiredPreCutoverGates');
+for(const [a,b,n] of [[contract.productionProjectId,evidence.productionTarget?.projectId,'project'],[contract.productionHostingTarget,evidence.productionTarget?.hostingTarget,'hosting target'],[contract.productionHostingSite,evidence.productionTarget?.hostingSite,'hosting site'],[contract.productionCloudRunService,evidence.productionTarget?.cloudRunService,'Cloud Run service'],[contract.productionCloudRunRegion,evidence.productionTarget?.cloudRunRegion,'Cloud Run region']])if(a!==b)fail(`${n} mismatch`);
+if(evidence.productionTarget?.promotesExistingCleanProject!==true||evidence.productionTarget?.createsAdditionalPreprodProject!==false)fail('production topology mismatch');
+if(contract.writesAuthorizedByThisContract!==false||contract.deployAuthorizedByThisContract!==false||contract.mergeAuthorizedByThisContract!==false||contract.productionCutoverAuthorizedByThisContract!==false)fail('base contract must not itself authorize writes/deploy/merge/cutover');
+if(r4.decision!=='ROOT_CAUSE_CLOSED_PASS'||r4.productP0Proven!==false||r4.functionalSourceLock!==lock.functionalSourceLock||r4.audit?.rc11SameArtifactNoRebuildRollbackEnforcement!=='PASS'||r4.audit?.rollbackReady!==true)fail('R4 closure/rollback proof invalid');
+const safety=evidence.safety||{};
+if(safety.failClosed!==true||safety.sameTestedArtifactRequired!==true||safety.noRebuild!==true||safety.rollbackRequired!==true||safety.humanApprovalRequired!==true)fail('promotion safety contract invalid');
+if(safety.productionWritesAuthorized!==false||safety.mergeAuthorized!==false)fail('business/data writes and merge must remain unauthorized');
+const names=Object.keys(evidence.gates||{}).sort(), expected=[...required].sort();
+if(JSON.stringify(names)!==JSON.stringify(expected))fail('gate set mismatch');
+const auth='EXPLICIT_CUTOVER_AUTHORIZATION';
+for(const gate of required){const item=evidence.gates[gate];if(!item?.status)fail(`missing status for ${gate}`);if(gate!==auth&&(item.status!=='PASS'||!item.evidenceRef))fail(`${gate} is not PASS with evidence`);}
+const authItem=evidence.gates[auth];
+if(authItem.status==='PENDING'){
+  if(lock.currentIteration!=='I5-G1'||lock.formalProgress?.completed!==95||lock.formalProgress?.productionIsAuthorized!==false)fail('pre-authorization continuity state invalid');
+  if(safety.deploymentAuthorized!==false||safety.productionCutoverAuthorized!==false||evidence.productionDeploymentExecuted!==false||evidence.productionCutoverExecuted===true)fail('authorization pending but deploy/cutover state is open');
+  console.log('READY_FOR_EXPLICIT_AUTHORIZATION_AFTER_ROOT_CAUSE_CLOSURE');console.log('technicalGates=5/5 PASS');console.log('cutoverAuthorization=PENDING');console.log('productionDeploymentAllowed=false');console.log('productionDataWritesAllowed=false');process.exit(0);
+}
+if(authItem.status!=='PASS'||!authItem.evidenceRef)fail('explicit cutover authorization PASS with evidence is required');
+if(evidence.cutoverExecutionMode!=='LOGICAL_PROMOTION_EXISTING_DEPLOYMENT_NO_REDEPLOY')fail('unexpected cutover execution mode');
+if(safety.deploymentAuthorized!==false||safety.providerRedeployRequired!==false)fail('logical cutover must not authorize provider redeploy');
+if(safety.productionCutoverAuthorized!==true)fail('explicit authorization must authorize logical cutover');
+if(evidence.productionDeploymentExecuted!==false)fail('logical cutover must preserve productionDeploymentExecuted=false');
+if(evidence.productionCutoverExecuted!==true)fail('authorized logical cutover has not been executed');
+if(!g1||g1.decision!=='PRODUCTION_CUTOVER_EXECUTED'||g1.functionalSourceLock!==lock.functionalSourceLock||g1.executionMode!==evidence.cutoverExecutionMode||g1.providerDeployExecuted!==false||g1.rebuildExecuted!==false||g1.safety?.businessDataWritesAuthorized!==false)fail('G1 cutover receipt invalid');
+if(lock.currentIteration!=='I5-G2'||lock.formalProgress?.completed!==98||lock.formalProgress?.productionIsAuthorized!==true||lock.formalProgress?.productionCutoverExecuted!==true)fail('post-cutover continuity state invalid');
+console.log('PRODUCTION_CUTOVER_EXECUTED');
+console.log('executionMode=LOGICAL_PROMOTION_EXISTING_DEPLOYMENT_NO_REDEPLOY');
+console.log('sameTestedArtifact=PASS');
+console.log('providerRedeployExecuted=false');
+console.log('rebuildExecuted=false');
+console.log('technicalGates=5/5 PASS');
+console.log('cutoverAuthorization=PASS');
+console.log('productionDataWritesAllowed=false');
+console.log('nextAction=PRODUCTION_SMOKE_HYPERCARE_AND_FREEZE');

@@ -1,0 +1,219 @@
+{
+  "contractId": "hr-import-control-phase-a-v1",
+  "status": "draft_safe_not_connected",
+  "generatedAt": "2026-07-09",
+  "purpose": "Define Phase A HR import and historical-control contract for clean migration without connecting old databases or storing sensitive raw HR payloads in repo.",
+  "phaseAContext": {
+    "hrIsOperationalSource": true,
+    "historicalImportRequired": true,
+    "historicalShoppersFromHrRequired": true,
+    "certificationsAlreadyPresentedMustBePreserved": true,
+    "visitsThroughJuneExecuted": true,
+    "junePendingIsPaymentsNotVisits": true,
+    "multiProjectRequired": true,
+    "projectQuestionnaireRoutingRequired": true
+  },
+  "safeState": {
+    "frontendConnected": false,
+    "oldDatabaseConnected": false,
+    "importWritesEnabled": false,
+    "hrWritesEnabled": false,
+    "productionEnabled": false,
+    "containsSecrets": false,
+    "containsSensitiveData": false,
+    "containsRawHrPayload": false
+  },
+  "collections": {
+    "hrSources": {
+      "path": "tenants/{tenantId}/projects/{projectId}/hrSources/{hrSourceId}",
+      "phaseA": true,
+      "notes": "Config reference for HR origin, not raw credentials or private URLs."
+    },
+    "hrImportRuns": {
+      "path": "tenants/{tenantId}/projects/{projectId}/hrImportRuns/{importRunId}",
+      "phaseA": true,
+      "notes": "Import run metadata, dry-run summary and validation status."
+    },
+    "hrRowsStaging": {
+      "path": "tenants/{tenantId}/projects/{projectId}/hrRowsStaging/{hrRowId}",
+      "phaseA": true,
+      "notes": "Sanitized staging rows only; no raw DPI, bank data, raw phone/email or raw evidence."
+    },
+    "visitSourceMap": {
+      "path": "tenants/{tenantId}/projects/{projectId}/visitSourceMap/{visitId}",
+      "phaseA": true,
+      "notes": "Stable mapping from HR rows to platform visits."
+    },
+    "shopperSourceMap": {
+      "path": "tenants/{tenantId}/shopperSourceMap/{shopperSourceId}",
+      "phaseA": true,
+      "notes": "Stable mapping for historical shoppers from HR without using sensitive raw identifiers."
+    },
+    "certificationSourceMap": {
+      "path": "tenants/{tenantId}/projects/{projectId}/certificationSourceMap/{certificationSourceId}",
+      "phaseA": true,
+      "notes": "Preserve certifications already presented so they are not requested again."
+    },
+    "importConflicts": {
+      "path": "tenants/{tenantId}/projects/{projectId}/importConflicts/{conflictId}",
+      "phaseA": true,
+      "notes": "Conflicts between HR, platform, shopper identity, visit assignment, questionnaire and payments."
+    }
+  },
+  "requiredImportRunKeys": [
+    "tenantId",
+    "projectId",
+    "importRunId",
+    "hrSourceId",
+    "mode",
+    "status",
+    "sourcePeriodFrom",
+    "sourcePeriodTo",
+    "createdAt",
+    "createdBy",
+    "auditRef"
+  ],
+  "requiredHrRowKeys": [
+    "tenantId",
+    "projectId",
+    "hrRowId",
+    "importRunId",
+    "country",
+    "periodKey",
+    "quincena",
+    "visitSourceKey",
+    "shopperSourceKey",
+    "visitStatus",
+    "assignmentStatus",
+    "questionnaireStatus",
+    "paymentControlStatus",
+    "sanitizationStatus",
+    "auditRef"
+  ],
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "hrSourceId",
+    "importRunId",
+    "hrRowId",
+    "visitId",
+    "visitSourceKey",
+    "shopperId",
+    "shopperSourceKey",
+    "assignmentId",
+    "certificationSourceId",
+    "country",
+    "periodKey",
+    "quincena"
+  ],
+  "importModes": {
+    "dry_run": "Validate and report only. No writes to operational collections.",
+    "staging_sanitized": "Write sanitized staging only under explicit gate.",
+    "promote_reviewed": "Promote reviewed rows to operational collections under explicit gate.",
+    "rollback": "Create rollback plan/metadata; no destructive delete by default."
+  },
+  "statuses": {
+    "pending_source_review": "Source exists but has not been validated.",
+    "sanitized_preview": "Sanitized row preview generated, not promoted.",
+    "ready_for_review": "Ready for human review.",
+    "review_required": "Conflict or missing source data requires review.",
+    "approved_for_staging": "Approved to stage sanitized rows.",
+    "staged_sanitized": "Sanitized staging completed.",
+    "approved_for_promote": "Approved to promote to operational collections.",
+    "promoted_audited": "Promoted with audit trail.",
+    "rejected_with_audit": "Rejected with reason.",
+    "rolled_back_audited": "Rolled back through controlled audit."
+  },
+  "hrBusinessRules": {
+    "visitsThroughJuneExecuted": "Rows through June must not be re-opened as visits pending unless HR explicitly marks otherwise and review approves.",
+    "junePaymentFocus": "June open operational work is payment/liquidation control, not visit execution.",
+    "certificationsPreserved": "Already-presented certifications must map to certification records and not be requested again.",
+    "historicalShoppersPreserved": "Historical shoppers from HR must become shopper records or source maps under review, not raw imports.",
+    "questionnaireRouting": "Questionnaire source can be CXOrbia, TyAOnline, external platform, general link or HR per-visit link by project/visit.",
+    "assignmentSync": "Assignments from HR and platform require stable keys and assignmentSource/assignmentSyncStatus tracking."
+  },
+  "dedupePolicy": {
+    "strategy": "stable_keys_only",
+    "visualMatchOnlyAllowed": false,
+    "nameOnlyMatchAllowed": false,
+    "phoneEmailRawMatchAllowed": false,
+    "onConflict": "route_to_importConflicts",
+    "notes": "Never merge shoppers, visits or assignments only because names look similar."
+  },
+  "forbiddenInRepo": [
+    "rawHrWorkbook",
+    "rawHrCsv",
+    "rawDpi",
+    "rawPassport",
+    "rawBankAccount",
+    "rawPhone",
+    "rawEmail",
+    "signedNdaFile",
+    "privateHrUrl",
+    "hrCredential",
+    "serviceAccountJson",
+    "rawEvidenceBinary",
+    "base64Evidence"
+  ],
+  "sanitizationPolicy": {
+    "allowedOperationalFields": [
+      "country",
+      "periodKey",
+      "quincena",
+      "visitSourceKey",
+      "shopperSourceKey",
+      "assignmentStatus",
+      "visitStatus",
+      "questionnaireStatus",
+      "submitStatus",
+      "paymentControlStatus",
+      "honorariumAmount",
+      "reimbursementAmount",
+      "currency",
+      "questionnaireRouteType"
+    ],
+    "hashOrMapOnlyFields": [
+      "shopperIdentitySource",
+      "contactReference",
+      "documentReference"
+    ],
+    "blockedFields": [
+      "dpiRaw",
+      "bankRaw",
+      "phoneRaw",
+      "emailRaw",
+      "ndaRaw",
+      "evidenceRaw"
+    ]
+  },
+  "gates": {
+    "devDryRun": {
+      "status": "allowed",
+      "requirements": ["noWrites", "sanitizedReport", "noRawSensitivePayload"]
+    },
+    "devStagingWrite": {
+      "status": "blocked",
+      "requirements": ["explicitApproval", "sanitizedRowsOnly", "auditLog", "rollbackPlan"]
+    },
+    "stagingPromote": {
+      "status": "blocked",
+      "requirements": ["reviewedConflicts", "sourceLock", "dryRunSuccess", "rollbackPlan"]
+    },
+    "productionPromote": {
+      "status": "blocked",
+      "requirements": ["PaulaGO", "smokeGO", "financialReview", "certificationReview", "rollback", "noCriticalNO_GO"]
+    },
+    "hrWriteBack": {
+      "status": "blocked",
+      "requirements": ["MakeGate", "conflictPolicy", "assignmentSyncAudit", "noDuplicateDispatch"]
+    }
+  },
+  "auditRequirements": [
+    "all import runs require actorId, source, mode, source period and auditRef",
+    "all promoted rows require importRunId and original sanitized hrRowId",
+    "all rejected rows require reason",
+    "all conflicts require resolution state and reviewer",
+    "all HR writebacks require Make/outbox gate and providerRef",
+    "rollback cannot physically delete without retention approval"
+  ]
+}

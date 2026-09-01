@@ -1,0 +1,17 @@
+name: CXOrbia C6 Equivalent Universe Tooling Fix — Frozen
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - backend/config/corte6-equivalent-universe-tooling-fix-request-retired.json
+
+permissions:
+  contents: read
+
+jobs:
+  frozen:
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo 'Unused tooling correction lane retired after the main source-only integration passed.'

@@ -1,0 +1,132 @@
+{
+  "schemaVersion": "cxorbia.i3.11c.runtime-contract-drift-forensic.evidence.v1",
+  "syncEpoch": "CXORBIA-20260818-I3-11C-RUNTIME-CONTRACT-DRIFT-03",
+  "generatedAt": "2026-08-18T13:13:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "forensicProfile": "I3_11C_TEMPORAL_WRITE_HISTORY_AND_RUNTIME_STALENESS_FORENSIC_NO_PROVIDER_READS",
+  "providerReads": 0,
+  "providerWrites": 0,
+  "sourceInputs": [
+    "app/adapters/cxorbia-provider-identity-link-runtime-v1.js",
+    "app/adapters/cxorbia-identity-roll-forward-v1.js",
+    "app/index-backend-dev.html",
+    "app/docs/evidence/I3-11C-STAFF-READONLY-CLOSE-LATEST.json",
+    "app/docs/evidence/I3-11C-FOCAL-PROVIDER-IDENTITY-LINK-ADJUDICATION-LATEST.json",
+    "app/docs/evidence/ITERATION3-I3-5C2-PERIOD-INDEPENDENT-LINK-MATERIALIZATION-LATEST.json"
+  ],
+  "target": {
+    "identityLinkId": "irl_3ed1b9a65d36c5873c1306bae1621e9d",
+    "sourceShopperId": "shp-57d2e3769946",
+    "canonicalShopperId": "TYA_GT_0C0BA8856E",
+    "tenantId": "tya",
+    "projectId": "cinepolis"
+  },
+  "chronology": {
+    "materializationRunId": 32076682895,
+    "materializationDecision": "PASS_I3_5C2_ONE_TIME_ADJUDICATION_PERIOD_INDEPENDENT_LINK",
+    "materializationProviderAck": true,
+    "staffRuntimeRunId": 32164134278,
+    "staffRuntimeGeneratedAt": "2026-08-18T17:15:45.046Z",
+    "staffRuntimeProviderLinkCount": 1,
+    "staffRuntimeTargetLinkCount": 0,
+    "focalProviderRunId": 32171812808,
+    "focalProviderGeneratedAt": "2026-08-18T12:35:21-06:00",
+    "focalProviderTrustedLinkCount": 2,
+    "focalProviderTargetIntact": true,
+    "focalProviderFieldDiff": []
+  },
+  "runtimeContract": {
+    "file": "app/adapters/cxorbia-provider-identity-link-runtime-v1.js",
+    "version": "cxorbia-provider-identity-link-runtime-v1",
+    "applicabilityRequirements": {
+      "statusExactlyActive": true,
+      "periodIndependentTrue": true,
+      "providerAckExactlyTrue": true,
+      "canonicalShopperIdRequired": true,
+      "authorityTypeRequired": true,
+      "sourceSystemRequired": true
+    },
+    "targetDeterministicResult": "REJECTED_BECAUSE_STATUS_MATERIALIZED_IS_NOT_EXACTLY_ACTIVE"
+  },
+  "canonicalContract": {
+    "file": "app/adapters/cxorbia-identity-roll-forward-v1.js",
+    "version": "cxorbia-identity-roll-forward-v1",
+    "acceptedStates": ["active", "confirmed", "approved", "materialized"],
+    "trustedAuthorities": ["provider_exact", "tenant_adjudication", "platform_created", "migrated_exact"],
+    "targetStatus": "materialized",
+    "targetAuthorityType": "tenant_adjudication",
+    "targetAuthorityRefPresent": true,
+    "targetNormalizedApplicable": true
+  },
+  "runtimeWiring": {
+    "entry": "app/index-backend-dev.html",
+    "loadsLegacyProviderIdentityRuntime": true,
+    "loadsCanonicalIdentityRollForwardContract": false,
+    "staffRuntimeUsesLegacyPredicate": true
+  },
+  "proven": [
+    "The target provider identity-link is currently intact and has no field diff from its expected materialized authoritative state.",
+    "The target identity-link status is materialized and authorityType is tenant_adjudication with authorityRef present.",
+    "The canonical reusable identity roll-forward contract accepts materialized links from tenant_adjudication authority.",
+    "The live provider identity runtime adapter only accepts links whose status is exactly active and providerAck is exactly true.",
+    "Because the target status is materialized, the live runtime predicate deterministically rejects the target before precompose/enrichment regardless of whether the provider document is otherwise authoritative.",
+    "index-backend-dev.html loads cxorbia-provider-identity-link-runtime-v1.js but does not load cxorbia-identity-roll-forward-v1.js, so the Staff DEV runtime follows the legacy predicate.",
+    "The prior Staff observation of targetLinkCount=0 is therefore explained by runtime contract drift without requiring provider deletion, mutation, re-scope, deactivation or a temporal provider write."
+  ],
+  "disprovenAsRequiredCause": [
+    "provider target-link repair",
+    "target-link deletion",
+    "target-link deactivation",
+    "target-link project re-scope",
+    "target-link source/canonical mutation",
+    "target-link structural non-applicability under the canonical contract",
+    "a provider-state change between Staff runtime and focal provider read as a necessary explanation"
+  ],
+  "unknownNonBlocking": [
+    "The exact fields/status of the other trusted provider identity-link observed in the focal collection were not needed to prove target exclusion and were not re-read in this forensic block.",
+    "A temporal provider-state change cannot be categorically excluded from GitHub-only evidence, but it is no longer necessary to explain the Staff target failure because the source predicate itself deterministically rejects the materialized target."
+  ],
+  "rootCause": {
+    "code": "PROVEN_RUNTIME_CONTRACT_DRIFT__LEGACY_PROVIDER_IDENTITY_LINK_APPLICABILITY_FILTER",
+    "class": "REUSABLE_CXORBIA_RUNTIME_CONTRACT_DRIFT",
+    "location": "app/adapters/cxorbia-provider-identity-link-runtime-v1.js::applicable",
+    "mechanism": "Legacy runtime trust predicate accepts only status=active/providerAck=true while the canonical reusable identity contract accepts authoritative materialized links. The target therefore never enters the live Staff applicable link set."
+  },
+  "correctionBoundary": {
+    "providerRepair": "FORBIDDEN_NOT_JUSTIFIED",
+    "frontendModulePatch": "FORBIDDEN_NOT_NEEDED",
+    "sourceCorrection": "ALIGN_PROVIDER_IDENTITY_RUNTIME_APPLICABILITY_WITH_CANONICAL_IDENTITY_ROLL_FORWARD_CONTRACT_WHILE_PRESERVING_RUNTIME_API",
+    "providerIOForCorrection": 0,
+    "deployForCorrection": 0
+  },
+  "nextFrontier": "I3_11C_UNIFY_PROVIDER_IDENTITY_RUNTIME_WITH_CANONICAL_ROLL_FORWARD_SOURCE_CORRECTION_NO_PROVIDER_IO",
+  "finalI3ClosureAfterCorrection": {
+    "requiresNewExactReadonlyRuntimeGate": true,
+    "targetResolution": "shp-57d2e3769946 -> TYA_GT_0C0BA8856E",
+    "augustCanonicalVisits": 2,
+    "augustResidualLiveVisits": 0,
+    "duplicateVisitKeys": 0,
+    "duplicateShopperIds": 0
+  },
+  "safety": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authReads": 0,
+    "authWrites": 0,
+    "firestoreDataWrites": 0,
+    "rulesDeploys": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "hrWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "historicalShopperAccess": 0,
+    "merge": false,
+    "production": false
+  },
+  "decision": "PASS_ROOT_CAUSE_PROVEN_RUNTIME_CONTRACT_DRIFT__PROCEED_SOURCE_CORRECTION_NO_PROVIDER_IO"
+}

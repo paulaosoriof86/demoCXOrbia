@@ -1,0 +1,51 @@
+{
+  "sourceSafe": true,
+  "containsRawSensitiveData": false,
+  "isSyntheticOrSanitized": true,
+  "communications": [
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "communicationId": "communication-preview-001",
+      "threadId": "thread-preview-shopper-001",
+      "participantRef": "shopper-ref-preview-001",
+      "participantRole": "shopper",
+      "channel": "in_app_preview",
+      "direction": "system_preview",
+      "interactionType": "postulation_followup",
+      "communicationStatus": "recorded_preview",
+      "manualConfirmationStatus": "not_required",
+      "shopperId": "shopper-preview-001",
+      "visitId": "visit-preview-001",
+      "hrRowId": "hr-row-preview-001",
+      "postulationId": "postulation-preview-001",
+      "assignmentId": "assignment-preview-001",
+      "notificationId": "notification-preview-001",
+      "crmEntityId": "crm-entity-preview-visit-001",
+      "safeSummary": {
+        "statusLabelRef": "postulation-approved-pending-assignment-sync-preview"
+      }
+    },
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "communicationId": "communication-preview-002",
+      "threadId": "thread-preview-shopper-004",
+      "participantRef": "ops-ref-preview-001",
+      "participantRole": "ops",
+      "channel": "email_manual_log",
+      "direction": "outbound_manual_log",
+      "interactionType": "questionnaire_completed",
+      "communicationStatus": "manual_log_ready",
+      "manualConfirmationStatus": "not_required",
+      "shopperId": "shopper-preview-004",
+      "visitId": "visit-preview-004",
+      "hrRowId": "hr-row-preview-004",
+      "assignmentId": "assignment-preview-004",
+      "mailActionId": "mail-action-preview-001",
+      "safeSummary": {
+        "statusLabelRef": "manual-log-preview-no-provider-send"
+      }
+    }
+  ]
+}

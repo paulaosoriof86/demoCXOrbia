@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+'use strict';
+const fs=require('fs'),path=require('path'),cp=require('child_process');
+const root=path.resolve(__dirname,'..','..');
+const fail=m=>{console.error(`M3_QUIESCENCE_BLOCKED: ${m}`);process.exit(2);};
+const json=p=>{try{return JSON.parse(fs.readFileSync(path.join(root,p),'utf8'));}catch(e){fail(`json:${p}:${e.message}`);}};
+const q=json('backend/config/cxorbia-m3-quiescence-lock.json');
+const lock=json('backend/config/cxorbia-phase-a-continuity-lock.json');
+const tomb=json('backend/config/cxorbia-historical-authority-tombstones.json');
+const evidence=json('app/docs/evidence/RC15-M3-0-QUIESCENCE-BARRIER-LATEST.json');
+if(q.masterPlanId!=='CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1'||q.m3MechanismEpoch!=='RC15-M3-MECHANISM-20260825-02')fail('authority_identity');
+if(q.status!=='CLOSED_PASS'||evidence.status!=='CLOSED_PASS')fail(`barrier_not_closed:${q.status}/${evidence.status}`);
+if(Number(q.queueFreeze?.residualHolds)!==27||Number(q.queueFreeze?.completedTombstones)!==3||q.queueFreeze?.resumeAuthorizedNow!==true)fail('closure_baseline');
+if(q.pullRequestQuiescence?.pullRequest!==7||q.pullRequestQuiescence?.requiredStateDuringM3BarrierAndFiniteQueue!=='closed'||q.pullRequestQuiescence?.observedStateAtBarrierClose!=='closed'||q.pullRequestQuiescence?.merged!==false)fail('pr7_contract');
+if(q.cleanProbeContract?.actionsExecutionRequiredForPass!==false||q.cleanProbeContract?.directRemoteReadbackRequiredForPass!==true||q.cleanProbeContract?.observedAutomaticPushWorkflowCount!==1||q.cleanProbeContract?.observedHistoricalAutomaticRuns!==0||q.cleanProbeContract?.observedPullRequestRuns!==0||q.cleanProbeContract?.observedBotChildCommits!==0||q.cleanProbeContract?.headStable!==true)fail('clean_probe_closure');
+if(q.singleAuthority?.mode!=='DIRECT_GITHUB_READBACK'||q.singleAuthority?.actionsRunsNeverAuthorizeExecution!==true||q.singleAuthority?.historicalRequestsNeverAuthorizeExecution!==true)fail('single_authority');
+if(lock.m1ExecutionControl?.status!=='CLOSED_PASS'||lock.m2ExecutionControl?.status!=='CLOSED_PASS'||lock.m3ExecutionControl?.quiescenceStatus!=='CLOSED_PASS'||lock.m3ExecutionControl?.finiteQueueFrozen!==false)fail('continuity_state');
+if(Number(lock.productionRealReadiness?.completed)!==69)fail('production_readiness');
+if(q.safety?.providerMutationAuthorizedNow!==false||q.safety?.merge!==false||Number(q.safety?.frontendFunctionalChanges)!==0)fail('unsafe_barrier');
+const r=cp.spawnSync(process.execPath,[path.join(root,'tools/continuity/validate-cxorbia-m3-direct-readback.js')],{cwd:root,encoding:'utf8'});if(r.status!==0)fail(`direct_readback:${(r.stderr||r.stdout||'').trim()}`);
+console.log('M3_QUIESCENCE_SOURCE_GATE_PASS');
+console.log('barrierStatus=CLOSED_PASS');
+console.log(`currentResidualHolds=${Number(tomb.progress?.currentResidualHolds)}`);
+console.log('pr7RequiredState=closed');
+console.log('actionsAuthority=false');

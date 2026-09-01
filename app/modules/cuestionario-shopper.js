@@ -4,21 +4,24 @@ window.CX = window.CX || {};
 
 CX.shopperQuestionnaire = function(data, p, visita, ui){
   const cfg=p.cuestionario||{modo:'interna'};
-  /* ----- Cuestionario EXTERNO o por LINK ----- */
-  if(cfg.modo==='externa' || cfg.modo==='link'){
-    const cred = (CX.session.user.name||'evaluador').toLowerCase().replace(/\s+/g,'.').replace(/[^a-z.]/g,'');
+  /* P0.1 — enum unificado: modos externos nuevos (externo_general/externo_visita) + legacy (externa/link).
+     P0.2 — cada modo externo abre el link que corresponde y NO cae en el formulario interno. */
+  const esPorVisita = (cfg.modo==='externo_visita' || cfg.modo==='link');
+  const esExterno   = (cfg.modo==='externo_general' || cfg.modo==='externa' || esPorVisita);
+  if(esExterno){
+    const etiqueta = cfg.etiqueta || cfg.label || 'externo';
+    /* link por visita: se toma de la fila de HR de la visita; general: URL del proyecto */
+    const url = esPorVisita ? (visita&&(visita.questionnaireLink||visita.cuestionarioUrl||visita.linkCuestionario||visita.urlCuestionario||visita.hrQuestionnaireLink)||cfg.url||'') : (cfg.url||'');
     ui.modal('Cuestionario del proyecto', `
       <div style="background:var(--brand-light);border-radius:11px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;color:var(--brand-dark)">
-        Este proyecto usa un <b>cuestionario ${cfg.modo==='link'?'con link propio por visita':'en plataforma externa'}</b> (${cfg.label||'externo'}). Complétalo y luego marca la visita como cuestionario enviado.</div>
-      ${cfg.modo==='externa'?`<div class="card-p" style="border:1px solid var(--border);border-radius:11px;margin-bottom:12px">
-        <div class="lbl">Tus credenciales (autogeneradas)</div>
-        <div class="between" style="padding:6px 0"><span style="font-size:12px;color:var(--t2)">Usuario</span><b class="mono">${cred}</b></div>
-        <div class="between" style="padding:6px 0;border-top:1px solid var(--border-2)"><span style="font-size:12px;color:var(--t2)">Contraseña</span><b class="mono">••••••</b></div>
-      </div>`:''}
-      <a href="${cfg.url||'#'}" target="_blank" class="btn btn-pr" style="width:100%;justify-content:center;margin-bottom:10px">🌐 Abrir cuestionario ${cfg.modo==='link'?'(link de esta visita)':'externo'}</a>
-      <button class="btn btn-green" id="markDone" style="width:100%;justify-content:center">✅ Marcar cuestionario como enviado</button>
+        Este proyecto usa un <b>cuestionario ${esPorVisita?'con link propio por visita (desde la hoja de ruta)':'externo · link general'}</b>${etiqueta?` (${etiqueta})`:''}. Complétalo y luego marca la visita como cuestionario enviado.</div>
+      ${url?`<a href="${url}" target="_blank" class="btn btn-pr" style="width:100%;justify-content:center;margin-bottom:10px">🌐 Abrir cuestionario ${esPorVisita?'(link de esta visita)':'externo'}</a>`
+           :`<div class="card-p" style="border:1px dashed var(--amber);border-radius:11px;margin-bottom:10px;font-size:12px;color:#92400e">⏳ Link ${esPorVisita?'de esta visita (pendiente en la hoja de ruta)':'general del proyecto (no configurado)'}. Configúralo en el proyecto o en la fuente de HR.</div>`}
+      <button class="btn btn-green" id="markDone" style="width:100%;justify-content:center">✅ Marcar cuestionario realizado</button>
     `, {onMount:(ov,close)=>{
-      ov.querySelector('#markDone').addEventListener('click',()=>{close();ui.toast('Cuestionario marcado como enviado · liquidación pasa a "pend. validar"','ok');CX.bus.emit('visit-flow');});
+      ov.querySelector('#markDone').addEventListener('click',()=>{
+        if(data.setVisitState && visita) data.setVisitState(visita.id,'cuestionario','cuestFecha',new Date().toISOString().slice(0,10));
+        close();ui.toast('Cuestionario realizado · pasa a revisión/validación según el proyecto','ok');CX.bus.emit('visit-flow');});
     }});
     return;
   }
@@ -87,7 +90,7 @@ CX.shopperQuestionnaire = function(data, p, visita, ui){
       }
       close(); CX.bus.emit('visit-flow');
       CX.automations&&CX.automations.fire('cuestionario',{shopper:visita&&visita.shopper||CX.session.user.name,sucursal:visita?visita.sucursal:p.name,score:res.total});
-      ui.modal('Cuestionario enviado', `
+      ui.modal('Cuestionario completado', `
         <div style="text-align:center;padding:8px 0">
           <div style="font-size:13px;color:var(--t2);margin-bottom:10px">Score de la visita</div>
           ${CX.cliUI?CX.cliUI.donut(res.total,96):'<div style="font-size:40px;font-weight:800">'+res.total+'</div>'}
@@ -96,7 +99,7 @@ CX.shopperQuestionnaire = function(data, p, visita, ui){
         </div>
         <div style="text-align:right;margin-top:8px"><button class="btn btn-pr" data-okk>Entendido</button></div>
       `, {onMount:(o2,c2)=>{o2.querySelector('[data-okk]').addEventListener('click',c2);}});
-      ui.toast('Cuestionario enviado · score '+res.total+'/100','ok',3200);
+      ui.toast('Cuestionario completado · score '+res.total+'/100','ok',3200);
     });
   }});
 };

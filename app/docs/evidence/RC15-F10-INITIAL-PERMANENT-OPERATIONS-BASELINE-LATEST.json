@@ -1,0 +1,158 @@
+{
+  "schemaVersion": "cxorbia.rc15.f10.initial-permanent-operations-baseline.v1",
+  "evidenceId": "RC15-F10-INITIAL-PERMANENT-OPERATIONS-BASELINE-20260828-01",
+  "phase": "F10_PERMANENT_OPERATING_MODEL",
+  "generatedAt": "2026-08-28",
+  "decision": "PASS_F10_INITIAL_OPERATING_BASELINE_WITH_ONE_MECHANISM_P1",
+  "productP0Proven": false,
+  "phaseA": 100,
+  "productionRealReadiness": 100,
+  "operatingModel": {
+    "contract": "backend/contracts/cxorbia-f10-permanent-operating-model-v1.json",
+    "status": "ACTIVE",
+    "defaultMode": "READ_ONLY",
+    "terminalF5F9ReplayForbidden": true,
+    "legacyDatabaseAccessForbidden": true,
+    "automaticRetry": false
+  },
+  "freshObservations": [
+    {
+      "area": "staff_admin_hr_identity_legal",
+      "status": "PASS",
+      "evidence": "app/docs/evidence/RC15-F10-STAFF-RUNTIME-AUTHORITY-READONLY-LATEST.json",
+      "runId": 33210899588,
+      "artifactId": 9701556386,
+      "artifactDigest": "sha256:b6160b1d4f4c2a4d094d2759aa77a4242afbf1e4b6b9a0f798f8a33d6ac08e56",
+      "highlights": {
+        "staffRuntime": "PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY",
+        "platformPosts": 8,
+        "hrAssignments": 15,
+        "hrAssignmentsArePostulations": false,
+        "syntheticHrPostsInPlatform": 0,
+        "identityMapSize": 209,
+        "targetCanonicalVisitsAugust": 2,
+        "targetLiveResidualVisitsAugust": 0,
+        "fuzzyMatching": false,
+        "durableLegalReceipt": "PASS"
+      }
+    },
+    {
+      "area": "client_auth_route_render",
+      "status": "PASS",
+      "evidence": "app/docs/evidence/RC15-F10-CLIENT-ROUTE-READONLY-LATEST.json",
+      "runId": 33211065748,
+      "artifactId": 9701612535,
+      "artifactDigest": "sha256:c8ebbc8c58f926db6cf904882f73f58487737792e202987dd5e4b05b1478418c",
+      "highlights": {
+        "singleVisibleProductLogin": true,
+        "authenticated": true,
+        "role": "cliente",
+        "tenantId": "tya",
+        "projectId": "cinepolis",
+        "route": "cli_dashboard",
+        "renderSatisfiedAt": "after_route_0ms",
+        "viewTextLength": 701,
+        "pageErrors": 0,
+        "consoleErrors": 0
+      }
+    }
+  ],
+  "shopperMonitoringAuthority": {
+    "status": "PASS_CURRENT_RUNTIME_CHECKPOINT_BACKED_FROM_F8",
+    "script": "tools/qa/tya-f8-checkpoint-backed-shopper-runtime-readonly.mjs",
+    "reasonNotReplayedInInitialF10Baseline": "The legacy multirole password selector is not safe for routine reuse. The already-certified checkpoint-backed mechanism proves exact current identity/runtime without password reset or persistence; a future focal F10 Shopper monitor should reuse that mechanism rather than the obsolete selector.",
+    "legacyMultiroleStopEvidence": "app/docs/evidence/RC15-F10-MULTIROLE-LEGACY-SHOPPER-SELECTOR-STOP-LATEST.json",
+    "productP0Proven": false
+  },
+  "finance": {
+    "operationalAuthorityStatus": "CERTIFIED_CONTROLLED_REVIEW_PRESERVED",
+    "authority": "backend/contracts/tya-corte3-financial-r20-delta-review-v1.json",
+    "lastReviewed": {
+      "hrVisits": 616,
+      "financialLiquidationRows": 247,
+      "exactAcceptedLinks": 209,
+      "reviewQueue": 79,
+      "canonicalHrRowIdentityChanges": 0,
+      "newFinancialRecords": 0,
+      "missingFinancialRecords": 0,
+      "paymentsExecuted": false
+    },
+    "freshF10Monitor": "HOLD_MECHANISM_BEFORE_RECONCILIATION",
+    "monitorStopEvidence": "app/docs/evidence/RC15-F10-FINANCIAL-MONITOR-MECHANISM-STOP-LATEST.json",
+    "monitorP1RootCause": "Controlled runner regressed from tools/reconciliation/tya-financial-workbook-live-hr-reconcile-r14c.mjs to nonexistent tools/migration/tya-reconcile-financial-live-hr-r14c.mjs and omitted the explicit --financial input.",
+    "canonicalReconcilerExists": true,
+    "canonicalReconciler": "tools/reconciliation/tya-financial-workbook-live-hr-reconcile-r14c.mjs",
+    "productP0Proven": false,
+    "paymentStateInferenceForbidden": true
+  },
+  "performanceBaseline": {
+    "status": "PASS_SAME_FROZEN_RELEASE_PRIOR_BASELINE",
+    "evidence": "app/docs/evidence/RC15-F8-BOUNDED-LOAD-FAILURE-READONLY-LATEST.json",
+    "requests": 24,
+    "concurrency": 4,
+    "http5xx": 0,
+    "contractFailures": 0,
+    "p95Ms": 181.87,
+    "failureInjectionFailClosed": true
+  },
+  "mechanismFindings": [
+    {
+      "id": "F10-MECH-P1-001",
+      "severity": "P1",
+      "area": "legacy_multirole_shopper_credential_selector",
+      "status": "RETIRED_NO_REPLAY",
+      "productImpact": "NONE",
+      "evidence": "app/docs/evidence/RC15-F10-MULTIROLE-LEGACY-SHOPPER-SELECTOR-STOP-LATEST.json"
+    },
+    {
+      "id": "F10-MECH-P1-002",
+      "severity": "P1",
+      "area": "financial_readonly_monitor_profile",
+      "status": "OPEN_FOCAL_REPAIR_REQUIRED",
+      "productImpact": "NONE_PROVEN",
+      "evidence": "app/docs/evidence/RC15-F10-FINANCIAL-MONITOR-MECHANISM-STOP-LATEST.json"
+    }
+  ],
+  "release": {
+    "releaseId": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
+    "functionalSourceSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "runtimeReleaseSourceSha": "2d0b8e83b32b44f6c3eae80b7630f8cd3295fba2",
+    "cloudRunRevision": "cxorbia-live-hr-dev-00013-rns",
+    "hostingRelease": "sites/cxorbia-backend-dev/releases/1787796646738000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/afe292cfcbbc6005",
+    "changedByF10": false
+  },
+  "safety": {
+    "frontendWrites": 0,
+    "moduleWrites": 0,
+    "coreWrites": 0,
+    "providerWrites": 0,
+    "businessDataWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "storageWrites": 0,
+    "rulesWrites": 0,
+    "paymentWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "deploys": 0,
+    "rebuilds": 0,
+    "reimports": 0,
+    "merge": false,
+    "newBranch": false,
+    "newPullRequest": false,
+    "newWorkflow": false,
+    "legacyDatabaseAccess": false
+  },
+  "classification": {
+    "reusableCXOrbia": "permanent read-only operating model plus role-separated production observations and fail-closed mechanism classification",
+    "exclusiveClient": "TyA/Cinepolis runtime, HR and finance operational evidence",
+    "claudePrototype": "NO_FRONTEND_CHANGE",
+    "academia": "NO_FUNCTIONAL_CHANGE; content follow-up remains P2",
+    "noClaudeImpact": true
+  },
+  "next": "F10_REPAIR_FINANCIAL_MONITOR_CANONICAL_RECONCILER_PATH_AND_RECERTIFY_READONLY"
+}

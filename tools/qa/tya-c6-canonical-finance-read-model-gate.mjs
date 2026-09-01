@@ -1,0 +1,24 @@
+import fs from 'node:fs';import vm from 'node:vm';
+const composerFile=process.argv[2]||'app/adapters/tya-cumulative-read-model-v2.js';
+const semanticsFile=process.argv[3]||'app/adapters/tya-canonical-state-semantics-v2.js';
+const financeFile=process.argv[4]||'app/adapters/tya-canonical-finance-read-model-v2.js';
+const sandbox={window:{},location:{hostname:'cxorbia-backend-dev.web.app',search:''},URLSearchParams,console};sandbox.window.window=sandbox.window;sandbox.window.location=sandbox.location;sandbox.window.URLSearchParams=URLSearchParams;
+vm.createContext(sandbox);vm.runInContext(fs.readFileSync(composerFile,'utf8'),sandbox);vm.runInContext(fs.readFileSync(semanticsFile,'utf8'),sandbox);
+const engine=sandbox.window.CX_TYA_CUMULATIVE_READ_MODEL;const visits=[];
+for(let i=0;i<44;i++){const submitted=i<33,questionnaire=i<38,realized=i<40,outOfRange=i===43;visits.push({id:'v'+i,visitId:'v'+i,hrRowId:'JULIO 26!'+(i+2),periodKey:'2026-07',projectId:'cinepolis-2026-07',pais:i<34?'GT':'HN',currency:i<34?'Q':'L',shopperId:'s'+(i%10),shopper:'Shopper '+(i%10),sucursal:'Sucursal '+i,estado:outOfRange?'fuera_rango':submitted?'submitida':questionnaire?'cuestionario':realized?'realizada':'agendada',agendada:'2026-07-20',realizada:realized?'2026-07-28':null,cuestFecha:questionnaire?'2026-07-29':null,submittedAt:submitted?'2026-07-30':null,honorario:60,boleto:40,comboAmt:100,canonicalFacets:{assigned:true,scheduled:true,realized,questionnaire,submitted,outOfRange,liquidationCandidate:submitted,liquidationConfirmed:false,paymentConfirmed:false}});}
+const oldForProject=()=>visits.filter(v=>['realizada','cuestionario'].includes(v.estado)).map(v=>({visitaId:v.id,visitId:v.id,hrRowId:v.hrRowId,shopper:v.shopper,sucursal:v.sucursal,estado:v.estado==='realizada'?'pendiente_cuestionario':'pendiente_submitir',reviewRequired:true,financialSourceStatus:'pending_or_review',liquidationState:'pending_financial_source'}));
+const data={visitas:()=>visits,period:()=>({id:'cinepolis-2026-07',periodKey:'2026-07',countries:['GT','HN'],currency:{GT:'Q',HN:'L'}}),financialMatchForVisit:v=>v.id==='v0'?{visitaId:v.id,visitId:v.id,hrRowId:v.hrRowId,estado:'pagada',financialSourceStatus:'exact_reconciled_source_safe',liquidationState:'reconciled_source_safe',paymentState:'payment_confirmed',paymentConfirmed:true,paymentSourceRef:'hist-source',honorario:60,reembolso:140,total:200,pais:'GT',moneda:'Q',reviewRequired:false}:null};
+sandbox.window.CX={data,liq:{forProject:oldForProject,label:s=>[s,'n'],resumen:list=>({total:list.length})}};sandbox.CX=sandbox.window.CX;
+vm.runInContext(fs.readFileSync(financeFile,'utf8'),sandbox,{filename:financeFile});
+const list=sandbox.window.CX.liq.forProject(data),assertions=[];const assert=(name,ok,detail)=>{assertions.push({name,ok,detail});if(!ok)process.exitCode=1;};
+assert('all_realized_visits_in_liquidations',list.length===40,list.length);
+assert('submitted_visits_not_omitted',list.filter(l=>l.canonicalFacets?.submitted===true).length===33,list.filter(l=>l.canonicalFacets?.submitted===true).length);
+assert('questionnaire_pending_count',list.filter(l=>l.estado==='pendiente_submitir').length===5,list.filter(l=>l.estado==='pendiente_submitir').length);
+assert('questionnaire_missing_count',list.filter(l=>l.estado==='pendiente_cuestionario').length===2,list.filter(l=>l.estado==='pendiente_cuestionario').length);
+assert('submitted_without_financial_source_is_review_required',list.filter(l=>l.operationalVisitStage==='submitida'&&l.reviewRequired===true).length===32,list.filter(l=>l.operationalVisitStage==='submitida'&&l.reviewRequired===true).length);
+assert('exact_paid_source_preserved',list.some(l=>l.visitId==='v0'&&l.paymentConfirmed===true&&l.paymentSourceRef==='hist-source'),list.find(l=>l.visitId==='v0'));
+assert('not_realized_excluded',!list.some(l=>l.visitId==='v40'||l.visitId==='v41'||l.visitId==='v42'||l.visitId==='v43'),list.filter(l=>/^v4[0-3]$/.test(l.visitId)));
+assert('unique_liquidation_keys',new Set(list.map(l=>l.visitId||l.hrRowId)).size===list.length,null);
+assert('payment_execution_remains_disabled',sandbox.window.CX_TYA_CANONICAL_FINANCE_READ_MODEL?.paymentExecutionAllowed===false,sandbox.window.CX_TYA_CANONICAL_FINANCE_READ_MODEL);
+const report={schemaVersion:'cxorbia.c6.canonical-finance-read-model-gate.v1',decision:assertions.every(a=>a.ok)?'PASS_C6_CANONICAL_FINANCE_LIQUIDATION_COMPLETENESS':'FAIL_C6_CANONICAL_FINANCE_LIQUIDATION_COMPLETENESS',engineVersion:engine.version,counts:{visits:visits.length,realized:40,liquidations:list.length,submitted:33,reviewRequired:list.filter(l=>l.reviewRequired===true).length,exactPaid:list.filter(l=>l.paymentConfirmed===true).length},assertions,safety:{providerWrites:0,firestoreWrites:0,authWrites:0,rulesWrites:0,storageWrites:0,hrWrites:0,paymentsWrites:0,deploys:0,production:false,merge:false}};
+console.log(JSON.stringify(report,null,2));if(process.exitCode)throw new Error(report.decision);

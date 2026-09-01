@@ -1,0 +1,154 @@
+{
+  "contract": "submitido-hr-driven-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "hrWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "purpose": "Define configurable submitido handling for Phase A so questionnaire completion, admin review, HR submitido and liquidation eligibility remain separate and auditable.",
+  "projectConfigPath": "tenants/{tenantId}/projects/{projectId}.submitido",
+  "canonicalSubmitidoModes": [
+    "hr_driven",
+    "external_system",
+    "platform_review",
+    "manual_admin_hr_confirmed"
+  ],
+  "defaultModeForTyaCinepolis": "hr_driven",
+  "projectSubmitidoConfigFields": {
+    "mode": {
+      "type": "string",
+      "allowedValues": [
+        "hr_driven",
+        "external_system",
+        "platform_review",
+        "manual_admin_hr_confirmed"
+      ],
+      "required": true
+    },
+    "sourceSystem": {
+      "type": "string",
+      "examples": ["HR", "TyAOnline", "CXOrbia", "external_platform"],
+      "required": true
+    },
+    "hrFieldCandidates": {
+      "type": "array<string>",
+      "requiredWhen": "mode is hr_driven or manual_admin_hr_confirmed",
+      "defaultCandidates": [
+        "submitidoAt",
+        "fechaSubmitido",
+        "fecha_submitido",
+        "submittedAt",
+        "hrSubmitidoAt",
+        "AC",
+        "AB"
+      ]
+    },
+    "questionnaireCompletedFieldCandidates": {
+      "type": "array<string>",
+      "requiredWhen": "mode is hr_driven or external_system",
+      "defaultCandidates": [
+        "questionnaireCompletedAt",
+        "cuestionarioCompletadoAt",
+        "fechaCuestionario",
+        "fecha_cuestionario",
+        "T",
+        "S"
+      ]
+    },
+    "allowManualOverride": {
+      "type": "boolean",
+      "default": false,
+      "note": "Manual override must require admin note and HR reference."
+    },
+    "requireAdminReviewBeforeSubmitido": {
+      "type": "boolean",
+      "default": true
+    },
+    "liquidationEligibilityMode": {
+      "type": "string",
+      "allowedValues": ["submitido_registered_only", "admin_exception_allowed"],
+      "default": "submitido_registered_only"
+    }
+  },
+  "submitidoRecordRequiredFields": [
+    "tenantId",
+    "projectId",
+    "visitId",
+    "assignmentId",
+    "shopperId",
+    "status",
+    "source",
+    "submitidoMode",
+    "updatedAt"
+  ],
+  "submitidoRecordRecommendedFields": [
+    "hrRowId",
+    "hrSourceId",
+    "reviewId",
+    "questionnaireCompletedAt",
+    "reviewStatus",
+    "submitidoAt",
+    "submitidoFieldName",
+    "sourceSystem",
+    "adminConfirmedBy",
+    "adminConfirmedAt",
+    "adminConfirmationNote",
+    "syncStatus",
+    "syncConflict",
+    "liquidationEligibility",
+    "auditTrail"
+  ],
+  "allowedStatuses": [
+    "not_started",
+    "questionnaire_completed_pending_review",
+    "pending_hr_submitido",
+    "submitido_registered",
+    "submitido_missing_in_hr",
+    "submitido_conflict",
+    "manual_confirmation_required",
+    "cancelled"
+  ],
+  "sourceTypes": [
+    "hr",
+    "external_system",
+    "platform_review",
+    "admin_confirmed_hr",
+    "import_preview"
+  ],
+  "rules": [
+    "questionnaireCompletedAt is not enough to set submitido_registered.",
+    "For hr_driven mode, submitidoAt must come from an HR field candidate tied to the same tenantId, projectId and hrRowId.",
+    "For manual_admin_hr_confirmed mode, adminConfirmationNote and HR reference are required.",
+    "submitidoAt must not be in the future.",
+    "submitidoAt should not be before questionnaireCompletedAt unless syncConflict and admin note exist.",
+    "Liquidation eligibility requires submitido_registered unless project config allows explicit admin exception.",
+    "No HR/platform conflict may be overwritten silently.",
+    "Every status change must append auditTrail."
+  ],
+  "conflictTriggers": [
+    "same visitId has two different submitidoAt values",
+    "HR row submitido belongs to another project or tenant",
+    "submitidoAt is earlier than questionnaireCompletedAt without admin note",
+    "submitido exists but visit is cancelled",
+    "submitido exists for shopperId different from assignment shopperId",
+    "submitido source is platform-only while project mode is hr_driven",
+    "liquidation marked eligible without submitido_registered"
+  ],
+  "hardStops": [
+    "Do not write HR from this contract.",
+    "Do not write Firestore from this contract.",
+    "Do not call Make from this contract.",
+    "Do not infer submitido from questionnaire completed alone.",
+    "Do not mark a liquidation payable when submitido status is pending or conflicted."
+  ],
+  "commercializablePrototypeNotes": [
+    "Submitido origin must be configurable per project, not hard-coded to TyA.",
+    "The UI should show source system and status honestly: HR-driven, external system, platform review or manual HR-confirmed.",
+    "The UI should keep questionnaire completion, submitido and liquidation eligibility as separate visible states.",
+    "Tenant/project labels may change, but the internal submitido modes should remain canonical."
+  ]
+}

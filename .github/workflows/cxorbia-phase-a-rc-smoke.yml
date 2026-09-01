@@ -1,0 +1,72 @@
+name: CXOrbia Historical V110 RC Diagnostic
+
+# Historical diagnostic only. V110 is superseded by the V159 registry/build-lock,
+# R15G/R18D semantic gates and the exact Hosting DEV lane. This workflow must not
+# run automatically or participate in the current release decision.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_historical_diagnostic:
+        description: 'Type RUN_HISTORICAL_V110_DIAGNOSTIC to generate a non-blocking historical report.'
+        required: true
+        default: 'HOLD'
+        type: string
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  historical-v110-rc-diagnostic:
+    name: Historical V110 RC diagnostic · non-blocking
+    if: ${{ inputs.confirm_historical_diagnostic == 'RUN_HISTORICAL_V110_DIAGNOSTIC' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Confirm V110 is not the active runtime
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const registry = JSON.parse(fs.readFileSync('backend/contracts/prototype-baseline-registry-v1.json','utf8'));
+          if (registry.currentRuntime?.version === 'V110') throw new Error('V110 unexpectedly became current runtime.');
+          console.log(JSON.stringify({
+            ok:true,
+            decision:'PASS_V110_DIAGNOSTIC_IS_HISTORICAL_ONLY',
+            currentRuntime:registry.currentRuntime?.version,
+            currentStatus:registry.currentRuntime?.status,
+            releaseGate:false
+          },null,2));
+          NODE
+
+      - name: Generate optional historical report
+        continue-on-error: true
+        run: |
+          mkdir -p .tmp/phase-a-rc-smoke
+          node tools/migration/tya-phase-a-rc-smoke-gate.mjs --out .tmp/phase-a-rc-smoke || true
+          cat > .tmp/phase-a-rc-smoke/HISTORICAL-NOT-A-GATE.md <<'EOF'
+          # Historical V110 diagnostic
+
+          This output is preserved only for historical comparison. It is not a release gate and cannot block V159.
+          Current authority: prototype baseline registry, V159 build-lock, R15G/R18D gates, Hosting DEV evidence and Paula visual validation.
+          EOF
+
+      - name: Upload historical diagnostic
+        uses: actions/upload-artifact@v4
+        with:
+          name: historical-v110-rc-diagnostic
+          path: .tmp/phase-a-rc-smoke
+          if-no-files-found: error
+          retention-days: 14

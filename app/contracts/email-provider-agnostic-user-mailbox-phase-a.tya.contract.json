@@ -1,0 +1,105 @@
+{
+  "contract": "email-provider-agnostic-user-mailbox-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A plus integration continuity",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "emailReadAllowed": false,
+  "emailSendAllowed": false,
+  "oauthAllowed": false,
+  "purpose": "Define provider-agnostic per-user mailbox configuration so any authorized provider can be connected later without locking CXOrbia to Gmail, Outlook or a single tenant-level account.",
+  "principle": "Email must be provider-agnostic, per user and real when authorized. A user may use a corporate email, assigned TyA email, CXOrbia-created email, personal email or manual/fictitious placeholder depending on tenant policy.",
+  "mailboxOwnershipTypes": [
+    "tenant_assigned_email",
+    "consultora_assigned_email",
+    "cxorbia_created_email_future",
+    "personal_email",
+    "role_alias_email",
+    "fictitious_placeholder_no_send",
+    "manual_contact_only"
+  ],
+  "providerTypes": [
+    "gmail_google_workspace",
+    "microsoft_365_outlook",
+    "imap_smtp_generic",
+    "custom_smtp",
+    "provider_api_custom_future",
+    "manual_log_only",
+    "unknown_to_be_configured"
+  ],
+  "userMailboxPath": "tenants/{tenantId}/users/{userId}/mailboxes/{mailboxId}",
+  "requiredFields": [
+    "tenantId",
+    "userId",
+    "mailboxId",
+    "emailAddress",
+    "mailboxOwnershipType",
+    "providerType",
+    "connectionStatus",
+    "canRead",
+    "canSend",
+    "canDraft",
+    "canLogManual",
+    "privacyScope",
+    "createdAt",
+    "updatedAt"
+  ],
+  "connectionStatuses": [
+    "not_configured",
+    "manual_only",
+    "placeholder_no_send",
+    "connection_requested",
+    "oauth_pending_future",
+    "smtp_config_pending_future",
+    "connected_future",
+    "connection_error_future",
+    "revoked",
+    "disabled"
+  ],
+  "capabilityFlags": [
+    "canRead",
+    "canSend",
+    "canDraft",
+    "canReply",
+    "canForward",
+    "canLogManual",
+    "canLinkToEntity",
+    "canSyncThreadsFuture",
+    "canUseTemplates"
+  ],
+  "configurationRules": [
+    "Email provider must be selectable per user, not fixed globally.",
+    "Tenant may define allowed provider policies, but individual user mailbox remains the operational configuration unit.",
+    "A fictitious placeholder email must not send or receive real mail.",
+    "Manual contact-only email may be used for traceability before real connection.",
+    "Any provider integration requires explicit future authorization and provider-specific secure setup.",
+    "Email actions must link to traceable entities when operationally relevant."
+  ],
+  "securityRules": [
+    "Do not store provider secrets in repo.",
+    "Do not store OAuth tokens in plain text.",
+    "Do not enable reading/sending until provider integration and permissions are approved.",
+    "Do not expose personal mailbox content to other users unless permission/role allows it.",
+    "Do not treat placeholder emails as deliverable addresses."
+  ],
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "consultant_partner"],
+    "manualsToUpdate": ["User email setup", "Provider-agnostic email", "Manual vs connected mailbox", "Email privacy"],
+    "coursesToUpdate": ["Admin user creation", "Superadmin integrations", "Ops communication traceability"],
+    "newLessons": [
+      "How to create a user with or without mailbox",
+      "Difference between personal email, assigned email and placeholder email",
+      "How provider-agnostic email works",
+      "When email can read/send and when it is only traceability"
+    ]
+  },
+  "hardStops": [
+    "Do not connect a real provider from this contract.",
+    "Do not read real email from this contract.",
+    "Do not send real email from this contract.",
+    "Do not store secrets or tokens in repo.",
+    "Do not treat placeholder email as deliverable."
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "sourceSafe": true,
+  "containsRawSensitiveData": false,
+  "isSyntheticOrSanitized": true,
+  "notifications": [
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "notificationId": "notification-preview-001",
+      "eventType": "postulation_approved_pending_assignment_sync",
+      "channel": "in_app",
+      "templateId": "template-postulation-approved-preview",
+      "templateVersion": "v1-preview",
+      "recipientRole": "shopper",
+      "recipientRef": "shopper-ref-preview-001",
+      "shopperId": "shopper-preview-001",
+      "visitId": "visit-preview-001",
+      "hrRowId": "hr-row-preview-001",
+      "postulationId": "postulation-preview-001",
+      "assignmentId": "assignment-preview-001",
+      "outboxStatus": "queued_preview_only",
+      "manualFallbackStatus": "not_required",
+      "templateVariables": {
+        "projectLabelRef": "project-label-ref-cinepolis-preview",
+        "visitLabelRef": "visit-label-ref-001"
+      }
+    },
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "notificationId": "notification-preview-002",
+      "eventType": "questionnaire_completed_pending_review",
+      "channel": "whatsapp_web_fallback",
+      "templateId": "template-questionnaire-completed-preview",
+      "templateVersion": "v1-preview",
+      "recipientRole": "ops",
+      "recipientRef": "ops-ref-preview-001",
+      "shopperId": "shopper-preview-004",
+      "visitId": "visit-preview-004",
+      "hrRowId": "hr-row-preview-004",
+      "assignmentId": "assignment-preview-004",
+      "outboxStatus": "manual_action_required",
+      "manualFallbackStatus": "copy_button_available",
+      "templateVariables": {
+        "statusLabelRef": "questionnaire-completed-pending-review-preview"
+      }
+    }
+  ]
+}

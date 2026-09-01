@@ -1,0 +1,1016 @@
+{
+  "schemaVersion": "1.0.0",
+  "runId": "29531154313",
+  "matchingPaths": [
+    {
+      "sha": "9891790c21eb0f78a89a483e3dedb6083084d59d",
+      "path": ".cxorbia/v156-promotion.patch.gz.b64",
+      "reachable": true
+    },
+    {
+      "sha": "57b6608aebbf06bd5640d8277f2bb197cee72df2",
+      "path": ".github/workflows/diagnose-v156-apply.yml",
+      "reachable": true
+    },
+    {
+      "sha": "34d4b1c49e4033331271664bc4ee8614abbbf42f",
+      "path": ".github/workflows/export-current-app-for-finalization.yml",
+      "reachable": true
+    },
+    {
+      "sha": "a89bbb85562d84ddf6388bd5ff8871a9cb1f4ee2",
+      "path": ".github/workflows/v156-artifact-filter-persist.yml",
+      "reachable": true
+    },
+    {
+      "sha": "a64cde816aed24adfeeaff45f1fbf38545fdb918",
+      "path": ".github/workflows/v156-artifact-index-persist.yml",
+      "reachable": true
+    },
+    {
+      "sha": "32a00d4fdb52dcef048d3df93ef6759e4e095ccd",
+      "path": ".github/workflows/v156-atomic-recovery-pr-executor.yml",
+      "reachable": true
+    },
+    {
+      "sha": "447d1386d245ee780fb89edbfdd074288c44b57a",
+      "path": ".github/workflows/v156-git-object-source-scan.yml",
+      "reachable": true
+    },
+    {
+      "sha": "20f57a89a196b9c00cd9f25aab3ab98d3a42409b",
+      "path": ".github/workflows/v156-payload-diagnostic-persist.yml",
+      "reachable": true
+    },
+    {
+      "sha": "2f5fe54445025b5cabbd069aa1f04f60b9132e2c",
+      "path": "MIGRACION-TYA-PAQUETE-DATOS.md",
+      "reachable": true
+    },
+    {
+      "sha": "faf22b6e69f030334c79261990dbef50523c582f",
+      "path": "PAQUETE-PARA-CLAUDE-PENDIENTES-PROTOTIPO-V57.md",
+      "reachable": true
+    },
+    {
+      "sha": "c2ba405cf4d1cc6489324cde7c36e56dd99f2881",
+      "path": "PAQUETE-PARA-CLAUDE-PENDIENTES-PROTOTIPO-V58.md",
+      "reachable": true
+    },
+    {
+      "sha": "23cd8c6e8943b418a69165ede2dc7aeca48f6622",
+      "path": "PAQUETE-PARA-CLAUDE-V62.md",
+      "reachable": true
+    },
+    {
+      "sha": "41e951d2e5796e63d7a892fb15b39aa86d51ab3b",
+      "path": "PAQUETE-PARA-CLAUDE-V63.md",
+      "reachable": true
+    },
+    {
+      "sha": "12b05c3551f65c08320e17f232cc4d9271e76c73",
+      "path": "app/contracts/claude-candidate-decision-checklist-phase-a.tya.contract.json",
+      "reachable": true
+    },
+    {
+      "sha": "4851b412bd2eab22ffbeb2b850746de25fcf5544",
+      "path": "app/docs/ACADEMIA-IMPACT-CANDIDATE-CHECKLIST-TYA-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "03036a21ad59583203cfd36b4b70dd1616f75a77",
+      "path": "app/docs/ACADEMIA-IMPACT-CLAUDE-CANDIDATE-FORENSIC-AUDIT-READINESS-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "5424fdae89443c0c6889b144c5cde916d2ec0182",
+      "path": "app/docs/ACADEMIA-IMPACT-CLAUDE-P0-PACKAGE-TYA-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "85e3587947a0572595936a9e5740aba2641d33fc",
+      "path": "app/docs/ACADEMIA-IMPACT-HR-SOURCE-SAFE-PROTECTED-CANDIDATES-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "3cf1fbda2d18c40687a86b2ea806e01764587ba8",
+      "path": "app/docs/ACADEMIA-IMPACT-V153-20260716.md",
+      "reachable": true
+    },
+    {
+      "sha": "60fd058728c4c66c8a9a327e2dc8280116d1bdd2",
+      "path": "app/docs/ACADEMIA-IMPACT-V155-GATE-COMERCIAL-20260716.md",
+      "reachable": true
+    },
+    {
+      "sha": "dd6968f27e0a8fdf46a7e5199f0496b8313b888f",
+      "path": "app/docs/ACADEMIA-IMPACT-V156-GATE-COMERCIAL-NO-GO-20260716.md",
+      "reachable": true
+    },
+    {
+      "sha": "c4f1e323695caa0b98cb40bb75c93b8a1f6b47b0",
+      "path": "app/docs/ACLARACION-CLAUDE-PACKAGE-COMPLETO-ADMIN-OPERATIVO-20260707.md",
+      "reachable": true
+    },
+    {
+      "sha": "63b1ed5f5e2349ebfeee783c857e3e9182077ff7",
+      "path": "app/docs/ADDENDUM-MAESTRO-METODOLOGIA-PAQUETES-CLAUDE-CXORBIA-20260712.md",
+      "reachable": true
+    },
+    {
+      "sha": "51c9e577c1f2e68c21c0219b6a6931ac0de02fba",
+      "path": "app/docs/AUDITORIA-CANDIDATA-ACTUAL-CLAUDE-P0-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "7791371f8ee6e22c1999fd04cfb57826bbef9294",
+      "path": "app/docs/AUDITORIA-CANDIDATA-V90-COPY-HONESTO-20260707.md",
+      "reachable": true
+    },
+    {
+      "sha": "1219ec367d497855d8c9eef944e59173cabb9c0c",
+      "path": "app/docs/AUDITORIA-DELTA-CANDIDATA-EXTERNA-V132-INTERNA-V145-R19-20260715.md",
+      "reachable": true
+    },
+    {
+      "sha": "e5f7dcdb46fc4b8b9481c74c2d64afda36a0f9fc",
+      "path": "app/docs/AUDITORIA-FORENSE-CANDIDATA-V100-20260711.md",
+      "reachable": true
+    },
+    {
+      "sha": "8ebbbc256a07dcb87c82ceb253b7536e4d8a5434",
+      "path": "app/docs/AUDITORIA-FORENSE-CANDIDATA-V101-20260711.md",
+      "reachable": true
+    },
+    {
+      "sha": "c0da355e81d2ac67f0153aad44f6cd904111447e",
+      "path": "app/docs/AUDITORIA-FORENSE-CANDIDATA-V102-RECHAZO-CONTAMINACION-ORBIT-20260711.md",
+      "reachable": true
+    },
+    {
+      "sha": "66f97fafcdb864659437f017946df8d551b7dcd1",
+      "path": "app/docs/AUDITORIA-FORENSE-CANDIDATA-V103-20260711.md",
+      "reachable": true
+    },
+    {
+      "sha": "b233d047f25e73a8855454fa6794129a9cc7c9f7",
+      "path": "app/docs/AUDITORIA-FORENSE-CANDIDATA-V104-20260711.md",
+      "reachable": true
+    },
+    {
+      "sha": "03c66ab64ca6f13f08cd4dc1597f2d1518f5fe5e",
+      "path": "app/docs/AUDITORIA-FORENSE-CANDIDATA-V105-INTERNAL-V106-20260711.md",
+      "reachable": true
+    },
+    {
+      "sha": "e63b57afe2865ad1d04b209f96dec6bacd99f3fb",
+      "path": "app/docs/AUDITORIA-FORENSE-CANDIDATA-V105-V106-20260711.md",
+      "reachable": true
+    },
+    {
+      "sha": "1da057d95c042349e7e6896f1c7c1be36e7d6b61",
+      "path": "app/docs/AUDITORIA-FORENSE-CANDIDATA-V109-BLOQUEO-CRITICO-20260712.md",
+      "reachable": true
+    },
+    {
+      "sha": "08a6ae5dc037b27191b7960db06938c0ff78a1cc",
+      "path": "app/docs/AUDITORIA-FORENSE-CANDIDATA-V131-20260714.md",
+      "reachable": true
+    },
+    {
+      "sha": "73f8db23fd4e242456b1580d41909a9722f01df4",
+      "path": "app/docs/AUDITORIA-FORENSE-CANDIDATA-V91-CXORBIA-20260708.md",
+      "reachable": true
+    },
+    {
+      "sha": "a6ebea2880f03b1b0aedb268dac2047063df7c27",
+      "path": "app/docs/AUDITORIA-FORENSE-CANDIDATA-V97-20260710.md",
+      "reachable": true
+    },
+    {
+      "sha": "ff8fe46b59509f6e8e5197c33a8c37946b9f279d",
+      "path": "app/docs/AUDITORIA-FORENSE-CANDIDATA-V99-20260710.md",
+      "reachable": true
+    },
+    {
+      "sha": "7a7e400427dd394a9760123107f1201a94aa298d",
+      "path": "app/docs/AUDITORIA-FRONTEND-CANDIDATE-V80-CLAUDE-20260704.md",
+      "reachable": true
+    },
+    {
+      "sha": "0d91f3582894d848fdbd141d4fd53496ef75519f",
+      "path": "app/docs/AUDITORIA-FRONTEND-CANDIDATE-V81-CLAUDE-20260704.md",
+      "reachable": true
+    },
+    {
+      "sha": "55d3a600df5c6c00f8372e3e46b070c2d171cc91",
+      "path": "app/docs/AUDITORIA-FRONTEND-CANDIDATE-V82-CLAUDE-20260704.md",
+      "reachable": true
+    },
+    {
+      "sha": "6fbd096be45ef542ce4b9ab6cf181505e9a0d053",
+      "path": "app/docs/AUDITORIA-FRONTEND-CANDIDATE-V83-CLAUDE-20260704.md",
+      "reachable": true
+    },
+    {
+      "sha": "c5cfd5520085bfbcb46b507463e1017d025ac158",
+      "path": "app/docs/AUDITORIA-FRONTEND-CANDIDATE-V84-CLAUDE-20260704.md",
+      "reachable": true
+    },
+    {
+      "sha": "9eb1f83f1a4ef48d4a91bac753134d0c7f05b0ed",
+      "path": "app/docs/AUDITORIA-FRONTEND-CANDIDATE-V85-CLAUDE-20260704.md",
+      "reachable": true
+    },
+    {
+      "sha": "6741d0c00aa017e615709e9c87d82acbdff7e3e0",
+      "path": "app/docs/AUDITORIA-FRONTEND-CANDIDATE-V86-CLAUDE-20260704.md",
+      "reachable": true
+    },
+    {
+      "sha": "3e8e55b6e9bc991d7344bc1d8a3b11013f24b30d",
+      "path": "app/docs/AUDITORIA-FRONTEND-CANDIDATE-V88-CLAUDE-20260706.md",
+      "reachable": true
+    },
+    {
+      "sha": "cf52894bfab5f63fa45484558e27616fee5e56a2",
+      "path": "app/docs/AUDITORIA-FRONTEND-CANDIDATE-V89-CLAUDE-20260706.md",
+      "reachable": true
+    },
+    {
+      "sha": "75007197f99344bc92068346ccc0fed60d458013",
+      "path": "app/docs/AUDITORIA-INTEGRAL-CANDIDATA-ACTUAL-V82-CLAUDE-20260704.md",
+      "reachable": true
+    },
+    {
+      "sha": "a3de0a23c72f6159640a50d97534d17f94b4d9b0",
+      "path": "app/docs/AUDITORIA-PROXIMA-CANDIDATA-CLAUDE-CRITERIOS-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "5aa9a7b0ae20d2c73218439fba3cd72b0f47711f",
+      "path": "app/docs/AUDITORIA-REVALIDACION-CANDIDATA-ACTUAL-CLAUDE-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "7b83adfb16c4dea626a121ec46878a45cfc799c4",
+      "path": "app/docs/AUDITORIA-V151-CIERRE-COMERCIAL-2P0-20260716.md",
+      "reachable": true
+    },
+    {
+      "sha": "4b992e03738644a5fe70fbf8510ce57c3266b914",
+      "path": "app/docs/AUDITORIA-V153-DOS-P0-REALES-RESTANTES-20260716.md",
+      "reachable": true
+    },
+    {
+      "sha": "a2ae95aadc92af487a479f34cb9b4a26110b1a10",
+      "path": "app/docs/AUDITORIA-V155-UNICO-P0-GATE-COMERCIAL-20260716.md",
+      "reachable": true
+    },
+    {
+      "sha": "15a4078e4a1ba66ce073f8f70d9ee776a3427ceb",
+      "path": "app/docs/AUDITORIA-V156-GATE-COMERCIAL-NO-GO-20260716.md",
+      "reachable": true
+    },
+    {
+      "sha": "b57cf3d66f7916f5ece1f61caf85fd67f3562295",
+      "path": "app/docs/CAMBIOS-AUDITORIA-FORENSE-CANDIDATA-V91-20260708.md",
+      "reachable": true
+    },
+    {
+      "sha": "e0e6e54a9cb24e7f99ff99c1c3744d83bc51adf6",
+      "path": "app/docs/CAMBIOS-BACKEND-ADDENDUM-CANDIDATE-REVIEW-TYA-20260703.md",
+      "reachable": true
+    },
+    {
+      "sha": "f1c11bb1a786a8e33e7e3f5626e6e119991198d6",
+      "path": "app/docs/CAMBIOS-BACKEND-ADDENDUM-CHECKLIST-DECISION-CANDIDATA-CLAUDE-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "bd2960fcd16af0b17b263ac191066ee62728a4bb",
+      "path": "app/docs/CAMBIOS-BACKEND-ADDENDUM-CLAUDE-P0-PACKAGE-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "7d332c710049e1739e6555f538ba2577fb6eea2b",
+      "path": "app/docs/CAMBIOS-BACKEND-ADDENDUM-MICRO-PAQUETE-COMANDOS-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "84f780b4ab32e676da0483a615cd6f64ea8f3dde",
+      "path": "app/docs/CAMBIOS-BACKEND-ADDENDUM-PAQUETE-CORTO-ESTADO-PAULA-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "d7bde9f97617d61717b5c9a5187d7c3cf1cb11e9",
+      "path": "app/docs/CAMBIOS-BACKEND-ADDENDUM-V156-FAST-LANE-20260716.md",
+      "reachable": true
+    },
+    {
+      "sha": "b3f0efb9d3a843557b59d16bc1a54fbd5b71803e",
+      "path": "app/docs/CAMBIOS-BACKEND-ADDENDUM-V156-GATE-COMERCIAL-20260716.md",
+      "reachable": true
+    },
+    {
+      "sha": "833eed982994a4c114baa29c86ab18e11f3200c6",
+      "path": "app/docs/CAMBIOS-BACKEND-ADDENDUM-V79-WORKING-CANDIDATE-20260704.md",
+      "reachable": true
+    },
+    {
+      "sha": "bb0530e928e6e1f84829d2745e0b50291c41da2c",
+      "path": "app/docs/CAMBIOS-CLAUDE-CANDIDATE-FORENSIC-AUDIT-READINESS-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "a92029189c8ebdc1b60b60b63d67a63df15fcc16",
+      "path": "app/docs/CAMBIOS-CLAUDE-PACKAGE-ACUMULADO-P0-HR-VIVA-CONFIGURABILITY-PWA-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "7efb36942e06624a25858dd5d2826501c0738b3b",
+      "path": "app/docs/CAMBIOS-CLAUDE-PACKAGE-ADMIN-OPERATIVO-PHASE-A-20260707.md",
+      "reachable": true
+    },
+    {
+      "sha": "b998d82e35f9d2dacf189cf8aa7fa0dfae2671a4",
+      "path": "app/docs/CAMBIOS-CLAUDE-PACKAGE-INDEX-REUSABLE-BACKEND-PATTERNS-20260707.md",
+      "reachable": true
+    },
+    {
+      "sha": "514cd77600eecc79d1c9646b41ad50d3da434ba3",
+      "path": "app/docs/CAMBIOS-CLAUDE-PACKAGE-PROTOTIPO-GENERICO-FULL-BACKEND-FLOWS-ACADEMIA-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "0cc0f23c956153cf659b829b6d52477ea2ca7938",
+      "path": "app/docs/CAMBIOS-CLAUDE-PACKAGE-PROTOTIPO-GENERICO-HR-VIVA-CONFIGURABILITY-PWA-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "2d8dbe2fb00ca7a4d81a1b94b3307f1b282c101c",
+      "path": "app/docs/CAMBIOS-HR-SOURCE-SAFE-PROTECTED-CANDIDATES-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "ad4b67a32c6709e2b96271fbc23aa661c864bd31",
+      "path": "app/docs/CAMBIOS-PAQUETE-CLAUDE-COMPLETO-ACUMULADO-POST-SYNTHETIC-COVERAGE-20260708.md",
+      "reachable": true
+    },
+    {
+      "sha": "cc66e02ba6e11d7b8e6e4b6e374d06a6604a8715",
+      "path": "app/docs/CAMBIOS-PAQUETE-CLAUDE-CRITICO-REALDATA-PREVIEW-TYA-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "836a3a96011a960b5a750c81638fc9cca9b74358",
+      "path": "app/docs/CAMBIOS-PHASE-A-GO-DEV-CONDITIONAL-REQUEST-PACKAGE-TYA-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "b107e9ad740c551abb9afa5ab67143792b7f4802",
+      "path": "app/docs/CAMBIOS-PHASE-A-GO-DEV-DECISION-PACKAGE-TYA-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "718f218145b40f9ccea6dd8f47f93dbe40e6bfdc",
+      "path": "app/docs/CAMBIOS-PHASE-A-HUMAN-SMOKE-SINGLE-RUN-PACKAGE-TYA-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "acc42cf257560a67b43266e9f3dd787fe83723a5",
+      "path": "app/docs/CHECKLIST-DECISION-NUEVA-CANDIDATA-CLAUDE-PHASE-A-TYA-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "65da8995323593160a1bac781bbca3706590ccaf",
+      "path": "app/docs/CHECKPOINT-CANDIDATA-INCREMENTAL-POST-V99-EMPALME-PENDIENTE-20260711.md",
+      "reachable": true
+    },
+    {
+      "sha": "13601aab503a9a6e8d312662fff25d1b34e7dfe5",
+      "path": "app/docs/CHECKPOINT-R19-V156-GATE-COMERCIAL-20260716.md",
+      "reachable": true
+    },
+    {
+      "sha": "c7f54af11a7812d6e71c66344922d543b441d5a2",
+      "path": "app/docs/CLAUDE-ACUMULADO-ADDENDUM-CHECKLIST-DECISION-CANDIDATA-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "5081451fa1bfb636733eff7e258121950c355e83",
+      "path": "app/docs/CLAUDE-ADDENDUM-FALTANTES-PAQUETE-GENERICO-FULL-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "c4af5076a6de720efe2cfa885842bba32233cbea",
+      "path": "app/docs/CLAUDE-P0-PACKAGE-TYA-CONFIGURABILITY-HR-VIVA-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "8c367c032fb2ffb88a637d5b86482fbf83bd0338",
+      "path": "app/docs/CLAUDE-PACKAGE-ACCUMULATED-ANTI-REWORK-CXORBIA-20260710.md",
+      "reachable": true
+    },
+    {
+      "sha": "064f82bbb84ee1514857ff8f7687172965661e7d",
+      "path": "app/docs/CLAUDE-PACKAGE-ACCUMULATED-PHASE-A-TYA-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "190163e171b5f3d70ec25a70efd0a1623b947361",
+      "path": "app/docs/CLAUDE-PACKAGE-ACCUMULATOR-V79-PHASE-A-20260704.md",
+      "reachable": true
+    },
+    {
+      "sha": "3309255aae838f389b48198b74532ccd37dbe24d",
+      "path": "app/docs/CLAUDE-PACKAGE-ACUMULADO-P0-HR-VIVA-CONFIGURABILITY-PWA-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "efb0681195f0a1041befbaeb94ca6f531f863589",
+      "path": "app/docs/CLAUDE-PACKAGE-ADMIN-OPERATIVO-PHASE-A-20260707.md",
+      "reachable": true
+    },
+    {
+      "sha": "63eb7551f6131a20c21fd717d6aa1db1b523279e",
+      "path": "app/docs/CLAUDE-PACKAGE-CXORBIA-PROTOTYPE-ACCUMULATED-GENERIC-20260710.md",
+      "reachable": true
+    },
+    {
+      "sha": "c1d5e925c42f3261e29b6ad7ddd9fe5b585a86fb",
+      "path": "app/docs/CLAUDE-PACKAGE-GENERIC-POST-EMPALME-20260711.md",
+      "reachable": true
+    },
+    {
+      "sha": "96076c9f91cd93f70dcaf3c8adeb6edbf0485d77",
+      "path": "app/docs/CLAUDE-PACKAGE-INDEX-REUSABLE-BACKEND-PATTERNS-CXORBIA-20260707.md",
+      "reachable": true
+    },
+    {
+      "sha": "8cc6ec1144f29f1f1ce8a3fd52e49bc3366be9b4",
+      "path": "app/docs/CLAUDE-PACKAGE-INTEGRAL-ANTI-REWORK-CXORBIA-20260710.md",
+      "reachable": true
+    },
+    {
+      "sha": "f16c4908eb4223a554adea22187e2bc70169df2f",
+      "path": "app/docs/CLAUDE-PACKAGE-PROTOTIPO-GENERICO-FULL-BACKEND-FLOWS-ACADEMIA-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "669649c6db2d2cd716b7366280565aa038fafff5",
+      "path": "app/docs/CLAUDE-PACKAGE-PROTOTIPO-GENERICO-HR-VIVA-CONFIGURABILITY-PWA-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "34d22ead5cd9d1405f62a5536fe987e9f4aef033",
+      "path": "app/docs/CLAUDE-PACKAGE-UPDATED-INDEX-PHASE-A-20260707.md",
+      "reachable": true
+    },
+    {
+      "sha": "877fa34ff79eb6cbe3b017bf984b43703b02f57a",
+      "path": "app/docs/CONTINUIDAD-FINAL-POST-CHECKLIST-CANDIDATA-CXORBIA-TYA-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "54a17909668f3b2de76166f8ea6ffe37b269e6b1",
+      "path": "app/docs/CONTROLLED-DEV-AUTHORIZATION-PACKAGE-TYA-20260704.md",
+      "reachable": true
+    },
+    {
+      "sha": "a283fd69374cdfd70643898bb89934e655cf6181",
+      "path": "app/docs/DECISION-V114-NO-EMPALME-PAQUETE-COMPLETO-CLAUDE-20260714.md",
+      "reachable": true
+    },
+    {
+      "sha": "c2507c4c511855eddacf0ceca952ea4edddad270",
+      "path": "app/docs/DEV-IMPORT-DRY-RUN-PACKAGE-TYA-20260703.md",
+      "reachable": true
+    },
+    {
+      "sha": "efba79af45595aa8bd4bda7cbe62d5eb797995c4",
+      "path": "app/docs/DRIFT-GATE-FIX-POST-CLAUDE-PACKAGE-20260707.md",
+      "reachable": true
+    },
+    {
+      "sha": "cee0a6e0cf43630fad6f62f79d5b3f75b5acc9fe",
+      "path": "app/docs/FRONTEND-PENDINGS-ADDENDUM-CLAUDE-P0-PACKAGE-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "c6aac1b011a0c995a8e4adc8148263ab347aa6e8",
+      "path": "app/docs/LISTA-REVISION-CANDIDATA-P0-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "59b573cf2095d0733802f9df59e0e1a11297ac28",
+      "path": "app/docs/MICRO-PAQUETE-COMANDOS-LOCALES-READINESS-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "cb696e061e4a5ace22154adab0324f4699b2244e",
+      "path": "app/docs/NEXT-CANDIDATE-AUDIT-ACADEMIA-ADMIN-ACTIONS-20260708.md",
+      "reachable": true
+    },
+    {
+      "sha": "aefe8fd83b57002696f560bc859502208fb5a1c0",
+      "path": "app/docs/OPERATIVE-CANDIDATES-DEV-POLICY-DECISION-TYA-20260703.md",
+      "reachable": true
+    },
+    {
+      "sha": "6e31fc9c7df728d9731c2c717441db1744f89e8f",
+      "path": "app/docs/PAQUETE-CLAUDE-ACUMULADO-CRITICO-P0-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "2c7f984e21e32d887197358f04a4bfb6267ddb65",
+      "path": "app/docs/PAQUETE-CLAUDE-ACUMULADO-FRONTEND-V104-20260711.md",
+      "reachable": true
+    },
+    {
+      "sha": "6ffca0b3bcbe85afa76a54d1dea6b248060baf08",
+      "path": "app/docs/PAQUETE-CLAUDE-COMPLETO-ACUMULADO-POST-SYNTHETIC-COVERAGE-CXORBIA-20260708.md",
+      "reachable": true
+    },
+    {
+      "sha": "146df4ffe830ae46d772b8556aaac002f035ff1f",
+      "path": "app/docs/PAQUETE-CLAUDE-CORRECCIONES-CRITICAS-POST-SMOKE-R5-20260711.md",
+      "reachable": true
+    },
+    {
+      "sha": "0171a642f955cb7a06e88e5e6d6998841307992f",
+      "path": "app/docs/PAQUETE-CLAUDE-CRITICO-REALDATA-PREVIEW-TYA-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "251e7d8d106065848849ea45720acc9c4c58be2e",
+      "path": "app/docs/PAQUETE-CLAUDE-NETO-POST-V105-V106-20260711.md",
+      "reachable": true
+    },
+    {
+      "sha": "d3852b11fc7a9f5106336bfe6566ec1ba9894f05",
+      "path": "app/docs/PAQUETE-CLAUDE-P0-POST-V87-CXORBIA-TYA-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "9992f400f3542d26699f771cbd89ff884baba7a8",
+      "path": "app/docs/PAQUETE-CLAUDE-PENDIENTES-RC-V74-20260703.md",
+      "reachable": true
+    },
+    {
+      "sha": "68c4a38752194026d6285729c3e051da3e710a97",
+      "path": "app/docs/PAQUETE-CLAUDE-PHASE-A-20260704.md",
+      "reachable": true
+    },
+    {
+      "sha": "5826fc849212134c38d4b635000fc01a599d884f",
+      "path": "app/docs/PAQUETE-CLAUDE-V82-SOURCE-LOCK-PHASE-A-ACTUALIZADO-20260704.md",
+      "reachable": true
+    },
+    {
+      "sha": "9fd678120ec97f0206f8e916ab35a439ef4220e6",
+      "path": "app/docs/PAQUETE-CORTO-ESTADO-PAULA-PHASE-A-TYA-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "a2730da5d3f8454a1e774c1f438614cc825d3c8b",
+      "path": "app/docs/PAQUETE-EXCLUSIVO-CLAUDE-CORRECCION-V107-A-V108-20260712.md",
+      "reachable": true
+    },
+    {
+      "sha": "c22c9644453a20e37bf7efee6f3224ae3e40b208",
+      "path": "app/docs/PAQUETE-EXCLUSIVO-CLAUDE-R18D-P0-FINANZAS-PERIOD-20260715.md",
+      "reachable": true
+    },
+    {
+      "sha": "9f76045ba89f1e27d18a0e2781e75492f4d05885",
+      "path": "app/docs/PAQUETE-EXCLUSIVO-CLAUDE-V108-A-V109-20260712.md",
+      "reachable": true
+    },
+    {
+      "sha": "6c9dcedd9e6b6743cda65ad60b73958a41f9bc21",
+      "path": "app/docs/PAQUETE-EXCLUSIVO-CLAUDE-V109-A-V110-20260712.md",
+      "reachable": true
+    },
+    {
+      "sha": "8e2cfd23d9c392856c7a51fe5b60c6475df3b523",
+      "path": "app/docs/PAQUETE-INSTRUCCIONES-CLAUDE-DESDE-BACKEND-20260703.md",
+      "reachable": true
+    },
+    {
+      "sha": "6b92799e8b745aa7b62c237713fb7f6194fe6b24",
+      "path": "app/docs/PAQUETE-PARA-CLAUDE-CXORBIA-V66-20260702.md",
+      "reachable": true
+    },
+    {
+      "sha": "80d090c7ea497fefa670a3341471588d42f5cf3a",
+      "path": "app/docs/PENDIENTE-FRONTEND-CHECKLIST-DECISION-CANDIDATA-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "2505c3170c022f1e223a83c2cd4927fe94db1e2f",
+      "path": "app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-CANDIDATA-V91-20260708.md",
+      "reachable": true
+    },
+    {
+      "sha": "5f70ccc03636b5f7008583904ba6131fa9460db9",
+      "path": "app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-CLAUDE-CANDIDATE-FORENSIC-AUDIT-READINESS-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "ae3ed6d3b33214afd05062019020bd2166bf21ad",
+      "path": "app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-HR-SOURCE-SAFE-PROTECTED-CANDIDATES-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "b6749583c61ec567be3fcf64667604c70848eb83",
+      "path": "app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V151-CIERRE-COMERCIAL-20260716.md",
+      "reachable": true
+    },
+    {
+      "sha": "1ebeb98c65797f57339ad031cebed16c6f4be433",
+      "path": "app/docs/PENDIENTES-PROTOTIPO-ADDENDUM-V156-GATE-COMERCIAL-20260716.md",
+      "reachable": true
+    },
+    {
+      "sha": "a6acc50ce76aa41f9b409fbfbca42b14803b937b",
+      "path": "app/docs/PHASE-A-BLOCK-PROGRESS-TRACKER-ADDENDUM-V156-FAST-LANE-20260716.md",
+      "reachable": true
+    },
+    {
+      "sha": "3dbda972995f5781d81cb74185bf35234a5f79b8",
+      "path": "app/docs/PHASE-A-CLAUDE-CANDIDATE-FORENSIC-AUDIT-READINESS-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "bb95358086f751c2cd29a0d007c6b8bd70bd1baa",
+      "path": "app/docs/PHASE-A-GO-DEV-CONDITIONAL-REQUEST-PACKAGE-TYA-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "4cee0bdcbc35bbdc36ce3cd536e5d7ba6a56c570",
+      "path": "app/docs/PHASE-A-GO-DEV-DECISION-PACKAGE-TYA-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "5a158149ab516d32b70d22e81e7a42e95c75df64",
+      "path": "app/docs/PHASE-A-HR-SOURCE-SAFE-PROTECTED-CANDIDATES-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "62477b2b629b4e6976d747adac900270fb3a425d",
+      "path": "app/docs/PHASE-A-HUMAN-SMOKE-SINGLE-RUN-PACKAGE-TYA-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "9d7cb811243cd82eab86a2cd9745e566d649ff3f",
+      "path": "app/docs/PHASE-A-TRACKER-ADDENDUM-CHECKLIST-DECISION-CANDIDATA-CLAUDE-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "49fa9deca821893214f5391f1047baaa29c464b7",
+      "path": "app/docs/PHASE-A-TRACKER-ADDENDUM-CLAUDE-P0-PACKAGE-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "5f6d4cd998c6463c8631156e4f5c1acc64191c53",
+      "path": "app/docs/PHASE-A-TRACKER-ADDENDUM-PAQUETE-CORTO-ESTADO-PAULA-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "086087c1ce098452af2ea49995a2209538842304",
+      "path": "app/docs/RESUMEN-ADDENDUM-CLAUDE-CANDIDATE-FORENSIC-AUDIT-READINESS-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "a6e85231792d0ce2a3a75ead9235f96a4b93f7de",
+      "path": "app/docs/RESUMEN-ADDENDUM-HR-SOURCE-SAFE-PROTECTED-CANDIDATES-20260709.md",
+      "reachable": true
+    },
+    {
+      "sha": "b21c3fed73cba2a626ca6d85d5034225fc29ae3c",
+      "path": "app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V151-CIERRE-COMERCIAL-20260716.md",
+      "reachable": true
+    },
+    {
+      "sha": "c587cf3275719b176b1c8d626e0a0c42824521f0",
+      "path": "app/docs/RESUMEN-PARA-CLAUDE-ADDENDUM-V153-DOS-P0-20260716.md",
+      "reachable": true
+    },
+    {
+      "sha": "a9c93819e937ed0ba1556f95b0ef62653593aab6",
+      "path": "app/docs/SANITIZED-DEV-CANDIDATE-TYA-20260703.md",
+      "reachable": true
+    },
+    {
+      "sha": "adc3e86f43bde8ac886d95b5103793ca76e87c68",
+      "path": "app/docs/SOURCE-LOCK-CANDIDATA-V91-CONTROLADA-CXORBIA-20260708.md",
+      "reachable": true
+    },
+    {
+      "sha": "0e92795f84cf3d9ae2446808fffcbd5a1fdaf3a4",
+      "path": "app/docs/TEMPLATE-REPORTE-DECISION-CANDIDATA-CLAUDE-20260705.md",
+      "reachable": true
+    },
+    {
+      "sha": "df043e2939a6997e876564c34d12413301524c98",
+      "path": "app/docs/V156-ACTIONS-ARTIFACT-INDEX-20260716.json",
+      "reachable": true
+    },
+    {
+      "sha": "6a8a8b9c2607b2d8de6f6fb41ef52f6fc330f0da",
+      "path": "app/docs/V156-ACTIONS-ARTIFACT-INDEX-20260716.md",
+      "reachable": true
+    },
+    {
+      "sha": "714f2a9ac68eb04089281d57a6fcd0e3444bc572",
+      "path": "app/docs/V156-PAYLOAD-DIAGNOSTIC-20260716.json",
+      "reachable": true
+    },
+    {
+      "sha": "0c42eed3d65faa704bdb6cdbf5c837b9dde6e12a",
+      "path": "app/docs/V156-PAYLOAD-DIAGNOSTIC-20260716.md",
+      "reachable": true
+    },
+    {
+      "sha": "6a7e7f1c982679a0edae024f8ce77b764be40757",
+      "path": "app/docs/V156-TARGETED-ARTIFACT-CANDIDATES-20260716.json",
+      "reachable": true
+    },
+    {
+      "sha": "9ca02eb157b68346a90817c85805c4bb4883a69a",
+      "path": "app/docs/V156-TARGETED-ARTIFACT-CANDIDATES-20260716.md",
+      "reachable": true
+    },
+    {
+      "sha": "249bed99e564cac9c632b71b077261bb02c9bf48",
+      "path": "app/docs/V79-FRONTEND-CANDIDATE-EMPALME-20260704.md",
+      "reachable": true
+    },
+    {
+      "sha": "b21e8503c24504c84df248fdbf61686588b87d7a",
+      "path": "app/docs/V79-WORKING-CANDIDATE-SOURCE-LOCK-TYA-20260704.md",
+      "reachable": true
+    },
+    {
+      "sha": "496a23ae085007b6ee0c128859a9fbd1f5574fa7",
+      "path": "backend/adapters/hr-source-safe-to-protected-candidates.preview.mjs",
+      "reachable": true
+    },
+    {
+      "sha": "3d9c4079d45ecefdea846f133b47b1de437f66c6",
+      "path": "backend/config/phase-a-claude-candidate-forensic-audit-checklist.source-safe.json",
+      "reachable": true
+    },
+    {
+      "sha": "864e6a645d891a5131149745cc6c1eaf6e685ee2",
+      "path": "backend/config/phase-a-hr-source-safe-to-protected-candidates.source-safe.json",
+      "reachable": true
+    },
+    {
+      "sha": "07be48a2531df55f20ff669e6db66598ce9ea7f4",
+      "path": "backend/config/phase-a-ledger-payment-evidence-candidates-r14.source-safe.json",
+      "reachable": true
+    },
+    {
+      "sha": "1dda7fc8e9dcb843e017742e9afced5a2bc962fc",
+      "path": "backend/config/phase-a-ledger-payment-evidence-candidates-r14c.source-safe.json",
+      "reachable": true
+    },
+    {
+      "sha": "4511fc1c1e160a36800a635975067814f99fa14f",
+      "path": "backend/contracts/phase-a-claude-candidate-forensic-audit-readiness-v1.json",
+      "reachable": true
+    },
+    {
+      "sha": "a03fde04b920f553971b06a7b7513e2505bcbe7c",
+      "path": "backend/contracts/phase-a-go-dev-conditional-request-package-v1.json",
+      "reachable": true
+    },
+    {
+      "sha": "f146a878778727a61c2d6bf7e32c2e7024f1dfdc",
+      "path": "backend/contracts/phase-a-go-dev-decision-package-v1.json",
+      "reachable": true
+    },
+    {
+      "sha": "4727d4ab1695807cd2bfd4ac37940866c17b4883",
+      "path": "backend/contracts/phase-a-hr-source-safe-to-protected-candidates-v1.json",
+      "reachable": true
+    },
+    {
+      "sha": "409139ecd398ea646c9e6015c5aed1fbdee38ef8",
+      "path": "backend/contracts/phase-a-human-smoke-single-run-package-v1.json",
+      "reachable": true
+    },
+    {
+      "sha": "11218060dd36a78f5e46e503ddeab17e6272d778",
+      "path": "firebase/auth-dev-tools/package.json",
+      "reachable": true
+    },
+    {
+      "sha": "e6b6ea79755cb89b5fd1c2d97dd3ee781b3efd8d",
+      "path": "firebase/client-write-tools/package-lock.json",
+      "reachable": true
+    },
+    {
+      "sha": "6a244515d9731f85f17f1711a9308bffa454a7ed",
+      "path": "firebase/client-write-tools/package.json",
+      "reachable": true
+    },
+    {
+      "sha": "000a8c8706555f12c6ff6355b5022350f6f44caf",
+      "path": "firebase/client-write-tools/validate-migration-tya-package.mjs",
+      "reachable": true
+    },
+    {
+      "sha": "e5f4f477571bd86e1bef9a74124c0008389b85ba",
+      "path": "firebase/schema/migration-tya-package-v1.json",
+      "reachable": true
+    },
+    {
+      "sha": "8048d9e30ea177ca33cf7a6876fb6a4ad806691f",
+      "path": "tools/migration/tya-build-dev-import-dry-run-package.mjs",
+      "reachable": true
+    },
+    {
+      "sha": "ca6e280c8c0f7e8f7c6fedd1043a4e97238083f2",
+      "path": "tools/migration/tya-build-liq-candidate-review.mjs",
+      "reachable": true
+    },
+    {
+      "sha": "a61ac929de4ac5fb58a5f43d5ae228a1465fe8dc",
+      "path": "tools/migration/tya-build-safe-write-plan-from-candidate.mjs",
+      "reachable": true
+    },
+    {
+      "sha": "0a3f6faffdd4de539a4a612d8c5c865f7d92e626",
+      "path": "tools/migration/tya-build-sanitized-dev-candidate.mjs",
+      "reachable": true
+    },
+    {
+      "sha": "383e2edaac3dbc0f359a55c8b37219bc2e9c9f20",
+      "path": "tools/migration/tya-operative-candidates-dev-policy-decision.mjs",
+      "reachable": true
+    },
+    {
+      "sha": "14a1b3dacb86dc957ec32c93a758b444b3e6011a",
+      "path": "tools/qa/verify-fast-lane-promotion-policy.mjs",
+      "reachable": true
+    },
+    {
+      "sha": "c696281cf063845a56a21029d986e5578cd78f26",
+      "path": "tools/quality/tya-local-output-packager.mjs",
+      "reachable": true
+    },
+    {
+      "sha": "6bd8d66eecec848db38de9e52fa985b7f9a9bce9",
+      "path": "tools/release/tya-claude-candidate-forensic-audit-prepare.mjs",
+      "reachable": true
+    },
+    {
+      "sha": "4afb88b7da4becda93ade1976090bc0b8f2af8c8",
+      "path": "tools/release/tya-hr-source-safe-protected-candidates-validate.mjs",
+      "reachable": true
+    },
+    {
+      "sha": "6b7814496e899ca88129b25be92a638745f11c27",
+      "path": ".github/workflows/v156-artifact-filter-persist.yml",
+      "reachable": true
+    },
+    {
+      "sha": "6b2f61382e5a2282cdf111184b90bd8b46ba5145",
+      "path": ".github/workflows/v156-atomic-recovery-pr-executor.yml",
+      "reachable": true
+    },
+    {
+      "sha": "7228441b7c3c619a15a30abf1beca5be135421e1",
+      "path": ".github/workflows/v156-atomic-recovery-pr-executor.yml",
+      "reachable": true
+    },
+    {
+      "sha": "bc4bdae8bc11e12f9ecb71aab2cc9b8c8059c5b5",
+      "path": ".github/workflows/v156-atomic-recovery-pr-executor.yml",
+      "reachable": true
+    },
+    {
+      "sha": "5688d51f96a69dc28ea075f80dd4db774f1fe0bc",
+      "path": ".github/workflows/v156-atomic-recovery.yml",
+      "reachable": true
+    },
+    {
+      "sha": "9e3ebe8b4364ba65d517d490389d15a5b7e673f5",
+      "path": ".github/workflows/export-current-app-for-finalization.yml",
+      "reachable": true
+    },
+    {
+      "sha": "ec62d16c5f929598cde10d5d10cc3be9913f4810",
+      "path": ".github/workflows/export-current-app-for-finalization.yml",
+      "reachable": true
+    },
+    {
+      "sha": "b696db07f53c7a5fd83652273b28f06c5861ec3f",
+      "path": ".github/workflows/diagnose-v156-apply.yml",
+      "reachable": true
+    },
+    {
+      "sha": "c0d7701dc3ab3cea87cd48fa7b863ad2b5377323",
+      "path": ".cxorbia/v156-promotion.patch.gz.b64",
+      "reachable": true
+    },
+    {
+      "sha": "085939b8ca2c7ea9898951116558074bea213231",
+      "path": ".github/workflows/v156-promote-temp.yml",
+      "reachable": true
+    },
+    {
+      "sha": "1266d9954e78a6ea36fc4aa879723243138d4bc5",
+      "path": ".github/workflows/v156-promote-temp.yml",
+      "reachable": true
+    },
+    {
+      "sha": "4f72e9ff13e30ecb34c51c366582f8748814b811",
+      "path": ".github/workflows/v156-promote-temp.yml",
+      "reachable": true
+    },
+    {
+      "sha": "f1023068a9a52afd2a4be87ac36c66920af3afe9",
+      "path": "app/docs/AUDITORIA-FORENSE-CANDIDATA-V131-20260714.md",
+      "reachable": true
+    },
+    {
+      "sha": "21a012a4078d31eda1f8e4dc3974d9776f27b210",
+      "path": "app/docs/CAMBIOS-CLAUDE-CANDIDATE-COMPLETO-POST-SYNTHETIC-COVERAGE-20260708.md",
+      "reachable": true
+    },
+    {
+      "sha": "362ca8633ea71eb5fc750f20ef8a5900d64d4d87",
+      "path": "app/docs/REPORTE-FORENSE-PAQUETE-GENERICO-20260711.md",
+      "reachable": true
+    },
+    {
+      "sha": "e3ce790d7354d2f435504c8f6c8b7ca1628cf659",
+      "path": "app/docs/AUDITORIA-FORENSE-CANDIDATA-V131-20260714.md",
+      "reachable": true
+    },
+    {
+      "sha": "6d8ece53a4305a4709432866ddcf73a604bebaf7",
+      "path": "app/docs/PAQUETE-CLAUDE-CORRECCIONES-CRITICAS-POST-SMOKE-R5-20260711.md",
+      "reachable": true
+    },
+    {
+      "sha": "78ce00808f061a2976244ca323d07259592e4506",
+      "path": "app/docs/CAMBIOS-CLAUDE-CANDIDATE-COMPLETO-POST-SYNTHETIC-COVERAGE-20260708.md",
+      "reachable": true
+    },
+    {
+      "sha": "de50cf951cad1feb08718d12094487f6b9a1400b",
+      "path": "app/docs/CAMBIOS-CLAUDE-CANDIDATE-COMPLETO-POST-SYNTHETIC-COVERAGE-20260708.md",
+      "reachable": true
+    },
+    {
+      "sha": "9929c15657e127661c39106d931ae7e067e8d792",
+      "path": "app/docs/CLAUDE-PACKAGE-INDEX-REUSABLE-BACKEND-PATTERNS-CXORBIA-20260707.md",
+      "reachable": true
+    },
+    {
+      "sha": "df09d4063f7d21d91709b8b51536c43bf5202da1",
+      "path": "PAQUETE-PARA-CLAUDE-PENDIENTES-PROTOTIPO-V58.md",
+      "reachable": true
+    },
+    {
+      "sha": "3cba2794e2fe3804d44b5c951257fd06f0d54329",
+      "path": "RESUMEN-PARA-CLAUDE-ADDENDUM-EMULADOR-PAQUETE.md",
+      "reachable": true
+    },
+    {
+      "sha": "fa4f840265b5d4ee27862f219e122e3de672f402",
+      "path": "firebase/admin-tools/package.json",
+      "reachable": true
+    },
+    {
+      "sha": "aa90197d8902886c8b9cd84f5876cd1ae45ba309",
+      "path": "firebase/emulator-rules/package.json",
+      "reachable": true
+    },
+    {
+      "sha": "a62d08bf12e2c835d83e4e4157f337c6788b1135",
+      "path": "firebase/client-write-tools/package.json",
+      "reachable": true
+    }
+  ],
+  "largeCandidateBlobs": [
+    {
+      "sha": "df043e2939a6997e876564c34d12413301524c98",
+      "path": "app/docs/V156-ACTIONS-ARTIFACT-INDEX-20260716.json",
+      "size": 14502864,
+      "reachable": true
+    },
+    {
+      "sha": "6a8a8b9c2607b2d8de6f6fb41ef52f6fc330f0da",
+      "path": "app/docs/V156-ACTIONS-ARTIFACT-INDEX-20260716.md",
+      "size": 2656679,
+      "reachable": true
+    }
+  ],
+  "unreachableBlobCount": 0
+}

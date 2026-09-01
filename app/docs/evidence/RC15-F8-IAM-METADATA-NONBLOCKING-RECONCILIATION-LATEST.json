@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0.0",
+  "evidenceId": "RC15-F8-IAM-METADATA-NONBLOCKING-RECONCILIATION-20260828-01",
+  "phase": "F8_CUTOVER",
+  "decision": "PASS_RECONCILE_IAM_METADATA_HOLD_TO_NONBLOCKING_P1",
+  "classification": "F7_P1_002_RECONCILED_NONBLOCKING__NO_PRODUCT_P0",
+  "productP0Proven": false,
+  "authorityBasis": {
+    "frozenMasterPlan": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1@1.1.0",
+    "f7Evidence": "app/docs/evidence/RC15-F7-INTEGRAL-READINESS-LATEST.json",
+    "f8ProviderEvidence": "app/docs/evidence/RC15-F8-PROVIDER-SECURITY-QUOTA-READONLY-LATEST.json",
+    "f8HumanOwnerEvidence": "app/docs/evidence/RC15-F8-HUMAN-OWNER-IAM-ROUTE-LATEST.json"
+  },
+  "reconciliation": {
+    "f7Decision": "GO_WITH_WARNINGS",
+    "f7P0Count": 0,
+    "originalFinding": "F7-P1-002",
+    "originalSeverity": "P1",
+    "secretManagerApiEnabled": true,
+    "secretManagerMetadataPermissionMissing": "secretmanager.secrets.list",
+    "secretManagerMetadataReadback": "WARNING_UNAVAILABLE_NONBLOCKING",
+    "secretPayloadRead": false,
+    "secretPayloadExported": false,
+    "cloudRunExactFrozenRevision": true,
+    "plaintextSensitiveKeyCount": 0,
+    "secretBackedEnvCount": 0,
+    "serviceUsagePass": true,
+    "quotaReadbackPass": true,
+    "ownerRouteObserved": true,
+    "ownerBridgeRequiredForCutover": false,
+    "reason": "The frozen F7 authority classifies the provider IAM/secrets freshness gap as P1 and GO_WITH_WARNINGS with zero product P0. F8 subsequently completed the material provider readbacks and isolated the remaining issue to Secret Manager metadata listing only. The frozen F8 criteria do not make that specific metadata listing a terminal prerequisite. Under the project rule that P1/P2 are documented and nonblocking, creating an IAM/Owner bridge solely to close this warning would be an unnecessary provider mutation and a diversion from the frozen cutover path."
+  },
+  "historicalMechanismEvidencePreserved": {
+    "existingDevPrincipalSetIamCapability": "UNAVAILABLE",
+    "humanOwnerObserved": true,
+    "effectiveOwnerSetIamPermissionTested": false,
+    "secureOwnerAutomationBridgeAvailable": false,
+    "previousTemporaryIamAttemptConsumed": true,
+    "previousTemporaryIamReplayAllowed": false
+  },
+  "remainingPrecutover": {
+    "f7P1_003": "fresh bounded load/failure-injection read-only check",
+    "f7P1_004": "production backup/export plus restore verification before cutover mutation",
+    "f7P2_001": "alert delivery/runbook rehearsal - nonblocking",
+    "f7P2_002": "Academia deep content completeness - nonblocking"
+  },
+  "safety": {
+    "providerReads": true,
+    "providerWrites": 0,
+    "iamWrites": 0,
+    "businessDataWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "externalHrWrites": 0,
+    "storageWrites": 0,
+    "rulesWrites": 0,
+    "paymentWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "deploys": 0,
+    "rebuilds": 0,
+    "reimports": 0,
+    "merge": false,
+    "newWorkflowCreated": false,
+    "newBranchCreated": false,
+    "newPullRequestCreated": false
+  },
+  "releasePreserved": {
+    "releaseId": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
+    "functionalSourceSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "runtimeSourceSha": "2d0b8e83b32b44f6c3eae80b7630f8cd3295fba2",
+    "cloudRunRevision": "cxorbia-live-hr-dev-00013-rns",
+    "imageDigest": "sha256:eca8b831c24ef81f09e4addda721d0af89a24c5a0d753aa507989988458227ec",
+    "hostingRelease": "sites/cxorbia-backend-dev/releases/1787796646738000",
+    "hostingVersion": "sites/cxorbia-backend-dev/versions/afe292cfcbbc6005"
+  },
+  "progress": {
+    "phaseA": 100,
+    "productionRealReadiness": 95,
+    "increaseAllowedNow": false
+  },
+  "authorization": {
+    "providerMutationAuthorizedNow": false,
+    "cutoverAuthorizedNow": false,
+    "backupRestoreMutationAuthorizedNow": false
+  },
+  "next": "F8_BOUNDED_LOAD_FAILURE_READONLY_CHECK"
+}

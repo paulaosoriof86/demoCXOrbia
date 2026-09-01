@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "cxorbia.rc15.m3.mechanism-certification.v3",
+  "generatedAt": "2026-08-25T17:13:00-06:00",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
+  "certifiedSourceHead": "6d31740c43f9ae98dd9f66a8b42da0affaf0bb80",
+  "certifyingRunId": 32909591852,
+  "block": "M3_MECHANISM_CERTIFICATION",
+  "status": "MECHANISM_CERTIFIED_PASS",
+  "certified": true,
+  "phaseA": {"completed": 98, "pending": 2, "total": 100},
+  "defectsClosed": [
+    "M3_CANONICAL_LOCK_DRIFT",
+    "M3_HISTORICAL_WORKFLOW_PUSH_NOISE",
+    "M3_LEGACY_CHECKPOINT_FALSE_FUNCTIONAL_DRIFT",
+    "M3_PROVIDER_PREFLIGHT_WRONG_PHASE_AUTOTRIGGER",
+    "M3_CERT_GATE_SELF_MISMATCH"
+  ],
+  "certifyingEvidence": {
+    "sourceOnlyGateWorkflow": ".github/workflows/cxorbia-phase-a-live-checkpoint.yml",
+    "runId": 32909591852,
+    "runConclusion": "success",
+    "steps": {
+      "sourceSyntax": "PASS",
+      "masterPlanFreeze": "PASS",
+      "canonicalAuthority": "PASS",
+      "stateSyncM3": "PASS",
+      "continuityM3": "PASS",
+      "phaseACurrentCheckpoint": "PASS"
+    },
+    "automaticPushWorkflowsObservedAtCertifiedHead": 1,
+    "providerPreflightAutoRunObserved": false,
+    "providerWritesObserved": 0,
+    "dataWritesObserved": 0,
+    "authWritesObserved": 0,
+    "deploysObserved": 0,
+    "mergeObserved": false
+  },
+  "certifiedControls": {
+    "oneAtomicGitCommitPerM3Materialization": true,
+    "remoteHeadReadbackRequired": true,
+    "onlyM3ValidatorsAreAuthority": true,
+    "functionalSourceLockSeparatedFromControlPlaneHead": true,
+    "m3CheckpointIsSourceOnly": true,
+    "m3CheckpointProviderAccess": false,
+    "providerPreflightIsManualInertUntilM4": true,
+    "historicalWorkflowPushNoiseContained": true,
+    "conversationInterruptionDoesNotResetState": true,
+    "m1M2RemainClosed": true,
+    "noUnboundedAudit": true
+  },
+  "certificationGates": {
+    "atomicCommitApplied": true,
+    "remoteHeadReadbackMatches": true,
+    "m3SourceOnlyWorkflowPass": true,
+    "masterPlanFreezeGatePass": true,
+    "canonicalAuthorityGatePass": true,
+    "stateSyncM3GatePass": true,
+    "continuityM3GatePass": true,
+    "phaseACurrentCheckpointPass": true,
+    "providerPreflightAutoRunAbsent": true,
+    "providerSideEffectsObserved": false
+  },
+  "safety": {"providerWrites":0,"dataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"rulesWrites":0,"cloudBuilds":0,"cloudRunUpdates":0,"hostingDeploys":0,"makeCalls":0,"geminiCalls":0,"payments":0,"g2bExecutions":0,"merge":false,"frontendFunctionalChanges":0},
+  "decision": "MECHANISM_CERTIFIED_PASS_CONTINUE_FINITE_M3_QUEUE",
+  "next": "M3_F1_FINITE_TOMBSTONE_QUEUE_REMAINING_28"
+}

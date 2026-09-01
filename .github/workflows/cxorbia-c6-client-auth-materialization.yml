@@ -1,0 +1,139 @@
+name: CXOrbia C6 Client Access And Unified Phase A Runtime
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/config/corte6-client-auth-materialization-request.json'
+
+permissions:
+  contents: write
+  statuses: write
+  id-token: write
+
+concurrency:
+  group: cxorbia-c6-client-access-unified-runtime
+  cancel-in-progress: false
+
+jobs:
+  access-and-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      GCP_PROJECT_ID: cxorbia-backend-dev
+      ROOT_URL: https://cxorbia-backend-dev.web.app
+      BRANCH: docs-tya-v6-v71-audit
+      REQUEST_PATH: backend/config/corte6-client-auth-materialization-request.json
+      REQUEST_COPY: /tmp/cxorbia-c6-client-access-request.json
+      OUT: .tmp/c6-client-access-repair
+      PRIVATE_DIR: .tmp/c6-client-access-private
+      PRIVATE_SNAPSHOT: .tmp/c6-client-access-private/private-snapshot.json
+      PRIVATE_E2E: .tmp/c6-client-access-private/private-e2e.json
+
+    steps:
+      - name: Checkout triggering commit only to capture request
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Capture request and pin immutable source SHA
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp "$REQUEST_PATH" "$REQUEST_COPY"
+          SOURCE_SHA="$(node -e "const r=require(process.env.REQUEST_COPY);if(r.schemaVersion!=='cxorbia.c6.client-access-runtime-request.v3')throw new Error('REQUEST_SCHEMA');if(!/^[a-f0-9]{40}$/.test(r.sourceHeadSha||''))throw new Error('SOURCE_HEAD_SHA_INVALID');process.stdout.write(r.sourceHeadSha)")"
+          REQUEST_ID="$(node -e "const r=require(process.env.REQUEST_COPY);process.stdout.write(String(r.requestId||''))")"
+          test -n "$REQUEST_ID"
+          git fetch --no-tags origin "$SOURCE_SHA"
+          git checkout --detach "$SOURCE_SHA"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          echo "source_sha=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
+          echo "request_id=$REQUEST_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Authenticate existing Firebase DEV project
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+
+      - name: Install transient provider and browser tooling
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT" "$PRIVATE_DIR"
+          chmod 700 "$PRIVATE_DIR"
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null
+
+      - name: Execute access transaction and single unified runtime authority
+        id: execution
+        continue-on-error: true
+        run: |
+          set +e
+          node tools/qa/cxorbia-c6-client-access-runtime-orchestrator.mjs "$REQUEST_COPY"
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Persist sanitized evidence and consume one-shot request atomically
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "$OUT/result.json"
+          cp "$OUT/result.json" /tmp/cxorbia-c6-client-access-result.json
+          SOURCE_SHA="${{ steps.source.outputs.source_sha }}"
+          REQUEST_ID="${{ steps.source.outputs.request_id }}"
+          git fetch origin "$BRANCH"
+          git checkout -B "$BRANCH" "origin/$BRANCH"
+          node <<'NODE'
+          const fs=require('fs');
+          const path=require('path');
+          const result=JSON.parse(fs.readFileSync('/tmp/cxorbia-c6-client-access-result.json','utf8'));
+          const requestPath=process.env.REQUEST_PATH;
+          const request=JSON.parse(fs.readFileSync(requestPath,'utf8'));
+          if(request.requestId!==process.env.REQUEST_ID)throw new Error('REQUEST_ID_CHANGED_DURING_RUN');
+          if(request.sourceHeadSha!==process.env.SOURCE_SHA)throw new Error('SOURCE_SHA_CHANGED_DURING_RUN');
+          if(request.enabled!==true||request.consumed!==false)throw new Error('REQUEST_STATE_CHANGED_DURING_RUN');
+          const pass=result.decision==='PASS_C6_ACCESS_AND_PHASE_A_UNIFIED_RUNTIME';
+          const accessPass=result.accessTransaction?.decision==='PASS_C6_CLIENT_ACCESS_TRANSACTION'||result.accessTransactionPassed===true;
+          const target=pass
+            ? 'app/docs/evidence/CORTE6-ACCESS-AND-PHASE-A-UNIFIED-RUNTIME-LATEST.json'
+            : accessPass
+              ? 'app/docs/evidence/CORTE6-PHASE-A-RUNTIME-HOLD-AFTER-ACCESS-PASS-LATEST.json'
+              : 'app/docs/evidence/CORTE6-ACCESS-TRANSACTION-FAILURE-LATEST.json';
+          fs.mkdirSync(path.dirname(target),{recursive:true});
+          fs.writeFileSync(target,JSON.stringify(result,null,2)+'\n','utf8');
+          request.enabled=false;
+          request.consumed=true;
+          request.status=pass?'consumed_pass':accessPass?'consumed_runtime_hold':'consumed_access_fail';
+          request.consumedAt=new Date().toISOString();
+          request.decision=result.decision;
+          request.failedStage=result.failedStage||null;
+          request.nextGate=pass?'CLOUD_V6_ACCUMULATIVE_AUDIT':'STOP_RETRY_CLASSIFIED_ROOT_CAUSE_REQUIRED';
+          fs.writeFileSync(requestPath,JSON.stringify(request,null,2)+'\n','utf8');
+          fs.writeFileSync('/tmp/cxorbia-evidence-path',target+'\n','utf8');
+          NODE
+          EVIDENCE_PATH="$(cat /tmp/cxorbia-evidence-path)"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$REQUEST_PATH" "$EVIDENCE_PATH"
+          git commit -m 'evidence: C6 access transaction and unified Phase A runtime result'
+          git push origin "HEAD:$BRANCH"
+        env:
+          SOURCE_SHA: ${{ steps.source.outputs.source_sha }}
+          REQUEST_ID: ${{ steps.source.outputs.request_id }}
+
+      - name: Cleanup private material
+        if: always()
+        run: rm -rf "$PRIVATE_DIR" "$REQUEST_COPY"
+
+      - name: Enforce final result
+        if: always()
+        run: test "${{ steps.execution.outputs.exit_code }}" = "0"

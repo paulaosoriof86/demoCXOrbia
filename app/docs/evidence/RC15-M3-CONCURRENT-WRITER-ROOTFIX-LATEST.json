@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "cxorbia.rc15.m3.concurrent-writer-rootfix.v3",
+  "generatedAt": "2026-08-26T09:22:00-06:00",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
+  "status": "VALID_INERT_YAML_ROOTFIX_PENDING_CLEAN_PROBE",
+  "provenDirectWriter": {"workflow":".github/workflows/cxorbia-phase-a-live-hr-read-probe.yml","runId":32917331228,"botCommit":"f164110bfe09fc817a451e9e3bb6f4503578c164","contained":true},
+  "secondaryRootCause": {"invalidInertYamlProven":true,"invalidPattern":"run scalar contained an unquoted colon after echo","effect":"GitHub created failed zero-job workflow runs on pushes despite workflow_dispatch-only intent","cleanProbeRunExample":32984431904,"jobsObserved":0},
+  "repair": {"historicalWorkflowCount":22,"validInertBlobSha":"5e33e90c4498f8f6bbbd8a0dda4d79a1ae393c96","workflowDispatchOnly":true,"contentsReadOnly":true,"jobAlwaysFalse":true,"yamlRunUsesBlockScalar":true,"canonicalValidatorRequiresExactValidInertContract":true},
+  "safety": {"providerWrites":0,"dataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"rulesWrites":0,"hostingDeploys":0,"cloudRunDeploys":0,"makeCalls":0,"geminiCalls":0,"payments":0,"merge":false,"frontendFunctionalChanges":0},
+  "next": "CLEAN_PROBE_AFTER_VALID_INERT_YAML_ROOTFIX"
+}

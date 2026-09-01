@@ -1,0 +1,159 @@
+{
+  "schemaVersion": "cxorbia.rc15.f10.hr-kpi-freshness-incident.v1.1",
+  "date": "2026-08-29",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "phase": "F10_PERMANENT_OPERATING_MODEL",
+  "incidentId": "F10-HR-KPI-FRESHNESS-20260829-01",
+  "status": "OPEN_P1_SOURCE_REPAIRED_PENDING_PREDEPLOY_AND_DEPLOY",
+  "productP0Proven": false,
+  "releaseHistoryReopened": false,
+  "supersedesConclusionOnly": "CHECKPOINT-OPERATIVO-CXORBIA-TYA-F10-LIVE-DYNAMIC-HR-20260829.md claim that run 33257681796 proved current-source freshness",
+  "trigger": "Owner compared Dashboard KPIs against the Google Sheet visible on 2026-08-29 and found current row/state differences.",
+  "priorRun": {
+    "runId": 33257681796,
+    "artifactId": 9716340234,
+    "workflowConclusion": "failure",
+    "runnerStatus": "HOLD_READONLY_POST_GATES",
+    "adminShopperSubscope": "produced browser/runtime evidence",
+    "client": "HOLD_TIMEOUT",
+    "freshnessVerdict": "DEMOTED_TO_INTERNAL_SNAPSHOT_SELF_CONSISTENCY_ONLY"
+  },
+  "observedPlatformSnapshotBeforeRepair": {
+    "periodKey": "2026-08",
+    "total": {"all": 44, "GT": 34, "HN": 10},
+    "sinAgendar": {"all": 3, "GT": 2, "HN": 1},
+    "realizadas": {"all": 31, "GT": 25, "HN": 6},
+    "pendRealizar": {"all": 13, "GT": 9, "HN": 4},
+    "cuestPend": {"all": 0},
+    "sinSubmitir": {"all": 1, "GT": 1, "HN": 0},
+    "liquidadas": {"all": 0},
+    "operationalSummary": {
+      "questionnaireCompleted": 31,
+      "submitted": 30,
+      "liquidationCandidates": 30,
+      "paymentConfirmed": 0
+    }
+  },
+  "independentFreshProviderReconciliation": {
+    "evidence": "app/docs/evidence/RC15-F10-FRESH-HR-SEMANTIC-ADJUDICATION-LATEST.json",
+    "runId": 33281688280,
+    "artifactId": 9723170395,
+    "workflowConclusion": "success",
+    "freshGateDecision": "PASS_F10_FRESH_HR_ROW_LEVEL_RECONCILIATION",
+    "revision": "b7bc89176161a8a1b83e3d33098634ae77a5a8bc3f6f44ee7c749e2d11da598d",
+    "sourceReadAt": "2026-08-29T23:44:58.827Z",
+    "cacheOrigin": "runtime_refresh",
+    "periodKey": "2026-08",
+    "rawOperationalEvidence": {
+      "total": {"all": 44, "GT": 34, "HN": 10},
+      "sinAgendar": {"all": 4, "GT": 3, "HN": 1},
+      "realizadas": {"all": 30, "GT": 24, "HN": 6},
+      "pendRealizar": {"all": 14, "GT": 10, "HN": 4},
+      "cuestPend": {"all": 4, "GT": 4, "HN": 0},
+      "sinSubmitir": {"all": 1, "GT": 1, "HN": 0},
+      "submitted": {"all": 30, "GT": 24, "HN": 6},
+      "liquidationCandidates": {"all": 30, "GT": 24, "HN": 6},
+      "liquidationConfirmed": {"all": 0},
+      "paymentConfirmed": {"all": 0}
+    },
+    "duplicateRowKeys": 0,
+    "canonicalFacetMismatchCountAgainstIndependentR20": 0,
+    "freshnessVerdict": "PROVEN_INDEPENDENTLY_FOR_THIS_REVISION"
+  },
+  "rootCauseAdjudication": [
+    {
+      "plane": "QA_MECHANISM",
+      "code": "SELF_PARITY_NOT_INDEPENDENT_FRESHNESS",
+      "status": "CONFIRMED_MECHANISM_DEFECT",
+      "impact": "The earlier Admin/Shopper QA could certify an internally consistent snapshot without proving same-moment Google Sheets freshness.",
+      "disposition": "Future certification must use forced provider freshness plus revision/sourceReadAt and compare against the same revision."
+    },
+    {
+      "plane": "READ_MODEL_RUNTIME",
+      "code": "STALE_WHILE_REVALIDATE_CAN_RETURN_OLD_CACHE",
+      "status": "CONFIRMED_GENERAL_RISK_NOT_CAUSE_OF_OBSERVED_DELTA_AT_FRESH_REVISION",
+      "impact": "Ordinary reads remain insufficient proof of continuously changing operational KPIs.",
+      "disposition": "Keep fresh=1/revision gate for certification."
+    },
+    {
+      "plane": "PRODUCT_READ_MODEL",
+      "code": "BACKWARD_LIFECYCLE_PROMOTION_USED_AS_VISIBLE_OPERATIONAL_EVIDENCE",
+      "status": "CONFIRMED_ROOT_CAUSE",
+      "activePath": [
+        "backend/runtime/hr-live-service/server.mjs",
+        "app/adapters/tya-live-source-inplace-apply.js",
+        "app/adapters/tya-cumulative-read-model-v2.js",
+        "app/adapters/tya-canonical-state-semantics-v2.js",
+        "app/adapters/tya-c6-domain-consistency-bridge.js",
+        "app/modules/dashboard.js"
+      ],
+      "impact": "Submit evidence promoted questionnaire and realization lifecycle milestones backward, hiding direct HR evidence gaps in visible operational KPIs.",
+      "rowEvidence": ["AGOSTO 26!13", "AGOSTO 26!16", "AGOSTO 26!18", "AGOSTO 26!22", "AGOSTO 26!24"],
+      "disposition": "Canonical lifecycle inference is preserved separately; visible operational KPIs now use direct milestone evidence in the F10 adapter successor."
+    },
+    {
+      "plane": "PRODUCT_READ_MODEL",
+      "code": "LIQUIDATION_CANDIDATE_VS_CONFIRMED_LIQUIDATION_LABELING",
+      "status": "ADJUDICATED_NOT_DATA_LOSS",
+      "impact": "The source has 30 submitted/liquidation candidates and 0 confirmed liquidations. The existing Liquidadas bucket is correctly confirmed-only, but candidates are not separately visible in the frozen Dashboard module.",
+      "disposition": "Keep candidate and confirmed liquidation separate. Expose candidate count later through the authorized frontend semantic lane; never make Liquidadas mean candidates."
+    }
+  ],
+  "supersededEarlierPrimaryTargetHypothesis": {
+    "files": ["app/core/tya-phase-a-source-safe-preview.js", "app/core/data.js"],
+    "decision": "DO_NOT_PATCH_FOR_THIS_INCIDENT",
+    "reason": "They are not the primary active live path responsible for the reproduced F10 delta; approved core lineage remains preserved."
+  },
+  "sourceRepair": {
+    "evidence": "app/docs/evidence/RC15-F10-OPERATIONAL-EVIDENCE-SOURCE-GATE-LATEST.json",
+    "atomicRunId": 33283725070,
+    "atomicArtifactId": 9723747009,
+    "workflowConclusion": "success",
+    "runnerStatus": "APPLIED_AND_VERIFIED",
+    "functionalCommit": "6392736070dcf34d24f9b27b8bb1d0ecbcf116b0",
+    "path": "app/adapters/tya-canonical-state-semantics-v2.js",
+    "gitBlob": "941051c96a26017363acfc72f7e88edbe70c68ba",
+    "sha256": "e832759e03238559617b71daa4daa52a00b2c6dbd2d2266e6df0ae391f853b2e",
+    "decision": "PASS_F10_SOURCE_PATCH_AND_APPROVED_MODULE_LINEAGE_INTACT__PREDEPLOY_HOLD",
+    "moduleFilesChanged": 0,
+    "coreFilesChanged": 0,
+    "entrypointChanged": false,
+    "appJsChanged": false,
+    "deployed": false
+  },
+  "moduleReclassificationAfterSourceRepair": {
+    "Dashboard": "SOURCE_READ_MODEL_REPAIRED_APPROVED_MODULE_BLOB_PRESERVED__PREDEPLOY_BROWSER_PENDING",
+    "HRSource": "APPROVED_MODULE_BLOB_PRESERVED__OPERATIONAL_EVIDENCE_FACADE_SOURCE_READY",
+    "Periodos": "APPROVED_MODULE_BLOB_PRESERVED__OPERATIONAL_EVIDENCE_FACADE_SOURCE_READY__P1_CONTEXT_LABEL_SEPARATE",
+    "Historico": "APPROVED_MODULE_BLOB_PRESERVED__CANONICAL_LIFECYCLE_PRESERVED_AND_OPERATIONAL_SUMMARY_SEPARATED",
+    "Visitas": "V174_APPROVED_BLOB_PRESERVED__OPERATIONAL_EVIDENCE_FACADE_SOURCE_READY",
+    "Postulaciones": "V174_APPROVED_BLOB_PRESERVED__SOURCE_READY",
+    "ReservasAsignacion": "APPROVED_BLOB_PRESERVED_FAIL_CLOSED_WRITES__SOURCE_READY",
+    "Shoppers": "AUTHORIZED_SUCCESSOR_BLOB_PRESERVED__CURRENT_VISIT_EVIDENCE_FACADE_SOURCE_READY",
+    "Finanzas": "CLOSED_PERIOD_FINANCIAL_RECONCILIATION_REMAINS_SEPARATE_PASS__CANDIDATE_AND_CONFIRMED_LIQUIDATION_REMAIN_DISTINCT",
+    "Liquidaciones": "SOURCE_DATA_HAS_30_CANDIDATES_AND_0_CONFIRMED__VISIBLE_CANDIDATE_TILE_FRONTEND_ENHANCEMENT_SEPARATE",
+    "Client": "HOLD_TIMEOUT_SEPARATE",
+    "AcademiaDocumentos": "APPROVED_BLOBS_PRESERVED__NO_HR_FRESHNESS_CERTIFICATION_CLAIM"
+  },
+  "remainingAdjudication": [
+    "Run exact-source predeploy browser/module-matrix gate against the repaired branch source.",
+    "After explicit deployment authorization, revalidate the deployed browser against one fresh provider revision before owner visual acceptance.",
+    "Client route timeout remains a separate F10 issue and must not be conflated with HR KPI semantics."
+  ],
+  "safety": {
+    "providerWrites": 0,
+    "businessDataWrites": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "paymentWrites": 0,
+    "deploys": 0,
+    "rebuilds": 0,
+    "reimports": 0,
+    "merge": false,
+    "newBranch": false,
+    "newPullRequest": false,
+    "newWorkflow": false
+  },
+  "nextExactBlock": "F10_PREDEPLOY_EXACT_SOURCE_BROWSER_AND_MODULE_MATRIX_GATE_THEN_REQUIRE_EXPLICIT_DEPLOY_AUTHORIZATION"
+}

@@ -1,0 +1,77 @@
+{
+  "contract": "release-readiness-sanitized-report-phase-a-tya",
+  "date": "2026-07-05",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "storageWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "emailSendAllowed": false,
+  "whatsappSendAllowed": false,
+  "geminiAllowed": false,
+  "importRealDataAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "dependsOn": [
+    "release-readiness-snapshot-preview-phase-a-tya",
+    "readiness-map-to-release-snapshot-bridge-phase-a-tya"
+  ],
+  "purpose": "Generate a sanitized, human-readable Phase A readiness report from release readiness snapshot preview output without exposing raw payloads or enabling any real activation.",
+  "allowedInputValidator": "tya-release-readiness-snapshot-preview-validator",
+  "allowedInputStatuses": [
+    "release_readiness_snapshot_preview_ready",
+    "review_required",
+    "error"
+  ],
+  "allowedOutputFormats": [
+    "markdown",
+    "json_summary"
+  ],
+  "requiredInputSections": [
+    "validator",
+    "status",
+    "runtimeEnabled",
+    "productionAllowed",
+    "firestoreWritesAllowed",
+    "storageWritesAllowed",
+    "makeWriteAllowed",
+    "emailSendAllowed",
+    "whatsappSendAllowed",
+    "geminiAllowed",
+    "importRealDataAllowed",
+    "deployAllowed",
+    "mergeAllowed",
+    "inputPreview",
+    "issues",
+    "warnings"
+  ],
+  "reportSections": [
+    "executive_status",
+    "gate_status",
+    "snapshot_metadata",
+    "area_summary",
+    "blockers",
+    "manual_review",
+    "prototype_p0_status",
+    "claude_next_actions",
+    "backend_next_actions",
+    "production_decision"
+  ],
+  "redactionRules": [
+    "Do not include raw fixture bodies.",
+    "Do not include stdout/stderr from validator execution.",
+    "Do not include contact, bank, document, email, phone, WhatsApp, token, credential, attachment or signed URL values.",
+    "Do not include external provider payloads.",
+    "Keep only area, status, gate, validator id and summarized reasons."
+  ],
+  "productionDecision": "not_production_ready_until_frontend_p0_corrected_and_audited",
+  "hardStops": [
+    "Do not use the sanitized report as deployment approval.",
+    "Do not remove blockers from the report unless the source validator input changed and was reviewed.",
+    "Do not publish provider-ready language while gates remain off.",
+    "Do not include raw operational or sensitive data."
+  ]
+}

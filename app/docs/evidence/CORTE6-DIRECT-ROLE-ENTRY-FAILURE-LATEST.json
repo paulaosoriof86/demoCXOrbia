@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "cxorbia.corte6.direct-role-entry-hosting-failure.v1",
+  "generatedAt": "2026-08-01T21:04:31.296Z",
+  "decision": "FAIL_C6_DIRECT_ROLE_ENTRY_ROOT_FIX_GATE",
+  "failedStage": "human_entry__click_admin",
+  "hostingDeployExecutions": 0,
+  "authorizationConsumed": false,
+  "providerMutationPossible": false,
+  "authUserCreates": 0,
+  "authWrites": 0,
+  "passwordChanges": 0,
+  "firestoreWrites": 0,
+  "rulesDeploys": 0,
+  "cloudRunDeploys": 0,
+  "hrWrites": 0,
+  "newFirebaseProjects": 0,
+  "newHostingSites": 0,
+  "merge": false,
+  "production": false
+}

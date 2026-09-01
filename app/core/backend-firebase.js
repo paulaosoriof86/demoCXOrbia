@@ -5,6 +5,7 @@
    No toca modulos UI.
    No se activa si CX.BACKEND.enabled !== true.
    El alcance de proyecto/periodo se resuelve antes del primer render.
+   Corte 6: toda lectura protegida respeta el principal Firebase real.
    ============================================================ */
 window.CX = window.CX || {};
 
@@ -15,6 +16,7 @@ window.CX = window.CX || {};
   let db = null;
   let started = false;
   let original = null;
+  let principal = null;
 
   function emit(name, payload){ if(CX.bus && typeof CX.bus.emit === 'function') CX.bus.emit(name, payload || {}); }
   function warn(){ console.warn.apply(console, ['[CX.backend]'].concat([].slice.call(arguments))); }
@@ -46,6 +48,7 @@ window.CX = window.CX || {};
   function shoppersCol(){ return tenantRef().collection(col.shoppers || 'shoppers'); }
   function docData(d){ return Object.assign({id:d.id}, d.data() || {}); }
   async function getAll(q){ const snap = await q.get(); return snap.docs.map(docData); }
+  async function getOne(ref){ const snap = await ref.get(); return snap.exists ? docData(snap) : null; }
 
   function firstArrayValue(value, fallback){ return Array.isArray(value) && value.length ? value[0] : fallback; }
   function toList(value){
@@ -90,6 +93,29 @@ window.CX = window.CX || {};
       honorario: p.honorario || {},
       boleto: p.boleto || {},
       comboAmt: p.comboAmt || {},
+    });
+  }
+
+  function normalizePeriod(p, project){
+    if(!p || typeof p !== 'object') return p;
+    const id = p.periodId || p.key || p.id;
+    const status = p.state || p.status || 'closed';
+    return Object.assign({}, p, {
+      id:id,
+      periodId:id,
+      key:p.key || id,
+      name:p.label || p.name || p.periodName || id,
+      label:p.label || p.name || p.periodName || id,
+      year:p.year || '',
+      month:p.month || '',
+      country:p.country || '',
+      countries:p.countries || {},
+      projectId:project.id,
+      projectName:project.name,
+      sourceProjectId:project.id,
+      status:status,
+      state:status,
+      active:status === 'active'
     });
   }
 
@@ -198,53 +224,124 @@ window.CX = window.CX || {};
 
   async function ensurePreviewAuth(){
     const authCfg = cfg.devPreviewAuth || {};
-    if(authCfg.enabled !== true) return;
+    if(authCfg.enabled !== true) return null;
+    if(CX.backendAuth && typeof CX.backendAuth.ensureAuthenticated === 'function'){
+      principal = await CX.backendAuth.ensureAuthenticated();
+      emit('backend-auth-ready', {provider:'firebase', tenantId:tenantId(), preview:true, role:principal && principal.role || '', scoped:true});
+      return principal;
+    }
+    if(authCfg.storedCredentialFallback !== true) throw new Error('AUTH_INTERACTIVE_GATE_REQUIRED');
     if(!window.firebase || !firebase.auth) throw new Error('Firebase Auth SDK no cargado para preview DEV');
     const auth = app && typeof app.auth === 'function' ? app.auth() : firebase.auth();
-    if(auth.currentUser){ emit('backend-auth-ready', {provider:'firebase', tenantId:tenantId(), preview:true, email:auth.currentUser.email || ''}); return; }
+    if(auth.currentUser){ emit('backend-auth-ready', {provider:'firebase', tenantId:tenantId(), preview:true, scoped:false}); return null; }
     const email = authCfg.email;
     const key = authCfg.passwordStorageKey || 'CXORBIA_DEV_PASSWORD';
     const password = readStoredPreviewPassword(key);
-    if(!email || !password){ markSource('localStorage/demo', {auth:'pending'}); throw new Error('Falta usuario o credencial temporal DEV para iniciar preview autenticado'); }
+    if(!email || !password){ markSource('localStorage/demo', {auth:'pending'}); throw new Error('Falta autenticacion Firebase DEV'); }
     await auth.signInWithEmailAndPassword(email, password);
-    emit('backend-auth-ready', {provider:'firebase', tenantId:tenantId(), preview:true, email:email});
+    emit('backend-auth-ready', {provider:'firebase', tenantId:tenantId(), preview:true, scoped:false});
+    return null;
+  }
+
+  function authContext(){
+    if(principal) return principal;
+    if(CX.backendAuth && typeof CX.backendAuth.context === 'function') return CX.backendAuth.context();
+    return null;
+  }
+  function roleOf(ctx){ return ctx && ctx.role ? String(ctx.role) : ''; }
+  function isOperator(ctx){ return ['super','admin','ops','coordinador'].includes(roleOf(ctx)); }
+  function isClient(ctx){ return ['cliente','client'].includes(roleOf(ctx)); }
+  function isShopper(ctx){ return roleOf(ctx) === 'shopper'; }
+
+  async function loadAuthorizedProjects(ctx){
+    if(!ctx || isOperator(ctx)) return getAll(projectsCol());
+    const ids = toList(ctx.projectIds);
+    if(!ids.length) throw new Error('PROJECT_SCOPE_REQUIRED');
+    const docs = await Promise.all(ids.map(function(id){ return getOne(projectRef(id)); }));
+    return docs.filter(Boolean);
+  }
+
+  async function loadAuthorizedShoppers(ctx){
+    if(!ctx || isOperator(ctx)) return getAll(shoppersCol());
+    if(isShopper(ctx) && ctx.shopperId){
+      const own = await getOne(shoppersCol().doc(ctx.shopperId));
+      return own ? [own] : [];
+    }
+    return [];
+  }
+
+  async function loadShopperVisits(projectId, shopperId){
+    if(!shopperId) throw new Error('SHOPPER_SCOPE_REQUIRED');
+    const merged = new Map();
+    const queries = [
+      {label:'own', q:subCol(projectId, 'visits').where('shopperId','==',shopperId)},
+      {label:'available-status', q:subCol(projectId, 'visits').where('status','==','disponible')},
+      {label:'available-legacy', q:subCol(projectId, 'visits').where('estado','==','disponible')},
+    ];
+    for(const item of queries){
+      try{
+        const rows = await getAll(item.q);
+        rows.forEach(function(v){ merged.set(v.id || v.visitId, v); });
+      }catch(e){
+        warn('Lectura shopper '+item.label+' bloqueada en '+projectId, e && e.message ? e.message : e);
+      }
+    }
+    return Array.from(merged.values());
+  }
+
+  async function loadPostsForPrincipal(projectId, ctx){
+    if(!ctx || isOperator(ctx)){
+      const result = await Promise.all([
+        getAll(subCol(projectId, 'postulations')).catch(function(e){ warn('No se pudieron leer postulations de '+projectId, e); return []; }),
+        getAll(subCol(projectId, 'applications')).catch(function(e){ warn('No se pudieron leer applications de '+projectId, e); return []; })
+      ]);
+      return result[0].concat(result[1]);
+    }
+    if(isShopper(ctx) && ctx.shopperId){
+      const result = await Promise.all([
+        getAll(subCol(projectId, 'postulations').where('shopperId','==',ctx.shopperId)).catch(function(e){ warn('No se pudieron leer postulations propias de '+projectId, e); return []; }),
+        getAll(subCol(projectId, 'applications').where('shopperId','==',ctx.shopperId)).catch(function(e){ warn('No se pudieron leer applications propias de '+projectId, e); return []; })
+      ]);
+      return result[0].concat(result[1]);
+    }
+    return [];
   }
 
   function resolveActiveProjects(projects){
-    const requested = toList(cfg.previewProjectIds).concat(toList(cfg.defaultProjectId));
+    const ctx = authContext();
+    const scoped = ctx && !isOperator(ctx) ? toList(ctx.projectIds) : [];
+    const requested = scoped.length ? scoped : toList(cfg.previewProjectIds).concat(toList(cfg.defaultProjectId));
     const ids = new Set(requested.filter(Boolean));
     let active = ids.size ? projects.filter(function(p){ return ids.has(p.id); }) : [];
     if(!active.length && cfg.defaultProjectId){ active = projects.filter(function(p){ return p.id === cfg.defaultProjectId; }); }
     if(!active.length && projects.length){
-      const preferred = projects.find(function(p){ return /cinepolis.*abril.*26/i.test([p.id, p.name].join(' ')); });
+      const preferred = projects.find(function(p){ return /cinepolis/i.test([p.id, p.name].join(' ')); });
       active = preferred ? [preferred] : [projects[0]];
     }
     return active;
   }
 
-  function buildPeriods(allProjects, activeProjects){
-    const activeIds = new Set(activeProjects.map(function(p){return p.id;}));
-    return allProjects.map(function(p){
-      const period = inferPeriod(p);
-      period.active = activeIds.has(p.id);
-      period.projectId = p.id;
-      period.projectName = p.name;
-      return period;
-    });
+  async function loadCanonicalPeriods(activeProjects){
+    const buckets = await Promise.all(activeProjects.map(async function(project){
+      const raw = await getAll(subCol(project.id, 'periods'));
+      return raw.map(function(period){ return normalizePeriod(period, project); });
+    }));
+    const periods = [];
+    buckets.forEach(function(bucket){ (bucket || []).forEach(function(period){ periods.push(period); }); });
+    periods.sort(function(a,b){ return String(a.key || a.id || '').localeCompare(String(b.key || b.id || '')); });
+    return periods;
   }
 
-  async function loadProjectData(project, shoppersById){
+  async function loadProjectData(project, shoppersById, ctx){
     const projectId = project.id;
     const periodId = project.periodId || projectId;
-    const visitsRaw = await getAll(subCol(projectId, 'visits'));
+    const visitsRaw = isShopper(ctx) ? await loadShopperVisits(projectId, ctx.shopperId) : await getAll(subCol(projectId, 'visits'));
     const visitsById = {};
     const visits = visitsRaw.map(function(v){ return normalizeVisit(v, projectId, periodId); });
     visits.forEach(function(v){ v.projectId = v.projectId || projectId; visitsById[v.id] = v; visitsById[v.visitId] = v; });
-    const postulationsPromise = getAll(subCol(projectId, 'postulations')).catch(function(e){ warn('No se pudieron leer postulations de '+projectId, e); return []; });
-    const applicationsPromise = getAll(subCol(projectId, 'applications')).catch(function(e){ warn('No se pudieron leer applications de '+projectId, e); return []; });
-    const result = await Promise.all([postulationsPromise, applicationsPromise]);
+    const rawPosts = isClient(ctx) ? [] : await loadPostsForPrincipal(projectId, ctx);
     const posts = [];
-    result[0].concat(result[1]).forEach(function(x){
+    rawPosts.forEach(function(x){
       const item = normalizeApplication(x, projectId, periodId, visitsById, shoppersById);
       if(item) posts.push(item);
     });
@@ -253,15 +350,16 @@ window.CX = window.CX || {};
 
   async function loadTenantData(){
     const loadStartedAt = Date.now();
-    emit('backend-loading', {provider:'firebase', tenantId:tenantId(), source:'firestore'});
-    const result = await Promise.all([getAll(projectsCol()), getAll(shoppersCol())]);
+    const ctx = authContext();
+    emit('backend-loading', {provider:'firebase', tenantId:tenantId(), source:'firestore', role:roleOf(ctx), scoped:!!ctx});
+    const result = await Promise.all([loadAuthorizedProjects(ctx), loadAuthorizedShoppers(ctx)]);
     const allProjects = result[0].map(normalizeProject);
     const activeProjects = resolveActiveProjects(allProjects);
-    const periods = buildPeriods(allProjects, activeProjects);
+    const periods = await loadCanonicalPeriods(activeProjects);
     const shoppers = result[1].map(normalizeShopper);
     const shoppersById = {};
     shoppers.forEach(function(s){ shoppersById[s.id] = s; shoppersById[s.shopperId] = s; });
-    const perProject = await Promise.all(activeProjects.map(function(p){ return loadProjectData(p, shoppersById); }));
+    const perProject = await Promise.all(activeProjects.map(function(p){ return loadProjectData(p, shoppersById, ctx); }));
     const visits = [];
     const posts = [];
     perProject.forEach(function(bucket){
@@ -270,8 +368,8 @@ window.CX = window.CX || {};
     });
     const counts = {projects:activeProjects.length, projectRecords:allProjects.length, periods:periods.length, shoppers:shoppers.length, visits:visits.length, posts:posts.length};
     window.CX_BACKEND_PERIODS = periods;
-    window.CX_BACKEND_PROJECT_SCOPE = {mode:'adapter-pre-render', activeProjectIds:activeProjects.map(function(p){return p.id;}), totalProjectRecords:allProjects.length, at:now()};
-    emit('backend-loaded', {provider:'firebase', tenantId:tenantId(), source:'firestore', ms:Date.now()-loadStartedAt, counts:counts});
+    window.CX_BACKEND_PROJECT_SCOPE = {mode:'firebase-auth-principal', role:roleOf(ctx), activeProjectIds:activeProjects.map(function(p){return p.id;}), totalProjectRecords:allProjects.length, at:now()};
+    emit('backend-loaded', {provider:'firebase', tenantId:tenantId(), source:'firestore', ms:Date.now()-loadStartedAt, counts:counts, role:roleOf(ctx), scoped:!!ctx});
     return {projects:activeProjects, allProjects:allProjects, periods:periods, shoppers:shoppers, visits:visits, posts:posts};
   }
 
@@ -288,13 +386,16 @@ window.CX = window.CX || {};
     const keep = CX.data.currentProjectId;
     const exists = CX.data.projects.some(function(p){ return p.id === keep; });
     CX.data.currentProjectId = exists ? keep : (cfg.defaultProjectId && CX.data.projects.some(function(p){return p.id === cfg.defaultProjectId;}) ? cfg.defaultProjectId : CX.data.projects[0].id);
-    CX.data.currentPeriodId = CX.data.currentPeriodId || ((CX.data.periods.find(function(p){return p.active;}) || {}).id || '');
+    const keepPeriod = CX.data.currentPeriodId;
+    const periodExists = CX.data.periods.some(function(p){ return p.id === keepPeriod; });
+    const activePeriod = CX.data.periods.find(function(p){ return p.active; }) || CX.data.periods[CX.data.periods.length - 1] || null;
+    CX.data.currentPeriodId = periodExists ? keepPeriod : (activePeriod ? activePeriod.id : '');
     const counts = {projects:CX.data.projects.length, projectRecords:state.allProjects ? state.allProjects.length : CX.data.projects.length, periods:CX.data.periods.length, visits:CX.data._visitas.length, shoppers:CX.data.shoppers.length, posts:CX.data._posts.length, projectId:CX.data.currentProjectId, periodId:CX.data.currentPeriodId};
-    markSource('firestore', {empty:false, counts:counts, scope:'adapter-pre-render'});
+    markSource('firestore', {empty:false, counts:counts, scope:'firebase-auth-principal'});
     emit('project', {source:'firebase'});
     emit('shoppers', {source:'firebase'});
     emit('visit-flow', {source:'firebase'});
-    emit('backend-ready', {provider:'firebase', empty:false, tenantId:tenantId(), source:'firestore', counts:counts, scope:'adapter-pre-render'});
+    emit('backend-ready', {provider:'firebase', empty:false, tenantId:tenantId(), source:'firestore', counts:counts, scope:'firebase-auth-principal'});
     return true;
   }
 
@@ -323,11 +424,11 @@ window.CX = window.CX || {};
     started = true;
     if(cfg.enabled !== true){ markSource('localStorage/demo', {reason:'backend-disabled'}); emit('backend-disabled', {provider:'firebase', tenantId:tenantId(), source:'localStorage/demo'}); return CX.backend; }
     try{ initFirebase(); await ensurePreviewAuth(); wrapDataMethods(); await refresh(); }
-    catch(e){ markSource('localStorage/demo', {error:e.message || String(e)}); warn('No se pudo iniciar adapter. La UI sigue con mock/localStorage.', e); emit('backend-error', {label:'start', message:e.message || String(e), source:'localStorage/demo', tenantId:tenantId()}); }
+    catch(e){ markSource('localStorage/demo', {error:e.message || String(e)}); warn('No se pudo iniciar adapter protegido.', e); emit('backend-error', {label:'start', message:e.message || String(e), source:'localStorage/demo', tenantId:tenantId()}); }
     return CX.backend;
   }
 
-  CX.backend = {config:cfg, start:start, refresh:refresh, writeProject:writeProject, writeShopper:writeShopper, writeVisit:writeVisit, isEnabled:function(){ return cfg.enabled === true; }, tenantId:tenantId};
+  CX.backend = {config:cfg, start:start, refresh:refresh, writeProject:writeProject, writeShopper:writeShopper, writeVisit:writeVisit, authContext:authContext, isEnabled:function(){ return cfg.enabled === true; }, tenantId:tenantId};
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();
 })();

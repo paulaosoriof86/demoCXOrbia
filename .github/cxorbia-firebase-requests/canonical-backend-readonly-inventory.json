@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "cxorbia.canonical-backend-readonly-inventory.request.v1",
+  "enabled": false,
+  "consumed": false,
+  "currentExecutionAuthority": false,
+  "replayAuthorized": false,
+  "authorizationSource": "current_conversation_corte6_auth_rbac_readonly_status_proof",
+  "mode": "READ_ONLY_CANONICAL_BACKEND_INVENTORY",
+  "targetProjectId": "cxorbia-backend-dev",
+  "classification": "CXORBIA_DEV_BACKEND_TENANT_TYA_NOT_LEGACY_PLATFORM",
+  "providerWrites": 0,
+  "production": false,
+  "merge": false,
+  "sensitiveValuesExported": false,
+  "triggerNonce": 9,
+  "m3Tombstone": {
+    "findingId": "RC15-CP-068",
+    "batch": "M3_FINITE_QUEUE_BATCH_1",
+    "disposition": "INERTIZED_WITHOUT_EXECUTION",
+    "tombstonedOn": "2026-08-26",
+    "providerWrites": 0,
+    "dataWrites": 0,
+    "evidencePreserved": true
+  }
+}

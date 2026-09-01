@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "cxorbia.rc15.f8.temp-datastore-owner.authorization.v1",
+  "authorizationId": "PAULA-F8-TEMP-DATASTORE-OWNER-20260828-01",
+  "authorizedAtConversationDate": "2026-08-28",
+  "authorizedBy": "Paula",
+  "projectId": "cxorbia-backend-dev",
+  "phase": "F8_CUTOVER",
+  "parentAuthorizationId": "PAULA-F8-BACKUP-RESTORE-CUTOVER-20260827-01",
+  "authorized": true,
+  "singleUse": true,
+  "automaticRetryAllowed": false,
+  "scope": {
+    "iamBindingMutation": true,
+    "role": "roles/datastore.owner",
+    "principal": "existing DEV identity only",
+    "principalFingerprintSha256Prefix": "ab70b5da53a2d545a74c",
+    "purpose": [
+      "datastore.databases.export",
+      "datastore.databases.import",
+      "datastore.databases.create",
+      "datastore.databases.delete",
+      "datastore.operations.get"
+    ],
+    "conditionRequired": true,
+    "maximumConditionDurationMinutes": 120,
+    "explicitRevokeAfterExecutionRequired": true,
+    "revokeRequiredOnPassOrFailure": true
+  },
+  "explicitlyNotAuthorized": {
+    "legacyDatabaseAccess": true,
+    "make": true,
+    "gemini": true,
+    "payments": true,
+    "deploy": true,
+    "frontendChange": true,
+    "newCredential": true,
+    "newServiceAccount": true,
+    "newBranch": true,
+    "newPullRequest": true,
+    "unconditionalDatastoreOwnerBinding": true,
+    "permanentDatastoreOwnerBinding": true,
+    "otherIamRolesOrBindings": true,
+    "secretPayloadAccess": true
+  },
+  "executionConstraints": {
+    "useOnlyAlreadyExistingIamCapableRoute": true,
+    "doNotPersistRawPrincipalIdentifierInEvidence": true,
+    "doNotPersistTokensOrCredentials": true,
+    "conditionExpiryMustBeComputedAtGrantTime": true,
+    "conditionExpiryMustNotExceed120MinutesFromGrant": true,
+    "bindingMustBeRemovedImmediatelyAfterF8Attempt": true,
+    "f8OriginalAuthorizationMustRemainUnconsumedUntilFirstBackupExportMutation": true,
+    "noAutomaticRetry": true
+  },
+  "exactUserAuthorization": "autorizo excepcionalmente para F8 un binding IAM temporal y condicionado de roles/datastore.owner a la identidad DEV existente, exclusivamente para backup/export + creación de base aislada + import + eliminación, sin datos legacy, Make, Gemini, pagos, deploy ni cambio de frontend",
+  "status": "AUTHORIZED_NOT_YET_CONSUMED",
+  "source": "explicit_current_conversation_authorization"
+}

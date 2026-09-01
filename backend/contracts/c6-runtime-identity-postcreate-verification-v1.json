@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "cxorbia.c6.runtime-identity-postcreate-verification.v1",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "project": "cxorbia-backend-dev",
+  "environment": "DEV",
+  "sourceLock": "e4a5538158980746f94f30ddea42dd1380f00caa",
+  "targetServiceAccount": "cxorbia-c6-runner-dev@cxorbia-backend-dev.iam.gserviceaccount.com",
+  "decision": "STOP_RETRY_READBACK_INCOMPLETE",
+  "identity": {
+    "exists": true,
+    "enabled": true,
+    "displayName": "cxorbia-c6-runner-dev",
+    "projectId": "cxorbia-backend-dev",
+    "uniqueId": "112507526829412676643",
+    "oauth2ClientId": "112507526829412676643"
+  },
+  "verification": {
+    "describeIdentity": "PASS",
+    "listUserManagedKeys": "PERMISSION_DENIED",
+    "readServiceAccountIamPolicy": "PERMISSION_DENIED",
+    "readProjectIamPolicy": "PERMISSION_DENIED",
+    "isolatedIdentityFinalPass": false
+  },
+  "missingPermissions": [
+    "iam.serviceAccountKeys.list",
+    "iam.serviceAccounts.getIamPolicy",
+    "resourcemanager.projects.getIamPolicy"
+  ],
+  "fingerprint": {
+    "value": "ed8f84baa824b89305a8e6ab16af43c51ff555c72e3c940aeb0ef1339e5c2460",
+    "status": "PROVISIONAL_INCOMPLETE_READBACK",
+    "final": false,
+    "basis": [
+      "email",
+      "uniqueId",
+      "enabled state",
+      "empty placeholder arrays for unreadable keys and bindings"
+    ]
+  },
+  "evidence": {
+    "requestId": "c6-iam-runtime-identity-postcreate-readonly-20260806-01",
+    "runId": "31135508722",
+    "jobId": "92733827812",
+    "artifactId": "8977774322",
+    "artifactDigest": "sha256:c579dceb2d02df82dc5397ea2b0dcd1afbdc6cafcdd914f259ad33970e9d3ccb",
+    "workflowRemovalCommit": "795f2296a70b3f92169f409e7017b828fe0c486a",
+    "requestDisableCommit": "0e12b33172f8d9df423b87fc5037c53b602691fc"
+  },
+  "safeState": {
+    "iamWrites": 0,
+    "deploys": 0,
+    "providerReads": 0,
+    "providerWrites": 0,
+    "skip13Executed": false,
+    "merge": false,
+    "production": false
+  },
+  "nextGate": {
+    "required": "READ_ONLY_IAM_VISIBILITY_WITH_ADMIN_OR_TEMPORARY_VIEWER_PERMISSIONS",
+    "mustVerify": [
+      "zero user-managed keys",
+      "zero direct service-account IAM bindings",
+      "zero direct project roles"
+    ],
+    "mustNotWrite": true
+  }
+}

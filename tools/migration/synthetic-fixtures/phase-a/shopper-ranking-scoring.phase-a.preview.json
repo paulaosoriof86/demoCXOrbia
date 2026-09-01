@@ -1,0 +1,67 @@
+{
+  "sourceSafe": true,
+  "containsRawSensitiveData": false,
+  "isSyntheticOrSanitized": true,
+  "rankingRun": {
+    "tenantId": "tya",
+    "projectId": "cinepolis-gt-preview",
+    "rankingRunId": "ranking-run-preview-001",
+    "rankingPeriodId": "2026-06-preview",
+    "rankingScope": "project_period_preview",
+    "scoreVersion": "v1-preview",
+    "status": "ready_for_review",
+    "productionAllowed": false,
+    "autoAssignAllowed": false,
+    "writesAllowed": false
+  },
+  "shopperMetrics": [
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "rankingRunId": "ranking-run-preview-001",
+      "rankingPeriodId": "2026-06-preview",
+      "shopperId": "shopper-preview-001",
+      "metricId": "metric-preview-visit-completion-001",
+      "metricCategory": "visit_completion",
+      "metricValue": 95,
+      "metricWeight": 40,
+      "metricSourceRef": "visit-metric-ref-preview-001",
+      "sourceSafe": true,
+      "sampleSize": 3,
+      "assignmentSyncOutcome": "already_reflected_no_duplicate",
+      "visitLifecycleOutcome": "schedule_valid"
+    },
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "rankingRunId": "ranking-run-preview-001",
+      "rankingPeriodId": "2026-06-preview",
+      "shopperId": "shopper-preview-001",
+      "metricId": "metric-preview-questionnaire-001",
+      "metricCategory": "questionnaire_completion",
+      "metricValue": 90,
+      "metricWeight": 40,
+      "metricSourceRef": "questionnaire-metric-ref-preview-001",
+      "sourceSafe": true,
+      "sampleSize": 3,
+      "assignmentSyncOutcome": "already_reflected_no_duplicate",
+      "visitLifecycleOutcome": "questionnaire_completed_pending_review"
+    },
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "rankingRunId": "ranking-run-preview-001",
+      "rankingPeriodId": "2026-06-preview",
+      "shopperId": "shopper-preview-001",
+      "metricId": "metric-preview-communication-001",
+      "metricCategory": "communication_followup",
+      "metricValue": 85,
+      "metricWeight": 20,
+      "metricSourceRef": "communication-metric-ref-preview-001",
+      "sourceSafe": true,
+      "sampleSize": 3,
+      "assignmentSyncOutcome": "already_reflected_no_duplicate",
+      "visitLifecycleOutcome": "schedule_valid"
+    }
+  ]
+}

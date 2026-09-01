@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "cxorbia.rc15.f8.backup-restore-cutover.authorization.v1",
+  "authorizationId": "PAULA-F8-BACKUP-RESTORE-CUTOVER-20260827-01",
+  "authorizedAtConversationDate": "2026-08-27",
+  "projectId": "cxorbia-backend-dev",
+  "releaseId": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
+  "singleUse": true,
+  "automaticRetryAllowed": false,
+  "authorized": true,
+  "scope": {
+    "minimumBackupExport": true,
+    "controlledRestoreVerification": true,
+    "strictlyNecessaryProviderMutationsForCutover": true,
+    "preMutationDynamicHeadSourceLockReleaseRollbackRecheck": true,
+    "postMutationReadOnlyReconciliation": true
+  },
+  "explicitlyNotAuthorized": {
+    "rebuildRelease": true,
+    "reimportRelease": true,
+    "legacyDatabaseConnectOrCopy": true,
+    "make": true,
+    "gemini": true,
+    "payments": true,
+    "newBranch": true,
+    "newPullRequest": true,
+    "newIamOrCredentials": true,
+    "secretPayloadAccess": true
+  },
+  "executionConstraints": {
+    "retainExactFrozenReleaseUnlessDriftProven": true,
+    "noDeployIfExactFrozenReleaseAlreadyOperating": true,
+    "noBusinessDataOverwriteForRestoreVerification": true,
+    "restoreVerificationMustUseIsolatedTemporaryDatabaseOrStopBeforeImport": true,
+    "backupArtifactMustNotBeCommittedToGit": true,
+    "sensitivePayloadsMustNotBePersistedInEvidence": true,
+    "stopOnPermissionOrCapabilityGapBeforeUnauthorizedMutation": true
+  },
+  "source": "explicit_current_conversation_authorization",
+  "status": "AUTHORIZED_NOT_YET_CONSUMED"
+}

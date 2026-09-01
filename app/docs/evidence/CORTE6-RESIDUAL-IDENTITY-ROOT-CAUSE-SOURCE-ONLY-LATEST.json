@@ -1,0 +1,183 @@
+{
+  "schemaVersion": "cxorbia.c6.residual-identity-root-cause-source-only.v1",
+  "generatedAt": "2026-08-05T21:00:00-06:00",
+  "decision": "PASS_C6_RESIDUAL_IDENTITY_ROOT_CAUSE_CLASSIFICATION_SOURCE_ONLY_WITH_HOLDS",
+  "scope": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "repositoryAnalysisOnly": true,
+    "containsPii": false
+  },
+  "inputDigests": {
+    "currentReportSha256": "2f05b73a71c0f348ff4cdbfb4bc7391fb89011468564d8cce12973cea255cf45",
+    "currentGroupMatrixSha256": "c39f53a1c40cb94d412e26c6e4933d171c488155613d2f9183e1d52445ff2f9f",
+    "currentPlan340Sha256": "89bdbacdf2dabbf981b4835057f0a34f3451b5fb9bf57cd1e77bf8dc57bcb749",
+    "currentArtifactSha256": "ba9a559832ee2d8003ae798ae8a40cbe7e6b7582587d32053c55f16af50b134a",
+    "stableArtifactSha256": "4eaf9354e4ed15996237af74fcea05c5b99bc2ec97f1be063dc8d8e52f1dc95f"
+  },
+  "surnameHolds": {
+    "count": 12,
+    "fingerprints": [
+      "cc941934f90032aa48e8",
+      "9ed0cdabf3794b7ccf21",
+      "3451d618b5d6307b87da",
+      "80d716626b85e14778ea",
+      "8aea97650e97902f7616",
+      "32e2de62067ab6ecfb7b",
+      "b31bdc0c7514acbe25ba",
+      "4a59de15805804cbe398",
+      "cfbd0c519e59f40c6239",
+      "540c9e6b71440b393365",
+      "c01e0f344901f03e78d2",
+      "729eb0480d5ec2266a20"
+    ],
+    "observedPlanShape": {
+      "primary": "HOLD",
+      "baseLoginFp": null,
+      "targetLoginFp": null,
+      "sourceSafeSurnameBasis": "unresolved",
+      "resolutionBases": [],
+      "precondition": "technical_surname_unresolved"
+    },
+    "c6Classification": "NO_C6_OR_INSUFFICIENT_EVIDENCE",
+    "rootCauseClasses": [
+      "SOURCE_EVIDENCE_INSUFFICIENT",
+      "DIAGNOSTIC_LABEL_TOO_BROAD"
+    ],
+    "proven": [
+      "no accepted source-safe login was produced",
+      "the plan exported no base or target login",
+      "the artifact does not export firstComplete, surnameComplete, passwordSeedComplete, candidate counts or conflict state"
+    ],
+    "notProven": [
+      "that the missing dimension is specifically surname",
+      "homonym collision",
+      "alias conflict",
+      "multiple active identities"
+    ],
+    "minimalNonOperationalCorrection": [
+      "keep HOLD",
+      "split first/surname/password completeness",
+      "export only source-safe candidate counts and basis counts",
+      "keep single-position surname inference forbidden"
+    ]
+  },
+  "multiAuthHold": {
+    "profileFp": "7cc28c78de9bfda01d14",
+    "baseLoginFp": "b33d2d62f63888674294",
+    "targetLoginFp": "c7c1f13857fe052101b2",
+    "sourceSafeSurnameBasis": "multi_source_full_name_consensus",
+    "resolutionBases": [
+      "unique_technical_holder_preserves_unsuffixed_login"
+    ],
+    "c6Classification": "C6_CONFIRMED",
+    "rootCauseClasses": [
+      "LEGITIMATE_UNRESOLVED_PROVIDER_IDENTITY_STATE",
+      "DIAGNOSTIC_OBSERVABILITY_GAP"
+    ],
+    "proven": [
+      "one canonical profile has at least two Auth candidates",
+      "all allowed technical scoring signals remain tied",
+      "source-safe name and visible target login are available"
+    ],
+    "notProven": [
+      "which Auth account is canonical",
+      "that creation time or arbitrary ordering is a safe discriminator"
+    ],
+    "minimalNonOperationalCorrection": [
+      "keep STOP_RETRY",
+      "export source-safe candidate signal vectors and score margin",
+      "require exact claims/shopperId/credential anchor or explicit tenant adjudication",
+      "never auto-select by age or order"
+    ]
+  },
+  "aggregateDiagnosis": {
+    "surnameMetrics": {
+      "stableIncompleteActive": 83,
+      "completedByMultiSourceConsensus": 71,
+      "remainingIncompleteActive": 12,
+      "reconciliation": "83 = 71 + 12",
+      "classification": "METRIC_ERROR_AND_LABELING_DEFECT",
+      "minimalCorrection": "report preConsensusIncompleteActiveProfiles, completedByConsensus and remainingIncompleteActiveProfiles separately; gate only remaining=0"
+    },
+    "collisionMetrics": {
+      "stable": {
+        "groups": 64,
+        "activeIdentities": 141,
+        "sizeDistribution": {
+          "2": 55,
+          "3": 6,
+          "4": 2,
+          "5": 1
+        }
+      },
+      "current": {
+        "groups": 65,
+        "activeIdentities": 142,
+        "sizeDistribution": {
+          "2": 56,
+          "3": 6,
+          "4": 3
+        }
+      },
+      "sameSourcePopulation": {
+        "profiles": 340,
+        "authUsers": 110,
+        "credentials": 109,
+        "mapped": 101,
+        "unmapped": 8,
+        "visits": 616,
+        "certifications": 77,
+        "liquidations": 827
+      },
+      "classification": [
+        "LEGITIMATE_CLASSIFICATION_MODEL_CHANGE",
+        "RIGID_AGGREGATE_GATE_DEFECT",
+        "CROSS_VERSION_FINGERPRINT_OBSERVABILITY_GAP"
+      ],
+      "proven": [
+        "the source population and crosswalk are stable",
+        "the current planner adds multi-source full-name consensus for 71 profiles",
+        "old and new group fingerprints use different namespaces",
+        "the provider gate hardcodes 64 despite the rule change"
+      ],
+      "notProven": [
+        "the exact profile/group movement between size 5, 4 and 2",
+        "that 65/142 is data drift",
+        "that 64/141 is valid under the consensus rule"
+      ],
+      "minimalCorrection": [
+        "remove rigid aggregate equality gate",
+        "freeze one cross-version group fingerprint namespace",
+        "compare added/removed/moved sets under one algorithm version",
+        "report raw profiles separately from canonical identities"
+      ]
+    }
+  },
+  "overall": {
+    "confirmedC6": 1,
+    "probableC6": 0,
+    "noC6OrInsufficient": 12,
+    "readyForAuthRepair": false,
+    "executable": false,
+    "partialExecutionAllowed": false
+  },
+  "safety": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "membershipWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "deploys": 0,
+    "make": 0,
+    "gemini": 0,
+    "payments": 0,
+    "merge": false,
+    "production": false
+  },
+  "nextExactBlock": "SOURCE_ONLY diagnostic-contract root fix: split name completeness metrics, add source-safe diagnostic vectors, replace rigid 64 aggregate gate with stable fingerprint-set reconciliation; stop before provider read."
+}

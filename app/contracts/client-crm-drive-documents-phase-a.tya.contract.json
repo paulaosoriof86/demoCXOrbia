@@ -1,0 +1,125 @@
+{
+  "contract": "client-crm-drive-documents-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A plus CRM continuity",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "oneDriveApiAllowed": false,
+  "storageWritesAllowed": false,
+  "purpose": "Define CRM/client/project traceability with shared OneDrive folder references, external documents, pipeline stages and related email/communication traces without connecting real OneDrive or writing files.",
+  "principle": "TyA as consultora/franchise relationship and final clients/projects must be represented without confusion. Shared OneDrive folders can be linked as external references and later integrated if authorized.",
+  "entities": {
+    "tenant": "tenants/{tenantId}",
+    "businessPartnerOrConsultora": "tenants/{tenantId}/businessPartners/{partnerId}",
+    "finalClients": "tenants/{tenantId}/clients/{clientId}",
+    "projects": "tenants/{tenantId}/projects/{projectId}",
+    "opportunities": "tenants/{tenantId}/crmOpportunities/{opportunityId}",
+    "clientDocuments": "tenants/{tenantId}/clientDocuments/{documentId}",
+    "externalFolders": "tenants/{tenantId}/externalFolders/{folderRefId}",
+    "documentTraceLinks": "tenants/{tenantId}/documentTraceLinks/{traceLinkId}",
+    "communications": "tenants/{tenantId}/communications/{communicationId}"
+  },
+  "relationshipTypes": [
+    "consultora_parent",
+    "franchise_owner",
+    "regional_program_owner",
+    "local_representative",
+    "local_coordinator",
+    "final_client_direct_billing",
+    "final_client_delegated_project",
+    "prospect",
+    "partner_or_ally"
+  ],
+  "pipelineStages": [
+    "lead_identified",
+    "prospect_contacted",
+    "needs_discovery",
+    "proposal_in_progress",
+    "proposal_sent",
+    "negotiation",
+    "won_project_setup",
+    "lost_or_paused",
+    "active_client",
+    "dormant_reactivation_future"
+  ],
+  "externalFolderTypes": [
+    "onedrive_shared_folder",
+    "sharepoint_folder_future",
+    "google_drive_folder_future",
+    "manual_external_url",
+    "storage_internal_future"
+  ],
+  "folderReferenceFields": [
+    "tenantId",
+    "folderRefId",
+    "ownerEntityType",
+    "ownerEntityId",
+    "folderType",
+    "displayName",
+    "externalUrl",
+    "provider",
+    "accessScope",
+    "containsSensitiveData",
+    "lastReviewedAt",
+    "createdBy",
+    "createdAt",
+    "updatedAt"
+  ],
+  "documentTypes": [
+    "route_sheet",
+    "proposal",
+    "cost_sheet",
+    "project_brief",
+    "client_requirements",
+    "contract_or_agreement",
+    "instructive",
+    "questionnaire_source",
+    "evidence_resource",
+    "email_attachment_reference",
+    "other"
+  ],
+  "documentSourceTypes": [
+    "onedrive_external_link",
+    "manual_upload_future",
+    "generated_in_platform_future",
+    "email_attachment_reference",
+    "hr_source_reference",
+    "manual_metadata_only"
+  ],
+  "documentTraceRules": [
+    "A client/project may store OneDrive folder URL as an external reference without downloading files.",
+    "Documents may be referenced by metadata and link before any Storage integration exists.",
+    "Cost sheets and proposals can be linked/downloaded later only under authorized policy.",
+    "Every document must link to owner entity: client, project, opportunity, partner or tenant.",
+    "Do not copy sensitive raw files into repo.",
+    "Do not connect OneDrive API from this contract."
+  ],
+  "crmTraceRules": [
+    "Prospects must keep historical trace even if paused or reactivated later.",
+    "Final clients may be direct-billing local clients or delegated international project clients.",
+    "TyA shared folders can be linked under businessPartner/consultora or under specific client/project as applicable.",
+    "Email traces, WhatsApp traces and document references should appear in the client/project history when linked.",
+    "Pipeline history must preserve stage changes, owner, date and notes."
+  ],
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "client", "consultant_partner"],
+    "manualsToUpdate": ["CRM client records", "OneDrive external folders", "Document traceability", "Pipeline stages", "Partner vs final client"],
+    "coursesToUpdate": ["Admin CRM setup", "Consultora client traceability", "Ops document lookup", "Commercial pipeline follow-up"],
+    "newLessons": [
+      "Difference between TyA/consultora relationship and final clients/projects",
+      "How to link a OneDrive folder to a client or project",
+      "How to preserve prospect history",
+      "How to link proposals and cost sheets",
+      "How email and WhatsApp traces appear in client history"
+    ]
+  },
+  "hardStops": [
+    "Do not connect OneDrive API from this contract.",
+    "Do not download or store real shared files from this contract.",
+    "Do not write Firestore from this contract.",
+    "Do not upload sensitive client documents to repo.",
+    "Do not confuse business partner/consultora with final client records."
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "cxorbia.c6.client-route-wait-diagnostic.v1",
+  "generatedAt": "2026-08-05T17:13:02.037Z",
+  "decision": "PASS_C6_CLIENT_ROUTE_WAIT_DIAGNOSTIC_CLASSIFIED",
+  "runnerDecision": "PASS_READONLY_POST_GATES",
+  "requestId": "c6-client-route-wait-focal-diagnostic-runtime-profile-20260805-04",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "targetHeadSha": "ab79011ff69518bd4104393f9c46ecc050d01846",
+  "requestCommitSha": "c3d7bc540d7e55ccf21abfa339239300f9c6d4e1",
+  "workflow": {
+    "runId": 31025221503,
+    "jobId": 92384251301,
+    "artifactId": 8939818306,
+    "artifactDigest": "sha256:5016033fe024f48f4f0b21dfae400a18dbc2a015a3bad70c49c2d5892a811ee4",
+    "jobConclusion": "success",
+    "repositoryUnchanged": true
+  },
+  "classification": {
+    "owner": "HARNESS",
+    "code": "HARNESS_NAV_ACTIVE_SUBCONDITION_MISMATCH",
+    "reason": "The client dashboard rendered with content, but the navigation-element assumption did not become true."
+  },
+  "observations": {
+    "sessionView": "cli_dashboard",
+    "navElementExists": false,
+    "navActive": false,
+    "viewExists": true,
+    "pageHeaderExists": true,
+    "viewTextLength": 690,
+    "renderException": null
+  },
+  "productConclusion": {
+    "clientAuthenticatedPreviously": true,
+    "routeAccepted": true,
+    "canonicalViewPresent": true,
+    "pageHeaderRendered": true,
+    "contentRendered": true,
+    "renderExceptionObserved": false,
+    "p0ProductRegressionProven": false
+  },
+  "harnessConclusion": {
+    "priorTimeoutWasProductFailure": false,
+    "invalidAssumption": "#nav-cli_dashboard must exist and become active after direct router navigation",
+    "requiredCorrection": "Replace the nav-element active-state requirement with route acceptance plus canonical rendered-view observability, then rerun only the read-only semantic gate.",
+    "runtimeChangeRequired": false,
+    "hostingDeployRequired": false
+  },
+  "credentialPreflight": {
+    "decision": "PASS_C6_EXISTING_CLIENT_CREDENTIAL_SELECTION",
+    "canonicalDecision": "PASS_C6_EXISTING_CANONICAL_CLIENT_CREDENTIAL_SELECTION",
+    "claimsValid": true,
+    "membershipValid": true,
+    "passwordSignIn": true,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "membershipWrites": 0,
+    "credentialsExposed": false
+  },
+  "safety": {
+    "hostingDeploysThisBlock": 0,
+    "hostingDeploysTotal": 2,
+    "additionalDeploysAuthorized": 0,
+    "cloudRunDeploys": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "credentialsExposed": false,
+    "tokensExposed": false,
+    "merge": false,
+    "production": false
+  },
+  "nextExactAction": "Correct only the read-only semantic harness condition for Client navigation, rerun that semantic gate without deploy or provider writes, and stop for human validation if PASS."
+}

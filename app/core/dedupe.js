@@ -19,7 +19,7 @@ CX.dedupe = {
 
   /* índice de visitas existentes del proyecto bajo AMBAS llaves */
   indexProject(pid){
-    pid = pid || CX.data.currentProjectId;
+    pid = pid || CX.data.currentPeriodId;
     const idx={};
     (CX.data._visitas||[]).filter(v=>v.projectId===pid).forEach(v=>{
       const ik=this.idKey(v); if(ik) idx[ik]=v;

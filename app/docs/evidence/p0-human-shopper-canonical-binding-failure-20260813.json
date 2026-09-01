@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "cxorbia.pre-go-live.human-shopper-p0.v1",
+  "observedAt": "2026-08-13T12:37:00-06:00",
+  "reportedBy": "Paula",
+  "environment": "cxorbia-backend-dev",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "buildId": "ecc725866acc3eb8",
+  "decision": "P0_PROVEN_HUMAN_SHOPPER_AUTHENTICATES_BUT_CANONICAL_OPERATIONAL_CONTEXT_IS_UNAVAILABLE",
+  "ownerAcceptance": "REJECTED",
+  "reproducibleEvidence": {
+    "humanShopperLoginSucceeded": true,
+    "shopperNavigationRendered": true,
+    "profileMessage": "La identidad de esta sesión no está vinculada al read model canónico.",
+    "shopperCountryVisible": false,
+    "postLoginRuntimeSourceObserved": "firestore",
+    "postLoginProjectsObserved": 1,
+    "postLoginVisitsObserved": 0,
+    "postLoginShoppersObserved": 1,
+    "postLoginPostulationsObserved": 0,
+    "expectedAuthority": "HR live all detected periods plus exact Firestore protected overlay",
+    "labHrReadOnly": {
+      "periods": 15,
+      "visits": 660,
+      "shoppers": 211,
+      "firstPeriod": "2025-06",
+      "latestPeriod": "2026-08",
+      "duplicateVisitKeys": 0
+    }
+  },
+  "sourceDiagnosis": {
+    "canonicalShopperPortalLockIsIntentionalWhenSessionShopperIdCannotResolveToCurrentCanonicalShopper": true,
+    "protectedAuthHrBridgeShouldReplaceFirestoreOnlySliceWithHrAuthorityAfterAuthenticatedContext": true,
+    "observedFirestoreOnlyStateMeansThatExpectedHumanShopperCompositionWasNotEffectiveAtOwnerValidation": true,
+    "m10AdminOnlyDoesNotCertifyThisHumanShopperPath": true,
+    "historicalIdentityCollisionRiskExists": true,
+    "historicalAuditDecision": "HOLD_C6_SHOPPER_LOGIN_COLLISION_CLASSIFICATION",
+    "historicalDistinctActiveCollisionGroups": 64,
+    "historicalDistinctActiveIdentitiesAffected": 141
+  },
+  "availabilityLabCaveat": {
+    "displayedAvailableCount": 0,
+    "acceptedAsCanonicalAvailabilityResult": false,
+    "reason": "The visible lab currently counts selected literal state labels; canonical availability must be evaluated through the canonical state semantics before acceptance."
+  },
+  "safety": {
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "realTyACutover": false
+  },
+  "nextGateRequired": "TARGETED_P0_HUMAN_SHOPPER_IDENTITY_AND_HR_AUTHORITY_DIAGNOSTIC_PLUS_ADMIN_VISIBLE_LOGIN_RECOVERY_READONLY"
+}

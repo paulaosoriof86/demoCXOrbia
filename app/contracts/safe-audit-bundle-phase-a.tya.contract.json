@@ -1,0 +1,19 @@
+{
+  "contract": "safe-audit-bundle-phase-a-tya",
+  "date": "2026-07-05",
+  "status": "draft_tool_no_remote_write",
+  "phase": "Phase A",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "realDataAllowed": false,
+  "providerActionsAllowed": false,
+  "purpose": "Prepare a local-only audit bundle that can run safe checks after explicit GO.",
+  "checks": [
+    "p0_operational_copy_scan",
+    "local_readiness_preflight",
+    "local_readiness_consistency"
+  ],
+  "outputFolder": "_diagnosticos/tya-safe-audit-bundle"
+}

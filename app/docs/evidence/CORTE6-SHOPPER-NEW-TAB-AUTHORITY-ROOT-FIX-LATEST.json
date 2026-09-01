@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "cxorbia.c6.shopper-new-tab-authority-root-fix.v2",
+  "generatedAt": "2026-08-02T13:24:00-06:00",
+  "decision": "PASS_C6_SHOPPER_NEW_TAB_AUTHORITY_ROOT_FIX_SOURCE_READY_PENDING_FRESH_DEV_DEPLOY",
+  "provenFailure": {
+    "decision": "FAIL_C6_REMOTE_GATES_AFTER_EXISTING_DEV_HOSTING_DEPLOY",
+    "failedStage": "remote_staff_shopper",
+    "reproduced": true,
+    "reproductions": 2,
+    "scenario": "restored authenticated Shopper session in a new browser tab",
+    "principal": {
+      "role": "shopper",
+      "authNamespace": "shopper",
+      "tenantId": "tya",
+      "projectId": "cinepolis"
+    },
+    "baseRuntime": {
+      "periods": 14,
+      "visits": 616,
+      "shoppers": 208,
+      "appOn": true,
+      "canonicalLane": "authenticated-human-canonical"
+    },
+    "protectedAuthority": {
+      "applied": false,
+      "periods": 0,
+      "visits": 0,
+      "shoppers": 0,
+      "ownVisits": 0
+    }
+  },
+  "rootCause": {
+    "classification": "RESTORED_SESSION_NEW_TAB_PROTECTED_AUTHORITY_RECONCILIATION_NOT_RESILIENT",
+    "details": [
+      "The protected authority composition depended on a one-shot backend-ready/refresh reconciliation path.",
+      "There was no independent bounded boot reconciliation for an already restored authenticated context in a new tab.",
+      "The live HR fetch used by the authority bridge had no bounded retry for transient 429/5xx/network failures.",
+      "The base HR preview could therefore be visible while the exact Firestore identity overlay remained unapplied."
+    ],
+    "frontendUiFailure": false,
+    "credentialFailure": false,
+    "sourceDataLoss": false,
+    "productionFailure": false
+  },
+  "fix": {
+    "file": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+    "blobSha": "4ff03ce4a4ab3cc680be32cc71f32d406cdb9307",
+    "boundedLiveHrRetries": 6,
+    "bootReconcileMaxAttempts": 180,
+    "triggers": [
+      "backend-auth-ready",
+      "backend-ready",
+      "DOMContentLoaded/script-ready",
+      "window focus",
+      "document visibility restored",
+      "backend refresh"
+    ],
+    "guards": [
+      "authenticated tenant/project principal",
+      "protected Firestore backend state ready",
+      "live snapshot apply function ready",
+      "canonical cumulative composer ready",
+      "single reconcile in flight",
+      "single boot timer"
+    ],
+    "idempotent": true,
+    "failClosed": true,
+    "providerWrites": 0,
+    "production": false
+  },
+  "staticGate": {
+    "file": "tools/qa/tya-c6-shopper-new-tab-authority-root-fix-gate.mjs",
+    "created": true,
+    "executionStatus": "PENDING_EXECUTABLE_GATE_IN_FRESH_DEPLOY_BLOCK",
+    "runtimeSyntaxExecutionClaimed": false
+  },
+  "preservedEvidence": {
+    "successfulHostingReleaseExists": true,
+    "successfulHostingReleaseRequestId": "c6-hosting-dev-deploy-remote-gates-20260802-04",
+    "successfulHostingReleaseTriggerHead": "405d8d405e2bf69918d0124b61c179171d5c678a",
+    "remoteCriticalParityPassed": true,
+    "liveHrRemotePassed": true,
+    "staffRemotePassedInPriorAttempt": true,
+    "clientRemotePassedInPriorAttempt": true,
+    "shopperNewTabPassed": false,
+    "financeSemanticGateCompleted": false
+  },
+  "deploymentState": {
+    "rootFixDeployed": false,
+    "freshHostingDevAuthorizationRequired": true,
+    "automaticRedeployAuthorized": false
+  },
+  "safety": {
+    "hostingDeploysCumulativeAuthorizedSequence": 1,
+    "hostingDeploysAfterRootFix": 0,
+    "cloudRunDeploys": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesDeploys": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "credentialsExposed": false,
+    "tokensExposed": false,
+    "merge": false,
+    "production": false
+  },
+  "nextGate": "FRESH_SINGLE_HOSTING_DEV_DEPLOY_OF_NEW_TAB_AUTHORITY_ROOT_FIX_THEN_REMOTE_CUMULATIVE_GATES"
+}

@@ -1,0 +1,187 @@
+{
+  "contractId": "make-outbox-phase-a-v1",
+  "status": "draft_safe_not_connected",
+  "generatedAt": "2026-07-08",
+  "purpose": "Define Phase A outbox, Make automation and notification gates without activating real webhooks or providers yet.",
+  "safeState": {
+    "makeProviderConnected": false,
+    "frontendConnected": false,
+    "webhookCallsEnabled": false,
+    "messageDispatchEnabled": false,
+    "hrWritesEnabled": false,
+    "paymentDispatchEnabled": false,
+    "productionEnabled": false,
+    "containsSecrets": false,
+    "containsSensitiveData": false
+  },
+  "outboxPath": "tenants/{tenantId}/outbox/{messageId}",
+  "requiredOutboxKeys": [
+    "tenantId",
+    "messageId",
+    "projectId",
+    "channel",
+    "messageType",
+    "status",
+    "gateStatus",
+    "dedupeKey",
+    "createdAt",
+    "createdBy",
+    "auditRef"
+  ],
+  "stableDedupeKeys": [
+    "tenantId",
+    "projectId",
+    "entityType",
+    "entityId",
+    "messageType",
+    "recipientRef",
+    "periodKey"
+  ],
+  "channels": {
+    "whatsapp": {
+      "phaseA": true,
+      "provider": "Make/WhatsApp provider later",
+      "defaultStatus": "prepared_pending_gate",
+      "notes": "No real WhatsApp send before provider gate. UI copy must say prepared/pending."
+    },
+    "email": {
+      "phaseA": true,
+      "provider": "Outlook/Make later",
+      "defaultStatus": "prepared_pending_gate",
+      "notes": "No real email send before provider gate."
+    },
+    "platformNotification": {
+      "phaseA": true,
+      "provider": "internal notification store later",
+      "defaultStatus": "prepared_pending_gate",
+      "notes": "Can be prepared as internal outbox record; delivery stays gated."
+    },
+    "hrSync": {
+      "phaseA": true,
+      "provider": "Make HR sync later",
+      "defaultStatus": "prepared_pending_gate",
+      "notes": "No HR write until explicit sync gate and conflict checks."
+    },
+    "paymentOps": {
+      "phaseA": true,
+      "provider": "manual/payment ops later",
+      "defaultStatus": "prepared_pending_gate",
+      "notes": "No real payment execution; only prepared state and audit."
+    },
+    "geminiReview": {
+      "phaseA": true,
+      "provider": "Gemini later",
+      "defaultStatus": "draft_pending_human_review",
+      "notes": "Gemini-generated material stays review-gated."
+    }
+  },
+  "messageTypes": {
+    "applicationApproved": {
+      "entityType": "application",
+      "allowedChannels": ["whatsapp", "email", "platformNotification"],
+      "copyRule": "prepared_not_sent_until_gate"
+    },
+    "visitAssigned": {
+      "entityType": "assignment",
+      "allowedChannels": ["whatsapp", "email", "platformNotification", "hrSync"],
+      "copyRule": "prepared_not_sent_until_gate"
+    },
+    "visitRescheduleRequested": {
+      "entityType": "visit",
+      "allowedChannels": ["whatsapp", "platformNotification"],
+      "copyRule": "prepared_not_sent_until_gate"
+    },
+    "visitOutOfRange": {
+      "entityType": "visit",
+      "allowedChannels": ["whatsapp", "platformNotification"],
+      "copyRule": "prepared_not_sent_until_gate"
+    },
+    "questionnairePending": {
+      "entityType": "visit",
+      "allowedChannels": ["whatsapp", "email", "platformNotification"],
+      "copyRule": "prepared_not_sent_until_gate"
+    },
+    "certificationAssigned": {
+      "entityType": "certification",
+      "allowedChannels": ["whatsapp", "email", "platformNotification"],
+      "copyRule": "prepared_not_sent_until_gate"
+    },
+    "paymentBatchPrepared": {
+      "entityType": "liquidation",
+      "allowedChannels": ["email", "platformNotification", "paymentOps"],
+      "copyRule": "prepared_not_paid_until_gate"
+    },
+    "hrAssignmentSyncPrepared": {
+      "entityType": "assignment",
+      "allowedChannels": ["hrSync"],
+      "copyRule": "prepared_not_synced_until_gate"
+    },
+    "geminiQuestionBankDraft": {
+      "entityType": "academyAsset",
+      "allowedChannels": ["geminiReview", "platformNotification"],
+      "copyRule": "draft_pending_human_review"
+    }
+  },
+  "statuses": {
+    "prepared_pending_gate": "Record prepared but not dispatched.",
+    "blocked_missing_gate": "Dispatch blocked because provider gate is inactive.",
+    "blocked_conflict_review": "Dispatch blocked because stable-key conflict requires review.",
+    "draft_pending_human_review": "Draft requires human review before publish/dispatch.",
+    "ready_for_dispatch": "Prepared and eligible only after explicit gate.",
+    "dispatch_requested": "Dispatch was requested by authorized actor under active gate.",
+    "dispatch_confirmed": "Provider confirmation received and audited.",
+    "dispatch_failed": "Provider failed; no silent retry without retry policy.",
+    "cancelled": "Cancelled with audit reason."
+  },
+  "gates": {
+    "devPrepareOnly": {
+      "status": "allowed",
+      "requirements": ["noProviderCall", "noWebhookUrl", "auditRecord", "honestCopy"]
+    },
+    "devProviderDispatch": {
+      "status": "blocked",
+      "requirements": ["explicitApproval", "testRecipientsOnly", "secretConfigured", "rollback", "auditLog"]
+    },
+    "stagingProviderDispatch": {
+      "status": "blocked",
+      "requirements": ["providerContractReview", "dedupeReview", "conflictReview", "rateLimitPolicy"]
+    },
+    "productionProviderDispatch": {
+      "status": "blocked",
+      "requirements": ["PaulaGO", "smokeGO", "rollback", "noCriticalNO_GO", "providerAudit"]
+    }
+  },
+  "forbiddenInRepo": [
+    "makeWebhookUrl",
+    "whatsappProviderToken",
+    "outlookRefreshToken",
+    "gmailToken",
+    "privateRecipientRawList",
+    "rawPhone",
+    "rawEmail",
+    "paymentInstructionRaw",
+    "providerSecret",
+    "geminiApiKey"
+  ],
+  "conflictPolicy": {
+    "dedupeStrategy": "stable_keys_only",
+    "visualMatchOnlyAllowed": false,
+    "duplicateDispatchAllowed": false,
+    "onConflict": "route_to_conflictReviews",
+    "notes": "Never send/sync/pay twice based on visual names or labels. Use stable keys and gate status."
+  },
+  "auditRequirements": [
+    "all prepared outbox records require actorId, source, reason and auditRef",
+    "all dispatch attempts require active gate and providerRef",
+    "all retries require retryCount, previousAttemptRef and reason",
+    "all cancellations require actorId and reason",
+    "HR sync cannot overwrite conflict silently",
+    "payment ops cannot mark paid without explicit payment state audit"
+  ],
+  "copyRules": {
+    "notSent": "Use preparado/listo para envio/fallback manual, never enviado, until dispatch_confirmed.",
+    "notSynced": "Use sync preparada/pendiente, never HR sincronizada, until dispatch_confirmed.",
+    "notPaid": "Use lote preparado/pago pendiente, never pagado, until payment state is audited.",
+    "aiDraft": "Use borrador IA/revision humana pendiente, never publicado or generado final without approval."
+  }
+}

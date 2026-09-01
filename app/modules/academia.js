@@ -7,19 +7,944 @@ window.CX=window.CX||{};
 
 /* ─ Catálogo de cursos ─ */
 CX.acadData={
+  /* T2.B (paquete V108): catálogos con IDs estables para el scope de Academia — reemplaza
+     el CSV libre. Nivel/paquete no tienen una fuente formal en el prototipo todavía, así que
+     se curan aquí como lista cerrada (misma idea que los planes ya usados en Consola SaaS). */
+  NIVELES:[{id:'basico',label:'Básico'},{id:'intermedio',label:'Intermedio'},{id:'avanzado',label:'Avanzado'}],
+  PAQUETES:[{id:'starter',label:'Starter'},{id:'estandar',label:'Estándar'},{id:'pro',label:'Pro'},{id:'enterprise',label:'Enterprise'}],
   CATS:(()=>{try{const s=JSON.parse(localStorage.getItem('cx_acad_cats')||'null');if(s&&Array.isArray(s)&&s.length)return s;}catch(e){}return ['Todos','Inducción','Operación','Set-up','Finanzas','Comercial','Técnico','IA','Industria MS'];})(),
   /* ── Persistencia de cursos personalizados ── */
   _ck:'cx_acad_cust',
   getCustom(r){ try{return JSON.parse(localStorage.getItem(this._ck+'_'+r)||'[]');}catch(e){return[];} },
   saveCustom(r,arr){ try{localStorage.setItem(this._ck+'_'+r,JSON.stringify(arr));}catch(e){} CX.bus&&CX.bus.emit('acad'); },
-  addCourse(r,c){ const arr=this.getCustom(r); arr.unshift(Object.assign({id:'cu'+Date.now().toString(36),lessons:[]},c)); this.saveCustom(r,arr); },
-  editCourse(r,cid,patch){ const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c)Object.assign(c,patch); const custom=this.getCustom(r); const cu=custom.find(x=>x.id===cid); if(cu)Object.assign(cu,patch); this.saveCustom(r,custom); },
-  addLesson(r,cid,lesson){ const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c){c.lessons=c.lessons||[];c.lessons.push(Object.assign({id:'ls'+Date.now().toString(36)},lesson));} CX.bus&&CX.bus.emit('acad'); },
-  editLesson(r,cid,lid,patch){ const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c){const l=(c.lessons||[]).find(x=>x.id===lid);if(l)Object.assign(l,patch);} const custom=this.getCustom(r); if(custom.find(x=>x.id===cid))this.saveCustom(r,custom); CX.bus&&CX.bus.emit('acad'); },
-  delLesson(r,cid,lid){ const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c){c.lessons=(c.lessons||[]).filter(x=>x.id!==lid);} const custom=this.getCustom(r); if(custom.find(x=>x.id===cid))this.saveCustom(r,custom); CX.bus&&CX.bus.emit('acad'); },
-  delCourse(r,cid){ this.saveCustom(r,this.getCustom(r).filter(x=>x.id!==cid)); },
+  /* Bloque 4 (auditoría V100 — corrección exacta): addCourse()/editCourse() ahora EXIGEN permiso
+     de acción (academy.create/academy.edit) — antes solo duplicateCourse() lo validaba. Devuelven
+     {ok:false,error} en vez de ejecutar en silencio cuando el rol no tiene el permiso. */
+  addCourse(r,c,ctx){
+    if(CX.permissions && !CX.permissions.can('academy.create', ctx)) return {ok:false, error:'Tu rol no tiene el permiso de acción "academy.create".'};
+    const arr=this.getCustom(r); const lessons=c.lessons||[]; const mins=(typeof c.mins==='number')?c.mins:Math.max(10,lessons.length*12);
+    const auditRef='aud_'+Math.random().toString(36).slice(2,8);
+    /* Contrato Academia (paquete 20260711): creator identificado explícitamente y separado de
+       revisor/aprobador (setCourseState). scope opcional (vacío = global) — ver visibleFor(). */
+    const creador=(CX.session&&CX.session.user&&CX.session.user.name)||'—';
+    /* T1b (paquete V109): identidad ESTABLE del creador por id (cx_users o sesión sintética) —
+       creador (nombre) se conserva solo para presentación; la separación de funciones en
+       setCourseState se valida contra createdByUserId, nunca contra el nombre. */
+    const createdByUserId=this.actorId();
+    /* T2.D (paquete V108, sin cambios en V109): todo curso queda vinculado a un tenantId real
+       desde su creación — el eje tenantId del scope se fuerza al tenant activo aunque el resto
+       de ejes queden vacíos (regla documentada: sin scope explícito = global DENTRO del tenant,
+       nunca global cruzando tenants). Con el bug de T1 corregido, CX.acadData.ctx().tenantId
+       ahora SIEMPRE resuelve a este mismo CX.BRAND.id, así que el eje coincide. */
+    const scope=Object.assign({}, c.scope||{}, {tenantId:[CX.BRAND.id]});
+    arr.unshift(Object.assign({id:'cu'+Date.now().toString(36),lessons:[],mins,cert:false,estado:'borrador',contentVersion:1,workflowVersion:1,auditRef,
+      creador, createdByUserId, revisadoPor:null, reviewedByUserId:null, aprobadoPor:null, approvedByUserId:null, scope},c,{mins,scope}));
+    this.saveCustom(r,arr);
+    this._logAudit(r,{accion:'crear',cid:arr[0].id,titulo:arr[0].n,motivo:c.motivo||'(creación)'});
+    return {ok:true, course:arr[0]};
+  },
+
+  /* T1 (paquete V109 — 20260712, corrección P0 real): contexto académico CANÓNICO, propio de
+     Academia — independiente de CX.permissions.ctx() (que sirve a otro propósito: simular un
+     tenant/proyecto distinto para el gate de permisos, no el tenant/país reales del usuario).
+     Bug confirmado en V108: CX.permissions.ctx().tenantId lee CX.session.user.tenantId, campo
+     que NINGÚN flujo de login (admin/cliente/shopper/invitado) asigna jamás — así que un curso
+     creado con scope.tenantId=[CX.BRAND.id] quedaba invisible para TODOS los roles, incluido el
+     shopper correcto, porque ctx.tenantId llegaba `undefined`. Este helper resuelve tenantId al
+     tenant real de la instancia (CX.BRAND.id — un solo tenant por despliegue en este prototipo),
+     projectId al proyecto activo, país como LISTA (scope de países del usuario invitado si existe,
+     si no los países del proyecto activo) para que multipaís no rompa el filtro, y rol al rol
+     efectivo de sesión (scopeRole para roles de prueba, o el rol real). */
+  ctx(){
+    const u=(CX.session&&CX.session.user)||{};
+    const p=CX.data&&CX.data.period&&CX.data.period();
+    const rol = u.scopeRole || u.role || (CX.session&&CX.session.role) || undefined;
+    const projectId = p && p.id;
+    let paises;
+    /* T1-V110 (corrección P0 real, 20260712): para rol SHOPPER, el país de acceso debe ser el
+       país REAL del shopper autenticado (data.getShopper(shopperId).pais) — nunca
+       project.countries. V109 usaba project.countries como fallback cuando el shopper no traía
+       scopePaises propio: en un proyecto multipaís (GT/HN) eso le daba al shopper GT acceso
+       equivalente a [GT,HN], filtrando contenido HN que no le correspondía. Ahora:
+       - si el usuario es un invitado/rol de prueba con scopePaises explícito, se respeta (sirve
+         para simular un revisor multipaís, no es el caso de un shopper real);
+       - si es shopper real, se resuelve su país desde el catálogo canónico de shoppers;
+       - si el país del shopper no puede resolverse, paises queda `[]` (fail-closed): un curso
+         restringido por país no será visible (axisOkMulti trata lista vacía/ausente como "sin
+         país conocido" → no confirmable), pero el contenido GLOBAL (sin restricción de país en
+         su scope) sigue visible sin problema. */
+    if(rol==='shopper'){
+      const sid=u.shopperId;
+      const shopper=sid && CX.data && CX.data.getShopper && CX.data.getShopper(sid);
+      if(shopper && shopper.pais) paises=[shopper.pais];
+      else paises=[]; // fail-closed: sin país real conocido, no se asume el del proyecto
+    } else if(u.scopePaises && u.scopePaises.length){
+      paises=u.scopePaises; // invitados/roles de prueba explícitos (no shopper real)
+    } else if(p && p.countries && p.countries.length){
+      paises=p.countries; // admin/super viendo catálogo administrable general
+    }
+    return { tenantId: CX.BRAND.id, projectId, paises, rol };
+  },
+
+  /* Visibilidad efectiva por scope opcional. Separa dos familias de ejes (paquete V109 —
+     corrección P0): ACCESO (tenantId/projectId/pais/rol) decide si el curso es visible;
+     CLASIFICACIÓN (modulo/nivel/paquete) es taxonomía de contenido — se usa para FILTRAR el
+     catálogo desde la UI (ver matchesClassification), nunca para ocultar un curso solo porque
+     la sesión actual no tenga esos campos (bug V108: un shopper sin "módulo" en su contexto
+     perdía cursos con scope.modulo definido, aunque el eje de acceso fuera correcto). Un eje de
+     acceso vacío/ausente en el scope significa "global" para ese eje (no restringe). País acepta
+     una lista de países del usuario (multipaís): basta con que UNO se solape con el scope. */
+  visibleFor(course, ctx){
+    const sc=course&&course.scope; if(!sc || !Object.keys(sc).length) return true;
+    ctx=ctx||{};
+    const axisOk=(vals,current)=>!vals || !vals.length || (current!=null && vals.includes(current));
+    const axisOkMulti=(vals,currentArr)=>{
+      if(!vals || !vals.length) return true; // eje global, no restringe
+      if(!currentArr || !currentArr.length) return false; // curso restringido por país, sesión sin país conocido → no confirmable
+      return currentArr.some(c=>vals.includes(c));
+    };
+    return axisOk(sc.tenantId, ctx.tenantId) && axisOk(sc.projectId, ctx.projectId) && axisOkMulti(sc.pais, ctx.paises)
+      && axisOk(sc.rol, ctx.rol);
+  },
+
+  /* Filtros de CLASIFICACIÓN (no de acceso): módulo/nivel/paquete son metadatos del contenido.
+     `filters` trae los valores elegidos por el usuario en la UI (opcional cada uno); si el curso
+     no declara ese eje en su scope, no se excluye por esa clasificación (coincide con "cualquiera"). */
+  matchesClassification(course, filters){
+    filters=filters||{};
+    const sc=(course&&course.scope)||{};
+    const axisPick=(vals,chosen)=>!chosen || (Array.isArray(vals)&&vals.includes(chosen));
+    if(filters.modulo && !(Array.isArray(sc.modulo)&&sc.modulo.length)) return true; // sin taxonomía declarada, no se excluye
+    if(filters.modulo && Array.isArray(sc.modulo) && sc.modulo.length && !axisPick(sc.modulo, filters.modulo)) return false;
+    if(filters.nivel && Array.isArray(sc.nivel) && sc.nivel.length && !axisPick(sc.nivel, filters.nivel)) return false;
+    if(filters.paquete && Array.isArray(sc.paquete) && sc.paquete.length && !axisPick(sc.paquete, filters.paquete)) return false;
+    return true;
+  },
+
+  /* T1b — actores con identidad estable (paquete V109). El prototipo SÍ tiene un catálogo real
+     de usuarios invitados (cx_users, editable en Configuración → Usuarios & Permisos) además de
+     la sesión activa — V108 afirmaba erróneamente que no existía ninguno. actorId() resuelve un
+     id ESTABLE y persistido: si el usuario de sesión viene de cx_users (tiene email), se busca/crea
+     su id ahí; si es una sesión sintética de demo (Admin Demo/Cliente Demo/Evaluador 01, sin
+     registro propio), el id es estable por rol+shopperId dentro de este navegador. Nunca se compara
+     por nombre visible — el nombre es solo presentación. */
+  actorId(){
+    const u=(CX.session&&CX.session.user)||{};
+    if(u.email){
+      try{
+        const list=JSON.parse(localStorage.getItem('cx_users')||'[]');
+        const idx=list.findIndex(x=>x.email===u.email);
+        if(idx>=0){
+          if(!list[idx].id){ list[idx].id='usr_'+Math.random().toString(36).slice(2,10); try{localStorage.setItem('cx_users',JSON.stringify(list));}catch(e){} }
+          return list[idx].id;
+        }
+      }catch(e){}
+    }
+    return 'session_'+(u.role||(CX.session&&CX.session.role)||'anon')+(u.shopperId?'_'+u.shopperId:'');
+  },
+  /* compat: cursos legados que solo tienen el NOMBRE (creador/revisadoPor/aprobadoPor) sin id —
+     se les asigna un id determinístico derivado del nombre (hash estable), para que la
+     comparación de separación de funciones siga funcionando sin perder el dato existente. */
+  _idFromName(name){
+    name=String(name||'');
+    let h=0; for(let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))|0;
+    return 'legacy_'+Math.abs(h).toString(36);
+  },
+  editCourse(r,cid,patch,ctx){
+    if(CX.permissions && !CX.permissions.can('academy.edit', ctx)) return {ok:false, error:'Tu rol no tiene el permiso de acción "academy.edit".'};
+    const cs=[...this.COURSES[r]||[],...this.getCustom(r)]; const c=cs.find(x=>x.id===cid); if(c)Object.assign(c,patch); const custom=this.getCustom(r); const cu=custom.find(x=>x.id===cid); if(cu){Object.assign(cu,patch); cu.contentVersion=(cu.contentVersion||1)+1;} this.saveCustom(r,custom);
+    this._logAudit(r,{accion:'editar',cid,titulo:(cu&&cu.n)||(c&&c.n)||cid,motivo:patch.motivo||'(edición de campos)'});
+    return {ok:true};
+  },
+  /* ---- Ciclo de vida de cursos personalizados (paquete 20260710 — Academia transversal) ----
+     Solo aplica a cursos CUSTOM (creados/editados desde la UI); el contenido seed/base de
+     Academia es material de referencia de la plataforma y no se archiva ni versiona desde aquí. */
+  _audKey(r){ return 'cx_acad_audit_'+r; },
+  auditLog(r){ try{return JSON.parse(localStorage.getItem(this._audKey(r))||'[]');}catch(e){return [];} },
+  /* P0-5 (paquete genérico 20260711): CADA entrada de auditoría lleva su PROPIO auditRef —
+     antes solo el curso tenía un auditRef fijo desde su creación, y todos los eventos
+     posteriores (editar, transicionar, duplicar…) se registraban sin una referencia propia. */
+  _logAudit(r,entry){ const l=this.auditLog(r); const auditRef='aud_'+Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-4);
+    l.unshift(Object.assign({fecha:new Date().toISOString(),por:(CX.session&&CX.session.user&&CX.session.user.name)||'—',auditRef},entry)); try{localStorage.setItem(this._audKey(r),JSON.stringify(l.slice(0,300)));}catch(e){} },
+  isCustom(r,cid){ return this.getCustom(r).some(x=>x.id===cid); },
+
+  /* P0.6 (V98 instrucciones exactas): transición ÚNICA y centralizada de estado de curso.
+     Estados: borrador → en_revision → aprobado → publicado_preview → archivado / eliminado.
+     Reglas: motivo obligatorio en archivar/eliminar/restaurar/aprobar/publicar; restaurar
+     SIEMPRE vuelve a 'borrador' (nunca directo a publicado); publicar exige permiso
+     'academy.publish'; cada transición queda en auditLog con estado anterior/nuevo, actor,
+     motivo y auditRef; y dispara una notificación local de cambio de estado/versión. */
+  ALLOWED_TRANSITIONS:{
+    borrador:['en_revision','archivado','eliminado'],
+    en_revision:['aprobado','borrador','archivado','eliminado'],
+    aprobado:['publicado_preview','en_revision','archivado','eliminado'],
+    publicado_preview:['archivado','en_revision'],
+    archivado:['borrador'],
+    eliminado:['borrador'],
+  },
+  ACTION_FOR_STATE:{ en_revision:'academy.review', aprobado:'academy.approve', archivado:'academy.archive', eliminado:'academy.delete', publicado_preview:'academy.publish', borrador:'academy.restore' },
+  setCourseState(r, cid, nextState, opts){
+    opts=opts||{};
+    const reason=(opts.reason||'').trim();
+    if(!this.isCustom(r,cid)) return {ok:false, error:'El contenido seed no cambia de estado desde el prototipo.'};
+    const custom=this.getCustom(r); const c=custom.find(x=>x.id===cid); if(!c) return {ok:false, error:'Curso no encontrado.'};
+    const prev=c.estado||'borrador';
+    const allowedNext=this.ALLOWED_TRANSITIONS[prev]||[];
+    if(prev!==nextState && !allowedNext.includes(nextState)) return {ok:false, error:'Transición no permitida: '+prev+' → '+nextState+'.'};
+    /* motivo obligatorio en archivar, eliminar, restaurar (→borrador), aprobar, publicar */
+    const needsReason = ['archivado','eliminado','publicado_preview','aprobado'].includes(nextState) || (nextState==='borrador' && (prev==='archivado'||prev==='eliminado'));
+    if(needsReason && !reason) return {ok:false, error:'El motivo es obligatorio para pasar a "'+nextState+'".'};
+    /* permiso de acción — no basta con ocultar el botón, se valida también aquí */
+    const action=this.ACTION_FOR_STATE[nextState];
+    if(action && CX.permissions && !CX.permissions.can(action, opts.ctx)){
+      return {ok:false, error:'Tu rol no tiene el permiso de acción "'+action+'".'};
+    }
+    /* Contrato Academia (paquete 20260711): revisión y aprobación exigen una identidad
+       autenticada DISTINTA de quien creó el curso (separación de funciones configurable —
+       mismo patrón que el segundo actor de certificación en modules/cert.js). Sin sistema central real
+       de auth, el "autenticado" es la sesión activa del prototipo (session.user.name); nunca
+       texto libre. */
+    /* T1b (paquete V109 — corrección P0): la separación de funciones se valida por ID ESTABLE
+       (createdByUserId/reviewedByUserId/approvedByUserId), no por nombre visible. opts.revisorId /
+       opts.aprobadorId llegan de CX.acadData.actorId() en el módulo; opts.revisor/opts.aprobador
+       (nombre) se conservan solo para mostrarlos en la UI/auditoría. Para cursos legados sin id
+       persistido, c.createdByUserId/c.reviewedByUserId se retro-completan con _idFromName() la
+       primera vez que se necesitan, para no perder la garantía con datos antiguos. */
+    if(nextState==='en_revision'){
+      const revisor=(opts.revisor||'').trim();
+      const revisorId=opts.revisorId||(revisor?this._idFromName(revisor):'');
+      if(!revisor || !revisorId) return {ok:false, error:'Selecciona quién revisa (identidad distinta al creador).'};
+      const creadorId=c.createdByUserId||(c.creador?this._idFromName(c.creador):null);
+      if(creadorId && revisorId===creadorId) return {ok:false, error:'El revisor debe ser distinto de quien creó el curso ('+c.creador+').'};
+      c.revisadoPor=revisor; c.reviewedByUserId=revisorId;
+    }
+    if(nextState==='aprobado'){
+      const aprobador=(opts.aprobador||'').trim();
+      const aprobadorId=opts.aprobadorId||(aprobador?this._idFromName(aprobador):'');
+      if(!aprobador || !aprobadorId) return {ok:false, error:'Selecciona quién aprueba (identidad distinta al creador y, si aplica, al revisor).'};
+      const creadorId=c.createdByUserId||(c.creador?this._idFromName(c.creador):null);
+      const revisorId=c.reviewedByUserId||(c.revisadoPor?this._idFromName(c.revisadoPor):null);
+      if(creadorId && aprobadorId===creadorId) return {ok:false, error:'El aprobador debe ser distinto de quien creó el curso ('+c.creador+').'};
+      if(revisorId && aprobadorId===revisorId) return {ok:false, error:'El aprobador debe ser distinto de quien revisó ('+c.revisadoPor+') — separación de funciones.'};
+      c.aprobadoPor=aprobador; c.approvedByUserId=aprobadorId;
+    }
+    c.estado=nextState; c.workflowVersion=(c.workflowVersion||1)+1; this.saveCustom(r,custom);
+    const accionLbl={en_revision:'enviar a revisión',aprobado:'aprobar',publicado_preview:'publicar (preview)',archivado:'archivar',eliminado:'eliminar',borrador:'restaurar a borrador'}[nextState]||nextState;
+    this._logAudit(r,{accion:accionLbl, cid, titulo:c.n, motivo:reason||'(sin motivo — transición sin exigencia)', estadoAnterior:prev, estadoNuevo:nextState, source:opts.source||'ui_admin', revisadoPor:c.revisadoPor, aprobadoPor:c.aprobadoPor});
+    /* notificación local del cambio (in-app; nunca canal externo) */
+    CX.notif && CX.notif.push({to:'admin', tipo:'academia_estado', icon:'📚', tono:'b', titulo:'Academia: "'+c.n+'" → '+nextState, txt:'workflow v'+c.workflowVersion+' · '+(reason||'sin motivo adicional')+' (auditoría preview local, no del sistema central)', nav:'aprendizaje'});
+    return {ok:true, course:c};
+  },
+
+  duplicateCourse(r,cid,ctx){
+    const src=[...this.COURSES[r]||[],...this.getCustom(r)].find(x=>x.id===cid); if(!src) return null;
+    if(CX.permissions && !CX.permissions.can('academy.duplicate', ctx)) return null;
+    const arr=this.getCustom(r); const auditRef='aud_'+Math.random().toString(36).slice(2,8);
+    const copy=Object.assign({},JSON.parse(JSON.stringify(src)),{id:'cu'+Date.now().toString(36),n:(src.n||'Curso')+' (copia)',estado:'borrador',contentVersion:1,workflowVersion:1,auditRef});
+    arr.unshift(copy); this.saveCustom(r,arr);
+    this._logAudit(r,{accion:'duplicar',cid:copy.id,titulo:copy.n,motivo:'Duplicado desde "'+(src.n||'')+'"'});
+    return copy;
+  },
+  archiveCourse(r,cid,motivo,ctx){ return this.setCourseState(r,cid,'archivado',{reason:motivo,ctx}).ok; },
+  /* restaurar SIEMPRE vuelve a 'borrador' (nunca directo a publicado_preview) — desde ahí
+     el flujo normal es enviar a revisión → aprobar → publicar, cada paso con su propio motivo. */
+  restoreCourse(r,cid,motivo,ctx){ return this.setCourseState(r,cid,'borrador',{reason:motivo,ctx}).ok; },
+  /* Bloque 4 (auditoría V100 — corrección exacta): crear/editar lecciones ahora exige permiso
+     de acción (academy.edit) — antes ninguna de las dos se validaba. Además se corrigió un bug
+     real encontrado durante la auditoría: addLesson() nunca llamaba saveCustom(), así que una
+     lección agregada se perdía al recargar (mutaba un objeto efímero de getCustom() y solo
+     emitía el evento del bus, sin persistir nada). */
+  addLesson(r,cid,lesson,ctx){
+    if(CX.permissions && !CX.permissions.can('academy.edit', ctx)) return {ok:false, error:'Tu rol no tiene el permiso de acción "academy.edit".'};
+    const custom=this.getCustom(r); const c=custom.find(x=>x.id===cid);
+    if(!c) return {ok:false, error:'Solo se pueden agregar lecciones a cursos personalizados.'};
+    c.lessons=c.lessons||[]; c.lessons.push(Object.assign({id:'ls'+Date.now().toString(36)},lesson)); c.contentVersion=(c.contentVersion||1)+1;
+    this.saveCustom(r,custom); CX.bus&&CX.bus.emit('acad');
+    this._logAudit(r,{accion:'agregar_leccion',cid,titulo:c.n,motivo:(lesson&&lesson.motivo)||'(lección nueva)'});
+    return {ok:true};
+  },
+  editLesson(r,cid,lid,patch,ctx){
+    if(CX.permissions && !CX.permissions.can('academy.edit', ctx)) return {ok:false, error:'Tu rol no tiene el permiso de acción "academy.edit".'};
+    const custom=this.getCustom(r); const c=custom.find(x=>x.id===cid);
+    if(!c) return {ok:false, error:'Solo se pueden editar lecciones de cursos personalizados.'};
+    const l=(c.lessons||[]).find(x=>x.id===lid); if(l){Object.assign(l,patch); c.contentVersion=(c.contentVersion||1)+1;}
+    this.saveCustom(r,custom); CX.bus&&CX.bus.emit('acad');
+    this._logAudit(r,{accion:'editar_leccion',cid,titulo:c.n,motivo:(patch&&patch.motivo)||'(edición de lección)'});
+    return {ok:true};
+  },
+  /* soft-delete de lección (P0.8 — auditoría V99): igual patrón que los cursos — nunca
+     hard-delete, exige motivo, y queda auditada. La lección oculta no aparece en el reproductor
+     normal (se filtra por _deleted) pero es recuperable llamando restoreLesson(). */
+  delLesson(r,cid,lid,motivo,ctx){
+    if(CX.permissions && !CX.permissions.can('academy.edit', ctx)) return {ok:false,error:'Tu rol no tiene el permiso de acción "academy.edit".'};
+    if(!motivo||!motivo.trim()) return {ok:false,error:'El motivo es obligatorio para eliminar una lección.'};
+    const custom=this.getCustom(r); const c=custom.find(x=>x.id===cid); if(!c) return {ok:false,error:'Curso no encontrado.'};
+    const l=(c.lessons||[]).find(x=>x.id===lid); if(!l) return {ok:false,error:'Lección no encontrada.'};
+    l._deleted=true; c.contentVersion=(c.contentVersion||1)+1; this.saveCustom(r,custom);
+    this._logAudit(r,{accion:'eliminar_leccion',cid,titulo:c.n+' → '+l.n,motivo});
+    return {ok:true};
+  },
+  restoreLesson(r,cid,lid,motivo,ctx){
+    if(CX.permissions && !CX.permissions.can('academy.edit', ctx)) return {ok:false,error:'Tu rol no tiene el permiso de acción "academy.edit".'};
+    /* Bloque D (auditoría V101 — 20260711): restaurar una lección eliminada permitía motivo vacío
+       ("sin motivo registrado") — ahora es obligatorio, igual que al eliminar (delLesson). */
+    if(!motivo||!motivo.trim()) return {ok:false,error:'El motivo es obligatorio para restaurar una lección.'};
+    const custom=this.getCustom(r); const c=custom.find(x=>x.id===cid); if(!c) return {ok:false,error:'Curso no encontrado.'};
+    const l=(c.lessons||[]).find(x=>x.id===lid); if(!l) return {ok:false,error:'Lección no encontrada.'};
+    delete l._deleted; c.contentVersion=(c.contentVersion||1)+1; this.saveCustom(r,custom);
+    this._logAudit(r,{accion:'restaurar_leccion',cid,titulo:c.n+' → '+l.n,motivo:motivo.trim()});
+    return {ok:true};
+  },
+  delCourse(r,cid,motivo,ctx){ return this.setCourseState(r,cid,'eliminado',{reason:motivo,ctx}).ok;
+  },
   COURSES:{
     admin:[
+      /* ─── FUNDAMENTOS DE OPERACIÓN CANÓNICA (Corte 1B/2A) ─── */
+      {id:'a_canon_ops',cat:'Operación',ic:'🧭',color:'#2563eb',n:'Operación canónica: datos vivos, estados y honestidad',
+       desc:'Cómo lee la plataforma la operación real: fuente viva con revisión única, estados ortogonales, ausencia ≠ cero, reasignación segura, exportación por alcance y seguridad del evaluador.',
+       cert:false,mins:45,
+       scope:{modulo:['Operación','Reportes']},
+       lessons:[
+         {id:'ac1',ic:'🔄',n:'Fuente viva y revisión única',content:`
+<h2>Una sola verdad por periodo</h2>
+<div class="acad-section">🎯 <b>Idea central</b><p>Todo lo que ves en Dashboard, Visitas, Panorama y Reportes se calcula de la <b>misma fuente viva</b> del periodo activo, identificada por una <b>revisión única</b> (<code>sourceRevision</code>) que combina tenant + proyecto + periodo + revisión de HR + modo.</p></div>
+<p>Cuando cambias de periodo o llega una nueva revisión de HR, la caché se <b>invalida</b> y todo se recalcula. Por eso los conteos de Visitas, Dashboard y los reportes exportados <b>siempre coinciden</b>: comparten la misma revisión. En cada exportación (PDF/Excel/PPT) la revisión de fuente aparece en el encabezado y en la hoja Resumen.</p>
+<p><b>Cómo validar:</b> exporta un reporte y confirma que la "Revisión de fuente" es la misma que ves en pantalla; cambia de periodo y verás que los números cambian juntos, sin recargar la página.</p>`},
+         {id:'ac2',ic:'⚡',n:'Refresco in-place, sin recarga',content:`
+<h2>La pantalla se actualiza sola</h2>
+<p>Marcar una visita, reasignar, cambiar de país o de periodo <b>refresca la vista en el momento</b>, sin <code>location.reload</code>. No se pierde el contexto ni la sesión.</p>
+<div class="acad-section">✅ <b>Por qué importa</b><p>Un refresco completo borraría filtros y estado. El refresco in-place mantiene tu trabajo y garantiza que lo que ves es el estado más reciente de la fuente viva.</p></div>`},
+         {id:'ac3',ic:'🧩',n:'Estados ortogonales (no se pisan)',content:`
+<h2>Una visita tiene varias facetas a la vez</h2>
+<p>Asignación, agenda, ejecución, cuestionario, submitido, liquidación, pago, fuera de rango y cancelación son <b>facetas independientes</b> (ortogonales). La etiqueta visible muestra la etapa más avanzada, pero cada faceta se evalúa por separado con la misma función canónica (<code>visitFacets</code>/<code>visitBucketFns</code>).</p>
+<ul>
+<li><b>Disponible → Asignada → Agendada → Realizada → Con cuestionario → Submitida → Liquidada.</b></li>
+<li><b>Fuera de rango</b> y <b>Cancelada</b> se marcan aparte, sin borrar el resto del historial.</li>
+</ul>
+<div class="acad-section">⚠️ <b>Regla</b><p>El estado visible <b>nunca</b> se toma del texto crudo del registro: se deriva de las facetas canónicas, para que Dashboard, Visitas y Reportes digan exactamente lo mismo.</p></div>`},
+         {id:'ac4',ic:'🚫',n:'Ausencia distinta de cero',content:`
+<h2>"No hay dato" ≠ "es cero"</h2>
+<p>Si una métrica no tiene fuente confirmada (un honorario ausente, un score que aún no llega), la plataforma muestra <b>"Pendiente de fuente"</b>, nunca un <b>0</b> aparente que se lea como un valor real.</p>
+<div class="acad-section">🎯 <b>Ejemplo</b><p>La <b>Efectividad</b> = Σ realizadas ÷ Σ asignadas. Si no hay asignadas reales en el alcance, el KPI dice "Pendiente de fuente" (gate fail-closed), no "0%". La fórmula siempre está visible para que el número sea auditable.</p></div>`},
+         {id:'ac5',ic:'🔁',n:'Reasignación segura y trazable',content:`
+<h2>Cambiar de evaluador sin perder la fecha</h2>
+<p>Al reasignar una visita, la plataforma te muestra el <b>evaluador actual, la fecha y la franja vigentes</b>, y exige una <b>decisión explícita</b> sobre la fecha:</p>
+<ul>
+<li><b>Conservar fecha</b> — mantiene la agenda vigente.</li>
+<li><b>Cambiar fecha</b> — pide nueva fecha y franja.</li>
+<li><b>Pendiente de agendamiento</b> — deja la visita sin fecha hasta coordinar.</li>
+</ul>
+<p>Nunca se borra ni se inventa una fecha en silencio. Cada reasignación queda <b>registrada</b> (quién, a quién, con qué decisión de fecha) y notifica al equipo. El cambio se prepara en memoria y queda <b>pendiente de sincronización autorizada</b> — no escribe en HR por su cuenta.</p>`},
+         {id:'ac6',ic:'⤓',n:'Exportación por alcance, periodo, rol y revisión',content:`
+<h2>Lo que exportas es lo que ves</h2>
+<p>Cada reporte (Reportes, Visitas, Postulaciones, Dashboard, CRM, Finanzas y Mis Reportes del evaluador) exporta en <b>PDF, Excel (.xlsx real) y PowerPoint</b> con el <b>diseño del tenant</b> (logo, colores, tipografía), encabezado con proyecto/periodo/país/sucursal/alcance/fecha/fuente/revisión, pie con paginación y gráficas cuando aplican.</p>
+<ul>
+<li>Las <b>mismas filas y columnas</b> aparecen en los tres formatos.</li>
+<li>Puedes <b>elegir, ocultar, ordenar y renombrar columnas</b> y agregar notas; la personalización se refleja en los tres formatos.</li>
+<li>Se exporta <b>solo el periodo activo y el alcance filtrado</b> visible; los datos protegidos (p. ej. teléfono) no se incluyen sin autorización.</li>
+</ul>`},
+         {id:'ac7',ic:'🧪',n:'Canary funcional',content:`
+<h2>Prueba viva de que el flujo responde</h2>
+<p>Acciones como <b>asignar</b> un evaluador o <b>registrar un cuestionario</b> cambian de inmediato las facetas y los KPIs derivados, sin recargar. Este "canary" confirma que la operación está viva y que los indicadores reaccionan a la realidad, no a datos congelados.</p>`},
+         {id:'ac8',ic:'🔒',n:'Seguridad fail-closed del evaluador',content:`
+<h2>Sin identidad verificable, sin datos</h2>
+<p>Los módulos privados del evaluador (Mis Visitas, Reservas, Mi Día, Mis Reportes) muestran datos <b>solo</b> cuando hay un <code>shopperId</code> verificable en la sesión. Sin identidad real:</p>
+<ul>
+<li>No se listan ni ejecutan visitas de nadie.</li>
+<li>Se muestra "Identidad de evaluador no verificable" y las exportaciones quedan bloqueadas.</li>
+<li>El estado de una visita <b>nunca</b> sustituye la identidad: un evaluador ve lo suyo, jamás lo de otro.</li>
+</ul>
+<div class="acad-section">⚠️ <b>Importante</b><p>La selección visual de rol ("Ver como") es una <b>vista previa</b>, no autenticación ni control de seguridad real. El RBAC/Auth real lo gobierna el backend.</p></div>`},
+         {id:'ac9',ic:'❓',n:'Evaluación: operación canónica',tipo:'quiz',quiz:[
+           {q:'¿Por qué Dashboard, Visitas y los reportes exportados muestran los mismos números?',o:['Porque se copian a mano','Porque comparten la misma fuente viva y una revisión única (sourceRevision)','Porque se recargan cada minuto'],a:1},
+           {q:'Una métrica no tiene fuente confirmada. ¿Qué debe mostrar la plataforma?',o:['0 para no dejar el espacio vacío','"Pendiente de fuente" — nunca un cero aparente','Un promedio estimado'],a:1},
+           {q:'Al reasignar una visita, ¿qué NO puede pasar?',o:['Que te pida decidir sobre la fecha','Que se borre o invente la fecha en silencio','Que quede registrada la reasignación'],a:1},
+           {q:'Un evaluador inicia sesión sin shopperId verificable. ¿Qué ve en Mis Visitas?',o:['Las visitas de un evaluador de ejemplo','Nada: estado "identidad no verificable", sin datos ni acciones','Todas las visitas del proyecto'],a:1}
+         ]}
+       ]},
+      /* ─── FINANZAS & LIQUIDACIONES (profundo) ─── */
+      {id:'a_fin_op',cat:'Finanzas',ic:'💵',color:'#0e9c6e',n:'Finanzas: liquidaciones, movimientos y beneficios',
+       desc:'Cómo se liquida, se paga y se concilia — pantalla por pantalla, con estados honestos.',
+       cert:false,mins:55,
+       lessons:[
+         {id:'af1',ic:'🧾',n:'De la visita al pago: el flujo',content:`
+<h2>El recorrido del dinero</h2>
+<div class="acad-section">🎯 <b>Objetivo del módulo</b><p>Liquidaciones convierte cada visita aprobada en un monto a pagar, sin que nadie calcule nada a mano. Vive en <b>Finanzas → Liquidaciones</b>.</p></div>
+<div class="acad-section">⚙️ <b>Cómo funciona</b><p>Cuando una visita se marca realizada y su cuestionario queda "realizado/completado", el sistema genera automáticamente un registro de liquidación en estado <code>pending_review</code>. Ese registro recorre estados hasta convertirse en un pago real — nunca salta directo de "realizada" a "pagada".</p></div>
+<div class="acad-section">🖱️ <b>Pantalla y botones que usarás</b><p>En la tabla de Liquidaciones, cada fila tiene un selector de estado (<code>pending_review → in_review → needs_correction/approved_for_submitido → submitido_registered</code>), un campo de <b>Nota/motivo</b> obligatorio para justificar el cambio, y el botón <b>"Guardar revisión"</b>. Ninguno de estos cambios de estado se pierde: queda en la <b>bitácora de revisión</b> de esa visita, visible para auditoría.</p></div>
+<h3>Flujo completo, paso a paso</h3>
+<div class="acad-flow">
+  <div class="acad-step"><span>1</span><b>Cuestionario realizado</b><p>El shopper completó y entregó el cuestionario. Aún no genera liquidación.</p></div>
+  <div class="acad-step"><span>2</span><b>Revisión admin</b><p>Apruebas, pides corrección o marcas conflicto (held_for_conflict).</p></div>
+  <div class="acad-step"><span>3</span><b>Submitido</b><p>Confirmado manual o desde HR según config del proyecto.</p></div>
+  <div class="acad-step"><span>4</span><b>Candidata para lote</b><p>Verificas y mueves a un lote de pago (batchId).</p></div>
+  <div class="acad-step"><span>5</span><b>Pago (sistema central)</b><p>El cruce financiero real lo hace el sistema central. En el prototipo queda "preview".</p></div>
+</div>
+<div class="acad-section">✅ <b>Para qué sirve (si no existiera este módulo)</b><p>Sin este ciclo, calcularías honorarios y reembolsos manualmente en un Excel cada quincena, sin registro de quién aprobó qué ni por qué — y cualquier error en un cuestionario se pagaría igual porque nadie tendría un punto de control antes de comprometer el dinero.</p></div>
+<blockquote>Ningún estado dice "pagado" sin cruce financiero real del sistema central. En el prototipo verás "candidata / preview operativo".</blockquote>`},
+         {id:'af2',ic:'💳',n:'Movimientos: ingresos, egresos y CxC/CxP',content:`
+<h2>Movimientos & Tesorería</h2>
+<div class="acad-section">🎯 <b>Objetivo del módulo</b><p>Registrar y conciliar todo el dinero que entra y sale de la operación — vive en <b>Finanzas → Movimientos</b>. Es la fuente de verdad detrás de cada cifra del Dashboard Financiero.</p></div>
+<div class="acad-section">⚙️ <b>Cómo funciona</b><p>Cada movimiento (ingreso o egreso) queda ligado a un proyecto (o marcado como global) y a un estado de conciliación. El sistema no concilia solo — tú confirmas cuándo un movimiento registrado ya se verificó con su comprobante real.</p></div>
+<div class="acad-section">🖱️ <b>Pantalla y botones que usarás</b><p>En Movimientos encontrarás los botones <b>"⚙️ Generar CxC/CxP automáticas"</b> (crea cuentas por cobrar/pagar a partir de las liquidaciones y facturación del periodo), <b>"＋ Remesa"</b> (registra una transferencia de/hacia la casa matriz), y <b>"⤒ Importar histórico"</b> (carga movimientos previos desde archivo). Cada CxC/CxP en la tabla es clickeable para ver su detalle y marcarla conciliada.</p></div>
+<h3>Tipos de movimiento</h3>
+<div class="acad-section"><b>Ingreso</b><p>Define la <b>fuente/pagador</b> (cliente, casa matriz) y el <b>proyecto destino</b>. Estados: conciliado, pendiente (CxC), por conciliar.</p></div>
+<div class="acad-section"><b>Egreso</b><p>Define el <b>beneficiario</b> (shopper, proveedor) y el proyecto. Un pago de lote genera un egreso por beneficiario con su número de lote.</p></div>
+<div class="acad-section"><b>CxC / CxP</b><p>Cuentas por cobrar y por pagar con buscador. Un egreso programado crea una CxP; al liquidarse, se concilia.</p></div>
+<div class="acad-section">✅ <b>Para qué sirve (si no existiera este módulo)</b><p>Sin Movimientos, el Dashboard Financiero mostraría solo estimaciones sin respaldo — no sabrías con certeza si un ingreso del cliente ya llegó de verdad o si sigues esperando el comprobante.</p></div>
+<h3>Datos sensibles</h3>
+<p>Los datos bancarios del shopper y montos de pago son sensibles: en producción se protegen por el sistema central y solo se referencian con <code>referencia de pago</code> opaco. El prototipo no expone datos reales.</p>`},
+         {id:'af3',ic:'🎟️',n:'Conceptos configurables (Boleto, Combo, etc.)',content:`
+<h2>Conceptos de reembolso por proyecto</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Permitir que cada proyecto reembolse al shopper los consumos que su escenario exige (ej. entrada de cine, combo), sin que estos conceptos estén programados fijos en la plataforma.</p></div>
+<div class="acad-section">⚙️ <b>Cómo funciona</b><p>Al configurar el proyecto (Admin del Proyecto → Proyectos → ⚙️), defines la lista de conceptos reembolsables junto con su monto tope (si aplica) y si requieren evidencia (foto del ticket). Esa lista queda asociada SOLO a ese proyecto — otro proyecto define la suya propia, sin interferir.</p></div>
+<div class="acad-section">🖱️ <b>Dónde se configura y usa</b><p>Se configura una sola vez en la ficha del proyecto. Después, cada vez que un shopper llena su cuestionario, el escenario le pide adjuntar la evidencia del concepto correspondiente (ej. foto del ticket de "Combo"), y ese monto se suma automáticamente al total de su liquidación junto al honorario.</p></div>
+<div class="acad-section"><b>Ejemplo (configurable)</b><p>Un programa de cine puede definir "Boleto" y "Combo" como conceptos reembolsables. Otro programa define los suyos. La plataforma no los trae fijos.</p></div>
+<ul class="acad-check">
+<li>Conceptos de reembolso definidos por proyecto</li>
+<li>Monto tope por concepto (si aplica)</li>
+<li>Evidencia requerida para reembolsar (foto del ticket)</li>
+<li>Corte del periodo: reembolsos pendientes quedan como liquidación/pago pendiente hasta el cruce</li>
+</ul>
+<div class="acad-section">✅ <b>Para qué sirve (si no existiera esto)</b><p>Sin conceptos configurables, cada cliente nuevo con un modelo de reembolso distinto (cine, restaurante, banco) requeriría una modificación de código — lo que hace que la plataforma sea difícil de vender a nuevos rubros de negocio.</p></div>
+<blockquote>Lo específico de un cliente (conceptos, montos) es configuración por tenant/proyecto/periodo, para mantener la plataforma comercializable y multi-proyecto.</blockquote>`},
+         {id:'af4',ic:'❓',n:'Evaluación de finanzas',tipo:'quiz',quiz:[
+           {q:'Un egreso por pago de lote, ¿qué genera?',o:['Un ingreso','Un egreso por beneficiario con número de lote','Una CxC'],a:1,fb:'Genera un egreso por beneficiario (shopper/proveedor) asociado a su número de lote (batchId).'},
+           {q:'¿Los conceptos "Boleto" y "Combo" son fijos de la plataforma?',o:['Sí, siempre están','No: son configuración por tenant/proyecto','Solo en cine'],a:1,fb:'Son configuración por proyecto. La plataforma es genérica y comercializable; cada cliente define sus conceptos.'},
+           {q:'¿Cuándo un movimiento dice "pagado"?',o:['Al moverlo a lote','Solo cuando el sistema central hace el cruce financiero real','Al crear la liquidación'],a:1,fb:'En el prototipo se muestra "candidata/preview". El estado real de pago depende del cruce del sistema central.'},
+         ]},
+       ]},
+      /* ─── BLOQUES BACKEND (transparencia de estado) ─── */
+      {id:'a_backend_prepared',cat:'Inducción',ic:'🔌',color:'#7c3aed',n:'Capacidades pendientes de activación',
+       desc:'Qué funciones dependen del sistema central y cómo se ven mientras la activación no está autorizada.',
+       cert:false,mins:25,
+       lessons:[
+         {id:'ab1',ic:'🔌',n:'Preparado vs. activo',content:`
+<h2>Cómo leer los estados del sistema central</h2>
+<p>Varias capacidades ya tienen su interfaz lista pero su ejecución real ocurre en el sistema central. Mientras la activación no esté autorizada, verás el badge <b>"preparado / pendiente de conexión"</b> — nunca "enviado" o "en vivo" falsos. Esta distinción existe para que nunca confundas una demo bien diseñada con un sistema en producción: lo que ves funciona en pantalla, pero la acción real (enviar un WhatsApp, escribir en una base de datos externa) solo ocurre cuando el equipo técnico activa esa conexión.</p>
+<div class="acad-cards">
+  <div class="acad-card"><div>🕐</div><b>Historial de comunicación</b><p>Timeline seguro por shopper. Se poblará cuando el sistema central registre los envíos reales.</p></div>
+  <div class="acad-card"><div>⭐</div><b>Ranking / scoring</b><p>Ayuda al admin a decidir. No autoasigna: la decisión sigue siendo humana.</p></div>
+  <div class="acad-card"><div>📐</div><b>Versionado de reglas</b><p>Cada proyecto/tenant versiona sus reglas; los cambios quedan con historial borrador→revisión→aprobado.</p></div>
+  <div class="acad-card"><div>🚦</div><b>Estado de preparación</b><p>Resumen con pendientes antes de habilitar producción.</p></div>
+  <div class="acad-card"><div>🧪</div><b>Datos de ejemplo</b><p>Información de prueba — NO es la fuente real de datos del cliente.</p></div>
+</div>
+<blockquote>Regla de oro: si un dato no dice explícitamente que proviene de una fuente confirmada, trátalo como vista previa. El indicador de fuente de datos en el sidebar te lo aclara.</blockquote>`},
+         {id:'ab3',ic:'🚪',n:'Qué significa "pendiente de activación" y quién la autoriza',content:`
+<h2>El concepto de activación, explicado sin jerga</h2>
+<p>"Pendiente de activación" separa "la interfaz está lista para mostrarse" de "la acción real está autorizada a ejecutarse". Existen tres estados posibles que verás repetidos en Administrabilidad:</p>
+<ul>
+<li><b>⛔ Sin autorizar:</b> la funcionalidad está construida pero nadie la ha autorizado a tocar datos o sistemas reales todavía.</li>
+<li><b>🧪 Vista previa:</b> puedes probar el flujo completo con datos de ejemplo, pero no afecta nada real.</li>
+<li><b>👤 Revisión humana:</b> la acción sí puede ejecutarse, pero solo después de que una persona confirme la decisión — nunca de forma automática.</li>
+</ul>
+<p>¿Quién autoriza una activación? Normalmente el equipo técnico, una vez que el sistema central correspondiente está conectado y probado en un ambiente controlado. Como admin de negocio, tu rol no es autorizar la activación — es entender en qué estado está cada capacidad para explicarle correctamente al cliente qué es demo y qué es producción real.</p>`},
+         {id:'ab4',ic:'❓',n:'Evaluación',tipo:'quiz',quiz:[
+           {q:'El ranking de shoppers, ¿asigna visitas solo?',o:['Sí, automático','No: es ayuda para el admin; la decisión es humana','Solo en HN'],a:1,fb:'El ranking es apoyo a la decisión. La asignación la confirma una persona.'},
+           {q:'Ves "preparado / pendiente de conexión" en una acción. ¿Ya se ejecutó?',o:['Sí','No: la interfaz está lista, la ejecución real depende del gate del sistema central','Depende del plan'],a:1,fb:'"Preparado" = UI lista; la ejecución real ocurre cuando el gate del sistema central está activo.'},
+         ]},
+       ]},
+      /* ─── GLOSARIO & CHECKLISTS (referencia rápida) ─── */
+      {id:'a_glos',cat:'Inducción',ic:'📖',color:'#0891b2',n:'Glosario y checklists operativos',
+       desc:'Referencia de términos clave y listas de verificación reales para el día a día.',
+       cert:false,mins:20,
+       lessons:[
+         {id:'ag1',ic:'📖',n:'Glosario CXOrbia',content:`
+<h2>Términos que usarás a diario</h2>
+<p>Referencia rápida. Estos conceptos aparecen en la plataforma y en los manuales técnicos.</p>
+<h3>Operación</h3>
+<dl class="acad-gloss">
+<dt>HR / Hoja de Ruta</dt><dd>El plan de visitas del periodo: qué sucursales, con qué escenario, en qué quincena y con qué honorario.</dd>
+<dt>Escenario</dt><dd>El guion de la visita (qué debe evaluar el shopper). Configurable por proyecto.</dd>
+<dt>Submitido</dt><dd>El momento en que el cuestionario se considera formalmente entregado. Configurable por proyecto; puede tomarse desde la HR.</dd>
+<dt>Revisión</dt><dd>Etapa formal del admin entre "cuestionario realizado" y "liquidación": aprobar, pedir corrección o marcar conflicto.</dd>
+<dt>Candidata (liquidación)</dt><dd>Una liquidación en preview operativo, aún sin cruce financiero real. No es un pago confirmado.</dd>
+</dl>
+<h3>Conceptos técnicos (sistema central)</h3>
+<dl class="acad-gloss">
+<dt>registro seguro</dt><dd>Registro seguro de la fuente de HR: el sistema central guarda la conexión y devuelve un <code>referencia segura</code> opaco. La URL real nunca se guarda en el navegador.</dd>
+<dt>referencia de visita</dt><dd>Referencia opaca que vincula una visita con su fila de origen en la HR, sin exponer datos sensibles.</dd>
+<dt>referencia de pago</dt><dd>Referencia opaca que vincula un pago con su origen, para trazabilidad sin exponer datos bancarios.</dd>
+<dt>requiere revisión</dt><dd>Estado que exige revisión humana del admin antes de avanzar (p. ej. inconsistencia detectada).</dd>
+<dt>en conflicto</dt><dd>Retenido por conflicto entre la plataforma y la HR; requiere reconciliación antes de liquidar.</dd>
+<dt>identificador de lote / de pago / de movimiento</dt><dd>Referencias que identifican el lote de pago, cada ítem de pago y cada movimiento financiero. Aparecen cuando el sistema central está activo.</dd>
+</dl>
+<blockquote>Los conceptos técnicos son visibles pero su ejecución real depende del sistema central. En el prototipo se muestran como preparados/pendientes.</blockquote>`},
+         {id:'ag2',ic:'✅',n:'Checklist: publicar una ronda',content:`
+<h2>Antes de publicar visitas</h2>
+<p>Verifica cada punto. La lista es una guía real, no un párrafo.</p>
+<ul class="acad-check">
+<li class="done">Proyecto configurado (país, moneda, periodicidad de rondas)</li>
+<li class="done">Fuente de HR definida (interna, importada o registro seguro por el sistema central)</li>
+<li>Cuestionario asignado al tipo de visita correcto</li>
+<li>Escenarios cargados para la quincena</li>
+<li>Honorarios por país configurados</li>
+<li>Certificación del proyecto lista (los shoppers no se postulan sin ella)</li>
+<li>Contactos de gestión (WhatsApp por tipo) configurados</li>
+</ul>
+<h3>Al cerrar el periodo</h3>
+<ul class="acad-check">
+<li>Cuestionarios en estado "realizado" revisados por el admin</li>
+<li>Revisión: aprobar / pedir corrección / marcar conflicto</li>
+<li>Submitido confirmado (manual o desde HR según config)</li>
+<li>Liquidaciones candidatas verificadas antes de mover a lote</li>
+</ul>
+<blockquote>Marca mental cada punto. Los estados reales de pago dependen del cruce financiero del sistema central.</blockquote>`},
+         {id:'ag3',ic:'❓',n:'Evaluación de referencia',tipo:'quiz',quiz:[
+           {q:'¿Qué significa que una liquidación esté como "candidata"?',o:['Que ya se pagó','Que está en preview operativo, sin cruce financiero real','Que fue rechazada'],a:1,fb:'Candidata = preview operativo. El pago real depende del cruce financiero del sistema central.'},
+           {q:'¿Dónde se guarda la URL real de una HR externa?',o:['En el navegador (localStorage)','En ningún lado del frontend; el sistema central la registra y devuelve un referencia segura opaco','En el cuestionario'],a:1,fb:'Nunca en el navegador. El sistema central hace el registro seguro (registro seguro) y devuelve un referencia segura opaco.'},
+           {q:'¿Qué es la etapa de "Revisión"?',o:['Un paso opcional','La etapa formal del admin entre cuestionario realizado y liquidación','Lo mismo que el submitido'],a:1,fb:'Revisión es una etapa formal: aprobar, pedir corrección o marcar conflicto antes de liquidar.'},
+         ]},
+       ]},
+      /* ─── DIAGNÓSTICO, ADMINISTRABILIDAD Y CONFLICTOS (módulos nuevos) ─── */
+      {id:'a_diag_admin',cat:'Técnico',ic:'🧭',color:'#2a6fdb',n:'Diagnóstico, Administrabilidad y conflictos: tu nueva caja de herramientas',
+       desc:'Tour de los dos módulos nuevos de Configuración: qué muestran, qué NO ejecutan, y cómo resolver un conflicto paso a paso.',
+       cert:false,mins:45,
+       lessons:[
+         {id:'ada1',ic:'🧪',n:'Diagnóstico & Readiness: qué verás',content:`
+<h2>Configuración → Diagnóstico & Readiness</h2>
+<p>Es la vista donde el equipo revisa la salud del sistema <b>en vista previa</b>, sin ejecutar nada real. Piénsalo como el panel de control de un piloto antes de despegar: te dice qué está listo, qué tiene bloqueos y qué necesita revisión, sin mover el avión todavía. Tiene 4 pestañas:</p>
+<div class="acad-cards">
+  <div class="acad-card"><div>🧪</div><b>Pruebas de ejemplo</b><p>Corre "paquetes" de casos de prueba ficticios (no datos reales de clientes) y muestra pass/warn/fail por paquete, con % de cobertura.</p></div>
+  <div class="acad-card"><div>📊</div><b>Estado de preparación</b><p>Matriz por módulo (15 módulos: tenant/proyecto/periodo, HR/source, usuarios/roles, shoppers, visitas, postulaciones, Academia, certificaciones, pagos, notificaciones, cola de revisión, registro de decisiones, autorizaciones, branding, switch del sistema central) + preparación por dominio de datos.</p></div>
+  <div class="acad-card"><div>⚖️</div><b>Conflictos</b><p>La bandeja de conflictos accionable, más los candidatos que llegaron desde el Importador — la ves en la siguiente lección.</p></div>
+  <div class="acad-card"><div>🔌</div><b>Capacidades y autorizaciones</b><p>Lista cada capacidad del sistema central preparada (assignment sync, liquidaciones, evidencias, etc.) con su estado: sin autorizar, vista previa o revisión humana.</p></div>
+</div>
+<blockquote>El banner ámbar de arriba de la pantalla siempre te recuerda: acciones reales pendientes de autorización · fuente real pendiente · revisión humana pendiente · producción NO autorizada. Si algo dice "vista previa", nunca asumas que ya pasó de verdad.</blockquote>`},
+         {id:'ada1b',ic:'📊',n:'Readiness por módulo y candidatos protegidos',content:`
+<h2>La matriz de readiness (patrón genérico)</h2>
+<p>Ningún módulo debe mostrarse como "conectado / importado / en producción" sin este semáforo. Cada módulo tiene un estado honesto:</p>
+<div class="acad-cards">
+  <div class="acad-card"><div>🟢</div><b>Listo</b><p>Sin bloqueos conocidos en vista previa. La confirmación real de producción la sigue dando el sistema central, no el navegador.</p></div>
+  <div class="acad-card"><div>🟡</div><b>Avanza con revisión</b><p>Avanza, pero con revisión humana pendiente — hay advertencias que alguien debe mirar antes de confiar del todo.</p></div>
+  <div class="acad-card"><div>🔴</div><b>Bloqueado</b><p>No avanza. Hay al menos un bloqueo real (ej. verificación de identidad no conectada, pagos sin autorizar).</p></div>
+</div>
+<h3>De dónde salen los "candidatos"</h3>
+<p>Cuando importas datos (Importador) o lees una fuente de HR, nada se escribe directo al sistema. Todo pasa por un pipeline de 6 etapas, siempre en este orden:</p>
+<div class="acad-flow">
+  <div class="acad-step"><span>1</span><b>vista previa (sin escribir)</b><p>Solo simula: cuenta filas, detecta tipos, no toca nada.</p></div>
+  <div class="acad-step"><span>2</span><b>registro seguro</b><p>Los datos sensibles (DPI, teléfono, banco, correo) se enmascaran antes de mostrarse en preview.</p></div>
+  <div class="acad-step"><span>3</span><b>protected candidates</b><p>Candidatos de shopper, certificación, liquidación o lote de pago — aún no son registros reales.</p></div>
+  <div class="acad-step"><span>4</span><b>cola de revisión</b><p>Bandeja donde una persona revisa cada candidato antes de decidir qué hacer.</p></div>
+  <div class="acad-step"><span>5</span><b>registro de decisiones</b><p>Cada decisión (aprobar, escalar, descartar) queda registrada con motivo y fecha — nunca en silencio.</p></div>
+  <div class="acad-step"><span>6</span><b>no escrito</b><p>El estado final en el prototipo: nada llega a la base de datos real hasta que el sistema central con su gate lo autorice.</p></div>
+</div>
+<p>Verás esto en acción en <b>Importador → Análisis IA</b> (el stepper del pipeline arriba del análisis) y en <b>Diagnóstico → Conflictos</b> (bloque "Candidatos desde HR/Source").</p>
+<blockquote>Acceso de lectura protegido: un shopper solo lee su propio perfil; un rol sin ese acceso habilitado ve datos enmascarados con 🔒; finanzas nunca ve el número de cuenta bancaria crudo. Esto se aplica ya en el módulo Shoppers.</blockquote>`},
+         {id:'ada2',ic:'⚖️',n:'Resolver un conflicto, paso a paso',content:`
+<h2>Bandeja de conflictos: cómo se resuelve de verdad</h2>
+<p>Cada tarjeta de conflicto trae: severidad, estado, <b>referencias de fuente opacas</b> (por ejemplo <code>src:hr#a4f2</code> — nunca un nombre o documento real) y un <code>auditRef</code>.</p>
+<ol>
+<li>Lee la razón del conflicto (p. ej. "assignmentSource divergente entre HR y plataforma").</li>
+<li>Pulsa <b>Revisar</b>.</li>
+<li>Elige una decisión: <b>mantener ambos registros</b>, <b>escalar a supervisor</b>, o <b>marcar revisado</b>. No existe la opción de "fusionar" o "deduplicar" — nunca se resuelve por coincidencia visual.</li>
+<li>Escribe el <b>motivo</b> (obligatorio) — queda ligado al auditRef.</li>
+<li>Al registrar, el conflicto pasa a "Resuelto" con fecha y auditRef visibles. El banner te recuerda: la <b>aplicación real</b> de esa decisión la ejecuta el sistema central cuando su gate esté activo.</li>
+</ol>
+<blockquote>Esta bandeja es igual para asignaciones (HR↔plataforma), liquidaciones, cuestionarios, importaciones y evidencias — mismo patrón en todos los dominios.</blockquote>`},
+         {id:'ada3',ic:'⚙️',n:'Administrabilidad: configurar sin romper nada',content:`
+<h2>Configuración → Administrabilidad</h2>
+<p>Aquí se ve qué es <b>versionado</b> y qué exige <b>motivo</b> antes de cambiar, en 5 pestañas:</p>
+<div class="acad-cards">
+  <div class="acad-card"><div>🧭</div><b>Matriz de configuración</b><p>18 dominios (tenant, reglas, HR, cuestionarios, NDA, planes, evidencias, roles, etc.) con su estado: versionado, motivo obligatorio, gate.</p></div>
+  <div class="acad-card"><div>🔒</div><b>NDA (versionado)</b><p>Editar el texto por rol crea una <b>nueva versión</b> con motivo. Las aceptaciones que ya firmaron los usuarios <b>nunca se alteran</b> — quedan intactas y auditables.</p></div>
+  <div class="acad-card"><div>📦</div><b>Planes (versionado)</b><p>Cada plan comercial (Básico, Pro, etc.) puede versionarse sin reconfigurar en silencio a los tenants que ya lo usan.</p></div>
+  <div class="acad-card"><div>📜</div><b>Reglas & gates</b><p>Reglas de negocio (elegibilidad de pago, anti-duplicado, ruteo de cuestionario) con su versión y su gate actual.</p></div>
+  <div class="acad-card"><div>🏗️</div><b>Fase A & dominios profundos</b><p>El detalle honesto de Fase A, sincronía HR↔plataforma, liquidaciones, cuestionarios, evidencias y la política de datos sensibles.</p></div>
+</div>
+<blockquote>Regla de oro de administrabilidad: <b>ningún cambio se sobre-escribe en silencio</b>. Todo cambio sensible pide un motivo y queda versionado.</blockquote>`},
+         {id:'ada4',ic:'❓',n:'Evaluación',tipo:'quiz',quiz:[
+           {q:'En la bandeja de conflictos, ¿puedes "fusionar" dos registros que se parecen?',o:['Sí, si coinciden visualmente','No: nunca se deduplica por coincidencia visual; solo mantener ambos, escalar o marcar revisado','Solo el super admin puede fusionar'],a:1,fb:'La fusión/dedupe nunca es una opción. La única resolución válida es una decisión humana registrada con motivo.'},
+           {q:'Si subes una nueva versión del NDA, ¿qué pasa con las aceptaciones ya firmadas?',o:['Se invalidan y hay que re-firmar','Se conservan intactas; solo aplica a nuevas aceptaciones','Se actualizan automáticamente a la nueva versión'],a:1,fb:'Las aceptaciones presentadas nunca se alteran. Es solo lectura y auditable.'},
+           {q:'¿Qué significa una capacidad en estado "sin autorizar"?',o:['Que la función no existe','Que la interfaz está lista pero la ejecución real no está autorizada todavía','Que hay un error'],a:1,fb:'"Gate apagado" = preparado pero no autorizado a ejecutar en producción.'},
+           {q:'Un módulo aparece como NO_GO_BLOCKER en la matriz de readiness. ¿Qué significa?',o:['Que el módulo no existe en el prototipo','Que tiene al menos un blocker real y no debe tratarse como listo para producción','Que necesita más diseño visual'],a:1,fb:'NO_GO_BLOCKER = hay un bloqueo real (ej. Auth no conectado). Nunca se muestra ese módulo como "conectado/producción" mientras tenga blockers.'},
+           {q:'Importaste un archivo de shoppers desde el Importador. ¿En qué etapa del pipeline queda antes de que alguien lo revise?',o:['Ya quedó escrito en el sistema','cola de revisión (candidato pendiente de revisión humana)','registro de decisiones directamente'],a:1,fb:'Todo candidato importado pasa por cola de revisión antes de cualquier decisión; nada se escribe sin gate + revisión.'},
+         ]},
+       ]},
+/* ─── GUÍA COMPLETA DE MÓDULOS (por módulo: beneficio, flujo, cómo usar) ─── */
+      {id:'a_modguide',cat:'Inducción',ic:'🗺️',color:'#0e9c6e',n:'Guía de módulos: beneficio, flujo y cómo usar — Operación y Administración',
+       desc:'Cada módulo del menú, uno por uno: para qué existe, qué pasa si no lo usas, y los pasos exactos para operarlo.',
+       cert:false,mins:170,
+       lessons:[
+         {id:'mg1',ic:'📋',n:'Operación (7 módulos)',content:`
+<h2>Sección "Operación" del menú</h2>
+<p>Es la sección que usas todos los días. Cada módulo aquí existe para eliminar una fricción operativa concreta.
+Esta lección va más a fondo que un resumen: para cada módulo verás qué es, qué problema resuelve, quién lo usa, el
+flujo completo con los botones exactos, cómo saber que funcionó, los errores más comunes y qué hacer cuando algo
+falla.</p>
+
+<div class="acad-section">☀️ <b>Mi Día</b>
+<p><b>Qué es y qué problema resuelve:</b> es tu pantalla de aterrizaje al entrar — junta en un solo cronograma lo que
+te toca hoy (visitas agendadas, postulaciones por aprobar, asignaciones internas pendientes) para que no tengas que
+recorrer 5 módulos distintos para saber qué hacer primero. Sin ella, cada coordinador arma su propio checklist mental
+y las tareas atrasadas se descubren tarde.</p>
+<p><b>Quién lo usa:</b> admin/coordinador (vista de equipo) y shopper (vista de sus propias visitas).</p>
+<p><b>Flujo completo y botones:</b> entras a la app → el bloque superior de KPIs (Agendadas / Por aprobar / etc.) es
+clickeable — un click en cualquier tarjeta te lleva a la lista filtrada detrás del número. Debajo, el <b>Cronograma</b>
+muestra el mes con un selector de proyecto ("🗂️ Todos" agrega, o elige uno) y flechas ◀ ▶ para cambiar de mes. Click
+en cualquier día abre un modal con los ítems de esa fecha; click en un ítem del modal te lleva directo a su pantalla
+de gestión (la visita, la postulación). Si hay asignaciones internas pendientes (tarea manual asignada por otro
+admin), aparecen en una tarjeta ámbar aparte con botón "Resuelta" para cerrarlas.</p>
+<p><b>Cómo validar que funcionó:</b> el ítem desaparece de "pendientes" y el contador de la tarjeta KPI baja en uno;
+si resolviste una asignación, deja de aparecer en la tarjeta ámbar.</p>
+<p><b>Errores frecuentes / qué hacer si falla:</b> si un ítem "vencido" no aparece resaltado, revisa que el filtro de
+proyecto arriba del cronograma no esté limitando la vista a un proyecto distinto al de esa visita. Si clickeas un
+KPI y la lista sale vacía, es porque no hay ningún registro en ese estado para el proyecto/periodo activo — no es un
+error, es el estado real.</p></div>
+
+<div class="acad-section">📊 <b>Dashboard Operativo</b>
+<p><b>Qué es y qué problema resuelve:</b> es tu alerta temprana de todo el programa — sin él, un atraso solo se nota
+cuando ya es tarde para corregirlo (ej. faltando 2 días para cerrar el periodo). Convierte filas de datos en un
+semáforo de avance real vs. ideal.</p>
+<p><b>Quién lo usa:</b> admin/coordinador. Ops/coordinador con scope de país solo ven sus países asignados.</p>
+<p><b>Flujo completo y botones:</b> arriba eliges país/proyecto — "Todos los proyectos" agrega KPIs globales; un
+proyecto específico muestra su detalle. Cada tarjeta de KPI (agendadas, realizadas, pendientes de revisión, atrasadas,
+etc.) es clickeable y abre la tabla de visitas detrás de ese número — desde ahí puedes entrar a cada visita
+individual. El bloque de comparativo trimestral (abajo) grafica 8 KPIs de los últimos 3 meses para ver tendencia, no
+solo la foto de hoy. Los botones 📲 junto a cada shopper en la tabla abren un borrador de WhatsApp (manual, no
+automático) para dar seguimiento.</p>
+<p><b>Cómo validar que funcionó:</b> el número de la tarjeta baja/sube según las acciones que tomes en Postulaciones/
+Visitas — el dashboard no se actualiza "en vivo sistema central", se recalcula sobre los mismos datos del prototipo cada vez
+que entras o cambias de proyecto.</p>
+<p><b>Errores frecuentes / qué hacer si falla:</b> si los KPIs parecen "congelados" tras aprobar algo, vuelve a entrar
+al módulo (o cambia de proyecto y regresa) para forzar el recálculo. Si un país/proyecto no aparece en el selector,
+revisa el scope del usuario en Configuración → Usuarios — puede estar limitado a otros países.</p></div>
+
+<div class="acad-section">📋 <b>Visitas Disponibles</b>
+<p><b>Qué es y qué problema resuelve:</b> es el "marketplace" donde el shopper ve qué visitas hay para tomar. Sin
+publicar aquí, ningún shopper puede reservar ni postularse — es el primer eslabón de toda la cadena operativa.</p>
+<p><b>Quién lo usa:</b> admin publica/gestiona; shopper reserva/postula desde su propia vista.</p>
+<p><b>Flujo completo y botones:</b> publicas una visita (botón <b>"+ Publicar"</b>, formulario manual) o la traes vía
+Hojas de Ruta/Importador → aparece en la tabla admin con su estado (disponible, reservada, asignada…) → usa los
+filtros de país/proyecto/estado arriba de la tabla para encontrarla → el shopper la ve en su propia lista y pulsa
+Reservar/Postular → tú la apruebas desde Postulaciones o Reservas & Asignación según el modo del proyecto.</p>
+<p><b>Datos a ingresar al publicar:</b> sucursal, rango de fechas disponible, honorario/combo, instructivo asociado
+— sin instructivo, el shopper no tiene contexto de qué evaluar.</p>
+<p><b>Cómo validar que funcionó:</b> la visita nueva aparece en la tabla con estado "disponible" y, si el proyecto
+tiene shoppers activos en ese país, empieza a mostrarse en su lista de disponibles.</p>
+<p><b>Errores frecuentes / qué hacer si falla:</b> si publicaste pero ningún shopper la ve, revisa que el país de la
+sucursal coincida exactamente con el país de certificación del shopper — el cruce es por país, no por texto libre.
+Una visita "huérfana" (sin instructivo) genera cuestionarios pobres — complétalo antes de publicar en volumen.</p></div>
+
+<div class="acad-section">📩 <b>Postulaciones</b>
+<p><b>Qué es y qué problema resuelve:</b> reemplaza el proceso manual de aprobar/reasignar shoppers por WhatsApp sin
+registro — aquí cada decisión queda con nombre de quien la tomó y fecha, evitando disputas de "yo nunca aprobé eso".</p>
+<p><b>Quién lo usa:</b> admin/coordinador/ops según permiso de acción de aprobar.</p>
+<p><b>Flujo completo y botones:</b> el shopper se postula desde Visitas Disponibles → aparece en tu bandeja agrupada
+por sucursal → cada fila tiene botones directos: <b>✅ Aprobar</b>, <b>✕ Rechazar</b>, y desde el detalle también
+Standby/Reasignar/Reprogramar/Cancelar. El badge numérico rojo en el menú lateral te dice cuántas hay pendientes de
+gestionar sin tener que entrar a contar.</p>
+<p><b>Cómo validar que funcionó:</b> al aprobar, el badge baja en uno, la visita pasa a "asignada" y se prepara un
+borrador de WhatsApp de notificación al shopper (manual, no envío automático salvo Make activo) — revisa el toast de
+confirmación para saber si quedó registrado.</p>
+<p><b>Errores frecuentes / qué hacer si falla:</b> si dos shoppers se postulan a la misma sucursal, la Academia →
+"Priorizar candidatos" te da el criterio (certificación vigente, rating, cercanía) — no hay una regla automática que
+decida por ti, es una decisión humana con motivo. Rechazar sin dejar motivo dificulta auditar después por qué se
+descartó a alguien — siempre completa el campo de motivo cuando el modal lo pida.</p></div>
+
+<div class="acad-section">🙋 <b>Reservas & Asignación</b>
+<p><b>Qué es y qué problema resuelve:</b> para programas con muchos cupos por periodo (ej. mensual, alto volumen),
+cruza automáticamente lo que el shopper reservó contra lo que se postuló, para que no se dupliquen dos personas en
+el mismo cupo sin que nadie se dé cuenta hasta el día de la visita.</p>
+<p><b>Quién lo usa:</b> admin/coordinador de proyectos por reservas (no todos los proyectos usan este modo).</p>
+<p><b>Flujo completo y botones:</b> el shopper reserva un cupo del periodo desde su portal → tú revisas la vista de
+cruce (reserva vs. postulación) en este módulo → si coinciden, pulsas <b>Confirmar asignación</b>; si hay dos
+shoppers en el mismo cupo, el sistema los marca en conflicto para que decidas manualmente cuál se queda.</p>
+<p><b>Cómo validar que funcionó:</b> el cupo pasa de "reservado" a "asignado" y ya no acepta más reservas de otros
+shoppers para esa misma fecha/sucursal.</p>
+<p><b>Errores frecuentes / qué hacer si falla:</b> confirmar sin revisar el cruce puede duplicar el gasto (dos
+honorarios por el mismo cupo) — siempre revisa la marca de conflicto antes de confirmar en lote.</p></div>
+
+<div class="acad-section">👥 <b>Shoppers</b>
+<p><b>Qué es y qué problema resuelve:</b> es tu base de datos de evaluadores — sin datos bancarios completos y
+certificación vigente, un shopper no puede entrar a un lote de pago ni postularse a un proyecto que lo exija.</p>
+<p><b>Quién lo usa:</b> admin da de alta/gestiona; el propio shopper autoactualiza sus datos desde Mi Perfil.</p>
+<p><b>Flujo completo y botones:</b> alta del shopper (nombre, país, contacto) → certificación por proyecto (ver
+módulo Certificación) → queda disponible para postularse/reservarse → su historial de desempeño (rating, visitas
+completas y a tiempo) se acumula automáticamente visita a visita. En la ficha, el botón <b>✎ Editar perfil</b> solo
+aparece para roles con acceso a datos protegidos (super/admin real, no un rol de prueba/scope) — de lo contrario
+verás "🔒 Edición de datos protegidos requiere acceso completo".</p>
+<p><b>Datos a ingresar:</b> nombre, país, teléfono/WhatsApp, correo, y — cuando el rol lo permite — datos bancarios
+(banco, tipo de cuenta, número). El número de cuenta/DPI se enmascara para roles sin ese permiso.</p>
+<p><b>Cómo validar que funcionó:</b> el shopper editado refleja el cambio inmediatamente en su ficha y en cualquier
+lista que lo referencie (Postulaciones, Dashboard).</p>
+<p><b>Errores frecuentes / qué hacer si falla:</b> un shopper "invisible" en la lista de candidatos para un proyecto
+casi siempre es un país mal cargado o una certificación vencida para ese proyecto específico — revisa ambos antes de
+asumir que es un bug.</p></div>
+
+<div class="acad-section">📑 <b>Reportes & KPIs</b>
+<p><b>Qué es y qué problema resuelve:</b> convierte datos operativos en reportes presentables (cumplimiento, ranking,
+hallazgos) sin armar un Excel a mano cada vez que el cliente o la dirección los pide.</p>
+<p><b>Quién lo usa:</b> admin/coordinador; el resultado también alimenta el Portal del Cliente.</p>
+<p><b>Flujo completo y botones:</b> eliges el tipo de reporte → filtras por periodo/proyecto/país con los selectores
+de arriba → el reporte se arma en pantalla; el botón <b>⤓ Exportar</b> lo descarga. Los reportes de cumplimiento y
+ranking se reflejan automáticamente en el Portal del Cliente — no hace falta reenviarlos por correo.</p>
+<p><b>Valor comercial:</b> "Reportes & KPIs" avanzados y comparativos trimestrales suelen ser parte de planes
+Estándar/Pro — es un argumento de venta cuando un cliente pide visibilidad ejecutiva sin pedirte trabajo manual extra.</p>
+<p><b>Errores frecuentes / qué hacer si falla:</b> un reporte "vacío" casi siempre es un filtro de periodo que no
+tiene datos todavía (ej. el periodo actual recién empezó) — cambia al periodo anterior para confirmar que el reporte
+sí funciona con datos históricos.</p></div>`},
+         {id:'mg2',ic:'🗂️',n:'Admin del Proyecto (8 módulos)',content:`
+<h2>Sección "Admin del Proyecto" del menú</h2>
+<p>Aquí configuras el programa antes (y durante) su operación — el set-up correcto aquí evita errores en cascada más
+adelante: un país mal cargado en Proyectos, una fuente de HR mal elegida, o un cuestionario mal ponderado se sienten
+después en Postulaciones, Finanzas y Reportes sin que sea obvio de dónde vino el problema.</p>
+
+<div class="acad-section">🏢 <b>Clientes</b>
+<p><b>Qué es y por qué importa:</b> es la ficha centralizada de la marca/empresa que te contrata — sin ella, cada
+proyecto queda aislado y pierdes el histórico de la relación comercial (propuestas anteriores, contactos, notas).</p>
+<p><b>Flujo y botones:</b> creas el cliente ANTES que su primer proyecto (nombre, contactos, notas comerciales) → la
+ficha se conecta automáticamente al CRM y a todos los proyectos que declares con ese cliente.</p>
+<p><b>Cómo validar / errores frecuentes:</b> si un proyecto no aparece bajo su cliente en el CRM, revisa que el campo
+"Cliente" del proyecto coincida EXACTAMENTE con el nombre de la ficha (no es una búsqueda difusa).</p></div>
+
+<div class="acad-section">🗂️ <b>Proyectos</b>
+<p><b>Qué es y por qué importa:</b> es la unidad que agrupa reglas de negocio — países, monedas, honorarios,
+periodicidad. Sin un proyecto bien configurado, las visitas que publiques no tienen contexto ni reglas de
+liquidación, y el sistema no sabrá cuánto pagarle a un shopper.</p>
+<p><b>Flujo completo:</b> <b>Crear proyecto</b> → defines países/monedas/honorarios → cargas el instructivo (la IA
+sugiere escenarios y estructura de cuestionario a partir de él, pero tú revisas y ajustas) → publicas. Ya publicado,
+puedes reabrir su configuración desde la ficha del proyecto para ajustar países/reglas — el cambio se guarda de
+inmediato para proyectos propios (no para los 3 proyectos de ejemplo/seed, que no persisten tras recargar).</p>
+<p><b>Cómo validar que funcionó:</b> el proyecto aparece en el selector de "Proyecto" de la barra lateral y en
+Dashboard/Mi Día; sus países filtran correctamente qué shoppers pueden postularse.</p>
+<p><b>Errores frecuentes:</b> mezclar "proyecto" (la configuración estable) con "periodo" (la ventana de tiempo
+operativa) — son cosas distintas aunque compartan pantalla; ver el módulo Periodos abajo.</p></div>
+
+<div class="acad-section">🗓️ <b>Periodos</b>
+<p><b>Qué es y por qué importa:</b> define la ventana de cumplimiento (quincena/mes) dentro de un proyecto — sin un
+corte claro, no hay un momento definido para saber qué visitas entran a liquidar en ese ciclo de pago.</p>
+<p><b>Flujo completo:</b> se configura la periodicidad al crear el proyecto; cada periodo cierra y el siguiente se
+abre automáticamente (o se duplica manualmente desde la ficha del proyecto con "Duplicar periodo" si necesitas
+reabrir uno similar). El estado del periodo (abierto/cerrado) determina si acepta nuevas visitas.</p>
+<p><b>Cómo validar que funcionó:</b> el periodo activo se refleja en el selector superior y todas las visitas nuevas
+quedan ligadas a él automáticamente.</p>
+<p><b>Errores frecuentes:</b> publicar visitas nuevas contra un periodo ya cerrado las deja "fuera de ciclo" —
+verifica el periodo activo antes de publicar en volumen al cierre de mes.</p></div>
+
+<div class="acad-section">📜 <b>Histórico</b>
+<p><b>Qué es y por qué importa:</b> preserva periodos ya cerrados como referencia y control de auditoría — un
+periodo cerrado NUNCA se sobre-escribe, ni siquiera por accidente, porque es la prueba de lo que realmente pasó.</p>
+<p><b>Flujo:</b> entras al histórico → eliges el periodo pasado → consultas sus visitas, liquidaciones y reportes tal
+como quedaron al cierre.</p>
+<p><b>Cuándo usarlo:</b> para comparar mes contra mes, auditar una disputa de pago, o justificar un reporte ante el
+cliente con datos de un ciclo ya cerrado.</p></div>
+
+<div class="acad-section">🗺️ <b>Hojas de Ruta (HR)</b>
+<p><b>Qué es y por qué importa:</b> es el plan de visitas del periodo (qué sucursal, cuándo, con qué honorario) —
+sin ella no hay nada que publicar en Visitas Disponibles.</p>
+<p><b>Flujo:</b> la subes por Importador (archivo puntual) o la conectas en vivo desde Fuente de HR (Google Sheets) →
+cada fila se convierte en una visita publicable.</p>
+<p><b>Cómo validar que funcionó:</b> las filas de la HR aparecen como visitas en estado "disponible" en el módulo
+Visitas Disponibles, con su sucursal y honorario correctos.</p>
+<p><b>Errores frecuentes:</b> filas con sucursal duplicada o país mal escrito no calzan contra los shoppers
+certificados de ese país — revisa el preview de importación antes de confirmar, no después.</p></div>
+
+<div class="acad-section">🔗 <b>Fuente de HR</b>
+<p><b>Qué es y por qué importa:</b> define SI tu Hoja de Ruta es un archivo estático (importación puntual) o una
+conexión viva (Google Sheets con lectura/escritura) — esto determina si un cambio en la hoja del cliente se refleja
+solo o si necesitas volver a importar cada vez.</p>
+<p><b>Flujo:</b> eliges "en vivo" (pegas la URL de un Sheet; el sistema usa una llave natural inmutable para nunca
+duplicar una fila ya importada) o "importación" para cargas puntuales sin conexión persistente.</p>
+<p><b>Botón clave:</b> "🧬 Generar candidatos registro seguro (preview)" prepara los candidatos de sincronización
+(identity link, certification carryover, liquidation, payment batch) para revisión humana en Diagnóstico →
+Conflictos — nunca escribe nada directamente, es siempre preview.</p>
+<p><b>Errores frecuentes:</b> pensar que "en vivo" sincroniza en tiempo real automáticamente — en el prototipo,
+"en vivo" prepara los candidatos para revisión; el sync real a producción lo ejecuta el sistema central con su gate.</p></div>
+
+<div class="acad-section">🧩 <b>Cuestionarios</b>
+<p><b>Qué es y por qué importa:</b> sin un cuestionario bien ponderado, el score final no refleja lo que realmente le
+importa al cliente — un cuestionario mal armado produce datos que parecen objetivos pero no lo son.</p>
+<p><b>Flujo completo:</b> "Set-up desde instructivo" deja que la IA (heurística local en este prototipo) proponga
+secciones y preguntas a partir del documento del cliente → ajustas los pesos de cada sección hasta que sumen 100% →
+publicas la versión activa para el proyecto.</p>
+<p><b>Cómo validar que funcionó:</b> al abrir una visita nueva de ese proyecto, el shopper ve exactamente esas
+secciones y preguntas en su cuestionario.</p>
+<p><b>Errores frecuentes:</b> pesos que no suman 100% distorsionan el score sin que sea evidente a simple vista — el
+editor te avisa si la suma no cuadra, no publiques hasta corregirlo.</p></div>
+
+<div class="acad-section">📥 <b>Importador</b>
+<p><b>Qué es y por qué importa:</b> migra datos masivos (shoppers, visitas, clientes) sin captura manual fila por
+fila — el error humano más caro en set-up suele ser digitar mal un dato al copiarlo a mano.</p>
+<p><b>Flujo completo:</b> subes el archivo (CSV/Excel/Sheet) → el sistema detecta el tipo de entidad por sus
+columnas → te muestra un preview con lo que va a crear/actualizar ANTES de tocar nada → confirmas la importación.</p>
+<p><b>Cómo validar que funcionó:</b> los registros nuevos aparecen en su módulo correspondiente (Shoppers, Visitas,
+Clientes) con los datos exactos del preview que confirmaste.</p>
+<p><b>Errores frecuentes:</b> confirmar sin revisar el preview es la causa #1 de datos mal cargados — siempre revisa
+cuántas filas se van a crear vs. actualizar antes de confirmar, especialmente en la primera carga de un proyecto
+nuevo.</p></div>`},
+         {id:'mg3',ic:'🎓',n:'Capacitación & IA, Finanzas (8 módulos)',content:`
+<h2>Capacitación & IA</h2>
+<div class="acad-section">📚 <b>Academia</b> (donde estás ahora)
+<p><b>Qué es y por qué importa:</b> autocapacitación sin depender de una sesión en vivo con un formador — cursos,
+manuales, certificación y evaluación en un solo lugar, disponible cuando el usuario lo necesita (no solo el día del
+onboarding).</p>
+<p><b>Flujo y botones:</b> el selector "Ver como" (arriba, solo admin) cambia entre el contenido de Consultora/
+Shopper/Cliente. <b>✨ Crear con IA</b> abre un modal para generar un curso desde un archivo o tema (heurística
+local en este prototipo, siempre como borrador). <b>🧬</b> duplica un curso, <b>🗄/♻️</b> archiva/restaura uno
+personalizado, <b>✎</b> edita nombre/categoría/descripción. "Ver archivados" muestra lo archivado sin mezclarlo con
+el catálogo activo.</p>
+<p><b>Errores frecuentes:</b> un curso "no aparece" tras crearlo casi siempre es porque nace en estado
+<b>borrador</b> — sigue visible para el admin que lo creó, pero conviene revisarlo antes de considerarlo listo.</p></div>
+
+<div class="acad-section">🏆 <b>Certificación</b>
+<p><b>Qué es y por qué importa:</b> filtra quién puede postularse a un proyecto según si domina su instructivo —
+protege la calidad del dato que finalmente le entregas al cliente. Sin certificación, cualquiera podría evaluar sin
+saber qué mirar.</p>
+<p><b>Flujo completo:</b> el shopper presenta el examen generado a partir del instructivo del proyecto (banco de
+preguntas por proyecto) → si aprueba, queda certificado para ese proyecto específico (la certificación NO es
+genérica, es por proyecto) → si no aprueba, puede repasar y volver a presentar.</p>
+<p><b>Cómo validar que funcionó:</b> el shopper certificado aparece elegible en la lista de candidatos de ese
+proyecto en Postulaciones/Visitas Disponibles.</p>
+<p><b>Errores frecuentes:</b> confundir "certificado en general" con "certificado para ESTE proyecto" — un shopper
+con muchas certificaciones previas puede seguir bloqueado si no tiene la de este proyecto puntual.</p></div>
+
+<div class="acad-section">📎 <b>Recursos del proyecto (Documentos)</b>
+<p><b>Qué es y por qué importa:</b> centraliza instructivos, guías y material de referencia con lector in-app, para
+no depender de PDFs sueltos perdidos en un correo o chat.</p>
+<p><b>Flujo:</b> subes el documento al proyecto → queda accesible desde Academia y desde la ficha del proyecto → el
+shopper lo consulta antes/durante su visita sin salir de la app.</p></div>
+
+<div class="acad-section">🤖 <b>Soporte IA</b>
+<p><b>Qué es y por qué importa:</b> resuelve dudas comunes al instante (heurística local en este prototipo) sin
+saturar al equipo humano con preguntas repetitivas de "cómo hago X".</p>
+<p><b>Flujo:</b> el usuario escribe su duda → recibe una respuesta sugerida → si no resuelve, puede escalar a un
+ticket real para que un humano lo atienda — el escalamiento queda registrado, la respuesta automática no reemplaza
+al soporte humano cuando hace falta.</p></div>
+
+<h2>Finanzas</h2>
+<div class="acad-section">💹 <b>Dashboard Financiero</b>
+<p><b>Qué es y por qué importa:</b> te dice si el negocio es rentable país por país y proyecto por proyecto — no
+solo si la operación "funciona", sino si conviene seguir operándola así.</p>
+<p><b>Flujo y botones:</b> revisas márgenes, cuentas por cobrar/pagar (CxC/CxP) y el comparativo intermensual; el
+bloque de análisis crítico resalta desviaciones fuera de lo normal para que no tengas que leer cada número a mano.</p>
+<p><b>Errores frecuentes:</b> un margen que "no cuadra" casi siempre viene de un movimiento mal clasificado en el
+módulo Movimientos (ver abajo) — revisa ahí antes de dudar del cálculo del dashboard.</p></div>
+
+<div class="acad-section">🧾 <b>Movimientos</b>
+<p><b>Qué es y por qué importa:</b> registra cada ingreso y egreso con trazabilidad — sin esto no puedes conciliar
+cuentas ni auditar de dónde salió o entró cada monto.</p>
+<p><b>Flujo y botones:</b> cada CxC/CxP es clickeable y editable directamente en la tabla; los financiamientos
+(préstamos, aportes) se marcan con su propia categoría — NO cuentan como ingreso operativo, para no inflar
+artificialmente el margen del negocio.</p>
+<p><b>Cómo validar que funcionó:</b> el movimiento aparece en la tabla y se refleja en el Dashboard Financiero al
+recalcular.</p></div>
+
+<div class="acad-section">💸 <b>Liquidaciones</b>
+<p><b>Qué es y por qué importa:</b> automatiza el cálculo de lo que se le debe a cada shopper según reglas de
+elegibilidad, sin captura manual visita por visita — el error humano más caro en finanzas operativas es calcular
+mal un monto a pagar.</p>
+<p><b>Flujo completo:</b> una visita realizada con cuestionario completo genera su liquidación sola → pasa por los
+estados de revisión (pending_review → in_review → needs_correction/aprobada) → tú eliges cuáles entran al siguiente
+lote de pago.</p>
+<p><b>Cómo validar que funcionó:</b> la liquidación nueva aparece en la tabla con el monto correcto (honorario +
+combo si aplica) y el estado "pendiente de revisión".</p>
+<p><b>Errores frecuentes:</b> liquidar una visita que está en conflicto de sincronía HR↔plataforma es un error
+grave — se retiene hasta reconciliar, nunca se liquida "para no atrasar" mientras el conflicto siga abierto.</p></div>
+
+<div class="acad-section">📦 <b>Lotes de Pago</b>
+<p><b>Qué es y por qué importa:</b> agrupa liquidaciones para procesarlas juntas (ej. quincenal) en vez de pago por
+pago — reduce el trabajo operativo y da un corte claro de cuándo se paga.</p>
+<p><b>Flujo y botones:</b> armas el lote seleccionando las liquidaciones candidatas (deben estar aprobadas, no en
+conflicto) → el botón <b>Marcar pagado (preview)</b> lo cierra y prepara el egreso correspondiente en Movimientos —
+"preview" porque el pago real y su evidencia bancaria los confirma el sistema central, no el navegador.</p>
+<p><b>Errores frecuentes:</b> incluir en un lote a un shopper con datos bancarios incompletos deja ese pago
+bloqueado — revisa su ficha en Shoppers antes de armar el lote, no después de intentar pagar.</p></div>`},
+         {id:'mg4',ic:'📈',n:'Comercial y Configuración (12 módulos)',content:`
+<h2>Comercial</h2>
+<div class="acad-section">🧮 <b>Costos & Propuestas</b>
+<p><b>Qué es y por qué importa:</b> cotiza con una calculadora que cruza honorarios, número de visitas y overhead
+en vez de estimar a ojo — reduce el riesgo de vender un proyecto por debajo de costo sin darte cuenta.</p>
+<p><b>Flujo:</b> defines volumen de visitas, honorario por visita y márgenes deseados → la calculadora arma el
+precio de venta → generas la propuesta con ese cálculo como base, no un número inventado.</p>
+<p><b>Errores frecuentes:</b> cotizar sin incluir el overhead de coordinación (tiempo del equipo, no solo el pago al
+shopper) es la causa más común de un proyecto que "opera bien pero no deja margen".</p></div>
+
+<div class="acad-section">🤝 <b>CRM Comercial</b>
+<p><b>Qué es y por qué importa:</b> sin un CRM, los leads y el seguimiento comercial viven en la memoria de una
+persona — se pierden por completo si esa persona rota o está de vacaciones.</p>
+<p><b>Flujo y botones:</b> <b>Pipeline</b> (vista kanban) para ver el embudo por etapa; <b>Ficha 360</b> de cada
+cuenta con el historial completo de interacciones, propuestas y proyectos asociados. El botón 📲 WhatsApp abre un
+borrador manual de seguimiento — no envía nada solo.</p>
+<p><b>Cómo validar que funcionó:</b> mover una cuenta de etapa en el pipeline se refleja de inmediato en su Ficha
+360 con la fecha del cambio.</p></div>
+
+<div class="acad-section">📣 <b>Marketing & Contenidos</b>
+<p><b>Qué es y por qué importa:</b> genera piezas y calendario de contenido con IA (heurística local en este
+prototipo) sin depender de un equipo de diseño dedicado para cada pieza pequeña.</p>
+<p><b>Flujo:</b> eliges el tipo de pieza/tema → se genera un borrador → lo ajustas y lo dejas listo para publicar
+manualmente (la publicación real a redes la ejecuta el proveedor conectado por el sistema central, no este módulo).</p></div>
+
+<h2>Configuración</h2>
+<div class="acad-section">⚙️ <b>Configuración</b>
+<p><b>Qué es y por qué importa:</b> es el panel central de ajustes del tenant (identidad, países operativos, patrón
+de nombres de usuario) — cambiarlo aquí afecta a toda la plataforma, no a un módulo aislado.</p>
+<p><b>Errores frecuentes:</b> agregar un país aquí no crea proyectos automáticamente en ese país — solo lo habilita
+como opción disponible al crear/editar un proyecto.</p></div>
+
+<div class="acad-section">🌐 <b>Consola SaaS</b>
+<p><b>Qué es y por qué importa:</b> vista de super-administración multi-tenant, para gestionar varias consultoras si
+operas la plataforma como proveedor (no como una sola consultora usándola para sí misma).</p>
+<p><b>Quién lo usa:</b> exclusivamente rol <b>super</b> — no aparece para admin/ops ni siquiera con permisos altos,
+porque afecta a otros tenants, no solo al propio.</p></div>
+
+<div class="acad-section">🧪 <b>Diagnóstico & Readiness</b>
+<p><b>Qué es y por qué importa:</b> te dice qué tan lista está la operación antes de confiar en ella — sin esto, un
+problema (ej. una fuente de HR mal sincronizada) se descubre en producción, no antes de que impacte a un shopper o
+al cliente.</p>
+<p><b>Flujo y botones:</b> revisa la pestaña <b>Conflictos</b> regularmente — cualquier tarjeta en estado "pendiente
+de revisión" necesita que TÚ tomes una decisión (mantener ambos, escalar, marcar revisado) con motivo obligatorio;
+nunca se resuelve solo, ni por coincidencia de nombres.</p>
+<p><b>Errores frecuentes:</b> ignorar conflictos acumulados "porque no urgen" es la causa más común de que una
+liquidación se calcule mal semanas después — resuélvelos en el momento, no en lote al final del periodo.</p></div>
+
+<div class="acad-section">⚙️ <b>Administrabilidad</b>
+<p><b>Qué es y por qué importa:</b> te deja versionar reglas y el texto del NDA sin miedo a romper lo que los
+usuarios ya aceptaron — todo cambio sensible queda registrado con motivo y versión, nunca se sobre-escribe en
+silencio.</p>
+<p><b>Flujo:</b> editas el texto del NDA por rol → se crea una nueva versión con tu motivo → las aceptaciones ya
+firmadas por usuarios anteriores se conservan intactas, solo aplica a nuevas aceptaciones desde ahora.</p></div>
+
+<div class="acad-section">🔐 <b>Usuarios & Permisos</b>
+<p><b>Qué es y por qué importa:</b> define quién ve qué módulo — sin esto, todos los roles verían todo, incluyendo
+finanzas sensibles y datos protegidos de shoppers.</p>
+<p><b>Flujo completo:</b> <b>Invitar usuario</b> → asignas rol técnico, persona operativa (opcional), país(es)/scope,
+proyecto y cliente (opcionales) → el usuario invitado entra ya con ese alcance aplicado desde el login. Un rol
+personalizado sin matriz de permisos configurada queda bloqueado por defecto (fail-closed) — solo ve Capacitación
+hasta que un admin le defina explícitamente qué categorías puede ver.</p>
+<p><b>Errores frecuentes:</b> crear un rol nuevo y esperar que "vea todo" por default es exactamente lo contrario
+del comportamiento real — hay que ir a la matriz de permisos y asignarle categorías explícitamente.</p></div>
+
+<div class="acad-section">⚡ <b>Automatizaciones</b>
+<p><b>Qué es y por qué importa:</b> dispara notificaciones (WhatsApp/correo) automáticamente en eventos clave, sin
+que alguien tenga que enviarlas una por una manualmente.</p>
+<p><b>Flujo y botones:</b> activas/desactivas cada automatización con su switch → eliges canal y plantilla → el
+botón <b>Escanear y preparar notificaciones (in-app)</b> detecta visitas atrasadas/pendientes y prepara sus alertas.
+El navegador NUNCA llama directo a un proveedor real de IA ni guarda su API key — solo guarda tu preferencia de
+modelo para cuando el sistema central/adapter esté conectado.</p></div>
+
+<div class="acad-section">🔌 <b>Integraciones & Add-ons</b>
+<p><b>Qué es y por qué importa:</b> muestra el catálogo del ecosistema (WhatsApp, Sheets, IA, facturación) que la
+plataforma puede conectar sin depender de desarrollo a medida por cada cliente nuevo.</p>
+<p><b>Errores frecuentes:</b> "Configurar" una integración en este prototipo guarda tu preferencia/preview — no
+activa una conexión real; el estado siempre lo aclara la etiqueta junto al botón.</p></div>
+
+<div class="acad-section">✉️ <b>Correo integrado</b>
+<p><b>Qué es y por qué importa:</b> da trazabilidad de comunicación con clientes sin salir de la plataforma ni
+perder el hilo en bandejas personales de cada persona del equipo.</p>
+<p><b>Flujo:</b> respondes desde el hilo del correo → el botón WA (borrador manual) abre WhatsApp Web si prefieres
+ese canal para ese contacto — ningún envío sale solo del navegador.</p></div>
+
+<div class="acad-section">🎨 <b>Identidad de Marca</b>
+<p><b>Qué es y por qué importa:</b> tu logo y colores aparecen en login, documentos y propuestas — sin configurarlo,
+todo sale con la marca genérica de CXOrbia, lo cual no transmite profesionalismo ante un cliente final.</p>
+<p><b>Cómo validar que funcionó:</b> cierra sesión y vuelve a entrar — el login y el manifest (ícono de instalación
+PWA) deben reflejar ya la marca configurada.</p></div>`},
+         {id:'mg5',ic:'❓',n:'Evaluación de la guía de módulos',tipo:'quiz',quiz:[
+           {q:'Un shopper no puede entrar a un lote de pago aunque tenga liquidaciones elegibles. ¿Qué módulo revisas primero?',o:['Marca','Shoppers — probablemente falten sus datos bancarios completos','Marketing','Automatizaciones'],a:1,fb:'El módulo Shoppers requiere banco, tipo de cuenta, número y titular completos para poder incluir a alguien en un lote de pago.'},
+           {q:'¿Cuál es la diferencia entre Fuente de HR y Hojas de Ruta?',o:['Son el mismo módulo con dos nombres','Fuente de HR define CÓMO se conecta la HR (archivo o en vivo); Hojas de Ruta ES el plan de visitas en sí','Hojas de Ruta es solo para shoppers','Fuente de HR es exclusivo de Finanzas'],a:1,fb:'Fuente de HR configura el mecanismo de conexión (importación vs. Google Sheets en vivo); Hojas de Ruta es el contenido — el plan de visitas del periodo.'},
+         ]}
+       ]},
       /* ─── INDUCCIÓN ─── */
       {id:'a_ind',cat:'Inducción',ic:'🚀',color:'#e0004d',n:'Inducción CXOrbia 360',
        desc:'Conoce la plataforma, el ciclo operativo y tu día a día como consultora.',
@@ -27,7 +952,7 @@ CX.acadData={
        lessons:[
          {id:'l1',ic:'🎯',n:'Bienvenida y visión',content:`
 <h2>Bienvenida a CXOrbia</h2>
-<p>CXOrbia es el ecosistema operativo y estratégico para consultoras de <strong>mystery shopping, auditoría de campo y experiencia al cliente</strong>.</p>
+<p>CXOrbia es el ecosistema operativo y estratégico para consultoras de <strong>mystery shopping, auditoría de campo y experiencia al cliente</strong>. Este curso es tu punto de partida: antes de tocar cualquier módulo, vale la pena entender la visión completa, porque cada pantalla que verás después tiene sentido dentro de este ecosistema, no como una herramienta aislada.</p>
 <div class="acad-cards">
   <div class="acad-card"><div>🏢</div><b>Admin</b><p>Operación, finanzas, comercial, IA. El cerebro de la consultora.</p></div>
   <div class="acad-card"><div>🕵️</div><b>Shopper</b><p>App de campo: visitas, OKRs, certificación, pagos.</p></div>
@@ -35,11 +960,12 @@ CX.acadData={
 </div>
 <h3>¿Por qué no es una herramienta estática?</h3>
 <ul><li>Una visita realizada genera automáticamente la liquidación, actualiza el dashboard y notifica al equipo — sin captura manual.</li>
-<li>La IA (Gemini) es transversal: cuestionarios, propuestas, actas, análisis crítico, marketing.</li>
-<li>Conecta con Make, WhatsApp, Google Sheets, Outlook y 30+ herramientas sin programar.</li>
+<li>La IA es transversal: cuestionarios, propuestas, actas, análisis crítico, marketing — con el proveedor que elijas.</li>
+<li>Conecta con tu orquestador de automatizaciones, WhatsApp, Google Sheets, Outlook y 30+ herramientas sin programar.</li>
 <li>Multi-tenant: cada consultora tiene su propia instancia con marca, plan y módulos.</li></ul>`},
          {id:'l2',ic:'🗺️',n:'La plataforma: módulos y menú',content:`
 <h2>Arquitectura del menú (admin)</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Que ubiques rápido cualquier módulo sin memorizar el sistema completo el primer día.</p></div>
 <div class="acad-section"><b>Operación</b> — lo que uses a diario<br>Mi Día · Dashboard · Visitas · Postulaciones · Reservas · Shoppers · Informes</div>
 <div class="acad-section"><b>Admin del Proyecto</b> — set-up y configuración<br>Clientes · Proyectos · Hojas de Ruta · Cuestionarios · Importador</div>
 <div class="acad-section"><b>Capacitación & IA</b><br>Academia · Certificación · Documentos · Soporte</div>
@@ -50,6 +976,7 @@ CX.acadData={
 <p>Usa el botón ☰ arriba a la izquierda para colapsar el menú y tener más espacio de trabajo. El proyecto activo siempre se muestra en la parte superior del rail.</p>`},
          {id:'l3',ic:'☀️',n:'Mi Día: el punto de partida',content:`
 <h2>Mi Día — tu cockpit diario</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Que sepas qué hacer hoy sin revisar módulo por módulo.</p></div>
 <p>Mi Día es la primera pantalla que verás al entrar. Muestra en un calendario mensual todas las visitas y tareas del periodo, con KPIs de la operación en tiempo real.</p>
 <h3>KPIs de Mi Día (todos clickeables)</h3>
 <ul>
@@ -62,11 +989,12 @@ CX.acadData={
 <p>Puedes ver el cronograma de un proyecto específico o de todos los proyectos simultáneamente usando el selector en la parte superior del calendario.</p>`},
          {id:'l4',ic:'🔄',n:'El ciclo operativo completo',content:`
 <h2>Ciclo de vida de una visita</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Que entiendas qué dispara qué — esto es la base de toda la plataforma.</p></div>
 <p>Entender este ciclo es fundamental. Cada etapa tiene responsables y genera acciones automáticas:</p>
 <div class="acad-flow">
   <div class="acad-step"><span>1</span><b>Publicar</b><p>El equipo carga la HR o publica visitas manualmente. Nacen en estado "disponible".</p></div>
   <div class="acad-step"><span>2</span><b>Reservar/Postular</b><p>El shopper reserva sucursales o se postula. El equipo recibe notificación.</p></div>
-  <div class="acad-step"><span>3</span><b>Asignar</b><p>El equipo aprueba la postulación o asigna manualmente. La visita pasa a "asignada" y el shopper recibe WhatsApp automático.</p></div>
+  <div class="acad-step"><span>3</span><b>Asignar</b><p>El equipo aprueba la postulación o asigna manualmente. La visita pasa a "asignada" y se prepara la notificación al shopper (WhatsApp/in-app según configuración · pendiente de conexión).</p></div>
   <div class="acad-step"><span>4</span><b>Agendar</b><p>El shopper elige fecha y franja. El equipo recibe notificación.</p></div>
   <div class="acad-step"><span>5</span><b>Realizar</b><p>El shopper ejecuta la visita y la marca como realizada. Se habilita el cuestionario.</p></div>
   <div class="acad-step"><span>6</span><b>Cuestionario</b><p>El shopper llena el cuestionario el mismo día con evidencias. El score se calcula automáticamente.</p></div>
@@ -78,7 +1006,7 @@ CX.acadData={
 <p>Ninguna acción vive aislada. Un solo evento dispara una cadena de actualizaciones automáticas en toda la plataforma. Entender esto te evita el trabajo manual duplicado y los errores de datos.</p>
 <h3>Ejemplo real: un shopper envía su cuestionario</h3>
 <div class="acad-flow">
-  <div class="acad-step"><span>1</span><b>Visita</b><p>La visita pasa de "realizada" a "cuestionario enviado". Su estado cambia en Visitas y en Mi Día.</p></div>
+  <div class="acad-step"><span>1</span><b>Visita</b><p>La visita pasa de "realizada" a "cuestionario realizado/completado". Su estado cambia en Visitas y en Mi Día.</p></div>
   <div class="acad-step"><span>2</span><b>Score</b><p>El cuestionario calcula el score ponderado por sección y lo guarda. El Portal del Cliente lo muestra en vivo.</p></div>
   <div class="acad-step"><span>3</span><b>Liquidación</b><p>Nace la liquidación con honorario + reembolso y su fecha estimada de pago (viernes + días configurados).</p></div>
   <div class="acad-step"><span>4</span><b>Beneficios</b><p>El shopper ve la liquidación en Mis Beneficios con estado y fecha.</p></div>
@@ -99,7 +1027,7 @@ CX.acadData={
            {q:'¿Cuál es el flujo correcto para que una visita pase de disponible a pagada?',o:['Disponible → Asignada → Realizada → Cuestionario → Pagada','Publicada → Postulación → Asignación → Agenda → Realización → Cuestionario → Liquidada/Pagada','Solo hay que marcarla como realizada y automáticamente se paga','El shopper la marca como pagada desde su app'],a:1,exp:'El ciclo completo es: Publicar → Postular/Reservar → Asignar → Agendar → Realizar → Cuestionario → Validar → Pagar. Cada etapa tiene responsables y genera notificaciones automáticas. Saltarse una etapa rompe la sincronía de la liquidación.'},
            {q:'¿Qué sección del menú contiene el Dashboard, Visitas y Postulaciones?',o:['Admin del Proyecto','Configuración','Operación','Finanzas'],a:2,exp:'El menú de Operación contiene todo lo que se usa a diario: Mi Día, Dashboard, Visitas, Postulaciones, Reservas, Shoppers e Informes. Admin del Proyecto contiene el set-up (Clientes, Proyectos, HR, Cuestionarios).'},
            {q:'¿Qué herramienta de IA usa CXOrbia por defecto y por qué?',o:['ChatGPT, porque es la más conocida','Gemini Flash, por su relación costo-beneficio para operaciones de alto volumen','No usa IA — todo es manual','Claude, porque es el más preciso'],a:1,exp:'CXOrbia usa Gemini Flash de Google por su excelente relación costo-beneficio con tokens económicos. Es configurable por tenant desde Configuración → Automatizaciones → Asistente de IA. Sin configurar, los generadores usan heurística local sin costo.'},
-           {q:'¿Qué ocurre cuando el equipo aprueba una postulación?',o:['Solo cambia el estado en la plataforma, nada más','La visita pasa a "asignada", el shopper recibe notificación automática (WhatsApp/push) y la HR externa se actualiza','El shopper debe verificar manualmente si fue aprobado','Se genera automáticamente la liquidación'],a:1,exp:'Al aprobar una postulación, la plataforma: (1) mueve la visita a "asignada", (2) notifica al shopper por WhatsApp/push vía Make, (3) escribe de vuelta a la HR externa (Google Sheets) si está activa, y (4) registra quién gestionó la aprobación para trazabilidad.'},
+           {q:'¿Qué ocurre cuando el equipo aprueba una postulación?',o:['Solo cambia el estado en la plataforma, nada más','La visita pasa a "asignada" y se emite un evento local (pendiente de conexión) para notificar al shopper y, si aplica, reflejarse en la HR externa','El shopper debe verificar manualmente si fue aprobado','Se genera automáticamente la liquidación'],a:1,exp:'Al aprobar una postulación, la plataforma: (1) mueve la visita a "asignada", (2) emite un evento local que queda en estado pendiente de conexión para notificar al shopper (WhatsApp/push vía Make, una vez que el sistema central confirme la conexión), (3) prepara la escritura de vuelta a la HR externa (Google Sheets) si esa integración está conectada, y (4) registra quién gestionó la aprobación para trazabilidad. Ninguna notificación ni escritura externa ocurre realmente hasta que el sistema central conecta la integración.'},
          ]}
        ]},
       /* ─── OPERACIÓN ─── */
@@ -109,24 +1037,29 @@ CX.acadData={
        lessons:[
          {id:'o1',ic:'📊',n:'Dashboard Operativo',content:`
 <h2>Dashboard Operativo — el cockpit</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Darte, en una sola pantalla, la salud de tu programa: ¿vas a tiempo?, ¿qué visitas necesitan atención hoy?, ¿cómo viene el trimestre? Vive en <b>Operación → Dashboard Operativo</b>.</p></div>
+<div class="acad-section">🖱️ <b>Selectores y botones que usarás</b><p>Arriba tienes el selector <b>"🌐 Todos los proyectos"</b> (o uno específico) y el selector de mes. Cada KPI y cada fila de los buckets es clickeable. El botón <b>"⤓ Exportar"</b> descarga el estado actual, y <b>"Ver ranking completo →"</b> te lleva al detalle de shoppers.</p></div>
 <h3>Avance real vs. ideal por país</h3>
 <p>La barra de progreso compara el % de visitas realizadas contra el % esperado según el día del mes (curva lineal). Si a día 15 se esperaba 50% y tienes 30%, el semáforo es rojo y hay riesgo de incumplimiento.</p>
 <ul><li>🟢 En rango: avance real ≥ ideal</li><li>🟡 Al límite: real está 1-15 pts por debajo del ideal</li><li>🔴 En riesgo: real más de 15 pts por debajo del ideal</li></ul>
 <h3>Estado operativo de visitas (buckets)</h3>
-<p>Cada bucket es clickeable y muestra la lista completa de visitas en esa etapa con:</p>
+<p>Cada bucket es clickeable y muestra la lista completa de visitas en esa etapa con botones de acción reales: <b>📲 WhatsApp</b> individual por fila, <b>📣 Recordar a todos</b> (recordatorio masivo al bucket completo), y checkboxes para seleccionar solo a algunos antes de recordar.</p>
 <ul><li>Sucursal, shopper asignado, escenario y fecha</li><li>WhatsApp individual por fila</li><li>Recordatorio masivo a todos los del bucket</li><li>Selección múltiple para recordar a los que elijas</li></ul>
 <h3>Comparativo trimestral (8 KPIs)</h3>
-<p>Compara los últimos 3 meses: cumplimiento, días real→submit, visitas realizadas, cuestionarios a tiempo, calidad QA, tasa de reprogramación, cobertura de sucursales y margen neto.</p>`},
+<p>Compara los últimos 3 meses: cumplimiento, días real→submit, visitas realizadas, cuestionarios a tiempo, calidad QA, tasa de reprogramación, cobertura de sucursales y margen neto.</p>
+<div class="acad-section">✅ <b>Para qué sirve (si no existiera)</b><p>Sin este dashboard, un atraso o un cuello de botella se detectaría hasta fin de mes, cuando ya es tarde para corregirlo — el semáforo diario es lo que te da tiempo real de reacción.</p></div>`},
          {id:'o2',ic:'📋',n:'Postulaciones y asignaciones',content:`
 <h2>Gestión de Postulaciones</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Que ninguna solicitud de un shopper quede sin respuesta ni sin trazabilidad. Vive en <b>Operación → Postulaciones</b>.</p></div>
+<div class="acad-section">⚙️ <b>Cómo funciona</b><p>Cuando un shopper reserva o se postula a una visita, aparece en tu bandeja en estado "pendiente". Cada acción que tomas (aprobar, rechazar, reasignar) queda registrada con tu nombre como gestor — esto es lo que te permite responder "¿quién gestionó esto?" meses después sin adivinar.</p></div>
 <h3>¿Qué es una postulación?</h3>
 <p>Cuando un shopper ve una visita disponible y solicita realizarla, se crea una postulación. El equipo decide si aprobar, poner en standby o rechazar.</p>
-<h3>Acciones disponibles por postulación</h3>
+<h3>Botones y acciones disponibles por postulación</h3>
 <ul>
-<li><b>Aprobar</b>: la visita pasa a "asignada" y el shopper recibe notificación.</li>
+<li><b>✅ Aprobar</b>: la visita pasa a "asignada" y el shopper recibe notificación.</li>
 <li><b>Standby</b>: se reserva pero no confirma todavía.</li>
 <li><b>Rechazar</b>: la visita queda disponible para otro shopper.</li>
-<li><b>Ver perfil</b>: abre la ficha del shopper con KPIs, historial y verificación de requisitos (perfil completo, datos bancarios, certificación).</li>
+<li><b>👤 Ver perfil</b>: abre la ficha del shopper con KPIs, historial y verificación de requisitos (perfil completo, datos bancarios, certificación).</li>
 <li><b>Editar</b>: cambia la fecha o franja; sincroniza con la HR externa.</li>
 <li><b>Reasignar</b>: transfiere a otro shopper con trazabilidad.</li>
 <li><b>Cancelar</b>: la visita vuelve a disponible y el shopper es notificado.</li>
@@ -134,9 +1067,11 @@ CX.acadData={
 <h3>Asignación manual</h3>
 <p>Usa "＋ Asignar visita manual" para asignar directamente sin que el shopper se postule. Puedes buscar por sucursal y por nombre de shopper. Si el shopper no existe, créalo al vuelo con nombre, apellido y WhatsApp.</p>
 <h3>Trazabilidad</h3>
-<p>Cada gestión queda registrada con "gestionado por [quién]". Esto es crítico cuando varias personas del equipo operan la plataforma al mismo tiempo.</p>`},
+<p>Cada gestión queda registrada con "gestionado por [quién]". Esto es crítico cuando varias personas del equipo operan la plataforma al mismo tiempo.</p>
+<div class="acad-section">✅ <b>Para qué sirve (si no existiera)</b><p>Sin esta bandeja con trazabilidad, dos personas del equipo podrían aprobar y reasignar la misma visita sin saberlo, generando confusión con el shopper y disputas internas sobre quién decidió qué.</p></div>`},
          {id:'o3',ic:'👥',n:'Gestión de shoppers',content:`
 <h2>Shoppers — red de evaluadores</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Ser la base de datos maestra de tu red de evaluadores — sin ella no puedes asignar, certificar ni pagar a nadie. Vive en <b>Operación → Shoppers</b>.</p></div>
 <h3>KPIs del módulo</h3>
 <ul>
 <li><b>En este proyecto</b>: shoppers activos para el proyecto seleccionado.</li>
@@ -148,9 +1083,12 @@ CX.acadData={
 <p>Al hacer clic en un shopper desde el Top del Dashboard o el Ranking, se abre su ficha con:</p>
 <ul><li>KPIs de desempeño (visitas, realizadas, liquidadas, en curso)</li><li>Verificación de requisitos (perfil completo, datos bancarios, WhatsApp, certificado)</li><li>Historial de visitas por categoría (todas, realizadas, liquidadas, en curso)</li><li>Acceso directo a "Ver perfil completo" y "WhatsApp"</li></ul>
 <h3>Datos bancarios</h3>
-<p>Es obligatorio completar banco, tipo de cuenta, número, titular y moneda para incluir al shopper en un lote de pago. El shopper puede actualizar sus propios datos desde Mi Perfil (autoservicio). Cualquier cambio bancario genera una notificación al equipo.</p>`},
+<p>Es obligatorio completar banco, tipo de cuenta, número, titular y moneda para incluir al shopper en un lote de pago. El shopper puede actualizar sus propios datos desde Mi Perfil (autoservicio). Cualquier cambio bancario genera una notificación al equipo.</p>
+<div class="acad-section">✅ <b>Para qué sirve (si no existiera)</b><p>Sin este módulo, no habría forma centralizada de saber quién puede recibir una visita nueva, quién está certificado, o a quién le falta completar su perfil antes del próximo lote de pago.</p></div>`},
          {id:'o4',ic:'📝',n:'Reportes operativos',content:`
 <h2>Reportes & KPIs</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Convertir la data operativa en reportes listos para compartir, sin depender de Excel manual. Vive en <b>Operación → Informes</b>.</p></div>
+<p>Este módulo existe para que dejes de armar Excels manuales cada vez que el cliente pide un análisis: los reportes se generan solos a partir de la misma data que ya está en la plataforma, siempre actualizados.</p>
 <h3>Reportes disponibles</h3>
 <ul>
 <li><b>Cumplimiento por sucursal</b>: ranking de tiendas por % de visitas realizadas.</li>
@@ -176,9 +1114,10 @@ CX.acadData={
        lessons:[
          {id:'s1',ic:'🏢',n:'Crear cliente y proyecto',content:`
 <h2>Paso 1: Crear el cliente</h2>
-<p>Ve a Admin del Proyecto → Clientes → Nuevo cliente.</p>
+<p>Ve a Admin del Proyecto → Clientes → Nuevo cliente. Este es el primer paso de cualquier programa nuevo: el cliente es el contenedor que agrupará todos sus proyectos presentes y futuros, así que vale la pena cargarlo bien desde el inicio en vez de corregirlo después.</p>
 <ul><li>Nombre, rubro (catálogo compartido CX.RUBROS), país, contactos.</li><li>Si el prospecto ya está en el CRM y lo marcas como ganado, el cliente se crea automáticamente sin recapturar.</li></ul>
 <h2>Paso 2: Crear el proyecto</h2>
+<div class="acad-section">🎯 <b>Objetivo de este paso</b><p>El proyecto es donde vive toda la configuración operativa y financiera del programa — sin él, no puedes cargar HR ni publicar visitas.</p></div>
 <p>Ve a Proyectos → Nuevo proyecto (o abre uno existente y usa el botón ⚙️).</p>
 <ul>
 <li><b>Periodicidad de rondas</b>: mensual, bimensual, trimestral, semestral o anual.</li>
@@ -188,6 +1127,7 @@ CX.acadData={
 </ul>`},
          {id:'s2',ic:'🗺️',n:'Hoja de Ruta inteligente',content:`
 <h2>La Hoja de Ruta (HR) es la base operativa</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Sin HR no hay visitas que publicar — es el plan operativo del periodo. Vive en <b>Admin del Proyecto → Hojas de Ruta</b>.</p></div>
 <p>La HR define qué sucursales se evalúan, con qué escenario, en qué quincena y con qué honorario. Sin ella no hay visitas.</p>
 <h3>Tres formas de crear la HR</h3>
 <div class="acad-section"><b>🤖 HR Inteligente (recomendado)</b><p>Ve a Hojas de Ruta → HR Inteligente. Carga el instructivo del cliente (PDF, Word, imagen) o pégalo como texto. La IA extrae: sucursales, ciudades, escenarios, franjas horarias y honorarios sugeridos. Revisas, iteras con lenguaje natural y aceptas.</p></div>
@@ -197,11 +1137,12 @@ CX.acadData={
 <p>Si usas Sheets en vivo Y además importas manualmente, el sistema no duplica porque usa una llave natural inmutable. Esto resolvió el problema que tenían en la plataforma anterior.</p>`},
          {id:'s3',ic:'🧩',n:'Cuestionario ponderado',content:`
 <h2>El cuestionario: el corazón de la medición</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>El cuestionario es lo que convierte una visita en un dato medible y comparable. Vive en <b>Admin del Proyecto → Cuestionarios</b>.</p></div>
 <h3>¿Qué es un cuestionario ponderado?</h3>
 <p>Cada sección tiene un peso % y cada pregunta tiene un peso dentro de su sección. El score final es el promedio ponderado — objetivo y reproducible.</p>
-<h3>Crear con IA (Set-up desde instructivo)</h3>
+<h3>Botones y flujo: Crear con IA (Set-up desde instructivo)</h3>
 <ol>
-<li>Ve a Cuestionarios → 🤖 Set-up desde instructivo.</li>
+<li>Ve a Cuestionarios → botón <b>"🤖 Set-up desde instructivo"</b>.</li>
 <li>Carga el instructivo del cliente.</li>
 <li>La IA propone secciones con pesos y preguntas.</li>
 <li>Usa el <b>Iterador</b>: escribe en lenguaje natural "agrega sección de limpieza", "sube el peso de atención a 35%", "menos preguntas por sección". La IA regenera.</li>
@@ -213,6 +1154,7 @@ CX.acadData={
 <p>Configura qué tipo de evidencia requiere cada pregunta: foto normal, foto geolocalizada, audio o video. Sin la evidencia correcta, el cuestionario no puede enviarse.</p>`},
          {id:'s4',ic:'📋',n:'Instructivo y certificación',content:`
 <h2>Instructivo: el manual del shopper</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>El instructivo alimenta tanto al cuestionario como a la certificación — es la fuente única de verdad del protocolo del cliente.</p></div>
 <p>El instructivo le dice al evaluador exactamente qué hacer, qué observar y cómo actuar en el escenario.</p>
 <h3>Crear el instructivo</h3>
 <p>Ve a Academia → Nuevo bloque → sube el PDF o documento del protocolo del cliente. También puedes crear uno en texto con formato y adjuntar videos (YouTube, Vimeo o archivo subido).</p>
@@ -240,19 +1182,21 @@ CX.acadData={
        lessons:[
          {id:'f1',ic:'💸',n:'Liquidaciones — el ciclo automático',content:`
 <h2>Liquidaciones: cero captura manual</h2>
-<p>Cada visita que se realiza y cuyo cuestionario se envía, genera automáticamente una liquidación. No hay captura manual.</p>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Calcular automáticamente cuánto se le debe a cada shopper, sin captura manual. Vive en <b>Finanzas → Liquidaciones</b>.</p></div>
+<p>Cada visita que se realiza y cuyo cuestionario se envía, genera automáticamente una liquidación. No hay captura manual. Esto elimina el error humano más común en finanzas operativas: calcular a mano cuánto le corresponde a cada shopper y olvidar un reembolso o duplicar un honorario.</p>
 <h3>Estados de la liquidación</h3>
 <ol>
-<li><b>Pend. cuestionario</b>: la visita fue realizada pero el shopper no ha enviado el cuestionario.</li>
-<li><b>Pend. submitir</b>: el cuestionario está lleno pero no enviado.</li>
-<li><b>Validada</b>: cuestionario enviado y aprobado por QA. Lista para incluir en un lote.</li>
+<li><b>Pend. cuestionario</b>: la visita fue realizada pero el shopper no ha completado el cuestionario.</li>
+<li><b>Pend. submitir</b>: el cuestionario está completo pero no submitido.</li>
+<li><b>Validada</b>: cuestionario realizado y aprobado en revisión. Lista para incluir en un lote.</li>
 <li><b>En lote</b>: fue movida al lote de pago en construcción.</li>
 <li><b>Pagada</b>: el lote fue pagado. Se generó el egreso en Movimientos.</li>
 </ol>
 <h3>Estructura del total</h3>
-<p>Total = Honorario + Reembolsos (consumos del escenario). Los reembolsos son un pass-through: el cliente los paga a la consultora y la consultora los paga al shopper. No son utilidad.</p>`},
+<p>Total = Honorario + Reembolsos (consumos del escenario). Los reembolsos son un pass-through: el cliente los paga a la consultora y la consultora los paga al shopper. No son utilidad — si los contabilizas como ingreso, tu margen real quedaría inflado artificialmente. Vigila esto especialmente al leer el Dashboard Financiero.</p>`},
          {id:'f2',ic:'📦',n:'Lotes de pago',content:`
 <h2>El Lote en Construcción</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Pagar varias liquidaciones de una sola vez, en vez de una por una. Vive en <b>Finanzas → Liquidaciones</b>, panel "📦 Lote en construcción".</p></div>
 <p>El lote es el mecanismo de pago por batches. En vez de pagar visita por visita, las agrupas en un lote y pagas todo de una vez.</p>
 <h3>Proceso paso a paso</h3>
 <ol>
@@ -266,6 +1210,8 @@ CX.acadData={
 <p>Al confirmar el pago del lote, tienes la opción de "diferir" las validadas no incluidas. Se convierten en Cuentas por Pagar (CxP) del mes siguiente y aparecerán disponibles para el próximo lote.</p>`},
          {id:'f3',ic:'📊',n:'Movimientos y tesorería',content:`
 <h2>Movimientos: la tesorería de la consultora</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Registrar y conciliar todo el dinero de la operación — no solo lo de shoppers. Vive en <b>Finanzas → Movimientos</b>.</p></div>
+<p>Si Liquidaciones responde "¿cuánto le debo a cada shopper?", Movimientos responde la pregunta más grande: "¿cómo está la salud financiera del negocio completo?" — y por eso vale la pena registrar aquí todo, no solo lo relacionado a shoppers.</p>
 <h3>Tipos de movimientos</h3>
 <ul>
 <li><b>Ingresos operativos</b>: comisiones, honorarios de programa, facturación, anticipos.</li>
@@ -274,11 +1220,12 @@ CX.acadData={
 <li><b>Remesas</b>: ingresos de casa matriz o sede regional para conciliar.</li>
 </ul>
 <h3>Scope: proyecto vs. global</h3>
-<p>Puedes ver movimientos por proyecto (específico de un programa) o globales (gastos administrativos que no corresponden a un proyecto particular). Usa el selector en Movimientos.</p>
+<p>Puedes ver movimientos por proyecto (específico de un programa) o globales (gastos administrativos que no corresponden a un proyecto particular). Usa el selector en Movimientos. Esta separación es la que te permite saber si UN proyecto específico es rentable, en vez de ver solo el resultado consolidado de toda la operación.</p>
 <h3>Presupuesto mensual</h3>
 <p>En la misma pantalla, en la sección "Presupuesto mensual", define los rubros de gasto por mes. El Dashboard Financiero mostrará semáforos (en rango/al límite/excedido) comparando el real vs. el presupuestado.</p>`},
          {id:'f4',ic:'📈',n:'Dashboard Financiero',content:`
 <h2>Dashboard Financiero: inteligencia del negocio</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Responder en una pantalla si el negocio es rentable, no solo si opera bien. Vive en <b>Finanzas → Dashboard Financiero</b>.</p></div>
 <h3>Tiles por país (clickeables)</h3>
 <p>Cada país tiene su tile con: ingresos operativos, honorarios pagados, reembolsos, CxC, margen % y análisis rápido. Clic → detalle de esa métrica.</p>
 <h3>Análisis crítico inteligente</h3>
@@ -342,30 +1289,36 @@ CX.acadData={
            {q:'¿Qué significa que un programa de mystery shopping tiene "calibración"?',o:['Que los cuestionarios son muy largos','Que todos los evaluadores miden igual los mismos criterios (consistencia metodológica), garantizando que los datos sean comparables entre sucursales y periodos','Que el programa es muy exacto en precios','Que los evaluadores son profesionales certificados'],a:1,exp:'La calibración es el proceso de asegurar que todos los evaluadores interpretan y aplican los criterios del cuestionario de la misma manera. Sin calibración, dos evaluadores en la misma sucursal pueden dar scores muy diferentes por interpretaciones distintas del mismo criterio. En CXOrbia, la certificación + el instructivo detallado son los mecanismos de calibración.'},
          ]}
        ]},
-      /* ── Admin: Backend técnico ── */
+      /* ── Admin: Sistema central técnico ── */
       {id:'a_backend',cat:'Técnico',ic:'⚙️',color:'#7c3aed',n:'Backend técnico: Firebase, Gemini, Make y Storage',
        desc:'Conecta el backend de producción: base de datos en tiempo real, IA generativa, automatizaciones y almacenamiento de archivos.',cert:false,mins:90,
        lessons:[
          {id:'bt1',ic:'🔥',n:'Firebase: Auth, Firestore y Realtime DB',content:`
 <h2>Firebase: el backend de CXOrbia en producción</h2>
-<p>Firebase (Google) es el backend recomendado. Ofrece autenticación, base de datos en tiempo real y almacenamiento sin servidor que escala automáticamente.</p>
-<h3>Pasos de configuración</h3>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Conectar autenticación, base de datos y hosting reales para pasar de prototipo a producción.</p></div>
+<div class="acad-section" style="background:#fff7e6;border-color:#f5c344">⚠️ <b>Importante — esto NO se hace desde el navegador del prototipo</b><p>Esta guía es para el <b>equipo de desarrollo del backend</b>, no para un usuario del prototipo. <code>firebaseConfig</code> identifica el proyecto de Firebase (no es un secreto por sí solo, pero igual vive en el código del backend, nunca pegado en un formulario de la app), y las reglas de seguridad reales las define y despliega ese equipo — el prototipo nunca pide ni guarda estas credenciales.</p></div>
+<p>Firebase (Google) es el backend recomendado. Ofrece autenticación, base de datos en tiempo real y almacenamiento sin servidor que escala automáticamente. La ventaja frente a montar tu propio servidor: no necesitas contratar infraestructura ni preocuparte por escalar cuando crece el número de tenants — Firebase escala solo, y pagas por uso real.</p>
+<h3>Pasos de configuración (equipo de backend)</h3>
 <div class="acad-flow">
   <div class="acad-step"><span>1</span><b>console.firebase.google.com → Crear proyecto</b><p>Activa Google Analytics si lo deseas.</p></div>
   <div class="acad-step"><span>2</span><b>Authentication → Sign-in method → Email/Password</b><p>Habilita y agrega los correos de los primeros usuarios.</p></div>
   <div class="acad-step"><span>3</span><b>Firestore Database → Crear en modo producción</b><p>Elige región us-central1 para América Latina.</p></div>
-  <div class="acad-step"><span>4</span><b>Configuración → Apps web → Copiar firebaseConfig</b><p>Es el objeto con apiKey, projectId, etc. que va en config.js de CXOrbia.</p></div>
+  <div class="acad-step"><span>4</span><b>Configuración → Apps web → Copiar firebaseConfig al código del backend</b><p>Es el objeto con apiKey, projectId, etc. — se agrega al código fuente del backend/adapter, nunca a un formulario de la interfaz.</p></div>
 </div>
 <h3>Reglas de Firestore (producción)</h3>
 <p>Nunca dejes el modo prueba en producción — permite acceso público sin autenticación. Define reglas que permitan lectura/escritura solo a usuarios autenticados con el rol correcto. El HANDOFF-DESARROLLO.md incluye las reglas por colección.</p>`},
          {id:'bt2',ic:'🤖',n:'Gemini: IA generativa en la plataforma',content:`
-<h2>Conectar Gemini (Google AI) a CXOrbia</h2>
+<h2>Conectar Gemini (Google AI) a CXOrbia — en el backend de producción</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Activar generación de contenido e IA real en los módulos que hoy usan heurística local.</p></div>
 <p>Gemini impulsa: análisis crítico, generación de cuestionarios desde instructivos, propuestas, documentos con branding, clasificación de hallazgos e importador inteligente.</p>
-<h3>Obtener API Key</h3>
+<div class="acad-section" style="background:#fff7e6;border-color:#f5c344">⚠️ <b>Importante — esto NO se hace en el navegador del prototipo</b><p>Este prototipo <b>nunca</b> pide ni guarda una API key real de IA en su interfaz — cualquier campo de "proveedor preferido" que veas en Configuración solo guarda una preferencia local, no una conexión. Los pasos de abajo son para el <b>equipo de desarrollo del backend</b>, cuando construya el adapter real: la API key vive en el servidor (Secret Manager u equivalente), nunca en localStorage ni en un formulario que el usuario final pueda ver.</p></div>
+<h3>Obtener API Key (para el backend, no para pegar aquí)</h3>
 <div class="acad-flow">
   <div class="acad-step"><span>1</span><b>aistudio.google.com → Get API Key → Create API key</b><p>La key tiene formato AIza...</p></div>
-  <div class="acad-step"><span>2</span><b>CXOrbia → Configuración → IA y Automatización → Pegar API Key</b><p>El sistema valida la key y activa el indicador “IA activa” en el topbar.</p></div>
+  <div class="acad-step"><span>2</span><b>El equipo de backend la guarda en el servidor (Secret Manager)</b><p>Nunca se pega en el navegador ni en un input de esta plataforma — el backend expone un endpoint propio que el frontend consume sin ver la key.</p></div>
 </div>
+<h3>Indicador "preferencia de IA" del prototipo</h3>
+<p>El selector de proveedor en Configuración → Automatizaciones solo guarda qué proveedor prefiere la consultora para cuando exista el backend — es información de enrutamiento, no una conexión activa. El estado real (disponible/no disponible) lo determina exclusivamente el adapter del backend, nunca un checkbox en el navegador.</p>
 <h3>Modelos recomendados</h3>
 <ul>
 <li><b>gemini-2.0-flash</b>: ultra rápido, ideal para análisis de cuestionarios, generación de contenido, clasificación. Usar por defecto.</li>
@@ -375,15 +1328,18 @@ CX.acadData={
 <p>~1,500 requests/día con gemini-flash. Para producción con 10+ usuarios activos, el plan pago ($0.075/1M tokens) cubre el uso normal sin problema.</p>`},
          {id:'bt3',ic:'🔗',n:'Make: automatizaciones y webhooks',content:`
 <h2>Make: el motor de automatizaciones</h2>
-<p>Make conecta CXOrbia con WhatsApp Business, correo, Google Sheets, Slack y cualquier API externa.</p>
+<p>Make conecta CXOrbia con WhatsApp Business, correo, Google Sheets, Slack y cualquier API externa. La idea central es que CXOrbia nunca envía un WhatsApp directamente — solo dispara un evento con datos, y Make decide qué hacer con él. Esto significa que puedes cambiar la lógica de notificaciones (a quién avisar, por qué canal, con qué texto) sin tocar el código de la plataforma, editando solo el escenario en Make.</p>
 <h3>Configuración básica</h3>
 <div class="acad-flow">
   <div class="acad-step"><span>1</span><b>Crear cuenta en make.com</b><p>El plan gratuito tiene 1,000 operaciones/mes — suficiente para empezar.</p></div>
   <div class="acad-step"><span>2</span><b>Crear escenario → Webhooks → Custom webhook → Copiar URL</b><p>Esta URL va en Configuración → Automatizaciones → URL de Make.</p></div>
   <div class="acad-step"><span>3</span><b>Router por event.type</b><p>CXOrbia envía eventos JSON. Usa un Router en Make para separar: aprobacion, pago, alerta, visita_realizada, cuestionario, correo_wa.</p></div>
-</div>`},
+</div>
+<h3>Por qué webhook por tenant, no uno global</h3>
+<p>Cada consultora (tenant) configura su propia URL de Make. Esto evita que los eventos de un cliente lleguen al escenario de otro, y le permite a cada consultora personalizar sus propias reglas de notificación sin afectar a las demás — clave para que la plataforma sea multi-tenant de verdad.</p>`},
          {id:'bt4',ic:'📦',n:'Storage: archivos y evidencias',content:`
 <h2>Firebase Storage: evidencias, PDFs y logos</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Guardar de forma segura evidencias, documentos y logos sin exponerlos públicamente.</p></div>
 <h3>Activar Storage</h3>
 <div class="acad-flow">
   <div class="acad-step"><span>1</span><b>Firebase Console → Storage → Comenzar</b><p>Selecciona la misma región que Firestore.</p></div>
@@ -403,12 +1359,61 @@ CX.acadData={
            {q:'¿Qué información debe incluir el payload JSON que CXOrbia envía a Make al aprobar una postulación?',o:['Solo el ID del shopper','Solo el nombre de la visita','Un objeto completo con event.type, shopperNombre, shopperTelefono, sucursal, fecha, honorario y proyectoNombre','Solo el teléfono del shopper'],a:2,exp:'El payload debe ser completo para que Make no necesite hacer una segunda llamada a Firestore. Si solo mandas el ID de la visita, Make tiene que ir a buscar los datos de Firestore — eso agrega latencia, dependencia y complejidad. La regla de oro: el evento debe contener todo lo que el mensaje final (WhatsApp al shopper) necesita.'},
          ]}
        ]},
+      /* ─── RUTA OPERATIVA (equipo ops) ─── */
+      {id:'a_ops_conflicts_route',cat:'Operación',ic:'🎧',color:'#2a6fdb',n:'Equipo operativo: asignación, conflictos y fuera de rango',
+       desc:'Tu ruta diaria: aprobar postulaciones, reasignar, resolver conflictos de HR y autorizar visitas fuera de rango — con estados honestos.',
+       cert:false,mins:50,
+       lessons:[
+         {id:'ao1',ic:'🧩',n:'Gestión de postulaciones',content:`
+<h2>De postulación a asignación</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Que ninguna postulación quede sin gestionar, con el candidato correcto para cada visita.</p></div>
+<p>Cada postulación que entra a tu bandeja representa a un shopper esperando una respuesta — mientras más rápido y criterioso seas gestionándola, mejor experiencia tiene el evaluador y menos riesgo de que la visita quede sin cubrir cerca de la fecha límite. Esta es tu rutina central del día.</p>
+<div class="acad-flow">
+  <div class="acad-step"><span>1</span><b>Revisar</b><p>Filtra por proyecto, país o estado. Cada postulación muestra quién la gestionó.</p></div>
+  <div class="acad-step"><span>2</span><b>Aprobar / standby / rechazar</b><p>Al aprobar, la visita pasa a "asignada" y se prepara la notificación (pendiente confirmación).</p></div>
+  <div class="acad-step"><span>3</span><b>Reasignar</b><p>Usa el buscador (país, certificación) para elegir otro shopper. Queda auditado.</p></div>
+</div>
+<h3>Cómo decidir entre varios candidatos</h3>
+<p>Cuando más de un shopper se postula a la misma sucursal, prioriza por: certificación vigente para ese proyecto específico, rating histórico (visitas completas y a tiempo), cercanía geográfica declarada, y si ya conoce el instructivo de ese cliente por visitas anteriores. No hay una regla única correcta — usa criterio, pero sé consistente para no generar percepción de favoritismo.</p>
+<div class="acad-section"><b>Sin duplicar</b><p>Si gestionas desde la plataforma y desde la HR, verifica que la visita quede con un solo gestor. El sync real lo resuelve el sistema central por llave natural.</p></div>`},
+         {id:'ao2',ic:'⚠️',n:'Conflictos y sincronía de HR',content:`
+<h2>Cuando la HR y la plataforma no coinciden</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Detectar y resolver conflictos de datos entre HR externa y la plataforma sin perder información.</p></div>
+<p>Cuando un cliente gestiona su hoja de ruta en Google Sheets o Excel EN VIVO, y tu equipo también opera desde la plataforma, es cuestión de tiempo antes de que ambos lados intenten cambiar el mismo registro casi al mismo tiempo (por ejemplo: tú reasignas un shopper en la plataforma, mientras alguien en el cliente edita la misma fila en la hoja). Esto es un <b>conflicto de sincronía</b>, no un error — es esperable en cualquier integración de dos vías.</p>
+<p>La sincronía con hoja de ruta externa (Google Sheets/Excel) queda <b>pendiente de conexión</b>. Mientras tanto, tu trabajo es NO dejar que un conflicto pase desapercibido:</p>
+<ul class="acad-check">
+<li>Revisa el panel de incidencias de la Fuente de HR</li>
+<li>Un conflicto (held_for_conflict) se retiene hasta reconciliar</li>
+<li>No fuerces liquidación de una visita en conflicto</li>
+<li>Deja nota del criterio con que resolviste</li>
+</ul>
+<h3>Cómo se ve un conflicto resuelto correctamente</h3>
+<p>Confirmas cuál de las dos versiones es la correcta (normalmente preguntando directamente a quien hizo el cambio más reciente), documentas el motivo en la nota, y solo entonces liberas la visita para continuar su flujo normal. Nunca se resuelve "a ojo" comparando qué versión se ve más completa — eso es exactamente lo que la política de "no dedupe visual" prohíbe en todo el sistema.</p>
+<blockquote>Los estados "sincronizada / actualizada" reales dependen del gate del sistema central. En preview verás "preparado · pendiente de conexión".</blockquote>`},
+         {id:'ao3',ic:'📍',n:'Visitas fuera de rango',content:`
+<h2>Autorizar (o no) una visita fuera de rango</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Decidir con criterio cuándo un atraso es responsabilidad del shopper y cuándo no.</p></div>
+<p>Cada proyecto define un rango de tiempo aceptable entre la fecha agendada y la fecha real de ejecución (por ejemplo, ±3 días). Una visita realizada fuera de ese rango no se rechaza automáticamente — pasa a tu bandeja para que decidas si se autoriza, porque puede haber una razón legítima detrás del atraso.</p>
+<h3>Antes de decidir, pregunta</h3>
+<ul>
+<li>¿El atraso fue por causa del shopper (falta de planeación, olvido) o por algo fuera de su control?</li>
+<li>¿La sucursal estaba cerrada, en remodelación, o el cliente canceló y reprogramó tarde?</li>
+<li>¿Es un patrón repetido de este shopper, o un caso aislado?</li>
+</ul>
+<div class="acad-section"><b>Regla de puntaje</b><p>Solo penaliza al shopper si la causa es suya. Si la causa es del cliente, local cerrado o fuerza mayor, se autoriza sin penalización, con motivo y responsable registrados.</p></div>
+<p>Registrar el motivo no es un trámite burocrático: es lo que te protege a ti si el cliente pregunta después por qué una visita se aceptó fuera de fecha, y es lo que te permite detectar patrones (un shopper que siempre se atrasa, una sucursal que siempre cancela) para actuar a tiempo.</p>`},
+         {id:'ao4',ic:'❓',n:'Evaluación operativa',tipo:'quiz',quiz:[
+           {q:'Una visita está en conflicto (HR vs plataforma). ¿La liquidas?',o:['Sí, de inmediato','No: se retiene hasta reconciliar','Solo si el shopper insiste'],a:1,fb:'Un conflicto se retiene (held_for_conflict) hasta reconciliar. No se liquida forzado.'},
+           {q:'Apruebas una postulación. ¿El shopper ya recibió WhatsApp?',o:['Sí, automático','No: la notificación queda preparada, pendiente de confirmación/gate','Depende del país'],a:1,fb:'La notificación se prepara; el envío real depende del gate del sistema central.'},
+         ]},
+       ]},
       /* ─── FRANQUICIA / COORDINACIÓN ─── */
       {id:'a_coord',cat:'Franquicia',ic:'🌎',color:'#0891b2',n:'Coordinador, Representante y Aliado: administra tu región',
        desc:'La herramienta que la consultora te da para gestionar proyectos, HR, shoppers y liquidaciones de tu territorio.',cert:true,mins:70,
        lessons:[
          {id:'co1',ic:'🧭',n:'Tu rol en el ecosistema',content:`
 <h2>Coordinador / Representante / Aliado: qué eres y qué no</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Darte control real de la operación de tu territorio, sin depender de hojas de cálculo sueltas.</p></div>
 <p>Eres el brazo operativo de la consultora en tu territorio. Antes, gestionar proyectos regionales significaba hojas de cálculo sueltas y correos; ahora tienes una plataforma que centraliza tu operación local con la misma potencia que usa la casa matriz — pero con alcance limitado a lo tuyo.</p>
 <h3>Diferencias entre los tres roles</h3>
 <div class="acad-cards">
@@ -420,6 +1425,7 @@ CX.acadData={
 <p>Tu acceso está limitado por país: solo ves y gestionas las visitas, HR, shoppers y clientes de tu(s) territorio(s) asignado(s). No ves la operación de otras regiones. Toda tu gestión queda registrada con tu nombre para trazabilidad (bitácora de auditoría).</p>`},
          {id:'co2',ic:'🗺️',n:'Administrar tu HR y asignaciones',content:`
 <h2>La hoja de ruta de tu territorio</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Centralizar qué sucursales de tu región se evalúan, con qué shopper y cuándo.</p></div>
 <p>Tu día a día gira en torno a la Hoja de Ruta (HR) de tu región. Puede vivir en la plataforma o en un Google Sheet colaborativo — en ambos casos, la ves y la gestionas desde CXOrbia.</p>
 <div class="acad-flow">
   <div class="acad-step"><span>1</span><b>Recibes o cargas la HR</b><p>La casa matriz te asigna las visitas de tu país, o tú cargas la HR de tu programa local vía importador inteligente.</p></div>
@@ -427,9 +1433,11 @@ CX.acadData={
   <div class="acad-step"><span>3</span><b>Asignas</b><p>Apruebas postulaciones o asignas manualmente. El shopper recibe notificación automática.</p></div>
   <div class="acad-step"><span>4</span><b>Das seguimiento</b><p>Vigilas atrasos, cuestionarios pendientes y avance vs meta de TU región desde el dashboard filtrado.</p></div>
 </div>
-<div class="acad-section">⚠️ <b>Anti-duplicación:</b> si trabajas la HR en Google Sheets y también en la plataforma, el sistema reconcilia por llave natural — no se duplica aunque asignes en ambos lados.</div>`},
+<div class="acad-section">⚠️ <b>Anti-duplicación:</b> si trabajas la HR en Google Sheets y también en la plataforma, el sistema reconcilia por llave natural — no se duplica aunque asignes en ambos lados.</div>
+<p>Esta flexibilidad es intencional: muchos coordinadores llevan años trabajando en Excel/Sheets con su propio equipo y no quieren abandonar ese flujo de golpe. CXOrbia te deja seguir operando como ya sabes mientras te da, sin esfuerzo adicional, el dashboard, los KPIs y la trazabilidad que antes no tenías.</p>`},
          {id:'co3',ic:'💵',n:'Liquidar honorarios y cruzar cuentas',content:`
 <h2>Control financiero de tu operación local</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Pagar correctamente a tu red de shoppers y mantener cuentas claras con la casa matriz.</p></div>
 <p>Si tu modelo es de aliado/franquiciado, gestionas el dinero de tu territorio: pagas a tus shoppers y cruzas cuentas con la casa matriz.</p>
 <h3>Liquidación a tus shoppers</h3>
 <ul>
@@ -438,9 +1446,11 @@ CX.acadData={
 <li>La fecha estimada de pago se calcula automáticamente (viernes + días configurados tras el submit).</li>
 </ul>
 <h3>Cruce con la casa matriz</h3>
-<p>Cuando facturas localmente un programa, registras el ingreso; cuando recibes o envías remesas a la casa matriz, las concilias. El módulo financiero mantiene separadas tus comisiones/honorarios de los financiamientos, para que sepas exactamente tu margen real por proyecto.</p>`},
+<p>Cuando facturas localmente un programa, registras el ingreso; cuando recibes o envías remesas a la casa matriz, las concilias. El módulo financiero mantiene separadas tus comisiones/honorarios de los financiamientos, para que sepas exactamente tu margen real por proyecto.</p>
+<p>Esta separación te protege de un error común en operaciones regionales: confundir un anticipo o financiamiento de la casa matriz con ingreso real del negocio, lo que infla artificialmente tu margen aparente hasta que el dinero tiene que devolverse.</p>`},
          {id:'co4',ic:'🤝',n:'Prospectar y presentar propuestas (Representante)',content:`
 <h2>Vender en tu territorio con respaldo de la consultora</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Convertir prospectos en clientes usando las mismas herramientas comerciales de la casa matriz.</p></div>
 <p>Como representante, usas el CRM y la calculadora de costos para convertir prospectos en clientes, con la metodología y la marca de la consultora.</p>
 <div class="acad-flow">
   <div class="acad-step"><span>1</span><b>Registra el prospecto</b><p>En el CRM, como lead, con sus datos y la fuente.</p></div>
@@ -454,14 +1464,129 @@ CX.acadData={
            {q:'Trabajas la HR de tu región en un Google Sheet compartido, pero también apruebas postulaciones en la plataforma. ¿Qué pasa con los datos?',o:['Se duplican y tienes que borrar manualmente','El sistema reconcilia por llave natural (documento del shopper + id de visita) y no duplica, aunque gestiones en ambos lados','Debes elegir solo uno de los dos','La plataforma bloquea el Google Sheet'],a:1,exp:'CXOrbia usa una llave natural inmutable para reconciliar la HR externa con la plataforma. Aunque asignes una visita en el Google Sheet y la apruebes también en la plataforma, el sistema reconoce que es el mismo registro y no lo duplica. Esto te permite mantener tu forma de trabajo colaborativa en Sheets mientras aprovechas la inteligencia y los KPIs de la plataforma.'},
          ]}
        ]},
+    /* ─── PLATAFORMA: CONTEXTO CANÓNICO (paquete V110→V111, 20260714) ─── */
+    {id:'a_plat_ctx',cat:'Plataforma',ic:'🧭',color:'#4f46e5',n:'Contexto de la plataforma: proyecto, periodo, país y niveles de dato',
+     desc:'Los cuatro conceptos que explican por qué ves lo que ves — y qué revisar cuando dos pantallas no coinciden.',
+     cert:false,mins:35,
+     lessons:[
+       {id:'apc1',ic:'🗂️',n:'Proyecto vs. periodo: qué significa cada nivel',content:`
+<h2>Proyecto (programa) vs. Periodo (ronda)</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Entender la diferencia entre un <b>proyecto</b> (el programa completo con un cliente — ej. "Proyecto Retail") y un <b>periodo</b> (una ronda concreta dentro de ese proyecto — ej. "Quincena 1", "Junio 2026"). Un periodo NUNCA es un proyecto nuevo: hereda país, moneda, marca y configuración de su proyecto.</p></div>
+<div class="acad-section">⚙️ <b>Cómo funciona</b><p>El selector <b>Proyecto</b> (barra lateral o Dashboard) elige el programa; el selector <b>Periodo</b> (que aparece solo si el proyecto tiene más de una ronda) elige la ronda activa dentro de ese programa. Cambiar el periodo NUNCA cambia el proyecto — cambia solo qué visitas, KPIs y calendario ves.</p></div>
+<h3>Dónde se selecciona cada uno</h3>
+<div class="acad-flow">
+  <div class="acad-step"><span>1</span><b>Barra lateral</b><p>Selector "Proyecto" (programa) y, debajo, "Periodo" si hay más de una ronda.</p></div>
+  <div class="acad-step"><span>2</span><b>Dashboard</b><p>El mismo selector de proyecto está disponible arriba — cambia el mismo estado, no uno paralelo.</p></div>
+  <div class="acad-step"><span>3</span><b>Periodos (módulo)</b><p>Lista completa de rondas del programa activo, con avance, estado (activo/cerrado/archivado) y comparativo.</p></div>
+</div>
+<div class="acad-section">✅ <b>Cómo comprobar que KPIs y listas corresponden al periodo activo</b><p>Mira el conteo total de visitas en el Dashboard y compáralo con el mismo número en Visitas/Histórico — deben coincidir siempre, porque ambos leen el mismo periodo activo. <code>CX.data.currentProjectId</code> identifica el proyecto/programa y <code>currentPeriodId</code> identifica el periodo — están relacionados pero <b>no son el mismo ID</b>: cambiar de periodo (mismo proyecto) nunca cambia el proyecto activo; cambiar de proyecto sí puede seleccionar un periodo distinto (el más reciente del nuevo proyecto, o el que ya estaba activo si pertenece a ambos). Si cambias de periodo o de proyecto desde CUALQUIER selector, los números deben actualizarse igual en Dashboard, Visitas, Mi Día e Histórico — sin recargar la página.</p></div>
+<div class="acad-section">⚠️ <b>Error frecuente</b><p>Ver un periodo seleccionado en un control y datos de OTRO periodo en otro panel. Esto NO debe pasar — todos los selectores de periodo llaman al mismo punto único (<code>CX.data.setCurrentPeriod</code>), nunca cambian solo una etiqueta visual.</p></div>
+<div class="acad-section">🔧 <b>Acción correctiva</b><p>Si detectas un desfase, recarga el módulo actual (navega a otro y vuelve) — si el desfase persiste tras eso, repórtalo como incidencia técnica: es síntoma de un selector roto, no de un dato faltante.</p></div>`},
+       {id:'apc2',ic:'🌎',n:'Países habilitados vs. alcance activo de tu sesión',content:`
+<h2>Configuración del tenant/proyecto vs. tu propio alcance</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Distinguir tres capas que se confunden fácil: los <b>países habilitados por el tenant</b> (marca/consultora), los <b>países de un proyecto</b> (ej. Retail opera en País A y País B), y tu <b>alcance activo de sesión</b> (los países que TÚ, con tu rol, puedes ver y operar).</p></div>
+<div class="acad-section">⚙️ <b>Cómo funciona</b><p>Un proyecto puede operar en varios países a la vez — eso es configuración, no tu alcance. Tu alcance real depende de tu rol: un <b>Coordinador/Aliado</b> tiene un conjunto de países asignado explícitamente (visible como "🌎 alcance multipaís" en tu perfil de la barra lateral); un <b>shopper</b> tiene exactamente UN país — el suyo propio, nunca la lista completa del proyecto.</p></div>
+<div class="acad-section">🖱️ <b>Dónde se ve</b><p>Tu país/alcance activo se muestra siempre en la esquina inferior de la barra lateral, junto a tu nombre. Un shopper ve su propio país (ej. "Shopper · 🇭🇳 Honduras"), nunca la lista de países del proyecto en el que participa.</p></div>
+<div class="acad-section">✅ <b>Qué ocurre ante un alcance inválido</b><p>Si tu usuario no tiene un país válido asignado (registro incompleto, país eliminado de catálogo), el sistema NO asume un país por defecto — el contenido restringido por país simplemente no se muestra (fail-closed), en vez de mostrarte datos de un país que no es el tuyo.</p></div>
+<div class="acad-section">⚠️ <b>Error frecuente</b><p>Confundir "el proyecto opera en 2 países" con "yo tengo acceso a esos 2 países" — son cosas distintas. Revisa siempre TU indicador de alcance, no la lista de países del proyecto.</p></div>
+<div class="acad-section">🔧 <b>Acción correctiva</b><p>Si tu alcance no es el correcto, pide a un administrador que revise tu asignación en Usuarios & Permisos — nunca se corrige eligiendo un país distinto tú mismo salvo que tu rol tenga selector real (coordinador/aliado).</p></div>`},
+       {id:'apc3',ic:'🔒',n:'Referencia protegida, perfil operativo y perfil autorizado',content:`
+<h2>Los tres niveles de dato de un shopper</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Saber por qué a veces un registro de shopper NO muestra rating, estado, honorario ni contacto — y por qué eso es correcto, no un error.</p></div>
+<div class="acad-section">⚙️ <b>Los tres niveles</b>
+<ul class="acad-check">
+<li><b>Referencia protegida</b>: la fuente solo entrega un código/identificador y país — sin ningún atributo operativo. Se muestra como "🔒 Protegido", sin rating/estado/honorario inventados.</li>
+<li><b>Perfil operativo</b>: hay atributos de operación (estado, conteo de visitas) pero SIN datos de contacto ni banco — no se puede editar ni contactar todavía.</li>
+<li><b>Perfil autorizado completo</b>: hay contacto/documento/cuenta de pago — la ficha completa se habilita, y solo con el permiso correspondiente se ven los campos protegidos (🔒) sin enmascarar.</li>
+</ul></div>
+<div class="acad-section">✅ <b>Por qué no se inventan valores</b><p>Mostrar un rating o un honorario "por defecto" cuando la fuente no lo entrega haría parecer que existe una evaluación real donde no la hay — eso rompe la confianza en TODO el resto de la plataforma. Por eso cada campo ausente se muestra como "— sin dato" o queda fuera de la tarjeta, nunca sustituido.</p></div>
+<div class="acad-section">⚠️ <b>Error frecuente</b><p>Pensar que un shopper en "🔒 Protegido" tiene un problema o está mal cargado — no es un error, es el nivel de dato real disponible desde su fuente. Compara con Shoppers → ábrelo y verás la explicación del nivel en su ficha.</p></div>
+<div class="acad-section">🔧 <b>Acción correctiva</b><p>Para subir de nivel, completa los datos operativos (estado, asignación a visitas) y luego los de contacto/banco desde su ficha (requiere permiso de datos protegidos) — nunca se "fuerza" un nivel manualmente.</p></div>`},
+       {id:'apc4',ic:'📸',n:'Foto fija vs. datos en vivo: qué estás viendo en cada momento',content:`
+<h2>Foto fija vs. lectura en vivo</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Distinguir cuándo estás viendo un <b>snapshot</b> (una foto de datos capturada en un momento específico — útil para auditoría/evidencia) de cuándo estás viendo los <b>datos en vivo</b> (la lectura actual, que cambia según lo que hagas).</p></div>
+<div class="acad-section">⚙️ <b>Cómo reconocer cada modo</b><p>Un snapshot se identifica porque trae una fecha/hora de captura fija y no cambia aunque edites datos después — se usa para evidencia (ej. una captura de auditoría). Los datos en vivo son lo que ves normalmente al navegar: KPIs, listas y calendarios que se recalculan en cada acción.</p></div>
+<div class="acad-section">✅ <b>Qué valida una actualización real</b><p>Si haces un cambio (ej. cambias de periodo, pagas un lote) y una pantalla en vivo no refleja el cambio de inmediato sin recargar, eso es una falla — repórtalo. Un snapshot, en cambio, es correcto que NO cambie: esa es su función (preservar el estado de un momento).</p></div>
+<div class="acad-section">⚠️ <b>Error frecuente</b><p>Comparar un snapshot antiguo contra los datos en vivo y asumir que "algo se perdió" — en realidad son dos cosas distintas por diseño; el snapshot es un punto en el tiempo, los datos en vivo son el presente.</p></div>
+<div class="acad-section">🔧 <b>Acción correctiva</b><p>Si necesitas comparar, usa el comparativo de periodos (módulo Periodos) en vez de comparar snapshots sueltos — te da la métrica real de cada ronda, lado a lado.</p></div>`},
+     ]},
     ],
     shopper:[
+      /* ─── RUTA OPERATIVA DEL SHOPPER (paso a paso) ─── */
+      {id:'s_ruta',cat:'Inducción',ic:'🧭',color:'#10b981',n:'Tu ruta operativa: de la oferta al pago',
+       desc:'Cada pantalla que usarás, en orden: agendar, reprogramar, realizar, cuestionario, beneficios y privacidad.',
+       cert:false,mins:45,
+       lessons:[
+         {id:'sr1',ic:'📅',n:'Agendar y reprogramar',content:`
+<h2>De visita disponible a agendada</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Convertir una visita disponible en un compromiso con fecha y hora. Vive en <b>Visitas Disponibles</b> y <b>Mis Visitas</b>.</p></div>
+<p>Este es el punto de entrada a cualquier trabajo: sin agendar correctamente, no hay visita que ejecutar ni honorario que cobrar. Vale la pena dominar esta pantalla desde el primer día.</p>
+<div class="acad-flow">
+  <div class="acad-step"><span>1</span><b>Visitas disponibles</b><p>Ves ofertas de TODOS los proyectos. Filtra por país, quincena o escenario.</p></div>
+  <div class="acad-step"><span>2</span><b>Postularte / reservar</b><p>Te postulas a la sucursal que quieras. Queda "pendiente" hasta que el equipo apruebe.</p></div>
+  <div class="acad-step"><span>3</span><b>Agendar</b><p>Cuando te aprueban, eliges fecha y franja dentro del rango permitido.</p></div>
+</div>
+<h3>Reprogramar</h3>
+<p>Si necesitas cambiar la fecha, pulsa <b>"Solicitar reprogramación"</b> desde la visita, elige la nueva fecha propuesta, escribe el motivo y pulsa <b>"Enviar solicitud"</b>. El equipo autoriza la nueva fecha o conserva la anterior. <b>Una reprogramación justificada no afecta tu puntaje.</b> Avisa con la mayor anticipación posible: una reprogramación de último minuto es más difícil de aprobar y puede dejar la sucursal sin cobertura si nadie más puede cubrirla a tiempo.</p>
+<div class="acad-section">⚠️ <b>Fuera de rango:</b> si agendas fuera del rango autorizado, requiere aprobación. Solo penaliza si la causa es tuya.</div>
+<h3>Cómo elegir bien tus visitas</h3>
+<p>No te postules a todo lo que veas: revisa el honorario, la distancia real desde tu ubicación, y si la franja horaria es compatible con tu disponibilidad real. Postularte a una visita que luego no puedes cumplir daña tu rating más que no postularte en absoluto.</p>`},
+         {id:'sr2',ic:'✅',n:'Realizar la visita y evidencias',content:`
+<h2>El día de la visita</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Convertir tu visita en evidencia verificable, no solo en una narrativa de tu palabra.</p></div>
+<p>Las evidencias no son un formalismo — son la prueba objetiva de que la visita ocurrió tal como la reportas. Sin evidencia correcta, tu cuestionario puede ser devuelto para corrección o incluso rechazado, retrasando tu pago.</p>
+<h3>Botones que usarás</h3>
+<ul class="acad-check">
+<li>Pulsa <b>"Confirmar realizada"</b> cuando termines — esto habilita el cuestionario.</li>
+<li>Adjunta las evidencias que pida el escenario (foto, foto geolocalizada, audio o video)</li>
+<li>Si el add-on de geolocalización está activo, la foto lleva GPS + fecha/hora automáticos</li>
+<li>Pulsa <b>"📝 Llenar cuestionario"</b> (o "Abrir cuestionario" si es externo) para completar el reporte</li>
+</ul>
+<h3>Errores comunes que retrasan tu cuestionario</h3>
+<ul>
+<li>Foto borrosa o tomada desde muy lejos, donde no se distingue el criterio evaluado.</li>
+<li>Evidencia de audio/video cuando el escenario pedía solo foto (o viceversa).</li>
+<li>Marcar "realizada" pero dejar el cuestionario para otro día — cuanto más tiempo pasa, más detalles olvidas y menos preciso es tu reporte.</li>
+</ul>
+<div class="acad-section"><b>Modal al marcar realizada</b><p>Al marcar realizada aparece el botón del cuestionario y el contacto de evidencias. No cierres sin completar el cuestionario.</p></div>`},
+         {id:'sr3',ic:'📝',n:'Cuestionario: realizado/completado',content:`
+<h2>Completar el cuestionario</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Registrar tu observación de forma estructurada — es lo que genera tu score y tu liquidación.</p></div>
+<p>Según el proyecto, el cuestionario puede ser <b>interno</b> (formulario en la plataforma) o <b>externo por link</b> (general o propio de cada visita, desde la hoja de ruta). Ninguno de los dos es "más importante" que el otro — ambos alimentan el mismo score y la misma liquidación, solo cambia dónde lo llenas.</p>
+<div class="acad-flow">
+  <div class="acad-step"><span>1</span><b>Abrir</b><p>Si es externo, pulsa "🌐 Abrir cuestionario" con el link de ESTA visita. Si falta el link, avisa a soporte; no uses otro formulario.</p></div>
+  <div class="acad-step"><span>2</span><b>Completar</b><p>Responde con evidencia y narrativa objetiva.</p></div>
+  <div class="acad-step"><span>3</span><b>Marcar realizado/completado</b><p>Pulsa "✅ Enviar cuestionario" (interno) o "✅ Marcar cuestionario realizado" (externo). El cuestionario queda "realizado/completado". Luego pasa a revisión del equipo.</p></div>
+</div>
+<h3>Cómo escribir una buena narrativa</h3>
+<p>Cuando el cuestionario pide un comentario abierto, describe hechos concretos y en orden cronológico ("el asesor saludó al entrar, preguntó el motivo de mi visita, tardó 4 minutos en ofrecer una solución") en vez de juicios generales ("la atención fue mala"). Una narrativa concreta es la que realmente ayuda al cliente a mejorar, y es la que evita que tu cuestionario sea devuelto por falta de detalle.</p>
+<blockquote>El texto correcto es "realizado/completado", no "enviado". Después de tu cuestionario viene la revisión del admin antes de cualquier liquidación.</blockquote>`},
+         {id:'sr4',ic:'💰',n:'Mis Beneficios y privacidad',content:`
+<h2>Cobrar y proteger tus datos</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Que veas exactamente en qué etapa está tu pago, sin tener que preguntar. Vive en <b>Mis Beneficios</b>.</p></div>
+<p>En <b>Mis Beneficios</b> ves tus honorarios, reembolsos y el estado de cada pago con su fecha estimada. Esta pantalla existe para que nunca tengas que preguntar "¿ya me pagaron?" por WhatsApp — el estado siempre está a la vista, actualizado.</p>
+<div class="acad-section"><b>Estados honestos</b><p>Un pago no dice "pagado" hasta el cruce financiero real. Antes verás "candidata / preview / pendiente".</p></div>
+<h3>Tus datos bancarios</h3>
+<p>Registra tus datos bancarios en tu perfil para agilizar pagos. <b>Son datos sensibles:</b> se protegen y solo se referencian de forma opaca. La plataforma nunca los expone públicamente. Un dato bancario mal escrito (número de cuenta con un dígito equivocado, nombre del titular distinto al de la cuenta) es la causa más común de retraso en pagos — revísalo con cuidado la primera vez que lo cargas.</p>
+<h3>Checklist antes de tu primera visita</h3>
+<ul class="acad-check">
+<li>Perfil completo (nombre, documento, WhatsApp)</li>
+<li>Datos bancarios registrados</li>
+<li>Certificación del proyecto aprobada</li>
+</ul>`},
+         {id:'sr5',ic:'❓',n:'Evaluación de tu ruta',tipo:'quiz',quiz:[
+           {q:'Reprogramas una visita con causa justificada. ¿Afecta tu puntaje?',o:['Sí, siempre','No, una reprogramación justificada no penaliza','Solo si es fin de semana'],a:1,fb:'Una reprogramación justificada no penaliza. Solo penaliza lo que es responsabilidad del shopper.'},
+           {q:'El proyecto usa cuestionario externo por link y falta el link de tu visita. ¿Qué haces?',o:['Uso cualquier formulario interno','Aviso a soporte y espero el link de esa visita','Invento las respuestas'],a:1,fb:'Nunca uses otro formulario. Avisa a soporte; el link correcto es el de esa visita, desde la hoja de ruta.'},
+           {q:'En Mis Beneficios, un pago aparece como "candidata". ¿Ya te pagaron?',o:['Sí','No: es preview, el pago real depende del cruce financiero','Depende del país'],a:1,fb:'"Candidata/preview" no es pago confirmado. El pago real ocurre con el cruce financiero del sistema central.'},
+         ]},
+       ]},
       {id:'s_ind',cat:'Inducción',ic:'🕵️',color:'#10b981',n:'Inducción del evaluador incógnito',
        desc:'Tu rol, las reglas de oro, el anonimato y cómo crecer profesionalmente.',
        cert:true,mins:60,
        lessons:[
          {id:'si1',ic:'🎯',n:'Tu rol y responsabilidad',content:`
 <h2>Ser evaluador incógnito</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Que entiendas por qué el anonimato y la objetividad no son opcionales, sino la base de tu credibilidad.</p></div>
 <p>Eres el <strong>cliente invisible</strong> que mide la experiencia real. Tu trabajo impacta directamente en decisiones de negocio de grandes marcas.</p>
 <h3>Las 4 reglas de oro</h3>
 <div class="acad-cards">
@@ -471,9 +1596,11 @@ CX.acadData={
   <div class="acad-card"><div>⏱️</div><b>Mismo día</b><p>El cuestionario se completa el mismo día. Sin excepciones.</p></div>
 </div>
 <h3>¿Por qué importa el anonimato?</h3>
-<p>Si el personal sabe que está siendo evaluado, modifica su comportamiento. La medición pierde validez. El cliente paga por ver la realidad, no un performance. Tu credibilidad como evaluador depende de mantener el anonimato impecable.</p>`},
+<p>Si el personal sabe que está siendo evaluado, modifica su comportamiento. La medición pierde validez. El cliente paga por ver la realidad, no un performance. Tu credibilidad como evaluador depende de mantener el anonimato impecable.</p>
+<p>Piensa en tu rol como el de un auditor silencioso: no estás ahí para "atrapar" a nadie ni para regalar una buena calificación por simpatía — estás ahí para producir un dato que, sumado al de cientos de otras visitas, le dice a la empresa dónde está fallando su servicio y dónde está funcionando bien de verdad.</p>`},
          {id:'si2',ic:'📋',n:'El flujo de una visita',content:`
 <h2>De la reserva al cobro — paso a paso</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Que veas el camino completo de una visita, de principio a fin, antes de tu primera vez.</p></div>
 <div class="acad-flow">
   <div class="acad-step"><span>1</span><b>Ver la oferta</b><p>Visitas Disponibles muestra TODAS las visitas de todos los proyectos. Filtra por proyecto, quincena, escenario o ciudad.</p></div>
   <div class="acad-step"><span>2</span><b>Reservar o postular</b><p>En Reservas puedes pedir con anticipación la sucursal que prefieres para el próximo periodo. En Visitas Disponibles te postulas para visitas activas.</p></div>
@@ -499,7 +1626,8 @@ CX.acadData={
 <li>Acceso a programas con honorarios preferentes.</li>
 <li>Menor tasa de rechazos de postulaciones.</li>
 <li>Convocatorias especiales para visitas de mayor complejidad y pago.</li>
-</ul>`},
+</ul>
+<p>Piensa en tu calificación como tu currículum dentro de la plataforma: se construye visita a visita, y una mala racha (varias reprogramaciones sin motivo, cuestionarios tarde) puede costarte semanas de recuperación. Vigílala como vigilarías cualquier reputación profesional.</p>`},
          {id:'si4',ic:'❓',n:'Evaluación de inducción',tipo:'quiz',quiz:[
            {q:'Un asesor de tienda te pregunta directamente: "¿Eres evaluador de mystery shopping?" ¿Qué haces?',o:['Dices la verdad, porque la honestidad es un valor','Niegas ser evaluador y continúas la visita como cualquier cliente real','Sales inmediatamente de la tienda y reportas la situación','Llamas al equipo desde la tienda para preguntar cómo proceder'],a:1,exp:'Niegas tu rol y continúas con naturalidad. El anonimato es la base del servicio: si confirmas que eres evaluador, el personal cambia su comportamiento, la medición pierde validez y el cliente no obtendrá información real. Después de la visita, puedes reportar al equipo que sospechan de tu identidad para que lo consideren en futuras visitas.'},
            {q:'¿Desde cuándo debes cronometrar el "tiempo de espera"?',o:['Desde que ves a un asesor disponible','Desde que llegas al establecimiento','Desde que ingresas a la fila o zona de atención del servicio','Desde que el asesor te comienza a atender'],a:2,exp:'El tiempo de espera se mide desde que el cliente ingresa a la fila o zona de atención, no desde que llega al mostrador. Medirlo desde el mostrador subestima la experiencia real del cliente, que comenzó a esperar mucho antes. Esta distinción es crítica porque determina si el estándar de servicio se cumplió o no.'},
@@ -512,6 +1640,7 @@ CX.acadData={
        lessons:[
          {id:'sc1',ic:'📝',n:'Tipos de pregunta y cómo responder',content:`
 <h2>Tipos de pregunta en el cuestionario</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Que tu observación se traduzca en datos comparables, no en opiniones sueltas.</p></div>
 <div class="acad-cards">
   <div class="acad-card"><div>⭐</div><b>Escala 1–5</b><p>Calificas del 1 al 5. Usa el RANGO COMPLETO: 1 y 2 para fallas claras, 4 y 5 para cumplimiento, 3 solo cuando es genuinamente intermedio.</p></div>
   <div class="acad-card"><div>✅</div><b>Sí / No</b><p>La respuesta es binaria. ¿Se cumplió o no se cumplió? No hay término medio. Sé preciso.</p></div>
@@ -519,10 +1648,11 @@ CX.acadData={
   <div class="acad-card"><div>📝</div><b>Texto abierto</b><p>Describe con precisión lo que observaste: qué dijo el asesor, qué acción realizó, qué faltaba. Evita opiniones subjetivas.</p></div>
 </div>
 <h3>El principio de la evidencia observable</h3>
-<p>Reporta solo lo que VISTE o ESCUCHASTE, no lo que interpretaste o asumiste. "El asesor no saludó al ingresar" es observable. "El asesor no quería trabajar" es una interpretación.</p>`},
+<p>Reporta solo lo que VISTE o ESCUCHASTE, no lo que interpretaste o asumiste. "El asesor no saludó al ingresar" es observable. "El asesor no quería trabajar" es una interpretación. Este principio es la diferencia entre un cuestionario que el cliente puede usar para tomar decisiones y uno que le genera dudas sobre tu objetividad.</p>`},
          {id:'sc2',ic:'📸',n:'Evidencias: cuándo y cómo',content:`
 <h2>Evidencias: la prueba de lo que evaluaste</h2>
-<p>El instructivo especifica qué evidencia requiere cada pregunta. No improvises — entrega exactamente lo que se pide.</p>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Respaldar tu reporte con prueba verificable, no solo tu palabra.</p></div>
+<p>El instructivo especifica qué evidencia requiere cada pregunta. No improvises — entrega exactamente lo que se pide. La evidencia es lo que convierte tu narrativa en un hecho verificable en vez de "la palabra de alguien"; sin ella, cualquier hallazgo puede ser cuestionado por la sucursal evaluada.</p>
 <h3>Tipos de evidencia</h3>
 <ul>
 <li><b>📸 Foto</b>: toma la foto con discreción. Usa el celular naturalmente (simula revisar mensajes). La foto debe mostrar claramente el elemento evaluado.</li>
@@ -558,6 +1688,7 @@ CX.acadData={
        lessons:[
          {id:'sct1',ic:'🎯',n:'Para qué sirve la certificación',content:`
 <h2>¿Por qué existe la certificación?</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Garantizar que todos los evaluadores midan con el mismo criterio antes de dejarlos operar un proyecto.</p></div>
 <p>La certificación garantiza que todos los evaluadores de un programa aplican los mismos criterios de la misma manera. Sin calibración, dos evaluadores en la misma sucursal pueden dar puntajes muy diferentes — los datos dejan de ser comparables.</p>
 <h3>¿Qué se evalúa en la certificación?</h3>
 <ul>
@@ -569,7 +1700,8 @@ CX.acadData={
 <h3>¿Cuándo debes certificarte?</h3>
 <p>Antes de tu primera visita de cualquier proyecto nuevo. Si ya estás certificado en un proyecto pero cambia el cuestionario o el protocolo, recibirás notificación de recertificación.</p>
 <h3>¿Qué pasa si no apruebas?</h3>
-<p>Tienes intentos adicionales. No perderás visitas asignadas por un primer intento fallido — el sistema permite reintento. Lee el feedback de cada pregunta fallida antes de reintentar.</p>`},
+<p>Tienes intentos adicionales. No perderás visitas asignadas por un primer intento fallido — el sistema permite reintento. Lee el feedback de cada pregunta fallida antes de reintentar.</p>
+<p>Piensa en la certificación como una inversión, no un obstáculo: el tiempo que dediques a entender bien el instructivo se traduce directamente en cuestionarios mejor llenados, menos correcciones pedidas por el equipo, y un ciclo de pago más rápido porque tu trabajo no necesita revisión adicional.</p>`},
          {id:'sct2',ic:'📚',n:'Cómo prepararte para el examen',content:`
 <h2>Estrategia para aprobar la certificación</h2>
 <div class="acad-flow">
@@ -588,14 +1720,16 @@ CX.acadData={
        lessons:[
          {id:'ss1',ic:'💰',n:'Cómo se calcula y cuándo recibes tu pago',content:`
 <h2>El ciclo de pago</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Que sepas en qué etapa exacta está tu pago, sin depender de preguntar.</p></div>
+<p>Esta es probablemente la pregunta que más te importa como evaluador, y la que menos control directo tienes sobre su velocidad — por eso vale la pena entender exactamente qué pasa en cada etapa, para saber cuándo es normal esperar y cuándo sí toca preguntar.</p>
 <div class="acad-flow">
-  <div class="acad-step"><span>1</span><b>Realizas y envías el cuestionario</b><p>Al hacer submit, tu visita pasa a estado "enviada" y se genera automáticamente una liquidación pendiente con tu honorario.</p></div>
-  <div class="acad-step"><span>2</span><b>Revisión del equipo</b><p>El coordinador revisa tu cuestionario y evidencias. Si hay observaciones, te notificarán por la plataforma.</p></div>
-  <div class="acad-step"><span>3</span><b>Aprobación y lote de pago</b><p>Tu liquidación se incluye en el lote de pago de la quincena correspondiente. Recibirás notificación cuando el lote sea aprobado.</p></div>
-  <div class="acad-step"><span>4</span><b>Transferencia a tu cuenta</b><p>El pago se procesa a los datos bancarios que registraste en Mi Perfil. Verifica que estén correctos y actualizados.</p></div>
+  <div class="acad-step"><span>1</span><b>Realizas y completas el cuestionario</b><p>Tu visita pasa a "cuestionario realizado/completado". Aún no genera liquidación: primero va a revisión.</p></div>
+  <div class="acad-step"><span>2</span><b>Revisión del equipo</b><p>El coordinador revisa tu cuestionario y evidencias. Si hay observaciones, te notifican por la plataforma.</p></div>
+  <div class="acad-step"><span>3</span><b>Submitido y lote de pago</b><p>Tras la revisión y el submitido, tu liquidación candidata puede incluirse en el lote de la quincena.</p></div>
+  <div class="acad-step"><span>4</span><b>Transferencia (sistema central)</b><p>El pago real se procesa por el sistema central a tus datos bancarios. Verifica que estén correctos en Mi Perfil.</p></div>
 </div>
 <h3>¿Qué hacer si hay un error en tu pago?</h3>
-<p>Abre un ticket de soporte con: visita afectada, monto esperado vs. monto recibido, y captura de la liquidación. El equipo responderá en máx. 48 horas hábiles.</p>`},
+<p>Abre un ticket de soporte con: visita afectada, monto esperado vs. monto recibido, y captura de la liquidación. El equipo responderá en máx. 48 horas hábiles. Ten la captura lista antes de escribir — acelera muchísimo la resolución porque el equipo no tiene que reconstruir tu caso desde cero.</p>`},
          {id:'ss2',ic:'🆘',n:'Canales de soporte y cuándo usarlos',content:`
 <h2>Cuándo y cómo pedir ayuda</h2>
 <div class="acad-cards">
@@ -643,7 +1777,8 @@ CX.acadData={
   <div class="acad-card"><div>🏆</div><b>Competitivo</b><p>Evalúas a la competencia del cliente para comparar (benchmarking).</p></div>
 </div>
 <h3>Franjas y escenarios</h3>
-<p>Cada visita tiene un <b>escenario</b> (el rol que debes representar: "cliente interesado en un crédito", "familia buscando promoción") y una <b>franja</b> (entre semana / fin de semana). Respeta ambos: si el escenario pide preguntar por un producto específico, hazlo con naturalidad. El escenario existe para provocar el comportamiento que se quiere medir.</p>`},
+<p>Cada visita tiene un <b>escenario</b> (el rol que debes representar: "cliente interesado en un crédito", "familia buscando promoción") y una <b>franja</b> (entre semana / fin de semana). Respeta ambos: si el escenario pide preguntar por un producto específico, hazlo con naturalidad. El escenario existe para provocar el comportamiento que se quiere medir.</p>
+<p>Es común empezar en modalidad presencial y, conforme construyes reputación, acceder a proyectos digitales o competitivos que suelen pagar mejor por requerir más discreción y análisis. Pregunta a tu coordinador qué modalidades están disponibles en tu país antes de asumir que solo existe la presencial.</p>`},
          {id:'sp3',ic:'⚖️',n:'Ética profesional del evaluador',content:`
 <h2>Las 6 reglas de oro de la ética</h2>
 <div class="acad-flow">
@@ -653,10 +1788,11 @@ CX.acadData={
   <div class="acad-step"><span>4</span><b>Confidencialidad</b><p>No compartes instructivos, escenarios, cuestionarios ni resultados con nadie.</p></div>
   <div class="acad-step"><span>5</span><b>No represalias</b><p>No usas tu rol para perjudicar a un empleado por motivos personales. Mides el proceso, no a la persona.</p></div>
   <div class="acad-step"><span>6</span><b>Cumplimiento</b><p>Respetas fechas, franjas y escenarios. Una visita fuera de las reglas no sirve.</p></div>
-</div>`},
+</div>
+<p>Estas reglas no son burocracia — son lo que le da valor comercial a tu trabajo. Una empresa paga por un dato confiable y objetivo; en el momento en que cualquiera de estas seis reglas se rompe, el dato deja de servir para tomar decisiones reales, y con él, la razón de ser de toda la profesión.</p>`},
          {id:'sp4',ic:'📈',n:'Convertirlo en un ingreso serio',content:`
 <h2>De ocasional a evaluador top</h2>
-<p>Los evaluadores con mejor rating reciben más visitas, mejores honorarios y acceso a programas premium. Así se construye:</p>
+<p>Los evaluadores con mejor rating reciben más visitas, mejores honorarios y acceso a programas premium. La diferencia entre un evaluador ocasional y uno que vive de esto no es suerte — es un puñado de hábitos consistentes. Así se construye:</p>
 <ul>
 <li><b>Rating alto</b>: cuestionarios completos, a tiempo, con evidencias correctas. Cada visita bien hecha sube tu calificación.</li>
 <li><b>Confiabilidad</b>: nunca dejas una visita a medias ni cancelas a última hora. La consultora prioriza a quien cumple.</li>
@@ -670,15 +1806,160 @@ CX.acadData={
            {q:'¿Por qué el anonimato es la regla más importante del mystery shopping?',o:['Para que el evaluador no se sienta observado','Porque si el personal sabe que es evaluado, altera su comportamiento y la medición deja de reflejar la realidad','Por seguridad del evaluador únicamente','Porque lo exige la ley'],a:1,exp:'El valor del mystery shopping está en medir el comportamiento REAL del personal en condiciones normales. Si el empleado sabe que lo evalúan, se comporta distinto (efecto observador) y el dato deja de ser útil. Por eso jamás revelas tu condición: la medición solo es válida si el personal actúa como lo haría con cualquier cliente.'},
          ]}
        ]},
+/* ─── GUÍA DE MÓDULOS DEL PORTAL (beneficio, flujo, cómo usar) ─── */
+      {id:'s_modguide',cat:'Inducción',ic:'🗺️',color:'#10b981',n:'Guía de tu portal: cada módulo, beneficio y cómo usarlo',
+       desc:'Los 11 módulos de tu app, uno por uno: para qué existe, qué pasa si no lo usas, y cómo se usa paso a paso.',
+       cert:false,mins:75,
+       lessons:[
+         {id:'smg1',ic:'📱',n:'Tu día a día operativo (5 módulos)',content:`
+<h2>Sección "Operación" de tu portal</h2>
+<div class="acad-section">☀️ <b>Mi Día</b>
+<p><b>Qué es y por qué importa:</b> sin esto, tendrías que revisar varias pantallas por separado para saber qué te
+toca hoy — aquí lo ves todo junto: visitas agendadas, alertas de cuestionario sin enviar, recertificación próxima.</p>
+<p><b>Flujo:</b> ábrela al empezar el día → revisa lo resaltado arriba (lo urgente) → toca cualquier ítem para ir
+directo a esa visita o tarea.</p>
+<p><b>Cómo validar que funcionó:</b> al completar una acción (enviar cuestionario, confirmar agenda), el ítem
+desaparece de la lista de pendientes de Mi Día.</p></div>
+
+<div class="acad-section">👤 <b>Mi Perfil</b>
+<p><b>Qué es y por qué importa:</b> tus datos bancarios, ubicación y disponibilidad determinan qué visitas te
+ofrecen y qué tan rápido te pagan — un perfil incompleto significa menos oferta de visitas y pagos más lentos, no
+un simple detalle administrativo.</p>
+<p><b>Datos a ingresar:</b> banco, tipo de cuenta, número de cuenta y titular <b>exactamente</b> como aparecen en tu
+cuenta bancaria real — una letra o dígito distinto retrasa tu pago porque no concilia contra el banco.</p>
+<p><b>Cómo validar que funcionó:</b> el resumen de tu perfil ya no muestra advertencias de "datos incompletos"; sigues
+apareciendo elegible en las listas de candidatos de tus proyectos certificados.</p>
+<p><b>Errores frecuentes:</b> copiar el número de cuenta con espacios o guiones que el banco no usa — pégalo tal
+cual aparece en tu estado de cuenta, sin formatear.</p></div>
+
+<div class="acad-section">📋 <b>Visitas Disponibles</b>
+<p><b>Qué es y por qué importa:</b> es tu "marketplace" de trabajo — si no lo revisas seguido, otros evaluadores se
+adelantan en las mejores sucursales (mejor honorario, ubicación más cómoda).</p>
+<p><b>Flujo completo:</b> filtras por país/proyecto → revisas honorario, combo y fecha límite de cada visita → pulsas
+<b>Reservar</b> (si el proyecto usa cupos) o <b>Postularme</b> (si usa aprobación) → esperas confirmación del equipo.</p>
+<p><b>Cómo validar que funcionó:</b> la visita pasa de "disponible" a "reservada"/"postulada" en tu lista, y luego a
+"asignada" cuando el equipo la confirma — revisa Mis Visitas para ver en qué etapa quedó.</p>
+<p><b>Errores frecuentes:</b> revisar solo el proyecto que tienes "activo" y no ver que hay oferta en otro proyecto
+donde también estás certificado — la oferta se cruza entre programas, revisa todos los que te habiliten.</p></div>
+
+<div class="acad-section">🙋 <b>Reservas & Asignación</b>
+<p><b>Qué es y por qué importa:</b> en programas mensuales de alto volumen, te deja apartar cupos por adelantado en
+vez de competir visita por visita cada vez que se publica algo nuevo.</p>
+<p><b>Flujo:</b> reservas el cupo del periodo que te interesa → el equipo confirma la asignación final (puede haber
+más de un shopper interesado en el mismo cupo, por eso no es automático).</p>
+<p><b>Cómo validar que funcionó:</b> el cupo pasa de "reservado" a "confirmado" en tu vista — hasta ese momento no
+des la visita por segura.</p></div>
+
+<div class="acad-section">🧭 <b>Mis Visitas</b>
+<p><b>Qué es y por qué importa:</b> es tu agenda personal completa — sin esto, perderías el rastro de en qué etapa
+está cada visita (agendada, realizada, cuestionario pendiente, liquidada).</p>
+<p><b>Flujo y botones:</b> cada visita muestra su estado actual; el botón <b>🔄 Reprogramar</b> abre el formulario
+para pedir nueva fecha (requiere motivo); una visita en "cuestionario pendiente" tiene un botón directo para
+completarlo.</p>
+<p><b>Cómo validar que funcionó:</b> tras enviar el cuestionario, la visita cambia de estado a "realizada/completada"
+— nunca dice "enviado", porque después viene la revisión del admin antes de cualquier liquidación.</p>
+<p><b>Errores frecuentes:</b> dejar una visita en "cuestionario pendiente" varios días afecta tu rating — complétalo
+el mismo día de la visita mientras los detalles están frescos.</p></div>`},
+
+         {id:'smg2',ic:'🎓',n:'Capacitación y tus beneficios (6 módulos)',content:`
+<h2>Capacitación & IA</h2>
+<div class="acad-section">📚 <b>Academia</b> (donde estás ahora)
+<p><b>Qué es y por qué importa:</b> te prepara para certificarte y entender la plataforma sin depender de que
+alguien te explique todo en una llamada — puedes repasar cuando quieras, a tu ritmo.</p></div>
+
+<div class="acad-section">🏆 <b>Certificación</b>
+<p><b>Qué es y por qué importa:</b> sin aprobarla, no puedes postularte a ese proyecto — es tu llave de entrada,
+específica de cada programa (no genérica).</p>
+<p><b>Flujo:</b> estudias el instructivo en Recursos del proyecto → presentas el examen → si apruebas, quedas
+habilitado para postularte a ese proyecto; si no, puedes repasar y volver a presentar.</p>
+<p><b>Cómo validar que funcionó:</b> el proyecto deja de mostrarte "certificación requerida" y puedes postularte a
+sus visitas normalmente.</p></div>
+
+<div class="acad-section">📎 <b>Recursos del proyecto</b>
+<p><b>Qué es y por qué importa:</b> el instructivo y material de referencia en un lector dentro de la misma app —
+no necesitas buscar PDFs sueltos en tu correo justo antes de una visita.</p></div>
+
+<div class="acad-section">🤖 <b>Soporte IA</b>
+<p><b>Qué es y por qué importa:</b> respuesta inmediata para dudas comunes del cuestionario o la plataforma, sin
+esperar a que alguien del equipo te conteste por WhatsApp.</p>
+<p><b>Flujo:</b> escribes tu duda → recibes una respuesta sugerida; si no resuelve tu caso, puedes escalar a un
+ticket real para que un humano lo revise.</p></div>
+
+<h2>Mis Beneficios</h2>
+<div class="acad-section">💰 <b>Mis Beneficios</b>
+<p><b>Qué es y por qué importa:</b> ves exactamente en qué etapa está tu pago — sin esto, no sabrías si "ya te toca
+cobrar" o si falta un paso.</p>
+<p><b>Flujo completo (etapas del ciclo):</b> visita realizada → cuestionario completado → revisión del admin →
+liquidación generada (elegible) → incluida en un lote de pago → lote marcado pagado.</p>
+<p><b>Cómo validar que funcionó:</b> tu visita muestra el estado correcto en cada etapa; cuando dice "pagada", el
+egreso correspondiente ya quedó registrado del lado de Finanzas.</p>
+<p><b>Errores frecuentes / qué significa cuando algo "no avanza":</b> si una visita muestra liquidación pero sin
+fecha de pago, significa que está formada pero el lote de la quincena todavía no se procesa — no es un error, es
+una etapa intermedia normal del ciclo.</p></div>
+
+<div class="acad-section">📢 <b>Tablón / Novedades</b>
+<p><b>Qué es y por qué importa:</b> anuncios y avisos importantes centralizados en un solo lugar, para que no se
+pierdan entre mensajes de WhatsApp de distintos chats y personas.</p></div>`},
+
+         {id:'smg3',ic:'❓',n:'Evaluación de la guía de tu portal',tipo:'quiz',quiz:[
+           {q:'Llevas dos semanas sin recibir ofertas de visitas nuevas. ¿Qué revisas primero?',o:['Tablón de Novedades','Mi Perfil — puede que falte disponibilidad, ubicación o certificación vigente','Soporte IA','Mis Beneficios'],a:1,fb:'Un perfil incompleto (disponibilidad, ubicación, certificación vencida) reduce directamente la oferta de visitas que te llega.'},
+           {q:'Tu liquidación aparece en Mis Beneficios pero sin fecha de pago. ¿Qué significa?',o:['Que hubo un error','Que está liquidada pero el lote de pago de esta quincena aún no se ha procesado','Que te rechazaron la visita','Que debes volver a enviar el cuestionario'],a:1,fb:'El ciclo tiene etapas separadas: liquidada (candidata) → en lote → pagada. Sin fecha de pago solo significa que el lote aún no cierra.'},
+         ]}
+       ]},
     ],
     /* ─── CLIENTE ─── */
     cliente:[
+      /* ─── RUTA DEL CLIENTE (lectura estratégica, sin operar) ─── */
+      {id:'cl_ruta',cat:'Portal',ic:'🧭',color:'#f59e0b',n:'Tu ruta en el portal: leer y decidir',
+       desc:'Cómo interpretar estados y resultados sin operar la plataforma — tu rol es estratégico.',
+       cert:false,mins:35,
+       lessons:[
+         {id:'clr1',ic:'📊',n:'Qué ves y qué NO operas',content:`
+<h2>Tu portal es de lectura estratégica</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Que decidas con datos objetivos, sin necesitar acceso operativo a la plataforma.</p></div>
+<p>Tu acceso a CXOrbia tiene un propósito distinto al del equipo de la consultora: tú no publicas visitas, no asignas shoppers ni procesas pagos — esa es la parte <b>operativa</b> y la hace la consultora con su propio equipo. Tu portal existe para que <b>leas resultados objetivos</b> de tu programa de evaluación y <b>tomes decisiones de negocio</b> con esa información, sin depender de que alguien te envíe un reporte por correo cada mes.</p>
+<p>Esta separación es intencional: mantiene la evaluación imparcial (tú no puedes influir en quién visita tu sucursal ni cuándo) y a la vez te da visibilidad total y en tiempo real de lo que se está midiendo.</p>
+<div class="acad-cards">
+  <div class="acad-card"><div>📈</div><b>Panorama</b><p>Score ponderado, ranking de sucursales, evolución.</p></div>
+  <div class="acad-card"><div>🏬</div><b>Sucursales & Score</b><p>Detalle por sucursal, hallazgos, evidencias.</p></div>
+  <div class="acad-card"><div>🎯</div><b>Planes de acción</b><p>Incentivos, mejora, seguimiento.</p></div>
+  <div class="acad-card"><div>📊</div><b>Insights & Benchmark</b><p>NPS, comparativo vs industria, anotaciones.</p></div>
+</div>`},
+         {id:'clr2',ic:'🚦',n:'Leer los estados correctamente',content:`
+<h2>Estados honestos: qué significan</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Que nunca confundas un dato preliminar con uno confirmado.</p></div>
+<p>CXOrbia nunca te muestra un dato como "definitivo" si todavía puede cambiar. Esto protege tus decisiones: si tomaras una acción comercial basada en una cifra que luego se ajusta, perderías confianza en el sistema. Por eso cada dato lleva una etiqueta de estado que debes aprender a leer.</p>
+<div class="acad-section"><b>Preview / candidata</b><p>Dato operativo aún sin confirmación final del sistema central. No es cifra cerrada.</p></div>
+<div class="acad-section"><b>Pendiente sistema central</b><p>La integración (correo, WhatsApp, sincronía) está preparada pero aún no ejecuta en vivo.</p></div>
+<div class="acad-section"><b>En vivo</b><p>Solo cuando el dato proviene de una fuente confirmada. Si no lo dice, trátalo como preview.</p></div>
+<blockquote>No interpretes un "preview" como resultado final. Pregunta a tu consultora cuándo el dato queda confirmado.</blockquote>
+<h3>Dónde aparecen estas etiquetas</h3>
+<p>Las verás junto a KPIs financieros compartidos, en badges de estado dentro de Sucursales & Score, y en cualquier cifra que dependa de un cruce que el sistema central aún no ha confirmado (por ejemplo, una liquidación reciente o un score calculado el mismo día de la visita). Con el tiempo aprenderás que la mayoría de tus decisiones estratégicas (dónde capacitar, a quién premiar) puedes tomarlas perfectamente sobre datos en preview — solo evita comprometerte con un número exacto frente a tu propia dirección hasta que esté confirmado.</p>`},
+         {id:'clr3',ic:'🤝',n:'Solicitar acciones y soporte',content:`
+<h2>Cómo pedir sin operar</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Que puedas activar cambios sin tocar la operación directamente.</p></div>
+<p>Aunque no operas la plataforma directamente, tu portal sí te permite <b>iniciar</b> acciones — la diferencia es que quedan como una solicitud que la consultora ejecuta, nunca como un cambio directo tuyo sobre la operación de otra persona (un shopper, una visita ajena).</p>
+<ul class="acad-check">
+<li>Solicitar un reporte personalizado</li>
+<li>Pedir una reunión de revisión de resultados</li>
+<li>Abrir soporte desde tu portal</li>
+<li>Solicitar capacitación dirigida a tus áreas débiles</li>
+<li>Cargar documentos (protocolos, imagen de marca) para el set-up</li>
+</ul>
+<p>Cada una de estas solicitudes llega como una tarea con tu nombre al equipo de la consultora — no se pierde en un correo genérico. Si necesitas visitas adicionales fuera de tu programa contratado, o quieres explorar un add-on (evidencia geolocalizada, NPS, benchmarking), también lo inicias desde aquí: la solicitud entra como oportunidad comercial y te contactan con una propuesta, sin que tengas que negociar el alcance tú mismo desde cero.</p>
+<div class="acad-section"><b>Datos sensibles</b><p>Los documentos que cargas se referencian de forma segura. La consultora los usa para el set-up; no se exponen públicamente.</p></div>`},
+         {id:'clr4',ic:'❓',n:'Evaluación del portal',tipo:'quiz',quiz:[
+           {q:'Ves un margen en estado "preview". ¿Es cifra final?',o:['Sí','No: es dato operativo sin confirmación final del sistema central','Solo si es de este mes'],a:1,fb:'Preview = dato operativo sin confirmar. La cifra final la confirma el sistema central/consultora.'},
+           {q:'Quieres cambiar la asignación de un shopper. ¿Puedes?',o:['Sí, desde mi portal','No: la operación la hace la consultora; yo decido y solicito','Solo los viernes'],a:1,fb:'Tu rol es estratégico: lees y decides. La operación la ejecuta la consultora.'},
+         ]},
+       ]},
       {id:'cl_por',cat:'Portal',ic:'🏬',color:'#f59e0b',n:'Tu portal de resultados estratégicos',
        desc:'Lee tu score, el ranking de sucursales y toma decisiones basadas en evidencia.',
        cert:false,mins:45,
        lessons:[
          {id:'cp1',ic:'📊',n:'Entender tu score',content:`
 <h2>¿Qué significa tu score?</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Que tengas una cifra objetiva del desempeño de tu red, sin esperar un reporte mensual manual.</p></div>
 <p>El score de tu programa es el <strong>promedio ponderado</strong> de todos los criterios evaluados en tus sucursales durante el periodo.</p>
 <h3>Cómo se calcula</h3>
 <p>El cuestionario tiene secciones con pesos porcentuales (ej: Atención 30%, Tiempos 25%, Limpieza 20%, Cierre y despedida 25%). Cada pregunta tiene peso dentro de su sección. El score es el promedio ponderado de todas las respuestas de todas las visitas del periodo.</p>
@@ -689,7 +1970,7 @@ CX.acadData={
 <li>🔴 Menos de 70: Crítico — requiere acción inmediata (capacitación, supervisión, revisión de procesos).</li>
 </ul>
 <h3>¿Con qué frecuencia se actualiza?</h3>
-<p>En tiempo real. Cada visita procesada impacta el score. No esperas el reporte mensual.</p>`},
+<p>En tiempo real. Cada visita procesada impacta el score. No esperas el reporte mensual — puedes ver el efecto de una capacitación reciente reflejado en cuanto las próximas visitas de esa sucursal se procesan, en vez de esperar el corte formal de fin de mes.</p>`},
          {id:'cp2',ic:'🏆',n:'Ranking y hallazgos',content:`
 <h2>Ranking de sucursales</h2>
 <p>El portal clasifica automáticamente tus sucursales por cumplimiento y score. Desde aquí puedes:</p>
@@ -704,6 +1985,7 @@ CX.acadData={
 <p>Por ejemplo: si "tiempo de espera en caja" aparece como el hallazgo #1, el plan de acción es capacitar específicamente en ese proceso, no en todo el protocolo genérico.</p>`},
          {id:'cp3',ic:'⚡',n:'Planes de acción',content:`
 <h2>De los datos a las decisiones</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Convertir el ranking y los hallazgos en acciones concretas con dueño y fecha, no solo en observación pasiva.</p></div>
 <p>El portal no es solo para ver — es para actuar. Desde "Planes de Acción" puedes:</p>
 <ul>
 <li>Crear un plan específico para una sucursal o grupo de sucursales.</li>
@@ -718,6 +2000,7 @@ CX.acadData={
 <li>Planes de mejora obligatoria para las críticas.</li>
 <li>Criterios de escalamiento para gerentes regionales.</li>
 </ul>
+<p>El plan de acción más efectivo no es el más severo, sino el más específico: ligar el reconocimiento y la corrección directamente al hallazgo que los origina hace que el personal entienda exactamente qué se espera de él, en vez de recibir una sanción genérica sin contexto.</p>
 <h3>Solicitar servicios adicionales</h3>
 <p>Desde el portal, en la sección "Servicios & Add-ons", puedes solicitar a tu consultora: NPS real (encuestas al cliente final), capacitación del personal, mystery shopping competitivo o dashboards ejecutivos en BI.</p>`},
          {id:'cp3b',ic:'⚡',n:'Planes de acción y seguimiento',content:`
@@ -742,7 +2025,8 @@ CX.acadData={
        lessons:[
          {id:'ch1',ic:'📊',n:'Leer el análisis de hallazgos',content:`
 <h2>Hallazgos: la inteligencia detrás del score</h2>
-<p>El score te dice <em>qué tan bien</em> está tu red en general. Los hallazgos te dicen <em>por qué</em> y <em>dónde</em>.</p>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Entender por qué y dónde falla tu red, no solo qué tan bien va en promedio.</p></div>
+<p>El score te dice <em>qué tan bien</em> está tu red en general. Los hallazgos te dicen <em>por qué</em> y <em>dónde</em>. Esta distinción es la razón por la que este módulo existe: un score sin hallazgos es solo una calificación; un score con hallazgos es un plan de mejora esperando ser ejecutado.</p>
 <h3>Hallazgos frecuentes vs. hallazgos críticos</h3>
 <ul>
 <li><b>Frecuentes</b>: criterios que fallan en más del 30% de las visitas. Son el área de mejora sistémica — afectan a muchas sucursales.</li>
@@ -757,7 +2041,7 @@ CX.acadData={
 </div>`},
          {id:'ch2',ic:'📈',n:'Comparativo intermensual y tendencias',content:`
 <h2>¿Estás mejorando o empeorando?</h2>
-<p>El portal muestra el comparativo mes a mes del score general y por criterio. Esto es más importante que el número puntual — la tendencia te dice si tus acciones están funcionando.</p>
+<p>El portal muestra el comparativo mes a mes del score general y por criterio. Esto es más importante que el número puntual — la tendencia te dice si tus acciones están funcionando. Un score de 78% no significa nada por sí solo hasta que sabes si el mes pasado era 72% (vas mejorando) o 84% (algo se rompió).</p>
 <h3>Cómo interpretar el comparativo</h3>
 <ul>
 <li><b>Tendencia positiva (+3pp o más)</b>: tus acciones están funcionando. Identifica qué cambió y replica.</li>
@@ -765,7 +2049,7 @@ CX.acadData={
 <li><b>Caída (−3pp o más)</b>: hay un nuevo problema o una mejora anterior se revirtió. Revisa hallazgos del período y compara qué sucursales bajaron.</li>
 </ul>
 <h3>Granularidad del análisis</h3>
-<p>Puedes ver el comparativo a nivel de: toda la red → región → sucursal → criterio específico. El drill-down te lleva desde el panorama general hasta la causa raíz.</p>`},
+<p>Puedes ver el comparativo a nivel de: toda la red → región → sucursal → criterio específico. El drill-down te lleva desde el panorama general hasta la causa raíz — evita el error común de reaccionar a un promedio de red cuando en realidad el problema está concentrado en 2 o 3 sucursales puntuales.</p>`},
          {id:'ch3',ic:'❓',n:'Evaluación de hallazgos',tipo:'quiz',quiz:[
            {q:'Tu top hallazgo frecuente este mes es "el asesor no ofreció producto adicional" en el 55% de las visitas. ¿Cuál es el plan de acción más efectivo?',o:['Bajar el peso de ese criterio en el cuestionario para mejorar el score','Capacitar específicamente en técnicas de venta cruzada y validar en el siguiente mes con un criterio de seguimiento','Despedir a los asesores con más fallas','Contratar más personal en las sucursales afectadas'],a:1,exp:'El hallazgo dice exactamente dónde está el problema: no es falta de personal sino falta de habilidad/protocolo en venta cruzada. La acción efectiva es capacitación específica (no genérica) + medición en el siguiente ciclo. El plan correcto incluye: sesión de capacitación, rol plays con el equipo, seguimiento con mystery en el próximo periodo, y comparativo pre/post. Bajar el peso del criterio esconde el problema sin resolverlo.'},
          ]}
@@ -776,7 +2060,8 @@ CX.acadData={
        lessons:[
          {id:'cls1',ic:'🎫',n:'Soporte y solicitudes desde el portal',content:`
 <h2>Tu canal de comunicación con la consultora</h2>
-<p>Desde el portal puedes hacer solicitudes formales sin necesidad de llamar o enviar un correo por fuera del sistema.</p>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Formalizar cualquier solicitud con seguimiento, sin depender de correos o llamadas informales.</p></div>
+<p>Desde el portal puedes hacer solicitudes formales sin necesidad de llamar o enviar un correo por fuera del sistema. Esto tiene una ventaja concreta: cada solicitud queda registrada con fecha y seguimiento, en vez de perderse en un hilo de correo o una llamada que nadie documentó.</p>
 <h3>Tipos de solicitudes</h3>
 <div class="acad-cards">
   <div class="acad-card"><div>🎫</div><b>Ticket de soporte</b><p>Preguntas sobre el reporte, aclaraciones de score, errores en datos. Respuesta en 24h hábiles.</p></div>
@@ -785,7 +2070,7 @@ CX.acadData={
   <div class="acad-card"><div>📊</div><b>Reporte personalizado</b><p>Solicita un análisis específico: región, temporada, campaña, benchmarking vs. competencia.</p></div>
 </div>
 <h3>Add-ons disponibles</h3>
-<p>Desde la sección Servicios & Add-ons puedes ver el catálogo completo de servicios adicionales de tu consultora y solicitar cotización directamente desde el portal.</p>`},
+<p>Desde la sección Servicios & Add-ons puedes ver el catálogo completo de servicios adicionales de tu consultora y solicitar cotización directamente desde el portal — sin tener que averiguar por separado qué más ofrece o negociar el alcance desde cero en una llamada.</p>`},
          {id:'cls2',ic:'❓',n:'Evaluación final del cliente',tipo:'quiz',quiz:[
            {q:'¿Cuál es la diferencia entre un ticket de soporte y una solicitud de servicio adicional?',o:['Son lo mismo, no hay diferencia','El ticket de soporte es para preguntas o problemas con el servicio contratado; la solicitud de servicio adicional es para pedir algo fuera del alcance del programa actual (cotización, nueva campaña, etc.)','El ticket de soporte cuesta dinero, la solicitud no','Solo el admin puede abrir tickets'],a:1,exp:'Los tickets de soporte están dentro del servicio contratado — son gratuitos y el equipo responde sin cargo. Las solicitudes de servicios adicionales implican un nuevo alcance que requiere cotización y acuerdo. Esta distinción ayuda al equipo de la consultora a priorizarlos correctamente: soporte operativo vs. desarrollo comercial.'},
          ]}
@@ -796,6 +2081,7 @@ CX.acadData={
        lessons:[
          {id:'cr1',ic:'🎁',n:'Incentivos y reconocimiento basados en datos',content:`
 <h2>Premiar lo que se mide</h2>
+<div class="acad-section">🎯 <b>Objetivo</b><p>Convertir el ranking en un sistema de incentivos justo y objetivo, no en un premio arbitrario.</p></div>
 <p>El ranking de sucursales no es solo información — es la base de un sistema de incentivos justo y objetivo. Cuando el reconocimiento se basa en el score de mystery shopping, el equipo entiende exactamente qué se espera de ellos.</p>
 <h3>Modelos de incentivo que funcionan</h3>
 <ul>
@@ -804,7 +2090,8 @@ CX.acadData={
 <li><b>Mejora sostenida</b>: premia a quien más suba su score respecto al mes anterior — motiva a las sucursales rezagadas, no solo a las que ya están arriba.</li>
 <li><b>Criterio específico</b>: bono ligado al criterio más crítico del negocio (ej. tiempo de espera).</li>
 </ul>
-<div class="acad-section">⚠️ <b>Cuidado:</b> un incentivo mal diseñado genera trampa. Si premias solo el número, el personal puede intentar identificar al evaluador. Por eso el anonimato y la rotación de evaluadores son clave.</div>`},
+<div class="acad-section">⚠️ <b>Cuidado:</b> un incentivo mal diseñado genera trampa. Si premias solo el número, el personal puede intentar identificar al evaluador. Por eso el anonimato y la rotación de evaluadores son clave.</div>
+<p>La regla práctica: comunica el criterio y el umbral con transparencia total ("toda sucursal sobre 85% recibe X"), pero nunca reveles cuándo ni con qué frecuencia llega el evaluador — esa combinación de transparencia en la regla y opacidad en el método es lo que mantiene la medición honesta y el incentivo efectivo al mismo tiempo.</p>`},
          {id:'cr2',ic:'🎓',n:'Planes de capacitación dirigidos',content:`
 <h2>Capacitar donde duele, no en general</h2>
 <p>El error más común es capacitar en "servicio al cliente" de forma genérica. El portal te dice exactamente en qué criterio falla tu red — capacita ahí.</p>
@@ -845,19 +2132,24 @@ CX.module('aprendizaje', ({data,role,ui})=>{
   const setProg=(id,v)=>{const s=prog();s[id]=v;try{localStorage.setItem(PK,JSON.stringify(s));}catch(e){}};
 
   let activeCat='Todos';
+  let clsModulo='', clsNivel='', clsPaquete='';
   let openCourse=null;
   let openLesson=null;
+  let showArchived=false;
 
   const getCourses=()=>{
     const r=role==='admin'?(CX._acadAud||'admin'):(role==='shopper'?'shopper':role==='cliente'?'cliente':'admin');
     const base=CX.acadData.COURSES[r]||CX.acadData.COURSES.admin;
     const custom=CX.acadData.getCustom(r);
-    return [...custom,...base];
+    const all=[...custom,...base];
+    /* los archivados solo se listan si el admin activa "ver archivados" — nunca para shopper/cliente */
+    if(role==='admin' && showArchived) return all;
+    return all.filter(c=>c.estado!=='archivado' && c.estado!=='eliminado');
   };
 
   /* ── player de lección ── */
   const lessonPlayer=(course)=>{
-    const lessons=course.lessons;
+    const lessons=(course.lessons||[]).filter(l=>!l._deleted); /* respeta soft-delete de lección */
     const li=Math.max(0,lessons.findIndex(l=>l.id===openLesson));
     const lesson=lessons[li];
     if(!lesson)return;
@@ -893,7 +2185,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
 
   const contentView=(lesson,course,li,lessons)=>`
     <div class="card card-p">
-      ${role==='admin'?`<div class="between" style="margin-bottom:10px"><span style="font-size:11px;color:var(--t3)">${lesson.ic} ${lesson.n}</span><div class="flex" style="gap:6px"><button class="btn btn-ghost btn-sm" id="editLsn">✎ Editar lección</button><button class="btn btn-ghost btn-sm" id="addLsn">＋ Añadir lección</button></div></div>`:''}
+      ${(role==='admin'&&CX.permissions&&CX.permissions.can('academy.edit',CX.permissions.ctx()))?`<div class="between" style="margin-bottom:10px"><span style="font-size:11px;color:var(--t3)">${lesson.ic} ${lesson.n}</span><div class="flex" style="gap:6px"><button class="btn btn-ghost btn-sm" id="editLsn">✎ Editar lección</button><button class="btn btn-ghost btn-sm" id="addLsn">＋ Añadir lección</button>${CX.acadData.isCustom(role==='admin'?(CX._acadAud||'admin'):role,course.id)?`<button class="btn btn-ghost btn-sm" id="delLsn" style="color:var(--red)" ${lessons.length<2?'disabled title="No se puede eliminar la única lección"':''}>🗑 Eliminar lección</button><button class="btn btn-ghost btn-sm" id="viewDelLsn">♻️ Lecciones eliminadas</button>`:''}</div></div>`:''}
       <div class="acad-content">${lesson.content}</div>
       <div class="between" style="margin-top:20px;padding-top:14px;border-top:1px solid var(--border-2)">
         ${li>0?`<button class="btn btn-ghost btn-sm" id="prevL">← Anterior</button>`:'<div></div>'}
@@ -905,7 +2197,35 @@ CX.module('aprendizaje', ({data,role,ui})=>{
     setProg(lesson.id,100);
     host.querySelector('#nextL')?.addEventListener('click',()=>{if(li<lessons.length-1){openLesson=lessons[li+1].id;lessonPlayer(course);}});
     host.querySelector('#prevL')?.addEventListener('click',()=>{if(li>0){openLesson=lessons[li-1].id;lessonPlayer(course);}});
-    const rr=role==='shopper'?'shopper':role==='cliente'?'cliente':'admin';
+    const rr=role==='admin'?(CX._acadAud||'admin'):(role==='cliente'?'cliente':'shopper');
+    host.querySelector('#delLsn')?.addEventListener('click',()=>ui.modal('🗑 Eliminar lección',`
+      <p style="font-size:12px;color:var(--t2);margin-bottom:8px">"${lesson.n.replace(/"/g,'&quot;')}" se marcará como eliminada (recuperable desde "♻️ Lecciones eliminadas") — no se borra de forma irreversible.</p>
+      <label class="lbl">Motivo (obligatorio)</label><textarea class="inp" id="dlMot" rows="2" placeholder="Ej. contenido duplicado, ya no aplica…"></textarea>
+      <div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="dlOk" style="background:var(--red);border-color:var(--red)">Eliminar</button></div>
+    `,{onMount:(ov,close)=>{ov.querySelector('#dlOk').addEventListener('click',()=>{
+      const m=(ov.querySelector('#dlMot').value||'').trim();
+      if(!m){ ui.toast('El motivo es obligatorio','warn'); return; }
+      const r=CX.acadData.delLesson(rr,course.id,lesson.id,m,CX.permissions.ctx());
+      if(!r.ok){ ui.toast('🔒 '+r.error,'warn',4200); return; }
+      close();openLesson=null;draw();ui.toast('Lección eliminada (recuperable) · auditado','');
+    });}}));
+    host.querySelector('#viewDelLsn')?.addEventListener('click',()=>{
+      const custom=CX.acadData.getCustom(rr); const c=custom.find(x=>x.id===course.id);
+      const deleted=(c&&c.lessons||[]).filter(l=>l._deleted);
+      ui.modal('♻️ Lecciones eliminadas',`
+        ${deleted.length?`<div style="display:flex;flex-direction:column;gap:8px">${deleted.map(l=>`<div class="between" style="padding:8px 10px;border:1px solid var(--border);border-radius:8px"><span style="font-size:12.5px">${l.ic||'📄'} ${l.n}</span><button class="btn btn-ghost btn-sm restLsn" data-lid="${l.id}">♻️ Restaurar</button></div>`).join('')}</div>`
+        :'<p style="font-size:12.5px;color:var(--t3)">No hay lecciones eliminadas en este curso.</p>'}
+      `,{onMount:(ov,close)=>{ov.querySelectorAll('.restLsn').forEach(b=>b.addEventListener('click',()=>{
+        close();
+        ui.modal('♻️ Restaurar lección',`<label class="lbl">Motivo (obligatorio)</label><textarea class="inp" id="rlMot" rows="2" placeholder="Ej. vuelve a ser vigente…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="rlOk">Restaurar</button></div>`,{onMount:(o2,c2)=>{o2.querySelector('#rlOk').addEventListener('click',()=>{
+          const m=(o2.querySelector('#rlMot').value||'').trim();
+          if(!m){ ui.toast('El motivo es obligatorio','warn'); return; }
+          const r=CX.acadData.restoreLesson(rr,course.id,b.dataset.lid,m,CX.permissions.ctx());
+          if(!r.ok){ ui.toast('🔒 '+r.error,'warn',4200); return; }
+          c2();draw();ui.toast('Lección restaurada · auditado','ok');
+        });}});
+      }));}});
+    });
     host.querySelector('#editLsn')?.addEventListener('click',()=>ui.modal('✎ Editar lección',`
       <label class="lbl">Título</label><input class="inp" id="elT" value="${lesson.n.replace(/"/g,'&quot;')}" style="margin-bottom:8px">
       <label class="lbl">Icono</label><input class="inp" id="elI" value="${lesson.ic||''}" style="max-width:80px;margin-bottom:8px">
@@ -956,8 +2276,13 @@ CX.module('aprendizaje', ({data,role,ui})=>{
       ov.querySelector('#elSave').addEventListener('click',()=>{
         let content=ov.querySelector('#elEditor').innerHTML;
         if(newRes)content=newRes+content;
-        CX.acadData.editLesson(rr,course.id,lesson.id,{n:ov.querySelector('#elT').value.trim()||lesson.n,ic:ov.querySelector('#elI').value||lesson.ic,content});
-        close();lessonPlayer(course);ui.toast('Lección actualizada','ok');
+        const rEd=CX.acadData.editLesson(rr,course.id,lesson.id,{n:ov.querySelector('#elT').value.trim()||lesson.n,ic:ov.querySelector('#elI').value||lesson.ic,content});
+        if(!rEd.ok){ ui.toast('🔒 '+rEd.error,'warn',4200); return; }
+        /* OLA3 (paquete V120→V121, 04-ACADEMIA-MANUALES-RUTAS-NOTIFICACIONES.md "lección
+           actualizada"): antes solo un toast efímero — sin notificación persistente para quienes
+           ya cursaron/asignados. No afirma envío real (WhatsApp/correo) sin proveedor. */
+        CX.notif && CX.notif.push({to:'all',tipo:'academia_leccion',icon:'📚',tono:'n',titulo:'Lección actualizada',txt:(course.n||'Curso')+' · '+(lesson.n||'Lección')+' tiene contenido nuevo',nav:'aprendizaje'});
+        close();lessonPlayer(course);ui.toast('Lección actualizada · notificación registrada','ok');
       });
     }}));
     host.querySelector('#addLsn')?.addEventListener('click',()=>{
@@ -1002,6 +2327,12 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         </div>
         <div id="lt-quiz" style="display:none">
           <div style="background:var(--brand-light);border-radius:9px;padding:9px 12px;font-size:12.5px;color:var(--brand-dark);margin-bottom:8px">✨ La evaluación se genera con IA a partir del contenido del curso. Puedes editarla después.</div>
+          <div class="grid g2" style="gap:8px;margin-bottom:8px">
+            <div><label class="lbl">Nº de preguntas</label><input class="inp" id="nlQn" type="number" value="5" min="1" max="30"></div>
+            <div><label class="lbl">Nivel</label><select class="sel" id="nlQlvl"><option>Básico</option><option selected>Intermedio</option><option>Avanzado</option></select></div>
+            <div><label class="lbl">Puntaje mínimo (%)</label><input class="inp" id="nlQgate" type="number" value="80" min="0" max="100"></div>
+            <div><label class="lbl">Intentos permitidos</label><input class="inp" id="nlQtry" type="number" value="3" min="1" max="10"></div>
+          </div>
           <textarea class="inp" id="nlQD" rows="3" placeholder="Qué debe evaluar o deja vacío para auto-generar…"></textarea>
         </div>
         <div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="nlSave">Agregar</button></div>`,
@@ -1015,9 +2346,10 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         ov.querySelector('#nlAI')?.addEventListener('click',()=>{
           const box=ov.querySelector('#nlC'),title=ov.querySelector('#nlT').value||'lección';
           box.placeholder='Generando…';
-          const gen=()=>{box.value='<h2>'+title+'</h2>\n<p>Contenido generado (conecta Gemini para IA real).</p>\n<ul><li>Punto clave 1</li><li>Punto clave 2</li><li>Punto clave 3</li></ul>';['#nlRef','#nlExp'].forEach(s=>ov.querySelector(s)&&(ov.querySelector(s).style.display=''));ui.toast('Contenido generado','ok');};
-          if(CX.ai&&CX.ai.ready())CX.ai.ask('Genera contenido HTML educativo rico (h2,p,ul) para una lección de mystery shopping llamada "'+title+'". Max 400 palabras. Solo HTML.').then(r=>{box.value=r;['#nlRef','#nlExp'].forEach(s=>ov.querySelector(s)&&(ov.querySelector(s).style.display=''));ui.toast('Generado con Gemini','ok');}).catch(gen);
-          else setTimeout(gen,600);
+          /* P0.1 (V98): heurística local directa — nunca se llama CX.ai.ask() (available() es
+             siempre false en el navegador). */
+          const gen=()=>{box.value='<h2>'+title+'</h2>\n<p>Contenido generado con heurística local (sin proveedor de IA real conectado).</p>\n<ul><li>Punto clave 1</li><li>Punto clave 2</li><li>Punto clave 3</li></ul>';['#nlRef','#nlExp'].forEach(s=>ov.querySelector(s)&&(ov.querySelector(s).style.display=''));ui.toast('Borrador local generado','ok');};
+          setTimeout(gen,600);
         });
         ov.querySelector('#nlRef')?.addEventListener('click',()=>{const b=ov.querySelector('#nlC');b.value+='\n<p><em>Refinado: detalle añadido.</em></p>';ui.toast('Refinado','ok');});
         ov.querySelector('#nlExp')?.addEventListener('click',()=>{const b=ov.querySelector('#nlC');b.value+='\n<h3>Profundizando</h3>\n<p>Contenido ampliado.</p>';ui.toast('Ampliado','ok');});
@@ -1037,7 +2369,8 @@ CX.module('aprendizaje', ({data,role,ui})=>{
             else if(src)content='<img src="'+src+'" style="max-width:100%;border-radius:10px">';
             else content='<p>Documento por adjuntar.</p>';}
           else if(lsnType==='quiz'){tipo='quiz';content=ov.querySelector('#nlQD').value;}
-          CX.acadData.addLesson(rr,course.id,{n:t,ic:ov.querySelector('#nlI').value||'📘',tipo,content});
+          const rAddL=CX.acadData.addLesson(rr,course.id,{n:t,ic:ov.querySelector('#nlI').value||'📘',tipo,content});
+          if(!rAddL.ok){ ui.toast('🔒 '+rAddL.error,'warn',4200); return; }
           close();lessonPlayer(course);ui.toast('Lección añadida','ok');
         });
       }});
@@ -1097,7 +2430,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
           <div style="font-size:10.5px;color:var(--brand);font-weight:600;margin-top:4px">${(m.secciones||[]).length} secciones · Leer →</div></div>
         </button>`).join('')}
       </div>
-      ${role==='admin'?`<div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="manualNew">＋ Crear manual</button></div>`:''}
+      ${(CX.permissions&&CX.permissions.can('academy.edit',CX.permissions.ctx()))?`<div style="text-align:right;margin-top:12px"><button class="btn btn-pr btn-sm" id="manualNew">＋ Crear manual</button></div>`:''}
     `,{onMount:(ov,close)=>{
       ov.querySelectorAll('.manualPick').forEach(b=>b.addEventListener('click',()=>{close();readManual(b.dataset.mid);}));
       ov.querySelector('#manualNew')?.addEventListener('click',()=>{close();crearManual();});
@@ -1110,7 +2443,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
       <label class="lbl">Título del manual</label><input class="inp" id="cmT" placeholder="Ej. Manual operativo del programa" style="margin-bottom:8px">
       <div class="grid g2" style="gap:8px;margin-bottom:8px">
         <div><label class="lbl">Icono</label><input class="inp" id="cmI" value="📘" style="max-width:80px"></div>
-        <div><label class="lbl">¿Quién lo ve?</label><select class="sel" id="cmRol"><option value="superadmin">Super Admin</option><option value="admin">Equipo administrativo</option><option value="ops">Operativo</option><option value="coordinador">Coordinador/Aliado</option><option value="shopper">Shopper</option><option value="cliente">Cliente (portal)</option></select></div>
+        <div><label class="lbl">¿Quién lo ve?</label><select class="sel" id="cmRol"><option value="superadmin">Super Admin</option><option value="admin">Equipo administrativo</option><option value="ops">Operativo</option><option value="coordinador">Coordinador/Representante</option><option value="aliado">Aliado/Franquiciado</option><option value="shopper">Shopper</option><option value="cliente">Cliente (portal)</option></select></div>
       </div>
       <label class="lbl">Descripción</label><input class="inp" id="cmD" placeholder="De qué trata" style="margin-bottom:10px">
       <div style="border-top:1px solid var(--border-2);padding-top:10px;margin-bottom:8px">
@@ -1122,7 +2455,7 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         </div>
         <div id="cmTextoWrap"><textarea class="inp" id="cmTexto" rows="4" placeholder="Pega el texto, describe la idea o el temario… la IA lo estructura en secciones" style="margin-bottom:6px"></textarea></div>
         <div id="cmRecWrap" style="display:none"><label class="btn btn-soft btn-sm" style="cursor:pointer">📎 Subir documento/recurso<input type="file" id="cmRecF" accept=".pdf,.doc,.docx,.txt,image/*" style="display:none"></label><div id="cmRecName" style="font-size:11px;color:var(--t3);margin-top:5px"></div></div>
-        <label class="flex" style="gap:8px;font-size:12px;margin-top:8px"><input type="checkbox" id="cmIA" ${CX.ai&&CX.ai.ready()?'checked':''}> Estructurar con IA (${CX.ai&&CX.ai.ready()?CX.ai.cfg().model:'configura IA en Integraciones'})</label>
+        <label class="flex" style="gap:8px;font-size:12px;margin-top:8px"><input type="checkbox" id="cmIA"> Estructurar en secciones (heurística local, sin proveedor de IA real)</label>
       </div>
       <div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="cmOk">Crear manual</button></div>
     `,{onMount:(ov,close)=>{
@@ -1133,13 +2466,15 @@ CX.module('aprendizaje', ({data,role,ui})=>{
         const t=(ov.querySelector('#cmT').value||'').trim();if(!t){ui.toast('Pon un título','warn');return;}
         const rol=ov.querySelector('#cmRol').value, ic=ov.querySelector('#cmI').value||'📘', desc=ov.querySelector('#cmD').value||'Manual';
         const fuente=(lsnType==='recurso'?recTxt:(ov.querySelector('#cmTexto').value||'')).trim();
-        const usarIA=ov.querySelector('#cmIA').checked && CX.ai && CX.ai.ready() && fuente;
+        /* P0.1 (V98): "Estructurar" ya no depende de una preferencia de proveedor — la heurística
+           local (partir por líneas en blanco/oraciones) siempre está disponible. */
+        const usarIA=ov.querySelector('#cmIA').checked && fuente;
         const finalizar=(secciones)=>{const m=CX.manualesData.add({rol,ic,titulo:t,desc,secciones});close();ui.toast('Manual creado','ok');openManuales();};
         if(usarIA){
-          ui.toast('Estructurando manual con IA…','',2500);
-          CX.ai.ask('Estructura este contenido como un manual profesional en secciones. Devuelve cada sección como "## Título" seguido del contenido en HTML simple (<p>, <ul>, <li>, <h3>). Contenido:\n\n'+fuente)
-            .then(res=>{const parts=res.split(/##\s+/).filter(Boolean);const secs=parts.map(p=>{const nl=p.indexOf('\n');return {t:p.slice(0,nl).trim()||'Sección',html:p.slice(nl+1).trim()};});finalizar(secs.length?secs:[{t:'Contenido',html:'<p>'+res+'</p>'}]);})
-            .catch(e=>{ui.toast('Error IA: '+e.message+' · creado manual editable','warn');finalizar([{t:'Sección 1',html:'<p>'+(fuente||'Contenido por completar.')+'</p>'}]);});
+          const parts=fuente.split(/\n{2,}/).filter(Boolean);
+          const secs=parts.map((p,i)=>({t:'Sección '+(i+1),html:'<p>'+p.trim()+'</p>'}));
+          ui.toast('Estructurado con heurística local (sin proveedor de IA real conectado)','',3000);
+          finalizar(secs.length?secs:[{t:'Sección 1',html:'<p>'+(fuente||'Contenido por completar.')+'</p>'}]);
         } else {
           finalizar([{t:'Sección 1',html:fuente?'<p>'+fuente.replace(/\n/g,'</p><p>')+'</p>':'<p>Contenido por completar. Usa ✎ Editar sección.</p>'}]);
         }
@@ -1166,10 +2501,10 @@ CX.module('aprendizaje', ({data,role,ui})=>{
           <div class="card card-p" style="position:sticky;top:10px">
             <div style="font-size:10px;font-weight:800;color:var(--t3);letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px">CONTENIDO</div>
             ${m.secciones.map((s,i)=>`<div class="manSec" data-si="${i}" style="padding:9px 11px;border-radius:9px;cursor:pointer;margin-bottom:4px;font-size:12px;background:${i===secIdx?'var(--brand)':'transparent'};color:${i===secIdx?'#fff':'var(--t1)'};font-weight:${i===secIdx?'700':'400'}">${i+1}. ${s.t.replace(/^\d+\s*·\s*/,'')}</div>`).join('')}
-            ${role==='admin'?`<button class="btn btn-ghost btn-sm" id="manAddSec" style="width:100%;margin-top:8px;border-style:dashed">＋ Sección</button>`:''}
+            ${(CX.permissions&&CX.permissions.can('academy.edit',CX.permissions.ctx()))?`<button class="btn btn-ghost btn-sm" id="manAddSec" style="width:100%;margin-top:8px;border-style:dashed">＋ Sección</button>`:''}
           </div>
           <div class="card card-p">
-            <div class="between" style="margin-bottom:12px"><h2 style="font-size:19px;font-weight:800;margin:0">${sec.t}</h2>${role==='admin'?`<button class="btn btn-ghost btn-sm" id="manEditSec">✎ Editar sección</button>`:''}</div>
+            <div class="between" style="margin-bottom:12px"><h2 style="font-size:19px;font-weight:800;margin:0">${sec.t}</h2>${(CX.permissions&&CX.permissions.can('academy.edit',CX.permissions.ctx()))?`<button class="btn btn-ghost btn-sm" id="manEditSec">✎ Editar sección</button>`:''}</div>
             <div class="acad-content" style="font-size:14px;line-height:1.75;color:var(--t1)">${sec.html}</div>
             <div class="between" style="margin-top:22px;border-top:1px solid var(--border-2);padding-top:14px">
               <button class="btn btn-ghost btn-sm" id="mPrev" ${secIdx===0?'disabled':''}>← Anterior</button>
@@ -1202,44 +2537,84 @@ CX.module('aprendizaje', ({data,role,ui})=>{
     if(openLesson){const c=getCourses().find(x=>x.id===openCourse);if(c)return lessonPlayer(c);}
     if(openCourse){const c=getCourses().find(x=>x.id===openCourse);if(c)return lessonPlayer(c);}
     const courses=getCourses();
-    const filtered=activeCat==='Todos'?courses:courses.filter(c=>c.cat===activeCat);
-    const totalLessons=courses.reduce((a,c)=>a+(c.lessons||[]).length,0);
-    const completedCourses=courses.filter(c=>prog()[c.id]>=100).length;
-    const completedLessons=courses.reduce((a,c)=>a+(c.lessons||[]).filter(l=>prog()[l.id]>=100).length,0);
-    const avgProg=courses.length?Math.round(courses.reduce((a,c)=>{const ls=c.lessons||[];const done=ls.filter(l=>prog()[l.id]>=100).length;return a+(ls.length?done/ls.length*100:0);},0)/courses.length):0;
-    const certs=courses.filter(c=>c.cert&&prog()[c.id]>=100).length;
+    /* visibilidad de gestión a nivel de módulo (crear categoría, crear manual, etc.) — mismo
+       criterio que canManage por tarjeta: deriva del permiso real, no de role==='admin' crudo. */
+    const canManageTop = role==='admin' && CX.permissions && CX.permissions.can('academy.edit', CX.permissions.ctx());
+    /* T2.A (paquete V108 — 20260712): UNA sola colección visible ("visibleCourses") alimenta
+       TODOS los KPIs, conteos, categorías y modales. Antes las tarjetas se filtraban por scope
+       (`filtered`) pero los totales de arriba (cursos, lecciones, certificados, avance) se
+       calculaban sobre `courses` SIN filtrar — un curso fuera de scope (p.ej. solo-admin) no
+       aparecía como tarjeta pero sí sumaba en los KPIs de un shopper. Ahora los KPIs SIEMPRE
+       usan la misma colección que las tarjetas. Un administrador con permiso de gestión
+       (canManageTop) sí ve/cuenta el catálogo completo, porque gestiona todo el contenido. */
+    const visibleCourses = (canManageTop ? courses : courses.filter(c=>CX.acadData.visibleFor(c, CX.acadData.ctx())))
+      /* P0-2 (paquete V151 cierre comercial, 20260716): el curso del sistema central técnico (Firebase/
+         Gemini/Make/Storage) es para el equipo técnico, nunca para la audiencia comercial —
+         oculto incluso para quien gestiona el catálogo, salvo superadmin explícito. */
+      .filter(c=>c.id!=='a_backend' || CX.session.hasTechAccess());
+    const filtered=(activeCat==='Todos'?visibleCourses:visibleCourses.filter(c=>c.cat===activeCat))
+      .filter(c=>CX.acadData.matchesClassification(c, {modulo:clsModulo||null, nivel:clsNivel||null, paquete:clsPaquete||null}));
+    const totalLessons=visibleCourses.reduce((a,c)=>a+(c.lessons||[]).length,0);
+    const completedCourses=visibleCourses.filter(c=>prog()[c.id]>=100).length;
+    const completedLessons=visibleCourses.reduce((a,c)=>a+(c.lessons||[]).filter(l=>prog()[l.id]>=100).length,0);
+    const avgProg=visibleCourses.length?Math.round(visibleCourses.reduce((a,c)=>{const ls=c.lessons||[];const done=ls.filter(l=>prog()[l.id]>=100).length;return a+(ls.length?done/ls.length*100:0);},0)/visibleCourses.length):0;
+    const certs=visibleCourses.filter(c=>c.cert&&prog()[c.id]>=100).length;
 
     host.innerHTML=`
       <div style="background:linear-gradient(135deg,#1a2740,#0d1b2e);border-radius:14px;padding:20px 24px;margin-bottom:16px">
-        <div class="between" style="margin-bottom:14px">
+        <div class="between" style="margin-bottom:14px;flex-wrap:wrap;gap:10px">
           <div><div style="font-size:18px;font-weight:900;color:#fff">🎓 Academia CXOrbia <span style="font-size:13px;font-weight:400;color:#94a3b8">Capacitación, certificaciones y recursos</span></div></div>
-          <div class="flex" style="gap:8px">
+          <div class="flex" style="gap:8px;flex-wrap:wrap">
             <button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.3)" id="acadManuales">📖 Manuales</button>
-            ${role==='admin'?`<select class="sel" id="acadAud" style="width:auto" title="A quién se dirigen los cursos"><option value="admin" ${(CX._acadAud||'admin')==='admin'?'selected':''}>🏢 Consultora</option><option value="shopper" ${CX._acadAud==='shopper'?'selected':''}>🕵️ Shopper</option><option value="cliente" ${CX._acadAud==='cliente'?'selected':''}>🏬 Cliente</option></select><button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.3)" id="acadNew">✨ Crear con IA</button><button class="btn btn-sm" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)" id="acadLoad">⤒ Cargar recurso</button>`:''}
+            ${role==='admin'?`<select class="sel" id="acadAud" style="width:auto" title="A quién se dirigen los cursos"><option value="admin" ${(CX._acadAud||'admin')==='admin'?'selected':''}>🏢 Consultora</option><option value="shopper" ${CX._acadAud==='shopper'?'selected':''}>🕵️ Shopper</option><option value="cliente" ${CX._acadAud==='cliente'?'selected':''}>🏬 Cliente</option></select><button class="btn btn-sm ${showArchived?'':''}" style="background:rgba(255,255,255,${showArchived?'.3':'.1'});color:#fff;border-color:rgba(255,255,255,.25)" id="acadShowArch" title="Cursos personalizados archivados">🗄 ${showArchived?'Ocultar':'Ver'} archivados</button><button class="btn btn-sm" style="background:rgba(255,255,255,.18);color:#fff;border-color:rgba(255,255,255,.3)" id="acadNew">✨ Crear con IA</button><button class="btn btn-sm" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)" id="acadLoad">⤒ Cargar recurso</button>`:''}
           </div>
         </div>
         <div class="grid g4">
-          <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:#fff">${courses.length}</div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px">Cursos</div><div style="font-size:11px;color:#64748b">${completedCourses} completados</div></div>
+          <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:#fff">${visibleCourses.length}</div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px">Cursos</div><div style="font-size:11px;color:#64748b">${completedCourses} completados</div></div>
           <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:${avgProg>=80?'#34d399':'#fbbf24'}">${avgProg}%</div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px">Avance promedio</div><div style="font-size:11px;color:#64748b">del equipo</div></div>
           <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:#a78bfa">${certs}</div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px">Certificaciones</div><div style="font-size:11px;color:#64748b">obtenidas</div></div>
           <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:#fff">${totalLessons}</div><div style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.6px">Lecciones</div><div style="font-size:11px;color:#64748b">${completedLessons} completadas</div></div>
         </div>
       </div>
       <div class="flex wrap" style="gap:6px;margin-bottom:16px">
-        ${CX.acadData.CATS.filter(c=>c==='Todos'||courses.some(x=>x.cat===c)).map(c=>`<button class="btn btn-sm acad-cat ${activeCat===c?'btn-pr':'btn-ghost'}" data-cat="${c}">${c}</button>`).join('')}
-        ${role==='admin'?`<button class="btn btn-sm btn-ghost" id="acadNewCat" style="border-style:dashed">＋ Categoría</button>`:''}
+        ${CX.acadData.CATS.filter(c=>c==='Todos'||visibleCourses.some(x=>x.cat===c)).map(c=>`<button class="btn btn-sm acad-cat ${activeCat===c?'btn-pr':'btn-ghost'}" data-cat="${c}">${c}</button>`).join('')}
+        ${canManageTop?`<button class="btn btn-sm btn-ghost" id="acadNewCat" style="border-style:dashed">＋ Categoría</button>`:''}
       </div>
+      ${(()=>{
+        /* Filtros de CLASIFICACIÓN (paquete V109) — módulo/nivel/paquete son taxonomía de contenido,
+           no ejes de acceso: solo aparecen si al menos un curso visible los declara, y filtran el
+           catálogo sin ocultar nada por ausencia de esos campos en la sesión. */
+        const anyModulo=visibleCourses.some(c=>c.scope&&c.scope.modulo&&c.scope.modulo.length);
+        const anyNivel=visibleCourses.some(c=>c.scope&&c.scope.nivel&&c.scope.nivel.length);
+        const anyPaquete=visibleCourses.some(c=>c.scope&&c.scope.paquete&&c.scope.paquete.length);
+        if(!anyModulo && !anyNivel && !anyPaquete) return '';
+        return `<div class="flex wrap" style="gap:8px;margin-bottom:14px;align-items:center">
+          <span style="font-size:11px;color:var(--t3)">Filtrar por:</span>
+          ${anyModulo?`<select class="sel" id="clsModulo" style="width:auto"><option value="">Módulo (todos)</option>${Object.keys(CX.MODULES||{}).map(mid=>`<option value="${mid}" ${clsModulo===mid?'selected':''}>${(CX.MODULES[mid]&&CX.MODULES[mid].name)||mid}</option>`).join('')}</select>`:''}
+          ${anyNivel?`<select class="sel" id="clsNivel" style="width:auto"><option value="">Nivel (todos)</option>${CX.acadData.NIVELES.map(n=>`<option value="${n.id}" ${clsNivel===n.id?'selected':''}>${n.label}</option>`).join('')}</select>`:''}
+          ${anyPaquete?`<select class="sel" id="clsPaquete" style="width:auto"><option value="">Paquete (todos)</option>${CX.acadData.PAQUETES.map(pk=>`<option value="${pk.id}" ${clsPaquete===pk.id?'selected':''}>${pk.label}</option>`).join('')}</select>`:''}
+        </div>`;
+      })()}
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
         ${filtered.map(c=>{
           const ls=c.lessons||[];const done=ls.filter(l=>prog()[l.id]>=100).length;const pct=ls.length?Math.round(done/ls.length*100):0;
-          return `<div class="card hov" data-course="${c.id}" style="cursor:pointer;overflow:hidden">
+          /* visibilidad de acciones de gestión (Academia — cierre de pendiente auditoría V101):
+             antes se mostraban por role==='admin' crudo, que sigue siendo 'admin' incluso cuando
+             un coordinador/aliado/ops navega en modo prueba sobre el shell admin (session.role
+             no cambia, solo session.testRole). Ahora se deriva del permiso real de acción —
+             el mismo chequeo que ya hacía el handler — para que el botón coincida con lo que
+             realmente va a pasar al hacer clic. */
+          const canManage = role==='admin' && CX.permissions && CX.permissions.can('academy.edit', CX.permissions.ctx());
+          const isCustom=canManage&&CX.acadData.isCustom(CX._acadAud||'admin',c.id);
+          const estadoLbl={borrador:'📝 Borrador',en_revision:'👀 En revisión',aprobado:'✅ Aprobado',archivado:'🗄 Archivado',eliminado:'🗑 Eliminado',publicado_preview:'✓ Publicado (vista previa)'}[c.estado]||'';
+          return `<div class="card hov" data-course="${c.id}" style="cursor:pointer;overflow:hidden;${c.estado==='archivado'||c.estado==='eliminado'?'opacity:.6':''}">
             <div style="background:linear-gradient(135deg,${c.color},${c.color}99);padding:18px 18px 14px;position:relative">
-              <div class="between" style="margin-bottom:8px"><span style="background:rgba(255,255,255,.22);color:#fff;border-radius:20px;padding:3px 11px;font-size:11px;font-weight:700">${c.ic} ${c.cat}</span>${c.cert&&pct>=100?'<span style="font-size:18px">🏅</span>':''}</div>
+              <div class="between" style="margin-bottom:8px"><span style="background:rgba(255,255,255,.22);color:#fff;border-radius:20px;padding:3px 11px;font-size:11px;font-weight:700">${c.ic} ${c.cat}</span><div class="flex" style="gap:6px;align-items:center">${c.cert&&pct>=100?'<span style="font-size:18px">🏅</span>':''}${canManage?`<button class="acad-dup" data-cid="${c.id}" title="Duplicar curso" style="background:rgba(255,255,255,.25);border:none;color:#fff;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:12px;line-height:1">🧬</button>`:''}${isCustom?((c.estado==='archivado'||c.estado==='eliminado')?`<button class="acad-restore" data-cid="${c.id}" title="Restaurar curso" style="background:rgba(255,255,255,.25);border:none;color:#fff;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:12px;line-height:1">♻️</button>`:`<button class="acad-arch" data-cid="${c.id}" title="Archivar curso" style="background:rgba(255,255,255,.25);border:none;color:#fff;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:12px;line-height:1">🗄</button>`):''}${canManage?`<button class="acad-edit" data-cid="${c.id}" title="Editar / eliminar curso" style="background:rgba(255,255,255,.25);border:none;color:#fff;width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:13px;line-height:1">✎</button>`:''}</div></div>
               <div style="font-size:16px;font-weight:800;color:#fff">${c.n}</div>
               <div style="font-size:12px;color:rgba(255,255,255,.8);margin-top:4px">${c.desc}</div>
             </div>
             <div class="card-p" style="padding:14px 16px">
-              <div style="font-size:11.5px;color:var(--t3);margin-bottom:10px">${ls.length} lecciones · ${c.mins} min ${c.cert?'· 🏅 certifica':''}</div>
+              <div style="font-size:11.5px;color:var(--t3);margin-bottom:10px">${ls.length} lecciones · ${typeof c.mins==='number'?c.mins:Math.max(10,ls.length*12)} min ${c.cert?'· 🏅 certifica':''} ${estadoLbl?'· '+estadoLbl+((c.contentVersion>1||c.workflowVersion>1)?' · contenido v'+(c.contentVersion||1)+' · flujo v'+(c.workflowVersion||1):''):''}</div>
               <div style="background:var(--border-2);border-radius:4px;height:6px;margin-bottom:6px"><div style="height:6px;border-radius:4px;background:${pct>=100?'var(--green)':c.color};width:${pct}%;transition:width .4s"></div></div>
               <div style="font-size:11.5px;color:var(--t3)">${pct>=100?'✅ Completado':pct>0?pct+'% completado':'Comenzar'}</div>
             </div>
@@ -1247,41 +2622,127 @@ CX.module('aprendizaje', ({data,role,ui})=>{
       </div>`;
 
     host.querySelector('#acadManuales')?.addEventListener('click',()=>openManuales());
+    host.querySelector('#acadShowArch')?.addEventListener('click',()=>{showArchived=!showArchived;draw();});
+    host.querySelectorAll('.acad-dup').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();const rr=role==='admin'?(CX._acadAud||'admin'):role;const copy=CX.acadData.duplicateCourse(rr,b.dataset.cid,CX.permissions.ctx());draw();ui.toast(copy?'Curso duplicado como borrador: "'+copy.n+'"':'No se pudo duplicar','ok');}));
+    host.querySelectorAll('.acad-arch').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();const rr=role==='admin'?(CX._acadAud||'admin'):role;
+      ui.modal('🗄 Archivar curso',`<label class="lbl">Motivo (obligatorio)</label><textarea class="inp" id="archMot" rows="2" placeholder="Ej. contenido desactualizado, se reemplaza por otro curso…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="archOk">Archivar</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#archOk').addEventListener('click',()=>{const m=(ov.querySelector('#archMot').value||'').trim();if(!m){ui.toast('El motivo es obligatorio','warn');return;}const r=CX.acadData.archiveCourse(rr,b.dataset.cid,m,CX.permissions.ctx());if(!r){ui.toast('🔒 No se pudo archivar (permiso o transición no válida)','warn',4200);return;}close();draw();ui.toast('Curso archivado · auditado','ok');});}});
+    }));
+    host.querySelectorAll('.acad-restore').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();const rr=role==='admin'?(CX._acadAud||'admin'):role;
+      ui.modal('♻️ Restaurar curso',`<p style="font-size:12px;color:var(--t2);margin-bottom:6px">El curso vuelve a estado <b>Borrador</b> — desde ahí sigue el flujo normal (enviar a revisión → aprobar → publicar).</p><label class="lbl">Motivo (obligatorio)</label><textarea class="inp" id="resMot" rows="2" placeholder="Ej. vuelve a ser vigente…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="resOk">Restaurar a borrador</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#resOk').addEventListener('click',()=>{
+        const m=(ov.querySelector('#resMot').value||'').trim();
+        if(!m){ ui.toast('El motivo es obligatorio','warn'); return; }
+        const r=CX.acadData.setCourseState(rr,b.dataset.cid,'borrador',{reason:m,ctx:CX.permissions.ctx()});
+        if(!r.ok){ ui.toast('🔒 '+r.error,'warn',4200); return; }
+        close();draw();ui.toast('Curso restaurado a Borrador · auditado','ok');
+      });}});
+    }));
     host.querySelector('#acadAud')?.addEventListener('change',e=>{CX._acadAud=e.target.value;activeCat='Todos';openCourse=null;openLesson=null;draw();});
     host.querySelectorAll('[data-course]').forEach(c=>c.addEventListener('click',()=>{openCourse=c.dataset.course;const course=getCourses().find(x=>x.id===openCourse);if(course){openLesson=course.lessons[0].id;lessonPlayer(course);}}));
     host.querySelectorAll('.acad-cat').forEach(b=>b.addEventListener('click',()=>{activeCat=b.dataset.cat;draw();}));
+    host.querySelector('#clsModulo')?.addEventListener('change',e=>{clsModulo=e.target.value;draw();});
+    host.querySelector('#clsNivel')?.addEventListener('change',e=>{clsNivel=e.target.value;draw();});
+    host.querySelector('#clsPaquete')?.addEventListener('change',e=>{clsPaquete=e.target.value;draw();});
     host.querySelector('#acadNewCat')?.addEventListener('click',()=>ui.modal('＋ Nueva categoría',`
       <label class="lbl">Nombre de la categoría</label><input class="inp" id="ncatN" placeholder="Ej. Investigación de mercados" style="margin-bottom:12px">
       <div style="text-align:right"><button class="btn btn-pr btn-sm" id="ncatSave">Crear</button></div>
     `,{onMount:(ov,close)=>ov.querySelector('#ncatSave').addEventListener('click',()=>{const n=(ov.querySelector('#ncatN').value||'').trim();if(!n){ui.toast('Pon un nombre','warn');return;}if(!CX.acadData.CATS.includes(n))CX.acadData.CATS.push(n);try{localStorage.setItem('cx_acad_cats',JSON.stringify(CX.acadData.CATS));}catch(e){}close();draw();ui.toast('Categoría "'+n+'" creada','ok');})}));
-    host.querySelectorAll('.acad-edit').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();const rr=role==='shopper'?'shopper':role==='cliente'?'cliente':'admin';const cc=getCourses().find(x=>x.id===b.dataset.cid);if(!cc)return;
-      ui.modal('✎ Editar curso',`<div class="grid g2" style="gap:8px 12px"><div><label class="lbl">Nombre</label><input class="inp" id="ecN" value="${(cc.n||'').replace(/"/g,'&quot;')}"></div><div><label class="lbl">Categoría</label><select class="sel" id="ecC">${CX.acadData.CATS.filter(c=>c!=='Todos').map(c=>`<option ${c===cc.cat?'selected':''}>${c}</option>`).join('')}</select></div><div style="grid-column:1/3"><label class="lbl">Descripción</label><textarea class="inp" id="ecD" rows="2">${cc.desc||''}</textarea></div></div><div style="text-align:right;margin-top:10px;display:flex;justify-content:space-between"><button class="btn btn-ghost btn-sm" id="ecDel" style="color:var(--red)">🗑 Eliminar</button><button class="btn btn-pr btn-sm" id="ecSave">Guardar</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#ecSave').addEventListener('click',()=>{CX.acadData.editCourse(rr,cc.id,{n:ov.querySelector('#ecN').value.trim(),cat:ov.querySelector('#ecC').value,desc:ov.querySelector('#ecD').value.trim()});close();draw();ui.toast('Curso actualizado','ok');});ov.querySelector('#ecDel').addEventListener('click',()=>{CX.acadData.delCourse(rr,cc.id);close();draw();ui.toast('Curso eliminado','');});}});
-    }));()=>ui.modal('✨ Crear módulo con IA',`
+    host.querySelectorAll('.acad-edit').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();const rr=role==='admin'?(CX._acadAud||'admin'):(role==='cliente'?'cliente':'shopper');const cc=getCourses().find(x=>x.id===b.dataset.cid);if(!cc)return;
+      ui.modal('✎ Editar curso',`<div class="grid g2" style="gap:8px 12px"><div><label class="lbl">Nombre</label><input class="inp" id="ecN" value="${(cc.n||'').replace(/"/g,'&quot;')}"></div><div><label class="lbl">Categoría</label><select class="sel" id="ecC">${CX.acadData.CATS.filter(c=>c!=='Todos').map(c=>`<option ${c===cc.cat?'selected':''}>${c}</option>`).join('')}</select></div><div style="grid-column:1/3"><label class="lbl">Descripción</label><textarea class="inp" id="ecD" rows="2">${cc.desc||''}</textarea></div>
+        ${CX.acadData.isCustom(rr,cc.id)?`<div style="grid-column:1/3;border-top:1px solid var(--border-2);margin-top:4px;padding-top:10px"><label class="lbl">Alcance (opcional — vacío en un eje = visible para todos en ese eje)</label>
+          <div class="grid g2" style="gap:6px 10px">
+            <div><span style="font-size:10px;color:var(--t3)">Tenant</span><div class="inp" style="background:var(--panel-2);color:var(--t2);cursor:default">${CX.BRAND.id} <span style="color:var(--t3);font-size:10px">(heredado, no editable)</span></div></div>
+            <div><span style="font-size:10px;color:var(--t3)">Proyecto(s)</span><select class="sel" id="ecScProj" multiple size="3">${(CX.data.projects||[]).map(pr=>`<option value="${pr.id}" ${(cc.scope&&cc.scope.projectId||[]).includes(pr.id)?'selected':''}>${pr.name}</option>`).join('')}</select></div>
+            <div><span style="font-size:10px;color:var(--t3)">País(es)</span><select class="sel" id="ecScPais" multiple size="3">${Object.keys(CX.GEO||{}).map(g=>`<option value="${g}" ${(cc.scope&&cc.scope.pais||[]).includes(g)?'selected':''}>${CX.paisFlag?CX.paisFlag(g)+' ':''}${g}</option>`).join('')}</select></div>
+            <div><span style="font-size:10px;color:var(--t3)">Rol(es)</span><select class="sel" id="ecScRol" multiple size="3">${(CX.ROLES||[]).map(rl=>`<option value="${rl.id}" ${(cc.scope&&cc.scope.rol||[]).includes(rl.id)?'selected':''}>${rl.label}</option>`).join('')}</select></div>
+            <div><span style="font-size:10px;color:var(--t3)">Nivel(es)</span><select class="sel" id="ecScNivel" multiple size="3">${CX.acadData.NIVELES.map(n=>`<option value="${n.id}" ${(cc.scope&&cc.scope.nivel||[]).includes(n.id)?'selected':''}>${n.label}</option>`).join('')}</select></div>
+            <div><span style="font-size:10px;color:var(--t3)">Módulo(s)</span><select class="sel" id="ecScModulo" multiple size="3">${Object.keys(CX.MODULES||{}).map(mid=>`<option value="${mid}" ${(cc.scope&&cc.scope.modulo||[]).includes(mid)?'selected':''}>${(CX.MODULES[mid]&&CX.MODULES[mid].name)||mid}</option>`).join('')}</select></div>
+            <div><span style="font-size:10px;color:var(--t3)">Paquete(s)</span><select class="sel" id="ecScPaquete" multiple size="3">${CX.acadData.PAQUETES.map(pk=>`<option value="${pk.id}" ${(cc.scope&&cc.scope.paquete||[]).includes(pk.id)?'selected':''}>${pk.label}</option>`).join('')}</select></div>
+          </div>
+          <div style="font-size:10.5px;color:var(--t3);margin-top:6px">Creador: <b>${cc.creador||'—'}</b>${cc.revisadoPor?' · Revisado por: <b>'+cc.revisadoPor+'</b>':''}${cc.aprobadoPor?' · Aprobado por: <b>'+cc.aprobadoPor+'</b>':''}</div>
+        </div>`:''}
+        ${CX.acadData.isCustom(rr,cc.id)?`<div style="grid-column:1/3;font-size:10.5px;color:var(--t3)">Estado: <b>${({borrador:'📝 Borrador',en_revision:'👀 En revisión',aprobado:'✅ Aprobado',archivado:'🗄 Archivado',eliminado:'🗑 Eliminado',publicado_preview:'✓ Publicado (vista previa)'}[cc.estado]||'—')}</b> · contenido v${cc.contentVersion||1} · flujo v${cc.workflowVersion||1}</div>
+        <div style="grid-column:1/3;display:flex;gap:6px;flex-wrap:wrap;margin-top:2px">${(CX.acadData.ALLOWED_TRANSITIONS[cc.estado||'borrador']||[]).filter(s=>s!=='archivado'&&s!=='eliminado').map(s=>`<button class="btn btn-soft btn-sm acadTrans" data-to="${s}" style="font-size:10.5px;padding:4px 9px">→ ${({borrador:'Borrador',en_revision:'Enviar a revisión',aprobado:'Aprobar',publicado_preview:'Publicar (vista previa)'}[s]||s)}</button>`).join('')}</div>`:''}</div><div style="text-align:right;margin-top:10px;display:flex;justify-content:space-between">${CX.acadData.isCustom(rr,cc.id)?'<button class="btn btn-ghost btn-sm" id="ecDel" style="color:var(--red)">🗑 Eliminar</button>':'<span></span>'}<button class="btn btn-pr btn-sm" id="ecSave">Guardar</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#ecSave').addEventListener('click',()=>{
+        /* T2.B (paquete V108): scope ya no es CSV libre — se lee de <select multiple> con IDs
+           estables de catálogos reales (proyectos, CX.GEO, CX.ROLES, CX.MODULES, niveles y
+           paquetes curados). tenantId siempre se fija al tenant activo (CX.BRAND.id), heredado
+           y no editable — todo curso queda vinculado a un tenant real. */
+        const multi=(sel)=>{const el=ov.querySelector(sel); if(!el) return undefined; return [...el.selectedOptions].map(o=>o.value).filter(Boolean);};
+        const scope=ov.querySelector('#ecScProj')?{tenantId:[CX.BRAND.id],projectId:multi('#ecScProj'),pais:multi('#ecScPais'),rol:multi('#ecScRol'),nivel:multi('#ecScNivel'),modulo:multi('#ecScModulo'),paquete:multi('#ecScPaquete')}:cc.scope;
+        const r=CX.acadData.editCourse(rr,cc.id,{n:ov.querySelector('#ecN').value.trim(),cat:ov.querySelector('#ecC').value,desc:ov.querySelector('#ecD').value.trim(),scope});if(!r.ok){ui.toast('🔒 '+r.error,'warn',4200);return;}
+        /* OLA3 (paquete V120→V121, notificación "manual/curso actualizado" — antes solo toast) */
+        CX.notif && CX.notif.push({to:'all',tipo:'academia_curso',icon:'📚',tono:'n',titulo:'Curso actualizado',txt:(cc.n||'Curso')+' tiene cambios nuevos',nav:'aprendizaje'});
+        close();draw();ui.toast('Curso actualizado · auditado · notificación registrada','ok');});
+      ov.querySelectorAll('.acadTrans').forEach(b=>b.addEventListener('click',()=>{
+        const to=b.dataset.to;
+        close();
+        const needsActor = to==='en_revision' || to==='aprobado';
+        /* T2 (paquete V108 — 20260712): el prototipo NO tiene un catálogo real de usuarios/Auth
+           con múltiples identidades — solo la sesión activa (CX.session.user). Antes se ofrecía
+           un "roster" armado con ETIQUETAS DE ROL (super/admin/coordinador) como si fueran personas
+           reales seleccionables: eso simulaba una separación de funciones que no existía. Ahora el
+           único actor posible es la identidad de sesión autenticada; si coincide con quien creó (o
+           revisó, para aprobar), no hay una segunda identidad real disponible y el flujo queda
+           bloqueado como preview — nunca se inventa una persona distinta. */
+        /* T1b (paquete V109 — corrección P0): el prototipo SÍ tiene un catálogo real de usuarios
+           invitados (cx_users, Configuración → Usuarios & Permisos) además de la sesión activa —
+           V108 afirmaba erróneamente que no existía ninguno. El actor se resuelve por ID ESTABLE
+           (CX.acadData.actorId(), persistido en cx_users cuando la sesión viene de un usuario
+           invitado con email, o derivado de rol+shopperId para sesiones demo sintéticas). Si el
+           id del actor de sesión coincide con quien creó (o revisó, para aprobar) el curso, no
+           hay una segunda identidad real disponible en ESTA sesión y el flujo queda bloqueado
+           como preview — nunca se inventa una persona ni un roster de etiquetas de rol. */
+        const sessionActor=(CX.session&&CX.session.user&&CX.session.user.name)||null;
+        const sessionActorId=CX.acadData.actorId();
+        const creadorId=cc.createdByUserId||(cc.creador?CX.acadData._idFromName(cc.creador):null);
+        const revisorId=cc.reviewedByUserId||(cc.revisadoPor?CX.acadData._idFromName(cc.revisadoPor):null);
+        const blockedReason = to==='aprobado' && revisorId && sessionActorId===revisorId
+          ? 'quien revisó ('+cc.revisadoPor+')'
+          : (creadorId && sessionActorId===creadorId ? 'quien creó ('+cc.creador+')' : null);
+        const actorAvailable = needsActor ? (sessionActor && !blockedReason) : true;
+        ui.modal('Cambiar estado → '+to,`<p style="font-size:12px;color:var(--t2);margin-bottom:8px">"${(cc.n||'').replace(/"/g,'&quot;')}" pasará a estado <b>${to}</b>.</p>${needsActor?(actorAvailable?`<div style="font-size:12px;color:var(--t2);margin-bottom:10px">${to==='en_revision'?'Revisa':'Aprueba'}: <b>${sessionActor}</b> (identidad de la sesión activa)</div>`:`<div class="bdg bdg-a" style="margin-bottom:10px;display:inline-block">Preview · requiere usuarios/Auth</div><div style="font-size:11.5px;color:var(--t3);margin-bottom:8px">Este prototipo no tiene un catálogo de usuarios/Auth con una segunda identidad distinta de ${blockedReason||'quien creó el curso'}. En producción, Auth real permite iniciar sesión como el revisor/aprobador correspondiente; aquí el flujo queda pendiente para no simular una separación de funciones inexistente.</div>`):''}<label class="lbl">Motivo</label><textarea class="inp" id="trMot" rows="2" placeholder="Explica el cambio de estado…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="trOk" ${actorAvailable?'':'disabled style="opacity:.5;cursor:not-allowed"'}>Confirmar</button></div>`,{onMount:(o2,c2)=>{o2.querySelector('#trOk').addEventListener('click',()=>{
+          if(!actorAvailable){ ui.toast('Vista previa · requiere gestión de usuarios/acceso para esta transición','warn',3600); return; }
+          const m=(o2.querySelector('#trMot').value||'').trim();
+          const actor=needsActor?sessionActor:'';
+          const opts={reason:m,ctx:CX.permissions.ctx()};
+          if(to==='en_revision'){ opts.revisor=actor; opts.revisorId=sessionActorId; }
+          if(to==='aprobado'){ opts.aprobador=actor; opts.aprobadorId=sessionActorId; }
+          const r=CX.acadData.setCourseState(rr,cc.id,to,opts);
+          if(!r.ok){ ui.toast('🔒 '+r.error,'warn',4200); return; }
+          c2();draw();ui.toast('Curso → '+to+' · auditado','ok');
+        });}});
+      }));
+      ov.querySelector('#ecDel')?.addEventListener('click',()=>{
+        close();
+        ui.modal('🗑 Eliminar curso',`<p style="font-size:12px;color:var(--t2);margin-bottom:8px">"${(cc.n||'').replace(/"/g,'&quot;')}" se marcará como eliminado (recuperable desde "Ver archivados") — no se borra de forma irreversible.</p><label class="lbl">Motivo (obligatorio)</label><textarea class="inp" id="delMot" rows="2" placeholder="Ej. duplicado por error, contenido incorrecto…"></textarea><div style="text-align:right;margin-top:10px"><button class="btn btn-pr btn-sm" id="delOk" style="background:var(--red);border-color:var(--red)">Eliminar</button></div>`,{onMount:(o2,c2)=>{o2.querySelector('#delOk').addEventListener('click',()=>{const m=(o2.querySelector('#delMot').value||'').trim();if(!m){ui.toast('El motivo es obligatorio','warn');return;}const rDel=CX.acadData.delCourse(rr,cc.id,m,CX.permissions.ctx());if(!rDel){ui.toast('🔒 No se pudo eliminar (permiso o transición no válida)','warn',4200);return;}c2();draw();ui.toast('Curso eliminado (recuperable) · auditado','');});}});
+      });}});
+    }));
+    host.querySelector('#acadNew')?.addEventListener('click',()=>ui.modal('✨ Crear módulo con IA',`
       <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Carga material (PDF, video, texto) y la IA genera un curso completo con lecciones profundas y evaluación.</p>
       <input type="file" id="aiCourseF" class="inp" accept=".pdf,.doc,.docx,.txt,image/*" style="padding:7px;margin-bottom:8px">
       <textarea class="inp" id="aiT" rows="3" placeholder="o describe el tema que quieres desarrollar…" style="margin-bottom:10px"></textarea>
       <div style="text-align:right"><button class="btn btn-green btn-sm" id="aiGo">Generar curso</button></div>
     `,{onMount:(ov,close)=>ov.querySelector('#aiGo').addEventListener('click',()=>{
       const pasted=(ov.querySelector('#aiT').value||'').trim();
-      if(CX.ai&&CX.ai.ready()){
-        ui.toast('Leyendo material y generando con '+CX.ai.cfg().model+'…','',2500);
-        CX.ai.readAttachment(ov.querySelector('#aiCourseF')).then(fileTxt=>{
-          const tema=(pasted+fileTxt).trim();
-          if(!tema){ui.toast('Describe el tema o adjunta material','warn');return;}
-          return CX.ai.ask('Crea un curso de capacitación sobre: "'+tema+'". Devuelve 4-6 lecciones. Cada lección como "## Título" seguido de contenido en HTML (<p>,<h3>,<ul>,<li>). La última lección debe ser un quiz con 3 preguntas.')
-          .then(res=>{
-            const parts=res.split(/##\s+/).filter(Boolean);
-            const lessons=parts.map((p,i)=>{const nl=p.indexOf('\n');const n=p.slice(0,nl).trim()||'Lección '+(i+1);const html=p.slice(nl+1).trim();return {id:'l'+Date.now().toString(36)+i,n,ic:/quiz|evalua/i.test(n)?'❓':'📘',tipo:/quiz|evalua/i.test(n)?'quiz':'texto',content:'<div class="acad-content">'+html+'</div>'};});
-            const rr=role==='shopper'?'shopper':role==='cliente'?'cliente':'admin';
-            CX.acadData.addCourse(rr,{cat:activeCat==='Todos'?'IA':activeCat,ic:'✨',color:'#7c3aed',n:tema.slice(0,60),desc:'Generado con IA',lessons});
-            close();draw();ui.toast('Curso generado · revisa, itera y publica','ok',4000);
-          })
-          .catch(e=>{close();ui.toast('Error IA: '+e.message,'warn');});
-        });
-      } else {
-        close();ui.toast('Configura un proveedor de IA en Integraciones para generar el curso','warn',4000);
-      }
-    })});
+      /* P0.1 (V98): heurística local directa — nunca se llama CX.ai.ask() (available() es
+         siempre false en el navegador); nunca bloquea por falta de proveedor configurado. */
+      ui.toast('Leyendo material y generando borrador local…','',2000);
+      CX.ai.readAttachment(ov.querySelector('#aiCourseF')).then(fileTxt=>{
+        const tema=(pasted+fileTxt).trim();
+        if(!tema){ui.toast('Describe el tema o adjunta material','warn');return;}
+        /* parte el tema/material en 3-4 bloques y arma lecciones + un quiz genérico */
+        const chunks=tema.split(/\n{2,}|(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÑ])/).map(s=>s.trim()).filter(s=>s.length>20);
+        const per=Math.max(1,Math.ceil(chunks.length/3));
+        const bloques=[]; for(let i=0;i<chunks.length;i+=per) bloques.push(chunks.slice(i,i+per).join(' '));
+        let res=(bloques.length?bloques:[tema]).map((b,i)=>'## Parte '+(i+1)+'\n<p>'+b+'</p>').join('\n\n');
+        res+='\n\n## Evaluación\n<p>Repasa los puntos anteriores antes de continuar.</p>';
+        const parts=res.split(/##\s+/).filter(Boolean);
+        const lessons=parts.map((p,i)=>{const nl=p.indexOf('\n');const n=p.slice(0,nl).trim()||'Lección '+(i+1);const html=p.slice(nl+1).trim();return {id:'l'+Date.now().toString(36)+i,n,ic:/quiz|evalua/i.test(n)?'❓':'📘',tipo:/quiz|evalua/i.test(n)?'quiz':'texto',content:'<div class="acad-content">'+html+'</div>'};});
+        const rr=role==='admin'?(CX._acadAud||'admin'):(role==='cliente'?'cliente':'shopper');
+        const rAdd=CX.acadData.addCourse(rr,{cat:activeCat==='Todos'?'IA':activeCat,ic:'✨',color:'#7c3aed',n:tema.slice(0,60),desc:'Borrador local (heurística, sin IA real)',lessons});
+        if(!rAdd.ok){ ui.toast('🔒 '+rAdd.error,'warn',4200); return; }
+        close();draw();ui.toast('Curso generado (borrador local) · revisa, itera y publica','ok',4000);
+      });
+    })}));
     host.querySelector('#acadLoad')?.addEventListener('click',()=>CX.router.nav('importador'));
   };
 
@@ -1291,23 +2752,51 @@ CX.module('aprendizaje', ({data,role,ui})=>{
 
 /* ── CSS de la Academia ── */
 (()=>{const s=document.createElement('style');s.textContent=`
-.acad-content{font-size:13.5px;color:var(--t2);line-height:1.7}
-.acad-content h2{font-size:17px;font-weight:800;color:var(--t1);margin:0 0 12px}
-.acad-content h3{font-size:14px;font-weight:700;color:var(--t1);margin:16px 0 8px}
-.acad-content ul,.acad-content ol{margin:0 0 12px 20px;line-height:1.9}
-.acad-content p{margin:0 0 10px}
-.acad-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:14px 0}
-.acad-card{background:var(--brand-light);border-radius:10px;padding:13px;text-align:center}
-.acad-card div{font-size:24px;margin-bottom:6px}
-.acad-card b{font-size:12.5px;color:var(--t1);display:block;margin-bottom:4px}
-.acad-card p{font-size:11.5px;color:var(--t3);margin:0}
-.acad-section{background:var(--panel-2,#f8f9fa);border-left:3px solid var(--brand);border-radius:0 9px 9px 0;padding:10px 14px;margin-bottom:10px;font-size:13px;color:var(--t2)}
-.acad-section b{color:var(--t1);display:block;margin-bottom:4px;font-size:13.5px}
-.acad-flow{display:flex;flex-direction:column;gap:8px;margin:14px 0}
-.acad-step{display:flex;gap:12px;align-items:flex-start;padding:10px 14px;border:1px solid var(--border);border-radius:10px}
-.acad-step span{width:24px;height:24px;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
-.acad-step b{font-size:13px;color:var(--t1);display:block;margin-bottom:3px}
-.acad-step p{font-size:12px;color:var(--t3);margin:0}
+/* ── Formato de marca CXOrbia para lecciones y manuales (estilo Orbit) ── */
+.acad-content{font-size:14px;color:var(--t2);line-height:1.75;counter-reset:acadsec}
+.acad-content h2{font-size:19px;font-weight:800;color:var(--t1);margin:24px 0 12px;padding-left:42px;position:relative;min-height:32px;display:flex;align-items:center}
+.acad-content h2::before{counter-increment:acadsec;content:counter(acadsec);position:absolute;left:0;top:0;width:32px;height:32px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;box-shadow:0 3px 8px rgba(33,150,211,.28)}
+.acad-content h2:first-child{margin-top:0}
+.acad-content h3{font-size:15px;font-weight:800;color:var(--brand-dark);margin:20px 0 8px;padding-bottom:6px;border-bottom:2px solid var(--brand-light)}
+.acad-content ul{list-style:none;margin:0 0 14px;padding:0;display:flex;flex-direction:column;gap:7px}
+.acad-content ul>li{position:relative;padding:10px 14px 10px 28px;background:#fff;border:1px solid var(--border);border-left:3px solid var(--brand);border-radius:0 10px 10px 0;box-shadow:0 1px 4px rgba(13,39,64,.04)}
+.acad-content ul>li::before{content:'';position:absolute;left:11px;top:17px;width:6px;height:6px;border-radius:50%;background:var(--brand)}
+.acad-content ol{list-style:none;margin:0 0 14px;padding:0;counter-reset:acadstep;display:flex;flex-direction:column;gap:7px}
+.acad-content ol>li{position:relative;padding:10px 14px 10px 40px;background:var(--panel-2,#f8fafc);border:1px solid var(--border);border-radius:10px;counter-increment:acadstep}
+.acad-content ol>li::before{content:counter(acadstep);position:absolute;left:10px;top:9px;width:20px;height:20px;border-radius:6px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.acad-content li{margin:0}
+.acad-content li::marker{color:var(--brand)}
+.acad-content p{margin:0 0 10px;color:var(--t2)}
+.acad-content b{color:var(--t1)}
+.acad-content code{background:#eef4fb;padding:2px 7px;border-radius:5px;font-size:12.5px;font-family:'SF Mono',Menlo,monospace;color:var(--brand-dark)}
+.acad-content blockquote{border-left:4px solid var(--brand);background:var(--brand-light);border-radius:0 10px 10px 0;padding:11px 16px;margin:12px 0;color:var(--brand-dark);font-size:13.5px}
+/* tarjetas con ícono (grid) */
+.acad-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:16px 0}
+.acad-card{background:#fff;border:1px solid var(--border);border-top:3px solid var(--brand);border-radius:13px;padding:16px;box-shadow:0 2px 10px rgba(13,39,64,.05);transition:transform .12s}
+.acad-card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(13,39,64,.1)}
+.acad-card>div:first-child,.acad-card div:first-child{font-size:26px;margin-bottom:8px}
+.acad-card b{font-size:13px;color:var(--t1);display:block;margin-bottom:5px}
+.acad-card p{font-size:12px;color:var(--t3);margin:0;line-height:1.55}
+/* caja de sección (acento de marca, elevada) */
+.acad-section{background:linear-gradient(180deg,#fff,var(--panel-2,#f8fafc));border:1px solid var(--border);border-left:4px solid var(--brand);border-radius:0 12px 12px 0;padding:13px 16px;margin:0 0 12px;font-size:13.5px;color:var(--t2);box-shadow:0 2px 8px rgba(13,39,64,.04)}
+.acad-section b{color:var(--t1);font-weight:800}
+.acad-section b:first-child{display:block;margin-bottom:4px;font-size:14px;color:var(--brand-dark)}
+.acad-section p{margin:4px 0 0}
+/* flujo numerado en tarjetas (grid horizontal, estilo Orbit) */
+.acad-flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:16px 0}
+.acad-step{background:#fff;border:1px solid var(--border);border-radius:13px;padding:15px 15px 14px;position:relative;box-shadow:0 2px 10px rgba(13,39,64,.05)}
+.acad-step span{display:inline-flex;width:28px;height:28px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;font-weight:800;font-size:13px;align-items:center;justify-content:center;margin-bottom:9px;box-shadow:0 3px 8px rgba(33,150,211,.28)}
+.acad-step b{font-size:13.5px;color:var(--t1);display:block;margin-bottom:4px}
+.acad-step p{font-size:12px;color:var(--t3);margin:0;line-height:1.55}
+/* checklist real (marca) */
+.acad-check{list-style:none;margin:12px 0;padding:0}
+.acad-check li{position:relative;padding:8px 8px 8px 34px;border:1px solid var(--border);border-radius:10px;margin-bottom:7px;background:#fff;font-size:13px;color:var(--t2)}
+.acad-check li::before{content:'';position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;border:2px solid var(--brand);border-radius:5px}
+.acad-check li.done::before{background:var(--brand);box-shadow:inset 0 0 0 2px #fff}
+/* glosario / definición */
+.acad-gloss{display:grid;gap:8px;margin:12px 0}
+.acad-gloss dt{font-weight:800;color:var(--brand-dark);font-size:13.5px}
+.acad-gloss dd{margin:0 0 6px;font-size:13px;color:var(--t2);padding-left:12px;border-left:2px solid var(--brand-light)}
 .acad-opt:hover{background:var(--brand-light);border-color:var(--brand)}
 @media(max-width:680px){[style*="grid-template-columns:220px"]{grid-template-columns:1fr!important}}
 `;document.head.appendChild(s);})();

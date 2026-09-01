@@ -1,0 +1,143 @@
+{
+  "contractId": "phase-a-protected-firestore-schema-dev-readiness-v1",
+  "status": "draft_safe_not_connected",
+  "generatedAt": "2026-07-09",
+  "purpose": "Define the protected Firestore data shape required for Phase A shopper profiles, certifications, settlements, liquidations and audit without enabling real writes or exposing sensitive data.",
+  "safeState": {
+    "firestoreConnected": false,
+    "frontendConnected": false,
+    "writesEnabled": false,
+    "importsEnabled": false,
+    "authClaimsRequiredBeforeRead": true,
+    "productionEnabled": false,
+    "containsSecrets": false,
+    "containsSensitiveData": false
+  },
+  "extendsContracts": [
+    "cxdata-firestore-phase-a-v1",
+    "auth-rbac-phase-a-v1",
+    "phase-a-protected-shopper-profile-dev-readiness-v1",
+    "liquidations-payments-phase-a-v1"
+  ],
+  "identityKeys": [
+    "tenantId",
+    "projectId",
+    "shopperId",
+    "userId",
+    "role"
+  ],
+  "stableSourceKeys": [
+    "tenantId",
+    "projectId",
+    "periodKey",
+    "country",
+    "sourceRef",
+    "hrRowId",
+    "visitId",
+    "assignmentId",
+    "certificationId",
+    "liquidationId",
+    "paymentBatchId"
+  ],
+  "collections": {
+    "shopperPublicRefs": {
+      "path": "tenants/{tenantId}/shopperPublicRefs/{shopperRefId}",
+      "phaseA": true,
+      "visibility": "source_safe_preview",
+      "allowedFields": ["tenantId", "shopperRefId", "country", "statusBucket", "certificationBucket", "paymentEligibilityBucket", "lastSourceSeenAt"],
+      "forbiddenFields": ["fullName", "email", "phone", "idDocumentRaw", "bankAccountRaw", "signedNdaRaw", "privateSourceUrl"]
+    },
+    "shopperProtectedProfiles": {
+      "path": "tenants/{tenantId}/shoppers/{shopperId}/protected/profile",
+      "phaseA": true,
+      "visibility": "auth_rbac_required",
+      "readRoles": ["tenantAdmin", "projectAdmin", "financeAdmin", "certificationAdmin", "shopperOwnProfile"],
+      "notes": "Full operational profile lives behind Auth/RBAC. Finance role cannot read raw bank fields. Shopper can read only own scoped profile."
+    },
+    "shopperIdentityLinks": {
+      "path": "tenants/{tenantId}/shopperIdentityLinks/{identityLinkId}",
+      "phaseA": true,
+      "visibility": "auth_rbac_required",
+      "notes": "Maps source references, userId, shopperId and project/country contexts without visual-name dedupe. Ambiguous matches go to reviewQueue."
+    },
+    "certificationAttempts": {
+      "path": "tenants/{tenantId}/projects/{projectId}/certificationAttempts/{attemptId}",
+      "phaseA": true,
+      "visibility": "auth_rbac_required",
+      "stableKeys": ["tenantId", "projectId", "shopperId", "certificationId", "attemptId", "sourceRef"],
+      "notes": "Preserves already presented certifications and future attempts. AI/Gemini drafts remain human-review gated."
+    },
+    "certificationCarryovers": {
+      "path": "tenants/{tenantId}/projects/{projectId}/certificationCarryovers/{carryoverId}",
+      "phaseA": true,
+      "visibility": "auth_rbac_required",
+      "notes": "Records preserved historical certification eligibility so completed shoppers are not asked to repeat unnecessarily."
+    },
+    "protectedLiquidations": {
+      "path": "tenants/{tenantId}/projects/{projectId}/protectedLiquidations/{liquidationId}",
+      "phaseA": true,
+      "visibility": "auth_rbac_required",
+      "stableKeys": ["tenantId", "projectId", "periodKey", "shopperId", "visitId", "hrRowId", "assignmentId", "liquidationId", "currency"],
+      "notes": "Payment-state control and shopper-visible amounts without raw bank data or real payment execution."
+    },
+    "protectedPaymentBatches": {
+      "path": "tenants/{tenantId}/projects/{projectId}/protectedPaymentBatches/{paymentBatchId}",
+      "phaseA": true,
+      "visibility": "auth_rbac_required",
+      "notes": "Prepared and audited payment batches only. Real payment execution remains out of scope and blocked."
+    },
+    "protectedReadAudit": {
+      "path": "tenants/{tenantId}/audit/protectedReads/{auditId}",
+      "phaseA": true,
+      "visibility": "tenant_admin_audit",
+      "requiredFields": ["tenantId", "actorUserId", "actorRole", "entityType", "entityId", "projectId", "reason", "timestamp", "source"]
+    },
+    "reviewQueue": {
+      "path": "tenants/{tenantId}/reviewQueue/{reviewId}",
+      "phaseA": true,
+      "visibility": "auth_rbac_required",
+      "notes": "Central queue for identity, certification, assignment, source and payment conflicts."
+    }
+  },
+  "fieldPolicies": {
+    "publicPreviewAllowed": ["opaqueRef", "country", "periodKey", "projectId", "statusBucket", "count", "eligibilityBucket"],
+    "protectedAllowedWithRole": ["fullName", "contact", "visitHistory", "certificationHistory", "liquidationHistory", "communicationHistory", "assignmentHistory"],
+    "restrictedOrEncrypted": ["idDocumentRaw", "bankAccountRaw", "signedNdaRaw", "evidenceRaw", "privateSourceUrl", "workbookRaw"],
+    "forbiddenInRepo": ["idDocumentRaw", "bankAccountRaw", "signedNdaRaw", "evidenceRaw", "privateSourceUrl", "workbookRaw", "providerToken", "refreshToken", "privateWebhookUrl"]
+  },
+  "readRules": {
+    "tenantAdmin": ["shopperProtectedProfiles", "shopperIdentityLinks", "certificationAttempts", "certificationCarryovers", "protectedLiquidations", "protectedPaymentBatches", "reviewQueue", "protectedReadAudit"],
+    "projectAdmin": ["shopperProtectedProfiles_projectScoped", "certificationAttempts_projectScoped", "certificationCarryovers_projectScoped", "protectedLiquidations_projectScoped", "reviewQueue_projectScoped"],
+    "financeAdmin": ["protectedLiquidations_projectScoped", "protectedPaymentBatches_projectScoped", "shopperProtectedProfiles_financeSafe"],
+    "certificationAdmin": ["certificationAttempts_projectScoped", "certificationCarryovers_projectScoped", "shopperProtectedProfiles_certificationSafe"],
+    "shopper": ["ownProfile", "ownCertificationAttempts", "ownLiquidations", "ownVisits"]
+  },
+  "writeRules": {
+    "devReadsOnly": "allowed_after_auth_config_gate",
+    "devWrites": "blocked_until_explicit_GO_and_rollback",
+    "importWrites": "blocked_until_dry_run_and_reviewQueue_clear",
+    "paymentStateWrites": "blocked_until_finance_GO_and_audit",
+    "productionWrites": "blocked_until_separate_production_GO"
+  },
+  "auditRequirements": [
+    "all protected reads require actorUserId, role, reason, entityType, entityId and timestamp",
+    "all identity links require sourceRef and confidence/status",
+    "ambiguous identity links must create reviewQueue items",
+    "certification carryovers require sourceTrace and reviewer or gate reason",
+    "liquidation payment states require auditRef and cannot expose raw bank data",
+    "no protected field can be copied to public preview payload"
+  ],
+  "claudePrototypeImpact": [
+    "show source-safe public preview only",
+    "show protected profile locked state when Auth/RBAC gate is off",
+    "render roles and permissions as configurable model, not hardcoded client behavior",
+    "use honest copy for pending Auth, pending review, gate off and source-safe states"
+  ],
+  "academyImpact": [
+    "explain why public preview hides PII",
+    "explain roles and protected profile access",
+    "explain reviewQueue and auditEvents",
+    "explain certification carryover",
+    "explain liquidation/payment state without real payment execution"
+  ]
+}

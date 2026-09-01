@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "1.0.0",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "sourceRef": "tya:hr-live-multitab:source-safe:not-imported",
+  "payloadSha256": "5513a437283d3a505d59ca3086ec0ce439f86138efc11e15518efec3e1916266",
+  "generatedFrom": "local source-safe runtime validation",
+  "periods": [
+    {"key":"2025-06","id":"cinepolis-2025-06","state":"cerrado","total":44,"expected":44,"GT":34,"HN":10,"done":44,"pct":100,"tabs":["JUNIO 25","JUNIO 25 HN"],"warnings":2},
+    {"key":"2025-07","id":"cinepolis-2025-07","state":"cerrado","total":44,"expected":44,"GT":34,"HN":10,"done":44,"pct":100,"tabs":["JULIO 25","JULIO 25 HN"],"warnings":2},
+    {"key":"2025-08","id":"cinepolis-2025-08","state":"cerrado","total":44,"expected":44,"GT":34,"HN":10,"done":44,"pct":100,"tabs":["AGOSTO 25","AGOSTO 25 HN"],"warnings":2},
+    {"key":"2025-09","id":"cinepolis-2025-09","state":"cerrado","total":44,"expected":44,"GT":34,"HN":10,"done":44,"pct":100,"tabs":["SEPTIEMBRE 25","SEPTIEMBRE 25 HN"],"warnings":2},
+    {"key":"2025-10","id":"cinepolis-2025-10","state":"cerrado","total":44,"expected":44,"GT":34,"HN":10,"done":44,"pct":100,"tabs":["OCTUBRE 25","OCTUBRE 25 HN"],"warnings":2},
+    {"key":"2025-11","id":"cinepolis-2025-11","state":"cerrado","total":44,"expected":44,"GT":34,"HN":10,"done":44,"pct":100,"tabs":["NOVIEMBRE 25","NOVIEMBRE 25 HN"],"warnings":2},
+    {"key":"2025-12","id":"cinepolis-2025-12","state":"cerrado","total":44,"expected":44,"GT":34,"HN":10,"done":44,"pct":100,"tabs":["DICIEMBRE 25","DICIEMBRE 25 HN"],"warnings":2},
+    {"key":"2026-01","id":"cinepolis-2026-01","state":"cerrado","total":44,"expected":44,"GT":34,"HN":10,"done":44,"pct":100,"tabs":["ENERO 26","ENERO 26 HN"],"warnings":2},
+    {"key":"2026-02","id":"cinepolis-2026-02","state":"cerrado","total":44,"expected":44,"GT":34,"HN":10,"done":44,"pct":100,"tabs":["FEBRERO 26","FEBRERO 26 HN"],"warnings":2},
+    {"key":"2026-03","id":"cinepolis-2026-03","state":"cerrado","total":44,"expected":44,"GT":34,"HN":10,"done":44,"pct":100,"tabs":["MARZO 26","MARZO 26 HN"],"warnings":0},
+    {"key":"2026-04","id":"cinepolis-2026-04","state":"cerrado","total":44,"expected":44,"GT":34,"HN":10,"done":44,"pct":100,"tabs":["ABRIL 26","ABRIL 26 HN"],"warnings":0},
+    {"key":"2026-05","id":"cinepolis-2026-05","state":"cerrado","total":44,"expected":44,"GT":34,"HN":10,"done":44,"pct":100,"tabs":["MAYO 26","MAYO 26 HN"],"warnings":0},
+    {"key":"2026-06","id":"cinepolis-2026-06","state":"cerrado","total":44,"expected":44,"GT":34,"HN":10,"done":44,"pct":100,"tabs":["JUNIO 26","JUNIO 26 HN"],"warnings":0},
+    {"key":"2026-07","id":"cinepolis-2026-07","state":"activo","total":44,"expected":44,"GT":34,"HN":10,"done":1,"pct":2,"tabs":["JULIO 26","JULIO 26 HN"],"warnings":0}
+  ],
+  "counts": {"periods":14,"visits":616,"historicalVisits":572,"activeVisits":44},
+  "activePeriodId": "cinepolis-2026-07",
+  "warnings": 18,
+  "blockers": [],
+  "sourceSafe": true,
+  "imported": false,
+  "production": false
+}

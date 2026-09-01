@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "cxorbia.c6.auth-principal-uniqueness-rootfix-activation.phase1-stop-retry.v1",
+  "generatedAt": "2026-08-07T17:54:00-06:00",
+  "decision": "STOP_RETRY_C6_AUTH_PRINCIPAL_UNIQUENESS_ROOTFIX_PHASE1_NEW_DIGEST",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "authorizationSource": "current_conversation_2026-08-07_c6_auth_principal_uniqueness_rootfix_activation_dev",
+  "sourcePhase": {
+    "runId": 31228513906,
+    "jobId": 93027465078,
+    "workflowConclusion": "failure",
+    "requestCommit": "18c988ff3aa8cc59aa2fa0476b0647fd051ed30c",
+    "requestId": "c6-auth-principal-uniqueness-rootfix-activation-dev-20260807-01",
+    "requestValidation": "PASS",
+    "rootfixSyntax": "PASS",
+    "activationV2Syntax": "PASS",
+    "rootfixSelfTest": "PASS_C6_AUTH_PRINCIPAL_UNIQUENESS_ROOTFIX_SELFTEST",
+    "activationV2SelfTest": "PASS_C6_AUTH_ACTIVATION_V2_SELFTEST",
+    "staticNoLoopGate": "PASS_C6_AUTH_PRINCIPAL_UNIQUENESS_STATIC_NO_LOOP_GATE",
+    "oldFinalPlanArtifactDownload": "PASS",
+    "materialization": "FAIL_NEW_DIGEST",
+    "phase1PassMarkerReached": false
+  },
+  "sourceRootCause": {
+    "classification": "SOURCE_SAFE_DIGEST_ANNOTATION_STRING_MISMATCH",
+    "operationalRootCauseStill": "CROSS_ROW_EXISTING_AUTH_PRINCIPAL_ALIAS_IN_OLD_PREWRITE",
+    "freezeDigestCalculatedWithAnnotation": "TARGET_SPECIFIC_EXISTING_AUTH_CANDIDATE_COUNT_0_AFTER_LINEAGE_PASS",
+    "transformToolUsesAnnotation": "TARGET_SPECIFIC_EXISTING_AUTH_CANDIDATE_COUNT_0_AFTER_EXACT_LINEAGE_PASS",
+    "effect": "The source-safe row digest changed because the audit-only annotation string is part of the digest-bearing compact row. The fail-closed NEW_DIGEST guard stopped before Phase 1 PASS.",
+    "identityOrProviderDriftDemonstrated": false,
+    "planCountsProviderValidated": false,
+    "providerRetryAllowedInThisBlock": false
+  },
+  "phase2": {
+    "started": false,
+    "credentialPrepared": false,
+    "providerAttempts": 0,
+    "providerReads": 0,
+    "authReads": 0,
+    "firestoreReads": 0,
+    "hrReads": 0,
+    "writeBoundaryEntered": false,
+    "authCreates": 0,
+    "authUpdates": 0,
+    "duplicateDisables": 0
+  },
+  "failClose": {
+    "requestEnabled": false,
+    "requestConsumed": true,
+    "allowedExecutions": 0,
+    "requestConsumeCommit": "781b5a0be084178cc0caf093715723b964a6be7c",
+    "oneShotWorkflowRemoved": true,
+    "workflowRemovalCommit": "3ec94117525a3cc1285cbf459805411937f0d5be"
+  },
+  "preserved": {
+    "AuthExecuted": false,
+    "production": false,
+    "SKIP13": "closed_13_of_13",
+    "multiAuthAdjudication": "closed",
+    "priorPlanDigest": "68e26a5217957333d256f2cb547faf3e1eef74e2c789bfd85454d42dfd472dc3",
+    "priorPlanExecutable": false
+  },
+  "safety": {
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "membershipWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "cloudBuilds": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "production": false
+  },
+  "nextExactBlock": "Source-only canonicalization of the audit annotation/digest contract, rerun Phase 1 only, and only with Phase 1 PASS re-arm a new non-overlapping Phase 2 activation request under explicit authorization."
+}

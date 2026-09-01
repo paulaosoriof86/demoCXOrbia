@@ -1,0 +1,154 @@
+{
+  "schemaVersion": "cxorbia.c6.shopper-group-provenance-residual-identity-source-only.v1",
+  "generatedAt": "2026-08-05T21:56:00-06:00",
+  "decision": "PASS_C6_GROUP_PROVENANCE_RESIDUAL_IDENTITY_SOURCE_ONLY_WITH_DIAGNOSTIC_HOLDS",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "sourceRun": 31069282511,
+  "sourceArtifactDigest": "sha256:ffdf8643726d4f8c0c63484790a3b71c2f0a8b4ac04be604e700b829304aff09",
+  "inputSha256": {
+    "providerReport": "070a395d47f406c008f6061528bbea2e2746d1d2526713813b7dd94fd3181a29",
+    "plan340": "c5882e90f42a77185decd4299e9db38297759e457b54264c3da4e595351e6c10",
+    "groupMatrix": "4b86087941a5aa6adf1ec99d605f6b4dc19b49a67d4f1f1ff61c2e14db6f0b6f",
+    "classifierReference": "a4d75d371c7beb902c913c97e2c2a9959f722b90e23d9ab0589fa27832236f6c",
+    "validationSummary": "dbe11af312da306b0e8745601cf927383271e8fefe8c6a9a316fdf719b9d113f"
+  },
+  "addedGroup": {
+    "groupFingerprint": "ebbcc231fcf415cbaf77",
+    "referenceCount": 64,
+    "currentCount": 65,
+    "addedCount": 1,
+    "removedCount": 0,
+    "unchangedCount": 64,
+    "activeCount": 2,
+    "keeperSelected": true,
+    "suffixedCount": 1,
+    "suffixLength4Count": 1,
+    "suffixLength6Count": 0,
+    "suffixLength8Count": 0,
+    "unresolvedCount": 0,
+    "memberVectorsPresentInArtifact": false,
+    "primaryClassification": "REFERENCE_UNIVERSE_MISMATCH_PROVEN",
+    "exactGroupCause": "NOT_PROVEN_MEMBER_PROVENANCE_MISSING",
+    "legitimateConsensusChangeForExactGroup": "POSSIBLE_NOT_PROVEN",
+    "differenceOfUniverse": true,
+    "suffixAllocationAlgorithmDefect": false,
+    "diagnosticComparatorDefect": true,
+    "sourceReasons": [
+      "classifier reference eligibility requires verifiedLoginAgreement from explicit or technical surname evidence",
+      "planner eligibility includes multi-source full-name consensus",
+      "planner linked-source resolution includes exact technical-anchor fallback not mirrored by the classifier reference",
+      "current group matrix exports group shape but no member fingerprints or pre/post eligibility"
+    ]
+  },
+  "memberProvenanceContract": {
+    "memberFingerprintNamespace": "shopper-collision-member-v1",
+    "fields": [
+      "memberFingerprint",
+      "active",
+      "preConsensusComplete",
+      "postConsensusComplete",
+      "completedByConsensus",
+      "sourceSafeSurnameBasis",
+      "surnameBasisCount",
+      "keeper",
+      "suffixApplied",
+      "suffixLength",
+      "inReferenceSet",
+      "inPlannerSet",
+      "referenceEligibility",
+      "plannerEligibility",
+      "linkedSourceResolutionMode"
+    ],
+    "rawNamesAllowed": false,
+    "rawSurnamesAllowed": false,
+    "rawLoginsAllowed": false,
+    "rawEmailsAllowed": false,
+    "uidsAllowed": false,
+    "rawPasswordsAllowed": false,
+    "piiAllowed": false
+  },
+  "surnameResiduals": {
+    "count": 12,
+    "classification": "AUTHORITATIVE_SURNAME_SOURCE_ENRICHMENT_REQUIRED",
+    "automaticInferenceAllowed": false,
+    "commonVector": {
+      "firstComplete": true,
+      "firstCandidateCount": 1,
+      "firstBasisCount": 1,
+      "surnameComplete": false,
+      "explicitCandidateCount": 0,
+      "technicalLoginCandidateCount": 0,
+      "consensusCandidateCount": 0,
+      "surnameBasisCount": 0,
+      "surnameConflict": false,
+      "passwordSeedComplete": true,
+      "passwordSeedCandidateCount": 1,
+      "passwordSeedBasisCount": 1
+    },
+    "minimumNonOperationalEvidence": [
+      "explicit surname linked by exact shopperId or strong technical anchor",
+      "exact mapped credential login",
+      "two independent linked full-name sources with matching surname token",
+      "explicit tenant adjudication recorded against a source-safe profile fingerprint"
+    ],
+    "forbidden": [
+      "single-position surname inference",
+      "generated surname",
+      "name-based deduplication",
+      "Auth repair before evidence"
+    ]
+  },
+  "multiAuthResidual": {
+    "count": 1,
+    "candidateCount": 2,
+    "topScore": 5016,
+    "secondScore": 5016,
+    "scoreMargin": 0,
+    "candidateSignalsIdentical": true,
+    "classification": "SOURCE_SAFE_ACCOUNT_ADJUDICATION_REQUIRED",
+    "automaticSelectionAllowed": false,
+    "minimumNonOperationalDiscriminator": [
+      "exact canonical claims unique to one candidate",
+      "exact credential or target-email anchor unique to one candidate",
+      "password compatibility unique to one candidate",
+      "explicit tenant adjudication against stable candidate fingerprints"
+    ],
+    "forbiddenSelectors": [
+      "creationTime",
+      "candidateOrdinal",
+      "firstReturned",
+      "enabledStateAlone",
+      "emailVerifiedAlone"
+    ]
+  },
+  "planState": {
+    "rows": 340,
+    "uniqueRows": 340,
+    "holdRows": 13,
+    "readyForAuthRepair": false,
+    "executable": false,
+    "partialExecutionAllowed": false
+  },
+  "safety": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "membershipWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "production": false
+  },
+  "nextGate": "SOURCE_ONLY_STATIC_PASS_REQUIRED_BEFORE_ANY_NEW_PROVIDER_READ"
+}

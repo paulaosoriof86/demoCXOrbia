@@ -1,0 +1,122 @@
+{
+  "schemaVersion": "cxorbia.i3.8-pass-i3.9-diagnostic.v1",
+  "generatedAt": "2026-08-17T17:45:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "formalProgress": 35,
+  "i3_8": {
+    "status": "PASS",
+    "decision": "PASS_I3_8_NEW_SHOPPER_PROVIDER_BACKED_PERIOD_INDEPENDENT_IDENTITY",
+    "runId": 32080412142,
+    "jobId": 95542161943,
+    "productTargetHeadSha": "d560d75144f9bc826e3c1332b7b3e260fdf107ae",
+    "executorHeadSha": "1ea0b8de00524cac7ca5ab80746bed73455a2e46",
+    "shopperId": "TYA_GT_393371F88D10F7A8",
+    "identityLinkId": "irl_fd0e52a9792ef088aa275fa90e27c77d",
+    "authCreates": 1,
+    "claimWrites": 1,
+    "firestoreWrites": 3,
+    "membershipWrites": 1,
+    "profileWrites": 1,
+    "shopperIdentityLinkWrites": 1,
+    "providerAck": true,
+    "readbackReady": true,
+    "periodIndependent": true,
+    "authorityType": "platform_created",
+    "exactReadbackAllTrue": true,
+    "requestConsumed": true,
+    "noAutomaticRetry": true
+  },
+  "i3_9": {
+    "status": "HOLD_NOT_PRODUCT_AUTH_FAILURE",
+    "providerPreconditionsProven": true,
+    "exactProviderReadback": {
+      "user": true,
+      "claims": true,
+      "membership": true,
+      "profile": true,
+      "crosswalk": true,
+      "platformCreatedAuthority": true,
+      "periodIndependent": true,
+      "visibleLoginMappingFingerprint": true
+    },
+    "attempts": [
+      {
+        "runId": 32080412142,
+        "jobId": 95542161943,
+        "classification": "HARNESS_DEPENDENCY_ORDER_FAILURE_BEFORE_I3_9",
+        "detail": "Playwright was removed by a subsequent transient npm install before I3.9 execution; I3.8 remained PASS."
+      },
+      {
+        "runId": 32080979723,
+        "jobId": 95543773480,
+        "artifactId": 9305107132,
+        "classification": "READONLY_BROWSER_CUSTOM_TOKEN_NETWORK_TECHNICAL",
+        "providerAdminWrites": 0,
+        "passwordChanges": 0,
+        "passwordResets": 0
+      },
+      {
+        "runId": 32080979723,
+        "jobId": 95544082776,
+        "artifactId": 9305141184,
+        "classification": "HARNESS_LOGIN_SURFACE_TIMING_FALSE_NEGATIVE",
+        "providerAdminWrites": 0,
+        "passwordChanges": 0,
+        "passwordResets": 0
+      },
+      {
+        "runId": 32081426357,
+        "jobId": 95545032005,
+        "artifactId": 9305251720,
+        "artifactDigest": "sha256:1f88295d8cf00a22018b16b3eb75fc78fed6b2ed8db9931cda04a262a26f1838",
+        "classification": "READONLY_CUSTOM_TOKEN_SESSION_ORCHESTRATION_TIMEOUT",
+        "visibleLoginSurface": true,
+        "firebaseProjectExact": true,
+        "providerAdminWrites": 0,
+        "customTokensMinted": 8,
+        "historicalShopperAccess": 0,
+        "passwordChanges": 0,
+        "passwordResets": 0,
+        "firestoreWrites": 0,
+        "deploys": 0
+      }
+    ],
+    "rootCauseSourceFinding": {
+      "reusableShopperMembershipAdapterExists": true,
+      "adapter": "app/adapters/cxorbia-shopper-membership-wiring-v1.js",
+      "deployedExactI3_2CSourceLoadedAdapter": false,
+      "currentSourceBeforeFixLoadedAdapter": false,
+      "sourceFixApplied": true,
+      "sourceFixCommit": "c796597effac6d77422df888b63933ab865ab198",
+      "sourceFix": "app/index-backend-dev.html now loads cxorbia-shopper-membership-wiring-v1.js immediately after staff membership wiring",
+      "sourceFixDeployed": false
+    },
+    "nextSafeGateRequired": {
+      "hostingDevDeployExactCurrentSource": true,
+      "oneSyntheticShopperPasswordChange": true,
+      "passwordResetEmail": false,
+      "newUserCreate": false,
+      "historicalShopperAccess": false,
+      "purpose": "Execute canonical visible username/password product login E2E after membership wiring source fix, then continue I3.10 and I3.11 same-build."
+    }
+  },
+  "safety": {
+    "historicalShopperAccess": 0,
+    "historicalShopperLogin": 0,
+    "historicalShopperRecovery": 0,
+    "historicalShopperReset": 0,
+    "unrelatedAuthWritesAfterI3_8": 0,
+    "hrWrites": 0,
+    "financeWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "deploysAfterI3_8": 0,
+    "merge": false,
+    "production": false
+  }
+}

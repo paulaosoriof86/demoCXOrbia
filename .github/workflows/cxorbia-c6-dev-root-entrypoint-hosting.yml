@@ -1,0 +1,17 @@
+name: CXOrbia Historical C6 DEV Root Entrypoint Hosting — INERT M3
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  historical-inert:
+    name: Historical authority inertized
+    runs-on: ubuntu-latest
+    steps:
+      - name: Refuse historical execution
+        run: |
+          echo 'HISTORICAL_INERT_M3: cxorbia-c6-dev-root-entrypoint-hosting.yml'
+          echo 'No Hosting deploy, provider mutation, data write, Auth mutation or merge authority remains in this workflow.'

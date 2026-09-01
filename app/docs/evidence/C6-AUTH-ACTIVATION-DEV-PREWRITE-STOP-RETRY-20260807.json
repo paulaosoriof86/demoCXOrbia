@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "cxorbia.c6.auth-activation-dev.terminal-evidence.v1",
+  "generatedAt": "2026-08-07T13:52:00-06:00",
+  "decision": "STOP_RETRY_C6_AUTH_ACTIVATION_DEV_PREWRITE",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "authorizationSource": "current_conversation_c6_auth_activation_dev_2026-08-07",
+  "source": {
+    "requestCommitSha": "b1be563ca9cc3b4931f380277a655f5e07c92ab3",
+    "workflowRunId": 31213274602,
+    "workflowJobId": 92980855907,
+    "artifactId": 9007517428,
+    "artifactDigest": "sha256:cc0c5b60cb066930d6d1e55a3eb23fcf6ed3e99f98c14500a1901969ba7b25ee"
+  },
+  "finalPlan": {
+    "materializedSourceSafe": true,
+    "rows": 340,
+    "uniqueRows": 340,
+    "operationCounts": {
+      "CREATE_AUTH": 81,
+      "UPDATE_AUTH": 46,
+      "NO_OP": 81,
+      "HOLD": 0,
+      "PRESERVE_NO_AUTH": 132
+    },
+    "subchangeCounts": {
+      "email": 39,
+      "password": 14,
+      "claims": 38
+    },
+    "rowsDigestSha256": "68e26a5217957333d256f2cb547faf3e1eef74e2c789bfd85454d42dfd472dc3",
+    "tenantAdjudication": {
+      "profileFingerprint": "7cc28c78de9bfda01d14",
+      "keeperCandidateFingerprint": "4e6d26551d11db444bd0",
+      "retireAccessCandidateFingerprint": "9b2b7ca1bd72c1301d29"
+    }
+  },
+  "prewrite": {
+    "pass": false,
+    "writeBoundaryEntered": false,
+    "blocker": "PASSWORD_ROLLBACK_HASH_SALT_UNAVAILABLE:ac93d90d9e41512acdcd",
+    "blockedProfilePlanClass": "UPDATE_AUTH",
+    "blockedProfileChanges": {
+      "email": true,
+      "password": true,
+      "claims": true
+    },
+    "priorSourceSafeRollbackClassification": "restore_email_disabled_and_claims_snapshot_password_compensation_only",
+    "interpretation": "The final 340-row identity plan is HOLD=0, but activation is not executable under the authorized rollback contract because at least one of the 14 password-change targets did not expose both passwordHash and passwordSalt in the prewrite provider snapshot."
+  },
+  "writes": {
+    "authCreates": 0,
+    "authUpdates": 0,
+    "duplicateDisables": 0,
+    "providerWriteCalls": 0,
+    "firestoreWrites": 0,
+    "membershipWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "cloudBuilds": 0,
+    "cloudRunDeploys": 0,
+    "hostingDeploys": 0
+  },
+  "failClose": {
+    "requestConsumeCommit": "7930d3835a55dd92f3c48f1f7588aea4d332833d",
+    "workflowRemovalCommit": "2f23b7cb129b745ed2367aa3da9f456eb5ceff2e",
+    "requestEnabled": false,
+    "requestConsumed": true,
+    "allowedExecutions": 0,
+    "workflowPresent": false,
+    "secondProviderAttempt": 0,
+    "realRollbackExecuted": false
+  },
+  "production": false,
+  "merge": false,
+  "nextGate": "SOURCE_ONLY_PASSWORD_ROLLBACK_ROOT_FIX_BEFORE_ANY_NEW_PROVIDER_ATTEMPT"
+}

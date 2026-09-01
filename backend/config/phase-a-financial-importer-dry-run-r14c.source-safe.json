@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "1.0.0",
+  "generatedAt": "2026-07-13T14:32:07Z",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "hrIndex": {
+    "visits": 616,
+    "shoppers": 210,
+    "sourceSafe": true
+  },
+  "financial": {
+    "rawRecords": 196,
+    "uniqueRecords": 196,
+    "exactDuplicates": 0,
+    "acceptedPaid": 0,
+    "pendingReview": 196,
+    "batches": 0,
+    "sensitiveColumnsExcluded": []
+  },
+  "certification": {
+    "status": "not_supplied"
+  },
+  "reviewQueue": 196,
+  "auditEvents": 196,
+  "dryRun": true,
+  "writes": false,
+  "imported": false,
+  "production": false,
+  "providers": false,
+  "safe": true
+}

@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "cxorbia.corte6.real-users-e2e-hosting-evidence.v4",
+  "generatedAt": "2026-08-01T17:21:16.588Z",
+  "decision": "PASS_C6_REAL_STAFF_SHOPPER_E2E_EXISTING_HOSTING_DEV",
+  "authorizationId": "chat-20260801-c6-real-users-e2e-hosting-01",
+  "requestId": "corte6-real-users-e2e-hosting-20260801-01",
+  "entryRootFixCommit": "3cb1c8a1adf2eddddbc1d0ba670af041a8d3c5fe",
+  "projectId": "cxorbia-backend-dev",
+  "hostingSite": "cxorbia-backend-dev",
+  "hostingTarget": "cxorbia-dev",
+  "hostingDeployExecutions": 1,
+  "entry": {
+    "usernamePasswordOnly": true,
+    "visibleAccessSelector": false,
+    "genericRolePicker": false,
+    "parallelTechnicalLogin": false,
+    "technicalStatusHidden": true,
+    "roleDerivedFromClaims": true,
+    "projectDerivedFromClaims": true,
+    "dualChoiceOnlyAfterCredentialValidation": true
+  },
+  "localE2E": {
+    "decision": "PASS_C6_REAL_USERS_END_TO_END",
+    "staff": {
+      "role": "coordinador",
+      "namespace": "staff",
+      "visits": 616,
+      "shoppers": 194,
+      "ownVisits": 0,
+      "hrAuthorityPreserved": true,
+      "identityMapResolved": true,
+      "refreshPreserved": true,
+      "newTabPreserved": true
+    },
+    "shopper": {
+      "role": "shopper",
+      "namespace": "shopper",
+      "visits": 616,
+      "shoppers": 208,
+      "ownVisits": 1,
+      "hrAuthorityPreserved": true,
+      "identityMapResolved": true,
+      "refreshPreserved": true,
+      "newTabPreserved": true
+    },
+    "hrAuthorityVisits": 616,
+    "credentialsExposed": false,
+    "tokensExposed": false,
+    "writes": 0,
+    "production": false
+  },
+  "remoteE2E": {
+    "decision": "PASS_C6_REAL_USERS_END_TO_END",
+    "staff": {
+      "role": "coordinador",
+      "namespace": "staff",
+      "visits": 616,
+      "shoppers": 194,
+      "ownVisits": 0,
+      "hrAuthorityPreserved": true,
+      "identityMapResolved": true,
+      "refreshPreserved": true,
+      "newTabPreserved": true
+    },
+    "shopper": {
+      "role": "shopper",
+      "namespace": "shopper",
+      "visits": 616,
+      "shoppers": 208,
+      "ownVisits": 1,
+      "hrAuthorityPreserved": true,
+      "identityMapResolved": true,
+      "refreshPreserved": true,
+      "newTabPreserved": true
+    },
+    "hrAuthorityVisits": 616,
+    "credentialsExposed": false,
+    "tokensExposed": false,
+    "writes": 0,
+    "production": false
+  },
+  "canonical": {
+    "visits616": true,
+    "domain": true,
+    "finance": true,
+    "shopperPortal": true,
+    "reservationsFailClosed": true
+  },
+  "safety": {
+    "existingUsersOnly": true,
+    "authUserCreates": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "firestoreWrites": 0,
+    "rulesDeploys": 0,
+    "cloudRunDeploys": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "legacyWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "reservationsWrites": 0,
+    "newFirebaseProjects": 0,
+    "newHostingSites": 0,
+    "credentialValuesExported": false,
+    "tokensExported": false,
+    "production": false,
+    "merge": false
+  }
+}

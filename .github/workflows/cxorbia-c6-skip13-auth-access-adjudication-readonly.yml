@@ -1,0 +1,110 @@
+name: CXOrbia I5 PREPROD Project Creator Route Preflight Readonly
+
+on:
+  pull_request:
+    types: [synchronize, ready_for_review]
+
+permissions:
+  contents: read
+  statuses: write
+
+concurrency:
+  group: cxorbia-i5-preprod-project-creator-route-preflight
+  cancel-in-progress: false
+
+env:
+  REQUEST_FILE: backend/config/i5-preprod-project-creator-route-preflight-request-v1.json
+  OUT_DIR: .tmp/i5-preprod-project-creator-route-preflight
+  PRIVATE_DIR: .tmp/i5-preprod-project-creator-route-private
+  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
+jobs:
+  preflight:
+    name: Probe existing creator identities without writes
+    if: >-
+      github.event.pull_request.number == 7 &&
+      github.event.pull_request.head.ref == 'docs-tya-v6-v71-audit' &&
+      github.event.pull_request.base.ref == 'release/cxorbia-tya-rc-20260630'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Detect exact request-only event
+        id: request
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs'),{execFileSync}=require('child_process');
+          const changed=execFileSync('git',['diff','--name-only','HEAD^','HEAD'],{encoding:'utf8'}).trim().split(/\r?\n/).filter(Boolean);
+          const x=fs.existsSync(process.env.REQUEST_FILE)?JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8')):{};
+          const executable=changed.length===1&&changed[0]===process.env.REQUEST_FILE&&x.enabled===true&&x.consumed===false&&x.status==='authorized_readonly_once'&&x.transportNonce==='i5-project-creator-route-preflight-01';
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`executable=${executable?'true':'false'}\n`);
+          console.log(JSON.stringify({changed,executable}));
+          NODE
+
+      - name: Safe skip non-request event
+        if: steps.request.outputs.executable != 'true'
+        run: echo 'SKIP_NON_REQUEST__PROVIDER_WRITES_0__PROJECT_CREATES_0__DEPLOYS_0'
+
+      - name: Validate read-only scope and inspect credential routes
+        if: steps.request.outputs.executable == 'true'
+        env:
+          DEDICATED_CREATOR_JSON: ${{ secrets.CXORBIA_GCP_PROJECT_CREATOR_JSON }}
+          ALT_CREATOR_JSON: ${{ secrets.GOOGLE_CLOUD_PROJECT_CREATOR_JSON }}
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$PRIVATE_DIR" "$OUT_DIR"
+          node <<'NODE'
+          const fs=require('fs'),crypto=require('crypto');
+          const x=JSON.parse(fs.readFileSync(process.env.REQUEST_FILE,'utf8'));
+          if(x.schemaVersion!=='cxorbia.i5.preprod.project-creator-route-preflight.request.v1'||x.gateId!=='I5_PREPROD_PROJECT_CREATOR_ROUTE_PREFLIGHT_READONLY'||x.repository!=='paulaosoriof86/demoCXOrbia'||x.branch!=='docs-tya-v6-v71-audit'||Number(x.pullRequest)!==7||x.readOnly!==true||Number(x.providerWrites)!==0||Number(x.projectCreates)!==0||x.deploy!==false||x.production!==false)throw new Error('request_scope_invalid');
+          const c=[['dedicated_project_creator',process.env.DEDICATED_CREATOR_JSON||''],['alternate_project_creator',process.env.ALT_CREATOR_JSON||''],['existing_dev_service_account',process.env.EXISTING_DEV_JSON||'']];
+          const routes=[];
+          for(const [route,raw] of c){let p=null;try{p=raw?JSON.parse(raw):null}catch{};const valid=Boolean(p&&p.type==='service_account'&&p.project_id&&p.client_email&&p.private_key&&p.token_uri);routes.push({route,present:Boolean(raw),shapeValid:valid,credentialProjectId:valid?p.project_id:null,principalSha256:valid?crypto.createHash('sha256').update(p.client_email).digest('hex'):null});if(valid)fs.writeFileSync(`${process.env.PRIVATE_DIR}/${route}.json`,raw,{mode:0o600});}
+          fs.writeFileSync(`${process.env.OUT_DIR}/routes.json`,JSON.stringify({routes,secretValuesOutput:false},null,2)+'\n');
+          NODE
+
+      - name: Probe creator capability on visible parent resources
+        if: steps.request.outputs.executable == 'true'
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs'),{execFileSync}=require('child_process');
+          const out=process.env.OUT_DIR,priv=process.env.PRIVATE_DIR,src=JSON.parse(fs.readFileSync(`${out}/routes.json`,'utf8'));const results=[];
+          const run=(cmd,args,opt={})=>{try{return{ok:true,out:execFileSync(cmd,args,{encoding:'utf8',...opt})}}catch(e){return{ok:false,out:String(e.stderr||e.stdout||e.message||'').slice(0,700)}}};
+          for(const r of src.routes){if(!r.shapeValid){results.push({...r,authenticated:false,projectsVisible:null,orgsVisible:null,createPermissionProven:false,parentProbes:[]});continue;}
+            const key=`${priv}/${r.route}.json`;const a=run('gcloud',['auth','activate-service-account','--key-file',key,'--quiet']);if(!a.ok){results.push({...r,authenticated:false,authError:'activation_failed',createPermissionProven:false,parentProbes:[]});continue;}
+            const token=run('gcloud',['auth','print-access-token']);const ps=run('gcloud',['projects','list','--format=json']);const os=run('gcloud',['organizations','list','--format=json']);
+            let projects=[];try{projects=ps.ok?JSON.parse(ps.out):[]}catch{};let orgs=[];try{orgs=os.ok?JSON.parse(os.out):[]}catch{};const parents=[];
+            for(const o of orgs.slice(0,10)){const id=String(o.ID||o.name||o.organizationId||'').replace(/^organizations\//,'');if(id)parents.push({type:'organization',id});}
+            for(const p of projects.slice(0,15)){const id=p.projectId||p.project_id;if(!id)continue;const d=run('gcloud',['projects','describe',id,'--format=json']);if(d.ok){try{const j=JSON.parse(d.out);if(j.parent?.type&&j.parent?.id)parents.push({type:String(j.parent.type).toLowerCase(),id:String(j.parent.id)});}catch{}}}
+            const unique=[...new Map(parents.map(p=>[`${p.type}:${p.id}`,p])).values()];const probes=[];let proven=false;
+            if(token.ok){for(const p of unique){if(!['organization','folder'].includes(p.type))continue;const resource=p.type==='organization'?`organizations/${p.id}`:`folders/${p.id}`;const q=run('curl',['-fsS','-X','POST','-H',`Authorization: Bearer ${token.out.trim()}`,'-H','Content-Type: application/json',`https://cloudresourcemanager.googleapis.com/v3/${resource}:testIamPermissions`,'-d',JSON.stringify({permissions:['resourcemanager.projects.create']})]);let yes=false;if(q.ok){try{yes=(JSON.parse(q.out).permissions||[]).includes('resourcemanager.projects.create')}catch{}}probes.push({resourceType:p.type,resourceIdSha256:require('crypto').createHash('sha256').update(p.id).digest('hex'),testSucceeded:q.ok,resourcemanagerProjectsCreate:yes});if(yes)proven=true;}}
+            results.push({...r,authenticated:true,projectsVisible:Array.isArray(projects)?projects.length:null,orgsVisible:Array.isArray(orgs)?orgs.length:null,createPermissionProven:proven,parentProbes:probes});
+          }
+          const preferred=results.find(x=>x.createPermissionProven)||results.find(x=>x.route==='dedicated_project_creator'&&x.authenticated)||results.find(x=>x.route==='alternate_project_creator'&&x.authenticated)||null;
+          const decision=preferred?.createPermissionProven?'PASS_I5_EXISTING_PROJECT_CREATOR_CAPABILITY_PROVEN':preferred?'PASS_I5_EXISTING_CREATOR_ROUTE_AUTHENTICATES_CAPABILITY_NOT_PROVEN':'HOLD_I5_NO_EXISTING_CREATOR_ROUTE_AUTHENTICATES';
+          const report={decision,preferredRoute:preferred?.route||null,capabilityProven:Boolean(preferred?.createPermissionProven),routes:results,providerReads:true,providerWrites:0,projectCreates:0,deploys:0,merge:false,production:false,nextGate:preferred?.createPermissionProven?'RETRY_PREPROD_CREATE_WITH_PROVEN_EXISTING_CREATOR_ROUTE':'NO_PROJECT_CREATE_RETRY_WITHOUT_NARROW_PROVIDER_ADMIN_AUTH_OR_PROVEN_CREATOR_ROUTE'};
+          fs.writeFileSync(`${out}/result.json`,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));
+          NODE
+
+      - name: Upload sanitized evidence
+        if: always() && steps.request.outputs.executable == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: i5-preprod-project-creator-route-preflight-${{ github.run_id }}
+          path: |
+            .tmp/i5-preprod-project-creator-route-preflight/routes.json
+            .tmp/i5-preprod-project-creator-route-preflight/result.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Cleanup private credential files
+        if: always()
+        run: rm -rf "$PRIVATE_DIR"

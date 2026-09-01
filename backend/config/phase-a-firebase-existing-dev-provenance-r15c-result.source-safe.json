@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "1.0.0",
+  "reportId": "phase-a-firebase-existing-dev-provenance-r15c-result",
+  "generatedAt": "2026-07-13T18:06:15.928Z",
+  "decision": "PASS_WITH_REVIEW_EXISTING_CXORBIA_DEV_PROVENANCE_R15C",
+  "target": {
+    "projectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "projectIdMatch": true,
+    "serviceAccountDomainMatch": true
+  },
+  "auth": {
+    "total": 17,
+    "knownFictitiousDomain": 17,
+    "expectedClaimStructure": 15,
+    "tenantTyaClaim": 13,
+    "disabled": 0,
+    "unclassified": 0
+  },
+  "firestore": {
+    "rootCollections": 1,
+    "expectedTenantsRootPresent": true,
+    "unexpectedRootCollections": 0,
+    "tenantTyaExists": true,
+    "clients": 3,
+    "projects": 29,
+    "shoppers": 215,
+    "notifications": 20,
+    "shopperBenefits": 572,
+    "knownProjectChecks": [
+      {"slot": "known_project_1", "exists": true, "visits": 36, "minimumSatisfied": true},
+      {"slot": "known_project_2", "exists": true, "visits": 8, "minimumSatisfied": true}
+    ]
+  },
+  "rules": {
+    "releaseCount": 1,
+    "minimumSatisfied": true
+  },
+  "summary": {
+    "lineageMatched": true,
+    "blockingFindings": 0,
+    "reviewItems": 0,
+    "readOnlyCxDataGateEligible": true
+  },
+  "evidence": {
+    "workflowRunId": 29273096228,
+    "artifactDigest": "sha256:9e101e564b539a5ba988987edb76dec1a3662d754aa7d45c1031ef42483578ec"
+  },
+  "safeState": {
+    "providerReads": true,
+    "userIdentifiersPersisted": false,
+    "userEmailsPersisted": false,
+    "documentFieldsPersisted": false,
+    "authWrites": false,
+    "claimsWrites": false,
+    "firestoreWrites": false,
+    "storageWrites": false,
+    "deploy": false,
+    "imports": false,
+    "production": false,
+    "piiOutput": false
+  }
+}

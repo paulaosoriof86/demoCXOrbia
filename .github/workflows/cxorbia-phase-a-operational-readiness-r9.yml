@@ -1,0 +1,51 @@
+name: CXOrbia Phase A Operational Readiness R9
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/contracts/phase-a-operational-readiness-r9-v1.json'
+      - 'backend/config/phase-a-operational-readiness-r9.source-safe.json'
+      - 'backend/config/phase-a-firestore-materialization-r5-summary.source-safe.json'
+      - 'tools/release/tya-phase-a-operational-readiness-r9.mjs'
+      - 'tools/release/tya-phase-a-operational-readiness-r9-validate.mjs'
+      - '.github/workflows/cxorbia-phase-a-operational-readiness-r9.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'backend/contracts/phase-a-operational-readiness-r9-v1.json'
+      - 'backend/config/phase-a-operational-readiness-r9.source-safe.json'
+      - 'backend/config/phase-a-firestore-materialization-r5-summary.source-safe.json'
+      - 'tools/release/tya-phase-a-operational-readiness-r9.mjs'
+      - 'tools/release/tya-phase-a-operational-readiness-r9-validate.mjs'
+      - '.github/workflows/cxorbia-phase-a-operational-readiness-r9.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  readiness-no-provider-calls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate R9 fail-closed logic
+        run: node tools/release/tya-phase-a-operational-readiness-r9-validate.mjs --out .tmp/phase-a-operational-readiness-r9-validation/report.json
+      - name: Build current R9 GO-HOLD report
+        run: node tools/release/tya-phase-a-operational-readiness-r9.mjs --out .tmp/phase-a-operational-readiness-r9/report.json
+      - name: Upload sanitized reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-a-operational-readiness-r9
+          path: |
+            .tmp/phase-a-operational-readiness-r9-validation
+            .tmp/phase-a-operational-readiness-r9
+          if-no-files-found: error
+          retention-days: 14

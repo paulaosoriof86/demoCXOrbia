@@ -1,0 +1,93 @@
+name: CXOrbia Corte 6 Auth Mapping Capability Read-Only
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/config/corte6-auth-mapping-capability-readonly-request.json'
+      - 'tools/qa/cxorbia-corte6-auth-mapping-capability-readonly.mjs'
+      - '.github/workflows/cxorbia-corte6-auth-mapping-capability-readonly.yml'
+
+permissions:
+  contents: write
+  statuses: write
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Gate
+        id: gate
+        run: |
+          set -euo pipefail
+          node <<'NODE' >> "$GITHUB_OUTPUT"
+          const r=require('./backend/config/corte6-auth-mapping-capability-readonly-request.json');
+          if(r.schemaVersion!=='cxorbia.corte6.auth-mapping-capability-readonly-request.v1'||r.repository!=='paulaosoriof86/demoCXOrbia'||r.branch!=='docs-tya-v6-v71-audit'||r.firebaseProjectId!=='cxorbia-backend-dev'||r.tenantId!=='tya') throw new Error('identity_mismatch');
+          for(const k of ['providerWrites','authWrites','firestoreWrites','rulesDeploys','hostingDeploys','storageWrites','hrWrites','legacyWrites']) if(r[k]!==0) throw new Error('unsafe:'+k);
+          if(r.production!==false||r.merge!==false||r.piiExported!==false||r.valuesExported!==false||r.secretsExported!==false) throw new Error('unsafe_scope');
+          console.log('execute='+(r.enabled===true&&r.consumed===false&&r.status==='ready'?'true':'false'));
+          NODE
+      - uses: actions/setup-node@v4
+        if: steps.gate.outputs.execute == 'true'
+        with:
+          node-version: '24'
+      - name: Load canonical DEV credential
+        if: steps.gate.outputs.execute == 'true'
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/c6-map-private
+          node <<'NODE'
+          const fs=require('fs');const raw=process.env.EXISTING_DEV_JSON||'';let p=null;try{p=JSON.parse(raw);}catch{}
+          if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.private_key))throw new Error('credential_invalid');
+          fs.writeFileSync('.tmp/c6-map-private/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.tmp/c6-map-private/credentials.json" >> "$GITHUB_ENV"
+      - name: Run read-only mapping capability inventory
+        id: inventory
+        if: steps.gate.outputs.execute == 'true'
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_AUTH_MAPPING_OUT: app/docs/evidence/CORTE6-AUTH-MAPPING-CAPABILITY-READONLY-LATEST.json
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+          node --check tools/qa/cxorbia-corte6-auth-mapping-capability-readonly.mjs
+          node tools/qa/cxorbia-corte6-auth-mapping-capability-readonly.mjs
+      - name: Persist sanitized evidence and freeze
+        if: steps.gate.outputs.execute == 'true' && steps.inventory.outcome == 'success'
+        run: |
+          set -euo pipefail
+          cp app/docs/evidence/CORTE6-AUTH-MAPPING-CAPABILITY-READONLY-LATEST.json /tmp/c6-map.json
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          cp /tmp/c6-map.json app/docs/evidence/CORTE6-AUTH-MAPPING-CAPABILITY-READONLY-LATEST.json
+          node <<'NODE'
+          const fs=require('fs');const p='backend/config/corte6-auth-mapping-capability-readonly-request.json';const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          r.status='consumed_readonly';r.enabled=false;r.consumed=true;r.consumedAt=new Date().toISOString();
+          fs.writeFileSync(p,JSON.stringify(r,null,2)+'\n','utf8');
+          NODE
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/docs/evidence/CORTE6-AUTH-MAPPING-CAPABILITY-READONLY-LATEST.json backend/config/corte6-auth-mapping-capability-readonly-request.json
+          git commit -m 'evidence: auth mapping capability read-only inventory'
+          git push origin HEAD:docs-tya-v6-v71-audit
+      - name: Publish status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          STATE=success;DESC='PASS_C6_AUTH_MAPPING_CAPABILITY_READONLY'
+          if [ '${{ job.status }}' != 'success' ]; then STATE=error;DESC='FAIL_C6_AUTH_MAPPING_CAPABILITY_READONLY'; fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/corte6-auth-mapping-capability/${DESC}" -f description="$DESC" >/dev/null
+      - name: Cleanup
+        if: always()
+        run: rm -rf .tmp/c6-map-private

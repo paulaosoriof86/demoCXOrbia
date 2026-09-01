@@ -1,0 +1,164 @@
+{
+  "schemaVersion": "tya.current-unresolved-shopper-identity.readonly.v1",
+  "generatedAt": "2026-07-30T03:02:57.271Z",
+  "authorizationScope": "READ_ONLY_REAL_IDENTITY_RECONCILIATION_CURRENT_UNRESOLVED",
+  "sources": {
+    "hr": {
+      "currentSourceSafeFile": "app/data/tya-hr-source-safe-current-through-july.js",
+      "readOnly": true,
+      "rawIdentityInMemoryOnly": true
+    },
+    "legacy": {
+      "projectId": "tya-plataforma",
+      "node": "tya_shoppers_extra",
+      "readOnly": true
+    },
+    "canonical": {
+      "projectId": "cxorbia-backend-dev",
+      "tenantId": "tya",
+      "readOnly": true
+    }
+  },
+  "policy": {
+    "realIdentityRequired": true,
+    "nameOnlyAutoMerge": false,
+    "hrOnlyProfileCreateAllowedAsCandidate": true,
+    "hrOnlyProfileCreateRequiresExactWriteAuthorizationAndLiveSourceRecheck": true,
+    "rawPiiInGitHub": false
+  },
+  "counts": {
+    "total": 7,
+    "currentHrIdentityFound": 7,
+    "reuseExisting": 0,
+    "linkLegacyCreate": 2,
+    "createFromCurrentHr": 5,
+    "hold": 0
+  },
+  "decisions": [
+    {
+      "plannedShopperId": "shopper_gt_0c0ba8856e",
+      "action": "CREATE_PROFILE_FROM_CURRENT_HR_IDENTITY_CANDIDATE",
+      "targetShopperId": "shopper_gt_0c0ba8856e",
+      "legacyShopperId": null,
+      "evidence": [
+        "current_hr_real_identity",
+        "no_current_legacy_profile",
+        "no_canonical_profile"
+      ],
+      "hrVisitCount": 1,
+      "currentHrIdentityFound": true,
+      "legacyProfileCandidates": 0,
+      "canonicalNameSurfaceCandidates": 0,
+      "identityFingerprint": "477f74117e88073e5a5bb9ff"
+    },
+    {
+      "plannedShopperId": "shopper_gt_319cd82eaf",
+      "action": "CREATE_PROFILE_FROM_CURRENT_HR_IDENTITY_CANDIDATE",
+      "targetShopperId": "shopper_gt_319cd82eaf",
+      "legacyShopperId": null,
+      "evidence": [
+        "current_hr_real_identity",
+        "no_current_legacy_profile",
+        "no_canonical_profile"
+      ],
+      "hrVisitCount": 2,
+      "currentHrIdentityFound": true,
+      "legacyProfileCandidates": 0,
+      "canonicalNameSurfaceCandidates": 0,
+      "identityFingerprint": "a8c7dbe3104294445f6b9dfb"
+    },
+    {
+      "plannedShopperId": "shopper_gt_a5fec782ee",
+      "action": "LINK_TO_LEGACY_PROFILE_CREATE_CANDIDATE",
+      "targetShopperId": null,
+      "legacyShopperId": "HRSH_CE214C77",
+      "evidence": [
+        "current_hr_real_identity",
+        "current_legacy_exact_identity_hash",
+        "country_compatible"
+      ],
+      "hrVisitCount": 1,
+      "currentHrIdentityFound": true,
+      "legacyProfileCandidates": 1,
+      "canonicalNameSurfaceCandidates": 0,
+      "identityFingerprint": "b6d6abea7c94e4cf524c0050"
+    },
+    {
+      "plannedShopperId": "shopper_gt_c342b8c62e",
+      "action": "CREATE_PROFILE_FROM_CURRENT_HR_IDENTITY_CANDIDATE",
+      "targetShopperId": "shopper_gt_c342b8c62e",
+      "legacyShopperId": null,
+      "evidence": [
+        "current_hr_real_identity",
+        "no_current_legacy_profile",
+        "no_canonical_profile"
+      ],
+      "hrVisitCount": 1,
+      "currentHrIdentityFound": true,
+      "legacyProfileCandidates": 0,
+      "canonicalNameSurfaceCandidates": 0,
+      "identityFingerprint": "9bbadfd13149a7022e3b1c77"
+    },
+    {
+      "plannedShopperId": "shopper_gt_dcc73986b1",
+      "action": "LINK_TO_LEGACY_PROFILE_CREATE_CANDIDATE",
+      "targetShopperId": null,
+      "legacyShopperId": "HRSH_205D3DD2",
+      "evidence": [
+        "current_hr_real_identity",
+        "current_legacy_exact_identity_hash",
+        "country_compatible"
+      ],
+      "hrVisitCount": 1,
+      "currentHrIdentityFound": true,
+      "legacyProfileCandidates": 1,
+      "canonicalNameSurfaceCandidates": 0,
+      "identityFingerprint": "25c79183ed4843697c4dd47a"
+    },
+    {
+      "plannedShopperId": "shopper_hn_7a5a21048b",
+      "action": "CREATE_PROFILE_FROM_CURRENT_HR_IDENTITY_CANDIDATE",
+      "targetShopperId": "shopper_hn_7a5a21048b",
+      "legacyShopperId": null,
+      "evidence": [
+        "current_hr_real_identity",
+        "no_current_legacy_profile",
+        "no_canonical_profile"
+      ],
+      "hrVisitCount": 1,
+      "currentHrIdentityFound": true,
+      "legacyProfileCandidates": 0,
+      "canonicalNameSurfaceCandidates": 0,
+      "identityFingerprint": "e02ff7259f8d3c6f5e0e46bc"
+    },
+    {
+      "plannedShopperId": "shopper_hn_ba49cafa91",
+      "action": "CREATE_PROFILE_FROM_CURRENT_HR_IDENTITY_CANDIDATE",
+      "targetShopperId": "shopper_hn_ba49cafa91",
+      "legacyShopperId": null,
+      "evidence": [
+        "current_hr_real_identity",
+        "no_current_legacy_profile",
+        "no_canonical_profile"
+      ],
+      "hrVisitCount": 1,
+      "currentHrIdentityFound": true,
+      "legacyProfileCandidates": 0,
+      "canonicalNameSurfaceCandidates": 0,
+      "identityFingerprint": "51ef2008d6bfc5c957e87c7e"
+    }
+  ],
+  "safety": {
+    "legacyWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false,
+    "rawNamesExported": false,
+    "rawEmailsExported": false,
+    "rawPhonesExported": false
+  }
+}

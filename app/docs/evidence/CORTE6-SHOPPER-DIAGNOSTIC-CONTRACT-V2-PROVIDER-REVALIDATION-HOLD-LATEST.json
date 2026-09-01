@@ -1,0 +1,155 @@
+{
+  "schemaVersion": "cxorbia.c6.shopper-diagnostic-contract-v2-provider-revalidation.v1",
+  "generatedAt": "2026-08-05T21:45:17-06:00",
+  "decision": "HOLD_C6_DIAGNOSTIC_CONTRACT_V2_STOP_RETRY",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "requestCommitSha": "206c26f777fadeec2c60cbf8d9c509998967f457",
+  "sourceContractCommitSha": "ceb5646400c61631eb2d8d469343360647c45f65",
+  "workflowRunId": 31069282511,
+  "workflowJobId": 92513630516,
+  "artifactId": 8955017770,
+  "artifactDigest": "sha256:ffdf8643726d4f8c0c63484790a3b71c2f0a8b4ac04be604e700b829304aff09",
+  "source": {
+    "profiles": 340,
+    "authUsers": 110,
+    "memberships": 1,
+    "credentials": 109,
+    "credentialsMapped": 101,
+    "credentialsUnmapped": 8,
+    "credentialCrosswalkParity": true,
+    "hrImportDocs": 1,
+    "visits": 616,
+    "certifications": 77,
+    "liquidations": 827,
+    "latestPeriod": "2026-07",
+    "recentFloor": "2026-05"
+  },
+  "surnameCompletion": {
+    "preConsensusIncompleteActiveProfiles": 83,
+    "completedByConsensus": 71,
+    "remainingIncompleteActiveProfiles": 12,
+    "metricIdentityValid": true
+  },
+  "surnameHolds": {
+    "count": 12,
+    "profileFingerprints": [
+      "cc941934f90032aa48e8",
+      "9ed0cdabf3794b7ccf21",
+      "3451d618b5d6307b87da",
+      "80d716626b85e14778ea",
+      "8aea97650e97902f7616",
+      "32e2de62067ab6ecfb7b",
+      "b31bdc0c7514acbe25ba",
+      "4a59de15805804cbe398",
+      "cfbd0c519e59f40c6239",
+      "540c9e6b71440b393365",
+      "c01e0f344901f03e78d2",
+      "729eb0480d5ec2266a20"
+    ],
+    "commonDiagnosticVector": {
+      "first": {"complete": true, "candidateCount": 1, "basisCount": 1},
+      "surname": {
+        "complete": false,
+        "explicitCandidateCount": 0,
+        "technicalLoginCandidateCount": 0,
+        "consensusCandidateCount": 0,
+        "basisCount": 0,
+        "conflict": false
+      },
+      "passwordSeed": {"complete": true, "candidateCount": 1, "basisCount": 1}
+    },
+    "classification": "FIRST_AND_PASSWORD_SEED_COMPLETE__SURNAME_HAS_ZERO_ALLOWED_CANDIDATES_OR_BASES"
+  },
+  "collisionReconciliation": {
+    "namespace": "shopper-visible-login-group-v1",
+    "selection": "same-run classifier groups with verifiedLoginAgreement=true and activeCount>1",
+    "referenceCount": 64,
+    "currentCount": 65,
+    "added": ["ebbcc231fcf415cbaf77"],
+    "removed": [],
+    "unchangedCount": 64,
+    "exactMatch": false,
+    "addedGroup": {
+      "groupFp": "ebbcc231fcf415cbaf77",
+      "activeCount": 2,
+      "keeperSelected": true,
+      "suffixedCount": 1,
+      "suffixLengths": {"4": 1, "6": 0, "8": 0},
+      "unresolvedCount": 0
+    },
+    "classification": "ONE_ADDED_GROUP_SOURCE_SAFE_PROVEN__MEMBER_PROVENANCE_NOT_EXPORTED__DIFFERENCE_UNEXPLAINED"
+  },
+  "multiAuth": {
+    "profilesWithMultipleCandidates": 1,
+    "resolved": 0,
+    "unresolved": 1,
+    "vectorProfileFp": "d15356ed735e87a33e69",
+    "planProfileFp": "7cc28c78de9bfda01d14",
+    "candidateCount": 2,
+    "topScore": 5016,
+    "secondScore": 5016,
+    "scoreMargin": 0,
+    "candidateSignalsIdentical": true,
+    "signalsPerCandidate": {
+      "exactClaims": false,
+      "shopperIdClaim": true,
+      "targetEmailMatch": false,
+      "baseEmailMatch": false,
+      "credentialEmailMatch": false,
+      "passwordCompatible": false,
+      "enabled": true,
+      "emailVerified": true,
+      "providerCreationMetadataPresent": true
+    },
+    "classification": "CONFIRMED_TECHNICAL_TIE_STOP_RETRY"
+  },
+  "plan": {
+    "rows": 340,
+    "uniqueProfileRows": 340,
+    "operationCounts": {
+      "CREATE_AUTH": 81,
+      "UPDATE_AUTH": 46,
+      "NO_OP": 73,
+      "HOLD": 13,
+      "PRESERVE_NO_AUTH": 127
+    },
+    "subchangeCounts": {"email": 39, "password": 14, "claims": 38},
+    "digest": "74f34e3eb8d07df4d12e2f7ddb7514d3b152371fa901deefc2cd305686bde47f",
+    "executable": false,
+    "readyForAuthRepair": false,
+    "partialExecutionAllowed": false
+  },
+  "blockers": [
+    "collision_group_set_drift:+1/-0",
+    "multi_auth_tie:1",
+    "surname_remaining:12"
+  ],
+  "safety": {
+    "providerRevalidationExecutions": 1,
+    "secondAttempt": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "membershipWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "production": false,
+    "rawNamesExported": false,
+    "rawLoginsExported": false,
+    "rawEmailsExported": false,
+    "rawPasswordsExported": false,
+    "uidsExported": false
+  },
+  "nextGate": "SOURCE_ONLY_GROUP_PROVENANCE_AND_RESIDUAL_IDENTITY_CLASSIFICATION_NO_PROVIDER_READ"
+}

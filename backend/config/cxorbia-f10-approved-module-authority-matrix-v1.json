@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "cxorbia.f10.approved-module-authority-matrix.v1.1",
+  "matrixId": "CXORBIA-F10-APPROVED-MODULE-AUTHORITY-20260829-02",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "frozenFunctionalSourceSha": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+  "releaseId": "CXORBIA-PHASE-A-RELEASE-100-FROZEN-20260827-01",
+  "lineageEvidence": "app/docs/evidence/RC15-F8-5-CANONICAL-MODULE-LINEAGE-CERTIFICATION-LATEST.json",
+  "compositionAuthority": "app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json",
+  "f10SourceGateEvidence": "app/docs/evidence/RC15-F10-OPERATIONAL-EVIDENCE-SOURCE-GATE-LATEST.json",
+  "currentSourceComparison": {
+    "functionalHeadVerified": "6392736070dcf34d24f9b27b8bb1d0ecbcf116b0",
+    "base": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "mergeBaseEqualsFrozenFunctionalSource": true,
+    "appModulesChangedAfterFreeze": 0,
+    "appCoreChangedAfterFreeze": 0,
+    "appJsChangedAfterFreeze": 0,
+    "entrypointChangedAfterFreeze": 0,
+    "authorizedF10AdapterSuccessors": 1,
+    "authorizedF10AdapterPath": "app/adapters/tya-canonical-state-semantics-v2.js",
+    "authorizedF10AdapterGitBlob": "941051c96a26017363acfc72f7e88edbe70c68ba",
+    "meaning": "All approved module/core/entrypoint/app.js bytes remain exact. F10 changes only the already-loaded canonical read-model adapter, so KPI semantics are repaired without replacing the approved module family."
+  },
+  "phaseAApprovedLoadedModules": [
+    {"path":"app/modules/dashboard.js","expectedGitBlob":"e879fc3f1dd5a7486762b197346cadd086e1d99d","authority":"M1_APPROVED_EXACT","status":"PRESERVE_EXACT"},
+    {"path":"app/modules/proyectos.js","expectedGitBlob":"68d1ec116fd39a14293ab305a34e895b9c19b77e","authority":"C6_DEPLOYED_APP_TREE","status":"PRESERVE_FROZEN"},
+    {"path":"app/modules/periodos.js","expectedGitBlob":"7987d7186efcaa12f33e4fd11f91ae6e50fd7ad5","authority":"C6_DEPLOYED_APP_TREE","status":"PRESERVE_FROZEN_P1_CONTEXT_LABEL_OPEN"},
+    {"path":"app/modules/historico.js","expectedGitBlob":"bf259b28e871bc6cea991f14ce5560323ef55f9e","authority":"C6_DEPLOYED_EXACT","status":"PRESERVE_EXACT_P1_CONTEXT_LABEL_OPEN"},
+    {"path":"app/modules/hr-source.js","expectedGitBlob":"dcfe3e9f0b5e97fdc0a4af77ba3873854ef545b0","authority":"C6_DEPLOYED_APP_TREE","status":"PRESERVE_FROZEN"},
+    {"path":"app/modules/proyecto-wizard.js","expectedGitBlob":"f46378a1fb79a6355cf39fbf364d2f09398861a6","authority":"FROZEN_FUNCTIONAL_SOURCE_AFTER_COMPOSITION_SUCCESSORS","status":"PRESERVE_FROZEN"},
+    {"path":"app/modules/visitas.js","expectedGitBlob":"d7c65650e4972d438f2641cbcaaff25486fb7f01","authority":"V174_APPROVED_EXACT","status":"PRESERVE_EXACT"},
+    {"path":"app/modules/visita-detalle.js","expectedGitBlob":"ad819a540ae92a076902185d75878ea7e716bc8c","authority":"V174_AND_V161C_EXACT","status":"PRESERVE_EXACT"},
+    {"path":"app/modules/revision-admin.js","expectedGitBlob":"41fcea495c1e23e7ecee43a637b45002124ea3c9","authority":"V174_EXACT_AFTER_V89_RESTORE","status":"PRESERVE_EXACT"},
+    {"path":"app/modules/cuestionario-shopper.js","expectedGitBlob":"a9801776eda4b52d447abaf20c28e2bf4290930d","authority":"C6_DEPLOYED_EXACT","status":"PRESERVE_EXACT"},
+    {"path":"app/modules/postulaciones.js","expectedGitBlob":"f38593885c245841710934971dd335ee5eddf1da","authority":"V174_APPROVED_EXACT","status":"PRESERVE_EXACT"},
+    {"path":"app/modules/shoppers.js","expectedGitBlob":"92f834bb2b7fcf5d8674acb717ce6b4e920c5766","authority":"AUTHORIZED_SUCCESSOR_SLICE_AFTER_C6","successorCommit":"f961253f18c388ae04619bb5175269015c8349c3","status":"PRESERVE_EXACT_SUCCESSOR"},
+    {"path":"app/modules/misvisitas.js","expectedGitBlob":"19feb19b96c7d2f69c3cfed785fdbfcaabd96e2d","authority":"AUTHORIZED_CANONICAL_ROOT_FIX_AFTER_C6","successorCommit":"9d8f44b0fea7f2513018339e54a0bef4ae152ea0","status":"PRESERVE_EXACT_SUCCESSOR"},
+    {"path":"app/modules/beneficios.js","expectedGitBlob":"73e200e57530479637792c89c644fcfdf78b6799","authority":"V182_AND_C6_EXACT","status":"PRESERVE_EXACT"},
+    {"path":"app/modules/tablon.js","expectedGitBlob":"d2eb7784d4b695f863d330f42a6ee6575a87a3f6","authority":"C6_DEPLOYED_APP_TREE","status":"PRESERVE_FROZEN"},
+    {"path":"app/modules/cert.js","expectedGitBlob":"5532109dec5c942c2fa6d520ad0a7e0b7b104034","authority":"C6_DEPLOYED_EXACT","status":"PRESERVE_EXACT"},
+    {"path":"app/modules/documentos.js","expectedGitBlob":"28c302761f22807ed5ebcb1f04cd1d12827652dd","authority":"V174_AND_V161C_EXACT","status":"PRESERVE_EXACT_STORAGE_WRITES_GATED"},
+    {"path":"app/modules/academia.js","expectedGitBlob":"0b42dd790d946d327eb1110b78878e302d51aa6e","authority":"RC_VISUAL_AND_C6_APP_TREE","status":"PRESERVE_FROZEN_ROLE_ROUTES"},
+    {"path":"app/modules/soporte.js","expectedGitBlob":"ab2e67c882a0c94a3efac1d9ef5f2d624fd32c0c","authority":"FROZEN_FUNCTIONAL_SOURCE_LOADED_SUPPORT","status":"PRESERVE_FROZEN"},
+    {"path":"app/modules/operacion-extra.js","expectedGitBlob":"896d1e97af7761209955a0df2cad1dca68820801","authority":"V174_APPROVED_EXACT","status":"PRESERVE_ADMIN_AND_SHOPPER_REPORTS"},
+    {"path":"app/modules/finanzas.js","expectedGitBlob":"623fab9ba1e06c39f83beda610bb771e23910a07","authority":"C6_ROOT_FIX_AFTER_V182","status":"PRESERVE_EXACT"},
+    {"path":"app/modules/cliente.js","expectedGitBlob":"4e5981081bdd01de368c4f412ed476244426634e","authority":"C6_DEPLOYED_EXACT","status":"PRESERVE_EXACT_CLIENT_ROUTE_HOLD_SEPARATE"},
+    {"path":"app/modules/cliente-extra.js","expectedGitBlob":"ca3d2d6b356b3d942ebbb2076625ce0b000e4b64","authority":"V174_APPROVED_EXACT","status":"PRESERVE_REPORTKIT_PROVIDER"},
+    {"path":"app/modules/novedades.js","expectedGitBlob":"3a8a4ac11fe3dfe5bff11c4840f355742bc93375","authority":"V174_APPROVED_EXACT","status":"PRESERVE_EXACT"},
+    {"path":"app/modules/midia.js","expectedGitBlob":"98d901850a437b029abac2ba3e569dc3a9543940","authority":"C6_DEPLOYED_EXACT","status":"PRESERVE_EXACT"},
+    {"path":"app/modules/reservas.js","expectedGitBlob":"ddc54bad9dfc7b242b06d39daf872c9f9b327c80","authority":"C6_DEPLOYED_EXACT","status":"PRESERVE_EXACT_FAIL_CLOSED_WRITES"}
+  ],
+  "loadedFrozenSupportModulesWithoutIndividualPhaseACriticalAuthorityClaim": [
+    {"path":"app/modules/configuracion.js","expectedGitBlob":"3b9d653959045b866432cf4b07309052baba2bba","status":"FROZEN_SOURCE_PRESENT_NOT_INDIVIDUAL_PHASEA_CRITICAL_AUTHORITY"},
+    {"path":"app/modules/saas-console.js","expectedGitBlob":"e5fa0e57083d4affdc044f3c32eeffd1c96980b5","status":"FROZEN_SOURCE_PRESENT_NOT_INDIVIDUAL_PHASEA_CRITICAL_AUTHORITY"},
+    {"path":"app/modules/importador.js","expectedGitBlob":"ad4f6b4621a69aa2cb303f026be6113e8f158ca2","status":"FROZEN_SOURCE_PRESENT_NOT_INDIVIDUAL_PHASEA_CRITICAL_AUTHORITY"},
+    {"path":"app/modules/integraciones.js","expectedGitBlob":"a71fc5bf83ff54df83c90339d0a3c0940167d75a","status":"FROZEN_SOURCE_PRESENT_NOT_INDIVIDUAL_PHASEA_CRITICAL_AUTHORITY"},
+    {"path":"app/modules/automatizaciones.js","expectedGitBlob":"ac456dfb309de43cbc5a25bee3ecf48076a168db","status":"FROZEN_SOURCE_PRESENT_NOT_INDIVIDUAL_PHASEA_CRITICAL_AUTHORITY"},
+    {"path":"app/modules/correo.js","expectedGitBlob":"be3cbf808498de86265410682625a45e57541b97","status":"FROZEN_SOURCE_PRESENT_NOT_INDIVIDUAL_PHASEA_CRITICAL_AUTHORITY"},
+    {"path":"app/modules/marca.js","expectedGitBlob":"bdcf20520d3774b90fd03042cec61f2ade7e0a9d","status":"FROZEN_SOURCE_PRESENT_NOT_INDIVIDUAL_PHASEA_CRITICAL_AUTHORITY"},
+    {"path":"app/modules/diagnostico.js","expectedGitBlob":"23f1bd5b72738d18e78d23a6af77ba2833279d65","status":"FROZEN_SOURCE_PRESENT_NOT_INDIVIDUAL_PHASEA_CRITICAL_AUTHORITY"},
+    {"path":"app/modules/administrabilidad.js","expectedGitBlob":"61a6606af657f9332a24b362748a229cc4a3446f","status":"FROZEN_SOURCE_PRESENT_NOT_INDIVIDUAL_PHASEA_CRITICAL_AUTHORITY"},
+    {"path":"app/modules/rutas.js","expectedGitBlob":"1da95ce4a808dafd7553ad9082056da7009e4920","status":"FROZEN_SOURCE_PRESENT_NOT_INDIVIDUAL_PHASEA_CRITICAL_AUTHORITY"}
+  ],
+  "postPhaseALoadedNotCertifiedAsPhaseAAuthority": [
+    {"path":"app/modules/cliente-insights.js","expectedGitBlob":"87d0a9d0bd06895c937f9d8ee1e0c985248d1b2e","classification":"POST_PHASE_A_NO_APPROVED_DATA_SOURCE","decision":"EXCLUDE_AS_PHASE_A_AUTHORITY"},
+    {"path":"app/modules/clientes.js","expectedGitBlob":"9c3c98605f4fb2e22d66b241607c9dd70c45d159","classification":"POST_PHASE_A_WORKSTREAM","decision":"DO_NOT_CLAIM_PHASE_A_CERTIFICATION"},
+    {"path":"app/modules/comercial.js","expectedGitBlob":"61aaee6432e4a4206b07f8633d158b8d2b2c2271","classification":"POST_PHASE_A_WORKSTREAM","decision":"DO_NOT_CLAIM_PHASE_A_CERTIFICATION"},
+    {"path":"app/modules/crm.js","expectedGitBlob":"6a6ff1c964eff4f25ecaf33b028335bfc62810ee","classification":"POST_PHASE_A_WORKSTREAM","decision":"DO_NOT_CLAIM_PHASE_A_CERTIFICATION"},
+    {"path":"app/modules/marketing.js","expectedGitBlob":"6bfe1b4e3dbed12ead8a88404cdb495dbf1b8e83","classification":"POST_PHASE_A_WORKSTREAM","decision":"DO_NOT_CLAIM_PHASE_A_CERTIFICATION"}
+  ],
+  "f10AuthorizedSuccessorBridgeFiles": [
+    {
+      "path": "app/adapters/tya-canonical-state-semantics-v2.js",
+      "expectedCurrentGitBlob": "941051c96a26017363acfc72f7e88edbe70c68ba",
+      "authority": "F10_AUTHORIZED_OPERATIONAL_EVIDENCE_SUCCESSOR",
+      "sourceCommit": "6392736070dcf34d24f9b27b8bb1d0ecbcf116b0",
+      "sourceGate": "PASS_F10_SOURCE_PATCH_AND_APPROVED_MODULE_LINEAGE_INTACT__PREDEPLOY_HOLD",
+      "semanticRepair": "SEPARATE_DIRECT_HR_OPERATIONAL_EVIDENCE_FROM_PROMOTED_CANONICAL_LIFECYCLE",
+      "deployStatus": "SOURCE_ONLY_NOT_DEPLOYED"
+    }
+  ],
+  "f10ResolvedMisTargetedBridgeHypothesis": [
+    {"path":"app/core/tya-phase-a-source-safe-preview.js","gitBlob":"2ac7e590940d3c6944f6dfb35f45dee2765b0503","versionDrift":false,"decision":"NOT_ACTIVE_PRIMARY_LIVE_PATH_DO_NOT_PATCH_FOR_THIS_INCIDENT"},
+    {"path":"app/core/data.js","gitBlob":"3a679020205617e44126ec586e0022edc70b0512","versionDrift":false,"decision":"PRESERVE_APPROVED_CORE_F10_RUNTIME_FACADE_HANDLES_OPERATIONAL_EVIDENCE"}
+  ],
+  "rules": [
+    "A wrong KPI does not prove an old module version. Check this matrix and live release parity before touching frontend lineage.",
+    "Phase A approved modules must match expectedGitBlob unless an explicit authorized successor incident changes the matrix.",
+    "Post-Phase-A loaded modules are not promoted to Phase A authority by presence in the entrypoint.",
+    "No wholesale frontend restore is authorized.",
+    "F10 HR/KPI semantic repair is focal and does not reset approved module lineage.",
+    "The authorized F10 adapter successor may change read-model semantics while app/modules, app/core, app/app.js and the entrypoint remain exact.",
+    "A source-only F10 successor is not a claim that Hosting serves the new adapter until a deployment gate and explicit authorization complete."
+  ]
+}

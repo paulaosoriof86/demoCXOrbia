@@ -1,0 +1,17 @@
+name: CXOrbia Historical Auth Pre-activation Route Action — INERT M3
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  historical-inert:
+    name: Historical authority inertized
+    runs-on: ubuntu-latest
+    steps:
+      - name: Refuse historical execution
+        run: |
+          echo 'HISTORICAL_INERT_M3: cxorbia-auth-preactivation-route-action.yml'
+          echo 'Historical validation/deploy/Auth execution is retained in Git history only; this workflow has no current mutation authority.'

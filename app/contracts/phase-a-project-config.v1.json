@@ -1,0 +1,66 @@
+{
+  "contractName": "phase-a-project-config",
+  "version": "1.0.0",
+  "status": "draft_contract_no_runtime",
+  "scope": "TyA Phase A controlled operational release",
+  "safety": {
+    "frontendChanges": false,
+    "runtimeConnected": false,
+    "firestoreWrites": false,
+    "deploy": false,
+    "production": false
+  },
+  "identity": {
+    "tenantId": "required",
+    "projectId": "required",
+    "projectName": "required",
+    "country": "required",
+    "currency": "required"
+  },
+  "hrSource": {
+    "enabled": "boolean",
+    "sourceType": ["google_sheet", "csv_import", "manual_preview", "external_source"],
+    "sourceUrl": "configured_per_project",
+    "sheetOrTabPattern": "configured_per_project",
+    "stableRowKey": ["hrRowId", "visitId", "composite_key"],
+    "fields": {
+      "assignedShopper": "mapped_field",
+      "visitDate": "mapped_field",
+      "availableFrom": "mapped_field",
+      "questionnaireLink": "mapped_field_optional",
+      "questionnaireCompletedAt": "mapped_field",
+      "reviewedAt": "mapped_field_optional",
+      "submittedAt": "mapped_field_optional",
+      "paymentStatus": "mapped_field_optional"
+    }
+  },
+  "questionnaire": {
+    "origin": ["internal", "external_platform", "project_general_link", "visit_specific_link_from_hr"],
+    "generalUrl": "optional",
+    "visitLinkField": "optional_mapped_field",
+    "internalAutoDetectCompleted": "boolean",
+    "externalRequiresShopperConfirmation": "boolean"
+  },
+  "reviewAndSubmit": {
+    "reviewEnabled": "boolean",
+    "reviewOwner": ["consultant", "client", "external_provider", "not_applicable"],
+    "reviewWritesToHr": "boolean_with_gate",
+    "submitOwner": ["consultant", "client", "external_provider", "platform", "not_applicable"],
+    "submitDateSource": ["hr", "platform", "not_applicable"],
+    "liquidationGate": ["questionnaire_completed", "review_completed", "submitted", "manual_admin"]
+  },
+  "contacts": {
+    "evidence": { "name": "optional", "whatsapp": "optional", "enabled": "boolean" },
+    "questionnaire": { "name": "optional", "whatsapp": "optional", "enabled": "boolean" },
+    "support": { "name": "optional", "whatsapp": "optional", "enabled": "boolean" },
+    "rescheduleCancel": { "name": "optional", "whatsapp": "optional", "enabled": "boolean" },
+    "payments": { "name": "optional", "whatsapp": "optional", "enabled": "boolean" },
+    "coordination": { "name": "optional", "whatsapp": "optional", "enabled": "boolean" }
+  },
+  "notifications": {
+    "mode": ["make", "whatsapp_api", "whatsapp_web_template", "in_app", "off"],
+    "greenApiAllowed": "boolean_optional_not_required",
+    "fallbackRequired": true,
+    "honestStatusRequired": true
+  }
+}

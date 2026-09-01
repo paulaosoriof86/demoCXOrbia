@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "tya.hr-country-tab-consistency.request.v1",
+  "enabled": true,
+  "mode": "READ_ONLY_COUNTRY_TAB_CONSISTENCY",
+  "providerWrites": 0,
+  "production": false,
+  "merge": false,
+  "triggerNonce": 3
+}

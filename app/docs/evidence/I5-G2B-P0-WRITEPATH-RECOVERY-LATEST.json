@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "cxorbia.g2b.p0-writepath-deploy.recovery-evidence.v1",
+  "generatedAt": "2026-08-21T14:32:12.032Z",
+  "decision": "RECOVERY_NO_PROVIDER_SIDE_EFFECT",
+  "recoveryId": "i5-g2b-p0-writepath-recovery-20260821-02",
+  "originalRequestId": "i5-g2b-p0-writepath-deploy-20260820-01",
+  "sourceFixHeadSha": "1d2cfecba0a89b637398d747a628e549d9823c68",
+  "providerBaseline": {
+    "cloudRunRevision": "cxorbia-live-hr-dev-00010-n78",
+    "hostingReleaseName": "sites/cxorbia-backend-dev/releases/1787196507030000"
+  },
+  "providerAfter": {
+    "cloudRunRevision": "cxorbia-live-hr-dev-00010-n78",
+    "hostingReleaseName": "sites/cxorbia-backend-dev/releases/1787196507030000"
+  },
+  "outcomes": {
+    "build": "skipped",
+    "cloudRun": "skipped",
+    "directSmoke": "skipped",
+    "hosting": "skipped",
+    "hostingSmoke": "skipped",
+    "providerData": "success"
+  },
+  "routeCodes": {
+    "direct": 0,
+    "hosting": 0
+  },
+  "cloudRunChanged": false,
+  "hostingChanged": false,
+  "automaticRetryAllowed": false,
+  "firestoreWrites": 0,
+  "authWrites": 0,
+  "storageWrites": 0,
+  "externalHrWrites": 0,
+  "realDataWrites": 0,
+  "realCredentialWrites": 0,
+  "realPaymentWrites": 0,
+  "rulesWrites": 0,
+  "makeCalls": 0,
+  "geminiCalls": 0,
+  "merge": false,
+  "next": "RECOVERY_RECONCILE_AND_REQUIRE_NEW_EXPLICIT_DECISION"
+}

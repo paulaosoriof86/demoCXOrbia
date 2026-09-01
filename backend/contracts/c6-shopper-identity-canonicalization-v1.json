@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "cxorbia.c6.shopper-identity-canonicalization.v1",
+  "status": "authorized_dev_runtime_contract",
+  "tenantId": "tya",
+  "canonicalProjectId": "cinepolis",
+  "firebaseProjectId": "cxorbia-backend-dev",
+  "visibleCredentialContract": {
+    "username": "nombre.apellido",
+    "usernameNormalization": "lowercase_ascii_without_accents_or_spaces",
+    "password": "Nombre123*",
+    "passwordNormalization": "first_given_name_with_initial_uppercase_and_remaining_lowercase_plus_123_star",
+    "namespace": "shopper",
+    "membershipRequired": false,
+    "authorities": [
+      "Firebase Auth password provider",
+      "custom claims",
+      "tenants/tya/shoppers/{shopperId}"
+    ]
+  },
+  "requiredClaims": {
+    "tenantId": "tya",
+    "projectIds": ["cinepolis"],
+    "role": "shopper",
+    "authNamespace": "shopper",
+    "shopperId": "exact canonical Firestore shopper document id"
+  },
+  "principalSeparation": {
+    "staffNamespace": "staff",
+    "shopperNamespace": "shopper",
+    "sameHumanMayHaveBoth": true,
+    "paulaStaffAndShopperMustRemainDistinct": true,
+    "dedupeByHumanName": false
+  },
+  "classification": {
+    "requiredPopulation": "all Firestore Shopper profiles for tenant TyA",
+    "categories": [
+      "ACTIVE_ELIGIBLE",
+      "ACTIVE_HOLD",
+      "HISTORICAL",
+      "HISTORICAL_PRESERVED_NO_CURRENT_SIGNAL",
+      "INACTIVE"
+    ],
+    "activeSignals": [
+      "explicit active profile state",
+      "existing Shopper Auth principal",
+      "exact mapped legacy credential",
+      "recent visit activity",
+      "active postulation or application"
+    ],
+    "eligibilityRequires": [
+      "exact shopperId",
+      "deterministic first name",
+      "deterministic surname",
+      "unique canonical login",
+      "no Auth identity collision",
+      "no target email collision"
+    ]
+  },
+  "writePolicy": {
+    "environment": "DEV",
+    "idempotent": true,
+    "createMissingAuth": true,
+    "normalizeExistingInternalEmail": true,
+    "normalizePassword": true,
+    "replaceClaimsWithRequiredClaims": true,
+    "membershipWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "production": false,
+    "merge": false,
+    "stopRetryOnCollisionOrFailure": true
+  },
+  "privacy": {
+    "rawNamesInRepository": false,
+    "rawVisibleLoginsInEvidence": false,
+    "rawPasswordsInRepositoryOrEvidence": false,
+    "internalEmailsInEvidence": false,
+    "uidsInEvidence": false,
+    "tokensInEvidence": false
+  }
+}

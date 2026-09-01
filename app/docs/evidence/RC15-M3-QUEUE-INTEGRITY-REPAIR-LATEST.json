@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "cxorbia.rc15.m3.queue-integrity-repair.v1",
+  "generatedAt": "2026-08-25T19:30:00-06:00",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "m3MechanismEpoch": "RC15-M3-MECHANISM-20260825-02",
+  "sourceHeadBefore": "f164110bfe09fc817a451e9e3bb6f4503578c164",
+  "block": "M3_QUEUE_INTEGRITY_REPAIR",
+  "status": "MATERIALIZED_SOURCE_ONLY_GATE_REQUIRED",
+  "phaseA": {"completed": 98, "pending": 2, "total": 100},
+  "defect": {
+    "id": "RC15_M3_FINITE_QUEUE_CARDINALITY_MEMBERSHIP_DRIFT",
+    "declaredResidual": 28,
+    "enumeratedResidualBefore": 27,
+    "rootCause": "The active validator asserted scalar residual counts but did not validate finite queue cardinality, uniqueness, arithmetic, or exact membership against the M2-locked residual evidence.",
+    "addedMissing": ["RC15-CP-074", "RC15-CP-078", "RC15-CP-090"],
+    "removedNonResidual": ["RC15-CP-117", "RC15-CP-118"],
+    "enumeratedResidualAfter": 28
+  },
+  "derivation": {
+    "tranche8Residual": 24,
+    "tranche11NewHolds": ["RC15-CP-124", "RC15-CP-125"],
+    "tranche12NewHolds": ["RC15-CP-127", "RC15-CP-130", "RC15-CP-131"],
+    "tranche14NewHolds": ["RC15-CP-142"],
+    "m2ResidualAtM3Start": 30,
+    "completedM3": ["RC15-CP-011", "RC15-CP-142"],
+    "pendingAfterRepair": 28
+  },
+  "validatorHardening": [
+    "pending queue length must equal currentResidualHolds",
+    "pending queue IDs must be unique",
+    "residual arithmetic must equal start minus completed tombstones",
+    "completed tombstone count must match progress",
+    "pending queue membership must equal deterministic M2-locked residual set minus completed tombstones",
+    "completed IDs cannot remain pending",
+    "cross-authority residual counts must agree",
+    "state-sync, continuity and checkpoint validators now derive the residual count dynamically instead of hard-coding 28"
+  ],
+  "progress": {
+    "before": {"completedTombstones": 2, "pending": 28},
+    "after": {"completedTombstones": 2, "pending": 28},
+    "reasonNoScalarDecrease": "This block repairs the control mechanism before the next tombstone materialization; it does not claim backlog consumption."
+  },
+  "safety": {"providerWrites":0,"dataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"rulesWrites":0,"hostingDeploys":0,"cloudRunUpdates":0,"makeCalls":0,"geminiCalls":0,"payments":0,"merge":false,"frontendFunctionalChanges":0},
+  "next": "M3_F1_TOMBSTONE_RC15_CP_108"
+}

@@ -1,0 +1,125 @@
+{
+  "contract": "assignment-sync-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "hrWriteAllowed": false,
+  "authRealAllowed": false,
+  "purpose": "Define safe bidirectional assignment synchronization between platform and HR for postulations, manual assignments and HR-detected assignments without activating runtime.",
+  "collections": {
+    "postulations": "tenants/{tenantId}/projects/{projectId}/postulations/{postulationId}",
+    "assignments": "tenants/{tenantId}/projects/{projectId}/assignments/{assignmentId}",
+    "visits": "tenants/{tenantId}/projects/{projectId}/visits/{visitId}",
+    "syncEvents": "tenants/{tenantId}/projects/{projectId}/syncEvents/{syncEventId}",
+    "syncConflicts": "tenants/{tenantId}/projects/{projectId}/syncConflicts/{conflictId}"
+  },
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "visitId",
+    "hrRowId",
+    "shopperId",
+    "assignmentId",
+    "postulationId",
+    "assignmentSource",
+    "assignmentSyncStatus",
+    "lastSyncedAt"
+  ],
+  "assignmentSources": [
+    "platform_postulation",
+    "platform_manual_admin",
+    "hr_detected",
+    "historical_import_preview",
+    "manual_review"
+  ],
+  "assignmentSyncStatuses": [
+    "not_synced",
+    "pending_make_sync",
+    "synced_from_platform",
+    "synced_from_hr",
+    "sync_disabled_preview_only",
+    "conflict_review_required",
+    "manual_review_required",
+    "cancelled"
+  ],
+  "postulationStatuses": [
+    "pending",
+    "approved",
+    "rejected",
+    "withdrawn",
+    "needs_reschedule_review",
+    "cancelled"
+  ],
+  "actions": {
+    "approvePostulation": {
+      "writesAllowedNow": false,
+      "requires": ["tenantId", "projectId", "visitId", "postulationId", "shopperId"],
+      "sets": {
+        "assignmentSource": "platform_postulation",
+        "assignmentSyncStatus": "pending_make_sync"
+      }
+    },
+    "manualAdminAssignment": {
+      "writesAllowedNow": false,
+      "requires": ["tenantId", "projectId", "visitId", "shopperId", "adminUserId"],
+      "sets": {
+        "assignmentSource": "platform_manual_admin",
+        "assignmentSyncStatus": "pending_make_sync"
+      }
+    },
+    "hrAssignmentDetected": {
+      "writesAllowedNow": false,
+      "requires": ["tenantId", "projectId", "visitId", "hrRowId", "shopperId"],
+      "sets": {
+        "assignmentSource": "hr_detected",
+        "assignmentSyncStatus": "synced_from_hr"
+      }
+    },
+    "markConflict": {
+      "writesAllowedNow": false,
+      "requires": ["tenantId", "projectId", "visitId", "reason"],
+      "sets": {
+        "assignmentSyncStatus": "conflict_review_required"
+      }
+    },
+    "cancelAssignment": {
+      "writesAllowedNow": false,
+      "requires": ["tenantId", "projectId", "visitId", "assignmentId", "reason"],
+      "sets": {
+        "assignmentSyncStatus": "cancelled"
+      }
+    }
+  },
+  "rules": [
+    "A visit assigned from platform must leave available visits immediately in preview/state, and later HR reflection must not duplicate it.",
+    "A visit assigned from HR must leave available visits when detected, unless the same stable assignment already exists from platform.",
+    "Never deduplicate by branch name, shopper display name, date or visual coincidence alone.",
+    "If HR and platform disagree on shopper, visit date, project or hrRowId, create conflict_review_required.",
+    "No silent overwrite is allowed.",
+    "Make sync remains disabled until explicit authorization.",
+    "This contract does not write Firestore or HR."
+  ],
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "shopper", "client", "consultant_partner"],
+    "manualsToUpdate": ["Postulations", "Assignments", "HR Source", "Notifications", "Visit flow"],
+    "coursesToUpdate": ["Ops assignment workflow", "Admin project operation", "Shopper application flow"],
+    "newLessons": [
+      "How postulations become assignments",
+      "How HR and platform avoid duplicate assignment",
+      "What to do when there is an assignment conflict",
+      "What each assignment status means"
+    ]
+  },
+  "hardStops": [
+    "Do not call Make from this contract.",
+    "Do not write HR from this contract.",
+    "Do not write Firestore from this contract.",
+    "Do not overwrite assignment conflicts silently.",
+    "Do not use visual matching as dedupe."
+  ]
+}

@@ -14,6 +14,7 @@ window.CX = window.CX || {};
     if(document.querySelector('script[src="'+src+'"]')) return;
     const s = document.createElement('script');
     s.src = src;
+    s.async = false;
     s.defer = false;
     document.head.appendChild(s);
   }
@@ -24,5 +25,10 @@ window.CX = window.CX || {};
     CX.BACKEND.projectScopeMode = 'adapter-only';
     loadScript('core/backend-resources.js');
     loadScript('core/backend-ai.js');
+    /* F10 authority repair: load the canonical operational authority adapter without
+       enabling any provider write. The HTTP transport remains fail-closed unless an
+       endpoint and explicit command-write gate are configured later. */
+    loadScript('adapters/tya-phase-a-operational-sync-v1.js');
+    loadScript('adapters/cxorbia-command-http-transport-v1.js');
   }
 })();

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "cxorbia.atomic-apply-request.v1",
+  "mode": "focal_text_patch_v1",
+  "requestId": "f10-hosting-predeploy-predicate-fix-20260829-01",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "expectedParentSha": "ca04d8f571b6e4d2568190323b700fb9c2f4616d",
+  "targetPath": ".github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml",
+  "expectedCurrentGitBlobSha": "66bf99149c121728dc923ccc2365a4d931c221c1",
+  "findText": "          must(pre.decision==='PASS_F10_PREDEPLOY_EXACT_SOURCE_BROWSER_AND_MODULE_MATRIX_GATE'&&pre.predeployGatePassed===true&&pre.newF10AdapterDeployed===false,'predeploy_not_pass');",
+  "replaceText": "          must(pre.decision==='PASS_F10_PREDEPLOY_EXACT_SOURCE_BROWSER_AND_APPROVED_MODULE_MATRIX'&&pre.deployAuthorization?.authorized===true&&pre.deployAuthorization?.conditionPredeploySatisfied===true&&pre.deploymentMechanismReadiness?.hostingDeployExecuted===false&&pre.sourceRepair?.gitBlob===process.env.F10_ADAPTER_BLOB&&pre.sourceRepair?.sha256===process.env.F10_ADAPTER_SHA256&&Number(pre.moduleMatrixGate?.mismatches||0)===0,'predeploy_not_pass');",
+  "commitMessage": "fix(f10): align Hosting lane with current predeploy evidence contract",
+  "deploy": false,
+  "merge": false,
+  "production": false,
+  "providerWrites": false,
+  "dataWrites": false
+}

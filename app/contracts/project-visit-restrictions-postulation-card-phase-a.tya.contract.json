@@ -1,0 +1,154 @@
+{
+  "contract": "project-visit-restrictions-postulation-card-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "purpose": "Define configurable project visit restrictions and the minimum data that must be visible in the postulation card before a shopper applies.",
+  "principle": "Cinepolis franja rules are project-specific. Other projects may use age, visit frequency, last visit date, profile, time, day, location or client-specific restrictions.",
+  "projectConfigPath": "tenants/{tenantId}/projects/{projectId}",
+  "projectMeasurementConfig": {
+    "requiredFields": [
+      "visitFrequency",
+      "measurementPeriod",
+      "executionWindow",
+      "restrictionSourceType",
+      "restrictionSourceLabel"
+    ],
+    "visitFrequencyOptions": [
+      "one_time",
+      "weekly",
+      "biweekly",
+      "monthly",
+      "quarterly",
+      "custom"
+    ],
+    "measurementPeriodOptions": [
+      "day",
+      "week",
+      "quincena",
+      "month",
+      "quarter",
+      "custom"
+    ],
+    "restrictionSourceTypes": [
+      "client_requirement",
+      "internal_progress_measurement",
+      "operational_quality_rule",
+      "scenario_requirement",
+      "legal_or_compliance_requirement",
+      "manual_project_exception"
+    ],
+    "cinepolisDefault": {
+      "visitFrequency": "monthly",
+      "measurementPeriod": "quincena",
+      "restrictionSourceType": "client_requirement",
+      "notes": "For Cinepolis, project frequency is monthly and measurement/execution period is quincenal. This comes from client requirement and must remain configurable, not global."
+    }
+  },
+  "visitRestrictionTypes": {
+    "shopperProfile": [
+      "ageRange",
+      "cityOrLocation",
+      "shopperExperienceLevel",
+      "certificationRequired",
+      "documentsRequired",
+      "excludeIfVisitedRecently",
+      "lastVisitMinimumDays",
+      "projectSpecificEligibility",
+      "manualEligibilityReview"
+    ],
+    "visitFrequency": [
+      "maxVisitsPerShopperPerPeriod",
+      "minDaysBetweenSameShopperVisits",
+      "lastVisitDate",
+      "lastVisitProjectId",
+      "lastVisitBranchId",
+      "repeatShopperAllowed",
+      "repeatShopperRequiresApproval"
+    ],
+    "scheduleWindow": [
+      "availableFrom",
+      "availableUntil",
+      "allowedWeekdays",
+      "allowedTimeRanges",
+      "franja",
+      "quincena",
+      "holidayRules",
+      "clientBlackoutDates",
+      "requiresOverrideIfOutsideWindow"
+    ],
+    "scenario": [
+      "scenarioSummary",
+      "scenarioCode",
+      "requiredInteraction",
+      "evidenceRequired",
+      "questionnaireMode",
+      "specialInstructions"
+    ]
+  },
+  "postulationCardRequiredFields": [
+    "tenantId",
+    "projectId",
+    "visitId",
+    "projectName",
+    "clientName",
+    "branchName",
+    "country",
+    "currency",
+    "honorarium",
+    "reimbursement",
+    "scenarioSummary",
+    "projectSummary",
+    "availableFrom",
+    "availableWindowSummary",
+    "franjaOrScheduleRestrictionSummary",
+    "measurementPeriodSummary",
+    "restrictionSourceLabel",
+    "shopperEligibilitySummary",
+    "lastVisitRestrictionSummary",
+    "certificationRequirementSummary",
+    "documentsRequirementSummary",
+    "questionnaireModeSummary",
+    "evidenceRequirementSummary",
+    "applyButtonState",
+    "restrictionWarnings"
+  ],
+  "postulationCardRules": [
+    "The shopper must see honorarium, reimbursement, scenario, project summary and restrictions before applying.",
+    "If a visit has profile restrictions, the postulation card must show them clearly.",
+    "If a date proposal is allowed, the card must show availableFrom, allowed days/time/franja and measurement period.",
+    "If restrictions are client requirements, the card must label them as client requirement.",
+    "If restrictions are internal progress measurement, the card must label them as internal control or operational measurement.",
+    "If eligibility is uncertain, the card must route to manual review rather than silently allow/deny.",
+    "The card must not promise HR synchronization when HR sync gate is off."
+  ],
+  "overrideRules": [
+    "Admin/ops may approve exceptions to profile, frequency or schedule restrictions only with authorizedBy and authorizedReason.",
+    "Exceptions must define whether they affect shopper score or not.",
+    "No automatic shopper penalty until scoring contract is approved."
+  ],
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "shopper", "client", "consultant_partner"],
+    "manualsToUpdate": ["Postulation card", "Project restrictions", "Shopper eligibility", "Visit frequency", "Scenario and honorarium", "Client requirement vs internal measurement"],
+    "coursesToUpdate": ["Shopper applying to visits", "Ops eligibility review", "Admin project restrictions", "Client project configuration"],
+    "newLessons": [
+      "How to read a postulation card",
+      "What visit restrictions mean",
+      "Difference between client requirement and internal measurement",
+      "How visit frequency and last visit restrictions work",
+      "What to do when a shopper is not eligible",
+      "How exceptions are authorized"
+    ]
+  },
+  "hardStops": [
+    "Do not hard-code Cinepolis restrictions globally.",
+    "Do not hide restrictions from the shopper before postulation.",
+    "Do not automatically penalize shoppers until scoring contract is approved.",
+    "Do not write Firestore from this contract.",
+    "Do not show HR sync as active when gate is off."
+  ]
+}

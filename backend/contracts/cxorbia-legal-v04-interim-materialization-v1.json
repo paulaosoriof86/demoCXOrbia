@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "cxorbia.legal-v04-interim-materialization.v1",
+  "status": "source_only_prepared_no_provider_io",
+  "purpose": "Exact one-time DEV bootstrap contract for TyA interim V0.4 legal profile, core provider registry and immutable legal content publication after counsel was explicitly deferred post-go-live by the tenant operator.",
+  "predecessors": [
+    "cxorbia.tenant-legal-nocode-profile.v1",
+    "cxorbia.legal-publication-snapshot.v1",
+    "cxorbia.legal-acceptance-durable.v1"
+  ],
+  "decisionAuthority": {
+    "decisionLock": "app/docs/DECISION-LOCK-TYA-LEGAL-INTERIM-GOLIVE-COUNSEL-DEFERRED-20260816.md",
+    "counselStatus": "deferred_post_golive",
+    "counselReviewed": false,
+    "falseCounselClaimForbidden": true,
+    "humanAcceptanceStillRequired": true,
+    "automaticAcceptance": false
+  },
+  "target": {
+    "projectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "scopeMode": "tenant",
+    "legalContentId": "tya-platform-master-terms",
+    "legalVersion": "tya-legal-bundle-v0.4-interim-golive-20260816",
+    "runtimeCodeMayHardcodeTenantPublicValues": false,
+    "bootstrapRequestMayCarryInitialPublicValues": true,
+    "bootstrapRequestIsNotRuntimeAuthority": true,
+    "providerBecomesAuthorityAfterAck": true
+  },
+  "paths": {
+    "legalProfile": "tenants/{tenantId}/legalProfile/current",
+    "coreProvider": "tenants/{tenantId}/legalProviders/firebase-google-core",
+    "legalContent": "tenants/{tenantId}/legalContents/{legalContentId}",
+    "legalVersion": "tenants/{tenantId}/legalContents/{legalContentId}/versions/{legalVersion}"
+  },
+  "writeBudget": {
+    "allowedExecutions": 1,
+    "firestoreWrites": 4,
+    "legalProfileWrites": 1,
+    "legalProviderWrites": 1,
+    "legalContentWrites": 2,
+    "legalAcceptanceWrites": 0,
+    "authWrites": 0,
+    "passwordResets": 0,
+    "historicalCredentialAccess": 0,
+    "historicalReconciliationWrites": 0,
+    "otherIdentityWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false
+  },
+  "publicationInvariants": {
+    "createOnlyBootstrap": true,
+    "unresolvedPlaceholdersAllowed": false,
+    "internalLegalReviewMarkersAllowed": false,
+    "registeredRestrictedDomicilePublic": false,
+    "contentDigest": "sha256(canonical UTF-8 LF rendered content)",
+    "versionImmutable": true,
+    "providerAckRequired": true,
+    "coreProviderRegistryEntryRequired": true,
+    "coreProviderTechnicalActiveState": true,
+    "activeProviderKey": "firebase-google-core",
+    "counselStatusPersisted": "deferred_post_golive",
+    "interimGoLive": true
+  },
+  "runtimeWiring": {
+    "durableAdapter": "app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js",
+    "providerBridge": "app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js",
+    "publicationProvider": "backend/runtime/cxorbia-legal-publication-provider-v1.mjs",
+    "legacyLocalStorageMayRemainLegalAuthority": false,
+    "humanUiRequiredForAcceptance": true,
+    "technicalRunnerMayAcceptForHuman": false
+  },
+  "nextGate": "PAULA_PROVIDER_WRITE_AND_HUMAN_ACCEPTANCE_RUNTIME_GATE_FOR_I3"
+}

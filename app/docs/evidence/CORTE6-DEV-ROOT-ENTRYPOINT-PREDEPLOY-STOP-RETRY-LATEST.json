@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "cxorbia.c6.dev-root-entrypoint-predeploy-stop-retry.v1",
+  "generatedAt": "2026-08-05T18:39:20Z",
+  "decision": "HOLD_C6_DEV_ROOT_ENTRYPOINT_PREDEPLOY_STOP_RETRY",
+  "p0": {
+    "proven": true,
+    "code": "DEV_ROOT_ENTRYPOINT_CANONICAL_RUNTIME_MISMATCH",
+    "reason": "The human DEV root served app/index.html while accumulated gates opened app/index-backend-dev.html, so the root could present the generic connected-mode block without the authorized backend adapters."
+  },
+  "sourceFix": {
+    "applied": true,
+    "firebaseConfigCommit": "298bb725da3b5d8f4841c93ee4338290470e4862",
+    "rootPath": "/",
+    "canonicalPath": "/index-backend-dev.html",
+    "redirectType": 302,
+    "productModulesChanged": false,
+    "loginChanged": false,
+    "authLogicChanged": false,
+    "businessLogicChanged": false
+  },
+  "permanentGates": {
+    "sourceParity": "tools/qa/tya-c6-dev-root-entrypoint-source-gate.mjs",
+    "remoteParity": "tools/qa/tya-c6-dev-root-entrypoint-remote-parity-gate.mjs",
+    "rootRuntime": "tools/qa/tya-c6-dev-root-runtime-wrapper.mjs",
+    "scenarioLabIncludesSourceParity": true
+  },
+  "sourceStatic": {
+    "decision": "PASS_READONLY_POST_GATES",
+    "compositionDecision": "PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS",
+    "labDecision": "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT",
+    "rootSourceDecision": "PASS_C6_DEV_ROOT_ENTRYPOINT_SOURCE_PARITY",
+    "workflowRunId": 31035432458,
+    "workflowJobId": 92406210890,
+    "artifactId": 8942354869,
+    "artifactDigest": "sha256:d0b75352b58f2723a57bafaae8e9e77b2aef016a2a7c7d5ecc48a45c779d979f",
+    "effectiveFailures": 0,
+    "repositoryUnchanged": true
+  },
+  "hostingExecution": {
+    "workflowRunId": 31035653127,
+    "workflowJobId": 92406957537,
+    "artifactId": 8942474073,
+    "artifactDigest": "sha256:bf3014ddc059b86ae2dde18d397b266b8e5c9f5db92bcf7a3fee13246f30060f",
+    "decision": "FAIL_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME",
+    "failedStage": "predeploy_workflow_shell_parse",
+    "errorCode": "BASH_HEREDOC_TERMINATOR_INDENTATION_INVALID",
+    "errorEvidence": [
+      "here-document delimited by end-of-file; wanted NODE",
+      "syntax error: unexpected end of file"
+    ],
+    "deployAttempted": false,
+    "deploySucceeded": false,
+    "hostingDeploysThisBlock": 0,
+    "automaticSecondDeploys": 0,
+    "rootRuntimeGatesExecuted": false,
+    "remoteRootCorrected": false
+  },
+  "stopRetry": {
+    "applied": true,
+    "hostingRequestEnabled": false,
+    "hostingRequestConsumed": true,
+    "hostingRequestAllowedExecutions": 0,
+    "sourceRequestEnabled": false,
+    "sourceRequestAllowedExecutions": 0,
+    "retryExecuted": false,
+    "newAuthorizationRequired": true
+  },
+  "preserved": {
+    "previousLoginRootFix": true,
+    "phaseAComposition": true,
+    "hrHistory": true,
+    "shoppers": true,
+    "applications": true,
+    "certifications": true,
+    "settlementsPayments": true,
+    "multiTenant": true,
+    "multiProject": true,
+    "finance": true,
+    "clientPortal": true,
+    "shopperPortal": true,
+    "reservations": true,
+    "academia": true
+  },
+  "safety": {
+    "hostingDeploysTotal": 2,
+    "hostingDeploysThisBlock": 0,
+    "hostingDeployAttemptsThisBlock": 0,
+    "additionalDeploysAuthorized": 0,
+    "cloudRunDeploys": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "credentialsExposed": false,
+    "tokensExposed": false,
+    "merge": false,
+    "production": false
+  },
+  "currentConclusion": {
+    "sourceCorrectionReady": true,
+    "sourceStaticPassed": true,
+    "hostingCorrectionLive": false,
+    "humanRootValidationAvailable": false,
+    "phaseAFreezeAllowed": false
+  },
+  "nextExactAction": "Fix only the heredoc terminator indentation in the Execute one Hosting deploy and root-only accumulated gates step of .github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml; repin only that workflow blob; execute source/static; only with PASS and new explicit authorization allow one Hosting DEV deployment, root parity and accumulated root gates; then stop for human validation."
+}

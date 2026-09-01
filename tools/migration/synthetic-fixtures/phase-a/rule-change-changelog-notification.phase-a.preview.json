@@ -1,0 +1,50 @@
+{
+  "sourceSafe": true,
+  "containsRawSensitiveData": false,
+  "isSyntheticOrSanitized": true,
+  "changeEvents": [
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "changeEventId": "change-event-preview-001",
+      "changeLogId": "changelog-preview-001",
+      "ruleSetId": "ruleset-visit-lifecycle-preview-001",
+      "ruleSetVersion": "v1-preview",
+      "ruleSetType": "visit_lifecycle_rules",
+      "changeType": "rule_created_preview",
+      "impactScope": "ops_required_read",
+      "audienceRole": "ops",
+      "changelogStatus": "notification_draft_ready",
+      "notificationPreviewStatus": "notification_draft_preview",
+      "notificationTemplateId": "template-rule-change-preview",
+      "notificationDraftId": "notification-draft-preview-001",
+      "createdByRef": "user-ref-paula-preview",
+      "reviewedByRef": "reviewer-ref-backend-preview",
+      "approvedByRef": "approver-ref-preview",
+      "safeSummary": {
+        "statusLabelRef": "rule-created-preview-not-published"
+      }
+    },
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "changeEventId": "change-event-preview-002",
+      "changeLogId": "changelog-preview-002",
+      "ruleSetId": "ruleset-payment-preview-001",
+      "ruleSetVersion": "v1-preview",
+      "ruleSetType": "liquidation_payment_rules",
+      "changeType": "academy_content_update_required",
+      "impactScope": "academy_required_update",
+      "audienceRole": "finance",
+      "changelogStatus": "academy_update_required",
+      "notificationPreviewStatus": "not_required",
+      "academyUpdateRef": "academy-update-ref-payment-preview-001",
+      "createdByRef": "user-ref-paula-preview",
+      "reviewedByRef": "reviewer-ref-finance-preview",
+      "approvedByRef": "approver-ref-preview",
+      "safeSummary": {
+        "statusLabelRef": "academy-update-required-preview"
+      }
+    }
+  ]
+}

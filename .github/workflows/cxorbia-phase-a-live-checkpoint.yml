@@ -1,0 +1,17 @@
+name: CXOrbia Phase A Live Execution Checkpoint — M3 Canonical Gate — HISTORICAL INERT
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  m3-historical-inert:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Historical M3 gate is closed
+        run: |
+          echo 'M3 is CLOSED/PASS and this historical gate no longer validates post-M3 state.'
+          echo 'Canonical continuation authority is backend/config/cxorbia-phase-a-continuity-lock.json plus the frozen master plan.'
+          echo 'No provider access, mutation, deploy or state transition is performed.'

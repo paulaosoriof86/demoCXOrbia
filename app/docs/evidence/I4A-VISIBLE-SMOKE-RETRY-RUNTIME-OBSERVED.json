@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "cxorbia.i4a.visible-shopper-lifecycle-smoke-retry.evidence.v1",
+  "generatedAt": "2026-08-19T17:14:01.324Z",
+  "gateId": "NEW_AUTH_REQUIRED_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY__SERVICE_WORKER_STABILIZED_HARNESS",
+  "requestId": "cxorbia-i4a-visible-shopper-lifecycle-smoke-retry-20260819-01",
+  "retryOfWorkflowRunId": 32278013553,
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "workflowRunId": 32280348780,
+  "workflowCommitSha": "fd79f36ea15a18d1953c628ca857e3d79f58600f",
+  "sourceHeadSha": "ae2b309947ebcd50642746e4c8908b6f43fc7b7b",
+  "uidFingerprint": "c4dbf93bdffb2721b22afe10d8ee48bbd9e1bea057401964d1cee9cfe84611b5",
+  "shopperIdFingerprint": "cf56f4c34cc84482c8aee1b2d031334751b683f606f68737b75496d9ceb90686",
+  "providerReads": 1,
+  "firestoreProviderReads": 4,
+  "authPasswordUpdates": 1,
+  "loginAttempts": 1,
+  "serviceWorkersBlocked": true,
+  "checkpoints": {
+    "page_ready": {
+      "pass": true,
+      "at": "2026-08-19T17:14:03.748Z"
+    },
+    "firebase_user": {
+      "pass": true,
+      "at": "2026-08-19T17:14:04.092Z"
+    },
+    "shopper_auth_context": {
+      "pass": true,
+      "at": "2026-08-19T17:14:04.176Z"
+    },
+    "membership_verified": {
+      "pass": true,
+      "at": "2026-08-19T17:14:04.393Z"
+    },
+    "app_entered": {
+      "pass": true,
+      "at": "2026-08-19T17:14:06.118Z"
+    },
+    "hr_authority_ready": {
+      "pass": true,
+      "at": "2026-08-19T17:14:11.461Z"
+    }
+  },
+  "surfaces": {
+    "auth": {
+      "role": "shopper",
+      "tenantId": "tya",
+      "projectIds": [
+        "cinepolis"
+      ],
+      "shopperIdPresent": true,
+      "membership": "verified",
+      "appOn": true,
+      "loginHidden": true,
+      "hrAuthority": true,
+      "hrPeriods": 15,
+      "hrVisits": 660
+    }
+  },
+  "pageErrors": [],
+  "consoleErrors": [],
+  "backendWriteAttemptsObserved": 0,
+  "safety": {
+    "historicalShopperAccess": false,
+    "otherIdentitiesModified": 0,
+    "authCreates": 0,
+    "authClaimsWrites": 0,
+    "authDeletes": 0,
+    "firestoreWrites": 0,
+    "postulationSubmits": 0,
+    "certificationSubmits": 0,
+    "reservationWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "merge": false,
+    "production": false,
+    "credentialsExported": false
+  },
+  "decision": "HOLD_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY_PHASE_FAILURE",
+  "failurePhase": "documents",
+  "error": "locator.click: Timeout 30000ms exceeded. Call log:   - waiting for locator('[data-doc]').first()     - locator resolved to <div data-doc=\"d1\"> </div>   - attempting click action     2   waiting for element to be visible, enabled and stable ",
+  "nextGate": "STOP_NO_AUTOMATIC_RETRY"
+}

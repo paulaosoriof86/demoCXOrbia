@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "cxorbia.project-command-provider-policy.v1",
+  "policyId": "CXORBIA-PROJECT-COMMAND-PROVIDER-POLICY-V1",
+  "enabled": false,
+  "status": "BLOCKED_PENDING_PROJECT_SOURCE_AND_DURABILITY_GATES",
+  "allowedTenantIds": ["tya"],
+  "externalProviderWrites": false,
+  "hrWrites": false,
+  "makeCalls": false,
+  "geminiCalls": false,
+  "paymentWrites": false,
+  "activationRequires": [
+    "PROJECT_CONFIG_SCHEMA_PASS",
+    "PROJECT_SOURCE_RESOLVER_PASS",
+    "PROJECT_CREATE_DURABLE_ACK_PASS",
+    "PROJECT_UPDATE_DURABLE_ACK_PASS",
+    "PROJECT_ISOLATION_PASS",
+    "PROJECT_INTERNAL_SOURCE_PASS",
+    "PROJECT_EXTERNAL_SOURCE_PASS",
+    "EXPLICIT_OWNER_AUTHORIZATION"
+  ],
+  "production": false
+}

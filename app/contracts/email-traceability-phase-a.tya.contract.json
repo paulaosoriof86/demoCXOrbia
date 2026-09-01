@@ -1,0 +1,181 @@
+{
+  "contract": "email-traceability-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "emailReadAllowed": false,
+  "emailSendAllowed": false,
+  "oauthAllowed": false,
+  "purpose": "Define configurable email account linking, traceability, message logging, thread association and future provider integration without reading or sending real email.",
+  "collections": {
+    "emailAccounts": "tenants/{tenantId}/emailAccounts/{emailAccountId}",
+    "emailThreads": "tenants/{tenantId}/emailThreads/{threadId}",
+    "emailMessages": "tenants/{tenantId}/emailMessages/{messageId}",
+    "emailOutbox": "tenants/{tenantId}/emailOutbox/{outboxId}",
+    "emailTraceLinks": "tenants/{tenantId}/emailTraceLinks/{traceLinkId}",
+    "emailTemplates": "tenants/{tenantId}/emailTemplates/{templateId}",
+    "emailDeliveryAttempts": "tenants/{tenantId}/emailDeliveryAttempts/{attemptId}",
+    "auditEvents": "tenants/{tenantId}/auditEvents/{eventId}"
+  },
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "emailAccountId",
+    "threadId",
+    "messageId",
+    "outboxId",
+    "traceLinkId",
+    "provider",
+    "providerAccountRef",
+    "providerThreadRef",
+    "providerMessageRef",
+    "relatedEntityType",
+    "relatedEntityId",
+    "direction",
+    "traceStatus",
+    "createdAt",
+    "updatedAt"
+  ],
+  "providersFuture": [
+    "gmail_oauth_future",
+    "microsoft_outlook_oauth_future",
+    "imap_smtp_future",
+    "manual_email_log",
+    "email_forwarding_inbox_future"
+  ],
+  "accountStatuses": [
+    "not_connected",
+    "configured_manual_only",
+    "connection_requested",
+    "oauth_pending_future",
+    "connected_future",
+    "connection_error_future",
+    "disabled",
+    "revoked"
+  ],
+  "traceStatuses": [
+    "draft_log",
+    "manual_logged",
+    "linked_to_entity",
+    "needs_classification",
+    "requires_contact_review",
+    "requires_privacy_review",
+    "ignored_or_archived",
+    "future_synced_from_provider",
+    "future_sent_from_provider",
+    "blocked_by_gate"
+  ],
+  "directions": ["inbound", "outbound", "internal_note", "manual_log"],
+  "relatedEntityTypes": [
+    "postulation",
+    "assignment",
+    "visit",
+    "shopper",
+    "client",
+    "project",
+    "support_ticket",
+    "training_request",
+    "liquidation",
+    "payment",
+    "academy_course",
+    "academy_manual",
+    "general_tenant"
+  ],
+  "configurationRules": [
+    "Email account linking must be configurable per tenant and optionally per project/team.",
+    "Internal email traceability can start as manual log or future connector, depending on authorization.",
+    "TyA may use little email operationally, but internal teams may use email and need traceability.",
+    "Email traceability must associate threads/messages to operational entities when possible.",
+    "No real OAuth, IMAP, SMTP, Gmail or Outlook connection is authorized by this contract.",
+    "Sensitive data must be redacted or protected according to future privacy policy before storage."
+  ],
+  "emailMessageFields": [
+    "tenantId",
+    "projectId",
+    "emailAccountId",
+    "threadId",
+    "messageId",
+    "provider",
+    "providerThreadRef",
+    "providerMessageRef",
+    "direction",
+    "fromRef",
+    "toRefs",
+    "ccRefs",
+    "bccRefsProtected",
+    "subject",
+    "snippet",
+    "bodyStoragePolicy",
+    "attachmentsPolicy",
+    "relatedEntityType",
+    "relatedEntityId",
+    "classification",
+    "traceStatus",
+    "createdBy",
+    "sentAtOrReceivedAt",
+    "createdAt",
+    "updatedAt",
+    "auditTrail"
+  ],
+  "bodyStoragePolicies": [
+    "metadata_only",
+    "snippet_only",
+    "redacted_body_future",
+    "full_body_requires_policy_future",
+    "external_reference_only"
+  ],
+  "attachmentPolicies": [
+    "do_not_store",
+    "metadata_only",
+    "storage_requires_review_future",
+    "external_reference_only"
+  ],
+  "classificationOptions": [
+    "operational_followup",
+    "shopper_support",
+    "client_request",
+    "project_change",
+    "training_request",
+    "payment_or_liquidation",
+    "complaint_or_escalation",
+    "commercial_opportunity",
+    "general_internal",
+    "needs_manual_classification"
+  ],
+  "emailOutboxRules": [
+    "Email outbox is separate from notification outbox but may reference the same eventType and relatedEntity.",
+    "Drafts may be prepared but not sent unless explicit future authorization exists.",
+    "If email provider is not connected, status remains manual_log or blocked_by_gate.",
+    "All email actions must preserve actor, timestamp, related entity and auditTrail."
+  ],
+  "privacyAndSecurityRules": [
+    "Do not store raw sensitive personal data unless policy explicitly allows it.",
+    "Do not store BCC recipients in shopper/client visible contexts.",
+    "Do not ingest email attachments into Storage without explicit policy and antivirus/privacy review.",
+    "Do not expose internal email threads to clients or shoppers unless specifically shared.",
+    "Do not connect personal or production mailboxes during documentation phase."
+  ],
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "client", "consultant_partner"],
+    "manualsToUpdate": ["Email traceability", "Email account configuration", "Manual email logging", "Email privacy", "Operational follow-up by email"],
+    "coursesToUpdate": ["Admin communication traceability", "Ops follow-up channels", "Superadmin tenant integrations", "Privacy and email handling"],
+    "newLessons": [
+      "Why email traceability matters",
+      "How to link an email to a postulation, visit, client or support request",
+      "Difference between manual email log and future provider sync",
+      "What email data can and cannot be stored",
+      "How email relates to notification outbox"
+    ]
+  },
+  "hardStops": [
+    "Do not connect real email accounts from this contract.",
+    "Do not read real emails from this contract.",
+    "Do not send real emails from this contract.",
+    "Do not write Firestore from this contract.",
+    "Do not store full email bodies or attachments without privacy policy.",
+    "Do not expose internal email traces to external users by default."
+  ]
+}

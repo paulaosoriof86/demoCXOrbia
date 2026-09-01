@@ -1,0 +1,159 @@
+{
+  "schemaVersion": "cxorbia.rc15.systemic-audit.control-plane.v4",
+  "generatedAt": "2026-08-21T19:24:30-06:00",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "masterPlanStatus": "FROZEN",
+  "phase": "F0_SYSTEMIC_AUDIT",
+  "status": "IN_PROGRESS",
+  "headBeforeTranche": "0abaa938062fed1a97fd18ed0c3797cdc15e75e2",
+  "masterPlanFreezeValidation": {
+    "decision": "PASS_REPLICATED_FROM_CANONICAL_GIT_IDENTITY",
+    "planGitBlobSha": "48494ebe5fc439aa6d00e6edcf2e78133357e7f3",
+    "planSha256": "2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475",
+    "currentPhase": "F0_SYSTEMIC_AUDIT",
+    "providerMutationAuthorizedNow": false
+  },
+  "tranche": "TRANCHE_9_BACKEND_REQUESTS_HIGH_RISK_CONFIG_AND_LIVE_LEGAL_WRITEPATH",
+  "closedInventories": {
+    "workflowUnion": {"classified":105,"total":105,"closed":true},
+    "githubFirebaseRequests": {"classified":33,"total":33,"closed":true},
+    "backendRequests": {"classified":6,"total":6,"closed":true}
+  },
+  "backendConfigPriorityArtifactsClassifiedThisTranche": 18,
+  "findingsDelta": [
+    {
+      "id": "RC15-CP-111",
+      "classification": "HISTORICAL_CONSUMED_DIRECT_RUNNER_DEPLOY_REQUEST_FAMILY",
+      "surfaces": [
+        "backend/config/c6-direct-trusted-runner-dev-deploy-request.json",
+        "backend/config/c6-direct-trusted-runner-dev-deploy-request-v2.json",
+        "backend/config/c6-direct-trusted-runner-dev-deploy-request-v3.json"
+      ],
+      "evidence": "v1/v2 are disabled+consumed fail-closed with zero deploys; v3 is disabled+consumed terminal PASS after one historical build/deploy. None is current authorization."
+    },
+    {
+      "id": "RC15-CP-112",
+      "classification": "HISTORICAL_CONSUMED_IAM_REQUESTS_FAIL_CLOSED",
+      "surfaces": [
+        "backend/config/c6-iam-admin-runtime-identity-create-request-v1.json",
+        "backend/config/c6-iam-visibility-temporary-security-reviewer-request-v1.json"
+      ],
+      "evidence": "Both are disabled+consumed; administrative credential/create path and temporary reviewer path ended before IAM mutation."
+    },
+    {
+      "id": "RC15-CP-113",
+      "classification": "HISTORICAL_CONSUMED_CORTE6_PROVIDER_WRITE_REQUEST_EXECUTE_FAMILIES",
+      "surfaces": [
+        "backend/config/corte6-credential-continuity-hosting-request.json",
+        "backend/config/corte6-cumulative-human-visual-hosting-request.json",
+        "backend/config/corte6-cumulative-human-visual-hosting-execute.json",
+        "backend/config/corte6-dev-root-entrypoint-hosting-execute.json",
+        "backend/config/corte6-human-full-visual-redeploy-request.json",
+        "backend/config/corte6-human-full-visual-execute.json",
+        "backend/config/corte6-profile-full-firestore-write-request-v2.json",
+        "backend/config/corte6-profile-full-firestore-write-execute-v2.json",
+        "backend/config/corte6-protected-session-continuity-hosting-execute.json"
+      ],
+      "evidence": "All inspected artifacts are disabled+consumed terminal historical events. Several record prior Hosting/Cloud Run/Firestore writes, but none expresses current one-shot execution authority. F2 must normalize inconsistent historical budget/authorization fields."
+    },
+    {
+      "id": "RC15-CP-114",
+      "classification": "HISTORICAL_CONSUMED_C6_AUTH_ACTIVATION_FAMILY",
+      "surfaces": [
+        "backend/config/c6-auth-activation-dev-request-v1.json",
+        "backend/config/c6-auth-plan-v4-activation-dev-request-v3.json",
+        "backend/config/c6-auth-principal-uniqueness-activation-dev-phase2-request-v1.json"
+      ],
+      "evidence": "All are disabled+consumed. Two stopped before writes; V4 records its historical one-shot Auth activation and terminal STOP_RETRY smoke state. No current execution authorization."
+    },
+    {
+      "id": "RC15-CP-115",
+      "classification": "HISTORICAL_CONSUMED_PREPROD_PROJECT_CREATE_HOSTING_REQUEST_FAIL_CLOSED",
+      "surface": "backend/config/i5-preprod-provision-hosting-uat-request-v1.json",
+      "evidence": "disabled+consumed, no automatic retry, project create failed, projectCreatesSucceeded=0, hostingDeploys=0."
+    },
+    {
+      "id": "RC15-CP-116",
+      "classification": "BACKEND_REQUESTS_DIRECTORY_CLOSED_HISTORICAL_TERMINAL",
+      "surfaces": [
+        "backend/requests/i3-5b-provider-exact-crosswalk-one-target.json",
+        "backend/requests/i3-5c2-period-independent-link-materialization.json",
+        "backend/requests/i3-8-new-shopper-provider-backed.json",
+        "backend/requests/i3-9-10-11-visible-login-close.json",
+        "backend/requests/i3-9-created-shopper-readonly-e2e.json",
+        "backend/requests/i3-legal-v04-materialization-dev.json"
+      ],
+      "evidence": "6/6 are disabled+consumed/superseded terminal historical requests. Historical writes are recorded where applicable; no automatic retry remains."
+    },
+    {
+      "id": "RC15-CP-117",
+      "classification": "CONTROL_PLANE_LEDGER_COVERAGE_GAP",
+      "surface": "backend/config/cxorbia-consumed-one-shot-gates.json",
+      "evidence": "Current canonical consumed ledger contains only six I5-era request entries while F0 has now proven many earlier consumed C6/Corte6/I3 write-capable requests outside that ledger. Policy is fail-closed for listed entries but ledger coverage is not globally exhaustive.",
+      "residualHold": false,
+      "requiredTreatment": "F2_CANONICAL_LEDGER_COVERAGE_AND_LINEAGE_NORMALIZATION"
+    },
+    {
+      "id": "RC15-CP-118",
+      "classification": "CONTROL_PLANE_ALIAS_EPOCH_STALE_NON_EXECUTING",
+      "surface": "backend/config/cxorbia-evidence-aliases.json",
+      "evidence": "Alias policy is non-executing and forbids reruns, but alias syncEpoch remains production-cutover epoch 47 while continuity lock is epoch 50. This is documentary/control-plane drift, not execution authority.",
+      "residualHold": false,
+      "requiredTreatment": "F2_ATOMIC_ALIAS_EPOCH_NORMALIZATION"
+    },
+    {
+      "id": "RC15-CP-119",
+      "classification": "P0_PROVEN_CURRENT_DEPLOYED_LEGAL_ACCEPTANCE_WRITE_GATE_SURVIVES_CONSUMED_REQUEST",
+      "surfaces": [
+        "backend/config/i3-legal-v04-runtime-deploy-dev-request.json",
+        "backend/config/i3-legal-v04-runtime-deploy-dev-execute.json",
+        ".github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml@e3200b5e6b0a22284e3318612138d252d820d3ae",
+        ".github/workflows/cxorbia-phase-a-live-hr-runtime-deploy-dev.yml@current",
+        "backend/runtime/hr-live-service/legal-runtime.mjs",
+        "backend/runtime/hr-live-service/server.mjs",
+        "app/adapters/cxorbia-legal-runtime-http-v1.js",
+        "firebase.json",
+        "backend/config/cxorbia-phase-a-continuity-lock.json"
+      ],
+      "proof": [
+        "Historical I3 deploy workflow explicitly updated Cloud Run with CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_ENABLED=true and gate PAULA_DEV_DEPLOY_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_RUNTIME.",
+        "The terminal I3 request identifies the deployed revision as cxorbia-live-hr-dev-00010-n78, status consumed_pass_human_acceptance_pending, and futureHumanLegalAcceptanceWriteBudget=1.",
+        "Current continuity lock proves the current Cloud Run revision is still cxorbia-live-hr-dev-00010-n78; no later Cloud Run revision replaced it.",
+        "Current legal-runtime source accepts POST /api/tenants/tya/legal/commands and commits one provider-backed legalAcceptance when those runtime env gates are enabled and a real authenticated human confirms.",
+        "Current firebase.json rewrites /api/tenants/** to cxorbia-live-hr-dev and the current browser adapter exposes the explicit human acceptance action in protected DEV.",
+        "The historical request is consumed, but the execute marker remains enabled=true/consumed=false; the current shared deploy workflow now fails closed on an I3 marker because it requires the G2-B recovery execute file as the sole changed file. Thus replay deploy is blocked, but the already-deployed runtime write gate remains live independently of request consumption."
+      ],
+      "currentRisk": "A real authenticated human acceptance click can still enter a Firestore legalAcceptance write path backed by historical runtime authorization rather than the current RC15 continuity lock.",
+      "providerMutationObservedThisTranche": false,
+      "residualHold": true,
+      "p0Proven": true,
+      "containmentAuthorizedNow": false,
+      "requiredContainment": "EXPLICIT_CURRENT_CONVERSATION_PROVIDER_AUTHORIZATION_REQUIRED_TO_DISABLE_LEGAL_ACCEPTANCE_WRITE_ENV_GATE_ON_EXISTING_CLOUD_RUN_AND_VERIFY_READBACK_WITHOUT_OTHER_WRITES",
+      "f0MayContinueReadOnly": true
+    }
+  ],
+  "coverage": {
+    "classifiedFindings": 119,
+    "holdDiscoveriesCumulative": 26,
+    "containedHolds": 1,
+    "currentResidualHolds": 25,
+    "allWorkflowsClassified": true,
+    "allWorkflowDispatchClassified": true,
+    "allRequestsClassified": false,
+    "allProviderWriteEntrypointsClassified": false,
+    "exhaustivenessFlagsTrue": 2,
+    "exhaustivenessFlagsTotal": 4,
+    "inventoryCursor": "TRANCHE_9_BACKEND_REQUESTS_CLOSED_HIGH_RISK_BACKEND_CONFIG_AND_LIVE_LEGAL_WRITEPATH"
+  },
+  "safety": {
+    "providerWritesThisTranche": 0,
+    "dataWritesThisTranche": 0,
+    "deploysThisTranche": 0,
+    "recoveryExecuted": false,
+    "syntheticStageExecuted": false,
+    "merge": false,
+    "frontendFunctionalChanges": 0
+  },
+  "decision": "P0_PROVEN_CONTINUE_F0_READONLY_AND_REQUIRE_SEPARATE_EXPLICIT_AUTHORIZATION_FOR_PROVIDER_CONTAINMENT",
+  "next": "CONTINUE_BACKEND_CONFIG_REQUEST_EXECUTE_AND_PROVIDER_ENTRYPOINT_INVENTORY_READONLY_WHILE_P0_119_CONTAINMENT_REMAINS_UNAUTHORIZED"
+}

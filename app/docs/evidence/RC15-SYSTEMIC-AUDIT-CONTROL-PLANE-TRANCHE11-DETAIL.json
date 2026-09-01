@@ -1,0 +1,117 @@
+{
+  "schemaVersion": "cxorbia.rc15.systemic-audit.control-plane.tranche11.v1",
+  "generatedAt": "2026-08-22T11:27:00-06:00",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "masterPlanStatus": "FROZEN",
+  "masterPlanGitBlobSha": "48494ebe5fc439aa6d00e6edcf2e78133357e7f3",
+  "masterPlanSha256": "2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475",
+  "phase": "F0_SYSTEMIC_AUDIT",
+  "inputHead": "119ab3b4980c89c414fc050162c61a983a509c58",
+  "phaseA": {"completed":98,"pending":2,"total":100},
+  "progressBefore": {"classifiedFindings":119,"holdDiscoveriesCumulative":26,"containedHolds":2,"currentResidualHolds":24,"exhaustivenessFlagsTrue":2},
+  "progressAfter": {"classifiedFindings":125,"holdDiscoveriesCumulative":28,"containedHolds":2,"currentResidualHolds":26,"exhaustivenessFlagsTrue":2},
+  "closedSubdomains": {
+    "deployedHrLiveHttpMutationRouters": "3/3 classified",
+    "hrLiveServiceTree": "8/8 files classified for execution role",
+    "toolsProduction": "2/2 classified",
+    "toolsDev": "1/1 classified",
+    "toolsBackend": "4/4 classified",
+    "empalmeTopLevelExecutableScripts": "2/2 classified"
+  },
+  "findings": [
+    {
+      "id": "RC15-CP-120",
+      "surface": "backend/runtime/hr-live-service/user-admin.mjs",
+      "classification": "PASS_CURRENT_PRODUCT_PROVIDER_WRITE_ENTRYPOINT_TENANT_AND_SUPER_GUARDED",
+      "status": "PASS",
+      "evidence": [
+        "POST /api/tenants/{tenantId}/admin/users/{uid} can create/update Auth + Firestore userDirectory/users mirror",
+        "DELETE can delete the same bounded user identity/profile documents",
+        "Firebase ID token verification is mandatory",
+        "token tenant must equal URL tenant",
+        "role set must include super",
+        "allowed roles are bounded"
+      ],
+      "treatment": "Preserve as intended product functionality. F2 must keep product authorization distinct from release/control-plane authorization; no continuity-lock gate is required per user action."
+    },
+    {
+      "id": "RC15-CP-121",
+      "surface": "backend/runtime/hr-live-service/server.mjs + legal-runtime.mjs + g2b-synthetic-runtime.mjs",
+      "classification": "PASS_DEPLOYED_HTTP_MUTATION_SURFACE_BOUNDED_AND_CLASSIFIED",
+      "status": "PASS",
+      "evidence": [
+        "non-GET mutation routing is limited to user-admin, legal-runtime and g2b-synthetic-runtime handlers",
+        "all other non-GET requests fall through to 405 METHOD_NOT_ALLOWED",
+        "legal write route is CP119-contained and current provider returns 423 before auth",
+        "G2-B synthetic route is gated by exact env/gate/request identity and current CP119 provider readback contains no CXORBIA_G2B_SYNTHETIC_* envs"
+      ],
+      "treatment": "Deployed HR live HTTP mutation subdomain is closed for F0. Revalidate G2-B provider state in F3 before any future recovery."
+    },
+    {
+      "id": "RC15-CP-122",
+      "surface": "tools/production",
+      "classification": "PASS_PROVIDER_WRITE_PRIMITIVE_AND_READONLY_VALIDATOR_CLASSIFIED",
+      "status": "PASS_WITH_F2_CONTROL_REQUIREMENT",
+      "evidence": [
+        "directory has exactly cxorbia-hosting-rest-deploy.mjs and validate-production-promotion-gates.js",
+        "hosting REST tool can create/finalize/release a Hosting version only when invoked with caller-supplied access token; dry-run performs no provider write",
+        "promotion validator only reads canonical JSON/files and exits fail-closed"
+      ],
+      "treatment": "F2 must require canonical caller authority before any credential/token reaches the Hosting write primitive. Source primitive alone is not execution authority."
+    },
+    {
+      "id": "RC15-CP-123",
+      "surface": "tools/dev + tools/backend",
+      "classification": "PASS_LOCAL_STATIC_AND_CONTRACT_TOOLING_READONLY",
+      "status": "PASS",
+      "evidence": [
+        "tools/dev contains only cxorbia-static-preview-server.mjs and binds localhost 127.0.0.1 with file reads only",
+        "tools/backend contains two contract/scan scripts and two PowerShell wrappers; no provider mutation entrypoint is present in these directories"
+      ],
+      "treatment": "No F1 action required."
+    },
+    {
+      "id": "RC15-CP-124",
+      "surface": "tools/empalme/tya-apply-post-v96-source-lock.sh",
+      "classification": "HOLD_HISTORICAL_UNGATED_SOURCE_MUTATION_AND_PUSH_TOOL",
+      "status": "HOLD",
+      "evidence": [
+        "requires only current branch docs-tya-v6-v71-audit plus repository history/artifacts",
+        "rewrites app runtime files including app/core and app/modules from historical V96/delta content",
+        "configures git identity, commits and pushes HEAD directly to the live branch",
+        "does not validate current master plan, continuity lock, consumed ledger or current explicit authorization"
+      ],
+      "risk": "Manual or credentialed invocation can regress live source despite current source lock and F0/F1/F2 authority model.",
+      "treatment": "F1 inertize/tombstone this historical direct source writer while preserving evidence; do not execute it."
+    },
+    {
+      "id": "RC15-CP-125",
+      "surface": "tools/empalme/tya-apply-v105-internal-v106-runtime.sh + backend/config/phase-a-v105-v106-empalme-request.source-safe.json",
+      "classification": "HOLD_HISTORICAL_SOURCE_MATERIALIZER_WITH_STALE_AUTHORIZED_REQUEST",
+      "status": "HOLD",
+      "evidence": [
+        "request dated 2026-07-11 still has authorized=true and authorizedBy=Paula with no consumed/expiry terminal state",
+        "script accepts that historical authorization plus CXORBIA_CONFIRM and can replace 70 runtime paths and apply an 18-file historical delta on the live branch working tree",
+        "script itself does not push/provider-write, but its source mutation authority is not bound to the current frozen plan/continuity lock"
+      ],
+      "risk": "Historical authorization remains semantically reusable for source materialization outside current control-plane authority.",
+      "treatment": "F1 terminalize the request and inert historical materializer execution authority; preserve artifacts as evidence."
+    }
+  ],
+  "reconciliations": [
+    "legal acceptance provider primitive maps to CP119 containment and is not a new P0",
+    "G2-B synthetic runtime/provider maps to existing G2-B hold and is not duplicated",
+    "shopper provider primitive maps to consumed/fail-closed CP110 request",
+    "visit lifecycle provider primitive maps to previously consumed I4B lifecycle gate",
+    "c6-direct-trusted-runner is provider-read-only and not a write entrypoint"
+  ],
+  "exhaustiveness": {
+    "allWorkflowsClassified": true,
+    "allWorkflowDispatchClassified": true,
+    "allRequestsClassified": false,
+    "allProviderWriteEntrypointsClassified": false
+  },
+  "safety": {"providerWrites":0,"dataWrites":0,"authWrites":0,"firestoreWrites":0,"storageWrites":0,"hrWrites":0,"cloudBuilds":0,"cloudRunUpdates":0,"hostingDeploys":0,"rulesWrites":0,"makeCalls":0,"geminiCalls":0,"paymentWrites":0,"g2bExecutions":0,"merge":false,"frontendFunctionalChanges":0},
+  "decision": "F0_PROGRESS_SUBDOMAINS_CLOSED_TWO_HISTORICAL_SOURCE_AUTHORITY_HOLDS_ADDED_NO_MUTATION",
+  "next": "F0_RC15_SYSTEMIC_AUDIT_CONTINUE_REMAINING_BACKEND_CONFIG_AND_PROVIDER_ENTRYPOINTS"
+}

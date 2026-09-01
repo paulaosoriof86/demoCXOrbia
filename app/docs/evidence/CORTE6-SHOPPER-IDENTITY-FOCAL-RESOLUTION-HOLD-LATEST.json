@@ -1,0 +1,143 @@
+{
+  "schemaVersion": "cxorbia.c6.shopper-identity-focal-resolution-hold.v1",
+  "generatedAt": "2026-08-06T00:26:24.935Z",
+  "decision": "HOLD_C6_SHOPPER_IDENTITY_RESOLUTION_REVIEW",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "sourceStatic": {
+    "decision": "PASS_READONLY_POST_GATES",
+    "compositionDecision": "PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS",
+    "labDecision": "PASS_TYA_DEV_SCENARIO_LAB_SOURCE_CONTRACT",
+    "runId": 31059576130,
+    "jobId": 92484349960,
+    "artifactId": 8951552902,
+    "artifactDigest": "sha256:5ae40b1a338d9594ffc3368477673677f2462ddd14e0e2b2d313dbf0b6e5311a"
+  },
+  "review": {
+    "runId": 31059688423,
+    "jobId": 92484697881,
+    "artifactId": 8951593943,
+    "artifactDigest": "sha256:fcaba14c38c2fcc1014563ac0edadc33bd40370511189dd01d511f5ff6176326",
+    "requestCommitSha": "e484f21b88fc0d240844750df8d31e3f75aa9ade",
+    "targetHeadSha": "d9169397d415e9234c08d5cfd62c11993f8023a8",
+    "profilesReviewed": 340,
+    "authUsersReviewed": 110,
+    "credentialRecordsReviewed": 109,
+    "hrImportDocsReviewed": 1,
+    "visitsReviewed": 616,
+    "providerReads": true,
+    "providerWrites": false
+  },
+  "baselineReconciliation": {
+    "historicalReference": {
+      "credentialRecords": 109,
+      "missingAuth": 21,
+      "loginExceptions": 30,
+      "passwordExceptions": 28
+    },
+    "current": {
+      "credentialRecords": 109,
+      "mapped": 101,
+      "unmapped": 8,
+      "missingAuth": 21,
+      "loginExceptions": 16,
+      "passwordExceptions": 18,
+      "mappedMissingAuth": 13,
+      "mappedLoginExceptions": 8,
+      "mappedPasswordExceptions": 10
+    },
+    "credentialPartitionComplete": true,
+    "missingAuthSetComplete": true,
+    "loginExceptionSetComplete": true,
+    "passwordExceptionSetComplete": true,
+    "basis": "fingerprint_set_membership_not_rigid_aggregate_equality"
+  },
+  "paulaResolution": {
+    "staffCandidates": 1,
+    "shopperCandidates": 2,
+    "resolution": "RESOLVED_ACTIVE_PROFILE_VS_HISTORICAL_BY_TECHNICAL_ACTIVITY",
+    "activeCandidate": {
+      "statusActive": true,
+      "statusInactive": false,
+      "visits": 0,
+      "hrLinks": 0,
+      "credentialCount": 1,
+      "authCount": 0,
+      "canonicalNameComplete": true,
+      "canonicalNameBasis": "exact_profile_surname",
+      "score": 220
+    },
+    "historicalCandidate": {
+      "statusActive": false,
+      "statusInactive": false,
+      "visits": 6,
+      "hrLinks": 0,
+      "credentialCount": 0,
+      "authCount": 0,
+      "canonicalNameComplete": true,
+      "canonicalNameBasis": "exact_bound_full_name",
+      "score": 30
+    }
+  },
+  "unresolved": {
+    "profiles": 241,
+    "remainingCollisionCount": 110,
+    "canonicalLoginCollisionGroups": 109,
+    "canonicalLoginCollisionProfiles": 238,
+    "groupSizeDistribution": {
+      "2": 94,
+      "3": 11,
+      "4": 3,
+      "5": 1
+    },
+    "multipleAuthCandidateProfiles": 1,
+    "canonicalNameIncompleteProfiles": 3
+  },
+  "nonOverlappingPlan": {
+    "rows": 340,
+    "CREATE_AUTH": 6,
+    "UPDATE_AUTH": 2,
+    "NO_OP": 10,
+    "HOLD": 241,
+    "PRESERVE_NO_AUTH": 81,
+    "subchangeEmail": 2,
+    "subchangePassword": 1,
+    "subchangeClaims": 1,
+    "planDigest": "ec16fb653bb8bf57a499b1ddc26ed8e64bd32ddb3d3debfac9eef6f2882efc40"
+  },
+  "diagnosis": {
+    "code": "VISIBLE_LOGIN_CONTRACT_COLLISION_POPULATION_REQUIRES_TECHNICAL_GROUP_RESOLUTION",
+    "priorFalseIncompleteNameHoldsRemoved": true,
+    "detail": "Exact bound profile names exposed 109 nombre.apellido collision groups covering 238 profiles. No group had a shared technical anchor sufficient for automatic merge. The visible-login contract cannot be materialized safely until each group is classified as duplicate historical profiles or distinct active people requiring a deterministic tenant-approved disambiguation rule."
+  },
+  "stopRetry": {
+    "applied": true,
+    "requestConsumed": true,
+    "automaticRetry": false,
+    "authRepairBlocked": true,
+    "deployBlocked": true
+  },
+  "safety": {
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "membershipWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "rawNamesExported": false,
+    "rawLoginsExported": false,
+    "rawPasswordsExported": false,
+    "uidsExported": false,
+    "merge": false,
+    "production": false
+  },
+  "nextExactBlock": "Source-safe technical group classification for the 109 visible-login collision groups, the one multiple-Auth profile and the three incomplete names. Resolve active-versus-historical aliases first; identify any truly distinct active people sharing nombre.apellido and stop for the minimum tenant disambiguation decision before every write."
+}

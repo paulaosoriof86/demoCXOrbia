@@ -1,0 +1,34 @@
+{
+  "contract": "local-output-checklist-phase-a-tya",
+  "date": "2026-07-05",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "storageWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "emailSendAllowed": false,
+  "whatsappSendAllowed": false,
+  "geminiAllowed": false,
+  "importRealDataAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "reviewAreas": [
+    "file_inventory",
+    "execution_status",
+    "privacy_review",
+    "expected_outputs",
+    "manual_review",
+    "safe_summary",
+    "next_action"
+  ],
+  "allowedDecisions": [
+    "safe_to_summarize",
+    "review_required",
+    "do_not_share",
+    "rerun_required"
+  ],
+  "purpose": "Checklist for reviewing local readiness outputs before sharing or using them."
+}

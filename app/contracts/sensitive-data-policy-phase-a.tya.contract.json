@@ -1,0 +1,126 @@
+{
+  "contract": "sensitive-data-policy-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "storageWritesAllowed": false,
+  "hrWriteAllowed": false,
+  "importRealDataAllowed": false,
+  "emailProviderAllowed": false,
+  "makeEnabled": false,
+  "geminiEnabled": false,
+  "purpose": "Define the Phase A policy for sensitive shopper, payment, email and attachment data before any real source import, Firestore write, Storage upload or provider integration is authorized.",
+  "policyModeForPhaseA": "exclude_or_tokenize_sensitive_fields_until_rules_and_encryption_are_approved",
+  "sensitiveCategories": {
+    "identity": ["dpi", "documentNumber", "passport", "taxId", "fullAddress", "birthDate", "signature"],
+    "banking": ["bankName", "bankAccount", "accountNumber", "iban", "swift", "paymentCredential", "accountHolderDocument"],
+    "legal": ["ndaRaw", "signedContractRaw", "signatureImage", "legalIdScan"],
+    "contact": ["personalEmailRaw", "phoneRaw", "whatsappRaw", "addressRaw"],
+    "communications": ["rawEmailBody", "rawWhatsappBody", "rawAudio", "callRecording"],
+    "attachments": ["rawAttachment", "idScan", "bankStatement", "signedNda", "privateEvidence"]
+  },
+  "allowedOperationalPreviewFields": [
+    "tenantId",
+    "projectId",
+    "shopperId",
+    "shopperDisplayName",
+    "shopperAlias",
+    "country",
+    "city",
+    "status",
+    "certificationStatus",
+    "visitId",
+    "hrRowId",
+    "assignmentId",
+    "periodId",
+    "quincena",
+    "paymentStatus",
+    "honorariumAmount",
+    "reimbursementAmount",
+    "boletoAmount",
+    "comboAmount",
+    "currency",
+    "sourceSafeRef",
+    "sourceLockRef",
+    "createdAt",
+    "updatedAt"
+  ],
+  "forbiddenInRepo": [
+    "raw HR exports with sensitive columns",
+    "bank data",
+    "identity documents",
+    "signed NDA files",
+    "raw email/WhatsApp exports",
+    "private attachments",
+    "real payment receipts with bank details",
+    "API keys or provider secrets"
+  ],
+  "storagePolicy": {
+    "phaseAStorageUploadsAllowed": false,
+    "futurePrivateRoutes": [
+      "tenants/{tenantId}/private/shoppers/{shopperId}/identity/{fileId}",
+      "tenants/{tenantId}/private/shoppers/{shopperId}/banking/{fileId}",
+      "tenants/{tenantId}/private/projects/{projectId}/evidence/{evidenceId}",
+      "tenants/{tenantId}/private/communications/{communicationId}/attachments/{fileId}"
+    ],
+    "requiresSecurityRulesBeforeEnablement": true,
+    "requiresSignedUrlOrRoleCheckedAccess": true,
+    "publicUrlsAllowed": false
+  },
+  "firestorePolicy": {
+    "phaseAFirestoreWritesAllowed": false,
+    "futurePrivateCollections": [
+      "tenants/{tenantId}/privateShoppers/{shopperId}",
+      "tenants/{tenantId}/privatePaymentProfiles/{shopperId}",
+      "tenants/{tenantId}/privateCommunicationBodies/{communicationId}",
+      "tenants/{tenantId}/privateAttachmentRefs/{attachmentId}"
+    ],
+    "requiresRulesReview": true,
+    "requiresRoleClaims": ["super", "admin_restricted", "finance_restricted"],
+    "shopperVisibleSensitiveFieldsAllowed": false
+  },
+  "importPolicy": {
+    "realImportAllowed": false,
+    "firstDevImportRecommendation": "exclude_sensitive_fields",
+    "allowedPreviewInput": "synthetic_or_sanitized_only",
+    "requiredInputMetadata": [
+      "sourceSafe=true",
+      "containsRawSensitiveData=false",
+      "isSyntheticOrSanitized=true"
+    ],
+    "ambiguousOrSensitiveRows": "manual_review_required",
+    "doNotUploadRawSourceFilesToRepo": true
+  },
+  "communicationPolicy": {
+    "emailProviderAgnostic": true,
+    "rawBodiesStoredInPhaseA": false,
+    "traceabilityAllowedFields": ["provider", "userMailboxRef", "messageRef", "threadRef", "sentAt", "receivedAt", "status", "subjectPreview", "templateId"],
+    "forbiddenPreviewFields": ["rawEmailBody", "rawWhatsappBody", "fullRecipientListWithPersonalData", "attachmentsRaw"],
+    "manualFallbackAllowed": true
+  },
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "finance", "shopper", "consultant_partner"],
+    "manualsToUpdate": ["Sensitive data", "Shopper privacy", "Payments without bank exposure", "Evidence and attachments", "Email traceability", "Manual review"],
+    "coursesToUpdate": ["Admin data protection", "Ops safe import", "Finance restricted data", "Shopper privacy basics"],
+    "newLessons": [
+      "Which data must never be uploaded to the repo",
+      "How source-safe preview works",
+      "Why bank and identity data are excluded from Phase A previews",
+      "What shoppers may and may not see",
+      "How manual review protects sensitive data"
+    ]
+  },
+  "hardStops": [
+    "Do not upload raw sensitive source files to the repository.",
+    "Do not import real sensitive data during Phase A without explicit approval and rules review.",
+    "Do not expose bank, identity, NDA or raw attachment data in shopper-visible views.",
+    "Do not store raw email or WhatsApp bodies in preview datasets.",
+    "Do not enable Storage uploads for private attachments until rules and access checks are approved.",
+    "Do not use Gemini on raw sensitive documents without a future approved redaction and review process.",
+    "Do not activate Make payloads that include sensitive fields."
+  ]
+}

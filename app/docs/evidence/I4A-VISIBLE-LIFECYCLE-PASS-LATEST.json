@@ -1,0 +1,16 @@
+{
+  "schemaVersion":"cxorbia.i4a.visible-lifecycle.pass.v1",
+  "syncEpoch":"CXORBIA-20260819-I4A-VISIBLE-LIFECYCLE-PASS-25",
+  "generatedAt":"2026-08-19T11:38:00-06:00",
+  "decision":"PASS_I4A_VISIBLE_SHOPPER_LIFECYCLE",
+  "providerRun":{"workflowRunId":32282507320,"workflowCommitSha":"bbb9ccc8e2784bd1b1cb4ca4fd9552dad034508f","decision":"PASS_I4A_VISIBLE_DEV_SHOPPER_LIFECYCLE_SMOKE_RETRY3_SAFE_GLOBALS"},
+  "identity":{"dedicatedSyntheticNonHistorical":true,"role":"shopper","tenantId":"tya","projectId":"cinepolis","membershipVerified":true},
+  "hrAuthority":{"periods":15,"visits":660,"pass":true},
+  "surfaces":{"documents":{"pass":true,"visibleOpenButtons":4,"viewerVisible":true},"availableVisitsPostulation":{"pass":true,"availableDetailControls":8,"detailVisible":true,"postulationControlVisible":true,"postulationControlDisabled":false,"ownPostulationCount":0},"notifications":{"pass":true,"panelVisible":true,"visibleRows":3,"backendSource":"firestore"},"certification":{"pass":true,"examVisible":false,"pendingSource":true,"fakeApprovalVisible":false}},
+  "checkpoints":{"pageReady":true,"firebaseUser":true,"shopperAuthContext":true,"membershipVerified":true,"appEntered":true,"hrAuthorityReady":true,"documents":true,"availableVisitsPostulation":true,"notifications":true,"certification":true},
+  "safety":{"providerReads":1,"firestoreProviderReads":4,"authPasswordUpdates":1,"loginAttempts":1,"historicalShopperAccess":false,"otherIdentitiesModified":0,"authCreates":0,"authClaimsWrites":0,"authDeletes":0,"firestoreWrites":0,"postulationSubmits":0,"certificationSubmits":0,"reservationWrites":0,"hrWrites":0,"rulesWrites":0,"storageWrites":0,"makeCalls":0,"geminiCalls":0,"paymentWrites":0,"hostingDeploys":0,"cloudRunDeploys":0,"merge":false,"production":false,"credentialsExported":false},
+  "rawEvidence":"app/docs/evidence/I4A-VISIBLE-SMOKE-RETRY3-RUNTIME-OBSERVED.json",
+  "i4aOperationalStatus":"PASS_CLOSED_NO_RERUN",
+  "formalScoring":"No subweight for I4-A is defined in the active Plan; formal Phase A remains 60/40 rather than inventing partial I4 points.",
+  "nextFrontier":"I4B_VISIT_LIFECYCLE_READINESS__NO_PROVIDER_WRITES"
+}

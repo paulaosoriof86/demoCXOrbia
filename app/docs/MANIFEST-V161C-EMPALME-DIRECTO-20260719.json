@@ -1,0 +1,914 @@
+{
+    "schema":  "cxorbia.runtime-manifest.v1",
+    "version":  "V161C",
+    "generatedAt":  "2026-07-19",
+    "repository":  "paulaosoriof86/demoCXOrbia",
+    "branch":  "docs-tya-v6-v71-audit",
+    "headBefore":  "d640b1119e373e303f188bfd87758221ef3b9fae",
+    "candidateZip":  "Prototype development request CXOrbia V161C.zip",
+    "candidateSha256":  "7504b80eed202fff801b1ce39f1028c91dc8446e56670c932042a4fb4a4e74e8",
+    "fileCount":  175,
+    "aggregateSha256":  "7075f70822e3fed8442d62b56e1467fa643facd756aa88258ae2d6d6bdc95cdf",
+    "excludedFromHash":  [
+                             "app/core/build-lock.js"
+                         ],
+    "appliedDelta":  [
+                         "app/app.js",
+                         "app/core/config.js",
+                         "app/core/router.js",
+                         "app/modules/visita-detalle.js",
+                         "app/modules/visitas.js",
+                         "app/REPORTE-DE-CAMBIOS.md"
+                     ],
+    "preserved":  [
+                      "app/core/data.js",
+                      "app/core/store.js",
+                      "app/index.html",
+                      "backend",
+                      "adapters",
+                      "tools",
+                      "contratos",
+                      "fuentes source-safe",
+                      "integraciones",
+                      "overlays",
+                      "documentacion viva",
+                      "CX.data"
+                  ],
+    "files":  [
+                  {
+                      "path":  "app/.gitignore",
+                      "sha256":  "6004b8acd375deead28b62d7fed0db3e38283689d571039a3aaf0a94b21cb5af",
+                      "bytes":  301
+                  },
+                  {
+                      "path":  "app/app.js",
+                      "sha256":  "ba9e98401605769c5c59123610b20798a17c9541c697227ee3b93eff500d7899",
+                      "bytes":  26856
+                  },
+                  {
+                      "path":  "app/contracts/academy-role-learning-phase-a.tya.contract.json",
+                      "sha256":  "adba5c9275d23fa3a610832a0d5ea35560fc217baea8cd8ff876a07347a595f5",
+                      "bytes":  7459
+                  },
+                  {
+                      "path":  "app/contracts/admin-review-phase-a.tya.contract.json",
+                      "sha256":  "7d1266391e955c113b6ee602965627668ed44f62b21cb3fe926b386ee2e5a273",
+                      "bytes":  6785
+                  },
+                  {
+                      "path":  "app/contracts/assignment-sync-conflict-preview-phase-a.tya.contract.json",
+                      "sha256":  "b514f5d638f29f90e3c60d54386df1e24a2b2e1f00e12f43cad3d470bdedadaf",
+                      "bytes":  5549
+                  },
+                  {
+                      "path":  "app/contracts/assignment-sync-phase-a.tya.contract.json",
+                      "sha256":  "39e1e4032e6e6b1d8c822f46521d40c73408df4d26a2859d4aa1c973e7fbb6ef",
+                      "bytes":  4472
+                  },
+                  {
+                      "path":  "app/contracts/auth-claims-phase-a.tya.contract.json",
+                      "sha256":  "ea2e0ae405683f0a7a475e7484c5f7e2617194b45365726b830599880b51cb86",
+                      "bytes":  4397
+                  },
+                  {
+                      "path":  "app/contracts/cinepolis-reimbursements-payment-batch-phase-a.tya.contract.json",
+                      "sha256":  "db1d38a4688e02892fa607414b29774caaf8c2dc9f49666c819c769b53f3eb4a",
+                      "bytes":  5807
+                  },
+                  {
+                      "path":  "app/contracts/claude-candidate-decision-checklist-phase-a.tya.contract.json",
+                      "sha256":  "3a5c2352f51b4e5ef5453468050618f60acc84ae0bd1811f585188cfda53b594",
+                      "bytes":  1160
+                  },
+                  {
+                      "path":  "app/contracts/client-crm-drive-documents-phase-a.tya.contract.json",
+                      "sha256":  "23d82df3f228062de744b84c3e55a041bfe5479b5e906818367bcdffb7861ac9",
+                      "bytes":  5013
+                  },
+                  {
+                      "path":  "app/contracts/controlled-production-matrix-phase-a.tya.contract.json",
+                      "sha256":  "a68fa311fc4f54569a505f88c7f8adf7ea35274419eff1947a633bd0bcde3a08",
+                      "bytes":  2244
+                  },
+                  {
+                      "path":  "app/contracts/crm-external-folder-refs-preview-phase-a.tya.contract.json",
+                      "sha256":  "1eebd9fc8860836f51e8e6b37de4db7fb4f98d9e2ac0653496e6c312e6e48c58",
+                      "bytes":  6833
+                  },
+                  {
+                      "path":  "app/contracts/documental-readiness-accumulated-phase-a.tya.contract.json",
+                      "sha256":  "c22c30b9219b5f49e55a4c9dddc2598625b1736a23d9d2d158e461a94ff41b70",
+                      "bytes":  853
+                  },
+                  {
+                      "path":  "app/contracts/email-provider-agnostic-user-mailbox-phase-a.tya.contract.json",
+                      "sha256":  "32f824373eaa9eb5a1cff5dab80414701b4440ecc1ef21ae75abf11d37bf54e7",
+                      "bytes":  3911
+                  },
+                  {
+                      "path":  "app/contracts/email-traceability-phase-a.tya.contract.json",
+                      "sha256":  "3b5317d93f58a9447d5a5504968aabc762e448cc98d606798b4d7b16b2a904d8",
+                      "bytes":  6233
+                  },
+                  {
+                      "path":  "app/contracts/email-user-mailbox-preview-phase-a.tya.contract.json",
+                      "sha256":  "17141c2d29e5c3803a2bdd79506c19b2353133f18cb8199d25e99d92b0a381fd",
+                      "bytes":  6796
+                  },
+                  {
+                      "path":  "app/contracts/evidence-storage-routing-phase-a.tya.contract.json",
+                      "sha256":  "3a53b9eb63a063eb7dd37c545f0b0a837b4219d10f95ca66addc0aa86888f49c",
+                      "bytes":  1337
+                  },
+                  {
+                      "path":  "app/contracts/firestore-dev-staging.rules.draft",
+                      "sha256":  "1d64a6364500f2351a50e6901d7fa36b804e53b76fc5416e1ef319e7d429539b",
+                      "bytes":  6928
+                  },
+                  {
+                      "path":  "app/contracts/liquidation-cinepolis-source-safe-preview-phase-a.tya.contract.json",
+                      "sha256":  "196e68742e582c074eb860067dc0e4a54e6c90d0422748843d90142a9841563d",
+                      "bytes":  7671
+                  },
+                  {
+                      "path":  "app/contracts/liquidation-payment-phase-a.tya.contract.json",
+                      "sha256":  "5928c5e623ea301b4cfbe756021c22723f1b1f2c72c8818e0ae79679ee93d545",
+                      "bytes":  4490
+                  },
+                  {
+                      "path":  "app/contracts/liquidations-phase-a.tya.contract.json",
+                      "sha256":  "950d5b395d5ae06fbaf2c1073e5987416f3d0680f342ba8c0b457241abef739c",
+                      "bytes":  877
+                  },
+                  {
+                      "path":  "app/contracts/local-command-pack-phase-a.tya.contract.json",
+                      "sha256":  "540dc882b9007c03eeceabf732f7f3343286a1f70f0e7d6de1fd3a69a891a072",
+                      "bytes":  882
+                  },
+                  {
+                      "path":  "app/contracts/local-output-checklist-phase-a.tya.contract.json",
+                      "sha256":  "6e9f2e1a347ba2923f1b110769cad7a03149751b8c003a78180be83d4699116a",
+                      "bytes":  876
+                  },
+                  {
+                      "path":  "app/contracts/local-output-packaging-phase-a.tya.contract.json",
+                      "sha256":  "8d5850c0e74fa18781008dd7621b6f983d594e6ca533e734cc2938ca8fe76033",
+                      "bytes":  972
+                  },
+                  {
+                      "path":  "app/contracts/local-readiness-consistency-phase-a.tya.contract.json",
+                      "sha256":  "78e1e81abf9055578fbf81e4df57ad0f76ccc0e15d36482d29f71ba6e58f5009",
+                      "bytes":  1604
+                  },
+                  {
+                      "path":  "app/contracts/local-readiness-execution-report-phase-a.tya.contract.json",
+                      "sha256":  "98be7fcd698fee54ec6cda825baa5b2bff85c2f0370530f15b0628f3674d532b",
+                      "bytes":  1125
+                  },
+                  {
+                      "path":  "app/contracts/local-readiness-preflight-phase-a.tya.contract.json",
+                      "sha256":  "65378cdd98f8dbdeefe7ce5865237466f42ea0562878a71d03ad789f6ad474f7",
+                      "bytes":  1067
+                  },
+                  {
+                      "path":  "app/contracts/login-entry-options-phase-a.tya.contract.json",
+                      "sha256":  "faa523b1c17cd5506d07fd062dc4fa39ca0905893b9afe3f269e7d77a31f78e9",
+                      "bytes":  3674
+                  },
+                  {
+                      "path":  "app/contracts/master-doc-index-phase-a.tya.contract.json",
+                      "sha256":  "099a31ff29c91ed579a95d38243059ae35d5805ad85cb28bce041d745e915cda",
+                      "bytes":  805
+                  },
+                  {
+                      "path":  "app/contracts/module-academy-sync-gate.tya.contract.json",
+                      "sha256":  "c447733784a54cb0ec89617c75b07b620474501a9882ce37a58bc27384927960",
+                      "bytes":  2205
+                  },
+                  {
+                      "path":  "app/contracts/notification-outbox-phase-a.tya.contract.json",
+                      "sha256":  "2c482385690285dbd101077d49cdfb023efb4995914800d82dcba7b4728c9783",
+                      "bytes":  5426
+                  },
+                  {
+                      "path":  "app/contracts/notification-outbox-preview-phase-a.tya.contract.json",
+                      "sha256":  "102aacba0a15ab428fdecde86a69739c90222fbebf26da0ad13ae488761262c4",
+                      "bytes":  7209
+                  },
+                  {
+                      "path":  "app/contracts/operational-waiting-closure-phase-a.tya.contract.json",
+                      "sha256":  "675866c6ebd8c3a38aa25f12db27b5ef9a89a9592c910f55940558c4558e9989",
+                      "bytes":  1262
+                  },
+                  {
+                      "path":  "app/contracts/p0-operational-copy-scanner.tya.contract.json",
+                      "sha256":  "73a72604fcfcf8070cd75f6c64c68f7376e765728b4e31787e823d6a95b6dcd6",
+                      "bytes":  764
+                  },
+                  {
+                      "path":  "app/contracts/phase-a-adapter-route-map.v1.json",
+                      "sha256":  "9a0cdc1baeda9d96a6fef2abb0731640e0ec9bf1df5f6d630f048cc81ea7344f",
+                      "bytes":  3601
+                  },
+                  {
+                      "path":  "app/contracts/phase-a-communications-review.v1.json",
+                      "sha256":  "01553c95d129a1ebb8191b478bf4861b8614220f4202354d1707da7db12824de",
+                      "bytes":  2583
+                  },
+                  {
+                      "path":  "app/contracts/phase-a-firestore-target-schema.v1.json",
+                      "sha256":  "86aea89be87665eb9385229f45a9995799a57eafd4b6d663f62319e32608b58b",
+                      "bytes":  5006
+                  },
+                  {
+                      "path":  "app/contracts/phase-a-local-readiness-runbook.tya.contract.json",
+                      "sha256":  "14e6f56421398469aacfeb2775efa5ac4a56b80bd6aee460d4d8d3a473463c0a",
+                      "bytes":  1999
+                  },
+                  {
+                      "path":  "app/contracts/phase-a-notification-templates.v1.json",
+                      "sha256":  "2cceba4848c87a3e896afbccadbd479f99929d948e4be580249954ab64c9fe53",
+                      "bytes":  5240
+                  },
+                  {
+                      "path":  "app/contracts/phase-a-project-config.v1.json",
+                      "sha256":  "87a5d88003ce1f9e7dd1b12809d09c65370b1316563e828f053ea6e1e9b6c4d7",
+                      "bytes":  2681
+                  },
+                  {
+                      "path":  "app/contracts/phase-a-readiness-gates.v1.json",
+                      "sha256":  "d5c3bfd3d4a1c44414367c8fd7cee119f6bde94b0ed7ec8e9d5a52b2957742c4",
+                      "bytes":  2503
+                  },
+                  {
+                      "path":  "app/contracts/phase-a-visit-workflow.v1.json",
+                      "sha256":  "c274eb7106ab46dbbd663a284276f8efed06855cd1ada69afed0734342050db1",
+                      "bytes":  2551
+                  },
+                  {
+                      "path":  "app/contracts/postulation-card-dynamic-data-source-phase-a.tya.contract.json",
+                      "sha256":  "462456fc7ae7c72d1a35b71608fbc6d122c34a3582f7878216b498d3fdf84f5c",
+                      "bytes":  6875
+                  },
+                  {
+                      "path":  "app/contracts/postulation-decision-flow-phase-a.tya.contract.json",
+                      "sha256":  "7c7320918bdc8501dc8d29a95f9fbdc4e9822bbb9e969ca034f21f206dd81d58",
+                      "bytes":  1707
+                  },
+                  {
+                      "path":  "app/contracts/postulation-dynamic-form-preview-phase-a.tya.contract.json",
+                      "sha256":  "6102c5f51a8a3eed03fe82580ddc90dd9065bb36e265ce5dc887f83bc4ce0da4",
+                      "bytes":  6271
+                  },
+                  {
+                      "path":  "app/contracts/postulation-management-decision-phase-a.tya.contract.json",
+                      "sha256":  "ee6fc02f408efc6a8be418942c7c4ead55dd0e0bd96cb0ca0cffa0ebf702eae7",
+                      "bytes":  5617
+                  },
+                  {
+                      "path":  "app/contracts/pre-execution-go-no-go-phase-a.tya.contract.json",
+                      "sha256":  "41427182c333f06f0313dff3601fee338f3c831fda7ab3b8291e4060d32f3588",
+                      "bytes":  1008
+                  },
+                  {
+                      "path":  "app/contracts/project-operational-state-phase-a.tya.contract.json",
+                      "sha256":  "9543946ebfc1df02fdb186e1f0e778519bea98d3fd249440a63056366e39970f",
+                      "bytes":  1974
+                  },
+                  {
+                      "path":  "app/contracts/project-tenant-rule-versioning-preview-phase-a.tya.contract.json",
+                      "sha256":  "4ef9bb2b41fe61b5e67e694d48fb137ece8a17f2701be91b45848809e84482f7",
+                      "bytes":  6486
+                  },
+                  {
+                      "path":  "app/contracts/project-visit-restrictions-postulation-card-phase-a.tya.contract.json",
+                      "sha256":  "461118392f60ee6c42a326f24a2b8c1b8242db1e10ae38eae744581709473051",
+                      "bytes":  5612
+                  },
+                  {
+                      "path":  "app/contracts/project-wizard-phase-a.tya.contract.json",
+                      "sha256":  "052708adf55886170d1d892174f3bbe4edb7618f0068e4bf739ee3b85af8c448",
+                      "bytes":  5304
+                  },
+                  {
+                      "path":  "app/contracts/questionnaire-routing-phase-a.tya.contract.json",
+                      "sha256":  "699efc9933d6345db7a01fa6c2fd41472452413ab9b521f5324c491eeb001959",
+                      "bytes":  1843
+                  },
+                  {
+                      "path":  "app/contracts/readiness-map-to-release-snapshot-bridge-phase-a.tya.contract.json",
+                      "sha256":  "decac50d9f5e655e9b82a3ecbb42dd7d539088448a793297d33fc5b9d238f4f8",
+                      "bytes":  2915
+                  },
+                  {
+                      "path":  "app/contracts/release-readiness-sanitized-report-phase-a.tya.contract.json",
+                      "sha256":  "39984a7da989513ac35ea69f9e9b51047c86c18dffaeccc0c5004857f1ec41fd",
+                      "bytes":  2514
+                  },
+                  {
+                      "path":  "app/contracts/release-readiness-snapshot-preview-phase-a.tya.contract.json",
+                      "sha256":  "4cd8c802cce07a6a252c81d4cfbfab49b8c748849717950669748dd701a4ce05",
+                      "bytes":  6999
+                  },
+                  {
+                      "path":  "app/contracts/rule-change-changelog-notification-preview-phase-a.tya.contract.json",
+                      "sha256":  "73decb6137346bfdadd6ec04392ecc3f524d4f19c6ee3a19b1dd517e3209cea5",
+                      "bytes":  6657
+                  },
+                  {
+                      "path":  "app/contracts/safe-audit-bundle-phase-a.tya.contract.json",
+                      "sha256":  "ab0e9dcea118a4a3031501687ba18f88fddc26f5cb026d18266fdd4fadb7cfae",
+                      "bytes":  578
+                  },
+                  {
+                      "path":  "app/contracts/safe-audit-local-orchestrator-phase-a.tya.contract.json",
+                      "sha256":  "e46ecca7dc586ad4fcc519515df8c364436e5c0b49866e54a36345b35443c3fc",
+                      "bytes":  1180
+                  },
+                  {
+                      "path":  "app/contracts/safe-audit-result-normalization-phase-a.tya.contract.json",
+                      "sha256":  "35f7348f39067d4c04879be974dc45259acdfed14dd45c600a2e9dbbca1c81f4",
+                      "bytes":  900
+                  },
+                  {
+                      "path":  "app/contracts/safe-work-queue-while-claude-phase-a.tya.contract.json",
+                      "sha256":  "a364b7afa5f55dfa0cb9b6337a62ad570896708aa2ab01a8e7f2e1014559d319",
+                      "bytes":  1019
+                  },
+                  {
+                      "path":  "app/contracts/sensitive-data-policy-phase-a.tya.contract.json",
+                      "sha256":  "bfea642ec131a069e4b694ae6b0749a3fc43bcee6b0db3edeb8d9ae9126f71ad",
+                      "bytes":  5345
+                  },
+                  {
+                      "path":  "app/contracts/shopper-communication-history-phase-a.tya.contract.json",
+                      "sha256":  "c9238b513a1dba9c943f478ad0304b82267471df8b2e7a0abf07b465f31238ac",
+                      "bytes":  4838
+                  },
+                  {
+                      "path":  "app/contracts/shopper-communication-history-preview-phase-a.tya.contract.json",
+                      "sha256":  "2adf62b9b53989794a46953a9ec305f7e0e6fbc8adda6545f951d6f3efab9865",
+                      "bytes":  7276
+                  },
+                  {
+                      "path":  "app/contracts/shopper-ranking-scoring-preview-phase-a.tya.contract.json",
+                      "sha256":  "a446adfd45d20e36cd6e604bfc74c984cf90b9eff0c564cef00e8566e76774ac",
+                      "bytes":  6377
+                  },
+                  {
+                      "path":  "app/contracts/submitido-hr-driven-phase-a.tya.contract.json",
+                      "sha256":  "eda1b87cbd258a14ee5af34d792f3f88220181305d42061caddaedd8506865fb",
+                      "bytes":  5166
+                  },
+                  {
+                      "path":  "app/contracts/synthetic-input-pack-preview-phase-a.tya.contract.json",
+                      "sha256":  "8354caa4cd0d43f22fcbdc20c75fc781a1e1dcec05616a274db4bc507508fdab",
+                      "bytes":  4471
+                  },
+                  {
+                      "path":  "app/contracts/synthetic-input-pack-readiness-map-phase-a.tya.contract.json",
+                      "sha256":  "ab7a550f8ec4469768ab596700378870a4ff34fd5dad28c47d226186effbb5bf",
+                      "bytes":  2772
+                  },
+                  {
+                      "path":  "app/contracts/tenant-profile-module-entitlements-phase-a.tya.contract.json",
+                      "sha256":  "62558438ddd3bb5111c0f0f08bb2a024ceb3210d94f12fc74e5c0fb7075642e5",
+                      "bytes":  3918
+                  },
+                  {
+                      "path":  "app/contracts/visit-lifecycle-phase-a.tya.contract.json",
+                      "sha256":  "a6845c2f04a67648cfcd40e43164c1dbec5984bddb3aa6142507ef8d2253d7a9",
+                      "bytes":  6761
+                  },
+                  {
+                      "path":  "app/contracts/visit-lifecycle-reservation-preview-phase-a.tya.contract.json",
+                      "sha256":  "8d8ff564df052216b069b643e3d9103879e7f1f674ae66c723bacd74bdb03c66",
+                      "bytes":  6765
+                  },
+                  {
+                      "path":  "app/contracts/visit-reservation-window-phase-a.tya.contract.json",
+                      "sha256":  "63a03b1b6f86fd7430ee5e5303e1cb95963f10e82fa5ea855aa516c2ebd8b187",
+                      "bytes":  8034
+                  },
+                  {
+                      "path":  "app/core/automations.js",
+                      "sha256":  "14f1f45eca3c48d7f55748347b01d29cad46b4e36ecedbe120638b5bb47261a7",
+                      "bytes":  21337
+                  },
+                  {
+                      "path":  "app/core/backend-active-project.js",
+                      "sha256":  "ddeee436e1386d5c856078a0e919a8b2d2231e943a317191f0cf234f5f2007b0",
+                      "bytes":  587
+                  },
+                  {
+                      "path":  "app/core/backend-adapter.compat.v78.disabled.js",
+                      "sha256":  "07e040af1c22f4858241a1ae0fa9df8b70417a8b356ce6c672b3503c4884aa81",
+                      "bytes":  3862
+                  },
+                  {
+                      "path":  "app/core/backend-adapter.v78.disabled.js",
+                      "sha256":  "adc2d08e0b3b17dbf6a1e117cd97292a4c73f601a21a374e0eae10a995af178c",
+                      "bytes":  2743
+                  },
+                  {
+                      "path":  "app/core/backend-ai.js",
+                      "sha256":  "702709e502d964452839c65e33e30ca726b04568831fc3e75593f216a27aa1d4",
+                      "bytes":  3686
+                  },
+                  {
+                      "path":  "app/core/backend-automations.js",
+                      "sha256":  "635481acfd047cf0340c7b5bd4ba71fe7f12a9d832b23c3dc186afac58a6dde5",
+                      "bytes":  4864
+                  },
+                  {
+                      "path":  "app/core/backend-bulletins.js",
+                      "sha256":  "70d9f77e4c027d3d07cf62267b8fec8205d92d343823339275306955cf21a588",
+                      "bytes":  8494
+                  },
+                  {
+                      "path":  "app/core/backend-config.js",
+                      "sha256":  "2aa29b76c627b83437a4c2e5f418153a82d27a949aae5fca748a5f7ebe3b8927",
+                      "bytes":  1762
+                  },
+                  {
+                      "path":  "app/core/backend-config-preview-dev.js",
+                      "sha256":  "22f9bd05d47ae1aec42cb629f9113d98c23b3a546773e4c0b9be241b0f14efc2",
+                      "bytes":  2024
+                  },
+                  {
+                      "path":  "app/core/backend-connection-point.v78.disabled.js",
+                      "sha256":  "689e723abc03e0ae55a72781778efaf60fea6b96ecc159c82a9090c44581d0d0",
+                      "bytes":  1960
+                  },
+                  {
+                      "path":  "app/core/backend-cxdata-finance-read.js",
+                      "sha256":  "39153c66821dab8a4e574b8f9da210ac4686c3306b2e1745b9382d322c60e2ed",
+                      "bytes":  3195
+                  },
+                  {
+                      "path":  "app/core/backend-cxdata-read-guard.js",
+                      "sha256":  "0687fa28f0568c70bfa379787ada44213d08e1abe4b0b3ea68f6144857ad3440",
+                      "bytes":  11535
+                  },
+                  {
+                      "path":  "app/core/backend-data-contract.js",
+                      "sha256":  "5f94a5bfe9b56c2abbbe29e8a429bec1dd552af694164fd97b136c2ad4727302",
+                      "bytes":  1393
+                  },
+                  {
+                      "path":  "app/core/backend-finance-benefits.js",
+                      "sha256":  "d4745c68a1cc4b987ed5605b5db1e328c86a2ec9adbe2706e475c1da4871ecf2",
+                      "bytes":  5603
+                  },
+                  {
+                      "path":  "app/core/backend-firebase.js",
+                      "sha256":  "3c62891a9c2c71d03ab0b8b7798cf135649c014a2e8fa9f12a9d410516c8df5c",
+                      "bytes":  19374
+                  },
+                  {
+                      "path":  "app/core/backend-hr-source-bridge.js",
+                      "sha256":  "461a9862c132000f402c1ea235925c315ac9c768ce43a48336d217d916d3f196",
+                      "bytes":  7051
+                  },
+                  {
+                      "path":  "app/core/backend-operational-actions.js",
+                      "sha256":  "2f0884ef36eeb3b323fb23c75e25648562f74f8114ae5c7e64d86d879a54a005",
+                      "bytes":  12254
+                  },
+                  {
+                      "path":  "app/core/backend-preview-status.js",
+                      "sha256":  "5ecdde56380042cded2bd4f56ab7e3539f793ed368c03868271f042fed8caef9",
+                      "bytes":  5907
+                  },
+                  {
+                      "path":  "app/core/backend-resources.js",
+                      "sha256":  "449a9ce5678350a544f27c850e68cbf5ab04bf53b6a35359f7cf7b355929973b",
+                      "bytes":  2932
+                  },
+                  {
+                      "path":  "app/core/backend-ui-action-bridge.js",
+                      "sha256":  "1f4b1bc9a57b5f5c50872e1e8bf898c21112be0e7d6678a02a1a63f592cfb718",
+                      "bytes":  3443
+                  },
+                  {
+                      "path":  "app/core/backend-v57-extra-config.js",
+                      "sha256":  "90196bd11503207479c92bf379cd01b6393413f8e624b0122c528e401a53666c",
+                      "bytes":  919
+                  },
+                  {
+                      "path":  "app/core/cliente-data.js",
+                      "sha256":  "2c221d76bd2a0a4c44da2a36564cfa3b014855f4aa8c0384c5e026262234df1e",
+                      "bytes":  17211
+                  },
+                  {
+                      "path":  "app/core/config.js",
+                      "sha256":  "94ab3cdd72ab15f081ca6829e43cab5e01628b7073b76ba4b471bf30c1252cb7",
+                      "bytes":  29568
+                  },
+                  {
+                      "path":  "app/core/costos.js",
+                      "sha256":  "93533d54cc16a71ff76cc462daf54a1a3fdf720eaaf8cc13a9bd186d8b3de3a8",
+                      "bytes":  4953
+                  },
+                  {
+                      "path":  "app/core/cx-data-bridge.v78.disabled.js",
+                      "sha256":  "1dbf4d8ad313ac91e232b97c427434c390b37a01471356144af791fb12eef12e",
+                      "bytes":  2548
+                  },
+                  {
+                      "path":  "app/core/data.js",
+                      "sha256":  "14eb15f07e4bff40bc87999ddc937164d5179eaec7baf0ae1377e3fd212fa89b",
+                      "bytes":  49801
+                  },
+                  {
+                      "path":  "app/core/data-source.js",
+                      "sha256":  "a8b17b2800d086e5a6a6a0f8045a1f67d2f79d066bf681642d66f7e4c4d09eb3",
+                      "bytes":  8413
+                  },
+                  {
+                      "path":  "app/core/dedupe.js",
+                      "sha256":  "e0d11c6a8e9f0e352cf73b46e36942583b2b193cd3f1e5c8307ae777ac73c475",
+                      "bytes":  1607
+                  },
+                  {
+                      "path":  "app/core/finanzas-core.js",
+                      "sha256":  "f539d7618618ba7acdadd5d682098628a654bfecefec160831e2ca5ad9cd9726",
+                      "bytes":  10717
+                  },
+                  {
+                      "path":  "app/core/geo.js",
+                      "sha256":  "51115e4d47baf849daebb4cb1a9097fe0c9e6bca3eba620fe9ad0a44ac25bcbc",
+                      "bytes":  7650
+                  },
+                  {
+                      "path":  "app/core/hr.js",
+                      "sha256":  "dd8c069317be6e3aed528b56380c84a808318fcd5263403246dc610320d1e3c0",
+                      "bytes":  6999
+                  },
+                  {
+                      "path":  "app/core/importador.js",
+                      "sha256":  "77a5b691b21835f4d61090fa9fcd75f948af93492c438b9d16b2c2c8de271505",
+                      "bytes":  10418
+                  },
+                  {
+                      "path":  "app/core/liquidacion.js",
+                      "sha256":  "d658181c2c0b28de89307abde95d34ec78a0fca3027f8c5c3c5746bece6fd269",
+                      "bytes":  4609
+                  },
+                  {
+                      "path":  "app/core/manuales-data.js",
+                      "sha256":  "79cf02bf226aae7b2c4d07a676afe139feea7e1fcd530f2686778171f5f45bef",
+                      "bytes":  47803
+                  },
+                  {
+                      "path":  "app/core/notif.js",
+                      "sha256":  "174d076634a6e7b3c371ec01db3a7a0be30a6ad5823bb2f6210b46e4c73fc6f6",
+                      "bytes":  2813
+                  },
+                  {
+                      "path":  "app/core/permissions.js",
+                      "sha256":  "8c56a8454532f37f9667d95b89bc6432817c807d920a46fe36d8ed6e417f15e7",
+                      "bytes":  12258
+                  },
+                  {
+                      "path":  "app/core/production-copy-guard.js",
+                      "sha256":  "a79183c09cf3fa8c87e8f51f03b9aa54fccce7497f4c7249856a941340762d7c",
+                      "bytes":  4790
+                  },
+                  {
+                      "path":  "app/core/programa.js",
+                      "sha256":  "3503cae34e8461d23b011801276645823cc5658347ec05bf78b0be9d694a7490",
+                      "bytes":  8359
+                  },
+                  {
+                      "path":  "app/core/pwa.js",
+                      "sha256":  "9c3ace4c52281443528f7e08b07ffa4ce98cea80eaf46e46e0549354a3d3edd7",
+                      "bytes":  14898
+                  },
+                  {
+                      "path":  "app/core/router.js",
+                      "sha256":  "215880727cf730e11c736f8ec108bbfa9e8f18fd5a15fd74ea1a67100815283d",
+                      "bytes":  21874
+                  },
+                  {
+                      "path":  "app/core/shoppers-store.js",
+                      "sha256":  "8a02b84f6a1ceaf07b7b8174a454475638f7980973d798d6b4cbb208b5fe4321",
+                      "bytes":  7031
+                  },
+                  {
+                      "path":  "app/core/store.js",
+                      "sha256":  "91f44c09bf1ed56d1e5e848a92444fed62be5d24769dabe7875c069f005be0e6",
+                      "bytes":  3233
+                  },
+                  {
+                      "path":  "app/core/topbar.js",
+                      "sha256":  "91aceba3f4ad05c69a1f580cebd47b7986b0ef69089d0d926f169cf61aac8d9b",
+                      "bytes":  13568
+                  },
+                  {
+                      "path":  "app/core/tya-phase-a-liquidation-certification-integrity.js",
+                      "sha256":  "97ae4d5e5a850434dd764e392bc489d8757c1dc552d229ea0152b3e97bed49fa",
+                      "bytes":  15432
+                  },
+                  {
+                      "path":  "app/core/tya-phase-a-period-history-integrity.js",
+                      "sha256":  "0ac51f9ad59d979623e44a1d128e102a1bd7891f862fcc60aac35d7ba6f0a97f",
+                      "bytes":  9899
+                  },
+                  {
+                      "path":  "app/core/tya-phase-a-source-safe-preview.js",
+                      "sha256":  "5a7a8b49cf6e982d71985bbd1973315d1acb2850ee703fd6cb47c0ccc9f7299a",
+                      "bytes":  9785
+                  },
+                  {
+                      "path":  "app/core/tya-phase-a-source-safe-runtime-guard.js",
+                      "sha256":  "f9e27bb163f75ddc75bdab15b3cc382e66214513476b3554befdc1d90aabdcc5",
+                      "bytes":  2885
+                  },
+                  {
+                      "path":  "app/core/ui.js",
+                      "sha256":  "eb22f8c58c72d55d540725caa4c13b8c2ad0365b4648992c2fa04817a5d8320e",
+                      "bytes":  9858
+                  },
+                  {
+                      "path":  "app/core/v91-modules.js",
+                      "sha256":  "8bdc84712569052d35fdb302be2484d58c0424f3efd49c40264aa814369b0369",
+                      "bytes":  1360
+                  },
+                  {
+                      "path":  "app/data/tya-certification-carryover-source-safe.js",
+                      "sha256":  "550bce17a7c3446356ebaf7537abe9c8658368e3b509d4ea48227c9ceec1fffc",
+                      "bytes":  635
+                  },
+                  {
+                      "path":  "app/data/tya-financial-control-source-safe.js",
+                      "sha256":  "c9c12a6a14a1c8cd33e2b57a53c24819a8865870d6ff6850fd76281e1aeb1a34",
+                      "bytes":  797
+                  },
+                  {
+                      "path":  "app/data/tya-hr-source-safe-periods.js",
+                      "sha256":  "5a636aafd72fd68d020b34f34d2d5a9df07687afb4acdb1874de3a5833915943",
+                      "bytes":  816653
+                  },
+                  {
+                      "path":  "app/demo/index.html",
+                      "sha256":  "feb3dbc4c33bc97a2b432216387964c28254f882883d5cbece078f45580070cd",
+                      "bytes":  254293
+                  },
+                  {
+                      "path":  "app/index.html",
+                      "sha256":  "efe18e1da74492dc6ddae3160e085bade288c1367aa58876df6dc1e92fbfe55c",
+                      "bytes":  5553
+                  },
+                  {
+                      "path":  "app/index-backend-dev.html",
+                      "sha256":  "7273c8666c21029fa6006635200dd558fe4d4ff80a2a6d0f90cb9c48833ff250",
+                      "bytes":  6204
+                  },
+                  {
+                      "path":  "app/manifest.webmanifest",
+                      "sha256":  "cb3196c4c901360f35010172610f1b30b449ecc3a78230747b8606bd840de4ee",
+                      "bytes":  510
+                  },
+                  {
+                      "path":  "app/modules/academia.js",
+                      "sha256":  "afbaa83f73877bf74b7d22a4c170d0c37d92645a2e49c05bd481c1e2f7ca4ece",
+                      "bytes":  302292
+                  },
+                  {
+                      "path":  "app/modules/academia-admin-actions.js",
+                      "sha256":  "42b4207bf777216b3e0f948c6cee28b3f54acc279eb44a6adadeca0503ff80b4",
+                      "bytes":  11279
+                  },
+                  {
+                      "path":  "app/modules/academia-create-ai-stable.js",
+                      "sha256":  "ef5da27ca900dcd623d5ede92f43843288edf649ec68f5d00f719699c8d2665c",
+                      "bytes":  6909
+                  },
+                  {
+                      "path":  "app/modules/administrabilidad.js",
+                      "sha256":  "fff04e7eca57aad06c9c9bee5eeedbb605801fee107c61089a41680d47a48761",
+                      "bytes":  17054
+                  },
+                  {
+                      "path":  "app/modules/automatizaciones.js",
+                      "sha256":  "7777dcaa4bd6a3aaeb427d117f082d622194284a383c21120ac982f7049fbb2b",
+                      "bytes":  14756
+                  },
+                  {
+                      "path":  "app/modules/beneficios.js",
+                      "sha256":  "e763ceed1924d5dee69399df575781161c43ff084bb12594b0c8f926d34c6867",
+                      "bytes":  7448
+                  },
+                  {
+                      "path":  "app/modules/cert.js",
+                      "sha256":  "e22f49f781ec6de15d69c1db7286c963ca7346095952f1eed2690d88712252bb",
+                      "bytes":  27218
+                  },
+                  {
+                      "path":  "app/modules/cliente.js",
+                      "sha256":  "8d87217f0bb3751569f0124913ff3aa801569ac5c64775c9c1147fe7accf8712",
+                      "bytes":  34500
+                  },
+                  {
+                      "path":  "app/modules/cliente-extra.js",
+                      "sha256":  "50c6f0f87277f2673a7aee26b8c4c1f9c1ab514e6faff41ef1f4d74b38e3cabc",
+                      "bytes":  14704
+                  },
+                  {
+                      "path":  "app/modules/cliente-insights.js",
+                      "sha256":  "2b32bd6e09354f3e872b01ad59323af93abd588b3f3cad27d4066e9a76d18003",
+                      "bytes":  13936
+                  },
+                  {
+                      "path":  "app/modules/clientes.js",
+                      "sha256":  "5e316172b93f78773ee6c4d4d87a1bc3310e4c0a5eac46f2cfb922a975bd895b",
+                      "bytes":  20966
+                  },
+                  {
+                      "path":  "app/modules/comercial.js",
+                      "sha256":  "116b21039ccd54aca613c0e535981a9a82177dc8d8226fa8927ac5c6a4a58d17",
+                      "bytes":  19117
+                  },
+                  {
+                      "path":  "app/modules/configuracion.js",
+                      "sha256":  "49b1f934a7727a3e385cffd4d843ef6fe6eda223dc5bed84229e96e261e1092a",
+                      "bytes":  57315
+                  },
+                  {
+                      "path":  "app/modules/correo.js",
+                      "sha256":  "58228f2d21ec7e780335a930914bd8dbac8ff42fc08cb9fb985a1034abd27340",
+                      "bytes":  27661
+                  },
+                  {
+                      "path":  "app/modules/crm.js",
+                      "sha256":  "e4bcc4f3e2917b86770cdef77ce44a5901d8b1c68a4eba6296227d8dde1c3d44",
+                      "bytes":  71226
+                  },
+                  {
+                      "path":  "app/modules/cuestionario-shopper.js",
+                      "sha256":  "335e012df4c7755bd997a98c50b3a2589c4b426625cae876b967002e2f816a9e",
+                      "bytes":  9217
+                  },
+                  {
+                      "path":  "app/modules/dashboard.js",
+                      "sha256":  "123599f122d3833249d26004c3996ffa999df4c06f93804b07b3e5f0a12a84f7",
+                      "bytes":  40918
+                  },
+                  {
+                      "path":  "app/modules/diagnostico.js",
+                      "sha256":  "a1170fefa28b381f2ccdcbf595422e006d9ef87276f93489f33acdcc1a61e6c2",
+                      "bytes":  31376
+                  },
+                  {
+                      "path":  "app/modules/documentos.js",
+                      "sha256":  "e8f824e40a346a1764041aa891ba2541686e2a3e6b0941918fdce8f5ef6485f8",
+                      "bytes":  21746
+                  },
+                  {
+                      "path":  "app/modules/finanzas.js",
+                      "sha256":  "2c3cd8789b0b6d76cecea9532b136063eba7f3ee390aff13b45fb43b72c17a66",
+                      "bytes":  71244
+                  },
+                  {
+                      "path":  "app/modules/historico.js",
+                      "sha256":  "05840c1e19b5408689db2ed43eee0be3822e92219d66a4ee7e1339dd5e0b68ee",
+                      "bytes":  7905
+                  },
+                  {
+                      "path":  "app/modules/hr-source.js",
+                      "sha256":  "d91e7dcb6f5f32e8d057c3c3d5f6f1b22863598db81f885fe438347b4c343ce2",
+                      "bytes":  22693
+                  },
+                  {
+                      "path":  "app/modules/importador.js",
+                      "sha256":  "da618a836e8d124f5849dfb305371bef6921e0723c34a0c4abbeb487165d5ffa",
+                      "bytes":  46363
+                  },
+                  {
+                      "path":  "app/modules/integraciones.js",
+                      "sha256":  "9cec20e9a9fdaf6bf0df2dd87d9d19407a5f75f2172190de6ec418052be716af",
+                      "bytes":  21486
+                  },
+                  {
+                      "path":  "app/modules/marca.js",
+                      "sha256":  "552610c7fea98277ef0725dd46cf1ee1218c637bfab79597169c2832cebe61ee",
+                      "bytes":  14900
+                  },
+                  {
+                      "path":  "app/modules/marketing.js",
+                      "sha256":  "8fdad031ba535df07ff33c1616f711f93dc0054ec03366e8ccc1d7e6e61461d2",
+                      "bytes":  19626
+                  },
+                  {
+                      "path":  "app/modules/midia.js",
+                      "sha256":  "5939ababa3d6dc4a22e9911054ee025abbd181c115713756d54bf2fa8aad8625",
+                      "bytes":  15486
+                  },
+                  {
+                      "path":  "app/modules/misvisitas.js",
+                      "sha256":  "3e93e1155ae725fc1e0c8fe34fbe228da223db3b9bab7c2aad1e47270f51a473",
+                      "bytes":  13906
+                  },
+                  {
+                      "path":  "app/modules/novedades.js",
+                      "sha256":  "b95d27d83ae6010ebe5da2ede91f0bf820d64ff26c583b21dc1d44d0140a9ff6",
+                      "bytes":  7856
+                  },
+                  {
+                      "path":  "app/modules/operacion-extra.js",
+                      "sha256":  "8f3761615b4986f25a61a04f11679b89eb3095357bbd53ee0bc476d13a7d00da",
+                      "bytes":  31851
+                  },
+                  {
+                      "path":  "app/modules/periodos.js",
+                      "sha256":  "6988fc687704b542eb57640b59c1d1f6f492880b182cd06fd16d8341e205c4c3",
+                      "bytes":  6783
+                  },
+                  {
+                      "path":  "app/modules/postulaciones.js",
+                      "sha256":  "031e7bc4eb795de18eb1f992f43a8cc8029139ff8a3e0e94764dfa8ef17161c5",
+                      "bytes":  38060
+                  },
+                  {
+                      "path":  "app/modules/proyectos.js",
+                      "sha256":  "2967584a33d25ef80066046343758511d37411486711d770310b7e19a04f9e9c",
+                      "bytes":  16740
+                  },
+                  {
+                      "path":  "app/modules/proyecto-wizard.js",
+                      "sha256":  "c94de7097aa49d30ecbfca0a5ee5283381c2f7a25d62832dbd8bc43853c4cffb",
+                      "bytes":  18079
+                  },
+                  {
+                      "path":  "app/modules/reservas.js",
+                      "sha256":  "0ed0fdb5108f362b89ae6b3ad6a0bfcc531a682057e92b34c679317c4abf1edc",
+                      "bytes":  18685
+                  },
+                  {
+                      "path":  "app/modules/revision-admin.js",
+                      "sha256":  "2b978e4ad0b5196f964b79563d024abae8223df98189ad4c3f0368f35b46b029",
+                      "bytes":  6778
+                  },
+                  {
+                      "path":  "app/modules/rutas.js",
+                      "sha256":  "22191256c4d9cdaedb520350d954cba04c75e479c344e0b0f287fa70c799439c",
+                      "bytes":  4482
+                  },
+                  {
+                      "path":  "app/modules/saas-console.js",
+                      "sha256":  "ff6de6282b15e3e81688c9347964cb484bc74e7320b98fca821ba9fe65795642",
+                      "bytes":  9037
+                  },
+                  {
+                      "path":  "app/modules/shoppers.js",
+                      "sha256":  "94d25f82e6138f8e0e559c4837c5d3ccc0f4f2448d74dd83821ff394f7def17d",
+                      "bytes":  25020
+                  },
+                  {
+                      "path":  "app/modules/soporte.js",
+                      "sha256":  "cf7a281a5ab1aed36c065af946ab0de565f85fa4280dae73f3535ef3d891bf06",
+                      "bytes":  15573
+                  },
+                  {
+                      "path":  "app/modules/tablon.js",
+                      "sha256":  "ee32633748298ca3c7a76be87a50ac36ac2e9640e368595ee56446a504aed144",
+                      "bytes":  7965
+                  },
+                  {
+                      "path":  "app/modules/visita-detalle.js",
+                      "sha256":  "f2beb3a4b3c9a4ee3965f4e46ac064083a357ff9c0f979b12bcd2d90c41c29ba",
+                      "bytes":  13278
+                  },
+                  {
+                      "path":  "app/modules/visitas.js",
+                      "sha256":  "f5037f6005f8ce1845ffff603ed20dd5f3f4988261489cd2ad431caee79b2763",
+                      "bytes":  29593
+                  },
+                  {
+                      "path":  "app/README.md",
+                      "sha256":  "46a31f5075e6d3ae4d7394ed1bb47cc07944e7b6f8a1e723cd7d53b43142a422",
+                      "bytes":  5022
+                  },
+                  {
+                      "path":  "app/REPORTE-DE-CAMBIOS.md",
+                      "sha256":  "9f6462c2518b0988b7dee582a8d24a0c45e2740042ca5bc5c4227c4220bd59e8",
+                      "bytes":  32315
+                  },
+                  {
+                      "path":  "app/styles/layout.css",
+                      "sha256":  "0b311b7cae0d33702ee10806f780c69e5f42904c10959048f3e5811ff17595c1",
+                      "bytes":  24376
+                  },
+                  {
+                      "path":  "app/styles/theme.css",
+                      "sha256":  "9ff569467fcb562312cc50d25f140ef149f6580aa6adccd62de2126ec798e3c4",
+                      "bytes":  11273
+                  },
+                  {
+                      "path":  "app/sw.js",
+                      "sha256":  "de3751081f9ac43129501f902e796224b89d5f72217f3ce20f77317596acf866",
+                      "bytes":  2642
+                  }
+              ]
+}

@@ -1,0 +1,15 @@
+import fs from 'node:fs';import vm from 'node:vm';
+const file=process.argv[2]||'app/adapters/tya-canonical-shopper-portal-v2.js';const src=fs.readFileSync(file,'utf8');
+const assertions=[];const assert=(name,ok,detail=null)=>{assertions.push({name,ok,detail});if(!ok)process.exitCode=1;};
+assert('syntax_constructable',(()=>{try{new vm.Script(src,{filename:file});return true;}catch(e){return e.message;}})()===true,null);
+assert('exact_identity_map_used',src.includes('CX.data?.__identityMap')&&src.includes('canonicalId'),null);
+assert('full_history_not_one_per_state',src.includes('data.visitsForShopper(s.id,false)')&&!src.includes('.find(v=>v.estado==='),null);
+assert('canonical_facets_used',src.includes('CX.data?.visitFacets')&&src.includes("if(f.submitted)"),null);
+assert('credentials_visible_from_exact_profile',src.includes("s.username||s.user")&&src.includes("s.password||s.pass"),null);
+assert('whatsapp_visible_without_fabrication',src.includes("s.whatsapp||s.phone||'— sin dato'")&&src.includes('Los datos faltantes no se inventan'),null);
+assert('certification_visible',src.includes('certificationStatus')&&src.includes('Certificación presentada'),null);
+assert('active_and_history_drills',src.includes("data-tab=\"active\"")&&src.includes("data-tab=\"submitted\"")&&src.includes("data-tab=\"paid\""),null);
+assert('read_only_no_profile_write',!src.includes('updateShopper(')&&!src.includes('firebase.')&&!src.includes('fetch('),null);
+assert('no_name_phone_email_dedupe',!src.includes('normalizeName')&&!src.includes('samePhone')&&!src.includes('sameEmail'),null);
+const report={schemaVersion:'cxorbia.c6.shopper-portal-contract-gate.v1',decision:assertions.every(a=>a.ok)?'PASS_C6_CANONICAL_SHOPPER_PORTAL_CONTRACT':'FAIL_C6_CANONICAL_SHOPPER_PORTAL_CONTRACT',assertions,safety:{providerWrites:0,firestoreWrites:0,authWrites:0,rulesWrites:0,storageWrites:0,hrWrites:0,deploys:0,production:false,merge:false}};
+console.log(JSON.stringify(report,null,2));if(process.exitCode)throw new Error(report.decision);

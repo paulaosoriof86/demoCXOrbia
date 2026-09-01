@@ -1,0 +1,73 @@
+{
+  "contractId": "phase-a-go-dev-conditional-request-package-v1",
+  "project": "CXOrbia TyA",
+  "date": "2026-07-09",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pr": 7,
+  "status": "prepared_not_requested",
+  "purpose": "Prepare the conditional GO DEV request format without asking Paula for a decision yet.",
+  "lane": "D_GO_DEV_backend_real",
+  "currentDecision": "not_requested",
+  "manualOrAuthorizationRequestedNow": false,
+  "allowedFutureResponses": [
+    "HOLD",
+    "RUN_SMOKE",
+    "GO_DEV",
+    "BLOCKED"
+  ],
+  "futureQuestionTemplate": "Paula, con la evidencia disponible, elige una opcion: HOLD, RUN_SMOKE, GO_DEV o BLOCKED.",
+  "responseMeaning": {
+    "HOLD": "Do not advance to GO DEV; continue preparing or wait.",
+    "RUN_SMOKE": "Run the prepared single human smoke package before deciding GO DEV.",
+    "GO_DEV": "Authorize controlled DEV work only, not production.",
+    "BLOCKED": "Stop and document the blocker before any DEV work."
+  },
+  "goDevWouldAllowOnly": [
+    "prepare_clean_dev_backend_resources",
+    "wire_cx_data_adapter_in_dev_mode",
+    "run_source_safe_dry_run",
+    "write_dev_only_records_if_gate_allows",
+    "record_audit_events",
+    "populate_dev_review_queue"
+  ],
+  "goDevWouldNotAllow": [
+    "merge_final",
+    "production_deploy",
+    "production_runtime",
+    "real_payments",
+    "copy_old_database",
+    "commit_sensitive_data",
+    "silent_hr_overwrite",
+    "hardcode_cinepolis_global_logic"
+  ],
+  "mustBeTrueBeforeRequesting": [
+    "pr_7_open_draft_no_merge",
+    "no_known_hard_stop",
+    "go_dev_checklist_prepared",
+    "go_dev_decision_package_prepared",
+    "go_dev_status_matrix_prepared",
+    "single_smoke_package_prepared_if_needed",
+    "manual_request_policy_respected"
+  ],
+  "mustNotAskAgainFor": [
+    "documented_hr_rules",
+    "documented_shoppers",
+    "documented_certifications",
+    "documented_june_payment_rule",
+    "prepared_adapter_from_zero",
+    "prepared_builder_from_zero"
+  ],
+  "stateSafe": {
+    "devGoRequested": false,
+    "devGoAuthorized": false,
+    "runtimeActive": false,
+    "devConnectionActive": false,
+    "imports": false,
+    "writes": false,
+    "deploy": false,
+    "production": false,
+    "payments": false,
+    "sensitiveDataInRepo": false
+  }
+}

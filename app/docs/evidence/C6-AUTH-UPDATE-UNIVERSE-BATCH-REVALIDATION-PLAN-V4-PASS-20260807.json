@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "cxorbia.c6.auth-update-universe-batch-revalidation.persisted-evidence.v1",
+  "generatedAt": "2026-08-08T03:16:29.637Z",
+  "decision": "PASS_C6_AUTH_UPDATE_UNIVERSE_BATCH_REVALIDATION_PLAN_V4",
+  "requestId": "c6-auth-update-universe-batch-revalidation-20260807-05",
+  "terminalExecution": {
+    "runId": 31236820249,
+    "jobId": 93050768996,
+    "artifactId": 9015681941,
+    "artifactDigest": "sha256:6c1d93c58853c01682ce54bafab5f03d116a0586b9658d59323bfae7d3db3263",
+    "workflowConclusion": "failure_after_provider_due_source_safe_verifier_false_positive"
+  },
+  "inputPlan": {
+    "rows": 340,
+    "updateRows": 45,
+    "digest": "7b92fa73946e74ec4058bcdcbcfca25fe90e0504db6b6b22e797fbad066bd749"
+  },
+  "providerRead": {
+    "attempts": 1,
+    "authDirectoryPages": 1,
+    "authUsers": 110,
+    "shopperDocuments": 340,
+    "hrDocuments": 1,
+    "visitDocuments": 616,
+    "certificationDocuments": 77,
+    "liquidationDocuments": 827,
+    "credentialRecords": 109,
+    "credentialsMapped": 101,
+    "credentialsUnmapped": 8
+  },
+  "systemicRisk": {
+    "classification": "SYSTEMIC_SUFFIXED_UPDATE_SHARED_BASELOGIN_ALIAS_RISK",
+    "expectedRows": 36,
+    "coverageProof": "ALL_45_CURRENT_UPDATE_AUTH_ROWS_CLASSIFIED_AS_SUPERSET_OF_36_RISK_ROWS",
+    "exactRiskMembershipNotRequiredForExecution": true
+  },
+  "classificationSummary": {
+    "rows": 45,
+    "all45UpdateRowsClassified": true,
+    "candidateCount0": 36,
+    "candidateCount1": 9,
+    "candidateCountGt1": 0,
+    "unresolvedReconstruction": 0,
+    "crossRowAssociations": 0,
+    "unresolved": 0
+  },
+  "candidateCount0ProfileFingerprints": [
+    "19f2a621b1b350db911b","5a9019cb254e5551495a","bc374da3e5e8b21e1e11","4b70ea815aba46f390bb","b84fb01fbc0a7d1e4ccd","ec45374d82bd957b15d7","a0c809dd2a00c26e80a3","51ea059349022a2bb852","987b964352f96107b5bb","ff1b191c37fcf31bbe13","73f322b58b4ec6dd1529","bab8bf6f9b52f6c99efb","d2feab14dcd84cfb7319","3a4ffa4f47fa83ba14bf","8e0c27db3a8ee884199d","b96614aa47fdef5e4a5d","bfa2869b52b98e0c11a5","f67ed794d5648a715a67","0e4a757125765fe9b630","61cd6a841cf0477820ff","07b0121460e5a6a3d08a","ffbc10a74b94ddabbf19","5f5580ddbbc8c35e0714","d01f24332b5b43c4c203","247210cff80a94cb4d90","d590ad543d51ce8194c4","e72939ea1770ee11de33","ede073649877829dd9c0","28c4f25542af3589fe7f","1d89318965b64ec0ff68","0054158b6972349fd78b","cecd0cc9a2f6cc26f316","d2b3c0a74cc3f4ff0fec","8622e1d9d5d700754c82","f3025660631f42be8c89","81547046762a6d911058"
+  ],
+  "candidateCount1Matrix": [
+    {"profileFp":"1809b3e942e3031e8c0a","candidateFp":"9957f4a87002ebc5ed9d","emailDiff":true,"passwordFlagV3":true,"claimsDiff":true},
+    {"profileFp":"849daed7bacd68f8d66a","candidateFp":"29d5272d53ea32949906","emailDiff":true,"passwordFlagV3":false,"claimsDiff":false},
+    {"profileFp":"a8dd7db89a02ff180674","candidateFp":"a67f40875c41eb5711df","emailDiff":false,"passwordFlagV3":true,"claimsDiff":false},
+    {"profileFp":"fd41961986eb154ede65","candidateFp":"9b6c0a52ee9693400822","emailDiff":false,"passwordFlagV3":true,"claimsDiff":false},
+    {"profileFp":"a71d8948cb63128ef5d9","candidateFp":"5b952599851789d805a7","emailDiff":false,"passwordFlagV3":true,"claimsDiff":false},
+    {"profileFp":"ce5ab1773f3554b64566","candidateFp":"ee067fb57e0b90d5b950","emailDiff":false,"passwordFlagV3":true,"claimsDiff":false},
+    {"profileFp":"39c7bc5bea5114a08ec1","candidateFp":"7f307aef0ee343b0172b","emailDiff":false,"passwordFlagV3":true,"claimsDiff":false},
+    {"profileFp":"93642de4fb1c34ae8978","candidateFp":"ef873c37565a6efdb9d0","emailDiff":false,"passwordFlagV3":true,"claimsDiff":false},
+    {"profileFp":"65614687535f60f5c4d3","candidateFp":"367c0745dbd681623570","emailDiff":false,"passwordFlagV3":true,"claimsDiff":false}
+  ],
+  "rebuiltPlan": {
+    "schemaVersion": "cxorbia.c6.shopper-auth-final-plan.v4",
+    "rows": 340,
+    "uniqueRows": 340,
+    "operationCounts": {"CREATE_AUTH":118,"UPDATE_AUTH":9,"NO_OP":81,"HOLD":0,"PRESERVE_NO_AUTH":132},
+    "subchangeCounts": {"email":2,"password":8,"claims":1},
+    "expectedAuthUsersBefore": 110,
+    "expectedAuthUsersAfter": 228,
+    "digest": "c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4",
+    "holdZero": true,
+    "executable": false,
+    "executableReason": "BATCH_REVALIDATION_COMPLETE_PENDING_SEPARATE_PREWRITE_AUTH_AUTHORIZATION"
+  },
+  "passwordPolicy": {
+    "materialInspected": false,
+    "signInProbeUsed": false,
+    "remainingUniqueUpdatePasswordFlags": 8,
+    "flagsForRowsRemainingUniqueUpdate": "PRESERVED_FROM_V3",
+    "flagsClearedWhenReclassified": true
+  },
+  "verifierAdjudication": {
+    "classification": "SOURCE_SAFE_VERIFIER_FALSE_POSITIVE_CHANGE_COUNT_EMAIL_KEY",
+    "trigger": "regex matched the numeric subchangeCounts.email field, not a raw email value",
+    "structuralOfflineValidation": {
+      "rawUidKeyCount": 0,
+      "rawShopperIdKeyCount": 0,
+      "rawPasswordHashKeyCount": 0,
+      "rawPasswordSaltKeyCount": 0,
+      "nonBooleanOrCountEmailValueKeyCount": 0,
+      "sensitiveStringCount": 0
+    },
+    "secondProviderAttemptRequired": false,
+    "secondProviderAttemptExecuted": false
+  },
+  "safety": {
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "visitsWrites": 0,
+    "certificationsWrites": 0,
+    "liquidationsWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "cloudBuild": 0,
+    "cloudRun": 0,
+    "hosting": 0,
+    "make": 0,
+    "gemini": 0,
+    "payments": 0,
+    "merge": false,
+    "production": false
+  }
+}

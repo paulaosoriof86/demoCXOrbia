@@ -1,0 +1,104 @@
+{
+  "contract": "tenant-profile-module-entitlements-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A plus SaaS continuity",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "purpose": "Define tenant/client-company profile, enabled modules, role options and login visibility without frontend changes or runtime activation.",
+  "principle": "The consultora tenant/client profile is different from the end-client module used by the consultora to manage its own clients.",
+  "paths": {
+    "tenantProfile": "tenants/{tenantId}/profile/main",
+    "tenantBranding": "tenants/{tenantId}/settings/branding",
+    "tenantPlan": "tenants/{tenantId}/settings/plan",
+    "moduleEntitlements": "tenants/{tenantId}/settings/moduleEntitlements",
+    "roleEntitlements": "tenants/{tenantId}/settings/roleEntitlements",
+    "featureFlags": "tenants/{tenantId}/settings/featureFlags",
+    "consultoraClients": "tenants/{tenantId}/clients/{clientId}"
+  },
+  "tenantProfileFields": [
+    "tenantId",
+    "legalName",
+    "commercialName",
+    "taxIdOrRegistrationId",
+    "country",
+    "currency",
+    "timezone",
+    "language",
+    "website",
+    "mainContactName",
+    "mainContactEmail",
+    "mainContactPhone",
+    "billingContact",
+    "supportContact",
+    "commercialContact",
+    "logoStorageRef",
+    "brandColors",
+    "status",
+    "createdAt",
+    "updatedAt"
+  ],
+  "moduleEntitlements": {
+    "defaultPolicy": "all_available_by_plan_then_tenant_can_hide_or_enable",
+    "modules": [
+      "dashboard",
+      "shoppers",
+      "postulations",
+      "visits",
+      "projects",
+      "hrSource",
+      "certifications",
+      "academy",
+      "liquidations",
+      "payments",
+      "clientPortal",
+      "reports",
+      "automations",
+      "saasConsole",
+      "support",
+      "commercialPackages"
+    ],
+    "visibilityStates": [
+      "enabled",
+      "hidden",
+      "preview_sales",
+      "disabled_by_plan",
+      "coming_soon",
+      "requires_upgrade"
+    ],
+    "tyaInitialRecommendation": {
+      "enabled": ["dashboard", "shoppers", "postulations", "visits", "projects", "hrSource", "certifications", "academy", "liquidations", "payments"],
+      "preview_sales": ["clientPortal", "reports", "automations", "commercialPackages"],
+      "hidden": ["saasConsole"],
+      "notes": "For TyA initial operation, shopper/admin modules are operational priority. Client portal may be shown as sales preview if Paula decides."
+    }
+  },
+  "loginRoleOptions": {
+    "source": "tenant module/role entitlements plus authenticated user claims",
+    "rules": [
+      "Login should show only role/module options enabled for the tenant and allowed for the user.",
+      "Hidden modules must not appear as available actions.",
+      "Preview sales modules may appear as commercial teaser only if tenant setting allows it.",
+      "Security must not rely only on hidden UI; Auth claims and rules must enforce access later."
+    ]
+  },
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "shopper", "client", "consultant_partner"],
+    "manualsToUpdate": ["Tenant configuration", "Module entitlements", "Login role options", "Company profile", "Client module vs tenant profile"],
+    "coursesToUpdate": ["Superadmin SaaS configuration", "Admin tenant setup", "Commercial module preview"],
+    "newLessons": [
+      "Difference between tenant/company profile and end-client records",
+      "How to enable or hide modules by tenant",
+      "How login options are controlled",
+      "How preview sales modules work"
+    ]
+  },
+  "hardStops": [
+    "Do not hard-code TyA module visibility in code.",
+    "Do not treat hidden UI as security boundary.",
+    "Do not mix tenant profile with consultora end-client records.",
+    "Do not write Firestore from this contract.",
+    "Do not activate Auth real from this contract."
+  ]
+}

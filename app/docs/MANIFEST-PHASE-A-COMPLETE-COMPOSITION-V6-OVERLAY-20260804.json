@@ -1,0 +1,210 @@
+{
+  "schemaVersion": "cxorbia.phase-a-complete-composition.v6-overlay.v1",
+  "candidateId": "CXORBIA-TYA-PHASE-A-COMPLETE-COMPOSITION-ACTIVE-OVERLAY-20260805",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "headBeforeEmpalme": "a2ccfb0c3709cad6f5e6a9c16dcb7f9293532d6e",
+  "empalmeCommit": "f961253f18c388ae04619bb5175269015c8349c3",
+  "candidateSha256": "0a8c26e2b780a6feffeeb9d77d5efbcca94e79e2c3b17ee1a2c1446be5e1d407",
+  "candidateAggregateSha256": "1f1af3a316c9dabf1df1ef5b07a7abd2fe62a8da09e704719912be7af328e825",
+  "baseManifest": "app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json",
+  "cloudManifest": "app/docs/MANIFEST-CLOUD-V6-CORE-OPS-SHOPPER-20260804.json",
+  "activeRevision": "V7_2_P0F1",
+  "legacyGateCompatibility": {
+    "stableAliasPath": "app/docs/MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-20260804.json",
+    "immutableV6Snapshot": "app/docs/MANIFEST-PHASE-A-COMPLETE-COMPOSITION-V6-OVERLAY-HISTORICAL-20260804.json",
+    "immutableV6SnapshotGitBlob": "94fbb474188d6907915df9226e01f0a86860518c",
+    "baseCandidateFieldsPreservedForGateV2Compatibility": true,
+    "currentAuthorityComesFrom": "latestAuditedDelta"
+  },
+  "latestAuditedDelta": {
+    "id": "V7_2_P0F1",
+    "decision": "AUDITED_GO_READY_DIRECT_APPLY",
+    "zipSha256": "09606d1cc133a1e1e138be76bd8c6aadeb1f70d7967d506aae3f81bf5e9c6fce",
+    "headBefore": "4b52a23b0d7eb7bbff679bd921b0af5dd9a30181",
+    "empalmeCommit": "33d6f4f14272f82dca9d9c7c0cc119a9f89619bd",
+    "aggregateSha256": "ecc725866acc3eb8aab292000be3ec31d1c46b5c14a53c8889fa7d6716a997e2",
+    "functionalFiles": [
+      "app/app.js",
+      "app/styles/layout.css"
+    ],
+    "sourceLockFile": "app/core/build-lock.js",
+    "credentialExposurePatternsAbsent": [
+      "CX.CREDS.passExample()",
+      "CX.CREDS.pass(f,l)",
+      "${s.pass}"
+    ]
+  },
+  "status": "C6_SHOPPER_COLLISION_CLASSIFIER_SOURCE_STATIC_PASS__READONLY_CLASSIFICATION_HOLD_64_DISTINCT_ACTIVE_GROUPS__83_ACTIVE_NAMES_UNVERIFIED__1_MULTI_AUTH__STOP_RETRY__NO_WRITES__NO_DEPLOY",
+  "criticalFileOverrides": [
+    {
+      "path": "app/app.js",
+      "gitBlob": "2043d33dee611adacebc947c8423ed1739c1a8da",
+      "authority": "V7_2_P0F1_AUDITED_GO_EMPALME_COMMIT_33D6F4F",
+      "decision": "PRESERVE_PENDING_DEV_VISUAL"
+    },
+    {
+      "path": "app/core/build-lock.js",
+      "gitBlob": "068b28bce919c2a4f357eb4c21f85fede06a0c5d",
+      "authority": "V7_2_P0F1_RUNTIME_LOCK",
+      "decision": "PRESERVE"
+    },
+    {
+      "path": "app/core/backend-browser-auth.js",
+      "gitBlob": "cb9ceb89d2282fe6d3c8b4ffc8c2cd1f52263cac",
+      "authority": "C6_HUMAN_LOGIN_SINGLE_FORM_P0_AUTHORIZED_20260805",
+      "decision": "GATE_SINGLE_VISIBLE_LOGIN_FORM_NO_CXINTEGRATEDAUTHSTEP"
+    },
+    {
+      "path": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+      "gitBlob": "3acc508ac242407ea688b6a4ba964409af1125ba",
+      "authority": "C6_LOGIN_SELECTOR_ROOT_FIX_AUTHORIZED_20260805",
+      "decision": "PRESERVE_ACCUMULATIVE_LG2_AND_LEGACY_LOGIN"
+    },
+    {
+      "path": "app/styles/layout.css",
+      "gitBlob": "91b3d308e1a51be7a470f0f12b32382c1043058f",
+      "authority": "V7_2_P0F1_AUDITED_GO_EMPALME_COMMIT_33D6F4F",
+      "decision": "PRESERVE_PENDING_DEV_VISUAL"
+    },
+    {
+      "path": "app/modules/proyecto-wizard.js",
+      "gitBlob": "f46378a1fb79a6355cf39fbf364d2f09398861a6",
+      "authority": "CLOUD_V6_REGIONAL_PRESENTATION_DELTA",
+      "decision": "PRESERVE"
+    },
+    {
+      "path": "app/modules/shoppers.js",
+      "gitBlob": "92f834bb2b7fcf5d8674acb717ce6b4e920c5766",
+      "authority": "CLOUD_V6_SHOPPER_PRESENTATION_DELTA",
+      "decision": "PRESERVE"
+    }
+  ],
+  "additionalCriticalFiles": [
+    {
+      "path": "app/index.html",
+      "gitBlob": "bda55ef224653afde6b2b87d98828dde1fc8f418",
+      "authority": "CLOUD_V6_DEMO_ENTRY_LOAD_ORDER",
+      "decision": "GATE"
+    },
+    {
+      "path": "app/core/frontend-export-helpers.js",
+      "gitBlob": "6b376d79798ec8d004db2b1cfb9ef5f97fc68d0a",
+      "authority": "CLOUD_V6_EXPORT_PRESENTATION_HELPER",
+      "decision": "GATE_SOURCE_ONLY"
+    },
+    {
+      "path": "app/core/dev-scenario-lab.js",
+      "gitBlob": "dee47d449ef4849ccadd422cad143a1ad007f5c3",
+      "authority": "CHATGPT_DEV_LAB_HONEST_EVIDENCE_SHELL_WITH_STATIC_OBSERVABILITY_MARKER",
+      "decision": "REQUIRE_CONTROLLED_RUNNER_EVIDENCE"
+    },
+    {
+      "path": "app/core/backend-dev-auth.local.js",
+      "gitBlob": "6b2e3ce079552fad247c7202df684328ad7dac7b",
+      "authority": "REPO_SAFE_FAIL_CLOSED_PLACEHOLDER",
+      "decision": "PRESERVE_NO_SECRETS"
+    },
+    {
+      "path": "firebase.json",
+      "gitBlob": "3501332042fc3736d35f88e9ca5befee72589256",
+      "authority": "C6_DEV_ROOT_ENTRYPOINT_P0_AUTHORIZED_20260805",
+      "decision": "GATE_ROOT_REDIRECT_TO_CANONICAL_HUMAN_ENTRY"
+    },
+    {
+      "path": "tools/qa/tya-c6-dev-root-entrypoint-source-gate.mjs",
+      "gitBlob": "428e2c20ae29e32ce38e8019ad962c9e7e386c8b",
+      "authority": "C6_DEV_ROOT_ENTRYPOINT_P0_AUTHORIZED_20260805",
+      "decision": "GATE_PERMANENT_SOURCE_PARITY"
+    },
+    {
+      "path": "tools/qa/tya-c6-dev-root-entrypoint-remote-parity-gate.mjs",
+      "gitBlob": "bc692151cc0a6382ca75d005b7febb732dabbdf6",
+      "authority": "C6_DEV_ROOT_ENTRYPOINT_P0_AUTHORIZED_20260805",
+      "decision": "GATE_PERMANENT_REMOTE_PARITY"
+    },
+    {
+      "path": "tools/qa/tya-c6-dev-root-runtime-wrapper.mjs",
+      "gitBlob": "ed5a10adeac009317063cd5330a92d75843c8352",
+      "authority": "C6_DEV_ROOT_ENTRYPOINT_P0_AUTHORIZED_20260805",
+      "decision": "GATE_ROOT_RUNTIME_ACCUMULATIVE"
+    },
+    {
+      "path": "tools/qa/tya-dev-scenario-lab-source-contract-gate.mjs",
+      "gitBlob": "4737e1a077a52004e7bab3235c18b729a18c4cfd",
+      "authority": "C6_DEV_ROOT_ENTRYPOINT_P0_AUTHORIZED_20260805",
+      "decision": "GATE_SOURCE_STATIC_INCLUDES_ROOT_ENTRYPOINT"
+    },
+    {
+      "path": ".github/workflows/cxorbia-c6-dev-root-entrypoint-hosting.yml",
+      "gitBlob": "bd25e9a843496f6962e6e8cc1b987c82620e0a36",
+      "authority": "C6_DEV_ROOT_ENTRYPOINT_P0_AUTHORIZED_20260805",
+      "decision": "PRESERVE_CONSUMED_ONE_SHOT_WORKFLOW"
+    },
+    {
+      "path": "tools/qa/cxorbia-c6-human-login-shopper-identity-audit.mjs",
+      "gitBlob": "9633a1db7fa071cf21350f27e7bb7d0cf00b1591",
+      "authority": "C6_SHOPPER_COLLISION_CLASSIFICATION_AUTHORIZED_20260805",
+      "decision": "GATE_COLLISION_CLASSIFICATION_DISPATCH"
+    },
+    {
+      "path": "tools/qa/cxorbia-c6-shopper-identity-resolution-review.mjs",
+      "gitBlob": "6ca283662a84bdf4b99eb19cfd8325d33a26dd7b",
+      "authority": "C6_SHOPPER_FOCAL_RESOLVER_AUTHORIZED_20260805",
+      "decision": "GATE_EXACT_BOUND_PROFILE_NAME_AND_REAL_COLLISIONS"
+    },
+    {
+      "path": "tools/qa/cxorbia-c6-shopper-login-collision-classification.mjs",
+      "gitBlob": "ef95c59442728be6a326b8240c3f74ae9a3551af",
+      "authority": "C6_SHOPPER_COLLISION_CLASSIFICATION_AUTHORIZED_20260805",
+      "decision": "GATE_109_GROUPS_ACTIVE_HISTORICAL_TECHNICAL_CLASSIFICATION"
+    },
+    {
+      "path": ".github/workflows/cxorbia-c6-human-login-shopper-identity-audit.yml",
+      "gitBlob": "ec4fc5a5000edba7efc7327db7f4758e1e1dc86d",
+      "authority": "C6_HUMAN_LOGIN_SHOPPER_IDENTITY_P0_AUTHORIZED_20260805",
+      "decision": "GATE_CONTROLLED_READONLY_PROVIDER_AUDIT"
+    }
+  ],
+  "preservation": {
+    "baseManifestRewritten": false,
+    "immutableV6SnapshotCreated": true,
+    "allOtherCriticalBlobsRemainExact": true,
+    "functionalDeltaAddedByThisReconciliation": false,
+    "productModulesChanged": false,
+    "designChanged": false,
+    "businessLogicChanged": false,
+    "gateRemainsFailClosed": true,
+    "singleCandidate": true,
+    "singleBranch": true
+  },
+  "visualDecision": {
+    "status": "NO_VISUAL_CHANGE_SOURCE_SAFE_COLLISION_CLASSIFICATION_ONLY",
+    "reason": "The classifier proved visible-login collisions and technical surname gaps without changing product, Login, modules or design."
+  },
+  "runtimeDecision": {
+    "sourceStaticPass": true,
+    "sourceStaticRunId": 31061161498,
+    "collisionClassifierPrepared": true,
+    "collisionClassificationExecuted": true,
+    "collisionClassificationDecision": "HOLD_C6_SHOPPER_LOGIN_COLLISION_CLASSIFICATION",
+    "collisionClassificationRunId": 31061262965,
+    "resolvedSingleActiveGroups": 39,
+    "distinctActiveCollisionGroups": 64,
+    "distinctActiveIdentities": 141,
+    "unresolvedSurnameGroups": 6,
+    "verifiedNameIncompleteActiveProfiles": 83,
+    "unresolvedMultipleAuthProfiles": 1,
+    "identityWritesAuthorized": false,
+    "deployAllowedByThisManifest": false,
+    "newDeployAuthorized": false
+  },
+  "safety": {
+    "secrets": false,
+    "providerWrites": false,
+    "deploy": false,
+    "merge": false,
+    "production": false
+  }
+}

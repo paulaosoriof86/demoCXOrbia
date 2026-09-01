@@ -1,0 +1,88 @@
+{
+  "contractId": "phase-a-dev-rollback-audit-plan-v1",
+  "project": "CXOrbia TyA",
+  "date": "2026-07-09",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pr": 7,
+  "status": "documented_only",
+  "purpose": "Define rollback and audit requirements before any future DEV connection step for Phase A TyA.",
+  "scope": {
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "phase": "Phase A",
+    "mode": "future_DEV_only_after_explicit_GO"
+  },
+  "currentSafeState": {
+    "devConnectionActive": false,
+    "deploy": false,
+    "production": false,
+    "imports": false,
+    "writes": false,
+    "providerLive": false,
+    "payments": false,
+    "sensitiveDataInRepo": false
+  },
+  "rollbackRequirementsBeforeFutureDEV": [
+    "single_disable_flag_defined",
+    "cx_data_return_to_local_source_defined",
+    "provider_gates_default_off",
+    "import_dry_run_only_until_go",
+    "write_batch_can_be_stopped_before_commit",
+    "audit_event_shape_defined",
+    "human_review_queue_for_conflicts_defined",
+    "no_raw_sensitive_payload_in_logs",
+    "manual_recovery_note_for_admins_defined",
+    "claude_copy_for_degraded_state_documented",
+    "academia_manual_for_rollback_and_audit_documented"
+  ],
+  "auditEventShape": {
+    "eventId": "string",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "actorRole": "admin | system | reviewer",
+    "action": "string",
+    "source": "platform | hr | import | dev_check | manual_review",
+    "entityType": "shopper | visit | assignment | certification | liquidation | payment_control | project_config | gate",
+    "entityRef": "opaque reference",
+    "previousStateRef": "opaque reference or null",
+    "nextStateRef": "opaque reference or null",
+    "decision": "prepared | allowed | blocked | reverted | review_required",
+    "reason": "string",
+    "createdAt": "ISO-8601"
+  },
+  "notAuthorizedHere": [
+    "activate_dev_connection",
+    "deploy",
+    "production",
+    "real_import",
+    "real_write",
+    "hr_write",
+    "provider_live",
+    "payment_run",
+    "copy_old_database",
+    "raw_sensitive_data_commit",
+    "rewrite_app_modules_or_core"
+  ],
+  "phaseAFocus": [
+    "hr_operational_source",
+    "real_or_source_safe_tya_data",
+    "cinepolis_as_configurable_project",
+    "june_liquidaciones_pagos",
+    "preserve_submitted_certifications",
+    "human_review_for_conflicts"
+  ],
+  "claudeImpact": [
+    "show_rollback_as_prepared_not_executed",
+    "show_audit_as_required_before_future_dev",
+    "show_degraded_or_blocked_states_honestly",
+    "do_not_claim_real_sync_import_payment_or_provider"
+  ],
+  "academiaImpact": [
+    "explain_rollback_plan",
+    "explain_audit_events",
+    "explain_human_review_queue",
+    "explain_no_private_data_in_logs",
+    "explain_dev_vs_production"
+  ]
+}

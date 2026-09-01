@@ -1,0 +1,132 @@
+name: CXOrbia Corte 6 Full Profile Identity Bridge Read-Only V2
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'backend/config/corte6-profile-full-identity-bridge-readonly-v2-request.json'
+
+permissions:
+  contents: write
+  statuses: write
+
+concurrency:
+  group: cxorbia-corte6-profile-full-identity-bridge-readonly-v2
+  cancel-in-progress: false
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout active branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate read-only identity bridge request
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const r=require('./backend/config/corte6-profile-full-identity-bridge-readonly-v2-request.json');
+          if(r.schemaVersion!=='cxorbia.corte6.profile-full-identity-bridge-readonly-request.v2')throw new Error('bad_schema');
+          if(r.repository!=='paulaosoriof86/demoCXOrbia'||r.branch!=='docs-tya-v6-v71-audit'||Number(r.pullRequest)!==7||r.firebaseProjectId!=='cxorbia-backend-dev'||r.tenantId!=='tya'||r.projectId!=='cinepolis')throw new Error('target_mismatch');
+          if(r.enabled!==true||r.consumed!==false||r.status!=='authorized_readonly_pending_execution')throw new Error('request_not_ready');
+          if(r.providerReads!==true||r.authReads!==true||r.firestoreReads!==true)throw new Error('read_scope_missing');
+          for(const k of ['providerWrites','firestoreWrites','authWrites','passwordChanges','rulesDeploys','hostingDeploys','cloudRunDeploys','storageWrites','hrWrites','legacyWrites','makeWrites','geminiCalls','paymentsWrites'])if(Number(r[k]||0)!==0)throw new Error('unsafe_write_scope:'+k);
+          if(r.production!==false||r.merge!==false||r.nameMatchAllowed!==false||r.phoneMatchAllowed!==false||r.emailMatchAllowed!==false||r.usernameAloneMatchAllowed!==false||r.authClaimRequired!==true)throw new Error('unsafe_identity_policy');
+          NODE
+
+      - name: Assemble and verify encrypted V2 profile bundle
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/c6-profile-identity-bridge
+          node <<'NODE'
+          const fs=require('fs'),crypto=require('crypto');
+          const base='backend/private-inbox/corte6-profile-full-v2-parts';
+          const m=JSON.parse(fs.readFileSync(base+'/READY.json','utf8'));
+          if(m.schemaVersion!=='cxorbia.corte6.profile-full-v2-chunk-manifest.v1'||Number(m.partCount)!==17||Number(m.totalChars)!==192144||m.sourceSha256!=='80a95a523fb3db925b90ff829d7d6939a9c1166dd443b245d82d84350b7214ed')throw new Error('manifest_contract_mismatch');
+          let assembled='';
+          for(const name of m.partFiles){if(!/^part-\d{3}\.txt$/.test(name))throw new Error('unsafe_part_name');assembled+=fs.readFileSync(base+'/'+name,'utf8');}
+          if(assembled.length!==Number(m.totalChars))throw new Error('assembled_length_mismatch');
+          const sha=crypto.createHash('sha256').update(Buffer.from(assembled,'utf8')).digest('hex');
+          if(sha!==m.sourceSha256)throw new Error('assembled_sha256_mismatch');
+          const e=JSON.parse(assembled);
+          if(e.schemaVersion!=='cxorbia.corte6.profile-full-handoff-envelope.v2'||e.targetProjectId!=='cxorbia-backend-dev'||e.tenantId!=='tya')throw new Error('envelope_target_mismatch');
+          fs.writeFileSync('.tmp/c6-profile-identity-bridge/corte6-profile-full-bundle-v2.enc.json',assembled,{mode:0o600});
+          NODE
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Load canonical DEV credential
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/c6-profile-identity-bridge
+          node <<'NODE'
+          const fs=require('fs');
+          const raw=process.env.EXISTING_DEV_JSON||'';
+          let p=null;try{p=JSON.parse(raw);}catch{}
+          if(!(p&&p.type==='service_account'&&p.project_id==='cxorbia-backend-dev'&&p.client_email&&p.private_key))throw new Error('credential_invalid');
+          fs.writeFileSync('.tmp/c6-profile-identity-bridge/credentials.json',raw,{mode:0o600});
+          NODE
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.tmp/c6-profile-identity-bridge/credentials.json" >> "$GITHUB_ENV"
+
+      - name: Run exact Auth-claim identity bridge read-only
+        id: resolve
+        env:
+          CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
+          CXORBIA_TENANT_ID: tya
+          CXORBIA_PROJECT_ID: cinepolis
+          CXORBIA_PROFILE_FULL_ENVELOPE: .tmp/c6-profile-identity-bridge/corte6-profile-full-bundle-v2.enc.json
+          CXORBIA_PROFILE_IDENTITY_BRIDGE_OUT: app/docs/evidence/CORTE6-PROFILE-FULL-IDENTITY-BRIDGE-READONLY-LATEST.json
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts firebase-admin@13.4.0 >/dev/null 2>&1
+          node --check tools/qa/cxorbia-corte6-profile-full-identity-bridge-readonly-v2.mjs
+          node tools/qa/cxorbia-corte6-profile-full-identity-bridge-readonly-v2.mjs
+
+      - name: Persist sanitized evidence and consume read-only request
+        if: steps.resolve.outcome == 'success'
+        run: |
+          set -euo pipefail
+          cp app/docs/evidence/CORTE6-PROFILE-FULL-IDENTITY-BRIDGE-READONLY-LATEST.json /tmp/c6-profile-identity-bridge.json
+          git fetch origin docs-tya-v6-v71-audit
+          git reset --hard origin/docs-tya-v6-v71-audit
+          mkdir -p app/docs/evidence
+          cp /tmp/c6-profile-identity-bridge.json app/docs/evidence/CORTE6-PROFILE-FULL-IDENTITY-BRIDGE-READONLY-LATEST.json
+          node <<'NODE'
+          const fs=require('fs');
+          const rp='backend/config/corte6-profile-full-identity-bridge-readonly-v2-request.json';
+          const ep='app/docs/evidence/CORTE6-PROFILE-FULL-IDENTITY-BRIDGE-READONLY-LATEST.json';
+          const r=JSON.parse(fs.readFileSync(rp,'utf8'));
+          const e=JSON.parse(fs.readFileSync(ep,'utf8'));
+          r.status='consumed_readonly';r.enabled=false;r.consumed=true;r.consumedAt=new Date().toISOString();r.decision=e.decision;
+          r.legacyExact=e.counts?.legacyExact||0;r.authBridgeResolved=e.counts?.authBridge?.resolvedExact||0;r.finalExactProfiles=e.counts?.final?.exactProfiles||0;r.remainingHold=e.counts?.final?.remainingHold||0;r.docsWithPlannedChanges=e.counts?.final?.docsWithPlannedChanges||0;r.profileFieldValuesPlanned=e.counts?.final?.profileFieldValuesPlanned||0;r.identityLinksPlanned=e.counts?.final?.identityLinksPlanned||0;
+          r.nextGate='REBASE_EXACT_FIRESTORE_WRITE_PLAN_ON_IDENTITY_BRIDGE_RESULT_BEFORE_REQUESTING_USER_WRITE_AUTHORIZATION';
+          fs.writeFileSync(rp,JSON.stringify(r,null,2)+'\n','utf8');
+          NODE
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add app/docs/evidence/CORTE6-PROFILE-FULL-IDENTITY-BRIDGE-READONLY-LATEST.json backend/config/corte6-profile-full-identity-bridge-readonly-v2-request.json
+          git commit -m 'evidence: Corte 6 full-profile Auth-claim identity bridge readonly'
+          git push origin HEAD:docs-tya-v6-v71-audit
+
+      - name: Publish status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          STATE=success;DESC='PASS_C6_PROFILE_IDENTITY_BRIDGE_READONLY'
+          if [ '${{ job.status }}' != 'success' ]; then STATE=error;DESC='FAIL_C6_PROFILE_IDENTITY_BRIDGE_READONLY'; fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context="cxorbia/corte6-profile-identity-bridge/$DESC" -f description="$DESC" >/dev/null
+
+      - name: Cleanup
+        if: always()
+        run: rm -rf .tmp/c6-profile-identity-bridge

@@ -1,0 +1,116 @@
+{
+  "contract": "auth-claims-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "authRealAllowed": false,
+  "purpose": "Define the minimum Firebase Auth custom claims needed to evaluate the Phase A Firestore DEV/staging rules draft without activating real Auth or runtime backend.",
+  "canonicalClaims": {
+    "tenantId": {
+      "type": "string",
+      "required": true,
+      "description": "Tenant isolation claim. For TyA this must resolve to the TyA tenant id used in Firestore document paths."
+    },
+    "role": {
+      "type": "string",
+      "required": true,
+      "allowedValues": [
+        "super",
+        "admin",
+        "ops",
+        "shopper",
+        "cliente"
+      ],
+      "description": "Canonical role expected for Phase A access decisions."
+    },
+    "projectId": {
+      "type": "string",
+      "requiredWhen": "single_project_scope",
+      "description": "Primary project scope for users limited to one project."
+    },
+    "projectIds": {
+      "type": "array<string>",
+      "requiredWhen": "multi_project_scope",
+      "description": "Project scope list for admin, ops, shopper or cliente users with access to more than one project."
+    },
+    "shopperId": {
+      "type": "string",
+      "requiredWhenRole": "shopper",
+      "description": "Stable shopper identifier used for self-scope reads and future shopper-owned writes."
+    }
+  },
+  "transitionalCompatibility": {
+    "roleAliases": [
+      {
+        "legacyValue": "coordinador",
+        "canonicalValue": "ops",
+        "reason": "The current Firestore DEV/staging rules draft references coordinador, while the Phase A role model also uses ops. This must be normalized before real Auth claims are issued."
+      }
+    ],
+    "projectScopeFallback": "projectId may be accepted for single-project users; projectIds should be preferred for multi-project and SaaS behavior."
+  },
+  "minimumClaimProfiles": {
+    "super": {
+      "requiredClaims": ["tenantId", "role"],
+      "optionalClaims": ["projectId", "projectIds"],
+      "notes": "Super can administer tenants but must still avoid production use until authorized."
+    },
+    "admin": {
+      "requiredClaims": ["tenantId", "role", "projectIds"],
+      "optionalClaims": ["projectId"],
+      "notes": "Admin manages Phase A project operations."
+    },
+    "ops": {
+      "requiredClaims": ["tenantId", "role", "projectIds"],
+      "optionalClaims": ["projectId"],
+      "notes": "Ops/coordinator role for operational management after role naming is locked."
+    },
+    "shopper": {
+      "requiredClaims": ["tenantId", "role", "projectIds", "shopperId"],
+      "optionalClaims": ["projectId"],
+      "notes": "Shopper access must remain self-scoped where documents are shopper-specific."
+    },
+    "cliente": {
+      "requiredClaims": ["tenantId", "role", "projectIds"],
+      "optionalClaims": ["projectId"],
+      "notes": "Cliente read scope must be reviewed before real DEV/staging Auth."
+    }
+  },
+  "phaseACollectionsCoveredByRulesDraft": [
+    "tenants",
+    "projects",
+    "shoppers",
+    "projectShoppers",
+    "hrSources",
+    "visits",
+    "postulations",
+    "assignments",
+    "certificationBanks",
+    "certifications",
+    "reviews",
+    "liquidations",
+    "contacts",
+    "notificationTemplates",
+    "notificationEvents",
+    "communicationsHistory",
+    "syncEvents"
+  ],
+  "hardStops": [
+    "Do not activate real Firebase Auth from this contract.",
+    "Do not deploy Firestore rules from this contract.",
+    "Do not create real users, tokens or claims from this contract.",
+    "Do not write Firestore data from this contract.",
+    "Do not connect Make, Gemini, WhatsApp or Storage real integrations from this contract."
+  ],
+  "readinessDecisionsRequiredBeforeDevAuth": [
+    "Lock canonical operational role name: ops versus coordinador.",
+    "Confirm whether admin and super may bypass projectIds or must also carry explicit project scope.",
+    "Confirm cliente read scope by collection before emulator validation.",
+    "Confirm shopper write permissions for postulations, agenda, visit completion and questionnaire status in the future action contract.",
+    "Confirm final sensitive-field policy for contact, payment and NDA-related attributes."
+  ]
+}

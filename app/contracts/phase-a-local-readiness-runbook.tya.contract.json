@@ -1,0 +1,52 @@
+{
+  "contract": "phase-a-local-readiness-runbook-tya",
+  "date": "2026-07-05",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "storageWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "emailSendAllowed": false,
+  "whatsappSendAllowed": false,
+  "geminiAllowed": false,
+  "importRealDataAllowed": false,
+  "deployAllowed": false,
+  "mergeAllowed": false,
+  "dependsOn": [
+    "synthetic-input-pack-preview-phase-a.tya.contract",
+    "synthetic-input-pack-readiness-map-phase-a.tya.contract",
+    "readiness-map-to-release-snapshot-bridge-phase-a-tya",
+    "release-readiness-snapshot-preview-phase-a-tya",
+    "release-readiness-sanitized-report-phase-a-tya",
+    "controlled-production-matrix-phase-a-tya"
+  ],
+  "purpose": "Provide a single local runbook that executes Phase A readiness preview artifacts from synthetic manifest to controlled production matrix, without any production activation.",
+  "orderedSteps": [
+    "01_synthetic_pack_runner",
+    "02_synthetic_pack_readiness_map",
+    "03_release_readiness_snapshot_input",
+    "04_release_readiness_snapshot_validator",
+    "05_sanitized_readiness_report_markdown",
+    "05b_sanitized_readiness_report_json",
+    "06_controlled_production_matrix_markdown",
+    "06b_controlled_production_matrix_json"
+  ],
+  "allowedOutputRoot": "_diagnosticos/tya-release-readiness",
+  "allowedManifestRoots": [
+    "tools/migration/synthetic-fixtures/phase-a"
+  ],
+  "requiredLocalTools": [
+    "node",
+    "powershell"
+  ],
+  "hardStops": [
+    "Do not run with real TyA raw data.",
+    "Do not upload local diagnostic payloads before review.",
+    "Do not infer production readiness from local preview output.",
+    "Do not activate deploy, merge, imports, writes or providers from this runbook.",
+    "Keep prototype P0 blocker active unless a corrective candidate with real delta has passed forensic audit."
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "cxorbia.corte6.p0-postdeploy-readonly-recheck.v1",
+  "status": "execute_readonly_once",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "firebaseProjectId": "cxorbia-backend-dev",
+  "hostingSite": "cxorbia-backend-dev",
+  "hostingTarget": "cxorbia-dev",
+  "originalHostingDeployExecutions": 1,
+  "additionalHostingDeployExecutions": 0,
+  "providerWrites": 0,
+  "authWrites": 0,
+  "firestoreWrites": 0,
+  "rulesDeploys": 0,
+  "cloudRunDeploys": 0,
+  "hrWrites": 0,
+  "merge": false,
+  "production": false,
+  "triggerNonce": "20260801T201500-0600-remote-readonly-recheck"
+}

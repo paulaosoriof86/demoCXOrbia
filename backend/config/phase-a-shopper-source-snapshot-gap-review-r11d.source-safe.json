@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "phase-a-shopper-source-snapshot-gap-review-r11d-v1",
+  "decision": "REVIEW_QUEUE_SOURCE_LEVEL_ITEM_CREATED",
+  "reviewItems": [
+    {
+      "reviewId": "review_7bff5218634728dbf3b9b023",
+      "tenantId": "tya",
+      "projectId": "cinepolis",
+      "phase": "Phase A",
+      "conflictType": "shopper_source_snapshot_reference_gap",
+      "severity": "P0_DATA_GATE",
+      "entityType": "source_snapshot",
+      "entityRef": "shopper_reference_set:39805fba4c918821",
+      "sourceARef": "r5_source:e2f248c15355824a:count_213",
+      "sourceBRef": "current_live_source_safe:39805fba4c918821:count_210",
+      "reason": "R5 materialization summary proves 213 shopper operations, current live source-safe read proves 210 identities, parser lineage is unchanged, and no approved 213-reference set is reachable in Git objects.",
+      "recommendedAction": "attach_approved_historical_source_safe_reference_set_or_supersede_r5_count_after_human_review",
+      "allowedActions": [
+        "attach_historical_source_safe_reference_set",
+        "attach_protected_materialization_candidate_paths",
+        "approve_210_as_authoritative_with_audited_r5_supersession",
+        "defer_materialization_keep_visual_runtime"
+      ],
+      "blockedActions": [
+        "infer_three_identities_from_count",
+        "match_or_merge_by_name",
+        "create_placeholder_shoppers",
+        "delete_historical_shoppers",
+        "materialize_shoppers",
+        "reopen_frontend_or_claude",
+        "write_firestore_or_hr"
+      ],
+      "status": "blocked",
+      "createdAt": "2026-07-12T21:39:47.122Z",
+      "resolvedAt": null,
+      "evidence": {
+        "r5PlanId": "phasea_e2f248c15355824a",
+        "r5SourceSha256": "e2f248c15355824a5ddd8fda1ee25f9cec8618de9cc9182ccd2cc5611335aa0a",
+        "r5PlanSha256": "27ce1785f6913e37d34b6331e134207ff142535278f63af5a3f1c529f150d292",
+        "r5ShopperCount": 213,
+        "currentReferenceSetSha256": "39805fba4c918821703406d4cc876fddb19733e9d02462161296a4a9baa513b9",
+        "currentShopperCount": 210,
+        "currentVisits": 616,
+        "currentPeriods": 14,
+        "r11Decision": "HOLD_REFERENCE_SET_UNAVAILABLE",
+        "r11bDecision": "HOLD_NO_213_REFERENCE_SET_IN_REACHABLE_GIT_OBJECTS",
+        "r11cDecision": "SOURCE_SNAPSHOT_DRIFT_NOT_BUILDER_DRIFT",
+        "builderSame": true,
+        "xlsxHelperSame": true
+      },
+      "impact": {
+        "visualSmoke": "not_blocked",
+        "historicalShopperCompleteness": "blocked",
+        "shopperMaterialization": "blocked",
+        "certificationCarryover": "hold_for_identity_linking",
+        "payments": "not_automatically_blocked_but_identity_links_require_review",
+        "production": "hold"
+      },
+      "sourceSafe": true,
+      "piiIncluded": false
+    }
+  ],
+  "auditEvents": [
+    {
+      "eventId": "audit_e815577d9d0bbe9ba8af4cca",
+      "eventType": "candidateNeedsReview",
+      "tenantId": "tya",
+      "projectId": "cinepolis",
+      "entityType": "source_snapshot",
+      "entityRef": "shopper_reference_set:39805fba4c918821",
+      "reviewId": "review_7bff5218634728dbf3b9b023",
+      "reasonCode": "historical_reference_set_unavailable",
+      "createdAt": "2026-07-12T21:39:47.122Z",
+      "sourceSafe": true,
+      "piiIncluded": false
+    }
+  ],
+  "counts": {
+    "reviewItems": 1,
+    "auditEvents": 1,
+    "placeholderShoppers": 0,
+    "materializedShoppers": 0
+  },
+  "policy": {
+    "oneSourceLevelItemNotThreeInventedIdentities": true,
+    "noNameMatching": true,
+    "noAutomaticMerge": true,
+    "noAutomaticDelete": true,
+    "noFixtureBackfill": true
+  },
+  "safeState": {
+    "writes": false,
+    "imported": false,
+    "production": false,
+    "providers": false,
+    "hrWrites": false,
+    "paymentsExecuted": false
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "contractId": "phase-a-local-builder-execution-control-v1",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "mode": "local_execution_control_contract_only_no_builder_run",
+  "createdAt": "2026-07-09",
+  "purpose": "Definir el control de ejecucion local futura del builder source-safe Phase A para que, cuando se necesite computador, exista un solo flujo seguro y sin reprocesos.",
+  "executionPrinciples": {
+    "singleCommandWorkflow": true,
+    "localOnly": true,
+    "noChatPrivateData": true,
+    "noRepoOutputCommit": true,
+    "noRuntime": true,
+    "noWrites": true,
+    "noImports": true,
+    "noDeploy": true,
+    "noProduction": true,
+    "phaseARealTyAOnly": true,
+    "doNotRepeatLevel0Level1": true,
+    "doNotAskAgainForDocumentedInputs": true,
+    "sourceSafeInputOnly": true,
+    "requiresExplicitLocalPathsOnlyWhenNeeded": true
+  },
+  "requiredRepoContractsBeforeLocalRun": [
+    "backend/contracts/phase-a-source-safe-input-builder-contract-v1.json",
+    "backend/contracts/phase-a-realdata-domain-readiness-pack-v1.json",
+    "backend/contracts/phase-a-source-safe-domain-mapping-v1.json",
+    "backend/contracts/phase-a-cxdata-dev-adapter-contract-v1.json",
+    "backend/contracts/phase-a-accumulated-readiness-gate-v1.json"
+  ],
+  "localInputsWhenNeeded": [
+    {
+      "name": "hrSourceSafeReportPath",
+      "required": true,
+      "description": "Ruta local al reporte HR source-safe/full-flow, no HR cruda.",
+      "allowedExamples": [".tmp/source-safe/hr-source-full-flow-report.json"],
+      "mustNotBe": ["raw_hr.xlsx", "raw_hr.csv", "old_database_export", "synthetic_fixture", "derived_tmp_original"]
+    },
+    {
+      "name": "sanitizedTyaExportPath",
+      "required": false,
+      "description": "Ruta local a export TyA original sanitizado si aplica, sin DPI/banco/email/telefono/nombre crudo.",
+      "allowedExamples": [".tmp/source-safe/tya-original-sanitized-export.json"],
+      "mustNotBe": ["raw_export.xlsx", "raw_export.csv", "old_database_export", "synthetic_fixture"]
+    },
+    {
+      "name": "projectConfigPath",
+      "required": false,
+      "description": "Ruta local opcional a configuracion source-safe del proyecto si no se usa contrato repo.",
+      "allowedExamples": ["backend/contracts/phase-a-source-safe-domain-mapping-v1.json"],
+      "mustNotBe": ["secret_env", "make_webhook", "service_account", "gemini_key"]
+    }
+  ],
+  "localOutputs": [
+    {
+      "name": "sourceSafeDomainsJson",
+      "pathRecommended": ".tmp/source-safe/tya-phase-a-domains.source-safe.local.json",
+      "mustStayLocal": true,
+      "commitAllowed": false,
+      "purpose": "Input local para real-data domain readiness pack."
+    },
+    {
+      "name": "readinessReportJson",
+      "pathRecommended": ".tmp/tya-phase-a-realdata-domain-readiness-pack/phase-a-realdata-domain-readiness-pack-report.json",
+      "mustStayLocal": true,
+      "commitAllowed": false,
+      "purpose": "Reporte local de dry-run."
+    },
+    {
+      "name": "readinessReportMd",
+      "pathRecommended": ".tmp/tya-phase-a-realdata-domain-readiness-pack/phase-a-realdata-domain-readiness-pack-report.md",
+      "mustStayLocal": true,
+      "commitAllowed": false,
+      "purpose": "Resumen local seguro de dry-run."
+    }
+  ],
+  "singleCommandPlan": {
+    "commandType": "PowerShell one block when Paula has computer",
+    "currentStatus": "not_requested_now",
+    "mustDo": [
+      "confirm repo path",
+      "confirm branch docs-tya-v6-v71-audit",
+      "validate source-safe input builder contract",
+      "validate realdata readiness pack contract",
+      "run local builder only if source-safe local inputs exist",
+      "run readiness pack with --input against local output",
+      "write reports only under .tmp",
+      "print verdict and next action"
+    ],
+    "mustNotDo": [
+      "git add .tmp",
+      "commit local output",
+      "upload private data",
+      "enable adapter",
+      "switch runtime",
+      "write Firestore",
+      "write HR",
+      "deploy",
+      "run Make/Gemini",
+      "execute payments"
+    ]
+  },
+  "localBuilderSafetyAssertions": [
+    {
+      "assertionId": "output_not_committed",
+      "required": true,
+      "description": "El output source-safe local y reportes .tmp no se commitean al repo."
+    },
+    {
+      "assertionId": "input_is_source_safe",
+      "required": true,
+      "description": "El builder solo puede aceptar reportes source-safe o export original sanitizado."
+    },
+    {
+      "assertionId": "no_sensitive_markers",
+      "required": true,
+      "description": "Si aparecen marcadores sensibles, bloquear antes de generar readiness."
+    },
+    {
+      "assertionId": "phase_a_business_rules",
+      "required": true,
+      "description": "Debe conservar junio como pagos/liquidaciones, certificaciones preservadas y sync sin duplicados."
+    },
+    {
+      "assertionId": "no_runtime_side_effects",
+      "required": true,
+      "description": "Ejecucion local no puede activar adapter, runtime, writes, imports ni deploy."
+    }
+  ],
+  "hardStops": [
+    "repoBranchMismatch",
+    "requiredContractMissing",
+    "privateDataRequestedInChat",
+    "rawHrInputDetected",
+    "rawSensitiveMarkerDetected",
+    "oldDatabaseInputDetected",
+    "syntheticFixtureMarkedReal",
+    "derivedTmpMarkedOriginal",
+    "localOutputCommitted",
+    "adapterEnabled",
+    "runtimeConnected",
+    "firestoreWriteAttempt",
+    "hrWriteAttempt",
+    "importAttempt",
+    "deployAttempt",
+    "makeGeminiCallAttempt",
+    "paymentAttempt",
+    "level0Level1ReprocessAttempt"
+  ],
+  "safeStateExpectedNow": {
+    "localCommandIssuedToPaula": false,
+    "builderExecuted": false,
+    "localOutputCommitted": false,
+    "adapterEnabled": false,
+    "runtimeConnected": false,
+    "domainImportExecuted": false,
+    "firestoreWrites": false,
+    "hrWrites": false,
+    "importsExecuted": false,
+    "deploy": false,
+    "production": false,
+    "makeWebhookLive": false,
+    "geminiLive": false,
+    "paymentProviderLive": false,
+    "realPayments": false,
+    "rawSensitiveDataInRepo": false,
+    "uiModulesModified": false,
+    "appCoreModified": false
+  }
+}

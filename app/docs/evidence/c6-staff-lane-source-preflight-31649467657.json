@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "cxorbia.c6.staff-lane-source-preflight.durable.v1",
+  "generatedAt": "2026-08-12T23:04:07.706Z",
+  "runId": 31649467657,
+  "jobId": 94290390013,
+  "artifactId": 9162011590,
+  "artifactDigest": "sha256:50b1b0be7d47594456e4b131099107ba7716906ca06655ce2ebf861d1979c9b1",
+  "requestId": "c6-staff-lane-source-preflight-20260812-06",
+  "requestCommitSha": "cb7156d5fb09d359e26a98d43c358b7b80c511c8",
+  "targetHeadSha": "d1951c7cee58070dd2b3714b6636552e429a691f",
+  "action": "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF",
+  "mode": "SOURCE_PREFLIGHT_ONLY",
+  "decision": "PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT_RUN",
+  "preflightDecision": "PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT",
+  "checks": {
+    "actionExplicitAndFailClosed": true,
+    "suffixDerivationRemoved": true,
+    "preflightBeforeProvider": true,
+    "staffSelectorDedicated": true,
+    "staffSelectorNoShopperHrFirestoreDependency": true,
+    "staffRuntimeNoTextPatching": true,
+    "staffCanonicalFormSelectors": true,
+    "productCanonicalSelectorsPresent": true,
+    "repositoryCleanAfterRun": true
+  },
+  "steps": {
+    "validateSourceOnlyRequest": "success",
+    "sourcePreflight": "success",
+    "googleCloudAuth": "skipped",
+    "toolInstall": "skipped",
+    "credentialSelector": "skipped",
+    "hostingRuntime": "skipped",
+    "summary": "success",
+    "artifactUpload": "success"
+  },
+  "safety": {
+    "providerCalls": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "hrReads": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "production": false
+  },
+  "phaseA": {
+    "certifiedPercent": 88,
+    "remainingPercent": 12,
+    "certifiedDeltaThisRun": 0,
+    "c6ExecutionLaneSourceReadinessPercent": 100
+  },
+  "nextGate": "NEW_EXPLICIT_HOSTING_RUNTIME_ONCE_AUTHORIZATION_REQUIRED"
+}

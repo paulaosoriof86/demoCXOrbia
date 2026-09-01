@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "1.0.0",
+  "evidenceId": "RC15-F8-TEMP-RESTORE-CLEANUP-HARDENING-20260828-01",
+  "generatedAt": "2026-08-28",
+  "phase": "F8_CUTOVER",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "headBeforeRepair": "7e084182b2be24cb36a811b5269baee22153a909",
+  "repairCommit": "183d56ed5cd70683c6dff1506c46e1beebed8281",
+  "executorPath": "tools/release/tya-f8-backup-restore-cutover-one-shot.mjs",
+  "authorizationId": "PAULA-F8-BACKUP-RESTORE-CUTOVER-20260827-01",
+  "authorizationStatusAfterRepair": "AUTHORIZED_NOT_YET_CONSUMED",
+  "findings": [
+    {
+      "id": "F8-EXECUTOR-MECH-005",
+      "classification": "PRE_EXECUTION_MECHANISM_DEFECT",
+      "detail": "The temporary restore database identifier was assigned before BACKUP_EXPORT. The finally block treated any non-null tempDb as cleanup-eligible, so an export failure before database creation could still issue an unnecessary DELETE mutation against a database name that this execution had never created."
+    },
+    {
+      "id": "F8-EXECUTOR-MECH-006",
+      "classification": "PRE_EXECUTION_MECHANISM_HARDENING_GAP",
+      "detail": "The temporary database identifier used only minute-level timestamp precision. Independent workspaces starting within the same minute could target the same temporary database identifier despite the local checkout lease."
+    },
+    {
+      "id": "F8-EXECUTOR-MECH-007",
+      "classification": "PRE_EXECUTION_MECHANISM_DEFECT",
+      "detail": "A failed or uncertain normal temporary-database DELETE could fall through to finally while tempDb remained set and automatically emit another DELETE request, conflicting with the no-automatic-retry execution contract."
+    }
+  ],
+  "repair": {
+    "executionSchemaVersion": "cxorbia.rc15.f8.backup-restore-cutover.execution.v4",
+    "tempDatabaseAllocatedOnlyAfterBackupExportCompletes": true,
+    "tempDatabaseRandomCollisionResistantSuffixBytes": 4,
+    "cleanupEligibilityRequiresAcceptedCreateRequest": true,
+    "cleanupEligibilitySetAfterCreateHttpAccepted": true,
+    "normalDeleteDisarmsCleanupBeforeDeleteRequest": true,
+    "finallyCleanupDisarmsItselfBeforeSingleDeleteRequest": true,
+    "automaticCleanupDeleteRetry": false,
+    "remoteGitBlobSha": "1d4b01bf3df3ec59ba84194a3b0d77f5c5425630",
+    "localExactBlobHashMatch": true,
+    "localSha256": "c6ddc2c25cb6f1242f89d5144b4e136ce1aa7a3c8b98a0ae049a90d165495a37",
+    "syntaxCheck": "PASS"
+  },
+  "execution": {
+    "providerExecutionAttempted": false,
+    "backupExportAttempted": false,
+    "restoreAttempted": false,
+    "cutoverAttempted": false,
+    "providerWrites": 0,
+    "businessDataWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "storageWrites": 0,
+    "rulesWrites": 0,
+    "deploys": 0,
+    "rebuilds": 0,
+    "reimports": 0,
+    "authorizationConsumed": false
+  },
+  "releaseChanged": false,
+  "authorizationExpanded": false,
+  "classification": "MECHANISM_TEMP_RESTORE_IDENTITY_AND_CLEANUP_HARDENED__EXTERNAL_TRANSPORT_OUTAGE_REMAINS",
+  "productP0Proven": false,
+  "productionRealReadiness": 95,
+  "next": "F8_EXECUTE_AUTHORIZED_BACKUP_RESTORE_CUTOVER_WHEN_SECURE_PROVIDER_EXECUTION_CHANNEL_IS_AVAILABLE"
+}

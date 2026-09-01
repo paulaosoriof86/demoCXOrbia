@@ -1,0 +1,153 @@
+{
+  "schemaVersion": "cxorbia.i4b.retry1.readonly-materialization-probe.v1",
+  "generatedAt": "2026-08-19T18:49:27.802Z",
+  "workflowRunId": 32289505247,
+  "workflowHeadSha": "e18cec8b16450ee13b6e51ebfda1725cb6298834",
+  "requestId": "cxorbia-i4b-single-dev-visit-lifecycle-e2e-retry1-20260819-01",
+  "gateId": "NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY1__HARNESS_SCOPE_FIXED__SYNTHETIC_VISIT_ONLY",
+  "decision": "NO_PROVIDER_MATERIALIZATION_OBSERVED_READONLY",
+  "synthetic": {
+    "visitExists": false,
+    "applicationExists": false,
+    "visitFingerprint": "434a197c69b643d712f6",
+    "applicationFingerprint": "2cf9a02fc2349e1d3249"
+  },
+  "traces": [
+    {
+      "tag": "application-create",
+      "commandType": "application.create",
+      "entityExpectedFingerprint": "a03a7d66d0d6999a",
+      "receiptExists": false,
+      "receiptProviderAck": null,
+      "receiptCommandType": null,
+      "receiptEntityMatches": null,
+      "auditExists": false,
+      "auditCommandType": null,
+      "auditEntityMatches": null
+    },
+    {
+      "tag": "application-approve",
+      "commandType": "application.status.update",
+      "entityExpectedFingerprint": "a03a7d66d0d6999a",
+      "receiptExists": false,
+      "receiptProviderAck": null,
+      "receiptCommandType": null,
+      "receiptEntityMatches": null,
+      "auditExists": false,
+      "auditCommandType": null,
+      "auditEntityMatches": null
+    },
+    {
+      "tag": "visit-schedule",
+      "commandType": "visit.state.update",
+      "entityExpectedFingerprint": "5596074df06c1944",
+      "receiptExists": false,
+      "receiptProviderAck": null,
+      "receiptCommandType": null,
+      "receiptEntityMatches": null,
+      "auditExists": false,
+      "auditCommandType": null,
+      "auditEntityMatches": null
+    },
+    {
+      "tag": "reschedule-request",
+      "commandType": "visit.reschedule",
+      "entityExpectedFingerprint": "5596074df06c1944",
+      "receiptExists": false,
+      "receiptProviderAck": null,
+      "receiptCommandType": null,
+      "receiptEntityMatches": null,
+      "auditExists": false,
+      "auditCommandType": null,
+      "auditEntityMatches": null
+    },
+    {
+      "tag": "reschedule-approved",
+      "commandType": "visit.reschedule",
+      "entityExpectedFingerprint": "5596074df06c1944",
+      "receiptExists": false,
+      "receiptProviderAck": null,
+      "receiptCommandType": null,
+      "receiptEntityMatches": null,
+      "auditExists": false,
+      "auditCommandType": null,
+      "auditEntityMatches": null
+    },
+    {
+      "tag": "cancel-request",
+      "commandType": "visit.cancel",
+      "entityExpectedFingerprint": "5596074df06c1944",
+      "receiptExists": false,
+      "receiptProviderAck": null,
+      "receiptCommandType": null,
+      "receiptEntityMatches": null,
+      "auditExists": false,
+      "auditCommandType": null,
+      "auditEntityMatches": null
+    },
+    {
+      "tag": "visit-realized",
+      "commandType": "visit.state.update",
+      "entityExpectedFingerprint": "5596074df06c1944",
+      "receiptExists": false,
+      "receiptProviderAck": null,
+      "receiptCommandType": null,
+      "receiptEntityMatches": null,
+      "auditExists": false,
+      "auditCommandType": null,
+      "auditEntityMatches": null
+    },
+    {
+      "tag": "questionnaire-submit",
+      "commandType": "visit.questionnaire.submit",
+      "entityExpectedFingerprint": "5596074df06c1944",
+      "receiptExists": false,
+      "receiptProviderAck": null,
+      "receiptCommandType": null,
+      "receiptEntityMatches": null,
+      "auditExists": false,
+      "auditCommandType": null,
+      "auditEntityMatches": null
+    },
+    {
+      "tag": "review-approved",
+      "commandType": "visit.review.update",
+      "entityExpectedFingerprint": "5596074df06c1944",
+      "receiptExists": false,
+      "receiptProviderAck": null,
+      "receiptCommandType": null,
+      "receiptEntityMatches": null,
+      "auditExists": false,
+      "auditCommandType": null,
+      "auditEntityMatches": null
+    },
+    {
+      "tag": "version-conflict",
+      "commandType": "visit.review.update",
+      "entityExpectedFingerprint": "5596074df06c1944",
+      "receiptExists": false,
+      "receiptProviderAck": null,
+      "receiptCommandType": null,
+      "receiptEntityMatches": null,
+      "auditExists": false,
+      "auditCommandType": null,
+      "auditEntityMatches": null
+    }
+  ],
+  "safety": {
+    "providerCalls": 0,
+    "firestoreWrites": 0,
+    "authReads": 0,
+    "authWrites": 0,
+    "historicalShopperAccess": false,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false
+  }
+}

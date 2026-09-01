@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "cxorbia.c6.shopper-auth-skip13-source-only-pass.v1",
+  "generatedAt": "2026-08-06T09:01:00-06:00",
+  "decision": "PASS_C6_SKIP13_AUTH_DISPOSITION_SOURCE_ONLY",
+  "authorizationId": "chat-20260806-c6-skip13-auth-repair-01",
+  "target": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "docs-tya-v6-v71-audit",
+    "pullRequest": 7,
+    "tenantId": "tya",
+    "projectId": "cinepolis"
+  },
+  "source": {
+    "providerRunId": 31104541809,
+    "artifactId": 8968941587,
+    "planRows": 340,
+    "planDigestBefore": "acc93da842d1a5d3244327680f88539f0651cb101bae09dd231fd8b5008bea92"
+  },
+  "disposition": {
+    "authorizedProfiles": 13,
+    "matchedProfiles": 13,
+    "unmatchedProfiles": 0,
+    "policy": "SKIP_AUTH_REPAIR_PRESERVE_HISTORY",
+    "primaryBefore": "HOLD",
+    "primaryAfter": "PRESERVE_NO_AUTH"
+  },
+  "plan": {
+    "rows": 340,
+    "uniqueRows": 340,
+    "operationCounts": {
+      "CREATE_AUTH": 81,
+      "UPDATE_AUTH": 46,
+      "NO_OP": 73,
+      "HOLD": 0,
+      "PRESERVE_NO_AUTH": 140
+    },
+    "subchangeCounts": {
+      "email": 39,
+      "password": 14,
+      "claims": 38
+    },
+    "planDigestAfter": "6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b",
+    "readyForAuthRepairByIdentity": true,
+    "identityHoldsRemaining": 0,
+    "executable": false,
+    "executionRequiresSeparateAuthorization": true
+  },
+  "preservation": {
+    "historicalProfilesDeleted": 0,
+    "visitsDeleted": 0,
+    "certificationsDeleted": 0,
+    "liquidationsDeleted": 0,
+    "providerAccountsChanged": 0,
+    "futureManualReactivationAllowed": true
+  },
+  "remainingProductionBlockers": [
+    "LIVE_HR_PROVIDER_METADATA_AUTODISCOVERY_AND_AUGUST_GT_HN"
+  ],
+  "safety": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "membershipWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "production": false
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "cxorbia.i4b.retry1.preprovider-docsync-failure.v1",
+  "syncEpoch": "CXORBIA-20260819-I4B-RETRY1-PREPROVIDER-DOCSYNC-FIX-28",
+  "generatedAt": "2026-08-19T14:08:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "workflowRunId": 32296607712,
+  "workflowJobId": 96209238773,
+  "workflowHeadSha": "f635a071a79e42489f38b3871208725ad8b0f3e1",
+  "artifactId": 9381423175,
+  "artifactDigest": "sha256:e88ccd8cc244f7fd5a571ffbc2c9082bd56267f85a591a2cdbd959d85e0dfcb2",
+  "decision": "HOLD_I4B_RETRY1_PRE_PROVIDER__SOURCE_TRUTH_DOCUMENT_DESYNC",
+  "classification": "DOCUMENTATION_SYNC_FAILURE_PRIMARY__PIPELINE_FINALIZER_SYNTAX_DEFECT_SECONDARY",
+  "sourceTruth": {
+    "decision": "FAIL_SOURCE_TRUTH_SYNC",
+    "errors": [
+      "FRONTIER:app/docs/ADDENDUM-MAESTRO-PLAN-UNIFICADO-PHASE-A-NO-DESVIACION-CXORBIA-TYA-20260817.md"
+    ]
+  },
+  "pipeline": {
+    "checkout": "PASS",
+    "authorizationContract": "PASS_BEFORE_SOURCE_TRUTH_CHECK",
+    "providerRuntimePrepared": false,
+    "providerExecutionEntered": false,
+    "finalizerPersisted": false,
+    "finalizerError": "shell syntax error: unexpected end of file"
+  },
+  "gate": {
+    "authorized": true,
+    "consumed": false,
+    "executionsConsumed": 0,
+    "sameAuthorizationReusable": true,
+    "reason": "The run stopped before provider execution and the gate remained enabled/unconsumed."
+  },
+  "safety": {
+    "syntheticVisitCreated": false,
+    "providerCommandCalls": 0,
+    "providerCommittedCalls": 0,
+    "providerWritesReported": 0,
+    "historicalShopperAccess": false,
+    "realHrVisitMutation": false,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "merge": false,
+    "production": false
+  },
+  "nextAction": "Synchronize the canonical live documents, repair the finalizer shell syntax, then execute the same already-authorized Retry1 on the observable PR lane without expanding scope."
+}

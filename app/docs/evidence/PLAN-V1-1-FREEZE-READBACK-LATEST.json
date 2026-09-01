@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "cxorbia.master-plan-freeze-readback.v1",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "masterPlanVersion": "1.1.0",
+  "planChangeRequest": "PCR-20260826-PRODUCTION-ACCELERATION-01",
+  "status": "PASS_DIRECT_REMOTE_READBACK",
+  "materializationCommitSha": "3e495eaa696411d3bf163e1112f5724f727ac58c",
+  "materializationTreeSha": "2191eaf32bf1453ee0bc781a2ca7d04815b27f83",
+  "expectedParentHead": "cf7c2bccf0aec2678a15afccc85f93dfe154de14",
+  "observedBranch": "docs-tya-v6-v71-audit",
+  "observedHeadAtReadback": "3e495eaa696411d3bf163e1112f5724f727ac58c",
+  "headMatchedMaterializationCommit": true,
+  "plan": {"path":"app/docs/PLAN-OPERATIVO-UNIFICADO-CXORBIA-TYA-VIGENTE.md","blobSha":"0ea2cd9802e687938086886d8d03648f105a7d64","sha256":"7b49f7df172f8b322c3ae38bdf55f50936696d2d6f7b5086ae8a68e97827dafa","status":"FROZEN"},
+  "continuityLock": {"path":"backend/config/cxorbia-phase-a-continuity-lock.json","blobSha":"14b329309f548f7c881d3294f3fd225e6bd54f66","version":"3.0.0","next":"M3_TERMINAL_13_CLOSURE"},
+  "executionCursor": {"phase":"M3_F1_F2_INERTIZATION_CANONICAL_AUTHORITY","step":"M3_TERMINAL_13_CLOSURE","residualHolds":13,"batch4Forbidden":true},
+  "progress": {"phaseA":"98/100","productionRealReadiness":"69/100"},
+  "providerPromotionMechanismRequiredBeforeRecovery": true,
+  "providerMutationAuthorizedNow": false,
+  "safety": {"providerWrites":0,"dataWrites":0,"deploys":0,"merge":false,"frontendFunctionalChanges":0},
+  "note": "This receipt proves the V1.1 freeze materialization commit. Later control-plane commits may advance branch HEAD without changing the frozen plan blob/hash."
+}

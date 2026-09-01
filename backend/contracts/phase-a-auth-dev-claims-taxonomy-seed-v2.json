@@ -1,0 +1,90 @@
+{
+  "contractId": "phase-a-auth-dev-claims-taxonomy-seed-v2",
+  "status": "draft_safe_not_connected",
+  "generatedAt": "2026-07-09",
+  "purpose": "Extend the Auth DEV claims seed plan with the full operational persona taxonomy, without activating Auth, writing claims or exposing personal data.",
+  "dependsOn": [
+    "auth-rbac-phase-a-v1",
+    "phase-a-role-taxonomy-org-scope-v1",
+    "phase-a-protected-firestore-rules-dev-draft-v1"
+  ],
+  "safeState": {
+    "authProviderConnected": false,
+    "usersCreated": false,
+    "claimsWritten": false,
+    "frontendConnected": false,
+    "firestoreWritesEnabled": false,
+    "importsEnabled": false,
+    "productionEnabled": false,
+    "containsSecrets": false,
+    "containsSensitiveData": false
+  },
+  "claimShape": {
+    "required": ["tenantId", "role", "personaType", "scope", "permissionsVersion"],
+    "optional": ["projectIds", "countryIds", "shopperId", "clientId", "staffId", "franchiseId", "representativeId"],
+    "forbidden": ["email", "password", "phone", "rawName", "documentRaw", "bankAccountRaw", "signedNdaRaw", "providerToken", "privateWebhookUrl", "sourcePrivateUrl", "workbookRaw"]
+  },
+  "personaTemplatesRequired": [
+    "tenantOwner",
+    "franchiseOwner",
+    "countryRepresentative",
+    "operationsCoordinator",
+    "projectCoordinator",
+    "fieldRepresentative",
+    "financeOperator",
+    "certificationOperator",
+    "clientBrandAdmin",
+    "clientBrandViewer",
+    "shopperEvaluator"
+  ],
+  "personaToTechnicalRole": {
+    "tenantOwner": "tenantAdmin",
+    "franchiseOwner": "tenantAdmin",
+    "countryRepresentative": "projectAdmin",
+    "operationsCoordinator": "projectAdmin",
+    "projectCoordinator": "projectAdmin",
+    "fieldRepresentative": "projectAdmin",
+    "financeOperator": "financeAdmin",
+    "certificationOperator": "certificationAdmin",
+    "clientBrandAdmin": "clientAdmin",
+    "clientBrandViewer": "clientViewer",
+    "shopperEvaluator": "shopper"
+  },
+  "scopeRules": {
+    "tenantOwner": ["tenant"],
+    "franchiseOwner": ["tenant", "country"],
+    "countryRepresentative": ["country", "tenantProjectOrCountry"],
+    "operationsCoordinator": ["tenantProject", "tenantProjectOrCountry"],
+    "projectCoordinator": ["tenantProject"],
+    "fieldRepresentative": ["tenantProject", "country"],
+    "financeOperator": ["tenantProject", "tenantProjectOrCountry"],
+    "certificationOperator": ["tenantProject", "tenantProjectOrCountry"],
+    "clientBrandAdmin": ["tenantProject"],
+    "clientBrandViewer": ["tenantProject"],
+    "shopperEvaluator": ["ownTenantOrProject"]
+  },
+  "gates": {
+    "devClaimsDryRun": {
+      "status": "allowed_validator_only",
+      "writes": false
+    },
+    "devClaimsWrite": {
+      "status": "blocked",
+      "requirements": ["explicitGO", "testUsersOnly", "auditPlan", "rollbackPlan", "rulesDryRun"]
+    },
+    "clientRolesActivation": {
+      "status": "blocked_until_rbac_update",
+      "requirements": ["clientAdminAndClientViewerInRules", "clientScopesReviewed", "AcademiaUpdated"]
+    },
+    "productionClaims": {
+      "status": "blocked",
+      "requirements": ["separateProductionGO", "smokeGO", "rollback", "noCriticalNOGO"]
+    }
+  },
+  "auditRequirements": [
+    "Every claim template must be source-safe and contain only opaque IDs.",
+    "Every future claim write requires actorUserId, reason, timestamp, previousClaimsRef and auditRef.",
+    "Persona changes must preserve scope and cannot silently expand project/country access.",
+    "Client and shopper personas must never include provider credentials or private source references."
+  ]
+}

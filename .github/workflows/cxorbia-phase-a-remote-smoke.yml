@@ -1,0 +1,129 @@
+name: CXOrbia Phase A Remote Smoke
+
+# Manual-only reusable remote verification.
+# No deploy, providers, database writes, imports or production actions.
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: 'URL HTTPS del preview/DEV/staging a validar'
+        required: true
+        type: string
+      proof_url:
+        description: 'URL HTTPS del build proof JSON'
+        required: true
+        type: string
+      expected_commit:
+        description: 'Commit exacto que debe declarar el proof'
+        required: true
+        type: string
+      expected_build:
+        description: 'Build label exacto que debe declarar el proof'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cxorbia-phase-a-remote-smoke-${{ github.ref }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  remote-smoke:
+    name: Phase A visible remote smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate inputs
+        run: |
+          set -euo pipefail
+          URL='${{ inputs.base_url }}'
+          PROOF='${{ inputs.proof_url }}'
+          COMMIT='${{ inputs.expected_commit }}'
+          BUILD='${{ inputs.expected_build }}'
+          for value in "$URL" "$PROOF"; do
+            if [[ ! "$value" =~ ^https:// ]]; then
+              echo 'URLs must start with https://'
+              exit 1
+            fi
+            if [[ "$value" =~ localhost|127\.0\.0\.1 ]]; then
+              echo 'URLs must be remote, not localhost'
+              exit 1
+            fi
+          done
+          if [[ ! "$COMMIT" =~ ^[0-9a-f]{40}$ ]]; then
+            echo 'expected_commit must be a full 40-character SHA.'
+            exit 1
+          fi
+          if [ -z "$BUILD" ]; then
+            echo 'expected_build is required.'
+            exit 1
+          fi
+          echo "CXORBIA_SMOKE_BASE_URL=$URL" >> "$GITHUB_ENV"
+          echo "CXORBIA_PROOF_URL=$PROOF" >> "$GITHUB_ENV"
+          echo "CXORBIA_EXPECT_DEPLOY_COMMIT=$COMMIT" >> "$GITHUB_ENV"
+          echo "CXORBIA_EXPECT_BUILD=$BUILD" >> "$GITHUB_ENV"
+
+      - name: Verify exact deployed proof
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/phase-a-remote-smoke
+          curl -fsSL --max-time 20 "$CXORBIA_PROOF_URL" > .tmp/phase-a-remote-smoke/build-proof.json
+          node <<'NODE'
+          const fs = require('fs');
+          const proof = JSON.parse(fs.readFileSync('.tmp/phase-a-remote-smoke/build-proof.json','utf8'));
+          const safe = proof.environment === 'dev' &&
+            proof.build === process.env.CXORBIA_EXPECT_BUILD &&
+            proof.commit === process.env.CXORBIA_EXPECT_DEPLOY_COMMIT &&
+            proof.tenantId === 'tya' && proof.projectId === 'cinepolis' &&
+            proof.visibleDataGate === true &&
+            proof.expectedPeriods === 14 && proof.expectedVisits === 616 &&
+            proof.expectedShoppers === 210 && proof.expectedCriticalRoutes === 13 &&
+            proof.hostingOnly === true && proof.firestoreWrites === false &&
+            proof.authWrites === false && proof.storageWrites === false &&
+            proof.imports === false && proof.rules === false && proof.functions === false &&
+            proof.make === false && proof.gemini === false && proof.payments === false &&
+            proof.production === false;
+          if (!safe) throw new Error('Remote proof does not match the authorized safe build contract.');
+          console.log('Exact remote proof verified.');
+          NODE
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install Playwright
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts playwright@1.47.2
+          npx playwright install --with-deps chromium
+
+      - name: Run authoritative visible and 13-route smoke
+        env:
+          CXORBIA_BASE_URL: ${{ env.CXORBIA_SMOKE_BASE_URL }}
+        run: |
+          set -euo pipefail
+          node tools/qa/tya-phase-a-visible-data-smoke-r17.mjs \
+            --out .tmp/phase-a-remote-smoke/visible-r17
+          printf 'status=success\nurl=%s\nproof_commit=%s\nbuild=%s\nvisible_smoke=pass\ncritical_routes=13/13\n' \
+            "$CXORBIA_SMOKE_BASE_URL" "$CXORBIA_EXPECT_DEPLOY_COMMIT" "$CXORBIA_EXPECT_BUILD" \
+            > .tmp/phase-a-remote-smoke/remote-status.txt
+
+      - name: Upload remote smoke report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-a-remote-smoke-report
+          path: .tmp/phase-a-remote-smoke
+          if-no-files-found: error
+          retention-days: 14

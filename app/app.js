@@ -24,26 +24,29 @@ CX.setFavicon = function(){
   }catch(e){}
 };
 
-/* ---------- PWA: instalación automática según dispositivo + navegador ---------- */
+/* ---------- PWA: instalación asistida según dispositivo + navegador (sin prometer descarga automática) ---------- */
 CX._deferredPrompt=null;
 CX.setupPWA = function(){
   /* registra el service worker para que sea instalable */
-  if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').then(reg=>{ try{reg.update();}catch(e){} }).catch(()=>{});
+    /* auto-recarga una sola vez cuando un SW nuevo toma el control
+       (así el usuario recibe la versión corregida sin refrescar a mano) */
+    let reloaded=false;
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{
+      if(reloaded)return; reloaded=true; location.reload();
+    });
+  }
   const ua=navigator.userAgent||'';
   const isIOS=/iPad|iPhone|iPod/.test(ua)&&!window.MSStream;
   const isStandalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone;
   if(isStandalone) return; /* ya está instalada */
-
-  /* Chrome/Edge/Android: capturar el evento y disparar el prompt automáticamente */
-  window.addEventListener('beforeinstallprompt',(e)=>{
-    e.preventDefault(); CX._deferredPrompt=e;
-    /* lanza el prompt apenas el usuario interactúe (requisito de los navegadores) */
-    const fire=()=>{ if(CX._deferredPrompt){ CX._deferredPrompt.prompt(); CX._deferredPrompt=null; }
-      document.removeEventListener('click',fire); document.removeEventListener('keydown',fire); };
-    if(!sessionStorage.getItem('cx_pwa_shown')){ sessionStorage.setItem('cx_pwa_shown','1');
-      document.addEventListener('click',fire,{once:false}); document.addEventListener('keydown',fire,{once:false}); }
-  });
-  /* iOS Safari no soporta prompt programático: mostrar una sola guía discreta */
+  /* R19 crítico 3.A (20260716): app.js YA NO escucha beforeinstallprompt — antes había DOS
+     propietarios del evento (este archivo y core/pwa.js), lo que podía disparar prompt() dos
+     veces. core/pwa.js (CX.pwa.init/_armFirstInteraction) es ahora el ÚNICO dueño: captura el
+     evento, arma un listener de una sola vez para la primera interacción elegible y llama
+     prompt() exactamente una vez. Aquí solo queda la guía discreta de iOS (Safari nunca expone
+     el evento, así que no puede haber doble disparo). */
   if(isIOS && !sessionStorage.getItem('cx_pwa_ios')){
     sessionStorage.setItem('cx_pwa_ios','1');
     setTimeout(()=>{ if(CX.ui&&CX.ui.toast) CX.ui.toast('📲 Para instalar la app: Compartir → “Agregar a inicio”','',6000); },2500);
@@ -66,63 +69,142 @@ CX.app = {
     lg.classList.remove('hidden');
     const b=CX.BRAND;
     const hasClientLogo = !!(b.logoUrl||b.logo);
+    /* P0-2 (paquete V110→V111, 20260714): bug confirmado — sin logo, el nombre del tenant se
+       mostraba DOS veces: una en brandBlock (brand-name) y otra en login-title (que reusaba
+       b.clientName). Con logo tampoco existía un título funcional realmente distinto (login-title
+       seguía mostrando el nombre, no una descripción de lo que hace el sistema). Ahora
+       login-title SIEMPRE es un título funcional (b.tagline o un fallback neutral) y NUNCA
+       repite el nombre del tenant — el nombre aparece una única vez (en el logo si existe, o en
+       brand-name si no). */
+    const functionalTitle = b.tagline || 'Plataforma operativa de campo';
     const brandBlock = hasClientLogo
       ? `<img class="client-logo" src="${b.logoUrl||b.logo}" alt="logo" style="max-height:64px;max-width:200px;object-fit:contain">`
       : `<div class="logo-mark"><span class="dot"></span></div>
-         <div><div class="brand-name">${b.clientName||b.name}</div><div class="brand-sub">${b.tagline}</div></div>`;
+         <div><div class="brand-name">${b.clientName||b.name}</div></div>`;
     /* banderitas SOLO de los países configurados para el tenant/franquicia.
        Si no hay países elegidos, no se muestran (no listar todos). */
-    let paises = (b.countries && b.countries.length) ? b.countries : [];
-    if(!paises.length){ /* derivar de los proyectos reales del tenant, si existen */
-      try{ const prj=(CX.data&&CX.data.projects)||[]; const set=new Set(); prj.forEach(p=>(p.countries||[]).forEach(c=>set.add(c))); paises=[...set]; }catch(e){}
+    /* R21: banderitas priorizan CX.tenantProfile.countries; si no existe, se derivan de los
+       proyectos activos del tenant (excluyendo inactiveProjectIds) — nunca un catálogo global. */
+    const tp = CX.tenantProfile || {};
+    let paises = (tp.countries && tp.countries.length) ? tp.countries : (b.countries && b.countries.length) ? b.countries : [];
+    if(!paises.length){
+      try{
+        const prj=(CX.data&&CX.data.projects)||[];
+        const active=Array.isArray(tp.activeProjectIds)?tp.activeProjectIds:null;
+        const inactive=Array.isArray(tp.inactiveProjectIds)?tp.inactiveProjectIds:[];
+        /* P1-2: activeProjectIds/inactiveProjectIds suelen traer programKeys de proyecto, no ids
+           de periodo — comparar contra id, CX.data.programKey(p) y p.program, no solo p.id. */
+        const idsOf=(pr)=>{const arr=[pr.id]; try{if(CX.data&&CX.data.programKey)arr.push(CX.data.programKey(pr));}catch(e){} if(pr.program)arr.push(pr.program); return arr;};
+        const scoped = active ? prj.filter(pr=>idsOf(pr).some(x=>active.includes(x))) : prj.filter(pr=>!idsOf(pr).some(x=>inactive.includes(x)));
+        const set=new Set(); scoped.forEach(p=>(p.countries||[]).forEach(c=>set.add(c))); paises=[...set];
+      }catch(e){}
     }
+    /* R21: roles visibles/flags gobernados por CX.tenantProfile cuando el adapter lo inyecta;
+       sin perfil (entorno actual sin adapter) se preserva el comportamiento existente. */
+    const visibleRoles = Array.isArray(tp.visibleLoginRoles) && tp.visibleLoginRoles.length ? tp.visibleLoginRoles : ['admin','cliente','shopper','ops','coordinador','aliado'];
+    const showAdminBtn = visibleRoles.includes('admin');
+    const showClienteBtn = visibleRoles.includes('cliente') && tp.clientPortalVisible!==false;
+    const showShopperBtn = visibleRoles.includes('shopper');
+    const showShopperReg = showShopperBtn && tp.allowShopperRegistration!==false;
+    const showTestArea = tp.showRoleTestArea!==false;
+    const testAreaLabel = tp.roleTestAreaLabel || 'Accesos de validación';
+    const altRoleDefs = {ops:'👥 Operativo',coordinador:'🌎 Coordinador',aliado:'🤝 Aliado'};
+    const altRoles = Object.keys(altRoleDefs).filter(id=>visibleRoles.includes(id));
+    /* P0-1 (V161): visibleLoginRoles determina QUÉ accesos existen; showRoleTestArea solo
+       controla el rótulo/separador de "validación" — nunca debe ocultar un rol autorizado.
+       Con showRoleTestArea=false, Operativo/Coordinador/Aliado (si están en visibleLoginRoles)
+       se siguen mostrando como accesos normales, sin texto técnico ni separador. */
+    const altRolesBtnsHTML = altRoles.map(id=>`<button class="btn btn-ghost btn-sm role-alt" data-role="${id}">${altRoleDefs[id]}</button>`).join('');
+    const altRolesBlock = altRoles.length
+      ? (showTestArea
+          ? `<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+          <div style="font-size:11px;color:var(--t3);text-align:center;margin-bottom:6px">${testAreaLabel}</div>
+          <div class="flex" style="gap:6px;justify-content:center;flex-wrap:wrap">
+            ${altRolesBtnsHTML}
+          </div>
+        </div>`
+          : `<div class="flex" style="gap:6px;justify-content:center;flex-wrap:wrap;margin-top:12px">${altRolesBtnsHTML}</div>`)
+      : '';
     const flagsRow = paises.length
       ? `<div class="login-flags">${paises.slice(0,8).map(c=>`<span class="cflag" title="${CX.paisName?CX.paisName(c):c}"><img src="https://flagcdn.com/24x18/${c.toLowerCase()}.png" alt="${c}" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'${c}',className:'cflag-txt'}))"><span>${c}</span></span>`).join('')}${paises.length>8?`<span style="font-size:11px;color:var(--t3);align-self:center">+${paises.length-8}</span>`:''}</div>`
       : '';
     /* logo pequeño de CXOrbia como "desarrollado por" (siempre visible en el pie del login) */
     const cxLogo = `<svg width="16" height="16" viewBox="0 0 64 64" style="vertical-align:middle"><rect width="64" height="64" rx="14" fill="#0d2740"/><circle cx="32" cy="32" r="15" fill="none" stroke="#4ab4e6" stroke-width="6" stroke-dasharray="58 26"/><circle cx="44" cy="22" r="4.5" fill="#fff"/></svg>`;
     const devForFooter = `<div class="login-poweredby">${cxLogo} <span>Desarrollado por <b>CXOrbia</b></span></div>`;
+    /* CLOUD V7 — pantalla de login canónica estilo Emergent: dos columnas.
+       Izq: panel orbit de marca (producto Gravicentra CX). Der: acceso corporativo.
+       Se elimina de ESTA pantalla el copy de demo/validación; los accesos alternos y el
+       área de test se conservan en la lógica pero fuera del login canónico (via _isDevAccess). */
+    const NODES_V7=[['CLIENTES',0],['TECNOLOGÍA',60],['PERSONAS',120],['OPERACIÓN',180],['PROCESOS',240],['INFORMACIÓN',300]];
+    const pol=(a,r)=>{const t=(a-90)*Math.PI/180;return[50+r*Math.cos(t),50+r*Math.sin(t)];};
+    const orbitSVG=`<svg class="lo-orbit" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <defs><radialGradient id="loCore" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#4a86e8" stop-opacity=".14"/><stop offset="100%" stop-color="#4a86e8" stop-opacity="0"/></radialGradient></defs>
+        <circle class="lo-ring lo-ring--d" cx="50" cy="50" r="46"/><circle class="lo-ring" cx="50" cy="50" r="45"/><circle class="lo-ring" cx="50" cy="50" r="33"/><circle class="lo-ring" cx="50" cy="50" r="19"/>
+        <circle cx="50" cy="50" r="10" fill="url(#loCore)"/>
+        ${NODES_V7.map(([,a])=>{const[dx,dy]=pol(a,33);return `<line class="lo-spoke" x1="50" y1="50" x2="${dx.toFixed(1)}" y2="${dy.toFixed(1)}"/>`;}).join('')}
+        ${NODES_V7.map(([,a])=>{const[dx,dy]=pol(a,33);return `<circle class="lo-dot" cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="0.9"/>`;}).join('')}
+        <g class="lo-sat lo-sat--a"><circle cx="50" cy="4" r="1.15"/></g>
+        <g class="lo-sat lo-sat--b"><circle cx="83" cy="50" r="0.9"/></g>
+        <g class="lo-sat lo-sat--c"><circle cx="50" cy="31" r="0.8"/></g>
+        <circle class="lo-core" cx="50" cy="58" r="0"/>
+      </svg>
+      ${NODES_V7.map(([label,a])=>{const[lx,ly]=pol(a,45);return `<span class="lo-node" style="left:${lx.toFixed(1)}%;top:${ly.toFixed(1)}%">${label}</span>`;}).join('')}
+      <div class="lo-corelabel"><span class="lo-brand">Gravicentra<em>CX</em></span><span class="lo-core-lbl"><i></i>CORE</span></div>`;
+    const flagsV7 = paises.length
+      ? `<div class="lg2-flags" role="list">${paises.map(c=>`<span role="listitem" class="lg2-flag" title="${CX.paisName?CX.paisName(c):c}"><img src="https://flagcdn.com/24x18/${c.toLowerCase()}.png" alt="" onerror="this.replaceWith(Object.assign(document.createElement('b'),{textContent:'${c}'}))"><span>${CX.paisName?CX.paisName(c):c}</span></span>`).join('')}</div>`
+      : '';
+    const roleCard=(role,ic,tt,dd)=>`<button class="lg2-role role-btn role-${role}" data-role="${role}"><span class="lg2-role__ic">${ic}</span><span class="lg2-role__b"><span class="lg2-role__t">${tt}</span><span class="lg2-role__d">${dd}</span></span></button>`;
+    /* tenant visible en la franja: nunca el nombre de producto legacy 'CXOrbia' */
+    const tenantName = (b.clientName && b.clientName!=='CXOrbia') ? b.clientName : (b.consultora || 'T&A Consultores');
     lg.innerHTML=`
-      <div class="login-card">
-        <div class="login-brand">
-          ${brandBlock}
+      <div class="lg2">
+        <header class="lg2-strip">
+          <div class="lg2-strip__tenant">${(b.clientName&&hasClientLogo)?`<img class="lg2-strip__logo lg2-strip__logo--img" src="${b.logoUrl||b.logo}" alt="${tenantName}">`:`<span class="lg2-strip__logo lg2-strip__logo--txt">${((tenantName).match(/[A-Za-z&]+/g)||['T&A'])[0].slice(0,3)}</span><span class="lg2-strip__id"><b>${tenantName}</b><small>${b.clientTag||'Consultora · Field Operations'}</small></span>`}</div>
+          <div class="lg2-strip__center"><span class="lg2-strip__micro">ECOSISTEMA CENTRADO EN EL CLIENTE</span><span class="lg2-strip__sub">Consultora · Field Operations</span></div>
+        </header>
+        <div class="lg2-body">
+        <aside class="lg2-aside">
+          <div class="lg2-stage">${orbitSVG}</div>
+          <div class="lg2-intel"><p class="lg2-intel__t">FIELD OPERATIONS INTELLIGENCE</p><p class="lg2-intel__p">Donde <strong>cada visita, cada dato y cada decisión</strong> orbitan alrededor de lo que <strong>realmente importa hoy.</strong></p><p class="lg2-intel__foot">v1.0 · ${new Date().getFullYear()} · Powered by Gravicentra CX</p></div>
+        </aside>
+        <main class="lg2-main">
+          <form class="lg2-card" id="loginForm" novalidate>
+            <div class="lg2-head">${(b.clientName&&hasClientLogo)?`<img class="lg2-tenantlogo" src="${b.logoUrl||b.logo}" alt="">`:''}<button type="button" class="lg2-lang" id="lgLang" aria-label="Idioma">🌐 ES</button></div>
+            <span class="lg2-eyebrow">INGRESO</span>
+            <h1 class="lg2-h">Iniciá sesión</h1>
+            <p class="lg2-sub">Accedé con tu cuenta corporativa para gestionar operaciones de campo.</p>
+            ${paises.length?`<div class="lg2-field lg2-field--flags">${flagsV7}</div>`:''}
+            <div class="lg2-field"><span class="lg2-label lg2-label--eyebrow">PERFIL</span><div class="lg2-roles">
+              ${showAdminBtn?roleCard('admin','🖥️','Administración / Coordinación','Operación, proyectos, finanzas y configuración'):''}
+              ${showClienteBtn?roleCard('cliente','📈','Portal del Cliente','Resultados, score por sucursal, acciones y reportes'):''}
+              ${showShopperBtn?roleCard('shopper','📱','Shopper / Evaluador','Portal móvil: visitas, certificación y pagos'):''}
+            </div></div>
+            <div class="lg2-field"><label class="lg2-label" for="lgUser">Usuario o correo corporativo</label><input id="lgUser" class="lg2-input" type="text" autocomplete="username" name="username" inputmode="text" autocapitalize="none" spellcheck="false" placeholder="usuario o correo"></div>
+            <div class="lg2-field"><label class="lg2-label" for="lgPass">Contraseña</label><input id="lgPass" class="lg2-input" type="password" autocomplete="current-password" name="password" placeholder="••••••••"></div>
+            <button type="submit" class="lg2-submit" id="lgSubmit">Ingresar</button>
+            ${showShopperReg?`<div class="lg2-foot"><a id="goReg">¿Sos evaluador nuevo? Registrate acá →</a></div>`:''}
+          </form>
+        </main>
         </div>
-        <div class="login-divider"></div>
-        <div class="login-title">${b.clientName?b.clientName:'Plataforma operativa de campo'}</div>
-        <div class="login-sub">Selecciona un perfil para entrar al ${b.demoMode?'demo':'sistema'}</div>
-        ${flagsRow}
-        <button class="role-btn role-admin" data-role="admin">
-          <div class="r-ic">🖥️</div>
-          <div><div class="r-t">Administración / Coordinación</div>
-          <div class="r-d">Operación, proyectos, finanzas y configuración</div></div>
-        </button>
-        <button class="role-btn role-cliente" data-role="cliente">
-          <div class="r-ic">📈</div>
-          <div><div class="r-t">Portal del Cliente (marca evaluada)</div>
-          <div class="r-d">Resultados, score por sucursal, acciones y reportes</div></div>
-        </button>
-        <button class="role-btn role-shopper" data-role="shopper">
-          <div class="r-ic">📱</div>
-          <div><div class="r-t">Shopper / Evaluador</div>
-          <div class="r-d">Portal móvil: visitas, certificación y pagos</div></div>
-        </button>
-        <div style="text-align:center;margin-top:6px"><a id="goReg" style="font-size:12.5px;color:var(--brand);font-weight:600;cursor:pointer">¿Eres evaluador nuevo? Regístrate aquí →</a></div>
-        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
-          <div style="font-size:11px;color:var(--t3);text-align:center;margin-bottom:6px">Probar acceso por rol (matriz de permisos)</div>
-          <div class="flex" style="gap:6px;justify-content:center;flex-wrap:wrap">
-            <button class="btn btn-ghost btn-sm role-alt" data-role="ops">👥 Operativo</button>
-            <button class="btn btn-ghost btn-sm role-alt" data-role="coordinador">🌎 Coordinador</button>
-            <button class="btn btn-ghost btn-sm role-alt" data-role="aliado">🤝 Aliado</button>
-          </div>
-        </div>
-        ${b.clientName?`<div class="login-devfor">Plataforma operativa para <b>${b.clientName}</b></div>`:''}
-        ${devForFooter}
-        <div style="text-align:center;margin-top:14px"><button class="btn btn-ghost btn-sm" id="pwaBtn">📲 Instalar como app</button></div>
-        ${b.demoMode?`<div style="text-align:center;margin-top:10px;font-size:11px;color:var(--t3)">
-          <span class="bdg bdg-a">● Demo comercial · datos ficticios</span></div>`:''}
       </div>`;
-    lg.querySelectorAll('.role-btn').forEach(b=>b.addEventListener('click',()=>this.selectRole(b.dataset.role)));
-    lg.querySelectorAll('.role-alt').forEach(b=>b.addEventListener('click',()=>this.selectRole(b.dataset.role)));
+    lg.querySelector('#loginForm')?.addEventListener('submit',(e)=>{e.preventDefault();});
+    lg.querySelectorAll('.role-btn').forEach(b=>b.addEventListener('click',()=>{
+      /* CORTE 3 P0-7 — en DEV, el acceso Shopper permite elegir una identidad real EXISTENTE desde
+         el flujo visible (no inyección oculta). En live/producción se mantiene el guard fail-closed. */
+      if(b.dataset.role==='shopper' && this._isDevAccess()) return this.pickShopperDev();
+      this.selectRole(b.dataset.role);
+    }));
+    lg.querySelector('#loginAsUser')?.addEventListener('click',()=>{
+      let us=[];try{us=JSON.parse(localStorage.getItem('cx_users')||'[]');}catch(e){}
+      const i=+(lg.querySelector('#loginUserSel').value||0); const u=us[i]; if(!u)return;
+      /* rol técnico real del usuario invitado + su scope persistido (paises) — no un rol de prueba genérico */
+      this.selectRole(u.rol, null, (u.paises&&u.paises.length)?u.paises:undefined, u);
+    });
+    lg.querySelectorAll('.role-alt').forEach(b=>b.addEventListener('click',()=>{
+      const role=b.dataset.role;
+      if(role==='coordinador'||role==='aliado') return this.pickScopeAndEnter(role);
+      this.selectRole(role);
+    }));
     const gr=lg.querySelector('#goReg'); if(gr)gr.addEventListener('click',()=>this.showRegister());
     const pw=lg.querySelector('#pwaBtn'); if(pw)pw.addEventListener('click',()=>CX.pwa.openInstall(CX.ui));
   },
@@ -141,15 +223,15 @@ CX.app = {
         <div><label class="lbl">Sexo</label><select class="sel" id="rgSexo"><option value="">Selecciona…</option><option>Femenino</option><option>Masculino</option><option>Otro</option><option>Prefiero no decir</option></select></div>
       </div>
       <div id="rgCreds" style="background:var(--brand-light);border-radius:10px;padding:10px 13px;font-size:12px;color:var(--brand-dark);margin:14px 0">
-        Tu usuario y contraseña se generan automáticamente según el patrón del cliente
-        (<b>${CX.CREDS.userExample()}</b> · <b>${CX.CREDS.passExample()}</b>). Edad y sexo se usan para automatizar la asignación de visitas.</div>
+        Tu usuario y credencial inicial se generan automáticamente según el patrón del cliente
+        (<b>${CX.CREDS.userExample()}</b>). La credencial inicial no se muestra en pantalla.</div>
       <div style="text-align:right"><button class="btn btn-green" id="rgSave">Crear mi cuenta</button></div>
     `, {onMount:(ov,close)=>{
       CX.geo.wire(ov, ids);
       // previsualizar credenciales al escribir nombre/apellido
       const upd=()=>{
         const f=ov.querySelector('#rgFirst').value, l=ov.querySelector('#rgLast').value;
-        if(f&&l) ov.querySelector('#rgCreds').innerHTML=`Tu cuenta será — usuario: <b>${CX.CREDS.user(f,l)}</b> · contraseña: <b>${CX.CREDS.pass(f,l)}</b>. Edad y sexo se usan para automatizar la asignación de visitas.`;
+        if(f&&l) ov.querySelector('#rgCreds').innerHTML=`Tu cuenta será — usuario: <b>${CX.CREDS.user(f,l)}</b>. La credencial inicial queda protegida y no se muestra en pantalla.`;
       };
       ov.querySelector('#rgFirst').addEventListener('input',upd);
       ov.querySelector('#rgLast').addEventListener('input',upd);
@@ -183,7 +265,7 @@ CX.app = {
       </div>
       <div style="background:var(--brand-light);border-radius:12px;padding:14px 16px;margin:14px 0">
         <div class="between" style="margin-bottom:8px"><span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">Usuario</span><b style="font-family:var(--disp)">${s.user}</b></div>
-        <div class="between"><span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">Contraseña</span><b style="font-family:var(--disp)">${s.pass}</b></div>
+        <div class="between"><span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">Credencial inicial</span><b style="font-family:var(--disp)">Protegida</b></div>
       </div>
       <p style="font-size:12.5px;color:var(--t2);line-height:1.6">Al ingresar podrás <b>completar tu perfil</b> (documento, ciudad, cuenta de pago) y empezar a postularte a visitas de tu país.</p>
       <div class="flex" style="justify-content:flex-end;margin-top:14px"><button class="btn btn-ghost btn-sm" data-x2>Cerrar</button><button class="btn btn-pr" id="rgEnter">Entrar a mi portal →</button></div>
@@ -193,24 +275,101 @@ CX.app = {
     }});
   },
 
-  selectRole(role, shopperId){
+  /* Fase 5: coordinador/aliado son scopeCountry — piden el/los país(es) asignado(s)
+     antes de entrar, para probar de verdad el filtrado por alcance (no solo la matriz de módulos). */
+  pickScopeAndEnter(role){
+    const set=new Set(); (CX.data&&CX.data.projects||[]).forEach(p=>(p.countries||[]).forEach(c=>set.add(c)));
+    const paises=[...set];
+    const lbl=role==='coordinador'?'Coordinador / Representante':'Aliado / Franquiciado';
+    CX.ui.modal('🌎 País(es) asignado(s) · '+lbl, `
+      <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Este rol solo ve proyectos, shoppers y visitas de su(s) país(es) asignado(s) (alcance real, no solo menú).</p>
+      <div class="flex wrap" style="gap:8px;margin-bottom:14px">${paises.map(c=>`<label class="flex" style="gap:6px;font-size:12.5px;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer"><input type="checkbox" class="scPais" value="${c}"> ${CX.paisFlag(c)} ${CX.paisName(c)}</label>`).join('')}</div>
+      <div style="text-align:right"><button class="btn btn-pr btn-sm" id="scGo">Entrar con este alcance</button></div>
+    `,{onMount:(ov,close)=>{
+      ov.querySelector('#scGo').addEventListener('click',()=>{
+        const sel=[...ov.querySelectorAll('.scPais:checked')].map(c=>c.value);
+        if(!sel.length){ CX.ui.toast('Elige al menos un país','warn'); return; }
+        close(); this.selectRole(role, null, sel);
+      });
+    }});
+  },
+
+  /* CORTE 3 P0-7 / V176 P0-1 — detección de entorno DEV FAIL-CLOSED con allowlist EXACTA.
+     No se acepta ningún dominio Firebase genérico (*.web.app / *.firebaseapp.com): eso incluiría
+     posibles hosts productivos. Solo hosts exactos de la allowlist, localhost, o un flag de build
+     explícito (window.CX_DEV_BUILD===true). Cualquier otro host → false (producción fail-closed). */
+  _DEV_HOST_ALLOWLIST:['localhost','127.0.0.1','[::1]'],
+  _isDevAccess(){
+    try{
+      if(window.CX_DEV_BUILD===true) return true;                 // flag de build explícito
+      if(CX.tenantProfile && CX.tenantProfile.devShopperAccess===true) return true; // control runtime autorizado
+      const h=(location.hostname||'').toLowerCase();
+      if(this._DEV_HOST_ALLOWLIST.includes(h)) return true;       // hosts DEV exactos
+      const extra=(CX.tenantProfile && Array.isArray(CX.tenantProfile.devHostAllowlist))?CX.tenantProfile.devHostAllowlist.map(s=>String(s).toLowerCase()):[];
+      if(extra.includes(h)) return true;                          // allowlist exacta inyectada por perfil
+    }catch(e){}
+    return false;                                                 // producción y hosts no autorizados: fail-closed
+  },
+  /* Selector VISIBLE de identidad Shopper para validación DEV: lista shoppers reales existentes
+     y entra con un shopperId real. Rotulado como validación DEV, no autenticación. */
+  pickShopperDev(){
+    const shoppers=(CX.data&&CX.data.shoppers?CX.data.shoppers:[]).filter(s=>s&&s.id).slice(0,60);
+    if(!shoppers.length){ CX.ui.toast('No hay evaluadores en la fuente para validación DEV','warn'); return; }
+    const opts=shoppers.map(s=>`<option value="${s.id}">${(s.nombre||s.id)} · ${s.code||''} · ${CX.paisName?CX.paisName(s.pais):s.pais||''}</option>`).join('');
+    CX.ui.modal('📱 Acceso Shopper · validación DEV', `
+      <div class="bdg bdg-a" style="margin-bottom:10px">⚠ Acceso de validación DEV — no es autenticación real</div>
+      <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Elige una identidad de evaluador <b>real existente</b> para recorrer el portal móvil. En producción este acceso queda fail-closed.</p>
+      <label class="lbl">Evaluador</label>
+      <select class="sel" id="devShopperSel" style="width:100%;margin-bottom:14px">${opts}</select>
+      <div style="text-align:right"><button class="btn btn-pr btn-sm" id="devShopperGo">Entrar como este evaluador</button></div>
+    `,{onMount:(ov,close)=>{
+      ov.querySelector('#devShopperGo').addEventListener('click',()=>{
+        const id=ov.querySelector('#devShopperSel').value; if(!id)return;
+        close(); this.selectRole('shopper', id);
+      });
+    }});
+  },
+
+  selectRole(role, shopperId, scopePaises, invitedUser){
     CX.session.role=role;
     CX.session.testRole=null;
+    if(invitedUser){
+      /* usuario real invitado desde Configuración → Usuarios: entra con su identidad, rol técnico y scope persistidos.
+         cliente/shopper tienen shell propio; cualquier otro rol técnico (super/admin/ops/coordinador/aliado/
+         personalizado) navega sobre el shell admin, con el rol real guardado en testRole para permisos. */
+      const usesAdminShell = role!=='cliente' && role!=='shopper';
+      CX.session.role = usesAdminShell ? 'admin' : role;
+      CX.session.testRole = (usesAdminShell && role!=='super' && role!=='admin') ? role : null;
+      CX.session.user={ name:invitedUser.name, role, org:'Tu Consultora', persona:invitedUser.persona||'',
+        scopeRole: CX.session.testRole||undefined, scopePaises:(scopePaises&&scopePaises.length)?scopePaises:undefined,
+        scopeProjectId: invitedUser.proyectoId||undefined, scopeCliente: invitedUser.cliente||undefined,
+        clienteRole: role==='cliente'?'director':undefined,
+        email:invitedUser.email };
+      CX.session.view=null;
+      CX.session.save();
+      return this.enter();
+    }
     if(role==='admin'){
       CX.session.user={name:'Admin Demo', role:'super', org:'Tu Consultora'};
     } else if(role==='cliente'){
       CX.session.user={name:'Cliente Demo', role:'cliente', clienteRole:'director', org:'Marca Cliente'};
     } else if(role==='shopper'){
-      const sid=shopperId||'sh1';
-      const s=CX.data.getShopper ? CX.data.getShopper(sid) : null;
-      CX.session.user={name:(s&&s.nombre)||'Evaluador 01', role:'shopper', shopperId:sid, code:(s&&s.code)||'EVL-01'};
+      /* P0 (V172): 'sh1' es semilla SOLO de modo demo, bajo guard explícito. En live/real,
+         una sesión Shopper sin shopperId provisto NO recibe identidad ficticia: los módulos
+         privados (Mis Visitas, Reservas, Mi Día) quedan fail-closed. La selección visual de
+         rol no es autenticación ni autorización. */
+      const demoMode=!!((CX.BRAND&&CX.BRAND.demoMode) || (CX.dataSource&&CX.dataSource.mode==='demo'));
+      const sid=shopperId||(demoMode?'sh1':null);
+      const s=(sid&&CX.data.getShopper)?CX.data.getShopper(sid):null;
+      if(sid){ CX.session.user={name:(s&&s.nombre)||'Evaluador 01', role:'shopper', shopperId:sid, code:(s&&s.code)||'EVL-01'}; }
+      else { CX.session.user={name:'Evaluador (sin identidad)', role:'shopper', shopperId:null}; }
     } else {
       /* roles no estándar (ops, coordinador, aliado, personalizados) — para probar la matriz de permisos.
          Navegan como el rol elegido; el router aplica roleCanAccess. Usan la vista de admin (roles:['admin']). */
       const lbl={ops:'Equipo Operativo',coordinador:'Coordinador / Representante',aliado:'Aliado / Franquiciado'}[role]||role;
       CX.session.role='admin'; /* la vista admin es la base; el scope real se aplica por matriz */
       CX.session.testRole=role; /* rol bajo prueba */
-      CX.session.user={name:lbl+' (prueba)', role:role, org:'Tu Consultora', scopeRole:role};
+      CX.session.user={name:lbl, role:role, org:'Tu Consultora', scopeRole:role, scopePaises:(scopePaises&&scopePaises.length)?scopePaises:undefined};
     }
     CX.session.view=null;
     CX.session.save();
@@ -220,16 +379,59 @@ CX.app = {
   enter(){
     document.getElementById('login').classList.add('hidden');
     document.getElementById('app').classList.add('on');
-    const go=()=>CX.router.mount();
+    const go=()=>{
+      /* P0.3 (V98): si el modo de datos activo no es 'demo' y no hay fuente/adapter real disponible,
+         el shell se bloquea con un estado honesto en vez de dejar pasar silenciosamente a los seeds
+         de demo. Solo perfiles con permiso ven el detalle técnico (diagnostics.viewSensitive). */
+      if(CX.dataSource && CX.dataSource.isBlocked() && CX.dataSource.mode!=='demo'){ return CX.app.renderDataSourceBlock(); }
+      CX.router.mount();try{CX.app.showBanners&&CX.app.showBanners();}catch(e){}};
     if(CX.confidencialidad && CX.confidencialidad.pending(CX.session.role)){
       CX.confidencialidad.show(CX.session.role, go);
     } else { go(); }
+  },
+
+  /* Pantalla de bloqueo honesta para source_safe_preview/connected sin fuente/adapter real —
+     nunca se sustituye en silencio por los datos de demo. */
+  renderDataSourceBlock(){
+    const ds=CX.dataSource; const canSeeDetail = CX.session.canSeeProtectedData ? CX.session.canSeeProtectedData() : (CX.session.role==='super');
+    const root=document.getElementById('app');
+    root.innerHTML=`<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0d1b2e;padding:24px">
+      <div style="max-width:520px;background:#fff;border-radius:16px;padding:32px 28px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35)">
+        <div style="font-size:40px;margin-bottom:10px">⛔</div>
+        <div style="font-size:18px;font-weight:800;color:#1a2740;margin-bottom:6px">Fuente de datos no disponible</div>
+        <div style="font-size:13px;color:#64748b;margin-bottom:16px">Modo activo: <b>${ds.label()}</b> · ${ds.statusLabel()}</div>
+        ${canSeeDetail?`<div style="text-align:left;background:#f8fafc;border-radius:10px;padding:12px 14px;font-size:12px;color:#475569;margin-bottom:18px">${ds.blockers.map(b=>'• '+b).join('<br>')}</div>`:`<div style="font-size:12.5px;color:#94a3b8;margin-bottom:18px">Contacta a un administrador para más detalle.</div>`}
+        <button class="btn btn-pr btn-sm" id="dsBackDemo" style="margin-right:8px">Volver a modo Demo</button>
+        <button class="btn btn-ghost btn-sm" id="dsLogout">Cerrar sesión</button>
+      </div>
+    </div>`;
+    document.getElementById('dsBackDemo').addEventListener('click',()=>{ CX.dataSource.setMode('demo'); location.reload(); });
+    document.getElementById('dsLogout').addEventListener('click',()=>this.logout());
   },
 
   logout(){
     CX.session.clear();
     this.showLogin();
     CX.ui.toast('Sesión cerrada','');
+  },
+
+  showBanners(){
+    let b=[]; try{b=JSON.parse(localStorage.getItem('cx_banners')||'[]');}catch(e){}
+    const rol=CX.session.role;
+    const mine=b.filter(x=>!x.roles||x.roles.includes(rol));
+    if(!mine.length)return;
+    const bn=mine[0];
+    const ov=document.createElement('div');ov.className='cx-ov';
+    ov.innerHTML=`<div class="cx-modal" style="width:min(520px,94vw)"><div style="background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;border-radius:14px 14px 0 0;padding:20px 24px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;opacity:.85">📢 RECORDATORIO</div>
+      <div style="font-size:19px;font-weight:800;margin-top:4px">${bn.titulo}</div></div>
+      <div style="padding:20px 24px"><div style="font-size:14px;color:var(--t2);line-height:1.6">${bn.cuerpo||''}</div>
+      <div style="text-align:right;margin-top:18px"><button class="btn btn-pr btn-sm" id="bnOk">Entendido</button></div></div></div>`;
+    document.body.appendChild(ov);
+    ov.querySelector('#bnOk').addEventListener('click',()=>{
+      try{const all=JSON.parse(localStorage.getItem('cx_banners')||'[]').filter(x=>x.id!==bn.id);localStorage.setItem('cx_banners',JSON.stringify(all));}catch(e){}
+      ov.remove();
+    });
   },
 };
 function __cxBoot(){ CX.pwa && CX.pwa.init(); CX.app.init(); }

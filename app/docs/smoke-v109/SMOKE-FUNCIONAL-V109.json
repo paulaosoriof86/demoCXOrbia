@@ -1,0 +1,91 @@
+{
+  "metodologia": "Runtime real: CX.app.selectRole(role) real (no mock) + CX.router.nav(id) real por CADA uno de los 48 módulos registrados en CX.modules, para los 3 roles Admin/Cliente/Shopper. Captura window.onerror durante toda la navegación.",
+  "fecha": "2026-07-12",
+  "build": "V109",
+  "moduleCount": 48,
+  "roles": {
+    "admin": {
+      "navErrorsCount": 0,
+      "navErrors": [],
+      "newConsoleErrors": []
+    },
+    "cliente": {
+      "navErrorsCount": 0,
+      "navErrors": [],
+      "newConsoleErrors": []
+    },
+    "shopper": {
+      "navErrorsCount": 0,
+      "navErrors": [],
+      "newConsoleErrors": []
+    }
+  },
+  "pruebas_funcionales_especificas": {
+    "academia_scope_shopper": {
+      "desc": "Curso con scope {projectId:['banca'], rol:['shopper']} creado por admin -> invisible con ctx admin (rol=super), visible con ctx shopper mismo proyecto.",
+      "resultado": "PASS",
+      "comando": "CX.acadData.visibleFor(course, CX.acadData.ctx())"
+    },
+    "academia_admin_only_no_afecta_kpi_shopper": {
+      "desc": "Curso con scope {rol:['admin','super']} no aparece en visibleCourses de un shopper (mismo array que alimenta KPIs).",
+      "resultado": "PASS"
+    },
+    "academia_pais_gt_hn": {
+      "desc": "Cursos con scope pais:['GT'] y pais:['HN'] respectivamente. Shopper en proyecto multipaís (sin scopePaises propio) ve ambos (fallback a countries del proyecto). Shopper invitado con scopePaises:['GT'] ve solo el de GT.",
+      "resultado": "PASS"
+    },
+    "academia_clasificacion_no_bloquea_acceso": {
+      "desc": "Curso con scope.modulo=['finanzas'] es VISIBLE para un shopper cuyo ctx no trae 'modulo' en absoluto (módulo es clasificación, no acceso). matchesClassification() sí filtra correctamente cuando se elige un valor de filtro.",
+      "resultado": "PASS"
+    },
+    "academia_actores_por_id": {
+      "desc": "setCourseState bloquea revisorId===createdByUserId y aprobadorId===reviewedByUserId (separación de funciones por ID estable, no por nombre); con IDs realmente distintos, ambas transiciones se ejecutan.",
+      "resultado": "PASS"
+    },
+    "finanzas_lotes_multipais": {
+      "desc": "payVisits() con 1 visita GT/GTQ (total 130) + 1 visita HN/HNL (total 270) en la MISMA llamada -> 2 loteId distintos, 0 suma cruzada de moneda.",
+      "resultado": "PASS",
+      "evidencia": {
+        "loteIdGT": "L-3GN45V8J",
+        "loteIdHN": "L-VJN8CJAC",
+        "sameLote": false
+      }
+    },
+    "finanzas_id_deterministico": {
+      "desc": "Recalcular el hash de la clave homogénea (tenant+proyecto+país+moneda+ref) + ids de visita ordenados reproduce EXACTAMENTE el mismo loteId ya asignado.",
+      "resultado": "PASS"
+    },
+    "finanzas_defensa_vista_lote_mixto": {
+      "desc": "Dos liquidaciones con el MISMO loteId legado pero país/moneda distintos (simulando dato corrupto anterior a la corrección) se dividen en 2 filas separadas, cada una 'Revisión requerida', sin sumar monedas.",
+      "resultado": "PASS"
+    },
+    "finanzas_sin_math_random": {
+      "desc": "Revisado core/data.js (payVisits) y modules/finanzas.js (groupKey fallback de revisión): 0 apariciones de Math.random() en la ruta de generación/fallback de lotes.",
+      "resultado": "PASS"
+    },
+    "finanzas_referencia_distinta_id_distinto": {
+      "desc": "Misma visita, mismo país/moneda/fecha, DOS llamadas a payVisits() con referencia distinta ('REF-100' vs 'REF-200') -> loteId distinto en cada una.",
+      "resultado": "PASS",
+      "evidencia": {"loteRef100":"L-9VAXTISW","loteRef200":"L-5NN1UDSB"}
+    },
+    "finanzas_mismo_conjunto_mismo_id": {
+      "desc": "Misma visita+referencia, pagada dos veces tras resetear su estado -> loteId recalculado IDÉNTICO en ambas corridas reales de payVisits() (no solo el hash re-derivado en frío).",
+      "resultado": "PASS",
+      "evidencia": {"first":"L-BU2BHR5U","second":"L-BU2BHR5U"}
+    },
+    "finanzas_sin_pais_moneda_fila_estable": {
+      "desc": "Dos registros sin país/moneda producen claves de revisión DISTINTAS entre sí (no se agrupan a ciegas) y la clave de cada registro es ESTABLE al recalcularla de nuevo (no aleatoria).",
+      "resultado": "PASS"
+    },
+    "portal_cliente_finite_scores": {
+      "desc": "CX.clienteData.validScore()/band() probado con null,undefined,NaN,Infinity,-Infinity,64,69,70,74,75,84,85 — solo los 7 valores finitos entran en banda; 64/69 -> crítico, 70/74 -> atención, 75/84 -> bueno, 85 -> excelente.",
+      "resultado": "PASS"
+    },
+    "portal_cliente_totales_consistentes": {
+      "desc": "resumen() sobre lista mixta con NaN/Infinity/null: R.criticas=2 (solo los <70 finitos), R.excelentes=1, NaN/Infinity excluidos de ambos — mismo criterio en KPI/distribución/drill porque comparten CX.clienteData.band().",
+      "resultado": "PASS"
+    }
+  },
+  "limitacion_honesta": "El entorno de herramientas disponible no captura píxeles dentro de iframes de viewport móvil (ver docs/smoke-v108, sin cambios en V109) — la evidencia de responsive sigue siendo funcional (scrollWidth/consola), no visual en píxeles. No re-testeado en esta ronda (V108 ya lo dejó verificado y el paquete V109 no lo reabre).",
+  "limitacion_honesta_2": "docs/verify-manifest.mjs está escrito para Node (node:fs/promises, node:crypto) y este entorno de trabajo no tiene una terminal/runtime Node disponible para invocarlo literalmente con 'node docs/verify-manifest.mjs'. Se ejecutó la MISMA lógica (SHA-256 por archivo + agregado sobre path:hash ordenado) directamente en el navegador sobre los 135 archivos reales del manifest, en 4 lotes, con 0 diffs y el aggregate recalculado idéntico al declarado — pero la ejecución literal del .mjs vía Node no se hizo en esta ronda y queda como verificación independiente adicional para quien tenga Node disponible."
+}

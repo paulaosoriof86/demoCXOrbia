@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "cxorbia.c6.unified-cumulative-static-gate.v1",
+  "generatedAt": "2026-08-01T22:16:00-06:00",
+  "branch": "docs-tya-v6-v71-audit",
+  "evaluatedHeadSha": "d41ebe2ba30cedce7e2312efd0b83123a1b93f47",
+  "gatePath": "tools/qa/tya-c6-unified-cumulative-runtime-gate.mjs",
+  "gateBlobSha": "bbe16c64644d8423a6e37060a612193fac23a7d9",
+  "executionMethod": "deterministic_github_source_contract_evaluation",
+  "nodeProcessExecuted": false,
+  "workflowExecuted": false,
+  "decision": "PASS_C6_UNIFIED_CUMULATIVE_RUNTIME_STATIC_GATE_WITH_DOCUMENTED_FRONTEND_WARNINGS",
+  "summary": {
+    "pass": 30,
+    "fail": 0,
+    "warning": 2
+  },
+  "passes": [
+    "C6_UNIFIED_NORMAL_ENTRY",
+    "C6_NORMAL_ENTRY_CANONICAL_FLAGS",
+    "C6_NO_FROZEN_RUNTIME_COUNTS",
+    "C6_NO_DIRECT_ROLE_OVERRIDE",
+    "C6_NO_HIDDEN_VISUAL_SESSION_OVERLAY",
+    "C6_PRODUCT_LOGIN_AND_HR_AUTHORITY",
+    "C6_TECHNICAL_E2E_PRESERVED_HUMAN_UNAFFECTED",
+    "C6_CANONICAL_DOMAIN_SHOPPER_FINANCE",
+    "C6_PROJECT_FINANCIAL_MODEL_LOAD_ORDER",
+    "C6_DELEGATED_GUARD_LOAD_ORDER",
+    "C6_AUTHENTICATED_PREVIEW_CONFIG",
+    "C6_SINGLE_VISIBLE_PRODUCT_LOGIN",
+    "C6_HR_AUTHORITY_DYNAMIC_EXACT_COMPOSITION",
+    "C6_LIVE_KPI_PHASE_HISTORY_CERTIFICATION",
+    "C6_SHOPPER_PROFILE_HISTORY_CONTRACT",
+    "C6_UNIFIED_CLIENT_HISTORY_PROJECT_CONFIG",
+    "C6_PROJECT_CREATION_DIRECT_DELEGATED_SELECTABLE",
+    "C6_PROJECT_MODEL_CONFIGURABLE_FAIL_CLOSED_NOT_NAME_HARDCODED",
+    "C6_LOCAL_DELEGATED_REGIONAL_BACKEND_CONTRACT",
+    "C6_ROYALTIES_AND_LOCAL_TAX_DIRECT_ONLY",
+    "C6_DELEGATED_AND_UNCONFIGURED_INCOME_FAIL_CLOSED",
+    "C6_CINEPOLIS_DELEGATED_CONFIGURATION",
+    "C6_CINEPOLIS_NO_LOCAL_ROYALTY_REGRESSION",
+    "C6_UNIFIED_RUNTIME_DELEGATED_COMMISSION_MODEL",
+    "C6_NO_DELEGATED_ROYALTY_IN_RUNTIME_METADATA",
+    "C6_NO_ZERO_HONORARIO_CONFIG",
+    "C6_CURRENT_HR_PERIOD_SNAPSHOT",
+    "C6_CURRENT_HR_RANGE_2025_06_TO_2026_07",
+    "C6_NO_AUGUST_WITHOUT_SOURCE",
+    "C6_READONLY_NO_PRODUCTION"
+  ],
+  "warnings": [
+    {
+      "code": "C6_REGIONAL_FRONTEND_OPTION_PENDING_CLAUDE",
+      "blocking": false,
+      "path": "app/modules/proyecto-wizard.js",
+      "detail": "Backend soporta regional; la opción visual permanece documentada para Claude."
+    },
+    {
+      "code": "C6_DELEGATED_FINANCE_COPY_PENDING_CLAUDE",
+      "blocking": false,
+      "path": "app/modules/finanzas.js",
+      "detail": "El texto visual delegado todavía debe describir comisión de coordinación y distribución configurable."
+    }
+  ],
+  "sourceSnapshot": {
+    "periods": 14,
+    "firstPeriod": "2025-06",
+    "lastPeriod": "2026-07",
+    "august2026Present": false,
+    "runtimeCountsAreDynamic": true
+  },
+  "financialContract": {
+    "projectClassificationSource": "project_configuration_not_name",
+    "supportedModels": ["directo", "delegado", "regional", "unconfigured"],
+    "unconfiguredFailClosed": true,
+    "cinepolisModel": "delegado",
+    "cinepolisRoyaltyPct": 0,
+    "shopperHonorariumUsedAsDelegatedIncomeFallback": false,
+    "marginRequiresExactCommissionAndDistribution": true,
+    "valuesInvented": false
+  },
+  "safety": {
+    "providerCalls": 0,
+    "hostingDeploys": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "rulesDeploys": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "merge": false,
+    "production": false
+  },
+  "limitations": [
+    "No se ejecutó el proceso Node porque la sesión no dispone de checkout autenticado ni de workflow ejecutable para este HEAD.",
+    "El resultado reproduce exhaustivamente las condiciones includes/regex del gate contra los archivos del HEAD evaluado.",
+    "No equivale a runtime/browser, Auth real, proveedor ni validación humana."
+  ],
+  "nextGate": "READONLY_RUNTIME_AUTH_STAFF_CLIENT_SHOPPER_ALL_PERIODS_DOMAIN_PROFILE_CLIENT_FINANCE_PROJECT_MODEL_THREE_RELOADS"
+}

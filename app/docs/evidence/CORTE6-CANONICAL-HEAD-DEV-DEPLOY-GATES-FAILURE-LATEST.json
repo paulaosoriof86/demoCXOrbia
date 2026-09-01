@@ -1,0 +1,782 @@
+{
+  "schemaVersion": "cxorbia.c6.canonical-head-single-dev-deploy-failure.v1",
+  "generatedAt": "2026-08-05T16:32:08.250Z",
+  "decision": "FAIL_C6_REMOTE_GATES_AFTER_SINGLE_DEV_HOSTING_DEPLOY_STOP_RETRY",
+  "failedStage": "remote_domain_finance_portals_reservations",
+  "sourceLock": {
+    "schemaVersion": "cxorbia.c6.canonical-head-source-lock.v1",
+    "generatedAt": "2026-08-05T16:28:24.881Z",
+    "sourceLockHead": "eca4d938e9f09ae446b41355bfaefcbd7e33cf7b",
+    "triggerHead": "dc955da8086e879dc6072b16611065fed7f0a687",
+    "lockedAppTree": "1f9896f5e15009fd5d7ca2cd6a22f129fc6c536b",
+    "currentAppTree": "1f9896f5e15009fd5d7ca2cd6a22f129fc6c536b",
+    "lockedQaTree": "aead24d215551c081c83a5a8ae0730e65b9dfec1",
+    "currentQaTree": "aead24d215551c081c83a5a8ae0730e65b9dfec1",
+    "appFiles": 2401,
+    "appBytes": 17441509,
+    "appManifestSha256": "e927f18c5225768ed822f49ccf300ce47dce7e677a32317b8195a954c723bddd",
+    "criticalQa": [
+      {
+        "path": "tools/qa/tya-c6-unified-cumulative-runtime-gate.mjs",
+        "sha256": "ee905967b151aeef42985913523483c1129261816d175ec6d9fbb74c25d699f2"
+      },
+      {
+        "path": "tools/qa/tya-c6-shopper-new-tab-authority-root-fix-gate.mjs",
+        "sha256": "531dd1ddd884dd6899203dbfb79547329e55b777bc38c7c7496f3a2549260c41"
+      },
+      {
+        "path": "tools/qa/tya-c6-unified-human-auth-browser-smoke.mjs",
+        "sha256": "f8db1163f9e0f058d93f83a36564bf89d5d77cb732642465883b2af68b573634"
+      },
+      {
+        "path": "tools/qa/tya-c6-client-auth-browser-smoke.mjs",
+        "sha256": "5110c5ee040e2802a0311a315a038df190df5332af58938591385380d5d4451c"
+      },
+      {
+        "path": "tools/qa/tya-c6-remote-parity-gate.mjs",
+        "sha256": "63e4de25321729a244707cbef3dd5430d58a7c9c21023f76d08761fef9f3f1c0"
+      },
+      {
+        "path": "tools/qa/tya-c6-remote-finance-model-diagnostic.mjs",
+        "sha256": "8d5b316631e5f1d6588f2c33ee99fae79d04d7e24d331ef18973849990fc53e6"
+      },
+      {
+        "path": "tools/qa/tya-c6-remote-domain-finance-portals-reservations-gate.mjs",
+        "sha256": "67f62d0e8a875b6f26874414a1a54a2f236465ecf4fd3bd9dfee6f1533123db5"
+      },
+      {
+        "path": "tools/qa/cxorbia-c6-existing-users-e2e-envelope-compat.mjs",
+        "sha256": "917dd202cae2265e85e2a4c71a3c139872a0c21a97a9afdb6203a495d6b2667d"
+      },
+      {
+        "path": "tools/qa/cxorbia-c6-client-auth-materialization.mjs",
+        "sha256": "08c0fe89ffc018e949cc2d15613c830d7d5b14955589259d987692422db4d153"
+      }
+    ],
+    "deployConfigPath": "firebase.deploy.json",
+    "deployConfigSha256": "0f31046cfb83bd0d7d6f71cf0be3477191b36142ad09538458b63f4bd630c0f3",
+    "runtimeAndQaExact": true,
+    "hostingDeploysBeforeGate": 0,
+    "providerWrites": 0,
+    "production": false
+  },
+  "deployAttempted": true,
+  "deploySucceeded": true,
+  "staticCumulativeLogTail": "      \"missingNav\": []\n    },\n    \"reportKit\": {\n      \"provider\": true,\n      \"client\": true,\n      \"admin\": true,\n      \"shopper\": true,\n      \"finance\": true,\n      \"pdf\": true,\n      \"xlsx\": true,\n      \"pptx\": true\n    },\n    \"externalPins\": {\n      \"firebase\": true,\n      \"sheetjs\": true,\n      \"mammoth\": true\n    },\n    \"secretScan\": {\n      \"hits\": [],\n      \"scannerSourcesChecked\": [\n        \"tools/migration/tya-phase-a-rc-smoke-gate.mjs\",\n        \"tools/quality/tya-p0-operational-copy-scanner.mjs\"\n      ]\n    },\n    \"devScenarioLab\": {\n      \"visibleShellPresent\": true,\n      \"controlledRunnerEvidenceRequired\": true,\n      \"ingestContractPresent\": true,\n      \"falseScenarioPassAbsent\": true,\n      \"falseCleanupPassAbsent\": true\n    }\n  },\n  \"failures\": [],\n  \"warnings\": [\n    {\n      \"code\": \"P1_SUPERSEDED_AB_OVERLAY_LOADED\",\n      \"detail\": \"The partial A+B overlay remains loaded. Do not remove it without a proved no-loss delta.\"\n    },\n    {\n      \"code\": \"P1_PDF_CHART_EXPORT_DEBT\",\n      \"detail\": \"Some print paths may omit charts. Rows/scope/source must still match.\"\n    },\n    {\n      \"code\": \"P2_XLSX_PRESENTATION_DEBT\",\n      \"detail\": \"Spreadsheet formatting is basic but data contract remains required.\"\n    }\n  ],\n  \"safety\": {\n    \"providerWrites\": 0,\n    \"deploys\": 0,\n    \"firestoreWrites\": 0,\n    \"authWrites\": 0,\n    \"storageWrites\": 0,\n    \"hrWrites\": 0,\n    \"makeCalls\": 0,\n    \"geminiCalls\": 0,\n    \"paymentWrites\": 0,\n    \"merge\": false,\n    \"production\": false\n  },\n  \"decision\": \"PASS_PHASE_A_COMPLETE_COMPOSITION_SOURCE_STATIC_GATE_WITH_DOCUMENTED_WARNINGS\"\n}\nPASS PHASE_A_COMPLETE_COMPOSITION_SOURCE_GATE · active manifest, exact blobs, roles, report kit, Lab markers and safe-state PASS\nPASS C6_UNIFIED_NORMAL_ENTRY\nPASS C6_NORMAL_ENTRY_CANONICAL_FLAGS\nPASS C6_NO_FROZEN_RUNTIME_COUNTS\nPASS C6_NO_DIRECT_ROLE_OVERRIDE\nPASS C6_NO_HIDDEN_VISUAL_SESSION_OVERLAY\nPASS C6_PRODUCT_LOGIN_AND_HR_AUTHORITY\nPASS C6_TECHNICAL_E2E_PRESERVED_HUMAN_UNAFFECTED\nPASS C6_CANONICAL_AB_DOMAIN_SHOPPER_FINANCE\nPASS C6_PROJECT_FINANCIAL_MODEL_LOAD_ORDER\nPASS C6_DELEGATED_GUARD_LOAD_ORDER\nPASS AB_COMPOSITION_AFTER_MODULES_BEFORE_C6_DOMAIN\nPASS C6_SHOPPER_AUTH_GUARD_LOAD_ORDER\nPASS C6_AUTHENTICATED_PREVIEW_CONFIG\nPASS C6_SINGLE_VISIBLE_PRODUCT_LOGIN\nPASS C6_HR_AUTHORITY_DYNAMIC_EXACT_COMPOSITION\nPASS C6_LIVE_KPI_PHASE_HISTORY_CERTIFICATION\nPASS C6_SHOPPER_PROFILE_HISTORY_CONTRACT\nPASS C6_UNIFIED_CLIENT_HISTORY_PROJECT_CONFIG\nPASS C6_EARLY_ROLE_CLICK_CANNOT_BYPASS_AUTH\nPASS C6_PROTECTED_SHOPPER_CARD_CANNOT_USE_DEV_PICKER\nPASS C6_PROJECT_CREATION_DIRECT_DELEGATED_SELECTABLE\nPASS C6_REGIONAL_FRONTEND_OPTION_PENDING_CLAUDE · backend contract supports regional; wizard option remains a documented frontend delta\nPASS C6_PROJECT_MODEL_CONFIGURABLE_FAIL_CLOSED_NOT_NAME_HARDCODED\nPASS C6_LOCAL_DELEGATED_REGIONAL_BACKEND_CONTRACT\nPASS C6_ROYALTIES_AND_LOCAL_TAX_DIRECT_ONLY\nPASS C6_DELEGATED_AND_UNCONFIGURED_INCOME_FAIL_CLOSED\nPASS C6_CINEPOLIS_DELEGATED_CONFIGURATION\nPASS C6_CINEPOLIS_NO_LOCAL_ROYALTY_REGRESSION\nPASS C6_UNIFIED_RUNTIME_DELEGATED_COMMISSION_MODEL\nPASS C6_NO_DELEGATED_ROYALTY_IN_RUNTIME_METADATA\nPASS C6_NO_ZERO_HONORARIO_CONFIG\nPASS C6_CURRENT_HR_PERIOD_SNAPSHOT · 14\nPASS C6_CURRENT_HR_RANGE_2025_06_TO_2026_07 · 2025-06..2026-07\nPASS C6_NO_AUGUST_WITHOUT_SOURCE\nPASS C6_READONLY_NO_PRODUCTION\nDECISION REDACTED_LONG_VALUE\n",
+  "staticRootFixLogTail": "PASS C6_SHOPPER_NEW_TAB_RESTORED_SESSION_CONTRACT\nPASS C6_SHOPPER_NEW_TAB_BOUNDED_HR_RETRY\nPASS C6_SHOPPER_NEW_TAB_BOOT_RECONCILE_SCHEDULER\nPASS C6_SHOPPER_NEW_TAB_AUTH_READY_RECONCILE\nPASS C6_SHOPPER_NEW_TAB_BACKEND_READY_RECONCILE\nPASS C6_SHOPPER_NEW_TAB_DOM_READY_RECONCILE\nPASS C6_SHOPPER_NEW_TAB_FOCUS_VISIBILITY_RECOVERY\nPASS C6_SHOPPER_NEW_TAB_PROTECTED_BACKEND_GUARD\nPASS C6_SHOPPER_NEW_TAB_RUNTIME_DEPENDENCY_GUARD\nPASS C6_SHOPPER_NEW_TAB_IDEMPOTENT_RECONCILE_GUARD\nPASS C6_SHOPPER_NEW_TAB_NEW_TAB_RECOVERY_METADATA\nPASS C6_SHOPPER_NEW_TAB_ZERO_PROVIDER_WRITES\nPASS C6_SHOPPER_NEW_TAB_NO_WRITE_APIS\nDECISION PASS_C6_SHOPPER_NEW_TAB_AUTHORITY_ROOT_FIX_STATIC_GATE\n",
+  "firebaseCliVersion": "15.25.1\n",
+  "deployLogTail": "\n\u001b[1m\u001b[37m===\u001b[39m Deploying to 'cxorbia-backend-dev'...\u001b[22m\n\n\u001b[36m\u001b[1mi \u001b[22m\u001b[39m deploying \u001b[1mhosting\u001b[22m\n\u001b[36m\u001b[1mi  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m beginning deploy...\n\u001b[36m\u001b[1mi  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m found 2400 files in \u001b[1mapp\u001b[22m\n\u001b[36m\u001b[1mi  hosting:\u001b[22m\u001b[39m adding files to version [0/2400] (\u001b[1m\u001b[32m0%\u001b[39m\u001b[22m)\n\u001b[36m\u001b[1mi  hosting:\u001b[22m\u001b[39m upload complete\n\u001b[32m\u001b[1m✔  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m file upload complete\n\u001b[36m\u001b[1mi  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m finalizing version...\n\u001b[32m\u001b[1m✔  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m version finalized\n\u001b[36m\u001b[1mi  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m releasing new version...\n\u001b[32m\u001b[1m✔  hosting[cxorbia-backend-dev]:\u001b[22m\u001b[39m release complete\n\n\u001b[32m\u001b[1m✔ \u001b[22m\u001b[39m \u001b[1m\u001b[4mDeploy complete!\u001b[24m\u001b[22m\n\n\u001b[1mProject Console:\u001b[22m https://console.firebase.google.com/project/cxorbia-backend-dev/overview\n\u001b[1mHosting URL:\u001b[22m https://cxorbia-backend-dev.web.app\n",
+  "firebaseDebugTail": null,
+  "parity": {
+    "schemaVersion": "cxorbia.c6.hosting-dev-remote-parity.v4",
+    "generatedAt": "2026-08-05T16:29:47.720Z",
+    "decision": "PASS_C6_HOSTING_DEV_REMOTE_PARITY_AND_LIVE_HR",
+    "root": "https://cxorbia-backend-dev.web.app",
+    "attempt": 1,
+    "maxAttempts": 30,
+    "allCriticalAssetsMatch": true,
+    "files": [
+      {
+        "path": "index-backend-dev.html",
+        "status": 200,
+        "localSha256": "e3473ac4883f86408b989e938d9f544923219cbac6646158ce0250a9c01f931e",
+        "remoteSha256": "e3473ac4883f86408b989e938d9f544923219cbac6646158ce0250a9c01f931e",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "core/backend-browser-auth.js",
+        "status": 200,
+        "localSha256": "f54d6945607cc59052e098dcec563c40fe384b2054699d9c8e1ea4c7d8cf3371",
+        "remoteSha256": "f54d6945607cc59052e098dcec563c40fe384b2054699d9c8e1ea4c7d8cf3371",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "core/tya-phase-a-source-safe-preview.js",
+        "status": 200,
+        "localSha256": "009f968ce8221db4fe1a26cf2b6020ffe6b0b157b6e2ae10b133ec9a0e0dfceb",
+        "remoteSha256": "009f968ce8221db4fe1a26cf2b6020ffe6b0b157b6e2ae10b133ec9a0e0dfceb",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-c6-unified-human-runtime-v1.js",
+        "status": 200,
+        "localSha256": "72a8f306ab85539fc0aeedfa5a7c9f488273efb20f4bf9f42b8815889028838f",
+        "remoteSha256": "72a8f306ab85539fc0aeedfa5a7c9f488273efb20f4bf9f42b8815889028838f",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-c6-shopper-auth-click-guard-v1.js",
+        "status": 200,
+        "localSha256": "b084c9ed045b855dd92b6018688eca896dbb138f81fe6ab6443dc9ed254bea06",
+        "remoteSha256": "b084c9ed045b855dd92b6018688eca896dbb138f81fe6ab6443dc9ed254bea06",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+        "status": 200,
+        "localSha256": "a4f1f2667e7c004576c05774c643354d13cf6d86a715b7e966cbe9b82aa66ef0",
+        "remoteSha256": "a4f1f2667e7c004576c05774c643354d13cf6d86a715b7e966cbe9b82aa66ef0",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-cumulative-read-model-v2.js",
+        "status": 200,
+        "localSha256": "107e071e8a34e17111dd9eccd53fa78878d75f12ef47cf6b03b0ed704d45ee12",
+        "remoteSha256": "107e071e8a34e17111dd9eccd53fa78878d75f12ef47cf6b03b0ed704d45ee12",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-c6-domain-consistency-bridge.js",
+        "status": 200,
+        "localSha256": "a9ec50eecb5dc3625363f6f65c40b79cf863129b2f3a48607ca5026e9ded93b4",
+        "remoteSha256": "a9ec50eecb5dc3625363f6f65c40b79cf863129b2f3a48607ca5026e9ded93b4",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-canonical-shopper-portal-v2.js",
+        "status": 200,
+        "localSha256": "71987e67011c384a331f739a362375dc32e20f898cd7b73bd1abe3d111d9a907",
+        "remoteSha256": "71987e67011c384a331f739a362375dc32e20f898cd7b73bd1abe3d111d9a907",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-canonical-finance-read-model-v2.js",
+        "status": 200,
+        "localSha256": "993d3edb51ce5d087b2248366ea7d4efc16108517721f03317fb6433fa70114c",
+        "remoteSha256": "993d3edb51ce5d087b2248366ea7d4efc16108517721f03317fb6433fa70114c",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-project-financial-model-contract-v1.js",
+        "status": 200,
+        "localSha256": "164629e5bc5869eca02e0bfd8110220505e58cd88d11808e279a97bb9b9aad6d",
+        "remoteSha256": "164629e5bc5869eca02e0bfd8110220505e58cd88d11808e279a97bb9b9aad6d",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-delegated-coordination-finance-guard-v1.js",
+        "status": 200,
+        "localSha256": "4a0342d67d14c3d7681326f5aeb7fdf27f1aa13a9999c6e85df5b7c4f9357cb3",
+        "remoteSha256": "4a0342d67d14c3d7681326f5aeb7fdf27f1aa13a9999c6e85df5b7c4f9357cb3",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "adapters/tya-canonical-reservations-guard-v2.js",
+        "status": 200,
+        "localSha256": "bc762625bb830bde6b4d64f384f0bc58ae20fdba3e8e5e7fa74702b2aa6a42a0",
+        "remoteSha256": "bc762625bb830bde6b4d64f384f0bc58ae20fdba3e8e5e7fa74702b2aa6a42a0",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "modules/cliente.js",
+        "status": 200,
+        "localSha256": "7efcc315a8e2f0f7f66c97e089d1e3f3aebf6ecc4d91a17177ead0390a041ffd",
+        "remoteSha256": "7efcc315a8e2f0f7f66c97e089d1e3f3aebf6ecc4d91a17177ead0390a041ffd",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "modules/finanzas.js",
+        "status": 200,
+        "localSha256": "3228420f225c083d2077bbbe3d5a21fd79738569b4b483eb120950bd50583a98",
+        "remoteSha256": "3228420f225c083d2077bbbe3d5a21fd79738569b4b483eb120950bd50583a98",
+        "match": true,
+        "error": null
+      },
+      {
+        "path": "app.js",
+        "status": 200,
+        "localSha256": "abecbc1bc006218ff7c363a04ea7f5b5296483328887aa472db1fff74252a0f0",
+        "remoteSha256": "abecbc1bc006218ff7c363a04ea7f5b5296483328887aa472db1fff74252a0f0",
+        "match": true,
+        "error": null
+      }
+    ],
+    "liveEndpoint": {
+      "status": 200,
+      "ok": true,
+      "revision": "fec5d1f96bb4584e539607ea896f48dde17664915b397b9e94bbf665671a6d21",
+      "runtimeRead": true,
+      "sourceSafe": true,
+      "contentType": "application/json; charset=utf-8",
+      "responseBytes": 826,
+      "parseableJson": true,
+      "error": null
+    },
+    "safety": {
+      "hostingDeploys": 0,
+      "cloudRunDeploys": 0,
+      "firestoreWrites": 0,
+      "authWrites": 0,
+      "rulesDeploys": 0,
+      "storageWrites": 0,
+      "hrWrites": 0,
+      "merge": false,
+      "production": false
+    }
+  },
+  "staffShopper": {
+    "schemaVersion": "cxorbia.c6.unified-human-auth-browser-smoke.v3",
+    "generatedAt": "2026-08-05T16:30:51.394Z",
+    "decision": "PASS_C6_UNIFIED_HUMAN_AUTH_STAFF_SHOPPER_RUNTIME_CLIENT_ROUTE_READY",
+    "root": "https://cxorbia-backend-dev.web.app",
+    "local": false,
+    "principalIsolation": "fresh_browser_per_principal",
+    "lane": "authenticated-human-canonical",
+    "staff": {
+      "role": "coordinador",
+      "namespace": "staff",
+      "periods": 15,
+      "visits": 660,
+      "shoppers": 195,
+      "firstPeriod": "2025-06",
+      "latestPeriod": "2026-08",
+      "ownVisits": null,
+      "projectId": "cinepolis",
+      "periodId": "cinepolis-2026-08",
+      "loginProtectedBy": "official_wrapper",
+      "reloadsStable": true,
+      "newTabStable": true,
+      "credentialsExposed": false,
+      "tokensExposed": false
+    },
+    "shopper": {
+      "role": "shopper",
+      "namespace": "shopper",
+      "periods": 15,
+      "visits": 660,
+      "shoppers": 209,
+      "firstPeriod": "2025-06",
+      "latestPeriod": "2026-08",
+      "ownVisits": 1,
+      "projectId": "cinepolis",
+      "periodId": "cinepolis-2026-08",
+      "loginProtectedBy": "official_wrapper",
+      "reloadsStable": true,
+      "newTabStable": true,
+      "credentialsExposed": false,
+      "tokensExposed": false
+    },
+    "client": {
+      "integratedCredentialRoute": true,
+      "authenticated": false,
+      "loginProtectedBy": "official_wrapper",
+      "reason": "existing_client_credential_not_selected_by_current_private_selector"
+    },
+    "fullClientAuthenticationGatePassed": false,
+    "remainingBlocker": "EXISTING_CLIENT_CREDENTIAL_NOT_SELECTED",
+    "hostingDeploys": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "credentialsExposed": false,
+    "tokensExposed": false,
+    "merge": false,
+    "production": false
+  },
+  "client": {
+    "schemaVersion": "cxorbia.c6.client-auth-browser-smoke.v1",
+    "generatedAt": "2026-08-05T16:31:18.263Z",
+    "decision": "PASS_C6_CLIENT_AUTH_EXISTING_CREDENTIAL_RUNTIME",
+    "authenticated": true,
+    "existingCredentialSelected": true,
+    "role": "cliente",
+    "namespace": "staff",
+    "tenantId": "tya",
+    "projectIds": [
+      "cinepolis"
+    ],
+    "periods": 15,
+    "visits": 660,
+    "firstPeriod": "2025-06",
+    "latestPeriod": "2026-08",
+    "projectId": "cinepolis",
+    "periodId": "cinepolis-2026-08",
+    "reloadsStable": true,
+    "newTabStable": true,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "credentialsExposed": false,
+    "tokensExposed": false,
+    "hostingDeploys": 0,
+    "providerWrites": 0,
+    "merge": false,
+    "production": false
+  },
+  "financeDiagnostic": {
+    "schemaVersion": "cxorbia.c6.remote-finance-model-diagnostic.v1",
+    "generatedAt": "2026-08-05T16:31:24.858Z",
+    "decision": "DIAGNOSTIC_C6_REMOTE_FINANCE_MODEL_CAPTURED",
+    "currentProjectId": "cinepolis",
+    "currentPeriodId": "cinepolis-2026-08",
+    "period": {
+      "id": "cinepolis-2026-08",
+      "parentProjectId": "cinepolis",
+      "program": "cinepolis",
+      "periodKey": "2026-08",
+      "modelo": "delegado",
+      "billingModel": "delegated_coordination",
+      "projectModel": "delegado",
+      "localBilling": false,
+      "royaltyApplicable": false,
+      "regalias": 0,
+      "compensationModel": "coordination_commission_shared",
+      "financialModelReviewRequired": false,
+      "financialModelContractVersion": "cxorbia.project-financial-model.v1"
+    },
+    "project": {
+      "id": "cinepolis",
+      "parentProjectId": "cinepolis",
+      "program": "cinepolis",
+      "periodKey": "2026-08",
+      "modelo": "delegado",
+      "billingModel": "delegated_coordination",
+      "projectModel": "delegado",
+      "localBilling": false,
+      "royaltyApplicable": false,
+      "regalias": 0,
+      "compensationModel": "coordination_commission_shared",
+      "financialModelReviewRequired": false,
+      "financialModelContractVersion": "cxorbia.project-financial-model.v1"
+    },
+    "currentById": {
+      "id": "cinepolis-2026-08",
+      "parentProjectId": "cinepolis",
+      "program": "cinepolis",
+      "periodKey": "2026-08",
+      "modelo": "delegado",
+      "billingModel": "delegated_coordination",
+      "projectModel": "delegado",
+      "localBilling": false,
+      "royaltyApplicable": false,
+      "regalias": 0,
+      "compensationModel": "coordination_commission_shared",
+      "financialModelReviewRequired": false,
+      "financialModelContractVersion": "cxorbia.project-financial-model.v1"
+    },
+    "projectFinancialModelContract": {
+      "ready": true,
+      "version": "cxorbia.project-financial-model.v1",
+      "reason": "unified_runtime_financial_configuration",
+      "projects": 15,
+      "delegated": 15,
+      "regional": 0,
+      "direct": 0,
+      "unconfigured": 0,
+      "royaltyViolations": 0,
+      "nonLocalRoyaltyPct": 0,
+      "delegatedCompensation": "coordination_commission_shared",
+      "regionalCompensation": "regional_coordination_distribution",
+      "projectClassificationSource": "project_configuration_not_name",
+      "defaultModelAssumed": false,
+      "splitValuesInvented": false,
+      "providerWrites": 0,
+      "production": false,
+      "at": "2026-08-05T16:31:24.835Z"
+    },
+    "projectFinancialConfiguration": {
+      "applied": true,
+      "reason": "protected_auth_hr_authority_ready",
+      "visitsUpdated": 0,
+      "postsUpdated": 0,
+      "honorarium": {
+        "GT": 60,
+        "HN": 200
+      },
+      "model": "delegado",
+      "billingModel": "delegated_coordination",
+      "localBilling": false,
+      "royaltyApplicable": false,
+      "royalty": 0,
+      "compensationModel": "coordination_commission_shared",
+      "commissionSplit": {
+        "status": "project_configuration_required",
+        "valuesInvented": false
+      },
+      "taxTreatment": "project_specific_not_inferred",
+      "source": "project_configuration",
+      "providerWrites": 0,
+      "production": false,
+      "at": "2026-08-05T16:31:24.844Z"
+    },
+    "delegatedCoordinationGuard": {
+      "ready": true,
+      "version": "delegated-coordination-finance-guard-v1",
+      "installed": true,
+      "defaultModelAssumed": false,
+      "shopperHonorariumUsedAsIncomeFallback": false,
+      "splitValuesInvented": false,
+      "providerWrites": 0,
+      "production": false,
+      "at": "2026-08-05T16:31:19.470Z"
+    },
+    "projectCount": 15,
+    "credentialsExposed": false,
+    "tokensExposed": false,
+    "hostingDeploys": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "merge": false,
+    "production": false
+  },
+  "semantic": {
+    "schemaVersion": "cxorbia.phase-a.remote-domain-finance-portals-reservations.dynamic.failure.v2",
+    "generatedAt": "2026-08-05T16:32:08.157Z",
+    "decision": "FAIL_PHASE_A_REMOTE_DOMAIN_FINANCE_PORTALS_RESERVATIONS_DYNAMIC",
+    "failedStage": "client_route_wait",
+    "errorCode": "page.waitForFunction: Timeout 30000ms exceeded.",
+    "partial": {
+      "staff": {
+        "role": "coordinador",
+        "namespace": "staff",
+        "tenantId": "tya",
+        "projectIds": [
+          "cinepolis"
+        ],
+        "authority": {
+          "applied": true,
+          "periods": 15,
+          "visits": 660,
+          "shoppers": 209,
+          "firstPeriod": "2025-06",
+          "latestPeriod": "2026-08",
+          "duplicateVisitKeys": 0,
+          "duplicateShopperIds": 0
+        },
+        "data": {
+          "periods": 15,
+          "visits": 660,
+          "shoppers": 195,
+          "currentProjectId": "cinepolis",
+          "currentPeriodId": "cinepolis-2026-08",
+          "summaryCount": 15,
+          "periodKey": "2026-08",
+          "summary": {
+            "periodKey": "2026-08",
+            "total": 44,
+            "available": 0,
+            "assigned": 10,
+            "scheduled": 2,
+            "realized": 1,
+            "questionnaireCompleted": 0,
+            "submitted": 0,
+            "liquidationCandidates": 0,
+            "liquidationConfirmed": 0,
+            "paymentConfirmed": 0,
+            "outOfRange": 1,
+            "outOfRangeEvidence": 2,
+            "reviewRequired": 34,
+            "byCountry": {
+              "GT": 34,
+              "HN": 10
+            }
+          },
+          "kpis": {
+            "total": {
+              "t": 44,
+              "GT": 34,
+              "HN": 10
+            },
+            "asignadas": {
+              "t": 10,
+              "GT": 8,
+              "HN": 2
+            },
+            "sinAsignar": {
+              "t": 34,
+              "GT": 26,
+              "HN": 8
+            },
+            "sinAgendar": {
+              "t": 8,
+              "GT": 6,
+              "HN": 2
+            },
+            "agendadas": {
+              "t": 1,
+              "GT": 1,
+              "HN": 0
+            },
+            "realizadas": {
+              "t": 1,
+              "GT": 1,
+              "HN": 0
+            },
+            "pendRealizar": {
+              "t": 43,
+              "GT": 33,
+              "HN": 10
+            },
+            "cuestPend": {
+              "t": 1,
+              "GT": 1,
+              "HN": 0
+            },
+            "sinSubmitir": {
+              "t": 0,
+              "GT": 0,
+              "HN": 0
+            },
+            "liquidadas": {
+              "t": 0,
+              "GT": 0,
+              "HN": 0
+            },
+            "fueraRango": {
+              "t": 1,
+              "GT": 1,
+              "HN": 0
+            },
+            "postPend": 0
+          },
+          "countries": [
+            "GT",
+            "HN"
+          ],
+          "phaseSums": {
+            "assigned": 10,
+            "scheduled": 2,
+            "realized": 1,
+            "questionnaire": 0,
+            "submitted": 0,
+            "liquidated": 0
+          }
+        },
+        "finance": {
+          "project": {
+            "modelo": "delegado",
+            "billingModel": "delegated_coordination",
+            "localBilling": false,
+            "royaltyApplicable": false,
+            "regalias": 0,
+            "honorario": {
+              "GT": 60,
+              "HN": 200
+            }
+          },
+          "modelContract": {
+            "ready": true,
+            "version": "cxorbia.project-financial-model.v1",
+            "reason": "unified_runtime_financial_configuration",
+            "projects": 15,
+            "delegated": 15,
+            "regional": 0,
+            "direct": 0,
+            "unconfigured": 0,
+            "royaltyViolations": 0,
+            "nonLocalRoyaltyPct": 0,
+            "delegatedCompensation": "coordination_commission_shared",
+            "regionalCompensation": "regional_coordination_distribution",
+            "projectClassificationSource": "project_configuration_not_name",
+            "defaultModelAssumed": false,
+            "splitValuesInvented": false,
+            "providerWrites": 0,
+            "production": false,
+            "at": "2026-08-05T16:31:32.037Z"
+          },
+          "delegatedGuard": {
+            "ready": true,
+            "version": "delegated-coordination-finance-guard-v1",
+            "projectId": "cinepolis",
+            "projectModel": "delegado",
+            "localBilling": false,
+            "royaltyPct": 0,
+            "readyCountries": 0,
+            "pendingCountries": 2,
+            "defaultModelAssumed": false,
+            "shopperHonorariumUsedAsIncomeFallback": false,
+            "splitValuesInvented": false,
+            "providerWrites": 0,
+            "production": false,
+            "at": "2026-08-05T16:31:32.071Z"
+          },
+          "projectConfiguration": {
+            "applied": true,
+            "reason": "protected_auth_hr_authority_ready",
+            "visitsUpdated": 0,
+            "postsUpdated": 0,
+            "honorarium": {
+              "GT": 60,
+              "HN": 200
+            },
+            "model": "delegado",
+            "billingModel": "delegated_coordination",
+            "localBilling": false,
+            "royaltyApplicable": false,
+            "royalty": 0,
+            "compensationModel": "coordination_commission_shared",
+            "commissionSplit": {
+              "status": "project_configuration_required",
+              "valuesInvented": false
+            },
+            "taxTreatment": "project_specific_not_inferred",
+            "source": "project_configuration",
+            "providerWrites": 0,
+            "production": false,
+            "at": "2026-08-05T16:31:32.046Z"
+          },
+          "rows": {
+            "GT": {
+              "cur": "Q",
+              "visRe": 0,
+              "ingreso": 0,
+              "honorarioDevengado": 0,
+              "honorarioPorPagar": 0,
+              "honorarioPagado": 0,
+              "pagosConfirmados": 0,
+              "reemb": 0,
+              "isr": 0,
+              "regal": 0,
+              "fijos": 0,
+              "margen": 0,
+              "cxp": 0,
+              "cxc": 0,
+              "margenPct": 0,
+              "financialSourceStatus": "canonical_source_safe",
+              "exactReconciledRecords": 0,
+              "paymentConfirmedRecords": 0,
+              "reviewQueueCount": 1,
+              "paymentHistoryMode": "historical_source_safe",
+              "sourceSafe": true,
+              "financialModel": "delegado",
+              "localBilling": false,
+              "royaltyApplicable": false,
+              "commissionAmount": 0,
+              "commissionSource": "project_configuration_required",
+              "commissionSourceStatus": "project_configuration_required",
+              "distributedAmount": 0,
+              "distributionSource": "project_configuration_required",
+              "distributionSourceStatus": "project_configuration_required",
+              "marginSourceStatus": "pending_or_review",
+              "financialReviewRequired": true,
+              "shopperCostsIncludedInCommissionMargin": false,
+              "valuesInvented": false
+            },
+            "HN": {
+              "cur": "L",
+              "visRe": 0,
+              "ingreso": 0,
+              "honorarioDevengado": 0,
+              "honorarioPorPagar": 0,
+              "honorarioPagado": 0,
+              "pagosConfirmados": 0,
+              "reemb": 0,
+              "isr": 0,
+              "regal": 0,
+              "fijos": 0,
+              "margen": 0,
+              "cxp": 0,
+              "cxc": 0,
+              "margenPct": 0,
+              "financialSourceStatus": "canonical_source_safe",
+              "exactReconciledRecords": 0,
+              "paymentConfirmedRecords": 0,
+              "reviewQueueCount": 0,
+              "paymentHistoryMode": "historical_source_safe",
+              "sourceSafe": true,
+              "financialModel": "delegado",
+              "localBilling": false,
+              "royaltyApplicable": false,
+              "commissionAmount": 0,
+              "commissionSource": "project_configuration_required",
+              "commissionSourceStatus": "project_configuration_required",
+              "distributedAmount": 0,
+              "distributionSource": "project_configuration_required",
+              "distributionSourceStatus": "project_configuration_required",
+              "marginSourceStatus": "pending_or_review",
+              "financialReviewRequired": true,
+              "shopperCostsIncludedInCommissionMargin": false,
+              "valuesInvented": false
+            }
+          }
+        },
+        "reservations": {
+          "marker": {
+            "ready": true,
+            "version": "canonical-reservations-guard-v2",
+            "source": "protected_canonical_or_empty",
+            "browserLocalStorageAsSource": false,
+            "mutationsEnabled": false,
+            "providerWrites": 0,
+            "production": false
+          },
+          "mutation": {
+            "ok": false,
+            "blocked": true,
+            "reason": "canonical_reservation_source_not_connected",
+            "action": "reserve",
+            "readOnly": true
+          }
+        },
+        "modules": {
+          "clientDashboard": true,
+          "shopperProfile": true,
+          "finance": true,
+          "reservations": true
+        }
+      },
+      "client": {
+        "navigation": {
+          "clientModule": true,
+          "routerAvailable": true,
+          "requested": true,
+          "routeAfterRequest": "cli_dashboard"
+        }
+      },
+      "shopper": null
+    },
+    "credentialsExposed": false,
+    "tokensExposed": false,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "rulesDeploys": 0,
+    "storageWrites": 0,
+    "cloudRunDeploys": 0,
+    "hostingDeploys": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "merge": false,
+    "production": false
+  },
+  "stopRetry": true,
+  "automaticSecondDeployAuthorized": false,
+  "safety": {
+    "hostingDeploysThisRun": 1,
+    "hostingDeployAttempts": 1,
+    "automaticSecondDeploys": 0,
+    "cloudRunDeploys": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "rulesDeploys": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "credentialsExposed": false,
+    "tokensExposed": false,
+    "merge": false,
+    "production": false
+  }
+}

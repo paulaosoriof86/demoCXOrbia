@@ -1,0 +1,186 @@
+{
+  "schemaVersion": "cxorbia.rc15.systemic-audit.control-plane.v2",
+  "generatedAt": "2026-08-21T18:06:00-06:00",
+  "masterPlanId": "CXORBIA-MASTER-GO-LIVE-POSTPROD-RC15-V1",
+  "masterPlanVersion": "1.0.0",
+  "masterPlanStatus": "FROZEN",
+  "phase": "F0_SYSTEMIC_AUDIT",
+  "step": "F0_RC15_CONTROL_PLANE_WRITE_SURFACE_INVENTORY",
+  "status": "IN_PROGRESS",
+  "phaseA": {"completed":98,"pending":2,"total":100},
+  "headBeforeTranche": "823892a38123b50a694e857a4bf6ec2107122d99",
+  "priorDetailedEvidence": {
+    "blobSha": "3b708b0697f3c36067bcdf76474ea9dd8ca2d7f6",
+    "findingsThrough": 92,
+    "confirmedHoldsThrough": 22,
+    "preservedImmutableInGit": true
+  },
+  "masterPlanFreezeValidation": {
+    "decision": "PASS_REPLICATED_FROM_CANONICAL_GIT_IDENTITY",
+    "planGitBlobShaExpected": "48494ebe5fc439aa6d00e6edcf2e78133357e7f3",
+    "planGitBlobShaObserved": "48494ebe5fc439aa6d00e6edcf2e78133357e7f3",
+    "planSha256Locked": "2ddfa91f6ad78ebf08f3dfeefe8b62a695753e3583fc536ce4f015c252d02475",
+    "currentPhase": "F0_SYSTEMIC_AUDIT",
+    "providerMutationAuthorizedNow": false,
+    "masterPlanFileChangedByEmergencyRequest": false,
+    "masterPlanIdentityPreserved": true
+  },
+  "emergencyPlanChangeRequest": {
+    "requestId": "RC15-PCR-EMERGENCY-V156-BASE-WORKFLOW-INERTIZATION-20260821-01",
+    "evidencePath": "app/docs/evidence/RC15-PLAN-CHANGE-REQUEST-EMERGENCY-V156-INERTIZATION-20260821.json",
+    "authorizedBy": "Paula",
+    "authorizationSource": "current_conversation",
+    "authorizedAt": "2026-08-21T18:06:00-06:00",
+    "scope": "INERTIZE_ONLY_HISTORICAL_V156_PR_BASE_WORKFLOW",
+    "decision": "PASS_EMERGENCY_CONTAINMENT",
+    "controlPlaneBranch": "release/cxorbia-tya-rc-20260630",
+    "baseBefore": "4a85e7e4d0eb31691d7b77e3551ed7cafabb5984",
+    "baseAfter": "fc7ead694ccdb01bee79856d47a761d34c8d88b9",
+    "workflowPath": ".github/workflows/cxorbia-v156-atomic-promotion.yml",
+    "workflowBlobBefore": "ec78fd01a6696ec5ebe3ad5d7c1a6d9dc123606a",
+    "workflowBlobAfter": "fe7691a6e53d51ff6a73a5df340541ba84d99594",
+    "branchDeltaFiles": 1,
+    "providerWrites": 0,
+    "deploys": 0,
+    "dataWrites": 0,
+    "merge": false
+  },
+  "findingsDelta": [
+    {
+      "id": "RC15-CP-093",
+      "classification": "P0_PROVEN_PR_BASE_HISTORICAL_SOURCE_MUTATION_WRITER_CONTAINED_INERT",
+      "surface": "release/cxorbia-tya-rc-20260630:.github/workflows/cxorbia-v156-atomic-promotion.yml",
+      "evidence": "PR synchronize run 32534531824 proved that the historical base workflow could re-enter from an ordinary PR synchronization with contents:write, DEV credential, protected Drive download, 35-file source apply and push to the live branch. The observed run stopped only on a historical SHA mismatch before apply/commit; that mismatch is not a safety control. Current-conversation emergency authorization replaced the base workflow in fc7ead694ccdb01bee79856d47a761d34c8d88b9 with contents:read, no push/pull_request trigger, no secrets/download/apply/commit/push/deploy, and an if:false job.",
+      "p0Proven": true,
+      "contained": true,
+      "residualHold": false
+    },
+    {
+      "id": "RC15-CP-094",
+      "classification": "HOLD_ACTIVE_EXTERNAL_HR_READ_AND_CANONICAL_STATE_WRITER_WITHOUT_CURRENT_AUTHORITY",
+      "surface": ".github/workflows/tya-hr-country-tab-consistency-current.yml + .github/cxorbia-firebase-requests/live-hr-country-tab-consistency.json",
+      "evidence": "The request remains enabled=true without consumed terminal semantics. The workflow has contents:write, loads the DEV service-account credential, performs live HR/provider reads and can commit sanitized evidence plus the HR tab registry to the live branch. It does not bind execution to the current continuity lock/consumed ledger before credential access or repository mutation.",
+      "providerMutationRiskNow": false,
+      "canonicalStateDriftRisk": true,
+      "residualHold": true,
+      "requiredTreatment": "F1_INERTIZE_HISTORICAL_STATE_WRITER_AND_F2_REQUIRE_CURRENT_CANONICAL_AUTHORITY_BEFORE_EXTERNAL_HR_OR_PROVIDER_ACCESS_AND_REPO_WRITE"
+    },
+    {
+      "id": "RC15-CP-095",
+      "classification": "READONLY_PROTOTYPE_BASELINE_ATOMICITY_VALIDATOR",
+      "surface": ".github/workflows/cxorbia-prototype-baseline-atomicity.yml",
+      "evidence": "contents:read; verifies accepted baseline and deployment-script syntax only; no provider credential, provider write or repository push."
+    },
+    {
+      "id": "RC15-CP-096",
+      "classification": "READONLY_REMOTE_SEMANTIC_BROWSER_GATE",
+      "surface": ".github/workflows/cxorbia-r17-human-findings-semantic-gate.yml",
+      "evidence": "contents:read; remote/browser semantic validation and artifact output only; no provider credential or repository mutation."
+    },
+    {
+      "id": "RC15-CP-097",
+      "classification": "READONLY_RC_DRIFT_VALIDATOR",
+      "surface": ".github/workflows/cxorbia-rc-phase-a-drift-gate.yml",
+      "evidence": "contents:read; offline source drift validation and artifacts only."
+    },
+    {
+      "id": "RC15-CP-098",
+      "classification": "READONLY_SOURCE_LOCK_VERIFY",
+      "surface": ".github/workflows/cxorbia-source-lock-post-v96-runtime-verify.yml",
+      "evidence": "contents:read; V110 union source-lock/manifest verification and artifacts only."
+    },
+    {
+      "id": "RC15-CP-099",
+      "classification": "READONLY_LIQUIDATION_CERTIFICATION_SOURCE_SAFE_VALIDATOR",
+      "surface": ".github/workflows/cxorbia-phase-a-liquidation-certification-source-safe.yml",
+      "evidence": "contents:read; source-safe liquidation/certification syntax and projection validation, artifacts only."
+    },
+    {
+      "id": "RC15-CP-100",
+      "classification": "HISTORICAL_MANUAL_READONLY_V110_DIAGNOSTIC",
+      "surface": ".github/workflows/cxorbia-phase-a-rc-smoke.yml",
+      "evidence": "typed manual historical diagnostic; contents:read; explicitly non-blocking/local report and artifact only."
+    },
+    {
+      "id": "RC15-CP-101",
+      "classification": "READONLY_LOCAL_VISUAL_SMOKE",
+      "surface": ".github/workflows/cxorbia-phase-a-visual-smoke.yml",
+      "evidence": "contents:read; local static server, source gates and browser smoke; artifacts only."
+    },
+    {
+      "id": "RC15-CP-102",
+      "classification": "READONLY_SOURCE_SAFE_RUNTIME_GUARD_VALIDATOR",
+      "surface": ".github/workflows/cxorbia-phase-a-source-safe-runtime-guard.yml",
+      "evidence": "contents:read; runtime-guard validation and artifacts only."
+    },
+    {
+      "id": "RC15-CP-103",
+      "classification": "READONLY_REPOSITORY_ENTRYPOINT_SCRIPT_INTEGRITY_STATUS_GATE",
+      "surface": ".github/workflows/cxorbia-corte4-entrypoint-script-integrity.yml",
+      "evidence": "contents:read plus commit-status publication only; repository script integrity check, no provider credential or source push."
+    },
+    {
+      "id": "RC15-CP-104",
+      "classification": "HISTORICAL_REMOTE_HTTP_BROWSER_DIAGNOSTIC_STATUS_ONLY",
+      "surface": ".github/workflows/cxorbia-corte4-p0-vis02-remote-diagnostic.yml",
+      "evidence": "public remote HTTP/browser diagnostic; contents:read/statuses:write only; no provider credential, deploy or repository push."
+    },
+    {
+      "id": "RC15-CP-105",
+      "classification": "HISTORICAL_REMOTE_PUBLIC_SCRIPT_PROBE_STATUS_ONLY",
+      "surface": ".github/workflows/cxorbia-corte4-p0-vis02-script-probe.yml",
+      "evidence": "public deployed-script HTTP probe; contents:read/statuses:write only."
+    },
+    {
+      "id": "RC15-CP-106",
+      "classification": "HISTORICAL_REMOTE_HTTP_BROWSER_DIAGNOSTIC_STATUS_ONLY",
+      "surface": ".github/workflows/cxorbia-corte4-p0-vis02b-final-remote-diagnostic.yml",
+      "evidence": "public remote browser diagnostic; contents:read/statuses:write only; no provider credential or repository push."
+    }
+  ],
+  "coverage": {
+    "controlPlaneWriteSurface": "EXPANDED_NOT_EXHAUSTIVE",
+    "classifiedFindings": 106,
+    "holdDiscoveriesCumulative": 24,
+    "currentResidualHolds": 23,
+    "containedHoldIds": ["RC15-CP-093"],
+    "currentResidualHoldIds": [
+      "RC15-CP-005","RC15-CP-011","RC15-CP-014","RC15-CP-017","RC15-CP-025","RC15-CP-028","RC15-CP-029","RC15-CP-030","RC15-CP-031","RC15-CP-045","RC15-CP-055","RC15-CP-056","RC15-CP-058","RC15-CP-059","RC15-CP-063","RC15-CP-066","RC15-CP-067","RC15-CP-068","RC15-CP-074","RC15-CP-078","RC15-CP-090","RC15-CP-091","RC15-CP-094"
+    ],
+    "additionalSurfacesClassifiedThisTranche": 14,
+    "allWorkflowsClassified": false,
+    "allRequestsClassified": false,
+    "allWorkflowDispatchClassified": false,
+    "allProviderWriteEntrypointsClassified": false,
+    "inventoryCursor": "TRANCHE_7_PR_BASE_SYNCHRONIZE_AND_FINAL_VALIDATORS"
+  },
+  "rootCauseProgress": {
+    "newRootCauseEvidence": true,
+    "finding": "RC15 now proves a seventh control-plane failure mode: execution authority can survive in the PR base branch and re-enter on pull_request synchronization even when the workflow has already disappeared from the live head. This joins provider/source/state authority drift, request/lock bypass, direct legacy connectivity, external-HR authority gaps and trigger/request/executor binding defects.",
+    "fixModel": "The proven V156 PR-base writer is contained. Continue exhaustive F0. F1 must atomically tombstone remaining historical write/read-state authorities; F2 must enforce master plan + continuity lock + consumed ledger/current read authorization before credentials, provider/external-HR/legacy access or repository mutation. Only afterward revalidate G2-B under a new explicit one-shot authorization."
+  },
+  "toolingIncidents": [
+    {
+      "description": "During emergency containment an atomic tree and commit object d2a3edf6377b130f3b6206959f4a42eb31b3aee7 was prepared but not referenced. The authorized branch change was then applied as single-file commit fc7ead694ccdb01bee79856d47a761d34c8d88b9. The dangling commit has no ref and no branch/provider side effect.",
+      "repositorySideEffectBeyondAuthorizedFile": false,
+      "providerOrDataSideEffect": false
+    }
+  ],
+  "safety": {
+    "providerWrites": 0,
+    "dataWrites": 0,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "deploys": 0,
+    "payments": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "merge": false,
+    "recoveryExecuted": false,
+    "syntheticStageExecuted": false
+  },
+  "decision": "CONTINUE_F0_AFTER_EMERGENCY_CONTAINMENT",
+  "next": "CONTINUE_REMAINING_WORKFLOW_REQUEST_PROVIDER_SOURCE_STATE_LEGACY_EXTERNAL_HR_AND_PR_BASE_SURFACES_UNTIL_EXHAUSTIVE"
+}

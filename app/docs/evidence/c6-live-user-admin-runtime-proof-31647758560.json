@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "cxorbia.c6.live-user-admin-runtime-proof-evidence.v1",
+  "date": "2026-08-12",
+  "actionRequested": "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "providerTarget": "cxorbia-backend-dev",
+  "request": {
+    "requestId": "c6-live-user-admin-membership-runtime-proof-20260812-05",
+    "requestCommit": "5c30fcc75faa96334bd8c11ac3ede7f1bbfba816",
+    "targetHeadSha": "8162460c41446f956ac66c9bd594b5e6fa2e07cd",
+    "singleHostingDeployMax": 1,
+    "stopRetryOnFailure": true,
+    "authorizationSource": "current_conversation_2026-08-12_one_shot_new_C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF_single_visible_login_form"
+  },
+  "execution": {
+    "workflowRunId": 31647758560,
+    "jobId": 94285159177,
+    "artifactId": 9161420264,
+    "artifactDigest": "sha256:38136897ad4a6c973577bbf4f608afa4ee03466370d7feb2183570c1cc908594",
+    "workflowConclusion": "failure",
+    "failedStep": "Select existing DEV credentials privately",
+    "stopRetryApplied": true,
+    "secondAttempt": false
+  },
+  "artifact": {
+    "summaryDecision": "FAIL_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME",
+    "resolvedAction": null,
+    "stage": "select_existing_credentials_v6__HOLD_SHOPPER_R109_U104_V1_D1_H0_S0_M616_L208_P194",
+    "credentialSelectionStaffShopperSourceSafeEmpty": true,
+    "source": null,
+    "runtime": null
+  },
+  "hosting": {
+    "deployAttempted": false,
+    "hostingDeploysThisRun": 0,
+    "authorizedHostingPhysicallyConsumed": "0/1"
+  },
+  "rootCause": {
+    "classification": "REQUEST_ACTION_METADATA_SUFFIX_DRIFT",
+    "workflowContract": "Read execute state resolves the exact Staff action only when authorizationSource.endsWith(C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF).",
+    "requestMismatch": "The authorized request metadata appended _single_visible_login_form after the exact action token, so steps.request.outputs.action resolved to an empty string.",
+    "effect": "The workflow entered the generic Staff+Shopper selector branch instead of Staff-only and stopped on the pre-existing generic Shopper HOLD before Hosting.",
+    "providerOrDataFailureDemonstrated": false,
+    "staffQaRepairReached": false
+  },
+  "safety": {
+    "newAuthWrites": 0,
+    "newFirestoreWrites": 0,
+    "newHrWrites": 0,
+    "newRulesWrites": 0,
+    "newStorageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "secondExactWrite": 0,
+    "secretsExposed": false,
+    "tokensExposed": false,
+    "merge": false,
+    "production": false
+  },
+  "phaseA": {
+    "certifiedPercent": 88,
+    "remainingPercent": 12,
+    "certifiedDeltaThisExecution": 0,
+    "tracker": "M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1"
+  },
+  "nextGate": {
+    "status": "BLOCKED_PENDING_NEW_EXPLICIT_AUTHORIZATION",
+    "reason": "STOP_RETRY forbids a second workflow attempt under the current authorization even though Hosting was not physically consumed.",
+    "requestConstructionRequirement": "The next one-shot must resolve the exact Staff action before the selector. Under the current workflow this means authorizationSource must terminate exactly with C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF and no trailing qualifier; verify the resolved action before allowing the selector/deploy stage.",
+    "preparedSourceHeadContainsStaffQaRepair": true
+  }
+}

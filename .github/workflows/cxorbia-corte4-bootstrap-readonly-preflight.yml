@@ -1,0 +1,180 @@
+name: CXOrbia Corte 4 Bootstrap DEV Read-only Preflight
+
+on:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - '.github/workflows/cxorbia-corte4-bootstrap-readonly-preflight.yml'
+      - '.github/cxorbia-firebase-requests/corte4-bootstrap-preflight.json'
+      - 'tools/release/cxorbia-corte4-bootstrap-preflight.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  statuses: write
+
+concurrency:
+  group: cxorbia-corte4-bootstrap-readonly-preflight
+  cancel-in-progress: true
+
+env:
+  CXORBIA_NEW_PROJECT_ID: cxorbia-tya-dev-260729-c4
+  CXORBIA_NEW_PROJECT_NAME: CXOrbia TyA DEV Clean Corte 4
+  CXORBIA_FIRESTORE_LOCATION: us-central1
+  CXORBIA_REQUEST_PATH: .github/cxorbia-firebase-requests/corte4-bootstrap-preflight.json
+  CXORBIA_REQUEST_TIMEOUT_MS: '8000'
+
+jobs:
+  bootstrap-preflight-readonly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+
+    steps:
+      - name: Checkout live branch
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate exact authorization request
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const p=process.env.CXORBIA_REQUEST_PATH;
+          const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          const exact={
+            schemaVersion:'cxorbia.corte4-bootstrap-preflight.v1',
+            enabled:true,
+            authorizationSource:'current_conversation',
+            authorizationText:'Autorizo bootstrap DEV read-only de Corte 4',
+            repository:'paulaosoriof86/demoCXOrbia',
+            branch:'docs-tya-v6-v71-audit',
+            pullRequest:7,
+            targetProjectId:process.env.CXORBIA_NEW_PROJECT_ID,
+            targetDisplayName:process.env.CXORBIA_NEW_PROJECT_NAME,
+            firestoreLocation:process.env.CXORBIA_FIRESTORE_LOCATION,
+            mode:'PREFLIGHT_ONLY',
+            providerReads:true,
+            providerWrites:false,
+            production:false,
+            merge:false,
+            imports:false,
+            payments:false,
+            storage:false,
+            hostingDeploy:false,
+            functions:false,
+            make:false,
+            gemini:false
+          };
+          for(const [k,v] of Object.entries(exact)) if(r[k]!==v) throw new Error(`Request mismatch: ${k}`);
+          console.log('Exact Corte 4 bootstrap preflight request validated.');
+          NODE
+
+      - name: Select existing credential without exposing it
+        env:
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/corte4-bootstrap-private .tmp/corte4-bootstrap-preflight
+          node <<'NODE'
+          const fs=require('fs');
+          const raw=process.env.EXISTING_DEV_JSON||'';
+          let parsed=null; try{parsed=JSON.parse(raw);}catch{}
+          const valid=Boolean(parsed&&parsed.type==='service_account'&&parsed.client_email&&parsed.private_key&&parsed.token_uri);
+          const report={route:'existing_dev_service_account',credentialAvailable:Boolean(raw),credentialShapeValid:valid,secretValuesOutput:false};
+          fs.writeFileSync('.tmp/corte4-bootstrap-preflight/credential-route.source-safe.json',JSON.stringify(report,null,2)+'\n');
+          if(valid) fs.writeFileSync('.tmp/corte4-bootstrap-private/credentials.json',raw,{mode:0o600});
+          console.log(JSON.stringify(report,null,2));
+          if(!valid) process.exit(2);
+          NODE
+
+      - name: Run provider read-only capability preflight
+        env:
+          CXORBIA_CONFIRM: PREFLIGHT_BOOTSTRAP_DEV_READ_ONLY_C4
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/.tmp/corte4-bootstrap-private/credentials.json
+        run: |
+          set -euo pipefail
+          node tools/release/cxorbia-corte4-bootstrap-preflight.mjs --out .tmp/corte4-bootstrap-preflight
+
+      - name: Publish sanitized result
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          report='.tmp/corte4-bootstrap-preflight/corte4-bootstrap-preflight.source-safe.json'
+          if [ ! -f "$report" ]; then
+            node -e "const fs=require('fs');fs.mkdirSync('.tmp/corte4-bootstrap-preflight',{recursive:true});fs.writeFileSync('$report',JSON.stringify({decision:'BLOCKED_WORKFLOW_PRECONDITION',summary:{providerWriteReady:false,missingPermissionCount:null,disabledServiceCount:null,locationResolved:false},safeState:{providerReads:false,providerWrites:false,production:false}},null,2)+'\n');"
+          fi
+          node - "$report" <<'NODE' > .tmp/corte4-bootstrap-preflight/status.env
+          const fs=require('fs'); const r=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const s=r.summary||{};
+          const pass=r.decision==='BOOTSTRAP_PREFLIGHT_READY_FOR_AUTHORIZED_WRITES_C4';
+          const decision=String(r.decision||'UNKNOWN').replace(/[^A-Z0-9_.-]/gi,'_').slice(0,52);
+          const location=String(r.target?.locationId||'unset').replace(/[^a-z0-9_-]/gi,'_').slice(0,20);
+          console.log(`STATE=${pass?'success':'error'}`);
+          console.log(`DECISION=${decision}`);
+          console.log(`READY=${Boolean(s.providerWriteReady)}`);
+          console.log(`MISSING=${s.missingPermissionCount===null?'unknown':Number(s.missingPermissionCount||0)}`);
+          console.log(`DISABLED=${s.disabledServiceCount===null?'unknown':Number(s.disabledServiceCount||0)}`);
+          console.log(`LOCATION=${location}`);
+          NODE
+          source .tmp/corte4-bootstrap-preflight/status.env
+          diag="cxorbia/c4boot-${DECISION}-m${MISSING}-d${DISABLED}-loc${LOCATION}"
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="$STATE" \
+            -f context="$diag" \
+            -f description="Sanitized Corte 4 bootstrap preflight diagnosis" >/dev/null
+          gh api --method POST -H 'Accept: application/vnd.github+json' \
+            "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -f state="$STATE" \
+            -f context='cxorbia/corte4-bootstrap-preflight' \
+            -f description="Bootstrap preflight: ${DECISION}" >/dev/null
+
+          node - "$report" <<'NODE' > .tmp/corte4-bootstrap-preflight/prereq-statuses.tsv
+          const fs=require('fs'); const r=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          const safe=s=>String(s||'unknown').replace(/[^A-Za-z0-9_.-]/g,'_').slice(0,70);
+          for(const p of (r.permissions?.missing||[])) console.log(`error\tcxorbia/c4boot-missing-${safe(p)}\tMissing bootstrap IAM permission`);
+          for(const [service,v] of Object.entries(r.services||{})) if(!v.enabled) console.log(`error\tcxorbia/c4boot-disabled-${safe(service)}\tRequired bootstrap service not enabled`);
+          if(!r.summary?.locationResolved) console.log('error\tcxorbia/c4boot-location-unset\tFirestore location requires explicit choice');
+          NODE
+          while IFS=$'\t' read -r item_state item_context item_desc; do
+            [ -n "$item_context" ] || continue
+            gh api --method POST -H 'Accept: application/vnd.github+json' \
+              "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+              -f state="$item_state" -f context="$item_context" -f description="$item_desc" >/dev/null
+          done < .tmp/corte4-bootstrap-preflight/prereq-statuses.tsv
+
+          body=$(cat <<EOF
+          ## Corte 4 · bootstrap DEV read-only · preflight
+
+          - Decision: \`$DECISION\`
+          - Provider write ready: \`$READY\`
+          - Missing required permissions: \`$MISSING\`
+          - Disabled required services: \`$DISABLED\`
+          - Firebase/Firestore location: \`$LOCATION\`
+          - Provider writes: \`0\`
+          - Production: \`false\`
+          EOF
+          )
+          gh issue comment 7 --repo "$GITHUB_REPOSITORY" --body "$body" >/dev/null
+          printf '%s\n' "$body" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Cleanup credential
+        if: always()
+        run: rm -rf .tmp/corte4-bootstrap-private
+
+      - name: Upload sanitized evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-corte4-bootstrap-readonly-preflight
+          path: .tmp/corte4-bootstrap-preflight
+          if-no-files-found: error
+          retention-days: 14

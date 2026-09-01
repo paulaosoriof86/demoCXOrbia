@@ -1,0 +1,38 @@
+{
+  "id": "PROVIDER_PROMOTION_MECHANISM_V1",
+  "version": 1,
+  "state": "FROZEN_PENDING_PROVIDER_WRITE_AUTHORIZATION",
+  "target": {
+    "repository": "paulaosoriof86/demoCXOrbia",
+    "branch": "docs-tya-v6-v71-audit",
+    "head": "739c13a84df82bf3e24917422bfba27a19d17752",
+    "protectedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
+    "knownGoodRevision": "cxorbia-live-hr-dev-00011-f2f"
+  },
+  "authorization": {
+    "providerMutationAuthorized": false,
+    "leaseIssued": false,
+    "leaseSingleUse": true,
+    "retryBudgetAfterExplicitAuthorization": 1,
+    "requiresSeparateExplicitAuthorizationInCurrentConversation": true,
+    "noOpConsumesLease": false,
+    "noOpConsumesRetry": false
+  },
+  "preflight": {
+    "mode": "READ_ONLY",
+    "failClosed": true,
+    "requiredBindings": ["repository","branch","head","provider","project","region","service","targetRevision","evidenceDigest"],
+    "invalidateOn": ["head_mismatch","source_mismatch","config_mismatch","provider_mismatch","project_mismatch","region_mismatch","service_mismatch","target_revision_mismatch","stale_evidence","ambiguous_state"]
+  },
+  "idempotency": {
+    "alreadyActiveAndVerifiedResult": "NO_OP_ALREADY_PROMOTED",
+    "ambiguousOrMismatchResult": "FAIL_CLOSED_REVIEW_REQUIRED",
+    "autoFix": false
+  },
+  "rollback": {
+    "revision": "cxorbia-live-hr-dev-00011-f2f",
+    "automaticWithoutAuthorization": false
+  },
+  "f3SafetyCounters": {"providerWrites":0,"deploys":0,"g2bAttempts":0},
+  "nextGate": "G2-B_WAITING_EXPLICIT_AUTHORIZATION"
+}

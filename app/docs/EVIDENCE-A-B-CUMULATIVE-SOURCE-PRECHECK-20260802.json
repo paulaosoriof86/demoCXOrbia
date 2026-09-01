@@ -1,0 +1,86 @@
+{
+  "schema": "cxorbia.tya.ab-source-precheck-evidence.v1",
+  "candidateId": "CXORBIA-TYA-A-B-CUMULATIVE-20260802",
+  "generatedAt": "2026-08-03T00:32:08.678Z",
+  "status": "PASS_CONNECTOR_ASSISTED_PRECHECK_PENDING_EXACT_CHECKOUT_GATE_AND_VISUAL",
+  "branch": "docs-tya-v6-v71-audit",
+  "headBeforeFunctionalDelta": "754639e0c0682c638cc799fd26bfcd2c744b0b6a",
+  "functionalDelta": {
+    "adapterCommitInitial": "b8c5323b9887fc97375f805cec9320dfc8b9afa7",
+    "indexCommit": "90d6c045c9ad7aaee284ad69bbbb146fbbd09326",
+    "adapterFixCommit": "4c5f0d829efe0094707235fab1472539d950b81e",
+    "adapterGitBlob": "9c0d76382531b8393cc0866ec694935a2a5e25a6",
+    "indexGitBlob": "b9a4aaf063d97305c3f4f53eba8f02b526d61761"
+  },
+  "manifest": {
+    "path": "app/docs/MANIFEST-A-B-CUMULATIVE-CANDIDATE-20260802.json",
+    "gitBlob": "a93bf5ae528dea0c5dc18505b7f3b16762f6efd8",
+    "entries": 23,
+    "connectorBlobReview": "23/23 exact Git blobs reviewed against current branch",
+    "status": "SOURCE_ASSEMBLED_PENDING_GATES_AND_VISUAL"
+  },
+  "checks": {
+    "adapterNodeSyntax": "PASS",
+    "adapterLocalMirrorGitBlob": "PASS_9c0d76382531b8393cc0866ec694935a2a5e25a6",
+    "indexLoadOrder": "PASS_AB_COMPOSITION_AFTER_MODULES_BEFORE_C6_BRIDGES",
+    "adapterSingleLoad": true,
+    "unitGate": {
+      "path": "tools/qa/tya-ab-cumulative-composition-unit.mjs",
+      "status": "PASS",
+      "count": 23,
+      "assertions": [
+        "synthetic client removed",
+        "placeholder contact removed",
+        "real contact preserved",
+        "CRM fixtures hidden",
+        "CRM user-created lead/account/contact remain mutable",
+        "CRM provenance platform_user",
+        "Marketing fixtures hidden",
+        "Marketing user-created content remains mutable",
+        "Marketing month follows active period",
+        "composition ready",
+        "provider writes zero",
+        "production false",
+        "delegated financial model",
+        "local billing false",
+        "royalty zero",
+        "GT honorarium 60",
+        "HN honorarium 200"
+      ]
+    },
+    "fullCheckoutGate": {
+      "path": "tools/qa/tya-ab-cumulative-candidate-source-gate.mjs",
+      "status": "READY_NOT_EXECUTED_IN_CURRENT_CONNECTOR_SESSION",
+      "reason": "Current GitHub connector exposes repository contents but no authenticated shell checkout or workflow-dispatch action. No claim of full gate PASS is made.",
+      "nextExecution": "Run on exact branch checkout before any Hosting DEV deploy; STOP_RETRY on first failure."
+    }
+  },
+  "behavior": {
+    "preservesApprovedModules": true,
+    "rewritesFrontendModules": false,
+    "suppressesUnprovenCrmFixtures": true,
+    "suppressesSyntheticClientsAndPlaceholderContacts": true,
+    "suppressesUnprovenMarketingFixtures": true,
+    "preservesUserCreatedRecords": true,
+    "preservesHrAuthority": true,
+    "preservesCxDataInterface": true,
+    "preservesC6CanonicalRuntime": true,
+    "makeEnabled": false,
+    "geminiEnabled": false
+  },
+  "safeState": {
+    "hostingDeploy": 0,
+    "cloudRunWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "merge": false,
+    "production": false
+  },
+  "next": "EXACT_CHECKOUT_SOURCE_GATE -> STATIC/CUMULATIVE GATES -> ONE DEV DEPLOY AUTHORIZATION -> PAULA CHECKPOINT VISUAL 1"
+}

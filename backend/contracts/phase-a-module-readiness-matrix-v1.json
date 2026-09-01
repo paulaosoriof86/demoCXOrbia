@@ -1,0 +1,62 @@
+{
+  "contractId": "phase-a-module-readiness-matrix-v1",
+  "status": "draft_safe_not_connected",
+  "generatedAt": "2026-07-09",
+  "purpose": "Prevent TyA Phase A rework by validating every critical module before connecting real source/base data.",
+  "safeState": {
+    "realDatabaseConnected": false,
+    "firestoreWritesEnabled": false,
+    "authEnabled": false,
+    "claimsWritten": false,
+    "importsEnabled": false,
+    "providersEnabled": false,
+    "productionEnabled": false,
+    "containsSensitiveData": false
+  },
+  "principles": [
+    "No real connection until module readiness passes.",
+    "Project is not period; period filters project.",
+    "TyA-specific logic must be represented as tenant/project configuration, not as hardcoded prototype logic.",
+    "Reusable CXOrbia patterns must be documented for future tenants.",
+    "Every module must have: config path, source/readiness path, protected data policy, reviewQueue policy and audit policy."
+  ],
+  "requiredModules": [
+    "tenantProjectPeriod",
+    "hrSource",
+    "usersRolesScopes",
+    "shoppersProtectedProfiles",
+    "visitsAssignments",
+    "applicationsScheduling",
+    "academyCoursesManuals",
+    "certificationsCarryover",
+    "liquidationsPayments",
+    "notificationsOutbox",
+    "reviewQueueConflicts",
+    "auditEvents",
+    "integrationsGates",
+    "brandingPwa",
+    "cxDataBackendSwitch"
+  ],
+  "moduleReadinessRequirements": {
+    "tenantProjectPeriod": ["tenantConfig", "projectConfig", "periodModel", "projectPeriodSeparation", "creationFlow"],
+    "hrSource": ["sourceType", "maskedSource", "tabsDetected", "lastReadAt", "sourceSafePayload", "routeSheetMapping"],
+    "usersRolesScopes": ["personaTypes", "technicalRoles", "scopes", "claimsSeed", "authGate"],
+    "shoppersProtectedProfiles": ["publicRefs", "protectedProfile", "identityLinks", "piiPolicy", "readAdapter"],
+    "visitsAssignments": ["stableVisitKeys", "hrRowId", "assignmentSource", "syncStatus", "conflictPolicy"],
+    "applicationsScheduling": ["applicationStates", "scheduleRules", "rescheduleRules", "cancelRules", "shopperFlow"],
+    "academyCoursesManuals": ["roleRoutes", "courseConfig", "manuals", "checklists", "glossary", "adminActions"],
+    "certificationsCarryover": ["questionBanks", "attempts", "carryover", "humanReview", "geminiGate"],
+    "liquidationsPayments": ["liquidationPreview", "paymentBatchPreview", "paymentStatusAudit", "financeGate", "noPaymentExecution"],
+    "notificationsOutbox": ["preparedMessages", "providerGate", "templates", "audit", "noRealSend"],
+    "reviewQueueConflicts": ["identityConflicts", "assignmentConflicts", "certificationConflicts", "paymentConflicts", "humanDecision"],
+    "auditEvents": ["protectedReads", "roleChanges", "paymentStateChanges", "sourceImports", "criticalActions"],
+    "integrationsGates": ["makeGate", "geminiGate", "storageGate", "paymentGate", "hrWritebackGate"],
+    "brandingPwa": ["brandConfig", "favicon", "manifest", "icons", "installCta"],
+    "cxDataBackendSwitch": ["sameInterface", "adapterBehindFacade", "rollback", "readOnlyGate", "writeGate"]
+  },
+  "verdicts": {
+    "go": "GO_MODULE_READY",
+    "warning": "GO_WITH_WARNINGS_NO_REAL_WRITE",
+    "noGo": "NO_GO_MODULE_READINESS"
+  }
+}

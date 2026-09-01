@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "phase-a-certification-carryover-source-safe-projection-v1",
+  "scope": {"multiTenant": true,"multiProject": true,"initialTenantId": "tya","initialProjectId": "cinepolis"},
+  "stableKeys": ["tenantId","projectId","shopperId","certificationId","sourceRef"],
+  "states": ["pending_source","pending_review","carried_over","rejected","expired","conflict"],
+  "requiredForCarryover": ["presentedAt","reviewedBy","reviewedAt","auditRef","sourceRef"],
+  "hardRules": [
+    "Historical visits or shopper counts do not prove certification.",
+    "Demo progress, approved_preview and pending_backend never enable real visits.",
+    "Carryover requires a sanitized certification source and an authenticated human reviewer.",
+    "A typed reviewer name is not an authenticated second actor.",
+    "Missing or conflicting evidence remains non-eligible and enters reviewQueue."
+  ],
+  "safeState": {"sourceSafe": true,"imported": false,"production": false,"writes": false,"providers": false,"eligibilityActivation": false}
+}

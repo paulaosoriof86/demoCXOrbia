@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "cxorbia.c6.auth-plan-v4-prewrite-hash-config-empty-stop-retry.evidence.v1",
+  "generatedAt": "2026-08-10T09:20:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "state": "C6_AUTH_PLAN_V4_PREWRITE_STOP_HASH_CONFIG_EMPTY__GET_SHAPE_REPAIR_PASS__ZERO_AUTH_WRITES__NO_SECOND_PROVIDER_ATTEMPT__NO_PRODUCTION",
+  "freeze": {
+    "rows": 340,
+    "uniqueRows": 340,
+    "operationCounts": {
+      "CREATE_AUTH": 118,
+      "UPDATE_AUTH": 9,
+      "NO_OP": 81,
+      "HOLD": 0,
+      "PRESERVE_NO_AUTH": 132
+    },
+    "subchangeCounts": {
+      "email": 2,
+      "password": 8,
+      "claims": 1
+    },
+    "expectedAuthUsersBefore": 110,
+    "expectedAuthUsersAfter": 228,
+    "digest": "c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4"
+  },
+  "sourceRepair": {
+    "head": "c6d4fdb83303a0293b1c6adce375b522d0c29db8",
+    "runId": 31402335372,
+    "decision": "PASS_C6_HASH_CONFIG_SOURCE_REPAIR_STATIC_ZERO_WRITES",
+    "removedQuery": "?mask=hashConfig",
+    "requestShape": "GET /admin/v2/projects/{projectId}/config",
+    "writeCallsBeforeBoundary": 0
+  },
+  "execution": {
+    "requestId": "c6-auth-plan-v4-activation-dev-20260810-02",
+    "requestCommit": "f0f655608f6fe53a976096f53d64e9c95670ec64",
+    "runId": 31402395938,
+    "jobId": 93500386091,
+    "artifactId": 9068194459,
+    "artifactDigest": "sha256:a469cf5d2d6607e8a205af52cbef78042a814886d7be5229480cfadce05013a9",
+    "providerAttempts": 1,
+    "secondProviderAttempt": false,
+    "decision": "STOP_RETRY_C6_AUTH_PLAN_V4_PREWRITE",
+    "errorCode": "HASH_CONFIG_EMPTY",
+    "errorFingerprint": "e9514406bb62df47b26382a9",
+    "prewritePass": false,
+    "writeBoundaryEntered": false,
+    "authCreates": 0,
+    "authUpdates": 0,
+    "duplicateDisables": 0,
+    "providerWriteCalls": 0,
+    "snapshotProduced": false,
+    "runtimeSmokeExecuted": false
+  },
+  "sourceOnlyDiagnosis": {
+    "priorHttp400Resolved": true,
+    "currentParserPaths": ["body.hashConfig", "body.hash_config"],
+    "officialConfigShape": "Config.signIn.hashConfig",
+    "nextProviderRetestAuthorized": false,
+    "permissionReadinessStillToVerify": "firebaseauth.configs.getHashConfig"
+  },
+  "safety": {
+    "requestConsumed": true,
+    "requestEnabled": false,
+    "allowedExecutions": 0,
+    "oneShotWorkflowPresent": false,
+    "sourceRepairWorkflowPresent": false,
+    "authExecuted": false,
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "membershipWrites": 0,
+    "hrWrites": 0,
+    "visitsWrites": 0,
+    "certificationsWrites": 0,
+    "liquidationsWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "cloudBuild": 0,
+    "cloudRun": 0,
+    "hosting": 0,
+    "make": 0,
+    "gemini": 0,
+    "payments": 0,
+    "merge": false,
+    "production": false,
+    "rawPiiExported": false
+  }
+}

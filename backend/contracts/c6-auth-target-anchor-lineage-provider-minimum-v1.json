@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "cxorbia.c6.auth-target-anchor-lineage-provider-minimum.v1",
+  "status": "provider_readonly_consumed_terminal_root_cause_cross_row_principal_alias",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "firebaseProjectId": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "projectId": "cinepolis",
+  "target": {
+    "profileFingerprint": "ac93d90d9e41512acdcd",
+    "profileFingerprintNamespace": "deterministic-suffix-plan-profile",
+    "baseLoginFingerprint": "493f2b26360648693c37",
+    "baseLoginFingerprintNamespace": "base-login",
+    "targetLoginFingerprint": "bd8d7019d612b4421366",
+    "targetLoginFingerprintNamespace": "target-login",
+    "suffixApplied": true,
+    "suffixLength": 4,
+    "sourceSafeSurnameBasis": "multi_source_full_name_consensus",
+    "frozenPlanClass": "UPDATE_AUTH",
+    "frozenChanges": {"email": true, "password": true, "claims": true},
+    "collisionPeerProfileFingerprint": "a8dd7db89a02ff180674"
+  },
+  "rootCauseCircuitBreaker": {
+    "priorFailuresClassified": [
+      "claim-only resolver failed because current claims are themselves scheduled to change",
+      "profile/credential-only resolver failed because credential crosswalk depended on technical keys propagated from linked operational sources",
+      "source-safe lineage could not reconstruct exact corroborating bases because UPDATE_AUTH diagnostics were not persisted"
+    ],
+    "sharedBaseLoginForbiddenAsSoleTargetAnchor": true,
+    "credentialCrosswalkRequiredAfterLineage": true,
+    "currentClaimsForbiddenAsSoleTargetAnchor": true,
+    "crossRowExistingAuthPrincipalReuseForbidden": true
+  },
+  "terminalProviderFinding": {
+    "requestId": "c6-auth-target-adaptive-lineage-password-snapshot-readonly-20260807-02",
+    "runId": 31227139583,
+    "jobId": 93023626036,
+    "artifactId": 9012489547,
+    "artifactDigest": "sha256:82fc0f55becf62fbec5380652d5cd9f535d592da866fd921b51b0eeba9d32c05",
+    "workflowConclusion": "success",
+    "decision": "STOP_RETRY_C6_AUTH_TARGET_ADAPTIVE_LINEAGE_PASSWORD_SNAPSHOT_READONLY_TECHNICAL",
+    "lineage": {
+      "pass": true,
+      "corroboratingBases": ["profile", "visit"],
+      "corroboratingBasisCount": 2,
+      "baseLoginFingerprintMatch": true,
+      "targetLoginFingerprintMatch": true,
+      "suffixLength": 4,
+      "targetLoginUniqueInFrozenPlan": true
+    },
+    "authResolution": {
+      "targetSpecificCandidateCount": 0,
+      "credentialAnchorPresent": false,
+      "hashConfigReads": 0,
+      "passwordInspected": false,
+      "snapshotCreated": false
+    },
+    "providerReads": {
+      "shopperIndexQueries": 1,
+      "shopperDocumentsRead": 340,
+      "targetLinkedQueries": 12,
+      "targetLinkedDocumentsRead": 5,
+      "authDirectoryPages": 1,
+      "hashConfigReads": 0
+    },
+    "writes": 0
+  },
+  "crossRowPrincipalAliasRootCause": {
+    "demonstrated": true,
+    "basis": [
+      "the frozen target and peer share the same baseLogin fingerprint",
+      "the peer preserves the unsuffixed base login",
+      "the old activation PREWRITE candidate gatherer included shared base-login Auth users for every row in that collision group",
+      "the old activation PREWRITE had no global uniqueness invariant preventing one existing Auth principal from being selected by multiple profile rows",
+      "the old PREWRITE advanced through candidate cardinality/change-flag validation to the password rollback phase",
+      "the corrected target-specific resolver reconstructs the exact target lineage but finds zero distinct eligible current Auth candidates when the shared base-login peer is excluded"
+    ],
+    "conclusion": "The old frozen UPDATE_AUTH classification for ac93d90d9e41512acdcd is not safe to execute. Its prior selected existing Auth principal can be explained by cross-row reuse of the collision peer through shared baseLogin.",
+    "doNotRepeatPasswordSnapshotUnderOldPlan": true,
+    "doNotRerunOldActivationPlan": true,
+    "sourcePlanRootFixRequired": true
+  },
+  "requiredNextSourceOnlyCorrection": {
+    "addGlobalExistingAuthPrincipalUniquenessInvariant": true,
+    "reclassifyTargetOnlyAfterSourceSafeSimulation": "CREATE_AUTH_IF_TARGET_SPECIFIC_CANDIDATE_COUNT_ZERO_AND_TARGET_LOGIN_UNIQUE",
+    "preserveCollisionPeerAsItsOwnExistingPrincipal": true,
+    "recalculatePlanCountsAndDigest": true,
+    "recalculateExpectedAuthPopulation": true,
+    "recalculatePasswordUpdateCount": true,
+    "fixSaltlessRollbackSemanticsWithoutRelaxingExactRollback": true,
+    "providerReadsAuthorized": false,
+    "writesAuthorized": false
+  },
+  "activationFollowUpRootCause": {
+    "currentActivationPrewriteStillRequiresNonemptyHashAndSaltForAll14PasswordChanges": true,
+    "knownSourceFinding": "saltless SHA256/1 can be legitimate",
+    "rule": "Do not rerun Auth Activation unchanged. The next source-only root fix must both prevent cross-row principal reuse and distinguish a proven legitimate empty salt from unavailable rollback material."
+  },
+  "hardStops": [
+    "no second provider attempt for this consumed block",
+    "no password snapshot retry under the old UPDATE_AUTH classification",
+    "no old Auth Activation rerun",
+    "no provider writes",
+    "no Auth writes",
+    "no Firestore writes",
+    "no HR writes",
+    "no deploy",
+    "no merge",
+    "no production"
+  ]
+}

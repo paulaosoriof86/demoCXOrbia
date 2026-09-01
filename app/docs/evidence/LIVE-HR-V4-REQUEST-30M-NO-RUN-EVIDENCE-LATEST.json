@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "cxorbia.live-hr-v4-request-observation.v1",
+  "generatedAt": "2026-08-06T12:44:00-06:00",
+  "decision": "STOP_RETRY_NO_RUN_OR_CHECKPOINT_EVIDENCE_WITHIN_30M",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "sourceCommit": "a1f11483153aa2576bb284b9b2f6ed178dbe528d",
+  "requestCommit": "ac2032ec224e6d56bf087788b949691b6690c437",
+  "requestBlobSha": "0c55cae69c51deb63f64de2a37992f3cec2713e0",
+  "authorizationId": "chat-20260806-live-hr-authority-current-period-v4-03",
+  "requestCreatedAt": "2026-08-06T18:13:33Z",
+  "observationWindow": {
+    "startedAt": "2026-08-06T18:13:33Z",
+    "endedAt": "2026-08-06T18:43:53Z",
+    "durationSeconds": 1820
+  },
+  "requestContract": {
+    "schemaVersion": "cxorbia.live-hr-current-reconcile.request.v3",
+    "controlPlaneContract": "cxorbia.live-hr-control-plane-journal.v1",
+    "providerReadsAuthorized": 1,
+    "providerWritesAuthorized": 0,
+    "expectedCurrentPeriod": "2026-08",
+    "expectedCountries": ["GT", "HN"],
+    "observationMode": "RUN_JOB_STEPS_JOURNAL_DIRECT",
+    "secondTriggerAllowed": false
+  },
+  "observations": {
+    "requestCommitFetched": true,
+    "exactWatchedPathChanged": true,
+    "branchHeadRemainedRequestCommitThroughWindow": true,
+    "commitStatusesObserved": 0,
+    "workflowStartedCheckpointObserved": false,
+    "providerBoundaryCheckpointObserved": false,
+    "providerSequenceCheckpointObserved": false,
+    "finalCheckpointObserved": false,
+    "runIdRecovered": false,
+    "jobIdRecovered": false,
+    "stepsRecovered": false,
+    "journalRecovered": false,
+    "artifactRecovered": false,
+    "workflowEvidenceCommitObserved": false,
+    "matchingGithubFailureNotificationObserved": false,
+    "gmailAbsenceAuthoritativeForRunExistence": false
+  },
+  "conclusion": {
+    "workflowRunExistence": "UNKNOWN_AFTER_30M_OBSERVATION",
+    "providerBoundaryProvenReached": false,
+    "providerReadConsumption": "UNKNOWN_NO_RUN_JOB_OR_CHECKPOINT_EVIDENCE",
+    "currentPeriod202608Validated": false,
+    "gtHnTabsValidated": false,
+    "historicalMutationValidated": false,
+    "transversalSourceRevisionValidated": false,
+    "retryExecuted": false,
+    "stopRetry": true
+  },
+  "antiLoop": {
+    "secondTriggerEmitted": false,
+    "requestModifiedAfterEmission": false,
+    "sameLaneDiagnosticReopened": false,
+    "rule": "do not infer providerReads=0 without a recovered cancelled job with steps=0"
+  },
+  "safety": {
+    "providerReadsExecutedByObserver": 0,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "make": 0,
+    "gemini": 0,
+    "payments": 0,
+    "merge": false,
+    "production": false
+  }
+}

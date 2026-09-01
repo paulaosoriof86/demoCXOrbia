@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "cxorbia.c6.skip13-auth-access-adjudication.no-run-evidence.v1",
+  "generatedAt": "2026-08-06T21:27:07Z",
+  "decision": "HOLD_C6_SKIP13_ADJUDICATION_NO_TERMINAL_RUN_EVIDENCE_STOP_RETRY",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "sourcePreparation": {
+    "contractCommit": "e9173d7253a3cec7cdbbb3b181924b7f132c94a3",
+    "toolCommit": "5281a7f0fa7c4ddcdb8db878ddbc2b99f9054b1c",
+    "workflowCommit": "a5b76313fd829f3a00e853bca03f6bb8e2fd423d",
+    "disabledRequestCommit": "9e7b53f8b468970d8ee174e114693074bfc7a67a",
+    "nodeCheck": "PASS"
+  },
+  "request": {
+    "requestCommit": "2eef8b70f2bd2d8570a7f3cc117e217851dd6964",
+    "targetHeadSha": "9e7b53f8b468970d8ee174e114693074bfc7a67a",
+    "authorizationId": "c6-skip13-auth-access-adjudication-20260806-01",
+    "authorizedAt": "2026-08-06T14:58:00-06:00",
+    "allowedExecutions": 1,
+    "secondTrigger": 0,
+    "requestModifiedAfterEmission": false
+  },
+  "scope": {
+    "skipProfiles": 13,
+    "blockingProfileFingerprint": "7cc28c78de9bfda01d14",
+    "blockingCandidateFingerprints": [
+      "9b2b7ca1bd72c1301d29",
+      "4e6d26551d11db444bd0"
+    ],
+    "authReadAuthorized": true,
+    "claimsReadAuthorized": true,
+    "membershipsReadAuthorized": true,
+    "hrReadAuthorized": false,
+    "writesAuthorized": false
+  },
+  "observation": {
+    "startedAt": "2026-08-06T21:06:40Z",
+    "endedAt": "2026-08-06T21:27:07Z",
+    "durationSeconds": 1227,
+    "combinedCommitStatuses": [],
+    "gmailNotificationMatches": 0,
+    "workflowRunIdRecovered": false,
+    "workflowJobIdRecovered": false,
+    "stepsRecovered": false,
+    "artifactRecovered": false,
+    "terminalStatusRecovered": false,
+    "gmailAbsenceAuthoritative": false
+  },
+  "classification": {
+    "workflowRunExistence": "UNKNOWN_AFTER_20M_OBSERVATION",
+    "providerBoundaryProvenReached": false,
+    "providerReadConsumption": "UNKNOWN_NO_RUN_JOB_STATUS_OR_CHECKPOINT_EVIDENCE",
+    "adjudicationCompleted": false,
+    "unplannedEffectiveAccessDetermined": false,
+    "retryExecuted": false,
+    "stopRetry": true
+  },
+  "preservedState": {
+    "authPlanRows": 340,
+    "CREATE_AUTH": 81,
+    "UPDATE_AUTH": 46,
+    "NO_OP": 73,
+    "HOLD": 0,
+    "PRESERVE_NO_AUTH": 140,
+    "skip13Preserved": true,
+    "historyPreserved": true,
+    "liveHrV4StillUnresolved": true
+  },
+  "safeState": {
+    "providerWrites": 0,
+    "authWrites": 0,
+    "passwordChanges": 0,
+    "passwordResets": 0,
+    "membershipWrites": 0,
+    "firestoreWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hrReads": 0,
+    "hrWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "merge": false,
+    "production": false
+  },
+  "nextRule": "Reconcile only late terminal evidence tied exactly to requestCommit 2eef8b70f2bd2d8570a7f3cc117e217851dd6964. Do not emit a second trigger or classify provider reads as zero or consumed without run/job/step evidence."
+}

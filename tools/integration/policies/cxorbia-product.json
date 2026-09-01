@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 2,
+  "policyId": "cxorbia-product-v2-direct-apply",
+  "repositoryFullName": "paulaosoriof86/demoCXOrbia",
+  "expectedBranch": "docs-tya-v6-v71-audit",
+  "multiTenant": true,
+  "runtimeRoot": "app",
+  "allowedCandidateRoots": ["app/"],
+  "protectedPrefixes": [
+    "app/contracts/",
+    "app/adapters/",
+    "app/docs/"
+  ],
+  "protectedFiles": [
+    "app/core/build-lock.js"
+  ],
+  "manifestExclude": ["docs", ".DS_Store"],
+  "buildLockPath": "app/core/build-lock.js",
+  "registryPath": "app/docs/EMPALME-CANDIDATE-REGISTRY.json",
+  "integrationMethod": "APPLY_DELTA_DIRECTLY",
+  "rules": {
+    "projectSelection": "explicit",
+    "noGlobalProjectDefault": true,
+    "candidateMayModifyFrontendRuntime": true,
+    "candidateMayModifyBackend": false,
+    "candidateMayModifyTenantOverlays": false,
+    "localIncomingLaneRequired": false,
+    "manualActionByPaulaAllowed": false,
+    "newMethodologyAfterGoAllowed": false
+  }
+}

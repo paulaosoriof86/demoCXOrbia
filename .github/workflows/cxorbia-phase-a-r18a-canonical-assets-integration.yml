@@ -1,0 +1,286 @@
+name: CXOrbia Phase A R18A Canonical Assets Integration
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - docs-tya-v6-v71-audit
+    paths:
+      - 'tools/hr-source/tya-build-live-hr-source-safe-r20.mjs'
+      - 'tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs'
+      - 'tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs'
+      - 'tools/hr-source/tya-reapply-canonical-state-r20.mjs'
+      - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
+      - 'tools/release/tya-source-safe-binding-build-r15g.mjs'
+      - 'tools/release/tya-source-safe-binding-build-r18a.mjs'
+      - 'tools/release/tya-corte1-report-projection-build.mjs'
+      - 'tools/qa/tya-r18a-canonical-assets-integration-validate.mjs'
+      - 'tools/qa/tya-source-semantics-r21-gate.mjs'
+      - 'tools/qa/tya-postulation-eligibility-r21-gate.mjs'
+      - 'tools/qa/tya-corte1-context-history-reports-gate.mjs'
+      - 'tools/qa/tya-corte1-report-projection-browser-gate.mjs'
+      - 'tools/qa/tya-corte1-report-frontend-consumer-acceptance.mjs'
+      - 'tools/qa/tya-corte1-report-frontend-runtime-gate.mjs'
+      - 'tools/dev/cxorbia-static-preview-server.mjs'
+      - 'backend/contracts/tya-hr-column-map-r20-v1.json'
+      - 'backend/contracts/tya-hr-tab-inventory-r20-v1.json'
+      - 'backend/contracts/phase-a-live-execution-checkpoint-v1.json'
+      - 'backend/contracts/phase-a-postulation-eligibility-r21-v1.json'
+      - 'backend/contracts/phase-a-corte1-context-history-reports-v1.json'
+      - 'backend/contracts/phase-a-corte1-report-frontend-consumer-v1.json'
+      - 'backend/config/tya-tenant-runtime-profile.source-safe.json'
+      - 'app/app.js'
+      - 'app/index.html'
+      - 'app/vendor/pptxgenjs.min.js'
+      - 'app/core/config.js'
+      - 'app/core/router.js'
+      - 'app/modules/visita-detalle.js'
+      - 'app/modules/visitas.js'
+      - 'app/modules/cliente-extra.js'
+      - 'app/docs/PHASE-A-LIVE-EXECUTION-CHECKPOINT-TYA-20260713.md'
+      - '.github/workflows/cxorbia-phase-a-r18a-canonical-assets-integration.yml'
+  pull_request:
+    branches:
+      - release/cxorbia-tya-rc-20260630
+    paths:
+      - 'tools/hr-source/tya-build-live-hr-source-safe-r20.mjs'
+      - 'tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs'
+      - 'tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs'
+      - 'tools/hr-source/tya-reapply-canonical-state-r20.mjs'
+      - 'tools/release/tya-source-safe-binding-build-r15f.mjs'
+      - 'tools/release/tya-source-safe-binding-build-r15g.mjs'
+      - 'tools/release/tya-source-safe-binding-build-r18a.mjs'
+      - 'tools/release/tya-corte1-report-projection-build.mjs'
+      - 'tools/qa/tya-r18a-canonical-assets-integration-validate.mjs'
+      - 'tools/qa/tya-source-semantics-r21-gate.mjs'
+      - 'tools/qa/tya-postulation-eligibility-r21-gate.mjs'
+      - 'tools/qa/tya-corte1-context-history-reports-gate.mjs'
+      - 'tools/qa/tya-corte1-report-projection-browser-gate.mjs'
+      - 'tools/qa/tya-corte1-report-frontend-consumer-acceptance.mjs'
+      - 'tools/qa/tya-corte1-report-frontend-runtime-gate.mjs'
+      - 'tools/dev/cxorbia-static-preview-server.mjs'
+      - 'backend/contracts/tya-hr-column-map-r20-v1.json'
+      - 'backend/contracts/tya-hr-tab-inventory-r20-v1.json'
+      - 'backend/contracts/phase-a-live-execution-checkpoint-v1.json'
+      - 'backend/contracts/phase-a-postulation-eligibility-r21-v1.json'
+      - 'backend/contracts/phase-a-corte1-context-history-reports-v1.json'
+      - 'backend/contracts/phase-a-corte1-report-frontend-consumer-v1.json'
+      - 'backend/config/tya-tenant-runtime-profile.source-safe.json'
+      - 'app/app.js'
+      - 'app/index.html'
+      - 'app/vendor/pptxgenjs.min.js'
+      - 'app/core/config.js'
+      - 'app/core/router.js'
+      - 'app/modules/visita-detalle.js'
+      - 'app/modules/visitas.js'
+      - 'app/modules/cliente-extra.js'
+      - 'app/docs/PHASE-A-LIVE-EXECUTION-CHECKPOINT-TYA-20260713.md'
+      - '.github/workflows/cxorbia-phase-a-r18a-canonical-assets-integration.yml'
+
+permissions:
+  contents: read
+  statuses: write
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  integrate-existing-canonical-assets:
+    name: Reuse existing canonical assets in HR source-safe path
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout current baseline and backend branch
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Validate syntax and isolated regression fixtures
+        run: |
+          set -euo pipefail
+          node --check app/modules/cliente-extra.js
+          node --check app/vendor/pptxgenjs.min.js
+          node --check tools/hr-source/tya-build-live-hr-source-safe-r20.mjs
+          node --check tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs
+          node --check tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs
+          node --check tools/hr-source/tya-reapply-canonical-state-r20.mjs
+          node --check tools/release/tya-source-safe-binding-build-r15f.mjs
+          node --check tools/release/tya-source-safe-binding-build-r15g.mjs
+          node --check tools/release/tya-source-safe-binding-build-r18a.mjs
+          node --check tools/release/tya-corte1-report-projection-build.mjs
+          node --check tools/qa/tya-r18a-canonical-assets-integration-validate.mjs
+          node --check tools/qa/tya-source-semantics-r21-gate.mjs
+          node --check tools/qa/tya-postulation-eligibility-r21-gate.mjs
+          node --check tools/qa/tya-corte1-context-history-reports-gate.mjs
+          node --check tools/qa/tya-corte1-report-projection-browser-gate.mjs
+          node --check tools/qa/tya-corte1-report-frontend-consumer-acceptance.mjs
+          node --check tools/qa/tya-corte1-report-frontend-runtime-gate.mjs
+          node --check tools/dev/cxorbia-static-preview-server.mjs
+          node tools/qa/tya-r18a-canonical-assets-integration-validate.mjs \
+            --self-test \
+            --out .tmp/r18a-self-test
+          node tools/qa/tya-postulation-eligibility-r21-gate.mjs \
+            --out .tmp/tya-postulation-eligibility-r21
+          node tools/qa/tya-corte1-report-frontend-consumer-acceptance.mjs \
+            --out .tmp/tya-corte1-report-frontend-consumer
+          node tools/qa/tya-corte1-report-frontend-runtime-gate.mjs \
+            --file app/modules/cliente-extra.js \
+            --out .tmp/tya-corte1-report-frontend-runtime
+
+      - name: Build live HR source-safe snapshot with the contract-driven R20 mapper
+        env:
+          CXORBIA_HR_SOURCE_SAFE_OUT: app/data/tya-hr-source-safe-periods.js
+          CXORBIA_HR_LIVE_MAX_ROW: '140'
+          CXORBIA_HR_LIVE_MAX_COL: AI
+          CXORBIA_HR_EARLIEST_PERIOD: '2025-06'
+          CXORBIA_GATE_OUT: .tmp/r20-source-safe-gates
+        run: |
+          set -euo pipefail
+          node tools/hr-source/tya-build-live-hr-source-safe-r20.mjs
+          test -s app/data/tya-hr-source-safe-periods.js
+          test -s .tmp/r20-source-safe-gates/hr-header-column-diagnostics.source-safe.json
+          grep -q 'exact_or_unique_anchored_only' app/data/tya-hr-source-safe-periods.js
+          grep -q 'empty_or_placeholder_shopper_is_unassigned' app/data/tya-hr-source-safe-periods.js
+
+      - name: Restrict the fresh snapshot to the verified Corte 0B inventory
+        run: |
+          set -euo pipefail
+          node tools/hr-source/tya-filter-source-safe-to-inventory-r20.mjs \
+            --input app/data/tya-hr-source-safe-periods.js \
+            --out app/data/tya-hr-source-safe-periods.js \
+            --inventory backend/contracts/tya-hr-tab-inventory-r20-v1.json \
+            --report-dir .tmp/r20-inventory-cutoff
+          grep -q 'tya-hr-tab-inventory-r20-v1' app/data/tya-hr-source-safe-periods.js
+          grep -q 'all_verified_hr_periods' app/data/tya-hr-source-safe-periods.js
+
+      - name: Canonicalize and reapply the final R20/R21 state machine
+        run: |
+          set -euo pipefail
+          node tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs \
+            --input app/data/tya-hr-source-safe-periods.js \
+            --out app/data/tya-hr-source-safe-periods.js \
+            --report-dir .tmp/r18a-canonicalization
+          node tools/hr-source/tya-reapply-canonical-state-r20.mjs \
+            --input app/data/tya-hr-source-safe-periods.js \
+            --out app/data/tya-hr-source-safe-periods.js \
+            --report-dir .tmp/r20-r21-final-canonical-pass
+          grep -q 'R18A_INTEGRATE_EXISTING_CANONICAL_ASSETS' app/data/tya-hr-source-safe-periods.js
+          grep -q 'runtimeSyncActive' app/data/tya-hr-source-safe-periods.js
+          grep -q 'r15g+r20+r21-eligibility' app/data/tya-hr-source-safe-periods.js
+          grep -q 'all_verified_hr_periods' app/data/tya-hr-source-safe-periods.js
+
+      - name: Run Corte 1 context, history and report projection gate
+        run: |
+          set -euo pipefail
+          node tools/qa/tya-corte1-context-history-reports-gate.mjs \
+            --payload app/data/tya-hr-source-safe-periods.js \
+            --contract backend/contracts/phase-a-corte1-context-history-reports-v1.json \
+            --frontend app/modules/cliente-extra.js \
+            --out .tmp/tya-corte1-context-history-reports
+
+      - name: Generate canonical source-safe DEV adapters in build copy
+        run: |
+          set -euo pipefail
+          node tools/release/tya-source-safe-binding-build-r18a.mjs \
+            --html app/index.html \
+            --out .tmp/r18a-binding
+          test -s app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
+          node --check app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js
+          grep -Fq 'adapters/tya-phase-a-source-safe-dev-adapter-r18a.js' app/index.html
+          node tools/release/tya-corte1-report-projection-build.mjs \
+            --payload app/data/tya-hr-source-safe-periods.js \
+            --contract backend/contracts/phase-a-corte1-context-history-reports-v1.json \
+            --html app/index.html \
+            --out app/adapters/tya-corte1-report-projection.js \
+            --report-dir .tmp/tya-corte1-report-projection-build
+          test -s app/adapters/tya-corte1-report-projection.js
+          node --check app/adapters/tya-corte1-report-projection.js
+          grep -Fq 'adapters/tya-corte1-report-projection.js' app/index.html
+
+      - name: Validate canonical payload and adapter together
+        run: |
+          set -euo pipefail
+          node tools/qa/tya-r18a-canonical-assets-integration-validate.mjs \
+            --payload app/data/tya-hr-source-safe-periods.js \
+            --adapter app/adapters/tya-phase-a-source-safe-dev-adapter-r18a.js \
+            --out .tmp/r18a-validation
+
+      - name: Install transient Playwright browser for R21 read-only gate
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts playwright@1.61.1
+          npx playwright install --with-deps chromium
+
+      - name: Run R21 and Corte 1 browser gates on generated build
+        env:
+          CXORBIA_STATIC_PREVIEW_PORT: '4173'
+          CXORBIA_MAX_SOURCE_AGE_HOURS: '24'
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/tya-source-semantics-r21 .tmp/tya-corte1-report-projection-browser
+          node tools/dev/cxorbia-static-preview-server.mjs > .tmp/tya-source-semantics-r21/static-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for attempt in $(seq 1 60); do
+            if curl -fsS 'http://127.0.0.1:4173/app/index.html?cxTyaPhaseA=1&r18d=visible' > /dev/null; then
+              ready=1
+              break
+            fi
+            sleep 1
+          done
+          test "$ready" = '1'
+          node tools/qa/tya-source-semantics-r21-gate.mjs \
+            --base-url 'http://127.0.0.1:4173/app/index.html?cxTyaPhaseA=1&r18d=visible' \
+            --out .tmp/tya-source-semantics-r21
+          node tools/qa/tya-corte1-report-projection-browser-gate.mjs \
+            --base-url 'http://127.0.0.1:4173/app/index.html?cxTyaPhaseA=1&r18d=visible' \
+            --out .tmp/tya-corte1-report-projection-browser
+
+      - name: Upload source-safe reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-a-r18a-canonical-assets-integration
+          path: |
+            .tmp/r18a-self-test
+            .tmp/r20-source-safe-gates
+            .tmp/r20-inventory-cutoff
+            .tmp/r18a-canonicalization
+            .tmp/r20-r21-final-canonical-pass
+            .tmp/tya-corte1-context-history-reports
+            .tmp/tya-corte1-report-projection-build
+            .tmp/tya-corte1-report-projection-browser
+            .tmp/tya-corte1-report-frontend-consumer
+            .tmp/tya-corte1-report-frontend-runtime
+            .tmp/r18a-binding
+            .tmp/r18a-validation
+            .tmp/tya-postulation-eligibility-r21
+            .tmp/tya-source-semantics-r21
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Publish R18A/R21/Corte 1 commit status
+        if: always()
+        uses: actions/github-script@v7
+        env:
+          CXORBIA_JOB_STATUS: ${{ job.status }}
+        with:
+          script: |
+            const state = process.env.CXORBIA_JOB_STATUS === 'success' ? 'success' : 'failure';
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              state,
+              context: 'cxorbia/r18a-r21-corte1-context-history-reports',
+              description: state === 'success'
+                ? 'Canonical source and Corte 1 frontend reports PASS'
+                : 'Canonical source or Corte 1 frontend reports HOLD',
+              target_url: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            });

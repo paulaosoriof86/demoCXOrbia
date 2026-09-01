@@ -1,0 +1,69 @@
+{
+  "sourceSafe": true,
+  "containsRawSensitiveData": false,
+  "isSyntheticOrSanitized": true,
+  "platformAssignments": [
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "visitId": "visit-preview-001",
+      "hrRowId": "hr-row-preview-001",
+      "sourceVisitRef": "hr-ref-preview-001",
+      "shopperId": "shopper-preview-001",
+      "assignmentId": "assignment-preview-001",
+      "postulationId": "postulation-preview-001",
+      "assignmentSource": "platform_preview",
+      "assignmentSyncStatus": "sync_disabled_preview_only",
+      "status": "assigned_preview"
+    },
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "visitId": "visit-preview-003",
+      "hrRowId": "hr-row-preview-003",
+      "sourceVisitRef": "hr-ref-preview-003",
+      "shopperId": "shopper-preview-003",
+      "assignmentId": "assignment-preview-003",
+      "assignmentSource": "platform_preview",
+      "assignmentSyncStatus": "sync_disabled_preview_only",
+      "status": "assigned_preview"
+    }
+  ],
+  "hrAssignments": [
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "visitId": "visit-preview-001",
+      "hrRowId": "hr-row-preview-001",
+      "sourceVisitRef": "hr-ref-preview-001",
+      "shopperId": "shopper-preview-001",
+      "assignmentId": "hr-assignment-preview-001",
+      "assignmentSource": "hr_preview",
+      "assignmentSyncStatus": "sync_disabled_preview_only",
+      "status": "assigned_preview"
+    },
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "visitId": "visit-preview-002",
+      "hrRowId": "hr-row-preview-002",
+      "sourceVisitRef": "hr-ref-preview-002",
+      "shopperId": "shopper-preview-002",
+      "assignmentId": "hr-assignment-preview-002",
+      "assignmentSource": "hr_preview",
+      "assignmentSyncStatus": "sync_disabled_preview_only",
+      "status": "assigned_preview"
+    }
+  ],
+  "postulations": [
+    {
+      "tenantId": "tya",
+      "projectId": "cinepolis-gt-preview",
+      "postulationId": "postulation-preview-001",
+      "shopperId": "shopper-preview-001",
+      "visitId": "visit-preview-001",
+      "hrRowId": "hr-row-preview-001",
+      "status": "pending_admin_review"
+    }
+  ]
+}

@@ -1,0 +1,166 @@
+{
+  "schemaVersion": "cxorbia.c6.auth-smoke-findings-adjudication.terminal-evidence.v1",
+  "generatedAt": "2026-08-10T15:18:00-06:00",
+  "state": "C6_AUTH_FINDINGS_ADJUDICATION_STOP_ONE_AMBIGUOUS_DUPLICATE__AUTH_DEV_228_PRESERVED__ZERO_WRITES__NO_SECOND_READ__NO_PRODUCTION",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "baseline": {
+    "authUsers": 228,
+    "authActivation": "PASS",
+    "readback": "PASS",
+    "rollbackDryRun": "PASS",
+    "planDigest": "c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4",
+    "prewriteRepeated": false,
+    "activationRepeated": false
+  },
+  "sourceGate": {
+    "commit": "2fcc0cc79ecf4cf77a32f45245020dc4e2b8cef0",
+    "runId": 31432971654,
+    "decision": "PASS_C6_AUTH_SMOKE_FINDINGS_ADJUDICATION_SOURCE_ZERO_WRITES_ONE_READ_NO_PII"
+  },
+  "execution": {
+    "requestId": "c6-auth-smoke-findings-adjudication-readonly-20260810-01",
+    "requestCommit": "ed081e79b3207692cb8b90b22c08feb3a241ba7b",
+    "runId": 31433085997,
+    "jobId": 93600894310,
+    "artifactId": 9079893971,
+    "artifactDigest": "sha256:1e300e105f29fa1d85385d495ad794633a0628127366221c6597e3ff97e454d0",
+    "providerReads": 1,
+    "secondProviderRead": false,
+    "decision": "STOP_RETRY_C6_AUTH_SMOKE_FINDINGS_ADJUDICATION",
+    "errorCode": "AMBIGUOUS_ADJUDICATION_1",
+    "errorFingerprint": "5a3ad62369651f48b197d362"
+  },
+  "observed": {
+    "authPopulation": 228,
+    "duplicateProviderEmailGroups": 5,
+    "unknownEnabledRoles": 4,
+    "adminTenantOutliers": 1,
+    "shopperScopeOutliers": 1,
+    "overlaps": {
+      "duplicateEmail__unknownRole": 1,
+      "duplicateEmail__adminTenant": 1,
+      "duplicateEmail__shopperScope": 0,
+      "unknownRole__adminTenant": 0,
+      "unknownRole__shopperScope": 0,
+      "adminTenant__shopperScope": 0
+    }
+  },
+  "duplicateGroups": [
+    {
+      "groupFp": "1acdcb3782b7cf351056",
+      "memberFps": ["6dee7f31c738218ce63a", "b561d9c46660715e214f"],
+      "enabledCount": 2,
+      "claimLevelEffectiveAccessCount": 2,
+      "roleFamily": "ADMIN_OPERACIONES",
+      "internalCxorbiaEmail": false,
+      "classification": "DEFECT_REAL_DUPLICATE_EFFECTIVE_ACCESS",
+      "repairRequired": true,
+      "ambiguous": false
+    },
+    {
+      "groupFp": "2c4d19f2b066835473d3",
+      "memberFps": ["aa5cbada6c5388ee1d8b", "f8405e17df357c121ccc"],
+      "enabledCount": 2,
+      "claimLevelEffectiveAccessCount": 2,
+      "roleFamily": "ADMIN_OPERACIONES",
+      "internalCxorbiaEmail": false,
+      "classification": "DEFECT_REAL_DUPLICATE_EFFECTIVE_ACCESS",
+      "repairRequired": true,
+      "ambiguous": false
+    },
+    {
+      "groupFp": "54225792eeb65f6739c0",
+      "memberFps": ["ce178298b2df136541d4", "19937aedc77af3404bdc"],
+      "enabledCount": 2,
+      "claimLevelEffectiveAccessCount": 2,
+      "roleFamily": "ADMIN_OPERACIONES",
+      "internalCxorbiaEmail": false,
+      "classification": "DEFECT_REAL_DUPLICATE_EFFECTIVE_ACCESS",
+      "repairRequired": true,
+      "ambiguous": false
+    },
+    {
+      "groupFp": "ae2f920fe6d9ce1fdd82",
+      "memberFps": ["ca9e2f644334833ab572", "360af509dcdcd1880f04"],
+      "enabledCount": 2,
+      "claimLevelEffectiveAccessCount": 2,
+      "roleFamily": "CLIENTE",
+      "internalCxorbiaEmail": false,
+      "classification": "DEFECT_REAL_DUPLICATE_EFFECTIVE_ACCESS",
+      "repairRequired": true,
+      "ambiguous": false
+    },
+    {
+      "groupFp": "fd891812eca020d27ee3",
+      "memberFps": ["e1773a24c98d6bbe26c3", "50d360f17c1fbdd69770"],
+      "enabledCount": 2,
+      "claimLevelEffectiveAccessCount": 0,
+      "internalCxorbiaEmail": false,
+      "memberClasses": ["OUTSIDE_CONTRACT_NO_TYA_ACCESS", "ADMIN_CROSS_TENANT_NO_TYA_ACCESS"],
+      "classification": "AMBIGUOUS_MULTI_ENABLED_PROVIDER_IDENTITY_WITH_BLOCKED_MEMBER",
+      "repairRequired": false,
+      "ambiguous": true
+    }
+  ],
+  "unknownRoles": [
+    {"candidateFp":"085672af5c98475df375","rolePresent":false,"classification":"SIN_ACCESO_EFECTIVO_ROLE_NOT_ALLOWED"},
+    {"candidateFp":"2349f1c0aaa3c696f646","rolePresent":false,"classification":"SIN_ACCESO_EFECTIVO_ROLE_NOT_ALLOWED"},
+    {"candidateFp":"6972df2731188d5ba37b","rolePresent":false,"classification":"SIN_ACCESO_EFECTIVO_ROLE_NOT_ALLOWED"},
+    {"candidateFp":"e1773a24c98d6bbe26c3","rolePresent":true,"classification":"SIN_ACCESO_EFECTIVO_ROLE_NOT_ALLOWED","overlapsDuplicateGroupFp":"fd891812eca020d27ee3"}
+  ],
+  "adminTenantOutlier": {
+    "candidateFp": "50d360f17c1fbdd69770",
+    "hasTenantClaim": true,
+    "projectCount": 1,
+    "targetProjectScoped": false,
+    "classification": "EXPECTED_CROSS_TENANT_NO_TYA_EFFECTIVE_ACCESS",
+    "overlapsDuplicateGroupFp": "fd891812eca020d27ee3"
+  },
+  "shopperScopeOutlier": {
+    "candidateFp": "b04295748f3131adf337",
+    "tenantAllowed": true,
+    "projectCount": 1,
+    "targetProjectScoped": false,
+    "shopperScopePresent": false,
+    "planRelation": null,
+    "classification": "SIN_ACCESO_EFECTIVO_SHOPPER_ID_MISSING"
+  },
+  "adjudicationSummary": {
+    "repairRequiredCases": 4,
+    "ambiguousCases": 1,
+    "noEffectiveAccessCases": 5,
+    "expectedHistoricalTechnicalCases": 1,
+    "allDuplicateProviderEmailsAreNonInternalCxorbia": true,
+    "note": "Effective access in duplicate groups is claim/scope-level. Canonical-login reachability was not probed and no sign-in probe was authorized."
+  },
+  "safety": {
+    "providerWrites": 0,
+    "authWrites": 0,
+    "iamWrites": 0,
+    "firestoreWrites": 0,
+    "membershipWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "prewrite": false,
+    "activation": false,
+    "newSmoke": false,
+    "make": 0,
+    "gemini": 0,
+    "payments": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false,
+    "rawPiiExported": false
+  },
+  "failClose": {
+    "requestConsumed": true,
+    "allowedExecutions": 0,
+    "oneShotWorkflowRemoved": true,
+    "sourceGateWorkflowRemoved": true,
+    "secondProviderRead": false
+  },
+  "next": "C6_AUTH_DUPLICATE_KEEPER_AND_TARGET_SCOPE_ADJUDICATION_READONLY_FOCAL_NO_REPAIR_NO_SMOKE"
+}

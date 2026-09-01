@@ -1,0 +1,182 @@
+{
+  "schemaVersion": "cxorbia.c6.auth-duplicate-canonical-replacement-repair-plan.source-only.v1",
+  "generatedAt": "2026-08-10T18:25:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "entryHeadSha": "b40e2e241bba41d1569560a40af0c8412f2e20cb",
+  "decision": "PASS_C6_REPAIR_PLAN_SOURCE_ONLY_PARTIAL_READY",
+  "state": "C6_AUTH_DUPLICATE_CANONICAL_REPLACEMENT_REPAIR_PLAN_PARTIAL_READY__ABC_CANONICAL_TARGET_INPUT_REQUIRED__D_REPAIR_READY__ZERO_PROVIDER_READS__ZERO_WRITES__NO_PRODUCTION",
+  "baseline": {
+    "authUsers": 228,
+    "activation": "PASS",
+    "readback": "PASS",
+    "rollbackDryRun": "PASS",
+    "planDigest": "c0c31fadb88928f5fc0b8a19248188c8610e13362608f1bae3e267034f893ba4",
+    "reconstructedUniverse340": false
+  },
+  "groups": [
+    {
+      "groupFp": "1acdcb3782b7cf351056",
+      "role": "super",
+      "legacyMembers": ["6dee7f31c738218ce63a", "b561d9c46660715e214f"],
+      "rectorDisposition": "CREATE_CANONICAL_REPLACEMENT_REQUIRED",
+      "targetContract": {
+        "role": "super",
+        "authNamespace": "staff",
+        "tenantId": "tya",
+        "projectIds": "OWNER_ENTITLEMENT_REQUIRED",
+        "shopperId": "ABSENT",
+        "internalIdentifier": "DETERMINISTIC_TENANT_NAMESPACE_LOGIN_HASH",
+        "credentialMaterial": "EPHEMERAL_SECRET_ONLY"
+      },
+      "missingInputs": ["OWNER_ANCHOR", "PROJECT_ENTITLEMENT", "EXECUTION_CREDENTIAL_INPUT"],
+      "classification": "CANONICAL_TARGET_INPUT_REQUIRED",
+      "repairExecutable": false,
+      "futureAuthWriteCap": 4
+    },
+    {
+      "groupFp": "2c4d19f2b066835473d3",
+      "role": "admin",
+      "legacyMembers": ["aa5cbada6c5388ee1d8b", "f8405e17df357c121ccc"],
+      "rectorDisposition": "CREATE_CANONICAL_REPLACEMENT_REQUIRED",
+      "targetContract": {
+        "role": "admin",
+        "authNamespace": "staff",
+        "tenantId": "tya",
+        "projectIds": "OWNER_ENTITLEMENT_REQUIRED",
+        "shopperId": "ABSENT",
+        "internalIdentifier": "DETERMINISTIC_TENANT_NAMESPACE_LOGIN_HASH",
+        "credentialMaterial": "EPHEMERAL_SECRET_ONLY"
+      },
+      "missingInputs": ["OWNER_ANCHOR", "PROJECT_ENTITLEMENT", "EXECUTION_CREDENTIAL_INPUT"],
+      "classification": "CANONICAL_TARGET_INPUT_REQUIRED",
+      "repairExecutable": false,
+      "futureAuthWriteCap": 4
+    },
+    {
+      "groupFp": "54225792eeb65f6739c0",
+      "role": "ops",
+      "legacyMembers": ["ce178298b2df136541d4", "19937aedc77af3404bdc"],
+      "rectorDisposition": "CREATE_CANONICAL_REPLACEMENT_REQUIRED",
+      "targetContract": {
+        "role": "ops",
+        "authNamespace": "staff",
+        "tenantId": "tya",
+        "projectIds": "OWNER_ENTITLEMENT_REQUIRED",
+        "shopperId": "ABSENT",
+        "internalIdentifier": "DETERMINISTIC_TENANT_NAMESPACE_LOGIN_HASH",
+        "credentialMaterial": "EPHEMERAL_SECRET_ONLY"
+      },
+      "missingInputs": ["OWNER_ANCHOR", "PROJECT_ENTITLEMENT", "EXECUTION_CREDENTIAL_INPUT"],
+      "classification": "CANONICAL_TARGET_INPUT_REQUIRED",
+      "repairExecutable": false,
+      "futureAuthWriteCap": 4
+    },
+    {
+      "groupFp": "ae2f920fe6d9ce1fdd82",
+      "role": "cliente",
+      "historicalMembers": ["ca9e2f644334833ab572", "360af509dcdcd1880f04"],
+      "rectorDisposition": "KEEP_VALIDATED_EXTERNAL_CANONICAL_RETIRE_BOTH_HISTORICAL",
+      "validatedCanonicalFp": "6a74d2b7c77f7b3f026b9ad0bef86183bc4e028b67f429ee36ab772587e5953c",
+      "canonicalContract": {
+        "role": "cliente",
+        "authNamespace": "staff",
+        "tenantId": "tya",
+        "projectIds": ["cinepolis"],
+        "signIn": "PASS",
+        "readback": "PASS",
+        "idempotency": "PASS",
+        "membership": "PASS"
+      },
+      "classification": "REPAIR_PLAN_READY",
+      "repairExecutable": true,
+      "futureAuthWriteCap": 2
+    }
+  ],
+  "credentialStrategy": {
+    "normalization": "trim+lowercase",
+    "internalIdentifierContract": "SHA256(tenantId + NUL + authNamespace + NUL + normalizedLogin)[0:48] + @auth.cxorbia.invalid",
+    "rawLoginExported": false,
+    "rawEmailExported": false,
+    "rawUidExported": false,
+    "rawPasswordExported": false,
+    "passwordHandling": "EPHEMERAL_SECRET_ONLY"
+  },
+  "snapshotContract": {
+    "required": true,
+    "fields": [
+      "authPopulationCount",
+      "focalPrincipalFingerprints",
+      "disabledState",
+      "providerClass",
+      "claimsDigest",
+      "role",
+      "authNamespace",
+      "tenantScope",
+      "projectScope",
+      "DCanonicalFingerprintAndClaimsDigest",
+      "ABCOwnerAnchorFingerprint",
+      "ABCTechnicalIdentifierDigest",
+      "ABCExpectedClaimsDigest",
+      "collisionProof"
+    ],
+    "rawPii": false
+  },
+  "idempotencyContract": {
+    "operationKey": "sha256(groupFp + ownerAnchorFp + expectedClaimsDigest + retirementMode)",
+    "existingExactCanonical": "CREATE_NO_OP_NO_PASSWORD_CHANGE",
+    "technicalIdentifierCollision": "STOP_RETRY_COLLISION",
+    "alreadyDisabledLegacy": "NO_OP",
+    "deleteAllowed": false
+  },
+  "readbackContract": {
+    "abc": ["canonicalExists", "canonicalEnabled", "roleExact", "authNamespaceStaff", "tenantIdTya", "projectIdsExactOwnerEntitlement", "bothLegacyDisabled", "deletesZero"],
+    "d": ["canonicalFingerprintExact", "canonicalEnabled", "canonicalClaimsDigestUnchanged", "canonicalMembershipExact", "bothHistoricalDisabled", "deletesZero"]
+  },
+  "rollbackDryRunContract": {
+    "createdCanonical": "DISABLE_ONLY_NO_DELETE",
+    "legacyDisabledByRun": "REENABLE_IF_ENABLED_IN_PRE_SNAPSHOT",
+    "dCanonical": "NO_MUTATION",
+    "requiresUnambiguousInverseForEveryWrite": true
+  },
+  "futureWriteBudget": {
+    "A": {"createUser": 1, "setCustomUserClaims": 1, "disableLegacy": 2, "authWrites": 4},
+    "B": {"createUser": 1, "setCustomUserClaims": 1, "disableLegacy": 2, "authWrites": 4},
+    "C": {"createUser": 1, "setCustomUserClaims": 1, "disableLegacy": 2, "authWrites": 4},
+    "D": {"createUser": 0, "setCustomUserClaims": 0, "disableHistorical": 2, "authWrites": 2},
+    "total": {"createUser": 3, "setCustomUserClaims": 3, "disableLegacyOrHistorical": 8, "authWritesHardCap": 14},
+    "authDeletes": 0,
+    "firestoreWrites": 0,
+    "iamWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "deploys": 0
+  },
+  "currentBlockSafety": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "authWrites": 0,
+    "iamWrites": 0,
+    "firestoreReads": 0,
+    "firestoreWrites": 0,
+    "hrReads": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "prewrite": false,
+    "activation": false,
+    "newSmoke": false,
+    "make": 0,
+    "gemini": 0,
+    "payments": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false
+  },
+  "next": "C6_AUTH_DUPLICATE_CANONICAL_TARGET_INPUT_RESOLUTION_SOURCE_SAFE_NO_PROVIDER_NO_REPAIR"
+}

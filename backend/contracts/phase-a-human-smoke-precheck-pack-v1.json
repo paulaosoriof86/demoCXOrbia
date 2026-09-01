@@ -1,0 +1,166 @@
+{
+  "contractId": "phase-a-human-smoke-precheck-pack-v1",
+  "project": "CXOrbia TyA",
+  "date": "2026-07-09",
+  "repo": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pr": 7,
+  "purpose": "Define a source-safe human smoke precheck package for RC Phase A controlled validation without enabling runtime, imports, writes or production.",
+  "status": "documented_only_not_executed",
+  "scope": {
+    "phase": "Phase A controlled RC precheck",
+    "tenant": "TyA",
+    "firstProject": "Cinépolis as configurable project, not hardcoded global logic",
+    "focus": [
+      "login/navigation health",
+      "Phase A critical modules open without critical JS errors",
+      "honest copy for gates and integrations",
+      "Academia admin visibility and review-human states",
+      "readiness/diagnostico visibility without runtime claims",
+      "liquidaciones/pagos represented as administrative control, not payment execution"
+    ]
+  },
+  "hardStops": [
+    "white_screen",
+    "critical_js_error_on_base_navigation",
+    "module_not_opening_for_phase_a_critical_path",
+    "copy_claims_real_send_sync_import_payment_or_provider_when_gate_off",
+    "sensitive_data_visible_or_committed",
+    "attempt_to_enable_firestore_auth_storage_hr_make_gemini_messaging_email_payments_without_explicit_go",
+    "cinépolis_hardcoded_as_global_product_logic",
+    "junio_treated_as_pending_visits_instead_of_pending_liquidaciones_pagos"
+  ],
+  "allowedNow": [
+    "documentation",
+    "contract_definition",
+    "human_smoke_checklist_preparation",
+    "claude_prototype_pending_documentation",
+    "academia_impact_documentation"
+  ],
+  "notAllowedNow": [
+    "deploy",
+    "merge",
+    "production",
+    "runtime_switch",
+    "builder_execution",
+    "imports",
+    "firestore_writes",
+    "auth_writes",
+    "storage_writes",
+    "hr_writes",
+    "make_live",
+    "gemini_live",
+    "real_email_or_whatsapp",
+    "real_payments",
+    "raw_hr_or_sensitive_data_commit"
+  ],
+  "criticalRoutes": [
+    {
+      "area": "auth_shell",
+      "expected": "Login/admin shell opens without blank screen or critical console error.",
+      "evidence": "visual_and_console_when_human_smoke_is_authorized"
+    },
+    {
+      "area": "navigation_base",
+      "expected": "Base navigation opens Phase A modules without route break.",
+      "evidence": "visual_and_console_when_human_smoke_is_authorized"
+    },
+    {
+      "area": "dashboard",
+      "expected": "Dashboard opens and does not claim live data/import/runtime when gates are off.",
+      "evidence": "visual_and_copy_review"
+    },
+    {
+      "area": "postulaciones_asignaciones",
+      "expected": "Postulations/assignments can represent platform source, HR source, pending sync, conflict and human review.",
+      "evidence": "visual_and_state_review"
+    },
+    {
+      "area": "reservas_visitas",
+      "expected": "Reservations/visits open with honest pending states and no silent dedupe by name.",
+      "evidence": "visual_and_state_review"
+    },
+    {
+      "area": "cuestionario_shopper",
+      "expected": "Questionnaire route opens and keeps questionnaire origin configurable by project/visit.",
+      "evidence": "visual_and_config_copy_review"
+    },
+    {
+      "area": "finanzas_liquidaciones_pagos",
+      "expected": "Finanzas/Mis beneficios separates honorario, reembolso, boleto/combo, lote, movimiento and payment status without claiming real payment.",
+      "evidence": "visual_and_copy_review"
+    },
+    {
+      "area": "academia",
+      "expected": "Academia opens and exposes or honestly documents admin actions: edit, duplicate, version, state, archive, audit and human review.",
+      "evidence": "visual_and_copy_review"
+    },
+    {
+      "area": "diagnostico_readiness",
+      "expected": "Diagnostico/readiness opens and shows preview/source-safe/gate-off states, not production-ready claims.",
+      "evidence": "visual_and_copy_review"
+    },
+    {
+      "area": "administrabilidad",
+      "expected": "Administrabilidad opens and supports configurable tenant/project concepts without hardcoding TyA/Cinépolis as global.",
+      "evidence": "visual_and_copy_review"
+    }
+  ],
+  "requiredResultShapeWhenExecutedLater": {
+    "verdict": "GO | NO_GO | GO_WITH_WARNINGS",
+    "checkedAt": "ISO-8601 timestamp",
+    "checker": "human/admin or authorized reviewer",
+    "environment": "local | preview | staging | production",
+    "routes": [
+      {
+        "area": "string",
+        "status": "pass | warning | fail | blocked | not_checked",
+        "consoleCriticalErrors": 0,
+        "copyClaimsRealIntegration": false,
+        "notes": "string"
+      }
+    ],
+    "blockers": [],
+    "warnings": [],
+    "nextAction": "string"
+  },
+  "documentationImpact": {
+    "backendReusable": [
+      "human smoke precheck pattern",
+      "GO/NO-GO result shape",
+      "honest copy gate verification",
+      "multi-tenant configurable project verification"
+    ],
+    "tyaExclusive": [
+      "junio as liquidaciones/pagos control",
+      "Cinépolis first TyA project",
+      "boleto/combo reimbursement review when visible"
+    ],
+    "claudePrototype": [
+      "routes must be smokeable",
+      "no false runtime/integration/payment claims",
+      "Academia actions and readiness states visible or honestly pending"
+    ],
+    "academia": [
+      "course/manual about smoke checklist",
+      "course/manual about GO/NO-GO",
+      "course/manual about preview vs runtime vs production"
+    ]
+  },
+  "safeState": {
+    "runtimeConnected": false,
+    "adapterEnabled": false,
+    "builderExecuted": false,
+    "importsExecuted": false,
+    "firestoreWrites": false,
+    "authWrites": false,
+    "storageWrites": false,
+    "hrWrites": false,
+    "makeLive": false,
+    "geminiLive": false,
+    "realPayments": false,
+    "deploy": false,
+    "production": false,
+    "rawSensitiveDataInRepo": false
+  }
+}

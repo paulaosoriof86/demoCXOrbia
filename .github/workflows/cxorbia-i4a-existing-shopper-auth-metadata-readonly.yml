@@ -1,0 +1,49 @@
+name: CXOrbia I4A Existing Shopper Auth Metadata Readonly — Consumed Gate Guard
+
+on:
+  pull_request:
+    types: [synchronize]
+    paths:
+      - backend/config/i4a-existing-shopper-auth-metadata-readonly-request.json
+
+permissions:
+  contents: read
+
+jobs:
+  verify-consumed:
+    if: >-
+      github.event.pull_request.number == 7 &&
+      github.event.pull_request.head.ref == 'docs-tya-v6-v71-audit' &&
+      github.event.pull_request.base.ref == 'release/cxorbia-tya-rc-20260630'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Assert provider gate is consumed and cannot rerun
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const p='backend/config/i4a-existing-shopper-auth-metadata-readonly-request.json';
+          const r=JSON.parse(fs.readFileSync(p,'utf8'));
+          const expected={
+            gateId:'NEW_AUTH_REQUIRED_I4A_EXISTING_SHOPPER_IDENTITY_CLASSIFICATION_DEV_READONLY_NO_LOGIN',
+            enabled:false,
+            consumed:true,
+            status:'consumed_hold_no_retry',
+            providerReadsAuthorized:false,
+            noAutomaticRetry:true,
+            consumedByRun:32208829234,
+            consumedByJob:95937257924,
+            artifactId:9350022534
+          };
+          for(const [k,v] of Object.entries(expected)) if(r[k]!==v) throw new Error(`consumed_gate_mismatch:${k}`);
+          if(r.result?.decision!=='HOLD_I4A_TEST_SHOPPER_IDENTITY_NOT_PROVEN__PROVIDER_READONLY_NO_LOGIN') throw new Error('decision_mismatch');
+          if(r.result?.providerReadCalls!==1||r.result?.explicitSafeCandidateCount!==0) throw new Error('result_counts_mismatch');
+          console.log(JSON.stringify({decision:'PASS_I4A_PROVIDER_GATE_CONSUMED_NO_RERUN',run:r.consumedByRun,nextGate:r.nextGate}));
+          NODE

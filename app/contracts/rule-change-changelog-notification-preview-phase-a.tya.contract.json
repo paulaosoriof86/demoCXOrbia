@@ -1,0 +1,187 @@
+{
+  "contract": "rule-change-changelog-notification-preview-phase-a-tya",
+  "date": "2026-07-04",
+  "status": "draft_documental_no_runtime",
+  "phase": "Phase A",
+  "tenant": "tya",
+  "runtimeEnabled": false,
+  "productionAllowed": false,
+  "firestoreWritesAllowed": false,
+  "makeWriteAllowed": false,
+  "emailSendAllowed": false,
+  "whatsappSendAllowed": false,
+  "geminiAllowed": false,
+  "importRealDataAllowed": false,
+  "dependsOn": [
+    "project-tenant-rule-versioning-preview-phase-a-tya",
+    "notification-outbox-preview-phase-a-tya",
+    "email-user-mailbox-preview-phase-a-tya",
+    "shopper-communication-history-preview-phase-a-tya",
+    "academia-role-based-learning-phase-a-tya",
+    "sensitive-data-policy-phase-a-tya"
+  ],
+  "purpose": "Define source-safe preview validation for changelog entries and notifications created when tenant/project rules change, without sending real notifications, publishing real changelog, calling Make/Gemini or writing production.",
+  "sourceSafety": {
+    "requiresSyntheticOrSanitizedInput": true,
+    "forbidsRawSensitiveData": true,
+    "requiredInputMetadata": [
+      "sourceSafe=true",
+      "containsRawSensitiveData=false",
+      "isSyntheticOrSanitized=true"
+    ],
+    "rawMessageBodyAllowed": false,
+    "rawRecipientContactAllowed": false,
+    "manualReviewForHighImpactChange": true,
+    "humanApprovalBeforePublish": true
+  },
+  "stableKeys": [
+    "tenantId",
+    "projectId",
+    "changeLogId",
+    "changeEventId",
+    "ruleSetId",
+    "ruleSetVersion",
+    "ruleSetType",
+    "changeType",
+    "impactScope",
+    "audienceRole",
+    "recipientSegmentRef",
+    "notificationTemplateId",
+    "notificationDraftId",
+    "academyUpdateRef",
+    "manualReviewReason",
+    "createdByRef",
+    "reviewedByRef",
+    "approvedByRef",
+    "createdAt",
+    "updatedAt"
+  ],
+  "impactScopes": [
+    "internal_admin_only",
+    "ops_required_read",
+    "finance_required_read",
+    "shopper_visible_future_flow",
+    "client_visible_summary",
+    "superadmin_configuration",
+    "academy_required_update",
+    "support_required_update",
+    "multi_role_required_read"
+  ],
+  "audienceRoles": [
+    "super",
+    "admin",
+    "ops",
+    "finance",
+    "shopper",
+    "client",
+    "consultant_partner",
+    "support"
+  ],
+  "changeTypes": [
+    "rule_created_preview",
+    "rule_updated_preview",
+    "rule_deprecated_preview",
+    "breaking_change_preview",
+    "migration_required_preview",
+    "rollback_required_preview",
+    "provider_gate_changed_preview",
+    "payment_rule_changed_preview",
+    "hr_mapping_changed_preview",
+    "questionnaire_routing_changed_preview",
+    "academy_content_update_required",
+    "sensitive_policy_changed_preview"
+  ],
+  "changelogStatuses": [
+    "draft_preview",
+    "human_review_required",
+    "ready_for_review",
+    "approved_preview",
+    "notification_draft_ready",
+    "academy_update_required",
+    "blocked_sensitive_payload",
+    "blocked_real_send",
+    "archived_preview"
+  ],
+  "notificationPreviewStatuses": [
+    "not_required",
+    "notification_draft_preview",
+    "manual_send_required",
+    "provider_pending_configuration",
+    "blocked_real_send",
+    "blocked_sensitive_payload",
+    "human_review_required"
+  ],
+  "previewInputShape": {
+    "sourceSafe": true,
+    "containsRawSensitiveData": false,
+    "isSyntheticOrSanitized": true,
+    "changeEvents": []
+  },
+  "requiredChangeEventFields": [
+    "tenantId",
+    "projectId",
+    "changeEventId",
+    "changeLogId",
+    "ruleSetId",
+    "ruleSetVersion",
+    "ruleSetType",
+    "changeType",
+    "impactScope",
+    "changelogStatus",
+    "createdByRef"
+  ],
+  "rules": [
+    "A rule change can create a preview changelog entry, but it must not publish or send notifications without human approval.",
+    "Audience must be role/segment based; do not store raw recipient phone or email.",
+    "High-impact changes require reviewedByRef and approvedByRef before any future notification.",
+    "Breaking changes must link to migration/rollback context from rule versioning.",
+    "Academia-impacting changes must create academyUpdateRef or academy_update_required status.",
+    "Notification drafts are preview only and must route through notification outbox/email mailbox future gates.",
+    "Do not mark sent, delivered, synced or published while gates are off.",
+    "Do not include secrets, tokens, private links, raw contact data, bank data, DPI/document data or raw message bodies."
+  ],
+  "previewOutcomes": [
+    "changelog_preview_ready",
+    "notification_draft_preview_ready",
+    "academy_update_required",
+    "human_review_required",
+    "blocked_sensitive_payload",
+    "blocked_real_send",
+    "migration_context_required",
+    "rollback_context_required",
+    "conflict_review_required"
+  ],
+  "claudePrototypeImpact": [
+    "Product updates/changelog UI must show draft/review/approved preview, not published/sent unless gates are active.",
+    "Do not show email/WhatsApp notification sent for rule changes while providers are pending.",
+    "Show audience by role/segment, not raw recipients.",
+    "Rule changes that affect operations should surface pending Academia/manual updates.",
+    "High-impact rule changes need visible human review and approval states."
+  ],
+  "academyImpact": {
+    "roles": ["super", "admin", "ops", "finance", "shopper", "client", "consultant_partner", "support"],
+    "manualsToUpdate": ["Changelog and product updates", "Rule change notifications", "Academia update workflow", "Role-based change communication", "Human review before publish"],
+    "coursesToUpdate": ["Admin change review", "Ops required updates", "Finance payment rule updates", "Shopper flow updates", "Client visible changes", "Superadmin release governance"],
+    "newLessons": [
+      "How a rule change becomes a changelog entry",
+      "Who must be notified by role",
+      "Why notification drafts are not sends",
+      "When Academia must be updated",
+      "How to approve or block a high-impact change"
+    ],
+    "interactiveChecklists": [
+      "Before publishing a changelog item",
+      "Before drafting notifications for a rule change",
+      "Before marking roles as informed",
+      "Before closing Academia update required"
+    ]
+  },
+  "hardStops": [
+    "Do not publish real changelog from preview.",
+    "Do not send email, WhatsApp or Make notifications from preview.",
+    "Do not store raw recipients, raw bodies or private links.",
+    "Do not mark roles informed without future confirmation gate.",
+    "Do not close Academia update required without human review.",
+    "Do not write Firestore or production state from this preview."
+  ]
+}

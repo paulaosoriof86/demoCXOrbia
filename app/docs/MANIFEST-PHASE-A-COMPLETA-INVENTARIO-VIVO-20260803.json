@@ -1,0 +1,76 @@
+{
+  "schema": "cxorbia.phase-a-complete-live-inventory.v1",
+  "candidateId": "CXORBIA-TYA-PHASE-A-COMPLETE-RECONSTRUCTION-20260803",
+  "status": "INVENTORY_ONLY_APPROVED_SHA_RECOVERY_PENDING",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "rules": {
+    "singleCandidate": true,
+    "singleBranch": true,
+    "fragmentedABVisualGateCancelled": true,
+    "approvedLineageMustBeRecovered": true,
+    "liveBlobDoesNotEqualApprovalByItself": true,
+    "providerWrites": false,
+    "deployAuthorized": false,
+    "production": false
+  },
+  "historicalAuthorities": [
+    "RC_PHASE_A_TECHNICAL_AND_VISUAL_SMOKE_PASS",
+    "M1_CORTE1_FROZEN_APPROVED",
+    "CORTE2A_V174_FROZEN_APPROVED",
+    "CORTE3_V182_FROZEN_ACTIVE_BASELINE",
+    "C6_MULTIROLE_HR_FINANCE_PORTALS_RESERVATIONS_TECHNICAL_PASS"
+  ],
+  "files": [
+    {"path":"app/app.js","gitBlob":"d509d08bd20dd2e44fa414e0b4d2819dd18f7c36","domain":"base","state":"APPROVED_LINEAGE_PRESENT_REQUIRES_ANTI_REGRESSION_SMOKE"},
+    {"path":"app/index-backend-dev.html","gitBlob":"b9a4aaf063d97305c3f4f53eba8f02b526d61761","domain":"base","state":"RECONCILE_COMPLETE_PHASE_A_LOAD_ORDER"},
+    {"path":"app/core/config.js","gitBlob":"0bf7b6c1daded062806d90e03ba2c5d67ac1fe63","domain":"base","state":"FROZEN_LINEAGE_PRESENT_REQUIRES_COMPOSITION_PROOF"},
+    {"path":"app/core/router.js","gitBlob":"fdd3c91c1428d49413fb305ed464dffdc6ea3e13","domain":"base","state":"APPROVED_LINEAGE_PRESENT_REQUIRES_ANTI_REGRESSION_SMOKE"},
+    {"path":"app/core/data.js","gitBlob":"3a679020205617e44126ec586e0022edc70b0512","domain":"base","state":"APPROVED_INTERFACE_PRESENT"},
+    {"path":"app/core/cliente-data.js","gitBlob":"3e2ac5716d711a7a883886085399ca04c614de77","domain":"portals_reports","state":"RECONCILE_APPROVED_FUNCTIONAL_OUTCOME"},
+    {"path":"app/modules/dashboard.js","gitBlob":"e879fc3f1dd5a7486762b197346cadd086e1d99d","domain":"operation","state":"APPROVED_LINEAGE_PRESENT_REQUIRES_ANTI_REGRESSION_SMOKE"},
+    {"path":"app/modules/midia.js","gitBlob":"98d901850a437b029abac2ba3e569dc3a9543940","domain":"operation","state":"FROZEN_LINEAGE_PRESENT_REQUIRES_COMPOSITION_PROOF"},
+    {"path":"app/modules/historico.js","gitBlob":"bf259b28e871bc6cea991f14ce5560323ef55f9e","domain":"operation","state":"APPROVED_LINEAGE_PRESENT_REQUIRES_ANTI_REGRESSION_SMOKE"},
+    {"path":"app/modules/visitas.js","gitBlob":"d7c65650e4972d438f2641cbcaaff25486fb7f01","domain":"operation","state":"FROZEN_LINEAGE_PRESENT_REQUIRES_COMPOSITION_PROOF"},
+    {"path":"app/modules/visita-detalle.js","gitBlob":"ad819a540ae92a076902185d75878ea7e716bc8c","domain":"operation","state":"APPROVED_LINEAGE_PRESENT_REQUIRES_ANTI_REGRESSION_SMOKE"},
+    {"path":"app/modules/revision-admin.js","gitBlob":"41fcea495c1e23e7ecee43a637b45002124ea3c9","domain":"operation","state":"APPROVED_LINEAGE_PRESENT_REQUIRES_ANTI_REGRESSION_SMOKE"},
+    {"path":"app/modules/postulaciones.js","gitBlob":"f38593885c245841710934971dd335ee5eddf1da","domain":"operation","state":"FROZEN_LINEAGE_PRESENT_REQUIRES_COMPOSITION_PROOF"},
+    {"path":"app/modules/reservas.js","gitBlob":"ddc54bad9dfc7b242b06d39daf872c9f9b327c80","domain":"operation_profiles","state":"APPROVED_LINEAGE_PRESENT_REQUIRES_ANTI_REGRESSION_SMOKE"},
+    {"path":"app/modules/shoppers.js","gitBlob":"df8dbfadabbc7f9a808da83d2a78225b7c5e6055","domain":"profiles","state":"APPROVED_LINEAGE_PRESENT_REQUIRES_ANTI_REGRESSION_SMOKE"},
+    {"path":"app/modules/novedades.js","gitBlob":"3a8a4ac11fe3dfe5bff11c4840f355742bc93375","domain":"operation","state":"FROZEN_LINEAGE_PRESENT_REQUIRES_COMPOSITION_PROOF"},
+    {"path":"app/modules/tablon.js","gitBlob":"d2eb7784d4b695f863d330f42a6ee6575a87a3f6","domain":"operation","state":"APPROVED_LINEAGE_PRESENT_REQUIRES_ANTI_REGRESSION_SMOKE"},
+    {"path":"app/modules/misvisitas.js","gitBlob":"418da18fa2c6c30780719e2fc1d9c72e84fd5d20","domain":"profiles","state":"APPROVED_LINEAGE_PRESENT_REQUIRES_ANTI_REGRESSION_SMOKE"},
+    {"path":"app/modules/operacion-extra.js","gitBlob":"896d1e97af7761209955a0df2cad1dca68820801","domain":"profiles_reports","state":"RECONCILE_APPROVED_FUNCTIONAL_OUTCOME"},
+    {"path":"app/modules/cert.js","gitBlob":"5532109dec5c942c2fa6d520ad0a7e0b7b104034","domain":"profiles","state":"APPROVED_LINEAGE_PRESENT_REQUIRES_ANTI_REGRESSION_SMOKE"},
+    {"path":"app/modules/cuestionario-shopper.js","gitBlob":"a9801776eda4b52d447abaf20c28e2bf4290930d","domain":"profiles","state":"APPROVED_LINEAGE_PRESENT_REQUIRES_ANTI_REGRESSION_SMOKE"},
+    {"path":"app/modules/beneficios.js","gitBlob":"73e200e57530479637792c89c644fcfdf78b6799","domain":"profiles_finance","state":"FROZEN_LINEAGE_PRESENT_REQUIRES_COMPOSITION_PROOF"},
+    {"path":"app/modules/documentos.js","gitBlob":"28c302761f22807ed5ebcb1f04cd1d12827652dd","domain":"profiles","state":"APPROVED_LINEAGE_PRESENT_REQUIRES_ANTI_REGRESSION_SMOKE"},
+    {"path":"app/core/finanzas-core.js","gitBlob":"6d3f46f003f3319f96cfd759b8b5ed52afc6a125","domain":"finance","state":"FROZEN_ACTIVE_BASELINE_REQUIRES_COMPOSITION_PROOF"},
+    {"path":"app/core/liquidacion.js","gitBlob":"dde322890eb8821b822215905b82a22102d73d2c","domain":"finance","state":"FROZEN_ACTIVE_BASELINE_REQUIRES_COMPOSITION_PROOF"},
+    {"path":"app/core/costos.js","gitBlob":"7f0c4547a68b8bafebae0652b8de5c8e27114a0c","domain":"finance","state":"APPROVED_LINEAGE_PRESENT_REQUIRES_ANTI_REGRESSION_SMOKE"},
+    {"path":"app/modules/finanzas.js","gitBlob":"623fab9ba1e06c39f83beda610bb771e23910a07","domain":"finance","state":"FROZEN_ACTIVE_BASELINE_REQUIRES_COMPOSITION_PROOF"},
+    {"path":"app/modules/cliente.js","gitBlob":"4e5981081bdd01de368c4f412ed476244426634e","domain":"portals_reports","state":"RECONCILE_APPROVED_FUNCTIONAL_OUTCOME"},
+    {"path":"app/modules/cliente-extra.js","gitBlob":"ca3d2d6b356b3d942ebbb2076625ce0b000e4b64","domain":"portals_reports","state":"RECONCILE_APPROVED_FUNCTIONAL_OUTCOME"},
+    {"path":"app/modules/cliente-insights.js","gitBlob":"87d0a9d0bd06895c937f9d8ee1e0c985248d1b2e","domain":"portals_reports","state":"PRESENT_BUT_NOT_PHASE_A_APPROVAL_AUTHORITY"}
+  ],
+  "postPhaseAWorkstream": [
+    "app/modules/crm.js",
+    "app/modules/clientes.js",
+    "app/modules/comercial.js",
+    "app/modules/marketing.js"
+  ],
+  "currentDev": {
+    "url": "https://cxorbia-backend-dev.web.app/index-backend-dev.html",
+    "classification": "TECHNICAL_COMPARISON_BUILD__NOT_FINAL_PHASE_A_CANDIDATE",
+    "deployedSourceLock": "b908daa8c9cce0bd1c06cb05e3aceb9ff1b98beb"
+  },
+  "next": "RECOVER_APPROVED_SHAS_AND_SOURCE_LOCKS_COMPARE_LIVE_CLASSIFY_BUILD_FINAL_MANIFEST",
+  "safeState": {
+    "functionalChanges": 0,
+    "deploys": 0,
+    "providerWrites": 0,
+    "merge": false,
+    "production": false
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "cxorbia.c6.staff-private-execution-handoff-envelope.v1",
+  "generatedAt": "2026-08-11T18:06:00-06:00",
+  "targetProjectId": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "authNamespace": "staff",
+  "keyFingerprintSha256": "c767f9d0413ff7547f5a2e95ae6d210f4fd1cc0ea34484c62320681ce9fb0ecd",
+  "aad": "cxorbia-c6-staff-private-execution-handoff-v1",
+  "algorithms": {
+    "keyWrap": "RSA-OAEP-3072-SHA256",
+    "content": "A256GCM",
+    "compression": "gzip"
+  },
+  "ivBase64": "Grs3vnrr8AkQ1NAn",
+  "wrappedKeyBase64": "lsOrBu1EPdw8KN7CgjfNq0CjJ0dys9u8P+hyTU+Nth258mLuyHYg9BdRLygmMJklbeOalOLAZuGMCjUkWN0Dq241f0inXpS8ofe0iiBKikH9/20To2KSmINjxsHvbZi2OIODZJS5GMBiWcmTf099bUWj0Cw76mVHjBxDqy1QrKYPaOPP+vRT4v41EyGTXOjEBK0Zu3Q5KwDE4YJCX8nJa76cEChmEPQo4Eol+vIx8xfig9kST/pE0NakbJKKk/aWDBR6MRXwzbbHl/xjAMWoXn4Altw8td97TaZxOD6gCVo/Th1qIDvzQyUvVZhopMwMVXusl46d81GDqMEW4OOW9jUfo2zVBDriDAzZ71BCtJ1Ezxa7xzZJo15jnmpNKr4ZoAh0NG+L0lZ9vXgwYBMJ7914vhl04ap2Ogi36JQVuejQJ1rgcNni+pD3XpLoBn7AlwkbymdUTSyjZZc1cj6k4WevhpKBlSQafjMTzdkeWfY1Uw7BVj8J1s5QdAftVnub",
+  "ciphertextBase64": "/x2FBLgvYSORAhtfLXPGFVTttUVKme7wiLl9xjl++/0uCoERvDC7oIcecYmu/b1aMA3GSTZPpB0ZzNjs1w1NvLcBMHxH8Pek2iXRRFhLYpiEEB2EvUJYg/P7trmvPxVDEbtB8wsJ4SHVGSPPUbVXD+SiPeDyCE/jsFV7j1qwq1Q+tEcMz7r1zIWY8c0afEErATVsbTk8IfKVs4dnXzoaD8XC80yD/6IbipLZUbHuBRmGibw+Y6JmhRXL7bUxYyBBHQ/ZDTojc+JNcRqDgPKN+D6rfRxdj2plGzs4fBlUtsWaTQ70xbA5xhnxeuoe0kJ57KbBMmO25p8ho+litjNSvYSoGjUrKcAQ3z0MYUl1XgVU3z2ngDN+",
+  "payloadClass": "ENCRYPTED_A_B_C_VISIBLE_LOGIN_ONLY",
+  "targetAliases": ["A", "B", "C"],
+  "rawPiiPersisted": false,
+  "rawLoginPersisted": false,
+  "rawEmailPersisted": false,
+  "uidPersisted": false,
+  "passwordPersisted": false,
+  "passwordHashPersisted": false,
+  "rawNamePersisted": false
+}

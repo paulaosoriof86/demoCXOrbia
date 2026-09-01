@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "cxorbia.c6.staff-repair-bootstrap.exact-write.evidence.v2",
+  "generatedAt": "2026-08-12T17:58:53.989Z",
+  "projectId": "cxorbia-backend-dev",
+  "tenantId": "tya",
+  "decision": "PASS_C6_STAFF_REPAIR_BOOTSTRAP_EXACT_WRITE_V2_READBACK",
+  "snapshotAuthority": {
+    "workflowRunId": 31518927950,
+    "expectedAuthPopulationBefore": 228
+  },
+  "preflight": {
+    "sourceContract": true,
+    "requestAuthorized": true,
+    "privateHandoffValidated": true,
+    "privateRuntimeCredentialsValidated": true,
+    "providerStatePass": true,
+    "allCanonicalReadbackBeforeRetire": true
+  },
+  "targetReadback": {
+    "A": true,
+    "B": true,
+    "C": true,
+    "D": true,
+    "R4Canonical": true
+  },
+  "historicalReadback": {
+    "R1_SUPER": 2,
+    "R2_ADMIN": 2,
+    "R3_OPS": 2,
+    "R4_CLIENT_HISTORICAL": 2
+  },
+  "writes": {
+    "authCreates": 3,
+    "customClaimsWrites": 3,
+    "authDisableWrites": 8,
+    "tenantUserWrites": 4,
+    "auditLogWrites": 12,
+    "authWritesTotal": 14,
+    "firestoreWritesTotal": 16,
+    "authDeletes": 0,
+    "firestoreDeletes": 0
+  },
+  "rollback": {
+    "executed": false,
+    "required": false,
+    "reason": null,
+    "authReenableWrites": 0,
+    "authDisableCreatedWrites": 0,
+    "userDocDeactivateWrites": 0,
+    "auditRollbackWrites": 0,
+    "deletes": 0
+  },
+  "credentialPrivacy": {
+    "source": "PRIVATE_HANDOFF_DERIVED_EPHEMERAL_BCD",
+    "rawPasswordPersisted": false,
+    "rawPasswordLogged": false,
+    "rawPasswordExported": false,
+    "passwordHashReused": false,
+    "passwordHashPersisted": false,
+    "generatedUnrecoverablePassword": false,
+    "deterministicallyRegenerableInAuthorizedRunner": true,
+    "rawVisibleLoginInRepo": false,
+    "rawVisibleLoginInArtifact": false,
+    "rawVisibleLoginInLog": false,
+    "visibleLoginPersistedOnlyAsProtectedTenantUserData": true
+  },
+  "blockers": [],
+  "safety": {
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeWrites": 0,
+    "geminiCalls": 0,
+    "paymentsWrites": 0,
+    "deploys": 0,
+    "merge": false,
+    "production": false
+  }
+}

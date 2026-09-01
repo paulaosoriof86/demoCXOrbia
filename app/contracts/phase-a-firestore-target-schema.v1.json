@@ -1,0 +1,94 @@
+{
+  "contractName": "phase-a-firestore-target-schema",
+  "version": "1.0.0",
+  "status": "draft_contract_no_runtime_no_writes",
+  "scope": "Firestore target schema for TyA Phase A controlled operational release",
+  "safety": {
+    "frontendChanges": false,
+    "runtimeConnected": false,
+    "firestoreWrites": false,
+    "deploy": false,
+    "production": false,
+    "realImport": false
+  },
+  "root": "tenants/{tenantId}",
+  "collections": {
+    "tenant": {
+      "path": "tenants/{tenantId}",
+      "purpose": "tenant metadata and enabled modules",
+      "requiredFields": ["tenantId", "name", "status", "createdAt", "updatedAt"]
+    },
+    "projects": {
+      "path": "tenants/{tenantId}/projects/{projectId}",
+      "purpose": "project configuration and operational rules",
+      "requiredFields": ["tenantId", "projectId", "name", "country", "currency", "status", "hrSource", "questionnaire", "reviewAndSubmit", "contacts", "notifications"]
+    },
+    "hrSources": {
+      "path": "tenants/{tenantId}/projects/{projectId}/hrSources/{hrSourceId}",
+      "purpose": "HR source configuration and column mappings",
+      "requiredFields": ["tenantId", "projectId", "hrSourceId", "sourceType", "sourceUrlRef", "stableRowKey", "fieldMap", "syncMode"]
+    },
+    "visits": {
+      "path": "tenants/{tenantId}/projects/{projectId}/visits/{visitId}",
+      "purpose": "operational visits and historical visit control",
+      "requiredFields": ["tenantId", "projectId", "visitId", "hrRowId", "status", "availabilityStatus", "shopperId", "visitDate", "questionnaireStatus", "reviewStatus", "paymentStatus"]
+    },
+    "postulations": {
+      "path": "tenants/{tenantId}/projects/{projectId}/postulations/{postulationId}",
+      "purpose": "shopper applications to visits",
+      "requiredFields": ["tenantId", "projectId", "postulationId", "visitId", "shopperId", "status", "proposedDate", "createdAt", "updatedAt"]
+    },
+    "assignments": {
+      "path": "tenants/{tenantId}/projects/{projectId}/assignments/{assignmentId}",
+      "purpose": "assignment state and HR/platform sync tracking",
+      "requiredFields": ["tenantId", "projectId", "assignmentId", "visitId", "hrRowId", "shopperId", "assignmentSource", "assignmentSyncStatus", "lastSyncedAt", "syncConflict"]
+    },
+    "shoppers": {
+      "path": "tenants/{tenantId}/shoppers/{shopperId}",
+      "purpose": "tenant-level shopper profile without raw sensitive fields",
+      "requiredFields": ["tenantId", "shopperId", "displayName", "status", "country", "city", "createdAt", "updatedAt"]
+    },
+    "projectShoppers": {
+      "path": "tenants/{tenantId}/projects/{projectId}/projectShoppers/{shopperId}",
+      "purpose": "project-specific shopper eligibility, certification and payout visibility",
+      "requiredFields": ["tenantId", "projectId", "shopperId", "eligibilityStatus", "certificationStatus", "paymentVisibility"]
+    },
+    "certificationBanks": {
+      "path": "tenants/{tenantId}/projects/{projectId}/certificationBanks/{bankId}",
+      "purpose": "project question banks generated or curated with human review",
+      "requiredFields": ["tenantId", "projectId", "bankId", "status", "source", "reviewedBy", "reviewedAt"]
+    },
+    "certifications": {
+      "path": "tenants/{tenantId}/projects/{projectId}/certifications/{certificationId}",
+      "purpose": "shopper certification records and historical approvals",
+      "requiredFields": ["tenantId", "projectId", "certificationId", "shopperId", "status", "approvedAt", "source"]
+    },
+    "reviews": {
+      "path": "tenants/{tenantId}/projects/{projectId}/reviews/{reviewId}",
+      "purpose": "review checkpoint for questionnaire and evidence before submit or liquidation",
+      "requiredFields": ["tenantId", "projectId", "reviewId", "visitId", "shopperId", "reviewStatus", "reviewedAt", "reviewOwner"]
+    },
+    "liquidations": {
+      "path": "tenants/{tenantId}/projects/{projectId}/liquidations/{liquidationId}",
+      "purpose": "shopper-visible historical liquidation and payment state",
+      "requiredFields": ["tenantId", "projectId", "liquidationId", "shopperId", "visitId", "period", "amount", "currency", "paymentStatus"]
+    },
+    "contacts": {
+      "path": "tenants/{tenantId}/projects/{projectId}/contacts/{contactType}",
+      "purpose": "WhatsApp/contact configuration by management type",
+      "requiredFields": ["tenantId", "projectId", "contactType", "enabled", "displayName", "whatsappRef"]
+    },
+    "syncEvents": {
+      "path": "tenants/{tenantId}/projects/{projectId}/syncEvents/{syncEventId}",
+      "purpose": "Make and HR/platform sync audit trail",
+      "requiredFields": ["tenantId", "projectId", "syncEventId", "source", "direction", "status", "createdAt"]
+    }
+  },
+  "sensitiveDataPolicy": {
+    "rawBankFields": "exclude_or_protect",
+    "dpiOrGovernmentId": "exclude_or_protect",
+    "nda": "exclude_or_protect",
+    "whatsapp": "store_as_ref_or_protected_value",
+    "rawHrUrl": "store_as_ref_or_config_secret_when_needed"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "cxorbia.i4b.retry2.lane-readiness-source-only.v1",
+  "syncEpoch": "CXORBIA-20260819-I4B-RETRY2-LANE-READY-SOURCE-ONLY-30",
+  "generatedAt": "2026-08-19T15:31:00-06:00",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "formalProgressPercent": 60,
+  "formalRemainingPercent": 40,
+  "frontier": "NEW_AUTH_REQUIRED_I4B_SINGLE_DEV_VISIT_LIFECYCLE_E2E_WRITE_GATE_RETRY2__PROVIDER_TX_READ_ORDER_FIXED__SYNTHETIC_VISIT_ONLY",
+  "canonicalSourceTruth": {"documents":10,"sameEpoch":true,"sameFrontier":true,"dynamicEpoch":true,"dynamicFrontier":true,"dynamicProgress":true,"hardCodedProgressRemoved":true},
+  "providerSource": {"retry1RootCauseFixed":true,"providerFixCommit":"1bde86e5e5b6c2084fe5c711b7a8c06d089f12f4","transactionBranchesGuarded":["application.create","application.status.update","visit.*"],"providerBackedRetestExecuted":false},
+  "executionLane": {"stableRequestDrivenWorkflow":true,"workflowPath":".github/workflows/cxorbia-i4b-retry1-readonly-materialization-probe.yml","genericRuntimeExecutor":"tools/cxorbia-i4b-lifecycle-runtime-executor.mjs","genericFinalizer":"tools/cxorbia-i4b-lifecycle-finalize.mjs","cancelInProgress":false,"preMutationFailurePreservesAuthorization":true,"requestPrepared":true,"requestEnabled":false,"requestConsumed":false,"authorizationRequired":true},
+  "safety": {"providerExecutionEntered":false,"providerWrites":0,"authWrites":0,"hrWrites":0,"rulesWrites":0,"storageWrites":0,"makeCalls":0,"geminiCalls":0,"paymentWrites":0,"hostingDeploys":0,"cloudRunDeploys":0,"merge":false,"production":false},
+  "nextAction": "Obtain exact Paula authorization for Retry2, enable the already-prepared request only, and let the stable request-driven lane execute once. PASS continues directly to I4-C."
+}

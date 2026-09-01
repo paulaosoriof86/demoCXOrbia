@@ -1,0 +1,124 @@
+{
+  "schemaVersion": "cxorbia.c6.accumulative-multirole-smoke-matrix.v1",
+  "generatedAt": "2026-08-06T13:52:00-06:00",
+  "authorizationId": "chat-20260806-c6-auth-smoke-final-source-only-01",
+  "sourceHead": "df65bb45629588b7906b957551108a3a5c71b763",
+  "planDigestSha256": "6060f406a33d4ba926c982871513f8e86ba2b10f44c2da00ab43bd2a409f721b",
+  "productionStrategy": "PROMOTE_EXISTING_CLEAN_PROJECT",
+  "firebaseProjectId": "cxorbia-backend-dev",
+  "hostingTarget": "cxorbia-dev",
+  "hostingSite": "cxorbia-backend-dev",
+  "cloudRunService": "cxorbia-live-hr-dev",
+  "mode": "SOURCE_ONLY_MATRIX_NO_RUNTIME_EXECUTION",
+  "globalPreconditions": [
+    "LIVE_HR_CURRENT_PERIOD_AND_HISTORY_REVISION_PASS",
+    "SHOPPER_AUTH_REPAIR_PASS",
+    "SNAPSHOT_AND_ROLLBACK_READY",
+    "EXACT_DEPLOY_OR_RUNTIME_HEAD_RECORDED"
+  ],
+  "globalChecks": [
+    "single canonical login form",
+    "role isolation",
+    "same tenantId and projectId scope",
+    "same sourceRevision across data-bearing modules",
+    "three reloads",
+    "new browser tab",
+    "no technical notes exposed",
+    "no duplicate identities or visits",
+    "UTF-8 without mojibake"
+  ],
+  "personas": [
+    {
+      "persona": "ADMIN_OPERACIONES",
+      "requiredRoleFamilies": [
+        "super",
+        "admin",
+        "ops"
+      ],
+      "modules": [
+        "dashboard",
+        "historico",
+        "visitas",
+        "shoppers",
+        "postulaciones",
+        "finanzas",
+        "liquidaciones",
+        "reservas",
+        "proyectos"
+      ],
+      "checks": [
+        "login succeeds with canonical form",
+        "dashboard and historical counts remain stable",
+        "visits and shoppers load under tenant/project scope",
+        "postulations and reservations preserve state",
+        "finance and liquidation read models remain available",
+        "no shopper-only or client-only privilege escalation"
+      ]
+    },
+    {
+      "persona": "SHOPPER",
+      "requiredRoleFamilies": [
+        "shopper"
+      ],
+      "modules": [
+        "misvisitas",
+        "postulaciones",
+        "cert",
+        "academia",
+        "reservas",
+        "perfil"
+      ],
+      "checks": [
+        "login resolves one canonical shopper identity",
+        "shopperId claim matches profile",
+        "only assigned and available visits allowed by contract are visible",
+        "historical certifications remain visible",
+        "three reloads and a new tab preserve session and scope",
+        "skipped profiles do not gain access"
+      ]
+    },
+    {
+      "persona": "CLIENTE",
+      "requiredRoleFamilies": [
+        "cliente"
+      ],
+      "modules": [
+        "cliente",
+        "dashboard",
+        "historico",
+        "visitas",
+        "reportes"
+      ],
+      "checks": [
+        "login resolves tenant and project membership",
+        "only client project data is visible",
+        "dashboard, history and visits use same sourceRevision",
+        "reports remain available without technical placeholders",
+        "shopper personal data remains protected"
+      ]
+    }
+  ],
+  "resultContract": {
+    "requiredDecision": "PASS_ACCUMULATIVE_MULTIROLE_SMOKE",
+    "partialPassAllowed": false,
+    "humanValidationRequired": true,
+    "productionCutoverAuthorizationStillRequired": true
+  },
+  "currentStatus": {
+    "executed": false,
+    "decision": "PREPARED_NOT_EXECUTED"
+  },
+  "safeState": {
+    "providerReads": 0,
+    "providerWrites": 0,
+    "hrWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "hostingDeploys": 0,
+    "cloudRunDeploys": 0,
+    "merge": false,
+    "production": false
+  }
+}

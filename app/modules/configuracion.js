@@ -4,7 +4,7 @@
 /* ---------- Cuestionarios: editor del PROGRAMA (secciones→preguntas, pesos, versiones) ---------- */
 let _qProg=null, _qPid=null;
 CX.module('cuestionarios', ({data,ui})=>{
-  const p=data.project();
+  const p=data.period();
   if(!_qProg||_qPid!==p.id){ _qProg=JSON.parse(JSON.stringify(CX.programa.get(p.id))); _qPid=p.id; }
   const TIPOS=CX.programa.TIPOS, CRIT=CX.programa.CRITERIOS;
   const host=ui.el('div');
@@ -197,17 +197,34 @@ CX.module('cuestionarios', ({data,ui})=>{
 
 /* ---------- Usuarios & Permisos (matriz editable) ---------- */
 let _uState=null;
+const _U_KEY='cx_users', _UR_KEY='cx_custom_roles';
+function _uSave(st){ try{ localStorage.setItem(_U_KEY, JSON.stringify(st.users)); localStorage.setItem(_UR_KEY, JSON.stringify(st.customRoles||[])); }catch(e){} }
 CX.module('usuarios', ({ui})=>{
-  if(!_uState) _uState={users:[
-    {name:'Admin Demo',email:'admin@demo.cxorbia',rol:'super',activo:true},
-    {name:'Coordinación',email:'coord@demo.cxorbia',rol:'admin',activo:true},
-    {name:'Operaciones',email:'ops@demo.cxorbia',rol:'ops',activo:true},
-    {name:'Evaluador 01',email:'evaluador01@demo.cxorbia',rol:'shopper',activo:true},
-    {name:'Finanzas',email:'finanzas@demo.cxorbia',rol:'admin',activo:false},
-  ]};
+  if(!_uState){
+    let savedUsers=null, savedRoles=null;
+    try{ savedUsers=JSON.parse(localStorage.getItem(_U_KEY)||'null'); }catch(e){}
+    try{ savedRoles=JSON.parse(localStorage.getItem(_UR_KEY)||'null'); }catch(e){}
+    /* Frontend gen\u00e9rico (correcci\u00f3n 20260711): bug real \u2014 estos 5 usuarios "demo" (incl. Admin
+       Demo, Evaluador 01, correos @demo.cxorbia) se sembraban SIN ning\u00fan gate de modo \u2014 aparec\u00edan
+       tambi\u00e9n fuera de demo. Ahora solo se siembran si CX.dataSource.showFixtures() es true; fuera
+       de demo, sin usuarios persistidos, la lista empieza vac\u00eda (estado honesto "pendiente
+       Auth/backend" en vez de fixtures con nombre y correo inventados). */
+    const _allowUserSeed = CX.dataSource ? CX.dataSource.showFixtures() : true;
+    _uState={users: savedUsers || (_allowUserSeed ? [
+      {name:'Admin Demo',email:'admin@demo.cxorbia',rol:'super',activo:true},
+      {name:'Coordinación',email:'coord@demo.cxorbia',rol:'admin',activo:true},
+      {name:'Operaciones',email:'ops@demo.cxorbia',rol:'ops',activo:true},
+      {name:'Evaluador 01',email:'evaluador01@demo.cxorbia',rol:'shopper',activo:true},
+      {name:'Finanzas',email:'finanzas@demo.cxorbia',rol:'admin',activo:false},
+    ] : []), customRoles: savedRoles || []};
+  }
   const st=_uState;
   const MODS=[['Operación','op'],['Finanzas','fin'],['Admin Proyecto','prj'],['Capacitación','cap'],['Configuración','cfg'],['Portal Shopper','sh'],['Comercial','com']];
-  if(!st.perm){ let saved=null; try{saved=JSON.parse(localStorage.getItem('cx_perm')||'null');}catch(e){} st.perm=saved||{super:['op','fin','prj','cap','cfg','sh','com'],admin:['op','fin','prj','cap','com'],ops:['op','prj','cap'],shopper:['sh','cap']}; }
+  if(!st.perm){
+    let saved=null; try{saved=JSON.parse(localStorage.getItem('cx_perm')||'null');}catch(e){}
+    const DEF={super:['op','fin','prj','cap','cfg','sh','com'],admin:['op','fin','prj','cap','com'],ops:['op','prj','cap'],coordinador:['op','prj','cap'],aliado:['op','prj','cap'],shopper:['sh','cap']};
+    st.perm = saved ? Object.assign({}, DEF, saved) : DEF; /* backfill: saved gana, pero nunca falta una llave default */
+  }
   const PERM=st.perm;
   const savePerm=()=>{try{localStorage.setItem('cx_perm',JSON.stringify(PERM));}catch(e){}};
 
@@ -231,9 +248,10 @@ CX.module('usuarios', ({ui})=>{
     </div>
     <div class="card card-p" style="margin-bottom:16px">
       <div class="card-t" style="margin-bottom:12px">Usuarios</div>
-      <table class="tbl"><thead><tr><th>Usuario</th><th>Correo</th><th>Rol</th><th>Estado</th><th></th></tr></thead><tbody>
+      <table class="tbl"><thead><tr><th>Usuario</th><th>Correo</th><th>Rol</th><th>Persona</th><th>Estado</th><th></th></tr></thead><tbody>
       ${st.users.map((u,i)=>`<tr data-ui="${i}"><td><b>${u.name}</b></td><td style="font-size:12px">${u.email}</td>
         <td><select class="sel" data-rol style="width:auto;padding:5px 8px">${roles.map(r=>`<option value="${r.id}" ${r.id===u.rol?'selected':''}>${r.label}</option>`).join('')}</select></td>
+        <td style="font-size:11.5px;color:var(--t3)">${(CX.PERSONAS.find(pn=>pn.id===u.persona)||{}).label||'—'}${(u.paises&&u.paises.length)?' · 🌎 '+u.paises.join('/'):''}</td>
         <td><label class="flex" style="gap:6px;font-size:12px"><input type="checkbox" data-act ${u.activo?'checked':''}> ${u.activo?'Activo':'Inactivo'}</label></td>
         <td style="text-align:right"><button class="btn btn-ghost btn-sm" data-ed="${i}" style="padding:2px 8px;font-size:11px">✎ Editar</button> <button class="btn btn-ghost btn-sm" data-rm="${i}" style="color:var(--red)">✕</button></td></tr>`).join('')}
       </tbody></table>
@@ -243,30 +261,52 @@ CX.module('usuarios', ({ui})=>{
       <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Rol</th>${MODS.map(m=>`<th style="text-align:center">${m[0]}</th>`).join('')}</tr></thead><tbody>
       ${roles.map(r=>`<tr><td>${ui.bdg(r.label,getColor(r.id))}</td>${MODS.map(m=>`<td style="text-align:center"><input type="checkbox" class="permChk" data-role="${r.id}" data-mod="${m[1]}" ${PERM[r.id]&&PERM[r.id].includes(m[1])?'checked':''} ${r.id==='super'?'disabled title="Super siempre tiene acceso total"':''}></td>`).join('')}</tr>`).join('')}
       </tbody></table></div>
-      <div style="margin-top:14px">${ui.aiBox('Marca/desmarca el acceso de cada rol a cada módulo. Los roles personalizados permiten segmentar por área: Coordinador, Comercial, Revisor, etc. En producción también se valida en el backend.','Gobierno · autoadministrable')}</div>
+      <div style="margin-top:14px">${ui.aiBox('Marca/desmarca el acceso de cada rol a cada módulo. Los roles personalizados permiten segmentar por área: Coordinador, Comercial, Revisor, etc. En producción también se valida en el sistema central.','Gobierno · autoadministrable')}</div>
+    </div>
+    <div class="card card-p" style="margin-top:16px">
+      <div class="between" style="margin-bottom:12px"><div class="card-t">Acciones sensibles <span class="muted" style="font-weight:500;font-size:11px">· quién puede ejecutar cada acción</span></div><span class="bdg bdg-g" id="actSaved" style="display:none">✓ Guardado</span></div>
+      <p style="font-size:12px;color:var(--t3);margin-bottom:10px">Esto es distinto de la matriz de módulos de arriba: un rol puede VER un módulo pero no tener permiso para ejecutar una acción sensible dentro de él (marcar pagado, publicar un banco de certificación, aprobar una postulación…). Una acción no listada aquí queda bloqueada para todos salvo Super.</p>
+      <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Acción</th>${roles.filter(r=>r.id!=='super').map(r=>`<th style="text-align:center">${r.label}</th>`).join('')}</tr></thead><tbody>
+      ${CX.permissions.ACTIONS.map(a=>{const cur=CX.permissions.matrix()[a]||[];return `<tr><td style="font-size:11.5px"><code>${a}</code></td>${roles.filter(r=>r.id!=='super').map(r=>`<td style="text-align:center"><input type="checkbox" class="actChk" data-action="${a}" data-role="${r.id}" ${cur.includes(r.id)?'checked':''}></td>`).join('')}</tr>`;}).join('')}
+      </tbody></table></div>
+      <div style="font-size:10.5px;color:var(--t3);margin-top:8px">Super siempre tiene todas las acciones registradas — no aparece en la tabla porque no se puede restringir. El contexto (proyecto/país asignado a un usuario) se valida ADEMÁS de esta matriz — un rol con la acción marcada aquí solo puede ejecutarla dentro de su propio scope si tiene uno asignado.</div>
+    </div>
+    <div class="card card-p" style="margin-top:16px">
+      <div class="card-t" style="margin-bottom:4px">Personas operativas (taxonomía de negocio)</div>
+      <p style="font-size:12px;color:var(--t3);margin-bottom:12px">La <b>persona</b> es el nombre visible de negocio (ej. "Representante de país"); el <b>rol técnico</b> y el <b>scope</b> son lo que realmente controla accesos. Referencia — asígnala al editar un usuario.</p>
+      <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Persona</th><th>Rol técnico</th><th>Scope</th><th>Descripción</th></tr></thead><tbody>
+      ${CX.PERSONAS.map(pn=>`<tr><td><b>${pn.label}</b></td><td>${ui.bdg((roles.find(r=>r.id===pn.rol)||{label:pn.rol}).label,getColor(pn.rol))}</td><td>${ui.bdg(pn.scope,'n')}</td><td style="font-size:11.5px;color:var(--t2)">${pn.desc}</td></tr>`).join('')}
+      </tbody></table></div>
     </div>`;
     host.querySelectorAll('[data-ui]').forEach(tr=>{const i=+tr.dataset.ui;
-      tr.querySelector('[data-rol]').addEventListener('change',e=>{st.users[i].rol=e.target.value;ui.toast('Rol actualizado','ok');draw();});
-      tr.querySelector('[data-act]').addEventListener('change',e=>{st.users[i].activo=e.target.checked;draw();});});
-    host.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>{st.users.splice(+b.dataset.rm,1);draw();ui.toast('Usuario eliminado','');}));
+      tr.querySelector('[data-rol]').addEventListener('change',e=>{st.users[i].rol=e.target.value;_uSave(st);ui.toast('Rol actualizado','ok');draw();});
+      tr.querySelector('[data-act]').addEventListener('change',e=>{st.users[i].activo=e.target.checked;_uSave(st);draw();});});
+    host.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>{st.users.splice(+b.dataset.rm,1);_uSave(st);draw();ui.toast('Usuario eliminado','');}));
     host.querySelectorAll('[data-ed]').forEach(b=>b.addEventListener('click',()=>{const i=+b.dataset.ed,u=st.users[i];
       ui.modal('✎ Editar usuario',`
         <div style="margin-bottom:10px"><label class="lbl">Nombre</label><input class="inp" id="euName" value="${(u.name||'').replace(/"/g,'&quot;')}"></div>
         <div style="margin-bottom:10px"><label class="lbl">Correo (cualquier dominio)</label><input class="inp" id="euMail" value="${(u.email||'').replace(/"/g,'&quot;')}" placeholder="correo@empresa.com"></div>
-        <div style="margin-bottom:10px"><label class="lbl">Rol</label><select class="sel" id="euRol">${allRoles().map(r=>`<option value="${r.id}" ${r.id===u.rol?'selected':''}>${r.label}</option>`).join('')}</select></div>
+        <div style="margin-bottom:10px"><label class="lbl">Rol técnico</label><select class="sel" id="euRol">${allRoles().map(r=>`<option value="${r.id}" ${r.id===u.rol?'selected':''}>${r.label}</option>`).join('')}</select></div>
+        <div style="margin-bottom:10px"><label class="lbl">Persona (nombre de negocio, opcional)</label><select class="sel" id="euPersona"><option value="">— sin persona asignada —</option>${CX.PERSONAS.map(pn=>`<option value="${pn.id}" ${pn.id===u.persona?'selected':''}>${pn.label}</option>`).join('')}</select></div>
         <div style="margin-bottom:14px"><label class="flex" style="gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" id="euAct" ${u.activo?'checked':''}> Usuario activo</label></div>
+        <div style="margin-bottom:10px"><label class="lbl">Alcance por país (coordinador/aliado — separa por coma; vacío = todos)</label><input class="inp" id="euPais" value="${(u.paises||[]).join(', ')}" placeholder="GT, HN"></div>
+        <div style="margin-bottom:10px"><label class="lbl">Proyecto asignado (opcional)</label><select class="sel" id="euProy"><option value="">— sin proyecto asignado —</option>${(CX.data&&CX.data.projects||[]).map(pr=>`<option value="${pr.id}" ${pr.id===u.proyectoId?'selected':''}>${pr.name}</option>`).join('')}</select></div>
+        <div style="margin-bottom:14px"><label class="lbl">Cliente/marca asignado (opcional, portal cliente)</label><input class="inp" id="euCliente" value="${(u.cliente||'').replace(/"/g,'&quot;')}" placeholder="Nombre de la marca/cuenta"></div>
         <div class="between"><button class="btn btn-ghost btn-sm" id="euInvite">📨 Reenviar invitación</button><button class="btn btn-pr btn-sm" id="euSave">Guardar cambios</button></div>
       `,{onMount:(ov,close)=>{
         ov.querySelector('#euSave').addEventListener('click',()=>{
           const mail=(ov.querySelector('#euMail').value||'').trim();
           if(mail&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)){ui.toast('Correo inválido','warn');return;}
           u.name=(ov.querySelector('#euName').value||'').trim()||u.name;
-          u.email=mail||u.email;u.rol=ov.querySelector('#euRol').value;u.activo=ov.querySelector('#euAct').checked;
-          close();draw();ui.toast('Usuario actualizado','ok');
+          u.email=mail||u.email;u.rol=ov.querySelector('#euRol').value;u.persona=ov.querySelector('#euPersona').value||'';u.activo=ov.querySelector('#euAct').checked;
+          u.paises=(ov.querySelector('#euPais').value||'').split(',').map(s=>s.trim().toUpperCase()).filter(Boolean);
+          u.proyectoId=ov.querySelector('#euProy').value||'';
+          u.cliente=(ov.querySelector('#euCliente').value||'').trim();
+          _uSave(st); close();draw();ui.toast('Usuario actualizado','ok');
         });
         ov.querySelector('#euInvite').addEventListener('click',()=>{
           if(CX.automations&&CX.automations.fire)CX.automations.fire('invitacion_usuario',{nombre:u.name,email:u.email,rol:u.rol});
-          ui.toast('Invitación reenviada a '+(u.email||u.name)+' (correo/WA según automatización)','ok',4000);
+          ui.toast('Invitación preparada para '+(u.email||u.name)+' · se enviará por correo/WA cuando la activación esté lista','ok',4000);
         });
       }});
     }));
@@ -276,12 +316,33 @@ CX.module('usuarios', ({ui})=>{
       savePerm();
       const sv=host.querySelector('#permSaved'); if(sv){sv.style.display='';setTimeout(()=>sv.style.display='none',1500);}
     }));
+    host.querySelectorAll('.actChk').forEach(c=>c.addEventListener('change',()=>{
+      const action=c.dataset.action, role=c.dataset.role;
+      const cur=CX.permissions.matrix()[action]||[];
+      const next = c.checked ? [...new Set([...cur,role])] : cur.filter(r=>r!==role);
+      CX.permissions.setActionRoles(action, next);
+      const sv=host.querySelector('#actSaved'); if(sv){sv.style.display='';setTimeout(()=>sv.style.display='none',1500);}
+    }));
     host.querySelector('#addU').addEventListener('click',()=>ui.modal('Invitar usuario',`
       <div style="margin-bottom:12px"><label class="lbl">Nombre</label><input class="inp" id="nuName" placeholder="Nombre y apellido"></div>
       <div style="margin-bottom:12px"><label class="lbl">Correo</label><input class="inp" id="nuMail" placeholder="correo@empresa.com"></div>
-      <div style="margin-bottom:16px"><label class="lbl">Rol</label><select class="sel" id="nuRol">${allRoles().map(r=>`<option value="${r.id}">${r.label}</option>`).join('')}</select></div>
-      <div style="text-align:right"><button class="btn btn-pr btn-sm" id="nuSave">Enviar invitación</button></div>`,{onMount:(ov,close)=>{
-        ov.querySelector('#nuSave').addEventListener('click',()=>{const n=ov.querySelector('#nuName').value||'Usuario nuevo';st.users.push({name:n,email:ov.querySelector('#nuMail').value||'nuevo@demo.cxorbia',rol:ov.querySelector('#nuRol').value,activo:true});close();draw();ui.toast('Invitación enviada','ok');});}}));
+      <div style="margin-bottom:12px"><label class="lbl">Rol técnico</label><select class="sel" id="nuRol">${allRoles().map(r=>`<option value="${r.id}">${r.label}</option>`).join('')}</select></div>
+      <div style="margin-bottom:12px"><label class="lbl">Persona (nombre de negocio, opcional)</label><select class="sel" id="nuPersona"><option value="">— sin persona asignada —</option>${CX.PERSONAS.map(pn=>`<option value="${pn.id}">${pn.label}</option>`).join('')}</select></div>
+      <div style="margin-bottom:12px"><label class="lbl">País(es) — coordinador/aliado/scope (separa por coma; vacío = todos)</label><input class="inp" id="nuPais" placeholder="GT, HN"></div>
+      <div style="margin-bottom:12px"><label class="lbl">Proyecto (opcional)</label><select class="sel" id="nuProy"><option value="">— sin proyecto asignado —</option>${(CX.data&&CX.data.projects||[]).map(pr=>`<option value="${pr.id}">${pr.name}</option>`).join('')}</select></div>
+      <div style="margin-bottom:16px"><label class="lbl">Cliente/marca (opcional, solo portal cliente)</label><input class="inp" id="nuCliente" placeholder="Nombre de la marca/cuenta"></div>
+      <div style="text-align:right"><button class="btn btn-pr btn-sm" id="nuSave">Preparar invitación</button></div>`,{onMount:(ov,close)=>{
+        ov.querySelector('#nuSave').addEventListener('click',()=>{
+          const n=ov.querySelector('#nuName').value||'Usuario nuevo';
+          const paises=(ov.querySelector('#nuPais').value||'').split(',').map(s=>s.trim().toUpperCase()).filter(Boolean);
+          st.users.push({
+            name:n, email:ov.querySelector('#nuMail').value||'nuevo@demo.cxorbia', rol:ov.querySelector('#nuRol').value,
+            persona:ov.querySelector('#nuPersona').value||'', paises, proyectoId:ov.querySelector('#nuProy').value||'',
+            cliente:(ov.querySelector('#nuCliente').value||'').trim(), activo:true,
+          });
+          _uSave(st);close();draw();
+          ui.toast('Invitación preparada (vista previa) · envío pendiente de activación','ok',4000);
+        });}}));
     /* Nuevo rol personalizado */
     host.querySelector('#addRol')?.addEventListener('click',()=>ui.modal('🎨 Crear rol personalizado',`
       <div class="grid g2" style="gap:10px;margin-bottom:12px">
@@ -302,7 +363,7 @@ CX.module('usuarios', ({ui})=>{
       st.customRoles=st.customRoles||[];
       st.customRoles.push({id,label:name,desc:ov.querySelector('#rnDesc').value||'Rol personalizado',custom:true});
       PERM[id]=mods;
-      savePerm();
+      savePerm(); _uSave(st);
       close();draw();ui.toast('Rol "'+name+'" creado','ok');
     })}));
     /* Eliminar rol personalizado */
@@ -310,7 +371,7 @@ CX.module('usuarios', ({ui})=>{
       const rid=b.dataset.delrole;
       st.customRoles=(st.customRoles||[]).filter(r=>r.id!==rid);
       st.users.forEach(u=>{if(u.rol===rid)u.rol='admin';});
-      delete PERM[rid]; draw(); ui.toast('Rol eliminado','');
+      delete PERM[rid]; _uSave(st); draw(); ui.toast('Rol eliminado','');
     }));
   };
   draw();
@@ -320,7 +381,7 @@ CX.module('usuarios', ({ui})=>{
 /* ---------- Configuración general (submenús + consola cliente/proveedor) ---------- */
 let _cfgTab='centro', _cfgMode='proveedor';
 CX.module('config', ({data,ui})=>{
-  const p=data.project();
+  const p=data.period();
   const host=ui.el('div');
   const plan=CX.session.plan||p.plan||'estandar';
 
@@ -384,6 +445,7 @@ CX.module('config', ({data,ui})=>{
     <div class="card card-p" style="margin-bottom:14px;background:var(--brand-light);border-color:#cfe6f7">
       <div style="font-size:13px;color:var(--brand-dark)"><b>✅ Toda la plataforma es autoadministrable.</b> Cada área de abajo se edita desde la interfaz, sin tocar código. Haz clic para abrir cada gestor.</div>
     </div>
+    ${(()=>{const sc=CX.dataSource&&CX.dataSource.sourceContract?CX.dataSource.sourceContract():null;if(!sc)return'';const modeLbl={demo:'Demo',source_safe_preview:'Vista previa',connected:'Conectado'}[sc.sourceReadMode]||'No disponible';return `<div class="card card-p" style="margin-bottom:14px"><div class="card-t" style="margin-bottom:6px">Estado de tu fuente de datos</div><div class="flex wrap" style="gap:6px">${ui.bdg('modo: '+modeLbl,'n')}${ui.bdg('sincronización activa: '+(sc.runtimeSyncActive?'sí':'no'),sc.runtimeSyncActive?'g':'n')}${sc.warnings.length?ui.bdg(sc.warnings.length+' advertencias','a'):''}${sc.blockers.length?ui.bdg(sc.blockers.length+' bloqueos','r'):''}</div></div>`;})()}
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
       ${areas.map(a=>`<button class="card hov centro-area" ${a.nav?`data-nav="${a.nav}"`:''} ${a.tab?`data-tab2="${a.tab}"`:''} style="padding:16px;cursor:pointer;text-align:left;border:1px solid var(--border);background:#fff;display:flex;flex-direction:column;gap:6px">
         <div class="between"><div style="font-size:24px">${a.ic}</div><span class="bdg bdg-n" style="font-size:9.5px">${a.tag}</span></div>
@@ -404,8 +466,15 @@ CX.module('config', ({data,ui})=>{
     const nombre=brandStored&&brandStored.name||CX.BRAND.name||'CXOrbia';
     const curTheme=CX.BRAND.theme||'cxorbia';
     const demoOn=CX.BRAND.demoMode!==false;
-    const projOpts=(CX.data.projects||[]).map(p=>`<option value="${p.id}" ${p.id===CX.data.currentProjectId?'selected':''}>${p.name}</option>`).join('');
+    const projOpts=(CX.data.projects||[]).map(p=>`<option value="${p.id}" ${p.id===CX.data.currentPeriodId?'selected':''}>${p.name}</option>`).join('');
+    const tenantCountries=(CX.BRAND.countries||[]).join(', ');
     body.innerHTML=`
+    <div class="card card-p" style="margin-bottom:14px">
+      <div class="between" style="margin-bottom:6px"><div class="card-t">🏷️ Tenant</div><span class="muted" style="font-size:11px">id interno · no editable</span></div>
+      <div style="font-family:monospace;font-size:12px;color:var(--t3);background:var(--panel-2);border-radius:8px;padding:7px 10px;display:inline-block">${CX.BRAND.id}</div>
+      <div style="margin-top:10px"><label class="lbl">Países del tenant (franquicia) — vacío = se derivan de los proyectos reales</label>
+        <input class="inp" id="cfgTenantCountries" value="${tenantCountries}" placeholder="Ej. GT, HN"></div>
+    </div>
     <div class="card card-p" style="margin-bottom:14px">
       <div class="card-t" style="margin-bottom:10px">🎚️ Modo de operación</div>
       <div class="grid g2" style="gap:12px">
@@ -455,9 +524,15 @@ CX.module('config', ({data,ui})=>{
           </button>`).join('')}
       </div>
     </div>`;
+    body.querySelector('#cfgTenantCountries')?.addEventListener('change',e=>{
+      const arr=(e.target.value||'').split(',').map(s=>s.trim().toUpperCase()).filter(Boolean);
+      CX.BRAND.countries=arr;
+      try{ const b=JSON.parse(localStorage.getItem('cx_brand_identity')||'{}'); b.countries=arr; localStorage.setItem('cx_brand_identity', JSON.stringify(b)); }catch(x){}
+      ui.toast(arr.length?'Países del tenant actualizados':'Países del tenant limpiados · se derivan de los proyectos','ok',3000);
+    });
     body.querySelector('#goMarca')?.addEventListener('click',()=>CX.router.nav('marca'));
     body.querySelector('#cfgDemo')?.addEventListener('change',e=>{try{localStorage.setItem('cx_demo_mode',e.target.checked?'on':'off');}catch(x){}CX.BRAND.demoMode=e.target.checked;ui.toast(e.target.checked?'Modo demo activado':'Modo piloto/cliente · sello demo oculto','ok',3000);});
-    body.querySelector('#cfgStartProj')?.addEventListener('change',e=>{try{localStorage.setItem('cx_start_project',e.target.value);}catch(x){}CX.data.setProject(e.target.value);ui.toast('Proyecto inicial: '+(CX.data.project()?CX.data.project().name:e.target.value),'ok',3000);});
+    body.querySelector('#cfgStartProj')?.addEventListener('change',e=>{try{localStorage.setItem('cx_start_project',e.target.value);}catch(x){}CX.data.setProject(e.target.value);ui.toast('Proyecto inicial: '+(CX.data.period()?CX.data.period().name:e.target.value),'ok',3000);});
     body.querySelectorAll('.tema-pick').forEach(btn=>btn.addEventListener('click',()=>{
       const id=btn.dataset.tema;
       CX.applyTheme(id);

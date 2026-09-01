@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "cxorbia.c6.execution-control-plane.v2",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "pullRequest": 7,
+  "providerProject": "cxorbia-backend-dev",
+  "status": "DIRECT_RUNNER_DEV_DEPLOY_PASS__PRIVATE_AUTHENTICATED__PROVIDER_BOUNDARY_OFF__AUTH_PLAN_FROZEN",
+  "rootCause": {
+    "historicalIncidentId": "qcvjkzcs7j74",
+    "historicalComponent": "GitHub Actions",
+    "historicalClassification": "EXTERNAL_PLATFORM_MAJOR_OUTAGE_AND_WEBHOOK_TRIGGER_THROTTLING",
+    "repoConfigurationFaultProven": false,
+    "currentOneShotPattern": "INSTALL_WORKFLOW_THEN_TRIGGER_PULL_REQUEST_EDITED",
+    "syntheticMergeShaForbidden": true,
+    "sourceIdentity": "github.event.pull_request.head.sha"
+  },
+  "primaryLane": {
+    "type": "github_actions_controlled_one_shot",
+    "event": "pull_request.edited",
+    "sourceLock": "github.event.pull_request.head.sha",
+    "requestAndClaimRequired": true,
+    "providerBoundaryGates": [
+      "runId",
+      "jobId",
+      "requestIdMatch",
+      "sourceLockMatch",
+      "claimStatus=pending"
+    ]
+  },
+  "fallbackLane": {
+    "type": "direct_trusted_runner",
+    "status": "PASS_C6_DIRECT_RUNNER_DEV_DEPLOY_V3",
+    "deployed": true,
+    "private": true,
+    "authenticatedInvocation": true,
+    "providerBoundaryEnabled": false,
+    "requiresSeparateProviderAuthorization": true,
+    "requiresIdempotencyLease": true,
+    "sourceContract": "backend/contracts/c6-direct-trusted-runner-dev-v2.json",
+    "sourceRuntime": "backend/runtime/c6-direct-trusted-runner/server.mjs",
+    "validatedSourceLock": "5c467be8d7359e66b6362a07dd3908ada3cf1c17",
+    "workflowRunId": "31186229092",
+    "workflowJobId": "92891340577",
+    "cloudBuildId": "2ae79aa7-574b-483f-90c1-25e6ee3161b0",
+    "artifactId": "8996863935",
+    "artifactDigest": "sha256:d1c5b954bc69c2874aeb1e77136b53bf2b3d1699e1e1b03efddf198d8c0d8a0d",
+    "revision": "cxorbia-c6-direct-runner-dev-00001-2vz",
+    "serviceUrl": "https://cxorbia-c6-direct-runner-dev-mzgge2pnia-uc.a.run.app",
+    "deployOutputUrl": "https://cxorbia-c6-direct-runner-dev-87461567267.us-central1.run.app",
+    "cloudBuildsExecuted": 1,
+    "deploysExecuted": 1,
+    "technicalValidation": {
+      "sourceGate": "PASS_C6_DIRECT_RUNNER_SOURCE_GATE_V2",
+      "privateEndpoint": true,
+      "unauthenticatedDeniedHttpStatus": 403,
+      "authenticatedHealth": true,
+      "runtimeIdentityAttached": true,
+      "lease": true,
+      "idempotencyDuplicate409": true,
+      "rollbackPlan": "DELETE_NEW_DEV_SERVICE_PRESERVE_RUNTIME_IDENTITY"
+    }
+  },
+  "safety": {
+    "providerBoundaryEnabled": false,
+    "providerWrites": false,
+    "providerReads": false,
+    "authWrites": false,
+    "passwordChanges": false,
+    "membershipWrites": false,
+    "firestoreWrites": false,
+    "rulesWrites": false,
+    "storageWrites": false,
+    "hrWrites": false,
+    "deployExecuted": true,
+    "hostingDeploy": false,
+    "merge": false,
+    "production": false,
+    "make": false,
+    "gemini": false,
+    "payments": false
+  }
+}

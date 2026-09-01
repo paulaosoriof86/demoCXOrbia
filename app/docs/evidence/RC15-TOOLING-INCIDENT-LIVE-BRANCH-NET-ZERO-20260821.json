@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "cxorbia.rc15.tooling-incident.v3",
+  "incidentId": "RC15-TOOLING-LIVE-BRANCH-REF-SYNC-MISROUTING-20260821",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "docs-tya-v6-v71-audit",
+  "description": "During canonical F0 ref synchronization, the intended update_ref action was repeatedly misrouted to a file-update action. Each accidental empty file was immediately removed before canonical state synchronization. Every cycle returned the live tree to the exact pre-incident tree.",
+  "preIncidentHead": "823892a38123b50a694e857a4bf6ec2107122d99",
+  "preIncidentTree": "8f12db2cd89b7478b68a8d352e11003f441d1113",
+  "cycles": [
+    {"accidentalPath":"__never_again__","accidentalCommit":"3539ba96fe9b70b42113b0233d2742e3759a54fa","correctiveCommit":"c3bb293ed5b75c02b17e8e7393ddd637002c27f3"},
+    {"accidentalPath":"__stop__","accidentalCommit":"eaee1b3ab00c8bb84de34ffec71d0c7172ec9dd9","correctiveCommit":"fe8fa57b3d1ebd961c057c59af79efac68409c85"},
+    {"accidentalPath":"__wrong_again__","accidentalCommit":"30549095c5a6543c9b6769e80dda9532e32409a8","correctiveCommit":"f85dda9ea15680affd0e851eb9384f01ca481ce1"},
+    {"accidentalPath":"__fatal__","accidentalCommit":"8c10e424a08aa0b4b76c2334fe61c387bd1bfc8b","correctiveCommit":"11cef766ba80760cd730090a143ed4e1ea9f2266"}
+  ],
+  "finalCorrectedHeadBeforeCanonicalSync": "11cef766ba80760cd730090a143ed4e1ea9f2266",
+  "verification": {
+    "finalCorrectedTree": "8f12db2cd89b7478b68a8d352e11003f441d1113",
+    "treeMatchesPreIncident": true,
+    "netContentSideEffectAfterCorrections": false,
+    "liveBranchHistorySideEffect": true,
+    "providerOrDataSideEffect": false,
+    "deploySideEffect": false,
+    "mergeSideEffect": false
+  },
+  "rootCause": "REPEATED_TOOL_ROUTING_ERROR_CONTENTS_UPDATE_SELECTED_INSTEAD_OF_DEDICATED_UPDATE_REF",
+  "control": "No further contents create/update/delete calls are permitted in this block. The final canonical movement must use the dedicated GitHub.update_ref operation with force=false after fresh HEAD resolution. All abandoned prepared commit objects remain unreferenced and have no branch/provider effect.",
+  "status": "CORRECTED_NET_TREE_ZERO_HISTORY_RETAINED",
+  "next": "CANONICAL_SYNC_USING_DEDICATED_UPDATE_REF_ONLY"
+}

@@ -19,7 +19,12 @@ CX.crmStore = CX.crmStore || {
   delCol(id){ if(['ganado','perdido','nuevo'].includes(id))return; this._cols=this.cols().filter(x=>x.id!==id); this.saveCols(); },
 
   /* ── Oportunidades ── */
+  /* OLA1 (paquete V114→V115/V117, 20260714): CRM sembraba oportunidades/cuentas/contactos
+     ficticios de clientes SIN gate de modo demo — visibles también fuera de demo, y con datos
+     que parecen reales (empresas, contactos, correos). Corregido al mismo patrón usado en el
+     resto de la plataforma: fuera de demo, listas vacías (honesto, pendiente de fuente real). */
   seed(){
+    if(!(CX.dataSource ? CX.dataSource.showFixtures() : true)) return [];
     return [
       {id:'op1',empresa:'Cadena Norte',rubro:'Supermercados',pais:'GT',etapa:'propuesta',valor:48000,contacto:'Ana Pérez',cargo:'Gerencia de Operaciones',contactoEmail:'ops@cadenanorte.gt',tel:'+502 5555 1010',prob:60,fuente:'LinkedIn',cuentaId:'ac1',proximaAccion:'Enviar propuesta revisada',proximaFecha:'2026-06-28',nota:'Solicitaron mystery + auditoría de imagen.',acts:[{id:'a01',tipo:'reunion',texto:'Reunión de relevamiento inicial',fecha:'2026-06-10 10:00',hecho:true},{id:'a02',tipo:'tarea',texto:'Enviar propuesta revisada',vence:'2026-06-28',hecho:false}],correos:[{de:'ops@cadenanorte.gt',asunto:'Re: Propuesta mystery shopping',fecha:'2026-06-18',preview:'Gracias por la información, quedamos atentos…'}],docs:[{n:'Brief del cliente.pdf',tipo:'pdf'},{n:'Protocolo de servicio.pdf',tipo:'pdf'}]},
       {id:'op2',empresa:'Grupo Vértice',rubro:'Restaurantes · Multimarca',pais:'GT',etapa:'calif',valor:32000,contacto:'Luis Marroquín',cargo:'Dirección de Marca',contactoEmail:'marca@vertice.com',tel:'+502 5555 2020',prob:35,fuente:'Referido',cuentaId:'ac2',proximaAccion:'Llamada de seguimiento',proximaFecha:'2026-06-26',nota:'Interés en experiencia al cliente trimestral.',acts:[{id:'a03',tipo:'llamada',texto:'Llamada de calificación inicial',fecha:'2026-06-15 14:00',hecho:true}],correos:[],docs:[]},
@@ -29,7 +34,14 @@ CX.crmStore = CX.crmStore || {
   },
   list(){ if(!this._l)this._l=this.seed(); return this._l; },
   add(o){ this.list().push(Object.assign({id:'op'+Date.now().toString(36),etapa:'nuevo',prob:15,valor:0,acts:[],docs:[],correos:[]},o)); CX.bus&&CX.bus.emit('crm'); },
-  move(id,etapa){ const o=this.list().find(x=>x.id===id); if(o){o.etapa=etapa;if(etapa==='ganado')o.prob=100;if(etapa==='perdido')o.prob=0;CX.bus&&CX.bus.emit('crm');} return o; },
+  /* P1 (paquete V114→V125): gate + historial en el \u00fanico punto real de mutaci\u00f3n (move()) en
+     vez de en cada call-site (bot\u00f3n, drag-drop, ganar/perder) \u2014 as\u00ed ning\u00fan camino nuevo puede
+     saltarse la validaci\u00f3n. Antes cualquier admin mov\u00eda una oportunidad sin gate ni rastro. */
+  move(id,etapa){ const o=this.list().find(x=>x.id===id); if(!o)return null;
+    if(CX.permissions && !CX.permissions.gate('crm.edit',CX.permissions.ctx({entityType:'oportunidad',entityId:id}),CX.ui)) return o;
+    const before=o.etapa; o.etapa=etapa;if(etapa==='ganado')o.prob=100;if(etapa==='perdido')o.prob=0;
+    CX.automations&&CX.automations.logAction('Oportunidad movida', id, o.empresa+' · '+before+' \u2192 '+etapa);
+    CX.bus&&CX.bus.emit('crm'); return o; },
   acts(id){ const o=this.list().find(x=>x.id===id);if(o&&!o.acts)o.acts=[];return o?o.acts:[]; },
   addAct(id,a){ const o=this.list().find(x=>x.id===id);if(o){o.acts=o.acts||[];o.acts.unshift(Object.assign({id:'a'+Date.now().toString(36),fecha:new Date().toISOString().slice(0,16).replace('T',' ')},a));CX.bus&&CX.bus.emit('crm');} },
   tareas(){ const out=[];this.list().forEach(o=>{(o.acts||[]).forEach(a=>{if(a.tipo==='tarea'&&!a.hecho)out.push(Object.assign({op:o.empresa,opId:o.id},a));});});return out.sort((a,b)=>(a.vence||'').localeCompare(b.vence||'')); },
@@ -37,6 +49,7 @@ CX.crmStore = CX.crmStore || {
 
   /* ── Cuentas (empresas) ── */
   cuentasSeed(){
+    if(!(CX.dataSource ? CX.dataSource.showFixtures() : true)) return [];
     return [
       {id:'ac1',nombre:'Cadena Norte',rubro:'Supermercados',pais:'GT',sitio:'cadenanorte.gt',empleados:'500+',estado:'Prospecto',salud:72,owner:'Comercial 1',sucursales:24},
       {id:'ac2',nombre:'Grupo Vértice',rubro:'Restaurantes · Multimarca',pais:'GT',sitio:'vertice.com',empleados:'200-500',estado:'Prospecto',salud:55,owner:'Comercial 2',sucursales:18},
@@ -50,6 +63,7 @@ CX.crmStore = CX.crmStore || {
 
   /* ── Contactos ── */
   contactosSeed(){
+    if(!(CX.dataSource ? CX.dataSource.showFixtures() : true)) return [];
     return [
       {id:'ct1',nombre:'Ana Pérez',cargo:'Gerencia de Operaciones',cuentaId:'ac1',email:'ops@cadenanorte.gt',tel:'+502 5555 1010',rol:'Decisor'},
       {id:'ct2',nombre:'Luis Marroquín',cargo:'Dirección de Marca',cuentaId:'ac2',email:'marca@vertice.com',tel:'+502 5555 2020',rol:'Influenciador'},
@@ -69,7 +83,7 @@ CX.crmStore = CX.crmStore || {
 CX.module('crm', ({data,ui})=>{
   const host=ui.el('div');
   let crmView='dashboard'; // dashboard | pipeline | leads | cuentas | contactos | actividades | reportes
-  const cur=()=>((data.project().currency&&data.project().currency.GT)||'$');
+  const cur=()=>((data.period().currency&&data.period().currency.GT)||'$');
   const k=(n)=>cur()+' '+(n/1000).toFixed(0)+'k';
   const emojis={llamada:'📞',reunion:'👥',nota:'🗒️',tarea:'⏰',acta:'📝',meet:'🎥',correo:'✉️'};
 
@@ -128,14 +142,14 @@ CX.module('crm', ({data,ui})=>{
       </div>
       <div class="between" style="margin-top:14px;border-top:1px solid var(--border-2);padding-top:12px">
         <div class="flex" style="gap:8px">
-          <button class="btn btn-soft btn-sm" id="fWa">📲 WhatsApp</button>
+          <button class="btn btn-soft btn-sm" id="fWa" title="Abre WhatsApp Web con un borrador manual — no es envío automático">📲 WhatsApp (borrador manual)</button>
           <button class="btn btn-soft btn-sm" id="fMail">✉️ Correo</button>
           <button class="btn btn-pr btn-sm" id="fProp">📄 Generar propuesta</button>
         </div>
         <button class="btn btn-green btn-sm" id="fGanar">🏆 Marcar ganado</button>
       </div>
     `,{onMount:(ov,close)=>{
-      ov.querySelector('#addDoc')?.addEventListener('click',()=>{o.docs=o.docs||[];o.docs.push({n:'Documento_'+Date.now().toString(36)+'.pdf',tipo:'pdf'});CX.bus&&CX.bus.emit('crm');close();ficha360(o);});
+      ov.querySelector('#addDoc')?.addEventListener('click',()=>{const inp=document.createElement('input');inp.type='file';inp.accept='.pdf,.doc,.docx,.txt,image/*';inp.onchange=e=>{const f=e.target.files[0];if(!f)return;o.docs=o.docs||[];o.docs.push({n:f.name,tipo:(f.type||'archivo')});CX.bus&&CX.bus.emit('crm');close();ficha360(CX.crmStore.list().find(x=>x.id===o.id)||o);ui.toast('📎 '+f.name+' vinculado a la ficha','ok');};inp.click();});
       ov.querySelectorAll('[data-newact]').forEach(b=>b.addEventListener('click',()=>{
         const tipo=b.dataset.newact;
         const isMeet=(tipo==='meet'), isMail=(tipo==='correo');
@@ -355,7 +369,7 @@ CX.module('crm', ({data,ui})=>{
     const tone=cu.salud>=70?'g':cu.salud>=50?'a':'r';
     const estC={borrador:'n',enviada:'b',aceptada:'g',rechazada:'r'};
 
-    const TABS=[['resumen','📋 Resumen'],['oportunidades','📊 Oportunidades'],['proyectos','📁 Proyectos'],['propuestas','📄 Propuestas'],['contactos','👥 Contactos'],['correos','📨 Correos'],['docs','📎 Documentos'],['timeline','🕐 Timeline']];
+    const TABS=[['resumen','📋 Resumen'],['oportunidades','📊 Oportunidades'],['proyectos','📁 Proyectos'],['propuestas','📄 Propuestas'],['contactos','👥 Contactos'],['correos','📨 Correos'],['reuniones','🗓️ Reuniones'],['finanzas','💰 Finanzas'],['docs','📎 Documentos'],['addons','🧩 Add-ons'],['timeline','🕐 Timeline']];
 
     const body=()=>{
       if(tab==='resumen')return `
@@ -388,6 +402,9 @@ CX.module('crm', ({data,ui})=>{
       if(tab==='contactos'){const L=cts();return `<div class="between" style="margin-bottom:10px"><span class="muted" style="font-size:12px">Contactos del cliente</span><button class="btn btn-pr btn-sm" id="hubNewCt">＋ Contacto</button></div>${L.length?`<table class="tbl"><thead><tr><th>Nombre</th><th>Cargo</th><th>Rol</th><th>Correo</th><th></th></tr></thead><tbody>${L.map(ct=>`<tr><td><b>${ct.nombre}</b></td><td style="font-size:12px">${ct.cargo}</td><td><span class="bdg ${ct.rol==='Decisor'?'bdg-g':'bdg-n'}">${ct.rol}</span></td><td style="font-size:12px"><a href="mailto:${ct.email}" style="color:var(--brand)">${ct.email}</a></td><td style="text-align:right"><button class="btn btn-ghost btn-sm hubCtMail" data-em="${ct.email}">✉️</button></td></tr>`).join('')}</tbody></table>`:ui.empty('👥','Sin contactos.')}`;}
       if(tab==='correos'){const L=correos();return `<div class="between" style="margin-bottom:10px"><span class="muted" style="font-size:12px">Trazabilidad de correos vinculados</span><button class="btn btn-pr btn-sm" id="hubNewMail">＋ Registrar correo</button></div>${L.length?L.map(c=>`<div class="hubMail" style="padding:10px 12px;background:var(--panel-2);border-radius:9px;margin-bottom:8px;cursor:pointer"><div class="between"><b style="font-size:12.5px">✉️ ${c.asunto}</b><span style="font-size:10.5px;color:var(--t3)">${c.fecha||''}</span></div><div style="font-size:11px;color:var(--t3)">${c.de||''}</div>${c.preview?`<div style="font-size:11.5px;color:var(--t2);margin-top:3px">${c.preview}</div>`:''}</div>`).join(''):ui.empty('📨','Sin correos. Conecta el correo (Integraciones) o registra uno manual; queda con trazabilidad por cliente.')}`;}
       if(tab==='docs'){const L=docs();return `<div class="between" style="margin-bottom:10px"><span class="muted" style="font-size:12px">Documentos del cliente (briefs, protocolos, set-up)</span><label class="btn btn-pr btn-sm" style="cursor:pointer">＋ Subir<input type="file" id="hubDocF" style="display:none"></label></div>${L.length?L.map(d=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 11px;border:1px solid var(--border);border-radius:9px;margin-bottom:7px"><span style="font-size:18px">📄</span><span style="font-size:12.5px;flex:1">${d.n}</span><span style="font-size:10.5px;color:var(--t3)">${d.op||''}</span></div>`).join(''):ui.empty('📎','Sin documentos. Sube briefs, protocolos o el set-up; alimentan el modelo de IA del cliente.')}`;}
+      if(tab==='reuniones'){const rs=acts().filter(a=>a.tipo==='reunion'||a.tipo==='meet');return `<div class="between" style="margin-bottom:10px"><span class="muted" style="font-size:12px">Reuniones y actas del cliente</span><button class="btn btn-pr btn-sm" id="hubNewMeet">＋ Agendar reunión</button></div>${rs.length?rs.map(r=>`<div style="padding:9px 11px;border:1px solid var(--border);border-radius:9px;margin-bottom:8px"><b style="font-size:12.5px">🗓️ ${r.texto}</b><div style="font-size:11px;color:var(--t3)">${r.fecha||''} ${r.link?'· <a href="'+r.link+'" target="_blank" style="color:var(--brand)">enlace</a>':''}</div></div>`).join(''):ui.empty('🗓️','Sin reuniones. Agenda una y queda con su acta (mock, pendiente integración calendario).')}`;}
+      if(tab==='finanzas'){const props2=props();const val=ops2().reduce((a,o)=>a+(o.valor||0),0);const won=ops2().filter(o=>o.etapa==='ganado').reduce((a,o)=>a+(o.valor||0),0);return `<div class="grid g2" style="gap:10px;margin-bottom:12px"><div class="card card-p"><div style="font-size:10px;color:var(--t3)">Pipeline del cliente</div><div style="font-size:20px;font-weight:800;color:var(--brand)">${k(val)}</div></div><div class="card card-p"><div style="font-size:10px;color:var(--t3)">Ganado / facturable</div><div style="font-size:20px;font-weight:800;color:var(--green)">${k(won)}</div></div></div><div class="card-t" style="font-size:12px;margin-bottom:6px">Propuestas económicas</div>${props2.length?props2.map(pr=>`<div class="between" style="padding:6px 0;border-bottom:1px solid var(--border-2)"><span style="font-size:12px">${pr.titulo||'Propuesta'} · ${pr.estado||'borrador'}</span><b style="font-size:12px">${pr.total?k(pr.total):'—'}</b></div>`).join(''):'<div style="font-size:12px;color:var(--t3)">Sin propuestas económicas aún.</div>'}<div style="margin-top:10px;font-size:10.5px;color:var(--t3)">🔒 Conciliación y cobros reales: pendiente activación backend.</div>`;}
+      if(tab==='addons'){const adns=[['📍 Evidencia geolocalizada','Activo por defecto'],['🎥 Video/audio','Según plan'],['📊 Benchmark de industria','Enterprise'],['🎓 Capacitación al personal','Add-on'],['🤖 Análisis IA avanzado','Según plan']];return `<div class="muted" style="font-size:12px;margin-bottom:10px">Add-ons contratables por este cliente (se reflejan en su plan y facturación)</div>${adns.map(a=>`<div class="between" style="padding:9px 11px;border:1px solid var(--border);border-radius:9px;margin-bottom:8px"><span style="font-size:12.5px">${a[0]}</span><span class="bdg bdg-n">${a[1]}</span></div>`).join('')}<div style="margin-top:8px;font-size:10.5px;color:var(--t3)">🔒 Activación y facturación de add-ons: pendiente de activación.</div>`;}
       if(tab==='timeline'){const tl=[...acts().map(a=>({i:emojis[a.tipo]||'•',t:a.texto,d:a.fecha||a.vence||'',done:a.hecho})),...correos().map(c=>({i:'✉️',t:c.asunto,s:c.preview,d:c.fecha}))].sort((a,b)=>(''+b.d).localeCompare(''+a.d));return tl.length?`<div style="border-left:2px solid var(--border-2);padding-left:14px">${tl.map(a=>`<div style="position:relative;padding:8px 0"><div style="position:absolute;left:-20px;top:11px;width:9px;height:9px;border-radius:50%;background:var(--brand);border:2px solid #fff"></div><div style="font-size:12.5px;font-weight:600${a.done?';text-decoration:line-through;opacity:.6':''}">${a.i} ${a.t}</div>${a.s?`<div style="font-size:11px;color:var(--t3)">${a.s}</div>`:''}<div style="font-size:10.5px;color:var(--t3)">${a.d||''}</div></div>`).join('')}</div>`:ui.empty('🕐','Sin actividad registrada.');}
       return '';
     };
@@ -403,6 +420,7 @@ CX.module('crm', ({data,ui})=>{
       ov.querySelectorAll('.hubCtMail,[data-em]').forEach(b=>b.addEventListener('click',()=>window.open('mailto:'+b.dataset.em,'_blank')));
       ov.querySelector('#hubNewProj')?.addEventListener('click',()=>{ov.__close();CX.router.nav('proyectos');ui.toast('Crea el programa para '+cu.nombre,'ok');});
       ov.querySelector('#hubNewProp')?.addEventListener('click',()=>{ov.__close();CX.router.nav('costos');ui.toast('Genera la propuesta para '+cu.nombre,'ok');});
+      ov.querySelector('#hubNewMeet')?.addEventListener('click',()=>ui.modal('🗓️ Agendar reunión',`<label class="lbl">Tema</label><input class="inp" id="mtT" placeholder="Reunión de seguimiento" style="margin-bottom:8px"><div class="grid g2" style="gap:8px;margin-bottom:8px"><div><label class="lbl">Fecha</label><input class="inp" id="mtF" type="date"></div><div><label class="lbl">Hora</label><input class="inp" id="mtH" type="time" value="10:00"></div></div><label class="lbl">Enlace (Meet/Zoom, opcional)</label><input class="inp" id="mtL" placeholder="https://…" style="margin-bottom:10px"><div style="font-size:10.5px;color:var(--t3);margin-bottom:10px">🔒 Envío de invitación real: pendiente integración calendario.</div><div style="text-align:right"><button class="btn btn-pr btn-sm" id="mtOk">Agendar</button></div>`,{onMount:(o2,c2)=>o2.querySelector('#mtOk').addEventListener('click',()=>{const o=ops2()[0]||CX.crmStore.list().find(x=>x.cuentaId===cu.id);const tema=(o2.querySelector('#mtT').value||'Reunión').trim();if(o){o.acts=o.acts||[];o.acts.unshift({id:'a'+Date.now().toString(36),tipo:'reunion',texto:tema,fecha:(o2.querySelector('#mtF').value||'')+' '+(o2.querySelector('#mtH').value||''),link:(o2.querySelector('#mtL').value||'').trim()});CX.bus&&CX.bus.emit('crm');}c2();draw360(ov);ui.toast('Reunión agendada','ok');})}));
       ov.querySelector('#hubNewMail')?.addEventListener('click',()=>ui.modal('＋ Registrar correo',`<label class="lbl">Asunto</label><input class="inp" id="hmA" style="margin-bottom:8px"><label class="lbl">De</label><input class="inp" id="hmD" placeholder="correo@cliente.com" style="margin-bottom:8px"><label class="lbl">Resumen</label><textarea class="inp" id="hmP" rows="2" style="margin-bottom:10px"></textarea><div style="text-align:right"><button class="btn btn-pr btn-sm" id="hmOk">Vincular</button></div>`,{onMount:(o2,c2)=>o2.querySelector('#hmOk').addEventListener('click',()=>{const o=ops2()[0];if(o){o.correos=o.correos||[];o.correos.unshift({asunto:o2.querySelector('#hmA').value||'(sin asunto)',de:o2.querySelector('#hmD').value||'',fecha:new Date().toISOString().slice(0,10),preview:o2.querySelector('#hmP').value||''});CX.bus&&CX.bus.emit('crm');}c2();draw360(ov);ui.toast('Correo vinculado a la ficha','ok');})}));
       ov.querySelector('#hubNewCt')?.addEventListener('click',()=>ui.modal('＋ Contacto',`<label class="lbl">Nombre</label><input class="inp" id="hcN" style="margin-bottom:8px"><label class="lbl">Cargo</label><input class="inp" id="hcC" style="margin-bottom:8px"><div class="grid g2" style="gap:8px;margin-bottom:8px"><div><label class="lbl">Correo</label><input class="inp" id="hcE"></div><div><label class="lbl">Rol</label><select class="sel" id="hcR"><option>Decisor</option><option>Influenciador</option><option>Contacto</option></select></div></div><div style="text-align:right"><button class="btn btn-pr btn-sm" id="hcOk">Crear</button></div>`,{onMount:(o2,c2)=>o2.querySelector('#hcOk').addEventListener('click',()=>{const n=(o2.querySelector('#hcN').value||'').trim();if(!n){ui.toast('Nombre requerido','warn');return;}CX.crmStore.addContacto({nombre:n,cargo:o2.querySelector('#hcC').value,cuentaId:cu.id,email:o2.querySelector('#hcE').value,rol:o2.querySelector('#hcR').value});c2();draw360(ov);ui.toast('Contacto creado','ok');})}));
       ov.querySelector('#hubDocF')?.addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const o=ops2()[0];if(o){o.docs=o.docs||[];o.docs.push({n:f.name,tipo:'doc'});CX.bus&&CX.bus.emit('crm');}draw360(ov);ui.toast('Documento "'+f.name+'" vinculado','ok');});
@@ -533,7 +551,22 @@ CX.module('crm', ({data,ui})=>{
       <label class="lbl">Meta trimestral (${cur()})</label><input class="inp" id="mT" type="number" value="${m.trimestral}" style="margin-bottom:12px">
       <div style="text-align:right"><button class="btn btn-pr btn-sm" id="mSave">Guardar</button></div>
     `,{onMount:(ov,close)=>ov.querySelector('#mSave').addEventListener('click',()=>{CX.crmStore.setMeta({mensual:+ov.querySelector('#mM').value||m.mensual,trimestral:+ov.querySelector('#mT').value||m.trimestral});close();draw();ui.toast('Meta actualizada','ok');})})});
-    host.querySelector('#expRep')?.addEventListener('click',()=>ui.toast('Reporte exportado (demo)','ok'));
+    host.querySelector('#expRep')?.addEventListener('click',()=>{
+      if(!CX.reportKit)return;
+      const san=(s)=>String(s||'r').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'r';
+      const projectLabel=(CX.data.programBase?CX.data.programBase(CX.data.period()):(CX.BRAND&&CX.BRAND.name))||'Comercial';
+      const ops2=CX.crmStore.list?CX.crmStore.list():[];
+      const porFuente2={};ops2.forEach(o=>{porFuente2[o.fuente||'Directo']=(porFuente2[o.fuente||'Directo']||0)+(o.valor||0);});
+      const crmSpec=(ext)=>({ title:'Reporte comercial · cierres',
+        meta:{title:'Reporte comercial · cierres',project:projectLabel,period:new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long'}),scope:'Pipeline CRM',sourceLabel:'CRM · oportunidades registradas',generatedAt:new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})},
+        columns:[{key:'empresa',label:'Empresa'},{key:'rubro',label:'Rubro'},{key:'etapa',label:'Etapa'},{key:'valor',label:'Valor'},{key:'prob',label:'Prob. %'}],
+        rows:ops2.map(o=>({empresa:o.empresa,rubro:o.rubro,etapa:(CX.crmStore.cols().find(c=>c.id===o.etapa)||{}).n||o.etapa,valor:(o.valor!=null?o.valor:'—'),prob:(o.prob!=null?o.prob:'—')})),
+        notes:'',
+        summary:['Oportunidades: '+ops2.length,'Cerrado ganado: '+k(ops2.filter(o=>o.etapa==='ganado').reduce((a,o)=>a+(o.valor||0),0))],
+        chart:{title:'Valor por fuente',data:Object.entries(porFuente2).map(([f,v])=>({label:f,value:v}))},
+        filename:[san('reporte-comercial'),san(projectLabel),new Date().toISOString().slice(0,10)].join('_')+'.'+ext });
+      CX.ui.modal('⤓ Exportar reporte comercial',`<p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Genera el reporte de cierres con el diseño del tenant.</p><div class="flex" style="gap:8px;justify-content:flex-end"><button class="btn btn-ghost btn-sm" id="cxPdf">⤓ PDF</button><button class="btn btn-soft btn-sm" id="cxXls">⤓ Excel</button><button class="btn btn-pr btn-sm" id="cxPpt">⤓ PPT</button></div>`,{onMount:(ov)=>{ov.querySelector('#cxPdf').addEventListener('click',()=>CX.reportKit.exportPDF(crmSpec('pdf')));ov.querySelector('#cxXls').addEventListener('click',()=>{if(CX.reportKit.exportExcel(crmSpec('xlsx')))CX.ui.toast('Excel .xlsx generado','ok');});ov.querySelector('#cxPpt').addEventListener('click',()=>{if(CX.reportKit.exportPPT(crmSpec('pptx')))CX.ui.toast('PowerPoint generado','ok');});}});
+    });
 
     /* KPI drills */
     const allOps=CX.crmStore.list();

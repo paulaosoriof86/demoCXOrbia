@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "cxorbia.rc15.f5.live-synthetic-acceptance.evidence.v1",
+  "decision": "F5_LIVE_SYNTHETIC_ACCEPTANCE_PASS",
+  "f5Pass": true,
+  "runId": 33085990980,
+  "runAttempt": 1,
+  "artifactId": 9652248195,
+  "artifactDigest": "sha256:d6fcb4ed171c6295431c2615cd4b8c0e740c3c05ff026393fd5f2ae8c7fbcfe4",
+  "controlPlaneHead": "2d0b8e83b32b44f6c3eae80b7630f8cd3295fba2",
+  "parentHead": "5cbf78f7922216056eb1a3140bdf45279ea1c89b",
+  "authorizationId": "CXORBIA-F5-AUTH-20260827-02",
+  "executionId": "CXORBIA-F5-EXECUTE-20260827-01",
+  "requestId": "CXORBIA-F5-SYNTHETIC-ACCEPTANCE-20260827-01",
+  "scope": {
+    "firebaseProjectId": "cxorbia-backend-dev",
+    "tenantId": "tya",
+    "projectId": "cinepolis",
+    "syntheticPrefix": "CXORBIA_E2E_SYNTH_"
+  },
+  "providerPromotion": {
+    "cloudBuildExecutions": 1,
+    "cloudRunUpdateAttempts": 1,
+    "cloudRunUpdates": 1,
+    "hostingDeploys": 0,
+    "beforeRevision": "cxorbia-live-hr-dev-00012-gw9",
+    "newRevision": "cxorbia-live-hr-dev-00013-rns",
+    "imageDigest": "sha256:eca8b831c24ef81f09e4addda721d0af89a24c5a0d753aa507989988458227ec",
+    "trafficPercent": 100,
+    "gateExpiresAt": "2026-08-27T15:53:16.136Z",
+    "serverSideExpiryEnforced": true
+  },
+  "lifecycle": {
+    "preReadback": "PASS",
+    "seed": "PASS",
+    "applicationCreate": "PASS",
+    "applicationApprove": "PASS",
+    "assign": "PASS",
+    "schedule": "PASS",
+    "rescheduleRequest": "PASS",
+    "rescheduleApprove": "PASS",
+    "questionnaireSubmit": "PASS",
+    "reviewApprove": "PASS",
+    "finalReadback": "PASS",
+    "cleanup": "PASS",
+    "postCleanupReadback": "PASS"
+  },
+  "syntheticProviderWrites": 67,
+  "cleanup": {
+    "providerWrites": 21,
+    "removed": {
+      "postulations": 1,
+      "receipts": 8,
+      "audit": 8,
+      "visit": 1,
+      "shopper": 1,
+      "shopperMembership": 1,
+      "operatorMembership": 1
+    },
+    "postCleanResidue": {
+      "visits": 0,
+      "postulations": 0,
+      "receipts": 0,
+      "audit": 0,
+      "shoppers": 0,
+      "users": 0,
+      "receiptActorOrphans": 0,
+      "auditActorOrphans": 0,
+      "exactFixtures": 0,
+      "authShopper": false,
+      "authOperator": false
+    }
+  },
+  "safety": {
+    "realDataWrites": 0,
+    "externalHrWrites": 0,
+    "firebaseAuthWrites": 0,
+    "paymentWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "merge": false,
+    "automaticRetryAllowed": false
+  },
+  "parallelReadOnlyPredeployNoise": {
+    "runId": 33085991102,
+    "classification": "MECHANISM_P1_NON_BLOCKING",
+    "cause": "local predeploy service started without firebase-admin dependency installed",
+    "productP0Proven": false,
+    "providerMutation": false,
+    "deploy": false,
+    "impactOnF5Decision": "NONE"
+  },
+  "readinessBefore": 81,
+  "readinessAfter": 86,
+  "next": "F6_PHASE_A_IMMUTABLE_RELEASE"
+}

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "cxorbia.operational.provider-policy.v1",
+  "policyId": "CXORBIA-OPERATIONAL-COMMAND-PROVIDER-POLICY-V1",
+  "enabled": false,
+  "status": "BLOCKED_PENDING_READONLY_GATES_AND_EXPLICIT_AUTHORIZATION",
+  "allowedTenantIds": ["tya"],
+  "allowedProjectIds": ["cinepolis"],
+  "conflictPolicy": "review_no_silent_overwrite",
+  "hrWrites": false,
+  "makeCalls": false,
+  "geminiCalls": false,
+  "storageWrites": false,
+  "paymentWrites": false,
+  "activationRequires": [
+    "OPERATIONAL_AUTHORITY_READONLY_PASS",
+    "PROVIDER_ROUTE_SYNTHETIC_GATE",
+    "EXPLICIT_OWNER_AUTHORIZATION"
+  ],
+  "production": false
+}

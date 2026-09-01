@@ -8,7 +8,31 @@ window.CX = window.CX || {};
 CX.pwa = {
   deferredPrompt:null,
   init(){
-    window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); this.deferredPrompt=e; });
+    window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); this.deferredPrompt=e; this._armFirstInteraction(); });
+    window.addEventListener('appinstalled',()=>{ this.deferredPrompt=null; this._installed=true; this._interactionArmed=false; try{localStorage.setItem('cx_pwa_installed','1');}catch(e){} });
+  },
+  /* R19 crítico 3.A (20260715): antes solo se llamaba prompt() cuando el usuario pulsaba el
+     botón de instalación explícito — el paquete exige abrir el prompt nativo en la PRIMERA
+     interacción elegible del usuario (pointerdown/click/keydown), una sola vez, sin esperar a
+     que encuentre y pulse un botón de instalar. Se arma un listener de una sola vez apenas llega
+     beforeinstallprompt; si el usuario ya rechazó antes (localStorage), no se insiste. */
+  _interactionArmed:false,
+  _armFirstInteraction(){
+    if(this._interactionArmed || this._installed) return;
+    try{ if(localStorage.getItem('cx_pwa_dismissed')==='1') return; }catch(e){}
+    this._interactionArmed=true;
+    const fire=()=>{
+      ['pointerdown','click','keydown'].forEach(ev=>document.removeEventListener(ev,fire,true));
+      if(!this.deferredPrompt) return;
+      const dp=this.deferredPrompt;
+      dp.prompt();
+      dp.userChoice.then((choice)=>{
+        this.deferredPrompt=null;
+        if(choice&&choice.outcome==='dismissed'){ try{localStorage.setItem('cx_pwa_dismissed','1');}catch(e){} }
+        if(CX.topbar&&CX.topbar.updatePwaBtn) CX.topbar.updatePwaBtn();
+      }).catch(()=>{ this.deferredPrompt=dp; });
+    };
+    ['pointerdown','click','keydown'].forEach(ev=>document.addEventListener(ev,fire,true));
   },
   /* detección de plataforma */
   detect(){
@@ -24,10 +48,17 @@ CX.pwa = {
     return {os:'Web', label:'tu dispositivo', how:'desktop'};
   },
   installable(){ return !!this.deferredPrompt; },
-  /* abre el flujo de instalación según plataforma */
+  /* R19 Gate 8 (20260715): en Windows/macOS/Android con Chromium, `beforeinstallprompt` SÍ se
+     dispara — pero antes solo se usaba this.deferredPrompt.prompt() cuando d.how==='prompt'
+     (únicamente Android); en Windows/Mac (d.how==='desktop') se mostraba SIEMPRE el modal manual
+     de instrucciones aunque el navegador ya hubiera ofrecido el evento nativo. Ahora: si existe
+     el evento capturado (deferredPrompt, cualquier Chromium), se dispara el prompt() nativo del
+     navegador en esta interacción — sin importar el label de plataforma. El modal de
+     instrucciones queda solo como fallback real para navegadores que NO exponen el evento
+     (o iOS Safari, que nunca lo expone). */
   openInstall(ui){
     const d=this.detect();
-    if(this.deferredPrompt && d.how==='prompt'){
+    if(this.deferredPrompt){
       this.deferredPrompt.prompt();
       this.deferredPrompt.userChoice.finally(()=>{this.deferredPrompt=null;});
       return;

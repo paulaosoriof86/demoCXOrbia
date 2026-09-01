@@ -1,0 +1,1 @@
+window.CX_TYA_CERTIFICATION_CARRYOVER_SOURCE_SAFE = {schemaVersion:'1.0.0',tenantId:'tya',projectId:'cinepolis',certificationId:'cinepolis-main',sourceStatus:'pending_certification_source',certifications:[],sourceSafe:true,imported:false,production:false,providerWrites:false,rawEvidence:false};

@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "cxorbia.c6.live-user-admin-runtime-proof.durable.v1",
+  "generatedAt": "2026-08-12T17:27:00-06:00",
+  "request": {
+    "requestId": "c6-live-user-admin-membership-runtime-proof-20260812-08",
+    "requestCommitSha": "45d6144207dad253965402b822ab0930195d8f5d",
+    "targetHeadSha": "7c6c5d89cc5886ca3ef98602460f33724a177504",
+    "action": "C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF",
+    "mode": "HOSTING_RUNTIME_ONCE"
+  },
+  "run": {
+    "runId": 31650715194,
+    "jobId": 94294235029,
+    "artifactId": 9162485896,
+    "artifactDigest": "sha256:e30accedd8e8c571066319572267e84856752577b7cd4cd63e0cd1f3c7d20194",
+    "workflowConclusion": "success",
+    "artifactDecision": "FAIL_C6_DEV_ROOT_ENTRYPOINT_HOSTING_AND_RUNTIME",
+    "artifactDecisionPrecedence": true
+  },
+  "preflight": {
+    "decision": "PASS_C6_STAFF_LANE_SOURCE_PREFLIGHT",
+    "schemaVersion": "cxorbia.c6.staff-lane-source-preflight.v2",
+    "hostingExecuteBashSyntax": true,
+    "hostingExecuteNestedHeredocAbsent": true,
+    "actionExplicitAndFailClosed": true,
+    "staffSelectorDedicated": true,
+    "staffCanonicalFormSelectors": true
+  },
+  "provider": {
+    "googleCloudAuth": "PASS",
+    "staffCredentialSelection": "PASS_C6_EXISTING_STAFF_ADMIN_E2E_CREDENTIAL_SELECTION_READONLY",
+    "staffRole": "coordinador",
+    "shopperSelection": false,
+    "clientSelection": false
+  },
+  "hosting": {
+    "deployAttempted": true,
+    "deployPhysicallySucceeded": true,
+    "hostingDeploysThisRun": 1,
+    "hostingAllowanceConsumed": "1/1",
+    "remoteParityDecision": "PASS_C6_DEV_ROOT_ENTRYPOINT_REMOTE_PARITY",
+    "remoteParityExact": true,
+    "rootHttpStatus": 302,
+    "canonicalHttpStatus": 200
+  },
+  "runtime": {
+    "decision": "FAIL_C6_LIVE_USER_ADMIN_FRONTEND_WIRING_RUNTIME_READONLY_PROOF",
+    "staffHumanDecision": "FAIL_C6_UNIFIED_HUMAN_AUTH_STAFF_ADMIN_RUNTIME_READONLY",
+    "authenticationSubmitted": false,
+    "authFailureDemonstrated": false,
+    "firestoreFailureDemonstrated": false,
+    "membershipFailureDemonstrated": false,
+    "hrFailureDemonstrated": false,
+    "rootCause": "QA_POINTER_INTERCEPTION_BY_BACKEND_PREVIEW_STATUS_OVERLAY",
+    "rootCauseDetail": "#cxBackendPreviewStatus is a persistent Preview DEV diagnostic pill at z-index 99999. Playwright resolved #lgSubmit as visible/enabled but the diagnostic pill overlapped it and intercepted pointer events for 30 seconds, so the canonical form submit event was never reached.",
+    "failedInteraction": "pointer click on #lgSubmit",
+    "productFormContract": "#loginForm submit event bound by app/core/backend-browser-auth.js",
+    "repairStrategy": "submit the same canonical form by pressing Enter from #lgPass; do not mutate/hide product UI"
+  },
+  "sourceOnlyRepairAfterStopRetry": {
+    "staffSmokeCommit": "ccf759c2a82a5baf82397cef02c3ca7851e13ce8",
+    "preflightCommit": "7cab212e5583ed7e2b4dc8b132b0d2b5bf953c19",
+    "productFilesChanged": false,
+    "appModulesChanged": false,
+    "providerCallsAfterStopRetry": 0,
+    "hostingDeploysAfterStopRetry": 0,
+    "secondRuntimeAttempt": 0
+  },
+  "safety": {
+    "authWrites": 0,
+    "firestoreWrites": 0,
+    "hrWrites": 0,
+    "rulesWrites": 0,
+    "storageWrites": 0,
+    "makeCalls": 0,
+    "geminiCalls": 0,
+    "paymentWrites": 0,
+    "secondExactWrite": 0,
+    "credentialsExposed": false,
+    "tokensExposed": false,
+    "merge": false,
+    "production": false
+  },
+  "phaseA": {
+    "certifiedPercent": 88,
+    "remainingPercent": 12,
+    "certifiedDeltaThisRun": 0,
+    "milestones": "M1=35/35 | M2=20/20 | M3=15/15 | M4=5/5 | M5=8/8 | M6=5/5 | M7=0/5 | M8=0/3 | M9=0/3 | M10=0/1"
+  },
+  "stopRetry": {
+    "applied": true,
+    "rerun": false,
+    "secondRequest": false,
+    "newAuthorizationRequiredForNextProviderRuntime": true
+  },
+  "nextGate": "NEW_EXPLICIT_HOSTING_RUNTIME_ONCE_AUTHORIZATION_REQUIRED_ON_REPAIRED_HEAD"
+}
