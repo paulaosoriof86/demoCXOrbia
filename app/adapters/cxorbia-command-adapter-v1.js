@@ -42,7 +42,7 @@
     const result=Object.assign({
       ok:false,status:'blocked',committed:false,providerAck:false,code:code||'COMMAND_WRITE_BLOCKED',
       commandType:str(command?.commandType),entityType:str(command?.entityType),entityId:str(command?.entityId)||null,
-      tenantId:str(command?.tenantId)||null,projectId:str(command?.projectId)||null,
+      tenantId:str(command?.tenantId)||null,projectId:str(command?.projectId)||null,periodId:str(command?.periodId)||null,
       localMutation:false,localStorageWrite:false,successUiAllowed:false,providerWrites:0,at:now()
     },extra||{});
     try{CX.bus?.emit?.('command-blocked',result);}catch(_){}
@@ -55,6 +55,7 @@
     if(!str(command.entityType))errors.push('missing-entityType');
     if(!str(command.tenantId))errors.push('missing-tenantId');
     if(command.requireProject!==false&&!str(command.projectId))errors.push('missing-projectId');
+    if(command.requirePeriod!==false&&!str(command.periodId))errors.push('missing-periodId');
     if(!str(command.idempotencyKey))errors.push('missing-idempotencyKey');
     if(command.expectedVersion===undefined||command.expectedVersion===null||command.expectedVersion==='')errors.push('missing-expectedVersion');
     if(!str(command.actor?.role))errors.push('missing-actor-role');
@@ -63,11 +64,11 @@
   }
   function build(input){
     input=input||{};const baseActor=currentActor();const actor=Object.assign({},baseActor,clean(input.actor||{}));
-    const tenantId=str(input.tenantId||actor.tenantId),projectId=str(input.projectId||'');
+    const tenantId=str(input.tenantId||actor.tenantId),projectId=str(input.projectId||''),periodId=str(input.periodId||input.payload?.periodId||'');
     const entityId=str(input.entityId||input.visitId||input.shopperId||input.applicationId||input.postulationId||'');
     const command={
       version:VERSION,commandType:str(input.commandType),entityType:str(input.entityType),entityId:entityId||null,
-      tenantId,projectId:projectId||null,requireProject:input.requireProject!==false,
+      tenantId,projectId:projectId||null,periodId:periodId||null,requireProject:input.requireProject!==false,requirePeriod:input.requirePeriod!==false,
       actor:{actorId:str(input.actorId||actor.actorId),role:str(input.role||actor.role),projectIds:uniq(actor.projectIds),shopperId:str(actor.shopperId)||null},
       expectedVersion:input.expectedVersion,idempotencyKey:str(input.idempotencyKey),payload:clean(input.payload||{}),
       source:str(input.source||'cx.data'),requestedAt:now(),authorization:clean(input.authorization||{providerEnforcementRequired:true}),
@@ -115,7 +116,7 @@
     if(!committed)return Object.assign(blocked(command,'COMMAND_NOT_COMMITTED'),clean(result||{}),{ok:false,committed:false,providerAck:false,successUiAllowed:false,localMutation:false,localStorageWrite:false});
     const out=Object.assign({},clean(result),{
       ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,localMutation:false,localStorageWrite:false,
-      commandType:command.commandType,entityType:command.entityType,entityId:command.entityId,tenantId:command.tenantId,projectId:command.projectId,idempotencyKey:command.idempotencyKey,at:now()
+      commandType:command.commandType,entityType:command.entityType,entityId:command.entityId,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,idempotencyKey:command.idempotencyKey,at:now()
     });
     try{CX.bus?.emit?.('command-committed',out);}catch(_){}
     return out;

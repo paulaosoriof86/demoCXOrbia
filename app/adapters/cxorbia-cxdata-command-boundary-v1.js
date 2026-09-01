@@ -48,7 +48,10 @@
   function visit(id){return (CX.data?._visitas||[]).find(v=>str(v.id||v.visitId)===str(id))||null;}
   function post(id){return (CX.data?._posts||[]).find(p=>str(p.id||p.applicationId||p.postulationId)===str(id))||null;}
   function commandMeta(meta){return meta&&typeof meta==='object'?meta:{};}
-  function idempotency(type,entityId,payload,expectedVersion){return `${type}:${hash([ctx().tenantId,ctx().projectId,entityId||'',expectedVersion, payload])}`;}
+  function idempotency(type,entityId,payload,expectedVersion,scope){
+    const c=scope||ctx();
+    return `${type}:${hash([c.tenantId,c.projectId,c.periodId,entityId||'',expectedVersion,payload])}`;
+  }
 
   class CXCommandBlockedError extends Error{
     constructor(result){super(result?.reason||result?.code||'COMMAND_BLOCKED');this.name='CXCommandBlockedError';this.cxCommandBlocked=true;this.result=result;}
@@ -74,7 +77,7 @@
     const c=ctx();
     return {
       commandType,entityType,entityId:entityId||null,
-      tenantId:c.tenantId,projectId:c.projectId,
+      tenantId:c.tenantId,projectId:c.projectId,periodId:c.periodId,
       actor:{actorId:c.actorId,role:c.role,projectIds:c.projectIds},
       expectedVersion,
       idempotencyKey:idempotency(commandType,entityId,payload,expectedVersion),
@@ -99,8 +102,17 @@
     D.addProject=function(cfg){
       cfg=cfg||{};const meta=commandMeta(cfg.__commandMeta);const c=ctx();const name=str(cfg.name||cfg.client);
       const payload=Object.assign({},cfg);delete payload.__commandMeta;
+      payload.initialPeriodId=str(payload.initialPeriodId||payload.periodId||('setup-'+hash([c.tenantId,name,payload.frecuencia,payload.periodoMedicion])));
       const cmd=buildBase('project.create','project',null,payload,'absent',Object.assign({permission:'project.create'},meta));
-      cmd.projectId=str(cfg.id||c.projectId)||c.projectId;cmd.requireProject=false;
+      cmd.projectId=null;cmd.periodId=payload.initialPeriodId;cmd.requireProject=false;
+      return execute(cmd,meta);
+    };
+    D.updateProject=function(id,patch,meta){
+      patch=patch||{};meta=commandMeta(meta||patch.__commandMeta);const cleanPatch=Object.assign({},patch);delete cleanPatch.__commandMeta;const c=ctx();
+      const current=(D.projects||[]).find(p=>str(p.id||p.projectId)===str(id))||{};
+      const periodId=str(cleanPatch.periodId||current.periodId||c.periodId||('setup-'+hash([c.tenantId,id,cleanPatch.name||current.name])));
+      const cmd=buildBase('project.update','project',id,Object.assign({projectId:id,periodId},cleanPatch),versionOf(current),Object.assign({permission:'project.update'},meta));
+      cmd.projectId=str(id);cmd.periodId=periodId;
       return execute(cmd,meta);
     };
     D.addShopper=function(cfg){
@@ -140,6 +152,15 @@
     };
     D.setApplicationStatus=function(applicationId,status,meta){
       meta=commandMeta(meta);const p=post(applicationId);const cmd=buildBase('application.status.update','application',applicationId,{applicationId,visitId:p?.visitaId||p?.visitId||null,status,reason:meta.reason||null},versionOf(p),Object.assign({permission:status==='rechazada'?'postulacion.reject':'postulacion.approve'},meta));
+      return execute(cmd,meta);
+    };
+    D.deleteApplication=function(applicationId,meta){
+      meta=commandMeta(meta);const p=post(applicationId);
+      if(p&&/^hr-post-/.test(str(p.id||p.applicationId||p.postulationId))&&str(p.source||'')!=='platform'){
+        const r=CX.commandAdapter?.blocked?.({commandType:'application.delete',entityType:'application',entityId:applicationId},'SYNTHETIC_HR_APPLICATION_DELETE_FORBIDDEN')||{ok:false,status:'blocked'};
+        return meta.ackAware?Promise.resolve(surfaceBlocked(r)):legacyFailClosed(r);
+      }
+      const cmd=buildBase('application.delete','application',applicationId,{applicationId,visitId:p?.visitaId||p?.visitId||null,reason:meta.reason||null},versionOf(p),Object.assign({permission:'application.delete'},meta));
       return execute(cmd,meta);
     };
     D.requestVisitReschedule=function(visitId,newDate,meta){

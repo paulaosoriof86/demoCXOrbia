@@ -109,21 +109,52 @@ CX.module('proyectos', ({data,ui})=>{
         ov.querySelector('#cf_iaEsc').addEventListener('click',()=>{ const sug=['Atención y bienvenida','Tiempos de espera','Limpieza e imagen','Cierre y despedida'].filter(s=>!esc.includes(s)); esc=esc.concat(sug); renderEsc(); ui.toast(CX.ai&&CX.ai.ready()?'Escenarios extraídos del instructivo con IA':'Sugeridos por IA (configura Gemini para extracción real del instructivo)','ok',3600); });
         ov.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>{close();data.setProject(pr.id);CX.router.nav(b.dataset.goto);}));
         ov.querySelector('#cf_open').addEventListener('click',()=>{close();data.setProject(pr.id);ui.toast('Proyecto activo: '+pr.name,'ok');});
-        ov.querySelector('#cf_save').addEventListener('click',()=>{ pr.name=ov.querySelector('#cf_name').value.trim()||pr.name; pr.industry=ov.querySelector('#cf_ind').value; pr.client=ov.querySelector('#cf_cli').value.trim(); pr.sucursales=+ov.querySelector('#cf_suc').value||pr.sucursales; pr.periodicidad=ov.querySelector('#cf_ronda').value; pr.ronda=ov.querySelector('#cf_ronda').value+' '+(pr.ronda||'').replace(/^[A-Za-zÁ-úñ]+\s?/,''); pr.periodoCumpl=ov.querySelector('#cf_cumpl').value; const ps=[...ov.querySelectorAll('.cf_pais:checked')].map(c=>c.value); if(ps.length){pr.countries=ps; pr.currency=pr.currency||{}; ps.forEach(c=>{if(!pr.currency[c])pr.currency[c]=(CX.COUNTRIES.find(x=>x.c===c)||{}).cur||'$';});} pr.scenarios=esc; pr.quincenas=ov.querySelector('#cf_quin').value.split('·').map(s=>s.trim()).filter(Boolean);
-        /* PhaseA-2/3/4: revisión, submitido, fuentes y contactos por proyecto */
-        if(ov.querySelector('#cf_revCons')){pr.revision={consultora:ov.querySelector('#cf_revCons').checked, cliente:ov.querySelector('#cf_revCli').checked};
-        pr.submitido={quien:ov.querySelector('#cf_submQuien').value, rol:ov.querySelector('#cf_submRol').value};
-        pr.hrFuente=Object.assign(pr.hrFuente||{},{origen:ov.querySelector('#cf_hrOrigen').value, etiqueta:ov.querySelector('#cf_hrEtiq').value.trim()});
-        pr.cuestionario=Object.assign(pr.cuestionario||{},{modo:ov.querySelector('#cf_cueOrigen').value, etiqueta:ov.querySelector('#cf_cueEtiq').value.trim()});
-        pr.contactos=pr.contactos||{}; ov.querySelectorAll('.cf_contacto').forEach(i=>{pr.contactos[i.dataset.ck]=i.value.trim();});}
-        /* #157 — vincular el proyecto con la Cuenta/Cliente del CRM (trazabilidad bidireccional) */
-        try{ if(pr.client && CX.crmStore){ const cuentas=CX.crmStore.cuentas(); let cu=cuentas.find(x=>(x.nombre||'').toLowerCase()===pr.client.toLowerCase());
-          if(cu){ cu.proyectos=cu.proyectos||[]; if(!cu.proyectos.includes(pr.id))cu.proyectos.push(pr.id); CX.crmStore.saveCuentas(); } } }catch(e){}
-        /* P0-2 (V94 reauditoría): si el proyecto/periodo fue creado desde la UI (no es seed),
-           persiste el cambio para que sobreviva un reload — nunca reescribe los 3 seeds de ejemplo. */
-        data._saveCustomProjects&&data._saveCustomProjects();
-        CX.bus&&CX.bus.emit('visit-flow'); close(); CX.router.nav('proyectos');
-        ui.toast('Configuración de '+pr.name+' actualizada'+(['retail','banca','food'].includes(pr.id)?' (seed de ejemplo · no persiste tras recargar)':' · guardado localmente · vista previa pendiente de activación'),'ok',3600); });
+        ov.querySelector('#cf_save').addEventListener('click',async()=>{
+          const ps=[...ov.querySelectorAll('.cf_pais:checked')].map(c=>c.value);
+          const currency=Object.assign({},pr.currency||{});
+          ps.forEach(c=>{if(!currency[c])currency[c]=(CX.COUNTRIES.find(x=>x.c===c)||{}).cur||'$';});
+          const next={
+            name:ov.querySelector('#cf_name').value.trim()||pr.name,
+            industry:ov.querySelector('#cf_ind').value,
+            client:ov.querySelector('#cf_cli').value.trim(),
+            sucursales:+ov.querySelector('#cf_suc').value||pr.sucursales,
+            periodicidad:ov.querySelector('#cf_ronda').value,
+            ronda:ov.querySelector('#cf_ronda').value+' '+(pr.ronda||'').replace(/^[A-Za-zÁ-úñ]+\s?/,''),
+            periodoCumpl:ov.querySelector('#cf_cumpl').value,
+            countries:ps.length?ps:pr.countries,
+            currency,
+            scenarios:esc,
+            quincenas:ov.querySelector('#cf_quin').value.split('·').map(s=>s.trim()).filter(Boolean)
+          };
+          if(ov.querySelector('#cf_revCons')){
+            next.revision={consultora:ov.querySelector('#cf_revCons').checked, cliente:ov.querySelector('#cf_revCli').checked};
+            next.submitido={quien:ov.querySelector('#cf_submQuien').value, rol:ov.querySelector('#cf_submRol').value};
+            next.hrFuente=Object.assign({},pr.hrFuente||{},{origen:ov.querySelector('#cf_hrOrigen').value, etiqueta:ov.querySelector('#cf_hrEtiq').value.trim()});
+            next.cuestionario=Object.assign({},pr.cuestionario||{},{modo:ov.querySelector('#cf_cueOrigen').value, etiqueta:ov.querySelector('#cf_cueEtiq').value.trim()});
+            next.contactos=Object.assign({},pr.contactos||{}); ov.querySelectorAll('.cf_contacto').forEach(i=>{next.contactos[i.dataset.ck]=i.value.trim();});
+            const external=next.hrFuente.origen==='externa';
+            next.operationalSource=Object.assign({},pr.operationalSource||{},{
+              mode:external?'external':'internal',
+              providerType:external?'custom_adapter':'internal_firestore',
+              authority:external?'external_source':'platform',
+              readPolicy:external?'external_live':'internal_live',
+              writePolicy:external?'external_read_only':'platform_only',
+              providerBindingId:external?(pr.operationalSource?.providerBindingId||'pending-secure-provider-binding'):null,
+              mappingRef:external?(pr.operationalSource?.mappingRef||'pending-hr-mapping-ref'):'internal-native-mapping'
+            });
+          }
+          if(data.updateProject&&CX.cxDataCommandBoundary?.canonicalMode?.()){
+            const ack=await data.updateProject(pr.id,next,{ackAware:true,reason:'project-config-update'});
+            if(!(ack&&ack.ok===true&&ack.committed===true&&ack.providerAck===true&&ack.successUiAllowed===true)){ui.toast('Configuración no actualizada: falta ACK remoto del proveedor','warn',4200);return;}
+            if(CX.backend&&typeof CX.backend.refresh==='function')await CX.backend.refresh();
+          }else{
+            Object.assign(pr,next);
+            try{ if(pr.client && CX.crmStore){ const cuentas=CX.crmStore.cuentas(); let cu=cuentas.find(x=>(x.nombre||'').toLowerCase()===pr.client.toLowerCase());
+              if(cu){ cu.proyectos=cu.proyectos||[]; if(!cu.proyectos.includes(pr.id))cu.proyectos.push(pr.id); CX.crmStore.saveCuentas(); } } }catch(e){}
+            data._saveCustomProjects&&data._saveCustomProjects();
+          }
+          CX.bus&&CX.bus.emit('visit-flow'); close(); CX.router.nav('proyectos');
+          ui.toast('Configuración de '+next.name+' actualizada con ACK remoto','ok',3600); });
       }});
     };
     const nb=document.getElementById('newProj');

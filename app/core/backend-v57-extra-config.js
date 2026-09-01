@@ -19,8 +19,8 @@ window.CX = window.CX || {};
   }
 
   if(CX.BACKEND.previewMode){
-    CX.BACKEND.defaultProjectId = CX.BACKEND.defaultProjectId || 'cinepolis-abril-26';
-    CX.BACKEND.previewProjectIds = CX.BACKEND.previewProjectIds || ['cinepolis-abril-26'];
+    CX.BACKEND.defaultProjectId = CX.BACKEND.defaultProjectId || null;
+    CX.BACKEND.previewProjectIds = Array.isArray(CX.BACKEND.previewProjectIds) ? CX.BACKEND.previewProjectIds : [];
     CX.BACKEND.projectScopeMode = 'adapter-only';
     loadScript('core/backend-resources.js');
     loadScript('core/backend-ai.js');

@@ -9,6 +9,7 @@ import { spawn } from 'node:child_process';
 import { maybeHandleDevVisualRequest } from './dev-visual.mjs';
 import { isLiveUserAdminPath, maybeHandleLiveUserAdminRequest } from './user-admin.mjs';
 import { isLegalRuntimePath, maybeHandleLegalRuntimeRequest } from './legal-runtime.mjs';
+import { isCxorbiaCommandRuntimePath, maybeHandleCxorbiaCommandRuntimeRequest } from './cxorbia-command-runtime-v1.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ROOT=path.resolve(HERE,'../../..');
@@ -233,6 +234,10 @@ const server=http.createServer(async(req,res)=>{
   }
   if(isLegalRuntimePath(url.pathname)){
     await maybeHandleLegalRuntimeRequest(req,res,url);
+    return;
+  }
+  if(isCxorbiaCommandRuntimePath(url.pathname)){
+    await maybeHandleCxorbiaCommandRuntimeRequest(req,res,url);
     return;
   }
   if(isLiveUserAdminPath(url.pathname)){
