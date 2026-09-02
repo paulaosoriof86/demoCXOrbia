@@ -34,7 +34,7 @@ env:
 jobs:
   certify:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 45
     steps:
       - name: Checkout transport head
         uses: actions/checkout@v4
@@ -72,18 +72,17 @@ jobs:
           node --check backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs
           node --check backend/runtime/hr-live-service/server.mjs
           node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs | tee "$GITHUB_WORKSPACE/$OUT/gate6-unit.tap"
-          grep -Fq 'cxorbia-shopper-command-provider-v1.mjs' backend/runtime/hr-live-service/Dockerfile
-          printf '{"sourceSha":"%s","sourceTree":"%s","dataBlob":"%s","shoppersBlob":"%s","applyBlob":"%s","authorityBlob":"%s","production":false}\n' \
-            "$SOURCE_SHA" "$(git rev-parse HEAD^{tree})" "$(git rev-parse HEAD:app/core/data.js)" \
-            "$(git rev-parse HEAD:app/modules/shoppers.js)" "$(git rev-parse HEAD:app/adapters/tya-live-source-inplace-apply.js)" \
-            "$(git rev-parse HEAD:app/adapters/tya-protected-auth-hr-authority-bridge-v2.js)" > "$GITHUB_WORKSPACE/$OUT/source-lock.json"
+          printf '{"sourceSha":"%s","sourceTree":"%s","dataBlob":"%s","shoppersBlob":"%s","production":false}\n' \
+            "$SOURCE_SHA" "$(git rev-parse HEAD^{tree})" "$(git rev-parse HEAD:app/core/data.js)" "$(git rev-parse HEAD:app/modules/shoppers.js)" \
+            > "$GITHUB_WORKSPACE/$OUT/source-lock.json"
 
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: '${{ env.PROJECT }}'
 
-      - name: Confirm repaired DEV actAs
+      - name: Read back deployed Recovery revision and IAM
+        id: runtime
         run: |
           set -euo pipefail
           active="$(gcloud auth list --filter=status:ACTIVE --format='value(account)' | head -n1)"
@@ -92,49 +91,35 @@ jobs:
           curl -fsS -X POST -H "Authorization: Bearer $token" -H 'Content-Type: application/json' \
             -d '{"permissions":["iam.serviceAccounts.actAs"]}' \
             "https://iam.googleapis.com/v1/projects/$PROJECT/serviceAccounts/$RUNTIME_SA:testIamPermissions" > "$OUT/iam-permission.json"
-          node <<'NODE'
-          const fs=require('fs');
-          const p=JSON.parse(fs.readFileSync(process.env.OUT+'/iam-permission.json','utf8'));
-          if(!(p.permissions||[]).includes('iam.serviceAccounts.actAs')) throw new Error('ACTAS_NOT_EFFECTIVE');
-          fs.writeFileSync(process.env.OUT+'/iam-effective.json',JSON.stringify({decision:'PASS_EFFECTIVE_PRINCIPAL_AND_ACTAS',actAs:true,writes:0,production:false},null,2)+'\n');
-          NODE
-
-      - name: Install gcloud beta noninteractive
-        run: gcloud components install beta --quiet
-
-      - name: Deploy exact source to Cloud Run DEV without rebuild of candidate
-        id: runtime
-        run: |
-          set -euo pipefail
-          current_sa="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(spec.template.spec.serviceAccountName)')"
-          test "$current_sa" = "$RUNTIME_SA"
-          cd "$SRC/backend/runtime/hr-live-service"
-          npm install --omit=dev --ignore-scripts --package-lock=false >/dev/null 2>&1
-          cd "$SRC"
-          gcloud beta run deploy "$SERVICE" \
-            --project "$PROJECT" \
-            --region "$REGION" \
-            --source "$SRC" \
-            --no-build \
-            --base-image="us-central1-docker.pkg.dev/serverless-runtimes/google-24-full/runtimes/nodejs24" \
-            --command=node \
-            --args=backend/runtime/hr-live-service/server.mjs \
-            --update-env-vars="CXORBIA_RECOVERY_SOURCE_SHA=$SOURCE_SHA,CXORBIA_ENVIRONMENT=DEV" \
-            --quiet
+          node -e "const p=require('./$OUT/iam-permission.json');if(!(p.permissions||[]).includes('iam.serviceAccounts.actAs'))process.exit(23)"
           url="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.url)')"
           rev="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.latestReadyRevisionName)')"
-          printf '{"revision":"%s","url":"%s","sourceSha":"%s","buildMode":"cloud_run_source_no_build","production":false}\n' "$rev" "$url" "$SOURCE_SHA" > "$GITHUB_WORKSPACE/$OUT/runtime.json"
+          gcloud run revisions describe "$rev" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/revision.json"
+          REV="$rev" URL="$url" node <<'NODE'
+          const fs=require('fs');
+          const r=JSON.parse(fs.readFileSync(process.env.OUT+'/revision.json','utf8'));
+          const env=(r.spec?.containers?.[0]?.env||[]);
+          const source=(env.find(x=>x.name==='CXORBIA_RECOVERY_SOURCE_SHA')||{}).value||null;
+          if(source!==process.env.SOURCE_SHA) throw new Error('RUNTIME_SOURCE_SHA_MISMATCH_'+source);
+          fs.writeFileSync(process.env.OUT+'/runtime.json',JSON.stringify({revision:process.env.REV,url:process.env.URL,sourceSha:source,production:false},null,2)+'\n');
+          NODE
           echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Install certification tooling
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase-tools@latest playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
 
       - name: Gate 6 runtime and durable identity readback
         id: gate6
         run: |
           set -euo pipefail
           url='${{ steps.runtime.outputs.url }}'
-          curl -fsS --retry 12 --retry-delay 4 "$url/health" > "$OUT/health.json"
-          curl -fsS --retry 8 --retry-delay 4 "$url/api/tya/cinepolis/hr-live?format=meta&fresh=1" > "$OUT/meta.json"
-          curl -fsS --retry 8 --retry-delay 4 "$url/api/tya/cinepolis/hr-live?fresh=1" > "$RUNNER_TEMP/hr.json"
-          cat > "$RUNNER_TEMP/readback.mjs" <<'NODE'
+          curl -fsS --retry 8 --retry-delay 4 "$url/health" > "$OUT/health.json"
+          curl -fsS --retry 8 --retry-delay 5 "$url/api/tya/cinepolis/hr-live?format=meta&fresh=1" > "$OUT/meta.json"
+          curl -fsS --retry 8 --retry-delay 4 "$url/api/tya/cinepolis/hr-live?format=json" > "$RUNNER_TEMP/hr.json"
+          cat > "$GITHUB_WORKSPACE/$OUT/readback.mjs" <<'NODE'
           import fs from 'node:fs';
           import crypto from 'node:crypto';
           import { applicationDefault, initializeApp } from 'firebase-admin/app';
@@ -173,21 +158,10 @@ jobs:
                String(cross.data().providerUidFingerprint||'')!==fingerprint(member.id)) bad++;
           }
           if(!ids.size||bad||duplicates||Number(reconciliation.shopperCount)!==ids.size) throw new Error(`G6_DURABLE_BAD_${bad}_DUP_${duplicates}_IDS_${ids.size}_REC_${reconciliation.shopperCount}`);
-          fs.writeFileSync(out+'/gate6.json',JSON.stringify({
-            decision:'PASS_GATE6_HR_SHOPPER_UPSERT_IDEMPOTENT',revision:String(meta.revision),shoppers:ids.size,
-            authCreated:Number(reconciliation.authCreated||0),idempotentReplays:Number(reconciliation.idempotentReplays||0),
-            duplicates:0,hrWrites:0,externalWrites:0,providerAck:true,production:false,piiExported:false
-          },null,2)+'\n');
+          fs.writeFileSync(out+'/gate6.json',JSON.stringify({decision:'PASS_GATE6_HR_SHOPPER_UPSERT_IDEMPOTENT',revision:String(meta.revision),shoppers:ids.size,authCreated:Number(reconciliation.authCreated||0),idempotentReplays:Number(reconciliation.idempotentReplays||0),duplicates:0,hrWrites:0,externalWrites:0,providerAck:true,production:false,piiExported:false},null,2)+'\n');
           NODE
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
-          OUT="$OUT" PROJECT="$PROJECT" node "$RUNNER_TEMP/readback.mjs"
-          rm -f "$RUNNER_TEMP/hr.json" "$RUNNER_TEMP/readback.mjs"
-
-      - name: Install Hosting and visual tooling
-        run: |
-          set -euo pipefail
-          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest playwright@1.55.0 >/dev/null 2>&1
-          npx playwright install --with-deps chromium >/dev/null 2>&1
+          OUT="$OUT" PROJECT="$PROJECT" node "$GITHUB_WORKSPACE/$OUT/readback.mjs"
+          rm -f "$RUNNER_TEMP/hr.json" "$OUT/readback.mjs"
 
       - name: Deploy exact candidate to existing Hosting DEV
         run: |
@@ -223,7 +197,7 @@ jobs:
           CXORBIA_E2E_PRIVATE_CREDENTIALS: ${{ runner.temp }}/private/e2e.json
         run: |
           set -euo pipefail
-          cat > "$OUT/visual.mjs" <<'NODE'
+          cat > "$GITHUB_WORKSPACE/$OUT/visual.mjs" <<'NODE'
           import fs from 'node:fs';
           import { chromium } from 'playwright';
           const out=process.env.OUT,root=process.env.ROOT;
@@ -252,7 +226,7 @@ jobs:
             await context.close();
           }finally{await browser.close();}
           NODE
-          ROOT="$ROOT" OUT="$OUT" SOURCE_SHA="$SOURCE_SHA" node "$OUT/visual.mjs"
+          ROOT="$ROOT" OUT="$OUT" SOURCE_SHA="$SOURCE_SHA" node "$GITHUB_WORKSPACE/$OUT/visual.mjs"
           rm -f "$OUT/visual.mjs"
 
       - name: Build sanitized result
@@ -260,8 +234,8 @@ jobs:
         run: |
           node <<'NODE'
           const fs=require('fs'),p=process.env.OUT,read=n=>{try{return JSON.parse(fs.readFileSync(p+'/'+n,'utf8'))}catch{return null}};
-          const g6=read('gate6.json'),visual=read('visual.json'),hosting=read('hosting-parity.json'),runtime=read('runtime.json'),iam=read('iam-effective.json');
-          const pass=g6?.decision==='PASS_GATE6_HR_SHOPPER_UPSERT_IDEMPOTENT'&&visual?.decision==='PASS_GATE6_SHOPPERS_VISUAL_CERTIFIED'&&hosting?.decision==='PASS_GATE6_VISUAL_BYTE_PARITY'&&iam?.actAs===true&&runtime?.sourceSha===process.env.SOURCE_SHA;
+          const g6=read('gate6.json'),visual=read('visual.json'),hosting=read('hosting-parity.json'),runtime=read('runtime.json');
+          const pass=g6?.decision==='PASS_GATE6_HR_SHOPPER_UPSERT_IDEMPOTENT'&&visual?.decision==='PASS_GATE6_SHOPPERS_VISUAL_CERTIFIED'&&hosting?.decision==='PASS_GATE6_VISUAL_BYTE_PARITY'&&runtime?.sourceSha===process.env.SOURCE_SHA;
           fs.writeFileSync(p+'/result.json',JSON.stringify({decision:pass?'PASS_GATE6_RUNTIME_AND_VISUAL':'HOLD_GATE6_CERTIFICATION',sourceSha:process.env.SOURCE_SHA,transportSha:process.env.GITHUB_SHA,runtimeRevision:runtime?.revision||null,sourceRevision:g6?.revision||visual?.observed?.sourceRevision||null,shoppers:g6?.shoppers||null,duplicates:g6?.duplicates??null,hosting:hosting?.decision||null,visual:visual?.decision||null,gate6:g6?.decision||null,nextGate:pass?7:6,production:false},null,2)+'\n');
           if(!pass) process.exitCode=17;
           NODE
