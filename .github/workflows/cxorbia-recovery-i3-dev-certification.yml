@@ -68,6 +68,46 @@ jobs:
         with:
           project_id: '${{ env.PROJECT }}'
 
+      - name: DEV IAM preflight and temporary self-actAs repair
+        run: |
+          set -euo pipefail
+          token="$(gcloud auth print-access-token)"
+          endpoint="https://iam.googleapis.com/v1/projects/$PROJECT/serviceAccounts/$RUNTIME_SA:testIamPermissions"
+          curl -fsS -X POST -H "Authorization: Bearer $token" -H 'Content-Type: application/json' \
+            -d '{"permissions":["iam.serviceAccounts.actAs","iam.serviceAccounts.setIamPolicy"]}' \
+            "$endpoint" > "$OUT/iam-permissions-before.json"
+          node <<'NODE'
+          const fs=require('fs');
+          const p=JSON.parse(fs.readFileSync(process.env.OUT+'/iam-permissions-before.json','utf8'));
+          const s=new Set(p.permissions||[]);
+          fs.writeFileSync(process.env.OUT+'/iam-preflight.json',JSON.stringify({
+            actAs:s.has('iam.serviceAccounts.actAs'),setIamPolicy:s.has('iam.serviceAccounts.setIamPolicy'),production:false
+          },null,2)+'\n');
+          NODE
+          actas="$(node -p "require('./$OUT/iam-preflight.json').actAs")"
+          setpolicy="$(node -p "require('./$OUT/iam-preflight.json').setIamPolicy")"
+          if [ "$actas" = true ]; then
+            echo 'CXORBIA_IAM_TEMP_BINDING=false' >> "$GITHUB_ENV"
+            printf '{"decision":"PASS_ACTAS_ALREADY_PRESENT","iamWrites":0,"production":false}\n' > "$OUT/iam-repair.json"
+          elif [ "$setpolicy" = true ]; then
+            gcloud iam service-accounts add-iam-policy-binding "$RUNTIME_SA" \
+              --project "$PROJECT" \
+              --member="serviceAccount:$RUNTIME_SA" \
+              --role="roles/iam.serviceAccountUser" \
+              --condition=None \
+              --quiet >/dev/null
+            token="$(gcloud auth print-access-token)"
+            curl -fsS -X POST -H "Authorization: Bearer $token" -H 'Content-Type: application/json' \
+              -d '{"permissions":["iam.serviceAccounts.actAs"]}' "$endpoint" > "$OUT/iam-permissions-after-add.json"
+            node -e "const x=require('./$OUT/iam-permissions-after-add.json');if(!(x.permissions||[]).includes('iam.serviceAccounts.actAs'))process.exit(2)"
+            echo 'CXORBIA_IAM_TEMP_BINDING=true' >> "$GITHUB_ENV"
+            printf '{"decision":"PASS_TEMP_SELF_ACTAS_ADDED","scope":"serviceAccount:self","role":"roles/iam.serviceAccountUser","production":false}\n' > "$OUT/iam-repair.json"
+          else
+            echo 'CXORBIA_IAM_TEMP_BINDING=false' >> "$GITHUB_ENV"
+            printf '{"decision":"HOLD_EXTERNAL_IAM_REQUIRED","missing":"iam.serviceAccounts.actAs","selfRepairAvailable":false,"iamWrites":0,"production":false}\n' > "$OUT/iam-repair.json"
+            exit 23
+          fi
+
       - name: Install gcloud beta noninteractive
         run: gcloud components install beta --quiet
 
@@ -88,6 +128,16 @@ jobs:
         id: runtime
         run: |
           set -euo pipefail
+          cleanup_iam(){
+            if [ "${CXORBIA_IAM_TEMP_BINDING:-false}" = true ]; then
+              gcloud iam service-accounts remove-iam-policy-binding "$RUNTIME_SA" \
+                --project "$PROJECT" \
+                --member="serviceAccount:$RUNTIME_SA" \
+                --role="roles/iam.serviceAccountUser" \
+                --condition=None --quiet >/dev/null || true
+            fi
+          }
+          trap cleanup_iam EXIT
           current_sa="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(spec.template.spec.serviceAccountName)')"
           test "$current_sa" = "$RUNTIME_SA"
           cd "$SRC/backend/runtime/hr-live-service"
@@ -132,6 +182,12 @@ jobs:
             production:false
           },null,2)+'\n');
           NODE
+          if [ "${CXORBIA_IAM_TEMP_BINDING:-false}" = true ]; then
+            cleanup_iam
+            echo 'CXORBIA_IAM_TEMP_BINDING=false' >> "$GITHUB_ENV"
+            printf '{"decision":"PASS_TEMP_SELF_ACTAS_REMOVED_AFTER_DEPLOY","production":false}\n' > "$GITHUB_WORKSPACE/$OUT/iam-cleanup.json"
+          fi
+          trap - EXIT
           echo "url=$url" >> "$GITHUB_OUTPUT"
 
       - name: Gate 6 runtime and durable identity readback
@@ -288,14 +344,14 @@ jobs:
           node <<'NODE'
           const fs=require('fs'),p=process.env.OUT;
           const read=n=>{try{return JSON.parse(fs.readFileSync(p+'/'+n,'utf8'))}catch{return null}};
-          const g6=read('gate6.json'),g78=read('gates7-8.json'),runtime=read('runtime.json');
+          const g6=read('gate6.json'),g78=read('gates7-8.json'),runtime=read('runtime.json'),iam=read('iam-repair.json');
           const pass=g6?.decision==='PASS_GATE6_HR_SHOPPER_UPSERT_IDEMPOTENT'&&
             g78?.gate7==='PASS_GATE7_SHOPPER_ACCESS'&&g78?.gate8==='PASS_GATE8_ADMIN_VISIBILITY';
           fs.writeFileSync(p+'/result.json',JSON.stringify({
-            decision:pass?'PASS_RECOVERY_DEV_GATES_6_8':'HOLD_RECOVERY_DEV_CERTIFICATION',
+            decision:pass?'PASS_RECOVERY_DEV_GATES_6_8':(iam?.decision==='HOLD_EXTERNAL_IAM_REQUIRED'?'HOLD_EXTERNAL_IAM_REQUIRED':'HOLD_RECOVERY_DEV_CERTIFICATION'),
             sourceSha:process.env.SOURCE_SHA,transportSha:process.env.GITHUB_SHA,
             closedGates:pass?[6,7,8]:(g6?[6]:[]),nextGate:pass?9:(g6?7:6),
-            runtime,gate6:g6?.decision||null,gate7:g78?.gate7||null,gate8:g78?.gate8||null,
+            runtime,iam:iam?.decision||null,gate6:g6?.decision||null,gate7:g78?.gate7||null,gate8:g78?.gate8||null,
             production:false,automaticRetry:false
           },null,2)+'\n');
           NODE
@@ -312,6 +368,11 @@ jobs:
       - name: Cleanup
         if: always()
         run: |
+          if [ "${CXORBIA_IAM_TEMP_BINDING:-false}" = true ]; then
+            gcloud iam service-accounts remove-iam-policy-binding "$RUNTIME_SA" \
+              --project "$PROJECT" --member="serviceAccount:$RUNTIME_SA" \
+              --role="roles/iam.serviceAccountUser" --condition=None --quiet >/dev/null || true
+          fi
           git worktree remove --force "$SRC" 2>/dev/null || true
           rm -rf "$RUNNER_TEMP/private" .firebase
 
