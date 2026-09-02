@@ -1,13 +1,15 @@
 #!/usr/bin/env node
-/* CXOrbia Recovery I2 command runtime shim.
+/* CXOrbia Recovery I3 command runtime shim.
    Import side effects: zero writes, zero provider initialization.
 */
 import { createProjectCommandProvider } from '../cxorbia-project-command-provider-v1.mjs';
 import { createOperationalCommandProvider } from '../cxorbia-operational-command-provider-v1.mjs';
+import { createShopperCommandProvider } from '../cxorbia-shopper-command-provider-v1.mjs';
 
 export const VERSION='cxorbia-command-runtime-v1';
 const ROUTE='/v1/cxorbia/commands';
 const PROJECT_COMMANDS=new Set(['project.create','project.update']);
+const SHOPPER_COMMANDS=new Set(['shopper.create']);
 const str=v=>String(v==null?'':v).trim();
 const json=(res,status,body)=>{res.statusCode=status;res.setHeader('Content-Type','application/json; charset=utf-8');res.end(JSON.stringify(body));};
 const blocked=(code,extra={})=>({ok:false,status:'blocked',committed:false,providerAck:false,successUiAllowed:false,localMutation:false,localStorageWrite:false,providerWrites:0,code,production:false,...extra});
@@ -17,7 +19,10 @@ export function isCxorbiaCommandRuntimePath(pathname){
 }
 
 export function commandProviderKind(commandType){
-  return PROJECT_COMMANDS.has(str(commandType))?'project':'operational';
+  const type=str(commandType);
+  if(PROJECT_COMMANDS.has(type))return 'project';
+  if(SHOPPER_COMMANDS.has(type))return 'shopper';
+  return 'operational';
 }
 
 async function readJson(req){
@@ -35,11 +40,17 @@ export function createProviderForCommand(command,overrides={}){
   const db=overrides.db??globalThis.CXORBIA_COMMAND_DB??null;
   const projectPolicy=overrides.projectPolicy??globalThis.CXORBIA_PROJECT_COMMAND_PROVIDER_POLICY??null;
   const operationalPolicy=overrides.operationalPolicy??globalThis.CXORBIA_OPERATIONAL_COMMAND_PROVIDER_POLICY??null;
+  const shopperPolicy=overrides.shopperPolicy??globalThis.CXORBIA_SHOPPER_COMMAND_PROVIDER_POLICY??null;
   if(!auth||!db)return {provider:null,kind,error:'COMMAND_PROVIDER_DEPENDENCIES_NOT_CONFIGURED'};
   if(kind==='project'){
     if(!projectPolicy)return {provider:null,kind,error:'PROJECT_COMMAND_PROVIDER_NOT_CONFIGURED'};
     try{return {provider:createProjectCommandProvider({auth,db,policy:projectPolicy}),kind};}
     catch(error){return {provider:null,kind,error:'PROJECT_COMMAND_PROVIDER_POLICY_INVALID',detail:str(error?.message||error)};}
+  }
+  if(kind==='shopper'){
+    if(!shopperPolicy)return {provider:null,kind,error:'SHOPPER_COMMAND_PROVIDER_NOT_CONFIGURED'};
+    try{return {provider:createShopperCommandProvider({auth,db,policy:shopperPolicy}),kind};}
+    catch(error){return {provider:null,kind,error:'SHOPPER_COMMAND_PROVIDER_POLICY_INVALID',detail:str(error?.message||error)};}
   }
   if(!operationalPolicy)return {provider:null,kind,error:'OPERATIONAL_COMMAND_PROVIDER_NOT_CONFIGURED'};
   try{return {provider:createOperationalCommandProvider({auth,db,policy:operationalPolicy}),kind};}

@@ -6,10 +6,14 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
+import { applicationDefault, getApps, initializeApp } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
 import { maybeHandleDevVisualRequest } from './dev-visual.mjs';
 import { isLiveUserAdminPath, maybeHandleLiveUserAdminRequest } from './user-admin.mjs';
 import { isLegalRuntimePath, maybeHandleLegalRuntimeRequest } from './legal-runtime.mjs';
 import { isCxorbiaCommandRuntimePath, maybeHandleCxorbiaCommandRuntimeRequest } from './cxorbia-command-runtime-v1.mjs';
+import { createShopperCommandProvider } from '../cxorbia-shopper-command-provider-v1.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ROOT=path.resolve(HERE,'../../..');
@@ -17,6 +21,7 @@ const PORT=Number(process.env.PORT||8080);
 const CACHE_MS=Math.max(15000,Number(process.env.CXORBIA_LIVE_HR_CACHE_MS||55000));
 const BOOTSTRAP_FILE=path.join(ROOT,'app/data/tya-hr-source-safe-periods.js');
 const REGISTRY_FILE=path.join(ROOT,'backend/config/tya-live-hr-tab-registry.source-safe.json');
+const FIREBASE_PROJECT=String(process.env.GOOGLE_CLOUD_PROJECT||process.env.GCLOUD_PROJECT||'').trim();
 const DEV_OPERATIONAL_NAMES=process.env.CXORBIA_DEV_OPERATIONAL_NAMES==='true';
 const DEV_OPERATIONAL_TOKEN='YES_PAULA_20260731_NAMES_DEV';
 const ENDPOINT_PATHS=new Set([
@@ -37,6 +42,8 @@ let lastRefreshError=null;
 let lastRefreshStartedAt=null;
 let lastRefreshFinishedAt=null;
 let lastRefreshDurationMs=null;
+let lastShopperReconciliation=null;
+let lastShopperReconciledRevision=null;
 
 function runNode(args,env){
   return new Promise((resolve,reject)=>{
@@ -106,6 +113,43 @@ function operationalSnapshot(current){
   return snapshot;
 }
 
+function ensureAdmin(){
+  if(!getApps().length){
+    const options={credential:applicationDefault()};
+    if(FIREBASE_PROJECT)options.projectId=FIREBASE_PROJECT;
+    initializeApp(options);
+  }
+  return {auth:getAuth(),db:getFirestore()};
+}
+function snapshotScope(snapshot){
+  const tenantId=String(snapshot?.tenantId||snapshot?.tenantConfig?.tenantId||'').trim();
+  const projectId=String(snapshot?.projectId||snapshot?.projectConfig?.projectId||'').trim();
+  if(!tenantId||!projectId)throw new Error('SHOPPER_RUNTIME_SOURCE_SCOPE_MISSING');
+  return {tenantId,projectId};
+}
+function shopperPolicy(snapshot){
+  const scope=snapshotScope(snapshot);
+  return {schemaVersion:'cxorbia.shopper-command-provider-policy.v1',enabled:true,allowedTenantIds:[scope.tenantId],allowedProjectIds:[scope.projectId],hrWrites:false,externalWrites:false,fuzzyMatching:false};
+}
+function configureShopperCommandRuntime(snapshot){
+  if(!snapshot)throw new Error('SHOPPER_COMMAND_SOURCE_SCOPE_UNAVAILABLE');
+  const {auth,db}=ensureAdmin();
+  globalThis.CXORBIA_COMMAND_AUTH=auth;
+  globalThis.CXORBIA_COMMAND_DB=db;
+  globalThis.CXORBIA_SHOPPER_COMMAND_PROVIDER_POLICY=shopperPolicy(snapshot);
+}
+async function reconcileAuthoritativeShoppers(current){
+  if(!current?.snapshot||!current?.revision)throw new Error('SHOPPER_RECONCILIATION_SOURCE_MISSING');
+  if(lastShopperReconciledRevision===current.revision)return lastShopperReconciliation;
+  const {auth,db}=ensureAdmin();
+  const provider=createShopperCommandProvider({auth,db,policy:shopperPolicy(current.snapshot)});
+  const result=await provider.reconcileSnapshot(current.snapshot,{sourceRevision:current.revision});
+  lastShopperReconciledRevision=current.revision;
+  lastShopperReconciliation={...result,completedAt:new Date().toISOString()};
+  console.log(`CXOrbia shopper reconciliation committed ${current.revision.slice(0,12)} shoppers=${result.shopperCount} authCreated=${result.authCreated} writes=${result.providerWrites}`);
+  return lastShopperReconciliation;
+}
+
 function loadBootstrap(){
   try{
     if(!fs.existsSync(BOOTSTRAP_FILE))return;
@@ -144,7 +188,9 @@ async function refreshSnapshot(){
       await runNode(['tools/hr-source/tya-canonicalize-live-hr-source-safe-r18a.mjs','--input',payload,'--out',payload,'--report-dir',path.join(dir,'canonical')],env);
       await runNode(['tools/hr-source/tya-reapply-canonical-state-r20.mjs','--input',payload,'--out',payload,'--report-dir',path.join(dir,'state')],env);
       await runNode(['tools/qa/tya-live-hr-read-probe-gate.mjs','--payload',payload,'--out',path.join(dir,'probe'),'--max-age-seconds','600'],env);
-      cache=materialize(parseSnapshot(payload),'runtime_refresh',parseIdentity(identityFile));
+      const next=materialize(parseSnapshot(payload),'runtime_refresh',parseIdentity(identityFile));
+      await reconcileAuthoritativeShoppers(next);
+      cache=next;
       lastRefreshError=null;
       lastRefreshFinishedAt=new Date().toISOString();
       lastRefreshDurationMs=Date.now()-started;
@@ -198,7 +244,9 @@ function runtimeMeta(current){
     refreshFinishedAt:lastRefreshFinishedAt,
     refreshDurationMs:lastRefreshDurationMs,
     refreshError:lastRefreshError,
+    shopperReconciliation:lastShopperReconciliation,
     writes:false,
+    hrWrites:false,
     imports:false,
     production:false
   };
@@ -237,6 +285,9 @@ const server=http.createServer(async(req,res)=>{
     return;
   }
   if(isCxorbiaCommandRuntimePath(url.pathname)){
+    try{configureShopperCommandRuntime(cache?.snapshot);}catch(error){
+      return sendJson(res,503,{ok:false,status:'blocked',committed:false,providerAck:false,successUiAllowed:false,code:String(error?.message||error),production:false});
+    }
     await maybeHandleCxorbiaCommandRuntimeRequest(req,res,url);
     return;
   }
@@ -245,7 +296,7 @@ const server=http.createServer(async(req,res)=>{
     return;
   }
   if(req.method!=='GET')return sendJson(res,405,{ok:false,error:'method_not_allowed'});
-  if(url.pathname==='/health')return sendJson(res,200,{ok:true,service:'cxorbia-live-hr-source-safe',cacheMs:CACHE_MS,bootstrapReady:Boolean(cache),revisionStable:true,autoMonthProviderRegistry:true,operationalDisplayIdentityDev:DEV_OPERATIONAL_NAMES,devFullVisualEndpoint:true,liveUserAdminSourceReady:true,legalRuntimeSourceReady:true,lastRefreshError,writes:false,production:false});
+  if(url.pathname==='/health')return sendJson(res,200,{ok:true,service:'cxorbia-live-hr-source-safe',cacheMs:CACHE_MS,bootstrapReady:Boolean(cache),revisionStable:true,autoMonthProviderRegistry:true,operationalDisplayIdentityDev:DEV_OPERATIONAL_NAMES,devFullVisualEndpoint:true,liveUserAdminSourceReady:true,legalRuntimeSourceReady:true,shopperReconciliationReady:true,lastShopperReconciliation,lastRefreshError,writes:false,hrWrites:false,production:false});
   if(!ENDPOINT_PATHS.has(url.pathname))return sendJson(res,404,{ok:false,error:'not_found'});
   if(await maybeHandleDevVisualRequest(req,res,url,{sendJson}))return;
   try{
@@ -280,7 +331,7 @@ const server=http.createServer(async(req,res)=>{
     return sendJson(res,200,{...snapshot,_runtime:{...meta,operationalView:operational}});
   }catch(error){
     console.error(error.stack||error.message||String(error));
-    return sendJson(res,503,{ok:false,error:'live_hr_read_failed',message:String(error.message||error).slice(0,500),sourceSafe:true,lastRefreshError,writes:false,production:false});
+    return sendJson(res,503,{ok:false,error:'live_hr_read_failed',message:String(error.message||error).slice(0,500),sourceSafe:true,lastRefreshError,writes:false,hrWrites:false,production:false});
   }
 });
 
