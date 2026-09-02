@@ -1,0 +1,111 @@
+name: CXOrbia Recovery I3 DEV Certification
+on:
+  push:
+    branches: [recovery/cxorbia-phase-a-20260831]
+    paths: [.github/workflows/cxorbia-recovery-i3-dev-certification.yml]
+permissions: {contents: read, statuses: write, id-token: write}
+concurrency: {group: cxorbia-recovery-i3-dev-certification, cancel-in-progress: false}
+defaults: {run: {shell: bash}}
+env:
+  SOURCE_SHA: 296c8c906e03ad2bf9a06589798f65acd9a94559
+  WF: .github/workflows/cxorbia-recovery-i3-dev-certification.yml
+  PROJECT: cxorbia-backend-dev
+  REGION: us-central1
+  SERVICE: cxorbia-live-hr-dev
+  RUNTIME_SA: firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com
+  HOSTING: cxorbia-dev
+  ROOT: https://cxorbia-backend-dev.web.app
+  OUT: .tmp/recovery-i3-dev
+  SRC: ${{ runner.temp }}/recovery-source
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 2}
+      - name: Freeze transport
+        run: |
+          set -euo pipefail; mkdir -p "$OUT"
+          test "$(git rev-parse HEAD^)" = "$SOURCE_SHA"
+          mapfile -t c < <(git diff --name-only HEAD^ HEAD); test "${#c[@]}" = 1; test "${c[0]}" = "$WF"
+          printf '{"authorizedBy":"Paula","sourceSha":"%s","transportSha":"%s","project":"%s","production":false,"singleLane":true}\n' "$SOURCE_SHA" "$GITHUB_SHA" "$PROJECT" > "$OUT/authorization.json"
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - uses: google-github-actions/auth@v2
+        with: {credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'}
+      - uses: google-github-actions/setup-gcloud@v2
+        with: {project_id: '${{ env.PROJECT }}'}
+      - name: Exact source + Gate 6 source tests
+        run: |
+          set -euo pipefail
+          git worktree add --detach "$SRC" "$SOURCE_SHA"; test "$(git -C "$SRC" rev-parse HEAD)" = "$SOURCE_SHA"
+          cd "$SRC"
+          node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
+          node --check backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs
+          node --check backend/runtime/hr-live-service/server.mjs
+          node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs | tee "$GITHUB_WORKSPACE/$OUT/gate6-unit.tap"
+          grep -Fq 'cxorbia-shopper-command-provider-v1.mjs' backend/runtime/hr-live-service/Dockerfile
+      - name: Build and deploy exact Cloud Run DEV image
+        id: runtime
+        run: |
+          set -euo pipefail
+          image="gcr.io/$PROJECT/$SERVICE:recovery-i3-${SOURCE_SHA:0:12}-${GITHUB_RUN_ID}"
+          cd "$SRC"; gcloud builds submit . --project "$PROJECT" --config backend/runtime/hr-live-service/cloudbuild.yaml --substitutions "_IMAGE=$image" --quiet
+          gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$image" --service-account "$RUNTIME_SA" --quiet
+          url="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.url)')"
+          rev="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.latestReadyRevisionName)')"
+          printf '{"image":"%s","revision":"%s","url":"%s","sourceSha":"%s","production":false}\n' "$image" "$rev" "$url" "$SOURCE_SHA" > "$GITHUB_WORKSPACE/$OUT/runtime.json"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+      - name: Gate 6 runtime + durable identity readback
+        run: |
+          set -euo pipefail
+          url='${{ steps.runtime.outputs.url }}'
+          curl -fsS --retry 12 --retry-delay 4 "$url/health" > "$OUT/health.json"
+          curl -fsS --retry 8 --retry-delay 4 "$url/api/tya/cinepolis/hr-live?format=meta&fresh=1" > "$OUT/meta.json"
+          curl -fsS --retry 8 --retry-delay 4 "$url/api/tya/cinepolis/hr-live?fresh=1" > "$RUNNER_TEMP/hr.json"
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
+          cat > "$RUNNER_TEMP/readback.mjs" <<'NODE'
+          import fs from'node:fs';import crypto from'node:crypto';import{applicationDefault,initializeApp}from'firebase-admin/app';import{getAuth}from'firebase-admin/auth';import{getFirestore}from'firebase-admin/firestore';
+          const o=process.env.OUT,h=JSON.parse(fs.readFileSync(o+'/health.json')),m0=JSON.parse(fs.readFileSync(o+'/meta.json')),m=m0.meta||m0,r=m.shopperReconciliation;
+          if(h.ok!==true||h.production!==false||h.shopperReconciliationReady!==true)throw Error('G6_HEALTH');if(m.sourceSafe!==true||m.runtimeRead!==true||m.production!==false||!r||r.ok!==true||r.providerAck!==true||r.hrWrites!==0||r.externalWrites!==0||r.fuzzyMatching!==false||String(r.sourceRevision)!==String(m.revision))throw Error('G6_RECONCILIATION');
+          const raw=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+'/hr.json')),s=raw.snapshot||raw.data||raw,tenant=String(s.tenantId||s.tenantConfig?.tenantId||''),project=String(s.projectId||s.projectConfig?.projectId||'');if(s.sourceSafe!==true||!tenant||!project)throw Error('G6_SOURCE');
+          const ids=new Set([...s.shoppers||[],...s.visits||[]].map(x=>String(x.shopperId||x.id||'')).filter(Boolean));initializeApp({credential:applicationDefault(),projectId:process.env.PROJECT});const db=getFirestore(),auth=getAuth(),t=db.collection('tenants').doc(tenant),fp=u=>crypto.createHash('sha256').update('cxorbia-provider-uid-v1\0'+u).digest('hex');let bad=0,dup=0;
+          for(const id of ids){const[p,c,q]=await Promise.all([t.collection('shoppers').doc(id).get(),t.collection('shopperIdentityCrosswalk').doc(id).get(),t.collection('users').where('shopperId','==',id).limit(2).get()]);if(!p.exists||!c.exists||q.size!==1){bad++;if(q.size>1)dup++;continue;}const u=q.docs[0],ur=await auth.getUser(u.id),cl=ur.customClaims||{};if(String(cl.tenantId)!==tenant||String(cl.shopperId)!==id||cl.role!=='shopper'||cl.authNamespace!=='shopper'||String(c.data().providerUidFingerprint||'')!==fp(u.id))bad++;}
+          if(!ids.size||bad||dup||Number(r.shopperCount)!==ids.size)throw Error(`G6_DURABLE_BAD_${bad}_DUP_${dup}`);fs.writeFileSync(o+'/gate6.json',JSON.stringify({decision:'PASS_GATE6_HR_SHOPPER_UPSERT_IDEMPOTENT',revision:String(m.revision),shoppers:ids.size,authCreated:Number(r.authCreated||0),idempotentReplays:Number(r.idempotentReplays||0),duplicates:0,hrWrites:0,production:false,piiExported:false},null,2)+'\n');
+          NODE
+          OUT="$OUT" PROJECT="$PROJECT" node "$RUNNER_TEMP/readback.mjs"; rm -f "$RUNNER_TEMP/hr.json" "$RUNNER_TEMP/readback.mjs"
+      - name: Exact Hosting DEV + byte parity
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-tools@latest playwright@1.54.2 >/dev/null 2>&1
+          cd "$SRC"; "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$HOSTING" --project "$PROJECT" --non-interactive
+          cd "$GITHUB_WORKSPACE"
+          for a in index-backend-dev.html modules/shoppers.js; do curl -fsSL --retry 10 --retry-delay 3 -H 'Cache-Control: no-cache' "$ROOT/$a?recovery=$GITHUB_RUN_ID" -o "$RUNNER_TEMP/$(basename $a)"; cmp "$SRC/app/$a" "$RUNNER_TEMP/$(basename $a)"; done
+          npx playwright install --with-deps chromium >/dev/null 2>&1
+      - name: Gates 7-8 login, admin visibility and visual proof
+        run: |
+          set -euo pipefail
+          ln -s "$GITHUB_WORKSPACE/node_modules" "$SRC/node_modules"
+          export CXORBIA_EXPECTED_PROJECT="$PROJECT" CXORBIA_DEV_ROOT_URL="$ROOT" PRIVATE_DIR="$RUNNER_TEMP/private" CXORBIA_E2E_PRIVATE_CREDENTIALS="$RUNNER_TEMP/private/e2e.json"
+          cd "$SRC"; node tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs >/dev/null; rm -f node_modules; cd "$GITHUB_WORKSPACE"
+          cat > "$RUNNER_TEMP/browser.mjs" <<'NODE'
+          import fs from'node:fs';import{chromium}from'playwright';const root=process.env.ROOT,c=JSON.parse(fs.readFileSync(process.env.CXORBIA_E2E_PRIVATE_CREDENTIALS)),out=process.env.OUT,t='YES_PAULA_20260801_REAL_USERS_E2E';const u=n=>{const x=new URL(root+'/index-backend-dev.html');x.searchParams.set('cxTechnicalAuthE2E',t);x.searchParams.set('cxTechnicalAuthNamespace',n);return x};
+          async function login(p,n,z){await p.goto(u(n),{waitUntil:'domcontentloaded',timeout:60000});await p.waitForSelector('#cxDevEntryAuth',{timeout:30000});await p.fill('#cxDevEntryLogin',z.login);await p.fill('#cxDevEntryPassword',z.password);await p.click('#cxDevEntrySubmit');await p.waitForFunction(ns=>{const q=window.CX?.backendAuth?.context?.();return q?.authenticated===true&&q?.authNamespace===ns&&document.getElementById('app')?.classList.contains('on')&&Array.isArray(window.CX?.data?._visitas)&&window.CX.data._visitas.length>0&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true;},n,{timeout:90000});return p.evaluate(()=>window.CX.backendAuth.context());}
+          const b=await chromium.launch({headless:true});try{let x=await b.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block'}),p=await x.newPage(),a=await login(p,'staff',c.staff);await p.evaluate(()=>CX.router.nav('shoppers'));await p.waitForFunction(()=>document.body.innerText.includes('Shoppers / Auditores')&&document.querySelectorAll('#shBody tr').length>0);const id=String(c.shopper.canonicalShopperId||c.shopper.shopperId||''),tr=p.locator(`#shBody tr[data-sid="${id}"]`);if(!id||await tr.count()!==1)throw Error('G8_TARGET_NOT_VISIBLE');await tr.click();await p.waitForSelector('.cx-modal');if(await p.locator('.cx-modal #shKpis .kpi').count()<4)throw Error('G8_KPI_HISTORY_NOT_VISIBLE');await p.evaluate(()=>document.querySelector('.cx-ov')?.remove());await p.evaluate(()=>document.querySelectorAll('#shBody tr').forEach(r=>{const d=r.querySelector('td');if(d)d.innerHTML='<b>IDENTIDAD PROTEGIDA</b>'}));await p.locator('#view').screenshot({path:out+'/gate8-shoppers-dev.png'});await x.close();x=await b.newContext({serviceWorkers:'block'});p=await x.newPage();const s=await login(p,'shopper',c.shopper);if(s.role!=='shopper'||s.authNamespace!=='shopper'||!s.shopperId)throw Error('G7_SHOPPER_LOGIN');await x.close();fs.writeFileSync(out+'/gates7-8.json',JSON.stringify({gate7:'PASS_GATE7_SHOPPER_ACCESS',gate8:'PASS_GATE8_ADMIN_VISIBILITY',adminRole:a.role,production:false,piiExported:false},null,2)+'\n')}finally{await b.close()}
+          NODE
+          ROOT="$ROOT" OUT="$OUT" node "$RUNNER_TEMP/browser.mjs"; rm -rf "$RUNNER_TEMP/private" "$RUNNER_TEMP/browser.mjs"
+      - name: Result + evidence
+        if: always()
+        run: |
+          node <<'NODE'
+          const fs=require('fs'),p=process.env.OUT,j=n=>{try{return JSON.parse(fs.readFileSync(p+'/'+n))}catch{return null}},g6=j('gate6.json'),g78=j('gates7-8.json'),rt=j('runtime.json'),pass=g6?.decision==='PASS_GATE6_HR_SHOPPER_UPSERT_IDEMPOTENT'&&g78?.gate7==='PASS_GATE7_SHOPPER_ACCESS'&&g78?.gate8==='PASS_GATE8_ADMIN_VISIBILITY';fs.writeFileSync(p+'/result.json',JSON.stringify({decision:pass?'PASS_RECOVERY_DEV_GATES_6_8':'HOLD_RECOVERY_DEV_CERTIFICATION',sourceSha:process.env.SOURCE_SHA,transportSha:process.env.GITHUB_SHA,closedGates:pass?[6,7,8]:(g6?[6]:[]),nextGate:pass?9:(g6?7:6),runtime:rt,gate6:g6?.decision||null,gate7:g78?.gate7||null,gate8:g78?.gate8||null,production:false,automaticRetry:false},null,2)+'\n');
+          NODE
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with: {name: 'cxorbia-recovery-i3-dev-cert-${{ github.run_id }}', path: '${{ env.OUT }}', if-no-files-found: error, retention-days: 14}
+      - name: Cleanup
+        if: always()
+        run: git worktree remove --force "$SRC" 2>/dev/null || true; rm -rf "$RUNNER_TEMP/private" .firebase
+      - name: Enforce
+        run: node -e "const r=require('./$OUT/result.json');if(r.decision!=='PASS_RECOVERY_DEV_GATES_6_8')process.exit(1)"
