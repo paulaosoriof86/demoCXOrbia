@@ -34,7 +34,7 @@ env:
 jobs:
   certify:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 55
     steps:
       - name: Checkout transport head
         uses: actions/checkout@v4
@@ -81,34 +81,54 @@ jobs:
             | tee "$GITHUB_WORKSPACE/$OUT/gate6-unit.tap"
           grep -Fq 'cxorbia-shopper-command-provider-v1.mjs' backend/runtime/hr-live-service/Dockerfile
 
-      - name: Build push and deploy exact Cloud Run DEV image
+      - name: Deploy exact source to Cloud Run DEV without build
         id: runtime
         run: |
           set -euo pipefail
-          image="gcr.io/$PROJECT/$SERVICE:recovery-i3-${SOURCE_SHA:0:12}-${GITHUB_RUN_ID}"
           current_sa="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(spec.template.spec.serviceAccountName)')"
           test "$current_sa" = "$RUNTIME_SA"
-          gcloud auth configure-docker gcr.io --quiet
+          cd "$SRC/backend/runtime/hr-live-service"
+          npm install --omit=dev --ignore-scripts --package-lock=false
+          npm ls --all --json > "$GITHUB_WORKSPACE/$OUT/runtime-dependencies.json"
           cd "$SRC"
-          docker build \
-            -f backend/runtime/hr-live-service/Dockerfile \
-            --label "cxorbia.source_sha=$SOURCE_SHA" \
-            --label "cxorbia.environment=DEV" \
-            -t "$image" .
-          docker push "$image"
-          digest="$(docker inspect --format='{{index .RepoDigests 0}}' "$image" | sed 's/.*@//')"
-          test -n "$digest"
-          gcloud run services update "$SERVICE" \
+          source_tree="$(git rev-parse HEAD^{tree})"
+          dep_hash="$(find backend/runtime/hr-live-service/node_modules -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | awk '{print $1}')"
+          printf '{"sourceSha":"%s","sourceTree":"%s","dependencyTreeHash":"%s","firebaseAdmin":"13.4.0","node":"24","buildMode":"cloud_run_source_no_build","production":false}\n' \
+            "$SOURCE_SHA" "$source_tree" "$dep_hash" > "$GITHUB_WORKSPACE/$OUT/source-package.json"
+          gcloud beta run deploy "$SERVICE" \
             --project "$PROJECT" \
             --region "$REGION" \
-            --image "$image" \
+            --source "$SRC" \
+            --no-build \
+            --base-image="us-central1-docker.pkg.dev/serverless-runtimes/google-24-full/runtimes/nodejs24" \
+            --command=node \
+            --args=backend/runtime/hr-live-service/server.mjs \
+            --update-env-vars="CXORBIA_RECOVERY_SOURCE_SHA=$SOURCE_SHA,CXORBIA_ENVIRONMENT=DEV" \
             --quiet
           url="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.url)')"
           rev="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.latestReadyRevisionName)')"
-          deployed_image="$(gcloud run revisions describe "$rev" --project "$PROJECT" --region "$REGION" --format='value(spec.containers[0].image)')"
-          test -n "$url"; test -n "$rev"; test -n "$deployed_image"
-          printf '{"image":"%s","digest":"%s","deployedImage":"%s","revision":"%s","url":"%s","sourceSha":"%s","buildMode":"github_runner_docker","production":false}\n' \
-            "$image" "$digest" "$deployed_image" "$rev" "$url" "$SOURCE_SHA" > "$GITHUB_WORKSPACE/$OUT/runtime.json"
+          after_sa="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(spec.template.spec.serviceAccountName)')"
+          test "$after_sa" = "$RUNTIME_SA"
+          token="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $token" \
+            "https://run.googleapis.com/v2/projects/$PROJECT/locations/$REGION/services/$SERVICE" \
+            > "$GITHUB_WORKSPACE/$OUT/cloud-run-v2.json"
+          OUT="$GITHUB_WORKSPACE/$OUT" SOURCE_SHA="$SOURCE_SHA" REV="$rev" URL="$url" node <<'NODE'
+          const fs=require('fs');
+          const out=process.env.OUT;
+          const v2=JSON.parse(fs.readFileSync(out+'/cloud-run-v2.json','utf8'));
+          const c=v2.template?.containers?.[0]||{};
+          const source=c.sourceCode?.cloudStorageSource||null;
+          if(!source||!source.bucket||!source.object) throw new Error('SOURCE_CODE_READBACK_MISSING');
+          const env=Object.fromEntries((c.env||[]).map(x=>[x.name,x.value]));
+          if(env.CXORBIA_RECOVERY_SOURCE_SHA!==process.env.SOURCE_SHA) throw new Error('SOURCE_SHA_ENV_READBACK_MISMATCH');
+          fs.writeFileSync(out+'/runtime.json',JSON.stringify({
+            revision:process.env.REV,url:process.env.URL,sourceSha:process.env.SOURCE_SHA,
+            buildMode:'cloud_run_source_no_build',baseImageUri:c.baseImageUri||null,
+            sourceCode:{bucket:source.bucket,object:source.object,generation:source.generation||null},
+            production:false
+          },null,2)+'\n');
+          NODE
           echo "url=$url" >> "$GITHUB_OUTPUT"
 
       - name: Gate 6 runtime and durable identity readback
