@@ -68,6 +68,9 @@ jobs:
         with:
           project_id: '${{ env.PROJECT }}'
 
+      - name: Install gcloud beta noninteractive
+        run: gcloud components install beta --quiet
+
       - name: Exact source and Gate 6 source tests
         run: |
           set -euo pipefail
