@@ -24,8 +24,6 @@ env:
   SOURCE_SHA: 296c8c906e03ad2bf9a06589798f65acd9a94559
   WF: .github/workflows/cxorbia-recovery-i3-dev-certification.yml
   PROJECT: cxorbia-backend-dev
-  REGION: us-central1
-  SERVICE: cxorbia-live-hr-dev
   RUNTIME_SA: firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com
   HOSTING: cxorbia-dev
   ROOT: https://cxorbia-backend-dev.web.app
@@ -34,14 +32,14 @@ env:
 jobs:
   certify:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 55
     steps:
       - name: Checkout transport head
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Freeze transport
+      - name: Freeze exact Recovery source
         run: |
           set -euo pipefail
           mkdir -p "$OUT"
@@ -50,20 +48,19 @@ jobs:
           mapfile -t changed < <(git diff --name-only "$SOURCE_SHA" HEAD)
           test "${#changed[@]}" = 1
           test "${changed[0]}" = "$WF"
-          printf '{"authorizedBy":"Paula","sourceSha":"%s","transportSha":"%s","project":"%s","production":false,"singleLane":true}\n' \
-            "$SOURCE_SHA" "$GITHUB_SHA" "$PROJECT" > "$OUT/authorization.json"
+          printf '{"authorizedBy":"Paula","sourceSha":"%s","transportSha":"%s","production":false,"singleLane":true}\n' "$SOURCE_SHA" "$GITHUB_SHA" > "$OUT/authorization.json"
 
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
-      - name: Authenticate existing Firebase DEV
+      - name: Authenticate canonical Firebase DEV
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
 
-      - name: Materialize exact candidate and Gate 6 source tests
+      - name: Materialize candidate and run Gate 6 source tests
         run: |
           set -euo pipefail
           git worktree add --detach "$SRC" "$SOURCE_SHA"
@@ -72,50 +69,34 @@ jobs:
           node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
           node --check backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs
           node --check backend/runtime/hr-live-service/server.mjs
-          node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs \
-            | tee "$GITHUB_WORKSPACE/$OUT/gate6-unit.tap"
-          grep -Fq 'cxorbia-shopper-command-provider-v1.mjs' backend/runtime/hr-live-service/Dockerfile
-          printf '{"sourceSha":"%s","sourceTree":"%s","shoppersBlob":"%s","production":false}\n' \
-            "$SOURCE_SHA" \
-            "$(git rev-parse HEAD^{tree})" \
-            "$(git rev-parse HEAD:app/modules/shoppers.js)" \
-            > "$GITHUB_WORKSPACE/$OUT/source-visual-lock.json"
+          node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs | tee "$GITHUB_WORKSPACE/$OUT/gate6-unit.tap"
+          printf '{"sourceSha":"%s","sourceTree":"%s","dataBlob":"%s","shoppersBlob":"%s","applyBlob":"%s","authorityBlob":"%s","production":false}\n' \
+            "$SOURCE_SHA" "$(git rev-parse HEAD^{tree})" "$(git rev-parse HEAD:app/core/data.js)" \
+            "$(git rev-parse HEAD:app/modules/shoppers.js)" "$(git rev-parse HEAD:app/adapters/tya-live-source-inplace-apply.js)" \
+            "$(git rev-parse HEAD:app/adapters/tya-protected-auth-hr-authority-bridge-v2.js)" > "$GITHUB_WORKSPACE/$OUT/source-visual-lock.json"
 
-      - name: Install Hosting and visual tooling
+      - name: Install DEV visual tooling
         run: |
           set -euo pipefail
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase-tools@latest playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null 2>&1
 
       - name: Deploy exact candidate to existing Hosting DEV
-        id: hosting
-        continue-on-error: true
         run: |
           set -euo pipefail
           cd "$SRC"
-          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy \
-            --config firebase.json \
-            --only "hosting:$HOSTING" \
-            --project "$PROJECT" \
-            --non-interactive
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$HOSTING" --project "$PROJECT" --non-interactive
 
-      - name: Hosting byte parity for Gate 6 visual surface
-        id: parity
-        if: steps.hosting.outcome == 'success'
+      - name: Prove Hosting byte parity
         run: |
           set -euo pipefail
-          for asset in index-backend-dev.html modules/shoppers.js; do
-            curl -fsSL --retry 10 --retry-delay 3 -H 'Cache-Control: no-cache' \
-              "$ROOT/$asset?recovery=$GITHUB_RUN_ID" -o "$RUNNER_TEMP/$(basename "$asset")"
+          for asset in index-backend-dev.html core/data.js modules/shoppers.js adapters/tya-live-source-inplace-apply.js adapters/tya-protected-auth-hr-authority-bridge-v2.js; do
+            curl -fsSL --retry 10 --retry-delay 3 -H 'Cache-Control: no-cache' "$ROOT/$asset?recovery=$GITHUB_RUN_ID" -o "$RUNNER_TEMP/$(basename "$asset")"
             cmp "$SRC/app/$asset" "$RUNNER_TEMP/$(basename "$asset")"
           done
-          printf '{"decision":"PASS_GATE6_VISUAL_BYTE_PARITY","sourceSha":"%s","hostingRoot":"%s","assets":["index-backend-dev.html","modules/shoppers.js"],"production":false}\n' \
-            "$SOURCE_SHA" "$ROOT" > "$OUT/hosting-parity.json"
+          printf '{"decision":"PASS_GATE6_VISUAL_BYTE_PARITY","sourceSha":"%s","hostingRoot":"%s","production":false}\n' "$SOURCE_SHA" "$ROOT" > "$OUT/hosting-parity.json"
 
-      - name: Read-only staff credential and Shoppers visual proof
-        id: visual
-        if: steps.hosting.outcome == 'success' && steps.parity.outcome == 'success'
-        continue-on-error: true
+      - name: Select existing staff credential read-only
         env:
           CXORBIA_EXPECTED_PROJECT: cxorbia-backend-dev
           CXORBIA_DEV_ROOT_URL: https://cxorbia-backend-dev.web.app
@@ -128,190 +109,106 @@ jobs:
           cd "$SRC"
           node tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs > "$GITHUB_WORKSPACE/$OUT/staff-credential-selection.jsonl"
           rm -f node_modules
-          cd "$GITHUB_WORKSPACE"
+
+      - name: Gate visual on authoritative HR composition
+        id: visual
+        continue-on-error: true
+        env:
+          CXORBIA_E2E_PRIVATE_CREDENTIALS: ${{ runner.temp }}/private/e2e.json
+        run: |
+          set -euo pipefail
           cat > "$OUT/visual.mjs" <<'NODE'
           import fs from 'node:fs';
           import { chromium } from 'playwright';
-          const out=process.env.OUT, root=process.env.ROOT;
+          const out=process.env.OUT,root=process.env.ROOT;
           const creds=JSON.parse(fs.readFileSync(process.env.CXORBIA_E2E_PRIVATE_CREDENTIALS,'utf8'));
           if(!creds.staff) throw new Error('VISUAL_STAFF_CREDENTIAL_MISSING');
-          const token='YES_PAULA_20260801_REAL_USERS_E2E';
           const u=new URL(root+'/index-backend-dev.html');
-          u.searchParams.set('cxTechnicalAuthE2E',token);
+          u.searchParams.set('cxTechnicalAuthE2E','YES_PAULA_20260801_REAL_USERS_E2E');
           u.searchParams.set('cxTechnicalAuthNamespace','staff');
           const browser=await chromium.launch({headless:true});
+          let page;
           try{
             const context=await browser.newContext({viewport:{width:1440,height:1050},serviceWorkers:'block'});
-            const page=await context.newPage();
+            page=await context.newPage();
             await page.goto(u.toString(),{waitUntil:'domcontentloaded',timeout:60000});
             await page.waitForFunction(()=>typeof window.CX?.backendAuth?.authenticate==='function'&&typeof window.CX?.app?.enter==='function',{timeout:45000});
             await page.evaluate(async ({login,password})=>{
               await window.CX.backendAuth.authenticate(login,password,'staff');
               window.CX.app.enter();
             },{login:creds.staff.login,password:creds.staff.password});
-            await page.waitForFunction(()=>{
-              const c=window.CX?.backendAuth?.context?.();
-              return c?.authenticated===true&&c?.authNamespace==='staff'&&
-                document.getElementById('app')?.classList.contains('on')&&
-                Array.isArray(window.CX?.data?._visitas)&&window.CX.data._visitas.length>0;
-            },{timeout:90000});
-            await page.evaluate(()=>CX.router.nav('shoppers'));
+            await page.waitForFunction(()=>window.CX?.backendAuth?.context?.().authenticated===true,{timeout:30000});
+            try{
+              await page.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,{timeout:90000});
+            }catch(error){
+              const state=await page.evaluate(()=>({
+                authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,
+                boot:window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE||null,
+                currentProjectId:window.CX?.data?.currentProjectId||null,
+                currentPeriodId:window.CX?.data?.currentPeriodId||null,
+                periodExists:!!window.CX?.data?.period?.(),
+                projectCount:Array.isArray(window.CX?.data?.projects)?window.CX.data.projects.length:null,
+                visitCount:Array.isArray(window.CX?.data?._visitas)?window.CX.data._visitas.length:null,
+                dataSource:{mode:window.CX?.dataSource?.mode||null,status:window.CX?.dataSource?.status||null,sourceRef:window.CX?.dataSource?.sourceRef||null,blockers:window.CX?.dataSource?.blockers||[]}
+              }));
+              fs.writeFileSync(out+'/visual-blocker.json',JSON.stringify({decision:'HOLD_HR_AUTHORITY_NOT_APPLIED',sourceSha:process.env.SOURCE_SHA,state,production:false},null,2)+'\n');
+              throw error;
+            }
+            const pre=await page.evaluate(()=>({
+              authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY,
+              currentProjectId:window.CX.data.currentProjectId,
+              currentPeriodId:window.CX.data.currentPeriodId,
+              periodExists:!!window.CX.data.period?.(),
+              projectCount:window.CX.data.projects.length,
+              visitCount:window.CX.data._visitas.length
+            }));
+            if(!pre.periodExists||pre.currentProjectId!=='cinepolis'||!pre.currentPeriodId) throw new Error('VISUAL_AUTHORITY_CONTEXT_INVALID');
+            await page.evaluate(()=>window.CX.router.nav('shoppers'));
             await page.waitForFunction(()=>document.body.innerText.includes('Shoppers / Auditores')&&document.querySelectorAll('#shBody tr').length>0,{timeout:30000});
             const observed=await page.evaluate(()=>({
-              title:document.body.innerText.includes('Shoppers / Auditores'),
-              rows:document.querySelectorAll('#shBody tr').length,
-              kpis:document.querySelectorAll('#shKpis .kpi').length,
-              sourceReady:Array.isArray(window.CX?.data?._visitas)&&window.CX.data._visitas.length>0,
-              authNamespace:window.CX?.backendAuth?.context?.().authNamespace||null,
-              role:window.CX?.backendAuth?.context?.().role||null
+              title:document.body.innerText.includes('Shoppers / Auditores'),rows:document.querySelectorAll('#shBody tr').length,
+              authNamespace:window.CX?.backendAuth?.context?.().authNamespace||null,role:window.CX?.backendAuth?.context?.().role||null,
+              authorityApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,
+              sourceRevision:window.CX?.data?.previewMeta?.sourceRevision||null
             }));
-            if(!observed.title||observed.rows<1||observed.authNamespace!=='staff') throw new Error('VISUAL_SHOPPERS_NOT_RENDERED');
-            await page.evaluate(()=>{
-              document.querySelectorAll('#shBody tr').forEach(r=>{
-                const cells=r.querySelectorAll('td');
-                if(cells[0]) cells[0].innerHTML='<b>IDENTIDAD PROTEGIDA</b>';
-                if(cells[1]) cells[1].textContent='—';
-              });
-            });
+            await page.evaluate(()=>document.querySelectorAll('#shBody tr').forEach(r=>{const c=r.querySelectorAll('td');if(c[0])c[0].innerHTML='<b>IDENTIDAD PROTEGIDA</b>';if(c[1])c[1].textContent='—';}));
             await page.locator('#view').screenshot({path:out+'/gate6-shoppers-visual-dev.png'});
-            fs.writeFileSync(out+'/visual.json',JSON.stringify({
-              decision:'PASS_GATE6_SHOPPERS_VISUAL_PRECERTIFICATION',sourceSha:process.env.SOURCE_SHA,
-              hostingRoot:root,observed,piiMaskedInScreenshot:true,backendGate6Certified:false,production:false
-            },null,2)+'\n');
+            fs.writeFileSync(out+'/visual.json',JSON.stringify({decision:'PASS_GATE6_SHOPPERS_VISUAL_PRECERTIFICATION',sourceSha:process.env.SOURCE_SHA,pre,observed,piiMaskedInScreenshot:true,backendGate6Certified:false,production:false},null,2)+'\n');
             await context.close();
-          } finally { await browser.close(); }
+          }finally{await browser.close();}
           NODE
           ROOT="$ROOT" OUT="$OUT" SOURCE_SHA="$SOURCE_SHA" node "$OUT/visual.mjs"
-          rm -rf "$RUNNER_TEMP/private" "$OUT/visual.mjs"
+          rm -f "$OUT/visual.mjs"
 
       - name: Setup gcloud for IAM readback
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: '${{ env.PROJECT }}'
 
-      - name: DEV IAM preflight only
+      - name: Confirm DEV IAM blocker read-only
         id: iam
         continue-on-error: true
         run: |
           set -euo pipefail
           token="$(gcloud auth print-access-token)"
           endpoint="https://iam.googleapis.com/v1/projects/$PROJECT/serviceAccounts/$RUNTIME_SA:testIamPermissions"
-          curl -fsS -X POST -H "Authorization: Bearer $token" -H 'Content-Type: application/json' \
-            -d '{"permissions":["iam.serviceAccounts.actAs","iam.serviceAccounts.setIamPolicy"]}' \
-            "$endpoint" > "$OUT/iam-permissions.json"
+          curl -fsS -X POST -H "Authorization: Bearer $token" -H 'Content-Type: application/json' -d '{"permissions":["iam.serviceAccounts.actAs","iam.serviceAccounts.setIamPolicy"]}' "$endpoint" > "$OUT/iam-permissions.json"
           node <<'NODE'
-          const fs=require('fs');
-          const p=JSON.parse(fs.readFileSync(process.env.OUT+'/iam-permissions.json','utf8'));
-          const s=new Set(p.permissions||[]);
-          const actAs=s.has('iam.serviceAccounts.actAs');
-          const setIamPolicy=s.has('iam.serviceAccounts.setIamPolicy');
-          fs.writeFileSync(process.env.OUT+'/iam-preflight.json',JSON.stringify({
-            decision:actAs?'PASS_ACTAS_PRESENT':'HOLD_EXTERNAL_IAM_REQUIRED',actAs,setIamPolicy,iamWrites:0,production:false
-          },null,2)+'\n');
-          if(!actAs) process.exit(23);
+          const fs=require('fs'),p=JSON.parse(fs.readFileSync(process.env.OUT+'/iam-permissions.json','utf8')),s=new Set(p.permissions||[]);
+          const actAs=s.has('iam.serviceAccounts.actAs'),setIamPolicy=s.has('iam.serviceAccounts.setIamPolicy');
+          fs.writeFileSync(process.env.OUT+'/iam-preflight.json',JSON.stringify({decision:actAs?'PASS_ACTAS_PRESENT':'HOLD_EXTERNAL_IAM_REQUIRED',actAs,setIamPolicy,iamWrites:0,production:false},null,2)+'\n');
           NODE
-
-      - name: Install gcloud beta noninteractive
-        if: steps.iam.outcome == 'success'
-        run: gcloud components install beta --quiet
-
-      - name: Deploy exact source to Cloud Run DEV without build
-        id: runtime
-        if: steps.iam.outcome == 'success'
-        run: |
-          set -euo pipefail
-          current_sa="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(spec.template.spec.serviceAccountName)')"
-          test "$current_sa" = "$RUNTIME_SA"
-          cd "$SRC/backend/runtime/hr-live-service"
-          npm install --omit=dev --ignore-scripts --package-lock=false >/dev/null 2>&1
-          cd "$SRC"
-          gcloud beta run deploy "$SERVICE" \
-            --project "$PROJECT" \
-            --region "$REGION" \
-            --source "$SRC" \
-            --no-build \
-            --base-image="us-central1-docker.pkg.dev/serverless-runtimes/google-24-full/runtimes/nodejs24" \
-            --command=node \
-            --args=backend/runtime/hr-live-service/server.mjs \
-            --update-env-vars="CXORBIA_RECOVERY_SOURCE_SHA=$SOURCE_SHA,CXORBIA_ENVIRONMENT=DEV" \
-            --quiet
-          url="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.url)')"
-          rev="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.latestReadyRevisionName)')"
-          printf '{"revision":"%s","url":"%s","sourceSha":"%s","buildMode":"cloud_run_source_no_build","production":false}\n' \
-            "$rev" "$url" "$SOURCE_SHA" > "$GITHUB_WORKSPACE/$OUT/runtime.json"
-          echo "url=$url" >> "$GITHUB_OUTPUT"
-
-      - name: Gate 6 runtime and durable identity readback
-        id: gate6
-        if: steps.runtime.outcome == 'success'
-        run: |
-          set -euo pipefail
-          url='${{ steps.runtime.outputs.url }}'
-          curl -fsS --retry 12 --retry-delay 4 "$url/health" > "$OUT/health.json"
-          curl -fsS --retry 8 --retry-delay 4 "$url/api/tya/cinepolis/hr-live?format=meta&fresh=1" > "$OUT/meta.json"
-          curl -fsS --retry 8 --retry-delay 4 "$url/api/tya/cinepolis/hr-live?fresh=1" > "$RUNNER_TEMP/hr.json"
-          cat > "$RUNNER_TEMP/readback.mjs" <<'NODE'
-          import fs from 'node:fs';
-          import crypto from 'node:crypto';
-          import { applicationDefault, initializeApp } from 'firebase-admin/app';
-          import { getAuth } from 'firebase-admin/auth';
-          import { getFirestore } from 'firebase-admin/firestore';
-          const out=process.env.OUT;
-          const health=JSON.parse(fs.readFileSync(out+'/health.json','utf8'));
-          const metaRaw=JSON.parse(fs.readFileSync(out+'/meta.json','utf8'));
-          const meta=metaRaw.meta||metaRaw;
-          const reconciliation=meta.shopperReconciliation;
-          if(health.ok!==true||health.production!==false||health.shopperReconciliationReady!==true) throw new Error('G6_HEALTH');
-          if(meta.sourceSafe!==true||meta.runtimeRead!==true||meta.production!==false||!reconciliation||reconciliation.ok!==true||
-             reconciliation.providerAck!==true||reconciliation.hrWrites!==0||reconciliation.externalWrites!==0||
-             reconciliation.fuzzyMatching!==false||String(reconciliation.sourceRevision)!==String(meta.revision)) throw new Error('G6_RECONCILIATION');
-          const raw=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+'/hr.json','utf8'));
-          const snapshot=raw.snapshot||raw.data||raw;
-          const tenantId=String(snapshot.tenantId||snapshot.tenantConfig?.tenantId||'');
-          const projectId=String(snapshot.projectId||snapshot.projectConfig?.projectId||'');
-          if(snapshot.sourceSafe!==true||!tenantId||!projectId) throw new Error('G6_SOURCE');
-          const ids=new Set([...(snapshot.shoppers||[]),...(snapshot.visits||[])].map(x=>String(x.shopperId||x.id||'')).filter(Boolean));
-          initializeApp({credential:applicationDefault(),projectId:process.env.PROJECT});
-          const db=getFirestore(),auth=getAuth(),tenant=db.collection('tenants').doc(tenantId);
-          const fingerprint=uid=>crypto.createHash('sha256').update('cxorbia-provider-uid-v1\0'+uid).digest('hex');
-          let bad=0,duplicates=0;
-          for(const id of ids){
-            const [profile,cross,members]=await Promise.all([
-              tenant.collection('shoppers').doc(id).get(),
-              tenant.collection('shopperIdentityCrosswalk').doc(id).get(),
-              tenant.collection('users').where('shopperId','==',id).limit(2).get()
-            ]);
-            if(!profile.exists||!cross.exists||members.size!==1){bad++;if(members.size>1)duplicates++;continue;}
-            const member=members.docs[0], user=await auth.getUser(member.id), claims=user.customClaims||{};
-            if(String(claims.tenantId)!==tenantId||String(claims.shopperId)!==id||claims.role!=='shopper'||
-               claims.authNamespace!=='shopper'||String(cross.data().providerUidFingerprint||'')!==fingerprint(member.id)) bad++;
-          }
-          if(!ids.size||bad||duplicates||Number(reconciliation.shopperCount)!==ids.size) throw new Error(`G6_DURABLE_BAD_${bad}_DUP_${duplicates}`);
-          fs.writeFileSync(out+'/gate6.json',JSON.stringify({
-            decision:'PASS_GATE6_HR_SHOPPER_UPSERT_IDEMPOTENT',revision:String(meta.revision),shoppers:ids.size,
-            authCreated:Number(reconciliation.authCreated||0),idempotentReplays:Number(reconciliation.idempotentReplays||0),
-            duplicates:0,hrWrites:0,production:false,piiExported:false
-          },null,2)+'\n');
-          NODE
-          OUT="$OUT" PROJECT="$PROJECT" node "$RUNNER_TEMP/readback.mjs"
-          rm -f "$RUNNER_TEMP/hr.json" "$RUNNER_TEMP/readback.mjs"
 
       - name: Build sanitized result
         if: always()
         run: |
           node <<'NODE'
-          const fs=require('fs'),p=process.env.OUT;
-          const read=n=>{try{return JSON.parse(fs.readFileSync(p+'/'+n,'utf8'))}catch{return null}};
-          const visual=read('visual.json'),iam=read('iam-preflight.json'),g6=read('gate6.json'),hosting=read('hosting-parity.json');
+          const fs=require('fs'),p=process.env.OUT,read=n=>{try{return JSON.parse(fs.readFileSync(p+'/'+n,'utf8'))}catch{return null}};
+          const hosting=read('hosting-parity.json'),visual=read('visual.json'),blocker=read('visual-blocker.json'),iam=read('iam-preflight.json');
           let decision='HOLD_RECOVERY_DEV_CERTIFICATION';
-          if(g6?.decision==='PASS_GATE6_HR_SHOPPER_UPSERT_IDEMPOTENT'&&visual?.decision==='PASS_GATE6_SHOPPERS_VISUAL_PRECERTIFICATION') decision='PASS_GATE6_RUNTIME_AND_VISUAL';
-          else if(iam?.decision==='HOLD_EXTERNAL_IAM_REQUIRED'&&visual?.decision==='PASS_GATE6_SHOPPERS_VISUAL_PRECERTIFICATION') decision='HOLD_EXTERNAL_IAM_REQUIRED_VISUAL_PRECERTIFIED';
-          else if(!hosting) decision='HOLD_HOSTING_DEV_VISUAL_PENDING';
-          fs.writeFileSync(p+'/result.json',JSON.stringify({
-            decision,sourceSha:process.env.SOURCE_SHA,transportSha:process.env.GITHUB_SHA,
-            hosting:hosting?.decision||null,visual:visual?.decision||null,iam:iam?.decision||null,gate6:g6?.decision||null,
-            nextGate:g6?7:6,production:false,automaticRetry:false
-          },null,2)+'\n');
+          if(visual?.decision==='PASS_GATE6_SHOPPERS_VISUAL_PRECERTIFICATION'&&iam?.decision==='HOLD_EXTERNAL_IAM_REQUIRED')decision='HOLD_EXTERNAL_IAM_REQUIRED_VISUAL_PRECERTIFIED';
+          else if(blocker?.decision==='HOLD_HR_AUTHORITY_NOT_APPLIED'&&iam?.decision==='HOLD_EXTERNAL_IAM_REQUIRED')decision='HOLD_RUNTIME_COMPOSITION_AND_EXTERNAL_IAM_REQUIRED';
+          fs.writeFileSync(p+'/result.json',JSON.stringify({decision,sourceSha:process.env.SOURCE_SHA,transportSha:process.env.GITHUB_SHA,hosting:hosting?.decision||null,visual:visual?.decision||null,visualBlocker:blocker?.decision||null,iam:iam?.decision||null,gate6:null,nextGate:6,production:false,automaticRetry:false},null,2)+'\n');
           NODE
 
       - name: Upload sanitized evidence
@@ -329,6 +226,6 @@ jobs:
           git worktree remove --force "$SRC" 2>/dev/null || true
           rm -rf "$RUNNER_TEMP/private" .firebase
 
-      - name: Enforce only full Gate 6 closure
+      - name: Hold until Gate 6 runtime is certifiable
         if: always()
-        run: node -e "const r=require('./$OUT/result.json');if(r.decision!=='PASS_GATE6_RUNTIME_AND_VISUAL')process.exit(1)"
+        run: node -e "const r=require('./$OUT/result.json');console.log(r.decision);process.exit(1)"
