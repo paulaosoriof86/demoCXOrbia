@@ -21,7 +21,7 @@ env:
   WF: .github/workflows/cxorbia-recovery-i3-dev-certification.yml
   PROJECT: cxorbia-backend-dev
   RUNTIME_SA: firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com
-  OUT: .tmp/recovery-i3-iam
+  OUT: .tmp/recovery-i3-principal
 
 jobs:
   certify:
@@ -40,7 +40,6 @@ jobs:
           mapfile -t changed < <(git diff --name-only "$SOURCE_SHA" HEAD)
           test "${#changed[@]}" = 1
           test "${changed[0]}" = "$WF"
-          printf '{"authorizedBy":"Paula","sourceSha":"%s","transportSha":"%s","production":false,"writes":0}\n' "$SOURCE_SHA" "$GITHUB_SHA" > "$OUT/authorization.json"
 
       - name: Authenticate canonical Firebase DEV
         uses: google-github-actions/auth@v2
@@ -52,34 +51,39 @@ jobs:
         with:
           project_id: '${{ env.PROJECT }}'
 
-      - name: Test exact IAM surfaces read-only
+      - name: Identify effective principal and permission read-only
         run: |
           set -euo pipefail
+          active="$(gcloud auth list --filter=status:ACTIVE --format='value(account)' | head -n1)"
+          client="$(node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS,'utf8'));process.stdout.write(String(p.client_email||''))")"
           token="$(gcloud auth print-access-token)"
           curl -fsS -X POST -H "Authorization: Bearer $token" -H 'Content-Type: application/json' \
-            -d '{"permissions":["iam.serviceAccounts.actAs","iam.serviceAccounts.setIamPolicy"]}' \
-            "https://iam.googleapis.com/v1/projects/$PROJECT/serviceAccounts/$RUNTIME_SA:testIamPermissions" > "$OUT/service-account-permissions.json"
-          curl -fsS -X POST -H "Authorization: Bearer $token" -H 'Content-Type: application/json' \
-            -d '{"permissions":["resourcemanager.projects.setIamPolicy","resourcemanager.projects.getIamPolicy"]}' \
-            "https://cloudresourcemanager.googleapis.com/v1/projects/$PROJECT:testIamPermissions" > "$OUT/project-permissions.json"
-          node <<'NODE'
-          const fs=require('fs'),p=process.env.OUT;
-          const sa=new Set((JSON.parse(fs.readFileSync(p+'/service-account-permissions.json','utf8')).permissions)||[]);
-          const pr=new Set((JSON.parse(fs.readFileSync(p+'/project-permissions.json','utf8')).permissions)||[]);
+            -d '{"permissions":["iam.serviceAccounts.actAs"]}' \
+            "https://iam.googleapis.com/v1/projects/$PROJECT/serviceAccounts/$RUNTIME_SA:testIamPermissions" > "$OUT/permission.json"
+          ACTIVE_ACCOUNT="$active" CLIENT_EMAIL="$client" node <<'NODE'
+          const fs=require('fs');
+          const p=JSON.parse(fs.readFileSync(process.env.OUT+'/permission.json','utf8'));
+          const active=process.env.ACTIVE_ACCOUNT||'';
+          const client=process.env.CLIENT_EMAIL||'';
+          const target=process.env.RUNTIME_SA||'';
           const result={
-            decision:sa.has('iam.serviceAccounts.actAs')?'PASS_ACTAS_PRESENT':(sa.has('iam.serviceAccounts.setIamPolicy')||pr.has('resourcemanager.projects.setIamPolicy')?'IAM_SELF_REPAIR_PATH_EXISTS':'HOLD_EXTERNAL_IAM_REQUIRED'),
-            serviceAccount:{actAs:sa.has('iam.serviceAccounts.actAs'),setIamPolicy:sa.has('iam.serviceAccounts.setIamPolicy')},
-            project:{getIamPolicy:pr.has('resourcemanager.projects.getIamPolicy'),setIamPolicy:pr.has('resourcemanager.projects.setIamPolicy')},
-            iamWrites:0,production:false
+            decision:(active===target&&client===target&&Array.isArray(p.permissions)&&p.permissions.includes('iam.serviceAccounts.actAs'))?'PASS_EFFECTIVE_PRINCIPAL_AND_ACTAS':(active!==target||client!==target?'AUTH_PRINCIPAL_MISMATCH':'ALLOW_PRESENT_BUT_NOT_EFFECTIVE'),
+            activeAccount:active,
+            credentialClientEmail:client,
+            targetRuntimeServiceAccount:target,
+            samePrincipal:active===target&&client===target,
+            actAs:Array.isArray(p.permissions)&&p.permissions.includes('iam.serviceAccounts.actAs'),
+            writes:0,
+            production:false
           };
-          fs.writeFileSync(p+'/iam-surface.json',JSON.stringify(result,null,2)+'\n');
+          fs.writeFileSync(process.env.OUT+'/principal.json',JSON.stringify(result,null,2)+'\n');
           console.log(JSON.stringify(result));
           NODE
 
       - name: Upload sanitized evidence
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-recovery-i3-iam-${{ github.run_id }}
+          name: cxorbia-recovery-i3-principal-${{ github.run_id }}
           path: ${{ env.OUT }}
           if-no-files-found: error
           retention-days: 14
