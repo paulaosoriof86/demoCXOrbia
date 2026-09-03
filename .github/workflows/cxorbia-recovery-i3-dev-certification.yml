@@ -124,7 +124,7 @@ jobs:
           set -euo pipefail
           active="$(gcloud auth list --filter=status:ACTIVE --format='value(account)' | head -n1)"
           test "$active" = "$RUNTIME_SA"
-          gcloud beta run deploy "$SERVICE" \
+          gcloud run deploy "$SERVICE" \
             --project "$PROJECT" \
             --region "$REGION" \
             --source . \
