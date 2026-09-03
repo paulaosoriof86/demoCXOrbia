@@ -249,7 +249,7 @@ async function durableCredentialIdentity({auth,db,command,shopperId}){
 
 export function createShopperCommandProvider({auth,db,policy}={}){
   const pv=validateProviderPolicy(policy);if(!pv.ok)throw new Error('SHOPPER_PROVIDER_POLICY_INVALID:'+pv.errors.join(','));
-  if(!auth?.getUser||!auth?.createUser||!auth?.setCustomUserClaims||!auth?.updateUser||!db?.collection||!db?.runTransaction)throw new Error('SHOPPER_PROVIDER_DEPENDENCIES_MISSING');
+  if(!auth?.getUser||!auth?.createUser||!auth?.setCustomUserClaims||!db?.collection||!db?.runTransaction)throw new Error('SHOPPER_PROVIDER_DEPENDENCIES_MISSING');
   return Object.freeze({
     version:VERSION,
     async reconcileSnapshot(snapshot,{sourceRevision}={}){
@@ -279,6 +279,7 @@ export function createShopperCommandProvider({auth,db,policy}={}){
           if(p.status==='committed')return ack(command,p.shopperId,{idempotentReplay:true,providerWrites:0,credentialState:p.credentialState||null,credentialIssued:false,uidFingerprint:p.uidFingerprint||null});
         }
         if(command.commandType==='shopper.credential.reset'){
+          if(!auth?.updateUser)throw new Error('SHOPPER_CREDENTIAL_AUTH_UPDATE_UNAVAILABLE');
           const identity=await durableCredentialIdentity({auth,db,command,shopperId});
           const password=generateCredential();
           await auth.updateUser(identity.uid,{password,disabled:false});
