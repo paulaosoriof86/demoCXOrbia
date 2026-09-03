@@ -128,7 +128,6 @@ jobs:
             --project "$PROJECT" \
             --region "$REGION" \
             --source . \
-            --no-build \
             --service-account "$RUNTIME_SA" \
             --set-env-vars "CXORBIA_RECOVERY_SOURCE_SHA=$SOURCE_SHA,CXORBIA_DEV_OPERATIONAL_NAMES=true" \
             --quiet
