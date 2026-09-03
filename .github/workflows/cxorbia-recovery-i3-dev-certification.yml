@@ -48,7 +48,7 @@ jobs:
           test "$GITHUB_REF_NAME" = "recovery/cxorbia-phase-a-20260831"
           git merge-base --is-ancestor "$SOURCE_SHA" HEAD
           test "$(git rev-parse "$SOURCE_SHA^")" = "$SOURCE_PARENT_SHA"
-          test "$(git rev-parse "$SOURCE_SHA^{tree})" = "$SOURCE_TREE"
+          test "$(git rev-parse "$SOURCE_SHA^{tree}")" = "$SOURCE_TREE"
           mapfile -t changed < <(git diff --name-only "$SOURCE_SHA" HEAD)
           test "${#changed[@]}" = 1
           test "${changed[0]}" = "$WF"
