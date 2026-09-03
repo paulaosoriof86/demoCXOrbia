@@ -126,8 +126,8 @@ window.CX=window.CX||{};
       },
       protectedPayload:{
         visits:clone(protectedState.visits),shoppers:clone(protectedState.shoppers),
-        posts:clone(protectedState.posts),certifications:clone(protectedState.certifications),
-        liquidations:clone(protectedState.liquidations)
+        posts:clone(protectedState.posts),postulations:clone(protectedState.posts),
+        certifications:clone(protectedState.certifications),liquidations:clone(protectedState.liquidations)
       }
     });
     const d=result.diagnostics||{};
