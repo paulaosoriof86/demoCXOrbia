@@ -263,6 +263,102 @@ jobs:
           echo "CXORBIA_E2E_PRIVATE_CREDENTIALS=$PRIVATE_E2E" >> "$GITHUB_ENV"
           chmod 600 "$PRIVATE_E2E"
 
+      - name: Gate 7 forensic browser bootstrap trace
+        run: |
+          set -euo pipefail
+          cd "$SRC"
+          OUT="$GITHUB_WORKSPACE/$OUT" HOSTING_URL="$HOSTING_URL" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { chromium } from 'playwright';
+          const out=process.env.OUT;
+          const host=String(process.env.HOSTING_URL||'').replace(/\/$/,'');
+          const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV';
+          const PROTECTED='YES_PAULA_20260730_PROTECTED_DEV';
+          const started=Date.now();
+          const events=[];
+          const sanitize=value=>String(value||'')
+            .replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g,'[email]')
+            .replace(/Bearer\s+[A-Za-z0-9._~-]+/gi,'Bearer [redacted]')
+            .replace(/[A-Za-z0-9_-]{48,}/g,'[long-token-redacted]')
+            .slice(0,500);
+          const push=(kind,payload)=>events.push({ms:Date.now()-started,kind,...payload});
+          const browser=await chromium.launch({headless:true});
+          let result=null;
+          try{
+            const context=await browser.newContext({serviceWorkers:'block'});
+            const page=await context.newPage();
+            page.on('console',msg=>{
+              if(['warning','error'].includes(msg.type()))push('console',{type:msg.type(),text:sanitize(msg.text())});
+            });
+            page.on('pageerror',error=>push('pageerror',{message:sanitize(error?.message||error),stack:sanitize(error?.stack||'')}));
+            page.on('requestfailed',request=>push('requestfailed',{url:sanitize(request.url()),failure:sanitize(request.failure()?.errorText||'')}));
+            page.on('response',response=>{
+              const url=response.url();
+              if(/index-backend-dev\.html|backend-browser-auth\.js|backend-protected-dev-mode\.js|backend-firebase\.js|tya-protected-auth-hr-authority-bridge-v2\.js|app\.js|firebase-(app|auth|firestore)-compat\.js|\/__\/firebase\/init\.js/.test(url)){
+                push('critical-response',{url:sanitize(url),status:response.status(),ok:response.ok()});
+              }
+            });
+            const url=`${host}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cxProjectId=cinepolis&cxProtectedRuntime=${PROTECTED}`;
+            const nav=await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
+            const samples=[];
+            const deadline=Date.now()+30000;
+            let finalState=null;
+            while(Date.now()<deadline){
+              finalState=await page.evaluate(()=>({
+                url:location.href,
+                readyState:document.readyState,
+                entry:window.CX_DEV_ENTRY_CANONICAL||null,
+                hasCX:!!window.CX,
+                backendEnabled:window.CX?.BACKEND?.enabled===true,
+                previewMode:window.CX?.BACKEND?.previewMode===true,
+                backendAuthType:typeof window.CX?.backendAuth,
+                authenticateType:typeof window.CX?.backendAuth?.authenticate,
+                appType:typeof window.CX?.app,
+                enterType:typeof window.CX?.app?.enter,
+                protectedRuntime:window.CX_PROTECTED_DEV_RUNTIME===true,
+                authorityApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,
+                loginPresent:!!document.getElementById('login'),
+                appPresent:!!document.getElementById('app'),
+                scriptCount:document.scripts.length
+              })).catch(error=>({evaluationError:String(error?.message||error)}));
+              samples.push({ms:Date.now()-started,state:finalState});
+              if(finalState.authenticateType==='function'&&finalState.enterType==='function')break;
+              await page.waitForTimeout(500);
+            }
+            const responses=events.filter(e=>e.kind==='critical-response');
+            const authResponse=responses.find(e=>/backend-browser-auth\.js/.test(e.url));
+            const appResponse=responses.find(e=>/\/app\.js/.test(e.url));
+            let blocker=null;
+            if(!authResponse)blocker='BACKEND_AUTH_SCRIPT_NOT_REQUESTED';
+            else if(authResponse.status!==200)blocker='BACKEND_AUTH_SCRIPT_HTTP_FAILURE';
+            else if(finalState?.authenticateType!=='function')blocker='BACKEND_AUTH_SYMBOL_NOT_EXPOSED';
+            else if(!appResponse)blocker='APP_SCRIPT_NOT_REQUESTED';
+            else if(appResponse.status!==200)blocker='APP_SCRIPT_HTTP_FAILURE';
+            else if(finalState?.enterType!=='function')blocker='APP_ENTER_SYMBOL_NOT_EXPOSED';
+            const pageErrors=events.filter(e=>e.kind==='pageerror');
+            if(blocker&&pageErrors.length)blocker='JAVASCRIPT_BOOTSTRAP_ERROR_BEFORE_AUTH_READY';
+            result={
+              decision:blocker?'ENVIRONMENT_FAILURE_CAUSE_PROVEN':'PASS_GATE7_BROWSER_BOOTSTRAP_FORENSIC',
+              classification:blocker?'ENVIRONMENT_FAILURE':'PASS',
+              blocker,
+              navigationStatus:nav?.status()||null,
+              finalState,
+              samples,
+              events,
+              sourceSha:process.env.SOURCE_SHA||null,
+              production:false,
+              productWrites:0,
+              hrWrites:0
+            };
+            fs.writeFileSync(out+'/gate7-browser-bootstrap-forensic.json',JSON.stringify(result,null,2)+'\n');
+            console.log(JSON.stringify({decision:result.decision,blocker:result.blocker,finalState:result.finalState,pageErrors:pageErrors.length,criticalResponses:responses.length}));
+            await context.close();
+            if(blocker)process.exitCode=1;
+          }finally{
+            await browser.close();
+          }
+          NODE
+
       - name: Execute controlled Gate 7 assignment with exact cleanup
         run: |
           set -euo pipefail
