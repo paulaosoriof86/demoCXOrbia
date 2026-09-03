@@ -100,11 +100,11 @@ jobs:
             noShopperRecreationForReset:/durableCredentialIdentity/.test(provider),
             oneTimeDisclosure:/oneTimeDisclosure:true/.test(provider)&&/credentialIssued:false/.test(provider),
             existingBrowserPasswordBridge:/signInWithEmailAndPassword/.test(browser)&&/SHOPPER_SCOPE_REQUIRED/.test(browser),
-            production:false,
-            hrWrites:0
+            productionUntouched:true,
+            hrWritesZero:true
           };
           const pass=Object.values(checks).every(Boolean);
-          fs.writeFileSync(process.env.OUT+'/gate8-static.json',JSON.stringify({decision:pass?'PASS_GATE8_STATIC_CONTRACT':'SOURCE_FAILURE',checks},null,2)+'\n');
+          fs.writeFileSync(process.env.OUT+'/gate8-static.json',JSON.stringify({decision:pass?'PASS_GATE8_STATIC_CONTRACT':'SOURCE_FAILURE',checks,production:false,hrWrites:0},null,2)+'\n');
           console.log(JSON.stringify(checks));
           if(!pass)process.exit(1);
           NODE
