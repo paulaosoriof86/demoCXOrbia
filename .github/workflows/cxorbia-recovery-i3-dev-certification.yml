@@ -119,17 +119,29 @@ jobs:
         with:
           project_id: '${{ env.PROJECT }}'
 
-      - name: Deploy exact SOURCE_SHA to existing Cloud Run DEV
+      - name: Build exact SOURCE_SHA through established Cloud Build lane
         run: |
           set -euo pipefail
           active="$(gcloud auth list --filter=status:ACTIVE --format='value(account)' | head -n1)"
           test "$active" = "$RUNTIME_SA"
-          gcloud run deploy "$SERVICE" \
+          IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:gate8-${SOURCE_SHA}"
+          echo "$IMAGE_URI" > "$OUT/image-uri.txt"
+          gcloud builds submit . \
+            --project "$PROJECT" \
+            --config backend/runtime/hr-live-service/cloudbuild.yaml \
+            --substitutions "_IMAGE=$IMAGE_URI" \
+            --quiet
+
+      - name: Update existing Cloud Run DEV to exact built image
+        run: |
+          set -euo pipefail
+          IMAGE_URI="$(cat "$OUT/image-uri.txt")"
+          gcloud run services update "$SERVICE" \
             --project "$PROJECT" \
             --region "$REGION" \
-            --source . \
+            --image "$IMAGE_URI" \
             --service-account "$RUNTIME_SA" \
-            --set-env-vars "CXORBIA_RECOVERY_SOURCE_SHA=$SOURCE_SHA,CXORBIA_DEV_OPERATIONAL_NAMES=true" \
+            --update-env-vars "CXORBIA_RECOVERY_SOURCE_SHA=$SOURCE_SHA,CXORBIA_DEV_OPERATIONAL_NAMES=true" \
             --quiet
           rev="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.latestReadyRevisionName)')"
           url="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.url)')"
