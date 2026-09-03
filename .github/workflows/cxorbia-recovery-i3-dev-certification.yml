@@ -132,9 +132,61 @@ jobs:
             --substitutions "_IMAGE=$IMAGE_URI" \
             --quiet
 
+      - name: Select an existing deploy identity with Artifact Registry read
+        env:
+          DEDICATED_CREATOR_JSON: ${{ secrets.CXORBIA_GCP_PROJECT_CREATOR_JSON }}
+          ALT_CREATOR_JSON: ${{ secrets.GOOGLE_CLOUD_PROJECT_CREATOR_JSON }}
+          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+        run: |
+          set -euo pipefail
+          mkdir -p .tmp/gate8-deploy-private "$OUT"
+          node <<'NODE'
+          const fs=require('fs');
+          const candidates=[
+            ['dedicated_project_creator',process.env.DEDICATED_CREATOR_JSON||''],
+            ['alternate_project_creator',process.env.ALT_CREATOR_JSON||''],
+            ['existing_dev_service_account',process.env.EXISTING_DEV_JSON||'']
+          ];
+          const inspected=[];
+          for(const [route,raw] of candidates){
+            let c=null;try{c=raw?JSON.parse(raw):null;}catch{}
+            const valid=Boolean(c&&c.type==='service_account'&&c.client_email&&c.private_key&&c.token_uri);
+            inspected.push({route,present:Boolean(raw),shapeValid:valid});
+            if(valid)fs.writeFileSync(`.tmp/gate8-deploy-private/${route}.json`,raw,{mode:0o600});
+          }
+          fs.writeFileSync(process.env.OUT+'/deploy-identity-candidates.source-safe.json',JSON.stringify({inspected,secretValuesOutput:false,production:false},null,2)+'\n');
+          NODE
+          selected=''
+          for route in dedicated_project_creator alternate_project_creator existing_dev_service_account; do
+            file=".tmp/gate8-deploy-private/${route}.json"
+            [ -s "$file" ] || continue
+            account="$(node -e "const c=require('./$file');process.stdout.write(c.client_email)")"
+            gcloud auth activate-service-account "$account" --key-file="$file" --project "$PROJECT" --quiet >/dev/null 2>&1 || continue
+            token="$(gcloud auth print-access-token 2>/dev/null || true)"
+            [ -n "$token" ] || continue
+            response="$(curl -fsS -X POST \
+              -H "Authorization: Bearer $token" \
+              -H 'Content-Type: application/json' \
+              "https://artifactregistry.googleapis.com/v1/projects/${PROJECT}/locations/us/repositories/gcr.io:testIamPermissions" \
+              -d '{"permissions":["artifactregistry.repositories.downloadArtifacts"]}' 2>/dev/null || true)"
+            allowed="$(RESPONSE="$response" node -e "let x={};try{x=JSON.parse(process.env.RESPONSE||'{}')}catch{};process.stdout.write(Array.isArray(x.permissions)&&x.permissions.includes('artifactregistry.repositories.downloadArtifacts')?'yes':'no')")"
+            if [ "$allowed" = 'yes' ]; then
+              selected="$route"
+              break
+            fi
+          done
+          if [ -z "$selected" ]; then
+            printf '{"decision":"ENVIRONMENT_FAILURE_GATE8_NO_EXISTING_DEPLOY_IDENTITY_WITH_ARTIFACT_DOWNLOAD","permission":"artifactregistry.repositories.downloadArtifacts","repository":"us/gcr.io","production":false}\n' > "$OUT/deploy-identity-selection.json"
+            cat "$OUT/deploy-identity-selection.json"
+            exit 1
+          fi
+          printf '{"decision":"PASS_EXISTING_DEPLOY_IDENTITY_SELECTED","route":"%s","permission":"artifactregistry.repositories.downloadArtifacts","repository":"us/gcr.io","secretValuesOutput":false,"production":false}\n' "$selected" > "$OUT/deploy-identity-selection.json"
+          echo "DEPLOY_IDENTITY_ROUTE=$selected" >> "$GITHUB_ENV"
+
       - name: Update existing Cloud Run DEV to exact built image
         run: |
           set -euo pipefail
+          test -n "${DEPLOY_IDENTITY_ROUTE:-}"
           IMAGE_URI="$(cat "$OUT/image-uri.txt")"
           gcloud run services update "$SERVICE" \
             --project "$PROJECT" \
@@ -214,6 +266,7 @@ jobs:
             sameHistoryAfterReload:result.sameHistoryAfterReload===true,
             browserObserved:result.browserObserved===true,
             rawCredentialPersisted:false,
+            deployIdentityRoute:process.env.DEPLOY_IDENTITY_ROUTE||null,
             production:false,
             hrWrites:0
           };
@@ -232,6 +285,6 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Cleanup runtime dependencies
+      - name: Cleanup private deploy credentials and runtime dependencies
         if: always()
-        run: rm -rf node_modules
+        run: rm -rf .tmp/gate8-deploy-private node_modules
