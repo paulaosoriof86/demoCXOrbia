@@ -158,11 +158,47 @@ CX.shopperPostForm = function(data, p, v, ui){
     };
     const validate=()=>showResult(runEligibility(di.value));
     di.addEventListener('change',validate);
-    ov.querySelector('#postSend').addEventListener('click',()=>{
+    ov.querySelector('#postSend').addEventListener('click',async()=>{
       if(!ov.querySelector('#postOk').checked){ui.toast('Confirma los requisitos para continuar','warn');return;}
       if(ov.querySelector('#postRecent').selectedIndex===1){ui.toast('No cumples la restricción de recencia para esta sucursal','err');return;}
       if(!validate())return;
-      close(); ui.toast('Postulación validada · pendiente de envío operativo.','ok');
+      const btn=ov.querySelector('#postSend');
+      const auth=(()=>{try{return CX.backendAuth?.context?.()||{};}catch(_){return {};}})();
+      const c=typeof data.ctx==='function'?data.ctx():{};
+      const tenantId=String(auth.tenantId||c.tenantId||CX.BACKEND?.tenantId||'').trim();
+      const projectId=String((Array.isArray(auth.projectIds)&&auth.projectIds.length===1?auth.projectIds[0]:'')||c.projectId||v.rootProjectId||'').trim();
+      const periodId=String(c.periodId||v.periodId||v.projectId||'').trim();
+      const shopperId=String(auth.shopperId||CX.session?.user?.shopperId||'').trim();
+      const visitId=String(v.visitId||v.id||'').trim();
+      const proposedDate=di.value;
+      const note=String(ov.querySelector('#postNote')?.value||'').trim();
+      if(!tenantId||!projectId||!periodId||!shopperId||!visitId||!CX.commandAdapter?.execute){
+        ui.toast('No fue posible verificar el contexto para enviar la postulación. No se modificó ningún dato.','err',4200);
+        return;
+      }
+      const idempotencyKey=['application.create',tenantId,projectId,periodId,visitId,shopperId].join(':');
+      const prev=btn.textContent;btn.disabled=true;btn.textContent='Enviando…';
+      try{
+        const result=await CX.commandAdapter.execute({
+          commandType:'application.create',entityType:'application',
+          tenantId,projectId,periodId,expectedVersion:'absent',idempotencyKey,
+          payload:{visitId,hrRowId:v.hrRowId||null,shopperId,proposedDate,note},
+          authorization:{providerEnforcementRequired:true,permission:'application.create'},
+          reason:'shopper_postulation_submit'
+        });
+        const committed=result?.ok===true&&result?.status==='committed'&&result?.providerAck===true&&result?.successUiAllowed===true;
+        if(!committed){
+          ui.toast('La postulación no recibió confirmación del backend. No se mostró éxito ni se aplicó un cambio local.','warn',4200);
+          return;
+        }
+        try{await CX.backend?.refresh?.();}catch(_){}
+        try{window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.('gate9_application_create_committed',true);}catch(_){}
+        close();ui.toast('Postulación enviada y confirmada.','ok');
+      }catch(_){
+        ui.toast('No fue posible confirmar la postulación. No se aplicó un cambio local.','err',4200);
+      }finally{
+        btn.disabled=false;btn.textContent=prev;
+      }
     });
   }});
 };
