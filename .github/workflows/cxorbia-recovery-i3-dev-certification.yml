@@ -80,15 +80,38 @@ jobs:
         run: |
           set -euo pipefail
           current_sa="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(spec.template.spec.serviceAccountName)')"
-          test "$current_sa" = "$RUNTIME_SA"
           rev="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.latestReadyRevisionName)')"
-          deployed_sha="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(spec.template.spec.containers[0].env[?name=\"CXORBIA_RECOVERY_SOURCE_SHA\"].value)')"
-          test "$deployed_sha" = "$SOURCE_SHA"
+          token="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $token" \
+            "https://run.googleapis.com/v2/projects/$PROJECT/locations/$REGION/services/$SERVICE" \
+            > "$OUT/cloud-run-v2.json"
           curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache' \
             "$HOSTING_URL/index-backend-dev.html?gate8=$GITHUB_RUN_ID" -o "$RUNNER_TEMP/index-backend-dev.html"
-          cmp "$SRC/app/index-backend-dev.html" "$RUNNER_TEMP/index-backend-dev.html"
-          printf '{"decision":"PASS_GATE8_DEV_SOURCE_READBACK","sourceSha":"%s","revision":"%s","runtimeServiceAccount":"%s","hostingByteParity":true,"gate7":"PASS_LOCKED","production":false}\n' \
-            "$SOURCE_SHA" "$rev" "$current_sa" > "$OUT/dev-readback.json"
+          CURRENT_SA="$current_sa" REV="$rev" SOURCE_FILE="$SRC/app/index-backend-dev.html" HOSTED_FILE="$RUNNER_TEMP/index-backend-dev.html" node <<'NODE'
+          const fs=require('fs');
+          const crypto=require('crypto');
+          const out=process.env.OUT;
+          const v2=JSON.parse(fs.readFileSync(out+'/cloud-run-v2.json','utf8'));
+          const container=v2.template?.containers?.[0]||{};
+          const env=Object.fromEntries((container.env||[]).map(x=>[String(x.name||''),String(x.value||'')]));
+          const deployedSourceSha=env.CXORBIA_RECOVERY_SOURCE_SHA||null;
+          const hash=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+          const sourceHtmlSha256=hash(process.env.SOURCE_FILE);
+          const hostedHtmlSha256=hash(process.env.HOSTED_FILE);
+          const hostingByteParity=sourceHtmlSha256===hostedHtmlSha256;
+          let decision='PASS_GATE8_DEV_SOURCE_READBACK';
+          let classification='PASS';
+          const blockers=[];
+          if(process.env.CURRENT_SA!==process.env.RUNTIME_SA){classification='RELEASE_COMPOSITION_FAILURE';blockers.push('RUNTIME_SERVICE_ACCOUNT_MISMATCH');}
+          if(!deployedSourceSha){if(classification==='PASS')classification='ENVIRONMENT_FAILURE';blockers.push('RUNTIME_SOURCE_SHA_READBACK_MISSING');}
+          else if(deployedSourceSha!==process.env.SOURCE_SHA){classification='RELEASE_COMPOSITION_FAILURE';blockers.push('RUNTIME_SOURCE_SHA_MISMATCH');}
+          if(!hostingByteParity){classification='RELEASE_COMPOSITION_FAILURE';blockers.push('HOSTING_BYTE_PARITY_MISMATCH');}
+          if(blockers.length)decision=classification==='ENVIRONMENT_FAILURE'?'ENVIRONMENT_FAILURE_GATE8_DEV_READBACK_DISCRIMINANT':'RELEASE_COMPOSITION_FAILURE_GATE8_DEV_DRIFT';
+          const result={decision,classification,sourceSha:process.env.SOURCE_SHA,deployedSourceSha,revision:process.env.REV,runtimeServiceAccount:process.env.CURRENT_SA,expectedRuntimeServiceAccount:process.env.RUNTIME_SA,sourceHtmlSha256,hostedHtmlSha256,hostingByteParity,blockers,gate6:'PASS_LOCKED',gate7:'PASS_LOCKED',redeploy:false,production:false};
+          fs.writeFileSync(out+'/gate8-dev-readback-diagnostic.json',JSON.stringify(result,null,2)+'\n');
+          console.log(JSON.stringify(result));
+          if(blockers.length)process.exit(1);
+          NODE
 
       - name: Install Gate 8 read-only certification dependencies
         run: |
@@ -207,7 +230,7 @@ jobs:
             });
             if(!profileState.identityOk||String(profileState.canonicalShopperId||'')!==expectedShopperId)throw new Error('MAPPING_FAILURE_GATE8_MI_PERFIL_EXACT_IDENTITY_FAILED');
             if(networkWrites.length)throw new Error('PERSISTENCE_FAILURE_GATE8_UNEXPECTED_COMMAND_OR_HR_WRITE');
-            fs.writeFileSync(process.env.OUT+'/gate8-browser.json',JSON.stringify({decision:'PASS_GATE8_SHOPPER_LOGIN',sourceSha:process.env.SOURCE_SHA,auth:{role:authState.ctx.role,authNamespace:authState.ctx.authNamespace,tenantId:authState.ctx.tenantId,projectIds:authState.ctx.projectIds,shopperFingerprint:expectedShopperId?String(expectedShopperId).length:null},shell:{sessionRole:authState.sessionRole,appOn:authState.appOn,loginHidden:authState.loginHidden,selectedRole:authState.selectedRole},profile:{view:profileState.view,heading:profileState.miPerfilHeading,identityOk:profileState.identityOk,reason:profileState.reason},authorityApplied:authState.authorityApplied,commandOrHrWritesObserved:networkWrites.length,production:false},null,2)+'\n');
+            fs.writeFileSync(process.env.OUT+'/gate8-browser.json',JSON.stringify({decision:'PASS_GATE8_SHOPPER_LOGIN',sourceSha:process.env.SOURCE_SHA,auth:{role:authState.ctx.role,authNamespace:authState.ctx.authNamespace,tenantId:authState.ctx.tenantId,projectIds:authState.ctx.projectIds,shopperIdPresent:!!authState.ctx.shopperId},shell:{sessionRole:authState.sessionRole,appOn:authState.appOn,loginHidden:authState.loginHidden,selectedRole:authState.selectedRole},profile:{view:profileState.view,heading:profileState.miPerfilHeading,identityOk:profileState.identityOk,reason:profileState.reason},authorityApplied:authState.authorityApplied,commandOrHrWritesObserved:networkWrites.length,production:false},null,2)+'\n');
             await context.close();
           }finally{await browser.close();}
           NODE
