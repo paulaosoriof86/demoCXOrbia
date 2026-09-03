@@ -159,10 +159,12 @@ ensure(first?.authenticated===true&&first.role==='shopper'&&first.tenantId===ten
 ensure(reload?.authenticated===true&&reload.role==='shopper'&&reload.tenantId===tenantId&&reload.shopperId===shopperId&&reload.sessionShopperId===shopperId&&reload.authorityApplied===true&&reload.shopperVisits===first.shopperVisits&&reload.targetVisitPresent===true,'FUNCTIONAL_DEFECT',{blocker:'SHOPPER_RELOAD_INVALID'});
 const [profileAfter,crossAfter,visitAfter,userAfter,memberAfter]=await Promise.all([tenant.collection('shoppers').doc(shopperId).get(),tenant.collection('shopperIdentityCrosswalk').doc(shopperId).get(),project.collection('visits').doc(targetVisit.id).get(),auth.getUser(uid),tenant.collection('users').doc(uid).get()]);
 ensure(profileAfter.exists&&crossAfter.exists&&visitAfter.exists&&memberAfter.exists,'PERSISTENCE_FAILURE',{blocker:'SHOPPER_IDENTITY_READBACK_MISSING'});
+const profileData=profileAfter.data()||{},crossData=crossAfter.data()||{};
+const expectedProviderUidFingerprint=sha(`cxorbia-provider-uid-v1\0${uid}`);
 const identityReadback={
   uidStable:userAfter.uid===before.uid,
-  profileStable:fp(profileAfter.data()||{})===before.profile,
-  crosswalkStable:fp(crossAfter.data()||{})===before.crosswalk,
+  profileIdentityStable:str(profileData.tenantId)===tenantId&&str(profileData.shopperId||profileData.id)===shopperId&&arr(profileData.projectIds).map(String).includes(projectId),
+  crosswalkIdentityStable:str(crossData.tenantId)===tenantId&&str(crossData.shopperId)===shopperId&&str(crossData.sourceStableKey||shopperId)===shopperId&&str(crossData.authNamespace)==='shopper'&&str(crossData.providerUidFingerprint)===expectedProviderUidFingerprint&&arr(crossData.projectIds).map(String).includes(projectId)&&crossData.fuzzyMatching===false,
   visitStable:fp({id:visitAfter.id,...(visitAfter.data()||{})})===before.visit,
   credentialStateValid:str(memberAfter.data()?.credentialState)==='enrolled'&&str(memberAfter.data()?.credentialVersion)==='cxorbia-shopper-credential-v1'
 };
