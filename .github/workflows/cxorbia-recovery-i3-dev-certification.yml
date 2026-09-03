@@ -282,17 +282,20 @@ jobs:
           const toDocs="return snap.docs.map(d=>({...(d.data()||{}),id:d.id}));";
           const fromDup="durableDuplicateKeys:visits.length-new Set(visits.map(visitKey).filter(Boolean)).size,";
           const toDup="durableDuplicateKeys:visits.length-new Set(visits.map(v=>str(v.id)).filter(Boolean)).size,";
-          if(!before.includes(fromDocs)||!before.includes(fromDup))throw new Error('GATE7_QA_DISCRIMINANT_PATTERN_NOT_FOUND');
-          const after=before.replace(fromDocs,toDocs).replace(fromDup,toDup);
+          const fromBrowser="    await page.locator('.role-btn[data-role=\"admin\"]').click({timeout:30000});\n    await page.locator('#lgUser').fill(creds.staff.login);\n    await page.locator('#lgPass').fill(creds.staff.password);\n    await page.locator('#lgSubmit').click();\n    await page.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,{timeout:120000});";
+          const toBrowser="    await page.waitForFunction(()=>window.CX_TYA_TECHNICAL_AUTH_E2E?.ready===true,{timeout:30000});\n    await page.locator('#cxDevEntryLogin').fill(creds.staff.login);\n    await page.locator('#cxDevEntryPassword').fill(creds.staff.password);\n    await page.locator('#cxDevEntrySubmit').click();\n    await page.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,{timeout:120000});";
+          if(!before.includes(fromDocs)||!before.includes(fromDup)||!before.includes(fromBrowser))throw new Error('GATE7_QA_DISCRIMINANT_PATTERN_NOT_FOUND');
+          const after=before.replace(fromDocs,toDocs).replace(fromDup,toDup).replace(fromBrowser,toBrowser);
           if(after===before)throw new Error('GATE7_QA_DISCRIMINANT_NOT_PATCHED');
           fs.writeFileSync(file,after,'utf8');
           fs.writeFileSync(process.env.OUT+'/gate7-qa-discriminant-fix.json',JSON.stringify({
-            decision:'PASS_GATE7_QA_DOCUMENT_ID_DISCRIMINANT_FIX',
+            decision:'PASS_GATE7_QA_DOCUMENT_ID_AND_TECHNICAL_AUTH_MAPPING_FIX',
             classification:'MAPPING_FAILURE',
             scope:'runner-only',
             sourceShaUnchanged:true,
             deployedArtifactUnchanged:true,
             durableIdentity:'firestore-document-id',
+            technicalAuthForm:'cxDevEntryAuth',
             production:false,
             hrWrites:0
           },null,2)+'\n');
