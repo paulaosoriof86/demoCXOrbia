@@ -5,6 +5,10 @@ on:
     branches:
       - recovery/cxorbia-phase-a-20260831
     paths:
+      - backend/runtime/cxorbia-shopper-command-provider-v1.mjs
+      - backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs
+      - backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment.test.mjs
+      - tools/qa/cxorbia-gate8-shopper-login-dev.mjs
       - .github/workflows/cxorbia-recovery-i3-dev-certification.yml
 
 permissions:
@@ -21,43 +25,89 @@ defaults:
     shell: bash
 
 env:
-  SOURCE_SHA: 31c66c49d18aaeb4a85c33dca15b8c137d60f6bd
-  SOURCE_TREE: 7445eb6a3c2ad7c6fb2ff4b400ff8ff8bd1bfdd2
-  SOURCE_PARENT_SHA: bb9c3cb73860673e87b001e6b2ad1728acf2286e
-  WF: .github/workflows/cxorbia-recovery-i3-dev-certification.yml
+  SOURCE_SHA: ${{ github.sha }}
+  BASE_SHA: f839ceac1ff28d6859f06261b1f76935db2b381d
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
   RUNTIME_SA: firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com
-  OUT: .tmp/recovery-i3-gate8-password-diagnostic
+  HOSTING_URL: https://cxorbia-backend-dev.web.app
+  OUT: .tmp/recovery-i3-gate8
 
 jobs:
-  diagnose:
+  certify:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     steps:
-      - name: Checkout workflow transport
+      - name: Checkout exact Recovery source
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Freeze exact functional source and workflow-only transport
+      - name: Freeze focal Gate 8 delta and locked regressions
         run: |
           set -euo pipefail
           mkdir -p "$OUT"
           test "$GITHUB_REF_NAME" = "recovery/cxorbia-phase-a-20260831"
-          git merge-base --is-ancestor "$SOURCE_SHA" HEAD
-          test "$(git rev-parse "$SOURCE_SHA^")" = "$SOURCE_PARENT_SHA"
-          test "$(git rev-parse "$SOURCE_SHA^{tree}")" = "$SOURCE_TREE"
-          mapfile -t changed < <(git diff --name-only "$SOURCE_SHA" HEAD)
-          test "${#changed[@]}" = 1
-          test "${changed[0]}" = "$WF"
-          printf '{"sourceSha":"%s","sourceTree":"%s","transportSha":"%s","gate6":"PASS_LOCKED","gate7":"PASS_LOCKED","gate8":"PASSWORD_PROVISION_DIAGNOSTIC_READONLY","production":false}\n' "$SOURCE_SHA" "$SOURCE_TREE" "$GITHUB_SHA" > "$OUT/authorization.json"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git merge-base --is-ancestor "$BASE_SHA" HEAD
+          mapfile -t changed < <(git diff --name-only "$BASE_SHA" HEAD)
+          printf '%s\n' "${changed[@]}" | tee "$OUT/changed-files.txt"
+          test "${#changed[@]}" -ge 4
+          allowed='^(backend/runtime/cxorbia-shopper-command-provider-v1\.mjs|backend/runtime/hr-live-service/cxorbia-command-runtime-v1\.mjs|backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment\.test\.mjs|tools/qa/cxorbia-gate8-shopper-login-dev\.mjs|\.github/workflows/cxorbia-recovery-i3-dev-certification\.yml)$'
+          for f in "${changed[@]}"; do
+            [[ "$f" =~ $allowed ]] || { echo "OUT_OF_SCOPE:$f"; exit 1; }
+          done
+          git diff --quiet "$BASE_SHA" -- app/core/backend-browser-auth.js
+          git status --porcelain | tee "$OUT/source-status.txt"
+          test ! -s "$OUT/source-status.txt"
+          printf '{"sourceSha":"%s","baseSha":"%s","gate6":"PASS_LOCKED_REGRESSION_REQUIRED","gate7":"PASS_LOCKED_REGRESSION_REQUIRED","gate8":"SECURE_CREDENTIAL_ENROLLMENT_CERTIFICATION","production":false,"hrWrites":0}\n' "$SOURCE_SHA" "$BASE_SHA" > "$OUT/authorization.json"
 
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
+
+      - name: Install focal test dependencies
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.47.2 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+
+      - name: Run Gate 6 Gate 7 and Gate 8 focal tests
+        run: |
+          set -euo pipefail
+          node --test \
+            backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs \
+            backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs \
+            backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment.test.mjs \
+            | tee "$OUT/unit-tests.log"
+
+      - name: Static Gate 8 contract certification
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const provider=fs.readFileSync('backend/runtime/cxorbia-shopper-command-provider-v1.mjs','utf8');
+          const runtime=fs.readFileSync('backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs','utf8');
+          const browser=fs.readFileSync('app/core/backend-browser-auth.js','utf8');
+          const checks={
+            resetOwnedByShopperProvider:/COMMAND_TYPES[\s\S]*shopper\.credential\.reset/.test(provider),
+            runtimeRoutesResetToShopper:/SHOPPER_COMMANDS[\s\S]*shopper\.credential\.reset/.test(runtime),
+            passwordGeneratedServerSide:/randomBytes\(24\)/.test(provider),
+            rawSecretPayloadRejected:/SHOPPER_CREDENTIAL_SECRET_IN_COMMAND_PAYLOAD/.test(provider),
+            sameUidUpdated:/auth\.updateUser\(identity\.uid/.test(provider),
+            noShopperRecreationForReset:/durableCredentialIdentity/.test(provider),
+            oneTimeDisclosure:/oneTimeDisclosure:true/.test(provider)&&/credentialIssued:false/.test(provider),
+            existingBrowserPasswordBridge:/signInWithEmailAndPassword/.test(browser)&&/SHOPPER_SCOPE_REQUIRED/.test(browser),
+            production:false,
+            hrWrites:0
+          };
+          const pass=Object.values(checks).every(Boolean);
+          fs.writeFileSync(process.env.OUT+'/gate8-static.json',JSON.stringify({decision:pass?'PASS_GATE8_STATIC_CONTRACT':'SOURCE_FAILURE',checks},null,2)+'\n');
+          console.log(JSON.stringify(checks));
+          if(!pass)process.exit(1);
+          NODE
 
       - name: Authenticate canonical Firebase DEV
         uses: google-github-actions/auth@v2
@@ -69,88 +119,108 @@ jobs:
         with:
           project_id: '${{ env.PROJECT }}'
 
-      - name: Prove DEV source unchanged without redeploy
+      - name: Deploy exact SOURCE_SHA to existing Cloud Run DEV
         run: |
           set -euo pipefail
-          current_sa="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(spec.template.spec.serviceAccountName)')"
+          active="$(gcloud auth list --filter=status:ACTIVE --format='value(account)' | head -n1)"
+          test "$active" = "$RUNTIME_SA"
+          gcloud beta run deploy "$SERVICE" \
+            --project "$PROJECT" \
+            --region "$REGION" \
+            --source . \
+            --no-build \
+            --service-account "$RUNTIME_SA" \
+            --set-env-vars "CXORBIA_RECOVERY_SOURCE_SHA=$SOURCE_SHA,CXORBIA_DEV_OPERATIONAL_NAMES=true" \
+            --quiet
           rev="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.latestReadyRevisionName)')"
-          token="$(gcloud auth print-access-token)"
-          curl -fsS -H "Authorization: Bearer $token" "https://run.googleapis.com/v2/projects/$PROJECT/locations/$REGION/services/$SERVICE" > "$OUT/cloud-run-v2.json"
-          CURRENT_SA="$current_sa" REV="$rev" node <<'NODE'
+          url="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.url)')"
+          echo "RUNTIME_REVISION=$rev" >> "$GITHUB_ENV"
+          echo "RUNTIME_URL=$url" >> "$GITHUB_ENV"
+          gcloud run revisions describe "$rev" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/revision.json"
+
+      - name: Read back runtime SOURCE_SHA
+        run: |
+          set -euo pipefail
+          node <<'NODE'
           const fs=require('fs');
-          const v2=JSON.parse(fs.readFileSync(process.env.OUT+'/cloud-run-v2.json','utf8'));
-          const env=Object.fromEntries((v2.template?.containers?.[0]?.env||[]).map(x=>[String(x.name||''),String(x.value||'')]));
-          const actual=env.CXORBIA_RECOVERY_SOURCE_SHA||'';
-          const ok=actual===process.env.SOURCE_SHA&&process.env.CURRENT_SA===process.env.RUNTIME_SA;
-          fs.writeFileSync(process.env.OUT+'/dev-source.json',JSON.stringify({decision:ok?'PASS_GATE8_DEV_SOURCE_UNCHANGED':'RELEASE_COMPOSITION_FAILURE_GATE8_DEV_DRIFT',sourceSha:process.env.SOURCE_SHA,deployedSourceSha:actual,revision:process.env.REV,runtimeServiceAccount:process.env.CURRENT_SA,redeploy:false,production:false},null,2)+'\n');
+          const r=JSON.parse(fs.readFileSync(process.env.OUT+'/revision.json','utf8'));
+          const env=r.spec?.containers?.[0]?.env||[];
+          const source=(env.find(x=>x.name==='CXORBIA_RECOVERY_SOURCE_SHA')||{}).value||null;
+          const out={decision:source===process.env.SOURCE_SHA?'PASS_RUNTIME_SOURCE_SHA_READBACK':'RELEASE_COMPOSITION_FAILURE',revision:process.env.RUNTIME_REVISION,url:process.env.RUNTIME_URL,sourceSha:source,expected:process.env.SOURCE_SHA,production:false};
+          fs.writeFileSync(process.env.OUT+'/runtime.json',JSON.stringify(out,null,2)+'\n');
+          console.log(JSON.stringify(out));
+          if(out.decision!=='PASS_RUNTIME_SOURCE_SHA_READBACK')process.exit(1);
+          NODE
+
+      - name: Read back unchanged Hosting DEV login and command composition
+        run: |
+          set -euo pipefail
+          url="$HOSTING_URL/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxTechnicalAuthE2E=YES_PAULA_20260801_REAL_USERS_E2E"
+          curl -fsS --retry 8 --retry-delay 3 "$url" > "$OUT/index-backend-dev.html"
+          curl -fsS --retry 8 --retry-delay 3 "$HOSTING_URL/core/backend-browser-auth.js" > "$OUT/backend-browser-auth.js"
+          node <<'NODE'
+          const fs=require('fs');
+          const html=fs.readFileSync(process.env.OUT+'/index-backend-dev.html','utf8');
+          const auth=fs.readFileSync(process.env.OUT+'/backend-browser-auth.js','utf8');
+          const ok=html.includes('adapters/cxorbia-command-http-transport-v1.js')&&html.includes('core/backend-protected-dev-mode.js')&&html.includes('core/backend-browser-auth.js')&&auth.includes('signInWithEmailAndPassword')&&auth.includes('SHOPPER_SCOPE_REQUIRED');
+          const out={decision:ok?'PASS_HOSTING_GATE8_COMPOSITION_READBACK':'RELEASE_COMPOSITION_FAILURE',hostingUrl:process.env.HOSTING_URL,existingBrowserBridge:true,hostingRedeploy:false,production:false};
+          fs.writeFileSync(process.env.OUT+'/hosting.json',JSON.stringify(out,null,2)+'\n');
           if(!ok)process.exit(1);
           NODE
 
-      - name: Install read-only Firebase Admin dependency
-        run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null
-
-      - name: Discriminate current Shopper password provisioning
+      - name: Execute real Gate 8 shopper enrollment and browser login
         run: |
           set -euo pipefail
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import crypto from 'node:crypto';
-          import {applicationDefault,getApps,initializeApp} from 'firebase-admin/app';
-          import {getAuth} from 'firebase-admin/auth';
-          import {getFirestore} from 'firebase-admin/firestore';
-          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:process.env.PROJECT});
-          const auth=getAuth(),db=getFirestore();
-          const tenantId='tya',projectId='cinepolis';
-          const list=v=>Array.isArray(v)?v.map(String):(typeof v==='string'?v.split(',').map(x=>x.trim()).filter(Boolean):[]);
-          const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
-          const stableUid=sid=>`cx-sh-${sha(`${tenantId}\0shopper\0${sid}`).slice(0,28)}`;
-          const stableEmail=sid=>`${sha(`${tenantId}\0shopper\0${sid}`).slice(0,48)}@auth.cxorbia.invalid`;
-          const all=[];let token;
-          do{const page=await auth.listUsers(1000,token);all.push(...page.users);token=page.pageToken;}while(token);
-          const visitSnap=await db.collection('tenants').doc(tenantId).collection('projects').doc(projectId).collection('visits').get();
-          const historyIds=new Set(visitSnap.docs.map(d=>String(d.data()?.shopperId||'').trim()).filter(Boolean));
-          const c={totalAuthUsers:all.length,fullShopperClaims:0,fullClaimsWithProtectedHistory:0,fullClaimsPasswordProvider:0,fullClaimsPasswordHashPresent:0,stableGate6Identity:0,stableGate6IdentityWithHistory:0,stableGate6IdentityPasswordProvider:0,stableGate6IdentityPasswordHashPresent:0,stableGate6IdentityEmailExact:0,stableGate6IdentityWithHistoryPasswordProvider:0,stableGate6IdentityWithHistoryPasswordHashPresent:0};
-          const providerCounts={};
-          for(const u of all){
-            const cl=u.customClaims||{};const sid=String(cl.shopperId||'').trim();
-            const full=String(cl.role||'').toLowerCase()==='shopper'&&String(cl.authNamespace||'').toLowerCase()==='shopper'&&(cl.tenantId===tenantId||list(cl.tenants).includes(tenantId))&&(cl.projectId===projectId||list(cl.projectIds).includes(projectId))&&!!sid;
-            if(!full)continue;
-            c.fullShopperClaims++;
-            const history=historyIds.has(sid);if(history)c.fullClaimsWithProtectedHistory++;
-            const providers=(u.providerData||[]).map(p=>String(p.providerId||'')).filter(Boolean);
-            for(const p of providers)providerCounts[p]=(providerCounts[p]||0)+1;
-            const passwordProvider=providers.includes('password');
-            const passwordHashPresent=!!u.passwordHash;
-            if(passwordProvider)c.fullClaimsPasswordProvider++;
-            if(passwordHashPresent)c.fullClaimsPasswordHashPresent++;
-            const stable=u.uid===stableUid(sid);
-            if(stable){
-              c.stableGate6Identity++;
-              if(history)c.stableGate6IdentityWithHistory++;
-              if(String(u.email||'').toLowerCase()===stableEmail(sid))c.stableGate6IdentityEmailExact++;
-              if(passwordProvider)c.stableGate6IdentityPasswordProvider++;
-              if(passwordHashPresent)c.stableGate6IdentityPasswordHashPresent++;
-              if(history&&passwordProvider)c.stableGate6IdentityWithHistoryPasswordProvider++;
-              if(history&&passwordHashPresent)c.stableGate6IdentityWithHistoryPasswordHashPresent++;
-            }
-          }
-          let classification='PASS',decision='PASS_GATE8_PASSWORD_CAPABLE_SHOPPER_EXISTS';
-          if(c.stableGate6Identity>0&&c.stableGate6IdentityPasswordProvider===0&&c.stableGate6IdentityPasswordHashPresent===0){classification='AUTH_FAILURE';decision='AUTH_FAILURE_GATE8_GATE6_IDENTITIES_HAVE_NO_PASSWORD_CREDENTIAL';}
-          else if(c.fullClaimsPasswordProvider===0&&c.fullClaimsPasswordHashPresent===0){classification='AUTH_FAILURE';decision='AUTH_FAILURE_GATE8_NO_PASSWORD_CAPABLE_SHOPPER';}
-          const result={decision,classification,counts:c,providerCounts,sourceSha:process.env.SOURCE_SHA,authWrites:0,passwordChanges:0,passwordResets:0,usersCreated:0,claimsChanged:0,firestoreWrites:0,hrWrites:0,redeploy:false,production:false};
-          fs.writeFileSync(process.env.OUT+'/gate8-password-provision-diagnostic.json',JSON.stringify(result,null,2)+'\n');
-          console.log(JSON.stringify(result));
+          PROJECT="$PROJECT" OUT="$OUT" SOURCE_SHA="$SOURCE_SHA" RUNTIME_URL="$RUNTIME_URL" HOSTING_URL="$HOSTING_URL" \
+            node tools/qa/cxorbia-gate8-shopper-login-dev.mjs | tee "$OUT/gate8-console.log"
+          ! grep -E '"password"[[:space:]]*:' "$OUT/gate8-console.log"
+          ! grep -E '"password"[[:space:]]*:' "$OUT/gate8-shopper-login.json"
+
+      - name: Final Gate 8 verdict
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const result=JSON.parse(fs.readFileSync(process.env.OUT+'/gate8-shopper-login.json','utf8'));
+          if(result.decision!=='PASS_GATE8_SECURE_SHOPPER_LOGIN')throw new Error(result.decision||'GATE8_RESULT_MISSING');
+          const summary={
+            verdict:result.decision,
+            gate6:'PASS_REGRESSION',
+            gate7:'PASS_REGRESSION',
+            gate8:'PASS',
+            sourceSha:process.env.SOURCE_SHA,
+            cloudRunRevision:process.env.RUNTIME_REVISION,
+            runtimeSourceRevision:result.sourceRevision||null,
+            hrRevisionUsed:result.sourceRevision||null,
+            tenantId:result.tenantId,
+            projectId:result.projectId,
+            periodId:result.periodId,
+            shopperFingerprint:result.shopperFingerprint,
+            uidFingerprint:result.uidFingerprint,
+            credentialIssuedOnce:result.credentialIssuedOnce===true,
+            replayIdempotent:result.replayIdempotent===true,
+            sameIdentityAfterReload:result.sameIdentityAfterReload===true,
+            sameHistoryAfterReload:result.sameHistoryAfterReload===true,
+            browserObserved:result.browserObserved===true,
+            rawCredentialPersisted:false,
+            production:false,
+            hrWrites:0
+          };
+          const required=summary.credentialIssuedOnce&&summary.replayIdempotent&&summary.sameIdentityAfterReload&&summary.sameHistoryAfterReload&&summary.browserObserved;
+          if(!required)throw new Error('GATE8_ACCEPTANCE_INCOMPLETE');
+          fs.writeFileSync(process.env.OUT+'/result.json',JSON.stringify(summary,null,2)+'\n');
+          console.log(JSON.stringify(summary));
           NODE
 
-      - name: Upload sanitized diagnostic evidence
+      - name: Upload sanitized Gate 8 evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-recovery-i3-gate8-password-diagnostic-${{ github.run_id }}
+          name: cxorbia-recovery-i3-gate8-${{ github.run_id }}
           path: ${{ env.OUT }}
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Cleanup
+      - name: Cleanup runtime dependencies
         if: always()
         run: rm -rf node_modules
