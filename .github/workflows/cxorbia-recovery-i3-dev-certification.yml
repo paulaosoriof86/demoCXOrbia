@@ -132,71 +132,45 @@ jobs:
             --substitutions "_IMAGE=$IMAGE_URI" \
             --quiet
 
-      - name: Select an existing deploy identity with Artifact Registry read
-        env:
-          DEDICATED_CREATOR_JSON: ${{ secrets.CXORBIA_GCP_PROJECT_CREATOR_JSON }}
-          ALT_CREATOR_JSON: ${{ secrets.GOOGLE_CLOUD_PROJECT_CREATOR_JSON }}
-          EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
+      - name: Deploy exact built image through Cloud Build execution identity
         run: |
           set -euo pipefail
-          mkdir -p .tmp/gate8-deploy-private "$OUT"
-          node <<'NODE'
-          const fs=require('fs');
-          const candidates=[
-            ['dedicated_project_creator',process.env.DEDICATED_CREATOR_JSON||''],
-            ['alternate_project_creator',process.env.ALT_CREATOR_JSON||''],
-            ['existing_dev_service_account',process.env.EXISTING_DEV_JSON||'']
-          ];
-          const inspected=[];
-          for(const [route,raw] of candidates){
-            let c=null;try{c=raw?JSON.parse(raw):null;}catch{}
-            const valid=Boolean(c&&c.type==='service_account'&&c.client_email&&c.private_key&&c.token_uri);
-            inspected.push({route,present:Boolean(raw),shapeValid:valid});
-            if(valid)fs.writeFileSync(`.tmp/gate8-deploy-private/${route}.json`,raw,{mode:0o600});
-          }
-          fs.writeFileSync(process.env.OUT+'/deploy-identity-candidates.source-safe.json',JSON.stringify({inspected,secretValuesOutput:false,production:false},null,2)+'\n');
-          NODE
-          selected=''
-          for route in dedicated_project_creator alternate_project_creator existing_dev_service_account; do
-            file=".tmp/gate8-deploy-private/${route}.json"
-            [ -s "$file" ] || continue
-            account="$(node -e "const c=require('./$file');process.stdout.write(c.client_email)")"
-            gcloud auth activate-service-account "$account" --key-file="$file" --project "$PROJECT" --quiet >/dev/null 2>&1 || continue
-            token="$(gcloud auth print-access-token 2>/dev/null || true)"
-            [ -n "$token" ] || continue
-            response="$(curl -fsS -X POST \
-              -H "Authorization: Bearer $token" \
-              -H 'Content-Type: application/json' \
-              "https://artifactregistry.googleapis.com/v1/projects/${PROJECT}/locations/us/repositories/gcr.io:testIamPermissions" \
-              -d '{"permissions":["artifactregistry.repositories.downloadArtifacts"]}' 2>/dev/null || true)"
-            allowed="$(RESPONSE="$response" node -e "let x={};try{x=JSON.parse(process.env.RESPONSE||'{}')}catch{};process.stdout.write(Array.isArray(x.permissions)&&x.permissions.includes('artifactregistry.repositories.downloadArtifacts')?'yes':'no')")"
-            if [ "$allowed" = 'yes' ]; then
-              selected="$route"
-              break
-            fi
-          done
-          if [ -z "$selected" ]; then
-            printf '{"decision":"ENVIRONMENT_FAILURE_GATE8_NO_EXISTING_DEPLOY_IDENTITY_WITH_ARTIFACT_DOWNLOAD","permission":"artifactregistry.repositories.downloadArtifacts","repository":"us/gcr.io","production":false}\n' > "$OUT/deploy-identity-selection.json"
-            cat "$OUT/deploy-identity-selection.json"
-            exit 1
-          fi
-          printf '{"decision":"PASS_EXISTING_DEPLOY_IDENTITY_SELECTED","route":"%s","permission":"artifactregistry.repositories.downloadArtifacts","repository":"us/gcr.io","secretValuesOutput":false,"production":false}\n' "$selected" > "$OUT/deploy-identity-selection.json"
-          echo "DEPLOY_IDENTITY_ROUTE=$selected" >> "$GITHUB_ENV"
-
-      - name: Update existing Cloud Run DEV to exact built image
-        run: |
-          set -euo pipefail
-          test -n "${DEPLOY_IDENTITY_ROUTE:-}"
           IMAGE_URI="$(cat "$OUT/image-uri.txt")"
-          gcloud run services update "$SERVICE" \
+          DEPLOY_CFG=".tmp/gate8-cloudbuild-deploy.yaml"
+          mkdir -p .tmp
+          cat > "$DEPLOY_CFG" <<'YAML'
+          steps:
+            - name: 'gcr.io/cloud-builders/gcloud'
+              entrypoint: 'bash'
+              args:
+                - '-c'
+                - |
+                  set -euo pipefail
+                  gcloud run services update "$_SERVICE" \
+                    --project "$_PROJECT" \
+                    --region "$_REGION" \
+                    --image "$_IMAGE" \
+                    --service-account "$_RUNTIME_SA" \
+                    --update-env-vars "CXORBIA_RECOVERY_SOURCE_SHA=$_SOURCE_SHA,CXORBIA_DEV_OPERATIONAL_NAMES=true" \
+                    --quiet
+          timeout: '600s'
+          options:
+            logging: CLOUD_LOGGING_ONLY
+          YAML
+          gcloud builds submit --no-source \
             --project "$PROJECT" \
-            --region "$REGION" \
-            --image "$IMAGE_URI" \
-            --service-account "$RUNTIME_SA" \
-            --update-env-vars "CXORBIA_RECOVERY_SOURCE_SHA=$SOURCE_SHA,CXORBIA_DEV_OPERATIONAL_NAMES=true" \
+            --config "$DEPLOY_CFG" \
+            --substitutions "_PROJECT=$PROJECT,_REGION=$REGION,_SERVICE=$SERVICE,_IMAGE=$IMAGE_URI,_RUNTIME_SA=$RUNTIME_SA,_SOURCE_SHA=$SOURCE_SHA" \
             --quiet
+          echo "DEPLOY_IDENTITY_ROUTE=cloud_build_execution_identity" >> "$GITHUB_ENV"
+
+      - name: Read back exact Cloud Run DEV revision
+        run: |
+          set -euo pipefail
           rev="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.latestReadyRevisionName)')"
           url="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.url)')"
+          test -n "$rev"
+          test -n "$url"
           echo "RUNTIME_REVISION=$rev" >> "$GITHUB_ENV"
           echo "RUNTIME_URL=$url" >> "$GITHUB_ENV"
           gcloud run revisions describe "$rev" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/revision.json"
@@ -285,6 +259,6 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Cleanup private deploy credentials and runtime dependencies
+      - name: Cleanup temporary Cloud Build config and runtime dependencies
         if: always()
-        run: rm -rf .tmp/gate8-deploy-private node_modules
+        run: rm -f .tmp/gate8-cloudbuild-deploy.yaml && rm -rf node_modules
