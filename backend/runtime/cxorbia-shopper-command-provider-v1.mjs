@@ -7,7 +7,7 @@
 import crypto from 'node:crypto';
 
 export const VERSION='cxorbia-shopper-command-provider-v1';
-export const COMMAND_TYPES=Object.freeze(['shopper.create']);
+export const COMMAND_TYPES=Object.freeze(['shopper.create','shopper.credential.reset']);
 export const OPERATOR_ROLES=Object.freeze(['super','admin']);
 
 const str=v=>String(v==null?'':v).trim();
@@ -19,6 +19,7 @@ const sha=value=>crypto.createHash('sha256').update(typeof value==='string'?valu
 const clean=value=>Array.isArray(value)?value.map(clean):(value&&typeof value==='object'?Object.fromEntries(Object.entries(value).filter(([,v])=>v!==undefined&&typeof v!=='function').map(([k,v])=>[k,clean(v)])):value);
 const sameArray=(a,b)=>JSON.stringify(uniq(a))===JSON.stringify(uniq(b));
 const receiptId=command=>sha(`${command.tenantId}\0${command.projectId}\0${command.periodId||''}\0${command.idempotencyKey}`).slice(0,40);
+const RAW_SECRET_KEY=/^(?:password|pass|newpassword|temporarypassword|credential|credentialvalue|secret|token|resettoken)$/i;
 
 export const providerUidFingerprint=uid=>sha(`cxorbia-provider-uid-v1\0${str(uid)}`);
 export const stableShopperUid=(tenantId,shopperId)=>`cx-sh-${sha(`${str(tenantId)}\0shopper\0${str(shopperId)}`).slice(0,28)}`;
@@ -38,6 +39,15 @@ function projectScope(snapshot){
     tenantId:str(snapshot?.tenantId||snapshot?.tenantConfig?.tenantId),
     projectId:str(snapshot?.projectId||snapshot?.projectConfig?.projectId)
   };
+}
+function containsRawSecret(value,depth=0){
+  if(depth>8||value==null)return false;
+  if(Array.isArray(value))return value.some(v=>containsRawSecret(v,depth+1));
+  if(typeof value!=='object')return false;
+  return Object.entries(value).some(([key,v])=>(RAW_SECRET_KEY.test(String(key))&&v!=null&&String(v)!=='')||containsRawSecret(v,depth+1));
+}
+function generateCredential(){
+  return `${crypto.randomBytes(24).toString('base64url')}!aA1`;
 }
 
 export function validateProviderPolicy(policy={}){
@@ -60,6 +70,7 @@ function validateCommand(command={}){
   if(!str(command.tenantId)||!str(command.projectId)||!str(command.periodId))errors.push('SHOPPER_COMMAND_SCOPE_REQUIRED');
   if(!str(command.idempotencyKey))errors.push('SHOPPER_IDEMPOTENCY_REQUIRED');
   if(command.authorization?.providerEnforcementRequired!==true)errors.push('SHOPPER_PROVIDER_ENFORCEMENT_REQUIRED');
+  if(command.commandType==='shopper.credential.reset'&&containsRawSecret(command.payload||{}))errors.push('SHOPPER_CREDENTIAL_SECRET_IN_COMMAND_PAYLOAD');
   return {ok:errors.length===0,errors};
 }
 
@@ -215,9 +226,30 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision}){
   }
 }
 
+async function durableCredentialIdentity({auth,db,command,shopperId}){
+  const tenantId=str(command.tenantId),projectId=str(command.projectId);
+  const tenant=db.collection('tenants').doc(tenantId),users=tenant.collection('users');
+  const memberDoc=await membershipMatches(users,shopperId);
+  if(!memberDoc)throw new Error('SHOPPER_CREDENTIAL_MEMBERSHIP_MISSING');
+  const uid=memberDoc.id,member=memberDoc.data()||{};
+  if(member.active!==true||str(member.tenantId)!==tenantId||str(member.shopperId)!==shopperId||str(member.role)!=='shopper'||str(member.authNamespace)!=='shopper')throw new Error('SHOPPER_CREDENTIAL_MEMBERSHIP_INVALID');
+  if(!uniq(member.projectIds).includes(projectId))throw new Error('SHOPPER_CREDENTIAL_PROJECT_SCOPE_DENIED');
+  const profileRef=tenant.collection('shoppers').doc(shopperId),crossRef=tenant.collection('shopperIdentityCrosswalk').doc(shopperId);
+  const [profileSnap,crossSnap,user]=await Promise.all([profileRef.get(),crossRef.get(),safeAuthByUid(auth,uid)]);
+  if(!profileSnap.exists)throw new Error('SHOPPER_CREDENTIAL_PROFILE_MISSING');
+  if(!crossSnap.exists)throw new Error('SHOPPER_CREDENTIAL_CROSSWALK_MISSING');
+  if(!user)throw new Error('SHOPPER_CREDENTIAL_AUTH_MISSING');
+  const profile=profileSnap.data()||{},cross=crossSnap.data()||{};
+  if(str(profile.tenantId||tenantId)!==tenantId||str(profile.shopperId||shopperId)!==shopperId||!uniq(profile.projectIds).includes(projectId))throw new Error('SHOPPER_CREDENTIAL_PROFILE_SCOPE_CONFLICT');
+  if(str(cross.tenantId)!==tenantId||str(cross.shopperId)!==shopperId||str(cross.providerUidFingerprint)!==providerUidFingerprint(uid)||!uniq(cross.projectIds).includes(projectId))throw new Error('SHOPPER_CREDENTIAL_CROSSWALK_CONFLICT');
+  assertAuthIdentity(user,tenantId,shopperId);
+  if(str(user.email).toLowerCase()!==internalEmail(tenantId,shopperId).toLowerCase())throw new Error('SHOPPER_CREDENTIAL_LOGIN_MAPPING_CONFLICT');
+  return {uid,user,memberRef:users.doc(uid)};
+}
+
 export function createShopperCommandProvider({auth,db,policy}={}){
   const pv=validateProviderPolicy(policy);if(!pv.ok)throw new Error('SHOPPER_PROVIDER_POLICY_INVALID:'+pv.errors.join(','));
-  if(!auth?.getUser||!auth?.createUser||!auth?.setCustomUserClaims||!db?.collection||!db?.runTransaction)throw new Error('SHOPPER_PROVIDER_DEPENDENCIES_MISSING');
+  if(!auth?.getUser||!auth?.createUser||!auth?.setCustomUserClaims||!auth?.updateUser||!db?.collection||!db?.runTransaction)throw new Error('SHOPPER_PROVIDER_DEPENDENCIES_MISSING');
   return Object.freeze({
     version:VERSION,
     async reconcileSnapshot(snapshot,{sourceRevision}={}){
@@ -241,7 +273,23 @@ export function createShopperCommandProvider({auth,db,policy}={}){
       const tenant=db.collection('tenants').doc(command.tenantId),receipt=tenant.collection('commandReceipts').doc(receiptId(command)),digest=sha(clean(command));
       try{
         const prior=await receipt.get();
-        if(prior.exists){const p=prior.data()||{};if(p.commandDigest!==digest)throw new Error('SHOPPER_IDEMPOTENCY_REUSE_DIFFERENT_PAYLOAD');if(p.status==='committed')return ack(command,p.shopperId,{idempotentReplay:true,providerWrites:0});}
+        if(prior.exists){
+          const p=prior.data()||{};
+          if(p.commandDigest!==digest)throw new Error('SHOPPER_IDEMPOTENCY_REUSE_DIFFERENT_PAYLOAD');
+          if(p.status==='committed')return ack(command,p.shopperId,{idempotentReplay:true,providerWrites:0,credentialState:p.credentialState||null,credentialIssued:false,uidFingerprint:p.uidFingerprint||null});
+        }
+        if(command.commandType==='shopper.credential.reset'){
+          const identity=await durableCredentialIdentity({auth,db,command,shopperId});
+          const password=generateCredential();
+          await auth.updateUser(identity.uid,{password,disabled:false});
+          const readback=await auth.getUser(identity.uid);
+          assertAuthIdentity(readback,str(command.tenantId),shopperId);
+          if(str(readback.email).toLowerCase()!==internalEmail(command.tenantId,shopperId).toLowerCase())throw new Error('SHOPPER_CREDENTIAL_READBACK_MAPPING_MISMATCH');
+          const issuedAt=now(),uidFingerprint=providerUidFingerprint(identity.uid);
+          await identity.memberRef.set({credentialState:'enrolled',credentialVersion:'cxorbia-shopper-credential-v1',lastCredentialResetAt:issuedAt,lastCredentialActionId:receiptId(command),updatedAt:issuedAt},{merge:true});
+          await receipt.set({status:'committed',commandDigest:digest,shopperId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,credentialState:'enrolled',credentialVersion:'cxorbia-shopper-credential-v1',uidFingerprint,updatedAt:issuedAt},{merge:false});
+          return ack(command,shopperId,{uidFingerprint,idempotentReplay:false,providerWrites:2,credentialState:'enrolled',credentialIssued:true,credential:{login:shopperId,password,namespace:'shopper',oneTimeDisclosure:true,persist:false}});
+        }
         const profile=command.payload?.profile||command.payload||{};
         const candidate={...sourceCandidate({...profile,shopperId},{tenantId:command.tenantId,projectId:command.projectId}),shopperId,tenantId:command.tenantId,projectId:command.projectId};
         const sourceRevision=str(command.payload?.sourceRevision||command.payload?.hrSourceRevision||`command:${command.idempotencyKey}`);
@@ -250,7 +298,7 @@ export function createShopperCommandProvider({auth,db,policy}={}){
         return ack(command,shopperId,{uidFingerprint:providerUidFingerprint(result.uid),idempotentReplay:result.idempotentReplay,providerWrites:Number(result.providerWrites||0)+1});
       }catch(error){return blocked(command,str(error?.message||error));}
     },
-    status(){return {version:VERSION,enabled:true,allowedTenantIds:uniq(policy.allowedTenantIds),allowedProjectIds:uniq(policy.allowedProjectIds),hrWrites:false,externalWrites:false,fuzzyMatching:false,stableIdentity:true};}
+    status(){return {version:VERSION,enabled:true,allowedTenantIds:uniq(policy.allowedTenantIds),allowedProjectIds:uniq(policy.allowedProjectIds),hrWrites:false,externalWrites:false,fuzzyMatching:false,stableIdentity:true,credentialEnrollment:true};}
   });
 }
 
