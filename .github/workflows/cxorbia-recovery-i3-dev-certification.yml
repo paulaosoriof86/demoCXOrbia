@@ -148,14 +148,57 @@ jobs:
                 - '-c'
                 - |
                   set +e
-                  gcloud run services update "$_SERVICE" \
+                  gcloud run services describe "$_SERVICE" \
                     --project "$_PROJECT" \
                     --region "$_REGION" \
-                    --image "$_IMAGE" \
-                    --service-account "$_RUNTIME_SA" \
-                    --update-env-vars "CXORBIA_RECOVERY_SOURCE_SHA=$_SOURCE_SHA,CXORBIA_DEV_OPERATIONAL_NAMES=true" \
-                    --quiet > /workspace/gate8-deploy.log 2>&1
+                    --format=json > /workspace/gate8-service.json 2> /workspace/gate8-deploy.log
                   rc=$?
+                  if [ "$rc" -eq 0 ]; then
+                    PROJECT="$_PROJECT" SERVICE="$_SERVICE" IMAGE="$_IMAGE" RUNTIME_SA="$_RUNTIME_SA" SOURCE_SHA="$_SOURCE_SHA" python3 - <<'PY' >> /workspace/gate8-deploy.log 2>&1
+                  import json, os
+                  path='/workspace/gate8-service.json'
+                  with open(path, encoding='utf-8') as f:
+                      svc=json.load(f)
+                  svc.pop('status', None)
+                  md=svc.setdefault('metadata', {})
+                  for key in ('creationTimestamp','generation','resourceVersion','selfLink','uid'):
+                      md.pop(key, None)
+                  tmpl=svc.setdefault('spec', {}).setdefault('template', {})
+                  tmd=tmpl.setdefault('metadata', {})
+                  for key in ('creationTimestamp','name'):
+                      tmd.pop(key, None)
+                  annotations=tmd.setdefault('annotations', {})
+                  removed=annotations.pop('run.googleapis.com/sources', None)
+                  if not annotations:
+                      tmd.pop('annotations', None)
+                  tspec=tmpl.setdefault('spec', {})
+                  tspec['serviceAccountName']=os.environ['RUNTIME_SA']
+                  containers=tspec.setdefault('containers', [])
+                  if len(containers) != 1:
+                      raise SystemExit(f'GATE8_EXPECTED_ONE_CONTAINER:{len(containers)}')
+                  container=containers[0]
+                  container['image']=os.environ['IMAGE']
+                  env=container.setdefault('env', [])
+                  def upsert(name, value):
+                      for item in env:
+                          if item.get('name') == name:
+                              item.clear(); item.update({'name':name,'value':value}); return
+                      env.append({'name':name,'value':value})
+                  upsert('CXORBIA_RECOVERY_SOURCE_SHA', os.environ['SOURCE_SHA'])
+                  upsert('CXORBIA_DEV_OPERATIONAL_NAMES', 'true')
+                  with open('/workspace/gate8-service-replace.json','w',encoding='utf-8') as f:
+                      json.dump(svc,f,separators=(',',':'))
+                  print(json.dumps({'sourceAnnotationRemoved':removed is not None,'containerCount':len(containers),'service':os.environ['SERVICE']}))
+                  PY
+                    rc=$?
+                  fi
+                  if [ "$rc" -eq 0 ]; then
+                    gcloud run services replace /workspace/gate8-service-replace.json \
+                      --project "$_PROJECT" \
+                      --region "$_REGION" \
+                      --quiet >> /workspace/gate8-deploy.log 2>&1
+                    rc=$?
+                  fi
                   printf '%s\n' "$rc" > /workspace/gate8-deploy.rc
                   cat /workspace/gate8-deploy.log
                   gcloud storage cp /workspace/gate8-deploy.log "$_LOG_URI" >/dev/null 2>&1
@@ -180,7 +223,7 @@ jobs:
           deploy_rc="$(gcloud storage cat "$RC_URI" | tr -d '\r\n')"
           printf '%s\n' "$deploy_rc" > "$OUT/deploy-cloud-build.rc"
           test "$deploy_rc" = "0"
-          echo "DEPLOY_IDENTITY_ROUTE=cloud_build_execution_identity" >> "$GITHUB_ENV"
+          echo "DEPLOY_IDENTITY_ROUTE=cloud_build_execution_identity_atomic_replace" >> "$GITHUB_ENV"
 
       - name: Read back exact Cloud Run DEV revision
         run: |
