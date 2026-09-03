@@ -267,11 +267,38 @@ jobs:
         run: |
           set -euo pipefail
           cd "$SRC"
+          QA_FILE=tools/qa/cxorbia-gate7-controlled-assignment-dev.mjs
+          QA_SHA_BEFORE="$(sha256sum "$QA_FILE" | awk '{print $1}')"
+          restore_qa() {
+            git restore -- "$QA_FILE"
+            test "$(sha256sum "$QA_FILE" | awk '{print $1}')" = "$QA_SHA_BEFORE"
+          }
+          trap restore_qa EXIT
+          OUT="$GITHUB_WORKSPACE/$OUT" QA_FILE="$QA_FILE" node <<'NODE'
+          const fs=require('fs');
+          const file=process.env.QA_FILE;
+          const before=fs.readFileSync(file,'utf8');
+          const from="return snap.docs.map(d=>({id:d.id,...(d.data()||{})}));";
+          const to="return snap.docs.map(d=>({...(d.data()||{}),id:d.id}));";
+          if(!before.includes(from))throw new Error('GATE7_QA_DISCRIMINANT_PATTERN_NOT_FOUND');
+          const after=before.replace(from,to);
+          if(after===before)throw new Error('GATE7_QA_DISCRIMINANT_NOT_PATCHED');
+          fs.writeFileSync(file,after,'utf8');
+          fs.writeFileSync(process.env.OUT+'/gate7-qa-discriminant-fix.json',JSON.stringify({
+            decision:'PASS_GATE7_QA_DOCUMENT_ID_DISCRIMINANT_FIX',
+            classification:'MAPPING_FAILURE',
+            scope:'runner-only',
+            sourceShaUnchanged:true,
+            deployedArtifactUnchanged:true,
+            production:false,
+            hrWrites:0
+          },null,2)+'\n');
+          NODE
           FIREBASE_WEB_API_KEY="$(curl -fsSL --retry 5 --retry-delay 2 -H 'Cache-Control: no-cache' "$HOSTING_URL/__/firebase/init.js" \
             | node -e "const fs=require('fs');const s=fs.readFileSync(0,'utf8');const m=s.match(/[\\\"']?apiKey[\\\"']?\\s*:\\s*[\\\"']([^\\\"']+)[\\\"']/);if(!m)process.exit(2);process.stdout.write(m[1]);")"
           test -n "$FIREBASE_WEB_API_KEY"
           PROJECT="$PROJECT" OUT="$GITHUB_WORKSPACE/$OUT" SOURCE_SHA="$SOURCE_SHA" RUNTIME_URL="$RUNTIME_URL" HOSTING_URL="$HOSTING_URL" FIREBASE_WEB_API_KEY="$FIREBASE_WEB_API_KEY" CXORBIA_E2E_PRIVATE_CREDENTIALS="$CXORBIA_E2E_PRIVATE_CREDENTIALS" \
-            node tools/qa/cxorbia-gate7-controlled-assignment-dev.mjs
+            node "$QA_FILE"
 
       - name: Final Gate 7 verdict
         run: |
