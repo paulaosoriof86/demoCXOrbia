@@ -86,6 +86,88 @@ function blocked(command,code,extra={}){return {ok:false,status:'blocked',commit
 function assertVersion(command,data){if(command.expectedVersion==='absent')return;if(str(command.expectedVersion)!==str(versionOf(data)))throw new Error('OPS_EXPECTED_VERSION_CONFLICT');}
 function assertPeriod(command,data){if(str(data?.periodId)!==str(command.periodId))throw new Error('OPS_PERIOD_SCOPE_MISMATCH');}
 function isAvailable(v){const state=str(v?.estado||v?.status).toLowerCase();return ['disponible','available'].includes(state)&&!str(v?.shopperId);}
+function projectScope(snapshot){
+  return {
+    tenantId:str(snapshot?.tenantId||snapshot?.tenantConfig?.tenantId),
+    projectId:str(snapshot?.projectId||snapshot?.projectConfig?.projectId)
+  };
+}
+function sourceCoord(v){const t=str(v?.sourceTab),r=str(v?.sourceRow);return t&&r?`${t}::${r}`:'';}
+function stableVisitId(v){return str(v?.visitId||v?.id)||str(v?.hrRowId)||sourceCoord(v);}
+function visitPeriodId(v,snapshot){return str(v?.periodId||v?.projectId||v?.measurementPeriodId||v?.measurementWindowProjectId||snapshot?.currentPeriodId);}
+function canonicalFacets(v){
+  const f=v?.canonicalFacets||{};
+  const state=str(v?.estado||v?.status||v?.presentationState).toLowerCase();
+  const assigned=typeof f.assigned==='boolean'?f.assigned:!!str(v?.shopperId);
+  const available=typeof f.available==='boolean'?f.available:state==='disponible';
+  return clean({...f,assigned,available:available&&!assigned,eligibilityBlocked:typeof f.eligibilityBlocked==='boolean'?f.eligibilityBlocked:(!available||assigned)});
+}
+function visitCandidate(row,scope,snapshot){
+  const visitId=stableVisitId(row),periodId=visitPeriodId(row,snapshot);
+  if(!visitId||!periodId)return null;
+  const shopperId=str(row?.shopperId);
+  const patch=clean({
+    ...row,
+    id:visitId,
+    visitId,
+    tenantId:scope.tenantId,
+    projectId:scope.projectId,
+    periodId,
+    rootProjectId:scope.projectId,
+    hrRowId:str(row?.hrRowId)||null,
+    sourceTab:str(row?.sourceTab)||null,
+    sourceRow:str(row?.sourceRow)||null,
+    sourceCoord:sourceCoord(row)||null,
+    shopperId:shopperId||null,
+    assignmentSource:shopperId?'hr':null,
+    assignmentSyncStatus:shopperId?'synced':null,
+    canonicalFacets:canonicalFacets(row),
+    hrManaged:clean({...row}),
+    hrSourceRevision:str(snapshot?.sourceRevision||snapshot?._runtime?.revision||'')||null
+  });
+  return patch;
+}
+export function visitsFromSnapshot(snapshot={}){
+  if(snapshot?.sourceSafe!==true||snapshot?.imported===true||Number(snapshot?.firestoreWrites||0)!==0)throw new Error('OPS_HR_SNAPSHOT_UNSAFE');
+  const scope=projectScope(snapshot);
+  if(!scope.tenantId||!scope.projectId)throw new Error('OPS_HR_SCOPE_MISSING');
+  const byId=new Map();
+  for(const row of arr(snapshot.visits)){
+    const candidate=visitCandidate(row,scope,snapshot);
+    if(!candidate)continue;
+    if(byId.has(candidate.visitId))throw new Error('OPS_HR_DUPLICATE_VISIT_STABLE_KEY');
+    byId.set(candidate.visitId,candidate);
+  }
+  return {scope,visits:[...byId.values()].sort((a,b)=>a.visitId.localeCompare(b.visitId))};
+}
+function durableVisitReviewRef(db,tenantId,visitId){
+  return db.collection('tenants').doc(tenantId).collection('reviewQueue').doc(`ops-visit-reconcile-${sha(visitId).slice(0,28)}`);
+}
+async function reconcileVisitDoc({db,policy,candidate,sourceRevision}){
+  const tenantId=str(candidate.tenantId),projectId=str(candidate.projectId),visitId=str(candidate.visitId);
+  if(!tenantId||!projectId||!visitId||!str(sourceRevision))throw new Error('OPS_VISIT_RECONCILIATION_KEYS_REQUIRED');
+  const commandScope={tenantId,projectId};
+  if(!scopeAllowed(policy,commandScope))throw new Error('OPS_VISIT_RECONCILIATION_SCOPE_DENIED');
+  const visitRef=db.collection('tenants').doc(tenantId).collection('projects').doc(projectId).collection('visits').doc(visitId);
+  const reviewRef=durableVisitReviewRef(db,tenantId,visitId);
+  return db.runTransaction(async tx=>{
+    const snap=await tx.get(visitRef);
+    if(!snap.exists){
+      tx.create(visitRef,{...candidate,hrSourceRevision:sourceRevision,createdAt:now(),updatedAt:now(),version:1});
+      return {providerWrites:1,created:true,idempotentReplay:false};
+    }
+    const existing=snap.data()||{};
+    if(str(existing.tenantId||tenantId)!==tenantId||str(existing.projectId||projectId)!==projectId||str(existing.visitId||existing.id||visitId)!==visitId)throw new Error('OPS_VISIT_DURABLE_SCOPE_CONFLICT');
+    const durableShopper=str(existing.shopperId),hrShopper=str(candidate.shopperId);
+    const platformPending=str(existing.assignmentSource)==='platform'&&str(existing.assignmentSyncStatus)==='pending_hr'&&durableShopper;
+    if(platformPending&&hrShopper&&hrShopper!==durableShopper){
+      tx.set(reviewRef,{tenantId,projectId,periodId:str(existing.periodId||candidate.periodId)||null,entityType:'visit',entityId:visitId,reviewType:'hr_platform_assignment_conflict',status:'open',reason:'hr_shopper_differs_from_platform_pending_assignment',platformShopperId:durableShopper,observedHrShopperId:hrShopper,automaticOverwrite:false,sourceRevision,createdAt:now()},{merge:false});
+      throw new Error('OPS_VISIT_RECONCILIATION_CONFLICT_REVIEW_REQUIRED');
+    }
+    if(str(existing.hrSourceRevision)===sourceRevision)return {providerWrites:0,created:false,idempotentReplay:true};
+    return {providerWrites:0,created:false,idempotentReplay:false};
+  });
+}
 
 async function transactionExecute(db,command,actor){
   const r=refs(db,command),digest=sha(clean(command));
@@ -177,6 +259,20 @@ export function createOperationalCommandProvider({auth,db,policy}={}){
       let actor;
       try{actor=await exactActor(auth,db,token,command);}catch(error){return blocked(command,'OPS_ACTOR_DENIED',{error:str(error?.message||error)});}
       try{return await transactionExecute(db,command,actor);}catch(error){return blocked(command,str(error?.message||error));}
+    },
+    async reconcileSnapshot(snapshot,{sourceRevision}={}){
+      const {scope,visits}=visitsFromSnapshot(snapshot);
+      if(!scopeAllowed(policy,scope))throw new Error('OPS_VISIT_RECONCILIATION_SCOPE_DENIED');
+      const revision=str(sourceRevision||snapshot?.sourceRevision||snapshot?._runtime?.revision);
+      if(!revision)throw new Error('OPS_VISIT_RECONCILIATION_REVISION_REQUIRED');
+      let created=0,replayed=0,writes=0;
+      for(const candidate of visits){
+        const result=await reconcileVisitDoc({db,policy,candidate,sourceRevision:revision});
+        if(result.created)created++;
+        if(result.idempotentReplay)replayed++;
+        writes+=Number(result.providerWrites||0);
+      }
+      return {ok:true,status:'committed',providerAck:true,sourceRevision:revision,tenantId:scope.tenantId,projectId:scope.projectId,visitCount:visits.length,createdVisits:created,idempotentReplays:replayed,providerWrites:writes,hrWrites:0,externalWrites:0,fuzzyMatching:false};
     },
     status(){return {version:VERSION,enabled:true,allowedTenantIds:arr(policy.allowedTenantIds),allowedProjectIds:arr(policy.allowedProjectIds),conflictPolicy:'review_no_silent_overwrite',hrWrites:false,makeCalls:false,geminiCalls:false,storageWrites:false,paymentWrites:false};}
   });

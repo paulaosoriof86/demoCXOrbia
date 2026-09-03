@@ -14,6 +14,7 @@ import { isLiveUserAdminPath, maybeHandleLiveUserAdminRequest } from './user-adm
 import { isLegalRuntimePath, maybeHandleLegalRuntimeRequest } from './legal-runtime.mjs';
 import { isCxorbiaCommandRuntimePath, maybeHandleCxorbiaCommandRuntimeRequest } from './cxorbia-command-runtime-v1.mjs';
 import { createShopperCommandProvider } from '../cxorbia-shopper-command-provider-v1.mjs';
+import { createOperationalCommandProvider } from '../cxorbia-operational-command-provider-v1.mjs';
 
 const HERE=path.dirname(fileURLToPath(import.meta.url));
 const ROOT=path.resolve(HERE,'../../..');
@@ -44,6 +45,8 @@ let lastRefreshFinishedAt=null;
 let lastRefreshDurationMs=null;
 let lastShopperReconciliation=null;
 let lastShopperReconciledRevision=null;
+let lastVisitReconciliation=null;
+let lastVisitReconciledRevision=null;
 
 function runNode(args,env){
   return new Promise((resolve,reject)=>{
@@ -131,12 +134,17 @@ function shopperPolicy(snapshot){
   const scope=snapshotScope(snapshot);
   return {schemaVersion:'cxorbia.shopper-command-provider-policy.v1',enabled:true,allowedTenantIds:[scope.tenantId],allowedProjectIds:[scope.projectId],hrWrites:false,externalWrites:false,fuzzyMatching:false};
 }
-function configureShopperCommandRuntime(snapshot){
-  if(!snapshot)throw new Error('SHOPPER_COMMAND_SOURCE_SCOPE_UNAVAILABLE');
+function operationalPolicy(snapshot){
+  const scope=snapshotScope(snapshot);
+  return {schemaVersion:'cxorbia.operational.provider-policy.v1',enabled:true,allowedTenantIds:[scope.tenantId],allowedProjectIds:[scope.projectId],conflictPolicy:'review_no_silent_overwrite',hrWrites:false,makeCalls:false,geminiCalls:false,storageWrites:false,paymentWrites:false};
+}
+function configureCommandRuntime(snapshot){
+  if(!snapshot)throw new Error('COMMAND_SOURCE_SCOPE_UNAVAILABLE');
   const {auth,db}=ensureAdmin();
   globalThis.CXORBIA_COMMAND_AUTH=auth;
   globalThis.CXORBIA_COMMAND_DB=db;
   globalThis.CXORBIA_SHOPPER_COMMAND_PROVIDER_POLICY=shopperPolicy(snapshot);
+  globalThis.CXORBIA_OPERATIONAL_COMMAND_PROVIDER_POLICY=operationalPolicy(snapshot);
 }
 async function reconcileAuthoritativeShoppers(current){
   if(!current?.snapshot||!current?.revision)throw new Error('SHOPPER_RECONCILIATION_SOURCE_MISSING');
@@ -148,6 +156,17 @@ async function reconcileAuthoritativeShoppers(current){
   lastShopperReconciliation={...result,completedAt:new Date().toISOString()};
   console.log(`CXOrbia shopper reconciliation committed ${current.revision.slice(0,12)} shoppers=${result.shopperCount} authCreated=${result.authCreated} writes=${result.providerWrites}`);
   return lastShopperReconciliation;
+}
+async function reconcileAuthoritativeVisits(current){
+  if(!current?.snapshot||!current?.revision)throw new Error('VISIT_RECONCILIATION_SOURCE_MISSING');
+  if(lastVisitReconciledRevision===current.revision)return lastVisitReconciliation;
+  const {auth,db}=ensureAdmin();
+  const provider=createOperationalCommandProvider({auth,db,policy:operationalPolicy(current.snapshot)});
+  const result=await provider.reconcileSnapshot(current.snapshot,{sourceRevision:current.revision});
+  lastVisitReconciledRevision=current.revision;
+  lastVisitReconciliation={...result,completedAt:new Date().toISOString()};
+  console.log(`CXOrbia visit reconciliation committed ${current.revision.slice(0,12)} visits=${result.visitCount} created=${result.createdVisits} writes=${result.providerWrites}`);
+  return lastVisitReconciliation;
 }
 
 function loadBootstrap(){
@@ -190,6 +209,7 @@ async function refreshSnapshot(){
       await runNode(['tools/qa/tya-live-hr-read-probe-gate.mjs','--payload',payload,'--out',path.join(dir,'probe'),'--max-age-seconds','600'],env);
       const next=materialize(parseSnapshot(payload),'runtime_refresh',parseIdentity(identityFile));
       await reconcileAuthoritativeShoppers(next);
+      await reconcileAuthoritativeVisits(next);
       cache=next;
       lastRefreshError=null;
       lastRefreshFinishedAt=new Date().toISOString();
@@ -245,6 +265,7 @@ function runtimeMeta(current){
     refreshDurationMs:lastRefreshDurationMs,
     refreshError:lastRefreshError,
     shopperReconciliation:lastShopperReconciliation,
+    visitReconciliation:lastVisitReconciliation,
     writes:false,
     hrWrites:false,
     imports:false,
@@ -285,7 +306,7 @@ const server=http.createServer(async(req,res)=>{
     return;
   }
   if(isCxorbiaCommandRuntimePath(url.pathname)){
-    try{configureShopperCommandRuntime(cache?.snapshot);}catch(error){
+    try{configureCommandRuntime(cache?.snapshot);}catch(error){
       return sendJson(res,503,{ok:false,status:'blocked',committed:false,providerAck:false,successUiAllowed:false,code:String(error?.message||error),production:false});
     }
     await maybeHandleCxorbiaCommandRuntimeRequest(req,res,url);
@@ -296,7 +317,7 @@ const server=http.createServer(async(req,res)=>{
     return;
   }
   if(req.method!=='GET')return sendJson(res,405,{ok:false,error:'method_not_allowed'});
-  if(url.pathname==='/health')return sendJson(res,200,{ok:true,service:'cxorbia-live-hr-source-safe',cacheMs:CACHE_MS,bootstrapReady:Boolean(cache),revisionStable:true,autoMonthProviderRegistry:true,operationalDisplayIdentityDev:DEV_OPERATIONAL_NAMES,devFullVisualEndpoint:true,liveUserAdminSourceReady:true,legalRuntimeSourceReady:true,shopperReconciliationReady:true,lastShopperReconciliation,lastRefreshError,writes:false,hrWrites:false,production:false});
+  if(url.pathname==='/health')return sendJson(res,200,{ok:true,service:'cxorbia-live-hr-source-safe',cacheMs:CACHE_MS,bootstrapReady:Boolean(cache),revisionStable:true,autoMonthProviderRegistry:true,operationalDisplayIdentityDev:DEV_OPERATIONAL_NAMES,devFullVisualEndpoint:true,liveUserAdminSourceReady:true,legalRuntimeSourceReady:true,shopperReconciliationReady:true,visitReconciliationReady:true,lastShopperReconciliation,lastVisitReconciliation,lastRefreshError,writes:false,hrWrites:false,production:false});
   if(!ENDPOINT_PATHS.has(url.pathname))return sendJson(res,404,{ok:false,error:'not_found'});
   if(await maybeHandleDevVisualRequest(req,res,url,{sendJson}))return;
   try{

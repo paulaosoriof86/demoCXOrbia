@@ -5,6 +5,15 @@ on:
     branches:
       - recovery/cxorbia-phase-a-20260831
     paths:
+      - backend/runtime/cxorbia-operational-command-provider-v1.mjs
+      - backend/runtime/hr-live-service/server.mjs
+      - app/adapters/tya-cumulative-read-model-v2.js
+      - app/index-backend-dev.html
+      - app/core/backend-protected-dev-mode.js
+      - app/modules/visitas.js
+      - firebase.json
+      - backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs
+      - tools/qa/cxorbia-gate7-controlled-assignment-dev.mjs
       - .github/workflows/cxorbia-recovery-i3-dev-certification.yml
 
 permissions:
@@ -21,40 +30,77 @@ defaults:
     shell: bash
 
 env:
-  SOURCE_SHA: 296c8c906e03ad2bf9a06589798f65acd9a94559
-  WF: .github/workflows/cxorbia-recovery-i3-dev-certification.yml
+  SOURCE_SHA: ${{ github.sha }}
+  EXPECTED_PARENT_SHA: bb9c3cb73860673e87b001e6b2ad1728acf2286e
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
   RUNTIME_SA: firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com
+  HOSTING_TARGET: cxorbia-dev
+  HOSTING_URL: https://cxorbia-backend-dev.web.app
   OUT: .tmp/recovery-i3-dev
 
 jobs:
   certify:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     steps:
-      - name: Checkout transport head
+      - name: Checkout exact Recovery source
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Freeze exact Recovery source and prior Gate 6
+      - name: Freeze Gate 7 source and Gate 6 lock
         run: |
           set -euo pipefail
           mkdir -p "$OUT"
-          echo "SRC=$RUNNER_TEMP/recovery-source" >> "$GITHUB_ENV"
-          git merge-base --is-ancestor "$SOURCE_SHA" HEAD
-          mapfile -t changed < <(git diff --name-only "$SOURCE_SHA" HEAD)
-          test "${#changed[@]}" = 1
-          test "${changed[0]}" = "$WF"
-          git worktree add --detach "$RUNNER_TEMP/recovery-source" "$SOURCE_SHA"
-          printf '{"sourceSha":"%s","transportSha":"%s","gate6":"PASS_LOCKED","currentGate":7,"writes":0,"production":false}\n' "$SOURCE_SHA" "$GITHUB_SHA" > "$OUT/authorization.json"
+          test "${GITHUB_REF_NAME}" = "recovery/cxorbia-phase-a-20260831"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT_SHA"
+          git status --porcelain | tee "$OUT/source-status.txt"
+          test ! -s "$OUT/source-status.txt"
+          printf '{"sourceSha":"%s","parentSha":"%s","gate6":"PASS_LOCKED","gate7":"MATERIALIZATION_CERTIFICATION","production":false,"hrWrites":0}\n' "$SOURCE_SHA" "$EXPECTED_PARENT_SHA" > "$OUT/authorization.json"
 
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
+
+      - name: Install focal test dependencies
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.47.2 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+
+      - name: Run Gate 7 focal unit tests
+        run: |
+          set -euo pipefail
+          node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs | tee "$OUT/unit-tests.log"
+
+      - name: Static Gate 7 source certification
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const read=p=>fs.readFileSync(p,'utf8');
+          const checks={
+            gate6PassLocked:true,
+            operationalProviderReconciles:/async reconcileSnapshot\(snapshot/.test(read('backend/runtime/cxorbia-operational-command-provider-v1.mjs')),
+            serverConfiguresOperationalPolicy:/CXORBIA_OPERATIONAL_COMMAND_PROVIDER_POLICY/.test(read('backend/runtime/hr-live-service/server.mjs')),
+            serverReconcilesVisits:/reconcileAuthoritativeVisits/.test(read('backend/runtime/hr-live-service/server.mjs')),
+            composerProjectsPlatformPending:/pendingPlatformAssignment/.test(read('app/adapters/tya-cumulative-read-model-v2.js'))&&/assignmentSyncStatus/.test(read('app/adapters/tya-cumulative-read-model-v2.js')),
+            entryLoadsSameOriginTransport:/cxorbia-command-http-transport-v1\.js/.test(read('app/index-backend-dev.html')),
+            devCommandWritesOnly:/enableCommandWrites\s*:\s*true/.test(read('app/core/backend-protected-dev-mode.js'))&&/commandEndpoint\s*:\s*'\/v1\/cxorbia\/commands'/.test(read('app/core/backend-protected-dev-mode.js')),
+            hostingRewritesCommand:/\"source\": \"\/v1\/cxorbia\/commands\"[\s\S]*\"serviceId\": \"cxorbia-live-hr-dev\"[\s\S]*\"region\": \"us-central1\"/.test(read('firebase.json')),
+            uiAwaitsAck:/await\s+data\.assignVisit[\s\S]*ackAware\s*:\s*true/.test(read('app/modules/visitas.js'))&&/commandSucceeded/.test(read('app/modules/visitas.js')),
+            production:false,
+            hrWrites:0
+          };
+          const pass=checks.gate6PassLocked&&checks.operationalProviderReconciles&&checks.serverConfiguresOperationalPolicy&&checks.serverReconcilesVisits&&checks.composerProjectsPlatformPending&&checks.entryLoadsSameOriginTransport&&checks.devCommandWritesOnly&&checks.hostingRewritesCommand&&checks.uiAwaitsAck&&checks.production===false&&checks.hrWrites===0;
+          fs.writeFileSync(process.env.OUT+'/gate7-static.json',JSON.stringify({decision:pass?'PASS_GATE7_STATIC_MATERIALIZATION':'SOURCE_FAILURE',checks},null,2)+'\n');
+          console.log(JSON.stringify(checks));
+          if(!pass)process.exit(1);
+          NODE
 
       - name: Authenticate canonical Firebase DEV
         uses: google-github-actions/auth@v2
@@ -66,116 +112,105 @@ jobs:
         with:
           project_id: '${{ env.PROJECT }}'
 
-      - name: Prove exact deployed runtime source
+      - name: Deploy exact SOURCE_SHA to existing Cloud Run DEV
         run: |
           set -euo pipefail
           active="$(gcloud auth list --filter=status:ACTIVE --format='value(account)' | head -n1)"
           test "$active" = "$RUNTIME_SA"
+          gcloud beta run deploy "$SERVICE" \
+            --project "$PROJECT" \
+            --region "$REGION" \
+            --source . \
+            --no-build \
+            --service-account "$RUNTIME_SA" \
+            --set-env-vars "CXORBIA_RECOVERY_SOURCE_SHA=$SOURCE_SHA,CXORBIA_DEV_OPERATIONAL_NAMES=true" \
+            --quiet
           rev="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.latestReadyRevisionName)')"
           url="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.url)')"
+          echo "RUNTIME_REVISION=$rev" >> "$GITHUB_ENV"
+          echo "RUNTIME_URL=$url" >> "$GITHUB_ENV"
           gcloud run revisions describe "$rev" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/revision.json"
-          REV="$rev" URL="$url" node <<'NODE'
+
+      - name: Read back runtime SOURCE_SHA
+        run: |
+          set -euo pipefail
+          node <<'NODE'
           const fs=require('fs');
           const r=JSON.parse(fs.readFileSync(process.env.OUT+'/revision.json','utf8'));
           const env=r.spec?.containers?.[0]?.env||[];
           const source=(env.find(x=>x.name==='CXORBIA_RECOVERY_SOURCE_SHA')||{}).value||null;
-          if(source!==process.env.SOURCE_SHA) throw new Error('RUNTIME_SOURCE_SHA_MISMATCH_'+source);
-          fs.writeFileSync(process.env.OUT+'/runtime.json',JSON.stringify({decision:'PASS_RUNTIME_SOURCE_LOCK',revision:process.env.REV,url:process.env.URL,sourceSha:source,production:false},null,2)+'\n');
-          console.log('RUNTIME_URL='+process.env.URL);
-          NODE
-          echo "RUNTIME_URL=$url" >> "$GITHUB_ENV"
-
-      - name: Static Gate 7 boundary discriminants
-        run: |
-          set -euo pipefail
-          SRC="$SRC" OUT="$OUT" node <<'NODE'
-          const fs=require('fs'),path=require('path');
-          const src=process.env.SRC,out=process.env.OUT;
-          const read=p=>fs.readFileSync(path.join(src,p),'utf8');
-          const server=read('backend/runtime/hr-live-service/server.mjs');
-          const runtime=read('backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs');
-          const provider=read('backend/runtime/cxorbia-operational-command-provider-v1.mjs');
-          const index=read('app/index-backend-dev.html');
-          const protectedMode=read('app/core/backend-protected-dev-mode.js');
-          const boundary=read('app/adapters/cxorbia-cxdata-command-boundary-v1.js');
-          const visitas=read('app/modules/visitas.js');
-          const result={
-            commandRoutesOperational:/return 'operational'/.test(runtime)&&/visit\.assign/.test(provider),
-            serverConfiguresOperationalPolicy:/CXORBIA_OPERATIONAL_COMMAND_PROVIDER_POLICY/.test(server),
-            entryLoadsCommandHttpTransport:/cxorbia-command-http-transport-v1\.js/.test(index),
-            protectedEnablesCommandWrites:/enableCommandWrites\s*:\s*true/.test(protectedMode),
-            boundaryBuildsVisitAssign:/D\.assignVisit=function/.test(boundary)&&/'visit\.assign'/.test(boundary),
-            adminAssignmentAwaitsAck:/await\s+data\.assignVisit/.test(visitas)&&/ackAware\s*:\s*true/.test(visitas),
-            production:false,writes:0
-          };
-          fs.writeFileSync(out+'/gate7-static.json',JSON.stringify(result,null,2)+'\n');
-          console.log(JSON.stringify(result));
-          NODE
-
-      - name: Probe live operational command provider without valid token
-        run: |
-          set -euo pipefail
-          code="$(curl -sS -o "$OUT/gate7-provider-response.json" -w '%{http_code}' -X POST "$RUNTIME_URL/v1/cxorbia/commands" \
-            -H 'Authorization: Bearer recovery-readonly-probe-not-a-valid-token' -H 'Content-Type: application/json' \
-            --data '{"version":"cxorbia-command-adapter-v1","commandType":"visit.assign","entityType":"visit","entityId":"probe-no-write","tenantId":"tya","projectId":"probe-project","periodId":"probe-period","expectedVersion":"source-current","idempotencyKey":"recovery-g7-readonly-provider-probe","payload":{"visitId":"probe-no-write","shopperId":"probe-no-write"},"authorization":{"providerEnforcementRequired":true}}')"
-          HTTP_CODE="$code" OUT="$OUT" node <<'NODE'
-          const fs=require('fs');
-          const raw=JSON.parse(fs.readFileSync(process.env.OUT+'/gate7-provider-response.json','utf8'));
-          const safe={httpCode:Number(process.env.HTTP_CODE),ok:raw.ok===true,status:raw.status||null,code:raw.code||null,providerKind:raw.providerKind||null,providerAck:raw.providerAck===true,writes:0,production:false};
-          fs.writeFileSync(process.env.OUT+'/gate7-provider.json',JSON.stringify(safe,null,2)+'\n');
-          console.log(JSON.stringify(safe));
-          if(safe.providerAck) throw new Error('READONLY_PROBE_MUST_NOT_COMMIT');
-          NODE
-          rm -f "$OUT/gate7-provider-response.json"
-
-      - name: Inspect HR available versus durable visit coverage read-only
-        run: |
-          set -euo pipefail
-          curl -fsS --retry 8 --retry-delay 3 "$RUNTIME_URL/api/tya/cinepolis/hr-live" > "$RUNNER_TEMP/hr-g7.json"
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
-          cat > "$GITHUB_WORKSPACE/gate7-readonly.mjs" <<'NODE'
-          import fs from 'node:fs';
-          import crypto from 'node:crypto';
-          import { applicationDefault, initializeApp } from 'firebase-admin/app';
-          import { getFirestore } from 'firebase-admin/firestore';
-          const raw=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+'/hr-g7.json','utf8'));
-          const s=raw.snapshot||raw.data||raw;
-          const tenantId=String(s.tenantId||s.tenantConfig?.tenantId||'');
-          const projectId=String(s.projectId||s.projectConfig?.projectId||'');
-          if(!tenantId||!projectId||s.sourceSafe!==true) throw new Error('G7_HR_SCOPE_INVALID');
-          const visits=Array.isArray(s.visits)?s.visits:[];
-          const available=visits.filter(v=>{
-            if(typeof v?.canonicalFacets?.available==='boolean')return v.canonicalFacets.available===true&&v.canonicalFacets.eligibilityBlocked!==true;
-            return String(v.estado||v.status||'').toLowerCase()==='disponible'&&!String(v.shopperId||'');
-          });
-          initializeApp({credential:applicationDefault(),projectId:process.env.PROJECT});
-          const db=getFirestore();
-          const snap=await db.collection('tenants').doc(tenantId).collection('projects').doc(projectId).collection('visits').get();
-          const durableIds=new Set(snap.docs.map(d=>d.id));
-          const durableAvailable=available.filter(v=>durableIds.has(String(v.id||v.visitId||'')));
-          const sample=available[0]||null;
-          const fp=x=>x?crypto.createHash('sha256').update(String(x)).digest('hex').slice(0,16):null;
-          const out={decision:'GATE7_READONLY_DURABLE_COVERAGE',sourceRevision:raw._runtime?.revision||null,tenantPresent:true,projectPresent:true,hrVisits:visits.length,hrAvailable:available.length,durableVisitDocs:snap.size,durableAvailableMatches:durableAvailable.length,sampleAvailableFingerprint:fp(sample&&(sample.id||sample.visitId)),sampleDurableExists:sample?durableIds.has(String(sample.id||sample.visitId||'')):false,writes:0,piiExported:false,production:false};
-          fs.writeFileSync(process.env.OUT+'/gate7-durable-coverage.json',JSON.stringify(out,null,2)+'\n');
+          const out={decision:source===process.env.SOURCE_SHA?'PASS_RUNTIME_SOURCE_SHA_READBACK':'RELEASE_COMPOSITION_FAILURE',revision:process.env.RUNTIME_REVISION,url:process.env.RUNTIME_URL,sourceSha:source,expected:process.env.SOURCE_SHA,production:false};
+          fs.writeFileSync(process.env.OUT+'/runtime.json',JSON.stringify(out,null,2)+'\n');
           console.log(JSON.stringify(out));
+          if(out.decision!=='PASS_RUNTIME_SOURCE_SHA_READBACK')process.exit(1);
           NODE
-          OUT="$OUT" PROJECT="$PROJECT" node "$GITHUB_WORKSPACE/gate7-readonly.mjs"
-          rm -f "$RUNNER_TEMP/hr-g7.json" "$GITHUB_WORKSPACE/gate7-readonly.mjs"
 
-      - name: Classify Gate 7 root cause
+      - name: Deploy Hosting DEV cxorbia-dev
+        run: |
+          set -euo pipefail
+          npx firebase-tools@13.35.1 deploy --config firebase.json --only "hosting:$HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$OUT/hosting-deploy.log"
+
+      - name: Read back Hosting DEV composition
+        run: |
+          set -euo pipefail
+          curl -fsS --retry 8 --retry-delay 3 "$HOSTING_URL/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxTechnicalAuthE2E=YES_PAULA_20260801_REAL_USERS_E2E" > "$OUT/index-backend-dev.html"
+          node <<'NODE'
+          const fs=require('fs');
+          const html=fs.readFileSync(process.env.OUT+'/index-backend-dev.html','utf8');
+          const ok=html.includes('adapters/cxorbia-command-http-transport-v1.js')&&html.includes('core/backend-protected-dev-mode.js');
+          const out={decision:ok?'PASS_HOSTING_DEV_COMPOSITION_READBACK':'RELEASE_COMPOSITION_FAILURE',hostingUrl:process.env.HOSTING_URL,transportSameOrigin:ok,production:false};
+          fs.writeFileSync(process.env.OUT+'/hosting.json',JSON.stringify(out,null,2)+'\n');
+          console.log(JSON.stringify(out));
+          if(!ok)process.exit(1);
+          NODE
+
+      - name: Prepare existing DEV credentials privately
+        run: |
+          set -euo pipefail
+          PRIVATE_DIR=.tmp/phase-a-runtime-private
+          PRIVATE_E2E=$PRIVATE_DIR/private-e2e.json
+          mkdir -p "$PRIVATE_DIR"
+          CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E" node tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs > "$OUT/credential-selection.source-safe.json"
+          echo "CXORBIA_E2E_PRIVATE_CREDENTIALS=$PRIVATE_E2E" >> "$GITHUB_ENV"
+          chmod 600 "$PRIVATE_E2E"
+
+      - name: Execute controlled Gate 7 assignment with exact cleanup
+        run: |
+          set -euo pipefail
+          PROJECT="$PROJECT" OUT="$OUT" SOURCE_SHA="$SOURCE_SHA" RUNTIME_URL="$RUNTIME_URL" HOSTING_URL="$HOSTING_URL" CXORBIA_E2E_PRIVATE_CREDENTIALS="$CXORBIA_E2E_PRIVATE_CREDENTIALS" \
+            node tools/qa/cxorbia-gate7-controlled-assignment-dev.mjs
+
+      - name: Final Gate 7 verdict
         run: |
           set -euo pipefail
           node <<'NODE'
-          const fs=require('fs'),p=process.env.OUT,read=n=>JSON.parse(fs.readFileSync(p+'/'+n,'utf8'));
-          const st=read('gate7-static.json'),pr=read('gate7-provider.json'),dc=read('gate7-durable-coverage.json');
-          const defects=[];
-          if(!st.serverConfiguresOperationalPolicy||pr.code==='OPERATIONAL_COMMAND_PROVIDER_NOT_CONFIGURED')defects.push('PROVIDER_FAILURE');
-          if(!st.entryLoadsCommandHttpTransport||!st.protectedEnablesCommandWrites||!st.adminAssignmentAwaitsAck)defects.push('FUNCTIONAL_DEFECT');
-          if(dc.hrAvailable>0&&dc.durableAvailableMatches===0)defects.push('PERSISTENCE_FAILURE');
-          const unique=[...new Set(defects)];
-          const result={decision:unique.length?'P0_PROVEN_GATE7_ASSIGNMENT_BOUNDARY':'GATE7_SOURCE_READY_FOR_WRITE_DISCRIMINANT',gate:7,sourceSha:process.env.SOURCE_SHA,classes:unique,static:st,provider:pr,durableCoverage:dc,writes:0,production:false,nextAction:unique.length?'PATCH_ONLY_PROVEN_GATE7_OWNERS':'RUN_CONTROLLED_ASSIGNMENT'};
-          fs.writeFileSync(p+'/result.json',JSON.stringify(result,null,2)+'\n');
-          console.log(JSON.stringify(result));
+          const fs=require('fs');
+          const result=JSON.parse(fs.readFileSync(process.env.OUT+'/gate7-controlled-assignment.json','utf8'));
+          if(result.decision!=='PASS_GATE7_ASSIGNMENT_AVAILABLE_TO_SHOPPER')throw new Error(result.decision);
+          const summary={
+            verdict:'PASS_GATE7_ASSIGNMENT_AVAILABLE_TO_SHOPPER',
+            gate6:'PASS_LOCKED',
+            sourceSha:process.env.SOURCE_SHA,
+            cloudRunRevision:process.env.RUNTIME_REVISION,
+            runtimeUrl:process.env.RUNTIME_URL,
+            hostingUrl:process.env.HOSTING_URL,
+            hrRevisionUsed:result.hrRevisionUsed,
+            visitFingerprint:result.visitFingerprint,
+            ackObserved:result.ackObserved,
+            replayIdempotent:result.replayIdempotent,
+            availableBefore:result.availableBefore,
+            availableAfter:result.availableAfter,
+            shopperVisitsBefore:result.shopperVisitsBefore,
+            shopperVisitsAfter:result.shopperVisitsAfter,
+            reloadObserved:result.reloadObserved,
+            cleanupExact:result.cleanupExact,
+            duplicateVisitKeys:result.duplicateVisitKeys,
+            durableDuplicateKeys:result.durableDuplicateKeys,
+            hrWrites:0,
+            production:false
+          };
+          fs.writeFileSync(process.env.OUT+'/result.json',JSON.stringify(summary,null,2)+'\n');
+          console.log('PASS_GATE7_ASSIGNMENT_AVAILABLE_TO_SHOPPER');
           NODE
 
       - name: Upload sanitized evidence
@@ -186,8 +221,6 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      - name: Cleanup
+      - name: Cleanup private runtime files
         if: always()
-        run: |
-          git worktree remove --force "$SRC" 2>/dev/null || true
-          rm -rf .firebase node_modules
+        run: rm -rf .tmp/phase-a-runtime-private node_modules

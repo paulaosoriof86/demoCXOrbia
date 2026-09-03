@@ -105,6 +105,10 @@
     return {row:null,conflict:false};
   }
   function addRelation(map,a,b){a=str(a);b=str(b);if(!a||!b)return;if(!map.has(a))map.set(a,new Set());map.get(a).add(b);}
+  function pendingPlatformAssignment(pv){
+    const shopperId=str(pv&&pv.shopperId);
+    return !!(shopperId&&str(pv.assignmentSource)==='platform'&&str(pv.assignmentSyncStatus)==='pending_hr');
+  }
   function profileComplete(s){return !!(str(s&&s.nombre)&&str(s&&(s.whatsapp||s.phone))&&str(s&&(s.username||s.user))&&str(s&&(s.password||s.pass)));}
   function certStatus(rows){
     const list=arr(rows);const passed=list.some(c=>c&&(
@@ -136,7 +140,7 @@
     for(const base of baseVisits){
       const match=findProtectedVisit(base,visitIndexes),key=visitKey(base);
       if(match.conflict){visitConflicts.push(key);continue;}if(!match.row)continue;
-      matches.set(key,match.row);const pid=str(match.row.visitId||match.row.id);if(pid)protectedVisitToHrVisit.set(pid,str(base.visitId||base.id));addRelation(relation,base.shopperId,match.row.shopperId);
+      matches.set(key,match.row);const pid=str(match.row.visitId||match.row.id);if(pid)protectedVisitToHrVisit.set(pid,str(base.visitId||base.id));if(!pendingPlatformAssignment(match.row))addRelation(relation,base.shopperId,match.row.shopperId);
     }
     const profilesById=uniqueIndex(profiles,p=>p.id),profilesByAlias=new Map();
     for(const p of profiles){for(const alias of arr(p.exactAliases)){if(!profilesByAlias.has(alias))profilesByAlias.set(alias,[]);profilesByAlias.get(alias).push(p);}}
@@ -152,13 +156,34 @@
       if(candidates.size===1)liveToCanonical.set(liveId,[...candidates][0]);
       else if(candidates.size>1)identityConflicts.push({liveShopperId:liveId,candidates:[...candidates].sort(),reason:'conflicting_exact_crosswalk'});
     }
+    const assignmentConflicts=[],pendingPlatformAssignmentOverlays=[];
     const composedVisits=baseVisits.map(base=>{
       const out=clone(base),key=visitKey(base),pv=matches.get(key)||null,liveId=str(base.shopperId),canonical=liveToCanonical.get(liveId)||liveId;
       if(canonical)out.shopperId=canonical;
       if(pv){
         out.__protectedVisitId=str(pv.visitId||pv.id)||null;out.__exactProtectedVisitOverlay=true;
         const bf=facets(base),pf=facets(pv);
+        const durableShopper=str(pv.shopperId),durableCanonical=liveToCanonical.get(durableShopper)||durableShopper;
+        const hasPendingPlatform=pendingPlatformAssignment(pv);
+        const conflict=hasPendingPlatform&&liveId&&durableCanonical&&canonical&&durableCanonical!==canonical;
+        if(conflict){
+          out.reviewRequired=true;out.assignmentReviewRequired=true;out.assignmentReviewReason='hr_platform_assignment_conflict';
+          assignmentConflicts.push({visitKey:key,hrShopperId:canonical,durableShopperId:durableCanonical,reason:'hr_platform_assignment_conflict'});
+        }else if(hasPendingPlatform&&!liveId&&durableCanonical){
+          out.shopperId=durableCanonical;out.assignmentSource='platform';out.assignmentSyncStatus='pending_hr';
+          out.lastSyncedAt=pv.lastSyncedAt||null;
+          out.__pendingPlatformAssignmentOverlay=true;
+          pendingPlatformAssignmentOverlays.push(key);
+        }else if(hasPendingPlatform&&liveId&&durableCanonical===canonical){
+          out.assignmentSource=out.assignmentSource||'platform';
+          out.assignmentSyncStatus=out.assignmentSyncStatus||'pending_hr';
+          out.lastSyncedAt=out.lastSyncedAt||pv.lastSyncedAt||null;
+        }
+        const platformAssigned=hasPendingPlatform&&!conflict&&durableCanonical&&(!liveId||durableCanonical===canonical);
         out.canonicalFacets=Object.assign({},base.canonicalFacets||{},bf,{
+          assigned:bf.assigned||platformAssigned,
+          available:platformAssigned?false:bf.available,
+          eligibilityBlocked:platformAssigned?true:bf.eligibilityBlocked,
           liquidationCandidate:bf.liquidationCandidate||pf.liquidationCandidate,
           liquidationConfirmed:bf.liquidationConfirmed||pf.liquidationConfirmed,
           paymentConfirmed:bf.paymentConfirmed||pf.paymentConfirmed
@@ -199,7 +224,7 @@
     const sameDisplayNameGroups=[...nameGroups.entries()].filter(([,ids])=>ids.length>1).map(([normalizedName,ids])=>({normalizedName,shopperIds:ids.sort(),reason:'display_name_collision_not_auto_merged'}));
     const uniqueVisitKeys=new Set(composedVisits.map(visitKey).filter(Boolean)),uniqueShopperIds=new Set(composedShoppers.map(s=>str(s.id)).filter(Boolean));
     const summaries=periodSummary(composedVisits);
-    const diagnostics={hrProjects:projects.length,hrVisits:baseVisits.length,hrShoppers:baseShoppers.length,hrPosts:basePosts.length,protectedVisits:protectedVisits.length,protectedProfiles:profiles.length,matchedProtectedVisits:matches.size,unmatchedProtectedVisits:Math.max(0,protectedVisits.length-matches.size),crosswalkLiveToCanonical:liveToCanonical.size,identityConflicts,visitConflicts,platformOnlyProfiles:platformOnlyProfiles.length,sameDisplayNameGroups,outputVisits:composedVisits.length,outputShoppers:composedShoppers.length,outputPosts:postMap.size,uniqueVisitKeys:uniqueVisitKeys.size,duplicateVisitKeys:composedVisits.length-uniqueVisitKeys.size,uniqueShopperIds:uniqueShopperIds.size,duplicateShopperIds:composedShoppers.length-uniqueShopperIds.size,protectedVisitsAppended:0,idempotentDesign:true,hrOwnsOperationalState:true,canonicalFacetSource:true,unmatchedProfilesExcludedFromOperationalList:true,identityContractVersion:contract?.version||'legacy-fallback',identityTechnicalKeyCount:arr(contract?.technicalKeys).length,canonicalProfileIndexConflicts:arr(canonicalProfileIndex?.conflicts).length};
+    const diagnostics={hrProjects:projects.length,hrVisits:baseVisits.length,hrShoppers:baseShoppers.length,hrPosts:basePosts.length,protectedVisits:protectedVisits.length,protectedProfiles:profiles.length,matchedProtectedVisits:matches.size,unmatchedProtectedVisits:Math.max(0,protectedVisits.length-matches.size),crosswalkLiveToCanonical:liveToCanonical.size,identityConflicts,visitConflicts,assignmentConflicts,pendingPlatformAssignmentOverlays:pendingPlatformAssignmentOverlays.length,platformOnlyProfiles:platformOnlyProfiles.length,sameDisplayNameGroups,outputVisits:composedVisits.length,outputShoppers:composedShoppers.length,outputPosts:postMap.size,uniqueVisitKeys:uniqueVisitKeys.size,duplicateVisitKeys:composedVisits.length-uniqueVisitKeys.size,uniqueShopperIds:uniqueShopperIds.size,duplicateShopperIds:composedShoppers.length-uniqueShopperIds.size,protectedVisitsAppended:0,idempotentDesign:true,hrOwnsOperationalState:true,canonicalFacetSource:true,unmatchedProfilesExcludedFromOperationalList:true,identityContractVersion:contract?.version||'legacy-fallback',identityTechnicalKeyCount:arr(contract?.technicalKeys).length,canonicalProfileIndexConflicts:arr(canonicalProfileIndex?.conflicts).length};
     return {projects,visits:composedVisits,shoppers:composedShoppers,posts:[...postMap.values()],periodOperationalSummary:summaries,currentPeriodId:hr.currentPeriodId||null,currentProjectId:hr.currentProjectId||'cinepolis',sourceRevision:hr.sourceRevision||null,identityMap:Object.fromEntries(liveToCanonical),identityReviewQueue:[...identityConflicts,...platformOnlyProfiles,...sameDisplayNameGroups],platformOnlyProfiles,diagnostics};
   }
   function signature(result){const d=result&&result.diagnostics||{};return JSON.stringify({visits:d.outputVisits,shoppers:d.outputShoppers,posts:d.outputPosts,uniqueVisitKeys:d.uniqueVisitKeys,duplicateVisitKeys:d.duplicateVisitKeys,uniqueShopperIds:d.uniqueShopperIds,duplicateShopperIds:d.duplicateShopperIds,visitIds:arr(result&&result.visits).map(visitKey).filter(Boolean).sort(),shopperIds:arr(result&&result.shoppers).map(s=>str(s.id)).filter(Boolean).sort(),periodSummary:result&&result.periodOperationalSummary});}

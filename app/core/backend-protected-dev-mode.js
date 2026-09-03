@@ -3,7 +3,7 @@
    ------------------------------------------------------------
    Separate authenticated DEV lane for validating real Firestore
    identities/profile/history without weakening Auth/RBAC/Rules.
-   Writes remain disabled.
+   Direct browser writes remain disabled; command-provider writes require ACK.
 
    Corte 6 P0 bridge:
    - source-safe watcher must not own CX.data in this lane;
@@ -29,6 +29,8 @@ window.CX = window.CX || {};
     writeMode:'disabled',
     enableDataWrites:false,
     enableOperationalWrites:false,
+    enableCommandWrites:true,
+    commandEndpoint:'/v1/cxorbia/commands',
     allowEmptyBackend:false,
     failClosedOnReadError:true,
     preserveCxDataInterface:true,

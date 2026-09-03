@@ -301,13 +301,37 @@ CX.module('visitas', ({data,role,ui})=>{
           <div style="grid-column:1/3"><label class="lbl">WhatsApp <b style="color:var(--accent)">*</b></label><input class="inp" id="an_w" placeholder="+502 ..."></div>
         </div><div style="text-align:right;margin-top:12px"><button class="btn btn-green btn-sm" id="an_save">Crear y asignar</button></div></div>
       `, {onMount:(ov,close)=>{
+        const commandSucceeded=(result)=>result&&result.ok===true&&result.status==='committed'&&result.providerAck===true&&result.successUiAllowed===true;
+        const functionalError=(result,fallback)=>String(result&&result.code||result&&result.error||fallback||'Acción no confirmada por el proveedor.');
+        const platformShopperId=()=>('shp-platform-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8));
         const renderList=(q)=>{ const f=shoppers.filter(s=>!q||s.nombre.toLowerCase().includes(q.toLowerCase()));
           ov.querySelector('#asgList').innerHTML=f.length?f.map(s=>`<button class="btn btn-ghost btn-sm asgPick" data-id="${s.id}" style="width:100%;justify-content:space-between;margin-bottom:6px">${s.nombre}<span class="bdg bdg-n">${s.ciudad||CX.paisName(s.pais)}</span></button>`).join(''):ui.empty('🔍','Sin shoppers en este país. Crea uno nuevo.');
-          ov.querySelectorAll('.asgPick').forEach(b=>b.addEventListener('click',()=>{ data.assignVisit(v.id,b.dataset.id); close(); ui.toast('Visita asignada a '+data.getShopper(b.dataset.id).nombre,'ok'); CX.router.nav('visitas'); })); };
+          ov.querySelectorAll('.asgPick').forEach(b=>b.addEventListener('click',async()=>{
+            b.disabled=true;
+            const shopper=data.getShopper?data.getShopper(b.dataset.id):null;
+            try{
+              const result=await data.assignVisit(v.id,b.dataset.id,{ackAware:true,assignmentSource:'platform',reason:'admin_assign_existing_shopper'});
+              if(!commandSucceeded(result)){ui.toast('Asignación no confirmada: '+functionalError(result),'err',5200);return;}
+              close();ui.toast('Visita asignada a '+(shopper&&shopper.nombre||'shopper confirmado'),'ok');CX.router.nav('visitas');
+            }catch(error){
+              ui.toast('Asignación no confirmada: '+String(error&&error.message||error),'err',5200);
+            }finally{b.disabled=false;}
+          })); };
         renderList('');
         ov.querySelector('#asgSearch').addEventListener('input',e=>renderList(e.target.value));
         ov.querySelectorAll('.asgTab').forEach(b=>b.addEventListener('click',()=>{ ov.querySelectorAll('.asgTab').forEach(x=>x.classList.replace('btn-pr','btn-ghost')); b.classList.replace('btn-ghost','btn-pr'); ov.querySelector('#asgExist').style.display=b.dataset.t==='exist'?'':'none'; ov.querySelector('#asgNew').style.display=b.dataset.t==='new'?'':'none'; }));
-        ov.querySelector('#an_save').addEventListener('click',()=>{ const f=ov.querySelector('#an_f').value.trim(),l=ov.querySelector('#an_l').value.trim(),w=ov.querySelector('#an_w').value.trim(); if(!f||!l||!w){ui.toast('Nombre, apellido y WhatsApp','err');return;} const s=data.addShopper({via:'asignacion',estado:'Pendiente',firstName:f,lastName:l,whatsapp:w,pais:v.pais,ciudad:v.ciudad}); data.assignVisit(v.id,s.id); close(); ui.toast('Shopper creado y visita asignada','ok',3200); CX.router.nav('visitas'); });
+        ov.querySelector('#an_save').addEventListener('click',async()=>{ const btn=ov.querySelector('#an_save'),f=ov.querySelector('#an_f').value.trim(),l=ov.querySelector('#an_l').value.trim(),w=ov.querySelector('#an_w').value.trim(); if(!f||!l||!w){ui.toast('Nombre, apellido y WhatsApp','err');return;} btn.disabled=true; const shopperId=platformShopperId();
+          try{
+            const createResult=await data.addShopper({shopperId,id:shopperId,via:'asignacion',estado:'Pendiente',firstName:f,lastName:l,nombre:(f+' '+l).trim(),whatsapp:w,pais:v.pais,country:v.pais,ciudad:v.ciudad,sourceType:'platform',sourceRef:'admin-visit-assignment',__commandMeta:{ackAware:true,reason:'admin_create_shopper_for_assignment'}});
+            if(!commandSucceeded(createResult)){ui.toast('Shopper no confirmado: '+functionalError(createResult),'err',5200);return;}
+            const durableShopperId=createResult.entityId||shopperId;
+            const assignResult=await data.assignVisit(v.id,durableShopperId,{ackAware:true,assignmentSource:'platform',reason:'admin_assign_new_confirmed_shopper'});
+            if(!commandSucceeded(assignResult)){ui.toast('Shopper creado; asignación no confirmada: '+functionalError(assignResult),'err',6200);return;}
+            close();ui.toast('Shopper creado y visita asignada','ok',3200);CX.router.nav('visitas');
+          }catch(error){
+            ui.toast('Acción no confirmada: '+String(error&&error.message||error),'err',6200);
+          }finally{btn.disabled=false;}
+        });
       }});
     };
     document.querySelectorAll('[data-assign]').forEach(b=>b.addEventListener('click',()=>assignModal(all.find(z=>z.id===b.dataset.assign))));

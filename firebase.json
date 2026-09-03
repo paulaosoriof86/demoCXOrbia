@@ -30,6 +30,13 @@
         }
       },
       {
+        "source": "/v1/cxorbia/commands",
+        "run": {
+          "serviceId": "cxorbia-live-hr-dev",
+          "region": "us-central1"
+        }
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
