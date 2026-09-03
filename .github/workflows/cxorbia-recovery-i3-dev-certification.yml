@@ -383,16 +383,21 @@ jobs:
           const fromUrl="    const url=`${HOSTING_URL}/index-backend-dev.html?cxBackendPreview=${TOKEN_PREVIEW}&cxProjectId=cinepolis&cxProtectedRuntime=${TOKEN_PROTECTED}&cxTechnicalAuthE2E=${TOKEN_TECH}`;";
           const toUrl="    const url=`${HOSTING_URL}/index-backend-dev.html?cxBackendPreview=${TOKEN_PREVIEW}&cxProjectId=cinepolis&cxProtectedRuntime=${TOKEN_PROTECTED}`;";
           const fromBrowser="    await page.locator('.role-btn[data-role=\"admin\"]').click({timeout:30000});\n    await page.locator('#lgUser').fill(creds.staff.login);\n    await page.locator('#lgPass').fill(creds.staff.password);\n    await page.locator('#lgSubmit').click();\n    await page.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,{timeout:120000});";
-          const toBrowser="    await page.waitForFunction(()=>typeof window.CX?.backendAuth?.authenticate==='function'&&typeof window.CX?.app?.enter==='function',{timeout:30000});\n    await page.evaluate(async ({login,password})=>{const ctx=await window.CX.backendAuth.authenticate(login,password,'staff');window.CX.app.enter();return {role:ctx?.role||null};},{login:creds.staff.login,password:creds.staff.password});\n    await page.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,{timeout:120000});";
+          const toBrowser="    await page.waitForFunction(()=>typeof window.CX?.backendAuth?.authenticate==='function'&&typeof window.CX?.app?.enter==='function',undefined,{timeout:30000});\n    await page.evaluate(async ({login,password})=>{const ctx=await window.CX.backendAuth.authenticate(login,password,'staff');window.CX.app.enter();return {role:ctx?.role||null};},{login:creds.staff.login,password:creds.staff.password});\n    await page.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,undefined,{timeout:120000});";
           if(!before.includes(fromDocs)||!before.includes(fromDup)||!before.includes(fromContext)||!before.includes(fromUrl)||!before.includes(fromBrowser))throw new Error('GATE7_QA_DISCRIMINANT_PATTERN_NOT_FOUND');
-          const after=before.replace(fromDocs,toDocs).replace(fromDup,toDup).replace(fromContext,toContext).replace(fromUrl,toUrl).replace(fromBrowser,toBrowser);
+          let after=before.replace(fromDocs,toDocs).replace(fromDup,toDup).replace(fromContext,toContext).replace(fromUrl,toUrl).replace(fromBrowser,toBrowser);
+          const authorityWaitWrong="await page.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,{timeout:120000});";
+          const authorityWaitCorrect="await page.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,undefined,{timeout:120000});";
+          after=after.replaceAll(authorityWaitWrong,authorityWaitCorrect);
           if(after===before)throw new Error('GATE7_QA_DISCRIMINANT_NOT_PATCHED');
           fs.writeFileSync(file,after,'utf8');
           fs.writeFileSync(process.env.OUT+'/gate7-qa-discriminant-fix.json',JSON.stringify({
             decision:'PASS_GATE7_QA_HUMAN_CANONICAL_BROWSER_MAPPING_FIX',
             classification:'MAPPING_FAILURE',
             environmentStabilization:'service-workers-blocked-runner-only',
-            environmentCause:'service-worker-controllerchange-navigation',
+            environmentCause:'playwright-waitForFunction-options-position-plus-service-worker-controllerchange',
+            playwrightWaitOptionsThirdArgument:true,
+            authorityTimeoutMs:120000,
             scope:'runner-only',
             sourceShaUnchanged:true,
             deployedArtifactUnchanged:true,
