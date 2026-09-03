@@ -29,8 +29,7 @@ env:
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
   RUNTIME_SA: firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com
-  HOSTING_URL: https://cxorbia-backend-dev.web.app
-  OUT: .tmp/recovery-i3-gate8-auth-diagnostic
+  OUT: .tmp/recovery-i3-gate8-password-diagnostic
 
 jobs:
   diagnose:
@@ -49,11 +48,11 @@ jobs:
           test "$GITHUB_REF_NAME" = "recovery/cxorbia-phase-a-20260831"
           git merge-base --is-ancestor "$SOURCE_SHA" HEAD
           test "$(git rev-parse "$SOURCE_SHA^")" = "$SOURCE_PARENT_SHA"
-          test "$(git rev-parse "$SOURCE_SHA^{tree}")" = "$SOURCE_TREE"
+          test "$(git rev-parse "$SOURCE_SHA^{tree})" = "$SOURCE_TREE"
           mapfile -t changed < <(git diff --name-only "$SOURCE_SHA" HEAD)
           test "${#changed[@]}" = 1
           test "${changed[0]}" = "$WF"
-          printf '{"sourceSha":"%s","sourceTree":"%s","transportSha":"%s","gate6":"PASS_LOCKED","gate7":"PASS_LOCKED","gate8":"AUTH_BOUNDARY_DIAGNOSTIC_READONLY","production":false}\n' "$SOURCE_SHA" "$SOURCE_TREE" "$GITHUB_SHA" > "$OUT/authorization.json"
+          printf '{"sourceSha":"%s","sourceTree":"%s","transportSha":"%s","gate6":"PASS_LOCKED","gate7":"PASS_LOCKED","gate8":"PASSWORD_PROVISION_DIAGNOSTIC_READONLY","production":false}\n' "$SOURCE_SHA" "$SOURCE_TREE" "$GITHUB_SHA" > "$OUT/authorization.json"
 
       - name: Setup Node 24
         uses: actions/setup-node@v4
@@ -82,19 +81,20 @@ jobs:
           const v2=JSON.parse(fs.readFileSync(process.env.OUT+'/cloud-run-v2.json','utf8'));
           const env=Object.fromEntries((v2.template?.containers?.[0]?.env||[]).map(x=>[String(x.name||''),String(x.value||'')]));
           const actual=env.CXORBIA_RECOVERY_SOURCE_SHA||'';
-          const result={decision:actual===process.env.SOURCE_SHA&&process.env.CURRENT_SA===process.env.RUNTIME_SA?'PASS_GATE8_DEV_SOURCE_UNCHANGED':'RELEASE_COMPOSITION_FAILURE_GATE8_DEV_DRIFT',sourceSha:process.env.SOURCE_SHA,deployedSourceSha:actual,revision:process.env.REV,runtimeServiceAccount:process.env.CURRENT_SA,redeploy:false,production:false};
-          fs.writeFileSync(process.env.OUT+'/dev-source.json',JSON.stringify(result,null,2)+'\n');
-          if(result.decision!=='PASS_GATE8_DEV_SOURCE_UNCHANGED')process.exit(1);
+          const ok=actual===process.env.SOURCE_SHA&&process.env.CURRENT_SA===process.env.RUNTIME_SA;
+          fs.writeFileSync(process.env.OUT+'/dev-source.json',JSON.stringify({decision:ok?'PASS_GATE8_DEV_SOURCE_UNCHANGED':'RELEASE_COMPOSITION_FAILURE_GATE8_DEV_DRIFT',sourceSha:process.env.SOURCE_SHA,deployedSourceSha:actual,revision:process.env.REV,runtimeServiceAccount:process.env.CURRENT_SA,redeploy:false,production:false},null,2)+'\n');
+          if(!ok)process.exit(1);
           NODE
 
       - name: Install read-only Firebase Admin dependency
         run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null
 
-      - name: Diagnose Shopper Auth claims profile and protected-history boundary
+      - name: Discriminate current Shopper password provisioning
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
+          import crypto from 'node:crypto';
           import {applicationDefault,getApps,initializeApp} from 'firebase-admin/app';
           import {getAuth} from 'firebase-admin/auth';
           import {getFirestore} from 'firebase-admin/firestore';
@@ -102,26 +102,43 @@ jobs:
           const auth=getAuth(),db=getFirestore();
           const tenantId='tya',projectId='cinepolis';
           const list=v=>Array.isArray(v)?v.map(String):(typeof v==='string'?v.split(',').map(x=>x.trim()).filter(Boolean):[]);
+          const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
+          const stableUid=sid=>`cx-sh-${sha(`${tenantId}\0shopper\0${sid}`).slice(0,28)}`;
+          const stableEmail=sid=>`${sha(`${tenantId}\0shopper\0${sid}`).slice(0,48)}@auth.cxorbia.invalid`;
           const all=[];let token;
           do{const page=await auth.listUsers(1000,token);all.push(...page.users);token=page.pageToken;}while(token);
-          const shopperSnap=await db.collection('tenants').doc(tenantId).collection('shoppers').get();
-          const shopperIds=new Set(shopperSnap.docs.map(d=>d.id));
           const visitSnap=await db.collection('tenants').doc(tenantId).collection('projects').doc(projectId).collection('visits').get();
-          const visitShopperIds=new Set(visitSnap.docs.map(d=>String(d.data()?.shopperId||'').trim()).filter(Boolean));
-          const c={totalAuthUsers:all.length,roleShopper:0,namespaceShopper:0,tenantTya:0,projectCinepolis:0,shopperIdPresent:0,fullShopperClaims:0,fullClaimsWithProfile:0,fullClaimsWithProtectedHistory:0,fullClaimsProfileAndHistory:0,disabledFullClaims:0,shopperProfiles:shopperIds.size,protectedVisits:visitSnap.size,protectedVisitShopperIds:visitShopperIds.size};
+          const historyIds=new Set(visitSnap.docs.map(d=>String(d.data()?.shopperId||'').trim()).filter(Boolean));
+          const c={totalAuthUsers:all.length,fullShopperClaims:0,fullClaimsWithProtectedHistory:0,fullClaimsPasswordProvider:0,fullClaimsPasswordHashPresent:0,stableGate6Identity:0,stableGate6IdentityWithHistory:0,stableGate6IdentityPasswordProvider:0,stableGate6IdentityPasswordHashPresent:0,stableGate6IdentityEmailExact:0,stableGate6IdentityWithHistoryPasswordProvider:0,stableGate6IdentityWithHistoryPasswordHashPresent:0};
+          const providerCounts={};
           for(const u of all){
-            const cl=u.customClaims||{};const role=String(cl.role||'').toLowerCase();const ns=String(cl.authNamespace||'').toLowerCase();const sid=String(cl.shopperId||'').trim();
-            const roleOk=role==='shopper';const nsOk=(ns||(roleOk?'shopper':'staff'))==='shopper';const tenantOk=cl.tenantId===tenantId||list(cl.tenants).includes(tenantId);const projectOk=cl.projectId===projectId||list(cl.projectIds).includes(projectId);const sidOk=!!sid;
-            if(roleOk)c.roleShopper++;if(nsOk&&roleOk)c.namespaceShopper++;if(tenantOk&&roleOk)c.tenantTya++;if(projectOk&&roleOk)c.projectCinepolis++;if(sidOk&&roleOk)c.shopperIdPresent++;
-            const full=roleOk&&nsOk&&tenantOk&&projectOk&&sidOk;
-            if(full){c.fullShopperClaims++;const profile=shopperIds.has(sid),history=visitShopperIds.has(sid);if(profile)c.fullClaimsWithProfile++;if(history)c.fullClaimsWithProtectedHistory++;if(profile&&history)c.fullClaimsProfileAndHistory++;if(u.disabled)c.disabledFullClaims++;}
+            const cl=u.customClaims||{};const sid=String(cl.shopperId||'').trim();
+            const full=String(cl.role||'').toLowerCase()==='shopper'&&String(cl.authNamespace||'').toLowerCase()==='shopper'&&(cl.tenantId===tenantId||list(cl.tenants).includes(tenantId))&&(cl.projectId===projectId||list(cl.projectIds).includes(projectId))&&!!sid;
+            if(!full)continue;
+            c.fullShopperClaims++;
+            const history=historyIds.has(sid);if(history)c.fullClaimsWithProtectedHistory++;
+            const providers=(u.providerData||[]).map(p=>String(p.providerId||'')).filter(Boolean);
+            for(const p of providers)providerCounts[p]=(providerCounts[p]||0)+1;
+            const passwordProvider=providers.includes('password');
+            const passwordHashPresent=!!u.passwordHash;
+            if(passwordProvider)c.fullClaimsPasswordProvider++;
+            if(passwordHashPresent)c.fullClaimsPasswordHashPresent++;
+            const stable=u.uid===stableUid(sid);
+            if(stable){
+              c.stableGate6Identity++;
+              if(history)c.stableGate6IdentityWithHistory++;
+              if(String(u.email||'').toLowerCase()===stableEmail(sid))c.stableGate6IdentityEmailExact++;
+              if(passwordProvider)c.stableGate6IdentityPasswordProvider++;
+              if(passwordHashPresent)c.stableGate6IdentityPasswordHashPresent++;
+              if(history&&passwordProvider)c.stableGate6IdentityWithHistoryPasswordProvider++;
+              if(history&&passwordHashPresent)c.stableGate6IdentityWithHistoryPasswordHashPresent++;
+            }
           }
-          let classification='PASS',decision='PASS_GATE8_AUTH_BOUNDARY_EXISTS';
-          if(c.fullShopperClaims===0){classification='AUTH_FAILURE';decision='AUTH_FAILURE_GATE8_NO_VALID_SHOPPER_CLAIMS';}
-          else if(c.fullClaimsWithProfile===0){classification='PERSISTENCE_FAILURE';decision='PERSISTENCE_FAILURE_GATE8_CLAIMED_SHOPPERS_HAVE_NO_PROFILE';}
-          else if(c.fullClaimsWithProtectedHistory===0){classification='MAPPING_FAILURE';decision='MAPPING_FAILURE_GATE8_CLAIMED_SHOPPERS_NOT_IN_PROTECTED_HISTORY';}
-          const result={decision,classification,counts:c,sourceSha:process.env.SOURCE_SHA,authWrites:0,passwordChanges:0,usersCreated:0,claimsChanged:0,firestoreWrites:0,hrWrites:0,redeploy:false,production:false};
-          fs.writeFileSync(process.env.OUT+'/gate8-auth-boundary-diagnostic.json',JSON.stringify(result,null,2)+'\n');
+          let classification='PASS',decision='PASS_GATE8_PASSWORD_CAPABLE_SHOPPER_EXISTS';
+          if(c.stableGate6Identity>0&&c.stableGate6IdentityPasswordProvider===0&&c.stableGate6IdentityPasswordHashPresent===0){classification='AUTH_FAILURE';decision='AUTH_FAILURE_GATE8_GATE6_IDENTITIES_HAVE_NO_PASSWORD_CREDENTIAL';}
+          else if(c.fullClaimsPasswordProvider===0&&c.fullClaimsPasswordHashPresent===0){classification='AUTH_FAILURE';decision='AUTH_FAILURE_GATE8_NO_PASSWORD_CAPABLE_SHOPPER';}
+          const result={decision,classification,counts:c,providerCounts,sourceSha:process.env.SOURCE_SHA,authWrites:0,passwordChanges:0,passwordResets:0,usersCreated:0,claimsChanged:0,firestoreWrites:0,hrWrites:0,redeploy:false,production:false};
+          fs.writeFileSync(process.env.OUT+'/gate8-password-provision-diagnostic.json',JSON.stringify(result,null,2)+'\n');
           console.log(JSON.stringify(result));
           NODE
 
@@ -129,7 +146,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-recovery-i3-gate8-auth-diagnostic-${{ github.run_id }}
+          name: cxorbia-recovery-i3-gate8-password-diagnostic-${{ github.run_id }}
           path: ${{ env.OUT }}
           if-no-files-found: warn
           retention-days: 14
