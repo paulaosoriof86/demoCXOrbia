@@ -137,6 +137,8 @@ jobs:
           set -euo pipefail
           IMAGE_URI="$(cat "$OUT/image-uri.txt")"
           DEPLOY_CFG=".tmp/gate8-cloudbuild-deploy.yaml"
+          LOG_URI="gs://${PROJECT}_cloudbuild/gate8-deploy/${SOURCE_SHA}.log"
+          RC_URI="gs://${PROJECT}_cloudbuild/gate8-deploy/${SOURCE_SHA}.rc"
           mkdir -p .tmp
           cat > "$DEPLOY_CFG" <<'YAML'
           steps:
@@ -145,23 +147,39 @@ jobs:
               args:
                 - '-c'
                 - |
-                  set -euo pipefail
+                  set +e
                   gcloud run services update "$_SERVICE" \
                     --project "$_PROJECT" \
                     --region "$_REGION" \
                     --image "$_IMAGE" \
                     --service-account "$_RUNTIME_SA" \
                     --update-env-vars "CXORBIA_RECOVERY_SOURCE_SHA=$_SOURCE_SHA,CXORBIA_DEV_OPERATIONAL_NAMES=true" \
-                    --quiet
+                    --quiet > /workspace/gate8-deploy.log 2>&1
+                  rc=$?
+                  printf '%s\n' "$rc" > /workspace/gate8-deploy.rc
+                  cat /workspace/gate8-deploy.log
+                  gcloud storage cp /workspace/gate8-deploy.log "$_LOG_URI" >/dev/null 2>&1
+                  log_copy_rc=$?
+                  gcloud storage cp /workspace/gate8-deploy.rc "$_RC_URI" >/dev/null 2>&1
+                  rc_copy_rc=$?
+                  if [ "$log_copy_rc" -ne 0 ] || [ "$rc_copy_rc" -ne 0 ]; then
+                    echo "GATE8_DEPLOY_RESULT_EXPORT_FAILURE"
+                    exit 2
+                  fi
+                  exit 0
           timeout: '600s'
           options:
-            logging: LEGACY
+            logging: CLOUD_LOGGING_ONLY
           YAML
           gcloud builds submit --no-source \
             --project "$PROJECT" \
             --config "$DEPLOY_CFG" \
-            --substitutions "_PROJECT=$PROJECT,_REGION=$REGION,_SERVICE=$SERVICE,_IMAGE=$IMAGE_URI,_RUNTIME_SA=$RUNTIME_SA,_SOURCE_SHA=$SOURCE_SHA" \
+            --substitutions "_PROJECT=$PROJECT,_REGION=$REGION,_SERVICE=$SERVICE,_IMAGE=$IMAGE_URI,_RUNTIME_SA=$RUNTIME_SA,_SOURCE_SHA=$SOURCE_SHA,_LOG_URI=$LOG_URI,_RC_URI=$RC_URI" \
             --quiet
+          gcloud storage cat "$LOG_URI" | tee "$OUT/deploy-cloud-build.log"
+          deploy_rc="$(gcloud storage cat "$RC_URI" | tr -d '\r\n')"
+          printf '%s\n' "$deploy_rc" > "$OUT/deploy-cloud-build.rc"
+          test "$deploy_rc" = "0"
           echo "DEPLOY_IDENTITY_ROUTE=cloud_build_execution_identity" >> "$GITHUB_ENV"
 
       - name: Read back exact Cloud Run DEV revision
