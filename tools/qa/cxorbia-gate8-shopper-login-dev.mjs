@@ -159,8 +159,14 @@ ensure(first?.authenticated===true&&first.role==='shopper'&&first.tenantId===ten
 ensure(reload?.authenticated===true&&reload.role==='shopper'&&reload.tenantId===tenantId&&reload.shopperId===shopperId&&reload.sessionShopperId===shopperId&&reload.authorityApplied===true&&reload.shopperVisits===first.shopperVisits&&reload.targetVisitPresent===true,'FUNCTIONAL_DEFECT',{blocker:'SHOPPER_RELOAD_INVALID'});
 const [profileAfter,crossAfter,visitAfter,userAfter,memberAfter]=await Promise.all([tenant.collection('shoppers').doc(shopperId).get(),tenant.collection('shopperIdentityCrosswalk').doc(shopperId).get(),project.collection('visits').doc(targetVisit.id).get(),auth.getUser(uid),tenant.collection('users').doc(uid).get()]);
 ensure(profileAfter.exists&&crossAfter.exists&&visitAfter.exists&&memberAfter.exists,'PERSISTENCE_FAILURE',{blocker:'SHOPPER_IDENTITY_READBACK_MISSING'});
-const preserved=userAfter.uid===before.uid&&fp(profileAfter.data()||{})===before.profile&&fp(crossAfter.data()||{})===before.crosswalk&&fp({id:visitAfter.id,...(visitAfter.data()||{})})===before.visit;
-ensure(preserved&&str(memberAfter.data()?.credentialState)==='enrolled'&&str(memberAfter.data()?.credentialVersion)==='cxorbia-shopper-credential-v1','PERSISTENCE_FAILURE',{blocker:'SHOPPER_IDENTITY_CHANGED'});
+const identityReadback={
+  uidStable:userAfter.uid===before.uid,
+  profileStable:fp(profileAfter.data()||{})===before.profile,
+  crosswalkStable:fp(crossAfter.data()||{})===before.crosswalk,
+  visitStable:fp({id:visitAfter.id,...(visitAfter.data()||{})})===before.visit,
+  credentialStateValid:str(memberAfter.data()?.credentialState)==='enrolled'&&str(memberAfter.data()?.credentialVersion)==='cxorbia-shopper-credential-v1'
+};
+ensure(Object.values(identityReadback).every(Boolean),'PERSISTENCE_FAILURE',{blocker:'SHOPPER_IDENTITY_CHANGED',identityReadback});
 const claims=userAfter.customClaims||{};
 ensure(str(claims.tenantId)===tenantId&&str(claims.shopperId)===shopperId&&str(claims.role)==='shopper'&&str(claims.authNamespace)==='shopper'&&arr(claims.projectIds).map(String).includes(projectId),'AUTH_FAILURE',{blocker:'SHOPPER_CLAIMS_CHANGED'});
 finish('PASS_GATE8_SECURE_SHOPPER_LOGIN',{gate6:'PASS_REGRESSION',gate7:'PASS_REGRESSION',sourceSha:process.env.SOURCE_SHA||null,tenantId,projectId,periodId,role:'shopper',sourceRevision:runtime.revision||snapshot.sourceRevision||null,shopperFingerprint:fp(shopperId),uidFingerprint:fp(uid),targetVisitFingerprint:fp(str(targetVisit.visitId||targetVisit.id)),credentialIssuedOnce:true,replayIdempotent:true,directPasswordAuth:true,browserObserved:true,sameIdentityAfterReload:true,sameHistoryAfterReload:reload.shopperVisits===first.shopperVisits&&reload.targetVisitPresent===true,historyCount:first.shopperVisits,rawSecretPersisted:false,rawSecretLogged:false,localStorageCredentialTruth:false},0);
