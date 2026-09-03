@@ -267,7 +267,10 @@ jobs:
         run: |
           set -euo pipefail
           cd "$SRC"
-          PROJECT="$PROJECT" OUT="$GITHUB_WORKSPACE/$OUT" SOURCE_SHA="$SOURCE_SHA" RUNTIME_URL="$RUNTIME_URL" HOSTING_URL="$HOSTING_URL" CXORBIA_E2E_PRIVATE_CREDENTIALS="$CXORBIA_E2E_PRIVATE_CREDENTIALS" \
+          FIREBASE_WEB_API_KEY="$(curl -fsSL --retry 5 --retry-delay 2 -H 'Cache-Control: no-cache' "$HOSTING_URL/__/firebase/init.js" \
+            | node -e "const fs=require('fs');const s=fs.readFileSync(0,'utf8');const m=s.match(/[\\\"']?apiKey[\\\"']?\\s*:\\s*[\\\"']([^\\\"']+)[\\\"']/);if(!m)process.exit(2);process.stdout.write(m[1]);")"
+          test -n "$FIREBASE_WEB_API_KEY"
+          PROJECT="$PROJECT" OUT="$GITHUB_WORKSPACE/$OUT" SOURCE_SHA="$SOURCE_SHA" RUNTIME_URL="$RUNTIME_URL" HOSTING_URL="$HOSTING_URL" FIREBASE_WEB_API_KEY="$FIREBASE_WEB_API_KEY" CXORBIA_E2E_PRIVATE_CREDENTIALS="$CXORBIA_E2E_PRIVATE_CREDENTIALS" \
             node tools/qa/cxorbia-gate7-controlled-assignment-dev.mjs
 
       - name: Final Gate 7 verdict
