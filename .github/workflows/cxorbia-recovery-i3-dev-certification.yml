@@ -155,7 +155,7 @@ jobs:
                     --quiet
           timeout: '600s'
           options:
-            logging: CLOUD_LOGGING_ONLY
+            logging: LEGACY
           YAML
           gcloud builds submit --no-source \
             --project "$PROJECT" \
