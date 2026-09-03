@@ -5,15 +5,6 @@ on:
     branches:
       - recovery/cxorbia-phase-a-20260831
     paths:
-      - backend/runtime/cxorbia-operational-command-provider-v1.mjs
-      - backend/runtime/hr-live-service/server.mjs
-      - app/adapters/tya-cumulative-read-model-v2.js
-      - app/index-backend-dev.html
-      - app/core/backend-protected-dev-mode.js
-      - app/modules/visitas.js
-      - firebase.json
-      - backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs
-      - tools/qa/cxorbia-gate7-controlled-assignment-dev.mjs
       - .github/workflows/cxorbia-recovery-i3-dev-certification.yml
 
 permissions:
@@ -30,8 +21,10 @@ defaults:
     shell: bash
 
 env:
-  SOURCE_SHA: ${{ github.sha }}
-  EXPECTED_PARENT_SHA: bb9c3cb73860673e87b001e6b2ad1728acf2286e
+  SOURCE_SHA: 31c66c49d18aaeb4a85c33dca15b8c137d60f6bd
+  SOURCE_TREE: 7445eb6a3c2ad7c6fb2ff4b400ff8ff8bd1bfdd2
+  SOURCE_PARENT_SHA: bb9c3cb73860673e87b001e6b2ad1728acf2286e
+  WF: .github/workflows/cxorbia-recovery-i3-dev-certification.yml
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -43,44 +36,51 @@ env:
 jobs:
   certify:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 55
     steps:
-      - name: Checkout exact Recovery source
+      - name: Checkout certification transport head
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Freeze Gate 7 source and Gate 6 lock
+      - name: Freeze exact Gate 7 source and workflow-only transport
         run: |
           set -euo pipefail
           mkdir -p "$OUT"
           test "${GITHUB_REF_NAME}" = "recovery/cxorbia-phase-a-20260831"
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT_SHA"
-          git status --porcelain | tee "$OUT/source-status.txt"
-          test ! -s "$OUT/source-status.txt"
-          printf '{"sourceSha":"%s","parentSha":"%s","gate6":"PASS_LOCKED","gate7":"MATERIALIZATION_CERTIFICATION","production":false,"hrWrites":0}\n' "$SOURCE_SHA" "$EXPECTED_PARENT_SHA" > "$OUT/authorization.json"
+          git merge-base --is-ancestor "$SOURCE_SHA" HEAD
+          test "$(git rev-parse "$SOURCE_SHA^")" = "$SOURCE_PARENT_SHA"
+          test "$(git rev-parse "$SOURCE_SHA^{tree}")" = "$SOURCE_TREE"
+          mapfile -t changed < <(git diff --name-only "$SOURCE_SHA" HEAD)
+          test "${#changed[@]}" = 1
+          test "${changed[0]}" = "$WF"
+          echo "SRC=$RUNNER_TEMP/recovery-g7-source" >> "$GITHUB_ENV"
+          git worktree add --detach "$RUNNER_TEMP/recovery-g7-source" "$SOURCE_SHA"
+          test "$(git -C "$RUNNER_TEMP/recovery-g7-source" rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git -C "$RUNNER_TEMP/recovery-g7-source" rev-parse HEAD^{tree})" = "$SOURCE_TREE"
+          test -z "$(git -C "$RUNNER_TEMP/recovery-g7-source" status --porcelain)"
+          printf '{"authorizedBy":"Paula","exception":"ChatGPT workflow-only writer due Codex capacity exhaustion","sourceSha":"%s","sourceTree":"%s","sourceParentSha":"%s","transportSha":"%s","gate6":"PASS_LOCKED","gate7":"MATERIALIZATION_CERTIFICATION","production":false,"hrWrites":0}\n' \
+            "$SOURCE_SHA" "$SOURCE_TREE" "$SOURCE_PARENT_SHA" "$GITHUB_SHA" > "$OUT/authorization.json"
 
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
-      - name: Install focal test dependencies
+      - name: Run Gate 6 and Gate 7 focal unit tests on exact source
         run: |
           set -euo pipefail
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.47.2 >/dev/null
-          npx playwright install --with-deps chromium >/dev/null
-
-      - name: Run Gate 7 focal unit tests
-        run: |
-          set -euo pipefail
-          node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs | tee "$OUT/unit-tests.log"
+          cd "$SRC"
+          node --check backend/runtime/cxorbia-operational-command-provider-v1.mjs
+          node --check backend/runtime/hr-live-service/server.mjs
+          node --test backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs \
+            | tee "$GITHUB_WORKSPACE/$OUT/unit-tests.log"
 
       - name: Static Gate 7 source certification
         run: |
           set -euo pipefail
-          node <<'NODE'
+          cd "$SRC"
+          OUT="$GITHUB_WORKSPACE/$OUT" node <<'NODE'
           const fs=require('fs');
           const read=p=>fs.readFileSync(p,'utf8');
           const checks={
@@ -112,53 +112,90 @@ jobs:
         with:
           project_id: '${{ env.PROJECT }}'
 
-      - name: Deploy exact SOURCE_SHA to existing Cloud Run DEV
+      - name: Install gcloud beta noninteractive
+        run: gcloud components install beta --quiet
+
+      - name: Deploy exact SOURCE_SHA to existing Cloud Run DEV without build
+        id: runtime
         run: |
           set -euo pipefail
-          active="$(gcloud auth list --filter=status:ACTIVE --format='value(account)' | head -n1)"
-          test "$active" = "$RUNTIME_SA"
+          current_sa="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(spec.template.spec.serviceAccountName)')"
+          test "$current_sa" = "$RUNTIME_SA"
+          cd "$SRC/backend/runtime/hr-live-service"
+          npm install --omit=dev --ignore-scripts --package-lock=false >/dev/null
+          npm ls --all --json > "$GITHUB_WORKSPACE/$OUT/runtime-dependencies.json"
+          cd "$SRC"
+          source_tree="$(git rev-parse HEAD^{tree})"
+          test "$source_tree" = "$SOURCE_TREE"
+          dep_hash="$(find backend/runtime/hr-live-service/node_modules -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | awk '{print $1}')"
+          printf '{"sourceSha":"%s","sourceTree":"%s","dependencyTreeHash":"%s","firebaseAdmin":"13.4.0","node":"24","buildMode":"cloud_run_source_no_build","production":false}\n' \
+            "$SOURCE_SHA" "$source_tree" "$dep_hash" > "$GITHUB_WORKSPACE/$OUT/source-package.json"
           gcloud beta run deploy "$SERVICE" \
             --project "$PROJECT" \
             --region "$REGION" \
-            --source . \
+            --source "$SRC" \
             --no-build \
-            --service-account "$RUNTIME_SA" \
-            --set-env-vars "CXORBIA_RECOVERY_SOURCE_SHA=$SOURCE_SHA,CXORBIA_DEV_OPERATIONAL_NAMES=true" \
+            --base-image="us-central1-docker.pkg.dev/serverless-runtimes/google-24-full/runtimes/nodejs24" \
+            --command=node \
+            --args=backend/runtime/hr-live-service/server.mjs \
+            --update-env-vars="CXORBIA_RECOVERY_SOURCE_SHA=$SOURCE_SHA,CXORBIA_ENVIRONMENT=DEV,CXORBIA_DEV_OPERATIONAL_NAMES=true" \
             --quiet
-          rev="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.latestReadyRevisionName)')"
           url="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.url)')"
+          rev="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.latestReadyRevisionName)')"
+          after_sa="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(spec.template.spec.serviceAccountName)')"
+          test "$after_sa" = "$RUNTIME_SA"
+          token="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $token" \
+            "https://run.googleapis.com/v2/projects/$PROJECT/locations/$REGION/services/$SERVICE" \
+            > "$GITHUB_WORKSPACE/$OUT/cloud-run-v2.json"
+          OUT="$GITHUB_WORKSPACE/$OUT" SOURCE_SHA="$SOURCE_SHA" REV="$rev" URL="$url" node <<'NODE'
+          const fs=require('fs');
+          const out=process.env.OUT;
+          const v2=JSON.parse(fs.readFileSync(out+'/cloud-run-v2.json','utf8'));
+          const c=v2.template?.containers?.[0]||{};
+          const source=c.sourceCode?.cloudStorageSource||null;
+          if(!source||!source.bucket||!source.object) throw new Error('SOURCE_CODE_READBACK_MISSING');
+          const env=Object.fromEntries((c.env||[]).map(x=>[x.name,x.value]));
+          if(env.CXORBIA_RECOVERY_SOURCE_SHA!==process.env.SOURCE_SHA) throw new Error('SOURCE_SHA_ENV_READBACK_MISMATCH');
+          fs.writeFileSync(out+'/runtime.json',JSON.stringify({
+            decision:'PASS_RUNTIME_SOURCE_SHA_READBACK',
+            revision:process.env.REV,
+            url:process.env.URL,
+            sourceSha:process.env.SOURCE_SHA,
+            buildMode:'cloud_run_source_no_build',
+            baseImageUri:c.baseImageUri||null,
+            sourceCode:{bucket:source.bucket,object:source.object,generation:source.generation||null},
+            production:false
+          },null,2)+'\n');
+          NODE
           echo "RUNTIME_REVISION=$rev" >> "$GITHUB_ENV"
           echo "RUNTIME_URL=$url" >> "$GITHUB_ENV"
-          gcloud run revisions describe "$rev" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/revision.json"
 
-      - name: Read back runtime SOURCE_SHA
+      - name: Install DEV certification dependencies
         run: |
           set -euo pipefail
-          node <<'NODE'
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase-tools@13.35.1 playwright@1.47.2 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
+          ln -s "$GITHUB_WORKSPACE/node_modules" "$SRC/node_modules"
+
+      - name: Deploy Hosting DEV from exact SOURCE_SHA
+        run: |
+          set -euo pipefail
+          cd "$SRC"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$HOSTING_TARGET" --project "$PROJECT" --non-interactive \
+            | tee "$GITHUB_WORKSPACE/$OUT/hosting-deploy.log"
+
+      - name: Read back Hosting DEV composition and byte parity
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 10 --retry-delay 3 -H 'Cache-Control: no-cache' \
+            "$HOSTING_URL/index-backend-dev.html?recovery=$GITHUB_RUN_ID" -o "$RUNNER_TEMP/index-backend-dev.html"
+          cmp "$SRC/app/index-backend-dev.html" "$RUNNER_TEMP/index-backend-dev.html"
+          OUT="$GITHUB_WORKSPACE/$OUT" HOSTING_URL="$HOSTING_URL" node <<'NODE'
           const fs=require('fs');
-          const r=JSON.parse(fs.readFileSync(process.env.OUT+'/revision.json','utf8'));
-          const env=r.spec?.containers?.[0]?.env||[];
-          const source=(env.find(x=>x.name==='CXORBIA_RECOVERY_SOURCE_SHA')||{}).value||null;
-          const out={decision:source===process.env.SOURCE_SHA?'PASS_RUNTIME_SOURCE_SHA_READBACK':'RELEASE_COMPOSITION_FAILURE',revision:process.env.RUNTIME_REVISION,url:process.env.RUNTIME_URL,sourceSha:source,expected:process.env.SOURCE_SHA,production:false};
-          fs.writeFileSync(process.env.OUT+'/runtime.json',JSON.stringify(out,null,2)+'\n');
-          console.log(JSON.stringify(out));
-          if(out.decision!=='PASS_RUNTIME_SOURCE_SHA_READBACK')process.exit(1);
-          NODE
-
-      - name: Deploy Hosting DEV cxorbia-dev
-        run: |
-          set -euo pipefail
-          npx firebase-tools@13.35.1 deploy --config firebase.json --only "hosting:$HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$OUT/hosting-deploy.log"
-
-      - name: Read back Hosting DEV composition
-        run: |
-          set -euo pipefail
-          curl -fsS --retry 8 --retry-delay 3 "$HOSTING_URL/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxTechnicalAuthE2E=YES_PAULA_20260801_REAL_USERS_E2E" > "$OUT/index-backend-dev.html"
-          node <<'NODE'
-          const fs=require('fs');
-          const html=fs.readFileSync(process.env.OUT+'/index-backend-dev.html','utf8');
+          const html=fs.readFileSync(process.env.RUNNER_TEMP+'/index-backend-dev.html','utf8');
           const ok=html.includes('adapters/cxorbia-command-http-transport-v1.js')&&html.includes('core/backend-protected-dev-mode.js');
-          const out={decision:ok?'PASS_HOSTING_DEV_COMPOSITION_READBACK':'RELEASE_COMPOSITION_FAILURE',hostingUrl:process.env.HOSTING_URL,transportSameOrigin:ok,production:false};
+          const out={decision:ok?'PASS_HOSTING_DEV_COMPOSITION_READBACK':'RELEASE_COMPOSITION_FAILURE',hostingUrl:process.env.HOSTING_URL,transportSameOrigin:ok,byteParity:true,production:false};
           fs.writeFileSync(process.env.OUT+'/hosting.json',JSON.stringify(out,null,2)+'\n');
           console.log(JSON.stringify(out));
           if(!ok)process.exit(1);
@@ -167,17 +204,20 @@ jobs:
       - name: Prepare existing DEV credentials privately
         run: |
           set -euo pipefail
-          PRIVATE_DIR=.tmp/phase-a-runtime-private
-          PRIVATE_E2E=$PRIVATE_DIR/private-e2e.json
+          PRIVATE_DIR="$RUNNER_TEMP/private"
+          PRIVATE_E2E="$PRIVATE_DIR/e2e.json"
           mkdir -p "$PRIVATE_DIR"
-          CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E" node tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs > "$OUT/credential-selection.source-safe.json"
+          cd "$SRC"
+          CXORBIA_E2E_PRIVATE_CREDENTIALS="$PRIVATE_E2E" node tools/qa/cxorbia-c6-existing-users-e2e-credentials.mjs \
+            > "$GITHUB_WORKSPACE/$OUT/credential-selection.source-safe.json"
           echo "CXORBIA_E2E_PRIVATE_CREDENTIALS=$PRIVATE_E2E" >> "$GITHUB_ENV"
           chmod 600 "$PRIVATE_E2E"
 
       - name: Execute controlled Gate 7 assignment with exact cleanup
         run: |
           set -euo pipefail
-          PROJECT="$PROJECT" OUT="$OUT" SOURCE_SHA="$SOURCE_SHA" RUNTIME_URL="$RUNTIME_URL" HOSTING_URL="$HOSTING_URL" CXORBIA_E2E_PRIVATE_CREDENTIALS="$CXORBIA_E2E_PRIVATE_CREDENTIALS" \
+          cd "$SRC"
+          PROJECT="$PROJECT" OUT="$GITHUB_WORKSPACE/$OUT" SOURCE_SHA="$SOURCE_SHA" RUNTIME_URL="$RUNTIME_URL" HOSTING_URL="$HOSTING_URL" CXORBIA_E2E_PRIVATE_CREDENTIALS="$CXORBIA_E2E_PRIVATE_CREDENTIALS" \
             node tools/qa/cxorbia-gate7-controlled-assignment-dev.mjs
 
       - name: Final Gate 7 verdict
@@ -191,6 +231,8 @@ jobs:
             verdict:'PASS_GATE7_ASSIGNMENT_AVAILABLE_TO_SHOPPER',
             gate6:'PASS_LOCKED',
             sourceSha:process.env.SOURCE_SHA,
+            sourceTree:process.env.SOURCE_TREE,
+            transportSha:process.env.GITHUB_SHA,
             cloudRunRevision:process.env.RUNTIME_REVISION,
             runtimeUrl:process.env.RUNTIME_URL,
             hostingUrl:process.env.HOSTING_URL,
@@ -214,13 +256,16 @@ jobs:
           NODE
 
       - name: Upload sanitized evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cxorbia-recovery-i3-dev-cert-${{ github.run_id }}
           path: ${{ env.OUT }}
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
 
       - name: Cleanup private runtime files
         if: always()
-        run: rm -rf .tmp/phase-a-runtime-private node_modules
+        run: |
+          rm -f "$SRC/node_modules" || true
+          rm -rf "$RUNNER_TEMP/private" node_modules
