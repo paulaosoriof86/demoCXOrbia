@@ -48,7 +48,46 @@ async function adminIdToken(auth,db,tenantId,projectId){
   ensure(response.ok&&body?.idToken,'AUTH_FAILURE',{blocker:`ADMIN_CUSTOM_TOKEN_EXCHANGE_${response.status}`,providerCode:body?.error?.message||null});
   return body.idToken;
 }
+async function directShopperPasswordAuth(tenantId,shopperId,password){
+  const key=await apiKey();
+  const normalized=str(shopperId).toLowerCase();
+  const email=`${sha(`${tenantId}\0shopper\0${normalized}`).slice(0,48)}@auth.cxorbia.invalid`;
+  const {response,body}=await jsonFetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${encodeURIComponent(key)}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email,password:String(password||''),returnSecureToken:true})});
+  ensure(response.ok&&body?.idToken,'AUTH_FAILURE',{blocker:'SHOPPER_DIRECT_PASSWORD_AUTH_FAILED',httpStatus:response.status,providerCode:body?.error?.message||null});
+  return true;
+}
 async function allDocs(ref){const snap=await ref.get();return snap.docs.map(d=>({id:d.id,...(d.data()||{})}));}
+async function browserDiagnostic(page,{tenantId,shopperId,projectId,stage}){
+  try{await page.locator('#lgPass').fill('',{timeout:2000});}catch(_){ }
+  const state=await page.evaluate(({tenantId,shopperId,projectId,stage})=>{
+    const ctx=window.CX?.backendAuth?.context?.()||null;
+    const err=document.getElementById('cxIntegratedAuthError');
+    const submit=document.getElementById('lgSubmit');
+    const form=document.getElementById('loginForm');
+    const session=window.CX?.session||{};
+    let firebaseCurrentUser=false;
+    try{firebaseCurrentUser=!!window.firebase?.auth?.()?.currentUser;}catch(_){ }
+    return {
+      stage,
+      firebaseCurrentUser,
+      backendContextPresent:!!ctx,
+      contextAuthenticated:ctx?.authenticated===true,
+      contextRole:typeof ctx?.role==='string'?ctx.role:null,
+      tenantMatch:ctx?.tenantId===tenantId,
+      shopperMatch:ctx?.shopperId===shopperId,
+      projectAllowed:Array.isArray(ctx?.projectIds)&&ctx.projectIds.map(String).includes(projectId),
+      authorityApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,
+      sessionRole:String(session.role||''),
+      sessionShopperMatch:String(session.user?.shopperId||'')===shopperId,
+      selectedRole:String(form?.dataset?.selectedRole||''),
+      submitText:String(submit?.textContent||'').trim(),
+      submitDisabled:submit?.disabled===true,
+      credentialError:String(err?.textContent||'').trim()||null
+    };
+  },{tenantId,shopperId,projectId,stage});
+  try{await page.screenshot({path:path.join(OUT,`gate8-shopper-${stage}-diagnostic.png`),fullPage:true});}catch(_){ }
+  return state;
+}
 
 if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
 const auth=getAuth(),db=getFirestore();
@@ -78,10 +117,11 @@ const replay=await jsonFetch(`${HOSTING_URL}/v1/cxorbia/commands`,{method:'POST'
 ensure(replay.response.ok&&replay.body?.ok===true&&replay.body?.idempotentReplay===true&&replay.body?.credentialIssued===false&&!replay.body?.credential,'PERSISTENCE_FAILURE',{blocker:'SHOPPER_ENROLLMENT_REPLAY_INVALID'});
 const receipt=await tenant.collection('commandReceipts').doc(receiptId(command)).get();
 ensure(receipt.exists&&receipt.data()?.credentialState==='enrolled'&&!JSON.stringify(receipt.data()||{}).includes(ephemeral),'PERSISTENCE_FAILURE',{blocker:'SHOPPER_ENROLLMENT_RECEIPT_UNSAFE'});
+await directShopperPasswordAuth(tenantId,shopperId,ephemeral);
 
 let chromium;try{({chromium}=await import('playwright'));}catch{finish('ENVIRONMENT_FAILURE',{blocker:'PLAYWRIGHT_UNAVAILABLE'});}
 const browser=await chromium.launch({headless:true});
-let first,reload;
+let first,reload,browserFailure=null;
 try{
   const context=await browser.newContext(),page=await context.newPage();
   const url=`${HOSTING_URL}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cxProjectId=${encodeURIComponent(projectId)}&cxProtectedRuntime=${PROTECTED}&cxTechnicalAuthE2E=${TECH}`;
@@ -93,10 +133,28 @@ try{
   ephemeral='';
   const wait=()=>page.waitForFunction(({tenantId,shopperId})=>window.CX?.backendAuth?.context?.()?.tenantId===tenantId&&window.CX?.backendAuth?.context?.()?.shopperId===shopperId&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,{tenantId,shopperId},{timeout:120000});
   const read=()=>page.evaluate(({projectId,shopperId,targetId})=>{const ctx=window.CX?.backendAuth?.context?.()||{},all=Array.isArray(window.CX?.data?._visitas)?window.CX.data._visitas:[],mine=all.filter(v=>String(v?.shopperId||'')===shopperId);return {authenticated:ctx.authenticated===true,role:ctx.role||null,tenantId:ctx.tenantId||null,shopperId:ctx.shopperId||null,projectAllowed:Array.isArray(ctx.projectIds)&&ctx.projectIds.map(String).includes(projectId),sessionShopperId:String(window.CX?.session?.user?.shopperId||''),authorityApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,shopperVisits:mine.length,targetVisitPresent:mine.some(v=>String(v?.visitId||v?.id||'')===targetId)};},{projectId,shopperId,targetId:str(targetVisit.visitId||targetVisit.id)});
-  await wait(); first=await read(); await page.screenshot({path:path.join(OUT,'gate8-shopper-login-first.png'),fullPage:true});
-  await page.reload({waitUntil:'domcontentloaded',timeout:90000}); await wait(); reload=await read(); await page.screenshot({path:path.join(OUT,'gate8-shopper-login-reload.png'),fullPage:true});
+  try{await wait();}catch(_){browserFailure=await browserDiagnostic(page,{tenantId,shopperId,projectId,stage:'initial'});}
+  if(!browserFailure){
+    first=await read();
+    await page.screenshot({path:path.join(OUT,'gate8-shopper-login-first.png'),fullPage:true});
+    await page.reload({waitUntil:'domcontentloaded',timeout:90000});
+    try{await wait();}catch(_){browserFailure=await browserDiagnostic(page,{tenantId,shopperId,projectId,stage:'reload'});}
+    if(!browserFailure){
+      reload=await read();
+      await page.screenshot({path:path.join(OUT,'gate8-shopper-login-reload.png'),fullPage:true});
+    }
+  }
   await context.close();
 }finally{await browser.close();}
+if(browserFailure){
+  const common={directPasswordAuth:true,browser:browserFailure,rawSecretPersisted:false,rawSecretLogged:false};
+  if(browserFailure.stage==='reload')finish('FUNCTIONAL_DEFECT',{blocker:'SHOPPER_RELOAD_TIMEOUT',...common});
+  if(!browserFailure.firebaseCurrentUser)finish('AUTH_FAILURE',{blocker:'SHOPPER_BROWSER_FIREBASE_SESSION_MISSING',...common});
+  if(!browserFailure.backendContextPresent||!browserFailure.contextAuthenticated)finish('AUTH_FAILURE',{blocker:'SHOPPER_BROWSER_CONTEXT_MISSING_AFTER_FIREBASE_AUTH',...common});
+  if(browserFailure.contextRole!=='shopper'||!browserFailure.tenantMatch||!browserFailure.shopperMatch||!browserFailure.projectAllowed)finish('AUTH_FAILURE',{blocker:'SHOPPER_BROWSER_CONTEXT_INVALID',...common});
+  if(!browserFailure.authorityApplied)finish('FUNCTIONAL_DEFECT',{blocker:'SHOPPER_AUTH_OK_HR_AUTHORITY_NOT_APPLIED',...common});
+  finish('FUNCTIONAL_DEFECT',{blocker:'SHOPPER_BROWSER_GATE8_TIMEOUT_UNCLASSIFIED',...common});
+}
 ensure(first?.authenticated===true&&first.role==='shopper'&&first.tenantId===tenantId&&first.shopperId===shopperId&&first.projectAllowed===true&&first.sessionShopperId===shopperId&&first.authorityApplied===true&&first.shopperVisits>0&&first.targetVisitPresent===true,'AUTH_FAILURE',{blocker:'SHOPPER_BROWSER_LOGIN_INVALID'});
 ensure(reload?.authenticated===true&&reload.role==='shopper'&&reload.tenantId===tenantId&&reload.shopperId===shopperId&&reload.sessionShopperId===shopperId&&reload.authorityApplied===true&&reload.shopperVisits===first.shopperVisits&&reload.targetVisitPresent===true,'FUNCTIONAL_DEFECT',{blocker:'SHOPPER_RELOAD_INVALID'});
 const [profileAfter,crossAfter,visitAfter,userAfter,memberAfter]=await Promise.all([tenant.collection('shoppers').doc(shopperId).get(),tenant.collection('shopperIdentityCrosswalk').doc(shopperId).get(),project.collection('visits').doc(targetVisit.id).get(),auth.getUser(uid),tenant.collection('users').doc(uid).get()]);
@@ -105,4 +163,4 @@ const preserved=userAfter.uid===before.uid&&fp(profileAfter.data()||{})===before
 ensure(preserved&&str(memberAfter.data()?.credentialState)==='enrolled'&&str(memberAfter.data()?.credentialVersion)==='cxorbia-shopper-credential-v1','PERSISTENCE_FAILURE',{blocker:'SHOPPER_IDENTITY_CHANGED'});
 const claims=userAfter.customClaims||{};
 ensure(str(claims.tenantId)===tenantId&&str(claims.shopperId)===shopperId&&str(claims.role)==='shopper'&&str(claims.authNamespace)==='shopper'&&arr(claims.projectIds).map(String).includes(projectId),'AUTH_FAILURE',{blocker:'SHOPPER_CLAIMS_CHANGED'});
-finish('PASS_GATE8_SECURE_SHOPPER_LOGIN',{gate6:'PASS_REGRESSION',gate7:'PASS_REGRESSION',sourceSha:process.env.SOURCE_SHA||null,tenantId,projectId,periodId,role:'shopper',sourceRevision:runtime.revision||snapshot.sourceRevision||null,shopperFingerprint:fp(shopperId),uidFingerprint:fp(uid),targetVisitFingerprint:fp(str(targetVisit.visitId||targetVisit.id)),credentialIssuedOnce:true,replayIdempotent:true,browserObserved:true,sameIdentityAfterReload:true,sameHistoryAfterReload:reload.shopperVisits===first.shopperVisits&&reload.targetVisitPresent===true,historyCount:first.shopperVisits,rawSecretPersisted:false,rawSecretLogged:false,localStorageCredentialTruth:false},0);
+finish('PASS_GATE8_SECURE_SHOPPER_LOGIN',{gate6:'PASS_REGRESSION',gate7:'PASS_REGRESSION',sourceSha:process.env.SOURCE_SHA||null,tenantId,projectId,periodId,role:'shopper',sourceRevision:runtime.revision||snapshot.sourceRevision||null,shopperFingerprint:fp(shopperId),uidFingerprint:fp(uid),targetVisitFingerprint:fp(str(targetVisit.visitId||targetVisit.id)),credentialIssuedOnce:true,replayIdempotent:true,directPasswordAuth:true,browserObserved:true,sameIdentityAfterReload:true,sameHistoryAfterReload:reload.shopperVisits===first.shopperVisits&&reload.targetVisitPresent===true,historyCount:first.shopperVisits,rawSecretPersisted:false,rawSecretLogged:false,localStorageCredentialTruth:false},0);
