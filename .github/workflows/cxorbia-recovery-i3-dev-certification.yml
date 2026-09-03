@@ -278,10 +278,12 @@ jobs:
           const fs=require('fs');
           const file=process.env.QA_FILE;
           const before=fs.readFileSync(file,'utf8');
-          const from="return snap.docs.map(d=>({id:d.id,...(d.data()||{})}));";
-          const to="return snap.docs.map(d=>({...(d.data()||{}),id:d.id}));";
-          if(!before.includes(from))throw new Error('GATE7_QA_DISCRIMINANT_PATTERN_NOT_FOUND');
-          const after=before.replace(from,to);
+          const fromDocs="return snap.docs.map(d=>({id:d.id,...(d.data()||{})}));";
+          const toDocs="return snap.docs.map(d=>({...(d.data()||{}),id:d.id}));";
+          const fromDup="durableDuplicateKeys:visits.length-new Set(visits.map(visitKey).filter(Boolean)).size,";
+          const toDup="durableDuplicateKeys:visits.length-new Set(visits.map(v=>str(v.id)).filter(Boolean)).size,";
+          if(!before.includes(fromDocs)||!before.includes(fromDup))throw new Error('GATE7_QA_DISCRIMINANT_PATTERN_NOT_FOUND');
+          const after=before.replace(fromDocs,toDocs).replace(fromDup,toDup);
           if(after===before)throw new Error('GATE7_QA_DISCRIMINANT_NOT_PATCHED');
           fs.writeFileSync(file,after,'utf8');
           fs.writeFileSync(process.env.OUT+'/gate7-qa-discriminant-fix.json',JSON.stringify({
@@ -290,6 +292,7 @@ jobs:
             scope:'runner-only',
             sourceShaUnchanged:true,
             deployedArtifactUnchanged:true,
+            durableIdentity:'firestore-document-id',
             production:false,
             hrWrites:0
           },null,2)+'\n');
