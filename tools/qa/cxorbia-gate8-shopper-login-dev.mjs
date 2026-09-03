@@ -31,12 +31,12 @@ function finish(decision,extra={},code=1){
 const ensure=(ok,decision,extra={})=>{if(!ok)finish(decision,extra);};
 async function jsonFetch(url,options){const response=await fetch(url,options);return {response,body:await response.json().catch(()=>null)};}
 async function apiKey(){
-  const response=await fetch(`${HOSTING_URL}/__/firebase/init.js`,{cache:'no-store'});
-  ensure(response.ok,'ENVIRONMENT_FAILURE',{blocker:`FIREBASE_INIT_HTTP_${response.status}`});
-  const source=await response.text();
-  const match=source.match(/apiKey\s*:\s*["']([^"']+)["']/);
-  ensure(match?.[1],'ENVIRONMENT_FAILURE',{blocker:'FIREBASE_WEB_API_KEY_UNAVAILABLE'});
-  return match[1];
+  const response=await fetch(`${HOSTING_URL}/__/firebase/init.json`,{cache:'no-store'});
+  ensure(response.ok,'ENVIRONMENT_FAILURE',{blocker:`FIREBASE_INIT_JSON_HTTP_${response.status}`});
+  const config=await response.json().catch(()=>null);
+  const key=str(config?.apiKey);
+  ensure(key,'ENVIRONMENT_FAILURE',{blocker:'FIREBASE_WEB_API_KEY_UNAVAILABLE'});
+  return key;
 }
 async function adminIdToken(auth,db,tenantId,projectId){
   const users=await db.collection('tenants').doc(tenantId).collection('users').get();
