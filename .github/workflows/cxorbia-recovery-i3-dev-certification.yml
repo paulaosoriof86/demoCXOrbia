@@ -8,7 +8,11 @@ on:
       - backend/runtime/cxorbia-shopper-command-provider-v1.mjs
       - backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs
       - backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment.test.mjs
+      - app/modules/visita-detalle.js
+      - app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
       - tools/qa/cxorbia-gate8-shopper-login-dev.mjs
+      - tools/qa/cxorbia-gate9-postulation-contract.mjs
+      - tools/qa/cxorbia-gate9-postulation-management-dev.mjs
       - .github/workflows/cxorbia-recovery-i3-dev-certification.yml
 
 permissions:
@@ -31,20 +35,21 @@ env:
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
   RUNTIME_SA: firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com
+  HOSTING_TARGET: cxorbia-dev
   HOSTING_URL: https://cxorbia-backend-dev.web.app
-  OUT: .tmp/recovery-i3-gate8
+  OUT: .tmp/recovery-i3-gate9
 
 jobs:
   certify:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
     steps:
       - name: Checkout exact Recovery source
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Freeze focal Gate 8 delta and locked regressions
+      - name: Freeze focal Gate 9 delta and locked regressions
         run: |
           set -euo pipefail
           mkdir -p "$OUT"
@@ -54,27 +59,28 @@ jobs:
           mapfile -t changed < <(git diff --name-only "$BASE_SHA" HEAD)
           printf '%s\n' "${changed[@]}" | tee "$OUT/changed-files.txt"
           test "${#changed[@]}" -ge 4
-          allowed='^(backend/runtime/cxorbia-shopper-command-provider-v1\.mjs|backend/runtime/hr-live-service/cxorbia-command-runtime-v1\.mjs|backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment\.test\.mjs|tools/qa/cxorbia-gate8-shopper-login-dev\.mjs|\.github/workflows/cxorbia-recovery-i3-dev-certification\.yml)$'
+          allowed='^(backend/runtime/cxorbia-shopper-command-provider-v1\.mjs|backend/runtime/hr-live-service/cxorbia-command-runtime-v1\.mjs|backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment\.test\.mjs|app/modules/visita-detalle\.js|app/adapters/tya-protected-auth-hr-authority-bridge-v2\.js|tools/qa/cxorbia-gate8-shopper-login-dev\.mjs|tools/qa/cxorbia-gate9-postulation-contract\.mjs|tools/qa/cxorbia-gate9-postulation-management-dev\.mjs|\.github/workflows/cxorbia-recovery-i3-dev-certification\.yml)$'
           for f in "${changed[@]}"; do
             [[ "$f" =~ $allowed ]] || { echo "OUT_OF_SCOPE:$f"; exit 1; }
           done
           git diff --quiet "$BASE_SHA" -- app/core/backend-browser-auth.js
+          node -e "const f=require('./firebase.json'),r=require('./.firebaserc');if(f.hosting?.target!=='cxorbia-dev')process.exit(1);if(r.projects?.default!=='cxorbia-backend-dev')process.exit(1);if(r.targets?.['cxorbia-backend-dev']?.hosting?.['cxorbia-dev']?.[0]!=='cxorbia-backend-dev')process.exit(1)"
           git status --porcelain | tee "$OUT/source-status.txt"
           test ! -s "$OUT/source-status.txt"
-          printf '{"sourceSha":"%s","baseSha":"%s","gate6":"PASS_LOCKED_REGRESSION_REQUIRED","gate7":"PASS_LOCKED_REGRESSION_REQUIRED","gate8":"SECURE_CREDENTIAL_ENROLLMENT_CERTIFICATION","production":false,"hrWrites":0}\n' "$SOURCE_SHA" "$BASE_SHA" > "$OUT/authorization.json"
+          printf '{"sourceSha":"%s","baseSha":"%s","gate6":"PASS_LOCKED_REGRESSION_REQUIRED","gate7":"PASS_LOCKED_REGRESSION_REQUIRED","gate8":"PASS_LOCKED_REGRESSION_REQUIRED","gate9":"POSTULATION_IMMEDIATE_MANAGEMENT_CERTIFICATION","hostingTarget":"%s","production":false,"hrWrites":0}\n' "$SOURCE_SHA" "$BASE_SHA" "$HOSTING_TARGET" > "$OUT/authorization.json"
 
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
-      - name: Install focal test dependencies
+      - name: Install focal test and DEV deploy dependencies
         run: |
           set -euo pipefail
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.47.2 >/dev/null
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.47.2 firebase-tools@latest >/dev/null
           npx playwright install --with-deps chromium >/dev/null
 
-      - name: Run Gate 6 Gate 7 and Gate 8 focal tests
+      - name: Run Gate 6 Gate 7 and Gate 8 locked regressions
         run: |
           set -euo pipefail
           node --test \
@@ -83,7 +89,7 @@ jobs:
             backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment.test.mjs \
             | tee "$OUT/unit-tests.log"
 
-      - name: Static Gate 8 contract certification
+      - name: Static Gate 8 regression contract
         run: |
           set -euo pipefail
           node <<'NODE'
@@ -91,23 +97,14 @@ jobs:
           const provider=fs.readFileSync('backend/runtime/cxorbia-shopper-command-provider-v1.mjs','utf8');
           const runtime=fs.readFileSync('backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs','utf8');
           const browser=fs.readFileSync('app/core/backend-browser-auth.js','utf8');
-          const checks={
-            resetOwnedByShopperProvider:/COMMAND_TYPES[\s\S]*shopper\.credential\.reset/.test(provider),
-            runtimeRoutesResetToShopper:/SHOPPER_COMMANDS[\s\S]*shopper\.credential\.reset/.test(runtime),
-            passwordGeneratedServerSide:/randomBytes\(24\)/.test(provider),
-            rawSecretPayloadRejected:/SHOPPER_CREDENTIAL_SECRET_IN_COMMAND_PAYLOAD/.test(provider),
-            sameUidUpdated:/auth\.updateUser\(identity\.uid/.test(provider),
-            noShopperRecreationForReset:/durableCredentialIdentity/.test(provider),
-            oneTimeDisclosure:/oneTimeDisclosure:true/.test(provider)&&/credentialIssued:false/.test(provider),
-            existingBrowserPasswordBridge:/signInWithEmailAndPassword/.test(browser)&&/SHOPPER_SCOPE_REQUIRED/.test(browser),
-            productionUntouched:true,
-            hrWritesZero:true
-          };
-          const pass=Object.values(checks).every(Boolean);
-          fs.writeFileSync(process.env.OUT+'/gate8-static.json',JSON.stringify({decision:pass?'PASS_GATE8_STATIC_CONTRACT':'SOURCE_FAILURE',checks,production:false,hrWrites:0},null,2)+'\n');
-          console.log(JSON.stringify(checks));
-          if(!pass)process.exit(1);
+          const checks={resetOwnedByShopperProvider:/COMMAND_TYPES[\s\S]*shopper\.credential\.reset/.test(provider),runtimeRoutesResetToShopper:/SHOPPER_COMMANDS[\s\S]*shopper\.credential\.reset/.test(runtime),passwordGeneratedServerSide:/randomBytes\(24\)/.test(provider),rawSecretPayloadRejected:/SHOPPER_CREDENTIAL_SECRET_IN_COMMAND_PAYLOAD/.test(provider),sameUidUpdated:/auth\.updateUser\(identity\.uid/.test(provider),oneTimeDisclosure:/oneTimeDisclosure:true/.test(provider)&&/credentialIssued:false/.test(provider),existingBrowserPasswordBridge:/signInWithEmailAndPassword/.test(browser)&&/SHOPPER_SCOPE_REQUIRED/.test(browser),productionUntouched:true,hrWritesZero:true};
+          const pass=Object.values(checks).every(Boolean);fs.writeFileSync(process.env.OUT+'/gate8-static.json',JSON.stringify({decision:pass?'PASS_GATE8_STATIC_REGRESSION':'SOURCE_FAILURE',checks,production:false,hrWrites:0},null,2)+'\n');if(!pass)process.exit(1);
           NODE
+
+      - name: Static Gate 9 contract certification
+        run: |
+          set -euo pipefail
+          node tools/qa/cxorbia-gate9-postulation-contract.mjs | tee "$OUT/gate9-contract.log"
 
       - name: Authenticate canonical Firebase DEV
         uses: google-github-actions/auth@v2
@@ -124,21 +121,17 @@ jobs:
           set -euo pipefail
           active="$(gcloud auth list --filter=status:ACTIVE --format='value(account)' | head -n1)"
           test "$active" = "$RUNTIME_SA"
-          IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:gate8-${SOURCE_SHA}"
+          IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:gate9-${SOURCE_SHA}"
           echo "$IMAGE_URI" > "$OUT/image-uri.txt"
-          gcloud builds submit . \
-            --project "$PROJECT" \
-            --config backend/runtime/hr-live-service/cloudbuild.yaml \
-            --substitutions "_IMAGE=$IMAGE_URI" \
-            --quiet
+          gcloud builds submit . --project "$PROJECT" --config backend/runtime/hr-live-service/cloudbuild.yaml --substitutions "_IMAGE=$IMAGE_URI" --quiet
 
       - name: Deploy exact built image through Cloud Build execution identity
         run: |
           set -euo pipefail
           IMAGE_URI="$(cat "$OUT/image-uri.txt")"
-          DEPLOY_CFG=".tmp/gate8-cloudbuild-deploy.yaml"
-          LOG_URI="gs://${PROJECT}_cloudbuild/gate8-deploy/${SOURCE_SHA}.log"
-          RC_URI="gs://${PROJECT}_cloudbuild/gate8-deploy/${SOURCE_SHA}.rc"
+          DEPLOY_CFG=".tmp/gate9-cloudbuild-deploy.yaml"
+          LOG_URI="gs://${PROJECT}_cloudbuild/gate9-deploy/${SOURCE_SHA}.log"
+          RC_URI="gs://${PROJECT}_cloudbuild/gate9-deploy/${SOURCE_SHA}.rc"
           mkdir -p .tmp
           cat > "$DEPLOY_CFG" <<'YAML'
           steps:
@@ -148,178 +141,116 @@ jobs:
                 - '-c'
                 - |
                   set +e
-                  gcloud run services describe "$_SERVICE" \
-                    --project "$_PROJECT" \
-                    --region "$_REGION" \
-                    --format=json > /workspace/gate8-service.json 2> /workspace/gate8-deploy.log
+                  gcloud run services describe "$_SERVICE" --project "$_PROJECT" --region "$_REGION" --format=json > /workspace/gate9-service.json 2> /workspace/gate9-deploy.log
                   rc=$?
                   if [ "$rc" -eq 0 ]; then
-                    PROJECT="$_PROJECT" SERVICE="$_SERVICE" IMAGE="$_IMAGE" RUNTIME_SA="$_RUNTIME_SA" SOURCE_SHA="$_SOURCE_SHA" python3 - <<'PY' >> /workspace/gate8-deploy.log 2>&1
+                    PROJECT="$_PROJECT" SERVICE="$_SERVICE" IMAGE="$_IMAGE" RUNTIME_SA="$_RUNTIME_SA" SOURCE_SHA="$_SOURCE_SHA" python3 - <<'PY' >> /workspace/gate9-deploy.log 2>&1
                   import json, os
-                  path='/workspace/gate8-service.json'
-                  with open(path, encoding='utf-8') as f:
-                      svc=json.load(f)
+                  with open('/workspace/gate9-service.json', encoding='utf-8') as f: svc=json.load(f)
                   svc.pop('status', None)
                   md=svc.setdefault('metadata', {})
-                  for key in ('creationTimestamp','generation','resourceVersion','selfLink','uid'):
-                      md.pop(key, None)
+                  for key in ('creationTimestamp','generation','resourceVersion','selfLink','uid'): md.pop(key, None)
                   tmpl=svc.setdefault('spec', {}).setdefault('template', {})
                   tmd=tmpl.setdefault('metadata', {})
-                  for key in ('creationTimestamp','name'):
-                      tmd.pop(key, None)
-                  annotations=tmd.setdefault('annotations', {})
-                  removed=annotations.pop('run.googleapis.com/sources', None)
-                  if not annotations:
-                      tmd.pop('annotations', None)
-                  tspec=tmpl.setdefault('spec', {})
-                  tspec['serviceAccountName']=os.environ['RUNTIME_SA']
+                  for key in ('creationTimestamp','name'): tmd.pop(key, None)
+                  annotations=tmd.setdefault('annotations', {}); annotations.pop('run.googleapis.com/sources', None)
+                  if not annotations: tmd.pop('annotations', None)
+                  tspec=tmpl.setdefault('spec', {}); tspec['serviceAccountName']=os.environ['RUNTIME_SA']
                   containers=tspec.setdefault('containers', [])
-                  if len(containers) != 1:
-                      raise SystemExit(f'GATE8_EXPECTED_ONE_CONTAINER:{len(containers)}')
-                  container=containers[0]
-                  container['image']=os.environ['IMAGE']
-                  env=container.setdefault('env', [])
-                  def upsert(name, value):
+                  if len(containers)!=1: raise SystemExit(f'GATE9_EXPECTED_ONE_CONTAINER:{len(containers)}')
+                  container=containers[0]; container['image']=os.environ['IMAGE']; env=container.setdefault('env', [])
+                  def upsert(name,value):
                       for item in env:
-                          if item.get('name') == name:
-                              item.clear(); item.update({'name':name,'value':value}); return
+                          if item.get('name')==name: item.clear(); item.update({'name':name,'value':value}); return
                       env.append({'name':name,'value':value})
-                  upsert('CXORBIA_RECOVERY_SOURCE_SHA', os.environ['SOURCE_SHA'])
-                  upsert('CXORBIA_DEV_OPERATIONAL_NAMES', 'true')
-                  with open('/workspace/gate8-service-replace.json','w',encoding='utf-8') as f:
-                      json.dump(svc,f,separators=(',',':'))
-                  print(json.dumps({'sourceAnnotationRemoved':removed is not None,'containerCount':len(containers),'service':os.environ['SERVICE']}))
+                  upsert('CXORBIA_RECOVERY_SOURCE_SHA',os.environ['SOURCE_SHA']); upsert('CXORBIA_DEV_OPERATIONAL_NAMES','true')
+                  with open('/workspace/gate9-service-replace.json','w',encoding='utf-8') as f: json.dump(svc,f,separators=(',',':'))
+                  print(json.dumps({'containerCount':len(containers),'service':os.environ['SERVICE']}))
                   PY
                     rc=$?
                   fi
                   if [ "$rc" -eq 0 ]; then
-                    gcloud run services replace /workspace/gate8-service-replace.json \
-                      --project "$_PROJECT" \
-                      --region "$_REGION" \
-                      --quiet >> /workspace/gate8-deploy.log 2>&1
+                    gcloud run services replace /workspace/gate9-service-replace.json --project "$_PROJECT" --region "$_REGION" --quiet >> /workspace/gate9-deploy.log 2>&1
                     rc=$?
                   fi
-                  printf '%s\n' "$rc" > /workspace/gate8-deploy.rc
-                  cat /workspace/gate8-deploy.log
-                  gcloud storage cp /workspace/gate8-deploy.log "$_LOG_URI" >/dev/null 2>&1
-                  log_copy_rc=$?
-                  gcloud storage cp /workspace/gate8-deploy.rc "$_RC_URI" >/dev/null 2>&1
-                  rc_copy_rc=$?
-                  if [ "$log_copy_rc" -ne 0 ] || [ "$rc_copy_rc" -ne 0 ]; then
-                    echo "GATE8_DEPLOY_RESULT_EXPORT_FAILURE"
-                    exit 2
-                  fi
+                  printf '%s\n' "$rc" > /workspace/gate9-deploy.rc
+                  cat /workspace/gate9-deploy.log
+                  gcloud storage cp /workspace/gate9-deploy.log "$_LOG_URI" >/dev/null 2>&1; log_copy_rc=$?
+                  gcloud storage cp /workspace/gate9-deploy.rc "$_RC_URI" >/dev/null 2>&1; rc_copy_rc=$?
+                  if [ "$log_copy_rc" -ne 0 ] || [ "$rc_copy_rc" -ne 0 ]; then exit 2; fi
                   exit 0
           timeout: '600s'
           options:
             logging: CLOUD_LOGGING_ONLY
           YAML
-          gcloud builds submit --no-source \
-            --project "$PROJECT" \
-            --config "$DEPLOY_CFG" \
-            --substitutions "_PROJECT=$PROJECT,_REGION=$REGION,_SERVICE=$SERVICE,_IMAGE=$IMAGE_URI,_RUNTIME_SA=$RUNTIME_SA,_SOURCE_SHA=$SOURCE_SHA,_LOG_URI=$LOG_URI,_RC_URI=$RC_URI" \
-            --quiet
+          gcloud builds submit --no-source --project "$PROJECT" --config "$DEPLOY_CFG" --substitutions "_PROJECT=$PROJECT,_REGION=$REGION,_SERVICE=$SERVICE,_IMAGE=$IMAGE_URI,_RUNTIME_SA=$RUNTIME_SA,_SOURCE_SHA=$SOURCE_SHA,_LOG_URI=$LOG_URI,_RC_URI=$RC_URI" --quiet
           gcloud storage cat "$LOG_URI" | tee "$OUT/deploy-cloud-build.log"
-          deploy_rc="$(gcloud storage cat "$RC_URI" | tr -d '\r\n')"
-          printf '%s\n' "$deploy_rc" > "$OUT/deploy-cloud-build.rc"
-          test "$deploy_rc" = "0"
+          deploy_rc="$(gcloud storage cat "$RC_URI" | tr -d '\r\n')"; printf '%s\n' "$deploy_rc" > "$OUT/deploy-cloud-build.rc"; test "$deploy_rc" = "0"
           echo "DEPLOY_IDENTITY_ROUTE=cloud_build_execution_identity_atomic_replace" >> "$GITHUB_ENV"
 
-      - name: Read back exact Cloud Run DEV revision
+      - name: Read back exact Cloud Run DEV revision and SOURCE_SHA
         run: |
           set -euo pipefail
           rev="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.latestReadyRevisionName)')"
           url="$(gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format='value(status.url)')"
-          test -n "$rev"
-          test -n "$url"
-          echo "RUNTIME_REVISION=$rev" >> "$GITHUB_ENV"
-          echo "RUNTIME_URL=$url" >> "$GITHUB_ENV"
+          test -n "$rev"; test -n "$url"; echo "RUNTIME_REVISION=$rev" >> "$GITHUB_ENV"; echo "RUNTIME_URL=$url" >> "$GITHUB_ENV"
           gcloud run revisions describe "$rev" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/revision.json"
+          RUNTIME_REVISION="$rev" RUNTIME_URL="$url" node <<'NODE'
+          const fs=require('fs');const r=JSON.parse(fs.readFileSync(process.env.OUT+'/revision.json','utf8'));const env=r.spec?.containers?.[0]?.env||[];const source=(env.find(x=>x.name==='CXORBIA_RECOVERY_SOURCE_SHA')||{}).value||null;const out={decision:source===process.env.SOURCE_SHA?'PASS_RUNTIME_SOURCE_SHA_READBACK':'RELEASE_COMPOSITION_FAILURE',revision:process.env.RUNTIME_REVISION,url:process.env.RUNTIME_URL,sourceSha:source,expected:process.env.SOURCE_SHA,production:false};fs.writeFileSync(process.env.OUT+'/runtime.json',JSON.stringify(out,null,2)+'\n');if(out.decision!=='PASS_RUNTIME_SOURCE_SHA_READBACK')process.exit(1);
+          NODE
 
-      - name: Read back runtime SOURCE_SHA
+      - name: Deploy exact SOURCE_SHA to Hosting DEV only
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          node -e "const f=require('./firebase.json'),r=require('./.firebaserc');if(f.hosting?.target!=='cxorbia-dev'||r.projects?.default!=='cxorbia-backend-dev'||r.targets?.['cxorbia-backend-dev']?.hosting?.['cxorbia-dev']?.[0]!=='cxorbia-backend-dev')process.exit(1)"
+          ./node_modules/.bin/firebase deploy --config firebase.json --only "hosting:$HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$OUT/hosting-deploy.log"
+          echo 1 > "$OUT/hosting-deploy-count.txt"
+
+      - name: Read back exact Hosting DEV Gate 9 assets
+        run: |
+          set -euo pipefail
+          ok=0
+          for attempt in $(seq 1 40); do
+            curl -fsSL --retry 2 --retry-delay 1 -H 'Cache-Control: no-cache' "$HOSTING_URL/modules/visita-detalle.js?gate9=${GITHUB_RUN_ID}-${attempt}" -o "$OUT/remote-visita-detalle.js" || true
+            curl -fsSL --retry 2 --retry-delay 1 -H 'Cache-Control: no-cache' "$HOSTING_URL/adapters/tya-protected-auth-hr-authority-bridge-v2.js?gate9=${GITHUB_RUN_ID}-${attempt}" -o "$OUT/remote-protected-bridge.js" || true
+            if cmp app/modules/visita-detalle.js "$OUT/remote-visita-detalle.js" && cmp app/adapters/tya-protected-auth-hr-authority-bridge-v2.js "$OUT/remote-protected-bridge.js"; then ok=1; break; fi
+            sleep 3
+          done
+          test "$ok" = 1
+          sha256sum app/modules/visita-detalle.js | awk '{print $1}' > "$OUT/local-visita-sha256.txt"
+          sha256sum "$OUT/remote-visita-detalle.js" | awk '{print $1}' > "$OUT/remote-visita-sha256.txt"
+          sha256sum app/adapters/tya-protected-auth-hr-authority-bridge-v2.js | awk '{print $1}' > "$OUT/local-bridge-sha256.txt"
+          sha256sum "$OUT/remote-protected-bridge.js" | awk '{print $1}' > "$OUT/remote-bridge-sha256.txt"
+          test "$(cat "$OUT/local-visita-sha256.txt")" = "$(cat "$OUT/remote-visita-sha256.txt")"
+          test "$(cat "$OUT/local-bridge-sha256.txt")" = "$(cat "$OUT/remote-bridge-sha256.txt")"
+          printf '{"decision":"PASS_HOSTING_GATE9_EXACT_PARITY","hostingUrl":"%s","hostingTarget":"%s","hostingDeploys":1,"sourceSha":"%s","production":false}\n' "$HOSTING_URL" "$HOSTING_TARGET" "$SOURCE_SHA" > "$OUT/hosting.json"
+
+      - name: Execute real Gate 9 authenticated postulation and immediate management read
+        run: |
+          set -euo pipefail
+          PROJECT="$PROJECT" OUT="$OUT" SOURCE_SHA="$SOURCE_SHA" HOSTING_URL="$HOSTING_URL" node tools/qa/cxorbia-gate9-postulation-management-dev.mjs | tee "$OUT/gate9-console.log"
+
+      - name: Final Gate 9 verdict
         run: |
           set -euo pipefail
           node <<'NODE'
-          const fs=require('fs');
-          const r=JSON.parse(fs.readFileSync(process.env.OUT+'/revision.json','utf8'));
-          const env=r.spec?.containers?.[0]?.env||[];
-          const source=(env.find(x=>x.name==='CXORBIA_RECOVERY_SOURCE_SHA')||{}).value||null;
-          const out={decision:source===process.env.SOURCE_SHA?'PASS_RUNTIME_SOURCE_SHA_READBACK':'RELEASE_COMPOSITION_FAILURE',revision:process.env.RUNTIME_REVISION,url:process.env.RUNTIME_URL,sourceSha:source,expected:process.env.SOURCE_SHA,production:false};
-          fs.writeFileSync(process.env.OUT+'/runtime.json',JSON.stringify(out,null,2)+'\n');
-          console.log(JSON.stringify(out));
-          if(out.decision!=='PASS_RUNTIME_SOURCE_SHA_READBACK')process.exit(1);
+          const fs=require('fs');const result=JSON.parse(fs.readFileSync(process.env.OUT+'/gate9-postulation-management.json','utf8'));const runtime=JSON.parse(fs.readFileSync(process.env.OUT+'/runtime.json','utf8'));const hosting=JSON.parse(fs.readFileSync(process.env.OUT+'/hosting.json','utf8'));
+          if(result.decision!=='PASS_GATE9_POSTULATION_IMMEDIATE_MANAGEMENT')throw new Error(result.decision||'GATE9_RESULT_MISSING');
+          if(runtime.decision!=='PASS_RUNTIME_SOURCE_SHA_READBACK'||hosting.decision!=='PASS_HOSTING_GATE9_EXACT_PARITY')throw new Error('GATE9_RELEASE_PARITY_INCOMPLETE');
+          const summary={verdict:result.decision,gate6:'PASS_LOCKED_REGRESSION',gate7:'PASS_LOCKED_REGRESSION',gate8:'PASS_LOCKED_REGRESSION',gate9:'PASS',sourceSha:process.env.SOURCE_SHA,cloudRunRevision:runtime.revision,tenantId:result.tenantId,projectId:result.projectId,periodId:result.periodId,shopperFingerprint:result.shopperFingerprint,visitFingerprint:result.visitFingerprint,applicationFingerprint:result.applicationFingerprint,remoteAck:result.remoteAck===true,durableReadback:result.durableReadback===true,immediateComposedReadModel:result.immediateComposedReadModel===true,browserObserved:result.browserObserved===true,hostingExactParity:true,hostingDeploys:Number(fs.readFileSync(process.env.OUT+'/hosting-deploy-count.txt','utf8').trim()),deployIdentityRoute:process.env.DEPLOY_IDENTITY_ROUTE||null,production:false,hrWrites:0};
+          if(!(summary.remoteAck&&summary.durableReadback&&summary.immediateComposedReadModel&&summary.browserObserved&&summary.hostingDeploys===1))throw new Error('GATE9_ACCEPTANCE_INCOMPLETE');fs.writeFileSync(process.env.OUT+'/result.json',JSON.stringify(summary,null,2)+'\n');console.log(JSON.stringify(summary));
           NODE
 
-      - name: Read back unchanged Hosting DEV login and command composition
-        run: |
-          set -euo pipefail
-          url="$HOSTING_URL/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxTechnicalAuthE2E=YES_PAULA_20260801_REAL_USERS_E2E"
-          curl -fsS --retry 8 --retry-delay 3 "$url" > "$OUT/index-backend-dev.html"
-          curl -fsS --retry 8 --retry-delay 3 "$HOSTING_URL/core/backend-browser-auth.js" > "$OUT/backend-browser-auth.js"
-          node <<'NODE'
-          const fs=require('fs');
-          const html=fs.readFileSync(process.env.OUT+'/index-backend-dev.html','utf8');
-          const auth=fs.readFileSync(process.env.OUT+'/backend-browser-auth.js','utf8');
-          const ok=html.includes('adapters/cxorbia-command-http-transport-v1.js')&&html.includes('core/backend-protected-dev-mode.js')&&html.includes('core/backend-browser-auth.js')&&auth.includes('signInWithEmailAndPassword')&&auth.includes('SHOPPER_SCOPE_REQUIRED');
-          const out={decision:ok?'PASS_HOSTING_GATE8_COMPOSITION_READBACK':'RELEASE_COMPOSITION_FAILURE',hostingUrl:process.env.HOSTING_URL,existingBrowserBridge:true,hostingRedeploy:false,production:false};
-          fs.writeFileSync(process.env.OUT+'/hosting.json',JSON.stringify(out,null,2)+'\n');
-          if(!ok)process.exit(1);
-          NODE
-
-      - name: Execute real Gate 8 shopper enrollment and browser login
-        run: |
-          set -euo pipefail
-          PROJECT="$PROJECT" OUT="$OUT" SOURCE_SHA="$SOURCE_SHA" RUNTIME_URL="$RUNTIME_URL" HOSTING_URL="$HOSTING_URL" \
-            node tools/qa/cxorbia-gate8-shopper-login-dev.mjs | tee "$OUT/gate8-console.log"
-          ! grep -E '"password"[[:space:]]*:' "$OUT/gate8-console.log"
-          ! grep -E '"password"[[:space:]]*:' "$OUT/gate8-shopper-login.json"
-
-      - name: Final Gate 8 verdict
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const fs=require('fs');
-          const result=JSON.parse(fs.readFileSync(process.env.OUT+'/gate8-shopper-login.json','utf8'));
-          if(result.decision!=='PASS_GATE8_SECURE_SHOPPER_LOGIN')throw new Error(result.decision||'GATE8_RESULT_MISSING');
-          const summary={
-            verdict:result.decision,
-            gate6:'PASS_REGRESSION',
-            gate7:'PASS_REGRESSION',
-            gate8:'PASS',
-            sourceSha:process.env.SOURCE_SHA,
-            cloudRunRevision:process.env.RUNTIME_REVISION,
-            runtimeSourceRevision:result.sourceRevision||null,
-            hrRevisionUsed:result.sourceRevision||null,
-            tenantId:result.tenantId,
-            projectId:result.projectId,
-            periodId:result.periodId,
-            shopperFingerprint:result.shopperFingerprint,
-            uidFingerprint:result.uidFingerprint,
-            credentialIssuedOnce:result.credentialIssuedOnce===true,
-            replayIdempotent:result.replayIdempotent===true,
-            sameIdentityAfterReload:result.sameIdentityAfterReload===true,
-            sameHistoryAfterReload:result.sameHistoryAfterReload===true,
-            browserObserved:result.browserObserved===true,
-            rawCredentialPersisted:false,
-            deployIdentityRoute:process.env.DEPLOY_IDENTITY_ROUTE||null,
-            production:false,
-            hrWrites:0
-          };
-          const required=summary.credentialIssuedOnce&&summary.replayIdempotent&&summary.sameIdentityAfterReload&&summary.sameHistoryAfterReload&&summary.browserObserved;
-          if(!required)throw new Error('GATE8_ACCEPTANCE_INCOMPLETE');
-          fs.writeFileSync(process.env.OUT+'/result.json',JSON.stringify(summary,null,2)+'\n');
-          console.log(JSON.stringify(summary));
-          NODE
-
-      - name: Upload sanitized Gate 8 evidence
+      - name: Upload sanitized Gate 9 evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-recovery-i3-gate8-${{ github.run_id }}
+          name: cxorbia-recovery-i3-gate9-${{ github.run_id }}
           path: ${{ env.OUT }}
           if-no-files-found: warn
           retention-days: 14
 
-      - name: Cleanup temporary Cloud Build config and runtime dependencies
+      - name: Cleanup temporary deployment files and dependencies
         if: always()
-        run: rm -f .tmp/gate8-cloudbuild-deploy.yaml && rm -rf node_modules
+        run: rm -f .tmp/gate9-cloudbuild-deploy.yaml firebase-debug.log && rm -rf .firebase node_modules
