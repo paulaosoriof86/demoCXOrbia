@@ -64,6 +64,6 @@ test('Gate 9 / frontend requires remote ACK and preserves durable posts through 
   const backend=fs.readFileSync(path.join(repoRoot,'app/core/backend-firebase.js'),'utf8');
   const admin=fs.readFileSync(path.join(repoRoot,'app/modules/postulaciones.js'),'utf8');
   assert.match(form,/CX\.commandAdapter\?\.execute/);assert.match(form,/commandType:'application\.create'/);assert.match(form,/status==='committed'/);assert.match(form,/providerAck===true/);assert.match(form,/successUiAllowed===true/);assert.doesNotMatch(form,/Postulación validada · pendiente de envío operativo/);
-  assert.match(bridge,/postulations:\s*Array\.isArray\(payload\?\.posts\)\s*\?\s*payload\.posts\s*:\s*\[\]/);
+  assert.match(bridge,/postulations:\s*clone\(protectedState\.posts\)/);
   assert.match(backend,/postulations/);assert.match(backend,/_posts/);assert.match(admin,/data\._posts/);
 });
