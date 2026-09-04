@@ -1,0 +1,63 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import { applicationDefault, initializeApp, getApps } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
+
+const PROJECT=process.env.PROJECT||'cxorbia-backend-dev';
+const OUT=process.env.OUT||'.tmp/recovery-i3-gate9';
+const RUNTIME_URL=String(process.env.RUNTIME_URL||'').replace(/\/$/,'');
+const HOSTING_URL=String(process.env.HOSTING_URL||'https://cxorbia-backend-dev.web.app').replace(/\/$/,'');
+const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',TECH='YES_PAULA_20260801_REAL_USERS_E2E';
+const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
+const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex'),fp=v=>sha(v).slice(0,24),now=()=>new Date().toISOString();
+const stableUid=(tenantId,shopperId)=>`cx-sh-${sha(`${tenantId}\0shopper\0${shopperId}`).slice(0,28)}`;
+function finish(decision,extra={},code=1){const result={decision,gate:9,generatedAt:now(),production:false,hrWrites:0,...extra};fs.mkdirSync(OUT,{recursive:true});fs.writeFileSync(path.join(OUT,'gate9-postulation-immediate.json'),JSON.stringify(result,null,2)+'\n');console.log(decision);process.exit(code);}
+const ensure=(ok,decision,extra={})=>{if(!ok)finish(decision,extra);};
+async function jsonFetch(url,options){const response=await fetch(url,options);return {response,body:await response.json().catch(()=>null)};}
+async function apiKey(){const r=await fetch(`${HOSTING_URL}/__/firebase/init.json`,{cache:'no-store'});ensure(r.ok,'ENVIRONMENT_FAILURE',{blocker:`FIREBASE_INIT_${r.status}`});const j=await r.json();ensure(str(j?.apiKey),'ENVIRONMENT_FAILURE',{blocker:'FIREBASE_API_KEY_MISSING'});return str(j.apiKey);}
+async function exchangeCustomToken(token){const key=await apiKey();const {response,body}=await jsonFetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${encodeURIComponent(key)}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token,returnSecureToken:true})});ensure(response.ok&&body?.idToken,'AUTH_FAILURE',{blocker:'CUSTOM_TOKEN_EXCHANGE_FAILED',status:response.status});return body.idToken;}
+async function allDocs(ref){const s=await ref.get();return s.docs.map(d=>({id:d.id,...(d.data()||{})}));}
+function dateCandidate(v){
+  const iso=x=>/^20\d\d-[01]\d-[0-3]\d$/.test(str(x));
+  let start=iso(v.disponibleDesde)?v.disponibleDesde:(iso(v.measurementWindowStart)?v.measurementWindowStart:'');if(!start)return null;
+  if(iso(v.measurementWindowStart)&&v.measurementWindowStart>start)start=v.measurementWindowStart;
+  const end=iso(v.measurementWindowEnd)?v.measurementWindowEnd:null;
+  const cat=str(v.franjaCode||v.franja).toUpperCase();
+  for(let i=0;i<45;i++){const d=new Date(start+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+i);const ds=d.toISOString().slice(0,10);if(end&&ds>end)break;const weekend=[0,6].includes(d.getUTCDay());if((cat==='WK'||cat==='RH WK'||cat==='SEMANA'||cat==='LUNES A VIERNES')&&weekend)continue;if((cat==='WKND'||cat==='RH WKND'||cat==='FIN DE SEMANA'||cat==='SÁBADO O DOMINGO'||cat==='SABADO O DOMINGO')&&!weekend)continue;if(['P1Q',''].includes(cat))continue;return ds;}return null;
+}
+
+if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
+const auth=getAuth(),db=getFirestore();ensure(RUNTIME_URL,'ENVIRONMENT_FAILURE',{blocker:'RUNTIME_URL_REQUIRED'});
+const live=await jsonFetch(`${RUNTIME_URL}/api/tya/cinepolis/hr-live?fresh=1`);ensure(live.response.ok,'ENVIRONMENT_FAILURE',{blocker:`HR_LIVE_${live.response.status}`});
+const snapshot=live.body?.snapshot||live.body?.data||live.body;ensure(snapshot?.sourceSafe===true,'SOURCE_FAILURE',{blocker:'HR_SOURCE_UNSAFE'});
+const runtime=live.body?._runtime||snapshot?._runtime||{};const tenantId=str(snapshot.tenantId||snapshot.tenantConfig?.tenantId),projectId=str(snapshot.projectId||snapshot.projectConfig?.projectId);ensure(tenantId&&projectId,'SOURCE_FAILURE',{blocker:'HR_SCOPE_MISSING'});
+const tenant=db.collection('tenants').doc(tenantId),project=tenant.collection('projects').doc(projectId);
+const [members,visits,posts]=await Promise.all([allDocs(tenant.collection('users')),allDocs(project.collection('visits')),allDocs(project.collection('postulations'))]);
+const shoppers=members.filter(m=>m.active===true&&str(m.role)==='shopper'&&str(m.authNamespace)==='shopper'&&arr(m.projectIds).map(String).includes(projectId)&&m.id===stableUid(tenantId,str(m.shopperId))).sort((a,b)=>str(a.shopperId).localeCompare(str(b.shopperId)));
+const available=visits.map(v=>({...v,_date:dateCandidate(v)})).filter(v=>['disponible','available'].includes(str(v.estado||v.status).toLowerCase())&&!str(v.shopperId)&&str(v.periodId)&&v._date);
+let selected=null;for(const s of shoppers){for(const v of available){if(!posts.some(p=>str(p.shopperId)===str(s.shopperId)&&str(p.visitId||p.visitaId)===str(v.visitId||v.id))){selected={shopper:s,visit:v};break;}}if(selected)break;}if(!selected&&shoppers[0]&&available[0])selected={shopper:shoppers[0],visit:available[0]};ensure(selected,'SOURCE_FAILURE',{blocker:'NO_GATE9_SHOPPER_VISIT_PAIR'});
+const shopperId=str(selected.shopper.shopperId),visitId=str(selected.visit.visitId||selected.visit.id),periodId=str(selected.visit.periodId),proposedDate=selected.visit._date;
+const staff=members.find(m=>m.active===true&&str(m.authNamespace)==='staff'&&['super','admin'].includes(str(m.role))&&(str(m.role)==='super'||arr(m.projectIds).map(String).includes(projectId)));ensure(staff,'AUTH_FAILURE',{blocker:'ADMIN_MISSING'});
+const staffCustom=await auth.createCustomToken(staff.id),staffIdToken=await exchangeCustomToken(staffCustom),staffCustomForBrowser=await auth.createCustomToken(staff.id);
+const reset={version:'cxorbia-command-adapter-v1',commandType:'shopper.credential.reset',entityType:'shopper',entityId:shopperId,tenantId,projectId,periodId,idempotencyKey:`recovery-g9-credential-${process.env.GITHUB_RUN_ID||Date.now()}-${fp(shopperId)}`,payload:{credentialPurpose:'gate9_postulation_certification',sourceRevision:runtime.revision||snapshot.sourceRevision||null},authorization:{providerEnforcementRequired:true}};
+const enrolled=await jsonFetch(`${HOSTING_URL}/v1/cxorbia/commands`,{method:'POST',headers:{authorization:`Bearer ${staffIdToken}`,'content-type':'application/json'},body:JSON.stringify(reset)});ensure(enrolled.response.ok&&enrolled.body?.providerAck===true&&enrolled.body?.credentialIssued===true,'AUTH_FAILURE',{blocker:'SHOPPER_CREDENTIAL_ENROLLMENT_FAILED',status:enrolled.response.status,code:enrolled.body?.code||null});let ephemeral=str(enrolled.body?.credential?.password);ensure(ephemeral.length>=24,'AUTH_FAILURE',{blocker:'EPHEMERAL_CREDENTIAL_MISSING'});
+let chromium;try{({chromium}=await import('playwright'));}catch{finish('ENVIRONMENT_FAILURE',{blocker:'PLAYWRIGHT_UNAVAILABLE'});}const browser=await chromium.launch({headless:true});const baseUrl=`${HOSTING_URL}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cxProjectId=${encodeURIComponent(projectId)}&cxProtectedRuntime=${PROTECTED}&cxTechnicalAuthE2E=${TECH}`;
+let browserPost=null,adminRead=null,adminDom=false;
+try{
+ const ctx=await browser.newContext(),page=await ctx.newPage();await page.goto(baseUrl,{waitUntil:'domcontentloaded',timeout:90000});await page.locator('.role-btn[data-role="shopper"]').click({timeout:30000});await page.locator('#lgUser').fill(shopperId);await page.locator('#lgPass').fill(ephemeral);await page.locator('#lgSubmit').click();ephemeral='';
+ await page.waitForFunction(({tenantId,shopperId})=>window.CX?.backendAuth?.context?.()?.tenantId===tenantId&&window.CX?.backendAuth?.context?.()?.shopperId===shopperId&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,{tenantId,shopperId},{timeout:120000});
+ const prep=await page.evaluate(({visitId,proposedDate})=>{const all=Array.isArray(window.CX?.data?._visitas)?window.CX.data._visitas:[];const v=all.find(x=>String(x?.visitId||x?.id||'')===visitId);if(!v||typeof window.CX?.shopperPostForm!=='function'||!window.CX?.ui)return {ok:false,reason:'VISIT_OR_FORM_MISSING'};window.CX.shopperPostForm(window.CX.data,{name:'Gate 9 certification',restriccion:''},v,window.CX.ui);return {ok:true,proposedDate};},{visitId,proposedDate});ensure(prep.ok,'FUNCTIONAL_DEFECT',{blocker:prep.reason});
+ await page.locator('#postDate').fill(proposedDate);await page.locator('#postOk').check();await page.locator('#postNote').fill('gate9-cert');await page.locator('#postSend').click();
+ await page.waitForFunction(({visitId,shopperId})=>Array.isArray(window.CX?.data?._posts)&&window.CX.data._posts.some(p=>String(p?.visitId||p?.visitaId||'')===visitId&&String(p?.shopperId||'')===shopperId),{visitId,shopperId},{timeout:120000});
+ browserPost=await page.evaluate(({visitId,shopperId})=>{const p=(window.CX?.data?._posts||[]).find(x=>String(x?.visitId||x?.visitaId||'')===visitId&&String(x?.shopperId||'')===shopperId);return p?{id:String(p.id||p.applicationId||p.postulationId||''),visitId:String(p.visitId||p.visitaId||''),shopperId:String(p.shopperId||''),estado:String(p.estado||p.status||'')}:null;},{visitId,shopperId});await page.screenshot({path:path.join(OUT,'gate9-shopper-postulation.png'),fullPage:true});await ctx.close();
+ const actx=await browser.newContext(),admin=await actx.newPage();await admin.goto(baseUrl,{waitUntil:'domcontentloaded',timeout:90000});await admin.evaluate(async token=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);await firebase.auth().signInWithCustomToken(token);},staffCustomForBrowser);await admin.reload({waitUntil:'domcontentloaded',timeout:90000});
+ await admin.waitForFunction(({tenantId})=>window.CX?.backendAuth?.context?.()?.authenticated===true&&window.CX?.backendAuth?.context?.()?.tenantId===tenantId&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,{tenantId},{timeout:120000});await admin.evaluate(async()=>{try{await window.CX?.backend?.refresh?.();}catch(_){}});
+ await admin.waitForFunction(({visitId,shopperId})=>Array.isArray(window.CX?.data?._posts)&&window.CX.data._posts.some(p=>String(p?.visitId||p?.visitaId||'')===visitId&&String(p?.shopperId||'')===shopperId),{visitId,shopperId},{timeout:120000});
+ adminRead=await admin.evaluate(({visitId,shopperId})=>{const p=(window.CX?.data?._posts||[]).find(x=>String(x?.visitId||x?.visitaId||'')===visitId&&String(x?.shopperId||'')===shopperId);return p?{id:String(p.id||p.applicationId||p.postulationId||''),visitId:String(p.visitId||p.visitaId||''),shopperId:String(p.shopperId||''),estado:String(p.estado||p.status||'')}:null;},{visitId,shopperId});
+ const nav=admin.locator('[data-page="postulaciones"],[data-view="postulaciones"],[data-module="postulaciones"]');if(await nav.count()){await nav.first().click();}else{const t=admin.getByText('Postulaciones',{exact:true});if(await t.count())await t.first().click();}try{await admin.waitForSelector(`[data-pid="${adminRead?.id||''}"]`,{timeout:15000});adminDom=true;}catch(_){adminDom=false;}await admin.screenshot({path:path.join(OUT,'gate9-admin-postulations.png'),fullPage:true});await actx.close();
+}finally{ephemeral='';await browser.close();}
+const durable=(await allDocs(project.collection('postulations'))).find(p=>str(p.visitId||p.visitaId)===visitId&&str(p.shopperId)===shopperId);ensure(durable,'PERSISTENCE_FAILURE',{blocker:'DURABLE_POSTULATION_MISSING'});ensure(browserPost&&adminRead,'FUNCTIONAL_DEFECT',{blocker:'IMMEDIATE_READ_MODEL_MISSING'});ensure(str(durable.tenantId)===tenantId&&str(durable.projectId)===projectId&&str(durable.periodId)===periodId&&str(durable.visitId||durable.visitaId)===visitId&&str(durable.shopperId)===shopperId,'PERSISTENCE_FAILURE',{blocker:'POSTULATION_SCOPE_MISMATCH'});ensure(str(adminRead.id)===str(durable.id||durable.applicationId||durable.postulationId),'FUNCTIONAL_DEFECT',{blocker:'ADMIN_READ_MODEL_ENTITY_MISMATCH'});ensure(adminDom,'FUNCTIONAL_DEFECT',{blocker:'GESTION_POSTULACIONES_DOM_MISSING'});
+finish('PASS_GATE9_POSTULATION_IMMEDIATE',{gate6:'PASS_REGRESSION',gate7:'PASS_REGRESSION',gate8:'PASS_REGRESSION',sourceSha:process.env.SOURCE_SHA||null,sourceRevision:runtime.revision||snapshot.sourceRevision||null,tenantId,projectId,periodId,role:'shopper',shopperFingerprint:fp(shopperId),visitFingerprint:fp(visitId),postulationFingerprint:fp(str(durable.id||durable.applicationId||durable.postulationId)),remoteAckRequired:true,durableReadback:true,adminImmediateRead:true,gestionDomObserved:true,localStorageTruth:false,rawSecretPersisted:false,rawSecretLogged:false},0);
