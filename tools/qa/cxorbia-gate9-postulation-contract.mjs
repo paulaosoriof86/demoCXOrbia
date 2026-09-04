@@ -7,7 +7,7 @@ const ensure=(ok,msg)=>{if(!ok){console.error(`FAIL_GATE9_CONTRACT:${msg}`);proc
 const submit=read('app/modules/visita-detalle.js');
 const bridge=read('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js');
 const provider=read('backend/runtime/cxorbia-operational-command-provider-v1.mjs');
-const composer=read('app/adapters/tya-hr-cumulative-read-model-v2.js');
+const composer=read('app/adapters/tya-cumulative-read-model-v2.js');
 
 ensure(submit.includes("commandType:'application.create'"),'APPLICATION_CREATE_NOT_WIRED');
 ensure(submit.includes("expectedVersion:'absent'"),'APPLICATION_CREATE_NOT_CREATE_ONLY');
