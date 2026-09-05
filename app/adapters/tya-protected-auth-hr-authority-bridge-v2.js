@@ -26,6 +26,7 @@ window.CX=window.CX||{};
   let bootTimer=null;
   let bootAttempt=0;
   let bootReason='initial';
+  let bootForce=false;
   const BOOT_MAX_ATTEMPTS=180;
   const HR_MAX_ATTEMPTS=6;
 
@@ -36,9 +37,11 @@ window.CX=window.CX||{};
     return !!(ctx&&ctx.authenticated===true&&ctx.tenantId==='tya'&&arr(ctx.projectIds).includes('cinepolis'));
   }
   function protectedBackendReady(){
-    const source=str(window.CX_BACKEND_LAST_STATE?.source||window.CX_BACKEND_DATA_SOURCE).toLowerCase();
-    const ref=str(CX.dataSource?.sourceRef).toLowerCase();
-    return source==='firestore'||source.startsWith('firestore/')||ref.includes('firestore');
+    const state=window.CX_BACKEND_LAST_STATE||{};
+    const source=str(state.source||window.CX_BACKEND_DATA_SOURCE).toLowerCase();
+    const counts=state.counts||{};
+    const completed=state.empty===false&&Number(counts.projects||0)>0;
+    return completed&&(source==='firestore'||source.startsWith('firestore/'));
   }
   function runtimeDependenciesReady(){
     return !!(
@@ -179,7 +182,8 @@ window.CX=window.CX||{};
       periods:CX.data.projects.length,hrVisits:CX.data._visitas.length,hrShoppers:counts.shoppers,
       firstPeriod:counts.firstPeriod,latestPeriod:counts.latestPeriod,
       uniqueVisitKeys:counts.uniqueVisitKeys,protectedVisits:protectedState.visits.length,
-      protectedProfiles:protectedState.shoppers.length,identityMapSize:Object.keys(result.identityMap||{}).length,
+      protectedProfiles:protectedState.shoppers.length,protectedPosts:protectedState.posts.length,
+      identityMapSize:Object.keys(result.identityMap||{}).length,
       identityReviewCount:arr(result.identityReviewQueue).length,ownVisits,
       duplicateVisitKeys:d.duplicateVisitKeys,duplicateShopperIds:d.duplicateShopperIds,
       liveHrFetchAttempt:Number(fetchAttempt||1),restoredSessionRecovery:true,
@@ -237,12 +241,14 @@ window.CX=window.CX||{};
   }
   function scheduleBootReconcile(reason,reset){
     bootReason=reason||bootReason;
-    if(reset===true)bootAttempt=0;
-    if(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true)return;
+    if(reset===true){bootAttempt=0;bootForce=true;}
+    if(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&!bootForce)return;
     if(bootTimer)return;
     const run=async()=>{
       bootTimer=null;
-      if(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true)return;
+      const force=bootForce;
+      bootForce=false;
+      if(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&!force)return;
       bootAttempt++;
       const ctx=context();
       const authReady=authorized(ctx);
