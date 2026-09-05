@@ -11,6 +11,7 @@ on:
       - backend/runtime/hr-live-service/test/cxorbia-gate9-postulation-immediate.test.mjs
       - app/modules/visita-detalle.js
       - app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
+      - app/adapters/tya-dev-technical-auth-e2e-v1.js
       - tools/qa/cxorbia-gate8-shopper-login-dev.mjs
       - tools/qa/cxorbia-gate9-postulation-contract.mjs
       - tools/qa/cxorbia-gate9-postulation-immediate-dev.mjs
@@ -60,7 +61,7 @@ jobs:
           mapfile -t changed < <(git diff --name-only "$BASE_SHA" HEAD)
           printf '%s\n' "${changed[@]}" | tee "$OUT/changed-files.txt"
           test "${#changed[@]}" -ge 4
-          allowed='^(backend/runtime/cxorbia-shopper-command-provider-v1\.mjs|backend/runtime/hr-live-service/cxorbia-command-runtime-v1\.mjs|backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment\.test\.mjs|backend/runtime/hr-live-service/test/cxorbia-gate9-postulation-immediate\.test\.mjs|app/modules/visita-detalle\.js|app/adapters/tya-protected-auth-hr-authority-bridge-v2\.js|tools/qa/cxorbia-gate8-shopper-login-dev\.mjs|tools/qa/cxorbia-gate9-postulation-contract\.mjs|tools/qa/cxorbia-gate9-postulation-immediate-dev\.mjs|\.github/workflows/cxorbia-recovery-i3-dev-certification\.yml)$'
+          allowed='^(backend/runtime/cxorbia-shopper-command-provider-v1\.mjs|backend/runtime/hr-live-service/cxorbia-command-runtime-v1\.mjs|backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment\.test\.mjs|backend/runtime/hr-live-service/test/cxorbia-gate9-postulation-immediate\.test\.mjs|app/modules/visita-detalle\.js|app/adapters/tya-protected-auth-hr-authority-bridge-v2\.js|app/adapters/tya-dev-technical-auth-e2e-v1\.js|tools/qa/cxorbia-gate8-shopper-login-dev\.mjs|tools/qa/cxorbia-gate9-postulation-contract\.mjs|tools/qa/cxorbia-gate9-postulation-immediate-dev\.mjs|\.github/workflows/cxorbia-recovery-i3-dev-certification\.yml)$'
           for f in "${changed[@]}"; do [[ "$f" =~ $allowed ]] || { echo "OUT_OF_SCOPE:$f"; exit 1; }; done
           git diff --quiet "$BASE_SHA" -- app/core/backend-browser-auth.js
           node -e "const fs=require('fs'),f=require('./firebase.json'),r=JSON.parse(fs.readFileSync('.firebaserc','utf8'));if(f.hosting?.target!=='cxorbia-dev'||r.projects?.default!=='cxorbia-backend-dev'||r.targets?.['cxorbia-backend-dev']?.hosting?.['cxorbia-dev']?.[0]!=='cxorbia-backend-dev')process.exit(1)"
