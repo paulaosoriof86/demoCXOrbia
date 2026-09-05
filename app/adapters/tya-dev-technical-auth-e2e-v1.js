@@ -25,6 +25,21 @@
     statusObserver.observe(document.body,{childList:true,subtree:true});
   }
 
+  function suppressPwaReloadRace(){
+    if(typeof CX.setupPWA!=='function'||CX.__technicalE2ePwaSuppressed===true)return;
+    CX.__technicalE2ePwaSuppressed=true;
+    CX.setupPWA=function(){
+      window.CX_TECHNICAL_E2E_PWA={
+        suppressed:true,
+        reason:'fresh-dev-deploy-controllerchange-reload-race',
+        technicalOnly:true,
+        humanRouteAffected:false,
+        production:false,
+        at:new Date().toISOString()
+      };
+    };
+  }
+
   function message(error){
     const code=String(error&&(error.code||error.message)||'');
     if(/auth\/(wrong-password|invalid-credential|user-not-found|invalid-email)/i.test(code))return 'Usuario o contraseña no válidos.';
@@ -80,10 +95,9 @@
       try{
         await CX.backendAuth.authenticate(user,pass,namespace);
         password.value='';login.value='';submit.textContent='Cargando...';
-        /* Do not enter the app here. backend-firebase owns the authenticated
-           bootstrap and emits backend-ready only after the protected refresh;
-           backend-browser-auth enters from that event. This keeps the E2E lane
-           on the same post-auth sequencing already certified by Gate 8. */
+        /* backend-firebase owns the authenticated bootstrap and emits
+           backend-ready only after the protected refresh; browser-auth enters
+           from that event, matching the Gate 8 post-auth sequence. */
       }catch(authError){
         password.value='';error.textContent=message(authError);error.style.display='block';
         submit.disabled=false;submit.textContent='Validar';
@@ -101,6 +115,7 @@
       technicalNamespace:namespace,
       namespaceUserSelectable:false,
       firebaseAuthAuthorityPreserved:true,
+      pwaReloadSuppressed:window.CX_TECHNICAL_E2E_PWA?.suppressed===true,
       credentialsEmbedded:false,
       writes:false,
       providerWrites:0,
@@ -112,12 +127,14 @@
       formId:'cxDevEntryAuth',
       gateMode:'technical-auth-e2e-isolated',
       humanRouteAffected:false,credentialsEmbedded:false,
+      pwaReloadSuppressed:window.CX_TECHNICAL_E2E_PWA?.suppressed===true,
       providerWrites:0,production:false,at
     };
     return true;
   }
 
   function patch(){
+    suppressPwaReloadRace();
     suppressHumanOnlyStatus();
     if(patched||!CX.app||!CX.backendAuth)return false;
     const show=typeof CX.app.showLogin==='function'?CX.app.showLogin.bind(CX.app):null;
