@@ -95,7 +95,7 @@ try{
  await sp.evaluate(async token=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);await firebase.auth().signInWithCustomToken(token);},shopperReloadToken);shopperReloadToken='';
  await sp.reload({waitUntil:'domcontentloaded',timeout:90000});
  try{
-   await sp.waitForFunction(({tenantId,shopperId,targetId})=>{const ctx=window.CX?.backendAuth?.context?.()||null,posts=Array.isArray(window.CX?.data?._posts)?window.CX.data._posts:[];return ctx.authenticated===true&&ctx.tenantId===tenantId&&ctx.shopperId===shopperId&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&posts.some(p=>String(p?.id||p?.applicationId||p?.postulationId||'')===targetId);},{tenantId,shopperId,targetId:durableId},{timeout:120000});
+   await sp.waitForFunction(({tenantId,shopperId,targetId})=>{const ctx=window.CX?.backendAuth?.context?.()||null,posts=Array.isArray(window.CX?.data?._posts)?window.CX.data._posts:[];return ctx?.authenticated===true&&ctx?.tenantId===tenantId&&ctx?.shopperId===shopperId&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&posts.some(p=>String(p?.id||p?.applicationId||p?.postulationId||'')===targetId);},{tenantId,shopperId,targetId:durableId},{timeout:120000});
  }catch(error){shopperReloadError=String(error?.message||error);}
  shopperReload=await gate10Diagnostic(sp,{tenantId,shopperId,projectId,targetId:durableId,role:'shopper'});
  await sp.screenshot({path:path.join(OUT,'gate10-shopper-after-reload.png'),fullPage:true});
@@ -106,7 +106,7 @@ try{
  await ap.evaluate(async token=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);await firebase.auth().signInWithCustomToken(token);},adminReloadToken);adminReloadToken='';
  await ap.reload({waitUntil:'domcontentloaded',timeout:90000});
  try{
-   await ap.waitForFunction(({tenantId,targetId})=>{const ctx=window.CX?.backendAuth?.context?.()||null,posts=Array.isArray(window.CX?.data?._posts)?window.CX.data._posts:[];return ctx.authenticated===true&&ctx.tenantId===tenantId&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&posts.some(p=>String(p?.id||p?.applicationId||p?.postulationId||'')===targetId);},{tenantId,targetId:durableId},{timeout:120000});
+   await ap.waitForFunction(({tenantId,targetId})=>{const ctx=window.CX?.backendAuth?.context?.()||null,posts=Array.isArray(window.CX?.data?._posts)?window.CX.data._posts:[];return ctx?.authenticated===true&&ctx?.tenantId===tenantId&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&posts.some(p=>String(p?.id||p?.applicationId||p?.postulationId||'')===targetId);},{tenantId,targetId:durableId},{timeout:120000});
  }catch(error){adminReloadError=String(error?.message||error);}
  adminReload=await gate10Diagnostic(ap,{tenantId,shopperId,projectId,targetId:durableId,role:'admin'});
  const nav=ap.locator('[data-page="postulaciones"],[data-view="postulaciones"],[data-module="postulaciones"]');if(await nav.count()){await nav.first().click();}else{const t=ap.getByText('Postulaciones',{exact:true});if(await t.count())await t.first().click();}
