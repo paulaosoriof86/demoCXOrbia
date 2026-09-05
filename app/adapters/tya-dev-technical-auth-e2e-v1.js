@@ -35,16 +35,20 @@
   function render(){
     suppressHumanOnlyStatus();
     const loginRoot=document.getElementById('login');
-    const card=loginRoot&&loginRoot.querySelector('.login-card');
-    if(!card||!CX.backendAuth)return false;
+    const legacyCard=loginRoot&&loginRoot.querySelector('.login-card');
+    const currentMain=loginRoot&&loginRoot.querySelector('.lg2-main');
+    const currentCard=currentMain&&currentMain.querySelector('#loginForm');
+    const card=legacyCard||currentCard;
+    const host=legacyCard||currentMain;
+    if(!card||!host||!CX.backendAuth)return false;
     card.querySelectorAll('.role-btn,.role-alt,#goReg').forEach(el=>el.remove());
     const guest=card.querySelector('#loginUserSel');
     if(guest){const section=guest.closest('div[style*="border-top"]')||guest.parentElement;section?.remove();}
-    const title=card.querySelector('.login-title');
+    const title=card.querySelector('.login-title,.lg2-h');
     if(title)title.textContent='Validación técnica protegida';
-    const sub=card.querySelector('.login-sub');
+    const sub=card.querySelector('.login-sub,.lg2-sub');
     if(sub)sub.textContent='Carril E2E privado; no corresponde a la entrada humana del producto.';
-    card.querySelector('#cxDevEntryAuth')?.remove();
+    host.querySelector('#cxDevEntryAuth')?.remove();
 
     const form=document.createElement('form');
     form.id='cxDevEntryAuth';
@@ -57,7 +61,12 @@
       '<input class="inp" id="cxDevEntryPassword" type="password" autocomplete="off" style="width:100%;margin-bottom:9px">'+
       '<div id="cxDevEntryError" aria-live="polite" style="display:none;font-size:11.5px;color:#b42318;background:#fef3f2;border-radius:8px;padding:8px 10px;margin-bottom:9px"></div>'+
       '<button class="btn btn-pr" id="cxDevEntrySubmit" type="submit" style="width:100%">Validar</button>';
-    card.insertBefore(form,card.querySelector('.login-devfor')||card.querySelector('.login-poweredby')||null);
+    if(currentCard){
+      currentCard.style.display='none';
+      host.appendChild(form);
+    }else{
+      card.insertBefore(form,card.querySelector('.login-devfor')||card.querySelector('.login-poweredby')||null);
+    }
 
     const login=form.querySelector('#cxDevEntryLogin');
     const password=form.querySelector('#cxDevEntryPassword');
