@@ -80,7 +80,10 @@
       try{
         await CX.backendAuth.authenticate(user,pass,namespace);
         password.value='';login.value='';submit.textContent='Cargando...';
-        CX.app?.enter?.();
+        /* Do not enter the app here. backend-firebase owns the authenticated
+           bootstrap and emits backend-ready only after the protected refresh;
+           backend-browser-auth enters from that event. This keeps the E2E lane
+           on the same post-auth sequencing already certified by Gate 8. */
       }catch(authError){
         password.value='';error.textContent=message(authError);error.style.display='block';
         submit.disabled=false;submit.textContent='Validar';
