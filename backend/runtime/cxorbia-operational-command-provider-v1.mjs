@@ -94,7 +94,17 @@ function projectScope(snapshot){
 }
 function sourceCoord(v){const t=str(v?.sourceTab),r=str(v?.sourceRow);return t&&r?`${t}::${r}`:'';}
 function stableVisitId(v){return str(v?.visitId||v?.id)||str(v?.hrRowId)||sourceCoord(v);}
-function visitPeriodId(v,snapshot){return str(v?.periodId||v?.projectId||v?.measurementPeriodId||v?.measurementWindowProjectId||snapshot?.currentPeriodId);}
+function visitPeriodId(v,snapshot){
+  const explicit=str(v?.periodId||v?.measurementPeriodId||v?.measurementWindowProjectId);
+  if(explicit)return explicit;
+  const periodKey=str(v?.periodKey);
+  if(periodKey){
+    const period=arr(snapshot?.periods).find(p=>str(p?.key||p?.periodKey)===periodKey);
+    const canonical=str(period?.periodId||period?.id);
+    if(canonical)return canonical;
+  }
+  return str(snapshot?.currentPeriodId);
+}
 function canonicalFacets(v){
   const f=v?.canonicalFacets||{};
   const state=str(v?.estado||v?.status||v?.presentationState).toLowerCase();
@@ -164,8 +174,9 @@ async function reconcileVisitDoc({db,policy,candidate,sourceRevision}){
       tx.set(reviewRef,{tenantId,projectId,periodId:str(existing.periodId||candidate.periodId)||null,entityType:'visit',entityId:visitId,reviewType:'hr_platform_assignment_conflict',status:'open',reason:'hr_shopper_differs_from_platform_pending_assignment',platformShopperId:durableShopper,observedHrShopperId:hrShopper,automaticOverwrite:false,sourceRevision,createdAt:now()},{merge:false});
       throw new Error('OPS_VISIT_RECONCILIATION_CONFLICT_REVIEW_REQUIRED');
     }
-    if(str(existing.hrSourceRevision)===sourceRevision)return {providerWrites:0,created:false,idempotentReplay:true};
-    return {providerWrites:0,created:false,idempotentReplay:false};
+    if(str(existing.hrSourceRevision)===sourceRevision&&str(existing.periodId)===str(candidate.periodId))return {providerWrites:0,created:false,idempotentReplay:true};
+    tx.set(visitRef,{periodId:candidate.periodId,rootProjectId:projectId,hrSourceRevision:sourceRevision,updatedAt:now(),version:Number(existing.version||0)+1},{merge:true});
+    return {providerWrites:1,created:false,idempotentReplay:false,periodScopeRepaired:str(existing.periodId)!==str(candidate.periodId)};
   });
 }
 
