@@ -102,6 +102,8 @@ function visitPeriodId(v,snapshot){
     const period=arr(snapshot?.periods).find(p=>str(p?.key||p?.periodKey)===periodKey);
     const canonical=str(period?.periodId||period?.id);
     if(canonical)return canonical;
+    const rootProjectId=str(period?.rootProjectId||snapshot?.projectId||snapshot?.projectConfig?.projectId||period?.projectId);
+    if(rootProjectId)return `${rootProjectId}-${periodKey}`;
   }
   return str(snapshot?.currentPeriodId);
 }

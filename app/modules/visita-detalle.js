@@ -167,7 +167,7 @@ CX.shopperPostForm = function(data, p, v, ui){
       const c=typeof data.ctx==='function'?data.ctx():{};
       const tenantId=String(auth.tenantId||c.tenantId||CX.BACKEND?.tenantId||'').trim();
       const projectId=String((Array.isArray(auth.projectIds)&&auth.projectIds.length===1?auth.projectIds[0]:'')||c.projectId||v.rootProjectId||'').trim();
-      const periodId=String(v.periodId||c.periodId||v.projectId||'').trim();
+      const periodId=String(v.periodId||v.projectId||c.periodId||'').trim();
       const shopperId=String(auth.shopperId||CX.session?.user?.shopperId||'').trim();
       const visitId=String(v.visitId||v.id||'').trim();
       const proposedDate=di.value;

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createOperationalCommandProvider } from '../../cxorbia-operational-command-provider-v1.mjs';
+import { createOperationalCommandProvider, visitsFromSnapshot } from '../../cxorbia-operational-command-provider-v1.mjs';
 
 const repoRoot=fileURLToPath(new URL('../../../../',import.meta.url));
 const clone=v=>v===undefined?undefined:structuredClone(v);
@@ -58,12 +58,35 @@ test('Gate 9 / application.create rejects shopper mismatch and unavailable visit
   assert.equal(unavailable.ok,false);assert.equal(unavailable.code,'OPS_VISIT_NOT_AVAILABLE');assert.equal(db2.paths().filter(p=>p.startsWith(postPrefix)).length,0);
 });
 
+test('Gate 9 / periodKey maps to a scoped canonical periodId and repairs legacy durable visit scope',async()=>{
+  const db=seededDb();
+  db.seed(visitPath('visit-a'),{...db.get(visitPath('visit-a')),periodId:'project-a',hrSourceRevision:'legacy-period-scope'});
+  const provider=createOperationalCommandProvider({auth:new FakeAuth(),db,policy});
+  const snapshot={
+    sourceSafe:true,
+    imported:false,
+    firestoreWrites:0,
+    tenantId:'tenant-a',
+    projectId:'project-a',
+    periods:[{key:'2026-09',projectId:'project-a'}],
+    visits:[{id:'visit-a',visitId:'visit-a',tenantId:'tenant-a',projectId:'project-a',periodKey:'2026-09',hrRowId:'HR!2',estado:'disponible',status:'disponible',shopperId:''}]
+  };
+  const mapped=visitsFromSnapshot(snapshot);
+  assert.equal(mapped.visits.length,1);
+  assert.equal(mapped.visits[0].periodId,'project-a-2026-09');
+  const result=await provider.reconcileSnapshot(snapshot,{sourceRevision:'gate9-period-scope-repair'});
+  assert.equal(result.ok,true);
+  assert.equal(result.providerAck,true);
+  assert.equal(db.get(visitPath('visit-a')).periodId,'project-a-2026-09');
+});
+
 test('Gate 9 / frontend requires remote ACK and preserves durable posts through protected HR composition',()=>{
   const form=fs.readFileSync(path.join(repoRoot,'app/modules/visita-detalle.js'),'utf8');
   const bridge=fs.readFileSync(path.join(repoRoot,'app/adapters/tya-protected-auth-hr-authority-bridge-v2.js'),'utf8');
   const backend=fs.readFileSync(path.join(repoRoot,'app/core/backend-firebase.js'),'utf8');
   const admin=fs.readFileSync(path.join(repoRoot,'app/modules/postulaciones.js'),'utf8');
   assert.match(form,/CX\.commandAdapter\?\.execute/);assert.match(form,/commandType:'application\.create'/);assert.match(form,/status==='committed'/);assert.match(form,/providerAck===true/);assert.match(form,/successUiAllowed===true/);assert.doesNotMatch(form,/Postulación validada · pendiente de envío operativo/);
+  assert.match(form,/const periodId=String\(v\.periodId\|\|v\.projectId\|\|c\.periodId\|\|''\)\.trim\(\)/);
   assert.match(bridge,/postulations:\s*clone\(protectedState\.posts\)/);
   assert.match(backend,/postulations/);assert.match(backend,/_posts/);assert.match(admin,/data\._posts/);
 });
