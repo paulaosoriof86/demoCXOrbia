@@ -156,6 +156,28 @@ CX.module('postulaciones', ({data,ui})=>{
       // marca trazabilidad en el cuerpo y "saca de pendientes" visualmente
       el.style.opacity=tone==='green'?'1':'.7';
       ui.toast(extra+' · gestionado por '+gestor(),'ok');};
+    const approveDurable=async(x,button,close)=>{
+      if(!x)return;
+      if(!CX.permissions.gate('postulacion.approve',{projectId:x.projectId,pais:x.pais},ui))return;
+      if(typeof data.setApplicationStatus!=='function'){
+        ui.toast('Aprobación no ejecutada: el boundary durable no está disponible. No se modificó ningún dato.','warn',4200);
+        return;
+      }
+      const previousText=button&&button.textContent;
+      if(button){button.disabled=true;button.textContent='Aprobando…';}
+      let result=null;
+      try{result=await data.setApplicationStatus(x.id,'aprobada',{ackAware:true,reason:'admin_approval'});}
+      catch(error){result={ok:false,status:'blocked',providerAck:false,successUiAllowed:false,code:error&&error.message?error.message:'COMMAND_ERROR'};}
+      const committed=result&&result.ok===true&&result.status==='committed'&&result.providerAck===true&&result.successUiAllowed===true;
+      if(!committed){
+        if(button){button.disabled=false;button.textContent=previousText||'✅ Aprobar';}
+        ui.toast('Aprobación no ejecutada: no hubo ACK remoto. No se modificó la postulación.','warn',4200);
+        return;
+      }
+      if(CX.automations)CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal});
+      act(x.id,'✅ Aprobada','green','Aprobada · confirmada por persistencia remota');
+      if(typeof close==='function')close();
+    };
 
     /* perfil real del shopper (no el listado) — tarjetas clickeables + historial + requisitos */
     const profileModal=(sid)=>{ const s=data.getShopper?data.getShopper(sid):data.shoppers.find(x=>x.id===sid); if(!s){ui.toast('Shopper no encontrado','warn');return;}
@@ -179,7 +201,7 @@ CX.module('postulaciones', ({data,ui})=>{
         ov.querySelectorAll('[data-ph]').forEach(el=>el.addEventListener('click',()=>{const k=el.dataset.ph; if(k==='all')histModal(()=>true,'Historial completo'); else if(k==='real')histModal(v=>['realizada','cuestionario','liquidada'].includes(v.estado),'Realizadas'); else histModal(v=>v.estado==='liquidada','Liquidadas');}));
       }});
     };
-    document.querySelectorAll('[data-ap]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.ap);if(!CX.permissions.gate('postulacion.approve',{projectId:x&&x.projectId,pais:x&&x.pais},ui))return;if(x&&CX.automations)CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal});act(b.dataset.ap,'✅ Aprobada','green','Aprobada · WhatsApp preparado (preview) · envío real pendiente backend/Make');}));
+    document.querySelectorAll('[data-ap]').forEach(b=>b.addEventListener('click',async()=>{const x=posts.find(z=>z.id===b.dataset.ap);await approveDurable(x,b);}));
     /* FIX: el botón Perfil ahora abre el perfil real del shopper */
     document.querySelectorAll('[data-perfil]').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();profileModal(b.dataset.perfil);}));
     /* detalle de la postulación/visita al hacer clic en la tarjeta */
@@ -202,7 +224,7 @@ CX.module('postulaciones', ({data,ui})=>{
       `,{onMount:(ov,close)=>{
         ov.querySelector('#pdPerfil')&&ov.querySelector('#pdPerfil').addEventListener('click',()=>{close();profileModal(x.shopperId);});
         ov.querySelector('#pdWa')&&ov.querySelector('#pdWa').addEventListener('click',()=>{const msg=encodeURIComponent('Hola '+(x.shopper||'')+', sobre tu visita en '+x.sucursal);window.open('https://wa.me/'+(x.phone||'').replace(/[^0-9]/g,'')+'?text='+msg,'_blank');});
-        ov.querySelector('#pdAp')&&ov.querySelector('#pdAp').addEventListener('click',()=>{if(!CX.permissions.gate('postulacion.approve',{projectId:x.projectId,pais:x.pais},ui))return;if(CX.automations)CX.automations.fire('aprobacion',{shopper:x.shopper,sucursal:x.sucursal});act(x.id,'✅ Aprobada','green','Aprobada · WhatsApp preparado (preview) · envío real pendiente backend/Make');close();});
+        ov.querySelector('#pdAp')&&ov.querySelector('#pdAp').addEventListener('click',async()=>{await approveDurable(x,ov.querySelector('#pdAp'),close);});
         ov.querySelector('#pdRj')&&ov.querySelector('#pdRj').addEventListener('click',()=>{if(!CX.permissions.gate('postulacion.reject',{projectId:x.projectId,pais:x.pais},ui))return;act(x.id,'✕ Rechazada','red','Rechazada · notificación preparada · pendiente confirmación');close();});
       }});
     };
