@@ -86,7 +86,7 @@ const pairBefore=beforePosts.filter(p=>str(p.visitId||p.visitaId)===visitId&&str
 gate10Ensure(beforeTarget,'PERSISTENCE_FAILURE',{blocker:'GATE10_DURABLE_TARGET_MISSING_BEFORE_RELOAD',gate9:'PASS_LOCKED',postulationFingerprint:fp(durableId)});
 gate10Ensure(pairBefore.length===1,'PERSISTENCE_FAILURE',{blocker:'GATE10_DUPLICATE_POSTULATION_BEFORE_RELOAD',gate9:'PASS_LOCKED',pairCount:pairBefore.length,postulationFingerprint:fp(durableId)});
 
-let shopperReload=null,adminReload=null,adminReloadDom=false,shopperReloadError=null,adminReloadError=null;
+let shopperReload=null,adminReload=null,adminReloadDom=false,shopperReloadError=null,adminReloadError=null,gate10AdminPeriodAligned=false;
 let shopperReloadToken=await auth.createCustomToken(stableUid(tenantId,shopperId)),adminReloadToken=await auth.createCustomToken(staff.id);
 const gate10Browser=await chromium.launch({headless:true});
 try{
@@ -109,6 +109,8 @@ try{
    await ap.waitForFunction(({tenantId,targetId})=>{const ctx=window.CX?.backendAuth?.context?.()||null,posts=Array.isArray(window.CX?.data?._posts)?window.CX.data._posts:[];return ctx?.authenticated===true&&ctx?.tenantId===tenantId&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&posts.some(p=>String(p?.id||p?.applicationId||p?.postulationId||'')===targetId);},{tenantId,targetId:durableId},{timeout:120000});
  }catch(error){adminReloadError=String(error?.message||error);}
  adminReload=await gate10Diagnostic(ap,{tenantId,shopperId,projectId,targetId:durableId,role:'admin'});
+ gate10AdminPeriodAligned=await ap.evaluate(periodId=>{try{return window.CX?.data?.setProject?.(periodId)===true;}catch(_){return false;}},periodId);
+ if(gate10AdminPeriodAligned){try{await ap.waitForFunction(periodId=>String(window.CX?.data?.currentPeriodId||'')===periodId,periodId,{timeout:15000});}catch(_){}}
  const nav=ap.locator('[data-page="postulaciones"],[data-view="postulaciones"],[data-module="postulaciones"]');if(await nav.count()){await nav.first().click();}else{const t=ap.getByText('Postulaciones',{exact:true});if(await t.count())await t.first().click();}
  try{await ap.waitForSelector(`[data-pid="${durableId}"]`,{timeout:15000});adminReloadDom=true;}catch(_){adminReloadDom=false;}
  await ap.screenshot({path:path.join(OUT,'gate10-admin-after-reload.png'),fullPage:true});
@@ -120,6 +122,7 @@ if(shopperReload.contextRole!=='shopper'||!shopperReload.tenantMatch||!shopperRe
 if(!shopperReload.authorityApplied||!shopperReload.targetPresent)gate10Finish('FUNCTIONAL_DEFECT',{blocker:'GATE10_SHOPPER_READ_MODEL_NOT_RESTORED_AFTER_RELOAD',gate9:'PASS_LOCKED',shopper:shopperReload,error:shopperReloadError,postulationFingerprint:fp(durableId)});
 if(!adminReload?.firebaseCurrentUser||!adminReload?.backendContextPresent||!adminReload?.contextAuthenticated)gate10Finish('AUTH_FAILURE',{blocker:'GATE10_ADMIN_SESSION_NOT_RESTORED_AFTER_RELOAD',gate9:'PASS_LOCKED',admin:adminReload,error:adminReloadError,postulationFingerprint:fp(durableId)});
 if(!adminReload.tenantMatch||!adminReload.projectAllowed)gate10Finish('AUTH_FAILURE',{blocker:'GATE10_ADMIN_CONTEXT_INVALID_AFTER_RELOAD',gate9:'PASS_LOCKED',admin:adminReload,postulationFingerprint:fp(durableId)});
+if(!gate10AdminPeriodAligned)gate10Finish('ENVIRONMENT_FAILURE',{blocker:'GATE10_QA_TARGET_PERIOD_NOT_SELECTABLE',gate9:'PASS_LOCKED',admin:adminReload,targetPeriodId:periodId,postulationFingerprint:fp(durableId)});
 if(!adminReload.authorityApplied||!adminReload.targetPresent||!adminReloadDom)gate10Finish('FUNCTIONAL_DEFECT',{blocker:'GATE10_ADMIN_MANAGEMENT_NOT_RESTORED_AFTER_RELOAD',gate9:'PASS_LOCKED',admin:adminReload,gestionDomAfterReload:adminReloadDom,error:adminReloadError,postulationFingerprint:fp(durableId)});
 
 const afterPosts=await allDocs(project.collection('postulations'));
