@@ -216,9 +216,16 @@
       out.perfilCompleto=profileComplete(out);out.profileCompletenessSource='actual_minimum_fields';out.credentialsDerivable=!!(out.__canonicalIdentityOverlay&&out.nombre&&!out.user&&!out.username);return out;
     });
     for(const v of composedVisits){const s=shopperByCanonical.get(str(v.shopperId));if(s){v.shopper=s.nombre||v.shopper;v.shopperCode=s.code||v.shopperCode;v.shopperWa=s.whatsapp||s.phone||v.shopperWa||null;}}
+    const normalizePostScope=p=>{
+      const rawProjectId=str(p&&p.projectId),periodId=str(p&&p.periodId),rootProjectId=str(p&&p.rootProjectId)||(periodId&&rawProjectId&&rawProjectId!==periodId?rawProjectId:str(hr.currentProjectId));
+      if(rootProjectId)p.rootProjectId=rootProjectId;
+      if(periodId)p.periodId=periodId;
+      p.projectId=periodId||rawProjectId;
+      return p;
+    };
     const postMap=new Map(),postKey=p=>{const vid=str(p.visitId||p.visitaId),sid=str(p.shopperId),id=str(p.id||p.applicationId||p.postulationId);return vid&&sid?`vs:${vid}::${sid}`:(id?`id:${id}`:'');};
-    for(const raw of basePosts){const p=clone(raw),sid=str(p.shopperId);if(liveToCanonical.has(sid))p.shopperId=liveToCanonical.get(sid);const key=postKey(p);if(key)postMap.set(key,p);}
-    for(const raw of [...arr(payload.postulations),...arr(payload.applications)]){const p=clone(raw);let vid=str(p.visitId||p.visitaId);if(protectedVisitToHrVisit.has(vid))vid=protectedVisitToHrVisit.get(vid);if(vid&&!composedVisits.some(v=>str(v.visitId||v.id)===vid))continue;p.visitId=vid;p.visitaId=vid;const sid=str(p.shopperId);if(liveToCanonical.has(sid))p.shopperId=liveToCanonical.get(sid);const key=postKey(p);if(key)postMap.set(key,postMap.has(key)?patch(postMap.get(key),p):p);}
+    for(const raw of basePosts){const p=normalizePostScope(clone(raw)),sid=str(p.shopperId);if(liveToCanonical.has(sid))p.shopperId=liveToCanonical.get(sid);const key=postKey(p);if(key)postMap.set(key,p);}
+    for(const raw of [...arr(payload.postulations),...arr(payload.applications)]){const p=normalizePostScope(clone(raw));let vid=str(p.visitId||p.visitaId);if(protectedVisitToHrVisit.has(vid))vid=protectedVisitToHrVisit.get(vid);if(vid&&!composedVisits.some(v=>str(v.visitId||v.id)===vid))continue;p.visitId=vid;p.visitaId=vid;const sid=str(p.shopperId);if(liveToCanonical.has(sid))p.shopperId=liveToCanonical.get(sid);const key=postKey(p);if(key)postMap.set(key,postMap.has(key)?patch(postMap.get(key),p):p);}
     const platformOnlyProfiles=profiles.filter(p=>p.id&&!consumedProfiles.has(str(p.id))&&meaningfulProfile(p)).map(p=>({id:p.id,nombre:p.nombre,exactAliases:p.exactAliases,reason:'no_exact_hr_crosswalk'}));
     const nameGroups=new Map();for(const s of composedShoppers){const n=lower(s.nombre).normalize('NFD').replace(/[\u0300-\u036f]/g,'');if(!n)continue;if(!nameGroups.has(n))nameGroups.set(n,[]);nameGroups.get(n).push(s.id);}
     const sameDisplayNameGroups=[...nameGroups.entries()].filter(([,ids])=>ids.length>1).map(([normalizedName,ids])=>({normalizedName,shopperIds:ids.sort(),reason:'display_name_collision_not_auto_merged'}));
