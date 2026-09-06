@@ -40,7 +40,7 @@ const browserToken=await auth.createCustomToken(staff.id),apiToken=await exchang
 let chromium;try{({chromium}=await import('playwright'));}catch{finish('ENVIRONMENT_FAILURE',{blocker:'GATE11_PLAYWRIGHT_UNAVAILABLE'});}
 const browser=await chromium.launch({headless:true});
 const baseUrl=`${HOSTING_URL}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cxProjectId=${encodeURIComponent(projectId)}&cxProtectedRuntime=${PROTECTED}&cxTechnicalAuthE2E=${TECH}`;
-let commandTrace=null,uiApproved=false;
+let commandTrace=null,uiApproved=false,uiSignal=null;
 try{
   const ctx=await browser.newContext(),page=await ctx.newPage();
   await page.goto(baseUrl,{waitUntil:'domcontentloaded',timeout:90000});
@@ -49,15 +49,38 @@ try{
   await page.waitForFunction(({tenantId,projectId})=>{const c=window.CX?.backendAuth?.context?.()||{};return c.authenticated===true&&c.tenantId===tenantId&&(c.role==='super'||(Array.isArray(c.projectIds)&&c.projectIds.map(String).includes(projectId)))&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true;},{tenantId,projectId},{timeout:120000});
   await page.evaluate(()=>window.CX?.router?.nav?.('postulaciones'));
   await page.waitForSelector(`[data-pid="${targetId}"]`,{timeout:30000});
+  await page.evaluate(()=>{
+    const ui=window.CX?.ui;
+    if(!ui||typeof ui.toast!=='function')throw new Error('GATE11_UI_TOAST_UNAVAILABLE');
+    window.__CX_GATE11_SUCCESS_UI={observed:false,at:null};
+    if(ui.__cxGate11ToastObserverInstalled!==true){
+      const original=ui.toast;
+      ui.toast=function(msg,...rest){
+        const text=String(msg||'');
+        if(/Aprobada/i.test(text)&&/confirmada por persistencia remota/i.test(text)){
+          window.__CX_GATE11_SUCCESS_UI={observed:true,at:Date.now()};
+        }
+        return original.call(this,msg,...rest);
+      };
+      ui.__cxGate11ToastObserverInstalled=true;
+    }
+  });
   const responsePromise=page.waitForResponse(response=>{const req=response.request();if(req.method()!=='POST'||!response.url().includes('/v1/cxorbia/commands'))return false;try{const p=req.postDataJSON();return str(p?.commandType)==='application.status.update'&&str(p?.entityId)===targetId;}catch(_){return false;}},{timeout:30000});
   const approve=page.locator(`[data-ap="${targetId}"]`);ensure(await approve.count(),'FUNCTIONAL_DEFECT',{blocker:'GATE11_APPROVE_BUTTON_MISSING',postulationFingerprint:targetFp});
   await approve.first().click();
   const response=await responsePromise;let body=null,payload=null;try{body=await response.json();}catch(_){}try{payload=response.request().postDataJSON();}catch(_){}
   commandTrace={observed:true,httpStatus:response.status(),httpOk:response.ok(),ok:body?.ok===true,status:str(body?.status)||null,providerAck:body?.providerAck===true,successUiAllowed:body?.successUiAllowed===true,idempotentReplay:body?.idempotentReplay===true,providerWrites:Number(body?.providerWrites??-1),request:{commandType:str(payload?.commandType)||null,entityIdMatch:str(payload?.entityId)===targetId,tenantMatch:str(payload?.tenantId)===tenantId,projectMatch:str(payload?.projectId)===projectId,periodMatch:str(payload?.periodId)===periodId,idempotencyKeyPresent:!!str(payload?.idempotencyKey),providerEnforcementRequired:payload?.authorization?.providerEnforcementRequired===true},payload};
   ensure(response.ok&&body?.providerAck===true&&body?.successUiAllowed===true&&body?.committed===true,'PERSISTENCE_FAILURE',{blocker:'GATE11_APPROVAL_REMOTE_ACK_MISSING',command:commandTrace,postulationFingerprint:targetFp});
-  try{await page.waitForFunction(id=>{const el=document.querySelector(`[data-pid="${id}"]`);return !!el&&/Aprobada/i.test(el.textContent||'');},targetId,{timeout:30000});uiApproved=true;}catch(_){uiApproved=false;}
+  try{
+    await page.waitForFunction(()=>window.__CX_GATE11_SUCCESS_UI?.observed===true,null,{timeout:10000});
+    uiSignal=await page.evaluate(()=>window.__CX_GATE11_SUCCESS_UI||null);
+    uiApproved=uiSignal?.observed===true;
+  }catch(_){
+    uiSignal=await page.evaluate(()=>window.__CX_GATE11_SUCCESS_UI||null).catch(()=>null);
+    uiApproved=false;
+  }
   await page.screenshot({path:path.join(OUT,'gate11-admin-approved.png'),fullPage:true});
-  await ctx.close();
+  ensure(uiApproved,'VISUAL_DEFECT',{blocker:'GATE11_SUCCESS_UI_NOT_OBSERVED_AFTER_ACK',successUiSignal:'toast_after_remote_ack',command:commandTrace,postulationFingerprint:targetFp});
   ensure(payload,'FUNCTIONAL_DEFECT',{blocker:'GATE11_COMMAND_PAYLOAD_NOT_CAPTURED'});
   const replay=await jsonFetch(`${HOSTING_URL}/v1/cxorbia/commands`,{method:'POST',headers:{authorization:`Bearer ${apiToken}`,'content-type':'application/json'},body:JSON.stringify(payload)});
   commandTrace.replay={httpStatus:replay.response.status,httpOk:replay.response.ok,ok:replay.body?.ok===true,providerAck:replay.body?.providerAck===true,idempotentReplay:replay.body?.idempotentReplay===true,providerWrites:Number(replay.body?.providerWrites??-1)};
@@ -69,4 +92,4 @@ const pairAfter=afterPosts.filter(p=>str(p.visitId||p.visitaId)===visitId&&str(p
 ensure(after&&str(after.status||after.estado)==='aprobada','PERSISTENCE_FAILURE',{blocker:'GATE11_APPROVED_POSTULATION_NOT_DURABLE',postulationFingerprint:targetFp});
 ensure(visit&&str(visit.shopperId)===shopperId&&['asignada','assigned'].includes(str(visit.status||visit.estado).toLowerCase()),'PERSISTENCE_FAILURE',{blocker:'GATE11_APPROVAL_VISIT_ASSIGNMENT_MISSING',visitFingerprint:fp(visitId),shopperFingerprint:fp(shopperId)});
 ensure(beforePosts.length===afterPosts.length&&pairAfter.length===1,'PERSISTENCE_FAILURE',{blocker:'GATE11_APPROVAL_DUPLICATED_ENTITY',postCountBefore:beforePosts.length,postCountAfter:afterPosts.length,pairCountBefore:pairBefore.length,pairCountAfter:pairAfter.length});
-finish('PASS_GATE11_APPROVAL_NO_DUPLICATE',{gate10:'PASS_LOCKED',sourceSha:process.env.SOURCE_SHA||null,tenantId,projectId,periodId,postulationFingerprint:targetFp,visitFingerprint:fp(visitId),shopperFingerprint:fp(shopperId),remoteAck:true,successUiAfterAck:uiApproved,commandObserved:commandTrace?.observed===true,idempotentReplay:commandTrace?.replay?.idempotentReplay===true,replayProviderWrites:commandTrace?.replay?.providerWrites,postCountBefore:beforePosts.length,postCountAfter:afterPosts.length,duplicatePairCountBefore:pairBefore.length,duplicatePairCountAfter:pairAfter.length,visitAssignedDurably:true,localStorageTruth:false},0);
+finish('PASS_GATE11_APPROVAL_NO_DUPLICATE',{gate10:'PASS_LOCKED',sourceSha:process.env.SOURCE_SHA||null,tenantId,projectId,periodId,postulationFingerprint:targetFp,visitFingerprint:fp(visitId),shopperFingerprint:fp(shopperId),remoteAck:true,successUiAfterAck:uiApproved,successUiSignal:'toast_after_remote_ack',successUiObservedAt:uiSignal?.at||null,commandObserved:commandTrace?.observed===true,idempotentReplay:commandTrace?.replay?.idempotentReplay===true,replayProviderWrites:commandTrace?.replay?.providerWrites,postCountBefore:beforePosts.length,postCountAfter:afterPosts.length,duplicatePairCountBefore:pairBefore.length,duplicatePairCountAfter:pairAfter.length,visitAssignedDurably:true,localStorageTruth:false},0);
