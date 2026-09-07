@@ -49,6 +49,8 @@ try{
   await page.evaluate(async token=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);await firebase.auth().signInWithCustomToken(token);},browserToken);
   await page.reload({waitUntil:'domcontentloaded',timeout:90000});
   await page.waitForFunction(({tenantId,projectId})=>{const c=window.CX?.backendAuth?.context?.()||{};return c.authenticated===true&&c.tenantId===tenantId&&(c.role==='super'||(Array.isArray(c.projectIds)&&c.projectIds.map(String).includes(projectId)))&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true;},{tenantId,projectId},{timeout:120000});
+  const gate11AdminPeriodAligned=await page.evaluate(periodId=>{try{return window.CX?.data?.setProject?.(periodId)===true;}catch(_){return false;}},periodId);
+  if(gate11AdminPeriodAligned){try{await page.waitForFunction(periodId=>String(window.CX?.data?.currentPeriodId||'')===periodId,periodId,{timeout:15000});}catch(_){}}
   await page.evaluate(()=>window.CX?.router?.nav?.('postulaciones'));
   await page.waitForSelector(`[data-pid="${targetId}"]`,{timeout:30000});
   await page.evaluate(()=>{
