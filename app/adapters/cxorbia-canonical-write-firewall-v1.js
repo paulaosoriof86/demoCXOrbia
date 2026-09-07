@@ -37,12 +37,12 @@
     if(!canonical())return;
     const t=event.target?.closest?.('button,a');if(!t)return;
 
-    /* Postulaciones: simple status/date decisions can already be expressed as canonical commands. */
-    if(t.matches('[data-ap],[data-sb],[data-rj]')){
-      const id=t.dataset.ap||t.dataset.sb||t.dataset.rj,p=post(id);if(!p)return;
+    /* Postulaciones: approval is already owned by the ACK-aware module handler; standby/reject remain protected here. */
+    if(t.matches('[data-sb],[data-rj]')){
+      const id=t.dataset.sb||t.dataset.rj,p=post(id);if(!p)return;
       event.preventDefault();event.stopImmediatePropagation();
-      const status=t.dataset.ap?'aprobada':t.dataset.sb?'standby':'rechazada';
-      run(t,()=>CX.data.setApplicationStatus(id,status,{ackAware:true,reason:'admin-postulation-decision'}),status==='aprobada'?'Postulación aprobada':status==='standby'?'Postulación en standby':'Postulación rechazada');return;
+      const status=t.dataset.sb?'standby':'rechazada';
+      run(t,()=>CX.data.setApplicationStatus(id,status,{ackAware:true,reason:'admin-postulation-decision'}),status==='standby'?'Postulación en standby':'Postulación rechazada');return;
     }
     if(t.matches('[data-authfecha],[data-keepfecha]')){
       const id=t.dataset.authfecha||t.dataset.keepfecha,p=post(id);if(!p)return;
