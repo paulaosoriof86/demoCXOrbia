@@ -163,7 +163,7 @@ CX.module('postulaciones', ({data,ui})=>{
     };
     const approveDurable=async(x,button,close)=>{
       if(!x)return;
-      if(!CX.permissions.gate('postulacion.approve',{projectId:x.projectId,pais:x.pais},ui))return;
+      if(!CX.permissions.gate('postulacion.approve',{projectId:x.rootProjectId||x.projectId,pais:x.pais},ui))return;
       if(typeof data.setApplicationStatus!=='function'){
         ui.toast('Aprobación no ejecutada: el boundary durable no está disponible. No se modificó ningún dato.','warn',4200);
         return;
