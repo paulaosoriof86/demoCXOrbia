@@ -5,6 +5,54 @@ CX.module('shoppers', ({data,ui})=>{
   const initials=(n)=>(n||'?').split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
   const av=(n,sz)=>`<div class="rail-av" style="width:${sz}px;height:${sz}px;font-size:${sz*0.38}px;background:linear-gradient(135deg,var(--brand),var(--brand-dark))">${initials(n)}</div>`;
   const viaBadge=(v)=>({registro:ui.bdg('Auto-registro','b'),manual:ui.bdg('Alta manual','t'),asignacion:ui.bdg('Creado en asignación','t')})[v]||'';
+  const arr=(v)=>Array.isArray(v)?v:[];
+  const byId=(list,id)=>arr(list).find(x=>String(x&&x.id||'')===String(id||''))||null;
+  const periodForVisit=(v)=>{
+    if(!v)return null;
+    const id=v.periodId||v.projectId||'';
+    return byId(data.periods,id)||byId(data.projects,id);
+  };
+  const rootProjectIdForVisit=(v)=>{
+    if(!v)return '';
+    if(v.rootProjectId)return String(v.rootProjectId);
+    const period=periodForVisit(v);
+    if(period&&period.rootProjectId)return String(period.rootProjectId);
+    if(period&&period.projectId&&String(period.projectId)!==String(period.id))return String(period.projectId);
+    if(v.periodId&&v.projectId&&String(v.projectId)!==String(v.periodId))return String(v.projectId);
+    if(period&&typeof data.programKey==='function')return String(data.programKey(period)||'');
+    return String(v.projectId||'');
+  };
+  const visitsForActiveProject=(shopperId)=>{
+    const root=String(data.currentProjectId||'');
+    return data.visitsForShopper(shopperId).filter(v=>rootProjectIdForVisit(v)===root);
+  };
+  const periodLabelForVisit=(v)=>{
+    const period=periodForVisit(v);
+    return v.periodLabel||(period&&(period.periodo||period.ronda||period.name))||v.periodKey||v.periodId||v.projectId||'—';
+  };
+  const projectLabelForVisit=(v)=>{
+    const rootId=rootProjectIdForVisit(v);
+    const root=byId(data.__backendAllProjectRecords,rootId)||byId(data.projects,rootId);
+    if(root)return root.programLabel||root.name||root.id;
+    if(rootId===String(data.currentProjectId||'')&&data.previewMeta&&data.previewMeta.projectName)return data.previewMeta.projectName;
+    return rootId||'—';
+  };
+  const evaluationForVisit=(v)=>{
+    if(v&&v.score!==undefined&&v.score!==null&&String(v.score)!=='')return String(v.score);
+    if(v&&v.koFail===true)return 'KO';
+    if(v&&v.evaluada===true)return 'Evaluada';
+    return '—';
+  };
+  const scopedStats=(shopperId)=>{
+    const vs=visitsForActiveProject(shopperId);
+    const state=v=>String(v&&v.estado||'').toLowerCase();
+    return {
+      total:vs.length,
+      realizadas:vs.filter(v=>['realizada','cuestionario','liquidada'].includes(state(v))).length,
+      liquidadas:vs.filter(v=>state(v)==='liquidada'||v.liquidada===true).length,
+      enCurso:vs.filter(v=>['asignada','agendada','postulada'].includes(state(v))).length
+    };
+  };
 
   const row=(s)=>{
     /* P0-3 (paquete V110→V111, 20260714): antes el estado y el honorario SIEMPRE mostraban un
@@ -72,12 +120,14 @@ CX.module('shoppers', ({data,ui})=>{
 
   /* ---------- drill: histórico de visitas ---------- */
   const drillVisits=(s, fn, title)=>{
-    const vs=data.visitsForShopper(s.id).filter(fn||(()=>true));
-    const body = vs.length ? `<table class="tbl"><thead><tr><th>Sucursal</th><th>Proyecto</th><th>Escenario</th><th>Estado</th><th>Fecha</th></tr></thead><tbody>
+    const vs=visitsForActiveProject(s.id).filter(fn||(()=>true));
+    const body = vs.length ? `<table class="tbl"><thead><tr><th>Sucursal</th><th>Proyecto</th><th>Periodo</th><th>Escenario</th><th>Estado</th><th>Evaluación</th><th>Fecha</th></tr></thead><tbody>
       ${vs.map(v=>`<tr><td><b>${v.sucursal}</b><div style="font-size:11px;color:var(--t3)">${CX.paisFlag(v.pais)} ${v.ciudad}</div></td>
-        <td style="font-size:12px">${(data.projects.find(p=>p.id===v.projectId)||{}).name||v.projectId}</td>
+        <td style="font-size:12px">${projectLabelForVisit(v)}</td>
+        <td style="font-size:12px">${periodLabelForVisit(v)}</td>
         <td style="font-size:12px">${v.escenario}</td>
         <td>${ui.estadoBadge(v.estado)}</td>
+        <td style="font-size:12px">${evaluationForVisit(v)}</td>
         <td style="font-size:12px">${v.realizada||v.agendada||v.disponibleDesde||'—'}</td></tr>`).join('')}
       </tbody></table>`
       : ui.empty('🗒️','Sin visitas en esta categoría todavía.');
@@ -114,7 +164,7 @@ CX.module('shoppers', ({data,ui})=>{
   /* ---------- modal de perfil completo ---------- */
   const profileModal=(s)=>{
     const lvl=CX.data_shopperDataLevel(s);
-    const st=data.shopperStats(s.id);
+    const st=scopedStats(s.id);
     /* P0-3: una referencia protegida NO abre ficha con PII ni con métricas inventadas — se
        muestra un modal reducido y honesto en vez del perfil completo. */
     if(lvl==='protected_reference'){
