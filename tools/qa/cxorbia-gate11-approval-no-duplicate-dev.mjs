@@ -40,9 +40,11 @@ const browserToken=await auth.createCustomToken(staff.id),apiToken=await exchang
 let chromium;try{({chromium}=await import('playwright'));}catch{finish('ENVIRONMENT_FAILURE',{blocker:'GATE11_PLAYWRIGHT_UNAVAILABLE'});}
 const browser=await chromium.launch({headless:true});
 const baseUrl=`${HOSTING_URL}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cxProjectId=${encodeURIComponent(projectId)}&cxProtectedRuntime=${PROTECTED}&cxTechnicalAuthE2E=${TECH}`;
-let commandTrace=null,uiApproved=false,uiSignal=null;
+let commandTrace=null,uiApproved=false,uiSignal=null,automationTrace=null;
+const pageErrors=[];
 try{
   const ctx=await browser.newContext(),page=await ctx.newPage();
+  page.on('pageerror',error=>pageErrors.push(str(error?.message||error).slice(0,500)));
   await page.goto(baseUrl,{waitUntil:'domcontentloaded',timeout:90000});
   await page.evaluate(async token=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);await firebase.auth().signInWithCustomToken(token);},browserToken);
   await page.reload({waitUntil:'domcontentloaded',timeout:90000});
@@ -53,6 +55,7 @@ try{
     const ui=window.CX?.ui;
     if(!ui||typeof ui.toast!=='function')throw new Error('GATE11_UI_TOAST_UNAVAILABLE');
     window.__CX_GATE11_SUCCESS_UI={observed:false,at:null};
+    window.__CX_GATE11_AUTOMATION_TRACE={before:false,after:false,error:null};
     if(ui.__cxGate11ToastObserverInstalled!==true){
       const original=ui.toast;
       ui.toast=function(msg,...rest){
@@ -63,6 +66,23 @@ try{
         return original.call(this,msg,...rest);
       };
       ui.__cxGate11ToastObserverInstalled=true;
+    }
+    const auto=window.CX?.automations;
+    if(auto&&typeof auto.fire==='function'&&auto.__cxGate11FireObserverInstalled!==true){
+      const originalFire=auto.fire;
+      auto.fire=function(evento,...rest){
+        const tracked=String(evento||'')==='aprobacion';
+        if(tracked)window.__CX_GATE11_AUTOMATION_TRACE={before:true,after:false,error:null};
+        try{
+          const out=originalFire.call(this,evento,...rest);
+          if(tracked)window.__CX_GATE11_AUTOMATION_TRACE.after=true;
+          return out;
+        }catch(error){
+          if(tracked)window.__CX_GATE11_AUTOMATION_TRACE.error=String(error?.message||error);
+          throw error;
+        }
+      };
+      auto.__cxGate11FireObserverInstalled=true;
     }
   });
   const responsePromise=page.waitForResponse(response=>{const req=response.request();if(req.method()!=='POST'||!response.url().includes('/v1/cxorbia/commands'))return false;try{const p=req.postDataJSON();return str(p?.commandType)==='application.status.update'&&str(p?.entityId)===targetId;}catch(_){return false;}},{timeout:30000});
@@ -79,8 +99,9 @@ try{
     uiSignal=await page.evaluate(()=>window.__CX_GATE11_SUCCESS_UI||null).catch(()=>null);
     uiApproved=false;
   }
+  automationTrace=await page.evaluate(()=>window.__CX_GATE11_AUTOMATION_TRACE||null).catch(()=>null);
   await page.screenshot({path:path.join(OUT,'gate11-admin-approved.png'),fullPage:true});
-  ensure(uiApproved,'VISUAL_DEFECT',{blocker:'GATE11_SUCCESS_UI_NOT_OBSERVED_AFTER_ACK',successUiSignal:'toast_after_remote_ack',command:commandTrace,postulationFingerprint:targetFp});
+  ensure(uiApproved,'VISUAL_DEFECT',{blocker:'GATE11_SUCCESS_UI_NOT_OBSERVED_AFTER_ACK',successUiSignal:'toast_after_remote_ack',command:commandTrace,automationTrace,pageErrors,postulationFingerprint:targetFp});
   ensure(payload,'FUNCTIONAL_DEFECT',{blocker:'GATE11_COMMAND_PAYLOAD_NOT_CAPTURED'});
   const replay=await jsonFetch(`${HOSTING_URL}/v1/cxorbia/commands`,{method:'POST',headers:{authorization:`Bearer ${apiToken}`,'content-type':'application/json'},body:JSON.stringify(payload)});
   commandTrace.replay={httpStatus:replay.response.status,httpOk:replay.response.ok,ok:replay.body?.ok===true,providerAck:replay.body?.providerAck===true,idempotentReplay:replay.body?.idempotentReplay===true,providerWrites:Number(replay.body?.providerWrites??-1)};
@@ -92,4 +113,4 @@ const pairAfter=afterPosts.filter(p=>str(p.visitId||p.visitaId)===visitId&&str(p
 ensure(after&&str(after.status||after.estado)==='aprobada','PERSISTENCE_FAILURE',{blocker:'GATE11_APPROVED_POSTULATION_NOT_DURABLE',postulationFingerprint:targetFp});
 ensure(visit&&str(visit.shopperId)===shopperId&&['asignada','assigned'].includes(str(visit.status||visit.estado).toLowerCase()),'PERSISTENCE_FAILURE',{blocker:'GATE11_APPROVAL_VISIT_ASSIGNMENT_MISSING',visitFingerprint:fp(visitId),shopperFingerprint:fp(shopperId)});
 ensure(beforePosts.length===afterPosts.length&&pairAfter.length===1,'PERSISTENCE_FAILURE',{blocker:'GATE11_APPROVAL_DUPLICATED_ENTITY',postCountBefore:beforePosts.length,postCountAfter:afterPosts.length,pairCountBefore:pairBefore.length,pairCountAfter:pairAfter.length});
-finish('PASS_GATE11_APPROVAL_NO_DUPLICATE',{gate10:'PASS_LOCKED',sourceSha:process.env.SOURCE_SHA||null,tenantId,projectId,periodId,postulationFingerprint:targetFp,visitFingerprint:fp(visitId),shopperFingerprint:fp(shopperId),remoteAck:true,successUiAfterAck:uiApproved,successUiSignal:'toast_after_remote_ack',successUiObservedAt:uiSignal?.at||null,commandObserved:commandTrace?.observed===true,idempotentReplay:commandTrace?.replay?.idempotentReplay===true,replayProviderWrites:commandTrace?.replay?.providerWrites,postCountBefore:beforePosts.length,postCountAfter:afterPosts.length,duplicatePairCountBefore:pairBefore.length,duplicatePairCountAfter:pairAfter.length,visitAssignedDurably:true,localStorageTruth:false},0);
+finish('PASS_GATE11_APPROVAL_NO_DUPLICATE',{gate10:'PASS_LOCKED',sourceSha:process.env.SOURCE_SHA||null,tenantId,projectId,periodId,postulationFingerprint:targetFp,visitFingerprint:fp(visitId),shopperFingerprint:fp(shopperId),remoteAck:true,successUiAfterAck:uiApproved,successUiSignal:'toast_after_remote_ack',successUiObservedAt:uiSignal?.at||null,automationTrace,pageErrors,commandObserved:commandTrace?.observed===true,idempotentReplay:commandTrace?.replay?.idempotentReplay===true,replayProviderWrites:commandTrace?.replay?.providerWrites,postCountBefore:beforePosts.length,postCountAfter:afterPosts.length,duplicatePairCountBefore:pairBefore.length,duplicatePairCountAfter:pairAfter.length,visitAssignedDurably:true,localStorageTruth:false},0);
