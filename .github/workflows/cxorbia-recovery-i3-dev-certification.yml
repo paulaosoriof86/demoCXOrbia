@@ -146,9 +146,11 @@ jobs:
 
       - name: Execute real Gate 12 shopper history E2E
         run: |
+          set +e
           set -uo pipefail
           PROJECT="$PROJECT" OUT="$OUT" SOURCE_SHA="$SOURCE_SHA" HOSTING_URL="$HOSTING_URL" node tools/qa/cxorbia-gate12-shopper-history-dev.mjs | tee "$OUT/gate12-console.log"
           qa_rc=${PIPESTATUS[0]}
+          set -e
           printf '%s\n' "$qa_rc" > "$OUT/gate12-qa.rc"
           test -f "$OUT/gate12-shopper-history.json"
           ! grep -E '"password"[[:space:]]*:' "$OUT/gate12-console.log"
