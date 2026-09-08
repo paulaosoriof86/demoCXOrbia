@@ -26,6 +26,7 @@ CX.module('shoppers', ({data,ui})=>{
     const root=String(data.currentProjectId||'');
     return data.visitsForShopper(shopperId).filter(v=>rootProjectIdForVisit(v)===root);
   };
+  const kpiVisitsForActiveProject=(shopperId)=>visitsForActiveProject(shopperId).filter(v=>v&&v.__pendingPlatformAssignmentOverlay!==true);
   const periodLabelForVisit=(v)=>{
     const period=periodForVisit(v);
     return v.periodLabel||(period&&(period.periodo||period.ronda||period.name))||v.periodKey||v.periodId||v.projectId||'—';
@@ -44,7 +45,7 @@ CX.module('shoppers', ({data,ui})=>{
     return '—';
   };
   const scopedStats=(shopperId)=>{
-    const vs=visitsForActiveProject(shopperId);
+    const vs=kpiVisitsForActiveProject(shopperId);
     const state=v=>String(v&&v.estado||'').toLowerCase();
     return {
       total:vs.length,
