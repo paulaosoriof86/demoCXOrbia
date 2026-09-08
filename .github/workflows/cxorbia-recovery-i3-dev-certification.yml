@@ -12,6 +12,7 @@ on:
       - backend/runtime/hr-live-service/test/cxorbia-gate9-postulation-immediate.test.mjs
       - app/modules/visita-detalle.js
       - app/modules/postulaciones.js
+      - app/modules/shoppers.js
       - app/adapters/cxorbia-canonical-write-firewall-v1.js
       - app/adapters/tya-cumulative-read-model-v2.js
       - app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
@@ -20,6 +21,7 @@ on:
       - tools/qa/cxorbia-gate9-postulation-contract.mjs
       - tools/qa/cxorbia-gate9-postulation-immediate-dev.mjs
       - tools/qa/cxorbia-gate11-approval-no-duplicate-dev.mjs
+      - tools/qa/cxorbia-gate12-shopper-history-dev.mjs
       - .github/workflows/cxorbia-recovery-i3-dev-certification.yml
 
 permissions:
@@ -66,12 +68,12 @@ jobs:
           mapfile -t changed < <(git diff --name-only "$BASE_SHA" HEAD)
           printf '%s\n' "${changed[@]}" | tee "$OUT/changed-files.txt"
           test "${#changed[@]}" -ge 4
-          allowed='^(backend/runtime/cxorbia-shopper-command-provider-v1\.mjs|backend/runtime/cxorbia-operational-command-provider-v1\.mjs|backend/runtime/hr-live-service/cxorbia-command-runtime-v1\.mjs|backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment\.test\.mjs|backend/runtime/hr-live-service/test/cxorbia-gate9-postulation-immediate\.test\.mjs|app/modules/visita-detalle\.js|app/modules/postulaciones\.js|app/adapters/cxorbia-canonical-write-firewall-v1\.js|app/adapters/tya-cumulative-read-model-v2\.js|app/adapters/tya-protected-auth-hr-authority-bridge-v2\.js|app/adapters/tya-dev-technical-auth-e2e-v1\.js|tools/qa/cxorbia-gate8-shopper-login-dev\.mjs|tools/qa/cxorbia-gate9-postulation-contract\.mjs|tools/qa/cxorbia-gate9-postulation-immediate-dev\.mjs|tools/qa/cxorbia-gate11-approval-no-duplicate-dev\.mjs|\.github/workflows/cxorbia-recovery-i3-dev-certification\.yml)$'
+          allowed='^(backend/runtime/cxorbia-shopper-command-provider-v1\.mjs|backend/runtime/cxorbia-operational-command-provider-v1\.mjs|backend/runtime/hr-live-service/cxorbia-command-runtime-v1\.mjs|backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment\.test\.mjs|backend/runtime/hr-live-service/test/cxorbia-gate9-postulation-immediate\.test\.mjs|app/modules/visita-detalle\.js|app/modules/postulaciones\.js|app/modules/shoppers\.js|app/adapters/cxorbia-canonical-write-firewall-v1\.js|app/adapters/tya-cumulative-read-model-v2\.js|app/adapters/tya-protected-auth-hr-authority-bridge-v2\.js|app/adapters/tya-dev-technical-auth-e2e-v1\.js|tools/qa/cxorbia-gate8-shopper-login-dev\.mjs|tools/qa/cxorbia-gate9-postulation-contract\.mjs|tools/qa/cxorbia-gate9-postulation-immediate-dev\.mjs|tools/qa/cxorbia-gate11-approval-no-duplicate-dev\.mjs|tools/qa/cxorbia-gate12-shopper-history-dev\.mjs|\.github/workflows/cxorbia-recovery-i3-dev-certification\.yml)$'
           for f in "${changed[@]}"; do [[ "$f" =~ $allowed ]] || { echo "OUT_OF_SCOPE:$f"; exit 1; }; done
           git diff --quiet "$BASE_SHA" -- app/core/backend-browser-auth.js
           node -e "const fs=require('fs'),f=require('./firebase.json'),r=JSON.parse(fs.readFileSync('.firebaserc','utf8'));if(f.hosting?.target!=='cxorbia-dev'||r.projects?.default!=='cxorbia-backend-dev'||r.targets?.['cxorbia-backend-dev']?.hosting?.['cxorbia-dev']?.[0]!=='cxorbia-backend-dev')process.exit(1)"
           git status --porcelain | tee "$OUT/source-status.txt"; test ! -s "$OUT/source-status.txt"
-          printf '{"sourceSha":"%s","baseSha":"%s","gate6":"PASS_LOCKED_REGRESSION_REQUIRED","gate7":"PASS_LOCKED_REGRESSION_REQUIRED","gate8":"PASS_LOCKED_REGRESSION_REQUIRED","gate9":"PASS_LOCKED_REGRESSION_REQUIRED","gate10":"PASS_LOCKED_REGRESSION_REQUIRED","gate11":"APPROVAL_NO_DUPLICATE_CERTIFICATION","hostingTarget":"%s","production":false,"hrWrites":0}\n' "$SOURCE_SHA" "$BASE_SHA" "$HOSTING_TARGET" > "$OUT/authorization.json"
+          printf '{"sourceSha":"%s","baseSha":"%s","gate6":"PASS_LOCKED_REGRESSION_REQUIRED","gate7":"PASS_LOCKED_REGRESSION_REQUIRED","gate8":"PASS_LOCKED_REGRESSION_REQUIRED","gate9":"PASS_LOCKED_REGRESSION_REQUIRED","gate10":"PASS_LOCKED_REGRESSION_REQUIRED","gate11":"PASS_LOCKED_REGRESSION_REQUIRED","gate12":"SHOPPER_HISTORY_CERTIFICATION","hostingTarget":"%s","production":false,"hrWrites":0}\n' "$SOURCE_SHA" "$BASE_SHA" "$HOSTING_TARGET" > "$OUT/authorization.json"
 
       - name: Setup Node 24
         uses: actions/setup-node@v4
@@ -219,25 +221,33 @@ jobs:
           ! grep -E '"password"[[:space:]]*:' "$OUT/gate11-console.log"
           ! grep -E '"password"[[:space:]]*:' "$OUT/gate11-approval-no-duplicate.json"
 
-      - name: Final Gate 11 verdict
+      - name: Execute real Gate 12 shopper history E2E
+        run: |
+          set -euo pipefail
+          PROJECT="$PROJECT" OUT="$OUT" SOURCE_SHA="$SOURCE_SHA" HOSTING_URL="$HOSTING_URL" node tools/qa/cxorbia-gate12-shopper-history-dev.mjs | tee "$OUT/gate12-console.log"
+          ! grep -E '"password"[[:space:]]*:' "$OUT/gate12-console.log"
+          ! grep -E '"password"[[:space:]]*:' "$OUT/gate12-shopper-history.json"
+
+      - name: Final Gate 12 verdict
         run: |
           set -euo pipefail
           node <<'NODE'
-          const fs=require('fs'),gate9=JSON.parse(fs.readFileSync(process.env.OUT+'/gate9-postulation-immediate.json','utf8')),gate10=JSON.parse(fs.readFileSync(process.env.OUT+'/gate10-persistence-reload.json','utf8')),gate11=JSON.parse(fs.readFileSync(process.env.OUT+'/gate11-approval-no-duplicate.json','utf8')),runtime=JSON.parse(fs.readFileSync(process.env.OUT+'/runtime.json','utf8')),hosting=JSON.parse(fs.readFileSync(process.env.OUT+'/hosting.json','utf8'));
+          const fs=require('fs'),gate9=JSON.parse(fs.readFileSync(process.env.OUT+'/gate9-postulation-immediate.json','utf8')),gate10=JSON.parse(fs.readFileSync(process.env.OUT+'/gate10-persistence-reload.json','utf8')),gate11=JSON.parse(fs.readFileSync(process.env.OUT+'/gate11-approval-no-duplicate.json','utf8')),gate12=JSON.parse(fs.readFileSync(process.env.OUT+'/gate12-shopper-history.json','utf8')),runtime=JSON.parse(fs.readFileSync(process.env.OUT+'/runtime.json','utf8')),hosting=JSON.parse(fs.readFileSync(process.env.OUT+'/hosting.json','utf8'));
           if(gate9.decision!=='PASS_GATE9_POSTULATION_IMMEDIATE')throw new Error(gate9.decision||'GATE9_RESULT_MISSING');
           if(gate10.decision!=='PASS_GATE10_PERSISTENCE_AFTER_RELOAD')throw new Error(gate10.decision||'GATE10_RESULT_MISSING');
           if(gate11.decision!=='PASS_GATE11_APPROVAL_NO_DUPLICATE')throw new Error(gate11.decision||'GATE11_RESULT_MISSING');
-          if(runtime.decision!=='PASS_RUNTIME_SOURCE_SHA_READBACK'||hosting.decision!=='PASS_HOSTING_GATE11_EXACT_PARITY')throw new Error('GATE11_RELEASE_PARITY_INCOMPLETE');
-          const summary={verdict:gate11.decision,gate6:'PASS_LOCKED_REGRESSION',gate7:'PASS_LOCKED_REGRESSION',gate8:'PASS_LOCKED_REGRESSION',gate9:'PASS_LOCKED_REGRESSION',gate10:'PASS_LOCKED_REGRESSION',gate11:'PASS',sourceSha:process.env.SOURCE_SHA,cloudRunRevision:runtime.revision,runtimeSourceRevision:gate9.sourceRevision||null,tenantId:gate11.tenantId,projectId:gate11.projectId,periodId:gate11.periodId,postulationFingerprint:gate11.postulationFingerprint,visitFingerprint:gate11.visitFingerprint,shopperFingerprint:gate11.shopperFingerprint,remoteAck:gate11.remoteAck===true,successUiAfterAck:gate11.successUiAfterAck===true,idempotentReplay:gate11.idempotentReplay===true,replayProviderWrites:Number(gate11.replayProviderWrites),duplicatePairCountBefore:Number(gate11.duplicatePairCountBefore),duplicatePairCountAfter:Number(gate11.duplicatePairCountAfter),visitAssignedDurably:gate11.visitAssignedDurably===true,hostingExactParity:true,hostingDeploys:Number(fs.readFileSync(process.env.OUT+'/hosting-deploy-count.txt','utf8').trim()),deployIdentityRoute:process.env.DEPLOY_IDENTITY_ROUTE||null,production:false,hrWrites:0};
-          if(!(summary.remoteAck&&summary.successUiAfterAck&&summary.idempotentReplay&&summary.replayProviderWrites===0&&summary.duplicatePairCountBefore===1&&summary.duplicatePairCountAfter===1&&summary.visitAssignedDurably&&summary.hostingDeploys===1))throw new Error('GATE11_ACCEPTANCE_INCOMPLETE');
+          if(gate12.decision!=='PASS_GATE12_SHOPPER_HISTORY')throw new Error(gate12.decision||'GATE12_RESULT_MISSING');
+          if(runtime.decision!=='PASS_RUNTIME_SOURCE_SHA_READBACK'||hosting.decision!=='PASS_HOSTING_GATE11_EXACT_PARITY'||gate12.hostingExactParity!==true)throw new Error('GATE12_RELEASE_PARITY_INCOMPLETE');
+          const summary={verdict:gate12.decision,gate6:'PASS_LOCKED_REGRESSION',gate7:'PASS_LOCKED_REGRESSION',gate8:'PASS_LOCKED_REGRESSION',gate9:'PASS_LOCKED_REGRESSION',gate10:'PASS_LOCKED_REGRESSION',gate11:'PASS_LOCKED_REGRESSION',gate12:'PASS',sourceSha:process.env.SOURCE_SHA,cloudRunRevision:runtime.revision,runtimeSourceRevision:gate9.sourceRevision||null,tenantId:gate12.tenantId,projectId:gate12.projectId,periodId:gate12.periodId,shopperFingerprint:gate12.shopperFingerprint,authorizedAdmin:gate12.authorizedAdmin===true,identityVisible:gate12.identityVisible===true,currentPeriodVisible:gate12.currentPeriodVisible===true,priorPeriodVisible:gate12.priorPeriodVisible===true,foreignProjectExcluded:gate12.foreignProjectExcluded===true,periodColumnVisible:gate12.periodColumnVisible===true,evaluationColumnVisible:gate12.evaluationColumnVisible===true,currentEvaluationVisible:gate12.currentEvaluationVisible===true,priorEvaluationVisible:gate12.priorEvaluationVisible===true,statusesVisible:gate12.statusesVisible===true,scopedKpiExact:gate12.scopedKpiExact===true,localStorageTruth:gate12.localStorageTruth===false,localStoragePoisonExcluded:gate12.localStoragePoisonExcluded===true,hostingExactParity:gate12.hostingExactParity===true,hostingDeploys:Number(fs.readFileSync(process.env.OUT+'/hosting-deploy-count.txt','utf8').trim()),deployIdentityRoute:process.env.DEPLOY_IDENTITY_ROUTE||null,production:false,hrWrites:0};
+          if(!(summary.authorizedAdmin&&summary.identityVisible&&summary.currentPeriodVisible&&summary.priorPeriodVisible&&summary.foreignProjectExcluded&&summary.periodColumnVisible&&summary.evaluationColumnVisible&&summary.currentEvaluationVisible&&summary.priorEvaluationVisible&&summary.statusesVisible&&summary.scopedKpiExact&&summary.localStorageTruth&&summary.localStoragePoisonExcluded&&summary.hostingExactParity&&summary.hostingDeploys===1))throw new Error('GATE12_ACCEPTANCE_INCOMPLETE');
           fs.writeFileSync(process.env.OUT+'/result.json',JSON.stringify(summary,null,2)+'\n');console.log(JSON.stringify(summary));
           NODE
 
-      - name: Upload sanitized Gate 11 evidence
+      - name: Upload sanitized Gate 12 evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-recovery-i3-gate11-${{ github.run_id }}
+          name: cxorbia-recovery-i3-gate12-${{ github.run_id }}
           path: ${{ env.OUT }}
           if-no-files-found: warn
           retention-days: 14
