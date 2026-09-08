@@ -17,6 +17,16 @@ function finish(decision,extra={},code=1){const out={decision,gate:12,generatedA
 const ensure=(ok,decision,extra={})=>{if(!ok)finish(decision,extra);};
 async function allDocs(ref){const s=await ref.get();return s.docs.map(d=>({id:d.id,...(d.data()||{})}));}
 
+const localShoppers=fs.readFileSync('app/modules/shoppers.js','utf8');
+let remoteShoppers='';
+try{
+  const response=await fetch(`${HOSTING_URL}/modules/shoppers.js?gate12=${Date.now()}`,{headers:{'Cache-Control':'no-cache'}});
+  ensure(response.ok,'RELEASE_COMPOSITION_FAILURE',{blocker:'GATE12_HOSTING_SHOPPERS_FETCH_FAILED',httpStatus:response.status});
+  remoteShoppers=await response.text();
+}catch(error){finish('RELEASE_COMPOSITION_FAILURE',{blocker:'GATE12_HOSTING_SHOPPERS_FETCH_FAILED',message:str(error?.message||error).slice(0,300)});}
+const localShoppersSha=sha(localShoppers),remoteShoppersSha=sha(remoteShoppers);
+ensure(localShoppersSha===remoteShoppersSha,'RELEASE_COMPOSITION_FAILURE',{blocker:'GATE12_HOSTING_SHOPPERS_PARITY_MISMATCH',localShoppersSha,remoteShoppersSha});
+
 if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
 const auth=getAuth(),db=getFirestore();
 const gate11=JSON.parse(fs.readFileSync(path.join(OUT,'gate11-approval-no-duplicate.json'),'utf8'));
@@ -83,7 +93,6 @@ try{
   await page.waitForSelector('#shKpis [data-k="all"]',{timeout:30000});
   const profile=await page.evaluate(targetId=>{
     const all=document.querySelector('#shKpis [data-k="all"]');
-    const text=String(document.body.innerText||'');
     return {identityVisible:!!document.querySelector(`[data-sid="${CSS.escape(targetId)}"]`)&&!!all,kpiText:String(all?.innerText||all?.textContent||'').trim()};
   },result.targetId);
   const scopedKpiExact=/(^|\D)2(\D|$)/.test(profile.kpiText);
@@ -120,4 +129,4 @@ try{
   result={...result,...acceptance};
 }finally{await browser.close();}
 
-finish('PASS_GATE12_SHOPPER_HISTORY',{gate11:'PASS_LOCKED',sourceSha:process.env.SOURCE_SHA||null,tenantId,projectId,periodId,shopperFingerprint:result.targetFingerprint,authorizedAdmin:result.authorizedAdmin,identityVisible:result.identityVisible,currentPeriodVisible:result.currentPeriodVisible,priorPeriodVisible:result.priorPeriodVisible,foreignProjectExcluded:result.foreignProjectExcluded,periodColumnVisible:result.periodColumnVisible,evaluationColumnVisible:result.evaluationColumnVisible,currentEvaluationVisible:result.currentEvaluationVisible,priorEvaluationVisible:result.priorEvaluationVisible,statusesVisible:result.statusesVisible,scopedKpiExact:result.scopedKpiExact,localStoragePoisonExcluded:result.localStoragePoisonExcluded,pageErrors},0);
+finish('PASS_GATE12_SHOPPER_HISTORY',{gate11:'PASS_LOCKED',sourceSha:process.env.SOURCE_SHA||null,tenantId,projectId,periodId,shopperFingerprint:result.targetFingerprint,authorizedAdmin:result.authorizedAdmin,identityVisible:result.identityVisible,currentPeriodVisible:result.currentPeriodVisible,priorPeriodVisible:result.priorPeriodVisible,foreignProjectExcluded:result.foreignProjectExcluded,periodColumnVisible:result.periodColumnVisible,evaluationColumnVisible:result.evaluationColumnVisible,currentEvaluationVisible:result.currentEvaluationVisible,priorEvaluationVisible:result.priorEvaluationVisible,statusesVisible:result.statusesVisible,scopedKpiExact:result.scopedKpiExact,localStoragePoisonExcluded:result.localStoragePoisonExcluded,hostingExactParity:true,localShoppersSha,remoteShoppersSha,pageErrors},0);
