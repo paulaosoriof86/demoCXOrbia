@@ -5,8 +5,7 @@ on:
     branches:
       - recovery/cxorbia-phase-a-20260831
     paths:
-      - app/modules/shoppers.js
-      - tools/qa/cxorbia-gate14-external-hr-kpis-same-revision-dev.mjs
+      - tools/qa/cxorbia-gate15-country-currency-project-period-dev.mjs
       - .github/workflows/cxorbia-recovery-i3-dev-certification.yml
 
 permissions:
@@ -24,12 +23,11 @@ defaults:
 
 env:
   SOURCE_SHA: ${{ github.sha }}
-  LOCK_GATE13_SHA: 96e18e5ab563b476eb1bb5ca79a29d2accf0c273
-  LOCK_GATE13_RUN_ID: '34178819244'
+  LOCK_GATE14_SHA: b1ac0003675aed4b6e16c7c2121a93fb6d9c5868
+  LOCK_GATE14_RUN_ID: '34184599912'
   PROJECT: cxorbia-backend-dev
-  HOSTING_TARGET: cxorbia-dev
   HOSTING_URL: https://cxorbia-backend-dev.web.app
-  OUT: .tmp/recovery-i3-gate14
+  OUT: .tmp/recovery-i3-gate15
 
 jobs:
   certify:
@@ -41,33 +39,28 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Prove Gate 14 focal product delta and locked Gate 13 lineage
+      - name: Prove Gate 15 QA-only delta and locked Gate 14 no product drift
         run: |
           set -euo pipefail
           mkdir -p "$OUT"
           test "$GITHUB_REF_NAME" = "recovery/cxorbia-phase-a-20260831"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          git merge-base --is-ancestor "$LOCK_GATE13_SHA" HEAD
-          git cat-file -e "$LOCK_GATE13_SHA^{commit}"
-          git diff --name-only "$LOCK_GATE13_SHA" HEAD | sort > "$OUT/current-delta.txt"
+          git merge-base --is-ancestor "$LOCK_GATE14_SHA" HEAD
+          git cat-file -e "$LOCK_GATE14_SHA^{commit}"
+          git diff --name-only "$LOCK_GATE14_SHA" HEAD | sort > "$OUT/current-delta.txt"
           printf '%s\n' \
             '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' \
-            'app/modules/shoppers.js' \
-            'tools/qa/cxorbia-gate14-external-hr-kpis-same-revision-dev.mjs' \
+            'tools/qa/cxorbia-gate15-country-currency-project-period-dev.mjs' \
             | sort > "$OUT/expected-delta.txt"
           diff -u "$OUT/expected-delta.txt" "$OUT/current-delta.txt"
-          git diff --name-only "$LOCK_GATE13_SHA" HEAD -- app backend firebase.json .firebaserc | sort > "$OUT/product-delta.txt"
-          printf '%s\n' 'app/modules/shoppers.js' > "$OUT/expected-product-delta.txt"
-          diff -u "$OUT/expected-product-delta.txt" "$OUT/product-delta.txt"
-          node --check app/modules/shoppers.js
-          node --check tools/qa/cxorbia-gate14-external-hr-kpis-same-revision-dev.mjs
-          node -e "const fs=require('fs'),f=require('./firebase.json'),r=JSON.parse(fs.readFileSync('.firebaserc','utf8'));if(f.hosting?.target!=='cxorbia-dev'||r.projects?.default!=='cxorbia-backend-dev'||r.targets?.['cxorbia-backend-dev']?.hosting?.['cxorbia-dev']?.[0]!=='cxorbia-backend-dev')process.exit(1)"
+          git diff --quiet "$LOCK_GATE14_SHA" HEAD -- app backend firebase.json .firebaserc
+          node --check tools/qa/cxorbia-gate15-country-currency-project-period-dev.mjs
           git status --porcelain | tee "$OUT/source-status.txt"; test ! -s "$OUT/source-status.txt"
           node <<'NODE'
           const fs=require('fs'),out=process.env.OUT;
-          const gate13={decision:'PASS_GATE13_AUTHORIZED_IDENTITY_KPIS',gate:13,lockedEvidence:true,lockedRunId:Number(process.env.LOCK_GATE13_RUN_ID),lockedSourceSha:process.env.LOCK_GATE13_SHA,noProductDrift:true,tenantId:'tya',projectId:'cinepolis',periodId:'cinepolis-2026-09',authorizedAdmin:true,backendProviderFirebase:true,adminCanSeeProtectedData:true,identityVisible:true,kpisExact:true,historyVisible:true,rootProjectScoped:true,authorityApplied:true,canonicalShopperStore:true,localStorageTruth:false,providerWrites:0,hrWrites:0,production:false};
-          fs.writeFileSync(`${out}/gate13-locked.json`,JSON.stringify(gate13,null,2)+'\n');
-          fs.writeFileSync(`${out}/locked-lineage.json`,JSON.stringify({decision:'PASS_GATE14_FOCAL_PRODUCT_DELTA',lockedRunId:Number(process.env.LOCK_GATE13_RUN_ID),lockedSourceSha:process.env.LOCK_GATE13_SHA,currentSourceSha:process.env.SOURCE_SHA,focalProductFiles:['app/modules/shoppers.js'],noUnexpectedProductDrift:true,changedFiles:fs.readFileSync(`${out}/current-delta.txt`,'utf8').trim().split(/\n/).filter(Boolean),production:false,hrWrites:0},null,2)+'\n');
+          const gate14={decision:'PASS_GATE14_KPIS_SAME_EXTERNAL_HR_REVISION',gate:14,lockedEvidence:true,lockedRunId:Number(process.env.LOCK_GATE14_RUN_ID),lockedSourceSha:process.env.LOCK_GATE14_SHA,noProductDrift:true,tenantId:'tya',projectId:'cinepolis',periodId:'cinepolis-2026-09',sameRevision:true,kpisExact:true,comparisonIndependentFromBrowserReadModel:true,identityResolution:'exact_technical_crosswalk_only',authorityApplied:true,localStorageTruth:false,providerWrites:0,hrWrites:0,production:false};
+          fs.writeFileSync(`${out}/gate14-locked.json`,JSON.stringify(gate14,null,2)+'\n');
+          fs.writeFileSync(`${out}/locked-lineage.json`,JSON.stringify({decision:'PASS_GATE14_LOCKED_NO_PRODUCT_DRIFT',lockedRunId:Number(process.env.LOCK_GATE14_RUN_ID),lockedSourceSha:process.env.LOCK_GATE14_SHA,currentSourceSha:process.env.SOURCE_SHA,noProductDrift:true,changedFiles:fs.readFileSync(`${out}/current-delta.txt`,'utf8').trim().split(/\n/).filter(Boolean),production:false,hrWrites:0},null,2)+'\n');
           NODE
 
       - name: Setup Node 24
@@ -75,10 +68,10 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Install Gate 14 DEV dependencies
+      - name: Install Gate 15 read-only dependencies
         run: |
           set -euo pipefail
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.47.2 firebase-tools@latest >/dev/null
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.47.2 >/dev/null
           npx playwright install --with-deps chromium >/dev/null
 
       - name: Authenticate canonical Firebase DEV
@@ -86,70 +79,59 @@ jobs:
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
 
-      - name: Deploy exact Gate 14 candidate to Hosting DEV only
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          ./node_modules/.bin/firebase deploy --config firebase.json --only "hosting:$HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$OUT/hosting-deploy.log"
-          echo 1 > "$OUT/hosting-deploy-count.txt"
-
-      - name: Read back exact Gate 14 frontend owners from Hosting DEV
+      - name: Read back exact Gate 15 product owners from Hosting DEV
         run: |
           set -euo pipefail
           pairs=(
-            'app/modules/shoppers.js|modules/shoppers.js|shoppers'
             'app/adapters/tya-live-source-inplace-apply.js|adapters/tya-live-source-inplace-apply.js|liveapply'
+            'app/core/data.js|core/data.js|data'
             'app/adapters/tya-protected-auth-hr-authority-bridge-v2.js|adapters/tya-protected-auth-hr-authority-bridge-v2.js|authority'
             'app/adapters/tya-cumulative-read-model-v2.js|adapters/tya-cumulative-read-model-v2.js|composer'
           )
           : > "$OUT/hosting-owner-hashes.txt"
           for item in "${pairs[@]}"; do
             IFS='|' read -r local remote key <<< "$item"
-            ok=0
-            for attempt in $(seq 1 40); do
-              curl -fsSL --retry 2 --retry-delay 1 -H 'Cache-Control: no-cache' "$HOSTING_URL/$remote?gate14=${GITHUB_RUN_ID}-${key}-${attempt}" -o "$OUT/remote-$key.js" || true
-              if cmp "$local" "$OUT/remote-$key.js"; then ok=1; break; fi
-              sleep 3
-            done
-            test "$ok" = 1
+            curl -fsSL --retry 3 --retry-delay 1 -H 'Cache-Control: no-cache' "$HOSTING_URL/$remote?gate15=${GITHUB_RUN_ID}-${key}" -o "$OUT/remote-$key.js"
+            cmp "$local" "$OUT/remote-$key.js"
             lsha="$(sha256sum "$local"|awk '{print $1}')"; rsha="$(sha256sum "$OUT/remote-$key.js"|awk '{print $1}')"; test "$lsha" = "$rsha"
             printf '%s %s\n' "$key" "$lsha" >> "$OUT/hosting-owner-hashes.txt"
           done
-          shoppers_sha="$(sha256sum app/modules/shoppers.js|awk '{print $1}')"
-          printf '{"decision":"PASS_HOSTING_GATE14_EXACT_PARITY","sourceSha":"%s","lockedProductSourceSha":"%s","ownerCount":4,"hostingDeploys":1,"shoppersSha256":"%s","production":false}\n' "$SOURCE_SHA" "$LOCK_GATE13_SHA" "$shoppers_sha" > "$OUT/hosting.json"
+          printf '{"decision":"PASS_HOSTING_GATE15_OWNER_PARITY","sourceSha":"%s","lockedProductSourceSha":"%s","ownerCount":4,"hostingDeploys":0,"production":false}\n' "$SOURCE_SHA" "$LOCK_GATE14_SHA" > "$OUT/hosting.json"
 
-      - name: Execute real Gate 14 same external HR revision KPI E2E
+      - name: Execute real Gate 15 country currency project period E2E
         run: |
           set -euo pipefail
-          PROJECT="$PROJECT" OUT="$OUT" SOURCE_SHA="$SOURCE_SHA" HOSTING_URL="$HOSTING_URL" node tools/qa/cxorbia-gate14-external-hr-kpis-same-revision-dev.mjs | tee "$OUT/gate14-console.log"
-          ! grep -E '"password"[[:space:]]*:' "$OUT/gate14-console.log"
-          ! grep -E '"password"[[:space:]]*:' "$OUT/gate14-external-hr-kpis-same-revision.json"
+          PROJECT="$PROJECT" OUT="$OUT" SOURCE_SHA="$SOURCE_SHA" HOSTING_URL="$HOSTING_URL" node tools/qa/cxorbia-gate15-country-currency-project-period-dev.mjs | tee "$OUT/gate15-console.log"
+          ! grep -E '"password"[[:space:]]*:' "$OUT/gate15-console.log"
+          ! grep -E '"password"[[:space:]]*:' "$OUT/gate15-country-currency-project-period.json"
 
-      - name: Final Gate 14 verdict
+      - name: Final Gate 15 verdict
         run: |
           set -euo pipefail
           node <<'NODE'
           const fs=require('fs'),read=n=>JSON.parse(fs.readFileSync(`${process.env.OUT}/${n}`,'utf8'));
-          const g13=read('gate13-locked.json'),g14=read('gate14-external-hr-kpis-same-revision.json'),hosting=read('hosting.json'),lineage=read('locked-lineage.json');
-          if(g13.decision!=='PASS_GATE13_AUTHORIZED_IDENTITY_KPIS'||g13.lockedEvidence!==true||g13.noProductDrift!==true||Number(g13.lockedRunId)!==Number(process.env.LOCK_GATE13_RUN_ID)||g13.lockedSourceSha!==process.env.LOCK_GATE13_SHA)throw new Error('GATE13_LOCK_INVALID');
-          if(lineage.decision!=='PASS_GATE14_FOCAL_PRODUCT_DELTA'||lineage.noUnexpectedProductDrift!==true||lineage.focalProductFiles?.length!==1||lineage.focalProductFiles[0]!=='app/modules/shoppers.js')throw new Error('GATE14_FOCAL_DELTA_INVALID');
-          if(hosting.decision!=='PASS_HOSTING_GATE14_EXACT_PARITY'||Number(hosting.ownerCount)!==4||Number(hosting.hostingDeploys)!==1||hosting.sourceSha!==process.env.SOURCE_SHA)throw new Error('GATE14_HOSTING_PARITY_INCOMPLETE');
-          if(g14.decision!=='PASS_GATE14_KPIS_SAME_EXTERNAL_HR_REVISION')throw new Error(g14.decision||'GATE14_RESULT_MISSING');
-          const pass=g14.sameRevision===true&&g14.externalRevision===g14.browserRevision&&g14.browserRevision===g14.readbackRevision&&g14.kpisExact===true&&g14.comparisonIndependentFromBrowserReadModel===true&&g14.externalAuthority==='hr-live-runtime'&&g14.identityResolution==='exact_technical_crosswalk_only'&&g14.authorityApplied===true&&g14.localStorageTruth===false&&Number(g14.providerWrites)===0&&Number(g14.hrWrites)===0&&g14.production===false;
-          if(!pass)throw new Error('GATE14_ACCEPTANCE_INCOMPLETE');
-          const summary={verdict:g14.decision,gate13:'PASS_LOCKED',gate14:'PASS',lockedGate13RunId:Number(process.env.LOCK_GATE13_RUN_ID),lockedGate13SourceSha:process.env.LOCK_GATE13_SHA,sourceSha:process.env.SOURCE_SHA,focalProductDelta:true,noUnexpectedProductDrift:true,hostingExactParity:true,hostingDeploys:1,tenantId:g14.tenantId,projectId:g14.projectId,periodId:g14.periodId,shopperFingerprint:g14.shopperFingerprint,externalRevision:g14.externalRevision,browserRevision:g14.browserRevision,readbackRevision:g14.readbackRevision,sameRevision:true,browserHistoryCount:g14.browserHistoryCount,pendingOverlayVisibility:g14.pendingOverlayVisibility,kpiExpected:g14.kpiExpected,kpiActual:g14.kpiActual,kpisExact:true,comparisonIndependentFromBrowserReadModel:true,identityResolution:g14.identityResolution,authorityApplied:true,localStorageTruth:false,providerWrites:0,hrWrites:0,production:false};
+          const g14=read('gate14-locked.json'),g15=read('gate15-country-currency-project-period.json'),hosting=read('hosting.json'),lineage=read('locked-lineage.json');
+          if(g14.decision!=='PASS_GATE14_KPIS_SAME_EXTERNAL_HR_REVISION'||g14.lockedEvidence!==true||g14.noProductDrift!==true||Number(g14.lockedRunId)!==Number(process.env.LOCK_GATE14_RUN_ID)||g14.lockedSourceSha!==process.env.LOCK_GATE14_SHA)throw new Error('GATE14_LOCK_INVALID');
+          if(lineage.decision!=='PASS_GATE14_LOCKED_NO_PRODUCT_DRIFT'||lineage.noProductDrift!==true)throw new Error('GATE15_PRODUCT_DRIFT');
+          if(hosting.decision!=='PASS_HOSTING_GATE15_OWNER_PARITY'||Number(hosting.ownerCount)!==4||Number(hosting.hostingDeploys)!==0)throw new Error('GATE15_HOSTING_PARITY_INCOMPLETE');
+          if(g15.decision!=='PASS_GATE15_COUNTRY_CURRENCY_PROJECT_PERIOD')throw new Error(g15.decision||'GATE15_RESULT_MISSING');
+          const countries=Array.isArray(g15.countries)?[...g15.countries].sort():[];
+          const gt=Array.isArray(g15.currencySets?.GT)?g15.currencySets.GT:[],hn=Array.isArray(g15.currencySets?.HN)?g15.currencySets.HN:[];
+          const pass=g15.sameRevision===true&&g15.externalRevision===g15.browserRevision&&g15.browserRevision===g15.readbackRevision&&g15.periodMappingExact===true&&g15.countryMappingExact===true&&g15.currencyMappingExact===true&&g15.projectMappingExact===true&&g15.visitPeriodMappingExact===true&&g15.activeContextExact===true&&countries.length===2&&countries[0]==='GT'&&countries[1]==='HN'&&gt.length===1&&gt[0]==='Q'&&hn.length===1&&hn[0]==='L'&&g15.activeProjectId==='cinepolis'&&/^cinepolis-\d{4}-\d{2}$/.test(String(g15.activePeriodId||''))&&g15.externalAuthority==='hr-live-runtime'&&g15.comparisonIndependentFromLocalStorage===true&&g15.authorityApplied===true&&g15.localStorageTruth===false&&Number(g15.providerWrites)===0&&Number(g15.hrWrites)===0&&g15.production===false;
+          if(!pass)throw new Error('GATE15_ACCEPTANCE_INCOMPLETE');
+          const summary={verdict:g15.decision,gate14:'PASS_LOCKED_NO_DRIFT',gate15:'PASS',lockedGate14RunId:Number(process.env.LOCK_GATE14_RUN_ID),lockedGate14SourceSha:process.env.LOCK_GATE14_SHA,sourceSha:process.env.SOURCE_SHA,noProductDrift:true,hostingOwnerParity:true,hostingDeploys:0,tenantId:g15.tenantId,projectId:g15.projectId,externalRevision:g15.externalRevision,browserRevision:g15.browserRevision,readbackRevision:g15.readbackRevision,sameRevision:true,periodCount:g15.periodCount,visitCount:g15.visitCount,countries,GT_currency:gt[0],HN_currency:hn[0],activeProjectId:g15.activeProjectId,activePeriodId:g15.activePeriodId,activePeriodKey:g15.activePeriodKey,periodMappingExact:true,countryMappingExact:true,currencyMappingExact:true,projectMappingExact:true,visitPeriodMappingExact:true,activeContextExact:true,comparisonIndependentFromLocalStorage:true,authorityApplied:true,localStorageTruth:false,providerWrites:0,hrWrites:0,production:false};
           fs.writeFileSync(`${process.env.OUT}/result.json`,JSON.stringify(summary,null,2)+'\n');console.log(JSON.stringify(summary));
           NODE
 
-      - name: Upload sanitized Gate 14 evidence
+      - name: Upload sanitized Gate 15 evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-recovery-i3-gate14-${{ github.run_id }}
+          name: cxorbia-recovery-i3-gate15-${{ github.run_id }}
           path: ${{ env.OUT }}
           if-no-files-found: warn
           retention-days: 14
 
       - name: Cleanup temporary dependencies
         if: always()
-        run: rm -f firebase-debug.log && rm -rf .firebase node_modules
+        run: rm -rf node_modules
