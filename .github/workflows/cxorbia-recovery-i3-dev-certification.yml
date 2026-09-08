@@ -5,11 +5,13 @@ on:
     branches:
       - recovery/cxorbia-phase-a-20260831
     paths:
+      - tools/qa/cxorbia-gate18-admin-e2e-dev.mjs
       - .github/workflows/cxorbia-recovery-i3-dev-certification.yml
 
 permissions:
   contents: read
   statuses: write
+  id-token: write
 
 concurrency:
   group: cxorbia-recovery-i3-dev-certification
@@ -21,38 +23,44 @@ defaults:
 
 env:
   SOURCE_SHA: ${{ github.sha }}
-  LOCK_GATE16_SHA: 833446cfea089b9807241c06c2e354d605bebc09
-  LOCK_GATE16_RUN_ID: '34185937660'
-  OUT: .tmp/recovery-i3-gate17
+  LOCK_GATE17_SHA: 0986f3487bd85b1e45aa06dbbd3d9cbab3f538c6
+  LOCK_GATE17_RUN_ID: '34186129864'
+  PROJECT: cxorbia-backend-dev
+  HOSTING_URL: https://cxorbia-backend-dev.web.app
+  OUT: .tmp/recovery-i3-gate18
 
 jobs:
   certify:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - name: Checkout exact Recovery source
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Prove Gate 17 workflow-only delta and lock Gate 16
+      - name: Prove Gate 18 QA-only delta and lock Gate 17
         run: |
           set -euo pipefail
           mkdir -p "$OUT"
           test "$GITHUB_REF_NAME" = "recovery/cxorbia-phase-a-20260831"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          git merge-base --is-ancestor "$LOCK_GATE16_SHA" HEAD
-          git cat-file -e "$LOCK_GATE16_SHA^{commit}"
-          git diff --name-only "$LOCK_GATE16_SHA" HEAD | sort > "$OUT/current-delta.txt"
-          printf '%s\n' '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' > "$OUT/expected-delta.txt"
+          git merge-base --is-ancestor "$LOCK_GATE17_SHA" HEAD
+          git cat-file -e "$LOCK_GATE17_SHA^{commit}"
+          git diff --name-only "$LOCK_GATE17_SHA" HEAD | sort > "$OUT/current-delta.txt"
+          printf '%s\n' \
+            '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' \
+            'tools/qa/cxorbia-gate18-admin-e2e-dev.mjs' \
+            | sort > "$OUT/expected-delta.txt"
           diff -u "$OUT/expected-delta.txt" "$OUT/current-delta.txt"
-          git diff --quiet "$LOCK_GATE16_SHA" HEAD -- app backend firebase.json .firebaserc
+          git diff --quiet "$LOCK_GATE17_SHA" HEAD -- app backend firebase.json .firebaserc
+          node --check tools/qa/cxorbia-gate18-admin-e2e-dev.mjs
           git status --porcelain | tee "$OUT/source-status.txt"; test ! -s "$OUT/source-status.txt"
           node <<'NODE'
           const fs=require('fs'),out=process.env.OUT;
-          const g16={decision:'PASS_GATE16_BIDIRECTIONAL_ACK_IDEMPOTENCY',gate:16,lockedEvidence:true,lockedRunId:Number(process.env.LOCK_GATE16_RUN_ID),lockedSourceSha:process.env.LOCK_GATE16_SHA,noProductDrift:true,tenantId:'tya',projectId:'cinepolis',periodId:'cinepolis-2026-09',remoteAck:true,successUiAfterAck:true,idempotentReplay:true,replayProviderWrites:0,commandSuccessRequiresProviderAck:true,directLocalWriteAllowed:false,hrWritesEnabled:false,hrWriteFailClosed:true,invalidPlatformSyncStates:0,localStorageTruth:false,providerWrites:0,hrWrites:0,production:false};
-          fs.writeFileSync(`${out}/gate16-locked.json`,JSON.stringify(g16,null,2)+'\n');
-          fs.writeFileSync(`${out}/locked-lineage.json`,JSON.stringify({decision:'PASS_GATE17_LOCKED_GATE16_NO_PRODUCT_DRIFT',lockedRunId:Number(process.env.LOCK_GATE16_RUN_ID),lockedSourceSha:process.env.LOCK_GATE16_SHA,currentSourceSha:process.env.SOURCE_SHA,noProductDrift:true,changedFiles:fs.readFileSync(`${out}/current-delta.txt`,'utf8').trim().split(/\n/).filter(Boolean),production:false},null,2)+'\n');
+          const g17={decision:'PASS_GATE17_SYNTAX_CONTRACTS',gate:17,lockedEvidence:true,lockedRunId:Number(process.env.LOCK_GATE17_RUN_ID),lockedSourceSha:process.env.LOCK_GATE17_SHA,noProductDrift:true,tenantId:'tya',projectId:'cinepolis',periodId:'cinepolis-2026-09',syntaxFiles:154,reusableContractTests:18,reusableContractTestsFailed:0,frozenContractsExact:true,localStorageTruth:false,providerWrites:0,hrWrites:0,production:false};
+          fs.writeFileSync(`${out}/gate17-locked.json`,JSON.stringify(g17,null,2)+'\n');
+          fs.writeFileSync(`${out}/locked-lineage.json`,JSON.stringify({decision:'PASS_GATE18_LOCKED_GATE17_NO_PRODUCT_DRIFT',lockedRunId:Number(process.env.LOCK_GATE17_RUN_ID),lockedSourceSha:process.env.LOCK_GATE17_SHA,currentSourceSha:process.env.SOURCE_SHA,noProductDrift:true,changedFiles:fs.readFileSync(`${out}/current-delta.txt`,'utf8').trim().split(/\n/).filter(Boolean),production:false},null,2)+'\n');
           NODE
 
       - name: Setup Node 24
@@ -60,95 +68,73 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Certify candidate syntax surface
+      - name: Install Gate 18 read-only dependencies
         run: |
           set -euo pipefail
-          : > "$OUT/syntax-inventory.txt"
-          find app/core app/adapters app/modules -maxdepth 1 -type f -name '*.js' -print | sort >> "$OUT/syntax-inventory.txt"
-          find backend/runtime -maxdepth 1 -type f \( -name '*.mjs' -o -name '*.js' \) -print | sort >> "$OUT/syntax-inventory.txt"
-          find backend/runtime/hr-live-service -maxdepth 1 -type f \( -name '*.mjs' -o -name '*.js' \) -print | sort >> "$OUT/syntax-inventory.txt"
-          sort -u "$OUT/syntax-inventory.txt" -o "$OUT/syntax-inventory.txt"
-          test -s "$OUT/syntax-inventory.txt"
-          syntax_count=0
-          while IFS= read -r f; do
-            node --check "$f" >> "$OUT/syntax.log" 2>&1
-            syntax_count=$((syntax_count+1))
-          done < "$OUT/syntax-inventory.txt"
-          test "$syntax_count" -gt 20
-          sha256sum $(cat "$OUT/syntax-inventory.txt") | sort > "$OUT/syntax-hashes.txt"
-          printf '%s\n' "$syntax_count" > "$OUT/syntax-count.txt"
-          printf '{"decision":"PASS_GATE17_SYNTAX","syntaxFiles":%s,"production":false}\n' "$syntax_count" > "$OUT/syntax.json"
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.47.2 >/dev/null
+          npx playwright install --with-deps chromium >/dev/null
 
-      - name: Run reusable functional contract suites
+      - name: Authenticate canonical Firebase DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - name: Read back exact Gate 18 admin owners from Hosting DEV
         run: |
           set -euo pipefail
-          node --test \
-            backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs \
-            backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs \
-            backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment.test.mjs \
-            backend/runtime/hr-live-service/test/cxorbia-gate9-postulation-immediate.test.mjs \
-            | tee "$OUT/contract-tests.log"
-          grep -Eq 'pass 18|pass[[:space:]]+18' "$OUT/contract-tests.log"
-          grep -Eq 'fail 0|fail[[:space:]]+0' "$OUT/contract-tests.log"
-          node tools/qa/cxorbia-gate9-postulation-contract.mjs | tee "$OUT/gate9-contract.log"
-          grep -Fq 'PASS_GATE9_POSTULATION_CONTRACT' "$OUT/gate9-contract.log"
+          pairs=(
+            'app/core/router.js|core/router.js|router'
+            'app/core/data.js|core/data.js|data'
+            'app/modules/dashboard.js|modules/dashboard.js|dashboard'
+            'app/modules/visitas.js|modules/visitas.js|visitas'
+            'app/modules/postulaciones.js|modules/postulaciones.js|postulaciones'
+            'app/modules/shoppers.js|modules/shoppers.js|shoppers'
+            'app/adapters/tya-live-source-inplace-apply.js|adapters/tya-live-source-inplace-apply.js|liveapply'
+            'app/adapters/tya-protected-auth-hr-authority-bridge-v2.js|adapters/tya-protected-auth-hr-authority-bridge-v2.js|authority'
+            'app/adapters/tya-cumulative-read-model-v2.js|adapters/tya-cumulative-read-model-v2.js|composer'
+          )
+          : > "$OUT/hosting-owner-hashes.txt"
+          for item in "${pairs[@]}"; do
+            IFS='|' read -r local remote key <<< "$item"
+            curl -fsSL --retry 3 --retry-delay 1 -H 'Cache-Control: no-cache' "$HOSTING_URL/$remote?gate18=${GITHUB_RUN_ID}-${key}" -o "$OUT/remote-$key.js"
+            cmp "$local" "$OUT/remote-$key.js"
+            lsha="$(sha256sum "$local"|awk '{print $1}')"; rsha="$(sha256sum "$OUT/remote-$key.js"|awk '{print $1}')"; test "$lsha" = "$rsha"
+            printf '%s %s\n' "$key" "$lsha" >> "$OUT/hosting-owner-hashes.txt"
+          done
+          printf '{"decision":"PASS_HOSTING_GATE18_ADMIN_OWNER_PARITY","sourceSha":"%s","lockedProductSourceSha":"%s","ownerCount":9,"hostingDeploys":0,"production":false}\n' "$SOURCE_SHA" "$LOCK_GATE17_SHA" > "$OUT/hosting.json"
 
-      - name: Certify frozen cross-cutting contracts
+      - name: Execute real Gate 18 Admin E2E
         run: |
           set -euo pipefail
-          node <<'NODE'
-          const fs=require('fs');
-          const read=p=>fs.readFileSync(p,'utf8');
-          const files={
-            command:read('app/adapters/cxorbia-command-adapter-v1.js'),
-            transport:read('app/adapters/cxorbia-command-http-transport-v1.js'),
-            boundary:read('app/adapters/cxorbia-cxdata-command-boundary-v1.js'),
-            firewall:read('app/adapters/cxorbia-canonical-write-firewall-v1.js'),
-            hrWrite:read('app/adapters/cxorbia-hr-write-adapter-contract-v1.js'),
-            identity:read('app/adapters/cxorbia-exact-identity-contract-v1.js'),
-            composer:read('app/adapters/tya-cumulative-read-model-v2.js'),
-            live:read('app/adapters/tya-live-source-inplace-apply.js'),
-            shoppers:read('app/modules/shoppers.js'),
-            data:read('app/core/data.js'),
-            operational:read('backend/runtime/cxorbia-operational-command-provider-v1.mjs')
-          };
-          const checks={
-            remoteAckRequired:/successRequiresProviderAck\s*:\s*true/.test(files.command)&&/providerAck/.test(files.transport),
-            noLocalWriteTruth:/localMutation\s*:\s*false/.test(files.boundary)&&/directLocalWriteAllowed\s*:\s*false/.test(files.firewall),
-            hrWriteIdempotency:/idempotencyKey/.test(files.hrWrite)&&/providerAck===true/.test(files.hrWrite),
-            exactIdentityOnly:/FORBIDDEN_MATCH_KEYS/.test(files.identity)&&/ambiguous_exact_technical_anchor/.test(files.identity),
-            hrOwnsOperationalState:/hrOwnsOperationalState\s*:\s*true/.test(files.composer)&&/protectedVisitsAppended\s*:\s*0/.test(files.composer),
-            projectPeriodSeparated:/currentProjectId/.test(files.data)&&/currentPeriodId/.test(files.data)&&/setCurrentPeriod/.test(files.data)&&/setCurrentProject/.test(files.data),
-            gtHnCurrencyScoped:/const currency=\{GT:'Q',HN:'L'\}/.test(files.live)&&/rootProjectId:'cinepolis'/.test(files.live),
-            pendingHrExcludedFromAuthoritativeKpi:/__pendingPlatformAssignmentOverlay!==true/.test(files.shoppers),
-            explicitSyncConfirmation:/visit\.sync\.confirm/.test(files.operational)&&/assignmentSyncStatus:'synced'/.test(files.operational),
-            idempotentReplayZeroWrites:/idempotentReplay:true,providerWrites:0/.test(files.operational)
-          };
-          const pass=Object.values(checks).every(Boolean);
-          const out={decision:pass?'PASS_GATE17_FROZEN_CONTRACTS':'SOURCE_FAILURE',gate:17,checks,production:false,localStorageTruth:false};
-          fs.writeFileSync(`${process.env.OUT}/contracts.json`,JSON.stringify(out,null,2)+'\n');
-          if(!pass)process.exit(1);
-          NODE
+          PROJECT="$PROJECT" OUT="$OUT" SOURCE_SHA="$SOURCE_SHA" HOSTING_URL="$HOSTING_URL" node tools/qa/cxorbia-gate18-admin-e2e-dev.mjs | tee "$OUT/gate18-console.log"
+          ! grep -E '"password"[[:space:]]*:' "$OUT/gate18-console.log"
+          ! grep -E '"password"[[:space:]]*:' "$OUT/gate18-admin-e2e.json"
 
-      - name: Final Gate 17 verdict
+      - name: Final Gate 18 verdict
         run: |
           set -euo pipefail
           node <<'NODE'
           const fs=require('fs'),read=n=>JSON.parse(fs.readFileSync(`${process.env.OUT}/${n}`,'utf8'));
-          const g16=read('gate16-locked.json'),lineage=read('locked-lineage.json'),syntax=read('syntax.json'),contracts=read('contracts.json');
-          if(g16.decision!=='PASS_GATE16_BIDIRECTIONAL_ACK_IDEMPOTENCY'||g16.lockedEvidence!==true||g16.noProductDrift!==true||Number(g16.lockedRunId)!==Number(process.env.LOCK_GATE16_RUN_ID)||g16.lockedSourceSha!==process.env.LOCK_GATE16_SHA)throw new Error('GATE16_LOCK_INVALID');
-          if(lineage.decision!=='PASS_GATE17_LOCKED_GATE16_NO_PRODUCT_DRIFT'||lineage.noProductDrift!==true)throw new Error('GATE17_PRODUCT_DRIFT');
-          if(syntax.decision!=='PASS_GATE17_SYNTAX'||Number(syntax.syntaxFiles)<=20)throw new Error('GATE17_SYNTAX_INCOMPLETE');
-          if(contracts.decision!=='PASS_GATE17_FROZEN_CONTRACTS'||!Object.values(contracts.checks||{}).every(Boolean))throw new Error('GATE17_CONTRACTS_INCOMPLETE');
-          const summary={verdict:'PASS_GATE17_SYNTAX_CONTRACTS',gate16:'PASS_LOCKED_NO_DRIFT',gate17:'PASS',lockedGate16RunId:Number(process.env.LOCK_GATE16_RUN_ID),lockedGate16SourceSha:process.env.LOCK_GATE16_SHA,sourceSha:process.env.SOURCE_SHA,noProductDrift:true,syntaxFiles:Number(syntax.syntaxFiles),reusableContractTests:18,reusableContractTestsFailed:0,frozenContractsExact:true,localStorageTruth:false,providerWrites:0,hrWrites:0,production:false};
+          const g17=read('gate17-locked.json'),g18=read('gate18-admin-e2e.json'),hosting=read('hosting.json'),lineage=read('locked-lineage.json');
+          if(g17.decision!=='PASS_GATE17_SYNTAX_CONTRACTS'||g17.lockedEvidence!==true||g17.noProductDrift!==true||Number(g17.lockedRunId)!==Number(process.env.LOCK_GATE17_RUN_ID)||g17.lockedSourceSha!==process.env.LOCK_GATE17_SHA)throw new Error('GATE17_LOCK_INVALID');
+          if(lineage.decision!=='PASS_GATE18_LOCKED_GATE17_NO_PRODUCT_DRIFT'||lineage.noProductDrift!==true)throw new Error('GATE18_PRODUCT_DRIFT');
+          if(hosting.decision!=='PASS_HOSTING_GATE18_ADMIN_OWNER_PARITY'||Number(hosting.ownerCount)!==9||Number(hosting.hostingDeploys)!==0)throw new Error('GATE18_HOSTING_PARITY_INCOMPLETE');
+          if(g18.decision!=='PASS_GATE18_ADMIN_E2E')throw new Error(g18.decision||'GATE18_RESULT_MISSING');
+          const pass=g18.sourceRevisionStable===true&&g18.authorityApplied===true&&g18.protectedAdminAccess===true&&g18.dashboardKpiTiles>=5&&g18.dashboardPhaseTiles>0&&g18.activeVisitCount>0&&g18.shopperIdentityVisible===true&&g18.shopperKpisVisible===true&&g18.shopperHistoryRows>0&&Array.isArray(g18.pageErrors)&&g18.pageErrors.length===0&&g18.localStorageTruth===false&&Number(g18.providerWrites)===0&&Number(g18.hrWrites)===0&&g18.production===false;
+          if(!pass)throw new Error('GATE18_ACCEPTANCE_INCOMPLETE');
+          const summary={verdict:g18.decision,gate17:'PASS_LOCKED_NO_DRIFT',gate18:'PASS',lockedGate17RunId:Number(process.env.LOCK_GATE17_RUN_ID),lockedGate17SourceSha:process.env.LOCK_GATE17_SHA,sourceSha:process.env.SOURCE_SHA,noProductDrift:true,hostingOwnerParity:true,hostingDeploys:0,tenantId:g18.tenantId,projectId:g18.projectId,periodId:g18.periodId,sourceRevision:g18.sourceRevision,adminRole:g18.adminRole,dashboardKpiTiles:g18.dashboardKpiTiles,dashboardPhaseTiles:g18.dashboardPhaseTiles,activeVisitCount:g18.activeVisitCount,activePostCount:g18.activePostCount,renderedPostCards:g18.renderedPostCards,shopperFingerprint:g18.shopperFingerprint,shopperIdentityVisible:true,shopperKpisVisible:true,shopperHistoryRows:g18.shopperHistoryRows,sourceRevisionStable:true,authorityApplied:true,protectedAdminAccess:true,pageErrors:0,localStorageTruth:false,providerWrites:0,hrWrites:0,production:false};
           fs.writeFileSync(`${process.env.OUT}/result.json`,JSON.stringify(summary,null,2)+'\n');console.log(JSON.stringify(summary));
           NODE
 
-      - name: Upload sanitized Gate 17 evidence
+      - name: Upload sanitized Gate 18 evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-recovery-i3-gate17-${{ github.run_id }}
+          name: cxorbia-recovery-i3-gate18-${{ github.run_id }}
           path: ${{ env.OUT }}
           if-no-files-found: warn
           retention-days: 14
+
+      - name: Cleanup temporary dependencies
+        if: always()
+        run: rm -rf node_modules
