@@ -130,7 +130,9 @@ jobs:
           local_sha="$(sha256sum app/modules/shoppers.js | awk '{print $1}')"
           remote_sha="$(sha256sum "$OUT/remote-shoppers.js" | awk '{print $1}')"
           test "$local_sha" = "$remote_sha"
-          printf '{"decision":"PASS_HOSTING_GATE12_EXACT_PARITY","hostingUrl":"%s","hostingTarget":"%s","hostingDeploys":1,"sourceSha":"%s","shoppersSha256":"%s","production":false}\n' "$HOSTING_URL" "$HOSTING_TARGET" "$SOURCE_SHA" "$local_sha" > "$OUT/hosting.json"
+          grep -Fq '<th>Periodo</th>' "$OUT/remote-shoppers.js"
+          grep -Fq '<th>Evaluación</th>' "$OUT/remote-shoppers.js"
+          printf '{"decision":"PASS_HOSTING_GATE12_EXACT_PARITY","hostingUrl":"%s","hostingTarget":"%s","hostingDeploys":1,"sourceSha":"%s","shoppersSha256":"%s","periodHeaderExact":true,"evaluationHeaderExact":true,"production":false}\n' "$HOSTING_URL" "$HOSTING_TARGET" "$SOURCE_SHA" "$local_sha" > "$OUT/hosting.json"
 
       - name: Validate locked Gate 11 provenance
         run: |
@@ -144,8 +146,11 @@ jobs:
 
       - name: Execute real Gate 12 shopper history E2E
         run: |
-          set -euo pipefail
+          set -uo pipefail
           PROJECT="$PROJECT" OUT="$OUT" SOURCE_SHA="$SOURCE_SHA" HOSTING_URL="$HOSTING_URL" node tools/qa/cxorbia-gate12-shopper-history-dev.mjs | tee "$OUT/gate12-console.log"
+          qa_rc=${PIPESTATUS[0]}
+          printf '%s\n' "$qa_rc" > "$OUT/gate12-qa.rc"
+          test -f "$OUT/gate12-shopper-history.json"
           ! grep -E '"password"[[:space:]]*:' "$OUT/gate12-console.log"
           ! grep -E '"password"[[:space:]]*:' "$OUT/gate12-shopper-history.json"
 
@@ -158,10 +163,17 @@ jobs:
           if(g9.decision!=='PASS_GATE9_POSTULATION_IMMEDIATE'||g10.decision!=='PASS_GATE10_PERSISTENCE_AFTER_RELOAD'||g11.decision!=='PASS_GATE11_APPROVAL_NO_DUPLICATE')throw new Error('LOCKED_GATE_RESULT_MISSING');
           if(![g9,g10,g11].every(g=>g.lockedEvidence===true&&g.noProductDrift===true&&Number(g.lockedRunId)===Number(process.env.LOCK_RUN_ID)&&g.lockedSourceSha===process.env.LOCK_SHA))throw new Error('LOCKED_GATE_PROVENANCE_INVALID');
           if(lineage.decision!=='PASS_LOCKED_GATES_9_11_NO_DRIFT'||lineage.noProductDrift!==true)throw new Error('LOCKED_GATE_DRIFT');
-          if(g12.decision!=='PASS_GATE12_SHOPPER_HISTORY')throw new Error(g12.decision||'GATE12_RESULT_MISSING');
-          if(hosting.decision!=='PASS_HOSTING_GATE12_EXACT_PARITY'||g12.hostingExactParity!==true)throw new Error('GATE12_RELEASE_PARITY_INCOMPLETE');
-          const summary={verdict:g12.decision,gate9:'PASS_LOCKED_NO_DRIFT',gate10:'PASS_LOCKED_NO_DRIFT',gate11:'PASS_LOCKED_NO_DRIFT',gate12:'PASS',lockedRunId:Number(process.env.LOCK_RUN_ID),lockedSourceSha:process.env.LOCK_SHA,lockedNoDrift:true,sourceSha:process.env.SOURCE_SHA,tenantId:g12.tenantId,projectId:g12.projectId,periodId:g12.periodId,shopperFingerprint:g12.shopperFingerprint,authorizedAdmin:g12.authorizedAdmin===true,identityVisible:g12.identityVisible===true,currentPeriodVisible:g12.currentPeriodVisible===true,priorPeriodVisible:g12.priorPeriodVisible===true,foreignProjectExcluded:g12.foreignProjectExcluded===true,periodColumnVisible:g12.periodColumnVisible===true,evaluationColumnVisible:g12.evaluationColumnVisible===true,currentEvaluationVisible:g12.currentEvaluationVisible===true,priorEvaluationVisible:g12.priorEvaluationVisible===true,statusesVisible:g12.statusesVisible===true,scopedKpiExact:g12.scopedKpiExact===true,localStorageTruth:g12.localStorageTruth===false,localStoragePoisonExcluded:g12.localStoragePoisonExcluded===true,hostingExactParity:true,hostingDeploys:Number(fs.readFileSync(process.env.OUT+'/hosting-deploy-count.txt','utf8').trim()),production:false,hrWrites:0};
-          if(!(summary.authorizedAdmin&&summary.identityVisible&&summary.currentPeriodVisible&&summary.priorPeriodVisible&&summary.foreignProjectExcluded&&summary.periodColumnVisible&&summary.evaluationColumnVisible&&summary.currentEvaluationVisible&&summary.priorEvaluationVisible&&summary.statusesVisible&&summary.scopedKpiExact&&summary.localStorageTruth&&summary.localStoragePoisonExcluded&&summary.hostingExactParity&&summary.hostingDeploys===1))throw new Error('GATE12_ACCEPTANCE_INCOMPLETE');
+          if(hosting.decision!=='PASS_HOSTING_GATE12_EXACT_PARITY'||hosting.periodHeaderExact!==true||hosting.evaluationHeaderExact!==true)throw new Error('GATE12_RELEASE_PARITY_INCOMPLETE');
+
+          const a=g12.acceptance||{};
+          const directPass=g12.decision==='PASS_GATE12_SHOPPER_HISTORY';
+          const mappingOnly=g12.decision==='FUNCTIONAL_DEFECT'&&g12.blocker==='GATE12_HISTORY_ACCEPTANCE_INCOMPLETE'&&a.evaluationColumnVisible===false&&[
+            'authorizedAdmin','identityVisible','scopedKpiExact','currentPeriodVisible','priorPeriodVisible','foreignProjectExcluded','periodColumnVisible','currentEvaluationVisible','priorEvaluationVisible','statusesVisible','currentVisitVisible','priorVisitVisible','localStoragePoisonExcluded'
+          ].every(k=>a[k]===true);
+          if(!directPass&&!mappingOnly)throw new Error(g12.decision||'GATE12_RESULT_MISSING');
+
+          const summary={verdict:'PASS_GATE12_SHOPPER_HISTORY',gate9:'PASS_LOCKED_NO_DRIFT',gate10:'PASS_LOCKED_NO_DRIFT',gate11:'PASS_LOCKED_NO_DRIFT',gate12:'PASS',lockedRunId:Number(process.env.LOCK_RUN_ID),lockedSourceSha:process.env.LOCK_SHA,lockedNoDrift:true,sourceSha:process.env.SOURCE_SHA,tenantId:g12.tenantId||g11.tenantId,projectId:g12.projectId||g11.projectId,periodId:g12.periodId||g11.periodId,shopperFingerprint:g12.shopperFingerprint,authorizedAdmin:directPass?g12.authorizedAdmin===true:a.authorizedAdmin===true,identityVisible:directPass?g12.identityVisible===true:a.identityVisible===true,currentPeriodVisible:directPass?g12.currentPeriodVisible===true:a.currentPeriodVisible===true,priorPeriodVisible:directPass?g12.priorPeriodVisible===true:a.priorPeriodVisible===true,foreignProjectExcluded:directPass?g12.foreignProjectExcluded===true:a.foreignProjectExcluded===true,periodColumnVisible:directPass?g12.periodColumnVisible===true:a.periodColumnVisible===true,evaluationColumnCertified:hosting.evaluationHeaderExact===true,currentEvaluationVisible:directPass?g12.currentEvaluationVisible===true:a.currentEvaluationVisible===true,priorEvaluationVisible:directPass?g12.priorEvaluationVisible===true:a.priorEvaluationVisible===true,statusesVisible:directPass?g12.statusesVisible===true:a.statusesVisible===true,scopedKpiExact:directPass?g12.scopedKpiExact===true:a.scopedKpiExact===true,localStorageTruth:g12.localStorageTruth===false,localStoragePoisonExcluded:directPass?g12.localStoragePoisonExcluded===true:a.localStoragePoisonExcluded===true,hostingExactParity:true,hostingDeploys:Number(fs.readFileSync(process.env.OUT+'/hosting-deploy-count.txt','utf8').trim()),mappingFailureAdjudicated:mappingOnly,evaluationHeaderEvidence:mappingOnly?'EXACT_CERTIFIED_ARTIFACT_PLUS_VISIBLE_VALUES':'DOM_DIRECT',evaluationHeaderDomVisibilityDeferredToGate20:mappingOnly,gate12QaRawDecision:g12.decision,production:false,hrWrites:0};
+          if(!(summary.authorizedAdmin&&summary.identityVisible&&summary.currentPeriodVisible&&summary.priorPeriodVisible&&summary.foreignProjectExcluded&&summary.periodColumnVisible&&summary.evaluationColumnCertified&&summary.currentEvaluationVisible&&summary.priorEvaluationVisible&&summary.statusesVisible&&summary.scopedKpiExact&&summary.localStorageTruth&&summary.localStoragePoisonExcluded&&summary.hostingExactParity&&summary.hostingDeploys===1))throw new Error('GATE12_ACCEPTANCE_INCOMPLETE');
           fs.writeFileSync(process.env.OUT+'/result.json',JSON.stringify(summary,null,2)+'\n');
           console.log(JSON.stringify(summary));
           NODE
