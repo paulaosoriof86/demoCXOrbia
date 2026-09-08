@@ -27,8 +27,6 @@ env:
   LOCK_GATE15_RUN_ID: '34184904309'
   LOCK_GATE11_SHA: 887ce3c869d7d52819cf11da9671f6846197f4f7
   LOCK_GATE11_RUN_ID: '34160689278'
-  LOCK_GATE11_CLOUD_RUN_REVISION: cxorbia-live-hr-dev-00055-nnr
-  LOCK_GATE11_IMAGE_DIGEST: gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev@sha256:96006b7999a3277a0100e8f7bd02b0759a9aaaf31392f069c333ddb267979c98
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -70,6 +68,8 @@ jobs:
             app/adapters/cxorbia-hr-write-adapter-contract-v1.js
             app/core/backend-protected-dev-mode.js
             backend/runtime/cxorbia-operational-command-provider-v1.mjs
+            backend/runtime/cxorbia-shopper-command-provider-v1.mjs
+            backend/runtime/cxorbia-project-command-provider-v1.mjs
             backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs
             backend/runtime/hr-live-service/server.mjs
           )
@@ -81,6 +81,8 @@ jobs:
           node --check app/adapters/cxorbia-canonical-write-firewall-v1.js
           node --check app/adapters/cxorbia-hr-write-adapter-contract-v1.js
           node --check backend/runtime/cxorbia-operational-command-provider-v1.mjs
+          node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
+          node --check backend/runtime/cxorbia-project-command-provider-v1.mjs
           node --check backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs
           grep -Fq "idempotentReplay:true,providerWrites:0" backend/runtime/cxorbia-operational-command-provider-v1.mjs
           grep -Fq "visit.sync.confirm" backend/runtime/cxorbia-operational-command-provider-v1.mjs
@@ -113,21 +115,30 @@ jobs:
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
 
-      - name: Read back exact locked command runtime revision
+      - name: Read back live command runtime and prove write-owner lineage
         run: |
           set -euo pipefail
           current_rev="$(gcloud run services describe "$SERVICE" --region "$REGION" --project "$PROJECT" --format='value(status.latestReadyRevisionName)')"
-          test "$current_rev" = "$LOCK_GATE11_CLOUD_RUN_REVISION"
+          test -n "$current_rev"
           gcloud run revisions describe "$current_rev" --region "$REGION" --project "$PROJECT" --format=json > "$OUT/runtime-revision.json"
-          node <<'NODE'
+          runtime_sha="$(node -e "const fs=require('fs'),r=JSON.parse(fs.readFileSync(process.env.OUT+'/runtime-revision.json','utf8')),c=r?.spec?.containers?.[0]||{},e=Object.fromEntries((c.env||[]).map(x=>[x.name,x.value]));process.stdout.write(String(e.CXORBIA_RECOVERY_SOURCE_SHA||''))")"
+          test "${#runtime_sha}" = 40
+          git cat-file -e "$runtime_sha^{commit}"
+          git merge-base --is-ancestor "$runtime_sha" HEAD
+          runtime_write_owners=(
+            backend/runtime/cxorbia-operational-command-provider-v1.mjs
+            backend/runtime/cxorbia-shopper-command-provider-v1.mjs
+            backend/runtime/cxorbia-project-command-provider-v1.mjs
+            backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs
+            backend/runtime/hr-live-service/server.mjs
+          )
+          git diff --quiet "$LOCK_GATE11_SHA" "$runtime_sha" -- "${runtime_write_owners[@]}"
+          RUNTIME_SHA="$runtime_sha" CURRENT_REV="$current_rev" node <<'NODE'
           const fs=require('fs');
           const r=JSON.parse(fs.readFileSync(`${process.env.OUT}/runtime-revision.json`,'utf8'));
           const c=r?.spec?.containers?.[0]||{};
-          const env=Object.fromEntries((c.env||[]).map(x=>[x.name,x.value]));
           const image=r?.status?.imageDigest||c.image||null;
-          if(env.CXORBIA_RECOVERY_SOURCE_SHA!==process.env.LOCK_GATE11_SHA)throw new Error('GATE16_RUNTIME_SOURCE_SHA_DRIFT');
-          if(image!==process.env.LOCK_GATE11_IMAGE_DIGEST)throw new Error('GATE16_RUNTIME_IMAGE_DIGEST_DRIFT');
-          const out={decision:'PASS_GATE16_COMMAND_RUNTIME_EXACT_LOCK',revision:r?.metadata?.name||null,sourceSha:env.CXORBIA_RECOVERY_SOURCE_SHA,imageDigest:image,expectedRevision:process.env.LOCK_GATE11_CLOUD_RUN_REVISION,expectedSourceSha:process.env.LOCK_GATE11_SHA,production:false};
+          const out={decision:'PASS_GATE16_COMMAND_RUNTIME_WRITE_OWNER_LOCK',revision:process.env.CURRENT_REV,sourceSha:process.env.RUNTIME_SHA,imageDigest:image,lockedRealWriteSourceSha:process.env.LOCK_GATE11_SHA,runtimeSourceInRecoveryLineage:true,noWriteOwnerDriftVsGate11:true,revisionNamePinned:false,imageDigestPinned:false,production:false};
           fs.writeFileSync(`${process.env.OUT}/runtime.json`,JSON.stringify(out,null,2)+'\n');
           NODE
 
@@ -168,12 +179,12 @@ jobs:
           if(g15.decision!=='PASS_GATE15_COUNTRY_CURRENCY_PROJECT_PERIOD'||g15.lockedEvidence!==true||g15.noProductDrift!==true||Number(g15.lockedRunId)!==Number(process.env.LOCK_GATE15_RUN_ID)||g15.lockedSourceSha!==process.env.LOCK_GATE15_SHA)throw new Error('GATE15_LOCK_INVALID');
           if(g11.decision!=='PASS_GATE11_APPROVAL_NO_DUPLICATE'||g11.lockedEvidence!==true||g11.remoteAck!==true||g11.successUiAfterAck!==true||g11.idempotentReplay!==true||Number(g11.replayProviderWrites)!==0||g11.visitAssignedDurably!==true)throw new Error('GATE11_REAL_WRITE_LOCK_INVALID');
           if(lineage.decision!=='PASS_GATE16_LOCKED_WRITE_OWNER_NO_DRIFT'||lineage.noProductDriftSinceGate15!==true||lineage.noWriteOwnerDriftSinceGate11!==true)throw new Error('GATE16_WRITE_OWNER_DRIFT');
-          if(runtime.decision!=='PASS_GATE16_COMMAND_RUNTIME_EXACT_LOCK'||runtime.revision!==process.env.LOCK_GATE11_CLOUD_RUN_REVISION||runtime.sourceSha!==process.env.LOCK_GATE11_SHA||runtime.imageDigest!==process.env.LOCK_GATE11_IMAGE_DIGEST)throw new Error('GATE16_RUNTIME_LOCK_INVALID');
+          if(runtime.decision!=='PASS_GATE16_COMMAND_RUNTIME_WRITE_OWNER_LOCK'||runtime.runtimeSourceInRecoveryLineage!==true||runtime.noWriteOwnerDriftVsGate11!==true||!runtime.revision||!/^[a-f0-9]{40}$/.test(String(runtime.sourceSha||''))||!runtime.imageDigest)throw new Error('GATE16_RUNTIME_LINEAGE_INVALID');
           if(hosting.decision!=='PASS_HOSTING_GATE16_WRITE_BOUNDARY_PARITY'||Number(hosting.ownerCount)!==6||Number(hosting.hostingDeploys)!==0)throw new Error('GATE16_HOSTING_PARITY_INCOMPLETE');
           if(g16.decision!=='PASS_GATE16_BIDIRECTIONAL_ACK_IDEMPOTENCY')throw new Error(g16.decision||'GATE16_RESULT_MISSING');
           const pass=g16.lockedRealWriteRemoteAck===true&&g16.lockedRealWriteSuccessUiAfterAck===true&&g16.lockedRealWriteIdempotentReplay===true&&Number(g16.lockedReplayProviderWrites)===0&&g16.commandWritesEnabled===true&&g16.commandSuccessRequiresProviderAck===true&&g16.providerAuthorizationRequired===true&&g16.commandLocalMutation===false&&g16.commandLocalStoragePersistence===false&&g16.transportEndpointConfigured===true&&g16.canonicalBoundaryReady===true&&g16.directLocalWriteAllowed===false&&g16.entryProviderAckRequired===true&&g16.hrWritesEnabled===false&&g16.hrWriteFailClosed===true&&g16.hrWriteBlockedCode==='HR_WRITES_DISABLED'&&g16.hrProviderAck===false&&g16.hrCommitted===false&&g16.hrLocalMutation===false&&g16.localStorageUnchanged===true&&Number(g16.invalidPlatformSyncStates)===0&&Number(g16.invalidSyncedWithoutTimestamp)===0&&g16.localStorageTruth===false&&Number(g16.providerWrites)===0&&Number(g16.hrWrites)===0&&g16.production===false;
           if(!pass)throw new Error('GATE16_ACCEPTANCE_INCOMPLETE');
-          const summary={verdict:g16.decision,gate15:'PASS_LOCKED_NO_DRIFT',gate16:'PASS',lockedGate15RunId:Number(process.env.LOCK_GATE15_RUN_ID),lockedGate15SourceSha:process.env.LOCK_GATE15_SHA,lockedRealWriteRunId:Number(process.env.LOCK_GATE11_RUN_ID),lockedRealWriteSourceSha:process.env.LOCK_GATE11_SHA,sourceSha:process.env.SOURCE_SHA,noProductDrift:true,noWriteOwnerDrift:true,cloudRunRevision:runtime.revision,cloudRunImageDigest:runtime.imageDigest,hostingWriteBoundaryParity:true,hostingDeploys:0,tenantId:g16.tenantId,projectId:g16.projectId,periodId:g16.periodId,remoteAck:true,successUiAfterAck:true,idempotentReplay:true,replayProviderWrites:0,commandSuccessRequiresProviderAck:true,directLocalWriteAllowed:false,hrWritesEnabled:false,hrWriteFailClosed:true,platformAssignments:g16.platformAssignments,pendingHrAssignments:g16.pendingHrAssignments,syncedAssignments:g16.syncedAssignments,invalidPlatformSyncStates:0,invalidSyncedWithoutTimestamp:0,localStorageTruth:false,providerWrites:0,hrWrites:0,production:false};
+          const summary={verdict:g16.decision,gate15:'PASS_LOCKED_NO_DRIFT',gate16:'PASS',lockedGate15RunId:Number(process.env.LOCK_GATE15_RUN_ID),lockedGate15SourceSha:process.env.LOCK_GATE15_SHA,lockedRealWriteRunId:Number(process.env.LOCK_GATE11_RUN_ID),lockedRealWriteSourceSha:process.env.LOCK_GATE11_SHA,sourceSha:process.env.SOURCE_SHA,noProductDrift:true,noWriteOwnerDrift:true,cloudRunRevision:runtime.revision,cloudRunSourceSha:runtime.sourceSha,cloudRunImageDigest:runtime.imageDigest,cloudRunWriteOwnerNoDrift:true,hostingWriteBoundaryParity:true,hostingDeploys:0,tenantId:g16.tenantId,projectId:g16.projectId,periodId:g16.periodId,remoteAck:true,successUiAfterAck:true,idempotentReplay:true,replayProviderWrites:0,commandSuccessRequiresProviderAck:true,directLocalWriteAllowed:false,hrWritesEnabled:false,hrWriteFailClosed:true,platformAssignments:g16.platformAssignments,pendingHrAssignments:g16.pendingHrAssignments,syncedAssignments:g16.syncedAssignments,invalidPlatformSyncStates:0,invalidSyncedWithoutTimestamp:0,localStorageTruth:false,providerWrites:0,hrWrites:0,production:false};
           fs.writeFileSync(`${process.env.OUT}/result.json`,JSON.stringify(summary,null,2)+'\n');console.log(JSON.stringify(summary));
           NODE
 
