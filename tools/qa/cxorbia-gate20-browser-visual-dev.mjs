@@ -48,7 +48,7 @@ async function authenticate(page,token){
   await page.goto(technicalUrl,{waitUntil:'domcontentloaded',timeout:90000});
   await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);await firebase.auth().signInWithCustomToken(t);},token);
   await page.reload({waitUntil:'domcontentloaded',timeout:90000});
-  await page.waitForFunction(({tenantId,projectId})=>{const c=window.CX?.backendAuth?.context?.()||{};return c.authenticated===true&&c.tenantId===tenantId&&['super','admin'].includes(String(c.role||''))&&(c.role==='super'||arr(c.projectIds).map(String).includes(projectId))&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true;},{tenantId,projectId},{timeout:120000});
+  await page.waitForFunction(({tenantId,projectId})=>{const c=window.CX?.backendAuth?.context?.()||{};const projects=Array.isArray(c.projectIds)?c.projectIds.map(String):[];return c.authenticated===true&&c.tenantId===tenantId&&['super','admin'].includes(String(c.role||''))&&(c.role==='super'||projects.includes(projectId))&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true;},{tenantId,projectId},{timeout:120000});
 }
 async function routeCheck(page,kind,route,expected){
   await page.evaluate(r=>window.CX.router.nav(r),route);
