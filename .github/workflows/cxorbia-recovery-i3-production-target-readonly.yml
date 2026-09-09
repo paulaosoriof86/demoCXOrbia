@@ -60,7 +60,7 @@ jobs:
             const input=b64url(JSON.stringify(header))+'.'+b64url(JSON.stringify(claim));
             const sign=crypto.createSign('RSA-SHA256');sign.update(input);sign.end();
             const jwt=input+'.'+sign.sign(sa.private_key,'base64').replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
-            const body=new URLSearchParams({grant_type:'urn:ietf:params:oauth:grant-type:jwt-bearer',assertion:jwt});
+            const body=new URLSearchParams({grant_type:'urn:ietf:params:oauth-type:jwt-bearer'.replace('oauth-type','oauth-grant-type'),assertion:jwt});
             const r=await fetch(sa.token_uri,{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body});
             const j=await r.json(); if(!r.ok||!j.access_token) throw new Error('oauth_token_failed_'+r.status); return j.access_token;
           }
@@ -68,62 +68,64 @@ jobs:
             const r=await fetch(url,{headers:{authorization:`Bearer ${token}`}}); const text=await r.text(); let body; try{body=JSON.parse(text)}catch{body={raw:text.slice(0,500)}}; return {ok:r.ok,status:r.status,body};
           }
           function sha(x){return crypto.createHash('sha256').update(x).digest('hex')}
-          const candidates=[['dev',process.env.DEV_JSON||''],['creator',process.env.CREATOR_JSON||''],['altCreator',process.env.ALT_CREATOR_JSON||'']];
-          let selected=null, attempts=[];
-          for(const [route,raw] of candidates){
-            let sa=null; try{sa=raw?JSON.parse(raw):null}catch{}
-            const valid=Boolean(sa&&sa.type==='service_account'&&sa.client_email&&sa.private_key&&sa.token_uri);
-            if(!valid){attempts.push({route,present:Boolean(raw),shapeValid:false});continue}
-            try{
-              const token=await tokenFor(sa);
-              const site=await api(`https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/${siteId}`,token);
-              attempts.push({route,present:true,shapeValid:true,siteGetStatus:site.status});
-              if(site.ok){selected={route,sa,token,site:site.body};break}
-            }catch(e){attempts.push({route,present:true,shapeValid:true,error:String(e.message).slice(0,100)})}
-          }
-          if(!selected){
-            fs.writeFileSync(`${out}/result.json`,JSON.stringify({decision:'HOLD_TARGET_IDENTITY_UNRESOLVED',classification:'AUTH_FAILURE',attempts,providerWrites:0,hostingDeploys:0,runtimeDeploys:0,productionWrites:0},null,2)+'\n');
-            throw new Error('TARGET_SITE_IDENTITY_UNRESOLVED');
-          }
-          const m=String(selected.site.name||'').match(/^projects\/([^/]+)\/sites\/([^/]+)$/);
-          if(!m||m[2]!==siteId) throw new Error('TARGET_SITE_RESOURCE_NAME_INVALID');
-          const targetProject=m[1];
-          const live=await api(`https://firebasehosting.googleapis.com/v1beta1/sites/${siteId}/channels/live`,selected.token);
-          if(!live.ok) throw new Error(`TARGET_LIVE_CHANNEL_READ_${live.status}`);
-          const releaseName=live.body?.release?.name||'';
-          const versionName=live.body?.release?.version?.name||'';
-          const releaseTime=live.body?.release?.releaseTime||'';
-          if(!releaseName||!versionName) throw new Error('TARGET_LIVE_IDENTITY_INCOMPLETE');
-          const version=await api(`https://firebasehosting.googleapis.com/v1beta1/${versionName}`,selected.token);
-          if(!version.ok) throw new Error(`TARGET_VERSION_READ_${version.status}`);
-          if(version.body?.status!=='FINALIZED') throw new Error('TARGET_VERSION_NOT_FINALIZED');
 
-          let files=[],pageToken='';
-          do{
-            const u=new URL(`https://firebasehosting.googleapis.com/v1beta1/${versionName}/files`);
-            u.searchParams.set('status','ACTIVE');u.searchParams.set('pageSize','1000');if(pageToken)u.searchParams.set('pageToken',pageToken);
-            const page=await api(u.toString(),selected.token); if(!page.ok) throw new Error(`TARGET_FILES_READ_${page.status}`);
-            files.push(...(page.body.files||[]));pageToken=page.body.nextPageToken||'';
-          }while(pageToken);
-          files=files.map(x=>({...x,path:String(x.path||'').startsWith('/')?String(x.path):'/'+String(x.path||'')})).sort((a,b)=>a.path.localeCompare(b.path));
-          if(files.length!==Number(version.body.fileCount||0)) throw new Error(`TARGET_FILECOUNT_MISMATCH_${files.length}_${version.body.fileCount}`);
-          const tsv=files.map(x=>[x.path,x.hash,x.status].join('\t')).join('\n')+'\n';
-          const config=JSON.stringify(version.body.config||{},Object.keys(version.body.config||{}).sort(),2)+'\n';
-          fs.writeFileSync(`${out}/legacy-active-files.tsv`,tsv);
-          fs.writeFileSync(`${out}/legacy-version-config.json`,JSON.stringify(version.body.config||{},null,2)+'\n');
-          const result={
-            decision:'PASS_I3_PRODUCTION_TARGET_IDENTITY_AND_ROLLBACK_FINGERPRINT',
-            credentialRoute:selected.route,
-            target:{siteId,projectId:targetProject,siteName:selected.site.name,defaultUrl:selected.site.defaultUrl||`https://${siteId}.web.app`,sameProjectAsCertifiedDev:targetProject===devProject},
-            rollback:{releaseName,versionName,releaseTime,status:version.body.status,fileCount:Number(version.body.fileCount||0),versionBytes:String(version.body.versionBytes||'0'),activeFileInventorySha256:sha(tsv),servingConfigSha256:sha(JSON.stringify(version.body.config||{}))},
-            certified:{sourceSha:process.env.CERTIFIED_SOURCE_SHA,hostingVersion:process.env.CERTIFIED_HOSTING_VERSION,runtimeDigest:process.env.CERTIFIED_RUNTIME_DIGEST},
-            attempts,
-            providerWrites:0,hostingDeploys:0,runtimeDeploys:0,productionWrites:0
-          };
-          fs.writeFileSync(`${out}/result.json`,JSON.stringify(result,null,2)+'\n');
-          console.log(`PASS_I3_PRODUCTION_TARGET_IDENTITY targetProject=${targetProject} targetSite=${siteId} sameProjectAsCertifiedDev=${result.target.sameProjectAsCertifiedDev} rollbackVersion=${versionName} rollbackFiles=${result.rollback.fileCount} providerWrites=0 hostingDeploys=0 runtimeDeploys=0 productionWrites=0`);
-          console.log(`ROLLBACK_INVENTORY_SHA256=${result.rollback.activeFileInventorySha256}`);
-          console.log(`ROLLBACK_CONFIG_SHA256=${result.rollback.servingConfigSha256}`);
+          (async()=>{
+            const candidates=[['dev',process.env.DEV_JSON||''],['creator',process.env.CREATOR_JSON||''],['altCreator',process.env.ALT_CREATOR_JSON||'']];
+            let selected=null, attempts=[];
+            for(const [route,raw] of candidates){
+              let sa=null; try{sa=raw?JSON.parse(raw):null}catch{}
+              const valid=Boolean(sa&&sa.type==='service_account'&&sa.client_email&&sa.private_key&&sa.token_uri);
+              if(!valid){attempts.push({route,present:Boolean(raw),shapeValid:false});continue}
+              try{
+                const token=await tokenFor(sa);
+                const site=await api(`https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/${siteId}`,token);
+                attempts.push({route,present:true,shapeValid:true,siteGetStatus:site.status});
+                if(site.ok){selected={route,token,site:site.body};break}
+              }catch(e){attempts.push({route,present:true,shapeValid:true,error:String(e.message).slice(0,100)})}
+            }
+            if(!selected){
+              fs.writeFileSync(`${out}/result.json`,JSON.stringify({decision:'HOLD_TARGET_IDENTITY_UNRESOLVED',classification:'AUTH_FAILURE',attempts,providerWrites:0,hostingDeploys:0,runtimeDeploys:0,productionWrites:0},null,2)+'\n');
+              throw new Error('TARGET_SITE_IDENTITY_UNRESOLVED');
+            }
+            const m=String(selected.site.name||'').match(/^projects\/([^/]+)\/sites\/([^/]+)$/);
+            if(!m||m[2]!==siteId) throw new Error('TARGET_SITE_RESOURCE_NAME_INVALID');
+            const targetProject=m[1];
+            const live=await api(`https://firebasehosting.googleapis.com/v1beta1/sites/${siteId}/channels/live`,selected.token);
+            if(!live.ok) throw new Error(`TARGET_LIVE_CHANNEL_READ_${live.status}`);
+            const releaseName=live.body?.release?.name||'';
+            const versionName=live.body?.release?.version?.name||'';
+            const releaseTime=live.body?.release?.releaseTime||'';
+            if(!releaseName||!versionName) throw new Error('TARGET_LIVE_IDENTITY_INCOMPLETE');
+            const version=await api(`https://firebasehosting.googleapis.com/v1beta1/${versionName}`,selected.token);
+            if(!version.ok) throw new Error(`TARGET_VERSION_READ_${version.status}`);
+            if(version.body?.status!=='FINALIZED') throw new Error('TARGET_VERSION_NOT_FINALIZED');
+
+            let files=[],pageToken='';
+            do{
+              const u=new URL(`https://firebasehosting.googleapis.com/v1beta1/${versionName}/files`);
+              u.searchParams.set('status','ACTIVE');u.searchParams.set('pageSize','1000');if(pageToken)u.searchParams.set('pageToken',pageToken);
+              const page=await api(u.toString(),selected.token); if(!page.ok) throw new Error(`TARGET_FILES_READ_${page.status}`);
+              files.push(...(page.body.files||[]));pageToken=page.body.nextPageToken||'';
+            }while(pageToken);
+            files=files.map(x=>({...x,path:String(x.path||'').startsWith('/')?String(x.path):'/'+String(x.path||'')})).sort((a,b)=>a.path.localeCompare(b.path));
+            if(files.length!==Number(version.body.fileCount||0)) throw new Error(`TARGET_FILECOUNT_MISMATCH_${files.length}_${version.body.fileCount}`);
+            const tsv=files.map(x=>[x.path,x.hash,x.status].join('\t')).join('\n')+'\n';
+            fs.writeFileSync(`${out}/legacy-active-files.tsv`,tsv);
+            fs.writeFileSync(`${out}/legacy-version-config.json`,JSON.stringify(version.body.config||{},null,2)+'\n');
+            const result={
+              decision:'PASS_I3_PRODUCTION_TARGET_IDENTITY_AND_ROLLBACK_FINGERPRINT',
+              credentialRoute:selected.route,
+              target:{siteId,projectId:targetProject,siteName:selected.site.name,defaultUrl:selected.site.defaultUrl||`https://${siteId}.web.app`,sameProjectAsCertifiedDev:targetProject===devProject},
+              rollback:{releaseName,versionName,releaseTime,status:version.body.status,fileCount:Number(version.body.fileCount||0),versionBytes:String(version.body.versionBytes||'0'),activeFileInventorySha256:sha(tsv),servingConfigSha256:sha(JSON.stringify(version.body.config||{}))},
+              certified:{sourceSha:process.env.CERTIFIED_SOURCE_SHA,hostingVersion:process.env.CERTIFIED_HOSTING_VERSION,runtimeDigest:process.env.CERTIFIED_RUNTIME_DIGEST},
+              attempts,
+              providerWrites:0,hostingDeploys:0,runtimeDeploys:0,productionWrites:0
+            };
+            fs.writeFileSync(`${out}/result.json`,JSON.stringify(result,null,2)+'\n');
+            console.log(`PASS_I3_PRODUCTION_TARGET_IDENTITY targetProject=${targetProject} targetSite=${siteId} sameProjectAsCertifiedDev=${result.target.sameProjectAsCertifiedDev} rollbackVersion=${versionName} rollbackFiles=${result.rollback.fileCount} providerWrites=0 hostingDeploys=0 runtimeDeploys=0 productionWrites=0`);
+            console.log(`ROLLBACK_INVENTORY_SHA256=${result.rollback.activeFileInventorySha256}`);
+            console.log(`ROLLBACK_CONFIG_SHA256=${result.rollback.servingConfigSha256}`);
+          })().catch(e=>{console.error(e);process.exit(1)});
           NODE
 
       - name: Final read-only verdict
