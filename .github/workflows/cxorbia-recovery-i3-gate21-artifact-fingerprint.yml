@@ -72,28 +72,47 @@ jobs:
             --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json \
             > "$OUT_DIR/runtime-service.json"
           REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$OUT_DIR/runtime-service.json")"
-          test -n "$REVISION"
+          if [[ -z "$REVISION" ]]; then echo '::error::latestReadyRevisionName missing'; exit 1; fi
           gcloud run revisions describe "$REVISION" \
             --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json \
             > "$OUT_DIR/runtime-revision.json"
 
           IMAGE_SPEC="$(jq -r '.spec.containers[0].image // empty' "$OUT_DIR/runtime-revision.json")"
-          DIGEST="$(jq -r '.status.imageDigest // empty' "$OUT_DIR/runtime-revision.json")"
+          CREATION="$(jq -r '.metadata.creationTimestamp // empty' "$OUT_DIR/runtime-revision.json")"
+          echo "runtimeRevision=$REVISION"
+          echo "runtimeImageSpec=$IMAGE_SPEC"
+          echo "runtimeCreation=$CREATION gate20Started=$GATE20_STARTED_AT"
+          jq -c '{statusKeys:(.status|keys),statusImageDigest:(.status.imageDigest // null),containerStatuses:(.status.containerStatuses // [])}' "$OUT_DIR/runtime-revision.json" || true
+          if [[ -z "$IMAGE_SPEC" ]]; then echo '::error::runtime image spec missing'; exit 1; fi
+
+          DIGEST="$(jq -r '[.status.imageDigest, .status.containerStatuses[0].imageDigest] | map(select(type=="string" and length>0)) | .[0] // empty' "$OUT_DIR/runtime-revision.json")"
           if [[ -z "$DIGEST" && "$IMAGE_SPEC" == *@sha256:* ]]; then
             DIGEST="sha256:${IMAGE_SPEC##*@sha256:}"
           fi
           if [[ -z "$DIGEST" ]]; then
-            DIGEST="$(gcloud container images describe "$IMAGE_SPEC" --project "$GCP_PROJECT_ID" --format='value(image_summary.digest)' 2>/dev/null || true)"
+            if gcloud container images describe "$IMAGE_SPEC" --project "$GCP_PROJECT_ID" --format=json > "$OUT_DIR/runtime-image-describe.json" 2>/dev/null; then
+              DIGEST="$(jq -r '.image_summary.digest // .imageSummary.digest // empty' "$OUT_DIR/runtime-image-describe.json")"
+            fi
           fi
-          [[ "$DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          if [[ -z "$DIGEST" ]]; then
+            if gcloud artifacts docker images describe "$IMAGE_SPEC" --project "$GCP_PROJECT_ID" --format=json > "$OUT_DIR/runtime-artifact-image-describe.json" 2>/dev/null; then
+              DIGEST="$(jq -r '.image_summary.digest // .imageSummary.digest // empty' "$OUT_DIR/runtime-artifact-image-describe.json")"
+            fi
+          fi
+          if [[ "$DIGEST" =~ ^[0-9a-f]{64}$ ]]; then DIGEST="sha256:$DIGEST"; fi
+          echo "runtimeResolvedDigest=$DIGEST"
+          if [[ ! "$DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]; then echo '::error::immutable runtime digest unresolved'; exit 1; fi
+
           IMAGE_REPO="${IMAGE_SPEC%@*}"
           if [[ "$IMAGE_REPO" == "$IMAGE_SPEC" ]]; then IMAGE_REPO="${IMAGE_SPEC%:*}"; fi
           IMMUTABLE_IMAGE="${IMAGE_REPO}@${DIGEST}"
-          CREATION="$(jq -r '.metadata.creationTimestamp // empty' "$OUT_DIR/runtime-revision.json")"
-          test -n "$CREATION"
-          node -e "if(Date.parse(process.argv[1])>Date.parse(process.argv[2]))process.exit(1)" "$CREATION" "$GATE20_STARTED_AT"
+          if [[ -z "$CREATION" ]]; then echo '::error::runtime revision creation timestamp missing'; exit 1; fi
+          if ! node -e "if(Date.parse(process.argv[1])>Date.parse(process.argv[2]))process.exit(1)" "$CREATION" "$GATE20_STARTED_AT"; then
+            echo "::error::latest ready runtime revision was created after Gate 20 started ($CREATION > $GATE20_STARTED_AT)"
+            exit 1
+          fi
           RUNTIME_URL="$(jq -r '.status.url // empty' "$OUT_DIR/runtime-service.json")"
-          test -n "$RUNTIME_URL"
+          if [[ -z "$RUNTIME_URL" ]]; then echo '::error::runtime service URL missing'; exit 1; fi
           curl --fail --silent --show-error --max-time 30 "$RUNTIME_URL/health" > "$OUT_DIR/runtime-health.json"
           jq -e '.ok == true and .service == "cxorbia-live-hr-runtime"' "$OUT_DIR/runtime-health.json" >/dev/null
           printf '%s\n' "$REVISION" > "$OUT_DIR/runtime-revision-name.txt"
@@ -113,7 +132,10 @@ jobs:
           VERSION_NAME="$(jq -r '.releases[0].version.name // empty' "$OUT_DIR/hosting-releases.json")"
           RELEASE_TIME="$(jq -r '.releases[0].releaseTime // empty' "$OUT_DIR/hosting-releases.json")"
           test -n "$RELEASE_NAME" && test -n "$VERSION_NAME" && test -n "$RELEASE_TIME"
-          node -e "if(Date.parse(process.argv[1])>Date.parse(process.argv[2]))process.exit(1)" "$RELEASE_TIME" "$GATE20_STARTED_AT"
+          if ! node -e "if(Date.parse(process.argv[1])>Date.parse(process.argv[2]))process.exit(1)" "$RELEASE_TIME" "$GATE20_STARTED_AT"; then
+            echo "::error::latest Hosting release was created after Gate 20 started ($RELEASE_TIME > $GATE20_STARTED_AT)"
+            exit 1
+          fi
           curl --fail --silent --show-error \
             -H "Authorization: Bearer $TOKEN" \
             "https://firebasehosting.googleapis.com/v1beta1/$VERSION_NAME" \
