@@ -44,12 +44,12 @@ try{
 
   await page.evaluate(()=>window.CX.router.nav('dashboard'));
   await page.waitForFunction(()=>document.querySelectorAll('[data-kpi]').length>=5&&String(document.body.innerText||'').includes('Dashboard'),null,{timeout:30000});
-  const dash=await page.evaluate(rev=>({kpiTiles:document.querySelectorAll('[data-kpi]').length,phaseTiles:document.querySelectorAll('[data-fase]').length,revision:String(window.CX?.data?.previewMeta?.sourceRevision||''),contextProject:String(window.CX?.data?.currentProjectId||'')}),base.revision);
+  const dash=await page.evaluate(()=>({kpiTiles:document.querySelectorAll('[data-kpi]').length,phaseTiles:document.querySelectorAll('[data-fase]').length,revision:String(window.CX?.data?.previewMeta?.sourceRevision||''),contextProject:String(window.CX?.data?.currentProjectId||'')}));
   ensure(dash.kpiTiles>=5&&dash.phaseTiles>0&&dash.revision===base.revision&&dash.contextProject===projectId,'FUNCTIONAL_DEFECT',{blocker:'GATE18_DASHBOARD_E2E_FAILED',dash});
 
   await page.evaluate(()=>window.CX.router.nav('visitas'));
   await page.waitForFunction(name=>{const t=String(document.body.innerText||'');return t.includes('Visitas')&&(!name||t.includes(name));},base.visitName,{timeout:30000});
-  const visitsUi=await page.evaluate(rev=>({revision:String(window.CX?.data?.previewMeta?.sourceRevision||''),hasVisitSurface:String(document.body.innerText||'').includes('Visitas'),activeVisits:Number(window.CX?.data?.visitas?.().length||0)}),base.revision);
+  const visitsUi=await page.evaluate(()=>({revision:String(window.CX?.data?.previewMeta?.sourceRevision||''),hasVisitSurface:String(document.body.innerText||'').includes('Visitas'),activeVisits:Number(window.CX?.data?.visitas?.().length||0)}));
   ensure(visitsUi.hasVisitSurface&&visitsUi.activeVisits===base.activeVisitCount&&visitsUi.revision===base.revision,'FUNCTIONAL_DEFECT',{blocker:'GATE18_VISITS_E2E_FAILED',visitsUi,expectedActiveVisits:base.activeVisitCount});
 
   await page.evaluate(()=>window.CX.router.nav('postulaciones'));
@@ -62,18 +62,18 @@ try{
   const clicked=await page.evaluate(id=>{const row=[...document.querySelectorAll('#shBody [data-sid]')].find(x=>String(x.dataset.sid)===String(id));if(!row)return false;row.click();return true;},base.targetId);
   ensure(clicked,'FUNCTIONAL_DEFECT',{blocker:'GATE18_SHOPPER_ROW_NOT_RENDERED',shopperFingerprint:fp(base.targetId)});
   await page.waitForSelector('#shKpis [data-k="all"]',{timeout:30000});
-  const profile=await page.evaluate(({name,rev})=>{const modal=[...document.querySelectorAll('.cx-modal')].at(-1)||document.body,t=String(modal.innerText||modal.textContent||'');return {identityVisible:!!name&&t.includes(name),kpisVisible:document.querySelectorAll('#shKpis [data-k]').length===4,revision:String(window.CX?.data?.previewMeta?.sourceRevision||''),protectedAccess:window.CX?.session?.canSeeProtectedData?.()===true};},{name:base.targetName,rev:base.revision});
+  const profile=await page.evaluate(({name})=>{const modal=[...document.querySelectorAll('.cx-modal')].at(-1)||document.body,t=String(modal.innerText||modal.textContent||'');return {identityVisible:!!name&&t.includes(name),kpisVisible:document.querySelectorAll('#shKpis [data-k]').length===4,revision:String(window.CX?.data?.previewMeta?.sourceRevision||''),protectedAccess:window.CX?.session?.canSeeProtectedData?.()===true};},{name:base.targetName});
   ensure(profile.identityVisible&&profile.kpisVisible&&profile.protectedAccess&&profile.revision===base.revision,'FUNCTIONAL_DEFECT',{blocker:'GATE18_SHOPPER_PROFILE_E2E_FAILED',shopperFingerprint:fp(base.targetId),profile});
   await page.locator('#shKpis [data-k="all"]').click();
   await page.waitForFunction(()=>{const m=[...document.querySelectorAll('.cx-modal')].at(-1);return !!m&&m.querySelectorAll('table tbody tr').length>0;},null,{timeout:30000});
-  const history=await page.evaluate(()=>{const m=[...document.querySelectorAll('.cx-modal')].at(-1);return {rows:m?.querySelectorAll('table tbody tr').length||0,text:String(m?.innerText||m?.textContent||''),revision:String(window.CX?.data?.previewMeta?.sourceRevision||'')};});
-  ensure(history.rows>0&&history.text.includes('Periodo')&&history.text.includes('Evaluación')&&history.revision===base.revision,'FUNCTIONAL_DEFECT',{blocker:'GATE18_SHOPPER_HISTORY_E2E_FAILED',shopperFingerprint:fp(base.targetId),historyRows:history.rows});
+  const history=await page.evaluate(()=>{const m=[...document.querySelectorAll('.cx-modal')].at(-1),headers=[...(m?.querySelectorAll('table thead th')||[])].map(th=>String(th.textContent||'').trim());return {rows:m?.querySelectorAll('table tbody tr').length||0,headers,periodHeader:headers.includes('Periodo'),evaluationHeader:headers.includes('Evaluación'),revision:String(window.CX?.data?.previewMeta?.sourceRevision||'')};});
+  ensure(history.rows>0&&history.periodHeader&&history.evaluationHeader&&history.revision===base.revision,'FUNCTIONAL_DEFECT',{blocker:'GATE18_SHOPPER_HISTORY_E2E_FAILED',shopperFingerprint:fp(base.targetId),historyRows:history.rows,historyHeaders:history.headers,periodHeader:history.periodHeader,evaluationHeader:history.evaluationHeader,startRevision:base.revision,historyRevision:history.revision});
 
   const end=await page.evaluate(()=>({revision:String(window.CX?.data?.previewMeta?.sourceRevision||''),authorityApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,authenticated:window.CX?.backendAuth?.context?.()?.authenticated===true,provider:window.CX?.backendAuth?.context?.()?.provider||null,localShopperPersistence:window.CX?.data?.__shopperStore?.localPersistence}));
   ensure(end.revision===base.revision&&end.authorityApplied&&end.authenticated&&end.provider==='firebase'&&end.localShopperPersistence===false,'ENVIRONMENT_FAILURE',{blocker:'GATE18_RUNTIME_CHANGED_DURING_E2E',startRevision:base.revision,endRevision:end.revision});
   ensure(pageErrors.length===0,'FUNCTIONAL_DEFECT',{blocker:'GATE18_BROWSER_PAGE_ERRORS',pageErrorCount:pageErrors.length,pageErrors});
 
-  result={tenantId,projectId,periodId:base.periodId,sourceRevision:base.revision,adminRole:base.role,dashboardKpiTiles:dash.kpiTiles,dashboardPhaseTiles:dash.phaseTiles,activeVisitCount:base.activeVisitCount,activePostCount:base.activePostCount,renderedPostCards:postsUi.renderedCards,shopperFingerprint:fp(base.targetId),shopperIdentityVisible:true,shopperKpisVisible:true,shopperHistoryRows:history.rows,sourceRevisionStable:true,authorityApplied:true,protectedAdminAccess:true,pageErrors};
+  result={tenantId,projectId,periodId:base.periodId,sourceRevision:base.revision,adminRole:base.role,dashboardKpiTiles:dash.kpiTiles,dashboardPhaseTiles:dash.phaseTiles,activeVisitCount:base.activeVisitCount,activePostCount:base.activePostCount,renderedPostCards:postsUi.renderedCards,shopperFingerprint:fp(base.targetId),shopperIdentityVisible:true,shopperKpisVisible:true,shopperHistoryRows:history.rows,shopperHistoryHeaders:history.headers,sourceRevisionStable:true,authorityApplied:true,protectedAdminAccess:true,pageErrors};
   await ctx.close();
 }finally{token='';await browser.close();}
 finish('PASS_GATE18_ADMIN_E2E',{sourceSha:process.env.SOURCE_SHA||null,lockedGate17RunId:Number(g17.lockedRunId)||null,...result},0);
