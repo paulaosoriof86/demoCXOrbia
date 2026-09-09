@@ -438,6 +438,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
+          include-hidden-files: true
 
       - name: Upload Gate 21 failure diagnostics
         if: failure()
@@ -448,3 +449,4 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
           compression-level: 0
+          include-hidden-files: true
