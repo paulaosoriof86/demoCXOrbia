@@ -63,19 +63,35 @@ async function routeCapture(page,kind,route,expected){
   ensure(metrics.overflowX<=limit,'VISUAL_DEFECT',{blocker:'GATE20_GLOBAL_HORIZONTAL_OVERFLOW',route,kind,overflowX:metrics.overflowX,limit,metrics});
 }
 
+async function humanLoginMetrics(page){
+  return page.evaluate(()=>{const login=document.querySelector('#login'),r=login?.getBoundingClientRect(),de=document.documentElement,b=document.body,text=String(b?.innerText||'');const entry=window.CX_DEV_ENTRY_CANONICAL||{};return {loginVisible:!!login&&r.width>0&&r.height>0,roleChoiceCount:document.querySelectorAll('#login .role-btn[data-role]').length,hasInput:!!document.querySelector('#login #lgUser')&&!!document.querySelector('#login #lgPass'),hasSubmit:!!document.querySelector('#login #lgSubmit'),singleVisibleProductLogin:entry.singleVisibleProductLogin===true,technicalAuth:entry.technicalAuth===true,technicalGateVisible:/USUARIO TÉCNICO|CONTRASEÑA TÉCNICA/i.test(text),overflowX:Math.max(0,Math.max(de.scrollWidth,b?.scrollWidth||0)-window.innerWidth),width:window.innerWidth,height:window.innerHeight};});
+}
+
 try{
   // Fresh unauthenticated HUMAN product login shell, desktop and mobile.
-  // The technical E2E flag intentionally renders a separate technical credential gate and must
-  // never be used to judge the customer-facing product login.
+  // Mobile may stage credentials after role selection; validate that progression instead of
+  // forcing desktop's simultaneous layout onto the responsive flow.
   for(const cfg of [{kind:'login-desktop',viewport:{width:1440,height:1000}},{kind:'login-mobile',viewport:{width:390,height:844}}]){
     const ctx=await browser.newContext({viewport:cfg.viewport}),page=await ctx.newPage(),errs=[];
     page.on('pageerror',e=>{const msg=str(e?.message||e).slice(0,500);errs.push(msg);allPageErrors.push(`${cfg.kind}:${msg}`);});
     await page.goto(humanUrl,{waitUntil:'domcontentloaded',timeout:90000});
     await page.waitForSelector('#login',{state:'visible',timeout:30000});
-    const m=await page.evaluate(()=>{const login=document.querySelector('#login'),r=login?.getBoundingClientRect(),de=document.documentElement,b=document.body,text=String(b?.innerText||'');const entry=window.CX_DEV_ENTRY_CANONICAL||{};return {loginVisible:!!login&&r.width>0&&r.height>0,hasInput:document.querySelectorAll('#login input').length>0,hasSubmit:document.querySelectorAll('#login button,#login [role="button"]').length>0,singleVisibleProductLogin:entry.singleVisibleProductLogin===true,technicalAuth:entry.technicalAuth===true,technicalGateVisible:/USUARIO TÉCNICO|CONTRASEÑA TÉCNICA/i.test(text),overflowX:Math.max(0,Math.max(de.scrollWidth,b?.scrollWidth||0)-window.innerWidth),width:window.innerWidth,height:window.innerHeight};});
+    let m=await humanLoginMetrics(page);
+    ensure(m.loginVisible&&m.roleChoiceCount>=3&&m.singleVisibleProductLogin===true&&m.technicalAuth===false&&m.technicalGateVisible===false&&m.overflowX<=16&&errs.length===0,'VISUAL_DEFECT',{blocker:'GATE20_HUMAN_LOGIN_ENTRY_INVALID',kind:cfg.kind,metrics:m,pageErrors:errs});
+    let responsiveProgression=false;
+    if(!m.hasInput||!m.hasSubmit){
+      const role=page.locator('#login .role-btn[data-role]').first();
+      ensure(await role.count()>0,'VISUAL_DEFECT',{blocker:'GATE20_HUMAN_LOGIN_ROLE_CONTROL_MISSING',kind:cfg.kind,metrics:m});
+      await role.click();
+      await page.waitForSelector('#login #lgUser',{state:'visible',timeout:10000});
+      await page.waitForSelector('#login #lgPass',{state:'visible',timeout:10000});
+      await page.waitForSelector('#login #lgSubmit',{state:'visible',timeout:10000});
+      responsiveProgression=true;
+      m=await humanLoginMetrics(page);
+    }
     await page.screenshot({path:path.join(OUT,`gate20-${cfg.kind}.png`),fullPage:true});
-    captures.push({file:`gate20-${cfg.kind}.png`,...m,pageErrors:errs});
-    ensure(m.loginVisible&&m.hasInput&&m.hasSubmit&&m.singleVisibleProductLogin===true&&m.technicalAuth===false&&m.technicalGateVisible===false&&m.overflowX<=16&&errs.length===0,'VISUAL_DEFECT',{blocker:'GATE20_HUMAN_LOGIN_VISUAL_INVALID',kind:cfg.kind,metrics:m,pageErrors:errs});
+    captures.push({file:`gate20-${cfg.kind}.png`,...m,responsiveProgression,pageErrors:errs});
+    ensure(m.loginVisible&&m.roleChoiceCount>=3&&m.hasInput&&m.hasSubmit&&m.singleVisibleProductLogin===true&&m.technicalAuth===false&&m.technicalGateVisible===false&&m.overflowX<=16&&errs.length===0,'VISUAL_DEFECT',{blocker:'GATE20_HUMAN_LOGIN_VISUAL_INVALID',kind:cfg.kind,metrics:m,responsiveProgression,pageErrors:errs});
     await ctx.close();
   }
 
@@ -101,7 +117,7 @@ try{
 ensure(allPageErrors.length===0,'VISUAL_DEFECT',{blocker:'GATE20_BROWSER_PAGE_ERRORS',pageErrors:allPageErrors});
 finish('PASS_GATE20_BROWSER_VISUAL',{
   sourceSha:process.env.SOURCE_SHA||null,lockedGate19RunId:Number(g19.lockedRunId)||null,tenantId,projectId,periodId:str(g19.periodId),
-  loginDesktop:true,loginMobile:true,humanProductLoginSeparatedFromTechnicalQa:true,adminDesktopRoutes:['dashboard','visitas','postulaciones','shoppers'],adminMobileRoutes:['dashboard','visitas','shoppers'],
+  loginDesktop:true,loginMobile:true,humanProductLoginSeparatedFromTechnicalQa:true,responsiveLoginProgressionValidated:true,adminDesktopRoutes:['dashboard','visitas','postulaciones','shoppers'],adminMobileRoutes:['dashboard','visitas','shoppers'],
   screenshots:captures.map(x=>x.file),captureCount:captures.length,maxOverflowX:Math.max(...captures.map(x=>Number(x.overflowX||0))),pageErrors:allPageErrors,
   domMarkersExact:true,hrAuthorityApplied:true,blockingUnexpectedModal:false,shopperVisualContinuityFromGate19:true,humanLegalAcceptanceReexecuted:false,legalAcceptanceBypass:false
 },0);
