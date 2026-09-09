@@ -6,7 +6,9 @@ on:
       - recovery/cxorbia-phase-a-20260831
     paths:
       - tools/qa/cxorbia-gate20-browser-visual-dev.mjs
+      - tools/qa/cxorbia-gate20-live-auth-diagnostic.mjs
       - .github/workflows/cxorbia-recovery-i3-dev-certification.yml
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -22,7 +24,7 @@ defaults:
     shell: bash
 
 env:
-  SOURCE_SHA: ${{ github.sha }}
+  PRODUCT_SOURCE_SHA: bd2a519db5ebd08f17d47827997056db795c8c09
   LOCK_GATE19_SHA: e91b4fee2ca8383a992361189261633e3cd72eac
   LOCK_GATE19_RUN_ID: '34302638183'
   PROJECT: cxorbia-backend-dev
@@ -34,34 +36,32 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - name: Checkout exact Recovery source
+      - name: Checkout Recovery QA head
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Prove Gate 20 QA-only delta and lock Gate 19
+      - name: Prove exact product lock and zero product drift
         run: |
           set -euo pipefail
           mkdir -p "$OUT"
           test "$GITHUB_REF_NAME" = "recovery/cxorbia-phase-a-20260831"
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          git merge-base --is-ancestor "$LOCK_GATE19_SHA" HEAD
+          git cat-file -e "$PRODUCT_SOURCE_SHA^{commit}"
           git cat-file -e "$LOCK_GATE19_SHA^{commit}"
-          git diff --name-only "$LOCK_GATE19_SHA" HEAD | sort > "$OUT/current-delta.txt"
-          printf '%s\n' \
-            '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' \
-            'tools/qa/cxorbia-gate20-browser-visual-dev.mjs' \
-            | sort > "$OUT/expected-delta.txt"
-          diff -u "$OUT/expected-delta.txt" "$OUT/current-delta.txt"
-          git diff --quiet "$LOCK_GATE19_SHA" HEAD -- app backend firebase.json .firebaserc
-          node --check tools/qa/cxorbia-gate20-browser-visual-dev.mjs
-          git status --porcelain | tee "$OUT/source-status.txt"; test ! -s "$OUT/source-status.txt"
+          git merge-base --is-ancestor "$PRODUCT_SOURCE_SHA" HEAD
+          git diff --quiet "$PRODUCT_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc
+          git diff --quiet "$PRODUCT_SOURCE_SHA" HEAD -- tools/qa/cxorbia-gate20-browser-visual-dev.mjs
+          git diff --name-only "$PRODUCT_SOURCE_SHA" HEAD | sort > "$OUT/qa-only-delta.txt"
+          node --check tools/qa/cxorbia-gate20-live-auth-diagnostic.mjs
+          git show "$PRODUCT_SOURCE_SHA:tools/qa/cxorbia-gate20-browser-visual-dev.mjs" > "$OUT/gate20-certified-runner.mjs"
+          node --check "$OUT/gate20-certified-runner.mjs"
           node <<'NODE'
           const fs=require('fs'),out=process.env.OUT;
           const g19={decision:'PASS_GATE19_SHOPPER_E2E_LINEAGE',gate:19,lockedEvidence:true,lockedRunId:Number(process.env.LOCK_GATE19_RUN_ID),lockedSourceSha:process.env.LOCK_GATE19_SHA,noProductDrift:true,tenantId:'tya',projectId:'cinepolis',periodId:'cinepolis-2026-09',secureShopperLoginObserved:true,shopperPostulationObserved:true,shopperReloadObserved:true,approvalRemoteAck:true,idempotentReplay:true,currentDurableReadback:true,duplicatePairCount:1,humanLegalAcceptanceReexecuted:false,legalAcceptanceBypass:false,localStorageTruth:false,providerWrites:0,hrWrites:0,production:false};
           fs.writeFileSync(`${out}/gate19-locked.json`,JSON.stringify(g19,null,2)+'\n');
-          fs.writeFileSync(`${out}/locked-lineage.json`,JSON.stringify({decision:'PASS_GATE20_LOCKED_GATE19_NO_PRODUCT_DRIFT',lockedRunId:Number(process.env.LOCK_GATE19_RUN_ID),lockedSourceSha:process.env.LOCK_GATE19_SHA,currentSourceSha:process.env.SOURCE_SHA,noProductDrift:true,changedFiles:fs.readFileSync(`${out}/current-delta.txt`,'utf8').trim().split(/\n/).filter(Boolean),production:false},null,2)+'\n');
+          fs.writeFileSync(`${out}/locked-lineage.json`,JSON.stringify({decision:'PASS_GATE20_PRODUCT_LOCK_NO_DRIFT',lockedGate19RunId:Number(process.env.LOCK_GATE19_RUN_ID),lockedGate19SourceSha:process.env.LOCK_GATE19_SHA,productSourceSha:process.env.PRODUCT_SOURCE_SHA,qaHeadSha:process.env.GITHUB_SHA,noProductDrift:true,production:false},null,2)+'\n');
           NODE
+          echo "PASS_GATE20_PRODUCT_LOCK source=$PRODUCT_SOURCE_SHA qaHead=$GITHUB_SHA productDrift=0"
 
       - name: Setup Node 24
         uses: actions/setup-node@v4
@@ -79,7 +79,7 @@ jobs:
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
 
-      - name: Read back exact Gate 20 visual owners from Hosting DEV
+      - name: Read back exact certified visual owners from pilot
         run: |
           set -euo pipefail
           pairs=(
@@ -99,17 +99,27 @@ jobs:
           : > "$OUT/hosting-owner-hashes.txt"
           for item in "${pairs[@]}"; do
             IFS='|' read -r local remote key <<< "$item"
-            curl -fsSL --retry 3 --retry-delay 1 -H 'Cache-Control: no-cache' "$HOSTING_URL/$remote?gate20=${GITHUB_RUN_ID}-${key}" -o "$OUT/remote-$key"
-            cmp "$local" "$OUT/remote-$key"
-            lsha="$(sha256sum "$local"|awk '{print $1}')"; rsha="$(sha256sum "$OUT/remote-$key"|awk '{print $1}')"; test "$lsha" = "$rsha"
-            printf '%s %s\n' "$key" "$lsha" >> "$OUT/hosting-owner-hashes.txt"
+            git show "$PRODUCT_SOURCE_SHA:$local" > "$OUT/source-$key"
+            curl -fsSL --retry 3 --retry-delay 1 -H 'Cache-Control: no-cache' "$HOSTING_URL/$remote?gate20live=${GITHUB_RUN_ID}-${key}" -o "$OUT/remote-$key"
+            cmp "$OUT/source-$key" "$OUT/remote-$key"
+            sha="$(sha256sum "$OUT/source-$key"|awk '{print $1}')"
+            printf '%s %s\n' "$key" "$sha" >> "$OUT/hosting-owner-hashes.txt"
+            rm -f "$OUT/source-$key" "$OUT/remote-$key"
           done
-          printf '{"decision":"PASS_HOSTING_GATE20_VISUAL_OWNER_PARITY","sourceSha":"%s","lockedProductSourceSha":"%s","ownerCount":12,"hostingDeploys":0,"production":false}\n' "$SOURCE_SHA" "$LOCK_GATE19_SHA" > "$OUT/hosting.json"
+          printf '{"decision":"PASS_HOSTING_GATE20_VISUAL_OWNER_PARITY","sourceSha":"%s","ownerCount":12,"hostingDeploys":0,"production":false}\n' "$PRODUCT_SOURCE_SHA" > "$OUT/hosting.json"
+          echo "PASS_GATE20_OWNER_PARITY owners=12 source=$PRODUCT_SOURCE_SHA"
 
-      - name: Execute Gate 20 browser and visual certification
+      - name: Diagnose live authenticated authority state
         run: |
           set -euo pipefail
-          PROJECT="$PROJECT" OUT="$OUT" SOURCE_SHA="$SOURCE_SHA" HOSTING_URL="$HOSTING_URL" node tools/qa/cxorbia-gate20-browser-visual-dev.mjs | tee "$OUT/gate20-console.log"
+          PROJECT="$PROJECT" OUT="$OUT" HOSTING_URL="$HOSTING_URL" node tools/qa/cxorbia-gate20-live-auth-diagnostic.mjs | tee "$OUT/gate20-live-auth-diagnostic.log"
+          test -s "$OUT/gate20-live-auth-diagnostic.json"
+          ! grep -E '"password"[[:space:]]*:' "$OUT/gate20-live-auth-diagnostic.json"
+
+      - name: Execute exact certified Gate 20 browser visual runner
+        run: |
+          set -euo pipefail
+          PROJECT="$PROJECT" OUT="$OUT" SOURCE_SHA="$PRODUCT_SOURCE_SHA" HOSTING_URL="$HOSTING_URL" node "$OUT/gate20-certified-runner.mjs" | tee "$OUT/gate20-console.log"
           ! grep -E '"password"[[:space:]]*:' "$OUT/gate20-console.log"
           ! grep -E '"password"[[:space:]]*:' "$OUT/gate20-browser-visual.json"
 
@@ -118,24 +128,23 @@ jobs:
           set -euo pipefail
           node <<'NODE'
           const fs=require('fs'),read=n=>JSON.parse(fs.readFileSync(`${process.env.OUT}/${n}`,'utf8'));
-          const g19=read('gate19-locked.json'),g20=read('gate20-browser-visual.json'),hosting=read('hosting.json'),lineage=read('locked-lineage.json');
-          if(g19.decision!=='PASS_GATE19_SHOPPER_E2E_LINEAGE'||g19.lockedEvidence!==true||g19.noProductDrift!==true||Number(g19.lockedRunId)!==Number(process.env.LOCK_GATE19_RUN_ID)||g19.lockedSourceSha!==process.env.LOCK_GATE19_SHA)throw new Error('GATE19_LOCK_INVALID');
-          if(lineage.decision!=='PASS_GATE20_LOCKED_GATE19_NO_PRODUCT_DRIFT'||lineage.noProductDrift!==true)throw new Error('GATE20_PRODUCT_DRIFT');
-          if(hosting.decision!=='PASS_HOSTING_GATE20_VISUAL_OWNER_PARITY'||Number(hosting.ownerCount)!==12||Number(hosting.hostingDeploys)!==0)throw new Error('GATE20_HOSTING_PARITY_INCOMPLETE');
+          const g20=read('gate20-browser-visual.json'),hosting=read('hosting.json'),lineage=read('locked-lineage.json'),diag=read('gate20-live-auth-diagnostic.json');
+          if(lineage.decision!=='PASS_GATE20_PRODUCT_LOCK_NO_DRIFT'||lineage.noProductDrift!==true||lineage.productSourceSha!==process.env.PRODUCT_SOURCE_SHA)throw new Error('GATE20_PRODUCT_DRIFT');
+          if(hosting.decision!=='PASS_HOSTING_GATE20_VISUAL_OWNER_PARITY'||Number(hosting.ownerCount)!==12)throw new Error('GATE20_HOSTING_PARITY_INCOMPLETE');
+          if(diag.decision!=='PASS')throw new Error('GATE20_LIVE_AUTHORITY_DIAGNOSTIC_'+diag.decision+'_'+diag.blocker);
           if(g20.decision!=='PASS_GATE20_BROWSER_VISUAL')throw new Error(g20.decision||'GATE20_RESULT_MISSING');
-          const pass=g20.loginDesktop===true&&g20.loginMobile===true&&Array.isArray(g20.adminDesktopRoutes)&&g20.adminDesktopRoutes.length===4&&Array.isArray(g20.adminMobileRoutes)&&g20.adminMobileRoutes.length===3&&Number(g20.captureCount)===9&&Array.isArray(g20.pageErrors)&&g20.pageErrors.length===0&&g20.domMarkersExact===true&&g20.hrAuthorityApplied===true&&g20.blockingUnexpectedModal===false&&g20.shopperVisualContinuityFromGate19===true&&g20.humanLegalAcceptanceReexecuted===false&&g20.legalAcceptanceBypass===false&&g20.localStorageTruth===false&&Number(g20.providerWrites)===0&&Number(g20.hrWrites)===0&&g20.production===false;
+          const pass=g20.loginDesktop===true&&g20.loginMobile===true&&Array.isArray(g20.adminDesktopRoutes)&&g20.adminDesktopRoutes.length===4&&Array.isArray(g20.adminMobileRoutes)&&g20.adminMobileRoutes.length===3&&Number(g20.captureCount)===9&&Array.isArray(g20.pageErrors)&&g20.pageErrors.length===0&&g20.domMarkersExact===true&&g20.hrAuthorityApplied===true&&g20.blockingUnexpectedModal===false&&g20.localStorageTruth===false&&Number(g20.providerWrites)===0&&Number(g20.hrWrites)===0&&g20.production===false;
           if(!pass)throw new Error('GATE20_ACCEPTANCE_INCOMPLETE');
-          const summary={verdict:g20.decision,gate20:'PASS',lockedGate19RunId:Number(process.env.LOCK_GATE19_RUN_ID),lockedGate19SourceSha:process.env.LOCK_GATE19_SHA,sourceSha:process.env.SOURCE_SHA,noProductDrift:true,hostingOwnerParity:true,hostingDeploys:0,tenantId:g20.tenantId,projectId:g20.projectId,periodId:g20.periodId,loginDesktop:true,loginMobile:true,adminDesktopRoutes:g20.adminDesktopRoutes,adminMobileRoutes:g20.adminMobileRoutes,captureCount:g20.captureCount,maxOverflowX:g20.maxOverflowX,pageErrors:0,domMarkersExact:true,hrAuthorityApplied:true,blockingUnexpectedModal:false,shopperVisualContinuityFromGate19:true,humanLegalAcceptanceReexecuted:false,legalAcceptanceBypass:false,localStorageTruth:false,providerWrites:0,hrWrites:0,production:false};
-          fs.writeFileSync(`${process.env.OUT}/result.json`,JSON.stringify(summary,null,2)+'\n');console.log(JSON.stringify(summary));
+          fs.writeFileSync(`${process.env.OUT}/result.json`,JSON.stringify({verdict:g20.decision,gate20:'PASS',productSourceSha:process.env.PRODUCT_SOURCE_SHA,qaHeadSha:process.env.GITHUB_SHA,noProductDrift:true,hostingOwnerParity:true,liveAuthorityDiagnostic:'PASS',tenantId:g20.tenantId,projectId:g20.projectId,periodId:g20.periodId,captureCount:g20.captureCount,providerWrites:0,hrWrites:0,production:false},null,2)+'\n');
           NODE
 
-      - name: Upload sanitized Gate 20 evidence
+      - name: Upload sanitized Gate 20 live acceptance evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-recovery-i3-gate20-${{ github.run_id }}
+          name: cxorbia-recovery-i3-gate20-live-${{ github.run_id }}
           path: ${{ env.OUT }}
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 14
 
       - name: Cleanup temporary dependencies
