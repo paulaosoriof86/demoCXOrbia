@@ -63,7 +63,7 @@ jobs:
           diff -u "$OUT/expected-delta.txt" "$OUT/current-delta.txt"
           git diff --quiet "$LOCK_GATE18_SHA" HEAD -- app backend firebase.json .firebaserc
           shopper_owners=(
-            app/core/access.js
+            app/core/backend-browser-auth.js
             app/modules/misvisitas.js
             app/modules/visita-detalle.js
             app/modules/postulaciones.js
@@ -115,7 +115,7 @@ jobs:
         run: |
           set -euo pipefail
           pairs=(
-            'app/core/access.js|core/access.js|access'
+            'app/core/backend-browser-auth.js|core/backend-browser-auth.js|browserauth'
             'app/modules/misvisitas.js|modules/misvisitas.js|misvisitas'
             'app/modules/visita-detalle.js|modules/visita-detalle.js|visitadetail'
             'app/modules/postulaciones.js|modules/postulaciones.js|postulaciones'
