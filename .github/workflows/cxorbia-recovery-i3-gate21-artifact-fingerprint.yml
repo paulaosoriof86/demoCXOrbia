@@ -3,10 +3,8 @@ name: CXOrbia Recovery I3 Gate 21 Artifact Fingerprint
 on:
   workflow_dispatch:
   push:
-    branches:
-      - recovery/cxorbia-phase-a-20260831
-    paths:
-      - '.github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml'
+    branches: [recovery/cxorbia-phase-a-20260831]
+    paths: ['.github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml']
 
 permissions:
   contents: read
@@ -48,13 +46,11 @@ jobs:
           test "$(git rev-parse "$GATE20_SOURCE_SHA")" = "$GATE20_SOURCE_SHA"
           git diff --quiet "$GATE20_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc
           mapfile -t changed < <(git diff --name-only "$GATE20_SOURCE_SHA" HEAD)
-          if [[ ${#changed[@]} -ne 1 || "${changed[0]}" != ".github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml" ]]; then
-            printf 'Unexpected post-Gate20 delta:\n%s\n' "${changed[*]:-<none>}" >&2
-            exit 1
-          fi
-          echo "PASS_GATE21_SOURCE_LOCK gate20Source=$GATE20_SOURCE_SHA currentQaHead=$(git rev-parse HEAD) productDrift=0"
+          [[ ${#changed[@]} -eq 1 ]]
+          [[ "${changed[0]}" == ".github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml" ]]
+          echo "PASS_GATE21_SOURCE_LOCK source=$GATE20_SOURCE_SHA productDrift=0"
 
-      - name: Authenticate Google Cloud DEV read-only certification
+      - name: Authenticate Google Cloud DEV
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
@@ -64,120 +60,52 @@ jobs:
         with:
           project_id: cxorbia-backend-dev
 
-      - name: Capture immutable runtime fingerprint
+      - name: Certify immutable runtime, Hosting and deterministic artifacts
         run: |
           set -euo pipefail
           mkdir -p "$OUT_DIR"
-          gcloud run services describe "$CLOUD_RUN_SERVICE" \
-            --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json \
-            > "$OUT_DIR/runtime-service.json"
-          REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$OUT_DIR/runtime-service.json")"
-          if [[ -z "$REVISION" ]]; then echo '::error::latestReadyRevisionName missing'; exit 1; fi
-          gcloud run revisions describe "$REVISION" \
-            --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json \
-            > "$OUT_DIR/runtime-revision.json"
 
+          # Runtime: read existing certified DEV revision only; never build/deploy.
+          gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json > "$OUT_DIR/runtime-service.json"
+          REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$OUT_DIR/runtime-service.json")"
+          test -n "$REVISION"
+          gcloud run revisions describe "$REVISION" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json > "$OUT_DIR/runtime-revision.json"
           IMAGE_SPEC="$(jq -r '.spec.containers[0].image // empty' "$OUT_DIR/runtime-revision.json")"
           CREATION="$(jq -r '.metadata.creationTimestamp // empty' "$OUT_DIR/runtime-revision.json")"
-          echo "runtimeRevision=$REVISION"
-          echo "runtimeImageSpec=$IMAGE_SPEC"
-          echo "runtimeCreation=$CREATION gate20Started=$GATE20_STARTED_AT"
-          jq -c '{statusKeys:(.status|keys),statusImageDigest:(.status.imageDigest // null),containerStatuses:(.status.containerStatuses // [])}' "$OUT_DIR/runtime-revision.json" || true
-          if [[ -z "$IMAGE_SPEC" ]]; then echo '::error::runtime image spec missing'; exit 1; fi
-
-          DIGEST="$(jq -r '[.status.imageDigest, .status.containerStatuses[0].imageDigest] | map(select(type=="string" and length>0)) | .[0] // empty' "$OUT_DIR/runtime-revision.json")"
-          if [[ -z "$DIGEST" && "$IMAGE_SPEC" == *@sha256:* ]]; then
+          DIGEST_RAW="$(jq -r '.status.imageDigest // empty' "$OUT_DIR/runtime-revision.json")"
+          if [[ "$DIGEST_RAW" == *@sha256:* ]]; then
+            DIGEST="sha256:${DIGEST_RAW##*@sha256:}"
+          elif [[ "$IMAGE_SPEC" == *@sha256:* ]]; then
             DIGEST="sha256:${IMAGE_SPEC##*@sha256:}"
+          elif [[ "$DIGEST_RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then
+            DIGEST="$DIGEST_RAW"
+          else
+            DIGEST=""
           fi
-          if [[ -z "$DIGEST" ]]; then
-            if gcloud container images describe "$IMAGE_SPEC" --project "$GCP_PROJECT_ID" --format=json > "$OUT_DIR/runtime-image-describe.json" 2>/dev/null; then
-              DIGEST="$(jq -r '.image_summary.digest // .imageSummary.digest // empty' "$OUT_DIR/runtime-image-describe.json")"
-            fi
-          fi
-          if [[ -z "$DIGEST" ]]; then
-            if gcloud artifacts docker images describe "$IMAGE_SPEC" --project "$GCP_PROJECT_ID" --format=json > "$OUT_DIR/runtime-artifact-image-describe.json" 2>/dev/null; then
-              DIGEST="$(jq -r '.image_summary.digest // .imageSummary.digest // empty' "$OUT_DIR/runtime-artifact-image-describe.json")"
-            fi
-          fi
-          if [[ "$DIGEST" =~ ^[0-9a-f]{64}$ ]]; then DIGEST="sha256:$DIGEST"; fi
-          echo "runtimeResolvedDigest=$DIGEST"
-          if [[ ! "$DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]; then echo '::error::immutable runtime digest unresolved'; exit 1; fi
-
+          [[ "$DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          test -n "$CREATION"
+          node -e "if(Date.parse(process.argv[1])>Date.parse(process.argv[2]))process.exit(1)" "$CREATION" "$GATE20_STARTED_AT"
           IMAGE_REPO="${IMAGE_SPEC%@*}"
-          if [[ "$IMAGE_REPO" == "$IMAGE_SPEC" ]]; then IMAGE_REPO="${IMAGE_SPEC%:*}"; fi
-          IMMUTABLE_IMAGE="${IMAGE_REPO}@${DIGEST}"
-          if [[ -z "$CREATION" ]]; then echo '::error::runtime revision creation timestamp missing'; exit 1; fi
-          if ! node -e "if(Date.parse(process.argv[1])>Date.parse(process.argv[2]))process.exit(1)" "$CREATION" "$GATE20_STARTED_AT"; then
-            echo "::error::latest ready runtime revision was created after Gate 20 started ($CREATION > $GATE20_STARTED_AT)"
-            exit 1
-          fi
+          IMMUTABLE_IMAGE="$IMAGE_REPO@$DIGEST"
           RUNTIME_URL="$(jq -r '.status.url // empty' "$OUT_DIR/runtime-service.json")"
-          if [[ -z "$RUNTIME_URL" ]]; then echo '::error::runtime service URL missing'; exit 1; fi
           curl --fail --silent --show-error --max-time 30 "$RUNTIME_URL/health" > "$OUT_DIR/runtime-health.json"
           jq -e '.ok == true and .service == "cxorbia-live-hr-runtime"' "$OUT_DIR/runtime-health.json" >/dev/null
-          printf '%s\n' "$REVISION" > "$OUT_DIR/runtime-revision-name.txt"
-          printf '%s\n' "$DIGEST" > "$OUT_DIR/runtime-image-digest.txt"
-          printf '%s\n' "$IMMUTABLE_IMAGE" > "$OUT_DIR/runtime-immutable-image.txt"
-          echo "PASS_GATE21_RUNTIME_FINGERPRINT revision=$REVISION imageDigest=$DIGEST createdBeforeGate20=true deploys=0"
+          echo "PASS_GATE21_RUNTIME_FINGERPRINT revision=$REVISION imageDigest=$DIGEST createdBeforeGate20=true runtimeDeploys=0"
 
-      - name: Capture Hosting release/version and exact deployed file inventory
-        run: |
-          set -euo pipefail
+          # Hosting: bind current finalized DEV release/version to the Gate 20 time window.
           TOKEN="$(gcloud auth print-access-token)"
-          curl --fail --silent --show-error \
-            -H "Authorization: Bearer $TOKEN" \
-            "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/releases?pageSize=1" \
-            > "$OUT_DIR/hosting-releases.json"
-          RELEASE_NAME="$(jq -r '.releases[0].name // empty' "$OUT_DIR/hosting-releases.json")"
-          VERSION_NAME="$(jq -r '.releases[0].version.name // empty' "$OUT_DIR/hosting-releases.json")"
-          RELEASE_TIME="$(jq -r '.releases[0].releaseTime // empty' "$OUT_DIR/hosting-releases.json")"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/releases?pageSize=1" > "$OUT_DIR/hosting-release.json"
+          RELEASE_NAME="$(jq -r '.releases[0].name // empty' "$OUT_DIR/hosting-release.json")"
+          VERSION_NAME="$(jq -r '.releases[0].version.name // empty' "$OUT_DIR/hosting-release.json")"
+          RELEASE_TIME="$(jq -r '.releases[0].releaseTime // empty' "$OUT_DIR/hosting-release.json")"
           test -n "$RELEASE_NAME" && test -n "$VERSION_NAME" && test -n "$RELEASE_TIME"
-          if ! node -e "if(Date.parse(process.argv[1])>Date.parse(process.argv[2]))process.exit(1)" "$RELEASE_TIME" "$GATE20_STARTED_AT"; then
-            echo "::error::latest Hosting release was created after Gate 20 started ($RELEASE_TIME > $GATE20_STARTED_AT)"
-            exit 1
-          fi
-          curl --fail --silent --show-error \
-            -H "Authorization: Bearer $TOKEN" \
-            "https://firebasehosting.googleapis.com/v1beta1/$VERSION_NAME" \
-            > "$OUT_DIR/hosting-version.json"
+          node -e "if(Date.parse(process.argv[1])>Date.parse(process.argv[2]))process.exit(1)" "$RELEASE_TIME" "$GATE20_STARTED_AT"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/$VERSION_NAME" > "$OUT_DIR/hosting-version.json"
           jq -e '.status == "FINALIZED"' "$OUT_DIR/hosting-version.json" >/dev/null
+          echo "PASS_GATE21_HOSTING_VERSION release=$RELEASE_NAME version=$VERSION_NAME releasedBeforeGate20=true hostingDeploys=0"
 
-          : > "$OUT_DIR/hosting-version-files.ndjson"
-          PAGE_TOKEN=""
-          while :; do
-            if [[ -z "$PAGE_TOKEN" ]]; then
-              URL="https://firebasehosting.googleapis.com/v1beta1/$VERSION_NAME/files?pageSize=1000"
-            else
-              URL="https://firebasehosting.googleapis.com/v1beta1/$VERSION_NAME/files?pageSize=1000&pageToken=$(python3 -c 'import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1],safe=""))' "$PAGE_TOKEN")"
-            fi
-            curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" "$URL" > "$OUT_DIR/hosting-files-page.json"
-            jq -c '.files[]?' "$OUT_DIR/hosting-files-page.json" >> "$OUT_DIR/hosting-version-files.ndjson"
-            PAGE_TOKEN="$(jq -r '.nextPageToken // empty' "$OUT_DIR/hosting-files-page.json")"
-            [[ -z "$PAGE_TOKEN" ]] && break
-          done
-          rm -f "$OUT_DIR/hosting-files-page.json"
-          test -s "$OUT_DIR/hosting-version-files.ndjson"
-          printf '%s\n' "$RELEASE_NAME" > "$OUT_DIR/hosting-release-name.txt"
-          printf '%s\n' "$VERSION_NAME" > "$OUT_DIR/hosting-version-name.txt"
-          echo "PASS_GATE21_HOSTING_VERSION release=$RELEASE_NAME version=$VERSION_NAME releasedBeforeGate20=true deploys=0"
-
-      - name: Prove current DEV Hosting bytes match Gate 20 owners
-        run: |
-          set -euo pipefail
-          files=(
-            app/index-backend-dev.html
-            app/app.js
-            app/styles/layout.css
-            app/styles/theme.css
-            app/styles/ui.css
-            app/router.js
-            app/api-auth.js
-            app/dashboard.js
-            app/visitas.js
-            app/postulaciones.js
-            app/shoppers.js
-            app/core/tenant-project-period-authority.js
-          )
+          # Re-prove the 12 visual owners against the exact current DEV Hosting bytes.
+          files=(app/index-backend-dev.html app/app.js app/styles/layout.css app/styles/theme.css app/styles/ui.css app/router.js app/api-auth.js app/dashboard.js app/visitas.js app/postulaciones.js app/shoppers.js app/core/tenant-project-period-authority.js)
           : > "$OUT_DIR/gate20-owner-sha256.txt"
           for local_path in "${files[@]}"; do
             rel="${local_path#app/}"
@@ -187,87 +115,43 @@ jobs:
             sha256sum "$local_path" >> "$OUT_DIR/gate20-owner-sha256.txt"
             rm -f "$remote"
           done
-          echo "PASS_GATE21_GATE20_OWNER_PARITY ownerCount=${#files[@]} mismatches=0"
+          echo "PASS_GATE21_GATE20_OWNER_PARITY ownerCount=12 mismatches=0"
 
-      - name: Prove deterministic source artifacts
-        run: |
-          set -euo pipefail
+          # Deterministic source artifacts: create twice and require byte identity.
           git archive --format=tar "$GATE20_SOURCE_SHA" app > "$OUT_DIR/hosting-app-a.tar"
           git archive --format=tar "$GATE20_SOURCE_SHA" app > "$OUT_DIR/hosting-app-b.tar"
           cmp --silent "$OUT_DIR/hosting-app-a.tar" "$OUT_DIR/hosting-app-b.tar"
-          mv "$OUT_DIR/hosting-app-a.tar" "$OUT_DIR/hosting-app.tar"
-          rm "$OUT_DIR/hosting-app-b.tar"
-
+          mv "$OUT_DIR/hosting-app-a.tar" "$OUT_DIR/hosting-app.tar"; rm "$OUT_DIR/hosting-app-b.tar"
           git archive --format=tar "$GATE20_SOURCE_SHA" backend > "$OUT_DIR/backend-source-a.tar"
           git archive --format=tar "$GATE20_SOURCE_SHA" backend > "$OUT_DIR/backend-source-b.tar"
           cmp --silent "$OUT_DIR/backend-source-a.tar" "$OUT_DIR/backend-source-b.tar"
-          mv "$OUT_DIR/backend-source-a.tar" "$OUT_DIR/backend-source.tar"
-          rm "$OUT_DIR/backend-source-b.tar"
-
-          sha256sum "$OUT_DIR/hosting-app.tar" | awk '{print $1}' > "$OUT_DIR/hosting-app.sha256"
-          sha256sum "$OUT_DIR/backend-source.tar" | awk '{print $1}' > "$OUT_DIR/backend-source.sha256"
-          git rev-parse "$GATE20_SOURCE_SHA:app" > "$OUT_DIR/app-tree-sha.txt"
-          git rev-parse "$GATE20_SOURCE_SHA:backend" > "$OUT_DIR/backend-tree-sha.txt"
-          git rev-parse "$GATE20_SOURCE_SHA:firebase.json" > "$OUT_DIR/firebase-json-blob-sha.txt"
-          git rev-parse "$GATE20_SOURCE_SHA:.firebaserc" > "$OUT_DIR/firebaserc-blob-sha.txt"
+          mv "$OUT_DIR/backend-source-a.tar" "$OUT_DIR/backend-source.tar"; rm "$OUT_DIR/backend-source-b.tar"
+          HOSTING_SHA="$(sha256sum "$OUT_DIR/hosting-app.tar" | awk '{print $1}')"
+          BACKEND_SHA="$(sha256sum "$OUT_DIR/backend-source.tar" | awk '{print $1}')"
+          SOURCE_TREE="$(git rev-parse "$GATE20_SOURCE_SHA^{tree}")"
+          APP_TREE="$(git rev-parse "$GATE20_SOURCE_SHA:app")"
+          BACKEND_TREE="$(git rev-parse "$GATE20_SOURCE_SHA:backend")"
+          FIREBASE_BLOB="$(git rev-parse "$GATE20_SOURCE_SHA:firebase.json")"
+          FIREBASERC_BLOB="$(git rev-parse "$GATE20_SOURCE_SHA:.firebaserc")"
           echo "PASS_GATE21_REPRODUCIBLE_ARTIFACT hostingRepeatEqual=true backendRepeatEqual=true"
 
-      - name: Build canonical immutable Gate 21 manifest
-        run: |
-          set -euo pipefail
-          SOURCE_TREE="$(git rev-parse "$GATE20_SOURCE_SHA^{tree}")"
-          APP_TREE="$(cat "$OUT_DIR/app-tree-sha.txt")"
-          BACKEND_TREE="$(cat "$OUT_DIR/backend-tree-sha.txt")"
-          FIREBASE_BLOB="$(cat "$OUT_DIR/firebase-json-blob-sha.txt")"
-          FIREBASERC_BLOB="$(cat "$OUT_DIR/firebaserc-blob-sha.txt")"
-          HOSTING_SHA="$(cat "$OUT_DIR/hosting-app.sha256")"
-          BACKEND_SHA="$(cat "$OUT_DIR/backend-source.sha256")"
-          RELEASE_NAME="$(cat "$OUT_DIR/hosting-release-name.txt")"
-          VERSION_NAME="$(cat "$OUT_DIR/hosting-version-name.txt")"
-          REVISION="$(cat "$OUT_DIR/runtime-revision-name.txt")"
-          IMAGE_DIGEST="$(cat "$OUT_DIR/runtime-image-digest.txt")"
-          IMMUTABLE_IMAGE="$(cat "$OUT_DIR/runtime-immutable-image.txt")"
-
+          # Canonical manifest contains immutable identifiers only; no volatile now timestamp.
           jq -n -S \
-            --arg sourceSha "$GATE20_SOURCE_SHA" \
-            --arg sourceTree "$SOURCE_TREE" \
-            --arg appTree "$APP_TREE" \
-            --arg backendTree "$BACKEND_TREE" \
-            --arg firebaseBlob "$FIREBASE_BLOB" \
-            --arg firebasercBlob "$FIREBASERC_BLOB" \
-            --arg gate20Run "$GATE20_RUN_ID" \
-            --arg gate20Evidence "$GATE20_EVIDENCE_DIGEST" \
-            --arg hostingSha "$HOSTING_SHA" \
-            --arg backendSha "$BACKEND_SHA" \
-            --arg releaseName "$RELEASE_NAME" \
-            --arg versionName "$VERSION_NAME" \
-            --arg revision "$REVISION" \
-            --arg imageDigest "$IMAGE_DIGEST" \
-            --arg immutableImage "$IMMUTABLE_IMAGE" \
-            '{
-              schemaVersion:"cxorbia.recovery.i3.gate21.release-manifest.v1",
-              gate:21,
-              verdict:"PASS_GATE21_ARTIFACT_FINGERPRINT",
-              production:false,
+            --arg sourceSha "$GATE20_SOURCE_SHA" --arg sourceTree "$SOURCE_TREE" --arg appTree "$APP_TREE" --arg backendTree "$BACKEND_TREE" \
+            --arg firebaseBlob "$FIREBASE_BLOB" --arg firebasercBlob "$FIREBASERC_BLOB" --arg gate20Run "$GATE20_RUN_ID" --arg gate20Evidence "$GATE20_EVIDENCE_DIGEST" \
+            --arg hostingSha "$HOSTING_SHA" --arg backendSha "$BACKEND_SHA" --arg releaseName "$RELEASE_NAME" --arg versionName "$VERSION_NAME" \
+            --arg revision "$REVISION" --arg imageDigest "$DIGEST" --arg immutableImage "$IMMUTABLE_IMAGE" \
+            '{schemaVersion:"cxorbia.recovery.i3.gate21.release-manifest.v1",gate:21,verdict:"PASS_GATE21_ARTIFACT_FINGERPRINT",production:false,
               gate20:{runId:$gate20Run,sourceSha:$sourceSha,evidenceArtifactDigest:$gate20Evidence},
               source:{sourceSha:$sourceSha,treeSha:$sourceTree,appTreeSha:$appTree,backendTreeSha:$backendTree,firebaseJsonBlobSha:$firebaseBlob,firebasercBlobSha:$firebasercBlob},
               hosting:{projectId:"cxorbia-backend-dev",site:"cxorbia-backend-dev",releaseName:$releaseName,versionName:$versionName,artifact:"hosting-app.tar",artifactSha256:$hostingSha,gate20OwnerParityCount:12},
               runtime:{projectId:"cxorbia-backend-dev",region:"us-central1",service:"cxorbia-live-hr-dev",revision:$revision,imageDigest:$imageDigest,immutableImage:$immutableImage,sourceArtifact:"backend-source.tar",sourceArtifactSha256:$backendSha},
               reproducibility:{hostingArchiveRepeatEqual:true,backendSourceArchiveRepeatEqual:true},
               promotion:{hosting:"extract exact hosting-app.tar; publish bytes without source rebuild",runtime:"deploy exact immutableImage @sha256; no build"},
-              writes:{hostingDeploys:0,runtimeDeploys:0,providerWrites:0,hrWrites:0,production:false}
-            }' > "$OUT_DIR/GATE21_RELEASE_MANIFEST.json"
+              writes:{hostingDeploys:0,runtimeDeploys:0,providerWrites:0,hrWrites:0,production:false}}' > "$OUT_DIR/GATE21_RELEASE_MANIFEST.json"
           sha256sum "$OUT_DIR/GATE21_RELEASE_MANIFEST.json" > "$OUT_DIR/GATE21_RELEASE_MANIFEST.sha256"
-          jq -e '.verdict=="PASS_GATE21_ARTIFACT_FINGERPRINT" and .production==false and .writes.hostingDeploys==0 and .writes.runtimeDeploys==0' "$OUT_DIR/GATE21_RELEASE_MANIFEST.json" >/dev/null
-          echo "GATE21_MANIFEST_SHA256=$(awk '{print $1}' "$OUT_DIR/GATE21_RELEASE_MANIFEST.sha256")"
-
-      - name: Final Gate 21 verdict
-        run: |
-          set -euo pipefail
-          test -s "$OUT_DIR/GATE21_RELEASE_MANIFEST.json"
-          test -s "$OUT_DIR/hosting-app.tar"
-          test -s "$OUT_DIR/backend-source.tar"
-          grep -q '^sha256:' "$OUT_DIR/runtime-image-digest.txt"
+          MANIFEST_SHA="$(awk '{print $1}' "$OUT_DIR/GATE21_RELEASE_MANIFEST.sha256")"
+          echo "GATE21_MANIFEST_SHA256=$MANIFEST_SHA"
           echo "PASS_GATE21_ARTIFACT_FINGERPRINT source=$GATE20_SOURCE_SHA gate20Run=$GATE20_RUN_ID hostingDeploys=0 runtimeDeploys=0 providerWrites=0 hrWrites=0 production=false"
 
       - name: Upload immutable Gate 21 certification package
