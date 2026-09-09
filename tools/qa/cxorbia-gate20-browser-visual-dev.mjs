@@ -28,7 +28,8 @@ ensure(staff,'AUTH_FAILURE',{blocker:'GATE20_AUTHORIZED_ADMIN_MISSING'});
 
 let chromium;try{({chromium}=await import('playwright'));}catch{finish('ENVIRONMENT_FAILURE',{blocker:'GATE20_PLAYWRIGHT_UNAVAILABLE'});}
 const browser=await chromium.launch({headless:true});
-const baseUrl=`${HOSTING_URL}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cxProjectId=${encodeURIComponent(projectId)}&cxProtectedRuntime=${PROTECTED}&cxTechnicalAuthE2E=${TECH}`;
+const humanUrl=`${HOSTING_URL}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cxProjectId=${encodeURIComponent(projectId)}&cxProtectedRuntime=${PROTECTED}`;
+const technicalUrl=`${humanUrl}&cxTechnicalAuthE2E=${TECH}`;
 const allPageErrors=[];
 const captures=[];
 
@@ -43,7 +44,7 @@ async function shellMetrics(page,label){
 }
 
 async function authenticateAdmin(page,token){
-  await page.goto(baseUrl,{waitUntil:'domcontentloaded',timeout:90000});
+  await page.goto(technicalUrl,{waitUntil:'domcontentloaded',timeout:90000});
   await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);await firebase.auth().signInWithCustomToken(t);},token);
   await page.reload({waitUntil:'domcontentloaded',timeout:90000});
   await page.waitForFunction(({tenantId,projectId})=>{const c=window.CX?.backendAuth?.context?.()||{};return c.authenticated===true&&c.tenantId===tenantId&&['super','admin'].includes(String(c.role||''))&&(c.role==='super'||(Array.isArray(c.projectIds)&&c.projectIds.map(String).includes(projectId)))&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true;},{tenantId,projectId},{timeout:120000});
@@ -63,20 +64,22 @@ async function routeCapture(page,kind,route,expected){
 }
 
 try{
-  // Fresh unauthenticated login shell, desktop and mobile.
+  // Fresh unauthenticated HUMAN product login shell, desktop and mobile.
+  // The technical E2E flag intentionally renders a separate technical credential gate and must
+  // never be used to judge the customer-facing product login.
   for(const cfg of [{kind:'login-desktop',viewport:{width:1440,height:1000}},{kind:'login-mobile',viewport:{width:390,height:844}}]){
     const ctx=await browser.newContext({viewport:cfg.viewport}),page=await ctx.newPage(),errs=[];
     page.on('pageerror',e=>{const msg=str(e?.message||e).slice(0,500);errs.push(msg);allPageErrors.push(`${cfg.kind}:${msg}`);});
-    await page.goto(baseUrl,{waitUntil:'domcontentloaded',timeout:90000});
+    await page.goto(humanUrl,{waitUntil:'domcontentloaded',timeout:90000});
     await page.waitForSelector('#login',{state:'visible',timeout:30000});
-    const m=await page.evaluate(()=>{const login=document.querySelector('#login'),r=login?.getBoundingClientRect(),de=document.documentElement,b=document.body;return {loginVisible:!!login&&r.width>0&&r.height>0,hasRoleChoice:document.querySelectorAll('.lg2-role,.role-btn').length>0,hasInput:document.querySelectorAll('input').length>0,overflowX:Math.max(0,Math.max(de.scrollWidth,b?.scrollWidth||0)-window.innerWidth),width:window.innerWidth,height:window.innerHeight};});
+    const m=await page.evaluate(()=>{const login=document.querySelector('#login'),r=login?.getBoundingClientRect(),de=document.documentElement,b=document.body,text=String(b?.innerText||'');const entry=window.CX_DEV_ENTRY_CANONICAL||{};return {loginVisible:!!login&&r.width>0&&r.height>0,hasInput:document.querySelectorAll('#login input').length>0,hasSubmit:document.querySelectorAll('#login button,#login [role="button"]').length>0,singleVisibleProductLogin:entry.singleVisibleProductLogin===true,technicalAuth:entry.technicalAuth===true,technicalGateVisible:/USUARIO TÉCNICO|CONTRASEÑA TÉCNICA/i.test(text),overflowX:Math.max(0,Math.max(de.scrollWidth,b?.scrollWidth||0)-window.innerWidth),width:window.innerWidth,height:window.innerHeight};});
     await page.screenshot({path:path.join(OUT,`gate20-${cfg.kind}.png`),fullPage:true});
     captures.push({file:`gate20-${cfg.kind}.png`,...m,pageErrors:errs});
-    ensure(m.loginVisible&&m.hasRoleChoice&&m.hasInput&&m.overflowX<=16&&errs.length===0,'VISUAL_DEFECT',{blocker:'GATE20_LOGIN_VISUAL_INVALID',kind:cfg.kind,metrics:m,pageErrors:errs});
+    ensure(m.loginVisible&&m.hasInput&&m.hasSubmit&&m.singleVisibleProductLogin===true&&m.technicalAuth===false&&m.technicalGateVisible===false&&m.overflowX<=16&&errs.length===0,'VISUAL_DEFECT',{blocker:'GATE20_HUMAN_LOGIN_VISUAL_INVALID',kind:cfg.kind,metrics:m,pageErrors:errs});
     await ctx.close();
   }
 
-  // Desktop current Admin surfaces.
+  // Desktop current Admin surfaces. Technical mode is only an authenticated QA mechanism.
   {
     const ctx=await browser.newContext({viewport:{width:1440,height:1000}}),page=await ctx.newPage();
     page.on('pageerror',e=>allPageErrors.push(`desktop:${str(e?.message||e).slice(0,500)}`));
@@ -98,7 +101,7 @@ try{
 ensure(allPageErrors.length===0,'VISUAL_DEFECT',{blocker:'GATE20_BROWSER_PAGE_ERRORS',pageErrors:allPageErrors});
 finish('PASS_GATE20_BROWSER_VISUAL',{
   sourceSha:process.env.SOURCE_SHA||null,lockedGate19RunId:Number(g19.lockedRunId)||null,tenantId,projectId,periodId:str(g19.periodId),
-  loginDesktop:true,loginMobile:true,adminDesktopRoutes:['dashboard','visitas','postulaciones','shoppers'],adminMobileRoutes:['dashboard','visitas','shoppers'],
+  loginDesktop:true,loginMobile:true,humanProductLoginSeparatedFromTechnicalQa:true,adminDesktopRoutes:['dashboard','visitas','postulaciones','shoppers'],adminMobileRoutes:['dashboard','visitas','shoppers'],
   screenshots:captures.map(x=>x.file),captureCount:captures.length,maxOverflowX:Math.max(...captures.map(x=>Number(x.overflowX||0))),pageErrors:allPageErrors,
   domMarkersExact:true,hrAuthorityApplied:true,blockingUnexpectedModal:false,shopperVisualContinuityFromGate19:true,humanLegalAcceptanceReexecuted:false,legalAcceptanceBypass:false
 },0);
