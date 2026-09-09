@@ -124,8 +124,8 @@ jobs:
             echo "::error::runtime health HTTP request failed"
             exit 1
           fi
-          if ! jq -e '.ok == true and .service == "cxorbia-live-hr-runtime"' "$OUT_DIR/runtime-health.json" >/dev/null; then
-            echo "::error::runtime health contract mismatch"
+          if ! jq -e '.ok == true and .service == "cxorbia-live-hr-source-safe" and .revisionStable == true and .shopperReconciliationReady == true and .visitReconciliationReady == true and .writes == false and .hrWrites == false and .production == false' "$OUT_DIR/runtime-health.json" >/dev/null; then
+            echo "::error::runtime health contract mismatch against Gate20 source"
             cat "$OUT_DIR/runtime-health.json"
             exit 1
           fi
