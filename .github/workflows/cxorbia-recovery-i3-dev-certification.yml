@@ -242,16 +242,33 @@ jobs:
 
           const fresh=JSON.parse(fs.readFileSync(path.join(outDir,'hr-fresh.json'),'utf8'));
           const mapping=JSON.parse(fs.readFileSync('backend/contracts/tya-hr-column-map-r20-v1.json','utf8'));
+          const sourceContractText=fs.readFileSync('app/data/tya-hr-source-safe-periods.js','utf8').replace(/^\uFEFF/,'');
+          const sourceContractMatch=sourceContractText.match(/window\.CX_TYA_HR_SOURCE_SAFE\s*=\s*([\s\S]*?);\s*$/);
+          if(!sourceContractMatch)throw new Error('P0B_SEALED_SOURCE_CONTRACT_PARSE_FAILED');
+          const sourceContract=JSON.parse(sourceContractMatch[1]);
           const sourceRevision=String(fresh?._runtime?.revision||'').trim();
           const freshTenant=String(fresh?.tenantId||fresh?.tenantConfig?.tenantId||'').trim();
           const freshProject=String(fresh?.projectId||fresh?.projectConfig?.projectId||'').trim();
           const freshName=String(fresh?.projectName||fresh?.projectConfig?.projectName||'').trim();
           const freshCountries=Array.isArray(fresh?.projectConfig?.countries)?fresh.projectConfig.countries.map(String).filter(Boolean):[];
-          const sourceId=String(fresh?.projectConfig?.hrSourceId||'').trim();
-          const sourceType=String(fresh?.source?.type||'').trim();
-          if(fresh?.sourceSafe!==true||!sourceRevision||freshTenant!==tenantId||freshProject!==projectId||!freshName||!freshCountries.length||!sourceId)throw new Error('P0B_AUTHORITATIVE_HR_PROJECT_CONTRACT_INVALID');
-          if(!/^google_sheets(?:_|$)/.test(sourceType))throw new Error('P0B_AUTHORITATIVE_HR_PROVIDER_UNEXPECTED:'+sourceType);
+          const contractTenant=String(sourceContract?.tenantId||sourceContract?.tenantConfig?.tenantId||'').trim();
+          const contractProject=String(sourceContract?.projectId||sourceContract?.projectConfig?.projectId||'').trim();
+          const contractName=String(sourceContract?.projectName||sourceContract?.projectConfig?.projectName||'').trim();
+          const contractCountries=Array.isArray(sourceContract?.projectConfig?.countries)?sourceContract.projectConfig.countries.map(String).filter(Boolean):[];
+          const sourceId=String(sourceContract?.projectConfig?.hrSourceId||'').trim();
+          const freshSourceType=String(fresh?.source?.type||'').trim();
+          const contractSourceType=String(sourceContract?.source?.type||'').trim();
+          if(fresh?.sourceSafe!==true||!sourceRevision)throw new Error('P0B_LIVE_HR_REVISION_INVALID');
+          if(freshTenant&&freshTenant!==tenantId)throw new Error('P0B_LIVE_TENANT_CONFLICT');
+          if(freshProject&&freshProject!==projectId)throw new Error('P0B_LIVE_PROJECT_CONFLICT');
+          if(contractTenant!==tenantId||contractProject!==projectId||!contractName||!contractCountries.length||!sourceId)throw new Error('P0B_SEALED_SOURCE_CONTRACT_INVALID');
+          if(freshName&&normalizeName(freshName)!==normalizeName(contractName))throw new Error('P0B_LIVE_PROJECT_NAME_CONFLICT');
+          if(freshCountries.length&&!sameStrings(freshCountries,contractCountries))throw new Error('P0B_LIVE_COUNTRIES_CONFLICT');
+          if(!/^google_sheets(?:_|$)/.test(freshSourceType||contractSourceType))throw new Error('P0B_AUTHORITATIVE_HR_PROVIDER_UNEXPECTED:'+(freshSourceType||contractSourceType));
+          if(String(fresh?.source?.columnMapContract||mapping?.contractId||'')!==String(mapping?.contractId||''))throw new Error('P0B_LIVE_MAPPING_CONTRACT_CONFLICT');
           if(String(mapping?.contractId||'')!=='tya-hr-column-map-r20-v1'||String(mapping?.tenantId||'')!==tenantId||String(mapping?.projectId||'')!==projectId)throw new Error('P0B_CANONICAL_MAPPING_CONTRACT_INVALID');
+          const authoritativeName=freshName||contractName;
+          const authoritativeCountries=freshCountries.length?freshCountries:contractCountries;
 
           const canonicalSource={
             mode:'external',
@@ -282,8 +299,8 @@ jobs:
               Boolean(String(before.materializationAuthorizationId||'').trim()) &&
               Boolean(String(before.materializationState||'').trim()) &&
               before.production!==true &&
-              normalizeName(before.name)===normalizeName(freshName) &&
-              sameStrings(before.countries,freshCountries);
+              normalizeName(before.name)===normalizeName(authoritativeName) &&
+              sameStrings(before.countries,authoritativeCountries);
             if(!legacyShapeOk)throw new Error('P0B_LEGACY_PROJECT_BOOTSTRAP_NOT_AUTHORIZED_BY_SHAPE');
             await db.runTransaction(async tx=>{
               const snap=await tx.get(ref);
@@ -297,13 +314,13 @@ jobs:
                 Boolean(String(current.materializationAuthorizationId||'').trim()) &&
                 Boolean(String(current.materializationState||'').trim()) &&
                 current.production!==true &&
-                normalizeName(current.name)===normalizeName(freshName) &&
-                sameStrings(current.countries,freshCountries);
+                normalizeName(current.name)===normalizeName(authoritativeName) &&
+                sameStrings(current.countries,authoritativeCountries);
               if(!currentShapeOk)throw new Error('P0B_LEGACY_PROJECT_BOOTSTRAP_RACE_OR_DRIFT');
               tx.set(ref,{
                 operationalSource:canonicalSource,
                 hrSourceId:sourceId,
-                normalizedName:normalizeName(freshName),
+                normalizedName:normalizeName(authoritativeName),
                 version:Number(current.version||0)
               },{merge:true});
             });
@@ -325,7 +342,7 @@ jobs:
           if(!sourceMatches(safeSource))throw new Error('P0B_DURABLE_SOURCE_NOT_CANONICAL');
           if(String(before.hrSourceId||'')!==sourceId)throw new Error('P0B_DURABLE_HR_SOURCE_ID_MISMATCH');
           if(normalizeName(before.normalizedName)!==normalizeName(name))throw new Error('P0B_DURABLE_NORMALIZED_NAME_MISSING');
-          if(!name||!countries.length||!sameStrings(countries,freshCountries))throw new Error('P0B_CURRENT_PROJECT_CONTRACT_INCOMPLETE');
+          if(!name||!countries.length||!sameStrings(countries,authoritativeCountries))throw new Error('P0B_CURRENT_PROJECT_CONTRACT_INCOMPLETE');
 
           const allowedValueKeys=new Set(['mode','type','providerType','readPolicy','writePolicy','providerBindingId','integrationSettingId','providerRef','mappingRef','hrSourceType','questionnaireSource','sourceType','status','version','id','projectId','tenantId','periodId','routeSource','name','normalizedName']);
           const sanitize=(value,key='')=>{
