@@ -57,11 +57,7 @@ jobs:
           test "$(git rev-parse "$FUNCTIONAL_SOURCE_SHA")" = "$FUNCTIONAL_SOURCE_SHA"
           test "$(git rev-parse "$GATE20_SOURCE_SHA")" = "$GATE20_SOURCE_SHA"
           git merge-base --is-ancestor "$FUNCTIONAL_SOURCE_SHA" HEAD
-
-          # No functional product drift after the final P0 candidate.
           git diff --quiet "$FUNCTIONAL_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc
-
-          # Gate 20 remains authoritative for visual/Hosting because its deployable surface is byte-identical.
           test "$(git rev-parse "$GATE20_SOURCE_SHA:app")" = "$(git rev-parse "$FUNCTIONAL_SOURCE_SHA:app")"
           test "$(git rev-parse "$GATE20_SOURCE_SHA:firebase.json")" = "$(git rev-parse "$FUNCTIONAL_SOURCE_SHA:firebase.json")"
           test "$(git rev-parse "$GATE20_SOURCE_SHA:.firebaserc")" = "$(git rev-parse "$FUNCTIONAL_SOURCE_SHA:.firebaserc")"
@@ -96,10 +92,10 @@ jobs:
           curl --fail --silent --show-error \
             -H "Authorization: Bearer $GH_TOKEN" \
             -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$GATE20_RUN_ID" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$GATE20_RUN_ID/attempts/$GATE20_RUN_ATTEMPT" \
             > "$OUT_DIR/gate20-run.json"
-          jq -e --arg sha "$GATE20_SOURCE_SHA" \
-            '.head_sha==$sha and .status=="completed" and .conclusion=="success"' \
+          jq -e --arg sha "$GATE20_SOURCE_SHA" --argjson attempt "$GATE20_RUN_ATTEMPT" \
+            '.head_sha==$sha and .run_attempt==$attempt and .status=="completed" and .conclusion=="success"' \
             "$OUT_DIR/gate20-run.json" >/dev/null
 
           curl --fail --silent --show-error \
@@ -124,8 +120,7 @@ jobs:
             --arg digest "$P0_ARTIFACT_DIGEST" \
             '.id==$id and .expired==false and .name==$name and .digest==$digest and .workflow_run.id==$run and .workflow_run.head_sha==$sha' \
             "$OUT_DIR/p0-artifact.json" >/dev/null
-
-          echo "PASS_GATE21_CERTIFICATION_BINDING gate20Run=$GATE20_RUN_ID p0Run=$P0_RUN_ID p0Artifact=$P0_ARTIFACT_ID"
+          echo "PASS_GATE21_CERTIFICATION_BINDING gate20Run=$GATE20_RUN_ID gate20Attempt=$GATE20_RUN_ATTEMPT p0Run=$P0_RUN_ID p0Artifact=$P0_ARTIFACT_ID"
 
       - name: Authenticate Google Cloud DEV for read-only fingerprint
         uses: google-github-actions/auth@v2
@@ -296,6 +291,7 @@ jobs:
             --arg firebasercBlob "$FIREBASERC_BLOB" \
             --arg gate20Source "$GATE20_SOURCE_SHA" \
             --arg gate20Run "$GATE20_RUN_ID" \
+            --arg gate20Attempt "$GATE20_RUN_ATTEMPT" \
             --arg p0Run "$P0_RUN_ID" \
             --arg p0ArtifactId "$P0_ARTIFACT_ID" \
             --arg p0ArtifactDigest "$P0_ARTIFACT_DIGEST" \
@@ -310,19 +306,8 @@ jobs:
             --arg imageDigest "$IMAGE_DIGEST" \
             --arg immutableImage "$IMMUTABLE_IMAGE" \
             --arg productionHostingSite "$PRODUCTION_HOSTING_SITE" \
-            '{
-              schemaVersion:"cxorbia.recovery.i3.gate21.release-manifest.v5",
-              gate:21,
-              verdict:"PASS_GATE21_ARTIFACT_FINGERPRINT",
-              production:false,
-              source:{functionalSourceSha:$sourceSha,treeSha:$sourceTree,appTreeSha:$appTree,backendTreeSha:$backendTree,firebaseJsonBlobSha:$firebaseBlob,firebasercBlobSha:$firebasercBlob},
-              evidence:{gate20VisualSourceSha:$gate20Source,gate20RunId:$gate20Run,p0ValidationRunId:$p0Run,p0ArtifactId:$p0ArtifactId,p0ArtifactDigest:$p0ArtifactDigest},
-              hostingCertifiedArtifact:{projectId:"cxorbia-backend-dev",site:"cxorbia-backend-dev",releaseName:$releaseName,versionName:$versionName,versionId:$versionId,releaseTime:$releaseTime,status:"FINALIZED",activeFileInventorySha256:$hostingInventorySha,servingConfigSha256:$hostingConfigSha,gate20OwnerParityCount:12},
-              runtimeCertifiedArtifact:{projectId:"cxorbia-backend-dev",region:"us-central1",service:"cxorbia-live-hr-dev",revision:$revision,revisionCreationTime:$runtimeCreation,imageDigest:$imageDigest,immutableImage:$immutableImage},
-              promotion:{hosting:{targetSite:$productionHostingSite,noRebuild:true,noRecomposition:true,exactVersionRequired:true},runtime:{noBuild:true,immutableImageRequired:true}},
-              invariants:{artifactDeployedMustEqualArtifactCertified:true,productionAuthorizationRequired:true,fullHeadRoutineDeploy:false},
-              writes:{hostingDeploys:0,runtimeDeploys:0,providerWrites:0,hrWrites:0,production:false}
-            }' > "$OUT_DIR/GATE21_RELEASE_MANIFEST.json"
+            '{schemaVersion:"cxorbia.recovery.i3.gate21.release-manifest.v5",gate:21,verdict:"PASS_GATE21_ARTIFACT_FINGERPRINT",production:false,source:{functionalSourceSha:$sourceSha,treeSha:$sourceTree,appTreeSha:$appTree,backendTreeSha:$backendTree,firebaseJsonBlobSha:$firebaseBlob,firebasercBlobSha:$firebasercBlob},evidence:{gate20VisualSourceSha:$gate20Source,gate20RunId:$gate20Run,gate20RunAttempt:$gate20Attempt,p0ValidationRunId:$p0Run,p0ArtifactId:$p0ArtifactId,p0ArtifactDigest:$p0ArtifactDigest},hostingCertifiedArtifact:{projectId:"cxorbia-backend-dev",site:"cxorbia-backend-dev",releaseName:$releaseName,versionName:$versionName,versionId:$versionId,releaseTime:$releaseTime,status:"FINALIZED",activeFileInventorySha256:$hostingInventorySha,servingConfigSha256:$hostingConfigSha,gate20OwnerParityCount:12},runtimeCertifiedArtifact:{projectId:"cxorbia-backend-dev",region:"us-central1",service:"cxorbia-live-hr-dev",revision:$revision,revisionCreationTime:$runtimeCreation,imageDigest:$imageDigest,immutableImage:$immutableImage},promotion:{hosting:{targetSite:$productionHostingSite,noRebuild:true,noRecomposition:true,exactVersionRequired:true},runtime:{noBuild:true,immutableImageRequired:true}},invariants:{artifactDeployedMustEqualArtifactCertified:true,productionAuthorizationRequired:true,fullHeadRoutineDeploy:false},writes:{hostingDeploys:0,runtimeDeploys:0,providerWrites:0,hrWrites:0,production:false}}' \
+            > "$OUT_DIR/GATE21_RELEASE_MANIFEST.json"
           sha256sum "$OUT_DIR/GATE21_RELEASE_MANIFEST.json" > "$OUT_DIR/GATE21_RELEASE_MANIFEST.sha256"
           MANIFEST_SHA="$(awk '{print $1}' "$OUT_DIR/GATE21_RELEASE_MANIFEST.sha256")"
           echo "GATE21_MANIFEST_SHA256=$MANIFEST_SHA"
