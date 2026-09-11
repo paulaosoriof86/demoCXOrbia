@@ -37,6 +37,7 @@ env:
   GCP_PROJECT_ID: cxorbia-backend-dev
   GCP_REGION: us-central1
   CLOUD_RUN_SERVICE: cxorbia-live-hr-dev
+  CLOUD_RUN_RUNTIME_SA: firebase-adminsdk-fbsvc@cxorbia-backend-dev.iam.gserviceaccount.com
   HOSTING_URL: https://cxorbia-backend-dev.web.app
   TENANT_ID: tya
   PROJECT_ID: cinepolis
@@ -161,6 +162,33 @@ jobs:
           set -euo pipefail
           gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json > "$OUT/cloud-run-before.json"
 
+      - name: Restore exact historical DEV Artifact Registry read binding if drifted
+        run: |
+          set -euo pipefail
+          member="serviceAccount:${CLOUD_RUN_RUNTIME_SA}"
+          gcloud artifacts repositories get-iam-policy gcr.io \
+            --location us \
+            --project "$GCP_PROJECT_ID" \
+            --format=json > "$OUT/artifact-registry-policy-before.json" || true
+          gcloud artifacts repositories add-iam-policy-binding gcr.io \
+            --location us \
+            --project "$GCP_PROJECT_ID" \
+            --member "$member" \
+            --role roles/artifactregistry.reader \
+            --quiet
+          gcloud artifacts repositories get-iam-policy gcr.io \
+            --location us \
+            --project "$GCP_PROJECT_ID" \
+            --format=json > "$OUT/artifact-registry-policy-after.json"
+          jq -e --arg member "$member" \
+            '.bindings[] | select(.role=="roles/artifactregistry.reader") | .members[] | select(.==$member)' \
+            "$OUT/artifact-registry-policy-after.json" >/dev/null
+          jq -n -S \
+            --arg repository "projects/${GCP_PROJECT_ID}/locations/us/repositories/gcr.io" \
+            --arg member "$member" \
+            '{decision:"PASS_DEV_ARTIFACT_REGISTRY_READER_READBACK",repository:$repository,member:$member,role:"roles/artifactregistry.reader",production:false}' \
+            > "$OUT/artifact-registry-binding.json"
+
       - name: Build exact P0 source image for DEV
         run: |
           set -euo pipefail
@@ -180,6 +208,7 @@ jobs:
             --project "$GCP_PROJECT_ID" \
             --region "$GCP_REGION" \
             --image "$IMAGE_URI" \
+            --service-account "$CLOUD_RUN_RUNTIME_SA" \
             --quiet
           gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json > "$OUT/cloud-run-after.json"
           jq -e --arg image "$IMAGE_URI" '.spec.template.spec.containers[0].image==$image' "$OUT/cloud-run-after.json" >/dev/null
