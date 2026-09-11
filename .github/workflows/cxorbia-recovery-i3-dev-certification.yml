@@ -162,33 +162,6 @@ jobs:
           set -euo pipefail
           gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json > "$OUT/cloud-run-before.json"
 
-      - name: Restore exact historical DEV Artifact Registry read binding if drifted
-        run: |
-          set -euo pipefail
-          member="serviceAccount:${CLOUD_RUN_RUNTIME_SA}"
-          gcloud artifacts repositories get-iam-policy gcr.io \
-            --location us \
-            --project "$GCP_PROJECT_ID" \
-            --format=json > "$OUT/artifact-registry-policy-before.json" || true
-          gcloud artifacts repositories add-iam-policy-binding gcr.io \
-            --location us \
-            --project "$GCP_PROJECT_ID" \
-            --member "$member" \
-            --role roles/artifactregistry.reader \
-            --quiet
-          gcloud artifacts repositories get-iam-policy gcr.io \
-            --location us \
-            --project "$GCP_PROJECT_ID" \
-            --format=json > "$OUT/artifact-registry-policy-after.json"
-          jq -e --arg member "$member" \
-            '.bindings[] | select(.role=="roles/artifactregistry.reader") | .members[] | select(.==$member)' \
-            "$OUT/artifact-registry-policy-after.json" >/dev/null
-          jq -n -S \
-            --arg repository "projects/${GCP_PROJECT_ID}/locations/us/repositories/gcr.io" \
-            --arg member "$member" \
-            '{decision:"PASS_DEV_ARTIFACT_REGISTRY_READER_READBACK",repository:$repository,member:$member,role:"roles/artifactregistry.reader",production:false}' \
-            > "$OUT/artifact-registry-binding.json"
-
       - name: Build exact P0 source image for DEV
         run: |
           set -euo pipefail
