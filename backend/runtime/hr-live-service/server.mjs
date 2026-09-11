@@ -134,6 +134,10 @@ function shopperPolicy(snapshot){
   const scope=snapshotScope(snapshot);
   return {schemaVersion:'cxorbia.shopper-command-provider-policy.v1',enabled:true,allowedTenantIds:[scope.tenantId],allowedProjectIds:[scope.projectId],hrWrites:false,externalWrites:false,fuzzyMatching:false};
 }
+function projectPolicy(snapshot){
+  const scope=snapshotScope(snapshot);
+  return {schemaVersion:'cxorbia.project-command-provider-policy.v1',enabled:true,allowedTenantIds:[scope.tenantId],allowedProjectIds:[scope.projectId],externalProviderWrites:false,hrWrites:false,makeCalls:false,geminiCalls:false,paymentWrites:false};
+}
 function operationalPolicy(snapshot){
   const scope=snapshotScope(snapshot);
   return {schemaVersion:'cxorbia.operational.provider-policy.v1',enabled:true,allowedTenantIds:[scope.tenantId],allowedProjectIds:[scope.projectId],conflictPolicy:'review_no_silent_overwrite',hrWrites:false,makeCalls:false,geminiCalls:false,storageWrites:false,paymentWrites:false};
@@ -144,6 +148,7 @@ function configureCommandRuntime(snapshot){
   globalThis.CXORBIA_COMMAND_AUTH=auth;
   globalThis.CXORBIA_COMMAND_DB=db;
   globalThis.CXORBIA_SHOPPER_COMMAND_PROVIDER_POLICY=shopperPolicy(snapshot);
+  globalThis.CXORBIA_PROJECT_COMMAND_PROVIDER_POLICY=projectPolicy(snapshot);
   globalThis.CXORBIA_OPERATIONAL_COMMAND_PROVIDER_POLICY=operationalPolicy(snapshot);
 }
 async function reconcileAuthoritativeShoppers(current){
