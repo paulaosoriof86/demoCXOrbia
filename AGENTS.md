@@ -40,17 +40,25 @@ Antes de cada write técnico:
 
 Un manifest o checkpoint histórico es evidencia inmutable. No se reescribe para convertirlo en puntero vivo. Cada candidata certificable debe producir su propio manifest/receipt ligado al source y artefacto exactos.
 
-## 4. Escritor único por iteración
+## 4. Escritor único por intento — decisión prevalente ratificada 2026-09-10
 
-La política del Plan Rector Recovery manda sobre contratos históricos de runners:
+La decisión operativa posterior de Paula sustituye, para Recovery, la restricción histórica que exigía Codex como escritor ordinario.
 
-- I0: sin Codex/write funcional.
-- I1: sin Codex, salvo fixtures mecánicos expresamente previstos.
-- I2: Codex es el escritor técnico principal del paquete autosuficiente.
-- I3: Codex escribe únicamente P0 `PROVEN`, con owner/archivo exactos y tests focales. Otros agentes y esta capa de control son read-only respecto del código funcional, salvo decisión Recovery posterior explícita.
-- I4: sin cambios de código salvo P0 de código nuevamente demostrado; deploy por carril único del artefacto ya certificado.
+- Escritor técnico primario: la sesión de ChatGPT que opera directamente sobre GitHub en el carril Recovery, con `expectedParentSha`/tree, allowlist focal, readback y gates reproducibles.
+- Codex no es prerrequisito de I2, I3 ni I4. Queda como excepción opcional únicamente si Paula lo solicita expresamente o una limitación técnica demostrable impide ejecutar el paquete de forma segura desde el carril directo.
+- Solo puede existir un escritor activo por intento. No alternar ChatGPT/Codex/agentes sobre el mismo paquete ni crear carriles paralelos.
+- I0 e I1 conservan sus restricciones de modificación definidas por el Plan Rector y sus gates.
+- I2 permite el paquete técnico autosuficiente previsto por el Plan, ejecutado por el escritor primario vigente.
+- I3 permite únicamente correcciones P0 `PROVEN`, con owner/archivo exactos, alcance mínimo y tests focales. No autoriza “arreglar todo CXOrbia”.
+- I4 no permite cambios de código salvo un P0 de código nuevamente demostrado; el deploy sigue siendo por el carril único del artefacto ya certificado y requiere autorización productiva explícita.
 
-Los mecanismos históricos que permitan escritura directa no vuelven opcional esta política. No pedir a Codex “arreglar todo CXOrbia”; cada paquete debe ser focal, reproducible y fail-closed.
+Control de cambio de gobernanza:
+
+- BEFORE: el router raíz heredaba la política inicial “Codex-only” para I2/I3.
+- AFTER: ChatGPT directo es el escritor primario de Recovery; Codex es opcional/excepcional.
+- Gates impactados: solo mecanismo de ejecución/continuidad; no altera por sí mismo ningún PASS funcional ni autoriza producción.
+- Criterio de aceptación: todo write directo debe cumplir sección 3, limitarse al owner probado, producir readback y no crear una segunda candidata.
+- Owner: autoridad Recovery ratificada por Paula; este `AGENTS.md` actúa como router operativo, no como sustituto de los documentos fuente.
 
 ## 5. Reglas anti-bucle
 
