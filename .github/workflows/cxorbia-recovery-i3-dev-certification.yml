@@ -222,6 +222,8 @@ jobs:
           const project=process.env.GCP_PROJECT_ID,tenantId=process.env.TENANT_ID,projectId=process.env.PROJECT_ID,periodId=process.env.PERIOD_ID;
           const hosting=String(process.env.HOSTING_URL).replace(/\/$/,'');
           const outDir=process.env.OUT;
+          const normalizeName=value=>String(value||'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ');
+          const sameStrings=(left,right)=>JSON.stringify([...new Set((left||[]).map(String).filter(Boolean))].sort())===JSON.stringify([...new Set((right||[]).map(String).filter(Boolean))].sort());
           if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:project});
           const auth=getAuth(),db=getFirestore();
           const memberDocs=(await db.collection('tenants').doc(tenantId).collection('users').get()).docs;
@@ -238,10 +240,77 @@ jobs:
           }
           if(!actor)throw new Error('P0B_AUTHORIZED_ADMIN_WITH_CLAIMS_MISSING');
 
+          const fresh=JSON.parse(fs.readFileSync(path.join(outDir,'hr-fresh.json'),'utf8'));
+          const mapping=JSON.parse(fs.readFileSync('backend/contracts/tya-hr-column-map-r20-v1.json','utf8'));
+          const sourceRevision=String(fresh?._runtime?.revision||'').trim();
+          const freshTenant=String(fresh?.tenantId||fresh?.tenantConfig?.tenantId||'').trim();
+          const freshProject=String(fresh?.projectId||fresh?.projectConfig?.projectId||'').trim();
+          const freshName=String(fresh?.projectName||fresh?.projectConfig?.projectName||'').trim();
+          const freshCountries=Array.isArray(fresh?.projectConfig?.countries)?fresh.projectConfig.countries.map(String).filter(Boolean):[];
+          const sourceId=String(fresh?.projectConfig?.hrSourceId||'').trim();
+          const sourceType=String(fresh?.source?.type||'').trim();
+          if(fresh?.sourceSafe!==true||!sourceRevision||freshTenant!==tenantId||freshProject!==projectId||!freshName||!freshCountries.length||!sourceId)throw new Error('P0B_AUTHORITATIVE_HR_PROJECT_CONTRACT_INVALID');
+          if(!/^google_sheets(?:_|$)/.test(sourceType))throw new Error('P0B_AUTHORITATIVE_HR_PROVIDER_UNEXPECTED:'+sourceType);
+          if(String(mapping?.contractId||'')!=='tya-hr-column-map-r20-v1'||String(mapping?.tenantId||'')!==tenantId||String(mapping?.projectId||'')!==projectId)throw new Error('P0B_CANONICAL_MAPPING_CONTRACT_INVALID');
+
+          const canonicalSource={
+            mode:'external',
+            providerType:'google_sheets',
+            readPolicy:'external_live',
+            writePolicy:'external_read_only',
+            providerRef:sourceId,
+            mappingRef:String(mapping.contractId)
+          };
+          const sourceMatches=value=>Boolean(value)
+            && String(value.mode||'')===canonicalSource.mode
+            && String(value.providerType||'')===canonicalSource.providerType
+            && String(value.readPolicy||'')===canonicalSource.readPolicy
+            && String(value.writePolicy||'')===canonicalSource.writePolicy
+            && String(value.providerRef||'')===canonicalSource.providerRef
+            && String(value.mappingRef||'')===canonicalSource.mappingRef;
           const ref=db.collection('tenants').doc(tenantId).collection('projects').doc(projectId);
           const beforeSnap=await ref.get();
           if(!beforeSnap.exists)throw new Error('P0B_PROJECT_MISSING');
-          const before=beforeSnap.data()||{};
+          let before=beforeSnap.data()||{};
+          let bootstrapApplied=false;
+          const hasDurableSource=Boolean(before.operationalSource||before.routeSource);
+          if(!hasDurableSource){
+            const legacyShapeOk=
+              String(before.tenantId||'')===tenantId &&
+              String(before.projectId||'')===projectId &&
+              Boolean(String(before.materializationPlanId||'').trim()) &&
+              Boolean(String(before.materializationAuthorizationId||'').trim()) &&
+              Boolean(String(before.materializationState||'').trim()) &&
+              before.production!==true &&
+              normalizeName(before.name)===normalizeName(freshName) &&
+              sameStrings(before.countries,freshCountries);
+            if(!legacyShapeOk)throw new Error('P0B_LEGACY_PROJECT_BOOTSTRAP_NOT_AUTHORIZED_BY_SHAPE');
+            await db.runTransaction(async tx=>{
+              const snap=await tx.get(ref);
+              if(!snap.exists)throw new Error('P0B_PROJECT_DISAPPEARED_DURING_BOOTSTRAP');
+              const current=snap.data()||{};
+              if(current.operationalSource||current.routeSource)return;
+              const currentShapeOk=
+                String(current.tenantId||'')===tenantId &&
+                String(current.projectId||'')===projectId &&
+                Boolean(String(current.materializationPlanId||'').trim()) &&
+                Boolean(String(current.materializationAuthorizationId||'').trim()) &&
+                Boolean(String(current.materializationState||'').trim()) &&
+                current.production!==true &&
+                normalizeName(current.name)===normalizeName(freshName) &&
+                sameStrings(current.countries,freshCountries);
+              if(!currentShapeOk)throw new Error('P0B_LEGACY_PROJECT_BOOTSTRAP_RACE_OR_DRIFT');
+              tx.set(ref,{
+                operationalSource:canonicalSource,
+                hrSourceId:sourceId,
+                normalizedName:normalizeName(freshName),
+                version:Number(current.version||0)
+              },{merge:true});
+            });
+            bootstrapApplied=true;
+            before=(await ref.get()).data()||{};
+          }
+
           const rawSource=before.operationalSource||before.routeSource||{};
           const safeSource={
             mode:String(rawSource.mode||''),
@@ -253,6 +322,10 @@ jobs:
           const countries=Array.isArray(before.countries)?before.countries.map(String).filter(Boolean):[];
           const name=String(before.name||'').trim();
           const version=Number(before.version||0);
+          if(!sourceMatches(safeSource))throw new Error('P0B_DURABLE_SOURCE_NOT_CANONICAL');
+          if(String(before.hrSourceId||'')!==sourceId)throw new Error('P0B_DURABLE_HR_SOURCE_ID_MISMATCH');
+          if(normalizeName(before.normalizedName)!==normalizeName(name))throw new Error('P0B_DURABLE_NORMALIZED_NAME_MISSING');
+          if(!name||!countries.length||!sameStrings(countries,freshCountries))throw new Error('P0B_CURRENT_PROJECT_CONTRACT_INCOMPLETE');
 
           const allowedValueKeys=new Set(['mode','type','providerType','readPolicy','writePolicy','providerBindingId','integrationSettingId','providerRef','mappingRef','hrSourceType','questionnaireSource','sourceType','status','version','id','projectId','tenantId','periodId','routeSource','name','normalizedName']);
           const sanitize=(value,key='')=>{
@@ -261,11 +334,9 @@ jobs:
             if(allowedValueKeys.has(key))return value==null?null:String(value);
             return {type:value===null?'null':typeof value};
           };
-          const diagnostic={decision:'DIAG_I3_P0B_DURABLE_PROJECT_SHAPE',tenantId,projectId,periodId,projectKeys:Object.keys(before).sort(),projectShape:sanitize(before),rawSourceShape:sanitize(rawSource),safeSource,countries,namePresent:Boolean(name),version,production:false};
+          const diagnostic={decision:'DIAG_I3_P0B_DURABLE_PROJECT_SHAPE',tenantId,projectId,periodId,bootstrapApplied,sourceRevision,providerRef:safeSource.providerRef,mappingRef:safeSource.mappingRef,projectKeys:Object.keys(before).sort(),projectShape:sanitize(before),rawSourceShape:sanitize(rawSource),safeSource,countries,namePresent:Boolean(name),version,production:false};
           fs.writeFileSync(path.join(outDir,'p0b-config-diagnostic.json'),JSON.stringify(diagnostic,null,2)+'\n');
           console.log(JSON.stringify(diagnostic));
-
-          if(!name||!countries.length||!safeSource.mode||!safeSource.providerType||!safeSource.readPolicy||!safeSource.writePolicy)throw new Error('P0B_CURRENT_PROJECT_CONTRACT_INCOMPLETE');
 
           const idempotencyKey=`i3-p0b-${process.env.PRODUCT_SOURCE_SHA.slice(0,12)}-${process.env.GITHUB_RUN_ID}`;
           const command={
@@ -294,13 +365,17 @@ jobs:
             if(Number(afterFirst.version)!==version+1)throw new Error('P0B_DURABLE_VERSION_NOT_INCREMENTED');
             if(String(afterFirst.updatedBy||'')!==actor.uid)throw new Error('P0B_DURABLE_ACTOR_READBACK_MISMATCH');
             if(String(afterFirst.name||'')!==name)throw new Error('P0B_DURABLE_NAME_DRIFT');
+            if(!sourceMatches(afterFirst.operationalSource))throw new Error('P0B_DURABLE_SOURCE_DRIFT');
+            if(String(afterFirst.hrSourceId||'')!==sourceId)throw new Error('P0B_DURABLE_HR_SOURCE_DRIFT');
+            if(normalizeName(afterFirst.normalizedName)!==normalizeName(name))throw new Error('P0B_DURABLE_NORMALIZED_NAME_DRIFT');
 
             const replay=await invoke();
             if(replay.httpStatus!==200||replay.body?.ok!==true||replay.body?.providerAck!==true||replay.body?.idempotentReplay!==true||Number(replay.body?.providerWrites||-1)!==0)throw new Error('P0B_REPLAY_NOT_IDEMPOTENT:'+JSON.stringify({httpStatus:replay.httpStatus,code:replay.body?.code,status:replay.body?.status,providerWrites:replay.body?.providerWrites,idempotentReplay:replay.body?.idempotentReplay}));
             const afterReplay=(await ref.get()).data()||{};
             if(Number(afterReplay.version)!==version+1)throw new Error('P0B_REPLAY_CHANGED_DURABLE_VERSION');
+            if(!sourceMatches(afterReplay.operationalSource))throw new Error('P0B_REPLAY_CHANGED_DURABLE_SOURCE');
 
-            const result={decision:'PASS_I3_P0B_PROJECT_UPDATE_DURABLE_ACK_REPLAY',tenantId,projectId,periodId,actorRole:actor.role,beforeVersion:version,afterVersion:Number(afterFirst.version),firstHttpStatus:first.httpStatus,firstProviderAck:true,firstProviderWrites:Number(first.body.providerWrites),durableReadback:true,replayHttpStatus:replay.httpStatus,idempotentReplay:true,replayProviderWrites:0,localStorageTruth:false,hrWrites:0,production:false,commandFingerprint:crypto.createHash('sha256').update(idempotencyKey).digest('hex').slice(0,20)};
+            const result={decision:'PASS_I3_P0B_PROJECT_UPDATE_DURABLE_ACK_REPLAY',tenantId,projectId,periodId,actorRole:actor.role,bootstrapApplied,sourceRevision,providerRef:safeSource.providerRef,mappingRef:safeSource.mappingRef,beforeVersion:version,afterVersion:Number(afterFirst.version),firstHttpStatus:first.httpStatus,firstProviderAck:true,firstProviderWrites:Number(first.body.providerWrites),durableReadback:true,replayHttpStatus:replay.httpStatus,idempotentReplay:true,replayProviderWrites:0,localStorageTruth:false,hrWrites:0,production:false,commandFingerprint:crypto.createHash('sha256').update(idempotencyKey).digest('hex').slice(0,20)};
             fs.writeFileSync(path.join(outDir,'p0b-result.json'),JSON.stringify(result,null,2)+'\n');
             console.log(JSON.stringify(result));
           } finally {
