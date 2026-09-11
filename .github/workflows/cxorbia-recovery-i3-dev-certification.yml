@@ -395,7 +395,7 @@ jobs:
           if(normalizeName(afterFirst.normalizedName)!==normalizeName(name))throw new Error('P0B_DURABLE_NORMALIZED_NAME_DRIFT');
 
           const replay=await invoke();
-          if(replay.httpStatus!==200||replay.body?.ok!==true||replay.body?.providerAck!==true||replay.body?.idempotentReplay!==true||Number(replay.body?.providerWrites||-1)!==0)throw new Error('P0B_REPLAY_NOT_IDEMPOTENT:'+JSON.stringify({httpStatus:replay.httpStatus,code:replay.body?.code,status:replay.body?.status,providerWrites:replay.body?.providerWrites,idempotentReplay:replay.body?.idempotentReplay}));
+          if(replay.httpStatus!==200||replay.body?.ok!==true||replay.body?.providerAck!==true||replay.body?.idempotentReplay!==true||Number(replay.body?.providerWrites??-1)!==0)throw new Error('P0B_REPLAY_NOT_IDEMPOTENT:'+JSON.stringify({httpStatus:replay.httpStatus,code:replay.body?.code,status:replay.body?.status,providerWrites:replay.body?.providerWrites,idempotentReplay:replay.body?.idempotentReplay}));
           const afterReplay=(await ref.get()).data()||{};
           if(Number(afterReplay.version)!==version+1)throw new Error('P0B_REPLAY_CHANGED_DURABLE_VERSION');
           if(!sourceMatches(afterReplay.operationalSource))throw new Error('P0B_REPLAY_CHANGED_DURABLE_SOURCE');
