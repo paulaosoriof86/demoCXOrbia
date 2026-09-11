@@ -139,8 +139,7 @@ jobs:
       - name: Install focused DEV validation dependencies
         run: |
           set -euo pipefail
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.47.2 >/dev/null
-          npx playwright install --with-deps chromium >/dev/null
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null
 
       - name: Execute existing runtime tests
         run: |
@@ -217,7 +216,6 @@ jobs:
           import { applicationDefault, getApps, initializeApp } from 'firebase-admin/app';
           import { getAuth } from 'firebase-admin/auth';
           import { getFirestore } from 'firebase-admin/firestore';
-          import { chromium } from 'playwright';
 
           const project=process.env.GCP_PROJECT_ID,tenantId=process.env.TENANT_ID,projectId=process.env.PROJECT_ID,periodId=process.env.PERIOD_ID;
           const hosting=String(process.env.HOSTING_URL).replace(/\/$/,'');
@@ -360,45 +358,51 @@ jobs:
             commandType:'project.update',tenantId,projectId,periodId,idempotencyKey,expectedVersion:version,
             payload:{name,countries,operationalSource:safeSource,version,status:before.status||'active',periodId}
           };
+          const initResponse=await fetch(`${hosting}/__/firebase/init.json`,{headers:{'Cache-Control':'no-store'}});
+          const initConfig=await initResponse.json().catch(()=>null);
+          if(!initResponse.ok||!initConfig?.apiKey||String(initConfig.projectId||'')!==project)throw new Error('P0B_FIREBASE_HOSTING_CONFIG_INVALID');
           const customToken=await auth.createCustomToken(actor.uid);
-          const browser=await chromium.launch({headless:true});
-          const ctx=await browser.newContext({viewport:{width:1280,height:800}});
-          const page=await ctx.newPage();
-          try{
-            await page.goto(`${hosting}/index-backend-dev.html?cxProjectId=${encodeURIComponent(projectId)}`,{waitUntil:'domcontentloaded',timeout:90000});
-            await page.waitForFunction(()=>Boolean(window.firebase&&window.firebase.auth),{timeout:60000});
-            const signed=await page.evaluate(async t=>{const r=await firebase.auth().signInWithCustomToken(t);return Boolean(r?.user);},customToken);
-            if(!signed)throw new Error('P0B_FIREBASE_SIGNIN_FAILED');
-            const invoke=async()=>page.evaluate(async cmd=>{
-              const token=await firebase.auth().currentUser.getIdToken(true);
-              const r=await fetch('/v1/cxorbia/commands',{method:'POST',headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json','Idempotency-Key':cmd.idempotencyKey},body:JSON.stringify(cmd)});
-              const body=await r.json().catch(()=>null);
-              return {httpStatus:r.status,body};
-            },command);
+          const exchangeResponse=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${encodeURIComponent(initConfig.apiKey)}`,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({token:customToken,returnSecureToken:true})
+          });
+          const exchangeBody=await exchangeResponse.json().catch(()=>null);
+          if(!exchangeResponse.ok||!exchangeBody?.idToken)throw new Error('P0B_FIREBASE_CUSTOM_TOKEN_EXCHANGE_FAILED:'+String(exchangeBody?.error?.message||exchangeResponse.status));
+          const idToken=String(exchangeBody.idToken);
+          const tokenParts=idToken.split('.');
+          if(tokenParts.length!==3)throw new Error('P0B_FIREBASE_ID_TOKEN_MALFORMED');
+          const tokenClaims=JSON.parse(Buffer.from(tokenParts[1],'base64url').toString('utf8'));
+          if(String(tokenClaims.user_id||tokenClaims.sub||'')!==actor.uid||String(tokenClaims.tenantId||'')!==tenantId||String(tokenClaims.role||'')!==actor.role||String(tokenClaims.authNamespace||'staff')!=='staff')throw new Error('P0B_FIREBASE_ID_TOKEN_CLAIMS_MISMATCH');
+          const invoke=async()=>{
+            const r=await fetch(`${hosting}/v1/cxorbia/commands`,{
+              method:'POST',
+              headers:{Authorization:`Bearer ${idToken}`,'Content-Type':'application/json','Idempotency-Key':command.idempotencyKey},
+              body:JSON.stringify(command)
+            });
+            const body=await r.json().catch(()=>null);
+            return {httpStatus:r.status,body};
+          };
 
-            const first=await invoke();
-            if(first.httpStatus!==200||first.body?.ok!==true||first.body?.committed!==true||first.body?.providerAck!==true||first.body?.successUiAllowed!==true||Number(first.body?.providerWrites||0)<3||first.body?.idempotentReplay===true)throw new Error('P0B_FIRST_COMMIT_INVALID:'+JSON.stringify({httpStatus:first.httpStatus,code:first.body?.code,status:first.body?.status,providerWrites:first.body?.providerWrites}));
-            const afterFirst=(await ref.get()).data()||{};
-            if(Number(afterFirst.version)!==version+1)throw new Error('P0B_DURABLE_VERSION_NOT_INCREMENTED');
-            if(String(afterFirst.updatedBy||'')!==actor.uid)throw new Error('P0B_DURABLE_ACTOR_READBACK_MISMATCH');
-            if(String(afterFirst.name||'')!==name)throw new Error('P0B_DURABLE_NAME_DRIFT');
-            if(!sourceMatches(afterFirst.operationalSource))throw new Error('P0B_DURABLE_SOURCE_DRIFT');
-            if(String(afterFirst.hrSourceId||'')!==sourceId)throw new Error('P0B_DURABLE_HR_SOURCE_DRIFT');
-            if(normalizeName(afterFirst.normalizedName)!==normalizeName(name))throw new Error('P0B_DURABLE_NORMALIZED_NAME_DRIFT');
+          const first=await invoke();
+          if(first.httpStatus!==200||first.body?.ok!==true||first.body?.committed!==true||first.body?.providerAck!==true||first.body?.successUiAllowed!==true||Number(first.body?.providerWrites||0)<3||first.body?.idempotentReplay===true)throw new Error('P0B_FIRST_COMMIT_INVALID:'+JSON.stringify({httpStatus:first.httpStatus,code:first.body?.code,status:first.body?.status,providerWrites:first.body?.providerWrites}));
+          const afterFirst=(await ref.get()).data()||{};
+          if(Number(afterFirst.version)!==version+1)throw new Error('P0B_DURABLE_VERSION_NOT_INCREMENTED');
+          if(String(afterFirst.updatedBy||'')!==actor.uid)throw new Error('P0B_DURABLE_ACTOR_READBACK_MISMATCH');
+          if(String(afterFirst.name||'')!==name)throw new Error('P0B_DURABLE_NAME_DRIFT');
+          if(!sourceMatches(afterFirst.operationalSource))throw new Error('P0B_DURABLE_SOURCE_DRIFT');
+          if(String(afterFirst.hrSourceId||'')!==sourceId)throw new Error('P0B_DURABLE_HR_SOURCE_DRIFT');
+          if(normalizeName(afterFirst.normalizedName)!==normalizeName(name))throw new Error('P0B_DURABLE_NORMALIZED_NAME_DRIFT');
 
-            const replay=await invoke();
-            if(replay.httpStatus!==200||replay.body?.ok!==true||replay.body?.providerAck!==true||replay.body?.idempotentReplay!==true||Number(replay.body?.providerWrites||-1)!==0)throw new Error('P0B_REPLAY_NOT_IDEMPOTENT:'+JSON.stringify({httpStatus:replay.httpStatus,code:replay.body?.code,status:replay.body?.status,providerWrites:replay.body?.providerWrites,idempotentReplay:replay.body?.idempotentReplay}));
-            const afterReplay=(await ref.get()).data()||{};
-            if(Number(afterReplay.version)!==version+1)throw new Error('P0B_REPLAY_CHANGED_DURABLE_VERSION');
-            if(!sourceMatches(afterReplay.operationalSource))throw new Error('P0B_REPLAY_CHANGED_DURABLE_SOURCE');
+          const replay=await invoke();
+          if(replay.httpStatus!==200||replay.body?.ok!==true||replay.body?.providerAck!==true||replay.body?.idempotentReplay!==true||Number(replay.body?.providerWrites||-1)!==0)throw new Error('P0B_REPLAY_NOT_IDEMPOTENT:'+JSON.stringify({httpStatus:replay.httpStatus,code:replay.body?.code,status:replay.body?.status,providerWrites:replay.body?.providerWrites,idempotentReplay:replay.body?.idempotentReplay}));
+          const afterReplay=(await ref.get()).data()||{};
+          if(Number(afterReplay.version)!==version+1)throw new Error('P0B_REPLAY_CHANGED_DURABLE_VERSION');
+          if(!sourceMatches(afterReplay.operationalSource))throw new Error('P0B_REPLAY_CHANGED_DURABLE_SOURCE');
 
-            const result={decision:'PASS_I3_P0B_PROJECT_UPDATE_DURABLE_ACK_REPLAY',tenantId,projectId,periodId,actorRole:actor.role,bootstrapApplied,sourceRevision,providerRef:safeSource.providerRef,mappingRef:safeSource.mappingRef,beforeVersion:version,afterVersion:Number(afterFirst.version),firstHttpStatus:first.httpStatus,firstProviderAck:true,firstProviderWrites:Number(first.body.providerWrites),durableReadback:true,replayHttpStatus:replay.httpStatus,idempotentReplay:true,replayProviderWrites:0,localStorageTruth:false,hrWrites:0,production:false,commandFingerprint:crypto.createHash('sha256').update(idempotencyKey).digest('hex').slice(0,20)};
-            fs.writeFileSync(path.join(outDir,'p0b-result.json'),JSON.stringify(result,null,2)+'\n');
-            console.log(JSON.stringify(result));
-          } finally {
-            await ctx.close();
-            await browser.close();
-          }
+          const result={decision:'PASS_I3_P0B_PROJECT_UPDATE_DURABLE_ACK_REPLAY',tenantId,projectId,periodId,actorRole:actor.role,bootstrapApplied,sourceRevision,providerRef:safeSource.providerRef,mappingRef:safeSource.mappingRef,beforeVersion:version,afterVersion:Number(afterFirst.version),firstHttpStatus:first.httpStatus,firstProviderAck:true,firstProviderWrites:Number(first.body.providerWrites),durableReadback:true,replayHttpStatus:replay.httpStatus,idempotentReplay:true,replayProviderWrites:0,authTransport:'firebase_custom_token_exchange',localStorageTruth:false,hrWrites:0,production:false,commandFingerprint:crypto.createHash('sha256').update(idempotencyKey).digest('hex').slice(0,20)};
+          fs.writeFileSync(path.join(outDir,'p0b-result.json'),JSON.stringify(result,null,2)+'\n');
+          console.log(JSON.stringify(result));
           NODE
 
       - name: Final I3 P0 validation verdict
