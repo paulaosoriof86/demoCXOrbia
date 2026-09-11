@@ -173,8 +173,14 @@ async function reconcileVisitDoc({db,policy,candidate,sourceRevision}){
     const durableShopper=str(existing.shopperId),hrShopper=str(candidate.shopperId);
     const platformPending=str(existing.assignmentSource)==='platform'&&str(existing.assignmentSyncStatus)==='pending_hr'&&durableShopper;
     if(platformPending&&hrShopper&&hrShopper!==durableShopper){
-      tx.set(reviewRef,{tenantId,projectId,periodId:str(existing.periodId||candidate.periodId)||null,entityType:'visit',entityId:visitId,reviewType:'hr_platform_assignment_conflict',status:'open',reason:'hr_shopper_differs_from_platform_pending_assignment',platformShopperId:durableShopper,observedHrShopperId:hrShopper,automaticOverwrite:false,sourceRevision,createdAt:now()},{merge:false});
-      throw new Error('OPS_VISIT_RECONCILIATION_CONFLICT_REVIEW_REQUIRED');
+      const reviewSnap=await tx.get(reviewRef);
+      const prior=reviewSnap.exists?(reviewSnap.data()||{}):null;
+      const sameOpenReview=Boolean(prior&&str(prior.status)==='open'&&str(prior.reviewType)==='hr_platform_assignment_conflict'&&str(prior.platformShopperId)===durableShopper&&str(prior.observedHrShopperId)===hrShopper&&str(prior.sourceRevision)===str(sourceRevision));
+      if(!sameOpenReview){
+        const ts=now();
+        tx.set(reviewRef,{tenantId,projectId,periodId:str(existing.periodId||candidate.periodId)||null,entityType:'visit',entityId:visitId,reviewType:'hr_platform_assignment_conflict',status:'open',reason:'hr_shopper_differs_from_platform_pending_assignment',platformShopperId:durableShopper,observedHrShopperId:hrShopper,automaticOverwrite:false,sourceRevision,createdAt:prior?.createdAt||ts,updatedAt:ts},{merge:false});
+      }
+      return {providerWrites:sameOpenReview?0:1,created:false,idempotentReplay:sameOpenReview,reviewRequired:true,conflict:true};
     }
     if(str(existing.hrSourceRevision)===sourceRevision&&str(existing.periodId)===str(candidate.periodId))return {providerWrites:0,created:false,idempotentReplay:true};
     tx.set(visitRef,{periodId:candidate.periodId,rootProjectId:projectId,hrSourceRevision:sourceRevision,updatedAt:now(),version:Number(existing.version||0)+1},{merge:true});
@@ -278,14 +284,16 @@ export function createOperationalCommandProvider({auth,db,policy}={}){
       if(!scopeAllowed(policy,scope))throw new Error('OPS_VISIT_RECONCILIATION_SCOPE_DENIED');
       const revision=str(sourceRevision||snapshot?.sourceRevision||snapshot?._runtime?.revision);
       if(!revision)throw new Error('OPS_VISIT_RECONCILIATION_REVISION_REQUIRED');
-      let created=0,replayed=0,writes=0;
+      let created=0,replayed=0,writes=0,reviews=0,conflicts=0;
       for(const candidate of visits){
         const result=await reconcileVisitDoc({db,policy,candidate,sourceRevision:revision});
         if(result.created)created++;
         if(result.idempotentReplay)replayed++;
+        if(result.reviewRequired)reviews++;
+        if(result.conflict)conflicts++;
         writes+=Number(result.providerWrites||0);
       }
-      return {ok:true,status:'committed',providerAck:true,sourceRevision:revision,tenantId:scope.tenantId,projectId:scope.projectId,visitCount:visits.length,createdVisits:created,idempotentReplays:replayed,providerWrites:writes,hrWrites:0,externalWrites:0,fuzzyMatching:false};
+      return {ok:true,status:'committed',providerAck:true,sourceRevision:revision,tenantId:scope.tenantId,projectId:scope.projectId,visitCount:visits.length,createdVisits:created,idempotentReplays:replayed,reviewRequiredVisits:reviews,conflicts,providerWrites:writes,hrWrites:0,externalWrites:0,fuzzyMatching:false};
     },
     status(){return {version:VERSION,enabled:true,allowedTenantIds:arr(policy.allowedTenantIds),allowedProjectIds:arr(policy.allowedProjectIds),conflictPolicy:'review_no_silent_overwrite',hrWrites:false,makeCalls:false,geminiCalls:false,storageWrites:false,paymentWrites:false};}
   });
