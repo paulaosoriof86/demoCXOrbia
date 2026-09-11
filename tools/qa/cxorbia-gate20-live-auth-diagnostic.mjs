@@ -11,6 +11,10 @@ const HOSTING_URL=String(process.env.HOSTING_URL||'https://cxorbia-backend-dev.w
 const TENANT='tya', PROJECT_ID='cinepolis';
 const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',TECH='YES_PAULA_20260801_REAL_USERS_E2E';
 const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
+const sanitize=v=>str(v)
+  .replace(/(authorization|bearer|password|passwd|secret|token|api[_-]?key|private[_-]?key)(\s*[:=]\s*|\s+)[^\s,;]+/gi,'$1=[REDACTED]')
+  .replace(/([?&](?:key|token|secret|password|api_key)=)[^&\s]+/gi,'$1[REDACTED]')
+  .slice(0,800);
 const write=(n,v)=>{fs.mkdirSync(OUT,{recursive:true});fs.writeFileSync(path.join(OUT,n),JSON.stringify(v,null,2)+'\n');};
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
@@ -41,8 +45,8 @@ function classify(s,hr){
 
 try{
   const ctx=await browser.newContext({viewport:{width:1440,height:1000}}),page=await ctx.newPage();
-  page.on('pageerror',e=>pageErrors.push(str(e?.message||e).slice(0,500)));
-  page.on('console',m=>{if(m.type()==='error')consoleErrors.push(str(m.text()).slice(0,500));});
+  page.on('pageerror',e=>pageErrors.push(sanitize(e?.message||e).slice(0,500)));
+  page.on('console',m=>{if(m.type()==='error')consoleErrors.push(sanitize(m.text()).slice(0,500));});
 
   const snapshot=()=>page.evaluate(()=>{
     const c=window.CX?.backendAuth?.context?.()||{};
@@ -68,7 +72,8 @@ try{
   let signIn={ok:false,error:null};
   try{
     signIn=await page.evaluate(async t=>{try{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);const r=await firebase.auth().signInWithCustomToken(t);return {ok:!!r?.user,error:null};}catch(e){return {ok:false,error:String(e?.code||e?.message||e)}};},token);
-  }catch(e){signIn={ok:false,error:str(e?.message||e).slice(0,300)};}
+  }catch(e){signIn={ok:false,error:sanitize(e?.message||e).slice(0,300)};}
+  if(signIn.error)signIn.error=sanitize(signIn.error);
   const afterSignIn=await snapshot();
   await page.reload({waitUntil:'domcontentloaded',timeout:90000});
 
@@ -81,13 +86,31 @@ try{
     await sleep(2000);
   }
   const final=await snapshot();
-  const hr=await page.evaluate(async()=>{try{const r=await fetch('/api/tya/cinepolis/hr-live?format=json&fresh=1&ts='+Date.now(),{cache:'no-store'});const p=await r.json().catch(()=>null);const s=p&&(p.snapshot||p.data||p);return {ok:r.ok,status:r.status,sourceSafe:s?.sourceSafe===true,periods:Array.isArray(s?.periods)?s.periods.length:null,visits:Array.isArray(s?.visits)?s.visits.length:null,shoppers:Array.isArray(s?.shoppers)?s.shoppers.length:null,revision:String(p?._runtime?.revision||s?._runtime?.revision||'')};}catch(e){return {ok:false,status:0,error:String(e?.message||e)}};});
+  const hrRaw=await page.evaluate(async()=>{try{
+    const r=await fetch('/api/tya/cinepolis/hr-live?format=json&fresh=1&ts='+Date.now(),{cache:'no-store'});
+    const p=await r.json().catch(()=>null);
+    const s=p&&(p.snapshot||p.data||p);
+    const runtime=p?._runtime||s?._runtime||{};
+    return {
+      ok:r.ok,status:r.status,
+      sourceSafe:s?.sourceSafe===true,
+      periods:Array.isArray(s?.periods)?s.periods.length:null,
+      visits:Array.isArray(s?.visits)?s.visits.length:null,
+      shoppers:Array.isArray(s?.shoppers)?s.shoppers.length:null,
+      revision:String(runtime?.revision||''),
+      error:String(p?.error||s?.error||''),
+      message:String(p?.message||s?.message||''),
+      lastRefreshError:String(runtime?.lastRefreshError||p?.lastRefreshError||s?.lastRefreshError||'')
+    };
+  }catch(e){return {ok:false,status:0,error:String(e?.message||e),message:'',lastRefreshError:''};}});
+  const hr={...hrRaw,error:sanitize(hrRaw.error),message:sanitize(hrRaw.message),lastRefreshError:sanitize(hrRaw.lastRefreshError)};
+  hr.cause=hr.lastRefreshError||hr.message||hr.error||'';
   await page.screenshot({path:path.join(OUT,'gate20-live-auth-diagnostic.png'),fullPage:true});
   const [decision,blocker]=classify(final,hr);
   result={decision,blocker,generatedAt:new Date().toISOString(),tenantId:TENANT,projectId:PROJECT_ID,signIn,before,afterSignIn,timeline,final,hr,pageErrors,consoleErrors,production:false,readOnly:true,providerWrites:0,hrWrites:0};
   await ctx.close();
 } catch(e){
-  result={decision:'ENVIRONMENT_FAILURE',blocker:'DIAGNOSTIC_EXECUTION_FAILED',error:str(e?.message||e).slice(0,500),pageErrors,consoleErrors,production:false,readOnly:true,providerWrites:0,hrWrites:0};
+  result={decision:'ENVIRONMENT_FAILURE',blocker:'DIAGNOSTIC_EXECUTION_FAILED',error:sanitize(e?.message||e).slice(0,500),pageErrors,consoleErrors,production:false,readOnly:true,providerWrites:0,hrWrites:0};
 } finally {await browser.close();}
 write('gate20-live-auth-diagnostic.json',result);
 console.log(JSON.stringify({decision:result.decision,blocker:result.blocker,signInOk:result.signIn?.ok??null,final:result.final?{firebaseUser:result.final.firebaseUser,auth:result.final.auth,backend:result.final.backend,boot:result.final.boot,authority:result.final.authority,data:result.final.data,dataSource:result.final.dataSource,dom:result.final.dom}:null,hr:result.hr||null,pageErrorCount:pageErrors.length,consoleErrorCount:consoleErrors.length,production:false}));

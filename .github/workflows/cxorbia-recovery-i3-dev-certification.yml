@@ -12,21 +12,25 @@ on:
 
 permissions:
   contents: read
+  actions: read
   statuses: write
   id-token: write
-
-concurrency:
-  group: cxorbia-recovery-i3-dev-certification
-  cancel-in-progress: false
 
 defaults:
   run:
     shell: bash
 
+concurrency:
+  group: cxorbia-recovery-i3-dev-certification
+  cancel-in-progress: false
+
 env:
   PRODUCT_SOURCE_SHA: bd2a519db5ebd08f17d47827997056db795c8c09
   LOCK_GATE19_SHA: e91b4fee2ca8383a992361189261633e3cd72eac
   LOCK_GATE19_RUN_ID: '34302638183'
+  LOCK_GATE19_RUN_ATTEMPT: '1'
+  LOCK_GATE19_ARTIFACT_ID: '10085471196'
+  LOCK_GATE19_ARTIFACT_DIGEST: 'sha256:7f12d75c4a230018d1877371f99697e7915f7a1fe9f9a1fc8367975c0ba828bb'
   PROJECT: cxorbia-backend-dev
   HOSTING_URL: https://cxorbia-backend-dev.web.app
   OUT: .tmp/recovery-i3-gate20
@@ -41,10 +45,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Prove exact product lock and zero product drift
+      - name: Prove exact product lock and immutable Gate 19 predecessor
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          mkdir -p "$OUT"
+          mkdir -p "$OUT/gate19-evidence"
           test "$GITHUB_REF_NAME" = "recovery/cxorbia-phase-a-20260831"
           git cat-file -e "$PRODUCT_SOURCE_SHA^{commit}"
           git cat-file -e "$LOCK_GATE19_SHA^{commit}"
@@ -55,13 +61,59 @@ jobs:
           node --check tools/qa/cxorbia-gate20-live-auth-diagnostic.mjs
           git show "$PRODUCT_SOURCE_SHA:tools/qa/cxorbia-gate20-browser-visual-dev.mjs" > "$OUT/gate20-certified-runner.mjs"
           node --check "$OUT/gate20-certified-runner.mjs"
-          node <<'NODE'
-          const fs=require('fs'),out=process.env.OUT;
-          const g19={decision:'PASS_GATE19_SHOPPER_E2E_LINEAGE',gate:19,lockedEvidence:true,lockedRunId:Number(process.env.LOCK_GATE19_RUN_ID),lockedSourceSha:process.env.LOCK_GATE19_SHA,noProductDrift:true,tenantId:'tya',projectId:'cinepolis',periodId:'cinepolis-2026-09',secureShopperLoginObserved:true,shopperPostulationObserved:true,shopperReloadObserved:true,approvalRemoteAck:true,idempotentReplay:true,currentDurableReadback:true,duplicatePairCount:1,humanLegalAcceptanceReexecuted:false,legalAcceptanceBypass:false,localStorageTruth:false,providerWrites:0,hrWrites:0,production:false};
-          fs.writeFileSync(`${out}/gate19-locked.json`,JSON.stringify(g19,null,2)+'\n');
-          fs.writeFileSync(`${out}/locked-lineage.json`,JSON.stringify({decision:'PASS_GATE20_PRODUCT_LOCK_NO_DRIFT',lockedGate19RunId:Number(process.env.LOCK_GATE19_RUN_ID),lockedGate19SourceSha:process.env.LOCK_GATE19_SHA,productSourceSha:process.env.PRODUCT_SOURCE_SHA,qaHeadSha:process.env.GITHUB_SHA,noProductDrift:true,production:false},null,2)+'\n');
-          NODE
-          echo "PASS_GATE20_PRODUCT_LOCK source=$PRODUCT_SOURCE_SHA qaHead=$GITHUB_SHA productDrift=0"
+
+          curl --fail --silent --show-error \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$LOCK_GATE19_RUN_ID/attempts/$LOCK_GATE19_RUN_ATTEMPT" \
+            > "$OUT/gate19-run-attempt.json"
+          jq -e \
+            --argjson run "$LOCK_GATE19_RUN_ID" \
+            --argjson attempt "$LOCK_GATE19_RUN_ATTEMPT" \
+            --arg sha "$LOCK_GATE19_SHA" \
+            '.id==$run and .run_attempt==$attempt and .head_sha==$sha and .status=="completed" and .conclusion=="success"' \
+            "$OUT/gate19-run-attempt.json" >/dev/null \
+            || { echo "::error::Gate19 exact run attempt mismatch"; exit 1; }
+
+          curl --fail --silent --show-error \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/$LOCK_GATE19_ARTIFACT_ID" \
+            > "$OUT/gate19-artifact-metadata.json"
+          jq -e \
+            --argjson id "$LOCK_GATE19_ARTIFACT_ID" \
+            --argjson run "$LOCK_GATE19_RUN_ID" \
+            --arg digest "$LOCK_GATE19_ARTIFACT_DIGEST" \
+            '.id==$id and .expired==false and .digest==$digest and .workflow_run.id==$run' \
+            "$OUT/gate19-artifact-metadata.json" >/dev/null \
+            || { echo "::error::Gate19 immutable artifact identity mismatch"; exit 1; }
+
+          curl --fail --silent --show-error --location \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/$LOCK_GATE19_ARTIFACT_ID/zip" \
+            -o "$OUT/gate19-evidence.zip"
+          unzip -q "$OUT/gate19-evidence.zip" -d "$OUT/gate19-evidence"
+          test -s "$OUT/gate19-evidence/result.json"
+          jq -e \
+            --arg sha "$LOCK_GATE19_SHA" \
+            '.verdict=="PASS_GATE19_SHOPPER_E2E_LINEAGE" and .gate19=="PASS" and .sourceSha==$sha and .noProductDrift==true and .hostingOwnerParity==true and .secureShopperLoginObserved==true and .shopperPostulationObserved==true and .shopperReloadObserved==true and .approvalRemoteAck==true and .idempotentReplay==true and .currentDurableReadback==true and .localStorageTruth==false and .providerWrites==0 and .hrWrites==0 and .production==false' \
+            "$OUT/gate19-evidence/result.json" >/dev/null \
+            || { echo "::error::Gate19 exact evidence contract mismatch"; exit 1; }
+          cp "$OUT/gate19-evidence/result.json" "$OUT/gate19-locked.json"
+          jq -n -S \
+            --arg decision "PASS_GATE20_PRODUCT_LOCK_NO_DRIFT" \
+            --arg productSourceSha "$PRODUCT_SOURCE_SHA" \
+            --arg qaHeadSha "$GITHUB_SHA" \
+            --arg gate19SourceSha "$LOCK_GATE19_SHA" \
+            --argjson gate19RunId "$LOCK_GATE19_RUN_ID" \
+            --argjson gate19RunAttempt "$LOCK_GATE19_RUN_ATTEMPT" \
+            --argjson gate19ArtifactId "$LOCK_GATE19_ARTIFACT_ID" \
+            --arg gate19ArtifactDigest "$LOCK_GATE19_ARTIFACT_DIGEST" \
+            '{decision:$decision,productSourceSha:$productSourceSha,qaHeadSha:$qaHeadSha,noProductDrift:true,gate19:{sourceSha:$gate19SourceSha,runId:$gate19RunId,runAttempt:$gate19RunAttempt,artifactId:$gate19ArtifactId,artifactDigest:$gate19ArtifactDigest,verifiedBy:"exactAttemptAndArtifactId"},production:false}' \
+            > "$OUT/locked-lineage.json"
+          rm -rf "$OUT/gate19-evidence" "$OUT/gate19-evidence.zip"
+          echo "PASS_GATE20_PRODUCT_LOCK source=$PRODUCT_SOURCE_SHA qaHead=$GITHUB_SHA productDrift=0 gate19Run=$LOCK_GATE19_RUN_ID gate19Attempt=$LOCK_GATE19_RUN_ATTEMPT gate19ArtifactId=$LOCK_GATE19_ARTIFACT_ID"
 
       - name: Setup Node 24
         uses: actions/setup-node@v4
@@ -100,7 +152,7 @@ jobs:
           for item in "${pairs[@]}"; do
             IFS='|' read -r local remote key <<< "$item"
             git show "$PRODUCT_SOURCE_SHA:$local" > "$OUT/source-$key"
-            curl -fsSL --retry 3 --retry-delay 1 -H 'Cache-Control: no-cache' "$HOSTING_URL/$remote?gate20live=${GITHUB_RUN_ID}-${key}" -o "$OUT/remote-$key"
+            curl -fsSL --retry 3 --retry-delay 1 -H 'Cache-Control: no-cache' "$HOSTING_URL/$remote?gate20live=${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${key}" -o "$OUT/remote-$key"
             cmp "$OUT/source-$key" "$OUT/remote-$key"
             sha="$(sha256sum "$OUT/source-$key"|awk '{print $1}')"
             printf '%s %s\n' "$key" "$sha" >> "$OUT/hosting-owner-hashes.txt"
@@ -128,24 +180,55 @@ jobs:
           set -euo pipefail
           node <<'NODE'
           const fs=require('fs'),read=n=>JSON.parse(fs.readFileSync(`${process.env.OUT}/${n}`,'utf8'));
-          const g20=read('gate20-browser-visual.json'),hosting=read('hosting.json'),lineage=read('locked-lineage.json'),diag=read('gate20-live-auth-diagnostic.json');
+          const g20=read('gate20-browser-visual.json'),hosting=read('hosting.json'),lineage=read('locked-lineage.json'),diag=read('gate20-live-auth-diagnostic.json'),g19=read('gate19-locked.json');
           if(lineage.decision!=='PASS_GATE20_PRODUCT_LOCK_NO_DRIFT'||lineage.noProductDrift!==true||lineage.productSourceSha!==process.env.PRODUCT_SOURCE_SHA)throw new Error('GATE20_PRODUCT_DRIFT');
+          if(!lineage.gate19||lineage.gate19.sourceSha!==process.env.LOCK_GATE19_SHA||Number(lineage.gate19.runId)!==Number(process.env.LOCK_GATE19_RUN_ID)||Number(lineage.gate19.runAttempt)!==Number(process.env.LOCK_GATE19_RUN_ATTEMPT)||Number(lineage.gate19.artifactId)!==Number(process.env.LOCK_GATE19_ARTIFACT_ID)||lineage.gate19.artifactDigest!==process.env.LOCK_GATE19_ARTIFACT_DIGEST)throw new Error('GATE20_GATE19_IMMUTABLE_TUPLE_MISMATCH');
+          if(g19.verdict!=='PASS_GATE19_SHOPPER_E2E_LINEAGE'||g19.sourceSha!==process.env.LOCK_GATE19_SHA)throw new Error('GATE20_GATE19_RECEIPT_INVALID');
           if(hosting.decision!=='PASS_HOSTING_GATE20_VISUAL_OWNER_PARITY'||Number(hosting.ownerCount)!==12)throw new Error('GATE20_HOSTING_PARITY_INCOMPLETE');
-          if(diag.decision!=='PASS')throw new Error('GATE20_LIVE_AUTHORITY_DIAGNOSTIC_'+diag.decision+'_'+diag.blocker);
+          if(diag.decision!=='PASS')throw new Error('GATE20_LIVE_AUTHORITY_DIAGNOSTIC_'+diag.decision+'_'+diag.blocker+(diag.hr?.cause?'_'+diag.hr.cause:''));
           if(g20.decision!=='PASS_GATE20_BROWSER_VISUAL')throw new Error(g20.decision||'GATE20_RESULT_MISSING');
           const pass=g20.loginDesktop===true&&g20.loginMobile===true&&Array.isArray(g20.adminDesktopRoutes)&&g20.adminDesktopRoutes.length===4&&Array.isArray(g20.adminMobileRoutes)&&g20.adminMobileRoutes.length===3&&Number(g20.captureCount)===9&&Array.isArray(g20.pageErrors)&&g20.pageErrors.length===0&&g20.domMarkersExact===true&&g20.hrAuthorityApplied===true&&g20.blockingUnexpectedModal===false&&g20.localStorageTruth===false&&Number(g20.providerWrites)===0&&Number(g20.hrWrites)===0&&g20.production===false;
           if(!pass)throw new Error('GATE20_ACCEPTANCE_INCOMPLETE');
-          fs.writeFileSync(`${process.env.OUT}/result.json`,JSON.stringify({verdict:g20.decision,gate20:'PASS',productSourceSha:process.env.PRODUCT_SOURCE_SHA,qaHeadSha:process.env.GITHUB_SHA,noProductDrift:true,hostingOwnerParity:true,liveAuthorityDiagnostic:'PASS',tenantId:g20.tenantId,projectId:g20.projectId,periodId:g20.periodId,captureCount:g20.captureCount,providerWrites:0,hrWrites:0,production:false},null,2)+'\n');
+          fs.writeFileSync(`${process.env.OUT}/result.json`,JSON.stringify({verdict:g20.decision,gate20:'PASS',productSourceSha:process.env.PRODUCT_SOURCE_SHA,qaHeadSha:process.env.GITHUB_SHA,noProductDrift:true,gate19ImmutableTuple:{sourceSha:process.env.LOCK_GATE19_SHA,runId:Number(process.env.LOCK_GATE19_RUN_ID),runAttempt:Number(process.env.LOCK_GATE19_RUN_ATTEMPT),artifactId:Number(process.env.LOCK_GATE19_ARTIFACT_ID),artifactDigest:process.env.LOCK_GATE19_ARTIFACT_DIGEST},hostingOwnerParity:true,liveAuthorityDiagnostic:'PASS',tenantId:g20.tenantId,projectId:g20.projectId,periodId:g20.periodId,captureCount:g20.captureCount,providerWrites:0,hrWrites:0,production:false},null,2)+'\n');
           NODE
 
       - name: Upload sanitized Gate 20 live acceptance evidence
+        id: gate20_upload
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-recovery-i3-gate20-live-${{ github.run_id }}
+          name: cxorbia-recovery-i3-gate20-live-${{ github.run_id }}-a${{ github.run_attempt }}
           path: ${{ env.OUT }}
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 90
+          compression-level: 0
+          include-hidden-files: true
+
+      - name: Record immutable Gate 20 artifact receipt
+        if: success()
+        run: |
+          set -euo pipefail
+          jq -n -S \
+            --arg sourceSha "$PRODUCT_SOURCE_SHA" \
+            --arg qaHeadSha "$GITHUB_SHA" \
+            --argjson runId "$GITHUB_RUN_ID" \
+            --argjson runAttempt "$GITHUB_RUN_ATTEMPT" \
+            --argjson artifactId '${{ steps.gate20_upload.outputs.artifact-id }}' \
+            --arg artifactDigest '${{ steps.gate20_upload.outputs.artifact-digest }}' \
+            --arg artifactName "cxorbia-recovery-i3-gate20-live-${GITHUB_RUN_ID}-a${GITHUB_RUN_ATTEMPT}" \
+            '{schemaVersion:"cxorbia.recovery.i3.gate20.receipt.v1",verdict:"PASS_GATE20_IMMUTABLE_RECEIPT",sourceSha:$sourceSha,qaHeadSha:$qaHeadSha,runId:$runId,runAttempt:$runAttempt,artifactId:$artifactId,artifactDigest:$artifactDigest,artifactName:$artifactName,production:false}' \
+            > "$OUT/GATE20_ARTIFACT_RECEIPT.json"
+          cat "$OUT/GATE20_ARTIFACT_RECEIPT.json"
+
+      - name: Upload Gate 20 immutable receipt
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-recovery-i3-gate20-receipt-${{ github.run_id }}-a${{ github.run_attempt }}
+          path: ${{ env.OUT }}/GATE20_ARTIFACT_RECEIPT.json
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 0
 
       - name: Cleanup temporary dependencies
         if: always()
