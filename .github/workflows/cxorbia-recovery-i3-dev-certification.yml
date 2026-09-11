@@ -253,6 +253,18 @@ jobs:
           const countries=Array.isArray(before.countries)?before.countries.map(String).filter(Boolean):[];
           const name=String(before.name||'').trim();
           const version=Number(before.version||0);
+
+          const allowedValueKeys=new Set(['mode','type','providerType','readPolicy','writePolicy','providerBindingId','integrationSettingId','providerRef','mappingRef','hrSourceType','questionnaireSource','sourceType','status','version','id','projectId','tenantId','periodId','routeSource','name','normalizedName']);
+          const sanitize=(value,key='')=>{
+            if(Array.isArray(value))return key==='countries'?value.map(v=>String(v)): {type:'array',length:value.length};
+            if(value&&typeof value==='object')return Object.fromEntries(Object.keys(value).sort().map(k=>[k,sanitize(value[k],k)]));
+            if(allowedValueKeys.has(key))return value==null?null:String(value);
+            return {type:value===null?'null':typeof value};
+          };
+          const diagnostic={decision:'DIAG_I3_P0B_DURABLE_PROJECT_SHAPE',tenantId,projectId,periodId,projectKeys:Object.keys(before).sort(),projectShape:sanitize(before),rawSourceShape:sanitize(rawSource),safeSource,countries,namePresent:Boolean(name),version,production:false};
+          fs.writeFileSync(path.join(outDir,'p0b-config-diagnostic.json'),JSON.stringify(diagnostic,null,2)+'\n');
+          console.log(JSON.stringify(diagnostic));
+
           if(!name||!countries.length||!safeSource.mode||!safeSource.providerType||!safeSource.readPolicy||!safeSource.writePolicy)throw new Error('P0B_CURRENT_PROJECT_CONTRACT_INCOMPLETE');
 
           const idempotencyKey=`i3-p0b-${process.env.PRODUCT_SOURCE_SHA.slice(0,12)}-${process.env.GITHUB_RUN_ID}`;
