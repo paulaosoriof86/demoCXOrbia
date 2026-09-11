@@ -1,13 +1,6 @@
 name: CXOrbia Recovery I3 DEV Certification
 
 on:
-  push:
-    branches:
-      - recovery/cxorbia-phase-a-20260831
-    paths:
-      - tools/qa/cxorbia-gate20-browser-visual-dev.mjs
-      - tools/qa/cxorbia-gate20-live-auth-diagnostic.mjs
-      - .github/workflows/cxorbia-recovery-i3-dev-certification.yml
   workflow_dispatch:
 
 permissions:
@@ -100,7 +93,35 @@ jobs:
             '.verdict=="PASS_GATE19_SHOPPER_E2E_LINEAGE" and .gate19=="PASS" and .sourceSha==$sha and .noProductDrift==true and .hostingOwnerParity==true and .secureShopperLoginObserved==true and .shopperPostulationObserved==true and .shopperReloadObserved==true and .approvalRemoteAck==true and .idempotentReplay==true and .currentDurableReadback==true and .localStorageTruth==false and .providerWrites==0 and .hrWrites==0 and .production==false' \
             "$OUT/gate19-evidence/result.json" >/dev/null \
             || { echo "::error::Gate19 exact evidence contract mismatch"; exit 1; }
-          cp "$OUT/gate19-evidence/result.json" "$OUT/gate19-locked.json"
+
+          jq -S \
+            --argjson run "$LOCK_GATE19_RUN_ID" \
+            --argjson attempt "$LOCK_GATE19_RUN_ATTEMPT" \
+            --argjson artifactId "$LOCK_GATE19_ARTIFACT_ID" \
+            --arg artifactDigest "$LOCK_GATE19_ARTIFACT_DIGEST" \
+            --arg lockedSourceSha "$LOCK_GATE19_SHA" \
+            '. + {
+              decision:.verdict,
+              gate:19,
+              lockedEvidence:true,
+              lockedRunId:$run,
+              lockedRunAttempt:$attempt,
+              lockedArtifactId:$artifactId,
+              lockedArtifactDigest:$artifactDigest,
+              lockedSourceSha:$lockedSourceSha
+            }' \
+            "$OUT/gate19-evidence/result.json" > "$OUT/gate19-locked.json"
+
+          jq -e \
+            --argjson run "$LOCK_GATE19_RUN_ID" \
+            --argjson attempt "$LOCK_GATE19_RUN_ATTEMPT" \
+            --argjson artifactId "$LOCK_GATE19_ARTIFACT_ID" \
+            --arg artifactDigest "$LOCK_GATE19_ARTIFACT_DIGEST" \
+            --arg sha "$LOCK_GATE19_SHA" \
+            '.decision=="PASS_GATE19_SHOPPER_E2E_LINEAGE" and .verdict=="PASS_GATE19_SHOPPER_E2E_LINEAGE" and .lockedEvidence==true and .lockedRunId==$run and .lockedRunAttempt==$attempt and .lockedArtifactId==$artifactId and .lockedArtifactDigest==$artifactDigest and .lockedSourceSha==$sha and .sourceSha==$sha and .noProductDrift==true' \
+            "$OUT/gate19-locked.json" >/dev/null \
+            || { echo "::error::Gate19 compatibility envelope mismatch"; exit 1; }
+
           jq -n -S \
             --arg decision "PASS_GATE20_PRODUCT_LOCK_NO_DRIFT" \
             --arg productSourceSha "$PRODUCT_SOURCE_SHA" \
@@ -183,7 +204,7 @@ jobs:
           const g20=read('gate20-browser-visual.json'),hosting=read('hosting.json'),lineage=read('locked-lineage.json'),diag=read('gate20-live-auth-diagnostic.json'),g19=read('gate19-locked.json');
           if(lineage.decision!=='PASS_GATE20_PRODUCT_LOCK_NO_DRIFT'||lineage.noProductDrift!==true||lineage.productSourceSha!==process.env.PRODUCT_SOURCE_SHA)throw new Error('GATE20_PRODUCT_DRIFT');
           if(!lineage.gate19||lineage.gate19.sourceSha!==process.env.LOCK_GATE19_SHA||Number(lineage.gate19.runId)!==Number(process.env.LOCK_GATE19_RUN_ID)||Number(lineage.gate19.runAttempt)!==Number(process.env.LOCK_GATE19_RUN_ATTEMPT)||Number(lineage.gate19.artifactId)!==Number(process.env.LOCK_GATE19_ARTIFACT_ID)||lineage.gate19.artifactDigest!==process.env.LOCK_GATE19_ARTIFACT_DIGEST)throw new Error('GATE20_GATE19_IMMUTABLE_TUPLE_MISMATCH');
-          if(g19.verdict!=='PASS_GATE19_SHOPPER_E2E_LINEAGE'||g19.sourceSha!==process.env.LOCK_GATE19_SHA)throw new Error('GATE20_GATE19_RECEIPT_INVALID');
+          if(g19.verdict!=='PASS_GATE19_SHOPPER_E2E_LINEAGE'||g19.sourceSha!==process.env.LOCK_GATE19_SHA||g19.decision!=='PASS_GATE19_SHOPPER_E2E_LINEAGE'||g19.lockedEvidence!==true)throw new Error('GATE20_GATE19_RECEIPT_INVALID');
           if(hosting.decision!=='PASS_HOSTING_GATE20_VISUAL_OWNER_PARITY'||Number(hosting.ownerCount)!==12)throw new Error('GATE20_HOSTING_PARITY_INCOMPLETE');
           if(diag.decision!=='PASS')throw new Error('GATE20_LIVE_AUTHORITY_DIAGNOSTIC_'+diag.decision+'_'+diag.blocker+(diag.hr?.cause?'_'+diag.hr.cause:''));
           if(g20.decision!=='PASS_GATE20_BROWSER_VISUAL')throw new Error(g20.decision||'GATE20_RESULT_MISSING');
