@@ -1,92 +1,104 @@
-# CXOrbia TyA — instrucciones de ejecución vigentes
+# CXOrbia Recovery — autoridad operativa raíz
 
-## Autoridad y continuidad
+Este archivo aplica a todo el repositorio salvo que un `AGENTS.md` más profundo restrinja todavía más el alcance. Su función es resolver autoridad y continuidad; no sustituye manifests, checkpoints ni evidencia de una candidata.
 
-Antes de actuar, leer en este orden:
+## 1. Autoridad prevalente
 
-1. `app/docs/00-INDICE-FUENTES-VIGENTES-CXORBIA-TYA.md`;
-2. `app/docs/CHECKPOINT-OPERATIVO-CXORBIA-TYA-VIGENTE.md`;
-3. `app/docs/ADDENDUM-MAESTRO-EMPALME-DIRECTO-Y-CARRIL-FILE-AWARE-CXORBIA-TYA-VIGENTE.md`;
-4. `app/docs/PHASE-A-PLAN-LOCK-NO-DEVIATION-20260704.md`;
-5. fuentes activas declaradas por el índice;
-6. PR #7 y HEAD remoto de la rama viva.
+Para cualquier trabajo de Recovery, leer y aplicar en este orden las fuentes del Project CXOrbia Recovery:
 
-Ante conflicto, prevalecen el índice vigente, el checkpoint vigente y el addendum de carril directo.
+1. `00_START_HERE_CXORBIA_RECOVERY.md`;
+2. `ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA.md`;
+3. `PLAN_RECTOR_RECUPERACION_CXORBIA.md`;
+4. `CONTRATOS_FUNCIONALES_CXORBIA_RECOVERY.md`;
+5. `CHECKPOINT_INICIAL_RECUPERACION_CXORBIA.md`;
+6. cualquier addendum Recovery posterior expresamente aprobado, en orden cronológico; actualmente el addendum de 2026-09-03 complementa y prevalece sobre reglas anteriores cuando existe conflicto;
+7. después, resolver dinámicamente en GitHub la rama Recovery viva, sus locks/checkpoints, manifest F9 aplicable, HEAD, tree, checks y evidencia vinculada al intento exacto.
 
-## Rama y PR únicos
+Las fuentes del Project pueden estar montadas fuera del árbol Git. No crear copias divergentes para sustituirlas. Si una ejecución técnica no puede leer la autoridad Recovery necesaria, debe detener el write funcional en vez de inferir reglas desde documentación histórica.
 
-- Repositorio: `paulaosoriof86/demoCXOrbia`.
-- Rama viva: `docs-tya-v6-v71-audit`.
-- PR existente: `#7`.
-- No crear rama, PR, candidata o metodología paralela.
-- No usar `main`, merge o producción sin autorización expresa.
+## 2. Rama operativa y precedencia histórica
 
-## Carril directo obligatorio
+- Repositorio único: `paulaosoriof86/demoCXOrbia`.
+- Carril operativo Recovery: `recovery/cxorbia-phase-a-20260831`.
+- `docs-tya-v6-v71-audit`, PR #7, índices/checkpoints/direct-runner contracts históricos y demás carriles previos son evidencia o autoridad histórica solamente cuando no contradicen Recovery.
+- No crear otra rama principal, PR paralelo, candidata paralela, overlay, materializador, workflow transportador ni metodología adicional para resolver un FAIL.
+- El HEAD de trabajo nunca equivale por sí solo a release aprobada ni a artefacto certificado.
 
-CXOrbia no depende de Codex para escribir en GitHub.
+## 3. Resolución dinámica del estado vivo
 
-`ATOMIC_DIRECT_APPLY_AVAILABLE` se satisface por cualquiera de estos carriles ya instalados:
+Nunca hardcodear un SHA como autoridad permanente.
 
-1. checkout Git autenticado con commit/push directo; o
-2. `CXORBIA_ATOMIC_APPLY_RUNNER` mediante `.github/cxorbia-apply-requests/request.json`.
+Antes de cada write técnico:
 
-Los gates post-aplicación se ejecutan mediante `CXORBIA_READONLY_POST_GATES_RUNNER` y `.github/cxorbia-gate-requests/request.json` cuando corresponda.
+1. leer la rama Recovery remota;
+2. capturar `expectedParentSha` y tree del intento;
+3. comprobar que coinciden con el paquete/issue/checkpoint que autoriza el cambio;
+4. limitar el write a owners y archivos allowlisted;
+5. si HEAD/tree cambiaron antes del write, clasificar `SOURCE_FAILURE`, no escribir y re-resolver el intento sobre el nuevo estado vivo;
+6. después del write, hacer readback del commit, parent, tree, diff y HEAD remoto;
+7. ejecutar únicamente los gates DEV focales previstos para ese paquete.
 
-Codex es opcional. Nunca debe convertirse en requisito, dependencia operativa ni acción manual de Paula cuando los runners controlados estén disponibles.
+Un manifest o checkpoint histórico es evidencia inmutable. No se reescribe para convertirlo en puntero vivo. Cada candidata certificable debe producir su propio manifest/receipt ligado al source y artefacto exactos.
 
-## Aplicación de deltas
+## 4. Escritor único por iteración
 
-Para toda candidata auditada GO y sin P0 demostrado:
+La política del Plan Rector Recovery manda sobre contratos históricos de runners:
 
-- aplicar el delta directamente sobre la rama viva;
-- conservar backend, overlays, contratos, documentos y autoridades canónicas;
-- producir un solo commit funcional atómico;
-- verificar parent, hashes, allowlist, diff, push y HEAD remoto;
-- ejecutar los gates posteriores sobre el HEAD exacto;
-- detenerse antes de deploy salvo autorización expresa.
+- I0: sin Codex/write funcional.
+- I1: sin Codex, salvo fixtures mecánicos expresamente previstos.
+- I2: Codex es el escritor técnico principal del paquete autosuficiente.
+- I3: Codex escribe únicamente P0 `PROVEN`, con owner/archivo exactos y tests focales. Otros agentes y esta capa de control son read-only respecto del código funcional, salvo decisión Recovery posterior explícita.
+- I4: sin cambios de código salvo P0 de código nuevamente demostrado; deploy por carril único del artefacto ya certificado.
 
-El runner atómico debe:
+Los mecanismos históricos que permitan escritura directa no vuelven opcional esta política. No pedir a Codex “arreglar todo CXOrbia”; cada paquete debe ser focal, reproducible y fail-closed.
 
-- consumir una solicitud de una sola ejecución;
-- validar `expectedParentSha` y hashes actuales/destino;
-- limitarse a archivos allowlisted;
-- eliminar la solicitud en el commit funcional;
-- dejar worktree limpio;
-- publicar evidencia verificable.
+## 5. Reglas anti-bucle
 
-## Prohibiciones
+Todo FAIL se clasifica únicamente como:
 
-- Contents API secuencial para cambios funcionales;
-- mutaciones directas de árboles funcionales fuera del runner controlado;
-- workflows transportadores improvisados;
-- nuevas ramas o PR;
-- PowerShell, CMD o pasos manuales para Paula;
-- reconstrucciones de candidatas;
-- auditorías generales cuando existe un delta focalizado;
-- relajación de gates, wildcard o hardcode de PASS;
-- deploy, Firestore/Auth/Storage/HR writes, Make, Gemini, pagos, merge o producción sin autorización y gate correspondiente.
+`SOURCE_FAILURE`, `MAPPING_FAILURE`, `PROVIDER_FAILURE`, `PERSISTENCE_FAILURE`, `AUTH_FAILURE`, `FUNCTIONAL_DEFECT`, `VISUAL_DEFECT`, `RELEASE_COMPOSITION_FAILURE` o `ENVIRONMENT_FAILURE`.
 
-## Regla de oro del prototipo
+Un FAIL no autoriza reauditoría general, reimport, nueva candidata, rama paralela, overlay, materializador o workflow nuevo. Se corrige dentro de la iteración vigente por el owner probado y se repite el gate afectado.
 
-- No rediseñar ni reescribir `/app/modules` o `/app/core` desde backend.
-- No parchar UI desde backend salvo delta frontend auditado y autorizado.
-- Mantener la interfaz exacta de `CX.data`.
-- Mantener multi-tenant por `tenantId` y multi-proyecto por `projectId`.
-- Preservar HR, histórico, shoppers, postulaciones, certificaciones, liquidaciones/pagos y sincronización HR/plataforma.
-- No conectar ni copiar la base legacy.
+No reabrir un gate PASS sin drift reproducible del producto, contrato, provider, persistencia, auth, release composition o ambiente que afecte ese gate.
 
-## Documentación y cierre
+## 6. Invariantes de producto P0
 
-Registrar cada bloque en CAMBIOS, checkpoint, índice, resumen para Claude, pendientes e impacto Academia según aplique.
+- Plataforma multi-tenant por `tenantId` y multi-proyecto por `projectId`.
+- `projectId`, `periodId` y execution cut son conceptos distintos.
+- Proyecto, periodo, país, moneda, fuentes HR/roadmap/cuestionario, Sheet IDs, columnas y mappings son configuración scoped; no defaults globales hardcodeados.
+- `routeSource` y fuentes equivalentes deben poder operar como `internal|external/provider` según contrato.
+- HR externa manda sobre campos HR-managed y la misma `sourceRevision` debe respaldar disponibilidad, asignaciones, histórico y KPIs.
+- Visitas disponibles = elegibles y no asignadas.
+- Asignar retira disponibilidad y crea/actualiza la vista shopper sin duplicados.
+- Shopper HR inexistente se upserta de forma automática e idempotente y debe poder autenticarse.
+- Administradores autorizados deben ver identidad, histórico y KPIs.
+- Postulación válida persiste, aparece en Gestión de Postulaciones y no reaparece después de eliminación válida.
+- Todo write bidireccional requiere ACK remoto, idempotencia y readback.
+- Un guardado únicamente local/preview no certifica persistencia.
+- Artifact desplegado debe ser exactamente el artifact certificado; no rebuild entre certificación y deploy.
 
-No afirmar PASS, commit, push, deploy o producción sin evidencia reproducible.
+## 7. Producción
 
-El cierre debe indicar:
+`https://tya-plataforma.web.app/` permanece `LEGACY_ORACLE` y `DO_NOT_TOUCH` hasta I4 y autorización productiva explícita.
 
-- qué se hizo;
-- HEAD anterior y nuevo;
-- archivos y gates;
-- qué se preservó;
-- impacto Phase A, Claude y Academia;
-- pendiente real y siguiente acción exacta;
-- estado seguro y bloqueo comprobado, si existe.
+No desplegar, mutar datos reales, Firestore/Auth/Storage/HR productivos ni reemplazar Hosting por rutina. No reimportar datos reales ni conectar/copiar la base legacy.
+
+## 8. Evidencia y cierre de cada bloque
+
+No afirmar PASS, commit, push, deploy ni producción sin readback/evidencia reproducible.
+
+Cada cierre debe registrar como mínimo:
+
+- iteración vigente;
+- evidencia nueva;
+- estado `GO`, `HOLD` o `NO_GO`;
+- HEAD/tree anterior y nuevo cuando exista write;
+- archivos realmente modificados;
+- P0 y clasificación, si existe;
+- tests/gates ejecutados y resultado;
+- `sourceRevision`/artifact/digest cuando aplique;
+- qué no cambió, incluida producción;
+- siguiente acción exacta y si requiere autorización.
+
+La continuidad se deriva de estas reglas + fuentes Recovery prevalentes + readback vivo. No depende de memoria conversacional ni de un SHA congelado fuera de su intento.
