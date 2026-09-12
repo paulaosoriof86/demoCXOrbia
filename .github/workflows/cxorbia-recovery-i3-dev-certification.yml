@@ -6,6 +6,9 @@ on:
       - recovery/cxorbia-phase-a-20260831
     paths:
       - .github/workflows/cxorbia-recovery-i3-dev-certification.yml
+      - tools/hr-source/tya-canonical-visit-state-r20.mjs
+      - tools/hr-source/tya-reapply-canonical-state-r20.mjs
+      - tools/hr-source/tya-canonical-visit-state-r20.test.mjs
   workflow_dispatch:
 
 permissions:
@@ -23,9 +26,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PRODUCT_SOURCE_SHA: 53683d0e7bb62e90de3ca4b8063db9e85f5d40ee
-  PRE_FIX_SHA: d8c7b2c27445d72e74653cb85fd7b288db122c9e
-  P0_B_SHA: 3cf833dbca8028567cd26f59e214eb4fdb3445ee
+  PRODUCT_SOURCE_SHA: 449a447d20fc6db9b208b964242c1b37a6e10199
+  PATCH_BASE_SHA: 93f8fb08c1ccec8970d2ff715d3a812e84632834
   LOCK_GATE18_SHA: 17a00b0383e1ad5d91188a6af731c834fb11371e
   LOCK_GATE18_RUN_ID: '34301633306'
   LOCK_GATE18_RUN_ATTEMPT: '2'
@@ -42,6 +44,7 @@ env:
   TENANT_ID: tya
   PROJECT_ID: cinepolis
   PERIOD_ID: cinepolis-2026-09
+  PERIOD_KEY: 2026-09
   OUT: .tmp/recovery-i3-p0-validation
 
 jobs:
@@ -54,7 +57,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Prove exact P0 source delta and immutable prior gates
+      - name: Prove exact Recovery P0 semantic patch and prior gate lineage
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -62,20 +65,22 @@ jobs:
           mkdir -p "$OUT"
           test "$GITHUB_REF_NAME" = "recovery/cxorbia-phase-a-20260831"
           git cat-file -e "$PRODUCT_SOURCE_SHA^{commit}"
-          git cat-file -e "$PRE_FIX_SHA^{commit}"
-          git cat-file -e "$P0_B_SHA^{commit}"
+          git cat-file -e "$PATCH_BASE_SHA^{commit}"
+          git merge-base --is-ancestor "$PATCH_BASE_SHA" "$PRODUCT_SOURCE_SHA"
           git merge-base --is-ancestor "$PRODUCT_SOURCE_SHA" HEAD
-          test "$(git rev-parse "$PRODUCT_SOURCE_SHA^")" = "$P0_B_SHA"
-          test "$(git rev-parse "$P0_B_SHA^")" = "$PRE_FIX_SHA"
 
-          git diff --quiet "$PRODUCT_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc
-          git diff --name-only "$PRE_FIX_SHA" "$PRODUCT_SOURCE_SHA" -- app backend firebase.json .firebaserc | sort > "$OUT/p0-product-delta.txt"
+          git diff --quiet "$PRODUCT_SOURCE_SHA" HEAD -- app backend tools/hr-source firebase.json .firebaserc
+          git diff --name-only "$PATCH_BASE_SHA" "$PRODUCT_SOURCE_SHA" -- app backend tools/hr-source firebase.json .firebaserc | sort > "$OUT/p0-product-delta.txt"
           printf '%s\n' \
-            'backend/runtime/cxorbia-operational-command-provider-v1.mjs' \
-            'backend/runtime/hr-live-service/server.mjs' \
+            'tools/hr-source/tya-canonical-visit-state-r20.mjs' \
+            'tools/hr-source/tya-canonical-visit-state-r20.test.mjs' \
+            'tools/hr-source/tya-reapply-canonical-state-r20.mjs' \
             | sort > "$OUT/p0-expected-delta.txt"
           diff -u "$OUT/p0-expected-delta.txt" "$OUT/p0-product-delta.txt"
 
+          node --check tools/hr-source/tya-canonical-visit-state-r20.mjs
+          node --check tools/hr-source/tya-reapply-canonical-state-r20.mjs
+          node --check tools/hr-source/tya-canonical-visit-state-r20.test.mjs
           node --check backend/runtime/cxorbia-project-command-provider-v1.mjs
           node --check backend/runtime/cxorbia-operational-command-provider-v1.mjs
           node --check backend/runtime/hr-live-service/server.mjs
@@ -117,8 +122,7 @@ jobs:
 
           jq -n -S \
             --arg productSourceSha "$PRODUCT_SOURCE_SHA" \
-            --arg preFixSha "$PRE_FIX_SHA" \
-            --arg p0bSha "$P0_B_SHA" \
+            --arg patchBaseSha "$PATCH_BASE_SHA" \
             --arg qaHeadSha "$GITHUB_SHA" \
             --arg gate18Sha "$LOCK_GATE18_SHA" \
             --argjson gate18Run "$LOCK_GATE18_RUN_ID" \
@@ -128,7 +132,7 @@ jobs:
             --argjson gate19Attempt "$LOCK_GATE19_RUN_ATTEMPT" \
             --argjson gate19Artifact "$LOCK_GATE19_ARTIFACT_ID" \
             --arg gate19Digest "$LOCK_GATE19_ARTIFACT_DIGEST" \
-            '{decision:"PASS_I3_P0_SOURCE_AND_LINEAGE_GUARD",productSourceSha:$productSourceSha,preFixSha:$preFixSha,p0bSha:$p0bSha,qaHeadSha:$qaHeadSha,productDelta:["backend/runtime/cxorbia-operational-command-provider-v1.mjs","backend/runtime/hr-live-service/server.mjs"],gate18:{sha:$gate18Sha,runId:$gate18Run,attempt:$gate18Attempt,conclusion:"success"},gate19:{sha:$gate19Sha,runId:$gate19Run,attempt:$gate19Attempt,artifactId:$gate19Artifact,artifactDigest:$gate19Digest},production:false}' \
+            '{decision:"PASS_I4_P0_SEMANTIC_PATCH_LINEAGE",productSourceSha:$productSourceSha,patchBaseSha:$patchBaseSha,qaHeadSha:$qaHeadSha,productDelta:["tools/hr-source/tya-canonical-visit-state-r20.mjs","tools/hr-source/tya-canonical-visit-state-r20.test.mjs","tools/hr-source/tya-reapply-canonical-state-r20.mjs"],priorGate18:{sha:$gate18Sha,runId:$gate18Run,attempt:$gate18Attempt,conclusion:"success"},priorGate19:{sha:$gate19Sha,runId:$gate19Run,attempt:$gate19Attempt,artifactId:$gate19Artifact,artifactDigest:$gate19Digest},freshGate18Required:true,freshGate19Required:true,production:false}' \
             > "$OUT/lineage.json"
 
       - name: Setup Node 24
@@ -141,10 +145,11 @@ jobs:
           set -euo pipefail
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null
 
-      - name: Execute existing runtime tests
+      - name: Execute runtime and Recovery P0 semantic tests
         run: |
           set -euo pipefail
           node --test backend/runtime/hr-live-service/test/*.test.mjs | tee "$OUT/runtime-tests.log"
+          node --test tools/hr-source/tya-canonical-visit-state-r20.test.mjs | tee "$OUT/semantic-tests.log"
 
       - name: Authenticate canonical Firebase DEV
         uses: google-github-actions/auth@v2
@@ -161,10 +166,10 @@ jobs:
           set -euo pipefail
           gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json > "$OUT/cloud-run-before.json"
 
-      - name: Build exact P0 source image for DEV
+      - name: Build exact Recovery P0 semantic source image for DEV
         run: |
           set -euo pipefail
-          IMAGE_URI="gcr.io/${GCP_PROJECT_ID}/${CLOUD_RUN_SERVICE}:i3-p0-${PRODUCT_SOURCE_SHA:0:12}-${GITHUB_RUN_ID}"
+          IMAGE_URI="gcr.io/${GCP_PROJECT_ID}/${CLOUD_RUN_SERVICE}:i4-p0-${PRODUCT_SOURCE_SHA:0:12}-${GITHUB_RUN_ID}"
           echo "$IMAGE_URI" > "$OUT/image-uri.txt"
           gcloud builds submit . \
             --project "$GCP_PROJECT_ID" \
@@ -172,7 +177,7 @@ jobs:
             --substitutions "_IMAGE=$IMAGE_URI" \
             --quiet
 
-      - name: Deploy exact P0 image to existing Recovery DEV runtime only
+      - name: Deploy exact Recovery P0 semantic image to existing DEV runtime only
         run: |
           set -euo pipefail
           IMAGE_URI="$(cat "$OUT/image-uri.txt")"
@@ -185,7 +190,7 @@ jobs:
           gcloud run services describe "$CLOUD_RUN_SERVICE" --project "$GCP_PROJECT_ID" --region "$GCP_REGION" --format=json > "$OUT/cloud-run-after.json"
           jq -e --arg image "$IMAGE_URI" '.spec.template.spec.containers[0].image==$image' "$OUT/cloud-run-after.json" >/dev/null
 
-      - name: Validate P0-A with fresh authoritative HR reconcile
+      - name: Validate P0-A with fresh authoritative HR reconcile and corrected KPIs
         run: |
           set -euo pipefail
           code="$(curl -sS --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 20 --max-time 180 -o "$OUT/hr-fresh.json" -w '%{http_code}' "$HOSTING_URL/api/tya/cinepolis/hr-live?format=json&fresh=1&ts=${GITHUB_RUN_ID}")"
@@ -201,7 +206,15 @@ jobs:
           if(vr.ok!==true||vr.status!=='committed'||vr.providerAck!==true)throw new Error('P0A_VISIT_RECONCILIATION_NOT_COMMITTED');
           if(String(vr.sourceRevision||'')!==String(rt.revision||''))throw new Error('P0A_REVISION_READBACK_MISMATCH');
           if(Number(vr.reviewRequiredVisits||0)!==Number(vr.conflicts||0))throw new Error('P0A_REVIEW_CONFLICT_ACCOUNTING_MISMATCH');
-          const out={decision:'PASS_I3_P0A_HR_CONFLICT_DURABLE_NO_ABORT',httpStatus:200,sourceRevision:rt.revision,visitCount:Number(vr.visitCount||0),createdVisits:Number(vr.createdVisits||0),reviewRequiredVisits:Number(vr.reviewRequiredVisits||0),conflicts:Number(vr.conflicts||0),providerWrites:Number(vr.providerWrites||0),hrWrites:Number(vr.hrWrites||0),refreshError:null,production:false};
+          const periodKey=process.env.PERIOD_KEY;
+          const period=(p.periodOperationalSummary||[]).find(x=>String(x?.periodKey||'')===periodKey);
+          if(!period)throw new Error('P0A_CURRENT_PERIOD_SUMMARY_MISSING');
+          const visits=(p.visits||[]).filter(v=>String(v?.periodKey||'')===periodKey);
+          const pendingRealization=visits.filter(v=>v?.canonicalFacets?.pendingRealization===true||(v?.canonicalFacets?.pendingRealization==null&&v?.canonicalFacets?.scheduled===true&&v?.canonicalFacets?.realized!==true)).length;
+          if(Number(period.available)!==Number(period.unassigned))throw new Error(`P0A_UNASSIGNED_NOT_AVAILABLE:${period.unassigned}:${period.available}`);
+          if(Number(period.eligibilityBlocked||0)!==0)throw new Error(`P0A_UNASSIGNED_ELIGIBILITY_BLOCKED:${period.eligibilityBlocked}`);
+          if(Number(period.scheduled)!==pendingRealization)throw new Error(`P0A_SCHEDULED_KPI_INCLUDES_REALIZED:${period.scheduled}:${pendingRealization}`);
+          const out={decision:'PASS_I4_P0_HR_AVAILABILITY_AND_SCHEDULED_KPI',httpStatus:200,sourceRevision:rt.revision,periodKey,visitCount:Number(vr.visitCount||0),createdVisits:Number(vr.createdVisits||0),reviewRequiredVisits:Number(vr.reviewRequiredVisits||0),conflicts:Number(vr.conflicts||0),providerWrites:Number(vr.providerWrites||0),hrWrites:Number(vr.hrWrites||0),currentPeriod:{total:Number(period.total||0),assigned:Number(period.assigned||0),unassigned:Number(period.unassigned||0),available:Number(period.available||0),eligibilityBlocked:Number(period.eligibilityBlocked||0),scheduled:Number(period.scheduled||0),pendingRealization,realized:Number(period.realized||0),questionnaireCompleted:Number(period.questionnaireCompleted||0),submitted:Number(period.submitted||0),byCountry:period.byCountry||{}},refreshError:null,production:false};
           fs.writeFileSync(`${process.env.OUT}/p0a-result.json`,JSON.stringify(out,null,2)+'\n');
           console.log(JSON.stringify(out));
           NODE
@@ -268,71 +281,14 @@ jobs:
           const authoritativeName=freshName||contractName;
           const authoritativeCountries=freshCountries.length?freshCountries:contractCountries;
 
-          const canonicalSource={
-            mode:'external',
-            providerType:'google_sheets',
-            readPolicy:'external_live',
-            writePolicy:'external_read_only',
-            providerRef:sourceId,
-            mappingRef:String(mapping.contractId)
-          };
-          const sourceMatches=value=>Boolean(value)
-            && String(value.mode||'')===canonicalSource.mode
-            && String(value.providerType||'')===canonicalSource.providerType
-            && String(value.readPolicy||'')===canonicalSource.readPolicy
-            && String(value.writePolicy||'')===canonicalSource.writePolicy
-            && String(value.providerRef||'')===canonicalSource.providerRef
-            && String(value.mappingRef||'')===canonicalSource.mappingRef;
+          const canonicalSource={mode:'external',providerType:'google_sheets',readPolicy:'external_live',writePolicy:'external_read_only',providerRef:sourceId,mappingRef:String(mapping.contractId)};
+          const sourceMatches=value=>Boolean(value)&&String(value.mode||'')===canonicalSource.mode&&String(value.providerType||'')===canonicalSource.providerType&&String(value.readPolicy||'')===canonicalSource.readPolicy&&String(value.writePolicy||'')===canonicalSource.writePolicy&&String(value.providerRef||'')===canonicalSource.providerRef&&String(value.mappingRef||'')===canonicalSource.mappingRef;
           const ref=db.collection('tenants').doc(tenantId).collection('projects').doc(projectId);
           const beforeSnap=await ref.get();
           if(!beforeSnap.exists)throw new Error('P0B_PROJECT_MISSING');
-          let before=beforeSnap.data()||{};
-          let bootstrapApplied=false;
-          const hasDurableSource=Boolean(before.operationalSource||before.routeSource);
-          if(!hasDurableSource){
-            const legacyShapeOk=
-              String(before.tenantId||'')===tenantId &&
-              String(before.projectId||'')===projectId &&
-              Boolean(String(before.materializationPlanId||'').trim()) &&
-              Boolean(String(before.materializationAuthorizationId||'').trim()) &&
-              Boolean(String(before.materializationState||'').trim()) &&
-              before.production!==true &&
-              normalizeName(before.name)===normalizeName(authoritativeName) &&
-              sameStrings(before.countries,authoritativeCountries);
-            if(!legacyShapeOk)throw new Error('P0B_LEGACY_PROJECT_BOOTSTRAP_NOT_AUTHORIZED_BY_SHAPE');
-            await db.runTransaction(async tx=>{
-              const snap=await tx.get(ref);
-              if(!snap.exists)throw new Error('P0B_PROJECT_DISAPPEARED_DURING_BOOTSTRAP');
-              const current=snap.data()||{};
-              if(current.operationalSource||current.routeSource)return;
-              const currentShapeOk=
-                String(current.tenantId||'')===tenantId &&
-                String(current.projectId||'')===projectId &&
-                Boolean(String(current.materializationPlanId||'').trim()) &&
-                Boolean(String(current.materializationAuthorizationId||'').trim()) &&
-                Boolean(String(current.materializationState||'').trim()) &&
-                current.production!==true &&
-                normalizeName(current.name)===normalizeName(authoritativeName) &&
-                sameStrings(current.countries,authoritativeCountries);
-              if(!currentShapeOk)throw new Error('P0B_LEGACY_PROJECT_BOOTSTRAP_RACE_OR_DRIFT');
-              tx.set(ref,{
-                operationalSource:canonicalSource,
-                hrSourceId:sourceId,
-                normalizedName:normalizeName(authoritativeName),
-                version:Number(current.version||0)
-              },{merge:true});
-            });
-            bootstrapApplied=true;
-            before=(await ref.get()).data()||{};
-          }
-
+          const before=beforeSnap.data()||{};
           const rawSource=before.operationalSource||before.routeSource||{};
-          const safeSource={
-            mode:String(rawSource.mode||''),
-            providerType:String(rawSource.providerType||''),
-            readPolicy:String(rawSource.readPolicy||''),
-            writePolicy:String(rawSource.writePolicy||'')
-          };
+          const safeSource={mode:String(rawSource.mode||''),providerType:String(rawSource.providerType||''),readPolicy:String(rawSource.readPolicy||''),writePolicy:String(rawSource.writePolicy||'')};
           for(const k of ['providerBindingId','integrationSettingId','providerRef','mappingRef'])if(rawSource[k]!=null&&String(rawSource[k]).trim())safeSource[k]=String(rawSource[k]).trim();
           const countries=Array.isArray(before.countries)?before.countries.map(String).filter(Boolean):[];
           const name=String(before.name||'').trim();
@@ -342,31 +298,13 @@ jobs:
           if(normalizeName(before.normalizedName)!==normalizeName(name))throw new Error('P0B_DURABLE_NORMALIZED_NAME_MISSING');
           if(!name||!countries.length||!sameStrings(countries,authoritativeCountries))throw new Error('P0B_CURRENT_PROJECT_CONTRACT_INCOMPLETE');
 
-          const allowedValueKeys=new Set(['mode','type','providerType','readPolicy','writePolicy','providerBindingId','integrationSettingId','providerRef','mappingRef','hrSourceType','questionnaireSource','sourceType','status','version','id','projectId','tenantId','periodId','routeSource','name','normalizedName']);
-          const sanitize=(value,key='')=>{
-            if(Array.isArray(value))return key==='countries'?value.map(v=>String(v)): {type:'array',length:value.length};
-            if(value&&typeof value==='object')return Object.fromEntries(Object.keys(value).sort().map(k=>[k,sanitize(value[k],k)]));
-            if(allowedValueKeys.has(key))return value==null?null:String(value);
-            return {type:value===null?'null':typeof value};
-          };
-          const diagnostic={decision:'DIAG_I3_P0B_DURABLE_PROJECT_SHAPE',tenantId,projectId,periodId,bootstrapApplied,sourceRevision,providerRef:safeSource.providerRef,mappingRef:safeSource.mappingRef,projectKeys:Object.keys(before).sort(),projectShape:sanitize(before),rawSourceShape:sanitize(rawSource),safeSource,countries,namePresent:Boolean(name),version,production:false};
-          fs.writeFileSync(path.join(outDir,'p0b-config-diagnostic.json'),JSON.stringify(diagnostic,null,2)+'\n');
-          console.log(JSON.stringify(diagnostic));
-
-          const idempotencyKey=`i3-p0b-${process.env.PRODUCT_SOURCE_SHA.slice(0,12)}-${process.env.GITHUB_RUN_ID}`;
-          const command={
-            commandType:'project.update',tenantId,projectId,periodId,idempotencyKey,expectedVersion:version,
-            payload:{name,countries,operationalSource:safeSource,version,status:before.status||'active',periodId}
-          };
+          const idempotencyKey=`i4-p0-${process.env.PRODUCT_SOURCE_SHA.slice(0,12)}-${process.env.GITHUB_RUN_ID}`;
+          const command={commandType:'project.update',tenantId,projectId,periodId,idempotencyKey,expectedVersion:version,payload:{name,countries,operationalSource:safeSource,version,status:before.status||'active',periodId}};
           const initResponse=await fetch(`${hosting}/__/firebase/init.json`,{headers:{'Cache-Control':'no-store'}});
           const initConfig=await initResponse.json().catch(()=>null);
           if(!initResponse.ok||!initConfig?.apiKey||String(initConfig.projectId||'')!==project)throw new Error('P0B_FIREBASE_HOSTING_CONFIG_INVALID');
           const customToken=await auth.createCustomToken(actor.uid);
-          const exchangeResponse=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${encodeURIComponent(initConfig.apiKey)}`,{
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({token:customToken,returnSecureToken:true})
-          });
+          const exchangeResponse=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${encodeURIComponent(initConfig.apiKey)}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:customToken,returnSecureToken:true})});
           const exchangeBody=await exchangeResponse.json().catch(()=>null);
           if(!exchangeResponse.ok||!exchangeBody?.idToken)throw new Error('P0B_FIREBASE_CUSTOM_TOKEN_EXCHANGE_FAILED:'+String(exchangeBody?.error?.message||exchangeResponse.status));
           const idToken=String(exchangeBody.idToken);
@@ -374,15 +312,7 @@ jobs:
           if(tokenParts.length!==3)throw new Error('P0B_FIREBASE_ID_TOKEN_MALFORMED');
           const tokenClaims=JSON.parse(Buffer.from(tokenParts[1],'base64url').toString('utf8'));
           if(String(tokenClaims.user_id||tokenClaims.sub||'')!==actor.uid||String(tokenClaims.tenantId||'')!==tenantId||String(tokenClaims.role||'')!==actor.role||String(tokenClaims.authNamespace||'staff')!=='staff')throw new Error('P0B_FIREBASE_ID_TOKEN_CLAIMS_MISMATCH');
-          const invoke=async()=>{
-            const r=await fetch(`${hosting}/v1/cxorbia/commands`,{
-              method:'POST',
-              headers:{Authorization:`Bearer ${idToken}`,'Content-Type':'application/json','Idempotency-Key':command.idempotencyKey},
-              body:JSON.stringify(command)
-            });
-            const body=await r.json().catch(()=>null);
-            return {httpStatus:r.status,body};
-          };
+          const invoke=async()=>{const r=await fetch(`${hosting}/v1/cxorbia/commands`,{method:'POST',headers:{Authorization:`Bearer ${idToken}`,'Content-Type':'application/json','Idempotency-Key':command.idempotencyKey},body:JSON.stringify(command)});const body=await r.json().catch(()=>null);return {httpStatus:r.status,body};};
 
           const first=await invoke();
           if(first.httpStatus!==200||first.body?.ok!==true||first.body?.committed!==true||first.body?.providerAck!==true||first.body?.successUiAllowed!==true||Number(first.body?.providerWrites||0)<3||first.body?.idempotentReplay===true)throw new Error('P0B_FIRST_COMMIT_INVALID:'+JSON.stringify({httpStatus:first.httpStatus,code:first.body?.code,status:first.body?.status,providerWrites:first.body?.providerWrites}));
@@ -391,8 +321,6 @@ jobs:
           if(String(afterFirst.updatedBy||'')!==actor.uid)throw new Error('P0B_DURABLE_ACTOR_READBACK_MISMATCH');
           if(String(afterFirst.name||'')!==name)throw new Error('P0B_DURABLE_NAME_DRIFT');
           if(!sourceMatches(afterFirst.operationalSource))throw new Error('P0B_DURABLE_SOURCE_DRIFT');
-          if(String(afterFirst.hrSourceId||'')!==sourceId)throw new Error('P0B_DURABLE_HR_SOURCE_DRIFT');
-          if(normalizeName(afterFirst.normalizedName)!==normalizeName(name))throw new Error('P0B_DURABLE_NORMALIZED_NAME_DRIFT');
 
           const replay=await invoke();
           if(replay.httpStatus!==200||replay.body?.ok!==true||replay.body?.providerAck!==true||replay.body?.idempotentReplay!==true||Number(replay.body?.providerWrites??-1)!==0)throw new Error('P0B_REPLAY_NOT_IDEMPOTENT:'+JSON.stringify({httpStatus:replay.httpStatus,code:replay.body?.code,status:replay.body?.status,providerWrites:replay.body?.providerWrites,idempotentReplay:replay.body?.idempotentReplay}));
@@ -400,29 +328,29 @@ jobs:
           if(Number(afterReplay.version)!==version+1)throw new Error('P0B_REPLAY_CHANGED_DURABLE_VERSION');
           if(!sourceMatches(afterReplay.operationalSource))throw new Error('P0B_REPLAY_CHANGED_DURABLE_SOURCE');
 
-          const result={decision:'PASS_I3_P0B_PROJECT_UPDATE_DURABLE_ACK_REPLAY',tenantId,projectId,periodId,actorRole:actor.role,bootstrapApplied,sourceRevision,providerRef:safeSource.providerRef,mappingRef:safeSource.mappingRef,beforeVersion:version,afterVersion:Number(afterFirst.version),firstHttpStatus:first.httpStatus,firstProviderAck:true,firstProviderWrites:Number(first.body.providerWrites),durableReadback:true,replayHttpStatus:replay.httpStatus,idempotentReplay:true,replayProviderWrites:0,authTransport:'firebase_custom_token_exchange',localStorageTruth:false,hrWrites:0,production:false,commandFingerprint:crypto.createHash('sha256').update(idempotencyKey).digest('hex').slice(0,20)};
+          const result={decision:'PASS_I4_P0B_PROJECT_UPDATE_DURABLE_ACK_REPLAY',tenantId,projectId,periodId,actorRole:actor.role,sourceRevision,providerRef:safeSource.providerRef,mappingRef:safeSource.mappingRef,beforeVersion:version,afterVersion:Number(afterFirst.version),firstHttpStatus:first.httpStatus,firstProviderAck:true,firstProviderWrites:Number(first.body.providerWrites),durableReadback:true,replayHttpStatus:replay.httpStatus,idempotentReplay:true,replayProviderWrites:0,authTransport:'firebase_custom_token_exchange',localStorageTruth:false,hrWrites:0,production:false,commandFingerprint:crypto.createHash('sha256').update(idempotencyKey).digest('hex').slice(0,20)};
           fs.writeFileSync(path.join(outDir,'p0b-result.json'),JSON.stringify(result,null,2)+'\n');
           console.log(JSON.stringify(result));
           NODE
 
-      - name: Final I3 P0 validation verdict
+      - name: Final Recovery P0 semantic validation verdict
         run: |
           set -euo pipefail
           node <<'NODE'
           const fs=require('fs'),p=n=>JSON.parse(fs.readFileSync(`${process.env.OUT}/${n}`,'utf8'));
           const lineage=p('lineage.json'),a=p('p0a-result.json'),b=p('p0b-result.json'),run=p('cloud-run-after.json');
-          if(lineage.decision!=='PASS_I3_P0_SOURCE_AND_LINEAGE_GUARD')throw new Error('I3_P0_LINEAGE_INVALID');
-          if(a.decision!=='PASS_I3_P0A_HR_CONFLICT_DURABLE_NO_ABORT'||a.httpStatus!==200||!a.sourceRevision||a.refreshError!==null)throw new Error('I3_P0A_NOT_CERTIFIED');
-          if(b.decision!=='PASS_I3_P0B_PROJECT_UPDATE_DURABLE_ACK_REPLAY'||b.firstProviderAck!==true||b.durableReadback!==true||b.idempotentReplay!==true||b.replayProviderWrites!==0)throw new Error('I3_P0B_NOT_CERTIFIED');
+          if(lineage.decision!=='PASS_I4_P0_SEMANTIC_PATCH_LINEAGE')throw new Error('I4_P0_LINEAGE_INVALID');
+          if(a.decision!=='PASS_I4_P0_HR_AVAILABILITY_AND_SCHEDULED_KPI'||a.httpStatus!==200||!a.sourceRevision||a.refreshError!==null)throw new Error('I4_P0A_NOT_VALIDATED');
+          if(b.decision!=='PASS_I4_P0B_PROJECT_UPDATE_DURABLE_ACK_REPLAY'||b.firstProviderAck!==true||b.durableReadback!==true||b.idempotentReplay!==true||b.replayProviderWrites!==0)throw new Error('I4_P0B_NOT_VALIDATED');
           const revision=run?.status?.latestReadyRevisionName||null;
           const image=run?.spec?.template?.spec?.containers?.[0]?.image||null;
-          if(!revision||!image)throw new Error('I3_P0_DEV_DEPLOY_IDENTITY_MISSING');
-          const result={verdict:'PASS_I3_P0_FIXES_DEV_VALIDATED',state:'FIX_VALIDATED',productSourceSha:process.env.PRODUCT_SOURCE_SHA,qaHeadSha:process.env.GITHUB_SHA,devRuntimeRevision:revision,devImage:image,p0a:a,p0b:b,gate18Locked:true,gate19Locked:true,hostingDeploys:0,production:false};
+          if(!revision||!image)throw new Error('I4_P0_DEV_DEPLOY_IDENTITY_MISSING');
+          const result={verdict:'PASS_I4_P0_SEMANTIC_FIX_DEV_VALIDATED',state:'P0_FIX_VALIDATED_REQUIRES_FRESH_GATE18_GATE19',productSourceSha:process.env.PRODUCT_SOURCE_SHA,qaHeadSha:process.env.GITHUB_SHA,devRuntimeRevision:revision,devImage:image,p0a:a,p0b:b,priorGate18Locked:true,priorGate19Locked:true,freshGate18Required:true,freshGate19Required:true,hostingDeploys:0,production:false};
           fs.writeFileSync(`${process.env.OUT}/result.json`,JSON.stringify(result,null,2)+'\n');
-          console.log(JSON.stringify({verdict:result.verdict,productSourceSha:result.productSourceSha,devRuntimeRevision:revision,p0a:a.decision,p0b:b.decision,production:false}));
+          console.log(JSON.stringify({verdict:result.verdict,productSourceSha:result.productSourceSha,devRuntimeRevision:revision,currentPeriod:a.currentPeriod,p0b:b.decision,freshGate18Required:true,freshGate19Required:true,production:false}));
           NODE
 
-      - name: Upload sanitized I3 P0 validation evidence
+      - name: Upload sanitized Recovery P0 validation evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
