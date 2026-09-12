@@ -94,7 +94,7 @@
     if(D.__cxCommandBoundaryVersion===VERSION)return true;
     if(!D.__prototypeMutationMethods){
       D.__prototypeMutationMethods={};
-      ['addProject','setVisitState','assignVisit','payVisits','addShopper','updateShopper'].forEach(name=>{
+      ['addProject','setVisitState','assignVisit','payVisits','addShopper','updateShopper','resetShopperCredential'].forEach(name=>{
         if(typeof D[name]==='function')D.__prototypeMutationMethods[name]=D[name];
       });
     }
@@ -118,7 +118,7 @@
     D.addShopper=function(cfg){
       cfg=cfg||{};const meta=commandMeta(cfg.__commandMeta);const c=ctx();
       const built=CX.shopperAdminCommandContract?.create?.({
-        tenantId:c.tenantId,projectId:c.projectId,projectIds:c.projectIds.length?c.projectIds:[c.projectId],actorId:c.actorId,actorRole:c.role,
+        tenantId:c.tenantId,projectId:c.projectId,periodId:c.periodId,projectIds:c.projectIds.length?c.projectIds:[c.projectId],actorId:c.actorId,actorRole:c.role,
         expectedVersion:'absent',idempotencyKey:idempotency('shopper.create','',cfg,'absent'),profile:cfg,identity:cfg,sourceType:cfg.sourceType||'platform',sourceRef:cfg.sourceRef||null
       });
       if(!built?.ok){const r=CX.commandAdapter?.blocked?.(built?.command||{},'SHOPPER_CREATE_INVALID',{errors:built?.errors||[]})||{ok:false,status:'blocked'};return meta.ackAware?Promise.resolve(surfaceBlocked(r)):legacyFailClosed(r);}
@@ -128,11 +128,22 @@
     D.updateShopper=function(id,patch){
       patch=patch||{};const meta=commandMeta(patch.__commandMeta);const cleanPatch=Object.assign({},patch);delete cleanPatch.__commandMeta;const c=ctx();const current=typeof D.getShopper==='function'?D.getShopper(id):null;
       const built=CX.shopperAdminCommandContract?.update?.({
-        tenantId:c.tenantId,projectId:c.projectId,projectIds:c.projectIds.length?c.projectIds:[c.projectId],actorId:c.actorId,actorRole:c.role,
+        tenantId:c.tenantId,projectId:c.projectId,periodId:c.periodId,projectIds:c.projectIds.length?c.projectIds:[c.projectId],actorId:c.actorId,actorRole:c.role,
         shopperId:id,expectedVersion:versionOf(current),idempotencyKey:idempotency('shopper.update',id,cleanPatch,versionOf(current)),patch:cleanPatch,identity:current||{}
       });
       if(!built?.ok){const r=CX.commandAdapter?.blocked?.(built?.command||{},'SHOPPER_UPDATE_INVALID',{errors:built?.errors||[]})||{ok:false,status:'blocked'};return meta.ackAware?Promise.resolve(surfaceBlocked(r)):legacyFailClosed(r);}
       built.command.authorization={providerEnforcementRequired:true,permission:'shopper.update'};
+      return execute(built.command,meta);
+    };
+    D.resetShopperCredential=function(id,meta){
+      meta=commandMeta(meta);const c=ctx();const current=typeof D.getShopper==='function'?D.getShopper(id):null;
+      const expected=versionOf(current);
+      const built=CX.shopperAdminCommandContract?.credentialReset?.({
+        tenantId:c.tenantId,projectId:c.projectId,periodId:c.periodId,projectIds:c.projectIds.length?c.projectIds:[c.projectId],actorId:c.actorId,actorRole:c.role,
+        shopperId:id,expectedVersion:expected,idempotencyKey:idempotency('shopper.credential.reset',id,{shopperId:id},expected)
+      });
+      if(!built?.ok){const r=CX.commandAdapter?.blocked?.(built?.command||{},'SHOPPER_CREDENTIAL_RESET_INVALID',{errors:built?.errors||[]})||{ok:false,status:'blocked'};return meta.ackAware?Promise.resolve(surfaceBlocked(r)):legacyFailClosed(r);}
+      built.command.authorization={providerEnforcementRequired:true,permission:'shopper.credential.reset'};
       return execute(built.command,meta);
     };
     D.setVisitState=function(id,estado,dateField,dateVal,meta){

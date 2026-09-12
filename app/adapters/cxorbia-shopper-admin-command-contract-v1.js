@@ -16,7 +16,7 @@
   const arr=v=>Array.isArray(v)?v:[];
   const uniq=v=>[...new Set(arr(v).map(str).filter(Boolean))];
   const exactKeys=()=>Array.isArray(root.CX_EXACT_IDENTITY_CONTRACT?.technicalKeys)?root.CX_EXACT_IDENTITY_CONTRACT.technicalKeys.slice():['shopperId','legacyShopperId','legacyId','externalShopperId','externalId','sourceId','sourceKey','hrRowId','personId','profileId','shopperDocId'];
-  const PUBLIC_PROFILE_FIELDS=['firstName','lastName','nombre','email','whatsapp','pais','country','depto','ciudad','sexo','edad','estado','sourceRef','sourceType','perfilCompleto','honorarioPref'];
+  const PUBLIC_PROFILE_FIELDS=['firstName','lastName','nombre','email','whatsapp','pais','country','depto','ciudad','sexo','edad','estado','sourceRef','sourceType','perfilCompleto','honorarioPref','createdVia'];
   const PROTECTED_PROFILE_FIELDS=['dpi','documentId','banco','ctaTipo','ctaNum','ctaTitular','ctaMoneda','cuentaPago','ndaStatus'];
 
   function pick(input,keys){const out={};keys.forEach(key=>{if(input&&input[key]!==undefined)out[key]=input[key];});return out;}
@@ -29,6 +29,7 @@
     const errors=[];
     if(!str(input?.tenantId))errors.push('missing-tenantId');
     if(!uniq(input?.projectIds).length)errors.push('missing-projectIds');
+    if(!str(input?.periodId))errors.push('missing-periodId');
     if(!str(input?.idempotencyKey))errors.push('missing-idempotencyKey');
     if(input?.expectedVersion===undefined||input?.expectedVersion===null||input?.expectedVersion==='')errors.push('missing-expectedVersion');
     if(!str(input?.actorRole))errors.push('missing-actorRole');
@@ -41,9 +42,9 @@
     input=input||{};const errors=validateBase(input),profile=safeProfile(input.profile||input),protectedData=protectedProfile(input.profile||input);
     if(!str(profile.firstName||profile.nombre))errors.push('missing-shopper-name');
     return {ok:errors.length===0,errors,command:{
-      commandType:'shopper.create',entityType:'shopper',entityId:null,tenantId:str(input.tenantId),projectId:str(input.projectId||uniq(input.projectIds)[0]),
+      commandType:'shopper.create',entityType:'shopper',entityId:null,tenantId:str(input.tenantId),projectId:str(input.projectId||uniq(input.projectIds)[0]),periodId:str(input.periodId),
       actor:{actorId:str(input.actorId||''),role:str(input.actorRole),projectIds:uniq(input.projectIds)},expectedVersion:input.expectedVersion,idempotencyKey:str(input.idempotencyKey),
-      payload:{projectIds:uniq(input.projectIds),profile,protectedProfile:protectedData,protectedProfilePolicy:protectionContract(),exactIdentityAnchors:exactAnchors(input.identity||input),
+      payload:{periodId:str(input.periodId),projectIds:uniq(input.projectIds),profile,protectedProfile:protectedData,protectedProfilePolicy:protectionContract(),exactIdentityAnchors:exactAnchors(input.identity||input),
         auth:{namespace:'shopper',principalRequired:true,claimsRequired:true,membershipRequired:true,credentialMode:'server_generated_or_protected_reset_flow',browserPasswordAllowed:false,browserTokenAllowed:false},
         persistence:persistenceContract(),sourceType:str(input.sourceType||profile.sourceType||'platform'),sourceRef:str(input.sourceRef||profile.sourceRef||'')||null},
       source:'admin-shopper-flow',authorization:{providerEnforcementRequired:true,permission:'shopper.create'}
@@ -53,17 +54,17 @@
     input=input||{};const errors=validateBase(input),shopperId=str(input.shopperId||input.entityId),patch=input.patch||{};
     if(!shopperId)errors.push('missing-shopperId');
     return {ok:errors.length===0,errors,command:{
-      commandType:'shopper.update',entityType:'shopper',entityId:shopperId||null,tenantId:str(input.tenantId),projectId:str(input.projectId||uniq(input.projectIds)[0]),
+      commandType:'shopper.update',entityType:'shopper',entityId:shopperId||null,tenantId:str(input.tenantId),projectId:str(input.projectId||uniq(input.projectIds)[0]),periodId:str(input.periodId),
       actor:{actorId:str(input.actorId||''),role:str(input.actorRole),projectIds:uniq(input.projectIds)},expectedVersion:input.expectedVersion,idempotencyKey:str(input.idempotencyKey),
-      payload:{shopperId:shopperId||null,projectIds:uniq(input.projectIds),patch:safeProfile(patch),protectedPatch:protectedProfile(patch),protectedProfilePolicy:protectionContract(),exactIdentityAnchors:exactAnchors(input.identity||input),persistence:persistenceContract()},
+      payload:{periodId:str(input.periodId),shopperId:shopperId||null,projectIds:uniq(input.projectIds),patch:safeProfile(patch),protectedPatch:protectedProfile(patch),protectedProfilePolicy:protectionContract(),exactIdentityAnchors:exactAnchors(input.identity||input),persistence:persistenceContract()},
       source:'admin-shopper-flow',authorization:{providerEnforcementRequired:true,permission:'shopper.update'}
     }};
   }
   function credentialReset(input){
-    input=input||{};const shopperId=str(input.shopperId);const errors=[!str(input.tenantId)?'missing-tenantId':null,!shopperId?'missing-shopperId':null,!str(input.idempotencyKey)?'missing-idempotencyKey':null,!str(input.actorRole)?'missing-actorRole':null].filter(Boolean);
-    return {ok:errors.length===0,errors,command:{commandType:'shopper.credential.reset',entityType:'shopper',entityId:shopperId||null,tenantId:str(input.tenantId),projectId:str(input.projectId||'')||null,requireProject:false,
+    input=input||{};const shopperId=str(input.shopperId);const errors=[!str(input.tenantId)?'missing-tenantId':null,!str(input.projectId)?'missing-projectId':null,!str(input.periodId)?'missing-periodId':null,!shopperId?'missing-shopperId':null,!str(input.idempotencyKey)?'missing-idempotencyKey':null,!str(input.actorRole)?'missing-actorRole':null].filter(Boolean);
+    return {ok:errors.length===0,errors,command:{commandType:'shopper.credential.reset',entityType:'shopper',entityId:shopperId||null,tenantId:str(input.tenantId),projectId:str(input.projectId),periodId:str(input.periodId),
       actor:{actorId:str(input.actorId||''),role:str(input.actorRole),projectIds:uniq(input.projectIds)},expectedVersion:input.expectedVersion==null?'provider-current':input.expectedVersion,idempotencyKey:str(input.idempotencyKey),
-      payload:{shopperId,serverOnly:true,browserPasswordAllowed:false,browserTokenAllowed:false},source:'admin-shopper-credential-reset',authorization:{providerEnforcementRequired:true,permission:'shopper.credential.reset'}}};
+      payload:{periodId:str(input.periodId),shopperId,serverOnly:true,browserPasswordAllowed:false,browserTokenAllowed:false},source:'admin-shopper-credential-reset',authorization:{providerEnforcementRequired:true,permission:'shopper.credential.reset'}}};
   }
 
   CX.shopperAdminCommandContract=Object.freeze({version:VERSION,create,update,credentialReset,exactIdentityKeys:exactKeys(),protectedFields:PROTECTED_PROFILE_FIELDS.slice(),browserCredentialStorageAllowed:false,localStoragePersistenceAllowed:false,successRequiresProviderAck:true,protectedDataRequiresEncryption:true});

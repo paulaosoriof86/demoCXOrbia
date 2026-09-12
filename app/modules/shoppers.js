@@ -7,6 +7,9 @@ CX.module('shoppers', ({data,ui})=>{
   const viaBadge=(v)=>({registro:ui.bdg('Auto-registro','b'),manual:ui.bdg('Alta manual','t'),asignacion:ui.bdg('Creado en asignación','t')})[v]||'';
   const arr=(v)=>Array.isArray(v)?v:[];
   const byId=(list,id)=>arr(list).find(x=>String(x&&x.id||'')===String(id||''))||null;
+  const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const commandOk=r=>r&&r.ok===true&&r.status==='committed'&&r.providerAck===true&&r.successUiAllowed===true;
+  const commandError=r=>String(r&&((r.reason||r.code)||r.error)||'La operación no fue confirmada por el proveedor.');
   const periodForVisit=(v)=>{
     if(!v)return null;
     const id=v.periodId||v.projectId||'';
@@ -53,6 +56,27 @@ CX.module('shoppers', ({data,ui})=>{
       liquidadas:vs.filter(v=>state(v)==='liquidada'||v.liquidada===true).length,
       enCurso:vs.filter(v=>['asignada','agendada','postulada'].includes(state(v))).length
     };
+  };
+  const showCredential=(result,title='Acceso del shopper')=>{
+    const credential=result&&result.credential;
+    if(!credential||result.credentialIssued!==true){
+      CX.ui.toast('La identidad quedó confirmada, pero no se emitió una credencial nueva.','warn',4200);
+      return;
+    }
+    ui.modal(title,`
+      <div style="background:var(--brand-light);border-radius:10px;padding:14px;color:var(--brand-dark);line-height:1.7">
+        <div style="font-weight:800;margin-bottom:6px">Credencial emitida y confirmada por el proveedor</div>
+        <div>Usuario: <b style="font-family:var(--disp)">${esc(credential.login)}</b></div>
+        <div>Contraseña temporal: <b style="font-family:var(--disp)">${esc(credential.password)}</b></div>
+        <div style="font-size:11px;margin-top:8px">Se muestra una sola vez y no se guarda en el navegador ni en la plataforma.</div>
+      </div>`);
+  };
+  const resetCredential=async(shopperId,title)=>{
+    if(typeof data.resetShopperCredential!=='function')throw new Error('SHOPPER_CREDENTIAL_RESET_UNAVAILABLE');
+    const result=await data.resetShopperCredential(shopperId,{ackAware:true,reason:'admin-shopper-repair'});
+    if(!commandOk(result))throw new Error(commandError(result));
+    showCredential(result,title||'Acceso restablecido');
+    return result;
   };
 
   const row=(s)=>{
@@ -166,8 +190,6 @@ CX.module('shoppers', ({data,ui})=>{
   const profileModal=(s)=>{
     const lvl=CX.data_shopperDataLevel(s);
     const st=scopedStats(s.id);
-    /* P0-3: una referencia protegida NO abre ficha con PII ni con métricas inventadas — se
-       muestra un modal reducido y honesto en vez del perfil completo. */
     if(lvl==='protected_reference'){
       ui.modal((s.code||'Referencia protegida'), `
         <div style="text-align:center;padding:10px 0">
@@ -184,6 +206,7 @@ CX.module('shoppers', ({data,ui})=>{
       `);
       return;
     }
+    const canEdit=lvl==='full_authorized_profile'&&CX.session&&CX.session.canSeeProtectedData&&CX.session.canSeeProtectedData();
     const body=`
       <div class="between" style="margin-bottom:14px">
         <div class="flex">${av(s.nombre,46)}
@@ -193,8 +216,8 @@ CX.module('shoppers', ({data,ui})=>{
         <span style="font-size:18px;font-weight:800;color:var(--amber)">${s.rating?('★ '+s.rating):''}</span>
       </div>
       <div style="background:var(--brand-light);border-radius:10px;padding:9px 13px;font-size:12px;color:var(--brand-dark);margin-bottom:14px" class="between">
-        <span>Usuario: <b style="font-family:var(--disp)">${s.user||'—'}</b></span>
-        <span>Credencial: <b style="font-family:var(--disp)">Protegida</b></span>
+        <span>Usuario: <b style="font-family:var(--disp)">${s.user||s.id||'—'}</b></span>
+        <button class="btn btn-soft btn-sm" id="shResetCredential">Restablecer acceso</button>
       </div>
       <div class="grid g4" style="margin-bottom:8px" id="shKpis">
         <div data-k="all" style="cursor:pointer">${ui.kpi('Visitas',st.total,'b')}</div>
@@ -223,33 +246,39 @@ CX.module('shoppers', ({data,ui})=>{
         <div class="card-t" style="font-size:12.5px;margin-bottom:6px">📊 Criterio de puntuación</div>
         <div style="font-size:11.5px;color:var(--t2);line-height:1.6">Sin score disponible — esta fuente todavía no entrega un rating para este perfil. No se muestra ni infiere un valor mientras no exista un dato real.</div>`}
       </div>
-      <div class="card-h" style="margin-bottom:10px"><div class="card-t">Datos del shopper</div>${lvl==='full_authorized_profile'?((CX.session&&CX.session.canSeeProtectedData&&CX.session.canSeeProtectedData())?'<button class="btn btn-soft btn-sm" id="shEdit">✎ Editar perfil</button>':'<span class="muted" style="font-size:11px">🔒 Edición de datos protegidos requiere acceso completo (Auth pendiente)</span>'):'<span class="muted" style="font-size:11px">Sin datos de contacto/documento en la fuente — nada que editar todavía</span>'}</div>
+      <div class="card-h" style="margin-bottom:10px"><div class="card-t">Datos del shopper</div>${canEdit?'<button class="btn btn-soft btn-sm" id="shEdit">✎ Editar perfil</button>':(lvl==='full_authorized_profile'?'<span class="muted" style="font-size:11px">🔒 Edición requiere acceso completo</span>':'<span class="muted" style="font-size:11px">Sin datos de contacto/documento autorizados para edición</span>')}</div>
       <div id="shFormHost"></div>
     `;
     ui.modal(s.nombre, body, {onMount:(ov,close)=>{
-      // KPIs clickeables
       const drills={all:[null,'Todas las visitas'],done:[v=>['realizada','cuestionario','liquidada'].includes(v.estado),'Visitas realizadas'],
         liq:[v=>v.estado==='liquidada','Visitas liquidadas'],curso:[v=>['asignada','agendada','postulada'].includes(v.estado),'Visitas en curso']};
       ov.querySelectorAll('#shKpis [data-k]').forEach(el=>el.addEventListener('click',()=>{const d=drills[el.dataset.k];drillVisits(s,d[0],d[1]);}));
-      // ver datos en modo lectura
       const host=ov.querySelector('#shFormHost');
       const readView=()=>{
         const canSeeSensitive = CX.session && CX.session.canSeeProtectedData ? CX.session.canSeeProtectedData() : (CX.session&&CX.session.role==='super');
         const mask=(v)=>v?('•'.repeat(Math.min(8,String(v).length))):null;
         const rSens=(l,v)=>{ const shown = canSeeSensitive ? v : mask(v);
-          return `<div style="padding:7px 0;border-bottom:1px solid var(--border)" class="between"><span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">${l}${canSeeSensitive?'':' 🔒'}</span><b style="font-size:13px;color:var(--t1);text-align:right">${shown||'<span style=\"color:var(--t3)\">— sin dato</span>'}</b></div>`; };
-        const r=(l,v)=>`<div style="padding:7px 0;border-bottom:1px solid var(--border)" class="between"><span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">${l}</span><b style="font-size:13px;color:var(--t1);text-align:right">${v||'<span style=\"color:var(--t3)\">— sin dato</span>'}</b></div>`;
+          return `<div style="padding:7px 0;border-bottom:1px solid var(--border)" class="between"><span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">${l}${canSeeSensitive?'':' 🔒'}</span><b style="font-size:13px;color:var(--t1);text-align:right">${shown||'<span style="color:var(--t3)">— sin dato</span>'}</b></div>`; };
+        const r=(l,v)=>`<div style="padding:7px 0;border-bottom:1px solid var(--border)" class="between"><span style="font-size:11px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px">${l}</span><b style="font-size:13px;color:var(--t1);text-align:right">${v||'<span style="color:var(--t3)">— sin dato</span>'}</b></div>`;
         host.innerHTML=`<div>${rSens('WhatsApp',s.whatsapp)}${rSens('Correo',s.email)}${r(CX.geo.deptLabel(s.pais),s.depto)}${r('Edad',s.edad)}${r('Sexo',s.sexo)}${rSens('Documento',s.dpi)}${rSens('Banco',s.banco)}${rSens('Tipo de cuenta',s.ctaTipo)}${rSens('Número de cuenta',s.ctaNum)}${rSens('Titular',s.ctaTitular)}${rSens('Moneda',s.ctaMoneda)}
         ${canSeeSensitive?'':'<div style="margin-top:8px;font-size:10.5px;color:var(--t3)">🔒 Datos protegidos · acceso completo pendiente de activación por rol</div>'}
         ${(()=>{const c=CX.data&&CX.data.ctx?CX.data.ctx():null;return c?`<div style="margin-top:6px;font-size:10px;color:var(--t3)">alcance: ${c.countryScope&&c.countryScope.length?c.countryScope.join(','):'sin restricción'} · rol ${c.role}</div>`:'';})()}</div>`;
       };
       readView();
+      ov.querySelector('#shResetCredential')?.addEventListener('click',async e=>{
+        const btn=e.currentTarget;if(!confirm('¿Restablecer el acceso de este shopper? La credencial anterior dejará de funcionar.'))return;
+        btn.disabled=true;btn.textContent='Restableciendo...';
+        try{await resetCredential(s.id,'Acceso restablecido · '+(s.nombre||s.id));}
+        catch(err){CX.ui.toast('No fue posible restablecer el acceso · '+String(err&&err.message||err),'err',5200);}
+        finally{btn.disabled=false;btn.textContent='Restablecer acceso';}
+      });
       ov.querySelector('#shEdit')?.addEventListener('click',()=>{
         host.innerHTML=editFields(s);
         const ids={pais:'ed_pais',depto:'ed_depto',ciudad:'ed_ciudad'};
         CX.geo.wire(host,ids,{pais:s.pais,depto:s.depto,ciudad:s.ciudad});
         host.querySelector('[data-cancel]').addEventListener('click',readView);
-        host.querySelector('#ed_save').addEventListener('click',()=>{
+        host.querySelector('#ed_save').addEventListener('click',async e=>{
+          const btn=e.currentTarget;
           const geo=CX.geo.read(host,ids);
           const patch={
             firstName:(host.querySelector('#ed_first').value||'').trim(),
@@ -270,9 +299,14 @@ CX.module('shoppers', ({data,ui})=>{
           };
           patch.cuentaPago=[patch.banco,patch.ctaNum,patch.ctaTitular].filter(Boolean).join(' · ');
           patch.perfilCompleto=data.shopperProfileComplete(Object.assign({},s,patch));
-          data.updateShopper(s.id,patch);
-          CX.ui.toast('Perfil actualizado','ok');
-          close(); CX.router.nav('shoppers');
+          patch.__commandMeta={ackAware:true,reason:'admin-shopper-profile-update'};
+          btn.disabled=true;btn.textContent='Guardando...';
+          try{
+            const result=await data.updateShopper(s.id,patch);
+            if(!commandOk(result))throw new Error(commandError(result));
+            CX.ui.toast('Perfil actualizado y confirmado','ok');
+            close();CX.router.nav('shoppers');
+          }catch(err){CX.ui.toast('No se guardó el perfil · '+String(err&&err.message||err),'err',5200);btn.disabled=false;btn.textContent='Guardar cambios';}
         });
       });
     }});
@@ -296,27 +330,31 @@ CX.module('shoppers', ({data,ui})=>{
           <div><label class="lbl">Sexo</label><select class="sel" id="al_sexo"><option value="">Selecciona…</option><option>Femenino</option><option>Masculino</option><option>Otro</option><option>Prefiero no decir</option></select></div>
         </div>
       </details>
-      <div id="al_creds" style="background:var(--brand-light);border-radius:10px;padding:10px 13px;font-size:12px;color:var(--brand-dark);margin:6px 0 14px">Credencial inicial: usuario según patrón configurado. La contraseña no se muestra en pantalla.</div>
+      <div id="al_creds" style="background:var(--brand-light);border-radius:10px;padding:10px 13px;font-size:12px;color:var(--brand-dark);margin:6px 0 14px">La plataforma creará una identidad durable y emitirá una credencial temporal después del ACK remoto.</div>
       <div style="text-align:right"><button class="btn btn-green" id="al_save">Crear shopper</button></div>
     `, {onMount:(ov,close)=>{
       CX.geo.wire(ov, ids);
-      const upd=()=>{const f=ov.querySelector('#al_first').value,l=ov.querySelector('#al_last').value;
-        if(f&&l)ov.querySelector('#al_creds').innerHTML=`Credencial inicial: usuario <b>${CX.CREDS.user(f,l)}</b> · contraseña protegida`;};
-      ov.querySelector('#al_first').addEventListener('input',upd);
-      ov.querySelector('#al_last').addEventListener('input',upd);
-      ov.querySelector('#al_save').addEventListener('click',()=>{
+      ov.querySelector('#al_save').addEventListener('click',async e=>{
+        const btn=e.currentTarget;
         const first=(ov.querySelector('#al_first').value||'').trim();
         const last=(ov.querySelector('#al_last').value||'').trim();
         const wa=(ov.querySelector('#al_wa').value||'').trim();
         if(!first||!last||!wa){CX.ui.toast('Nombre, apellido y WhatsApp son obligatorios','err');return;}
         const geo=CX.geo.read(ov, ids);
-        data.addShopper({via:'manual', estado:'Pendiente', firstName:first, lastName:last, whatsapp:wa,
-          pais:geo.pais, depto:geo.depto, ciudad:geo.ciudad,
+        const payload={via:'manual',createdVia:'manual',sourceType:'platform',estado:'Pendiente',firstName:first,lastName:last,nombre:[first,last].filter(Boolean).join(' '),whatsapp:wa,
+          pais:geo.pais,depto:geo.depto,ciudad:geo.ciudad,
           email:(ov.querySelector('#al_mail').value||'').trim(),
           edad:(ov.querySelector('#al_edad').value||'').trim(),
-          sexo:ov.querySelector('#al_sexo').value||''});
-        close(); CX.ui.toast('Shopper creado · el resto del perfil lo completa al ingresar','ok',3600);
-        CX.router.nav('shoppers');
+          sexo:ov.querySelector('#al_sexo').value||'',
+          __commandMeta:{ackAware:true,reason:'admin-shopper-manual-create'}};
+        btn.disabled=true;btn.textContent='Creando...';
+        try{
+          const created=await data.addShopper(payload);
+          if(!commandOk(created)||!created.entityId)throw new Error(commandError(created));
+          const credential=await resetCredential(created.entityId,'Shopper creado · credencial inicial');
+          if(!commandOk(credential))throw new Error(commandError(credential));
+          close();CX.ui.toast('Shopper creado y acceso confirmado','ok',3600);CX.router.nav('shoppers');
+        }catch(err){CX.ui.toast('No se creó el shopper · '+String(err&&err.message||err),'err',5200);btn.disabled=false;btn.textContent='Crear shopper';}
       });
     }});
   };
@@ -328,13 +366,12 @@ CX.module('shoppers', ({data,ui})=>{
       const s=data.getShopper(tr.dataset.sid); if(s)profileModal(s);
     }));
     bindRows();
-    // KPIs superiores clickeables → lista filtrada de shoppers
+    const L=list();
     const tkMap={all:['Shoppers del proyecto',()=>true],act:['Shoppers activos (6 meses)',s=>data.shopperActivo(s)],inact:['Inactivas',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!data.shopperActivo(s)],prot:['Referencias protegidas',s=>CX.data_shopperDataLevel(s)==='protected_reference'],comp:['Perfiles completos',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&s.perfilCompleto],incom:['Perfiles incompletos',s=>CX.data_shopperDataLevel(s)!=='protected_reference'&&!s.perfilCompleto]};
-    document.querySelectorAll('#shTopKpis [data-tk]').forEach(el=>el.addEventListener('click',()=>{const d=tkMap[el.dataset.tk];const arr=L.filter(d[1]);
-      ui.modal(d[0]+' ('+arr.length+')',arr.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Ciudad</th><th>Rating</th><th>Estado</th></tr></thead><tbody>${arr.map(s=>`<tr class="hov" data-pk="${s.id}" style="cursor:pointer"><td><b>${s.nombre}</b><div style="font-size:10px;color:var(--t3)">${s.code}</div></td><td style="font-size:12px">${s.ciudad||CX.paisName(s.pais)}</td><td style="font-weight:700;color:var(--amber)">★ ${s.rating||'—'}</td><td>${ui.bdg(s.estado||'—',s.estado==='Pendiente'?'a':'g')}</td></tr>`).join('')}</tbody></table>`:ui.empty('👥','Sin shoppers en esta categoría.'),{onMount:(ov,close)=>ov.querySelectorAll('[data-pk]').forEach(tr=>tr.addEventListener('click',()=>{close();const s=data.getShopper(tr.dataset.pk);if(s)profileModal(s);}))});
+    document.querySelectorAll('#shTopKpis [data-tk]').forEach(el=>el.addEventListener('click',()=>{const d=tkMap[el.dataset.tk];const items=L.filter(d[1]);
+      ui.modal(d[0]+' ('+items.length+')',items.length?`<table class="tbl"><thead><tr><th>Shopper</th><th>Ciudad</th><th>Rating</th><th>Estado</th></tr></thead><tbody>${items.map(s=>`<tr class="hov" data-pk="${s.id}" style="cursor:pointer"><td><b>${s.nombre}</b><div style="font-size:10px;color:var(--t3)">${s.code}</div></td><td style="font-size:12px">${s.ciudad||CX.paisName(s.pais)}</td><td style="font-weight:700;color:var(--amber)">★ ${s.rating||'—'}</td><td>${ui.bdg(s.estado||'—',s.estado==='Pendiente'?'a':'g')}</td></tr>`).join('')}</tbody></table>`:ui.empty('👥','Sin shoppers en esta categoría.'),{onMount:(ov,close)=>ov.querySelectorAll('[data-pk]').forEach(tr=>tr.addEventListener('click',()=>{close();const s=data.getShopper(tr.dataset.pk);if(s)profileModal(s);}))});
     }));
     if(CX.session._focusShopper){ const fs=data.getShopper(CX.session._focusShopper); CX.session._focusShopper=null; if(fs)setTimeout(()=>profileModal(fs),120); }
-    // buscador
     const search=document.getElementById('shSearch');
     if(search)search.addEventListener('input',()=>{
       const q=search.value.toLowerCase().trim();

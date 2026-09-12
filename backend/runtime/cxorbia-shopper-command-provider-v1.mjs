@@ -7,7 +7,7 @@
 import crypto from 'node:crypto';
 
 export const VERSION='cxorbia-shopper-command-provider-v1';
-export const COMMAND_TYPES=Object.freeze(['shopper.create','shopper.credential.reset']);
+export const COMMAND_TYPES=Object.freeze(['shopper.create','shopper.update','shopper.credential.reset']);
 export const OPERATOR_ROLES=Object.freeze(['super','admin']);
 
 const str=v=>String(v==null?'':v).trim();
@@ -20,12 +20,18 @@ const clean=value=>Array.isArray(value)?value.map(clean):(value&&typeof value===
 const sameArray=(a,b)=>JSON.stringify(uniq(a))===JSON.stringify(uniq(b));
 const receiptId=command=>sha(`${command.tenantId}\0${command.projectId}\0${command.periodId||''}\0${command.idempotencyKey}`).slice(0,40);
 const RAW_SECRET_KEY=/^(?:password|pass|newpassword|temporarypassword|credential|credentialvalue|secret|token|resettoken)$/i;
+const PUBLIC_PROFILE_FIELDS=Object.freeze(['firstName','lastName','nombre','email','whatsapp','pais','country','depto','ciudad','sexo','edad','estado','sourceRef','sourceType','perfilCompleto','honorarioPref','createdVia']);
+const PROTECTED_PROFILE_FIELDS=Object.freeze(['dpi','documentId','banco','ctaTipo','ctaNum','ctaTitular','ctaMoneda','cuentaPago','ndaStatus']);
+const HR_MANAGED_PROFILE_FIELDS=Object.freeze(['nombre','pais','country','shopperCode']);
 
 export const providerUidFingerprint=uid=>sha(`cxorbia-provider-uid-v1\0${str(uid)}`);
 export const stableShopperUid=(tenantId,shopperId)=>`cx-sh-${sha(`${str(tenantId)}\0shopper\0${str(shopperId)}`).slice(0,28)}`;
 const internalEmail=(tenantId,shopperId)=>`${sha(`${str(tenantId)}\0shopper\0${str(shopperId)}`).slice(0,48)}@auth.cxorbia.invalid`;
 const canonicalClaims=(shopperId,tenantId,projectIds)=>({authNamespace:'shopper',projectIds:uniq(projectIds),role:'shopper',shopperId:str(shopperId),tenantId:str(tenantId)});
 const claimsDigest=claims=>sha(canonicalClaims(claims?.shopperId,claims?.tenantId,claims?.projectIds));
+const pick=(input,keys)=>Object.fromEntries(keys.filter(key=>input&&input[key]!==undefined).map(key=>[key,input[key]]));
+const publicProfile=input=>clean(pick(input||{},PUBLIC_PROFILE_FIELDS));
+const protectedProfile=input=>clean(pick(input||{},PROTECTED_PROFILE_FIELDS));
 
 function blocked(command,code,extra={}){
   return {ok:false,status:'blocked',committed:false,providerAck:false,successUiAllowed:false,localMutation:false,localStorageWrite:false,providerWrites:0,tenantId:command?.tenantId||null,projectId:command?.projectId||null,periodId:command?.periodId||null,commandType:command?.commandType||null,entityId:command?.entityId||null,code,...extra};
@@ -89,7 +95,12 @@ async function exactActor(auth,db,token,command){
 
 function stableShopperId(command){
   const payload=command?.payload||{},profile=payload.profile||{};
-  return str(command?.entityId||payload.shopperId||payload.hrShopperId||profile.shopperId||profile.id||profile.legacyShopperId);
+  const explicit=str(command?.entityId||payload.shopperId||payload.hrShopperId||profile.shopperId||profile.id||profile.legacyShopperId);
+  if(explicit)return explicit;
+  if(command?.commandType==='shopper.create'&&str(command?.tenantId)&&str(command?.projectId)&&str(command?.idempotencyKey)){
+    return `shopper_manual_${sha(`${command.tenantId}\0${command.projectId}\0${command.idempotencyKey}`).slice(0,24)}`;
+  }
+  return '';
 }
 function sourceCandidate(row,scope){
   const shopperId=str(row?.shopperId||row?.id);
@@ -220,10 +231,60 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision}){
     });
     return {shopperId,uid,authCreated,...outcome};
   }catch(error){
-    // Auth may already have been created or claims updated. No success ACK is returned.
-    // Stable uid + conflict checks make the next identical attempt complete safely.
     throw error;
   }
+}
+
+async function persistManualProfile({db,command,shopperId,uid,projectIds}){
+  const tenantId=str(command.tenantId),projectId=str(command.projectId),tenant=db.collection('tenants').doc(tenantId);
+  const profileRef=tenant.collection('shoppers').doc(shopperId),crossRef=tenant.collection('shopperIdentityCrosswalk').doc(shopperId);
+  const raw=command.payload?.profile||{};
+  const pub=publicProfile(raw),prot=protectedProfile(command.payload?.protectedProfile||raw);
+  const nombre=str(pub.nombre||[pub.firstName,pub.lastName].filter(Boolean).join(' '));
+  const patch=clean({...pub,...prot,id:shopperId,shopperId,tenantId,projectIds:uniq(projectIds),sourceType:'platform',createdVia:str(pub.createdVia||raw.via||'manual')||'manual',user:shopperId,code:str(raw.code||shopperId),hrSourceRevision:null,lastHrSyncedAt:null,updatedAt:now()});
+  if(nombre)patch.nombre=nombre;
+  await db.runTransaction(async tx=>{
+    const [profileSnap,crossSnap]=await Promise.all([tx.get(profileRef),tx.get(crossRef)]);
+    if(!profileSnap.exists||!crossSnap.exists)throw new Error('SHOPPER_MANUAL_DURABLE_IDENTITY_INCOMPLETE');
+    const profile=profileSnap.data()||{},cross=crossSnap.data()||{};
+    if(str(profile.tenantId||tenantId)!==tenantId||str(profile.shopperId||shopperId)!==shopperId)throw new Error('SHOPPER_PROFILE_SCOPE_CONFLICT');
+    if(str(cross.tenantId)!==tenantId||str(cross.shopperId)!==shopperId||str(cross.providerUidFingerprint)!==providerUidFingerprint(uid))throw new Error('SHOPPER_CROSSWALK_CONFLICT');
+    tx.set(profileRef,patch,{merge:true});
+    tx.set(crossRef,{sourceType:'platform',identityMode:'stable_platform_shopper_id',updatedAt:now()},{merge:true});
+  });
+  return {providerWrites:2};
+}
+
+function changedHrManagedFields(existing,patch){
+  if(str(existing?.sourceType)!=='hr_external')return [];
+  return HR_MANAGED_PROFILE_FIELDS.filter(key=>patch[key]!==undefined&&str(patch[key])!==str(existing?.[key]));
+}
+async function durableProfileUpdate({auth,db,command,shopperId}){
+  const tenantId=str(command.tenantId),projectId=str(command.projectId),tenant=db.collection('tenants').doc(tenantId),users=tenant.collection('users');
+  const memberDoc=await membershipMatches(users,shopperId);
+  if(!memberDoc)throw new Error('SHOPPER_UPDATE_MEMBERSHIP_MISSING');
+  const uid=memberDoc.id,member=memberDoc.data()||{};
+  if(member.active!==true||str(member.tenantId)!==tenantId||str(member.shopperId)!==shopperId||str(member.role)!=='shopper'||str(member.authNamespace)!=='shopper')throw new Error('SHOPPER_UPDATE_MEMBERSHIP_INVALID');
+  if(!uniq(member.projectIds).includes(projectId))throw new Error('SHOPPER_UPDATE_PROJECT_SCOPE_DENIED');
+  const profileRef=tenant.collection('shoppers').doc(shopperId),crossRef=tenant.collection('shopperIdentityCrosswalk').doc(shopperId);
+  const [profileSnap,crossSnap,user]=await Promise.all([profileRef.get(),crossRef.get(),safeAuthByUid(auth,uid)]);
+  if(!profileSnap.exists)throw new Error('SHOPPER_UPDATE_PROFILE_MISSING');
+  if(!crossSnap.exists)throw new Error('SHOPPER_UPDATE_CROSSWALK_MISSING');
+  if(!user)throw new Error('SHOPPER_UPDATE_AUTH_MISSING');
+  const profile=profileSnap.data()||{},cross=crossSnap.data()||{};
+  if(str(profile.tenantId||tenantId)!==tenantId||str(profile.shopperId||shopperId)!==shopperId||!uniq(profile.projectIds).includes(projectId))throw new Error('SHOPPER_UPDATE_PROFILE_SCOPE_CONFLICT');
+  if(str(cross.tenantId)!==tenantId||str(cross.shopperId)!==shopperId||str(cross.providerUidFingerprint)!==providerUidFingerprint(uid)||!uniq(cross.projectIds).includes(projectId))throw new Error('SHOPPER_UPDATE_CROSSWALK_CONFLICT');
+  assertAuthIdentity(user,tenantId,shopperId);
+  const pub=publicProfile(command.payload?.patch||{}),prot=protectedProfile(command.payload?.protectedPatch||{});
+  const changed=changedHrManagedFields(profile,pub);
+  if(changed.length)throw new Error(`SHOPPER_HR_MANAGED_FIELDS_IMMUTABLE:${changed.join(',')}`);
+  const merged={...profile,...pub,...prot};
+  const patch=clean({...pub,...prot,updatedAt:now()});
+  if(str(profile.sourceType)!=='hr_external'&&(pub.firstName!==undefined||pub.lastName!==undefined||pub.nombre!==undefined)){
+    patch.nombre=str(pub.nombre||[merged.firstName,merged.lastName].filter(Boolean).join(' '))||profile.nombre;
+  }
+  await profileRef.set(patch,{merge:true});
+  return {uid,providerWrites:1,profileUpdated:true};
 }
 
 async function durableCredentialIdentity({auth,db,command,shopperId}){
@@ -235,16 +296,24 @@ async function durableCredentialIdentity({auth,db,command,shopperId}){
   if(member.active!==true||str(member.tenantId)!==tenantId||str(member.shopperId)!==shopperId||str(member.role)!=='shopper'||str(member.authNamespace)!=='shopper')throw new Error('SHOPPER_CREDENTIAL_MEMBERSHIP_INVALID');
   if(!uniq(member.projectIds).includes(projectId))throw new Error('SHOPPER_CREDENTIAL_PROJECT_SCOPE_DENIED');
   const profileRef=tenant.collection('shoppers').doc(shopperId),crossRef=tenant.collection('shopperIdentityCrosswalk').doc(shopperId);
-  const [profileSnap,crossSnap,user]=await Promise.all([profileRef.get(),crossRef.get(),safeAuthByUid(auth,uid)]);
+  const [profileSnap,crossSnap]=await Promise.all([profileRef.get(),crossRef.get()]);
   if(!profileSnap.exists)throw new Error('SHOPPER_CREDENTIAL_PROFILE_MISSING');
   if(!crossSnap.exists)throw new Error('SHOPPER_CREDENTIAL_CROSSWALK_MISSING');
-  if(!user)throw new Error('SHOPPER_CREDENTIAL_AUTH_MISSING');
   const profile=profileSnap.data()||{},cross=crossSnap.data()||{};
   if(str(profile.tenantId||tenantId)!==tenantId||str(profile.shopperId||shopperId)!==shopperId||!uniq(profile.projectIds).includes(projectId))throw new Error('SHOPPER_CREDENTIAL_PROFILE_SCOPE_CONFLICT');
   if(str(cross.tenantId)!==tenantId||str(cross.shopperId)!==shopperId||str(cross.providerUidFingerprint)!==providerUidFingerprint(uid)||!uniq(cross.projectIds).includes(projectId))throw new Error('SHOPPER_CREDENTIAL_CROSSWALK_CONFLICT');
+  const email=internalEmail(tenantId,shopperId);
+  let user=await safeAuthByUid(auth,uid),authCreated=false;
+  const byEmail=await safeAuthByEmail(auth,email);
+  if(byEmail&&byEmail.uid!==uid)throw new Error('SHOPPER_CREDENTIAL_EMAIL_CONFLICT');
+  if(!user){
+    user=byEmail||await auth.createUser({uid,email,disabled:false});
+    authCreated=!byEmail;
+    await auth.setCustomUserClaims(uid,canonicalClaims(shopperId,tenantId,member.projectIds));
+    user=await auth.getUser(uid);
+  }
   assertAuthIdentity(user,tenantId,shopperId);
-  if(str(user.email).toLowerCase()!==internalEmail(tenantId,shopperId).toLowerCase())throw new Error('SHOPPER_CREDENTIAL_LOGIN_MAPPING_CONFLICT');
-  return {uid,user,memberRef:users.doc(uid)};
+  return {uid,user,email,authCreated,memberRef:users.doc(uid)};
 }
 
 export function createShopperCommandProvider({auth,db,policy}={}){
@@ -276,30 +345,37 @@ export function createShopperCommandProvider({auth,db,policy}={}){
         if(prior.exists){
           const p=prior.data()||{};
           if(p.commandDigest!==digest)throw new Error('SHOPPER_IDEMPOTENCY_REUSE_DIFFERENT_PAYLOAD');
-          if(p.status==='committed')return ack(command,p.shopperId,{idempotentReplay:true,providerWrites:0,credentialState:p.credentialState||null,credentialIssued:false,uidFingerprint:p.uidFingerprint||null});
+          if(p.status==='committed')return ack(command,p.shopperId,{idempotentReplay:true,providerWrites:0,credentialState:p.credentialState||null,credentialIssued:false,uidFingerprint:p.uidFingerprint||null,profileUpdated:p.profileUpdated===true});
         }
         if(command.commandType==='shopper.credential.reset'){
           if(!auth?.updateUser)throw new Error('SHOPPER_CREDENTIAL_AUTH_UPDATE_UNAVAILABLE');
           const identity=await durableCredentialIdentity({auth,db,command,shopperId});
           const password=generateCredential();
-          await auth.updateUser(identity.uid,{password,disabled:false});
+          await auth.updateUser(identity.uid,{email:identity.email,password,disabled:false});
           const readback=await auth.getUser(identity.uid);
           assertAuthIdentity(readback,str(command.tenantId),shopperId);
-          if(str(readback.email).toLowerCase()!==internalEmail(command.tenantId,shopperId).toLowerCase())throw new Error('SHOPPER_CREDENTIAL_READBACK_MAPPING_MISMATCH');
+          if(str(readback.email).toLowerCase()!==identity.email.toLowerCase())throw new Error('SHOPPER_CREDENTIAL_READBACK_MAPPING_MISMATCH');
           const issuedAt=now(),uidFingerprint=providerUidFingerprint(identity.uid);
           await identity.memberRef.set({credentialState:'enrolled',credentialVersion:'cxorbia-shopper-credential-v1',lastCredentialResetAt:issuedAt,lastCredentialActionId:receiptId(command),updatedAt:issuedAt},{merge:true});
-          await receipt.set({status:'committed',commandDigest:digest,shopperId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,credentialState:'enrolled',credentialVersion:'cxorbia-shopper-credential-v1',uidFingerprint,updatedAt:issuedAt},{merge:false});
-          return ack(command,shopperId,{uidFingerprint,idempotentReplay:false,providerWrites:2,credentialState:'enrolled',credentialIssued:true,credential:{login:shopperId,password,namespace:'shopper',oneTimeDisclosure:true,persist:false}});
+          await receipt.set({status:'committed',commandDigest:digest,shopperId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,credentialState:'enrolled',credentialVersion:'cxorbia-shopper-credential-v1',uidFingerprint,authCreated:identity.authCreated===true,updatedAt:issuedAt},{merge:false});
+          return ack(command,shopperId,{uidFingerprint,idempotentReplay:false,providerWrites:2,credentialState:'enrolled',credentialIssued:true,authCreated:identity.authCreated===true,credential:{login:shopperId,password,namespace:'shopper',oneTimeDisclosure:true,persist:false}});
+        }
+        if(command.commandType==='shopper.update'){
+          const result=await durableProfileUpdate({auth,db,command,shopperId});
+          await receipt.set({status:'committed',commandDigest:digest,shopperId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,profileUpdated:true,updatedAt:now()},{merge:false});
+          return ack(command,shopperId,{uidFingerprint:providerUidFingerprint(result.uid),idempotentReplay:false,providerWrites:Number(result.providerWrites||0)+1,profileUpdated:true});
         }
         const profile=command.payload?.profile||command.payload||{};
-        const candidate={...sourceCandidate({...profile,shopperId},{tenantId:command.tenantId,projectId:command.projectId}),shopperId,tenantId:command.tenantId,projectId:command.projectId};
+        const nombre=str(profile.nombre||[profile.firstName,profile.lastName].filter(Boolean).join(' '));
+        const candidate={...sourceCandidate({...profile,nombre,shopperId},{tenantId:command.tenantId,projectId:command.projectId}),shopperId,tenantId:command.tenantId,projectId:command.projectId};
         const sourceRevision=str(command.payload?.sourceRevision||command.payload?.hrSourceRevision||`command:${command.idempotencyKey}`);
         const result=await durableUpsert({auth,db,policy,candidate,sourceRevision});
+        const manual=await persistManualProfile({db,command,shopperId,uid:result.uid,projectIds:result.projectIds||[command.projectId]});
         await receipt.set({status:'committed',commandDigest:digest,shopperId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,updatedAt:now()},{merge:false});
-        return ack(command,shopperId,{uidFingerprint:providerUidFingerprint(result.uid),idempotentReplay:result.idempotentReplay,providerWrites:Number(result.providerWrites||0)+1});
+        return ack(command,shopperId,{uidFingerprint:providerUidFingerprint(result.uid),idempotentReplay:result.idempotentReplay,providerWrites:Number(result.providerWrites||0)+Number(manual.providerWrites||0)+1,profileUpdated:true});
       }catch(error){return blocked(command,str(error?.message||error));}
     },
-    status(){return {version:VERSION,enabled:true,allowedTenantIds:uniq(policy.allowedTenantIds),allowedProjectIds:uniq(policy.allowedProjectIds),hrWrites:false,externalWrites:false,fuzzyMatching:false,stableIdentity:true,credentialEnrollment:true};}
+    status(){return {version:VERSION,enabled:true,allowedTenantIds:uniq(policy.allowedTenantIds),allowedProjectIds:uniq(policy.allowedProjectIds),hrWrites:false,externalWrites:false,fuzzyMatching:false,stableIdentity:true,profileMutation:true,credentialEnrollment:true,credentialRepair:true};}
   });
 }
 
