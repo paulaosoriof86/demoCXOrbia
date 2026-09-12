@@ -8,11 +8,9 @@
   Se conserva como candidato financiero aunque la HR no tenga submitido; la
   contradicción pasa a revisión y nunca confirma liquidación/pago.
 
-  R21 normaliza franja y ventana de medición antes de reaplicar la máquina:
-  - RH WK / WK se expone como Semana;
-  - RH WKND / WKND se expone como Fin de semana;
-  - Quincena 1 y 2 reciben límites de fecha canónicos del periodo;
-  - sin shopper no equivale automáticamente a visita disponible.
+  Recovery P0 mantiene franja y ventana de medición como metadatos operativos,
+  publica toda visita sin shopper para postulación y define `scheduled` del
+  resumen como visita programada que todavía no tiene realización.
 */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -111,7 +109,7 @@ payload.visits=(payload.visits||[]).map(raw=>{
     }
   }
   visit.submit=visit.canonicalFacets?.submitted===true;
-  visit.stateModelVersion='phase-a-canonical-visit-state-r21-v1';
+  visit.stateModelVersion='phase-a-canonical-visit-state-r21-v2';
   visit.domainMappingVersion='phase-a-source-safe-domain-mapping-r21';
   return visit;
 });
@@ -175,7 +173,7 @@ payload.counts={
   eligibilityBlocked:payload.visits.filter(v=>v.canonicalFacets?.eligibilityBlocked).length,
   assigned:payload.visits.filter(v=>v.canonicalFacets?.assigned).length,
   unassigned:payload.visits.filter(v=>!v.canonicalFacets?.assigned).length,
-  scheduled:payload.visits.filter(v=>v.canonicalFacets?.scheduled).length,
+  scheduled:payload.visits.filter(v=>v.canonicalFacets?.pendingRealization===true||(v.canonicalFacets?.pendingRealization==null&&v.canonicalFacets?.scheduled===true&&v.canonicalFacets?.realized!==true)).length,
   realized:payload.visits.filter(v=>v.canonicalFacets?.realized).length,
   questionnaireCompleted:payload.visits.filter(v=>v.canonicalFacets?.questionnaire).length,
   submitted:payload.visits.filter(v=>v.canonicalFacets?.submitted).length,
@@ -188,29 +186,31 @@ payload.counts={
 };
 payload.source={
   ...(payload.source||{}),
-  semanticNormalizer:'r15g+r20+r21-eligibility',
+  semanticNormalizer:'r15g+r20+r21-recovery-p0',
   finalCanonicalPass:'after_r18a_r18b',
   canonicalStateAcrossAllDetectedPeriods:true,
   assignmentAndAvailabilitySeparated:true,
+  unassignedAvailableForPostulation:true,
+  scheduledKpiExcludesRealized:true,
   normalizedFranjaAndMeasurementWindow:true,
   financialControlsPreservedAsPendingReview:true,
   runtimeLiveSync:false
 };
 payload.normalization={
   ...(payload.normalization||{}),
-  version:'R21-eligibility-final',
+  version:'R21-recovery-p0-v2',
   historyScope:payload.normalization?.historyScope||'all_verified_hr_periods',
   finalCanonicalPass:true,
   periodCount:summaries.length,
   periodKeys:summaries.map(row=>row.periodKey),
-  rules:[...(payload.normalization?.rules||[]),'unassigned_is_not_automatically_available','recognized_previous_window_dependency_blocks_offer','franja_code_normalized','measurement_window_bounds_explicit']
+  rules:[...(payload.normalization?.rules||[]).filter(rule=>rule!=='unassigned_is_not_automatically_available'),'unassigned_is_available_for_postulation','availability_date_is_schedule_metadata','scheduled_kpi_excludes_realized','franja_code_normalized','measurement_window_bounds_explicit']
 };
 
 writePayload(output,payload);
 fs.mkdirSync(reportDir,{recursive:true});
 const report={
-  schemaVersion:'1.2.0',
-  decision:'PASS_R21_ELIGIBILITY_FINAL_CANONICAL_PASS',
+  schemaVersion:'1.3.0',
+  decision:'PASS_R21_RECOVERY_P0_CANONICAL_PASS',
   input:path.relative(process.cwd(),input).replaceAll('\\','/'),
   output:path.relative(process.cwd(),output).replaceAll('\\','/'),
   counts:payload.counts,
@@ -219,7 +219,7 @@ const report={
 };
 fs.writeFileSync(path.join(reportDir,'report.json'),JSON.stringify(report,null,2)+'\n','utf8');
 fs.writeFileSync(path.join(reportDir,'report.md'),[
-  '# R21 eligibility final canonical pass','',
+  '# R21 Recovery P0 final canonical pass','',
   `Decision: **${report.decision}**`,
   `Periods: ${summaries.length}`,
   `Visits: ${payload.visits.length}`,
@@ -227,6 +227,7 @@ fs.writeFileSync(path.join(reportDir,'report.md'),[
   `Eligibility blocked: ${payload.counts.eligibilityBlocked}`,
   `Assigned: ${payload.counts.assigned}`,
   `Unassigned: ${payload.counts.unassigned}`,
+  `Scheduled pending realization: ${payload.counts.scheduled}`,
   `Submitted: ${payload.counts.submitted}`,
   `Financial exact links: ${payload.counts.financialExactLinks}`,
   `Financial links without HR submission: ${payload.counts.financialExactLinksWithoutHrSubmission}`,
