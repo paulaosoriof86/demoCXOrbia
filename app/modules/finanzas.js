@@ -415,7 +415,7 @@ CX.module('movimientos', ({data,ui})=>{
     // ---- financiamientos ----
     const fl=host.querySelector('#finList');
     if(fl){ const fins=CX.finStore.financiamientos(p.id);
-      fl.innerHTML=fins.length?fins.map(f=>`<div style="padding:8px 0;border-bottom:1px solid var(--border-2)"><div class="between"><div><b style="font-size:12.5px">${f.fuente||'Financiamiento'}</b><div style="font-size:10.5px;color:var(--t3)">${f.pais||''} · ${f.fecha} · devuelto ${f.pais&&p.currency[f.pais]?ui.money(p.currency[f.pais],f.devuelto||0):(f.moneda?ui.money(f.moneda,f.devuelto||0):'\u2014')}</div></div>
+      fl.innerHTML=fins.length?fins.map(f=>`<div style="padding:8px 0;border-bottom:1px solid var(--border-2)"><div class="between"><div><b style="font-size:12.5px">${f.fuente||'Financiamiento'}</b><div style="font-size:10.5px;color:var(--t3)">${f.pais||''} · ${f.fecha} · devuelto ${f.pais&&p.currency[f.pais]?ui.money(p.currency[f.pais],f.devuelto||0):(f.moneda?ui.money(f.moneda,f.devuelto||0):'—')}</div></div>
         <div class="flex" style="gap:8px"><b style="font-size:12.5px;color:${(f.saldo||0)>0?'var(--amber)':'var(--green)'}">saldo ${f.pais&&p.currency[f.pais]?ui.money(p.currency[f.pais],f.saldo||0):(f.moneda?ui.money(f.moneda,f.saldo||0):'Pendiente de moneda')}</b>${(!(f.pais&&p.currency[f.pais])&&!f.moneda)?ui.bdg('Revisión requerida · sin moneda · Bloqueado','r'):((f.saldo||0)<=0?ui.bdg('saldado','g'):`<button class="btn btn-soft btn-sm" data-devfin="${f.id}">Devolver</button>`)}</div></div></div>`).join(''):'<div class="muted" style="font-size:12px;padding:6px 0">Sin financiamientos registrados</div>';
       fl.querySelectorAll('[data-devfin]').forEach(b=>b.addEventListener('click',()=>{const f=CX.finStore.financiamientos(p.id).find(x=>x.id===b.dataset.devfin);
         ui.modal('Devolver financiamiento · '+f.fuente,`<div style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Saldo: <b>${f.pais&&p.currency[f.pais]?ui.money(p.currency[f.pais],f.saldo||0):(f.moneda?ui.money(f.moneda,f.saldo||0):'Pendiente de moneda')}</b></div><label class="lbl">Monto a devolver</label><input class="inp" id="dvM" type="number" value="${f.saldo||0}" style="margin-bottom:14px"><div style="text-align:right"><button class="btn btn-green btn-sm" id="dvOk">Registrar devolución</button></div>`,{onMount:(ov,close)=>{ov.querySelector('#dvOk').addEventListener('click',()=>{CX.finStore.devolverFinanciamiento(p.id,f.id,+ov.querySelector('#dvM').value||0);close();draw();ui.toast('Devolución registrada · egreso generado · CxP reducida','ok',3600);});}});
@@ -567,16 +567,26 @@ CX.module('movimientos', ({data,ui})=>{
 
     const pl=host.querySelector('#payLote');
     if(pl){ if(pendingCurrencyRows.length){ pl.disabled=true; pl.title='Bloqueado: hay filas en revisión de moneda'; pl.classList.add('btn-ghost'); }
-    pl.addEventListener('click',()=>{
+    pl.addEventListener('click',async()=>{
       if(pendingCurrencyRows.length){ui.toast('Pagar lote bloqueado: resuelve las filas en revisión de moneda primero','err');return;} /* R31: fail-closed */
       const val=CX.liq.forProject(data).filter(l=>l.estado==='validada');
       if(!val.length){ui.toast('No hay liquidaciones validadas para pagar','warn');return;}
-      const r=data.payVisits(val.map(l=>l.visitaId));
-      /* P0-2 (V110): el toast ya no asume que todo lo enviado se pagó — si payVisits() devolvió
-         reviewRequired, esas visitas NO cambiaron de estado ni generaron movimiento; se informa
-         aparte y honesto, nunca mezclado con "pagadas". */
-      const revMsg=(r.reviewRequired&&r.reviewRequired.length)?(' · '+r.reviewRequired.length+' en revisión requerida (dato incompleto, no pagada(s))'):'';
-      ui.toast(r.pagadas+' liquidaciones marcadas pagadas (vista previa) · egreso(s) preparados en Movimientos'+revMsg+' · cruce bancario pendiente de validación', r.reviewRequired&&r.reviewRequired.length?'warn':'ok',4800);
+      const priorLabel=pl.textContent; pl.disabled=true; pl.textContent='Registrando…';
+      try{
+        const r=await data.payVisits(val.map(l=>l.visitaId),null,null,{ackAware:true,reason:'admin-finance-mark-paid'});
+        if(!(r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true)) throw new Error(r?.code||'FINANCE_PAYMENT_ACK_REQUIRED');
+        /* P0-2 (V110): el toast ya no asume que todo lo enviado se pagó — si payVisits() devolvió
+           reviewRequired, esas visitas NO cambiaron de estado ni generaron movimiento; se informa
+           aparte y honesto, nunca mezclado con "pagadas". */
+        const revMsg=(r.reviewRequired&&r.reviewRequired.length)?(' · '+r.reviewRequired.length+' en revisión requerida (dato incompleto, no pagada(s))'):'';
+        try{if(CX.backend?.refresh)await CX.backend.refresh();}catch(_){/* commit durable; refresh best-effort */}
+        ui.toast('Registro interno de pago persistido · '+r.pagadas+' liquidación(es)'+revMsg+' · conciliación bancaria/externa pendiente', r.reviewRequired&&r.reviewRequired.length?'warn':'ok',4800);
+        draw();
+      }catch(error){
+        ui.toast('No se registró el pago: no se recibió confirmación durable del servidor.','err',4800);
+      }finally{
+        if(pl.isConnected){pl.disabled=!!pendingCurrencyRows.length;pl.textContent=priorLabel;}
+      }
     }); }
     const ih=host.querySelector('#impHist');
     if(ih)ih.addEventListener('click',()=>ui.modal('Importar histórico de movimientos',`
@@ -754,16 +764,30 @@ CX.module('liquidaciones', ({data,ui})=>{
       if(draftPend){ui.toast('Hay liquidaciones sin moneda resuelta en el lote: revísalas antes de pagar','err');return;}
       const restantes=validadas.filter(l=>!draft.includes(l.visitaId));
       ui.modal('Confirmar pago de lote',`
-        <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Vas a pagar <b>${draft.length}</b> liquidación(es) por <b>${Object.keys(porMon).map(m=>ui.money(m,porMon[m])).join(' + ')}</b>. Se generarán los egresos en Movimientos y se sincronizará Beneficios.</p>
+        <p style="font-size:12.5px;color:var(--t2);margin-bottom:12px">Vas a registrar internamente <b>${draft.length}</b> liquidación(es) por <b>${Object.keys(porMon).map(m=>ui.money(m,porMon[m])).join(' + ')}</b>. El registro durable no equivale a confirmación bancaria; la conciliación externa seguirá pendiente.</p>
         ${restantes.length?`<label class="flex" style="gap:8px;font-size:12px;color:var(--t1);background:var(--amber-bg);padding:9px 11px;border-radius:9px;cursor:pointer"><input type="checkbox" id="difCxp" checked> Diferir las <b>${restantes.length}</b> validada(s) no incluida(s) a Cuentas por Pagar (cierre de mes)</label>`:''}
-        <div style="text-align:right;margin-top:14px"><button class="btn btn-green btn-sm" id="confPay">Pagar lote</button></div>
-      `,{onMount:(ov,close)=>{ov.querySelector('#confPay').addEventListener('click',()=>{
-        let diferidas=0; const difBox=ov.querySelector('#difCxp');
-        if(difBox&&difBox.checked){restantes.forEach(l=>{CX.finStore.addCxp(p.id,{concepto:'Liquidación diferida · '+l.shopper+' ('+l.sucursal+')',monto:l.total,pais:l.pais,origen:'liquidacion',visitaId:l.visitaId});diferidas++;});}
-        const ids=[...draft]; close(); CX.finStore.clearDraft(p.id);
-        const r=data.payVisits(ids);
-        const revMsg2=(r.reviewRequired&&r.reviewRequired.length)?(' · '+r.reviewRequired.length+' en revisión requerida (dato incompleto, no pagada(s))'):'';
-        ui.toast('Lote registrado como pagado (preview) · '+r.pagadas+' visita(s) · fecha de pago '+r.fechaPago+(diferidas?' · '+diferidas+' diferida(s) a CxP':'')+revMsg2+' · egresos reflejados en Movimientos · pendiente cruce financiero real', r.reviewRequired&&r.reviewRequired.length?'warn':'ok', 5200);
+        <div style="text-align:right;margin-top:14px"><button class="btn btn-green btn-sm" id="confPay">Registrar pago interno</button></div>
+      `,{onMount:(ov,close)=>{const conf=ov.querySelector('#confPay');conf.addEventListener('click',async()=>{
+        if(conf.disabled)return;
+        const priorLabel=conf.textContent; conf.disabled=true; conf.textContent='Registrando…';
+        try{
+          const ids=[...draft];
+          const r=await data.payVisits(ids,null,null,{ackAware:true,reason:'admin-finance-liquidation-batch'});
+          if(!(r?.ok===true&&r?.status==='committed'&&r?.providerAck===true&&r?.successUiAllowed===true)) throw new Error(r?.code||'FINANCE_PAYMENT_ACK_REQUIRED');
+          let diferidas=0; const difBox=ov.querySelector('#difCxp');
+          if(difBox&&difBox.checked){restantes.forEach(l=>{CX.finStore.addCxp(p.id,{concepto:'Liquidación diferida · '+l.shopper+' ('+l.sucursal+')',monto:l.total,pais:l.pais,origen:'liquidacion',visitaId:l.visitaId});diferidas++;});}
+          const reviewIds=new Set((r.reviewRequired||[]).map(x=>x.id||x.visitaId).filter(Boolean));
+          CX.finStore.clearDraft(p.id);
+          reviewIds.forEach(id=>CX.finStore.toggleDraft(p.id,id));
+          try{if(CX.backend?.refresh)await CX.backend.refresh();}catch(_){/* commit durable; refresh best-effort */}
+          close();
+          const revMsg2=reviewIds.size?(' · '+reviewIds.size+' en revisión requerida y conservada(s) en el lote'):'';
+          ui.toast('Registro interno de pago persistido · '+r.pagadas+' visita(s) · fecha '+r.fechaPago+(diferidas?' · '+diferidas+' diferida(s) a CxP':'')+revMsg2+' · conciliación bancaria/externa pendiente', reviewIds.size?'warn':'ok', 5200);
+          draw();
+        }catch(error){
+          conf.disabled=false; conf.textContent=priorLabel;
+          ui.toast('No se registró el lote: no se recibió confirmación durable del servidor.','err',5200);
+        }
       });}});
     });
   };
