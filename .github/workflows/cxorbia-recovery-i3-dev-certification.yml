@@ -26,6 +26,7 @@ env:
   PRODUCT_SOURCE_SHA: 0e0b9627bec0ccc2c892a70cd86e9e5f144df870
   LOCKED_GATE20_SOURCE_SHA: bd2a519db5ebd08f17d47827997056db795c8c09
   LOCKED_GATE20_RUN_ID: '34306578074'
+  LOCKED_GATE20_RUN_ATTEMPT: '1'
   FUNCTIONAL_CERT_RUN_ID: '34732457426'
   FUNCTIONAL_CERT_HEAD_SHA: 7c6a63166c20d0713137c301e103b52c1ac259fb
   FUNCTIONAL_CERT_ARTIFACT_ID: '10310078031'
@@ -86,13 +87,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$LOCKED_GATE20_RUN_ID" > "$OUT/locked-gate20-run.json"
-          jq -e --arg sha "$LOCKED_GATE20_SOURCE_SHA" '.head_sha==$sha and .status=="completed" and .conclusion=="success"' "$OUT/locked-gate20-run.json" >/dev/null
+          curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$LOCKED_GATE20_RUN_ID/attempts/$LOCKED_GATE20_RUN_ATTEMPT" > "$OUT/locked-gate20-run.json"
+          jq -e --arg sha "$LOCKED_GATE20_SOURCE_SHA" --argjson attempt "$LOCKED_GATE20_RUN_ATTEMPT" '.head_sha==$sha and .run_attempt==$attempt and .status=="completed" and .conclusion=="success"' "$OUT/locked-gate20-run.json" >/dev/null
           curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$FUNCTIONAL_CERT_RUN_ID" > "$OUT/functional-cert-run.json"
           jq -e --arg sha "$FUNCTIONAL_CERT_HEAD_SHA" '.head_sha==$sha and .status=="completed" and .conclusion=="success"' "$OUT/functional-cert-run.json" >/dev/null
           curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/$FUNCTIONAL_CERT_ARTIFACT_ID" > "$OUT/functional-cert-artifact.json"
           jq -e --argjson id "$FUNCTIONAL_CERT_ARTIFACT_ID" --argjson run "$FUNCTIONAL_CERT_RUN_ID" --arg sha "$FUNCTIONAL_CERT_HEAD_SHA" --arg digest "$FUNCTIONAL_CERT_ARTIFACT_DIGEST" '.id==$id and .expired==false and .digest==$digest and .workflow_run.id==$run and .workflow_run.head_sha==$sha' "$OUT/functional-cert-artifact.json" >/dev/null
-          jq -n -S --argjson run "$LOCKED_GATE20_RUN_ID" --arg sha "$LOCKED_GATE20_SOURCE_SHA" --arg tenant "$TENANT_ID" --arg project "$PROJECT_ID" --arg period "$PERIOD_ID" '{decision:"PASS_LOCKED_GATE20_BASELINE",lockedEvidence:true,lockedRunId:$run,lockedSourceSha:$sha,tenantId:$tenant,projectId:$project,periodId:$period,production:false}' > "$OUT/gate20-locked.json"
+          jq -n -S --argjson run "$LOCKED_GATE20_RUN_ID" --argjson attempt "$LOCKED_GATE20_RUN_ATTEMPT" --arg sha "$LOCKED_GATE20_SOURCE_SHA" --arg tenant "$TENANT_ID" --arg project "$PROJECT_ID" --arg period "$PERIOD_ID" '{decision:"PASS_LOCKED_GATE20_BASELINE",lockedEvidence:true,lockedRunId:$run,lockedRunAttempt:$attempt,lockedSourceSha:$sha,tenantId:$tenant,projectId:$project,periodId:$period,production:false}' > "$OUT/gate20-locked.json"
 
       - name: Setup Node 24
         uses: actions/setup-node@v4
@@ -167,7 +168,7 @@ jobs:
           const fs=require('fs'),p=n=>JSON.parse(fs.readFileSync(`${process.env.OUT}/${n}`,'utf8'));
           const source=p('source-guard.json'),runtime=p('runtime-readback.json'),hosting=p('hosting.json'),visual=p('gate20-browser-visual.json');
           if(source.decision!=='PASS_GATE20_FOCAL_SOURCE_GUARD'||runtime.decision!=='PASS_GATE20_CERTIFIED_RUNTIME_READBACK'||hosting.decision!=='PASS_GATE20_CHANGED_OWNER_PARITY'||visual.decision!=='PASS_GATE20_FOCAL_VISUAL_DRIFT')throw new Error('GATE20_FOCAL_INCOMPLETE');
-          const result={verdict:'PASS_GATE20_CURRENT_CANDIDATE',gate20:'PASS',lockedBaselineRunId:Number(process.env.LOCKED_GATE20_RUN_ID),lockedBaselineSourceSha:process.env.LOCKED_GATE20_SOURCE_SHA,productSourceSha:process.env.PRODUCT_SOURCE_SHA,qaHeadSha:process.env.GITHUB_SHA,functionalCertificationRunId:Number(process.env.FUNCTIONAL_CERT_RUN_ID),devRuntimeRevision:process.env.EXPECTED_DEV_REVISION,changedSurfaceOwners:visual.changedSurfaceOwners,desktop:true,mobile:true,validatedRoutes:visual.validatedRoutes,captureCount:visual.captureCount,pageErrors:0,maxOverflowX:visual.maxOverflowX,hostingOwnerParity:true,rebuild:false,redeploy:false,providerWrites:0,hrWrites:0,production:false};
+          const result={verdict:'PASS_GATE20_CURRENT_CANDIDATE',gate20:'PASS',lockedBaselineRunId:Number(process.env.LOCKED_GATE20_RUN_ID),lockedBaselineRunAttempt:Number(process.env.LOCKED_GATE20_RUN_ATTEMPT),lockedBaselineSourceSha:process.env.LOCKED_GATE20_SOURCE_SHA,productSourceSha:process.env.PRODUCT_SOURCE_SHA,qaHeadSha:process.env.GITHUB_SHA,functionalCertificationRunId:Number(process.env.FUNCTIONAL_CERT_RUN_ID),devRuntimeRevision:process.env.EXPECTED_DEV_REVISION,changedSurfaceOwners:visual.changedSurfaceOwners,desktop:true,mobile:true,validatedRoutes:visual.validatedRoutes,captureCount:visual.captureCount,pageErrors:0,maxOverflowX:visual.maxOverflowX,hostingOwnerParity:true,rebuild:false,redeploy:false,providerWrites:0,hrWrites:0,production:false};
           fs.writeFileSync(`${process.env.OUT}/result.json`,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
           NODE
 
