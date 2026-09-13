@@ -60,8 +60,10 @@ jobs:
           grep -q "COPY backend/runtime/cxorbia-finance-command-provider-v1.mjs" backend/runtime/hr-live-service/Dockerfile
           grep -q "createFinanceCommandProvider" backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs
           grep -q "finance.payment.batch" backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs
-          grep -q "providerAck!==true" app/modules/finanzas.js
-          grep -q "providerAck!==true" app/modules/operacion-extra.js
+          grep -q "providerAck===true" app/modules/finanzas.js
+          grep -q "successUiAllowed===true" app/modules/finanzas.js
+          grep -q "providerAck===true" app/modules/operacion-extra.js
+          grep -q "successUiAllowed===true" app/modules/operacion-extra.js
           node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
           node --check backend/runtime/cxorbia-finance-command-provider-v1.mjs
           node --check backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs
