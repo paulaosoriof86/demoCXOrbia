@@ -83,14 +83,28 @@ function validateCommand(command={}){
 async function exactActor(auth,db,token,command){
   const decoded=await auth.verifyIdToken(token,true);
   const role=str(decoded.role),namespace=str(decoded.authNamespace||'staff');
-  if(str(decoded.tenantId)!==str(command.tenantId)||!OPERATOR_ROLES.includes(role)||namespace!=='staff')throw new Error('SHOPPER_ACTOR_SCOPE_DENIED');
+  if(str(decoded.tenantId)!==str(command.tenantId))throw new Error('SHOPPER_ACTOR_SCOPE_DENIED');
+  const targetShopper=str(command.entityId||command.payload?.shopperId);
+  const shopperSelfUpdate=command.commandType==='shopper.update'&&role==='shopper'&&namespace==='shopper';
+  const staffOperator=OPERATOR_ROLES.includes(role)&&namespace==='staff';
+  if(!staffOperator&&!shopperSelfUpdate)throw new Error('SHOPPER_ACTOR_SCOPE_DENIED');
+  if(shopperSelfUpdate){
+    if(str(command.authorization?.permission)!=='shopper.self.update')throw new Error('SHOPPER_SELF_UPDATE_PERMISSION_REQUIRED');
+    if(!targetShopper||str(decoded.shopperId)!==targetShopper)throw new Error('SHOPPER_SELF_UPDATE_SCOPE_DENIED');
+  }else if(str(command.authorization?.permission)==='shopper.self.update'){
+    throw new Error('SHOPPER_SELF_UPDATE_STAFF_PERMISSION_INVALID');
+  }
   if(role!=='super'&&!uniq(decoded.projectIds).includes(str(command.projectId)))throw new Error('SHOPPER_ACTOR_PROJECT_DENIED');
   const member=await db.collection('tenants').doc(command.tenantId).collection('users').doc(decoded.uid).get();
   if(!member.exists)throw new Error('SHOPPER_ACTOR_MEMBERSHIP_MISSING');
   const m=member.data()||{};
-  if(m.active!==true||str(m.tenantId)!==str(command.tenantId)||str(m.role)!==role||str(m.authNamespace)!=='staff')throw new Error('SHOPPER_ACTOR_MEMBERSHIP_INVALID');
+  if(shopperSelfUpdate){
+    if(m.active!==true||str(m.tenantId)!==str(command.tenantId)||str(m.role)!=='shopper'||str(m.authNamespace)!=='shopper'||str(m.shopperId)!==targetShopper)throw new Error('SHOPPER_SELF_UPDATE_MEMBERSHIP_INVALID');
+  }else if(m.active!==true||str(m.tenantId)!==str(command.tenantId)||str(m.role)!==role||str(m.authNamespace)!=='staff'){
+    throw new Error('SHOPPER_ACTOR_MEMBERSHIP_INVALID');
+  }
   if(role!=='super'&&!uniq(m.projectIds).includes(str(command.projectId)))throw new Error('SHOPPER_ACTOR_MEMBERSHIP_PROJECT_DENIED');
-  return {uid:decoded.uid,role};
+  return {uid:decoded.uid,role,shopperId:shopperSelfUpdate?targetShopper:null,selfScoped:shopperSelfUpdate};
 }
 
 function stableShopperId(command){
@@ -361,9 +375,10 @@ export function createShopperCommandProvider({auth,db,policy}={}){
           return ack(command,shopperId,{uidFingerprint,idempotentReplay:false,providerWrites:2,credentialState:'enrolled',credentialIssued:true,authCreated:identity.authCreated===true,credential:{login:shopperId,password,namespace:'shopper',oneTimeDisclosure:true,persist:false}});
         }
         if(command.commandType==='shopper.update'){
+          if(actor.selfScoped===true&&shopperId!==actor.shopperId)throw new Error('SHOPPER_SELF_UPDATE_SCOPE_DENIED');
           const result=await durableProfileUpdate({auth,db,command,shopperId});
-          await receipt.set({status:'committed',commandDigest:digest,shopperId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,profileUpdated:true,updatedAt:now()},{merge:false});
-          return ack(command,shopperId,{uidFingerprint:providerUidFingerprint(result.uid),idempotentReplay:false,providerWrites:Number(result.providerWrites||0)+1,profileUpdated:true});
+          await receipt.set({status:'committed',commandDigest:digest,shopperId,commandType:command.commandType,providerAck:true,actorUid:actor.uid,profileUpdated:true,selfScoped:actor.selfScoped===true,updatedAt:now()},{merge:false});
+          return ack(command,shopperId,{uidFingerprint:providerUidFingerprint(result.uid),idempotentReplay:false,providerWrites:Number(result.providerWrites||0)+1,profileUpdated:true,selfScoped:actor.selfScoped===true});
         }
         const profile=command.payload?.profile||command.payload||{};
         const nombre=str(profile.nombre||[profile.firstName,profile.lastName].filter(Boolean).join(' '));
@@ -375,7 +390,7 @@ export function createShopperCommandProvider({auth,db,policy}={}){
         return ack(command,shopperId,{uidFingerprint:providerUidFingerprint(result.uid),idempotentReplay:result.idempotentReplay,providerWrites:Number(result.providerWrites||0)+Number(manual.providerWrites||0)+1,profileUpdated:true});
       }catch(error){return blocked(command,str(error?.message||error));}
     },
-    status(){return {version:VERSION,enabled:true,allowedTenantIds:uniq(policy.allowedTenantIds),allowedProjectIds:uniq(policy.allowedProjectIds),hrWrites:false,externalWrites:false,fuzzyMatching:false,stableIdentity:true,profileMutation:true,credentialEnrollment:true,credentialRepair:true};}
+    status(){return {version:VERSION,enabled:true,allowedTenantIds:uniq(policy.allowedTenantIds),allowedProjectIds:uniq(policy.allowedProjectIds),hrWrites:false,externalWrites:false,fuzzyMatching:false,stableIdentity:true,profileMutation:true,credentialEnrollment:true,credentialRepair:true,shopperSelfProfileUpdate:true};}
   });
 }
 
