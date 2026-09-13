@@ -14,6 +14,7 @@ COPY backend/runtime/cxorbia-legal-acceptance-provider-v1.mjs ./backend/runtime/
 COPY backend/runtime/cxorbia-project-command-provider-v1.mjs ./backend/runtime/cxorbia-project-command-provider-v1.mjs
 COPY backend/runtime/cxorbia-operational-command-provider-v1.mjs ./backend/runtime/cxorbia-operational-command-provider-v1.mjs
 COPY backend/runtime/cxorbia-shopper-command-provider-v1.mjs ./backend/runtime/cxorbia-shopper-command-provider-v1.mjs
+COPY backend/runtime/cxorbia-finance-command-provider-v1.mjs ./backend/runtime/cxorbia-finance-command-provider-v1.mjs
 COPY backend/contracts ./backend/contracts
 COPY backend/config/tya-live-hr-tab-registry.source-safe.json ./backend/config/tya-live-hr-tab-registry.source-safe.json
 COPY tools/hr-source ./tools/hr-source
