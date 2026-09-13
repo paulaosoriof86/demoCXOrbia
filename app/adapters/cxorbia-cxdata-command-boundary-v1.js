@@ -132,7 +132,7 @@
         shopperId:id,expectedVersion:versionOf(current),idempotencyKey:idempotency('shopper.update',id,cleanPatch,versionOf(current)),patch:cleanPatch,identity:current||{}
       });
       if(!built?.ok){const r=CX.commandAdapter?.blocked?.(built?.command||{},'SHOPPER_UPDATE_INVALID',{errors:built?.errors||[]})||{ok:false,status:'blocked'};return meta.ackAware?Promise.resolve(surfaceBlocked(r)):legacyFailClosed(r);}
-      built.command.authorization={providerEnforcementRequired:true,permission:'shopper.update'};
+      built.command.authorization={providerEnforcementRequired:true,permission:c.role==='shopper'?'shopper.self.update':'shopper.update'};
       return execute(built.command,meta);
     };
     D.resetShopperCredential=function(id,meta){
