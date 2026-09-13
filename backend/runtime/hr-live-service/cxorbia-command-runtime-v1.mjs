@@ -5,11 +5,13 @@
 import { createProjectCommandProvider } from '../cxorbia-project-command-provider-v1.mjs';
 import { createOperationalCommandProvider } from '../cxorbia-operational-command-provider-v1.mjs';
 import { createShopperCommandProvider } from '../cxorbia-shopper-command-provider-v1.mjs';
+import { createFinanceCommandProvider } from '../cxorbia-finance-command-provider-v1.mjs';
 
 export const VERSION='cxorbia-command-runtime-v1';
 const ROUTE='/v1/cxorbia/commands';
 const PROJECT_COMMANDS=new Set(['project.create','project.update']);
 const SHOPPER_COMMANDS=new Set(['shopper.create','shopper.update','shopper.credential.reset']);
+const FINANCE_COMMANDS=new Set(['finance.payment.batch']);
 const str=v=>String(v==null?'':v).trim();
 const json=(res,status,body)=>{res.statusCode=status;res.setHeader('Content-Type','application/json; charset=utf-8');res.end(JSON.stringify(body));};
 const blocked=(code,extra={})=>({ok:false,status:'blocked',committed:false,providerAck:false,successUiAllowed:false,localMutation:false,localStorageWrite:false,providerWrites:0,code,production:false,...extra});
@@ -22,6 +24,7 @@ export function commandProviderKind(commandType){
   const type=str(commandType);
   if(PROJECT_COMMANDS.has(type))return 'project';
   if(SHOPPER_COMMANDS.has(type))return 'shopper';
+  if(FINANCE_COMMANDS.has(type))return 'finance';
   return 'operational';
 }
 
@@ -34,6 +37,20 @@ async function readJson(req){
   return raw?JSON.parse(raw):{};
 }
 
+function derivedFinancePolicy(operationalPolicy){
+  if(!operationalPolicy)return null;
+  return {
+    schemaVersion:'cxorbia.finance-command-provider-policy.v1',
+    enabled:operationalPolicy.enabled===true,
+    allowedTenantIds:Array.isArray(operationalPolicy.allowedTenantIds)?operationalPolicy.allowedTenantIds:[],
+    allowedProjectIds:Array.isArray(operationalPolicy.allowedProjectIds)?operationalPolicy.allowedProjectIds:[],
+    conflictPolicy:operationalPolicy.conflictPolicy||'review_no_silent_overwrite',
+    externalPaymentWrites:false,
+    bankWrites:false,
+    hrWrites:false
+  };
+}
+
 export function createProviderForCommand(command,overrides={}){
   const kind=commandProviderKind(command?.commandType);
   const auth=overrides.auth??globalThis.CXORBIA_COMMAND_AUTH??null;
@@ -41,6 +58,7 @@ export function createProviderForCommand(command,overrides={}){
   const projectPolicy=overrides.projectPolicy??globalThis.CXORBIA_PROJECT_COMMAND_PROVIDER_POLICY??null;
   const operationalPolicy=overrides.operationalPolicy??globalThis.CXORBIA_OPERATIONAL_COMMAND_PROVIDER_POLICY??null;
   const shopperPolicy=overrides.shopperPolicy??globalThis.CXORBIA_SHOPPER_COMMAND_PROVIDER_POLICY??null;
+  const financePolicy=overrides.financePolicy??globalThis.CXORBIA_FINANCE_COMMAND_PROVIDER_POLICY??derivedFinancePolicy(operationalPolicy);
   if(!auth||!db)return {provider:null,kind,error:'COMMAND_PROVIDER_DEPENDENCIES_NOT_CONFIGURED'};
   if(kind==='project'){
     if(!projectPolicy)return {provider:null,kind,error:'PROJECT_COMMAND_PROVIDER_NOT_CONFIGURED'};
@@ -51,6 +69,11 @@ export function createProviderForCommand(command,overrides={}){
     if(!shopperPolicy)return {provider:null,kind,error:'SHOPPER_COMMAND_PROVIDER_NOT_CONFIGURED'};
     try{return {provider:createShopperCommandProvider({auth,db,policy:shopperPolicy}),kind};}
     catch(error){return {provider:null,kind,error:'SHOPPER_COMMAND_PROVIDER_POLICY_INVALID',detail:str(error?.message||error)};}
+  }
+  if(kind==='finance'){
+    if(!financePolicy)return {provider:null,kind,error:'FINANCE_COMMAND_PROVIDER_NOT_CONFIGURED'};
+    try{return {provider:createFinanceCommandProvider({auth,db,policy:financePolicy}),kind};}
+    catch(error){return {provider:null,kind,error:'FINANCE_COMMAND_PROVIDER_POLICY_INVALID',detail:str(error?.message||error)};}
   }
   if(!operationalPolicy)return {provider:null,kind,error:'OPERATIONAL_COMMAND_PROVIDER_NOT_CONFIGURED'};
   try{return {provider:createOperationalCommandProvider({auth,db,policy:operationalPolicy}),kind};}
