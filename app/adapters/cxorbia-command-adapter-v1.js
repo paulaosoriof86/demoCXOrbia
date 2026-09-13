@@ -91,10 +91,14 @@
       return{ok:true};
     }
     if(actor.role==='shopper'){
-      const allowed=new Set(['visit.state.update','visit.reschedule','visit.cancel','visit.questionnaire.submit','application.create']);
+      const allowed=new Set(['visit.state.update','visit.reschedule','visit.cancel','visit.questionnaire.submit','application.create','shopper.update']);
       if(!allowed.has(command.commandType))return{ok:false,code:'COMMAND_ROLE_DENIED'};
-      const targetShopper=str(command.payload?.shopperId||command.payload?.actorShopperId||actor.shopperId);
-      if(actor.shopperId&&targetShopper&&actor.shopperId!==targetShopper)return{ok:false,code:'COMMAND_SHOPPER_SCOPE_DENIED'};
+      const targetShopper=str(command.payload?.shopperId||command.payload?.actorShopperId||command.entityId||actor.shopperId);
+      if(!actor.shopperId||!targetShopper||actor.shopperId!==targetShopper)return{ok:false,code:'COMMAND_SHOPPER_SCOPE_DENIED'};
+      if(command.commandType==='shopper.update'){
+        if(command.entityType!=='shopper')return{ok:false,code:'COMMAND_SHOPPER_ENTITY_INVALID'};
+        if(str(command.authorization?.permission)!=='shopper.self.update')return{ok:false,code:'COMMAND_SHOPPER_SELF_PERMISSION_REQUIRED'};
+      }
     }
     if(['cliente','client'].includes(actor.role))return{ok:false,code:'COMMAND_CLIENT_WRITE_DENIED'};
     return{ok:true};
