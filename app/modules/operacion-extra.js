@@ -51,30 +51,41 @@ CX.module('miperfil', ({data,ui})=>{
       <div style="text-align:right;margin-top:16px"><button class="btn btn-green" id="mp_save">Guardar</button></div>
     `, {onMount:(ov,close)=>{
       CX.geo.wire(ov,ids,{pais:s.pais,depto:s.depto,ciudad:s.ciudad});
-      ov.querySelector('#mp_save').addEventListener('click',()=>{
-        const geo=CX.geo.read(ov,ids);
-        const patch={
-          firstName:(ov.querySelector('#mp_first').value||'').trim(),
-          lastName:(ov.querySelector('#mp_last').value||'').trim(),
-          pais:geo.pais, depto:geo.depto, ciudad:geo.ciudad,
-          whatsapp:(ov.querySelector('#mp_wa').value||'').trim(),
-          email:(ov.querySelector('#mp_mail').value||'').trim(),
-          edad:(ov.querySelector('#mp_edad').value||'').trim(),
-          sexo:ov.querySelector('#mp_sexo').value||'',
-          dpi:(ov.querySelector('#mp_dpi').value||'').trim(),
-          banco:(ov.querySelector('#mp_banco').value||'').trim(),
-          ctaTipo:ov.querySelector('#mp_ctaTipo').value||'',
-          ctaNum:(ov.querySelector('#mp_ctaNum').value||'').trim(),
-          ctaTitular:(ov.querySelector('#mp_ctaTit').value||'').trim(),
-          ctaMoneda:(ov.querySelector('#mp_ctaMon').value||'').trim(),
-        };
-        patch.cuentaPago=[patch.banco,patch.ctaNum,patch.ctaTitular].filter(Boolean).join(' · ');
-        patch.perfilCompleto=data.shopperProfileComplete(Object.assign({},s,patch));
-        data.updateShopper(s.id,patch);
-        // refrescar el nombre mostrado en sesión
-        const ns=data.getShopper(s.id); if(ns){CX.session.user.name=ns.nombre;CX.session.save();}
-        close(); CX.ui.toast(patch.perfilCompleto?'¡Perfil completo! Ya puedes postularte sin restricciones':'Perfil actualizado','ok',3200);
-        CX.router.nav('miperfil');
+      const save=ov.querySelector('#mp_save');
+      save.addEventListener('click',async()=>{
+        if(save.disabled)return;
+        const priorLabel=save.textContent;
+        save.disabled=true;save.textContent='Guardando…';
+        try{
+          const geo=CX.geo.read(ov,ids);
+          const patch={
+            firstName:(ov.querySelector('#mp_first').value||'').trim(),
+            lastName:(ov.querySelector('#mp_last').value||'').trim(),
+            pais:geo.pais, depto:geo.depto, ciudad:geo.ciudad,
+            whatsapp:(ov.querySelector('#mp_wa').value||'').trim(),
+            email:(ov.querySelector('#mp_mail').value||'').trim(),
+            edad:(ov.querySelector('#mp_edad').value||'').trim(),
+            sexo:ov.querySelector('#mp_sexo').value||'',
+            dpi:(ov.querySelector('#mp_dpi').value||'').trim(),
+            banco:(ov.querySelector('#mp_banco').value||'').trim(),
+            ctaTipo:ov.querySelector('#mp_ctaTipo').value||'',
+            ctaNum:(ov.querySelector('#mp_ctaNum').value||'').trim(),
+            ctaTitular:(ov.querySelector('#mp_ctaTit').value||'').trim(),
+            ctaMoneda:(ov.querySelector('#mp_ctaMon').value||'').trim(),
+          };
+          patch.cuentaPago=[patch.banco,patch.ctaNum,patch.ctaTitular].filter(Boolean).join(' · ');
+          patch.perfilCompleto=data.shopperProfileComplete(Object.assign({},s,patch));
+          patch.__commandMeta={ackAware:true,reason:'shopper-self-profile-update'};
+          const result=await data.updateShopper(s.id,patch);
+          if(!(result?.ok===true&&result?.status==='committed'&&result?.providerAck===true&&result?.successUiAllowed===true))throw new Error(result?.code||'SHOPPER_PROFILE_ACK_REQUIRED');
+          try{if(CX.backend?.refresh)await CX.backend.refresh();}catch(_){/* write is committed; refresh is best-effort */}
+          close();
+          CX.ui.toast(patch.perfilCompleto?'¡Perfil completo! Ya puedes postularte sin restricciones':'Perfil actualizado','ok',3200);
+          CX.router.nav('miperfil');
+        }catch(error){
+          save.disabled=false;save.textContent=priorLabel;
+          CX.ui.toast('No se guardó el perfil: no se recibió confirmación durable del servidor.','err',4200);
+        }
       });
     }});
   };
