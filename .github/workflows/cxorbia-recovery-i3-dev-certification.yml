@@ -6,11 +6,12 @@ on:
       - recovery/cxorbia-phase-a-20260831
     paths:
       - .github/workflows/cxorbia-recovery-i3-dev-certification.yml
-      - tools/qa/cxorbia-i3-profile-finance-persistence-dev.mjs
+      - tools/qa/cxorbia-gate20-browser-visual-dev.mjs
   workflow_dispatch:
 
 permissions:
   contents: read
+  actions: read
   id-token: write
 
 defaults:
@@ -23,6 +24,12 @@ concurrency:
 
 env:
   PRODUCT_SOURCE_SHA: 0e0b9627bec0ccc2c892a70cd86e9e5f144df870
+  LOCKED_GATE20_SOURCE_SHA: bd2a519db5ebd08f17d47827997056db795c8c09
+  LOCKED_GATE20_RUN_ID: '34306578074'
+  FUNCTIONAL_CERT_RUN_ID: '34732457426'
+  FUNCTIONAL_CERT_HEAD_SHA: 7c6a63166c20d0713137c301e103b52c1ac259fb
+  FUNCTIONAL_CERT_ARTIFACT_ID: '10310078031'
+  FUNCTIONAL_CERT_ARTIFACT_DIGEST: sha256:a48eb87512210a5723347d780e1d3548a7e4e2de9428232229935e78b14f490b
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -30,58 +37,73 @@ env:
   TENANT_ID: tya
   PROJECT_ID: cinepolis
   PERIOD_ID: cinepolis-2026-09
-  OUT: .tmp/recovery-i3-dev-certification
+  OUT: .tmp/recovery-i3-gate20-focal
   EXPECTED_DEV_REVISION: cxorbia-live-hr-dev-00067-jk6
   EXPECTED_DEV_IMAGE: gcr.io/cxorbia-backend-dev/cxorbia-live-hr-dev:i3-cert-0e0b9627bec0-34732201798
-  ORIGIN_BUILD_ID: 1f72e008-9b67-4511-9f6a-a8245ff5facb
-  ORIGIN_RUN_ID: '34732201798'
 
 jobs:
   certify:
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
-      - name: Checkout exact Recovery certification head
+      - name: Checkout exact Recovery QA head
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Prove exact product source and certification-only successor
+      - name: Prove product source frozen and visual drift focal
         run: |
           set -euo pipefail
           mkdir -p "$OUT"
           test "$GITHUB_REF_NAME" = "recovery/cxorbia-phase-a-20260831"
           git cat-file -e "$PRODUCT_SOURCE_SHA^{commit}"
+          git cat-file -e "$LOCKED_GATE20_SOURCE_SHA^{commit}"
           git merge-base --is-ancestor "$PRODUCT_SOURCE_SHA" HEAD
           git diff --quiet "$PRODUCT_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools/hr-source
           while IFS= read -r file; do
             test -z "$file" && continue
             case "$file" in
-              .github/workflows/cxorbia-recovery-i3-dev-certification.yml|tools/qa/cxorbia-i3-profile-finance-persistence-dev.mjs) ;;
+              .github/workflows/cxorbia-recovery-i3-dev-certification.yml|tools/qa/cxorbia-i3-profile-finance-persistence-dev.mjs|tools/qa/cxorbia-gate20-browser-visual-dev.mjs) ;;
               *) echo "Unexpected post-source drift: $file" >&2; exit 1 ;;
             esac
           done < <(git diff --name-only "$PRODUCT_SOURCE_SHA" HEAD)
-          grep -q "COPY backend/runtime/cxorbia-finance-command-provider-v1.mjs" backend/runtime/hr-live-service/Dockerfile
-          grep -q "createFinanceCommandProvider" backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs
-          grep -q "finance.payment.batch" backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs
-          grep -q "providerAck===true" app/modules/finanzas.js
-          grep -q "successUiAllowed===true" app/modules/finanzas.js
-          grep -q "providerAck===true" app/modules/operacion-extra.js
-          grep -q "successUiAllowed===true" app/modules/operacion-extra.js
-          node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
-          node --check backend/runtime/cxorbia-finance-command-provider-v1.mjs
-          node --check backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs
-          node --check tools/qa/cxorbia-i3-profile-finance-persistence-dev.mjs
-          jq -n -S \
-            --arg product "$PRODUCT_SOURCE_SHA" --arg qa "$GITHUB_SHA" \
-            --arg revision "$EXPECTED_DEV_REVISION" --arg image "$EXPECTED_DEV_IMAGE" \
-            --arg build "$ORIGIN_BUILD_ID" --arg originRun "$ORIGIN_RUN_ID" \
-            '{decision:"PASS_I3_PRODUCT_SOURCE_GUARD",productSourceSha:$product,qaHeadSha:$qa,expectedDevRevision:$revision,expectedDevImage:$image,originBuildId:$build,originRunId:$originRun,postSourceProductDrift:false,rebuild:false,redeploy:false,production:false}' > "$OUT/source-guard.json"
+          git diff --name-only "$LOCKED_GATE20_SOURCE_SHA" "$PRODUCT_SOURCE_SHA" -- app | sort > "$OUT/app-visual-drift.txt"
+          cat > "$OUT/expected-app-visual-drift.txt" <<'EOF'
+          app/adapters/cxorbia-command-adapter-v1.js
+          app/adapters/cxorbia-cxdata-command-boundary-v1.js
+          app/adapters/cxorbia-shopper-admin-command-contract-v1.js
+          app/modules/finanzas.js
+          app/modules/operacion-extra.js
+          app/modules/shoppers.js
+          EOF
+          sed -i 's/^          //' "$OUT/expected-app-visual-drift.txt"
+          diff -u "$OUT/expected-app-visual-drift.txt" "$OUT/app-visual-drift.txt"
+          node --check tools/qa/cxorbia-gate20-browser-visual-dev.mjs
+          jq -n -S --arg product "$PRODUCT_SOURCE_SHA" --arg baseline "$LOCKED_GATE20_SOURCE_SHA" --arg qa "$GITHUB_SHA" '{decision:"PASS_GATE20_FOCAL_SOURCE_GUARD",productSourceSha:$product,lockedGate20SourceSha:$baseline,qaHeadSha:$qa,productDriftAfterCandidate:false,rebuild:false,redeploy:false,production:false}' > "$OUT/source-guard.json"
+
+      - name: Verify locked Gate 20 and functional certification identities
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$LOCKED_GATE20_RUN_ID" > "$OUT/locked-gate20-run.json"
+          jq -e --arg sha "$LOCKED_GATE20_SOURCE_SHA" '.head_sha==$sha and .status=="completed" and .conclusion=="success"' "$OUT/locked-gate20-run.json" >/dev/null
+          curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$FUNCTIONAL_CERT_RUN_ID" > "$OUT/functional-cert-run.json"
+          jq -e --arg sha "$FUNCTIONAL_CERT_HEAD_SHA" '.head_sha==$sha and .status=="completed" and .conclusion=="success"' "$OUT/functional-cert-run.json" >/dev/null
+          curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/$FUNCTIONAL_CERT_ARTIFACT_ID" > "$OUT/functional-cert-artifact.json"
+          jq -e --argjson id "$FUNCTIONAL_CERT_ARTIFACT_ID" --argjson run "$FUNCTIONAL_CERT_RUN_ID" --arg sha "$FUNCTIONAL_CERT_HEAD_SHA" --arg digest "$FUNCTIONAL_CERT_ARTIFACT_DIGEST" '.id==$id and .expired==false and .digest==$digest and .workflow_run.id==$run and .workflow_run.head_sha==$sha' "$OUT/functional-cert-artifact.json" >/dev/null
+          jq -n -S --argjson run "$LOCKED_GATE20_RUN_ID" --arg sha "$LOCKED_GATE20_SOURCE_SHA" --arg tenant "$TENANT_ID" --arg project "$PROJECT_ID" --arg period "$PERIOD_ID" '{decision:"PASS_LOCKED_GATE20_BASELINE",lockedEvidence:true,lockedRunId:$run,lockedSourceSha:$sha,tenantId:$tenant,projectId:$project,periodId:$period,production:false}' > "$OUT/gate20-locked.json"
 
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
+
+      - name: Install focal visual dependencies
+        run: |
+          set -euo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.47.2 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
 
       - name: Authenticate canonical Firebase DEV
         uses: google-github-actions/auth@v2
@@ -93,96 +115,67 @@ jobs:
         with:
           project_id: ${{ env.PROJECT }}
 
-      - name: Install focal certification dependency only
-        run: |
-          set -euo pipefail
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
-
-      - name: Read back the already materialized exact DEV artifact
+      - name: Read back exact certified DEV runtime
         run: |
           set -euo pipefail
           gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-current.json"
           revision="$(jq -r '.status.latestReadyRevisionName // empty' "$OUT/runtime-current.json")"
           created="$(jq -r '.status.latestCreatedRevisionName // empty' "$OUT/runtime-current.json")"
           image="$(jq -r '.spec.template.spec.containers[0].image // empty' "$OUT/runtime-current.json")"
-          url="$(jq -r '.status.url // empty' "$OUT/runtime-current.json")"
           test "$revision" = "$EXPECTED_DEV_REVISION"
           test "$created" = "$EXPECTED_DEV_REVISION"
           test "$image" = "$EXPECTED_DEV_IMAGE"
-          test -n "$url"
-          echo "DEV_REVISION=$revision" >> "$GITHUB_ENV"
-          echo "RUNTIME_URL=$url" >> "$GITHUB_ENV"
-          curl -fsS --retry 10 --retry-delay 3 "$url/health" > "$OUT/health.json"
-          jq -e '.ok==true and .production==false and .hrWrites==false' "$OUT/health.json" >/dev/null
-          jq -n -S --arg revision "$revision" --arg image "$image" --arg build "$ORIGIN_BUILD_ID" '{decision:"PASS_I3_EXISTING_DEV_ARTIFACT_READBACK",devRuntimeRevision:$revision,image:$image,originBuildId:$build,rebuild:false,redeploy:false,production:false}' > "$OUT/runtime-readback.json"
+          jq -n -S --arg revision "$revision" --arg image "$image" '{decision:"PASS_GATE20_CERTIFIED_RUNTIME_READBACK",revision:$revision,image:$image,rebuild:false,redeploy:false,production:false}' > "$OUT/runtime-readback.json"
 
-      - name: Prove Hosting DEV owner parity after release propagation
+      - name: Prove current changed owners are served by Hosting DEV
         run: |
           set -euo pipefail
           pairs=(
-            'modules/operacion-extra.js app/modules/operacion-extra.js'
+            'modules/shoppers.js app/modules/shoppers.js'
             'modules/finanzas.js app/modules/finanzas.js'
+            'modules/operacion-extra.js app/modules/operacion-extra.js'
             'adapters/cxorbia-command-adapter-v1.js app/adapters/cxorbia-command-adapter-v1.js'
             'adapters/cxorbia-cxdata-command-boundary-v1.js app/adapters/cxorbia-cxdata-command-boundary-v1.js'
             'adapters/cxorbia-shopper-admin-command-contract-v1.js app/adapters/cxorbia-shopper-admin-command-contract-v1.js'
           )
-          : > "$OUT/hosting-parity-attempts.tsv"
+          : > "$OUT/hosting-owner-parity.tsv"
           for pair in "${pairs[@]}"; do
             remote="${pair%% *}"; local="${pair#* }"; out="$OUT/remote-$(basename "$remote")"
-            expected="$(sha256sum "$local" | awk '{print $1}')"
-            matched=0
-            for attempt in $(seq 1 18); do
-              stamp="${GITHUB_RUN_ID}-${attempt}-$(date +%s%N)"
-              curl -fsSL --retry 3 --retry-delay 2 \
-                -H 'Cache-Control: no-cache, no-store, max-age=0' -H 'Pragma: no-cache' \
-                "$HOSTING_URL/$remote?i3cert=$stamp" -o "$out"
-              actual="$(sha256sum "$out" | awk '{print $1}')"
-              printf '%s\t%s\t%s\t%s\n' "$remote" "$attempt" "$expected" "$actual" >> "$OUT/hosting-parity-attempts.tsv"
+            expected="$(sha256sum "$local"|awk '{print $1}')"; matched=0
+            for attempt in $(seq 1 12); do
+              curl -fsSL --retry 3 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' -H 'Pragma: no-cache' "$HOSTING_URL/$remote?gate20f=${GITHUB_RUN_ID}-${attempt}-$(date +%s%N)" -o "$out"
+              actual="$(sha256sum "$out"|awk '{print $1}')"
+              printf '%s\t%s\t%s\t%s\n' "$remote" "$attempt" "$expected" "$actual" >> "$OUT/hosting-owner-parity.tsv"
               if [ "$actual" = "$expected" ]; then matched=1; break; fi
-              sleep 5
+              sleep 4
             done
-            if [ "$matched" -ne 1 ]; then
-              jq -n -S --arg owner "$remote" --arg expected "$expected" --arg actual "$actual" '{decision:"ENVIRONMENT_FAILURE_HOSTING_STALE_OR_MISMATCH",owner:$owner,expectedSha256:$expected,actualSha256:$actual,rebuild:false,redeploy:false,production:false}' > "$OUT/hosting-parity.json"
-              exit 1
-            fi
+            test "$matched" = 1
           done
-          jq -n -S --arg product "$PRODUCT_SOURCE_SHA" --arg originRun "$ORIGIN_RUN_ID" '{decision:"PASS_I3_HOSTING_OWNER_PARITY",productSourceSha:$product,originDeployRunId:$originRun,propagationReadback:true,rebuild:false,redeploy:false,production:false}' > "$OUT/hosting-parity.json"
+          jq -n -S --arg product "$PRODUCT_SOURCE_SHA" '{decision:"PASS_GATE20_CHANGED_OWNER_PARITY",productSourceSha:$product,ownerCount:6,hostingDeploys:0,production:false}' > "$OUT/hosting.json"
 
-      - name: Read fresh HR source without writes
+      - name: Execute focal browser and visual drift revalidation
         run: |
           set -euo pipefail
-          code="$(curl -sS --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 20 --max-time 180 -o "$OUT/hr-fresh.json" -w '%{http_code}' "$HOSTING_URL/api/tya/cinepolis/hr-live?format=json&fresh=1&i3cert=${GITHUB_RUN_ID}")"
-          test "$code" = '200'
-          node <<'NODE'
-          const fs=require('fs');const p=JSON.parse(fs.readFileSync(`${process.env.OUT}/hr-fresh.json`,'utf8'));const s=p?.snapshot||p?.data||p;const rt=p?._runtime||s?._runtime||{};
-          if(s?.sourceSafe!==true||rt.refreshError)throw new Error('SOURCE_FAILURE:HR_FRESH_INVALID');
-          fs.writeFileSync(`${process.env.OUT}/hr-readback.json`,JSON.stringify({decision:'PASS_I3_HR_FRESH_READBACK',sourceRevision:rt.revision||s.sourceRevision||null,sourceSafe:true,hrWrites:0,production:false},null,2)+'\n');
-          NODE
+          PROJECT="$PROJECT" OUT="$OUT" SOURCE_SHA="$PRODUCT_SOURCE_SHA" HOSTING_URL="$HOSTING_URL" node tools/qa/cxorbia-gate20-browser-visual-dev.mjs | tee "$OUT/gate20-focal-console.log"
+          ! grep -E '"password"[[:space:]]*:' "$OUT/gate20-focal-console.log"
+          ! grep -E '"password"[[:space:]]*:' "$OUT/gate20-browser-visual.json"
 
-      - name: Execute focal provider ACK persistence and idempotence certification
-        run: |
-          set -euo pipefail
-          PROJECT="$PROJECT" OUT="$OUT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" PERIOD_ID="$PERIOD_ID" SOURCE_SHA="$PRODUCT_SOURCE_SHA" node tools/qa/cxorbia-i3-profile-finance-persistence-dev.mjs | tee "$OUT/focal-persistence-console.log"
-          test "$(jq -r '.decision' "$OUT/shopper-profile-persistence.json")" = 'SHOPPER_PROFILE_PERSISTENCE_PASS'
-          test "$(jq -r '.decision' "$OUT/finance-bulk-payment-persistence.json")" = 'FINANCE_BULK_PAYMENT_PERSISTENCE_PASS'
-          test "$(jq -r '.decision' "$OUT/synthetic-cleanup.json")" = 'PASS_I3_SYNTHETIC_CLEANUP'
-
-      - name: Final I3 functional closure verdict
+      - name: Final Gate 20 closure verdict
         run: |
           set -euo pipefail
           node <<'NODE'
           const fs=require('fs'),p=n=>JSON.parse(fs.readFileSync(`${process.env.OUT}/${n}`,'utf8'));
-          const source=p('source-guard.json'),runtime=p('runtime-readback.json'),host=p('hosting-parity.json'),hr=p('hr-readback.json'),profile=p('shopper-profile-persistence.json'),finance=p('finance-bulk-payment-persistence.json'),cleanup=p('synthetic-cleanup.json');
-          if(source.decision!=='PASS_I3_PRODUCT_SOURCE_GUARD'||runtime.decision!=='PASS_I3_EXISTING_DEV_ARTIFACT_READBACK'||host.decision!=='PASS_I3_HOSTING_OWNER_PARITY'||hr.decision!=='PASS_I3_HR_FRESH_READBACK'||profile.decision!=='SHOPPER_PROFILE_PERSISTENCE_PASS'||finance.decision!=='FINANCE_BULK_PAYMENT_PERSISTENCE_PASS'||cleanup.decision!=='PASS_I3_SYNTHETIC_CLEANUP')throw new Error('I3_CERTIFICATION_INCOMPLETE');
-          const result={verdict:'PASS_I3_FUNCTIONAL_CLOSURE',state:'I3_READY_TO_CLOSE',productSourceSha:process.env.PRODUCT_SOURCE_SHA,qaHeadSha:process.env.GITHUB_SHA,devRuntimeRevision:process.env.DEV_REVISION,originBuildId:process.env.ORIGIN_BUILD_ID,originRunId:process.env.ORIGIN_RUN_ID,rebuild:false,redeploy:false,shopperProfilePersistence:true,financeBulkPaymentPersistence:true,remoteAck:true,freshPersistenceReadback:true,idempotence:true,syntheticCleanup:true,hrWrites:0,production:false};
+          const source=p('source-guard.json'),runtime=p('runtime-readback.json'),hosting=p('hosting.json'),visual=p('gate20-browser-visual.json');
+          if(source.decision!=='PASS_GATE20_FOCAL_SOURCE_GUARD'||runtime.decision!=='PASS_GATE20_CERTIFIED_RUNTIME_READBACK'||hosting.decision!=='PASS_GATE20_CHANGED_OWNER_PARITY'||visual.decision!=='PASS_GATE20_FOCAL_VISUAL_DRIFT')throw new Error('GATE20_FOCAL_INCOMPLETE');
+          const result={verdict:'PASS_GATE20_CURRENT_CANDIDATE',gate20:'PASS',lockedBaselineRunId:Number(process.env.LOCKED_GATE20_RUN_ID),lockedBaselineSourceSha:process.env.LOCKED_GATE20_SOURCE_SHA,productSourceSha:process.env.PRODUCT_SOURCE_SHA,qaHeadSha:process.env.GITHUB_SHA,functionalCertificationRunId:Number(process.env.FUNCTIONAL_CERT_RUN_ID),devRuntimeRevision:process.env.EXPECTED_DEV_REVISION,changedSurfaceOwners:visual.changedSurfaceOwners,desktop:true,mobile:true,validatedRoutes:visual.validatedRoutes,captureCount:visual.captureCount,pageErrors:0,maxOverflowX:visual.maxOverflowX,hostingOwnerParity:true,rebuild:false,redeploy:false,providerWrites:0,hrWrites:0,production:false};
           fs.writeFileSync(`${process.env.OUT}/result.json`,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
           NODE
 
-      - name: Upload sanitized I3 certification evidence
+      - name: Upload sanitized Gate 20 focal evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-recovery-i3-dev-certification-${{ github.run_id }}
+          name: cxorbia-recovery-i3-gate20-focal-${{ github.run_id }}
           path: ${{ env.OUT }}
           if-no-files-found: warn
           retention-days: 14
