@@ -1,4 +1,4 @@
-name: CXOrbia Recovery I3 Remaining Duplicate Auth Canonicalization Readonly
+name: CXOrbia Recovery I3 Shopper Membership Root Fix
 
 on:
   push:
@@ -12,8 +12,12 @@ permissions:
   statuses: write
   actions: read
 
+concurrency:
+  group: cxorbia-recovery-i3-shopper-membership-root-fix
+  cancel-in-progress: false
+
 jobs:
-  classify:
+  repair:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -24,26 +28,65 @@ jobs:
         with:
           node-version: '24'
       - run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
-      - name: Read duplicate Auth provenance and orphan crosswalk only
+      - name: Rehome duplicate technical principals and close exact membership linkage
         env:
           EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
         run: |
           set -euo pipefail
-          mkdir -p .tmp/i3-remaining
+          mkdir -p .tmp/i3-root-fix
           node <<'NODE'
-          const fs=require('fs'),crypto=require('crypto'),admin=require('firebase-admin');const PROJECT='cxorbia-backend-dev',TENANT='tya',PROJECT_ID='cinepolis';
-          const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v.map(str).filter(Boolean):[],sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex'),uidFp=uid=>sha('cxorbia-provider-uid-v1\0'+str(uid)),stableUid=shopperId=>`cx-sh-${sha(`${TENANT}\0shopper\0${str(shopperId)}`).slice(0,28)}`;
-          let sa;try{sa=JSON.parse(process.env.EXISTING_DEV_JSON||'');}catch{}if(!(sa&&sa.project_id===PROJECT&&sa.private_key))throw new Error('DEV_CREDENTIAL_INVALID');admin.initializeApp({credential:admin.credential.cert(sa),projectId:PROJECT});const db=admin.firestore(),auth=admin.auth();
+          const fs=require('fs'),crypto=require('crypto'),admin=require('firebase-admin');
+          const PROJECT='cxorbia-backend-dev',TENANT='tya',PROJECT_ID='cinepolis';
+          const EXPECT={allPrincipals:431,uniqueShopperIds:425,activePrincipalsBefore:430,activeDuplicateShopperIds:5,technicalDuplicatesToDisable:5};
+          const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v.map(str).filter(Boolean):[],uniq=v=>[...new Set(arr(v))].sort();
+          const stable=value=>Array.isArray(value)?value.map(stable):(value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(k=>[k,stable(value[k])])):value);
+          const hash=v=>crypto.createHash('sha256').update(typeof v==='string'?v:JSON.stringify(stable(v)),'utf8').digest('hex');
+          const uidFp=uid=>hash('cxorbia-provider-uid-v1\0'+str(uid));
+          const stableUid=shopperId=>`cx-sh-${hash(`${TENANT}\0shopper\0${str(shopperId)}`).slice(0,28)}`;
+          const canonicalClaims=(shopperId,projectIds)=>({authNamespace:'shopper',projectIds:uniq(projectIds),role:'shopper',shopperId:str(shopperId),tenantId:TENANT});
+          const claimsDigest=(shopperId,projectIds)=>hash(canonicalClaims(shopperId,projectIds));
+          const same=(a,b)=>JSON.stringify(stable(a))===JSON.stringify(stable(b));
+          let sa;try{sa=JSON.parse(process.env.EXISTING_DEV_JSON||'');}catch{}
+          if(!(sa&&sa.type==='service_account'&&sa.project_id===PROJECT&&sa.private_key))throw new Error('DEV_CREDENTIAL_INVALID');
+          admin.initializeApp({credential:admin.credential.cert(sa),projectId:PROJECT});const db=admin.firestore(),auth=admin.auth();
           async function allUsers(){const out=[];let token;do{const p=await auth.listUsers(1000,token);out.push(...p.users);token=p.pageToken;}while(token);return out;}
-          function principal(u){const c=u.customClaims||{},role=str(c.role).toLowerCase(),ns=str(c.authNamespace||(role==='shopper'?'shopper':'staff')).toLowerCase(),shopperId=str(c.shopperId);return role==='shopper'&&ns==='shopper'&&(str(c.tenantId)===TENANT||arr(c.tenants).includes(TENANT))&&(str(c.projectId)===PROJECT_ID||arr(c.projectIds).includes(PROJECT_ID))&&shopperId?{u,c,shopperId}:null;}
-          (async()=>{const [users,ms,cs,ps]=await Promise.all([allUsers(),db.collection('tenants').doc(TENANT).collection('users').get(),db.collection('tenants').doc(TENANT).collection('shopperIdentityCrosswalk').get(),db.collection('tenants').doc(TENANT).collection('shoppers').get()]);const principals=users.map(principal).filter(Boolean),groups=new Map();for(const p of principals){const a=groups.get(p.shopperId)||[];a.push(p);groups.set(p.shopperId,a);}const memberships=new Map(ms.docs.map(d=>[d.id,d.data()||{}])),crosses=new Map(cs.docs.map(d=>[d.id,d.data()||{}])),profiles=new Map(ps.docs.map(d=>[d.id,d.data()||{}]));const duplicates=[];for(const [shopperId,g] of groups){if(g.length<2)continue;const ordered=[...g].sort((a,b)=>new Date(a.u.metadata?.creationTime||0)-new Date(b.u.metadata?.creationTime||0));duplicates.push({shopperFingerprint:sha('shopper\0'+shopperId).slice(0,16),principalCount:g.length,profileExists:profiles.has(shopperId),crosswalkExists:crosses.has(shopperId),crosswalkMatchesOldest:crosses.has(shopperId)?str(crosses.get(shopperId).providerUidFingerprint)===uidFp(ordered[0].u.uid):false,principals:ordered.map((p,i)=>({rankByCreation:i===0?'OLDEST':'NEWER',uidFingerprint:uidFp(p.u.uid).slice(0,16),createdAt:p.u.metadata?.creationTime||null,lastSignInAt:p.u.metadata?.lastSignInTime||null,lastRefreshAt:p.u.metadata?.lastRefreshTime||null,disabled:p.u.disabled===true,hasPasswordProvider:(p.u.providerData||[]).some(x=>x.providerId==='password'),internalCxorbiaEmail:/@auth\.cxorbia\.invalid$/i.test(str(p.u.email)),uidMatchesDeterministicStable:p.u.uid===stableUid(shopperId),hasMembership:memberships.has(p.u.uid),membershipFingerprintMatches:memberships.has(p.u.uid)?str(memberships.get(p.u.uid).providerUidFingerprint)===uidFp(p.u.uid):false}))});}
-          let orphanCrosswalk=0;const orphan=[];for(const p of principals){const m=memberships.get(p.u.uid);if(!m)continue;const c=crosses.get(p.shopperId);if(!c){orphanCrosswalk++;orphan.push({uidFingerprint:uidFp(p.u.uid).slice(0,16),shopperFingerprint:sha('shopper\0'+p.shopperId).slice(0,16),profileExists:profiles.has(p.shopperId),uidMatchesDeterministicStable:p.u.uid===stableUid(p.shopperId),internalCxorbiaEmail:/@auth\.cxorbia\.invalid$/i.test(str(p.u.email))});}}
-          const report={decision:'PASS_I3_REMAINING_DUPLICATE_AUTH_CANONICALIZATION_READONLY',generatedAt:new Date().toISOString(),headSha:process.env.GITHUB_SHA,counts:{authUsers:users.length,effectivePrincipals:principals.length,effectiveShopperIds:groups.size,duplicateShopperIds:duplicates.length,membershipDocuments:ms.size,crosswalkDocuments:cs.size,orphanMembershipWithoutCrosswalk:orphanCrosswalk},duplicates,orphan,safety:{firestoreWrites:0,authWrites:0,production:false,deploys:0,piiExported:false,secretsExported:false}};fs.writeFileSync('.tmp/i3-remaining/report.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));})().catch(e=>{console.error('REMAINING_READONLY_FAILED:'+String(e?.message||e));process.exit(1);});
+          function principal(u){const c=u.customClaims||{},role=str(c.role).toLowerCase(),ns=str(c.authNamespace||(role==='shopper'?'shopper':'staff')).toLowerCase(),shopperId=str(c.shopperId),projectIds=uniq(c.projectIds);return role==='shopper'&&ns==='shopper'&&(str(c.tenantId)===TENANT||arr(c.tenants).includes(TENANT))&&projectIds.includes(PROJECT_ID)&&shopperId?{u,c,shopperId,projectIds}:null;}
+          async function snapshot(){const [users,ms,cs,ps]=await Promise.all([allUsers(),db.collection('tenants').doc(TENANT).collection('users').get(),db.collection('tenants').doc(TENANT).collection('shopperIdentityCrosswalk').get(),db.collection('tenants').doc(TENANT).collection('shoppers').get()]);const principals=users.map(principal).filter(Boolean),groups=new Map();for(const p of principals){const a=groups.get(p.shopperId)||[];a.push(p);groups.set(p.shopperId,a);}const members=ms.docs.map(d=>({uid:d.id,...(d.data()||{})})).filter(x=>str(x.role)==='shopper'||str(x.authNamespace)==='shopper'),byUid=new Map(members.map(m=>[m.uid,m])),byShopper=new Map();for(const m of members){const s=str(m.shopperId),a=byShopper.get(s)||[];a.push(m);byShopper.set(s,a);}const crosses=new Map(cs.docs.map(d=>[d.id,d.data()||{}])),profiles=new Map(ps.docs.map(d=>[d.id,d.data()||{}]));return{users,principals,groups,members,byUid,byShopper,crosses,profiles};}
+          function hasPassword(u){return (u.providerData||[]).some(x=>x.providerId==='password');}
+          function desiredMembership(p){return{active:true,tenantId:TENANT,role:'shopper',authNamespace:'shopper',shopperId:p.shopperId,projectIds:p.projectIds,providerUidFingerprint:uidFp(p.u.uid),claimsDigest:claimsDigest(p.shopperId,p.projectIds),membershipVersion:'cxorbia-shopper-membership-v1'};}
+          function membershipExact(m,d){return !!m&&m.active===true&&str(m.tenantId)===d.tenantId&&str(m.role)===d.role&&str(m.authNamespace)===d.authNamespace&&str(m.shopperId)===d.shopperId&&same(uniq(m.projectIds),d.projectIds)&&str(m.providerUidFingerprint)===d.providerUidFingerprint&&str(m.claimsDigest)===d.claimsDigest;}
+          function crossExact(c,p){return !!c&&str(c.tenantId)===TENANT&&str(c.shopperId||p.shopperId)===p.shopperId&&same(uniq(c.projectIds),p.projectIds)&&str(c.authNamespace)=== 'shopper'&&str(c.providerUidFingerprint)===uidFp(p.u.uid);}
+          (async()=>{
+            const before=await snapshot(),activeBefore=before.principals.filter(p=>p.u.disabled!==true),activeGroups=new Map();for(const p of activeBefore){const a=activeGroups.get(p.shopperId)||[];a.push(p);activeGroups.set(p.shopperId,a);}const activeDup=[...activeGroups.values()].filter(a=>a.length>1);
+            if(before.principals.length!==EXPECT.allPrincipals||before.groups.size!==EXPECT.uniqueShopperIds||activeBefore.length!==EXPECT.activePrincipalsBefore||activeDup.length!==EXPECT.activeDuplicateShopperIds)throw new Error(`PREWRITE_CARDINALITY_DRIFT:all_${before.principals.length}_ids_${before.groups.size}_active_${activeBefore.length}_dup_${activeDup.length}`);
+            const canonical=new Map(),disable=[];
+            for(const [shopperId,all] of before.groups){const active=all.filter(p=>p.u.disabled!==true);if(active.length===1){canonical.set(shopperId,active[0]);continue;}if(active.length===2){const historical=active.filter(p=>hasPassword(p.u)&&p.u.uid!==stableUid(shopperId)),technical=active.filter(p=>!hasPassword(p.u)&&p.u.uid===stableUid(shopperId));if(historical.length===1&&technical.length===1){canonical.set(shopperId,historical[0]);disable.push(technical[0]);continue;}}throw new Error(`AMBIGUOUS_ACTIVE_AUTH_PRINCIPAL:${hash('shopper\0'+shopperId).slice(0,16)}:${active.length}`);}
+            if(canonical.size!==EXPECT.uniqueShopperIds||disable.length!==EXPECT.technicalDuplicatesToDisable)throw new Error(`CANONICALIZATION_DRIFT:canonical_${canonical.size}_disable_${disable.length}`);
+            const now=new Date().toISOString(),ops=[];let membershipUpserts=0,crosswalkUpserts=0,membershipDeletes=0;
+            for(const [shopperId,p] of canonical){if(!before.profiles.has(shopperId))throw new Error(`PROFILE_MISSING:${hash('shopper\0'+shopperId).slice(0,16)}`);const d=desiredMembership(p),m=before.byUid.get(p.u.uid);if(!membershipExact(m,d)){ops.push({type:'set',ref:db.collection('tenants').doc(TENANT).collection('users').doc(p.u.uid),data:{...d,updatedAt:now}});membershipUpserts++;}const c=before.crosses.get(shopperId);if(!crossExact(c,p)){ops.push({type:'set',ref:db.collection('tenants').doc(TENANT).collection('shopperIdentityCrosswalk').doc(shopperId),data:{tenantId:TENANT,shopperId,projectIds:p.projectIds,authNamespace:'shopper',providerUidFingerprint:uidFp(p.u.uid),sourceStableKey:shopperId,fuzzyMatching:false,updatedAt:now}});crosswalkUpserts++;}}
+            for(const p of disable){const m=before.byUid.get(p.u.uid);if(m){ops.push({type:'delete',ref:db.collection('tenants').doc(TENANT).collection('users').doc(p.u.uid)});membershipDeletes++;}}
+            for(let i=0;i<ops.length;i+=400){const b=db.batch();for(const op of ops.slice(i,i+400)){op.type==='delete'?b.delete(op.ref):b.set(op.ref,op.data,{merge:true});}await b.commit();}
+            for(const p of disable)await auth.updateUser(p.u.uid,{disabled:true});
+            const after=await snapshot(),activeAfter=after.principals.filter(p=>p.u.disabled!==true),groupsAfter=new Map();for(const p of activeAfter){const a=groupsAfter.get(p.shopperId)||[];a.push(p);groupsAfter.set(p.shopperId,a);}let exact=0,badMembership=0,badCrosswalk=0,badProfile=0,duplicateMembership=0;
+            for(const p of activeAfter){const d=desiredMembership(p),m=after.byUid.get(p.u.uid),c=after.crosses.get(p.shopperId),sameShopper=after.byShopper.get(p.shopperId)||[];if(!membershipExact(m,d))badMembership++;if(!crossExact(c,p))badCrosswalk++;if(!after.profiles.has(p.shopperId))badProfile++;if(sameShopper.length!==1||sameShopper[0].uid!==p.u.uid)duplicateMembership++;if(membershipExact(m,d)&&crossExact(c,p)&&after.profiles.has(p.shopperId)&&sameShopper.length===1&&sameShopper[0].uid===p.u.uid)exact++;}
+            const activeDuplicateShopperIds=[...groupsAfter.values()].filter(a=>a.length>1).length,disabledTechnicalStillActive=disable.filter(p=>after.users.find(u=>u.uid===p.u.uid)?.disabled!==true).length;
+            if(activeAfter.length!==425||groupsAfter.size!==425||activeDuplicateShopperIds!==0||exact!==425||badMembership||badCrosswalk||badProfile||duplicateMembership||disabledTechnicalStillActive)throw new Error(`POSTWRITE_EXACT_READBACK_FAIL:active_${activeAfter.length}_ids_${groupsAfter.size}_dup_${activeDuplicateShopperIds}_exact_${exact}_m_${badMembership}_x_${badCrosswalk}_p_${badProfile}_dm_${duplicateMembership}_tech_${disabledTechnicalStillActive}`);
+            const report={decision:'PASS_I3_SHOPPER_MEMBERSHIP_ROOT_FIX',generatedAt:new Date().toISOString(),headSha:process.env.GITHUB_SHA,rootCause:'MAPPING_FAILURE_CAUSED_BY_POST_IDENTITY_MEMBERSHIP_LAYER_AND_DETERMINISTIC_DUPLICATE_AUTH_CREATION',before:{effectivePrincipals:before.principals.length,uniqueShopperIds:before.groups.size,activePrincipals:activeBefore.length,activeDuplicateShopperIds:activeDup.length},write:{membershipUpserts,crosswalkUpserts,membershipDeletes,firestoreWrites:ops.length,authDisables:disable.length,authCreates:0,profileWrites:0,hrWrites:0,production:false,reimport:false,historicalPasswordUidPreserved:true},after:{activeEffectivePrincipals:activeAfter.length,uniqueActiveShopperIds:groupsAfter.size,activeDuplicateShopperIds,exactMembershipCrosswalkProfileLinks:exact,badMembership,badCrosswalk,badProfile,duplicateMembership,disabledTechnicalStillActive},safety:{production:false,deploys:0,secretsExported:false,piiExported:false}};
+            fs.writeFileSync('.tmp/i3-root-fix/report.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
+          })().catch(e=>{console.error('SHOPPER_ROOT_FIX_FAILED:'+String(e?.message||e));process.exit(1);});
           NODE
       - if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-i3-remaining-${{ github.run_id }}
-          path: .tmp/i3-remaining/report.json
+          name: cxorbia-i3-shopper-root-fix-${{ github.run_id }}
+          path: .tmp/i3-root-fix/report.json
           if-no-files-found: warn
-          retention-days: 14
+          retention-days: 30
+      - name: Publish exact root-fix status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          STATE=error;DESC='SHOPPER_ROOT_FIX_FAILED'
+          if [ -f .tmp/i3-root-fix/report.json ]; then STATE=success;DESC="$(node -e "const r=require('./.tmp/i3-root-fix/report.json');process.stdout.write('PASS exact='+r.after.exactMembershipCrosswalkProfileLinks+' dup='+r.after.activeDuplicateShopperIds+' writes='+r.write.firestoreWrites+' authDisables='+r.write.authDisables)")";fi
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/i3-shopper-membership-root-fix' -f description="$DESC" -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
