@@ -1,4 +1,4 @@
-name: CXOrbia Recovery I3 Shopper Membership Readonly Probe
+name: CXOrbia Recovery I3 Shopper Membership Exact Backfill
 
 on:
   push:
@@ -13,11 +13,11 @@ permissions:
   actions: read
 
 concurrency:
-  group: cxorbia-recovery-i3-shopper-membership-readonly-probe
+  group: cxorbia-recovery-i3-shopper-membership-exact-backfill
   cancel-in-progress: false
 
 jobs:
-  probe:
+  repair:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -29,79 +29,91 @@ jobs:
           node-version: '24'
       - name: Install transient Firebase Admin
         run: npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 >/dev/null 2>&1
-      - name: Read Auth UID to membership and crosswalk linkage
+      - name: Exact DEV membership backfill and immediate readback
         env:
           EXISTING_DEV_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}
         run: |
           set -euo pipefail
-          mkdir -p .tmp/i3-shopper-membership-readback
+          mkdir -p .tmp/i3-shopper-membership-backfill
           node <<'NODE'
           const fs=require('fs'),crypto=require('crypto'),admin=require('firebase-admin');
-          const PROJECT='cxorbia-backend-dev',TENANT='tya',PROJECT_ID='cinepolis';
+          const PROJECT='cxorbia-backend-dev',TENANT='tya',PROJECT_ID='cinepolis',EXPECTED_SAFE=201;
           const raw=process.env.EXISTING_DEV_JSON||'';let sa=null;try{sa=JSON.parse(raw);}catch{}
           if(!(sa&&sa.type==='service_account'&&sa.project_id===PROJECT&&sa.private_key))throw new Error('DEV_CREDENTIAL_INVALID');
           admin.initializeApp({credential:admin.credential.cert(sa),projectId:PROJECT});
-          const db=admin.firestore(),auth=admin.auth(),str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v.map(str).filter(Boolean):[];
-          const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex'),uidFp=uid=>sha('cxorbia-provider-uid-v1\0'+str(uid)),shortUid=uid=>uidFp(uid).slice(0,16);
+          const db=admin.firestore(),auth=admin.auth(),str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v.map(str).filter(Boolean):[],uniq=v=>[...new Set(arr(v))].sort();
+          const stable=value=>Array.isArray(value)?value.map(stable):(value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(k=>[k,stable(value[k])])):value);
+          const sha=v=>crypto.createHash('sha256').update(typeof v==='string'?v:JSON.stringify(stable(v)),'utf8').digest('hex');
+          const uidFp=uid=>sha('cxorbia-provider-uid-v1\0'+str(uid));
+          const claimsDigest=(shopperId,projectIds)=>sha({authNamespace:'shopper',projectIds:uniq(projectIds),role:'shopper',shopperId:str(shopperId),tenantId:TENANT});
           async function allUsers(){const out=[];let token;do{const p=await auth.listUsers(1000,token);out.push(...p.users);token=p.pageToken;}while(token);return out;}
-          function effectivePrincipal(u){const c=u.customClaims||{},role=str(c.role).toLowerCase(),ns=str(c.authNamespace||(role==='shopper'?'shopper':'staff')).toLowerCase(),shopperId=str(c.shopperId);return role==='shopper'&&ns==='shopper'&&(str(c.tenantId)===TENANT||arr(c.tenants).includes(TENANT))&&(str(c.projectId)===PROJECT_ID||arr(c.projectIds).includes(PROJECT_ID))&&shopperId?{u,c,shopperId}:null;}
-          (async()=>{
+          function principal(u){const c=u.customClaims||{},role=str(c.role).toLowerCase(),ns=str(c.authNamespace||(role==='shopper'?'shopper':'staff')).toLowerCase(),shopperId=str(c.shopperId);return role==='shopper'&&ns==='shopper'&&(str(c.tenantId)===TENANT||arr(c.tenants).includes(TENANT))&&(str(c.projectId)===PROJECT_ID||arr(c.projectIds).includes(PROJECT_ID))&&shopperId?{u,c,shopperId}:null;}
+          async function snapshot(){
             const [users,memberSnap,crossSnap,profileSnap]=await Promise.all([allUsers(),db.collection('tenants').doc(TENANT).collection('users').get(),db.collection('tenants').doc(TENANT).collection('shopperIdentityCrosswalk').get(),db.collection('tenants').doc(TENANT).collection('shoppers').get()]);
-            const authByUid=new Map(users.map(u=>[u.uid,u])),effective=users.map(effectivePrincipal).filter(Boolean),authByShopper=new Map();
-            for(const p of effective){const a=authByShopper.get(p.shopperId)||[];a.push(p);authByShopper.set(p.shopperId,a);}
-            const members=memberSnap.docs.map(d=>({uid:d.id,...(d.data()||{})})).filter(x=>str(x.role)==='shopper'||str(x.authNamespace)==='shopper'),byUid=new Map(members.map(x=>[x.uid,x])),byShopper=new Map();
-            for(const m of members){const s=str(m.shopperId);if(!s)continue;const a=byShopper.get(s)||[];a.push(m);byShopper.set(s,a);}
+            const effective=users.map(principal).filter(Boolean),authByShopper=new Map();for(const p of effective){const a=authByShopper.get(p.shopperId)||[];a.push(p);authByShopper.set(p.shopperId,a);}
+            const members=memberSnap.docs.map(d=>({uid:d.id,...(d.data()||{})})).filter(x=>str(x.role)==='shopper'||str(x.authNamespace)==='shopper'),byUid=new Map(members.map(m=>[m.uid,m])),byShopper=new Map();for(const m of members){const s=str(m.shopperId);if(!s)continue;const a=byShopper.get(s)||[];a.push(m);byShopper.set(s,a);}
             const crosses=crossSnap.docs.map(d=>({id:d.id,...(d.data()||{})})),crossByShopper=new Map();for(const c of crosses){const s=str(c.shopperId||c.id);if(!s)continue;const a=crossByShopper.get(s)||[];a.push(c);crossByShopper.set(s,a);}
-            const profileIds=new Set(profileSnap.docs.map(d=>d.id));
-            const classes={OK:0,AUTH_UID_WITHOUT_MEMBERSHIP:0,MEMBERSHIP_UNDER_OTHER_UID:0,CROSSWALK_UID_MISMATCH:0,DUPLICATE_MEMBERSHIP:0,OTHER_SCOPE_MISMATCH:0};
-            const plan={SAFE_CREATE_MEMBERSHIP_ON_EXISTING_UID:0,SAFE_REHOME_MEMBERSHIP_TO_EXISTING_UID:0,HOLD_DUPLICATE_AUTH_PRINCIPAL:0,HOLD_OTHER_UID_ACTIVE:0,HOLD_PROFILE_MISSING:0,HOLD_OTHER:0};
-            const affected=[];
-            for(const {u,shopperId} of effective){
-              const fp=uidFp(u.uid),member=byUid.get(u.uid),same=byShopper.get(shopperId)||[],crossesFor=crossByShopper.get(shopperId)||[],authGroup=authByShopper.get(shopperId)||[];let code='OK',detail='';
-              if(!member){if(same.length>1){code='DUPLICATE_MEMBERSHIP';detail='multiple_memberships_for_claimed_shopper';}else if(same.length===1){code='MEMBERSHIP_UNDER_OTHER_UID';detail='membership_exists_for_shopper_but_not_authenticated_uid';}else if(crossesFor.length===1&&str(crossesFor[0].providerUidFingerprint)&&str(crossesFor[0].providerUidFingerprint)!==fp){code='CROSSWALK_UID_MISMATCH';detail='crosswalk_points_to_different_uid_fingerprint';}else{code='AUTH_UID_WITHOUT_MEMBERSHIP';detail='no_membership_for_authenticated_uid_or_claimed_shopper';}}
-              else if(same.length>1){code='DUPLICATE_MEMBERSHIP';detail='multiple_memberships_for_claimed_shopper';}
-              else if(str(member.shopperId)!==shopperId||str(member.tenantId)!==TENANT||str(member.role)!=='shopper'||str(member.authNamespace)!=='shopper'){code='OTHER_SCOPE_MISMATCH';detail='membership_document_scope_or_shopper_mismatch';}
-              else if(str(member.providerUidFingerprint)&&str(member.providerUidFingerprint)!==fp){code='CROSSWALK_UID_MISMATCH';detail='membership_uid_fingerprint_mismatch';}
-              else if(crossesFor.length>1||(crossesFor.length===1&&str(crossesFor[0].providerUidFingerprint)&&str(crossesFor[0].providerUidFingerprint)!==fp)){code='CROSSWALK_UID_MISMATCH';detail='crosswalk_uid_linkage_mismatch';}
-              classes[code]++;
-              if(code!=='OK'){
-                const profileExists=profileIds.has(shopperId),otherMember=same.length===1?same[0]:null,otherAuth=otherMember?authByUid.get(otherMember.uid):null;
-                let repair='HOLD_OTHER';
-                if(!profileExists)repair='HOLD_PROFILE_MISSING';
-                else if(authGroup.length>1)repair='HOLD_DUPLICATE_AUTH_PRINCIPAL';
-                else if(code==='AUTH_UID_WITHOUT_MEMBERSHIP'&&same.length===0&&crossesFor.length===0)repair='SAFE_CREATE_MEMBERSHIP_ON_EXISTING_UID';
-                else if(code==='MEMBERSHIP_UNDER_OTHER_UID'&&otherMember&&(!otherAuth||otherAuth.disabled===true))repair='SAFE_REHOME_MEMBERSHIP_TO_EXISTING_UID';
-                else if(code==='MEMBERSHIP_UNDER_OTHER_UID'&&otherAuth&&otherAuth.disabled!==true)repair='HOLD_OTHER_UID_ACTIVE';
-                plan[repair]++;
-                affected.push({uidFingerprint:shortUid(u.uid),shopperFingerprint:sha('shopper\0'+shopperId).slice(0,16),code,repair,profileExists,effectiveAuthPrincipalsForShopper:authGroup.length,sameShopperMembershipCount:same.length,crosswalkCount:crossesFor.length,otherMembershipAuthExists:!!otherAuth,otherMembershipAuthDisabled:otherAuth?otherAuth.disabled===true:null});
+            const profiles=new Map(profileSnap.docs.map(d=>[d.id,{id:d.id,...(d.data()||{})}]));
+            return{users,effective,authByShopper,members,byUid,byShopper,crosses,crossByShopper,profiles,profileCount:profileSnap.size};
+          }
+          (async()=>{
+            const before=await snapshot(),safe=[];
+            for(const p of before.effective){
+              const same=before.byShopper.get(p.shopperId)||[],crosses=before.crossByShopper.get(p.shopperId)||[],authGroup=before.authByShopper.get(p.shopperId)||[],profile=before.profiles.get(p.shopperId);
+              if(!before.byUid.has(p.u.uid)&&same.length===0&&crosses.length===0&&authGroup.length===1&&profile){
+                const sourceType=str(profile.sourceType);
+                if(sourceType!=='hr_external'&&sourceType!=='platform')throw new Error('UNSUPPORTED_PROFILE_SOURCE_TYPE:'+sourceType);
+                safe.push({...p,profile,sourceType});
               }
             }
-            const duplicateAuthShopperIds=[...authByShopper.values()].filter(a=>a.length>1).length;
-            const rootCause=(classes.AUTH_UID_WITHOUT_MEMBERSHIP||classes.MEMBERSHIP_UNDER_OTHER_UID||classes.CROSSWALK_UID_MISMATCH||classes.DUPLICATE_MEMBERSHIP||classes.OTHER_SCOPE_MISMATCH)?'MAPPING_FAILURE_SHOPPER_AUTH_UID_TO_TENANT_MEMBERSHIP':'NO_CURRENT_MEMBERSHIP_MAPPING_FAILURE_IN_EFFECTIVE_CINEPOLIS_SHOPPERS';
-            const report={schemaVersion:'cxorbia.recovery.i3.shopper-auth-membership-readonly.v2',generatedAt:new Date().toISOString(),branch:process.env.GITHUB_REF_NAME,headSha:process.env.GITHUB_SHA,projectId:PROJECT,tenantId:TENANT,scopeProjectId:PROJECT_ID,decision:'PASS_READONLY_SHOPPER_AUTH_MEMBERSHIP_REPAIR_CLASSIFICATION',rootCause,counts:{authUsersReviewed:users.length,effectiveShopperPrincipals:effective.length,effectiveShopperIds:authByShopper.size,duplicateAuthShopperIds,shopperMembershipDocuments:members.length,crosswalkDocuments:crosses.length,shopperProfiles:profileSnap.size,...classes,...plan},affected:affected.slice(0,100),safety:{providerReads:true,providerWrites:0,authWrites:0,firestoreWrites:0,storageWrites:0,hrWrites:0,deploys:0,production:false,piiExported:false,secretsExported:false}};
-            fs.writeFileSync('.tmp/i3-shopper-membership-readback/report.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
-          })().catch(e=>{console.error('READONLY_PROBE_FAILED:'+String(e?.message||e).replace(/[^A-Za-z0-9_.:-]+/g,'_').slice(0,160));process.exit(1);});
+            if(safe.length!==EXPECTED_SAFE)throw new Error(`PREWRITE_SET_DRIFT:expected_${EXPECTED_SAFE}_observed_${safe.length}`);
+            const duplicateIds=[...before.authByShopper.values()].filter(a=>a.length>1).length;
+            if(duplicateIds!==6)throw new Error(`PREWRITE_DUPLICATE_SET_DRIFT:expected_6_observed_${duplicateIds}`);
+            const batch=db.batch(),at=new Date().toISOString();
+            for(const p of safe){
+              const projectIds=uniq([...(p.c.projectIds||[]),...(p.profile.projectIds||[]),PROJECT_ID]);
+              const membership={active:true,tenantId:TENANT,role:'shopper',authNamespace:'shopper',shopperId:p.shopperId,projectIds,providerUidFingerprint:uidFp(p.u.uid),claimsDigest:claimsDigest(p.shopperId,projectIds),membershipVersion:'cxorbia-shopper-membership-v1',updatedAt:at};
+              const crosswalk={tenantId:TENANT,shopperId:p.shopperId,projectIds,authNamespace:'shopper',providerUidFingerprint:uidFp(p.u.uid),sourceStableKey:p.shopperId,identityMode:p.sourceType==='platform'?'stable_platform_shopper_id':'stable_hr_shopper_id',fuzzyMatching:false,sourceType:p.sourceType,updatedAt:at};
+              batch.set(db.collection('tenants').doc(TENANT).collection('users').doc(p.u.uid),membership,{merge:true});
+              batch.set(db.collection('tenants').doc(TENANT).collection('shopperIdentityCrosswalk').doc(p.shopperId),crosswalk,{merge:true});
+            }
+            await batch.commit();
+            const after=await snapshot();
+            let ok=0,missing=0,underOther=0,crossMismatch=0,duplicateMembership=0,scopeMismatch=0;
+            for(const p of after.effective){
+              const fp=uidFp(p.u.uid),m=after.byUid.get(p.u.uid),same=after.byShopper.get(p.shopperId)||[],crosses=after.crossByShopper.get(p.shopperId)||[];
+              if(!m){if(same.length>1)duplicateMembership++;else if(same.length===1)underOther++;else missing++;continue;}
+              if(same.length>1){duplicateMembership++;continue;}
+              if(str(m.shopperId)!==p.shopperId||str(m.tenantId)!==TENANT||str(m.role)!=='shopper'||str(m.authNamespace)!=='shopper'){scopeMismatch++;continue;}
+              if(str(m.providerUidFingerprint)!==fp||crosses.length!==1||str(crosses[0].providerUidFingerprint)!==fp){crossMismatch++;continue;}
+              ok++;
+            }
+            const expectedOk=223+EXPECTED_SAFE;
+            if(ok!==expectedOk||missing!==2||underOther!==5||crossMismatch!==0||duplicateMembership!==0||scopeMismatch!==0)throw new Error(`POSTWRITE_READBACK_MISMATCH:ok_${ok}_missing_${missing}_underOther_${underOther}_cross_${crossMismatch}_dupMem_${duplicateMembership}_scope_${scopeMismatch}`);
+            const report={schemaVersion:'cxorbia.recovery.i3.shopper-membership-exact-backfill.v1',generatedAt:new Date().toISOString(),headSha:process.env.GITHUB_SHA,decision:'PASS_I3_SHOPPER_MEMBERSHIP_EXACT_BACKFILL',rootCause:'MAPPING_FAILURE_SHOPPER_AUTH_UID_TO_TENANT_MEMBERSHIP',before:{effectiveShopperPrincipals:before.effective.length,membershipDocuments:before.members.length,crosswalkDocuments:before.crosses.length,deterministicSafe:EXPECTED_SAFE,duplicateAuthShopperIds:duplicateIds},write:{membershipWrites:EXPECTED_SAFE,crosswalkWrites:EXPECTED_SAFE,authWrites:0,profileWrites:0,totalFirestoreWrites:EXPECTED_SAFE*2,preservedHistoricalAuthUid:true},after:{effectiveShopperPrincipals:after.effective.length,OK:ok,AUTH_UID_WITHOUT_MEMBERSHIP:missing,MEMBERSHIP_UNDER_OTHER_UID:underOther,CROSSWALK_UID_MISMATCH:crossMismatch,DUPLICATE_MEMBERSHIP:duplicateMembership,OTHER_SCOPE_MISMATCH:scopeMismatch,remainingDuplicateAuthShopperIds:[...after.authByShopper.values()].filter(a=>a.length>1).length},safety:{production:false,hrWrites:0,authWrites:0,profileWrites:0,deploys:0,reimport:false,piiExported:false,secretsExported:false}};
+            fs.writeFileSync('.tmp/i3-shopper-membership-backfill/report.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
+          })().catch(e=>{console.error('EXACT_BACKFILL_FAILED:'+String(e?.message||e).replace(/[^A-Za-z0-9_.:-]+/g,'_').slice(0,220));process.exit(1);});
           NODE
-      - name: Upload sanitized readback
+      - name: Upload sanitized repair receipt
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-i3-shopper-membership-readonly-${{ github.run_id }}
-          path: .tmp/i3-shopper-membership-readback/report.json
+          name: cxorbia-i3-shopper-membership-backfill-${{ github.run_id }}
+          path: .tmp/i3-shopper-membership-backfill/report.json
           if-no-files-found: warn
-          retention-days: 7
-      - name: Publish compact readback status
+          retention-days: 30
+      - name: Publish compact repair status
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          STATE=error;DESC='READONLY_PROBE_EXECUTION_FAILED'
-          if [ -f .tmp/i3-shopper-membership-readback/report.json ]; then
+          STATE=error;DESC='EXACT_BACKFILL_FAILED'
+          if [ -f .tmp/i3-shopper-membership-backfill/report.json ]; then
             STATE=success
             DESC="$(node - <<'NODE'
-          const r=require('./.tmp/i3-shopper-membership-readback/report.json'),c=r.counts||{};process.stdout.write(`A=${c.AUTH_UID_WITHOUT_MEMBERSHIP||0} O=${c.MEMBERSHIP_UNDER_OTHER_UID||0} DU=${c.duplicateAuthShopperIds||0} SAFE=${c.SAFE_CREATE_MEMBERSHIP_ON_EXISTING_UID||0}/${c.SAFE_REHOME_MEMBERSHIP_TO_EXISTING_UID||0} HOLD=${(c.HOLD_DUPLICATE_AUTH_PRINCIPAL||0)+(c.HOLD_OTHER_UID_ACTIVE||0)+(c.HOLD_PROFILE_MISSING||0)+(c.HOLD_OTHER||0)}`);
+          const r=require('./.tmp/i3-shopper-membership-backfill/report.json');process.stdout.write(`PASS writes=${r.write.totalFirestoreWrites} OK=${r.after.OK} remaining=${r.after.AUTH_UID_WITHOUT_MEMBERSHIP+r.after.MEMBERSHIP_UNDER_OTHER_UID} dupAuthIds=${r.after.remainingDuplicateAuthShopperIds}`);
           NODE
           )"
           fi
-          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/i3-shopper-membership-readonly' -f description="$DESC" -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+          gh api --method POST -H 'Accept: application/vnd.github+json' "/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" -f state="$STATE" -f context='cxorbia/i3-shopper-membership-exact-backfill' -f description="$DESC" -f target_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
