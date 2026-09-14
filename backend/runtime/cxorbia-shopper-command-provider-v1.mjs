@@ -183,6 +183,34 @@ async function membershipMatches(users,shopperId){
 }
 async function safeAuthByUid(auth,uid){try{return await auth.getUser(uid);}catch(error){if(authNotFound(error))return null;throw error;}}
 async function safeAuthByEmail(auth,email){try{return await auth.getUserByEmail(email);}catch(error){if(authNotFound(error))return null;throw error;}}
+function authPrincipalMatches(user,tenantId,shopperId,projectId){
+  const c=user?.customClaims||{},role=str(c.role).toLowerCase(),namespace=str(c.authNamespace||(role==='shopper'?'shopper':'')).toLowerCase();
+  const tenantMatch=str(c.tenantId)===tenantId||uniq(c.tenants).includes(tenantId);
+  const projects=uniq([...(arr(c.projectIds)),c.projectId]);
+  return tenantMatch&&str(c.shopperId)===shopperId&&role==='shopper'&&namespace==='shopper'&&projects.includes(projectId);
+}
+async function listAllAuthUsers(auth){
+  if(!auth?.listUsers)throw new Error('SHOPPER_AUTH_IDENTITY_LOOKUP_UNAVAILABLE');
+  const users=[];let pageToken;
+  do{
+    const page=await auth.listUsers(1000,pageToken);
+    users.push(...arr(page?.users));
+    pageToken=page?.pageToken;
+  }while(pageToken);
+  return users;
+}
+function selectExistingShopperAuthPrincipal(authUsers,tenantId,shopperId,projectId){
+  const matches=arr(authUsers).filter(user=>authPrincipalMatches(user,tenantId,shopperId,projectId));
+  const enabled=matches.filter(user=>user?.disabled!==true);
+  if(enabled.length>1)throw new Error('SHOPPER_AUTH_PRINCIPAL_AMBIGUOUS');
+  if(enabled.length===1)return enabled[0];
+  if(matches.length)throw new Error('SHOPPER_AUTH_PRINCIPAL_DISABLED');
+  return null;
+}
+async function existingShopperAuthPrincipal(auth,tenantId,shopperId,projectId,authUsers){
+  const users=authUsers||await listAllAuthUsers(auth);
+  return selectExistingShopperAuthPrincipal(users,tenantId,shopperId,projectId);
+}
 function assertAuthIdentity(user,tenantId,shopperId){
   const c=user?.customClaims||{};
   if(str(c.tenantId)&&str(c.tenantId)!==tenantId)throw new Error('SHOPPER_AUTH_TENANT_CONFLICT');
@@ -191,7 +219,7 @@ function assertAuthIdentity(user,tenantId,shopperId){
   if(str(c.authNamespace)&&str(c.authNamespace)!=='shopper')throw new Error('SHOPPER_AUTH_NAMESPACE_CONFLICT');
 }
 
-async function durableUpsert({auth,db,policy,candidate,sourceRevision}){
+async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers}){
   const tenantId=str(candidate.tenantId),projectId=str(candidate.projectId),shopperId=str(candidate.shopperId);
   if(!tenantId||!projectId||!shopperId||!str(sourceRevision))throw new Error('SHOPPER_DURABLE_KEYS_REQUIRED');
   if(!scopeAllowed(policy,tenantId,projectId))throw new Error('SHOPPER_PROVIDER_SCOPE_DENIED');
@@ -202,7 +230,8 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision}){
   const existingMember=existingMemberDoc?.data?.()||{};
   const existingCross=crossBefore.exists?crossBefore.data()||{}:{};
   const existingProfile=profileBefore.exists?profileBefore.data()||{}:{};
-  const uid=existingMemberDoc?.id||stableShopperUid(tenantId,shopperId);
+  const recoveredPrincipal=existingMemberDoc?null:await existingShopperAuthPrincipal(auth,tenantId,shopperId,projectId,authUsers);
+  const uid=existingMemberDoc?.id||recoveredPrincipal?.uid||stableShopperUid(tenantId,shopperId);
   const memberRef=users.doc(uid);
   if(crossBefore.exists){
     const c=existingCross;
@@ -212,7 +241,7 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision}){
   const email=internalEmail(tenantId,shopperId);
   let user=await safeAuthByUid(auth,uid),authCreated=false;
   if(!user){
-    if(existingMemberDoc||crossBefore.exists)throw new Error('SHOPPER_DURABLE_IDENTITY_AUTH_MISSING');
+    if(existingMemberDoc||crossBefore.exists||recoveredPrincipal)throw new Error('SHOPPER_DURABLE_IDENTITY_AUTH_MISSING');
     const byEmail=await safeAuthByEmail(auth,email);
     if(byEmail&&byEmail.uid!==uid)throw new Error('SHOPPER_AUTH_EMAIL_CONFLICT');
     user=byEmail||await auth.createUser({uid,email,disabled:false});
@@ -339,9 +368,10 @@ export function createShopperCommandProvider({auth,db,policy}={}){
       const {scope,shoppers}=shoppersFromSnapshot(snapshot);
       if(!scopeAllowed(policy,scope.tenantId,scope.projectId))throw new Error('SHOPPER_RECONCILIATION_SCOPE_DENIED');
       if(!str(sourceRevision))throw new Error('SHOPPER_RECONCILIATION_REVISION_REQUIRED');
+      const authUsers=shoppers.length?await listAllAuthUsers(auth):[];
       let created=0,replayed=0,writes=0;
       for(const source of shoppers){
-        const result=await durableUpsert({auth,db,policy,candidate:source,sourceRevision});
+        const result=await durableUpsert({auth,db,policy,candidate:source,sourceRevision,authUsers});
         if(result.authCreated)created++;
         if(result.idempotentReplay)replayed++;
         writes+=Number(result.providerWrites||0);
