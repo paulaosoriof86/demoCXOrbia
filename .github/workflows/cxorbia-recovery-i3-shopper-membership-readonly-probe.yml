@@ -81,7 +81,7 @@ jobs:
             let createCalls=0,listCalls=0;
             return {
               get createCalls(){return createCalls;},get listCalls(){return listCalls;},_users:users,
-              async listUsers(){listCalls++;return{users:[...users.values()].map(structuredClone),pageToken:null};},
+              async listUsers(){listCalls++;return{users:[...users.values()].map(u=>structuredClone(u)),pageToken:null};},
               async getUser(uid){if(!users.has(uid))throw notFound();return structuredClone(users.get(uid));},
               async getUserByEmail(email){const u=[...users.values()].find(x=>x.email===email);if(!u)throw notFound();return structuredClone(u);},
               async createUser(input){createCalls++;const u={...input,customClaims:{},providerData:[]};users.set(u.uid,u);return structuredClone(u);},
@@ -95,7 +95,6 @@ jobs:
             return provider.reconcileSnapshot(snapshot,{sourceRevision:'synthetic-rev-1'});
           }
 
-          // 1) Proven historical principal must be reused; deterministic duplicate must NOT be created.
           {
             const historicalUid='historical-password-uid';
             const auth=makeAuth([{uid:historicalUid,disabled:false,customClaims:canonicalClaims(SHOPPER),providerData:[{providerId:'password'}]}]);
@@ -110,7 +109,6 @@ jobs:
             assert.equal(db._store.has(`tenants/${TENANT}/users/${stableShopperUid(TENANT,SHOPPER)}`),false);
           }
 
-          // 2) More than one enabled exact principal must block; never create another principal.
           {
             const claims=canonicalClaims(SHOPPER);
             const auth=makeAuth([{uid:'u1',disabled:false,customClaims:claims},{uid:'u2',disabled:false,customClaims:claims}]);
@@ -120,7 +118,6 @@ jobs:
             assert.equal(db._store.size,0);
           }
 
-          // 3) Disabled-only exact identity must block; it is not silently replaced.
           {
             const auth=makeAuth([{uid:'disabled-u1',disabled:true,customClaims:canonicalClaims(SHOPPER)}]);
             const db=makeDb();
@@ -129,7 +126,6 @@ jobs:
             assert.equal(db._store.size,0);
           }
 
-          // 4) Only true absence may create the deterministic principal.
           {
             const auth=makeAuth([]),db=makeDb();
             const result=await reconcile(auth,db);
