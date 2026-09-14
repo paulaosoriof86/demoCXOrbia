@@ -56,6 +56,7 @@ class FakeAuth{
   missing(){const e=new Error('not found');e.code='auth/user-not-found';return e;}
   async getUser(uid){const u=this.users.get(uid);if(!u)throw this.missing();return clone(u);}
   async getUserByEmail(email){for(const u of this.users.values())if(u.email===email)return clone(u);throw this.missing();}
+  async listUsers(maxResults=1000,pageToken){const all=[...this.users.values()].map(u=>clone(u)),start=pageToken?Number(pageToken):0,users=all.slice(start,start+maxResults),next=start+maxResults<all.length?String(start+maxResults):undefined;return {users,pageToken:next};}
   async createUser(record){const user={uid:record.uid,email:record.email,disabled:Boolean(record.disabled),customClaims:{}};this.users.set(record.uid,user);this.created++;return clone(user);}
   async setCustomUserClaims(uid,claims){const user=this.users.get(uid);if(!user)throw this.missing();user.customClaims=clone(claims);this.claimWrites++;}
   async updateUser(uid,patch){const user=this.users.get(uid);if(!user)throw this.missing();Object.assign(user,clone(patch));if(Object.hasOwn(patch,'password'))this.passwordWrites++;return clone(user);}
