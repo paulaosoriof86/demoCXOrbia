@@ -6,6 +6,7 @@ on:
       - recovery/cxorbia-phase-a-20260831
     paths:
       - .github/workflows/cxorbia-recovery-i3-dev-certification.yml
+      - app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js
       - backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
       - backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment.test.mjs
       - backend/runtime/hr-live-service/test/cxorbia-shopper-admin-repair.test.mjs
@@ -27,8 +28,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PRODUCT_SOURCE_SHA: 35c18ae52d96bdb6946dd3ffd3d58fcb512be71e
-  P0_BASE_SHA: b6fa43814e7a25a7f233f9fcfad5f15fcd5cef41
+  PRODUCT_SOURCE_SHA: 26156b2b79115e681828e3fffcf8ee249b84ae05
+  P0_BASE_SHA: 34cf9912f7899b00092f7b26ff0be8055ad7a411
   SHOPPER_RECURRENCE_RUN_ID: '34899285403'
   SHOPPER_RECURRENCE_HEAD_SHA: 056c040352c67e06aee6317af582ff0af4ca5b89
   LOCKED_GATE20_SOURCE_SHA: bd2a519db5ebd08f17d47827997056db795c8c09
@@ -68,7 +69,7 @@ jobs:
           test "$(git rev-parse "$PRODUCT_SOURCE_SHA^")" = "$P0_BASE_SHA"
           git diff --quiet "$PRODUCT_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           git diff --name-only "$P0_BASE_SHA" "$PRODUCT_SOURCE_SHA" -- app backend firebase.json .firebaserc tools/hr-source | sort > "$OUT/p0-product-delta.txt"
-          printf '%s\n' 'backend/runtime/cxorbia-shopper-command-provider-v1.mjs' > "$OUT/p0-expected-delta.txt"
+          printf '%s\n' 'app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js' > "$OUT/p0-expected-delta.txt"
           diff -u "$OUT/p0-expected-delta.txt" "$OUT/p0-product-delta.txt"
           while IFS= read -r file; do
             test -z "$file" && continue
@@ -77,11 +78,37 @@ jobs:
               *) echo "Unexpected post-product delta: $file" >&2; exit 1 ;;
             esac
           done < <(git diff --name-only "$PRODUCT_SOURCE_SHA" HEAD)
+          node --check app/adapters/cxorbia-command-adapter-v1.js
+          node --check app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js
           node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
           node --check tools/qa/cxorbia-i3-profile-finance-persistence-dev.mjs
           node --check tools/qa/cxorbia-gate20-browser-visual-dev.mjs
+          node <<'NODE'
+          const fs=require('fs'),vm=require('vm'),assert=require('assert');
+          const ctx={console,Date,setTimeout,clearTimeout};
+          ctx.globalThis=ctx;ctx.window=ctx;
+          ctx.CX={
+            BACKEND:{tenantId:'tya',enableCommandWrites:false},
+            backendAuth:{context:()=>({authenticated:true,tenantId:'tya',role:'shopper',authNamespace:'shopper',projectIds:['cinepolis']})},
+            session:{}
+          };
+          vm.createContext(ctx);
+          vm.runInContext(fs.readFileSync('app/adapters/cxorbia-command-adapter-v1.js','utf8'),ctx);
+          vm.runInContext(fs.readFileSync('app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js','utf8'),ctx);
+          const built=ctx.CX.legalAcceptanceDurable.buildHumanAcceptanceCommand({
+            scope:{tenantId:'tya',scopeMode:'tenant',projectId:null,role:'shopper',authNamespace:'shopper'},
+            current:{legalContentId:'terms',legalVersion:'v1',contentDigest:'a'.repeat(64)},
+            idempotencyKey:'i3-legal-period-regression',humanConfirmed:true
+          });
+          assert.equal(built.ok,true,JSON.stringify(built));
+          assert.equal(built.command.requireProject,false);
+          assert.equal(built.command.requirePeriod,false);
+          assert.equal(built.command.periodId,null);
+          assert.equal((built.errors||[]).includes('missing-periodId'),false);
+          console.log('PASS_I3_LEGAL_TENANT_SCOPE_PERIOD_REGRESSION');
+          NODE
           jq -n -S --arg source "$PRODUCT_SOURCE_SHA" --arg base "$P0_BASE_SHA" --arg qa "$GITHUB_SHA" \
-            '{decision:"PASS_I3_FROZEN_PRODUCT_GUARD",productSourceSha:$source,p0BaseSha:$base,qaHeadSha:$qa,productDelta:["backend/runtime/cxorbia-shopper-command-provider-v1.mjs"],qaHarnessDelta:["backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs","backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment.test.mjs","backend/runtime/hr-live-service/test/cxorbia-shopper-admin-repair.test.mjs"],productDrift:false,production:false}' > "$OUT/source-guard.json"
+            '{decision:"PASS_I3_FROZEN_PRODUCT_GUARD",productSourceSha:$source,p0BaseSha:$base,qaHeadSha:$qa,productDelta:["app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js"],focalRegression:"PASS_I3_LEGAL_TENANT_SCOPE_PERIOD_REGRESSION",qaHarnessDelta:[],productDrift:false,production:false}' > "$OUT/source-guard.json"
 
       - name: Bind shopper recurrence proof and approved Gate 20 baseline
         env:
