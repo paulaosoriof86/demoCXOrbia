@@ -1,0 +1,168 @@
+name: CXOrbia Recovery I3 Legal Browser Build Probe
+
+on:
+  push:
+    branches:
+      - recovery/cxorbia-phase-a-20260831
+    paths:
+      - .github/workflows/cxorbia-recovery-i3-legal-browser-build-probe.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: cxorbia-recovery-i3-legal-browser-build-probe
+  cancel-in-progress: false
+
+env:
+  PRODUCT_SOURCE_SHA: 26156b2b79115e681828e3fffcf8ee249b84ae05
+  PROJECT: cxorbia-backend-dev
+  HOSTING_URL: https://cxorbia-backend-dev.web.app
+  TENANT_ID: tya
+  PROJECT_ID: cinepolis
+  OUT: .tmp/recovery-i3-legal-browser-build-probe
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout canonical Recovery branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Freeze focal source and prove no product drift
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          test "$GITHUB_REF_NAME" = "recovery/cxorbia-phase-a-20260831"
+          git cat-file -e "$PRODUCT_SOURCE_SHA^{commit}"
+          git merge-base --is-ancestor "$PRODUCT_SOURCE_SHA" HEAD
+          git diff --quiet "$PRODUCT_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc
+          jq -n -S --arg head "$GITHUB_SHA" --arg source "$PRODUCT_SOURCE_SHA" '{decision:"PASS_I3_LEGAL_BROWSER_PROBE_SOURCE_FREEZE",headSha:$head,productSourceSha:$source,productDrift:false,production:false,writes:0}' > "$OUT/source-freeze.json"
+
+      - name: Prove exact DEV static assets before browser execution
+        run: |
+          set -euo pipefail
+          assets=(
+            'app/index-backend-dev.html index-backend-dev.html'
+            'app/adapters/cxorbia-command-adapter-v1.js adapters/cxorbia-command-adapter-v1.js'
+            'app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js adapters/cxorbia-legal-acceptance-durable-contract-v1.js'
+            'app/adapters/cxorbia-legal-runtime-http-v1.js adapters/cxorbia-legal-runtime-http-v1.js'
+          )
+          : > "$OUT/asset-parity.tsv"
+          for pair in "${assets[@]}"; do
+            local_path="${pair%% *}"; remote_path="${pair#* }"
+            expected="$(sha256sum "$local_path" | awk '{print $1}')"
+            remote="$OUT/remote-$(basename "$remote_path")"
+            curl -fsSL --retry 5 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' -H 'Pragma: no-cache' "$HOSTING_URL/$remote_path?i3buildprobe=${GITHUB_RUN_ID}-$(date +%s%N)" -o "$remote"
+            actual="$(sha256sum "$remote" | awk '{print $1}')"
+            printf '%s\t%s\t%s\t%s\n' "$remote_path" "$expected" "$actual" "$([ "$expected" = "$actual" ] && echo MATCH || echo MISMATCH)" >> "$OUT/asset-parity.tsv"
+            test "$expected" = "$actual"
+          done
+          jq -Rn '[inputs|split("\t")|{path:.[0],expectedSha256:.[1],servedSha256:.[2],classification:.[3]}] | {decision:"PASS_I3_LEGAL_DEV_ASSET_PARITY",assets:.,production:false,writes:0}' < "$OUT/asset-parity.tsv" > "$OUT/asset-parity.json"
+
+      - name: Setup Node and fresh Chromium
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install read-only probe dependencies
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
+
+      - name: Authenticate canonical Firebase DEV read-only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - name: Execute same-path command build in fresh authenticated browser
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const path=require('path');
+          const {initializeApp,applicationDefault,getApps}=require('firebase-admin/app');
+          const {getAuth}=require('firebase-admin/auth');
+          const {getFirestore}=require('firebase-admin/firestore');
+          const {chromium}=require('playwright');
+          const OUT=process.env.OUT,PROJECT=process.env.PROJECT,TENANT=process.env.TENANT_ID,PROJECT_ID=process.env.PROJECT_ID,HOST=process.env.HOSTING_URL.replace(/\/$/,'');
+          const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',TECH='YES_PAULA_20260801_REAL_USERS_E2E';
+          const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
+          const write=(n,v)=>fs.writeFileSync(path.join(OUT,n),JSON.stringify(v,null,2)+'\n');
+          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
+          const auth=getAuth(),db=getFirestore();
+          const docs=(await db.collection('tenants').doc(TENANT).collection('users').get()).docs.map(d=>({id:d.id,...(d.data()||{})}));
+          const candidates={
+            staff:docs.filter(x=>x.active===true&&str(x.authNamespace)==='staff'&&['super','admin'].includes(str(x.role))).sort((a,b)=>(str(a.role)==='super'?-1:1)),
+            shopper:docs.filter(x=>x.active===true&&str(x.authNamespace)==='shopper'&&str(x.role)==='shopper'&&str(x.shopperId))
+          };
+          async function firstAuthUser(list){for(const x of list){try{await auth.getUser(x.id);return x;}catch(e){if(str(e?.code)!=='auth/user-not-found')throw e;}}return null;}
+          const fixtures={staff:await firstAuthUser(candidates.staff),shopper:await firstAuthUser(candidates.shopper)};
+          if(!fixtures.staff||!fixtures.shopper)throw new Error('AUTH_FAILURE:LEGAL_BROWSER_PROBE_FIXTURE_MISSING');
+          const browser=await chromium.launch({headless:true});
+          const results=[];
+          try{
+            for(const [kind,member] of Object.entries(fixtures)){
+              const ctx=await browser.newContext({serviceWorkers:'block'});
+              const page=await ctx.newPage();
+              const pageErrors=[]; page.on('pageerror',e=>pageErrors.push(str(e?.message||e)));
+              const url=`${HOST}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cxProjectId=${encodeURIComponent(PROJECT_ID)}&cxProtectedRuntime=${PROTECTED}&cxTechnicalAuthE2E=${TECH}&i3buildprobe=${Date.now()}`;
+              await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
+              const token=await auth.createCustomToken(member.id);
+              await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);await firebase.auth().signInWithCustomToken(t);},token);
+              await page.reload({waitUntil:'domcontentloaded',timeout:90000});
+              await page.waitForFunction(({tenant})=>{const c=window.CX?.backendAuth?.context?.()||{};return c.authenticated===true&&String(c.tenantId||'')===tenant&&window.CX?.legalRuntimeHttp&&window.CX?.legalAcceptanceDurable&&window.CX?.commandAdapter;},{tenant:TENANT},{timeout:120000});
+              const observed=await page.evaluate(async()=>{
+                const clean=v=>JSON.parse(JSON.stringify(v??null));
+                await CX.legalRuntimeHttp.preload(true);
+                const snap=CX.legalAcceptanceProviderBridge?.snapshot?.()||null;
+                const scope=snap?.scope||null,current=snap?.current||CX.legalRuntimeHttp.current?.()||null;
+                const input={scope,current,idempotencyKey:'i3-live-build-probe-'+Date.now(),humanConfirmed:true};
+                const built=CX.legalAcceptanceDurable.buildHumanAcceptanceCommand(input);
+                const actor=CX.legalAcceptanceDurable.currentAuthenticatedActor?.()||{};
+                return clean({
+                  url:location.pathname+location.search,
+                  entry:window.CX_DEV_ENTRY_CANONICAL||null,
+                  actor:{authenticated:actor.authenticated===true,tenantId:actor.tenantId||null,role:actor.role||null,authNamespace:actor.authNamespace||null,projectIds:Array.isArray(actor.projectIds)?actor.projectIds:[]},
+                  input:{tenantId:scope?.tenantId||null,scopeMode:scope?.scopeMode||null,projectId:scope?.projectId??null,periodId:input.periodId??null,role:scope?.role||null,authNamespace:scope?.authNamespace||null,legalContentId:current?.legalContentId||null,legalVersion:current?.legalVersion||null,contentDigest:current?.contentDigest||null,idempotencyKeyPresent:Boolean(input.idempotencyKey),humanConfirmed:input.humanConfirmed===true},
+                  built:{ok:built?.ok===true,status:built?.status||null,code:built?.code||null,errors:Array.isArray(built?.errors)?built.errors:[],command:built?.command?{commandType:built.command.commandType,entityType:built.command.entityType,tenantId:built.command.tenantId,projectId:built.command.projectId,periodId:built.command.periodId,requireProject:built.command.requireProject,requirePeriod:built.command.requirePeriod,expectedVersion:built.command.expectedVersion,actorRole:built.command.actor?.role||null}:null},
+                  executedMarkers:{durableRequirePeriodFalse:String(CX.legalAcceptanceDurable.buildHumanAcceptanceCommand).includes('requirePeriod:false'),commandAdapterHonorsRequirePeriodFalse:String(CX.commandAdapter.build).includes('requirePeriod:input.requirePeriod!==false')},
+                  versions:{legalDurable:CX.legalAcceptanceDurable?.version||null,commandAdapter:CX.commandAdapter?.version||null,legalRuntime:CX.legalRuntimeHttp?.version||null},
+                  legalRuntimeStatus:CX.legalRuntimeHttp.status?.()||null,
+                  providerSnapshotLoaded:Boolean(snap),
+                  providerWrites:0,legalAcceptanceWrites:0,commandExecuteCalled:false,production:false
+                });
+              });
+              observed.fixtureKind=kind; observed.pageErrors=pageErrors;
+              results.push(observed);
+              await ctx.close();
+            }
+          } finally { await browser.close(); }
+          const failures=results.filter(r=>r.pageErrors.length||!r.providerSnapshotLoaded||!r.actor.authenticated||r.input.scopeMode!=='tenant'||r.input.projectId!==null||r.input.periodId!==null||!r.built.ok||!r.built.command||r.built.command.requireProject!==false||r.built.command.requirePeriod!==false||r.built.command.periodId!==null||r.built.errors.length||!r.executedMarkers.durableRequirePeriodFalse||!r.executedMarkers.commandAdapterHonorsRequirePeriodFalse);
+          const out={decision:failures.length?'FAIL_I3_LEGAL_LIVE_BROWSER_BUILD':'PASS_I3_LEGAL_LIVE_BROWSER_BUILD',iteration:'I3',host:HOST,rolesTested:results.map(r=>r.actor.role),results,failures:failures.map(r=>({fixtureKind:r.fixtureKind,role:r.actor.role,errors:r.built.errors,code:r.built.code,pageErrors:r.pageErrors})),providerWrites:0,legalAcceptanceWrites:0,commandExecuteCalls:0,production:false,generatedAt:new Date().toISOString()};
+          write('live-browser-build.json',out);
+          console.log(out.decision,JSON.stringify(out.failures));
+          if(failures.length)process.exit(2);
+          NODE
+
+      - name: Classify focal result
+        if: always()
+        run: |
+          set -euo pipefail
+          if [ -f "$OUT/live-browser-build.json" ]; then
+            jq -e '.providerWrites==0 and .legalAcceptanceWrites==0 and .commandExecuteCalls==0 and .production==false' "$OUT/live-browser-build.json" >/dev/null
+          fi
+          if [ -f "$OUT/asset-parity.json" ]; then jq -e '.production==false and .writes==0' "$OUT/asset-parity.json" >/dev/null; fi
+
+      - name: Upload focal read-only evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-legal-browser-build-probe-${{ github.run_id }}
+          path: ${{ env.OUT }}
+          if-no-files-found: error
