@@ -6,6 +6,9 @@ on:
       - recovery/cxorbia-phase-a-20260831
     paths:
       - .github/workflows/cxorbia-recovery-i3-dev-certification.yml
+      - backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
+      - backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment.test.mjs
+      - backend/runtime/hr-live-service/test/cxorbia-shopper-admin-repair.test.mjs
       - tools/qa/cxorbia-gate20-browser-visual-dev.mjs
       - tools/qa/cxorbia-i3-profile-finance-persistence-dev.mjs
   workflow_dispatch:
@@ -63,14 +66,14 @@ jobs:
           git cat-file -e "$P0_BASE_SHA^{commit}"
           git merge-base --is-ancestor "$PRODUCT_SOURCE_SHA" HEAD
           test "$(git rev-parse "$PRODUCT_SOURCE_SHA^")" = "$P0_BASE_SHA"
-          git diff --quiet "$PRODUCT_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools/hr-source
+          git diff --quiet "$PRODUCT_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           git diff --name-only "$P0_BASE_SHA" "$PRODUCT_SOURCE_SHA" -- app backend firebase.json .firebaserc tools/hr-source | sort > "$OUT/p0-product-delta.txt"
           printf '%s\n' 'backend/runtime/cxorbia-shopper-command-provider-v1.mjs' > "$OUT/p0-expected-delta.txt"
           diff -u "$OUT/p0-expected-delta.txt" "$OUT/p0-product-delta.txt"
           while IFS= read -r file; do
             test -z "$file" && continue
             case "$file" in
-              .github/workflows/cxorbia-recovery-i3-shopper-membership-readonly-probe.yml|.github/workflows/cxorbia-recovery-i3-dev-certification.yml) ;;
+              .github/workflows/cxorbia-recovery-i3-shopper-membership-readonly-probe.yml|.github/workflows/cxorbia-recovery-i3-dev-certification.yml|backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs|backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment.test.mjs|backend/runtime/hr-live-service/test/cxorbia-shopper-admin-repair.test.mjs) ;;
               *) echo "Unexpected post-product delta: $file" >&2; exit 1 ;;
             esac
           done < <(git diff --name-only "$PRODUCT_SOURCE_SHA" HEAD)
@@ -78,7 +81,7 @@ jobs:
           node --check tools/qa/cxorbia-i3-profile-finance-persistence-dev.mjs
           node --check tools/qa/cxorbia-gate20-browser-visual-dev.mjs
           jq -n -S --arg source "$PRODUCT_SOURCE_SHA" --arg base "$P0_BASE_SHA" --arg qa "$GITHUB_SHA" \
-            '{decision:"PASS_I3_FROZEN_PRODUCT_GUARD",productSourceSha:$source,p0BaseSha:$base,qaHeadSha:$qa,productDelta:["backend/runtime/cxorbia-shopper-command-provider-v1.mjs"],productDrift:false,production:false}' > "$OUT/source-guard.json"
+            '{decision:"PASS_I3_FROZEN_PRODUCT_GUARD",productSourceSha:$source,p0BaseSha:$base,qaHeadSha:$qa,productDelta:["backend/runtime/cxorbia-shopper-command-provider-v1.mjs"],qaHarnessDelta:["backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs","backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment.test.mjs","backend/runtime/hr-live-service/test/cxorbia-shopper-admin-repair.test.mjs"],productDrift:false,production:false}' > "$OUT/source-guard.json"
 
       - name: Bind shopper recurrence proof and approved Gate 20 baseline
         env:
