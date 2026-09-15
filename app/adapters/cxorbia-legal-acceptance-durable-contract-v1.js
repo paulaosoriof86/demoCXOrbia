@@ -114,6 +114,7 @@
       tenantId:scope.tenantId,
       projectId:scope.projectId,
       requireProject:scope.scopeMode==='project',
+      requirePeriod:false,
       role:scope.role,
       expectedVersion:current.legalVersion,
       idempotencyKey,
