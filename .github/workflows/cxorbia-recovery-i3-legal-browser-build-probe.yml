@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PRODUCT_SOURCE_SHA: 26156b2b79115e681828e3fffcf8ee249b84ae05
+  PRODUCT_SOURCE_SHA: 8775b1cccbc4a97e87e7996cf409bc1f490d0ccd
   PROJECT: cxorbia-backend-dev
   HOSTING_URL: https://cxorbia-backend-dev.web.app
   TENANT_ID: tya
