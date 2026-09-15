@@ -113,6 +113,7 @@ jobs:
               const url=`${HOST}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cxProjectId=${encodeURIComponent(PROJECT_ID)}&cxProtectedRuntime=${PROTECTED}&cxHumanFullVisual=${FULL}&i3humanbuildprobe=${Date.now()}`;
               await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
               await page.waitForFunction(()=>window.CX_DEV_ENTRY_CANONICAL?.lane==='authenticated-human-canonical'&&window.CX_DEV_ENTRY_CANONICAL?.fullVisual===true&&window.CX_DEV_ENTRY_CANONICAL?.technicalAuth===false,null,{timeout:90000});
+              await page.waitForFunction(()=>window.firebase&&typeof window.firebase.auth==='function'&&window.firebase.auth().Persistence?.SESSION,{},{timeout:90000});
               const token=await auth.createCustomToken(member.id);
               await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);await firebase.auth().signInWithCustomToken(t);},token);
               await page.reload({waitUntil:'domcontentloaded',timeout:90000});
