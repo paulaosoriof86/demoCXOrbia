@@ -7,6 +7,7 @@ on:
     paths:
       - .github/workflows/cxorbia-recovery-i3-dev-certification.yml
       - app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js
+      - app/sw.js
       - backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
       - backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment.test.mjs
       - backend/runtime/hr-live-service/test/cxorbia-shopper-admin-repair.test.mjs
@@ -28,7 +29,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PRODUCT_SOURCE_SHA: 26156b2b79115e681828e3fffcf8ee249b84ae05
+  PRODUCT_SOURCE_SHA: 8775b1cccbc4a97e87e7996cf409bc1f490d0ccd
   P0_BASE_SHA: 34cf9912f7899b00092f7b26ff0be8055ad7a411
   SHOPPER_RECURRENCE_RUN_ID: '34899285403'
   SHOPPER_RECURRENCE_HEAD_SHA: 056c040352c67e06aee6317af582ff0af4ca5b89
@@ -66,36 +67,65 @@ jobs:
           test "$GITHUB_REF_NAME" = "recovery/cxorbia-phase-a-20260831"
           git cat-file -e "$PRODUCT_SOURCE_SHA^{commit}"
           git cat-file -e "$P0_BASE_SHA^{commit}"
+          git merge-base --is-ancestor "$P0_BASE_SHA" "$PRODUCT_SOURCE_SHA"
           git merge-base --is-ancestor "$PRODUCT_SOURCE_SHA" HEAD
-          test "$(git rev-parse "$PRODUCT_SOURCE_SHA^")" = "$P0_BASE_SHA"
           git diff --quiet "$PRODUCT_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
           git diff --name-only "$P0_BASE_SHA" "$PRODUCT_SOURCE_SHA" -- app backend firebase.json .firebaserc tools/hr-source | sort > "$OUT/p0-product-delta.txt"
-          printf '%s\n' 'app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js' > "$OUT/p0-expected-delta.txt"
+          printf '%s\n' 'app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js' 'app/sw.js' > "$OUT/p0-expected-delta.txt"
           diff -u "$OUT/p0-expected-delta.txt" "$OUT/p0-product-delta.txt"
           while IFS= read -r file; do
             test -z "$file" && continue
             case "$file" in
-              .github/workflows/cxorbia-recovery-i3-shopper-membership-readonly-probe.yml|.github/workflows/cxorbia-recovery-i3-dev-certification.yml|backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs|backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment.test.mjs|backend/runtime/hr-live-service/test/cxorbia-shopper-admin-repair.test.mjs) ;;
+              .github/workflows/cxorbia-recovery-i3-shopper-membership-readonly-probe.yml|.github/workflows/cxorbia-recovery-i3-legal-browser-build-probe.yml|.github/workflows/cxorbia-recovery-i3-dev-certification.yml|backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs|backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment.test.mjs|backend/runtime/hr-live-service/test/cxorbia-shopper-admin-repair.test.mjs) ;;
               *) echo "Unexpected post-product delta: $file" >&2; exit 1 ;;
             esac
           done < <(git diff --name-only "$PRODUCT_SOURCE_SHA" HEAD)
           node --check app/adapters/cxorbia-command-adapter-v1.js
           node --check app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js
+          node --check app/sw.js
           node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
           node --check tools/qa/cxorbia-i3-profile-finance-persistence-dev.mjs
           node --check tools/qa/cxorbia-gate20-browser-visual-dev.mjs
           node <<'NODE'
           const fs=require('fs'),vm=require('vm'),assert=require('assert');
           const ctx={console,Date,setTimeout,clearTimeout};ctx.globalThis=ctx;ctx.window=ctx;
-          ctx.CX={BACKEND:{tenantId:'tya',enableCommandWrites:false},backendAuth:{context:()=>({authenticated:true,tenantId:'tya',role:'shopper',authNamespace:'shopper',projectIds:['cinepolis']})},session:{}};
+          ctx.CX={BACKEND:{tenantId:'tya',enableCommandWrites:false},session:{}};
           vm.createContext(ctx);
           vm.runInContext(fs.readFileSync('app/adapters/cxorbia-command-adapter-v1.js','utf8'),ctx);
           vm.runInContext(fs.readFileSync('app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js','utf8'),ctx);
-          const built=ctx.CX.legalAcceptanceDurable.buildHumanAcceptanceCommand({scope:{tenantId:'tya',scopeMode:'tenant',projectId:null,role:'shopper',authNamespace:'shopper'},current:{legalContentId:'terms',legalVersion:'v1',contentDigest:'a'.repeat(64)},idempotencyKey:'i3-legal-period-regression',humanConfirmed:true});
-          assert.equal(built.ok,true,JSON.stringify(built));assert.equal(built.command.requireProject,false);assert.equal(built.command.requirePeriod,false);assert.equal(built.command.periodId,null);assert.equal((built.errors||[]).includes('missing-periodId'),false);
+          for(const role of ['super','admin','shopper']){
+            const ns=role==='shopper'?'shopper':'staff';
+            ctx.CX.backendAuth={context:()=>({authenticated:true,tenantId:'tya',role,authNamespace:ns,projectIds:['cinepolis']})};
+            const built=ctx.CX.legalAcceptanceDurable.buildHumanAcceptanceCommand({scope:{tenantId:'tya',scopeMode:'tenant',projectId:null,role,authNamespace:ns},current:{legalContentId:'terms',legalVersion:'tya-legal-bundle-v0.4-interim-golive-20260816',contentDigest:'a'.repeat(64)},idempotencyKey:`i3-legal-period-regression-${role}`,humanConfirmed:true});
+            assert.equal(built.ok,true,JSON.stringify(built));assert.equal(built.command.requireProject,false);assert.equal(built.command.requirePeriod,false);assert.equal(built.command.periodId,null);assert.deepEqual(Array.from(built.errors||[]),[]);
+          }
           console.log('PASS_I3_LEGAL_TENANT_SCOPE_PERIOD_REGRESSION');
           NODE
-          jq -n -S --arg source "$PRODUCT_SOURCE_SHA" --arg base "$P0_BASE_SHA" --arg qa "$GITHUB_SHA" '{decision:"PASS_I3_FROZEN_PRODUCT_GUARD",productSourceSha:$source,p0BaseSha:$base,qaHeadSha:$qa,productDelta:["app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js"],focalRegression:"PASS_I3_LEGAL_TENANT_SCOPE_PERIOD_REGRESSION",productDrift:false,production:false}' > "$OUT/source-guard.json"
+          node <<'NODE'
+          const fs=require('fs'),vm=require('vm'),assert=require('assert');
+          const handlers={},calls={match:0,fetch:[]};
+          const sw={
+            CX_BUILD_ID:'test-build',URL,Set,Promise,Response,console,
+            importScripts:()=>{},
+            self:{location:{origin:'https://cxorbia-backend-dev.web.app'},skipWaiting:()=>{},clients:{claim:async()=>{}},addEventListener:(name,fn)=>{handlers[name]=fn;}},
+            caches:{keys:async()=>[],delete:async()=>true,open:async()=>({keys:async()=>[],delete:async()=>true,put:async()=>{}}),match:async()=>{calls.match++;return {cached:true};}},
+            fetch:(request,init)=>{calls.fetch.push({url:request.url,init});return Promise.reject(new Error('simulated-network-down'));}
+          };
+          vm.createContext(sw);vm.runInContext(fs.readFileSync('app/sw.js','utf8'),sw);
+          assert.equal(typeof handlers.fetch,'function');
+          (async()=>{
+            let critical;
+            handlers.fetch({request:{method:'GET',url:'https://cxorbia-backend-dev.web.app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js'},respondWith:p=>{critical=p;}});
+            await assert.rejects(critical,/simulated-network-down/);
+            assert.equal(calls.match,0,'critical legal asset must never query CacheStorage fallback');
+            assert.equal(calls.fetch[0].init?.cache,'no-store');
+            let nonCritical;
+            handlers.fetch({request:{method:'GET',url:'https://cxorbia-backend-dev.web.app/styles/theme.css',mode:'cors'},respondWith:p=>{nonCritical=p;}});
+            const fallback=await nonCritical;assert.equal(fallback.cached,true);assert.equal(calls.match,1);
+            console.log('PASS_I3_LEGAL_CRITICAL_CACHE_FAIL_CLOSED');
+          })().catch(e=>{console.error(e);process.exit(1);});
+          NODE
+          jq -n -S --arg source "$PRODUCT_SOURCE_SHA" --arg base "$P0_BASE_SHA" --arg qa "$GITHUB_SHA" '{decision:"PASS_I3_FROZEN_PRODUCT_GUARD",productSourceSha:$source,p0BaseSha:$base,qaHeadSha:$qa,productDelta:["app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js","app/sw.js"],focalRegression:"PASS_I3_LEGAL_TENANT_SCOPE_PERIOD_REGRESSION",cacheRegression:"PASS_I3_LEGAL_CRITICAL_CACHE_FAIL_CLOSED",productDrift:false,production:false}' > "$OUT/source-guard.json"
 
       - name: Bind locked shopper and Gate 20 evidence
         env:
@@ -137,8 +167,10 @@ jobs:
           git archive "$PRODUCT_SOURCE_SHA" | tar -x -C "$SOURCE_DIR"
           test -f "$SOURCE_DIR/firebase.json"; test -f "$SOURCE_DIR/.firebaserc"
           test -f "$SOURCE_DIR/app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js"
+          test -f "$SOURCE_DIR/app/sw.js"
           echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
           sha256sum "$SOURCE_DIR/app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js" > "$OUT/legal-owner-local.sha256"
+          sha256sum "$SOURCE_DIR/app/sw.js" > "$OUT/sw-local.sha256"
 
       - name: Build exact approved product source image
         run: |
@@ -188,18 +220,45 @@ jobs:
           echo "DEV_REVISION=$FINAL_REVISION" >> "$GITHUB_ENV"; echo "RUNTIME_DIGEST=$FINAL_DIGEST" >> "$GITHUB_ENV"; echo "IMMUTABLE_IMAGE=$IMMUTABLE_IMAGE" >> "$GITHUB_ENV"
           jq -n -S --arg sourceRevision "$CURRENT_REVISION" --arg finalRevision "$FINAL_REVISION" --arg digest "$FINAL_DIGEST" --arg image "$IMMUTABLE_IMAGE" --argjson updated "$CONFIG_UPDATED" '{decision:"PASS_I3_LEGAL_GATE_CONFIG_ONLY",sourceRuntimeRevision:$sourceRevision,finalRuntimeRevision:$finalRevision,imageDigest:$digest,immutableImage:$image,configRevisionCreated:($updated==1),rebuildAfterCertification:false,production:false}' > "$OUT/runtime-config-receipt.json"
 
-      - name: Compose exact certified product source into Hosting DEV and prove legal owner parity
+      - name: Compose exact certified product source into Hosting DEV and prove critical legal parity
         run: |
           set -Eeuo pipefail
           trap 'rc=$?; echo "::error::RELEASE_COMPOSITION_FAILURE hosting-dev line=$LINENO rc=$rc"; exit $rc' ERR
           cd "$SOURCE_DIR"
           "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$OUT/hosting-deploy.log"
           cd "$GITHUB_WORKSPACE"
-          remote="$OUT/remote-cxorbia-legal-acceptance-durable-contract-v1.js"; expected="$(sha256sum "$SOURCE_DIR/app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js" | awk '{print $1}')"; matched=0
-          for attempt in $(seq 1 15); do curl -fsSL --retry 3 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' -H 'Pragma: no-cache' "$HOSTING_URL/adapters/cxorbia-legal-acceptance-durable-contract-v1.js?i3=${GITHUB_RUN_ID}-${attempt}-$(date +%s%N)" -o "$remote"; actual="$(sha256sum "$remote" | awk '{print $1}')"; if [ "$actual" = "$expected" ]; then matched=1; break; fi; sleep 4; done
-          test "$matched" = 1
-          grep -q 'requirePeriod:false' "$remote"
-          jq -n -S --arg source "$PRODUCT_SOURCE_SHA" --arg expected "$expected" --arg actual "$actual" '{decision:"PASS_I3_LEGAL_OWNER_HOSTING_PARITY",productSourceSha:$source,owner:"app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js",expectedSha256:$expected,servedSha256:$actual,hostingDeploys:1,devOnly:true,production:false}' > "$OUT/legal-hosting-parity.json"
+          pairs=(
+            'index-backend-dev.html app/index-backend-dev.html'
+            'adapters/cxorbia-command-adapter-v1.js app/adapters/cxorbia-command-adapter-v1.js'
+            'adapters/cxorbia-legal-acceptance-durable-contract-v1.js app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js'
+            'adapters/cxorbia-legal-acceptance-provider-bridge-v1.js app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js'
+            'adapters/cxorbia-legal-runtime-http-v1.js app/adapters/cxorbia-legal-runtime-http-v1.js'
+            'sw.js app/sw.js'
+          )
+          : > "$OUT/legal-critical-parity.tsv"
+          for pair in "${pairs[@]}"; do
+            remote_path="${pair%% *}"; local_path="${pair#* }"; remote="$OUT/remote-$(basename "$remote_path")"; expected="$(sha256sum "$SOURCE_DIR/$local_path"|awk '{print $1}')"; matched=0
+            for attempt in $(seq 1 15); do curl -fsSL --retry 3 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' -H 'Pragma: no-cache' "$HOSTING_URL/$remote_path?i3=${GITHUB_RUN_ID}-${attempt}-$(date +%s%N)" -o "$remote"; actual="$(sha256sum "$remote"|awk '{print $1}')"; if [ "$actual" = "$expected" ]; then matched=1; break; fi; sleep 4; done
+            test "$matched" = 1
+            printf '%s\t%s\t%s\tMATCH\n' "$remote_path" "$expected" "$actual" >> "$OUT/legal-critical-parity.tsv"
+          done
+          grep -q 'requirePeriod:false' "$OUT/remote-cxorbia-legal-acceptance-durable-contract-v1.js"
+          grep -q 'CX_FAIL_CLOSED_PATHS' "$OUT/remote-sw.js"
+          grep -q "cache:'no-store'" "$OUT/remote-sw.js"
+          node <<'NODE'
+          const fs=require('fs'),vm=require('vm'),assert=require('assert');
+          const ctx={console,Date,setTimeout,clearTimeout};ctx.globalThis=ctx;ctx.window=ctx;ctx.CX={BACKEND:{tenantId:'tya',enableCommandWrites:false},session:{}};
+          vm.createContext(ctx);
+          vm.runInContext(fs.readFileSync(`${process.env.OUT}/remote-cxorbia-command-adapter-v1.js`,'utf8'),ctx);
+          vm.runInContext(fs.readFileSync(`${process.env.OUT}/remote-cxorbia-legal-acceptance-durable-contract-v1.js`,'utf8'),ctx);
+          for(const role of ['super','admin','shopper']){
+            const ns=role==='shopper'?'shopper':'staff';ctx.CX.backendAuth={context:()=>({authenticated:true,tenantId:'tya',role,authNamespace:ns,projectIds:['cinepolis']})};
+            const built=ctx.CX.legalAcceptanceDurable.buildHumanAcceptanceCommand({scope:{tenantId:'tya',scopeMode:'tenant',projectId:null,role,authNamespace:ns},current:{legalContentId:'terms',legalVersion:'tya-legal-bundle-v0.4-interim-golive-20260816',contentDigest:'a'.repeat(64)},idempotencyKey:`i3-served-human-build-${role}`,humanConfirmed:true});
+            assert.equal(built.ok,true,JSON.stringify(built));assert.equal(built.command.requireProject,false);assert.equal(built.command.requirePeriod,false);assert.equal(built.command.periodId,null);assert.deepEqual(Array.from(built.errors||[]),[]);
+          }
+          console.log('PASS_I3_SERVED_LEGAL_HUMAN_COMMAND_BUILD');
+          NODE
+          jq -Rn --arg source "$PRODUCT_SOURCE_SHA" '[inputs|split("\t")|{path:.[0],expectedSha256:.[1],servedSha256:.[2],classification:.[3]}] | {decision:"PASS_I3_LEGAL_OWNER_HOSTING_PARITY",productSourceSha:$source,owners:.,ownerCount:length,servedHumanBuild:"PASS_I3_SERVED_LEGAL_HUMAN_COMMAND_BUILD",cacheFailClosed:true,hostingDeploys:1,devOnly:true,production:false}' < "$OUT/legal-critical-parity.tsv" > "$OUT/legal-hosting-parity.json"
 
       - name: Read fresh authoritative HR source on exact runtime
         run: |
@@ -228,7 +287,7 @@ jobs:
       - name: Record I3 HOLD awaiting unavoidable human legal acceptance
         if: env.HUMAN_LEGAL_ACCEPTANCE_READY != 'true'
         run: |
-          jq -n -S --arg source "$PRODUCT_SOURCE_SHA" --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg version "$CURRENT_LEGAL_VERSION" '{verdict:"HOLD_I3_HUMAN_LEGAL_ACCEPTANCE_REQUIRED",state:"HOLD",iteration:"I3",productSourceSha:$source,devRuntimeRevision:$revision,runtimeDigest:$digest,currentLegalVersion:$version,exactSourceImageBuilt:true,devRuntimeDeployed:true,hostingExactSourceDeployed:true,legalOwnerHostingParity:true,legalWriteGateReady:true,profilePersistence:true,financePersistence:true,hrFreshReadback:true,humanAcceptancePresent:false,automaticAcceptance:false,legalAcceptanceBypass:false,production:false}' > "$OUT/result.json"
+          jq -n -S --arg source "$PRODUCT_SOURCE_SHA" --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg version "$CURRENT_LEGAL_VERSION" '{verdict:"HOLD_I3_HUMAN_LEGAL_ACCEPTANCE_REQUIRED",state:"HOLD",iteration:"I3",productSourceSha:$source,devRuntimeRevision:$revision,runtimeDigest:$digest,currentLegalVersion:$version,exactSourceImageBuilt:true,devRuntimeDeployed:true,hostingExactSourceDeployed:true,legalOwnerHostingParity:true,legalCacheFailClosed:true,servedHumanCommandBuild:true,legalWriteGateReady:true,profilePersistence:true,financePersistence:true,hrFreshReadback:true,humanAcceptancePresent:false,automaticAcceptance:false,legalAcceptanceBypass:false,production:false}' > "$OUT/result.json"
           echo "HOLD_I3_HUMAN_LEGAL_ACCEPTANCE_REQUIRED legalVersion=$CURRENT_LEGAL_VERSION runtime=$DEV_REVISION"
 
       - name: Install browser dependency only when human receipt exists
@@ -241,9 +300,9 @@ jobs:
         if: env.HUMAN_LEGAL_ACCEPTANCE_READY == 'true'
         run: |
           set -euo pipefail
-          pairs=('modules/shoppers.js app/modules/shoppers.js' 'modules/finanzas.js app/modules/finanzas.js' 'modules/operacion-extra.js app/modules/operacion-extra.js' 'adapters/cxorbia-command-adapter-v1.js app/adapters/cxorbia-command-adapter-v1.js' 'adapters/cxorbia-cxdata-command-boundary-v1.js app/adapters/cxorbia-cxdata-command-boundary-v1.js' 'adapters/cxorbia-shopper-admin-command-contract-v1.js app/adapters/cxorbia-shopper-admin-command-contract-v1.js' 'adapters/cxorbia-legal-acceptance-durable-contract-v1.js app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js')
-          for pair in "${pairs[@]}"; do remote="${pair%% *}"; local="${pair#* }"; out="$OUT/remote-$(basename "$remote")"; expected="$(sha256sum "$SOURCE_DIR/$local"|awk '{print $1}')"; matched=0; for attempt in $(seq 1 12); do curl -fsSL --retry 3 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' -H 'Pragma: no-cache' "$HOSTING_URL/$remote?gate20=${GITHUB_RUN_ID}-${attempt}-$(date +%s%N)" -o "$out"; actual="$(sha256sum "$out"|awk '{print $1}')"; if [ "$actual" = "$expected" ]; then matched=1; break; fi; sleep 4; done; test "$matched" = 1; done
-          jq -n -S --arg source "$PRODUCT_SOURCE_SHA" '{decision:"PASS_GATE20_CHANGED_OWNER_PARITY",productSourceSha:$source,ownerCount:7,hostingDeploys:1,production:false}' > "$OUT/hosting.json"
+          pairs=('modules/shoppers.js app/modules/shoppers.js' 'modules/finanzas.js app/modules/finanzas.js' 'modules/operacion-extra.js app/modules/operacion-extra.js' 'adapters/cxorbia-command-adapter-v1.js app/adapters/cxorbia-command-adapter-v1.js' 'adapters/cxorbia-cxdata-command-boundary-v1.js app/adapters/cxorbia-cxdata-command-boundary-v1.js' 'adapters/cxorbia-shopper-admin-command-contract-v1.js app/adapters/cxorbia-shopper-admin-command-contract-v1.js' 'adapters/cxorbia-legal-acceptance-durable-contract-v1.js app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js' 'sw.js app/sw.js')
+          for pair in "${pairs[@]}"; do remote="${pair%% *}"; local="${pair#* }"; out="$OUT/gate20-remote-$(basename "$remote")"; expected="$(sha256sum "$SOURCE_DIR/$local"|awk '{print $1}')"; matched=0; for attempt in $(seq 1 12); do curl -fsSL --retry 3 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' -H 'Pragma: no-cache' "$HOSTING_URL/$remote?gate20=${GITHUB_RUN_ID}-${attempt}-$(date +%s%N)" -o "$out"; actual="$(sha256sum "$out"|awk '{print $1}')"; if [ "$actual" = "$expected" ]; then matched=1; break; fi; sleep 4; done; test "$matched" = 1; done
+          jq -n -S --arg source "$PRODUCT_SOURCE_SHA" '{decision:"PASS_GATE20_CHANGED_OWNER_PARITY",productSourceSha:$source,ownerCount:8,hostingDeploys:1,production:false}' > "$OUT/hosting.json"
 
       - name: Execute focal browser visual drift revalidation
         if: env.HUMAN_LEGAL_ACCEPTANCE_READY == 'true'
@@ -257,8 +316,8 @@ jobs:
           set -euo pipefail
           node <<'NODE'
           const fs=require('fs'),p=n=>JSON.parse(fs.readFileSync(`${process.env.OUT}/${n}`,'utf8'));const guard=p('source-guard.json'),locked=p('locked-evidence.json'),sourceRuntime=p('source-runtime-deploy.json'),cfg=p('runtime-config-receipt.json'),composition=p('legal-hosting-parity.json'),hr=p('hr-readback.json'),profile=p('shopper-profile-persistence.json'),finance=p('finance-bulk-payment-persistence.json'),cleanup=p('synthetic-cleanup.json'),legal=p('legal-human-preflight.json'),hosting=p('hosting.json'),visual=p('gate20-browser-visual.json');
-          if(guard.decision!=='PASS_I3_FROZEN_PRODUCT_GUARD'||locked.decision!=='PASS_I3_LOCKED_EVIDENCE'||sourceRuntime.decision!=='PASS_I3_EXACT_SOURCE_DEV_RUNTIME'||cfg.decision!=='PASS_I3_LEGAL_GATE_CONFIG_ONLY'||composition.decision!=='PASS_I3_LEGAL_OWNER_HOSTING_PARITY'||hr.decision!=='PASS_I3_HR_EXACT_RUNTIME'||profile.decision!=='SHOPPER_PROFILE_PERSISTENCE_PASS'||finance.decision!=='FINANCE_BULK_PAYMENT_PERSISTENCE_PASS'||cleanup.decision!=='PASS_I3_SYNTHETIC_CLEANUP'||legal.decision!=='PASS_I3_CURRENT_HUMAN_LEGAL_ACCEPTANCE_PRESENT'||hosting.decision!=='PASS_GATE20_CHANGED_OWNER_PARITY'||visual.decision!=='PASS_GATE20_FOCAL_VISUAL_DRIFT')throw new Error('I3_CURRENT_CANDIDATE_CLOSURE_INCOMPLETE');
-          const result={verdict:'PASS_I3_CURRENT_CANDIDATE_FUNCTIONAL_VISUAL',state:'I3_READY_FOR_GATE21',iteration:'I3',productSourceSha:process.env.PRODUCT_SOURCE_SHA,qaHeadSha:process.env.GITHUB_SHA,devRuntimeRevision:process.env.DEV_REVISION,runtimeDigest:process.env.RUNTIME_DIGEST,currentLegalVersion:process.env.CURRENT_LEGAL_VERSION,exactSourceImageBuilt:true,devRuntimeDeployed:true,hostingExactSourceDeployed:true,legalOwnerHostingParity:true,legalWriteGateReady:true,humanAcceptancePresent:true,automaticAcceptance:false,legalAcceptanceBypass:false,profilePersistence:true,financePersistence:true,hrFreshReadback:true,gate20:'PASS',desktop:true,mobile:true,rebuildAfterCertification:false,production:false};fs.writeFileSync(`${process.env.OUT}/result.json`,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
+          if(guard.decision!=='PASS_I3_FROZEN_PRODUCT_GUARD'||guard.cacheRegression!=='PASS_I3_LEGAL_CRITICAL_CACHE_FAIL_CLOSED'||locked.decision!=='PASS_I3_LOCKED_EVIDENCE'||sourceRuntime.decision!=='PASS_I3_EXACT_SOURCE_DEV_RUNTIME'||cfg.decision!=='PASS_I3_LEGAL_GATE_CONFIG_ONLY'||composition.decision!=='PASS_I3_LEGAL_OWNER_HOSTING_PARITY'||composition.servedHumanBuild!=='PASS_I3_SERVED_LEGAL_HUMAN_COMMAND_BUILD'||composition.cacheFailClosed!==true||hr.decision!=='PASS_I3_HR_EXACT_RUNTIME'||profile.decision!=='SHOPPER_PROFILE_PERSISTENCE_PASS'||finance.decision!=='FINANCE_BULK_PAYMENT_PERSISTENCE_PASS'||cleanup.decision!=='PASS_I3_SYNTHETIC_CLEANUP'||legal.decision!=='PASS_I3_CURRENT_HUMAN_LEGAL_ACCEPTANCE_PRESENT'||hosting.decision!=='PASS_GATE20_CHANGED_OWNER_PARITY'||visual.decision!=='PASS_GATE20_FOCAL_VISUAL_DRIFT')throw new Error('I3_CURRENT_CANDIDATE_CLOSURE_INCOMPLETE');
+          const result={verdict:'PASS_I3_CURRENT_CANDIDATE_FUNCTIONAL_VISUAL',state:'I3_READY_FOR_GATE21',iteration:'I3',productSourceSha:process.env.PRODUCT_SOURCE_SHA,qaHeadSha:process.env.GITHUB_SHA,devRuntimeRevision:process.env.DEV_REVISION,runtimeDigest:process.env.RUNTIME_DIGEST,currentLegalVersion:process.env.CURRENT_LEGAL_VERSION,exactSourceImageBuilt:true,devRuntimeDeployed:true,hostingExactSourceDeployed:true,legalOwnerHostingParity:true,legalCacheFailClosed:true,servedHumanCommandBuild:true,legalWriteGateReady:true,humanAcceptancePresent:true,automaticAcceptance:false,legalAcceptanceBypass:false,profilePersistence:true,financePersistence:true,hrFreshReadback:true,gate20:'PASS',desktop:true,mobile:true,rebuildAfterCertification:false,production:false};fs.writeFileSync(`${process.env.OUT}/result.json`,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
           NODE
 
       - name: Upload sanitized I3 evidence
