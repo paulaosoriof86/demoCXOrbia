@@ -17,9 +17,10 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PRODUCT_SOURCE_SHA: 44ef1d75563eeb23eeaf3997ae112983f8e5e4d1
+  PRODUCT_SOURCE_SHA: c733131344111f498c830ec5e380c49c88d89d40
   PROJECT: cxorbia-backend-dev
   HOSTING_URL: https://cxorbia-backend-dev.web.app
+  FIREBASE_HOSTING_TARGET: cxorbia-dev
   TENANT_ID: tya
   PROJECT_ID: cinepolis
   AFFECTED_SHOPPER_ID: s3
@@ -29,7 +30,7 @@ env:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
       - name: Checkout canonical Recovery branch
         uses: actions/checkout@v4
@@ -44,20 +45,25 @@ jobs:
           git cat-file -e "$PRODUCT_SOURCE_SHA^{commit}"
           git merge-base --is-ancestor "$PRODUCT_SOURCE_SHA" HEAD
           git diff --quiet "$PRODUCT_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc
+          node --check app/core/backend-browser-auth.js
           node --check app/adapters/tya-canonical-shopper-portal-v2.js
-          grep -q 'currentAuthenticatedEmail' app/adapters/tya-canonical-shopper-portal-v2.js
+          grep -q 'sessionCredential: sessionCredentialSnapshot' app/core/backend-browser-auth.js
+          grep -q "validated-shopper-login-memory" app/core/backend-browser-auth.js
+          grep -q 'canonical-shopper-portal-v2-p0-session-credential-operational' app/adapters/tya-canonical-shopper-portal-v2.js
+          grep -q 'data-credential-reveal' app/adapters/tya-canonical-shopper-portal-v2.js
+          ! grep -q '<b>Protegida</b>' app/adapters/tya-canonical-shopper-portal-v2.js
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
-      - name: Install read-only probe dependencies
+      - name: Install focal DEV dependencies
         run: |
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase-tools@latest playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null 2>&1
 
-      - name: Authenticate Firebase DEV read-only
+      - name: Authenticate canonical Firebase DEV
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
@@ -69,11 +75,20 @@ jobs:
           git worktree add --detach "$DEPLOY_TREE" "$PRODUCT_SOURCE_SHA"
           test "$(git -C "$DEPLOY_TREE" rev-parse HEAD)" = "$PRODUCT_SOURCE_SHA"
 
-      - name: Prove corrected source is already served by DEV exactly
+      - name: Deploy exact corrected product source to Hosting DEV only
+        run: |
+          set -euo pipefail
+          cd "$DEPLOY_TREE"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$OUT/hosting-dev-deploy.log"
+          cd "$GITHUB_WORKSPACE"
+          jq -n -S --arg source "$PRODUCT_SOURCE_SHA" '{decision:"PASS_I3_SHOPPER_FOCAL_HOSTING_DEV_DEPLOY",productSourceSha:$source,hostingDevDeploys:1,cloudRunDeploys:0,providerWrites:0,firestoreWrites:0,authWrites:0,hrWrites:0,productionWrites:0,production:false}' > "$OUT/hosting-dev-deploy.json"
+
+      - name: Prove corrected source is served by DEV exactly
         run: |
           set -euo pipefail
           assets=(
             'app/index-backend-dev.html index-backend-dev.html'
+            'app/core/backend-browser-auth.js core/backend-browser-auth.js'
             'app/adapters/cxorbia-exact-identity-contract-v1.js adapters/cxorbia-exact-identity-contract-v1.js'
             'app/adapters/tya-protected-auth-hr-authority-bridge-v2.js adapters/tya-protected-auth-hr-authority-bridge-v2.js'
             'app/adapters/tya-canonical-shopper-portal-v2.js adapters/tya-canonical-shopper-portal-v2.js'
@@ -84,51 +99,131 @@ jobs:
             local_path="$DEPLOY_TREE/${pair%% *}"; remote_path="${pair#* }"
             expected="$(sha256sum "$local_path" | awk '{print $1}')"
             remote="$OUT/remote-$(basename "$remote_path")"
-            curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' -H 'Pragma: no-cache' "$HOSTING_URL/$remote_path?i3focal=${GITHUB_RUN_ID}-$(date +%s%N)" -o "$remote"
-            actual="$(sha256sum "$remote" | awk '{print $1}')"
-            printf '%s\t%s\t%s\t%s\n' "$remote_path" "$expected" "$actual" "$([ "$expected" = "$actual" ] && echo MATCH || echo MISMATCH)" >> "$OUT/asset-parity.tsv"
-            test "$expected" = "$actual"
+            matched=0
+            for attempt in $(seq 1 12); do
+              curl -fsSL --retry 4 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' -H 'Pragma: no-cache' "$HOSTING_URL/$remote_path?i3credential=${GITHUB_RUN_ID}-${attempt}-$(date +%s%N)" -o "$remote"
+              actual="$(sha256sum "$remote" | awk '{print $1}')"
+              if [ "$expected" = "$actual" ]; then matched=1; break; fi
+              sleep 3
+            done
+            test "$matched" = 1
+            printf '%s\t%s\t%s\tMATCH\n' "$remote_path" "$expected" "$actual" >> "$OUT/asset-parity.tsv"
           done
 
-      - name: Prove real Auth email and Visitas Disponibles in same shopper session
+      - name: Prove focal real shopper credential, history, KPIs and available visits in one session
         run: |
           set -euo pipefail
-          node --input-type=module <<'NODE'
+          DEPLOY_TREE="$DEPLOY_TREE" node --input-type=module <<'NODE'
           import fs from 'fs';
+          import crypto from 'crypto';
+          import zlib from 'zlib';
           import { initializeApp, applicationDefault, getApps } from 'firebase-admin/app';
           import { getAuth } from 'firebase-admin/auth';
           import { getFirestore } from 'firebase-admin/firestore';
           import { chromium } from 'playwright';
-          const s=v=>String(v??'').trim(),sleep=ms=>new Promise(r=>setTimeout(r,ms));
-          if(!getApps().length) initializeApp({credential:applicationDefault(),projectId:process.env.PROJECT});
-          const db=getFirestore(),tenant=db.collection('tenants').doc(process.env.TENANT_ID),sid=process.env.AFFECTED_SHOPPER_ID,auth=getAuth();
+
+          const s=v=>String(v??'').trim();
+          const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
+          const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+          const project=process.env.PROJECT,tenantId=process.env.TENANT_ID,projectId=process.env.PROJECT_ID,sid=process.env.AFFECTED_SHOPPER_ID,root=process.env.DEPLOY_TREE;
+          if(!getApps().length) initializeApp({credential:applicationDefault(),projectId:project});
+          const db=getFirestore(),auth=getAuth(),tenant=db.collection('tenants').doc(tenantId);
+
+          const shopperSnap=await tenant.collection('shoppers').doc(sid).get();
+          if(!shopperSnap.exists) throw new Error('SOURCE_FAILURE:FOCAL_SHOPPER_PROFILE_MISSING');
+          const shopper=shopperSnap.data()||{};
           const members=await tenant.collection('users').where('shopperId','==',sid).get();
-          if(members.size!==1) throw new Error('AFFECTED_SHOPPER_MEMBERSHIP_DRIFT');
-          const uid=members.docs[0].id,au=await auth.getUser(uid),email=s(au.email);
-          if(!email) throw new Error('AUTH_EMAIL_SOURCE_NOT_PRESENT');
-          const browser=await chromium.launch({headless:true}),ctx=await browser.newContext({serviceWorkers:'allow'}),page=await ctx.newPage(),pageErrors=[];
+          if(members.size!==1) throw new Error('AUTH_FAILURE:AFFECTED_SHOPPER_MEMBERSHIP_DRIFT');
+          const uid=members.docs[0].id;
+          const au=await auth.getUser(uid);
+          if(au.disabled) throw new Error('AUTH_FAILURE:FOCAL_AUTH_DISABLED');
+
+          const credentialPath=process.env.GOOGLE_APPLICATION_CREDENTIALS;
+          if(!credentialPath||!fs.existsSync(credentialPath)) throw new Error('ENVIRONMENT_FAILURE:ADC_FILE_MISSING');
+          const sa=JSON.parse(fs.readFileSync(credentialPath,'utf8'));
+          if(sa.project_id!==project||!sa.private_key) throw new Error('ENVIRONMENT_FAILURE:DEV_SERVICE_ACCOUNT_INVALID');
+          const pub=JSON.parse(fs.readFileSync(`${root}/backend/secure/corte6-credential-handoff-public.json`,'utf8'));
+          const encPriv=JSON.parse(fs.readFileSync(`${root}/backend/secure/corte6-credential-handoff-private.enc.json`,'utf8'));
+          const env=JSON.parse(fs.readFileSync(`${root}/backend/private-inbox/corte6-credential-bundle.enc.json`,'utf8'));
+          if(pub.projectId!==project||encPriv.projectId!==project||env.targetProjectId!==project||pub.fingerprintSha256!==encPriv.fingerprintSha256||pub.fingerprintSha256!==env.keyFingerprintSha256) throw new Error('SOURCE_FAILURE:CREDENTIAL_HANDOFF_IDENTITY_MISMATCH');
+          const kek=crypto.hkdfSync('sha256',Buffer.from(sa.private_key,'utf8'),Buffer.from(encPriv.saltBase64,'base64'),Buffer.from('cxorbia-c6-credential-handoff-kek-v1','utf8'),32);
+          const d1=crypto.createDecipheriv('aes-256-gcm',kek,Buffer.from(encPriv.ivBase64,'base64'));d1.setAuthTag(Buffer.from(encPriv.tagBase64,'base64'));
+          const privateDer=Buffer.concat([d1.update(Buffer.from(encPriv.ciphertextBase64,'base64')),d1.final()]);
+          const privateKey=crypto.createPrivateKey({key:privateDer,format:'der',type:'pkcs8'});
+          const rawAes=crypto.privateDecrypt({key:privateKey,padding:crypto.constants.RSA_PKCS1_OAEP_PADDING,oaepHash:'sha256'},Buffer.from(env.wrappedKeyBase64,'base64'));
+          const encrypted=Buffer.from(env.ciphertextBase64,'base64'),tag=encrypted.subarray(encrypted.length-16),ct=encrypted.subarray(0,encrypted.length-16);
+          const d2=crypto.createDecipheriv('aes-256-gcm',rawAes,Buffer.from(env.ivBase64,'base64'));d2.setAAD(Buffer.from(env.aad,'utf8'));d2.setAuthTag(tag);
+          const decrypted=Buffer.concat([d2.update(ct),d2.final()]);
+          const bundleBytes=env.algorithms?.compression==='gzip'?zlib.gunzipSync(decrypted):decrypted;
+          const bundle=JSON.parse(bundleBytes.toString('utf8'));
+
+          const firstRaw=s(shopper.firstName||shopper.nombre).split(/\s+/)[0];
+          const lastName=s(shopper.lastName||shopper.apellido);
+          const legacyId=s(shopper.legacyShopperId);
+          if(!firstRaw) throw new Error('SOURCE_FAILURE:FOCAL_FIRST_NAME_MISSING');
+          if(!lastName) throw new Error('SOURCE_FAILURE:FOCAL_LAST_NAME_MISSING');
+          const possible=(Array.isArray(bundle.records)?bundle.records:[]).filter(r=>r?.kind==='shopper'&&((legacyId&&s(r.legacyId)===legacyId)||s(r.normalizedLogin)===s(shopper.username||shopper.user).toLowerCase()));
+          const unique=[...new Map(possible.map(r=>[`${s(r.legacyId)}\0${s(r.normalizedLogin)}`,r])).values()];
+          if(unique.length!==1) throw new Error('MAPPING_FAILURE:FOCAL_CREDENTIAL_RECORD_NOT_UNIQUE');
+          const record=unique[0];
+          const login=s(shopper.username||shopper.user||record.loginIdentifier);
+          if(!login||login.toLowerCase()!==s(record.normalizedLogin)) throw new Error('MAPPING_FAILURE:FOCAL_USERNAME_CONTRACT_MISMATCH');
+          const capitalizedFirst=firstRaw.charAt(0).toUpperCase()+firstRaw.slice(1);
+          const password=capitalizedFirst+'123*';
+          const passwordHashPass=sha(password)===s(record.passwordHashHex).toLowerCase();
+          if(!passwordHashPass) throw new Error('AUTH_FAILURE:FOCAL_PASSWORD_CONTRACT_HASH_MISMATCH');
+
+          const browser=await chromium.launch({headless:true});
+          const ctx=await browser.newContext({serviceWorkers:'allow'});
+          const page=await ctx.newPage(),pageErrors=[];
           page.on('pageerror',e=>pageErrors.push(s(e?.message||e)));
           try{
-            const host=process.env.HOSTING_URL.replace(/\/$/,''),url=`${host}/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV&i3final=${Date.now()}`;
+            const host=process.env.HOSTING_URL.replace(/\/$/,''),url=`${host}/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=${encodeURIComponent(projectId)}&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV&i3credential=${Date.now()}`;
             await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
-            const token=await auth.createCustomToken(uid);
-            let signed=false,lastError='';
-            for(let attempt=1;attempt<=5&&!signed;attempt++){
-              try{
-                await page.waitForFunction(()=>window.firebase?.apps?.some(a=>a?.name==='[DEFAULT]')&&typeof window.firebase.auth==='function',null,{timeout:30000});
-                signed=await page.evaluate(async t=>{try{const a=window.firebase.auth();await a.setPersistence(window.firebase.auth.Auth.Persistence.SESSION);await a.signInWithCustomToken(t);return true;}catch(e){return false;}},token);
-              }catch(e){lastError=s(e?.message||e);}
-              if(!signed) await sleep(800*attempt);
-            }
-            if(!signed) throw new Error(`SHOPPER_SIGNIN_PROBE_FAILED_${lastError}`);
-            await page.reload({waitUntil:'domcontentloaded',timeout:90000});
+            await page.waitForSelector('#loginForm',{timeout:90000});
+            await page.waitForFunction(()=>window.CX?.app&&typeof window.CX.app.selectRole==='function',null,{timeout:90000});
+            await page.evaluate(()=>window.CX.app.selectRole('shopper'));
+            await page.fill('#lgUser',login);
+            await page.fill('#lgPass',password);
+            await page.click('#lgSubmit');
             await page.waitForFunction(({shopper})=>{const c=window.CX?.backendAuth?.context?.()||{};return c.authenticated===true&&String(c.role||'')==='shopper'&&String(c.shopperId||'')===shopper;},{shopper:sid},{timeout:120000});
             await page.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE?.completed===true,null,{timeout:150000});
+
             const result=await page.evaluate(async expected=>{
               const d=window.CX?.data||{},portal=window.CX_TYA_CANONICAL_SHOPPER_PORTAL||{};
-              window.CX?.router?.nav?.('miperfil'); await new Promise(r=>setTimeout(r,250));
-              const profileText=String(document.querySelector('#view')?.innerText||''),runtimeEmail=String(portal.currentAuthenticatedEmail?.()||'');
-              const profile={authEmailRuntimeMatches:runtimeEmail===expected,emailRendered:profileText.includes(expected),pending:/Validando tu identidad|slice transitorio|Periodos HR:\s*pendiente/i.test(profileText),identityBlocked:/identidad de esta sesión no está vinculada/i.test(profileText)};
+              window.CX?.router?.nav?.('miperfil'); await new Promise(r=>setTimeout(r,350));
+              const view=document.querySelector('#view'),profileText=String(view?.innerText||'');
+              const identity=portal.resolveExactSessionShopper?.(d)||{};
+              const shopperKey=String(identity?.row?.id||identity?.row?.shopperId||identity?.canonical||'');
+              const visits=shopperKey&&typeof d.visitsForShopper==='function'?d.visitsForShopper(shopperKey,false):[];
+              const stats=shopperKey&&typeof d.shopperStats==='function'?d.shopperStats(shopperKey):{};
+              const credState=portal.currentSessionCredentialState?.()||{};
+              const secret=window.CX?.backendAuth?.sessionCredential?.()||{};
+              const value=view?.querySelector?.('[data-credential-value]'),reveal=view?.querySelector?.('[data-credential-reveal]'),copy=view?.querySelector?.('[data-credential-copy]');
+              const maskedBefore=String(value?.textContent||'')==='••••••••';
+              const secretAbsentBefore=secret.password? !profileText.includes(String(secret.password)) : false;
+              if(reveal)reveal.click();
+              const revealMatches=!!secret.password&&String(value?.textContent||'')===String(secret.password);
+              if(reveal)reveal.click();
+              const maskedAfter=String(value?.textContent||'')==='••••••••';
+              const hasKpi=(label,val)=>Array.from(view?.querySelectorAll?.('.card')||[]).some(el=>{const t=String(el.innerText||'');return t.includes(label)&&t.includes(String(val));});
+              const profile={
+                nameVisible:!!expected.firstName&&profileText.includes(expected.firstName),
+                lastNameVisible:!!expected.lastName&&profileText.includes(expected.lastName),
+                usernameVisible:!!expected.login&&profileText.includes(expected.login),
+                identityLinked:profileText.includes('Identidad vinculada'),
+                misleadingCompleteLabelAbsent:!profileText.includes('Perfil completo')&&!profileText.includes('Perfil incompleto'),
+                credentialAvailable:credState.available===true&&credState.usernamePresent===true&&credState.passwordPresent===true&&credState.source==='validated-shopper-login-memory',
+                credentialControls:!!reveal&&!!copy,
+                credentialMaskedBefore:maskedBefore,
+                credentialSecretAbsentBefore:secretAbsentBefore,
+                credentialRevealMatches:revealMatches,
+                credentialMaskedAfter:maskedAfter,
+                historyCountExact:profileText.includes(`Histórico de visitas · ${visits.length}`)&&(view?.querySelectorAll?.('tbody tr')?.length||0)===visits.length,
+                kpiExact:hasKpi('Visitas',stats.total)&&hasKpi('Realizadas',stats.realizadas)&&hasKpi('Submitidas',stats.submitted)&&hasKpi('Pagadas confirmadas',stats.paymentConfirmed),
+                pending:/Validando tu identidad|slice transitorio|Periodos HR:\s*pendiente/i.test(profileText),
+                identityBlocked:/identidad de esta sesión no está vinculada/i.test(profileText)
+              };
               const projects=(window.CX?.router&&typeof window.CX.router.resolveVisibleProjects==='function')?window.CX.router.resolveVisibleProjects('shopper'):(typeof d.projectsFor==='function'?d.projectsFor('shopper'):d.projects||[]);
               const allowed=new Set((projects||[]).map(pr=>d.programKey?d.programKey(pr):pr.id));
               const projByAny=id=>(d.projects||[]).find(x=>x.id===id)||(d.projects||[]).find(x=>(d.programKey?d.programKey(x):x.id)===id);
@@ -136,37 +231,48 @@ jobs:
               const pool=(d._visitas||[]).filter(v=>(!d.inScope||d.inScope(v.pais))&&allowed.has(progKeyOf(v)));
               const expectedVisits=typeof d.availableVisits==='function'?d.availableVisits(pool):pool.filter(v=>v.estado==='disponible');
               const expectedProjects=new Set(expectedVisits.map(progKeyOf)).size;
-              window.CX?.router?.nav?.('visitas'); await new Promise(r=>setTimeout(r,250));
-              const view=document.querySelector('#view'),text=String(view?.innerText||''),m=text.match(/(\d+) oportunidades en (\d+) proyecto\(s\) para tu perfil/i),cards=view?.querySelectorAll?.('[data-detail]')?.length||0;
+              window.CX?.router?.nav?.('visitas'); await new Promise(r=>setTimeout(r,300));
+              const availableView=document.querySelector('#view'),text=String(availableView?.innerText||''),m=text.match(/(\d+) oportunidades en (\d+) proyecto\(s\) para tu perfil/i),cards=availableView?.querySelectorAll?.('[data-detail]')?.length||0;
               const available={expectedCount:expectedVisits.length,expectedProjectCount:expectedProjects,renderedCount:m?Number(m[1]):-1,renderedProjectCount:m?Number(m[2]):-1,detailCards:cards,pending:/slice transitorio|Periodos HR:\s*pendiente/i.test(text)};
-              return {profile,available,authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null};
-            },email);
-            const a=result.available,p=result.profile;
-            const profilePass=p.authEmailRuntimeMatches&&p.emailRendered&&!p.pending&&!p.identityBlocked;
+              await window.CX?.app?.logout?.();
+              const cleared=(window.CX?.backendAuth?.sessionCredential?.()||{}).available!==true;
+              return {profile,available,credentialClearedOnLogout:cleared,historyCount:visits.length,stats:{total:Number(stats.total||0),realizadas:Number(stats.realizadas||0),submitted:Number(stats.submitted||0),paymentConfirmed:Number(stats.paymentConfirmed||0)},authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null};
+            },{firstName:firstRaw,lastName,login});
+
+            const p=result.profile,a=result.available;
+            const profilePass=p.nameVisible&&p.lastNameVisible&&p.usernameVisible&&p.identityLinked&&p.misleadingCompleteLabelAbsent&&p.credentialAvailable&&p.credentialControls&&p.credentialMaskedBefore&&p.credentialSecretAbsentBefore&&p.credentialRevealMatches&&p.credentialMaskedAfter&&p.historyCountExact&&p.kpiExact&&!p.pending&&!p.identityBlocked&&result.credentialClearedOnLogout===true;
             const visitsPass=a.renderedCount===a.expectedCount&&a.renderedProjectCount===a.expectedProjectCount&&a.detailCards===a.expectedCount&&!a.pending;
-            const out={decision:(profilePass&&visitsPass&&pageErrors.length===0)?'PASS_I3_SHOPPER_PROFILE_EMAIL_AND_AVAILABLE_VISITS':'FAIL_I3_SHOPPER_PROFILE_EMAIL_AND_AVAILABLE_VISITS',checks:{profilePass,visitsPass,noPageErrors:pageErrors.length===0},profile:p,available:a,hrAuthority:{applied:result.authority?.applied===true,hrVisits:Number(result.authority?.hrVisits||0),hrShoppers:Number(result.authority?.hrShoppers||0),ownVisits:Number(result.authority?.ownVisits||0)},valuesRedacted:true,writes:{hostingDevDeploys:0,providerWrites:0,firestoreWrites:0,authWrites:0,hrWrites:0,productionWrites:0},production:false};
-            fs.writeFileSync(`${process.env.OUT}/final-shopper-profile-availability.json`,JSON.stringify(out,null,2)+'\n');
-            console.log(out.decision,JSON.stringify({checks:out.checks,available:out.available,hrAuthority:out.hrAuthority}));
-            if(out.decision!=='PASS_I3_SHOPPER_PROFILE_EMAIL_AND_AVAILABLE_VISITS') process.exitCode=1;
+            const out={
+              decision:(passwordHashPass&&profilePass&&visitsPass&&pageErrors.length===0)?'PASS_I3_SHOPPER_MINIMUM_REAL_PROFILE_CREDENTIAL_HISTORY_KPI_AVAILABLE':'FAIL_I3_SHOPPER_MINIMUM_REAL_PROFILE_CREDENTIAL_HISTORY_KPI_AVAILABLE',
+              checks:{passwordHashContractPass:passwordHashPass,profilePass,visitsPass,noPageErrors:pageErrors.length===0,credentialClearedOnLogout:result.credentialClearedOnLogout===true},
+              profile:p,historyCount:result.historyCount,stats:result.stats,available:a,
+              hrAuthority:{applied:result.authority?.applied===true,hrVisits:Number(result.authority?.hrVisits||0),hrShoppers:Number(result.authority?.hrShoppers||0),ownVisits:Number(result.authority?.ownVisits||0)},
+              valuesRedacted:true,passwordValueLogged:false,passwordHashLogged:false,passwordLength:password.length,
+              writes:{hostingDevDeploys:1,cloudRunDeploys:0,providerWrites:0,firestoreWrites:0,authWrites:0,hrWrites:0,productionWrites:0},production:false
+            };
+            fs.writeFileSync(`${process.env.OUT}/final-shopper-minimum-real-profile.json`,JSON.stringify(out,null,2)+'\n');
+            console.log(out.decision,JSON.stringify({checks:out.checks,historyCount:out.historyCount,stats:out.stats,available:out.available,hrAuthority:out.hrAuthority,valuesRedacted:true}));
+            if(out.decision!=='PASS_I3_SHOPPER_MINIMUM_REAL_PROFILE_CREDENTIAL_HISTORY_KPI_AVAILABLE') process.exitCode=1;
           } finally { await ctx.close(); await browser.close(); }
           NODE
 
-      - name: Enforce final shopper focal PASS and zero writes
+      - name: Enforce focal shopper PASS and write boundaries
         run: |
           set -euo pipefail
-          jq -e '.decision=="PASS_I3_SHOPPER_PROFILE_EMAIL_AND_AVAILABLE_VISITS" and .checks.profilePass==true and .checks.visitsPass==true and .checks.noPageErrors==true and .production==false and .writes.hostingDevDeploys==0 and .writes.providerWrites==0 and .writes.firestoreWrites==0 and .writes.authWrites==0 and .writes.hrWrites==0 and .writes.productionWrites==0' "$OUT/final-shopper-profile-availability.json" >/dev/null
+          jq -e '.decision=="PASS_I3_SHOPPER_MINIMUM_REAL_PROFILE_CREDENTIAL_HISTORY_KPI_AVAILABLE" and .checks.passwordHashContractPass==true and .checks.profilePass==true and .checks.visitsPass==true and .checks.noPageErrors==true and .checks.credentialClearedOnLogout==true and .valuesRedacted==true and .passwordValueLogged==false and .passwordHashLogged==false and .production==false and .writes.hostingDevDeploys==1 and .writes.cloudRunDeploys==0 and .writes.providerWrites==0 and .writes.firestoreWrites==0 and .writes.authWrites==0 and .writes.hrWrites==0 and .writes.productionWrites==0' "$OUT/final-shopper-minimum-real-profile.json" >/dev/null
 
-      - name: Upload focal evidence
+      - name: Upload focal sanitized evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cxorbia-i3-human-shopper-hr-probe-${{ github.run_id }}
           path: ${{ env.OUT }}
           if-no-files-found: error
+          retention-days: 14
 
       - name: Cleanup
         if: always()
         run: |
           git worktree remove --force "$DEPLOY_TREE" 2>/dev/null || true
-          rm -rf .firebase
+          rm -rf .firebase node_modules
           rm -f firebase-debug.log
