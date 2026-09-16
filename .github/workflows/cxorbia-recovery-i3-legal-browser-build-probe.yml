@@ -6,6 +6,7 @@ on:
       - recovery/cxorbia-phase-a-20260831
     paths:
       - .github/workflows/cxorbia-recovery-i3-legal-browser-build-probe.yml
+      - tools/qa/cxorbia-i3-shopper-hr-composition-probe.mjs
   workflow_dispatch:
 
 permissions:
