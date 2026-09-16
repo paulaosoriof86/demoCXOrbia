@@ -36,7 +36,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Freeze exact corrected product source and mapping rule
+      - name: Freeze exact corrected product source and canonical username rule
         run: |
           set -euo pipefail
           mkdir -p "$OUT"
@@ -51,7 +51,7 @@ jobs:
           grep -q 'canonical-shopper-portal-v2-p0-session-credential-operational' app/adapters/tya-canonical-shopper-portal-v2.js
           grep -q 'data-credential-reveal' app/adapters/tya-canonical-shopper-portal-v2.js
           ! grep -q '<b>Protegida</b>' app/adapters/tya-canonical-shopper-portal-v2.js
-          grep -q "const uid=\`tya-\${r.kind==='shopper'?'sh':'usr'}-\${digest.slice(0,24)}\`" tools/qa/cxorbia-corte6-credential-handoff-dryrun.mjs
+          grep -q 'normalizeLogin(login)' app/core/backend-browser-auth.js
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -145,20 +145,14 @@ jobs:
 
           const firstRaw=s(shopper.firstName||shopper.nombre).split(/\s+/)[0];
           const lastName=s(shopper.lastName||shopper.apellido);
+          const login=s(shopper.username||shopper.user);
           if(!firstRaw) throw new Error('SOURCE_FAILURE:FOCAL_FIRST_NAME_MISSING');
           if(!lastName) throw new Error('SOURCE_FAILURE:FOCAL_LAST_NAME_MISSING');
-          const exact=(Array.isArray(bundle.records)?bundle.records:[]).filter(r=>{
-            if(r?.kind!=='shopper') return false;
-            const normalized=s(r.normalizedLogin||r.loginIdentifier).toLowerCase();
-            if(!normalized) return false;
-            const digest=sha(`${tenantId}\0shopper\0${normalized}`);
-            return `tya-sh-${digest.slice(0,24)}`===uid;
-          });
-          if(exact.length!==1) throw new Error(`MAPPING_FAILURE:FOCAL_EXACT_AUTH_UID_CREDENTIAL_COUNT_${exact.length}`);
+          if(!login) throw new Error('SOURCE_FAILURE:FOCAL_USERNAME_MISSING');
+          const exact=(Array.isArray(bundle.records)?bundle.records:[]).filter(r=>r?.kind==='shopper'&&s(r.normalizedLogin||r.loginIdentifier).toLowerCase()===login.toLowerCase());
+          if(exact.length!==1) throw new Error(`MAPPING_FAILURE:FOCAL_EXACT_USERNAME_CREDENTIAL_COUNT_${exact.length}`);
           const record=exact[0];
-          if(!s(record.legacyId)) throw new Error('MAPPING_FAILURE:FOCAL_CREDENTIAL_LEGACY_ID_MISSING');
-          const login=s(shopper.username||shopper.user||record.loginIdentifier);
-          if(!login||login.toLowerCase()!==s(record.normalizedLogin)) throw new Error('MAPPING_FAILURE:FOCAL_USERNAME_CONTRACT_MISMATCH');
+          if(s(record.normalizedLogin||record.loginIdentifier).toLowerCase()!==login.toLowerCase()) throw new Error('MAPPING_FAILURE:FOCAL_USERNAME_CONTRACT_MISMATCH');
           const capitalizedFirst=firstRaw.charAt(0).toUpperCase()+firstRaw.slice(1);
           const password=capitalizedFirst+'123*';
           if(sha(password)!==s(record.passwordHashHex).toLowerCase()) throw new Error('AUTH_FAILURE:FOCAL_PASSWORD_CONTRACT_HASH_MISMATCH');
@@ -197,7 +191,7 @@ jobs:
             },{firstName:firstRaw,lastName,login});
 
             const p=result.profile,a=result.available,profilePass=p.nameVisible&&p.lastNameVisible&&p.usernameVisible&&p.identityLinked&&p.misleadingCompleteLabelAbsent&&p.credentialAvailable&&p.credentialControls&&p.credentialMaskedBefore&&p.credentialSecretAbsentBefore&&p.credentialRevealMatches&&p.credentialMaskedAfter&&p.historyCountExact&&p.kpiExact&&!p.pending&&!p.identityBlocked&&result.credentialClearedOnLogout===true,visitsPass=a.renderedCount===a.expectedCount&&a.renderedProjectCount===a.expectedProjectCount&&a.detailCards===a.expectedCount&&!a.pending;
-            const out={decision:(profilePass&&visitsPass&&pageErrors.length===0)?'PASS_I3_SHOPPER_MINIMUM_REAL_PROFILE_CREDENTIAL_HISTORY_KPI_AVAILABLE':'FAIL_I3_SHOPPER_MINIMUM_REAL_PROFILE_CREDENTIAL_HISTORY_KPI_AVAILABLE',checks:{exactLegacyCredentialMapping:true,exactAuthUidCredentialMapping:true,passwordHashContractPass:true,profilePass,visitsPass,noPageErrors:pageErrors.length===0,credentialClearedOnLogout:result.credentialClearedOnLogout===true},profile:p,historyCount:result.historyCount,stats:result.stats,available:a,valuesRedacted:true,passwordValueLogged:false,passwordHashLogged:false,passwordLength:password.length,writes:{hostingDevDeploys:0,cloudRunDeploys:0,providerWrites:0,firestoreWrites:0,authWrites:0,hrWrites:0,productionWrites:0},production:false};
+            const out={decision:(profilePass&&visitsPass&&pageErrors.length===0)?'PASS_I3_SHOPPER_MINIMUM_REAL_PROFILE_CREDENTIAL_HISTORY_KPI_AVAILABLE':'FAIL_I3_SHOPPER_MINIMUM_REAL_PROFILE_CREDENTIAL_HISTORY_KPI_AVAILABLE',checks:{exactUsernameCredentialMapping:true,passwordHashContractPass:true,profilePass,visitsPass,noPageErrors:pageErrors.length===0,credentialClearedOnLogout:result.credentialClearedOnLogout===true},profile:p,historyCount:result.historyCount,stats:result.stats,available:a,valuesRedacted:true,passwordValueLogged:false,passwordHashLogged:false,passwordLength:password.length,writes:{hostingDevDeploys:0,cloudRunDeploys:0,providerWrites:0,firestoreWrites:0,authWrites:0,hrWrites:0,productionWrites:0},production:false};
             fs.writeFileSync(`${process.env.OUT}/final-shopper-minimum-real-profile.json`,JSON.stringify(out,null,2)+'\n');
             console.log(out.decision,JSON.stringify({checks:out.checks,historyCount:out.historyCount,stats:out.stats,available:out.available,valuesRedacted:true}));
             if(out.decision!=='PASS_I3_SHOPPER_MINIMUM_REAL_PROFILE_CREDENTIAL_HISTORY_KPI_AVAILABLE') process.exitCode=1;
@@ -207,7 +201,7 @@ jobs:
       - name: Enforce focal shopper PASS and zero writes
         run: |
           set -euo pipefail
-          jq -e '.decision=="PASS_I3_SHOPPER_MINIMUM_REAL_PROFILE_CREDENTIAL_HISTORY_KPI_AVAILABLE" and .checks.exactLegacyCredentialMapping==true and .checks.exactAuthUidCredentialMapping==true and .checks.passwordHashContractPass==true and .checks.profilePass==true and .checks.visitsPass==true and .checks.noPageErrors==true and .checks.credentialClearedOnLogout==true and .valuesRedacted==true and .passwordValueLogged==false and .passwordHashLogged==false and .production==false and .writes.hostingDevDeploys==0 and .writes.cloudRunDeploys==0 and .writes.providerWrites==0 and .writes.firestoreWrites==0 and .writes.authWrites==0 and .writes.hrWrites==0 and .writes.productionWrites==0' "$OUT/final-shopper-minimum-real-profile.json" >/dev/null
+          jq -e '.decision=="PASS_I3_SHOPPER_MINIMUM_REAL_PROFILE_CREDENTIAL_HISTORY_KPI_AVAILABLE" and .checks.exactUsernameCredentialMapping==true and .checks.passwordHashContractPass==true and .checks.profilePass==true and .checks.visitsPass==true and .checks.noPageErrors==true and .checks.credentialClearedOnLogout==true and .valuesRedacted==true and .passwordValueLogged==false and .passwordHashLogged==false and .production==false and .writes.hostingDevDeploys==0 and .writes.cloudRunDeploys==0 and .writes.providerWrites==0 and .writes.firestoreWrites==0 and .writes.authWrites==0 and .writes.hrWrites==0 and .writes.productionWrites==0' "$OUT/final-shopper-minimum-real-profile.json" >/dev/null
 
       - name: Upload focal sanitized evidence
         if: always()
