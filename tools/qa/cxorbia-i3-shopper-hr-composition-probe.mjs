@@ -53,7 +53,30 @@ try{
     await page.reload({waitUntil:'domcontentloaded',timeout:90000});
     await page.waitForFunction(({tenant,shopper})=>{const c=window.CX?.backendAuth?.context?.()||{};return c.authenticated===true&&String(c.tenantId||'')===tenant&&String(c.role||'')==='shopper'&&String(c.shopperId||'')===shopper;},{tenant:TENANT,shopper:SHOPPER_ID},{timeout:120000});
     await page.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE?.completed===true,null,{timeout:120000});
-    const live=await page.evaluate(async()=>{const base=window.CX_TYA_LIVE_SOURCE_URL||'/api/tya/cinepolis/hr-live',sep=base.includes('?')?'&':'?',r=await fetch(base+sep+new URLSearchParams({format:'json',fresh:'1',i3focal:String(Date.now())}),{cache:'no-store'}),p=await r.json(),s=p?.snapshot||p?.data||p||{},rt=p?._runtime||s?._runtime||{};return {endpoint:base,httpStatus:r.status,snapshot:s,revision:rt.revision||s.sourceRevision||null};});
+    const live=await page.evaluate(async()=>{
+      const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+      const base=window.CX_TYA_LIVE_SOURCE_URL||'/api/tya/cinepolis/hr-live',sep=base.includes('?')?'&':'?';
+      let last={endpoint:base,httpStatus:0,error:'HR_LIVE_UNAVAILABLE',snapshot:null,revision:null,attempt:0};
+      for(let attempt=1;attempt<=4;attempt++){
+        try{
+          const r=await fetch(base+sep+new URLSearchParams({format:'json',fresh:'1',i3focal:String(Date.now()),attempt:String(attempt)}),{cache:'no-store',headers:{'Cache-Control':'no-cache, no-store','Pragma':'no-cache'}});
+          const text=await r.text();
+          let p=null;
+          try{p=text?JSON.parse(text):null;}catch(_){p=null;}
+          if(!r.ok||!p){
+            last={endpoint:base,httpStatus:r.status,error:!p?`HR_LIVE_NON_JSON_${r.status}`:`HR_LIVE_HTTP_${r.status}`,bodyMarker:text.slice(0,80),snapshot:null,revision:null,attempt};
+            if((r.status===429||r.status>=500||!p)&&attempt<4){await sleep(1000*attempt);continue;}
+            return last;
+          }
+          const s=p?.snapshot||p?.data||p||{},rt=p?._runtime||s?._runtime||{};
+          return {endpoint:base,httpStatus:r.status,snapshot:s,revision:rt.revision||s.sourceRevision||null,error:null,attempt};
+        }catch(e){
+          last={endpoint:base,httpStatus:0,error:String(e?.message||e),snapshot:null,revision:null,attempt};
+          if(attempt<4){await sleep(1000*attempt);continue;}
+        }
+      }
+      return last;
+    });
     const liveValidation=validate(live.snapshot); delete live.snapshot;
     const before=await page.evaluate(()=>{const c=window.CX?.backendAuth?.context?.()||{},d=window.CX?.data||{},id=window.CX_TYA_CANONICAL_SHOPPER_PORTAL?.resolveExactSessionShopper?.(d)||null,p=d.__sessionShopperProfile||null;return {authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,boot:window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE||null,context:{authenticated:c.authenticated===true,tenantId:c.tenantId||null,role:c.role||null,authNamespace:c.authNamespace||null,shopperId:c.shopperId||null,projectIds:Array.isArray(c.projectIds)?c.projectIds:[]},previewMeta:d.previewMeta||null,dataSource:window.CX?.dataSource||null,counts:{projects:Array.isArray(d.projects)?d.projects.length:0,visits:Array.isArray(d._visitas)?d._visitas.length:0,shoppers:Array.isArray(d.shoppers)?d.shoppers.length:0},identity:id?{ok:id.ok===true,reason:id.reason||null,raw:id.raw||null,canonical:id.canonical||null,matchCount:Array.isArray(id.matches)?id.matches.length:0}:null,sessionProfile:{present:!!p,id:p?String(p.id||p.shopperId||''):null},legalModalVisible:[...document.querySelectorAll('.cx-modal')].some(x=>/Términos de uso y confidencialidad/i.test(String(x.innerText||''))&&getComputedStyle(x).display!=='none')};});
     const second=await page.evaluate(async()=>{const r=await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('i3_focal_second_reconcile');return {ok:r?.ok===true,skipped:r?.skipped===true,reason:r?.reason||null,error:r?.error||null,resultApplied:r?.result?.applied===true};});
@@ -67,9 +90,10 @@ try{
   const a=observed.after.authority||{},b=observed.before,live=observed.liveValidation||{},id=observed.after.identity||{},profile=observed.after.sessionProfile||{};
   const checks={humanAuth:b.context?.authenticated===true&&b.context?.role==='shopper'&&b.context?.shopperId===SHOPPER_ID,hrHttp200:observed.live.httpStatus===200,validateSnapshot:live.ok===true,authorityApplied:a.applied===true,hrVisitsMatch:Number(a.hrVisits)===Number(live.visits),hrShoppersMatch:Number(a.hrShoppers)===Number(live.shoppers),protectedSliceStable:Number(a.protectedProfiles)===1,sessionProfilePreserved:a.sessionProfilePreserved===true&&profile.present===true&&profile.id===SHOPPER_ID,identityResolved:id.ok===true&&id.raw===SHOPPER_ID&&id.canonical===SHOPPER_ID,secondReconcileApplied:observed.second.ok===true&&observed.second.resultApplied===true,legalReceiptDurable:observed.legalReadback.currentReceiptPresent===true&&!b.legalModalVisible,noPageErrors:observed.pageErrors.length===0,notTransient:b.counts.projects>0&&b.counts.visits>0&&b.counts.shoppers>1};
   const pass=Object.values(checks).every(Boolean);
-  const out={decision:pass?'PASS_I3_SHOPPER_HR_COMPOSITION_FIX':'HOLD_I3_SHOPPER_HR_COMPOSITION_FIX',classification:pass?null:'RELEASE_COMPOSITION_FAILURE',checks,observed,writes:{hostingDevDeploys:0,providerWrites:0,firestoreWrites:0,authWrites:0,hrWrites:0,productionWrites:0},priorDevDeployRun:PRIOR_DEV_DEPLOY_RUN,production:false,generatedAt:new Date().toISOString()};
+  const environmentOnly=!pass&&(observed.live.httpStatus===0||observed.live.httpStatus===429||observed.live.httpStatus>=500||observed.liveValidation?.ok!==true&&/^HR_LIVE_(HTTP|NON_JSON|UNAVAILABLE)/.test(str(observed.live.error)));
+  const out={decision:pass?'PASS_I3_SHOPPER_HR_COMPOSITION_FIX':environmentOnly?'ENVIRONMENT_FAILURE':'HOLD_I3_SHOPPER_HR_COMPOSITION_FIX',classification:pass?null:environmentOnly?'ENVIRONMENT_FAILURE':'RELEASE_COMPOSITION_FAILURE',checks,observed,writes:{hostingDevDeploys:0,providerWrites:0,firestoreWrites:0,authWrites:0,hrWrites:0,productionWrites:0},priorDevDeployRun:PRIOR_DEV_DEPLOY_RUN,production:false,generatedAt:new Date().toISOString()};
   write(out);
-  console.log(out.decision,JSON.stringify(checks));
+  console.log(out.decision,JSON.stringify(checks),JSON.stringify({live:observed.live}));
   if(!pass)process.exitCode=2;
 } catch(e) {
   const out={decision:'ENVIRONMENT_FAILURE',blocker:'I3_FOCAL_PROBE_EXCEPTION',error:String(e?.stack||e?.message||e),priorDevDeployRun:PRIOR_DEV_DEPLOY_RUN,production:false};
