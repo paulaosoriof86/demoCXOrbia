@@ -167,9 +167,13 @@ jobs:
           try{
             const host=process.env.HOSTING_URL.replace(/\/$/,''),url=`${host}/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=${encodeURIComponent(projectId)}&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV&i3credential=${Date.now()}`;
             await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
-            await page.waitForSelector('#loginForm',{timeout:90000});
-            await page.waitForFunction(()=>window.CX?.app&&typeof window.CX.app.selectRole==='function',null,{timeout:90000});
-            await page.evaluate(()=>window.CX.app.selectRole('shopper'));
+            const shopperRole='#login .role-btn[data-role="shopper"]';
+            await page.waitForSelector(shopperRole,{timeout:90000});
+            await Promise.all([
+              page.waitForLoadState('domcontentloaded',{timeout:90000}).catch(()=>{}),
+              page.click(shopperRole)
+            ]);
+            await page.waitForSelector('#loginForm[data-selected-role="shopper"]',{timeout:90000});
             await page.fill('#lgUser',login); await page.fill('#lgPass',password); await page.click('#lgSubmit');
             await page.waitForFunction(({shopper})=>{const c=window.CX?.backendAuth?.context?.()||{};return c.authenticated===true&&String(c.role||'')==='shopper'&&String(c.shopperId||'')===shopper;},{shopper:sid},{timeout:120000});
             await page.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE?.completed===true,null,{timeout:150000});
