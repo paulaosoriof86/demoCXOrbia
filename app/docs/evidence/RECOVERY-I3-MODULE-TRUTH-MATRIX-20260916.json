@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "cxorbia.recovery.i3.module-truth-matrix.v1",
+  "iteration": "I3",
+  "generatedAt": "2026-09-16",
+  "expectedParentSha": "027d54acf86242e2cd582f52c3a12d1f372f7458",
+  "productSourceSha": "8775b1cccbc4a97e87e7996cf409bc1f490d0ccd",
+  "scope": [
+    "shopper-auth-membership",
+    "shopper-profile-full",
+    "shopper-human-hr-authority",
+    "project-route-source"
+  ],
+  "rows": [
+    {
+      "module": "shopper-auth-membership",
+      "approvedEvidence": "actions run 34899285403 / PASS_I3_SHOPPER_AUTH_MEMBERSHIP_DEV_READONLY",
+      "sourceSuccessor": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+      "head": "027d54acf86242e2cd582f52c3a12d1f372f7458",
+      "liveObserved": "425 active principals, 425 unique shopperIds, 425 exact membership+crosswalk+profile links, zero duplicates",
+      "classification": "MATCH",
+      "note": "Auth linkage itself is not reopened."
+    },
+    {
+      "module": "shopper-profile-full",
+      "approvedEvidence": "CORTE6-PROFILE-FULL-FIRESTORE-WRITE-LATEST.json / PASS_C6_PROFILE_FULL_FIRESTORE_WRITE_READBACK / 120 docs / 329 profile fields / 0 mismatches",
+      "sourceSuccessor": "app/adapters/tya-canonical-shopper-portal-v2.js",
+      "head": "027d54acf86242e2cd582f52c3a12d1f372f7458",
+      "liveObserved": "affected human session renders canonical portal but username/contact/certification/history are incomplete or empty",
+      "classification": "APPROVED_NOT_COMPOSED",
+      "note": "Approved profile data exists; current human runtime does not prove that it is composed into the visible shopper row."
+    },
+    {
+      "module": "shopper-human-hr-authority",
+      "approvedEvidence": "current I3 source plus prior HR exact-runtime PASS evidence",
+      "sourceSuccessor": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "head": "027d54acf86242e2cd582f52c3a12d1f372f7458",
+      "liveObserved": "authenticated human session remains Firestore protected transient slice with HR periods pending, visits 0 and shoppers 1",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "note": "Current Gate 20 focal browser test uses cxTechnicalAuthE2E; it does not certify the exact human lane that reproduced the failure."
+    },
+    {
+      "module": "project-route-source",
+      "approvedEvidence": "Recovery contracts and prevalent addendum require project-scoped configurable routeSource and second-project readiness",
+      "sourceSuccessor": "app/index-backend-dev.html + app/adapters/tya-protected-auth-hr-authority-bridge-v2.js + firebase.json",
+      "head": "027d54acf86242e2cd582f52c3a12d1f372f7458",
+      "liveObserved": "canonical DEV bootstrap/bridge still use Cinépolis-specific default and /api/tya/cinepolis/hr-live while firebase.json also exposes generic /api/tenants/**",
+      "classification": "TRUE_FUNCTIONAL_DEFECT",
+      "note": "This violates the frozen anti-hardcode and second-project readiness contracts unless a product-level dynamic router selects the scoped adapter; current bootstrap does not demonstrate that router."
+    }
+  ],
+  "nextAction": "Extend the existing read-only human-lane browser probe to the affected shopper fixture and classify Auth, legal persistence, HR provider, composition and profile mapping without product/data writes.",
+  "safety": {
+    "productWrites": 0,
+    "providerWrites": 0,
+    "firestoreWrites": 0,
+    "authWrites": 0,
+    "hrWrites": 0,
+    "productionWrites": 0,
+    "production": false
+  }
+}
