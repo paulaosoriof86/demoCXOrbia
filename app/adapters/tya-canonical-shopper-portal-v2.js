@@ -30,6 +30,12 @@
   function authenticatedEmail(){
     try{return str(window.firebase?.auth?.()?.currentUser?.email);}catch(_){return '';}
   }
+  function currentSessionCredential(){
+    try{
+      const c=CX.backendAuth?.sessionCredential?.()||null;
+      return c&&c.available===true?c:{available:false,username:null,password:null,source:'none'};
+    }catch(_){return {available:false,username:null,password:null,source:'none'};}
+  }
   function sessionShopperId(){
     return str(CX.session?.user?.shopperId||authContext()?.shopperId);
   }
@@ -86,26 +92,55 @@
       host.innerHTML=`${ui.ph('Mi Perfil','Identidad Shopper')}<div class="card card-p">${ui.empty('🔒',reason)}</div>`;
       return host;
     }
-    const s=identity.row,shopperKey=str(s.id||s.shopperId||identity.canonical),email=str(s.email)||authenticatedEmail();
+    const s=identity.row,shopperKey=str(s.id||s.shopperId||identity.canonical),email=str(s.email)||authenticatedEmail(),credential=currentSessionCredential();
+    const username=str(s.username||s.user||credential.username),firstName=str(s.firstName||s.nombre),lastName=str(s.lastName||s.apellido);
     const visits=data.visitsForShopper(shopperKey,false).slice().sort((a,b)=>str(b.realizada||b.cuestFecha||b.submittedAt||b.agendada).localeCompare(str(a.realizada||a.cuestFecha||a.submittedAt||a.agendada)));
-    const st=data.shopperStats(shopperKey),cs=cert(s),complete=!!data.shopperProfileComplete?.(s);
+    const st=data.shopperStats(shopperKey),cs=cert(s);
     const active=visits.filter(v=>{const f=facets(v);return f.assigned&&!f.liquidationConfirmed&&!f.paymentConfirmed&&!f.cancelled;});
     const done=visits.filter(v=>facets(v).realized),submitted=visits.filter(v=>facets(v).submitted),paid=visits.filter(v=>facets(v).paymentConfirmed);
     let tab='all';
     const draw=()=>{
       const list=tab==='active'?active:tab==='done'?done:tab==='submitted'?submitted:tab==='paid'?paid:visits;
-      host.innerHTML=`${ui.ph('Mi Perfil','Identidad, acceso, certificación e histórico canónico')}
+      const credentialAvailable=credential.available===true&&!!str(credential.password);
+      const credentialBody=credentialAvailable
+        ? `<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><b data-credential-value>••••••••</b><button class="btn btn-sm btn-ghost" type="button" data-credential-reveal aria-pressed="false">Mostrar</button><button class="btn btn-sm btn-ghost" type="button" data-credential-copy>Copiar</button></div>`
+        : `<b data-credential-unavailable style="font-size:11px">Disponible al ingresar con usuario y contraseña</b>`;
+      host.innerHTML=`${ui.ph('Mi Perfil','Identidad, acceso e histórico canónico')}
       <div class="card card-p" style="margin-bottom:14px">
-        <div class="between" style="gap:12px;align-items:flex-start"><div><div class="card-t" style="font-size:18px">${esc(s.nombre)}</div><div style="font-size:11px;color:var(--t3);margin-top:3px">${esc(shopperKey)} · ${esc(s.ciudad)} · ${esc(s.pais)}</div></div><div class="flex wrap" style="gap:6px"><span class="bdg bdg-${complete?'g':'a'}">${complete?'Perfil completo':'Perfil incompleto'}</span><span class="bdg bdg-${cs==='certificada'?'g':cs==='presentada'?'b':'n'}">${cs==='certificada'?'Certificada':cs==='presentada'?'Certificación presentada':'Sin certificación'}</span></div></div>
-        <div class="grid g4" style="margin-top:14px"><div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">USUARIO</div><b>${esc(s.username||s.user||'— sin dato')}</b></div><div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">CREDENCIAL</div><b>Protegida</b></div><div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">WHATSAPP</div><b>${esc(s.whatsapp||s.phone||'— sin dato')}</b></div><div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">CORREO</div><b>${esc(email||'— sin dato')}</b></div></div>
-        <div style="font-size:11px;color:var(--t3);margin-top:9px">Los datos faltantes no se inventan. Una actualización persistente requiere fuente real y gate de escritura.</div>
+        <div class="between" style="gap:12px;align-items:flex-start"><div><div class="card-t" style="font-size:18px">${esc(s.nombre)}</div><div style="font-size:11px;color:var(--t3);margin-top:3px">${esc(shopperKey)} · ${esc(s.ciudad)} · ${esc(s.pais)}</div></div><div class="flex wrap" style="gap:6px"><span class="bdg bdg-g">Identidad vinculada</span><span class="bdg bdg-${cs==='certificada'?'g':cs==='presentada'?'b':'n'}">${cs==='certificada'?'Certificada':cs==='presentada'?'Certificación presentada':'Sin certificación'}</span></div></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:14px">
+          <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">NOMBRE</div><b>${esc(firstName||'— sin dato')}</b></div>
+          <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">APELLIDO</div><b>${esc(lastName||'— sin dato')}</b></div>
+          <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">USUARIO</div><b>${esc(username||'— sin dato')}</b></div>
+          <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">CONTRASEÑA</div>${credentialBody}</div>
+          <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">WHATSAPP</div><b>${esc(s.whatsapp||s.phone||'— sin dato')}</b></div>
+          <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">CORREO</div><b>${esc(email||'— sin dato')}</b></div>
+        </div>
+        <div style="font-size:11px;color:var(--t3);margin-top:9px">La contraseña validada solo se mantiene en memoria durante la sesión iniciada con usuario y contraseña; no se guarda en localStorage, Firestore ni HR. Los demás datos faltantes no se inventan.</div>
       </div>
       <div class="grid g4" style="margin-bottom:12px">${ui.kpi('Visitas',st.total,'b')}${ui.kpi('Realizadas',st.realizadas,'g')}${ui.kpi('Submitidas',st.submitted,'p')}${ui.kpi('Pagadas confirmadas',st.paymentConfirmed,'g')}</div>
       <div class="card card-p"><div class="between" style="gap:8px;flex-wrap:wrap;margin-bottom:10px"><div class="card-t">Histórico de visitas · ${visits.length}</div><div class="flex wrap" style="gap:6px"><button class="btn btn-sm ${tab==='all'?'btn-pr':'btn-ghost'}" data-tab="all">Todas ${visits.length}</button><button class="btn btn-sm ${tab==='active'?'btn-pr':'btn-ghost'}" data-tab="active">Activas ${active.length}</button><button class="btn btn-sm ${tab==='done'?'btn-pr':'btn-ghost'}" data-tab="done">Realizadas ${done.length}</button><button class="btn btn-sm ${tab==='submitted'?'btn-pr':'btn-ghost'}" data-tab="submitted">Submitidas ${submitted.length}</button><button class="btn btn-sm ${tab==='paid'?'btn-pr':'btn-ghost'}" data-tab="paid">Pagadas ${paid.length}</button></div></div>${rows(list,ui)}</div>`;
       host.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;draw();}));
+      if(credentialAvailable){
+        const value=host.querySelector('[data-credential-value]'),reveal=host.querySelector('[data-credential-reveal]'),copy=host.querySelector('[data-credential-copy]');
+        reveal?.addEventListener('click',()=>{
+          const show=reveal.getAttribute('aria-pressed')!=='true';
+          reveal.setAttribute('aria-pressed',show?'true':'false');
+          reveal.textContent=show?'Ocultar':'Mostrar';
+          if(value)value.textContent=show?String(credential.password):'••••••••';
+        });
+        copy?.addEventListener('click',async()=>{
+          try{
+            await navigator.clipboard.writeText(String(credential.password));
+            if(CX.ui?.toast)CX.ui.toast('Contraseña copiada para esta sesión.','',2200);
+          }catch(_){
+            if(CX.ui?.toast)CX.ui.toast('No fue posible copiar. Usa Mostrar para verla.','warn',2600);
+          }
+        });
+      }
     };
     draw();return host;
   }
-  function install(){if(!CX.modules)return;CX.modules.miperfil=render;window.CX_TYA_CANONICAL_SHOPPER_PORTAL={ready:true,version:'canonical-shopper-portal-v2-p0-auth-email-rendered',exactIdentityOnly:true,identityContractVersion:window.CX_EXACT_IDENTITY_CONTRACT?.version||'legacy-fallback',fullHistory:true,certificationVisible:true,providerWrites:0,production:false,resolveExactSessionShopper:resolveSessionShopper,currentAuthContext:authContext,currentAuthenticatedEmail:authenticatedEmail,isAuthorityPending:authorityPending};}
+  function install(){if(!CX.modules)return;CX.modules.miperfil=render;window.CX_TYA_CANONICAL_SHOPPER_PORTAL={ready:true,version:'canonical-shopper-portal-v2-p0-session-credential-operational',exactIdentityOnly:true,identityContractVersion:window.CX_EXACT_IDENTITY_CONTRACT?.version||'legacy-fallback',fullHistory:true,certificationVisible:true,providerWrites:0,production:false,resolveExactSessionShopper:resolveSessionShopper,currentAuthContext:authContext,currentAuthenticatedEmail:authenticatedEmail,currentSessionCredentialState:()=>{const c=currentSessionCredential();return {available:c.available===true,usernamePresent:!!str(c.username),passwordPresent:!!str(c.password),source:str(c.source)};},isAuthorityPending:authorityPending};}
   install();document.addEventListener('DOMContentLoaded',install,{once:true});window.addEventListener('cx:full-visual-ready',install);
 })();
