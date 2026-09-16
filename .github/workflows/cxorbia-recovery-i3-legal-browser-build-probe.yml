@@ -13,39 +13,86 @@ permissions:
   actions: read
 
 concurrency:
-  group: cxorbia-recovery-i3-legal-browser-build-probe
+  group: cxorbia-recovery-i3-human-shopper-hr-probe
   cancel-in-progress: false
 
 env:
-  PRODUCT_SOURCE_SHA: 8775b1cccbc4a97e87e7996cf409bc1f490d0ccd
+  PRODUCT_SOURCE_SHA: 1f3550d5c1c28e376d86aa178bd3e3015a06b5b2
   PROJECT: cxorbia-backend-dev
+  HOSTING_TARGET: cxorbia-dev
   HOSTING_URL: https://cxorbia-backend-dev.web.app
   TENANT_ID: tya
   PROJECT_ID: cinepolis
   AFFECTED_SHOPPER_ID: s3
-  OUT: .tmp/recovery-i3-legal-browser-build-probe
+  OUT: .tmp/recovery-i3-human-shopper-hr-probe
+  DEPLOY_TREE: ${{ runner.temp }}/cxorbia-i3-human-shopper-source
 
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     steps:
       - name: Checkout canonical Recovery branch
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Freeze focal source and prove no product drift
+      - name: Freeze exact focal product source
         run: |
           set -euo pipefail
           mkdir -p "$OUT"
           test "$GITHUB_REF_NAME" = "recovery/cxorbia-phase-a-20260831"
           git cat-file -e "$PRODUCT_SOURCE_SHA^{commit}"
           git merge-base --is-ancestor "$PRODUCT_SOURCE_SHA" HEAD
-          git diff --quiet "$PRODUCT_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc ':(exclude)app/docs/evidence/RECOVERY-I3-MODULE-TRUTH-MATRIX-20260916.json'
-          jq -n -S --arg head "$GITHUB_SHA" --arg source "$PRODUCT_SOURCE_SHA" '{decision:"PASS_I3_HUMAN_SHOPPER_SOURCE_FREEZE",headSha:$head,productSourceSha:$source,productDrift:false,production:false,writes:0}' > "$OUT/source-freeze.json"
+          git diff --quiet "$PRODUCT_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc
+          jq -n -S --arg head "$GITHUB_SHA" --arg source "$PRODUCT_SOURCE_SHA" '{decision:"PASS_I3_FOCAL_SOURCE_FREEZE",headSha:$head,productSourceSha:$source,productDrift:false,production:false}' > "$OUT/source-freeze.json"
 
-      - name: Prove exact DEV static assets before browser execution
+      - name: Syntax and focal source contract
+        run: |
+          set -euo pipefail
+          node --check app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
+          node --check app/adapters/tya-canonical-shopper-portal-v2.js
+          grep -q '__sessionShopperProfile' app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
+          grep -q '__sessionShopperProfile' app/adapters/tya-canonical-shopper-portal-v2.js
+          grep -q 'if(authorityPending())' app/adapters/tya-canonical-shopper-portal-v2.js
+          jq -n -S '{decision:"PASS_I3_FOCAL_SOURCE_CONTRACT",syntax:true,authorityGatedPortal:true,exactSessionProfileChannel:true,production:false}' > "$OUT/source-contract.json"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install DEV deployment and probe dependencies
+        run: |
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase-tools@latest playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
+
+      - name: Authenticate Firebase DEV only
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+
+      - name: Prepare exact product source
+        run: |
+          set -euo pipefail
+          rm -rf "$DEPLOY_TREE"
+          git worktree add --detach "$DEPLOY_TREE" "$PRODUCT_SOURCE_SHA"
+          test "$(git -C "$DEPLOY_TREE" rev-parse HEAD)" = "$PRODUCT_SOURCE_SHA"
+          node --check "$DEPLOY_TREE/app/adapters/tya-protected-auth-hr-authority-bridge-v2.js"
+          node --check "$DEPLOY_TREE/app/adapters/tya-canonical-shopper-portal-v2.js"
+
+      - name: Deploy exact focal source to Hosting DEV once
+        run: |
+          set -euo pipefail
+          cd "$DEPLOY_TREE"
+          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy \
+            --config firebase.json \
+            --only "hosting:$HOSTING_TARGET" \
+            --project "$PROJECT" \
+            --non-interactive
+          jq -n -S --arg source "$PRODUCT_SOURCE_SHA" '{decision:"PASS_I3_FOCAL_DEV_DEPLOY",project:"cxorbia-backend-dev",hostingTarget:"cxorbia-dev",productSourceSha:$source,hostingDeploys:1,production:false}' > "$OUT/dev-deploy.json"
+
+      - name: Prove exact DEV asset parity post-deploy
         run: |
           set -euo pipefail
           assets=(
@@ -57,32 +104,17 @@ jobs:
           )
           : > "$OUT/asset-parity.tsv"
           for pair in "${assets[@]}"; do
-            local_path="${pair%% *}"; remote_path="${pair#* }"
+            local_path="$DEPLOY_TREE/${pair%% *}"; remote_path="${pair#* }"
             expected="$(sha256sum "$local_path" | awk '{print $1}')"
             remote="$OUT/remote-$(basename "$remote_path")"
-            curl -fsSL --retry 5 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' -H 'Pragma: no-cache' "$HOSTING_URL/$remote_path?i3humanprobe=${GITHUB_RUN_ID}-$(date +%s%N)" -o "$remote"
+            curl -fsSL --retry 8 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' -H 'Pragma: no-cache' "$HOSTING_URL/$remote_path?i3focal=${GITHUB_RUN_ID}-$(date +%s%N)" -o "$remote"
             actual="$(sha256sum "$remote" | awk '{print $1}')"
             printf '%s\t%s\t%s\t%s\n' "$remote_path" "$expected" "$actual" "$([ "$expected" = "$actual" ] && echo MATCH || echo MISMATCH)" >> "$OUT/asset-parity.tsv"
             test "$expected" = "$actual"
           done
-          jq -Rn '[inputs|split("\t")|{path:.[0],expectedSha256:.[1],servedSha256:.[2],classification:.[3]}] | {decision:"PASS_I3_HUMAN_SHOPPER_DEV_ASSET_PARITY",assets:.,production:false,writes:0}' < "$OUT/asset-parity.tsv" > "$OUT/asset-parity.json"
+          jq -Rn '[inputs|split("\t")|{path:.[0],expectedSha256:.[1],servedSha256:.[2],classification:.[3]}] | {decision:"PASS_I3_FOCAL_DEV_ASSET_PARITY",assets:.,production:false}' < "$OUT/asset-parity.tsv" > "$OUT/asset-parity.json"
 
-      - name: Setup Node and fresh Chromium
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      - name: Install read-only probe dependencies
-        run: |
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
-          npx playwright install --with-deps chromium >/dev/null 2>&1
-
-      - name: Authenticate canonical Firebase DEV read-only
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
-      - name: Probe affected shopper exact human lane end to end
+      - name: Probe exact affected shopper human lane
         run: |
           set -euo pipefail
           node <<'NODE'
@@ -95,114 +127,64 @@ jobs:
           const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
           const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
           const write=v=>fs.writeFileSync(path.join(OUT,'affected-shopper-human-lane.json'),JSON.stringify(v,null,2)+'\n');
-          const flags=p=>({username:Boolean(str(p?.username||p?.user)),phone:Boolean(str(p?.whatsapp||p?.phone)),email:Boolean(str(p?.email)),certification:Boolean(str(p?.certificationStatus)||p?.certified===true||p?.certificationPresented===true)});
           const visitKey=v=>{const coord=str(v?.sourceTab)&&str(v?.sourceRow)?`${str(v.sourceTab)}::${str(v.sourceRow)}`:'';return str(v?.hrRowId)||coord||str(v?.visitId||v?.id);};
-          function validateMirror(snapshot){
-            try{
-              if(!snapshot||snapshot.sourceSafe!==true)throw new Error('HR_LIVE_SOURCE_SAFE_REQUIRED');
-              const periods=arr(snapshot.periods),visits=arr(snapshot.visits),shoppers=arr(snapshot.shoppers);
-              if(!periods.length||!visits.length)throw new Error('HR_LIVE_NONEMPTY_REQUIRED');
-              const periodKeys=periods.map(p=>str(p.key||p.periodKey)).filter(Boolean);
-              if(new Set(periodKeys).size!==periodKeys.length)throw new Error('HR_LIVE_DUPLICATE_PERIOD_KEYS');
-              const keys=visits.map(visitKey).filter(Boolean);
-              if(keys.length!==visits.length||new Set(keys).size!==keys.length)throw new Error('HR_LIVE_DUPLICATE_OR_MISSING_VISIT_KEYS');
-              const periodSet=new Set(periodKeys);
-              for(const key of new Set(visits.map(v=>str(v.periodKey)).filter(Boolean)))if(!periodSet.has(key))throw new Error(`HR_LIVE_VISIT_PERIOD_MISSING_${key}`);
-              return {ok:true,error:null,periods:periods.length,visits:visits.length,shoppers:shoppers.length,uniqueVisitKeys:keys.length,firstPeriod:periodKeys.slice().sort()[0]||null,latestPeriod:periodKeys.slice().sort().at(-1)||null};
-            }catch(error){return {ok:false,error:str(error?.message||error)};}
-          }
-          function classifyCondition(after,reconcileResult,hr){
-            const a=after.authority||{},b=after.boot||{};
-            if(after.context?.authenticated!==true)return 'backend_auth_not_authenticated';
-            if(after.context?.role!=='shopper'||after.context?.shopperId!==SHOPPER_ID)return 'shopper_context_not_exact';
-            if(hr.httpStatus!==200)return `hr_http_${hr.httpStatus||0}`;
-            if(hr.validation?.ok!==true)return `validateSnapshot:${hr.validation?.error||'failed'}`;
-            if(b.authorized===false)return 'boot_authorized_false';
-            if(b.protectedBackendReady===false)return 'protected_backend_not_ready';
-            if(b.runtimeDependenciesReady===false)return 'runtime_dependencies_not_ready';
-            if(reconcileResult?.skipped===true)return `reconcile_skipped:${reconcileResult.reason||'unknown'}`;
-            if(reconcileResult?.ok===false)return `reconcile_error:${reconcileResult.error||a.error||'unknown'}`;
-            if(a.applied!==true)return `authority_not_applied:${a.error||'no_error_marker'}`;
-            return null;
-          }
+          const validate=s=>{try{if(!s||s.sourceSafe!==true)throw new Error('HR_LIVE_SOURCE_SAFE_REQUIRED');const periods=arr(s.periods),visits=arr(s.visits),shoppers=arr(s.shoppers),pk=periods.map(p=>str(p.key||p.periodKey)).filter(Boolean),vk=visits.map(visitKey).filter(Boolean);if(!periods.length||!visits.length)throw new Error('HR_LIVE_NONEMPTY_REQUIRED');if(new Set(pk).size!==pk.length)throw new Error('HR_LIVE_DUPLICATE_PERIOD_KEYS');if(vk.length!==visits.length||new Set(vk).size!==vk.length)throw new Error('HR_LIVE_DUPLICATE_OR_MISSING_VISIT_KEYS');const ps=new Set(pk);for(const k of new Set(visits.map(v=>str(v.periodKey)).filter(Boolean)))if(!ps.has(k))throw new Error(`HR_LIVE_VISIT_PERIOD_MISSING_${k}`);return {ok:true,periods:periods.length,visits:visits.length,shoppers:shoppers.length,uniqueVisitKeys:vk.length};}catch(e){return {ok:false,error:str(e?.message||e)};}};
           (async()=>{
             if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
-            const adminAuth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(TENANT);
-            const memberSnap=await tenant.collection('users').where('shopperId','==',SHOPPER_ID).get();
-            const members=memberSnap.docs.map(d=>({id:d.id,...(d.data()||{})})).filter(m=>m.active===true&&str(m.role)==='shopper'&&str(m.authNamespace)==='shopper'&&arr(m.projectIds).map(String).includes(PROJECT_ID));
-            if(members.length!==1){const out={decision:'AUTH_FAILURE',blocker:'AFFECTED_SHOPPER_MEMBERSHIP_DRIFT',membershipCount:members.length,writes:0,production:false};write(out);console.log(out.decision,out.blocker);process.exit(2);}
-            const member=members[0];
-            try{await adminAuth.getUser(member.id);}catch(e){const out={decision:'AUTH_FAILURE',blocker:'AFFECTED_SHOPPER_AUTH_USER_DRIFT',code:str(e?.code),writes:0,production:false};write(out);console.log(out.decision,out.blocker);process.exit(2);}
+            const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(TENANT);
+            const memberDocs=await tenant.collection('users').where('shopperId','==',SHOPPER_ID).get();
+            const members=memberDocs.docs.map(d=>({id:d.id,...(d.data()||{})})).filter(m=>m.active===true&&str(m.role)==='shopper'&&str(m.authNamespace)==='shopper'&&arr(m.projectIds).map(String).includes(PROJECT_ID));
+            if(members.length!==1)throw new Error('AFFECTED_SHOPPER_MEMBERSHIP_DRIFT');
+            const member=members[0]; await auth.getUser(member.id);
             const profileSnap=await tenant.collection('shoppers').doc(SHOPPER_ID).get();
-            const rawProfile=profileSnap.exists?(profileSnap.data()||{}):{};
-            const rawProfileFlags=flags(rawProfile);
-            const legalContents=(await tenant.collection('legalContents').get()).docs.map(d=>({id:d.id,...(d.data()||{})})).filter(c=>c.active!==false&&str(c.scopeMode||'tenant')==='tenant'&&str(c.currentVersion)&&/^[a-f0-9]{64}$/.test(str(c.currentDigest).toLowerCase()));
+            if(!profileSnap.exists)throw new Error('AFFECTED_SHOPPER_PROFILE_DRIFT');
+            const legal=(await tenant.collection('legalContents').get()).docs.map(d=>({id:d.id,...(d.data()||{})})).filter(c=>c.active!==false&&str(c.scopeMode||'tenant')==='tenant'&&str(c.currentVersion)&&/^[a-f0-9]{64}$/.test(str(c.currentDigest).toLowerCase()));
             const receipts=(await tenant.collection('legalAcceptances').get()).docs.map(d=>({id:d.id,...(d.data()||{})}));
-            const current=legalContents.length===1?legalContents[0]:null;
-            const matchingReceipts=current?receipts.filter(r=>str(r.actorUid)===member.id&&str(r.tenantId)===TENANT&&str(r.scopeMode)==='tenant'&&str(r.role)==='shopper'&&str(r.authNamespace)==='shopper'&&str(r.legalContentId)===str(current.id)&&str(r.legalVersion)===str(current.currentVersion)&&str(r.contentDigest).toLowerCase()===str(current.currentDigest).toLowerCase()&&str(r.status)==='accepted'&&str(r.acceptanceMethod)==='human_ui'&&r.subjectExact===true&&Boolean(r.acceptedAt)):[];
-            const browser=await chromium.launch({headless:true});
-            const ctx=await browser.newContext({serviceWorkers:'allow'});
-            const page=await ctx.newPage();
-            const pageErrors=[];page.on('pageerror',e=>pageErrors.push(str(e?.message||e)));
-            let observed;
+            const current=legal.length===1?legal[0]:null;
+            const matching=current?receipts.filter(r=>str(r.actorUid)===member.id&&str(r.tenantId)===TENANT&&str(r.scopeMode)==='tenant'&&str(r.role)==='shopper'&&str(r.authNamespace)==='shopper'&&str(r.legalContentId)===str(current.id)&&str(r.legalVersion)===str(current.currentVersion)&&str(r.contentDigest).toLowerCase()===str(current.currentDigest).toLowerCase()&&str(r.status)==='accepted'&&str(r.acceptanceMethod)==='human_ui'&&r.subjectExact===true&&Boolean(r.acceptedAt)):[];
+            const browser=await chromium.launch({headless:true}),ctx=await browser.newContext({serviceWorkers:'allow'}),page=await ctx.newPage(),pageErrors=[];
+            page.on('pageerror',e=>pageErrors.push(str(e?.message||e)));
+            let observed={};
             try{
-              const url=`${HOST}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cxProjectId=${encodeURIComponent(PROJECT_ID)}&cxProtectedRuntime=${PROTECTED}&cxHumanFullVisual=${FULL}&i3affectedshopper=${Date.now()}`;
+              const url=`${HOST}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cxProjectId=${encodeURIComponent(PROJECT_ID)}&cxProtectedRuntime=${PROTECTED}&cxHumanFullVisual=${FULL}&i3focal=${Date.now()}`;
               await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
               await page.waitForFunction(()=>window.CX_DEV_ENTRY_CANONICAL?.lane==='authenticated-human-canonical'&&window.CX_DEV_ENTRY_CANONICAL?.technicalAuth===false,null,{timeout:90000});
-              await page.waitForFunction(()=>window.firebase&&window.firebase.apps&&window.firebase.apps.some(a=>a&&a.name==='[DEFAULT]')&&typeof window.firebase.auth==='function',null,{timeout:90000});
-              const token=await adminAuth.createCustomToken(member.id);
+              await page.waitForFunction(()=>window.firebase?.apps?.some(a=>a?.name==='[DEFAULT]')&&typeof window.firebase.auth==='function',null,{timeout:90000});
+              const token=await auth.createCustomToken(member.id);
               await page.evaluate(async t=>{const a=firebase.auth();await a.setPersistence(firebase.auth.Auth.Persistence.SESSION);await a.signInWithCustomToken(t);},token);
               await page.reload({waitUntil:'domcontentloaded',timeout:90000});
               await page.waitForFunction(({tenant,shopper})=>{const c=window.CX?.backendAuth?.context?.()||{};return c.authenticated===true&&String(c.tenantId||'')===tenant&&String(c.role||'')==='shopper'&&String(c.shopperId||'')===shopper;},{tenant:TENANT,shopper:SHOPPER_ID},{timeout:120000});
-              const hr=await page.evaluate(async()=>{
-                const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
-                const visitKey=v=>{const coord=str(v?.sourceTab)&&str(v?.sourceRow)?`${str(v.sourceTab)}::${str(v.sourceRow)}`:'';return str(v?.hrRowId)||coord||str(v?.visitId||v?.id);};
-                const validate=snapshot=>{try{if(!snapshot||snapshot.sourceSafe!==true)throw new Error('HR_LIVE_SOURCE_SAFE_REQUIRED');const periods=arr(snapshot.periods),visits=arr(snapshot.visits),shoppers=arr(snapshot.shoppers);if(!periods.length||!visits.length)throw new Error('HR_LIVE_NONEMPTY_REQUIRED');const periodKeys=periods.map(p=>str(p.key||p.periodKey)).filter(Boolean);if(new Set(periodKeys).size!==periodKeys.length)throw new Error('HR_LIVE_DUPLICATE_PERIOD_KEYS');const keys=visits.map(visitKey).filter(Boolean);if(keys.length!==visits.length||new Set(keys).size!==keys.length)throw new Error('HR_LIVE_DUPLICATE_OR_MISSING_VISIT_KEYS');const periodSet=new Set(periodKeys);for(const key of new Set(visits.map(v=>str(v.periodKey)).filter(Boolean)))if(!periodSet.has(key))throw new Error(`HR_LIVE_VISIT_PERIOD_MISSING_${key}`);return {ok:true,error:null,periods:periods.length,visits:visits.length,shoppers:shoppers.length,uniqueVisitKeys:keys.length,firstPeriod:periodKeys.slice().sort()[0]||null,latestPeriod:periodKeys.slice().sort().at(-1)||null};}catch(error){return {ok:false,error:String(error?.message||error)};}};
-                try{const base=window.CX_TYA_LIVE_SOURCE_URL||'/api/tya/cinepolis/hr-live';const sep=base.includes('?')?'&':'?';const requestUrl=base+sep+new URLSearchParams({format:'json',fresh:'1',i3human:String(Date.now())}).toString();const r=await fetch(requestUrl,{cache:'no-store',headers:{'Cache-Control':'no-cache, no-store','Pragma':'no-cache'}});const p=await r.json().catch(()=>null),s=p?.snapshot||p?.data||p||{},rt=p?._runtime||s?._runtime||{};return {endpoint:base,httpStatus:r.status,sourceSafe:s?.sourceSafe===true,periods:arr(s?.periods).length,visits:arr(s?.visits).length,shoppers:arr(s?.shoppers).length,revision:rt.revision||s.sourceRevision||null,refreshError:rt.refreshError||null,validation:validate(s)};}catch(e){return {endpoint:window.CX_TYA_LIVE_SOURCE_URL||'/api/tya/cinepolis/hr-live',httpStatus:0,error:String(e?.message||e),validation:{ok:false,error:String(e?.message||e)}};}
-              });
-              const before=await page.evaluate(()=>{const clean=v=>JSON.parse(JSON.stringify(v??null)),c=window.CX?.backendAuth?.context?.()||{},d=window.CX?.data||{};const identity=window.CX_TYA_CANONICAL_SHOPPER_PORTAL?.resolveExactSessionShopper?.(d)||null;return clean({authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,boot:window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE||null,context:{authenticated:c.authenticated===true,tenantId:c.tenantId||null,role:c.role||null,authNamespace:c.authNamespace||null,shopperId:c.shopperId||null,projectIds:Array.isArray(c.projectIds)?c.projectIds:[]},previewMeta:d.previewMeta||null,dataSource:window.CX?.dataSource||null,counts:{projects:Array.isArray(d.projects)?d.projects.length:0,visits:Array.isArray(d._visitas)?d._visitas.length:0,shoppers:Array.isArray(d.shoppers)?d.shoppers.length:0},identity:identity?{ok:identity.ok===true,reason:identity.reason||null,raw:identity.raw||null,canonical:identity.canonical||null,matchCount:Array.isArray(identity.matches)?identity.matches.length:0}:null});});
-              const reconcileResult=await page.evaluate(async()=>{if(typeof window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY!=='function')return {available:false,invoked:false,ok:false,error:'RECONCILE_FUNCTION_MISSING'};const r=await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY('i3_affected_shopper_exact_human_probe');return {available:true,invoked:true,ok:r?.ok===true,skipped:r?.skipped===true,reason:r?.reason||null,error:r?.error||null,resultApplied:r?.result?.applied===true};});
-              await page.waitForTimeout(250);
-              const after=await page.evaluate(()=>{const clean=v=>JSON.parse(JSON.stringify(v??null)),c=window.CX?.backendAuth?.context?.()||{},d=window.CX?.data||{},sid=String(c.shopperId||''),p=(typeof d.getShopper==='function'?d.getShopper(sid):null)||((Array.isArray(d.shoppers)?d.shoppers:[]).find(x=>String(x?.id||x?.shopperId||'')===sid))||{},f=v=>Boolean(String(v??'').trim()),identity=window.CX_TYA_CANONICAL_SHOPPER_PORTAL?.resolveExactSessionShopper?.(d)||null,own=typeof d.visitsForShopper==='function'?d.visitsForShopper(identity?.canonical||sid,false):[];return clean({authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,boot:window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE||null,context:{authenticated:c.authenticated===true,tenantId:c.tenantId||null,role:c.role||null,authNamespace:c.authNamespace||null,shopperId:c.shopperId||null,projectIds:Array.isArray(c.projectIds)?c.projectIds:[]},previewMeta:d.previewMeta||null,dataSource:window.CX?.dataSource||null,counts:{projects:Array.isArray(d.projects)?d.projects.length:0,visits:Array.isArray(d._visitas)?d._visitas.length:0,shoppers:Array.isArray(d.shoppers)?d.shoppers.length:0,ownVisits:Array.isArray(own)?own.length:0},identity:identity?{ok:identity.ok===true,reason:identity.reason||null,raw:identity.raw||null,canonical:identity.canonical||null,matchCount:Array.isArray(identity.matches)?identity.matches.length:0}:null,profileFlags:{username:f(p.username||p.user),phone:f(p.whatsapp||p.phone),email:f(p.email),certification:f(p.certificationStatus)||p.certified===true||p.certificationPresented===true},legalModalVisible:[...document.querySelectorAll('.cx-modal')].some(x=>/Términos de uso y confidencialidad/i.test(String(x.innerText||''))&&getComputedStyle(x).display!=='none')});});
-              observed={hr,before,reconcileResult,after};
-              observed.pageErrors=pageErrors;
-              observed.rawProfileExists=profileSnap.exists;
-              observed.rawProfileFlags=rawProfileFlags;
-              observed.legalReadback={currentTenantLegalContentCount:legalContents.length,currentReceiptPresent:matchingReceipts.length>0,currentReceiptCount:matchingReceipts.length};
-            } finally {await ctx.close();await browser.close();}
-            const c=observed.after?.context||{},h=observed.hr||{},a=observed.after?.authority||{},b=observed.after?.boot||{},d=observed.after?.counts||{},r=observed.reconcileResult||{};
-            const exactCondition=classifyCondition(observed.after||{},r,h);
-            const validateSnapshotPassed=h.validation?.ok===true;
-            const reconcileExecuted=r.available===true&&r.invoked===true&&r.skipped!==true;
-            const applyCompositionExecuted=r.resultApplied===true||a.applied===true;
-            let decision='PASS_I3_AFFECTED_SHOPPER_HUMAN_LANE',blocker=null;
-            if(!c.authenticated||c.role!=='shopper'||c.authNamespace!=='shopper'||c.shopperId!==SHOPPER_ID||!arr(c.projectIds).map(String).includes(PROJECT_ID)){decision='AUTH_FAILURE';blocker='AFFECTED_SHOPPER_HUMAN_CONTEXT_DRIFT';}
-            else if(h.httpStatus!==200||h.sourceSafe!==true||validateSnapshotPassed!==true){decision='PROVIDER_FAILURE';blocker='AFFECTED_SHOPPER_BROWSER_HR_SOURCE_INVALID';}
-            else if(b.protectedBackendReady===false||b.runtimeDependenciesReady===false||r.available!==true){decision='RELEASE_COMPOSITION_FAILURE';blocker='AFFECTED_SHOPPER_HR_RUNTIME_DEPENDENCY_NOT_READY';}
-            else if(r.ok!==true||a.applied!==true||d.projects<1||d.visits<1){decision='FUNCTIONAL_DEFECT';blocker='AFFECTED_SHOPPER_HR_AUTHORITY_NOT_COMPOSED';}
-            else if((rawProfileFlags.username&&!observed.after.profileFlags.username)||(rawProfileFlags.phone&&!observed.after.profileFlags.phone)||(rawProfileFlags.email&&!observed.after.profileFlags.email)||(rawProfileFlags.certification&&!observed.after.profileFlags.certification)){decision='MAPPING_FAILURE';blocker='AFFECTED_SHOPPER_PROFILE_FIELDS_DROPPED_IN_COMPOSITION';}
-            else if(pageErrors.length){decision='FUNCTIONAL_DEFECT';blocker='AFFECTED_SHOPPER_PAGE_ERRORS';}
-            const out={decision,blocker,iteration:'I3',shopperFixture:SHOPPER_ID,humanLane:true,technicalAuth:false,observed,derived:{validateSnapshotPassed,reconcileExecuted,applyCompositionExecuted,exactConditionLeavingAuthorityNotApplied:exactCondition},writes:0,providerWrites:0,firestoreWrites:0,authWrites:0,hrWrites:0,production:false,generatedAt:new Date().toISOString()};
-            write(out);
-            console.log(decision,blocker||'',JSON.stringify({http:h.httpStatus,revision:h.revision,validateSnapshotPassed,reconcileExecuted,applyCompositionExecuted,authorityApplied:a.applied===true,condition:exactCondition,projects:d.projects,visits:d.visits,shoppers:d.shoppers,identity:observed.after?.identity,profileFlags:observed.after?.profileFlags,rawProfileFlags,legalReceiptPresent:observed.legalReadback.currentReceiptPresent}));
-            if(decision!=='PASS_I3_AFFECTED_SHOPPER_HUMAN_LANE')process.exitCode=2;
-          })().catch(error=>{const out={decision:'ENVIRONMENT_FAILURE',blocker:'AFFECTED_SHOPPER_HUMAN_PROBE_EXCEPTION',error:String(error?.stack||error?.message||error),writes:0,production:false,generatedAt:new Date().toISOString()};write(out);console.error(error);process.exitCode=1;});
+              await page.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE?.completed===true,null,{timeout:120000});
+              const live=await page.evaluate(async()=>{const base=window.CX_TYA_LIVE_SOURCE_URL||'/api/tya/cinepolis/hr-live',sep=base.includes('?')?'&':'?',r=await fetch(base+sep+new URLSearchParams({format:'json',fresh:'1',i3focal:String(Date.now())}),{cache:'no-store'}),p=await r.json(),s=p?.snapshot||p?.data||p||{},rt=p?._runtime||s?._runtime||{};return {endpoint:base,httpStatus:r.status,snapshot:s,revision:rt.revision||s.sourceRevision||null};});
+              const liveValidation=validate(live.snapshot); delete live.snapshot;
+              const before=await page.evaluate(()=>{const c=window.CX?.backendAuth?.context?.()||{},d=window.CX?.data||{},id=window.CX_TYA_CANONICAL_SHOPPER_PORTAL?.resolveExactSessionShopper?.(d)||null,p=d.__sessionShopperProfile||null;return {authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,boot:window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE||null,context:{authenticated:c.authenticated===true,tenantId:c.tenantId||null,role:c.role||null,authNamespace:c.authNamespace||null,shopperId:c.shopperId||null,projectIds:Array.isArray(c.projectIds)?c.projectIds:[]},previewMeta:d.previewMeta||null,dataSource:window.CX?.dataSource||null,counts:{projects:Array.isArray(d.projects)?d.projects.length:0,visits:Array.isArray(d._visitas)?d._visitas.length:0,shoppers:Array.isArray(d.shoppers)?d.shoppers.length:0},identity:id?{ok:id.ok===true,reason:id.reason||null,raw:id.raw||null,canonical:id.canonical||null,matchCount:Array.isArray(id.matches)?id.matches.length:0}:null,sessionProfile:{present:!!p,id:p?String(p.id||p.shopperId||''):null},legalModalVisible:[...document.querySelectorAll('.cx-modal')].some(x=>/Términos de uso y confidencialidad/i.test(String(x.innerText||''))&&getComputedStyle(x).display!=='none')};});
+              const second=await page.evaluate(async()=>{const r=await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY?.('i3_focal_second_reconcile');return {ok:r?.ok===true,skipped:r?.skipped===true,reason:r?.reason||null,error:r?.error||null,resultApplied:r?.result?.applied===true};});
+              const after=await page.evaluate(()=>{const d=window.CX?.data||{},id=window.CX_TYA_CANONICAL_SHOPPER_PORTAL?.resolveExactSessionShopper?.(d)||null,p=d.__sessionShopperProfile||null;return {authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,counts:{projects:Array.isArray(d.projects)?d.projects.length:0,visits:Array.isArray(d._visitas)?d._visitas.length:0,shoppers:Array.isArray(d.shoppers)?d.shoppers.length:0},identity:id?{ok:id.ok===true,reason:id.reason||null,raw:id.raw||null,canonical:id.canonical||null,matchCount:Array.isArray(id.matches)?id.matches.length:0}:null,sessionProfile:{present:!!p,id:p?String(p.id||p.shopperId||''):null}};});
+              observed={live,liveValidation,before,second,after,pageErrors,legalReadback:{currentTenantLegalContentCount:legal.length,currentReceiptPresent:matching.length>0,currentReceiptCount:matching.length}};
+            }finally{await ctx.close();await browser.close();}
+            const a=observed.after.authority||{},b=observed.before,live=observed.liveValidation||{},id=observed.after.identity||{},profile=observed.after.sessionProfile||{};
+            const checks={humanAuth:b.context?.authenticated===true&&b.context?.role==='shopper'&&b.context?.shopperId===SHOPPER_ID,hrHttp200:observed.live.httpStatus===200,validateSnapshot:live.ok===true,authorityApplied:a.applied===true,hrVisitsMatch:Number(a.hrVisits)===Number(live.visits),hrShoppersMatch:Number(a.hrShoppers)===Number(live.shoppers),protectedSliceStable:Number(a.protectedProfiles)===1,sessionProfilePreserved:a.sessionProfilePreserved===true&&profile.present===true&&profile.id===SHOPPER_ID,identityResolved:id.ok===true&&id.raw===SHOPPER_ID&&id.canonical===SHOPPER_ID,secondReconcileApplied:observed.second.ok===true&&observed.second.resultApplied===true,legalReceiptDurable:observed.legalReadback.currentReceiptPresent===true&&!b.legalModalVisible,noPageErrors:observed.pageErrors.length===0,notTransient:b.counts.projects>0&&b.counts.visits>0&&b.counts.shoppers>1};
+            const pass=Object.values(checks).every(Boolean);
+            const out={decision:pass?'PASS_I3_SHOPPER_HR_COMPOSITION_FIX':'HOLD_I3_SHOPPER_HR_COMPOSITION_FIX',classification:pass?null:'RELEASE_COMPOSITION_FAILURE',checks,observed,writes:{hostingDevDeploys:1,providerWrites:0,firestoreWrites:0,authWrites:0,hrWrites:0,productionWrites:0},production:false,generatedAt:new Date().toISOString()};write(out);console.log(out.decision,JSON.stringify(checks));if(!pass)process.exitCode=2;
+          })().catch(e=>{const out={decision:'ENVIRONMENT_FAILURE',blocker:'I3_FOCAL_PROBE_EXCEPTION',error:String(e?.stack||e?.message||e),production:false};write(out);console.error(e);process.exitCode=1;});
           NODE
 
-      - name: Enforce read-only evidence
-        if: always()
+      - name: Enforce exact focal PASS and zero product/provider writes
         run: |
           set -euo pipefail
-          jq -e '.production==false and .writes==0' "$OUT/source-freeze.json" >/dev/null
-          jq -e '.production==false and .writes==0' "$OUT/asset-parity.json" >/dev/null
-          if [ -f "$OUT/affected-shopper-human-lane.json" ]; then
-            jq -e '.production==false and .writes==0 and (.providerWrites//0)==0 and (.firestoreWrites//0)==0 and (.authWrites//0)==0 and (.hrWrites//0)==0' "$OUT/affected-shopper-human-lane.json" >/dev/null
-          fi
+          jq -e '.decision=="PASS_I3_SHOPPER_HR_COMPOSITION_FIX" and .production==false and .writes.providerWrites==0 and .writes.firestoreWrites==0 and .writes.authWrites==0 and .writes.hrWrites==0 and .writes.productionWrites==0' "$OUT/affected-shopper-human-lane.json" >/dev/null
 
-      - name: Upload focal read-only evidence
+      - name: Upload focal evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cxorbia-i3-human-shopper-hr-probe-${{ github.run_id }}
           path: ${{ env.OUT }}
           if-no-files-found: error
+
+      - name: Cleanup
+        if: always()
+        run: |
+          git worktree remove --force "$DEPLOY_TREE" 2>/dev/null || true
+          rm -rf .firebase
+          rm -f firebase-debug.log
