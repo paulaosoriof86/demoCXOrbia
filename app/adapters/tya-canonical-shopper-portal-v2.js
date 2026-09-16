@@ -58,17 +58,24 @@
   function rows(vs,ui){return vs.length?`<div style="overflow:auto"><table class="tbl"><thead><tr><th>Periodo</th><th>Visita</th><th>Estado</th><th>Fecha</th><th>País</th></tr></thead><tbody>${vs.map(v=>{const st=stage(v);return `<tr><td>${esc(v.periodLabel||v.periodKey)}</td><td><b>${esc(v.sucursal)}</b><div style="font-size:10px;color:var(--t3)">${esc(v.escenario)} · ${esc(v.ciudad)}</div></td><td><span class="bdg bdg-${st[1]}">${esc(st[0])}</span></td><td>${esc(v.realizada||v.cuestFecha||v.submittedAt||v.agendada||v.disponibleDesde||'—')}</td><td>${esc(v.pais||v.country||'—')}</td></tr>`;}).join('')}</tbody></table></div>`:ui.empty('🗒️','Sin visitas en esta categoría.');}
   function render({data,ui}){
     const host=ui.el('div');
-    let identity=resolveSessionShopper(data);
     const redraw=()=>{
       const next=render({data:CX.data,ui});
       host.replaceChildren(...Array.from(next.childNodes));
     };
-    if(!identity.ok&&authorityPending()){
+    if(authorityPending()){
+      const onReady=()=>redraw();
+      window.addEventListener('cx:protected-auth-hr-authority-ready',onReady,{once:true});
       try{window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.('shopper_portal_requires_hr_authority',true);}catch(_){}
-      window.addEventListener('cx:protected-auth-hr-authority-ready',redraw,{once:true});
+      setTimeout(()=>{
+        if(!authorityPending()){
+          window.removeEventListener('cx:protected-auth-hr-authority-ready',onReady);
+          redraw();
+        }
+      },0);
       host.innerHTML=`${ui.ph('Mi Perfil','Identidad Shopper')}<div class="card card-p">${ui.empty('⏳','Validando tu identidad e histórico contra la HR viva…')}</div>`;
       return host;
     }
+    const identity=resolveSessionShopper(data);
     if(!identity.ok){
       const reason=identity.reason==='ambiguous_exact_identity'?'Se encontraron varias relaciones técnicas exactas y se requiere revisión; no se unieron identidades por nombre.':'La identidad de esta sesión no está vinculada al read model canónico.';
       host.innerHTML=`${ui.ph('Mi Perfil','Identidad Shopper')}<div class="card card-p">${ui.empty('🔒',reason)}</div>`;
@@ -94,6 +101,6 @@
     };
     draw();return host;
   }
-  function install(){if(!CX.modules)return;CX.modules.miperfil=render;window.CX_TYA_CANONICAL_SHOPPER_PORTAL={ready:true,version:'canonical-shopper-portal-v2-p0-shared-identity-contract',exactIdentityOnly:true,identityContractVersion:window.CX_EXACT_IDENTITY_CONTRACT?.version||'legacy-fallback',fullHistory:true,certificationVisible:true,providerWrites:0,production:false,resolveExactSessionShopper:resolveSessionShopper,currentAuthContext:authContext,isAuthorityPending:authorityPending};}
+  function install(){if(!CX.modules)return;CX.modules.miperfil=render;window.CX_TYA_CANONICAL_SHOPPER_PORTAL={ready:true,version:'canonical-shopper-portal-v2-p0-hr-authority-gated',exactIdentityOnly:true,identityContractVersion:window.CX_EXACT_IDENTITY_CONTRACT?.version||'legacy-fallback',fullHistory:true,certificationVisible:true,providerWrites:0,production:false,resolveExactSessionShopper:resolveSessionShopper,currentAuthContext:authContext,isAuthorityPending:authorityPending};}
   install();document.addEventListener('DOMContentLoaded',install,{once:true});window.addEventListener('cx:full-visual-ready',install);
 })();
