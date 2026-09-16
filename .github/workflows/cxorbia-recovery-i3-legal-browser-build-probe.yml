@@ -25,7 +25,7 @@ env:
   PROJECT_ID: cinepolis
   AFFECTED_SHOPPER_ID: s3
   OUT: .tmp/recovery-i3-human-shopper-hr-probe
-  DEPLOY_TREE: ${{ runner.temp }}/cxorbia-i3-human-shopper-source
+  DEPLOY_TREE: /tmp/cxorbia-i3-human-shopper-source
 
 jobs:
   probe:
