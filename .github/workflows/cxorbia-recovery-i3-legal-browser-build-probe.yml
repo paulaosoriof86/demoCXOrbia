@@ -67,35 +67,64 @@ jobs:
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
 
-      - name: Prove persisted shopper profile shape read-only
+      - name: Prove shopper identity source shapes read-only
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE'
           import fs from 'fs';
           import { initializeApp, applicationDefault } from 'firebase-admin/app';
           import { getFirestore } from 'firebase-admin/firestore';
+          import { getAuth } from 'firebase-admin/auth';
           const s=v=>String(v??'').trim();
           initializeApp({credential:applicationDefault(),projectId:process.env.PROJECT});
-          const snap=await getFirestore().collection('tenants').doc(process.env.TENANT_ID).collection('shoppers').doc(process.env.AFFECTED_SHOPPER_ID).get();
+          const db=getFirestore(), tenant=db.collection('tenants').doc(process.env.TENANT_ID);
+          const snap=await tenant.collection('shoppers').doc(process.env.AFFECTED_SHOPPER_ID).get();
           if(!snap.exists) throw new Error('AFFECTED_SHOPPER_PROFILE_DRIFT');
           const p=snap.data()||{};
+          const members=await tenant.collection('users').where('shopperId','==',process.env.AFFECTED_SHOPPER_ID).get();
+          if(members.size!==1) throw new Error('AFFECTED_SHOPPER_MEMBERSHIP_DRIFT');
+          const memberDoc=members.docs[0], m=memberDoc.data()||{};
+          const au=await getAuth().getUser(memberDoc.id);
           const shape={
             shopperId:process.env.AFFECTED_SHOPPER_ID,
-            exists:true,
-            namePresent:!!s(p.nombre||p.name),
-            usernamePresent:!!s(p.username||p.user),
-            phonePresent:!!s(p.whatsapp||p.phone),
-            emailPresent:!!s(p.email),
-            certificationPresent:!!s(p.certificationStatus)||p.certified===true||p.certificationPresented===true,
-            cityPresent:!!s(p.ciudad||p.city),
-            countryPresent:!!s(p.pais||p.country),
-            fieldNames:Object.keys(p).sort(),
+            profile:{
+              exists:true,
+              namePresent:!!s(p.nombre||p.name||[p.firstName,p.lastName].filter(Boolean).join(' ')),
+              usernamePresent:!!s(p.username||p.user),
+              phonePresent:!!s(p.whatsapp||p.phone),
+              emailPresent:!!s(p.email),
+              certificationPresent:!!s(p.certificationStatus)||p.certified===true||p.certificationPresented===true,
+              cityPresent:!!s(p.ciudad||p.city),
+              countryPresent:!!s(p.pais||p.country),
+              profileCompleteFlag:p.perfilCompleto===true||p.profileComplete===true,
+              fieldNames:Object.keys(p).sort()
+            },
+            membership:{
+              exists:true,
+              active:m.active===true,
+              role:s(m.role),
+              authNamespace:s(m.authNamespace),
+              emailPresent:!!s(m.email),
+              usernamePresent:!!s(m.username||m.user),
+              phonePresent:!!s(m.phone||m.whatsapp),
+              displayNamePresent:!!s(m.displayName||m.name||m.nombre),
+              fieldNames:Object.keys(m).sort()
+            },
+            auth:{
+              exists:true,
+              emailPresent:!!s(au.email),
+              phonePresent:!!s(au.phoneNumber),
+              displayNamePresent:!!s(au.displayName),
+              disabled:au.disabled===true,
+              providerIds:(au.providerData||[]).map(x=>x.providerId).filter(Boolean).sort()
+            },
             valuesRedacted:true,
             firestoreWrites:0,
+            authWrites:0,
             production:false
           };
-          fs.writeFileSync(`${process.env.OUT}/persisted-profile-shape.json`,JSON.stringify(shape,null,2)+'\n');
-          console.log('PERSISTED_PROFILE_SHAPE',JSON.stringify(shape));
+          fs.writeFileSync(`${process.env.OUT}/shopper-identity-source-shapes.json`,JSON.stringify(shape,null,2)+'\n');
+          console.log('SHOPPER_IDENTITY_SOURCE_SHAPES',JSON.stringify(shape));
           NODE
 
       - name: Prepare exact product source
