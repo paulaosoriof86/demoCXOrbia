@@ -24,6 +24,7 @@ window.CX = window.CX || {};
   let resolveInteractive = null;
   let rejectInteractive = null;
   let selectedRole = '';
+  let sessionCredential = null;
 
   function list(value){
     if(Array.isArray(value)) return value.map(String).map(function(x){return x.trim();}).filter(Boolean);
@@ -59,6 +60,35 @@ window.CX = window.CX || {};
 
   function normalizeLogin(value){
     return String(value || '').trim().toLowerCase();
+  }
+
+  function clearSessionCredential(){
+    sessionCredential = null;
+  }
+
+  function captureSessionCredential(login, password, ctx){
+    clearSessionCredential();
+    if(!ctx || String(ctx.role || '').trim().toLowerCase() !== 'shopper') return;
+    const username = String(login || '').trim();
+    const secret = String(password || '');
+    if(!username || !secret) return;
+    sessionCredential = {
+      username: username,
+      password: secret,
+      source: 'validated-shopper-login-memory'
+    };
+  }
+
+  function sessionCredentialSnapshot(){
+    if(!sessionCredential || !currentContext || String(currentContext.role || '').trim().toLowerCase() !== 'shopper'){
+      return {available:false,username:null,password:null,source:'none'};
+    }
+    return {
+      available:true,
+      username:sessionCredential.username,
+      password:sessionCredential.password,
+      source:sessionCredential.source
+    };
   }
 
   async function sha256Hex(value){
@@ -252,6 +282,7 @@ window.CX = window.CX || {};
       const ctx = await contextFromUser(cred.user, ns);
       if(requestedRole && !roleMatchesSelection(ctx, requestedRole)) throw new Error('ROLE_SELECTION_MISMATCH');
       currentContext = ctx;
+      captureSessionCredential(login, password, ctx);
       applyCxSession(ctx);
       if(resolveInteractive){
         resolveInteractive(ctx);
@@ -262,6 +293,7 @@ window.CX = window.CX || {};
     }catch(e){
       try{await auth.signOut();}catch(_){ }
       currentContext = null;
+      clearSessionCredential();
       throw e;
     }
   }
@@ -277,6 +309,7 @@ window.CX = window.CX || {};
     if(currentContext) return currentContext;
     if(readyPromise) return readyPromise;
     readyPromise = (async function(){
+      clearSessionCredential();
       ensureFirebase();
       await auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
       const restored = await firstAuthState();
@@ -288,6 +321,7 @@ window.CX = window.CX || {};
         }catch(_){
           try{await auth.signOut();}catch(__){ }
           currentContext = null;
+          clearSessionCredential();
         }
       }
       return waitForInteractive();
@@ -399,6 +433,7 @@ window.CX = window.CX || {};
     const originalEnter = typeof CX.app.enter === 'function' ? CX.app.enter.bind(CX.app) : null;
 
     CX.app.showLogin = function(){
+      clearSessionCredential();
       removeLegacyCredentialOverlay();
       const result = originalShowLogin ? originalShowLogin() : undefined;
       resetVisibleLoginState();
@@ -433,6 +468,7 @@ window.CX = window.CX || {};
         resolveInteractive = null;
         rejectInteractive = null;
         selectedRole = '';
+        clearSessionCredential();
         removeLegacyCredentialOverlay();
         if(CX.session) CX.session.clear();
         if(originalShowLogin) originalShowLogin();
@@ -472,6 +508,7 @@ window.CX = window.CX || {};
     ensureAuthenticated: ensureAuthenticated,
     authenticate: signIn,
     context: function(){ return currentContext; },
+    sessionCredential: sessionCredentialSnapshot,
     signOut: async function(){
       ensureFirebase();
       await auth.signOut();
@@ -480,6 +517,7 @@ window.CX = window.CX || {};
       resolveInteractive = null;
       rejectInteractive = null;
       selectedRole = '';
+      clearSessionCredential();
       if(CX.session) CX.session.clear();
     },
     showForRole: showCredentialStep,
