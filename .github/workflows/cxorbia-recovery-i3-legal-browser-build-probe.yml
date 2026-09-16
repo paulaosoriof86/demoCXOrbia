@@ -6,7 +6,6 @@ on:
       - recovery/cxorbia-phase-a-20260831
     paths:
       - .github/workflows/cxorbia-recovery-i3-legal-browser-build-probe.yml
-      - tools/qa/cxorbia-i3-shopper-hr-composition-probe.mjs
   workflow_dispatch:
 
 permissions:
@@ -20,7 +19,6 @@ concurrency:
 env:
   PRODUCT_SOURCE_SHA: 44ef1d75563eeb23eeaf3997ae112983f8e5e4d1
   PROJECT: cxorbia-backend-dev
-  HOSTING_TARGET: cxorbia-dev
   HOSTING_URL: https://cxorbia-backend-dev.web.app
   TENANT_ID: tya
   PROJECT_ID: cinepolis
@@ -31,14 +29,14 @@ env:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 30
     steps:
       - name: Checkout canonical Recovery branch
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Freeze exact focal product source
+      - name: Freeze exact corrected product source
         run: |
           set -euo pipefail
           mkdir -p "$OUT"
@@ -46,50 +44,23 @@ jobs:
           git cat-file -e "$PRODUCT_SOURCE_SHA^{commit}"
           git merge-base --is-ancestor "$PRODUCT_SOURCE_SHA" HEAD
           git diff --quiet "$PRODUCT_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc
-          node --check app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
           node --check app/adapters/tya-canonical-shopper-portal-v2.js
           grep -q 'currentAuthenticatedEmail' app/adapters/tya-canonical-shopper-portal-v2.js
-          jq -n -S --arg source "$PRODUCT_SOURCE_SHA" '{decision:"PASS_I3_AUTH_EMAIL_SOURCE_FREEZE",productSourceSha:$source,production:false}' > "$OUT/source-freeze.json"
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
-      - name: Install DEV deployment and probe dependencies
+      - name: Install read-only probe dependencies
         run: |
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase-tools@latest playwright@1.55.0 >/dev/null 2>&1
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null 2>&1
-          node --check tools/qa/cxorbia-i3-shopper-hr-composition-probe.mjs
 
-      - name: Authenticate Firebase DEV only
+      - name: Authenticate Firebase DEV read-only
         uses: google-github-actions/auth@v2
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-
-      - name: Prove shopper identity source shapes read-only
-        run: |
-          set -euo pipefail
-          node --input-type=module <<'NODE'
-          import fs from 'fs';
-          import { initializeApp, applicationDefault } from 'firebase-admin/app';
-          import { getFirestore } from 'firebase-admin/firestore';
-          import { getAuth } from 'firebase-admin/auth';
-          const s=v=>String(v??'').trim();
-          initializeApp({credential:applicationDefault(),projectId:process.env.PROJECT});
-          const db=getFirestore(), tenant=db.collection('tenants').doc(process.env.TENANT_ID);
-          const snap=await tenant.collection('shoppers').doc(process.env.AFFECTED_SHOPPER_ID).get();
-          if(!snap.exists) throw new Error('AFFECTED_SHOPPER_PROFILE_DRIFT');
-          const p=snap.data()||{};
-          const members=await tenant.collection('users').where('shopperId','==',process.env.AFFECTED_SHOPPER_ID).get();
-          if(members.size!==1) throw new Error('AFFECTED_SHOPPER_MEMBERSHIP_DRIFT');
-          const memberDoc=members.docs[0], m=memberDoc.data()||{};
-          const au=await getAuth().getUser(memberDoc.id);
-          const shape={shopperId:process.env.AFFECTED_SHOPPER_ID,profile:{exists:true,namePresent:!!s(p.nombre||p.name||[p.firstName,p.lastName].filter(Boolean).join(' ')),usernamePresent:!!s(p.username||p.user),phonePresent:!!s(p.whatsapp||p.phone),emailPresent:!!s(p.email),certificationPresent:!!s(p.certificationStatus)||p.certified===true||p.certificationPresented===true,cityPresent:!!s(p.ciudad||p.city),countryPresent:!!s(p.pais||p.country),profileCompleteFlag:p.perfilCompleto===true||p.profileComplete===true},membership:{exists:true,active:m.active===true,role:s(m.role),authNamespace:s(m.authNamespace)},auth:{exists:true,emailPresent:!!s(au.email),phonePresent:!!s(au.phoneNumber),displayNamePresent:!!s(au.displayName),disabled:au.disabled===true,providerIds:(au.providerData||[]).map(x=>x.providerId).filter(Boolean).sort()},valuesRedacted:true,firestoreWrites:0,authWrites:0,production:false};
-          if(!shape.auth.emailPresent) throw new Error('AUTH_EMAIL_SOURCE_NOT_PRESENT');
-          fs.writeFileSync(`${process.env.OUT}/shopper-identity-source-shapes.json`,JSON.stringify(shape,null,2)+'\n');
-          console.log('SHOPPER_IDENTITY_SOURCE_SHAPES',JSON.stringify(shape));
-          NODE
 
       - name: Prepare exact product source
         run: |
@@ -97,17 +68,8 @@ jobs:
           rm -rf "$DEPLOY_TREE"
           git worktree add --detach "$DEPLOY_TREE" "$PRODUCT_SOURCE_SHA"
           test "$(git -C "$DEPLOY_TREE" rev-parse HEAD)" = "$PRODUCT_SOURCE_SHA"
-          node --check "$DEPLOY_TREE/app/adapters/tya-canonical-shopper-portal-v2.js"
 
-      - name: Deploy exact corrected source to Hosting DEV once
-        run: |
-          set -euo pipefail
-          cd "$DEPLOY_TREE"
-          "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$HOSTING_TARGET" --project "$PROJECT" --non-interactive
-          mkdir -p "$GITHUB_WORKSPACE/$OUT"
-          jq -n -S --arg source "$PRODUCT_SOURCE_SHA" '{decision:"PASS_I3_AUTH_EMAIL_DEV_DEPLOY",project:"cxorbia-backend-dev",hostingTarget:"cxorbia-dev",productSourceSha:$source,hostingDeploys:1,production:false}' > "$GITHUB_WORKSPACE/$OUT/dev-deploy.json"
-
-      - name: Prove exact DEV asset parity post-deploy
+      - name: Prove corrected source is already served by DEV exactly
         run: |
           set -euo pipefail
           assets=(
@@ -128,10 +90,7 @@ jobs:
             test "$expected" = "$actual"
           done
 
-      - name: Probe Profile Full and Visitas Disponibles read-only
-        run: node tools/qa/cxorbia-i3-shopper-hr-composition-probe.mjs
-
-      - name: Prove exact Auth email is rendered in Mi Perfil
+      - name: Prove real Auth email and Visitas Disponibles in same shopper session
         run: |
           set -euo pipefail
           node --input-type=module <<'NODE'
@@ -140,37 +99,62 @@ jobs:
           import { getAuth } from 'firebase-admin/auth';
           import { getFirestore } from 'firebase-admin/firestore';
           import { chromium } from 'playwright';
-          const s=v=>String(v??'').trim(),host=process.env.HOSTING_URL.replace(/\/$/,''),sid=process.env.AFFECTED_SHOPPER_ID;
+          const s=v=>String(v??'').trim(),sleep=ms=>new Promise(r=>setTimeout(r,ms));
           if(!getApps().length) initializeApp({credential:applicationDefault(),projectId:process.env.PROJECT});
-          const db=getFirestore(),tenant=db.collection('tenants').doc(process.env.TENANT_ID),members=await tenant.collection('users').where('shopperId','==',sid).get();
+          const db=getFirestore(),tenant=db.collection('tenants').doc(process.env.TENANT_ID),sid=process.env.AFFECTED_SHOPPER_ID,auth=getAuth();
+          const members=await tenant.collection('users').where('shopperId','==',sid).get();
           if(members.size!==1) throw new Error('AFFECTED_SHOPPER_MEMBERSHIP_DRIFT');
-          const uid=members.docs[0].id,auth=getAuth(),au=await auth.getUser(uid),email=s(au.email);
+          const uid=members.docs[0].id,au=await auth.getUser(uid),email=s(au.email);
           if(!email) throw new Error('AUTH_EMAIL_SOURCE_NOT_PRESENT');
-          const browser=await chromium.launch({headless:true}),ctx=await browser.newContext({serviceWorkers:'allow'}),page=await ctx.newPage();
+          const browser=await chromium.launch({headless:true}),ctx=await browser.newContext({serviceWorkers:'allow'}),page=await ctx.newPage(),pageErrors=[];
+          page.on('pageerror',e=>pageErrors.push(s(e?.message||e)));
           try{
-            const url=`${host}/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV&i3email=${Date.now()}`;
+            const host=process.env.HOSTING_URL.replace(/\/$/,''),url=`${host}/index-backend-dev.html?cxBackendPreview=YES_PAULA_20260628_PREVIEW_DEV&cxProjectId=cinepolis&cxProtectedRuntime=YES_PAULA_20260730_PROTECTED_DEV&cxHumanFullVisual=YES_PAULA_20260731_FULL_PROFILE_DEV&i3final=${Date.now()}`;
             await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
-            await page.waitForFunction(()=>window.firebase?.apps?.some(a=>a?.name==='[DEFAULT]')&&typeof window.firebase.auth==='function',null,{timeout:90000});
             const token=await auth.createCustomToken(uid);
-            await page.evaluate(async t=>{const a=firebase.auth();await a.setPersistence(firebase.auth.Auth.Persistence.SESSION);await a.signInWithCustomToken(t);},token);
+            let signed=false,lastError='';
+            for(let attempt=1;attempt<=5&&!signed;attempt++){
+              try{
+                await page.waitForFunction(()=>window.firebase?.apps?.some(a=>a?.name==='[DEFAULT]')&&typeof window.firebase.auth==='function',null,{timeout:30000});
+                signed=await page.evaluate(async t=>{try{const a=window.firebase.auth();await a.setPersistence(window.firebase.auth.Auth.Persistence.SESSION);await a.signInWithCustomToken(t);return true;}catch(e){return false;}},token);
+              }catch(e){lastError=s(e?.message||e);}
+              if(!signed) await sleep(800*attempt);
+            }
+            if(!signed) throw new Error(`SHOPPER_SIGNIN_PROBE_FAILED_${lastError}`);
             await page.reload({waitUntil:'domcontentloaded',timeout:90000});
             await page.waitForFunction(({shopper})=>{const c=window.CX?.backendAuth?.context?.()||{};return c.authenticated===true&&String(c.role||'')==='shopper'&&String(c.shopperId||'')===shopper;},{shopper:sid},{timeout:120000});
-            await page.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,null,{timeout:120000});
-            await page.evaluate(()=>window.CX?.router?.nav?.('miperfil'));
-            await page.waitForTimeout(300);
-            const result=await page.evaluate(expected=>{const text=String(document.querySelector('#view')?.innerText||''),runtime=String(window.CX_TYA_CANONICAL_SHOPPER_PORTAL?.currentAuthenticatedEmail?.()||'');return {authEmailRuntimeMatches:runtime===expected,emailRendered:text.includes(expected),pending:/Validando tu identidad|slice transitorio|Periodos HR:\s*pendiente/i.test(text),identityBlocked:/identidad de esta sesión no está vinculada/i.test(text)};},email);
-            const out={decision:(result.authEmailRuntimeMatches&&result.emailRendered&&!result.pending&&!result.identityBlocked)?'PASS_I3_AUTH_EMAIL_RENDERED':'FAIL_I3_AUTH_EMAIL_RENDERED',checks:result,valuesRedacted:true,firestoreWrites:0,authWrites:0,hrWrites:0,productionWrites:0,production:false};
-            fs.writeFileSync(`${process.env.OUT}/auth-email-render.json`,JSON.stringify(out,null,2)+'\n');
-            console.log(out.decision,JSON.stringify(out.checks));
-            if(out.decision!=='PASS_I3_AUTH_EMAIL_RENDERED') process.exitCode=1;
+            await page.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE?.completed===true,null,{timeout:150000});
+            const result=await page.evaluate(async expected=>{
+              const d=window.CX?.data||{},portal=window.CX_TYA_CANONICAL_SHOPPER_PORTAL||{};
+              window.CX?.router?.nav?.('miperfil'); await new Promise(r=>setTimeout(r,250));
+              const profileText=String(document.querySelector('#view')?.innerText||''),runtimeEmail=String(portal.currentAuthenticatedEmail?.()||'');
+              const profile={authEmailRuntimeMatches:runtimeEmail===expected,emailRendered:profileText.includes(expected),pending:/Validando tu identidad|slice transitorio|Periodos HR:\s*pendiente/i.test(profileText),identityBlocked:/identidad de esta sesión no está vinculada/i.test(profileText)};
+              const projects=(window.CX?.router&&typeof window.CX.router.resolveVisibleProjects==='function')?window.CX.router.resolveVisibleProjects('shopper'):(typeof d.projectsFor==='function'?d.projectsFor('shopper'):d.projects||[]);
+              const allowed=new Set((projects||[]).map(pr=>d.programKey?d.programKey(pr):pr.id));
+              const projByAny=id=>(d.projects||[]).find(x=>x.id===id)||(d.projects||[]).find(x=>(d.programKey?d.programKey(x):x.id)===id);
+              const progKeyOf=v=>{const pr=projByAny(v.projectId);return pr?(d.programKey?d.programKey(pr):pr.id):v.projectId;};
+              const pool=(d._visitas||[]).filter(v=>(!d.inScope||d.inScope(v.pais))&&allowed.has(progKeyOf(v)));
+              const expectedVisits=typeof d.availableVisits==='function'?d.availableVisits(pool):pool.filter(v=>v.estado==='disponible');
+              const expectedProjects=new Set(expectedVisits.map(progKeyOf)).size;
+              window.CX?.router?.nav?.('visitas'); await new Promise(r=>setTimeout(r,250));
+              const view=document.querySelector('#view'),text=String(view?.innerText||''),m=text.match(/(\d+) oportunidades en (\d+) proyecto\(s\) para tu perfil/i),cards=view?.querySelectorAll?.('[data-detail]')?.length||0;
+              const available={expectedCount:expectedVisits.length,expectedProjectCount:expectedProjects,renderedCount:m?Number(m[1]):-1,renderedProjectCount:m?Number(m[2]):-1,detailCards:cards,pending:/slice transitorio|Periodos HR:\s*pendiente/i.test(text)};
+              return {profile,available,authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null};
+            },email);
+            const a=result.available,p=result.profile;
+            const profilePass=p.authEmailRuntimeMatches&&p.emailRendered&&!p.pending&&!p.identityBlocked;
+            const visitsPass=a.renderedCount===a.expectedCount&&a.renderedProjectCount===a.expectedProjectCount&&a.detailCards===a.expectedCount&&!a.pending;
+            const out={decision:(profilePass&&visitsPass&&pageErrors.length===0)?'PASS_I3_SHOPPER_PROFILE_EMAIL_AND_AVAILABLE_VISITS':'FAIL_I3_SHOPPER_PROFILE_EMAIL_AND_AVAILABLE_VISITS',checks:{profilePass,visitsPass,noPageErrors:pageErrors.length===0},profile:p,available:a,hrAuthority:{applied:result.authority?.applied===true,hrVisits:Number(result.authority?.hrVisits||0),hrShoppers:Number(result.authority?.hrShoppers||0),ownVisits:Number(result.authority?.ownVisits||0)},valuesRedacted:true,writes:{hostingDevDeploys:0,providerWrites:0,firestoreWrites:0,authWrites:0,hrWrites:0,productionWrites:0},production:false};
+            fs.writeFileSync(`${process.env.OUT}/final-shopper-profile-availability.json`,JSON.stringify(out,null,2)+'\n');
+            console.log(out.decision,JSON.stringify({checks:out.checks,available:out.available,hrAuthority:out.hrAuthority}));
+            if(out.decision!=='PASS_I3_SHOPPER_PROFILE_EMAIL_AND_AVAILABLE_VISITS') process.exitCode=1;
           } finally { await ctx.close(); await browser.close(); }
           NODE
 
-      - name: Enforce focal PASS and zero operational writes
+      - name: Enforce final shopper focal PASS and zero writes
         run: |
           set -euo pipefail
-          jq -e '.decision=="PASS_I3_PROFILE_FULL_AVAILABLE_VISITS" and .checks.availableVisitsExact==true and .production==false and .writes.providerWrites==0 and .writes.firestoreWrites==0 and .writes.authWrites==0 and .writes.hrWrites==0 and .writes.productionWrites==0' "$OUT/affected-shopper-human-lane.json" >/dev/null
-          jq -e '.decision=="PASS_I3_AUTH_EMAIL_RENDERED" and .checks.authEmailRuntimeMatches==true and .checks.emailRendered==true and .production==false and .firestoreWrites==0 and .authWrites==0 and .hrWrites==0 and .productionWrites==0' "$OUT/auth-email-render.json" >/dev/null
+          jq -e '.decision=="PASS_I3_SHOPPER_PROFILE_EMAIL_AND_AVAILABLE_VISITS" and .checks.profilePass==true and .checks.visitsPass==true and .checks.noPageErrors==true and .production==false and .writes.hostingDevDeploys==0 and .writes.providerWrites==0 and .writes.firestoreWrites==0 and .writes.authWrites==0 and .writes.hrWrites==0 and .writes.productionWrites==0' "$OUT/final-shopper-profile-availability.json" >/dev/null
 
       - name: Upload focal evidence
         if: always()
