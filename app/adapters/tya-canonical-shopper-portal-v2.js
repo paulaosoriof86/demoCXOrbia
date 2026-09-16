@@ -8,7 +8,7 @@
   if(params.get('cxHumanFullVisual')!=='YES_PAULA_20260731_FULL_PROFILE_DEV')return;
   const arr=v=>Array.isArray(v)?v:[];
   const str=v=>String(v==null?'':v).trim();
-  const esc=v=>str(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const esc=v=>str(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
   const facets=v=>CX.data?.visitFacets?CX.data.visitFacets(v):(window.CX_TYA_CUMULATIVE_READ_MODEL?.facets?.(v)||v?.canonicalFacets||{});
   const stage=v=>{const f=facets(v);if(f.paymentConfirmed)return ['Pagada','g'];if(f.liquidationConfirmed)return ['Liquidada','g'];if(f.submitted)return ['Submitida','t'];if(f.questionnaire)return ['Cuestionario completo · pendiente de submitir','p'];if(f.realized)return ['Realizada · pendiente de cuestionario','a'];if(f.outOfRange)return ['Fuera de rango','r'];if(f.scheduled)return ['Agendada','t'];if(f.assigned)return ['Asignada · pendiente de agendar','b'];if(f.available)return ['Disponible','b'];return ['Pendiente','n'];};
   const cert=s=>s?.certificationStatus||((s?.certified)?'certificada':s?.certificationPresented?'presentada':'sin_registro');
@@ -26,6 +26,9 @@
   }
   function authContext(){
     try{return CX.backendAuth?.context?.()||null;}catch(_){return null;}
+  }
+  function authenticatedEmail(){
+    try{return str(window.firebase?.auth?.()?.currentUser?.email);}catch(_){return '';}
   }
   function sessionShopperId(){
     return str(CX.session?.user?.shopperId||authContext()?.shopperId);
@@ -83,7 +86,7 @@
       host.innerHTML=`${ui.ph('Mi Perfil','Identidad Shopper')}<div class="card card-p">${ui.empty('🔒',reason)}</div>`;
       return host;
     }
-    const s=identity.row,shopperKey=str(s.id||s.shopperId||identity.canonical);
+    const s=identity.row,shopperKey=str(s.id||s.shopperId||identity.canonical),email=str(s.email)||authenticatedEmail();
     const visits=data.visitsForShopper(shopperKey,false).slice().sort((a,b)=>str(b.realizada||b.cuestFecha||b.submittedAt||b.agendada).localeCompare(str(a.realizada||a.cuestFecha||a.submittedAt||a.agendada)));
     const st=data.shopperStats(shopperKey),cs=cert(s),complete=!!data.shopperProfileComplete?.(s);
     const active=visits.filter(v=>{const f=facets(v);return f.assigned&&!f.liquidationConfirmed&&!f.paymentConfirmed&&!f.cancelled;});
@@ -94,7 +97,7 @@
       host.innerHTML=`${ui.ph('Mi Perfil','Identidad, acceso, certificación e histórico canónico')}
       <div class="card card-p" style="margin-bottom:14px">
         <div class="between" style="gap:12px;align-items:flex-start"><div><div class="card-t" style="font-size:18px">${esc(s.nombre)}</div><div style="font-size:11px;color:var(--t3);margin-top:3px">${esc(shopperKey)} · ${esc(s.ciudad)} · ${esc(s.pais)}</div></div><div class="flex wrap" style="gap:6px"><span class="bdg bdg-${complete?'g':'a'}">${complete?'Perfil completo':'Perfil incompleto'}</span><span class="bdg bdg-${cs==='certificada'?'g':cs==='presentada'?'b':'n'}">${cs==='certificada'?'Certificada':cs==='presentada'?'Certificación presentada':'Sin certificación'}</span></div></div>
-        <div class="grid g4" style="margin-top:14px"><div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">USUARIO</div><b>${esc(s.username||s.user||'— sin dato')}</b></div><div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">CREDENCIAL</div><b>Protegida</b></div><div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">WHATSAPP</div><b>${esc(s.whatsapp||s.phone||'— sin dato')}</b></div><div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">CORREO</div><b>${esc(s.email||'— sin dato')}</b></div></div>
+        <div class="grid g4" style="margin-top:14px"><div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">USUARIO</div><b>${esc(s.username||s.user||'— sin dato')}</b></div><div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">CREDENCIAL</div><b>Protegida</b></div><div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">WHATSAPP</div><b>${esc(s.whatsapp||s.phone||'— sin dato')}</b></div><div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">CORREO</div><b>${esc(email||'— sin dato')}</b></div></div>
         <div style="font-size:11px;color:var(--t3);margin-top:9px">Los datos faltantes no se inventan. Una actualización persistente requiere fuente real y gate de escritura.</div>
       </div>
       <div class="grid g4" style="margin-bottom:12px">${ui.kpi('Visitas',st.total,'b')}${ui.kpi('Realizadas',st.realizadas,'g')}${ui.kpi('Submitidas',st.submitted,'p')}${ui.kpi('Pagadas confirmadas',st.paymentConfirmed,'g')}</div>
@@ -103,6 +106,6 @@
     };
     draw();return host;
   }
-  function install(){if(!CX.modules)return;CX.modules.miperfil=render;window.CX_TYA_CANONICAL_SHOPPER_PORTAL={ready:true,version:'canonical-shopper-portal-v2-p0-hr-authority-gated-session-profile',exactIdentityOnly:true,identityContractVersion:window.CX_EXACT_IDENTITY_CONTRACT?.version||'legacy-fallback',fullHistory:true,certificationVisible:true,providerWrites:0,production:false,resolveExactSessionShopper:resolveSessionShopper,currentAuthContext:authContext,isAuthorityPending:authorityPending};}
+  function install(){if(!CX.modules)return;CX.modules.miperfil=render;window.CX_TYA_CANONICAL_SHOPPER_PORTAL={ready:true,version:'canonical-shopper-portal-v2-p0-auth-email-rendered',exactIdentityOnly:true,identityContractVersion:window.CX_EXACT_IDENTITY_CONTRACT?.version||'legacy-fallback',fullHistory:true,certificationVisible:true,providerWrites:0,production:false,resolveExactSessionShopper:resolveSessionShopper,currentAuthContext:authContext,currentAuthenticatedEmail:authenticatedEmail,isAuthorityPending:authorityPending};}
   install();document.addEventListener('DOMContentLoaded',install,{once:true});window.addEventListener('cx:full-visual-ready',install);
 })();
