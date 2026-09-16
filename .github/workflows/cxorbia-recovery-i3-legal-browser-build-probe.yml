@@ -60,6 +60,19 @@ jobs:
         run: |
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
           npx playwright install --with-deps chromium >/dev/null 2>&1
+
+      - name: Stabilize auth navigation in focal probe
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('tools/qa/cxorbia-i3-shopper-hr-composition-probe.mjs')
+          s=p.read_text()
+          old="""    await page.evaluate(async t=>{const a=firebase.auth();await a.setPersistence(firebase.auth.Auth.Persistence.SESSION);await a.signInWithCustomToken(t);},token);\n    await page.reload({waitUntil:'domcontentloaded',timeout:90000});"""
+          new="""    try{\n      await page.evaluate(async t=>{const a=firebase.auth();await a.setPersistence(firebase.auth.Auth.Persistence.SESSION);a.signInWithCustomToken(t);return true;},token);\n    }catch(e){if(!/Execution context was destroyed|navigation/i.test(String(e?.message||e)))throw e;}\n    await page.waitForLoadState('domcontentloaded',{timeout:90000}).catch(()=>{});\n    await page.waitForTimeout(750);"""
+          if old not in s: raise SystemExit('AUTH_NAV_PATCH_TARGET_NOT_FOUND')
+          p.write_text(s.replace(old,new,1))
+          PY
           node --check tools/qa/cxorbia-i3-shopper-hr-composition-probe.mjs
 
       - name: Authenticate Firebase DEV read-only
@@ -95,13 +108,13 @@ jobs:
             test "$expected" = "$actual"
           done
 
-      - name: Probe exact affected shopper human lane read-only
+      - name: Probe Profile Full and Visitas Disponibles read-only
         run: node tools/qa/cxorbia-i3-shopper-hr-composition-probe.mjs
 
       - name: Enforce exact focal PASS and zero writes
         run: |
           set -euo pipefail
-          jq -e '.decision=="PASS_I3_SHOPPER_HR_COMPOSITION_FIX" and .production==false and .writes.hostingDevDeploys==0 and .writes.providerWrites==0 and .writes.firestoreWrites==0 and .writes.authWrites==0 and .writes.hrWrites==0 and .writes.productionWrites==0' "$OUT/affected-shopper-human-lane.json" >/dev/null
+          jq -e '.decision=="PASS_I3_PROFILE_FULL_AVAILABLE_VISITS" and .checks.profileFullExact==true and .checks.availableVisitsExact==true and .production==false and .writes.hostingDevDeploys==0 and .writes.providerWrites==0 and .writes.firestoreWrites==0 and .writes.authWrites==0 and .writes.hrWrites==0 and .writes.productionWrites==0' "$OUT/affected-shopper-human-lane.json" >/dev/null
 
       - name: Upload focal evidence
         if: always()
