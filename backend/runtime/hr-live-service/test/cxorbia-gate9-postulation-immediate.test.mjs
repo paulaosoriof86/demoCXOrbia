@@ -87,6 +87,6 @@ test('Gate 9 / frontend requires remote ACK and preserves durable posts through 
   const admin=fs.readFileSync(path.join(repoRoot,'app/modules/postulaciones.js'),'utf8');
   assert.match(form,/CX\.commandAdapter\?\.execute/);assert.match(form,/commandType:'application\.create'/);assert.match(form,/status==='committed'/);assert.match(form,/providerAck===true/);assert.match(form,/successUiAllowed===true/);assert.doesNotMatch(form,/Postulación validada · pendiente de envío operativo/);
   assert.match(form,/const periodId=String\(v\.periodId\|\|v\.projectId\|\|c\.periodId\|\|''\)\.trim\(\)/);
-  assert.match(bridge,/postulations:\s*clone\(protectedState\.posts\)/);
+  assert.match(bridge,/postulations:\s*clone\(state\.posts\)/);
   assert.match(backend,/postulations/);assert.match(backend,/_posts/);assert.match(admin,/data\._posts/);
 });
