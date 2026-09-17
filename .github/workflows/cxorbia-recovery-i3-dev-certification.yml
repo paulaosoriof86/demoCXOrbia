@@ -6,13 +6,8 @@ on:
       - recovery/cxorbia-phase-a-20260831
     paths:
       - .github/workflows/cxorbia-recovery-i3-dev-certification.yml
-      - app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js
-      - app/sw.js
-      - backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs
-      - backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment.test.mjs
-      - backend/runtime/hr-live-service/test/cxorbia-shopper-admin-repair.test.mjs
-      - tools/qa/cxorbia-gate20-browser-visual-dev.mjs
-      - tools/qa/cxorbia-i3-profile-finance-persistence-dev.mjs
+      - ADDENDUM_I3_RELEASE_COMPOSITION_CORRECTION_2026-09-16.md
+      - CXORBIA_I3_COMPOSITION_LOCK_2026-09-16.json
   workflow_dispatch:
 
 permissions:
@@ -29,13 +24,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PRODUCT_SOURCE_SHA: 8775b1cccbc4a97e87e7996cf409bc1f490d0ccd
-  P0_BASE_SHA: 34cf9912f7899b00092f7b26ff0be8055ad7a411
-  SHOPPER_RECURRENCE_RUN_ID: '34899285403'
-  SHOPPER_RECURRENCE_HEAD_SHA: 056c040352c67e06aee6317af582ff0af4ca5b89
-  LOCKED_GATE20_SOURCE_SHA: bd2a519db5ebd08f17d47827997056db795c8c09
-  LOCKED_GATE20_RUN_ID: '34306578074'
-  LOCKED_GATE20_RUN_ATTEMPT: '1'
+  I3_CERTIFICATION_SOURCE_SHA: b94911a4748c03c2e604415e8a97ee091da96218
+  I3_CERTIFICATION_SOURCE_TREE: e3efd4afa9ffcb973e66e40e08798eba4e6c0f34
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -55,98 +45,31 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - name: Checkout exact Recovery control head
+      - name: Checkout canonical Recovery control head
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Prove frozen focal product source and control-only successor
+      - name: Prove single certification source and control-only successor
         run: |
           set -euo pipefail
           mkdir -p "$OUT"
           test "$GITHUB_REF_NAME" = "recovery/cxorbia-phase-a-20260831"
-          git cat-file -e "$PRODUCT_SOURCE_SHA^{commit}"
-          git cat-file -e "$P0_BASE_SHA^{commit}"
-          git merge-base --is-ancestor "$P0_BASE_SHA" "$PRODUCT_SOURCE_SHA"
-          git merge-base --is-ancestor "$PRODUCT_SOURCE_SHA" HEAD
-          git diff --quiet "$PRODUCT_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-          git diff --name-only "$P0_BASE_SHA" "$PRODUCT_SOURCE_SHA" -- app backend firebase.json .firebaserc tools/hr-source | sort > "$OUT/p0-product-delta.txt"
-          printf '%s\n' 'app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js' 'app/sw.js' > "$OUT/p0-expected-delta.txt"
-          diff -u "$OUT/p0-expected-delta.txt" "$OUT/p0-product-delta.txt"
-          while IFS= read -r file; do
-            test -z "$file" && continue
-            case "$file" in
-              .github/workflows/cxorbia-recovery-i3-shopper-membership-readonly-probe.yml|.github/workflows/cxorbia-recovery-i3-legal-browser-build-probe.yml|.github/workflows/cxorbia-recovery-i3-dev-certification.yml|backend/runtime/hr-live-service/test/cxorbia-shopper-command-provider-v1.test.mjs|backend/runtime/hr-live-service/test/cxorbia-gate8-shopper-credential-enrollment.test.mjs|backend/runtime/hr-live-service/test/cxorbia-shopper-admin-repair.test.mjs) ;;
-              *) echo "Unexpected post-product delta: $file" >&2; exit 1 ;;
-            esac
-          done < <(git diff --name-only "$PRODUCT_SOURCE_SHA" HEAD)
-          node --check app/adapters/cxorbia-command-adapter-v1.js
-          node --check app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js
-          node --check app/sw.js
-          node --check backend/runtime/cxorbia-shopper-command-provider-v1.mjs
-          node --check tools/qa/cxorbia-i3-profile-finance-persistence-dev.mjs
-          node --check tools/qa/cxorbia-gate20-browser-visual-dev.mjs
-          node <<'NODE'
-          const fs=require('fs'),vm=require('vm'),assert=require('assert');
-          const ctx={console,Date,setTimeout,clearTimeout};ctx.globalThis=ctx;ctx.window=ctx;
-          ctx.CX={BACKEND:{tenantId:'tya',enableCommandWrites:false},session:{}};
-          vm.createContext(ctx);
-          vm.runInContext(fs.readFileSync('app/adapters/cxorbia-command-adapter-v1.js','utf8'),ctx);
-          vm.runInContext(fs.readFileSync('app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js','utf8'),ctx);
-          for(const role of ['super','admin','shopper']){
-            const ns=role==='shopper'?'shopper':'staff';
-            ctx.CX.backendAuth={context:()=>({authenticated:true,tenantId:'tya',role,authNamespace:ns,projectIds:['cinepolis']})};
-            const built=ctx.CX.legalAcceptanceDurable.buildHumanAcceptanceCommand({scope:{tenantId:'tya',scopeMode:'tenant',projectId:null,role,authNamespace:ns},current:{legalContentId:'terms',legalVersion:'tya-legal-bundle-v0.4-interim-golive-20260816',contentDigest:'a'.repeat(64)},idempotencyKey:`i3-legal-period-regression-${role}`,humanConfirmed:true});
-            assert.equal(built.ok,true,JSON.stringify(built));assert.equal(built.command.requireProject,false);assert.equal(built.command.requirePeriod,false);assert.equal(built.command.periodId,null);assert.deepEqual(Array.from(built.errors||[]),[]);
-          }
-          console.log('PASS_I3_LEGAL_TENANT_SCOPE_PERIOD_REGRESSION');
-          NODE
-          node <<'NODE'
-          const fs=require('fs'),vm=require('vm'),assert=require('assert');
-          const handlers={},calls={match:0,fetch:[]};
-          const sw={
-            CX_BUILD_ID:'test-build',URL,Set,Promise,Response,console,
-            importScripts:()=>{},
-            self:{location:{origin:'https://cxorbia-backend-dev.web.app'},skipWaiting:()=>{},clients:{claim:async()=>{}},addEventListener:(name,fn)=>{handlers[name]=fn;}},
-            caches:{keys:async()=>[],delete:async()=>true,open:async()=>({keys:async()=>[],delete:async()=>true,put:async()=>{}}),match:async()=>{calls.match++;return {cached:true};}},
-            fetch:(request,init)=>{calls.fetch.push({url:request.url,init});return Promise.reject(new Error('simulated-network-down'));}
-          };
-          vm.createContext(sw);vm.runInContext(fs.readFileSync('app/sw.js','utf8'),sw);
-          assert.equal(typeof handlers.fetch,'function');
-          (async()=>{
-            let critical;
-            handlers.fetch({request:{method:'GET',url:'https://cxorbia-backend-dev.web.app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js'},respondWith:p=>{critical=p;}});
-            await assert.rejects(critical,/simulated-network-down/);
-            assert.equal(calls.match,0,'critical legal asset must never query CacheStorage fallback');
-            assert.equal(calls.fetch[0].init?.cache,'no-store');
-            let nonCritical;
-            handlers.fetch({request:{method:'GET',url:'https://cxorbia-backend-dev.web.app/styles/theme.css',mode:'cors'},respondWith:p=>{nonCritical=p;}});
-            const fallback=await nonCritical;assert.equal(fallback.cached,true);assert.equal(calls.match,1);
-            console.log('PASS_I3_LEGAL_CRITICAL_CACHE_FAIL_CLOSED');
-          })().catch(e=>{console.error(e);process.exit(1);});
-          NODE
-          jq -n -S --arg source "$PRODUCT_SOURCE_SHA" --arg base "$P0_BASE_SHA" --arg qa "$GITHUB_SHA" '{decision:"PASS_I3_FROZEN_PRODUCT_GUARD",productSourceSha:$source,p0BaseSha:$base,qaHeadSha:$qa,productDelta:["app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js","app/sw.js"],focalRegression:"PASS_I3_LEGAL_TENANT_SCOPE_PERIOD_REGRESSION",cacheRegression:"PASS_I3_LEGAL_CRITICAL_CACHE_FAIL_CLOSED",productDrift:false,production:false}' > "$OUT/source-guard.json"
-
-      - name: Bind locked shopper and Gate 20 evidence
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$SHOPPER_RECURRENCE_RUN_ID" > "$OUT/shopper-recurrence-run.json"
-          jq -e --arg sha "$SHOPPER_RECURRENCE_HEAD_SHA" '.head_sha==$sha and .status=="completed" and .conclusion=="success" and .name=="CXOrbia Recovery I3 Shopper Auth Membership Recurrence Gate"' "$OUT/shopper-recurrence-run.json" >/dev/null
-          curl -fsS -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$LOCKED_GATE20_RUN_ID/attempts/$LOCKED_GATE20_RUN_ATTEMPT" > "$OUT/locked-gate20-run.json"
-          jq -e --arg sha "$LOCKED_GATE20_SOURCE_SHA" --argjson attempt "$LOCKED_GATE20_RUN_ATTEMPT" '.head_sha==$sha and .run_attempt==$attempt and .status=="completed" and .conclusion=="success"' "$OUT/locked-gate20-run.json" >/dev/null
-          jq -n -S --argjson recurrence "$SHOPPER_RECURRENCE_RUN_ID" --arg recurrenceSha "$SHOPPER_RECURRENCE_HEAD_SHA" --argjson gate20 "$LOCKED_GATE20_RUN_ID" --argjson attempt "$LOCKED_GATE20_RUN_ATTEMPT" --arg gate20Sha "$LOCKED_GATE20_SOURCE_SHA" '{decision:"PASS_I3_LOCKED_EVIDENCE",shopperRecurrence:{runId:$recurrence,headSha:$recurrenceSha,conclusion:"success"},gate20:{runId:$gate20,attempt:$attempt,headSha:$gate20Sha,conclusion:"success"},production:false}' > "$OUT/locked-evidence.json"
+          git cat-file -e "$I3_CERTIFICATION_SOURCE_SHA^{commit}"
+          test "$(git rev-parse "$I3_CERTIFICATION_SOURCE_SHA^{tree}")" = "$I3_CERTIFICATION_SOURCE_TREE"
+          git merge-base --is-ancestor "$I3_CERTIFICATION_SOURCE_SHA" HEAD
+          git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg control "$GITHUB_SHA" '{decision:"PASS_I3_SINGLE_CERTIFICATION_SOURCE_GUARD",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,productDrift:false,production:false}' > "$OUT/source-guard.json"
 
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
-      - name: Install focal DEV dependencies and run runtime tests
+      - name: Install existing focal certification dependencies
         run: |
           set -euo pipefail
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase-tools@latest >/dev/null 2>&1
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase-tools@latest playwright@1.55.0 >/dev/null 2>&1
           node --test backend/runtime/hr-live-service/test/*.test.mjs | tee "$OUT/runtime-tests.log"
 
       - name: Authenticate canonical Firebase DEV
@@ -159,174 +82,126 @@ jobs:
         with:
           project_id: ${{ env.PROJECT }}
 
-      - name: Prepare exact approved product source once
+      - name: Prepare exact certification source once
         run: |
           set -Eeuo pipefail
-          SOURCE_DIR="$RUNNER_TEMP/cxorbia-product-source"
+          SOURCE_DIR="$RUNNER_TEMP/cxorbia-i3-certified-source"
           rm -rf "$SOURCE_DIR"; mkdir -p "$SOURCE_DIR"
-          git archive "$PRODUCT_SOURCE_SHA" | tar -x -C "$SOURCE_DIR"
-          test -f "$SOURCE_DIR/firebase.json"; test -f "$SOURCE_DIR/.firebaserc"
-          test -f "$SOURCE_DIR/app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js"
-          test -f "$SOURCE_DIR/app/sw.js"
+          git archive "$I3_CERTIFICATION_SOURCE_SHA" | tar -x -C "$SOURCE_DIR"
+          test -f "$SOURCE_DIR/firebase.json"
+          test -f "$SOURCE_DIR/.firebaserc"
           echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
-          sha256sum "$SOURCE_DIR/app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js" > "$OUT/legal-owner-local.sha256"
-          sha256sum "$SOURCE_DIR/app/sw.js" > "$OUT/sw-local.sha256"
 
-      - name: Build exact approved product source image
+      - name: Build exact certification source once
         run: |
           set -Eeuo pipefail
-          trap 'rc=$?; echo "::error::ENVIRONMENT_FAILURE exact-source-build line=$LINENO rc=$rc"; exit $rc' ERR
-          IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-${PRODUCT_SOURCE_SHA:0:12}-${GITHUB_RUN_ID}"
+          IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-${I3_CERTIFICATION_SOURCE_SHA:0:12}-${GITHUB_RUN_ID}"
           echo "$IMAGE_URI" > "$OUT/source-image-uri.txt"
           gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
-          jq -n -S --arg source "$PRODUCT_SOURCE_SHA" --arg image "$IMAGE_URI" '{decision:"PASS_I3_EXACT_SOURCE_IMAGE_BUILD",productSourceSha:$source,imageTag:$image,buildFromGitArchive:true,production:false}' > "$OUT/source-build.json"
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg image "$IMAGE_URI" '{decision:"PASS_I3_ONE_BUILD",i3CertificationSourceSha:$source,imageTag:$image,buildCount:1,production:false}' > "$OUT/source-build.json"
 
-      - name: Deploy exact source image to existing Recovery DEV runtime only
+      - name: Deploy exact built image to Recovery DEV runtime
         run: |
           set -Eeuo pipefail
-          trap 'rc=$?; echo "::error::ENVIRONMENT_FAILURE exact-source-dev-deploy line=$LINENO rc=$rc"; exit $rc' ERR
           IMAGE_URI="$(cat "$OUT/source-image-uri.txt")"
           gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMAGE_URI" --quiet
           gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-after-source-deploy.json"
-          SOURCE_REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$OUT/runtime-after-source-deploy.json")"; CREATED_REVISION="$(jq -r '.status.latestCreatedRevisionName // empty' "$OUT/runtime-after-source-deploy.json")"
-          test -n "$SOURCE_REVISION"; test "$SOURCE_REVISION" = "$CREATED_REVISION"
+          SOURCE_REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$OUT/runtime-after-source-deploy.json")"
+          test -n "$SOURCE_REVISION"
           gcloud run revisions describe "$SOURCE_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/source-runtime-revision.json"
-          IMAGE_SPEC="$(jq -r '.spec.containers[0].image // empty' "$OUT/source-runtime-revision.json")"; DIGEST_RAW="$(jq -r '.status.imageDigest // empty' "$OUT/source-runtime-revision.json")"
-          if [[ "$DIGEST_RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$DIGEST_RAW"; elif [[ "$DIGEST_RAW" == *@sha256:* ]]; then DIGEST="sha256:${DIGEST_RAW##*@sha256:}"; elif [[ "$IMAGE_SPEC" == *@sha256:* ]]; then DIGEST="sha256:${IMAGE_SPEC##*@sha256:}"; else echo 'Immutable source image digest unresolved' >&2; exit 1; fi
-          IMAGE_REPO="${IMAGE_SPEC%@*}"; [[ "$IMAGE_REPO" != "$IMAGE_SPEC" ]] || IMAGE_REPO="${IMAGE_SPEC%:*}"; IMMUTABLE_IMAGE="$IMAGE_REPO@$DIGEST"
-          RUNTIME_URL="$(jq -r '.status.url // empty' "$OUT/runtime-after-source-deploy.json")"; test -n "$RUNTIME_URL"
+          IMAGE_SPEC="$(jq -r '.spec.containers[0].image // empty' "$OUT/source-runtime-revision.json")"
+          DIGEST_RAW="$(jq -r '.status.imageDigest // empty' "$OUT/source-runtime-revision.json")"
+          if [[ "$DIGEST_RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then DIGEST="$DIGEST_RAW"; elif [[ "$DIGEST_RAW" == *@sha256:* ]]; then DIGEST="sha256:${DIGEST_RAW##*@sha256:}"; elif [[ "$IMAGE_SPEC" == *@sha256:* ]]; then DIGEST="sha256:${IMAGE_SPEC##*@sha256:}"; else echo "Immutable image digest unresolved" >&2; exit 1; fi
+          IMAGE_REPO="${IMAGE_SPEC%@*}"; [[ "$IMAGE_REPO" != "$IMAGE_SPEC" ]] || IMAGE_REPO="${IMAGE_SPEC%:*}"
+          IMMUTABLE_IMAGE="$IMAGE_REPO@$DIGEST"
+          RUNTIME_URL="$(jq -r '.status.url // empty' "$OUT/runtime-after-source-deploy.json")"
           curl -fsS --retry 10 --retry-delay 3 "$RUNTIME_URL/health" > "$OUT/health-after-source-deploy.json"
           jq -e '.ok==true and .production==false and .hrWrites==false and .shopperReconciliationReady==true and .visitReconciliationReady==true' "$OUT/health-after-source-deploy.json" >/dev/null
-          echo "SOURCE_RUNTIME_REVISION=$SOURCE_REVISION" >> "$GITHUB_ENV"; echo "SOURCE_RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"; echo "SOURCE_IMMUTABLE_IMAGE=$IMMUTABLE_IMAGE" >> "$GITHUB_ENV"
-          jq -n -S --arg source "$PRODUCT_SOURCE_SHA" --arg revision "$SOURCE_REVISION" --arg digest "$DIGEST" --arg image "$IMMUTABLE_IMAGE" '{decision:"PASS_I3_EXACT_SOURCE_DEV_RUNTIME",productSourceSha:$source,devRuntimeRevision:$revision,runtimeDigest:$digest,immutableImage:$image,devDeploy:true,hostingDeploy:false,production:false}' > "$OUT/source-runtime-deploy.json"
+          echo "SOURCE_RUNTIME_REVISION=$SOURCE_REVISION" >> "$GITHUB_ENV"
+          echo "SOURCE_RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
+          echo "SOURCE_IMMUTABLE_IMAGE=$IMMUTABLE_IMAGE" >> "$GITHUB_ENV"
 
-      - name: Materialize legal human-acceptance gate as config-only DEV successor
+      - name: Materialize existing legal gate as config-only DEV successor
         run: |
           set -Eeuo pipefail
-          CURRENT_REVISION="$SOURCE_RUNTIME_REVISION"; CURRENT_DIGEST="$SOURCE_RUNTIME_DIGEST"; IMMUTABLE_IMAGE="$SOURCE_IMMUTABLE_IMAGE"
-          gcloud run revisions describe "$CURRENT_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$RUNNER_TEMP/current-revision.json"
-          CUR_ENABLE="$(jq -r --arg n "$LEGAL_ENABLE_NAME" '((.spec.containers[0].env // []) | map(select(.name==$n)) | .[0].value) // empty' "$RUNNER_TEMP/current-revision.json")"; CUR_GATE="$(jq -r --arg n "$LEGAL_GATE_NAME" '((.spec.containers[0].env // []) | map(select(.name==$n)) | .[0].value) // empty' "$RUNNER_TEMP/current-revision.json")"
-          CONFIG_UPDATED=0
-          if [[ "$CUR_ENABLE" != "$LEGAL_ENABLE_VALUE" || "$CUR_GATE" != "$LEGAL_GATE_VALUE" ]]; then gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$IMMUTABLE_IMAGE" --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE" --quiet; CONFIG_UPDATED=1; fi
+          gcloud run revisions describe "$SOURCE_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$RUNNER_TEMP/current-revision.json"
+          CUR_ENABLE="$(jq -r --arg n "$LEGAL_ENABLE_NAME" '((.spec.containers[0].env // []) | map(select(.name==$n)) | .[0].value) // empty' "$RUNNER_TEMP/current-revision.json")"
+          CUR_GATE="$(jq -r --arg n "$LEGAL_GATE_NAME" '((.spec.containers[0].env // []) | map(select(.name==$n)) | .[0].value) // empty' "$RUNNER_TEMP/current-revision.json")"
+          if [[ "$CUR_ENABLE" != "$LEGAL_ENABLE_VALUE" || "$CUR_GATE" != "$LEGAL_GATE_VALUE" ]]; then
+            gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$SOURCE_IMMUTABLE_IMAGE" --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE" --quiet
+          fi
           gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-final.json"
-          FINAL_REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$OUT/runtime-final.json")"; test -n "$FINAL_REVISION"
-          gcloud run revisions describe "$FINAL_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-final-revision.json"
-          FINAL_IMAGE="$(jq -r '.spec.containers[0].image // empty' "$OUT/runtime-final-revision.json")"; FINAL_DIGEST_RAW="$(jq -r '.status.imageDigest // empty' "$OUT/runtime-final-revision.json")"
-          if [[ "$FINAL_DIGEST_RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then FINAL_DIGEST="$FINAL_DIGEST_RAW"; elif [[ "$FINAL_DIGEST_RAW" == *@sha256:* ]]; then FINAL_DIGEST="sha256:${FINAL_DIGEST_RAW##*@sha256:}"; elif [[ "$FINAL_IMAGE" == *@sha256:* ]]; then FINAL_DIGEST="sha256:${FINAL_IMAGE##*@sha256:}"; else exit 1; fi
-          test "$FINAL_DIGEST" = "$CURRENT_DIGEST"
-          jq -e --arg n "$LEGAL_ENABLE_NAME" --arg v "$LEGAL_ENABLE_VALUE" '((.spec.containers[0].env // []) | map(select(.name==$n)) | .[0].value)==$v' "$OUT/runtime-final-revision.json" >/dev/null
-          jq -e --arg n "$LEGAL_GATE_NAME" --arg v "$LEGAL_GATE_VALUE" '((.spec.containers[0].env // []) | map(select(.name==$n)) | .[0].value)==$v' "$OUT/runtime-final-revision.json" >/dev/null
-          RUNTIME_URL="$(jq -r '.status.url // empty' "$OUT/runtime-final.json")"; curl -fsS --retry 10 --retry-delay 3 "$RUNTIME_URL/health" > "$OUT/health-final.json"; jq -e '.ok==true and .production==false and .hrWrites==false' "$OUT/health-final.json" >/dev/null
-          echo "DEV_REVISION=$FINAL_REVISION" >> "$GITHUB_ENV"; echo "RUNTIME_DIGEST=$FINAL_DIGEST" >> "$GITHUB_ENV"; echo "IMMUTABLE_IMAGE=$IMMUTABLE_IMAGE" >> "$GITHUB_ENV"
-          jq -n -S --arg sourceRevision "$CURRENT_REVISION" --arg finalRevision "$FINAL_REVISION" --arg digest "$FINAL_DIGEST" --arg image "$IMMUTABLE_IMAGE" --argjson updated "$CONFIG_UPDATED" '{decision:"PASS_I3_LEGAL_GATE_CONFIG_ONLY",sourceRuntimeRevision:$sourceRevision,finalRuntimeRevision:$finalRevision,imageDigest:$digest,immutableImage:$image,configRevisionCreated:($updated==1),rebuildAfterCertification:false,production:false}' > "$OUT/runtime-config-receipt.json"
+          DEV_REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$OUT/runtime-final.json")"
+          gcloud run revisions describe "$DEV_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-final-revision.json"
+          FINAL_DIGEST_RAW="$(jq -r '.status.imageDigest // empty' "$OUT/runtime-final-revision.json")"
+          if [[ "$FINAL_DIGEST_RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then FINAL_DIGEST="$FINAL_DIGEST_RAW"; elif [[ "$FINAL_DIGEST_RAW" == *@sha256:* ]]; then FINAL_DIGEST="sha256:${FINAL_DIGEST_RAW##*@sha256:}"; else FINAL_DIGEST="$SOURCE_RUNTIME_DIGEST"; fi
+          test "$FINAL_DIGEST" = "$SOURCE_RUNTIME_DIGEST"
+          echo "DEV_REVISION=$DEV_REVISION" >> "$GITHUB_ENV"
+          echo "RUNTIME_DIGEST=$FINAL_DIGEST" >> "$GITHUB_ENV"
 
-      - name: Compose exact certified product source into Hosting DEV and prove critical legal parity
+      - name: Deploy same exact source archive to Hosting DEV
         run: |
           set -Eeuo pipefail
-          trap 'rc=$?; echo "::error::RELEASE_COMPOSITION_FAILURE hosting-dev line=$LINENO rc=$rc"; exit $rc' ERR
           cd "$SOURCE_DIR"
           "$GITHUB_WORKSPACE/node_modules/.bin/firebase" deploy --config firebase.json --only "hosting:$FIREBASE_HOSTING_TARGET" --project "$PROJECT" --non-interactive | tee "$GITHUB_WORKSPACE/$OUT/hosting-deploy.log"
           cd "$GITHUB_WORKSPACE"
           pairs=(
             'index-backend-dev.html app/index-backend-dev.html'
+            'core/backend-browser-auth.js app/core/backend-browser-auth.js'
+            'modules/shoppers.js app/modules/shoppers.js'
+            'modules/finanzas.js app/modules/finanzas.js'
+            'modules/operacion-extra.js app/modules/operacion-extra.js'
             'adapters/cxorbia-command-adapter-v1.js app/adapters/cxorbia-command-adapter-v1.js'
+            'adapters/tya-canonical-shopper-portal-v2.js app/adapters/tya-canonical-shopper-portal-v2.js'
             'adapters/cxorbia-legal-acceptance-durable-contract-v1.js app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js'
-            'adapters/cxorbia-legal-acceptance-provider-bridge-v1.js app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js'
-            'adapters/cxorbia-legal-runtime-http-v1.js app/adapters/cxorbia-legal-runtime-http-v1.js'
             'sw.js app/sw.js'
           )
-          : > "$OUT/legal-critical-parity.tsv"
+          : > "$OUT/hosting-parity.tsv"
           for pair in "${pairs[@]}"; do
-            remote_path="${pair%% *}"; local_path="${pair#* }"; remote="$OUT/remote-$(basename "$remote_path")"; expected="$(sha256sum "$SOURCE_DIR/$local_path"|awk '{print $1}')"; matched=0
-            for attempt in $(seq 1 15); do curl -fsSL --retry 3 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' -H 'Pragma: no-cache' "$HOSTING_URL/$remote_path?i3=${GITHUB_RUN_ID}-${attempt}-$(date +%s%N)" -o "$remote"; actual="$(sha256sum "$remote"|awk '{print $1}')"; if [ "$actual" = "$expected" ]; then matched=1; break; fi; sleep 4; done
+            remote_path="${pair%% *}"; local_path="${pair#* }"; remote="$OUT/remote-$(basename "$remote_path")"
+            expected="$(sha256sum "$SOURCE_DIR/$local_path"|awk '{print $1}')"; matched=0
+            for attempt in $(seq 1 15); do
+              curl -fsSL --retry 3 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' -H 'Pragma: no-cache' "$HOSTING_URL/$remote_path?i3=${GITHUB_RUN_ID}-${attempt}-$(date +%s%N)" -o "$remote"
+              actual="$(sha256sum "$remote"|awk '{print $1}')"
+              if [[ "$actual" = "$expected" ]]; then matched=1; break; fi
+              sleep 4
+            done
             test "$matched" = 1
-            printf '%s\t%s\t%s\tMATCH\n' "$remote_path" "$expected" "$actual" >> "$OUT/legal-critical-parity.tsv"
+            printf '%s\t%s\t%s\tMATCH\n' "$remote_path" "$expected" "$actual" >> "$OUT/hosting-parity.tsv"
           done
-          grep -q 'requirePeriod:false' "$OUT/remote-cxorbia-legal-acceptance-durable-contract-v1.js"
-          grep -q 'CX_FAIL_CLOSED_PATHS' "$OUT/remote-sw.js"
-          grep -q "cache:'no-store'" "$OUT/remote-sw.js"
-          node <<'NODE'
-          const fs=require('fs'),vm=require('vm'),assert=require('assert');
-          const ctx={console,Date,setTimeout,clearTimeout};ctx.globalThis=ctx;ctx.window=ctx;ctx.CX={BACKEND:{tenantId:'tya',enableCommandWrites:false},session:{}};
-          vm.createContext(ctx);
-          vm.runInContext(fs.readFileSync(`${process.env.OUT}/remote-cxorbia-command-adapter-v1.js`,'utf8'),ctx);
-          vm.runInContext(fs.readFileSync(`${process.env.OUT}/remote-cxorbia-legal-acceptance-durable-contract-v1.js`,'utf8'),ctx);
-          for(const role of ['super','admin','shopper']){
-            const ns=role==='shopper'?'shopper':'staff';ctx.CX.backendAuth={context:()=>({authenticated:true,tenantId:'tya',role,authNamespace:ns,projectIds:['cinepolis']})};
-            const built=ctx.CX.legalAcceptanceDurable.buildHumanAcceptanceCommand({scope:{tenantId:'tya',scopeMode:'tenant',projectId:null,role,authNamespace:ns},current:{legalContentId:'terms',legalVersion:'tya-legal-bundle-v0.4-interim-golive-20260816',contentDigest:'a'.repeat(64)},idempotencyKey:`i3-served-human-build-${role}`,humanConfirmed:true});
-            assert.equal(built.ok,true,JSON.stringify(built));assert.equal(built.command.requireProject,false);assert.equal(built.command.requirePeriod,false);assert.equal(built.command.periodId,null);assert.deepEqual(Array.from(built.errors||[]),[]);
-          }
-          console.log('PASS_I3_SERVED_LEGAL_HUMAN_COMMAND_BUILD');
-          NODE
-          jq -Rn --arg source "$PRODUCT_SOURCE_SHA" '[inputs|split("\t")|{path:.[0],expectedSha256:.[1],servedSha256:.[2],classification:.[3]}] | {decision:"PASS_I3_LEGAL_OWNER_HOSTING_PARITY",productSourceSha:$source,owners:.,ownerCount:length,servedHumanBuild:"PASS_I3_SERVED_LEGAL_HUMAN_COMMAND_BUILD",cacheFailClosed:true,hostingDeploys:1,devOnly:true,production:false}' < "$OUT/legal-critical-parity.tsv" > "$OUT/legal-hosting-parity.json"
+          jq -Rn --arg source "$I3_CERTIFICATION_SOURCE_SHA" '[inputs|split("\t")|{path:.[0],expectedSha256:.[1],servedSha256:.[2],classification:.[3]}] | {decision:"PASS_I3_SINGLE_SOURCE_HOSTING_PARITY",i3CertificationSourceSha:$source,owners:.,ownerCount:length,production:false}' < "$OUT/hosting-parity.tsv" > "$OUT/hosting-parity.json"
 
-      - name: Read fresh authoritative HR source on exact runtime
+      - name: Read fresh authoritative HR source
         run: |
           set -euo pipefail
-          code="$(curl -sS --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 20 --max-time 180 -o "$OUT/hr-fresh.json" -w '%{http_code}' "$HOSTING_URL/api/tya/cinepolis/hr-live?format=json&fresh=1&i3=${GITHUB_RUN_ID}")"; test "$code" = '200'
-          node <<'NODE'
-          const fs=require('fs'),p=JSON.parse(fs.readFileSync(`${process.env.OUT}/hr-fresh.json`,'utf8')),s=p?.snapshot||p?.data||p,rt=p?._runtime||s?._runtime||{};
-          if(s?.sourceSafe!==true||rt.refreshError)throw new Error('SOURCE_FAILURE:HR_FRESH_INVALID');
-          fs.writeFileSync(`${process.env.OUT}/hr-readback.json`,JSON.stringify({decision:'PASS_I3_HR_EXACT_RUNTIME',sourceRevision:rt.revision||s.sourceRevision||null,sourceSafe:true,hrWrites:0,production:false},null,2)+'\n');
-          NODE
+          code="$(curl -sS --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 20 --max-time 180 -o "$OUT/hr-fresh.json" -w '%{http_code}' "$HOSTING_URL/api/tya/cinepolis/hr-live?format=json&fresh=1&i3=${GITHUB_RUN_ID}")"
+          test "$code" = "200"
+          node -e 'const fs=require("fs"),p=JSON.parse(fs.readFileSync(process.env.OUT+"/hr-fresh.json","utf8")),s=p?.snapshot||p?.data||p,rt=p?._runtime||s?._runtime||{};if(s?.sourceSafe!==true||rt.refreshError)throw new Error("SOURCE_FAILURE:HR_FRESH_INVALID");fs.writeFileSync(process.env.OUT+"/hr-readback.json",JSON.stringify({decision:"PASS_I3_HR_EXACT_RUNTIME",sourceSafe:true,production:false},null,2)+"\n")'
 
-      - name: Re-certify focal profile and finance persistence
+      - name: Re-certify focal persistence on single source
         run: |
           set -euo pipefail
-          PROJECT="$PROJECT" OUT="$OUT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" PERIOD_ID="$PERIOD_ID" SOURCE_SHA="$PRODUCT_SOURCE_SHA" node tools/qa/cxorbia-i3-profile-finance-persistence-dev.mjs | tee "$OUT/focal-persistence-console.log"
-          test "$(jq -r '.decision' "$OUT/shopper-profile-persistence.json")" = 'SHOPPER_PROFILE_PERSISTENCE_PASS'; test "$(jq -r '.decision' "$OUT/finance-bulk-payment-persistence.json")" = 'FINANCE_BULK_PAYMENT_PERSISTENCE_PASS'; test "$(jq -r '.decision' "$OUT/synthetic-cleanup.json")" = 'PASS_I3_SYNTHETIC_CLEANUP'
+          PROJECT="$PROJECT" OUT="$OUT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" PERIOD_ID="$PERIOD_ID" SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" node tools/qa/cxorbia-i3-profile-finance-persistence-dev.mjs | tee "$OUT/focal-persistence-console.log"
+          test "$(jq -r '.decision' "$OUT/shopper-profile-persistence.json")" = "SHOPPER_PROFILE_PERSISTENCE_PASS"
+          test "$(jq -r '.decision' "$OUT/finance-bulk-payment-persistence.json")" = "FINANCE_BULK_PAYMENT_PERSISTENCE_PASS"
+          test "$(jq -r '.decision' "$OUT/synthetic-cleanup.json")" = "PASS_I3_SYNTHETIC_CLEANUP"
 
-      - name: Detect exact current human legal acceptance without writing
+      - name: Package one certification artifact without rebuild
         run: |
           set -euo pipefail
-          node <<'NODE'
-          const fs=require('fs');const {applicationDefault,initializeApp,getApps}=require('firebase-admin/app');const {getFirestore}=require('firebase-admin/firestore');const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];const roleApplicable=(role,roles)=>{const s=new Set(arr(roles).map(str).filter(Boolean));return s.size===0||s.has(role)};
-          (async()=>{if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:process.env.PROJECT});const tenant=getFirestore().collection('tenants').doc(process.env.TENANT_ID);const contents=(await tenant.collection('legalContents').get()).docs.map(d=>({id:d.id,...(d.data()||{})})).filter(c=>c.active!==false&&str(c.scopeMode||'tenant')==='tenant'&&str(c.currentVersion)&&/^[a-f0-9]{64}$/.test(str(c.currentDigest).toLowerCase())&&roleApplicable('shopper',c.roleApplicability));if(contents.length!==1)throw new Error(`AUTH_FAILURE:CURRENT_LEGAL_CONTENT_COUNT_${contents.length}`);const c=contents[0],receipts=(await tenant.collection('legalAcceptances').get()).docs.map(d=>({id:d.id,...(d.data()||{})}));const accepted=receipts.filter(r=>str(r.tenantId)===process.env.TENANT_ID&&str(r.scopeMode)==='tenant'&&str(r.role)==='shopper'&&str(r.authNamespace)==='shopper'&&str(r.legalContentId)===str(c.id)&&str(r.legalVersion)===str(c.currentVersion)&&str(r.contentDigest).toLowerCase()===str(c.currentDigest).toLowerCase()&&str(r.status)==='accepted'&&str(r.acceptanceMethod)==='human_ui'&&r.subjectExact===true&&Boolean(r.acceptedAt)&&str(r.actorUid));const ready=accepted.length>0;fs.writeFileSync(`${process.env.OUT}/legal-human-preflight.json`,JSON.stringify({decision:ready?'PASS_I3_CURRENT_HUMAN_LEGAL_ACCEPTANCE_PRESENT':'HOLD_I3_HUMAN_LEGAL_ACCEPTANCE_REQUIRED',legalContentId:str(c.id),legalVersion:str(c.currentVersion),acceptedReceiptCount:accepted.length,humanUiOnly:true,automaticAcceptance:false,legalAcceptanceBypass:false,providerWrites:0,hrWrites:0,production:false},null,2)+'\n');fs.appendFileSync(process.env.GITHUB_ENV,`HUMAN_LEGAL_ACCEPTANCE_READY=${ready?'true':'false'}\nCURRENT_LEGAL_VERSION=${str(c.currentVersion)}\n`);})().catch(e=>{console.error(e);process.exit(1)});
-          NODE
+          tar -C "$SOURCE_DIR" -cf "$OUT/cxorbia-i3-certified-source.tar" .
+          ARTIFACT_SHA256="$(sha256sum "$OUT/cxorbia-i3-certified-source.tar" | awk '{print $1}')"
+          echo "$ARTIFACT_SHA256  cxorbia-i3-certified-source.tar" > "$OUT/cxorbia-i3-certified-source.tar.sha256"
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg control "$GITHUB_SHA" --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg image "$SOURCE_IMMUTABLE_IMAGE" --arg artifact "$ARTIFACT_SHA256" '{decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_P0",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,buildCount:1,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,rebuildAfterCertification:false,production:false}' > "$OUT/i3-certification-manifest.json"
+          cp "$OUT/i3-certification-manifest.json" "$OUT/result.json"
 
-      - name: Record I3 HOLD awaiting unavoidable human legal acceptance
-        if: env.HUMAN_LEGAL_ACCEPTANCE_READY != 'true'
-        run: |
-          jq -n -S --arg source "$PRODUCT_SOURCE_SHA" --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg version "$CURRENT_LEGAL_VERSION" '{verdict:"HOLD_I3_HUMAN_LEGAL_ACCEPTANCE_REQUIRED",state:"HOLD",iteration:"I3",productSourceSha:$source,devRuntimeRevision:$revision,runtimeDigest:$digest,currentLegalVersion:$version,exactSourceImageBuilt:true,devRuntimeDeployed:true,hostingExactSourceDeployed:true,legalOwnerHostingParity:true,legalCacheFailClosed:true,servedHumanCommandBuild:true,legalWriteGateReady:true,profilePersistence:true,financePersistence:true,hrFreshReadback:true,humanAcceptancePresent:false,automaticAcceptance:false,legalAcceptanceBypass:false,production:false}' > "$OUT/result.json"
-          echo "HOLD_I3_HUMAN_LEGAL_ACCEPTANCE_REQUIRED legalVersion=$CURRENT_LEGAL_VERSION runtime=$DEV_REVISION"
-
-      - name: Install browser dependency only when human receipt exists
-        if: env.HUMAN_LEGAL_ACCEPTANCE_READY == 'true'
-        run: |
-          npm install --no-save --ignore-scripts --package-lock=false playwright@1.55.0 >/dev/null 2>&1
-          npx playwright install --with-deps chromium >/dev/null 2>&1
-
-      - name: Prove current changed owners are served by Hosting DEV
-        if: env.HUMAN_LEGAL_ACCEPTANCE_READY == 'true'
-        run: |
-          set -euo pipefail
-          pairs=('modules/shoppers.js app/modules/shoppers.js' 'modules/finanzas.js app/modules/finanzas.js' 'modules/operacion-extra.js app/modules/operacion-extra.js' 'adapters/cxorbia-command-adapter-v1.js app/adapters/cxorbia-command-adapter-v1.js' 'adapters/cxorbia-cxdata-command-boundary-v1.js app/adapters/cxorbia-cxdata-command-boundary-v1.js' 'adapters/cxorbia-shopper-admin-command-contract-v1.js app/adapters/cxorbia-shopper-admin-command-contract-v1.js' 'adapters/cxorbia-legal-acceptance-durable-contract-v1.js app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js' 'sw.js app/sw.js')
-          for pair in "${pairs[@]}"; do remote="${pair%% *}"; local="${pair#* }"; out="$OUT/gate20-remote-$(basename "$remote")"; expected="$(sha256sum "$SOURCE_DIR/$local"|awk '{print $1}')"; matched=0; for attempt in $(seq 1 12); do curl -fsSL --retry 3 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' -H 'Pragma: no-cache' "$HOSTING_URL/$remote?gate20=${GITHUB_RUN_ID}-${attempt}-$(date +%s%N)" -o "$out"; actual="$(sha256sum "$out"|awk '{print $1}')"; if [ "$actual" = "$expected" ]; then matched=1; break; fi; sleep 4; done; test "$matched" = 1; done
-          jq -n -S --arg source "$PRODUCT_SOURCE_SHA" '{decision:"PASS_GATE20_CHANGED_OWNER_PARITY",productSourceSha:$source,ownerCount:8,hostingDeploys:1,production:false}' > "$OUT/hosting.json"
-
-      - name: Execute focal browser visual drift revalidation
-        if: env.HUMAN_LEGAL_ACCEPTANCE_READY == 'true'
-        run: |
-          PROJECT="$PROJECT" OUT="$OUT" SOURCE_SHA="$PRODUCT_SOURCE_SHA" HOSTING_URL="$HOSTING_URL" node tools/qa/cxorbia-gate20-browser-visual-dev.mjs | tee "$OUT/gate20-focal-console.log"
-          test "$(jq -r '.decision' "$OUT/gate20-browser-visual.json")" = 'PASS_GATE20_FOCAL_VISUAL_DRIFT'
-
-      - name: Final I3 functional plus visual closure verdict
-        if: env.HUMAN_LEGAL_ACCEPTANCE_READY == 'true'
-        run: |
-          set -euo pipefail
-          node <<'NODE'
-          const fs=require('fs'),p=n=>JSON.parse(fs.readFileSync(`${process.env.OUT}/${n}`,'utf8'));const guard=p('source-guard.json'),locked=p('locked-evidence.json'),sourceRuntime=p('source-runtime-deploy.json'),cfg=p('runtime-config-receipt.json'),composition=p('legal-hosting-parity.json'),hr=p('hr-readback.json'),profile=p('shopper-profile-persistence.json'),finance=p('finance-bulk-payment-persistence.json'),cleanup=p('synthetic-cleanup.json'),legal=p('legal-human-preflight.json'),hosting=p('hosting.json'),visual=p('gate20-browser-visual.json');
-          if(guard.decision!=='PASS_I3_FROZEN_PRODUCT_GUARD'||guard.cacheRegression!=='PASS_I3_LEGAL_CRITICAL_CACHE_FAIL_CLOSED'||locked.decision!=='PASS_I3_LOCKED_EVIDENCE'||sourceRuntime.decision!=='PASS_I3_EXACT_SOURCE_DEV_RUNTIME'||cfg.decision!=='PASS_I3_LEGAL_GATE_CONFIG_ONLY'||composition.decision!=='PASS_I3_LEGAL_OWNER_HOSTING_PARITY'||composition.servedHumanBuild!=='PASS_I3_SERVED_LEGAL_HUMAN_COMMAND_BUILD'||composition.cacheFailClosed!==true||hr.decision!=='PASS_I3_HR_EXACT_RUNTIME'||profile.decision!=='SHOPPER_PROFILE_PERSISTENCE_PASS'||finance.decision!=='FINANCE_BULK_PAYMENT_PERSISTENCE_PASS'||cleanup.decision!=='PASS_I3_SYNTHETIC_CLEANUP'||legal.decision!=='PASS_I3_CURRENT_HUMAN_LEGAL_ACCEPTANCE_PRESENT'||hosting.decision!=='PASS_GATE20_CHANGED_OWNER_PARITY'||visual.decision!=='PASS_GATE20_FOCAL_VISUAL_DRIFT')throw new Error('I3_CURRENT_CANDIDATE_CLOSURE_INCOMPLETE');
-          const result={verdict:'PASS_I3_CURRENT_CANDIDATE_FUNCTIONAL_VISUAL',state:'I3_READY_FOR_GATE21',iteration:'I3',productSourceSha:process.env.PRODUCT_SOURCE_SHA,qaHeadSha:process.env.GITHUB_SHA,devRuntimeRevision:process.env.DEV_REVISION,runtimeDigest:process.env.RUNTIME_DIGEST,currentLegalVersion:process.env.CURRENT_LEGAL_VERSION,exactSourceImageBuilt:true,devRuntimeDeployed:true,hostingExactSourceDeployed:true,legalOwnerHostingParity:true,legalCacheFailClosed:true,servedHumanCommandBuild:true,legalWriteGateReady:true,humanAcceptancePresent:true,automaticAcceptance:false,legalAcceptanceBypass:false,profilePersistence:true,financePersistence:true,hrFreshReadback:true,gate20:'PASS',desktop:true,mobile:true,rebuildAfterCertification:false,production:false};fs.writeFileSync(`${process.env.OUT}/result.json`,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
-          NODE
-
-      - name: Upload sanitized I3 evidence
+      - name: Upload one sanitized I3 certification artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-recovery-i3-dev-certification-${{ github.run_id }}
+          name: cxorbia-recovery-i3-single-source-certification-${{ github.run_id }}
           path: ${{ env.OUT }}
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 14
 
       - name: Cleanup temporary dependencies

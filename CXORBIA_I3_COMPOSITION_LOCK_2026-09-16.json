@@ -1,0 +1,32 @@
+{
+  "schema": "cxorbia-i3-composition-lock-v1",
+  "date": "2026-09-16",
+  "state": "LOCKED_FOR_SINGLE_SOURCE_CERTIFICATION",
+  "classificationCorrected": "RELEASE_COMPOSITION_FAILURE",
+  "i3CertificationSourceSha": "b94911a4748c03c2e604415e8a97ee091da96218",
+  "i3CertificationSourceTree": "e3efd4afa9ffcb973e66e40e08798eba4e6c0f34",
+  "addendum": {
+    "path": "ADDENDUM_I3_RELEASE_COMPOSITION_CORRECTION_2026-09-16.md",
+    "sha256": "cea9cece7523b49fb0581484a3fe33e8c05485deac739066d3f4a4adbf138dca"
+  },
+  "manifestContract": {
+    "producerWorkflow": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+    "artifactNamePattern": "cxorbia-recovery-i3-single-source-certification-<run_id>",
+    "manifestPath": "i3-certification-manifest.json",
+    "sourceArchivePath": "cxorbia-i3-certified-source.tar",
+    "sourceArchiveSha256Path": "cxorbia-i3-certified-source.tar.sha256"
+  },
+  "buildInput": {
+    "method": "git archive",
+    "source": "b94911a4748c03c2e604415e8a97ee091da96218",
+    "buildCount": 1
+  },
+  "parityRules": [
+    "All final I3 gates MUST use i3CertificationSourceSha.",
+    "No final gate may define an independent PRODUCT_SOURCE_SHA.",
+    "Shopper and Gate20 must prove DEV assets are byte-identical to i3CertificationSourceSha.",
+    "Gate21 must fingerprint the artifact produced by the certification run and MUST NOT rebuild.",
+    "I4 must deploy the exact certified artifact and immutable runtime image and MUST NOT rebuild."
+  ],
+  "production": "DO_NOT_TOUCH_UNTIL_I3_GO_AND_PAULA_AUTHORIZATION"
+}
