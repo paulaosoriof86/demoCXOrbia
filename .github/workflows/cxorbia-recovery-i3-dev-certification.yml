@@ -6,8 +6,9 @@ on:
       - recovery/cxorbia-phase-a-20260831
     paths:
       - .github/workflows/cxorbia-recovery-i3-dev-certification.yml
-      - ADDENDUM_I3_RELEASE_COMPOSITION_CORRECTION_2026-09-16.md
-      - CXORBIA_I3_COMPOSITION_LOCK_2026-09-16.json
+      - .github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml
+      - ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-17_I3_MICRO_ITERATIONS_FROZEN.md
+      - CXORBIA_I3_MICRO_ITERATION_PLAN_LOCK_2026-09-17.json
   workflow_dispatch:
 
 permissions:
@@ -26,10 +27,14 @@ concurrency:
 env:
   I3_CERTIFICATION_SOURCE_SHA: b94911a4748c03c2e604415e8a97ee091da96218
   I3_CERTIFICATION_SOURCE_TREE: e3efd4afa9ffcb973e66e40e08798eba4e6c0f34
+  LOCKED_GATE20_BASELINE_RUN_ID: '34306578074'
+  LOCKED_GATE20_BASELINE_RUN_ATTEMPT: '1'
+  LOCKED_GATE20_BASELINE_SOURCE_SHA: bd2a519db5ebd08f17d47827997056db795c8c09
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
   HOSTING_URL: https://cxorbia-backend-dev.web.app
+  HOSTING_SITE: cxorbia-backend-dev
   FIREBASE_HOSTING_TARGET: cxorbia-dev
   TENANT_ID: tya
   PROJECT_ID: cinepolis
@@ -43,7 +48,7 @@ env:
 jobs:
   certify:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 70
     steps:
       - name: Checkout canonical Recovery control head
         uses: actions/checkout@v4
@@ -59,7 +64,9 @@ jobs:
           test "$(git rev-parse "$I3_CERTIFICATION_SOURCE_SHA^{tree}")" = "$I3_CERTIFICATION_SOURCE_TREE"
           git merge-base --is-ancestor "$I3_CERTIFICATION_SOURCE_SHA" HEAD
           git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg control "$GITHUB_SHA" '{decision:"PASS_I3_SINGLE_CERTIFICATION_SOURCE_GUARD",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,productDrift:false,production:false}' > "$OUT/source-guard.json"
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg control "$GITHUB_SHA" \
+            '{decision:"PASS_I3_SINGLE_CERTIFICATION_SOURCE_GUARD",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,productDrift:false,production:false}' \
+            > "$OUT/source-guard.json"
 
       - name: Setup Node 24
         uses: actions/setup-node@v4
@@ -70,6 +77,7 @@ jobs:
         run: |
           set -euo pipefail
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 firebase-tools@latest playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null
           node --test backend/runtime/hr-live-service/test/*.test.mjs | tee "$OUT/runtime-tests.log"
 
       - name: Authenticate canonical Firebase DEV
@@ -90,6 +98,7 @@ jobs:
           git archive "$I3_CERTIFICATION_SOURCE_SHA" | tar -x -C "$SOURCE_DIR"
           test -f "$SOURCE_DIR/firebase.json"
           test -f "$SOURCE_DIR/.firebaserc"
+          test -f "$SOURCE_DIR/tools/qa/cxorbia-gate20-browser-visual-dev.mjs"
           echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
 
       - name: Build exact certification source once
@@ -98,7 +107,9 @@ jobs:
           IMAGE_URI="gcr.io/${PROJECT}/${SERVICE}:i3-${I3_CERTIFICATION_SOURCE_SHA:0:12}-${GITHUB_RUN_ID}"
           echo "$IMAGE_URI" > "$OUT/source-image-uri.txt"
           gcloud builds submit "$SOURCE_DIR" --project "$PROJECT" --config "$SOURCE_DIR/backend/runtime/hr-live-service/cloudbuild.yaml" --substitutions "_IMAGE=$IMAGE_URI" --quiet
-          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg image "$IMAGE_URI" '{decision:"PASS_I3_ONE_BUILD",i3CertificationSourceSha:$source,imageTag:$image,buildCount:1,production:false}' > "$OUT/source-build.json"
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg image "$IMAGE_URI" \
+            '{decision:"PASS_I3_ONE_BUILD",i3CertificationSourceSha:$source,imageTag:$image,buildCount:1,production:false}' \
+            > "$OUT/source-build.json"
 
       - name: Deploy exact built image to Recovery DEV runtime
         run: |
@@ -128,7 +139,8 @@ jobs:
           CUR_ENABLE="$(jq -r --arg n "$LEGAL_ENABLE_NAME" '((.spec.containers[0].env // []) | map(select(.name==$n)) | .[0].value) // empty' "$RUNNER_TEMP/current-revision.json")"
           CUR_GATE="$(jq -r --arg n "$LEGAL_GATE_NAME" '((.spec.containers[0].env // []) | map(select(.name==$n)) | .[0].value) // empty' "$RUNNER_TEMP/current-revision.json")"
           if [[ "$CUR_ENABLE" != "$LEGAL_ENABLE_VALUE" || "$CUR_GATE" != "$LEGAL_GATE_VALUE" ]]; then
-            gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$SOURCE_IMMUTABLE_IMAGE" --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE" --quiet
+            gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$SOURCE_IMMUTABLE_IMAGE" \
+              --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE" --quiet
           fi
           gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-final.json"
           DEV_REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$OUT/runtime-final.json")"
@@ -161,7 +173,8 @@ jobs:
             remote_path="${pair%% *}"; local_path="${pair#* }"; remote="$OUT/remote-$(basename "$remote_path")"
             expected="$(sha256sum "$SOURCE_DIR/$local_path"|awk '{print $1}')"; matched=0
             for attempt in $(seq 1 15); do
-              curl -fsSL --retry 3 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' -H 'Pragma: no-cache' "$HOSTING_URL/$remote_path?i3=${GITHUB_RUN_ID}-${attempt}-$(date +%s%N)" -o "$remote"
+              curl -fsSL --retry 3 --retry-delay 2 -H 'Cache-Control: no-cache, no-store, max-age=0' -H 'Pragma: no-cache' \
+                "$HOSTING_URL/$remote_path?i3=${GITHUB_RUN_ID}-${attempt}-$(date +%s%N)" -o "$remote"
               actual="$(sha256sum "$remote"|awk '{print $1}')"
               if [[ "$actual" = "$expected" ]]; then matched=1; break; fi
               sleep 4
@@ -169,41 +182,109 @@ jobs:
             test "$matched" = 1
             printf '%s\t%s\t%s\tMATCH\n' "$remote_path" "$expected" "$actual" >> "$OUT/hosting-parity.tsv"
           done
-          jq -Rn --arg source "$I3_CERTIFICATION_SOURCE_SHA" '[inputs|split("\t")|{path:.[0],expectedSha256:.[1],servedSha256:.[2],classification:.[3]}] | {decision:"PASS_I3_SINGLE_SOURCE_HOSTING_PARITY",i3CertificationSourceSha:$source,owners:.,ownerCount:length,production:false}' < "$OUT/hosting-parity.tsv" > "$OUT/hosting-parity.json"
+          jq -Rn --arg source "$I3_CERTIFICATION_SOURCE_SHA" \
+            '[inputs|split("\t")|{path:.[0],expectedSha256:.[1],servedSha256:.[2],classification:.[3]}] | {decision:"PASS_I3_SINGLE_SOURCE_HOSTING_PARITY",i3CertificationSourceSha:$source,owners:.,ownerCount:length,production:false}' \
+            < "$OUT/hosting-parity.tsv" > "$OUT/hosting-parity.json"
+
+      - name: Capture exact finalized Hosting DEV identity
+        run: |
+          set -Eeuo pipefail
+          TOKEN="$(gcloud auth print-access-token)"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" \
+            "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$OUT/hosting-live-channel.json"
+          HOSTING_RELEASE_NAME="$(jq -r '.release.name // empty' "$OUT/hosting-live-channel.json")"
+          HOSTING_VERSION_NAME="$(jq -r '.release.version.name // empty' "$OUT/hosting-live-channel.json")"
+          HOSTING_RELEASE_TIME="$(jq -r '.release.releaseTime // empty' "$OUT/hosting-live-channel.json")"
+          test -n "$HOSTING_RELEASE_NAME"; test -n "$HOSTING_VERSION_NAME"; test -n "$HOSTING_RELEASE_TIME"
+          curl --fail --silent --show-error -H "Authorization: Bearer $TOKEN" \
+            "https://firebasehosting.googleapis.com/v1beta1/$HOSTING_VERSION_NAME" > "$OUT/hosting-version.json"
+          test "$(jq -r '.status // empty' "$OUT/hosting-version.json")" = "FINALIZED"
+          echo "HOSTING_RELEASE_NAME=$HOSTING_RELEASE_NAME" >> "$GITHUB_ENV"
+          echo "HOSTING_VERSION_NAME=$HOSTING_VERSION_NAME" >> "$GITHUB_ENV"
+          echo "HOSTING_RELEASE_TIME=$HOSTING_RELEASE_TIME" >> "$GITHUB_ENV"
 
       - name: Read fresh authoritative HR source
         run: |
           set -euo pipefail
-          code="$(curl -sS --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 20 --max-time 180 -o "$OUT/hr-fresh.json" -w '%{http_code}' "$HOSTING_URL/api/tya/cinepolis/hr-live?format=json&fresh=1&i3=${GITHUB_RUN_ID}")"
+          code="$(curl -sS --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 20 --max-time 180 \
+            -o "$OUT/hr-fresh.json" -w '%{http_code}' "$HOSTING_URL/api/tya/cinepolis/hr-live?format=json&fresh=1&i3=${GITHUB_RUN_ID}")"
           test "$code" = "200"
           node -e 'const fs=require("fs"),p=JSON.parse(fs.readFileSync(process.env.OUT+"/hr-fresh.json","utf8")),s=p?.snapshot||p?.data||p,rt=p?._runtime||s?._runtime||{};if(s?.sourceSafe!==true||rt.refreshError)throw new Error("SOURCE_FAILURE:HR_FRESH_INVALID");fs.writeFileSync(process.env.OUT+"/hr-readback.json",JSON.stringify({decision:"PASS_I3_HR_EXACT_RUNTIME",sourceSafe:true,production:false},null,2)+"\n")'
 
       - name: Re-certify focal persistence on single source
         run: |
           set -euo pipefail
-          PROJECT="$PROJECT" OUT="$OUT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" PERIOD_ID="$PERIOD_ID" SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" node tools/qa/cxorbia-i3-profile-finance-persistence-dev.mjs | tee "$OUT/focal-persistence-console.log"
+          PROJECT="$PROJECT" OUT="$OUT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" PERIOD_ID="$PERIOD_ID" SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" \
+            node tools/qa/cxorbia-i3-profile-finance-persistence-dev.mjs | tee "$OUT/focal-persistence-console.log"
           test "$(jq -r '.decision' "$OUT/shopper-profile-persistence.json")" = "SHOPPER_PROFILE_PERSISTENCE_PASS"
           test "$(jq -r '.decision' "$OUT/finance-bulk-payment-persistence.json")" = "FINANCE_BULK_PAYMENT_PERSISTENCE_PASS"
           test "$(jq -r '.decision' "$OUT/synthetic-cleanup.json")" = "PASS_I3_SYNTHETIC_CLEANUP"
 
+      - name: Lock prior Gate 20 PASS only as baseline evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$OUT/gate20"
+          curl --fail --silent --show-error \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$LOCKED_GATE20_BASELINE_RUN_ID/attempts/$LOCKED_GATE20_BASELINE_RUN_ATTEMPT" \
+            > "$OUT/gate20/locked-baseline-run.json"
+          jq -e --arg sha "$LOCKED_GATE20_BASELINE_SOURCE_SHA" --argjson attempt "$LOCKED_GATE20_BASELINE_RUN_ATTEMPT" \
+            '.head_sha==$sha and .run_attempt==$attempt and .status=="completed" and .conclusion=="success"' \
+            "$OUT/gate20/locked-baseline-run.json" >/dev/null
+          jq -n -S \
+            --argjson run "$LOCKED_GATE20_BASELINE_RUN_ID" \
+            --arg sha "$LOCKED_GATE20_BASELINE_SOURCE_SHA" \
+            --arg tenant "$TENANT_ID" --arg project "$PROJECT_ID" --arg period "$PERIOD_ID" \
+            '{decision:"PASS_LOCKED_GATE20_BASELINE",lockedEvidence:true,lockedRunId:$run,lockedSourceSha:$sha,tenantId:$tenant,projectId:$project,periodId:$period,authority:"HISTORICAL_PASS_BASELINE_ONLY_NOT_RELEASE_SOURCE",production:false}' \
+            > "$OUT/gate20/gate20-locked.json"
+
+      - name: Revalidate Gate 20 focal visual drift on same exact source
+        run: |
+          set -Eeuo pipefail
+          ln -s "$GITHUB_WORKSPACE/node_modules" "$SOURCE_DIR/node_modules"
+          PROJECT="$PROJECT" OUT="$GITHUB_WORKSPACE/$OUT/gate20" SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" HOSTING_URL="$HOSTING_URL" \
+            node "$SOURCE_DIR/tools/qa/cxorbia-gate20-browser-visual-dev.mjs" | tee "$OUT/gate20/gate20-console.log"
+          rm -f "$SOURCE_DIR/node_modules"
+          test "$(jq -r '.decision' "$OUT/gate20/gate20-browser-visual.json")" = "PASS_GATE20_FOCAL_VISUAL_DRIFT"
+          test "$(jq -r '.sourceSha' "$OUT/gate20/gate20-browser-visual.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
+          test "$(jq -r '.hrAuthorityApplied' "$OUT/gate20/gate20-browser-visual.json")" = "true"
+          test "$(jq -r '.production' "$OUT/gate20/gate20-browser-visual.json")" = "false"
+
       - name: Package one certification artifact without rebuild
         run: |
-          set -euo pipefail
+          set -Eeuo pipefail
+          test ! -e "$SOURCE_DIR/node_modules"
           tar -C "$SOURCE_DIR" -cf "$OUT/cxorbia-i3-certified-source.tar" .
           ARTIFACT_SHA256="$(sha256sum "$OUT/cxorbia-i3-certified-source.tar" | awk '{print $1}')"
+          GATE20_SHA256="$(sha256sum "$OUT/gate20/gate20-browser-visual.json" | awk '{print $1}')"
           echo "$ARTIFACT_SHA256  cxorbia-i3-certified-source.tar" > "$OUT/cxorbia-i3-certified-source.tar.sha256"
-          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg control "$GITHUB_SHA" --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg image "$SOURCE_IMMUTABLE_IMAGE" --arg artifact "$ARTIFACT_SHA256" '{decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_P0",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,buildCount:1,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,rebuildAfterCertification:false,production:false}' > "$OUT/i3-certification-manifest.json"
+          jq -n -S \
+            --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg control "$GITHUB_SHA" \
+            --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg image "$SOURCE_IMMUTABLE_IMAGE" \
+            --arg artifact "$ARTIFACT_SHA256" --arg gate20Sha "$GATE20_SHA256" \
+            --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hostingVersion "$HOSTING_VERSION_NAME" --arg hostingReleaseTime "$HOSTING_RELEASE_TIME" \
+            '{decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,buildCount:1,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingReleaseTime,gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,rebuildAfterCertification:false,production:false}' \
+            > "$OUT/i3-certification-manifest.json"
           cp "$OUT/i3-certification-manifest.json" "$OUT/result.json"
 
       - name: Upload one sanitized I3 certification artifact
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cxorbia-recovery-i3-single-source-certification-${{ github.run_id }}
           path: ${{ env.OUT }}
           if-no-files-found: error
           retention-days: 14
+          compression-level: 0
+          include-hidden-files: true
 
       - name: Cleanup temporary dependencies
         if: always()
         run: rm -rf node_modules
+
+  gate21:
+    name: Gate 21 integrity of same certification artifact
+    needs: certify
+    uses: ./.github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml
+    secrets: inherit
