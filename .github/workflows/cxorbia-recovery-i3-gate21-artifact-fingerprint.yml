@@ -16,8 +16,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  I3_CERTIFICATION_SOURCE_SHA: b94911a4748c03c2e604415e8a97ee091da96218
-  I3_CERTIFICATION_SOURCE_TREE: e3efd4afa9ffcb973e66e40e08798eba4e6c0f34
+  I3_CERTIFICATION_SOURCE_SHA: 57ffe11bc4a209bed1d73b9487bad55a4f653a1d
+  I3_CERTIFICATION_SOURCE_TREE: 034ffaa108a8044ea106dfc2ddc84a961adcd4e0
   CERTIFICATION_ARTIFACT_NAME: cxorbia-recovery-i3-single-source-certification-${{ github.run_id }}
   OUT_DIR: .gate21
 
