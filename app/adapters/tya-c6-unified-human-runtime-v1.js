@@ -280,24 +280,98 @@
     },0);
   }
 
+  function humanAuthorityReady(){
+    const authority=window.CX_PROTECTED_AUTH_HR_AUTHORITY;
+    const data=CX.data||{};
+    const periodId=str(data.currentPeriodId),projectId=str(data.currentProjectId);
+    return !!(authority?.applied===true
+      && arr(data.projects).length>0
+      && arr(data._visitas).length>0
+      && periodId
+      && periodId!==projectId);
+  }
+
+  function requestHumanAuthority(reason){
+    try{window.CX_SCHEDULE_PROTECTED_AUTH_HR_RECONCILE?.(reason||'c6_human_runtime_requires_hr_authority',true);}catch(_){}
+  }
+
+  function installHumanAuthorityGate(){
+    const router=CX.router;
+    if(!router||router.__c6HumanAuthorityGate===true)return;
+    const originalMount=router.mount.bind(router),originalNav=router.nav.bind(router);
+    let pendingView=null,replaying=false;
+    const showGate=reason=>{
+      const app=document.getElementById('app'),rail=document.getElementById('rail'),view=document.getElementById('view'),crumb=document.getElementById('crumb');
+      if(app)app.classList.add('on');
+      if(rail)rail.innerHTML='';
+      if(crumb)crumb.textContent='Sincronizando operación';
+      if(view)view.innerHTML='<div class="card card-p" data-cx-human-authority-gate="pending" style="max-width:720px;margin:40px auto"><div class="card-t">Validando fuente operacional</div><div class="muted" style="margin-top:8px;line-height:1.55">CXOrbia está cargando la autoridad HR viva y el contexto exacto de proyecto y periodo. Ningún módulo operativo se mostrará con un slice transitorio.</div></div>';
+      window.CX_C6_HR_AUTHORITY_GATE={ready:false,blocked:true,reason:reason||'pending_hr_authority',pendingView:pendingView||CX.session?.view||null,providerWrites:0,production:false,at:new Date().toISOString()};
+    };
+    const release=reason=>{
+      if(replaying||!CX.session?.role||!humanAuthorityReady())return false;
+      replaying=true;
+      const requested=pendingView;
+      try{
+        originalMount();
+        if(requested&&CX.MODULES?.[requested]&&CX.session?.view!==requested)originalNav(requested);
+        window.CX_C6_HR_AUTHORITY_GATE={ready:true,blocked:false,reason:reason||'hr_authority_ready',pendingView:null,periodId:str(CX.data?.currentPeriodId),projectId:str(CX.data?.currentProjectId),sourceRevision:CX.data?.previewMeta?.sourceRevision||null,providerWrites:0,production:false,at:new Date().toISOString()};
+        pendingView=null;
+        return true;
+      }finally{replaying=false;}
+    };
+    router.mount=function(){
+      if(CX.session?.role&&!humanAuthorityReady()){
+        pendingView=pendingView||CX.session?.view||null;
+        showGate('mount_waiting_hr_authority');
+        requestHumanAuthority('c6_mount_waiting_hr_authority');
+        return;
+      }
+      return originalMount(...arguments);
+    };
+    router.nav=function(id){
+      if(CX.session?.role&&!humanAuthorityReady()){
+        pendingView=id||pendingView||CX.session?.view||null;
+        showGate('nav_waiting_hr_authority');
+        requestHumanAuthority('c6_nav_waiting_hr_authority');
+        return;
+      }
+      return originalNav(...arguments);
+    };
+    router.__c6HumanAuthorityGate=true;
+    window.addEventListener('cx:protected-auth-hr-authority-ready',()=>setTimeout(()=>release('protected_auth_hr_authority_ready'),0));
+    window.addEventListener('cx:live-source-updated',()=>{if(humanAuthorityReady())setTimeout(()=>release('live_source_updated'),0);});
+    if(CX.bus?.on)CX.bus.on('backend-auth-ready',()=>{
+      if(CX.session?.role&&!humanAuthorityReady()){
+        showGate('backend_auth_ready_waiting_hr_authority');
+        requestHumanAuthority('c6_backend_auth_ready_waiting_hr_authority');
+      }
+    });
+    window.CX_C6_HR_AUTHORITY_GATE={ready:humanAuthorityReady(),blocked:false,installed:true,providerWrites:0,production:false,at:new Date().toISOString()};
+  }
+
   forceUnifiedConfig();
   installEarlyRoleClickGuard();
   clearSyntheticSession();
+  installHumanAuthorityGate();
 
   const activate=reason=>{
     forceUnifiedConfig();
     installEarlyRoleClickGuard();
     clearSyntheticSession();
+    installHumanAuthorityGate();
     patchClientLogin();
     wrapDashboard();
     applyProjectFinancialConfiguration(reason);
     window.CX_TYA_C6_UNIFIED_RUNTIME={
-      ready:true,version:'c6-unified-human-runtime-v1',
+      ready:true,version:'c6-unified-human-runtime-v1.1-hr-authority-gated',
       lane:'authenticated-human-canonical',
       singleVisibleProductLogin:true,
       earlyAuthClickGuard:true,
       directRoleEntryAllowed:false,
       hrAuthority:'live-all-detected-periods',
+      hrAuthorityGate:true,
+      transientOperationalSliceVisible:false,
       identityOverlay:'firestore-exact-crosswalk',
       canonicalDomain:true,canonicalShopperPortal:true,canonicalFinance:true,
       projectHonorarium:{GT:60,HN:200},
