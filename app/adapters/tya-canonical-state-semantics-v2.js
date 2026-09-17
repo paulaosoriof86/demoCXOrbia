@@ -61,7 +61,7 @@
   function periodSummary(visits){
     const map=new Map();
     for(const v of arr(visits)){
-      const key=str(v?.periodKey)||str(v?.projectId).replace(/^cinepolis-/,'')||'unknown';
+      const key=str(v?.periodKey)||str(v?.periodId).replace(/^cinepolis-/,'')||str(v?.projectId).replace(/^cinepolis-/,'')||'unknown';
       if(!map.has(key))map.set(key,{periodKey:key,total:0,available:0,assigned:0,scheduled:0,realized:0,questionnaireCompleted:0,submitted:0,liquidationCandidates:0,liquidationConfirmed:0,paymentConfirmed:0,outOfRange:0,outOfRangeEvidence:0,reviewRequired:0,byCountry:{}});
       const row=map.get(key),f=facets(v);row.total++;row.available+=f.available?1:0;row.assigned+=f.assigned?1:0;row.scheduled+=f.scheduled?1:0;row.realized+=f.realized?1:0;row.questionnaireCompleted+=f.questionnaire?1:0;row.submitted+=f.submitted?1:0;row.liquidationCandidates+=f.liquidationCandidate?1:0;row.liquidationConfirmed+=f.liquidationConfirmed?1:0;row.paymentConfirmed+=f.paymentConfirmed?1:0;row.outOfRange+=f.outOfRange?1:0;row.outOfRangeEvidence+=f.outOfRangeEvidence?1:0;row.reviewRequired+=v?.reviewRequired===true?1:0;const c=str(v?.pais||v?.country)||'unknown';row.byCountry[c]=(row.byCountry[c]||0)+1;
     }

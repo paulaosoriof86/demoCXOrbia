@@ -66,9 +66,10 @@ CX.module('visitas', ({data,role,ui})=>{
           return base;
         })();
     const allowedProgramKeys=new Set(shopperProjects.map(pr=>data.programKey(pr)));
-    // ofertas de TODOS los proyectos autorizados para el shopper (alcance por país Y proyecto activo),
-    // usando el contrato real de disponibilidad cuando exista — nunca estado textual ni ausencia de shopper.
-    const scopePool=data._visitas.filter(v=>(!data.inScope||data.inScope(v.pais)) && allowedProgramKeys.has(progKeyOf(v)));
+    const periodIdOf=(v)=>data.recordPeriodId?data.recordPeriodId(v):(v.periodId||v.projectId);
+    // La oferta operativa se limita a la revisión/periodo activo. El histórico multi-periodo
+    // permanece en Mis Visitas; una fila vieja no reaparece por faltar fecha de submitido.
+    const scopePool=data._visitas.filter(v=>(!data.inScope||data.inScope(v.pais)) && allowedProgramKeys.has(progKeyOf(v)) && periodIdOf(v)===data.currentPeriodId);
     const list=(typeof data.availableVisits==='function')
       ? data.availableVisits(scopePool)
       : scopePool.filter(isAvailable);
@@ -275,7 +276,7 @@ CX.module('visitas', ({data,role,ui})=>{
     const editor=(v)=>ui.modal((v?'Editar':'Publicar')+' visita',`
       <div class="grid g2" style="gap:12px">
         <div style="grid-column:1/3"><label class="lbl">Sucursal (elige o escribe nueva)</label>
-         <select class="sel" id="vSucSel" style="margin-bottom:5px"><option value="">— elegir existente —</option>${[...new Set(data._visitas.filter(x=>x.projectId===p.id).map(z=>z.sucursal)),(CX.hr?CX.hr.external(p).map(r=>r.sucursal).filter(Boolean):[])].flat().filter((s,i,a)=>s&&a.indexOf(s)===i).map(s=>`<option ${v&&v.sucursal===s?'selected':''}>${s}</option>`).join('')}</select>
+         <select class="sel" id="vSucSel" style="margin-bottom:5px"><option value="">— elegir existente —</option>${[...new Set(data._visitas.filter(x=>(data.recordPeriodId?data.recordPeriodId(x):(x.periodId||x.projectId))===p.id).map(z=>z.sucursal)),(CX.hr?CX.hr.external(p).map(r=>r.sucursal).filter(Boolean):[])].flat().filter((s,i,a)=>s&&a.indexOf(s)===i).map(s=>`<option ${v&&v.sucursal===s?'selected':''}>${s}</option>`).join('')}</select>
          <input class="inp" id="vSucFree" value="${v?v.sucursal:''}" placeholder="o escribe una nueva sucursal · Ciudad"></div>
         <div><label class="lbl">País</label><select class="sel">${p.countries.map(c=>`<option ${v&&v.pais===c?'selected':''}>${c}</option>`).join('')}</select></div>
         <div><label class="lbl">Quincena</label><select class="sel">${p.quincenas.map(q=>`<option ${v&&v.quincena===q?'selected':''}>${q}</option>`).join('')}</select></div>

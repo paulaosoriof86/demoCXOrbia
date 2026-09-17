@@ -509,7 +509,7 @@ CX.data = {
   _periodMeta(){ try{ return JSON.parse(localStorage.getItem('cx_period_meta')||'{}'); }catch(e){ return {}; } },
   _savePeriodMeta(m){ try{ localStorage.setItem('cx_period_meta', JSON.stringify(m)); }catch(e){} CX.bus&&CX.bus.emit('project'); },
   periodState(id){ return this._periodMeta()[id] || 'activo'; },
-  periodStats(id){ const vs=this._visitas.filter(v=>v.projectId===id); const done=vs.filter(v=>['realizada','cuestionario','validada','liquidada'].includes(v.estado)).length;
+  periodStats(id){ const vs=this._visitas.filter(v=>this.recordPeriodId(v)===id); const done=vs.filter(v=>['realizada','cuestionario','validada','liquidada'].includes(v.estado)).length;
     return { total:vs.length, done, pct: vs.length? Math.round(done/vs.length*100):0 }; },
   setPeriodState(id, st){ const m=this._periodMeta(); m[id]=st; this._savePeriodMeta(m); },
   closePeriod(id){ this.setPeriodState(id,'cerrado'); },
@@ -522,7 +522,7 @@ CX.data = {
      visita con fecha (periodo vacío), cae al mes real del reloj del sistema — nunca a un mes de
      otro periodo ni a una fecha inventada. */
   periodDates(id){
-    const vs=this._visitas.filter(v=>v.projectId===id);
+    const vs=this._visitas.filter(v=>this.recordPeriodId(v)===id);
     const out=[];
     vs.forEach(v=>{ [v.agendada,v.realizada,v.cuestFecha,v.disponibleDesde].forEach(d=>{ if(d) out.push(d); }); });
     return out;
@@ -542,8 +542,26 @@ CX.data = {
     /* clona la estructura (sucursales/escenarios) pero NO las visitas ejecutadas — periodo nuevo arranca limpio */
     CX.bus&&CX.bus.emit('project'); return dup; },
 
-  visitas(){const arr=this._visitas.filter(v=>v.projectId===this.currentPeriodId);return this.scopePaises()?arr.filter(v=>this.inScope(v.pais)):arr;},
-  posts(){const arr=this._posts.filter(p=>p.projectId===this.currentPeriodId);return this.scopePaises()?arr.filter(p=>this.inScope(p.pais)):arr;},
+  recordPeriodId(row){
+    if(!row)return null;
+    const explicit=row.periodId;
+    if(explicit&&this.projects.some(p=>p.id===explicit))return explicit;
+    if(row.periodKey){
+      const matches=this.projects.filter(p=>String(p.periodKey)===String(row.periodKey)&&(!row.projectId||this.programKey(p)===row.projectId||this.programKey(p)===row.rootProjectId));
+      if(matches.length===1)return matches[0].id;
+    }
+    if(row.projectId&&this.projects.some(p=>p.id===row.projectId))return row.projectId;
+    return explicit||null;
+  },
+  recordProjectId(row){
+    if(!row)return null;
+    const raw=row.rootProjectId||row.projectId||null;
+    if(raw&&!this.projects.some(p=>p.id===raw))return raw;
+    const pid=this.recordPeriodId(row),per=pid&&this.projects.find(p=>p.id===pid);
+    return per?this.programKey(per):raw;
+  },
+  visitas(){const arr=this._visitas.filter(v=>this.recordPeriodId(v)===this.currentPeriodId);return this.scopePaises()?arr.filter(v=>this.inScope(v.pais)):arr;},
+  posts(){const arr=this._posts.filter(p=>this.recordPeriodId(p)===this.currentPeriodId);return this.scopePaises()?arr.filter(p=>this.inScope(p.pais)):arr;},
   shoppersFor(){const cs=this.period().countries;const sc=this.scopePaises();return this.shoppers.filter(s=>cs.includes(s.pais)&&this.inScope(s.pais));},
 
   /* ---- P0-3/GAP3 (paquete V111→V112, 20260714): pool de shoppers RANKEABLES ----

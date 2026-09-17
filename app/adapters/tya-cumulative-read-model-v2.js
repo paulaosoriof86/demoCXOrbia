@@ -120,11 +120,30 @@
   function periodSummary(visits){
     const map=new Map();
     for(const v of arr(visits)){
-      const key=str(v.periodKey)||str(v.projectId).replace(/^cinepolis-/,'')||'unknown';
+      const key=str(v.periodKey)||str(v.periodId).replace(/^cinepolis-/,'')||str(v.projectId).replace(/^cinepolis-/,'')||'unknown';
       if(!map.has(key))map.set(key,{periodKey:key,total:0,available:0,assigned:0,scheduled:0,realized:0,questionnaireCompleted:0,submitted:0,liquidationCandidates:0,liquidationConfirmed:0,paymentConfirmed:0,outOfRange:0,reviewRequired:0,byCountry:{}});
       const row=map.get(key),f=facets(v);row.total++;row.available+=f.available?1:0;row.assigned+=f.assigned?1:0;row.scheduled+=f.scheduled?1:0;row.realized+=f.realized?1:0;row.questionnaireCompleted+=f.questionnaire?1:0;row.submitted+=f.submitted?1:0;row.liquidationCandidates+=f.liquidationCandidate?1:0;row.liquidationConfirmed+=f.liquidationConfirmed?1:0;row.paymentConfirmed+=f.paymentConfirmed?1:0;row.outOfRange+=f.outOfRange?1:0;row.reviewRequired+=v&&v.reviewRequired===true?1:0;const c=str(v&&v.pais||v&&v.country)||'unknown';row.byCountry[c]=(row.byCountry[c]||0)+1;
     }
     return [...map.values()].sort((a,b)=>a.periodKey.localeCompare(b.periodKey));
+  }
+  function normalizeScope(row,hr){
+    const out=row||{},projects=arr(hr&&hr.projects),rawProjectId=str(out.projectId),rawPeriodId=str(out.periodId);
+    let periodId=rawPeriodId;
+    if(!periodId&&rawProjectId&&projects.some(p=>str(p.id)===rawProjectId))periodId=rawProjectId;
+    if(!periodId&&str(out.periodKey)){
+      const matches=projects.filter(p=>str(p.periodKey)===str(out.periodKey));
+      if(matches.length===1)periodId=str(matches[0].id);
+    }
+    let projectId=str(out.rootProjectId);
+    if(!projectId&&rawProjectId&&rawProjectId!==periodId)projectId=rawProjectId;
+    if(!projectId&&periodId){
+      const period=projects.find(p=>str(p.id)===periodId);
+      projectId=str(period&&(period.projectId||period.rootProjectId||period.program));
+    }
+    if(!projectId)projectId=str(hr&&hr.currentProjectId);
+    if(projectId){out.projectId=projectId;out.rootProjectId=projectId;}
+    if(periodId)out.periodId=periodId;
+    return out;
   }
   function compose(input){
     const hr=clone(input&&input.hr||{}),payload=clone(input&&input.protectedPayload||{});
@@ -158,7 +177,7 @@
     }
     const assignmentConflicts=[],pendingPlatformAssignmentOverlays=[];
     const composedVisits=baseVisits.map(base=>{
-      const out=clone(base),key=visitKey(base),pv=matches.get(key)||null,liveId=str(base.shopperId),canonical=liveToCanonical.get(liveId)||liveId;
+      const out=normalizeScope(clone(base),hr),key=visitKey(base),pv=matches.get(key)||null,liveId=str(base.shopperId),canonical=liveToCanonical.get(liveId)||liveId;
       if(canonical)out.shopperId=canonical;
       if(pv){
         out.__protectedVisitId=str(pv.visitId||pv.id)||null;out.__exactProtectedVisitOverlay=true;
@@ -216,13 +235,7 @@
       out.perfilCompleto=profileComplete(out);out.profileCompletenessSource='actual_minimum_fields';out.credentialsDerivable=!!(out.__canonicalIdentityOverlay&&out.nombre&&!out.user&&!out.username);return out;
     });
     for(const v of composedVisits){const s=shopperByCanonical.get(str(v.shopperId));if(s){v.shopper=s.nombre||v.shopper;v.shopperCode=s.code||v.shopperCode;v.shopperWa=s.whatsapp||s.phone||v.shopperWa||null;}}
-    const normalizePostScope=p=>{
-      const rawProjectId=str(p&&p.projectId),periodId=str(p&&p.periodId),rootProjectId=str(p&&p.rootProjectId)||(periodId&&rawProjectId&&rawProjectId!==periodId?rawProjectId:str(hr.currentProjectId));
-      if(rootProjectId)p.rootProjectId=rootProjectId;
-      if(periodId)p.periodId=periodId;
-      p.projectId=periodId||rawProjectId;
-      return p;
-    };
+    const normalizePostScope=p=>normalizeScope(p,hr);
     const postMap=new Map(),postKey=p=>{const vid=str(p.visitId||p.visitaId),sid=str(p.shopperId),id=str(p.id||p.applicationId||p.postulationId);return vid&&sid?`vs:${vid}::${sid}`:(id?`id:${id}`:'');};
     for(const raw of basePosts){const p=normalizePostScope(clone(raw)),sid=str(p.shopperId);if(liveToCanonical.has(sid))p.shopperId=liveToCanonical.get(sid);const key=postKey(p);if(key)postMap.set(key,p);}
     for(const raw of [...arr(payload.postulations),...arr(payload.applications)]){const p=normalizePostScope(clone(raw));let vid=str(p.visitId||p.visitaId);if(protectedVisitToHrVisit.has(vid))vid=protectedVisitToHrVisit.get(vid);if(vid&&!composedVisits.some(v=>str(v.visitId||v.id)===vid))continue;p.visitId=vid;p.visitaId=vid;const sid=str(p.shopperId);if(liveToCanonical.has(sid))p.shopperId=liveToCanonical.get(sid);const key=postKey(p);if(key)postMap.set(key,postMap.has(key)?patch(postMap.get(key),p):p);}

@@ -1,7 +1,8 @@
 /* CXOrbia · Postulaciones (admin) — full fidelity */
 CX.module('postulaciones', ({data,ui})=>{
   const p=data.period(), posts=data._posts.filter(x=>data.inScope(x.pais));
-  const projName=(id)=>{const pr=data.projects.find(x=>x.id===id);return pr?pr.name:'';};
+  const projName=(id)=>{const pg=data.programs?.().find(x=>x.key===id);if(pg)return pg.name;const pr=data.projects.find(x=>x.id===id);return pr?(data.programBase?data.programBase(pr):pr.name):(id||'');};
+  const periodIdOf=(row)=>data.recordPeriodId?data.recordPeriodId(row):(row.periodId||row.projectId);
   /* CORTE 2A — revisión de fuente canónica (misma que Dashboard/reportes/Visitas) */
   const sourceRevision=(CX.clienteData&&CX.clienteData.sourceRevision)?CX.clienteData.sourceRevision(p):(p&&p.sourceRevision)||'0';
   /* CORTE 2A — teléfono protegido: etiqueta segura si el dato está ausente o protegido,
@@ -11,7 +12,7 @@ CX.module('postulaciones', ({data,ui})=>{
   /* R19 P0-1: los KPIs superiores deben coincidir con el periodo activo por defecto (mismo
      criterio que el listado abajo) — nunca contar postulaciones de otros periodos salvo que se
      pida explícitamente "Ver históricas". */
-  const activePosts=posts.filter(x=>x.projectId===data.currentPeriodId);
+  const activePosts=posts.filter(x=>periodIdOf(x)===data.currentPeriodId);
   const c=(s)=>activePosts.filter(x=>x.estado===s).length;
   const reprog=activePosts.filter(x=>x.reprog);
   const agendadas=data.visitas().filter(v=>v.agendada&&v.shopperId);
@@ -118,7 +119,7 @@ CX.module('postulaciones', ({data,ui})=>{
         const fpr=(document.getElementById('pProj')||{}).value||'';
         const fp=(document.getElementById('pPais')||{}).value||'';
         const fe=(document.getElementById('pEst')||{}).value||'';
-        return posts.filter(x=>(hist||x.projectId===data.currentPeriodId)&&(!q||(x.shopper+x.shopperCode+x.sucursal).toLowerCase().includes(q))&&(!fpr||x.projectId===fpr)&&(!fp||x.pais===fp)&&(!fe||x.estado===fe));
+        return posts.filter(x=>(hist||periodIdOf(x)===data.currentPeriodId)&&(!q||(x.shopper+x.shopperCode+x.sucursal).toLowerCase().includes(q))&&(!fpr||x.projectId===fpr)&&(!fp||x.pais===fp)&&(!fe||x.estado===fe));
       };
       const poSpec=(ext)=>{
         const rows=visibleActive();
@@ -241,7 +242,7 @@ CX.module('postulaciones', ({data,ui})=>{
     document.querySelectorAll('[data-rj]').forEach(b=>b.addEventListener('click',()=>{const x=posts.find(z=>z.id===b.dataset.rj);if(!CX.permissions.gate('postulacion.reject',{projectId:x&&x.projectId,pais:x&&x.pais},ui))return;act(b.dataset.rj,'✕ Rechazada','red','Postulación rechazada · notificación preparada · pendiente confirmación');}));
     const search=()=>{const q=(document.getElementById('pSearch').value||'').toLowerCase(),fpr=document.getElementById('pProj').value,fp=document.getElementById('pPais').value,fe=document.getElementById('pEst').value,hist=document.getElementById('pHist').checked;
       document.querySelectorAll('#pGroups [data-pid]').forEach(el=>{const x=posts.find(z=>z.id===el.dataset.pid);
-        const ok=(hist||x.projectId===data.currentPeriodId)&&(!q||(x.shopper+x.shopperCode+x.sucursal).toLowerCase().includes(q))&&(!fpr||x.projectId===fpr)&&(!fp||x.pais===fp)&&(!fe||x.estado===fe);el.style.display=ok?'':'none';});
+        const ok=(hist||periodIdOf(x)===data.currentPeriodId)&&(!q||(x.shopper+x.shopperCode+x.sucursal).toLowerCase().includes(q))&&(!fpr||x.projectId===fpr)&&(!fp||x.pais===fp)&&(!fe||x.estado===fe);el.style.display=ok?'':'none';});
       // ocultar grupos sin tarjetas visibles
       document.querySelectorAll('#pGroups .card').forEach(g=>{const any=[...g.querySelectorAll('[data-pid]')].some(el=>el.style.display!=='none');g.style.display=any?'':'none';});};
     ['pSearch','pProj','pPais','pEst','pHist'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',search);});
@@ -327,7 +328,7 @@ CX.module('postulaciones', ({data,ui})=>{
     if(shr)shr.addEventListener('click',()=>ui.toast('Lectura de HR preparada · la sincronización real (lectura/escritura) queda pendiente de activación','',4200));
     if(am)am.addEventListener('click',()=>{
       const projName=(id)=>{const pr=data.projects.find(x=>x.id===id);return pr?pr.name:'';};
-      const disp=data._visitas.filter(v=>v.estado==='disponible'||!v.shopperId);
+      const disp=data._visitas.filter(v=>periodIdOf(v)===data.currentPeriodId&&(v.estado==='disponible'||!v.shopperId));
       const cands=data.shoppersFor();
       ui.modal('Asignar visita manual',`
         <p style="font-size:12px;color:var(--t2);margin-bottom:12px">Busca la visita y el shopper (no tienes que recorrer toda la lista). Si el shopper no existe, créalo aquí mismo.</p>

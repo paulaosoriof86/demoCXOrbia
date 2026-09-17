@@ -10,8 +10,9 @@ window.CX = window.CX || {};
   function mapPeriods(snapshot){
     return safeArray(snapshot.periods).map(p=>Object.assign({},p,{
       id:periodId(p.key),tenantId:'tya',rootProjectId:'cinepolis',program:'cinepolis',programLabel:'Cinépolis',
-      projectId:periodId(p.key),periodKey:p.key,periodo:p.label,
-      name:p.internalName||('Cinépolis '+(p.fullLabel||p.label||p.key)),client:'TyA',
+      projectId:'cinepolis',projectName:'Cinépolis',periodId:periodId(p.key),periodKey:p.key,
+      periodLabel:p.fullLabel||p.label||p.key,periodo:p.fullLabel||p.label||p.key,
+      name:'Cinépolis',sourcePeriodName:p.internalName||p.fullLabel||p.label||p.key,client:'TyA',
       industry:'Mystery shopping · cines · GT/HN',countries:['GT','HN'],currency,accent:'#2196d3',
       sucursales:Number(p.total||0),nVisitas:Number(p.total||0),honorario:{GT:60,HN:200},honRecibe:{GT:null,HN:null},
       modelo:'directo',isr:5,regalias:10,boleto:{GT:0,HN:0},combo:'Configurable por visita HR',comboAmt:{GT:0,HN:0},
@@ -21,7 +22,7 @@ window.CX = window.CX || {};
       cuestionario:{modo:'configurable',url:'',label:'CXOrbia / TyAOnline / externo / link por visita desde HR'},
       pago:{logica:'Pagos y liquidaciones se controlan por submitido y cruce financiero.',diasPago:null,moneda:'local'},
       hrMap:{fuente:'HR TyA multihoja source-safe',cols:['País','ID cinema','Shopping','Quincena','Franja','Disponible desde','Agendada','Realizada','Cuestionario','Submitido','Liquidación']},
-      geoloc:false,conocimiento:'TyA/Cinépolis Phase A. Proyecto normal configurable dentro del tenant TyA.',
+      geoloc:false,conocimiento:p.conocimiento||p.projectSummary||p.summary||'',
       sourceSafe:true,importStatus:'hr_live_runtime_source_safe_not_imported',runtimeSyncActive:false,
       snapshotCounts:p.countries||{GT:0,HN:0,total:Number(p.total||0)}
     }));
@@ -29,8 +30,8 @@ window.CX = window.CX || {};
 
   function mapVisits(snapshot){
     return safeArray(snapshot.visits).map((v,idx)=>Object.assign({},v,{
-      id:v.id||('hr-live-'+(idx+1)),tenantId:'tya',rootProjectId:'cinepolis',projectId:periodId(v.periodKey),
-      periodKey:v.periodKey,periodLabel:v.periodLabel,hrRowId:v.hrRowId,sourceTab:v.sourceTab,sourceRow:v.sourceRow,
+      id:v.id||('hr-live-'+(idx+1)),tenantId:'tya',rootProjectId:'cinepolis',projectId:'cinepolis',projectName:'Cinépolis',
+      periodId:periodId(v.periodKey),periodKey:v.periodKey,periodLabel:v.periodLabel,hrRowId:v.hrRowId,sourceTab:v.sourceTab,sourceRow:v.sourceRow,
       num:idx+1,sucursal:v.sucursal||'Sucursal HR',ciudad:v.ciudad||'',pais:v.pais||v.country,
       country:v.country||v.pais,currency:v.currency||currency[v.pais||v.country]||'',quincena:v.quincena||'',
       escenario:v.escenario||v.tipoCompra||'',franja:v.franja||'',franjaCode:v.franjaCode||null,canal:'Visita presencial',
@@ -51,7 +52,7 @@ window.CX = window.CX || {};
       id:s.id||('shopper-protegido-'+(idx+1)),shopperId:s.shopperId||s.id||('shopper-protegido-'+(idx+1)),
       code:s.code||('TYA-SH-'+(idx+1)),nombre:s.nombre||'Shopper protegido',pais:s.pais||null,ciudad:s.ciudad||'',
       estado:s.estado??null,status:s.status??null,rating:s.rating??null,honorarioPref:s.honorarioPref??null,
-      perfilCompleto:s.perfilCompleto===true,firstName:s.firstName||'',lastName:s.lastName||'',whatsapp:'',phone:'',email:'',dpi:'',banco:'',ctaNum:'',
+      perfilCompleto:s.perfilCompleto===true,firstName:s.firstName||'',lastName:s.lastName||'',whatsapp:s.whatsapp||s.phone||'',phone:s.phone||s.whatsapp||'',email:s.email||'',dpi:'',banco:'',ctaNum:'',
       dataLevel:s.dataLevel||'protected_reference',operationalProfileAvailable:s.operationalProfileAvailable===true,
       operationalDisplayName:s.operationalDisplayName===true,
       sourceHistoricalVisitCount:Number(s.sourceHistoricalVisitCount??s.visitas??0),
@@ -65,7 +66,8 @@ window.CX = window.CX || {};
 
   function mapPosts(visits){
     return visits.filter(v=>['asignada','agendada','fuera_rango','disponible'].includes(v.estado)).slice(0,80).map((v,i)=>({
-      id:'hr-post-'+(i+1),visitaId:v.id,projectId:v.projectId,rootProjectId:'cinepolis',shopperId:v.shopperId,
+      id:'hr-post-'+(i+1),visitaId:v.id,projectId:v.projectId||'cinepolis',projectName:v.projectName||'Cinépolis',
+      rootProjectId:v.rootProjectId||v.projectId||'cinepolis',periodId:v.periodId||periodId(v.periodKey),periodKey:v.periodKey,shopperId:v.shopperId,
       shopper:v.shopper||'Shopper protegido',shopperCode:v.shopperCode||'',sucursal:v.sucursal,ciudad:v.ciudad,
       pais:v.pais,quincena:v.quincena,franjaCode:v.franjaCode,honorario:v.honorario,boleto:v.boleto,
       comboAmt:v.comboAmt,currency:v.currency,fechaProp:v.agendada||v.disponibleDesde,disponibleDesde:v.disponibleDesde,
