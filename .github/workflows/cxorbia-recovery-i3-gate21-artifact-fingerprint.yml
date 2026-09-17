@@ -78,10 +78,11 @@ jobs:
           ACTUAL_GATE20_SHA="$(sha256sum "$CERT/gate20/gate20-browser-visual.json" | awk '{print $1}')"
           test "$EXPECTED_GATE20_SHA" = "$ACTUAL_GATE20_SHA"
 
-          tar -tf "$CERT/cxorbia-i3-certified-source.tar" | grep -q '^./firebase.json$'
-          tar -tf "$CERT/cxorbia-i3-certified-source.tar" | grep -q '^./app/modules/shoppers.js$'
-          tar -tf "$CERT/cxorbia-i3-certified-source.tar" | grep -q '^./app/modules/finanzas.js$'
-          tar -tf "$CERT/cxorbia-i3-certified-source.tar" | grep -q '^./app/modules/operacion-extra.js$'
+          tar -tf "$CERT/cxorbia-i3-certified-source.tar" > "$OUT_DIR/certified-source-files.txt"
+          grep -Fxq './firebase.json' "$OUT_DIR/certified-source-files.txt"
+          grep -Fxq './app/modules/shoppers.js' "$OUT_DIR/certified-source-files.txt"
+          grep -Fxq './app/modules/finanzas.js' "$OUT_DIR/certified-source-files.txt"
+          grep -Fxq './app/modules/operacion-extra.js' "$OUT_DIR/certified-source-files.txt"
 
           printf '%s\n' "$ACTUAL_ARTIFACT_SHA" > "$OUT_DIR/certified-artifact.sha256"
           printf '%s\n' "$ACTUAL_GATE20_SHA" > "$OUT_DIR/gate20-evidence.sha256"
