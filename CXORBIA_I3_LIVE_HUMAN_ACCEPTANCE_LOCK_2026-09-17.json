@@ -1,0 +1,69 @@
+{
+  "lockId": "CXORBIA-I3-LIVE-HUMAN-ACCEPTANCE-LOCK-2026-09-17",
+  "status": "HOLD",
+  "iteration": "I3",
+  "blockingClassification": "MAPPING_FAILURE",
+  "blockingReason": "Certified Shopper visual renders authenticated session without evaluator record/country; prior Gate20 was structurally PASS but semantically insufficient.",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "expectedParentHead": "073909aa891be7989e77ca0c11904045e5a7d9e0",
+  "certifiedProductUnderTest": {
+    "sha": "b94911a4748c03c2e604415e8a97ee091da96218",
+    "treeSha": "e3efd4afa9ffcb973e66e40e08798eba4e6c0f34"
+  },
+  "priorTerminalIntegrity": {
+    "lock": "CXORBIA_I3_TERMINAL_LOCK_2026-09-17.json",
+    "runId": 35247813214,
+    "artifactId": 10508358915,
+    "artifactName": "cxorbia-recovery-i3-single-source-certification-35247813214",
+    "artifactGithubDigest": "sha256:c8369fae797689bb5935307524975bc5dba08747e09e49d5c125c3c548de84c9",
+    "sourceTarSha256": "5e223800ccc37225047f476ca442773ad8cc36d36940f309bce9446dc4715bef",
+    "gate21Pass": true,
+    "promotionEligibilitySuspended": true
+  },
+  "newEvidence": {
+    "shopperDesktopMiPerfilScreenshotSha256": "8647670568dd07945ac46ce2171a51d3a6442cfb23ea407b2eec0feb5a29e379",
+    "adminDesktopShoppersScreenshotSha256": "248a4a054b09c2a9d068bc62830ab6425a119a8ba67ec98c3c0cdb18ba662df9",
+    "observedShopperMessage": "No se encontró tu registro de evaluador. Contacta al equipo para verificar tu identidad.",
+    "observedShopperRail": "Shopper · sin país asignado",
+    "priorGate20Gap": "Route/DOM/authority/overflow checks did not assert semantic shopper profile binding or full shopper operational cycle."
+  },
+  "frozenMicroIterations": [
+    {
+      "id": "MI-1",
+      "name": "Exact Shopper HR/profile binding owner",
+      "scope": "Locate and fix only the proven binding/mapping owner; no general auth diagnosis."
+    },
+    {
+      "id": "MI-2",
+      "name": "Finance-style live synthetic Admin + Shopper scenario",
+      "runIdPattern": "AUDIT-TYA-20260917-LIVE*",
+      "scope": "Visible DEV scenario using normal product contracts, cumulative screenshots, reload/new-tab stability and exact cleanup."
+    }
+  ],
+  "liveAcceptanceRequired": {
+    "admin": ["Dashboard/HR", "Visitas", "Disponibles", "Postulaciones", "Ficha Postulacion", "Shoppers", "Reservas/Asignacion", "Finanzas"],
+    "shopper": ["Login", "Mi Perfil", "Certificaciones", "Visitas Disponibles", "Postulacion", "Mis Visitas", "Reserva/Agenda", "Historico", "Reportes/Beneficios"],
+    "crossModule": [
+      "same HR revision and period",
+      "eligible visit visible once",
+      "application visible Admin and Shopper",
+      "assignment removes availability",
+      "assigned visit appears once for exact shopper",
+      "Admin identity/history/KPIs coherent",
+      "reload x3 and new tab stable",
+      "zero duplicates",
+      "visual evidence per stage",
+      "exact cleanup and baseline restored"
+    ],
+    "humanCheckpointByPaula": true
+  },
+  "methodAuthority": [
+    "app/docs/METODOLOGIA-PRUEBAS-EN-PLATAFORMA-REUTILIZABLE-DESDE-FINANZAS-20260804.md",
+    "app/docs/MATRIZ-EJECUCION-LABORATORIO-ADMIN-SHOPPER-20260804.md"
+  ],
+  "productionTouched": false,
+  "i4Authorized": false,
+  "nextExactAction": "MI-1: read exact shopper identity/profile binding owners from certified source and current DEV evidence; fix only proven owner if needed, then execute MI-2 live synthetic visible scenario.",
+  "doesNotReplacePostproductionPlan": true
+}
