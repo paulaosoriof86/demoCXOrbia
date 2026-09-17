@@ -166,6 +166,8 @@ jobs:
             'adapters/cxorbia-command-adapter-v1.js app/adapters/cxorbia-command-adapter-v1.js'
             'adapters/tya-canonical-shopper-portal-v2.js app/adapters/tya-canonical-shopper-portal-v2.js'
             'adapters/cxorbia-legal-acceptance-durable-contract-v1.js app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js'
+            'adapters/tya-protected-auth-hr-authority-bridge-v2.js app/adapters/tya-protected-auth-hr-authority-bridge-v2.js'
+            'adapters/tya-c6-unified-human-runtime-v1.js app/adapters/tya-c6-unified-human-runtime-v1.js'
             'sw.js app/sw.js'
           )
           : > "$OUT/hosting-parity.tsv"
@@ -210,6 +212,53 @@ jobs:
             -o "$OUT/hr-fresh.json" -w '%{http_code}' "$HOSTING_URL/api/tya/cinepolis/hr-live?format=json&fresh=1&i3=${GITHUB_RUN_ID}")"
           test "$code" = "200"
           node -e 'const fs=require("fs"),p=JSON.parse(fs.readFileSync(process.env.OUT+"/hr-fresh.json","utf8")),s=p?.snapshot||p?.data||p,rt=p?._runtime||s?._runtime||{};if(s?.sourceSafe!==true||rt.refreshError)throw new Error("SOURCE_FAILURE:HR_FRESH_INVALID");fs.writeFileSync(process.env.OUT+"/hr-readback.json",JSON.stringify({decision:"PASS_I3_HR_EXACT_RUNTIME",sourceSafe:true,production:false},null,2)+"\n")'
+
+      - name: Revalidate real human lane HR authority release
+        run: |
+          set -Eeuo pipefail
+          PROJECT="$PROJECT" OUT="$OUT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" PERIOD_ID="$PERIOD_ID" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import { applicationDefault, initializeApp, getApps } from 'firebase-admin/app';
+          import { getAuth } from 'firebase-admin/auth';
+          import { getFirestore } from 'firebase-admin/firestore';
+          import { chromium } from 'playwright';
+          const PROJECT=process.env.PROJECT,OUT=process.env.OUT,HOSTING_URL=String(process.env.HOSTING_URL||'').replace(/\/$/,''),tenantId=process.env.TENANT_ID,projectId=process.env.PROJECT_ID,periodId=process.env.PERIOD_ID;
+          const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
+          const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
+          const allDocs=async ref=>(await ref.get()).docs.map(d=>({id:d.id,...(d.data()||{})}));
+          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
+          const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(tenantId);
+          const members=await allDocs(tenant.collection('users'));
+          const legalContents=(await allDocs(tenant.collection('legalContents'))).filter(c=>c.active!==false&&str(c.scopeMode||'tenant')==='tenant'&&str(c.currentVersion)&&/^[a-f0-9]{64}$/.test(str(c.currentDigest).toLowerCase())&&(arr(c.roleApplicability).length===0||arr(c.roleApplicability).map(str).includes('shopper')));
+          if(legalContents.length!==1)throw new Error(`AUTH_FAILURE:HUMAN_LANE_LEGAL_CONTENT_${legalContents.length}`);
+          const currentLegal=legalContents[0],receipts=await allDocs(tenant.collection('legalAcceptances'));
+          const accepted=new Set(receipts.filter(r=>str(r.tenantId)===tenantId&&str(r.scopeMode)==='tenant'&&str(r.role)==='shopper'&&str(r.authNamespace)==='shopper'&&str(r.legalContentId)===str(currentLegal.id)&&str(r.legalVersion)===str(currentLegal.currentVersion)&&str(r.contentDigest).toLowerCase()===str(currentLegal.currentDigest).toLowerCase()&&str(r.status)==='accepted'&&str(r.acceptanceMethod)==='human_ui'&&r.subjectExact===true&&Boolean(r.acceptedAt)&&str(r.actorUid)).map(r=>str(r.actorUid)));
+          let shopper=null;
+          for(const m of members.filter(x=>accepted.has(str(x.id))&&x.active===true&&str(x.authNamespace)==='shopper'&&str(x.role)==='shopper'&&str(x.shopperId)&&(arr(x.projectIds).length===0||arr(x.projectIds).map(String).includes(projectId)))){try{await auth.getUser(m.id);shopper=m;break;}catch(e){if(str(e?.code)!=='auth/user-not-found')throw e;}}
+          if(!shopper)throw new Error('AUTH_FAILURE:HUMAN_LANE_ACCEPTED_SHOPPER_MISSING');
+          const token=await auth.createCustomToken(shopper.id),browser=await chromium.launch({headless:true});
+          try{
+            const ctx=await browser.newContext({viewport:{width:1440,height:1000}}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(str(e?.message||e)));
+            const url=`${HOSTING_URL}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cxProjectId=${encodeURIComponent(projectId)}&cxProtectedRuntime=${PROTECTED}&cxHumanFullVisual=${FULL}`;
+            await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
+            await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);await firebase.auth().signInWithCustomToken(t);},token);
+            await page.reload({waitUntil:'domcontentloaded',timeout:90000});
+            await page.waitForFunction(({tenantId,projectId})=>{const c=window.CX?.backendAuth?.context?.()||{},projects=Array.isArray(c.projectIds)?c.projectIds.map(String):[];return c.authenticated===true&&c.tenantId===tenantId&&c.role==='shopper'&&(projects.length===0||projects.includes(projectId));},{tenantId,projectId},{timeout:90000});
+            const before=await page.evaluate(()=>({source:String(window.CX_BACKEND_LAST_STATE?.source||window.CX_BACKEND_DATA_SOURCE||''),backendCounts:window.CX_BACKEND_LAST_STATE?.counts||null,gate:window.CX_C6_HR_AUTHORITY_GATE||null,boot:window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE||null}));
+            await page.waitForFunction(({projectId,periodId})=>{const d=window.CX?.data||{},gate=window.CX_C6_HR_AUTHORITY_GATE||{},source=String(window.CX?.dataSource?.sourceRef||'');return window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&gate.ready===true&&gate.blocked===false&&source==='hr-live-all-periods+firestore-authenticated-exact-overlay'&&String(d.currentProjectId||'')===projectId&&String(d.currentPeriodId||'')===periodId&&Array.isArray(d.projects)&&d.projects.length>0&&Array.isArray(d._visitas)&&d._visitas.length>0;},{projectId,periodId},{timeout:120000});
+            await page.waitForTimeout(750);
+            const after=await page.evaluate(()=>{const d=window.CX?.data||{},body=String(document.body?.innerText||'');return {authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,gate:window.CX_C6_HR_AUTHORITY_GATE||null,boot:window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE||null,source:String(window.CX?.dataSource?.sourceRef||''),sourceRevision:String(d.previewMeta?.sourceRevision||''),projectId:String(d.currentProjectId||''),periodId:String(d.currentPeriodId||''),periods:Array.isArray(d.projects)?d.projects.length:0,visits:Array.isArray(d._visitas)?d._visitas.length:0,shoppers:Array.isArray(d.shoppers)?d.shoppers.length:0,pendingGateText:body.includes('Validando fuente operacional'),technicalMode:new URLSearchParams(location.search).has('cxTechnicalAuthE2E')};});
+            if(errors.length)throw new Error(`VISUAL_DEFECT:HUMAN_LANE_PAGE_ERROR:${errors.join('|').slice(0,600)}`);
+            if(after.pendingGateText||after.technicalMode||!after.authority?.applied||after.gate?.ready!==true||after.gate?.blocked===true||after.source!=='hr-live-all-periods+firestore-authenticated-exact-overlay'||after.projectId!==projectId||after.periodId!==periodId||!after.periods||!after.visits||!/^[a-f0-9]{64}$/.test(after.sourceRevision))throw new Error(`FUNCTIONAL_DEFECT:HUMAN_LANE_AUTHORITY_NOT_RELEASED:${JSON.stringify(after)}`);
+            fs.mkdirSync(OUT,{recursive:true});await page.screenshot({path:path.join(OUT,'human-lane-authority-release.png'),fullPage:true});
+            fs.writeFileSync(path.join(OUT,'human-lane-authority-release.json'),JSON.stringify({decision:'PASS_I3_HUMAN_LANE_AUTHORITY_RELEASE',production:false,readOnly:true,technicalMode:false,humanFullVisual:true,tenantId,projectId,periodId,shopperSelected:true,before,after},null,2)+'\n');
+            await ctx.close();
+          } finally {await browser.close();}
+          NODE
+          test "$(jq -r '.decision' "$OUT/human-lane-authority-release.json")" = "PASS_I3_HUMAN_LANE_AUTHORITY_RELEASE"
+          test "$(jq -r '.after.pendingGateText' "$OUT/human-lane-authority-release.json")" = "false"
+          test "$(jq -r '.after.technicalMode' "$OUT/human-lane-authority-release.json")" = "false"
 
       - name: Re-certify focal persistence on single source
         run: |
@@ -259,13 +308,14 @@ jobs:
           tar -C "$SOURCE_DIR" -cf "$OUT/cxorbia-i3-certified-source.tar" .
           ARTIFACT_SHA256="$(sha256sum "$OUT/cxorbia-i3-certified-source.tar" | awk '{print $1}')"
           GATE20_SHA256="$(sha256sum "$OUT/gate20/gate20-browser-visual.json" | awk '{print $1}')"
+          HUMAN_LANE_SHA256="$(sha256sum "$OUT/human-lane-authority-release.json" | awk '{print $1}')"
           echo "$ARTIFACT_SHA256  cxorbia-i3-certified-source.tar" > "$OUT/cxorbia-i3-certified-source.tar.sha256"
           jq -n -S \
             --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg control "$GITHUB_SHA" \
             --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg image "$SOURCE_IMMUTABLE_IMAGE" \
-            --arg artifact "$ARTIFACT_SHA256" --arg gate20Sha "$GATE20_SHA256" \
+            --arg artifact "$ARTIFACT_SHA256" --arg gate20Sha "$GATE20_SHA256" --arg humanLaneSha "$HUMAN_LANE_SHA256" \
             --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hostingVersion "$HOSTING_VERSION_NAME" --arg hostingReleaseTime "$HOSTING_RELEASE_TIME" \
-            '{decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,buildCount:1,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingReleaseTime,gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,rebuildAfterCertification:false,production:false}' \
+            '{decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,buildCount:1,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingReleaseTime,humanLane:{decision:"PASS_I3_HUMAN_LANE_AUTHORITY_RELEASE",evidenceSha256:$humanLaneSha,technicalMode:false},gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,rebuildAfterCertification:false,production:false}' \
             > "$OUT/i3-certification-manifest.json"
           cp "$OUT/i3-certification-manifest.json" "$OUT/result.json"
 
