@@ -2,11 +2,11 @@
   "lockId": "CXORBIA-I3-LIVE-HUMAN-ACCEPTANCE-LOCK-2026-09-17",
   "status": "HOLD",
   "iteration": "I3",
-  "blockingClassification": "MAPPING_FAILURE",
-  "blockingReason": "Certified Shopper visual renders authenticated session without evaluator record/country; prior Gate20 was structurally PASS but semantically insufficient.",
+  "blockingClassification": "ENVIRONMENT_FAILURE",
+  "blockingReason": "The prior Gate20 acceptance ran in the technical E2E lane, whose canonical bootstrap removes cxHumanFullVisual; therefore it did not certify the human Admin+Shopper visual lane Paula must accept.",
+  "conditionalProductClassification": "If the same missing shopper profile/country reproduces in the authenticated human canonical lane, classify that concrete product failure as MAPPING_FAILURE and fix only its proven owner.",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "expectedParentHead": "073909aa891be7989e77ca0c11904045e5a7d9e0",
   "certifiedProductUnderTest": {
     "sha": "b94911a4748c03c2e604415e8a97ee091da96218",
     "treeSha": "e3efd4afa9ffcb973e66e40e08798eba4e6c0f34"
@@ -26,19 +26,22 @@
     "adminDesktopShoppersScreenshotSha256": "248a4a054b09c2a9d068bc62830ab6425a119a8ba67ec98c3c0cdb18ba662df9",
     "observedShopperMessage": "No se encontró tu registro de evaluador. Contacta al equipo para verificar tu identidad.",
     "observedShopperRail": "Shopper · sin país asignado",
-    "priorGate20Gap": "Route/DOM/authority/overflow checks did not assert semantic shopper profile binding or full shopper operational cycle."
+    "gate20TechnicalLane": true,
+    "technicalLaneRemovesHumanFullVisual": true,
+    "canonicalShopperPortalRequiresHumanFullVisual": true,
+    "priorGate20Gap": "Route/DOM/authority/overflow checks were executed in technical E2E and did not certify the authenticated human canonical Shopper surface or full shopper operational cycle."
   },
   "frozenMicroIterations": [
     {
       "id": "MI-1",
-      "name": "Exact Shopper HR/profile binding owner",
-      "scope": "Locate and fix only the proven binding/mapping owner; no general auth diagnosis."
+      "name": "Authenticated human canonical lane readback",
+      "scope": "Validate the exact certified candidate in the real human lane; no code change before reproduction. If Shopper profile/country is correct, close environment/test-harness failure and continue directly to MI-2. If not, classify MAPPING_FAILURE and fix only the proven binding owner."
     },
     {
       "id": "MI-2",
       "name": "Finance-style live synthetic Admin + Shopper scenario",
       "runIdPattern": "AUDIT-TYA-20260917-LIVE*",
-      "scope": "Visible DEV scenario using normal product contracts, cumulative screenshots, reload/new-tab stability and exact cleanup."
+      "scope": "Visible DEV scenario using normal product contracts, cumulative screenshots, same live HR revision, reload/new-tab stability and exact cleanup."
     }
   ],
   "liveAcceptanceRequired": {
@@ -64,6 +67,6 @@
   ],
   "productionTouched": false,
   "i4Authorized": false,
-  "nextExactAction": "MI-1: read exact shopper identity/profile binding owners from certified source and current DEV evidence; fix only proven owner if needed, then execute MI-2 live synthetic visible scenario.",
+  "nextExactAction": "MI-1: run/read the authenticated-human canonical DEV surface on the already certified artifact and capture Admin + Shopper semantic evidence. Do not rebuild and do not touch production.",
   "doesNotReplacePostproductionPlan": true
 }
