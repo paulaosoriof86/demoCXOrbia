@@ -21,6 +21,14 @@
     "source": "b94911a4748c03c2e604415e8a97ee091da96218",
     "buildCount": 1
   },
+  "harnessCorrections": [
+    {
+      "commit": "13e116753f5631767211be8af580bbba1c7ee4fe",
+      "classification": "SOURCE_FAILURE_TEST_HARNESS",
+      "owner": "backend/runtime/hr-live-service/test/cxorbia-gate9-postulation-immediate.test.mjs",
+      "change": "Align textual assertion from protectedState.posts to the approved state.posts owner; product source remains frozen and unchanged."
+    }
+  ],
   "parityRules": [
     "All final I3 gates MUST use i3CertificationSourceSha.",
     "No final gate may define an independent PRODUCT_SOURCE_SHA.",
