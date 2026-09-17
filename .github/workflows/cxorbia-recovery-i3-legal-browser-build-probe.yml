@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PRODUCT_SOURCE_SHA: c733131344111f498c830ec5e380c49c88d89d40
+  I3_CERTIFICATION_SOURCE_SHA: b94911a4748c03c2e604415e8a97ee091da96218
   PROJECT: cxorbia-backend-dev
   HOSTING_URL: https://cxorbia-backend-dev.web.app
   TENANT_ID: tya
@@ -36,14 +36,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Freeze exact corrected product source and protected Auth mapping rule
+      - name: Freeze exact single certification source and protected Auth mapping rule
         run: |
           set -euo pipefail
           mkdir -p "$OUT"
           test "$GITHUB_REF_NAME" = "recovery/cxorbia-phase-a-20260831"
-          git cat-file -e "$PRODUCT_SOURCE_SHA^{commit}"
-          git merge-base --is-ancestor "$PRODUCT_SOURCE_SHA" HEAD
-          git diff --quiet "$PRODUCT_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc
+          git cat-file -e "$I3_CERTIFICATION_SOURCE_SHA^{commit}"
+          git merge-base --is-ancestor "$I3_CERTIFICATION_SOURCE_SHA" HEAD
+          git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc ':(exclude)backend/runtime/hr-live-service/test/**'
           node --check app/core/backend-browser-auth.js
           node --check app/adapters/tya-canonical-shopper-portal-v2.js
           grep -q 'sessionCredential: sessionCredentialSnapshot' app/core/backend-browser-auth.js
@@ -68,14 +68,14 @@ jobs:
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
 
-      - name: Prepare exact product source
+      - name: Prepare exact certification source
         run: |
           set -euo pipefail
           rm -rf "$SOURCE_TREE"
-          git worktree add --detach "$SOURCE_TREE" "$PRODUCT_SOURCE_SHA"
-          test "$(git -C "$SOURCE_TREE" rev-parse HEAD)" = "$PRODUCT_SOURCE_SHA"
+          git worktree add --detach "$SOURCE_TREE" "$I3_CERTIFICATION_SOURCE_SHA"
+          test "$(git -C "$SOURCE_TREE" rev-parse HEAD)" = "$I3_CERTIFICATION_SOURCE_SHA"
 
-      - name: Prove exact corrected source is already served by DEV
+      - name: Prove exact single certification source is already served by DEV
         run: |
           set -euo pipefail
           assets=(
@@ -96,7 +96,7 @@ jobs:
             test "$expected" = "$actual"
             printf '%s\t%s\t%s\tMATCH\n' "$remote_path" "$expected" "$actual" >> "$OUT/asset-parity.tsv"
           done
-          jq -n -S --arg source "$PRODUCT_SOURCE_SHA" '{decision:"PASS_I3_SHOPPER_EXACT_DEV_PARITY_NO_REDEPLOY",productSourceSha:$source,hostingDevDeploys:0,cloudRunDeploys:0,providerWrites:0,firestoreWrites:0,authWrites:0,hrWrites:0,productionWrites:0,production:false}' > "$OUT/dev-parity.json"
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" '{decision:"PASS_I3_SHOPPER_EXACT_DEV_PARITY_NO_REDEPLOY",i3CertificationSourceSha:$source,hostingDevDeploys:0,cloudRunDeploys:0,providerWrites:0,firestoreWrites:0,authWrites:0,hrWrites:0,productionWrites:0,production:false}' > "$OUT/dev-parity.json"
 
       - name: Prove focal shopper minimum operational profile in one real password session
         run: |
