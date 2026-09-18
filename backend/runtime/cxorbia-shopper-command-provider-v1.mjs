@@ -314,7 +314,15 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers}
   const memberRef=users.doc(uid);
   if(crossBefore.exists){
     const c=existingCross;
-    if(str(c.tenantId)!==tenantId||str(c.shopperId)!==shopperId||str(c.sourceStableKey||sourceShopperId)!==sourceShopperId)throw new Error('SHOPPER_CROSSWALK_SCOPE_CONFLICT');
+    const crossTenantOk=str(c.tenantId)===tenantId;
+    const crossSourceOk=str(c.sourceStableKey||sourceShopperId)===sourceShopperId;
+    const crossIdentityMode=str(c.identityMode).toLowerCase();
+    const exactAliasSelfMap=
+      sourceShopperId!==shopperId&&profileBefore.exists&&crossTenantOk&&crossSourceOk&&
+      str(c.shopperId)===sourceShopperId&&str(c.sourceType).toLowerCase()==='hr_external'&&
+      ['stable_hr_shopper_id','exact_technical_keys_only'].includes(crossIdentityMode);
+    if(exactAliasSelfMap)throw new Error('SHOPPER_EXACT_ALIAS_SELF_CROSSWALK_MIGRATION_REQUIRED');
+    if(!crossTenantOk||str(c.shopperId)!==shopperId||!crossSourceOk)throw new Error('SHOPPER_CROSSWALK_SCOPE_CONFLICT');
     if(str(c.providerUidFingerprint)&&str(c.providerUidFingerprint)!==providerUidFingerprint(uid))throw new Error('SHOPPER_CROSSWALK_UID_CONFLICT');
   }
   const email=internalEmail(tenantId,credential.ok?credential.login:shopperId);
@@ -507,8 +515,9 @@ export function createShopperCommandProvider({auth,db,policy}={}){
       const authUsers=shoppers.length?await listAllAuthUsers(auth):[];
       const exactIdentityMap=await exactShopperIdentityMap(db,scope.tenantId,scope.projectId);
       let created=0,replayed=0,writes=0,credentialNormalized=0,credentialRuleMissing=0;
-      const identityReviewQueue=[];
+      const identityReviewQueue=[],identityMigrationQueue=[];
       const reviewableCredentialCollisions=new Set(['SHOPPER_VISIBLE_LOGIN_COLLISION','SHOPPER_AUTH_EMAIL_CONFLICT']);
+      const reviewableExactMigration=new Set(['SHOPPER_EXACT_ALIAS_SELF_CROSSWALK_MIGRATION_REQUIRED']);
       for(const source of shoppers){
         const canonicalShopperId=exactIdentityMap.get(source.shopperId)||source.shopperId;
         let result;
@@ -516,6 +525,17 @@ export function createShopperCommandProvider({auth,db,policy}={}){
           result=await durableUpsert({auth,db,policy,candidate:{...source,sourceShopperId:source.shopperId,shopperId:canonicalShopperId},sourceRevision,authUsers});
         }catch(error){
           const reason=str(error?.message||error).split(':')[0];
+          if(reviewableExactMigration.has(reason)){
+            identityMigrationQueue.push({
+              sourceShopperId:source.shopperId,
+              canonicalShopperId,
+              country:str(source.country||source.pais),
+              reason,
+              exactIdentityAlreadyProven:true,
+              requiresHumanAdjudication:false
+            });
+            continue;
+          }
           if(!reviewableCredentialCollisions.has(reason))throw error;
           const credential=shopperCredentialRule(source);
           identityReviewQueue.push({
@@ -536,14 +556,17 @@ export function createShopperCommandProvider({auth,db,policy}={}){
       }
       return {
         ok:true,
-        status:identityReviewQueue.length?'committed_with_identity_review':'committed',
+        status:(identityReviewQueue.length||identityMigrationQueue.length)?'committed_with_identity_review':'committed',
         providerAck:true,
         sourceRevision,tenantId:scope.tenantId,projectId:scope.projectId,
         shopperCount:shoppers.length,
-        reconciledShopperCount:shoppers.length-identityReviewQueue.length,
+        reconciledShopperCount:shoppers.length-identityReviewQueue.length-identityMigrationQueue.length,
         identityReviewRequired:identityReviewQueue.length>0,
         identityReviewCount:identityReviewQueue.length,
         identityReviewQueue,
+        identityMigrationRequired:identityMigrationQueue.length>0,
+        identityMigrationCount:identityMigrationQueue.length,
+        identityMigrationQueue,
         authCreated:created,idempotentReplays:replayed,credentialNormalized,credentialRuleMissing,
         credentialRuleVersion:CREDENTIAL_RULE_VERSION,providerWrites:writes,hrWrites:0,externalWrites:0,fuzzyMatching:false
       };

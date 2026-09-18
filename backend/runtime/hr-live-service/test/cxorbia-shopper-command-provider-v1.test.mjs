@@ -233,3 +233,38 @@ test('Gate 6 / visible-login collision quarantines only the affected shopper and
   assert.equal(JSON.stringify(result).includes('Patricia Ordoñez'),false);
   assert.equal(JSON.stringify(result).includes('Patricia123*'),false);
 });
+
+
+test('Gate 6 / proven exact alias with legacy self-mapped crosswalk is quarantined as migration debt without blocking fresh HR',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  const alias='shopper_gt_legacy_alias',canonical='shp-canonical-existing';
+  const first=snapshot({shopperId:alias,shopperCode:'TYA_GT_ALIAS'});
+  first.visits[0].shopper='Cesar Castillo';
+  await p.reconcileSnapshot(first,{sourceRevision:'rev-alias-self'});
+  const aliasCross=`tenants/tenant-a/shopperIdentityCrosswalk/${alias}`;
+  assert.equal(db.get(aliasCross).shopperId,alias);
+  assert.equal(db.get(aliasCross).identityMode,'stable_hr_shopper_id');
+
+  db.seed(`tenants/tenant-a/shoppers/${canonical}`,{
+    id:canonical,shopperId:canonical,tenantId:'tenant-a',projectIds:['project-a'],
+    nombre:'Cesar Castillo',firstName:'Cesar',lastName:'Castillo',sourceType:'hr_external'
+  });
+  db.seed('tenants/tenant-a/shopperIdentityLinks/link-existing-canonical',{
+    tenantId:'tenant-a',canonicalShopperId:canonical,sourceSystem:'hr',
+    sourceIdentity:{legacyId:alias},projectScope:'project-a',status:'active',
+    authorityType:'provider_exact',authorityRef:'provider-ack-existing-canonical'
+  });
+
+  const result=await p.reconcileSnapshot(first,{sourceRevision:'rev-alias-after-exact-link'});
+  assert.equal(result.ok,true);
+  assert.equal(result.providerAck,true);
+  assert.equal(result.identityMigrationRequired,true);
+  assert.equal(result.identityMigrationCount,1);
+  assert.equal(result.identityMigrationQueue[0].sourceShopperId,alias);
+  assert.equal(result.identityMigrationQueue[0].canonicalShopperId,canonical);
+  assert.equal(result.identityMigrationQueue[0].reason,'SHOPPER_EXACT_ALIAS_SELF_CROSSWALK_MIGRATION_REQUIRED');
+  assert.equal(result.identityMigrationQueue[0].exactIdentityAlreadyProven,true);
+  assert.equal(result.identityMigrationQueue[0].requiresHumanAdjudication,false);
+  assert.equal(db.get(aliasCross).shopperId,alias);
+  assert.equal(db.get(`tenants/tenant-a/shoppers/${canonical}`).shopperId,canonical);
+});
