@@ -23,9 +23,21 @@
   }
   async function refresh(reason){
     if(typeof window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY!=='function')throw new Error('RESERVATION_READBACK_RECONCILER_REQUIRED');
-    const readback=await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY(reason||'reservation_provider_ack');
-    if(readback?.ok!==true)throw new Error(readback?.error||'RESERVATION_READBACK_FAILED');
-    CX.bus?.emit?.('reservas',{source:'durable_provider_ack'});
+    let last=null;
+    for(let attempt=1;attempt<=8;attempt++){
+      const readback=await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY(reason||'reservation_provider_ack');
+      last=readback;
+      if(readback?.ok===true&&readback?.skipped!==true){
+        CX.bus?.emit?.('reservas',{source:'durable_provider_ack'});
+        return readback;
+      }
+      if(readback?.ok===true&&readback?.skipped===true&&readback?.reason==='reconcile_in_progress'){
+        await new Promise(resolve=>setTimeout(resolve,150*attempt));
+        continue;
+      }
+      throw new Error(readback?.error||readback?.reason||'RESERVATION_READBACK_FAILED');
+    }
+    throw new Error(last?.error||'RESERVATION_READBACK_RECONCILE_TIMEOUT');
   }
   function assertAck(result){
     if(!result?.ok||result?.providerAck!==true||result?.committed!==true||result?.successUiAllowed!==true)throw new Error(result?.code||'RESERVATION_PROVIDER_ACK_REQUIRED');
