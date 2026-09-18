@@ -7,7 +7,7 @@
   "controlParentSha": "326f1c66d62b7c710f71812969aac1d28b6b03ed",
   "productSourceBefore": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
   "productTreeBefore": "878fd60a2dc542cf04540026c34f1a7543cc2134",
-  "state": "COMPOSED_PRECERT",
+  "state": "COMPOSED_PRECERT_AFTER_FOCAL_FAIL_CORRECTION",
   "entrypoint": "app/index-backend-dev.html",
   "loadedScriptsTotal": 130,
   "internalScriptsTotal": 124,
@@ -524,7 +524,7 @@
       "classification": "FOCAL_FIX",
       "byteExact": false,
       "reason": "P0_PROVEN_ATOMIC_COMPOSITION_OWNER",
-      "currentBlob": "2e2b836164d3882c81a9d99149af1c9fe5255fdc",
+      "currentBlob": "89660adee9722eef3db8d73ab552f9f70d52f06f",
       "compositionResult": "MATCH"
     },
     {
@@ -1352,11 +1352,14 @@
     "same-artifact-human-live"
   ],
   "production": "DO_NOT_TOUCH",
-  "productSourceAfter": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-  "productTreeAfter": "fcdd8dcc1ea511714f8dd398edae2843137a7da9",
+  "productSourceAfter": "186c2a8f5a243d0ccf1c3720acbe13ff38825895",
+  "productTreeAfter": "4032b6a1e6ca7ae677fa7917fbb559a875432ddb",
   "sourceDiff": {
-    "productCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-    "filesChanged": 11,
+    "productCommit": "186c2a8f5a243d0ccf1c3720acbe13ff38825895",
+    "filesChangedInInitialAtomicComposition": 11,
+    "focalCorrectionFiles": [
+      "app/core/backend-firebase.js"
+    ],
     "onlyAuthorizedOwners": true
   },
   "moduleTruth": {
@@ -1365,5 +1368,15 @@
     "activeOutsideMatrix": 0,
     "duplicateSrc": 0,
     "unknownOverlays": 0
-  }
+  },
+  "correctionHistory": [
+    {
+      "classification": "PERSISTENCE_FAILURE",
+      "owner": "app/core/backend-firebase.js",
+      "reason": "Gate20 admin authority blocked because duplicate durable selector compared docId to generic visitKey/hrRowId instead of the declared live visit id.",
+      "fix": "Select the unique durable row whose __docId equals its declared visitId/id; preserve historical duplicates as non-authoritative.",
+      "sourceCommit": "186c2a8f5a243d0ccf1c3720acbe13ff38825895",
+      "blob": "89660adee9722eef3db8d73ab552f9f70d52f06f"
+    }
+  ]
 }

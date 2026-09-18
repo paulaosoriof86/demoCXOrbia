@@ -103,11 +103,11 @@
     }
   },
   "productSource": {
-    "sha": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-    "treeSha": "fcdd8dcc1ea511714f8dd398edae2843137a7da9",
-    "message": "fix(i3): atomic canonical recovery composition"
+    "sha": "186c2a8f5a243d0ccf1c3720acbe13ff38825895",
+    "treeSha": "4032b6a1e6ca7ae677fa7917fbb559a875432ddb",
+    "message": "fix(i3): select canonical durable visit by declared live visit id"
   },
-  "controlHeadAtConstruction": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+  "controlHeadAtConstruction": "186c2a8f5a243d0ccf1c3720acbe13ff38825895",
   "phaseAComplete": true,
   "allModulesMatch": true,
   "modules": [
@@ -120,8 +120,8 @@
         "app/core/backend-firebase.js",
         "app/core/backend-protected-dev-mode.js"
       ],
-      "lastApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED",
-      "sourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+      "lastApprovedAuthority": "P0_PROVEN_DURABLE_VISIT_CANONICAL_DOCID_EQUALS_DECLARED_LIVE_VISIT_ID",
+      "sourceCommit": "186c2a8f5a243d0ccf1c3720acbe13ff38825895",
       "loadOrderEntrypoint": "app/index-backend-dev.html",
       "roles": [
         "Admin",
@@ -1271,15 +1271,15 @@
       "historicalApprovedBlob": null,
       "f9ApprovedSource": null,
       "f9ApprovedBlob": null,
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "2e2b836164d3882c81a9d99149af1c9fe5255fdc",
-      "currentBlob": "2e2b836164d3882c81a9d99149af1c9fe5255fdc",
+      "latestApprovedSource": "186c2a8f5a243d0ccf1c3720acbe13ff38825895",
+      "latestApprovedBlob": "89660adee9722eef3db8d73ab552f9f70d52f06f",
+      "currentBlob": "89660adee9722eef3db8d73ab552f9f70d52f06f",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "loadOrder": 56,
       "atomicDisposition": "FOCAL_FIX",
-      "latestApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED"
+      "latestApprovedAuthority": "P0_PROVEN_DURABLE_VISIT_CANONICAL_DOCID_EQUALS_DECLARED_LIVE_VISIT_ID"
     },
     {
       "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
@@ -2964,7 +2964,7 @@
     "rule": "preserve; do not regress/rebuild; not an I3 requirement absent transversal P0"
   },
   "devCertification": {
-    "status": "PENDING_SINGLE_RUN",
+    "status": "PENDING_SINGLE_RUN_AFTER_FOCAL_FAIL_CORRECTION",
     "servedSourceSha": null,
     "servedTreeSha": null,
     "artifactSha256": null
@@ -2985,7 +2985,7 @@
     "duplicateSrc": 0,
     "unknownOverlays": 0
   },
-  "nextExactAction": "RUN_SINGLE_CANONICAL_I3_DEV_CERTIFICATION_ON_THIS_SOURCE_THEN_HUMAN_ACCEPT_SAME_ARTIFACT",
+  "nextExactAction": "RUN_CANONICAL_I3_DEV_CERTIFICATION_AFTER_DURABLE_VISIT_AUTHORITY_CORRECTION_THEN_HUMAN_ACCEPT_SAME_ARTIFACT",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
