@@ -76,16 +76,10 @@ window.CX = window.CX || {};
     }));
   }
 
-  function mapPosts(visits,identity){
-    return visits.filter(v=>['asignada','agendada','fuera_rango','disponible'].includes(v.estado)).slice(0,80).map((v,i)=>({
-      id:'hr-post-'+(i+1),visitaId:v.id,projectId:v.projectId||identity.projectId,projectName:v.projectName||identity.projectName,
-      rootProjectId:v.rootProjectId||v.projectId||identity.projectId,periodId:v.periodId||periodId(identity.projectId,v.periodKey),periodKey:v.periodKey,shopperId:v.shopperId,
-      shopper:v.shopper||'Shopper protegido',shopperCode:v.shopperCode||'',sucursal:v.sucursal,ciudad:v.ciudad,
-      pais:v.pais,quincena:v.quincena,franjaCode:v.franjaCode,honorario:v.honorario,boleto:v.boleto,
-      comboAmt:v.comboAmt,currency:v.currency,fechaProp:v.agendada||v.disponibleDesde,disponibleDesde:v.disponibleDesde,
-      estado:v.estado==='disponible'?'pendiente':'aprobada',aprobadaPor:v.shopperId?'HR TyA':null,
-      reprog:v.estado==='fuera_rango',sourceSafe:true,piiProtected:true
-    }));
+  function mapPosts(){
+    // HR owns visit state, never application/postulation state.
+    // Canonical postulations are loaded only from durable platform collections.
+    return [];
   }
 
   function refreshBadge(){

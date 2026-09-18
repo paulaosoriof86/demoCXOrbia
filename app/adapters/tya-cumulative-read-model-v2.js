@@ -165,7 +165,13 @@
     for(const p of profiles){for(const alias of arr(p.exactAliases)){if(!profilesByAlias.has(alias))profilesByAlias.set(alias,[]);profilesByAlias.get(alias).push(p);}}
     const liveToCanonical=new Map(),identityConflicts=[];
     for(const s of baseShoppers){
-      const liveId=str(s.shopperId||s.id);if(!liveId)continue;const candidates=new Set();
+      const liveId=str(s.shopperId||s.id);if(!liveId)continue;
+      const authoritativeCanonical=str(s.canonicalShopperId);
+      if(authoritativeCanonical){
+        liveToCanonical.set(liveId,authoritativeCanonical);
+        continue;
+      }
+      const candidates=new Set();
       const direct=onlyUnique(profilesById,liveId);if(direct)candidates.add(str(direct.id));
       const alias=onlyUnique(profilesByAlias,liveId);if(alias)candidates.add(str(alias.id));
       const contractResolution=canonicalProfileIndex?.resolve?.(s);
@@ -177,7 +183,7 @@
     }
     const assignmentConflicts=[],pendingPlatformAssignmentOverlays=[];
     const composedVisits=baseVisits.map(base=>{
-      const out=normalizeScope(clone(base),hr),key=visitKey(base),pv=matches.get(key)||null,liveId=str(base.shopperId),canonical=liveToCanonical.get(liveId)||liveId;
+      const out=normalizeScope(clone(base),hr),key=visitKey(base),pv=matches.get(key)||null,liveId=str(base.shopperId),canonical=str(base.canonicalShopperId)||liveToCanonical.get(liveId)||liveId;
       if(canonical)out.shopperId=canonical;
       if(pv){
         out.__protectedVisitId=str(pv.visitId||pv.id)||null;out.__exactProtectedVisitOverlay=true;

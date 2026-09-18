@@ -39,6 +39,15 @@ CX.module('dashboard', ({data,ui})=>{
   const shoppersPool=ALL?data.shoppers.filter(s=>data.inScope(s.pais)):data.shoppersFor();
   const split=(o)=>cs.map(c=>c+':'+(o[c]||0)).join(' · ');
   const months=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+  const _clock=new Date();
+  const _periodToken=String(p?.periodKey||p?.key||p?.periodId||p?.id||'');
+  const _periodMatch=_periodToken.match(/(20\d{2})-(0[1-9]|1[0-2])/);
+  const _monthField=Number(p?.month||p?.mes||0);
+  const selYear=_periodMatch?Number(_periodMatch[1]):(Number(p?.year||p?.anio||p?.año)||_clock.getFullYear());
+  const selMonth=_periodMatch?Number(_periodMatch[2])-1:(_monthField>=1&&_monthField<=12?_monthField-1:_clock.getMonth());
+  const _daysInSelectedMonth=new Date(selYear,selMonth+1,0).getDate();
+  const _selectedIsCurrent=selYear===_clock.getFullYear()&&selMonth===_clock.getMonth();
+  const _selectedDay=_selectedIsCurrent?Math.min(_clock.getDate(),_daysInSelectedMonth):_daysInSelectedMonth;
 
   /* drill de un KPI: listado + WA individual por fila + selección múltiple para notificar */
   const drill=(titulo, filtroFn, waMsg)=>{
@@ -109,8 +118,7 @@ CX.module('dashboard', ({data,ui})=>{
   if(k.fueraRango.t) alerts.push(['r','fuera',`${k.fueraRango.t} fuera de rango`]);
 
   /* comparativo del último trimestre (3 meses) — el mes actual sale de datos REALES; los previos se derivan */
-  const _mNow=new Date().getMonth();
-  const trimestre=[months[(_mNow+10)%12],months[(_mNow+11)%12],months[_mNow]];
+  const trimestre=[months[(selMonth+10)%12],months[(selMonth+11)%12],months[selMonth]];
   const cumplNow=Math.round(k.realizadas.t/Math.max(k.total.t,1)*100);
   const cobNow=Math.min(100,Math.round(k.asignadas.t/Math.max(k.total.t,1)*100));
   const realNow=k.realizadas.t;
@@ -156,12 +164,11 @@ CX.module('dashboard', ({data,ui})=>{
      único selector real de periodo es el de la barra lateral (rail #periodSel) y el de proyecto
      (#dashProjSel, abajo), que sí invocan el setter canónico CX.data.setProject/setCurrentPeriod.
      El avance real-vs-ideal usa el mes REAL del calendario (no una selección simulada). */
-  const selMonth=new Date().getMonth();
   const avanceHTML=`<div class="card card-p" style="margin-bottom:18px">
-    <div class="card-h"><div class="card-t">📊 Avance real vs ideal del mes — por país</div><span class="muted" style="font-size:11px">día ${new Date().getDate()} de ${new Date(new Date().getFullYear(),new Date().getMonth()+1,0).getDate()} · ideal lineal</span></div>
+    <div class="card-h"><div class="card-t">📊 Avance real vs ideal del mes — por país</div><span class="muted" style="font-size:11px">día ${_selectedDay} de ${_daysInSelectedMonth} · ideal lineal</span></div>
     ${cs.map(c=>{
       const tot=k.total[c]||0, real=k.realizadas[c]||0;
-      const diaHoy=new Date().getDate(), diasMes=new Date(new Date().getFullYear(),selMonth+1,0).getDate();
+      const diaHoy=_selectedDay, diasMes=_daysInSelectedMonth;
       const idealPct=Math.min(100,Math.round(diaHoy/diasMes*100));
       const realPct=tot?Math.round(real/tot*100):0;
       const gap=realPct-idealPct; const tone=gap>=0?'green':gap>=-15?'amber':'red';
@@ -185,7 +192,7 @@ CX.module('dashboard', ({data,ui})=>{
   <div style="font-size:10.5px;color:var(--t3);margin:-6px 0 12px" title="Contrato de contexto único (CX.data.ctx())">tenant ${(CX.data.ctx?CX.data.ctx().tenantId:CX.BRAND.id)||'—'} · rol ${CX.data.ctx?CX.data.ctx().role:CX.session.role} · modo ${CX.data.ctx?CX.data.ctx().dataMode:'demo'}${(()=>{if(!data.visitContract)return '';const arr=pool();const conf=arr.filter(v=>{const vc=data.visitContract(v);return vc&&vc.paymentState==='confirmado';}).length;return ' · '+conf+'/'+arr.length+' visitas con pago confirmado (contrato)';})()}</div>
 
   <div class="card card-p" style="margin-bottom:14px;background:var(--brand-light);border-color:#cfe6f7">
-    <div style="font-size:12.5px;color:var(--brand-dark)"><b>${months[selMonth]} ${new Date().getFullYear()} ·</b> ${k.total.t} visitas · ${split(k.total)}. Las tarjetas y fases son <b>clickeables</b> para ver su detalle. Multipaís: cada país mantiene su moneda.</div>
+    <div style="font-size:12.5px;color:var(--brand-dark)"><b>${months[selMonth]} ${selYear} ·</b> ${k.total.t} visitas · ${split(k.total)}. Las tarjetas y fases son <b>clickeables</b> para ver su detalle. Multipaís: cada país mantiene su moneda.</div>
   </div>
 
   <div class="grid" style="grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:12px">
@@ -227,7 +234,7 @@ CX.module('dashboard', ({data,ui})=>{
   <div class="card card-p" id="estadoBoard" style="margin-bottom:18px"></div>
 
   <div class="card card-p">
-    <div class="card-h"><div class="card-t">📈 Comparativo último trimestre — KPIs clave</div><span class="muted" style="font-size:11px">${trimestre.join(' · ')} ${new Date().getFullYear()}</span></div>
+    <div class="card-h"><div class="card-t">📈 Comparativo último trimestre — KPIs clave</div><span class="muted" style="font-size:11px">${trimestre.join(' · ')} ${selYear}</span></div>
     <table class="tbl"><thead><tr><th>KPI</th>${trimestre.map(m=>`<th>${m}</th>`).join('')}<th>Δ vs mes ant.</th></tr></thead><tbody>${trimRows}</tbody></table>
     <div style="margin-top:14px">${ui.aiBox('Comparo el último trimestre de los KPIs que importan a este proyecto (cumplimiento, velocidad, volumen, margen) y resalto la tendencia. Cada tarjeta y fase abre su detalle; donde hay gestión externa, ofrezco notificar por WhatsApp.','Lectura inteligente · trimestre')}</div>
   </div>`;
@@ -386,7 +393,7 @@ CX.module('dashboard', ({data,ui})=>{
         const projectLabel=ALL?'Todos los proyectos':(data.programBase?data.programBase(p):p.name);
         const rows=cs.map(c=>{const tot=k.total[c]||0,real=k.realizadas[c]||0;return {pais:CX.paisLabel?CX.paisLabel(c):c,total:tot,asignadas:(k.asignadas[c]||0),sin_asignar:(k.sinAsignar[c]||0),realizadas:real,avance:(tot?Math.round(real/tot*100):0)+'%'};});
         return { title:'Dashboard Operativo',
-          meta:{title:'Dashboard Operativo',project:projectLabel,period:(months[selMonth]+' '+new Date().getFullYear()),scope:(ALL?'Todos los proyectos':p.name),sourceLabel:'Operación viva del periodo',generatedAt:new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})},
+          meta:{title:'Dashboard Operativo',project:projectLabel,period:(months[selMonth]+' '+selYear),scope:(ALL?'Todos los proyectos':p.name),sourceLabel:'Operación viva del periodo',generatedAt:new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'})},
           columns:[{key:'pais',label:'País'},{key:'total',label:'Total'},{key:'asignadas',label:'Asignadas'},{key:'sin_asignar',label:'Sin asignar'},{key:'realizadas',label:'Realizadas'},{key:'avance',label:'Avance'}],
           rows, notes:'',
           summary:['Total visitas: '+(k.total.t||0),'Realizadas: '+(k.realizadas.t||0)],

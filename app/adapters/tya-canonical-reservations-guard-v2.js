@@ -9,41 +9,74 @@
   if(params.get('cxHumanFullVisual')!=='YES_PAULA_20260731_FULL_PROFILE_DEV')return;
   const arr=v=>Array.isArray(v)?v:[];
   const str=v=>String(v==null?'':v).trim();
-  function canonicalPeriod(){return str(CX.data?.period?.()?.periodKey||CX.data?.currentPeriodId).replace(/^cinepolis-/,'');}
-  function canonicalPid(pid){const current=str(CX.data?.currentPeriodId);return current||str(pid);}
-  function records(pid){
-    const target=canonicalPid(pid),period=canonicalPeriod();
-    return arr(CX.data?.__protectedReservations).filter(r=>(!r.projectId||str(r.projectId)===target||str(r.rootProjectId)==='cinepolis')&&(!r.periodo||str(r.periodo)===period));
+  function canonicalPeriod(){return str(CX.data?.period?.()?.periodKey||CX.data?.period?.()?.key||CX.data?.currentPeriodId).replace(/^cinepolis-/,'');}
+  function canonicalPeriodId(){return str(CX.data?.currentPeriodId);}
+  function canonicalProjectId(){return str(CX.data?.currentProjectId||CX.BACKEND?.defaultProjectId);}
+  function branchId(v){return str((str(v?.sucursal)+'|'+str(v?.ciudad)).toLowerCase().replace(/\s+/g,'-'));}
+  function records(){
+    const project=canonicalProjectId(),periodId=canonicalPeriodId(),period=canonicalPeriod();
+    return arr(CX.data?.__protectedReservations).filter(r=>
+      (!r.projectId||str(r.projectId)===project)&&
+      (!r.periodId||str(r.periodId)===periodId)&&
+      (!r.periodo||str(r.periodo)===period)
+    );
+  }
+  async function refresh(reason){
+    if(typeof window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY!=='function')throw new Error('RESERVATION_READBACK_RECONCILER_REQUIRED');
+    const readback=await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY(reason||'reservation_provider_ack');
+    if(readback?.ok!==true)throw new Error(readback?.error||'RESERVATION_READBACK_FAILED');
+    CX.bus?.emit?.('reservas',{source:'durable_provider_ack'});
+  }
+  function assertAck(result){
+    if(!result?.ok||result?.providerAck!==true||result?.committed!==true||result?.successUiAllowed!==true)throw new Error(result?.code||'RESERVATION_PROVIDER_ACK_REQUIRED');
+    return result;
   }
   function install(){
     if(!CX.reservas)return;
-    const blocked=action=>({ok:false,blocked:true,reason:'canonical_reservation_source_not_connected',action,readOnly:true});
-    CX.reservas._key=canonicalPid;
+    CX.reservas._key=()=>canonicalPeriodId();
     CX.reservas.periodoActual=canonicalPeriod;
+    CX.reservas.sucursales=()=>{
+      const project=canonicalProjectId(),periodId=canonicalPeriodId(),map={};
+      arr(CX.data?._visitas).filter(v=>str(v.projectId)===project&&str(v.periodId)===periodId).forEach(v=>{
+        const id=branchId(v);if(id&&!map[id])map[id]={id,sucursal:v.sucursal,ciudad:v.ciudad,pais:v.pais};
+      });
+      return Object.values(map);
+    };
     CX.reservas._seed=()=>[];
-    CX.reservas.list=pid=>records(pid);
+    CX.reservas.list=()=>records();
     CX.reservas._persist=()=>false;
-    CX.reservas.reservar=()=>blocked('reserve');
-    CX.reservas.setEstado=()=>blocked('set_status');
-    CX.reservas.remove=()=>blocked('remove');
-    CX.reservas.cruzar=()=>blocked('cross_assignment');
-    CX.reservas.resumen=pid=>{const L=records(pid);return {total:L.length,solicitadas:L.filter(r=>r.estado==='solicitada').length,asignadas:L.filter(r=>['asignada','aprobada'].includes(r.estado)).length,cruzadas:L.filter(r=>r.estado==='cruzada').length,source:'protected_canonical_or_empty',readOnly:true};};
-    const original=CX.modules?.reservas;
-    if(typeof original==='function'&&!original.__c6CanonicalReservations){
-      const wrapped=args=>{
-        const host=original(args);
-        setTimeout(()=>{
-          if(!host||!host.prepend)return;
-          const banner=document.createElement('div');banner.className='card card-p';banner.style.cssText='margin-bottom:12px;border-left:4px solid var(--amber);background:#fff8ec';
-          banner.innerHTML='<b>Reservas · fuente canónica pendiente</b><div style="font-size:12px;color:var(--t2);margin-top:4px">En DEV conectado no se leen ni escriben reservas desde localStorage. La pantalla permanece read-only hasta conectar la fuente por tenant/proyecto y pasar su gate.</div>';
-          host.prepend(banner);
-          host.querySelectorAll('#rNew,#aCruzar,#aAsignar,#aEscenarios,[data-del],.rEst').forEach(el=>{el.disabled=true;el.title='Bloqueado: fuente canónica de reservas pendiente';});
-        },0);
-        return host;
-      };
-      wrapped.__c6CanonicalReservations=true;CX.modules.reservas=wrapped;
-    }
-    window.CX_TYA_CANONICAL_RESERVATIONS={ready:true,version:'canonical-reservations-guard-v2',source:'protected_canonical_or_empty',browserLocalStorageAsSource:false,mutationsEnabled:false,providerWrites:0,production:false};
+    CX.reservas.reservar=async(_pid,rec)=>{
+      const duplicate=records().find(r=>str(r.sucursalId||r.branchId)===str(rec?.sucursalId||rec?.branchId)&&str(r.periodo||canonicalPeriod())===str(rec?.periodo||canonicalPeriod())&&str(r.shopperId)===str(rec?.shopperId));
+      if(duplicate)return {dup:true,r:duplicate};
+      const result=assertAck(await CX.data.createReservation(Object.assign({},rec,{periodo:rec?.periodo||canonicalPeriod()}),{ackAware:true,reason:'reservation_create'}));
+      await refresh('reservation_create_ack');
+      return {ok:true,r:records().find(r=>str(r.id||r.reservationId)===str(result.entityId))||{id:result.entityId},providerAck:true};
+    };
+    CX.reservas.setEstado=async(_pid,id,estado,extra)=>{
+      const result=assertAck(await CX.data.setReservationStatus(id,estado,extra||{},{ackAware:true,reason:'reservation_status_update'}));
+      await refresh('reservation_status_ack');
+      return records().find(r=>str(r.id||r.reservationId)===str(result.entityId))||{id:result.entityId,estado};
+    };
+    CX.reservas.remove=async(_pid,id)=>{
+      const result=assertAck(await CX.data.deleteReservation(id,{ackAware:true,reason:'reservation_delete'}));
+      await refresh('reservation_delete_ack');
+      return result;
+    };
+    CX.reservas.cruzar=async(_pid,periodo)=>{
+      let cruzadas=0;
+      for(const r of records().filter(r=>str(r.periodo)===str(periodo)&&['asignada','aprobada'].includes(str(r.estado||r.status)))){
+        const v=arr(CX.data?._visitas).find(v=>str(v.projectId)===canonicalProjectId()&&str(v.periodId)===canonicalPeriodId()&&branchId(v)===str(r.sucursalId||r.branchId)&&(!v.shopperId||str(v.estado)==='disponible'));
+        if(!v||!r.shopperId)continue;
+        await CX.reservas.setEstado(null,r.id||r.reservationId,'cruzada',{visitId:v.id||v.visitId,shopperId:r.shopperId,shopper:r.shopper});
+        cruzadas++;
+      }
+      return {cruzadas,providerAck:true};
+    };
+    CX.reservas.resumen=()=>{
+      const L=records();
+      return {total:L.length,solicitadas:L.filter(r=>str(r.estado||r.status)==='solicitada').length,asignadas:L.filter(r=>['asignada','aprobada'].includes(str(r.estado||r.status))).length,cruzadas:L.filter(r=>str(r.estado||r.status)==='cruzada').length,source:'durable_provider',readOnly:false};
+    };
+    window.CX_TYA_CANONICAL_RESERVATIONS={ready:true,version:'canonical-reservations-guard-v2',source:'durable_provider',browserLocalStorageAsSource:false,mutationsEnabled:true,providerAckRequired:true,readbackRequired:true,production:false};
   }
   install();document.addEventListener('DOMContentLoaded',install,{once:true});window.addEventListener('cx:full-visual-ready',install);
 })();

@@ -132,14 +132,21 @@ CX.module('reservas', ({data,role,ui})=>{
           <select class="sel" id="rsSuc" style="margin-bottom:10px">${sucs.map(s=>`<option value="${s.id}">${s.sucursal} · ${s.ciudad}</option>`).join('')}</select>
           <label class="lbl">Periodo</label><select class="sel" id="rsPer" style="margin-bottom:14px">${periodos().map(x=>`<option ${x===per?'selected':''}>${x}</option>`).join('')}</select>
           <div style="text-align:right"><button class="btn btn-pr btn-sm" id="rsOk">Enviar solicitud</button></div>
-        `,{onMount:(ov,close)=>ov.querySelector('#rsOk').addEventListener('click',()=>{
-          const s=sucs.find(x=>x.id===ov.querySelector('#rsSuc').value);
+        `,{onMount:(ov,close)=>ov.querySelector('#rsOk').addEventListener('click',async()=>{
+          const branch=sucs.find(x=>x.id===ov.querySelector('#rsSuc').value);
           const u=CX.session.user||{};
-          const res=CX.reservas.reservar(pid,{sucursalId:s.id,sucursal:s.sucursal,ciudad:s.ciudad,pais:s.pais,periodo:ov.querySelector('#rsPer').value,shopperId:sid(),shopper:u.name||'Shopper'});
-          close(); if(res.dup){ui.toast('Ya solicitaste esa sucursal para ese periodo','warn');return;} draw(); ui.toast('Solicitud enviada · el equipo la revisará','ok');
+          try{
+            const result=await CX.reservas.reservar(pid,{sucursalId:branch.id,sucursal:branch.sucursal,ciudad:branch.ciudad,pais:branch.pais,periodo:ov.querySelector('#rsPer').value,shopperId:sid(),shopper:u.name||'Shopper'});
+            close();
+            if(result.dup){ui.toast('Ya solicitaste esa sucursal para ese periodo','warn');return;}
+            draw();ui.toast('Solicitud guardada y confirmada','ok');
+          }catch(_){ui.toast('No hubo ACK remoto; la solicitud no se declaró guardada','warn');}
         })});
       });
-      host.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{CX.reservas.remove(pid,b.dataset.del);draw();ui.toast('Solicitud cancelada','');}));
+      host.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',async()=>{
+        try{await CX.reservas.remove(pid,b.dataset.del);draw();ui.toast('Solicitud cancelada y confirmada','ok');}
+        catch(_){ui.toast('No hubo ACK remoto; la cancelación no se declaró aplicada','warn');}
+      }));
       host.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>CX.router.nav('misvisitas')));
       return;
     }
@@ -172,27 +179,31 @@ CX.module('reservas', ({data,role,ui})=>{
       </div>`;
 
     host.querySelector('#aPer').addEventListener('change',e=>{per=e.target.value;draw();});
-    host.querySelectorAll('.rEst').forEach(s=>s.addEventListener('change',()=>{
-      const newEst=s.value; const r=CX.reservas.list(pid).find(x=>x.id===s.dataset.id);
-      CX.reservas.setEstado(pid,s.dataset.id,newEst);
-      if(['asignada','aprobada'].includes(newEst) && r){
-        // Auto-asignar la visita disponible correspondiente
-        const v=(data._visitas||[]).find(x=>x.projectId===pid&&(x.sucursal+'|'+x.ciudad).toLowerCase().replace(/\s+/g,'-')===r.sucursalId&&(!x.shopperId||x.estado==='disponible'));
-        if(v&&r.shopperId){ const sh=data.getShopper&&data.getShopper(r.shopperId);v.shopperId=r.shopperId;v.shopper=r.shopper;v.shopperCode=sh&&sh.code;v.estado='asignada'; CX.hr&&CX.hr.writeBack&&CX.hr.writeBack(p,v); CX.bus&&CX.bus.emit('visit-flow'); }
-        // Notificar al shopper
-        const hasHook=!!(CX.automations&&CX.automations.hook&&CX.automations.hook());
-        CX.notif&&CX.notif.push({to:'shopper',tipo:'reserva_aprobada',icon:'✅',tono:'g',titulo:'¡Tu reserva fue aprobada!',txt:'Sucursal: '+r.sucursal+' · '+r.periodo+'. Ya puedes ver la visita en Mis Visitas.',nav:'misvisitas'});
-        CX.automations&&CX.automations.fire('aprobacion',{shopper:r.shopper,sucursal:r.sucursal,periodo:r.periodo});
-        if(!hasHook){const wa=(data.getShopper&&data.getShopper(r.shopperId)||{}).whatsapp||'';if(wa){const msg=encodeURIComponent('¡Hola '+r.shopper+'! Tu reserva para '+r.sucursal+' ('+r.periodo+') fue aprobada. Revisa tu visita en la plataforma.');window.open('https://wa.me/'+wa.replace(/[^0-9]/g,'')+'?text='+msg,'_blank');}}
-        ui.toast('Reserva aprobada · visita asignada · notificación preparada, pendiente de envío','ok',3600);
-      } else ui.toast('Estado actualizado','ok');
-      draw();
+    host.querySelectorAll('.rEst').forEach(sel=>sel.addEventListener('change',async()=>{
+      const newEst=sel.value;const reservation=CX.reservas.list(pid).find(x=>x.id===sel.dataset.id);
+      try{
+        let extra={};
+        if(['asignada','aprobada'].includes(newEst)&&reservation?.shopperId){
+          const visit=(data._visitas||[]).find(x=>x.projectId===data.currentProjectId&&x.periodId===data.currentPeriodId&&(x.sucursal+'|'+x.ciudad).toLowerCase().replace(/\s+/g,'-')===reservation.sucursalId&&(!x.shopperId||x.estado==='disponible'));
+          if(visit)extra={visitId:visit.id||visit.visitId,shopperId:reservation.shopperId,shopper:reservation.shopper};
+        }
+        const saved=await CX.reservas.setEstado(pid,sel.dataset.id,newEst,extra);
+        draw();
+        if(['aprobada','cruzada'].includes(String(saved?.estado||saved?.status||newEst))){
+          CX.notif&&CX.notif.push({to:'shopper',tipo:'reserva_aprobada',icon:'✅',tono:'g',titulo:'¡Tu reserva fue aprobada!',txt:'Sucursal: '+(reservation?.sucursal||'')+' · '+(reservation?.periodo||per)+'. Revisa tu visita en la plataforma.',nav:'misvisitas'});
+        }
+        ui.toast('Estado confirmado por el proveedor','ok');
+      }catch(_){draw();ui.toast('No hubo ACK remoto; no se declaró el cambio','warn');}
     }));
-    host.querySelectorAll('[data-rsh]').forEach(b=>b.addEventListener('click',()=>{ const r=CX.reservas.list(pid).find(x=>x.id===b.dataset.rsh);
-      const cands=data.shoppersFor();
-      ui.modal('Asignar shopper · '+r.sucursal,`<select class="sel" id="rshSel" style="margin-bottom:14px">${cands.map(s=>`<option value="${s.id}">${s.nombre} · ${s.code}</option>`).join('')}</select>
+    host.querySelectorAll('[data-rsh]').forEach(b=>b.addEventListener('click',()=>{
+      const reservation=CX.reservas.list(pid).find(x=>x.id===b.dataset.rsh),cands=data.shoppersFor();
+      ui.modal('Asignar shopper · '+reservation.sucursal,`<select class="sel" id="rshSel" style="margin-bottom:14px">${cands.map(s=>`<option value="${s.id}">${s.nombre} · ${s.code}</option>`).join('')}</select>
         <div style="text-align:right"><button class="btn btn-pr btn-sm" id="rshOk">Asignar</button></div>`,
-      {onMount:(ov,close)=>ov.querySelector('#rshOk').addEventListener('click',()=>{const s=data.getShopper(ov.querySelector('#rshSel').value);CX.reservas.setEstado(pid,r.id,'asignada',{shopperId:s.id,shopper:s.nombre});close();draw();ui.toast('Shopper asignado a la reserva','ok');})});
+      {onMount:(ov,close)=>ov.querySelector('#rshOk').addEventListener('click',async()=>{
+        const shopper=data.getShopper(ov.querySelector('#rshSel').value);
+        try{await CX.reservas.setEstado(pid,reservation.id,'asignada',{shopperId:shopper.id,shopper:shopper.nombre});close();draw();ui.toast('Shopper asignado y confirmado','ok');}
+        catch(_){ui.toast('No hubo ACK remoto; la asignación no se declaró aplicada','warn');}
+      })});
     }));
     host.querySelector('#aAsignar').addEventListener('click',()=>{
       const cands=data.shoppersFor();
@@ -201,20 +212,20 @@ CX.module('reservas', ({data,role,ui})=>{
         <label class="lbl">Shopper</label><select class="sel" id="asSh" style="margin-bottom:10px">${cands.map(s=>`<option value="${s.id}">${s.nombre} · ${s.code}</option>`).join('')}</select>
         <label class="lbl">Periodo</label><select class="sel" id="asPer" style="margin-bottom:14px">${periodos().map(x=>`<option ${x===per?'selected':''}>${x}</option>`).join('')}</select>
         <div style="text-align:right"><button class="btn btn-pr btn-sm" id="asOk">Asignar</button></div>
-      `,{onMount:(ov,close)=>ov.querySelector('#asOk').addEventListener('click',()=>{
-        const s=sucs.find(x=>x.id===ov.querySelector('#asSuc').value), sh=data.getShopper(ov.querySelector('#asSh').value);
-        const res=CX.reservas.reservar(pid,{sucursalId:s.id,sucursal:s.sucursal,ciudad:s.ciudad,pais:s.pais,periodo:ov.querySelector('#asPer').value,shopperId:sh.id,shopper:sh.nombre,estado:'asignada'});
-        if(res.r)CX.reservas.setEstado(pid,res.r.id,'asignada');
-        close();draw();ui.toast(res.dup?'Ya existía esa asignación':'Sucursal asignada a '+sh.nombre,'ok');
+      `,{onMount:(ov,close)=>ov.querySelector('#asOk').addEventListener('click',async()=>{
+        const branch=sucs.find(x=>x.id===ov.querySelector('#asSuc').value),shopper=data.getShopper(ov.querySelector('#asSh').value);
+        try{
+          const result=await CX.reservas.reservar(pid,{sucursalId:branch.id,sucursal:branch.sucursal,ciudad:branch.ciudad,pais:branch.pais,periodo:ov.querySelector('#asPer').value,shopperId:shopper.id,shopper:shopper.nombre,estado:'asignada'});
+          close();draw();ui.toast(result.dup?'Ya existía esa asignación':'Sucursal asignada y confirmada a '+shopper.nombre,result.dup?'warn':'ok');
+        }catch(_){ui.toast('No hubo ACK remoto; la asignación no se declaró aplicada','warn');}
       })});
     });
-    host.querySelector('#aEscenarios').addEventListener('click',()=>ui.modal('Cargar escenarios del periodo · '+per,`
-      <p style="font-size:12.5px;color:var(--t2);margin-bottom:10px">Sube el archivo de escenarios/sucursales que te envió el cliente para <b>${per}</b> (Excel/CSV/PDF). La IA detecta sucursales y crea las visitas disponibles del periodo.</p>
-      <input type="file" class="inp" accept=".csv,.xlsx,.xls,.pdf,image/*" style="padding:7px;margin-bottom:12px">
-      <div style="text-align:right"><button class="btn btn-green btn-sm" onclick="CX.ui.toast('Escenarios cargados (demo) · usa el Importador inteligente para confirmar','ok');this.closest('.cx-ov').remove()">Procesar con IA</button></div>`));
-    host.querySelector('#aCruzar').addEventListener('click',()=>{
-      const r=CX.reservas.cruzar(pid,per);
-      draw(); ui.toast(r.cruzadas?(r.cruzadas+' visita(s) publicada(s) y cruzada(s) con su reserva · ya asignadas'):'No hay reservas asignadas para cruzar este periodo',r.cruzadas?'ok':'warn',4000);
+    host.querySelector('#aEscenarios').addEventListener('click',()=>ui.toast('Los escenarios se administran desde la fuente configurada del proyecto. No se modificó ningún dato.','warn',3600));
+    host.querySelector('#aCruzar').addEventListener('click',async()=>{
+      try{
+        const result=await CX.reservas.cruzar(pid,per);
+        draw();ui.toast(result.cruzadas?(result.cruzadas+' visita(s) cruzada(s) con ACK remoto'):'No hay reservas asignadas para cruzar este periodo',result.cruzadas?'ok':'warn',4000);
+      }catch(_){ui.toast('No se completó el cruce; no se declaró ninguna asignación sin ACK','warn');}
     });
     const km={all:['Todas',()=>true],solicitada:['Por revisar',r=>r.estado==='solicitada'],asignada:['Asignadas',r=>['asignada','aprobada'].includes(r.estado)],cruzada:['Cruzadas',r=>r.estado==='cruzada']};
     host.querySelectorAll('#rKpis [data-rk]').forEach(el=>el.addEventListener('click',()=>{const d=km[el.dataset.rk];const L=all.filter(d[1]);

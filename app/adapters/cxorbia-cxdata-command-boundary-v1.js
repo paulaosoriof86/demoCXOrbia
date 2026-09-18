@@ -47,6 +47,7 @@
   }
   function visit(id){return (CX.data?._visitas||[]).find(v=>str(v.id||v.visitId)===str(id))||null;}
   function post(id){return (CX.data?._posts||[]).find(p=>str(p.id||p.applicationId||p.postulationId)===str(id))||null;}
+  function reservation(id){return (CX.data?.__protectedReservations||[]).find(r=>str(r.id||r.reservationId)===str(id))||null;}
   function commandMeta(meta){return meta&&typeof meta==='object'?meta:{};}
   function idempotency(type,entityId,payload,expectedVersion,scope){
     const c=scope||ctx();
@@ -159,6 +160,22 @@
     D.payVisits=function(ids,fechaPago,referencia,meta){
       meta=commandMeta(meta);const list=Array.isArray(ids)?ids.map(str).filter(Boolean):[];const current=list.map(visit).filter(Boolean);const expected=current.map(v=>[v.id,versionOf(v)]);
       const cmd=buildBase('finance.payment.batch','paymentBatch',idempotency('finance.payment.batch','',list,'source-current'),{visitIds:list,fechaPago:fechaPago||null,referencia:str(referencia)||null},hash(expected),Object.assign({permission:'finance.markPaid'},meta));
+      return execute(cmd,meta);
+    };
+    D.createReservation=function(rec,meta){
+      rec=rec||{};meta=commandMeta(meta);const payload=Object.assign({},rec);delete payload.__commandMeta;
+      const cmd=buildBase('reservation.create','reservation',null,payload,'absent',Object.assign({permission:'reservation.create'},meta));
+      return execute(cmd,meta);
+    };
+    D.setReservationStatus=function(reservationId,status,extra,meta){
+      extra=extra&&typeof extra==='object'?extra:{};meta=commandMeta(meta);const current=reservation(reservationId);
+      const payload=Object.assign({reservationId,status},extra);
+      const cmd=buildBase('reservation.status.update','reservation',reservationId,payload,versionOf(current),Object.assign({permission:'reservation.update'},meta));
+      return execute(cmd,meta);
+    };
+    D.deleteReservation=function(reservationId,meta){
+      meta=commandMeta(meta);const current=reservation(reservationId);
+      const cmd=buildBase('reservation.delete','reservation',reservationId,{reservationId},versionOf(current),Object.assign({permission:'reservation.delete'},meta));
       return execute(cmd,meta);
     };
     D.setApplicationStatus=function(applicationId,status,meta){

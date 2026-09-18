@@ -46,7 +46,7 @@ window.CX = window.CX || {};
   function projectRef(projectId){ return projectsCol().doc(projectId); }
   function subCol(projectId, name){ return projectRef(projectId).collection(col[name] || name); }
   function shoppersCol(){ return tenantRef().collection(col.shoppers || 'shoppers'); }
-  function docData(d){ return Object.assign({id:d.id}, d.data() || {}); }
+  function docData(d){ return Object.assign({id:d.id}, d.data() || {}, {__docId:d.id}); }
   async function getAll(q){ const snap = await q.get(); return snap.docs.map(docData); }
   async function getOne(ref){ const snap = await ref.get(); return snap.exists ? docData(snap) : null; }
 
@@ -183,6 +183,30 @@ window.CX = window.CX || {};
       comboAmt: v.comboAmt || v.comboReimbursementAmount || 0,
       reimbursements: Array.isArray(v.reimbursements) ? v.reimbursements : [],
     });
+  }
+
+  function durableVisitKey(v){
+    if(!v || typeof v !== 'object') return '';
+    const coord=v.sourceTab&&v.sourceRow ? String(v.sourceTab)+'::'+String(v.sourceRow) : '';
+    return String(v.hrRowId||coord||v.visitId||v.id||'').trim();
+  }
+
+  function selectAuthoritativeDurableVisits(rows){
+    const groups=new Map();
+    (Array.isArray(rows)?rows:[]).forEach(function(row){
+      const key=durableVisitKey(row);
+      if(!key) return;
+      if(!groups.has(key)) groups.set(key,[]);
+      groups.get(key).push(row);
+    });
+    const out=[];
+    groups.forEach(function(group,key){
+      if(group.length===1){ out.push(group[0]); return; }
+      const exact=group.filter(function(row){ return String(row.__docId||'')===key; });
+      if(exact.length!==1) throw new Error('DURABLE_VISIT_AUTHORITY_AMBIGUOUS:'+key);
+      out.push(Object.assign({},exact[0],{__canonicalDurableAuthority:true,__historicalDuplicateCount:group.length-1}));
+    });
+    return out;
   }
 
   function normalizeApplication(a, projectId, periodId, visitsById, shoppersById){
@@ -346,7 +370,8 @@ window.CX = window.CX || {};
   async function loadProjectData(project, shoppersById, ctx){
     const projectId = project.id;
     const periodId = project.periodId || projectId;
-    const visitsRaw = isShopper(ctx) ? await loadShopperVisits(projectId, ctx.shopperId) : await getAll(subCol(projectId, 'visits'));
+    const visitsRawAll = isShopper(ctx) ? await loadShopperVisits(projectId, ctx.shopperId) : await getAll(subCol(projectId, 'visits'));
+    const visitsRaw = selectAuthoritativeDurableVisits(visitsRawAll);
     const visitsById = {};
     const visits = visitsRaw.map(function(v){ return normalizeVisit(v, projectId, periodId); });
     visits.forEach(function(v){ v.projectId = v.projectId || projectId; visitsById[v.id] = v; visitsById[v.visitId] = v; });

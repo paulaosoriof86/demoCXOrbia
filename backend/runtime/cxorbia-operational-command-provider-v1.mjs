@@ -9,10 +9,11 @@ import crypto from 'node:crypto';
 
 export const VERSION='cxorbia-operational-command-provider-v1';
 export const COMMAND_TYPES=Object.freeze([
-  'application.create','application.status.update','application.delete','visit.assign','visit.sync.confirm'
+  'application.create','application.status.update','application.delete','reservation.create','reservation.status.update','reservation.delete','visit.assign','visit.sync.confirm'
 ]);
 export const OPERATOR_ROLES=Object.freeze(['super','admin','ops','coordinador']);
 export const APPLICATION_STATES=Object.freeze(['pendiente','aprobada','rechazada','standby','cancelada']);
+export const RESERVATION_STATES=Object.freeze(['solicitada','asignada','aprobada','rechazada','cruzada','cancelada']);
 
 const str=v=>String(v==null?'':v).trim();
 const arr=v=>Array.isArray(v)?v:[];
@@ -75,7 +76,7 @@ async function exactActor(auth,db,token,command){
 function refs(db,command){
   const tenant=db.collection('tenants').doc(command.tenantId),project=tenant.collection('projects').doc(command.projectId);
   return {
-    tenant,project,visits:project.collection('visits'),applications:project.collection('postulations'),
+    tenant,project,visits:project.collection('visits'),applications:project.collection('postulations'),reservations:project.collection('reservations'),
     receipt:tenant.collection('commandReceipts').doc(receiptId(command)),
     audit:tenant.collection('entityAuditTrail').doc(auditId(command)),
     review:tenant.collection('reviewQueue').doc('ops-'+auditId(command))
@@ -239,6 +240,44 @@ async function transactionExecute(db,command,actor){
       }
       auditEntityType='application';
     }
+    else if(command.commandType==='reservation.create'){
+      const shopperId=str(payload.shopperId||actor.shopperId),branchId=str(payload.branchId||payload.sucursalId);
+      if(!shopperId||!branchId)throw new Error('OPS_RESERVATION_KEYS_REQUIRED');
+      if(actor.role==='shopper'&&shopperId!==actor.shopperId)throw new Error('OPS_RESERVATION_SHOPPER_SCOPE_DENIED');
+      const status=str(payload.status||payload.estado||'solicitada').toLowerCase();
+      if(!RESERVATION_STATES.includes(status))throw new Error('OPS_RESERVATION_STATUS_INVALID');
+      entityId=entityId||('rsv-'+sha(`${command.tenantId}\0${command.projectId}\0${command.periodId}\0${shopperId}\0${branchId}`).slice(0,28));
+      const reservationRef=r.reservations.doc(entityId),reservationSnap=await tx.get(reservationRef);
+      if(reservationSnap.exists)throw new Error('OPS_RESERVATION_ALREADY_EXISTS');
+      tx.create(reservationRef,{id:entityId,reservationId:entityId,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,periodo:payload.periodo||null,branchId,sucursalId:branchId,sucursal:payload.sucursal||null,ciudad:payload.ciudad||null,pais:payload.pais||null,shopperId,shopper:payload.shopper||null,status,estado:status,source:'platform',version:1,createdAt:now(),updatedAt:now()});providerWrites++;
+      auditEntityType='reservation';
+    }
+    else if(command.commandType==='reservation.status.update'){
+      if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_RESERVATION_STATUS_OPERATOR_ONLY');
+      const reservationRef=r.reservations.doc(entityId),reservationSnap=await tx.get(reservationRef);if(!reservationSnap.exists)throw new Error('OPS_RESERVATION_MISSING');
+      const reservation=reservationSnap.data()||{};assertPeriod(command,reservation);assertVersion(command,reservation);
+      const status=str(payload.status||payload.estado).toLowerCase();if(!RESERVATION_STATES.includes(status))throw new Error('OPS_RESERVATION_STATUS_INVALID');
+      const shopperId=str(payload.shopperId||reservation.shopperId),visitId=str(payload.visitId||payload.visitaId);
+      if(!shopperId)throw new Error('OPS_RESERVATION_SHOPPER_REQUIRED');
+      if(visitId){
+        const vRef=r.visits.doc(visitId),vSnap=await tx.get(vRef);if(!vSnap.exists)throw new Error('OPS_VISIT_MISSING');
+        const v=vSnap.data()||{};assertPeriod(command,v);
+        const assigned=str(v.shopperId);if(assigned&&assigned!==shopperId)throw new Error('OPS_VISIT_ALREADY_ASSIGNED_OTHER_SHOPPER');
+        tx.set(vRef,{shopperId,estado:'asignada',status:'asignada',assignmentSource:'platform',assignmentSyncStatus:'pending_hr',lastSyncedAt:null,updatedAt:now(),version:Number(v.version||0)+1},{merge:true});providerWrites++;
+      }
+      const finalStatus=visitId&&['asignada','aprobada','cruzada'].includes(status)?'cruzada':status;
+      tx.set(reservationRef,{shopperId,shopper:payload.shopper||reservation.shopper||null,status:finalStatus,estado:finalStatus,visitId:visitId||reservation.visitId||null,visitaId:visitId||reservation.visitaId||null,managedBy:actor.uid,updatedAt:now(),version:Number(reservation.version||0)+1},{merge:true});providerWrites++;
+      auditEntityType='reservation';
+    }
+    else if(command.commandType==='reservation.delete'){
+      const reservationRef=r.reservations.doc(entityId),reservationSnap=await tx.get(reservationRef);
+      if(reservationSnap.exists){
+        const reservation=reservationSnap.data()||{};assertPeriod(command,reservation);assertVersion(command,reservation);
+        if(actor.role==='shopper'&&str(reservation.shopperId)!==actor.shopperId)throw new Error('OPS_RESERVATION_SHOPPER_SCOPE_DENIED');
+        tx.delete(reservationRef);providerWrites++;
+      }
+      auditEntityType='reservation';
+    }
     else if(command.commandType==='visit.assign'){
       if(!OPERATOR_ROLES.includes(actor.role))throw new Error('OPS_VISIT_ASSIGN_OPERATOR_ONLY');
       const visitId=str(payload.visitId||entityId),shopperId=str(payload.shopperId);if(!visitId||!shopperId)throw new Error('OPS_VISIT_ASSIGN_KEYS_REQUIRED');entityId=visitId;
@@ -299,4 +338,4 @@ export function createOperationalCommandProvider({auth,db,policy}={}){
   });
 }
 
-export default {VERSION,COMMAND_TYPES,OPERATOR_ROLES,APPLICATION_STATES,validateProviderPolicy,validateCommand,createOperationalCommandProvider};
+export default {VERSION,COMMAND_TYPES,OPERATOR_ROLES,APPLICATION_STATES,RESERVATION_STATES,validateProviderPolicy,validateCommand,createOperationalCommandProvider};

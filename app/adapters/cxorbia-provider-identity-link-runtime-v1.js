@@ -104,11 +104,23 @@
 
     const shoppers=payload.shoppers.map(profile=>Object.assign({},profile||{}));
     const applied=[],conflicts=[];
+    const hrExact=new Map();
+    for(const row of Array.isArray(input?.hr?.shoppers)?input.hr.shoppers:[]){
+      const live=str(row?.shopperId||row?.id),canonical=str(row?.canonicalShopperId);
+      if(live&&canonical)hrExact.set(live,canonical);
+    }
 
     for(const link of exactLinks){
       const canonical=canonicalFor(link);
       const aliases=exactAliasesForLink(link).filter(alias=>alias!==canonical);
       if(!canonical||!aliases.length)continue;
+      const authoritativeTargets=uniq(aliases.map(alias=>hrExact.get(alias)).filter(Boolean));
+      if(authoritativeTargets.length){
+        if(authoritativeTargets.length!==1||authoritativeTargets[0]!==canonical){
+          conflicts.push({identityLinkId:str(link.identityLinkId||link.id),canonicalShopperId:canonical,sourceAliases:aliases,authoritativeCanonicalShopperIds:authoritativeTargets,reason:'hr_exact_crosswalk_precedes_historical_identity_link'});
+          continue;
+        }
+      }
 
       const needles=new Set([canonical,...aliases]);
       const matchingIndexes=[];

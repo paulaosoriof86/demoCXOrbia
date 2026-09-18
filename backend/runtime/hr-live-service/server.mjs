@@ -136,6 +136,71 @@ function snapshotScope(snapshot){
   if(!tenantId||!projectId)throw new Error('SHOPPER_RUNTIME_SOURCE_SCOPE_MISSING');
   return {tenantId,projectId};
 }
+async function verifiedProtectedPrincipal(req,scope){
+  const token=String(req.headers.authorization||'').trim().replace(/^Bearer\s+/i,'');
+  if(!token)throw new Error('AUTH_FAILURE:PROTECTED_RUNTIME_BEARER_REQUIRED');
+  const {auth,db}=ensureAdmin();
+  const decoded=await auth.verifyIdToken(token,true);
+  const role=String(decoded.role||'').trim().toLowerCase();
+  const namespace=String(decoded.authNamespace||'').trim().toLowerCase();
+  if(String(decoded.tenantId||'').trim()!==scope.tenantId)throw new Error('AUTH_FAILURE:PROTECTED_RUNTIME_TENANT_DENIED');
+  const memberSnap=await db.collection('tenants').doc(scope.tenantId).collection('users').doc(decoded.uid).get();
+  if(!memberSnap.exists)throw new Error('AUTH_FAILURE:PROTECTED_RUNTIME_MEMBERSHIP_MISSING');
+  const member=memberSnap.data()||{};
+  if(member.active===false||String(member.status||'active').trim().toLowerCase()==='inactive')throw new Error('AUTH_FAILURE:PROTECTED_RUNTIME_MEMBERSHIP_INACTIVE');
+  if(String(member.role||'').trim().toLowerCase()!==role||String(member.authNamespace||'').trim().toLowerCase()!==namespace)throw new Error('AUTH_FAILURE:PROTECTED_RUNTIME_MEMBERSHIP_CLAIMS_MISMATCH');
+  const projects=Array.isArray(member.projectIds)?member.projectIds.map(String):[];
+  if(role!=='super'&&!projects.includes(scope.projectId))throw new Error('AUTH_FAILURE:PROTECTED_RUNTIME_PROJECT_DENIED');
+  return {uid:decoded.uid,role,namespace,shopperId:String(decoded.shopperId||member.shopperId||'').trim(),db};
+}
+
+async function exactHrCrosswalk(db,scope){
+  const snap=await db.collection('tenants').doc(scope.tenantId).collection('shopperIdentityCrosswalk').get();
+  const tokenTargets=new Map();
+  for(const doc of snap.docs){
+    const row={id:doc.id,...(doc.data()||{})};
+    if(String(row.sourceType||'').trim().toLowerCase()!=='hr_external')continue;
+    const projectIds=Array.isArray(row.projectIds)?row.projectIds.map(String):[];
+    if(row.projectId&&String(row.projectId)!==scope.projectId)continue;
+    if(projectIds.length&&!projectIds.includes(scope.projectId))continue;
+    const target=String(row.shopperId||'').trim();if(!target)continue;
+    for(const token of [row.id,row.sourceStableKey,row.sourceShopperId].map(v=>String(v||'').trim()).filter(Boolean)){
+      if(!tokenTargets.has(token))tokenTargets.set(token,new Set());
+      tokenTargets.get(token).add(target);
+    }
+  }
+  const unique=new Map();
+  for(const [token,targets] of tokenTargets){
+    if(targets.size!==1)throw new Error('MAPPING_FAILURE:HR_CROSSWALK_AMBIGUOUS:'+token);
+    unique.set(token,[...targets][0]);
+  }
+  return unique;
+}
+
+async function protectedPlatformState(current,principal,scope,operational){
+  const snapshot=operational?operationalSnapshot(current):JSON.parse(JSON.stringify(current.snapshot));
+  const cross=await exactHrCrosswalk(principal.db,scope);
+  let mappedShoppers=0,mappedVisits=0;
+  for(const shopper of snapshot.shoppers||[]){
+    const live=String(shopper.shopperId||shopper.id||'').trim(),canonical=cross.get(live);
+    if(canonical){shopper.canonicalShopperId=canonical;shopper.identityAuthority='hr_exact_crosswalk';mappedShoppers++;}
+  }
+  for(const visit of snapshot.visits||[]){
+    const live=String(visit.shopperId||'').trim(),canonical=cross.get(live);
+    if(canonical){visit.canonicalShopperId=canonical;visit.identityAuthority='hr_exact_crosswalk';mappedVisits++;}
+  }
+  const reservationsRef=principal.db.collection('tenants').doc(scope.tenantId).collection('projects').doc(scope.projectId).collection('reservations');
+  let reservationSnap;
+  if(principal.role==='shopper'){
+    if(!principal.shopperId)throw new Error('AUTH_FAILURE:PROTECTED_RUNTIME_SHOPPER_ID_REQUIRED');
+    reservationSnap=await reservationsRef.where('shopperId','==',principal.shopperId).get();
+  }else if(['super','admin','ops','coordinador'].includes(principal.role)){
+    reservationSnap=await reservationsRef.get();
+  }else reservationSnap={docs:[]};
+  const reservations=reservationSnap.docs.map(doc=>({id:doc.id,...(doc.data()||{})}));
+  return {snapshot,protectedState:{reservations,identityAuthority:'hr_exact_crosswalk',crosswalkTokenCount:cross.size,mappedShoppers,mappedVisits,sourceRevision:current.revision}};
+}
+
 function shopperPolicy(snapshot){
   const scope=snapshotScope(snapshot);
   return {schemaVersion:'cxorbia.shopper-command-provider-policy.v1',enabled:true,allowedTenantIds:[scope.tenantId],allowedProjectIds:[scope.projectId],hrWrites:false,externalWrites:false,fuzzyMatching:false};
@@ -341,9 +406,15 @@ const server=http.createServer(async(req,res)=>{
     }
     const format=url.searchParams.get('format')||'json';
     const operational=DEV_OPERATIONAL_NAMES&&url.searchParams.get('view')==='operational-names'&&url.searchParams.get('cxOperationalPreview')===DEV_OPERATIONAL_TOKEN;
+    const protectedRequested=url.searchParams.get('protectedState')==='1';
     const meta={...runtimeMeta(current),tenantId:requestedScope.tenantId,projectId:requestedScope.projectId,legacyRoute:requestedScope.legacy===true};
-    const snapshot=operational?operationalSnapshot(current):current.snapshot;
-    const json=operational?JSON.stringify(snapshot):current.json;
+    let snapshot,protectedState=null;
+    if(protectedRequested){
+      const principal=await verifiedProtectedPrincipal(req,requestedScope);
+      const protectedView=await protectedPlatformState(current,principal,requestedScope,operational);
+      snapshot=protectedView.snapshot;protectedState=protectedView.protectedState;
+    }else snapshot=operational?operationalSnapshot(current):current.snapshot;
+    const json=(operational||protectedRequested)?JSON.stringify(snapshot):current.json;
     res.setHeader('ETag',`"${current.revision}"`);
     res.setHeader('X-CXOrbia-Source-Revision',current.revision);
     res.setHeader('X-CXOrbia-Generated-At',current.snapshot.generatedAt||'');
@@ -365,6 +436,7 @@ const server=http.createServer(async(req,res)=>{
       res.setHeader('Content-Type','application/javascript; charset=utf-8');
       return res.end(`window.CX_TYA_HR_SOURCE_SAFE=${json};window.CX_TYA_HR_LIVE_META=${JSON.stringify({...meta,operationalView:operational})};`);
     }
+    if(protectedRequested)return sendJson(res,200,{snapshot,_protected:protectedState,_runtime:{...meta,operationalView:operational,protectedState:true}});
     return sendJson(res,200,{...snapshot,_runtime:{...meta,operationalView:operational}});
   }catch(error){
     console.error(error.stack||error.message||String(error));
