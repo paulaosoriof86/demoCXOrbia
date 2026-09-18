@@ -102,18 +102,33 @@ async function authenticate(page,uid,expectedRole){
   const reconcile=await page.evaluate(async()=>{
     const sleep=ms=>new Promise(r=>setTimeout(r,ms));
     let last=null;
-    for(let i=0;i<8;i++){
-      if(typeof window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY!=='function'){
-        last={ok:false,reason:'reconciler_missing'};
-      }else{
-        last=await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY('gate20_explicit_reconcile');
-        if(last?.ok===true&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true)return {ok:true,last,authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY,gate:window.CX_C6_HR_AUTHORITY_GATE||null,source:String(window.CX?.dataSource?.sourceRef||''),projectId:String(window.CX?.data?.currentProjectId||'')};
-      }
-      await sleep(750*(i+1));
+    const snapshot=()=>({
+      authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,
+      gate:window.CX_C6_HR_AUTHORITY_GATE||null,
+      source:String(window.CX?.dataSource?.sourceRef||''),
+      projectId:String(window.CX?.data?.currentProjectId||'')
+    });
+    // Prefer the canonical boot reconcile already triggered by backend refresh.
+    // Do not race it with a second writer/reader cycle.
+    for(let i=0;i<40;i++){
+      const snap=snapshot();
+      if(snap.authority?.applied===true)return {ok:true,last:{ok:true,reason:'boot_reconcile_observed'},...snap};
+      await sleep(500);
     }
-    return {ok:false,last,authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,gate:window.CX_C6_HR_AUTHORITY_GATE||null,source:String(window.CX?.dataSource?.sourceRef||''),projectId:String(window.CX?.data?.currentProjectId||'')};
+    // Only if boot did not settle, request one explicit reconcile and observe it.
+    if(typeof window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY!=='function'){
+      return {ok:false,last:{ok:false,reason:'reconciler_missing'},...snapshot()};
+    }
+    last=await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY('gate20_explicit_reconcile');
+    for(let i=0;i<40;i++){
+      const snap=snapshot();
+      if(snap.authority?.applied===true)return {ok:true,last,...snap};
+      if(last?.reason!=='reconcile_in_progress'&&last?.ok===false&&last?.skipped!==true)break;
+      await sleep(500);
+    }
+    return {ok:false,last,...snapshot()};
   });
-  if(!reconcile?.ok)throw new Error('FUNCTIONAL_DEFECT:GATE20_EXPLICIT_HR_RECONCILE_FAILED:'+JSON.stringify(reconcile).slice(0,1200));
+  if(!reconcile?.ok)throw new Error('FUNCTIONAL_DEFECT:GATE20_HR_RECONCILE_NOT_SETTLED:'+JSON.stringify(reconcile).slice(0,1200));
   const authority=reconcile?.authority||{};
   const preview=await page.evaluate(()=>({projectId:String(window.CX?.data?.previewMeta?.projectId||''),hrAuthority:window.CX?.data?.previewMeta?.hrAuthority===true,sourceRef:String(window.CX?.dataSource?.sourceRef||''),currentProjectId:String(window.CX?.data?.currentProjectId||'')}));
   const authorityOk=authority.applied===true&&
