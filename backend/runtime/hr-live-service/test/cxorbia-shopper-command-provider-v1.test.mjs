@@ -36,6 +36,13 @@ class CollectionRef{
   constructor(db,path){this.db=db;this.path=path;}
   doc(id){return new DocRef(this.db,`${this.path}/${id}`);}
   where(field,op,value){assert.equal(op,'==');return new Query(this.db,this.path,field,value);}
+  async get(){
+    const prefix=`${this.path}/`,depth=this.path.split('/').length+1,docs=[];
+    for(const [path,value] of this.db._store){
+      if(path.startsWith(prefix)&&path.split('/').length===depth)docs.push(new Snapshot(path.split('/').at(-1),value));
+    }
+    return {size:docs.length,docs};
+  }
 }
 class FakeFirestore{
   constructor(){this._store=new Map();this.failNextTransaction=false;}
@@ -180,4 +187,19 @@ test('Gate 6 / protected HR snapshot uses the trusted ephemeral identity map for
   assert.equal(db.get(`${pp.users}/${uid}`).visibleLogin,'mishael.depaz');
   assert.equal(db.get(pp.profile).username,'mishael.depaz');
   assert.equal(JSON.stringify([...db._store.values()]).includes('Mishael123*'),false);
+});
+
+test('Gate 6 / trusted exact identity link reuses one canonical Auth for an HR technical alias',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),canonical='shopper_gt_cesar_plain',alias='shopper_gt_cesar_accent',canonicalUid=stableShopperUid('tenant-a',canonical);
+  const first=snapshot({shopperId:canonical,shopperCode:'TYA_GT_CESAR'});first.visits[0].shopper='Cesar Castillo';
+  await p.reconcileSnapshot(first,{sourceRevision:'rev-cesar-1'});
+  db.seed('tenants/tenant-a/shopperIdentityLinks/link-cesar',{tenantId:'tenant-a',canonicalShopperId:canonical,sourceSystem:'hr',sourceIdentityKey:alias,sourceAliases:[alias],projectScope:'project-a',status:'active',periodIndependent:true,authorityType:'provider_exact',authorityRef:'provider-ack-cesar'});
+  const second=snapshot({shopperId:alias,shopperCode:'TYA_GT_CESAR_ALIAS'});second.visits[0].shopper='César Castillo';
+  const result=await p.reconcileSnapshot(second,{sourceRevision:'rev-cesar-2'});
+  assert.equal(result.authCreated,0);assert.equal(auth.created,1);assert.equal(auth.users.size,1);
+  assert.equal((await auth.getUser(canonicalUid)).customClaims.shopperId,canonical);
+  assert.equal(db.get(`tenants/tenant-a/users/${canonicalUid}`).shopperId,canonical);
+  assert.deepEqual(db.get(`tenants/tenant-a/shoppers/${canonical}`).sourceShopperIds,[alias]);
+  assert.equal(db.get(`tenants/tenant-a/shopperIdentityCrosswalk/${alias}`).shopperId,canonical);
+  assert.equal(db.get(`tenants/tenant-a/shopperIdentityCrosswalk/${alias}`).identityMode,'provider_exact_identity_link');
 });

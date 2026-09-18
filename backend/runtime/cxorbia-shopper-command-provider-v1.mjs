@@ -10,6 +10,8 @@ export const VERSION='cxorbia-shopper-command-provider-v1';
 export const COMMAND_TYPES=Object.freeze(['shopper.create','shopper.update','shopper.credential.reset']);
 export const OPERATOR_ROLES=Object.freeze(['super','admin']);
 export const CREDENTIAL_RULE_VERSION='tya-shopper-nombre-apellido-v1';
+const ACTIVE_IDENTITY_LINK_STATES=new Set(['active','confirmed','approved','materialized']);
+const TRUSTED_IDENTITY_AUTHORITIES=new Set(['provider_exact','tenant_adjudication','platform_created','migrated_exact']);
 
 const str=v=>String(v==null?'':v).trim();
 const arr=v=>Array.isArray(v)?v:[];
@@ -45,6 +47,39 @@ const claimsDigest=claims=>sha(canonicalClaims(claims?.shopperId,claims?.tenantI
 const pick=(input,keys)=>Object.fromEntries(keys.filter(key=>input&&input[key]!==undefined).map(key=>[key,input[key]]));
 const publicProfile=input=>clean(pick(input||{},PUBLIC_PROFILE_FIELDS));
 const protectedProfile=input=>clean(pick(input||{},PROTECTED_PROFILE_FIELDS));
+const identityLinkTokens=link=>uniq([
+  link?.sourceIdentityKey,link?.sourceSubjectId,link?.sourceId,link?.sourceKey,
+  link?.legacyShopperId,link?.externalShopperId,link?.externalId,link?.hrRowId,
+  link?.personId,link?.shopperDocId,
+  ...arr(link?.sourceAliases),...arr(link?.sourceIdentityAliases),...arr(link?.identityAliases),
+  ...arr(link?.exactAliases),...arr(link?.aliases)
+]);
+
+async function exactShopperIdentityMap(db,tenantId,projectId){
+  const links=db.collection('tenants').doc(tenantId).collection('shopperIdentityLinks');
+  if(typeof links.get!=='function')return new Map();
+  const snap=await links.get();
+  const map=new Map();
+  for(const doc of arr(snap?.docs)){
+    const link=doc.data()||{},status=str(link.status||link.state).toLowerCase();
+    const authority=str(link.authorityType||link.authority?.type).toLowerCase();
+    const authorityRef=str(link.authorityRef||link.authority?.evidenceRef||link.authority?.adjudicationId||link.authority?.providerRef||link.authority?.commandId||link.providerAckRef||link.adjudicationId||link.commandId||link.idempotencyKey||doc.id);
+    const scope=str(link.projectScope||link.scope?.projectId||link.projectId||'*');
+    const canonicalShopperId=str(link.canonicalShopperId||link.canonicalId||link.shopperId||link.profileId);
+    const sourceSystem=str(link.sourceSystem||link.sourceNamespace||link.sourceType||link.sourceIdentity?.sourceSystem).toLowerCase();
+    if(str(link.tenantId||link.scope?.tenantId)!==tenantId)continue;
+    if(!ACTIVE_IDENTITY_LINK_STATES.has(status)||!TRUSTED_IDENTITY_AUTHORITIES.has(authority)||!authorityRef)continue;
+    if(link.periodIndependent!==true||link.periodKey||link.periodId||link.periodScope)continue;
+    if(scope!=='*'&&scope.toLowerCase()!=='tenant'&&scope!==projectId)continue;
+    if(!canonicalShopperId||!sourceSystem.includes('hr'))continue;
+    for(const token of identityLinkTokens(link)){
+      const prior=map.get(token);
+      if(prior&&prior!==canonicalShopperId)throw new Error('SHOPPER_IDENTITY_LINK_CONFLICT');
+      map.set(token,canonicalShopperId);
+    }
+  }
+  return map;
+}
 
 function blocked(command,code,extra={}){
   return {ok:false,status:'blocked',committed:false,providerAck:false,successUiAllowed:false,localMutation:false,localStorageWrite:false,providerWrites:0,tenantId:command?.tenantId||null,projectId:command?.projectId||null,periodId:command?.periodId||null,commandType:command?.commandType||null,entityId:command?.entityId||null,code,...extra};
@@ -191,6 +226,10 @@ function hrProfilePatch(candidate,projectIds,sourceRevision){
   if(candidate.shopperCode)out.shopperCode=candidate.shopperCode;
   if(candidate.pais||candidate.country){out.pais=candidate.pais||candidate.country;out.country=candidate.country||candidate.pais;}
   if(candidate.nombre&&!protectedName)out.nombre=candidate.nombre;
+  if(candidate.sourceShopperId&&candidate.sourceShopperId!==candidate.shopperId){
+    out.sourceShopperIds=uniq([candidate.sourceShopperId]);
+    out.exactAliases=uniq([candidate.sourceShopperId]);
+  }
   return out;
 }
 
@@ -238,11 +277,11 @@ function assertAuthIdentity(user,tenantId,shopperId){
 }
 
 async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers}){
-  const tenantId=str(candidate.tenantId),projectId=str(candidate.projectId),shopperId=str(candidate.shopperId);
-  if(!tenantId||!projectId||!shopperId||!str(sourceRevision))throw new Error('SHOPPER_DURABLE_KEYS_REQUIRED');
+  const tenantId=str(candidate.tenantId),projectId=str(candidate.projectId),shopperId=str(candidate.shopperId),sourceShopperId=str(candidate.sourceShopperId||candidate.shopperId);
+  if(!tenantId||!projectId||!shopperId||!sourceShopperId||!str(sourceRevision))throw new Error('SHOPPER_DURABLE_KEYS_REQUIRED');
   if(!scopeAllowed(policy,tenantId,projectId))throw new Error('SHOPPER_PROVIDER_SCOPE_DENIED');
   const tenant=db.collection('tenants').doc(tenantId),users=tenant.collection('users');
-  const profileRef=tenant.collection('shoppers').doc(shopperId),crossRef=tenant.collection('shopperIdentityCrosswalk').doc(shopperId);
+  const profileRef=tenant.collection('shoppers').doc(shopperId),crossRef=tenant.collection('shopperIdentityCrosswalk').doc(sourceShopperId);
   const existingMemberDoc=await membershipMatches(users,shopperId);
   const [crossBefore,profileBefore]=await Promise.all([crossRef.get(),profileRef.get()]);
   const existingMember=existingMemberDoc?.data?.()||{};
@@ -261,7 +300,7 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers}
   const memberRef=users.doc(uid);
   if(crossBefore.exists){
     const c=existingCross;
-    if(str(c.tenantId)!==tenantId||str(c.shopperId)!==shopperId)throw new Error('SHOPPER_CROSSWALK_SCOPE_CONFLICT');
+    if(str(c.tenantId)!==tenantId||str(c.shopperId)!==shopperId||str(c.sourceStableKey||sourceShopperId)!==sourceShopperId)throw new Error('SHOPPER_CROSSWALK_SCOPE_CONFLICT');
     if(str(c.providerUidFingerprint)&&str(c.providerUidFingerprint)!==providerUidFingerprint(uid))throw new Error('SHOPPER_CROSSWALK_UID_CONFLICT');
   }
   const email=internalEmail(tenantId,credential.ok?credential.login:shopperId);
@@ -310,6 +349,8 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers}
       const alreadyCurrent=profileSnap.exists&&memberSnap.exists&&crossSnap.exists&&str(profile.hrSourceRevision)===sourceRevision&&sameArray(profile.projectIds,unionProjects)&&sameArray(member.projectIds,unionProjects)&&sameArray(cross.projectIds,unionProjects)&&str(member.providerUidFingerprint)===providerUidFingerprint(uid)&&str(cross.providerUidFingerprint)===providerUidFingerprint(uid)&&credentialCurrent;
       if(alreadyCurrent)return {providerWrites:credentialNormalized?1:0,idempotentReplay:!credentialNormalized,projectIds:unionProjects,credentialNormalized,credentialRuleApplied:credential.ok};
       const profilePatch=hrProfilePatch(candidate,unionProjects,sourceRevision);
+      profilePatch.sourceShopperIds=uniq([...(profile.sourceShopperIds||[]),...(profilePatch.sourceShopperIds||[])]);
+      profilePatch.exactAliases=uniq([...(profile.exactAliases||[]),...(profilePatch.exactAliases||[])]);
       if(credential.ok){
         profilePatch.firstName=credential.firstName;
         profilePatch.lastName=credential.lastName;
@@ -319,13 +360,13 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers}
         profilePatch.credentialRuleVersion=CREDENTIAL_RULE_VERSION;
       }
       const membership={active:true,tenantId,role:'shopper',authNamespace:'shopper',shopperId,projectIds:unionProjects,providerUidFingerprint:providerUidFingerprint(uid),claimsDigest:claimsDigest(canonicalClaims(shopperId,tenantId,unionProjects)),membershipVersion:'cxorbia-shopper-membership-v1',...(credential.ok?{visibleLogin:credential.login,credentialRuleVersion:CREDENTIAL_RULE_VERSION,credentialState:'enrolled'}:{}),updatedAt:now()};
-      const crosswalk={tenantId,shopperId,projectIds:unionProjects,authNamespace:'shopper',providerUidFingerprint:providerUidFingerprint(uid),sourceStableKey:shopperId,identityMode:'stable_hr_shopper_id',fuzzyMatching:false,sourceType:'hr_external',updatedAt:now()};
+      const crosswalk={tenantId,shopperId,projectIds:unionProjects,authNamespace:'shopper',providerUidFingerprint:providerUidFingerprint(uid),sourceStableKey:sourceShopperId,identityMode:sourceShopperId===shopperId?'stable_hr_shopper_id':'provider_exact_identity_link',fuzzyMatching:false,sourceType:'hr_external',updatedAt:now()};
       tx.set(profileRef,profilePatch,{merge:true});
       tx.set(memberRef,membership,{merge:true});
       tx.set(crossRef,crosswalk,{merge:true});
       return {providerWrites:3+(credentialNormalized?1:0),idempotentReplay:false,projectIds:unionProjects,credentialNormalized,credentialRuleApplied:credential.ok};
     });
-    return {shopperId,uid,authCreated,visibleLogin:credential.ok?credential.login:null,...outcome};
+    return {shopperId,sourceShopperId,uid,authCreated,visibleLogin:credential.ok?credential.login:null,...outcome};
   }catch(error){
     throw error;
   }
@@ -450,9 +491,11 @@ export function createShopperCommandProvider({auth,db,policy}={}){
       if(!scopeAllowed(policy,scope.tenantId,scope.projectId))throw new Error('SHOPPER_RECONCILIATION_SCOPE_DENIED');
       if(!str(sourceRevision))throw new Error('SHOPPER_RECONCILIATION_REVISION_REQUIRED');
       const authUsers=shoppers.length?await listAllAuthUsers(auth):[];
+      const exactIdentityMap=await exactShopperIdentityMap(db,scope.tenantId,scope.projectId);
       let created=0,replayed=0,writes=0,credentialNormalized=0,credentialRuleMissing=0;
       for(const source of shoppers){
-        const result=await durableUpsert({auth,db,policy,candidate:source,sourceRevision,authUsers});
+        const canonicalShopperId=exactIdentityMap.get(source.shopperId)||source.shopperId;
+        const result=await durableUpsert({auth,db,policy,candidate:{...source,sourceShopperId:source.shopperId,shopperId:canonicalShopperId},sourceRevision,authUsers});
         if(result.authCreated)created++;
         if(result.idempotentReplay)replayed++;
         if(result.credentialNormalized)credentialNormalized++;
