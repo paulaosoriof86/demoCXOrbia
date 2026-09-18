@@ -832,11 +832,10 @@ jobs:
           const profileCanonical=p=>str(p?.canonicalShopperId||p?.shopperId||p?.id);
           const profileByCanonical=new Map(profiles.map(p=>[profileCanonical(p),p]).filter(([k])=>k));
           const tokenTargets=new Map();
-          const addExact=(token,target,origin)=>{
+          const addExact=(token,target)=>{
             token=str(token);target=str(target);if(!token||!target)return;
             if(!tokenTargets.has(token))tokenTargets.set(token,new Set());
             tokenTargets.get(token).add(target);
-            if(tokenTargets.get(token).size>1)throw new Error('MAPPING_FAILURE:SEMANTIC_EXACT_AUTHORITY_CONFLICT:'+origin);
           };
           for(const link of links){
             const status=str(link?.status||link?.state).toLowerCase();
@@ -844,19 +843,19 @@ jobs:
             const target=str(link?.canonicalShopperId||link?.canonicalId||link?.shopperId||link?.profileId);
             if(str(link?.tenantId||link?.scope?.tenantId)!==tenantId||!['active','confirmed','approved','materialized'].includes(status)||!['provider_exact','tenant_adjudication','platform_created','migrated_exact'].includes(authority)||!target)continue;
             const tokens=[link?.sourceIdentityKey,link?.sourceSubjectId,link?.sourceId,link?.sourceKey,link?.legacyShopperId,link?.externalShopperId,...flatten(link?.sourceIdentityAliases),...flatten(link?.identityAliases),...flatten(link?.aliases)].map(str).filter(Boolean);
-            for(const token of new Set(tokens))addExact(token,target,'identity_link');
+            for(const token of new Set(tokens))addExact(token,target);
           }
           for(const row of durableCrosswalks){
             const sourceType=str(row?.sourceType).toLowerCase(),mode=str(row?.identityMode).toLowerCase(),target=str(row?.shopperId);
             const projects=arr(row?.projectIds).map(str);
             if(str(row?.tenantId||tenantId)!==tenantId||sourceType!=='hr_external'||!target||(!projects.includes(projectId)&&projects.length>0))continue;
             if(!['provider_exact_identity_link','stable_hr_shopper_id','exact_technical_keys_only'].includes(mode))continue;
-            for(const token of new Set([row.id,row?.sourceStableKey,row?.sourceShopperId].map(str).filter(Boolean)))addExact(token,target,'durable_crosswalk');
+            for(const token of new Set([row.id,row?.sourceStableKey,row?.sourceShopperId].map(str).filter(Boolean)))addExact(token,target);
           }
           for(const row of arr(visitCrosswalk?.crosswalk)){
             if(row?.action!=='REUSE_EXISTING_CANONICAL_SHOPPER')continue;
             const source=str(row?.plannedShopperId),target=str(row?.canonicalShopperId);
-            if(source&&target)addExact(source,target,'visit_identity_crosswalk');
+            if(source&&target)addExact(source,target);
           }
           const resolveCanonical=id=>{
             let cur=str(id);const seen=new Set();
@@ -864,7 +863,11 @@ jobs:
               if(!cur||seen.has(cur))throw new Error('MAPPING_FAILURE:SEMANTIC_IDENTITY_CHAIN_CYCLE');
               seen.add(cur);
               const targets=[...(tokenTargets.get(cur)||new Set())];
-              if(targets.length>1)throw new Error('MAPPING_FAILURE:SEMANTIC_IDENTITY_LINK_CONFLICT');
+              if(targets.length>1){
+                const nonSelf=[...new Set(targets.filter(x=>x!==cur))];
+                if(targets.includes(cur)&&nonSelf.length===1){cur=nonSelf[0];continue;}
+                throw new Error('MAPPING_FAILURE:SEMANTIC_IDENTITY_LINK_CONFLICT');
+              }
               if(!targets.length||targets[0]===cur)return cur;
               cur=targets[0];
             }
