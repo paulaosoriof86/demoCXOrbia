@@ -359,6 +359,80 @@ jobs:
             throw new Error('MAPPING_FAILURE:IDENTITY_LINK_CHAIN_DEPTH');
           };
 
+
+          // Focal I3 identity-evidence completion: read durable shopper profiles without exporting PII.
+          // Only exact persisted aliases, government-document equality, protected-email equality or stable legacy-id equality
+          // may resolve a missing HR technical identity. Different government documents prove a distinct identity.
+          const profileSnap=await tenant.collection('shoppers').get();
+          const profiles=profileSnap.docs.map(d=>({id:d.id,...(d.data()||{})}));
+          const profileCanonical=p=>str(p?.canonicalShopperId||p?.shopperId||p?.id);
+          const profileAliases=p=>[...new Set([
+            ...flattenTechnical(p?.exactAliases),...flattenTechnical(p?.identityAliases),...flattenTechnical(p?.aliases),
+            ...flattenTechnical(p?.sourceAliases),...flattenTechnical(p?.sourceIdentityAliases),
+            ...flattenTechnical(p?.sourceShopperIds),...flattenTechnical(p?.legacyLiveShopperIds),
+            ...flattenTechnical(p?.hrShopperIds),...flattenTechnical(p?.canonicalLegacyIds)
+          ].map(str).filter(Boolean))];
+          const profileForCanonical=target=>profiles.filter(p=>profileCanonical(p)===str(target));
+          const normalizedDocument=p=>str(p?.dpi||p?.documentId).toUpperCase().replace(/[^A-Z0-9]/g,'');
+          const normalizedProtectedEmail=p=>{
+            const value=str(p?.email).toLowerCase();
+            return value&& !value.endsWith('@auth.cxorbia.invalid') ? value : '';
+          };
+          const stableLegacyId=p=>str(p?.legacyShopperId||p?.legacyId);
+          let protectedExactAliasEvidence=0,protectedDistinctIdentityEvidence=0;
+          const protectedProfileResolution=(sourceId,groupIds)=>{
+            const explicit=profiles.filter(p=>profileCanonical(p)!==sourceId&&profileAliases(p).includes(sourceId));
+            const explicitTargets=[...new Set(explicit.map(profileCanonical).filter(Boolean))];
+            if(explicitTargets.length===1){
+              protectedExactAliasEvidence++;
+              const target=explicitTargets[0];
+              return {ok:true,target,evidenceType:'protected_profile_authorized_alias',evidenceRef:'profile-alias:'+sha([sourceId,target].join('\0')).slice(0,32)};
+            }
+            if(explicitTargets.length>1)return {ok:false,reason:'PROTECTED_PROFILE_ALIAS_CONFLICT',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'};
+
+            const sourceProfiles=profiles.filter(p=>profileCanonical(p)===sourceId);
+            if(sourceProfiles.length>1)return {ok:false,reason:'PROTECTED_SOURCE_PROFILE_AMBIGUOUS',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'};
+            if(sourceProfiles.length===0)return {ok:false,reason:'EXACT_IDENTITY_EVIDENCE_MISSING',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'};
+            const sourceProfile=sourceProfiles[0];
+
+            const candidateTargets=[];
+            for(const peer of groupIds.filter(x=>x!==sourceId)){
+              const direct=[...(tokenTargets.get(peer)||new Set())];
+              if(direct.length===1)candidateTargets.push(resolveTrusted(peer));
+              else {
+                const exact=exactBySource.get(peer);
+                if(exact)candidateTargets.push(resolveTrusted(exact));
+              }
+            }
+            const targets=[...new Set(candidateTargets.filter(Boolean))];
+            if(targets.length!==1)return {ok:false,reason:targets.length?'PROTECTED_TARGET_AMBIGUOUS':'EXACT_IDENTITY_EVIDENCE_MISSING',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'};
+            const target=targets[0],targetProfiles=profileForCanonical(target);
+            if(targetProfiles.length!==1)return {ok:false,reason:targetProfiles.length?'PROTECTED_TARGET_PROFILE_AMBIGUOUS':'PROTECTED_TARGET_PROFILE_MISSING',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'};
+            const targetProfile=targetProfiles[0];
+
+            const sourceDoc=normalizedDocument(sourceProfile),targetDoc=normalizedDocument(targetProfile);
+            const sourceEmail=normalizedProtectedEmail(sourceProfile),targetEmail=normalizedProtectedEmail(targetProfile);
+            const sourceLegacy=stableLegacyId(sourceProfile),targetLegacy=stableLegacyId(targetProfile);
+
+            if(sourceDoc&&targetDoc){
+              if(sourceDoc===targetDoc){
+                protectedExactAliasEvidence++;
+                return {ok:true,target,evidenceType:'protected_profile_document_match',evidenceRef:'profile-document:'+sha([sourceId,target,sourceDoc].join('\0')).slice(0,32)};
+              }
+              protectedDistinctIdentityEvidence++;
+              return {ok:false,reason:'PROTECTED_DOCUMENT_DIVERGENCE',identityDisposition:'PROVEN_DISTINCT_IDENTITY'};
+            }
+            if(sourceLegacy&&targetLegacy&&sourceLegacy===targetLegacy){
+              protectedExactAliasEvidence++;
+              return {ok:true,target,evidenceType:'protected_profile_stable_legacy_id_match',evidenceRef:'profile-legacy:'+sha([sourceId,target,sourceLegacy].join('\0')).slice(0,32)};
+            }
+            if(sourceEmail&&targetEmail&&sourceEmail===targetEmail){
+              protectedExactAliasEvidence++;
+              return {ok:true,target,evidenceType:'protected_profile_email_match',evidenceRef:'profile-email:'+sha([sourceId,target,sourceEmail].join('\0')).slice(0,32)};
+            }
+            return {ok:false,reason:'EXACT_IDENTITY_EVIDENCE_MISSING',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'};
+          };
+
           const planned=[],blockers=[];
           for(const group of collisions){
             const rows=group.ids.map(sourceId=>{
@@ -366,16 +440,20 @@ jobs:
               if(direct.length>1)return {sourceId,reason:'DIRECT_TRUSTED_LINK_CONFLICT'};
               if(direct.length===1)return {sourceId,alreadyLinked:true,target:resolveTrusted(sourceId),exactVisitTarget:exactBySource.get(sourceId)||null};
               const exactVisitTarget=exactBySource.get(sourceId);
-              if(!exactVisitTarget)return {sourceId,reason:'EXACT_VISIT_IDENTITY_EVIDENCE_MISSING'};
-              return {sourceId,alreadyLinked:false,target:resolveTrusted(exactVisitTarget),exactVisitTarget};
+              if(!exactVisitTarget){
+                const protectedResolution=protectedProfileResolution(sourceId,group.ids);
+                if(!protectedResolution.ok)return {sourceId,reason:protectedResolution.reason,identityDisposition:protectedResolution.identityDisposition||'INSUFFICIENT_EXACT_EVIDENCE'};
+                return {sourceId,alreadyLinked:false,target:resolveTrusted(protectedResolution.target),exactVisitTarget:null,evidenceType:protectedResolution.evidenceType,evidenceRef:protectedResolution.evidenceRef};
+              }
+              return {sourceId,alreadyLinked:false,target:resolveTrusted(exactVisitTarget),exactVisitTarget,evidenceType:'exact_visit_identity_crosswalk',evidenceRef:'exact-visit-crosswalk:'+mappingHash};
             });
             const bad=rows.filter(x=>x.reason);
-            if(bad.length){blockers.push({credentialFingerprint:sha(group.login).slice(0,24),technicalIds:group.ids,reasons:bad.map(x=>({sourceId:x.sourceId,reason:x.reason}))});continue;}
+            if(bad.length){blockers.push({credentialFingerprint:sha(group.login).slice(0,24),technicalIds:group.ids,reasons:bad.map(x=>({sourceId:x.sourceId,reason:x.reason,identityDisposition:x.identityDisposition||'INSUFFICIENT_EXACT_EVIDENCE'}))});continue;}
             const targets=[...new Set(rows.map(x=>x.target))];
             if(targets.length!==1){blockers.push({credentialFingerprint:sha(group.login).slice(0,24),technicalIds:group.ids,reasons:[{reason:'EXACT_EVIDENCE_TARGET_DIVERGENCE',targetFingerprints:targets.map(x=>sha(x).slice(0,24))}]});continue;}
             const target=targets[0];
             for(const row of rows.filter(x=>!x.alreadyLinked)){
-              planned.push({sourceId:row.sourceId,canonicalShopperId:target,exactVisitCanonicalShopperId:row.exactVisitTarget,credentialFingerprint:sha(group.login).slice(0,24)});
+              planned.push({sourceId:row.sourceId,canonicalShopperId:target,exactVisitCanonicalShopperId:row.exactVisitTarget||null,evidenceType:row.evidenceType||'exact_visit_identity_crosswalk',evidenceRef:row.evidenceRef||('exact-visit-crosswalk:'+mappingHash),credentialFingerprint:sha(group.login).slice(0,24)});
             }
           }
 
@@ -385,8 +463,8 @@ jobs:
             identityCount:arr(overlay.identities).length,collisionGroupCount:collisions.length,
             collisionTechnicalIdCount:collisions.reduce((n,x)=>n+x.ids.length,0),
             exactVisitCrosswalkSha256:mappingHash,existingTrustedIdentityLinks:links.length,
-            durableExactAliasEvidence,
-            rawNamesPersisted:false,rawLoginsPersisted:false,hrWrites:0,authWrites:0,production:false
+            durableExactAliasEvidence,protectedProfileReads:profiles.length,protectedExactAliasEvidence,protectedDistinctIdentityEvidence,
+            rawNamesPersisted:false,rawLoginsPersisted:false,rawProtectedAnchorsPersisted:false,hrWrites:0,authWrites:0,production:false
           };
           if(blockers.length){
             const report={...base,decision:'HOLD_I3_EXACT_IDENTITY_ADJUDICATION',classification:'MAPPING_FAILURE',providerWrites:0,blockers,plannedWrites:0};
@@ -414,9 +492,11 @@ jobs:
                   sourceSystem:'hr',sourceIdentityKey:p.sourceId,sourceIdentityAliases:[p.sourceId],
                   status:'materialized',periodIndependent:true,sourceSafe:true,
                   authorityType:'tenant_adjudication',
-                  authorityRef:'exact-visit-crosswalk:'+mappingHash,
-                  adjudicationEvidence:{type:'exact_visit_identity_crosswalk',mappingHashSha256:mappingHash,exactVisitCanonicalShopperId:p.exactVisitCanonicalShopperId},
-                  createdBy:'cxorbia-recovery-i3-exact-credential-collision-adjudicator-v1',
+                  authorityRef:p.evidenceRef,
+                  adjudicationEvidence:p.evidenceType==='exact_visit_identity_crosswalk'
+                    ?{type:'exact_visit_identity_crosswalk',mappingHashSha256:mappingHash,exactVisitCanonicalShopperId:p.exactVisitCanonicalShopperId}
+                    :{type:p.evidenceType,evidenceRef:p.evidenceRef,protectedReadOnly:true,rawAnchorPersisted:false},
+                  createdBy:'cxorbia-recovery-i3-exact-credential-collision-adjudicator-v2',
                   createdAt:FieldValue.serverTimestamp(),updatedAt:FieldValue.serverTimestamp()
                 },{merge:false});
               }
