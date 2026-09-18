@@ -1,4 +1,5 @@
 name: CXOrbia Recovery I3 DEV Certification
+# Control successor: Gate20 explicit canonical HR reconciliation.
 
 on:
   push:
