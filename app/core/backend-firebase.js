@@ -202,7 +202,10 @@ window.CX = window.CX || {};
     const out=[];
     groups.forEach(function(group,key){
       if(group.length===1){ out.push(group[0]); return; }
-      const exact=group.filter(function(row){ return String(row.__docId||'')===key; });
+      const exact=group.filter(function(row){
+        const declaredVisitId=String(row.visitId||row.id||'').trim();
+        return !!declaredVisitId && String(row.__docId||'')===declaredVisitId;
+      });
       if(exact.length!==1) throw new Error('DURABLE_VISIT_AUTHORITY_AMBIGUOUS:'+key);
       out.push(Object.assign({},exact[0],{__canonicalDurableAuthority:true,__historicalDuplicateCount:group.length-1}));
     });
