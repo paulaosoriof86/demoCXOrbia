@@ -10,6 +10,7 @@ export const VERSION='cxorbia-shopper-command-provider-v1';
 export const COMMAND_TYPES=Object.freeze(['shopper.create','shopper.update','shopper.credential.reset']);
 export const OPERATOR_ROLES=Object.freeze(['super','admin']);
 export const CREDENTIAL_RULE_VERSION='tya-shopper-nombre-apellido-v1';
+export const DURABLE_CREDENTIAL_SWEEP_VERSION='cxorbia-durable-shopper-credential-sweep-v1';
 const ACTIVE_IDENTITY_LINK_STATES=new Set(['active','confirmed','approved','materialized']);
 const TRUSTED_IDENTITY_AUTHORITIES=new Set(['provider_exact','tenant_adjudication','platform_created','migrated_exact']);
 
@@ -503,11 +504,103 @@ async function durableCredentialIdentity({auth,db,command,shopperId}){
   return {uid,user,email,authCreated,credential,memberRef:users.doc(uid)};
 }
 
+async function normalizeDurableShopperCredentials({auth,db,tenantId}={}){
+  tenantId=str(tenantId);
+  if(!tenantId)throw new Error('SHOPPER_DURABLE_CREDENTIAL_TENANT_REQUIRED');
+  if(!auth?.getUser||!auth?.getUserByEmail||!auth?.updateUser||!auth?.setCustomUserClaims)throw new Error('SHOPPER_DURABLE_CREDENTIAL_AUTH_UNAVAILABLE');
+  const tenant=db.collection('tenants').doc(tenantId),users=tenant.collection('users'),profilesRef=tenant.collection('shoppers');
+  const [memberSnap,profileSnap]=await Promise.all([users.get(),profilesRef.get()]);
+  const members=arr(memberSnap?.docs).map(d=>({id:d.id,...(d.data()||{})}))
+    .filter(m=>m.active===true&&str(m.role)==='shopper'&&str(m.authNamespace)==='shopper')
+    .sort((a,b)=>String(a.id).localeCompare(String(b.id)));
+  const profiles=arr(profileSnap?.docs).map(d=>({id:d.id,...(d.data()||{})}));
+  const profileById=new Map(),duplicateProfiles=new Set();
+  for(const profile of profiles){
+    const shopperId=str(profile.shopperId||profile.id);
+    if(!shopperId)continue;
+    if(profileById.has(shopperId))duplicateProfiles.add(shopperId);
+    else profileById.set(shopperId,profile);
+  }
+  const memberCountByShopper=new Map();
+  for(const member of members){
+    const shopperId=str(member.shopperId);
+    if(shopperId)memberCountByShopper.set(shopperId,(memberCountByShopper.get(shopperId)||0)+1);
+  }
+  const reviewQueue=[],review=(member,reason,credential=null)=>{
+    reviewQueue.push({
+      uidFingerprint:member?.id?providerUidFingerprint(member.id):null,
+      shopperId:str(member?.shopperId)||null,
+      reason,
+      credentialFingerprint:credential?.ok?sha(`${tenantId}\0${credential.login}`).slice(0,24):null,
+      requiresHumanAdjudication:true
+    });
+  };
+  let eligible=0,normalized=0,idempotentReplays=0,authWrites=0,firestoreWrites=0,claimsWrites=0;
+  for(const member of members){
+    const shopperId=str(member.shopperId);
+    if(!shopperId){review(member,'SHOPPER_DURABLE_MEMBERSHIP_IDENTITY_MISSING');continue;}
+    if((memberCountByShopper.get(shopperId)||0)!==1){review(member,'SHOPPER_MEMBERSHIP_DUPLICATE_IDENTITY');continue;}
+    if(duplicateProfiles.has(shopperId)){review(member,'SHOPPER_PROFILE_DUPLICATE_IDENTITY');continue;}
+    const profile=profileById.get(shopperId);
+    if(!profile){review(member,'SHOPPER_DURABLE_PROFILE_MISSING');continue;}
+    if(str(profile.tenantId||tenantId)!==tenantId||str(profile.shopperId||profile.id)!==shopperId){review(member,'SHOPPER_PROFILE_SCOPE_CONFLICT');continue;}
+    const credential=shopperCredentialRule(profile);
+    if(!credential.ok){review(member,credential.reason,credential);continue;}
+    let user=await safeAuthByUid(auth,member.id);
+    if(!user){review(member,'SHOPPER_DURABLE_IDENTITY_AUTH_MISSING',credential);continue;}
+    try{assertAuthIdentity(user,tenantId,shopperId);}catch(error){review(member,str(error?.message||error),credential);continue;}
+    const email=internalEmail(tenantId,credential.login),byEmail=await safeAuthByEmail(auth,email);
+    if(byEmail&&byEmail.uid!==member.id){review(member,'SHOPPER_VISIBLE_LOGIN_COLLISION',credential);continue;}
+    const projectIds=uniq([...(member.projectIds||[]),...(profile.projectIds||[]),...(user.customClaims?.projectIds||[])]);
+    const claims=canonicalClaims(shopperId,tenantId,projectIds);
+    const memberCurrent=str(member.visibleLogin).toLowerCase()===credential.login&&str(member.credentialRuleVersion)===CREDENTIAL_RULE_VERSION&&str(member.credentialSweepVersion)===DURABLE_CREDENTIAL_SWEEP_VERSION;
+    const profileCurrent=str(profile.username||profile.user||profile.visibleLogin).toLowerCase()===credential.login&&str(profile.credentialRuleVersion)===CREDENTIAL_RULE_VERSION&&str(profile.credentialSweepVersion)===DURABLE_CREDENTIAL_SWEEP_VERSION;
+    const authCurrent=str(user.email).toLowerCase()===email.toLowerCase()&&user.disabled!==true;
+    const claimsCurrent=claimsDigest(user.customClaims||{})===claimsDigest(claims);
+    eligible++;
+    if(memberCurrent&&profileCurrent&&authCurrent&&claimsCurrent){idempotentReplays++;continue;}
+    user=await auth.updateUser(member.id,{email,password:credential.password,disabled:false});authWrites++;
+    if(!claimsCurrent){await auth.setCustomUserClaims(member.id,claims);claimsWrites++;}
+    const memberRef=users.doc(member.id),profileRef=profilesRef.doc(profile.id||shopperId);
+    await db.runTransaction(async tx=>{
+      const [memberNowSnap,profileNowSnap]=await Promise.all([tx.get(memberRef),tx.get(profileRef)]);
+      if(!memberNowSnap.exists||!profileNowSnap.exists)throw new Error('SHOPPER_DURABLE_CREDENTIAL_READBACK_MISSING');
+      const memberNow=memberNowSnap.data()||{},profileNow=profileNowSnap.data()||{};
+      if(str(memberNow.tenantId)!==tenantId||str(memberNow.shopperId)!==shopperId||str(memberNow.role)!=='shopper'||str(memberNow.authNamespace)!=='shopper')throw new Error('SHOPPER_MEMBERSHIP_CONFLICT');
+      if(str(profileNow.tenantId||tenantId)!==tenantId||str(profileNow.shopperId||profileNowSnap.id)!==shopperId)throw new Error('SHOPPER_PROFILE_SCOPE_CONFLICT');
+      const stamp=now();
+      tx.set(memberRef,{
+        visibleLogin:credential.login,credentialRuleVersion:CREDENTIAL_RULE_VERSION,
+        credentialState:'enrolled',credentialSweepVersion:DURABLE_CREDENTIAL_SWEEP_VERSION,
+        providerUidFingerprint:providerUidFingerprint(member.id),updatedAt:stamp
+      },{merge:true});
+      tx.set(profileRef,{
+        firstName:credential.firstName,lastName:credential.lastName,
+        visibleLogin:credential.login,username:credential.login,user:credential.login,
+        credentialRuleVersion:CREDENTIAL_RULE_VERSION,credentialSweepVersion:DURABLE_CREDENTIAL_SWEEP_VERSION,
+        updatedAt:stamp
+      },{merge:true});
+    });
+    firestoreWrites+=2;normalized++;
+  }
+  return {
+    ok:true,status:reviewQueue.length?'committed_with_identity_review':'committed',
+    tenantId,activeShopperMemberships:members.length,eligibleShopperCount:eligible,
+    normalizedShopperCount:normalized,idempotentReplays,
+    identityReviewRequired:reviewQueue.length>0,identityReviewCount:reviewQueue.length,identityReviewQueue:reviewQueue,
+    credentialRuleVersion:CREDENTIAL_RULE_VERSION,credentialSweepVersion:DURABLE_CREDENTIAL_SWEEP_VERSION,
+    authWrites,claimsWrites,firestoreWrites,plaintextPersisted:false
+  };
+}
+
 export function createShopperCommandProvider({auth,db,policy}={}){
   const pv=validateProviderPolicy(policy);if(!pv.ok)throw new Error('SHOPPER_PROVIDER_POLICY_INVALID:'+pv.errors.join(','));
   if(!auth?.getUser||!auth?.createUser||!auth?.setCustomUserClaims||!db?.collection||!db?.runTransaction)throw new Error('SHOPPER_PROVIDER_DEPENDENCIES_MISSING');
   return Object.freeze({
     version:VERSION,
+    async normalizeDurableCredentials({tenantId}={}){
+      return normalizeDurableShopperCredentials({auth,db,tenantId});
+    },
     async reconcileSnapshot(snapshot,{sourceRevision,identityByShopperId}={}){
       const {scope,shoppers}=shoppersFromSnapshot(snapshot,{identityByShopperId});
       if(!scopeAllowed(policy,scope.tenantId,scope.projectId))throw new Error('SHOPPER_RECONCILIATION_SCOPE_DENIED');
@@ -617,4 +710,4 @@ export function createShopperCommandProvider({auth,db,policy}={}){
   });
 }
 
-export default {VERSION,COMMAND_TYPES,OPERATOR_ROLES,CREDENTIAL_RULE_VERSION,shopperCredentialRule,providerUidFingerprint,stableShopperUid,shoppersFromSnapshot,validateProviderPolicy,createShopperCommandProvider};
+export default {VERSION,COMMAND_TYPES,OPERATOR_ROLES,CREDENTIAL_RULE_VERSION,DURABLE_CREDENTIAL_SWEEP_VERSION,shopperCredentialRule,providerUidFingerprint,stableShopperUid,shoppersFromSnapshot,validateProviderPolicy,createShopperCommandProvider};

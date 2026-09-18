@@ -5,6 +5,7 @@ import {
   providerUidFingerprint,
   stableShopperUid,
   CREDENTIAL_RULE_VERSION,
+  DURABLE_CREDENTIAL_SWEEP_VERSION,
   shopperCredentialRule
 } from '../../cxorbia-shopper-command-provider-v1.mjs';
 
@@ -274,4 +275,38 @@ test('Gate 6 / proven exact alias with legacy self-mapped crosswalk is quarantin
   assert.equal(result.identityMigrationQueue[0].requiresHumanAdjudication,false);
   assert.equal(db.get(aliasCross).shopperId,alias);
   assert.equal(db.get(`tenants/tenant-a/shoppers/${canonical}`).shopperId,canonical);
+});
+
+
+test('Gate 8 / durable legacy shoppers converge to the frozen credential rule outside the current HR snapshot',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  const good='shopper_legacy_good',goodUid='legacy-good-uid',bad='shopper_legacy_incomplete',badUid='legacy-bad-uid';
+  auth.seed({uid:goodUid,email:'old-good@example.invalid',disabled:false,customClaims:{tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:good,projectIds:['older-project']}});
+  auth.seed({uid:badUid,email:'old-bad@example.invalid',disabled:false,customClaims:{tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:bad,projectIds:['older-project']}});
+  db.seed(`tenants/tenant-a/users/${goodUid}`,{active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:good,projectIds:['older-project'],visibleLogin:'old.login',credentialRuleVersion:'legacy'});
+  db.seed(`tenants/tenant-a/shoppers/${good}`,{id:good,shopperId:good,tenantId:'tenant-a',projectIds:['older-project'],displayName:'María López'});
+  db.seed(`tenants/tenant-a/users/${badUid}`,{active:true,tenantId:'tenant-a',role:'shopper',authNamespace:'shopper',shopperId:bad,projectIds:['older-project']});
+  db.seed(`tenants/tenant-a/shoppers/${bad}`,{id:bad,shopperId:bad,tenantId:'tenant-a',projectIds:['older-project'],nombre:'Monónimo'});
+
+  const first=await p.normalizeDurableCredentials({tenantId:'tenant-a'});
+  assert.equal(first.ok,true);
+  assert.equal(first.activeShopperMemberships,2);
+  assert.equal(first.eligibleShopperCount,1);
+  assert.equal(first.normalizedShopperCount,1);
+  assert.equal(first.identityReviewCount,1);
+  assert.equal(first.identityReviewQueue[0].shopperId,bad);
+  assert.equal(first.identityReviewQueue[0].reason,'SHOPPER_CREDENTIAL_NAME_INCOMPLETE');
+  assert.equal((await auth.getUser(goodUid)).password,'María123*');
+  assert.match((await auth.getUser(goodUid)).email,/@auth\.cxorbia\.invalid$/);
+  assert.equal(db.get(`tenants/tenant-a/users/${goodUid}`).visibleLogin,'maria.lopez');
+  assert.equal(db.get(`tenants/tenant-a/users/${goodUid}`).credentialRuleVersion,CREDENTIAL_RULE_VERSION);
+  assert.equal(db.get(`tenants/tenant-a/users/${goodUid}`).credentialSweepVersion,DURABLE_CREDENTIAL_SWEEP_VERSION);
+  assert.equal(db.get(`tenants/tenant-a/shoppers/${good}`).username,'maria.lopez');
+  assert.equal(db.get(`tenants/tenant-a/shoppers/${good}`).credentialSweepVersion,DURABLE_CREDENTIAL_SWEEP_VERSION);
+  assert.equal(JSON.stringify([...db._store.values()]).includes('María123*'),false);
+
+  const second=await p.normalizeDurableCredentials({tenantId:'tenant-a'});
+  assert.equal(second.normalizedShopperCount,0);
+  assert.equal(second.idempotentReplays,1);
+  assert.equal(second.identityReviewCount,1);
 });
