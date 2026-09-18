@@ -314,7 +314,7 @@ jobs:
             const projectOk=projectIds.includes(PROJECT_ID);
             const target=str(row.shopperId);
             if(!tenantOk||sourceType!=='hr_external'||!projectOk||!target)continue;
-            if(!['stable_hr_shopper_id','provider_exact_identity_link'].includes(identityMode))continue;
+            if(identityMode!=='provider_exact_identity_link')continue;
             for(const token of [...new Set([doc.id,row.sourceStableKey,row.sourceShopperId].map(str).filter(Boolean))]){
               addExact(token,target,'durable_shopper_identity_crosswalk');
               durableExactAliasEvidence++;
