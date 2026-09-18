@@ -166,3 +166,18 @@ test('Gate 6 / owner credential rule materializes visible login and deterministi
   assert.equal(profile.user,'mishael.depaz');
   assert.equal(JSON.stringify([...db._store.values()]).includes('Mishael123*'),false);
 });
+
+test('Gate 6 / protected HR snapshot uses the trusted ephemeral identity map for the owner credential rule',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),id='shopper_gt_protected',uid=stableShopperUid('tenant-a',id),pp=paths(id);
+  const snap=snapshot({shopperId:id,shopperCode:'TYA_GT_PROTECTED'});
+  snap.visits[0].shopper='Shopper protegido';
+  await assert.rejects(()=>p.reconcileSnapshot(snap,{sourceRevision:'rev-protected-missing'}),/SHOPPER_CREDENTIAL_NAME_INCOMPLETE/);
+  const identityByShopperId=new Map([[id,'Mishael De Paz']]);
+  const result=await p.reconcileSnapshot(snap,{sourceRevision:'rev-protected',identityByShopperId});
+  assert.equal(result.credentialRuleMissing,0);
+  assert.equal(result.credentialNormalized,1);
+  assert.equal((await auth.getUser(uid)).password,'Mishael123*');
+  assert.equal(db.get(`${pp.users}/${uid}`).visibleLogin,'mishael.depaz');
+  assert.equal(db.get(pp.profile).username,'mishael.depaz');
+  assert.equal(JSON.stringify([...db._store.values()]).includes('Mishael123*'),false);
+});

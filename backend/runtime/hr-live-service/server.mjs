@@ -156,7 +156,7 @@ async function reconcileAuthoritativeShoppers(current){
   if(lastShopperReconciledRevision===current.revision)return lastShopperReconciliation;
   const {auth,db}=ensureAdmin();
   const provider=createShopperCommandProvider({auth,db,policy:shopperPolicy(current.snapshot)});
-  const result=await provider.reconcileSnapshot(current.snapshot,{sourceRevision:current.revision});
+  const result=await provider.reconcileSnapshot(current.snapshot,{sourceRevision:current.revision,identityByShopperId:current.identity});
   lastShopperReconciledRevision=current.revision;
   lastShopperReconciliation={...result,completedAt:new Date().toISOString()};
   console.log(`CXOrbia shopper reconciliation committed ${current.revision.slice(0,12)} shoppers=${result.shopperCount} authCreated=${result.authCreated} writes=${result.providerWrites}`);

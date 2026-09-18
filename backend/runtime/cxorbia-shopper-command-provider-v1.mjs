@@ -125,9 +125,16 @@ function stableShopperId(command){
   }
   return '';
 }
-function sourceCandidate(row,scope){
+function credentialIdentityName(identityByShopperId,shopperId){
+  const source=identityByShopperId instanceof Map?identityByShopperId.get(shopperId):identityByShopperId?.[shopperId];
+  const name=str(source?.displayName||source?.nombre||source);
+  return /^shopper protegido$/i.test(name)?'':name;
+}
+function sourceCandidate(row,scope,identityByShopperId){
   const shopperId=str(row?.shopperId||row?.id);
   if(!shopperId)return null;
+  const protectedName=/^shopper protegido$/i.test(str(row?.nombre||row?.shopper));
+  const credentialName=protectedName?credentialIdentityName(identityByShopperId,shopperId):'';
   return clean({
     shopperId,
     tenantId:scope.tenantId,
@@ -137,20 +144,20 @@ function sourceCandidate(row,scope){
     country:str(row?.country||row?.pais),
     sourceSafe:row?.sourceSafe===true,
     piiProtected:row?.piiProtected===true,
-    nombre:str(row?.nombre||row?.shopper),
+    nombre:credentialName||str(row?.nombre||row?.shopper),
     firstName:str(row?.firstName),
     lastName:str(row?.lastName||row?.apellido),
     sourceTab:str(row?.sourceTab),
     hrRowId:str(row?.hrRowId)
   });
 }
-export function shoppersFromSnapshot(snapshot={}){
+export function shoppersFromSnapshot(snapshot={},options={}){
   if(snapshot?.sourceSafe!==true||snapshot?.imported===true||Number(snapshot?.firestoreWrites||0)!==0)throw new Error('SHOPPER_HR_SNAPSHOT_UNSAFE');
   const scope=projectScope(snapshot);
   if(!scope.tenantId||!scope.projectId)throw new Error('SHOPPER_HR_SCOPE_MISSING');
   const byId=new Map();
   const ingest=row=>{
-    const c=sourceCandidate(row,scope);if(!c)return;
+    const c=sourceCandidate(row,scope,options.identityByShopperId);if(!c)return;
     const prior=byId.get(c.shopperId)||{};
     byId.set(c.shopperId,{...prior,...Object.fromEntries(Object.entries(c).filter(([,v])=>v!==''&&v!==false)),sourceSafe:prior.sourceSafe===true||c.sourceSafe===true,piiProtected:prior.piiProtected===true||c.piiProtected===true});
   };
@@ -438,8 +445,8 @@ export function createShopperCommandProvider({auth,db,policy}={}){
   if(!auth?.getUser||!auth?.createUser||!auth?.setCustomUserClaims||!db?.collection||!db?.runTransaction)throw new Error('SHOPPER_PROVIDER_DEPENDENCIES_MISSING');
   return Object.freeze({
     version:VERSION,
-    async reconcileSnapshot(snapshot,{sourceRevision}={}){
-      const {scope,shoppers}=shoppersFromSnapshot(snapshot);
+    async reconcileSnapshot(snapshot,{sourceRevision,identityByShopperId}={}){
+      const {scope,shoppers}=shoppersFromSnapshot(snapshot,{identityByShopperId});
       if(!scopeAllowed(policy,scope.tenantId,scope.projectId))throw new Error('SHOPPER_RECONCILIATION_SCOPE_DENIED');
       if(!str(sourceRevision))throw new Error('SHOPPER_RECONCILIATION_REVISION_REQUIRED');
       const authUsers=shoppers.length?await listAllAuthUsers(auth):[];
