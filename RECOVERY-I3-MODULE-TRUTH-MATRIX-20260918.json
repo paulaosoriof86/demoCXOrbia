@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "cxorbia.recovery.module-truth-matrix.v3.1",
+  "schemaVersion": "cxorbia.recovery.module-truth-matrix.v3",
   "observedAt": "2026-09-18",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -1967,6 +1967,14 @@
       "devDeploys": 0
     },
     "correction": "Use exact F9 Git tree blobs as accepted baseline, preserve August-04 blob as historical metadata, and map only proven post-F9 successors.",
-    "productChanged": false
+    "productChanged": false,
+    "run180": {
+      "runId": 35342475457,
+      "failedStep": "Prove exhaustive cumulative Phase A module integrity",
+      "classification": "MAPPING_FAILURE",
+      "cause": "matrix schemaVersion v3.1 did not equal workflow frozen schema v3; comparator did not execute",
+      "productBuilds": 0,
+      "devDeploys": 0
+    }
   }
 }
