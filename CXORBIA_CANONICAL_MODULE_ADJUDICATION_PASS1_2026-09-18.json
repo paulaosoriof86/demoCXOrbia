@@ -1,0 +1,717 @@
+{
+  "schema": "cxorbia.recovery.canonical-module-adjudication.pass1.v1",
+  "frozenAt": "2026-09-18T10:10:00-06:00",
+  "iteration": "I3_FUNCTIONAL_CLOSURE",
+  "state": "READ_ONLY_FORENSIC_PASS1_COMPLETE",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlHead": "14946373eb062d051d6417795d58e5681e1e220a",
+  "baselineAuthorities": {
+    "phaseACompleteManifest": "app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json",
+    "baselineCandidate": "CXORBIA-TYA-PHASE-A-COMPLETE-CANONICAL-COMPOSITION-20260804",
+    "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+    "terminalCertifiedTree": "e3efd4afa9ffcb973e66e40e08798eba4e6c0f34",
+    "currentComparisonSource": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6"
+  },
+  "reduction": {
+    "phaseAAuthorityFiles": 84,
+    "filesWithTerminalCertifiedBaseline": 52,
+    "exactUnchangedVsTerminal": 39,
+    "changedVsTerminal": 13,
+    "recoveryOnlyNoTerminalBaseline": 32,
+    "conclusion": "The search space is not the whole product. 39 terminal-certified owners are exact KEEP candidates. Adjudication is concentrated on 13 post-terminal changes plus 32 Recovery-only owners, with priority to the owners implicated by live drift."
+  },
+  "exactTerminalKeepCandidates": [
+    {
+      "path": "app/core/build-lock.js",
+      "domain": "base-router-shell-cache",
+      "blob": "068b28bce919c2a4f357eb4c21f85fede06a0c5d",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/styles/theme.css",
+      "domain": "base-router-shell-cache",
+      "blob": "48bf933ebeb0e2a0df49d80ff16a460a1947ddb9",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/styles/layout.css",
+      "domain": "base-router-shell-cache",
+      "blob": "91b3d308e1a51be7a470f0f12b32382c1043058f",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/manifest.webmanifest",
+      "domain": "base-router-shell-cache",
+      "blob": "bc969630aaee9152ff69541c88ca443886c4c82f",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/sw.js",
+      "domain": "base-router-shell-cache",
+      "blob": "39c445f1ab5b50d12b22c5f912c4950b6735107a",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/core/config.js",
+      "domain": "core-config-data-router-permissions",
+      "blob": "0bf7b6c1daded062806d90e03ba2c5d67ac1fe63",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/core/router.js",
+      "domain": "core-config-data-router-permissions",
+      "blob": "fdd3c91c1428d49413fb305ed464dffdc6ea3e13",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/core/permissions.js",
+      "domain": "core-config-data-router-permissions",
+      "blob": "bedc4f8bbc80dba9f03e34ec6bbcf9cfeeb2a1d5",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/core/data-source.js",
+      "domain": "core-config-data-router-permissions",
+      "blob": "6149dff1d91b83af007badbaafdef63f00c34d1f",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/core/backend-browser-auth.js",
+      "domain": "auth-protected-data-runtime",
+      "blob": "6ff36a155e81fc95ed4c41160505f72aaf5b8496",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/core/backend-protected-dev-session-continuity.js",
+      "domain": "auth-protected-data-runtime",
+      "blob": "00f2b3d1e92ad6154853282a8881163cf9e6ca5d",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/adapters/tya-canonical-finance-read-model-v2.js",
+      "domain": "phase-a-supporting-core",
+      "blob": "6a527c3813ad4318bc921bf3c997bc4c70726db5",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/adapters/tya-canonical-reservations-guard-v2.js",
+      "domain": "visits-review-postulations-reservations",
+      "blob": "0eb96842dea71bb6f1b4801914e6a475c5885ccc",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/modules/proyectos.js",
+      "domain": "projects-periods-hr-source-wizard-multiproject",
+      "blob": "9492e710671749f954510d49dcf93e590a52669c",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/modules/periodos.js",
+      "domain": "projects-periods-hr-source-wizard-multiproject",
+      "blob": "7987d7186efcaa12f33e4fd11f91ae6e50fd7ad5",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/modules/hr-source.js",
+      "domain": "projects-periods-hr-source-wizard-multiproject",
+      "blob": "dcfe3e9f0b5e97fdc0a4af77ba3873854ef545b0",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/modules/proyecto-wizard.js",
+      "domain": "projects-periods-hr-source-wizard-multiproject",
+      "blob": "3c722c503634665d3574979db267f1dda2c3c159",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/modules/academia.js",
+      "domain": "certifications",
+      "blob": "0b42dd790d946d327eb1110b78878e302d51aa6e",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/core/cliente-data.js",
+      "domain": "client-portal-reportkit",
+      "blob": "3e2ac5716d711a7a883886085399ca04c614de77",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/modules/dashboard.js",
+      "domain": "dashboard-operation",
+      "blob": "e879fc3f1dd5a7486762b197346cadd086e1d99d",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/modules/midia.js",
+      "domain": "dashboard-operation",
+      "blob": "98d901850a437b029abac2ba3e569dc3a9543940",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/modules/historico.js",
+      "domain": "historical",
+      "blob": "bf259b28e871bc6cea991f14ce5560323ef55f9e",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/modules/visita-detalle.js",
+      "domain": "visits-review-postulations-reservations",
+      "blob": "322a350e22a57a94c587a38d480f1ccf28157db7",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/modules/revision-admin.js",
+      "domain": "visits-review-postulations-reservations",
+      "blob": "41fcea495c1e23e7ecee43a637b45002124ea3c9",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/modules/reservas.js",
+      "domain": "visits-review-postulations-reservations",
+      "blob": "ddc54bad9dfc7b242b06d39daf872c9f9b327c80",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/modules/novedades.js",
+      "domain": "documents-resources",
+      "blob": "3a8a4ac11fe3dfe5bff11c4840f355742bc93375",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/modules/tablon.js",
+      "domain": "documents-resources",
+      "blob": "d2eb7784d4b695f863d330f42a6ee6575a87a3f6",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/modules/misvisitas.js",
+      "domain": "shoppers-mi-visitas-profile",
+      "blob": "19feb19b96c7d2f69c3cfed785fdbfcaabd96e2d",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/modules/operacion-extra.js",
+      "domain": "reports-admin-shopper",
+      "blob": "509c4dd251515ea1429ebe51d69d9e779ae69a54",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/modules/cert.js",
+      "domain": "certifications",
+      "blob": "5532109dec5c942c2fa6d520ad0a7e0b7b104034",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/modules/cuestionario-shopper.js",
+      "domain": "questionnaire-shopper",
+      "blob": "a9801776eda4b52d447abaf20c28e2bf4290930d",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/modules/beneficios.js",
+      "domain": "benefits",
+      "blob": "73e200e57530479637792c89c644fcfdf78b6799",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/modules/documentos.js",
+      "domain": "documents-resources",
+      "blob": "28c302761f22807ed5ebcb1f04cd1d12827652dd",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/core/finanzas-core.js",
+      "domain": "finance-core-liquidation-costs",
+      "blob": "6d3f46f003f3319f96cfd759b8b5ed52afc6a125",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/core/liquidacion.js",
+      "domain": "finance-core-liquidation-costs",
+      "blob": "dde322890eb8821b822215905b82a22102d73d2c",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/core/costos.js",
+      "domain": "finance-core-liquidation-costs",
+      "blob": "7f0c4547a68b8bafebae0652b8de5c8e27114a0c",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/modules/finanzas.js",
+      "domain": "finance-core-liquidation-costs",
+      "blob": "5af9e5d28833524cabba132834738e8acce55e0b",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/modules/cliente.js",
+      "domain": "client-portal-reportkit",
+      "blob": "4e5981081bdd01de368c4f412ed476244426634e",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    },
+    {
+      "path": "app/modules/cliente-extra.js",
+      "domain": "client-portal-reportkit",
+      "blob": "ca3d2d6b356b3d942ebbb2076625ce0b000e4b64",
+      "disposition": "KEEP_CANDIDATE_EXACT_TERMINAL_MATCH"
+    }
+  ],
+  "postTerminalChangedOwners": [
+    {
+      "path": "app/app.js",
+      "domain": "base-router-shell-cache",
+      "terminalCertifiedBlob": "2043d33dee611adacebc947c8423ed1739c1a8da",
+      "currentBlob": "cb83a257b0474846abfeca90d25817810f349dcd",
+      "latestApprovedSource": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "latestApprovedAuthority": "P0_PROVEN_RECOVERY_SUCCESSOR: legal/consent must never block access, tests or production",
+      "disposition": "ADJUDICATE_POST_TERMINAL_DELTA"
+    },
+    {
+      "path": "app/index-backend-dev.html",
+      "domain": "base-router-shell-cache",
+      "terminalCertifiedBlob": "6f084ab81264b937cda661dddb4b071ef956d35f",
+      "currentBlob": "7cad29de66de546527d9c6b92b44cad676d1882f",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): make project source routing explicit and multi-project safe; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "disposition": "ADJUDICATE_POST_TERMINAL_DELTA"
+    },
+    {
+      "path": "app/core/data.js",
+      "domain": "core-config-data-router-permissions",
+      "terminalCertifiedBlob": "a885af50b4b3e98679fa372c8765c38242d0a4c0",
+      "currentBlob": "703472f0659ed8581e2ec2c34522c90385f3a0ac",
+      "latestApprovedSource": "3d36b46c53e970899d16e24a7061bd33c5ba812f",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "disposition": "ADJUDICATE_POST_TERMINAL_DELTA"
+    },
+    {
+      "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "domain": "canonical-hr-state-adapters",
+      "terminalCertifiedBlob": "090d01dc4913112a68d39f6c1547e6556458384d",
+      "currentBlob": "6e599771aa694457a904a4be639868fe065e4e9f",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): make project source routing explicit and multi-project safe; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "disposition": "ADJUDICATE_POST_TERMINAL_DELTA"
+    },
+    {
+      "path": "app/adapters/tya-cumulative-read-model-v2.js",
+      "domain": "canonical-hr-state-adapters",
+      "terminalCertifiedBlob": "d93f308ad8de48c11b7a6b37662809757acc0af4",
+      "currentBlob": "5793dff8ab72315e161662a8ccd6e7ffd0ed5be1",
+      "latestApprovedSource": "3d36b46c53e970899d16e24a7061bd33c5ba812f",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "disposition": "ADJUDICATE_POST_TERMINAL_DELTA"
+    },
+    {
+      "path": "app/adapters/tya-canonical-state-semantics-v2.js",
+      "domain": "canonical-hr-state-adapters",
+      "terminalCertifiedBlob": "5c62a221f4a5a33fc133b4f34e636f722beaca4d",
+      "currentBlob": "f8e472154fa8869bcbb2e6aa240d0f0be9ed3f5c",
+      "latestApprovedSource": "3d36b46c53e970899d16e24a7061bd33c5ba812f",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "disposition": "ADJUDICATE_POST_TERMINAL_DELTA"
+    },
+    {
+      "path": "app/adapters/tya-live-source-refresh-watch-v2.js",
+      "domain": "canonical-hr-state-adapters",
+      "terminalCertifiedBlob": "4f10c7cf1e2bbd665c7723b7edf2dd43991474ec",
+      "currentBlob": "c83e455ed50fa23552abaf1a9ecd16d81903d12b",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): make project source routing explicit and multi-project safe; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "disposition": "ADJUDICATE_POST_TERMINAL_DELTA"
+    },
+    {
+      "path": "app/adapters/tya-canonical-shopper-portal-v2.js",
+      "domain": "shoppers-mi-visitas-profile",
+      "terminalCertifiedBlob": "a605f5b154a5d330f452e6b72d6c3f50fc343d00",
+      "currentBlob": "621a90d701e736ecb448da019d2240486fbcd134",
+      "latestApprovedSource": "dcba411b1e6f88d3e500fd5e2df53d664af7771e",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): enforce owner shopper credential rule; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "disposition": "ADJUDICATE_POST_TERMINAL_DELTA"
+    },
+    {
+      "path": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+      "domain": "human-runtime-domain-consistency",
+      "terminalCertifiedBlob": "3acc508ac242407ea688b6a4ba964409af1125ba",
+      "currentBlob": "be7331eda76b750e2454e096b9cc3cb705a4c50a",
+      "latestApprovedSource": "57ffe11bc4a209bed1d73b9487bad55a4f653a1d",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): gate human runtime on live HR authority; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "disposition": "ADJUDICATE_POST_TERMINAL_DELTA"
+    },
+    {
+      "path": "app/adapters/tya-c6-domain-consistency-bridge.js",
+      "domain": "human-runtime-domain-consistency",
+      "terminalCertifiedBlob": "81f1e5807dfe18e0f53a348813b98fe353eeb7a1",
+      "currentBlob": "b5f660ae49e5bccb041127fcb88d025264f84174",
+      "latestApprovedSource": "dcba411b1e6f88d3e500fd5e2df53d664af7771e",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): enforce owner shopper credential rule; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "disposition": "ADJUDICATE_POST_TERMINAL_DELTA"
+    },
+    {
+      "path": "app/modules/visitas.js",
+      "domain": "visits-review-postulations-reservations",
+      "terminalCertifiedBlob": "67b96c49e6e8ed58974c7c6e80e84a89c9485cf7",
+      "currentBlob": "43f1aa36468340aa96ceec30b30f4816b13c6d2a",
+      "latestApprovedSource": "3d36b46c53e970899d16e24a7061bd33c5ba812f",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "disposition": "ADJUDICATE_POST_TERMINAL_DELTA"
+    },
+    {
+      "path": "app/modules/postulaciones.js",
+      "domain": "visits-review-postulations-reservations",
+      "terminalCertifiedBlob": "fc1bf4e962b04fe8bd06f599cf7404aac5f34f72",
+      "currentBlob": "a6d11eb76a834182e76b981e4d954a1d3aa7f357",
+      "latestApprovedSource": "3d36b46c53e970899d16e24a7061bd33c5ba812f",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "disposition": "ADJUDICATE_POST_TERMINAL_DELTA"
+    },
+    {
+      "path": "app/modules/shoppers.js",
+      "domain": "shoppers-mi-visitas-profile",
+      "terminalCertifiedBlob": "5fba01c9b96de9bb6b97bccc3fa5c83d82d7214b",
+      "currentBlob": "bc767591653f0f5a49214de60a4886c6b40c2330",
+      "latestApprovedSource": "dcba411b1e6f88d3e500fd5e2df53d664af7771e",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): enforce owner shopper credential rule; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "disposition": "ADJUDICATE_POST_TERMINAL_DELTA"
+    }
+  ],
+  "recoveryOnlyOwners": [
+    {
+      "path": "app/adapters/cxorbia-canonical-write-firewall-v1.js",
+      "domain": "persistence-command-ack-boundary",
+      "currentBlob": "10c87de64550a1cfe6a9f7ae96e8a0445a71222f",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "app/adapters/cxorbia-command-adapter-v1.js",
+      "domain": "persistence-command-ack-boundary",
+      "currentBlob": "2d195893221eb6f9863db47946ec775db7f37367",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+      "domain": "persistence-command-ack-boundary",
+      "currentBlob": "58bd2514a0086dfcf34be266b8d36ba7dca97036",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js",
+      "domain": "persistence-command-ack-boundary",
+      "currentBlob": "218ca59cb37dd17d3de6ba81660616f9c1c45116",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "app/adapters/cxorbia-shopper-admin-command-contract-v1.js",
+      "domain": "persistence-command-ack-boundary",
+      "currentBlob": "c928691256c1b7c18a51758d3dce94c63b26e976",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "app/adapters/tya-live-source-inplace-apply.js",
+      "domain": "canonical-hr-state-adapters",
+      "currentBlob": "30ebde6ecd49e27328fafc904c07c33ea2687c83",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "app/core/backend-cxdata-read-guard.js",
+      "domain": "auth-protected-data-runtime",
+      "currentBlob": "49b66d84ddb772e1e33a9845ddff9cde1ccdc670",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "app/core/backend-firebase.js",
+      "domain": "auth-protected-data-runtime",
+      "currentBlob": "0bba12d8f241c7704dd01862b8902491dda01b6f",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "app/core/backend-protected-dev-mode.js",
+      "domain": "auth-protected-data-runtime",
+      "currentBlob": "1e8637339b4c61a8827993f0166047f6172cbca9",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "backend/contracts/cxorbia-project-source-contract-v1.json",
+      "domain": "projects-periods-hr-source-wizard-multiproject",
+      "currentBlob": "b92aa2e4464930cc74e10a6142ce762a40527961",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
+      "domain": "persistence-command-ack-boundary",
+      "currentBlob": "e1c428ca1156cae36ca233cdc3bdeaad4ecccf89",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+      "domain": "persistence-command-ack-boundary",
+      "currentBlob": "b359b88b5ec6b229c4685e57430d1f45663b382b",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "backend/runtime/cxorbia-project-command-provider-v1.mjs",
+      "domain": "projects-periods-hr-source-wizard-multiproject",
+      "currentBlob": "abd18d1a5b551307a4fb2f317fab100bbe739f24",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
+      "domain": "persistence-command-ack-boundary",
+      "currentBlob": "914aa47d2bd9d3a155ee458219193d45f8a971ee",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/server.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "currentBlob": "febf836d7ac0df7bb0b3d43c88023d08c38c8951",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
+      "domain": "persistence-command-ack-boundary",
+      "currentBlob": "b1d2cd588fd7409ededba4dea1fdece0d08df91a",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "backend/runtime/hr-live-service/Dockerfile",
+      "domain": "phase-a-supporting-core",
+      "currentBlob": "ad39487f397ed759db67e4f35c7699d65d47af97",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "currentBlob": "a048ce612df1d84f138150679f642063c0895134",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "tools/hr-source/tya-canonical-visit-state-r20.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "currentBlob": "b76677a6a49fc50624b0cd31142f29132f0caa5d",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "tools/hr-source/tya-reapply-canonical-state-r20.mjs",
+      "domain": "canonical-hr-state-adapters",
+      "currentBlob": "30f713184a96c367deba4d15547ea0aff854c565",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "app/adapters/cxorbia-exact-identity-contract-v1.js",
+      "domain": "identity-membership-roll-forward",
+      "currentBlob": "9b2d465dfe4d77a0a30786b0d540903b0f014c32",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "app/adapters/cxorbia-identity-roll-forward-v1.js",
+      "domain": "identity-membership-roll-forward",
+      "currentBlob": "89d1de9535ac4537c0309c8bf24483cceebc08e5",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "app/adapters/cxorbia-shopper-membership-wiring-v1.js",
+      "domain": "identity-membership-roll-forward",
+      "currentBlob": "a96370a5a72ac6a12a6733d6e768a52293abe82b",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "app/adapters/cxorbia-provider-identity-link-runtime-v1.js",
+      "domain": "identity-membership-roll-forward",
+      "currentBlob": "c1c0627f34243e43b52219198ea023b0af387041",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js",
+      "domain": "identity-membership-roll-forward",
+      "currentBlob": "ffdfe6b7de4b58b1d17765ce6f7820076a5ea157",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "app/adapters/tya-phase-a-authority-compat-v1.js",
+      "domain": "phase-a-supporting-core",
+      "currentBlob": "6a54ddbbbf3a6d717c9e9ffed6a16f3bba1591b0",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "app/adapters/cxorbia-command-http-transport-v1.js",
+      "domain": "persistence-command-ack-boundary",
+      "currentBlob": "72bdfcdaa5667b62b52962396631e1665506ba13",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "app/adapters/cxorbia-hr-write-adapter-contract-v1.js",
+      "domain": "persistence-command-ack-boundary",
+      "currentBlob": "aad818a8be3581397672ade7988c9a5ec9b4ccb0",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js",
+      "domain": "persistence-command-ack-boundary",
+      "currentBlob": "9c6c3170e5ea8cde2693667b56534b8d0b0043ef",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "app/adapters/cxorbia-legal-runtime-http-v1.js",
+      "domain": "persistence-command-ack-boundary",
+      "currentBlob": "56385f181c7e7e36b903ea18c1e470f759749a86",
+      "latestApprovedSource": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "latestApprovedAuthority": "P0_PROVEN_RECOVERY_SUCCESSOR: observable non-blocking legal runtime",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "app/adapters/tya-financial-canonical-source-safe-adapter.js",
+      "domain": "phase-a-supporting-core",
+      "currentBlob": "931054b79a4b477e3f6732829ac02e476f6780ca",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    },
+    {
+      "path": "app/adapters/tya-delegated-coordination-finance-guard-v1.js",
+      "domain": "phase-a-supporting-core",
+      "currentBlob": "18c5dc95129b434c6362a313d4c8b317bea7a965",
+      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "disposition": "ADJUDICATE_RECOVERY_ONLY_OWNER"
+    }
+  ],
+  "priorityOwners": [
+    {
+      "path": "app/adapters/tya-live-source-inplace-apply.js",
+      "reason": "Shopper protegido fallback + synthetic mapPosts",
+      "priority": "P0"
+    },
+    {
+      "path": "app/adapters/tya-canonical-shopper-portal-v2.js",
+      "reason": "authenticated shopper canonical profile/history binding regression",
+      "priority": "P0"
+    },
+    {
+      "path": "app/adapters/tya-c6-domain-consistency-bridge.js",
+      "reason": "identity map/profile/history dependency closure",
+      "priority": "P0"
+    },
+    {
+      "path": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+      "reason": "human runtime release/binding dependency",
+      "priority": "P0"
+    },
+    {
+      "path": "app/modules/shoppers.js",
+      "reason": "authorized Admin shopper identity/profile surface",
+      "priority": "P0"
+    },
+    {
+      "path": "app/adapters/cxorbia-identity-roll-forward-v1.js",
+      "reason": "canonicalShopperId roll-forward dependency",
+      "priority": "P0"
+    },
+    {
+      "path": "app/adapters/cxorbia-shopper-membership-wiring-v1.js",
+      "reason": "Auth/membership -> canonical shopper binding",
+      "priority": "P0"
+    },
+    {
+      "path": "app/adapters/cxorbia-provider-identity-link-runtime-v1.js",
+      "reason": "exact persisted identity links",
+      "priority": "P0"
+    },
+    {
+      "path": "app/modules/postulaciones.js",
+      "reason": "must display only durable real postulations",
+      "priority": "P0"
+    },
+    {
+      "path": "app/adapters/tya-canonical-reservations-guard-v2.js",
+      "reason": "currently forces source pending/read-only",
+      "priority": "P0"
+    },
+    {
+      "path": "app/modules/finanzas.js",
+      "reason": "financial surfaces inconsistent",
+      "priority": "P0"
+    },
+    {
+      "path": "app/adapters/tya-canonical-finance-read-model-v2.js",
+      "reason": "finance authority dependency",
+      "priority": "P0"
+    },
+    {
+      "path": "app/adapters/tya-financial-canonical-source-safe-adapter.js",
+      "reason": "finance source-safe dependency",
+      "priority": "P0"
+    },
+    {
+      "path": "app/core/data.js",
+      "reason": "period/project scope affects historical selection",
+      "priority": "P0"
+    },
+    {
+      "path": "app/modules/midia.js",
+      "reason": "period semantics/visual context",
+      "priority": "P0"
+    }
+  ],
+  "noProductChange": true,
+  "noDeploy": true,
+  "productionTouched": false,
+  "nextExactAction": "Pass2 read-only: for priority owners, locate exact human/functional approved checkpoint and compare semantic diffs. Then complete remaining Recovery-only owners. No product mutation until KEEP/RECOVER is assigned 20/20."
+}
