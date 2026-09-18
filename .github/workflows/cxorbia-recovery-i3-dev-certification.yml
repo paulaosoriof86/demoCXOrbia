@@ -247,14 +247,14 @@ jobs:
               await page.waitForFunction(()=>!!window.firebase?.auth,null,{timeout:90000});
               const attemptToken=await auth.createCustomToken(shopper.id);
               try{
-                await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},attemptToken);
+                await page.evaluate(async t=>{const fb=window.firebase;if(!fb?.auth)throw new Error('FIREBASE_SDK_NOT_READY');await fb.auth().setPersistence(fb.auth.Auth.Persistence.LOCAL);await fb.auth().signInWithCustomToken(t);},attemptToken);
               }catch(error){
                 const msg=String(error&&error.message||error||'');
-                if(!/Execution context was destroyed|navigation|auth\/network-request-failed|network AuthError|timeout|interrupted connection|unreachable host/i.test(msg))throw error;
+                if(!/Execution context was destroyed|navigation|FIREBASE_SDK_NOT_READY|auth\/network-request-failed|network AuthError|timeout|interrupted connection|unreachable host/i.test(msg))throw error;
                 lastNetworkError=error;
               }
               await page.waitForLoadState('domcontentloaded',{timeout:90000}).catch(()=>{});
-              const persistedUid=await page.evaluate(()=>String(firebase.auth().currentUser?.uid||'')).catch(()=> '');
+              const persistedUid=await page.evaluate(()=>String(window.firebase?.auth?.().currentUser?.uid||'')).catch(()=> '');
               if(persistedUid===String(shopper.id)){authSettled=true;break;}
               if(attempt<5)await page.waitForTimeout(1500*attempt);
             }
@@ -264,7 +264,8 @@ jobs:
             // so the harness must not expect raw signInWithCustomToken() to populate it.
             await page.goto('about:blank',{waitUntil:'domcontentloaded',timeout:30000});
             await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
-            await page.waitForFunction(expectedUid=>String(firebase.auth().currentUser?.uid||'')===String(expectedUid),shopper.id,{timeout:90000});
+            await page.waitForFunction(()=>!!window.firebase?.auth,null,{timeout:90000});
+            await page.waitForFunction(expectedUid=>String(window.firebase?.auth?.().currentUser?.uid||'')===String(expectedUid),shopper.id,{timeout:90000});
             await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
             await page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});
             await page.waitForFunction(({tenantId,projectId})=>{const c=window.CX?.backendAuth?.context?.()||{},projects=Array.isArray(c.projectIds)?c.projectIds.map(String):[];return c.authenticated===true&&c.tenantId===tenantId&&c.role==='shopper'&&(projects.length===0||projects.includes(projectId));},{tenantId,projectId},{timeout:120000});
