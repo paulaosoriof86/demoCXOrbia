@@ -191,42 +191,68 @@ window.CX = window.CX || {};
     return String(v.hrRowId||coord||v.visitId||v.id||'').trim();
   }
 
-  async function stableVisitIdFromDurableRow(row, projectId){
-    if(!row || typeof row!=='object') return '';
-    const period=String(row.periodKey||row.periodId||'').trim().match(/^20\d{2}-(0[1-9]|1[0-2])/);
-    const periodKey=period?period[0]:'';
-    const country=String(row.country||row.pais||'').trim().toUpperCase();
-    const sourceRow=Number(row.sourceRow);
-    if(!periodKey||!/^[A-Z]{2}$/.test(country)||!Number.isInteger(sourceRow)||sourceRow<1) return '';
-    const canonical=[tenantId().toLowerCase(),String(projectId||row.projectId||'').trim().toLowerCase(),periodKey,country,sourceRow].join('|');
-    if(!canonical.split('|')[1]) return '';
-    const bytes=new TextEncoder().encode(canonical);
+  async function sha256Hex(value){
+    const bytes=new TextEncoder().encode(String(value==null?'':value));
     const digest=await crypto.subtle.digest('SHA-256',bytes);
-    const hex=Array.from(new Uint8Array(digest)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
-    return 'hr_'+periodKey+'_'+country.toLowerCase()+'_'+sourceRow+'_'+hex.slice(0,10);
+    return Array.from(new Uint8Array(digest)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
   }
 
-  async function selectAuthoritativeDurableVisits(rows, projectId){
+  function durablePeriodKey(row){
+    const match=String(row?.periodKey||row?.periodId||'').trim().match(/20\d{2}-(0[1-9]|1[0-2])/);
+    return match?match[0]:'';
+  }
+
+  async function providerR20VisitIdFromDurableRow(row){
+    if(!row||typeof row!=='object')return '';
+    const periodKey=durablePeriodKey(row),country=String(row.country||row.pais||'').trim().toUpperCase(),sourceRow=Number(row.sourceRow);
+    if(!periodKey||!/^[A-Z]{2}$/.test(country)||!Number.isInteger(sourceRow)||sourceRow<1)return '';
+    const cinemaId=String(row.cinemaId||row.branchId||'').trim();
+    const shopping=String(row.shopping||row.sucursal||row.branchName||'').trim();
+    const quincena=String(row.quincena||row.periodName||'').trim();
+    const franja=String(row.franja||row.slot||row.timeBand||'').trim();
+    const providerRaw=[cinemaId,shopping,quincena,franja,sourceRow].join('|').trim().toLowerCase();
+    const suffix=(await sha256Hex(providerRaw)).slice(0,10);
+    return 'hr_'+periodKey+'_'+country.toLowerCase()+'_'+sourceRow+'_'+suffix;
+  }
+
+  async function stableRowVisitIdFromDurableRow(row,projectId){
+    if(!row||typeof row!=='object')return '';
+    const periodKey=durablePeriodKey(row),country=String(row.country||row.pais||'').trim().toUpperCase(),sourceRow=Number(row.sourceRow);
+    if(!periodKey||!/^[A-Z]{2}$/.test(country)||!Number.isInteger(sourceRow)||sourceRow<1)return '';
+    const project=String(projectId||row.projectId||'').trim().toLowerCase();
+    if(!project)return '';
+    const canonical=[tenantId().toLowerCase(),project,periodKey,country,sourceRow].join('|');
+    const suffix=(await sha256Hex(canonical)).slice(0,10);
+    return 'hr_'+periodKey+'_'+country.toLowerCase()+'_'+sourceRow+'_'+suffix;
+  }
+
+  async function selectAuthoritativeDurableVisits(rows,projectId){
     const groups=new Map();
     (Array.isArray(rows)?rows:[]).forEach(function(row){
       const key=durableVisitKey(row);
-      if(!key) return;
-      if(!groups.has(key)) groups.set(key,[]);
+      if(!key)return;
+      if(!groups.has(key))groups.set(key,[]);
       groups.get(key).push(row);
     });
     const out=[];
     for(const [key,group] of groups){
-      if(group.length===1){ out.push(group[0]); continue; }
-      const expectedIds=new Set();
+      if(group.length===1){out.push(group[0]);continue;}
+      const providerMatches=[],stableMatches=[],declaredMatches=[];
       for(const row of group){
-        const expected=await stableVisitIdFromDurableRow(row,projectId);
-        if(expected) expectedIds.add(expected);
+        const docId=String(row.__docId||'').trim();
+        const providerId=await providerR20VisitIdFromDurableRow(row);
+        const stableId=await stableRowVisitIdFromDurableRow(row,projectId);
+        const declaredId=String(row.visitId||row.id||'').trim();
+        if(providerId&&docId===providerId)providerMatches.push({row,id:providerId});
+        if(stableId&&docId===stableId)stableMatches.push({row,id:stableId});
+        if(declaredId&&docId===declaredId)declaredMatches.push({row,id:declaredId});
       }
-      if(expectedIds.size!==1) throw new Error('DURABLE_VISIT_AUTHORITY_IDENTITY_AMBIGUOUS:'+key);
-      const expectedId=[...expectedIds][0];
-      const exact=group.filter(function(row){return String(row.__docId||'')===expectedId;});
-      if(exact.length!==1) throw new Error('DURABLE_VISIT_AUTHORITY_AMBIGUOUS:'+key);
-      out.push(Object.assign({},exact[0],{__canonicalDurableAuthority:true,__canonicalStableVisitId:expectedId,__historicalDuplicateCount:group.length-1}));
+      let chosen=null,authorityVersion='';
+      if(providerMatches.length===1){chosen=providerMatches[0];authorityVersion='live-r20-provider-id';}
+      else if(providerMatches.length===0&&stableMatches.length===1){chosen=stableMatches[0];authorityVersion='stable-row-id-v1';}
+      else if(providerMatches.length===0&&stableMatches.length===0&&declaredMatches.length===1){chosen=declaredMatches[0];authorityVersion='declared-id-fallback';}
+      if(!chosen)throw new Error('DURABLE_VISIT_AUTHORITY_AMBIGUOUS:'+key);
+      out.push(Object.assign({},chosen.row,{__canonicalDurableAuthority:true,__canonicalDurableVisitId:chosen.id,__canonicalDurableAuthorityVersion:authorityVersion,__historicalDuplicateCount:group.length-1}));
     }
     return out;
   }
