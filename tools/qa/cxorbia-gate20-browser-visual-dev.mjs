@@ -23,7 +23,9 @@ const tenantId=str(lock.tenantId||'tya'),projectId=str(lock.projectId||'cinepoli
 if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
 const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(tenantId);
 const members=await allDocs(tenant.collection('users'));
-const staff=members.find(m=>m.active===true&&str(m.authNamespace)==='staff'&&['super','admin'].includes(str(m.role))&&(str(m.role)==='super'||arr(m.projectIds).map(String).includes(projectId)));
+const staff=
+  members.find(m=>m.active===true&&str(m.authNamespace)==='staff'&&str(m.role)==='admin'&&arr(m.projectIds).map(String).includes(projectId))||
+  members.find(m=>m.active===true&&str(m.authNamespace)==='staff'&&str(m.role)==='super');
 ensure(staff,'AUTH_FAILURE',{blocker:'GATE20_FOCAL_ADMIN_MISSING'});
 
 // Recovery 2026-09-18: legal acceptance is never an eligibility or access gate.
@@ -76,6 +78,16 @@ async function authenticate(page,uid,expectedRole){
     const projectOk=role==='super'||projects.length===0||projects.includes(projectId);
     return c.authenticated===true&&c.tenantId===tenantId&&roleOk&&projectOk;
   },{tenantId,projectId,expectedRole},{timeout:120000});
+  const protectedRefresh=await page.evaluate(async()=>{
+    if(typeof window.CX?.backend?.refresh!=='function')return {ok:false,reason:'backend_refresh_missing',last:window.CX_BACKEND_LAST_STATE||null};
+    try{
+      const state=await window.CX.backend.refresh();
+      return {ok:true,projects:Array.isArray(state?.projects)?state.projects.length:0,shoppers:Array.isArray(state?.shoppers)?state.shoppers.length:0,visits:Array.isArray(state?.visits)?state.visits.length:0,last:window.CX_BACKEND_LAST_STATE||null,scope:window.CX_BACKEND_PROJECT_SCOPE||null};
+    }catch(e){
+      return {ok:false,reason:String(e?.message||e),last:window.CX_BACKEND_LAST_STATE||null,scope:window.CX_BACKEND_PROJECT_SCOPE||null};
+    }
+  });
+  if(!protectedRefresh?.ok)throw new Error('FUNCTIONAL_DEFECT:GATE20_PROTECTED_BACKEND_REFRESH_FAILED:'+JSON.stringify(protectedRefresh).slice(0,1200));
   await page.waitForFunction(()=>{const src=String(window.CX_BACKEND_LAST_STATE?.source||window.CX_BACKEND_DATA_SOURCE||'').toLowerCase();return !!window.CX?.data&&(src==='firestore'||src.startsWith('firestore/'));},null,{timeout:90000});
   const reconcile=await page.evaluate(async()=>{
     const sleep=ms=>new Promise(r=>setTimeout(r,ms));
