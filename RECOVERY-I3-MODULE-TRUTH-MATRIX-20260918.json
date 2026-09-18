@@ -103,11 +103,11 @@
     }
   },
   "productSource": {
-    "sha": "f98da1bf658618842691037f7f7f143a30d3a85a",
-    "treeSha": "742362cd477ee7a7b5e5ce25198159c251be232e",
-    "message": "fix(i3): select durable visits by live R20 provider identity"
+    "sha": "829afe0c98da6d44b10a8dfa92be233dbedebb6b",
+    "treeSha": "84a364832844e9058cae31ce28c83bb340359609",
+    "message": "fix(i3): resolve durable visit authority against live HR"
   },
-  "controlHeadAtConstruction": "f98da1bf658618842691037f7f7f143a30d3a85a",
+  "controlHeadAtConstruction": "829afe0c98da6d44b10a8dfa92be233dbedebb6b",
   "phaseAComplete": true,
   "allModulesMatch": true,
   "modules": [
@@ -120,8 +120,8 @@
         "app/core/backend-firebase.js",
         "app/core/backend-protected-dev-mode.js"
       ],
-      "lastApprovedAuthority": "RUN199_V5_EXACT_LIVE_DOCID_MATCH_USING_CURRENT_R20_PROVIDER_IDENTITY",
-      "sourceCommit": "f98da1bf658618842691037f7f7f143a30d3a85a",
+      "lastApprovedAuthority": "RUN199_V5_LIVE_HR_VISIT_ID_EQUALS_FIRESTORE_DOCID",
+      "sourceCommit": "829afe0c98da6d44b10a8dfa92be233dbedebb6b",
       "loadOrderEntrypoint": "app/index-backend-dev.html",
       "roles": [
         "Admin",
@@ -184,8 +184,8 @@
         "tools/hr-source/tya-canonical-visit-state-r20.mjs",
         "tools/hr-source/tya-reapply-canonical-state-r20.mjs"
       ],
-      "lastApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED",
-      "sourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+      "lastApprovedAuthority": "RUN199_V5_LIVE_HR_VISIT_ID_EQUALS_FIRESTORE_DOCID",
+      "sourceCommit": "829afe0c98da6d44b10a8dfa92be233dbedebb6b",
       "loadOrderEntrypoint": "app/index-backend-dev.html",
       "roles": [
         "Admin",
@@ -1028,15 +1028,15 @@
       "historicalApprovedBlob": "e93d17bb764030c9993455327957e52b4bf41885",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "0b0ffc1cc215afbcc2fd3400ea1496162da93b60",
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "f9e708f44bd1d77883e6a21efd23e88f4989f559",
-      "currentBlob": "f9e708f44bd1d77883e6a21efd23e88f4989f559",
+      "latestApprovedSource": "829afe0c98da6d44b10a8dfa92be233dbedebb6b",
+      "latestApprovedBlob": "21f838e0f6236c7aa9f82ba70e74501af8410639",
+      "currentBlob": "21f838e0f6236c7aa9f82ba70e74501af8410639",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "d93f308ad8de48c11b7a6b37662809757acc0af4",
-      "latestApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED",
+      "latestApprovedAuthority": "RUN199_V5_LIVE_HR_VISIT_ID_EQUALS_FIRESTORE_DOCID",
       "loadOrder": 41,
       "atomicDisposition": "FOCAL_FIX"
     },
@@ -1271,15 +1271,15 @@
       "historicalApprovedBlob": null,
       "f9ApprovedSource": null,
       "f9ApprovedBlob": null,
-      "latestApprovedSource": "f98da1bf658618842691037f7f7f143a30d3a85a",
-      "latestApprovedBlob": "7934b91afce19770d3556847c8c868a68a000d60",
-      "currentBlob": "7934b91afce19770d3556847c8c868a68a000d60",
+      "latestApprovedSource": "829afe0c98da6d44b10a8dfa92be233dbedebb6b",
+      "latestApprovedBlob": "4a1b16787855a7da537a84941cf706ad76850b97",
+      "currentBlob": "4a1b16787855a7da537a84941cf706ad76850b97",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "loadOrder": 56,
       "atomicDisposition": "FOCAL_FIX",
-      "latestApprovedAuthority": "RUN199_V5_EXACT_LIVE_DOCID_MATCH_USING_CURRENT_R20_PROVIDER_IDENTITY"
+      "latestApprovedAuthority": "RUN199_V5_LIVE_HR_VISIT_ID_EQUALS_FIRESTORE_DOCID"
     },
     {
       "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
@@ -2964,7 +2964,7 @@
     "rule": "preserve; do not regress/rebuild; not an I3 requirement absent transversal P0"
   },
   "devCertification": {
-    "status": "PENDING_SINGLE_RUN_AFTER_R20_PROVIDER_IDENTITY_FIX",
+    "status": "PENDING_SINGLE_RUN_AFTER_LIVE_HR_AUTHORITY_LAYER_FIX",
     "servedSourceSha": null,
     "servedTreeSha": null,
     "artifactSha256": null

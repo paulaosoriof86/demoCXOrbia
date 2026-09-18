@@ -7,7 +7,7 @@
   "controlParentSha": "326f1c66d62b7c710f71812969aac1d28b6b03ed",
   "productSourceBefore": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
   "productTreeBefore": "878fd60a2dc542cf04540026c34f1a7543cc2134",
-  "state": "COMPOSED_PRECERT_AFTER_R20_PROVIDER_IDENTITY_FIX",
+  "state": "COMPOSED_PRECERT_AFTER_LIVE_HR_AUTHORITY_LAYER_FIX",
   "entrypoint": "app/index-backend-dev.html",
   "loadedScriptsTotal": 130,
   "internalScriptsTotal": 124,
@@ -373,8 +373,8 @@
       "sourceBlob": "5793dff8ab72315e161662a8ccd6e7ffd0ed5be1",
       "classification": "FOCAL_FIX",
       "byteExact": false,
-      "reason": "P0_PROVEN_ATOMIC_COMPOSITION_OWNER",
-      "currentBlob": "f9e708f44bd1d77883e6a21efd23e88f4989f559",
+      "reason": "P0_PROVEN_RUN199_LIVE_HR_VISIT_ID_EQUALS_FIRESTORE_DOCID",
+      "currentBlob": "21f838e0f6236c7aa9f82ba70e74501af8410639",
       "compositionResult": "MATCH"
     },
     {
@@ -523,8 +523,8 @@
       "sourceBlob": "0bba12d8f241c7704dd01862b8902491dda01b6f",
       "classification": "FOCAL_FIX",
       "byteExact": false,
-      "reason": "P0_PROVEN_RUN199_EXACT_LIVE_DOCID_WITH_CURRENT_R20_PROVIDER_IDENTITY",
-      "currentBlob": "7934b91afce19770d3556847c8c868a68a000d60",
+      "reason": "P0_PROVEN_RUN199_LIVE_HR_VISIT_ID_EQUALS_FIRESTORE_DOCID",
+      "currentBlob": "4a1b16787855a7da537a84941cf706ad76850b97",
       "compositionResult": "MATCH"
     },
     {
@@ -1352,17 +1352,18 @@
     "same-artifact-human-live"
   ],
   "production": "DO_NOT_TOUCH",
-  "productSourceAfter": "f98da1bf658618842691037f7f7f143a30d3a85a",
-  "productTreeAfter": "742362cd477ee7a7b5e5ce25198159c251be232e",
+  "productSourceAfter": "829afe0c98da6d44b10a8dfa92be233dbedebb6b",
+  "productTreeAfter": "84a364832844e9058cae31ce28c83bb340359609",
   "sourceDiff": {
     "productCommit": "186c2a8f5a243d0ccf1c3720acbe13ff38825895",
     "filesChangedInInitialAtomicComposition": 11,
     "focalCorrectionFiles": [
-      "app/core/backend-firebase.js"
+      "app/core/backend-firebase.js",
+      "app/adapters/tya-cumulative-read-model-v2.js"
     ],
     "onlyAuthorizedOwners": true,
-    "latestProductCommit": "f98da1bf658618842691037f7f7f143a30d3a85a",
-    "latestProductTree": "742362cd477ee7a7b5e5ce25198159c251be232e"
+    "latestProductCommit": "829afe0c98da6d44b10a8dfa92be233dbedebb6b",
+    "latestProductTree": "84a364832844e9058cae31ce28c83bb340359609"
   },
   "moduleTruth": {
     "schemaVersion": "cxorbia.recovery.module-truth-matrix.v4",
@@ -1395,6 +1396,20 @@
       "fix": "Select the unique duplicate row whose Firestore docId self-matches the current R20 provider visit-id algorithm; preserve historical duplicates and retain stable-row/declared-id only as fail-closed compatibility fallbacks.",
       "sourceCommit": "f98da1bf658618842691037f7f7f143a30d3a85a",
       "blob": "7934b91afce19770d3556847c8c868a68a000d60"
+    },
+    {
+      "classification": "PERSISTENCE_FAILURE",
+      "owners": [
+        "app/core/backend-firebase.js",
+        "app/adapters/tya-cumulative-read-model-v2.js"
+      ],
+      "evidence": "Run212 proved every pre-Gate20 control, Client, human lane and focal persistence PASS, while Gate20 failed before HR composition because backend-firebase tried to choose a duplicate durable authority without access to live HR. Run199 v5 proves every duplicate group has exactly one Firestore docId equal to the live HR visitId.",
+      "fix": "Preserve all durable history at backend load; resolve authority only in cumulative composition where live HR and durable rows coexist, with exact live HR visitId == Firestore docId as supreme authority.",
+      "sourceCommit": "829afe0c98da6d44b10a8dfa92be233dbedebb6b",
+      "blobs": {
+        "app/core/backend-firebase.js": "4a1b16787855a7da537a84941cf706ad76850b97",
+        "app/adapters/tya-cumulative-read-model-v2.js": "21f838e0f6236c7aa9f82ba70e74501af8410639"
+      }
     }
   ]
 }

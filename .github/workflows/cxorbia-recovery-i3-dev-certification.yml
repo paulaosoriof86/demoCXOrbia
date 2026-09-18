@@ -30,8 +30,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  I3_CERTIFICATION_SOURCE_SHA: f98da1bf658618842691037f7f7f143a30d3a85a
-  I3_CERTIFICATION_SOURCE_TREE: 742362cd477ee7a7b5e5ce25198159c251be232e
+  I3_CERTIFICATION_SOURCE_SHA: 829afe0c98da6d44b10a8dfa92be233dbedebb6b
+  I3_CERTIFICATION_SOURCE_TREE: 84a364832844e9058cae31ce28c83bb340359609
   HISTORICAL_GATE20_BASELINE_RUN_ID: '34306578074'
   HISTORICAL_GATE20_BASELINE_RUN_ATTEMPT: '1'
   HISTORICAL_GATE20_BASELINE_SOURCE_SHA: bd2a519db5ebd08f17d47827997056db795c8c09
@@ -234,10 +234,10 @@ jobs:
         run: |
           set -Eeuo pipefail
           ! grep -q "id:'hr-post-'" app/adapters/tya-live-source-inplace-apply.js
-          grep -q "DURABLE_VISIT_AUTHORITY_AMBIGUOUS" app/core/backend-firebase.js
-          grep -q "providerR20VisitIdFromDurableRow" app/core/backend-firebase.js
-          grep -q "__canonicalDurableAuthorityVersion" app/core/backend-firebase.js
-          grep -q "live-r20-provider-id" app/core/backend-firebase.js
+          grep -q "preserveDurableVisits" app/core/backend-firebase.js
+          ! grep -q "DURABLE_VISIT_AUTHORITY_AMBIGUOUS" app/core/backend-firebase.js
+          grep -q "live_hr_visit_id_equals_firestore_doc_id" app/adapters/tya-cumulative-read-model-v2.js
+          grep -q "docId:uniqueIndex(protectedVisits" app/adapters/tya-cumulative-read-model-v2.js
           grep -q "hr_exact_crosswalk_precedes_historical_identity_link" app/adapters/cxorbia-provider-identity-link-runtime-v1.js
           grep -q "protectedState:'1'" app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
           grep -q "'reservation.create'" backend/runtime/cxorbia-operational-command-provider-v1.mjs
