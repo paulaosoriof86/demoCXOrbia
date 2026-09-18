@@ -30,7 +30,7 @@
     params.set('cxProjectId',periodizedProject[1]);
     changed=true;
   }
-  if(!params.get('cxProjectId')){params.set('cxProjectId','cinepolis');changed=true;}
+  // Project selection is explicit. No global project default is allowed.
   if(technical){
     if(params.get('cxProtectedRuntime')!==PROTECTED){params.set('cxProtectedRuntime',PROTECTED);changed=true;}
     if(params.has('cxHumanFullVisual')){params.delete('cxHumanFullVisual');changed=true;}
@@ -98,7 +98,17 @@
 <script src="core/liquidacion.js"></script>
 <script src="core/finanzas-core.js"></script>
 <script src="core/notif.js"></script>
-<script>window.CX_TYA_LIVE_SOURCE_URL='/api/tya/cinepolis/hr-live?view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV';window.CX_TYA_LIVE_POLL_MS=20000;</script>
+<script>
+(function(){
+  const params=new URLSearchParams(location.search||'');
+  const tenantId=String(params.get('cxTenantId')||'tya').trim();
+  const projectId=String(params.get('cxProjectId')||'').trim();
+  window.CX_TYA_LIVE_SOURCE_URL=tenantId&&projectId
+    ? '/api/tenants/'+encodeURIComponent(tenantId)+'/projects/'+encodeURIComponent(projectId)+'/hr-live?view=operational-names&cxOperationalPreview=YES_PAULA_20260731_NAMES_DEV'
+    : '';
+  window.CX_TYA_LIVE_POLL_MS=20000;
+})();
+</script>
 <script src="adapters/tya-live-source-inplace-apply.js"></script>
 <script src="adapters/tya-live-source-refresh-watch-v2.js"></script>
 <script src="adapters/cxorbia-exact-identity-contract-v1.js"></script>

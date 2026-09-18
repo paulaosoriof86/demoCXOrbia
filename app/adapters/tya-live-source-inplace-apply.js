@@ -2,22 +2,34 @@
    Adapter only: no page reload, no UI-module patch, no writes or production. */
 window.CX = window.CX || {};
 (function(){
-  const periodId=key=>'cinepolis-'+String(key||'pending');
-  const currency={GT:'Q',HN:'L'};
   const safeArray=value=>Array.isArray(value)?value:[];
   const latestOf=periods=>periods.slice().sort((a,b)=>String(a.periodKey).localeCompare(String(b.periodKey))).at(-1)||periods[0]||null;
+  const str=value=>String(value==null?'':value).trim();
+  const periodId=(projectId,key)=>projectId+'-'+String(key||'pending');
+  function sourceIdentity(snapshot){
+    const tenantId=str(snapshot?.tenantId||snapshot?.tenantConfig?.tenantId);
+    const projectId=str(snapshot?.projectId||snapshot?.projectConfig?.projectId);
+    if(!tenantId||!projectId)throw new Error('HR_LIVE_SCOPE_REQUIRED');
+    const projectName=str(snapshot?.projectName||snapshot?.projectConfig?.projectName||snapshot?.projectConfig?.name||projectId);
+    const projectConfig=snapshot?.projectConfig&&typeof snapshot.projectConfig==='object'?snapshot.projectConfig:{};
+    const countrySet=new Set(safeArray(projectConfig.countries).map(str).filter(Boolean));
+    for(const v of safeArray(snapshot?.visits)){const c=str(v?.pais||v?.country);if(c)countrySet.add(c);}
+    const currency=Object.assign({},projectConfig.currency||projectConfig.currencies||{});
+    for(const v of safeArray(snapshot?.visits)){const c=str(v?.pais||v?.country),cur=str(v?.currency||v?.moneda);if(c&&cur&&!currency[c])currency[c]=cur;}
+    return {tenantId,projectId,projectName,tenantName:str(snapshot?.tenantName||snapshot?.tenantConfig?.name||tenantId),countries:[...countrySet],currency,projectConfig};
+  }
 
-  function mapPeriods(snapshot){
+  function mapPeriods(snapshot,identity){
     return safeArray(snapshot.periods).map(p=>Object.assign({},p,{
-      id:periodId(p.key),tenantId:'tya',rootProjectId:'cinepolis',program:'cinepolis',programLabel:'Cinépolis',
-      projectId:'cinepolis',projectName:'Cinépolis',periodId:periodId(p.key),periodKey:p.key,
+      id:periodId(identity.projectId,p.key),tenantId:identity.tenantId,rootProjectId:identity.projectId,program:identity.projectId,programLabel:identity.projectName,
+      projectId:identity.projectId,projectName:identity.projectName,periodId:periodId(identity.projectId,p.key),periodKey:p.key,
       periodLabel:p.fullLabel||p.label||p.key,periodo:p.fullLabel||p.label||p.key,
-      name:'Cinépolis',sourcePeriodName:p.internalName||p.fullLabel||p.label||p.key,client:'TyA',
-      industry:'Mystery shopping · cines · GT/HN',countries:['GT','HN'],currency,accent:'#2196d3',
-      sucursales:Number(p.total||0),nVisitas:Number(p.total||0),honorario:{GT:60,HN:200},honRecibe:{GT:null,HN:null},
-      modelo:'directo',isr:5,regalias:10,boleto:{GT:0,HN:0},combo:'Configurable por visita HR',comboAmt:{GT:0,HN:0},
-      scenarios:['Cinépolis · visita regular','Cinépolis · fin de semana','Cinépolis · VIP / formato especial'],
-      quincenas:['Quincena 1','Quincena 2'],canales:['Visita presencial'],formato:'Mystery shopping cine',ronda:p.label,
+      name:identity.projectName,sourcePeriodName:p.internalName||p.fullLabel||p.label||p.key,client:identity.tenantName,
+      industry:identity.projectConfig.industry||'Mystery shopping',countries:identity.countries,currency:identity.currency,accent:'#2196d3',
+      sucursales:Number(p.total||0),nVisitas:Number(p.total||0),honorario:identity.projectConfig.honorario||{},honRecibe:identity.projectConfig.honorarioRecibe||{},
+      modelo:'directo',isr:5,regalias:10,boleto:identity.projectConfig.boleto||{},combo:'Configurable por visita HR',comboAmt:identity.projectConfig.comboAmt||{},
+      scenarios:safeArray(identity.projectConfig.scenarios),
+      quincenas:['Quincena 1','Quincena 2'],canales:['Visita presencial'],formato:identity.projectConfig.formato||'Mystery shopping',ronda:p.label,
       restriccion:'Reglas Q1/Q2, franja y visita previa configurables por proyecto.',
       cuestionario:{modo:'configurable',url:'',label:'CXOrbia / TyAOnline / externo / link por visita desde HR'},
       pago:{logica:'Pagos y liquidaciones se controlan por submitido y cruce financiero.',diasPago:null,moneda:'local'},
@@ -28,12 +40,12 @@ window.CX = window.CX || {};
     }));
   }
 
-  function mapVisits(snapshot){
+  function mapVisits(snapshot,identity){
     return safeArray(snapshot.visits).map((v,idx)=>Object.assign({},v,{
-      id:v.id||('hr-live-'+(idx+1)),tenantId:'tya',rootProjectId:'cinepolis',projectId:'cinepolis',projectName:'Cinépolis',
-      periodId:periodId(v.periodKey),periodKey:v.periodKey,periodLabel:v.periodLabel,hrRowId:v.hrRowId,sourceTab:v.sourceTab,sourceRow:v.sourceRow,
+      id:v.id||('hr-live-'+(idx+1)),tenantId:identity.tenantId,rootProjectId:identity.projectId,projectId:identity.projectId,projectName:identity.projectName,
+      periodId:periodId(identity.projectId,v.periodKey),periodKey:v.periodKey,periodLabel:v.periodLabel,hrRowId:v.hrRowId,sourceTab:v.sourceTab,sourceRow:v.sourceRow,
       num:idx+1,sucursal:v.sucursal||'Sucursal HR',ciudad:v.ciudad||'',pais:v.pais||v.country,
-      country:v.country||v.pais,currency:v.currency||currency[v.pais||v.country]||'',quincena:v.quincena||'',
+      country:v.country||v.pais,currency:v.currency||identity.currency[v.pais||v.country]||'',quincena:v.quincena||'',
       escenario:v.escenario||v.tipoCompra||'',franja:v.franja||'',franjaCode:v.franjaCode||null,canal:'Visita presencial',
       formato:v.formato||'Mystery shopping cine',honorario:Number(v.honorario||0),boleto:Number(v.boleto||0),
       combo:v.tipoCombo||'Configurable por HR',comboAmt:Number(v.comboAmt||0),estado:v.estado||'disponible',
@@ -64,10 +76,10 @@ window.CX = window.CX || {};
     }));
   }
 
-  function mapPosts(visits){
+  function mapPosts(visits,identity){
     return visits.filter(v=>['asignada','agendada','fuera_rango','disponible'].includes(v.estado)).slice(0,80).map((v,i)=>({
-      id:'hr-post-'+(i+1),visitaId:v.id,projectId:v.projectId||'cinepolis',projectName:v.projectName||'Cinépolis',
-      rootProjectId:v.rootProjectId||v.projectId||'cinepolis',periodId:v.periodId||periodId(v.periodKey),periodKey:v.periodKey,shopperId:v.shopperId,
+      id:'hr-post-'+(i+1),visitaId:v.id,projectId:v.projectId||identity.projectId,projectName:v.projectName||identity.projectName,
+      rootProjectId:v.rootProjectId||v.projectId||identity.projectId,periodId:v.periodId||periodId(identity.projectId,v.periodKey),periodKey:v.periodKey,shopperId:v.shopperId,
       shopper:v.shopper||'Shopper protegido',shopperCode:v.shopperCode||'',sucursal:v.sucursal,ciudad:v.ciudad,
       pais:v.pais,quincena:v.quincena,franjaCode:v.franjaCode,honorario:v.honorario,boleto:v.boleto,
       comboAmt:v.comboAmt,currency:v.currency,fechaProp:v.agendada||v.disponibleDesde,disponibleDesde:v.disponibleDesde,
@@ -87,7 +99,8 @@ window.CX = window.CX || {};
     const valid=!!(snapshot&&snapshot.sourceSafe===true&&snapshot.imported!==true&&snapshot.production!==true&&safeArray(snapshot.periods).length&&safeArray(snapshot.visits).length&&CX.data);
     if(!valid)throw new Error('Snapshot HR live inválido o vacío.');
     const previousPeriodKey=(()=>{try{return CX.data.period&&CX.data.period()?.periodKey||null;}catch(e){return null;}})();
-    const periods=mapPeriods(snapshot),visits=mapVisits(snapshot),shoppers=mapShoppers(snapshot),posts=mapPosts(visits);
+    const identity=sourceIdentity(snapshot);
+    const periods=mapPeriods(snapshot,identity),visits=mapVisits(snapshot,identity),shoppers=mapShoppers(snapshot),posts=mapPosts(visits,identity);
     const latest=latestOf(periods);
     const preferred=periods.find(p=>p.periodKey===previousPeriodKey)||periods.find(p=>p.periodKey===meta.latestPeriodKey)||latest;
 
@@ -97,17 +110,17 @@ window.CX = window.CX || {};
     window.CX_TYA_HR_SNAPSHOT_SOURCE_SAFE=false;
     window.CX_TYA_VISIBLE_DATA_READY=true;
 
-    CX.BRAND=Object.assign(CX.BRAND||{},{id:'tya',tenantId:'tya',clientName:'TyA',name:'TyA',tagline:'Tenant TyA · Phase A controlada',demoMode:false,countries:['GT','HN']});
+    CX.BRAND=Object.assign(CX.BRAND||{},{id:identity.tenantId,tenantId:identity.tenantId,clientName:identity.tenantName,demoMode:false,countries:identity.countries});
     CX.data.projects=periods;
     CX.data.shoppers=shoppers;
     CX.data._visitas=visits;
     CX.data._posts=posts;
-    CX.data.currentProjectId='cinepolis';
+    CX.data.currentProjectId=identity.projectId;
     CX.data.currentPeriodId=preferred&&preferred.id;
     CX.data.periodOperationalSummary=safeArray(snapshot.periodOperationalSummary);
     CX.data.sourceMode=snapshot.operationalIdentityPreview===true?'tya_hr_live_runtime_operational_display_dev':'tya_hr_live_runtime_source_safe_dev';
     CX.data.previewMeta=Object.assign({},CX.data.previewMeta||{}, {
-      tenantId:'tya',projectId:'cinepolis',projectName:'Cinépolis',sourceTitle:snapshot.source&&snapshot.source.title,
+      tenantId:identity.tenantId,projectId:identity.projectId,projectName:identity.projectName,sourceTitle:snapshot.source&&snapshot.source.title,
       generatedAt:snapshot.generatedAt||meta.generatedAt||null,sourceReadAt:meta.sourceReadAt||null,sourceRevision:meta.revision||null,
       periods:periods.length,tabs:snapshot.counts&&snapshot.counts.tabs,totalVisits:visits.length,countries:snapshot.counts&&snapshot.counts.byCountry,
       production:false,imported:false,sourceSafe:true,piiProtected:true,runtimeSyncActive:false,runtimeReadActive:true,revisionStable:true,
@@ -118,7 +131,7 @@ window.CX = window.CX || {};
     if(CX.dataSource){
       CX.dataSource.mode='connected';
       CX.dataSource.status='ready';
-      CX.dataSource.sourceRef=snapshot.operationalIdentityPreview===true?'hr-live-runtime:tya:cinepolis:display-name-only':'hr-live-runtime:tya:cinepolis';
+      CX.dataSource.sourceRef=snapshot.operationalIdentityPreview===true?('hr-live-runtime:'+identity.tenantId+':'+identity.projectId+':display-name-only'):('hr-live-runtime:'+identity.tenantId+':'+identity.projectId);
       CX.dataSource.updatedAt=meta.sourceReadAt||meta.generatedAt||new Date().toISOString();
       CX.dataSource.runtimeSyncActive=false;
       CX.dataSource.runtimeReadActive=true;
@@ -129,7 +142,7 @@ window.CX = window.CX || {};
     }
 
     window.CX_TYA_VISIBLE_DATA_CONTRACT={
-      tenantId:'tya',rootProjectId:'cinepolis',projectName:'Cinépolis',periodCount:periods.length,
+      tenantId:identity.tenantId,rootProjectId:identity.projectId,projectName:identity.projectName,periodCount:periods.length,
       uniquePeriodIds:new Set(periods.map(p=>p.id)).size,visitCount:visits.length,shopperCount:shoppers.length,
       currentPeriodId:CX.data.currentPeriodId,currentPeriodVisits:CX.data.visitas?CX.data.visitas().length:0,
       sourceRevision:meta.revision||null,sourceReadAt:meta.sourceReadAt||null,
@@ -140,8 +153,8 @@ window.CX = window.CX || {};
     if(typeof window.CX_TYA_BUILD_CORTE1_REPORTS==='function')window.CX_TYA_BUILD_CORTE1_REPORTS(snapshot,meta);
     if(CX.clienteData&&typeof CX.clienteData.invalidate==='function')CX.clienteData.invalidate();
     refreshBadge();
-    document.documentElement.setAttribute('data-cx-tenant','tya');
-    document.documentElement.setAttribute('data-cx-project','cinepolis');
+    document.documentElement.setAttribute('data-cx-tenant',identity.tenantId);
+    document.documentElement.setAttribute('data-cx-project',identity.projectId);
     document.documentElement.setAttribute('data-cx-source','hr-live');
     if(CX.bus&&typeof CX.bus.emit==='function')CX.bus.emit('visit-flow',{sourceRevision:meta.revision||null,reason:options.reason||'live_refresh'});
     try{window.dispatchEvent(new CustomEvent('cx:live-source-updated',{detail:{revision:meta.revision||null,sourceReadAt:meta.sourceReadAt||null,reason:options.reason||'live_refresh'}}));}catch(e){}

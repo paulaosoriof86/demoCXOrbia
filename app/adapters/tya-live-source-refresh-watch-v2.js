@@ -13,7 +13,16 @@
   const fullVisual=params.get('cxHumanFullVisual')==='YES_PAULA_20260731_FULL_PROFILE_DEV';
   const authenticatedHumanRuntime=protectedRuntime&&fullVisual&&!technicalAuthE2E;
   if(technicalAuthE2E){const reason='protected-technical-auth-owns-cxdata';window.CX_TYA_LIVE_SOURCE_WATCH_DISABLED_REASON=reason;window.CX_TYA_CHECK_LIVE_SOURCE=async()=>({ok:false,skipped:true,reason});return;}
-  const endpoint=window.CX_TYA_LIVE_SOURCE_URL||'/api/tya/cinepolis/hr-live';
+  function runtimeScope(){
+    let ctx=null;try{ctx=CX.backendAuth?.context?.()||null;}catch(_){}
+    const tenantId=String(ctx?.tenantId||params.get('cxTenantId')||CX.BACKEND?.tenantId||'').trim();
+    const scoped=Array.isArray(ctx?.projectIds)?[...new Set(ctx.projectIds.map(String).map(x=>x.trim()).filter(Boolean))]:[];
+    const projectId=String(params.get('cxProjectId')||CX.data?.currentProjectId||(scoped.length===1?scoped[0]:'')).trim();
+    const records=Array.isArray(CX.data?.__backendAllProjectRecords)?CX.data.__backendAllProjectRecords:[];
+    const project=records.find(x=>String(x?.id||x?.projectId||'').trim()===projectId)||null;
+    return {tenantId,projectId,project};
+  }
+  function endpoint(){if(window.CX_TYA_LIVE_SOURCE_URL)return String(window.CX_TYA_LIVE_SOURCE_URL);const scope=runtimeScope();if(!scope.tenantId||!scope.projectId)return '';return '/api/tenants/'+encodeURIComponent(scope.tenantId)+'/projects/'+encodeURIComponent(scope.projectId)+'/hr-live';}
   const pollMs=Math.max(15000,Number(window.CX_TYA_LIVE_POLL_MS||20000));
   let currentRevision=window.CX_TYA_HR_LIVE_META?.revision||null,checking=false,failures=0,pending=null,currentContentSignature=null;
   const VOLATILE=new Set(['generatedAt','sourceReadAt','sourceSnapshotAt','lastSnapshotAt','tabRegistryObservedAt','observedAt','refreshedAt','loadedAt','updatedAt','cacheAgeMs','refreshStartedAt','refreshFinishedAt','refreshDurationMs']);
@@ -21,7 +30,7 @@
   function signature(snapshot){try{return JSON.stringify(stableValue({periods:snapshot?.periods||[],visits:snapshot?.visits||[],shoppers:snapshot?.shoppers||[],periodOperationalSummary:snapshot?.periodOperationalSummary||[]}));}catch(_){return '';}}
   function canonicalHumanAuthReady(){
     if(!authenticatedHumanRuntime)return true;
-    try{const ctx=CX.backendAuth?.context?.();return !!(ctx&&ctx.authenticated===true&&ctx.tenantId==='tya');}catch(_){return false;}
+    try{const ctx=CX.backendAuth?.context?.(),scope=runtimeScope();return !!(ctx&&ctx.authenticated===true&&scope.tenantId&&ctx.tenantId===scope.tenantId&&scope.projectId);}catch(_){return false;}
   }
   function canonicalProtectedAuthorityReady(){
     if(!authenticatedHumanRuntime)return true;
@@ -35,11 +44,11 @@
   }
   function refreshBadge(){try{const el=document.getElementById('tbDataBadge');if(el&&CX.dataSource){const b=CX.dataSource.badge();el.innerHTML='<span class="d" style="background:'+b.c+'"></span> '+b.t;}}catch(_){}}
   function markUpdating(){if(CX.dataSource){CX.dataSource.updating=true;CX.dataSource.runtimeReadActive=true;}refreshBadge();}
-  function canonicalBaselineReady(){return !!(CX.data&&Array.isArray(CX.data.projects)&&CX.data.projects.length===14&&Array.isArray(CX.data._visitas)&&CX.data._visitas.length===616&&Array.isArray(CX.data.shoppers)&&CX.data.shoppers.length===208);}
+  function canonicalBaselineReady(){return !!(CX.data&&Array.isArray(CX.data.projects)&&CX.data.projects.length>0&&Array.isArray(CX.data._visitas)&&CX.data._visitas.length>0);}
   function markLive(meta){
     window.CX_TYA_HR_VIVA_SOURCE_SAFE=true;window.CX_TYA_HR_SNAPSHOT_SOURCE_SAFE=false;
     if(CX.data){const stable=fullVisual&&window.CX_TYA_FULL_VISUAL_READY===true;CX.data.sourceMode=stable?'tya_hr_live_plus_firestore_full_profile_stable_dev':fullVisual?'tya_hr_live_preparing_full_profile_stable_dev':'tya_hr_live_runtime_source_safe_dev';CX.data.previewMeta=Object.assign({},CX.data.previewMeta||{},{generatedAt:meta.generatedAt||null,sourceReadAt:meta.sourceReadAt||null,runtimeReadActive:true,runtimeSyncActive:false,sourceRevision:meta.revision||null,revisionStable:meta.revisionStable===true,fullProfileVisual:stable||CX.data.previewMeta?.fullProfileVisual===true,note:stable?'HR viva estable; perfil protegido compuesto desde revisión canónica.':'Lectura HR viva runtime sin recargar la página.'});}
-    if(CX.dataSource){CX.dataSource.mode=(authenticatedHumanRuntime||technicalAuthE2E)?'connected':'source_safe_preview';CX.dataSource.status='ready';CX.dataSource.sourceRef=authenticatedHumanRuntime?'hr-live-all-periods+firestore-authenticated-exact-overlay':fullVisual?'hr-live+firestore-full-profile-stable+canonical-finance':'hr-live-runtime:tya:cinepolis';CX.dataSource.updatedAt=meta.sourceReadAt||meta.generatedAt||new Date().toISOString();CX.dataSource.runtimeSyncActive=false;CX.dataSource.runtimeReadActive=true;CX.dataSource.updating=false;CX.dataSource.blockers=[];}
+    if(CX.dataSource){CX.dataSource.mode=(authenticatedHumanRuntime||technicalAuthE2E)?'connected':'source_safe_preview';CX.dataSource.status='ready';CX.dataSource.sourceRef=authenticatedHumanRuntime?'hr-live-all-periods+firestore-authenticated-exact-overlay':fullVisual?'hr-live+firestore-full-profile-stable+canonical-finance':('hr-live-runtime:'+runtimeScope().tenantId+':'+runtimeScope().projectId);CX.dataSource.updatedAt=meta.sourceReadAt||meta.generatedAt||new Date().toISOString();CX.dataSource.runtimeSyncActive=false;CX.dataSource.runtimeReadActive=true;CX.dataSource.updating=false;CX.dataSource.blockers=[];}
     refreshBadge();
   }
   function markFailure(error){
@@ -56,7 +65,7 @@
     }
     refreshBadge();
   }
-  async function getJson(format,extra={}){const q=new URLSearchParams({format,...extra,ts:String(Date.now())});const r=await fetch(endpoint+(endpoint.includes('?')?'&':'?')+q,{cache:'no-store',headers:{'Cache-Control':'no-cache, no-store','Pragma':'no-cache'}});const j=await r.json().catch(()=>null);if(!r.ok)throw new Error('HTTP '+r.status+(j?.message?': '+j.message:''));return j;}
+  async function getJson(format,extra={}){const source=endpoint();if(!source)throw new Error('PROJECT_SOURCE_REQUIRED');const q=new URLSearchParams({format,...extra,ts:String(Date.now())});const r=await fetch(source+(source.includes('?')?'&':'?')+q,{cache:'no-store',headers:{'Cache-Control':'no-cache, no-store','Pragma':'no-cache'}});const j=await r.json().catch(()=>null);if(!r.ok)throw new Error('HTTP '+r.status+(j?.message?': '+j.message:''));return j;}
   function busy(){try{const modal=[...document.querySelectorAll('dialog[open],[aria-modal="true"],.modal.show,.modal.open,.overlay.open,.drawer.open,.cx-ov')].some(x=>x.getClientRects().length);const a=document.activeElement;return modal||!!(a&&a!==document.body&&(['INPUT','TEXTAREA','SELECT'].includes(a.tagName)||a.isContentEditable));}catch(_){return false;}}
   function capture(){const content=document.querySelector('.content'),rail=document.getElementById('rail');return {periodId:CX.data?.currentPeriodId||null,projectId:CX.data?.currentProjectId||null,view:CX.session?.view||null,contentTop:content?.scrollTop||0,contentLeft:content?.scrollLeft||0,railTop:rail?.scrollTop||0,windowX:window.scrollX||0,windowY:window.scrollY||0};}
   function restoreModel(s){if(!CX.data||!s)return;if(s.periodId&&CX.data.projects?.some(p=>String(p.id)===String(s.periodId)))CX.data.currentPeriodId=s.periodId;if(s.projectId)CX.data.currentProjectId=s.projectId;if(CX.session&&s.view)CX.session.view=s.view;}
@@ -66,6 +75,9 @@
   function applySilent(snapshot,runtime,reason){const fn=window.CX_TYA_APPLY_LIVE_SNAPSHOT;if(typeof fn!=='function')throw new Error('Adapter in-place no disponible');const state=capture(),original=CX.bus?.emit;let intercepted=0;if(original)CX.bus.emit=function(event,...args){if(event==='visit-flow'){intercepted++;return;}return original.call(CX.bus,event,...args);};try{return {result:fn(snapshot,runtime,{reason}),state,intercepted};}finally{if(original)CX.bus.emit=original;}}
   function recompose(reason){if(!fullVisual)return {ok:true,skipped:true};const fn=window.CX_TYA_REAPPLY_FULL_VISUAL_OVERLAY;if(typeof fn!=='function')return {ok:false,skipped:true,reason:'overlay_not_ready'};return fn(reason);}
   async function check(reason){
+    const scope=runtimeScope();
+    if(scope.project?.operationalSource?.mode==='internal')return {ok:true,skipped:true,reason:'internal_project_firestore_authority'};
+    if(!scope.projectId)return {ok:false,skipped:true,reason:'project_selection_required'};
     if(authenticatedHumanRuntime&&!canonicalHumanAuthReady())return {ok:false,skipped:true,reason:'authenticated_human_context_required'};
     if(authenticatedHumanRuntime&&!canonicalProtectedAuthorityReady()){
       if(CX.dataSource){CX.dataSource.updating=false;CX.dataSource.warnings=['Esperando autoridad canónica Auth + Firestore + HR antes de habilitar refresh HR.'];refreshBadge();}

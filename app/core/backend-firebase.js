@@ -320,15 +320,16 @@ window.CX = window.CX || {};
   function resolveActiveProjects(projects){
     const ctx = authContext();
     const scoped = ctx && !isOperator(ctx) ? toList(ctx.projectIds) : [];
-    const requested = scoped.length ? scoped : toList(cfg.previewProjectIds).concat(toList(cfg.defaultProjectId));
-    const ids = new Set(requested.filter(Boolean));
-    let active = ids.size ? projects.filter(function(p){ return ids.has(p.id); }) : [];
-    if(!active.length && cfg.defaultProjectId){ active = projects.filter(function(p){ return p.id === cfg.defaultProjectId; }); }
-    if(!active.length && projects.length){
-      const preferred = projects.find(function(p){ return /cinepolis/i.test([p.id, p.name].join(' ')); });
-      active = preferred ? [preferred] : [projects[0]];
+    const explicit = toList(cfg.previewProjectIds).concat(toList(cfg.defaultProjectId)).filter(Boolean);
+    const requested = scoped.length ? scoped : explicit;
+    if(requested.length){
+      const ids = new Set(requested);
+      return projects.filter(function(p){ return ids.has(p.id); });
     }
-    return active;
+    // Operators may inspect the project registry, but no project is selected
+    // merely because it is first or historically familiar.
+    if(ctx && isOperator(ctx)) return projects.slice();
+    return projects.length===1 ? projects.slice() : [];
   }
 
   async function loadCanonicalPeriods(activeProjects){
@@ -419,7 +420,9 @@ window.CX = window.CX || {};
     CX.data._posts = state.posts || [];
     const keep = CX.data.currentProjectId;
     const exists = CX.data.projects.some(function(p){ return p.id === keep; });
-    CX.data.currentProjectId = exists ? keep : (cfg.defaultProjectId && CX.data.projects.some(function(p){return p.id === cfg.defaultProjectId;}) ? cfg.defaultProjectId : CX.data.projects[0].id);
+    const explicitProjectId = String(cfg.defaultProjectId || '').trim();
+    const explicitExists = explicitProjectId && CX.data.projects.some(function(p){return p.id === explicitProjectId;});
+    CX.data.currentProjectId = exists ? keep : (explicitExists ? explicitProjectId : (CX.data.projects.length===1 ? CX.data.projects[0].id : ''));
     const keepPeriod = CX.data.currentPeriodId;
     const periodExists = CX.data.periods.some(function(p){ return p.id === keepPeriod; });
     const activePeriod = CX.data.periods.find(function(p){ return p.active; }) || CX.data.periods[CX.data.periods.length - 1] || null;

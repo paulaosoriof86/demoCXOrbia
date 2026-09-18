@@ -20,6 +20,8 @@ window.CX = window.CX || {};
   const TOKEN = 'YES_PAULA_20260730_PROTECTED_DEV';
   const protectedRuntime = params.get('cxProtectedRuntime') === TOKEN;
   if(!protectedRuntime) return;
+  const explicitProjectId = String(params.get('cxProjectId') || '').trim();
+  const explicitTenantId = String(params.get('cxTenantId') || 'tya').trim();
 
   const cfg = CX.BACKEND = Object.assign(CX.BACKEND || {}, {
     enabled:true,
@@ -34,9 +36,9 @@ window.CX = window.CX || {};
     allowEmptyBackend:false,
     failClosedOnReadError:true,
     preserveCxDataInterface:true,
-    tenantId:'tya',
-    defaultProjectId:params.get('cxProjectId') || 'cinepolis',
-    previewProjectIds:[params.get('cxProjectId') || 'cinepolis'],
+    tenantId:explicitTenantId,
+    defaultProjectId:explicitProjectId || null,
+    previewProjectIds:explicitProjectId ? [explicitProjectId] : [],
     canonicalBackendProjectId:'cxorbia-backend-dev',
     migrationTargetProjectId:'cxorbia-backend-dev',
     sandboxOnly:false,

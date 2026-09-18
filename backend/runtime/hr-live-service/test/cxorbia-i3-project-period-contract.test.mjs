@@ -20,22 +20,23 @@ test('I3 HR frontend mapping keeps project and period independent end to end',()
   vm.runInNewContext(read('app/adapters/tya-live-source-inplace-apply.js'),sandbox);
   const snapshot={
     sourceSafe:true,imported:false,production:false,generatedAt:'2026-09-17T00:00:00Z',
+    tenantId:'tya',projectId:'project-alpha',projectName:'Proyecto Alpha',projectConfig:{projectId:'project-alpha',countries:['GT'],currency:{GT:'Q'}},
     source:{title:'HR test'},counts:{tabs:1,byCountry:{GT:1}},
     periods:[{key:'2026-09',label:'SEP 2026',fullLabel:'SEP 2026',internalName:'Cinépolis SEP',total:1,countries:{GT:1,HN:0,total:1}}],
     visits:[{id:'visit-1',periodKey:'2026-09',periodLabel:'SEP 2026',pais:'GT',estado:'disponible',sucursal:'Cinema test'}],
     shoppers:[]
   };
   window.CX_TYA_APPLY_LIVE_SNAPSHOT(snapshot,{revision:'a'.repeat(64),latestPeriodKey:'2026-09'});
-  assert.equal(data.currentProjectId,'cinepolis');
-  assert.equal(data.currentPeriodId,'cinepolis-2026-09');
-  assert.equal(data.projects[0].projectId,'cinepolis');
-  assert.equal(data.projects[0].periodId,'cinepolis-2026-09');
-  assert.equal(data.projects[0].name,'Cinépolis');
+  assert.equal(data.currentProjectId,'project-alpha');
+  assert.equal(data.currentPeriodId,'project-alpha-2026-09');
+  assert.equal(data.projects[0].projectId,'project-alpha');
+  assert.equal(data.projects[0].periodId,'project-alpha-2026-09');
+  assert.equal(data.projects[0].name,'Proyecto Alpha');
   assert.equal(data.projects[0].periodo,'SEP 2026');
-  assert.equal(data._visitas[0].projectId,'cinepolis');
-  assert.equal(data._visitas[0].periodId,'cinepolis-2026-09');
-  assert.equal(data._posts[0].projectId,'cinepolis');
-  assert.equal(data._posts[0].periodId,'cinepolis-2026-09');
+  assert.equal(data._visitas[0].projectId,'project-alpha');
+  assert.equal(data._visitas[0].periodId,'project-alpha-2026-09');
+  assert.equal(data._posts[0].projectId,'project-alpha');
+  assert.equal(data._posts[0].periodId,'project-alpha-2026-09');
 });
 
 test('I3 cumulative composition never rewrites projectId from periodId',()=>{
@@ -95,7 +96,35 @@ test('I3 HR authority bridge follows backend operator scope semantics',()=>{
   assert.match(backend,/function isOperator\(ctx\)\{ return \['super','admin','ops','coordinador'\]\.includes\(roleOf\(ctx\)\); \}/);
   assert.match(backend,/if\(!ctx \|\| isOperator\(ctx\)\) return getAll\(projectsCol\(\)\)/);
   assert.match(bridge,/\['super','admin','ops','coordinador'\]\.includes\(role\)/);
-  assert.match(bridge,/return projects\.includes\('cinepolis'\)/);
+  assert.match(bridge,/return projects\.includes\(scope\.projectId\)/);
+  assert.doesNotMatch(bridge,/projects\.includes\('cinepolis'\)/);
+});
+
+test('I3 project selection has no global Cinépolis default and HR runtime is scope checked',()=>{
+  const html=read('app/index-backend-dev.html');
+  const protectedMode=read('app/core/backend-protected-dev-mode.js');
+  const backend=read('app/core/backend-firebase.js');
+  const mapper=read('app/adapters/tya-live-source-inplace-apply.js');
+  const bridge=read('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js');
+  const runtime=read('backend/runtime/hr-live-service/server.mjs');
+  assert.doesNotMatch(html,/params\.set\('cxProjectId','cinepolis'\)/);
+  assert.doesNotMatch(protectedMode,/defaultProjectId:params\.get\('cxProjectId'\) \|\| 'cinepolis'/);
+  assert.doesNotMatch(backend,/preferred[\s\S]{0,120}cinepolis/i);
+  assert.doesNotMatch(mapper,/projectId:'cinepolis'|rootProjectId:'cinepolis'/);
+  assert.match(bridge,/endpointFor\(scope\)/);
+  assert.match(runtime,/hrRouteScope\(pathname\)/);
+  assert.match(runtime,/hr_scope_mismatch/);
+});
+
+test('I3 project operational source remains durable and explicit',()=>{
+  const projectModule=read('app/modules/proyectos.js');
+  const provider=read('backend/runtime/cxorbia-project-command-provider-v1.mjs');
+  assert.match(projectModule,/operationalSource/);
+  assert.match(projectModule,/providerBindingId/);
+  assert.match(projectModule,/mappingRef/);
+  assert.match(provider,/operationalSource/);
+  assert.match(provider,/providerBindingId/);
+  assert.match(provider,/mappingRef/);
 });
 
 test('I3 human entry composes approved period-independent identity roll-forward and canonicalizes periodized project query',()=>{

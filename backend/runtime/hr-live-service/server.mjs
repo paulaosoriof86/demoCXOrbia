@@ -25,10 +25,16 @@ const REGISTRY_FILE=path.join(ROOT,'backend/config/tya-live-hr-tab-registry.sour
 const FIREBASE_PROJECT=String(process.env.GOOGLE_CLOUD_PROJECT||process.env.GCLOUD_PROJECT||'').trim();
 const DEV_OPERATIONAL_NAMES=process.env.CXORBIA_DEV_OPERATIONAL_NAMES==='true';
 const DEV_OPERATIONAL_TOKEN='YES_PAULA_20260731_NAMES_DEV';
-const ENDPOINT_PATHS=new Set([
-  '/v1/tenants/tya/projects/cinepolis/hr-live',
-  '/api/tya/cinepolis/hr-live'
+const LEGACY_ENDPOINT_PATHS=new Map([
+  ['/v1/tenants/tya/projects/cinepolis/hr-live',{tenantId:'tya',projectId:'cinepolis'}],
+  ['/api/tya/cinepolis/hr-live',{tenantId:'tya',projectId:'cinepolis'}]
 ]);
+function hrRouteScope(pathname){
+  const generic=String(pathname||'').match(/^\/(?:api|v1)\/tenants\/([^/]+)\/projects\/([^/]+)\/hr-live$/);
+  if(generic)return {tenantId:decodeURIComponent(generic[1]),projectId:decodeURIComponent(generic[2]),legacy:false};
+  const legacy=LEGACY_ENDPOINT_PATHS.get(String(pathname||''));
+  return legacy?{...legacy,legacy:true}:null;
+}
 const ALLOWED_ORIGINS=new Set([
   'https://cxorbia-backend-dev.web.app',
   'https://cxorbia-backend-dev.firebaseapp.com',
@@ -323,14 +329,19 @@ const server=http.createServer(async(req,res)=>{
   }
   if(req.method!=='GET')return sendJson(res,405,{ok:false,error:'method_not_allowed'});
   if(url.pathname==='/health')return sendJson(res,200,{ok:true,service:'cxorbia-live-hr-source-safe',cacheMs:CACHE_MS,bootstrapReady:Boolean(cache),revisionStable:true,autoMonthProviderRegistry:true,operationalDisplayIdentityDev:DEV_OPERATIONAL_NAMES,devFullVisualEndpoint:true,liveUserAdminSourceReady:true,legalRuntimeSourceReady:true,shopperReconciliationReady:true,visitReconciliationReady:true,lastShopperReconciliation,lastVisitReconciliation,lastRefreshError,writes:false,hrWrites:false,production:false});
-  if(!ENDPOINT_PATHS.has(url.pathname))return sendJson(res,404,{ok:false,error:'not_found'});
+  const requestedScope=hrRouteScope(url.pathname);
+  if(!requestedScope)return sendJson(res,404,{ok:false,error:'not_found'});
   if(await maybeHandleDevVisualRequest(req,res,url,{sendJson}))return;
   try{
     const forceFresh=url.searchParams.get('fresh')==='1';
     const current=await buildSnapshot({forceFresh});
+    const actualScope=snapshotScope(current.snapshot);
+    if(actualScope.tenantId!==requestedScope.tenantId||actualScope.projectId!==requestedScope.projectId){
+      return sendJson(res,409,{ok:false,error:'hr_scope_mismatch',requested:{tenantId:requestedScope.tenantId,projectId:requestedScope.projectId},source:{tenantId:actualScope.tenantId,projectId:actualScope.projectId},writes:false,hrWrites:false,production:false});
+    }
     const format=url.searchParams.get('format')||'json';
     const operational=DEV_OPERATIONAL_NAMES&&url.searchParams.get('view')==='operational-names'&&url.searchParams.get('cxOperationalPreview')===DEV_OPERATIONAL_TOKEN;
-    const meta=runtimeMeta(current);
+    const meta={...runtimeMeta(current),tenantId:requestedScope.tenantId,projectId:requestedScope.projectId,legacyRoute:requestedScope.legacy===true};
     const snapshot=operational?operationalSnapshot(current):current.snapshot;
     const json=operational?JSON.stringify(snapshot):current.json;
     res.setHeader('ETag',`"${current.revision}"`);
