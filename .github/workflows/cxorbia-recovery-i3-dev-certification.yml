@@ -645,7 +645,7 @@ jobs:
                 tenantId:String(token?.claims?.tenantId||''),
                 authNamespace:String(token?.claims?.authNamespace||'')
               };
-            },{email:expectedEmail,password:sample.password});
+            },{email:internalEmail(sample.login),password:sample.password});
             passwordLoginPassed=
               result.uid===sample.uid&&
               result.role==='shopper'&&
