@@ -114,7 +114,20 @@ async function authenticate(page,uid,expectedRole){
     return {ok:false,last,authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,gate:window.CX_C6_HR_AUTHORITY_GATE||null,source:String(window.CX?.dataSource?.sourceRef||''),projectId:String(window.CX?.data?.currentProjectId||'')};
   });
   if(!reconcile?.ok)throw new Error('FUNCTIONAL_DEFECT:GATE20_EXPLICIT_HR_RECONCILE_FAILED:'+JSON.stringify(reconcile).slice(0,1200));
-  if(reconcile.source!=='hr-live-all-periods+firestore-authenticated-exact-overlay'||reconcile.projectId!==projectId||reconcile.gate?.blocked===true)throw new Error('FUNCTIONAL_DEFECT:GATE20_HR_AUTHORITY_CONTEXT_INVALID:'+JSON.stringify(reconcile).slice(0,1200));
+  const authority=reconcile?.authority||{};
+  const preview=await page.evaluate(()=>({projectId:String(window.CX?.data?.previewMeta?.projectId||''),hrAuthority:window.CX?.data?.previewMeta?.hrAuthority===true,sourceRef:String(window.CX?.dataSource?.sourceRef||''),currentProjectId:String(window.CX?.data?.currentProjectId||'')}));
+  const authorityOk=authority.applied===true&&
+    Number(authority.hrVisits||0)>0&&
+    Number(authority.uniqueVisitKeys||0)===Number(authority.hrVisits||0)&&
+    Number(authority.duplicateVisitKeys||0)===0&&
+    Number(authority.duplicateShopperIds||0)===0&&
+    Number(authority.identityMapSize||0)>0&&
+    Number(authority.providerWrites||0)===0&&
+    Number(authority.authWrites||0)===0&&
+    authority.production===false;
+  const scopeOk=(preview.projectId===projectId||preview.currentProjectId===projectId)&&preview.hrAuthority===true;
+  const sourceOk=preview.sourceRef==='hr-live-all-periods+firestore-authenticated-exact-overlay';
+  if(!authorityOk||!scopeOk||!sourceOk)throw new Error('FUNCTIONAL_DEFECT:GATE20_LIVE_AUTHORITY_INVARIANT_FAIL:'+JSON.stringify({authority,preview}).slice(0,1600));
 }
 async function routeCheck(page,kind,route,expected){
   await page.evaluate(r=>window.CX.router.nav(r),route);
