@@ -244,6 +244,7 @@ jobs:
             let authSettled=false,lastNetworkError=null;
             for(let attempt=1;attempt<=5&&!authSettled;attempt++){
               await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
+              await page.waitForFunction(()=>!!window.firebase?.auth,null,{timeout:90000});
               const attemptToken=await auth.createCustomToken(shopper.id);
               try{
                 await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},attemptToken);
