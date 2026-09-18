@@ -274,10 +274,20 @@ jobs:
           const cross=JSON.parse(fs.readFileSync(CROSSWALK,'utf8'));
           const exactBySource=new Map();
           const exactEvidenceBySource=new Map();
+          const exactEvidenceConflicts=[];
           const addExact=(source,target,evidence)=>{
             source=str(source);target=str(target);if(!source||!target)return;
             const prior=exactBySource.get(source);
-            if(prior&&prior!==target)throw new Error('MAPPING_FAILURE:EXACT_IDENTITY_EVIDENCE_CONFLICT');
+            if(prior&&prior!==target){
+              exactEvidenceConflicts.push({
+                sourceId:source,
+                priorTargetFingerprint:sha(prior).slice(0,24),
+                newTargetFingerprint:sha(target).slice(0,24),
+                priorEvidence:[...(exactEvidenceBySource.get(source)||new Set())].sort(),
+                newEvidence:evidence
+              });
+              return;
+            }
             exactBySource.set(source,target);
             if(!exactEvidenceBySource.has(source))exactEvidenceBySource.set(source,new Set());
             exactEvidenceBySource.get(source).add(evidence);
@@ -309,6 +319,20 @@ jobs:
               addExact(token,target,'durable_shopper_identity_crosswalk');
               durableExactAliasEvidence++;
             }
+          }
+
+          if(exactEvidenceConflicts.length){
+            const report={
+              schemaVersion:'cxorbia.i3.exact-identity-evidence-conflict.v1',
+              generatedAt:new Date().toISOString(),tenantId:TENANT,projectId:PROJECT_ID,
+              decision:'HOLD_I3_EXACT_IDENTITY_EVIDENCE_CONFLICT',classification:'MAPPING_FAILURE',
+              exactVisitCrosswalkSha256:mappingHash,durableExactAliasEvidence,
+              conflicts:exactEvidenceConflicts,
+              providerWrites:0,hrWrites:0,authWrites:0,production:false
+            };
+            fs.writeFileSync(OUT+'/identity-link-adjudication.json',JSON.stringify(report,null,2)+'\n');
+            console.log(JSON.stringify(report));
+            process.exit(2);
           }
 
           const linkSnap=await linksRef.get();
