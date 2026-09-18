@@ -205,6 +205,195 @@ jobs:
           echo "HOSTING_VERSION_NAME=$HOSTING_VERSION_NAME" >> "$GITHUB_ENV"
           echo "HOSTING_RELEASE_TIME=$HOSTING_RELEASE_TIME" >> "$GITHUB_ENV"
 
+      - name: Adjudicate proven exact HR aliases before fresh reconciliation
+        run: |
+          set -Eeuo pipefail
+          IDENTITY_TMP="$RUNNER_TEMP/cxorbia-i3-operational-identity-$GITHUB_RUN_ID.json"
+          REGISTRY_TMP="$RUNNER_TEMP/cxorbia-i3-tab-registry-$GITHUB_RUN_ID.json"
+          trap 'rm -f "$IDENTITY_TMP" "$REGISTRY_TMP"' EXIT
+          export FIREBASE_SERVICE_ACCOUNT_JSON="$(cat "$GOOGLE_APPLICATION_CREDENTIALS")"
+          export CXORBIA_HR_OPERATIONAL_IDENTITY_OUT="$IDENTITY_TMP"
+          export CXORBIA_HR_TAB_REGISTRY="$REGISTRY_TMP"
+          export CXORBIA_EXPECTED_CURRENT_PERIOD="2026-09"
+          node "$SOURCE_DIR/tools/hr-source/tya-live-provider-registry-identity-dev.mjs" > "$OUT/identity-registry-safe-console.json"
+          PROJECT="$PROJECT" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" OUT="$OUT" IDENTITY_TMP="$IDENTITY_TMP" \
+          CROSSWALK="$SOURCE_DIR/app/docs/evidence/VISIT-IDENTITY-CROSSWALK-READONLY-LATEST.json" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import crypto from 'node:crypto';
+          import { applicationDefault, initializeApp, getApps } from 'firebase-admin/app';
+          import { FieldValue, getFirestore } from 'firebase-admin/firestore';
+
+          const PROJECT=process.env.PROJECT,TENANT=process.env.TENANT_ID,PROJECT_ID=process.env.PROJECT_ID,OUT=process.env.OUT;
+          const IDENTITY_TMP=process.env.IDENTITY_TMP,CROSSWALK=process.env.CROSSWALK;
+          const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
+          const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
+          const active=new Set(['active','confirmed','approved','materialized']);
+          const trusted=new Set(['provider_exact','tenant_adjudication','platform_created','migrated_exact']);
+          const strip=v=>str(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+          const part=v=>strip(v).toLowerCase().replace(/[^a-z0-9]+/g,'');
+          const credentialLogin=name=>{
+            const tokens=str(name).split(/\s+/).filter(Boolean),first=tokens[0]||'',last=tokens.slice(1).join(' ');
+            const a=part(first),b=part(last);return a&&b?a+'.'+b:'';
+          };
+          const flatten=v=>{
+            if(v==null)return[];
+            if(Array.isArray(v))return v.flatMap(flatten);
+            if(typeof v==='object')return Object.values(v).flatMap(flatten);
+            return [str(v)];
+          };
+          const linkTokens=link=>[...new Set([
+            link?.sourceIdentityKey,link?.sourceSubjectId,link?.sourceId,link?.sourceKey,
+            link?.legacyShopperId,link?.legacyId,link?.externalShopperId,link?.externalId,link?.hrRowId,
+            link?.personId,link?.shopperDocId,
+            ...flatten(link?.sourceIdentity),...flatten(link?.identity),...flatten(link?.crosswalk),...flatten(link?.profile),
+            ...flatten(link?.exactIdentityAnchors),
+            ...arr(link?.sourceAliases),...arr(link?.sourceIdentityAliases),...arr(link?.identityAliases),
+            ...arr(link?.exactAliases),...arr(link?.aliases)
+          ].map(str).filter(Boolean))];
+          const applicable=link=>{
+            const status=str(link?.status||link?.state).toLowerCase(),authority=str(link?.authorityType||link?.authority?.type).toLowerCase();
+            const authorityRef=str(link?.authorityRef||link?.authority?.evidenceRef||link?.authority?.adjudicationId||link?.authority?.providerRef||link?.authority?.commandId||link?.providerAckRef||link?.adjudicationId||link?.commandId||link?.idempotencyKey||link?.id);
+            const tenant=str(link?.tenantId||link?.scope?.tenantId),scope=str(link?.projectScope||link?.scope?.projectId||link?.projectId||'*');
+            const sourceSystem=str(link?.sourceSystem||link?.sourceNamespace||link?.sourceType||link?.sourceIdentity?.sourceSystem).toLowerCase();
+            const canonical=str(link?.canonicalShopperId||link?.canonicalId||link?.shopperId||link?.profileId);
+            return tenant===TENANT&&active.has(status)&&trusted.has(authority)&&!!authorityRef&&link?.periodIndependent===true&&!link?.periodKey&&!link?.periodId&&!link?.periodScope&&(scope==='*'||scope.toLowerCase()==='tenant'||scope===PROJECT_ID)&&sourceSystem.includes('hr')&&!!canonical&&linkTokens(link).length>0;
+          };
+          const canonicalFor=link=>str(link?.canonicalShopperId||link?.canonicalId||link?.shopperId||link?.profileId);
+
+          const overlay=JSON.parse(fs.readFileSync(IDENTITY_TMP,'utf8'));
+          if(overlay?.schemaVersion!=='cxorbia.tya-dev-operational-display-identity.v1'||overlay?.displayIdentityOnly!==true||overlay?.containsContactData!==false)throw new Error('SOURCE_FAILURE:IDENTITY_OVERLAY_CONTRACT');
+          const groups=new Map();
+          for(const row of arr(overlay.identities)){
+            const id=str(row?.shopperId),login=credentialLogin(row?.displayName);
+            if(!id||!login)continue;
+            if(!groups.has(login))groups.set(login,[]);
+            groups.get(login).push(id);
+          }
+          const collisions=[...groups.entries()].map(([login,ids])=>({login,ids:[...new Set(ids)].sort()})).filter(x=>x.ids.length>1);
+
+          const cross=JSON.parse(fs.readFileSync(CROSSWALK,'utf8'));
+          const exactBySource=new Map(arr(cross?.crosswalk).filter(x=>x?.action==='REUSE_EXISTING_CANONICAL_SHOPPER'&&str(x?.plannedShopperId)&&str(x?.canonicalShopperId)).map(x=>[str(x.plannedShopperId),str(x.canonicalShopperId)]));
+          const mappingHash=str(cross?.mappingHashSha256);
+          if(!/^[a-f0-9]{64}$/.test(mappingHash))throw new Error('SOURCE_FAILURE:EXACT_VISIT_CROSSWALK_HASH_INVALID');
+
+          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
+          const db=getFirestore(),tenant=db.collection('tenants').doc(TENANT),linksRef=tenant.collection('shopperIdentityLinks');
+          const linkSnap=await linksRef.get();
+          const links=linkSnap.docs.map(d=>({id:d.id,...(d.data()||{})})).filter(applicable);
+          const tokenTargets=new Map();
+          for(const link of links){
+            const target=canonicalFor(link);
+            for(const token of linkTokens(link)){
+              if(!tokenTargets.has(token))tokenTargets.set(token,new Set());
+              tokenTargets.get(token).add(target);
+            }
+          }
+          const resolveTrusted=source=>{
+            let cur=str(source);const seen=new Set();
+            for(let i=0;i<8;i++){
+              if(!cur||seen.has(cur))throw new Error('MAPPING_FAILURE:IDENTITY_LINK_CHAIN_CYCLE');
+              seen.add(cur);
+              const targets=[...(tokenTargets.get(cur)||new Set())];
+              if(targets.length>1)throw new Error('MAPPING_FAILURE:IDENTITY_LINK_TOKEN_CONFLICT');
+              if(targets.length===0)return cur;
+              if(targets[0]===cur)return cur;
+              cur=targets[0];
+            }
+            throw new Error('MAPPING_FAILURE:IDENTITY_LINK_CHAIN_DEPTH');
+          };
+
+          const planned=[],blockers=[];
+          for(const group of collisions){
+            const rows=group.ids.map(sourceId=>{
+              const direct=[...(tokenTargets.get(sourceId)||new Set())];
+              if(direct.length>1)return {sourceId,reason:'DIRECT_TRUSTED_LINK_CONFLICT'};
+              if(direct.length===1)return {sourceId,alreadyLinked:true,target:resolveTrusted(sourceId),exactVisitTarget:exactBySource.get(sourceId)||null};
+              const exactVisitTarget=exactBySource.get(sourceId);
+              if(!exactVisitTarget)return {sourceId,reason:'EXACT_VISIT_IDENTITY_EVIDENCE_MISSING'};
+              return {sourceId,alreadyLinked:false,target:resolveTrusted(exactVisitTarget),exactVisitTarget};
+            });
+            const bad=rows.filter(x=>x.reason);
+            if(bad.length){blockers.push({credentialFingerprint:sha(group.login).slice(0,24),technicalIds:group.ids,reasons:bad.map(x=>({sourceId:x.sourceId,reason:x.reason}))});continue;}
+            const targets=[...new Set(rows.map(x=>x.target))];
+            if(targets.length!==1){blockers.push({credentialFingerprint:sha(group.login).slice(0,24),technicalIds:group.ids,reasons:[{reason:'EXACT_EVIDENCE_TARGET_DIVERGENCE',targetFingerprints:targets.map(x=>sha(x).slice(0,24))}]});continue;}
+            const target=targets[0];
+            for(const row of rows.filter(x=>!x.alreadyLinked)){
+              planned.push({sourceId:row.sourceId,canonicalShopperId:target,exactVisitCanonicalShopperId:row.exactVisitTarget,credentialFingerprint:sha(group.login).slice(0,24)});
+            }
+          }
+
+          const base={
+            schemaVersion:'cxorbia.i3.exact-credential-collision-adjudication.v1',
+            generatedAt:new Date().toISOString(),tenantId:TENANT,projectId:PROJECT_ID,
+            identityCount:arr(overlay.identities).length,collisionGroupCount:collisions.length,
+            collisionTechnicalIdCount:collisions.reduce((n,x)=>n+x.ids.length,0),
+            exactVisitCrosswalkSha256:mappingHash,existingTrustedIdentityLinks:links.length,
+            rawNamesPersisted:false,rawLoginsPersisted:false,hrWrites:0,authWrites:0,production:false
+          };
+          if(blockers.length){
+            const report={...base,decision:'HOLD_I3_EXACT_IDENTITY_ADJUDICATION',classification:'MAPPING_FAILURE',providerWrites:0,blockers,plannedWrites:0};
+            fs.writeFileSync(OUT+'/identity-link-adjudication.json',JSON.stringify(report,null,2)+'\n');
+            console.log(JSON.stringify(report));
+            process.exit(2);
+          }
+
+          const uniquePlan=[...new Map(planned.map(x=>[x.sourceId,x])).values()];
+          if(uniquePlan.length){
+            await db.runTransaction(async tx=>{
+              const refs=uniquePlan.map(p=>({p,id:'irl_i3_'+sha([TENANT,PROJECT_ID,'hr',p.sourceId,p.canonicalShopperId].join('\0')).slice(0,32)}));
+              const snaps=await Promise.all(refs.map(x=>tx.get(linksRef.doc(x.id))));
+              for(let i=0;i<refs.length;i++){
+                const {p,id}=refs[i],snap=snaps[i],ref=linksRef.doc(id);
+                if(snap.exists){
+                  const prior={id,...(snap.data()||{})};
+                  if(!applicable(prior)||canonicalFor(prior)!==p.canonicalShopperId||!linkTokens(prior).includes(p.sourceId))throw new Error('MAPPING_FAILURE:DETERMINISTIC_LINK_ID_CONFLICT');
+                  continue;
+                }
+                tx.set(ref,{
+                  schemaVersion:'cxorbia.shopper-identity-link.v1',
+                  tenantId:TENANT,projectId:PROJECT_ID,projectScope:PROJECT_ID,
+                  canonicalShopperId:p.canonicalShopperId,
+                  sourceSystem:'hr',sourceIdentityKey:p.sourceId,sourceIdentityAliases:[p.sourceId],
+                  status:'materialized',periodIndependent:true,sourceSafe:true,
+                  authorityType:'tenant_adjudication',
+                  authorityRef:'exact-visit-crosswalk:'+mappingHash,
+                  adjudicationEvidence:{type:'exact_visit_identity_crosswalk',mappingHashSha256:mappingHash,exactVisitCanonicalShopperId:p.exactVisitCanonicalShopperId},
+                  createdBy:'cxorbia-recovery-i3-exact-credential-collision-adjudicator-v1',
+                  createdAt:FieldValue.serverTimestamp(),updatedAt:FieldValue.serverTimestamp()
+                },{merge:false});
+              }
+            });
+          }
+
+          const after=await linksRef.get(),afterLinks=after.docs.map(d=>({id:d.id,...(d.data()||{})})).filter(applicable);
+          const afterTargets=new Map();
+          for(const link of afterLinks)for(const token of linkTokens(link)){
+            if(!afterTargets.has(token))afterTargets.set(token,new Set());
+            afterTargets.get(token).add(canonicalFor(link));
+          }
+          function resolveAfter(source,map){
+            let cur=str(source);const seen=new Set();
+            for(let i=0;i<8;i++){
+              if(!cur||seen.has(cur))throw new Error('MAPPING_FAILURE:READBACK_CHAIN_CYCLE');
+              seen.add(cur);const targets=[...(map.get(cur)||new Set())];
+              if(targets.length>1)throw new Error('MAPPING_FAILURE:READBACK_LINK_CONFLICT');
+              if(!targets.length||targets[0]===cur)return cur;cur=targets[0];
+            }
+            throw new Error('MAPPING_FAILURE:READBACK_CHAIN_DEPTH');
+          }
+          const readback=[];
+          for(const p of uniquePlan){
+            const targets=[...(afterTargets.get(p.sourceId)||new Set())];
+            if(targets.length!==1||resolveAfter(targets[0],afterTargets)!==p.canonicalShopperId)throw new Error('PERSISTENCE_FAILURE:IDENTITY_LINK_READBACK_MISMATCH');
+            readback.push({sourceId:p.sourceId,canonicalShopperId:p.canonicalShopperId});
+          }
+          const report={...base,decision:collisions.length?'PASS_I3_EXACT_IDENTITY_LINKS_MATERIALIZED':'PASS_I3_NO_CREDENTIAL_COLLISIONS',classification:null,providerWrites:uniquePlan.length,plannedWrites:uniquePlan.length,readback,collisionGroups:collisions.map(g=>({credentialFingerprint:sha(g.login).slice(0,24),technicalIds:g.ids}))};
+          fs.writeFileSync(OUT+'/identity-link-adjudication.json',JSON.stringify(report,null,2)+'\n');
+          console.log(JSON.stringify(report));
+          NODE
+          decision="$(jq -r '.decision' "$OUT/identity-link-adjudication.json")"
+          [[ "$decision" = "PASS_I3_EXACT_IDENTITY_LINKS_MATERIALIZED" || "$decision" = "PASS_I3_NO_CREDENTIAL_COLLISIONS" ]]
+
       - name: Read fresh authoritative HR source
         run: |
           set -euo pipefail
@@ -212,7 +401,7 @@ jobs:
             -o "$OUT/hr-fresh.json" -w '%{http_code}' "$HOSTING_URL/api/tya/cinepolis/hr-live?format=json&fresh=1&i3=${GITHUB_RUN_ID}")"
           if [[ "$code" != "200" ]]; then
             echo "HR_FRESH_HTTP_STATUS=$code" >&2
-            node -e 'const fs=require("fs");let p={};try{p=JSON.parse(fs.readFileSync(process.env.OUT+"/hr-fresh.json","utf8"))}catch{};const raw=String(p?.error||p?.message||p?._runtime?.refreshError||p?.data?._runtime?.refreshError||"HR_FRESH_NON_200");console.error("HR_FRESH_ERROR="+raw.replace(/[\\r\\n]+/g," ").slice(0,800))' >&2
+            node -e 'const fs=require("fs");let p={};try{p=JSON.parse(fs.readFileSync(process.env.OUT+"/hr-fresh.json","utf8"))}catch{};const raw=String(p?.message||p?._runtime?.refreshError||p?.data?._runtime?.refreshError||p?.error||"HR_FRESH_NON_200");console.error("HR_FRESH_ERROR="+raw.replace(/[\\r\\n]+/g," ").slice(0,800))' >&2
             exit 1
           fi
           node -e 'const fs=require("fs"),p=JSON.parse(fs.readFileSync(process.env.OUT+"/hr-fresh.json","utf8")),s=p?.snapshot||p?.data||p,rt=p?._runtime||s?._runtime||{};if(s?.sourceSafe!==true||rt.refreshError)throw new Error("SOURCE_FAILURE:HR_FRESH_INVALID");fs.writeFileSync(process.env.OUT+"/hr-readback.json",JSON.stringify({decision:"PASS_I3_HR_EXACT_RUNTIME",sourceSafe:true,production:false},null,2)+"\n")'
