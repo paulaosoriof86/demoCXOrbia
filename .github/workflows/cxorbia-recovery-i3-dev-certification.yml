@@ -162,7 +162,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           echo "ad262dd0165a7159e62076f67a6339b375ce0760dd6b650abc4ee438b04950af  CXORBIA_CANONICAL_ROUTE_INVENTORY_2026-09-18.json" | sha256sum -c -
-          echo "ee74d19b7c66e8582b5c9d721de95f6385a0fb5d4ef400232e5a87af0ffbdcef  ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-18_I3_FORENSIC_CONTROL_PLANE_CACHE_ROOTCAUSE_FROZEN.md" | sha256sum -c -
+          echo "1897093c6de6a9b36cdd0b2b0728ed2ddf0604e509a554c850a01e67e6e50d3a  ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-18_I3_FORENSIC_CONTROL_PLANE_CACHE_ROOTCAUSE_FROZEN.md" | sha256sum -c -
           grep -q "CX_RUNTIME_PREFIXES" app/sw.js
           grep -q "keys.map(k => caches.delete(k))" app/sw.js
           for pattern in '**/*.html' '**/*.js' '**/*.css' '**/*.json' '**/*.webmanifest'; do
