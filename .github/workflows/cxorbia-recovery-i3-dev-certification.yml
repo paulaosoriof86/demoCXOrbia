@@ -884,8 +884,8 @@ jobs:
             population.canonicalProfiles++;
             const rule=credentialRule(profile),login=str(m.visibleLogin||rule.login).toLowerCase();
             const name=str(profile.nombre||profile.name||profile.fullName);
-            const protectedEmail=str(profile.email||profile.correo||profile.mail);
-            const contact=str(profile.whatsapp||profile.phone||profile.telefono||(!/@auth\.cxorbia\.invalid$/i.test(protectedEmail)?protectedEmail:''));
+            const protectedEmail=str(profile.email||profile.correo||profile.mail||profile.contactEmail);
+            const contact=str(profile.whatsapp||profile.phone||profile.telefono||profile.telefonoWhatsapp||profile.mobile||(!/@auth\.cxorbia\.invalid$/i.test(protectedEmail)?protectedEmail:''));
             if(name&&login&&!technicalId(login))population.canonicalLogins++;
             if(contact)population.authorizedContacts++;
             if(!name||!login||technicalId(login)||!contact)continue;
