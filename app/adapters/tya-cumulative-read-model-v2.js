@@ -98,11 +98,24 @@
   function uniqueIndex(rows,keyFn){const m=new Map();arr(rows).forEach(row=>{const k=str(keyFn(row));if(!k)return;if(!m.has(k))m.set(k,[]);m.get(k).push(row);});return m;}
   const onlyUnique=(m,k)=>{const rows=m.get(str(k))||[];return rows.length===1?rows[0]:null;};
   function findProtectedVisit(base,indexes){
+    const liveId=str(base&&(base.visitId||base.id));
+    // Run199 v5 proved every durable duplicate group has exactly one document
+    // whose Firestore docId equals the live HR visitId. That exact live identity
+    // is authoritative over historical rows and over weaker coordinate matches.
+    const exactDoc=onlyUnique(indexes.docId,liveId);
+    if(exactDoc)return {row:exactDoc,conflict:false,authority:'live_hr_visit_id_equals_firestore_doc_id'};
     const c=[];const add=v=>{if(v&&!c.includes(v))c.push(v);};
-    add(onlyUnique(indexes.hrRow,str(base&&base.hrRowId)));add(onlyUnique(indexes.coord,sourceCoord(base)));add(onlyUnique(indexes.id,str(base&&(base.visitId||base.id))));
-    if(c.length===1)return {row:c[0],conflict:false};
-    if(c.length>1){const ids=new Set(c.map(v=>str(v&&(v.visitId||v.id))||str(v&&v.hrRowId)||sourceCoord(v)));return ids.size===1?{row:c[0],conflict:false}:{row:null,conflict:true};}
-    return {row:null,conflict:false};
+    add(onlyUnique(indexes.hrRow,str(base&&base.hrRowId)));
+    add(onlyUnique(indexes.coord,sourceCoord(base)));
+    add(onlyUnique(indexes.id,liveId));
+    if(c.length===1)return {row:c[0],conflict:false,authority:'exact_legacy_fallback'};
+    if(c.length>1){
+      const docMatches=c.filter(v=>str(v&&v.__docId)===liveId);
+      if(docMatches.length===1)return {row:docMatches[0],conflict:false,authority:'live_hr_visit_id_equals_firestore_doc_id'};
+      const ids=new Set(c.map(v=>str(v&&(v.visitId||v.id))||str(v&&v.hrRowId)||sourceCoord(v)));
+      return ids.size===1?{row:c[0],conflict:false,authority:'exact_same_identity_fallback'}:{row:null,conflict:true,authority:'ambiguous'};
+    }
+    return {row:null,conflict:false,authority:'none'};
   }
   function addRelation(map,a,b){a=str(a);b=str(b);if(!a||!b)return;if(!map.has(a))map.set(a,new Set());map.get(a).add(b);}
   function pendingPlatformAssignment(pv){
@@ -154,11 +167,12 @@
     const canonicalProfileIndex=contract&&typeof contract.buildCanonicalProfileIndex==='function'
       ?contract.buildCanonicalProfileIndex(profiles,linkedIdentitySources)
       :null;
-    const visitIndexes={id:uniqueIndex(protectedVisits,v=>v&&(v.visitId||v.id)),hrRow:uniqueIndex(protectedVisits,v=>v&&v.hrRowId),coord:uniqueIndex(protectedVisits,sourceCoord)};
+    const visitIndexes={docId:uniqueIndex(protectedVisits,v=>v&&v.__docId),id:uniqueIndex(protectedVisits,v=>v&&(v.visitId||v.id)),hrRow:uniqueIndex(protectedVisits,v=>v&&v.hrRowId),coord:uniqueIndex(protectedVisits,sourceCoord)};
     const relation=new Map(),protectedVisitToHrVisit=new Map(),matches=new Map(),visitConflicts=[];
     for(const base of baseVisits){
       const match=findProtectedVisit(base,visitIndexes),key=visitKey(base);
       if(match.conflict){visitConflicts.push(key);continue;}if(!match.row)continue;
+      match.row.__durableAuthority=match.authority||null;
       matches.set(key,match.row);const pid=str(match.row.visitId||match.row.id);if(pid)protectedVisitToHrVisit.set(pid,str(base.visitId||base.id));if(!pendingPlatformAssignment(match.row))addRelation(relation,base.shopperId,match.row.shopperId);
     }
     const profilesById=uniqueIndex(profiles,p=>p.id),profilesByAlias=new Map();
@@ -250,7 +264,7 @@
     const sameDisplayNameGroups=[...nameGroups.entries()].filter(([,ids])=>ids.length>1).map(([normalizedName,ids])=>({normalizedName,shopperIds:ids.sort(),reason:'display_name_collision_not_auto_merged'}));
     const uniqueVisitKeys=new Set(composedVisits.map(visitKey).filter(Boolean)),uniqueShopperIds=new Set(composedShoppers.map(s=>str(s.id)).filter(Boolean));
     const summaries=periodSummary(composedVisits);
-    const diagnostics={hrProjects:projects.length,hrVisits:baseVisits.length,hrShoppers:baseShoppers.length,hrPosts:basePosts.length,protectedVisits:protectedVisits.length,protectedProfiles:profiles.length,matchedProtectedVisits:matches.size,unmatchedProtectedVisits:Math.max(0,protectedVisits.length-matches.size),crosswalkLiveToCanonical:liveToCanonical.size,identityConflicts,visitConflicts,assignmentConflicts,pendingPlatformAssignmentOverlays:pendingPlatformAssignmentOverlays.length,platformOnlyProfiles:platformOnlyProfiles.length,sameDisplayNameGroups,outputVisits:composedVisits.length,outputShoppers:composedShoppers.length,outputPosts:postMap.size,uniqueVisitKeys:uniqueVisitKeys.size,duplicateVisitKeys:composedVisits.length-uniqueVisitKeys.size,uniqueShopperIds:uniqueShopperIds.size,duplicateShopperIds:composedShoppers.length-uniqueShopperIds.size,protectedVisitsAppended:0,idempotentDesign:true,hrOwnsOperationalState:true,canonicalFacetSource:true,unmatchedProfilesExcludedFromOperationalList:true,identityContractVersion:contract?.version||'legacy-fallback',identityTechnicalKeyCount:arr(contract?.technicalKeys).length,canonicalProfileIndexConflicts:arr(canonicalProfileIndex?.conflicts).length};
+    const diagnostics={hrProjects:projects.length,hrVisits:baseVisits.length,hrShoppers:baseShoppers.length,hrPosts:basePosts.length,protectedVisits:protectedVisits.length,protectedProfiles:profiles.length,matchedProtectedVisits:matches.size,unmatchedProtectedVisits:Math.max(0,protectedVisits.length-matches.size),crosswalkLiveToCanonical:liveToCanonical.size,identityConflicts,visitConflicts,assignmentConflicts,pendingPlatformAssignmentOverlays:pendingPlatformAssignmentOverlays.length,platformOnlyProfiles:platformOnlyProfiles.length,sameDisplayNameGroups,outputVisits:composedVisits.length,outputShoppers:composedShoppers.length,outputPosts:postMap.size,uniqueVisitKeys:uniqueVisitKeys.size,duplicateVisitKeys:composedVisits.length-uniqueVisitKeys.size,uniqueShopperIds:uniqueShopperIds.size,duplicateShopperIds:composedShoppers.length-uniqueShopperIds.size,protectedVisitsAppended:0,idempotentDesign:true,hrOwnsOperationalState:true,canonicalFacetSource:true,unmatchedProfilesExcludedFromOperationalList:true,identityContractVersion:contract?.version||'legacy-fallback',identityTechnicalKeyCount:arr(contract?.technicalKeys).length,canonicalProfileIndexConflicts:arr(canonicalProfileIndex?.conflicts).length,durableVisitAuthority:'live_hr_visit_id_equals_firestore_doc_id',durableHistoryPreserved:true};
     return {projects,visits:composedVisits,shoppers:composedShoppers,posts:[...postMap.values()],periodOperationalSummary:summaries,currentPeriodId:hr.currentPeriodId||null,currentProjectId:hr.currentProjectId||'cinepolis',sourceRevision:hr.sourceRevision||null,identityMap:Object.fromEntries(liveToCanonical),identityReviewQueue:[...identityConflicts,...platformOnlyProfiles,...sameDisplayNameGroups],platformOnlyProfiles,diagnostics};
   }
   function signature(result){const d=result&&result.diagnostics||{};return JSON.stringify({visits:d.outputVisits,shoppers:d.outputShoppers,posts:d.outputPosts,uniqueVisitKeys:d.uniqueVisitKeys,duplicateVisitKeys:d.duplicateVisitKeys,uniqueShopperIds:d.uniqueShopperIds,duplicateShopperIds:d.duplicateShopperIds,visitIds:arr(result&&result.visits).map(visitKey).filter(Boolean).sort(),shopperIds:arr(result&&result.shoppers).map(s=>str(s.id)).filter(Boolean).sort(),periodSummary:result&&result.periodOperationalSummary});}

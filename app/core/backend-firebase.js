@@ -191,70 +191,11 @@ window.CX = window.CX || {};
     return String(v.hrRowId||coord||v.visitId||v.id||'').trim();
   }
 
-  async function sha256Hex(value){
-    const bytes=new TextEncoder().encode(String(value==null?'':value));
-    const digest=await crypto.subtle.digest('SHA-256',bytes);
-    return Array.from(new Uint8Array(digest)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
-  }
-
-  function durablePeriodKey(row){
-    const match=String(row?.periodKey||row?.periodId||'').trim().match(/20\d{2}-(0[1-9]|1[0-2])/);
-    return match?match[0]:'';
-  }
-
-  async function providerR20VisitIdFromDurableRow(row){
-    if(!row||typeof row!=='object')return '';
-    const periodKey=durablePeriodKey(row),country=String(row.country||row.pais||'').trim().toUpperCase(),sourceRow=Number(row.sourceRow);
-    if(!periodKey||!/^[A-Z]{2}$/.test(country)||!Number.isInteger(sourceRow)||sourceRow<1)return '';
-    const cinemaId=String(row.cinemaId||row.branchId||'').trim();
-    const shopping=String(row.shopping||row.sucursal||row.branchName||'').trim();
-    const quincena=String(row.quincena||row.periodName||'').trim();
-    const franja=String(row.franja||row.slot||row.timeBand||'').trim();
-    const providerRaw=[cinemaId,shopping,quincena,franja,sourceRow].join('|').trim().toLowerCase();
-    const suffix=(await sha256Hex(providerRaw)).slice(0,10);
-    return 'hr_'+periodKey+'_'+country.toLowerCase()+'_'+sourceRow+'_'+suffix;
-  }
-
-  async function stableRowVisitIdFromDurableRow(row,projectId){
-    if(!row||typeof row!=='object')return '';
-    const periodKey=durablePeriodKey(row),country=String(row.country||row.pais||'').trim().toUpperCase(),sourceRow=Number(row.sourceRow);
-    if(!periodKey||!/^[A-Z]{2}$/.test(country)||!Number.isInteger(sourceRow)||sourceRow<1)return '';
-    const project=String(projectId||row.projectId||'').trim().toLowerCase();
-    if(!project)return '';
-    const canonical=[tenantId().toLowerCase(),project,periodKey,country,sourceRow].join('|');
-    const suffix=(await sha256Hex(canonical)).slice(0,10);
-    return 'hr_'+periodKey+'_'+country.toLowerCase()+'_'+sourceRow+'_'+suffix;
-  }
-
-  async function selectAuthoritativeDurableVisits(rows,projectId){
-    const groups=new Map();
-    (Array.isArray(rows)?rows:[]).forEach(function(row){
-      const key=durableVisitKey(row);
-      if(!key)return;
-      if(!groups.has(key))groups.set(key,[]);
-      groups.get(key).push(row);
-    });
-    const out=[];
-    for(const [key,group] of groups){
-      if(group.length===1){out.push(group[0]);continue;}
-      const providerMatches=[],stableMatches=[],declaredMatches=[];
-      for(const row of group){
-        const docId=String(row.__docId||'').trim();
-        const providerId=await providerR20VisitIdFromDurableRow(row);
-        const stableId=await stableRowVisitIdFromDurableRow(row,projectId);
-        const declaredId=String(row.visitId||row.id||'').trim();
-        if(providerId&&docId===providerId)providerMatches.push({row,id:providerId});
-        if(stableId&&docId===stableId)stableMatches.push({row,id:stableId});
-        if(declaredId&&docId===declaredId)declaredMatches.push({row,id:declaredId});
-      }
-      let chosen=null,authorityVersion='';
-      if(providerMatches.length===1){chosen=providerMatches[0];authorityVersion='live-r20-provider-id';}
-      else if(providerMatches.length===0&&stableMatches.length===1){chosen=stableMatches[0];authorityVersion='stable-row-id-v1';}
-      else if(providerMatches.length===0&&stableMatches.length===0&&declaredMatches.length===1){chosen=declaredMatches[0];authorityVersion='declared-id-fallback';}
-      if(!chosen)throw new Error('DURABLE_VISIT_AUTHORITY_AMBIGUOUS:'+key);
-      out.push(Object.assign({},chosen.row,{__canonicalDurableAuthority:true,__canonicalDurableVisitId:chosen.id,__canonicalDurableAuthorityVersion:authorityVersion,__historicalDuplicateCount:group.length-1}));
-    }
-    return out;
+  // Durable visit authority is intentionally resolved only when the live HR
+  // snapshot is present in the cumulative composer. At this layer we preserve
+  // every durable row, including historical duplicates, together with __docId.
+  function preserveDurableVisits(rows){
+    return Array.isArray(rows)?rows.slice():[];
   }
 
   function normalizeApplication(a, projectId, periodId, visitsById, shoppersById){
@@ -419,7 +360,7 @@ window.CX = window.CX || {};
     const projectId = project.id;
     const periodId = project.periodId || projectId;
     const visitsRawAll = isShopper(ctx) ? await loadShopperVisits(projectId, ctx.shopperId) : await getAll(subCol(projectId, 'visits'));
-    const visitsRaw = await selectAuthoritativeDurableVisits(visitsRawAll, projectId);
+    const visitsRaw = preserveDurableVisits(visitsRawAll);
     const visitsById = {};
     const visits = visitsRaw.map(function(v){ return normalizeVisit(v, projectId, periodId); });
     visits.forEach(function(v){ v.projectId = v.projectId || projectId; visitsById[v.id] = v; visitsById[v.visitId] = v; });
