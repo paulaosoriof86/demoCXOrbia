@@ -4,11 +4,11 @@
   "iteration": "I3",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "expectedParentSha": "19fc841a379d46206d7ada5b25cd526148a39d31",
-  "expectedParentTree": "4afd284466ee22438039df349b95d8a55636c8ed",
-  "i3CertificationSourceSha": "19fc841a379d46206d7ada5b25cd526148a39d31",
-  "i3CertificationSourceTree": "4afd284466ee22438039df349b95d8a55636c8ed",
-  "classification": "MAPPING_FAILURE",
+  "expectedParentSha": "dcba411b1e6f88d3e500fd5e2df53d664af7771e",
+  "expectedParentTree": "ee453984756197b18331413df836641e5264e656",
+  "i3CertificationSourceSha": "dcba411b1e6f88d3e500fd5e2df53d664af7771e",
+  "i3CertificationSourceTree": "ee453984756197b18331413df836641e5264e656",
+  "classification": "AUTH_FAILURE",
   "oneSourceOneBuildOneArtifact": true,
   "executionEngine": "GITHUB_ACTIONS_SERVER_SIDE",
   "chatIsAuthority": false,
@@ -36,5 +36,11 @@
   "cinepolisP0Priority": true,
   "nextAction": "SERVER_SIDE_CERTIFICATION_THEN_LIVE_HUMAN_ACCEPTANCE",
   "productionAuthorizationRequired": true,
-  "frozenDocument": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-17_I3_MICRO_ITERATIONS_FROZEN.md"
+  "frozenDocument": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-17_I3_MICRO_ITERATIONS_FROZEN.md",
+  "ownerCredentialRule": {
+    "username": "nombre.apellido",
+    "password": "Nombre123*",
+    "version": "tya-shopper-nombre-apellido-v1",
+    "plaintextPersistence": false
+  }
 }

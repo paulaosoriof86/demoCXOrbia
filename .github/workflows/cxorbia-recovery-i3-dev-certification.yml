@@ -25,8 +25,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  I3_CERTIFICATION_SOURCE_SHA: 19fc841a379d46206d7ada5b25cd526148a39d31
-  I3_CERTIFICATION_SOURCE_TREE: 4afd284466ee22438039df349b95d8a55636c8ed
+  I3_CERTIFICATION_SOURCE_SHA: dcba411b1e6f88d3e500fd5e2df53d664af7771e
+  I3_CERTIFICATION_SOURCE_TREE: ee453984756197b18331413df836641e5264e656
   LOCKED_GATE20_BASELINE_RUN_ID: '34306578074'
   LOCKED_GATE20_BASELINE_RUN_ATTEMPT: '1'
   LOCKED_GATE20_BASELINE_SOURCE_SHA: bd2a519db5ebd08f17d47827997056db795c8c09
@@ -213,6 +213,66 @@ jobs:
           test "$code" = "200"
           node -e 'const fs=require("fs"),p=JSON.parse(fs.readFileSync(process.env.OUT+"/hr-fresh.json","utf8")),s=p?.snapshot||p?.data||p,rt=p?._runtime||s?._runtime||{};if(s?.sourceSafe!==true||rt.refreshError)throw new Error("SOURCE_FAILURE:HR_FRESH_INVALID");fs.writeFileSync(process.env.OUT+"/hr-readback.json",JSON.stringify({decision:"PASS_I3_HR_EXACT_RUNTIME",sourceSafe:true,production:false},null,2)+"\n")'
 
+      - name: Revalidate owner-defined shopper credential contract in DEV
+        run: |
+          set -Eeuo pipefail
+          PROJECT="$PROJECT" OUT="$OUT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import crypto from 'node:crypto';
+          import { applicationDefault, initializeApp, getApps } from 'firebase-admin/app';
+          import { getAuth } from 'firebase-admin/auth';
+          import { getFirestore } from 'firebase-admin/firestore';
+          import { chromium } from 'playwright';
+          const PROJECT=process.env.PROJECT,OUT=process.env.OUT,HOSTING_URL=String(process.env.HOSTING_URL||'').replace(/\/$/,''),tenantId=process.env.TENANT_ID,projectId=process.env.PROJECT_ID;
+          const RULE='tya-shopper-nombre-apellido-v1',PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
+          const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
+          const docs=async ref=>(await ref.get()).docs.map(d=>({id:d.id,...(d.data()||{})}));
+          const strip=v=>str(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+          const part=v=>strip(v).toLowerCase().replace(/[^a-z0-9]+/g,'');
+          const rule=p=>{const tokens=str(p?.nombre).split(/\s+/).filter(Boolean),first=str(p?.firstName||tokens[0]),last=str(p?.lastName||p?.apellido||tokens.slice(1).join(' ')),a=part(first),b=part(last),f=first.split(/\s+/)[0]||'';return a&&b&&f?{ok:true,login:a+'.'+b,password:f.charAt(0).toLocaleUpperCase('es-GT')+f.slice(1).toLocaleLowerCase('es-GT')+'123*'}:{ok:false};};
+          const internalEmail=login=>crypto.createHash('sha256').update(tenantId+'\0shopper\0'+String(login).toLowerCase(),'utf8').digest('hex').slice(0,48)+'@auth.cxorbia.invalid';
+          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
+          const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(tenantId);
+          const [members,profiles]=await Promise.all([docs(tenant.collection('users')),docs(tenant.collection('shoppers'))]);
+          const profileById=new Map(profiles.map(p=>[str(p.shopperId||p.id),p]));
+          const targets=members.filter(m=>m.active===true&&str(m.role)==='shopper'&&str(m.authNamespace)==='shopper'&&str(m.shopperId)&&(arr(m.projectIds).length===0||arr(m.projectIds).map(String).includes(projectId)));
+          if(!targets.length)throw new Error('AUTH_FAILURE:CREDENTIAL_RULE_NO_ACTIVE_SHOPPERS');
+          const mismatches=[];let checked=0,sample=null;
+          for(const m of targets){
+            const p=profileById.get(str(m.shopperId));if(!p){mismatches.push('profile_missing');continue;}
+            const c=rule(p);if(!c.ok){mismatches.push('name_incomplete');continue;}
+            let user;try{user=await auth.getUser(m.id);}catch{mismatches.push('auth_missing');continue;}
+            const expectedEmail=internalEmail(c.login);
+            if(str(m.visibleLogin).toLowerCase()!==c.login)mismatches.push('member_login');
+            if(str(m.credentialRuleVersion)!==RULE)mismatches.push('member_rule');
+            if(str(p.username||p.user||p.visibleLogin).toLowerCase()!==c.login)mismatches.push('profile_login');
+            if(str(p.credentialRuleVersion)!==RULE)mismatches.push('profile_rule');
+            if(str(user.email).toLowerCase()!==expectedEmail)mismatches.push('auth_email');
+            checked++;
+            if(!sample)sample={uid:m.id,shopperId:str(m.shopperId),login:c.login,password:c.password};
+          }
+          if(mismatches.length)throw new Error('FUNCTIONAL_DEFECT:CREDENTIAL_RULE_MISMATCH:'+JSON.stringify({checked,targetCount:targets.length,mismatches:[...new Set(mismatches)]}));
+          if(!sample)throw new Error('AUTH_FAILURE:CREDENTIAL_RULE_SAMPLE_MISSING');
+          const browser=await chromium.launch({headless:true});
+          let passwordLoginPassed=false;
+          try{
+            const ctx=await browser.newContext({viewport:{width:1280,height:900}}),page=await ctx.newPage();
+            const url=`${HOSTING_URL}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cxProjectId=${encodeURIComponent(projectId)}&cxProtectedRuntime=${PROTECTED}&cxHumanFullVisual=${FULL}`;
+            await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
+            await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
+            await page.waitForFunction(()=>typeof window.CX?.backendAuth?.authenticate==='function',null,{timeout:90000});
+            const result=await page.evaluate(async ({login,password})=>{const c=await window.CX.backendAuth.authenticate(login,password,'shopper','shopper');return {role:c?.role,shopperId:c?.shopperId,authenticated:c?.authenticated};},{login:sample.login,password:sample.password});
+            passwordLoginPassed=result.authenticated===true&&result.role==='shopper'&&String(result.shopperId||'')===sample.shopperId;
+            if(!passwordLoginPassed)throw new Error('AUTH_FAILURE:CREDENTIAL_RULE_PASSWORD_LOGIN_CONTEXT');
+            await page.evaluate(async()=>{try{await window.CX.backendAuth.signOut();}catch(_){}});
+            await ctx.close();
+          } finally {await browser.close();}
+          const evidence={decision:'PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE',credentialRuleVersion:RULE,activeShopperMemberships:targets.length,checked,profileAndAuthMappingExact:true,passwordLoginPassed,plaintextPersisted:false,production:false};
+          fs.writeFileSync(OUT+'/credential-rule-readback.json',JSON.stringify(evidence,null,2)+'\n');
+          NODE
+          test "$(jq -r '.decision' "$OUT/credential-rule-readback.json")" = "PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE"
+          test "$(jq -r '.passwordLoginPassed' "$OUT/credential-rule-readback.json")" = "true"
+
       - name: Revalidate real human lane HR authority release
         run: |
           set -Eeuo pipefail
@@ -333,13 +393,14 @@ jobs:
           ARTIFACT_SHA256="$(sha256sum "$OUT/cxorbia-i3-certified-source.tar" | awk '{print $1}')"
           GATE20_SHA256="$(sha256sum "$OUT/gate20/gate20-browser-visual.json" | awk '{print $1}')"
           HUMAN_LANE_SHA256="$(sha256sum "$OUT/human-lane-authority-release.json" | awk '{print $1}')"
+          CREDENTIAL_RULE_SHA256="$(sha256sum "$OUT/credential-rule-readback.json" | awk '{print $1}')"
           echo "$ARTIFACT_SHA256  cxorbia-i3-certified-source.tar" > "$OUT/cxorbia-i3-certified-source.tar.sha256"
           jq -n -S \
             --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg control "$GITHUB_SHA" \
             --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg image "$SOURCE_IMMUTABLE_IMAGE" \
-            --arg artifact "$ARTIFACT_SHA256" --arg gate20Sha "$GATE20_SHA256" --arg humanLaneSha "$HUMAN_LANE_SHA256" \
+            --arg artifact "$ARTIFACT_SHA256" --arg gate20Sha "$GATE20_SHA256" --arg humanLaneSha "$HUMAN_LANE_SHA256" --arg credentialRuleSha "$CREDENTIAL_RULE_SHA256" \
             --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hostingVersion "$HOSTING_VERSION_NAME" --arg hostingReleaseTime "$HOSTING_RELEASE_TIME" \
-            '{decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,buildCount:1,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingReleaseTime,humanLane:{decision:"PASS_I3_HUMAN_LANE_AUTHORITY_RELEASE",evidenceSha256:$humanLaneSha,technicalMode:false},gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,rebuildAfterCertification:false,production:false}' \
+            '{decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,buildCount:1,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingReleaseTime,humanLane:{decision:"PASS_I3_HUMAN_LANE_AUTHORITY_RELEASE",evidenceSha256:$humanLaneSha,technicalMode:false},credentialRule:{decision:"PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE",version:"tya-shopper-nombre-apellido-v1",evidenceSha256:$credentialRuleSha,passwordLoginPassed:true},gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,rebuildAfterCertification:false,production:false}' \
             > "$OUT/i3-certification-manifest.json"
           cp "$OUT/i3-certification-manifest.json" "$OUT/result.json"
 
