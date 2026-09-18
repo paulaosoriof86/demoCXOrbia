@@ -4004,7 +4004,7 @@
   },
   "continuityCheckpoint": {
     "iteration": "I3",
-    "status": "HOLD_PENDING_RECERTIFICATION",
+    "status": "HOLD_RESERVATION_SUBCONDITION_DIAGNOSTIC",
     "exactProductSourceSha": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
     "exactProductSourceTree": "c0cfb98637316c8209753badc08d537bfa79cde8",
     "resolvedThrough": [
@@ -4028,7 +4028,13 @@
       "Historico",
       "Cliente"
     ],
-    "nextExactAction": "Run canonical I3 certification once on this exact source; only fix a new exact causal owner if the run fails.",
-    "production": "DO_NOT_TOUCH"
+    "nextExactAction": "Read I3_RESERVATION_PROBE from the next canonical run; change only the exact failing owner/subcondition. Do not change product source unless that evidence proves a product defect.",
+    "production": "DO_NOT_TOUCH",
+    "lastRun": {
+      "runNumber": 224,
+      "runId": 35406456275,
+      "result": "FAIL_STEP23",
+      "code": "PROVIDER_FAILURE:RESERVATION_DURABLE_ACK_READBACK_FAIL"
+    }
   }
 }

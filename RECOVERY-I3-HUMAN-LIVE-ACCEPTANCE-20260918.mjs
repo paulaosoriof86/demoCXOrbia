@@ -195,6 +195,7 @@ try{
    return {postulations,periods,dashboardPeriodsOk:periods.length>=2&&periods.every(x=>x.ok),finance,reservations};
  },durablePosts.length);
  write('i3-functional-probes.json',{decision:probe.postulations.ok&&probe.dashboardPeriodsOk&&probe.finance.ok&&probe.reservations.ok?'PASS_I3_ATOMIC_FUNCTIONAL_PROBES':'HOLD_I3_ATOMIC_FUNCTIONAL_PROBES',sourceSha:SOURCE,sourceRevision:revision,production:false,probe});
+ console.log('I3_RESERVATION_PROBE='+JSON.stringify(probe.reservations));
  if(!probe.postulations.ok)issues.push({classification:'FUNCTIONAL_DEFECT',code:'POSTULATIONS_NOT_DURABLE_ONLY',probe:probe.postulations});
  if(!probe.dashboardPeriodsOk)issues.push({classification:'FUNCTIONAL_DEFECT',code:'DASHBOARD_PERIOD_CONTEXT_FAIL',probe:probe.periods});
  if(!probe.finance.ok)issues.push({classification:'RELEASE_COMPOSITION_FAILURE',code:'FINANCE_DEPENDENCY_CLOSURE_NOT_ACTIVE',probe:probe.finance});
