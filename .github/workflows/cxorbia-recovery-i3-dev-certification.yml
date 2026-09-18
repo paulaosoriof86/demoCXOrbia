@@ -860,9 +860,13 @@ jobs:
           export CXORBIA_CLIENT_AUTH_PRIVATE_SNAPSHOT="$RUNNER_TEMP/cxorbia-client-membership-snapshot.json"
           export CXORBIA_E2E_PRIVATE_CREDENTIALS="$RUNNER_TEMP/cxorbia-client-e2e-private.json"
           export OUT_DIR="$OUT/client-membership"
+          ln -s "$GITHUB_WORKSPACE/node_modules" "$SOURCE_DIR/node_modules"
+          trap 'rm -f "$SOURCE_DIR/node_modules"' EXIT
           node "$SOURCE_DIR/tools/qa/cxorbia-c6-client-auth-materialization.mjs" --mode=snapshot > "$OUT/client-membership/snapshot.json"
           node "$SOURCE_DIR/tools/qa/cxorbia-c6-client-auth-materialization.mjs" --mode=apply > "$OUT/client-membership/apply.json"
           node "$SOURCE_DIR/tools/qa/cxorbia-c6-client-auth-materialization.mjs" --mode=readback > "$OUT/client-membership/readback.json"
+          rm -f "$SOURCE_DIR/node_modules"
+          trap - EXIT
           test "$(jq -r '.decision' "$OUT/client-membership/snapshot.json")" = "PASS_C6_CLIENT_AUTH_MEMBERSHIP_PREWRITE_SNAPSHOT"
           APPLY_DECISION="$(jq -r '.decision' "$OUT/client-membership/apply.json")"
           [[ "$APPLY_DECISION" = "PASS_C6_CLIENT_AUTH_MEMBERSHIP_REPAIRED" || "$APPLY_DECISION" = "PASS_C6_CLIENT_AUTH_MEMBERSHIP_IDEMPOTENT_NOOP" ]]
