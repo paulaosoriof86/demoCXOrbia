@@ -178,7 +178,14 @@ test('Gate 6 / protected HR snapshot uses the trusted ephemeral identity map for
   const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),id='shopper_gt_protected',uid=stableShopperUid('tenant-a',id),pp=paths(id);
   const snap=snapshot({shopperId:id,shopperCode:'TYA_GT_PROTECTED'});
   snap.visits[0].shopper='Shopper protegido';
-  await assert.rejects(()=>p.reconcileSnapshot(snap,{sourceRevision:'rev-protected-missing'}),/SHOPPER_CREDENTIAL_NAME_INCOMPLETE/);
+  const missing=await p.reconcileSnapshot(snap,{sourceRevision:'rev-protected-missing'});
+  assert.equal(missing.ok,true);
+  assert.equal(missing.status,'committed_with_identity_review');
+  assert.equal(missing.identityReviewCount,1);
+  assert.equal(missing.identityReviewQueue[0].sourceShopperId,id);
+  assert.equal(missing.identityReviewQueue[0].reason,'SHOPPER_CREDENTIAL_NAME_INCOMPLETE');
+  assert.equal(db.get(pp.profile),undefined);
+  assert.equal(auth.users.size,0);
   const identityByShopperId=new Map([[id,'Mishael De Paz']]);
   const result=await p.reconcileSnapshot(snap,{sourceRevision:'rev-protected',identityByShopperId});
   assert.equal(result.credentialRuleMissing,0);

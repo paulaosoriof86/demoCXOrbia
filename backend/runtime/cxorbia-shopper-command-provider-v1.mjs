@@ -516,7 +516,7 @@ export function createShopperCommandProvider({auth,db,policy}={}){
       const exactIdentityMap=await exactShopperIdentityMap(db,scope.tenantId,scope.projectId);
       let created=0,replayed=0,writes=0,credentialNormalized=0,credentialRuleMissing=0;
       const identityReviewQueue=[],identityMigrationQueue=[];
-      const reviewableCredentialCollisions=new Set(['SHOPPER_VISIBLE_LOGIN_COLLISION','SHOPPER_AUTH_EMAIL_CONFLICT']);
+      const reviewableCredentialCollisions=new Set(['SHOPPER_VISIBLE_LOGIN_COLLISION','SHOPPER_AUTH_EMAIL_CONFLICT','SHOPPER_CREDENTIAL_NAME_INCOMPLETE']);
       const reviewableExactMigration=new Set(['SHOPPER_EXACT_ALIAS_SELF_CROSSWALK_MIGRATION_REQUIRED']);
       for(const source of shoppers){
         const canonicalShopperId=exactIdentityMap.get(source.shopperId)||source.shopperId;
