@@ -7,6 +7,7 @@ on:
     paths:
       - .github/workflows/cxorbia-recovery-i3-dev-certification.yml
       - .github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml
+      - RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
       - ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-17_I3_MICRO_ITERATIONS_FROZEN.md
       - CXORBIA_I3_MICRO_ITERATION_PLAN_LOCK_2026-09-17.json
   workflow_dispatch:
@@ -76,6 +77,65 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
+
+      - name: Prove exhaustive cumulative Phase A module integrity
+        run: |
+          set -Eeuo pipefail
+          MATRIX="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
+          test -f "$MATRIX"
+          test "$(jq -r '.schemaVersion' "$MATRIX")" = "cxorbia.recovery.module-truth-matrix.v3"
+          test "$(jq -r '.productSource.sha' "$MATRIX")" = "$I3_CERTIFICATION_SOURCE_SHA"
+          test "$(jq -r '.productSource.treeSha' "$MATRIX")" = "$I3_CERTIFICATION_SOURCE_TREE"
+          test "$(jq -r '.phaseAComplete' "$MATRIX")" = "true"
+          test "$(jq -r '.allModulesMatch' "$MATRIX")" = "true"
+          test "$(jq '[.modules[] | select(.classification != "MATCH")] | length' "$MATRIX")" = "0"
+          MATRIX="$MATRIX" SOURCE="$I3_CERTIFICATION_SOURCE_SHA" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {execFileSync} from 'node:child_process';
+          const m=JSON.parse(fs.readFileSync(process.env.MATRIX,'utf8'));
+          const source=process.env.SOURCE;
+          const git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
+          const authoritative=m.sourceFiles.filter(x=>x.phaseAAuthority===true);
+          if(!authoritative.length)throw new Error('RELEASE_COMPOSITION_FAILURE:EMPTY_PHASE_A_AUTHORITY');
+          const bad=[];
+          for(const f of authoritative){
+            let actual='';
+            try{actual=git('rev-parse',source+':'+f.path);}catch{actual='MISSING';}
+            if(actual!==f.currentBlob||actual!==f.latestApprovedBlob)bad.push({path:f.path,expected:f.currentBlob,actual});
+          }
+          if(bad.length)throw new Error('RELEASE_COMPOSITION_FAILURE:MODULE_BLOB_MISMATCH:'+JSON.stringify(bad));
+          const html=git('show',source+':app/index-backend-dev.html');
+          const scripts=[...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi)].map(x=>x[1].replace(/^\.\//,''));
+          const styles=[...html.matchAll(/<link\b[^>]*\bhref=["']([^"']+\.css(?:\?[^"']*)?)["']/gi)].map(x=>x[1].replace(/^\.\//,'').replace(/\?.*$/,''));
+          const dup=scripts.filter((x,i,a)=>a.indexOf(x)!==i);
+          if(dup.length)throw new Error('RELEASE_COMPOSITION_FAILURE:DUPLICATE_SCRIPT:'+JSON.stringify([...new Set(dup)]));
+          const missing=[];
+          for(const f of authoritative){
+            const rel=f.path.replace(/^app\//,'');
+            if(f.loadTarget==='browser-script'&&!scripts.includes(rel))missing.push(rel);
+            if(f.loadTarget==='browser-style'&&!styles.includes(rel))missing.push(rel);
+          }
+          if(missing.length)throw new Error('RELEASE_COMPOSITION_FAILURE:APPROVED_OWNER_NOT_LOADED:'+JSON.stringify(missing));
+          for(const [before,after] of m.loadOrder.checks){
+            const a=scripts.indexOf(before),b=scripts.indexOf(after);
+            if(a<0||b<0||a>=b)throw new Error('RELEASE_COMPOSITION_FAILURE:LOAD_ORDER:'+before+'->'+after);
+          }
+          for(const f of m.preservedNonAuthoritySource||[]){
+            const rel=f.path.replace(/^app\//,'');
+            if(scripts.includes(rel))throw new Error('RELEASE_COMPOSITION_FAILURE:NON_AUTHORITY_LIBRARY_BECAME_ACTIVE:'+rel);
+          }
+          const overlay=m.loadOrder.preservedSupersededOverlay;
+          const oi=scripts.indexOf(overlay.path.replace(/^app\//,''));
+          const ci=scripts.indexOf('adapters/tya-c6-domain-consistency-bridge.js');
+          if(oi<0||ci<0||oi>=ci)throw new Error('RELEASE_COMPOSITION_FAILURE:SUPERSEDED_OVERLAY_ORDER');
+          NODE
+          cp "$MATRIX" "$OUT/module-truth-matrix.json"
+          MODULE_TRUTH_MATRIX_SHA256="$(sha256sum "$OUT/module-truth-matrix.json" | awk '{print $1}')"
+          echo "MODULE_TRUTH_MATRIX_SHA256=$MODULE_TRUTH_MATRIX_SHA256" >> "$GITHUB_ENV"
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg sha "$MODULE_TRUTH_MATRIX_SHA256" \
+            --argjson modules "$(jq '.modules|length' "$MATRIX")" \
+            '{decision:"PASS_I3_EXHAUSTIVE_PHASE_A_MODULE_INTEGRITY",sourceSha:$source,sourceTree:$tree,moduleTruthSha256:$sha,moduleCount:$modules,allModulesMatch:true,production:false}' \
+            > "$OUT/module-integrity-gate.json"
 
       - name: Install existing focal certification dependencies
         run: |
@@ -992,7 +1052,8 @@ jobs:
             --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg image "$SOURCE_IMMUTABLE_IMAGE" \
             --arg artifact "$ARTIFACT_SHA256" --arg gate20Sha "$GATE20_SHA256" --arg humanLaneSha "$HUMAN_LANE_SHA256" --arg credentialRuleSha "$CREDENTIAL_RULE_SHA256" --arg semanticGate20Sha "$SEMANTIC_GATE20_SHA256" \
             --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hostingVersion "$HOSTING_VERSION_NAME" --arg hostingReleaseTime "$HOSTING_RELEASE_TIME" \
-            '{decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,buildCount:1,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingReleaseTime,humanLane:{decision:"PASS_I3_HUMAN_LANE_AUTHORITY_RELEASE",evidenceSha256:$humanLaneSha,technicalMode:false},credentialRule:{decision:"PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE",version:"tya-shopper-nombre-apellido-v1",evidenceSha256:$credentialRuleSha,passwordLoginPassed:true},gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},gate20Semantic:{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",sourceSha:$source,evidenceSha256:$semanticGate20Sha},artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,rebuildAfterCertification:false,production:false}' \
+            --arg moduleTruthSha "$MODULE_TRUTH_MATRIX_SHA256" --slurpfile moduleTruth "$OUT/module-truth-matrix.json" \
+            '{decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,buildCount:1,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingReleaseTime,humanLane:{decision:"PASS_I3_HUMAN_LANE_AUTHORITY_RELEASE",evidenceSha256:$humanLaneSha,technicalMode:false},credentialRule:{decision:"PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE",version:"tya-shopper-nombre-apellido-v1",evidenceSha256:$credentialRuleSha,passwordLoginPassed:true},gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},gate20Semantic:{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",sourceSha:$source,evidenceSha256:$semanticGate20Sha},moduleTruthEvidenceSha256:$moduleTruthSha,moduleTruth:$moduleTruth[0],artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,rebuildAfterCertification:false,production:false}' \
             > "$OUT/i3-certification-manifest.json"
           cp "$OUT/i3-certification-manifest.json" "$OUT/result.json"
 

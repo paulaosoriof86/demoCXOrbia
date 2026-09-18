@@ -82,6 +82,16 @@ jobs:
           test "$(jq -r '.buildCount' "$CERT/result.json")" = "1"
           test "$(jq -r '.rebuildAfterCertification' "$CERT/result.json")" = "false"
           test "$(jq -r '.production' "$CERT/result.json")" = "false"
+          test -f "$CERT/module-truth-matrix.json"
+          test "$(jq -r '.moduleTruth.phaseAComplete' "$CERT/result.json")" = "true"
+          test "$(jq -r '.moduleTruth.allModulesMatch' "$CERT/result.json")" = "true"
+          test "$(jq '[.moduleTruth.modules[] | select(.classification != "MATCH")] | length' "$CERT/result.json")" = "0"
+          EXPECTED_MODULE_TRUTH_SHA="$(jq -r '.moduleTruthEvidenceSha256 // empty' "$CERT/result.json")"
+          ACTUAL_MODULE_TRUTH_SHA="$(sha256sum "$CERT/module-truth-matrix.json" | awk '{print $1}')"
+          test -n "$EXPECTED_MODULE_TRUTH_SHA"
+          test "$EXPECTED_MODULE_TRUTH_SHA" = "$ACTUAL_MODULE_TRUTH_SHA"
+          test "$(jq -r '.productSource.sha' "$CERT/module-truth-matrix.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
+          test "$(jq -r '.productSource.treeSha' "$CERT/module-truth-matrix.json")" = "$I3_CERTIFICATION_SOURCE_TREE"
           test "$(jq -r '.gate20.decision' "$CERT/result.json")" = "PASS_GATE20_FOCAL_VISUAL_DRIFT"
           test "$(jq -r '.gate20.sourceSha' "$CERT/result.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
           test "$(jq -r '.decision' "$CERT/gate20/gate20-browser-visual.json")" = "PASS_GATE20_FOCAL_VISUAL_DRIFT"
@@ -126,6 +136,8 @@ jobs:
           HOSTING_VERSION="$(jq -r '.hostingVersionName' "$CERT/result.json")"
           HOSTING_RELEASE_TIME="$(jq -r '.hostingReleaseTime' "$CERT/result.json")"
           CONTROL_HEAD="$(jq -r '.controlHeadSha' "$CERT/result.json")"
+          MODULE_TRUTH_SHA="$(jq -r '.moduleTruthEvidenceSha256' "$CERT/result.json")"
+          MODULE_COUNT="$(jq -r '.moduleTruth.modules|length' "$CERT/result.json")"
 
           jq -n -S \
             --arg source "$I3_CERTIFICATION_SOURCE_SHA" \
@@ -135,13 +147,14 @@ jobs:
             --arg artifactName "$CERTIFICATION_ARTIFACT_NAME" \
             --arg artifactSha "$ARTIFACT_SHA" \
             --arg gate20Sha "$GATE20_SHA" \
+            --arg moduleTruthSha "$MODULE_TRUTH_SHA" --argjson moduleCount "$MODULE_COUNT" \
             --arg runtimeRevision "$RUNTIME_REVISION" \
             --arg runtimeDigest "$RUNTIME_DIGEST" \
             --arg immutableImage "$IMMUTABLE_IMAGE" \
             --arg hostingRelease "$HOSTING_RELEASE" \
             --arg hostingVersion "$HOSTING_VERSION" \
             --arg hostingReleaseTime "$HOSTING_RELEASE_TIME" \
-            '{schemaVersion:"cxorbia.recovery.i3.gate21.same-artifact.v1",gate:21,verdict:"PASS_GATE21_ARTIFACT_FINGERPRINT",production:false,source:{sha:$source,treeSha:$tree,controlHeadSha:$control},certification:{runId:$run,artifactName:$artifactName,artifactSha256:$artifactSha,buildCount:1,rebuildAfterCertification:false},gate20:{sourceSha:$source,evidenceSha256:$gate20Sha},hostingCertifiedArtifact:{releaseName:$hostingRelease,versionName:$hostingVersion,releaseTime:$hostingReleaseTime},runtimeCertifiedArtifact:{revision:$runtimeRevision,imageDigest:$runtimeDigest,immutableImage:$immutableImage},promotion:{noRebuild:true,noRecomposition:true,exactCertifiedArtifactRequired:true,productionAuthorizationRequired:true},writes:{builds:0,hostingDeploys:0,runtimeDeploys:0,providerWrites:0,hrWrites:0,production:false}}' \
+            '{schemaVersion:"cxorbia.recovery.i3.gate21.same-artifact.v1",gate:21,verdict:"PASS_GATE21_ARTIFACT_FINGERPRINT",production:false,source:{sha:$source,treeSha:$tree,controlHeadSha:$control},certification:{runId:$run,artifactName:$artifactName,artifactSha256:$artifactSha,buildCount:1,rebuildAfterCertification:false},gate20:{sourceSha:$source,evidenceSha256:$gate20Sha},moduleTruth:{evidenceSha256:$moduleTruthSha,moduleCount:$moduleCount,allModulesMatch:true},hostingCertifiedArtifact:{releaseName:$hostingRelease,versionName:$hostingVersion,releaseTime:$hostingReleaseTime},runtimeCertifiedArtifact:{revision:$runtimeRevision,imageDigest:$runtimeDigest,immutableImage:$immutableImage},promotion:{noRebuild:true,noRecomposition:true,exactCertifiedArtifactRequired:true,productionAuthorizationRequired:true},writes:{builds:0,hostingDeploys:0,runtimeDeploys:0,providerWrites:0,hrWrites:0,production:false}}' \
             > "$OUT_DIR/GATE21_RELEASE_MANIFEST.json"
           sha256sum "$OUT_DIR/GATE21_RELEASE_MANIFEST.json" > "$OUT_DIR/GATE21_RELEASE_MANIFEST.sha256"
 
