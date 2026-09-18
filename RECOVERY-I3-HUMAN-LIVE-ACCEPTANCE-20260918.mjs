@@ -113,6 +113,7 @@ async function custom(p,m,role){
       try{
         await p.evaluate(async t=>{
           const fb=window.firebase;
+          if(!fb?.auth||!Array.isArray(fb.apps)||!fb.apps.length)throw new Error('FIREBASE_SDK_NOT_READY');
           await fb.auth().setPersistence(fb.auth.Auth.Persistence.LOCAL);
           await fb.auth().signInWithCustomToken(t);
         },attemptToken);
