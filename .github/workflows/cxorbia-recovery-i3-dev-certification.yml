@@ -25,8 +25,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  I3_CERTIFICATION_SOURCE_SHA: 6d4dbdc098348500ba62161d8136458e8b1016ad
-  I3_CERTIFICATION_SOURCE_TREE: 669a1c8c12e8eef24e26ba410b8d50d0bf58fb97
+  I3_CERTIFICATION_SOURCE_SHA: f836f38dc0ce3a48034ed8968220d5dece9d6629
+  I3_CERTIFICATION_SOURCE_TREE: 5f860258fc74dd443379a8e2cdc28ae08962d41f
   HISTORICAL_GATE20_BASELINE_RUN_ID: '34306578074'
   HISTORICAL_GATE20_BASELINE_RUN_ATTEMPT: '1'
   HISTORICAL_GATE20_BASELINE_SOURCE_SHA: bd2a519db5ebd08f17d47827997056db795c8c09
@@ -65,6 +65,9 @@ jobs:
           test "$(git rev-parse "$I3_CERTIFICATION_SOURCE_SHA^{tree}")" = "$I3_CERTIFICATION_SOURCE_TREE"
           git merge-base --is-ancestor "$I3_CERTIFICATION_SOURCE_SHA" HEAD
           git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+          ! grep -Eq "params\.set\('cxProjectId','cinepolis'\)|/api/tya/cinepolis/hr-live" app/index-backend-dev.html
+          ! grep -Eq "defaultProjectId:[^\n]*cinepolis|previewProjectIds:[^\n]*cinepolis" app/core/backend-protected-dev-mode.js
+          ! grep -Eq "projects\.includes\('cinepolis'\)|currentProjectId\|\|'cinepolis'|projectId:'cinepolis'" app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
           jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg control "$GITHUB_SHA" \
             '{decision:"PASS_I3_SINGLE_CERTIFICATION_SOURCE_GUARD",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,productDrift:false,production:false}' \
             > "$OUT/source-guard.json"
@@ -874,8 +877,11 @@ jobs:
             throw new Error('MAPPING_FAILURE:SEMANTIC_IDENTITY_CHAIN_DEPTH');
           };
 
+          const contactOf=p=>{const protectedEmail=str(p?.email||p?.correo||p?.mail||p?.contactEmail);return str(p?.whatsapp||p?.phone||p?.telefono||p?.telefonoWhatsapp||p?.mobile||(!/@auth\.cxorbia\.invalid$/i.test(protectedEmail)?protectedEmail:''));};
+          const profilesWithAuthorizedContact=profiles.filter(p=>Boolean(contactOf(p))).length;
+          if(profilesWithAuthorizedContact===0)throw new Error('FUNCTIONAL_DEFECT:PROTECTED_CONTACT_INVENTORY_EMPTY');
           let sample=null;
-          const population={acceptedMemberships:0,authUsers:0,canonicalProfiles:0,canonicalLogins:0,authorizedContacts:0};
+          const population={acceptedMemberships:0,authUsers:0,canonicalProfiles:0,canonicalLogins:0,acceptedProfilesWithContact:0,protectedProfilesWithContact:profilesWithAuthorizedContact};
           for(const m of members.filter(x=>accepted.has(str(x.id))&&x.active===true&&str(x.authNamespace)==='shopper'&&str(x.role)==='shopper'&&str(x.shopperId)&&(arr(x.projectIds).length===0||arr(x.projectIds).map(String).includes(projectId)))){
             population.acceptedMemberships++;
             try{await auth.getUser(m.id);population.authUsers++;}catch(error){if(str(error?.code)==='auth/user-not-found')continue;throw error;}
@@ -884,11 +890,10 @@ jobs:
             population.canonicalProfiles++;
             const rule=credentialRule(profile),login=str(m.visibleLogin||rule.login).toLowerCase();
             const name=str(profile.nombre||profile.name||profile.fullName);
-            const protectedEmail=str(profile.email||profile.correo||profile.mail||profile.contactEmail);
-            const contact=str(profile.whatsapp||profile.phone||profile.telefono||profile.telefonoWhatsapp||profile.mobile||(!/@auth\.cxorbia\.invalid$/i.test(protectedEmail)?protectedEmail:''));
+            const contact=contactOf(profile);
             if(name&&login&&!technicalId(login))population.canonicalLogins++;
-            if(contact)population.authorizedContacts++;
-            if(!name||!login||technicalId(login)||!contact)continue;
+            if(contact)population.acceptedProfilesWithContact++;
+            if(!name||!login||technicalId(login))continue;
             sample={uid:m.id,rawShopperId:str(m.shopperId),canonical,expectedLogin:login,expectedName:name,expectedContact:contact};
             break;
           }
@@ -941,7 +946,10 @@ jobs:
                 canonicalIsNonTechnical:!/^shopper_(?:gt|hn)_[a-f0-9]+$/i.test(canonical),
                 loginRendered:body.toLowerCase().includes(String(expectedLogin||'').toLowerCase()),
                 nameRendered:body.includes(String(expectedName||'')),
-                contactRendered:body.includes(String(expectedContact||'')),
+                contactExpected:Boolean(String(expectedContact||'')),
+                contactRendered:String(expectedContact||'')
+                  ? body.includes(String(expectedContact))
+                  : (/WHATSAPP/i.test(body)&&/CORREO/i.test(body)&&!/[a-z0-9._%+-]+@auth\.cxorbia\.invalid/i.test(body)),
                 historyRendered:body.includes(expectedHistory),
                 visitsCount:Array.isArray(visits)?visits.length:0,
                 unresolvedIdentityText:/no está vinculada al read model canónico|varias relaciones técnicas exactas/i.test(body),
@@ -958,7 +966,9 @@ jobs:
             decision:'PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY',
             sourceSha,production:false,readOnly:true,providerWrites:0,hrWrites:0,
             shopperSampleFingerprint:sha([tenantId,projectId,sample.uid,sample.canonical].join('\0')).slice(0,24),
-            authenticated:true,exactCanonicalIdentity:true,visibleLoginCanonical:true,authorizedContactRendered:true,
+            authenticated:true,exactCanonicalIdentity:true,visibleLoginCanonical:true,
+            authorizedContactState:result.contactExpected?'authorized_value_rendered':'authorized_value_absent_clean',
+            protectedProfilesWithAuthorizedContact:profilesWithAuthorizedContact,
             historyBoundToCanonicalShopper:true,historyVisitCount:result.visitsCount,technicalLoginRendered:false,unresolvedIdentityText:false
           };
           fs.writeFileSync(path.join(OUT,'gate20-semantic-shopper.json'),JSON.stringify(evidence,null,2)+'\n');
