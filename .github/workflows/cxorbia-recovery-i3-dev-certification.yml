@@ -713,7 +713,7 @@ jobs:
                 await page.evaluate(async t=>{const fb=window.firebase;if(!fb?.auth)throw new Error('FIREBASE_SDK_NOT_READY');await fb.auth().setPersistence(fb.auth.Auth.Persistence.LOCAL);await fb.auth().signInWithCustomToken(t);},attemptToken);
               }catch(error){
                 const msg=String(error&&error.message||error||'');
-                if(!/Execution context was destroyed|navigation|FIREBASE_SDK_NOT_READY|auth\/network-request-failed|network AuthError|timeout|interrupted connection|unreachable host/i.test(msg))throw error;
+                if(!/Execution context was destroyed|navigation|FIREBASE_SDK_NOT_READY|app-compat\/no-app|No Firebase App|auth\/network-request-failed|network AuthError|timeout|interrupted connection|unreachable host/i.test(msg))throw error;
                 lastNetworkError=error;
               }
               await page.waitForLoadState('domcontentloaded',{timeout:90000}).catch(()=>{});
@@ -881,7 +881,7 @@ jobs:
                 await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},token);
               }catch(error){
                 const msg=String(error?.message||error||'');
-                if(!/Execution context was destroyed|navigation|auth\/network-request-failed|network AuthError|timeout|interrupted connection|unreachable host/i.test(msg))throw error;
+                if(!/Execution context was destroyed|navigation|app-compat\/no-app|No Firebase App|auth\/network-request-failed|network AuthError|timeout|interrupted connection|unreachable host/i.test(msg))throw error;
                 lastNetworkError=error;
               }
               await page.waitForLoadState('domcontentloaded',{timeout:90000}).catch(()=>{});
