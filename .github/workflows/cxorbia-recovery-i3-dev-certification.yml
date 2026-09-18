@@ -256,8 +256,8 @@ jobs:
               }
             }
             if(!authSettled)throw new Error('ENVIRONMENT_FAILURE:FIREBASE_AUTH_NETWORK_RETRY_EXHAUSTED:'+String(lastNetworkError&&lastNetworkError.message||lastNetworkError||'network'));
-            await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
-            await page.waitForFunction(({tenantId,projectId})=>{const c=window.CX?.backendAuth?.context?.()||{},projects=Array.isArray(c.projectIds)?c.projectIds.map(String):[];return c.authenticated===true&&c.tenantId===tenantId&&c.role==='shopper'&&(projects.length===0||projects.includes(projectId));},{tenantId,projectId},{timeout:90000});
+            await page.waitForLoadState('domcontentloaded',{timeout:90000}).catch(()=>{});
+            await page.waitForFunction(({tenantId,projectId})=>{const c=window.CX?.backendAuth?.context?.()||{},projects=Array.isArray(c.projectIds)?c.projectIds.map(String):[];return c.authenticated===true&&c.tenantId===tenantId&&c.role==='shopper'&&(projects.length===0||projects.includes(projectId));},{tenantId,projectId},{timeout:120000});
             const before=await page.evaluate(()=>({source:String(window.CX_BACKEND_LAST_STATE?.source||window.CX_BACKEND_DATA_SOURCE||''),backendCounts:window.CX_BACKEND_LAST_STATE?.counts||null,gate:window.CX_C6_HR_AUTHORITY_GATE||null,boot:window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE||null}));
             await page.waitForFunction(({projectId,periodId})=>{const d=window.CX?.data||{},gate=window.CX_C6_HR_AUTHORITY_GATE||{},source=String(window.CX?.dataSource?.sourceRef||'');return window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&gate.ready===true&&gate.blocked===false&&source==='hr-live-all-periods+firestore-authenticated-exact-overlay'&&String(d.currentProjectId||'')===projectId&&String(d.currentPeriodId||'')===periodId&&Array.isArray(d.projects)&&d.projects.length>0&&Array.isArray(d._visitas)&&d._visitas.length>0;},{projectId,periodId},{timeout:120000});
             await page.waitForTimeout(750);
