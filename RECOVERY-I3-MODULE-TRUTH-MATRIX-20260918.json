@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "cxorbia.recovery.module-truth-matrix.v3",
+  "schemaVersion": "cxorbia.recovery.module-truth-matrix.v3.1",
   "observedAt": "2026-09-18",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
@@ -23,7 +23,84 @@
     },
     "canonicalConvergence": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-18_I3_CANONICAL_CONVERGENCE_FROZEN.md",
     "cumulativeIntegrity": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-18_CUMULATIVE_MODULE_INTEGRITY_FROZEN.md",
-    "antiDesync": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-18_I3_GATE20_GATE21_ANTI_DESYNC_FROZEN.md"
+    "antiDesync": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-18_I3_GATE20_GATE21_ANTI_DESYNC_FROZEN.md",
+    "phaseATreeReconciliation": {
+      "method": "recursive Git tree readback; manifest hashes retained as historical metadata, F9 blobs taken from exact F9 tree",
+      "f9Tree": "3e37f076e78dc0fe4a9d6d85bf6e9d7c2a65f9bf",
+      "currentTree": "5f860258fc74dd443379a8e2cdc28ae08962d41f",
+      "historicalManifestVsF9Corrections": [
+        {
+          "path": "app/app.js",
+          "historicalManifestBlob": "d509d08bd20dd2e44fa414e0b4d2819dd18f7c36",
+          "actualF9Blob": "2043d33dee611adacebc947c8423ed1739c1a8da"
+        },
+        {
+          "path": "app/index-backend-dev.html",
+          "historicalManifestBlob": "b9a4aaf063d97305c3f4f53eba8f02b526d61761",
+          "actualF9Blob": "7a5f169dd0e239d46fa4af09cf67f2eb4329a477"
+        },
+        {
+          "path": "app/core/build-lock.js",
+          "historicalManifestBlob": "717dd4a40e3a24c380089cf22596e04fc8c25da1",
+          "actualF9Blob": "068b28bce919c2a4f357eb4c21f85fede06a0c5d"
+        },
+        {
+          "path": "app/styles/layout.css",
+          "historicalManifestBlob": "2cea8372cad099cb4610b93744824e4596b04adc",
+          "actualF9Blob": "91b3d308e1a51be7a470f0f12b32382c1043058f"
+        },
+        {
+          "path": "app/core/backend-browser-auth.js",
+          "historicalManifestBlob": "d052a4b62e5320817d42055946e94de463914b24",
+          "actualF9Blob": "cb9ceb89d2282fe6d3c8b4ffc8c2cd1f52263cac"
+        },
+        {
+          "path": "app/adapters/tya-cumulative-read-model-v2.js",
+          "historicalManifestBlob": "e93d17bb764030c9993455327957e52b4bf41885",
+          "actualF9Blob": "0b0ffc1cc215afbcc2fd3400ea1496162da93b60"
+        },
+        {
+          "path": "app/adapters/tya-canonical-state-semantics-v2.js",
+          "historicalManifestBlob": "c85be3537cfa80a2f0565ca074d71ecef68d53a2",
+          "actualF9Blob": "5c62a221f4a5a33fc133b4f34e636f722beaca4d"
+        },
+        {
+          "path": "app/adapters/tya-live-source-refresh-watch-v2.js",
+          "historicalManifestBlob": "0320fb7c1769ef11761e3fa5d107bfe47402b30c",
+          "actualF9Blob": "4f10c7cf1e2bbd665c7723b7edf2dd43991474ec"
+        },
+        {
+          "path": "app/adapters/tya-canonical-finance-read-model-v2.js",
+          "historicalManifestBlob": "9b5f5991a05474b3155e7182186c2fe23bb97556",
+          "actualF9Blob": "6a527c3813ad4318bc921bf3c997bc4c70726db5"
+        },
+        {
+          "path": "app/adapters/tya-canonical-shopper-portal-v2.js",
+          "historicalManifestBlob": "78af302e7040f219c1a515191e93c085f5a2f3cf",
+          "actualF9Blob": "e186b0d97be42abe6f8dd1f41358feb59aee860a"
+        },
+        {
+          "path": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+          "historicalManifestBlob": "7c00752d9a34209366f3c328ea3e5f5fddb4e1db",
+          "actualF9Blob": "3acc508ac242407ea688b6a4ba964409af1125ba"
+        },
+        {
+          "path": "app/modules/proyecto-wizard.js",
+          "historicalManifestBlob": "a95668206105a94194f99607aeb41f0f87bba98d",
+          "actualF9Blob": "f46378a1fb79a6355cf39fbf364d2f09398861a6"
+        },
+        {
+          "path": "app/modules/shoppers.js",
+          "historicalManifestBlob": "df8dbfadabbc7f9a808da83d2a78225b7c5e6055",
+          "actualF9Blob": "92f834bb2b7fcf5d8674acb717ce6b4e920c5766"
+        },
+        {
+          "path": "app/modules/misvisitas.js",
+          "historicalManifestBlob": "418da18fa2c6c30780719e2fc1d9c72e84fd5d20",
+          "actualF9Blob": "19feb19b96c7d2f69c3cfed785fdbfcaabd96e2d"
+        }
+      ]
+    }
   },
   "productSource": {
     "sha": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
@@ -31,8 +108,8 @@
     "message": "fix(i3): make project source routing explicit and multi-project safe"
   },
   "controlHeadAtConstruction": {
-    "sha": "7473c404c7667b2c7fc351c2c3613a898638f088",
-    "treeSha": "170078498b86c65b4d09b2d920f119388ff887f0"
+    "sha": "5e9a4387315ec0ea5ee2b17cb32dbdbff357c270",
+    "treeSha": "3d2c58f9acc282e9841e197cdf796baa7a6e67ec"
   },
   "phaseAComplete": true,
   "allModulesMatch": true,
@@ -449,7 +526,10 @@
       "currentBlob": "2043d33dee611adacebc947c8423ed1739c1a8da",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "2043d33dee611adacebc947c8423ed1739c1a8da",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/index-backend-dev.html",
@@ -457,13 +537,16 @@
       "historicalAuthority": "C6_DEPLOYED_APP_TREE",
       "historicalApprovedBlob": "b9a4aaf063d97305c3f4f53eba8f02b526d61761",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
-      "f9ApprovedBlob": "b9a4aaf063d97305c3f4f53eba8f02b526d61761",
+      "f9ApprovedBlob": "7a5f169dd0e239d46fa4af09cf67f2eb4329a477",
       "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "latestApprovedBlob": "7cad29de66de546527d9c6b92b44cad676d1882f",
       "currentBlob": "7cad29de66de546527d9c6b92b44cad676d1882f",
       "loadTarget": "artifact-file",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "6f084ab81264b937cda661dddb4b071ef956d35f",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): make project source routing explicit and multi-project safe; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629"
     },
     {
       "path": "app/core/build-lock.js",
@@ -477,7 +560,10 @@
       "currentBlob": "068b28bce919c2a4f357eb4c21f85fede06a0c5d",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "068b28bce919c2a4f357eb4c21f85fede06a0c5d",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/styles/theme.css",
@@ -491,7 +577,10 @@
       "currentBlob": "48bf933ebeb0e2a0df49d80ff16a460a1947ddb9",
       "loadTarget": "browser-style",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "48bf933ebeb0e2a0df49d80ff16a460a1947ddb9",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/styles/layout.css",
@@ -499,13 +588,16 @@
       "historicalAuthority": "V182_EXACT",
       "historicalApprovedBlob": "2cea8372cad099cb4610b93744824e4596b04adc",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
-      "f9ApprovedBlob": "2cea8372cad099cb4610b93744824e4596b04adc",
+      "f9ApprovedBlob": "91b3d308e1a51be7a470f0f12b32382c1043058f",
       "latestApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
-      "latestApprovedBlob": "2cea8372cad099cb4610b93744824e4596b04adc",
-      "currentBlob": "2cea8372cad099cb4610b93744824e4596b04adc",
+      "latestApprovedBlob": "91b3d308e1a51be7a470f0f12b32382c1043058f",
+      "currentBlob": "91b3d308e1a51be7a470f0f12b32382c1043058f",
       "loadTarget": "browser-style",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "91b3d308e1a51be7a470f0f12b32382c1043058f",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/manifest.webmanifest",
@@ -519,7 +611,10 @@
       "currentBlob": "bc969630aaee9152ff69541c88ca443886c4c82f",
       "loadTarget": "pwa-manifest",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "bc969630aaee9152ff69541c88ca443886c4c82f",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/sw.js",
@@ -528,12 +623,15 @@
       "historicalApprovedBlob": "643c2e63fa301f6822b298fcc422077b74934628",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "643c2e63fa301f6822b298fcc422077b74934628",
-      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "latestApprovedBlob": "39c445f1ab5b50d12b22c5f912c4950b6735107a",
       "currentBlob": "39c445f1ab5b50d12b22c5f912c4950b6735107a",
       "loadTarget": "service-worker",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "39c445f1ab5b50d12b22c5f912c4950b6735107a",
+      "latestApprovedAuthority": "TERMINAL_CERTIFIED_PREDECESSOR: run 35247813214 Gate21 PASS"
     },
     {
       "path": "app/core/config.js",
@@ -547,7 +645,10 @@
       "currentBlob": "0bf7b6c1daded062806d90e03ba2c5d67ac1fe63",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "0bf7b6c1daded062806d90e03ba2c5d67ac1fe63",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/core/router.js",
@@ -561,7 +662,10 @@
       "currentBlob": "fdd3c91c1428d49413fb305ed464dffdc6ea3e13",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "fdd3c91c1428d49413fb305ed464dffdc6ea3e13",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/core/permissions.js",
@@ -575,7 +679,10 @@
       "currentBlob": "bedc4f8bbc80dba9f03e34ec6bbcf9cfeeb2a1d5",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "bedc4f8bbc80dba9f03e34ec6bbcf9cfeeb2a1d5",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/core/data.js",
@@ -584,12 +691,15 @@
       "historicalApprovedBlob": "3a679020205617e44126ec586e0022edc70b0512",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "3a679020205617e44126ec586e0022edc70b0512",
-      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedSource": "3d36b46c53e970899d16e24a7061bd33c5ba812f",
       "latestApprovedBlob": "703472f0659ed8581e2ec2c34522c90385f3a0ac",
       "currentBlob": "703472f0659ed8581e2ec2c34522c90385f3a0ac",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "a885af50b4b3e98679fa372c8765c38242d0a4c0",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629"
     },
     {
       "path": "app/core/data-source.js",
@@ -603,7 +713,10 @@
       "currentBlob": "6149dff1d91b83af007badbaafdef63f00c34d1f",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "6149dff1d91b83af007badbaafdef63f00c34d1f",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/core/backend-browser-auth.js",
@@ -612,12 +725,15 @@
       "historicalApprovedBlob": "d052a4b62e5320817d42055946e94de463914b24",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "cb9ceb89d2282fe6d3c8b4ffc8c2cd1f52263cac",
-      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "latestApprovedBlob": "6ff36a155e81fc95ed4c41160505f72aaf5b8496",
       "currentBlob": "6ff36a155e81fc95ed4c41160505f72aaf5b8496",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "6ff36a155e81fc95ed4c41160505f72aaf5b8496",
+      "latestApprovedAuthority": "TERMINAL_CERTIFIED_PREDECESSOR: run 35247813214 Gate21 PASS"
     },
     {
       "path": "app/core/backend-protected-dev-session-continuity.js",
@@ -631,7 +747,10 @@
       "currentBlob": "00f2b3d1e92ad6154853282a8881163cf9e6ca5d",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "00f2b3d1e92ad6154853282a8881163cf9e6ca5d",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
@@ -645,7 +764,10 @@
       "currentBlob": "6e599771aa694457a904a4be639868fe065e4e9f",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "090d01dc4913112a68d39f6c1547e6556458384d",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): make project source routing explicit and multi-project safe; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629"
     },
     {
       "path": "app/adapters/tya-cumulative-read-model-v2.js",
@@ -654,12 +776,15 @@
       "historicalApprovedBlob": "e93d17bb764030c9993455327957e52b4bf41885",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "0b0ffc1cc215afbcc2fd3400ea1496162da93b60",
-      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedSource": "3d36b46c53e970899d16e24a7061bd33c5ba812f",
       "latestApprovedBlob": "5793dff8ab72315e161662a8ccd6e7ffd0ed5be1",
       "currentBlob": "5793dff8ab72315e161662a8ccd6e7ffd0ed5be1",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "d93f308ad8de48c11b7a6b37662809757acc0af4",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629"
     },
     {
       "path": "app/adapters/tya-canonical-state-semantics-v2.js",
@@ -668,12 +793,15 @@
       "historicalApprovedBlob": "c85be3537cfa80a2f0565ca074d71ecef68d53a2",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "5c62a221f4a5a33fc133b4f34e636f722beaca4d",
-      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedSource": "3d36b46c53e970899d16e24a7061bd33c5ba812f",
       "latestApprovedBlob": "f8e472154fa8869bcbb2e6aa240d0f0be9ed3f5c",
       "currentBlob": "f8e472154fa8869bcbb2e6aa240d0f0be9ed3f5c",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "5c62a221f4a5a33fc133b4f34e636f722beaca4d",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629"
     },
     {
       "path": "app/adapters/tya-live-source-refresh-watch-v2.js",
@@ -687,7 +815,10 @@
       "currentBlob": "c83e455ed50fa23552abaf1a9ecd16d81903d12b",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "4f10c7cf1e2bbd665c7723b7edf2dd43991474ec",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): make project source routing explicit and multi-project safe; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629"
     },
     {
       "path": "app/adapters/tya-canonical-finance-read-model-v2.js",
@@ -701,7 +832,10 @@
       "currentBlob": "6a527c3813ad4318bc921bf3c997bc4c70726db5",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "6a527c3813ad4318bc921bf3c997bc4c70726db5",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/adapters/tya-canonical-shopper-portal-v2.js",
@@ -710,12 +844,15 @@
       "historicalApprovedBlob": "78af302e7040f219c1a515191e93c085f5a2f3cf",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "e186b0d97be42abe6f8dd1f41358feb59aee860a",
-      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedSource": "dcba411b1e6f88d3e500fd5e2df53d664af7771e",
       "latestApprovedBlob": "621a90d701e736ecb448da019d2240486fbcd134",
       "currentBlob": "621a90d701e736ecb448da019d2240486fbcd134",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "a605f5b154a5d330f452e6b72d6c3f50fc343d00",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): enforce owner shopper credential rule; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629"
     },
     {
       "path": "app/adapters/tya-canonical-reservations-guard-v2.js",
@@ -729,7 +866,10 @@
       "currentBlob": "0eb96842dea71bb6f1b4801914e6a475c5885ccc",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "0eb96842dea71bb6f1b4801914e6a475c5885ccc",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/adapters/tya-c6-unified-human-runtime-v1.js",
@@ -738,12 +878,15 @@
       "historicalApprovedBlob": "7c00752d9a34209366f3c328ea3e5f5fddb4e1db",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "3acc508ac242407ea688b6a4ba964409af1125ba",
-      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedSource": "57ffe11bc4a209bed1d73b9487bad55a4f653a1d",
       "latestApprovedBlob": "be7331eda76b750e2454e096b9cc3cb705a4c50a",
       "currentBlob": "be7331eda76b750e2454e096b9cc3cb705a4c50a",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "3acc508ac242407ea688b6a4ba964409af1125ba",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): gate human runtime on live HR authority; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629"
     },
     {
       "path": "app/adapters/tya-c6-domain-consistency-bridge.js",
@@ -752,12 +895,15 @@
       "historicalApprovedBlob": "81f1e5807dfe18e0f53a348813b98fe353eeb7a1",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "81f1e5807dfe18e0f53a348813b98fe353eeb7a1",
-      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedSource": "dcba411b1e6f88d3e500fd5e2df53d664af7771e",
       "latestApprovedBlob": "b5f660ae49e5bccb041127fcb88d025264f84174",
       "currentBlob": "b5f660ae49e5bccb041127fcb88d025264f84174",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "81f1e5807dfe18e0f53a348813b98fe353eeb7a1",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): enforce owner shopper credential rule; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629"
     },
     {
       "path": "app/modules/proyectos.js",
@@ -766,12 +912,15 @@
       "historicalApprovedBlob": "68d1ec116fd39a14293ab305a34e895b9c19b77e",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "68d1ec116fd39a14293ab305a34e895b9c19b77e",
-      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "latestApprovedBlob": "9492e710671749f954510d49dcf93e590a52669c",
       "currentBlob": "9492e710671749f954510d49dcf93e590a52669c",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "9492e710671749f954510d49dcf93e590a52669c",
+      "latestApprovedAuthority": "TERMINAL_CERTIFIED_PREDECESSOR: run 35247813214 Gate21 PASS"
     },
     {
       "path": "app/modules/periodos.js",
@@ -785,7 +934,10 @@
       "currentBlob": "7987d7186efcaa12f33e4fd11f91ae6e50fd7ad5",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "7987d7186efcaa12f33e4fd11f91ae6e50fd7ad5",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/modules/hr-source.js",
@@ -799,7 +951,10 @@
       "currentBlob": "dcfe3e9f0b5e97fdc0a4af77ba3873854ef545b0",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "dcfe3e9f0b5e97fdc0a4af77ba3873854ef545b0",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/modules/proyecto-wizard.js",
@@ -807,13 +962,16 @@
       "historicalAuthority": "C6_DEPLOYED_APP_TREE",
       "historicalApprovedBlob": "a95668206105a94194f99607aeb41f0f87bba98d",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
-      "f9ApprovedBlob": "a95668206105a94194f99607aeb41f0f87bba98d",
-      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "f9ApprovedBlob": "f46378a1fb79a6355cf39fbf364d2f09398861a6",
+      "latestApprovedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "latestApprovedBlob": "3c722c503634665d3574979db267f1dda2c3c159",
       "currentBlob": "3c722c503634665d3574979db267f1dda2c3c159",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "3c722c503634665d3574979db267f1dda2c3c159",
+      "latestApprovedAuthority": "TERMINAL_CERTIFIED_PREDECESSOR: run 35247813214 Gate21 PASS"
     },
     {
       "path": "app/modules/academia.js",
@@ -827,7 +985,10 @@
       "currentBlob": "0b42dd790d946d327eb1110b78878e302d51aa6e",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "0b42dd790d946d327eb1110b78878e302d51aa6e",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/core/cliente-data.js",
@@ -841,7 +1002,10 @@
       "currentBlob": "3e2ac5716d711a7a883886085399ca04c614de77",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "3e2ac5716d711a7a883886085399ca04c614de77",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/modules/dashboard.js",
@@ -855,7 +1019,10 @@
       "currentBlob": "e879fc3f1dd5a7486762b197346cadd086e1d99d",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "e879fc3f1dd5a7486762b197346cadd086e1d99d",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/modules/midia.js",
@@ -869,7 +1036,10 @@
       "currentBlob": "98d901850a437b029abac2ba3e569dc3a9543940",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "98d901850a437b029abac2ba3e569dc3a9543940",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/modules/historico.js",
@@ -883,7 +1053,10 @@
       "currentBlob": "bf259b28e871bc6cea991f14ce5560323ef55f9e",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "bf259b28e871bc6cea991f14ce5560323ef55f9e",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/modules/visitas.js",
@@ -892,12 +1065,15 @@
       "historicalApprovedBlob": "d7c65650e4972d438f2641cbcaaff25486fb7f01",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "d7c65650e4972d438f2641cbcaaff25486fb7f01",
-      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedSource": "3d36b46c53e970899d16e24a7061bd33c5ba812f",
       "latestApprovedBlob": "43f1aa36468340aa96ceec30b30f4816b13c6d2a",
       "currentBlob": "43f1aa36468340aa96ceec30b30f4816b13c6d2a",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "67b96c49e6e8ed58974c7c6e80e84a89c9485cf7",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629"
     },
     {
       "path": "app/modules/visita-detalle.js",
@@ -906,12 +1082,15 @@
       "historicalApprovedBlob": "ad819a540ae92a076902185d75878ea7e716bc8c",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "ad819a540ae92a076902185d75878ea7e716bc8c",
-      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "latestApprovedBlob": "322a350e22a57a94c587a38d480f1ccf28157db7",
       "currentBlob": "322a350e22a57a94c587a38d480f1ccf28157db7",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "322a350e22a57a94c587a38d480f1ccf28157db7",
+      "latestApprovedAuthority": "TERMINAL_CERTIFIED_PREDECESSOR: run 35247813214 Gate21 PASS"
     },
     {
       "path": "app/modules/revision-admin.js",
@@ -925,7 +1104,10 @@
       "currentBlob": "41fcea495c1e23e7ecee43a637b45002124ea3c9",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "41fcea495c1e23e7ecee43a637b45002124ea3c9",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/modules/postulaciones.js",
@@ -934,12 +1116,15 @@
       "historicalApprovedBlob": "f38593885c245841710934971dd335ee5eddf1da",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "f38593885c245841710934971dd335ee5eddf1da",
-      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedSource": "3d36b46c53e970899d16e24a7061bd33c5ba812f",
       "latestApprovedBlob": "a6d11eb76a834182e76b981e4d954a1d3aa7f357",
       "currentBlob": "a6d11eb76a834182e76b981e4d954a1d3aa7f357",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "fc1bf4e962b04fe8bd06f599cf7404aac5f34f72",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629"
     },
     {
       "path": "app/modules/reservas.js",
@@ -953,7 +1138,10 @@
       "currentBlob": "ddc54bad9dfc7b242b06d39daf872c9f9b327c80",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "ddc54bad9dfc7b242b06d39daf872c9f9b327c80",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/modules/shoppers.js",
@@ -961,13 +1149,16 @@
       "historicalAuthority": "C6_DEPLOYED_EXACT",
       "historicalApprovedBlob": "df8dbfadabbc7f9a808da83d2a78225b7c5e6055",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
-      "f9ApprovedBlob": "df8dbfadabbc7f9a808da83d2a78225b7c5e6055",
-      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "f9ApprovedBlob": "92f834bb2b7fcf5d8674acb717ce6b4e920c5766",
+      "latestApprovedSource": "dcba411b1e6f88d3e500fd5e2df53d664af7771e",
       "latestApprovedBlob": "bc767591653f0f5a49214de60a4886c6b40c2330",
       "currentBlob": "bc767591653f0f5a49214de60a4886c6b40c2330",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "5fba01c9b96de9bb6b97bccc3fa5c83d82d7214b",
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): enforce owner shopper credential rule; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629"
     },
     {
       "path": "app/modules/novedades.js",
@@ -981,7 +1172,10 @@
       "currentBlob": "3a8a4ac11fe3dfe5bff11c4840f355742bc93375",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "3a8a4ac11fe3dfe5bff11c4840f355742bc93375",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/modules/tablon.js",
@@ -995,7 +1189,10 @@
       "currentBlob": "d2eb7784d4b695f863d330f42a6ee6575a87a3f6",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "d2eb7784d4b695f863d330f42a6ee6575a87a3f6",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/modules/misvisitas.js",
@@ -1003,13 +1200,16 @@
       "historicalAuthority": "C6_DEPLOYED_EXACT",
       "historicalApprovedBlob": "418da18fa2c6c30780719e2fc1d9c72e84fd5d20",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
-      "f9ApprovedBlob": "418da18fa2c6c30780719e2fc1d9c72e84fd5d20",
+      "f9ApprovedBlob": "19feb19b96c7d2f69c3cfed785fdbfcaabd96e2d",
       "latestApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
-      "latestApprovedBlob": "418da18fa2c6c30780719e2fc1d9c72e84fd5d20",
-      "currentBlob": "418da18fa2c6c30780719e2fc1d9c72e84fd5d20",
+      "latestApprovedBlob": "19feb19b96c7d2f69c3cfed785fdbfcaabd96e2d",
+      "currentBlob": "19feb19b96c7d2f69c3cfed785fdbfcaabd96e2d",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "19feb19b96c7d2f69c3cfed785fdbfcaabd96e2d",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/modules/operacion-extra.js",
@@ -1018,12 +1218,15 @@
       "historicalApprovedBlob": "896d1e97af7761209955a0df2cad1dca68820801",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "896d1e97af7761209955a0df2cad1dca68820801",
-      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "latestApprovedBlob": "509c4dd251515ea1429ebe51d69d9e779ae69a54",
       "currentBlob": "509c4dd251515ea1429ebe51d69d9e779ae69a54",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "509c4dd251515ea1429ebe51d69d9e779ae69a54",
+      "latestApprovedAuthority": "TERMINAL_CERTIFIED_PREDECESSOR: run 35247813214 Gate21 PASS"
     },
     {
       "path": "app/modules/cert.js",
@@ -1037,7 +1240,10 @@
       "currentBlob": "5532109dec5c942c2fa6d520ad0a7e0b7b104034",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "5532109dec5c942c2fa6d520ad0a7e0b7b104034",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/modules/cuestionario-shopper.js",
@@ -1051,7 +1257,10 @@
       "currentBlob": "a9801776eda4b52d447abaf20c28e2bf4290930d",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "a9801776eda4b52d447abaf20c28e2bf4290930d",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/modules/beneficios.js",
@@ -1065,7 +1274,10 @@
       "currentBlob": "73e200e57530479637792c89c644fcfdf78b6799",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "73e200e57530479637792c89c644fcfdf78b6799",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/modules/documentos.js",
@@ -1079,7 +1291,10 @@
       "currentBlob": "28c302761f22807ed5ebcb1f04cd1d12827652dd",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "28c302761f22807ed5ebcb1f04cd1d12827652dd",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/core/finanzas-core.js",
@@ -1093,7 +1308,10 @@
       "currentBlob": "6d3f46f003f3319f96cfd759b8b5ed52afc6a125",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "6d3f46f003f3319f96cfd759b8b5ed52afc6a125",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/core/liquidacion.js",
@@ -1107,7 +1325,10 @@
       "currentBlob": "dde322890eb8821b822215905b82a22102d73d2c",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "dde322890eb8821b822215905b82a22102d73d2c",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/core/costos.js",
@@ -1121,7 +1342,10 @@
       "currentBlob": "7f0c4547a68b8bafebae0652b8de5c8e27114a0c",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "7f0c4547a68b8bafebae0652b8de5c8e27114a0c",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/modules/finanzas.js",
@@ -1130,12 +1354,15 @@
       "historicalApprovedBlob": "623fab9ba1e06c39f83beda610bb771e23910a07",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "623fab9ba1e06c39f83beda610bb771e23910a07",
-      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "latestApprovedBlob": "5af9e5d28833524cabba132834738e8acce55e0b",
       "currentBlob": "5af9e5d28833524cabba132834738e8acce55e0b",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "5af9e5d28833524cabba132834738e8acce55e0b",
+      "latestApprovedAuthority": "TERMINAL_CERTIFIED_PREDECESSOR: run 35247813214 Gate21 PASS"
     },
     {
       "path": "app/modules/cliente.js",
@@ -1149,7 +1376,10 @@
       "currentBlob": "4e5981081bdd01de368c4f412ed476244426634e",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "4e5981081bdd01de368c4f412ed476244426634e",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/modules/cliente-extra.js",
@@ -1163,7 +1393,10 @@
       "currentBlob": "ca3d2d6b356b3d942ebbb2076625ce0b000e4b64",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "terminalCertifiedBlob": "ca3d2d6b356b3d942ebbb2076625ce0b000e4b64",
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
     },
     {
       "path": "app/adapters/cxorbia-canonical-write-firewall-v1.js",
@@ -1709,7 +1942,7 @@
     "rule": "preserve; do not regress/rebuild; not an I3 requirement absent transversal P0"
   },
   "devCertification": {
-    "status": "PENDING_SAME_RUN_CERTIFICATION",
+    "status": "PENDING_SAME_RUN_CERTIFICATION_AFTER_MATRIX_MAPPING_FIX",
     "rule": "same canonical workflow must deploy exact product source to DEV, prove served fingerprints, Gate20 semantic+visual, package once and Gate21 same artifact; this field does not authorize I4"
   },
   "invariants": {
@@ -1724,5 +1957,16 @@
     "gate21IndependentSourceAuthority": false,
     "productionTouched": false
   },
-  "nextExactAction": "Run canonical I3 workflow once after this control-only matrix/gate commit; accept I3 GO only if same-run DEV parity, all functional gates, Gate20 and Gate21 pass on f836f38dc0ce3a48034ed8968220d5dece9d6629."
+  "nextExactAction": "Run canonical I3 workflow on this control-only matrix correction; product source remains f836f38dc0ce3a48034ed8968220d5dece9d6629.",
+  "moduleTruthCorrection": {
+    "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
+    "run179": {
+      "runId": 35341645345,
+      "failedStep": "Prove exhaustive cumulative Phase A module integrity",
+      "productBuilds": 0,
+      "devDeploys": 0
+    },
+    "correction": "Use exact F9 Git tree blobs as accepted baseline, preserve August-04 blob as historical metadata, and map only proven post-F9 successors.",
+    "productChanged": false
+  }
 }
