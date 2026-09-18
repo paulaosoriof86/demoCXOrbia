@@ -56,9 +56,14 @@ jobs:
     timeout-minutes: 70
     env:
       ACCEPTANCE_OUT: .tmp/recovery-i3-human-live-acceptance
-      CERTIFIED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/00b425303930a46e
-      CERTIFIED_RUNTIME_REVISION: cxorbia-live-hr-dev-00119-5jf
-      CERTIFIED_RUNTIME_DIGEST: sha256:502d2fecec771eb2eebb0d99c5dc91312d292f06808861b09eb904930a57b92e
+      CERTIFIED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/714f0e0d2322fed0
+      CERTIFIED_RUNTIME_REVISION: cxorbia-live-hr-dev-00122-csp
+      CERTIFIED_RUNTIME_DIGEST: sha256:8eb503c6bf9218c3d994d12bcbf1f7ef359603ef0e04ebc932ab7d9907ac8e1d
+      CERTIFIED_RUN_ID: "35361181438"
+      CERTIFIED_ARTIFACT_ID: "10555321726"
+      CERTIFIED_ARTIFACT_DIGEST: sha256:00655f4d8963876c0a8bc49913d0851ffbef5d3c13b046c8f0ca3b5cf3d7e371
+      CERTIFIED_GATE21_ARTIFACT_ID: "10555421090"
+      CERTIFIED_GATE21_DIGEST: sha256:db1ea6f2f597935e51d10c6fd40b1ac9ed8e74dff1624307ba8b1ad77c9014f0
     steps:
       - name: Checkout canonical Recovery control head
         uses: actions/checkout@v4
@@ -85,7 +90,7 @@ jobs:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
-      - name: Verify exact run 181 DEV artifact before human acceptance
+      - name: Verify exact run 188 DEV artifact before human acceptance
         run: |
           set -Eeuo pipefail
           mkdir -p "$ACCEPTANCE_OUT"
@@ -108,7 +113,7 @@ jobs:
           git show "$I3_CERTIFICATION_SOURCE_SHA:app/index-backend-dev.html" > "$RUNNER_TEMP/expected"
           curl -fsS "$HOSTING_URL/index-backend-dev.html?i3human=$GITHUB_RUN_ID" -o "$RUNNER_TEMP/served"
           test "$(sha256sum "$RUNNER_TEMP/expected"|awk '{print $1}')" = "$(sha256sum "$RUNNER_TEMP/served"|awk '{print $1}')"
-          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg hosting "$CERTIFIED_HOSTING_VERSION" --arg revision "$CERTIFIED_RUNTIME_REVISION" --arg digest "$CERTIFIED_RUNTIME_DIGEST" '{decision:"PASS_I3_CERTIFIED_DEV_IDENTITY_BEFORE_HUMAN_ACCEPTANCE",sourceSha:$source,hostingVersion:$hosting,runtimeRevision:$revision,runtimeDigest:$digest,rebuilds:0,deploys:0,production:false}' > "$ACCEPTANCE_OUT/certified-dev-identity.json"
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg hosting "$CERTIFIED_HOSTING_VERSION" --arg revision "$CERTIFIED_RUNTIME_REVISION" --arg digest "$CERTIFIED_RUNTIME_DIGEST" --arg run "$CERTIFIED_RUN_ID" --arg artifact "$CERTIFIED_ARTIFACT_ID" --arg artifactDigest "$CERTIFIED_ARTIFACT_DIGEST" --arg gate21Artifact "$CERTIFIED_GATE21_ARTIFACT_ID" --arg gate21Digest "$CERTIFIED_GATE21_DIGEST" '{decision:"PASS_I3_CERTIFIED_DEV_IDENTITY_BEFORE_HUMAN_ACCEPTANCE",sourceSha:$source,certifiedRunId:$run,artifactId:$artifact,artifactDigest:$artifactDigest,gate21ArtifactId:$gate21Artifact,gate21Digest:$gate21Digest,hostingVersion:$hosting,runtimeRevision:$revision,runtimeDigest:$digest,rebuilds:0,deploys:0,production:false}' > "$ACCEPTANCE_OUT/certified-dev-identity.json"
       - name: Execute live human acceptance Admin Shopper Client
         run: node RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
       - name: Upload human live screenshots and evidence
