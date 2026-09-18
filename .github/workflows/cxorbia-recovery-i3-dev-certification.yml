@@ -272,12 +272,45 @@ jobs:
           const collisions=[...groups.entries()].map(([login,ids])=>({login,ids:[...new Set(ids)].sort()})).filter(x=>x.ids.length>1);
 
           const cross=JSON.parse(fs.readFileSync(CROSSWALK,'utf8'));
-          const exactBySource=new Map(arr(cross?.crosswalk).filter(x=>x?.action==='REUSE_EXISTING_CANONICAL_SHOPPER'&&str(x?.plannedShopperId)&&str(x?.canonicalShopperId)).map(x=>[str(x.plannedShopperId),str(x.canonicalShopperId)]));
+          const exactBySource=new Map();
+          const exactEvidenceBySource=new Map();
+          const addExact=(source,target,evidence)=>{
+            source=str(source);target=str(target);if(!source||!target)return;
+            const prior=exactBySource.get(source);
+            if(prior&&prior!==target)throw new Error('MAPPING_FAILURE:EXACT_IDENTITY_EVIDENCE_CONFLICT');
+            exactBySource.set(source,target);
+            if(!exactEvidenceBySource.has(source))exactEvidenceBySource.set(source,new Set());
+            exactEvidenceBySource.get(source).add(evidence);
+          };
+          for(const row of arr(cross?.crosswalk)){
+            if(row?.action==='REUSE_EXISTING_CANONICAL_SHOPPER'&&str(row?.plannedShopperId)&&str(row?.canonicalShopperId)){
+              addExact(row.plannedShopperId,row.canonicalShopperId,'visit_identity_crosswalk');
+            }
+          }
           const mappingHash=str(cross?.mappingHashSha256);
           if(!/^[a-f0-9]{64}$/.test(mappingHash))throw new Error('SOURCE_FAILURE:EXACT_VISIT_CROSSWALK_HASH_INVALID');
 
           if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
           const db=getFirestore(),tenant=db.collection('tenants').doc(TENANT),linksRef=tenant.collection('shopperIdentityLinks');
+
+          const durableCrossSnap=await tenant.collection('shopperIdentityCrosswalk').get();
+          let durableExactAliasEvidence=0;
+          for(const doc of durableCrossSnap.docs){
+            const row=doc.data()||{};
+            const tenantOk=str(row.tenantId||TENANT)===TENANT;
+            const sourceType=str(row.sourceType).toLowerCase();
+            const identityMode=str(row.identityMode).toLowerCase();
+            const projectIds=arr(row.projectIds).map(str).filter(Boolean);
+            const projectOk=projectIds.includes(PROJECT_ID);
+            const target=str(row.shopperId);
+            if(!tenantOk||sourceType!=='hr_external'||!projectOk||!target)continue;
+            if(!['stable_hr_shopper_id','provider_exact_identity_link'].includes(identityMode))continue;
+            for(const token of [...new Set([doc.id,row.sourceStableKey,row.sourceShopperId].map(str).filter(Boolean))]){
+              addExact(token,target,'durable_shopper_identity_crosswalk');
+              durableExactAliasEvidence++;
+            }
+          }
+
           const linkSnap=await linksRef.get();
           const links=linkSnap.docs.map(d=>({id:d.id,...(d.data()||{})})).filter(applicable);
           const tokenTargets=new Map();
@@ -328,6 +361,7 @@ jobs:
             identityCount:arr(overlay.identities).length,collisionGroupCount:collisions.length,
             collisionTechnicalIdCount:collisions.reduce((n,x)=>n+x.ids.length,0),
             exactVisitCrosswalkSha256:mappingHash,existingTrustedIdentityLinks:links.length,
+            durableExactAliasEvidence,
             rawNamesPersisted:false,rawLoginsPersisted:false,hrWrites:0,authWrites:0,production:false
           };
           if(blockers.length){
