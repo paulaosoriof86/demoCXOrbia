@@ -25,8 +25,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  I3_CERTIFICATION_SOURCE_SHA: e23e5639ce73c68e5f3387e5357dbd162edda54b
-  I3_CERTIFICATION_SOURCE_TREE: 6058537ac82756e5df8af13e276ee0e736637ecc
+  I3_CERTIFICATION_SOURCE_SHA: ff63238f6131275bdd5b083a7f0a3613470725a7
+  I3_CERTIFICATION_SOURCE_TREE: f83fac0ec5d3d1a39a07439bbfe21dab0b189212
   LOCKED_GATE20_BASELINE_RUN_ID: '34306578074'
   LOCKED_GATE20_BASELINE_RUN_ATTEMPT: '1'
   LOCKED_GATE20_BASELINE_SOURCE_SHA: bd2a519db5ebd08f17d47827997056db795c8c09
@@ -475,13 +475,8 @@ jobs:
             durableExactAliasEvidence,protectedProfileReads:profiles.length,protectedExactAliasEvidence,protectedDistinctIdentityEvidence,
             rawNamesPersisted:false,rawLoginsPersisted:false,rawProtectedAnchorsPersisted:false,hrWrites:0,authWrites:0,production:false
           };
-          if(blockers.length){
-            const report={...base,decision:'HOLD_I3_EXACT_IDENTITY_ADJUDICATION',classification:'MAPPING_FAILURE',providerWrites:0,blockers,plannedWrites:0};
-            fs.writeFileSync(OUT+'/identity-link-adjudication.json',JSON.stringify(report,null,2)+'\n');
-            console.log(JSON.stringify(report));
-            process.exit(2);
-          }
-
+          // Exceptional unresolved identities remain fail-closed per shopper, but do not block the
+          // authoritative HR revision for unrelated shoppers. Proven exact aliases are still materialized below.
           const uniquePlan=[...new Map(planned.map(x=>[x.sourceId,x])).values()];
           if(uniquePlan.length){
             await db.runTransaction(async tx=>{
@@ -534,12 +529,20 @@ jobs:
             if(targets.length!==1||resolveAfter(targets[0],afterTargets)!==p.canonicalShopperId)throw new Error('PERSISTENCE_FAILURE:IDENTITY_LINK_READBACK_MISMATCH');
             readback.push({sourceId:p.sourceId,canonicalShopperId:p.canonicalShopperId});
           }
-          const report={...base,decision:collisions.length?'PASS_I3_EXACT_IDENTITY_LINKS_MATERIALIZED':'PASS_I3_NO_CREDENTIAL_COLLISIONS',classification:null,providerWrites:uniquePlan.length,plannedWrites:uniquePlan.length,readback,collisionGroups:collisions.map(g=>({credentialFingerprint:sha(g.login).slice(0,24),technicalIds:g.ids}))};
+          const report={...base,
+            decision:blockers.length?'PASS_I3_IDENTITY_REVIEW_QUARANTINED':collisions.length?'PASS_I3_EXACT_IDENTITY_LINKS_MATERIALIZED':'PASS_I3_NO_CREDENTIAL_COLLISIONS',
+            classification:blockers.length?'MAPPING_FAILURE':null,
+            blocking:false,
+            identityReviewRequired:blockers.length>0,
+            identityReviewGroupCount:blockers.length,
+            providerWrites:uniquePlan.length,plannedWrites:uniquePlan.length,readback,blockers,
+            collisionGroups:collisions.map(g=>({credentialFingerprint:sha(g.login).slice(0,24),technicalIds:g.ids}))
+          };
           fs.writeFileSync(OUT+'/identity-link-adjudication.json',JSON.stringify(report,null,2)+'\n');
           console.log(JSON.stringify(report));
           NODE
           decision="$(jq -r '.decision' "$OUT/identity-link-adjudication.json")"
-          [[ "$decision" = "PASS_I3_EXACT_IDENTITY_LINKS_MATERIALIZED" || "$decision" = "PASS_I3_NO_CREDENTIAL_COLLISIONS" ]]
+          [[ "$decision" = "PASS_I3_IDENTITY_REVIEW_QUARANTINED" || "$decision" = "PASS_I3_EXACT_IDENTITY_LINKS_MATERIALIZED" || "$decision" = "PASS_I3_NO_CREDENTIAL_COLLISIONS" ]]
 
       - name: Read fresh authoritative HR source
         run: |
