@@ -244,7 +244,7 @@ jobs:
             let authSettled=false,lastNetworkError=null;
             for(let attempt=1;attempt<=5&&!authSettled;attempt++){
               await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
-              await page.waitForFunction(()=>!!window.firebase?.auth,null,{timeout:90000});
+              await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
               const attemptToken=await auth.createCustomToken(shopper.id);
               try{
                 await page.evaluate(async t=>{const fb=window.firebase;if(!fb?.auth)throw new Error('FIREBASE_SDK_NOT_READY');await fb.auth().setPersistence(fb.auth.Auth.Persistence.LOCAL);await fb.auth().signInWithCustomToken(t);},attemptToken);
@@ -264,7 +264,7 @@ jobs:
             // so the harness must not expect raw signInWithCustomToken() to populate it.
             await page.goto('about:blank',{waitUntil:'domcontentloaded',timeout:30000});
             await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
-            await page.waitForFunction(()=>!!window.firebase?.auth,null,{timeout:90000});
+            await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
             await page.waitForFunction(expectedUid=>String(window.firebase?.auth?.().currentUser?.uid||'')===String(expectedUid),shopper.id,{timeout:90000});
             await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
             await page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});
