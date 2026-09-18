@@ -88,3 +88,12 @@ test('I3 Gate 20 restores CX auth context from persisted Firebase session before
   assert.match(gate20,/await window\.CX\.backendAuth\.ensureAuthenticated\(\)/);
   assert.match(gate20,/CX_PROTECTED_AUTH_HR_AUTHORITY\?\.applied===true/);
 });
+
+test('I3 HR authority bridge follows backend operator scope semantics',()=>{
+  const backend=read('app/core/backend-firebase.js');
+  const bridge=read('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js');
+  assert.match(backend,/function isOperator\(ctx\)\{ return \['super','admin','ops','coordinador'\]\.includes\(roleOf\(ctx\)\); \}/);
+  assert.match(backend,/if\(!ctx \|\| isOperator\(ctx\)\) return getAll\(projectsCol\(\)\)/);
+  assert.match(bridge,/\['super','admin','ops','coordinador'\]\.includes\(role\)/);
+  assert.match(bridge,/return projects\.includes\('cinepolis'\)/);
+});
