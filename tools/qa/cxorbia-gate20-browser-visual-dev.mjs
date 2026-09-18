@@ -8,7 +8,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 const PROJECT=process.env.PROJECT||'cxorbia-backend-dev';
 const OUT=process.env.OUT||'.tmp/recovery-i3-gate20-focal';
 const HOSTING_URL=String(process.env.HOSTING_URL||'https://cxorbia-backend-dev.web.app').replace(/\/$/,'');
-const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',TECH='YES_PAULA_20260801_REAL_USERS_E2E';
+const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV',TECH='YES_PAULA_20260801_REAL_USERS_E2E';
 const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
 const now=()=>new Date().toISOString();
 const write=(n,v)=>{fs.mkdirSync(OUT,{recursive:true});fs.writeFileSync(path.join(OUT,n),JSON.stringify(v,null,2)+'\n');};
@@ -36,12 +36,13 @@ write('shopper-fixture-readback.json',{decision:'PASS_GATE20_ACTIVE_SHOPPER_FIXT
 
 let chromium;try{({chromium}=await import('playwright'));}catch{finish('ENVIRONMENT_FAILURE',{blocker:'GATE20_PLAYWRIGHT_UNAVAILABLE'});}
 const browser=await chromium.launch({headless:true});
-const base=`${HOSTING_URL}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cxProjectId=${encodeURIComponent(projectId)}&cxProtectedRuntime=${PROTECTED}`;
+const base=`${HOSTING_URL}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cxProjectId=${encodeURIComponent(projectId)}&cxProtectedRuntime=${PROTECTED}&cxHumanFullVisual=${FULL}`;
 const technicalUrl=`${base}&cxTechnicalAuthE2E=${TECH}`;
 const pageErrors=[],captures=[];
 async function capture(page,file){await page.screenshot({path:path.join(OUT,file),fullPage:true});captures.push(file);}
 async function authenticate(page,token,expectedRole){
   await page.goto(technicalUrl,{waitUntil:'domcontentloaded',timeout:90000});
+  await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
   await page.evaluate(async t=>{
     await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
     await firebase.auth().signInWithCustomToken(t);
