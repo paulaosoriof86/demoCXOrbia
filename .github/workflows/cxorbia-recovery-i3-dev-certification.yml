@@ -28,8 +28,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  I3_CERTIFICATION_SOURCE_SHA: 8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6
-  I3_CERTIFICATION_SOURCE_TREE: 878fd60a2dc542cf04540026c34f1a7543cc2134
+  I3_CERTIFICATION_SOURCE_SHA: 8ae9492acd887d7cc156fdcd8c9845793f77aa5c
+  I3_CERTIFICATION_SOURCE_TREE: fcdd8dcc1ea511714f8dd398edae2843137a7da9
   HISTORICAL_GATE20_BASELINE_RUN_ID: '34306578074'
   HISTORICAL_GATE20_BASELINE_RUN_ATTEMPT: '1'
   HISTORICAL_GATE20_BASELINE_SOURCE_SHA: bd2a519db5ebd08f17d47827997056db795c8c09
@@ -167,12 +167,19 @@ jobs:
           set -Eeuo pipefail
           MATRIX="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
           test -f "$MATRIX"
-          test "$(jq -r '.schemaVersion' "$MATRIX")" = "cxorbia.recovery.module-truth-matrix.v3"
+          test "$(jq -r '.schemaVersion' "$MATRIX")" = "cxorbia.recovery.module-truth-matrix.v4"
           test "$(jq -r '.productSource.sha' "$MATRIX")" = "$I3_CERTIFICATION_SOURCE_SHA"
           test "$(jq -r '.productSource.treeSha' "$MATRIX")" = "$I3_CERTIFICATION_SOURCE_TREE"
           test "$(jq -r '.phaseAComplete' "$MATRIX")" = "true"
           test "$(jq -r '.allModulesMatch' "$MATRIX")" = "true"
           test "$(jq '[.modules[] | select(.classification != "MATCH")] | length' "$MATRIX")" = "0"
+          test "$(jq -r '.entrypointClosure.activeInternalScriptCount' "$MATRIX")" = "124"
+          test "$(jq -r '.entrypointClosure.matrixCoveredActiveInternal' "$MATRIX")" = "124"
+          test "$(jq '.entrypointClosure.activeInternalOutsideMatrix|length' "$MATRIX")" = "0"
+          test "$(jq '.entrypointClosure.duplicateSrc|length' "$MATRIX")" = "0"
+          test "$(jq '.entrypointClosure.unknownActiveOverlays|length' "$MATRIX")" = "0"
+          test "$(jq -r '.financeClosure.classification' "$MATRIX")" = "MATCH"
+          test "$(jq '.financeClosure.activeFiles|length' "$MATRIX")" -ge 1
           MATRIX="$MATRIX" SOURCE="$I3_CERTIFICATION_SOURCE_SHA" node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {execFileSync} from 'node:child_process';
@@ -218,8 +225,26 @@ jobs:
           echo "MODULE_TRUTH_MATRIX_SHA256=$MODULE_TRUTH_MATRIX_SHA256" >> "$GITHUB_ENV"
           jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg sha "$MODULE_TRUTH_MATRIX_SHA256" \
             --argjson modules "$(jq '.modules|length' "$MATRIX")" \
-            '{decision:"PASS_I3_EXHAUSTIVE_PHASE_A_MODULE_INTEGRITY",sourceSha:$source,sourceTree:$tree,moduleTruthSha256:$sha,moduleCount:$modules,allModulesMatch:true,production:false}' \
+            '{decision:"PASS_I3_EXHAUSTIVE_PHASE_A_MODULE_INTEGRITY",sourceSha:$source,sourceTree:$tree,moduleTruthSha256:$sha,moduleCount:$modules,activeInternalScripts:124,activeOutsideMatrix:0,duplicateSrc:0,unknownOverlays:0,allModulesMatch:true,production:false}' \
             > "$OUT/module-integrity-gate.json"
+
+      - name: Prove atomic P0 source contracts before build
+        run: |
+          set -Eeuo pipefail
+          ! grep -q "id:'hr-post-'" app/adapters/tya-live-source-inplace-apply.js
+          grep -q "DURABLE_VISIT_AUTHORITY_AMBIGUOUS" app/core/backend-firebase.js
+          grep -q "hr_exact_crosswalk_precedes_historical_identity_link" app/adapters/cxorbia-provider-identity-link-runtime-v1.js
+          grep -q "protectedState:'1'" app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
+          grep -q "'reservation.create'" backend/runtime/cxorbia-operational-command-provider-v1.mjs
+          grep -q "source:'durable_provider'" app/adapters/tya-canonical-reservations-guard-v2.js
+          grep -q "mutationsEnabled:true" app/adapters/tya-canonical-reservations-guard-v2.js
+          ! grep -q "fuente canónica pendiente" app/adapters/tya-canonical-reservations-guard-v2.js
+          grep -q "const selYear=_periodMatch" app/modules/dashboard.js
+          ! grep -q "const selMonth=new Date().getMonth()" app/modules/dashboard.js
+          OVERLAY=app/adapters/tya-ab-cumulative-composition-v1.js
+          ! grep -Eq "CX\.data\._visitas\s*=|CX\.data\._posts\s*=|CX\.reservas\.[A-Za-z_]+\s*=|CX\.fin(Store)?\.[A-Za-z_]+\s*=" "$OVERLAY"
+          test "$(jq '.financeClosure.activeFiles|length' RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json)" -ge 1
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" '{decision:"PASS_I3_ATOMIC_P0_SOURCE_CONTRACT",sourceSha:$source,syntheticPostulations:false,durableVisitAuthority:true,hrCrosswalkPrecedence:true,reservationsDurableProvider:true,dashboardSelectedPeriod:true,financeClosure:true,overlayNoShadow:true,production:false}' > "$OUT/atomic-p0-source-contract.json"
 
       - name: Install existing focal certification dependencies
         run: |
@@ -824,6 +849,27 @@ jobs:
           test "$(jq -r '.decision' "$OUT/credential-rule-readback.json")" = "PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE"
           test "$(jq -r '.passwordLoginPassed' "$OUT/credential-rule-readback.json")" = "true"
 
+      - name: Restore historical Client membership only with exact readback
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$OUT/client-membership"
+          export CXORBIA_EXPECTED_PROJECT="$PROJECT"
+          export CXORBIA_MEMBERSHIP_ONLY_REPAIR=1
+          export CXORBIA_DEV_ROOT_URL="$HOSTING_URL"
+          export CXORBIA_CLIENT_AUTH_PRIVATE_SNAPSHOT="$RUNNER_TEMP/cxorbia-client-membership-snapshot.json"
+          export CXORBIA_E2E_PRIVATE_CREDENTIALS="$RUNNER_TEMP/cxorbia-client-e2e-private.json"
+          export OUT_DIR="$OUT/client-membership"
+          node "$SOURCE_DIR/tools/qa/cxorbia-c6-client-auth-materialization.mjs" --mode=snapshot > "$OUT/client-membership/snapshot.json"
+          node "$SOURCE_DIR/tools/qa/cxorbia-c6-client-auth-materialization.mjs" --mode=apply > "$OUT/client-membership/apply.json"
+          node "$SOURCE_DIR/tools/qa/cxorbia-c6-client-auth-materialization.mjs" --mode=readback > "$OUT/client-membership/readback.json"
+          test "$(jq -r '.decision' "$OUT/client-membership/snapshot.json")" = "PASS_C6_CLIENT_AUTH_MEMBERSHIP_PREWRITE_SNAPSHOT"
+          APPLY_DECISION="$(jq -r '.decision' "$OUT/client-membership/apply.json")"
+          [[ "$APPLY_DECISION" = "PASS_C6_CLIENT_AUTH_MEMBERSHIP_REPAIRED" || "$APPLY_DECISION" = "PASS_C6_CLIENT_AUTH_MEMBERSHIP_IDEMPOTENT_NOOP" ]]
+          test "$(jq -r '.canonicalDecision' "$OUT/client-membership/readback.json")" = "PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK"
+          test "$(jq -r '.authUserCreates' "$OUT/client-membership/readback.json")" = "0"
+          test "$(jq -r '.passwordChanges' "$OUT/client-membership/readback.json")" = "0"
+          test "$(jq -r '.hrWrites' "$OUT/client-membership/readback.json")" = "0"
+
       - name: Revalidate real human lane HR authority release
         run: |
           set -Eeuo pipefail
@@ -1125,14 +1171,16 @@ jobs:
           HUMAN_LANE_SHA256="$(sha256sum "$OUT/human-lane-authority-release.json" | awk '{print $1}')"
           CREDENTIAL_RULE_SHA256="$(sha256sum "$OUT/credential-rule-readback.json" | awk '{print $1}')"
           SEMANTIC_GATE20_SHA256="$(sha256sum "$OUT/gate20-semantic-shopper.json" | awk '{print $1}')"
+          ATOMIC_P0_SHA256="$(sha256sum "$OUT/atomic-p0-source-contract.json" | awk '{print $1}')"
+          CLIENT_MEMBERSHIP_SHA256="$(sha256sum "$OUT/client-membership/readback.json" | awk '{print $1}')"
           echo "$ARTIFACT_SHA256  cxorbia-i3-certified-source.tar" > "$OUT/cxorbia-i3-certified-source.tar.sha256"
           jq -n -S \
             --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg control "$GITHUB_SHA" \
             --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg image "$SOURCE_IMMUTABLE_IMAGE" \
-            --arg artifact "$ARTIFACT_SHA256" --arg gate20Sha "$GATE20_SHA256" --arg humanLaneSha "$HUMAN_LANE_SHA256" --arg credentialRuleSha "$CREDENTIAL_RULE_SHA256" --arg semanticGate20Sha "$SEMANTIC_GATE20_SHA256" \
+            --arg artifact "$ARTIFACT_SHA256" --arg gate20Sha "$GATE20_SHA256" --arg humanLaneSha "$HUMAN_LANE_SHA256" --arg credentialRuleSha "$CREDENTIAL_RULE_SHA256" --arg semanticGate20Sha "$SEMANTIC_GATE20_SHA256" --arg atomicP0Sha "$ATOMIC_P0_SHA256" --arg clientMembershipSha "$CLIENT_MEMBERSHIP_SHA256" \
             --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hostingVersion "$HOSTING_VERSION_NAME" --arg hostingReleaseTime "$HOSTING_RELEASE_TIME" \
             --arg moduleTruthSha "$MODULE_TRUTH_MATRIX_SHA256" --slurpfile moduleTruth "$OUT/module-truth-matrix.json" \
-            '{decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,buildCount:1,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingReleaseTime,humanLane:{decision:"PASS_I3_HUMAN_LANE_AUTHORITY_RELEASE",evidenceSha256:$humanLaneSha,technicalMode:false},credentialRule:{decision:"PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE",version:"tya-shopper-nombre-apellido-v1",evidenceSha256:$credentialRuleSha,passwordLoginPassed:true},gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},gate20Semantic:{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",sourceSha:$source,evidenceSha256:$semanticGate20Sha},moduleTruthEvidenceSha256:$moduleTruthSha,moduleTruth:$moduleTruth[0],artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,rebuildAfterCertification:false,production:false}' \
+            '{decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,buildCount:1,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingReleaseTime,humanLane:{decision:"PASS_I3_HUMAN_LANE_AUTHORITY_RELEASE",evidenceSha256:$humanLaneSha,technicalMode:false},credentialRule:{decision:"PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE",version:"tya-shopper-nombre-apellido-v1",evidenceSha256:$credentialRuleSha,passwordLoginPassed:true},atomicP0:{decision:"PASS_I3_ATOMIC_P0_SOURCE_CONTRACT",evidenceSha256:$atomicP0Sha},clientMembership:{decision:"PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK",evidenceSha256:$clientMembershipSha,authUserCreates:0,passwordChanges:0},gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},gate20Semantic:{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",sourceSha:$source,evidenceSha256:$semanticGate20Sha},moduleTruthEvidenceSha256:$moduleTruthSha,moduleTruth:$moduleTruth[0],artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,rebuildAfterCertification:false,production:false}' \
             > "$OUT/i3-certification-manifest.json"
           cp "$OUT/i3-certification-manifest.json" "$OUT/result.json"
 
@@ -1155,3 +1203,89 @@ jobs:
     needs: certify
     uses: ./.github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml
     secrets: inherit
+
+  human_live_same_artifact:
+    name: Final human acceptance on exact certified DEV artifact
+    if: ${{ !contains(github.event.head_commit.message, '[human-live-only]') }}
+    needs: [certify, gate21]
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    env:
+      ACCEPTANCE_OUT: .tmp/recovery-i3-human-live-same-artifact
+    steps:
+      - name: Checkout Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install final acceptance browser dependencies
+        run: |
+          set -Eeuo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Authenticate canonical Firebase DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+      - name: Download exact same-run certified artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cxorbia-recovery-i3-single-source-certification-${{ github.run_id }}
+          path: ${{ env.ACCEPTANCE_OUT }}/certification
+      - name: Prove no rebuild or redeploy occurred after certification
+        run: |
+          set -Eeuo pipefail
+          CERT="$ACCEPTANCE_OUT/certification"
+          MAN="$CERT/i3-certification-manifest.json"
+          test -f "$MAN"
+          test "$(jq -r '.decision' "$MAN")" = "PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21"
+          test "$(jq -r '.i3CertificationSourceSha' "$MAN")" = "$I3_CERTIFICATION_SOURCE_SHA"
+          test "$(jq -r '.i3CertificationSourceTree' "$MAN")" = "$I3_CERTIFICATION_SOURCE_TREE"
+          test "$(jq -r '.buildCount' "$MAN")" = "1"
+          test "$(jq -r '.rebuildAfterCertification' "$MAN")" = "false"
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$ACCEPTANCE_OUT/runtime.json"
+          REV="$(jq -r '.status.latestReadyRevisionName' "$ACCEPTANCE_OUT/runtime.json")"
+          test "$REV" = "$(jq -r '.devRuntimeRevision' "$MAN")"
+          gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$ACCEPTANCE_OUT/runtime-revision.json"
+          DIG="$(jq -r '.status.imageDigest // empty' "$ACCEPTANCE_OUT/runtime-revision.json")"
+          [[ "$DIG" == sha256:* ]] || DIG="sha256:${DIG##*@sha256:}"
+          test "$DIG" = "$(jq -r '.runtimeImageDigest' "$MAN")"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$ACCEPTANCE_OUT/hosting-live.json"
+          test "$(jq -r '.release.version.name' "$ACCEPTANCE_OUT/hosting-live.json")" = "$(jq -r '.hostingVersionName' "$MAN")"
+          mkdir -p "$RUNNER_TEMP/i3-final-source"
+          git archive "$I3_CERTIFICATION_SOURCE_SHA" | tar -x -C "$RUNNER_TEMP/i3-final-source"
+          while IFS= read -r p; do
+            rel="${p#app/}"
+            sha_expected="$(sha256sum "$RUNNER_TEMP/i3-final-source/$p"|awk '{print $1}')"
+            sha_served="$(curl -fsS --retry 4 --retry-delay 2 "$HOSTING_URL/$rel?i3final=$GITHUB_RUN_ID-$(date +%s%N)" | sha256sum | awk '{print $1}')"
+            test "$sha_expected" = "$sha_served"
+          done < <(jq -r '.sourceFiles[] | select(.phaseAAuthority==true and (.loadTarget=="browser-script" or .loadTarget=="browser-style")) | .path' RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json)
+          sha_expected="$(sha256sum "$RUNNER_TEMP/i3-final-source/app/index-backend-dev.html"|awk '{print $1}')"
+          sha_served="$(curl -fsS "$HOSTING_URL/index-backend-dev.html?i3final=$GITHUB_RUN_ID" | sha256sum | awk '{print $1}')"
+          test "$sha_expected" = "$sha_served"
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg artifact "$(jq -r '.artifactSha256' "$MAN")" --arg revision "$REV" --arg digest "$DIG" --arg hosting "$(jq -r '.hostingVersionName' "$MAN")" '{decision:"PASS_I3_SAME_CERTIFIED_ARTIFACT_BEFORE_HUMAN_ACCEPTANCE",sourceSha:$source,artifactSha256:$artifact,runtimeRevision:$revision,runtimeDigest:$digest,hostingVersion:$hosting,rebuilds:0,deploysAfterCertification:0,production:false}' > "$ACCEPTANCE_OUT/same-artifact-readback.json"
+      - name: Execute exhaustive Admin Shopper GT Shopper HN Client acceptance
+        run: |
+          set -Eeuo pipefail
+          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" I3_CERTIFICATION_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" ACCEPTANCE_OUT="$ACCEPTANCE_OUT" node RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
+          test "$(jq -r '.decision' "$ACCEPTANCE_OUT/human-live-acceptance.json")" = "PASS_I3_HUMAN_LIVE_ACCEPTANCE"
+          test "$(jq -r '.decision' "$ACCEPTANCE_OUT/i3-functional-probes.json")" = "PASS_I3_ATOMIC_FUNCTIONAL_PROBES"
+      - name: Upload final I3 human acceptance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-final-human-live-acceptance-${{ github.run_id }}
+          path: ${{ env.ACCEPTANCE_OUT }}
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+          include-hidden-files: true
+      - name: Cleanup
+        if: always()
+        run: rm -rf node_modules

@@ -104,6 +104,18 @@ jobs:
           ACTUAL_SEMANTIC_SHA="$(sha256sum "$CERT/gate20-semantic-shopper.json" | awk '{print $1}')"
           test "$EXPECTED_SEMANTIC_SHA" = "$ACTUAL_SEMANTIC_SHA"
 
+          test "$(jq -r '.atomicP0.decision' "$CERT/result.json")" = "PASS_I3_ATOMIC_P0_SOURCE_CONTRACT"
+          test "$(jq -r '.clientMembership.decision' "$CERT/result.json")" = "PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK"
+          test "$(jq -r '.clientMembership.authUserCreates' "$CERT/result.json")" = "0"
+          test "$(jq -r '.clientMembership.passwordChanges' "$CERT/result.json")" = "0"
+          test -f "$CERT/atomic-p0-source-contract.json"
+          test -f "$CERT/client-membership/readback.json"
+          ACTUAL_ATOMIC_P0_SHA="$(sha256sum "$CERT/atomic-p0-source-contract.json" | awk '{print $1}')"
+          ACTUAL_CLIENT_MEMBERSHIP_SHA="$(sha256sum "$CERT/client-membership/readback.json" | awk '{print $1}')"
+          test "$ACTUAL_ATOMIC_P0_SHA" = "$(jq -r '.atomicP0.evidenceSha256' "$CERT/result.json")"
+          test "$ACTUAL_CLIENT_MEMBERSHIP_SHA" = "$(jq -r '.clientMembership.evidenceSha256' "$CERT/result.json")"
+          test "$(jq -r '.canonicalDecision' "$CERT/client-membership/readback.json")" = "PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK"
+
           EXPECTED_ARTIFACT_SHA="$(jq -r '.artifactSha256' "$CERT/result.json")"
           ACTUAL_ARTIFACT_SHA="$(sha256sum "$CERT/cxorbia-i3-certified-source.tar" | awk '{print $1}')"
           test "$EXPECTED_ARTIFACT_SHA" = "$ACTUAL_ARTIFACT_SHA"
