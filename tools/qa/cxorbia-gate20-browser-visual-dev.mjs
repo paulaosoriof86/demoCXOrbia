@@ -40,24 +40,46 @@ const base=`${HOSTING_URL}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cx
 const validationUrl=base;
 const pageErrors=[],captures=[];
 async function capture(page,file){await page.screenshot({path:path.join(OUT,file),fullPage:true});captures.push(file);}
-async function authenticate(page,token,expectedRole){
-  await page.goto(validationUrl,{waitUntil:'domcontentloaded',timeout:90000});
-  await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
-  await page.evaluate(async t=>{
-    await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-    await firebase.auth().signInWithCustomToken(t);
-  },token);
-  await page.waitForFunction(()=>!!firebase.auth().currentUser?.uid,null,{timeout:90000});
-  // Gate 20 validates the authenticated human canonical lane, matching the
-  // already-proven human-lane authority release on this exact DEV artifact.
-  // Raw Firebase sign-in only establishes the provider session; after reload,
-  // canonical ensureAuthenticated() restores claims/session before HR authority.
+async function authenticate(page,uid,expectedRole){
+  let authSettled=false,lastNetworkError=null;
+  for(let attempt=1;attempt<=5&&!authSettled;attempt++){
+    await page.goto(validationUrl,{waitUntil:'domcontentloaded',timeout:90000});
+    await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
+    const attemptToken=await auth.createCustomToken(uid);
+    try{
+      await page.evaluate(async t=>{
+        const fb=window.firebase;
+        if(!fb?.auth)throw new Error('FIREBASE_SDK_NOT_READY');
+        await fb.auth().setPersistence(fb.auth.Auth.Persistence.LOCAL);
+        await fb.auth().signInWithCustomToken(t);
+      },attemptToken);
+    }catch(error){
+      const msg=String(error&&error.message||error||'');
+      if(!/Execution context was destroyed|navigation|FIREBASE_SDK_NOT_READY|app-compat\/no-app|No Firebase App|auth\/network-request-failed|network AuthError|timeout|interrupted connection|unreachable host/i.test(msg))throw error;
+      lastNetworkError=error;
+    }
+    await page.waitForLoadState('domcontentloaded',{timeout:90000}).catch(()=>{});
+    const persistedUid=await page.evaluate(()=>String(window.firebase?.auth?.().currentUser?.uid||'')).catch(()=> '');
+    if(persistedUid===String(uid)){authSettled=true;break;}
+    if(attempt<5)await page.waitForTimeout(1500*attempt);
+  }
+  if(!authSettled)throw new Error('ENVIRONMENT_FAILURE:GATE20_FIREBASE_AUTH_SESSION_NOT_PERSISTED:'+String(lastNetworkError&&lastNetworkError.message||lastNetworkError||'no-current-user'));
   await page.goto('about:blank',{waitUntil:'domcontentloaded',timeout:30000});
   await page.goto(validationUrl,{waitUntil:'domcontentloaded',timeout:90000});
-  await page.waitForFunction(()=>!!firebase.auth().currentUser?.uid,null,{timeout:90000});
+  await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
+  await page.waitForFunction(expectedUid=>String(window.firebase?.auth?.().currentUser?.uid||'')===String(expectedUid),uid,{timeout:90000});
   await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
   await page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});
-  await page.waitForFunction(({tenantId,projectId,expectedRole})=>{const c=window.CX?.backendAuth?.context?.()||{};const projects=Array.isArray(c.projectIds)?c.projectIds.map(String):[];const role=String(c.role||'');const roleOk=expectedRole==='staff'?['super','admin'].includes(role):role===expectedRole;const projectOk=role==='super'||projects.length===0||projects.includes(projectId);return c.authenticated===true&&c.tenantId===tenantId&&roleOk&&projectOk&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true;},{tenantId,projectId,expectedRole},{timeout:120000});
+  await page.waitForFunction(({tenantId,projectId,expectedRole})=>{
+    const c=window.CX?.backendAuth?.context?.()||{},projects=Array.isArray(c.projectIds)?c.projectIds.map(String):[],role=String(c.role||'');
+    const roleOk=expectedRole==='staff'?['super','admin'].includes(role):role===expectedRole;
+    const projectOk=role==='super'||projects.length===0||projects.includes(projectId);
+    return c.authenticated===true&&c.tenantId===tenantId&&roleOk&&projectOk;
+  },{tenantId,projectId,expectedRole},{timeout:120000});
+  await page.waitForFunction(({projectId})=>{
+    const gate=window.CX_C6_HR_AUTHORITY_GATE||{},source=String(window.CX?.dataSource?.sourceRef||'');
+    return window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&gate.ready===true&&gate.blocked===false&&source==='hr-live-all-periods+firestore-authenticated-exact-overlay'&&String(window.CX?.data?.currentProjectId||'')===projectId;
+  },{projectId},{timeout:120000});
 }
 async function routeCheck(page,kind,route,expected){
   await page.evaluate(r=>window.CX.router.nav(r),route);
@@ -83,7 +105,7 @@ try{
     const ctx=await browser.newContext({viewport:cfg.viewport,isMobile:cfg.kind.includes('mobile'),hasTouch:cfg.kind.includes('mobile')});
     const page=await ctx.newPage();
     page.on('pageerror',e=>pageErrors.push(`${cfg.kind}:${str(e?.message||e).slice(0,500)}`));
-    await authenticate(page,await auth.createCustomToken(cfg.member.id),cfg.role);
+    await authenticate(page,cfg.member.id,cfg.role);
     for(const [route,expected] of cfg.routes)maxOverflowX=Math.max(maxOverflowX,await routeCheck(page,cfg.kind,route,expected));
     await ctx.close();
   }
