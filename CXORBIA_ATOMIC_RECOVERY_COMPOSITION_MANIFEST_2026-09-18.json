@@ -7,7 +7,7 @@
   "controlParentSha": "326f1c66d62b7c710f71812969aac1d28b6b03ed",
   "productSourceBefore": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
   "productTreeBefore": "878fd60a2dc542cf04540026c34f1a7543cc2134",
-  "state": "COMPOSED_PRECERT_AFTER_FOCAL_FAIL_CORRECTION",
+  "state": "COMPOSED_PRECERT_AFTER_STABLE_VISIT_AUTHORITY_FIX",
   "entrypoint": "app/index-backend-dev.html",
   "loadedScriptsTotal": 130,
   "internalScriptsTotal": 124,
@@ -523,8 +523,8 @@
       "sourceBlob": "0bba12d8f241c7704dd01862b8902491dda01b6f",
       "classification": "FOCAL_FIX",
       "byteExact": false,
-      "reason": "P0_PROVEN_ATOMIC_COMPOSITION_OWNER",
-      "currentBlob": "89660adee9722eef3db8d73ab552f9f70d52f06f",
+      "reason": "P0_PROVEN_RUN199_STABLE_HR_VISIT_ID_AUTHORITY",
+      "currentBlob": "02376836eeecfbe3b31f5b436af2f19c23363969",
       "compositionResult": "MATCH"
     },
     {
@@ -1352,15 +1352,17 @@
     "same-artifact-human-live"
   ],
   "production": "DO_NOT_TOUCH",
-  "productSourceAfter": "186c2a8f5a243d0ccf1c3720acbe13ff38825895",
-  "productTreeAfter": "4032b6a1e6ca7ae677fa7917fbb559a875432ddb",
+  "productSourceAfter": "fc98484ff31cfa0e3c2684e28eee6608f86026a2",
+  "productTreeAfter": "69db1278b95325e1f4c4b3f35b3e393161596b11",
   "sourceDiff": {
     "productCommit": "186c2a8f5a243d0ccf1c3720acbe13ff38825895",
     "filesChangedInInitialAtomicComposition": 11,
     "focalCorrectionFiles": [
       "app/core/backend-firebase.js"
     ],
-    "onlyAuthorizedOwners": true
+    "onlyAuthorizedOwners": true,
+    "latestProductCommit": "fc98484ff31cfa0e3c2684e28eee6608f86026a2",
+    "latestProductTree": "69db1278b95325e1f4c4b3f35b3e393161596b11"
   },
   "moduleTruth": {
     "schemaVersion": "cxorbia.recovery.module-truth-matrix.v4",
@@ -1377,6 +1379,14 @@
       "fix": "Select the unique durable row whose __docId equals its declared visitId/id; preserve historical duplicates as non-authoritative.",
       "sourceCommit": "186c2a8f5a243d0ccf1c3720acbe13ff38825895",
       "blob": "89660adee9722eef3db8d73ab552f9f70d52f06f"
+    },
+    {
+      "classification": "PERSISTENCE_FAILURE",
+      "owner": "app/core/backend-firebase.js",
+      "evidence": "Run199 v5: every duplicate group has exactly one docId matching live HR; stable visit identity contract derives that live id from tenant/project/period/country/sourceRow. Run209 exposed JUNIO 25!10 ambiguity under weaker selector.",
+      "fix": "Derive expected stable HR visit id with SHA-256 contract and select the unique durable document whose Firestore docId equals that expected live id; preserve all other rows as historical/non-authoritative.",
+      "sourceCommit": "fc98484ff31cfa0e3c2684e28eee6608f86026a2",
+      "blob": "02376836eeecfbe3b31f5b436af2f19c23363969"
     }
   ]
 }
