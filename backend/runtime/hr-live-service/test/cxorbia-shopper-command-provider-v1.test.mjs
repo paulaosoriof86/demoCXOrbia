@@ -79,7 +79,7 @@ const snapshot=({revisionCountry='GT',shopperId='shopper_gt_abc123',shopperCode=
   firestoreWrites:0,
   tenantId:'tenant-a',
   projectId,
-  visits:[{id:'visit-1',tenantId:'tenant-a',projectId,shopperId,shopperCode,pais:revisionCountry,country:revisionCountry,sourceSafe:true,piiProtected:true,shopper:'Shopper protegido',hrRowId:'TAB!2',sourceTab:'TAB'}]
+  visits:[{id:'visit-1',tenantId:'tenant-a',projectId,shopperId,shopperCode,pais:revisionCountry,country:revisionCountry,sourceSafe:true,piiProtected:true,shopper:'Persona Prueba',hrRowId:'TAB!2',sourceTab:'TAB'}]
 });
 const paths=id=>({
   profile:`tenants/tenant-a/shoppers/${id}`,
