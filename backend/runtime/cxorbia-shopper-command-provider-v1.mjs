@@ -28,7 +28,8 @@ const properFirst=value=>{const first=str(value).split(/\s+/).filter(Boolean)[0]
 export function shopperCredentialRule(profile={}){
   const full=str(profile.nombre||profile.name||profile.displayName);
   const tokens=full.split(/\s+/).filter(Boolean);
-  const first=str(profile.firstName||tokens[0]);
+  const firstSource=str(profile.firstName||tokens[0]);
+  const first=str(firstSource).split(/\s+/).filter(Boolean)[0]||'';
   const last=str(profile.lastName||profile.apellido||tokens.slice(1).join(' '));
   const firstLogin=loginPart(first),lastLogin=loginPart(last),passwordFirst=properFirst(first);
   if(!firstLogin||!lastLogin||!passwordFirst)return {ok:false,reason:'SHOPPER_CREDENTIAL_NAME_INCOMPLETE',login:null,password:null,ruleVersion:CREDENTIAL_RULE_VERSION};

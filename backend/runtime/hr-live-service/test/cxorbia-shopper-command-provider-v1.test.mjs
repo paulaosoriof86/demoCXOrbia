@@ -310,3 +310,17 @@ test('Gate 8 / durable legacy shoppers converge to the frozen credential rule ou
   assert.equal(second.idempotentReplays,1);
   assert.equal(second.identityReviewCount,1);
 });
+
+
+test('Gate 8 / nombre.apellido uses only the first given name and remains idempotent after profile normalization',()=>{
+  const historical={nombre:'Juan Carlos Pérez Gómez',firstName:'Juan Carlos',lastName:'Pérez Gómez'};
+  const first=shopperCredentialRule(historical);
+  assert.equal(first.ok,true);
+  assert.equal(first.login,'juan.perezgomez');
+  assert.equal(first.password,'Juan123*');
+  assert.equal(first.firstName,'Juan');
+  assert.equal(first.lastName,'Pérez Gómez');
+  const normalized={...historical,firstName:first.firstName,lastName:first.lastName,visibleLogin:first.login,username:first.login,user:first.login,credentialRuleVersion:CREDENTIAL_RULE_VERSION};
+  const second=shopperCredentialRule(normalized);
+  assert.deepEqual(second,first);
+});
