@@ -4,10 +4,10 @@
   "iteration": "I3",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "expectedParentSha": "dcba411b1e6f88d3e500fd5e2df53d664af7771e",
-  "expectedParentTree": "ee453984756197b18331413df836641e5264e656",
-  "i3CertificationSourceSha": "dcba411b1e6f88d3e500fd5e2df53d664af7771e",
-  "i3CertificationSourceTree": "ee453984756197b18331413df836641e5264e656",
+  "expectedParentSha": "320a823bfa49ef2d301cf47bf30e27eb32482a6c",
+  "expectedParentTree": "182848332c0b51895218ac5d8f21115c04ce522d",
+  "i3CertificationSourceSha": "320a823bfa49ef2d301cf47bf30e27eb32482a6c",
+  "i3CertificationSourceTree": "182848332c0b51895218ac5d8f21115c04ce522d",
   "classification": "AUTH_FAILURE",
   "oneSourceOneBuildOneArtifact": true,
   "executionEngine": "GITHUB_ACTIONS_SERVER_SIDE",
@@ -41,6 +41,7 @@
     "username": "nombre.apellido",
     "password": "Nombre123*",
     "version": "tya-shopper-nombre-apellido-v1",
-    "plaintextPersistence": false
+    "plaintextPersistence": false,
+    "profileRenameKeepsCredentialInvariant": true
   }
 }
