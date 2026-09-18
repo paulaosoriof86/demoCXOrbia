@@ -30,8 +30,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  I3_CERTIFICATION_SOURCE_SHA: fc98484ff31cfa0e3c2684e28eee6608f86026a2
-  I3_CERTIFICATION_SOURCE_TREE: 69db1278b95325e1f4c4b3f35b3e393161596b11
+  I3_CERTIFICATION_SOURCE_SHA: f98da1bf658618842691037f7f7f143a30d3a85a
+  I3_CERTIFICATION_SOURCE_TREE: 742362cd477ee7a7b5e5ce25198159c251be232e
   HISTORICAL_GATE20_BASELINE_RUN_ID: '34306578074'
   HISTORICAL_GATE20_BASELINE_RUN_ATTEMPT: '1'
   HISTORICAL_GATE20_BASELINE_SOURCE_SHA: bd2a519db5ebd08f17d47827997056db795c8c09
@@ -235,8 +235,9 @@ jobs:
           set -Eeuo pipefail
           ! grep -q "id:'hr-post-'" app/adapters/tya-live-source-inplace-apply.js
           grep -q "DURABLE_VISIT_AUTHORITY_AMBIGUOUS" app/core/backend-firebase.js
-          grep -q "crypto.subtle.digest('SHA-256'" app/core/backend-firebase.js
-          grep -q "__canonicalStableVisitId" app/core/backend-firebase.js
+          grep -q "providerR20VisitIdFromDurableRow" app/core/backend-firebase.js
+          grep -q "__canonicalDurableAuthorityVersion" app/core/backend-firebase.js
+          grep -q "live-r20-provider-id" app/core/backend-firebase.js
           grep -q "hr_exact_crosswalk_precedes_historical_identity_link" app/adapters/cxorbia-provider-identity-link-runtime-v1.js
           grep -q "protectedState:'1'" app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
           grep -q "'reservation.create'" backend/runtime/cxorbia-operational-command-provider-v1.mjs

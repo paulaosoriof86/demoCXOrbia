@@ -7,7 +7,7 @@
   "controlParentSha": "326f1c66d62b7c710f71812969aac1d28b6b03ed",
   "productSourceBefore": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
   "productTreeBefore": "878fd60a2dc542cf04540026c34f1a7543cc2134",
-  "state": "COMPOSED_PRECERT_AFTER_STABLE_VISIT_AUTHORITY_FIX",
+  "state": "COMPOSED_PRECERT_AFTER_R20_PROVIDER_IDENTITY_FIX",
   "entrypoint": "app/index-backend-dev.html",
   "loadedScriptsTotal": 130,
   "internalScriptsTotal": 124,
@@ -523,8 +523,8 @@
       "sourceBlob": "0bba12d8f241c7704dd01862b8902491dda01b6f",
       "classification": "FOCAL_FIX",
       "byteExact": false,
-      "reason": "P0_PROVEN_RUN199_STABLE_HR_VISIT_ID_AUTHORITY",
-      "currentBlob": "02376836eeecfbe3b31f5b436af2f19c23363969",
+      "reason": "P0_PROVEN_RUN199_EXACT_LIVE_DOCID_WITH_CURRENT_R20_PROVIDER_IDENTITY",
+      "currentBlob": "7934b91afce19770d3556847c8c868a68a000d60",
       "compositionResult": "MATCH"
     },
     {
@@ -1352,8 +1352,8 @@
     "same-artifact-human-live"
   ],
   "production": "DO_NOT_TOUCH",
-  "productSourceAfter": "fc98484ff31cfa0e3c2684e28eee6608f86026a2",
-  "productTreeAfter": "69db1278b95325e1f4c4b3f35b3e393161596b11",
+  "productSourceAfter": "f98da1bf658618842691037f7f7f143a30d3a85a",
+  "productTreeAfter": "742362cd477ee7a7b5e5ce25198159c251be232e",
   "sourceDiff": {
     "productCommit": "186c2a8f5a243d0ccf1c3720acbe13ff38825895",
     "filesChangedInInitialAtomicComposition": 11,
@@ -1361,8 +1361,8 @@
       "app/core/backend-firebase.js"
     ],
     "onlyAuthorizedOwners": true,
-    "latestProductCommit": "fc98484ff31cfa0e3c2684e28eee6608f86026a2",
-    "latestProductTree": "69db1278b95325e1f4c4b3f35b3e393161596b11"
+    "latestProductCommit": "f98da1bf658618842691037f7f7f143a30d3a85a",
+    "latestProductTree": "742362cd477ee7a7b5e5ce25198159c251be232e"
   },
   "moduleTruth": {
     "schemaVersion": "cxorbia.recovery.module-truth-matrix.v4",
@@ -1387,6 +1387,14 @@
       "fix": "Derive expected stable HR visit id with SHA-256 contract and select the unique durable document whose Firestore docId equals that expected live id; preserve all other rows as historical/non-authoritative.",
       "sourceCommit": "fc98484ff31cfa0e3c2684e28eee6608f86026a2",
       "blob": "02376836eeecfbe3b31f5b436af2f19c23363969"
+    },
+    {
+      "classification": "PERSISTENCE_FAILURE",
+      "owner": "app/core/backend-firebase.js",
+      "evidence": "Run211 Gate20 exposed SEPTIEMBRE 26!25 under row-only stable-id selector. Current live R20 provider derives visitId from period/country/sourceRow plus SHA-256 of cinemaId|shopping|quincena|franja|sourceRow; Run199 v5 proves exactly one durable docId matches each live visit.",
+      "fix": "Select the unique duplicate row whose Firestore docId self-matches the current R20 provider visit-id algorithm; preserve historical duplicates and retain stable-row/declared-id only as fail-closed compatibility fallbacks.",
+      "sourceCommit": "f98da1bf658618842691037f7f7f143a30d3a85a",
+      "blob": "7934b91afce19770d3556847c8c868a68a000d60"
     }
   ]
 }

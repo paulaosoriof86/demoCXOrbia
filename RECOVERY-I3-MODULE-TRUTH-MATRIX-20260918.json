@@ -103,11 +103,11 @@
     }
   },
   "productSource": {
-    "sha": "fc98484ff31cfa0e3c2684e28eee6608f86026a2",
-    "treeSha": "69db1278b95325e1f4c4b3f35b3e393161596b11",
-    "message": "fix(i3): derive durable visit authority from stable HR identity"
+    "sha": "f98da1bf658618842691037f7f7f143a30d3a85a",
+    "treeSha": "742362cd477ee7a7b5e5ce25198159c251be232e",
+    "message": "fix(i3): select durable visits by live R20 provider identity"
   },
-  "controlHeadAtConstruction": "fc98484ff31cfa0e3c2684e28eee6608f86026a2",
+  "controlHeadAtConstruction": "f98da1bf658618842691037f7f7f143a30d3a85a",
   "phaseAComplete": true,
   "allModulesMatch": true,
   "modules": [
@@ -120,8 +120,8 @@
         "app/core/backend-firebase.js",
         "app/core/backend-protected-dev-mode.js"
       ],
-      "lastApprovedAuthority": "RUN199_V5_EXACT_LIVE_DOCID_PLUS_STABLE_VISIT_ID_CONTRACT",
-      "sourceCommit": "fc98484ff31cfa0e3c2684e28eee6608f86026a2",
+      "lastApprovedAuthority": "RUN199_V5_EXACT_LIVE_DOCID_MATCH_USING_CURRENT_R20_PROVIDER_IDENTITY",
+      "sourceCommit": "f98da1bf658618842691037f7f7f143a30d3a85a",
       "loadOrderEntrypoint": "app/index-backend-dev.html",
       "roles": [
         "Admin",
@@ -1271,15 +1271,15 @@
       "historicalApprovedBlob": null,
       "f9ApprovedSource": null,
       "f9ApprovedBlob": null,
-      "latestApprovedSource": "fc98484ff31cfa0e3c2684e28eee6608f86026a2",
-      "latestApprovedBlob": "02376836eeecfbe3b31f5b436af2f19c23363969",
-      "currentBlob": "02376836eeecfbe3b31f5b436af2f19c23363969",
+      "latestApprovedSource": "f98da1bf658618842691037f7f7f143a30d3a85a",
+      "latestApprovedBlob": "7934b91afce19770d3556847c8c868a68a000d60",
+      "currentBlob": "7934b91afce19770d3556847c8c868a68a000d60",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "loadOrder": 56,
       "atomicDisposition": "FOCAL_FIX",
-      "latestApprovedAuthority": "RUN199_V5_EXACT_LIVE_DOCID_PLUS_STABLE_VISIT_ID_CONTRACT"
+      "latestApprovedAuthority": "RUN199_V5_EXACT_LIVE_DOCID_MATCH_USING_CURRENT_R20_PROVIDER_IDENTITY"
     },
     {
       "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
@@ -2964,7 +2964,7 @@
     "rule": "preserve; do not regress/rebuild; not an I3 requirement absent transversal P0"
   },
   "devCertification": {
-    "status": "PENDING_SINGLE_RUN_AFTER_STABLE_VISIT_AUTHORITY_FIX",
+    "status": "PENDING_SINGLE_RUN_AFTER_R20_PROVIDER_IDENTITY_FIX",
     "servedSourceSha": null,
     "servedTreeSha": null,
     "artifactSha256": null
