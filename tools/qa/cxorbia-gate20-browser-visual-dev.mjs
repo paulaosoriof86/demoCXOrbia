@@ -88,47 +88,26 @@ async function authenticate(page,uid,expectedRole){
     const projectOk=role==='super'||projects.length===0||projects.includes(projectId);
     return c.authenticated===true&&c.tenantId===tenantId&&roleOk&&projectOk;
   },{tenantId,projectId,expectedRole},{timeout:120000});
-  const protectedRefresh=await page.evaluate(async()=>{
-    if(typeof window.CX?.backend?.refresh!=='function')return {ok:false,reason:'backend_refresh_missing',last:window.CX_BACKEND_LAST_STATE||null};
-    try{
-      const state=await window.CX.backend.refresh();
-      return {ok:true,projects:Array.isArray(state?.projects)?state.projects.length:0,shoppers:Array.isArray(state?.shoppers)?state.shoppers.length:0,visits:Array.isArray(state?.visits)?state.visits.length:0,last:window.CX_BACKEND_LAST_STATE||null,scope:window.CX_BACKEND_PROJECT_SCOPE||null};
-    }catch(e){
-      return {ok:false,reason:String(e?.message||e),last:window.CX_BACKEND_LAST_STATE||null,scope:window.CX_BACKEND_PROJECT_SCOPE||null};
-    }
-  });
-  if(!protectedRefresh?.ok)throw new Error('FUNCTIONAL_DEFECT:GATE20_PROTECTED_BACKEND_REFRESH_FAILED:'+JSON.stringify(protectedRefresh).slice(0,1200));
-  await page.waitForFunction(()=>{const src=String(window.CX_BACKEND_LAST_STATE?.source||window.CX_BACKEND_DATA_SOURCE||'').toLowerCase();return !!window.CX?.data&&(src==='firestore'||src.startsWith('firestore/'));},null,{timeout:90000});
-  const reconcile=await page.evaluate(async()=>{
-    const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-    let last=null;
-    const snapshot=()=>({
-      authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,
-      gate:window.CX_C6_HR_AUTHORITY_GATE||null,
-      source:String(window.CX?.dataSource?.sourceRef||''),
-      projectId:String(window.CX?.data?.currentProjectId||'')
-    });
-    // Prefer the canonical boot reconcile already triggered by backend refresh.
-    // Do not race it with a second writer/reader cycle.
-    for(let i=0;i<40;i++){
-      const snap=snapshot();
-      if(snap.authority?.applied===true)return {ok:true,last:{ok:true,reason:'boot_reconcile_observed'},...snap};
-      await sleep(500);
-    }
-    // Only if boot did not settle, request one explicit reconcile and observe it.
-    if(typeof window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY!=='function'){
-      return {ok:false,last:{ok:false,reason:'reconciler_missing'},...snapshot()};
-    }
-    last=await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY('gate20_explicit_reconcile');
-    for(let i=0;i<40;i++){
-      const snap=snapshot();
-      if(snap.authority?.applied===true)return {ok:true,last,...snap};
-      if(last?.reason!=='reconcile_in_progress'&&last?.ok===false&&last?.skipped!==true)break;
-      await sleep(500);
-    }
-    return {ok:false,last,...snapshot()};
-  });
-  if(!reconcile?.ok)throw new Error('FUNCTIONAL_DEFECT:GATE20_HR_RECONCILE_NOT_SETTLED:'+JSON.stringify(reconcile).slice(0,1200));
+  // Mirror the exact authenticated human lane already proven earlier in this
+  // same run. Gate20 is an observer: it must not start another backend refresh
+  // or another HR reconciliation cycle.
+  await page.waitForFunction(({projectId})=>{
+    const d=window.CX?.data||{},gate=window.CX_C6_HR_AUTHORITY_GATE||{},source=String(window.CX?.dataSource?.sourceRef||'');
+    return window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&
+      gate.ready===true&&gate.blocked===false&&
+      source==='hr-live-all-periods+firestore-authenticated-exact-overlay'&&
+      String(d.currentProjectId||'')===projectId&&
+      Array.isArray(d.projects)&&d.projects.length>0&&
+      Array.isArray(d._visitas)&&d._visitas.length>0;
+  },{projectId},{timeout:120000});
+  const reconcile=await page.evaluate(()=>({
+    ok:true,
+    authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,
+    gate:window.CX_C6_HR_AUTHORITY_GATE||null,
+    boot:window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE||null,
+    source:String(window.CX?.dataSource?.sourceRef||''),
+    projectId:String(window.CX?.data?.currentProjectId||'')
+  }));
   const authority=reconcile?.authority||{};
   const preview=await page.evaluate(()=>({projectId:String(window.CX?.data?.previewMeta?.projectId||''),hrAuthority:window.CX?.data?.previewMeta?.hrAuthority===true,sourceRef:String(window.CX?.dataSource?.sourceRef||''),currentProjectId:String(window.CX?.data?.currentProjectId||'')}));
   const authorityOk=authority.applied===true&&
