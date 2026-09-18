@@ -363,14 +363,23 @@ jobs:
           // Focal I3 identity-evidence completion: read durable shopper profiles without exporting PII.
           // Only exact persisted aliases, government-document equality, protected-email equality or stable legacy-id equality
           // may resolve a missing HR technical identity. Different government documents prove a distinct identity.
+          const flattenProfileToken=value=>{
+            const out=[];const walk=v=>{
+              if(v==null)return;
+              if(Array.isArray(v)){v.forEach(walk);return;}
+              if(typeof v==='object'){Object.values(v).forEach(walk);return;}
+              const token=str(v);if(token)out.push(token);
+            };
+            walk(value);return out;
+          };
           const profileSnap=await tenant.collection('shoppers').get();
           const profiles=profileSnap.docs.map(d=>({id:d.id,...(d.data()||{})}));
           const profileCanonical=p=>str(p?.canonicalShopperId||p?.shopperId||p?.id);
           const profileAliases=p=>[...new Set([
-            ...flattenTechnical(p?.exactAliases),...flattenTechnical(p?.identityAliases),...flattenTechnical(p?.aliases),
-            ...flattenTechnical(p?.sourceAliases),...flattenTechnical(p?.sourceIdentityAliases),
-            ...flattenTechnical(p?.sourceShopperIds),...flattenTechnical(p?.legacyLiveShopperIds),
-            ...flattenTechnical(p?.hrShopperIds),...flattenTechnical(p?.canonicalLegacyIds)
+            ...flattenProfileToken(p?.exactAliases),...flattenProfileToken(p?.identityAliases),...flattenProfileToken(p?.aliases),
+            ...flattenProfileToken(p?.sourceAliases),...flattenProfileToken(p?.sourceIdentityAliases),
+            ...flattenProfileToken(p?.sourceShopperIds),...flattenProfileToken(p?.legacyLiveShopperIds),
+            ...flattenProfileToken(p?.hrShopperIds),...flattenProfileToken(p?.canonicalLegacyIds)
           ].map(str).filter(Boolean))];
           const profileForCanonical=target=>profiles.filter(p=>profileCanonical(p)===str(target));
           const normalizedDocument=p=>str(p?.dpi||p?.documentId).toUpperCase().replace(/[^A-Z0-9]/g,'');
