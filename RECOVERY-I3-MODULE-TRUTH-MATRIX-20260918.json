@@ -103,9 +103,9 @@
     }
   },
   "productSource": {
-    "sha": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
-    "treeSha": "5f860258fc74dd443379a8e2cdc28ae08962d41f",
-    "message": "fix(i3): make project source routing explicit and multi-project safe"
+    "sha": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+    "treeSha": "878fd60a2dc542cf04540026c34f1a7543cc2134",
+    "message": "fix(i3): make legal consent observable and non-blocking"
   },
   "controlHeadAtConstruction": {
     "sha": "5e9a4387315ec0ea5ee2b17cb32dbdbff357c270",
@@ -521,15 +521,15 @@
       "historicalApprovedBlob": "d509d08bd20dd2e44fa414e0b4d2819dd18f7c36",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "2043d33dee611adacebc947c8423ed1739c1a8da",
-      "latestApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
-      "latestApprovedBlob": "2043d33dee611adacebc947c8423ed1739c1a8da",
-      "currentBlob": "2043d33dee611adacebc947c8423ed1739c1a8da",
+      "latestApprovedSource": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "latestApprovedBlob": "cb83a257b0474846abfeca90d25817810f349dcd",
+      "currentBlob": "cb83a257b0474846abfeca90d25817810f349dcd",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "2043d33dee611adacebc947c8423ed1739c1a8da",
-      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
+      "latestApprovedAuthority": "P0_PROVEN_RECOVERY_SUCCESSOR: legal/consent must never block access, tests or production"
     },
     {
       "path": "app/index-backend-dev.html",
@@ -1841,12 +1841,13 @@
       "historicalApprovedBlob": null,
       "f9ApprovedSource": null,
       "f9ApprovedBlob": null,
-      "latestApprovedSource": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "latestApprovedBlob": "bd75f82f267723cc31e6c3aed7e59e472f87f18e",
-      "currentBlob": "bd75f82f267723cc31e6c3aed7e59e472f87f18e",
+      "latestApprovedSource": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "latestApprovedBlob": "56385f181c7e7e36b903ea18c1e470f759749a86",
+      "currentBlob": "56385f181c7e7e36b903ea18c1e470f759749a86",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "latestApprovedAuthority": "P0_PROVEN_RECOVERY_SUCCESSOR: observable non-blocking legal runtime"
     },
     {
       "path": "app/adapters/tya-financial-canonical-source-safe-adapter.js",
@@ -1942,7 +1943,7 @@
     "rule": "preserve; do not regress/rebuild; not an I3 requirement absent transversal P0"
   },
   "devCertification": {
-    "status": "PENDING_SAME_RUN_CERTIFICATION_AFTER_MATRIX_MAPPING_FIX",
+    "status": "PENDING_RECERTIFICATION_AFTER_P0_LEGAL_NONBLOCKING",
     "rule": "same canonical workflow must deploy exact product source to DEV, prove served fingerprints, Gate20 semantic+visual, package once and Gate21 same artifact; this field does not authorize I4"
   },
   "invariants": {
@@ -1957,7 +1958,7 @@
     "gate21IndependentSourceAuthority": false,
     "productionTouched": false
   },
-  "nextExactAction": "Run canonical I3 workflow on this control-only matrix correction; product source remains f836f38dc0ce3a48034ed8968220d5dece9d6629.",
+  "nextExactAction": "Certify source 8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6 once, then execute live/human acceptance with legal receipts observable and non-blocking.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -1976,5 +1977,13 @@
       "productBuilds": 0,
       "devDeploys": 0
     }
+  },
+  "legalNonBlocking": {
+    "prevalentAddendum": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-18_LEGAL_NONBLOCKING_FROZEN.md",
+    "accessBlocking": false,
+    "testsBlocking": false,
+    "productionBlocking": false,
+    "automaticAcceptance": false,
+    "receiptObservable": true
   }
 }

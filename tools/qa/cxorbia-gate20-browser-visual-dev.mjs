@@ -26,24 +26,13 @@ const members=await allDocs(tenant.collection('users'));
 const staff=members.find(m=>m.active===true&&str(m.authNamespace)==='staff'&&['super','admin'].includes(str(m.role))&&(str(m.role)==='super'||arr(m.projectIds).map(String).includes(projectId)));
 ensure(staff,'AUTH_FAILURE',{blocker:'GATE20_FOCAL_ADMIN_MISSING'});
 
-// Gate 20 must never manufacture, bypass or re-execute legal acceptance. Select only an
-// already-active shopper whose durable human_ui receipt matches the current tenant legal version.
-const legalContents=(await allDocs(tenant.collection('legalContents'))).filter(c=>c.active!==false&&str(c.scopeMode||'tenant')==='tenant'&&str(c.currentVersion)&&/^[a-f0-9]{64}$/.test(str(c.currentDigest).toLowerCase())&&roleApplicable('shopper',c.roleApplicability));
-ensure(legalContents.length===1,'AUTH_FAILURE',{blocker:'GATE20_FOCAL_SHOPPER_CURRENT_LEGAL_AMBIGUOUS',candidateCount:legalContents.length});
-const currentLegal=legalContents[0];
-const legalReceipts=await allDocs(tenant.collection('legalAcceptances'));
-const acceptedUids=new Set(legalReceipts.filter(r=>
-  str(r.tenantId)===tenantId&&str(r.scopeMode)==='tenant'&&str(r.role)==='shopper'&&str(r.authNamespace)==='shopper'&&
-  str(r.legalContentId)===str(currentLegal.id)&&str(r.legalVersion)===str(currentLegal.currentVersion)&&
-  str(r.contentDigest).toLowerCase()===str(currentLegal.currentDigest).toLowerCase()&&str(r.status)==='accepted'&&
-  str(r.acceptanceMethod)==='human_ui'&&r.subjectExact===true&&Boolean(r.acceptedAt)&&str(r.actorUid)
-).map(r=>str(r.actorUid)));
+// Recovery 2026-09-18: legal acceptance is never an eligibility or access gate.
 let shopper=null;
-for(const m of members.filter(x=>acceptedUids.has(str(x.id))&&x.active===true&&str(x.authNamespace)==='shopper'&&str(x.role)==='shopper'&&str(x.shopperId)&&(arr(x.projectIds).length===0||arr(x.projectIds).map(String).includes(projectId)))){
+for(const m of members.filter(x=>x.active===true&&str(x.authNamespace)==='shopper'&&str(x.role)==='shopper'&&str(x.shopperId)&&(arr(x.projectIds).length===0||arr(x.projectIds).map(String).includes(projectId)))){
   try{await auth.getUser(m.id);shopper=m;break;}catch(error){if(str(error?.code)!=='auth/user-not-found')throw error;}
 }
-ensure(shopper,'AUTH_FAILURE',{blocker:'GATE20_FOCAL_ACCEPTED_SHOPPER_AUTH_USER_MISSING',currentLegalVersion:str(currentLegal.currentVersion),acceptedReceiptCount:acceptedUids.size});
-write('shopper-fixture-readback.json',{decision:'PASS_GATE20_EXISTING_HUMAN_ACCEPTED_SHOPPER_FIXTURE',tenantId,projectId,legalContentId:str(currentLegal.id),legalVersion:str(currentLegal.currentVersion),acceptedReceiptCount:acceptedUids.size,shopperSelected:true,humanLegalAcceptanceReexecuted:false,legalAcceptanceBypass:false,providerWrites:0,hrWrites:0,production:false});
+ensure(shopper,'AUTH_FAILURE',{blocker:'GATE20_FOCAL_SHOPPER_AUTH_USER_MISSING'});
+write('shopper-fixture-readback.json',{decision:'PASS_GATE20_ACTIVE_SHOPPER_FIXTURE',tenantId,projectId,shopperSelected:true,legalAcceptanceBlocking:false,legalReceiptRequiredForAccess:false,providerWrites:0,hrWrites:0,production:false});
 
 let chromium;try{({chromium}=await import('playwright'));}catch{finish('ENVIRONMENT_FAILURE',{blocker:'GATE20_PLAYWRIGHT_UNAVAILABLE'});}
 const browser=await chromium.launch({headless:true});
@@ -75,7 +64,7 @@ async function routeCheck(page,kind,route,expected){
   await page.waitForTimeout(500);
   const m=await page.evaluate(()=>{const d=document.documentElement,b=document.body,v=document.querySelector('#view')||document.querySelector('main.content'),r=v?.getBoundingClientRect()||{width:0,height:0,bottom:0,top:0};const modals=[...document.querySelectorAll('.cx-modal')].filter(x=>{const s=getComputedStyle(x),q=x.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&q.width>0&&q.height>0;});return {viewVisible:r.width>0&&r.height>0&&r.bottom>0&&r.top<innerHeight,overflowX:Math.max(0,Math.max(d.scrollWidth,b.scrollWidth)-innerWidth),visibleModals:modals.length,modalText:modals.map(x=>String(x.innerText||'').slice(0,240)).join(' | '),tenant:d.getAttribute('data-cx-tenant'),project:d.getAttribute('data-cx-project'),source:d.getAttribute('data-cx-source'),revision:String(window.CX?.data?.previewMeta?.sourceRevision||''),authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,bodyTextLength:String(b.innerText||'').trim().length};});
   await capture(page,`gate20-focal-${kind}-${route}.png`);
-  if(kind.startsWith('shopper')&&m.visibleModals>0&&/Términos de uso y confidencialidad/i.test(m.modalText)) finish('AUTH_FAILURE',{blocker:'GATE20_FOCAL_EXISTING_LEGAL_ACCEPTANCE_NOT_RECOGNIZED',kind,route,metrics:m,humanLegalAcceptanceReexecuted:false,legalAcceptanceBypass:false});
+  if(kind.startsWith('shopper')&&m.visibleModals>0&&/Términos de uso y confidencialidad/i.test(m.modalText)) finish('FUNCTIONAL_DEFECT',{blocker:'GATE20_FOCAL_LEGAL_MODAL_MUST_NOT_BLOCK_ACCESS',kind,route,metrics:m,legalAcceptanceBlocking:false});
   ensure(m.viewVisible&&m.bodyTextLength>100&&m.visibleModals===0&&m.tenant===tenantId&&m.project===projectId&&m.source==='hr-live'&&/^[a-f0-9]{64}$/.test(m.revision)&&m.authority,'VISUAL_DEFECT',{blocker:'GATE20_FOCAL_ROUTE_STRUCTURE_INVALID',kind,route,metrics:m});
   ensure(m.overflowX<=(kind.includes('mobile')?24:16),'VISUAL_DEFECT',{blocker:'GATE20_FOCAL_HORIZONTAL_OVERFLOW',kind,route,metrics:m});
   return m.overflowX;
@@ -99,4 +88,4 @@ try{
 }finally{await browser.close();}
 ensure(pageErrors.length===0,'VISUAL_DEFECT',{blocker:'GATE20_FOCAL_BROWSER_PAGE_ERRORS',pageErrors});
 ensure(captures.length===6,'VISUAL_DEFECT',{blocker:'GATE20_FOCAL_CAPTURE_COUNT_INVALID',captureCount:captures.length});
-finish('PASS_GATE20_FOCAL_VISUAL_DRIFT',{sourceSha:process.env.SOURCE_SHA||null,lockedGate20RunId:Number(lock.lockedRunId)||null,lockedGate20SourceSha:str(lock.lockedSourceSha),tenantId,projectId,periodId,changedSurfaceOwners:['app/modules/shoppers.js','app/modules/finanzas.js','app/modules/operacion-extra.js'],validatedRoutes:{admin:['shoppers','financiero'],shopper:['miperfil']},desktop:true,mobile:true,screenshots:captures,captureCount:captures.length,maxOverflowX,pageErrors,domMarkersExact:true,hrAuthorityApplied:true,blockingUnexpectedModal:false,existingHumanLegalAcceptanceVerified:true,humanLegalAcceptanceReexecuted:false,legalAcceptanceBypass:false},0);
+finish('PASS_GATE20_FOCAL_VISUAL_DRIFT',{sourceSha:process.env.SOURCE_SHA||null,lockedGate20RunId:Number(lock.lockedRunId)||null,lockedGate20SourceSha:str(lock.lockedSourceSha),tenantId,projectId,periodId,changedSurfaceOwners:['app/modules/shoppers.js','app/modules/finanzas.js','app/modules/operacion-extra.js'],validatedRoutes:{admin:['shoppers','financiero'],shopper:['miperfil']},desktop:true,mobile:true,screenshots:captures,captureCount:captures.length,maxOverflowX,pageErrors,domMarkersExact:true,hrAuthorityApplied:true,blockingUnexpectedModal:false,legalAcceptanceBlocking:false,legalReceiptRequiredForAccess:false},0);

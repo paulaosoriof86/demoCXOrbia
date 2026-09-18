@@ -27,8 +27,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  I3_CERTIFICATION_SOURCE_SHA: f836f38dc0ce3a48034ed8968220d5dece9d6629
-  I3_CERTIFICATION_SOURCE_TREE: 5f860258fc74dd443379a8e2cdc28ae08962d41f
+  I3_CERTIFICATION_SOURCE_SHA: 8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6
+  I3_CERTIFICATION_SOURCE_TREE: 878fd60a2dc542cf04540026c34f1a7543cc2134
   HISTORICAL_GATE20_BASELINE_RUN_ID: '34306578074'
   HISTORICAL_GATE20_BASELINE_RUN_ATTEMPT: '1'
   HISTORICAL_GATE20_BASELINE_SOURCE_SHA: bd2a519db5ebd08f17d47827997056db795c8c09
@@ -834,13 +834,10 @@ jobs:
           if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
           const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(tenantId);
           const members=await allDocs(tenant.collection('users'));
-          const legalContents=(await allDocs(tenant.collection('legalContents'))).filter(c=>c.active!==false&&str(c.scopeMode||'tenant')==='tenant'&&str(c.currentVersion)&&/^[a-f0-9]{64}$/.test(str(c.currentDigest).toLowerCase())&&(arr(c.roleApplicability).length===0||arr(c.roleApplicability).map(str).includes('shopper')));
-          if(legalContents.length!==1)throw new Error(`AUTH_FAILURE:HUMAN_LANE_LEGAL_CONTENT_${legalContents.length}`);
-          const currentLegal=legalContents[0],receipts=await allDocs(tenant.collection('legalAcceptances'));
-          const accepted=new Set(receipts.filter(r=>str(r.tenantId)===tenantId&&str(r.scopeMode)==='tenant'&&str(r.role)==='shopper'&&str(r.authNamespace)==='shopper'&&str(r.legalContentId)===str(currentLegal.id)&&str(r.legalVersion)===str(currentLegal.currentVersion)&&str(r.contentDigest).toLowerCase()===str(currentLegal.currentDigest).toLowerCase()&&str(r.status)==='accepted'&&str(r.acceptanceMethod)==='human_ui'&&r.subjectExact===true&&Boolean(r.acceptedAt)&&str(r.actorUid)).map(r=>str(r.actorUid)));
+          // Recovery 2026-09-18: legal receipt is observable only and never selects or blocks the shopper test population.
           let shopper=null;
-          for(const m of members.filter(x=>accepted.has(str(x.id))&&x.active===true&&str(x.authNamespace)==='shopper'&&str(x.role)==='shopper'&&str(x.shopperId)&&(arr(x.projectIds).length===0||arr(x.projectIds).map(String).includes(projectId)))){try{await auth.getUser(m.id);shopper=m;break;}catch(e){if(str(e?.code)!=='auth/user-not-found')throw e;}}
-          if(!shopper)throw new Error('AUTH_FAILURE:HUMAN_LANE_ACCEPTED_SHOPPER_MISSING');
+          for(const m of members.filter(x=>x.active===true&&str(x.authNamespace)==='shopper'&&str(x.role)==='shopper'&&str(x.shopperId)&&(arr(x.projectIds).length===0||arr(x.projectIds).map(String).includes(projectId)))){try{await auth.getUser(m.id);shopper=m;break;}catch(e){if(str(e?.code)!=='auth/user-not-found')throw e;}}
+          if(!shopper)throw new Error('AUTH_FAILURE:HUMAN_LANE_SHOPPER_MISSING');
           const browser=await chromium.launch({headless:true});
           try{
             const ctx=await browser.newContext({viewport:{width:1440,height:1000}}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(str(e?.message||e)));
@@ -922,7 +919,7 @@ jobs:
           set -Eeuo pipefail
           ln -s "$GITHUB_WORKSPACE/node_modules" "$SOURCE_DIR/node_modules"
           PROJECT="$PROJECT" OUT="$GITHUB_WORKSPACE/$OUT/gate20" SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" HOSTING_URL="$HOSTING_URL" \
-            node "$SOURCE_DIR/tools/qa/cxorbia-gate20-browser-visual-dev.mjs" | tee "$OUT/gate20/gate20-console.log"
+            node "$GITHUB_WORKSPACE/tools/qa/cxorbia-gate20-browser-visual-dev.mjs" | tee "$OUT/gate20/gate20-console.log"
           rm -f "$SOURCE_DIR/node_modules"
           test "$(jq -r '.decision' "$OUT/gate20/gate20-browser-visual.json")" = "PASS_GATE20_FOCAL_VISUAL_DRIFT"
           test "$(jq -r '.sourceSha' "$OUT/gate20/gate20-browser-visual.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
@@ -964,10 +961,8 @@ jobs:
           ]);
           const visitCrosswalk=JSON.parse(fs.readFileSync(path.join(sourceDir,'app/docs/evidence/VISIT-IDENTITY-CROSSWALK-READONLY-LATEST.json'),'utf8'));
           if(!/^[a-f0-9]{64}$/.test(str(visitCrosswalk?.mappingHashSha256)))throw new Error('SOURCE_FAILURE:SEMANTIC_VISIT_CROSSWALK_HASH_INVALID');
-          const legal=legalContents.filter(c=>c.active!==false&&str(c.scopeMode||'tenant')==='tenant'&&str(c.currentVersion)&&/^[a-f0-9]{64}$/.test(str(c.currentDigest).toLowerCase())&&(arr(c.roleApplicability).length===0||arr(c.roleApplicability).map(str).includes('shopper')));
-          if(legal.length!==1)throw new Error('AUTH_FAILURE:SEMANTIC_CURRENT_LEGAL_AMBIGUOUS');
-          const currentLegal=legal[0];
-          const accepted=new Set(receipts.filter(r=>str(r.tenantId)===tenantId&&str(r.scopeMode)==='tenant'&&str(r.role)==='shopper'&&str(r.authNamespace)==='shopper'&&str(r.legalContentId)===str(currentLegal.id)&&str(r.legalVersion)===str(currentLegal.currentVersion)&&str(r.contentDigest).toLowerCase()===str(currentLegal.currentDigest).toLowerCase()&&str(r.status)==='accepted'&&str(r.acceptanceMethod)==='human_ui'&&r.subjectExact===true&&Boolean(r.acceptedAt)&&str(r.actorUid)).map(r=>str(r.actorUid)));
+          // Legal content/receipts remain readable for observability but never gate semantic acceptance.
+          const accepted=new Set(members.filter(x=>x.active===true&&str(x.authNamespace)==='shopper'&&str(x.role)==='shopper').map(x=>str(x.id)));
 
           const profileCanonical=p=>str(p?.canonicalShopperId||p?.shopperId||p?.id);
           const profileByCanonical=new Map(profiles.map(p=>[profileCanonical(p),p]).filter(([k])=>k));
@@ -1018,9 +1013,9 @@ jobs:
           const profilesWithAuthorizedContact=profiles.filter(p=>Boolean(contactOf(p))).length;
           if(profilesWithAuthorizedContact===0)throw new Error('FUNCTIONAL_DEFECT:PROTECTED_CONTACT_INVENTORY_EMPTY');
           let sample=null;
-          const population={acceptedMemberships:0,authUsers:0,canonicalProfiles:0,canonicalLogins:0,acceptedProfilesWithContact:0,protectedProfilesWithContact:profilesWithAuthorizedContact};
+          const population={eligibleMemberships:0,authUsers:0,canonicalProfiles:0,canonicalLogins:0,profilesWithContact:0,protectedProfilesWithContact:profilesWithAuthorizedContact};
           for(const m of members.filter(x=>accepted.has(str(x.id))&&x.active===true&&str(x.authNamespace)==='shopper'&&str(x.role)==='shopper'&&str(x.shopperId)&&(arr(x.projectIds).length===0||arr(x.projectIds).map(String).includes(projectId)))){
-            population.acceptedMemberships++;
+            population.eligibleMemberships++;
             try{await auth.getUser(m.id);population.authUsers++;}catch(error){if(str(error?.code)==='auth/user-not-found')continue;throw error;}
             const canonical=resolveCanonical(m.shopperId),profile=profileByCanonical.get(canonical)||profileByCanonical.get(str(m.shopperId));
             if(!profile)continue;
@@ -1029,7 +1024,7 @@ jobs:
             const name=str(profile.nombre||profile.name||profile.fullName);
             const contact=contactOf(profile);
             if(name&&login&&!technicalId(login))population.canonicalLogins++;
-            if(contact)population.acceptedProfilesWithContact++;
+            if(contact)population.profilesWithContact++;
             if(!name||!login||technicalId(login))continue;
             sample={uid:m.id,rawShopperId:str(m.shopperId),canonical,expectedLogin:login,expectedName:name,expectedContact:contact};
             break;
