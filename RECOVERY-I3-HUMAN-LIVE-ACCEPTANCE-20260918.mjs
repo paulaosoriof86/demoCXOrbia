@@ -104,21 +104,39 @@ const accepted=all,history=all.filter(x=>x.h>0&&x.co),acceptedHistory=history;if
 const staff=members.find(m=>m.active===true&&str(m.authNamespace)==='staff'&&str(m.role)==='super')||members.find(m=>m.active===true&&str(m.authNamespace)==='staff'&&['admin','ops','coordinador'].includes(str(m.role)));const client=members.find(m=>m.active===true&&str(m.authNamespace)==='staff'&&['cliente','client'].includes(str(m.role))&&(arr(m.projectIds).length===0||arr(m.projectIds).map(String).includes(PROJ)));if(!staff)throw new Error('AUTH_FAILURE:STAFF_MISSING');const clientMissing=!client;await auth.getUser(staff.id);if(client)await auth.getUser(client.id);
 const base=HOST+'/index-backend-dev.html?'+new URLSearchParams({cxBackendPreview:PRE,cxProjectId:PROJ,cxProtectedRuntime:PROT,cxHumanFullVisual:FULL});const browser=await chromium.launch({headless:true}),routes=[],shots=[],issues=[],pageErrors=[];async function ctx(viewport={width:1440,height:1000},mobile=false){const c=await browser.newContext({viewport,isMobile:mobile,hasTouch:mobile}),p=await c.newPage();p.on('pageerror',e=>pageErrors.push(str(e?.message||e).slice(0,500)));return{c,p}}async function snap(p,n){const f=safe(n)+'.png';await p.screenshot({path:path.join(OUT,f),fullPage:true});shots.push(f);return f}
 async function custom(p,m,role){
-  await p.goto(base,{waitUntil:'domcontentloaded',timeout:90000});
-  await p.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
-  const token=await auth.createCustomToken(m.id);
-  try{
-    await p.evaluate(async t=>{
-      const fb=window.firebase;
-      await fb.auth().setPersistence(fb.auth.Auth.Persistence.LOCAL);
-      await fb.auth().signInWithCustomToken(t);
-    },token);
-  }catch(e){
-    const msg=str(e?.message||e);
-    if(!/Execution context was destroyed|navigation/i.test(msg))throw e;
+  let authSettled=false,lastError='';
+  for(let attempt=1;attempt<=5;attempt++){
+    try{
+      if(!p.url().startsWith(HOST))await p.goto(base,{waitUntil:'domcontentloaded',timeout:90000});
+      await p.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
+      const attemptToken=await auth.createCustomToken(m.id);
+      try{
+        await p.evaluate(async t=>{
+          const fb=window.firebase;
+          await fb.auth().setPersistence(fb.auth.Auth.Persistence.LOCAL);
+          await fb.auth().signInWithCustomToken(t);
+        },attemptToken);
+      }catch(e){
+        const msg=str(e?.message||e);
+        if(!/Execution context was destroyed|navigation|FIREBASE_SDK_NOT_READY|app-compat\/no-app|No Firebase App|auth\/network-request-failed|network AuthError|timeout|interrupted connection|unreachable host/i.test(msg))throw e;
+        lastError=msg;
+      }
+      await p.waitForLoadState('domcontentloaded',{timeout:90000}).catch(()=>{});
+      if(!p.url().startsWith(HOST))await p.goto(base,{waitUntil:'domcontentloaded',timeout:90000});
+      await p.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
+      const persistedUid=await p.evaluate(()=>String(window.firebase?.auth?.().currentUser?.uid||'')).catch(()=> '');
+      if(persistedUid===String(m.id)){authSettled=true;break;}
+      lastError='uid_not_rehydrated';
+    }catch(e){
+      const msg=str(e?.message||e);
+      if(!/Execution context was destroyed|navigation|FIREBASE_SDK_NOT_READY|app-compat\/no-app|No Firebase App|auth\/network-request-failed|network AuthError|timeout|interrupted connection|unreachable host/i.test(msg))throw e;
+      lastError=msg;
+    }
+    if(attempt<5)await p.waitForTimeout(1500*attempt);
   }
-  await p.waitForLoadState('domcontentloaded',{timeout:90000}).catch(()=>{});
-  if(!p.url().startsWith(HOST))await p.goto(base,{waitUntil:'domcontentloaded',timeout:90000});
+  if(!authSettled)throw new Error('ENVIRONMENT_FAILURE:ACCEPTANCE_CUSTOM_AUTH_NOT_SETTLED:'+role+':'+lastError.slice(0,160));
+  await p.goto('about:blank',{waitUntil:'domcontentloaded',timeout:30000});
+  await p.goto(base,{waitUntil:'domcontentloaded',timeout:90000});
   await p.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
   await p.waitForFunction(uid=>String(window.firebase?.auth?.().currentUser?.uid||'')===String(uid),m.id,{timeout:90000});
   await p.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
