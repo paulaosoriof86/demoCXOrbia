@@ -8,6 +8,7 @@ on:
       - .github/workflows/cxorbia-recovery-i3-dev-certification.yml
       - .github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml
       - RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
+      - RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
       - ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-17_I3_MICRO_ITERATIONS_FROZEN.md
       - CXORBIA_I3_MICRO_ITERATION_PLAN_LOCK_2026-09-17.json
   workflow_dispatch:
@@ -47,7 +48,83 @@ env:
   OUT: .tmp/recovery-i3-dev-certification
 
 jobs:
+  human_live_acceptance:
+    if: ${{ contains(github.event.head_commit.message, '[human-live-only]') }}
+    name: I3 Human Live Acceptance on Certified DEV
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    env:
+      ACCEPTANCE_OUT: .tmp/recovery-i3-human-live-acceptance
+      CERTIFIED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/00b425303930a46e
+      CERTIFIED_RUNTIME_REVISION: cxorbia-live-hr-dev-00119-5jf
+      CERTIFIED_RUNTIME_DIGEST: sha256:502d2fecec771eb2eebb0d99c5dc91312d292f06808861b09eb904930a57b92e
+    steps:
+      - name: Checkout canonical Recovery control head
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prove acceptance is control-only on certified product source
+        run: |
+          set -Eeuo pipefail
+          git cat-file -e "$I3_CERTIFICATION_SOURCE_SHA^{commit}"
+          test "$(git rev-parse "$I3_CERTIFICATION_SOURCE_SHA^{tree}")" = "$I3_CERTIFICATION_SOURCE_TREE"
+          git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install acceptance browser dependencies
+        run: |
+          set -Eeuo pipefail
+          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null
+      - name: Authenticate canonical Firebase DEV
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+      - name: Verify exact run 181 DEV artifact before human acceptance
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$ACCEPTANCE_OUT"
+          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$ACCEPTANCE_OUT/runtime.json"
+          REV="$(jq -r '.status.latestReadyRevisionName' "$ACCEPTANCE_OUT/runtime.json")"
+          test "$REV" = "$CERTIFIED_RUNTIME_REVISION"
+          gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$ACCEPTANCE_OUT/runtime-revision.json"
+          DIG="$(jq -r '.status.imageDigest // empty' "$ACCEPTANCE_OUT/runtime-revision.json")"
+          [[ "$DIG" == sha256:* ]] || DIG="sha256:${DIG##*@sha256:}"
+          test "$DIG" = "$CERTIFIED_RUNTIME_DIGEST"
+          TOKEN="$(gcloud auth print-access-token)"
+          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$ACCEPTANCE_OUT/hosting-live.json"
+          test "$(jq -r '.release.version.name' "$ACCEPTANCE_OUT/hosting-live.json")" = "$CERTIFIED_HOSTING_VERSION"
+          while IFS= read -r p; do
+            rel="${p#app/}"
+            git show "$I3_CERTIFICATION_SOURCE_SHA:$p" > "$RUNNER_TEMP/expected"
+            curl -fsS --retry 4 --retry-delay 2 "$HOSTING_URL/$rel?i3human=$GITHUB_RUN_ID-$(date +%s%N)" -o "$RUNNER_TEMP/served"
+            test "$(sha256sum "$RUNNER_TEMP/expected"|awk '{print $1}')" = "$(sha256sum "$RUNNER_TEMP/served"|awk '{print $1}')"
+          done < <(jq -r '.sourceFiles[] | select(.phaseAAuthority==true and (.loadTarget=="browser-script" or .loadTarget=="browser-style")) | .path' RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json)
+          git show "$I3_CERTIFICATION_SOURCE_SHA:app/index-backend-dev.html" > "$RUNNER_TEMP/expected"
+          curl -fsS "$HOSTING_URL/index-backend-dev.html?i3human=$GITHUB_RUN_ID" -o "$RUNNER_TEMP/served"
+          test "$(sha256sum "$RUNNER_TEMP/expected"|awk '{print $1}')" = "$(sha256sum "$RUNNER_TEMP/served"|awk '{print $1}')"
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg hosting "$CERTIFIED_HOSTING_VERSION" --arg revision "$CERTIFIED_RUNTIME_REVISION" --arg digest "$CERTIFIED_RUNTIME_DIGEST" '{decision:"PASS_I3_CERTIFIED_DEV_IDENTITY_BEFORE_HUMAN_ACCEPTANCE",sourceSha:$source,hostingVersion:$hosting,runtimeRevision:$revision,runtimeDigest:$digest,rebuilds:0,deploys:0,production:false}' > "$ACCEPTANCE_OUT/certified-dev-identity.json"
+      - name: Execute live human acceptance Admin Shopper Client
+        run: node RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
+      - name: Upload human live screenshots and evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cxorbia-i3-human-live-acceptance-${{ github.run_id }}
+          path: ${{ env.ACCEPTANCE_OUT }}
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+      - name: Cleanup
+        if: always()
+        run: rm -rf node_modules
+
   certify:
+    if: ${{ !contains(github.event.head_commit.message, '[human-live-only]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 70
     steps:
