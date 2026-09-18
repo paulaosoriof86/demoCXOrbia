@@ -191,7 +191,22 @@ window.CX = window.CX || {};
     return String(v.hrRowId||coord||v.visitId||v.id||'').trim();
   }
 
-  function selectAuthoritativeDurableVisits(rows){
+  async function stableVisitIdFromDurableRow(row, projectId){
+    if(!row || typeof row!=='object') return '';
+    const period=String(row.periodKey||row.periodId||'').trim().match(/^20\d{2}-(0[1-9]|1[0-2])/);
+    const periodKey=period?period[0]:'';
+    const country=String(row.country||row.pais||'').trim().toUpperCase();
+    const sourceRow=Number(row.sourceRow);
+    if(!periodKey||!/^[A-Z]{2}$/.test(country)||!Number.isInteger(sourceRow)||sourceRow<1) return '';
+    const canonical=[tenantId().toLowerCase(),String(projectId||row.projectId||'').trim().toLowerCase(),periodKey,country,sourceRow].join('|');
+    if(!canonical.split('|')[1]) return '';
+    const bytes=new TextEncoder().encode(canonical);
+    const digest=await crypto.subtle.digest('SHA-256',bytes);
+    const hex=Array.from(new Uint8Array(digest)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+    return 'hr_'+periodKey+'_'+country.toLowerCase()+'_'+sourceRow+'_'+hex.slice(0,10);
+  }
+
+  async function selectAuthoritativeDurableVisits(rows, projectId){
     const groups=new Map();
     (Array.isArray(rows)?rows:[]).forEach(function(row){
       const key=durableVisitKey(row);
@@ -200,15 +215,19 @@ window.CX = window.CX || {};
       groups.get(key).push(row);
     });
     const out=[];
-    groups.forEach(function(group,key){
-      if(group.length===1){ out.push(group[0]); return; }
-      const exact=group.filter(function(row){
-        const declaredVisitId=String(row.visitId||row.id||'').trim();
-        return !!declaredVisitId && String(row.__docId||'')===declaredVisitId;
-      });
+    for(const [key,group] of groups){
+      if(group.length===1){ out.push(group[0]); continue; }
+      const expectedIds=new Set();
+      for(const row of group){
+        const expected=await stableVisitIdFromDurableRow(row,projectId);
+        if(expected) expectedIds.add(expected);
+      }
+      if(expectedIds.size!==1) throw new Error('DURABLE_VISIT_AUTHORITY_IDENTITY_AMBIGUOUS:'+key);
+      const expectedId=[...expectedIds][0];
+      const exact=group.filter(function(row){return String(row.__docId||'')===expectedId;});
       if(exact.length!==1) throw new Error('DURABLE_VISIT_AUTHORITY_AMBIGUOUS:'+key);
-      out.push(Object.assign({},exact[0],{__canonicalDurableAuthority:true,__historicalDuplicateCount:group.length-1}));
-    });
+      out.push(Object.assign({},exact[0],{__canonicalDurableAuthority:true,__canonicalStableVisitId:expectedId,__historicalDuplicateCount:group.length-1}));
+    }
     return out;
   }
 
@@ -374,7 +393,7 @@ window.CX = window.CX || {};
     const projectId = project.id;
     const periodId = project.periodId || projectId;
     const visitsRawAll = isShopper(ctx) ? await loadShopperVisits(projectId, ctx.shopperId) : await getAll(subCol(projectId, 'visits'));
-    const visitsRaw = selectAuthoritativeDurableVisits(visitsRawAll);
+    const visitsRaw = await selectAuthoritativeDurableVisits(visitsRawAll, projectId);
     const visitsById = {};
     const visits = visitsRaw.map(function(v){ return normalizeVisit(v, projectId, periodId); });
     visits.forEach(function(v){ v.projectId = v.projectId || projectId; visitsById[v.id] = v; visitsById[v.visitId] = v; });
