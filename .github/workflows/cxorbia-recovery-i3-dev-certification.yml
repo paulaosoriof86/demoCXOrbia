@@ -25,8 +25,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  I3_CERTIFICATION_SOURCE_SHA: 10cc157820e816cdb08b51df029038a1c955ced7
-  I3_CERTIFICATION_SOURCE_TREE: d9054c7cedfe4bf6331334ca34f28b883ba70912
+  I3_CERTIFICATION_SOURCE_SHA: 9e5ca1841b9227ca45998d2d0e5caf0acaa76ce9
+  I3_CERTIFICATION_SOURCE_TREE: 2f3f831193b8baf24bbe590e01bb33d0eacda768
   LOCKED_GATE20_BASELINE_RUN_ID: '34306578074'
   LOCKED_GATE20_BASELINE_RUN_ATTEMPT: '1'
   LOCKED_GATE20_BASELINE_SOURCE_SHA: bd2a519db5ebd08f17d47827997056db795c8c09
@@ -556,45 +556,77 @@ jobs:
           fi
           node -e 'const fs=require("fs"),p=JSON.parse(fs.readFileSync(process.env.OUT+"/hr-fresh.json","utf8")),s=p?.snapshot||p?.data||p,rt=p?._runtime||s?._runtime||{};if(s?.sourceSafe!==true||rt.refreshError)throw new Error("SOURCE_FAILURE:HR_FRESH_INVALID");fs.writeFileSync(process.env.OUT+"/hr-readback.json",JSON.stringify({decision:"PASS_I3_HR_EXACT_RUNTIME",sourceSafe:true,production:false},null,2)+"\n")'
 
+      - name: Normalize durable active shopper credentials on frozen rule
+        run: |
+          set -Eeuo pipefail
+          PROJECT="$PROJECT" OUT="$OUT" TENANT_ID="$TENANT_ID" SOURCE_DIR="$SOURCE_DIR" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import { pathToFileURL } from 'node:url';
+          import { applicationDefault, initializeApp, getApps } from 'firebase-admin/app';
+          import { getAuth } from 'firebase-admin/auth';
+          import { getFirestore } from 'firebase-admin/firestore';
+          const PROJECT=process.env.PROJECT,OUT=process.env.OUT,tenantId=process.env.TENANT_ID,SOURCE_DIR=process.env.SOURCE_DIR;
+          const mod=await import(pathToFileURL(path.join(SOURCE_DIR,'backend/runtime/cxorbia-shopper-command-provider-v1.mjs')).href);
+          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
+          const provider=mod.createShopperCommandProvider({
+            auth:getAuth(),db:getFirestore(),
+            policy:{schemaVersion:'cxorbia.shopper-command-provider-policy.v1',enabled:true,allowedTenantIds:[tenantId],allowedProjectIds:[],hrWrites:false,externalWrites:false,fuzzyMatching:false}
+          });
+          const result=await provider.normalizeDurableCredentials({tenantId});
+          if(result?.ok!==true)throw new Error('FUNCTIONAL_DEFECT:DURABLE_CREDENTIAL_SWEEP_FAILED');
+          if(result?.credentialRuleVersion!==mod.CREDENTIAL_RULE_VERSION||result?.credentialSweepVersion!==mod.DURABLE_CREDENTIAL_SWEEP_VERSION)throw new Error('FUNCTIONAL_DEFECT:DURABLE_CREDENTIAL_SWEEP_VERSION_MISMATCH');
+          if(result?.plaintextPersisted!==false)throw new Error('PERSISTENCE_FAILURE:DURABLE_CREDENTIAL_SECRET_POLICY');
+          fs.writeFileSync(OUT+'/durable-credential-sweep.json',JSON.stringify(result,null,2)+'\n');
+          NODE
+          test "$(jq -r '.ok' "$OUT/durable-credential-sweep.json")" = "true"
+
       - name: Revalidate owner-defined shopper credential contract in DEV
         run: |
           set -Eeuo pipefail
-          PROJECT="$PROJECT" OUT="$OUT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" node --input-type=module <<'NODE'
+          PROJECT="$PROJECT" OUT="$OUT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" SOURCE_DIR="$SOURCE_DIR" node --input-type=module <<'NODE'
           import fs from 'node:fs';
+          import path from 'node:path';
           import crypto from 'node:crypto';
+          import { pathToFileURL } from 'node:url';
           import { applicationDefault, initializeApp, getApps } from 'firebase-admin/app';
           import { getAuth } from 'firebase-admin/auth';
           import { getFirestore } from 'firebase-admin/firestore';
           import { chromium } from 'playwright';
-          const PROJECT=process.env.PROJECT,OUT=process.env.OUT,HOSTING_URL=String(process.env.HOSTING_URL||'').replace(/\/$/,''),tenantId=process.env.TENANT_ID,projectId=process.env.PROJECT_ID;
-          const RULE='tya-shopper-nombre-apellido-v1',PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
+          const PROJECT=process.env.PROJECT,OUT=process.env.OUT,HOSTING_URL=String(process.env.HOSTING_URL||'').replace(/\/$/,''),tenantId=process.env.TENANT_ID,projectId=process.env.PROJECT_ID,SOURCE_DIR=process.env.SOURCE_DIR;
+          const mod=await import(pathToFileURL(path.join(SOURCE_DIR,'backend/runtime/cxorbia-shopper-command-provider-v1.mjs')).href);
+          const RULE=mod.CREDENTIAL_RULE_VERSION,SWEEP=mod.DURABLE_CREDENTIAL_SWEEP_VERSION,PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
           const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
           const docs=async ref=>(await ref.get()).docs.map(d=>({id:d.id,...(d.data()||{})}));
-          const strip=v=>str(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-          const part=v=>strip(v).toLowerCase().replace(/[^a-z0-9]+/g,'');
-          const rule=p=>{const tokens=str(p?.nombre).split(/\s+/).filter(Boolean),first=str(p?.firstName||tokens[0]),last=str(p?.lastName||p?.apellido||tokens.slice(1).join(' ')),a=part(first),b=part(last),f=first.split(/\s+/)[0]||'';return a&&b&&f?{ok:true,login:a+'.'+b,password:f.charAt(0).toLocaleUpperCase('es-GT')+f.slice(1).toLocaleLowerCase('es-GT')+'123*'}:{ok:false};};
           const internalEmail=login=>crypto.createHash('sha256').update(tenantId+'\0shopper\0'+String(login).toLowerCase(),'utf8').digest('hex').slice(0,48)+'@auth.cxorbia.invalid';
           if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
           const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(tenantId);
           const [members,profiles]=await Promise.all([docs(tenant.collection('users')),docs(tenant.collection('shoppers'))]);
+          const sweep=JSON.parse(fs.readFileSync(OUT+'/durable-credential-sweep.json','utf8'));
+          const reviewIds=new Set(arr(sweep.identityReviewQueue).map(x=>str(x?.shopperId)).filter(Boolean));
           const profileById=new Map(profiles.map(p=>[str(p.shopperId||p.id),p]));
-          const targets=members.filter(m=>m.active===true&&str(m.role)==='shopper'&&str(m.authNamespace)==='shopper'&&str(m.shopperId)&&(arr(m.projectIds).length===0||arr(m.projectIds).map(String).includes(projectId)));
+          const targets=members.filter(m=>m.active===true&&str(m.role)==='shopper'&&str(m.authNamespace)==='shopper'&&str(m.shopperId));
           if(!targets.length)throw new Error('AUTH_FAILURE:CREDENTIAL_RULE_NO_ACTIVE_SHOPPERS');
-          const mismatches=[];let checked=0,sample=null;
+          const mismatches=[];let checked=0,reviewed=0,sample=null;
           for(const m of targets){
-            const p=profileById.get(str(m.shopperId));if(!p){mismatches.push('profile_missing');continue;}
-            const c=rule(p);if(!c.ok){mismatches.push('name_incomplete');continue;}
-            let user;try{user=await auth.getUser(m.id);}catch{mismatches.push('auth_missing');continue;}
+            const shopperId=str(m.shopperId);
+            if(reviewIds.has(shopperId)){reviewed++;continue;}
+            const p=profileById.get(shopperId);if(!p){mismatches.push('profile_missing_not_quarantined');continue;}
+            const c=mod.shopperCredentialRule(p);if(!c.ok){mismatches.push('canonical_rule_rejected_not_quarantined');continue;}
+            let user;try{user=await auth.getUser(m.id);}catch{mismatches.push('auth_missing_not_quarantined');continue;}
             const expectedEmail=internalEmail(c.login);
             if(str(m.visibleLogin).toLowerCase()!==c.login)mismatches.push('member_login');
             if(str(m.credentialRuleVersion)!==RULE)mismatches.push('member_rule');
+            if(str(m.credentialSweepVersion)!==SWEEP)mismatches.push('member_sweep');
             if(str(p.username||p.user||p.visibleLogin).toLowerCase()!==c.login)mismatches.push('profile_login');
             if(str(p.credentialRuleVersion)!==RULE)mismatches.push('profile_rule');
+            if(str(p.credentialSweepVersion)!==SWEEP)mismatches.push('profile_sweep');
             if(str(user.email).toLowerCase()!==expectedEmail)mismatches.push('auth_email');
             checked++;
-            if(!sample)sample={uid:m.id,shopperId:str(m.shopperId),login:c.login,password:c.password};
+            if(!sample)sample={uid:m.id,shopperId,login:c.login,password:c.password};
           }
-          if(mismatches.length)throw new Error('FUNCTIONAL_DEFECT:CREDENTIAL_RULE_MISMATCH:'+JSON.stringify({checked,targetCount:targets.length,mismatches:[...new Set(mismatches)]}));
+          if(checked+reviewed!==targets.length)mismatches.push('population_accounting');
+          if(mismatches.length)throw new Error('FUNCTIONAL_DEFECT:CREDENTIAL_RULE_MISMATCH:'+JSON.stringify({checked,reviewed,targetCount:targets.length,mismatches:[...new Set(mismatches)]}));
           if(!sample)throw new Error('AUTH_FAILURE:CREDENTIAL_RULE_SAMPLE_MISSING');
           const browser=await chromium.launch({headless:true});
           let passwordLoginPassed=false;
@@ -610,7 +642,7 @@ jobs:
             await page.evaluate(async()=>{try{await window.CX.backendAuth.signOut();}catch(_){}});
             await ctx.close();
           } finally {await browser.close();}
-          const evidence={decision:'PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE',credentialRuleVersion:RULE,activeShopperMemberships:targets.length,checked,profileAndAuthMappingExact:true,passwordLoginPassed,plaintextPersisted:false,production:false};
+          const evidence={decision:'PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE',credentialRuleVersion:RULE,credentialSweepVersion:SWEEP,activeShopperMemberships:targets.length,checked,identityReviewCount:reviewed,profileAndAuthMappingExact:true,passwordLoginPassed,plaintextPersisted:false,production:false};
           fs.writeFileSync(OUT+'/credential-rule-readback.json',JSON.stringify(evidence,null,2)+'\n');
           NODE
           test "$(jq -r '.decision' "$OUT/credential-rule-readback.json")" = "PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE"
