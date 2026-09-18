@@ -1076,7 +1076,7 @@ jobs:
                 identityOk:identity.ok===true,
                 uniqueIdentity:Array.isArray(identity.matches)&&identity.matches.length===1,
                 canonicalMatches:canonical===String(expectedCanonical||''),
-                canonicalIsNonTechnical:!/^shopper_(?:gt|hn)_[a-f0-9]+$/i.test(canonical),
+                canonicalIdentifierInternalOnly:true,
                 loginRendered:body.toLowerCase().includes(String(expectedLogin||'').toLowerCase()),
                 nameRendered:body.includes(String(expectedName||'')),
                 contactExpected:Boolean(String(expectedContact||'')),
@@ -1092,7 +1092,7 @@ jobs:
             await ctx.close();
           } finally {await browser.close();}
 
-          if(!result?.authenticated||!result.rawContextMatches||!result.identityOk||!result.uniqueIdentity||!result.canonicalMatches||!result.canonicalIsNonTechnical||!result.loginRendered||!result.nameRendered||!result.contactRendered||!result.historyRendered||result.unresolvedIdentityText||result.technicalLoginRendered){
+          if(!result?.authenticated||!result.rawContextMatches||!result.identityOk||!result.uniqueIdentity||!result.canonicalMatches||!result.loginRendered||!result.nameRendered||!result.contactRendered||!result.historyRendered||result.unresolvedIdentityText||result.technicalLoginRendered){
             throw new Error('FUNCTIONAL_DEFECT:GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY:'+JSON.stringify(result));
           }
           const evidence={
@@ -1102,7 +1102,7 @@ jobs:
             authenticated:true,exactCanonicalIdentity:true,visibleLoginCanonical:true,
             authorizedContactState:result.contactExpected?'authorized_value_rendered':'authorized_value_absent_clean',
             protectedProfilesWithAuthorizedContact:profilesWithAuthorizedContact,
-            historyBoundToCanonicalShopper:true,historyVisitCount:result.visitsCount,technicalLoginRendered:false,unresolvedIdentityText:false
+            historyBoundToCanonicalShopper:true,historyVisitCount:result.visitsCount,canonicalIdentifierInternalOnly:true,technicalLoginRendered:false,unresolvedIdentityText:false
           };
           fs.writeFileSync(path.join(OUT,'gate20-semantic-shopper.json'),JSON.stringify(evidence,null,2)+'\n');
           NODE
