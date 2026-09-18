@@ -203,3 +203,33 @@ test('Gate 6 / trusted exact identity link reuses one canonical Auth for an HR t
   assert.equal(db.get(`tenants/tenant-a/shopperIdentityCrosswalk/${alias}`).shopperId,canonical);
   assert.equal(db.get(`tenants/tenant-a/shopperIdentityCrosswalk/${alias}`).identityMode,'provider_exact_identity_link');
 });
+
+
+test('Gate 6 / visible-login collision quarantines only the affected shopper and preserves fresh reconciliation for the rest',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db);
+  const base=snapshot({shopperId:'shopper_gt_alpha',shopperCode:'TYA_GT_ALPHA'});
+  base.visits=[
+    {...base.visits[0],id:'visit-alpha',shopperId:'shopper_gt_alpha',shopperCode:'TYA_GT_ALPHA',shopper:'Patricia Ordoñez'},
+    {...base.visits[0],id:'visit-beta',shopperId:'shopper_gt_beta',shopperCode:'TYA_GT_BETA',shopper:'Patricia Ordoñez'},
+    {...base.visits[0],id:'visit-gamma',shopperId:'shopper_gt_gamma',shopperCode:'TYA_GT_GAMMA',shopper:'Lucia Rivera'}
+  ];
+  const result=await p.reconcileSnapshot(base,{sourceRevision:'rev-visible-collision'});
+  assert.equal(result.ok,true);
+  assert.equal(result.status,'committed_with_identity_review');
+  assert.equal(result.shopperCount,3);
+  assert.equal(result.reconciledShopperCount,2);
+  assert.equal(result.identityReviewRequired,true);
+  assert.equal(result.identityReviewCount,1);
+  assert.equal(result.identityReviewQueue.length,1);
+  assert.equal(result.identityReviewQueue[0].sourceShopperId,'shopper_gt_beta');
+  assert.equal(result.identityReviewQueue[0].canonicalShopperId,'shopper_gt_beta');
+  assert.match(result.identityReviewQueue[0].reason,/SHOPPER_(VISIBLE_LOGIN_COLLISION|AUTH_EMAIL_CONFLICT)/);
+  assert.equal(result.identityReviewQueue[0].requiresHumanAdjudication,true);
+  assert.ok(result.identityReviewQueue[0].credentialFingerprint);
+  assert.ok(db.get('tenants/tenant-a/shoppers/shopper_gt_alpha'));
+  assert.equal(db.get('tenants/tenant-a/shoppers/shopper_gt_beta'),undefined);
+  assert.ok(db.get('tenants/tenant-a/shoppers/shopper_gt_gamma'));
+  assert.equal(auth.users.size,2);
+  assert.equal(JSON.stringify(result).includes('Patricia Ordoñez'),false);
+  assert.equal(JSON.stringify(result).includes('Patricia123*'),false);
+});

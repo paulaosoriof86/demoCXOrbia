@@ -507,16 +507,46 @@ export function createShopperCommandProvider({auth,db,policy}={}){
       const authUsers=shoppers.length?await listAllAuthUsers(auth):[];
       const exactIdentityMap=await exactShopperIdentityMap(db,scope.tenantId,scope.projectId);
       let created=0,replayed=0,writes=0,credentialNormalized=0,credentialRuleMissing=0;
+      const identityReviewQueue=[];
+      const reviewableCredentialCollisions=new Set(['SHOPPER_VISIBLE_LOGIN_COLLISION','SHOPPER_AUTH_EMAIL_CONFLICT']);
       for(const source of shoppers){
         const canonicalShopperId=exactIdentityMap.get(source.shopperId)||source.shopperId;
-        const result=await durableUpsert({auth,db,policy,candidate:{...source,sourceShopperId:source.shopperId,shopperId:canonicalShopperId},sourceRevision,authUsers});
+        let result;
+        try{
+          result=await durableUpsert({auth,db,policy,candidate:{...source,sourceShopperId:source.shopperId,shopperId:canonicalShopperId},sourceRevision,authUsers});
+        }catch(error){
+          const reason=str(error?.message||error).split(':')[0];
+          if(!reviewableCredentialCollisions.has(reason))throw error;
+          const credential=shopperCredentialRule(source);
+          identityReviewQueue.push({
+            sourceShopperId:source.shopperId,
+            canonicalShopperId,
+            country:str(source.country||source.pais),
+            reason,
+            credentialFingerprint:credential.ok?sha(`${scope.tenantId}\0${credential.login}`).slice(0,24):null,
+            requiresHumanAdjudication:true
+          });
+          continue;
+        }
         if(result.authCreated)created++;
         if(result.idempotentReplay)replayed++;
         if(result.credentialNormalized)credentialNormalized++;
         if(!result.visibleLogin)credentialRuleMissing++;
         writes+=Number(result.providerWrites||0);
       }
-      return {ok:true,status:'committed',providerAck:true,sourceRevision,tenantId:scope.tenantId,projectId:scope.projectId,shopperCount:shoppers.length,authCreated:created,idempotentReplays:replayed,credentialNormalized,credentialRuleMissing,credentialRuleVersion:CREDENTIAL_RULE_VERSION,providerWrites:writes,hrWrites:0,externalWrites:0,fuzzyMatching:false};
+      return {
+        ok:true,
+        status:identityReviewQueue.length?'committed_with_identity_review':'committed',
+        providerAck:true,
+        sourceRevision,tenantId:scope.tenantId,projectId:scope.projectId,
+        shopperCount:shoppers.length,
+        reconciledShopperCount:shoppers.length-identityReviewQueue.length,
+        identityReviewRequired:identityReviewQueue.length>0,
+        identityReviewCount:identityReviewQueue.length,
+        identityReviewQueue,
+        authCreated:created,idempotentReplays:replayed,credentialNormalized,credentialRuleMissing,
+        credentialRuleVersion:CREDENTIAL_RULE_VERSION,providerWrites:writes,hrWrites:0,externalWrites:0,fuzzyMatching:false
+      };
     },
     async execute(token,command={}){
       const cv=validateCommand(command);if(!cv.ok)return blocked(command,'SHOPPER_COMMAND_INVALID',{errors:cv.errors});
