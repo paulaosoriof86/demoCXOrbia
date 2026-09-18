@@ -801,7 +801,7 @@ jobs:
           import { chromium } from 'playwright';
 
           const PROJECT=process.env.PROJECT,OUT=process.env.OUT,HOSTING_URL=String(process.env.HOSTING_URL||'').replace(/\/$/,'');
-          const tenantId=process.env.TENANT_ID,projectId=process.env.PROJECT_ID,sourceSha=process.env.SOURCE_SHA;
+          const tenantId=process.env.TENANT_ID,projectId=process.env.PROJECT_ID,sourceSha=process.env.SOURCE_SHA,sourceDir=process.env.SOURCE_DIR;
           const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
           const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
           const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
@@ -813,13 +813,16 @@ jobs:
 
           if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
           const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(tenantId);
-          const [members,profiles,links,legalContents,receipts]=await Promise.all([
+          const [members,profiles,links,durableCrosswalks,legalContents,receipts]=await Promise.all([
             allDocs(tenant.collection('users')),
             allDocs(tenant.collection('shoppers')),
             allDocs(tenant.collection('shopperIdentityLinks')),
+            allDocs(tenant.collection('shopperIdentityCrosswalk')),
             allDocs(tenant.collection('legalContents')),
             allDocs(tenant.collection('legalAcceptances'))
           ]);
+          const visitCrosswalk=JSON.parse(fs.readFileSync(path.join(sourceDir,'app/docs/evidence/VISIT-IDENTITY-CROSSWALK-READONLY-LATEST.json'),'utf8'));
+          if(!/^[a-f0-9]{64}$/.test(str(visitCrosswalk?.mappingHashSha256)))throw new Error('SOURCE_FAILURE:SEMANTIC_VISIT_CROSSWALK_HASH_INVALID');
           const legal=legalContents.filter(c=>c.active!==false&&str(c.scopeMode||'tenant')==='tenant'&&str(c.currentVersion)&&/^[a-f0-9]{64}$/.test(str(c.currentDigest).toLowerCase())&&(arr(c.roleApplicability).length===0||arr(c.roleApplicability).map(str).includes('shopper')));
           if(legal.length!==1)throw new Error('AUTH_FAILURE:SEMANTIC_CURRENT_LEGAL_AMBIGUOUS');
           const currentLegal=legal[0];
@@ -828,16 +831,31 @@ jobs:
           const profileCanonical=p=>str(p?.canonicalShopperId||p?.shopperId||p?.id);
           const profileByCanonical=new Map(profiles.map(p=>[profileCanonical(p),p]).filter(([k])=>k));
           const tokenTargets=new Map();
+          const addExact=(token,target,origin)=>{
+            token=str(token);target=str(target);if(!token||!target)return;
+            if(!tokenTargets.has(token))tokenTargets.set(token,new Set());
+            tokenTargets.get(token).add(target);
+            if(tokenTargets.get(token).size>1)throw new Error('MAPPING_FAILURE:SEMANTIC_EXACT_AUTHORITY_CONFLICT:'+origin);
+          };
           for(const link of links){
             const status=str(link?.status||link?.state).toLowerCase();
             const authority=str(link?.authorityType||link?.authority?.type).toLowerCase();
             const target=str(link?.canonicalShopperId||link?.canonicalId||link?.shopperId||link?.profileId);
             if(str(link?.tenantId||link?.scope?.tenantId)!==tenantId||!['active','confirmed','approved','materialized'].includes(status)||!['provider_exact','tenant_adjudication','platform_created','migrated_exact'].includes(authority)||!target)continue;
             const tokens=[link?.sourceIdentityKey,link?.sourceSubjectId,link?.sourceId,link?.sourceKey,link?.legacyShopperId,link?.externalShopperId,...flatten(link?.sourceIdentityAliases),...flatten(link?.identityAliases),...flatten(link?.aliases)].map(str).filter(Boolean);
-            for(const token of new Set(tokens)){
-              if(!tokenTargets.has(token))tokenTargets.set(token,new Set());
-              tokenTargets.get(token).add(target);
-            }
+            for(const token of new Set(tokens))addExact(token,target,'identity_link');
+          }
+          for(const row of durableCrosswalks){
+            const sourceType=str(row?.sourceType).toLowerCase(),mode=str(row?.identityMode).toLowerCase(),target=str(row?.shopperId);
+            const projects=arr(row?.projectIds).map(str);
+            if(str(row?.tenantId||tenantId)!==tenantId||sourceType!=='hr_external'||!target||(!projects.includes(projectId)&&projects.length>0))continue;
+            if(!['provider_exact_identity_link','stable_hr_shopper_id','exact_technical_keys_only'].includes(mode))continue;
+            for(const token of new Set([row.id,row?.sourceStableKey,row?.sourceShopperId].map(str).filter(Boolean)))addExact(token,target,'durable_crosswalk');
+          }
+          for(const row of arr(visitCrosswalk?.crosswalk)){
+            if(row?.action!=='REUSE_EXISTING_CANONICAL_SHOPPER')continue;
+            const source=str(row?.plannedShopperId),target=str(row?.canonicalShopperId);
+            if(source&&target)addExact(source,target,'visit_identity_crosswalk');
           }
           const resolveCanonical=id=>{
             let cur=str(id);const seen=new Set();
@@ -853,19 +871,24 @@ jobs:
           };
 
           let sample=null;
+          const population={acceptedMemberships:0,authUsers:0,canonicalProfiles:0,canonicalLogins:0,authorizedContacts:0};
           for(const m of members.filter(x=>accepted.has(str(x.id))&&x.active===true&&str(x.authNamespace)==='shopper'&&str(x.role)==='shopper'&&str(x.shopperId)&&(arr(x.projectIds).length===0||arr(x.projectIds).map(String).includes(projectId)))){
-            try{await auth.getUser(m.id);}catch(error){if(str(error?.code)==='auth/user-not-found')continue;throw error;}
+            population.acceptedMemberships++;
+            try{await auth.getUser(m.id);population.authUsers++;}catch(error){if(str(error?.code)==='auth/user-not-found')continue;throw error;}
             const canonical=resolveCanonical(m.shopperId),profile=profileByCanonical.get(canonical)||profileByCanonical.get(str(m.shopperId));
             if(!profile)continue;
+            population.canonicalProfiles++;
             const rule=credentialRule(profile),login=str(m.visibleLogin||rule.login).toLowerCase();
             const name=str(profile.nombre||profile.name||profile.fullName);
             const protectedEmail=str(profile.email||profile.correo||profile.mail);
             const contact=str(profile.whatsapp||profile.phone||profile.telefono||(!/@auth\.cxorbia\.invalid$/i.test(protectedEmail)?protectedEmail:''));
+            if(name&&login&&!technicalId(login))population.canonicalLogins++;
+            if(contact)population.authorizedContacts++;
             if(!name||!login||technicalId(login)||!contact)continue;
             sample={uid:m.id,rawShopperId:str(m.shopperId),canonical,expectedLogin:login,expectedName:name,expectedContact:contact};
             break;
           }
-          if(!sample)throw new Error('FUNCTIONAL_DEFECT:SEMANTIC_SHOPPER_PROFILE_SAMPLE_MISSING');
+          if(!sample)throw new Error('MAPPING_FAILURE:SEMANTIC_SHOPPER_PROFILE_SAMPLE_MISSING:'+JSON.stringify(population));
 
           const url=`${HOSTING_URL}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cxProjectId=${encodeURIComponent(projectId)}&cxProtectedRuntime=${PROTECTED}&cxHumanFullVisual=${FULL}`;
           const browser=await chromium.launch({headless:true});
