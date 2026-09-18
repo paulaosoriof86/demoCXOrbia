@@ -80,3 +80,11 @@ test('I3 protected shopper profile survives empty Firestore project scope for HR
   assert.match(bridge,/if\(c\?\.role==='shopper'&&str\(c\.shopperId\)\)/);
   assert.match(bridge,/arr\(CX\.data\.shoppers\)\.some/);
 });
+
+test('I3 Gate 20 restores CX auth context from persisted Firebase session before HR authority assertion',()=>{
+  const gate20=read('tools/qa/cxorbia-gate20-browser-visual-dev.mjs');
+  assert.match(gate20,/Persistence\.LOCAL/);
+  assert.match(gate20,/backendAuth\?\.ensureAuthenticated/);
+  assert.match(gate20,/await window\.CX\.backendAuth\.ensureAuthenticated\(\)/);
+  assert.match(gate20,/CX_PROTECTED_AUTH_HR_AUTHORITY\?\.applied===true/);
+});

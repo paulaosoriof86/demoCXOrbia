@@ -53,8 +53,19 @@ const pageErrors=[],captures=[];
 async function capture(page,file){await page.screenshot({path:path.join(OUT,file),fullPage:true});captures.push(file);}
 async function authenticate(page,token,expectedRole){
   await page.goto(technicalUrl,{waitUntil:'domcontentloaded',timeout:90000});
-  await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);await firebase.auth().signInWithCustomToken(t);},token);
-  await page.reload({waitUntil:'domcontentloaded',timeout:90000});
+  await page.evaluate(async t=>{
+    await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    await firebase.auth().signInWithCustomToken(t);
+  },token);
+  await page.waitForFunction(()=>!!firebase.auth().currentUser?.uid,null,{timeout:90000});
+  // Raw Firebase sign-in does not populate CX.backendAuth.currentContext.
+  // Reboot once from the persisted provider session, then let the product's
+  // canonical ensureAuthenticated() restore claims/session before testing HR.
+  await page.goto('about:blank',{waitUntil:'domcontentloaded',timeout:30000});
+  await page.goto(technicalUrl,{waitUntil:'domcontentloaded',timeout:90000});
+  await page.waitForFunction(()=>!!firebase.auth().currentUser?.uid,null,{timeout:90000});
+  await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
+  await page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});
   await page.waitForFunction(({tenantId,projectId,expectedRole})=>{const c=window.CX?.backendAuth?.context?.()||{};const projects=Array.isArray(c.projectIds)?c.projectIds.map(String):[];const role=String(c.role||'');const roleOk=expectedRole==='staff'?['super','admin'].includes(role):role===expectedRole;const projectOk=role==='super'||projects.length===0||projects.includes(projectId);return c.authenticated===true&&c.tenantId===tenantId&&roleOk&&projectOk&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true;},{tenantId,projectId,expectedRole},{timeout:120000});
 }
 async function routeCheck(page,kind,route,expected){
