@@ -2,6 +2,13 @@ name: CXOrbia Recovery I3 Gate 21 Artifact Fingerprint
 
 on:
   workflow_call:
+    inputs:
+      certification_source_sha:
+        required: true
+        type: string
+      certification_source_tree:
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -16,8 +23,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  I3_CERTIFICATION_SOURCE_SHA: b7a892a149905c6f616c13d5f69de27963c9ebf7
-  I3_CERTIFICATION_SOURCE_TREE: a346b58c632b573444ed2d0ba298368f883e40bc
+  I3_CERTIFICATION_SOURCE_SHA: ${{ inputs.certification_source_sha }}
+  I3_CERTIFICATION_SOURCE_TREE: ${{ inputs.certification_source_tree }}
   CERTIFICATION_ARTIFACT_NAME: cxorbia-recovery-i3-single-source-certification-${{ github.run_id }}
   OUT_DIR: .gate21
 
@@ -56,6 +63,7 @@ jobs:
           test -f "$CERT/cxorbia-i3-certified-source.tar"
           test -f "$CERT/cxorbia-i3-certified-source.tar.sha256"
           test -f "$CERT/gate20/gate20-browser-visual.json"
+          test -f "$CERT/gate20-semantic-shopper.json"
 
           cmp --silent "$CERT/i3-certification-manifest.json" "$CERT/result.json"
           test "$(jq -r '.decision' "$CERT/result.json")" = "PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21"
@@ -68,6 +76,13 @@ jobs:
           test "$(jq -r '.gate20.sourceSha' "$CERT/result.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
           test "$(jq -r '.decision' "$CERT/gate20/gate20-browser-visual.json")" = "PASS_GATE20_FOCAL_VISUAL_DRIFT"
           test "$(jq -r '.sourceSha' "$CERT/gate20/gate20-browser-visual.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
+          test "$(jq -r '.gate20Semantic.decision' "$CERT/result.json")" = "PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY"
+          test "$(jq -r '.gate20Semantic.sourceSha' "$CERT/result.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
+          test "$(jq -r '.decision' "$CERT/gate20-semantic-shopper.json")" = "PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY"
+          test "$(jq -r '.sourceSha' "$CERT/gate20-semantic-shopper.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
+          EXPECTED_SEMANTIC_SHA="$(jq -r '.gate20Semantic.evidenceSha256' "$CERT/result.json")"
+          ACTUAL_SEMANTIC_SHA="$(sha256sum "$CERT/gate20-semantic-shopper.json" | awk '{print $1}')"
+          test "$EXPECTED_SEMANTIC_SHA" = "$ACTUAL_SEMANTIC_SHA"
 
           EXPECTED_ARTIFACT_SHA="$(jq -r '.artifactSha256' "$CERT/result.json")"
           ACTUAL_ARTIFACT_SHA="$(sha256sum "$CERT/cxorbia-i3-certified-source.tar" | awk '{print $1}')"

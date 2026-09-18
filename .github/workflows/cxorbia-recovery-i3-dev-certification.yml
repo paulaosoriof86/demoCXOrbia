@@ -788,6 +788,157 @@ jobs:
           test "$(jq -r '.hrAuthorityApplied' "$OUT/gate20/gate20-browser-visual.json")" = "true"
           test "$(jq -r '.production' "$OUT/gate20/gate20-browser-visual.json")" = "false"
 
+      - name: Revalidate Gate 20 semantic shopper profile and history on same exact source
+        run: |
+          set -Eeuo pipefail
+          PROJECT="$PROJECT" OUT="$OUT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import crypto from 'node:crypto';
+          import { applicationDefault, initializeApp, getApps } from 'firebase-admin/app';
+          import { getAuth } from 'firebase-admin/auth';
+          import { getFirestore } from 'firebase-admin/firestore';
+          import { chromium } from 'playwright';
+
+          const PROJECT=process.env.PROJECT,OUT=process.env.OUT,HOSTING_URL=String(process.env.HOSTING_URL||'').replace(/\/$/,'');
+          const tenantId=process.env.TENANT_ID,projectId=process.env.PROJECT_ID,sourceSha=process.env.SOURCE_SHA;
+          const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
+          const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
+          const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
+          const allDocs=async ref=>(await ref.get()).docs.map(d=>({id:d.id,...(d.data()||{})}));
+          const flatten=v=>{if(v==null)return[];if(Array.isArray(v))return v.flatMap(flatten);if(typeof v==='object')return Object.values(v).flatMap(flatten);return [str(v)];};
+          const technicalId=v=>/^shopper_(?:gt|hn)_[a-f0-9]+$/i.test(str(v));
+          const credentialPart=v=>str(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'');
+          const credentialRule=p=>{const tokens=str(p?.nombre||p?.name||p?.fullName).split(/\s+/).filter(Boolean),first=str(p?.firstName||tokens[0]),last=str(p?.lastName||p?.apellido||tokens.slice(1).join(' ')),a=credentialPart(first),b=credentialPart(last);return a&&b?{login:a+'.'+b}:{login:''};};
+
+          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
+          const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(tenantId);
+          const [members,profiles,links,legalContents,receipts]=await Promise.all([
+            allDocs(tenant.collection('users')),
+            allDocs(tenant.collection('shoppers')),
+            allDocs(tenant.collection('shopperIdentityLinks')),
+            allDocs(tenant.collection('legalContents')),
+            allDocs(tenant.collection('legalAcceptances'))
+          ]);
+          const legal=legalContents.filter(c=>c.active!==false&&str(c.scopeMode||'tenant')==='tenant'&&str(c.currentVersion)&&/^[a-f0-9]{64}$/.test(str(c.currentDigest).toLowerCase())&&(arr(c.roleApplicability).length===0||arr(c.roleApplicability).map(str).includes('shopper')));
+          if(legal.length!==1)throw new Error('AUTH_FAILURE:SEMANTIC_CURRENT_LEGAL_AMBIGUOUS');
+          const currentLegal=legal[0];
+          const accepted=new Set(receipts.filter(r=>str(r.tenantId)===tenantId&&str(r.scopeMode)==='tenant'&&str(r.role)==='shopper'&&str(r.authNamespace)==='shopper'&&str(r.legalContentId)===str(currentLegal.id)&&str(r.legalVersion)===str(currentLegal.currentVersion)&&str(r.contentDigest).toLowerCase()===str(currentLegal.currentDigest).toLowerCase()&&str(r.status)==='accepted'&&str(r.acceptanceMethod)==='human_ui'&&r.subjectExact===true&&Boolean(r.acceptedAt)&&str(r.actorUid)).map(r=>str(r.actorUid)));
+
+          const profileCanonical=p=>str(p?.canonicalShopperId||p?.shopperId||p?.id);
+          const profileByCanonical=new Map(profiles.map(p=>[profileCanonical(p),p]).filter(([k])=>k));
+          const tokenTargets=new Map();
+          for(const link of links){
+            const status=str(link?.status||link?.state).toLowerCase();
+            const authority=str(link?.authorityType||link?.authority?.type).toLowerCase();
+            const target=str(link?.canonicalShopperId||link?.canonicalId||link?.shopperId||link?.profileId);
+            if(str(link?.tenantId||link?.scope?.tenantId)!==tenantId||!['active','confirmed','approved','materialized'].includes(status)||!['provider_exact','tenant_adjudication','platform_created','migrated_exact'].includes(authority)||!target)continue;
+            const tokens=[link?.sourceIdentityKey,link?.sourceSubjectId,link?.sourceId,link?.sourceKey,link?.legacyShopperId,link?.externalShopperId,...flatten(link?.sourceIdentityAliases),...flatten(link?.identityAliases),...flatten(link?.aliases)].map(str).filter(Boolean);
+            for(const token of new Set(tokens)){
+              if(!tokenTargets.has(token))tokenTargets.set(token,new Set());
+              tokenTargets.get(token).add(target);
+            }
+          }
+          const resolveCanonical=id=>{
+            let cur=str(id);const seen=new Set();
+            for(let i=0;i<8;i++){
+              if(!cur||seen.has(cur))throw new Error('MAPPING_FAILURE:SEMANTIC_IDENTITY_CHAIN_CYCLE');
+              seen.add(cur);
+              const targets=[...(tokenTargets.get(cur)||new Set())];
+              if(targets.length>1)throw new Error('MAPPING_FAILURE:SEMANTIC_IDENTITY_LINK_CONFLICT');
+              if(!targets.length||targets[0]===cur)return cur;
+              cur=targets[0];
+            }
+            throw new Error('MAPPING_FAILURE:SEMANTIC_IDENTITY_CHAIN_DEPTH');
+          };
+
+          let sample=null;
+          for(const m of members.filter(x=>accepted.has(str(x.id))&&x.active===true&&str(x.authNamespace)==='shopper'&&str(x.role)==='shopper'&&str(x.shopperId)&&(arr(x.projectIds).length===0||arr(x.projectIds).map(String).includes(projectId)))){
+            try{await auth.getUser(m.id);}catch(error){if(str(error?.code)==='auth/user-not-found')continue;throw error;}
+            const canonical=resolveCanonical(m.shopperId),profile=profileByCanonical.get(canonical)||profileByCanonical.get(str(m.shopperId));
+            if(!profile)continue;
+            const rule=credentialRule(profile),login=str(m.visibleLogin||rule.login).toLowerCase();
+            const name=str(profile.nombre||profile.name||profile.fullName);
+            const protectedEmail=str(profile.email||profile.correo||profile.mail);
+            const contact=str(profile.whatsapp||profile.phone||profile.telefono||(!/@auth\.cxorbia\.invalid$/i.test(protectedEmail)?protectedEmail:''));
+            if(!name||!login||technicalId(login)||!contact)continue;
+            sample={uid:m.id,rawShopperId:str(m.shopperId),canonical,expectedLogin:login,expectedName:name,expectedContact:contact};
+            break;
+          }
+          if(!sample)throw new Error('FUNCTIONAL_DEFECT:SEMANTIC_SHOPPER_PROFILE_SAMPLE_MISSING');
+
+          const url=`${HOSTING_URL}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cxProjectId=${encodeURIComponent(projectId)}&cxProtectedRuntime=${PROTECTED}&cxHumanFullVisual=${FULL}`;
+          const browser=await chromium.launch({headless:true});
+          let result=null;
+          try{
+            const ctx=await browser.newContext({viewport:{width:1440,height:1000}}),page=await ctx.newPage();
+            let settled=false,lastNetworkError=null;
+            for(let attempt=1;attempt<=5&&!settled;attempt++){
+              await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
+              await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
+              const token=await auth.createCustomToken(sample.uid);
+              try{
+                await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},token);
+              }catch(error){
+                const msg=String(error?.message||error||'');
+                if(!/Execution context was destroyed|navigation|auth\/network-request-failed|network AuthError|timeout|interrupted connection|unreachable host/i.test(msg))throw error;
+                lastNetworkError=error;
+              }
+              await page.waitForLoadState('domcontentloaded',{timeout:90000}).catch(()=>{});
+              const uid=await page.evaluate(()=>String(window.firebase?.auth?.().currentUser?.uid||'')).catch(()=>'');
+              if(uid===sample.uid){settled=true;break;}
+              if(attempt<5)await page.waitForTimeout(1500*attempt);
+            }
+            if(!settled)throw new Error('ENVIRONMENT_FAILURE:SEMANTIC_FIREBASE_SESSION_NOT_PERSISTED:'+String(lastNetworkError?.message||lastNetworkError||'no-current-user').slice(0,120));
+            await page.goto('about:blank',{waitUntil:'domcontentloaded',timeout:30000});
+            await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
+            await page.waitForFunction(()=>String(window.firebase?.auth?.().currentUser?.uid||'')!=='' ,null,{timeout:90000});
+            await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
+            await page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});
+            await page.waitForFunction(({tenantId,projectId})=>{const c=window.CX?.backendAuth?.context?.()||{},projects=Array.isArray(c.projectIds)?c.projectIds.map(String):[];return c.authenticated===true&&c.tenantId===tenantId&&c.role==='shopper'&&(projects.length===0||projects.includes(projectId))&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true;},{tenantId,projectId},{timeout:120000});
+            await page.evaluate(()=>window.CX.router.nav('miperfil'));
+            await page.waitForFunction(()=>String(document.body?.innerText||'').includes('Mi Perfil')&&String(document.body?.innerText||'').includes('Histórico de visitas'),null,{timeout:60000});
+            await page.waitForTimeout(750);
+            result=await page.evaluate(({expectedCanonical,expectedLogin,expectedName,expectedContact,rawShopperId})=>{
+              const portal=window.CX_TYA_CANONICAL_SHOPPER_PORTAL,data=window.CX?.data||{},ctx=window.CX?.backendAuth?.context?.()||{},body=String(document.body?.innerText||'');
+              const identity=portal?.resolveExactSessionShopper?.(data)||{ok:false,matches:[]};
+              const canonical=String(identity?.canonical||identity?.row?.id||identity?.row?.shopperId||'');
+              const visits=identity?.ok&&typeof data.visitsForShopper==='function'?data.visitsForShopper(canonical,false):[];
+              const expectedHistory='Histórico de visitas · '+String(Array.isArray(visits)?visits.length:0);
+              return {
+                authenticated:ctx.authenticated===true&&ctx.role==='shopper',
+                rawContextMatches:String(ctx.shopperId||'')===String(rawShopperId||''),
+                identityOk:identity.ok===true,
+                uniqueIdentity:Array.isArray(identity.matches)&&identity.matches.length===1,
+                canonicalMatches:canonical===String(expectedCanonical||''),
+                canonicalIsNonTechnical:!/^shopper_(?:gt|hn)_[a-f0-9]+$/i.test(canonical),
+                loginRendered:body.toLowerCase().includes(String(expectedLogin||'').toLowerCase()),
+                nameRendered:body.includes(String(expectedName||'')),
+                contactRendered:body.includes(String(expectedContact||'')),
+                historyRendered:body.includes(expectedHistory),
+                visitsCount:Array.isArray(visits)?visits.length:0,
+                unresolvedIdentityText:/no está vinculada al read model canónico|varias relaciones técnicas exactas/i.test(body),
+                technicalLoginRendered:/USUARIO\s+shopper_(?:gt|hn)_[a-f0-9]+/i.test(body)
+              };
+            },{expectedCanonical:sample.canonical,expectedLogin:sample.expectedLogin,expectedName:sample.expectedName,expectedContact:sample.expectedContact,rawShopperId:sample.rawShopperId});
+            await ctx.close();
+          } finally {await browser.close();}
+
+          if(!result?.authenticated||!result.rawContextMatches||!result.identityOk||!result.uniqueIdentity||!result.canonicalMatches||!result.canonicalIsNonTechnical||!result.loginRendered||!result.nameRendered||!result.contactRendered||!result.historyRendered||result.unresolvedIdentityText||result.technicalLoginRendered){
+            throw new Error('FUNCTIONAL_DEFECT:GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY:'+JSON.stringify(result));
+          }
+          const evidence={
+            decision:'PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY',
+            sourceSha,production:false,readOnly:true,providerWrites:0,hrWrites:0,
+            shopperSampleFingerprint:sha([tenantId,projectId,sample.uid,sample.canonical].join('\0')).slice(0,24),
+            authenticated:true,exactCanonicalIdentity:true,visibleLoginCanonical:true,authorizedContactRendered:true,
+            historyBoundToCanonicalShopper:true,historyVisitCount:result.visitsCount,technicalLoginRendered:false,unresolvedIdentityText:false
+          };
+          fs.writeFileSync(path.join(OUT,'gate20-semantic-shopper.json'),JSON.stringify(evidence,null,2)+'\n');
+          NODE
+          test "$(jq -r '.decision' "$OUT/gate20-semantic-shopper.json")" = "PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY"
+          test "$(jq -r '.sourceSha' "$OUT/gate20-semantic-shopper.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
+
       - name: Package one certification artifact without rebuild
         run: |
           set -Eeuo pipefail
@@ -797,13 +948,14 @@ jobs:
           GATE20_SHA256="$(sha256sum "$OUT/gate20/gate20-browser-visual.json" | awk '{print $1}')"
           HUMAN_LANE_SHA256="$(sha256sum "$OUT/human-lane-authority-release.json" | awk '{print $1}')"
           CREDENTIAL_RULE_SHA256="$(sha256sum "$OUT/credential-rule-readback.json" | awk '{print $1}')"
+          SEMANTIC_GATE20_SHA256="$(sha256sum "$OUT/gate20-semantic-shopper.json" | awk '{print $1}')"
           echo "$ARTIFACT_SHA256  cxorbia-i3-certified-source.tar" > "$OUT/cxorbia-i3-certified-source.tar.sha256"
           jq -n -S \
             --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg control "$GITHUB_SHA" \
             --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg image "$SOURCE_IMMUTABLE_IMAGE" \
-            --arg artifact "$ARTIFACT_SHA256" --arg gate20Sha "$GATE20_SHA256" --arg humanLaneSha "$HUMAN_LANE_SHA256" --arg credentialRuleSha "$CREDENTIAL_RULE_SHA256" \
+            --arg artifact "$ARTIFACT_SHA256" --arg gate20Sha "$GATE20_SHA256" --arg humanLaneSha "$HUMAN_LANE_SHA256" --arg credentialRuleSha "$CREDENTIAL_RULE_SHA256" --arg semanticGate20Sha "$SEMANTIC_GATE20_SHA256" \
             --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hostingVersion "$HOSTING_VERSION_NAME" --arg hostingReleaseTime "$HOSTING_RELEASE_TIME" \
-            '{decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,buildCount:1,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingReleaseTime,humanLane:{decision:"PASS_I3_HUMAN_LANE_AUTHORITY_RELEASE",evidenceSha256:$humanLaneSha,technicalMode:false},credentialRule:{decision:"PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE",version:"tya-shopper-nombre-apellido-v1",evidenceSha256:$credentialRuleSha,passwordLoginPassed:true},gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,rebuildAfterCertification:false,production:false}' \
+            '{decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,buildCount:1,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingReleaseTime,humanLane:{decision:"PASS_I3_HUMAN_LANE_AUTHORITY_RELEASE",evidenceSha256:$humanLaneSha,technicalMode:false},credentialRule:{decision:"PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE",version:"tya-shopper-nombre-apellido-v1",evidenceSha256:$credentialRuleSha,passwordLoginPassed:true},gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},gate20Semantic:{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",sourceSha:$source,evidenceSha256:$semanticGate20Sha},artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,rebuildAfterCertification:false,production:false}' \
             > "$OUT/i3-certification-manifest.json"
           cp "$OUT/i3-certification-manifest.json" "$OUT/result.json"
 
@@ -825,4 +977,7 @@ jobs:
     name: Gate 21 integrity of same certification artifact
     needs: certify
     uses: ./.github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml
+    with:
+      certification_source_sha: 6d4dbdc098348500ba62161d8136458e8b1016ad
+      certification_source_tree: 669a1c8c12e8eef24e26ba410b8d50d0bf58fb97
     secrets: inherit
