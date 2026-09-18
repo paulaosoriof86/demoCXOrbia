@@ -375,7 +375,31 @@ window.CX = window.CX || {};
 
   function applyData(state){
     if(!CX.data){ markSource('localStorage/demo', {reason:'missing-cx-data'}); return false; }
-    if(!state || !state.projects || !state.projects.length){ markSource('firestore', {empty:true, counts:{projects:0, visits:0, shoppers:0, posts:0}}); emit('backend-ready', {provider:'firebase', empty:true, tenantId:tenantId(), source:'firestore'}); return false; }
+    if(!state || !state.projects || !state.projects.length){
+      // Firestore project materialization is not the operational authority for projectId.
+      // Preserve any exact protected principal data already read (notably the shopper
+      // profile) so the live-HR authority bridge can compose the canonical project/period.
+      const safeState = state || {};
+      CX.data.periods = safeState.periods || [];
+      CX.data.__backendAllProjectRecords = safeState.allProjects || [];
+      CX.data.__backendPeriods = safeState.periods || [];
+      CX.data.shoppers = safeState.shoppers || [];
+      CX.data._visitas = safeState.visits || [];
+      CX.data._posts = safeState.posts || [];
+      const counts = {
+        projects:0,
+        projectRecords:(safeState.allProjects || []).length,
+        periods:CX.data.periods.length,
+        visits:CX.data._visitas.length,
+        shoppers:CX.data.shoppers.length,
+        posts:CX.data._posts.length
+      };
+      markSource('firestore', {empty:true, counts:counts, scope:'firebase-auth-principal'});
+      emit('shoppers', {source:'firebase'});
+      emit('visit-flow', {source:'firebase'});
+      emit('backend-ready', {provider:'firebase', empty:true, tenantId:tenantId(), source:'firestore', counts:counts, scope:'firebase-auth-principal'});
+      return false;
+    }
     CX.data.projects = state.projects;
     CX.data.periods = state.periods || [];
     CX.data.__backendAllProjectRecords = state.allProjects || [];

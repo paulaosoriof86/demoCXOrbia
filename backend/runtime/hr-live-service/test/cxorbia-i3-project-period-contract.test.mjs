@@ -69,3 +69,14 @@ test('I3 current-period consumers use canonical period owner instead of projectI
   assert.match(visits,/periodIdOf\(v\)===data\.currentPeriodId/);
   assert.match(posts,/periodIdOf\(x\)===data\.currentPeriodId/);
 });
+
+test('I3 protected shopper profile survives empty Firestore project scope for HR composition',()=>{
+  const backend=read('app/core/backend-firebase.js');
+  const bridge=read('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js');
+  assert.match(backend,/Firestore project materialization is not the operational authority for projectId/);
+  assert.match(backend,/CX\.data\.shoppers\s*=\s*safeState\.shoppers\s*\|\|\s*\[\]/);
+  assert.match(backend,/shoppers:CX\.data\.shoppers\.length/);
+  assert.match(backend,/emit\('backend-ready',[\s\S]*empty:true[\s\S]*counts:counts/);
+  assert.match(bridge,/if\(c\?\.role==='shopper'&&str\(c\.shopperId\)\)/);
+  assert.match(bridge,/arr\(CX\.data\.shoppers\)\.some/);
+});
