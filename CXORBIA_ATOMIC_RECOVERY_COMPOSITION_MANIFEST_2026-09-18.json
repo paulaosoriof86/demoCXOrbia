@@ -1,0 +1,1097 @@
+{
+  "schema": "cxorbia.recovery.atomic-recovery-composition-manifest.v1",
+  "generatedAt": "2026-09-18",
+  "iteration": "I3",
+  "repository": "paulaosoriof86/demoCXOrbia",
+  "branch": "recovery/cxorbia-phase-a-20260831",
+  "controlParentSha": "9ff87f7c25ab45b168ad70a758fa934a151ac14f",
+  "productSourceBefore": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+  "productTreeBefore": "878fd60a2dc542cf04540026c34f1a7543cc2134",
+  "state": "AUTHORIZED_ATOMIC_RECOMPOSITION_PRECOMMIT",
+  "entrypoint": "app/index-backend-dev.html",
+  "loadedScriptsTotal": 130,
+  "internalScriptsTotal": 124,
+  "matrixPriorSourceFiles": 86,
+  "priorMissingActiveInternal": 56,
+  "rules": {
+    "oneProductCommit": true,
+    "oneCandidate": true,
+    "oneBuild": true,
+    "oneArtifact": true,
+    "keepByteExact": true,
+    "noDataReimport": true,
+    "noProduction": true,
+    "noNewOverlay": true,
+    "noFuzzyIdentity": true,
+    "hrCrosswalkPrecedence": true,
+    "durableHistoryPreserved": true
+  },
+  "scripts": [
+    {
+      "loadOrder": 5,
+      "path": "app/core/build-lock.js",
+      "sourceBlob": "068b28bce919c2a4f357eb4c21f85fede06a0c5d",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 6,
+      "path": "app/core/config.js",
+      "sourceBlob": "0bf7b6c1daded062806d90e03ba2c5d67ac1fe63",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 7,
+      "path": "app/core/geo.js",
+      "sourceBlob": "0d4f3b75da2e642c09e3c9adf006566668d23169",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 8,
+      "path": "app/core/store.js",
+      "sourceBlob": "c6921e26773c866ba0b0ac0b725f4660e47742a5",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 9,
+      "path": "app/core/data.js",
+      "sourceBlob": "703472f0659ed8581e2ec2c34522c90385f3a0ac",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 10,
+      "path": "app/adapters/tya-project-financial-model-contract-v1.js",
+      "sourceBlob": "333f5fd204cba2c53eefe8f98acb27a4502da166",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 11,
+      "path": "app/core/data-source.js",
+      "sourceBlob": "6149dff1d91b83af007badbaafdef63f00c34d1f",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 12,
+      "path": "app/core/dedupe.js",
+      "sourceBlob": "4dbfe7f318b72a174dd2c253fb5355166788a7f5",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 13,
+      "path": "app/core/shoppers-store.js",
+      "sourceBlob": "755c5689a70e574917e32ad9d8baeaa4238d80f5",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 14,
+      "path": "app/core/programa.js",
+      "sourceBlob": "663bffee3d339f1602e92a62f1e065c4d6297ac4",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 15,
+      "path": "app/core/cliente-data.js",
+      "sourceBlob": "3e2ac5716d711a7a883886085399ca04c614de77",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 16,
+      "path": "app/core/hr.js",
+      "sourceBlob": "d29605947a7b455119d74ddcf29ac34c4720e437",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 17,
+      "path": "app/core/costos.js",
+      "sourceBlob": "7f0c4547a68b8bafebae0652b8de5c8e27114a0c",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 18,
+      "path": "app/core/automations.js",
+      "sourceBlob": "940ece14951719114401891697f303fab88b0f36",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 19,
+      "path": "app/core/permissions.js",
+      "sourceBlob": "bedc4f8bbc80dba9f03e34ec6bbcf9cfeeb2a1d5",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 20,
+      "path": "app/core/manuales-data.js",
+      "sourceBlob": "b18921f9cc87cb78a4db34b6205a480749470f26",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 23,
+      "path": "app/vendor/pptxgenjs.min.js",
+      "sourceBlob": "1ff971b3a9684bf3d2592883f1832e6992043154",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 24,
+      "path": "app/core/importador.js",
+      "sourceBlob": "4df42e90e0c1b42a45be57e6e34ad8c1f73b2daf",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 25,
+      "path": "app/core/ui.js",
+      "sourceBlob": "d06561fc2574c818463cf9c650f5ff276c14d9e5",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 26,
+      "path": "app/data/tya-financial-canonical-source-safe.js",
+      "sourceBlob": "889426185947563aaf128d7206acf42fdb218e3b",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 27,
+      "path": "app/data/tya-financial-canonical-source-safe-liq-01.js",
+      "sourceBlob": "5eb9146d7b8050bff489602d25426e658fb9316e",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 28,
+      "path": "app/data/tya-financial-canonical-source-safe-liq-02.js",
+      "sourceBlob": "7c36694b90736af980145c32c2aa4c034cd34870",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 29,
+      "path": "app/data/tya-financial-canonical-source-safe-liq-03.js",
+      "sourceBlob": "91fedfea2f837fa6b4319b3738432afc6da05a94",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 30,
+      "path": "app/data/tya-financial-canonical-source-safe-review-01.js",
+      "sourceBlob": "1e8866bbb585e970c993c5ebec245ca644d0fc6c",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 31,
+      "path": "app/data/tya-financial-canonical-source-safe-review-02.js",
+      "sourceBlob": "3afbcc5faa627029e09ecf695c7f494f2c7995d2",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 32,
+      "path": "app/data/tya-financial-canonical-source-safe-evidence.js",
+      "sourceBlob": "8285bdbc138f6ca8f85bf680f06d22e3a962cf28",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 33,
+      "path": "app/data/tya-financial-canonical-source-safe-final.js",
+      "sourceBlob": "e40955ee476e8fe5a0bab01965b0e29bd0958b5b",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 34,
+      "path": "app/data/tya-payment-history-source-safe.js",
+      "sourceBlob": "088c68680177c470a4539622e1694128dd211d85",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 35,
+      "path": "app/core/liquidacion.js",
+      "sourceBlob": "dde322890eb8821b822215905b82a22102d73d2c",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 36,
+      "path": "app/core/finanzas-core.js",
+      "sourceBlob": "6d3f46f003f3319f96cfd759b8b5ed52afc6a125",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 37,
+      "path": "app/core/notif.js",
+      "sourceBlob": "c86f8d98eac023fa6cd30d59f0a792edfc885f23",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 38,
+      "path": "app/adapters/tya-live-source-inplace-apply.js",
+      "sourceBlob": "30ebde6ecd49e27328fafc904c07c33ea2687c83",
+      "classification": "FOCAL_FIX",
+      "byteExact": false,
+      "reason": "P0_PROVEN_ATOMIC_COMPOSITION_OWNER"
+    },
+    {
+      "loadOrder": 39,
+      "path": "app/adapters/tya-live-source-refresh-watch-v2.js",
+      "sourceBlob": "c83e455ed50fa23552abaf1a9ecd16d81903d12b",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 40,
+      "path": "app/adapters/cxorbia-exact-identity-contract-v1.js",
+      "sourceBlob": "9b2d465dfe4d77a0a30786b0d540903b0f014c32",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 41,
+      "path": "app/adapters/tya-cumulative-read-model-v2.js",
+      "sourceBlob": "5793dff8ab72315e161662a8ccd6e7ffd0ed5be1",
+      "classification": "FOCAL_FIX",
+      "byteExact": false,
+      "reason": "P0_PROVEN_ATOMIC_COMPOSITION_OWNER"
+    },
+    {
+      "loadOrder": 42,
+      "path": "app/adapters/cxorbia-identity-roll-forward-v1.js",
+      "sourceBlob": "89d1de9535ac4537c0309c8bf24483cceebc08e5",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 43,
+      "path": "app/adapters/tya-canonical-state-semantics-v2.js",
+      "sourceBlob": "f8e472154fa8869bcbb2e6aa240d0f0be9ed3f5c",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 44,
+      "path": "app/core/backend-config.js",
+      "sourceBlob": "b12f0ec1e26d2c8d34fa19fb98433d02e926a455",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 45,
+      "path": "app/core/backend-config-preview-dev.js",
+      "sourceBlob": "8eaad7a9b56e559a342aee5f4be2f303ed61fbaf",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 46,
+      "path": "app/core/backend-protected-dev-mode.js",
+      "sourceBlob": "1e8637339b4c61a8827993f0166047f6172cbca9",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 47,
+      "path": "app/core/backend-protected-dev-session-continuity.js",
+      "sourceBlob": "00f2b3d1e92ad6154853282a8881163cf9e6ca5d",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 48,
+      "path": "app/core/backend-v57-extra-config.js",
+      "sourceBlob": "a6c73a471af480e904e59adcacc12ec08d4a697f",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 49,
+      "path": "app/core/backend-dev-auth.local.js",
+      "sourceBlob": "6b2e3ce079552fad247c7202df684328ad7dac7b",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 50,
+      "path": "app/core/backend-browser-auth.js",
+      "sourceBlob": "6ff36a155e81fc95ed4c41160505f72aaf5b8496",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 51,
+      "path": "app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js",
+      "sourceBlob": "ffdfe6b7de4b58b1d17765ce6f7820076a5ea157",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 52,
+      "path": "app/adapters/cxorbia-shopper-membership-wiring-v1.js",
+      "sourceBlob": "a96370a5a72ac6a12a6733d6e768a52293abe82b",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 53,
+      "path": "app/adapters/cxorbia-provider-identity-link-runtime-v1.js",
+      "sourceBlob": "c1c0627f34243e43b52219198ea023b0af387041",
+      "classification": "FOCAL_FIX",
+      "byteExact": false,
+      "reason": "P0_PROVEN_ATOMIC_COMPOSITION_OWNER"
+    },
+    {
+      "loadOrder": 54,
+      "path": "app/adapters/tya-phase-a-authority-compat-v1.js",
+      "sourceBlob": "6a54ddbbbf3a6d717c9e9ffed6a16f3bba1591b0",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 55,
+      "path": "app/adapters/tya-dev-technical-auth-e2e-v1.js",
+      "sourceBlob": "bae31255c340e14bccec4f1e6a3b844ddd5cd65e",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 56,
+      "path": "app/core/backend-firebase.js",
+      "sourceBlob": "0bba12d8f241c7704dd01862b8902491dda01b6f",
+      "classification": "FOCAL_FIX",
+      "byteExact": false,
+      "reason": "P0_PROVEN_ATOMIC_COMPOSITION_OWNER"
+    },
+    {
+      "loadOrder": 57,
+      "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
+      "sourceBlob": "6e599771aa694457a904a4be639868fe065e4e9f",
+      "classification": "FOCAL_FIX",
+      "byteExact": false,
+      "reason": "P0_PROVEN_ATOMIC_COMPOSITION_OWNER"
+    },
+    {
+      "loadOrder": 58,
+      "path": "app/core/backend-cxdata-read-guard.js",
+      "sourceBlob": "49b66d84ddb772e1e33a9845ddff9cde1ccdc670",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 59,
+      "path": "app/core/backend-finance-benefits.js",
+      "sourceBlob": "dc492b96ede5da4fbd065564a4f130b14b15dd4f",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 60,
+      "path": "app/core/backend-cxdata-finance-read.js",
+      "sourceBlob": "d3e519f20bb92662e0feb11407a735b36fd13457",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 61,
+      "path": "app/core/backend-operational-actions.js",
+      "sourceBlob": "785ea0967b5984fd63431048712b3a5726a4e947",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 62,
+      "path": "app/adapters/cxorbia-command-adapter-v1.js",
+      "sourceBlob": "2d195893221eb6f9863db47946ec775db7f37367",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 63,
+      "path": "app/adapters/cxorbia-command-http-transport-v1.js",
+      "sourceBlob": "72bdfcdaa5667b62b52962396631e1665506ba13",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 64,
+      "path": "app/adapters/cxorbia-shopper-admin-command-contract-v1.js",
+      "sourceBlob": "c928691256c1b7c18a51758d3dce94c63b26e976",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 65,
+      "path": "app/adapters/cxorbia-hr-write-adapter-contract-v1.js",
+      "sourceBlob": "aad818a8be3581397672ade7988c9a5ec9b4ccb0",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 66,
+      "path": "app/core/backend-cxdata-readonly-corte4.js",
+      "sourceBlob": "3ad9c3db4f998a9edd23aaf7d2de8a8d8cc192f6",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 67,
+      "path": "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
+      "sourceBlob": "58bd2514a0086dfcf34be266b8d36ba7dca97036",
+      "classification": "FOCAL_FIX",
+      "byteExact": false,
+      "reason": "P0_PROVEN_ATOMIC_COMPOSITION_OWNER"
+    },
+    {
+      "loadOrder": 68,
+      "path": "app/core/backend-ui-action-bridge.js",
+      "sourceBlob": "1e94719110d72b76da05a86ebc54d28bd6f9338a",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 69,
+      "path": "app/core/backend-bulletins.js",
+      "sourceBlob": "4f51dfa1b8e6287c9c2ef63f5b05e5fc9d2beedb",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 70,
+      "path": "app/core/backend-automations.js",
+      "sourceBlob": "63ad78a8b50134a787c66b3e49e551313edc69d8",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 71,
+      "path": "app/core/backend-preview-status.js",
+      "sourceBlob": "3f3dad02014b743af201ccac07719007db736639",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 72,
+      "path": "app/core/backend-hr-source-bridge.js",
+      "sourceBlob": "93b11308c2b4078c292f6f68da0b9a72d1d8f0b0",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 73,
+      "path": "app/adapters/tya-financial-canonical-source-safe-adapter.js",
+      "sourceBlob": "931054b79a4b477e3f6732829ac02e476f6780ca",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 74,
+      "path": "app/adapters/tya-canonical-finance-read-model-v2.js",
+      "sourceBlob": "6a527c3813ad4318bc921bf3c997bc4c70726db5",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 75,
+      "path": "app/adapters/tya-delegated-coordination-finance-guard-v1.js",
+      "sourceBlob": "18c5dc95129b434c6362a313d4c8b317bea7a965",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 76,
+      "path": "app/adapters/cxorbia-canonical-write-firewall-v1.js",
+      "sourceBlob": "10c87de64550a1cfe6a9f7ae96e8a0445a71222f",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 77,
+      "path": "app/core/topbar.js",
+      "sourceBlob": "e59210e95e99a9e568f976dcd13c6f98b963464f",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 78,
+      "path": "app/core/pwa.js",
+      "sourceBlob": "b6d8bb5d5b6aacf0e456130bb7b7b746bcf754bf",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 79,
+      "path": "app/core/router.js",
+      "sourceBlob": "fdd3c91c1428d49413fb305ed464dffdc6ea3e13",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 80,
+      "path": "app/modules/midia.js",
+      "sourceBlob": "98d901850a437b029abac2ba3e569dc3a9543940",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 81,
+      "path": "app/modules/dashboard.js",
+      "sourceBlob": "e879fc3f1dd5a7486762b197346cadd086e1d99d",
+      "classification": "FOCAL_FIX",
+      "byteExact": false,
+      "reason": "P0_PROVEN_ATOMIC_COMPOSITION_OWNER"
+    },
+    {
+      "loadOrder": 82,
+      "path": "app/modules/proyectos.js",
+      "sourceBlob": "9492e710671749f954510d49dcf93e590a52669c",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 83,
+      "path": "app/modules/periodos.js",
+      "sourceBlob": "7987d7186efcaa12f33e4fd11f91ae6e50fd7ad5",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 84,
+      "path": "app/modules/historico.js",
+      "sourceBlob": "bf259b28e871bc6cea991f14ce5560323ef55f9e",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 85,
+      "path": "app/modules/hr-source.js",
+      "sourceBlob": "dcfe3e9f0b5e97fdc0a4af77ba3873854ef545b0",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 86,
+      "path": "app/modules/proyecto-wizard.js",
+      "sourceBlob": "3c722c503634665d3574979db267f1dda2c3c159",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 87,
+      "path": "app/modules/visitas.js",
+      "sourceBlob": "43f1aa36468340aa96ceec30b30f4816b13c6d2a",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 88,
+      "path": "app/modules/visita-detalle.js",
+      "sourceBlob": "322a350e22a57a94c587a38d480f1ccf28157db7",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 89,
+      "path": "app/modules/revision-admin.js",
+      "sourceBlob": "41fcea495c1e23e7ecee43a637b45002124ea3c9",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 90,
+      "path": "app/modules/cuestionario-shopper.js",
+      "sourceBlob": "a9801776eda4b52d447abaf20c28e2bf4290930d",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 91,
+      "path": "app/modules/postulaciones.js",
+      "sourceBlob": "a6d11eb76a834182e76b981e4d954a1d3aa7f357",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 92,
+      "path": "app/modules/shoppers.js",
+      "sourceBlob": "bc767591653f0f5a49214de60a4886c6b40c2330",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 93,
+      "path": "app/modules/misvisitas.js",
+      "sourceBlob": "19feb19b96c7d2f69c3cfed785fdbfcaabd96e2d",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 94,
+      "path": "app/modules/beneficios.js",
+      "sourceBlob": "73e200e57530479637792c89c644fcfdf78b6799",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 95,
+      "path": "app/modules/tablon.js",
+      "sourceBlob": "d2eb7784d4b695f863d330f42a6ee6575a87a3f6",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 96,
+      "path": "app/modules/cert.js",
+      "sourceBlob": "5532109dec5c942c2fa6d520ad0a7e0b7b104034",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 97,
+      "path": "app/modules/documentos.js",
+      "sourceBlob": "28c302761f22807ed5ebcb1f04cd1d12827652dd",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 98,
+      "path": "app/modules/academia.js",
+      "sourceBlob": "0b42dd790d946d327eb1110b78878e302d51aa6e",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 99,
+      "path": "app/modules/soporte.js",
+      "sourceBlob": "ab2e67c882a0c94a3efac1d9ef5f2d624fd32c0c",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 100,
+      "path": "app/modules/operacion-extra.js",
+      "sourceBlob": "509c4dd251515ea1429ebe51d69d9e779ae69a54",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 101,
+      "path": "app/modules/finanzas.js",
+      "sourceBlob": "5af9e5d28833524cabba132834738e8acce55e0b",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 102,
+      "path": "app/modules/configuracion.js",
+      "sourceBlob": "3b9d653959045b866432cf4b07309052baba2bba",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 103,
+      "path": "app/modules/saas-console.js",
+      "sourceBlob": "e5fa0e57083d4affdc044f3c32eeffd1c96980b5",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 104,
+      "path": "app/modules/cliente.js",
+      "sourceBlob": "4e5981081bdd01de368c4f412ed476244426634e",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 105,
+      "path": "app/modules/cliente-extra.js",
+      "sourceBlob": "ca3d2d6b356b3d942ebbb2076625ce0b000e4b64",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 106,
+      "path": "app/modules/cliente-insights.js",
+      "sourceBlob": "87d0a9d0bd06895c937f9d8ee1e0c985248d1b2e",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 107,
+      "path": "app/modules/novedades.js",
+      "sourceBlob": "3a8a4ac11fe3dfe5bff11c4840f355742bc93375",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 108,
+      "path": "app/modules/clientes.js",
+      "sourceBlob": "9c3c98605f4fb2e22d66b241607c9dd70c45d159",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 109,
+      "path": "app/modules/importador.js",
+      "sourceBlob": "ad4f6b4621a69aa2cb303f026be6113e8f158ca2",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 110,
+      "path": "app/modules/comercial.js",
+      "sourceBlob": "61aaee6432e4a4206b07f8633d158b8d2b2c2271",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 111,
+      "path": "app/modules/crm.js",
+      "sourceBlob": "6a6ff1c964eff4f25ecaf33b028335bfc62810ee",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 112,
+      "path": "app/modules/marketing.js",
+      "sourceBlob": "6bfe1b4e3dbed12ead8a88404cdb495dbf1b8e83",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 113,
+      "path": "app/modules/reservas.js",
+      "sourceBlob": "ddc54bad9dfc7b242b06d39daf872c9f9b327c80",
+      "classification": "FOCAL_FIX",
+      "byteExact": false,
+      "reason": "P0_PROVEN_ATOMIC_COMPOSITION_OWNER"
+    },
+    {
+      "loadOrder": 114,
+      "path": "app/modules/integraciones.js",
+      "sourceBlob": "a71fc5bf83ff54df83c90339d0a3c0940167d75a",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 115,
+      "path": "app/modules/automatizaciones.js",
+      "sourceBlob": "ac456dfb309de43cbc5a25bee3ecf48076a168db",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 116,
+      "path": "app/modules/correo.js",
+      "sourceBlob": "be3cbf808498de86265410682625a45e57541b97",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 117,
+      "path": "app/modules/marca.js",
+      "sourceBlob": "bdcf20520d3774b90fd03042cec61f2ade7e0a9d",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 118,
+      "path": "app/modules/diagnostico.js",
+      "sourceBlob": "23f1bd5b72738d18e78d23a6af77ba2833279d65",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 119,
+      "path": "app/modules/administrabilidad.js",
+      "sourceBlob": "61a6606af657f9332a24b362748a229cc4a3446f",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 120,
+      "path": "app/adapters/tya-ab-cumulative-composition-v1.js",
+      "sourceBlob": "9c0d76382531b8393cc0866ec694935a2a5e25a6",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 121,
+      "path": "app/adapters/tya-c6-domain-consistency-bridge.js",
+      "sourceBlob": "b5f660ae49e5bccb041127fcb88d025264f84174",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 122,
+      "path": "app/adapters/tya-canonical-shopper-portal-v2.js",
+      "sourceBlob": "621a90d701e736ecb448da019d2240486fbcd134",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 123,
+      "path": "app/adapters/tya-canonical-reservations-guard-v2.js",
+      "sourceBlob": "0eb96842dea71bb6f1b4801914e6a475c5885ccc",
+      "classification": "FOCAL_FIX",
+      "byteExact": false,
+      "reason": "P0_PROVEN_ATOMIC_COMPOSITION_OWNER"
+    },
+    {
+      "loadOrder": 124,
+      "path": "app/adapters/tya-c6-unified-human-runtime-v1.js",
+      "sourceBlob": "be7331eda76b750e2454e096b9cc3cb705a4c50a",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 125,
+      "path": "app/adapters/tya-c6-shopper-auth-click-guard-v1.js",
+      "sourceBlob": "0b065999e74d366340eb8692ca39184514c97cfc",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 126,
+      "path": "app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js",
+      "sourceBlob": "218ca59cb37dd17d3de6ba81660616f9c1c45116",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 127,
+      "path": "app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js",
+      "sourceBlob": "9c6c3170e5ea8cde2693667b56534b8d0b0043ef",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 128,
+      "path": "app/adapters/cxorbia-legal-runtime-http-v1.js",
+      "sourceBlob": "56385f181c7e7e36b903ea18c1e470f759749a86",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 129,
+      "path": "app/core/backend-corte4-empty-shell-guard.js",
+      "sourceBlob": "a8b5b99a81ba903508a08d37e34fae414d61a492",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    },
+    {
+      "loadOrder": 130,
+      "path": "app/app.js",
+      "sourceBlob": "cb83a257b0474846abfeca90d25817810f349dcd",
+      "classification": "KEEP",
+      "byteExact": true,
+      "reason": "ADJUDICATED_KEEP_BYTE_EXACT"
+    }
+  ],
+  "nonEntrypointOwners": [
+    {
+      "path": "backend/runtime/hr-live-service/server.mjs",
+      "classification": "FOCAL_FIX",
+      "reason": "exact HR crosswalk precedence and durable reservation readback on existing runtime"
+    },
+    {
+      "path": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+      "classification": "FOCAL_FIX",
+      "reason": "extend existing ACK/idempotent provider for reservations; preserve visit reconciliation"
+    },
+    {
+      "path": "tools/qa/cxorbia-c6-client-auth-materialization.mjs",
+      "classification": "DATA_RECONCILE",
+      "reason": "existing historical Client identity; membership-only repair + readback, no new Auth identity"
+    },
+    {
+      "path": "RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs",
+      "classification": "FOCAL_FIX",
+      "reason": "acceptance uses HR exact crosswalk precedence and verifies all P0 domains"
+    },
+    {
+      "path": ".github/workflows/cxorbia-recovery-i3-dev-certification.yml",
+      "classification": "FOCAL_FIX",
+      "reason": "one canonical run targets new product source and performs data reconcile + exhaustive gates"
+    }
+  ],
+  "dataReconcile": [
+    {
+      "domain": "durable-visits",
+      "classification": "DATA_RECONCILE",
+      "method": "select exact live-key/current-authority document in read model; preserve duplicate historical docs non-authoritative"
+    },
+    {
+      "domain": "client-membership",
+      "classification": "DATA_RECONCILE",
+      "method": "membership-only repair against existing canonical historical client Auth identity; snapshot/apply/readback"
+    },
+    {
+      "domain": "finance",
+      "classification": "DATA_RECONCILE",
+      "method": "reconcile approved finance dependency closure to one source-state; no module rebuild"
+    }
+  ],
+  "overlayDecision": {
+    "path": "app/adapters/tya-ab-cumulative-composition-v1.js",
+    "classification": "KEEP",
+    "condition": "must pass no-shadow/no-loss proof against Phase A contracts; otherwise remove in same product commit"
+  },
+  "acceptance": [
+    "source-guard",
+    "124-script-module-truth-matrix",
+    "one-build",
+    "exact-dev-deploy",
+    "hr-fresh",
+    "auth",
+    "admin",
+    "shopper-gt",
+    "shopper-hn",
+    "client",
+    "durable-postulations",
+    "reservations-assignment",
+    "dashboard-past-present",
+    "finance",
+    "reports",
+    "certifications",
+    "documents",
+    "gate20-visual",
+    "gate20-semantic",
+    "one-artifact",
+    "gate21",
+    "same-artifact-human-live"
+  ],
+  "production": "DO_NOT_TOUCH"
+}
