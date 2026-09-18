@@ -76,10 +76,23 @@ async function authenticate(page,uid,expectedRole){
     const projectOk=role==='super'||projects.length===0||projects.includes(projectId);
     return c.authenticated===true&&c.tenantId===tenantId&&roleOk&&projectOk;
   },{tenantId,projectId,expectedRole},{timeout:120000});
-  await page.waitForFunction(({projectId})=>{
-    const gate=window.CX_C6_HR_AUTHORITY_GATE||{},source=String(window.CX?.dataSource?.sourceRef||'');
-    return window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&gate.ready===true&&gate.blocked===false&&source==='hr-live-all-periods+firestore-authenticated-exact-overlay'&&String(window.CX?.data?.currentProjectId||'')===projectId;
-  },{projectId},{timeout:120000});
+  await page.waitForFunction(()=>{const src=String(window.CX_BACKEND_LAST_STATE?.source||window.CX_BACKEND_DATA_SOURCE||'').toLowerCase();return !!window.CX?.data&&(src==='firestore'||src.startsWith('firestore/'));},null,{timeout:90000});
+  const reconcile=await page.evaluate(async()=>{
+    const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+    let last=null;
+    for(let i=0;i<8;i++){
+      if(typeof window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY!=='function'){
+        last={ok:false,reason:'reconciler_missing'};
+      }else{
+        last=await window.CX_RECONCILE_PROTECTED_AUTH_WITH_HR_AUTHORITY('gate20_explicit_reconcile');
+        if(last?.ok===true&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true)return {ok:true,last,authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY,gate:window.CX_C6_HR_AUTHORITY_GATE||null,source:String(window.CX?.dataSource?.sourceRef||''),projectId:String(window.CX?.data?.currentProjectId||'')};
+      }
+      await sleep(750*(i+1));
+    }
+    return {ok:false,last,authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,gate:window.CX_C6_HR_AUTHORITY_GATE||null,source:String(window.CX?.dataSource?.sourceRef||''),projectId:String(window.CX?.data?.currentProjectId||'')};
+  });
+  if(!reconcile?.ok)throw new Error('FUNCTIONAL_DEFECT:GATE20_EXPLICIT_HR_RECONCILE_FAILED:'+JSON.stringify(reconcile).slice(0,1200));
+  if(reconcile.source!=='hr-live-all-periods+firestore-authenticated-exact-overlay'||reconcile.projectId!==projectId||reconcile.gate?.blocked===true)throw new Error('FUNCTIONAL_DEFECT:GATE20_HR_AUTHORITY_CONTEXT_INVALID:'+JSON.stringify(reconcile).slice(0,1200));
 }
 async function routeCheck(page,kind,route,expected){
   await page.evaluate(r=>window.CX.router.nav(r),route);
