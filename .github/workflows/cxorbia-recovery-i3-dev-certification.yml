@@ -210,7 +210,11 @@ jobs:
           set -euo pipefail
           code="$(curl -sS --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 20 --max-time 180 \
             -o "$OUT/hr-fresh.json" -w '%{http_code}' "$HOSTING_URL/api/tya/cinepolis/hr-live?format=json&fresh=1&i3=${GITHUB_RUN_ID}")"
-          test "$code" = "200"
+          if [[ "$code" != "200" ]]; then
+            echo "HR_FRESH_HTTP_STATUS=$code" >&2
+            node -e 'const fs=require("fs");let p={};try{p=JSON.parse(fs.readFileSync(process.env.OUT+"/hr-fresh.json","utf8"))}catch{};const raw=String(p?.error||p?.message||p?._runtime?.refreshError||p?.data?._runtime?.refreshError||"HR_FRESH_NON_200");console.error("HR_FRESH_ERROR="+raw.replace(/[\\r\\n]+/g," ").slice(0,800))' >&2
+            exit 1
+          fi
           node -e 'const fs=require("fs"),p=JSON.parse(fs.readFileSync(process.env.OUT+"/hr-fresh.json","utf8")),s=p?.snapshot||p?.data||p,rt=p?._runtime||s?._runtime||{};if(s?.sourceSafe!==true||rt.refreshError)throw new Error("SOURCE_FAILURE:HR_FRESH_INVALID");fs.writeFileSync(process.env.OUT+"/hr-readback.json",JSON.stringify({decision:"PASS_I3_HR_EXACT_RUNTIME",sourceSafe:true,production:false},null,2)+"\n")'
 
       - name: Revalidate owner-defined shopper credential contract in DEV
