@@ -9,6 +9,7 @@ on:
       - .github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml
       - RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
       - RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
+      - backend/runtime/hr-live-service/test/cxorbia-i3-project-period-contract.test.mjs
       - tools/qa/cxorbia-gate20-browser-visual-dev.mjs
       - ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-17_I3_MICRO_ITERATIONS_FROZEN.md
       - CXORBIA_I3_MICRO_ITERATION_PLAN_LOCK_2026-09-17.json

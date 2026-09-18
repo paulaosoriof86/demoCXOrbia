@@ -35,8 +35,8 @@ test('I3 HR frontend mapping keeps project and period independent end to end',()
   assert.equal(data.projects[0].periodo,'SEP 2026');
   assert.equal(data._visitas[0].projectId,'project-alpha');
   assert.equal(data._visitas[0].periodId,'project-alpha-2026-09');
-  assert.equal(data._posts[0].projectId,'project-alpha');
-  assert.equal(data._posts[0].periodId,'project-alpha-2026-09');
+  // HR never projects synthetic applications/postulations. Those come only from durable platform state.
+  assert.equal(data._posts.length,0);
 });
 
 test('I3 cumulative composition never rewrites projectId from periodId',()=>{
