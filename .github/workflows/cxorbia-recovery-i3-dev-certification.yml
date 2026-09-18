@@ -636,7 +636,16 @@ jobs:
             await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
             await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
             await page.waitForFunction(()=>typeof window.CX?.backendAuth?.authenticate==='function',null,{timeout:90000});
-            const result=await page.evaluate(async ({login,password})=>{const c=await window.CX.backendAuth.authenticate(login,password,'shopper','shopper');return {role:c?.role,shopperId:c?.shopperId,authenticated:c?.authenticated};},{login:sample.login,password:sample.password});
+            await page.evaluate(({login,password})=>{
+              void window.CX.backendAuth.authenticate(login,password,'shopper','shopper').catch(error=>{
+                try{sessionStorage.setItem('cx_i3_credential_probe_error',String(error?.message||error));}catch(_){}
+              });
+            },{login:sample.login,password:sample.password});
+            await page.waitForFunction(({shopperId})=>{
+              const c=window.CX?.backendAuth?.context?.()||{};
+              return c.authenticated===true&&c.role==='shopper'&&String(c.shopperId||'')===String(shopperId||'');
+            },{shopperId:sample.shopperId},{timeout:90000});
+            const result=await page.evaluate(()=>{const c=window.CX?.backendAuth?.context?.()||{};return {role:c.role,shopperId:c.shopperId,authenticated:c.authenticated};});
             passwordLoginPassed=result.authenticated===true&&result.role==='shopper'&&String(result.shopperId||'')===sample.shopperId;
             if(!passwordLoginPassed)throw new Error('AUTH_FAILURE:CREDENTIAL_RULE_PASSWORD_LOGIN_CONTEXT');
             await page.evaluate(async()=>{try{await window.CX.backendAuth.signOut();}catch(_){}});
