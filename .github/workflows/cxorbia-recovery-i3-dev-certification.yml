@@ -237,26 +237,35 @@ jobs:
           let shopper=null;
           for(const m of members.filter(x=>accepted.has(str(x.id))&&x.active===true&&str(x.authNamespace)==='shopper'&&str(x.role)==='shopper'&&str(x.shopperId)&&(arr(x.projectIds).length===0||arr(x.projectIds).map(String).includes(projectId)))){try{await auth.getUser(m.id);shopper=m;break;}catch(e){if(str(e?.code)!=='auth/user-not-found')throw e;}}
           if(!shopper)throw new Error('AUTH_FAILURE:HUMAN_LANE_ACCEPTED_SHOPPER_MISSING');
-          const token=await auth.createCustomToken(shopper.id),browser=await chromium.launch({headless:true});
+          const browser=await chromium.launch({headless:true});
           try{
             const ctx=await browser.newContext({viewport:{width:1440,height:1000}}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(str(e?.message||e)));
             const url=`${HOSTING_URL}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cxProjectId=${encodeURIComponent(projectId)}&cxProtectedRuntime=${PROTECTED}&cxHumanFullVisual=${FULL}`;
             let authSettled=false,lastNetworkError=null;
             for(let attempt=1;attempt<=5&&!authSettled;attempt++){
               await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
+              const attemptToken=await auth.createCustomToken(shopper.id);
               try{
-                await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);await firebase.auth().signInWithCustomToken(t);},token);
-                authSettled=true;
+                await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},attemptToken);
               }catch(error){
                 const msg=String(error&&error.message||error||'');
-                if(/Execution context was destroyed|navigation/i.test(msg)){authSettled=true;break;}
-                if(!/auth\/network-request-failed|network AuthError|timeout|interrupted connection|unreachable host/i.test(msg))throw error;
+                if(!/Execution context was destroyed|navigation|auth\/network-request-failed|network AuthError|timeout|interrupted connection|unreachable host/i.test(msg))throw error;
                 lastNetworkError=error;
-                if(attempt<5)await page.waitForTimeout(1500*attempt);
               }
+              await page.waitForLoadState('domcontentloaded',{timeout:90000}).catch(()=>{});
+              const persistedUid=await page.evaluate(()=>String(firebase.auth().currentUser?.uid||'')).catch(()=> '');
+              if(persistedUid===String(shopper.id)){authSettled=true;break;}
+              if(attempt<5)await page.waitForTimeout(1500*attempt);
             }
-            if(!authSettled)throw new Error('ENVIRONMENT_FAILURE:FIREBASE_AUTH_NETWORK_RETRY_EXHAUSTED:'+String(lastNetworkError&&lastNetworkError.message||lastNetworkError||'network'));
-            await page.waitForLoadState('domcontentloaded',{timeout:90000}).catch(()=>{});
+            if(!authSettled)throw new Error('ENVIRONMENT_FAILURE:FIREBASE_AUTH_SESSION_NOT_PERSISTED:'+String(lastNetworkError&&lastNetworkError.message||lastNetworkError||'no-current-user'));
+            // Force one clean product boot from the already-persisted Firebase session.
+            // backend-browser-auth restores currentContext only during ensureAuthenticated(),
+            // so the harness must not expect raw signInWithCustomToken() to populate it.
+            await page.goto('about:blank',{waitUntil:'domcontentloaded',timeout:30000});
+            await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
+            await page.waitForFunction(expectedUid=>String(firebase.auth().currentUser?.uid||'')===String(expectedUid),shopper.id,{timeout:90000});
+            await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
+            await page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});
             await page.waitForFunction(({tenantId,projectId})=>{const c=window.CX?.backendAuth?.context?.()||{},projects=Array.isArray(c.projectIds)?c.projectIds.map(String):[];return c.authenticated===true&&c.tenantId===tenantId&&c.role==='shopper'&&(projects.length===0||projects.includes(projectId));},{tenantId,projectId},{timeout:120000});
             const before=await page.evaluate(()=>({source:String(window.CX_BACKEND_LAST_STATE?.source||window.CX_BACKEND_DATA_SOURCE||''),backendCounts:window.CX_BACKEND_LAST_STATE?.counts||null,gate:window.CX_C6_HR_AUTHORITY_GATE||null,boot:window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE||null}));
             await page.waitForFunction(({projectId,periodId})=>{const d=window.CX?.data||{},gate=window.CX_C6_HR_AUTHORITY_GATE||{},source=String(window.CX?.dataSource?.sourceRef||'');return window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&gate.ready===true&&gate.blocked===false&&source==='hr-live-all-periods+firestore-authenticated-exact-overlay'&&String(d.currentProjectId||'')===projectId&&String(d.currentPeriodId||'')===periodId&&Array.isArray(d.projects)&&d.projects.length>0&&Array.isArray(d._visitas)&&d._visitas.length>0;},{projectId,periodId},{timeout:120000});
