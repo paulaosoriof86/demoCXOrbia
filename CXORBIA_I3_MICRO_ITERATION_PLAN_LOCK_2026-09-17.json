@@ -4,15 +4,22 @@
   "iteration": "I3",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
-  "expectedParentSha": "44543e72727d28d983b2f698d4f1c9a6be471513",
-  "expectedParentTree": "008511d759d4f0957537150958c5dd730864b6d2",
-  "i3CertificationSourceSha": "b94911a4748c03c2e604415e8a97ee091da96218",
-  "i3CertificationSourceTree": "e3efd4afa9ffcb973e66e40e08798eba4e6c0f34",
+  "expectedParentSha": "89304fb0b21cbeb79fdf3c791fa76de582402650",
+  "expectedParentTree": "78a6b74c523300591706ebea64a12c51089d0bb3",
+  "i3CertificationSourceSha": "3d36b46c53e970899d16e24a7061bd33c5ba812f",
+  "i3CertificationSourceTree": "afe365ac5519423a0724fd22fb4eabc9367f811e",
   "classification": "RELEASE_COMPOSITION_FAILURE",
   "oneSourceOneBuildOneArtifact": true,
   "executionEngine": "GITHUB_ACTIONS_SERVER_SIDE",
   "chatIsAuthority": false,
-  "resumeAuthority": ["branchHead", "workflowRunId", "jobs", "artifacts", "gate21Manifest", "terminalLock"],
+  "resumeAuthority": [
+    "branchHead",
+    "workflowRunId",
+    "jobs",
+    "artifacts",
+    "gate21Manifest",
+    "terminalLock"
+  ],
   "microIterations": [
     "MI3.1_SOURCE_LOCK",
     "MI3.2_CONTROL_PLANE_BINDING",
@@ -27,7 +34,7 @@
   "historicalProductShaAllowedAsReleaseSource": false,
   "productionTouched": false,
   "cinepolisP0Priority": true,
-  "nextAction": "ATOMIC_CONTROL_PLANE_COMMIT_THEN_SERVER_SIDE_CERTIFICATION",
+  "nextAction": "SERVER_SIDE_CERTIFICATION_THEN_GATE21",
   "productionAuthorizationRequired": true,
   "frozenDocument": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-17_I3_MICRO_ITERATIONS_FROZEN.md"
 }
