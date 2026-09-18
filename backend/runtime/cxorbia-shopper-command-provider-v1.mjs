@@ -248,6 +248,7 @@ async function durableUpsert({auth,db,policy,candidate,sourceRevision,authUsers}
     firstName:str(candidate.firstName||existingProfile.firstName),
     lastName:str(candidate.lastName||existingProfile.lastName||existingProfile.apellido)
   });
+  if(!credential.ok)throw new Error(credential.reason);
   const recoveredPrincipal=existingMemberDoc?null:await existingShopperAuthPrincipal(auth,tenantId,shopperId,projectId,authUsers);
   const uid=existingMemberDoc?.id||recoveredPrincipal?.uid||stableShopperUid(tenantId,shopperId);
   const memberRef=users.doc(uid);
@@ -373,8 +374,32 @@ async function durableProfileUpdate({auth,db,command,shopperId}){
   if(str(profile.sourceType)!=='hr_external'&&(pub.firstName!==undefined||pub.lastName!==undefined||pub.nombre!==undefined)){
     patch.nombre=str(pub.nombre||[merged.firstName,merged.lastName].filter(Boolean).join(' '))||profile.nombre;
   }
-  await profileRef.set(patch,{merge:true});
-  return {uid,providerWrites:1,profileUpdated:true};
+  const finalProfile={...merged,...patch,nombre:patch.nombre||merged.nombre};
+  const credential=shopperCredentialRule(finalProfile);
+  if(!credential.ok)throw new Error(credential.reason);
+  const expectedEmail=internalEmail(tenantId,credential.login);
+  const loginChanged=str(profile.visibleLogin||profile.username||profile.user).toLowerCase()!==credential.login||
+    str(member.visibleLogin).toLowerCase()!==credential.login||
+    str(profile.credentialRuleVersion)!==CREDENTIAL_RULE_VERSION||
+    str(member.credentialRuleVersion)!==CREDENTIAL_RULE_VERSION||
+    str(user.email).toLowerCase()!==expectedEmail.toLowerCase();
+  if(loginChanged){
+    if(!auth?.updateUser)throw new Error('SHOPPER_CREDENTIAL_AUTH_UPDATE_UNAVAILABLE');
+    const collision=await safeAuthByEmail(auth,expectedEmail);
+    if(collision&&collision.uid!==uid)throw new Error('SHOPPER_VISIBLE_LOGIN_COLLISION');
+    await auth.updateUser(uid,{email:expectedEmail,password:credential.password,disabled:false});
+  }
+  patch.firstName=credential.firstName;
+  patch.lastName=credential.lastName;
+  patch.visibleLogin=credential.login;
+  patch.username=credential.login;
+  patch.user=credential.login;
+  patch.credentialRuleVersion=CREDENTIAL_RULE_VERSION;
+  await Promise.all([
+    profileRef.set(patch,{merge:true}),
+    users.doc(uid).set({visibleLogin:credential.login,credentialRuleVersion:CREDENTIAL_RULE_VERSION,credentialState:'enrolled',updatedAt:now()},{merge:true})
+  ]);
+  return {uid,providerWrites:loginChanged?3:2,profileUpdated:true,credentialNormalized:loginChanged,visibleLogin:credential.login};
 }
 
 async function durableCredentialIdentity({auth,db,command,shopperId}){
