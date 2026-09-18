@@ -592,7 +592,6 @@ jobs:
           import { applicationDefault, initializeApp, getApps } from 'firebase-admin/app';
           import { getAuth } from 'firebase-admin/auth';
           import { getFirestore } from 'firebase-admin/firestore';
-          import { chromium } from 'playwright';
           const PROJECT=process.env.PROJECT,OUT=process.env.OUT,HOSTING_URL=String(process.env.HOSTING_URL||'').replace(/\/$/,''),tenantId=process.env.TENANT_ID,projectId=process.env.PROJECT_ID,SOURCE_DIR=process.env.SOURCE_DIR;
           const mod=await import(pathToFileURL(path.join(SOURCE_DIR,'backend/runtime/cxorbia-shopper-command-provider-v1.mjs')).href);
           const RULE=mod.CREDENTIAL_RULE_VERSION,SWEEP=mod.DURABLE_CREDENTIAL_SWEEP_VERSION,PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
@@ -628,34 +627,49 @@ jobs:
           if(checked+reviewed!==targets.length)mismatches.push('population_accounting');
           if(mismatches.length)throw new Error('FUNCTIONAL_DEFECT:CREDENTIAL_RULE_MISMATCH:'+JSON.stringify({checked,reviewed,targetCount:targets.length,mismatches:[...new Set(mismatches)]}));
           if(!sample)throw new Error('AUTH_FAILURE:CREDENTIAL_RULE_SAMPLE_MISSING');
-          const browser=await chromium.launch({headless:true});
-          let passwordLoginPassed=false;
-          try{
-            const ctx=await browser.newContext({viewport:{width:1280,height:900}}),page=await ctx.newPage();
-            const url=`${HOSTING_URL}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cxProjectId=${encodeURIComponent(projectId)}&cxProtectedRuntime=${PROTECTED}&cxHumanFullVisual=${FULL}`;
-            await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
-            await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
-            const result=await page.evaluate(async ({email,password})=>{
-              const cred=await window.firebase.auth().signInWithEmailAndPassword(email,password);
-              const token=await cred.user.getIdTokenResult(true);
-              return {
-                uid:String(cred.user.uid||''),
-                role:String(token?.claims?.role||''),
-                shopperId:String(token?.claims?.shopperId||''),
-                tenantId:String(token?.claims?.tenantId||''),
-                authNamespace:String(token?.claims?.authNamespace||'')
-              };
-            },{email:internalEmail(sample.login),password:sample.password});
-            passwordLoginPassed=
-              result.uid===sample.uid&&
-              result.role==='shopper'&&
-              result.shopperId===sample.shopperId&&
-              result.tenantId===tenantId&&
-              result.authNamespace==='shopper';
-            if(!passwordLoginPassed)throw new Error('AUTH_FAILURE:CREDENTIAL_RULE_PASSWORD_LOGIN_CONTEXT');
-            await page.evaluate(async()=>{try{await window.firebase.auth().signOut();}catch(_){}});
-            await ctx.close();
-          } finally {await browser.close();}
+          const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+          async function fetchRetry(url,options={},attempts=5){
+            let lastError=null;
+            for(let attempt=1;attempt<=attempts;attempt++){
+              try{
+                const response=await fetch(url,options);
+                if(response.ok||response.status<500)return response;
+                lastError=new Error('HTTP_'+response.status);
+              }catch(error){lastError=error;}
+              if(attempt<attempts)await sleep(1000*attempt);
+            }
+            throw new Error('ENVIRONMENT_FAILURE:AUTH_NETWORK_UNREACHABLE:'+String(lastError?.message||lastError||'unknown').slice(0,120));
+          }
+          const initResponse=await fetchRetry(HOSTING_URL+'/__/firebase/init.js',{headers:{accept:'application/javascript'}});
+          if(!initResponse.ok)throw new Error('ENVIRONMENT_FAILURE:FIREBASE_INIT_HTTP_'+initResponse.status);
+          const initText=await initResponse.text();
+          const apiKeyMatch=initText.match(/["']?apiKey["']?\s*:\s*["']([^"']+)["']/);
+          if(!apiKeyMatch)throw new Error('ENVIRONMENT_FAILURE:FIREBASE_INIT_APIKEY_MISSING');
+          const apiKey=apiKeyMatch[1];
+          const signInResponse=await fetchRetry(
+            'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key='+encodeURIComponent(apiKey),
+            {
+              method:'POST',
+              headers:{'content-type':'application/json'},
+              body:JSON.stringify({email:internalEmail(sample.login),password:sample.password,returnSecureToken:true})
+            }
+          );
+          const signInBody=await signInResponse.json().catch(()=>({}));
+          if(!signInResponse.ok){
+            const code=str(signInBody?.error?.message||'AUTH_SIGNIN_FAILED').split(':')[0].trim().replace(/[^A-Z0-9_\-]/gi,'_').slice(0,80);
+            const cls=/INVALID_PASSWORD|EMAIL_NOT_FOUND|INVALID_LOGIN_CREDENTIALS|USER_DISABLED/i.test(code)?'AUTH_FAILURE':'ENVIRONMENT_FAILURE';
+            throw new Error(cls+':IDENTITY_TOOLKIT_'+code);
+          }
+          const tokenParts=str(signInBody.idToken).split('.');
+          if(tokenParts.length<2)throw new Error('AUTH_FAILURE:CREDENTIAL_RULE_ID_TOKEN_MISSING');
+          const claims=JSON.parse(Buffer.from(tokenParts[1],'base64url').toString('utf8'));
+          const passwordLoginPassed=
+            str(signInBody.localId)===sample.uid&&
+            str(claims.role)==='shopper'&&
+            str(claims.shopperId)===sample.shopperId&&
+            str(claims.tenantId)===tenantId&&
+            str(claims.authNamespace)==='shopper';
+          if(!passwordLoginPassed)throw new Error('AUTH_FAILURE:CREDENTIAL_RULE_PASSWORD_LOGIN_CONTEXT');
           const evidence={decision:'PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE',credentialRuleVersion:RULE,credentialSweepVersion:SWEEP,activeShopperMemberships:targets.length,checked,identityReviewCount:reviewed,profileAndAuthMappingExact:true,passwordLoginPassed,plaintextPersisted:false,production:false};
           fs.writeFileSync(OUT+'/credential-rule-readback.json',JSON.stringify(evidence,null,2)+'\n');
           NODE
