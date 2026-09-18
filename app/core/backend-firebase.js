@@ -123,12 +123,22 @@ window.CX = window.CX || {};
     if(!s || typeof s !== 'object') return s;
     const id = s.id || s.shopperId;
     const country = s.pais || firstArrayValue(s.countries, 'GT');
+    const whatsapp = s.whatsapp || s.phone || s.telefono || s.telefonoWhatsapp || s.mobile || '';
+    const email = s.email || s.correo || s.mail || s.contactEmail || '';
+    const username = s.username || s.user || s.login || s.visibleLogin || '';
     return Object.assign({}, s, {
       id:id,
       shopperId: s.shopperId || id,
       nombre: s.nombre || s.name || s.fullName || id || 'Shopper',
       pais: country,
+      country: s.country || country,
       ciudad: s.ciudad || firstArrayValue(s.cities, '') || s.city || '',
+      whatsapp: whatsapp,
+      phone: s.phone || s.telefono || whatsapp,
+      email: email,
+      correo: s.correo || email,
+      username: username,
+      user: s.user || username,
       code: s.code || s.codigo || id,
       estado: s.estado || s.status || 'Activo',
       rating: s.rating || (s.score ? +(s.score / 20).toFixed(1) : 0),

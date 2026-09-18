@@ -28,7 +28,10 @@
     try{return CX.backendAuth?.context?.()||null;}catch(_){return null;}
   }
   function authenticatedEmail(){
-    try{return str(window.firebase?.auth?.()?.currentUser?.email);}catch(_){return '';}
+    try{
+      const email=str(window.firebase?.auth?.()?.currentUser?.email);
+      return /@auth\.cxorbia\.invalid$/i.test(email)?'':email;
+    }catch(_){return '';}
   }
   function currentSessionCredential(){
     try{
@@ -92,7 +95,7 @@
       host.innerHTML=`${ui.ph('Mi Perfil','Identidad Shopper')}<div class="card card-p">${ui.empty('🔒',reason)}</div>`;
       return host;
     }
-    const s=identity.row,shopperKey=str(s.id||s.shopperId||identity.canonical),email=str(s.email)||authenticatedEmail(),credential=currentSessionCredential();
+    const s=identity.row,shopperKey=str(s.id||s.shopperId||identity.canonical),profileEmail=str(s.email||s.correo||s.mail),email=profileEmail||authenticatedEmail(),credential=currentSessionCredential();
     const username=str(s.username||s.user||credential.username),firstName=str(s.firstName||s.nombre),lastName=str(s.lastName||s.apellido);
     const visits=data.visitsForShopper(shopperKey,false).slice().sort((a,b)=>str(b.realizada||b.cuestFecha||b.submittedAt||b.agendada).localeCompare(str(a.realizada||a.cuestFecha||a.submittedAt||a.agendada)));
     const st=data.shopperStats(shopperKey),cs=cert(s);

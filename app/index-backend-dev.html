@@ -23,6 +23,13 @@
   const technical=params.get('cxTechnicalAuthE2E')===TECHNICAL;
   let changed=false;
   if(params.get('cxBackendPreview')!==PREVIEW){params.set('cxBackendPreview',PREVIEW);changed=true;}
+  const rawProjectId=String(params.get('cxProjectId')||'').trim();
+  const periodizedProject=rawProjectId.match(/^(.+)-((?:19|20)\d{2})-(0[1-9]|1[0-2])$/);
+  if(periodizedProject){
+    if(!params.get('cxPeriodId'))params.set('cxPeriodId',rawProjectId);
+    params.set('cxProjectId',periodizedProject[1]);
+    changed=true;
+  }
   if(!params.get('cxProjectId')){params.set('cxProjectId','cinepolis');changed=true;}
   if(technical){
     if(params.get('cxProtectedRuntime')!==PROTECTED){params.set('cxProtectedRuntime',PROTECTED);changed=true;}
@@ -96,6 +103,7 @@
 <script src="adapters/tya-live-source-refresh-watch-v2.js"></script>
 <script src="adapters/cxorbia-exact-identity-contract-v1.js"></script>
 <script src="adapters/tya-cumulative-read-model-v2.js"></script>
+<script src="adapters/cxorbia-identity-roll-forward-v1.js"></script>
 <script src="adapters/tya-canonical-state-semantics-v2.js"></script>
 <script src="core/backend-config.js"></script>
 <script src="core/backend-config-preview-dev.js"></script>

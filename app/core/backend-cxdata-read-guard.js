@@ -175,7 +175,8 @@ window.CX = window.CX || {};
     const posts = dedupe((Array.isArray(D._posts) ? D._posts : []).map(p=>canonicalPost(p, visitsById, shoppersById)), p=>p.id || [p.visitId, p.shopperId].filter(Boolean).join(':'));
     const projects = (Array.isArray(D.projects) ? D.projects : []).map(p=>normalizeProject(p, visits));
 
-    const projectIds = new Set(projects.map(p=>p.id));
+    const operationalProjectId = p=>String((p&&p.projectId)||(p&&p.program)||((p&&p.id&&!/-((?:19|20)\d{2})-(?:0[1-9]|1[0-2])$/.test(String(p.id)))?p.id:'')||'').trim();
+    const projectIds = new Set(projects.map(operationalProjectId).filter(Boolean));
     visits.forEach(v=>{ if(v.projectId && !projectIds.has(v.projectId)) anomalies.push('visit-without-project:'+v.id); });
     posts.forEach(p=>{ if(p.visitId && !visitsById[p.visitId]) anomalies.push('post-without-visit:'+p.id); });
 
@@ -186,7 +187,7 @@ window.CX = window.CX || {};
 
     if(!D.currentProjectId || !projectIds.has(D.currentProjectId)){
       const preferred = CX.BACKEND && CX.BACKEND.defaultProjectId;
-      D.currentProjectId = preferred && projectIds.has(preferred) ? preferred : (projects[0] && projects[0].id) || '';
+      D.currentProjectId = preferred && projectIds.has(preferred) ? preferred : operationalProjectId(projects[0]);
     }
 
     const currentProjectId = D.currentProjectId;

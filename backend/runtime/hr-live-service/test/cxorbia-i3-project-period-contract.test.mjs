@@ -97,3 +97,44 @@ test('I3 HR authority bridge follows backend operator scope semantics',()=>{
   assert.match(bridge,/\['super','admin','ops','coordinador'\]\.includes\(role\)/);
   assert.match(bridge,/return projects\.includes\('cinepolis'\)/);
 });
+
+test('I3 human entry composes approved period-independent identity roll-forward and canonicalizes periodized project query',()=>{
+  const html=read('app/index-backend-dev.html');
+  assert.match(html,/cxorbia-identity-roll-forward-v1\.js/);
+  assert.match(html,/periodizedProject/);
+  assert.match(html,/params\.set\('cxPeriodId',rawProjectId\)/);
+  assert.match(html,/params\.set\('cxProjectId',periodizedProject\[1\]\)/);
+});
+
+test('I3 backend read guard never promotes a period record id into currentProjectId',()=>{
+  const guard=read('app/core/backend-cxdata-read-guard.js');
+  assert.match(guard,/operationalProjectId/);
+  assert.match(guard,/p&&p\.projectId/);
+  assert.doesNotMatch(guard,/D\.currentProjectId\s*=\s*preferred[^\n]*projects\[0\]\s*&&\s*projects\[0\]\.id/);
+});
+
+test('I3 shopper historical lookup normalizes both requested and visit identities through exact crosswalk',()=>{
+  const bridge=read('app/adapters/tya-c6-domain-consistency-bridge.js');
+  assert.match(bridge,/canonical=x=>str\(map\[str\(x\)\]\|\|x\)/);
+  assert.match(bridge,/canonical\(v\.shopperId\)===target/);
+});
+
+test('I3 profile completeness never depends on persisted plaintext password',()=>{
+  const bridge=read('app/adapters/tya-c6-domain-consistency-bridge.js');
+  assert.doesNotMatch(bridge,/CX\.CREDS\.pass/);
+  assert.doesNotMatch(bridge,/perfilCompleto=!!\([^\n]*(?:s\.pass|s\.password)/);
+  assert.match(bridge,/operational_profile_without_persisted_secret/);
+});
+
+test('I3 shopper portal hides internal Firebase provider email',()=>{
+  const portal=read('app/adapters/tya-canonical-shopper-portal-v2.js');
+  assert.match(portal,/@auth\\\.cxorbia\\\.invalid/);
+  assert.match(portal,/profileEmail=str\(s\.email\|\|s\.correo\|\|s\.mail\)/);
+});
+
+test('I3 protected shopper normalization reuses existing contact and login aliases',()=>{
+  const backend=read('app/core/backend-firebase.js');
+  assert.match(backend,/s\.telefono/);
+  assert.match(backend,/s\.correo/);
+  assert.match(backend,/s\.visibleLogin/);
+});

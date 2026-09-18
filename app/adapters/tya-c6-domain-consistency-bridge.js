@@ -40,12 +40,14 @@
     if(s.__canonicalIdentityOverlay){
       const n=splitName(s.nombre);
       if(!s.firstName)s.firstName=n.first;if(!s.lastName)s.lastName=n.last;
-      if(!s.user&&!s.username&&CX.CREDS&&n.first&&n.last){s.user=CX.CREDS.user(n.first,n.last);s.username=s.user;s.credentialSource='derived_existing_pattern_dev';}
-      if(!s.pass&&!s.password&&CX.CREDS&&n.first&&n.last){s.pass=CX.CREDS.pass(n.first,n.last);s.password=s.pass;s.credentialSource='derived_existing_pattern_dev';}
+      // Credential metadata comes only from protected/provider sources.
+      // Never derive username or password from the shopper name.
     }
-    s.whatsapp=s.whatsapp||s.phone||'';s.phone=s.phone||s.whatsapp||'';
-    s.perfilCompleto=!!(str(s.nombre)&&str(s.whatsapp||s.phone)&&str(s.user||s.username)&&str(s.pass||s.password));
-    s.profileCompletenessSource='actual_minimum_fields';
+    s.whatsapp=s.whatsapp||s.phone||s.telefono||'';s.phone=s.phone||s.telefono||s.whatsapp||'';
+    s.email=s.email||s.correo||s.mail||'';
+    s.user=s.user||s.username||s.login||'';s.username=s.username||s.user||'';
+    s.perfilCompleto=!!(str(s.nombre)&&str(s.whatsapp||s.phone)&&str(s.user||s.username)&&str(s.pais||s.country));
+    s.profileCompletenessSource='operational_profile_without_persisted_secret';
     return s;
   }
   function resolveSessionIdentity(){
@@ -74,9 +76,9 @@
       liquidadas:v=>{const f=facets(v);return f.liquidationConfirmed&&!f.cancelled;},
       fueraRango:v=>{const f=facets(v);return f.outOfRange&&!f.cancelled;}
     };
-    d.visitsForShopper=function(id,onlyCurrentProject){const canonical=str((this.__identityMap||{})[str(id)]||id);return arr(this._visitas).filter(v=>str(v.shopperId)===canonical&&(!onlyCurrentProject||str(v.rootProjectId||'cinepolis')===str(this.currentProjectId||'cinepolis')));};
+    d.visitsForShopper=function(id,onlyCurrentProject){const map=this.__identityMap||{},canonical=x=>str(map[str(x)]||x),target=canonical(id);return arr(this._visitas).filter(v=>canonical(v.shopperId)===target&&(!onlyCurrentProject||str(v.rootProjectId||v.projectId||'')===str(this.currentProjectId||'')));};
     d.shopperStats=function(id){const vs=this.visitsForShopper(id,false),fs=vs.map(facets);const s=this.getShopper?this.getShopper(str((this.__identityMap||{})[str(id)]||id)):null;return {total:vs.length,realizadas:fs.filter(f=>f.realized).length,liquidadas:fs.filter(f=>f.liquidationConfirmed).length,enCurso:fs.filter(f=>f.assigned&&!f.liquidationConfirmed&&!f.paymentConfirmed&&!f.cancelled).length,postulaciones:(this.postsForShopper?this.postsForShopper(id):[]).length||Number(s&&s.postulaciones||0),submitted:fs.filter(f=>f.submitted).length,paymentConfirmed:fs.filter(f=>f.paymentConfirmed).length};};
-    d.shopperProfileComplete=function(s){return !!(s&&str(s.nombre)&&str(s.whatsapp||s.phone)&&str(s.user||s.username)&&str(s.pass||s.password));};
+    d.shopperProfileComplete=function(s){return !!(s&&str(s.nombre)&&str(s.whatsapp||s.phone||s.telefono)&&str(s.user||s.username||s.login)&&str(s.pais||s.country));};
     d.shopperActivo=function(s,ref){if(!s||s.identityReviewRequired)return false;const end=new Date((ref||this.activeRefDate())+'T00:00:00'),start=new Date(end);start.setMonth(start.getMonth()-6);return this.visitsForShopper(s.id,false).some(v=>{const f=facets(v),raw=v.realizada||v.cuestFecha||v.submittedAt;if(!f.realized||!raw)return false;const dt=new Date(raw+'T00:00:00');return dt>=start&&dt<=end;});};
     d.phaseFlow=function(c){const vs=currentVisits().filter(v=>countryOf(v)===c),t=vs.length||1,n=fn=>vs.filter(fn).length,pc=x=>Math.round(x/t*100);const count={assigned:n(v=>facets(v).assigned),scheduled:n(v=>facets(v).scheduled),realized:n(v=>facets(v).realized),questionnaire:n(v=>facets(v).questionnaire),submitted:n(v=>facets(v).submitted),liquidated:n(v=>facets(v).liquidationConfirmed),sinAgendar:n(v=>{const f=facets(v);return f.assigned&&!f.scheduled&&!f.realized;}),sinAsignar:n(v=>{const f=facets(v);return !f.assigned&&!f.realized;})};return {total:vs.length,asign:[count.assigned,pc(count.assigned)],agend:[count.scheduled,pc(count.scheduled)],sinAgend:[count.sinAgendar,pc(count.sinAgendar)],sinAsign:[count.sinAsignar,pc(count.sinAsignar)],real:[count.realized,pc(count.realized)],cuest:[count.questionnaire,pc(count.questionnaire)],submit:[count.submitted,pc(count.submitted)],liq:[count.liquidated,pc(count.liquidated)]};};
     d.kpis=function(){const v=currentVisits(),P=fn=>{const o={t:v.filter(fn).length};arr(this.period()?.countries).forEach(c=>o[c]=v.filter(x=>countryOf(x)===c&&fn(x)).length);return o;},B=this.visitBucketFns;return {total:P(()=>true),asignadas:P(B.asignadas),sinAsignar:P(B.sinAsignar),sinAgendar:P(B.sinAgendar),agendadas:P(B.agendadas),realizadas:P(B.realizadas),pendRealizar:P(B.pendRealizar),cuestPend:P(B.cuestPend),sinSubmitir:P(B.sinSubmitir),liquidadas:P(B.liquidadas),fueraRango:P(B.fueraRango),postPend:arr(this._posts).filter(p=>p.estado==='pendiente'&&!p._archived).length};};
