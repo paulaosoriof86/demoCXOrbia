@@ -120,7 +120,7 @@
     if(!committed)return Object.assign(blocked(command,'COMMAND_NOT_COMMITTED'),clean(result||{}),{ok:false,committed:false,providerAck:false,successUiAllowed:false,localMutation:false,localStorageWrite:false});
     const out=Object.assign({},clean(result),{
       ok:true,status:'committed',committed:true,providerAck:true,successUiAllowed:true,localMutation:false,localStorageWrite:false,
-      commandType:command.commandType,entityType:command.entityType,entityId:command.entityId,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,idempotencyKey:command.idempotencyKey,at:now()
+      commandType:command.commandType,entityType:command.entityType,entityId:result?.entityId||command.entityId||null,tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,idempotencyKey:command.idempotencyKey,at:now()
     });
     try{CX.bus?.emit?.('command-committed',out);}catch(_){}
     return out;
