@@ -28,12 +28,22 @@ const staff=
   members.find(m=>m.active===true&&str(m.authNamespace)==='staff'&&str(m.role)==='super');
 ensure(staff,'AUTH_FAILURE',{blocker:'GATE20_FOCAL_ADMIN_MISSING'});
 
-// Recovery 2026-09-18: legal acceptance is never an eligibility or access gate.
+// Gate20 fixture must belong to an active exact HR crosswalk for this project.
+const crosswalk=await allDocs(tenant.collection('shopperIdentityCrosswalk')),liveCanonical=new Set();
+for(const x of crosswalk){
+  if(str(x?.sourceType).toLowerCase()!=='hr_external')continue;
+  const projects=arr(x?.projectIds).map(str),singleProject=str(x?.projectId);
+  if(singleProject&&singleProject!==projectId)continue;
+  if(projects.length&&!projects.includes(projectId))continue;
+  if(str(x?.shopperId))liveCanonical.add(str(x.shopperId));
+}
+ensure(liveCanonical.size>0,'MAPPING_FAILURE',{blocker:'GATE20_FOCAL_LIVE_CROSSWALK_EMPTY'});
 let shopper=null;
-for(const m of members.filter(x=>x.active===true&&str(x.authNamespace)==='shopper'&&str(x.role)==='shopper'&&str(x.shopperId)&&(arr(x.projectIds).length===0||arr(x.projectIds).map(String).includes(projectId)))){
+const shopperCandidates=members.filter(x=>x.active===true&&str(x.authNamespace)==='shopper'&&str(x.role)==='shopper'&&str(x.shopperId)&&liveCanonical.has(str(x.shopperId))&&(arr(x.projectIds).length===0||arr(x.projectIds).map(String).includes(projectId))).sort((a,b)=>str(a.shopperId).localeCompare(str(b.shopperId)));
+for(const m of shopperCandidates){
   try{await auth.getUser(m.id);shopper=m;break;}catch(error){if(str(error?.code)!=='auth/user-not-found')throw error;}
 }
-ensure(shopper,'AUTH_FAILURE',{blocker:'GATE20_FOCAL_SHOPPER_AUTH_USER_MISSING'});
+ensure(shopper,'AUTH_FAILURE',{blocker:'GATE20_FOCAL_LIVE_SHOPPER_AUTH_USER_MISSING'});
 write('shopper-fixture-readback.json',{decision:'PASS_GATE20_ACTIVE_SHOPPER_FIXTURE',tenantId,projectId,shopperSelected:true,legalAcceptanceBlocking:false,legalReceiptRequiredForAccess:false,providerWrites:0,hrWrites:0,production:false});
 
 let chromium;try{({chromium}=await import('playwright'));}catch{finish('ENVIRONMENT_FAILURE',{blocker:'GATE20_PLAYWRIGHT_UNAVAILABLE'});}

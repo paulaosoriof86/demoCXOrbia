@@ -893,11 +893,22 @@ jobs:
           const allDocs=async ref=>(await ref.get()).docs.map(d=>({id:d.id,...(d.data()||{})}));
           if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
           const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(tenantId);
-          const members=await allDocs(tenant.collection('users'));
-          // Recovery 2026-09-18: legal receipt is observable only and never selects or blocks the shopper test population.
+          const [members,crosswalk]=await Promise.all([allDocs(tenant.collection('users')),allDocs(tenant.collection('shopperIdentityCrosswalk'))]);
+          const fresh=JSON.parse(fs.readFileSync(path.join(OUT,'hr-fresh.json'),'utf8')),freshSnapshot=fresh?.snapshot||fresh?.data||fresh;
+          const liveIds=new Set(arr(freshSnapshot?.shoppers).map(x=>str(x?.shopperId||x?.id)).filter(Boolean)),liveCanonical=new Set();
+          for(const x of crosswalk){
+            if(str(x?.sourceType).toLowerCase()!=='hr_external')continue;
+            const projects=arr(x?.projectIds).map(str),singleProject=str(x?.projectId);
+            if(singleProject&&singleProject!==projectId)continue;
+            if(projects.length&&!projects.includes(projectId))continue;
+            const tokens=[x?.id,x?.sourceStableKey,x?.sourceShopperId].map(str).filter(Boolean);
+            if(tokens.some(t=>liveIds.has(t))&&str(x?.shopperId))liveCanonical.add(str(x.shopperId));
+          }
+          if(!liveCanonical.size)throw new Error('MAPPING_FAILURE:HUMAN_LANE_LIVE_CROSSWALK_EMPTY');
           let shopper=null;
-          for(const m of members.filter(x=>x.active===true&&str(x.authNamespace)==='shopper'&&str(x.role)==='shopper'&&str(x.shopperId)&&(arr(x.projectIds).length===0||arr(x.projectIds).map(String).includes(projectId)))){try{await auth.getUser(m.id);shopper=m;break;}catch(e){if(str(e?.code)!=='auth/user-not-found')throw e;}}
-          if(!shopper)throw new Error('AUTH_FAILURE:HUMAN_LANE_SHOPPER_MISSING');
+          const candidates=members.filter(x=>x.active===true&&str(x.authNamespace)==='shopper'&&str(x.role)==='shopper'&&str(x.shopperId)&&liveCanonical.has(str(x.shopperId))&&(arr(x.projectIds).length===0||arr(x.projectIds).map(String).includes(projectId))).sort((a,b)=>str(a.shopperId).localeCompare(str(b.shopperId)));
+          for(const m of candidates){try{await auth.getUser(m.id);shopper=m;break;}catch(e){if(str(e?.code)!=='auth/user-not-found')throw e;}}
+          if(!shopper)throw new Error('AUTH_FAILURE:HUMAN_LANE_LIVE_SHOPPER_MISSING');
           const browser=await chromium.launch({headless:true});
           try{
             const ctx=await browser.newContext({viewport:{width:1440,height:1000}}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(str(e?.message||e)));
