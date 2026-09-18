@@ -67,8 +67,8 @@ CX.module('shoppers', ({data,ui})=>{
       <div style="background:var(--brand-light);border-radius:10px;padding:14px;color:var(--brand-dark);line-height:1.7">
         <div style="font-weight:800;margin-bottom:6px">Credencial emitida y confirmada por el proveedor</div>
         <div>Usuario: <b style="font-family:var(--disp)">${esc(credential.login)}</b></div>
-        <div>Contraseña temporal: <b style="font-family:var(--disp)">${esc(credential.password)}</b></div>
-        <div style="font-size:11px;margin-top:8px">Se muestra una sola vez y no se guarda en el navegador ni en la plataforma.</div>
+        <div>Contraseña: <b style="font-family:var(--disp)">${esc(credential.password)}</b></div>
+        <div style="font-size:11px;margin-top:8px">Regla TyA: usuario nombre.apellido y contraseña Nombre123*. No se guarda la contraseña en Firestore, HR ni localStorage.</div>
       </div>`);
   };
   const resetCredential=async(shopperId,title)=>{

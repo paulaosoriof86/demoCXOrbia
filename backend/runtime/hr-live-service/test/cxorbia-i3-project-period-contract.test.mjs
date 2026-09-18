@@ -138,3 +138,15 @@ test('I3 protected shopper normalization reuses existing contact and login alias
   assert.match(backend,/s\.correo/);
   assert.match(backend,/s\.visibleLogin/);
 });
+
+test('I3 owner-defined shopper credential contract is identical in provider and human UI',()=>{
+  const provider=read('backend/runtime/cxorbia-shopper-command-provider-v1.mjs');
+  const bridge=read('app/adapters/tya-c6-domain-consistency-bridge.js');
+  const portal=read('app/adapters/tya-canonical-shopper-portal-v2.js');
+  assert.match(provider,/CREDENTIAL_RULE_VERSION='tya-shopper-nombre-apellido-v1'/);
+  assert.match(provider,/password:passwordFirst\+'123\*'/);
+  assert.match(provider,/login:firstLogin\+'\.'\+lastLogin/);
+  assert.match(bridge,/credentialRuleVersion='tya-shopper-nombre-apellido-v1'/);
+  assert.match(portal,/password:f\.charAt\(0\).*\+'123\*'/);
+  assert.doesNotMatch(provider,/randomBytes\(24\).*!aA1/);
+});

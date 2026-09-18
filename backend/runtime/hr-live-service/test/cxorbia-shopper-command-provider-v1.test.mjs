@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import {
   createShopperCommandProvider,
   providerUidFingerprint,
-  stableShopperUid
+  stableShopperUid,
+  CREDENTIAL_RULE_VERSION,
+  shopperCredentialRule
 } from '../../cxorbia-shopper-command-provider-v1.mjs';
 
 const clone=value=>value===undefined?undefined:structuredClone(value);
@@ -58,12 +60,13 @@ class FakeFirestore{
   paths(){return [...this._store.keys()].sort();}
 }
 class FakeAuth{
-  constructor(){this.users=new Map();this.created=0;this.claimWrites=0;}
+  constructor(){this.users=new Map();this.created=0;this.claimWrites=0;this.updated=0;}
   missing(){const e=new Error('not found');e.code='auth/user-not-found';return e;}
   async getUser(uid){const u=this.users.get(uid);if(!u)throw this.missing();return clone(u);}
   async getUserByEmail(email){for(const u of this.users.values())if(u.email===email)return clone(u);throw this.missing();}
   async listUsers(maxResults=1000,pageToken){const all=[...this.users.values()].map(u=>clone(u)),start=pageToken?Number(pageToken):0,users=all.slice(start,start+maxResults),next=start+maxResults<all.length?String(start+maxResults):undefined;return {users,pageToken:next};}
-  async createUser(record){if(this.users.has(record.uid))throw new Error('auth/uid-already-exists');const user={uid:record.uid,email:record.email,disabled:Boolean(record.disabled),customClaims:{}};this.users.set(record.uid,user);this.created++;return clone(user);}
+  async createUser(record){if(this.users.has(record.uid))throw new Error('auth/uid-already-exists');const user={uid:record.uid,email:record.email,password:record.password,disabled:Boolean(record.disabled),customClaims:{}};this.users.set(record.uid,user);this.created++;return clone(user);}
+  async updateUser(uid,patch){const user=this.users.get(uid);if(!user)throw this.missing();Object.assign(user,clone(patch));this.updated++;return clone(user);}
   async setCustomUserClaims(uid,claims){const user=this.users.get(uid);if(!user)throw this.missing();user.customClaims=clone(claims);this.claimWrites++;}
   async verifyIdToken(){return {uid:'admin-1',tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']};}
   seed(user){this.users.set(user.uid,clone({...user,customClaims:user.customClaims||{}}));}
@@ -141,4 +144,25 @@ test('Gate 6 / 5 partial failure and identity conflict fail closed with safe ret
   const conflictSnapshot=snapshot({shopperId:conflictId,shopperCode:'TYA_GT_CONFLICT'});
   await assert.rejects(()=>p.reconcileSnapshot(conflictSnapshot,{sourceRevision:'rev-conflict'}),/SHOPPER_CROSSWALK_UID_CONFLICT/);
   assert.equal(db.get(cp.cross).providerUidFingerprint,providerUidFingerprint(wrongUid));
+});
+
+test('Gate 6 / owner credential rule materializes visible login and deterministic Auth password without persisting the secret',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),id='shopper_gt_owner_rule',uid=stableShopperUid('tenant-a',id),pp=paths(id);
+  const snap=snapshot({shopperId:id,shopperCode:'TYA_GT_OWNER'});
+  snap.visits[0].shopper='Mishael De Paz';
+  const result=await p.reconcileSnapshot(snap,{sourceRevision:'rev-owner-rule'});
+  assert.equal(result.credentialRuleVersion,CREDENTIAL_RULE_VERSION);
+  assert.equal(result.credentialRuleMissing,0);
+  const expected=shopperCredentialRule({nombre:'Mishael De Paz'});
+  assert.equal(expected.login,'mishael.depaz');
+  assert.equal(expected.password,'Mishael123*');
+  const user=await auth.getUser(uid);
+  assert.equal(user.password,'Mishael123*');
+  const member=db.get(`${pp.users}/${uid}`);
+  const profile=db.get(pp.profile);
+  assert.equal(member.visibleLogin,'mishael.depaz');
+  assert.equal(member.credentialRuleVersion,CREDENTIAL_RULE_VERSION);
+  assert.equal(profile.username,'mishael.depaz');
+  assert.equal(profile.user,'mishael.depaz');
+  assert.equal(JSON.stringify([...db._store.values()]).includes('Mishael123*'),false);
 });

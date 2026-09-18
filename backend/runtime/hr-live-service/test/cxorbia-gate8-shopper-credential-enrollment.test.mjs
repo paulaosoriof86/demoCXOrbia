@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import {
   createShopperCommandProvider,
   providerUidFingerprint,
-  stableShopperUid
+  stableShopperUid,
+  CREDENTIAL_RULE_VERSION
 } from '../../cxorbia-shopper-command-provider-v1.mjs';
 
 const clone=value=>value===undefined?undefined:structuredClone(value);
@@ -57,14 +58,14 @@ class FakeAuth{
   async getUser(uid){const u=this.users.get(uid);if(!u)throw this.missing();return clone(u);}
   async getUserByEmail(email){for(const u of this.users.values())if(u.email===email)return clone(u);throw this.missing();}
   async listUsers(maxResults=1000,pageToken){const all=[...this.users.values()].map(u=>clone(u)),start=pageToken?Number(pageToken):0,users=all.slice(start,start+maxResults),next=start+maxResults<all.length?String(start+maxResults):undefined;return {users,pageToken:next};}
-  async createUser(record){const user={uid:record.uid,email:record.email,disabled:Boolean(record.disabled),customClaims:{}};this.users.set(record.uid,user);this.created++;return clone(user);}
+  async createUser(record){const user={uid:record.uid,email:record.email,password:record.password,disabled:Boolean(record.disabled),customClaims:{}};this.users.set(record.uid,user);this.created++;return clone(user);}
   async setCustomUserClaims(uid,claims){const user=this.users.get(uid);if(!user)throw this.missing();user.customClaims=clone(claims);this.claimWrites++;}
   async updateUser(uid,patch){const user=this.users.get(uid);if(!user)throw this.missing();Object.assign(user,clone(patch));if(Object.hasOwn(patch,'password'))this.passwordWrites++;return clone(user);}
   async verifyIdToken(){return {uid:'admin-1',tenantId:'tenant-a',role:'super',authNamespace:'staff',projectIds:['project-a']};}
 }
 
 const policy={schemaVersion:'cxorbia.shopper-command-provider-policy.v1',enabled:true,allowedTenantIds:['tenant-a'],allowedProjectIds:['project-a'],hrWrites:false,externalWrites:false,fuzzyMatching:false};
-const snapshot={sourceSafe:true,imported:false,firestoreWrites:0,tenantId:'tenant-a',projectId:'project-a',visits:[{id:'v1',shopperId:'shopper-1',shopperCode:'S1',pais:'GT',sourceSafe:true,piiProtected:true,hrRowId:'TAB!2',sourceTab:'TAB'}]};
+const snapshot={sourceSafe:true,imported:false,firestoreWrites:0,tenantId:'tenant-a',projectId:'project-a',visits:[{id:'v1',shopperId:'shopper-1',shopperCode:'S1',shopper:'Paula Osorio',pais:'GT',sourceSafe:true,piiProtected:true,hrRowId:'TAB!2',sourceTab:'TAB'}]};
 const command=(idempotencyKey='gate8-1',payload={})=>({version:'cxorbia-command-adapter-v1',commandType:'shopper.credential.reset',entityType:'shopper',entityId:'shopper-1',tenantId:'tenant-a',projectId:'project-a',periodId:'2026-09',idempotencyKey,payload,authorization:{providerEnforcementRequired:true}});
 
 async function setup(){
@@ -75,7 +76,7 @@ async function setup(){
   return {auth,db,provider,uid:stableShopperUid('tenant-a','shopper-1')};
 }
 
-test('Gate 8 enrolls a unique server-generated credential on the existing stable UID and stores no raw secret',async()=>{
+test('Gate 8 enforces the owner-defined nombre.apellido / Nombre123* credential on the stable UID and stores no raw secret',async()=>{
   const {auth,db,provider,uid}=await setup();
   const beforeProfile=db.get('tenants/tenant-a/shoppers/shopper-1');
   const beforeCross=db.get('tenants/tenant-a/shopperIdentityCrosswalk/shopper-1');
@@ -84,11 +85,13 @@ test('Gate 8 enrolls a unique server-generated credential on the existing stable
   assert.equal(result.commandType,'shopper.credential.reset');
   assert.equal(result.entityId,'shopper-1');
   assert.equal(result.credentialIssued,true);
-  assert.equal(result.credential.login,'shopper-1');
+  assert.equal(result.credential.login,'paula.osorio');
+  assert.equal(result.credential.password,'Paula123*');
   assert.equal(result.credential.namespace,'shopper');
-  assert.equal(result.credential.oneTimeDisclosure,true);
+  assert.equal(result.credential.oneTimeDisclosure,false);
+  assert.equal(result.credential.deterministicRule,true);
+  assert.equal(result.credential.ruleVersion,CREDENTIAL_RULE_VERSION);
   assert.equal(result.credential.persist,false);
-  assert.ok(result.credential.password.length>=24);
   assert.equal((await auth.getUser(uid)).password,result.credential.password);
   assert.equal(auth.passwordWrites,1);
   assert.equal(result.uidFingerprint,providerUidFingerprint(uid));
@@ -98,7 +101,8 @@ test('Gate 8 enrolls a unique server-generated credential on the existing stable
   assert.equal(serializedStore.includes(result.credential.password),false);
   const member=db.get(`tenants/tenant-a/users/${uid}`);
   assert.equal(member.credentialState,'enrolled');
-  assert.equal(member.credentialVersion,'cxorbia-shopper-credential-v1');
+  assert.equal(member.credentialVersion,CREDENTIAL_RULE_VERSION);
+  assert.equal(member.visibleLogin,'paula.osorio');
 });
 
 test('Gate 8 replay is idempotent and never re-discloses or rotates the credential',async()=>{

@@ -33,15 +33,17 @@
   const stageLabel=v=>{const f=facets(v);if(f.paymentConfirmed)return 'Pagada';if(f.liquidationConfirmed)return 'Liquidada';if(f.submitted)return 'Submitida';if(f.questionnaire)return 'Cuestionario completo · pendiente de submitir';if(f.realized)return 'Realizada · pendiente de cuestionario';if(f.outOfRange)return 'Fuera de rango';if(f.scheduled)return 'Agendada';if(f.assigned)return 'Asignada · pendiente de agendar';if(f.available)return 'Disponible';return 'Pendiente de disponibilidad';};
   const stageTone=v=>{const f=facets(v);return f.paymentConfirmed||f.liquidationConfirmed?'g':f.submitted?'t':f.questionnaire?'p':f.realized?'a':f.outOfRange?'r':f.scheduled?'t':f.assigned?'b':'n';};
   const splitName=name=>{const p=str(name).split(/\s+/).filter(Boolean);return {first:p[0]||'',last:p.slice(1).join(' ')||''};};
+  const credentialPart=value=>str(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'');
+  const shopperCredentialRule=s=>{const n=splitName(s?.nombre),first=str(s?.firstName||n.first),last=str(s?.lastName||s?.apellido||n.last),a=credentialPart(first),b=credentialPart(last),f=first.split(/\s+/)[0]||'';return a&&b&&f?{ok:true,login:a+'.'+b,password:f.charAt(0).toLocaleUpperCase('es-GT')+f.slice(1).toLocaleLowerCase('es-GT')+'123*',firstName:f.charAt(0).toLocaleUpperCase('es-GT')+f.slice(1).toLocaleLowerCase('es-GT'),lastName:last}:{ok:false};};
   const certStatus=s=>s&&s.certificationStatus||((s&&s.certified)?'certificada':(s&&s.certificationPresented)?'presentada':'sin_registro');
 
   function recalcProfile(s){
     if(!s)return s;
-    if(s.__canonicalIdentityOverlay){
-      const n=splitName(s.nombre);
-      if(!s.firstName)s.firstName=n.first;if(!s.lastName)s.lastName=n.last;
-      // Credential metadata comes only from protected/provider sources.
-      // Never derive username or password from the shopper name.
+    const credential=shopperCredentialRule(s);
+    if(credential.ok){
+      s.firstName=credential.firstName;s.lastName=credential.lastName;
+      s.visibleLogin=credential.login;s.user=credential.login;s.username=credential.login;
+      s.credentialRuleVersion='tya-shopper-nombre-apellido-v1';
     }
     s.whatsapp=s.whatsapp||s.phone||s.telefono||'';s.phone=s.phone||s.telefono||s.whatsapp||'';
     s.email=s.email||s.correo||s.mail||'';
