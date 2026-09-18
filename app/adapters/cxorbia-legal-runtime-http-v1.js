@@ -184,23 +184,32 @@
     }catch(error){showBlocked(error,role,go);}
   }
 
+  function observeNonBlocking(role){
+    Promise.resolve().then(()=>preload(false)).then(()=>{
+      try{root.dispatchEvent(new CustomEvent('cx:legal-observability',{detail:{role:str(role),loaded:state.loaded,pending:state.pending!==false,providerAck:state.providerAck===true,accessBlocking:false}}));}catch(_){}
+    }).catch(error=>{
+      state={...state,error:str(error?.message||error),pending:true};
+      try{root.dispatchEvent(new CustomEvent('cx:legal-observability',{detail:{role:str(role),loaded:false,pending:true,error:state.error,accessBlocking:false}}));}catch(_){}
+    });
+    return {ok:true,accessBlocking:false,pending:state.pending!==false};
+  }
+
   const wrapped=Object.assign({},legacy||{});
-  wrapped.pending=function(role){
-    if(!protectedDev()) return legacy?.pending?legacy.pending(role):false;
-    if(!state.loaded||state.error) return true;
-    return state.pending!==false;
-  };
+  wrapped.pending=function(){ return false; };
   wrapped.show=function(role,go){
-    if(!protectedDev()) return legacy?.show?legacy.show(role,go):go();
-    return showProvider(role,go);
+    if(typeof go==='function') go();
+    observeNonBlocking(role);
+    return {ok:true,accessBlocking:false};
   };
   CX.confidencialidad=wrapped;
 
   CX.legalRuntimeHttp=Object.freeze({
     version:VERSION,
     preload,
+    observeNonBlocking,
     current:()=>state.current?{...state.current}:null,
     pending:()=>state.pending!==false,
+    accessBlocking:()=>false,
     recordHumanAcceptance,
     status:()=>({
       version:VERSION,
@@ -209,10 +218,14 @@
       loaded:state.loaded,
       pending:state.pending!==false,
       error:state.error,
+      accessBlocking:false,
+      consentRequiredForAccess:false,
+      testsBlocking:false,
+      productionBlocking:false,
       localStorageAuthority:false,
       sessionStorageAuthority:false,
       automaticAcceptance:false,
-      humanConfirmationRequired:true,
+      humanConfirmationRequiredForReceipt:true,
       productionEntrypointWired:false,
       at:new Date().toISOString()
     })

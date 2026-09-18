@@ -385,9 +385,10 @@ CX.app = {
          de demo. Solo perfiles con permiso ven el detalle técnico (diagnostics.viewSensitive). */
       if(CX.dataSource && CX.dataSource.isBlocked() && CX.dataSource.mode!=='demo'){ return CX.app.renderDataSourceBlock(); }
       CX.router.mount();try{CX.app.showBanners&&CX.app.showBanners();}catch(e){}};
-    if(CX.confidencialidad && CX.confidencialidad.pending(CX.session.role)){
-      CX.confidencialidad.show(CX.session.role, go);
-    } else { go(); }
+    /* Recovery 2026-09-18: legal/confidentiality is observable and recordable, never an access gate.
+       Login, navigation, I3 acceptance and production operation must continue regardless of receipt state. */
+    try{ CX.legalRuntimeHttp?.observeNonBlocking?.(CX.session.role); }catch(_){}
+    go();
   },
 
   /* Pantalla de bloqueo honesta para source_safe_preview/connected sin fuente/adapter real —
