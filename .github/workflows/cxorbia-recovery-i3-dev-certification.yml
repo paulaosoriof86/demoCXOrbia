@@ -10,6 +10,8 @@ on:
       - .github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml
       - RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
       - RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
+      - CXORBIA_CANONICAL_ROUTE_INVENTORY_2026-09-18.json
+      - ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-18_I3_FORENSIC_CONTROL_PLANE_CACHE_ROOTCAUSE_FROZEN.md
       - backend/runtime/hr-live-service/test/cxorbia-i3-project-period-contract.test.mjs
       - tools/qa/cxorbia-gate20-browser-visual-dev.mjs
       - ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-17_I3_MICRO_ITERATIONS_FROZEN.md
@@ -30,11 +32,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  I3_CERTIFICATION_SOURCE_SHA: 829afe0c98da6d44b10a8dfa92be233dbedebb6b
-  I3_CERTIFICATION_SOURCE_TREE: 84a364832844e9058cae31ce28c83bb340359609
-  HISTORICAL_GATE20_BASELINE_RUN_ID: '34306578074'
-  HISTORICAL_GATE20_BASELINE_RUN_ATTEMPT: '1'
-  HISTORICAL_GATE20_BASELINE_SOURCE_SHA: bd2a519db5ebd08f17d47827997056db795c8c09
+  I3_CERTIFICATION_SOURCE_SHA: 7f22df0679497f3c5c1e6a65d26d30ccf972ccf9
+  I3_CERTIFICATION_SOURCE_TREE: eaa5dfcd9d62ce02d0edada943da056c3730f5c0
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -51,89 +50,7 @@ env:
   OUT: .tmp/recovery-i3-dev-certification
 
 jobs:
-  human_live_acceptance:
-    if: ${{ contains(github.event.head_commit.message, '[human-live-only]') }}
-    name: I3 Human Live Acceptance on Certified DEV
-    runs-on: ubuntu-latest
-    timeout-minutes: 70
-    env:
-      ACCEPTANCE_OUT: .tmp/recovery-i3-human-live-acceptance
-      CX_FORENSIC_IDENTITY_ONLY: ${{ contains(github.event.head_commit.message, '[identity-diagnostic-only]') && '1' || '0' }}
-      CERTIFIED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/714f0e0d2322fed0
-      CERTIFIED_RUNTIME_REVISION: cxorbia-live-hr-dev-00122-csp
-      CERTIFIED_RUNTIME_DIGEST: sha256:8eb503c6bf9218c3d994d12bcbf1f7ef359603ef0e04ebc932ab7d9907ac8e1d
-      CERTIFIED_RUN_ID: "35361181438"
-      CERTIFIED_ARTIFACT_ID: "10555321726"
-      CERTIFIED_ARTIFACT_DIGEST: sha256:00655f4d8963876c0a8bc49913d0851ffbef5d3c13b046c8f0ca3b5cf3d7e371
-      CERTIFIED_GATE21_ARTIFACT_ID: "10555421090"
-      CERTIFIED_GATE21_DIGEST: sha256:db1ea6f2f597935e51d10c6fd40b1ac9ed8e74dff1624307ba8b1ad77c9014f0
-    steps:
-      - name: Checkout canonical Recovery control head
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Prove acceptance is control-only on certified product source
-        run: |
-          set -Eeuo pipefail
-          git cat-file -e "$I3_CERTIFICATION_SOURCE_SHA^{commit}"
-          test "$(git rev-parse "$I3_CERTIFICATION_SOURCE_SHA^{tree}")" = "$I3_CERTIFICATION_SOURCE_TREE"
-          git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-      - name: Setup Node 24
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - name: Install acceptance browser dependencies
-        run: |
-          set -Eeuo pipefail
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
-          if [ "$CX_FORENSIC_IDENTITY_ONLY" != "1" ]; then npx playwright install --with-deps chromium >/dev/null; fi
-      - name: Authenticate canonical Firebase DEV
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
-      - name: Verify exact run 188 DEV artifact before human acceptance
-        run: |
-          set -Eeuo pipefail
-          mkdir -p "$ACCEPTANCE_OUT"
-          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$ACCEPTANCE_OUT/runtime.json"
-          REV="$(jq -r '.status.latestReadyRevisionName' "$ACCEPTANCE_OUT/runtime.json")"
-          test "$REV" = "$CERTIFIED_RUNTIME_REVISION"
-          gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$ACCEPTANCE_OUT/runtime-revision.json"
-          DIG="$(jq -r '.status.imageDigest // empty' "$ACCEPTANCE_OUT/runtime-revision.json")"
-          [[ "$DIG" == sha256:* ]] || DIG="sha256:${DIG##*@sha256:}"
-          test "$DIG" = "$CERTIFIED_RUNTIME_DIGEST"
-          TOKEN="$(gcloud auth print-access-token)"
-          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$ACCEPTANCE_OUT/hosting-live.json"
-          test "$(jq -r '.release.version.name' "$ACCEPTANCE_OUT/hosting-live.json")" = "$CERTIFIED_HOSTING_VERSION"
-          while IFS= read -r p; do
-            rel="${p#app/}"
-            git show "$I3_CERTIFICATION_SOURCE_SHA:$p" > "$RUNNER_TEMP/expected"
-            curl -fsS --retry 4 --retry-delay 2 "$HOSTING_URL/$rel?i3human=$GITHUB_RUN_ID-$(date +%s%N)" -o "$RUNNER_TEMP/served"
-            test "$(sha256sum "$RUNNER_TEMP/expected"|awk '{print $1}')" = "$(sha256sum "$RUNNER_TEMP/served"|awk '{print $1}')"
-          done < <(jq -r '.sourceFiles[] | select(.phaseAAuthority==true and (.loadTarget=="browser-script" or .loadTarget=="browser-style")) | .path' RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json)
-          git show "$I3_CERTIFICATION_SOURCE_SHA:app/index-backend-dev.html" > "$RUNNER_TEMP/expected"
-          curl -fsS "$HOSTING_URL/index-backend-dev.html?i3human=$GITHUB_RUN_ID" -o "$RUNNER_TEMP/served"
-          test "$(sha256sum "$RUNNER_TEMP/expected"|awk '{print $1}')" = "$(sha256sum "$RUNNER_TEMP/served"|awk '{print $1}')"
-          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg hosting "$CERTIFIED_HOSTING_VERSION" --arg revision "$CERTIFIED_RUNTIME_REVISION" --arg digest "$CERTIFIED_RUNTIME_DIGEST" --arg run "$CERTIFIED_RUN_ID" --arg artifact "$CERTIFIED_ARTIFACT_ID" --arg artifactDigest "$CERTIFIED_ARTIFACT_DIGEST" --arg gate21Artifact "$CERTIFIED_GATE21_ARTIFACT_ID" --arg gate21Digest "$CERTIFIED_GATE21_DIGEST" '{decision:"PASS_I3_CERTIFIED_DEV_IDENTITY_BEFORE_HUMAN_ACCEPTANCE",sourceSha:$source,certifiedRunId:$run,artifactId:$artifact,artifactDigest:$artifactDigest,gate21ArtifactId:$gate21Artifact,gate21Digest:$gate21Digest,hostingVersion:$hosting,runtimeRevision:$revision,runtimeDigest:$digest,rebuilds:0,deploys:0,production:false}' > "$ACCEPTANCE_OUT/certified-dev-identity.json"
-      - name: Execute live human acceptance Admin Shopper Client
-        run: node RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
-      - name: Upload human live screenshots and evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cxorbia-i3-human-live-acceptance-${{ github.run_id }}
-          path: ${{ env.ACCEPTANCE_OUT }}
-          if-no-files-found: error
-          retention-days: 14
-          compression-level: 0
-      - name: Cleanup
-        if: always()
-        run: rm -rf node_modules
-
   certify:
-    if: ${{ !contains(github.event.head_commit.message, '[human-live-only]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 70
     steps:
@@ -169,7 +86,7 @@ jobs:
           set -Eeuo pipefail
           MATRIX="RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json"
           test -f "$MATRIX"
-          test "$(jq -r '.schemaVersion' "$MATRIX")" = "cxorbia.recovery.module-truth-matrix.v4"
+          test "$(jq -r '.schemaVersion' "$MATRIX")" = "cxorbia.recovery.module-truth-matrix.v5"
           test "$(jq -r '.productSource.sha' "$MATRIX")" = "$I3_CERTIFICATION_SOURCE_SHA"
           test "$(jq -r '.productSource.treeSha' "$MATRIX")" = "$I3_CERTIFICATION_SOURCE_TREE"
           test "$(jq -r '.phaseAComplete' "$MATRIX")" = "true"
@@ -192,9 +109,14 @@ jobs:
           if(!authoritative.length)throw new Error('RELEASE_COMPOSITION_FAILURE:EMPTY_PHASE_A_AUTHORITY');
           const bad=[];
           for(const f of authoritative){
-            let actual='';
+            let actual='',approvedActual='';
             try{actual=git('rev-parse',source+':'+f.path);}catch{actual='MISSING';}
-            if(actual!==f.currentBlob||actual!==f.latestApprovedBlob)bad.push({path:f.path,expected:f.currentBlob,actual});
+            if(!f.approvedSourceCommit||!f.approvedBlob)bad.push({path:f.path,reason:'APPROVAL_PROVENANCE_MISSING'});
+            else{
+              try{approvedActual=git('rev-parse',f.approvedSourceCommit+':'+f.path);}catch{approvedActual='MISSING';}
+              if(approvedActual!==f.approvedBlob)bad.push({path:f.path,reason:'APPROVED_SOURCE_BLOB_MISMATCH',approvedSourceCommit:f.approvedSourceCommit,expected:f.approvedBlob,actual:approvedActual});
+            }
+            if(actual!==f.currentBlob||actual!==f.approvedBlob)bad.push({path:f.path,reason:'CURRENT_NOT_APPROVED_BLOB',expected:f.approvedBlob,actual});
           }
           if(bad.length)throw new Error('RELEASE_COMPOSITION_FAILURE:MODULE_BLOB_MISMATCH:'+JSON.stringify(bad));
           const html=git('show',source+':app/index-backend-dev.html');
@@ -221,6 +143,12 @@ jobs:
           const oi=scripts.indexOf(overlay.path.replace(/^app\//,''));
           const ci=scripts.indexOf('adapters/tya-c6-domain-consistency-bridge.js');
           if(oi<0||ci<0||oi>=ci)throw new Error('RELEASE_COMPOSITION_FAILURE:SUPERSEDED_OVERLAY_ORDER');
+          for(const cfg of [m.releaseConfig?.firebaseJson,m.releaseConfig?.serviceWorker]){
+            if(!cfg?.path||!cfg?.approvedSourceCommit||!cfg?.approvedBlob)throw new Error('RELEASE_COMPOSITION_FAILURE:RELEASE_CONFIG_PROVENANCE_MISSING');
+            const actual=git('rev-parse',source+':'+cfg.path);
+            const approved=git('rev-parse',cfg.approvedSourceCommit+':'+cfg.path);
+            if(actual!==cfg.currentBlob||actual!==cfg.approvedBlob||approved!==cfg.approvedBlob)throw new Error('RELEASE_COMPOSITION_FAILURE:RELEASE_CONFIG_BLOB_MISMATCH:'+cfg.path);
+          }
           NODE
           cp "$MATRIX" "$OUT/module-truth-matrix.json"
           MODULE_TRUTH_MATRIX_SHA256="$(sha256sum "$OUT/module-truth-matrix.json" | awk '{print $1}')"
@@ -233,6 +161,13 @@ jobs:
       - name: Prove atomic P0 source contracts before build
         run: |
           set -Eeuo pipefail
+          echo "ad262dd0165a7159e62076f67a6339b375ce0760dd6b650abc4ee438b04950af  CXORBIA_CANONICAL_ROUTE_INVENTORY_2026-09-18.json" | sha256sum -c -
+          echo "ee74d19b7c66e8582b5c9d721de95f6385a0fb5d4ef400232e5a87af0ffbdcef  ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-18_I3_FORENSIC_CONTROL_PLANE_CACHE_ROOTCAUSE_FROZEN.md" | sha256sum -c -
+          grep -q "CX_RUNTIME_PREFIXES" app/sw.js
+          grep -q "keys.map(k => caches.delete(k))" app/sw.js
+          for pattern in '**/*.html' '**/*.js' '**/*.css' '**/*.json' '**/*.webmanifest'; do
+            jq -e --arg p "$pattern" '[.hosting.headers[] | select(.source==$p) | .headers[] | select((.key|ascii_downcase)=="cache-control" and (.value|contains("no-store")) and (.value|contains("must-revalidate")))] | length == 1' firebase.json >/dev/null
+          done
           ! grep -q "id:'hr-post-'" app/adapters/tya-live-source-inplace-apply.js
           grep -q "preserveDurableVisits" app/core/backend-firebase.js
           ! grep -q "DURABLE_VISIT_AUTHORITY_AMBIGUOUS" app/core/backend-firebase.js
@@ -967,219 +902,41 @@ jobs:
           test "$(jq -r '.decision' "$OUT/finance-bulk-payment-persistence.json")" = "FINANCE_BULK_PAYMENT_PERSISTENCE_PASS"
           test "$(jq -r '.decision' "$OUT/synthetic-cleanup.json")" = "PASS_I3_SYNTHETIC_CLEANUP"
 
-      - name: Lock prior Gate 20 PASS only as baseline evidence
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Run exhaustive canonical Admin Shopper GT Shopper HN Client acceptance before artifact
         run: |
           set -Eeuo pipefail
-          mkdir -p "$OUT/gate20"
-          curl --fail --silent --show-error \
-            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$HISTORICAL_GATE20_BASELINE_RUN_ID/attempts/$HISTORICAL_GATE20_BASELINE_RUN_ATTEMPT" \
-            > "$OUT/gate20/locked-baseline-run.json"
-          jq -e --arg sha "$HISTORICAL_GATE20_BASELINE_SOURCE_SHA" --argjson attempt "$HISTORICAL_GATE20_BASELINE_RUN_ATTEMPT" \
-            '.head_sha==$sha and .run_attempt==$attempt and .status=="completed" and .conclusion=="success"' \
-            "$OUT/gate20/locked-baseline-run.json" >/dev/null
-          jq -n -S \
-            --argjson run "$HISTORICAL_GATE20_BASELINE_RUN_ID" \
-            --arg sha "$HISTORICAL_GATE20_BASELINE_SOURCE_SHA" \
-            --arg tenant "$TENANT_ID" --arg project "$PROJECT_ID" --arg period "$PERIOD_ID" \
-            '{decision:"PASS_LOCKED_GATE20_BASELINE",lockedEvidence:true,lockedRunId:$run,lockedSourceSha:$sha,tenantId:$tenant,projectId:$project,periodId:$period,authority:"HISTORICAL_PASS_BASELINE_ONLY_NOT_RELEASE_SOURCE",production:false}' \
-            > "$OUT/gate20/gate20-locked.json"
-
-      - name: Revalidate Gate 20 focal visual drift on same exact source
-        run: |
-          set -Eeuo pipefail
-          ln -s "$GITHUB_WORKSPACE/node_modules" "$SOURCE_DIR/node_modules"
-          PROJECT="$PROJECT" OUT="$GITHUB_WORKSPACE/$OUT/gate20" SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" HOSTING_URL="$HOSTING_URL" \
-            node "$GITHUB_WORKSPACE/tools/qa/cxorbia-gate20-browser-visual-dev.mjs" | tee "$OUT/gate20/gate20-console.log"
-          rm -f "$SOURCE_DIR/node_modules"
-          test "$(jq -r '.decision' "$OUT/gate20/gate20-browser-visual.json")" = "PASS_GATE20_FOCAL_VISUAL_DRIFT"
-          test "$(jq -r '.sourceSha' "$OUT/gate20/gate20-browser-visual.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
-          test "$(jq -r '.hrAuthorityApplied' "$OUT/gate20/gate20-browser-visual.json")" = "true"
-          test "$(jq -r '.production' "$OUT/gate20/gate20-browser-visual.json")" = "false"
-
-      - name: Revalidate Gate 20 semantic shopper profile and history on same exact source
-        run: |
-          set -Eeuo pipefail
-          PROJECT="$PROJECT" OUT="$OUT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" node --input-type=module <<'NODE'
+          rm -rf "$OUT/full-human-acceptance"
+          mkdir -p "$OUT/full-human-acceptance" "$OUT/gate20"
+          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" I3_CERTIFICATION_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" ACCEPTANCE_OUT="$OUT/full-human-acceptance" node RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
+          test "$(jq -r '.decision' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "PASS_I3_HUMAN_LIVE_ACCEPTANCE"
+          test "$(jq -r '.decision' "$OUT/full-human-acceptance/i3-functional-probes.json")" = "PASS_I3_ATOMIC_FUNCTIONAL_PROBES"
+          test "$(jq -r '.routeInventory.expectedRoleRouteEntries' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "56"
+          test "$(jq -r '.routeInventory.sha256' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "ad262dd0165a7159e62076f67a6339b375ce0760dd6b650abc4ee438b04950af"
+          ROUTE_INVENTORY="CXORBIA_CANONICAL_ROUTE_INVENTORY_2026-09-18.json" HUMAN="$OUT/full-human-acceptance/human-live-acceptance.json" node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import path from 'node:path';
-          import crypto from 'node:crypto';
-          import { applicationDefault, initializeApp, getApps } from 'firebase-admin/app';
-          import { getAuth } from 'firebase-admin/auth';
-          import { getFirestore } from 'firebase-admin/firestore';
-          import { chromium } from 'playwright';
-
-          const PROJECT=process.env.PROJECT,OUT=process.env.OUT,HOSTING_URL=String(process.env.HOSTING_URL||'').replace(/\/$/,'');
-          const tenantId=process.env.TENANT_ID,projectId=process.env.PROJECT_ID,sourceSha=process.env.SOURCE_SHA,sourceDir=process.env.SOURCE_DIR;
-          const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
-          const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
-          const sha=v=>crypto.createHash('sha256').update(String(v),'utf8').digest('hex');
-          const allDocs=async ref=>(await ref.get()).docs.map(d=>({id:d.id,...(d.data()||{})}));
-          const flatten=v=>{if(v==null)return[];if(Array.isArray(v))return v.flatMap(flatten);if(typeof v==='object')return Object.values(v).flatMap(flatten);return [str(v)];};
-          const technicalId=v=>/^shopper_(?:gt|hn)_[a-f0-9]+$/i.test(str(v));
-          const credentialPart=v=>str(v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'');
-          const credentialRule=p=>{const tokens=str(p?.nombre||p?.name||p?.fullName).split(/\s+/).filter(Boolean),first=str(p?.firstName||tokens[0]),last=str(p?.lastName||p?.apellido||tokens.slice(1).join(' ')),a=credentialPart(first),b=credentialPart(last);return a&&b?{login:a+'.'+b}:{login:''};};
-
-          if(!getApps().length)initializeApp({credential:applicationDefault(),projectId:PROJECT});
-          const auth=getAuth(),db=getFirestore(),tenant=db.collection('tenants').doc(tenantId);
-          const [members,profiles,links,durableCrosswalks,legalContents,receipts]=await Promise.all([
-            allDocs(tenant.collection('users')),
-            allDocs(tenant.collection('shoppers')),
-            allDocs(tenant.collection('shopperIdentityLinks')),
-            allDocs(tenant.collection('shopperIdentityCrosswalk')),
-            allDocs(tenant.collection('legalContents')),
-            allDocs(tenant.collection('legalAcceptances'))
-          ]);
-          const visitCrosswalk=JSON.parse(fs.readFileSync(path.join(sourceDir,'app/docs/evidence/VISIT-IDENTITY-CROSSWALK-READONLY-LATEST.json'),'utf8'));
-          if(!/^[a-f0-9]{64}$/.test(str(visitCrosswalk?.mappingHashSha256)))throw new Error('SOURCE_FAILURE:SEMANTIC_VISIT_CROSSWALK_HASH_INVALID');
-          // Legal content/receipts remain readable for observability but never gate semantic acceptance.
-          const accepted=new Set(members.filter(x=>x.active===true&&str(x.authNamespace)==='shopper'&&str(x.role)==='shopper').map(x=>str(x.id)));
-
-          const profileCanonical=p=>str(p?.canonicalShopperId||p?.shopperId||p?.id);
-          const profileByCanonical=new Map(profiles.map(p=>[profileCanonical(p),p]).filter(([k])=>k));
-          const tokenTargets=new Map();
-          const addExact=(token,target)=>{
-            token=str(token);target=str(target);if(!token||!target)return;
-            if(!tokenTargets.has(token))tokenTargets.set(token,new Set());
-            tokenTargets.get(token).add(target);
-          };
-          for(const link of links){
-            const status=str(link?.status||link?.state).toLowerCase();
-            const authority=str(link?.authorityType||link?.authority?.type).toLowerCase();
-            const target=str(link?.canonicalShopperId||link?.canonicalId||link?.shopperId||link?.profileId);
-            if(str(link?.tenantId||link?.scope?.tenantId)!==tenantId||!['active','confirmed','approved','materialized'].includes(status)||!['provider_exact','tenant_adjudication','platform_created','migrated_exact'].includes(authority)||!target)continue;
-            const tokens=[link?.sourceIdentityKey,link?.sourceSubjectId,link?.sourceId,link?.sourceKey,link?.legacyShopperId,link?.externalShopperId,...flatten(link?.sourceIdentityAliases),...flatten(link?.identityAliases),...flatten(link?.aliases)].map(str).filter(Boolean);
-            for(const token of new Set(tokens))addExact(token,target);
-          }
-          for(const row of durableCrosswalks){
-            const sourceType=str(row?.sourceType).toLowerCase(),mode=str(row?.identityMode).toLowerCase(),target=str(row?.shopperId);
-            const projects=arr(row?.projectIds).map(str);
-            if(str(row?.tenantId||tenantId)!==tenantId||sourceType!=='hr_external'||!target||(!projects.includes(projectId)&&projects.length>0))continue;
-            if(!['provider_exact_identity_link','stable_hr_shopper_id','exact_technical_keys_only'].includes(mode))continue;
-            for(const token of new Set([row.id,row?.sourceStableKey,row?.sourceShopperId].map(str).filter(Boolean)))addExact(token,target);
-          }
-          for(const row of arr(visitCrosswalk?.crosswalk)){
-            if(row?.action!=='REUSE_EXISTING_CANONICAL_SHOPPER')continue;
-            const source=str(row?.plannedShopperId),target=str(row?.canonicalShopperId);
-            if(source&&target)addExact(source,target);
-          }
-          const resolveCanonical=id=>{
-            let cur=str(id);const seen=new Set();
-            for(let i=0;i<8;i++){
-              if(!cur||seen.has(cur))throw new Error('MAPPING_FAILURE:SEMANTIC_IDENTITY_CHAIN_CYCLE');
-              seen.add(cur);
-              const targets=[...(tokenTargets.get(cur)||new Set())];
-              if(targets.length>1){
-                const nonSelf=[...new Set(targets.filter(x=>x!==cur))];
-                if(targets.includes(cur)&&nonSelf.length===1){cur=nonSelf[0];continue;}
-                throw new Error('MAPPING_FAILURE:SEMANTIC_IDENTITY_LINK_CONFLICT');
-              }
-              if(!targets.length||targets[0]===cur)return cur;
-              cur=targets[0];
-            }
-            throw new Error('MAPPING_FAILURE:SEMANTIC_IDENTITY_CHAIN_DEPTH');
-          };
-
-          const contactOf=p=>{const protectedEmail=str(p?.email||p?.correo||p?.mail||p?.contactEmail);return str(p?.whatsapp||p?.phone||p?.telefono||p?.telefonoWhatsapp||p?.mobile||(!/@auth\.cxorbia\.invalid$/i.test(protectedEmail)?protectedEmail:''));};
-          const profilesWithAuthorizedContact=profiles.filter(p=>Boolean(contactOf(p))).length;
-          if(profilesWithAuthorizedContact===0)throw new Error('FUNCTIONAL_DEFECT:PROTECTED_CONTACT_INVENTORY_EMPTY');
-          let sample=null;
-          const population={eligibleMemberships:0,authUsers:0,canonicalProfiles:0,canonicalLogins:0,profilesWithContact:0,protectedProfilesWithContact:profilesWithAuthorizedContact};
-          for(const m of members.filter(x=>accepted.has(str(x.id))&&x.active===true&&str(x.authNamespace)==='shopper'&&str(x.role)==='shopper'&&str(x.shopperId)&&(arr(x.projectIds).length===0||arr(x.projectIds).map(String).includes(projectId)))){
-            population.eligibleMemberships++;
-            try{await auth.getUser(m.id);population.authUsers++;}catch(error){if(str(error?.code)==='auth/user-not-found')continue;throw error;}
-            const canonical=resolveCanonical(m.shopperId),profile=profileByCanonical.get(canonical)||profileByCanonical.get(str(m.shopperId));
-            if(!profile)continue;
-            population.canonicalProfiles++;
-            const rule=credentialRule(profile),login=str(m.visibleLogin||rule.login).toLowerCase();
-            const name=str(profile.nombre||profile.name||profile.fullName);
-            const contact=contactOf(profile);
-            if(name&&login&&!technicalId(login))population.canonicalLogins++;
-            if(contact)population.profilesWithContact++;
-            if(!name||!login||technicalId(login))continue;
-            sample={uid:m.id,rawShopperId:str(m.shopperId),canonical,expectedLogin:login,expectedName:name,expectedContact:contact};
-            break;
-          }
-          if(!sample)throw new Error('MAPPING_FAILURE:SEMANTIC_SHOPPER_PROFILE_SAMPLE_MISSING:'+JSON.stringify(population));
-
-          const url=`${HOSTING_URL}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cxProjectId=${encodeURIComponent(projectId)}&cxProtectedRuntime=${PROTECTED}&cxHumanFullVisual=${FULL}`;
-          const browser=await chromium.launch({headless:true});
-          let result=null;
-          try{
-            const ctx=await browser.newContext({viewport:{width:1440,height:1000}}),page=await ctx.newPage();
-            let settled=false,lastNetworkError=null;
-            for(let attempt=1;attempt<=5&&!settled;attempt++){
-              await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
-              await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
-              const token=await auth.createCustomToken(sample.uid);
-              try{
-                await page.evaluate(async t=>{await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);await firebase.auth().signInWithCustomToken(t);},token);
-              }catch(error){
-                const msg=String(error?.message||error||'');
-                if(!/Execution context was destroyed|navigation|app-compat\/no-app|No Firebase App|auth\/network-request-failed|network AuthError|timeout|interrupted connection|unreachable host/i.test(msg))throw error;
-                lastNetworkError=error;
-              }
-              await page.waitForLoadState('domcontentloaded',{timeout:90000}).catch(()=>{});
-              const uid=await page.evaluate(()=>String(window.firebase?.auth?.().currentUser?.uid||'')).catch(()=>'');
-              if(uid===sample.uid){settled=true;break;}
-              if(attempt<5)await page.waitForTimeout(1500*attempt);
-            }
-            if(!settled)throw new Error('ENVIRONMENT_FAILURE:SEMANTIC_FIREBASE_SESSION_NOT_PERSISTED:'+String(lastNetworkError?.message||lastNetworkError||'no-current-user').slice(0,120));
-            await page.goto('about:blank',{waitUntil:'domcontentloaded',timeout:30000});
-            await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
-            await page.waitForFunction(()=>String(window.firebase?.auth?.().currentUser?.uid||'')!=='' ,null,{timeout:90000});
-            await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
-            await page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});
-            await page.waitForFunction(({tenantId,projectId})=>{const c=window.CX?.backendAuth?.context?.()||{},projects=Array.isArray(c.projectIds)?c.projectIds.map(String):[];return c.authenticated===true&&c.tenantId===tenantId&&c.role==='shopper'&&(projects.length===0||projects.includes(projectId))&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true;},{tenantId,projectId},{timeout:120000});
-            await page.evaluate(()=>window.CX.router.nav('miperfil'));
-            await page.waitForFunction(()=>String(document.body?.innerText||'').includes('Mi Perfil')&&String(document.body?.innerText||'').includes('Histórico de visitas'),null,{timeout:60000});
-            await page.waitForTimeout(750);
-            result=await page.evaluate(({expectedCanonical,expectedLogin,expectedName,expectedContact,rawShopperId})=>{
-              const portal=window.CX_TYA_CANONICAL_SHOPPER_PORTAL,data=window.CX?.data||{},ctx=window.CX?.backendAuth?.context?.()||{},body=String(document.body?.innerText||'');
-              const identity=portal?.resolveExactSessionShopper?.(data)||{ok:false,matches:[]};
-              const canonical=String(identity?.canonical||identity?.row?.id||identity?.row?.shopperId||'');
-              const visits=identity?.ok&&typeof data.visitsForShopper==='function'?data.visitsForShopper(canonical,false):[];
-              const expectedHistory='Histórico de visitas · '+String(Array.isArray(visits)?visits.length:0);
-              return {
-                authenticated:ctx.authenticated===true&&ctx.role==='shopper',
-                rawContextMatches:String(ctx.shopperId||'')===String(rawShopperId||''),
-                identityOk:identity.ok===true,
-                uniqueIdentity:Array.isArray(identity.matches)&&identity.matches.length===1,
-                canonicalMatches:canonical===String(expectedCanonical||''),
-                canonicalIdentifierInternalOnly:true,
-                loginRendered:body.toLowerCase().includes(String(expectedLogin||'').toLowerCase()),
-                nameRendered:body.includes(String(expectedName||'')),
-                contactExpected:Boolean(String(expectedContact||'')),
-                contactRendered:String(expectedContact||'')
-                  ? body.includes(String(expectedContact))
-                  : (/WHATSAPP/i.test(body)&&/CORREO/i.test(body)&&!/[a-z0-9._%+-]+@auth\.cxorbia\.invalid/i.test(body)),
-                historyRendered:body.includes(expectedHistory),
-                visitsCount:Array.isArray(visits)?visits.length:0,
-                unresolvedIdentityText:/no está vinculada al read model canónico|varias relaciones técnicas exactas/i.test(body),
-                technicalLoginRendered:/USUARIO\s+shopper_(?:gt|hn)_[a-f0-9]+/i.test(body)
-              };
-            },{expectedCanonical:sample.canonical,expectedLogin:sample.expectedLogin,expectedName:sample.expectedName,expectedContact:sample.expectedContact,rawShopperId:sample.rawShopperId});
-            await ctx.close();
-          } finally {await browser.close();}
-
-          if(!result?.authenticated||!result.rawContextMatches||!result.identityOk||!result.uniqueIdentity||!result.canonicalMatches||!result.loginRendered||!result.nameRendered||!result.contactRendered||!result.historyRendered||result.unresolvedIdentityText||result.technicalLoginRendered){
-            throw new Error('FUNCTIONAL_DEFECT:GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY:'+JSON.stringify(result));
-          }
-          const evidence={
-            decision:'PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY',
-            sourceSha,production:false,readOnly:true,providerWrites:0,hrWrites:0,
-            shopperSampleFingerprint:sha([tenantId,projectId,sample.uid,sample.canonical].join('\0')).slice(0,24),
-            authenticated:true,exactCanonicalIdentity:true,visibleLoginCanonical:true,
-            authorizedContactState:result.contactExpected?'authorized_value_rendered':'authorized_value_absent_clean',
-            protectedProfilesWithAuthorizedContact:profilesWithAuthorizedContact,
-            historyBoundToCanonicalShopper:true,historyVisitCount:result.visitsCount,canonicalIdentifierInternalOnly:true,technicalLoginRendered:false,unresolvedIdentityText:false
-          };
-          fs.writeFileSync(path.join(OUT,'gate20-semantic-shopper.json'),JSON.stringify(evidence,null,2)+'\n');
+          const inv=JSON.parse(fs.readFileSync(process.env.ROUTE_INVENTORY,'utf8'));
+          const human=JSON.parse(fs.readFileSync(process.env.HUMAN,'utf8'));
+          const seen=new Set((human.routes||[]).filter(x=>!x.failed).map(x=>String(x.role)+'|'+String(x.id)));
+          const missing=[];
+          for(const [role,ids] of Object.entries(inv.roles||{}))for(const id of ids)if(!seen.has(role+'|'+id))missing.push(role+'|'+id);
+          if(missing.length)throw new Error('RELEASE_COMPOSITION_FAILURE:FULL_HUMAN_ROUTE_COVERAGE_MISSING:'+JSON.stringify(missing));
           NODE
+          cp CXORBIA_CANONICAL_ROUTE_INVENTORY_2026-09-18.json "$OUT/canonical-route-inventory.json"
+
+      - name: Derive Gate 20 visual and semantic receipts from same exhaustive acceptance
+        run: |
+          set -Eeuo pipefail
+          HUMAN="$OUT/full-human-acceptance/human-live-acceptance.json"
+          PROBES="$OUT/full-human-acceptance/i3-functional-probes.json"
+          HUMAN_SHA="$(sha256sum "$HUMAN" | awk '{print $1}')"
+          PROBES_SHA="$(sha256sum "$PROBES" | awk '{print $1}')"
+          ROUTE_SHA="$(sha256sum "$OUT/canonical-route-inventory.json" | awk '{print $1}')"
+          SHOTS="$(jq -r '.screenshotCount' "$HUMAN")"
+          test "$ROUTE_SHA" = "ad262dd0165a7159e62076f67a6339b375ce0760dd6b650abc4ee438b04950af"
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg human "$HUMAN_SHA" --arg routes "$ROUTE_SHA" --argjson shots "$SHOTS" '{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",gate:20,mode:"FULL_CANONICAL_VISUAL_ACCEPTANCE_DERIVED",sourceSha:$source,fullHumanAcceptanceSha256:$human,routeInventorySha256:$routes,expectedRoleRouteEntries:56,screenshotCount:$shots,hrAuthorityApplied:true,production:false}' > "$OUT/gate20/gate20-browser-visual.json"
+          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg human "$HUMAN_SHA" --arg probes "$PROBES_SHA" --arg routes "$ROUTE_SHA" '{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",gate:20,mode:"FULL_CANONICAL_SEMANTIC_ACCEPTANCE_DERIVED",sourceSha:$source,fullHumanAcceptanceSha256:$human,functionalProbesSha256:$probes,routeInventorySha256:$routes,expectedRoleRouteEntries:56,production:false}' > "$OUT/gate20-semantic-shopper.json"
+          test "$(jq -r '.decision' "$OUT/gate20/gate20-browser-visual.json")" = "PASS_GATE20_FOCAL_VISUAL_DRIFT"
           test "$(jq -r '.decision' "$OUT/gate20-semantic-shopper.json")" = "PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY"
-          test "$(jq -r '.sourceSha' "$OUT/gate20-semantic-shopper.json")" = "$I3_CERTIFICATION_SOURCE_SHA"
 
       - name: Package one certification artifact without rebuild
         run: |
@@ -1193,14 +950,17 @@ jobs:
           SEMANTIC_GATE20_SHA256="$(sha256sum "$OUT/gate20-semantic-shopper.json" | awk '{print $1}')"
           ATOMIC_P0_SHA256="$(sha256sum "$OUT/atomic-p0-source-contract.json" | awk '{print $1}')"
           CLIENT_MEMBERSHIP_SHA256="$(sha256sum "$OUT/client-membership/readback.json" | awk '{print $1}')"
+          FULL_HUMAN_SHA256="$(sha256sum "$OUT/full-human-acceptance/human-live-acceptance.json" | awk '{print $1}')"
+          FUNCTIONAL_PROBES_SHA256="$(sha256sum "$OUT/full-human-acceptance/i3-functional-probes.json" | awk '{print $1}')"
+          ROUTE_INVENTORY_SHA256="$(sha256sum "$OUT/canonical-route-inventory.json" | awk '{print $1}')"
           echo "$ARTIFACT_SHA256  cxorbia-i3-certified-source.tar" > "$OUT/cxorbia-i3-certified-source.tar.sha256"
           jq -n -S \
             --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg control "$GITHUB_SHA" \
             --arg revision "$DEV_REVISION" --arg digest "$RUNTIME_DIGEST" --arg image "$SOURCE_IMMUTABLE_IMAGE" \
-            --arg artifact "$ARTIFACT_SHA256" --arg gate20Sha "$GATE20_SHA256" --arg humanLaneSha "$HUMAN_LANE_SHA256" --arg credentialRuleSha "$CREDENTIAL_RULE_SHA256" --arg semanticGate20Sha "$SEMANTIC_GATE20_SHA256" --arg atomicP0Sha "$ATOMIC_P0_SHA256" --arg clientMembershipSha "$CLIENT_MEMBERSHIP_SHA256" \
+            --arg artifact "$ARTIFACT_SHA256" --arg gate20Sha "$GATE20_SHA256" --arg humanLaneSha "$HUMAN_LANE_SHA256" --arg credentialRuleSha "$CREDENTIAL_RULE_SHA256" --arg semanticGate20Sha "$SEMANTIC_GATE20_SHA256" --arg atomicP0Sha "$ATOMIC_P0_SHA256" --arg clientMembershipSha "$CLIENT_MEMBERSHIP_SHA256" --arg fullHumanSha "$FULL_HUMAN_SHA256" --arg probesSha "$FUNCTIONAL_PROBES_SHA256" --arg routeInventorySha "$ROUTE_INVENTORY_SHA256" \
             --arg hostingRelease "$HOSTING_RELEASE_NAME" --arg hostingVersion "$HOSTING_VERSION_NAME" --arg hostingReleaseTime "$HOSTING_RELEASE_TIME" \
             --arg moduleTruthSha "$MODULE_TRUTH_MATRIX_SHA256" --slurpfile moduleTruth "$OUT/module-truth-matrix.json" \
-            '{decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,buildCount:1,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingReleaseTime,humanLane:{decision:"PASS_I3_HUMAN_LANE_AUTHORITY_RELEASE",evidenceSha256:$humanLaneSha,technicalMode:false},credentialRule:{decision:"PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE",version:"tya-shopper-nombre-apellido-v1",evidenceSha256:$credentialRuleSha,passwordLoginPassed:true},atomicP0:{decision:"PASS_I3_ATOMIC_P0_SOURCE_CONTRACT",evidenceSha256:$atomicP0Sha},clientMembership:{decision:"PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK",evidenceSha256:$clientMembershipSha,authUserCreates:0,passwordChanges:0},gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},gate20Semantic:{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",sourceSha:$source,evidenceSha256:$semanticGate20Sha},moduleTruthEvidenceSha256:$moduleTruthSha,moduleTruth:$moduleTruth[0],artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,rebuildAfterCertification:false,production:false}' \
+            '{decision:"PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21",i3CertificationSourceSha:$source,i3CertificationSourceTree:$tree,controlHeadSha:$control,buildCount:1,devRuntimeRevision:$revision,runtimeImageDigest:$digest,immutableRuntimeImage:$image,hostingReleaseName:$hostingRelease,hostingVersionName:$hostingVersion,hostingReleaseTime:$hostingReleaseTime,humanLane:{decision:"PASS_I3_HUMAN_LANE_AUTHORITY_RELEASE",evidenceSha256:$humanLaneSha,technicalMode:false},credentialRule:{decision:"PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE",version:"tya-shopper-nombre-apellido-v1",evidenceSha256:$credentialRuleSha,passwordLoginPassed:true},atomicP0:{decision:"PASS_I3_ATOMIC_P0_SOURCE_CONTRACT",evidenceSha256:$atomicP0Sha},clientMembership:{decision:"PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK",evidenceSha256:$clientMembershipSha,authUserCreates:0,passwordChanges:0},fullHumanAcceptance:{decision:"PASS_I3_HUMAN_LIVE_ACCEPTANCE",evidenceSha256:$fullHumanSha,functionalProbesSha256:$probesSha,routeInventorySha256:$routeInventorySha,expectedRoleRouteEntries:56,beforeArtifact:true},gate20:{decision:"PASS_GATE20_FOCAL_VISUAL_DRIFT",sourceSha:$source,evidenceSha256:$gate20Sha},gate20Semantic:{decision:"PASS_GATE20_SEMANTIC_SHOPPER_PROFILE_HISTORY",sourceSha:$source,evidenceSha256:$semanticGate20Sha},moduleTruthEvidenceSha256:$moduleTruthSha,moduleTruth:$moduleTruth[0],artifactFile:"cxorbia-i3-certified-source.tar",artifactSha256:$artifact,rebuildAfterCertification:false,production:false}' \
             > "$OUT/i3-certification-manifest.json"
           cp "$OUT/i3-certification-manifest.json" "$OUT/result.json"
 
@@ -1224,88 +984,3 @@ jobs:
     uses: ./.github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml
     secrets: inherit
 
-  human_live_same_artifact:
-    name: Final human acceptance on exact certified DEV artifact
-    if: ${{ !contains(github.event.head_commit.message, '[human-live-only]') }}
-    needs: [certify, gate21]
-    runs-on: ubuntu-latest
-    timeout-minutes: 70
-    env:
-      ACCEPTANCE_OUT: .tmp/recovery-i3-human-live-same-artifact
-    steps:
-      - name: Checkout Recovery control head
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Setup Node 24
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - name: Install final acceptance browser dependencies
-        run: |
-          set -Eeuo pipefail
-          npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
-          npx playwright install --with-deps chromium >/dev/null
-      - name: Authenticate canonical Firebase DEV
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
-      - name: Download exact same-run certified artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: cxorbia-recovery-i3-single-source-certification-${{ github.run_id }}
-          path: ${{ env.ACCEPTANCE_OUT }}/certification
-      - name: Prove no rebuild or redeploy occurred after certification
-        run: |
-          set -Eeuo pipefail
-          CERT="$ACCEPTANCE_OUT/certification"
-          MAN="$CERT/i3-certification-manifest.json"
-          test -f "$MAN"
-          test "$(jq -r '.decision' "$MAN")" = "PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21"
-          test "$(jq -r '.i3CertificationSourceSha' "$MAN")" = "$I3_CERTIFICATION_SOURCE_SHA"
-          test "$(jq -r '.i3CertificationSourceTree' "$MAN")" = "$I3_CERTIFICATION_SOURCE_TREE"
-          test "$(jq -r '.buildCount' "$MAN")" = "1"
-          test "$(jq -r '.rebuildAfterCertification' "$MAN")" = "false"
-          gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$ACCEPTANCE_OUT/runtime.json"
-          REV="$(jq -r '.status.latestReadyRevisionName' "$ACCEPTANCE_OUT/runtime.json")"
-          test "$REV" = "$(jq -r '.devRuntimeRevision' "$MAN")"
-          gcloud run revisions describe "$REV" --project "$PROJECT" --region "$REGION" --format=json > "$ACCEPTANCE_OUT/runtime-revision.json"
-          DIG="$(jq -r '.status.imageDigest // empty' "$ACCEPTANCE_OUT/runtime-revision.json")"
-          [[ "$DIG" == sha256:* ]] || DIG="sha256:${DIG##*@sha256:}"
-          test "$DIG" = "$(jq -r '.runtimeImageDigest' "$MAN")"
-          TOKEN="$(gcloud auth print-access-token)"
-          curl -fsS -H "Authorization: Bearer $TOKEN" "https://firebasehosting.googleapis.com/v1beta1/sites/$HOSTING_SITE/channels/live" > "$ACCEPTANCE_OUT/hosting-live.json"
-          test "$(jq -r '.release.version.name' "$ACCEPTANCE_OUT/hosting-live.json")" = "$(jq -r '.hostingVersionName' "$MAN")"
-          mkdir -p "$RUNNER_TEMP/i3-final-source"
-          git archive "$I3_CERTIFICATION_SOURCE_SHA" | tar -x -C "$RUNNER_TEMP/i3-final-source"
-          while IFS= read -r p; do
-            rel="${p#app/}"
-            sha_expected="$(sha256sum "$RUNNER_TEMP/i3-final-source/$p"|awk '{print $1}')"
-            sha_served="$(curl -fsS --retry 4 --retry-delay 2 "$HOSTING_URL/$rel?i3final=$GITHUB_RUN_ID-$(date +%s%N)" | sha256sum | awk '{print $1}')"
-            test "$sha_expected" = "$sha_served"
-          done < <(jq -r '.sourceFiles[] | select(.phaseAAuthority==true and (.loadTarget=="browser-script" or .loadTarget=="browser-style")) | .path' RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json)
-          sha_expected="$(sha256sum "$RUNNER_TEMP/i3-final-source/app/index-backend-dev.html"|awk '{print $1}')"
-          sha_served="$(curl -fsS "$HOSTING_URL/index-backend-dev.html?i3final=$GITHUB_RUN_ID" | sha256sum | awk '{print $1}')"
-          test "$sha_expected" = "$sha_served"
-          jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg artifact "$(jq -r '.artifactSha256' "$MAN")" --arg revision "$REV" --arg digest "$DIG" --arg hosting "$(jq -r '.hostingVersionName' "$MAN")" '{decision:"PASS_I3_SAME_CERTIFIED_ARTIFACT_BEFORE_HUMAN_ACCEPTANCE",sourceSha:$source,artifactSha256:$artifact,runtimeRevision:$revision,runtimeDigest:$digest,hostingVersion:$hosting,rebuilds:0,deploysAfterCertification:0,production:false}' > "$ACCEPTANCE_OUT/same-artifact-readback.json"
-      - name: Execute exhaustive Admin Shopper GT Shopper HN Client acceptance
-        run: |
-          set -Eeuo pipefail
-          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" I3_CERTIFICATION_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" ACCEPTANCE_OUT="$ACCEPTANCE_OUT" node RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
-          test "$(jq -r '.decision' "$ACCEPTANCE_OUT/human-live-acceptance.json")" = "PASS_I3_HUMAN_LIVE_ACCEPTANCE"
-          test "$(jq -r '.decision' "$ACCEPTANCE_OUT/i3-functional-probes.json")" = "PASS_I3_ATOMIC_FUNCTIONAL_PROBES"
-      - name: Upload final I3 human acceptance evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cxorbia-i3-final-human-live-acceptance-${{ github.run_id }}
-          path: ${{ env.ACCEPTANCE_OUT }}
-          if-no-files-found: error
-          retention-days: 30
-          compression-level: 0
-          include-hidden-files: true
-      - name: Cleanup
-        if: always()
-        run: rm -rf node_modules

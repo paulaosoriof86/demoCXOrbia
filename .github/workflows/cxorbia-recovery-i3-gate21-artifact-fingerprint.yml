@@ -74,6 +74,9 @@ jobs:
           test -f "$CERT/cxorbia-i3-certified-source.tar.sha256"
           test -f "$CERT/gate20/gate20-browser-visual.json"
           test -f "$CERT/gate20-semantic-shopper.json"
+          test -f "$CERT/full-human-acceptance/human-live-acceptance.json"
+          test -f "$CERT/full-human-acceptance/i3-functional-probes.json"
+          test -f "$CERT/canonical-route-inventory.json"
 
           cmp --silent "$CERT/i3-certification-manifest.json" "$CERT/result.json"
           test "$(jq -r '.decision' "$CERT/result.json")" = "PASS_I3_ONE_ARTIFACT_READY_FOR_GATE21"
@@ -108,6 +111,19 @@ jobs:
           test "$(jq -r '.clientMembership.decision' "$CERT/result.json")" = "PASS_C6_CLIENT_AUTH_MEMBERSHIP_READBACK"
           test "$(jq -r '.clientMembership.authUserCreates' "$CERT/result.json")" = "0"
           test "$(jq -r '.clientMembership.passwordChanges' "$CERT/result.json")" = "0"
+          test "$(jq -r '.fullHumanAcceptance.decision' "$CERT/result.json")" = "PASS_I3_HUMAN_LIVE_ACCEPTANCE"
+          test "$(jq -r '.fullHumanAcceptance.beforeArtifact' "$CERT/result.json")" = "true"
+          test "$(jq -r '.fullHumanAcceptance.expectedRoleRouteEntries' "$CERT/result.json")" = "56"
+          test "$(jq -r '.decision' "$CERT/full-human-acceptance/human-live-acceptance.json")" = "PASS_I3_HUMAN_LIVE_ACCEPTANCE"
+          test "$(jq -r '.decision' "$CERT/full-human-acceptance/i3-functional-probes.json")" = "PASS_I3_ATOMIC_FUNCTIONAL_PROBES"
+          test "$(jq -r '.routeInventory.expectedRoleRouteEntries' "$CERT/full-human-acceptance/human-live-acceptance.json")" = "56"
+          ACTUAL_FULL_HUMAN_SHA="$(sha256sum "$CERT/full-human-acceptance/human-live-acceptance.json" | awk '{print $1}')"
+          ACTUAL_FUNCTIONAL_PROBES_SHA="$(sha256sum "$CERT/full-human-acceptance/i3-functional-probes.json" | awk '{print $1}')"
+          ACTUAL_ROUTE_INVENTORY_SHA="$(sha256sum "$CERT/canonical-route-inventory.json" | awk '{print $1}')"
+          test "$ACTUAL_FULL_HUMAN_SHA" = "$(jq -r '.fullHumanAcceptance.evidenceSha256' "$CERT/result.json")"
+          test "$ACTUAL_FUNCTIONAL_PROBES_SHA" = "$(jq -r '.fullHumanAcceptance.functionalProbesSha256' "$CERT/result.json")"
+          test "$ACTUAL_ROUTE_INVENTORY_SHA" = "$(jq -r '.fullHumanAcceptance.routeInventorySha256' "$CERT/result.json")"
+          test "$ACTUAL_ROUTE_INVENTORY_SHA" = "ad262dd0165a7159e62076f67a6339b375ce0760dd6b650abc4ee438b04950af"
           test -f "$CERT/atomic-p0-source-contract.json"
           test -f "$CERT/client-membership/readback.json"
           ACTUAL_ATOMIC_P0_SHA="$(sha256sum "$CERT/atomic-p0-source-contract.json" | awk '{print $1}')"
@@ -141,6 +157,8 @@ jobs:
           CERT="$OUT_DIR/certification"
           ARTIFACT_SHA="$(cat "$OUT_DIR/certified-artifact.sha256")"
           GATE20_SHA="$(cat "$OUT_DIR/gate20-evidence.sha256")"
+          FULL_HUMAN_SHA="$(sha256sum "$CERT/full-human-acceptance/human-live-acceptance.json" | awk '{print $1}')"
+          ROUTE_INVENTORY_SHA="$(sha256sum "$CERT/canonical-route-inventory.json" | awk '{print $1}')"
           RUNTIME_REVISION="$(jq -r '.devRuntimeRevision' "$CERT/result.json")"
           RUNTIME_DIGEST="$(jq -r '.runtimeImageDigest' "$CERT/result.json")"
           IMMUTABLE_IMAGE="$(jq -r '.immutableRuntimeImage' "$CERT/result.json")"
@@ -159,6 +177,8 @@ jobs:
             --arg artifactName "$CERTIFICATION_ARTIFACT_NAME" \
             --arg artifactSha "$ARTIFACT_SHA" \
             --arg gate20Sha "$GATE20_SHA" \
+            --arg fullHumanSha "$FULL_HUMAN_SHA" \
+            --arg routeInventorySha "$ROUTE_INVENTORY_SHA" \
             --arg moduleTruthSha "$MODULE_TRUTH_SHA" --argjson moduleCount "$MODULE_COUNT" \
             --arg runtimeRevision "$RUNTIME_REVISION" \
             --arg runtimeDigest "$RUNTIME_DIGEST" \
@@ -166,7 +186,7 @@ jobs:
             --arg hostingRelease "$HOSTING_RELEASE" \
             --arg hostingVersion "$HOSTING_VERSION" \
             --arg hostingReleaseTime "$HOSTING_RELEASE_TIME" \
-            '{schemaVersion:"cxorbia.recovery.i3.gate21.same-artifact.v1",gate:21,verdict:"PASS_GATE21_ARTIFACT_FINGERPRINT",production:false,source:{sha:$source,treeSha:$tree,controlHeadSha:$control},certification:{runId:$run,artifactName:$artifactName,artifactSha256:$artifactSha,buildCount:1,rebuildAfterCertification:false},gate20:{sourceSha:$source,evidenceSha256:$gate20Sha},moduleTruth:{evidenceSha256:$moduleTruthSha,moduleCount:$moduleCount,allModulesMatch:true},hostingCertifiedArtifact:{releaseName:$hostingRelease,versionName:$hostingVersion,releaseTime:$hostingReleaseTime},runtimeCertifiedArtifact:{revision:$runtimeRevision,imageDigest:$runtimeDigest,immutableImage:$immutableImage},promotion:{noRebuild:true,noRecomposition:true,exactCertifiedArtifactRequired:true,productionAuthorizationRequired:true},writes:{builds:0,hostingDeploys:0,runtimeDeploys:0,providerWrites:0,hrWrites:0,production:false}}' \
+            '{schemaVersion:"cxorbia.recovery.i3.gate21.same-artifact.v1",gate:21,verdict:"PASS_GATE21_ARTIFACT_FINGERPRINT",production:false,source:{sha:$source,treeSha:$tree,controlHeadSha:$control},certification:{runId:$run,artifactName:$artifactName,artifactSha256:$artifactSha,buildCount:1,rebuildAfterCertification:false},gate20:{sourceSha:$source,evidenceSha256:$gate20Sha},fullHumanAcceptance:{decision:"PASS_I3_HUMAN_LIVE_ACCEPTANCE",evidenceSha256:$fullHumanSha,routeInventorySha256:$routeInventorySha,expectedRoleRouteEntries:56,beforeArtifact:true},moduleTruth:{evidenceSha256:$moduleTruthSha,moduleCount:$moduleCount,allModulesMatch:true},hostingCertifiedArtifact:{releaseName:$hostingRelease,versionName:$hostingVersion,releaseTime:$hostingReleaseTime},runtimeCertifiedArtifact:{revision:$runtimeRevision,imageDigest:$runtimeDigest,immutableImage:$immutableImage},promotion:{noRebuild:true,noRecomposition:true,exactCertifiedArtifactRequired:true,productionAuthorizationRequired:true},writes:{builds:0,hostingDeploys:0,runtimeDeploys:0,providerWrites:0,hrWrites:0,production:false}}' \
             > "$OUT_DIR/GATE21_RELEASE_MANIFEST.json"
           sha256sum "$OUT_DIR/GATE21_RELEASE_MANIFEST.json" > "$OUT_DIR/GATE21_RELEASE_MANIFEST.sha256"
 

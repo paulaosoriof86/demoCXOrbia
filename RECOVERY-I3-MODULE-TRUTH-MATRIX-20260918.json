@@ -1,10 +1,10 @@
 {
-  "schemaVersion": "cxorbia.recovery.module-truth-matrix.v4",
+  "schemaVersion": "cxorbia.recovery.module-truth-matrix.v5",
   "observedAt": "2026-09-18",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
-  "classificationBasis": "ENTRYPOINT_EXHAUSTIVE_124_INTERNAL_PLUS_PHASE_A_NON_SCRIPT_AUTHORITIES",
+  "classificationBasis": "ENTRYPOINT_EXHAUSTIVE_124_INTERNAL_PLUS_INDEPENDENT_APPROVAL_PROVENANCE_AND_CACHE_RELEASE_CONFIG",
   "baselineChain": {
     "phaseACompositionManifest": {
       "path": "app/docs/MANIFEST-PHASE-A-COMPLETA-FINAL-COMPOSICION-20260804.json",
@@ -103,11 +103,11 @@
     }
   },
   "productSource": {
-    "sha": "829afe0c98da6d44b10a8dfa92be233dbedebb6b",
-    "treeSha": "84a364832844e9058cae31ce28c83bb340359609",
-    "message": "fix(i3): resolve durable visit authority against live HR"
+    "sha": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+    "treeSha": "eaa5dfcd9d62ce02d0edada943da056c3730f5c0",
+    "message": "fix(i3): eliminate stale runtime cache from certified lane"
   },
-  "controlHeadAtConstruction": "829afe0c98da6d44b10a8dfa92be233dbedebb6b",
+  "controlHeadAtConstruction": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
   "phaseAComplete": true,
   "allModulesMatch": true,
   "modules": [
@@ -528,7 +528,13 @@
       "terminalCertifiedBlob": "068b28bce919c2a4f357eb4c21f85fede06a0c5d",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 5,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "068b28bce919c2a4f357eb4c21f85fede06a0c5d",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/config.js",
@@ -547,7 +553,13 @@
       "terminalCertifiedBlob": "0bf7b6c1daded062806d90e03ba2c5d67ac1fe63",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 6,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "0bf7b6c1daded062806d90e03ba2c5d67ac1fe63",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/geo.js",
@@ -560,7 +572,13 @@
       "classification": "MATCH",
       "loadOrder": 7,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "0d4f3b75da2e642c09e3c9adf006566668d23169",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/store.js",
@@ -573,7 +591,13 @@
       "classification": "MATCH",
       "loadOrder": 8,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "c6921e26773c866ba0b0ac0b725f4660e47742a5",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/data.js",
@@ -592,7 +616,13 @@
       "terminalCertifiedBlob": "a885af50b4b3e98679fa372c8765c38242d0a4c0",
       "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "loadOrder": 9,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "3d36b46c53e970899d16e24a7061bd33c5ba812f",
+      "approvedBlob": "703472f0659ed8581e2ec2c34522c90385f3a0ac",
+      "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/tya-project-financial-model-contract-v1.js",
@@ -605,7 +635,13 @@
       "classification": "MATCH",
       "loadOrder": 10,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "333f5fd204cba2c53eefe8f98acb27a4502da166",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/data-source.js",
@@ -624,7 +660,13 @@
       "terminalCertifiedBlob": "6149dff1d91b83af007badbaafdef63f00c34d1f",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 11,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "6149dff1d91b83af007badbaafdef63f00c34d1f",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/dedupe.js",
@@ -637,7 +679,13 @@
       "classification": "MATCH",
       "loadOrder": 12,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "4dbfe7f318b72a174dd2c253fb5355166788a7f5",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/shoppers-store.js",
@@ -650,7 +698,13 @@
       "classification": "MATCH",
       "loadOrder": 13,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "755c5689a70e574917e32ad9d8baeaa4238d80f5",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/programa.js",
@@ -663,7 +717,13 @@
       "classification": "MATCH",
       "loadOrder": 14,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "663bffee3d339f1602e92a62f1e065c4d6297ac4",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/cliente-data.js",
@@ -682,7 +742,13 @@
       "terminalCertifiedBlob": "3e2ac5716d711a7a883886085399ca04c614de77",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 15,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "3e2ac5716d711a7a883886085399ca04c614de77",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/hr.js",
@@ -695,7 +761,13 @@
       "classification": "MATCH",
       "loadOrder": 16,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "d29605947a7b455119d74ddcf29ac34c4720e437",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/costos.js",
@@ -714,7 +786,13 @@
       "terminalCertifiedBlob": "7f0c4547a68b8bafebae0652b8de5c8e27114a0c",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 17,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "7f0c4547a68b8bafebae0652b8de5c8e27114a0c",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/automations.js",
@@ -727,7 +805,13 @@
       "classification": "MATCH",
       "loadOrder": 18,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "940ece14951719114401891697f303fab88b0f36",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/permissions.js",
@@ -746,7 +830,13 @@
       "terminalCertifiedBlob": "bedc4f8bbc80dba9f03e34ec6bbcf9cfeeb2a1d5",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 19,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "bedc4f8bbc80dba9f03e34ec6bbcf9cfeeb2a1d5",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/manuales-data.js",
@@ -759,7 +849,13 @@
       "classification": "MATCH",
       "loadOrder": 20,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "b18921f9cc87cb78a4db34b6205a480749470f26",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/vendor/pptxgenjs.min.js",
@@ -772,7 +868,13 @@
       "classification": "MATCH",
       "loadOrder": 23,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "1ff971b3a9684bf3d2592883f1832e6992043154",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/importador.js",
@@ -785,7 +887,13 @@
       "classification": "MATCH",
       "loadOrder": 24,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "4df42e90e0c1b42a45be57e6e34ad8c1f73b2daf",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/ui.js",
@@ -798,7 +906,13 @@
       "classification": "MATCH",
       "loadOrder": 25,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "d06561fc2574c818463cf9c650f5ff276c14d9e5",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/data/tya-financial-canonical-source-safe.js",
@@ -811,7 +925,13 @@
       "classification": "MATCH",
       "loadOrder": 26,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "889426185947563aaf128d7206acf42fdb218e3b",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/data/tya-financial-canonical-source-safe-liq-01.js",
@@ -824,7 +944,13 @@
       "classification": "MATCH",
       "loadOrder": 27,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "5eb9146d7b8050bff489602d25426e658fb9316e",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/data/tya-financial-canonical-source-safe-liq-02.js",
@@ -837,7 +963,13 @@
       "classification": "MATCH",
       "loadOrder": 28,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "7c36694b90736af980145c32c2aa4c034cd34870",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/data/tya-financial-canonical-source-safe-liq-03.js",
@@ -850,7 +982,13 @@
       "classification": "MATCH",
       "loadOrder": 29,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "91fedfea2f837fa6b4319b3738432afc6da05a94",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/data/tya-financial-canonical-source-safe-review-01.js",
@@ -863,7 +1001,13 @@
       "classification": "MATCH",
       "loadOrder": 30,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "1e8866bbb585e970c993c5ebec245ca644d0fc6c",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/data/tya-financial-canonical-source-safe-review-02.js",
@@ -876,7 +1020,13 @@
       "classification": "MATCH",
       "loadOrder": 31,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "3afbcc5faa627029e09ecf695c7f494f2c7995d2",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/data/tya-financial-canonical-source-safe-evidence.js",
@@ -889,7 +1039,13 @@
       "classification": "MATCH",
       "loadOrder": 32,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "8285bdbc138f6ca8f85bf680f06d22e3a962cf28",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/data/tya-financial-canonical-source-safe-final.js",
@@ -902,7 +1058,13 @@
       "classification": "MATCH",
       "loadOrder": 33,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "e40955ee476e8fe5a0bab01965b0e29bd0958b5b",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/data/tya-payment-history-source-safe.js",
@@ -915,7 +1077,13 @@
       "classification": "MATCH",
       "loadOrder": 34,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "088c68680177c470a4539622e1694128dd211d85",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/liquidacion.js",
@@ -934,7 +1102,13 @@
       "terminalCertifiedBlob": "dde322890eb8821b822215905b82a22102d73d2c",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 35,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "dde322890eb8821b822215905b82a22102d73d2c",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/finanzas-core.js",
@@ -953,7 +1127,13 @@
       "terminalCertifiedBlob": "6d3f46f003f3319f96cfd759b8b5ed52afc6a125",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 36,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "6d3f46f003f3319f96cfd759b8b5ed52afc6a125",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/notif.js",
@@ -966,7 +1146,13 @@
       "classification": "MATCH",
       "loadOrder": 37,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "c86f8d98eac023fa6cd30d59f0a792edfc885f23",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/tya-live-source-inplace-apply.js",
@@ -983,7 +1169,13 @@
       "classification": "MATCH",
       "loadOrder": 38,
       "atomicDisposition": "FOCAL_FIX",
-      "latestApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED"
+      "latestApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED",
+      "approvedSourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+      "approvedBlob": "66deef501caa885ca42fc9e3c6971510deda69bb",
+      "approvalAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "FOCAL_FIX"
     },
     {
       "path": "app/adapters/tya-live-source-refresh-watch-v2.js",
@@ -1002,7 +1194,13 @@
       "terminalCertifiedBlob": "4f10c7cf1e2bbd665c7723b7edf2dd43991474ec",
       "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): make project source routing explicit and multi-project safe; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "loadOrder": 39,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "c83e455ed50fa23552abaf1a9ecd16d81903d12b",
+      "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): make project source routing explicit and multi-project safe; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/cxorbia-exact-identity-contract-v1.js",
@@ -1019,7 +1217,13 @@
       "classification": "MATCH",
       "loadOrder": 40,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "9b2d465dfe4d77a0a30786b0d540903b0f014c32",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/tya-cumulative-read-model-v2.js",
@@ -1038,7 +1242,13 @@
       "terminalCertifiedBlob": "d93f308ad8de48c11b7a6b37662809757acc0af4",
       "latestApprovedAuthority": "RUN199_V5_LIVE_HR_VISIT_ID_EQUALS_FIRESTORE_DOCID",
       "loadOrder": 41,
-      "atomicDisposition": "FOCAL_FIX"
+      "atomicDisposition": "FOCAL_FIX",
+      "approvedSourceCommit": "829afe0c98da6d44b10a8dfa92be233dbedebb6b",
+      "approvedBlob": "21f838e0f6236c7aa9f82ba70e74501af8410639",
+      "approvalAuthority": "P0_PROVEN_LIVE_HR_DURABLE_AUTHORITY_LAYER",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "FOCAL_FIX"
     },
     {
       "path": "app/adapters/cxorbia-identity-roll-forward-v1.js",
@@ -1055,7 +1265,13 @@
       "classification": "MATCH",
       "loadOrder": 42,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "89d1de9535ac4537c0309c8bf24483cceebc08e5",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/tya-canonical-state-semantics-v2.js",
@@ -1074,7 +1290,13 @@
       "terminalCertifiedBlob": "5c62a221f4a5a33fc133b4f34e636f722beaca4d",
       "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "loadOrder": 43,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "3d36b46c53e970899d16e24a7061bd33c5ba812f",
+      "approvedBlob": "f8e472154fa8869bcbb2e6aa240d0f0be9ed3f5c",
+      "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/backend-config.js",
@@ -1087,7 +1309,13 @@
       "classification": "MATCH",
       "loadOrder": 44,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "b12f0ec1e26d2c8d34fa19fb98433d02e926a455",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/backend-config-preview-dev.js",
@@ -1100,7 +1328,13 @@
       "classification": "MATCH",
       "loadOrder": 45,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "8eaad7a9b56e559a342aee5f4be2f303ed61fbaf",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/backend-protected-dev-mode.js",
@@ -1117,7 +1351,13 @@
       "classification": "MATCH",
       "loadOrder": 46,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "1e8637339b4c61a8827993f0166047f6172cbca9",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/backend-protected-dev-session-continuity.js",
@@ -1136,7 +1376,13 @@
       "terminalCertifiedBlob": "00f2b3d1e92ad6154853282a8881163cf9e6ca5d",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 47,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "00f2b3d1e92ad6154853282a8881163cf9e6ca5d",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/backend-v57-extra-config.js",
@@ -1149,7 +1395,13 @@
       "classification": "MATCH",
       "loadOrder": 48,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "a6c73a471af480e904e59adcacc12ec08d4a697f",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/backend-dev-auth.local.js",
@@ -1162,7 +1414,13 @@
       "classification": "MATCH",
       "loadOrder": 49,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "6b2e3ce079552fad247c7202df684328ad7dac7b",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/backend-browser-auth.js",
@@ -1181,7 +1439,13 @@
       "terminalCertifiedBlob": "6ff36a155e81fc95ed4c41160505f72aaf5b8496",
       "latestApprovedAuthority": "TERMINAL_CERTIFIED_PREDECESSOR: run 35247813214 Gate21 PASS",
       "loadOrder": 50,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "6ff36a155e81fc95ed4c41160505f72aaf5b8496",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js",
@@ -1198,7 +1462,13 @@
       "classification": "MATCH",
       "loadOrder": 51,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "ffdfe6b7de4b58b1d17765ce6f7820076a5ea157",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/cxorbia-shopper-membership-wiring-v1.js",
@@ -1215,7 +1485,13 @@
       "classification": "MATCH",
       "loadOrder": 52,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "a96370a5a72ac6a12a6733d6e768a52293abe82b",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/cxorbia-provider-identity-link-runtime-v1.js",
@@ -1232,7 +1508,13 @@
       "classification": "MATCH",
       "loadOrder": 53,
       "atomicDisposition": "FOCAL_FIX",
-      "latestApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED"
+      "latestApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED",
+      "approvedSourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+      "approvedBlob": "2074daee29ec108719ed5cdd33b49922ec348d02",
+      "approvalAuthority": "P0_PROVEN_HR_CROSSWALK_PRECEDENCE",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "FOCAL_FIX"
     },
     {
       "path": "app/adapters/tya-phase-a-authority-compat-v1.js",
@@ -1249,7 +1531,13 @@
       "classification": "MATCH",
       "loadOrder": 54,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "6a54ddbbbf3a6d717c9e9ffed6a16f3bba1591b0",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/tya-dev-technical-auth-e2e-v1.js",
@@ -1262,7 +1550,13 @@
       "classification": "MATCH",
       "loadOrder": 55,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "bae31255c340e14bccec4f1e6a3b844ddd5cd65e",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/backend-firebase.js",
@@ -1279,7 +1573,13 @@
       "classification": "MATCH",
       "loadOrder": 56,
       "atomicDisposition": "FOCAL_FIX",
-      "latestApprovedAuthority": "RUN199_V5_LIVE_HR_VISIT_ID_EQUALS_FIRESTORE_DOCID"
+      "latestApprovedAuthority": "RUN199_V5_LIVE_HR_VISIT_ID_EQUALS_FIRESTORE_DOCID",
+      "approvedSourceCommit": "829afe0c98da6d44b10a8dfa92be233dbedebb6b",
+      "approvedBlob": "4a1b16787855a7da537a84941cf706ad76850b97",
+      "approvalAuthority": "P0_PROVEN_LIVE_HR_DURABLE_AUTHORITY_LAYER",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "FOCAL_FIX"
     },
     {
       "path": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js",
@@ -1298,7 +1598,13 @@
       "terminalCertifiedBlob": "090d01dc4913112a68d39f6c1547e6556458384d",
       "latestApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED",
       "loadOrder": 57,
-      "atomicDisposition": "FOCAL_FIX"
+      "atomicDisposition": "FOCAL_FIX",
+      "approvedSourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+      "approvedBlob": "03b94ab55f24c95d1fea9b40f8ffa265f679f3cc",
+      "approvalAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "FOCAL_FIX"
     },
     {
       "path": "app/core/backend-cxdata-read-guard.js",
@@ -1315,7 +1621,13 @@
       "classification": "MATCH",
       "loadOrder": 58,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "49b66d84ddb772e1e33a9845ddff9cde1ccdc670",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/backend-finance-benefits.js",
@@ -1328,7 +1640,13 @@
       "classification": "MATCH",
       "loadOrder": 59,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "dc492b96ede5da4fbd065564a4f130b14b15dd4f",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/backend-cxdata-finance-read.js",
@@ -1341,7 +1659,13 @@
       "classification": "MATCH",
       "loadOrder": 60,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "d3e519f20bb92662e0feb11407a735b36fd13457",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/backend-operational-actions.js",
@@ -1354,7 +1678,13 @@
       "classification": "MATCH",
       "loadOrder": 61,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "785ea0967b5984fd63431048712b3a5726a4e947",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/cxorbia-command-adapter-v1.js",
@@ -1371,7 +1701,13 @@
       "classification": "MATCH",
       "loadOrder": 62,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "2d195893221eb6f9863db47946ec775db7f37367",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/cxorbia-command-http-transport-v1.js",
@@ -1388,7 +1724,13 @@
       "classification": "MATCH",
       "loadOrder": 63,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "72bdfcdaa5667b62b52962396631e1665506ba13",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/cxorbia-shopper-admin-command-contract-v1.js",
@@ -1405,7 +1747,13 @@
       "classification": "MATCH",
       "loadOrder": 64,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "c928691256c1b7c18a51758d3dce94c63b26e976",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/cxorbia-hr-write-adapter-contract-v1.js",
@@ -1422,7 +1770,13 @@
       "classification": "MATCH",
       "loadOrder": 65,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "aad818a8be3581397672ade7988c9a5ec9b4ccb0",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/backend-cxdata-readonly-corte4.js",
@@ -1435,7 +1789,13 @@
       "classification": "MATCH",
       "loadOrder": 66,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "3ad9c3db4f998a9edd23aaf7d2de8a8d8cc192f6",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/cxorbia-cxdata-command-boundary-v1.js",
@@ -1452,7 +1812,13 @@
       "classification": "MATCH",
       "loadOrder": 67,
       "atomicDisposition": "FOCAL_FIX",
-      "latestApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED"
+      "latestApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED",
+      "approvedSourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+      "approvedBlob": "f0c6359061bc2030c834a2a5b53c5e6c6717b33d",
+      "approvalAuthority": "P0_PROVEN_DURABLE_COMMAND_BOUNDARY",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "FOCAL_FIX"
     },
     {
       "path": "app/core/backend-ui-action-bridge.js",
@@ -1465,7 +1831,13 @@
       "classification": "MATCH",
       "loadOrder": 68,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "1e94719110d72b76da05a86ebc54d28bd6f9338a",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/backend-bulletins.js",
@@ -1478,7 +1850,13 @@
       "classification": "MATCH",
       "loadOrder": 69,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "4f51dfa1b8e6287c9c2ef63f5b05e5fc9d2beedb",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/backend-automations.js",
@@ -1491,7 +1869,13 @@
       "classification": "MATCH",
       "loadOrder": 70,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "63ad78a8b50134a787c66b3e49e551313edc69d8",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/backend-preview-status.js",
@@ -1504,7 +1888,13 @@
       "classification": "MATCH",
       "loadOrder": 71,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "3f3dad02014b743af201ccac07719007db736639",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/backend-hr-source-bridge.js",
@@ -1517,7 +1907,13 @@
       "classification": "MATCH",
       "loadOrder": 72,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "93b11308c2b4078c292f6f68da0b9a72d1d8f0b0",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/tya-financial-canonical-source-safe-adapter.js",
@@ -1534,7 +1930,13 @@
       "classification": "MATCH",
       "loadOrder": 73,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "931054b79a4b477e3f6732829ac02e476f6780ca",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/tya-canonical-finance-read-model-v2.js",
@@ -1553,7 +1955,13 @@
       "terminalCertifiedBlob": "6a527c3813ad4318bc921bf3c997bc4c70726db5",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 74,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "6a527c3813ad4318bc921bf3c997bc4c70726db5",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/tya-delegated-coordination-finance-guard-v1.js",
@@ -1570,7 +1978,13 @@
       "classification": "MATCH",
       "loadOrder": 75,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "18c5dc95129b434c6362a313d4c8b317bea7a965",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/cxorbia-canonical-write-firewall-v1.js",
@@ -1587,7 +2001,13 @@
       "classification": "MATCH",
       "loadOrder": 76,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "10c87de64550a1cfe6a9f7ae96e8a0445a71222f",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/topbar.js",
@@ -1600,7 +2020,13 @@
       "classification": "MATCH",
       "loadOrder": 77,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "e59210e95e99a9e568f976dcd13c6f98b963464f",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/pwa.js",
@@ -1613,7 +2039,13 @@
       "classification": "MATCH",
       "loadOrder": 78,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "b6d8bb5d5b6aacf0e456130bb7b7b746bcf754bf",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/router.js",
@@ -1632,7 +2064,13 @@
       "terminalCertifiedBlob": "fdd3c91c1428d49413fb305ed464dffdc6ea3e13",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 79,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "fdd3c91c1428d49413fb305ed464dffdc6ea3e13",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/midia.js",
@@ -1651,7 +2089,13 @@
       "terminalCertifiedBlob": "98d901850a437b029abac2ba3e569dc3a9543940",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 80,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "98d901850a437b029abac2ba3e569dc3a9543940",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/dashboard.js",
@@ -1670,7 +2114,13 @@
       "terminalCertifiedBlob": "e879fc3f1dd5a7486762b197346cadd086e1d99d",
       "latestApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED",
       "loadOrder": 81,
-      "atomicDisposition": "FOCAL_FIX"
+      "atomicDisposition": "FOCAL_FIX",
+      "approvedSourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+      "approvedBlob": "a42fe7119661aeba3754a5119479e65040cfa02a",
+      "approvalAuthority": "P0_PROVEN_SELECTED_PERIOD_SEMANTICS",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "FOCAL_FIX"
     },
     {
       "path": "app/modules/proyectos.js",
@@ -1689,7 +2139,13 @@
       "terminalCertifiedBlob": "9492e710671749f954510d49dcf93e590a52669c",
       "latestApprovedAuthority": "TERMINAL_CERTIFIED_PREDECESSOR: run 35247813214 Gate21 PASS",
       "loadOrder": 82,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "9492e710671749f954510d49dcf93e590a52669c",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/periodos.js",
@@ -1708,7 +2164,13 @@
       "terminalCertifiedBlob": "7987d7186efcaa12f33e4fd11f91ae6e50fd7ad5",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 83,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "7987d7186efcaa12f33e4fd11f91ae6e50fd7ad5",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/historico.js",
@@ -1727,7 +2189,13 @@
       "terminalCertifiedBlob": "bf259b28e871bc6cea991f14ce5560323ef55f9e",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 84,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "bf259b28e871bc6cea991f14ce5560323ef55f9e",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/hr-source.js",
@@ -1746,7 +2214,13 @@
       "terminalCertifiedBlob": "dcfe3e9f0b5e97fdc0a4af77ba3873854ef545b0",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 85,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "dcfe3e9f0b5e97fdc0a4af77ba3873854ef545b0",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/proyecto-wizard.js",
@@ -1765,7 +2239,13 @@
       "terminalCertifiedBlob": "3c722c503634665d3574979db267f1dda2c3c159",
       "latestApprovedAuthority": "TERMINAL_CERTIFIED_PREDECESSOR: run 35247813214 Gate21 PASS",
       "loadOrder": 86,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "3c722c503634665d3574979db267f1dda2c3c159",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/visitas.js",
@@ -1784,7 +2264,13 @@
       "terminalCertifiedBlob": "67b96c49e6e8ed58974c7c6e80e84a89c9485cf7",
       "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "loadOrder": 87,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "3d36b46c53e970899d16e24a7061bd33c5ba812f",
+      "approvedBlob": "43f1aa36468340aa96ceec30b30f4816b13c6d2a",
+      "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/visita-detalle.js",
@@ -1803,7 +2289,13 @@
       "terminalCertifiedBlob": "322a350e22a57a94c587a38d480f1ccf28157db7",
       "latestApprovedAuthority": "TERMINAL_CERTIFIED_PREDECESSOR: run 35247813214 Gate21 PASS",
       "loadOrder": 88,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "322a350e22a57a94c587a38d480f1ccf28157db7",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/revision-admin.js",
@@ -1822,7 +2314,13 @@
       "terminalCertifiedBlob": "41fcea495c1e23e7ecee43a637b45002124ea3c9",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 89,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "41fcea495c1e23e7ecee43a637b45002124ea3c9",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/cuestionario-shopper.js",
@@ -1841,7 +2339,13 @@
       "terminalCertifiedBlob": "a9801776eda4b52d447abaf20c28e2bf4290930d",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 90,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "a9801776eda4b52d447abaf20c28e2bf4290930d",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/postulaciones.js",
@@ -1860,7 +2364,13 @@
       "terminalCertifiedBlob": "fc1bf4e962b04fe8bd06f599cf7404aac5f34f72",
       "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "loadOrder": 91,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "3d36b46c53e970899d16e24a7061bd33c5ba812f",
+      "approvedBlob": "a6d11eb76a834182e76b981e4d954a1d3aa7f357",
+      "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/shoppers.js",
@@ -1879,7 +2389,13 @@
       "terminalCertifiedBlob": "5fba01c9b96de9bb6b97bccc3fa5c83d82d7214b",
       "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): enforce owner shopper credential rule; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "loadOrder": 92,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "dcba411b1e6f88d3e500fd5e2df53d664af7771e",
+      "approvedBlob": "bc767591653f0f5a49214de60a4886c6b40c2330",
+      "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): enforce owner shopper credential rule; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/misvisitas.js",
@@ -1898,7 +2414,13 @@
       "terminalCertifiedBlob": "19feb19b96c7d2f69c3cfed785fdbfcaabd96e2d",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 93,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "19feb19b96c7d2f69c3cfed785fdbfcaabd96e2d",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/beneficios.js",
@@ -1917,7 +2439,13 @@
       "terminalCertifiedBlob": "73e200e57530479637792c89c644fcfdf78b6799",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 94,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "73e200e57530479637792c89c644fcfdf78b6799",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/tablon.js",
@@ -1936,7 +2464,13 @@
       "terminalCertifiedBlob": "d2eb7784d4b695f863d330f42a6ee6575a87a3f6",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 95,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "d2eb7784d4b695f863d330f42a6ee6575a87a3f6",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/cert.js",
@@ -1955,7 +2489,13 @@
       "terminalCertifiedBlob": "5532109dec5c942c2fa6d520ad0a7e0b7b104034",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 96,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "5532109dec5c942c2fa6d520ad0a7e0b7b104034",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/documentos.js",
@@ -1974,7 +2514,13 @@
       "terminalCertifiedBlob": "28c302761f22807ed5ebcb1f04cd1d12827652dd",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 97,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "28c302761f22807ed5ebcb1f04cd1d12827652dd",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/academia.js",
@@ -1993,7 +2539,13 @@
       "terminalCertifiedBlob": "0b42dd790d946d327eb1110b78878e302d51aa6e",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 98,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "0b42dd790d946d327eb1110b78878e302d51aa6e",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/soporte.js",
@@ -2006,7 +2558,13 @@
       "classification": "MATCH",
       "loadOrder": 99,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "ab2e67c882a0c94a3efac1d9ef5f2d624fd32c0c",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/operacion-extra.js",
@@ -2025,7 +2583,13 @@
       "terminalCertifiedBlob": "509c4dd251515ea1429ebe51d69d9e779ae69a54",
       "latestApprovedAuthority": "TERMINAL_CERTIFIED_PREDECESSOR: run 35247813214 Gate21 PASS",
       "loadOrder": 100,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "509c4dd251515ea1429ebe51d69d9e779ae69a54",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/finanzas.js",
@@ -2044,7 +2608,13 @@
       "terminalCertifiedBlob": "5af9e5d28833524cabba132834738e8acce55e0b",
       "latestApprovedAuthority": "TERMINAL_CERTIFIED_PREDECESSOR: run 35247813214 Gate21 PASS",
       "loadOrder": 101,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "5af9e5d28833524cabba132834738e8acce55e0b",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/configuracion.js",
@@ -2057,7 +2627,13 @@
       "classification": "MATCH",
       "loadOrder": 102,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "3b9d653959045b866432cf4b07309052baba2bba",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/saas-console.js",
@@ -2070,7 +2646,13 @@
       "classification": "MATCH",
       "loadOrder": 103,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "e5fa0e57083d4affdc044f3c32eeffd1c96980b5",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/cliente.js",
@@ -2089,7 +2671,13 @@
       "terminalCertifiedBlob": "4e5981081bdd01de368c4f412ed476244426634e",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 104,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "4e5981081bdd01de368c4f412ed476244426634e",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/cliente-extra.js",
@@ -2108,7 +2696,13 @@
       "terminalCertifiedBlob": "ca3d2d6b356b3d942ebbb2076625ce0b000e4b64",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 105,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "ca3d2d6b356b3d942ebbb2076625ce0b000e4b64",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/cliente-insights.js",
@@ -2121,7 +2715,13 @@
       "classification": "MATCH",
       "loadOrder": 106,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "87d0a9d0bd06895c937f9d8ee1e0c985248d1b2e",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/novedades.js",
@@ -2140,7 +2740,13 @@
       "terminalCertifiedBlob": "3a8a4ac11fe3dfe5bff11c4840f355742bc93375",
       "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
       "loadOrder": 107,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "3a8a4ac11fe3dfe5bff11c4840f355742bc93375",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/clientes.js",
@@ -2153,7 +2759,13 @@
       "classification": "MATCH",
       "loadOrder": 108,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "9c3c98605f4fb2e22d66b241607c9dd70c45d159",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/importador.js",
@@ -2166,7 +2778,13 @@
       "classification": "MATCH",
       "loadOrder": 109,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "ad4f6b4621a69aa2cb303f026be6113e8f158ca2",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/comercial.js",
@@ -2179,7 +2797,13 @@
       "classification": "MATCH",
       "loadOrder": 110,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "61aaee6432e4a4206b07f8633d158b8d2b2c2271",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/crm.js",
@@ -2192,7 +2816,13 @@
       "classification": "MATCH",
       "loadOrder": 111,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "6a6ff1c964eff4f25ecaf33b028335bfc62810ee",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/marketing.js",
@@ -2205,7 +2835,13 @@
       "classification": "MATCH",
       "loadOrder": 112,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "6bfe1b4e3dbed12ead8a88404cdb495dbf1b8e83",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/reservas.js",
@@ -2224,7 +2860,13 @@
       "terminalCertifiedBlob": "ddc54bad9dfc7b242b06d39daf872c9f9b327c80",
       "latestApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED",
       "loadOrder": 113,
-      "atomicDisposition": "FOCAL_FIX"
+      "atomicDisposition": "FOCAL_FIX",
+      "approvedSourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+      "approvedBlob": "e7bb40adc8d3258d94d9373e67b601d9c567db74",
+      "approvalAuthority": "P0_PROVEN_DURABLE_RESERVATIONS",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "FOCAL_FIX"
     },
     {
       "path": "app/modules/integraciones.js",
@@ -2237,7 +2879,13 @@
       "classification": "MATCH",
       "loadOrder": 114,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "a71fc5bf83ff54df83c90339d0a3c0940167d75a",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/automatizaciones.js",
@@ -2250,7 +2898,13 @@
       "classification": "MATCH",
       "loadOrder": 115,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "ac456dfb309de43cbc5a25bee3ecf48076a168db",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/correo.js",
@@ -2263,7 +2917,13 @@
       "classification": "MATCH",
       "loadOrder": 116,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "be3cbf808498de86265410682625a45e57541b97",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/marca.js",
@@ -2276,7 +2936,13 @@
       "classification": "MATCH",
       "loadOrder": 117,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "bdcf20520d3774b90fd03042cec61f2ade7e0a9d",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/diagnostico.js",
@@ -2289,7 +2955,13 @@
       "classification": "MATCH",
       "loadOrder": 118,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "23f1bd5b72738d18e78d23a6af77ba2833279d65",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/modules/administrabilidad.js",
@@ -2302,7 +2974,13 @@
       "classification": "MATCH",
       "loadOrder": 119,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "61a6606af657f9332a24b362748a229cc4a3446f",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/tya-ab-cumulative-composition-v1.js",
@@ -2315,7 +2993,13 @@
       "classification": "MATCH",
       "loadOrder": 120,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "9c0d76382531b8393cc0866ec694935a2a5e25a6",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/tya-c6-domain-consistency-bridge.js",
@@ -2334,7 +3018,13 @@
       "terminalCertifiedBlob": "81f1e5807dfe18e0f53a348813b98fe353eeb7a1",
       "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): enforce owner shopper credential rule; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "loadOrder": 121,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "dcba411b1e6f88d3e500fd5e2df53d664af7771e",
+      "approvedBlob": "b5f660ae49e5bccb041127fcb88d025264f84174",
+      "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): enforce owner shopper credential rule; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/tya-canonical-shopper-portal-v2.js",
@@ -2353,7 +3043,13 @@
       "terminalCertifiedBlob": "a605f5b154a5d330f452e6b72d6c3f50fc343d00",
       "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): enforce owner shopper credential rule; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "loadOrder": 122,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "dcba411b1e6f88d3e500fd5e2df53d664af7771e",
+      "approvedBlob": "621a90d701e736ecb448da019d2240486fbcd134",
+      "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): enforce owner shopper credential rule; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/tya-canonical-reservations-guard-v2.js",
@@ -2372,7 +3068,13 @@
       "terminalCertifiedBlob": "0eb96842dea71bb6f1b4801914e6a475c5885ccc",
       "latestApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED",
       "loadOrder": 123,
-      "atomicDisposition": "FOCAL_FIX"
+      "atomicDisposition": "FOCAL_FIX",
+      "approvedSourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+      "approvedBlob": "3a9e35729f714165294358331e8d78eda3251c56",
+      "approvalAuthority": "P0_PROVEN_DURABLE_RESERVATION_PROVIDER",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "FOCAL_FIX"
     },
     {
       "path": "app/adapters/tya-c6-unified-human-runtime-v1.js",
@@ -2391,7 +3093,13 @@
       "terminalCertifiedBlob": "3acc508ac242407ea688b6a4ba964409af1125ba",
       "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): gate human runtime on live HR authority; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "loadOrder": 124,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "57ffe11bc4a209bed1d73b9487bad55a4f653a1d",
+      "approvedBlob": "be7331eda76b750e2454e096b9cc3cb705a4c50a",
+      "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): gate human runtime on live HR authority; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/tya-c6-shopper-auth-click-guard-v1.js",
@@ -2404,7 +3112,13 @@
       "classification": "MATCH",
       "loadOrder": 125,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "0b065999e74d366340eb8692ca39184514c97cfc",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/cxorbia-legal-acceptance-durable-contract-v1.js",
@@ -2421,7 +3135,13 @@
       "classification": "MATCH",
       "loadOrder": 126,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "218ca59cb37dd17d3de6ba81660616f9c1c45116",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js",
@@ -2438,7 +3158,13 @@
       "classification": "MATCH",
       "loadOrder": 127,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "9c6c3170e5ea8cde2693667b56534b8d0b0043ef",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/cxorbia-legal-runtime-http-v1.js",
@@ -2455,7 +3181,13 @@
       "classification": "MATCH",
       "latestApprovedAuthority": "P0_PROVEN_RECOVERY_SUCCESSOR: observable non-blocking legal runtime",
       "loadOrder": 128,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "56385f181c7e7e36b903ea18c1e470f759749a86",
+      "approvalAuthority": "P0_PROVEN_RECOVERY_SUCCESSOR: observable non-blocking legal runtime",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/core/backend-corte4-empty-shell-guard.js",
@@ -2468,7 +3200,13 @@
       "classification": "MATCH",
       "loadOrder": 129,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT"
+      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "a8b5b99a81ba903508a08d37e34fae414d61a492",
+      "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/app.js",
@@ -2487,7 +3225,13 @@
       "terminalCertifiedBlob": "2043d33dee611adacebc947c8423ed1739c1a8da",
       "latestApprovedAuthority": "P0_PROVEN_RECOVERY_SUCCESSOR: legal/consent must never block access, tests or production",
       "loadOrder": 130,
-      "atomicDisposition": "KEEP"
+      "atomicDisposition": "KEEP",
+      "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
+      "approvedBlob": "cb83a257b0474846abfeca90d25817810f349dcd",
+      "approvalAuthority": "P0_PROVEN_RECOVERY_SUCCESSOR: legal/consent must never block access, tests or production",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/cxorbia-project-operational-source-v1.js",
@@ -2502,7 +3246,13 @@
       "loadTarget": "preserved-source-library",
       "phaseAAuthority": false,
       "classification": "MATCH",
-      "preservation": "PRESERVED_NOT_ACTIVE_AUTHORITY__NOT_LOADED_IN_B949_OR_F836"
+      "preservation": "PRESERVED_NOT_ACTIVE_AUTHORITY__NOT_LOADED_IN_B949_OR_F836",
+      "approvedSourceCommit": "bb2ca859d6cbac26272fdbbb0f09ca31a950604a",
+      "approvedBlob": "95ba739c314af820c514267374f47c965e96db6f",
+      "approvalAuthority": "I2_CLEAN_CANDIDATE_CONTRACT_SEAL",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/adapters/tya-phase-a-operational-sync-v1.js",
@@ -2517,7 +3267,13 @@
       "loadTarget": "preserved-source-library",
       "phaseAAuthority": false,
       "classification": "MATCH",
-      "preservation": "PRESERVED_NOT_ACTIVE_AUTHORITY__NOT_LOADED_IN_B949_OR_F836"
+      "preservation": "PRESERVED_NOT_ACTIVE_AUTHORITY__NOT_LOADED_IN_B949_OR_F836",
+      "approvedSourceCommit": "bb2ca859d6cbac26272fdbbb0f09ca31a950604a",
+      "approvedBlob": "2af5769f53f7b831c69a0314f01c6e8e27e7a14c",
+      "approvalAuthority": "I2_CLEAN_CANDIDATE_CONTRACT_SEAL",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/index-backend-dev.html",
@@ -2534,7 +3290,13 @@
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "6f084ab81264b937cda661dddb4b071ef956d35f",
-      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): make project source routing explicit and multi-project safe; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629"
+      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): make project source routing explicit and multi-project safe; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "7cad29de66de546527d9c6b92b44cad676d1882f",
+      "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): make project source routing explicit and multi-project safe; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/manifest.webmanifest",
@@ -2551,7 +3313,13 @@
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "bc969630aaee9152ff69541c88ca443886c4c82f",
-      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "bc969630aaee9152ff69541c88ca443886c4c82f",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/styles/layout.css",
@@ -2568,7 +3336,13 @@
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "91b3d308e1a51be7a470f0f12b32382c1043058f",
-      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "91b3d308e1a51be7a470f0f12b32382c1043058f",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/styles/theme.css",
@@ -2585,7 +3359,13 @@
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "48bf933ebeb0e2a0df49d80ff16a460a1947ddb9",
-      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE"
+      "latestApprovedAuthority": "F9_ACCEPTED_RELEASE_LINEAGE",
+      "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
+      "approvedBlob": "48bf933ebeb0e2a0df49d80ff16a460a1947ddb9",
+      "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "app/sw.js",
@@ -2596,13 +3376,19 @@
       "f9ApprovedBlob": "643c2e63fa301f6822b298fcc422077b74934628",
       "latestApprovedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "latestApprovedBlob": "39c445f1ab5b50d12b22c5f912c4950b6735107a",
-      "currentBlob": "39c445f1ab5b50d12b22c5f912c4950b6735107a",
+      "currentBlob": "6c67028a6fa83900a2e7acbeb556c19a1acdfce1",
       "loadTarget": "service-worker",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "39c445f1ab5b50d12b22c5f912c4950b6735107a",
-      "latestApprovedAuthority": "TERMINAL_CERTIFIED_PREDECESSOR: run 35247813214 Gate21 PASS"
+      "latestApprovedAuthority": "TERMINAL_CERTIFIED_PREDECESSOR: run 35247813214 Gate21 PASS",
+      "approvedSourceCommit": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "approvedBlob": "6c67028a6fa83900a2e7acbeb556c19a1acdfce1",
+      "approvalAuthority": "P0_PROVEN_RELEASE_CACHE_DESYNC_FIX",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "FOCAL_FIX"
     },
     {
       "path": "backend/contracts/cxorbia-project-source-contract-v1.json",
@@ -2616,7 +3402,13 @@
       "currentBlob": "b92aa2e4464930cc74e10a6142ce762a40527961",
       "loadTarget": "artifact-file",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "b92aa2e4464930cc74e10a6142ce762a40527961",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "backend/runtime/cxorbia-finance-command-provider-v1.mjs",
@@ -2630,7 +3422,13 @@
       "currentBlob": "e1c428ca1156cae36ca233cdc3bdeaad4ecccf89",
       "loadTarget": "runtime-build",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "e1c428ca1156cae36ca233cdc3bdeaad4ecccf89",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
@@ -2646,7 +3444,13 @@
       "phaseAAuthority": true,
       "classification": "MATCH",
       "atomicDisposition": "FOCAL_FIX",
-      "latestApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED"
+      "latestApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED",
+      "approvedSourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+      "approvedBlob": "add205ae203ca4626aff6824b480e8d9ca40cf30",
+      "approvalAuthority": "P0_PROVEN_DURABLE_OPERATIONAL_PROVIDER",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "FOCAL_FIX"
     },
     {
       "path": "backend/runtime/cxorbia-project-command-provider-v1.mjs",
@@ -2660,7 +3464,13 @@
       "currentBlob": "abd18d1a5b551307a4fb2f317fab100bbe739f24",
       "loadTarget": "runtime-build",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "abd18d1a5b551307a4fb2f317fab100bbe739f24",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "backend/runtime/cxorbia-shopper-command-provider-v1.mjs",
@@ -2674,7 +3484,13 @@
       "currentBlob": "914aa47d2bd9d3a155ee458219193d45f8a971ee",
       "loadTarget": "runtime-build",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "914aa47d2bd9d3a155ee458219193d45f8a971ee",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "backend/runtime/hr-live-service/cxorbia-command-runtime-v1.mjs",
@@ -2688,7 +3504,13 @@
       "currentBlob": "b1d2cd588fd7409ededba4dea1fdece0d08df91a",
       "loadTarget": "runtime-build",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "b1d2cd588fd7409ededba4dea1fdece0d08df91a",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "backend/runtime/hr-live-service/Dockerfile",
@@ -2702,7 +3524,13 @@
       "currentBlob": "ad39487f397ed759db67e4f35c7699d65d47af97",
       "loadTarget": "runtime-build",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "ad39487f397ed759db67e4f35c7699d65d47af97",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "backend/runtime/hr-live-service/server.mjs",
@@ -2718,7 +3546,13 @@
       "phaseAAuthority": true,
       "classification": "MATCH",
       "atomicDisposition": "FOCAL_FIX",
-      "latestApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED"
+      "latestApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED",
+      "approvedSourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+      "approvedBlob": "77432677b682b94b0382152e9692421ecdd67fce",
+      "approvalAuthority": "P0_PROVEN_ATOMIC_BACKEND_RUNTIME",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "FOCAL_FIX"
     },
     {
       "path": "tools/hr-source/tya-build-live-hr-source-safe-r20.mjs",
@@ -2732,7 +3566,13 @@
       "currentBlob": "a048ce612df1d84f138150679f642063c0895134",
       "loadTarget": "runtime-tool",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "a048ce612df1d84f138150679f642063c0895134",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "tools/hr-source/tya-canonical-visit-state-r20.mjs",
@@ -2746,7 +3586,13 @@
       "currentBlob": "b76677a6a49fc50624b0cd31142f29132f0caa5d",
       "loadTarget": "runtime-tool",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "b76677a6a49fc50624b0cd31142f29132f0caa5d",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     },
     {
       "path": "tools/hr-source/tya-reapply-canonical-state-r20.mjs",
@@ -2760,7 +3606,13 @@
       "currentBlob": "30f713184a96c367deba4d15547ea0aff854c565",
       "loadTarget": "runtime-tool",
       "phaseAAuthority": true,
-      "classification": "MATCH"
+      "classification": "MATCH",
+      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "approvedBlob": "30f713184a96c367deba4d15547ea0aff854c565",
+      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
+      "composedAtSource": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "provenanceIndependent": true,
+      "approvalDisposition": "KEEP"
     }
   ],
   "loadOrder": {
@@ -2964,7 +3816,7 @@
     "rule": "preserve; do not regress/rebuild; not an I3 requirement absent transversal P0"
   },
   "devCertification": {
-    "status": "PENDING_SINGLE_RUN_AFTER_LIVE_HR_AUTHORITY_LAYER_FIX",
+    "status": "PENDING_SINGLE_FORENSIC_FINAL_RUN",
     "servedSourceSha": null,
     "servedTreeSha": null,
     "artifactSha256": null
@@ -2983,9 +3835,14 @@
     "entrypointInternalScripts": 124,
     "activeInternalOutsideMatrix": 0,
     "duplicateSrc": 0,
-    "unknownOverlays": 0
+    "unknownOverlays": 0,
+    "unauthorizedDrift": 0,
+    "expectedRoleRouteEntries": 56,
+    "fullHumanBeforeArtifact": true,
+    "gate21AfterFullHuman": true,
+    "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "RUN_CANONICAL_I3_DEV_CERTIFICATION_THEN_GATE20_GATE21_AND_HUMAN_ACCEPT_SAME_ARTIFACT",
+  "nextExactAction": "ONE_FORENSIC_FINAL_RUN_SOURCE_MATRIX_BUILD_DEV_FULL_HUMAN_GATE20_PACKAGE_GATE21",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -3106,5 +3963,43 @@
         "classification": "MATCH"
       }
     ]
+  },
+  "approvalProvenancePolicy": {
+    "independentFromComposition": true,
+    "approvedSourceCommitRequired": true,
+    "approvedBlobRequired": true,
+    "currentBlobMustEqualApprovedBlob": true,
+    "compositionCommitCannotOverwriteApprovalSource": true
+  },
+  "releaseConfig": {
+    "firebaseJson": {
+      "path": "firebase.json",
+      "approvedSourceCommit": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "approvedBlob": "b5f5bbd29b385cf4f6e654e2a028baf98bb41ae3",
+      "currentBlob": "b5f5bbd29b385cf4f6e654e2a028baf98bb41ae3",
+      "classification": "MATCH",
+      "authority": "P0_PROVEN_RELEASE_CACHE_DESYNC_FIX"
+    },
+    "serviceWorker": {
+      "path": "app/sw.js",
+      "approvedSourceCommit": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "approvedBlob": "6c67028a6fa83900a2e7acbeb556c19a1acdfce1",
+      "currentBlob": "6c67028a6fa83900a2e7acbeb556c19a1acdfce1",
+      "classification": "MATCH",
+      "authority": "P0_PROVEN_RELEASE_CACHE_DESYNC_FIX",
+      "runtimeCriticalNetworkOnly": true,
+      "purgeAllCachesOnActivate": true
+    },
+    "cacheControl": "no-store, no-cache, max-age=0, must-revalidate"
+  },
+  "forensicAudit": {
+    "phaseAAuthoritiesExamined": 84,
+    "exactAgainstPreAuditAuthority": 73,
+    "authorizedFocalDifferences": 11,
+    "unauthorizedDrift": 0,
+    "missingAuthorities": 0,
+    "expectedRoleRouteEntries": 56,
+    "gate20PriorUniqueRoutes": 3,
+    "rootCause": "RELEASE_COMPOSITION_CONTROL_PLANE_AND_CACHE_DESYNC"
   }
 }

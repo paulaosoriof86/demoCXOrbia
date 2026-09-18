@@ -7,7 +7,7 @@
   "controlParentSha": "326f1c66d62b7c710f71812969aac1d28b6b03ed",
   "productSourceBefore": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
   "productTreeBefore": "878fd60a2dc542cf04540026c34f1a7543cc2134",
-  "state": "COMPOSED_PRECERT_AFTER_LIVE_HR_AUTHORITY_LAYER_FIX",
+  "state": "FORENSIC_CANONICAL_PRECERT",
   "entrypoint": "app/index-backend-dev.html",
   "loadedScriptsTotal": 130,
   "internalScriptsTotal": 124,
@@ -1352,8 +1352,8 @@
     "same-artifact-human-live"
   ],
   "production": "DO_NOT_TOUCH",
-  "productSourceAfter": "829afe0c98da6d44b10a8dfa92be233dbedebb6b",
-  "productTreeAfter": "84a364832844e9058cae31ce28c83bb340359609",
+  "productSourceAfter": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+  "productTreeAfter": "eaa5dfcd9d62ce02d0edada943da056c3730f5c0",
   "sourceDiff": {
     "productCommit": "186c2a8f5a243d0ccf1c3720acbe13ff38825895",
     "filesChangedInInitialAtomicComposition": 11,
@@ -1362,15 +1362,20 @@
       "app/adapters/tya-cumulative-read-model-v2.js"
     ],
     "onlyAuthorizedOwners": true,
-    "latestProductCommit": "829afe0c98da6d44b10a8dfa92be233dbedebb6b",
-    "latestProductTree": "84a364832844e9058cae31ce28c83bb340359609"
+    "latestProductCommit": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+    "latestProductTree": "eaa5dfcd9d62ce02d0edada943da056c3730f5c0",
+    "forensicCacheFixFiles": [
+      "app/sw.js",
+      "firebase.json"
+    ]
   },
   "moduleTruth": {
-    "schemaVersion": "cxorbia.recovery.module-truth-matrix.v4",
+    "schemaVersion": "cxorbia.recovery.module-truth-matrix.v5",
     "activeInternalScripts": 124,
     "activeOutsideMatrix": 0,
     "duplicateSrc": 0,
-    "unknownOverlays": 0
+    "unknownOverlays": 0,
+    "unauthorizedDrift": 0
   },
   "correctionHistory": [
     {
@@ -1410,6 +1415,29 @@
         "app/core/backend-firebase.js": "4a1b16787855a7da537a84941cf706ad76850b97",
         "app/adapters/tya-cumulative-read-model-v2.js": "21f838e0f6236c7aa9f82ba70e74501af8410639"
       }
+    }
+  ],
+  "controlPlaneRules": {
+    "matrixIndependentProvenance": true,
+    "expectedRouteInventoryEntries": 56,
+    "fullHumanBeforeArtifact": true,
+    "gate20DerivedFromFullHuman": true,
+    "gate21AfterFullHuman": true,
+    "legacyRun188LaneAllowed": false,
+    "noRebuildAfterHumanAcceptance": true
+  },
+  "releaseCompositionFixes": [
+    {
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "owners": [
+        "app/sw.js",
+        "firebase.json"
+      ],
+      "reason": "stale BUILD_ID cache namespace plus absent cache-control allowed stale/mixed visual runtime",
+      "sourceCommit": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
+      "treeSha": "eaa5dfcd9d62ce02d0edada943da056c3730f5c0",
+      "serviceWorkerBlob": "6c67028a6fa83900a2e7acbeb556c19a1acdfce1",
+      "firebaseBlob": "b5f5bbd29b385cf4f6e654e2a028baf98bb41ae3"
     }
   ]
 }
