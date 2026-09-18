@@ -56,6 +56,7 @@ jobs:
     timeout-minutes: 70
     env:
       ACCEPTANCE_OUT: .tmp/recovery-i3-human-live-acceptance
+      CX_FORENSIC_IDENTITY_ONLY: ${{ contains(github.event.head_commit.message, '[identity-diagnostic-only]') && '1' || '0' }}
       CERTIFIED_HOSTING_VERSION: sites/cxorbia-backend-dev/versions/714f0e0d2322fed0
       CERTIFIED_RUNTIME_REVISION: cxorbia-live-hr-dev-00122-csp
       CERTIFIED_RUNTIME_DIGEST: sha256:8eb503c6bf9218c3d994d12bcbf1f7ef359603ef0e04ebc932ab7d9907ac8e1d
@@ -83,7 +84,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
-          npx playwright install --with-deps chromium >/dev/null
+          if [ "$CX_FORENSIC_IDENTITY_ONLY" != "1" ]; then npx playwright install --with-deps chromium >/dev/null; fi
       - name: Authenticate canonical Firebase DEV
         uses: google-github-actions/auth@v2
         with:
