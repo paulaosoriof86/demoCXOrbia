@@ -47,13 +47,27 @@ const claimsDigest=claims=>sha(canonicalClaims(claims?.shopperId,claims?.tenantI
 const pick=(input,keys)=>Object.fromEntries(keys.filter(key=>input&&input[key]!==undefined).map(key=>[key,input[key]]));
 const publicProfile=input=>clean(pick(input||{},PUBLIC_PROFILE_FIELDS));
 const protectedProfile=input=>clean(pick(input||{},PROTECTED_PROFILE_FIELDS));
-const identityLinkTokens=link=>uniq([
-  link?.sourceIdentityKey,link?.sourceSubjectId,link?.sourceId,link?.sourceKey,
-  link?.legacyShopperId,link?.externalShopperId,link?.externalId,link?.hrRowId,
-  link?.personId,link?.shopperDocId,
-  ...arr(link?.sourceAliases),...arr(link?.sourceIdentityAliases),...arr(link?.identityAliases),
-  ...arr(link?.exactAliases),...arr(link?.aliases)
+const IDENTITY_TECHNICAL_KEYS=Object.freeze([
+  'shopperId','legacyShopperId','legacyId','externalShopperId','externalId','sourceId','sourceKey',
+  'hrRowId','personId','profileId','shopperDocId','sourceIdentityKey','sourceSubjectId'
 ]);
+const IDENTITY_ALIAS_KEYS=Object.freeze(['exactAliases','identityAliases','aliases','sourceAliases','sourceIdentityAliases']);
+const flattenTechnical=value=>{
+  const out=[];
+  const walk=v=>{
+    if(v==null)return;
+    if(Array.isArray(v)){v.forEach(walk);return;}
+    if(typeof v==='object'){Object.values(v).forEach(walk);return;}
+    const token=str(v);if(token)out.push(token);
+  };
+  walk(value);return out;
+};
+const identityLinkTokens=link=>uniq([
+  link,link?.sourceIdentity,link?.identity,link?.crosswalk,link?.profile,link?.exactIdentityAnchors
+].filter(Boolean).flatMap(container=>[
+  ...IDENTITY_TECHNICAL_KEYS.flatMap(key=>flattenTechnical(container[key])),
+  ...IDENTITY_ALIAS_KEYS.flatMap(key=>flattenTechnical(container[key]))
+]));
 
 async function exactShopperIdentityMap(db,tenantId,projectId){
   const links=db.collection('tenants').doc(tenantId).collection('shopperIdentityLinks');
@@ -69,7 +83,7 @@ async function exactShopperIdentityMap(db,tenantId,projectId){
     const sourceSystem=str(link.sourceSystem||link.sourceNamespace||link.sourceType||link.sourceIdentity?.sourceSystem).toLowerCase();
     if(str(link.tenantId||link.scope?.tenantId)!==tenantId)continue;
     if(!ACTIVE_IDENTITY_LINK_STATES.has(status)||!TRUSTED_IDENTITY_AUTHORITIES.has(authority)||!authorityRef)continue;
-    if(link.periodIndependent!==true||link.periodKey||link.periodId||link.periodScope)continue;
+    if(link.periodKey||link.periodId||link.periodScope)continue;
     if(scope!=='*'&&scope.toLowerCase()!=='tenant'&&scope!==projectId)continue;
     if(!canonicalShopperId||!sourceSystem.includes('hr'))continue;
     for(const token of identityLinkTokens(link)){

@@ -193,7 +193,7 @@ test('Gate 6 / trusted exact identity link reuses one canonical Auth for an HR t
   const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),canonical='shopper_gt_cesar_plain',alias='shopper_gt_cesar_accent',canonicalUid=stableShopperUid('tenant-a',canonical);
   const first=snapshot({shopperId:canonical,shopperCode:'TYA_GT_CESAR'});first.visits[0].shopper='Cesar Castillo';
   await p.reconcileSnapshot(first,{sourceRevision:'rev-cesar-1'});
-  db.seed('tenants/tenant-a/shopperIdentityLinks/link-cesar',{tenantId:'tenant-a',canonicalShopperId:canonical,sourceSystem:'hr',sourceIdentityKey:alias,sourceAliases:[alias],projectScope:'project-a',status:'active',periodIndependent:true,authorityType:'provider_exact',authorityRef:'provider-ack-cesar'});
+  db.seed('tenants/tenant-a/shopperIdentityLinks/link-cesar',{tenantId:'tenant-a',canonicalShopperId:canonical,sourceSystem:'hr',sourceIdentity:{legacyId:alias},projectScope:'project-a',status:'active',authorityType:'provider_exact',authorityRef:'provider-ack-cesar'});
   const second=snapshot({shopperId:alias,shopperCode:'TYA_GT_CESAR_ALIAS'});second.visits[0].shopper='César Castillo';
   const result=await p.reconcileSnapshot(second,{sourceRevision:'rev-cesar-2'});
   assert.equal(result.authCreated,0);assert.equal(auth.created,1);assert.equal(auth.users.size,1);
