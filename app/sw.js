@@ -1,7 +1,8 @@
 /* CXOrbia · Service Worker mínimo — habilita instalación PWA y caché básico offline.
    network-first para SIEMPRE preferir la versión más reciente de cada archivo;
-   la caché es solo respaldo offline. Los assets críticos del runtime legal protegido
-   son network-only/fail-closed: nunca pueden caer a una copia vieja de CacheStorage.
+   la caché es solo respaldo offline para activos no críticos. Todo el runtime
+   ejecutable de CXOrbia (HTML/core/adapters/modules/data/styles/vendor/manifest)
+   es network-only/fail-closed: nunca puede caer a una copia vieja de CacheStorage.
    P1 (V98 instrucciones exactas) + pendiente #11 (paquete genérico 20260711):
    BUILD_ID ya NO se define aquí de forma independiente — se importa desde
    core/build-lock.js, la ÚNICA fuente del valor, para que la app y el Service
@@ -15,15 +16,23 @@ importScripts('core/build-lock.js');
 const CX_CACHE = 'cxorbia-'+CX_BUILD_ID;
 const CX_FAIL_CLOSED_PATHS = new Set([
   '/index-backend-dev.html',
-  '/adapters/cxorbia-command-adapter-v1.js',
-  '/adapters/cxorbia-legal-acceptance-durable-contract-v1.js',
-  '/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js',
-  '/adapters/cxorbia-legal-runtime-http-v1.js'
+  '/index.html',
+  '/manifest.webmanifest'
 ]);
+const CX_RUNTIME_PREFIXES = [
+  '/core/',
+  '/adapters/',
+  '/modules/',
+  '/data/',
+  '/styles/',
+  '/vendor/'
+];
 const isFailClosedRequest = request => {
   try {
     const url = new URL(request.url);
-    return url.origin === self.location.origin && CX_FAIL_CLOSED_PATHS.has(url.pathname);
+    if (url.origin !== self.location.origin) return false;
+    return CX_FAIL_CLOSED_PATHS.has(url.pathname)
+      || CX_RUNTIME_PREFIXES.some(prefix => url.pathname.startsWith(prefix));
   } catch (_) { return false; }
 };
 self.addEventListener('install', e => { self.skipWaiting(); });
@@ -32,10 +41,10 @@ self.addEventListener('activate', e => {
     /* Purga cachés de versiones anteriores y elimina cualquier copia crítica que
        hubiera quedado en el namespace actual antes de este fix. */
     const keys = await caches.keys();
-    await Promise.all(keys.filter(k => k !== CX_CACHE).map(k => caches.delete(k)));
-    const current = await caches.open(CX_CACHE);
-    const requests = await current.keys();
-    await Promise.all(requests.filter(isFailClosedRequest).map(request => current.delete(request)));
+    /* Recovery anti-desync: a newly activated worker purges every prior product
+       cache namespace, including a same BUILD_ID namespace inherited from an
+       older recovery composition. Runtime-critical assets are never re-cached. */
+    await Promise.all(keys.map(k => caches.delete(k)));
     await self.clients.claim();
   })());
 });
