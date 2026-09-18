@@ -27,9 +27,9 @@ concurrency:
 env:
   I3_CERTIFICATION_SOURCE_SHA: 6d4dbdc098348500ba62161d8136458e8b1016ad
   I3_CERTIFICATION_SOURCE_TREE: 669a1c8c12e8eef24e26ba410b8d50d0bf58fb97
-  LOCKED_GATE20_BASELINE_RUN_ID: '34306578074'
-  LOCKED_GATE20_BASELINE_RUN_ATTEMPT: '1'
-  LOCKED_GATE20_BASELINE_SOURCE_SHA: bd2a519db5ebd08f17d47827997056db795c8c09
+  HISTORICAL_GATE20_BASELINE_RUN_ID: '34306578074'
+  HISTORICAL_GATE20_BASELINE_RUN_ATTEMPT: '1'
+  HISTORICAL_GATE20_BASELINE_SOURCE_SHA: bd2a519db5ebd08f17d47827997056db795c8c09
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -60,6 +60,7 @@ jobs:
           set -euo pipefail
           mkdir -p "$OUT"
           test "$GITHUB_REF_NAME" = "recovery/cxorbia-phase-a-20260831"
+          ! grep -Eq 'certification_source_(sha|tree)|I3_CERTIFICATION_SOURCE_(SHA|TREE):' .github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml
           git cat-file -e "$I3_CERTIFICATION_SOURCE_SHA^{commit}"
           test "$(git rev-parse "$I3_CERTIFICATION_SOURCE_SHA^{tree}")" = "$I3_CERTIFICATION_SOURCE_TREE"
           git merge-base --is-ancestor "$I3_CERTIFICATION_SOURCE_SHA" HEAD
@@ -764,14 +765,14 @@ jobs:
           mkdir -p "$OUT/gate20"
           curl --fail --silent --show-error \
             -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$LOCKED_GATE20_BASELINE_RUN_ID/attempts/$LOCKED_GATE20_BASELINE_RUN_ATTEMPT" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$HISTORICAL_GATE20_BASELINE_RUN_ID/attempts/$HISTORICAL_GATE20_BASELINE_RUN_ATTEMPT" \
             > "$OUT/gate20/locked-baseline-run.json"
-          jq -e --arg sha "$LOCKED_GATE20_BASELINE_SOURCE_SHA" --argjson attempt "$LOCKED_GATE20_BASELINE_RUN_ATTEMPT" \
+          jq -e --arg sha "$HISTORICAL_GATE20_BASELINE_SOURCE_SHA" --argjson attempt "$HISTORICAL_GATE20_BASELINE_RUN_ATTEMPT" \
             '.head_sha==$sha and .run_attempt==$attempt and .status=="completed" and .conclusion=="success"' \
             "$OUT/gate20/locked-baseline-run.json" >/dev/null
           jq -n -S \
-            --argjson run "$LOCKED_GATE20_BASELINE_RUN_ID" \
-            --arg sha "$LOCKED_GATE20_BASELINE_SOURCE_SHA" \
+            --argjson run "$HISTORICAL_GATE20_BASELINE_RUN_ID" \
+            --arg sha "$HISTORICAL_GATE20_BASELINE_SOURCE_SHA" \
             --arg tenant "$TENANT_ID" --arg project "$PROJECT_ID" --arg period "$PERIOD_ID" \
             '{decision:"PASS_LOCKED_GATE20_BASELINE",lockedEvidence:true,lockedRunId:$run,lockedSourceSha:$sha,tenantId:$tenant,projectId:$project,periodId:$period,authority:"HISTORICAL_PASS_BASELINE_ONLY_NOT_RELEASE_SOURCE",production:false}' \
             > "$OUT/gate20/gate20-locked.json"
@@ -1000,7 +1001,4 @@ jobs:
     name: Gate 21 integrity of same certification artifact
     needs: certify
     uses: ./.github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml
-    with:
-      certification_source_sha: 6d4dbdc098348500ba62161d8136458e8b1016ad
-      certification_source_tree: 669a1c8c12e8eef24e26ba410b8d50d0bf58fb97
     secrets: inherit

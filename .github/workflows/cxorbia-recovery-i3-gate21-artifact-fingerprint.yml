@@ -2,13 +2,6 @@ name: CXOrbia Recovery I3 Gate 21 Artifact Fingerprint
 
 on:
   workflow_call:
-    inputs:
-      certification_source_sha:
-        required: true
-        type: string
-      certification_source_tree:
-        required: true
-        type: string
 
 permissions:
   contents: read
@@ -23,8 +16,6 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  I3_CERTIFICATION_SOURCE_SHA: ${{ inputs.certification_source_sha }}
-  I3_CERTIFICATION_SOURCE_TREE: ${{ inputs.certification_source_tree }}
   CERTIFICATION_ARTIFACT_NAME: cxorbia-recovery-i3-single-source-certification-${{ github.run_id }}
   OUT_DIR: .gate21
 
@@ -38,21 +29,40 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Prove source lock and no product drift
-        run: |
-          set -euo pipefail
-          mkdir -p "$OUT_DIR"
-          test "$(git rev-parse "$I3_CERTIFICATION_SOURCE_SHA^{tree}")" = "$I3_CERTIFICATION_SOURCE_TREE"
-          git merge-base --is-ancestor "$I3_CERTIFICATION_SOURCE_SHA" HEAD
-          git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
-          printf '%s\n' "$I3_CERTIFICATION_SOURCE_SHA" > "$OUT_DIR/source-sha.txt"
-          printf '%s\n' "$I3_CERTIFICATION_SOURCE_TREE" > "$OUT_DIR/source-tree-sha.txt"
-
       - name: Download exact certification artifact from this same workflow run
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.CERTIFICATION_ARTIFACT_NAME }}
           path: .gate21/certification
+
+      - name: Resolve release identity only from same-run certification manifest
+        run: |
+          set -Eeuo pipefail
+          mkdir -p "$OUT_DIR"
+          CERT="$OUT_DIR/certification"
+          test -f "$CERT/i3-certification-manifest.json"
+          test -f "$CERT/result.json"
+          cmp --silent "$CERT/i3-certification-manifest.json" "$CERT/result.json"
+
+          SOURCE_SHA="$(jq -r '.i3CertificationSourceSha // empty' "$CERT/result.json")"
+          SOURCE_TREE="$(jq -r '.i3CertificationSourceTree // empty' "$CERT/result.json")"
+          CONTROL_HEAD="$(jq -r '.controlHeadSha // empty' "$CERT/result.json")"
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$SOURCE_TREE" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$CONTROL_HEAD" =~ ^[0-9a-f]{40}$ ]]
+          test "$CONTROL_HEAD" = "$(git rev-parse HEAD)"
+
+          git cat-file -e "$SOURCE_SHA^{commit}"
+          test "$(git rev-parse "$SOURCE_SHA^{tree}")" = "$SOURCE_TREE"
+          git merge-base --is-ancestor "$SOURCE_SHA" HEAD
+          git diff --quiet "$SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools/hr-source ':(exclude)backend/runtime/hr-live-service/test/**'
+
+          printf '%s\n' "$SOURCE_SHA" > "$OUT_DIR/source-sha.txt"
+          printf '%s\n' "$SOURCE_TREE" > "$OUT_DIR/source-tree-sha.txt"
+          echo "I3_CERTIFICATION_SOURCE_SHA=$SOURCE_SHA" >> "$GITHUB_ENV"
+          echo "I3_CERTIFICATION_SOURCE_TREE=$SOURCE_TREE" >> "$GITHUB_ENV"
+
+          jq -n -S --arg source "$SOURCE_SHA" --arg tree "$SOURCE_TREE" --arg control "$CONTROL_HEAD" --arg artifact "$CERTIFICATION_ARTIFACT_NAME"             '{decision:"PASS_GATE21_MANIFEST_DERIVED_RELEASE_IDENTITY",sourceSha:$source,sourceTree:$tree,controlHeadSha:$control,artifactName:$artifact,independentSourceAuthority:false,production:false}'             > "$OUT_DIR/release-identity-handoff.json"
 
       - name: Verify immutable certification artifact and Gate 20 binding
         run: |
