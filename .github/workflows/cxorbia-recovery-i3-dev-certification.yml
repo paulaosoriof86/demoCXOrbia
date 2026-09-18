@@ -635,20 +635,25 @@ jobs:
             const url=`${HOSTING_URL}/index-backend-dev.html?cxBackendPreview=${PREVIEW}&cxProjectId=${encodeURIComponent(projectId)}&cxProtectedRuntime=${PROTECTED}&cxHumanFullVisual=${FULL}`;
             await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
             await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
-            await page.waitForFunction(()=>typeof window.CX?.backendAuth?.authenticate==='function',null,{timeout:90000});
-            await page.evaluate(({login,password})=>{
-              void window.CX.backendAuth.authenticate(login,password,'shopper','shopper').catch(error=>{
-                try{sessionStorage.setItem('cx_i3_credential_probe_error',String(error?.message||error));}catch(_){}
-              });
-            },{login:sample.login,password:sample.password});
-            await page.waitForFunction(({shopperId})=>{
-              const c=window.CX?.backendAuth?.context?.()||{};
-              return c.authenticated===true&&c.role==='shopper'&&String(c.shopperId||'')===String(shopperId||'');
-            },{shopperId:sample.shopperId},{timeout:90000});
-            const result=await page.evaluate(()=>{const c=window.CX?.backendAuth?.context?.()||{};return {role:c.role,shopperId:c.shopperId,authenticated:c.authenticated};});
-            passwordLoginPassed=result.authenticated===true&&result.role==='shopper'&&String(result.shopperId||'')===sample.shopperId;
+            const result=await page.evaluate(async ({email,password})=>{
+              const cred=await window.firebase.auth().signInWithEmailAndPassword(email,password);
+              const token=await cred.user.getIdTokenResult(true);
+              return {
+                uid:String(cred.user.uid||''),
+                role:String(token?.claims?.role||''),
+                shopperId:String(token?.claims?.shopperId||''),
+                tenantId:String(token?.claims?.tenantId||''),
+                authNamespace:String(token?.claims?.authNamespace||'')
+              };
+            },{email:expectedEmail,password:sample.password});
+            passwordLoginPassed=
+              result.uid===sample.uid&&
+              result.role==='shopper'&&
+              result.shopperId===sample.shopperId&&
+              result.tenantId===tenantId&&
+              result.authNamespace==='shopper';
             if(!passwordLoginPassed)throw new Error('AUTH_FAILURE:CREDENTIAL_RULE_PASSWORD_LOGIN_CONTEXT');
-            await page.evaluate(async()=>{try{await window.CX.backendAuth.signOut();}catch(_){}});
+            await page.evaluate(async()=>{try{await window.firebase.auth().signOut();}catch(_){}});
             await ctx.close();
           } finally {await browser.close();}
           const evidence={decision:'PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE',credentialRuleVersion:RULE,credentialSweepVersion:SWEEP,activeShopperMemberships:targets.length,checked,identityReviewCount:reviewed,profileAndAuthMappingExact:true,passwordLoginPassed,plaintextPersisted:false,production:false};
