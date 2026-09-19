@@ -102,9 +102,13 @@ new_login="""async function visibleShopperLogin(f) {
 exact(old_login,new_login,"VISIBLE_LOGIN_BLOCK")
 
 role_click="""    await page.locator('.role-btn[data-role="shopper"]').click({ timeout: 30000 });"""
-role_ready="""    await page.waitForFunction(() => typeof window.CX?.backendAuth?.selectedRole === 'function' && window.CX?.app?.__firebaseBrowserAuthWrapped === true && window.CX?.app?.__c6SingleFormRoleGuard === true, null, { timeout: 30000 });
+role_ready="""    await page.waitForFunction(() => typeof window.CX?.backendAuth?.selectedRole === 'function' && window.CX?.app?.__firebaseBrowserAuthWrapped === true && window.CX?.app?.__c6SingleFormRoleGuard === true && document.querySelector('#loginForm')?.__cxSingleFormAuthBound === true && window.CX_TYA_C6_UNIFIED_RUNTIME?.ready === true && window.CX_C6_SHOPPER_AUTH_CLICK_GUARD?.installed === true, null, { timeout: 45000 });
+    await page.waitForTimeout(750);
+    await page.waitForFunction(() => document.querySelector('#loginForm')?.__cxSingleFormAuthBound === true && typeof window.CX?.backendAuth?.selectedRole === 'function', null, { timeout: 15000 });
     await page.locator('.role-btn[data-role="shopper"]').click({ timeout: 30000 });
-    await page.waitForFunction(() => window.CX?.backendAuth?.selectedRole?.() === 'shopper' && document.querySelector('#loginForm')?.dataset?.selectedRole === 'shopper', null, { timeout: 30000 });"""
+    await page.waitForFunction(() => window.CX?.backendAuth?.selectedRole?.() === 'shopper' && document.querySelector('#loginForm')?.dataset?.selectedRole === 'shopper', null, { timeout: 30000 });
+    await page.waitForTimeout(500);
+    await page.waitForFunction(() => window.CX?.backendAuth?.selectedRole?.() === 'shopper' && document.querySelector('#loginForm')?.dataset?.selectedRole === 'shopper', null, { timeout: 5000 });"""
 role_count=s.count(role_click)
 if role_count!=2:
     raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:SHOPPER_ROLE_CLICK_COUNT:{role_count}")
