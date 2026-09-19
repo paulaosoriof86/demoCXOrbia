@@ -103,11 +103,11 @@
     }
   },
   "productSource": {
-    "sha": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
-    "treeSha": "c0cfb98637316c8209753badc08d537bfa79cde8",
-    "message": "fix(i3): preserve provider-generated entity id across ACK boundary"
+    "sha": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
+    "treeSha": "60840ee5f2fc858ca41f0df1771dc97837070261",
+    "message": "fix(i3): accept applied protected HR authority for ACK readback readiness"
   },
-  "controlHeadAtConstruction": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+  "controlHeadAtConstruction": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
   "phaseAComplete": true,
   "allModulesMatch": true,
   "modules": [
@@ -184,8 +184,8 @@
         "tools/hr-source/tya-canonical-visit-state-r20.mjs",
         "tools/hr-source/tya-reapply-canonical-state-r20.mjs"
       ],
-      "lastApprovedAuthority": "RUN220_P0_POSTULATIONS_DURABLE_READ_MODEL",
-      "sourceCommit": "7104a45c9b04549ccb8a0c4849457ee7f9753ade",
+      "lastApprovedAuthority": "RUN225_P0_PROTECTED_BACKEND_READY_ACK_READBACK",
+      "sourceCommit": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "loadOrderEntrypoint": "app/index-backend-dev.html",
       "roles": [
         "Admin",
@@ -532,7 +532,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "068b28bce919c2a4f357eb4c21f85fede06a0c5d",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -557,7 +557,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "0bf7b6c1daded062806d90e03ba2c5d67ac1fe63",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -576,7 +576,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "0d4f3b75da2e642c09e3c9adf006566668d23169",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -595,7 +595,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "c6921e26773c866ba0b0ac0b725f4660e47742a5",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -620,7 +620,7 @@
       "approvedSourceCommit": "3d36b46c53e970899d16e24a7061bd33c5ba812f",
       "approvedBlob": "703472f0659ed8581e2ec2c34522c90385f3a0ac",
       "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -639,7 +639,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "333f5fd204cba2c53eefe8f98acb27a4502da166",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -664,7 +664,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "6149dff1d91b83af007badbaafdef63f00c34d1f",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -683,7 +683,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "4dbfe7f318b72a174dd2c253fb5355166788a7f5",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -702,7 +702,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "755c5689a70e574917e32ad9d8baeaa4238d80f5",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -721,7 +721,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "663bffee3d339f1602e92a62f1e065c4d6297ac4",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -746,7 +746,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "3e2ac5716d711a7a883886085399ca04c614de77",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -765,7 +765,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "d29605947a7b455119d74ddcf29ac34c4720e437",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -790,7 +790,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "7f0c4547a68b8bafebae0652b8de5c8e27114a0c",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -809,7 +809,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "940ece14951719114401891697f303fab88b0f36",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -834,7 +834,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "bedc4f8bbc80dba9f03e34ec6bbcf9cfeeb2a1d5",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -853,7 +853,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "b18921f9cc87cb78a4db34b6205a480749470f26",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -872,7 +872,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "1ff971b3a9684bf3d2592883f1832e6992043154",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -891,7 +891,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "4df42e90e0c1b42a45be57e6e34ad8c1f73b2daf",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -910,7 +910,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "d06561fc2574c818463cf9c650f5ff276c14d9e5",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -929,7 +929,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "889426185947563aaf128d7206acf42fdb218e3b",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -948,7 +948,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "5eb9146d7b8050bff489602d25426e658fb9316e",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -967,7 +967,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "7c36694b90736af980145c32c2aa4c034cd34870",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -986,7 +986,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "91fedfea2f837fa6b4319b3738432afc6da05a94",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1005,7 +1005,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "1e8866bbb585e970c993c5ebec245ca644d0fc6c",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1024,7 +1024,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "3afbcc5faa627029e09ecf695c7f494f2c7995d2",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1043,7 +1043,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "8285bdbc138f6ca8f85bf680f06d22e3a962cf28",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1062,7 +1062,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "e40955ee476e8fe5a0bab01965b0e29bd0958b5b",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1081,7 +1081,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "088c68680177c470a4539622e1694128dd211d85",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1106,7 +1106,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "dde322890eb8821b822215905b82a22102d73d2c",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1131,7 +1131,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "6d3f46f003f3319f96cfd759b8b5ed52afc6a125",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1150,7 +1150,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "c86f8d98eac023fa6cd30d59f0a792edfc885f23",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1173,7 +1173,7 @@
       "approvedSourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
       "approvedBlob": "66deef501caa885ca42fc9e3c6971510deda69bb",
       "approvalAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX"
     },
@@ -1198,7 +1198,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "c83e455ed50fa23552abaf1a9ecd16d81903d12b",
       "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): make project source routing explicit and multi-project safe; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1221,7 +1221,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "9b2d465dfe4d77a0a30786b0d540903b0f014c32",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1246,7 +1246,7 @@
       "approvedSourceCommit": "7104a45c9b04549ccb8a0c4849457ee7f9753ade",
       "approvedBlob": "2d87309292b28804a032a874b87f523412b58a13",
       "approvalAuthority": "P0_PROVEN_RUN220_POSTULATIONS_NOT_DURABLE_ONLY_OWNER_FIX",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX"
     },
@@ -1269,7 +1269,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "89d1de9535ac4537c0309c8bf24483cceebc08e5",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1294,7 +1294,7 @@
       "approvedSourceCommit": "3d36b46c53e970899d16e24a7061bd33c5ba812f",
       "approvedBlob": "f8e472154fa8869bcbb2e6aa240d0f0be9ed3f5c",
       "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1313,7 +1313,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "b12f0ec1e26d2c8d34fa19fb98433d02e926a455",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1332,7 +1332,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "8eaad7a9b56e559a342aee5f4be2f303ed61fbaf",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1355,7 +1355,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "1e8637339b4c61a8827993f0166047f6172cbca9",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1380,7 +1380,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "00f2b3d1e92ad6154853282a8881163cf9e6ca5d",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1399,7 +1399,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "a6c73a471af480e904e59adcacc12ec08d4a697f",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1418,7 +1418,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "6b2e3ce079552fad247c7202df684328ad7dac7b",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1443,7 +1443,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "6ff36a155e81fc95ed4c41160505f72aaf5b8496",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1466,7 +1466,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "ffdfe6b7de4b58b1d17765ce6f7820076a5ea157",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1489,7 +1489,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "a96370a5a72ac6a12a6733d6e768a52293abe82b",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1512,7 +1512,7 @@
       "approvedSourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
       "approvedBlob": "2074daee29ec108719ed5cdd33b49922ec348d02",
       "approvalAuthority": "P0_PROVEN_HR_CROSSWALK_PRECEDENCE",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX"
     },
@@ -1535,7 +1535,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "6a54ddbbbf3a6d717c9e9ffed6a16f3bba1591b0",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1554,7 +1554,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "bae31255c340e14bccec4f1e6a3b844ddd5cd65e",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1577,7 +1577,7 @@
       "approvedSourceCommit": "829afe0c98da6d44b10a8dfa92be233dbedebb6b",
       "approvedBlob": "4a1b16787855a7da537a84941cf706ad76850b97",
       "approvalAuthority": "P0_PROVEN_LIVE_HR_DURABLE_AUTHORITY_LAYER",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX"
     },
@@ -1588,21 +1588,21 @@
       "historicalApprovedBlob": "4ff03ce4a4ab3cc680be32cc71f32d406cdb9307",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "4ff03ce4a4ab3cc680be32cc71f32d406cdb9307",
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "03b94ab55f24c95d1fea9b40f8ffa265f679f3cc",
-      "currentBlob": "03b94ab55f24c95d1fea9b40f8ffa265f679f3cc",
+      "latestApprovedSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
+      "latestApprovedBlob": "f0eee3b58e05956968790ce457700c4d16586c05",
+      "currentBlob": "f0eee3b58e05956968790ce457700c4d16586c05",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "090d01dc4913112a68d39f6c1547e6556458384d",
-      "latestApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED",
+      "latestApprovedAuthority": "RUN225_P0_PROTECTED_BACKEND_READY_ACK_READBACK",
       "loadOrder": 57,
       "atomicDisposition": "FOCAL_FIX",
-      "approvedSourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "approvedBlob": "03b94ab55f24c95d1fea9b40f8ffa265f679f3cc",
-      "approvalAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "approvedSourceCommit": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
+      "approvedBlob": "f0eee3b58e05956968790ce457700c4d16586c05",
+      "approvalAuthority": "P0_PROVEN_RUN225_PROTECTED_BACKEND_NOT_READY_OWNER_FIX",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX"
     },
@@ -1625,7 +1625,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "49b66d84ddb772e1e33a9845ddff9cde1ccdc670",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1644,7 +1644,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "dc492b96ede5da4fbd065564a4f130b14b15dd4f",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1663,7 +1663,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "d3e519f20bb92662e0feb11407a735b36fd13457",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1682,7 +1682,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "785ea0967b5984fd63431048712b3a5726a4e947",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1705,7 +1705,7 @@
       "approvedSourceCommit": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
       "approvedBlob": "12c06b7569c0be9ee6dc96555b541e0e6345afac",
       "approvalAuthority": "P0_PROVEN_RESERVATION_ACK_ENTITY_ID_OWNER_FIX",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX"
     },
@@ -1728,7 +1728,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "72bdfcdaa5667b62b52962396631e1665506ba13",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1751,7 +1751,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "c928691256c1b7c18a51758d3dce94c63b26e976",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1774,7 +1774,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "aad818a8be3581397672ade7988c9a5ec9b4ccb0",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1793,7 +1793,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "3ad9c3db4f998a9edd23aaf7d2de8a8d8cc192f6",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1816,7 +1816,7 @@
       "approvedSourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
       "approvedBlob": "f0c6359061bc2030c834a2a5b53c5e6c6717b33d",
       "approvalAuthority": "P0_PROVEN_DURABLE_COMMAND_BOUNDARY",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX"
     },
@@ -1835,7 +1835,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "1e94719110d72b76da05a86ebc54d28bd6f9338a",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1854,7 +1854,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "4f51dfa1b8e6287c9c2ef63f5b05e5fc9d2beedb",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1873,7 +1873,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "63ad78a8b50134a787c66b3e49e551313edc69d8",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1892,7 +1892,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "3f3dad02014b743af201ccac07719007db736639",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1911,7 +1911,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "93b11308c2b4078c292f6f68da0b9a72d1d8f0b0",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1934,7 +1934,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "931054b79a4b477e3f6732829ac02e476f6780ca",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1959,7 +1959,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "6a527c3813ad4318bc921bf3c997bc4c70726db5",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -1982,7 +1982,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "18c5dc95129b434c6362a313d4c8b317bea7a965",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2005,7 +2005,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "10c87de64550a1cfe6a9f7ae96e8a0445a71222f",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2024,7 +2024,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "e59210e95e99a9e568f976dcd13c6f98b963464f",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2043,7 +2043,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "b6d8bb5d5b6aacf0e456130bb7b7b746bcf754bf",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2068,7 +2068,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "fdd3c91c1428d49413fb305ed464dffdc6ea3e13",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2093,7 +2093,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "98d901850a437b029abac2ba3e569dc3a9543940",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2118,7 +2118,7 @@
       "approvedSourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
       "approvedBlob": "a42fe7119661aeba3754a5119479e65040cfa02a",
       "approvalAuthority": "P0_PROVEN_SELECTED_PERIOD_SEMANTICS",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX"
     },
@@ -2143,7 +2143,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "9492e710671749f954510d49dcf93e590a52669c",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2168,7 +2168,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "7987d7186efcaa12f33e4fd11f91ae6e50fd7ad5",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2193,7 +2193,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "bf259b28e871bc6cea991f14ce5560323ef55f9e",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2218,7 +2218,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "dcfe3e9f0b5e97fdc0a4af77ba3873854ef545b0",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2243,7 +2243,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "3c722c503634665d3574979db267f1dda2c3c159",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2268,7 +2268,7 @@
       "approvedSourceCommit": "3d36b46c53e970899d16e24a7061bd33c5ba812f",
       "approvedBlob": "43f1aa36468340aa96ceec30b30f4816b13c6d2a",
       "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2293,7 +2293,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "322a350e22a57a94c587a38d480f1ccf28157db7",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2318,7 +2318,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "41fcea495c1e23e7ecee43a637b45002124ea3c9",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2343,7 +2343,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "a9801776eda4b52d447abaf20c28e2bf4290930d",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2368,7 +2368,7 @@
       "approvedSourceCommit": "3d36b46c53e970899d16e24a7061bd33c5ba812f",
       "approvedBlob": "a6d11eb76a834182e76b981e4d954a1d3aa7f357",
       "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): separate canonical project and period scope; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2393,7 +2393,7 @@
       "approvedSourceCommit": "dcba411b1e6f88d3e500fd5e2df53d664af7771e",
       "approvedBlob": "bc767591653f0f5a49214de60a4886c6b40c2330",
       "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): enforce owner shopper credential rule; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2418,7 +2418,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "19feb19b96c7d2f69c3cfed785fdbfcaabd96e2d",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2443,7 +2443,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "73e200e57530479637792c89c644fcfdf78b6799",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2468,7 +2468,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "d2eb7784d4b695f863d330f42a6ee6575a87a3f6",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2493,7 +2493,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "5532109dec5c942c2fa6d520ad0a7e0b7b104034",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2518,7 +2518,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "28c302761f22807ed5ebcb1f04cd1d12827652dd",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2543,7 +2543,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "0b42dd790d946d327eb1110b78878e302d51aa6e",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2562,7 +2562,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "ab2e67c882a0c94a3efac1d9ef5f2d624fd32c0c",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2587,7 +2587,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "509c4dd251515ea1429ebe51d69d9e779ae69a54",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2612,7 +2612,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "5af9e5d28833524cabba132834738e8acce55e0b",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2631,7 +2631,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "3b9d653959045b866432cf4b07309052baba2bba",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2650,7 +2650,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "e5fa0e57083d4affdc044f3c32eeffd1c96980b5",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2675,7 +2675,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "4e5981081bdd01de368c4f412ed476244426634e",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2700,7 +2700,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "ca3d2d6b356b3d942ebbb2076625ce0b000e4b64",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2719,7 +2719,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "87d0a9d0bd06895c937f9d8ee1e0c985248d1b2e",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2744,7 +2744,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "3a8a4ac11fe3dfe5bff11c4840f355742bc93375",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2763,7 +2763,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "9c3c98605f4fb2e22d66b241607c9dd70c45d159",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2782,7 +2782,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "ad4f6b4621a69aa2cb303f026be6113e8f158ca2",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2801,7 +2801,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "61aaee6432e4a4206b07f8633d158b8d2b2c2271",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2820,7 +2820,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "6a6ff1c964eff4f25ecaf33b028335bfc62810ee",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2839,7 +2839,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "6bfe1b4e3dbed12ead8a88404cdb495dbf1b8e83",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2864,7 +2864,7 @@
       "approvedSourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
       "approvedBlob": "e7bb40adc8d3258d94d9373e67b601d9c567db74",
       "approvalAuthority": "P0_PROVEN_DURABLE_RESERVATIONS",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX"
     },
@@ -2883,7 +2883,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "a71fc5bf83ff54df83c90339d0a3c0940167d75a",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2902,7 +2902,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "ac456dfb309de43cbc5a25bee3ecf48076a168db",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2921,7 +2921,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "be3cbf808498de86265410682625a45e57541b97",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2940,7 +2940,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "bdcf20520d3774b90fd03042cec61f2ade7e0a9d",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2959,7 +2959,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "23f1bd5b72738d18e78d23a6af77ba2833279d65",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2978,7 +2978,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "61a6606af657f9332a24b362748a229cc4a3446f",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -2997,7 +2997,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "9c0d76382531b8393cc0866ec694935a2a5e25a6",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3022,7 +3022,7 @@
       "approvedSourceCommit": "dcba411b1e6f88d3e500fd5e2df53d664af7771e",
       "approvedBlob": "b5f660ae49e5bccb041127fcb88d025264f84174",
       "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): enforce owner shopper credential rule; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3047,7 +3047,7 @@
       "approvedSourceCommit": "dcba411b1e6f88d3e500fd5e2df53d664af7771e",
       "approvedBlob": "621a90d701e736ecb448da019d2240486fbcd134",
       "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): enforce owner shopper credential rule; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3072,7 +3072,7 @@
       "approvedSourceCommit": "43f83f539336542cd647c6007f8e62a1c29e9764",
       "approvedBlob": "d209a7e847f6913534ed115aa951c2f0d3f224f7",
       "approvalAuthority": "P0_PROVEN_RUN222_RESERVATION_DURABLE_ACK_READBACK_OWNER_FIX",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX"
     },
@@ -3097,7 +3097,7 @@
       "approvedSourceCommit": "57ffe11bc4a209bed1d73b9487bad55a4f653a1d",
       "approvedBlob": "be7331eda76b750e2454e096b9cc3cb705a4c50a",
       "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): gate human runtime on live HR authority; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3116,7 +3116,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "0b065999e74d366340eb8692ca39184514c97cfc",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3139,7 +3139,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "218ca59cb37dd17d3de6ba81660616f9c1c45116",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3162,7 +3162,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "9c6c3170e5ea8cde2693667b56534b8d0b0043ef",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3185,7 +3185,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "56385f181c7e7e36b903ea18c1e470f759749a86",
       "approvalAuthority": "P0_PROVEN_RECOVERY_SUCCESSOR: observable non-blocking legal runtime",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3204,7 +3204,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "a8b5b99a81ba903508a08d37e34fae414d61a492",
       "approvalAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3229,7 +3229,7 @@
       "approvedSourceCommit": "8d0df77a6e0ffe39eb70c0dcd2eee7d22cf692c6",
       "approvedBlob": "cb83a257b0474846abfeca90d25817810f349dcd",
       "approvalAuthority": "P0_PROVEN_RECOVERY_SUCCESSOR: legal/consent must never block access, tests or production",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3250,7 +3250,7 @@
       "approvedSourceCommit": "bb2ca859d6cbac26272fdbbb0f09ca31a950604a",
       "approvedBlob": "95ba739c314af820c514267374f47c965e96db6f",
       "approvalAuthority": "I2_CLEAN_CANDIDATE_CONTRACT_SEAL",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3271,7 +3271,7 @@
       "approvedSourceCommit": "bb2ca859d6cbac26272fdbbb0f09ca31a950604a",
       "approvedBlob": "2af5769f53f7b831c69a0314f01c6e8e27e7a14c",
       "approvalAuthority": "I2_CLEAN_CANDIDATE_CONTRACT_SEAL",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3294,7 +3294,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "7cad29de66de546527d9c6b92b44cad676d1882f",
       "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): make project source routing explicit and multi-project safe; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3317,7 +3317,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "bc969630aaee9152ff69541c88ca443886c4c82f",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3340,7 +3340,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "91b3d308e1a51be7a470f0f12b32382c1043058f",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3363,7 +3363,7 @@
       "approvedSourceCommit": "b94911a4748c03c2e604415e8a97ee091da96218",
       "approvedBlob": "48bf933ebeb0e2a0df49d80ff16a460a1947ddb9",
       "approvalAuthority": "PASS1_EXACT_TERMINAL_KEEP",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3386,7 +3386,7 @@
       "approvedSourceCommit": "7f22df0679497f3c5c1e6a65d26d30ccf972ccf9",
       "approvedBlob": "6c67028a6fa83900a2e7acbeb556c19a1acdfce1",
       "approvalAuthority": "P0_PROVEN_RELEASE_CACHE_DESYNC_FIX",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX"
     },
@@ -3406,7 +3406,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "b92aa2e4464930cc74e10a6142ce762a40527961",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3426,7 +3426,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "e1c428ca1156cae36ca233cdc3bdeaad4ecccf89",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3448,7 +3448,7 @@
       "approvedSourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
       "approvedBlob": "add205ae203ca4626aff6824b480e8d9ca40cf30",
       "approvalAuthority": "P0_PROVEN_DURABLE_OPERATIONAL_PROVIDER",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX"
     },
@@ -3468,7 +3468,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "abd18d1a5b551307a4fb2f317fab100bbe739f24",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3488,7 +3488,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "914aa47d2bd9d3a155ee458219193d45f8a971ee",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3508,7 +3508,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "b1d2cd588fd7409ededba4dea1fdece0d08df91a",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3528,7 +3528,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "ad39487f397ed759db67e4f35c7699d65d47af97",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3550,7 +3550,7 @@
       "approvedSourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
       "approvedBlob": "77432677b682b94b0382152e9692421ecdd67fce",
       "approvalAuthority": "P0_PROVEN_ATOMIC_BACKEND_RUNTIME",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX"
     },
@@ -3570,7 +3570,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "a048ce612df1d84f138150679f642063c0895134",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3590,7 +3590,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "b76677a6a49fc50624b0cd31142f29132f0caa5d",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3610,7 +3610,7 @@
       "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
       "approvedBlob": "30f713184a96c367deba4d15547ea0aff854c565",
       "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
+      "composedAtSource": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     }
@@ -4004,14 +4004,15 @@
   },
   "continuityCheckpoint": {
     "iteration": "I3",
-    "status": "HOLD_RESERVATION_SUBCONDITION_DIAGNOSTIC",
-    "exactProductSourceSha": "af98336e8d35054c36c5677d8d52f3ee34edf2b1",
-    "exactProductSourceTree": "c0cfb98637316c8209753badc08d537bfa79cde8",
+    "status": "HOLD_PENDING_RECERTIFICATION",
+    "exactProductSourceSha": "5371c3e38bc391e842fb103eeb9faf05f3182f47",
+    "exactProductSourceTree": "60840ee5f2fc858ca41f0df1771dc97837070261",
     "resolvedThrough": [
       "AUTH_HARNESS_REHYDRATION",
       "DURABLE_POSTULATIONS_READ_MODEL",
       "RESERVATION_RECONCILE_IN_PROGRESS_ACK_READBACK",
-      "PROVIDER_GENERATED_ENTITY_ID_ACK_PRESERVATION"
+      "PROVIDER_GENERATED_ENTITY_ID_ACK_PRESERVATION",
+      "PROTECTED_HR_AUTHORITY_POST_ACK_READINESS"
     ],
     "noReprocess": [
       "I0",
@@ -4028,13 +4029,14 @@
       "Historico",
       "Cliente"
     ],
-    "nextExactAction": "Read I3_RESERVATION_PROBE from the next canonical run; change only the exact failing owner/subcondition. Do not change product source unless that evidence proves a product defect.",
-    "production": "DO_NOT_TOUCH",
     "lastRun": {
-      "runNumber": 224,
-      "runId": 35406456275,
+      "runNumber": 225,
+      "runId": 35407334638,
       "result": "FAIL_STEP23",
-      "code": "PROVIDER_FAILURE:RESERVATION_DURABLE_ACK_READBACK_FAIL"
-    }
+      "code": "PROVIDER_FAILURE:RESERVATION_DURABLE_ACK_READBACK_FAIL",
+      "subcondition": "protected_backend_not_ready"
+    },
+    "nextExactAction": "Run canonical I3 certification once on this exact source. If acceptance passes, derive Gate20, package the same artifact without rebuild, then Gate21 from that manifest only. If it fails, fix only the exact causal owner.",
+    "production": "DO_NOT_TOUCH"
   }
 }
