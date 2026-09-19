@@ -32,8 +32,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  I3_CERTIFICATION_SOURCE_SHA: 5371c3e38bc391e842fb103eeb9faf05f3182f47
-  I3_CERTIFICATION_SOURCE_TREE: 60840ee5f2fc858ca41f0df1771dc97837070261
+  I3_CERTIFICATION_SOURCE_SHA: b99c0922ee9205bc111a7431a2afc41049158a1c
+  I3_CERTIFICATION_SOURCE_TREE: 877263dbc08c98fda7ab1579857374f839770895
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -730,6 +730,8 @@ jobs:
             if(str(m.visibleLogin).toLowerCase()!==c.login)mismatches.push('member_login');
             if(str(m.credentialRuleVersion)!==RULE)mismatches.push('member_rule');
             if(str(m.credentialSweepVersion)!==SWEEP)mismatches.push('member_sweep');
+            if(str(m.credentialPasswordProofVersion)!==mod.CREDENTIAL_PASSWORD_PROOF_VERSION)mismatches.push('member_password_proof');
+            if(str(m.credentialPasswordRuleVersion)!==RULE)mismatches.push('member_password_rule');
             if(str(p.username||p.user||p.visibleLogin).toLowerCase()!==c.login)mismatches.push('profile_login');
             if(str(p.credentialRuleVersion)!==RULE)mismatches.push('profile_rule');
             if(str(p.credentialSweepVersion)!==SWEEP)mismatches.push('profile_sweep');
@@ -783,7 +785,7 @@ jobs:
             str(claims.tenantId)===tenantId&&
             str(claims.authNamespace)==='shopper';
           if(!passwordLoginPassed)throw new Error('AUTH_FAILURE:CREDENTIAL_RULE_PASSWORD_LOGIN_CONTEXT');
-          const evidence={decision:'PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE',credentialRuleVersion:RULE,credentialSweepVersion:SWEEP,activeShopperMemberships:targets.length,checked,identityReviewCount:reviewed,profileAndAuthMappingExact:true,passwordLoginPassed,plaintextPersisted:false,production:false};
+          const evidence={decision:'PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE',credentialRuleVersion:RULE,credentialSweepVersion:SWEEP,passwordProofVersion:mod.CREDENTIAL_PASSWORD_PROOF_VERSION,activeShopperMemberships:targets.length,checked,identityReviewCount:reviewed,profileAndAuthMappingExact:true,passwordProofDurable:true,passwordLoginPassed,plaintextPersisted:false,production:false};
           fs.writeFileSync(OUT+'/credential-rule-readback.json',JSON.stringify(evidence,null,2)+'\n');
           NODE
           test "$(jq -r '.decision' "$OUT/credential-rule-readback.json")" = "PASS_I3_OWNER_SHOPPER_CREDENTIAL_RULE"
