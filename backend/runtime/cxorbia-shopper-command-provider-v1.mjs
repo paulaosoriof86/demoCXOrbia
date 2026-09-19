@@ -11,6 +11,7 @@ export const COMMAND_TYPES=Object.freeze(['shopper.create','shopper.update','sho
 export const OPERATOR_ROLES=Object.freeze(['super','admin']);
 export const CREDENTIAL_RULE_VERSION='tya-shopper-nombre-apellido-v1';
 export const DURABLE_CREDENTIAL_SWEEP_VERSION='cxorbia-durable-shopper-credential-sweep-v1';
+export const CREDENTIAL_PASSWORD_PROOF_VERSION='cxorbia-shopper-password-proof-v1';
 const ACTIVE_IDENTITY_LINK_STATES=new Set(['active','confirmed','approved','materialized']);
 const TRUSTED_IDENTITY_AUTHORITIES=new Set(['provider_exact','tenant_adjudication','platform_created','migrated_exact']);
 
@@ -554,7 +555,8 @@ async function normalizeDurableShopperCredentials({auth,db,tenantId}={}){
     if(byEmail&&byEmail.uid!==member.id){review(member,'SHOPPER_VISIBLE_LOGIN_COLLISION',credential);continue;}
     const projectIds=uniq([...(member.projectIds||[]),...(profile.projectIds||[]),...(user.customClaims?.projectIds||[])]);
     const claims=canonicalClaims(shopperId,tenantId,projectIds);
-    const memberCurrent=str(member.visibleLogin).toLowerCase()===credential.login&&str(member.credentialRuleVersion)===CREDENTIAL_RULE_VERSION&&str(member.credentialSweepVersion)===DURABLE_CREDENTIAL_SWEEP_VERSION;
+    const passwordProofCurrent=str(member.credentialPasswordProofVersion)===CREDENTIAL_PASSWORD_PROOF_VERSION&&str(member.credentialPasswordRuleVersion)===CREDENTIAL_RULE_VERSION;
+    const memberCurrent=str(member.visibleLogin).toLowerCase()===credential.login&&str(member.credentialRuleVersion)===CREDENTIAL_RULE_VERSION&&str(member.credentialSweepVersion)===DURABLE_CREDENTIAL_SWEEP_VERSION&&passwordProofCurrent;
     const profileCurrent=str(profile.username||profile.user||profile.visibleLogin).toLowerCase()===credential.login&&str(profile.credentialRuleVersion)===CREDENTIAL_RULE_VERSION&&str(profile.credentialSweepVersion)===DURABLE_CREDENTIAL_SWEEP_VERSION;
     const authCurrent=str(user.email).toLowerCase()===email.toLowerCase()&&user.disabled!==true;
     const claimsCurrent=claimsDigest(user.customClaims||{})===claimsDigest(claims);
@@ -573,12 +575,14 @@ async function normalizeDurableShopperCredentials({auth,db,tenantId}={}){
       tx.set(memberRef,{
         visibleLogin:credential.login,credentialRuleVersion:CREDENTIAL_RULE_VERSION,
         credentialState:'enrolled',credentialSweepVersion:DURABLE_CREDENTIAL_SWEEP_VERSION,
+        credentialPasswordProofVersion:CREDENTIAL_PASSWORD_PROOF_VERSION,credentialPasswordRuleVersion:CREDENTIAL_RULE_VERSION,
         providerUidFingerprint:providerUidFingerprint(member.id),updatedAt:stamp
       },{merge:true});
       tx.set(profileRef,{
         firstName:credential.firstName,lastName:credential.lastName,
         visibleLogin:credential.login,username:credential.login,user:credential.login,
         credentialRuleVersion:CREDENTIAL_RULE_VERSION,credentialSweepVersion:DURABLE_CREDENTIAL_SWEEP_VERSION,
+        credentialPasswordProofVersion:CREDENTIAL_PASSWORD_PROOF_VERSION,credentialPasswordRuleVersion:CREDENTIAL_RULE_VERSION,
         updatedAt:stamp
       },{merge:true});
     });
@@ -662,7 +666,7 @@ export function createShopperCommandProvider({auth,db,policy}={}){
         identityMigrationCount:identityMigrationQueue.length,
         identityMigrationQueue,
         authCreated:created,idempotentReplays:replayed,credentialNormalized,credentialRuleMissing,
-        credentialRuleVersion:CREDENTIAL_RULE_VERSION,providerWrites:writes,hrWrites:0,externalWrites:0,fuzzyMatching:false
+        credentialRuleVersion:CREDENTIAL_RULE_VERSION,passwordProofVersion:CREDENTIAL_PASSWORD_PROOF_VERSION,providerWrites:writes,hrWrites:0,externalWrites:0,fuzzyMatching:false
       };
     },
     async execute(token,command={}){
