@@ -148,7 +148,7 @@ admin_signin_retry=admin_signin_indent+f"""let __cxAdminAuthSettled=false,__cxAd
 {{indent}}await {admin_page_var}.goto('about:blank',{{waitUntil:'domcontentloaded',timeout:30000}});
 {{indent}}await {admin_page_var}.goto(productUrl(),{{waitUntil:'domcontentloaded',timeout:90000}});
 {{indent}}await {admin_page_var}.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{{timeout:90000}});
-{{indent}}await {admin_page_var}.waitForFunction(()=>Boolean(window.firebase?.auth?.().currentUser),null,{{timeout:90000}});""".replaceAll("{indent}",admin_signin_indent)
+{{indent}}await {admin_page_var}.waitForFunction(()=>Boolean(window.firebase?.auth?.().currentUser),null,{{timeout:90000}});""".replace("{indent}",admin_signin_indent)
 s=s[:admin_signin_start]+admin_signin_retry+s[admin_signin_end:]
 
 admin_ensure_needle="backendAuth.ensureAuthenticated"

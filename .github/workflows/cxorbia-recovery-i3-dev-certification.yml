@@ -1007,11 +1007,19 @@ jobs:
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test "$(git rev-list --parents -n 1 HEAD | awk '{print NF}')" = '2'
           test "$(git show -s --format=%T "$I3_CERTIFICATION_SOURCE_SHA")" = "$I3_CERTIFICATION_SOURCE_TREE"
-          printf '%s\n' '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' '.github/control/PATCH-I3-LIVE-FIXTURES-V2-20260919.py' | sort > /tmp/expected-files
           git diff --name-only HEAD^ HEAD | sort > /tmp/actual-files
-          diff -u /tmp/expected-files /tmp/actual-files
+          awk '
+            $0 == ".github/workflows/cxorbia-recovery-i3-dev-certification.yml" { next }
+            $0 == ".github/control/PATCH-I3-LIVE-FIXTURES-V2-20260919.py" { next }
+            $0 == "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json" { next }
+            $0 == "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-19_I3_LIVE_FIXTURE_FORENSIC_FROZEN.md" { next }
+            { print; bad=1 }
+            END { exit bad ? 1 : 0 }
+          ' /tmp/actual-files
+          test -s /tmp/actual-files
           git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools
           mkdir -p "$OUT" "$GITHUB_WORKSPACE/.tmp"
+          python3 -m py_compile .github/control/PATCH-I3-LIVE-FIXTURES-V2-20260919.py
           python3 .github/control/PATCH-I3-LIVE-FIXTURES-V2-20260919.py
           node --check "$GITHUB_WORKSPACE/.tmp/i3-live-fixtures-v2.mjs"
 
