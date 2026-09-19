@@ -1005,7 +1005,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           test "$GITHUB_RUN_ATTEMPT" = '1'
-          test "$(git rev-parse HEAD^)" = '26b898764c20d225d08f2fb8b3d27bc5925fb0e3'
+          test "$(git rev-parse HEAD^)" = 'fcd1cc4d6094c7c35a8685790cd687071f479c05'
           test "$(git show -s --format=%T "$I3_CERTIFICATION_SOURCE_SHA")" = "$I3_CERTIFICATION_SOURCE_TREE"
           printf '%s\n' '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' | sort > /tmp/expected-files
           git diff --name-only HEAD^ HEAD | sort > /tmp/actual-files
@@ -1036,7 +1036,7 @@ jobs:
           if f0<0 or f1<0:
               raise SystemExit("RELEASE_COMPOSITION_FAILURE:SHOPPER_LOGIN_FUNCTION_MARKERS")
           diagfn="""async function shopperLogin(f){let c=await browser.newContext({viewport:{width:1440,height:1000}}),p=await c.newPage();try{await p.goto(base(),{waitUntil:'domcontentloaded',timeout:90000});await p.waitForFunction(()=>!!window.firebase?.auth&&window.firebase.apps?.length,null,{timeout:90000});await p.locator('.role-btn[data-role="shopper"]').click();await p.locator('#lgUser').fill(f.cr.login);await p.locator('#lgPass').fill(f.cr.password);await p.locator('#lgSubmit').click();try{await p.waitForFunction(({t,pr,id})=>{let x=window.CX?.backendAuth?.context?.()||{},ps=Array.isArray(x.projectIds)?x.projectIds.map(String):[];return x.authenticated===true&&x.role==='shopper'&&x.tenantId===t&&String(x.shopperId||'')===id&&(ps.length===0||ps.includes(pr));},{t:TENANT,pr:PROJ,id:f.id},{timeout:45000})}catch(e){let d=await p.evaluate(()=>{let x=window.CX?.backendAuth?.context?.()||{},u=window.firebase?.auth?.().currentUser||null;return{authenticated:x.authenticated===true,role:String(x.role||''),tenantId:String(x.tenantId||''),shopperId:String(x.shopperId||''),projectIds:Array.isArray(x.projectIds)?x.projectIds.map(String):[],firebaseUser:Boolean(u),firebaseUid:u?String(u.uid):'',selectedRole:String(window.CX?.backendAuth?.selectedRole?.()||''),authError:String(document.querySelector('#cxIntegratedAuthError')?.innerText||document.querySelector('#lgError')?.innerText||'').slice(0,220)}});throw new Error('AUTH_FAILURE:VISIBLE_LOGIN_CONTEXT:'+f.test+':'+JSON.stringify(d).slice(0,600))}try{await p.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,null,{timeout:90000})}catch(e){let d=await p.evaluate(()=>({ctx:window.CX?.backendAuth?.context?.()||{},authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,gate:window.CX_C6_HR_AUTHORITY_GATE||null,source:String(window.CX?.dataSource?.sourceRef||'')}));throw new Error('FUNCTIONAL_DEFECT:VISIBLE_LOGIN_HR_AUTHORITY:'+f.test+':'+JSON.stringify(d).slice(0,600))}return await p.evaluate(()=>{let x=window.CX?.backendAuth?.context?.()||{},s=window.CX?.data?.__sessionShopperProfile||{};return{role:x.role,tenantId:x.tenantId,shopperId:x.shopperId,authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,profile:{id:s.id||s.shopperId||null,pais:s.pais||s.country||null,phone:s.whatsapp||s.phone||null,email:s.email||'',estado:s.estado||null}}})}finally{await c.close()}}
-"""
+          """
           s=s[:f0]+diagfn+s[f1:]
           launch="browser=await chromium.launch({headless:true});"
           if s.count(launch)!=1:
