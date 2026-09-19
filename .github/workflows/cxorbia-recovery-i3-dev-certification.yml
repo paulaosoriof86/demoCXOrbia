@@ -1005,7 +1005,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           test "$GITHUB_RUN_ATTEMPT" = '1'
-          test "$(git rev-parse HEAD^)" = '8006d1eb0fefd93c390786a501709fa54f2db1bf'
+          test "$(git rev-parse HEAD^)" = '701cab3356d21a1200da46171fe2a2d93207156d'
           test "$(git show -s --format=%T "$I3_CERTIFICATION_SOURCE_SHA")" = "$I3_CERTIFICATION_SOURCE_TREE"
           printf '%s\n' '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' | sort > /tmp/expected-files
           git diff --name-only HEAD^ HEAD | sort > /tmp/actual-files
@@ -1025,7 +1025,8 @@ jobs:
           if n1!=1 or n2!=1:
               raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:LIVE_FIXTURE_PATCH_ANCHOR:n1={n1}:n2={n2}")
           p.write_text(s,encoding="utf-8")
-          PY          node --check "$GITHUB_WORKSPACE/.tmp/i3-live-fixtures.mjs"
+          PY
+          node --check "$GITHUB_WORKSPACE/.tmp/i3-live-fixtures.mjs"
           jq -n --arg run "$GITHUB_RUN_ID" '{prepared:true,runId:$run,production:false,builds:0,deploys:0}' > "$OUT/preflight.json"
 
       - name: Setup Node 24
