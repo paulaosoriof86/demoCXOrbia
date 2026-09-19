@@ -32,8 +32,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  I3_CERTIFICATION_SOURCE_SHA: 144c58e2125aba6e49deefe0ce23fa9d94259cdb
-  I3_CERTIFICATION_SOURCE_TREE: 23c196cd6ad1a9e8e329bfd56c8bb11c24231b3e
+  I3_CERTIFICATION_SOURCE_SHA: ca032d94da9dc98776ceaf0d03b522c359f739ab
+  I3_CERTIFICATION_SOURCE_TREE: 03a04284577de76475cbd9e79663ab38aaf5f38c
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -175,6 +175,7 @@ jobs:
           grep -q "docId:uniqueIndex(protectedVisits" app/adapters/tya-cumulative-read-model-v2.js
           grep -q "hr_exact_crosswalk_precedes_historical_identity_link" app/adapters/cxorbia-provider-identity-link-runtime-v1.js
           grep -q "protectedState:'1'" app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
+          grep -q "COPY app/core/shopper-credential-rule.js ./app/core/shopper-credential-rule.js" backend/runtime/hr-live-service/Dockerfile
           grep -q "'reservation.create'" backend/runtime/cxorbia-operational-command-provider-v1.mjs
           grep -q "source:'durable_provider'" app/adapters/tya-canonical-reservations-guard-v2.js
           grep -q "mutationsEnabled:true" app/adapters/tya-canonical-reservations-guard-v2.js
