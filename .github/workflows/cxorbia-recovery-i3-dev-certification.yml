@@ -1005,15 +1005,16 @@ jobs:
         run: |
           set -Eeuo pipefail
           test "$GITHUB_RUN_ATTEMPT" = '1'
-          test "$(git rev-parse HEAD^)" = '4ca8e9c0e50b8b69bd6110fa516a5dce32e1c1ca'
+          test "$(git rev-parse HEAD^)" = 'e4daf525c3b3cc315dee312c4bf48f63d0e92af7'
           test "$(git show -s --format=%T "$I3_CERTIFICATION_SOURCE_SHA")" = "$I3_CERTIFICATION_SOURCE_TREE"
           printf '%s\n' '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' | sort > /tmp/expected-files
           git diff --name-only HEAD^ HEAD | sort > /tmp/actual-files
           diff -u /tmp/expected-files /tmp/actual-files
           git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools
-          gzip -dc .github/control/RECOVERY-I3-LIVE-FIXTURES-20260919.mjs.gz > "$RUNNER_TEMP/i3-live-fixtures.mjs"
-          node --check "$RUNNER_TEMP/i3-live-fixtures.mjs"
-          mkdir -p "$OUT"
+          mkdir -p "$OUT" "$GITHUB_WORKSPACE/.tmp"
+          gzip -dc .github/control/RECOVERY-I3-LIVE-FIXTURES-20260919.mjs.gz > "$GITHUB_WORKSPACE/.tmp/i3-live-fixtures.mjs"
+          node --check "$GITHUB_WORKSPACE/.tmp/i3-live-fixtures.mjs"
+          jq -n --arg run "$GITHUB_RUN_ID" '{prepared:true,runId:$run,production:false,builds:0,deploys:0}' > "$OUT/preflight.json"
 
       - name: Setup Node 24
         uses: actions/setup-node@v4
@@ -1056,7 +1057,7 @@ jobs:
       - name: Execute reversible provider-backed live DEV fixtures
         run: |
           set -Eeuo pipefail
-          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" PERIOD_ID="$PERIOD_ID" I3_CERTIFICATION_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" I3_CERTIFICATION_SOURCE_TREE="$I3_CERTIFICATION_SOURCE_TREE" SOURCE_DIR="$SOURCE_DIR" PRIOR_DIR="$PRIOR_DIR" PRIOR_RUN_ID="$PRIOR_RUN_ID" CERTIFIED_ARTIFACT_SHA256="$CERTIFIED_ARTIFACT_SHA256" OUT="$OUT" node "$RUNNER_TEMP/i3-live-fixtures.mjs"
+          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" PERIOD_ID="$PERIOD_ID" I3_CERTIFICATION_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" I3_CERTIFICATION_SOURCE_TREE="$I3_CERTIFICATION_SOURCE_TREE" SOURCE_DIR="$SOURCE_DIR" PRIOR_DIR="$PRIOR_DIR" PRIOR_RUN_ID="$PRIOR_RUN_ID" CERTIFIED_ARTIFACT_SHA256="$CERTIFIED_ARTIFACT_SHA256" OUT="$OUT" node "$GITHUB_WORKSPACE/.tmp/i3-live-fixtures.mjs"
           test "$(jq -r '.decision' "$OUT/i3-live-fixtures-result.json")" = 'PASS_I3_LIVE_FIXTURES'
           test "$(jq -r '.cleanup.ok' "$OUT/i3-live-fixtures-result.json")" = 'true'
           test "$(jq -r '.buildCountThisRun' "$OUT/i3-live-fixtures-result.json")" = '0'
