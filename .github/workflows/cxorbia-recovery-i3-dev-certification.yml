@@ -1005,7 +1005,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           test "$GITHUB_RUN_ATTEMPT" = '1'
-          test "$(git rev-parse HEAD^)" = '2d43f46553f418752f62f9af390508ac35e151c4'
+          test "$(git rev-parse HEAD^)" = '27eae1db53c51b1cb5700040fcb5af48978407e9'
           test "$(git show -s --format=%T "$I3_CERTIFICATION_SOURCE_SHA")" = "$I3_CERTIFICATION_SOURCE_TREE"
           printf '%s\n' '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' | sort > /tmp/expected-files
           git diff --name-only HEAD^ HEAD | sort > /tmp/actual-files
@@ -1018,16 +1018,19 @@ jobs:
           import re
           p=Path(".tmp/i3-live-fixtures.mjs")
           s=p.read_text(encoding="utf-8")
-          fixture="{test:'3_NOMBRE_TILDE',key:'accent-'+RUN,profile:{firstName:'César',lastName:'Castillofix'+tail,nombre:'César Castillofix'+tail,whatsapp:'+50255550102',phone:'+50255550102',pais:'GT',country:'GT',email:'',estado:'Activo',sourceType:'platform',createdVia:'live-fixture'}}"
-          s,n1=re.subn(r"\{test\s*:\s*['\"]3_NOMBRE_TILDE['\"].*?\}\}", fixture, s, count=1, flags=re.S)
-          s,n2=re.subn(r"(['\"])cesar\.castillo\1", "('cesar.castillofix'+tail)", s, count=1)
-          anchor="const sp=sm.createShopperCommandProvider"
-          exact="const exactAccent=sm.shopperCredentialRule({nombre:'César Castillo'});if(!exactAccent?.ok||exactAccent.login!=='cesar.castillo'||exactAccent.password!=='Cesar123*')throw new Error('FUNCTIONAL_DEFECT:ACCENT_RULE_EXACT_OWNER');"
-          n3=s.count(anchor)
-          if n3==1:
-              s=s.replace(anchor,exact+anchor,1)
-          if n1!=1 or n2!=1 or n3!=1:
-              raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:LIVE_FIXTURE_STRUCTURAL_PATCH:n1={n1}:n2={n2}:n3={n3}")
+          a=s.find("3_NOMBRE_TILDE")
+          b=s.find("4_NOMBRE_COMPUESTO",a+1)
+          if a<0 or b<0 or b<=a:
+              raise SystemExit("RELEASE_COMPOSITION_FAILURE:ACCENT_FIXTURE_MARKERS")
+          segment=s[a:b]
+          n1=segment.count("Castillo")
+          if n1!=2:
+              raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:ACCENT_FIXTURE_NAME_COUNT:{n1}")
+          segment=segment.replace("Castillo","CastilloI3LiveA9")
+          s=s[:a]+segment+s[b:]
+          s,n2=re.subn(r"(['\"])cesar\.castillo\1", "'cesar.castilloi3livea9'", s, count=1)
+          if n2!=1:
+              raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:ACCENT_LOGIN_EXPECTATION_COUNT:{n2}")
           p.write_text(s,encoding="utf-8")
           PY
           node --check "$GITHUB_WORKSPACE/.tmp/i3-live-fixtures.mjs"
@@ -1074,6 +1077,13 @@ jobs:
       - name: Execute reversible provider-backed live DEV fixtures
         run: |
           set -Eeuo pipefail
+          SOURCE_DIR="$SOURCE_DIR" OUT="$OUT" node <<'NODE'
+          const fs=require('fs'),path=require('path');
+          const Rule=require(path.join(process.env.SOURCE_DIR,'app/core/shopper-credential-rule.js'));
+          const x=Rule.shopperCredentialRule({nombre:'César Castillo'});
+          if(!x||x.ok!==true||x.login!=='cesar.castillo'||x.password!=='Cesar123*')throw new Error('FUNCTIONAL_DEFECT:ACCENT_RULE_EXACT_OWNER');
+          fs.writeFileSync(path.join(process.env.OUT,'credential-accent-exact.json'),JSON.stringify({decision:'PASS_I3_CREDENTIAL_ACCENT_EXACT_OWNER',login:'cesar.castillo',passwordRuleMatched:true,passwordPersisted:false,production:false},null,2)+'\n');
+          NODE
           PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" PERIOD_ID="$PERIOD_ID" I3_CERTIFICATION_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" I3_CERTIFICATION_SOURCE_TREE="$I3_CERTIFICATION_SOURCE_TREE" SOURCE_DIR="$SOURCE_DIR" PRIOR_DIR="$PRIOR_DIR" PRIOR_RUN_ID="$PRIOR_RUN_ID" CERTIFIED_ARTIFACT_SHA256="$CERTIFIED_ARTIFACT_SHA256" OUT="$OUT" node "$GITHUB_WORKSPACE/.tmp/i3-live-fixtures.mjs"
           test "$(jq -r '.decision' "$OUT/i3-live-fixtures-result.json")" = 'PASS_I3_LIVE_FIXTURES'
           test "$(jq -r '.cleanup.ok' "$OUT/i3-live-fixtures-result.json")" = 'true'
