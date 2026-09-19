@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.recovery.module-truth-matrix.v5",
-  "observedAt": "2026-09-19T21:02:11Z",
+  "observedAt": "2026-09-19T23:04:01Z",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
@@ -103,9 +103,9 @@
     }
   },
   "productSource": {
-    "sha": "751d01397bcd85903456e5cb78e3e5ce41161b17",
-    "treeSha": "3612496c2cbf4abdaed1404fcf69552817929fcf",
-    "message": "fix(i3): route protected Shopper login through Firebase auth"
+    "sha": "6bcbc1df70c29c2ad3ad57ecfa906917e6372ace",
+    "treeSha": "fa044d1527ccad25508c709043eeda2a829bae2e",
+    "message": "fix(i3): expose project-scoped platform shoppers to authorized Admin"
   },
   "controlHeadAtConstruction": "751d01397bcd85903456e5cb78e3e5ce41161b17",
   "phaseAComplete": true,
@@ -186,8 +186,8 @@
         "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
         "backend/contracts/tya-hr-column-map-r20-v1.json"
       ],
-      "lastApprovedAuthority": "RUN236_LIVE_PROVEN_SHOPPER_HR_BOOT_DEADLOCK_FIX",
-      "sourceCommit": "df07426b9bf8d936becce415da494e38f315f2dd",
+      "lastApprovedAuthority": "P0_PROVEN_RUN264_ADMIN_PLATFORM_ONLY_VISIBILITY_OWNER_FIX",
+      "sourceCommit": "6bcbc1df70c29c2ad3ad57ecfa906917e6372ace",
       "loadOrderEntrypoint": "app/index-backend-dev.html",
       "roles": [
         "Admin",
@@ -1235,21 +1235,21 @@
       "historicalApprovedBlob": "e93d17bb764030c9993455327957e52b4bf41885",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "0b0ffc1cc215afbcc2fd3400ea1496162da93b60",
-      "latestApprovedSource": "7104a45c9b04549ccb8a0c4849457ee7f9753ade",
-      "latestApprovedBlob": "2d87309292b28804a032a874b87f523412b58a13",
-      "currentBlob": "2d87309292b28804a032a874b87f523412b58a13",
+      "latestApprovedSource": "6bcbc1df70c29c2ad3ad57ecfa906917e6372ace",
+      "latestApprovedBlob": "cbe63e37ff932f64c9577fa106712683d38a978a",
+      "currentBlob": "cbe63e37ff932f64c9577fa106712683d38a978a",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "d93f308ad8de48c11b7a6b37662809757acc0af4",
-      "latestApprovedAuthority": "RUN220_P0_POSTULATIONS_DURABLE_READ_MODEL",
+      "latestApprovedAuthority": "P0_PROVEN_RUN264_ADMIN_PLATFORM_ONLY_VISIBILITY",
       "loadOrder": 41,
       "atomicDisposition": "FOCAL_FIX",
-      "approvedSourceCommit": "7104a45c9b04549ccb8a0c4849457ee7f9753ade",
-      "approvedBlob": "2d87309292b28804a032a874b87f523412b58a13",
-      "approvalAuthority": "P0_PROVEN_RUN220_POSTULATIONS_NOT_DURABLE_ONLY_OWNER_FIX",
-      "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
+      "approvedSourceCommit": "6bcbc1df70c29c2ad3ad57ecfa906917e6372ace",
+      "approvedBlob": "cbe63e37ff932f64c9577fa106712683d38a978a",
+      "approvalAuthority": "P0_PROVEN_RUN264_ADMIN_PLATFORM_ONLY_VISIBILITY_OWNER_FIX",
+      "composedAtSource": "6bcbc1df70c29c2ad3ad57ecfa906917e6372ace",
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX"
     },
@@ -3895,18 +3895,17 @@
     "rule": "preserve; do not regress/rebuild; not an I3 requirement absent transversal P0"
   },
   "devCertification": {
-    "status": "RUN238_CERTIFIED_LIVE_FIXTURES_HOLD",
-    "runId": "35456396448",
-    "runNumber": 238,
-    "servedSourceSha": "751d01397bcd85903456e5cb78e3e5ce41161b17",
-    "servedTreeSha": "3612496c2cbf4abdaed1404fcf69552817929fcf",
-    "artifactSha256": "bc340a7c30657e4326b3dfa306bff5cbb016ce37abaaece0edf3f5adc91d9a16",
-    "buildCount": 1,
+    "status": "RUN238_SUPERSEDED_BY_P0_FIX_PENDING_SINGLE_RECERTIFICATION",
+    "priorRunId": "35456396448",
+    "priorRunNumber": 238,
+    "priorServedSourceSha": "751d01397bcd85903456e5cb78e3e5ce41161b17",
+    "priorArtifactSha256": "bc340a7c30657e4326b3dfa306bff5cbb016ce37abaaece0edf3f5adc91d9a16",
+    "candidateSourceSha": "6bcbc1df70c29c2ad3ad57ecfa906917e6372ace",
+    "candidateSourceTree": "fa044d1527ccad25508c709043eeda2a829bae2e",
+    "buildCountPlanned": 1,
     "rebuildAfterCertification": false,
-    "gate20": "PASS",
-    "gate21": "PASS",
     "production": false,
-    "liveFixtureClosure": "HOLD"
+    "liveFixtureClosure": "PENDING_SAME_RUN_10_OF_10"
   },
   "invariants": {
     "singleCandidate": true,
@@ -4091,9 +4090,9 @@
   },
   "continuityCheckpoint": {
     "iteration": "I3",
-    "status": "HOLD_PENDING_LIVE_FIXTURE_CLOSURE",
-    "exactProductSourceSha": "751d01397bcd85903456e5cb78e3e5ce41161b17",
-    "exactProductSourceTree": "3612496c2cbf4abdaed1404fcf69552817929fcf",
+    "status": "HOLD_PENDING_SINGLE_RECERTIFICATION_OF_P0_FIX",
+    "exactProductSourceSha": "6bcbc1df70c29c2ad3ad57ecfa906917e6372ace",
+    "exactProductSourceTree": "fa044d1527ccad25508c709043eeda2a829bae2e",
     "noReprocess": [
       "I0",
       "I1",
@@ -4134,15 +4133,15 @@
       "acceptance imports provider function instead of reimplementing credentials",
       "stale v1 tests updated to the explicitly approved v2 contract"
     ],
-    "nextExactAction": "Run one canonical I3 live-fixture suite using the proven Run 238 bounded custom-auth retry/rehydration semantics. Do not change product source. Require 10/10 + cleanup. If Admin custom auth still cannot settle after five bounded retries, stop as ENVIRONMENT_FAILURE and do not patch product.",
+    "nextExactAction": "Certify source 6bcbc1df70c29c2ad3ad57ecfa906917e6372ace once; after certify succeeds, run same-run 10-case live fixtures against its exact artifact; require 10/10 + cleanup; only then Gate21 against that same artifact.",
     "production": "DO_NOT_TOUCH",
     "rootCauseRun233": "Static/unit gates exposed stale v1 browser credential implementations and stale expectations before DEV deploy.",
     "lastRun": {
-      "runNumber": 258,
-      "runId": "35468874734",
+      "runNumber": 264,
+      "runId": "35474748670",
       "result": "HOLD_7_OF_10",
-      "code": "ENVIRONMENT_FAILURE_ADMIN_BROWSER_AUTH_NETWORK_TRANSIENT",
-      "classification": "ENVIRONMENT_FAILURE"
+      "code": "FUNCTIONAL_DEFECT:ADMIN_FIXTURE_VISIBILITY_OR_SCOPE",
+      "classification": "FUNCTIONAL_DEFECT"
     },
     "rootCauseRun235": "Cloud Run revision could not start because cxorbia-shopper-command-provider-v1.mjs imports ../../app/core/shopper-credential-rule.js but the runtime Dockerfile did not COPY that shared owner into the image.",
     "fixRun235": "Dockerfile now packages exactly app/core/shopper-credential-rule.js at the import path; static P0 guard enforces the COPY before build.",
@@ -4159,12 +4158,13 @@
     "rootCauseRun236": "Shopper backendReady() required an exact Firestore shopper profile before fetchHr(). That creates a circular dependency because authenticated HR + exact crosswalk is the authority that must canonicalize the shopper identity/history before the session profile can be resolved.",
     "fixRun236": "For a Shopper, pre-HR readiness now requires authenticated Firebase principal rather than pre-existing exact Firestore profile. Auth+tenant+project authorization remains required by reconcile() and is reverified server-side. After composition, __sessionShopperProfile falls back to the exact canonical shopper from result.shoppers/identityMap.",
     "rootCauseRun237": "app.js intercepted the Shopper role button in DEV with pickShopperDev(), an explicitly non-auth legacy validation picker, before backend-browser-auth could select the protected Firebase shopper namespace. This produced selectedRole='', no Firebase user, no context, and no credential error.",
-    "fixRun237": "When protected Firebase DEV auth is enabled, Shopper role now always follows selectRole('shopper') -> backend-browser-auth -> Firebase. Legacy pickShopperDev remains only for non-protected DEV access."
+    "fixRun237": "When protected Firebase DEV auth is enabled, Shopper role now always follows selectRole('shopper') -> backend-browser-auth -> Firebase. Legacy pickShopperDev remains only for non-protected DEV access.",
+    "p0Owner": "app/adapters/tya-cumulative-read-model-v2.js"
   },
   "liveFixtureForensic": {
     "auditId": "CXORBIA-I3-LIVE-FIXTURE-FORENSIC-20260919",
-    "status": "FROZEN",
-    "productDrift": false,
+    "status": "P0_PROVEN_PRODUCT_FIX_COMPOSED_CERTIFICATION_REQUIRED",
+    "productDrift": true,
     "certifiedSourceSha": "751d01397bcd85903456e5cb78e3e5ce41161b17",
     "certifiedSourceTree": "3612496c2cbf4abdaed1404fcf69552817929fcf",
     "certifiedArtifactSha256": "bc340a7c30657e4326b3dfa306bff5cbb016ce37abaaece0edf3f5adc91d9a16",
@@ -4214,6 +4214,17 @@
         "passed": 7,
         "firstFailure": "Admin Firebase auth/network-request-failed inside page.evaluate",
         "classification": "ENVIRONMENT_FAILURE"
+      },
+      {
+        "runNumber": 264,
+        "runId": "35474748670",
+        "result": "HOLD",
+        "passed": 7,
+        "firstFailure": "5_PERFIL_ADMIN: platform-created project-scoped shoppers absent from Admin operational shopper list",
+        "classification": "FUNCTIONAL_DEFECT",
+        "cleanup": true,
+        "buildCount": 0,
+        "deployCount": 0
       }
     ],
     "stablePassedTests": [
@@ -4230,13 +4241,14 @@
       "7_DISPONIBILIDAD_ASIGNACION",
       "8_POSTULACION"
     ],
-    "rootCause": "LIVE_FIXTURE_HARNESS_BROWSER_AUTH_LIFECYCLE_AND_FAIL_FAST_MISCLASSIFICATION",
-    "decisiveProof": "Failure location changes across runs while product source/tree/artifact stay identical; the same Shopper cases fail in one run and pass in later runs. Run 238 canonical custom-auth helper already contains bounded retry + rehydration for navigation/network transients, while the live-fixture harness did not.",
-    "correction": "Reuse the already-proven Run 238 custom-auth retry/rehydration semantics for the Admin fixture; no product source change. Persistent network failure after bounded retries is ENVIRONMENT_FAILURE, not FUNCTIONAL_DEFECT.",
-    "antiLoop": "No more product/auth patches from these transient harness failures. One full live-fixture run after this control-only correction; only a reproducible product-level failure with exact owner may modify product.",
+    "rootCause": "ADMIN_PLATFORM_ONLY_PROFILES_EXCLUDED_FROM_COMPOSED_SHOPPER_LIST",
+    "decisiveProof": "Run264 executed the stabilized full suite on the unchanged certified source. Four provider-created shoppers authenticated and their own profiles were visible, but Admin failed. The canonical composer explicitly built result.shoppers only from HR base shoppers and flagged unmatchedProfilesExcludedFromOperationalList=true, while shoppers.js renders CX.data.shoppers.",
+    "correction": "Present only meaningful platform-only profiles whose projectIds include hr.currentProjectId to authorized staff read model, mark them non-HR/project-scoped, keep them in identity review, derive visit/KPI counts only from composed visits, and preserve HR ownership of operational state.",
+    "antiLoop": "Exactly one new product candidate. One certification build. Same-run live fixtures must reach 10/10 with cleanup before Gate21. No Auth rewrite, no HR write, no reimport, no second candidate.",
     "cleanupVerified": true,
     "buildCountAcrossLiveFixtureRuns": 0,
     "deployCountAcrossLiveFixtureRuns": 0,
-    "productionTouched": false
+    "productionTouched": false,
+    "owner": "app/adapters/tya-cumulative-read-model-v2.js"
   }
 }

@@ -10,6 +10,7 @@ on:
       - .github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml
       - RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json
       - RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
+      - ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-19_I3_ADMIN_PLATFORM_PROFILE_P0_FROZEN.md
       - .github/control/RECOVERY-I3-LIVE-FIXTURES-20260919.mjs.gz
       - CXORBIA_CANONICAL_ROUTE_INVENTORY_2026-09-18.json
       - ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-18_I3_FORENSIC_CONTROL_PLANE_CACHE_ROOTCAUSE_FROZEN.md
@@ -33,8 +34,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  I3_CERTIFICATION_SOURCE_SHA: 751d01397bcd85903456e5cb78e3e5ce41161b17
-  I3_CERTIFICATION_SOURCE_TREE: 3612496c2cbf4abdaed1404fcf69552817929fcf
+  I3_CERTIFICATION_SOURCE_SHA: 6bcbc1df70c29c2ad3ad57ecfa906917e6372ace
+  I3_CERTIFICATION_SOURCE_TREE: fa044d1527ccad25508c709043eeda2a829bae2e
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -984,16 +985,15 @@ jobs:
         run: rm -rf node_modules
 
   live-fixtures:
-    name: I3 full live fixture suite v2 — no rebuild or deploy
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-live-fixtures-only]') }}
+    name: I3 full live fixture suite v2 — same certified source/artifact
+    needs: certify
+    if: ${{ needs.certify.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 55
     permissions:
       contents: read
       actions: read
     env:
-      PRIOR_RUN_ID: '35456396448'
-      CERTIFIED_ARTIFACT_SHA256: bc340a7c30657e4326b3dfa306bff5cbb016ce37abaaece0edf3f5adc91d9a16
       OUT: .tmp/recovery-i3-live-fixtures-v2
     steps:
       - name: Checkout control-only fixture-suite successor
@@ -1013,6 +1013,7 @@ jobs:
             $0 == ".github/control/PATCH-I3-LIVE-FIXTURES-V2-20260919.py" { next }
             $0 == "RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json" { next }
             $0 == "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-19_I3_LIVE_FIXTURE_FORENSIC_FROZEN.md" { next }
+            $0 == "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-19_I3_ADMIN_PLATFORM_PROFILE_P0_FROZEN.md" { next }
             { print; bad=1 }
             END { exit bad ? 1 : 0 }
           ' /tmp/actual-files
@@ -1039,27 +1040,30 @@ jobs:
         with:
           credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
 
-      - name: Bind to Run 238 and exact certified source without rebuild
+      - name: Bind to same-run certification artifact and exact source without rebuild
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -Eeuo pipefail
           SOURCE_DIR="$RUNNER_TEMP/cxorbia-i3-live-source"
-          PRIOR_DIR="$RUNNER_TEMP/cxorbia-i3-run238"
+          PRIOR_DIR="$RUNNER_TEMP/cxorbia-i3-current-certification"
           rm -rf "$SOURCE_DIR" "$PRIOR_DIR"
           mkdir -p "$SOURCE_DIR" "$PRIOR_DIR"
           git archive "$I3_CERTIFICATION_SOURCE_SHA" | tar -x -C "$SOURCE_DIR"
-          gh run download "$PRIOR_RUN_ID" --repo "${{ github.repository }}" --name "cxorbia-recovery-i3-single-source-certification-$PRIOR_RUN_ID" --dir "$PRIOR_DIR"
+          gh run download "$GITHUB_RUN_ID" --repo "${{ github.repository }}" --name "cxorbia-recovery-i3-single-source-certification-$GITHUB_RUN_ID" --dir "$PRIOR_DIR"
           MANIFEST="$(find "$PRIOR_DIR" -name i3-certification-manifest.json -print -quit)"
           test -n "$MANIFEST"
           test "$(jq -r '.i3CertificationSourceSha' "$MANIFEST")" = "$I3_CERTIFICATION_SOURCE_SHA"
           test "$(jq -r '.i3CertificationSourceTree' "$MANIFEST")" = "$I3_CERTIFICATION_SOURCE_TREE"
-          test "$(jq -r '.artifactSha256' "$MANIFEST")" = "$CERTIFIED_ARTIFACT_SHA256"
           test "$(jq -r '.buildCount' "$MANIFEST")" = '1'
           test "$(jq -r '.rebuildAfterCertification' "$MANIFEST")" = 'false'
           test "$(jq -r '.production' "$MANIFEST")" = 'false'
+          CERTIFIED_ARTIFACT_SHA256="$(jq -r '.artifactSha256 // empty' "$MANIFEST")"
+          [[ "$CERTIFIED_ARTIFACT_SHA256" =~ ^[0-9a-f]{64}$ ]]
           echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
           echo "PRIOR_DIR=$PRIOR_DIR" >> "$GITHUB_ENV"
+          echo "PRIOR_RUN_ID=$GITHUB_RUN_ID" >> "$GITHUB_ENV"
+          echo "CERTIFIED_ARTIFACT_SHA256=$CERTIFIED_ARTIFACT_SHA256" >> "$GITHUB_ENV"
 
       - name: Execute revised reversible 10-case live suite
         id: livev2
@@ -1096,7 +1100,7 @@ jobs:
 
   gate21:
     name: Gate 21 integrity of same certification artifact
-    needs: certify
+    needs: [certify, live-fixtures]
     uses: ./.github/workflows/cxorbia-recovery-i3-gate21-artifact-fingerprint.yml
     secrets: inherit
 
