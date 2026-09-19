@@ -3890,7 +3890,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "Run exactly one canonical I3 certification on this source/control. If fast shopper login passes, continue full acceptance 56/56 -> Gate20 -> one artifact without rebuild -> Gate21 from same manifest. Fix only a new exact causal owner if it fails.",
+  "nextExactAction": "Re-run canonical I3 certification on unchanged product source 40b847d2...; continue only from resulting evidence. If acceptance passes, Gate20 -> one artifact without rebuild -> Gate21 from same manifest.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -4093,13 +4093,14 @@
       "credential rule untouched"
     ],
     "lastRun": {
-      "runNumber": 229,
-      "runId": 35416784969,
-      "result": "FAIL_STEP23",
-      "code": "AUTH_FAILURE:ACCEPTED_SHOPPER_VISIBLE_LOGIN_OR_BOOT_FAIL"
+      "runNumber": 230,
+      "runId": 35424382969,
+      "result": "FAIL_STEP16",
+      "code": "SOURCE_FAILURE:IDENTITY_OVERLAY_CONTRACT",
+      "classification": "CONTROL_HARNESS_SCHEMA_STALE"
     },
-    "rootCause": "Acceptance selected from all active shoppers instead of credential-proof + current-legal accepted shoppers; quarantined identity-review rows can intentionally lack normalized password proof.",
-    "harnessFix": "Select only durable password-proof shoppers; current legal accepted + HR history required; fast visible-login preflight before 56-route traversal; no secrets logged.",
+    "rootCause": "Workflow identity adjudication gate still required legacy v1 display-name-only schema after the same existing private runtime identity file was upgraded to v2 optional contact data.",
+    "harnessFix": "Gate16 now requires exact v2 operational-shopper-identity contract with optional contact data and no credentials; product source remains unchanged.",
     "alreadyProven": [
       "Reservations durable create/status/delete ACK PASS",
       "Client membership/readback PASS",
@@ -4108,7 +4109,7 @@
       "credential sweep/readback PASS",
       "124/124 entrypoint closure PASS"
     ],
-    "nextExactAction": "Run exactly one canonical I3 certification on this source/control. If fast shopper login passes, continue full acceptance 56/56 -> Gate20 -> one artifact without rebuild -> Gate21 from same manifest. Fix only a new exact causal owner if it fails.",
+    "nextExactAction": "Re-run canonical I3 certification on unchanged product source 40b847d2...; continue only from resulting evidence. If acceptance passes, Gate20 -> one artifact without rebuild -> Gate21 from same manifest.",
     "production": "DO_NOT_TOUCH"
   }
 }

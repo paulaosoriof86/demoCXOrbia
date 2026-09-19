@@ -374,7 +374,7 @@ jobs:
           const canonicalFor=link=>str(link?.canonicalShopperId||link?.canonicalId||link?.shopperId||link?.profileId);
 
           const overlay=JSON.parse(fs.readFileSync(IDENTITY_TMP,'utf8'));
-          if(overlay?.schemaVersion!=='cxorbia.tya-dev-operational-display-identity.v1'||overlay?.displayIdentityOnly!==true||overlay?.containsContactData!==false)throw new Error('SOURCE_FAILURE:IDENTITY_OVERLAY_CONTRACT');
+          if(overlay?.schemaVersion!=='cxorbia.tya-operational-shopper-identity.v2'||overlay?.displayIdentityOnly!==false||overlay?.containsContactData!==true||overlay?.contactDataOptional!==true||overlay?.containsCredentials!==false)throw new Error('SOURCE_FAILURE:IDENTITY_OVERLAY_CONTRACT');
           const groups=new Map();
           for(const row of arr(overlay.identities)){
             const id=str(row?.shopperId),login=credentialLogin(row?.displayName);
