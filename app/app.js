@@ -191,7 +191,8 @@ CX.app = {
     lg.querySelectorAll('.role-btn').forEach(b=>b.addEventListener('click',()=>{
       /* CORTE 3 P0-7 — en DEV, el acceso Shopper permite elegir una identidad real EXISTENTE desde
          el flujo visible (no inyección oculta). En live/producción se mantiene el guard fail-closed. */
-      if(b.dataset.role==='shopper' && this._isDevAccess()) return this.pickShopperDev();
+      const protectedFirebaseLogin=!!(CX.BACKEND?.enabled===true&&CX.BACKEND?.devPreviewAuth?.enabled===true);
+      if(b.dataset.role==='shopper' && this._isDevAccess() && !protectedFirebaseLogin) return this.pickShopperDev();
       this.selectRole(b.dataset.role);
     }));
     lg.querySelector('#loginAsUser')?.addEventListener('click',()=>{

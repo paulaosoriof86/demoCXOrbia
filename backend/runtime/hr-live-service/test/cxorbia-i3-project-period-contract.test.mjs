@@ -157,6 +157,13 @@ test('I3 profile completeness never depends on persisted plaintext password',()=
   assert.match(bridge,/operational_profile_without_persisted_secret/);
 });
 
+test('I3 protected DEV Shopper role never diverts to the legacy non-auth picker',()=>{
+  const app=read('app/app.js');
+  assert.match(app,/protectedFirebaseLogin=!!\(CX\.BACKEND\?\.enabled===true&&CX\.BACKEND\?\.devPreviewAuth\?\.enabled===true\)/);
+  assert.match(app,/b\.dataset\.role==='shopper' && this\._isDevAccess\(\) && !protectedFirebaseLogin/);
+  assert.match(app,/this\.selectRole\(b\.dataset\.role\)/);
+});
+
 test('I3 shopper portal hides internal Firebase provider email',()=>{
   const portal=read('app/adapters/tya-canonical-shopper-portal-v2.js');
   assert.match(portal,/@auth\\\.cxorbia\\\.invalid/);
