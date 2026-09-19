@@ -156,3 +156,46 @@ test('Gate 7 / visitas UI does not declare assignment success before ACK',()=>{
   assert.doesNotMatch(source,/data\.assignVisit\(v\.id,b\.dataset\.id\);\s*close\(\);\s*ui\.toast\('Visita asignada/);
   assert.doesNotMatch(source,/data\.assignVisit\(v\.id,s\.id\);\s*close\(\);\s*ui\.toast\('Shopper creado y visita asignada/);
 });
+
+test('Gate 7 / composer presents only project-scoped platform-only shopper profiles to authorized staff without claiming HR authority',()=>{
+  const result=composer.compose({
+    hr:{
+      projects:[{id:'period-a',projectId:'project-a',countries:['GT','HN']}],
+      visits:[],shoppers:[],posts:[],
+      currentProjectId:'project-a',currentPeriodId:'period-a',sourceRevision:'hr-rev-platform-profile'
+    },
+    protectedPayload:{
+      visits:[],
+      shoppers:[
+        {id:'shopper-platform-a',shopperId:'shopper-platform-a',tenantId:'tenant-a',projectIds:['project-a'],nombre:'Nora Plataforma',pais:'GT',country:'GT',whatsapp:'+50255550001',phone:'+50255550001',email:'nora@example.invalid',estado:'Activo',visibleLogin:'nora.plataforma'},
+        {id:'shopper-platform-b',shopperId:'shopper-platform-b',tenantId:'tenant-a',projectIds:['project-b'],nombre:'Bruno Otro Proyecto',pais:'HN',country:'HN',whatsapp:'+50499990001',phone:'+50499990001',email:'bruno@example.invalid',estado:'Activo',visibleLogin:'bruno.otro'}
+      ],
+      posts:[],postulations:[],applications:[],certifications:[],liquidations:[]
+    }
+  });
+  assert.equal(result.shoppers.length,1);
+  const shopper=result.shoppers[0];
+  assert.equal(shopper.id,'shopper-platform-a');
+  assert.equal(shopper.shopperId,'shopper-platform-a');
+  assert.equal(shopper.nombre,'Nora Plataforma');
+  assert.equal(shopper.pais,'GT');
+  assert.equal(shopper.whatsapp,'+50255550001');
+  assert.equal(shopper.email,'nora@example.invalid');
+  assert.equal(shopper.estado,'Activo');
+  assert.equal(shopper.__platformOnlyProfile,true);
+  assert.equal(shopper.__hrIdentityPresent,false);
+  assert.equal(shopper.__hrOwnedOperational,false);
+  assert.equal(shopper.identityAuthority,'platform_created_project_scoped');
+  assert.equal(shopper.visitas,0);
+  assert.equal(shopper.realizadas,0);
+  assert.equal(shopper.submitidas,0);
+  assert.equal(result.shoppers.some(s=>s.id==='shopper-platform-b'),false);
+  assert.equal(result.diagnostics.platformOnlyProfiles,2);
+  assert.equal(result.diagnostics.platformOnlyProfilesPresented,1);
+  assert.equal(result.diagnostics.platformOnlyProfilesCrossProjectExcluded,1);
+  assert.equal(result.diagnostics.platformOnlyPresentationProjectScoped,true);
+  assert.equal(result.diagnostics.unmatchedProfilesExcludedFromOperationalList,false);
+  assert.equal(result.diagnostics.duplicateShopperIds,0);
+  assert.equal(result.identityReviewQueue.filter(x=>x.reason==='no_exact_hr_crosswalk').length,2);
+});
+
