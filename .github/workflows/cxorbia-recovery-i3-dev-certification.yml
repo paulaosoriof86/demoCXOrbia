@@ -1005,9 +1005,9 @@ jobs:
         run: |
           set -Eeuo pipefail
           test "$GITHUB_RUN_ATTEMPT" = '1'
-          test "$(git rev-parse HEAD^)" = '31c1b42c6d3883a17b4825129835666103b9219a'
-          test "$(git rev-parse "$I3_CERTIFICATION_SOURCE_SHA^{tree}")" = "$I3_CERTIFICATION_SOURCE_TREE"
-          printf '%s\n' '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' '.github/control/RECOVERY-I3-LIVE-FIXTURES-20260919.mjs.gz' | sort > /tmp/expected-files
+          test "$(git rev-parse HEAD^)" = '106da1454fb0d5dc68f9b28a91284b84a770db53'
+          test "$(git show -s --format=%T "$I3_CERTIFICATION_SOURCE_SHA")" = "$I3_CERTIFICATION_SOURCE_TREE"
+          printf '%s\n' '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' | sort > /tmp/expected-files
           git diff --name-only HEAD^ HEAD | sort > /tmp/actual-files
           diff -u /tmp/expected-files /tmp/actual-files
           git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools
