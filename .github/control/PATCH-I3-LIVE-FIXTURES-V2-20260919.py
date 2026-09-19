@@ -125,5 +125,19 @@ required=["1_SHOPPER_GT","2_SHOPPER_HN","3_NOMBRE_TILDE","4_NOMBRE_COMPUESTO","5
 for x in required:
     if x not in s: raise SystemExit("RELEASE_COMPOSITION_FAILURE:MISSING_TEST_ID:"+x)
 out_path.parent.mkdir(parents=True,exist_ok=True)
+
+hr_block="""  const hrResp = await fetch(HOST + '/api/tenants/' + encodeURIComponent(TENANT) + '/projects/' + encodeURIComponent(PROJECT_ID) + '/hr-live?' + new URLSearchParams({ format: 'json', fresh: '1', view: 'operational-names', cxOperationalPreview: FULL, ts: String(Date.now()) }), { cache: 'no-store', headers: { 'cache-control': 'no-store' } });
+  const hrPayload = await hrResp.json();
+  if (!hrResp.ok) throw new Error('PROVIDER_FAILURE:HR_LIVE_FOR_FIXTURE_' + hrResp.status);
+  const hr = hrPayload.snapshot || hrPayload.data || hrPayload;
+"""
+if s.count(hr_block)!=1:
+    raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:HR_WARM_BLOCK:count={s.count(hr_block)}")
+s=s.replace(hr_block,"",1)
+staff_anchor="  const staffToken = await customTokenToIdToken(await auth.createCustomToken(staff.id), apiKey);\n"
+if s.count(staff_anchor)!=1:
+    raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:STAFF_TOKEN_ANCHOR:count={s.count(staff_anchor)}")
+s=s.replace(staff_anchor,staff_anchor+"\n"+hr_block,1)
+
 out_path.write_text(s,encoding="utf-8")
 print("PATCH_I3_LIVE_FIXTURES_V2_OK",len(s))
