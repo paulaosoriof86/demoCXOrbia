@@ -985,7 +985,7 @@ jobs:
 
   live-fixtures:
     name: I3 new shopper Auth diagnostic only — no rebuild or deploy
-    if: \${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-live-fixtures-only]') && github.run_attempt == 1 }}
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-live-fixtures-only]') && github.run_attempt == 1 }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
@@ -1005,9 +1005,9 @@ jobs:
         run: |
           set -Eeuo pipefail
           test "$GITHUB_RUN_ATTEMPT" = '1'
-          test "$(git rev-parse HEAD^)" = 'b9c86c2002ffddf533620b86dece61e6a23aca85'
+          test "$(git rev-parse HEAD^)" = '782a3b173177695be9444bbce7e3527007130250'
           test "$(git show -s --format=%T "$I3_CERTIFICATION_SOURCE_SHA")" = "$I3_CERTIFICATION_SOURCE_TREE"
-          printf '%s\n' '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' '.github/control/RECOVERY-I3-NEW-SHOPPER-AUTH-DIAGNOSTIC-20260919.mjs' | sort > /tmp/expected-files
+          printf '%s\n' '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' | sort > /tmp/expected-files
           git diff --name-only HEAD^ HEAD | sort > /tmp/actual-files
           diff -u /tmp/expected-files /tmp/actual-files
           git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools
@@ -1028,11 +1028,11 @@ jobs:
       - name: Authenticate canonical Firebase DEV
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: '\${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
 
       - name: Bind to Run 238 and exact certified source without rebuild
         env:
-          GH_TOKEN: \${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -Eeuo pipefail
           SOURCE_DIR="$RUNNER_TEMP/cxorbia-i3-auth-source"
@@ -1040,7 +1040,7 @@ jobs:
           rm -rf "$SOURCE_DIR" "$PRIOR_DIR"
           mkdir -p "$SOURCE_DIR" "$PRIOR_DIR"
           git archive "$I3_CERTIFICATION_SOURCE_SHA" | tar -x -C "$SOURCE_DIR"
-          gh run download "$PRIOR_RUN_ID" --repo "\${{ github.repository }}" --name "cxorbia-recovery-i3-single-source-certification-$PRIOR_RUN_ID" --dir "$PRIOR_DIR"
+          gh run download "$PRIOR_RUN_ID" --repo "${{ github.repository }}" --name "cxorbia-recovery-i3-single-source-certification-$PRIOR_RUN_ID" --dir "$PRIOR_DIR"
           MANIFEST="$(find "$PRIOR_DIR" -name i3-certification-manifest.json -print -quit)"
           test -n "$MANIFEST"
           test "$(jq -r '.i3CertificationSourceSha' "$MANIFEST")" = "$I3_CERTIFICATION_SOURCE_SHA"
@@ -1062,8 +1062,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-recovery-i3-auth-diagnostic-\${{ github.run_id }}
-          path: \${{ env.OUT }}
+          name: cxorbia-recovery-i3-auth-diagnostic-${{ github.run_id }}
+          path: ${{ env.OUT }}
           if-no-files-found: error
           retention-days: 14
           compression-level: 0
