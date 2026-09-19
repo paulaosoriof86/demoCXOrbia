@@ -114,26 +114,65 @@ if role_count!=2:
     raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:SHOPPER_ROLE_CLICK_COUNT:{role_count}")
 s=s.replace(role_click,role_ready)
 
-admin_needle="backendAuth.ensureAuthenticated"
-admin_count=s.count(admin_needle)
-if admin_count!=1:
-    ctx=[line.strip()[:500] for line in s.splitlines() if "ensureAuthenticated" in line]
+admin_signin_needle="signInWithCustomToken"
+admin_signin_count=s.count(admin_signin_needle)
+if admin_signin_count!=1:
+    ctx=[line.strip()[:700] for line in s.splitlines() if "signInWithCustomToken" in line]
+    print("ADMIN_SIGNIN_CONTEXT",ctx)
+    raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:ADMIN_SIGNIN_SEMANTIC_COUNT:{admin_signin_count}")
+admin_signin_idx=s.find(admin_signin_needle)
+admin_signin_start=s.rfind("\n",0,admin_signin_idx)+1
+admin_signin_end=s.find("\n",admin_signin_idx)
+if admin_signin_end<0: admin_signin_end=len(s)
+admin_signin_line=s[admin_signin_start:admin_signin_end]
+if ".evaluate" not in admin_signin_line or "await " not in admin_signin_line:
+    print("ADMIN_SIGNIN_CONTEXT",[admin_signin_line[:1000]])
+    raise SystemExit("RELEASE_COMPOSITION_FAILURE:ADMIN_SIGNIN_NOT_EVALUATE")
+admin_signin_indent=admin_signin_line[:len(admin_signin_line)-len(admin_signin_line.lstrip())]
+admin_page_var=admin_signin_line.strip().split(".evaluate",1)[0].replace("await ","").strip()
+admin_signin_stmt=admin_signin_line.strip()
+admin_signin_retry=admin_signin_indent+f"""let __cxAdminAuthSettled=false,__cxAdminAuthError='';
+{{indent}}for(let __cxAdminAuthAttempt=1;__cxAdminAuthAttempt<=5;__cxAdminAuthAttempt++){{
+{{indent}}  try{{
+{{indent}}    {admin_signin_stmt}
+{{indent}}  }}catch(__cxAdminAuthErr){{
+{{indent}}    const __cxAdminMsg=String(__cxAdminAuthErr?.message||__cxAdminAuthErr||'');
+{{indent}}    if(!/Execution context was destroyed|navigation|FIREBASE_SDK_NOT_READY|app-compat\\/no-app|No Firebase App|auth\\/network-request-failed|network AuthError|timeout|interrupted connection|unreachable host/i.test(__cxAdminMsg))throw __cxAdminAuthErr;
+{{indent}}    __cxAdminAuthError=__cxAdminMsg;
+{{indent}}  }}
+{{indent}}  await {admin_page_var}.waitForLoadState('domcontentloaded',{{timeout:90000}}).catch(()=>{{}});
+{{indent}}  const __cxAdminUid=await {admin_page_var}.evaluate(()=>String(window.firebase?.auth?.().currentUser?.uid||'')).catch(()=> '');
+{{indent}}  if(__cxAdminUid){{__cxAdminAuthSettled=true;break;}}
+{{indent}}  if(__cxAdminAuthAttempt<5)await {admin_page_var}.waitForTimeout(1500*__cxAdminAuthAttempt);
+{{indent}}}}
+{{indent}}if(!__cxAdminAuthSettled)throw new Error('ENVIRONMENT_FAILURE:LIVE_FIXTURE_ADMIN_AUTH_NOT_SETTLED:'+__cxAdminAuthError.slice(0,160));
+{{indent}}await {admin_page_var}.goto('about:blank',{{waitUntil:'domcontentloaded',timeout:30000}});
+{{indent}}await {admin_page_var}.goto(productUrl(),{{waitUntil:'domcontentloaded',timeout:90000}});
+{{indent}}await {admin_page_var}.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{{timeout:90000}});
+{{indent}}await {admin_page_var}.waitForFunction(()=>Boolean(window.firebase?.auth?.().currentUser),null,{{timeout:90000}});""".replaceAll("{indent}",admin_signin_indent)
+s=s[:admin_signin_start]+admin_signin_retry+s[admin_signin_end:]
+
+admin_ensure_needle="backendAuth.ensureAuthenticated"
+admin_ensure_count=s.count(admin_ensure_needle)
+if admin_ensure_count!=1:
+    ctx=[line.strip()[:700] for line in s.splitlines() if "ensureAuthenticated" in line]
     print("ADMIN_ENSURE_CONTEXT",ctx)
-    raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:ADMIN_ENSURE_SEMANTIC_COUNT:{admin_count}")
-admin_idx=s.find(admin_needle)
-admin_start=s.rfind("\n",0,admin_idx)+1
-admin_end=s.find("\n",admin_idx)
-if admin_end<0: admin_end=len(s)
-admin_line=s[admin_start:admin_end]
-if ".evaluate" not in admin_line or "await " not in admin_line:
-    print("ADMIN_ENSURE_CONTEXT",[admin_line[:800]])
+    raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:ADMIN_ENSURE_SEMANTIC_COUNT:{admin_ensure_count}")
+admin_ensure_idx=s.find(admin_ensure_needle)
+admin_ensure_start=s.rfind("\n",0,admin_ensure_idx)+1
+admin_ensure_end=s.find("\n",admin_ensure_idx)
+if admin_ensure_end<0: admin_ensure_end=len(s)
+admin_ensure_line=s[admin_ensure_start:admin_ensure_end]
+if ".evaluate" not in admin_ensure_line or "await " not in admin_ensure_line:
+    print("ADMIN_ENSURE_CONTEXT",[admin_ensure_line[:1000]])
     raise SystemExit("RELEASE_COMPOSITION_FAILURE:ADMIN_ENSURE_NOT_EVALUATE")
-admin_indent=admin_line[:len(admin_line)-len(admin_line.lstrip())]
-page_var=admin_line.strip().split(".evaluate",1)[0].replace("await ","").strip()
-admin_restore=admin_indent+f"""await {page_var}.reload({{ waitUntil: 'domcontentloaded', timeout: 90000 }});
-{{indent}}await {page_var}.waitForFunction((uid) => String(window.firebase?.auth?.().currentUser?.uid || '') === uid, uid, {{ timeout: 90000 }});
-{{indent}}await {page_var}.waitForFunction(() => typeof window.CX?.backendAuth?.context === 'function' && window.CX?.app?.__firebaseBrowserAuthWrapped === true, null, {{ timeout: 90000 }});""".replace("{indent}",admin_indent)
-s=s[:admin_start]+admin_restore+s[admin_end:]
+admin_ensure_indent=admin_ensure_line[:len(admin_ensure_line)-len(admin_ensure_line.lstrip())]
+admin_ensure_stmt=admin_ensure_line.strip()
+admin_ensure_guard=admin_ensure_indent+f"""try{{{admin_ensure_stmt}}}catch(__cxAdminEnsureErr){{
+{{indent}}  const __cxAdminEnsureMsg=String(__cxAdminEnsureErr?.message||__cxAdminEnsureErr||'');
+{{indent}}  if(!/Execution context was destroyed|navigation/i.test(__cxAdminEnsureMsg))throw __cxAdminEnsureErr;
+{{indent}}}}""".replace("{indent}",admin_ensure_indent)
+s=s[:admin_ensure_start]+admin_ensure_guard+s[admin_ensure_end:]
 
 exact(
 """    await page.waitForFunction(({ tenantId, projectId, shopperId }) => { const c=window.CX?.backendAuth?.context?.()||{}, ps=Array.isArray(c.projectIds)?c.projectIds.map(String):[]; return c.authenticated===true&&c.role==='shopper'&&c.tenantId===tenantId&&String(c.shopperId||'')===shopperId&&(ps.length===0||ps.includes(projectId)); }, { tenantId:TENANT, projectId:PROJECT_ID, shopperId:f.id }, { timeout:120000 });

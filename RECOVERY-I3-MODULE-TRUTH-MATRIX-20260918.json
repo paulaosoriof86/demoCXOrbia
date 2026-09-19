@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.recovery.module-truth-matrix.v5",
-  "observedAt": "2026-09-18",
+  "observedAt": "2026-09-19T21:02:11Z",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
@@ -3895,10 +3895,18 @@
     "rule": "preserve; do not regress/rebuild; not an I3 requirement absent transversal P0"
   },
   "devCertification": {
-    "status": "PENDING_SINGLE_FORENSIC_FINAL_RUN",
-    "servedSourceSha": null,
-    "servedTreeSha": null,
-    "artifactSha256": null
+    "status": "RUN238_CERTIFIED_LIVE_FIXTURES_HOLD",
+    "runId": "35456396448",
+    "runNumber": 238,
+    "servedSourceSha": "751d01397bcd85903456e5cb78e3e5ce41161b17",
+    "servedTreeSha": "3612496c2cbf4abdaed1404fcf69552817929fcf",
+    "artifactSha256": "bc340a7c30657e4326b3dfa306bff5cbb016ce37abaaece0edf3f5adc91d9a16",
+    "buildCount": 1,
+    "rebuildAfterCertification": false,
+    "gate20": "PASS",
+    "gate21": "PASS",
+    "production": false,
+    "liveFixtureClosure": "HOLD"
   },
   "invariants": {
     "singleCandidate": true,
@@ -4083,7 +4091,7 @@
   },
   "continuityCheckpoint": {
     "iteration": "I3",
-    "status": "HOLD_PENDING_PROTECTED_SHOPPER_LOGIN_RECERTIFICATION",
+    "status": "HOLD_PENDING_LIVE_FIXTURE_CLOSURE",
     "exactProductSourceSha": "751d01397bcd85903456e5cb78e3e5ce41161b17",
     "exactProductSourceTree": "3612496c2cbf4abdaed1404fcf69552817929fcf",
     "noReprocess": [
@@ -4126,15 +4134,15 @@
       "acceptance imports provider function instead of reimplementing credentials",
       "stale v1 tests updated to the explicitly approved v2 contract"
     ],
-    "nextExactAction": "Run canonical I3 on exact source. Fast Shopper login must establish Firebase context and HR authority before any 56-route traversal. If PASS, execute live fictitious-data probes/readback/cleanup and continue exhaustive acceptance.",
+    "nextExactAction": "Run one canonical I3 live-fixture suite using the proven Run 238 bounded custom-auth retry/rehydration semantics. Do not change product source. Require 10/10 + cleanup. If Admin custom auth still cannot settle after five bounded retries, stop as ENVIRONMENT_FAILURE and do not patch product.",
     "production": "DO_NOT_TOUCH",
     "rootCauseRun233": "Static/unit gates exposed stale v1 browser credential implementations and stale expectations before DEV deploy.",
     "lastRun": {
-      "runNumber": 237,
-      "runId": 35455553847,
-      "result": "FAIL_STEP23_FAST_PREFLIGHT",
-      "code": "AUTH_FAILURE:FAST_ACCEPTED_SHOPPER_VISIBLE_LOGIN",
-      "classification": "FUNCTIONAL_DEFECT_PROTECTED_LOGIN_ROUTE"
+      "runNumber": 258,
+      "runId": "35468874734",
+      "result": "HOLD_7_OF_10",
+      "code": "ENVIRONMENT_FAILURE_ADMIN_BROWSER_AUTH_NETWORK_TRANSIENT",
+      "classification": "ENVIRONMENT_FAILURE"
     },
     "rootCauseRun235": "Cloud Run revision could not start because cxorbia-shopper-command-provider-v1.mjs imports ../../app/core/shopper-credential-rule.js but the runtime Dockerfile did not COPY that shared owner into the image.",
     "fixRun235": "Dockerfile now packages exactly app/core/shopper-credential-rule.js at the import path; static P0 guard enforces the COPY before build.",
@@ -4152,5 +4160,83 @@
     "fixRun236": "For a Shopper, pre-HR readiness now requires authenticated Firebase principal rather than pre-existing exact Firestore profile. Auth+tenant+project authorization remains required by reconcile() and is reverified server-side. After composition, __sessionShopperProfile falls back to the exact canonical shopper from result.shoppers/identityMap.",
     "rootCauseRun237": "app.js intercepted the Shopper role button in DEV with pickShopperDev(), an explicitly non-auth legacy validation picker, before backend-browser-auth could select the protected Firebase shopper namespace. This produced selectedRole='', no Firebase user, no context, and no credential error.",
     "fixRun237": "When protected Firebase DEV auth is enabled, Shopper role now always follows selectRole('shopper') -> backend-browser-auth -> Firebase. Legacy pickShopperDev remains only for non-protected DEV access."
+  },
+  "liveFixtureForensic": {
+    "auditId": "CXORBIA-I3-LIVE-FIXTURE-FORENSIC-20260919",
+    "status": "FROZEN",
+    "productDrift": false,
+    "certifiedSourceSha": "751d01397bcd85903456e5cb78e3e5ce41161b17",
+    "certifiedSourceTree": "3612496c2cbf4abdaed1404fcf69552817929fcf",
+    "certifiedArtifactSha256": "bc340a7c30657e4326b3dfa306bff5cbb016ce37abaaece0edf3f5adc91d9a16",
+    "evidence": [
+      {
+        "runNumber": 251,
+        "runId": "35466876728",
+        "result": "PASS",
+        "proof": "new Shopper provider -> direct password -> claims -> visible login -> backendAuth.context -> membership; cleanup PASS"
+      },
+      {
+        "runNumber": 254,
+        "runId": "35467568326",
+        "result": "HOLD",
+        "passed": 6,
+        "firstFailure": "4_NOMBRE_COMPUESTO selectedRole empty before Firebase user",
+        "classification": "HARNESS_AUTH_SELECTION_RACE"
+      },
+      {
+        "runNumber": 255,
+        "runId": "35468034782",
+        "result": "HOLD",
+        "passed": 3,
+        "firstFailure": "1_SHOPPER_GT selectedRole empty before Firebase user",
+        "classification": "HARNESS_AUTH_SELECTION_RACE"
+      },
+      {
+        "runNumber": 256,
+        "runId": "35468357011",
+        "result": "HOLD",
+        "passed": 7,
+        "firstFailure": "Admin page.evaluate execution context destroyed by navigation",
+        "classification": "HARNESS_BROWSER_LIFECYCLE"
+      },
+      {
+        "runNumber": 257,
+        "runId": "35468802173",
+        "result": "FAIL_PREFLIGHT",
+        "passed": 0,
+        "firstFailure": "ADMIN_ENSURE_COUNT=0 before Auth/writes",
+        "classification": "RELEASE_COMPOSITION_FAILURE"
+      },
+      {
+        "runNumber": 258,
+        "runId": "35468874734",
+        "result": "HOLD",
+        "passed": 7,
+        "firstFailure": "Admin Firebase auth/network-request-failed inside page.evaluate",
+        "classification": "ENVIRONMENT_FAILURE"
+      }
+    ],
+    "stablePassedTests": [
+      "1_SHOPPER_GT",
+      "2_SHOPPER_HN",
+      "3_NOMBRE_TILDE",
+      "4_NOMBRE_COMPUESTO",
+      "6_HISTORICO_KPIS",
+      "9_RESERVA",
+      "10_CLIENTE"
+    ],
+    "pendingTests": [
+      "5_PERFIL_ADMIN",
+      "7_DISPONIBILIDAD_ASIGNACION",
+      "8_POSTULACION"
+    ],
+    "rootCause": "LIVE_FIXTURE_HARNESS_BROWSER_AUTH_LIFECYCLE_AND_FAIL_FAST_MISCLASSIFICATION",
+    "decisiveProof": "Failure location changes across runs while product source/tree/artifact stay identical; the same Shopper cases fail in one run and pass in later runs. Run 238 canonical custom-auth helper already contains bounded retry + rehydration for navigation/network transients, while the live-fixture harness did not.",
+    "correction": "Reuse the already-proven Run 238 custom-auth retry/rehydration semantics for the Admin fixture; no product source change. Persistent network failure after bounded retries is ENVIRONMENT_FAILURE, not FUNCTIONAL_DEFECT.",
+    "antiLoop": "No more product/auth patches from these transient harness failures. One full live-fixture run after this control-only correction; only a reproducible product-level failure with exact owner may modify product.",
+    "cleanupVerified": true,
+    "buildCountAcrossLiveFixtureRuns": 0,
+    "deployCountAcrossLiveFixtureRuns": 0,
+    "productionTouched": false
   }
 }
