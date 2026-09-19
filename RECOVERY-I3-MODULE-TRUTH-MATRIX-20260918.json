@@ -3890,7 +3890,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "Re-run canonical I3 certification on unchanged product source 40b847d2...; continue only from resulting evidence. If acceptance passes, Gate20 -> one artifact without rebuild -> Gate21 from same manifest.",
+  "nextExactAction": "Run one canonical I3 certification on unchanged product source. Fast visible login now tests Auth only; then full 56/56, Gate20, single artifact, Gate21.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -4093,14 +4093,14 @@
       "credential rule untouched"
     ],
     "lastRun": {
-      "runNumber": 230,
-      "runId": 35424382969,
-      "result": "FAIL_STEP16",
-      "code": "SOURCE_FAILURE:IDENTITY_OVERLAY_CONTRACT",
-      "classification": "CONTROL_HARNESS_SCHEMA_STALE"
+      "runNumber": 231,
+      "runId": 35424545153,
+      "result": "FAIL_STEP23_FAST_PRECONDITION",
+      "code": "AUTH_FAILURE:NO_CURRENT_LEGAL_ACCEPTED_CREDENTIAL_PROVEN_SHOPPER_WITH_HR_HISTORY",
+      "classification": "HARNESS_REOPENED_CLOSED_LEGAL_GATE"
     },
-    "rootCause": "Workflow identity adjudication gate still required legacy v1 display-name-only schema after the same existing private runtime identity file was upgraded to v2 optional contact data.",
-    "harnessFix": "Gate16 now requires exact v2 operational-shopper-identity contract with optional contact data and no credentials; product source remains unchanged.",
+    "rootCause": "Control harness incorrectly required the same focal Shopper to have a receipt for the current legal content, reopening Legal even though the durable legal gate was already closed and frozen separately.",
+    "harnessFix": "Visible login/profile/history now select credential-proof shoppers, prefer current/ever legal receipts when available, but Legal is not re-opened as a Shopper acceptance blocker.",
     "alreadyProven": [
       "Reservations durable create/status/delete ACK PASS",
       "Client membership/readback PASS",
@@ -4109,7 +4109,7 @@
       "credential sweep/readback PASS",
       "124/124 entrypoint closure PASS"
     ],
-    "nextExactAction": "Re-run canonical I3 certification on unchanged product source 40b847d2...; continue only from resulting evidence. If acceptance passes, Gate20 -> one artifact without rebuild -> Gate21 from same manifest.",
+    "nextExactAction": "Run one canonical I3 certification on unchanged product source. Fast visible login now tests Auth only; then full 56/56, Gate20, single artifact, Gate21.",
     "production": "DO_NOT_TOUCH"
   }
 }
