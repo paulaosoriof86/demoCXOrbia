@@ -114,6 +114,15 @@ if role_count!=2:
     raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:SHOPPER_ROLE_CLICK_COUNT:{role_count}")
 s=s.replace(role_click,role_ready)
 
+admin_ensure="""    await p.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});"""
+admin_restore="""    await p.reload({ waitUntil: 'domcontentloaded', timeout: 90000 });
+    await p.waitForFunction((uid) => String(window.firebase?.auth?.().currentUser?.uid || '') === uid, uid, { timeout: 90000 });
+    await p.waitForFunction(() => typeof window.CX?.backendAuth?.context === 'function' && window.CX?.app?.__firebaseBrowserAuthWrapped === true, null, { timeout: 90000 });"""
+admin_count=s.count(admin_ensure)
+if admin_count!=1:
+    raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:ADMIN_ENSURE_COUNT:{admin_count}")
+s=s.replace(admin_ensure,admin_restore,1)
+
 exact(
 """    await page.waitForFunction(({ tenantId, projectId, shopperId }) => { const c=window.CX?.backendAuth?.context?.()||{}, ps=Array.isArray(c.projectIds)?c.projectIds.map(String):[]; return c.authenticated===true&&c.role==='shopper'&&c.tenantId===tenantId&&String(c.shopperId||'')===shopperId&&(ps.length===0||ps.includes(projectId)); }, { tenantId:TENANT, projectId:PROJECT_ID, shopperId:f.id }, { timeout:120000 });
     await page.waitForFunction(() => window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied === true, null, { timeout:150000 });""",
