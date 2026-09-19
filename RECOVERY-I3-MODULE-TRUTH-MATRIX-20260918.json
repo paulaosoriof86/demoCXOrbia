@@ -4030,13 +4030,14 @@
       "Cliente"
     ],
     "lastRun": {
-      "runNumber": 225,
-      "runId": 35407334638,
+      "runNumber": 226,
+      "runId": 35408755626,
       "result": "FAIL_STEP23",
-      "code": "PROVIDER_FAILURE:RESERVATION_DURABLE_ACK_READBACK_FAIL",
-      "subcondition": "protected_backend_not_ready"
+      "code": "AUTH_FAILURE:CLIENT_MEMBERSHIP_MISSING",
+      "classification": "HARNESS_CONTROL_FALSE_NEGATIVE",
+      "evidence": "Client materialization/readback PASS uses status=active; runtime treats missing active boolean as active unless explicitly false/inactive."
     },
-    "nextExactAction": "Run canonical I3 certification once on this exact source. If acceptance passes, derive Gate20, package the same artifact without rebuild, then Gate21 from that manifest only. If it fails, fix only the exact causal owner.",
+    "nextExactAction": "Re-run canonical I3 certification on unchanged product source. No product change. If acceptance passes, derive Gate20, package one artifact without rebuild, then Gate21 from that same artifact manifest.",
     "production": "DO_NOT_TOUCH"
   }
 }
