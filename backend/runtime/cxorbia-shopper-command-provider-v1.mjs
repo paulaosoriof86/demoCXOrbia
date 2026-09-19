@@ -5,13 +5,15 @@
    HR is read-only: this provider never writes to HR or any external source.
 */
 import crypto from 'node:crypto';
+import ShopperCredentialRule from '../../app/core/shopper-credential-rule.js';
 
 export const VERSION='cxorbia-shopper-command-provider-v1';
 export const COMMAND_TYPES=Object.freeze(['shopper.create','shopper.update','shopper.credential.reset']);
 export const OPERATOR_ROLES=Object.freeze(['super','admin']);
-export const CREDENTIAL_RULE_VERSION='tya-shopper-primer-nombre-primer-apellido-v2';
-export const DURABLE_CREDENTIAL_SWEEP_VERSION='cxorbia-durable-shopper-credential-sweep-v2';
-export const CREDENTIAL_PASSWORD_PROOF_VERSION='cxorbia-shopper-password-proof-v2';
+export const CREDENTIAL_RULE_VERSION=ShopperCredentialRule.CREDENTIAL_RULE_VERSION;
+export const DURABLE_CREDENTIAL_SWEEP_VERSION=ShopperCredentialRule.DURABLE_CREDENTIAL_SWEEP_VERSION;
+export const CREDENTIAL_PASSWORD_PROOF_VERSION=ShopperCredentialRule.CREDENTIAL_PASSWORD_PROOF_VERSION;
+export const shopperCredentialRule=ShopperCredentialRule.shopperCredentialRule;
 const ACTIVE_IDENTITY_LINK_STATES=new Set(['active','confirmed','approved','materialized']);
 const TRUSTED_IDENTITY_AUTHORITIES=new Set(['provider_exact','tenant_adjudication','platform_created','migrated_exact']);
 
@@ -23,38 +25,6 @@ const stable=value=>Array.isArray(value)?value.map(stable):(value&&typeof value=
 const sha=value=>crypto.createHash('sha256').update(typeof value==='string'?value:JSON.stringify(stable(value)),'utf8').digest('hex');
 const clean=value=>Array.isArray(value)?value.map(clean):(value&&typeof value==='object'?Object.fromEntries(Object.entries(value).filter(([,v])=>v!==undefined&&typeof v!=='function').map(([k,v])=>[k,clean(v)])):value);
 const sameArray=(a,b)=>JSON.stringify(uniq(a))===JSON.stringify(uniq(b));
-const stripMarks=value=>str(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-const loginPart=value=>stripMarks(value).toLowerCase().replace(/[^a-z0-9]+/g,'');
-const properFirst=value=>{const first=str(value).split(/\s+/).filter(Boolean)[0]||'';return first?first.charAt(0).toLocaleUpperCase('es-GT')+first.slice(1).toLocaleLowerCase('es-GT'):'';};
-const SURNAME_PARTICLES=new Set(['de','del']);
-const SURNAME_ARTICLES=new Set(['la','las','los']);
-function firstSurnameFromTokens(tokens=[]){
-  const xs=arr(tokens).map(str).filter(Boolean);if(!xs.length)return'';
-  const first=stripMarks(xs[0]).toLowerCase();
-  if(first==='de'){
-    const second=stripMarks(xs[1]).toLowerCase();
-    if(SURNAME_ARTICLES.has(second)&&xs[2])return xs.slice(0,3).join(' ');
-    if(xs[1])return xs.slice(0,2).join(' ');
-  }
-  if(first==='del'&&xs[1])return xs.slice(0,2).join(' ');
-  return xs[0];
-}
-function sameText(a,b){return stripMarks(a).toLowerCase().replace(/\s+/g,' ')===stripMarks(b).toLowerCase().replace(/\s+/g,' ');}
-export function shopperCredentialRule(profile={}){
-  const full=str(profile.nombre||profile.name||profile.displayName),tokens=full.split(/\s+/).filter(Boolean);
-  const firstSource=str(profile.firstName||tokens[0]),first=str(firstSource).split(/\s+/).filter(Boolean)[0]||'';
-  const explicitLast=str(profile.firstSurname||profile.primerApellido||profile.lastName||profile.apellido);
-  const legacyRemainder=tokens.slice(1).join(' ');
-  let last='';
-  if(explicitLast&&!sameText(explicitLast,legacyRemainder))last=firstSurnameFromTokens(explicitLast.split(/\s+/));
-  else{
-    const start=tokens.length>=4?2:1;
-    last=firstSurnameFromTokens(tokens.slice(start));
-  }
-  const firstLogin=loginPart(first),lastLogin=loginPart(last),passwordFirst=properFirst(stripMarks(first));
-  if(!firstLogin||!lastLogin||!passwordFirst)return {ok:false,reason:'SHOPPER_CREDENTIAL_NAME_INCOMPLETE',login:null,password:null,ruleVersion:CREDENTIAL_RULE_VERSION};
-  return {ok:true,login:firstLogin+'.'+lastLogin,password:passwordFirst+'123*',firstName:properFirst(first),lastName:last,firstSurname:last,ruleVersion:CREDENTIAL_RULE_VERSION};
-}
 const receiptId=command=>sha(`${command.tenantId}\0${command.projectId}\0${command.periodId||''}\0${command.idempotencyKey}`).slice(0,40);
 const RAW_SECRET_KEY=/^(?:password|pass|newpassword|temporarypassword|credential|credentialvalue|secret|token|resettoken)$/i;
 const PUBLIC_PROFILE_FIELDS=Object.freeze(['firstName','lastName','nombre','email','whatsapp','phone','pais','country','depto','ciudad','sexo','edad','estado','sourceRef','sourceType','perfilCompleto','honorarioPref','createdVia']);

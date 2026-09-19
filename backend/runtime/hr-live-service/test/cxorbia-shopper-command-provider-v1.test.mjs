@@ -317,14 +317,14 @@ test('Gate 8 / durable legacy shoppers converge to the frozen credential rule ou
   assert.equal(first.identityReviewCount,1);
   assert.equal(first.identityReviewQueue[0].shopperId,bad);
   assert.equal(first.identityReviewQueue[0].reason,'SHOPPER_CREDENTIAL_NAME_INCOMPLETE');
-  assert.equal((await auth.getUser(goodUid)).password,'María123*');
+  assert.equal((await auth.getUser(goodUid)).password,'Maria123*');
   assert.match((await auth.getUser(goodUid)).email,/@auth\.cxorbia\.invalid$/);
   assert.equal(db.get(`tenants/tenant-a/users/${goodUid}`).visibleLogin,'maria.lopez');
   assert.equal(db.get(`tenants/tenant-a/users/${goodUid}`).credentialRuleVersion,CREDENTIAL_RULE_VERSION);
   assert.equal(db.get(`tenants/tenant-a/users/${goodUid}`).credentialSweepVersion,DURABLE_CREDENTIAL_SWEEP_VERSION);
   assert.equal(db.get(`tenants/tenant-a/shoppers/${good}`).username,'maria.lopez');
   assert.equal(db.get(`tenants/tenant-a/shoppers/${good}`).credentialSweepVersion,DURABLE_CREDENTIAL_SWEEP_VERSION);
-  assert.equal(JSON.stringify([...db._store.values()]).includes('María123*'),false);
+  assert.equal(JSON.stringify([...db._store.values()]).includes('Maria123*'),false);
 
   const second=await p.normalizeDurableCredentials({tenantId:'tenant-a'});
   assert.equal(second.normalizedShopperCount,0);
@@ -333,11 +333,11 @@ test('Gate 8 / durable legacy shoppers converge to the frozen credential rule ou
 });
 
 
-test('Gate 8 / nombre.apellido uses only the first given name and remains idempotent after profile normalization',()=>{
+test('Gate 8 / first-name.first-surname remains idempotent after profile normalization',()=>{
   const historical={nombre:'Juan Carlos Pérez Gómez',firstName:'Juan Carlos',lastName:'Pérez Gómez'};
   const first=shopperCredentialRule(historical);
   assert.equal(first.ok,true);
-  assert.equal(first.login,'juan.perezgomez');
+  assert.equal(first.login,'juan.perez');
   assert.equal(first.password,'Juan123*');
   assert.equal(first.firstName,'Juan');
   assert.equal(first.lastName,'Pérez Gómez');

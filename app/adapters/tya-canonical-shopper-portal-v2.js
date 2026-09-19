@@ -24,11 +24,8 @@
     ];
     return [...new Set(values.flatMap(flatten).map(str).filter(Boolean))];
   }
-  const credentialPart=value=>str(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'');
-  function shopperCredentialRule(s){
-    const tokens=str(s?.nombre).split(/\s+/).filter(Boolean),first=str(s?.firstName||tokens[0]),last=str(s?.lastName||s?.apellido||tokens.slice(1).join(' ')),a=credentialPart(first),b=credentialPart(last),f=first.split(/\s+/)[0]||'';
-    return a&&b&&f?{ok:true,login:a+'.'+b,password:f.charAt(0).toLocaleUpperCase('es-GT')+f.slice(1).toLocaleLowerCase('es-GT')+'123*',firstName:f.charAt(0).toLocaleUpperCase('es-GT')+f.slice(1).toLocaleLowerCase('es-GT'),lastName:last}:{ok:false,login:'',password:'',firstName:first,lastName:last};
-  }
+  const credentialApi=window.CX_SHOPPER_CREDENTIAL_RULE;
+  const shopperCredentialRule=s=>credentialApi?.shopperCredentialRule?.(s)||{ok:false,login:'',password:'',firstName:'',lastName:''};
   function authContext(){
     try{return CX.backendAuth?.context?.()||null;}catch(_){return null;}
   }
@@ -124,7 +121,7 @@
           <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">WHATSAPP</div><b>${esc(s.whatsapp||s.phone||'— sin dato')}</b></div>
           <div class="card card-p" style="padding:10px"><div class="muted" style="font-size:10px">CORREO</div><b>${esc(email||'— sin dato')}</b></div>
         </div>
-        <div style="font-size:11px;color:var(--t3);margin-top:9px">Regla TyA: usuario = nombre.apellido y contraseña = Nombre123*. La contraseña se deriva para autenticación y visualización del propio shopper; no se guarda en localStorage, Firestore ni HR.</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:9px">Regla TyA: usuario = primer nombre.primer apellido y contraseña = Nombre123*; usuario y contraseña se derivan sin tildes. La contraseña se deriva para autenticación y visualización del propio shopper; no se guarda en localStorage, Firestore ni HR.</div>
       </div>
       <div class="grid g4" style="margin-bottom:12px">${ui.kpi('Visitas',st.total,'b')}${ui.kpi('Realizadas',st.realizadas,'g')}${ui.kpi('Submitidas',st.submitted,'p')}${ui.kpi('Pagadas confirmadas',st.paymentConfirmed,'g')}</div>
       <div class="card card-p"><div class="between" style="gap:8px;flex-wrap:wrap;margin-bottom:10px"><div class="card-t">Histórico de visitas · ${visits.length}</div><div class="flex wrap" style="gap:6px"><button class="btn btn-sm ${tab==='all'?'btn-pr':'btn-ghost'}" data-tab="all">Todas ${visits.length}</button><button class="btn btn-sm ${tab==='active'?'btn-pr':'btn-ghost'}" data-tab="active">Activas ${active.length}</button><button class="btn btn-sm ${tab==='done'?'btn-pr':'btn-ghost'}" data-tab="done">Realizadas ${done.length}</button><button class="btn btn-sm ${tab==='submitted'?'btn-pr':'btn-ghost'}" data-tab="submitted">Submitidas ${submitted.length}</button><button class="btn btn-sm ${tab==='paid'?'btn-pr':'btn-ghost'}" data-tab="paid">Pagadas ${paid.length}</button></div></div>${rows(list,ui)}</div>`;

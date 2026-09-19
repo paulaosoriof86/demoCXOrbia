@@ -168,14 +168,20 @@ test('I3 protected shopper normalization reuses existing contact and login alias
   assert.match(backend,/s\.visibleLogin/);
 });
 
-test('I3 owner-defined shopper credential contract is identical in provider and human UI',()=>{
+test('I3 shopper credential contract has one shared implementation across provider and human UI',()=>{
+  const shared=read('app/core/shopper-credential-rule.js');
   const provider=read('backend/runtime/cxorbia-shopper-command-provider-v1.mjs');
   const bridge=read('app/adapters/tya-c6-domain-consistency-bridge.js');
   const portal=read('app/adapters/tya-canonical-shopper-portal-v2.js');
-  assert.match(provider,/CREDENTIAL_RULE_VERSION='tya-shopper-nombre-apellido-v1'/);
-  assert.match(provider,/password:passwordFirst\+'123\*'/);
-  assert.match(provider,/login:firstLogin\+'\.'\+lastLogin/);
-  assert.match(bridge,/credentialRuleVersion='tya-shopper-nombre-apellido-v1'/);
-  assert.match(portal,/password:f\.charAt\(0\).*\+'123\*'/);
+  const html=read('app/index-backend-dev.html');
+  assert.match(shared,/CREDENTIAL_RULE_VERSION='tya-shopper-primer-nombre-primer-apellido-v2'/);
+  assert.match(shared,/password:passwordFirst\+'123\*'/);
+  assert.match(shared,/login:firstLogin\+'\.'\+lastLogin/);
+  assert.match(provider,/ShopperCredentialRule\.shopperCredentialRule/);
+  assert.match(bridge,/CX_SHOPPER_CREDENTIAL_RULE/);
+  assert.match(portal,/CX_SHOPPER_CREDENTIAL_RULE/);
+  assert.match(html,/core\/shopper-credential-rule\.js/);
+  assert.doesNotMatch(bridge,/const credentialPart=/);
+  assert.doesNotMatch(portal,/const credentialPart=/);
   assert.doesNotMatch(provider,/randomBytes\(24\).*!aA1/);
 });
