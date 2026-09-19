@@ -150,7 +150,29 @@ async function custom(p,m,role){
     return c.authenticated&&c.tenantId===t&&(r==='admin'?['super','admin','ops','coordinador'].includes(x):['cliente','client'].includes(x))&&(x==='super'||!ps.length||ps.includes(pr))&&window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true;
   },{t:TENANT,pr:PROJ,r:role},{timeout:150000});
 }
-async function visible(p,x){await p.goto(base,{waitUntil:'domcontentloaded',timeout:90000});await p.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});await p.click('.role-btn[data-role="shopper"]');await p.fill('#lgUser',x.cr.login);await p.fill('#lgPass',x.cr.password);await p.click('#lgSubmit');await p.waitForFunction(()=>!!window.firebase.auth().currentUser?.uid,null,{timeout:90000});const uid=await p.evaluate(()=>window.firebase.auth().currentUser?.uid||'');if(uid!==x.uid)throw new Error('AUTH_FAILURE:VISIBLE_LOGIN_UID_MISMATCH');await p.waitForTimeout(1800);return await p.evaluate(()=>({ctx:CX?.backendAuth?.context?.()||{},authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,legalModal:[...document.querySelectorAll('.cx-modal')].some(x=>/Términos de uso y confidencialidad/i.test(String(x.innerText||''))),body:String(document.body?.innerText||'')}))}
+async function visible(p,x){
+  const waitContext=()=>p.waitForFunction(({t,pr,raw,can})=>{
+    const c=window.CX?.backendAuth?.context?.()||{},ps=Array.isArray(c.projectIds)?c.projectIds.map(String):[],sid=String(c.shopperId||'');
+    return c.authenticated===true&&String(c.role||'').toLowerCase()==='shopper'&&c.tenantId===t&&(ps.length===0||ps.includes(pr))&&(!sid||sid===String(raw)||sid===String(can));
+  },{t:TENANT,pr:PROJ,raw:x.raw,can:x.can},{timeout:120000});
+  await p.goto(base,{waitUntil:'domcontentloaded',timeout:90000});
+  await p.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
+  await p.locator('.role-btn[data-role="shopper"]').click({timeout:30000});
+  await p.locator('#lgUser').fill(x.cr.login);
+  await p.locator('#lgPass').fill(x.cr.password);
+  await p.locator('#lgSubmit').click();
+  let firstError='';
+  try{await waitContext();}catch(e){
+    firstError=str(e?.message||e);
+    await p.reload({waitUntil:'domcontentloaded',timeout:90000});
+    await p.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
+    try{await waitContext();}catch(e2){throw new Error('VISIBLE_LOGIN_CONTEXT_NOT_READY:'+firstError.slice(0,120)+':reload:'+str(e2?.message||e2).slice(0,120));}
+  }
+  const uid=await p.evaluate(()=>String(window.firebase?.auth?.().currentUser?.uid||''));
+  if(uid&&uid!==String(x.uid))throw new Error('VISIBLE_LOGIN_UID_MISMATCH');
+  await p.waitForTimeout(500);
+  return await p.evaluate(()=>({ctx:CX?.backendAuth?.context?.()||{},authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,legalModal:[...document.querySelectorAll('.cx-modal')].some(x=>/Términos de uso y confidencialidad/i.test(String(x.innerText||''))),body:String(document.body?.innerText||'')}));
+}
 async function assertNav(p,role){const expected=arr(ROUTE_INVENTORY?.roles?.[role]),actual=await p.evaluate(r=>{const a=v=>Array.isArray(v)?v:[];return a(window.CX?.NAV?.[r]).flatMap(s=>a(s?.items).map(String))},role);const missing=expected.filter(x=>!actual.includes(x));if(missing.length)issues.push({classification:'RELEASE_COMPOSITION_FAILURE',code:'EXPECTED_CANONICAL_NAV_MISSING',role,missing,expectedCount:expected.length,actualCount:actual.length});return {expected,actual,missing}}
 async function route(p,role,id,label,tag){try{await p.evaluate(x=>window.CX.router.nav(x),id);await p.waitForFunction(x=>window.CX?.session?.view===x,id,{timeout:15000});await p.waitForTimeout(650);const m=await p.evaluate(({id,role})=>{const v=document.querySelector('#view')||document.querySelector('main.content'),r=v?.getBoundingClientRect()||{},h=document.documentElement,b=String(document.body?.innerText||'');return{id,role,visible:(r.width||0)>0&&(r.height||0)>0,text:String(v?.innerText||'').trim().length,tenant:h.getAttribute('data-cx-tenant'),project:h.getAttribute('data-cx-project'),revision:String(window.CX?.data?.previewMeta?.sourceRevision||''),authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,bad:/No se encontró tu registro de evaluador|identidad de esta sesión no está vinculada|sin país asignado/i.test(b),module:typeof window.CX?.modules?.[id]==='function'}} ,{id,role});const f=await snap(p,tag+'-'+role+'-'+id);if(!(m.visible&&m.text>20&&m.module&&m.tenant===TENANT&&m.project===PROJ&&m.authority&&/^[a-f0-9]{64}$/.test(m.revision))||(role==='shopper'&&m.bad))issues.push({classification:role==='shopper'&&m.bad?'FUNCTIONAL_DEFECT':'VISUAL_DEFECT',code:'ROUTE_FAIL',role,id,label,m,f});routes.push({...m,label,f})}catch(e){let f=null;try{f=await snap(p,tag+'-'+role+'-'+id+'-error')}catch{};issues.push({classification:'VISUAL_DEFECT',code:'ROUTE_NAVIGATION_EXCEPTION',role,id,label,error:str(e?.message||e).slice(0,300),f});routes.push({id,role,label,failed:true,f})}}
 try{

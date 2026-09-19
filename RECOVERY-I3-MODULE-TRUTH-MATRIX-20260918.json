@@ -4030,14 +4030,14 @@
       "Cliente"
     ],
     "lastRun": {
-      "runNumber": 226,
-      "runId": 35408755626,
+      "runNumber": 227,
+      "runId": 35409924908,
       "result": "FAIL_STEP23",
-      "code": "AUTH_FAILURE:CLIENT_MEMBERSHIP_MISSING",
-      "classification": "HARNESS_CONTROL_FALSE_NEGATIVE",
-      "evidence": "Client materialization/readback PASS uses status=active; runtime treats missing active boolean as active unless explicitly false/inactive."
+      "code": "AUTH_FAILURE:ACCEPTED_SHOPPER_VISIBLE_LOGIN_OR_BOOT_FAIL",
+      "classification": "HARNESS_CONTROL_VISIBLE_LOGIN_BOOT",
+      "evidence": "Product reservations PASS and Client PASS; visible-login helper was weaker than existing Gate8 certified login pattern."
     },
-    "nextExactAction": "Re-run canonical I3 certification on unchanged product source. No product change. If acceptance passes, derive Gate20, package one artifact without rebuild, then Gate21 from that same artifact manifest.",
+    "nextExactAction": "Re-run canonical I3 certification on unchanged product source with Gate8-aligned visible login. If acceptance passes, continue Gate20 -> one artifact without rebuild -> Gate21 from same manifest.",
     "production": "DO_NOT_TOUCH"
   }
 }
