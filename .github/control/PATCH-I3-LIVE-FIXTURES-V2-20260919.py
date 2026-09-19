@@ -114,14 +114,26 @@ if role_count!=2:
     raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:SHOPPER_ROLE_CLICK_COUNT:{role_count}")
 s=s.replace(role_click,role_ready)
 
-admin_ensure="""    await p.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});"""
-admin_restore="""    await p.reload({ waitUntil: 'domcontentloaded', timeout: 90000 });
-    await p.waitForFunction((uid) => String(window.firebase?.auth?.().currentUser?.uid || '') === uid, uid, { timeout: 90000 });
-    await p.waitForFunction(() => typeof window.CX?.backendAuth?.context === 'function' && window.CX?.app?.__firebaseBrowserAuthWrapped === true, null, { timeout: 90000 });"""
-admin_count=s.count(admin_ensure)
+admin_needle="backendAuth.ensureAuthenticated"
+admin_count=s.count(admin_needle)
 if admin_count!=1:
-    raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:ADMIN_ENSURE_COUNT:{admin_count}")
-s=s.replace(admin_ensure,admin_restore,1)
+    ctx=[line.strip()[:500] for line in s.splitlines() if "ensureAuthenticated" in line]
+    print("ADMIN_ENSURE_CONTEXT",ctx)
+    raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:ADMIN_ENSURE_SEMANTIC_COUNT:{admin_count}")
+admin_idx=s.find(admin_needle)
+admin_start=s.rfind("\n",0,admin_idx)+1
+admin_end=s.find("\n",admin_idx)
+if admin_end<0: admin_end=len(s)
+admin_line=s[admin_start:admin_end]
+if ".evaluate" not in admin_line or "await " not in admin_line:
+    print("ADMIN_ENSURE_CONTEXT",[admin_line[:800]])
+    raise SystemExit("RELEASE_COMPOSITION_FAILURE:ADMIN_ENSURE_NOT_EVALUATE")
+admin_indent=admin_line[:len(admin_line)-len(admin_line.lstrip())]
+page_var=admin_line.strip().split(".evaluate",1)[0].replace("await ","").strip()
+admin_restore=admin_indent+f"""await {page_var}.reload({{ waitUntil: 'domcontentloaded', timeout: 90000 }});
+{{indent}}await {page_var}.waitForFunction((uid) => String(window.firebase?.auth?.().currentUser?.uid || '') === uid, uid, {{ timeout: 90000 }});
+{{indent}}await {page_var}.waitForFunction(() => typeof window.CX?.backendAuth?.context === 'function' && window.CX?.app?.__firebaseBrowserAuthWrapped === true, null, {{ timeout: 90000 }});""".replace("{indent}",admin_indent)
+s=s[:admin_start]+admin_restore+s[admin_end:]
 
 exact(
 """    await page.waitForFunction(({ tenantId, projectId, shopperId }) => { const c=window.CX?.backendAuth?.context?.()||{}, ps=Array.isArray(c.projectIds)?c.projectIds.map(String):[]; return c.authenticated===true&&c.role==='shopper'&&c.tenantId===tenantId&&String(c.shopperId||'')===shopperId&&(ps.length===0||ps.includes(projectId)); }, { tenantId:TENANT, projectId:PROJECT_ID, shopperId:f.id }, { timeout:120000 });
