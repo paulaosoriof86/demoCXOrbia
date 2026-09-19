@@ -101,6 +101,15 @@ new_login="""async function visibleShopperLogin(f) {
 }"""
 exact(old_login,new_login,"VISIBLE_LOGIN_BLOCK")
 
+role_click="""    await page.locator('.role-btn[data-role="shopper"]').click({ timeout: 30000 });"""
+role_ready="""    await page.waitForFunction(() => typeof window.CX?.backendAuth?.selectedRole === 'function' && window.CX?.app?.__firebaseBrowserAuthWrapped === true && window.CX?.app?.__c6SingleFormRoleGuard === true, null, { timeout: 30000 });
+    await page.locator('.role-btn[data-role="shopper"]').click({ timeout: 30000 });
+    await page.waitForFunction(() => window.CX?.backendAuth?.selectedRole?.() === 'shopper' && document.querySelector('#loginForm')?.dataset?.selectedRole === 'shopper', null, { timeout: 30000 });"""
+role_count=s.count(role_click)
+if role_count!=2:
+    raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:SHOPPER_ROLE_CLICK_COUNT:{role_count}")
+s=s.replace(role_click,role_ready)
+
 exact(
 """    await page.waitForFunction(({ tenantId, projectId, shopperId }) => { const c=window.CX?.backendAuth?.context?.()||{}, ps=Array.isArray(c.projectIds)?c.projectIds.map(String):[]; return c.authenticated===true&&c.role==='shopper'&&c.tenantId===tenantId&&String(c.shopperId||'')===shopperId&&(ps.length===0||ps.includes(projectId)); }, { tenantId:TENANT, projectId:PROJECT_ID, shopperId:f.id }, { timeout:120000 });
     await page.waitForFunction(() => window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied === true, null, { timeout:150000 });""",
