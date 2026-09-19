@@ -985,7 +985,7 @@ jobs:
 
   live-fixtures:
     name: I3 full live fixture suite v2 — no rebuild or deploy
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-live-fixtures-only]') && github.run_attempt == 1 }}
+    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-live-fixtures-only]') }}
     runs-on: ubuntu-latest
     timeout-minutes: 55
     permissions:
@@ -1005,9 +1005,9 @@ jobs:
         run: |
           set -Eeuo pipefail
           test "$GITHUB_RUN_ATTEMPT" = '1'
-          test "$(git rev-parse HEAD^)" = '58dd5d9c18e3b306654952b6b7c334d7b3a9bf49'
+          test "$(git rev-parse HEAD^)" = '3b526903790244fa770014136c19f15954173b84'
           test "$(git show -s --format=%T "$I3_CERTIFICATION_SOURCE_SHA")" = "$I3_CERTIFICATION_SOURCE_TREE"
-          printf '%s\n' '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' '.github/control/PATCH-I3-LIVE-FIXTURES-V2-20260919.py' 'RECOVERY-I3-MODULE-TRUTH-MATRIX-20260918.json' 'ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-19_I3_LIVE_FIXTURE_FORENSIC_FROZEN.md' | sort > /tmp/expected-files
+          printf '%s\n' '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' | sort > /tmp/expected-files
           git diff --name-only HEAD^ HEAD | sort > /tmp/actual-files
           diff -u /tmp/expected-files /tmp/actual-files
           git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools
