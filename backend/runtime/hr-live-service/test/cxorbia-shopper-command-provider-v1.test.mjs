@@ -340,7 +340,7 @@ test('Gate 8 / first-name.first-surname remains idempotent after profile normali
   assert.equal(first.login,'juan.perez');
   assert.equal(first.password,'Juan123*');
   assert.equal(first.firstName,'Juan');
-  assert.equal(first.lastName,'Pérez Gómez');
+  assert.equal(first.lastName,'Pérez');
   const normalized={...historical,firstName:first.firstName,lastName:first.lastName,visibleLogin:first.login,username:first.login,user:first.login,credentialRuleVersion:CREDENTIAL_RULE_VERSION};
   const second=shopperCredentialRule(normalized);
   assert.deepEqual(second,first);

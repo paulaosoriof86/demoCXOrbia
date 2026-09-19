@@ -3919,7 +3919,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "Run one canonical I3 certification; after DEV deploy perform live fictitious-data tests with cleanup/readback before accepting exhaustive 56/56 and artifact.",
+  "nextExactAction": "Re-run canonical I3 on unchanged product source 144c58e2...; tests must pass before DEV deploy, then execute live fictitious-data probes and exhaustive acceptance.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -4124,8 +4124,15 @@
       "acceptance imports provider function instead of reimplementing credentials",
       "stale v1 tests updated to the explicitly approved v2 contract"
     ],
-    "nextExactAction": "Run one canonical I3 certification; after DEV deploy perform live fictitious-data tests with cleanup/readback before accepting exhaustive 56/56 and artifact.",
+    "nextExactAction": "Re-run canonical I3 on unchanged product source 144c58e2...; tests must pass before DEV deploy, then execute live fictitious-data probes and exhaustive acceptance.",
     "production": "DO_NOT_TOUCH",
-    "rootCauseRun233": "Static/unit gates exposed stale v1 browser credential implementations and stale expectations before DEV deploy."
+    "rootCauseRun233": "Static/unit gates exposed stale v1 browser credential implementations and stale expectations before DEV deploy.",
+    "lastRun": {
+      "runNumber": 234,
+      "runId": 35450867261,
+      "result": "FAIL_STEP7_TESTS",
+      "classification": "CONTROL_TEST_EXPECTATION_STALE",
+      "evidence": "All credential v2 tests passed except legacy assertion expecting both surnames in lastName; approved contract requires first surname only."
+    }
   }
 }
