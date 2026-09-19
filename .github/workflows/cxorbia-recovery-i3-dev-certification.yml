@@ -984,19 +984,19 @@ jobs:
         run: rm -rf node_modules
 
   live-fixtures:
-    name: I3 new shopper Auth diagnostic only — no rebuild or deploy
+    name: I3 full live fixture suite v2 — no rebuild or deploy
     if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-live-fixtures-only]') && github.run_attempt == 1 }}
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 55
     permissions:
       contents: read
       actions: read
     env:
       PRIOR_RUN_ID: '35456396448'
       CERTIFIED_ARTIFACT_SHA256: bc340a7c30657e4326b3dfa306bff5cbb016ce37abaaece0edf3f5adc91d9a16
-      OUT: .tmp/recovery-i3-auth-diagnostic
+      OUT: .tmp/recovery-i3-live-fixtures-v2
     steps:
-      - name: Checkout control-only Auth diagnostic successor
+      - name: Checkout control-only fixture-suite successor
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -1005,21 +1005,22 @@ jobs:
         run: |
           set -Eeuo pipefail
           test "$GITHUB_RUN_ATTEMPT" = '1'
-          test "$(git rev-parse HEAD^)" = '782a3b173177695be9444bbce7e3527007130250'
+          test "$(git rev-parse HEAD^)" = '74e9f598b2e3b6f2c75f7d432ba275b91a4056d7'
           test "$(git show -s --format=%T "$I3_CERTIFICATION_SOURCE_SHA")" = "$I3_CERTIFICATION_SOURCE_TREE"
-          printf '%s\n' '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' | sort > /tmp/expected-files
+          printf '%s\n' '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' '.github/control/RECOVERY-I3-LIVE-FIXTURES-20260919-V2.mjs.gz' | sort > /tmp/expected-files
           git diff --name-only HEAD^ HEAD | sort > /tmp/actual-files
           diff -u /tmp/expected-files /tmp/actual-files
           git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools
-          node --check .github/control/RECOVERY-I3-NEW-SHOPPER-AUTH-DIAGNOSTIC-20260919.mjs
-          mkdir -p "$OUT"
+          mkdir -p "$OUT" "$GITHUB_WORKSPACE/.tmp"
+          gzip -dc .github/control/RECOVERY-I3-LIVE-FIXTURES-20260919-V2.mjs.gz > "$GITHUB_WORKSPACE/.tmp/i3-live-fixtures-v2.mjs"
+          node --check "$GITHUB_WORKSPACE/.tmp/i3-live-fixtures-v2.mjs"
 
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: 24
 
-      - name: Install focal diagnostic dependencies
+      - name: Install focal live-test dependencies
         run: |
           set -Eeuo pipefail
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
@@ -1035,7 +1036,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -Eeuo pipefail
-          SOURCE_DIR="$RUNNER_TEMP/cxorbia-i3-auth-source"
+          SOURCE_DIR="$RUNNER_TEMP/cxorbia-i3-live-source"
           PRIOR_DIR="$RUNNER_TEMP/cxorbia-i3-run238"
           rm -rf "$SOURCE_DIR" "$PRIOR_DIR"
           mkdir -p "$SOURCE_DIR" "$PRIOR_DIR"
@@ -1050,34 +1051,36 @@ jobs:
           test "$(jq -r '.rebuildAfterCertification' "$MANIFEST")" = 'false'
           test "$(jq -r '.production' "$MANIFEST")" = 'false'
           echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
+          echo "PRIOR_DIR=$PRIOR_DIR" >> "$GITHUB_ENV"
 
-      - name: Execute one reversible provider-backed new-Shopper Auth diagnostic
-        id: authdiag
+      - name: Execute revised reversible 10-case live suite
+        id: livev2
         continue-on-error: true
         run: |
           set -Eeuo pipefail
-          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" PERIOD_ID="$PERIOD_ID" I3_CERTIFICATION_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" I3_CERTIFICATION_SOURCE_TREE="$I3_CERTIFICATION_SOURCE_TREE" SOURCE_DIR="$SOURCE_DIR" PRIOR_RUN_ID="$PRIOR_RUN_ID" CERTIFIED_ARTIFACT_SHA256="$CERTIFIED_ARTIFACT_SHA256" OUT="$OUT" node .github/control/RECOVERY-I3-NEW-SHOPPER-AUTH-DIAGNOSTIC-20260919.mjs
+          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" PERIOD_ID="$PERIOD_ID" I3_CERTIFICATION_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" I3_CERTIFICATION_SOURCE_TREE="$I3_CERTIFICATION_SOURCE_TREE" SOURCE_DIR="$SOURCE_DIR" PRIOR_DIR="$PRIOR_DIR" PRIOR_RUN_ID="$PRIOR_RUN_ID" CERTIFIED_ARTIFACT_SHA256="$CERTIFIED_ARTIFACT_SHA256" OUT="$OUT" node "$GITHUB_WORKSPACE/.tmp/i3-live-fixtures-v2.mjs"
 
-      - name: Upload sanitized Auth diagnostic evidence
+      - name: Upload sanitized revised live fixture evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-recovery-i3-auth-diagnostic-${{ github.run_id }}
+          name: cxorbia-recovery-i3-live-fixtures-v2-${{ github.run_id }}
           path: ${{ env.OUT }}
           if-no-files-found: error
           retention-days: 14
           compression-level: 0
 
-      - name: Assert diagnostic result and cleanup
+      - name: Assert revised suite result and cleanup
         if: always()
         run: |
           set -Eeuo pipefail
-          test -f "$OUT/auth-diagnostic-result.json"
-          test "$(jq -r '.cleanup.ok' "$OUT/auth-diagnostic-result.json")" = 'true'
-          test "$(jq -r '.buildCountThisRun' "$OUT/auth-diagnostic-result.json")" = '0'
-          test "$(jq -r '.deployCountThisRun' "$OUT/auth-diagnostic-result.json")" = '0'
-          test "$(jq -r '.production' "$OUT/auth-diagnostic-result.json")" = 'false'
-          test "$(jq -r '.decision' "$OUT/auth-diagnostic-result.json")" = 'PASS_I3_NEW_SHOPPER_AUTH_DIAGNOSTIC'
+          test -f "$OUT/i3-live-fixtures-result.json"
+          test "$(jq -r '.cleanup.ok' "$OUT/i3-live-fixtures-result.json")" = 'true'
+          test "$(jq -r '.buildCountThisRun' "$OUT/i3-live-fixtures-result.json")" = '0'
+          test "$(jq -r '.deployCountThisRun' "$OUT/i3-live-fixtures-result.json")" = '0'
+          test "$(jq -r '.production' "$OUT/i3-live-fixtures-result.json")" = 'false'
+          test "$(jq -r '.decision' "$OUT/i3-live-fixtures-result.json")" = 'PASS_I3_LIVE_FIXTURES_V2'
+          test "$(jq '[.tests[] | select(.ok==true)] | length' "$OUT/i3-live-fixtures-result.json")" = '10'
 
       - name: Cleanup temporary dependencies
         if: always()
