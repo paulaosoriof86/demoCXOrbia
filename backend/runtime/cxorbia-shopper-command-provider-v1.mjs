@@ -38,9 +38,9 @@ export function shopperCredentialRule(profile={}){
 }
 const receiptId=command=>sha(`${command.tenantId}\0${command.projectId}\0${command.periodId||''}\0${command.idempotencyKey}`).slice(0,40);
 const RAW_SECRET_KEY=/^(?:password|pass|newpassword|temporarypassword|credential|credentialvalue|secret|token|resettoken)$/i;
-const PUBLIC_PROFILE_FIELDS=Object.freeze(['firstName','lastName','nombre','email','whatsapp','pais','country','depto','ciudad','sexo','edad','estado','sourceRef','sourceType','perfilCompleto','honorarioPref','createdVia']);
+const PUBLIC_PROFILE_FIELDS=Object.freeze(['firstName','lastName','nombre','email','whatsapp','phone','pais','country','depto','ciudad','sexo','edad','estado','sourceRef','sourceType','perfilCompleto','honorarioPref','createdVia']);
 const PROTECTED_PROFILE_FIELDS=Object.freeze(['dpi','documentId','banco','ctaTipo','ctaNum','ctaTitular','ctaMoneda','cuentaPago','ndaStatus']);
-const HR_MANAGED_PROFILE_FIELDS=Object.freeze(['nombre','pais','country','shopperCode']);
+const HR_MANAGED_PROFILE_FIELDS=Object.freeze(['nombre','pais','country','shopperCode','whatsapp','phone','email']);
 
 export const providerUidFingerprint=uid=>sha(`cxorbia-provider-uid-v1\0${str(uid)}`);
 export const stableShopperUid=(tenantId,shopperId)=>`cx-sh-${sha(`${str(tenantId)}\0shopper\0${str(shopperId)}`).slice(0,28)}`;
@@ -185,20 +185,26 @@ function credentialIdentityName(identityByShopperId,shopperId){
 function sourceCandidate(row,scope,identityByShopperId){
   const shopperId=str(row?.shopperId||row?.id);
   if(!shopperId)return null;
+  const source=identityByShopperId instanceof Map?identityByShopperId.get(shopperId):identityByShopperId?.[shopperId]||{};
   const protectedName=/^shopper protegido$/i.test(str(row?.nombre||row?.shopper));
   const credentialName=protectedName?credentialIdentityName(identityByShopperId,shopperId):'';
+  const phone=str(row?.whatsapp||row?.phone||row?.telefono||source?.whatsapp||source?.phone||source?.telefono);
+  const email=str(row?.email||row?.mail||row?.correo||source?.email||source?.mail).toLowerCase();
   return clean({
     shopperId,
     tenantId:scope.tenantId,
     projectId:scope.projectId,
     shopperCode:str(row?.shopperCode),
-    pais:str(row?.pais||row?.country),
-    country:str(row?.country||row?.pais),
+    pais:str(row?.pais||row?.country||source?.country),
+    country:str(row?.country||row?.pais||source?.country),
     sourceSafe:row?.sourceSafe===true,
     piiProtected:row?.piiProtected===true,
-    nombre:credentialName||str(row?.nombre||row?.shopper),
+    nombre:credentialName||str(row?.nombre||row?.shopper||source?.displayName),
     firstName:str(row?.firstName),
     lastName:str(row?.lastName||row?.apellido),
+    whatsapp:phone,
+    phone,
+    email,
     sourceTab:str(row?.sourceTab),
     hrRowId:str(row?.hrRowId)
   });
@@ -224,6 +230,9 @@ function hrProfilePatch(candidate,projectIds,sourceRevision){
     shopperCode:candidate.shopperCode||null,
     pais:candidate.pais||candidate.country||null,
     country:candidate.country||candidate.pais||null,
+    whatsapp:candidate.whatsapp||candidate.phone||null,
+    phone:candidate.phone||candidate.whatsapp||null,
+    email:candidate.email||null,
     sourceSafe:candidate.sourceSafe===true,
     piiProtected:candidate.piiProtected===true,
     sourceTab:candidate.sourceTab||null,
@@ -242,6 +251,8 @@ function hrProfilePatch(candidate,projectIds,sourceRevision){
   };
   if(candidate.shopperCode)out.shopperCode=candidate.shopperCode;
   if(candidate.pais||candidate.country){out.pais=candidate.pais||candidate.country;out.country=candidate.country||candidate.pais;}
+  if(candidate.whatsapp||candidate.phone){out.whatsapp=candidate.whatsapp||candidate.phone;out.phone=candidate.phone||candidate.whatsapp;}
+  if(candidate.email)out.email=candidate.email;
   if(candidate.nombre&&!protectedName)out.nombre=candidate.nombre;
   if(candidate.sourceShopperId&&candidate.sourceShopperId!==candidate.shopperId){
     out.sourceShopperIds=uniq([candidate.sourceShopperId]);

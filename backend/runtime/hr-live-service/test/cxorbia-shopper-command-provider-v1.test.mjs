@@ -324,3 +324,24 @@ test('Gate 8 / nombre.apellido uses only the first given name and remains idempo
   const second=shopperCredentialRule(normalized);
   assert.deepEqual(second,first);
 });
+
+test('Gate 6 / optional HR contact fields materialize from the private exact identity runtime without becoming credential requirements',async()=>{
+  const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),id='shopper_gt_contact',uid=stableShopperUid('tenant-a',id),pp=paths(id);
+  const contactSnapshot=snapshot({shopperId:id,shopperCode:'TYA_GT_CONTACT'});
+  contactSnapshot.visits[0].shopper='Shopper protegido';
+  const identity=new Map([[id,{displayName:'Paula Osorio',country:'GT',phone:'50255551234',whatsapp:'50255551234',email:'paula@example.com'}]]);
+  const first=await p.reconcileSnapshot(contactSnapshot,{sourceRevision:'rev-contact-1',identityByShopperId:identity});
+  assert.equal(first.ok,true);
+  assert.equal((await auth.getUser(uid)).password,'Paula123*');
+  const profile=db.get(pp.profile);
+  assert.equal(profile.nombre,'Paula Osorio');
+  assert.equal(profile.whatsapp,'50255551234');
+  assert.equal(profile.phone,'50255551234');
+  assert.equal(profile.email,'paula@example.com');
+  assert.equal(profile.country,'GT');
+  const noEmail=new Map([[id,{displayName:'Paula Osorio',country:'GT',phone:'50255551234',whatsapp:'50255551234',email:''}]]);
+  const second=await p.reconcileSnapshot(contactSnapshot,{sourceRevision:'rev-contact-2',identityByShopperId:noEmail});
+  assert.equal(second.ok,true);
+  assert.equal(db.get(pp.profile).email,'paula@example.com');
+});
+

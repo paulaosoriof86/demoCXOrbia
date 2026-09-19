@@ -81,8 +81,12 @@ function parseSnapshot(file){
 function parseIdentity(file){
   if(!file||!fs.existsSync(file))return new Map();
   const x=JSON.parse(fs.readFileSync(file,'utf8'));
-  if(x?.schemaVersion!=='cxorbia.tya-dev-operational-display-identity.v1'||x?.displayIdentityOnly!==true||x?.containsContactData!==false||x?.containsGovernmentId!==false||x?.containsBankData!==false||x?.containsCredentials!==false)throw new Error('Operational display identity overlay invalid.');
-  return new Map((x.identities||[]).filter(i=>i?.shopperId&&i?.displayName).map(i=>[String(i.shopperId),String(i.displayName)]));
+  const legacy=x?.schemaVersion==='cxorbia.tya-dev-operational-display-identity.v1'&&x?.displayIdentityOnly===true&&x?.containsContactData===false;
+  const current=x?.schemaVersion==='cxorbia.tya-operational-shopper-identity.v2'&&x?.containsContactData===true&&x?.contactDataOptional===true;
+  if((!legacy&&!current)||x?.containsGovernmentId!==false||x?.containsBankData!==false||x?.containsCredentials!==false)throw new Error('Operational shopper identity runtime file invalid.');
+  return new Map((x.identities||[]).filter(i=>i?.shopperId&&i?.displayName).map(i=>[String(i.shopperId),{
+    displayName:String(i.displayName),country:String(i.country||''),phone:String(i.phone||i.whatsapp||''),whatsapp:String(i.whatsapp||i.phone||''),email:String(i.email||''),lastObservedPeriodKey:String(i.lastObservedPeriodKey||'')
+  }]));
 }
 
 function stableRevisionValue(value){
@@ -100,7 +104,8 @@ function stableRevisionValue(value){
 
 function materialize(snapshot,origin,identity=new Map()){
   const json=JSON.stringify(snapshot);
-  const stableJson=JSON.stringify(stableRevisionValue(snapshot));
+  const identityStable=[...identity.entries()].sort((a,b)=>String(a[0]).localeCompare(String(b[0]))).map(([id,value])=>[id,stableRevisionValue(value)]);
+  const stableJson=JSON.stringify({snapshot:stableRevisionValue(snapshot),shopperIdentity:identityStable});
   const revision=crypto.createHash('sha256').update(stableJson).digest('hex');
   return {snapshot,json,revision,loadedAt:Date.now(),origin,identity};
 }
@@ -109,11 +114,11 @@ function operationalSnapshot(current){
   const snapshot=JSON.parse(JSON.stringify(current.snapshot));
   const identity=current.identity||new Map();
   for(const shopper of snapshot.shoppers||[]){
-    const name=identity.get(String(shopper.shopperId||shopper.id||''));
+    const row=identity.get(String(shopper.shopperId||shopper.id||'')),name=String(row?.displayName||row||'');
     if(name){shopper.nombre=name;shopper.operationalDisplayName=true;shopper.dataLevel=shopper.dataLevel||'protected_reference';}
   }
   for(const visit of snapshot.visits||[]){
-    const name=identity.get(String(visit.shopperId||''));
+    const row=identity.get(String(visit.shopperId||'')),name=String(row?.displayName||row||'');
     if(name){visit.shopper=name;visit.operationalDisplayName=true;}
   }
   snapshot.operationalIdentityPreview=true;

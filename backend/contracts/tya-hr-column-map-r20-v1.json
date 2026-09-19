@@ -97,6 +97,26 @@
       "critical": true,
       "domain": "assignment"
     },
+    "telefono": {
+      "aliases": [
+        "Telefono",
+        "Teléfono",
+        "WhatsApp",
+        "Whatsapp"
+      ],
+      "critical": false,
+      "domain": "shopper_contact"
+    },
+    "mail": {
+      "aliases": [
+        "Mail",
+        "Correo",
+        "Email",
+        "Correo electrónico"
+      ],
+      "critical": false,
+      "domain": "shopper_contact"
+    },
     "disponibleDesde": {
       "aliases": [
         "Disponible a partir de",
@@ -176,7 +196,9 @@
     "all operational and submission evidence columns remain fail-closed",
     "tab name is authoritative country evidence only for declared tab_scoped_compact headers",
     "missing ID CINEMA in a declared compact tab never invents a cinema identifier; hrRowId/sourceTab/sourceRow remain the identity evidence",
-    "duplicate Fecha submitido columns coalesce only when one is populated or all populated values are equal"
+    "duplicate Fecha submitido columns coalesce only when one is populated or all populated values are equal",
+    "shopper phone/email are optional HR-managed profile data when present",
+    "missing optional shopper phone/email never blocks shopper identity or login"
   ],
   "prohibitions": [
     "first_partial_match_wins",
