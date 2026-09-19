@@ -71,15 +71,17 @@ test('I3 current-period consumers use canonical period owner instead of projectI
   assert.match(posts,/periodIdOf\(x\)===data\.currentPeriodId/);
 });
 
-test('I3 protected shopper profile survives empty Firestore project scope for HR composition',()=>{
+test('I3 Shopper HR boot never requires an exact Firestore profile before consulting authenticated HR authority',()=>{
   const backend=read('app/core/backend-firebase.js');
   const bridge=read('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js');
   assert.match(backend,/Firestore project materialization is not the operational authority for projectId/);
   assert.match(backend,/CX\.data\.shoppers\s*=\s*safeState\.shoppers\s*\|\|\s*\[\]/);
-  assert.match(backend,/shoppers:CX\.data\.shoppers\.length/);
   assert.match(backend,/emit\('backend-ready',[\s\S]*empty:true[\s\S]*counts:counts/);
-  assert.match(bridge,/if\(c\?\.role==='shopper'&&str\(c\.shopperId\)\)/);
-  assert.match(bridge,/arr\(CX\.data\.shoppers\)\.some/);
+  assert.match(bridge,/const user=window\.firebase\?\.auth\?\.\(\)\.currentUser;return c\.authenticated===true&&!!user/);
+  assert.doesNotMatch(bridge,/arr\(CX\.data\.shoppers\)\.some\(x=>str\(x\?\.id\|\|x\?\.shopperId\)===sid\)/);
+  assert.match(bridge,/sessionProfile\(state,c,result\)/);
+  assert.match(bridge,/arr\(result\?\.shoppers\)/);
+  assert.match(bridge,/result\?\.identityMap/);
 });
 
 test('I3 Gate 20 restores CX auth context from persisted Firebase session before HR authority assertion',()=>{
