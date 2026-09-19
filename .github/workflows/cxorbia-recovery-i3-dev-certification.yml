@@ -32,8 +32,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  I3_CERTIFICATION_SOURCE_SHA: 30a2c27b292fd25fb13e511755431643496ae782
-  I3_CERTIFICATION_SOURCE_TREE: 96919a28faac031e562425405ff327fd3c81294f
+  I3_CERTIFICATION_SOURCE_SHA: 144c58e2125aba6e49deefe0ce23fa9d94259cdb
+  I3_CERTIFICATION_SOURCE_TREE: 23c196cd6ad1a9e8e329bfd56c8bb11c24231b3e
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -92,8 +92,8 @@ jobs:
           test "$(jq -r '.phaseAComplete' "$MATRIX")" = "true"
           test "$(jq -r '.allModulesMatch' "$MATRIX")" = "true"
           test "$(jq '[.modules[] | select(.classification != "MATCH")] | length' "$MATRIX")" = "0"
-          test "$(jq -r '.entrypointClosure.activeInternalScriptCount' "$MATRIX")" = "124"
-          test "$(jq -r '.entrypointClosure.matrixCoveredActiveInternal' "$MATRIX")" = "124"
+          test "$(jq -r '.entrypointClosure.activeInternalScriptCount' "$MATRIX")" = "125"
+          test "$(jq -r '.entrypointClosure.matrixCoveredActiveInternal' "$MATRIX")" = "125"
           test "$(jq '.entrypointClosure.activeInternalOutsideMatrix|length' "$MATRIX")" = "0"
           test "$(jq '.entrypointClosure.duplicateSrc|length' "$MATRIX")" = "0"
           test "$(jq '.entrypointClosure.unknownActiveOverlays|length' "$MATRIX")" = "0"
@@ -155,7 +155,7 @@ jobs:
           echo "MODULE_TRUTH_MATRIX_SHA256=$MODULE_TRUTH_MATRIX_SHA256" >> "$GITHUB_ENV"
           jq -n -S --arg source "$I3_CERTIFICATION_SOURCE_SHA" --arg tree "$I3_CERTIFICATION_SOURCE_TREE" --arg sha "$MODULE_TRUTH_MATRIX_SHA256" \
             --argjson modules "$(jq '.modules|length' "$MATRIX")" \
-            '{decision:"PASS_I3_EXHAUSTIVE_PHASE_A_MODULE_INTEGRITY",sourceSha:$source,sourceTree:$tree,moduleTruthSha256:$sha,moduleCount:$modules,activeInternalScripts:124,activeOutsideMatrix:0,duplicateSrc:0,unknownOverlays:0,allModulesMatch:true,production:false}' \
+            '{decision:"PASS_I3_EXHAUSTIVE_PHASE_A_MODULE_INTEGRITY",sourceSha:$source,sourceTree:$tree,moduleTruthSha256:$sha,moduleCount:$modules,activeInternalScripts:125,activeOutsideMatrix:0,duplicateSrc:0,unknownOverlays:0,allModulesMatch:true,production:false}' \
             > "$OUT/module-integrity-gate.json"
 
       - name: Prove atomic P0 source contracts before build
