@@ -1005,14 +1005,14 @@ jobs:
         run: |
           set -Eeuo pipefail
           test "$GITHUB_RUN_ATTEMPT" = '1'
-          test "$(git rev-parse HEAD^)" = '74e9f598b2e3b6f2c75f7d432ba275b91a4056d7'
+          test "$(git rev-parse HEAD^)" = '8a0da4f6ac4eacb947ecb3aeb929201455124b5d'
           test "$(git show -s --format=%T "$I3_CERTIFICATION_SOURCE_SHA")" = "$I3_CERTIFICATION_SOURCE_TREE"
-          printf '%s\n' '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' '.github/control/RECOVERY-I3-LIVE-FIXTURES-20260919-V2.mjs.gz' | sort > /tmp/expected-files
+          printf '%s\n' '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' '.github/control/PATCH-I3-LIVE-FIXTURES-V2-20260919.py' '.github/control/RECOVERY-I3-LIVE-FIXTURES-20260919-V2.mjs.gz' | sort > /tmp/expected-files
           git diff --name-only HEAD^ HEAD | sort > /tmp/actual-files
           diff -u /tmp/expected-files /tmp/actual-files
           git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools
           mkdir -p "$OUT" "$GITHUB_WORKSPACE/.tmp"
-          gzip -dc .github/control/RECOVERY-I3-LIVE-FIXTURES-20260919-V2.mjs.gz > "$GITHUB_WORKSPACE/.tmp/i3-live-fixtures-v2.mjs"
+          python3 .github/control/PATCH-I3-LIVE-FIXTURES-V2-20260919.py
           node --check "$GITHUB_WORKSPACE/.tmp/i3-live-fixtures-v2.mjs"
 
       - name: Setup Node 24
