@@ -9,9 +9,9 @@ import crypto from 'node:crypto';
 export const VERSION='cxorbia-shopper-command-provider-v1';
 export const COMMAND_TYPES=Object.freeze(['shopper.create','shopper.update','shopper.credential.reset']);
 export const OPERATOR_ROLES=Object.freeze(['super','admin']);
-export const CREDENTIAL_RULE_VERSION='tya-shopper-nombre-apellido-v1';
-export const DURABLE_CREDENTIAL_SWEEP_VERSION='cxorbia-durable-shopper-credential-sweep-v1';
-export const CREDENTIAL_PASSWORD_PROOF_VERSION='cxorbia-shopper-password-proof-v1';
+export const CREDENTIAL_RULE_VERSION='tya-shopper-primer-nombre-primer-apellido-v2';
+export const DURABLE_CREDENTIAL_SWEEP_VERSION='cxorbia-durable-shopper-credential-sweep-v2';
+export const CREDENTIAL_PASSWORD_PROOF_VERSION='cxorbia-shopper-password-proof-v2';
 const ACTIVE_IDENTITY_LINK_STATES=new Set(['active','confirmed','approved','materialized']);
 const TRUSTED_IDENTITY_AUTHORITIES=new Set(['provider_exact','tenant_adjudication','platform_created','migrated_exact']);
 
@@ -26,15 +26,34 @@ const sameArray=(a,b)=>JSON.stringify(uniq(a))===JSON.stringify(uniq(b));
 const stripMarks=value=>str(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 const loginPart=value=>stripMarks(value).toLowerCase().replace(/[^a-z0-9]+/g,'');
 const properFirst=value=>{const first=str(value).split(/\s+/).filter(Boolean)[0]||'';return first?first.charAt(0).toLocaleUpperCase('es-GT')+first.slice(1).toLocaleLowerCase('es-GT'):'';};
+const SURNAME_PARTICLES=new Set(['de','del']);
+const SURNAME_ARTICLES=new Set(['la','las','los']);
+function firstSurnameFromTokens(tokens=[]){
+  const xs=arr(tokens).map(str).filter(Boolean);if(!xs.length)return'';
+  const first=stripMarks(xs[0]).toLowerCase();
+  if(first==='de'){
+    const second=stripMarks(xs[1]).toLowerCase();
+    if(SURNAME_ARTICLES.has(second)&&xs[2])return xs.slice(0,3).join(' ');
+    if(xs[1])return xs.slice(0,2).join(' ');
+  }
+  if(first==='del'&&xs[1])return xs.slice(0,2).join(' ');
+  return xs[0];
+}
+function sameText(a,b){return stripMarks(a).toLowerCase().replace(/\s+/g,' ')===stripMarks(b).toLowerCase().replace(/\s+/g,' ');}
 export function shopperCredentialRule(profile={}){
-  const full=str(profile.nombre||profile.name||profile.displayName);
-  const tokens=full.split(/\s+/).filter(Boolean);
-  const firstSource=str(profile.firstName||tokens[0]);
-  const first=str(firstSource).split(/\s+/).filter(Boolean)[0]||'';
-  const last=str(profile.lastName||profile.apellido||tokens.slice(1).join(' '));
-  const firstLogin=loginPart(first),lastLogin=loginPart(last),passwordFirst=properFirst(first);
+  const full=str(profile.nombre||profile.name||profile.displayName),tokens=full.split(/\s+/).filter(Boolean);
+  const firstSource=str(profile.firstName||tokens[0]),first=str(firstSource).split(/\s+/).filter(Boolean)[0]||'';
+  const explicitLast=str(profile.firstSurname||profile.primerApellido||profile.lastName||profile.apellido);
+  const legacyRemainder=tokens.slice(1).join(' ');
+  let last='';
+  if(explicitLast&&!sameText(explicitLast,legacyRemainder))last=firstSurnameFromTokens(explicitLast.split(/\s+/));
+  else{
+    const start=tokens.length>=4?2:1;
+    last=firstSurnameFromTokens(tokens.slice(start));
+  }
+  const firstLogin=loginPart(first),lastLogin=loginPart(last),passwordFirst=properFirst(stripMarks(first));
   if(!firstLogin||!lastLogin||!passwordFirst)return {ok:false,reason:'SHOPPER_CREDENTIAL_NAME_INCOMPLETE',login:null,password:null,ruleVersion:CREDENTIAL_RULE_VERSION};
-  return {ok:true,login:firstLogin+'.'+lastLogin,password:passwordFirst+'123*',firstName:properFirst(first),lastName:last,ruleVersion:CREDENTIAL_RULE_VERSION};
+  return {ok:true,login:firstLogin+'.'+lastLogin,password:passwordFirst+'123*',firstName:properFirst(first),lastName:last,firstSurname:last,ruleVersion:CREDENTIAL_RULE_VERSION};
 }
 const receiptId=command=>sha(`${command.tenantId}\0${command.projectId}\0${command.periodId||''}\0${command.idempotencyKey}`).slice(0,40);
 const RAW_SECRET_KEY=/^(?:password|pass|newpassword|temporarypassword|credential|credentialvalue|secret|token|resettoken)$/i;

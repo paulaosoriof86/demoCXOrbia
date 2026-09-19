@@ -175,6 +175,26 @@ test('Gate 6 / owner credential rule materializes visible login and deterministi
   assert.equal(JSON.stringify([...db._store.values()]).includes('Mishael123*'),false);
 });
 
+
+test('Gate 6 / credential rule strips accents from password and uses first name + first surname',()=>{
+  const accent=shopperCredentialRule({nombre:'César Castillo'});
+  assert.equal(accent.ok,true);
+  assert.equal(accent.login,'cesar.castillo');
+  assert.equal(accent.password,'Cesar123*');
+
+  const fourTokens=shopperCredentialRule({nombre:'Ana María Pérez López'});
+  assert.equal(fourTokens.login,'ana.perez');
+  assert.equal(fourTokens.password,'Ana123*');
+
+  const structured=shopperCredentialRule({nombre:'Ana María Pérez López',firstName:'Ana María',lastName:'Pérez López'});
+  assert.equal(structured.login,'ana.perez');
+  assert.equal(structured.password,'Ana123*');
+
+  const compound=shopperCredentialRule({nombre:'Mishael De Paz'});
+  assert.equal(compound.login,'mishael.depaz');
+  assert.equal(compound.password,'Mishael123*');
+});
+
 test('Gate 6 / protected HR snapshot uses the trusted ephemeral identity map for the owner credential rule',async()=>{
   const auth=new FakeAuth(),db=new FakeFirestore(),p=provider(auth,db),id='shopper_gt_protected',uid=stableShopperUid('tenant-a',id),pp=paths(id);
   const snap=snapshot({shopperId:id,shopperCode:'TYA_GT_PROTECTED'});
@@ -206,6 +226,7 @@ test('Gate 6 / trusted exact identity link reuses one canonical Auth for an HR t
   const result=await p.reconcileSnapshot(second,{sourceRevision:'rev-cesar-2'});
   assert.equal(result.authCreated,0);assert.equal(auth.created,1);assert.equal(auth.users.size,1);
   assert.equal((await auth.getUser(canonicalUid)).customClaims.shopperId,canonical);
+  assert.equal((await auth.getUser(canonicalUid)).password,'Cesar123*');
   assert.equal(db.get(`tenants/tenant-a/users/${canonicalUid}`).shopperId,canonical);
   assert.deepEqual(db.get(`tenants/tenant-a/shoppers/${canonical}`).sourceShopperIds,[alias]);
   assert.equal(db.get(`tenants/tenant-a/shopperIdentityCrosswalk/${alias}`).shopperId,canonical);
