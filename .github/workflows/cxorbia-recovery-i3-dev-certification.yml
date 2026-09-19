@@ -1005,7 +1005,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           test "$GITHUB_RUN_ATTEMPT" = '1'
-          test "$(git rev-parse HEAD^)" = 'e4daf525c3b3cc315dee312c4bf48f63d0e92af7'
+          test "$(git rev-parse HEAD^)" = '701d89a1bb199d044c1104dbd880f43d17dc4e6b'
           test "$(git show -s --format=%T "$I3_CERTIFICATION_SOURCE_SHA")" = "$I3_CERTIFICATION_SOURCE_TREE"
           printf '%s\n' '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' | sort > /tmp/expected-files
           git diff --name-only HEAD^ HEAD | sort > /tmp/actual-files
@@ -1013,6 +1013,18 @@ jobs:
           git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools
           mkdir -p "$OUT" "$GITHUB_WORKSPACE/.tmp"
           gzip -dc .github/control/RECOVERY-I3-LIVE-FIXTURES-20260919.mjs.gz > "$GITHUB_WORKSPACE/.tmp/i3-live-fixtures.mjs"
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path(".tmp/i3-live-fixtures.mjs")
+          s=p.read_text(encoding="utf-8")
+          old="{test:'3_NOMBRE_TILDE',key:'accent-'+RUN,profile:{firstName:'César',lastName:'Castillo',nombre:'César Castillo',whatsapp:'+50255550102',phone:'+50255550102',pais:'GT',country:'GT',email:'',estado:'Activo',sourceType:'platform',createdVia:'live-fixture'}}"
+          new="{test:'3_NOMBRE_TILDE',key:'accent-'+RUN,profile:{firstName:'César',lastName:'Castillofix'+tail,nombre:'César Castillofix'+tail,whatsapp:'+50255550102',phone:'+50255550102',pais:'GT',country:'GT',email:'',estado:'Activo',sourceType:'platform',createdVia:'live-fixture'}}"
+          old2="let ac=defs.find(x=>x.test==='3_NOMBRE_TILDE'),co=defs.find(x=>x.test==='4_NOMBRE_COMPUESTO');if(ac.cr.login!=='cesar.castillo'||ac.cr.password!=='Cesar123*')throw new Error('FUNCTIONAL_DEFECT:ACCENT_RULE');if(co.cr.login.includes('maria')||co.cr.login.includes('lopez')||co.cr.login.split('.').length!==2)throw new Error('FUNCTIONAL_DEFECT:COMPOUND_RULE');"
+          new2="let exactAccent=sm.shopperCredentialRule({nombre:'César Castillo'});if(!exactAccent?.ok||exactAccent.login!=='cesar.castillo'||exactAccent.password!=='Cesar123*')throw new Error('FUNCTIONAL_DEFECT:ACCENT_RULE_EXACT_OWNER');let ac=defs.find(x=>x.test==='3_NOMBRE_TILDE'),co=defs.find(x=>x.test==='4_NOMBRE_COMPUESTO');if(!ac.cr.login.startsWith('cesar.castillofix')||ac.cr.password!=='Cesar123*')throw new Error('FUNCTIONAL_DEFECT:ACCENT_RULE_LIVE_FIXTURE');if(co.cr.login.includes('maria')||co.cr.login.includes('lopez')||co.cr.login.split('.').length!==2)throw new Error('FUNCTIONAL_DEFECT:COMPOUND_RULE');"
+          if s.count(old)!=1 or s.count(old2)!=1:
+              raise SystemExit("RELEASE_COMPOSITION_FAILURE:LIVE_FIXTURE_PATCH_ANCHOR")
+          p.write_text(s.replace(old,new).replace(old2,new2),encoding="utf-8")
+          PY
           node --check "$GITHUB_WORKSPACE/.tmp/i3-live-fixtures.mjs"
           jq -n --arg run "$GITHUB_RUN_ID" '{prepared:true,runId:$run,production:false,builds:0,deploys:0}' > "$OUT/preflight.json"
 
