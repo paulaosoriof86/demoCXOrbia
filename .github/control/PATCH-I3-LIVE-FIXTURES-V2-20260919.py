@@ -114,20 +114,19 @@ if role_count!=2:
     raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:SHOPPER_ROLE_CLICK_COUNT:{role_count}")
 s=s.replace(role_click,role_ready)
 
-admin_signin_needle="signInWithCustomToken"
-admin_signin_count=s.count(admin_signin_needle)
+admin_signin_candidates=[line for line in s.splitlines() if "signInWithCustomToken" in line and ".evaluate" in line]
+admin_signin_count=len(admin_signin_candidates)
 if admin_signin_count!=1:
     ctx=[line.strip()[:700] for line in s.splitlines() if "signInWithCustomToken" in line]
     print("ADMIN_SIGNIN_CONTEXT",ctx)
-    raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:ADMIN_SIGNIN_SEMANTIC_COUNT:{admin_signin_count}")
-admin_signin_idx=s.find(admin_signin_needle)
-admin_signin_start=s.rfind("\n",0,admin_signin_idx)+1
-admin_signin_end=s.find("\n",admin_signin_idx)
-if admin_signin_end<0: admin_signin_end=len(s)
-admin_signin_line=s[admin_signin_start:admin_signin_end]
-if ".evaluate" not in admin_signin_line or "await " not in admin_signin_line:
+    raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:ADMIN_SIGNIN_BROWSER_COUNT:{admin_signin_count}")
+admin_signin_line=admin_signin_candidates[0]
+admin_signin_idx=s.find(admin_signin_line)
+admin_signin_start=admin_signin_idx
+admin_signin_end=admin_signin_start+len(admin_signin_line)
+if "await " not in admin_signin_line:
     print("ADMIN_SIGNIN_CONTEXT",[admin_signin_line[:1000]])
-    raise SystemExit("RELEASE_COMPOSITION_FAILURE:ADMIN_SIGNIN_NOT_EVALUATE")
+    raise SystemExit("RELEASE_COMPOSITION_FAILURE:ADMIN_SIGNIN_NOT_AWAITED")
 admin_signin_indent=admin_signin_line[:len(admin_signin_line)-len(admin_signin_line.lstrip())]
 admin_page_var=admin_signin_line.strip().split(".evaluate",1)[0].replace("await ","").strip()
 admin_signin_stmt=admin_signin_line.strip()

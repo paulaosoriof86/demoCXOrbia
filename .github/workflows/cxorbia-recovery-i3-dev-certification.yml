@@ -1007,7 +1007,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test "$(git rev-list --parents -n 1 HEAD | awk '{print NF}')" = '2'
           test "$(git show -s --format=%T "$I3_CERTIFICATION_SOURCE_SHA")" = "$I3_CERTIFICATION_SOURCE_TREE"
-          printf '%s\n' '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' | sort > /tmp/expected-files
+          printf '%s\n' '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' '.github/control/PATCH-I3-LIVE-FIXTURES-V2-20260919.py' | sort > /tmp/expected-files
           git diff --name-only HEAD^ HEAD | sort > /tmp/actual-files
           diff -u /tmp/expected-files /tmp/actual-files
           git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools
