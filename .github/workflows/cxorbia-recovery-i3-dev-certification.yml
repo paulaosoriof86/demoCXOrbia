@@ -1005,7 +1005,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           test "$GITHUB_RUN_ATTEMPT" = '1'
-          test "$(git rev-parse HEAD^)" = '701cab3356d21a1200da46171fe2a2d93207156d'
+          test "$(git rev-parse HEAD^)" = '2d43f46553f418752f62f9af390508ac35e151c4'
           test "$(git show -s --format=%T "$I3_CERTIFICATION_SOURCE_SHA")" = "$I3_CERTIFICATION_SOURCE_TREE"
           printf '%s\n' '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' | sort > /tmp/expected-files
           git diff --name-only HEAD^ HEAD | sort > /tmp/actual-files
@@ -1018,12 +1018,16 @@ jobs:
           import re
           p=Path(".tmp/i3-live-fixtures.mjs")
           s=p.read_text(encoding="utf-8")
-          s,n1=re.subn(r"lastName:'Castillo',nombre:'César Castillo',whatsapp:'\+50255550102'", "lastName:'Castillofix'+tail,nombre:'César Castillofix'+tail,whatsapp:'+50255550102'", s, count=1)
-          exact="let exactAccent=sm.shopperCredentialRule({nombre:'César Castillo'});if(!exactAccent?.ok||exactAccent.login!=='cesar.castillo'||exactAccent.password!=='Cesar123*')throw new Error('FUNCTIONAL_DEFECT:ACCENT_RULE_EXACT_OWNER');"
-          live="if(!ac.cr.login.startsWith('cesar.castillofix')||ac.cr.password!=='Cesar123*')throw new Error('FUNCTIONAL_DEFECT:ACCENT_RULE_LIVE_FIXTURE');"
-          s,n2=re.subn(r"if\(ac\.cr\.login!=='cesar\.castillo'\|\|ac\.cr\.password!=='Cesar123\*'\)throw new Error\('FUNCTIONAL_DEFECT:ACCENT_RULE'\);", exact+live, s, count=1)
-          if n1!=1 or n2!=1:
-              raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:LIVE_FIXTURE_PATCH_ANCHOR:n1={n1}:n2={n2}")
+          fixture="{test:'3_NOMBRE_TILDE',key:'accent-'+RUN,profile:{firstName:'César',lastName:'Castillofix'+tail,nombre:'César Castillofix'+tail,whatsapp:'+50255550102',phone:'+50255550102',pais:'GT',country:'GT',email:'',estado:'Activo',sourceType:'platform',createdVia:'live-fixture'}}"
+          s,n1=re.subn(r"\{test\s*:\s*['\"]3_NOMBRE_TILDE['\"].*?\}\}", fixture, s, count=1, flags=re.S)
+          s,n2=re.subn(r"(['\"])cesar\.castillo\1", "('cesar.castillofix'+tail)", s, count=1)
+          anchor="const sp=sm.createShopperCommandProvider"
+          exact="const exactAccent=sm.shopperCredentialRule({nombre:'César Castillo'});if(!exactAccent?.ok||exactAccent.login!=='cesar.castillo'||exactAccent.password!=='Cesar123*')throw new Error('FUNCTIONAL_DEFECT:ACCENT_RULE_EXACT_OWNER');"
+          n3=s.count(anchor)
+          if n3==1:
+              s=s.replace(anchor,exact+anchor,1)
+          if n1!=1 or n2!=1 or n3!=1:
+              raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:LIVE_FIXTURE_STRUCTURAL_PATCH:n1={n1}:n2={n2}:n3={n3}")
           p.write_text(s,encoding="utf-8")
           PY
           node --check "$GITHUB_WORKSPACE/.tmp/i3-live-fixtures.mjs"
