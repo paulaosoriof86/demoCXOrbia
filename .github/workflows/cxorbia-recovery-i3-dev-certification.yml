@@ -984,19 +984,19 @@ jobs:
         run: rm -rf node_modules
 
   live-fixtures:
-    name: I3 live fixtures only — no rebuild or deploy
-    if: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-live-fixtures-only]') && github.run_attempt == 1 }}
+    name: I3 new shopper Auth diagnostic only — no rebuild or deploy
+    if: \${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[i3-live-fixtures-only]') && github.run_attempt == 1 }}
     runs-on: ubuntu-latest
-    timeout-minutes: 50
+    timeout-minutes: 45
     permissions:
       contents: read
       actions: read
     env:
       PRIOR_RUN_ID: '35456396448'
       CERTIFIED_ARTIFACT_SHA256: bc340a7c30657e4326b3dfa306bff5cbb016ce37abaaece0edf3f5adc91d9a16
-      OUT: .tmp/recovery-i3-live-fixtures
+      OUT: .tmp/recovery-i3-auth-diagnostic
     steps:
-      - name: Checkout fixtures-only control successor
+      - name: Checkout control-only Auth diagnostic successor
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -1005,55 +1005,21 @@ jobs:
         run: |
           set -Eeuo pipefail
           test "$GITHUB_RUN_ATTEMPT" = '1'
-          test "$(git rev-parse HEAD^)" = 'fcd1cc4d6094c7c35a8685790cd687071f479c05'
+          test "$(git rev-parse HEAD^)" = 'b9c86c2002ffddf533620b86dece61e6a23aca85'
           test "$(git show -s --format=%T "$I3_CERTIFICATION_SOURCE_SHA")" = "$I3_CERTIFICATION_SOURCE_TREE"
-          printf '%s\n' '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' | sort > /tmp/expected-files
+          printf '%s\n' '.github/workflows/cxorbia-recovery-i3-dev-certification.yml' '.github/control/RECOVERY-I3-NEW-SHOPPER-AUTH-DIAGNOSTIC-20260919.mjs' | sort > /tmp/expected-files
           git diff --name-only HEAD^ HEAD | sort > /tmp/actual-files
           diff -u /tmp/expected-files /tmp/actual-files
           git diff --quiet "$I3_CERTIFICATION_SOURCE_SHA" HEAD -- app backend firebase.json .firebaserc tools
-          mkdir -p "$OUT" "$GITHUB_WORKSPACE/.tmp"
-          gzip -dc .github/control/RECOVERY-I3-LIVE-FIXTURES-20260919.mjs.gz > "$GITHUB_WORKSPACE/.tmp/i3-live-fixtures.mjs"
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
-          p=Path(".tmp/i3-live-fixtures.mjs")
-          s=p.read_text(encoding="utf-8")
-          a=s.find("3_NOMBRE_TILDE")
-          b=s.find("4_NOMBRE_COMPUESTO",a+1)
-          if a<0 or b<0 or b<=a:
-              raise SystemExit("RELEASE_COMPOSITION_FAILURE:ACCENT_FIXTURE_MARKERS")
-          segment=s[a:b]
-          n1=segment.count("Castillo")
-          if n1!=2:
-              raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:ACCENT_FIXTURE_NAME_COUNT:{n1}")
-          segment=segment.replace("Castillo","CastilloI3LiveA9")
-          s=s[:a]+segment+s[b:]
-          s,n2=re.subn(r"(['\"])cesar\.castillo\1", "'cesar.castilloi3livea9'", s, count=1)
-          if n2!=1:
-              raise SystemExit(f"RELEASE_COMPOSITION_FAILURE:ACCENT_LOGIN_EXPECTATION_COUNT:{n2}")
-          f0=s.find("async function shopperLogin(f){")
-          f1=s.find("async function adminPage",f0+1)
-          if f0<0 or f1<0:
-              raise SystemExit("RELEASE_COMPOSITION_FAILURE:SHOPPER_LOGIN_FUNCTION_MARKERS")
-          diagfn="""async function shopperLogin(f){let c=await browser.newContext({viewport:{width:1440,height:1000}}),p=await c.newPage();try{await p.goto(base(),{waitUntil:'domcontentloaded',timeout:90000});await p.waitForFunction(()=>!!window.firebase?.auth&&window.firebase.apps?.length,null,{timeout:90000});await p.locator('.role-btn[data-role="shopper"]').click();await p.locator('#lgUser').fill(f.cr.login);await p.locator('#lgPass').fill(f.cr.password);await p.locator('#lgSubmit').click();try{await p.waitForFunction(({t,pr,id})=>{let x=window.CX?.backendAuth?.context?.()||{},ps=Array.isArray(x.projectIds)?x.projectIds.map(String):[];return x.authenticated===true&&x.role==='shopper'&&x.tenantId===t&&String(x.shopperId||'')===id&&(ps.length===0||ps.includes(pr));},{t:TENANT,pr:PROJ,id:f.id},{timeout:45000})}catch(e){let d=await p.evaluate(()=>{let x=window.CX?.backendAuth?.context?.()||{},u=window.firebase?.auth?.().currentUser||null;return{authenticated:x.authenticated===true,role:String(x.role||''),tenantId:String(x.tenantId||''),shopperId:String(x.shopperId||''),projectIds:Array.isArray(x.projectIds)?x.projectIds.map(String):[],firebaseUser:Boolean(u),firebaseUid:u?String(u.uid):'',selectedRole:String(window.CX?.backendAuth?.selectedRole?.()||''),authError:String(document.querySelector('#cxIntegratedAuthError')?.innerText||document.querySelector('#lgError')?.innerText||'').slice(0,220)}});throw new Error('AUTH_FAILURE:VISIBLE_LOGIN_CONTEXT:'+f.test+':'+JSON.stringify(d).slice(0,600))}try{await p.waitForFunction(()=>window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,null,{timeout:90000})}catch(e){let d=await p.evaluate(()=>({ctx:window.CX?.backendAuth?.context?.()||{},authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,gate:window.CX_C6_HR_AUTHORITY_GATE||null,source:String(window.CX?.dataSource?.sourceRef||'')}));throw new Error('FUNCTIONAL_DEFECT:VISIBLE_LOGIN_HR_AUTHORITY:'+f.test+':'+JSON.stringify(d).slice(0,600))}return await p.evaluate(()=>{let x=window.CX?.backendAuth?.context?.()||{},s=window.CX?.data?.__sessionShopperProfile||{};return{role:x.role,tenantId:x.tenantId,shopperId:x.shopperId,authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,profile:{id:s.id||s.shopperId||null,pais:s.pais||s.country||null,phone:s.whatsapp||s.phone||null,email:s.email||'',estado:s.estado||null}}})}finally{await c.close()}}
-          """
-          s=s[:f0]+diagfn+s[f1:]
-          launch="browser=await chromium.launch({headless:true});"
-          if s.count(launch)!=1:
-              raise SystemExit("RELEASE_COMPOSITION_FAILURE:BROWSER_LAUNCH_ANCHOR")
-          direct="""const directAuth=[];for(const f of defs){let idt=await passToken(f.email,f.cr.password,key),d=await auth.verifyIdToken(idt,true),ok=String(d.uid||'')===f.uid&&String(d.role||'')==='shopper'&&String(d.tenantId||'')===TENANT&&String(d.shopperId||'')===f.id&&A(d.projectIds).map(String).includes(PROJ);directAuth.push({test:f.test,ok,role:String(d.role||''),tenantId:String(d.tenantId||''),projectScoped:A(d.projectIds).map(String).includes(PROJ),shopperIdMatches:String(d.shopperId||'')===f.id,uidMatches:String(d.uid||'')===f.uid});if(!ok)throw new Error('AUTH_FAILURE:DIRECT_PASSWORD_CLAIMS:'+f.test)}fs.writeFileSync(path.join(OUT,'direct-auth-preflight.json'),JSON.stringify({decision:'PASS_I3_DIRECT_FIXTURE_AUTH',fixtures:directAuth,production:false},null,2)+'\\n');"""
-          s=s.replace(launch,direct+launch,1)
-          p.write_text(s,encoding="utf-8")
-          PY
-          node --check "$GITHUB_WORKSPACE/.tmp/i3-live-fixtures.mjs"
-          jq -n --arg run "$GITHUB_RUN_ID" '{prepared:true,runId:$run,production:false,builds:0,deploys:0}' > "$OUT/preflight.json"
+          node --check .github/control/RECOVERY-I3-NEW-SHOPPER-AUTH-DIAGNOSTIC-20260919.mjs
+          mkdir -p "$OUT"
 
       - name: Setup Node 24
         uses: actions/setup-node@v4
         with:
           node-version: 24
 
-      - name: Install focal live-test dependencies
+      - name: Install focal diagnostic dependencies
         run: |
           set -Eeuo pipefail
           npm install --no-save --ignore-scripts --package-lock=false firebase-admin@13.4.0 playwright@1.55.0 >/dev/null 2>&1
@@ -1062,19 +1028,19 @@ jobs:
       - name: Authenticate canonical Firebase DEV
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
+          credentials_json: '\${{ secrets.FIREBASE_SERVICE_ACCOUNT_CXORBIA_BACKEND_DEV }}'
 
       - name: Bind to Run 238 and exact certified source without rebuild
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: \${{ github.token }}
         run: |
           set -Eeuo pipefail
-          SOURCE_DIR="$RUNNER_TEMP/cxorbia-i3-live-source"
+          SOURCE_DIR="$RUNNER_TEMP/cxorbia-i3-auth-source"
           PRIOR_DIR="$RUNNER_TEMP/cxorbia-i3-run238"
           rm -rf "$SOURCE_DIR" "$PRIOR_DIR"
           mkdir -p "$SOURCE_DIR" "$PRIOR_DIR"
           git archive "$I3_CERTIFICATION_SOURCE_SHA" | tar -x -C "$SOURCE_DIR"
-          gh run download "$PRIOR_RUN_ID" --repo "${{ github.repository }}" --name "cxorbia-recovery-i3-single-source-certification-$PRIOR_RUN_ID" --dir "$PRIOR_DIR"
+          gh run download "$PRIOR_RUN_ID" --repo "\${{ github.repository }}" --name "cxorbia-recovery-i3-single-source-certification-$PRIOR_RUN_ID" --dir "$PRIOR_DIR"
           MANIFEST="$(find "$PRIOR_DIR" -name i3-certification-manifest.json -print -quit)"
           test -n "$MANIFEST"
           test "$(jq -r '.i3CertificationSourceSha' "$MANIFEST")" = "$I3_CERTIFICATION_SOURCE_SHA"
@@ -1084,34 +1050,34 @@ jobs:
           test "$(jq -r '.rebuildAfterCertification' "$MANIFEST")" = 'false'
           test "$(jq -r '.production' "$MANIFEST")" = 'false'
           echo "SOURCE_DIR=$SOURCE_DIR" >> "$GITHUB_ENV"
-          echo "PRIOR_DIR=$PRIOR_DIR" >> "$GITHUB_ENV"
 
-      - name: Execute reversible provider-backed live DEV fixtures
+      - name: Execute one reversible provider-backed new-Shopper Auth diagnostic
+        id: authdiag
+        continue-on-error: true
         run: |
           set -Eeuo pipefail
-          SOURCE_DIR="$SOURCE_DIR" OUT="$OUT" node <<'NODE'
-          const fs=require('fs'),path=require('path');
-          const Rule=require(path.join(process.env.SOURCE_DIR,'app/core/shopper-credential-rule.js'));
-          const x=Rule.shopperCredentialRule({nombre:'César Castillo'});
-          if(!x||x.ok!==true||x.login!=='cesar.castillo'||x.password!=='Cesar123*')throw new Error('FUNCTIONAL_DEFECT:ACCENT_RULE_EXACT_OWNER');
-          fs.writeFileSync(path.join(process.env.OUT,'credential-accent-exact.json'),JSON.stringify({decision:'PASS_I3_CREDENTIAL_ACCENT_EXACT_OWNER',login:'cesar.castillo',passwordRuleMatched:true,passwordPersisted:false,production:false},null,2)+'\n');
-          NODE
-          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" PERIOD_ID="$PERIOD_ID" I3_CERTIFICATION_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" I3_CERTIFICATION_SOURCE_TREE="$I3_CERTIFICATION_SOURCE_TREE" SOURCE_DIR="$SOURCE_DIR" PRIOR_DIR="$PRIOR_DIR" PRIOR_RUN_ID="$PRIOR_RUN_ID" CERTIFIED_ARTIFACT_SHA256="$CERTIFIED_ARTIFACT_SHA256" OUT="$OUT" node "$GITHUB_WORKSPACE/.tmp/i3-live-fixtures.mjs"
-          test "$(jq -r '.decision' "$OUT/i3-live-fixtures-result.json")" = 'PASS_I3_LIVE_FIXTURES'
-          test "$(jq -r '.cleanup.ok' "$OUT/i3-live-fixtures-result.json")" = 'true'
-          test "$(jq -r '.buildCountThisRun' "$OUT/i3-live-fixtures-result.json")" = '0'
-          test "$(jq -r '.deployCountThisRun' "$OUT/i3-live-fixtures-result.json")" = '0'
-          test "$(jq '[.tests[] | select(.ok==true)] | length' "$OUT/i3-live-fixtures-result.json")" = '10'
+          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" PERIOD_ID="$PERIOD_ID" I3_CERTIFICATION_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" I3_CERTIFICATION_SOURCE_TREE="$I3_CERTIFICATION_SOURCE_TREE" SOURCE_DIR="$SOURCE_DIR" PRIOR_RUN_ID="$PRIOR_RUN_ID" CERTIFIED_ARTIFACT_SHA256="$CERTIFIED_ARTIFACT_SHA256" OUT="$OUT" node .github/control/RECOVERY-I3-NEW-SHOPPER-AUTH-DIAGNOSTIC-20260919.mjs
 
-      - name: Upload sanitized live fixture evidence
+      - name: Upload sanitized Auth diagnostic evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cxorbia-recovery-i3-live-fixtures-${{ github.run_id }}
-          path: ${{ env.OUT }}
+          name: cxorbia-recovery-i3-auth-diagnostic-\${{ github.run_id }}
+          path: \${{ env.OUT }}
           if-no-files-found: error
           retention-days: 14
           compression-level: 0
+
+      - name: Assert diagnostic result and cleanup
+        if: always()
+        run: |
+          set -Eeuo pipefail
+          test -f "$OUT/auth-diagnostic-result.json"
+          test "$(jq -r '.cleanup.ok' "$OUT/auth-diagnostic-result.json")" = 'true'
+          test "$(jq -r '.buildCountThisRun' "$OUT/auth-diagnostic-result.json")" = '0'
+          test "$(jq -r '.deployCountThisRun' "$OUT/auth-diagnostic-result.json")" = '0'
+          test "$(jq -r '.production' "$OUT/auth-diagnostic-result.json")" = 'false'
+          test "$(jq -r '.decision' "$OUT/auth-diagnostic-result.json")" = 'PASS_I3_NEW_SHOPPER_AUTH_DIAGNOSTIC'
 
       - name: Cleanup temporary dependencies
         if: always()
