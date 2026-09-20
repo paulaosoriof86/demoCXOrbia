@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.recovery.module-truth-matrix.v5",
-  "observedAt": "2026-09-20T07:42:00Z",
+  "observedAt": "2026-09-20T08:05:00Z",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
@@ -103,9 +103,9 @@
     }
   },
   "productSource": {
-    "sha": "47c1aad1baf2d229ccb2e6753b6491a8f342c111",
-    "treeSha": "f802966cb2e64d0ac6cac932463f1b34dde872c8",
-    "message": "fix(i3): preserve Admin view across HR authority release"
+    "sha": "6e5c8c2af101c25c418ceeb6dbd83c7779af383d",
+    "treeSha": "ff7c5b5b6cab06478e3efa19dff33532644e4db1",
+    "message": "fix(i3): preserve Admin view on staff authority handoff"
   },
   "controlHeadAtConstruction": "751d01397bcd85903456e5cb78e3e5ce41161b17",
   "phaseAComplete": true,
@@ -355,8 +355,8 @@
         "app/adapters/cxorbia-provider-identity-link-runtime-v1.js",
         "app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js"
       ],
-      "lastApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED",
-      "sourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
+      "lastApprovedAuthority": "P0_PROVEN_RUN284_STAFF_REENTRY_VIEW_RESET_FIX",
+      "sourceCommit": "6e5c8c2af101c25c418ceeb6dbd83c7779af383d",
       "loadOrderEntrypoint": "app/index-backend-dev.html",
       "roles": [
         "Admin",
@@ -1457,19 +1457,19 @@
       "historicalApprovedBlob": null,
       "f9ApprovedSource": null,
       "f9ApprovedBlob": null,
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "ffdfe6b7de4b58b1d17765ce6f7820076a5ea157",
-      "currentBlob": "ffdfe6b7de4b58b1d17765ce6f7820076a5ea157",
+      "latestApprovedSource": "6e5c8c2af101c25c418ceeb6dbd83c7779af383d",
+      "latestApprovedBlob": "a669a9930191e2872dea5ffbf7aff039f5a29918",
+      "currentBlob": "a669a9930191e2872dea5ffbf7aff039f5a29918",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "loadOrder": 51,
       "atomicDisposition": "KEEP",
-      "latestApprovedAuthority": "ADJUDICATED_KEEP_BYTE_EXACT",
-      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "approvedBlob": "ffdfe6b7de4b58b1d17765ce6f7820076a5ea157",
-      "approvalAuthority": "POST_F9_RECOVERY_SUCCESSOR",
-      "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
+      "latestApprovedAuthority": "P0_PROVEN_RUN284_STAFF_REENTRY_VIEW_RESET_FIX",
+      "approvedSourceCommit": "6e5c8c2af101c25c418ceeb6dbd83c7779af383d",
+      "approvedBlob": "a669a9930191e2872dea5ffbf7aff039f5a29918",
+      "approvalAuthority": "P0_PROVEN_RUN284_STAFF_REENTRY_VIEW_RESET_FIX",
+      "composedAtSource": "6e5c8c2af101c25c418ceeb6dbd83c7779af383d",
       "provenanceIndependent": true,
       "approvalDisposition": "KEEP"
     },
@@ -3930,7 +3930,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "Recertify exactly product source 47c1aad1baf2d229ccb2e6753b6491a8f342c111 / tree f802966cb2e64d0ac6cac932463f1b34dde872c8. Require Step21/23 same HR revision, Gate20 PASS, one artifact, live fixtures 10/10 cleanup=true build=0 deploy=0 production=false, then Gate21 PASS.",
+  "nextExactAction": "Recertify exactly product source 6e5c8c2af101c25c418ceeb6dbd83c7779af383d / tree ff7c5b5b6cab06478e3efa19dff33532644e4db1. Require Step21/23 same HR revision, Gate20 PASS, one artifact, live fixtures 10/10 cleanup=true build=0 deploy=0 production=false, then Gate21 PASS.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -4092,9 +4092,9 @@
   },
   "continuityCheckpoint": {
     "iteration": "I3",
-    "status": "HOLD_RUN283_VISUAL_DEFECT_FIXED_PENDING_RECERTIFICATION",
-    "exactProductSourceSha": "47c1aad1baf2d229ccb2e6753b6491a8f342c111",
-    "exactProductSourceTree": "f802966cb2e64d0ac6cac932463f1b34dde872c8",
+    "status": "HOLD_RUN284_VISUAL_DEFECT_ROOT_FIXED_PENDING_RECERTIFICATION",
+    "exactProductSourceSha": "6e5c8c2af101c25c418ceeb6dbd83c7779af383d",
+    "exactProductSourceTree": "ff7c5b5b6cab06478e3efa19dff33532644e4db1",
     "noReprocess": [
       "I0",
       "I1",
@@ -4135,12 +4135,12 @@
       "acceptance imports provider function instead of reimplementing credentials",
       "stale v1 tests updated to the explicitly approved v2 contract"
     ],
-    "nextExactAction": "Recertify exactly product source 47c1aad1baf2d229ccb2e6753b6491a8f342c111 / tree f802966cb2e64d0ac6cac932463f1b34dde872c8. Require Step21/23 same HR revision, Gate20 PASS, one artifact, live fixtures 10/10 cleanup=true build=0 deploy=0 production=false, then Gate21 PASS.",
+    "nextExactAction": "Recertify exactly product source 6e5c8c2af101c25c418ceeb6dbd83c7779af383d / tree ff7c5b5b6cab06478e3efa19dff33532644e4db1. Require Step21/23 same HR revision, Gate20 PASS, one artifact, live fixtures 10/10 cleanup=true build=0 deploy=0 production=false, then Gate21 PASS.",
     "production": "DO_NOT_TOUCH",
     "rootCauseRun233": "Static/unit gates exposed stale v1 browser credential implementations and stale expectations before DEV deploy.",
     "lastRun": {
-      "runNumber": 283,
-      "runId": "35497011065",
+      "runNumber": 284,
+      "runId": "35497810660",
       "result": "HOLD_LIVE_FIXTURE_ADMIN_ROWS_NOT_RERENDERED_AFTER_COMPOSITION",
       "code": "VISUAL_DEFECT:ADMIN_ROWS_NOT_RERENDERED_AFTER_COMPOSITION",
       "classification": "VISUAL_DEFECT",
@@ -4164,7 +4164,7 @@
     "fixRun236": "For a Shopper, pre-HR readiness now requires authenticated Firebase principal rather than pre-existing exact Firestore profile. Auth+tenant+project authorization remains required by reconcile() and is reverified server-side. After composition, __sessionShopperProfile falls back to the exact canonical shopper from result.shoppers/identityMap.",
     "rootCauseRun237": "app.js intercepted the Shopper role button in DEV with pickShopperDev(), an explicitly non-auth legacy validation picker, before backend-browser-auth could select the protected Firebase shopper namespace. This produced selectedRole='', no Firebase user, no context, and no credential error.",
     "fixRun237": "When protected Firebase DEV auth is enabled, Shopper role now always follows selectRole('shopper') -> backend-browser-auth -> Firebase. Legacy pickShopperDev remains only for non-protected DEV access.",
-    "p0Owner": "app/adapters/tya-c6-unified-human-runtime-v1.js::installHumanAuthorityGate.release"
+    "p0Owner": "app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js::finalizeStaffFrontend"
   },
   "liveFixtureForensic": {
     "auditId": "CXORBIA-I3-LIVE-FIXTURE-FORENSIC-20260919",
@@ -4681,6 +4681,45 @@
     "fix": "release now restores pendingView || CX.session.view before allowing fallback mount result",
     "correctedProductSourceSha": "47c1aad1baf2d229ccb2e6753b6491a8f342c111",
     "correctedProductSourceTree": "f802966cb2e64d0ac6cac932463f1b34dde872c8",
+    "production": "DO_NOT_TOUCH"
+  },
+  "run284StaffReentryViewResetP0": {
+    "classification": "VISUAL_DEFECT",
+    "code": "ADMIN_ROWS_NOT_RERENDERED_AFTER_COMPOSITION",
+    "runId": "35497810660",
+    "runNumber": 284,
+    "evidence": {
+      "selectedProfilesOk": true,
+      "shoppersForPresentedAllFixtures": true,
+      "rowsVisible": false,
+      "finalView": "midia",
+      "expectedView": "shoppers",
+      "authorityReason": "c6_nav_waiting_hr_authority",
+      "shopperHistoryCurrentRun": {
+        "sourceRevision": "3faa7a0edcf4810f0b86ab6f2bbed788398468e65f6e0352f544b7129d80de6f",
+        "humanLiveAcceptance": "PASS_I3_HUMAN_LIVE_ACCEPTANCE",
+        "gt": {
+          "history": 11,
+          "total": 12,
+          "visualRoute": "misvisitas"
+        },
+        "hn": {
+          "history": 5,
+          "total": 5,
+          "visualRoute": "misvisitas"
+        },
+        "authority": true
+      },
+      "cleanup": true,
+      "buildCountThisRun": 0,
+      "deployCountThisRun": 0,
+      "production": false
+    },
+    "rootCause": "Each cx:protected-auth-hr-authority-ready called finalizeStaffFrontend(), which unconditionally called CX.app.enter(). backend-browser-auth wraps app.enter() and reapplies Auth context via applyCxSession(), clearing CX.session.view to null; router.mount then falls back to first admin module midia.",
+    "owner": "app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js",
+    "fix": "If canonical staff shell is already visible and authenticated, skip CX.app.enter() and only republish verified membership/canonical state; preserve current view.",
+    "correctedProductSourceSha": "6e5c8c2af101c25c418ceeb6dbd83c7779af383d",
+    "correctedProductSourceTree": "ff7c5b5b6cab06478e3efa19dff33532644e4db1",
     "production": "DO_NOT_TOUCH"
   }
 }
