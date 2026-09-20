@@ -321,14 +321,47 @@ try {
 
   const admin = await adminShopperReadback(staff.id, fixtureDefs);
   const hn = fixtureDefs.find((x) => x.profile.pais === 'HN');
-  let adminOk = fixtureDefs.every((f, i) => admin.rows[i] && admin.selected.some((x) => x.id === f.id && x.country === f.profile.pais && str(x.phone) === f.profile.whatsapp && str(x.email) === str(f.profile.email) && str(x.status) === 'Activo'));
-  adminOk = adminOk && str(admin.hnDetail).includes(hn.profile.whatsapp) && str(admin.hnDetail).includes(hn.profile.email);
+  const rowChecks = fixtureDefs.map((f, i) => ({ id: f.id, rowVisible: admin.rows[i] === true }));
+  const selectedChecks = fixtureDefs.map((f) => {
+    const row = admin.selected.find((x) => x.id === f.id) || null;
+    return {
+      id: f.id,
+      present: !!row,
+      countryOk: !!row && row.country === f.profile.pais,
+      phoneOk: !!row && str(row.phone) === f.profile.whatsapp,
+      emailOk: !!row && str(row.email) === str(f.profile.email),
+      statusOk: !!row && str(row.status) === 'Activo'
+    };
+  });
+  const rowsVisible = rowChecks.every((x) => x.rowVisible);
+  const selectedProfilesOk = selectedChecks.every((x) => x.present && x.countryOk && x.phoneOk && x.emailOk && x.statusOk);
+  const hnDetailPhoneOk = str(admin.hnDetail).includes(hn.profile.whatsapp);
+  const hnDetailEmailOk = str(admin.hnDetail).includes(hn.profile.email);
   const denied = command('shopper.create', 'shopper', null, 'i3-cross-project-' + RUN_ID, { profile: { firstName: 'Scope', lastName: 'Denied', nombre: 'Scope Denied', whatsapp: '0', pais: 'GT' } });
   denied.projectId = 'not-' + PROJECT_ID;
   const deniedAck = await executeHttp(staffToken, denied);
-  adminOk = adminOk && deniedAck.ok !== true && deniedAck.providerAck !== true;
-  if (!adminOk) throw new Error('FUNCTIONAL_DEFECT:ADMIN_FIXTURE_VISIBILITY_OR_SCOPE');
-  record('5_PERFIL_ADMIN', 'Authorized Admin sees identity/country/phone/email/status; cross-project command blocked', { rows: admin.rows, selected: admin.selected, crossProjectBlocked: deniedAck.ok !== true }, { role: admin.ctx.role, tenantId: admin.ctx.tenantId, projectIds: admin.ctx.projectIds }, 'Shared synthetic cleanup pending', 'Shared absence readback pending', true);
+  const crossProjectBlocked = deniedAck.ok !== true && deniedAck.providerAck !== true;
+  const adminDiagnostic = {
+    schemaVersion: 'cxorbia.i3.admin-fixture-diagnostic.v1',
+    rowsVisible,
+    selectedProfilesOk,
+    hnDetailPhoneOk,
+    hnDetailEmailOk,
+    crossProjectBlocked,
+    rowChecks,
+    selectedChecks,
+    selected: admin.selected,
+    context: { role: admin.ctx.role, tenantId: admin.ctx.tenantId, projectIds: admin.ctx.projectIds },
+    crossProject: { ok: deniedAck.ok === true, providerAck: deniedAck.providerAck === true, code: str(deniedAck.code) },
+    production: false
+  };
+  fs.writeFileSync(path.join(OUT, 'admin-fixture-diagnostic.json'), JSON.stringify(adminDiagnostic, null, 2) + '\n');
+  const adminOk = rowsVisible && selectedProfilesOk && hnDetailPhoneOk && hnDetailEmailOk && crossProjectBlocked;
+  record('5_PERFIL_ADMIN', 'Authorized Admin sees identity/country/phone/email/status; cross-project command blocked', adminDiagnostic, { role: admin.ctx.role, tenantId: admin.ctx.tenantId, projectIds: admin.ctx.projectIds }, 'Shared synthetic cleanup pending', 'Shared absence readback pending', adminOk, { diagnosticVersion: 'v1' });
+  if (!rowsVisible) throw new Error('FUNCTIONAL_DEFECT:ADMIN_FIXTURE_ROWS_NOT_VISIBLE');
+  if (!selectedProfilesOk) throw new Error('FUNCTIONAL_DEFECT:ADMIN_FIXTURE_READ_MODEL_MISMATCH');
+  if (!hnDetailPhoneOk || !hnDetailEmailOk) throw new Error('VISUAL_DEFECT:ADMIN_FIXTURE_HN_DETAIL_NOT_VISIBLE');
+  if (!crossProjectBlocked) throw new Error('AUTH_FAILURE:ADMIN_CROSS_PROJECT_COMMAND_NOT_BLOCKED');
 
   const visitKey = (v) => str(v.visitId || v.id || v.hrRowId || (str(v.sourceTab) && str(v.sourceRow) ? str(v.sourceTab) + '::' + str(v.sourceRow) : ''));
   const activePeriod = arr(hr.periods).find((p) => str(p.id || p.periodId) === PERIOD_ID) || null;
