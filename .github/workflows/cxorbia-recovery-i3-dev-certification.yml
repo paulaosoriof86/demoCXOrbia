@@ -418,11 +418,36 @@ jobs:
           const cross=JSON.parse(fs.readFileSync(CROSSWALK,'utf8'));
           const exactBySource=new Map();
           const exactEvidenceBySource=new Map();
+          const exactEvidenceRank=new Map();
           const exactEvidenceConflicts=[];
-          const addExact=(source,target,evidence)=>{
-            source=str(source);target=str(target);if(!source||!target)return;
-            const prior=exactBySource.get(source);
+          const exactEvidenceSuperseded=[];
+          const addExact=(source,target,evidence,rank)=>{
+            source=str(source);target=str(target);rank=Number(rank||0);if(!source||!target)return;
+            const prior=exactBySource.get(source),priorRank=Number(exactEvidenceRank.get(source)||0);
             if(prior&&prior!==target){
+              if(rank>priorRank){
+                exactEvidenceSuperseded.push({
+                  sourceId:source,
+                  supersededTargetFingerprint:sha(prior).slice(0,24),
+                  authoritativeTargetFingerprint:sha(target).slice(0,24),
+                  supersededEvidence:[...(exactEvidenceBySource.get(source)||new Set())].sort(),
+                  authoritativeEvidence:evidence
+                });
+                exactBySource.set(source,target);
+                exactEvidenceRank.set(source,rank);
+                exactEvidenceBySource.set(source,new Set([evidence]));
+                return;
+              }
+              if(rank<priorRank){
+                exactEvidenceSuperseded.push({
+                  sourceId:source,
+                  supersededTargetFingerprint:sha(target).slice(0,24),
+                  authoritativeTargetFingerprint:sha(prior).slice(0,24),
+                  supersededEvidence:[evidence],
+                  authoritativeEvidence:[...(exactEvidenceBySource.get(source)||new Set())].sort()
+                });
+                return;
+              }
               exactEvidenceConflicts.push({
                 sourceId:source,
                 priorTargetFingerprint:sha(prior).slice(0,24),
@@ -433,12 +458,13 @@ jobs:
               return;
             }
             exactBySource.set(source,target);
+            exactEvidenceRank.set(source,Math.max(priorRank,rank));
             if(!exactEvidenceBySource.has(source))exactEvidenceBySource.set(source,new Set());
             exactEvidenceBySource.get(source).add(evidence);
           };
           for(const row of arr(cross?.crosswalk)){
             if(row?.action==='REUSE_EXISTING_CANONICAL_SHOPPER'&&str(row?.plannedShopperId)&&str(row?.canonicalShopperId)){
-              addExact(row.plannedShopperId,row.canonicalShopperId,'visit_identity_crosswalk');
+              addExact(row.plannedShopperId,row.canonicalShopperId,'historical_visit_identity_crosswalk',10);
             }
           }
           const mappingHash=str(cross?.mappingHashSha256);
@@ -448,19 +474,20 @@ jobs:
           const db=getFirestore(),tenant=db.collection('tenants').doc(TENANT),linksRef=tenant.collection('shopperIdentityLinks');
 
           const durableCrossSnap=await tenant.collection('shopperIdentityCrosswalk').get();
+          const exactCrossModes=new Set(['provider_exact_identity_link','stable_hr_shopper_id','exact_technical_keys_only']);
           let durableExactAliasEvidence=0;
           for(const doc of durableCrossSnap.docs){
             const row=doc.data()||{};
             const tenantOk=str(row.tenantId||TENANT)===TENANT;
             const sourceType=str(row.sourceType).toLowerCase();
             const identityMode=str(row.identityMode).toLowerCase();
-            const projectIds=arr(row.projectIds).map(str).filter(Boolean);
-            const projectOk=projectIds.includes(PROJECT_ID);
+            const projectIds=arr(row.projectIds).map(str).filter(Boolean),singleProject=str(row.projectId);
+            const projectOk=(!singleProject||singleProject===PROJECT_ID)&&(projectIds.length===0||projectIds.includes(PROJECT_ID));
             const target=str(row.shopperId);
             if(!tenantOk||sourceType!=='hr_external'||!projectOk||!target)continue;
-            if(identityMode!=='provider_exact_identity_link')continue;
+            if(!exactCrossModes.has(identityMode))continue;
             for(const token of [...new Set([doc.id,row.sourceStableKey,row.sourceShopperId].map(str).filter(Boolean))]){
-              addExact(token,target,'durable_shopper_identity_crosswalk');
+              addExact(token,target,'durable_shopper_identity_crosswalk:'+identityMode,20);
               durableExactAliasEvidence++;
             }
           }
@@ -471,6 +498,8 @@ jobs:
               generatedAt:new Date().toISOString(),tenantId:TENANT,projectId:PROJECT_ID,
               decision:'HOLD_I3_EXACT_IDENTITY_EVIDENCE_CONFLICT',classification:'MAPPING_FAILURE',
               exactVisitCrosswalkSha256:mappingHash,durableExactAliasEvidence,
+              precedence:'durable_hr_exact_crosswalk_over_historical_visit_crosswalk',
+              supersededEvidence:exactEvidenceSuperseded,
               conflicts:exactEvidenceConflicts,
               providerWrites:0,hrWrites:0,authWrites:0,production:false
             };
@@ -702,7 +731,9 @@ jobs:
             collisionTechnicalIdCount:collisions.reduce((n,x)=>n+x.ids.length,0),
             singletonAccountCollisionGroupCount:singletonAccountCollisions.length,
             exactVisitCrosswalkSha256:mappingHash,existingTrustedIdentityLinks:links.length,
-            durableExactAliasEvidence,protectedProfileReads:profiles.length,protectedExactAliasEvidence,protectedDistinctIdentityEvidence,
+            durableExactAliasEvidence,exactEvidenceSupersededCount:exactEvidenceSuperseded.length,
+            exactIdentityPrecedence:'durable_hr_exact_crosswalk_over_historical_visit_crosswalk',
+            protectedProfileReads:profiles.length,protectedExactAliasEvidence,protectedDistinctIdentityEvidence,
             rawNamesPersisted:false,rawLoginsPersisted:false,rawProtectedAnchorsPersisted:false,hrWrites:0,authWrites:0,production:false
           };
           // Exceptional unresolved identities remain fail-closed per shopper, but do not block the
