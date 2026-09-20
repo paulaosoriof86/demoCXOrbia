@@ -5,6 +5,7 @@ const read=path=>fs.readFileSync(path,'utf8');
 const shopper=read('app/adapters/tya-canonical-shopper-portal-v2.js');
 const auth=read('app/core/backend-browser-auth.js');
 const authority=read('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js');
+const liveWatcher=read('app/adapters/tya-live-source-refresh-watch-v2.js');
 const status=read('app/core/backend-preview-status.js');
 
 const checks=[];
@@ -20,6 +21,7 @@ check('authority_sets_canonical_source',authority.includes("sourceRef='hr-live-a
 check('authority_replaces_runtime_with_hr',authority.includes('CX.data._visitas=clone(result.visits)')&&authority.includes('CX.data.shoppers=clone(result.shoppers)'));
 check('authority_emits_ready_event',authority.includes("cx:protected-auth-hr-authority-ready"));
 check('authority_does_not_force_provider_refresh',!/fresh\s*:\s*['"]1['"]/.test(authority),'authenticated protected boot must consume runtime authority without forcing a new external HR revision');
+check('live_watcher_does_not_force_provider_refresh',!/fresh\s*:\s*['"]1['"]/.test(liveWatcher),'live watcher must consume runtime cache authority; external refresh cadence belongs to the runtime, not the browser');
 
 const statusListensFinal=status.includes('cx:protected-auth-hr-authority-ready');
 const statusCallsProjects=/Proyectos:\s*['"+]?\+?c\.projects/.test(status)||status.includes('Proyectos: '+"'+c.projects+");
