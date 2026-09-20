@@ -7,6 +7,7 @@ const auth=read('app/core/backend-browser-auth.js');
 const authority=read('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js');
 const liveWatcher=read('app/adapters/tya-live-source-refresh-watch-v2.js');
 const status=read('app/core/backend-preview-status.js');
+const backend=read('app/core/backend-firebase.js');
 
 const checks=[];
 const check=(id,pass,detail='')=>checks.push({id,pass:!!pass,detail});
@@ -21,7 +22,10 @@ check('authority_sets_canonical_source',authority.includes("sourceRef='hr-live-a
 check('authority_replaces_runtime_with_hr',authority.includes('CX.data._visitas=clone(result.visits)')&&authority.includes('CX.data.shoppers=clone(result.shoppers)'));
 check('authority_emits_ready_event',authority.includes("cx:protected-auth-hr-authority-ready"));
 check('authority_does_not_force_provider_refresh',!/fresh\s*:\s*['"]1['"]/.test(authority),'authenticated protected boot must consume runtime authority without forcing a new external HR revision');
-check('authority_preserves_firestore_backend_ready_capture',authority.includes("const fresh=capture();lastProtectedState=fresh||null;schedule('backend_ready_firestore_dynamic',true)"),'backend-ready must retain the newest Firestore state before HR recomposition');
+check('backend_publishes_authorized_state_before_composition',backend.includes('window.CX_BACKEND_AUTHORIZED_STATE=clean')&&backend.includes('publishAuthorizedState(state||{})'),'backend adapter must publish the exact authorized Firestore state before any HR recomposition');
+check('authority_consumes_authorized_backend_snapshot',authority.includes('captureAuthorizedBackend()||capture()'),'HR authority bridge must prefer the exact authorized Firestore snapshot over mutable composed CX.data');
+check('authority_refresh_does_not_clear_authorized_snapshot',!authority.includes('lastProtectedState=null;schedule(\'backend_refresh_dynamic\',true)'),'backend refresh must not discard the newly captured authorized Firestore snapshot');
+check('authority_emits_shopper_rerender',authority.includes("CX.bus.emit('shoppers',{reason:'protected_auth_hr_authority_dynamic_ready'"),'final composition must explicitly refresh the Shoppers view');
 check('authority_retries_forced_reconcile_when_busy',authority.includes("if(reconciling){bootForce=true;return {ok:false,skipped:true,reason:'reconcile_in_progress_forced_retry'};}"),'a forced backend-ready reconcile must not be lost when another reconcile is already running');
 check('live_watcher_does_not_force_provider_refresh',!/fresh\s*:\s*['"]1['"]/.test(liveWatcher),'live watcher must consume runtime cache authority; external refresh cadence belongs to the runtime, not the browser');
 

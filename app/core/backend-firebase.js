@@ -272,6 +272,18 @@ window.CX = window.CX || {};
     return null;
   }
   function roleOf(ctx){ return ctx && ctx.role ? String(ctx.role) : ''; }
+  function publishAuthorizedState(state){
+    const ctx=authContext()||{};
+    window.CX_BACKEND_AUTHORIZED_STATE=clean({
+      version:'cxorbia-backend-authorized-state-v1',
+      tenantId:tenantId(),
+      principal:{role:roleOf(ctx),tenantId:String(ctx.tenantId||tenantId()),authNamespace:String(ctx.authNamespace||''),shopperId:String(ctx.shopperId||''),projectIds:toList(ctx.projectIds)},
+      projects:(state&&state.projects)||[],allProjects:(state&&state.allProjects)||[],periods:(state&&state.periods)||[],
+      shoppers:(state&&state.shoppers)||[],visits:(state&&state.visits)||[],posts:(state&&state.posts)||[],
+      capturedAt:now(),source:'firestore-authorized'
+    });
+    return window.CX_BACKEND_AUTHORIZED_STATE;
+  }
   function isOperator(ctx){ return ['super','admin','ops','coordinador'].includes(roleOf(ctx)); }
   function isClient(ctx){ return ['cliente','client'].includes(roleOf(ctx)); }
   function isShopper(ctx){ return roleOf(ctx) === 'shopper'; }
@@ -400,6 +412,7 @@ window.CX = window.CX || {};
 
   function applyData(state){
     if(!CX.data){ markSource('localStorage/demo', {reason:'missing-cx-data'}); return false; }
+    publishAuthorizedState(state||{});
     if(!state || !state.projects || !state.projects.length){
       // Firestore project materialization is not the operational authority for projectId.
       // Preserve any exact protected principal data already read (notably the shopper
