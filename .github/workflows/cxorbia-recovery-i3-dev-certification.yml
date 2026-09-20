@@ -666,6 +666,32 @@ jobs:
             return {ok:false,reason:'EXACT_IDENTITY_EVIDENCE_MISSING',identityDisposition:'INSUFFICIENT_EXACT_EVIDENCE'};
           };
 
+          const paulaGroup=singletonAccountCollisions.find(x=>x.login==='paula.osorio')||null;
+          if(paulaGroup){
+            const sourceId=paulaGroup.ids.length===1?str(paulaGroup.ids[0]):'';
+            const activeTargets=paulaGroup.accountTargets.map(str).filter(Boolean);
+            const selectedExactTarget=sourceId?str(exactBySource.get(sourceId)):'';
+            const selectedExactEvidence=sourceId?[...(exactEvidenceBySource.get(sourceId)||new Set())].sort():[];
+            let protectedPairEvidence=null;
+            if(sourceId&&activeTargets.length===1){
+              const e=protectedProfilePairResolution(sourceId,resolveTrusted(activeTargets[0]));
+              protectedPairEvidence=e?.ok
+                ?{ok:true,target:str(e.target),evidenceType:str(e.evidenceType)}
+                :{ok:false,reason:str(e?.reason),identityDisposition:str(e?.identityDisposition)};
+            }
+            console.log('I3_PAULA_MAPPING_DIAGNOSTIC='+JSON.stringify({
+              login:'paula.osorio',
+              sourceShopperId:sourceId||null,
+              activeAccountTargets:activeTargets,
+              selectedExactTarget:selectedExactTarget||null,
+              selectedExactEvidence,
+              exactTargetMatchesActive:activeTargets.length===1&&selectedExactTarget===resolveTrusted(activeTargets[0]),
+              protectedPairEvidence,
+              fuzzyMatching:false,
+              production:false
+            }));
+          }
+
           const planned=[],blockers=[];
           for(const group of collisions){
             const rows=group.ids.map(sourceId=>{
