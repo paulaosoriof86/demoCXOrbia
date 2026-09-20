@@ -672,12 +672,21 @@ jobs:
             const activeTargets=paulaGroup.accountTargets.map(str).filter(Boolean);
             const selectedExactTarget=sourceId?str(exactBySource.get(sourceId)):'';
             const selectedExactEvidence=sourceId?[...(exactEvidenceBySource.get(sourceId)||new Set())].sort():[];
-            let protectedPairEvidence=null;
+            const historicalRow=sourceId?arr(cross?.crosswalk).find(row=>str(row?.plannedShopperId)===sourceId&&row?.action==='REUSE_EXISTING_CANONICAL_SHOPPER'&&str(row?.canonicalShopperId)):null;
+            const historicalExactTarget=str(historicalRow?.canonicalShopperId);
+            let protectedPairEvidence=null,historicalToActiveEvidence=null;
             if(sourceId&&activeTargets.length===1){
-              const e=protectedProfilePairResolution(sourceId,resolveTrusted(activeTargets[0]));
+              const activeTarget=resolveTrusted(activeTargets[0]);
+              const e=protectedProfilePairResolution(sourceId,activeTarget);
               protectedPairEvidence=e?.ok
                 ?{ok:true,target:str(e.target),evidenceType:str(e.evidenceType)}
                 :{ok:false,reason:str(e?.reason),identityDisposition:str(e?.identityDisposition)};
+              if(historicalExactTarget){
+                const h=protectedProfilePairResolution(historicalExactTarget,activeTarget);
+                historicalToActiveEvidence=h?.ok
+                  ?{ok:true,target:str(h.target),evidenceType:str(h.evidenceType)}
+                  :{ok:false,reason:str(h?.reason),identityDisposition:str(h?.identityDisposition)};
+              }
             }
             console.log('I3_PAULA_MAPPING_DIAGNOSTIC='+JSON.stringify({
               login:'paula.osorio',
@@ -685,8 +694,11 @@ jobs:
               activeAccountTargets:activeTargets,
               selectedExactTarget:selectedExactTarget||null,
               selectedExactEvidence,
+              historicalExactTarget:historicalExactTarget||null,
+              historicalHrVisitCount:Number(historicalRow?.hrVisitCount||0),
               exactTargetMatchesActive:activeTargets.length===1&&selectedExactTarget===resolveTrusted(activeTargets[0]),
               protectedPairEvidence,
+              historicalToActiveEvidence,
               fuzzyMatching:false,
               production:false
             }));
