@@ -82,6 +82,7 @@ const serverCode=fs.readFileSync(path.resolve('backend/runtime/hr-live-service/s
 const applyCode=fs.readFileSync(path.resolve('app/adapters/tya-live-source-inplace-apply.js'),'utf8');
 const parityChecks={
   serverStableRevision:serverCode.includes('stableRevisionValue')&&serverCode.includes('X-CXOrbia-Source-Revision'),
+  bootstrapCannotServeAsLiveAuthority:serverCode.includes("if(cache?.origin==='build_bootstrap')return inFlight||refreshSnapshot();"),
   runtimeMetaRevision:serverCode.includes('revision:current.revision'),
   previewMetaRevision:applyCode.includes('sourceRevision:meta.revision||null'),
   visibleContractRevision:applyCode.includes('sourceRevision:meta.revision||null,sourceReadAt'),

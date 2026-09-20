@@ -314,6 +314,7 @@ async function refreshSnapshot(){
 
 async function buildSnapshot({forceFresh=false}={}){
   if(forceFresh)return inFlight||refreshSnapshot();
+  if(cache?.origin==='build_bootstrap')return inFlight||refreshSnapshot();
   const age=cache?Date.now()-cache.loadedAt:Infinity;
   if(cache&&age<CACHE_MS)return cache;
   if(inFlight)return cache||inFlight;
