@@ -51,6 +51,8 @@ env:
   LEGAL_ENABLE_VALUE: 'true'
   LEGAL_GATE_NAME: CXORBIA_I3_LEGAL_ACCEPTANCE_WRITE_GATE
   LEGAL_GATE_VALUE: PAULA_DEV_DEPLOY_FOR_I3_HUMAN_LEGAL_ACCEPTANCE_RUNTIME
+  I3_HR_CACHE_PIN_NAME: CXORBIA_LIVE_HR_CACHE_MS
+  I3_HR_CACHE_PIN_VALUE: '3600000'
   OUT: .tmp/recovery-i3-dev-certification
 
 jobs:
@@ -256,13 +258,16 @@ jobs:
           gcloud run revisions describe "$SOURCE_RUNTIME_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$RUNNER_TEMP/current-revision.json"
           CUR_ENABLE="$(jq -r --arg n "$LEGAL_ENABLE_NAME" '((.spec.containers[0].env // []) | map(select(.name==$n)) | .[0].value) // empty' "$RUNNER_TEMP/current-revision.json")"
           CUR_GATE="$(jq -r --arg n "$LEGAL_GATE_NAME" '((.spec.containers[0].env // []) | map(select(.name==$n)) | .[0].value) // empty' "$RUNNER_TEMP/current-revision.json")"
-          if [[ "$CUR_ENABLE" != "$LEGAL_ENABLE_VALUE" || "$CUR_GATE" != "$LEGAL_GATE_VALUE" ]]; then
+          CUR_HR_CACHE="$(jq -r --arg n "$I3_HR_CACHE_PIN_NAME" '((.spec.containers[0].env // []) | map(select(.name==$n)) | .[0].value) // empty' "$RUNNER_TEMP/current-revision.json")"
+          if [[ "$CUR_ENABLE" != "$LEGAL_ENABLE_VALUE" || "$CUR_GATE" != "$LEGAL_GATE_VALUE" || "$CUR_HR_CACHE" != "$I3_HR_CACHE_PIN_VALUE" ]]; then
             gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$SOURCE_IMMUTABLE_IMAGE" \
-              --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE" --quiet
+              --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE,$I3_HR_CACHE_PIN_NAME=$I3_HR_CACHE_PIN_VALUE" --quiet
           fi
           gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-final.json"
           DEV_REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$OUT/runtime-final.json")"
           gcloud run revisions describe "$DEV_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-final-revision.json"
+          FINAL_HR_CACHE="$(jq -r --arg n "$I3_HR_CACHE_PIN_NAME" '((.spec.containers[0].env // []) | map(select(.name==$n)) | .[0].value) // empty' "$OUT/runtime-final-revision.json")"
+          test "$FINAL_HR_CACHE" = "$I3_HR_CACHE_PIN_VALUE"
           FINAL_DIGEST_RAW="$(jq -r '.status.imageDigest // empty' "$OUT/runtime-final-revision.json")"
           if [[ "$FINAL_DIGEST_RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then FINAL_DIGEST="$FINAL_DIGEST_RAW"; elif [[ "$FINAL_DIGEST_RAW" == *@sha256:* ]]; then FINAL_DIGEST="sha256:${FINAL_DIGEST_RAW##*@sha256:}"; else FINAL_DIGEST="$SOURCE_RUNTIME_DIGEST"; fi
           test "$FINAL_DIGEST" = "$SOURCE_RUNTIME_DIGEST"
@@ -835,7 +840,8 @@ jobs:
           import { getAuth } from 'firebase-admin/auth';
           import { getFirestore } from 'firebase-admin/firestore';
           import { chromium } from 'playwright';
-          const PROJECT=process.env.PROJECT,OUT=process.env.OUT,HOSTING_URL=String(process.env.HOSTING_URL||'').replace(/\/$/,''),tenantId=process.env.TENANT_ID,projectId=process.env.PROJECT_ID,periodId=process.env.PERIOD_ID;
+          const PROJECT=process.env.PROJECT,OUT=process.env.OUT,HOSTING_URL=String(process.env.HOSTING_URL||'').replace(/\/$/,''),tenantId=process.env.TENANT_ID,projectId=process.env.PROJECT_ID,periodId=process.env.PERIOD_ID,expectedHrRevision=String(process.env.PINNED_HR_REVISION||'').trim();
+          if(!/^[a-f0-9]{64}$/.test(expectedHrRevision))throw new Error('RELEASE_COMPOSITION_FAILURE:HUMAN_LANE_PINNED_HR_REVISION_MISSING');
           const PREVIEW='YES_PAULA_20260628_PREVIEW_DEV',PROTECTED='YES_PAULA_20260730_PROTECTED_DEV',FULL='YES_PAULA_20260731_FULL_PROFILE_DEV';
           const str=v=>String(v??'').trim(),arr=v=>Array.isArray(v)?v:[];
           const allDocs=async ref=>(await ref.get()).docs.map(d=>({id:d.id,...(d.data()||{})}));
@@ -890,19 +896,39 @@ jobs:
             await page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});
             await page.waitForFunction(({tenantId,projectId})=>{const c=window.CX?.backendAuth?.context?.()||{},projects=Array.isArray(c.projectIds)?c.projectIds.map(String):[];return c.authenticated===true&&c.tenantId===tenantId&&c.role==='shopper'&&(projects.length===0||projects.includes(projectId));},{tenantId,projectId},{timeout:120000});
             const before=await page.evaluate(()=>({source:String(window.CX_BACKEND_LAST_STATE?.source||window.CX_BACKEND_DATA_SOURCE||''),backendCounts:window.CX_BACKEND_LAST_STATE?.counts||null,gate:window.CX_C6_HR_AUTHORITY_GATE||null,boot:window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE||null}));
-            await page.waitForFunction(({projectId,periodId})=>{const d=window.CX?.data||{},gate=window.CX_C6_HR_AUTHORITY_GATE||{},source=String(window.CX?.dataSource?.sourceRef||'');return window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&gate.ready===true&&gate.blocked===false&&source==='hr-live-all-periods+firestore-authenticated-exact-overlay'&&String(d.currentProjectId||'')===projectId&&String(d.currentPeriodId||'')===periodId&&Array.isArray(d.projects)&&d.projects.length>0&&Array.isArray(d._visitas)&&d._visitas.length>0;},{projectId,periodId},{timeout:120000});
+            const releaseDiag=async()=>page.evaluate(()=>{const d=window.CX?.data||{},c=window.CX?.backendAuth?.context?.()||{},gate=window.CX_C6_HR_AUTHORITY_GATE||{};return{firebaseUid:String(window.firebase?.auth?.().currentUser?.uid||''),context:{authenticated:c.authenticated===true,role:String(c.role||''),tenantId:String(c.tenantId||''),shopperId:String(c.shopperId||'')},authorityApplied:window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true,gateReady:gate.ready===true,gateBlocked:gate.blocked===true,source:String(window.CX?.dataSource?.sourceRef||''),sourceRevision:String(d.previewMeta?.sourceRevision||''),projectId:String(d.currentProjectId||''),periodId:String(d.currentPeriodId||''),periods:Array.isArray(d.projects)?d.projects.length:0,visits:Array.isArray(d._visitas)?d._visitas.length:0};}).catch(()=>({diagnosticUnavailable:true}));
+            let released=false,lastReleaseDiag=null;
+            for(let releaseAttempt=1;releaseAttempt<=3&&!released;releaseAttempt++){
+              try{
+                await page.waitForFunction(({projectId,periodId,hrRevision})=>{const d=window.CX?.data||{},gate=window.CX_C6_HR_AUTHORITY_GATE||{},source=String(window.CX?.dataSource?.sourceRef||'');return window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied===true&&gate.ready===true&&gate.blocked===false&&source==='hr-live-all-periods+firestore-authenticated-exact-overlay'&&String(d.previewMeta?.sourceRevision||'')===hrRevision&&String(d.currentProjectId||'')===projectId&&String(d.currentPeriodId||'')===periodId&&Array.isArray(d.projects)&&d.projects.length>0&&Array.isArray(d._visitas)&&d._visitas.length>0;},{projectId,periodId,hrRevision:expectedHrRevision},{timeout:90000});
+                released=true;
+              }catch(error){
+                lastReleaseDiag=await releaseDiag();
+                if(releaseAttempt===3)throw new Error('ENVIRONMENT_FAILURE:HUMAN_LANE_AUTHORITY_NOT_SETTLED:'+JSON.stringify(lastReleaseDiag).slice(0,800));
+                await page.goto('about:blank',{waitUntil:'domcontentloaded',timeout:30000});
+                await page.goto(url,{waitUntil:'domcontentloaded',timeout:90000});
+                await page.waitForFunction(()=>!!window.firebase?.auth&&Array.isArray(window.firebase?.apps)&&window.firebase.apps.length>0,null,{timeout:90000});
+                await page.waitForFunction(expectedUid=>String(window.firebase?.auth?.().currentUser?.uid||'')===String(expectedUid),shopper.id,{timeout:90000});
+                await page.waitForFunction(()=>typeof window.CX?.backendAuth?.ensureAuthenticated==='function',null,{timeout:90000});
+                await page.evaluate(async()=>{await window.CX.backendAuth.ensureAuthenticated();});
+                await page.waitForFunction(({tenantId,projectId})=>{const c=window.CX?.backendAuth?.context?.()||{},projects=Array.isArray(c.projectIds)?c.projectIds.map(String):[];return c.authenticated===true&&c.tenantId===tenantId&&c.role==='shopper'&&(projects.length===0||projects.includes(projectId));},{tenantId,projectId},{timeout:120000});
+              }
+            }
             await page.waitForTimeout(750);
             const after=await page.evaluate(()=>{const d=window.CX?.data||{},body=String(document.body?.innerText||'');return {authority:window.CX_PROTECTED_AUTH_HR_AUTHORITY||null,gate:window.CX_C6_HR_AUTHORITY_GATE||null,boot:window.CX_PROTECTED_AUTH_HR_BOOT_RECONCILE||null,source:String(window.CX?.dataSource?.sourceRef||''),sourceRevision:String(d.previewMeta?.sourceRevision||''),projectId:String(d.currentProjectId||''),periodId:String(d.currentPeriodId||''),periods:Array.isArray(d.projects)?d.projects.length:0,visits:Array.isArray(d._visitas)?d._visitas.length:0,shoppers:Array.isArray(d.shoppers)?d.shoppers.length:0,pendingGateText:body.includes('Validando fuente operacional'),technicalMode:new URLSearchParams(location.search).has('cxTechnicalAuthE2E')};});
             if(errors.length)throw new Error(`VISUAL_DEFECT:HUMAN_LANE_PAGE_ERROR:${errors.join('|').slice(0,600)}`);
-            if(after.pendingGateText||after.technicalMode||!after.authority?.applied||after.gate?.ready!==true||after.gate?.blocked===true||after.source!=='hr-live-all-periods+firestore-authenticated-exact-overlay'||after.projectId!==projectId||after.periodId!==periodId||!after.periods||!after.visits||!/^[a-f0-9]{64}$/.test(after.sourceRevision))throw new Error(`FUNCTIONAL_DEFECT:HUMAN_LANE_AUTHORITY_NOT_RELEASED:${JSON.stringify(after)}`);
+            if(after.sourceRevision!==expectedHrRevision)throw new Error(`RELEASE_COMPOSITION_FAILURE:HUMAN_LANE_HR_REVISION_MISMATCH:expected=${expectedHrRevision}:actual=${after.sourceRevision}`);
+            if(after.pendingGateText||after.technicalMode||!after.authority?.applied||after.gate?.ready!==true||after.gate?.blocked===true||after.source!=='hr-live-all-periods+firestore-authenticated-exact-overlay'||after.projectId!==projectId||after.periodId!==periodId||!after.periods||!after.visits)throw new Error(`FUNCTIONAL_DEFECT:HUMAN_LANE_AUTHORITY_NOT_RELEASED:${JSON.stringify(after)}`);
             fs.mkdirSync(OUT,{recursive:true});await page.screenshot({path:path.join(OUT,'human-lane-authority-release.png'),fullPage:true});
-            fs.writeFileSync(path.join(OUT,'human-lane-authority-release.json'),JSON.stringify({decision:'PASS_I3_HUMAN_LANE_AUTHORITY_RELEASE',production:false,readOnly:true,technicalMode:false,humanFullVisual:true,tenantId,projectId,periodId,shopperSelected:true,before,after},null,2)+'\n');
+            fs.writeFileSync(path.join(OUT,'human-lane-authority-release.json'),JSON.stringify({decision:'PASS_I3_HUMAN_LANE_AUTHORITY_RELEASE',production:false,readOnly:true,technicalMode:false,humanFullVisual:true,tenantId,projectId,periodId,pinnedHrRevision:expectedHrRevision,shopperSelected:true,before,after},null,2)+'\n');
             await ctx.close();
           } finally {await browser.close();}
           NODE
           test "$(jq -r '.decision' "$OUT/human-lane-authority-release.json")" = "PASS_I3_HUMAN_LANE_AUTHORITY_RELEASE"
           test "$(jq -r '.after.pendingGateText' "$OUT/human-lane-authority-release.json")" = "false"
           test "$(jq -r '.after.technicalMode' "$OUT/human-lane-authority-release.json")" = "false"
+          test "$(jq -r '.pinnedHrRevision' "$OUT/human-lane-authority-release.json")" = "$PINNED_HR_REVISION"
+          test "$(jq -r '.after.sourceRevision' "$OUT/human-lane-authority-release.json")" = "$PINNED_HR_REVISION"
 
       - name: Re-certify focal persistence on single source
         run: |
@@ -918,7 +944,7 @@ jobs:
           set -Eeuo pipefail
           rm -rf "$OUT/full-human-acceptance"
           mkdir -p "$OUT/full-human-acceptance" "$OUT/gate20"
-          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" I3_CERTIFICATION_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" SOURCE_DIR="$SOURCE_DIR" CX_I3_PINNED_HR_FILE="$OUT/hr-fresh.json" ACCEPTANCE_OUT="$OUT/full-human-acceptance" node RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
+          PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" I3_CERTIFICATION_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" SOURCE_DIR="$SOURCE_DIR" CX_I3_PINNED_HR_FILE="$OUT/hr-fresh.json" CX_I3_PINNED_HR_REVISION="$PINNED_HR_REVISION" ACCEPTANCE_OUT="$OUT/full-human-acceptance" node RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
           test "$(jq -r '.decision' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "PASS_I3_HUMAN_LIVE_ACCEPTANCE"
           test "$(jq -r '.sourceRevision' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "$PINNED_HR_REVISION"
           test "$(jq -r '.decision' "$OUT/full-human-acceptance/i3-functional-probes.json")" = "PASS_I3_ATOMIC_FUNCTIONAL_PROBES"

@@ -157,3 +157,15 @@ El job live-fixtures terminó la ejecución y cleanup, pero no pudo materializar
 **Código:** `LIVE_FIXTURE_RESULT_SCOPE_ERROR`
 
 Corrección congelada: mover únicamente `hrRevision` al scope exterior del harness V4 y asignarla dentro del `try`. No cambia producto, workflow, HR, Auth, datos ni producción. El siguiente run debe demostrar físicamente 10/10, cleanup, artifact de live fixtures y Gate21.
+
+
+## 14. Run 274 — runtime HR cache window not pinned
+
+Run 274 (`35489834648`) mantuvo product source `815eecb2b5b01001bd1f6455bae622159f0ca3e5` / tree `32e04ac5e9631d94b42e421b083b6264df2964a9`. Steps 1–20 pasaron. Step21 falló por timeout exactamente en la espera de autoridad/datos HR de la UI, después de que Firebase y `backendAuth.context()` ya estaban autenticados.
+
+El runtime usa `CXORBIA_LIVE_HR_CACHE_MS=55000` por defecto. Step17 terminó ~04:45:46Z y Step21 comenzó ~04:48:05Z (~139 s después), fuera del TTL. El control-plane había pinneado el archivo HR, pero no la ventana del runtime vivo, por lo que el boot podía activar un refresh de fondo y dejar de estar garantizado sobre la misma revisión.
+
+**Observed:** `ENVIRONMENT_FAILURE:HUMAN_LANE_AUTHORITY_SETTLE_TIMEOUT`  
+**Structural:** `RELEASE_COMPOSITION_FAILURE:CERTIFICATION_HR_CACHE_WINDOW_NOT_PINNED`
+
+Corrección: en I3 DEV el mismo immutable image usa `CXORBIA_LIVE_HR_CACHE_MS=3600000`; Step17 sigue siendo el único `fresh=1`; Step21 exige `PINNED_HR_REVISION` con retry/diagnóstico acotado; Step23 exige la misma revisión en cada ruta y Admin. Manifest/live fixtures/Gate21 continúan sellando la misma revisión/hash. No cambia producto, no reimporta y no toca producción.
