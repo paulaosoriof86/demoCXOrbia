@@ -19,6 +19,7 @@ check('shopper_rerenders_on_authority_ready',shopper.includes('cx:protected-auth
 check('authority_sets_canonical_source',authority.includes("sourceRef='hr-live-all-periods+firestore-authenticated-exact-overlay'"));
 check('authority_replaces_runtime_with_hr',authority.includes('CX.data._visitas=clone(result.visits)')&&authority.includes('CX.data.shoppers=clone(result.shoppers)'));
 check('authority_emits_ready_event',authority.includes("cx:protected-auth-hr-authority-ready"));
+check('authority_does_not_force_provider_refresh',!/fresh\s*:\s*['"]1['"]/.test(authority),'authenticated protected boot must consume runtime authority without forcing a new external HR revision');
 
 const statusListensFinal=status.includes('cx:protected-auth-hr-authority-ready');
 const statusCallsProjects=/Proyectos:\s*['"+]?\+?c\.projects/.test(status)||status.includes('Proyectos: '+"'+c.projects+");
