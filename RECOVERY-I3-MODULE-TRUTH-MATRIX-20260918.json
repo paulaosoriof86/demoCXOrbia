@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.recovery.module-truth-matrix.v5",
-  "observedAt": "2026-09-19T23:04:01Z",
+  "observedAt": "2026-09-20T02:23:43Z",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
@@ -103,9 +103,9 @@
     }
   },
   "productSource": {
-    "sha": "6bcbc1df70c29c2ad3ad57ecfa906917e6372ace",
-    "treeSha": "fa044d1527ccad25508c709043eeda2a829bae2e",
-    "message": "fix(i3): expose project-scoped platform shoppers to authorized Admin"
+    "sha": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
+    "treeSha": "32e04ac5e9631d94b42e421b083b6264df2964a9",
+    "message": "fix(i3): reconcile live HR visit state before assignment"
   },
   "controlHeadAtConstruction": "751d01397bcd85903456e5cb78e3e5ce41161b17",
   "phaseAComplete": true,
@@ -383,8 +383,8 @@
         "app/adapters/cxorbia-legal-acceptance-provider-bridge-v1.js",
         "app/adapters/cxorbia-legal-runtime-http-v1.js"
       ],
-      "lastApprovedAuthority": "USER_DECISION_20260919_SINGLE_CANONICAL_SHOPPER_CREDENTIAL_OWNER",
-      "sourceCommit": "144c58e2125aba6e49deefe0ce23fa9d94259cdb",
+      "lastApprovedAuthority": "P0_PROVEN_RUN269_HR_VISIT_DURABLE_RECONCILIATION",
+      "sourceCommit": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
       "loadOrderEntrypoint": "app/index-backend-dev.html",
       "roles": [
         "Admin",
@@ -3441,18 +3441,18 @@
       "historicalApprovedBlob": null,
       "f9ApprovedSource": null,
       "f9ApprovedBlob": null,
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "add205ae203ca4626aff6824b480e8d9ca40cf30",
-      "currentBlob": "add205ae203ca4626aff6824b480e8d9ca40cf30",
+      "latestApprovedSource": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
+      "latestApprovedBlob": "3c8f0e91a64c9b981d920de69316335ee21dc98c",
+      "currentBlob": "3c8f0e91a64c9b981d920de69316335ee21dc98c",
       "loadTarget": "runtime-service",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "atomicDisposition": "FOCAL_FIX",
-      "latestApprovedAuthority": "P0_PROVEN_ATOMIC_RECOVERY_COMPOSITION_SOURCE__CERTIFICATION_REQUIRED",
-      "approvedSourceCommit": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "approvedBlob": "add205ae203ca4626aff6824b480e8d9ca40cf30",
-      "approvalAuthority": "P0_PROVEN_DURABLE_OPERATIONAL_PROVIDER",
-      "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
+      "latestApprovedAuthority": "P0_PROVEN_RUN269_HR_VISIT_DURABLE_RECONCILIATION",
+      "approvedSourceCommit": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
+      "approvedBlob": "3c8f0e91a64c9b981d920de69316335ee21dc98c",
+      "approvalAuthority": "P0_PROVEN_RUN269_HR_VISIT_DURABLE_RECONCILIATION",
+      "composedAtSource": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX"
     },
@@ -3895,19 +3895,19 @@
     "rule": "preserve; do not regress/rebuild; not an I3 requirement absent transversal P0"
   },
   "devCertification": {
-    "status": "RUN267_CERTIFY_PASS_CONTROL_PLANE_ROOTCAUSE_FROZEN_PENDING_FINAL_SAME_RUN",
+    "status": "RUN269_CERTIFY_PASS_8_OF_10_LIVE_P0_PROVEN_PENDING_RECERTIFICATION",
     "priorRunId": "35456396448",
     "priorRunNumber": 238,
     "priorServedSourceSha": "751d01397bcd85903456e5cb78e3e5ce41161b17",
     "priorArtifactSha256": "bc340a7c30657e4326b3dfa306bff5cbb016ce37abaaece0edf3f5adc91d9a16",
-    "candidateSourceSha": "6bcbc1df70c29c2ad3ad57ecfa906917e6372ace",
-    "candidateSourceTree": "fa044d1527ccad25508c709043eeda2a829bae2e",
+    "candidateSourceSha": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
+    "candidateSourceTree": "32e04ac5e9631d94b42e421b083b6264df2964a9",
     "buildCountPlanned": 1,
     "rebuildAfterCertification": false,
     "production": false,
-    "liveFixtureClosure": "PENDING_DETERMINISTIC_V3_10_OF_10",
-    "lastSuccessfulCertifyRunId": "35477665206",
-    "lastSuccessfulCertifyRunNumber": 267
+    "liveFixtureClosure": "PENDING_AFTER_P0_HR_VISIT_RECONCILIATION",
+    "lastSuccessfulCertifyRunId": "35482104368",
+    "lastSuccessfulCertifyRunNumber": 269
   },
   "invariants": {
     "singleCandidate": true,
@@ -4092,9 +4092,9 @@
   },
   "continuityCheckpoint": {
     "iteration": "I3",
-    "status": "HOLD_DEEP_FORENSIC_ROOTCAUSE_FROZEN_PENDING_SINGLE_CONTROL_PLANE_CLOSURE",
-    "exactProductSourceSha": "6bcbc1df70c29c2ad3ad57ecfa906917e6372ace",
-    "exactProductSourceTree": "fa044d1527ccad25508c709043eeda2a829bae2e",
+    "status": "HOLD_P0_PROVEN_HR_VISIT_DURABLE_RECONCILIATION_PENDING_SINGLE_RECERTIFICATION",
+    "exactProductSourceSha": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
+    "exactProductSourceTree": "32e04ac5e9631d94b42e421b083b6264df2964a9",
     "noReprocess": [
       "I0",
       "I1",
@@ -4135,17 +4135,17 @@
       "acceptance imports provider function instead of reimplementing credentials",
       "stale v1 tests updated to the explicitly approved v2 contract"
     ],
-    "nextExactAction": "Certify source 6bcbc1df70c29c2ad3ad57ecfa906917e6372ace once; after certify succeeds, run same-run 10-case live fixtures against its exact artifact; require 10/10 + cleanup; only then Gate21 against that same artifact.",
+    "nextExactAction": "Certify source 815eecb2b5b01001bd1f6455bae622159f0ca3e5 / tree 32e04ac5e9631d94b42e421b083b6264df2964a9 once; require full acceptance, Gate20, one artifact, live fixtures 10/10 + cleanup, then Gate21 same-run. No product change unless a new reproducible P0 is proven.",
     "production": "DO_NOT_TOUCH",
     "rootCauseRun233": "Static/unit gates exposed stale v1 browser credential implementations and stale expectations before DEV deploy.",
     "lastRun": {
-      "runNumber": 267,
-      "runId": "35477665206",
-      "result": "HOLD_CERTIFY_PASS_LIVE_FIXTURE_PREFLIGHT_CONTROL_FAILURE",
-      "code": "RELEASE_COMPOSITION_FAILURE:I3_CONTROL_PLANE_MULTI_AUTHORITY_AND_RUNTIME_TEST_RECOMPOSITION",
-      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "runNumber": 269,
+      "runId": "35482104368",
+      "result": "HOLD_CERTIFY_PASS_LIVE_FIXTURES_8_OF_10",
+      "code": "PERSISTENCE_FAILURE:HR_VISIT_STATE_NOT_RECONCILED_TO_DURABLE_READBACK",
+      "classification": "PERSISTENCE_FAILURE",
       "certify": "PASS_STEPS_1_27",
-      "liveFixtures": "NOT_EXECUTED_PREFLIGHT_FAIL",
+      "liveFixtures": "8_OF_10_PASS_CLEANUP_TRUE",
       "gate21": "SKIPPED"
     },
     "rootCauseRun235": "Cloud Run revision could not start because cxorbia-shopper-command-provider-v1.mjs imports ../../app/core/shopper-credential-rule.js but the runtime Dockerfile did not COPY that shared owner into the image.",
@@ -4164,7 +4164,7 @@
     "fixRun236": "For a Shopper, pre-HR readiness now requires authenticated Firebase principal rather than pre-existing exact Firestore profile. Auth+tenant+project authorization remains required by reconcile() and is reverified server-side. After composition, __sessionShopperProfile falls back to the exact canonical shopper from result.shoppers/identityMap.",
     "rootCauseRun237": "app.js intercepted the Shopper role button in DEV with pickShopperDev(), an explicitly non-auth legacy validation picker, before backend-browser-auth could select the protected Firebase shopper namespace. This produced selectedRole='', no Firebase user, no context, and no credential error.",
     "fixRun237": "When protected Firebase DEV auth is enabled, Shopper role now always follows selectRole('shopper') -> backend-browser-auth -> Firebase. Legacy pickShopperDev remains only for non-protected DEV access.",
-    "p0Owner": "app/adapters/tya-cumulative-read-model-v2.js"
+    "p0Owner": "backend/runtime/cxorbia-operational-command-provider-v1.mjs"
   },
   "liveFixtureForensic": {
     "auditId": "CXORBIA-I3-LIVE-FIXTURE-FORENSIC-20260919",
@@ -4261,8 +4261,8 @@
     "frozenAddendum": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-19_I3_DEEP_FORENSIC_ROOTCAUSE_FROZEN.md",
     "classification": "RELEASE_COMPOSITION_FAILURE",
     "code": "I3_CONTROL_PLANE_MULTI_AUTHORITY_AND_RUNTIME_TEST_RECOMPOSITION",
-    "productSourceSha": "6bcbc1df70c29c2ad3ad57ecfa906917e6372ace",
-    "productSourceTree": "fa044d1527ccad25508c709043eeda2a829bae2e",
+    "productSourceSha": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
+    "productSourceTree": "32e04ac5e9631d94b42e421b083b6264df2964a9",
     "productDrift": false,
     "run267CertifyPassed": true,
     "structuralClosure": [
@@ -4273,6 +4273,34 @@
       "credential rule version derived from canonical evidence",
       "Gate21 binds same-run live fixture evidence hash and 10/10 closure",
       "single causal assertion failure; cleanup remains always"
+    ],
+    "production": "DO_NOT_TOUCH",
+    "run269ReleaseCompositionSynchronized": true,
+    "run269RuntimeDataP0": "PERSISTENCE_FAILURE:HR_VISIT_STATE_NOT_RECONCILED_TO_DURABLE_READBACK"
+  },
+  "run269VisitReconciliationP0": {
+    "classification": "PERSISTENCE_FAILURE",
+    "code": "HR_VISIT_STATE_NOT_RECONCILED_TO_DURABLE_READBACK",
+    "runId": "35482104368",
+    "runNumber": 269,
+    "certifiedSourceSha": "6bcbc1df70c29c2ad3ad57ecfa906917e6372ace",
+    "certifiedSourceTree": "fa044d1527ccad25508c709043eeda2a829bae2e",
+    "liveFixturesPassed": 8,
+    "liveFixturesTotal": 10,
+    "failingCode": "ENVIRONMENT_FAILURE:ASSIGNMENT_VISIT_NOT_AVAILABLE_AT_READBACK",
+    "releaseDesynchronization": false,
+    "rootCause": "Existing durable visit documents were not reconciling current HR operational state fields (estado/status/shopperId/assignmentSource/assignmentSyncStatus/canonicalFacets); reconciliation only refreshed period/revision metadata.",
+    "exactOwner": "backend/runtime/cxorbia-operational-command-provider-v1.mjs",
+    "regressionTest": "backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs",
+    "localRegression": "9/9 PASS",
+    "correctionSourceSha": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
+    "correctionSourceTree": "32e04ac5e9631d94b42e421b083b6264df2964a9",
+    "correctionProviderBlob": "3c8f0e91a64c9b981d920de69316335ee21dc98c",
+    "guarantees": [
+      "existing durable visit state follows current HR operational authority",
+      "same-revision stale durable rows are repaired",
+      "platform pending assignment is preserved until HR reflects or conflicts",
+      "visit assignment paths reject non-available durable visits fail-closed"
     ],
     "production": "DO_NOT_TOUCH"
   }

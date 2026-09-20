@@ -73,3 +73,32 @@ Run 268 (35479768269) cerró certify completo en SUCCESS: Steps 1–27, aceptaci
 El primer causal fue MAPPING_FAILURE del helper visible Shopper: exigía firebase.auth().currentUser.uid === shopperId operacional. La candidata congelada demuestra que son namespaces distintos: stableShopperUid(tenantId,shopperId) produce uid cx-sh-<hash>, mientras canonicalClaims conserva shopperId como claim operacional. El diagnóstico de Run 268 mostró Firebase user presente, backend context authenticated=true, role=shopper, tenant=tya, shopperId correcto y HR authority aplicada, pero firebaseUidMatches=false.
 
 Corrección congelada: visible Shopper debe probar credenciales por login real fresco y validar principal mediante Firebase user presente + token claims role/tenant/project/shopperId + backendAuth.context + HR authority. Queda prohibido volver a asumir uid === shopperId. El UID exacto sólo es válido cuando el contrato específico define el principal técnico, como custom-token staff/client.
+
+
+## 10. Run 269 — P0 HR→durable visit reconciliation
+
+Run 269 (`35482104368`) demuestra que la composición de release NO está desincronizada: source/tree/control/artifact/Hosting/matrix están alineados, full human acceptance PASS y Gate20 PASS. Live fixtures alcanzó 8/10 con cleanup=true, build=0, deploy=0, production=false.
+
+El primer causal restante fue `ENVIRONMENT_FAILURE:ASSIGNMENT_VISIT_NOT_AVAILABLE_AT_READBACK`. La inspección del source certificado demostró un P0 real distinto del control-plane:
+
+**Clasificación:** `PERSISTENCE_FAILURE`  
+**Código:** `HR_VISIT_STATE_NOT_RECONCILED_TO_DURABLE_READBACK`  
+**Owner:** `backend/runtime/cxorbia-operational-command-provider-v1.mjs`
+
+`reconcileAuthoritativeVisits()` refrescaba el snapshot HR, pero `reconcileVisitDoc()` para visitas ya existentes sólo actualizaba period/revision metadata. No reconciliaba `estado/status/shopperId/assignmentSource/assignmentSyncStatus/canonicalFacets`. Por tanto HR podía declarar una visita elegible/no asignada mientras Firestore durable conservaba un estado operacional anterior.
+
+### Corrección P0 congelada
+Nueva product source: `815eecb2b5b01001bd1f6455bae622159f0ca3e5`  
+Tree: `32e04ac5e9631d94b42e421b083b6264df2964a9`  
+Provider blob: `3c8f0e91a64c9b981d920de69316335ee21dc98c`
+
+La corrección:
+1. reconcilia el estado operacional durable con la autoridad HR incluso si el sourceRevision ya coincide;
+2. preserva asignaciones platform `pending_hr` mientras HR siga sin asignación;
+3. al reflejar HR el mismo shopper, marca la sincronización como `synced`;
+4. mantiene conflicto fail-closed si HR refleja otro shopper;
+5. bloquea `visit.assign`, aprobación de postulación y cruce de reserva cuando una visita durable no está disponible.
+
+Regresión exacta: `backend/runtime/hr-live-service/test/cxorbia-gate7-operational-assignment.test.mjs` = 9/9 PASS, incluyendo transición HR entre revisiones, reparación stale same-revision, preservación pending_hr y rechazo de asignación stale.
+
+No hubo reimport, reconstrucción de módulo, nueva rama, nuevo Firebase ni cambio de producción.
