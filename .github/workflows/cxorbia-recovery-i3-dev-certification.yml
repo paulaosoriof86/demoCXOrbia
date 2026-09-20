@@ -36,8 +36,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  I3_CERTIFICATION_SOURCE_SHA: f5d7113547df0c69d5d49bad3951dbd793684788
-  I3_CERTIFICATION_SOURCE_TREE: 804b7e5998bd2c6c786f8f81d7a05bb0a8068034
+  I3_CERTIFICATION_SOURCE_SHA: 16d1bc8649f358f72d9576d6e4c20bfa6b833272
+  I3_CERTIFICATION_SOURCE_TREE: 74bec1dbb83681e94b17320ea3756fa926bbb912
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -182,6 +182,7 @@ jobs:
           grep -q "hr_exact_crosswalk_precedes_historical_identity_link" app/adapters/cxorbia-provider-identity-link-runtime-v1.js
           grep -q "protectedState:'1'" app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
           ! grep -Fq "fresh:'1'" app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
+          ! grep -Fq "fresh:'1'" app/adapters/tya-live-source-refresh-watch-v2.js
           grep -Fq "if(cache?.origin==='build_bootstrap')return inFlight||refreshSnapshot();" backend/runtime/hr-live-service/server.mjs
           node --check app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
           node --check backend/runtime/hr-live-service/server.mjs

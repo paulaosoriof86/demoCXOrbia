@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.recovery.module-truth-matrix.v5",
-  "observedAt": "2026-09-20T05:30:00Z",
+  "observedAt": "2026-09-20T05:45:00Z",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
@@ -103,9 +103,9 @@
     }
   },
   "productSource": {
-    "sha": "f5d7113547df0c69d5d49bad3951dbd793684788",
-    "treeSha": "804b7e5998bd2c6c786f8f81d7a05bb0a8068034",
-    "message": "fix(i3): refresh live HR before serving bootstrap"
+    "sha": "16d1bc8649f358f72d9576d6e4c20bfa6b833272",
+    "treeSha": "74bec1dbb83681e94b17320ea3756fa926bbb912",
+    "message": "fix(i3): make runtime sole HR refresh authority"
   },
   "controlHeadAtConstruction": "751d01397bcd85903456e5cb78e3e5ce41161b17",
   "phaseAComplete": true,
@@ -186,8 +186,8 @@
         "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
         "backend/contracts/tya-hr-column-map-r20-v1.json"
       ],
-      "lastApprovedAuthority": "P0_PROVEN_RUN276_PROTECTED_BOOT_HR_REVISION_CHURN_ROOT_FIX",
-      "sourceCommit": "f5d7113547df0c69d5d49bad3951dbd793684788",
+      "lastApprovedAuthority": "P0_PROVEN_RUN277_BROWSER_WATCHER_REFRESH_CHURN_ROOT_FIX",
+      "sourceCommit": "16d1bc8649f358f72d9576d6e4c20bfa6b833272",
       "loadOrderEntrypoint": "app/index-backend-dev.html",
       "roles": [
         "Admin",
@@ -1187,23 +1187,23 @@
       "historicalApprovedBlob": "0320fb7c1769ef11761e3fa5d107bfe47402b30c",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "4f10c7cf1e2bbd665c7723b7edf2dd43991474ec",
-      "latestApprovedSource": "8ae9492acd887d7cc156fdcd8c9845793f77aa5c",
-      "latestApprovedBlob": "c83e455ed50fa23552abaf1a9ecd16d81903d12b",
-      "currentBlob": "c83e455ed50fa23552abaf1a9ecd16d81903d12b",
+      "latestApprovedSource": "16d1bc8649f358f72d9576d6e4c20bfa6b833272",
+      "latestApprovedBlob": "b85085756dfa1ef7c79f6f6ff34892677ce41000",
+      "currentBlob": "b85085756dfa1ef7c79f6f6ff34892677ce41000",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "4f10c7cf1e2bbd665c7723b7edf2dd43991474ec",
-      "latestApprovedAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): make project source routing explicit and multi-project safe; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
+      "latestApprovedAuthority": "P0_PROVEN_RUN277_BROWSER_WATCHER_NO_FORCED_REFRESH",
       "loadOrder": 39,
-      "atomicDisposition": "KEEP",
-      "approvedSourceCommit": "f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "approvedBlob": "c83e455ed50fa23552abaf1a9ecd16d81903d12b",
-      "approvalAuthority": "POST_TERMINAL_RECOVERY_SUCCESSOR: fix(i3): make project source routing explicit and multi-project safe; composed in f836f38dc0ce3a48034ed8968220d5dece9d6629",
-      "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
+      "atomicDisposition": "FOCAL_FIX",
+      "approvedSourceCommit": "16d1bc8649f358f72d9576d6e4c20bfa6b833272",
+      "approvedBlob": "b85085756dfa1ef7c79f6f6ff34892677ce41000",
+      "approvalAuthority": "P0_PROVEN_RUN277_BROWSER_WATCHER_NO_FORCED_REFRESH",
+      "composedAtSource": "16d1bc8649f358f72d9576d6e4c20bfa6b833272",
       "provenanceIndependent": true,
-      "approvalDisposition": "KEEP"
+      "approvalDisposition": "FOCAL_FIX"
     },
     {
       "path": "app/adapters/cxorbia-exact-identity-contract-v1.js",
@@ -3895,17 +3895,17 @@
     "rule": "preserve; do not regress/rebuild; not an I3 requirement absent transversal P0"
   },
   "devCertification": {
-    "status": "RUN276_P0_PROVEN_PROTECTED_BOOT_REFRESH_CHURN_FIXED_PENDING_RECERTIFICATION",
+    "status": "RUN277_P0_PROVEN_BROWSER_WATCHER_REFRESH_CHURN_FIXED_PENDING_RECERTIFICATION",
     "priorRunId": "35456396448",
     "priorRunNumber": 238,
     "priorServedSourceSha": "751d01397bcd85903456e5cb78e3e5ce41161b17",
     "priorArtifactSha256": "bc340a7c30657e4326b3dfa306bff5cbb016ce37abaaece0edf3f5adc91d9a16",
-    "candidateSourceSha": "f5d7113547df0c69d5d49bad3951dbd793684788",
-    "candidateSourceTree": "804b7e5998bd2c6c786f8f81d7a05bb0a8068034",
+    "candidateSourceSha": "16d1bc8649f358f72d9576d6e4c20bfa6b833272",
+    "candidateSourceTree": "74bec1dbb83681e94b17320ea3756fa926bbb912",
     "buildCountPlanned": 1,
     "rebuildAfterCertification": false,
     "production": false,
-    "liveFixtureClosure": "PENDING_AFTER_P0_PROTECTED_BOOT_HR_REVISION_FIX",
+    "liveFixtureClosure": "PENDING_AFTER_RUN277_BROWSER_WATCHER_REFRESH_FIX",
     "lastSuccessfulCertifyRunId": "35482104368",
     "lastSuccessfulCertifyRunNumber": 269
   },
@@ -3930,7 +3930,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "Run one canonical same-run I3 closure on unchanged product source after static control-plane readback: certify -> exhaustive acceptance -> Gate20 -> one artifact -> deterministic live fixtures 10/10 + cleanup -> Gate21.",
+  "nextExactAction": "Recertify exactly product source 16d1bc8649f358f72d9576d6e4c20bfa6b833272 / tree 74bec1dbb83681e94b17320ea3756fa926bbb912. Require single external fresh authority at Step17, Step21 and Step23 exact same pinned HR revision, Gate20 PASS, one artifact, live fixtures 10/10 cleanup, then Gate21 same manifest/artifact/revision. Do not reopen general HR/Auth.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -4092,9 +4092,9 @@
   },
   "continuityCheckpoint": {
     "iteration": "I3",
-    "status": "HOLD_RUN276_P0_PROVEN_PROTECTED_BOOT_FORCED_REFRESH_FIXED_PENDING_RECERTIFICATION",
-    "exactProductSourceSha": "f5d7113547df0c69d5d49bad3951dbd793684788",
-    "exactProductSourceTree": "804b7e5998bd2c6c786f8f81d7a05bb0a8068034",
+    "status": "HOLD_RUN277_P0_PROVEN_BROWSER_WATCHER_FORCED_REFRESH_FIXED_PENDING_RECERTIFICATION",
+    "exactProductSourceSha": "16d1bc8649f358f72d9576d6e4c20bfa6b833272",
+    "exactProductSourceTree": "74bec1dbb83681e94b17320ea3756fa926bbb912",
     "noReprocess": [
       "I0",
       "I1",
@@ -4135,16 +4135,16 @@
       "acceptance imports provider function instead of reimplementing credentials",
       "stale v1 tests updated to the explicitly approved v2 contract"
     ],
-    "nextExactAction": "Recertify exactly product source f5d7113547df0c69d5d49bad3951dbd793684788 / tree 804b7e5998bd2c6c786f8f81d7a05bb0a8068034. Require Step6 P0 source gates, single fresh Step17, Step21/23 exact same HR revision, live fixtures 10/10 cleanup, then Gate21. Do not patch Auth/HR mapping unless a new reproducible P0 appears.",
+    "nextExactAction": "Recertify exactly product source 16d1bc8649f358f72d9576d6e4c20bfa6b833272 / tree 74bec1dbb83681e94b17320ea3756fa926bbb912. Require single external fresh authority at Step17, Step21 and Step23 exact same pinned HR revision, Gate20 PASS, one artifact, live fixtures 10/10 cleanup, then Gate21 same manifest/artifact/revision. Do not reopen general HR/Auth.",
     "production": "DO_NOT_TOUCH",
     "rootCauseRun233": "Static/unit gates exposed stale v1 browser credential implementations and stale expectations before DEV deploy.",
     "lastRun": {
-      "runNumber": 276,
-      "runId": "35491084832",
-      "result": "HOLD_CERTIFY_STEP21_FORCED_REFRESH_REVISION_CHURN",
-      "code": "FUNCTIONAL_DEFECT:PROTECTED_AUTH_BRIDGE_FORCES_HR_REFRESH",
-      "classification": "FUNCTIONAL_DEFECT",
-      "certify": "FAIL_STEP21",
+      "runNumber": 277,
+      "runId": "35491841485",
+      "result": "HOLD_CERTIFY_STEP23_ADMIN_HR_REVISION_MISMATCH",
+      "code": "RELEASE_COMPOSITION_FAILURE:ADMIN_HR_REVISION_MISMATCH",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "certify": "FAIL_STEP23",
       "liveFixtures": "NOT_RUN",
       "gate21": "SKIPPED"
     },
@@ -4164,7 +4164,7 @@
     "fixRun236": "For a Shopper, pre-HR readiness now requires authenticated Firebase principal rather than pre-existing exact Firestore profile. Auth+tenant+project authorization remains required by reconcile() and is reverified server-side. After composition, __sessionShopperProfile falls back to the exact canonical shopper from result.shoppers/identityMap.",
     "rootCauseRun237": "app.js intercepted the Shopper role button in DEV with pickShopperDev(), an explicitly non-auth legacy validation picker, before backend-browser-auth could select the protected Firebase shopper namespace. This produced selectedRole='', no Firebase user, no context, and no credential error.",
     "fixRun237": "When protected Firebase DEV auth is enabled, Shopper role now always follows selectRole('shopper') -> backend-browser-auth -> Firebase. Legacy pickShopperDev remains only for non-protected DEV access.",
-    "p0Owner": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js + backend/runtime/hr-live-service/server.mjs"
+    "p0Owner": "app/adapters/tya-live-source-refresh-watch-v2.js::check + tools/qa/cxorbia-p0-shopper-hr-authority-source-gate.mjs"
   },
   "liveFixtureForensic": {
     "auditId": "CXORBIA-I3-LIVE-FIXTURE-FORENSIC-20260919",
@@ -4484,6 +4484,32 @@
       "bridgeRegressionGate": "tools/qa/cxorbia-p0-shopper-hr-authority-source-gate.mjs",
       "bootstrapRegressionGate": "tools/qa/tya-live-hr-authority-contract.mjs + Step6 static guard",
       "singleFreshAuthority": "Step17",
+      "productChange": true
+    },
+    "production": "DO_NOT_TOUCH"
+  },
+  "run277BrowserWatcherRefreshP0": {
+    "classification": "FUNCTIONAL_DEFECT",
+    "code": "BROWSER_LIVE_WATCHER_FORCES_HR_REFRESH",
+    "runId": "35491841485",
+    "runNumber": 277,
+    "beforeProductSourceSha": "f5d7113547df0c69d5d49bad3951dbd793684788",
+    "correctedProductSourceSha": "16d1bc8649f358f72d9576d6e4c20bfa6b833272",
+    "correctedProductSourceTree": "74bec1dbb83681e94b17320ea3756fa926bbb912",
+    "observedFailure": "RELEASE_COMPOSITION_FAILURE:ADMIN_HR_REVISION_MISMATCH",
+    "evidence": {
+      "pinnedHrRevision": "7451f66478afb5d0d7645e5d27f3a6a84c81ef0606719879af90ae615860ef01",
+      "step21ExactPinnedRevisionPass": true,
+      "step23Failure": "ADMIN_HR_REVISION_MISMATCH",
+      "activeOwner": "app/adapters/tya-live-source-refresh-watch-v2.js::check",
+      "activeEntrypoint": "app/index-backend-dev.html",
+      "before": "getJson('meta',{fresh:'1'}) on canonical_authority_ready/focus/visibility/load/poll every 20s",
+      "after": "getJson('meta') consumes runtime cache authority; runtime owns external refresh cadence"
+    },
+    "correction": {
+      "browserForcedFreshRemoved": true,
+      "runtimeRefreshAuthorityOnly": true,
+      "regressionGate": "tools/qa/cxorbia-p0-shopper-hr-authority-source-gate.mjs + Step6 static guard",
       "productChange": true
     },
     "production": "DO_NOT_TOUCH"
