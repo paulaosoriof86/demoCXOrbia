@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.recovery.module-truth-matrix.v5",
-  "observedAt": "2026-09-20T07:05:00Z",
+  "observedAt": "2026-09-20T07:24:00Z",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
@@ -103,9 +103,9 @@
     }
   },
   "productSource": {
-    "sha": "23a2b3b076a585cad7da3a4c50dfe9d4e3192995",
-    "treeSha": "f02852474cd5dd2c7b9f77f8495918bc622c7a7f",
-    "message": "fix(i3): converge Admin read model after Firestore ready"
+    "sha": "2ca71bac1fe66b7cdc28ea99b106e7e99010f048",
+    "treeSha": "8425d3c07bc78fad23eaf75dc30f93835cf53c8f",
+    "message": "fix(i3): bind Admin composition to authorized Firestore snapshot"
   },
   "controlHeadAtConstruction": "751d01397bcd85903456e5cb78e3e5ce41161b17",
   "phaseAComplete": true,
@@ -120,8 +120,8 @@
         "app/core/backend-firebase.js",
         "app/core/backend-protected-dev-mode.js"
       ],
-      "lastApprovedAuthority": "RUN199_V5_LIVE_HR_VISIT_ID_EQUALS_FIRESTORE_DOCID",
-      "sourceCommit": "829afe0c98da6d44b10a8dfa92be233dbedebb6b",
+      "lastApprovedAuthority": "P0_PROVEN_RUN282_AUTHORIZED_FIRESTORE_SNAPSHOT_HANDOFF",
+      "sourceCommit": "2ca71bac1fe66b7cdc28ea99b106e7e99010f048",
       "loadOrderEntrypoint": "app/index-backend-dev.html",
       "roles": [
         "Admin",
@@ -186,8 +186,8 @@
         "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
         "backend/contracts/tya-hr-column-map-r20-v1.json"
       ],
-      "lastApprovedAuthority": "P0_PROVEN_RUN281_ADMIN_READMODEL_CONVERGENCE_ROOT_FIX",
-      "sourceCommit": "23a2b3b076a585cad7da3a4c50dfe9d4e3192995",
+      "lastApprovedAuthority": "P0_PROVEN_RUN282_AUTHORIZED_FIRESTORE_SNAPSHOT_HANDOFF",
+      "sourceCommit": "2ca71bac1fe66b7cdc28ea99b106e7e99010f048",
       "loadOrderEntrypoint": "app/index-backend-dev.html",
       "roles": [
         "Admin",
@@ -1568,19 +1568,19 @@
       "historicalApprovedBlob": null,
       "f9ApprovedSource": null,
       "f9ApprovedBlob": null,
-      "latestApprovedSource": "829afe0c98da6d44b10a8dfa92be233dbedebb6b",
-      "latestApprovedBlob": "4a1b16787855a7da537a84941cf706ad76850b97",
-      "currentBlob": "4a1b16787855a7da537a84941cf706ad76850b97",
+      "latestApprovedSource": "2ca71bac1fe66b7cdc28ea99b106e7e99010f048",
+      "latestApprovedBlob": "96f27331534b4e563d75a83c84f18b0065b50738",
+      "currentBlob": "96f27331534b4e563d75a83c84f18b0065b50738",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "loadOrder": 56,
       "atomicDisposition": "FOCAL_FIX",
-      "latestApprovedAuthority": "RUN199_V5_LIVE_HR_VISIT_ID_EQUALS_FIRESTORE_DOCID",
-      "approvedSourceCommit": "829afe0c98da6d44b10a8dfa92be233dbedebb6b",
-      "approvedBlob": "4a1b16787855a7da537a84941cf706ad76850b97",
-      "approvalAuthority": "P0_PROVEN_LIVE_HR_DURABLE_AUTHORITY_LAYER",
-      "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
+      "latestApprovedAuthority": "P0_PROVEN_RUN282_AUTHORIZED_FIRESTORE_SNAPSHOT_HANDOFF",
+      "approvedSourceCommit": "2ca71bac1fe66b7cdc28ea99b106e7e99010f048",
+      "approvedBlob": "96f27331534b4e563d75a83c84f18b0065b50738",
+      "approvalAuthority": "P0_PROVEN_RUN282_AUTHORIZED_FIRESTORE_SNAPSHOT_HANDOFF",
+      "composedAtSource": "2ca71bac1fe66b7cdc28ea99b106e7e99010f048",
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX"
     },
@@ -1591,21 +1591,21 @@
       "historicalApprovedBlob": "4ff03ce4a4ab3cc680be32cc71f32d406cdb9307",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "4ff03ce4a4ab3cc680be32cc71f32d406cdb9307",
-      "latestApprovedSource": "23a2b3b076a585cad7da3a4c50dfe9d4e3192995",
-      "latestApprovedBlob": "7f4a7181c0d01238e1cbbe63606ba5df8db506c2",
-      "currentBlob": "7f4a7181c0d01238e1cbbe63606ba5df8db506c2",
+      "latestApprovedSource": "2ca71bac1fe66b7cdc28ea99b106e7e99010f048",
+      "latestApprovedBlob": "e1a2a2a561985d6d0f62a3a6c9c11476ebf78709",
+      "currentBlob": "e1a2a2a561985d6d0f62a3a6c9c11476ebf78709",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "090d01dc4913112a68d39f6c1547e6556458384d",
-      "latestApprovedAuthority": "P0_PROVEN_RUN281_ADMIN_READMODEL_CONVERGENCE_ROOT_FIX",
+      "latestApprovedAuthority": "P0_PROVEN_RUN282_AUTHORIZED_FIRESTORE_SNAPSHOT_HANDOFF",
       "loadOrder": 57,
       "atomicDisposition": "FOCAL_FIX",
-      "approvedSourceCommit": "23a2b3b076a585cad7da3a4c50dfe9d4e3192995",
-      "approvedBlob": "7f4a7181c0d01238e1cbbe63606ba5df8db506c2",
-      "approvalAuthority": "P0_PROVEN_RUN281_ADMIN_READMODEL_CONVERGENCE_ROOT_FIX",
-      "composedAtSource": "23a2b3b076a585cad7da3a4c50dfe9d4e3192995",
+      "approvedSourceCommit": "2ca71bac1fe66b7cdc28ea99b106e7e99010f048",
+      "approvedBlob": "e1a2a2a561985d6d0f62a3a6c9c11476ebf78709",
+      "approvalAuthority": "P0_PROVEN_RUN282_AUTHORIZED_FIRESTORE_SNAPSHOT_HANDOFF",
+      "composedAtSource": "2ca71bac1fe66b7cdc28ea99b106e7e99010f048",
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX"
     },
@@ -3930,7 +3930,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "Recertify exactly product source 23a2b3b076a585cad7da3a4c50dfe9d4e3192995 / tree f02852474cd5dd2c7b9f77f8495918bc622c7a7f. Require Step21/23 same HR revision, Gate20 PASS, one artifact, live fixtures 10/10 cleanup=true build=0 deploy=0 production=false, then Gate21 same artifact/manifest/HR revision. No further product change unless first physical causal proves another P0.",
+  "nextExactAction": "Recertify exactly product source 2ca71bac1fe66b7cdc28ea99b106e7e99010f048 / tree 8425d3c07bc78fad23eaf75dc30f93835cf53c8f. Require Step21/23 same HR revision, Gate20 PASS, one artifact, live fixtures 10/10 cleanup=true build=0 deploy=0 production=false, Gate21 same artifact/manifest/revision. If Admin still fails, use admin.probe + finalPresentation evidence; no new broad audit.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -4092,9 +4092,9 @@
   },
   "continuityCheckpoint": {
     "iteration": "I3",
-    "status": "HOLD_RUN281_P0_PROVEN_ADMIN_READMODEL_CONVERGENCE_FIXED_PENDING_RECERTIFICATION",
-    "exactProductSourceSha": "23a2b3b076a585cad7da3a4c50dfe9d4e3192995",
-    "exactProductSourceTree": "f02852474cd5dd2c7b9f77f8495918bc622c7a7f",
+    "status": "HOLD_RUN282_P0_PROVEN_AUTHORIZED_FIRESTORE_SNAPSHOT_HANDOFF_FIXED_PENDING_RECERTIFICATION",
+    "exactProductSourceSha": "2ca71bac1fe66b7cdc28ea99b106e7e99010f048",
+    "exactProductSourceTree": "8425d3c07bc78fad23eaf75dc30f93835cf53c8f",
     "noReprocess": [
       "I0",
       "I1",
@@ -4135,12 +4135,12 @@
       "acceptance imports provider function instead of reimplementing credentials",
       "stale v1 tests updated to the explicitly approved v2 contract"
     ],
-    "nextExactAction": "Recertify exactly product source 23a2b3b076a585cad7da3a4c50dfe9d4e3192995 / tree f02852474cd5dd2c7b9f77f8495918bc622c7a7f. Require Step21/23 same HR revision, Gate20 PASS, one artifact, live fixtures 10/10 cleanup=true build=0 deploy=0 production=false, then Gate21 same artifact/manifest/HR revision. No further product change unless first physical causal proves another P0.",
+    "nextExactAction": "Recertify exactly product source 2ca71bac1fe66b7cdc28ea99b106e7e99010f048 / tree 8425d3c07bc78fad23eaf75dc30f93835cf53c8f. Require Step21/23 same HR revision, Gate20 PASS, one artifact, live fixtures 10/10 cleanup=true build=0 deploy=0 production=false, Gate21 same artifact/manifest/revision. If Admin still fails, use admin.probe + finalPresentation evidence; no new broad audit.",
     "production": "DO_NOT_TOUCH",
     "rootCauseRun233": "Static/unit gates exposed stale v1 browser credential implementations and stale expectations before DEV deploy.",
     "lastRun": {
-      "runNumber": 281,
-      "runId": "35495187331",
+      "runNumber": 282,
+      "runId": "35495945752",
       "result": "HOLD_LIVE_FIXTURE_ADMIN_REQUIRES_EXPLICIT_BACKEND_REFRESH",
       "code": "FUNCTIONAL_DEFECT:ADMIN_FIXTURE_REQUIRES_EXPLICIT_BACKEND_REFRESH",
       "classification": "FUNCTIONAL_DEFECT",
@@ -4164,7 +4164,7 @@
     "fixRun236": "For a Shopper, pre-HR readiness now requires authenticated Firebase principal rather than pre-existing exact Firestore profile. Auth+tenant+project authorization remains required by reconcile() and is reverified server-side. After composition, __sessionShopperProfile falls back to the exact canonical shopper from result.shoppers/identityMap.",
     "rootCauseRun237": "app.js intercepted the Shopper role button in DEV with pickShopperDev(), an explicitly non-auth legacy validation picker, before backend-browser-auth could select the protected Firebase shopper namespace. This produced selectedRole='', no Firebase user, no context, and no credential error.",
     "fixRun237": "When protected Firebase DEV auth is enabled, Shopper role now always follows selectRole('shopper') -> backend-browser-auth -> Firebase. Legacy pickShopperDev remains only for non-protected DEV access.",
-    "p0Owner": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js::reconcile + backend-ready binding"
+    "p0Owner": "app/core/backend-firebase.js::publishAuthorizedState + app/adapters/tya-protected-auth-hr-authority-bridge-v2.js::captureAuthorizedBackend/applyComposition"
   },
   "liveFixtureForensic": {
     "auditId": "CXORBIA-I3-LIVE-FIXTURE-FORENSIC-20260919",
@@ -4623,6 +4623,38 @@
       "capture newest Firestore state immediately on backend-ready before HR recomposition",
       "preserve bootForce and retry when reconcile is already in progress",
       "static regression gate in cxorbia-p0-shopper-hr-authority-source-gate.mjs"
+    ],
+    "production": "DO_NOT_TOUCH"
+  },
+  "run282AuthorizedFirestoreSnapshotP0": {
+    "classification": "FUNCTIONAL_DEFECT",
+    "code": "ADMIN_FIXTURE_REQUIRES_EXPLICIT_BACKEND_REFRESH",
+    "runId": "35495945752",
+    "runNumber": 282,
+    "beforeProductSourceSha": "23a2b3b076a585cad7da3a4c50dfe9d4e3192995",
+    "correctedProductSourceSha": "2ca71bac1fe66b7cdc28ea99b106e7e99010f048",
+    "correctedProductSourceTree": "8425d3c07bc78fad23eaf75dc30f93835cf53c8f",
+    "evidence": {
+      "liveFixturesPassed": 7,
+      "cleanup": true,
+      "buildCountThisRun": 0,
+      "deployCountThisRun": 0,
+      "production": false,
+      "adminSelectedProfilesAfterExplicitRefresh": 4,
+      "adminSelectedProfilesCorrect": true,
+      "rowsVisible": false,
+      "hnDetailVisible": false,
+      "crossProjectBlocked": true,
+      "certifiedArtifactSha256": "1556dcf704a53f7f131efe29f986b6723efc58bca5c882e316eea0ff6504cc34",
+      "hrRevision": "bb0d190c8aa8e70ef23f1d7183b071cf6894027eb877557303b645a11b354905"
+    },
+    "rootCause": "Protected composition depended on mutable CX.data capture instead of an immutable authorized Firestore snapshot. The browser could therefore compose before the newest authorized shopper state was safely handed off; explicit backend.refresh exposed the missing profiles while the UI could remain on the prior rendered list.",
+    "fix": [
+      "backend-firebase publishes exact authorized Firestore state before bus events",
+      "HR authority bridge prefers the authorized snapshot for overlay composition",
+      "backend.refresh preserves rather than clears the authorized snapshot",
+      "final composition emits explicit shoppers rerender plus visit-flow",
+      "live harness freezes probe/presentation evidence if any residual failure remains"
     ],
     "production": "DO_NOT_TOUCH"
   }

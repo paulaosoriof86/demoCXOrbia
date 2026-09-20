@@ -36,8 +36,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  I3_CERTIFICATION_SOURCE_SHA: 23a2b3b076a585cad7da3a4c50dfe9d4e3192995
-  I3_CERTIFICATION_SOURCE_TREE: f02852474cd5dd2c7b9f77f8495918bc622c7a7f
+  I3_CERTIFICATION_SOURCE_SHA: 2ca71bac1fe66b7cdc28ea99b106e7e99010f048
+  I3_CERTIFICATION_SOURCE_TREE: 8425d3c07bc78fad23eaf75dc30f93835cf53c8f
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev

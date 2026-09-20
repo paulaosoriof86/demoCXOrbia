@@ -203,6 +203,9 @@ async function adminShopperReadback(staffUid, fixtures) {
       selected,
       rows: probeIds.map((id) => Boolean(document.querySelector('tr[data-sid="' + CSS.escape(id) + '"]'))),
       totalShoppers: all.length,
+      presented: (typeof window.CX?.data?.shoppersFor === 'function' ? window.CX.data.shoppersFor() : []).filter((x) => probeIds.includes(String(x.id || x.shopperId || ''))).map((x) => String(x.id || x.shopperId || '')),
+      view: String(window.CX?.session?.view || ''),
+      period: (() => { const p=typeof window.CX?.data?.period==='function'?window.CX.data.period():null; return { id:String(p?.id||''), countries:Array.isArray(p?.countries)?p.countries.map(String):[] }; })(),
       sourceMode: String(window.CX?.data?.sourceMode || ''),
       sourceRef: String(window.CX?.dataSource?.sourceRef || ''),
       authority: {
@@ -424,6 +427,8 @@ try {
     selected: admin.selected,
     context: { role: admin.ctx.role, tenantId: admin.ctx.tenantId, projectIds: admin.ctx.projectIds },
     crossProject: { ok: deniedAck.ok === true, providerAck: deniedAck.providerAck === true, code: str(deniedAck.code) },
+    probe: admin.probe || {},
+    finalPresentation: { presented: admin.presented || [], view: admin.view || '', period: admin.period || null, sourceMode: admin.sourceMode || '', sourceRef: admin.sourceRef || '', authority: admin.authority || {}, backend: admin.backend || {} },
     production: false
   };
   fs.writeFileSync(path.join(OUT, 'admin-fixture-diagnostic.json'), JSON.stringify(adminDiagnostic, null, 2) + '\n');
@@ -439,6 +444,11 @@ try {
       throw new Error('VISUAL_DEFECT:ADMIN_FIXTURE_ROWS_NOT_VISIBLE_AFTER_AUTOMATIC_SYNC');
     }
     if (adminProbe.refreshInvoked === true && refreshSelected === fixtureDefs.length && postRefreshSelected === fixtureDefs.length) {
+      const authorityAdvanced = String(adminProbe.postRefreshAuthority?.authority?.at || '') && String(adminProbe.postRefreshAuthority?.authority?.at || '') !== String(adminProbe.afterWait?.authority?.at || '');
+      const presentedCount = Array.isArray(admin.presented) ? admin.presented.length : 0;
+      if (!authorityAdvanced) throw new Error('RELEASE_COMPOSITION_FAILURE:ADMIN_AUTHORITY_NOT_RECOMPOSED_AFTER_BACKEND_REFRESH');
+      if (presentedCount < fixtureDefs.length) throw new Error('FUNCTIONAL_DEFECT:ADMIN_SHOPPERSFOR_SCOPE_EXCLUDES_CREATED_PROFILES');
+      if (!rowsVisible) throw new Error('VISUAL_DEFECT:ADMIN_ROWS_NOT_RERENDERED_AFTER_COMPOSITION');
       throw new Error('FUNCTIONAL_DEFECT:ADMIN_FIXTURE_REQUIRES_EXPLICIT_BACKEND_REFRESH');
     }
     if (adminProbe.refreshInvoked === true && refreshSelected === fixtureDefs.length && postRefreshSelected < fixtureDefs.length) {
