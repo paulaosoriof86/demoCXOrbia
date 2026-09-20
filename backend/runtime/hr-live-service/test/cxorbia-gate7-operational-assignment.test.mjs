@@ -100,6 +100,53 @@ test('Gate 7 / visit HR reconciliation creates durable visits idempotently by re
   assert.deepEqual(db.paths(),before);
 });
 
+test('Gate 7 / HR reconciliation updates durable operational state across revisions and repairs stale same-revision rows',async()=>{
+  const db=new FakeFirestore();
+  await provider(db).reconcileSnapshot(hrSnapshot(),{sourceRevision:'hr-rev-1'});
+  const assigned=hrSnapshot();
+  assigned.visits[0]={...assigned.visits[0],estado:'asignada',status:'asignada',shopperId:'shopper-hr',canonicalFacets:{available:false,assigned:true}};
+  const second=await provider(db).reconcileSnapshot(assigned,{sourceRevision:'hr-rev-2'});
+  assert.equal(second.providerWrites,1);
+  assert.equal(db.get(visitPath('visit-a')).estado,'asignada');
+  assert.equal(db.get(visitPath('visit-a')).shopperId,'shopper-hr');
+  assert.equal(db.get(visitPath('visit-a')).assignmentSource,'hr');
+  assert.equal(db.get(visitPath('visit-a')).assignmentSyncStatus,'synced');
+  assert.equal(db.get(visitPath('visit-a')).canonicalFacets.available,false);
+
+  const available=hrSnapshot();
+  const third=await provider(db).reconcileSnapshot(available,{sourceRevision:'hr-rev-3'});
+  assert.equal(third.providerWrites,1);
+  assert.equal(db.get(visitPath('visit-a')).estado,'disponible');
+  assert.equal(db.get(visitPath('visit-a')).shopperId,null);
+  assert.equal(db.get(visitPath('visit-a')).assignmentSource,null);
+  assert.equal(db.get(visitPath('visit-a')).assignmentSyncStatus,null);
+  assert.equal(db.get(visitPath('visit-a')).canonicalFacets.available,true);
+
+  db.seed(visitPath('visit-a'),{...db.get(visitPath('visit-a')),estado:'realizada',status:'realizada',shopperId:'shopper-stale',assignmentSource:'hr',assignmentSyncStatus:'synced'});
+  const repaired=await provider(db).reconcileSnapshot(available,{sourceRevision:'hr-rev-3'});
+  assert.equal(repaired.providerWrites,1);
+  assert.equal(db.get(visitPath('visit-a')).estado,'disponible');
+  assert.equal(db.get(visitPath('visit-a')).shopperId,null);
+});
+
+test('Gate 7 / HR reconciliation preserves platform-pending assignment until HR reflects or conflicts',async()=>{
+  const db=new FakeFirestore();
+  db.seed(visitPath('visit-a'),{id:'visit-a',visitId:'visit-a',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',hrRowId:'HR!2',estado:'asignada',status:'asignada',shopperId:'shopper-platform',assignmentSource:'platform',assignmentSyncStatus:'pending_hr',version:4});
+  const waiting=await provider(db).reconcileSnapshot(hrSnapshot(),{sourceRevision:'hr-rev-wait'});
+  assert.equal(waiting.providerWrites,1);
+  assert.equal(db.get(visitPath('visit-a')).shopperId,'shopper-platform');
+  assert.equal(db.get(visitPath('visit-a')).assignmentSource,'platform');
+  assert.equal(db.get(visitPath('visit-a')).assignmentSyncStatus,'pending_hr');
+
+  const reflected=hrSnapshot();
+  reflected.visits[0]={...reflected.visits[0],estado:'asignada',status:'asignada',shopperId:'shopper-platform',canonicalFacets:{available:false,assigned:true}};
+  const synced=await provider(db).reconcileSnapshot(reflected,{sourceRevision:'hr-rev-synced'});
+  assert.equal(synced.providerWrites,1);
+  assert.equal(db.get(visitPath('visit-a')).shopperId,'shopper-platform');
+  assert.equal(db.get(visitPath('visit-a')).assignmentSource,'platform');
+  assert.equal(db.get(visitPath('visit-a')).assignmentSyncStatus,'synced');
+});
+
 test('Gate 7 / composer overlays durable platform pending assignment without taking HR-managed fields',()=>{
   const result=composer.compose({
     hr:{projects:[],visits:[{id:'visit-a',visitId:'visit-a',projectId:'period-a',periodId:'period-a',hrRowId:'HR!2',estado:'disponible',sucursal:'HR Fresh',shopperId:''}],shoppers:[{id:'shopper-a',shopperId:'shopper-a',nombre:'Shopper A'}],posts:[],currentProjectId:'project-a',currentPeriodId:'period-a'},
@@ -147,6 +194,19 @@ test('Gate 7 / visit.assign requires provider ACK and replays idempotently',asyn
   assert.equal(replay.providerWrites,0);
   assert.equal(receiptPaths(db).length,1);
   assert.equal(auditPaths(db).length,1);
+});
+
+test('Gate 7 / visit.assign rejects a durable visit that is no longer HR-available',async()=>{
+  const db=new FakeFirestore();
+  db.seed('tenants/tenant-a/users/admin-1',{active:true,tenantId:'tenant-a',role:'admin',authNamespace:'staff',projectIds:['project-a']});
+  db.seed(visitPath('visit-a'),{id:'visit-a',visitId:'visit-a',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',hrRowId:'HR!2',estado:'realizada',status:'realizada'});
+  const command={version:'cxorbia-command-adapter-v1',commandType:'visit.assign',entityType:'visit',entityId:'visit-a',tenantId:'tenant-a',projectId:'project-a',periodId:'period-a',expectedVersion:'source-current',idempotencyKey:'gate7-assign-stale',payload:{visitId:'visit-a',hrRowId:'HR!2',shopperId:'shopper-a',assignmentSource:'platform'},authorization:{providerEnforcementRequired:true}};
+  const result=await provider(db).execute('token',command);
+  assert.equal(result.ok,false);
+  assert.equal(result.code,'OPS_VISIT_NOT_AVAILABLE');
+  assert.equal(receiptPaths(db).length,0);
+  assert.equal(auditPaths(db).length,0);
+  assert.equal(db.get(visitPath('visit-a')).shopperId,undefined);
 });
 
 test('Gate 7 / visitas UI does not declare assignment success before ACK',()=>{

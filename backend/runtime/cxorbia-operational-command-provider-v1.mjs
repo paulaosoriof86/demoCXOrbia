@@ -183,9 +183,21 @@ async function reconcileVisitDoc({db,policy,candidate,sourceRevision}){
       }
       return {providerWrites:sameOpenReview?0:1,created:false,idempotentReplay:sameOpenReview,reviewRequired:true,conflict:true};
     }
-    if(str(existing.hrSourceRevision)===sourceRevision&&str(existing.periodId)===str(candidate.periodId))return {providerWrites:0,created:false,idempotentReplay:true};
-    tx.set(visitRef,{periodId:candidate.periodId,rootProjectId:projectId,hrSourceRevision:sourceRevision,updatedAt:now(),version:Number(existing.version||0)+1},{merge:true});
-    return {providerWrites:1,created:false,idempotentReplay:false,periodScopeRepaired:str(existing.periodId)!==str(candidate.periodId)};
+    const basePatch=clean({
+      periodId:candidate.periodId,rootProjectId:projectId,hrRowId:candidate.hrRowId,sourceTab:candidate.sourceTab,sourceRow:candidate.sourceRow,sourceCoord:candidate.sourceCoord,hrSourceRevision:sourceRevision
+    });
+    let desired;
+    if(platformPending&&!hrShopper){
+      desired=basePatch;
+    }else if(platformPending&&hrShopper===durableShopper){
+      desired=clean({...basePatch,estado:candidate.estado,status:candidate.status,shopperId:durableShopper,assignmentSource:'platform',assignmentSyncStatus:'synced',canonicalFacets:candidate.canonicalFacets});
+    }else{
+      desired=clean({...basePatch,estado:candidate.estado,status:candidate.status,shopperId:candidate.shopperId||null,assignmentSource:candidate.assignmentSource||null,assignmentSyncStatus:candidate.assignmentSyncStatus||null,canonicalFacets:candidate.canonicalFacets});
+    }
+    const same=Object.entries(desired).every(([key,value])=>JSON.stringify(stable(existing[key]))===JSON.stringify(stable(value)));
+    if(same)return {providerWrites:0,created:false,idempotentReplay:true};
+    tx.set(visitRef,{...desired,updatedAt:now(),version:Number(existing.version||0)+1},{merge:true});
+    return {providerWrites:1,created:false,idempotentReplay:false,periodScopeRepaired:str(existing.periodId)!==str(candidate.periodId),hrOperationalStateReconciled:true};
   });
 }
 
@@ -224,6 +236,7 @@ async function transactionExecute(db,command,actor){
           tx.set(r.review,{tenantId:command.tenantId,projectId:command.projectId,periodId:command.periodId,entityType:'visit',entityId:visitId,reviewType:'assignment_conflict',status:'open',reason:'shopper_mismatch',platformShopperId:str(a.shopperId),observedShopperId:assigned,automaticOverwrite:false,createdAt:now()});providerWrites++;
           throw new Error('OPS_VISIT_ALREADY_ASSIGNED_OTHER_SHOPPER');
         }
+        if(!assigned&&!isAvailable(v))throw new Error('OPS_VISIT_NOT_AVAILABLE');
       }
       tx.set(aRef,{status,estado:status,decisionReason:payload.reason||null,managedBy:actor.uid,updatedAt:now(),version:Number(a.version||0)+1},{merge:true});providerWrites++;
       if(status==='aprobada'){
@@ -263,6 +276,7 @@ async function transactionExecute(db,command,actor){
         const vRef=r.visits.doc(visitId),vSnap=await tx.get(vRef);if(!vSnap.exists)throw new Error('OPS_VISIT_MISSING');
         const v=vSnap.data()||{};assertPeriod(command,v);
         const assigned=str(v.shopperId);if(assigned&&assigned!==shopperId)throw new Error('OPS_VISIT_ALREADY_ASSIGNED_OTHER_SHOPPER');
+        if(!assigned&&!isAvailable(v))throw new Error('OPS_VISIT_NOT_AVAILABLE');
         tx.set(vRef,{shopperId,estado:'asignada',status:'asignada',assignmentSource:'platform',assignmentSyncStatus:'pending_hr',lastSyncedAt:null,updatedAt:now(),version:Number(v.version||0)+1},{merge:true});providerWrites++;
       }
       const finalStatus=visitId&&['asignada','aprobada','cruzada'].includes(status)?'cruzada':status;
@@ -283,6 +297,7 @@ async function transactionExecute(db,command,actor){
       const visitId=str(payload.visitId||entityId),shopperId=str(payload.shopperId);if(!visitId||!shopperId)throw new Error('OPS_VISIT_ASSIGN_KEYS_REQUIRED');entityId=visitId;
       const vRef=r.visits.doc(visitId),vSnap=await tx.get(vRef);if(!vSnap.exists)throw new Error('OPS_VISIT_MISSING');const v=vSnap.data()||{};assertPeriod(command,v);assertVersion(command,v);
       const assigned=str(v.shopperId);if(assigned&&assigned!==shopperId)throw new Error('OPS_VISIT_ALREADY_ASSIGNED_OTHER_SHOPPER');
+      if(!isAvailable(v))throw new Error('OPS_VISIT_NOT_AVAILABLE');
       const source=str(payload.assignmentSource||'platform');if(!['platform','hr'].includes(source))throw new Error('OPS_ASSIGNMENT_SOURCE_INVALID');
       tx.set(vRef,{shopperId,estado:'asignada',status:'asignada',assignmentSource:source,assignmentSyncStatus:source==='platform'?'pending_hr':'pending_platform',hrRowId:payload.hrRowId||v.hrRowId||null,periodId:command.periodId,lastSyncedAt:null,updatedAt:now(),version:Number(v.version||0)+1},{merge:true});providerWrites++;
       auditEntityType='visit';
