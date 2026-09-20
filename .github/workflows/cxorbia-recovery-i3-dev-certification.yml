@@ -704,6 +704,49 @@ jobs:
                 historicalMatchesActive:!!historicalEmail&&!!targetEmail&&historicalEmail===targetEmail
               };
             }
+            const lineageIds=[sourceId,historicalExactTarget,...activeTargets].map(str).filter(Boolean);
+            const lineageSet=new Set(lineageIds);
+            const lineageMembers=members.filter(m=>lineageSet.has(str(m?.shopperId))).map(m=>({
+              shopperId:str(m?.shopperId),
+              memberFingerprint:sha(str(m?.id)).slice(0,18),
+              active:m?.active===true,
+              role:str(m?.role),
+              authNamespace:str(m?.authNamespace),
+              visibleLoginMatchesPaula:str(m?.visibleLogin).toLowerCase()==='paula.osorio',
+              providerUidFingerprintPresent:!!str(m?.providerUidFingerprint),
+              providerUidFingerprint:str(m?.providerUidFingerprint)||null,
+              projectScoped:arr(m?.projectIds).map(str).includes(PROJECT_ID)
+            }));
+            const durableCrossRows=durableCrossSnap.docs.map(d=>({id:d.id,...(d.data()||{})})).filter(row=>{
+              const tokens=[row?.id,row?.sourceStableKey,row?.sourceShopperId,row?.shopperId].map(str);
+              return tokens.some(t=>lineageSet.has(t));
+            }).map(row=>({
+              docId:str(row?.id),
+              sourceStableKey:str(row?.sourceStableKey)||null,
+              sourceShopperId:str(row?.sourceShopperId)||null,
+              shopperId:str(row?.shopperId)||null,
+              identityMode:str(row?.identityMode)||null,
+              sourceType:str(row?.sourceType)||null,
+              projectScoped:arr(row?.projectIds).map(str).includes(PROJECT_ID)||str(row?.projectId)===PROJECT_ID,
+              providerUidFingerprint:str(row?.providerUidFingerprint)||null
+            }));
+            const trustedLinkRows=links.filter(link=>{
+              const target=canonicalFor(link),tokens=linkTokens(link);
+              return lineageSet.has(target)||tokens.some(t=>lineageSet.has(str(t)));
+            }).map(link=>({
+              id:str(link?.id),
+              canonicalShopperId:canonicalFor(link),
+              authorityType:str(link?.authorityType||link?.authority?.type)||null,
+              sourceSystem:str(link?.sourceSystem||link?.sourceNamespace||link?.sourceType)||null,
+              tokens:linkTokens(link).filter(t=>lineageSet.has(str(t)))
+            }));
+            const uidFpGroups=new Map();
+            for(const m of lineageMembers){
+              const fp=str(m.providerUidFingerprint);if(!fp)continue;
+              if(!uidFpGroups.has(fp))uidFpGroups.set(fp,[]);
+              uidFpGroups.get(fp).push(m.shopperId);
+            }
+            const sharedProviderUidFingerprints=[...uidFpGroups.entries()].filter(([,ids])=>new Set(ids).size>1).map(([fp,ids])=>({fingerprint:fp,shopperIds:[...new Set(ids)]}));
             console.log('I3_PAULA_MAPPING_DIAGNOSTIC='+JSON.stringify({
               login:'paula.osorio',
               sourceShopperId:sourceId||null,
@@ -716,6 +759,10 @@ jobs:
               protectedPairEvidence,
               historicalToActiveEvidence,
               operationalEmailEvidence,
+              lineageMembers,
+              durableCrossRows,
+              trustedLinkRows,
+              sharedProviderUidFingerprints,
               fuzzyMatching:false,
               production:false
             }));
