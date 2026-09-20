@@ -988,7 +988,13 @@ jobs:
           set -Eeuo pipefail
           rm -rf "$OUT/full-human-acceptance"
           mkdir -p "$OUT/full-human-acceptance" "$OUT/gate20"
+          set +e
           PROJECT="$PROJECT" HOSTING_URL="$HOSTING_URL" TENANT_ID="$TENANT_ID" PROJECT_ID="$PROJECT_ID" I3_CERTIFICATION_SOURCE_SHA="$I3_CERTIFICATION_SOURCE_SHA" SOURCE_DIR="$SOURCE_DIR" CX_I3_PINNED_HR_FILE="$OUT/hr-fresh.json" CX_I3_PINNED_HR_REVISION="$PINNED_HR_REVISION" ACCEPTANCE_OUT="$OUT/full-human-acceptance" node RECOVERY-I3-HUMAN-LIVE-ACCEPTANCE-20260918.mjs
+          ACCEPTANCE_CODE=$?
+          set -e
+          if [ -f "$OUT/full-human-acceptance/paula-osorio-live-proof.json" ]; then echo "PAULA_OSORIO_PROOF=$(jq -c '.' "$OUT/full-human-acceptance/paula-osorio-live-proof.json")"; fi
+          if [ -f "$OUT/full-human-acceptance/human-live-acceptance.json" ]; then echo "HUMAN_FIRST_ISSUE=$(jq -c '.issues[0] // null' "$OUT/full-human-acceptance/human-live-acceptance.json")"; fi
+          if [ "$ACCEPTANCE_CODE" -ne 0 ]; then exit "$ACCEPTANCE_CODE"; fi
           test "$(jq -r '.decision' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "PASS_I3_HUMAN_LIVE_ACCEPTANCE"
           test "$(jq -r '.sourceRevision' "$OUT/full-human-acceptance/human-live-acceptance.json")" = "$PINNED_HR_REVISION"
           test "$(jq -r '.decision' "$OUT/full-human-acceptance/i3-functional-probes.json")" = "PASS_I3_ATOMIC_FUNCTIONAL_PROBES"

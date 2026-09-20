@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.recovery.module-truth-matrix.v5",
-  "observedAt": "2026-09-20T09:12:00Z",
+  "observedAt": "2026-09-20T09:26:00Z",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
@@ -3930,7 +3930,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "Recertify unchanged product 77bf74f807d254637f0b2cde4b1d1668017a0c8a; execute Paula focal proof, Step23/Gate20, live fixtures 10/10, Gate21.",
+  "nextExactAction": "Recertify unchanged product source 77bf74f807d254637f0b2cde4b1d1668017a0c8a. Persist and print Paula.osorio live proof plus first exact Step23 blocker before any throw. No product change until exact route owner is proven.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -4092,7 +4092,7 @@
   },
   "continuityCheckpoint": {
     "iteration": "I3",
-    "status": "HOLD_RUN286_MATRIX_PROVENANCE_FIXED_PENDING_RECERTIFICATION",
+    "status": "HOLD_RUN287_ROUTE_FAIL_CONTROL_OBSERVABILITY_PENDING_RECERTIFICATION",
     "exactProductSourceSha": "77bf74f807d254637f0b2cde4b1d1668017a0c8a",
     "exactProductSourceTree": "6bdd13dbc1ae5d2e0e9d2f3dd592aa222ee36679",
     "noReprocess": [
@@ -4135,15 +4135,15 @@
       "acceptance imports provider function instead of reimplementing credentials",
       "stale v1 tests updated to the explicitly approved v2 contract"
     ],
-    "nextExactAction": "Recertify unchanged product 77bf74f807d254637f0b2cde4b1d1668017a0c8a; execute Paula focal proof, Step23/Gate20, live fixtures 10/10, Gate21.",
+    "nextExactAction": "Recertify unchanged product source 77bf74f807d254637f0b2cde4b1d1668017a0c8a. Persist and print Paula.osorio live proof plus first exact Step23 blocker before any throw. No product change until exact route owner is proven.",
     "production": "DO_NOT_TOUCH",
     "rootCauseRun233": "Static/unit gates exposed stale v1 browser credential implementations and stale expectations before DEV deploy.",
     "lastRun": {
-      "runNumber": 286,
-      "runId": "35501436839",
-      "classification": "RELEASE_COMPOSITION_FAILURE",
-      "code": "MODULE_BLOB_MISMATCH:LIVE_SOURCE_REFRESH_WATCH_V2",
-      "certify": "FAIL_STEP5",
+      "runNumber": 287,
+      "runId": "35501482461",
+      "classification": "FUNCTIONAL_DEFECT",
+      "code": "ROUTE_FAIL_STEP23_UNDISAMBIGUATED",
+      "certify": "FAIL_STEP23",
       "liveFixtures": "SKIPPED",
       "gate21": "SKIPPED"
     },
@@ -4719,6 +4719,15 @@
     "fix": "If canonical staff shell is already visible and authenticated, skip CX.app.enter() and only republish verified membership/canonical state; preserve current view.",
     "correctedProductSourceSha": "6e5c8c2af101c25c418ceeb6dbd83c7779af383d",
     "correctedProductSourceTree": "ff7c5b5b6cab06478e3efa19dff33532644e4db1",
+    "production": "DO_NOT_TOUCH"
+  },
+  "run287ControlObservability": {
+    "classification": "FUNCTIONAL_DEFECT",
+    "code": "ROUTE_FAIL_STEP23_UNDISAMBIGUATED",
+    "productSourceUnchanged": "77bf74f807d254637f0b2cde4b1d1668017a0c8a",
+    "productTreeUnchanged": "6bdd13dbc1ae5d2e0e9d2f3dd592aa222ee36679",
+    "changeScope": "control-only",
+    "paulaTarget": "paula.osorio",
     "production": "DO_NOT_TOUCH"
   }
 }
