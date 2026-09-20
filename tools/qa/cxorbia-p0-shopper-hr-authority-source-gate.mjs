@@ -21,6 +21,8 @@ check('authority_sets_canonical_source',authority.includes("sourceRef='hr-live-a
 check('authority_replaces_runtime_with_hr',authority.includes('CX.data._visitas=clone(result.visits)')&&authority.includes('CX.data.shoppers=clone(result.shoppers)'));
 check('authority_emits_ready_event',authority.includes("cx:protected-auth-hr-authority-ready"));
 check('authority_does_not_force_provider_refresh',!/fresh\s*:\s*['"]1['"]/.test(authority),'authenticated protected boot must consume runtime authority without forcing a new external HR revision');
+check('authority_preserves_firestore_backend_ready_capture',authority.includes("const fresh=capture();lastProtectedState=fresh||null;schedule('backend_ready_firestore_dynamic',true)"),'backend-ready must retain the newest Firestore state before HR recomposition');
+check('authority_retries_forced_reconcile_when_busy',authority.includes("if(reconciling){bootForce=true;return {ok:false,skipped:true,reason:'reconcile_in_progress_forced_retry'};}"),'a forced backend-ready reconcile must not be lost when another reconcile is already running');
 check('live_watcher_does_not_force_provider_refresh',!/fresh\s*:\s*['"]1['"]/.test(liveWatcher),'live watcher must consume runtime cache authority; external refresh cadence belongs to the runtime, not the browser');
 
 const statusListensFinal=status.includes('cx:protected-auth-hr-authority-ready');
