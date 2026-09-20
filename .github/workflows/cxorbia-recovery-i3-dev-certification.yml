@@ -36,8 +36,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  I3_CERTIFICATION_SOURCE_SHA: 815eecb2b5b01001bd1f6455bae622159f0ca3e5
-  I3_CERTIFICATION_SOURCE_TREE: 32e04ac5e9631d94b42e421b083b6264df2964a9
+  I3_CERTIFICATION_SOURCE_SHA: f5d7113547df0c69d5d49bad3951dbd793684788
+  I3_CERTIFICATION_SOURCE_TREE: 804b7e5998bd2c6c786f8f81d7a05bb0a8068034
   PROJECT: cxorbia-backend-dev
   REGION: us-central1
   SERVICE: cxorbia-live-hr-dev
@@ -181,6 +181,12 @@ jobs:
           grep -q "docId:uniqueIndex(protectedVisits" app/adapters/tya-cumulative-read-model-v2.js
           grep -q "hr_exact_crosswalk_precedes_historical_identity_link" app/adapters/cxorbia-provider-identity-link-runtime-v1.js
           grep -q "protectedState:'1'" app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
+          ! grep -Fq "fresh:'1'" app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
+          grep -Fq "if(cache?.origin==='build_bootstrap')return inFlight||refreshSnapshot();" backend/runtime/hr-live-service/server.mjs
+          node --check app/adapters/tya-protected-auth-hr-authority-bridge-v2.js
+          node --check backend/runtime/hr-live-service/server.mjs
+          node tools/qa/cxorbia-p0-shopper-hr-authority-source-gate.mjs > "$OUT/shopper-hr-authority-source-gate.json"
+          test "$(jq -r '.decision' "$OUT/shopper-hr-authority-source-gate.json")" = "PASS_P0_SHOPPER_HR_AUTHORITY_SOURCE_GATE"
           grep -q "COPY app/core/shopper-credential-rule.js ./app/core/shopper-credential-rule.js" backend/runtime/hr-live-service/Dockerfile
           grep -q "'reservation.create'" backend/runtime/cxorbia-operational-command-provider-v1.mjs
           grep -q "source:'durable_provider'" app/adapters/tya-canonical-reservations-guard-v2.js

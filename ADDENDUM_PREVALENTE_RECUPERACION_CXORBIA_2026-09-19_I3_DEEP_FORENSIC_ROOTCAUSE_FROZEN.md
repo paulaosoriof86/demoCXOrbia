@@ -181,3 +181,26 @@ El runtime implementa `let cache=null` en memoria de proceso y `loadBootstrap()`
 **Código:** `PROCESS_LOCAL_HR_CACHE_MULTI_INSTANCE_DIVERGENCE`
 
 Corrección I3 DEV: mismo immutable image, `min-instances=1`, `max-instances=1`, cache 3.600.000 ms, Step17 único `fresh=1`, cinco readbacks por Hosting y cinco por URL directa exigiendo la misma revisión y `cacheOrigin=runtime_refresh` antes de Step21. Step21/Step23/live fixtures/Gate21 conservan revisión exacta. No cambia producto, no reimporta y no toca producción.
+
+
+## 16. Run 276 — exact product root cause: protected boot forced HR refresh
+
+Run 276 (`35491084832`) cerró Step13 con min/max=1, Step17 con un único refresh y 10 readbacks Hosting/direct-runtime sobre la misma revisión `7058cd2a0b2daff713cc30b9045457abf94e3a24d2f014f73242c7e540fd867f`. Aun así Step21 terminó mostrando `88d562c724084e45068551d87cc3863fb655b55c2266b56122b8ede3ec983b0d`.
+
+La revisión de Step21 tampoco era el bootstrap empacado: el bootstrap exacto calcula `d6eb9221c9758b209c1f2e188aaacaf23e215e42ef4fa8a952c6a8789e36da89`. Por tanto existió un refresh real después de Step17.
+
+El owner exacto quedó demostrado en `app/adapters/tya-protected-auth-hr-authority-bridge-v2.js::queryUrl`: el boot protegido enviaba `fresh:'1'` en cada reconciliación autenticada. Así, Step17 pinneaba una revisión y la propia UI obligaba inmediatamente a crear otra.
+
+**Clasificación:** `FUNCTIONAL_DEFECT`  
+**Código:** `PROTECTED_AUTH_BRIDGE_FORCES_HR_REFRESH`
+
+P0_PROVEN:
+- se elimina únicamente `fresh:'1'` del bridge protegido;
+- la lectura autenticada consume la autoridad/cache runtime vigente;
+- el gate `cxorbia-p0-shopper-hr-authority-source-gate.mjs` falla si vuelve a aparecer refresh forzado;
+- además, `server.mjs` ya no permite que `build_bootstrap` satisfaga una lectura live: la primera lectura tras cold start ejecuta `refreshSnapshot()` de forma bloqueante;
+- Step17 sigue siendo el único `fresh=1` de certificación;
+- no cambia Auth, mapping, datos reales ni producción.
+
+Nuevo product source: `f5d7113547df0c69d5d49bad3951dbd793684788`  
+Nuevo product tree: `804b7e5998bd2c6c786f8f81d7a05bb0a8068034`.

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.recovery.module-truth-matrix.v5",
-  "observedAt": "2026-09-20T05:10:00Z",
+  "observedAt": "2026-09-20T05:30:00Z",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
@@ -103,9 +103,9 @@
     }
   },
   "productSource": {
-    "sha": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
-    "treeSha": "32e04ac5e9631d94b42e421b083b6264df2964a9",
-    "message": "fix(i3): reconcile live HR visit state before assignment"
+    "sha": "f5d7113547df0c69d5d49bad3951dbd793684788",
+    "treeSha": "804b7e5998bd2c6c786f8f81d7a05bb0a8068034",
+    "message": "fix(i3): refresh live HR before serving bootstrap"
   },
   "controlHeadAtConstruction": "751d01397bcd85903456e5cb78e3e5ce41161b17",
   "phaseAComplete": true,
@@ -186,8 +186,8 @@
         "tools/hr-source/tya-live-provider-registry-identity-dev.mjs",
         "backend/contracts/tya-hr-column-map-r20-v1.json"
       ],
-      "lastApprovedAuthority": "P0_PROVEN_RUN264_ADMIN_PLATFORM_ONLY_VISIBILITY_OWNER_FIX",
-      "sourceCommit": "6bcbc1df70c29c2ad3ad57ecfa906917e6372ace",
+      "lastApprovedAuthority": "P0_PROVEN_RUN276_PROTECTED_BOOT_HR_REVISION_CHURN_ROOT_FIX",
+      "sourceCommit": "f5d7113547df0c69d5d49bad3951dbd793684788",
       "loadOrderEntrypoint": "app/index-backend-dev.html",
       "roles": [
         "Admin",
@@ -1591,21 +1591,21 @@
       "historicalApprovedBlob": "4ff03ce4a4ab3cc680be32cc71f32d406cdb9307",
       "f9ApprovedSource": "f9802fdd498934a8e7729fa5c7d18341bec1cd71",
       "f9ApprovedBlob": "4ff03ce4a4ab3cc680be32cc71f32d406cdb9307",
-      "latestApprovedSource": "df07426b9bf8d936becce415da494e38f315f2dd",
-      "latestApprovedBlob": "c2e8d875c497666f8dc95b3300390cfa55c10a6f",
-      "currentBlob": "c2e8d875c497666f8dc95b3300390cfa55c10a6f",
+      "latestApprovedSource": "f5d7113547df0c69d5d49bad3951dbd793684788",
+      "latestApprovedBlob": "d2ef7fa3c7a527c42f8cd13d50ec5ca7a80c0b6c",
+      "currentBlob": "d2ef7fa3c7a527c42f8cd13d50ec5ca7a80c0b6c",
       "loadTarget": "browser-script",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "terminalCertifiedSource": "b94911a4748c03c2e604415e8a97ee091da96218",
       "terminalCertifiedBlob": "090d01dc4913112a68d39f6c1547e6556458384d",
-      "latestApprovedAuthority": "RUN236_LIVE_PROVEN_SHOPPER_HR_BOOT_DEADLOCK_FIX",
+      "latestApprovedAuthority": "P0_PROVEN_RUN276_PROTECTED_BOOT_NO_FORCED_REFRESH",
       "loadOrder": 57,
       "atomicDisposition": "FOCAL_FIX",
-      "approvedSourceCommit": "df07426b9bf8d936becce415da494e38f315f2dd",
-      "approvedBlob": "c2e8d875c497666f8dc95b3300390cfa55c10a6f",
-      "approvalAuthority": "RUN236_LIVE_PROVEN_SHOPPER_HR_BOOT_DEADLOCK_FIX",
-      "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
+      "approvedSourceCommit": "f5d7113547df0c69d5d49bad3951dbd793684788",
+      "approvedBlob": "d2ef7fa3c7a527c42f8cd13d50ec5ca7a80c0b6c",
+      "approvalAuthority": "P0_PROVEN_RUN276_PROTECTED_BOOT_NO_FORCED_REFRESH",
+      "composedAtSource": "f5d7113547df0c69d5d49bad3951dbd793684788",
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX"
     },
@@ -3547,18 +3547,18 @@
       "historicalApprovedBlob": null,
       "f9ApprovedSource": null,
       "f9ApprovedBlob": null,
-      "latestApprovedSource": "40b847d2a50c35e2d2417d1f904bc8ec1b74d22a",
-      "latestApprovedBlob": "87375ebdccb922d71bd69b921770fb265f1d240a",
-      "currentBlob": "87375ebdccb922d71bd69b921770fb265f1d240a",
+      "latestApprovedSource": "f5d7113547df0c69d5d49bad3951dbd793684788",
+      "latestApprovedBlob": "f81e02b66c06d45e1ff3ad21d0e614ef5f57f616",
+      "currentBlob": "f81e02b66c06d45e1ff3ad21d0e614ef5f57f616",
       "loadTarget": "runtime-service",
       "phaseAAuthority": true,
       "classification": "MATCH",
       "atomicDisposition": "FOCAL_FIX",
-      "latestApprovedAuthority": "USER_CLARIFICATION_20260918_SHOPPER_HR_CONTACT_AND_I3_FOCAL_CLOSURE",
-      "approvedSourceCommit": "40b847d2a50c35e2d2417d1f904bc8ec1b74d22a",
-      "approvedBlob": "87375ebdccb922d71bd69b921770fb265f1d240a",
-      "approvalAuthority": "P0_PROVEN_FOCAL_RECOVERY_USER_CLARIFICATION_20260918",
-      "composedAtSource": "751d01397bcd85903456e5cb78e3e5ce41161b17",
+      "latestApprovedAuthority": "P0_PROVEN_RUN276_BOOTSTRAP_FAIL_CLOSED_LIVE_REFRESH",
+      "approvedSourceCommit": "f5d7113547df0c69d5d49bad3951dbd793684788",
+      "approvedBlob": "f81e02b66c06d45e1ff3ad21d0e614ef5f57f616",
+      "approvalAuthority": "P0_PROVEN_RUN276_BOOTSTRAP_FAIL_CLOSED_LIVE_REFRESH",
+      "composedAtSource": "f5d7113547df0c69d5d49bad3951dbd793684788",
       "provenanceIndependent": true,
       "approvalDisposition": "FOCAL_FIX"
     },
@@ -3895,17 +3895,17 @@
     "rule": "preserve; do not regress/rebuild; not an I3 requirement absent transversal P0"
   },
   "devCertification": {
-    "status": "RUN269_CERTIFY_PASS_8_OF_10_LIVE_P0_PROVEN_PENDING_RECERTIFICATION",
+    "status": "RUN276_P0_PROVEN_PROTECTED_BOOT_REFRESH_CHURN_FIXED_PENDING_RECERTIFICATION",
     "priorRunId": "35456396448",
     "priorRunNumber": 238,
     "priorServedSourceSha": "751d01397bcd85903456e5cb78e3e5ce41161b17",
     "priorArtifactSha256": "bc340a7c30657e4326b3dfa306bff5cbb016ce37abaaece0edf3f5adc91d9a16",
-    "candidateSourceSha": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
-    "candidateSourceTree": "32e04ac5e9631d94b42e421b083b6264df2964a9",
+    "candidateSourceSha": "f5d7113547df0c69d5d49bad3951dbd793684788",
+    "candidateSourceTree": "804b7e5998bd2c6c786f8f81d7a05bb0a8068034",
     "buildCountPlanned": 1,
     "rebuildAfterCertification": false,
     "production": false,
-    "liveFixtureClosure": "PENDING_AFTER_P0_HR_VISIT_RECONCILIATION",
+    "liveFixtureClosure": "PENDING_AFTER_P0_PROTECTED_BOOT_HR_REVISION_FIX",
     "lastSuccessfulCertifyRunId": "35482104368",
     "lastSuccessfulCertifyRunNumber": 269
   },
@@ -4092,9 +4092,9 @@
   },
   "continuityCheckpoint": {
     "iteration": "I3",
-    "status": "HOLD_RUN275_PROCESS_LOCAL_HR_CACHE_MULTI_INSTANCE_PENDING_SINGLE_RUNTIME_LANE_RECERTIFICATION",
-    "exactProductSourceSha": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
-    "exactProductSourceTree": "32e04ac5e9631d94b42e421b083b6264df2964a9",
+    "status": "HOLD_RUN276_P0_PROVEN_PROTECTED_BOOT_FORCED_REFRESH_FIXED_PENDING_RECERTIFICATION",
+    "exactProductSourceSha": "f5d7113547df0c69d5d49bad3951dbd793684788",
+    "exactProductSourceTree": "804b7e5998bd2c6c786f8f81d7a05bb0a8068034",
     "noReprocess": [
       "I0",
       "I1",
@@ -4135,15 +4135,15 @@
       "acceptance imports provider function instead of reimplementing credentials",
       "stale v1 tests updated to the explicitly approved v2 contract"
     ],
-    "nextExactAction": "Keep product source 815eecb2b5b01001bd1f6455bae622159f0ca3e5 / tree 32e04ac5e9631d94b42e421b083b6264df2964a9 unchanged. Force I3 DEV Cloud Run minInstances=1/maxInstances=1 with exact readback, Step17 fresh once, then prove five Hosting and five direct-runtime reads all match the same runtime_refresh revision before Step21; require Step21/23/live fixtures/Gate21 same revision.",
+    "nextExactAction": "Recertify exactly product source f5d7113547df0c69d5d49bad3951dbd793684788 / tree 804b7e5998bd2c6c786f8f81d7a05bb0a8068034. Require Step6 P0 source gates, single fresh Step17, Step21/23 exact same HR revision, live fixtures 10/10 cleanup, then Gate21. Do not patch Auth/HR mapping unless a new reproducible P0 appears.",
     "production": "DO_NOT_TOUCH",
     "rootCauseRun233": "Static/unit gates exposed stale v1 browser credential implementations and stale expectations before DEV deploy.",
     "lastRun": {
-      "runNumber": 275,
-      "runId": "35490346169",
-      "result": "HOLD_CERTIFY_STEP21_EXACT_REVISION_MISMATCH",
-      "code": "RELEASE_COMPOSITION_FAILURE:PROCESS_LOCAL_HR_CACHE_MULTI_INSTANCE_DIVERGENCE",
-      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "runNumber": 276,
+      "runId": "35491084832",
+      "result": "HOLD_CERTIFY_STEP21_FORCED_REFRESH_REVISION_CHURN",
+      "code": "FUNCTIONAL_DEFECT:PROTECTED_AUTH_BRIDGE_FORCES_HR_REFRESH",
+      "classification": "FUNCTIONAL_DEFECT",
       "certify": "FAIL_STEP21",
       "liveFixtures": "NOT_RUN",
       "gate21": "SKIPPED"
@@ -4164,7 +4164,7 @@
     "fixRun236": "For a Shopper, pre-HR readiness now requires authenticated Firebase principal rather than pre-existing exact Firestore profile. Auth+tenant+project authorization remains required by reconcile() and is reverified server-side. After composition, __sessionShopperProfile falls back to the exact canonical shopper from result.shoppers/identityMap.",
     "rootCauseRun237": "app.js intercepted the Shopper role button in DEV with pickShopperDev(), an explicitly non-auth legacy validation picker, before backend-browser-auth could select the protected Firebase shopper namespace. This produced selectedRole='', no Firebase user, no context, and no credential error.",
     "fixRun237": "When protected Firebase DEV auth is enabled, Shopper role now always follows selectRole('shopper') -> backend-browser-auth -> Firebase. Legacy pickShopperDev remains only for non-protected DEV access.",
-    "p0Owner": null
+    "p0Owner": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js + backend/runtime/hr-live-service/server.mjs"
   },
   "liveFixtureForensic": {
     "auditId": "CXORBIA-I3-LIVE-FIXTURE-FORENSIC-20260919",
@@ -4261,8 +4261,8 @@
     "frozenAddendum": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-19_I3_DEEP_FORENSIC_ROOTCAUSE_FROZEN.md",
     "classification": "RELEASE_COMPOSITION_FAILURE",
     "code": "I3_CONTROL_PLANE_MULTI_AUTHORITY_AND_RUNTIME_TEST_RECOMPOSITION",
-    "productSourceSha": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
-    "productSourceTree": "32e04ac5e9631d94b42e421b083b6264df2964a9",
+    "productSourceSha": "f5d7113547df0c69d5d49bad3951dbd793684788",
+    "productSourceTree": "804b7e5998bd2c6c786f8f81d7a05bb0a8068034",
     "productDrift": false,
     "run267CertifyPassed": true,
     "structuralClosure": [
@@ -4279,7 +4279,9 @@
     "run269RuntimeDataP0": "PERSISTENCE_FAILURE:HR_VISIT_STATE_NOT_RECONCILED_TO_DURABLE_READBACK",
     "run270ReleaseCompositionSynchronized": true,
     "run270PersistentBlocker": "MAPPING_FAILURE:LIVE_FIXTURE_UNSCOPED_RAW_HR_AVAILABILITY",
-    "run272ReleaseCompositionRoot": "RELEASE_COMPOSITION_FAILURE:MULTIPLE_HR_REVISIONS_WITHIN_SINGLE_CERTIFICATION_RUN"
+    "run272ReleaseCompositionRoot": "RELEASE_COMPOSITION_FAILURE:MULTIPLE_HR_REVISIONS_WITHIN_SINGLE_CERTIFICATION_RUN",
+    "run276ProductP0": "FUNCTIONAL_DEFECT:PROTECTED_AUTH_BRIDGE_FORCES_HR_REFRESH",
+    "run276BootstrapP0": "FUNCTIONAL_DEFECT:BUILD_BOOTSTRAP_COULD_SATISFY_LIVE_READ_AFTER_COLD_START"
   },
   "run269VisitReconciliationP0": {
     "classification": "PERSISTENCE_FAILURE",
@@ -4454,6 +4456,36 @@
       "step23ExactRevision": true
     },
     "productChange": false,
+    "production": "DO_NOT_TOUCH"
+  },
+  "run276ProtectedBootRefreshP0": {
+    "classification": "FUNCTIONAL_DEFECT",
+    "code": "PROTECTED_AUTH_BRIDGE_FORCES_HR_REFRESH",
+    "runId": "35491084832",
+    "runNumber": 276,
+    "beforeProductSourceSha": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
+    "correctedProductSourceSha": "f5d7113547df0c69d5d49bad3951dbd793684788",
+    "correctedProductSourceTree": "804b7e5998bd2c6c786f8f81d7a05bb0a8068034",
+    "evidence": {
+      "step17PinnedRevision": "7058cd2a0b2daff713cc30b9045457abf94e3a24d2f014f73242c7e540fd867f",
+      "step17SingleRuntimeLane": true,
+      "step17CrossReadbacksPassed": 10,
+      "step21UiRevision": "88d562c724084e45068551d87cc3863fb655b55c2266b56122b8ede3ec983b0d",
+      "bootstrapRevision": "d6eb9221c9758b209c1f2e188aaacaf23e215e42ef4fa8a952c6a8789e36da89",
+      "bridgeOwner": "app/adapters/tya-protected-auth-hr-authority-bridge-v2.js::queryUrl",
+      "bridgeBefore": "fresh:'1'",
+      "bridgeAfter": "fresh omitted; runtime cache authority consumed",
+      "additionalCause": "build_bootstrap previously counted as fresh cache after process start"
+    },
+    "rootCause": "The protected-auth HR bridge forced fresh=1 on every authenticated reconciliation. That independently called refreshSnapshot after Step17 had already pinned a revision, so the same certification run necessarily churned HR revisions. Multi-instance/TTL were amplifiers, not the primary cause. Separately, a cold-start bootstrap could satisfy live reads before provider refresh.",
+    "correction": {
+      "bridgeForcedFreshRemoved": true,
+      "bootstrapLiveReadFailClosed": true,
+      "bridgeRegressionGate": "tools/qa/cxorbia-p0-shopper-hr-authority-source-gate.mjs",
+      "bootstrapRegressionGate": "tools/qa/tya-live-hr-authority-contract.mjs + Step6 static guard",
+      "singleFreshAuthority": "Step17",
+      "productChange": true
+    },
     "production": "DO_NOT_TOUCH"
   }
 }
