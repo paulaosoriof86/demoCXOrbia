@@ -3895,7 +3895,7 @@
     "rule": "preserve; do not regress/rebuild; not an I3 requirement absent transversal P0"
   },
   "devCertification": {
-    "status": "RUN238_SUPERSEDED_BY_P0_FIX_PENDING_SINGLE_RECERTIFICATION",
+    "status": "RUN267_CERTIFY_PASS_CONTROL_PLANE_ROOTCAUSE_FROZEN_PENDING_FINAL_SAME_RUN",
     "priorRunId": "35456396448",
     "priorRunNumber": 238,
     "priorServedSourceSha": "751d01397bcd85903456e5cb78e3e5ce41161b17",
@@ -3905,7 +3905,9 @@
     "buildCountPlanned": 1,
     "rebuildAfterCertification": false,
     "production": false,
-    "liveFixtureClosure": "PENDING_SAME_RUN_10_OF_10"
+    "liveFixtureClosure": "PENDING_DETERMINISTIC_V3_10_OF_10",
+    "lastSuccessfulCertifyRunId": "35477665206",
+    "lastSuccessfulCertifyRunNumber": 267
   },
   "invariants": {
     "singleCandidate": true,
@@ -3928,7 +3930,7 @@
     "gate21AfterFullHuman": true,
     "cacheRuntimeFailClosed": true
   },
-  "nextExactAction": "Run canonical I3 on exact source. Fast Shopper login must establish Firebase context and HR authority before any 56-route traversal. If PASS, execute live fictitious-data probes/readback/cleanup and continue exhaustive acceptance.",
+  "nextExactAction": "Run one canonical same-run I3 closure on unchanged product source after static control-plane readback: certify -> exhaustive acceptance -> Gate20 -> one artifact -> deterministic live fixtures 10/10 + cleanup -> Gate21.",
   "moduleTruthCorrection": {
     "cause": "MAPPING_FAILURE: August-04 manifest carried 14 historical blob identities that do not equal the accepted F9 tree; run 179 correctly exposed two first mismatches before build.",
     "run179": {
@@ -4090,7 +4092,7 @@
   },
   "continuityCheckpoint": {
     "iteration": "I3",
-    "status": "HOLD_PENDING_SINGLE_RECERTIFICATION_OF_P0_FIX",
+    "status": "HOLD_DEEP_FORENSIC_ROOTCAUSE_FROZEN_PENDING_SINGLE_CONTROL_PLANE_CLOSURE",
     "exactProductSourceSha": "6bcbc1df70c29c2ad3ad57ecfa906917e6372ace",
     "exactProductSourceTree": "fa044d1527ccad25508c709043eeda2a829bae2e",
     "noReprocess": [
@@ -4137,11 +4139,14 @@
     "production": "DO_NOT_TOUCH",
     "rootCauseRun233": "Static/unit gates exposed stale v1 browser credential implementations and stale expectations before DEV deploy.",
     "lastRun": {
-      "runNumber": 264,
-      "runId": "35474748670",
-      "result": "HOLD_7_OF_10",
-      "code": "FUNCTIONAL_DEFECT:ADMIN_FIXTURE_VISIBILITY_OR_SCOPE",
-      "classification": "FUNCTIONAL_DEFECT"
+      "runNumber": 267,
+      "runId": "35477665206",
+      "result": "HOLD_CERTIFY_PASS_LIVE_FIXTURE_PREFLIGHT_CONTROL_FAILURE",
+      "code": "RELEASE_COMPOSITION_FAILURE:I3_CONTROL_PLANE_MULTI_AUTHORITY_AND_RUNTIME_TEST_RECOMPOSITION",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
+      "certify": "PASS_STEPS_1_27",
+      "liveFixtures": "NOT_EXECUTED_PREFLIGHT_FAIL",
+      "gate21": "SKIPPED"
     },
     "rootCauseRun235": "Cloud Run revision could not start because cxorbia-shopper-command-provider-v1.mjs imports ../../app/core/shopper-credential-rule.js but the runtime Dockerfile did not COPY that shared owner into the image.",
     "fixRun235": "Dockerfile now packages exactly app/core/shopper-credential-rule.js at the import path; static P0 guard enforces the COPY before build.",
@@ -4250,5 +4255,25 @@
     "deployCountAcrossLiveFixtureRuns": 0,
     "productionTouched": false,
     "owner": "app/adapters/tya-cumulative-read-model-v2.js"
+  },
+  "deepForensicRootCause": {
+    "auditId": "CXORBIA-I3-DEEP-FORENSIC-20260919",
+    "frozenAddendum": "ADDENDUM_PREVALENTE_RECUPERACION_CXORBIA_2026-09-19_I3_DEEP_FORENSIC_ROOTCAUSE_FROZEN.md",
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "code": "I3_CONTROL_PLANE_MULTI_AUTHORITY_AND_RUNTIME_TEST_RECOMPOSITION",
+    "productSourceSha": "6bcbc1df70c29c2ad3ad57ecfa906917e6372ace",
+    "productSourceTree": "fa044d1527ccad25508c709043eeda2a829bae2e",
+    "productDrift": false,
+    "run267CertifyPassed": true,
+    "structuralClosure": [
+      "static hashed V3 live fixture source; no runtime semantic patching",
+      "single browser/Auth lifecycle helper shared by human acceptance and live fixtures",
+      "one product-drift policy across certify/live-fixtures/Gate21",
+      "legacy fixtures-only path removed",
+      "credential rule version derived from canonical evidence",
+      "Gate21 binds same-run live fixture evidence hash and 10/10 closure",
+      "single causal assertion failure; cleanup remains always"
+    ],
+    "production": "DO_NOT_TOUCH"
   }
 }

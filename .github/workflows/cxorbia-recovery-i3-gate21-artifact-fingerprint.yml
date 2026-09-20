@@ -17,6 +17,7 @@ concurrency:
 
 env:
   CERTIFICATION_ARTIFACT_NAME: cxorbia-recovery-i3-single-source-certification-${{ github.run_id }}
+  LIVE_FIXTURE_ARTIFACT_NAME: cxorbia-recovery-i3-live-fixtures-v2-${{ github.run_id }}
   OUT_DIR: .gate21
 
 jobs:
@@ -34,6 +35,25 @@ jobs:
         with:
           name: ${{ env.CERTIFICATION_ARTIFACT_NAME }}
           path: .gate21/certification
+
+      - name: Download same-run live fixture evidence
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.LIVE_FIXTURE_ARTIFACT_NAME }}
+          path: .gate21/live-fixtures
+
+      - name: Verify same-run live fixture closure
+        run: |
+          set -Eeuo pipefail
+          LIVE="$OUT_DIR/live-fixtures/i3-live-fixtures-result.json"
+          test -f "$LIVE"
+          test "$(jq -r '.decision' "$LIVE")" = "PASS_I3_LIVE_FIXTURES_V2"
+          test "$(jq -r '.cleanup.ok' "$LIVE")" = "true"
+          test "$(jq -r '.buildCountThisRun' "$LIVE")" = "0"
+          test "$(jq -r '.deployCountThisRun' "$LIVE")" = "0"
+          test "$(jq -r '.production' "$LIVE")" = "false"
+          test "$(jq '[.tests[] | select(.ok==true)] | length' "$LIVE")" = "10"
+          sha256sum "$LIVE" | awk '{print $1}' > "$OUT_DIR/live-fixtures.sha256"
 
       - name: Resolve release identity only from same-run certification manifest
         run: |
@@ -166,6 +186,7 @@ jobs:
           HOSTING_VERSION="$(jq -r '.hostingVersionName' "$CERT/result.json")"
           HOSTING_RELEASE_TIME="$(jq -r '.hostingReleaseTime' "$CERT/result.json")"
           CONTROL_HEAD="$(jq -r '.controlHeadSha' "$CERT/result.json")"
+          LIVE_FIXTURE_SHA="$(cat "$OUT_DIR/live-fixtures.sha256")"
           MODULE_TRUTH_SHA="$(jq -r '.moduleTruthEvidenceSha256' "$CERT/result.json")"
           MODULE_COUNT="$(jq -r '.moduleTruth.modules|length' "$CERT/result.json")"
 
@@ -176,6 +197,8 @@ jobs:
             --arg run "$GITHUB_RUN_ID" \
             --arg artifactName "$CERTIFICATION_ARTIFACT_NAME" \
             --arg artifactSha "$ARTIFACT_SHA" \
+            --arg liveFixtureArtifactName "$LIVE_FIXTURE_ARTIFACT_NAME" \
+            --arg liveFixtureSha "$LIVE_FIXTURE_SHA" \
             --arg gate20Sha "$GATE20_SHA" \
             --arg fullHumanSha "$FULL_HUMAN_SHA" \
             --arg routeInventorySha "$ROUTE_INVENTORY_SHA" \
@@ -186,7 +209,7 @@ jobs:
             --arg hostingRelease "$HOSTING_RELEASE" \
             --arg hostingVersion "$HOSTING_VERSION" \
             --arg hostingReleaseTime "$HOSTING_RELEASE_TIME" \
-            '{schemaVersion:"cxorbia.recovery.i3.gate21.same-artifact.v1",gate:21,verdict:"PASS_GATE21_ARTIFACT_FINGERPRINT",production:false,source:{sha:$source,treeSha:$tree,controlHeadSha:$control},certification:{runId:$run,artifactName:$artifactName,artifactSha256:$artifactSha,buildCount:1,rebuildAfterCertification:false},gate20:{sourceSha:$source,evidenceSha256:$gate20Sha},fullHumanAcceptance:{decision:"PASS_I3_HUMAN_LIVE_ACCEPTANCE",evidenceSha256:$fullHumanSha,routeInventorySha256:$routeInventorySha,expectedRoleRouteEntries:56,beforeArtifact:true},moduleTruth:{evidenceSha256:$moduleTruthSha,moduleCount:$moduleCount,allModulesMatch:true},hostingCertifiedArtifact:{releaseName:$hostingRelease,versionName:$hostingVersion,releaseTime:$hostingReleaseTime},runtimeCertifiedArtifact:{revision:$runtimeRevision,imageDigest:$runtimeDigest,immutableImage:$immutableImage},promotion:{noRebuild:true,noRecomposition:true,exactCertifiedArtifactRequired:true,productionAuthorizationRequired:true},writes:{builds:0,hostingDeploys:0,runtimeDeploys:0,providerWrites:0,hrWrites:0,production:false}}' \
+            '{schemaVersion:"cxorbia.recovery.i3.gate21.same-artifact.v1",gate:21,verdict:"PASS_GATE21_ARTIFACT_FINGERPRINT",production:false,source:{sha:$source,treeSha:$tree,controlHeadSha:$control},certification:{runId:$run,artifactName:$artifactName,artifactSha256:$artifactSha,buildCount:1,rebuildAfterCertification:false},liveFixtures:{artifactName:$liveFixtureArtifactName,evidenceSha256:$liveFixtureSha,decision:"PASS_I3_LIVE_FIXTURES_V2",passed:10,cleanup:true,builds:0,deploys:0,production:false},gate20:{sourceSha:$source,evidenceSha256:$gate20Sha},fullHumanAcceptance:{decision:"PASS_I3_HUMAN_LIVE_ACCEPTANCE",evidenceSha256:$fullHumanSha,routeInventorySha256:$routeInventorySha,expectedRoleRouteEntries:56,beforeArtifact:true},moduleTruth:{evidenceSha256:$moduleTruthSha,moduleCount:$moduleCount,allModulesMatch:true},hostingCertifiedArtifact:{releaseName:$hostingRelease,versionName:$hostingVersion,releaseTime:$hostingReleaseTime},runtimeCertifiedArtifact:{revision:$runtimeRevision,imageDigest:$runtimeDigest,immutableImage:$immutableImage},promotion:{noRebuild:true,noRecomposition:true,exactCertifiedArtifactRequired:true,productionAuthorizationRequired:true},writes:{builds:0,hostingDeploys:0,runtimeDeploys:0,providerWrites:0,hrWrites:0,production:false}}' \
             > "$OUT_DIR/GATE21_RELEASE_MANIFEST.json"
           sha256sum "$OUT_DIR/GATE21_RELEASE_MANIFEST.json" > "$OUT_DIR/GATE21_RELEASE_MANIFEST.sha256"
 
