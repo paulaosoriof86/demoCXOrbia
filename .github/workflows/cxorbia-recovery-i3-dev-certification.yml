@@ -251,6 +251,7 @@ jobs:
           echo "SOURCE_RUNTIME_REVISION=$SOURCE_REVISION" >> "$GITHUB_ENV"
           echo "SOURCE_RUNTIME_DIGEST=$DIGEST" >> "$GITHUB_ENV"
           echo "SOURCE_IMMUTABLE_IMAGE=$IMMUTABLE_IMAGE" >> "$GITHUB_ENV"
+          echo "RUNTIME_URL=$RUNTIME_URL" >> "$GITHUB_ENV"
 
       - name: Materialize existing legal gate as config-only DEV successor
         run: |
@@ -259,15 +260,24 @@ jobs:
           CUR_ENABLE="$(jq -r --arg n "$LEGAL_ENABLE_NAME" '((.spec.containers[0].env // []) | map(select(.name==$n)) | .[0].value) // empty' "$RUNNER_TEMP/current-revision.json")"
           CUR_GATE="$(jq -r --arg n "$LEGAL_GATE_NAME" '((.spec.containers[0].env // []) | map(select(.name==$n)) | .[0].value) // empty' "$RUNNER_TEMP/current-revision.json")"
           CUR_HR_CACHE="$(jq -r --arg n "$I3_HR_CACHE_PIN_NAME" '((.spec.containers[0].env // []) | map(select(.name==$n)) | .[0].value) // empty' "$RUNNER_TEMP/current-revision.json")"
-          if [[ "$CUR_ENABLE" != "$LEGAL_ENABLE_VALUE" || "$CUR_GATE" != "$LEGAL_GATE_VALUE" || "$CUR_HR_CACHE" != "$I3_HR_CACHE_PIN_VALUE" ]]; then
+          CUR_MIN_SCALE="$(jq -r '.spec.template.metadata.annotations["autoscaling.knative.dev/minScale"] // empty' "$RUNNER_TEMP/current-revision.json")"
+          CUR_MAX_SCALE="$(jq -r '.spec.template.metadata.annotations["autoscaling.knative.dev/maxScale"] // empty' "$RUNNER_TEMP/current-revision.json")"
+          if [[ "$CUR_ENABLE" != "$LEGAL_ENABLE_VALUE" || "$CUR_GATE" != "$LEGAL_GATE_VALUE" || "$CUR_HR_CACHE" != "$I3_HR_CACHE_PIN_VALUE" || "$CUR_MIN_SCALE" != "1" || "$CUR_MAX_SCALE" != "1" ]]; then
             gcloud run services update "$SERVICE" --project "$PROJECT" --region "$REGION" --image "$SOURCE_IMMUTABLE_IMAGE" \
+              --min-instances=1 --max-instances=1 \
               --update-env-vars "$LEGAL_ENABLE_NAME=$LEGAL_ENABLE_VALUE,$LEGAL_GATE_NAME=$LEGAL_GATE_VALUE,$I3_HR_CACHE_PIN_NAME=$I3_HR_CACHE_PIN_VALUE" --quiet
           fi
           gcloud run services describe "$SERVICE" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-final.json"
           DEV_REVISION="$(jq -r '.status.latestReadyRevisionName // empty' "$OUT/runtime-final.json")"
           gcloud run revisions describe "$DEV_REVISION" --project "$PROJECT" --region "$REGION" --format=json > "$OUT/runtime-final-revision.json"
           FINAL_HR_CACHE="$(jq -r --arg n "$I3_HR_CACHE_PIN_NAME" '((.spec.containers[0].env // []) | map(select(.name==$n)) | .[0].value) // empty' "$OUT/runtime-final-revision.json")"
+          FINAL_MIN_SCALE="$(jq -r '.metadata.annotations["autoscaling.knative.dev/minScale"] // .spec.template.metadata.annotations["autoscaling.knative.dev/minScale"] // empty' "$OUT/runtime-final-revision.json")"
+          FINAL_MAX_SCALE="$(jq -r '.metadata.annotations["autoscaling.knative.dev/maxScale"] // .spec.template.metadata.annotations["autoscaling.knative.dev/maxScale"] // empty' "$OUT/runtime-final-revision.json")"
           test "$FINAL_HR_CACHE" = "$I3_HR_CACHE_PIN_VALUE"
+          test "$FINAL_MIN_SCALE" = "1"
+          test "$FINAL_MAX_SCALE" = "1"
+          jq -n -S --arg revision "$DEV_REVISION" --arg min "$FINAL_MIN_SCALE" --arg max "$FINAL_MAX_SCALE" --arg cache "$FINAL_HR_CACHE" \
+            '{decision:"PASS_I3_SINGLE_RUNTIME_LANE",revision:$revision,minInstances:($min|tonumber),maxInstances:($max|tonumber),hrCacheMs:($cache|tonumber),production:false}' > "$OUT/runtime-single-lane.json"
           FINAL_DIGEST_RAW="$(jq -r '.status.imageDigest // empty' "$OUT/runtime-final-revision.json")"
           if [[ "$FINAL_DIGEST_RAW" =~ ^sha256:[0-9a-f]{64}$ ]]; then FINAL_DIGEST="$FINAL_DIGEST_RAW"; elif [[ "$FINAL_DIGEST_RAW" == *@sha256:* ]]; then FINAL_DIGEST="sha256:${FINAL_DIGEST_RAW##*@sha256:}"; else FINAL_DIGEST="$SOURCE_RUNTIME_DIGEST"; fi
           test "$FINAL_DIGEST" = "$SOURCE_RUNTIME_DIGEST"
@@ -680,7 +690,34 @@ jobs:
           node -e 'const fs=require("fs"),p=JSON.parse(fs.readFileSync(process.env.OUT+"/hr-fresh.json","utf8")),s=p?.snapshot||p?.data||p,rt=p?._runtime||s?._runtime||{};if(s?.sourceSafe!==true||rt.refreshError)throw new Error("SOURCE_FAILURE:HR_FRESH_INVALID");fs.writeFileSync(process.env.OUT+"/hr-readback.json",JSON.stringify({decision:"PASS_I3_HR_EXACT_RUNTIME",sourceSafe:true,production:false},null,2)+"\n")'
 
           PINNED_HR_REVISION="$(jq -r '._runtime.revision // .sourceRevision // empty' "$OUT/hr-fresh.json")"
+          PINNED_HR_ORIGIN="$(jq -r '._runtime.cacheOrigin // empty' "$OUT/hr-fresh.json")"
+          PINNED_HR_CACHE_MS="$(jq -r '._runtime.cacheMs // 0' "$OUT/hr-fresh.json")"
           [[ "$PINNED_HR_REVISION" =~ ^[0-9a-f]{64}$ ]]
+          test "$PINNED_HR_ORIGIN" = "runtime_refresh"
+          test "$PINNED_HR_CACHE_MS" = "$I3_HR_CACHE_PIN_VALUE"
+          printf '[]\n' > "$OUT/hr-pin-readbacks.json"
+          for i in 1 2 3 4 5; do
+            curl -fsS --retry 3 --retry-delay 1 "$HOSTING_URL/api/tya/cinepolis/hr-live?format=meta&i3pin=${GITHUB_RUN_ID}-${i}" > "$RUNNER_TEMP/hr-hosting-$i.json"
+            curl -fsS --retry 3 --retry-delay 1 "$RUNTIME_URL/api/tya/cinepolis/hr-live?format=meta&i3pin=${GITHUB_RUN_ID}-${i}" > "$RUNNER_TEMP/hr-runtime-$i.json"
+            H_REV="$(jq -r '.revision // empty' "$RUNNER_TEMP/hr-hosting-$i.json")"
+            R_REV="$(jq -r '.revision // empty' "$RUNNER_TEMP/hr-runtime-$i.json")"
+            H_ORIGIN="$(jq -r '.cacheOrigin // empty' "$RUNNER_TEMP/hr-hosting-$i.json")"
+            R_ORIGIN="$(jq -r '.cacheOrigin // empty' "$RUNNER_TEMP/hr-runtime-$i.json")"
+            H_CACHE="$(jq -r '.cacheMs // 0' "$RUNNER_TEMP/hr-hosting-$i.json")"
+            R_CACHE="$(jq -r '.cacheMs // 0' "$RUNNER_TEMP/hr-runtime-$i.json")"
+            test "$H_REV" = "$PINNED_HR_REVISION"
+            test "$R_REV" = "$PINNED_HR_REVISION"
+            test "$H_ORIGIN" = "runtime_refresh"
+            test "$R_ORIGIN" = "runtime_refresh"
+            test "$H_CACHE" = "$I3_HR_CACHE_PIN_VALUE"
+            test "$R_CACHE" = "$I3_HR_CACHE_PIN_VALUE"
+            jq --argjson i "$i" --arg h "$H_REV" --arg r "$R_REV" --arg ho "$H_ORIGIN" --arg ro "$R_ORIGIN" \
+              '. + [{read:$i,hostingRevision:$h,runtimeRevision:$r,hostingOrigin:$ho,runtimeOrigin:$ro}]' "$OUT/hr-pin-readbacks.json" > "$RUNNER_TEMP/hr-pin-readbacks.next"
+            mv "$RUNNER_TEMP/hr-pin-readbacks.next" "$OUT/hr-pin-readbacks.json"
+            sleep 1
+          done
+          test "$(jq 'length' "$OUT/hr-pin-readbacks.json")" = "5"
+          test "$(jq --arg r "$PINNED_HR_REVISION" '[.[] | select(.hostingRevision==$r and .runtimeRevision==$r)] | length' "$OUT/hr-pin-readbacks.json")" = "5"
           echo "PINNED_HR_REVISION=$PINNED_HR_REVISION" >> "$GITHUB_ENV"
 
       - name: Normalize durable active shopper credentials on frozen rule

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "cxorbia.recovery.module-truth-matrix.v5",
-  "observedAt": "2026-09-20T04:55:00Z",
+  "observedAt": "2026-09-20T05:10:00Z",
   "repository": "paulaosoriof86/demoCXOrbia",
   "branch": "recovery/cxorbia-phase-a-20260831",
   "iteration": "I3_FUNCTIONAL_CLOSURE",
@@ -4092,7 +4092,7 @@
   },
   "continuityCheckpoint": {
     "iteration": "I3",
-    "status": "HOLD_RUN274_RUNTIME_HR_CACHE_WINDOW_NOT_PINNED_PENDING_SINGLE_RECERTIFICATION",
+    "status": "HOLD_RUN275_PROCESS_LOCAL_HR_CACHE_MULTI_INSTANCE_PENDING_SINGLE_RUNTIME_LANE_RECERTIFICATION",
     "exactProductSourceSha": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
     "exactProductSourceTree": "32e04ac5e9631d94b42e421b083b6264df2964a9",
     "noReprocess": [
@@ -4135,15 +4135,15 @@
       "acceptance imports provider function instead of reimplementing credentials",
       "stale v1 tests updated to the explicitly approved v2 contract"
     ],
-    "nextExactAction": "Keep product source 815eecb2b5b01001bd1f6455bae622159f0ca3e5 / tree 32e04ac5e9631d94b42e421b083b6264df2964a9 unchanged. Pin DEV runtime HR cache to 3600000ms for I3 certification, require Step21 and every Step23 route to render the exact PINNED_HR_REVISION, use bounded authority-release retries with diagnostics, then require artifact + live fixtures 10/10 + Gate21.",
+    "nextExactAction": "Keep product source 815eecb2b5b01001bd1f6455bae622159f0ca3e5 / tree 32e04ac5e9631d94b42e421b083b6264df2964a9 unchanged. Force I3 DEV Cloud Run minInstances=1/maxInstances=1 with exact readback, Step17 fresh once, then prove five Hosting and five direct-runtime reads all match the same runtime_refresh revision before Step21; require Step21/23/live fixtures/Gate21 same revision.",
     "production": "DO_NOT_TOUCH",
     "rootCauseRun233": "Static/unit gates exposed stale v1 browser credential implementations and stale expectations before DEV deploy.",
     "lastRun": {
-      "runNumber": 274,
-      "runId": "35489834648",
-      "result": "HOLD_CERTIFY_STEP21_TIMEOUT",
-      "code": "ENVIRONMENT_FAILURE:HUMAN_LANE_AUTHORITY_SETTLE_TIMEOUT_AFTER_HR_CACHE_TTL",
-      "classification": "ENVIRONMENT_FAILURE",
+      "runNumber": 275,
+      "runId": "35490346169",
+      "result": "HOLD_CERTIFY_STEP21_EXACT_REVISION_MISMATCH",
+      "code": "RELEASE_COMPOSITION_FAILURE:PROCESS_LOCAL_HR_CACHE_MULTI_INSTANCE_DIVERGENCE",
+      "classification": "RELEASE_COMPOSITION_FAILURE",
       "certify": "FAIL_STEP21",
       "liveFixtures": "NOT_RUN",
       "gate21": "SKIPPED"
@@ -4408,6 +4408,52 @@
       "step23EveryRouteExactRevision": true,
       "productChange": false
     },
+    "production": "DO_NOT_TOUCH"
+  },
+  "run275ProcessLocalCache": {
+    "classification": "RELEASE_COMPOSITION_FAILURE",
+    "code": "PROCESS_LOCAL_HR_CACHE_MULTI_INSTANCE_DIVERGENCE",
+    "runId": "35490346169",
+    "runNumber": 275,
+    "productSourceSha": "815eecb2b5b01001bd1f6455bae622159f0ca3e5",
+    "productSourceTree": "32e04ac5e9631d94b42e421b083b6264df2964a9",
+    "pinnedHrRevision": "ea5eae3b9b53955223c355168bfa2edf4918ebf64841754889419c30a4c86c5f",
+    "uiHrRevision": "51663e313d2b079ef59787e790df9ec356dd84cea8bade90c864cfbf76888abb",
+    "uiState": {
+      "firebaseAuthenticated": true,
+      "backendContextAuthenticated": true,
+      "role": "shopper",
+      "tenantId": "tya",
+      "projectId": "cinepolis",
+      "periodId": "cinepolis-2026-09",
+      "authorityApplied": true,
+      "gateReady": true,
+      "gateBlocked": false,
+      "source": "hr-live-all-periods+firestore-authenticated-exact-overlay",
+      "periods": 16,
+      "visits": 704
+    },
+    "sourceEvidence": {
+      "cacheStorage": "process-local let cache",
+      "bootstrapOrigin": "build_bootstrap",
+      "runtimeCacheMs": 3600000,
+      "additionalFreshConsumersFound": 0,
+      "cloudRunScalingExplicitBeforeFix": false
+    },
+    "rootCause": "The HR cache is process-local. I3 pinned one process through Step17, while Cloud Run had no explicit one-instance constraint; a later UI request could land on another process with a different cached/bootstrap revision. Increasing TTL cannot create cross-instance consistency.",
+    "correction": {
+      "minInstances": 1,
+      "maxInstances": 1,
+      "cacheMs": 3600000,
+      "sameImmutableImage": true,
+      "step17FreshCount": 1,
+      "hostingReadbacks": 5,
+      "directRuntimeReadbacks": 5,
+      "requireOrigin": "runtime_refresh",
+      "step21ExactRevision": true,
+      "step23ExactRevision": true
+    },
+    "productChange": false,
     "production": "DO_NOT_TOUCH"
   }
 }

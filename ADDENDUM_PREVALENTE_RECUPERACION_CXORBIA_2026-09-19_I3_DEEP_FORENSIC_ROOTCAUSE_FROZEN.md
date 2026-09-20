@@ -169,3 +169,15 @@ El runtime usa `CXORBIA_LIVE_HR_CACHE_MS=55000` por defecto. Step17 terminó ~04
 **Structural:** `RELEASE_COMPOSITION_FAILURE:CERTIFICATION_HR_CACHE_WINDOW_NOT_PINNED`
 
 Corrección: en I3 DEV el mismo immutable image usa `CXORBIA_LIVE_HR_CACHE_MS=3600000`; Step17 sigue siendo el único `fresh=1`; Step21 exige `PINNED_HR_REVISION` con retry/diagnóstico acotado; Step23 exige la misma revisión en cada ruta y Admin. Manifest/live fixtures/Gate21 continúan sellando la misma revisión/hash. No cambia producto, no reimporta y no toca producción.
+
+
+## 15. Run 275 — process-local HR cache / multi-instance divergence
+
+Run 275 (`35490346169`) mantuvo product source `815eecb2b5b01001bd1f6455bae622159f0ca3e5` / tree `32e04ac5e9631d94b42e421b083b6264df2964a9`. Steps 1–20 pasaron. En Step21, Firebase y `backendAuth.context()` estaban autenticados, HR authority aplicada, gate ready/no-blocked, source correcto, proyecto `cinepolis`, periodo `cinepolis-2026-09`, 16 periodos y 704 visitas. El único desacuerdo fue la revisión: pin `ea5eae3b9b53955223c355168bfa2edf4918ebf64841754889419c30a4c86c5f` versus UI `51663e313d2b079ef59787e790df9ec356dd84cea8bade90c864cfbf76888abb`.
+
+El runtime implementa `let cache=null` en memoria de proceso y `loadBootstrap()` carga `build_bootstrap` al arrancar. No se encontró otro consumidor explícito `fresh=1`. El workflow no imponía scaling de una instancia. Ampliar `CACHE_MS` no sincroniza procesos distintos.
+
+**Clasificación:** `RELEASE_COMPOSITION_FAILURE`  
+**Código:** `PROCESS_LOCAL_HR_CACHE_MULTI_INSTANCE_DIVERGENCE`
+
+Corrección I3 DEV: mismo immutable image, `min-instances=1`, `max-instances=1`, cache 3.600.000 ms, Step17 único `fresh=1`, cinco readbacks por Hosting y cinco por URL directa exigiendo la misma revisión y `cacheOrigin=runtime_refresh` antes de Step21. Step21/Step23/live fixtures/Gate21 conservan revisión exacta. No cambia producto, no reimporta y no toca producción.
