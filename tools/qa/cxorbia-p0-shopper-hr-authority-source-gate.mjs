@@ -7,6 +7,7 @@ const auth=read('app/core/backend-browser-auth.js');
 const authority=read('app/adapters/tya-protected-auth-hr-authority-bridge-v2.js');
 const liveWatcher=read('app/adapters/tya-live-source-refresh-watch-v2.js');
 const c6Runtime=read('app/adapters/tya-c6-unified-human-runtime-v1.js');
+const staffMembership=read('app/adapters/tya-c6-live-user-admin-membership-wiring-v1.js');
 const status=read('app/core/backend-preview-status.js');
 const backend=read('app/core/backend-firebase.js');
 
@@ -30,6 +31,8 @@ check('authority_emits_shopper_rerender',authority.includes("CX.bus.emit('shoppe
 check('authority_retries_forced_reconcile_when_busy',authority.includes("if(reconciling){bootForce=true;return {ok:false,skipped:true,reason:'reconcile_in_progress_forced_retry'};}"),'a forced backend-ready reconcile must not be lost when another reconcile is already running');
 check('live_watcher_does_not_force_provider_refresh',!/fresh\s*:\s*['"]1['"]/.test(liveWatcher),'live watcher must consume runtime cache authority; external refresh cadence belongs to the runtime, not the browser');
 check('c6_release_preserves_current_view_when_pending_empty',c6Runtime.includes("const requested=pendingView||CX.session?.view||null;"),'authority release must preserve the current authorized module instead of falling back to the first rail entry');
+check('staff_handoff_does_not_reenter_mounted_session',staffMembership.includes("const canonicalSessionMounted=appAlreadyVisible&&loginAlreadyHidden&&!!CX.session?.role;")&&staffMembership.includes("if(!canonicalSessionMounted){CX.app.enter();appEnterInvoked=true;}"),'authority refresh must not call app.enter again once the canonical staff shell is mounted, because Auth re-entry clears session.view');
+check('staff_handoff_preserves_current_view_on_refresh',staffMembership.includes('preservedCurrentViewOnAuthorityRefresh:canonicalSessionMounted'),'handoff must expose readback that the current module was preserved during authority refresh');
 
 const statusListensFinal=status.includes('cx:protected-auth-hr-authority-ready');
 const statusCallsProjects=/Proyectos:\s*['"+]?\+?c\.projects/.test(status)||status.includes('Proyectos: '+"'+c.projects+");
