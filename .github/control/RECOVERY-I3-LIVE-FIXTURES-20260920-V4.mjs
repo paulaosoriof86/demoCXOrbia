@@ -191,17 +191,88 @@ async function adminPage(staffUid) {
 }
 async function adminShopperReadback(staffUid, fixtures) {
   const { context, page } = await adminPage(staffUid);
+  const ids = fixtures.map((x) => x.id);
+  const capture = async () => page.evaluate((probeIds) => {
+    const all = Array.isArray(window.CX?.data?.shoppers) ? window.CX.data.shoppers : [];
+    const selected = all.filter((x) => probeIds.includes(String(x.id || x.shopperId || ''))).map((x) => ({
+      id: String(x.id || x.shopperId || ''), country: x.pais || x.country || null, phone: x.whatsapp || x.phone || null, email: x.email || '', status: x.estado || null
+    }));
+    const review = Array.isArray(window.CX?.data?.__identityReviewQueue) ? window.CX.data.__identityReviewQueue : [];
+    return {
+      ctx: window.CX.backendAuth.context(),
+      selected,
+      rows: probeIds.map((id) => Boolean(document.querySelector('tr[data-sid="' + CSS.escape(id) + '"]'))),
+      totalShoppers: all.length,
+      sourceMode: String(window.CX?.data?.sourceMode || ''),
+      sourceRef: String(window.CX?.dataSource?.sourceRef || ''),
+      authority: {
+        applied: window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied === true,
+        reason: String(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.reason || ''),
+        protectedProfiles: Number(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.protectedProfiles || 0),
+        hrShoppers: Number(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.hrShoppers || 0),
+        identityReviewCount: Number(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.identityReviewCount || 0),
+        at: String(window.CX_PROTECTED_AUTH_HR_AUTHORITY?.at || '')
+      },
+      backend: {
+        source: String(window.CX_BACKEND_LAST_STATE?.source || ''),
+        shoppers: Number(window.CX_BACKEND_LAST_STATE?.counts?.shoppers || 0),
+        projects: Number(window.CX_BACKEND_LAST_STATE?.counts?.projects || 0)
+      },
+      reviewMatches: review.filter((x) => probeIds.includes(String(x?.id || x?.shopperId || x?.canonicalShopperId || ''))).map((x) => ({
+        id: String(x?.id || x?.shopperId || x?.canonicalShopperId || ''),
+        reason: String(x?.reason || x?.identityReviewReason || '')
+      }))
+    };
+  }, ids);
   try {
     await page.evaluate(() => window.CX.router.nav('shoppers'));
     await page.waitForFunction(() => window.CX?.session?.view === 'shoppers', null, { timeout: 30000 });
     await sleep(900);
-    const base = await page.evaluate((ids) => {
-      const all = Array.isArray(window.CX?.data?.shoppers) ? window.CX.data.shoppers : [];
-      const selected = all.filter((x) => ids.includes(String(x.id || x.shopperId || ''))).map((x) => ({
-        id: String(x.id || x.shopperId || ''), country: x.pais || x.country || null, phone: x.whatsapp || x.phone || null, email: x.email || '', status: x.estado || null
-      }));
-      return { ctx: window.CX.backendAuth.context(), selected, rows: ids.map((id) => Boolean(document.querySelector('tr[data-sid="' + CSS.escape(id) + '"]'))) };
-    }, fixtures.map((x) => x.id));
+    const initial = await capture();
+
+    let spontaneous = false;
+    try {
+      await page.waitForFunction((probeIds) => {
+        const all = Array.isArray(window.CX?.data?.shoppers) ? window.CX.data.shoppers : [];
+        const present = new Set(all.map((x) => String(x.id || x.shopperId || '')));
+        return probeIds.every((id) => present.has(String(id)));
+      }, ids, { timeout: 10000 });
+      spontaneous = true;
+    } catch (_) {}
+
+    const afterWait = await capture();
+    let refreshInvoked = false;
+    let refreshReadback = null;
+    let postRefreshAuthority = null;
+    if (!spontaneous) {
+      refreshInvoked = true;
+      const priorAuthorityAt = String(afterWait.authority?.at || '');
+      refreshReadback = await page.evaluate(async (probeIds) => {
+        if (typeof window.CX?.backend?.refresh !== 'function') return { refreshAvailable:false, selected:[], totalShoppers:0 };
+        await window.CX.backend.refresh();
+        const all = Array.isArray(window.CX?.data?.shoppers) ? window.CX.data.shoppers : [];
+        return {
+          refreshAvailable:true,
+          selected: all.filter((x) => probeIds.includes(String(x.id || x.shopperId || ''))).map((x) => ({
+            id:String(x.id || x.shopperId || ''), country:x.pais || x.country || null, phone:x.whatsapp || x.phone || null, email:x.email || '', status:x.estado || null
+          })),
+          totalShoppers:all.length,
+          sourceMode:String(window.CX?.data?.sourceMode || ''),
+          sourceRef:String(window.CX?.dataSource?.sourceRef || '')
+        };
+      }, ids);
+      try {
+        await page.waitForFunction((priorAt) => {
+          const a = window.CX_PROTECTED_AUTH_HR_AUTHORITY || {};
+          return a.applied === true && String(a.at || '') && String(a.at || '') !== String(priorAt || '');
+        }, priorAuthorityAt, { timeout: 45000 });
+      } catch (_) {}
+      await sleep(1200);
+      postRefreshAuthority = await capture();
+    }
+
+    const base = await capture();
+    base.probe = { initial, afterWait, spontaneous, refreshInvoked, refreshReadback, postRefreshAuthority };
     const hn = fixtures.find((x) => x.profile.pais === 'HN');
     const row = page.locator('tr[data-sid="' + hn.id + '"]');
     if (await row.count()) { await row.first().click(); await sleep(400); base.hnDetail = await page.evaluate(() => String(document.querySelector('.cx-modal')?.innerText || '')); }
@@ -358,8 +429,27 @@ try {
   fs.writeFileSync(path.join(OUT, 'admin-fixture-diagnostic.json'), JSON.stringify(adminDiagnostic, null, 2) + '\n');
   const adminOk = rowsVisible && selectedProfilesOk && hnDetailPhoneOk && hnDetailEmailOk && crossProjectBlocked;
   record('5_PERFIL_ADMIN', 'Authorized Admin sees identity/country/phone/email/status; cross-project command blocked', adminDiagnostic, { role: admin.ctx.role, tenantId: admin.ctx.tenantId, projectIds: admin.ctx.projectIds }, 'Shared synthetic cleanup pending', 'Shared absence readback pending', adminOk, { diagnosticVersion: 'v1' });
-  if (!rowsVisible) throw new Error('FUNCTIONAL_DEFECT:ADMIN_FIXTURE_ROWS_NOT_VISIBLE');
-  if (!selectedProfilesOk) throw new Error('FUNCTIONAL_DEFECT:ADMIN_FIXTURE_READ_MODEL_MISMATCH');
+  const probe = admin.probe || {};
+  const refreshSelected = Array.isArray(probe.refreshReadback?.selected) ? probe.refreshReadback.selected.length : 0;
+  const postRefreshSelected = Array.isArray(probe.postRefreshAuthority?.selected) ? probe.postRefreshAuthority.selected.length : 0;
+  const postProtectedProfiles = Number(probe.postRefreshAuthority?.authority?.protectedProfiles || 0);
+  if (!rowsVisible || !selectedProfilesOk) {
+    if (probe.spontaneous === true) {
+      if (!selectedProfilesOk) throw new Error('FUNCTIONAL_DEFECT:ADMIN_FIXTURE_READ_MODEL_MISMATCH_AFTER_AUTOMATIC_SYNC');
+      throw new Error('VISUAL_DEFECT:ADMIN_FIXTURE_ROWS_NOT_VISIBLE_AFTER_AUTOMATIC_SYNC');
+    }
+    if (probe.refreshInvoked === true && refreshSelected === fixtureDefs.length && postRefreshSelected === fixtureDefs.length) {
+      throw new Error('FUNCTIONAL_DEFECT:ADMIN_FIXTURE_REQUIRES_EXPLICIT_BACKEND_REFRESH');
+    }
+    if (probe.refreshInvoked === true && refreshSelected === fixtureDefs.length && postRefreshSelected < fixtureDefs.length) {
+      if (postProtectedProfiles >= fixtureDefs.length) throw new Error('RELEASE_COMPOSITION_FAILURE:ADMIN_PLATFORM_PROFILES_LOST_AFTER_AUTHORITY_RECOMPOSE');
+      throw new Error('FUNCTIONAL_DEFECT:ADMIN_AUTHORITY_CAPTURE_DROPS_REFRESHED_PROFILES');
+    }
+    if (probe.refreshInvoked === true && refreshSelected < fixtureDefs.length) {
+      throw new Error('AUTH_FAILURE:ADMIN_FIRESTORE_REFRESH_SCOPE_EXCLUDES_CREATED_PROFILES');
+    }
+    throw new Error('FUNCTIONAL_DEFECT:ADMIN_FIXTURE_ROWS_NOT_VISIBLE');
+  }
   if (!hnDetailPhoneOk || !hnDetailEmailOk) throw new Error('VISUAL_DEFECT:ADMIN_FIXTURE_HN_DETAIL_NOT_VISIBLE');
   if (!crossProjectBlocked) throw new Error('AUTH_FAILURE:ADMIN_CROSS_PROJECT_COMMAND_NOT_BLOCKED');
 
