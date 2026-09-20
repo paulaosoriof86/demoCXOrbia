@@ -311,7 +311,7 @@
     const release=reason=>{
       if(replaying||!CX.session?.role||!humanAuthorityReady())return false;
       replaying=true;
-      const requested=pendingView;
+      const requested=pendingView||CX.session?.view||null;
       try{
         originalMount();
         if(requested&&CX.MODULES?.[requested]&&CX.session?.view!==requested)originalNav(requested);
