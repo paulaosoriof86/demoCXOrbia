@@ -65,3 +65,11 @@ P0 funcional nuevo=NINGUNO.
 Producto=NO CAMBIAR.
 Producción=DO_NOT_TOUCH.
 Siguiente acción=corrección estructural única del control-plane conforme a §6, luego un solo run canónico.
+
+
+## 9. Evidencia Run 268 — identidad Auth vs shopperId
+Run 268 (35479768269) cerró certify completo en SUCCESS: Steps 1–27, aceptación exhaustiva Step 23, Gate20, artifact y cleanup. Live-fixtures pasó preflight, autenticación Firebase y binding same-run; ejecutó la suite y produjo evidencia con cleanup.ok=true, buildCountThisRun=0, deployCountThisRun=0, production=false.
+
+El primer causal fue MAPPING_FAILURE del helper visible Shopper: exigía firebase.auth().currentUser.uid === shopperId operacional. La candidata congelada demuestra que son namespaces distintos: stableShopperUid(tenantId,shopperId) produce uid cx-sh-<hash>, mientras canonicalClaims conserva shopperId como claim operacional. El diagnóstico de Run 268 mostró Firebase user presente, backend context authenticated=true, role=shopper, tenant=tya, shopperId correcto y HR authority aplicada, pero firebaseUidMatches=false.
+
+Corrección congelada: visible Shopper debe probar credenciales por login real fresco y validar principal mediante Firebase user presente + token claims role/tenant/project/shopperId + backendAuth.context + HR authority. Queda prohibido volver a asumir uid === shopperId. El UID exacto sólo es válido cuando el contrato específico define el principal técnico, como custom-token staff/client.

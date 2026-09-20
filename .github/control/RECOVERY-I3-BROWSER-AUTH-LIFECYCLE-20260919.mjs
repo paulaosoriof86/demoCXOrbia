@@ -72,8 +72,8 @@ export async function settleCustomRoleAuth({ page, member, role, tenantId, proje
   return await page.evaluate(() => window.CX?.backendAuth?.context?.() || {});
 }
 
-export async function settleVisibleShopperAuth({ page, expectedUid, rawShopperId, canonicalShopperId, tenantId, projectId, baseUrl, login, password }) {
-  const diag = async () => page.evaluate((uid) => {
+export async function settleVisibleShopperAuth({ page, rawShopperId, canonicalShopperId, tenantId, projectId, baseUrl, login, password }) {
+  const diag = async () => page.evaluate(() => {
     const c = window.CX?.backendAuth?.context?.() || {};
     const u = String(window.firebase?.auth?.().currentUser?.uid || '');
     const p = window.CX?.data?.__sessionShopperProfile || {};
@@ -81,13 +81,13 @@ export async function settleVisibleShopperAuth({ page, expectedUid, rawShopperId
       selectedRole: String(window.CX?.backendAuth?.selectedRole?.() || ''),
       formRole: String(document.querySelector('#loginForm')?.dataset?.selectedRole || ''),
       authError: String(document.querySelector('#cxIntegratedAuthError')?.innerText || document.querySelector('#lgError')?.innerText || '').slice(0, 200),
-      firebaseUserPresent: Boolean(u), firebaseUidMatches: u === String(uid),
+      firebaseUserPresent: Boolean(u), firebaseUid: u,
       contextAuthenticated: c.authenticated === true, contextRole: String(c.role || ''),
       contextTenant: String(c.tenantId || ''), contextShopperId: String(c.shopperId || ''),
       authorityApplied: window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied === true,
       profile: { id: String(p.id || p.shopperId || ''), country: String(p.pais || p.country || ''), phone: String(p.whatsapp || p.phone || ''), email: String(p.email || '') }
     };
-  }, expectedUid).catch(() => ({ diagnosticUnavailable: true }));
+  }).catch(() => ({ diagnosticUnavailable: true }));
 
   let lastError = '', lastDiag = {};
   for (let attempt = 1; attempt <= 5; attempt++) {
@@ -101,20 +101,18 @@ export async function settleVisibleShopperAuth({ page, expectedUid, rawShopperId
         !!document.querySelector('#lgPass') &&
         !!document.querySelector('#lgSubmit'), null, { timeout: 60000 });
 
-      let uid = await page.evaluate(() => String(window.firebase?.auth?.().currentUser?.uid || '')).catch(() => '');
-      if (uid !== String(expectedUid)) {
-        if (uid) await page.evaluate(async () => { try { await window.firebase.auth().signOut(); } catch (_) {} }).catch(() => {});
-        await page.locator('.role-btn[data-role="shopper"]').click({ timeout: 30000 });
-        await page.waitForFunction(() =>
-          String(window.CX?.backendAuth?.selectedRole?.() || '').toLowerCase() === 'shopper' &&
-          String(document.querySelector('#loginForm')?.dataset?.selectedRole || '').toLowerCase() === 'shopper',
-          null, { timeout: 30000 });
-        await page.locator('#lgUser').fill(login);
-        await page.locator('#lgPass').fill(password);
-        await page.locator('#lgSubmit').click();
-      }
+      const priorUid = await page.evaluate(() => String(window.firebase?.auth?.().currentUser?.uid || '')).catch(() => '');
+      if (priorUid) await page.evaluate(async () => { try { await window.firebase.auth().signOut(); } catch (_) {} }).catch(() => {});
+      await page.locator('.role-btn[data-role="shopper"]').click({ timeout: 30000 });
+      await page.waitForFunction(() =>
+        String(window.CX?.backendAuth?.selectedRole?.() || '').toLowerCase() === 'shopper' &&
+        String(document.querySelector('#loginForm')?.dataset?.selectedRole || '').toLowerCase() === 'shopper',
+        null, { timeout: 30000 });
+      await page.locator('#lgUser').fill(login);
+      await page.locator('#lgPass').fill(password);
+      await page.locator('#lgSubmit').click();
 
-      await page.waitForFunction((uid) => String(window.firebase?.auth?.().currentUser?.uid || '') === String(uid), expectedUid, { timeout: 60000 });
+      await page.waitForFunction(() => Boolean(window.firebase?.auth?.().currentUser?.uid), null, { timeout: 60000 });
       await waitEnsure(page, 60000);
       await page.waitForFunction(({ tenantId, projectId, rawShopperId, canonicalShopperId }) => {
         const c = window.CX?.backendAuth?.context?.() || {};
@@ -122,14 +120,29 @@ export async function settleVisibleShopperAuth({ page, expectedUid, rawShopperId
         const sid = String(c.shopperId || '');
         return c.authenticated === true && String(c.role || '').toLowerCase() === 'shopper' &&
           c.tenantId === tenantId && (ps.length === 0 || ps.includes(projectId)) &&
-          (!sid || sid === String(rawShopperId || '') || sid === String(canonicalShopperId || ''));
+          (sid === String(rawShopperId || '') || sid === String(canonicalShopperId || ''));
       }, { tenantId, projectId, rawShopperId, canonicalShopperId }, { timeout: 90000 });
       await page.waitForFunction(() => window.CX_PROTECTED_AUTH_HR_AUTHORITY?.applied === true, null, { timeout: 150000 });
-      return await page.evaluate(() => ({
+      const principal = await page.evaluate(async ({ tenantId, projectId, rawShopperId, canonicalShopperId }) => {
+        const user = window.firebase?.auth?.().currentUser || null;
+        if (!user) return { ok:false, code:'FIREBASE_USER_MISSING' };
+        const token = await user.getIdTokenResult();
+        const claims = token?.claims || {};
+        const sid = String(claims.shopperId || '');
+        const ps = Array.isArray(claims.projectIds) ? claims.projectIds.map(String) : [];
+        const ok = String(claims.role || '').toLowerCase() === 'shopper' &&
+          String(claims.tenantId || '') === tenantId &&
+          (ps.length === 0 || ps.includes(projectId)) &&
+          (sid === String(rawShopperId || '') || sid === String(canonicalShopperId || ''));
+        return { ok, uid:String(user.uid || ''), shopperId:sid, tenantId:String(claims.tenantId || ''), role:String(claims.role || ''), projectIds:ps };
+      }, { tenantId, projectId, rawShopperId, canonicalShopperId });
+      if (!principal?.ok) throw new Error('AUTH_FAILURE:VISIBLE_LOGIN_PRINCIPAL_CLAIMS_MISMATCH:' + JSON.stringify(principal).slice(0, 500));
+      return await page.evaluate((principal) => ({
         context: window.CX?.backendAuth?.context?.() || {},
         authority: window.CX_PROTECTED_AUTH_HR_AUTHORITY || null,
-        profile: window.CX?.data?.__sessionShopperProfile || {}
-      }));
+        profile: window.CX?.data?.__sessionShopperProfile || {},
+        authPrincipal: principal
+      }), principal);
     } catch (e) {
       lastError = sval(e?.message || e);
       lastDiag = await diag();
